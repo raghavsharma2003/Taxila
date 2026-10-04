@@ -1,0 +1,78 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8ec;color:#344b3d}
+.scene{width:360px;height:320px;padding:9px 12px;display:flex;flex-direction:column;align-items:center}
+h1{height:24px;margin:0;color:#365d46;font-size:18px;line-height:24px;font-weight:750}
+.question{height:38px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:14px;font-weight:650;color:#755435}
+svg{width:336px;height:230px;overflow:visible}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:filter .22s,transform .18s}
+.part:active{transform:scale(.96)}
+.part.glow{filter:drop-shadow(0 0 7px #f5be45) brightness(1.08)}
+.label{font:700 13px system-ui,sans-serif;fill:#405548}
+.leader{fill:none;stroke:#9eaa8e;stroke-width:1.5;stroke-linecap:round}
+.feedback{height:19px;font-size:13px;font-weight:700;color:#53724d;text-align:center}
+</style>
+<div class="scene">
+  <h1 id="title"></h1>
+  <div class="question" id="question" data-ask></div>
+  <svg viewBox="0 0 336 230" role="img" aria-label="">
+    <path class="leader" d="M221 38 L195 46"/>
+    <path class="leader" d="M224 72 L194 70"/>
+    <path class="leader" d="M118 126 L140 126"/>
+    <path class="leader" d="M217 143 L207 143"/>
+    <path class="leader" d="M221 207 L205 207"/>
+    <text class="label" x="225" y="42"></text>
+    <text class="label" x="228" y="77"></text>
+    <text class="label" x="72" y="131"></text>
+    <text class="label" x="221" y="148"></text>
+    <text class="label" x="225" y="212"></text>
+    <path class="part" d="M164 24 C151 7 134 17 143 35 C125 27 118 44 137 53 C119 61 129 78 148 68 C146 88 166 89 168 69 C181 84 197 71 183 56 C203 50 197 31 177 36 C181 17 164 10 164 24Z" fill="#f29a83" stroke="#d87969" stroke-width="2"/>
+    <circle class="part" cx="168" cy="58" r="27" fill="#f5c652" stroke="#dba93c" stroke-width="2"/>
+    <path class="part" d="M140 86 Q168 82 196 86 L196 167 Q168 174 140 167Z" fill="#69a76b" stroke="#4f8957" stroke-width="2"/>
+    <path class="part" d="M142 113 C124 91 94 91 83 120 C94 153 122 157 146 133 C162 154 192 153 211 122 C200 92 171 92 151 113Z" fill="#84bd75" stroke="#59945e" stroke-width="2"/>
+    <path class="part" d="M130 166 Q168 174 206 166 L201 181 Q221 192 219 210 Q201 204 187 194 Q194 215 180 228 Q166 215 169 194 Q152 205 132 210 Q135 192 155 181Z" fill="#c99769" stroke="#a97950" stroke-width="2"/>
+  </svg>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(function(){
+  const p=Studio.params;
+  const title=document.getElementById("title");
+  const question=document.getElementById("question");
+  const feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  question.textContent=Studio.t("ask")+" "+Studio.t(p.ask);
+  question.setAttribute("data-ask",p.ask);
+  const keys=p.parts;
+  const shapes=document.querySelectorAll("svg .part");
+  const labels=document.querySelectorAll("svg .label");
+  shapes.forEach(function(el,i){
+    const key=keys[i];
+    el.setAttribute("data-part",key);
+    el.addEventListener("click",function(){
+      el.animate([{transform:"scale(1)"},{transform:"scale(.96)"},{transform:"scale(1)"}],{duration:220});
+      Studio.event("tap",{part:key});
+      Studio.answer(key);
+    });
+  });
+  labels.forEach(function(el,i){
+    const key=keys[i];
+    el.setAttribute("data-label",key);
+    el.textContent=Studio.t(key);
+  });
+  Studio.onVerdict(function(v){
+    if(v.correct){
+      const target=Array.from(shapes).find(function(el){return el.getAttribute("data-part")===p.ask});
+      if(target)target.classList.add("glow");
+      feedback.textContent=Studio.t("right")+" "+Studio.t("done");
+      Studio.done();
+    }else{
+      feedback.textContent=Studio.t("wrong");
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

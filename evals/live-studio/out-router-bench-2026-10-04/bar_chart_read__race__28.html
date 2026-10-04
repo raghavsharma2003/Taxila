@@ -1,0 +1,104 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#493b33;background:#fff8ed}
+.frame{width:360px;height:320px;padding:10px 12px;overflow:hidden;background:linear-gradient(145deg,#fffaf2,#fff2df)}
+h1{height:27px;margin:0;text-align:center;font-size:18px;line-height:27px;font-weight:750;color:#654333}
+.ask{height:32px;margin:0;text-align:center;font-size:14px;line-height:20px;color:#755b4a}
+.chart{position:relative;width:336px;height:224px;margin:2px auto 0}
+svg{display:block;width:336px;height:224px;overflow:visible}
+.grid{stroke:#eadfce;stroke-width:1}
+.axis{stroke:#8e7866;stroke-width:1.4}
+.ticktext{fill:#6f5d50;font-size:10px;text-anchor:end;dominant-baseline:middle}
+.axis-title{fill:#755b4a;font-size:11px;font-weight:650;text-anchor:middle}
+.bar{fill:#e99a54;stroke:#d57b37;stroke-width:1.5;transform-box:fill-box;transform-origin:center bottom;animation:grow .72s cubic-bezier(.2,.8,.25,1) both}
+.name{fill:#5d493b;font-size:10px;text-anchor:middle;dominant-baseline:hanging}
+.column-hit{position:absolute;top:0;height:210px;width:60px;padding:0;border:0;background:transparent;border-radius:10px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.column-hit:active{background:#edc08033;transform:scale(.96)}
+.column-hit:focus-visible{outline:3px solid #b86e32;outline-offset:-3px}
+.feedback{height:24px;margin:1px 0 0;text-align:center;font-size:14px;line-height:22px;font-weight:700;color:#755b4a}
+@keyframes grow{from{transform:scaleY(.04)}to{transform:scaleY(1)}}
+</style>
+<div class="frame">
+  <h1 id="title"></h1>
+  <p class="ask" id="ask"></p>
+  <div class="chart" id="chart">
+    <svg id="drawing" viewBox="0 0 336 224" role="img" aria-label=""></svg>
+  </div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const data = Studio.params.data;
+  const chart = document.getElementById("chart");
+  const svg = document.getElementById("drawing");
+  const ns = "http://www.w3.org/2000/svg";
+  const put = (tag, attrs, parent = svg) => {
+    const el = document.createElementNS(ns, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    parent.appendChild(el);
+    return el;
+  };
+  document.getElementById("title").textContent = Studio.t("title");
+  document.getElementById("ask").textContent = Studio.t("ask");
+  svg.setAttribute("aria-label", Studio.t("yaxis"));
+
+  const max = Math.max(...data.map(d => d.value));
+  const rough = max / 4;
+  const power = Math.pow(10, Math.floor(Math.log10(rough || 1)));
+  const scaled = rough / power;
+  const step = (scaled <= 1 ? 1 : scaled <= 2 ? 2 : scaled <= 5 ? 5 : 10) * power;
+  const top = Math.ceil(max / step) * step;
+  const left = 43, right = 330, plotTop = 17, base = 162;
+  const plotHeight = base - plotTop;
+  const slot = (right - left) / data.length;
+  const barWidth = Math.min(38, slot * .62);
+
+  for (let value = 0; value <= top; value += step) {
+    const y = base - (value / top) * plotHeight;
+    put("line", {x1:left, y1:y, x2:right, y2:y, class:value === 0 ? "axis" : "grid"});
+    const label = put("text", {x:left - 7, y:y, class:"ticktext", "data-tick":value});
+    label.textContent = value;
+  }
+  put("line", {x1:left, y1:plotTop, x2:left, y2:base, class:"axis"});
+  const axisTitle = put("text", {x:10, y:(plotTop + base) / 2, class:"axis-title", transform:`rotate(-90 10 ${(plotTop + base) / 2})`});
+  axisTitle.textContent = Studio.t("yaxis");
+
+  data.forEach((d, i) => {
+    const center = left + slot * (i + .5);
+    const height = (d.value / top) * plotHeight;
+    const rect = put("rect", {
+      x:center - barWidth / 2, y:base - height, width:barWidth, height:height,
+      rx:5, class:"bar", "data-bar":d.key, "data-value":d.value
+    });
+    const name = put("text", {x:center, y:171, class:"name"});
+    name.textContent = Studio.t(d.key);
+    const hit = document.createElement("button");
+    hit.type = "button";
+    hit.className = "column-hit";
+    hit.setAttribute("data-column", d.key);
+    hit.setAttribute("aria-label", Studio.t(d.key));
+    hit.style.left = `${center - slot / 2}px`;
+    chart.appendChild(hit);
+    hit.addEventListener("click", () => {
+      if (hit.disabled) return;
+      Studio.event("bar_tap", {key:d.key});
+      Studio.answer(d.key);
+    });
+  });
+
+  Studio.onVerdict(({correct}) => {
+    const feedback = document.getElementById("feedback");
+    if (correct) {
+      feedback.textContent = Studio.t("right") + " " + Studio.t("done");
+      chart.querySelectorAll(".column-hit").forEach(el => el.disabled = true);
+      Studio.done();
+    } else {
+      feedback.textContent = Studio.t("wrong");
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,75 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#49382f;background:#fff8ed}
+#card{width:360px;height:320px;padding:10px 12px 8px;display:flex;flex-direction:column;align-items:stretch}
+#title{font-size:19px;line-height:23px;font-weight:800;text-align:center;color:#76472f;margin:0}
+#ask{font-size:14px;line-height:18px;font-weight:650;text-align:center;color:#58483b;margin:2px 0 0}
+#chart{width:100%;height:225px;display:block;overflow:visible;flex:none}
+.grid{stroke:#eadfd0;stroke-width:1}
+.axis{stroke:#967e69;stroke-width:1.3}
+.tick-label{font-size:11px;fill:#705f50;text-anchor:end;dominant-baseline:middle}
+.axis-title{font-size:11px;fill:#705f50;text-anchor:middle}
+.bar{fill:#e7a64f;transform-box:fill-box;transform-origin:center bottom;transform:scaleY(0);transition:transform 700ms cubic-bezier(.2,.8,.25,1)}
+.bar.grow{transform:scaleY(1)}
+.bar-label{font-size:10px;fill:#49382f;text-anchor:middle;dominant-baseline:hanging;font-weight:650}
+.column-hit{fill:transparent;cursor:pointer}
+.column-hit:focus{outline:none}
+.column-hit:focus-visible{stroke:#9b6039;stroke-width:2;stroke-dasharray:3 2}
+#feedback{height:26px;margin:0;text-align:center;font-size:14px;line-height:22px;font-weight:750;color:#80522f}
+#feedback.wrong{color:#9b4e38}
+#feedback.right{color:#39745a}
+#chart .column-hit:active{opacity:.75}
+</style>
+<div id="card">
+  <div id="title"></div>
+  <div id="ask"></div>
+  <svg id="chart" viewBox="0 0 360 225" role="img" aria-label="">
+    <g id="plot"></g>
+  </svg>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=> {
+  const p=Studio.params, data=p.data;
+  const t=key=>Studio.t(key);
+  document.getElementById("title").textContent=t("title");
+  document.getElementById("ask").textContent=t("ask");
+  const plot=document.getElementById("plot"), feedback=document.getElementById("feedback");
+  const ns="http://www.w3.org/2000/svg";
+  const make=(tag,attrs={},text)=>{const n=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);if(text!==undefined)n.textContent=text;return n};
+  const left=47,right=350,top=16,base=168,plotH=base-top;
+  const max=Math.max(...data.map(d=>Number(d.value)));
+  const rough=max/4, power=Math.pow(10,Math.floor(Math.log10(rough||1)));
+  const step=(rough/power<=1?1:rough/power<=2?2:rough/power<=5?5:10)*power;
+  const ceiling=Math.ceil(max/step)*step;
+  const tickGroup=make("g");
+  for(let v=0;v<=ceiling;v+=step){
+    const y=base-(v/ceiling)*plotH;
+    tickGroup.append(make("line",{x1:left,y1:y,x2:right,y2:y,class:v===0?"axis":"grid"}));
+    tickGroup.append(make("text",{x:left-7,y:y,class:"tick-label","data-tick":v},String(v)));
+  }
+  tickGroup.append(make("text",{x:12,y:(top+base)/2,class:"axis-title",transform:`rotate(-90 12 ${(top+base)/2})`},t("yaxis")));
+  plot.append(tickGroup);
+  const count=data.length, width=(right-left)/count;
+  data.forEach((d,i)=>{
+    const x=left+i*width, barW=Math.min(34,width*.58), h=(Number(d.value)/ceiling)*plotH;
+    const bar=make("rect",{x:x+(width-barW)/2,y:base-h,width:barW,height:h,rx:6,class:"bar","data-bar":d.key,"data-value":d.value});
+    plot.append(bar);
+    plot.append(make("text",{x:x+width/2,y:base+9,class:"bar-label"},t(d.key)));
+    const hit=make("rect",{x:x+1,y:0,width:width-2,height:225,class:"column-hit","data-column":d.key,tabindex:"0",role:"button","aria-label":t(d.key)});
+    hit.addEventListener("click",()=>Studio.answer(d.key));
+    hit.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();Studio.answer(d.key)}});
+    plot.append(hit);
+  });
+  let finished=false;
+  Studio.onVerdict(({correct})=>{
+    feedback.className=correct?"right":"wrong";
+    feedback.textContent=t(correct?"right":"wrong");
+    if(correct&&!finished){finished=true;window.setTimeout(()=>{feedback.textContent=t("done");Studio.done()},650)}
+  });
+  requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll(".bar").forEach(b=>b.classList.add("grow"))));
+  Studio.ready();
+})();
+
+</script>

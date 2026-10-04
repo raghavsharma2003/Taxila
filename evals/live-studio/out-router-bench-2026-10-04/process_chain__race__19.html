@@ -1,0 +1,104 @@
+<style>
+  *{box-sizing:border-box}
+  #activity{width:360px;height:320px;overflow:hidden;position:relative;padding:8px 12px;background:#fff8ed;color:#59443d;font-family:system-ui,sans-serif;text-align:center}
+  #heading{height:24px;font-size:18px;font-weight:800}
+  #scene{display:block;width:336px;height:112px;margin:0 auto}
+  .arrow{fill:none;stroke:#d49a75;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .stage circle{fill:#ffe1b7;stroke:#d99875;stroke-width:2;transition:fill .25s,stroke-width .25s,filter .25s}
+  .stage.active circle{fill:#ffd187;stroke-width:4;filter:drop-shadow(0 0 7px #f4ac63)}
+  .stage text{fill:#59443d;font-size:12px;font-weight:700;text-anchor:middle;dominant-baseline:middle}
+  [data-token]{fill:#ef765e;stroke:#fff8ed;stroke-width:2;filter:drop-shadow(0 2px 2px #ad7059)}
+  #next{display:block;height:52px;min-width:112px;margin:0 auto}
+  #prompt{height:25px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+  #options{display:flex;gap:5px;width:100%}
+  button{border:0;border-radius:16px;background:#ebaa78;color:#513a34;font:700 14px system-ui,sans-serif;cursor:pointer;transition:transform .16s,background .2s}
+  button:active{transform:scale(.92)}
+  #options button{flex:1;min-width:0;height:52px;background:#f5d9ab}
+  #feedback{height:22px;padding-top:2px;font-size:13px;font-weight:800;color:#9b674d}
+</style>
+<div id="activity">
+  <div id="heading"></div>
+  <svg id="scene" viewBox="0 0 336 112" aria-hidden="true"></svg>
+  <button id="next" data-action="next"></button>
+  <div id="prompt"></div>
+  <div id="options"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params,keys=p.stages,root=document.getElementById('activity');
+  const svg=document.getElementById('scene'),next=document.getElementById('next');
+  const options=document.getElementById('options'),feedback=document.getElementById('feedback');
+  const NS='http://www.w3.org/2000/svg';
+  const make=(tag,attrs,parent)=>{
+    const el=document.createElementNS(NS,tag);
+    for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);
+    parent.appendChild(el);
+    return el;
+  };
+  const n=keys.length;
+  const positions=keys.map((_,i)=>{
+    if(p.cycle){
+      const a=-Math.PI/2+i*2*Math.PI/n;
+      return{x:168+112*Math.cos(a),y:56+27*Math.sin(a)};
+    }
+    return{x:n===1?168:34+i*268/(n-1),y:56};
+  });
+  const defs=make('defs',{},svg);
+  const marker=make('marker',{id:'tip',viewBox:'0 0 10 10',refX:'8',refY:'5',markerWidth:'7',markerHeight:'7',orient:'auto'},defs);
+  make('path',{d:'M 1 1 L 9 5 L 1 9 Z',fill:'#d49a75'},marker);
+  const links=p.cycle?n:Math.max(0,n-1);
+  for(let i=0;i<links;i++){
+    const a=positions[i],b=positions[(i+1)%n],dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1;
+    const ux=dx/len,uy=dy/len;
+    make('path',{'data-arrow':keys[i]+'>'+keys[(i+1)%n],class:'arrow',
+      d:`M ${a.x+ux*25} ${a.y+uy*25} L ${b.x-ux*26} ${b.y-uy*26}`,
+      'marker-end':'url(#tip)'},svg);
+  }
+  const groups=keys.map((key,i)=>{
+    const pos=positions[i],g=make('g',{'data-stage':key,class:'stage'},svg);
+    make('circle',{cx:pos.x,cy:pos.y,r:24},g);
+    const label=make('text',{'data-label':key,x:pos.x,y:pos.y+9},g);
+    label.textContent=Studio.t(key);
+    return g;
+  });
+  const token=make('circle',{'data-token':'',cx:positions[0].x,cy:positions[0].y-9,r:6},svg);
+  let index=0,moving=false,finished=false;
+  function active(){
+    root.setAttribute('data-active',keys[index]);
+    groups.forEach((g,i)=>g.classList.toggle('active',i===index));
+  }
+  active();
+  document.getElementById('heading').textContent=Studio.t('title');
+  next.textContent=Studio.t('next');
+  document.getElementById('prompt').textContent=Studio.t('ask')+' '+Studio.t(p.askAfter);
+  p.options.forEach(key=>{
+    const b=document.createElement('button');
+    b.setAttribute('data-option',key);
+    b.textContent=Studio.t(key);
+    b.addEventListener('click',()=>{if(!finished)Studio.answer(key)});
+    options.appendChild(b);
+  });
+  next.addEventListener('click',()=>{
+    if(moving||finished||(!p.cycle&&index===n-1))return;
+    moving=true;
+    const from=positions[index],to=positions[(index+1)%n],start=performance.now(),duration=650;
+    Studio.event('next',{from:keys[index],to:keys[(index+1)%n]});
+    function frame(now){
+      const t=Math.min(1,(now-start)/duration),ease=t*t*(3-2*t);
+      token.setAttribute('cx',from.x+(to.x-from.x)*ease);
+      token.setAttribute('cy',from.y+(to.y-from.y)*ease-9);
+      if(t<1)requestAnimationFrame(frame);
+      else{index=(index+1)%n;moving=false;active()}
+    }
+    requestAnimationFrame(frame);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct&&!finished){finished=true;next.disabled=true;Studio.done()}
+  });
+  Studio.ready();
+})();
+
+</script>

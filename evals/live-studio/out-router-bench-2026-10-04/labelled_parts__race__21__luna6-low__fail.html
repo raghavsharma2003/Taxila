@@ -1,0 +1,90 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8e9;color:#354b3d}
+.frame{width:360px;height:320px;position:relative;overflow:hidden;background:linear-gradient(160deg,#fffaf0,#f1f8e9)}
+h1{position:absolute;left:16px;top:7px;margin:0;font-size:15px;font-weight:750;color:#496649}
+.question{position:absolute;left:16px;right:16px;top:29px;min-height:48px;padding:8px 12px;border-radius:15px;background:#fff;box-shadow:0 2px 8px #51643a1c;font-size:14px;line-height:1.25}
+svg{position:absolute;inset:0;width:360px;height:320px}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:filter .2s,transform .18s}
+.part:active{transform:scale(.94)}
+.part.selected{filter:drop-shadow(0 0 8px #ffd348);animation:glow .8s ease-in-out infinite alternate}
+.label{font:600 13px system-ui,sans-serif;fill:#455b46}
+.leader{fill:none;stroke:#8b9c7b;stroke-width:1.5;stroke-linecap:round}
+@keyframes glow{from{filter:drop-shadow(0 0 4px #ffcf36)}to{filter:drop-shadow(0 0 12px #ffb51f)}}
+</style>
+<div class="frame">
+  <h1 id="title"></h1>
+  <div class="question" id="question" data-ask></div>
+  <svg viewBox="0 0 360 320" role="img" aria-label="">
+    <g class="part" data-part="petal">
+      <ellipse cx="151" cy="91" rx="25" ry="21" fill="#f28e83"/>
+      <ellipse cx="209" cy="91" rx="25" ry="21" fill="#f28e83"/>
+      <ellipse cx="180" cy="63" rx="21" ry="25" fill="#f28e83"/>
+      <ellipse cx="180" cy="119" rx="21" ry="25" fill="#f28e83"/>
+    </g>
+    <path class="leader" d="M225 80 L244 72"/>
+    <text class="label" data-label="petal" x="248" y="76"></text>
+
+    <circle class="part" data-part="centre" cx="180" cy="91" r="29" fill="#f6c64e"/>
+    <path class="leader" d="M201 109 L223 123"/>
+    <text class="label" data-label="centre" x="228" y="128"></text>
+
+    <g class="part" data-part="stem">
+      <rect x="153" y="132" width="54" height="98" rx="27" fill="#5a9b58"/>
+    </g>
+    <path class="leader" d="M207 180 L229 180"/>
+    <text class="label" data-label="stem" x="234" y="185"></text>
+
+    <g class="part" data-part="leaf">
+      <ellipse cx="143" cy="177" rx="38" ry="31" fill="#78b85b" stroke="#5a9b58" stroke-width="2" transform="rotate(18 143 177)"/>
+      <path d="M115 166 Q146 175 169 183" fill="none" stroke="#e0f0bb" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <path class="leader" d="M108 184 L88 193"/>
+    <text class="label" data-label="leaf" x="48" y="198"></text>
+
+    <g class="part" data-part="root">
+      <ellipse cx="180" cy="250" rx="38" ry="31" fill="#bf8c5b" stroke="#a97548" stroke-width="2"/>
+      <path d="M180 228 L180 267 M168 238 L157 252 M192 238 L203 252" fill="none" stroke="#e7c49a" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <path class="leader" d="M218 250 L239 250"/>
+    <text class="label" data-label="root" x="244" y="255"></text>
+  </svg>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const title=document.getElementById("title");
+  const question=document.getElementById("question");
+  title.textContent=Studio.t("title");
+  question.dataset.ask=p.ask;
+  question.textContent=Studio.t("ask")+" "+Studio.t(p.ask);
+  document.querySelectorAll("[data-label]").forEach(el=>{
+    el.textContent=Studio.t(el.getAttribute("data-label"));
+  });
+  const parts=[...document.querySelectorAll("[data-part]")];
+  let locked=false;
+  parts.forEach(el=>{
+    el.addEventListener("click",()=>{
+      if(locked)return;
+      const key=el.getAttribute("data-part");
+      Studio.event("tap",{part:key});
+      Studio.answer(key);
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      locked=true;
+      const target=parts.find(el=>el.getAttribute("data-part")===p.ask);
+      if(target)target.classList.add("selected");
+      question.textContent=Studio.t("right")+" "+Studio.t("done");
+      Studio.done();
+    }else{
+      question.textContent=Studio.t("wrong")+" "+Studio.t("ask")+" "+Studio.t(p.ask);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

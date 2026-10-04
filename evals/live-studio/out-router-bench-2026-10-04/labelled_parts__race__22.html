@@ -1,0 +1,74 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{background:#fff8e9;color:#354b3e;font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif}
+.frame{width:360px;height:320px;padding:10px 12px;display:flex;flex-direction:column;gap:5px}
+h1{height:25px;margin:0;text-align:center;font-size:17px;line-height:25px;color:#42694a}
+.question{min-height:36px;padding:7px 10px;border-radius:13px;background:#f5edcf;text-align:center;font-size:14px;font-weight:700;line-height:20px}
+svg{display:block;width:336px;height:218px;overflow:hidden}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:filter .22s,transform .16s}
+.part:active{transform:scale(.94)}
+.part:focus-visible{outline:none;filter:drop-shadow(0 0 5px #789e58)}
+.part.correct{filter:drop-shadow(0 0 8px #f2b827);animation:glow .75s ease-in-out infinite alternate}
+@keyframes glow{from{filter:drop-shadow(0 0 3px #f2b827)}to{filter:drop-shadow(0 0 12px #f2b827)}}
+.label{font-size:12px;font-weight:700;fill:#4e604c}
+.leader{stroke:#849576;stroke-width:1.5;stroke-linecap:round}
+.feedback{height:20px;text-align:center;font-size:13px;font-weight:700;color:#54754d;line-height:20px}
+</style>
+<div class="frame">
+  <h1 id="title"></h1>
+  <div class="question" id="question" data-ask></div>
+  <svg id="picture" viewBox="0 0 336 218" role="img"></svg>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params,svg=document.getElementById("picture"),ns="http://www.w3.org/2000/svg";
+  const say=k=>Studio.t(k);
+  document.getElementById("title").textContent=say("title");
+  document.getElementById("question").textContent=say("ask")+" "+say(p.ask);
+  const make=(tag,attrs={})=>{const e=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);return e};
+  const shapes=[
+    '<path d="M166 69 C145 66 137 48 147 37 C158 39 164 49 166 59 C168 49 174 39 185 37 C195 49 187 66 166 69Z" fill="#f2a94a" stroke="#d78635" stroke-width="2"/><path d="M166 67 C148 63 145 48 152 43 M166 67 C183 62 187 48 180 43" fill="none" stroke="#ffd789" stroke-width="2"/>',
+    '<circle cx="166" cy="62" r="13" fill="#f6cf55" stroke="#dfa936" stroke-width="2"/><circle cx="162" cy="59" r="2" fill="#fff2ad"/>',
+    '<path d="M159 75 C158 111 160 153 159 181 C159 193 173 193 173 181 C172 145 174 108 173 75Z" fill="#4e9a5a" stroke="#347a48" stroke-width="2"/>',
+    '<path d="M164 119 C145 116 119 105 108 88 C128 81 151 91 166 111 C181 91 204 81 224 88 C213 105 188 116 168 119Z" fill="#70b95e" stroke="#438749" stroke-width="2"/><path d="M111 90 Q139 98 164 115 M221 90 Q194 99 168 115" fill="none" stroke="#d5ed9a" stroke-width="2"/>',
+    '<path d="M160 183 C151 190 149 199 145 210 M164 185 C162 194 164 203 162 214 M170 185 C178 194 181 202 185 210 M157 190 C147 194 140 199 136 205 M174 190 C184 194 191 198 196 204" fill="none" stroke="#a8784c" stroke-width="7" stroke-linecap="round"/><path d="M160 185 C153 193 152 200 149 206 M169 186 C177 194 179 200 182 206" fill="none" stroke="#c49a68" stroke-width="2"/>'
+  ];
+  const coords=[
+    {x:166,y:52,lx:166,ly:30,tx:166,ty:25,anchor:"middle",ax:166,ay:39},
+    {x:166,y:62,lx:185,ly:68,tx:190,ty:72,anchor:"start",ax:178,ay:64},
+    {x:166,y:134,lx:187,ly:145,tx:192,ty:149,anchor:"start",ax:173,ay:139},
+    {x:127,y:99,lx:222,ly:99,tx:228,ty:103,anchor:"start",ax:216,ay:99},
+    {x:166,y:201,lx:193,ly:204,tx:199,ty:208,anchor:"start",ax:184,ay:201}
+  ];
+  const items=[],feedback=document.getElementById("feedback");
+  let locked=false;
+  p.parts.forEach((key,i)=>{
+    const c=coords[i];
+    svg.append(make("line",{class:"leader",x1:c.ax,y1:c.ay,x2:c.lx,y2:c.ly}));
+    const g=make("g",{class:"part",tabindex:"0",role:"button","data-part":key});
+    g.append(make("circle",{cx:c.x,cy:c.y,r:"30",fill:"transparent"}));
+    const art=make("g");art.innerHTML=shapes[i];g.append(art);
+    const label=make("text",{class:"label","data-label":key,x:c.tx,y:c.ty,"text-anchor":c.anchor});
+    label.textContent=say(key);
+    svg.append(g,label);
+    const select=()=>{if(locked)return;Studio.event("tap",{part:key});Studio.answer(key)};
+    g.addEventListener("click",select);
+    g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select()}});
+    items.push({key,g});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      locked=true;
+      const chosen=items.find(x=>x.key===p.ask);
+      if(chosen)chosen.g.classList.add("correct");
+      feedback.textContent=say("right")+" "+say("done");
+      Studio.done();
+    }else feedback.textContent=say("wrong");
+  });
+  Studio.ready();
+})();
+
+</script>

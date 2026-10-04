@@ -1,0 +1,181 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e9;font-family:Arial,sans-serif;color:#56372b}
+  #game{width:360px;height:320px;position:relative;overflow:hidden;background:
+    radial-gradient(circle at 82% 9%,#ffe4a6 0 18px,transparent 19px),
+    radial-gradient(circle at 12% 82%,#dff3d7 0 24px,transparent 25px),
+    #fff7e9}
+  .top{height:76px;padding:12px 18px 0;text-align:center;position:relative;z-index:2}
+  h1{margin:0;color:#c85b36;font-size:22px;line-height:27px;font-weight:800}
+  #instr{margin-top:4px;font-size:13px;line-height:16px;color:#765044;font-weight:700}
+  #fraction{
+    position:absolute;top:77px;left:19px;width:68px;height:70px;
+    border-radius:20px;background:#fff;border:3px solid #f1c166;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    color:#b24d34;font-weight:800;font-size:23px;line-height:20px;
+    box-shadow:0 4px 0 #f6d990;z-index:3
+  }
+  #fraction .line{width:31px;height:3px;background:#b24d34;border-radius:3px;margin:3px 0}
+  #board{position:absolute;left:88px;top:68px;width:254px;height:186px}
+  #whole{width:254px;height:186px;overflow:visible}
+  .part{
+    fill:#f7d89a;stroke:#fff7e9;stroke-width:4;stroke-linejoin:round;
+    cursor:pointer;transform-origin:180px 133px;
+    transition:fill .18s ease,filter .18s ease,transform .18s ease
+  }
+  .part:hover{filter:brightness(1.04)}
+  .part.shaded{fill:#e77842;filter:drop-shadow(0 2px 1px rgba(145,63,32,.2))}
+  .part:active{transform:scale(.96)}
+  #check{
+    position:absolute;left:124px;bottom:12px;width:112px;height:54px;border:0;border-radius:18px;
+    background:#53a96f;color:#fff;font-size:17px;font-weight:800;box-shadow:0 5px 0 #347c4d;
+    cursor:pointer;transition:transform .15s ease,background .15s ease;z-index:4
+  }
+  #check:active{transform:translateY(4px);box-shadow:0 1px 0 #347c4d}
+  #check.wait{background:#8bbd9b;pointer-events:none}
+  #message{
+    position:absolute;left:96px;top:249px;width:168px;height:28px;text-align:center;
+    color:#8e583d;font-size:14px;font-weight:800;line-height:28px;
+    transition:transform .25s ease,opacity .25s ease;opacity:0;transform:translateY(7px)
+  }
+  #message.show{opacity:1;transform:translateY(0)}
+  #burst{position:absolute;left:154px;top:122px;width:72px;height:72px;pointer-events:none;opacity:0}
+  .ray{position:absolute;left:33px;top:33px;width:7px;height:17px;border-radius:8px;background:#f3b641;transform-origin:3px 3px}
+  .ray:nth-child(1){transform:rotate(0deg) translateY(-36px)}
+  .ray:nth-child(2){transform:rotate(60deg) translateY(-36px)}
+  .ray:nth-child(3){transform:rotate(120deg) translateY(-36px)}
+  .ray:nth-child(4){transform:rotate(180deg) translateY(-36px)}
+  .ray:nth-child(5){transform:rotate(240deg) translateY(-36px)}
+  .ray:nth-child(6){transform:rotate(300deg) translateY(-36px)}
+  .celebrate #burst{animation:burst .7s ease-out}
+  .celebrate #whole{animation:hop .55s ease-in-out}
+  @keyframes burst{0%{opacity:0;transform:scale(.2)}30%{opacity:1}100%{opacity:0;transform:scale(1.35)}}
+  @keyframes hop{0%,100%{transform:translateY(0)}45%{transform:translateY(-8px)}}
+  #doneScreen{
+    position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+    text-align:center;padding:30px;background:#fff7e9;z-index:8
+  }
+  #doneScreen.show{display:flex;animation:fade .35s ease}
+  #doneBubble{width:244px;min-height:150px;border-radius:32px;background:#fff;border:4px solid #f2c363;box-shadow:0 7px 0 #f5dc9e;padding:29px 18px;color:#c65d3a;font-size:24px;font-weight:800;line-height:30px}
+  #doneFlower{font-size:39px;line-height:45px}
+  @keyframes fade{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+</style>
+<div id="game">
+  <div class="top">
+    <h1 id="title"></h1>
+    <div id="instr"></div>
+  </div>
+  <div id="fraction" data-target><span id="num"></span><span class="line"></span><span id="den"></span></div>
+  <div id="board" data-item="">
+    <svg id="whole" viewBox="0 0 360 250" aria-hidden="true"></svg>
+  </div>
+  <div id="burst"><i class="ray"></i><i class="ray"></i><i class="ray"></i><i class="ray"></i><i class="ray"></i><i class="ray"></i></div>
+  <div id="message"></div>
+  <button id="check" data-action="check"></button>
+  <div id="doneScreen"><div id="doneBubble"><div id="doneFlower">✿</div><div id="doneText"></div></div></div>
+</div>
+<script>
+
+(function(){
+  var items=Studio.params.items, picture=Studio.params.picture, index=0, waiting=false, completed=false;
+  var game=document.getElementById('game'), board=document.getElementById('board');
+  var whole=document.getElementById('whole'), msg=document.getElementById('message');
+  var check=document.getElementById('check'), target=document.querySelector('[data-target]');
+  var ns='http://www.w3.org/2000/svg';
+
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+
+  function point(cx,cy,r,a){
+    return [cx+r*Math.cos(a),cy+r*Math.sin(a)];
+  }
+  function makePizza(d){
+    var cx=180,cy=130,r=101;
+    for(var i=0;i<d;i++){
+      var a=-Math.PI/2+(i*2*Math.PI/d), b=-Math.PI/2+((i+1)*2*Math.PI/d);
+      var p1=point(cx,cy,r,a),p2=point(cx,cy,r,b);
+      var path=document.createElementNS(ns,'path');
+      path.setAttribute('d','M '+cx+' '+cy+' L '+p1[0]+' '+p1[1]+' A '+r+' '+r+' 0 '+(d===1?1:0)+' 1 '+p2[0]+' '+p2[1]+' Z');
+      path.setAttribute('class','part');
+      path.setAttribute('data-part',i);
+      path.setAttribute('data-shaded','false');
+      whole.appendChild(path);
+    }
+    var rim=document.createElementNS(ns,'circle');
+    rim.setAttribute('cx',cx);rim.setAttribute('cy',cy);rim.setAttribute('r',r);
+    rim.setAttribute('fill','none');rim.setAttribute('stroke','#d99743');rim.setAttribute('stroke-width','4');rim.setAttribute('pointer-events','none');
+    whole.appendChild(rim);
+  }
+  function makeBar(d){
+    var x=30,y=68,w=300,h=124;
+    for(var i=0;i<d;i++){
+      var rect=document.createElementNS(ns,'rect');
+      rect.setAttribute('x',x+i*w/d+2);rect.setAttribute('y',y);
+      rect.setAttribute('width',w/d-4);rect.setAttribute('height',h);
+      rect.setAttribute('rx','10');rect.setAttribute('class','part');
+      rect.setAttribute('data-part',i);rect.setAttribute('data-shaded','false');
+      whole.appendChild(rect);
+    }
+    var border=document.createElementNS(ns,'rect');
+    border.setAttribute('x',x);border.setAttribute('y',y);border.setAttribute('width',w);border.setAttribute('height',h);border.setAttribute('rx','13');
+    border.setAttribute('fill','none');border.setAttribute('stroke','#d99743');border.setAttribute('stroke-width','4');border.setAttribute('pointer-events','none');
+    whole.appendChild(border);
+  }
+  function togglePart(e){
+    if(waiting||completed)return;
+    var el=e.currentTarget, on=el.getAttribute('data-shaded')==='true';
+    el.setAttribute('data-shaded',on?'false':'true');
+    el.classList.toggle('shaded',!on);
+    Studio.event('part',{n:Number(el.getAttribute('data-part'))});
+  }
+  function render(){
+    var item=items[index];
+    board.setAttribute('data-item',item.id);
+    document.getElementById('num').textContent=item.n;
+    document.getElementById('den').textContent=item.d;
+    whole.innerHTML='';
+    if(picture==='bar') makeBar(item.d); else makePizza(item.d);
+    var parts=whole.querySelectorAll('[data-part]');
+    for(var i=0;i<parts.length;i++)parts[i].addEventListener('click',togglePart);
+    msg.className='';
+    msg.textContent='';
+    check.classList.remove('wait');
+  }
+  check.addEventListener('click',function(){
+    if(waiting||completed)return;
+    var parts=whole.querySelectorAll('[data-part]'), count=0;
+    for(var i=0;i<parts.length;i++)if(parts[i].getAttribute('data-shaded')==='true')count++;
+    waiting=true;check.classList.add('wait');
+    Studio.event('check',{n:count,d:items[index].d});
+    Studio.answer({n:count,d:items[index].d});
+  });
+  Studio.onVerdict(function(v){
+    if(completed)return;
+    if(v.correct){
+      msg.textContent=Studio.t('right');msg.className='show';
+      game.classList.add('celebrate');
+      Studio.event('right',{i:index});
+      setTimeout(function(){
+        game.classList.remove('celebrate');
+        index++;
+        waiting=false;
+        if(index>=items.length){
+          completed=true;
+          document.getElementById('doneText').textContent=Studio.t('done');
+          document.getElementById('doneScreen').classList.add('show');
+          Studio.done();
+        }else render();
+      },850);
+    }else{
+      waiting=false;check.classList.remove('wait');
+      msg.textContent=Studio.t('wrong')+' '+Studio.t('hint');
+      msg.className='show';
+      Studio.event('wrong',{i:index});
+    }
+  });
+  render();
+  Studio.ready();
+}());
+
+</script>

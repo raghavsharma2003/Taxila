@@ -1,0 +1,61 @@
+<style>
+*{box-sizing:border-box}
+.stage{width:360px;height:320px;overflow:hidden;position:relative;background:#fff8ec;color:#394c4b;font-family:system-ui,sans-serif;padding:12px}
+h1{font-size:18px;line-height:22px;margin:0 0 3px;font-weight:750;color:#385b58}
+.instr{height:32px;font-size:13px;line-height:16px;margin:0;color:#61716b}
+.card{height:225px;position:relative;border-radius:20px;background:#fff;box-shadow:0 3px 12px #866c3820;padding:10px 12px}
+.prompt{height:38px;display:flex;align-items:center;gap:7px;font-size:14px;font-weight:650}
+.target{color:#cb6845;font-size:20px;font-weight:800}
+.rail{position:absolute;left:18px;right:18px;top:91px;height:83px}
+.axis{position:absolute;left:0;right:0;top:37px;height:4px;border-radius:4px;background:#87aaa0}
+.tick{position:absolute;top:24px;width:2px;height:18px;background:#547970;transform:translateX(-50%);border-radius:2px}
+.tick-label{position:absolute;top:48px;transform:translateX(-50%);font-size:11px;color:#62746e;white-space:nowrap}
+.marker{position:absolute;top:0;transform:translateX(-50%);width:34px;height:34px;border:0;border-radius:50%;background:#ef9b72;box-shadow:0 3px 7px #bc715344;display:grid;place-items:center;transition:left .22s ease,transform .22s ease}
+.marker svg{width:22px;height:22px}
+.marker.hop{animation:hop .38s ease}
+@keyframes hop{50%{transform:translateX(-50%) translateY(-13px) scale(1.12)}}
+.controls{position:absolute;left:12px;right:12px;bottom:11px;display:flex;gap:8px}
+button{font:700 14px system-ui,sans-serif;color:#395850;background:#e4f0e9;border:0;border-radius:14px;min-width:52px;height:54px;padding:0 12px;cursor:pointer;transition:transform .12s,background .15s}
+button:active{transform:scale(.94);background:#cce3d7}
+button.check{flex:1;color:#fff;background:#578e7e}
+button.check:active{background:#3d7567}
+.feedback{height:20px;margin-top:3px;text-align:center;font-size:13px;font-weight:700;color:#578e7e}
+.feedback.wrong{color:#bb765d}
+</style>
+<div class="stage">
+  <h1 id="title"></h1>
+  <p class="instr" id="instr"></p>
+  <section class="card" id="item">
+    <div class="prompt"><span id="target"></span></div>
+    <div class="rail" id="rail"><div class="axis"></div></div>
+    <div class="controls">
+      <button type="button" data-action="left" id="left"></button>
+      <button type="button" data-action="right" id="right"></button>
+      <button type="button" data-action="check" class="check" id="check"></button>
+    </div>
+  </section>
+  <div class="feedback" id="feedback"></div>
+</div>
+<script>
+
+(()=>{const p=Studio.params, t=Studio.t, min=p.min, step=p.step, count=Math.round((p.max-min)/step), rail=document.getElementById("rail"), itemBox=document.getElementById("item"), targetEl=document.getElementById("target"), feedback=document.getElementById("feedback");
+const fmt=v=>p.format==="fraction"?`${Math.round(v*p.den)}/${p.den}`:String(Number(v.toFixed(6)));
+document.getElementById("title").textContent=t("title");
+document.getElementById("instr").textContent=t("instr");
+document.getElementById("left").textContent=t("left");
+document.getElementById("right").textContent=t("right_btn");
+document.getElementById("check").textContent=t("check");
+const ticks=[];
+for(let k=0;k<=count;k++){const v=Number((min+k*step).toFixed(6)), x=(k/count)*100;const tick=document.createElement("div");tick.className="tick";tick.dataset.tick=String(v);tick.style.left=x+"%";rail.appendChild(tick);ticks.push(tick);if(k%p.labelEvery===0){const label=document.createElement("div");label.className="tick-label";label.textContent=fmt(v);label.style.left=x+"%";rail.appendChild(label)}}
+const marker=document.createElement("div");marker.className="marker";marker.setAttribute("data-marker","");marker.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8a6.5 6.5 0 0 0-6.5 6.5c0 4.6 6.5 12 6.5 12s6.5-7.4 6.5-12A6.5 6.5 0 0 0 12 2.8Zm0 9a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z" fill="#fff"/></svg>';rail.appendChild(marker);
+let idx=0,k=Math.round((p.start-min)/step),busy=false;
+function paint(){const value=Number((min+k*step).toFixed(6));marker.dataset.value=String(value);marker.style.left=(k/count*100)+"%"}
+function showItem(){if(idx>=p.items.length){itemBox.hidden=true;feedback.className="feedback";feedback.textContent=t("done");Studio.done();return}itemBox.hidden=false;itemBox.dataset.item=p.items[idx].id;const v=Number(p.items[idx].target.toFixed(6));targetEl.dataset.target=String(v);targetEl.textContent=fmt(v);k=Math.round((p.start-min)/step);paint();feedback.textContent="";feedback.className="feedback";busy=false}
+document.getElementById("left").addEventListener("click",()=>{if(busy)return;k=Math.max(0,k-1);paint()});
+document.getElementById("right").addEventListener("click",()=>{if(busy)return;k=Math.min(count,k+1);paint()});
+document.getElementById("check").addEventListener("click",()=>{if(busy||idx>=p.items.length)return;busy=true;Studio.answer({value:Number((min+k*step).toFixed(6))})});
+Studio.onVerdict(({correct})=>{if(correct){feedback.className="feedback";feedback.textContent=t("right");marker.classList.remove("hop");void marker.offsetWidth;marker.classList.add("hop");setTimeout(()=>{idx++;showItem()},380)}else{busy=false;feedback.className="feedback wrong";feedback.textContent=t("wrong")}});
+showItem();Studio.ready();
+})();
+
+</script>

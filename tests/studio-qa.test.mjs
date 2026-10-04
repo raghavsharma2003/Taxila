@@ -202,3 +202,13 @@ test("gate (browser): goldens pass at their params and at held-out params; seede
     assert.equal(r.pass, false, `${kind}/${mid} must be caught`);
   }
 });
+
+test("whiteboard continue mode: new words never land on the previous board's words (gate), and the fixer slides them off", () => {
+  const prior = [{ id: "p1", op: "text", at: [300, 220], text: "4 equal parts", size: "m", startMs: 0, endMs: 500 }];
+  const ops = [GOOD_OPS[0], { id: "n2", op: "text", at: [300, 222], text: "1/4", size: "m", startMs: 100, endMs: 600 }];
+  const over = gateWhiteboard(S(ops, { mode: "continue" }), ctx({ prior }));
+  assert.ok(failing(over).includes("W2.no_text_overlap"));
+  const fixed = fitOps(ops, { w: 400, h: 300 }, 6, prior);
+  assert.ok(fixed.fixes.includes("separate:n2"));
+  assert.ok(!failing(gateWhiteboard(S(fixed.ops, { mode: "continue" }), ctx({ prior }))).includes("W2.no_text_overlap"));
+});

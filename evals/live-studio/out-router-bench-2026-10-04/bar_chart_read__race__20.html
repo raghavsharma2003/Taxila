@@ -1,0 +1,103 @@
+<style>
+*{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8eb;font-family:Arial,sans-serif;color:#563e32}#app{width:360px;height:320px;position:relative;background:linear-gradient(180deg,#fff4d9 0%,#fffaf0 58%,#fff4e7 100%);overflow:hidden}.sun{position:absolute;width:88px;height:88px;border-radius:50%;background:#ffe39b;right:-26px;top:-31px;opacity:.62}.leaf{position:absolute;width:30px;height:16px;border-radius:30px 4px 30px 4px;background:#b9dd92;left:11px;top:48px;transform:rotate(-28deg);opacity:.7}.leaf:after{content:"";position:absolute;width:25px;height:4px;background:#8bb779;border-radius:5px;left:4px;top:7px;transform:rotate(25deg)}#heading{height:64px;position:relative;padding:11px 22px 0;z-index:2}#title{font-size:20px;font-weight:800;line-height:22px;color:#9b5435;letter-spacing:.1px}#ask{font-size:14px;font-weight:700;line-height:19px;color:#675044;margin-top:3px}#chart{display:block;position:relative;z-index:1;width:360px;height:256px;overflow:visible}.grid{stroke:#e7d9bd;stroke-width:1}.axis{stroke:#8d725d;stroke-width:2;stroke-linecap:round}.tick{font-size:11px;font-weight:700;fill:#826b5c;dominant-baseline:middle;text-anchor:end}.axis-title{font-size:12px;font-weight:800;fill:#896755;text-anchor:middle}.bar{fill:#ed9363;stroke:#c9704a;stroke-width:1.4;rx:8;ry:8;filter:drop-shadow(0 3px 1px rgba(157,87,56,.14));transition:y 650ms cubic-bezier(.22,.85,.35,1),height 650ms cubic-bezier(.22,.85,.35,1),fill 180ms ease,stroke 180ms ease}.bar-name{font-size:11px;font-weight:800;fill:#684c3d;text-anchor:middle;dominant-baseline:middle;pointer-events:none}.column{fill:transparent;cursor:pointer;outline:none}.column:focus{fill:rgba(236,159,101,.12)}.column:active~.bar{transform:scale(.98);transform-origin:center bottom}.pressed{animation:tap .28s ease}.wrongbar{fill:#d9877b;stroke:#a95f55}.rightbar{fill:#83b879;stroke:#5e9862}@keyframes tap{50%{transform:scale(.96);transform-origin:center bottom}}#feedback{position:absolute;left:50%;bottom:2px;transform:translate(-50%,12px);min-width:126px;max-width:260px;padding:7px 13px;border-radius:18px;background:#fffdf7;box-shadow:0 3px 11px rgba(110,75,49,.16);text-align:center;font-size:13px;font-weight:800;opacity:0;pointer-events:none;transition:opacity .22s ease,transform .22s ease;z-index:4}.show{opacity:1!important;transform:translate(-50%,0)!important}.good{color:#477c4d}.bad{color:#a85e51}.finished{bottom:2px}
+</style>
+<div id="app">
+  <div class="sun"></div>
+  <div class="leaf"></div>
+  <div id="heading">
+    <div id="title"></div>
+    <div id="ask"></div>
+  </div>
+  <svg id="chart" viewBox="0 0 360 256" role="img">
+    <g id="gridLayer"></g>
+    <g id="barLayer"></g>
+    <g id="labelLayer"></g>
+    <g id="hitLayer"></g>
+  </svg>
+  <div id="feedback"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, data=p.data, svg=document.getElementById("chart");
+  var grid=document.getElementById("gridLayer"), bars=document.getElementById("barLayer");
+  var labels=document.getElementById("labelLayer"), hits=document.getElementById("hitLayer");
+  var feedback=document.getElementById("feedback"), waiting=false, finished=false;
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("ask").textContent=Studio.t("ask");
+
+  var NS="http://www.w3.org/2000/svg";
+  function el(name, attrs, text){
+    var n=document.createElementNS(NS,name), k;
+    for(k in attrs)n.setAttribute(k,attrs[k]);
+    if(text!==undefined)n.textContent=text;
+    return n;
+  }
+  var max=0, i;
+  for(i=0;i<data.length;i++)if(data[i].value>max)max=data[i].value;
+  function niceStep(v){
+    var raw=v/6, power=Math.pow(10,Math.floor(Math.log(raw||1)/Math.LN10));
+    var unit=raw/power, n=unit<=1?1:unit<=2?2:unit<=5?5:10;
+    return n*power;
+  }
+  var step=niceStep(max), topValue=Math.ceil(max/step)*step;
+  if(topValue===0){step=1;topValue=1;}
+  var left=58, right=346, plotTop=14, baseline=188, plotHeight=baseline-plotTop;
+  var scale=plotHeight/topValue;
+
+  grid.appendChild(el("line",{x1:left,y1:baseline,x2:right,y2:baseline,"class":"axis"}));
+  grid.appendChild(el("line",{x1:left,y1:plotTop,x2:left,y2:baseline,"class":"axis"}));
+  for(var tick=0;tick<=topValue+step*.001;tick+=step){
+    var yy=baseline-tick*scale;
+    grid.appendChild(el("line",{x1:left,y1:yy,x2:right,y2:yy,"class":"grid"}));
+    grid.appendChild(el("text",{x:left-8,y:yy,"class":"tick","data-tick":tick},String(tick)));
+  }
+  grid.appendChild(el("text",{x:16,y:(plotTop+baseline)/2,"class":"axis-title",transform:"rotate(-90 16 "+((plotTop+baseline)/2)+")"},Studio.t("yaxis")));
+
+  var columnWidth=(right-left)/data.length;
+  data.forEach(function(d,index){
+    var cx=left+columnWidth*(index+.5), bw=Math.min(columnWidth*.62,38);
+    var h=d.value*scale, y=baseline-h;
+    var bar=el("rect",{x:cx-bw/2,y:baseline,width:bw,height:0,"class":"bar","data-bar":d.key,"data-value":d.value});
+    bars.appendChild(bar);
+    labels.appendChild(el("text",{x:cx,y:215,"class":"bar-name"},Studio.t(d.key)));
+    var hit=el("rect",{x:left+index*columnWidth,y:0,width:columnWidth,height:256,"class":"column","data-column":d.key,tabindex:"0"});
+    hit.addEventListener("click",function(){
+      if(waiting||finished)return;
+      waiting=true;
+      bar.classList.remove("pressed");
+      void bar.getBoundingClientRect();
+      bar.classList.add("pressed");
+      Studio.event("tap",{value:d.value});
+      Studio.answer(d.key);
+    });
+    hit.addEventListener("keydown",function(e){
+      if((e.key==="Enter"||e.key===" ")&&!waiting&&!finished){e.preventDefault();hit.dispatchEvent(new Event("click"));}
+    });
+    hits.appendChild(hit);
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        bar.setAttribute("y",y);
+        bar.setAttribute("height",h);
+      });
+    });
+  });
+
+  Studio.onVerdict(function(v){
+    feedback.classList.remove("show","good","bad","finished");
+    if(v.correct){
+      finished=true;
+      feedback.textContent=Studio.t("right")+" "+Studio.t("done");
+      feedback.classList.add("good","show","finished");
+      Studio.done();
+    }else{
+      feedback.textContent=Studio.t("wrong");
+      feedback.classList.add("bad","show");
+      waiting=false;
+      setTimeout(function(){if(!finished)feedback.classList.remove("show");},1100);
+    }
+  });
+  Studio.ready();
+}());
+
+</script>

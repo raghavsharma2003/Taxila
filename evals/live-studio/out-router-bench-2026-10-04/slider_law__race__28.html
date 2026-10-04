@@ -1,0 +1,77 @@
+<style>
+  *{box-sizing:border-box}body{margin:0}#activity{width:360px;height:320px;overflow:hidden;background:#fff5e8;color:#543b32;font-family:system-ui,sans-serif;padding:4px 10px;display:grid;grid-template-rows:24px 162px 54px 20px 52px;gap:1px}
+  .title{text-align:center;font-weight:800;font-size:17px;line-height:24px}
+  .scene{position:relative;overflow:hidden;border-radius:18px;background:#fce8ce}
+  .scene svg{position:absolute;inset:0;width:100%;height:100%}
+  .readout{position:absolute;z-index:2;top:8px;padding:5px 9px;border-radius:12px;background:#fff9ef;font-size:14px;font-weight:750;box-shadow:0 2px 6px #9d603420}
+  .readout.x{left:9px}.readout.y{right:9px}
+  .bar{position:absolute;left:139px;bottom:0;width:62px;height:0;border-radius:13px 13px 0 0;background:linear-gradient(90deg,#e57f59,#f5b46b);box-shadow:inset -8px 0 #cf694b33;transition:height .35s cubic-bezier(.2,.8,.2,1)}
+  .bar:after{content:"";position:absolute;left:11px;right:11px;top:12px;height:8px;border-radius:8px;background:#ffffff75}
+  .controls,.options{display:flex;gap:8px}
+  button{border:0;border-radius:16px;min-width:52px;min-height:52px;font:750 16px system-ui,sans-serif;cursor:pointer;transition:transform .16s,background .2s;touch-action:manipulation}
+  button:active{transform:scale(.92)}button:disabled{opacity:.48;cursor:default}
+  .controls button{flex:1;background:#a75648;color:white}
+  .question{text-align:center;font-size:14px;font-weight:700;line-height:20px;white-space:nowrap}
+  .options button{flex:1;background:#fff;border:2px solid #e9b895;color:#663d32}
+  .options button.picked{background:#f7d5b7}.options button.good{background:#a9d5a0;border-color:#70ab79}
+</style>
+<div id="activity">
+  <div class="title" id="title"></div>
+  <div class="scene">
+    <svg viewBox="0 0 340 162" aria-hidden="true"><path d="M0 145 Q80 132 165 145 T340 145 V162 H0Z" fill="#edcda8"/><circle cx="283" cy="65" r="22" fill="#ffd98c"/><path d="M20 109 Q37 88 54 109 M274 126 Q290 105 307 126" fill="none" stroke="#d4a781" stroke-width="5" stroke-linecap="round"/></svg>
+    <div class="bar" data-visual data-dim="h"></div>
+    <div class="readout x"><span id="xname"></span> <span id="xvalue" data-x=""></span></div>
+    <div class="readout y"><span id="yname"></span> <span data-output data-value=""></span></div>
+  </div>
+  <div class="controls"><button type="button" data-action="dec" id="less"></button><button type="button" data-action="inc" id="more"></button></div>
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, t=key=>Studio.t(key), $=s=>document.querySelector(s);
+  const xEl=$('#xvalue'), yEl=$('[data-output]'), visual=$('[data-visual]');
+  const dec=$('[data-action="dec"]'), inc=$('[data-action="inc"]'), question=$('#question'), options=$('#options');
+  const clean=n=>Number(n.toFixed(8));
+  let x=p.x.start, complete=false;
+  $('#title').textContent=t('title');$('#xname').textContent=t('xname');$('#yname').textContent=t('yname');
+  dec.textContent=t('less');inc.textContent=t('more');
+  function draw(){
+    const y=clean(p.law.k*x+p.law.b);
+    xEl.textContent=x;xEl.dataset.x=x;
+    yEl.textContent=y;yEl.dataset.value=y;
+    visual.style.height=(y*p.y.unitsPer)+'px';
+    dec.disabled=x-p.x.step<p.x.min;inc.disabled=x+p.x.step>p.x.max;
+  }
+  function move(direction){
+    const next=clean(x+direction*p.x.step);
+    if(next<p.x.min||next>p.x.max)return;
+    x=next;draw();Studio.event('change',{x:x});
+  }
+  dec.addEventListener('click',()=>move(-1));inc.addEventListener('click',()=>move(1));
+  question.textContent=t('ask')+' '+p.ask.x;
+  p.ask.options.forEach(value=>{
+    const button=document.createElement('button');
+    button.type='button';button.dataset.option=value;button.textContent=value;
+    button.addEventListener('click',()=>{
+      if(complete)return;
+      options.querySelectorAll('button').forEach(b=>b.classList.remove('picked'));
+      button.classList.add('picked');
+      Studio.answer({value:value});
+    });
+    options.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    question.textContent=t(correct?'right':'wrong');
+    if(correct&&!complete){
+      complete=true;
+      options.querySelector('.picked')?.classList.add('good');
+      options.querySelectorAll('button').forEach(b=>b.disabled=true);
+      Studio.done();
+    }
+  });
+  draw();Studio.ready();
+})();
+
+</script>

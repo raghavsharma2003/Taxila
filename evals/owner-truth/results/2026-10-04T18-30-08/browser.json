@@ -25,7 +25,26 @@
    "paramsTarget": null,
    "commits": [
     {
-     "label": "random: 3 taps",
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "fr.make",
+      "shaded": 0,
+      "parts": 3,
+      "value": "0/3",
+      "target": "1/3",
+      "attempt": 1,
+      "changes": 0
+     },
+     "committed": "0/3",
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
      "intended": null,
      "claim": true,
      "value": {
@@ -34,8 +53,8 @@
       "parts": 3,
       "value": "1/3",
       "target": "1/3",
-      "attempt": 1,
-      "changes": 3
+      "attempt": 2,
+      "changes": 1
      },
      "committed": "1/3",
      "vsKit": null,
@@ -44,7 +63,7 @@
      "mismatch": false
     },
     {
-     "label": "random: 4 taps",
+     "label": "random: 2 taps",
      "intended": null,
      "claim": false,
      "value": {
@@ -63,7 +82,7 @@
      "mismatch": false
     },
     {
-     "label": "random: 2 taps",
+     "label": "random: 4 taps",
      "intended": null,
      "claim": true,
      "value": {
@@ -82,26 +101,7 @@
      "mismatch": false
     },
     {
-     "label": "random: 1 taps",
-     "intended": null,
-     "claim": true,
-     "value": {
-      "kind": "fr.make",
-      "shaded": 1,
-      "parts": 3,
-      "value": "1/3",
-      "target": "1/3",
-      "attempt": 1,
-      "changes": 1
-     },
-     "committed": "1/3",
-     "vsKit": null,
-     "vsParams": null,
-     "vsScene": null,
-     "mismatch": false
-    },
-    {
-     "label": "random: 0 taps",
+     "label": "random: 4 taps",
      "intended": null,
      "claim": false,
      "value": {
@@ -110,7 +110,7 @@
       "parts": 3,
       "value": "0/3",
       "target": "1/3",
-      "attempt": 1,
+      "attempt": 3,
       "changes": 0
      },
      "committed": "0/3",
@@ -126,10 +126,11 @@
    "text": "Rang bharo: 1/3\n\n−\n0\n+\nCheck",
    "consoleErrors": [],
    "eventTypes": [
-    "interaction:fr.shade",
     "answer",
+    "interaction:fr.shade",
     "goal_met",
-    "stuck"
+    "stuck",
+    "interaction:retap"
    ]
   },
   {
@@ -219,7 +220,8 @@
    "text": "Marker ko yahan rakho:\n\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n◀\n?\n▶\nCheck",
    "consoleErrors": [],
    "eventTypes": [
-    "interaction:nl.place"
+    "interaction:nl.place",
+    "stuck"
    ]
   },
   {
@@ -276,6 +278,92 @@
      "vsParams": null,
      "vsScene": true,
      "mismatch": false
+    },
+    {
+     "label": "random: 3 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "misc": "MC.C6_MATHS_CH07_T01_M_UNEQUAL_PARTS",
+      "attempt": 3,
+      "changes": 3
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "attempt": 4,
+      "changes": 4
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 3 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "misc": "MC.C6_MATHS_CH07_T01_M_UNEQUAL_PARTS",
+      "attempt": 3,
+      "changes": 3
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "attempt": 4,
+      "changes": 4
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
     }
    ],
    "errors": [],
@@ -312,11 +400,96 @@
    "itemId": "diag:c4-maths-ch05-t01-m-bigger-denominator-bigger",
    "key": "1/2",
    "paramsTarget": null,
-   "commits": [],
-   "errors": [],
-   "issues": [
-    "no answer could be committed by tapping (no reachable Check or no commit)"
+   "commits": [
+    {
+     "label": "random: 3 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "0",
+      "fractions": [
+       "1/3",
+       "1/2"
+      ],
+      "question": "bigger",
+      "misc": "bigger_denominator",
+      "attempt": 3,
+      "changes": 0
+     },
+     "committed": "1/3",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "same",
+      "fractions": [
+       "1/3",
+       "1/2"
+      ],
+      "question": "bigger",
+      "attempt": 4,
+      "changes": 0
+     },
+     "committed": "same",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "0",
+      "fractions": [
+       "1/3",
+       "1/2"
+      ],
+      "question": "bigger",
+      "misc": "bigger_denominator",
+      "attempt": 8,
+      "changes": 0
+     },
+     "committed": "1/3",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "1",
+      "fractions": [
+       "1/3",
+       "1/2"
+      ],
+      "question": "bigger",
+      "attempt": 10,
+      "changes": 0
+     },
+     "committed": "1/2",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false
+    }
    ],
+   "errors": [],
+   "issues": [],
    "mounted": true,
    "text": "Bada wala tap karo\n\n1/3\n?\n1/2\n?\nBarabar",
    "consoleErrors": [],
@@ -422,17 +595,51 @@
      "display": "1/2"
     },
     {
-     "label": "random: 4 taps",
+     "label": "random: 2 taps",
      "intended": null,
      "claim": false,
      "value": {
       "kind": "nl.read",
-      "value": "675",
+      "value": "9",
+      "target_shown": true,
+      "attempt": 1,
+      "changes": 0
+     },
+     "committed": "9",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "nl.read",
+      "value": "91",
       "target_shown": true,
       "attempt": 2,
       "changes": 0
      },
-     "committed": "675",
+     "committed": "91",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "nl.read",
+      "value": "9119",
+      "target_shown": true,
+      "attempt": 3,
+      "changes": 0
+     },
+     "committed": "9119",
      "vsKit": false,
      "vsParams": false,
      "vsScene": null,
@@ -444,63 +651,12 @@
      "claim": false,
      "value": {
       "kind": "nl.read",
-      "value": "675566",
-      "target_shown": true,
-      "attempt": 3,
-      "changes": 0
-     },
-     "committed": "675566",
-     "vsKit": false,
-     "vsParams": false,
-     "vsScene": null,
-     "mismatch": false
-    },
-    {
-     "label": "random: 5 taps",
-     "intended": null,
-     "claim": false,
-     "value": {
-      "kind": "nl.read",
-      "value": "675566",
-      "target_shown": true,
-      "attempt": 4,
-      "changes": 0
-     },
-     "committed": "675566",
-     "vsKit": false,
-     "vsParams": false,
-     "vsScene": null,
-     "mismatch": false
-    },
-    {
-     "label": "random: 1 taps",
-     "intended": null,
-     "claim": false,
-     "value": {
-      "kind": "nl.read",
-      "value": "675566",
+      "value": "911993",
       "target_shown": true,
       "attempt": 5,
       "changes": 0
      },
-     "committed": "675566",
-     "vsKit": false,
-     "vsParams": false,
-     "vsScene": null,
-     "mismatch": false
-    },
-    {
-     "label": "random: 3 taps",
-     "intended": null,
-     "claim": false,
-     "value": {
-      "kind": "nl.read",
-      "value": "67556",
-      "target_shown": true,
-      "attempt": 6,
-      "changes": 0
-     },
-     "committed": "67556",
+     "committed": "911993",
      "vsKit": false,
      "vsParams": false,
      "vsScene": null,
@@ -566,6 +722,112 @@
       },
       "attempt": 2,
       "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "misc": "MC.C5_MATHS_CH02_T01_M_NOT_NUMBERS",
+      "attempt": 2,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "attempt": 3,
+      "changes": 3
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "attempt": 4,
+      "changes": 4
      },
      "committed": null,
      "vsKit": null,
@@ -710,34 +972,51 @@
      "display": "1/4"
     },
     {
-     "label": "random: 5 taps",
+     "label": "random: 2 taps",
      "intended": null,
      "claim": false,
      "value": {
       "kind": "nl.read",
-      "value": "6",
+      "value": "4/",
       "target_shown": true,
       "attempt": 1,
       "changes": 0
      },
-     "committed": "6",
+     "committed": "4/",
      "vsKit": false,
      "vsParams": false,
      "vsScene": null,
      "mismatch": false
     },
     {
-     "label": "random: 2 taps",
+     "label": "random: 0 taps",
      "intended": null,
      "claim": false,
      "value": {
       "kind": "nl.read",
-      "value": "62",
+      "value": "4/",
       "target_shown": true,
       "attempt": 2,
       "changes": 0
      },
-     "committed": "62",
+     "committed": "4/",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "nl.read",
+      "value": "4/",
+      "target_shown": true,
+      "attempt": 3,
+      "changes": 0
+     },
+     "committed": "4/",
      "vsKit": false,
      "vsParams": false,
      "vsScene": null,
@@ -749,46 +1028,29 @@
      "claim": false,
      "value": {
       "kind": "nl.read",
-      "value": "62159/",
-      "target_shown": true,
-      "attempt": 3,
-      "changes": 0
-     },
-     "committed": "62159/",
-     "vsKit": false,
-     "vsParams": false,
-     "vsScene": null,
-     "mismatch": false
-    },
-    {
-     "label": "random: 4 taps",
-     "intended": null,
-     "claim": false,
-     "value": {
-      "kind": "nl.read",
-      "value": "62159/",
+      "value": "41784",
       "target_shown": true,
       "attempt": 4,
       "changes": 0
      },
-     "committed": "62159/",
+     "committed": "41784",
      "vsKit": false,
      "vsParams": false,
      "vsScene": null,
      "mismatch": false
     },
     {
-     "label": "random: 2 taps",
+     "label": "random: 5 taps",
      "intended": null,
      "claim": false,
      "value": {
       "kind": "nl.read",
-      "value": "62159/",
+      "value": "417886",
       "target_shown": true,
       "attempt": 6,
       "changes": 0
      },
-     "committed": "62159/",
+     "committed": "417886",
      "vsKit": false,
      "vsParams": false,
      "vsScene": null,
@@ -969,17 +1231,111 @@
    "itemId": null,
    "key": null,
    "paramsTarget": null,
-   "commits": [],
-   "errors": [],
-   "issues": [
-    "no answer could be committed by tapping (no reachable Check or no commit)"
+   "commits": [
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "wc.states",
+      "target": "boiling",
+      "state": "ice",
+      "temp_c": -10,
+      "kJ": 0,
+      "attempt": 1,
+      "changes": 0
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 3 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "wc.states",
+      "target": "boiling",
+      "state": "melting",
+      "temp_c": 0,
+      "kJ": 2,
+      "attempt": 2,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "wc.states",
+      "target": "boiling",
+      "state": "melting",
+      "temp_c": 0,
+      "kJ": 1,
+      "attempt": 3,
+      "changes": 3
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 0 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "wc.states",
+      "target": "boiling",
+      "state": "melting",
+      "temp_c": 0,
+      "kJ": 1,
+      "attempt": 4,
+      "changes": 3
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "wc.states",
+      "target": "boiling",
+      "state": "melting",
+      "temp_c": 0,
+      "kJ": 2,
+      "attempt": 5,
+      "changes": 4
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    }
    ],
+   "errors": [],
+   "issues": [],
    "mounted": true,
    "text": "Itna garam karo ki yeh ho jaaye: ubal raha\n\n100°\n0°\n-10 °C · barf\nGarmi (kJ)\n−5\n−\n0\n+\n+5\nCheck",
    "consoleErrors": [],
    "eventTypes": [
-    "interaction:wc.heat",
     "answer",
+    "interaction:wc.heat",
     "stuck"
    ]
   },
@@ -1057,6 +1413,92 @@
      "vsKit": null,
      "vsParams": null,
      "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 4,
+      "changes": 4
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o3"
+      },
+      "misc": "MC.C7_MATHS_CH08_T01_M_MULT_BIGGER",
+      "attempt": 4,
+      "changes": 4
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "random: 3 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o3"
+      },
+      "misc": "MC.C7_MATHS_CH08_T01_M_MULT_BIGGER",
+      "attempt": 7,
+      "changes": 7
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 10,
+      "changes": 10
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
      "mismatch": false
     }
    ],
@@ -1148,6 +1590,112 @@
      "vsParams": null,
      "vsScene": false,
      "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 3,
+      "changes": 3
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 3 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "misc": "MC.C5_EVS_CH01_T01_M1",
+      "attempt": 2,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 3,
+      "changes": 3
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
     }
    ],
    "errors": [],
@@ -1238,6 +1786,92 @@
      "vsParams": null,
      "vsScene": false,
      "mismatch": false
+    },
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "misc": "MC.C6_SCIENCE_CH01_T01_M1",
+      "attempt": 7,
+      "changes": 7
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 8,
+      "changes": 8
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 3 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 2,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "misc": "MC.C6_SCIENCE_CH01_T01_M1",
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
     }
    ],
    "errors": [],
@@ -1263,19 +1897,74 @@
    "itemId": null,
    "key": null,
    "paramsTarget": null,
-   "commits": [],
-   "errors": [],
-   "issues": [
-    "no answer could be committed by tapping (no reachable Check or no commit)"
+   "commits": [
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "wc.states",
+      "target": "boiling",
+      "state": "ice",
+      "temp_c": -10,
+      "kJ": 0,
+      "attempt": 1,
+      "changes": 0
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "wc.states",
+      "target": "boiling",
+      "state": "ice",
+      "temp_c": -10,
+      "kJ": 0,
+      "attempt": 3,
+      "changes": 0
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "wc.states",
+      "target": "boiling",
+      "state": "ice",
+      "temp_c": -10,
+      "kJ": 0,
+      "attempt": 4,
+      "changes": 0
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    }
    ],
+   "errors": [],
+   "issues": [],
    "mounted": true,
    "text": "Paani ubalte waqt uska taapmaan…\n\nbadhta rehta\nwahi rehta\ngirta\n\nPehle andaaza lagao, phir chala ke dekho\n\nItna garam karo ki yeh ho jaaye: ubal raha\n\n100°\n0°\n-10 °C · barf\nGarmi (kJ)\n−5\n−\n0\n+\n+5\nCheck",
    "consoleErrors": [],
    "eventTypes": [
     "answer",
     "interaction:poe.predicted",
-    "stuck",
-    "interaction:wc.heat"
+    "stuck"
    ]
   },
   {
@@ -1302,20 +1991,20 @@
      "claim": false,
      "value": {
       "kind": "pv.build",
-      "built": 10000,
+      "built": 1,
       "target": 24360,
       "counts": [
+       1,
        0,
        0,
        0,
-       0,
-       1
+       0
       ],
       "canonical": true,
       "attempt": 1,
       "changes": 1
      },
-     "committed": "10000",
+     "committed": "1",
      "vsKit": false,
      "vsParams": false,
      "vsScene": null,
@@ -1327,20 +2016,20 @@
      "claim": false,
      "value": {
       "kind": "pv.build",
-      "built": 1000,
+      "built": 11101,
       "target": 24360,
       "counts": [
-       0,
-       0,
-       0,
        1,
-       0
+       10,
+       10,
+       0,
+       1
       ],
-      "canonical": true,
+      "canonical": false,
       "attempt": 2,
-      "changes": 5
+      "changes": 6
      },
-     "committed": "1000",
+     "committed": "11101",
      "vsKit": false,
      "vsParams": false,
      "vsScene": null,
@@ -1352,45 +2041,45 @@
      "claim": false,
      "value": {
       "kind": "pv.build",
-      "built": 1001,
+      "built": 11091,
       "target": 24360,
       "counts": [
        1,
+       9,
+       10,
        0,
-       0,
-       1,
-       0
+       1
       ],
-      "canonical": true,
+      "canonical": false,
       "attempt": 4,
-      "changes": 6
+      "changes": 7
      },
-     "committed": "1001",
+     "committed": "11091",
      "vsKit": false,
      "vsParams": false,
      "vsScene": null,
      "mismatch": false
     },
     {
-     "label": "random: 3 taps",
+     "label": "random: 0 taps",
      "intended": null,
      "claim": false,
      "value": {
       "kind": "pv.build",
-      "built": 21001,
+      "built": 11091,
       "target": 24360,
       "counts": [
        1,
+       9,
+       10,
        0,
-       0,
-       1,
-       2
+       1
       ],
-      "canonical": true,
+      "canonical": false,
       "attempt": 5,
-      "changes": 8
+      "changes": 7
      },
-     "committed": "21001",
+     "committed": "11091",
      "vsKit": false,
      "vsParams": false,
      "vsScene": null,
@@ -1402,20 +2091,20 @@
      "claim": false,
      "value": {
       "kind": "pv.build",
-      "built": 21001,
+      "built": 21091,
       "target": 24360,
       "counts": [
        1,
+       9,
+       10,
        0,
-       0,
-       1,
        2
       ],
-      "canonical": true,
+      "canonical": false,
       "attempt": 6,
       "changes": 8
      },
-     "committed": "21001",
+     "committed": "21091",
      "vsKit": false,
      "vsParams": false,
      "vsScene": null,
@@ -1430,6 +2119,7 @@
    "eventTypes": [
     "interaction:pv.piece",
     "answer",
+    "interaction:pv.exchange",
     "stuck"
    ]
   },
@@ -1509,6 +2199,115 @@
      "vsParams": null,
      "vsScene": false,
      "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "misc": "MC.C5_MATHS_CH01_T01_M_COMMA_ANYWHERE",
+      "attempt": 3,
+      "changes": 3
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o3"
+      },
+      "misc": "MC.C5_MATHS_CH01_T01_M_COMMA_ANYWHERE",
+      "attempt": 7,
+      "changes": 7
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o3"
+      },
+      "misc": "MC.C5_MATHS_CH01_T01_M_COMMA_ANYWHERE",
+      "attempt": 9,
+      "changes": 9
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 11,
+      "changes": 11
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o3"
+      },
+      "misc": "MC.C5_MATHS_CH01_T01_M_COMMA_ANYWHERE",
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
     }
    ],
    "errors": [],
@@ -1580,6 +2379,91 @@
     {
      "label": "scene option \"A tree, because it is tall and green\"",
      "intended": "A tree, because it is tall and green",
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o3"
+      },
+      "misc": "MC.C6_SCIENCE_CH02_T01_M1",
+      "attempt": 2,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 3,
+      "changes": 3
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 3,
+      "changes": 3
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
      "claim": false,
      "value": {
       "kind": "sc.commit",
@@ -1688,6 +2572,112 @@
      "vsParams": null,
      "vsScene": false,
      "mismatch": false
+    },
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "misc": "MC.C7_SCIENCE_CH01_T01_M2",
+      "attempt": 7,
+      "changes": 7
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 10,
+      "changes": 10
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 3 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 2,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 2,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 3,
+      "changes": 3
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
     }
    ],
    "errors": [],
@@ -1728,7 +2718,64 @@
    "paramsTarget": null,
    "commits": [
     {
-     "label": "random: 3 taps",
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "fr.make",
+      "shaded": 1,
+      "parts": 5,
+      "value": "1/5",
+      "target": "2/5",
+      "attempt": 4,
+      "changes": 1
+     },
+     "committed": "1/5",
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 0 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "fr.make",
+      "shaded": 1,
+      "parts": 5,
+      "value": "1/5",
+      "target": "2/5",
+      "attempt": 5,
+      "changes": 1
+     },
+     "committed": "1/5",
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "fr.make",
+      "shaded": 2,
+      "parts": 5,
+      "value": "2/5",
+      "target": "2/5",
+      "attempt": 7,
+      "changes": 4
+     },
+     "committed": "2/5",
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 0 taps",
      "intended": null,
      "claim": false,
      "value": {
@@ -1747,45 +2794,7 @@
      "mismatch": false
     },
     {
-     "label": "random: 2 taps",
-     "intended": null,
-     "claim": false,
-     "value": {
-      "kind": "fr.make",
-      "shaded": 1,
-      "parts": 5,
-      "value": "1/5",
-      "target": "2/5",
-      "attempt": 3,
-      "changes": 1
-     },
-     "committed": "1/5",
-     "vsKit": null,
-     "vsParams": null,
-     "vsScene": null,
-     "mismatch": false
-    },
-    {
-     "label": "random: 2 taps",
-     "intended": null,
-     "claim": false,
-     "value": {
-      "kind": "fr.make",
-      "shaded": 1,
-      "parts": 5,
-      "value": "1/5",
-      "target": "2/5",
-      "attempt": 6,
-      "changes": 1
-     },
-     "committed": "1/5",
-     "vsKit": null,
-     "vsParams": null,
-     "vsScene": null,
-     "mismatch": false
-    },
-    {
-     "label": "random: 1 taps",
+     "label": "random: 0 taps",
      "intended": null,
      "claim": false,
      "value": {
@@ -1794,29 +2803,10 @@
       "parts": 5,
       "value": "0/5",
       "target": "2/5",
-      "attempt": 7,
-      "changes": 2
+      "attempt": 2,
+      "changes": 0
      },
      "committed": "0/5",
-     "vsKit": null,
-     "vsParams": null,
-     "vsScene": null,
-     "mismatch": false
-    },
-    {
-     "label": "random: 5 taps",
-     "intended": null,
-     "claim": true,
-     "value": {
-      "kind": "fr.make",
-      "shaded": 2,
-      "parts": 5,
-      "value": "2/5",
-      "target": "2/5",
-      "attempt": 9,
-      "changes": 4
-     },
-     "committed": "2/5",
      "vsKit": null,
      "vsParams": null,
      "vsScene": null,
@@ -1830,8 +2820,8 @@
    "consoleErrors": [],
    "eventTypes": [
     "answer",
-    "stuck",
     "interaction:fr.shade",
+    "stuck",
     "goal_met",
     "interaction:retap"
    ]
@@ -1857,11 +2847,73 @@
    "itemId": "c5-maths-ch02-t02-i01",
    "key": "1/4",
    "paramsTarget": null,
-   "commits": [],
-   "errors": [],
-   "issues": [
-    "no answer could be committed by tapping (no reachable Check or no commit)"
+   "commits": [
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "same",
+      "fractions": [
+       "1/4",
+       "1/8"
+      ],
+      "question": "bigger",
+      "attempt": 4,
+      "changes": 0
+     },
+     "committed": "same",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "0",
+      "fractions": [
+       "1/4",
+       "1/8"
+      ],
+      "question": "bigger",
+      "attempt": 5,
+      "changes": 0
+     },
+     "committed": "1/4",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "0",
+      "fractions": [
+       "1/4",
+       "1/8"
+      ],
+      "question": "bigger",
+      "attempt": 2,
+      "changes": 0
+     },
+     "committed": "1/4",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false
+    }
    ],
+   "errors": [],
+   "issues": [],
    "mounted": true,
    "text": "Bada wala tap karo\n\n1/4\n1/8\nBarabar",
    "consoleErrors": [],
@@ -1894,19 +2946,123 @@
    "itemId": "diag:c5-maths-ch02-t02-m-bigger-denominator",
    "key": "1/4",
    "paramsTarget": null,
-   "commits": [],
-   "errors": [],
-   "issues": [
-    "no answer could be committed by tapping (no reachable Check or no commit)"
+   "commits": [
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "same",
+      "fractions": [
+       "1/4",
+       "1/8"
+      ],
+      "question": "bigger",
+      "attempt": 4,
+      "changes": 0
+     },
+     "committed": "same",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 3 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "0",
+      "fractions": [
+       "1/4",
+       "1/8"
+      ],
+      "question": "bigger",
+      "attempt": 7,
+      "changes": 0
+     },
+     "committed": "1/4",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "0",
+      "fractions": [
+       "1/4",
+       "1/8"
+      ],
+      "question": "bigger",
+      "attempt": 1,
+      "changes": 0
+     },
+     "committed": "1/4",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "same",
+      "fractions": [
+       "1/4",
+       "1/8"
+      ],
+      "question": "bigger",
+      "attempt": 1,
+      "changes": 0
+     },
+     "committed": "same",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 3 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "0",
+      "fractions": [
+       "1/4",
+       "1/8"
+      ],
+      "question": "bigger",
+      "attempt": 3,
+      "changes": 0
+     },
+     "committed": "1/4",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false
+    }
    ],
+   "errors": [],
+   "issues": [],
    "mounted": true,
    "text": "Bada wala tap karo\n\n1/4\n?\n1/8\n?\nBarabar",
    "consoleErrors": [],
    "eventTypes": [
     "answer",
+    "stuck",
     "goal_met",
-    "interaction:retap",
-    "stuck"
+    "interaction:retap"
    ]
   },
   {
@@ -1985,6 +3141,71 @@
      "vsParams": null,
      "vsScene": false,
      "mismatch": false
+    },
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "attempt": 6,
+      "changes": 6
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o3"
+      },
+      "misc": "MC.C6_MATHS_CH02_T01_M_LONGER_LINE",
+      "attempt": 2,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o3"
+      },
+      "misc": "MC.C6_MATHS_CH02_T01_M_LONGER_LINE",
+      "attempt": 4,
+      "changes": 4
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
     }
    ],
    "errors": [],
@@ -2020,19 +3241,81 @@
    "itemId": "c5-maths-ch02-t02-i02",
    "key": "5/7",
    "paramsTarget": null,
-   "commits": [],
-   "errors": [],
-   "issues": [
-    "no answer could be committed by tapping (no reachable Check or no commit)"
+   "commits": [
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "1",
+      "fractions": [
+       "3/7",
+       "5/7"
+      ],
+      "question": "bigger",
+      "attempt": 3,
+      "changes": 0
+     },
+     "committed": "5/7",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 3 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "1",
+      "fractions": [
+       "3/7",
+       "5/7"
+      ],
+      "question": "bigger",
+      "attempt": 3,
+      "changes": 0
+     },
+     "committed": "5/7",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "1",
+      "fractions": [
+       "3/7",
+       "5/7"
+      ],
+      "question": "bigger",
+      "attempt": 1,
+      "changes": 0
+     },
+     "committed": "5/7",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false
+    }
    ],
+   "errors": [],
+   "issues": [],
    "mounted": true,
    "text": "Bada wala tap karo\n\n3/7\n5/7\nBarabar",
    "consoleErrors": [],
    "eventTypes": [
     "answer",
+    "stuck",
     "goal_met",
-    "interaction:retap",
-    "stuck"
+    "interaction:retap"
    ]
   },
   {
@@ -2055,11 +3338,115 @@
    "itemId": "c5-maths-ch02-t02-i13",
    "key": "2/9",
    "paramsTarget": null,
-   "commits": [],
-   "errors": [],
-   "issues": [
-    "no answer could be committed by tapping (no reachable Check or no commit)"
+   "commits": [
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "0",
+      "fractions": [
+       "2/9",
+       "5/9"
+      ],
+      "question": "smaller",
+      "attempt": 1,
+      "changes": 0
+     },
+     "committed": "2/9",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "0",
+      "fractions": [
+       "2/9",
+       "5/9"
+      ],
+      "question": "smaller",
+      "attempt": 2,
+      "changes": 0
+     },
+     "committed": "2/9",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "0",
+      "fractions": [
+       "2/9",
+       "5/9"
+      ],
+      "question": "smaller",
+      "attempt": 1,
+      "changes": 0
+     },
+     "committed": "2/9",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "0",
+      "fractions": [
+       "2/9",
+       "5/9"
+      ],
+      "question": "smaller",
+      "attempt": 4,
+      "changes": 0
+     },
+     "committed": "2/9",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "1",
+      "fractions": [
+       "2/9",
+       "5/9"
+      ],
+      "question": "smaller",
+      "attempt": 1,
+      "changes": 0
+     },
+     "committed": "5/9",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    }
    ],
+   "errors": [],
+   "issues": [],
    "mounted": true,
    "text": "Chhota wala tap karo\n\n2/9\n5/9\nBarabar",
    "consoleErrors": [],
@@ -2154,6 +3541,1891 @@
    "consoleErrors": [],
    "eventTypes": [
     "interaction:nl.place"
+   ]
+  },
+  {
+   "session": "s13-aarav-c5-maths-ch02-t01",
+   "params": {
+    "topicId": "c5-maths-ch02-t01",
+    "skillId": null,
+    "lang": "hinglish",
+    "fractions": [
+     [
+      2,
+      5
+     ]
+    ],
+    "numbers": [
+     0,
+     1
+    ]
+   },
+   "engine": "number-line@1",
+   "mode": null,
+   "goal": null,
+   "itemId": null,
+   "key": null,
+   "paramsTarget": null,
+   "commits": [
+    {
+     "label": "stepper: position 0",
+     "intended": null,
+     "committed": null,
+     "note": "no answer event"
+    },
+    {
+     "label": "stepper: position 1",
+     "intended": null,
+     "committed": null,
+     "note": "no answer event"
+    },
+    {
+     "label": "stepper: position 2",
+     "intended": null,
+     "committed": null,
+     "note": "no answer event"
+    },
+    {
+     "label": "stepper: position 3",
+     "intended": null,
+     "committed": null,
+     "note": "no answer event"
+    },
+    {
+     "label": "stepper: position 4",
+     "intended": null,
+     "committed": null,
+     "note": "no answer event"
+    },
+    {
+     "label": "stepper: position 5",
+     "intended": null,
+     "committed": null,
+     "note": "no answer event"
+    },
+    {
+     "label": "stepper: position 6",
+     "intended": null,
+     "committed": null,
+     "note": "no answer event"
+    },
+    {
+     "label": "stepper: position 7",
+     "intended": null,
+     "committed": null,
+     "note": "no answer event"
+    },
+    {
+     "label": "stepper: position 8",
+     "intended": null,
+     "committed": null,
+     "note": "no answer event"
+    }
+   ],
+   "errors": [],
+   "issues": [
+    "no answer could be committed by tapping (no reachable Check or no commit)"
+   ],
+   "mounted": true,
+   "text": "Marker ko yahan rakho:\n\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n◀\n?\n▶\nCheck",
+   "consoleErrors": [],
+   "eventTypes": [
+    "interaction:nl.place"
+   ]
+  },
+  {
+   "session": "s15-chotu-c4-maths-ch05-t01",
+   "params": {
+    "topicId": "c4-maths-ch05-t01",
+    "skillId": null,
+    "lang": "hinglish",
+    "fractions": [
+     [
+      1,
+      3
+     ]
+    ],
+    "numbers": [
+     15
+    ]
+   },
+   "engine": "fractions@1",
+   "mode": null,
+   "goal": null,
+   "itemId": null,
+   "key": null,
+   "paramsTarget": null,
+   "commits": [
+    {
+     "label": "random: 3 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "fr.make",
+      "shaded": 0,
+      "parts": 3,
+      "value": "0/3",
+      "target": "1/3",
+      "attempt": 2,
+      "changes": 2
+     },
+     "committed": "0/3",
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 0 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "fr.make",
+      "shaded": 0,
+      "parts": 3,
+      "value": "0/3",
+      "target": "1/3",
+      "attempt": 3,
+      "changes": 2
+     },
+     "committed": "0/3",
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "fr.make",
+      "shaded": 0,
+      "parts": 3,
+      "value": "0/3",
+      "target": "1/3",
+      "attempt": 5,
+      "changes": 4
+     },
+     "committed": "0/3",
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "fr.make",
+      "shaded": 0,
+      "parts": 3,
+      "value": "0/3",
+      "target": "1/3",
+      "attempt": 7,
+      "changes": 4
+     },
+     "committed": "0/3",
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "fr.make",
+      "shaded": 0,
+      "parts": 3,
+      "value": "0/3",
+      "target": "1/3",
+      "attempt": 9,
+      "changes": 4
+     },
+     "committed": "0/3",
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    }
+   ],
+   "errors": [],
+   "issues": [],
+   "mounted": true,
+   "text": "Rang bharo: 1/3\n\n−\n0\n+\nCheck",
+   "consoleErrors": [],
+   "eventTypes": [
+    "answer",
+    "interaction:fr.shade",
+    "stuck"
+   ]
+  },
+  {
+   "session": "s13-aarav-c5-maths-ch02-t01",
+   "params": {
+    "topicId": "c5-maths-ch02-t01",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "lang": "hinglish",
+    "mode": "read",
+    "target": "1/2",
+    "min": "0",
+    "max": "1",
+    "partition": 2,
+    "labels": "ends",
+    "numberKind": "fraction",
+    "itemId": "c5-maths-ch02-t01-i01"
+   },
+   "engine": "number-line@1",
+   "mode": "read",
+   "goal": "item:c5-maths-ch02-t01-i01",
+   "itemId": "c5-maths-ch02-t01-i01",
+   "key": "1/2",
+   "paramsTarget": "1/2",
+   "commits": [
+    {
+     "label": "keypad: the key \"1/2\"",
+     "intended": "1/2",
+     "claim": true,
+     "value": {
+      "kind": "nl.read",
+      "value": "1/2",
+      "target_shown": true,
+      "attempt": 1,
+      "changes": 0
+     },
+     "committed": "1/2",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false,
+     "display": "1/2"
+    },
+    {
+     "label": "keypad: a wrong value \"1/3\"",
+     "intended": "1/3",
+     "claim": false,
+     "value": {
+      "kind": "nl.read",
+      "value": "1/3",
+      "target_shown": true,
+      "attempt": 1,
+      "changes": 0
+     },
+     "committed": "1/3",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false,
+     "display": "1/3"
+    },
+    {
+     "label": "keypad: an equivalent fraction \"2/4\"",
+     "intended": "2/4",
+     "claim": true,
+     "value": {
+      "kind": "nl.read",
+      "value": "2/4",
+      "target_shown": true,
+      "attempt": 2,
+      "changes": 0
+     },
+     "committed": "2/4",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false,
+     "display": "2/4"
+    },
+    {
+     "label": "keypad: the key again \"1/2\"",
+     "intended": "1/2",
+     "claim": true,
+     "value": {
+      "kind": "nl.read",
+      "value": "1/2",
+      "target_shown": true,
+      "attempt": 1,
+      "changes": 0
+     },
+     "committed": "1/2",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false,
+     "display": "1/2"
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "nl.read",
+      "value": "9/3",
+      "target_shown": true,
+      "attempt": 1,
+      "changes": 0
+     },
+     "committed": "9/3",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "nl.read",
+      "value": "9/3",
+      "target_shown": true,
+      "attempt": 2,
+      "changes": 0
+     },
+     "committed": "9/3",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "nl.read",
+      "value": "9/326",
+      "target_shown": true,
+      "attempt": 3,
+      "changes": 0
+     },
+     "committed": "9/326",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "nl.read",
+      "value": "9/3276",
+      "target_shown": true,
+      "attempt": 4,
+      "changes": 0
+     },
+     "committed": "9/3276",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "nl.read",
+      "value": "9/3276",
+      "target_shown": true,
+      "attempt": 5,
+      "changes": 0
+     },
+     "committed": "9/3276",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    }
+   ],
+   "errors": [],
+   "issues": [],
+   "mounted": true,
+   "text": "Marker par kaunsa number hai?\n\n0\n1\n1\n2\n3\n4\n5\n6\n7\n8\n9\n/\n0\n⌫\nCheck",
+   "consoleErrors": [],
+   "eventTypes": [
+    "answer",
+    "goal_met",
+    "stuck"
+   ]
+  },
+  {
+   "session": "s13-aarav-c5-maths-ch02-t01",
+   "params": {
+    "scene": "(scene@1, see mounts.json)"
+   },
+   "engine": "scene@1",
+   "mode": null,
+   "goal": "g1:diag:c5-maths-ch02-t01-m-not-numbers",
+   "itemId": "diag:c5-maths-ch02-t01-m-not-numbers",
+   "key": "Yes, like 1/2 and 1/4, lots of them",
+   "paramsTarget": null,
+   "commits": [
+    {
+     "label": "scene option \"No, 1 comes straight after 0\"",
+     "intended": "No, 1 comes straight after 0",
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "misc": "MC.C5_MATHS_CH02_T01_M_NOT_NUMBERS",
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "scene option \"Yes, like 1/2 and 1/4, lots of them\"",
+     "intended": "Yes, like 1/2 and 1/4, lots of them",
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "attempt": 2,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "attempt": 2,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "misc": "MC.C5_MATHS_CH02_T01_M_NOT_NUMBERS",
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "attempt": 2,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    }
+   ],
+   "errors": [],
+   "issues": [],
+   "mounted": true,
+   "text": "Cricket netspractice\n⚽\nNumber line par 0 aur 1ke beech koi number haikya?\nNo, 1 comes straight after 0\nYes, like 1/2 and 1/4, lots of them",
+   "consoleErrors": [],
+   "eventTypes": [
+    "interaction:sc.choice",
+    "answer",
+    "goal_met"
+   ]
+  },
+  {
+   "session": "s13-aarav-c5-maths-ch02-t01",
+   "params": {
+    "topicId": "c5-maths-ch02-t01",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "lang": "hinglish",
+    "mode": "read",
+    "target": "1/4",
+    "min": "0",
+    "max": "1",
+    "partition": 4,
+    "labels": "ends",
+    "numberKind": "fraction",
+    "itemId": "c5-maths-ch02-t01-i02"
+   },
+   "engine": "number-line@1",
+   "mode": "read",
+   "goal": "item:c5-maths-ch02-t01-i02",
+   "itemId": "c5-maths-ch02-t01-i02",
+   "key": "1/4",
+   "paramsTarget": "1/4",
+   "commits": [
+    {
+     "label": "keypad: the key \"1/4\"",
+     "intended": "1/4",
+     "claim": true,
+     "value": {
+      "kind": "nl.read",
+      "value": "1/4",
+      "target_shown": true,
+      "attempt": 1,
+      "changes": 0
+     },
+     "committed": "1/4",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false,
+     "display": "1/4"
+    },
+    {
+     "label": "keypad: a wrong value \"1/5\"",
+     "intended": "1/5",
+     "claim": false,
+     "value": {
+      "kind": "nl.read",
+      "value": "1/5",
+      "target_shown": true,
+      "attempt": 1,
+      "changes": 0
+     },
+     "committed": "1/5",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false,
+     "display": "1/5"
+    },
+    {
+     "label": "keypad: an equivalent fraction \"2/8\"",
+     "intended": "2/8",
+     "claim": true,
+     "value": {
+      "kind": "nl.read",
+      "value": "2/8",
+      "target_shown": true,
+      "attempt": 2,
+      "changes": 0
+     },
+     "committed": "2/8",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false,
+     "display": "2/8"
+    },
+    {
+     "label": "keypad: the key again \"1/4\"",
+     "intended": "1/4",
+     "claim": true,
+     "value": {
+      "kind": "nl.read",
+      "value": "1/4",
+      "target_shown": true,
+      "attempt": 1,
+      "changes": 0
+     },
+     "committed": "1/4",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false,
+     "display": "1/4"
+    },
+    {
+     "label": "random: 3 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "nl.read",
+      "value": "792",
+      "target_shown": true,
+      "attempt": 1,
+      "changes": 0
+     },
+     "committed": "792",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 0 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "nl.read",
+      "value": "792",
+      "target_shown": true,
+      "attempt": 2,
+      "changes": 0
+     },
+     "committed": "792",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "nl.read",
+      "value": "7929",
+      "target_shown": true,
+      "attempt": 4,
+      "changes": 0
+     },
+     "committed": "7929",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "nl.read",
+      "value": "7929/",
+      "target_shown": true,
+      "attempt": 5,
+      "changes": 0
+     },
+     "committed": "7929/",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "nl.read",
+      "value": "7929/",
+      "target_shown": true,
+      "attempt": 6,
+      "changes": 0
+     },
+     "committed": "7929/",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    }
+   ],
+   "errors": [],
+   "issues": [],
+   "mounted": true,
+   "text": "Marker par kaunsa number hai?\n\n0\n1\n1\n2\n3\n4\n5\n6\n7\n8\n9\n/\n0\n⌫\nCheck",
+   "consoleErrors": [],
+   "eventTypes": [
+    "answer",
+    "goal_met",
+    "stuck"
+   ]
+  },
+  {
+   "session": "s15-chotu-c4-maths-ch05-t01",
+   "params": {
+    "topicId": "c4-maths-ch05-t01",
+    "skillId": "c4-maths-ch05-t01-s3",
+    "lang": "hinglish",
+    "mode": "compare",
+    "fractions": [
+     "1/3",
+     "1/2"
+    ],
+    "question": "bigger",
+    "model": "circle",
+    "predict": true,
+    "itemId": "diag:c4-maths-ch05-t01-m-bigger-denominator-bigger"
+   },
+   "engine": "fractions@1",
+   "mode": "compare",
+   "goal": "item:diag:c4-maths-ch05-t01-m-bigger-denominator-bigger",
+   "itemId": "diag:c4-maths-ch05-t01-m-bigger-denominator-bigger",
+   "key": "1/2",
+   "paramsTarget": null,
+   "commits": [
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "1",
+      "fractions": [
+       "1/3",
+       "1/2"
+      ],
+      "question": "bigger",
+      "attempt": 2,
+      "changes": 0
+     },
+     "committed": "1/2",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "1",
+      "fractions": [
+       "1/3",
+       "1/2"
+      ],
+      "question": "bigger",
+      "attempt": 2,
+      "changes": 0
+     },
+     "committed": "1/2",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "1",
+      "fractions": [
+       "1/3",
+       "1/2"
+      ],
+      "question": "bigger",
+      "attempt": 4,
+      "changes": 0
+     },
+     "committed": "1/2",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "1",
+      "fractions": [
+       "1/3",
+       "1/2"
+      ],
+      "question": "bigger",
+      "attempt": 1,
+      "changes": 0
+     },
+     "committed": "1/2",
+     "vsKit": true,
+     "vsParams": true,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "fr.compare",
+      "chosen": "0",
+      "fractions": [
+       "1/3",
+       "1/2"
+      ],
+      "question": "bigger",
+      "misc": "bigger_denominator",
+      "attempt": 2,
+      "changes": 0
+     },
+     "committed": "1/3",
+     "vsKit": false,
+     "vsParams": false,
+     "vsScene": null,
+     "mismatch": false
+    }
+   ],
+   "errors": [],
+   "issues": [],
+   "mounted": true,
+   "text": "Bada wala tap karo\n\n1/3\n?\n1/2\n?\nBarabar",
+   "consoleErrors": [],
+   "eventTypes": [
+    "answer",
+    "goal_met",
+    "stuck",
+    "interaction:retap"
+   ]
+  },
+  {
+   "session": "s13-aarav-c5-maths-ch02-t01",
+   "params": {
+    "topicId": "c5-maths-ch02-t01",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "lang": "hinglish",
+    "fractions": [
+     [
+      1,
+      8
+     ]
+    ],
+    "numbers": [
+     0,
+     1,
+     0,
+     1
+    ],
+    "predict": true
+   },
+   "engine": "number-line@1",
+   "mode": null,
+   "goal": null,
+   "itemId": null,
+   "key": null,
+   "paramsTarget": null,
+   "commits": [
+    {
+     "label": "stepper: position 0",
+     "intended": null,
+     "committed": null,
+     "note": "no answer event"
+    },
+    {
+     "label": "stepper: position 1",
+     "intended": null,
+     "committed": null,
+     "note": "no answer event"
+    },
+    {
+     "label": "stepper: position 2",
+     "intended": null,
+     "committed": null,
+     "note": "no answer event"
+    },
+    {
+     "label": "stepper: position 3",
+     "intended": null,
+     "committed": null,
+     "note": "no answer event"
+    },
+    {
+     "label": "stepper: position 4",
+     "intended": null,
+     "committed": null,
+     "note": "no answer event"
+    },
+    {
+     "label": "stepper: position 5",
+     "intended": null,
+     "committed": null,
+     "note": "no answer event"
+    },
+    {
+     "label": "stepper: position 6",
+     "intended": null,
+     "committed": null,
+     "note": "no answer event"
+    },
+    {
+     "label": "stepper: position 7",
+     "intended": null,
+     "committed": null,
+     "note": "no answer event"
+    },
+    {
+     "label": "stepper: position 8",
+     "intended": null,
+     "committed": null,
+     "note": "no answer event"
+    }
+   ],
+   "errors": [],
+   "issues": [
+    "no answer could be committed by tapping (no reachable Check or no commit)"
+   ],
+   "mounted": true,
+   "text": "Marker ko yahan rakho:\n\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n◀\n?\n▶\nCheck",
+   "consoleErrors": [],
+   "eventTypes": [
+    "interaction:nl.place"
+   ]
+  },
+  {
+   "session": "s14-meher-c6-maths-ch07-t01",
+   "params": {
+    "scene": "(scene@1, see mounts.json)"
+   },
+   "engine": "scene@1",
+   "mode": null,
+   "goal": "g1:diag:c6-maths-ch07-t01-m-unequal-parts",
+   "itemId": "diag:c6-maths-ch07-t01-m-unequal-parts",
+   "key": "No, the pieces must be equal for each to be 1/3",
+   "paramsTarget": null,
+   "commits": [
+    {
+     "label": "scene option \"Yes, there are 3 pieces\"",
+     "intended": "Yes, there are 3 pieces",
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "misc": "MC.C6_MATHS_CH07_T01_M_UNEQUAL_PARTS",
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "scene option \"No, the pieces must be equal for each to be 1/3\"",
+     "intended": "No, the pieces must be equal for each to be 1/3",
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "attempt": 2,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "misc": "MC.C6_MATHS_CH07_T01_M_UNEQUAL_PARTS",
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "attempt": 2,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 3 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    }
+   ],
+   "errors": [],
+   "issues": [],
+   "mounted": true,
+   "text": "Quick puzzle\n📘\nYes, there are 3 pieces\nNo, the pieces must be equal for each to be 1/3",
+   "consoleErrors": [],
+   "eventTypes": [
+    "interaction:sc.choice",
+    "answer",
+    "goal_met"
+   ]
+  },
+  {
+   "session": "s17-zoya-c5-evs-ch01-t01",
+   "params": {
+    "scene": "(scene@1, see mounts.json)"
+   },
+   "engine": "water-cycle@1",
+   "mode": null,
+   "goal": null,
+   "itemId": null,
+   "key": null,
+   "paramsTarget": null,
+   "commits": [
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "wc.states",
+      "target": "boiling",
+      "state": "water",
+      "temp_c": 34.5,
+      "kJ": 5,
+      "attempt": 2,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "wc.states",
+      "target": "boiling",
+      "state": "water",
+      "temp_c": 34.5,
+      "kJ": 5,
+      "attempt": 3,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 0 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "wc.states",
+      "target": "boiling",
+      "state": "water",
+      "temp_c": 34.5,
+      "kJ": 5,
+      "attempt": 4,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "wc.states",
+      "target": "boiling",
+      "state": "boiling",
+      "temp_c": 100,
+      "kJ": 10,
+      "attempt": 5,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "wc.states",
+      "target": "boiling",
+      "state": "ice",
+      "temp_c": -10,
+      "kJ": 0,
+      "attempt": 1,
+      "changes": 0
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    }
+   ],
+   "errors": [],
+   "issues": [],
+   "mounted": true,
+   "text": "Itna garam karo ki yeh ho jaaye: ubal raha\n\n100°\n0°\n-10 °C · barf\nGarmi (kJ)\n−5\n−\n0\n+\n+5\nCheck",
+   "consoleErrors": [],
+   "eventTypes": [
+    "interaction:wc.heat",
+    "answer",
+    "stuck",
+    "goal_met"
+   ]
+  },
+  {
+   "session": "s16-kabir-c7-maths-ch08-t01",
+   "params": {
+    "scene": "(scene@1, see mounts.json)"
+   },
+   "engine": "scene@1",
+   "mode": null,
+   "goal": "g1:diag:c7-maths-ch08-t01-m-mult-bigger",
+   "itemId": "diag:c7-maths-ch08-t01-m-mult-bigger",
+   "key": "Smaller (it is 4)",
+   "paramsTarget": null,
+   "commits": [
+    {
+     "label": "scene option \"Smaller (it is 4)\"",
+     "intended": "Smaller (it is 4)",
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "scene option \"The same\"",
+     "intended": "The same",
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "scene option \"Bigger, because multiplying makes bigger\"",
+     "intended": "Bigger, because multiplying makes bigger",
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o3"
+      },
+      "misc": "MC.C7_MATHS_CH08_T01_M_MULT_BIGGER",
+      "attempt": 2,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 3,
+      "changes": 3
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 2,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o3"
+      },
+      "misc": "MC.C7_MATHS_CH08_T01_M_MULT_BIGGER",
+      "attempt": 5,
+      "changes": 5
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 6,
+      "changes": 6
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    }
+   ],
+   "errors": [],
+   "issues": [],
+   "mounted": true,
+   "text": "Scorer ki paheli\n⚽\n12 × 1/3, 12 se bada hai yachhota?\nSmaller (it is 4)\nThe same\nBigger, because multiplying makes bigger",
+   "consoleErrors": [],
+   "eventTypes": [
+    "interaction:sc.choice",
+    "answer",
+    "goal_met",
+    "stuck"
+   ]
+  },
+  {
+   "session": "s17-zoya-c5-evs-ch01-t01",
+   "params": {
+    "scene": "(scene@1, see mounts.json)"
+   },
+   "engine": "scene@1",
+   "mode": null,
+   "goal": "g1:diag:c5-evs-ch01-t01-m1",
+   "itemId": "diag:c5-evs-ch01-t01-m1",
+   "key": "Less than one bucket; the rest is salty or frozen",
+   "paramsTarget": null,
+   "commits": [
+    {
+     "label": "scene option \"Less than one bucket; the rest is salty or frozen\"",
+     "intended": "Less than one bucket; the rest is salty or frozen",
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "scene option \"About 90 buckets, since most water on Earth is clean\"",
+     "intended": "About 90 buckets, since most water on Earth is clean",
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "misc": "MC.C5_EVS_CH01_T01_M1",
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "scene option \"All 100 buckets, as long as we boil it first\"",
+     "intended": "All 100 buckets, as long as we boil it first",
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o3"
+      },
+      "misc": "MC.C5_EVS_CH01_T01_M2",
+      "attempt": 2,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "random: 4 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 3,
+      "changes": 3
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    }
+   ],
+   "errors": [],
+   "issues": [],
+   "mounted": true,
+   "text": "Backstagepaheli\n⭐\nLess than one bucket; the rest is salty or frozen\nAbout 90 buckets, since most water on Earth is clean\nAll 100 buckets, as long as we boil it first",
+   "consoleErrors": [],
+   "eventTypes": [
+    "interaction:sc.choice",
+    "answer",
+    "goal_met",
+    "stuck"
+   ]
+  },
+  {
+   "session": "s18-ishaan-c6-science-ch01-t01",
+   "params": {
+    "scene": "(scene@1, see mounts.json)"
+   },
+   "engine": "scene@1",
+   "mode": null,
+   "goal": "g1:diag:c6-science-ch01-t01-m1",
+   "itemId": "diag:c6-science-ch01-t01-m1",
+   "key": "Set up two same bowls, one warm, one cool, and compare",
+   "paramsTarget": null,
+   "commits": [
+    {
+     "label": "scene option \"Set up two same bowls, one warm, one cool, and compare\"",
+     "intended": "Set up two same bowls, one warm, one cool, and compare",
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "scene option \"Read the answer in a book and simply memorise it\"",
+     "intended": "Read the answer in a book and simply memorise it",
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "misc": "MC.C6_SCIENCE_CH01_T01_M1",
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "scene option \"Ask one friend and simply believe whatever they tell her\"",
+     "intended": "Ask one friend and simply believe whatever they tell her",
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o3"
+      },
+      "misc": "MC.C6_SCIENCE_CH01_T01_M1",
+      "attempt": 2,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 3,
+      "changes": 3
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 3 taps",
+     "intended": null,
+     "claim": true,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o1"
+      },
+      "attempt": 2,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": true,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "sc.commit",
+      "probe": "p_pick",
+      "probe_kind": "diagnose",
+      "via": "tap",
+      "vars": {
+       "pick": "o2"
+      },
+      "misc": "MC.C6_SCIENCE_CH01_T01_M1",
+      "attempt": 2,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": false,
+     "mismatch": false
+    }
+   ],
+   "errors": [],
+   "issues": [],
+   "mounted": true,
+   "text": "अब तुम्हारीबारी\n📘\nSet up two same bowls, one warm, one cool, and compare\nRead the answer in a book and simply memorise it\nAsk one friend and simply believe whatever they tell her",
+   "consoleErrors": [],
+   "eventTypes": [
+    "interaction:sc.choice",
+    "answer",
+    "goal_met",
+    "stuck"
+   ]
+  },
+  {
+   "session": "s17-zoya-c5-evs-ch01-t01",
+   "params": {
+    "scene": "(scene@1, see mounts.json)"
+   },
+   "engine": "water-cycle@1",
+   "mode": null,
+   "goal": null,
+   "itemId": null,
+   "key": null,
+   "paramsTarget": null,
+   "commits": [
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "wc.states",
+      "target": "boiling",
+      "state": "water",
+      "temp_c": 34.5,
+      "kJ": 5,
+      "attempt": 1,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 1 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "wc.states",
+      "target": "boiling",
+      "state": "water",
+      "temp_c": 34.5,
+      "kJ": 5,
+      "attempt": 2,
+      "changes": 1
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 5 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "wc.states",
+      "target": "boiling",
+      "state": "ice",
+      "temp_c": -10,
+      "kJ": 0,
+      "attempt": 3,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    },
+    {
+     "label": "random: 2 taps",
+     "intended": null,
+     "claim": false,
+     "value": {
+      "kind": "wc.states",
+      "target": "boiling",
+      "state": "ice",
+      "temp_c": -10,
+      "kJ": 0,
+      "attempt": 4,
+      "changes": 2
+     },
+     "committed": null,
+     "vsKit": null,
+     "vsParams": null,
+     "vsScene": null,
+     "mismatch": false
+    }
+   ],
+   "errors": [],
+   "issues": [],
+   "mounted": true,
+   "text": "Paani ubalte waqt uska taapmaan…\n\nbadhta rehta\nwahi rehta\ngirta\n\nPehle andaaza lagao, phir chala ke dekho\n\nItna garam karo ki yeh ho jaaye: ubal raha\n\n100°\n0°\n-10 °C · barf\nGarmi (kJ)\n−5\n−\n0\n+\n+5\nCheck",
+   "consoleErrors": [],
+   "eventTypes": [
+    "answer",
+    "interaction:poe.predicted",
+    "interaction:wc.heat",
+    "stuck"
    ]
   }
  ]

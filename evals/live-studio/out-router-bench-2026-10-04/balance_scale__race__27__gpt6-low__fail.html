@@ -1,0 +1,141 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ec;font-family:system-ui,sans-serif;color:#594335}
+  .card{width:360px;height:320px;padding:12px 16px;text-align:center;position:relative;background:radial-gradient(circle at 50% 35%,#fffdf6 0%,#fff8ec 78%)}
+  h1{margin:0;font-size:21px;line-height:27px;color:#70472f}
+  .hint{min-height:22px;margin:2px 0 0;font-size:13px;line-height:18px;color:#806b5c}
+  svg{display:block;width:328px;height:178px;overflow:visible}
+  .beam{transform-origin:164px 55px;transition:transform .65s cubic-bezier(.2,1.5,.4,1)}
+  .weight rect{fill:#eeb774;stroke:#aa7044;stroke-width:2}
+  .weight text{font-size:16px;font-weight:800;fill:#573d31;text-anchor:middle;dominant-baseline:middle}
+  .choices{display:flex;justify-content:center;gap:14px;height:59px}
+  button{width:82px;height:56px;border:2px solid #b97c51;border-radius:15px;background:#f5c892;color:#543b30;font:800 22px system-ui,sans-serif;box-shadow:0 4px 0 #d7a374;cursor:pointer;transition:transform .18s,opacity .2s}
+  button:active{transform:translateY(3px) scale(.94);box-shadow:0 1px 0 #d7a374}
+  button:disabled{cursor:default}
+  .message{height:25px;margin:1px 0 0;font-size:15px;font-weight:700;color:#9b6645}
+  .celebrate{animation:glow .55s ease-in-out 2}
+  @keyframes glow{50%{filter:drop-shadow(0 0 9px #f3b35b);transform:scale(1.035)}}
+</style>
+<div class="card">
+  <h1 id="title"></h1>
+  <div class="hint" id="instr"></div>
+  <svg viewBox="0 0 328 178" aria-hidden="true">
+    <path d="M164 57 L130 163 Q164 169 198 163 Z" fill="#e7caa5"/>
+    <rect x="107" y="163" width="114" height="9" rx="5" fill="#9d7257"/>
+    <g class="beam" data-beam data-tilt="level">
+      <rect x="55" y="50" width="218" height="10" rx="5" fill="#a56d4b"/>
+      <g data-pan="left" data-total="">
+        <path d="M60 55 L60 125 M112 55 L112 125" stroke="#ad8064" stroke-width="3"/>
+        <path d="M46 125 Q86 148 126 125 Z" fill="#deaa70" stroke="#a87351" stroke-width="2"/>
+        <g class="weights"></g>
+      </g>
+      <g data-pan="right" data-total="">
+        <path d="M216 55 L216 125 M268 55 L268 125" stroke="#ad8064" stroke-width="3"/>
+        <path d="M202 125 Q242 148 282 125 Z" fill="#deaa70" stroke="#a87351" stroke-width="2"/>
+        <g class="weights"></g>
+      </g>
+    </g>
+    <circle cx="164" cy="55" r="10" fill="#835a45"/>
+    <circle cx="164" cy="55" r="4" fill="#f9deb4"/>
+  </svg>
+  <div class="choices" id="choices"></div>
+  <div class="message" id="message" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const items=Studio.params.items;
+  const beam=document.querySelector('[data-beam]');
+  const pans={left:document.querySelector('[data-pan="left"]'),right:document.querySelector('[data-pan="right"]')};
+  const choices=document.getElementById('choices');
+  const message=document.getElementById('message');
+  const svgNS='http://www.w3.org/2000/svg';
+  let index=0, selected=null, busy=false;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  function sum(a){return a.reduce((n,v)=>n+Number(v),0)}
+  function drawWeights(side,values){
+    const holder=pans[side].querySelector('.weights');
+    holder.replaceChildren();
+    const center=side==='left'?86:242;
+    values.forEach((value,i)=>{
+      const g=document.createElementNS(svgNS,'g');
+      g.setAttribute('class','weight');
+      g.setAttribute('data-weight',String(value));
+      const x=center+(i-(values.length-1)/2)*29;
+      const rect=document.createElementNS(svgNS,'rect');
+      rect.setAttribute('x',x-14);rect.setAttribute('y',101);
+      rect.setAttribute('width',28);rect.setAttribute('height',26);rect.setAttribute('rx',7);
+      const text=document.createElementNS(svgNS,'text');
+      text.setAttribute('x',x);text.setAttribute('y',114);
+      text.textContent=String(value);
+      g.append(rect,text);holder.append(g);
+    });
+    pans[side].setAttribute('data-total',String(sum(values)));
+  }
+  function update(){
+    const item=items[index];
+    const left=item.left,right=selected===null?item.right:[...item.right,selected];
+    drawWeights('left',left);drawWeights('right',right);
+    const a=sum(left),b=sum(right);
+    const tilt=a>b?'left':b>a?'right':'level';
+    beam.setAttribute('data-tilt',tilt);
+    beam.style.transform=`rotate(${tilt==='left'?-9:tilt==='right'?9:0}deg)`;
+  }
+  function show(){
+    selected=null;busy=false;message.textContent='';
+    choices.replaceChildren();
+    items[index].options.forEach(value=>{
+      const button=document.createElement('button');
+      button.type='button';button.textContent=String(value);
+      button.setAttribute('data-option',String(value));
+      button.addEventListener('click',()=>{
+        if(busy)return;
+        busy=true;selected=value;button.remove();update();
+        Studio.event('choose',{value:String(value)});
+        Studio.answer({value});
+      });
+      choices.append(button);
+    });
+    update();
+  }
+  Studio.onVerdict(({correct})=>{
+    if(!busy)return;
+    message.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      beam.classList.add('celebrate');
+      setTimeout(()=>{
+        beam.classList.remove('celebrate');
+        index++;
+        if(index<items.length)show();
+        else{
+          choices.replaceChildren();
+          message.textContent=Studio.t('done');
+          Studio.done();
+        }
+      },1100);
+    }else{
+      setTimeout(()=>{
+        const value=selected;
+        selected=null;update();
+        const button=document.createElement('button');
+        button.type='button';button.textContent=String(value);
+        button.setAttribute('data-option',String(value));
+        const positions=items[index].options;
+        const at=positions.indexOf(value);
+        choices.insertBefore(button,choices.children[at]||null);
+        button.addEventListener('click',()=>{
+          if(busy)return;
+          busy=true;selected=value;button.remove();update();
+          Studio.event('choose',{value:String(value)});
+          Studio.answer({value});
+        });
+        busy=false;message.textContent='';
+      },900);
+    }
+  });
+  show();
+  Studio.ready();
+})();
+
+</script>

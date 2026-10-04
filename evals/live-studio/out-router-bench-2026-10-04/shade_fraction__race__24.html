@@ -1,0 +1,145 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff6e9;color:#593b35;font-family:system-ui,sans-serif}
+  .card{position:relative;width:360px;height:320px;overflow:hidden;padding:14px 18px;background:radial-gradient(circle at 85% 8%,#ffe3b8,transparent 38%),#fff6e9}
+  h1{margin:0;font-size:20px;line-height:26px;font-weight:800}
+  .instruction{margin:2px 0 0;font-size:14px;line-height:19px}
+  .target{position:absolute;top:61px;right:23px;min-width:66px;height:56px;display:grid;place-items:center;border-radius:18px;background:#fff;color:#a34c37;box-shadow:0 3px 0 #eed8c6;font-size:27px;font-weight:800}
+  .picture{position:absolute;left:76px;top:79px;width:208px;height:174px;overflow:visible}
+  .plate{fill:#fff;stroke:#ead7c5;stroke-width:5}
+  .part{fill:#f5d7a4;cursor:pointer;transition:fill .2s,filter .2s,transform .2s;transform-origin:center;transform-box:fill-box}
+  .part[data-shaded="true"]{fill:#e5825c;filter:drop-shadow(0 2px 2px #9e5a4955)}
+  .part:active{transform:scale(.95)}
+  .divider{stroke:#fff6e9;stroke-width:3;stroke-linecap:round;pointer-events:none}
+  .feedback{position:absolute;left:18px;bottom:76px;width:210px;min-height:20px;font-size:14px;font-weight:700;color:#a34c37}
+  .hint{position:absolute;left:18px;bottom:26px;width:205px;font-size:13px;line-height:17px;color:#85655b}
+  .check{position:absolute;right:18px;bottom:17px;width:112px;height:54px;border:0;border-radius:18px;background:#be6048;color:#fff;font:800 16px system-ui,sans-serif;box-shadow:0 5px 0 #8e4738;cursor:pointer;transition:transform .15s,box-shadow .15s}
+  .check:active{transform:translateY(4px);box-shadow:0 1px 0 #8e4738}
+  .check:disabled{opacity:.65;cursor:default}
+  .pop{animation:pop .48s ease}
+  .wobble{animation:wobble .35s ease}
+  @keyframes pop{50%{transform:scale(1.07)}}
+  @keyframes wobble{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+</style>
+<div class="card" id="card">
+  <h1 id="title"></h1>
+  <p class="instruction" id="instruction"></p>
+  <div id="item" data-item="">
+    <div class="target" data-target></div>
+    <svg class="picture" id="picture" viewBox="0 0 208 174" aria-hidden="true">
+      <circle class="plate" cx="104" cy="87" r="81"></circle>
+      <g id="parts"></g>
+      <g id="dividers"></g>
+    </svg>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+    <div class="hint" id="hint"></div>
+    <button class="check" data-action="check" id="check"></button>
+  </div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params,card=document.getElementById('card');
+  const itemBox=document.getElementById('item'),parts=document.getElementById('parts');
+  const dividers=document.getElementById('dividers');
+  const target=document.querySelector('[data-target]');
+  const feedback=document.getElementById('feedback'),hint=document.getElementById('hint');
+  const check=document.getElementById('check');
+  const ns='http://www.w3.org/2000/svg';
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+  let index=0,pending=false,finished=false;
+  function render(){
+    const item=p.items[index];
+    itemBox.dataset.item=item.id;
+    target.textContent=item.n+'/'+item.d;
+    feedback.textContent='';
+    hint.textContent='';
+    parts.replaceChildren();
+    dividers.replaceChildren();
+    for(let i=0;i<item.d;i++){
+      const pizza=p.picture==='pizza';
+      const shape=document.createElementNS(ns,pizza?'path':'rect');
+      if(pizza){
+        const a=-Math.PI/2+2*Math.PI*i/item.d;
+        const b=-Math.PI/2+2*Math.PI*(i+1)/item.d;
+        const x=104,y=87,r=76;
+        shape.setAttribute('d',`M ${x} ${y} L ${x+r*Math.cos(a)} ${y+r*Math.sin(a)} A ${r} ${r} 0 ${b-a>Math.PI?1:0} 1 ${x+r*Math.cos(b)} ${y+r*Math.sin(b)} Z`);
+        const line=document.createElementNS(ns,'line');
+        line.setAttribute('x1',x);line.setAttribute('y1',y);
+        line.setAttribute('x2',x+r*Math.cos(a));line.setAttribute('y2',y+r*Math.sin(a));
+        line.classList.add('divider');
+        dividers.appendChild(line);
+      }else{
+        const width=152/item.d;
+        shape.setAttribute('x',28+i*width);
+        shape.setAttribute('y',46);
+        shape.setAttribute('width',width);
+        shape.setAttribute('height',82);
+        if(i){
+          const line=document.createElementNS(ns,'line');
+          line.setAttribute('x1',28+i*width);line.setAttribute('x2',28+i*width);
+          line.setAttribute('y1',46);line.setAttribute('y2',128);
+          line.classList.add('divider');
+          dividers.appendChild(line);
+        }
+      }
+      shape.classList.add('part');
+      shape.dataset.part=String(i);
+      shape.dataset.shaded='false';
+      shape.addEventListener('click',()=>{
+        if(pending)return;
+        shape.dataset.shaded=shape.dataset.shaded==='true'?'false':'true';
+        feedback.textContent='';
+        shape.classList.remove('pop');
+        void shape.getBoundingClientRect();
+        shape.classList.add('pop');
+        Studio.event('part',{index:i});
+      });
+      parts.appendChild(shape);
+    }
+  }
+  check.addEventListener('click',()=>{
+    if(pending||finished)return;
+    pending=true;
+    check.disabled=true;
+    const item=p.items[index];
+    const n=parts.querySelectorAll('[data-shaded="true"]').length;
+    Studio.event('check',{n,d:item.d});
+    Studio.answer({n,d:item.d});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending||finished)return;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      card.classList.remove('pop');
+      void card.getBoundingClientRect();
+      card.classList.add('pop');
+      setTimeout(()=>{
+        index++;
+        if(index<p.items.length){
+          render();
+          pending=false;
+          check.disabled=false;
+        }else{
+          finished=true;
+          itemBox.remove();
+          document.getElementById('instruction').textContent=Studio.t('done');
+          Studio.done();
+        }
+      },650);
+    }else{
+      hint.textContent=Studio.t('hint');
+      card.classList.remove('wobble');
+      void card.getBoundingClientRect();
+      card.classList.add('wobble');
+      pending=false;
+      check.disabled=false;
+    }
+  });
+  render();
+  Studio.ready();
+})();
+
+</script>

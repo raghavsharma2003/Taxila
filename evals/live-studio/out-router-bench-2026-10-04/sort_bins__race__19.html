@@ -1,0 +1,98 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#473c36}
+  .board{position:relative;width:360px;height:320px;overflow:hidden;padding:12px 12px 8px;background:radial-gradient(circle at 93% 6%,#ffe5bd 0 42px,transparent 43px),#fff8ed}
+  .heading{text-align:center;height:61px}
+  h1{margin:0;font-size:22px;line-height:29px;font-weight:800}
+  .instruction{margin:2px 0 0;font-size:13px;line-height:20px;color:#756257}
+  .cards{height:96px;display:flex;align-items:center;justify-content:center;gap:6px}
+  .card{width:78px;height:62px;flex:none;border:2px solid #e5b78a;border-radius:16px;background:#fffdf9;color:#473c36;box-shadow:0 5px 0 #eacba9;display:grid;place-items:center;font:700 14px system-ui,sans-serif;cursor:pointer;transition:transform .24s ease,box-shadow .24s ease,opacity .24s ease;position:relative;z-index:1;overflow-wrap:anywhere;text-align:center;padding:3px}
+  .card:active,.bin:active{transform:scale(.95)}
+  .card[data-selected="true"]{transform:translateY(-12px) scale(1.06);box-shadow:0 10px 20px #e7a96077,0 0 0 4px #ffd78b;z-index:3}
+  .card.flying{transition:transform .38s cubic-bezier(.22,.8,.3,1),opacity .38s;pointer-events:none;z-index:5}
+  .card.shake{animation:shake .38s ease}
+  @keyframes shake{0%,100%{transform:translateY(0)}25%{transform:translate(-5px,-3px)}50%{transform:translate(5px,-3px)}75%{transform:translate(-3px,-2px)}}
+  .bins{height:113px;display:flex;gap:7px}
+  .bin{flex:1;min-width:0;height:108px;border:2px solid #d9a982;border-radius:19px;background:#ffedda;box-shadow:inset 0 -5px 0 #f5dcc0;cursor:pointer;padding:7px 5px;display:flex;align-items:center;flex-direction:column;transition:transform .2s,background .2s}
+  .bin:nth-child(2){background:#e9f3ed;border-color:#a2c8b3;box-shadow:inset 0 -5px 0 #d3e8da}
+  .bin:nth-child(3){background:#eaf1fa;border-color:#acc4df;box-shadow:inset 0 -5px 0 #d7e5f5}
+  .bin.pulse{animation:pulse .4s ease}
+  @keyframes pulse{50%{transform:scale(1.05)}}
+  .bin-name{font-size:15px;font-weight:800;line-height:23px;text-align:center}
+  .placed-list{width:100%;display:flex;flex-direction:column;align-items:center;gap:3px;overflow:hidden}
+  .placed{width:94%;min-height:27px;border-radius:9px;background:#fffdf9;border:1px solid #e6cab0;text-align:center;display:grid;place-items:center;font-size:12px;font-weight:700;padding:2px;animation:appear .28s ease}
+  @keyframes appear{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+  .message{height:31px;display:grid;place-items:center;font-size:16px;font-weight:800;color:#9a6847;text-align:center}
+  .decoration{position:absolute;right:10px;top:10px;width:27px;height:27px;pointer-events:none}
+</style>
+<div class="board">
+  <svg class="decoration" viewBox="0 0 27 27" aria-hidden="true"><path d="M13.5 2v5m0 13v5M2 13.5h5m13 0h5M5.4 5.4l3.5 3.5m9.2 9.2 3.5 3.5m0-16.2-3.5 3.5m-9.2 9.2-3.5 3.5" fill="none" stroke="#e7ae69" stroke-width="2.5" stroke-linecap="round"/></svg>
+  <div class="heading"><h1 id="title"></h1><p class="instruction" id="instr"></p></div>
+  <div class="cards" id="cards"></div>
+  <div class="bins" id="bins"></div>
+  <div class="message" id="message" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, cards=document.getElementById('cards'), bins=document.getElementById('bins'), message=document.getElementById('message');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  let selected=null, pending=null, busy=false, sorted=0;
+  const binNodes={};
+  p.bins.forEach(key=>{
+    const bin=document.createElement('div');
+    bin.className='bin';bin.setAttribute('data-bin',key);
+    const name=document.createElement('div');name.className='bin-name';name.textContent=Studio.t(key);
+    const list=document.createElement('div');list.className='placed-list';
+    bin.append(name,list);bins.append(bin);binNodes[key]={bin,list};
+    bin.addEventListener('click',()=>{
+      if(!selected||busy)return;
+      busy=true;
+      pending={card:selected.getAttribute('data-card'),bin:key,element:selected};
+      Studio.answer({card:pending.card,bin:pending.bin});
+    });
+  });
+  p.cards.forEach(key=>{
+    const card=document.createElement('button');
+    card.type='button';card.className='card';card.setAttribute('data-card',key);
+    card.setAttribute('data-selected','false');card.textContent=Studio.t(key);
+    card.addEventListener('click',()=>{
+      if(busy)return;
+      if(selected)selected.setAttribute('data-selected','false');
+      selected=selected===card?null:card;
+      if(selected)selected.setAttribute('data-selected','true');
+      message.textContent='';
+      Studio.event('pick',{card:key});
+    });
+    cards.append(card);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    const {card,bin,element}=pending;
+    pending=null;
+    element.setAttribute('data-selected','false');selected=null;
+    if(correct){
+      message.textContent=Studio.t('right');
+      const target=binNodes[bin], a=element.getBoundingClientRect(), b=target.list.getBoundingClientRect();
+      element.classList.add('flying');
+      element.style.transform=`translate(${b.left+b.width/2-a.left-a.width/2}px,${b.top+15-a.top-a.height/2}px) scale(.6)`;
+      element.style.opacity='0.35';
+      target.bin.classList.add('pulse');
+      setTimeout(()=>{
+        element.remove();target.bin.classList.remove('pulse');
+        const placed=document.createElement('div');
+        placed.className='placed';placed.setAttribute('data-placed',bin);placed.textContent=Studio.t(card);
+        target.list.append(placed);sorted++;busy=false;
+        if(sorted===p.cards.length){message.textContent=Studio.t('done');Studio.done()}
+      },390);
+    }else{
+      message.textContent=Studio.t('wrong');
+      element.classList.add('shake');
+      setTimeout(()=>{element.classList.remove('shake');busy=false},400);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

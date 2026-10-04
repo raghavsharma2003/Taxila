@@ -1,0 +1,48 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ec;font-family:system-ui,sans-serif;color:#344b3c} .card{width:360px;height:320px;overflow:hidden;background:linear-gradient(#fff9ef,#f4f8e9);position:relative} h1{height:27px;margin:0;padding:5px 12px 0;font-size:17px;font-weight:750;text-align:center;color:#365c42;white-space:nowrap;overflow:hidden} svg{display:block;width:360px;height:160px} .scene-label{font-size:12px;font-weight:750;fill:#385543;paint-order:stroke;stroke:#fff9ef;stroke-width:3px;stroke-linejoin:round} .stream{fill:none;stroke-width:3;stroke-linecap:round;stroke-dasharray:5 7;opacity:.62;transition:opacity .3s,stroke-width .3s} .stream.focus{opacity:1;stroke-width:5} .particle{transition:opacity .2s} .row{height:55px;display:flex;align-items:center;gap:7px;padding:2px 9px} button{border:0;border-radius:17px;font:750 13px system-ui,sans-serif;cursor:pointer;touch-action:manipulation;transition:transform .16s,background .2s,box-shadow .2s} button:active{transform:scale(.92)} .control{height:52px;min-width:57px;padding:0 10px;background:#e1efd8;color:#315c40;box-shadow:0 3px 0 #bed3b4} [data-caption]{flex:1;min-width:0;text-align:center;font-size:14px;font-weight:700;color:#42604b;line-height:1.15} .ask{height:24px;text-align:center;font-size:14px;font-weight:750;color:#435845;white-space:nowrap;overflow:hidden;padding:2px 8px} .options{height:54px;display:flex;gap:7px;padding:0 9px 2px} .options button{flex:1;min-width:0;height:52px;background:#fff;color:#365746;border:2px solid #a8c9a2;box-shadow:0 3px 0 #d2dfc9} .options button.picked{background:#dcefd5} .feedback{position:absolute;right:9px;top:238px;font-size:12px;font-weight:800;color:#397650;pointer-events:none}
+</style>
+<div class="card">
+  <h1 id="title"></h1>
+  <svg id="scene" viewBox="0 0 360 160" aria-hidden="true">
+    <path id="waterPath" class="stream" d="M151 142 Q139 112 166 91" stroke="#61aac9"/>
+    <path id="co2Path" class="stream" d="M39 93 Q91 77 151 78" stroke="#b98cbd"/>
+    <path id="o2Path" class="stream" d="M209 79 Q253 65 321 88" stroke="#e5a35a"/>
+    <circle id="sunShape" cx="55" cy="38" r="22" fill="#ffc865" stroke="#efaa47" stroke-width="4"/>
+    <path id="rootsShape" d="M176 115 Q173 134 158 150 M176 115 Q182 137 197 150 M176 129 Q172 144 177 153" fill="none" stroke="#aa8065" stroke-width="9" stroke-linecap="round"/>
+    <path id="hubShape" d="M153 90 Q151 48 209 49 Q207 97 163 104 Q171 83 191 67" fill="#79bd70" stroke="#418b63" stroke-width="4" stroke-linejoin="round"/>
+    <g id="particles"></g><g id="labels"></g>
+  </svg>
+  <div class="row"><button class="control" data-action="play"></button><div data-caption></div><button class="control" data-action="next"></button></div>
+  <div class="ask" id="ask"></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, svgNS='http://www.w3.org/2000/svg';
+  const $=s=>document.querySelector(s);
+  $('#title').textContent=Studio.t('title');
+  $('#ask').textContent=Studio.t('ask');
+  $('#hubShape').setAttribute('data-entity',p.hub);
+  $('#sunShape').setAttribute('data-entity',p.entities[0]);
+  $('#rootsShape').setAttribute('data-entity',p.entities[1]);
+  const positions=[[p.entities[0],19,75],[p.hub,212,52],[p.entities[1],210,150],[p.flows[0].key,91,137],[p.flows[1].key,32,112],[p.flows[2].key,282,117]];
+  positions.forEach(([key,x,y])=>{let t=document.createElementNS(svgNS,'text');t.setAttribute('class','scene-label');t.setAttribute('data-label',key);t.setAttribute('x',x);t.setAttribute('y',y);t.textContent=Studio.t(key);$('#labels').append(t)});
+  const paths=['#waterPath','#co2Path','#o2Path'].map($), colors=['#61aac9','#b98cbd','#e5a35a'];
+  let step=0,playing=true,done=false;
+  const dots=[];
+  p.flows.forEach((flow,i)=>{for(let j=0;j<4;j++){let c=document.createElementNS(svgNS,'circle');c.setAttribute('r',j%2?4:5);c.setAttribute('fill',colors[i]);c.setAttribute('data-flow',flow.key);$('#particles').append(c);dots.push({c,i,j})}});
+  function showStep(){ $('[data-caption]').textContent=Studio.t('step'+(step+1));paths.forEach((path,i)=>path.classList.toggle('focus',i===step%paths.length));}
+  function playText(){ $('[data-action="play"]').textContent=Studio.t(playing?'pause':'play');}
+  playText();showStep();
+  $('[data-action="play"]').addEventListener('click',()=>{playing=!playing;playText();Studio.event('play',{playing:playing?1:0})});
+  $('[data-action="next"]').addEventListener('click',()=>{step=(step+1)%p.steps;showStep();Studio.event('step',{step:step+1})});
+  p.options.forEach(key=>{let b=document.createElement('button');b.setAttribute('data-option',key);b.textContent=Studio.t(key);b.addEventListener('click',()=>{if(done)return;document.querySelectorAll('[data-option]').forEach(o=>o.classList.remove('picked'));b.classList.add('picked');$('#feedback').textContent='';Studio.answer(key)});$('#options').append(b)});
+  Studio.onVerdict(({correct})=>{ $('#feedback').textContent=Studio.t(correct?'right':'wrong');if(correct&&!done){done=true;Studio.done()}});
+  let phase=0,last=0;
+  function frame(now){if(playing)phase+=(Math.min(now-last,40)||0)*.00022;last=now;dots.forEach(({c,i,j})=>{let path=paths[i],fraction=(phase+j/4)%1,point=path.getPointAtLength(fraction*path.getTotalLength());c.setAttribute('cx',point.x);c.setAttribute('cy',point.y)});requestAnimationFrame(frame)}
+  requestAnimationFrame(frame);Studio.ready();
+})();
+
+</script>

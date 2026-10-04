@@ -78,7 +78,10 @@ export function policyScore(text: string, ctx: TurnContext): PolicyScore {
   const toks = t.split(" ");
   const last = toks[toks.length - 1];
   if (HOLD_REQUEST.test(t)) return { p: 0.02, cue: "hold_request" };
-  if (FILLER_TOKEN.test(last)) return { p: 0.1, cue: "filler" };
+  // "हूँ" is both the filler "hmm" and the verb "am" ("कर सकता हूँ", "ठीक हूँ"): after another word it is the verb, a
+  // completion cue (duplex prototype finding F-HUN, 2026-10-04); alone or repeated it stays a filler
+  const hunVerb = /^हूँ$|^हूं$/u.test(last) && toks.length > 1 && !/^(?:हूँ|हूं|हम्म|उम्म)$/u.test(toks[toks.length - 2]);
+  if (FILLER_TOKEN.test(last) && !hunVerb) return { p: 0.1, cue: "filler" };
   // an ASR comma is a heard continuation contour; it also turns a clause-final "na" into the medial discourse marker
   // (O'Reilly-Brown), so it is read before the yield lexicon
   if (/[,،]\s*$/.test(raw)) return { p: 0.2, cue: "open" };

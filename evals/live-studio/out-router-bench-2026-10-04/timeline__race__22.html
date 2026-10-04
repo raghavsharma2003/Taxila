@@ -1,0 +1,97 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8ed;color:#49352e}
+.scene{position:relative;width:360px;height:320px;overflow:hidden;padding:12px 16px}
+h1{height:30px;margin:0;text-align:center;font-size:18px;line-height:26px;color:#794d38}
+.prompt{height:34px;margin:2px 0 0;text-align:center;font-size:14px;line-height:18px;color:#765849}
+.timeline{position:absolute;left:16px;top:159px;width:328px;height:3px;border-radius:5px;background:#c98559}
+.timeline:after{content:"";position:absolute;right:-2px;top:-5px;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:9px solid #c98559}
+.event{position:absolute;inset:0;pointer-events:none}
+.marker{position:absolute;top:153px;width:15px;height:15px;border:3px solid #fff8ed;border-radius:50%;background:#bd6844;box-shadow:0 0 0 2px #bd6844;transform:translateX(-50%);z-index:2}
+.stem{position:absolute;width:2px;background:#d5a17d;transform:translateX(-50%);pointer-events:none}
+.card{position:absolute;width:88px;height:64px;padding:5px 4px;border:2px solid #e7c4a5;border-radius:13px;background:#fffdf8;color:#593e31;box-shadow:0 3px 0 #efdcc7;text-align:center;font:600 12px/15px system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;pointer-events:auto;cursor:pointer;transition:transform .16s ease,background .16s ease,border-color .16s ease}
+.card:active{transform:scale(.94)}
+.card:hover{background:#fff2df;border-color:#c98559}
+.year{font-size:11px;color:#a05b3d}
+.feedback{position:absolute;left:16px;right:16px;bottom:11px;min-height:30px;text-align:center;font-size:14px;font-weight:650;color:#79503b}
+.feedback.good{color:#3f7756}
+.feedback.bad{color:#a75343}
+</style>
+<div class="scene">
+  <h1 id="title"></h1>
+  <div class="prompt" id="prompt"></div>
+  <div class="timeline" data-axis aria-label=""></div>
+  <div id="events"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const t=Studio.t;
+  document.getElementById("title").textContent=t("title");
+  document.getElementById("prompt").textContent=t("ask");
+  const host=document.getElementById("events");
+  const feedback=document.getElementById("feedback");
+  const years=p.events.map(e=>Number(e.year));
+  const lo=Math.min(...years), hi=Math.max(...years);
+  const left=16, width=328;
+  const ordered=p.events.map((event,index)=>({
+    event,index,
+    x:hi===lo?left+width/2:left+(Number(event.year)-lo)/(hi-lo)*width
+  })).sort((a,b)=>a.x-b.x);
+  const laneEnds=[-Infinity,-Infinity];
+  ordered.forEach(item=>{
+    const {event,x}=item;
+    const cardWidth=88;
+    const cardX=Math.max(0,Math.min(360-cardWidth,x-cardWidth/2));
+    let lane=laneEnds[0]<=cardX?0:laneEnds[1]<=cardX?1:(laneEnds[0]<=laneEnds[1]?0:1);
+    laneEnds[lane]=cardX+cardWidth+4;
+    const top=lane===0?65:190;
+    const cardBottom=top+64;
+    const stem=document.createElement("div");
+    stem.className="stem";
+    stem.style.left=x+"px";
+    stem.style.top=(lane===0?top+64:160)+"px";
+    stem.style.height=(lane===0?159-(top+64):top-160)+"px";
+    const marker=document.createElement("div");
+    marker.className="marker";
+    marker.dataset.event=event.key;
+    marker.dataset.year=event.year;
+    marker.style.left=x+"px";
+    const card=document.createElement("button");
+    card.className="card";
+    card.type="button";
+    card.dataset.card=event.key;
+    card.style.left=cardX+"px";
+    card.style.top=top+"px";
+    const name=document.createElement("span");
+    name.textContent=t(event.key);
+    const year=document.createElement("span");
+    year.className="year";
+    year.textContent=String(event.year);
+    card.append(name,year);
+    card.addEventListener("click",()=>{
+      feedback.textContent="";
+      feedback.className="feedback";
+      Studio.event("tap",{key:event.key});
+      Studio.answer(event.key);
+    });
+    host.append(stem,marker,card);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      feedback.textContent=t("right");
+      feedback.className="feedback good";
+      Studio.done();
+      feedback.textContent=t("done");
+    }else{
+      feedback.textContent=t("wrong");
+      feedback.className="feedback bad";
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

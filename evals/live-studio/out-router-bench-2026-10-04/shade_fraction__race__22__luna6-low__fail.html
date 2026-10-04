@@ -1,0 +1,108 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff5e6;color:#49372c}
+#app{width:360px;height:320px;padding:8px 14px;display:flex;flex-direction:column;align-items:center;position:relative;overflow:hidden}
+header{width:100%;height:34px;flex:none;display:flex;align-items:center;justify-content:center;color:#754c30;font-size:18px;font-weight:800}
+#instruction{height:28px;flex:none;display:flex;align-items:center;justify-content:center;font-size:14px;color:#725e4c;text-align:center}
+#target{height:40px;flex:none;display:flex;align-items:center;justify-content:center;gap:8px;font-size:24px;font-weight:800;color:#a75432}
+#target span{min-width:22px;text-align:center}
+#whole{width:188px;height:156px;flex:none;display:block;overflow:hidden;touch-action:manipulation}
+#pizza,#bar{pointer-events:none}
+.part{pointer-events:all;fill:#ffe3a3;stroke:#fffaf0;stroke-width:2;stroke-linejoin:round;cursor:pointer;transition:fill .18s ease,transform .15s ease;transform-box:fill-box;transform-origin:center}
+.part[data-shaded="true"]{fill:#f28b62}
+.part:active{transform:scale(.97)}
+#message{height:24px;flex:none;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#a75432;text-align:center}
+#controls{width:100%;height:58px;flex:none;display:flex;align-items:center;justify-content:center}
+button{height:56px;min-width:144px;border:0;border-radius:18px;background:#e8754f;color:white;font:700 17px system-ui,sans-serif;box-shadow:0 4px 0 #b95536;cursor:pointer;transition:transform .14s,background .2s}
+button:active{transform:scale(.95) translateY(2px);box-shadow:0 2px 0 #b95536}
+#message.celebrate{animation:bounce .55s ease}
+@keyframes bounce{0%{transform:scale(.8)}55%{transform:scale(1.14)}100%{transform:scale(1)}}
+</style>
+<div id="app">
+<header id="title"></header>
+<div id="instruction"></div>
+<div id="target" data-target><span id="num"></span><span>/</span><span id="den"></span></div>
+<svg id="whole" viewBox="0 0 188 156" aria-hidden="true">
+<g id="pizza" transform="translate(94 78)"></g>
+<g id="bar" transform="translate(8 48)"></g>
+</svg>
+<div id="message"></div>
+<div id="controls"><button id="check" data-action="check" type="button"></button></div>
+</div>
+<script>
+
+(()=>{
+const p=Studio.params,items=p.items;
+const title=document.getElementById("title"),instruction=document.getElementById("instruction");
+const target=document.getElementById("target"),num=document.getElementById("num"),den=document.getElementById("den");
+const pizza=document.getElementById("pizza"),bar=document.getElementById("bar"),whole=document.getElementById("whole");
+const message=document.getElementById("message"),check=document.getElementById("check"),app=document.getElementById("app");
+title.textContent=Studio.t("title");
+instruction.textContent=Studio.t("instr");
+check.textContent=Studio.t("check");
+let index=0,parts=[],locked=false;
+function makePart(tag,attrs,i){
+ const el=document.createElementNS("http://www.w3.org/2000/svg",tag);
+ for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);
+ el.setAttribute("class","part");
+ el.setAttribute("data-part",String(i));
+ el.setAttribute("data-shaded","false");
+ el.addEventListener("click",()=>{
+  if(locked)return;
+  el.setAttribute("data-shaded",String(el.getAttribute("data-shaded")!=="true"));
+ });
+ return el;
+}
+function draw(){
+ const item=items[index];
+ app.setAttribute("data-item",String(item.id));
+ num.textContent=String(item.n);den.textContent=String(item.d);
+ message.textContent="";message.className="";
+ parts=[];pizza.replaceChildren();bar.replaceChildren();
+ if(p.picture==="pizza"){
+  pizza.style.display="";bar.style.display="none";
+  const r=71;
+  for(let i=0;i<item.d;i++){
+   const a1=-Math.PI/2+Math.PI*2*i/item.d,a2=-Math.PI/2+Math.PI*2*(i+1)/item.d;
+   const x1=Math.cos(a1)*r,y1=Math.sin(a1)*r,x2=Math.cos(a2)*r,y2=Math.sin(a2)*r;
+   const d="M0 0 L"+x1+" "+y1+" A"+r+" "+r+" 0 0 1 "+x2+" "+y2+" Z";
+   const el=makePart("path",{d},i);
+   pizza.appendChild(el);parts.push(el);
+  }
+ }else{
+  pizza.style.display="none";bar.style.display="";
+  const total=172,w=total/item.d;
+  for(let i=0;i<item.d;i++){
+   const el=makePart("rect",{x:String(i*w),y:"0",width:String(w),height:"60"},i);
+   bar.appendChild(el);parts.push(el);
+  }
+ }
+ locked=false;
+}
+function advance(){
+ index++;
+ if(index>=items.length){
+  message.textContent=Studio.t("done");
+  target.style.display="none";whole.style.display="none";check.style.display="none";
+  instruction.textContent="";
+  Studio.done();
+ }else draw();
+}
+check.addEventListener("click",()=>{
+ if(locked)return;
+ const count=parts.reduce((n,el)=>n+(el.getAttribute("data-shaded")==="true"?1:0),0);
+ Studio.answer({n:count,d:items[index].d});
+});
+Studio.onVerdict(v=>{
+ if(v.correct){
+  locked=true;message.textContent=Studio.t("right");message.classList.add("celebrate");
+  message.addEventListener("animationend",function finish(){
+   message.removeEventListener("animationend",finish);advance();
+  },{once:true});
+ }else message.textContent=Studio.t("wrong");
+});
+draw();Studio.ready();
+})();
+
+</script>

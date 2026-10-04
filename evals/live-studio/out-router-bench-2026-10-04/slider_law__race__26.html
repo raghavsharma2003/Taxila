@@ -1,0 +1,91 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;color:#553b35;background:#fff8ed}
+  .card{width:360px;height:320px;padding:8px 14px;display:grid;grid-template-rows:26px 82px 54px 94px 22px;gap:4px}
+  h1{margin:0;font-size:19px;line-height:26px;font-weight:800}
+  .scene{position:relative;overflow:hidden;border-radius:18px;background:#f7e8d5;padding:7px 13px}
+  .readings{display:flex;justify-content:space-between;gap:8px;font-size:14px;font-weight:650}
+  .readings strong{font-size:21px;color:#8b4b40}
+  .track{position:absolute;left:13px;bottom:9px;width:300px;height:22px;border-radius:12px;background:#e7d6c4}
+  [data-visual]{height:22px;width:0;border-radius:12px;background:linear-gradient(90deg,#f3a76e,#df735e);transition:width .32s cubic-bezier(.2,.8,.2,1);box-shadow:inset 0 -4px #cf6658}
+  .controls{display:flex;gap:12px}
+  button{border:0;cursor:pointer;font:inherit;font-weight:800;min-width:52px;min-height:52px;border-radius:16px;transition:transform .16s,background .16s,box-shadow .16s}
+  button:active{transform:scale(.92)}
+  .controls button{flex:1;background:#f6d4ad;color:#704437;box-shadow:0 3px #dfae85}
+  button:disabled{opacity:.45;cursor:default;box-shadow:none}
+  .question{border-radius:17px;background:#fff0df;padding:6px 9px}
+  .prompt{height:28px;font-size:14px;font-weight:750}
+  .options{display:flex;gap:8px}
+  .options button{flex:1;background:#fff;color:#8b4b40;box-shadow:0 3px #e5c8b0;font-size:18px}
+  .options button.chosen{background:#f8d9ad}
+  .feedback{text-align:center;font-size:15px;font-weight:800;color:#9b6050;line-height:22px}
+  .feedback.pop{animation:pop .3s ease-out}
+  @keyframes pop{50%{transform:scale(1.12)}}
+</style>
+<div class="card">
+  <h1 id="title"></h1>
+  <div class="scene">
+    <div class="readings">
+      <div><span id="xname"></span> <strong data-x></strong></div>
+      <div><span id="yname"></span> <strong data-output data-value></strong></div>
+    </div>
+    <div class="track"><div data-visual data-dim="w"></div></div>
+  </div>
+  <div class="controls">
+    <button type="button" data-action="dec"></button>
+    <button type="button" data-action="inc"></button>
+  </div>
+  <div class="question">
+    <div class="prompt"><span id="ask"></span> <span id="ask-x"></span></div>
+    <div class="options" id="options"></div>
+  </div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, q=s=>document.querySelector(s);
+  const text=(s,key)=>{q(s).textContent=Studio.t(key)};
+  text('#title','title');text('#xname','xname');text('#yname','yname');
+  text('[data-action="dec"]','less');text('[data-action="inc"]','more');
+  text('#ask','ask');q('#ask-x').textContent=p.ask.x;
+  const fmt=n=>String(Number(n.toFixed(8)));
+  let x=p.x.start,finished=false;
+  const dec=q('[data-action="dec"]'),inc=q('[data-action="inc"]');
+  function render(){
+    const y=p.law.k*x+p.law.b,xs=fmt(x),ys=fmt(y);
+    q('[data-x]').dataset.x=xs;q('[data-x]').textContent=xs;
+    q('[data-output]').dataset.value=ys;q('[data-output]').textContent=ys;
+    q('[data-visual]').style.width=fmt(y*p.y.unitsPer)+'px';
+    dec.disabled=x-p.x.step<p.x.min;
+    inc.disabled=x+p.x.step>p.x.max;
+  }
+  dec.addEventListener('click',()=>{x=Number(fmt(x-p.x.step));render();Studio.event('change',{x:fmt(x)})});
+  inc.addEventListener('click',()=>{x=Number(fmt(x+p.x.step));render();Studio.event('change',{x:fmt(x)})});
+  const box=q('#options');
+  p.ask.options.forEach(value=>{
+    const button=document.createElement('button');
+    button.type='button';button.dataset.option=fmt(value);button.textContent=fmt(value);
+    button.addEventListener('click',()=>{
+      if(finished)return;
+      box.querySelectorAll('button').forEach(b=>b.classList.remove('chosen'));
+      button.classList.add('chosen');
+      Studio.answer({value});
+    });
+    box.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    const feedback=q('#feedback');
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.classList.remove('pop');void feedback.offsetWidth;feedback.classList.add('pop');
+    if(correct&&!finished){
+      finished=true;
+      box.querySelectorAll('button').forEach(b=>b.disabled=true);
+      Studio.done();
+    }
+  });
+  render();
+  Studio.ready();
+})();
+
+</script>

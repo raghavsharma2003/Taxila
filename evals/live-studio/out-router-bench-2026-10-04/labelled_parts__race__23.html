@@ -1,0 +1,105 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff8eb;color:#493b32}
+#scene{width:360px;height:320px;position:relative;padding:8px 12px}
+h1{height:28px;margin:0;text-align:center;font-size:18px;line-height:28px;font-weight:750;color:#496b46}
+#question{height:34px;margin:0;text-align:center;font-size:15px;line-height:24px;font-weight:650}
+svg{display:block;width:336px;height:242px;overflow:visible}
+.label{font:600 12px system-ui,sans-serif;fill:#493b32}
+.leader{fill:none;stroke:#9d8a73;stroke-width:1.5;stroke-linecap:round}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .18s ease,filter .22s ease}
+.part:active{transform:scale(.94)}
+.part.correct{filter:drop-shadow(0 0 7px #f3bb45);animation:glow .7s ease-in-out infinite alternate}
+@keyframes glow{from{filter:drop-shadow(0 0 3px #f3bb45)}to{filter:drop-shadow(0 0 10px #f3bb45)}}
+#feedback{position:absolute;left:12px;right:12px;bottom:5px;height:22px;text-align:center;font-size:14px;line-height:22px;font-weight:700;color:#496b46}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+<main id="scene">
+  <h1 id="title"></h1>
+  <p id="question" data-ask></p>
+  <svg viewBox="0 0 336 242" role="img" aria-label="">
+    <g class="leader">
+      <path d="M115 43 L143 55"/>
+      <path d="M207 78 L190 78"/>
+      <path d="M104 136 L151 146"/>
+      <path d="M244 184 L225 170"/>
+      <path d="M206 224 L187 216"/>
+    </g>
+    <g class="part" data-part="petal" tabindex="0" role="button" aria-label="">
+      <path d="M159 66 C140 42 154 28 168 51 C174 31 193 37 183 61 C207 49 216 67 190 78 C212 89 203 106 181 92 C181 118 161 118 164 91 C141 107 129 91 155 79 C132 74 139 56 159 66Z" fill="#f28c78" stroke="#d97061" stroke-width="2"/>
+    </g>
+    <g class="part" data-part="centre" tabindex="0" role="button" aria-label="">
+      <circle cx="168" cy="76" r="29" fill="transparent"/>
+      <circle cx="168" cy="76" r="15" fill="#f5c84c" stroke="#d6a532" stroke-width="2"/>
+      <circle cx="163" cy="72" r="2" fill="#fff1b5"/><circle cx="172" cy="80" r="2" fill="#fff1b5"/>
+    </g>
+    <g class="part" data-part="stem" tabindex="0" role="button" aria-label="">
+      <rect x="141" y="119" width="54" height="74" rx="20" fill="transparent"/>
+      <path d="M158 119 Q168 116 178 119 L181 181 Q180 205 168 211 Q156 205 155 181Z" fill="#62a66b" stroke="#438653" stroke-width="2"/>
+      <path d="M168 128 L168 197" stroke="#b8d58c" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g class="part" data-part="leaf" tabindex="0" role="button" aria-label="">
+      <path d="M165 153 C181 127 218 126 237 149 C221 174 187 181 165 153Z" fill="#76bd70" stroke="#438653" stroke-width="2"/>
+      <path d="M170 155 Q199 151 229 145" fill="none" stroke="#d5e8a5" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="201" cy="153" rx="39" ry="30" fill="transparent"/>
+    </g>
+    <g class="part" data-part="root" tabindex="0" role="button" aria-label="">
+      <rect x="138" y="190" width="60" height="52" rx="18" fill="transparent"/>
+      <path d="M168 197 C168 211 163 218 160 231 M168 210 C177 218 182 227 184 239 M164 216 C153 219 148 229 145 236 M174 217 C187 216 193 224 198 231" fill="none" stroke="#b9875a" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M168 202 C168 214 163 221 160 231 M168 213 C177 221 182 228 184 238" fill="none" stroke="#d4ac7d" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <text class="label" data-label="petal" x="88" y="43"></text>
+    <text class="label" data-label="centre" x="207" y="82"></text>
+    <text class="label" data-label="stem" x="60" y="140"></text>
+    <text class="label" data-label="leaf" x="244" y="187"></text>
+    <text class="label" data-label="root" x="206" y="228"></text>
+  </svg>
+  <div id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(() => {
+  const params = Studio.params;
+  const title = document.getElementById("title");
+  const question = document.getElementById("question");
+  const feedback = document.getElementById("feedback");
+  title.textContent = Studio.t("title");
+  question.textContent = Studio.t("ask");
+  document.querySelectorAll("[data-part]").forEach(el => {
+    const key = el.getAttribute("data-part");
+    el.setAttribute("aria-label", Studio.t(key));
+    const label = document.querySelector('[data-label="' + key + '"]');
+    if (label) label.textContent = Studio.t(key);
+  });
+  let locked = false;
+  const choose = key => {
+    if (locked) return;
+    Studio.event("tap", {part:key});
+    Studio.answer(key);
+  };
+  document.querySelectorAll("[data-part]").forEach(el => {
+    const key = el.getAttribute("data-part");
+    el.addEventListener("click", () => choose(key));
+    el.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        choose(key);
+      }
+    });
+  });
+  Studio.onVerdict(({correct}) => {
+    if (correct) {
+      locked = true;
+      const target = document.querySelector('[data-part="' + params.ask + '"]');
+      if (target) target.classList.add("correct");
+      feedback.textContent = Studio.t("right") + " " + Studio.t("done");
+      Studio.done();
+    } else {
+      feedback.textContent = Studio.t("wrong");
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

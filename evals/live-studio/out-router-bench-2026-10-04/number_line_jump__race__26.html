@@ -1,0 +1,97 @@
+<style>
+*{box-sizing:border-box}
+:root{--ink:#284653;--muted:#68838a;--teal:#278f88;--mint:#dff3e9;--coral:#ef9b79;--paper:#fffaf0}
+body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;color:var(--ink);background:var(--paper)}
+#app{width:360px;height:320px;padding:10px 14px;position:relative}
+header{height:42px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+h1{font-size:17px;line-height:1.1;margin:0;font-weight:800}
+#instr{font-size:12px;color:var(--muted);text-align:right;max-width:165px}
+#item{height:220px;position:relative;border-radius:20px;background:#fff;box-shadow:0 3px 12px #28465312;padding:9px 12px}
+#topline{height:35px;display:flex;align-items:center;justify-content:center;gap:7px;font-size:13px;color:var(--muted)}
+#target{font-size:20px;font-weight:800;color:var(--ink);min-width:42px;text-align:center}
+#track{position:absolute;left:22px;right:22px;top:83px;height:110px}
+#rail{position:absolute;left:0;right:0;top:15px;height:4px;border-radius:5px;background:#a9d9c6}
+.tick{position:absolute;top:7px;width:2px;height:20px;background:#568f84;transform:translateX(-50%);border-radius:2px}
+.tick.labelled{height:25px}
+.tick-label{position:absolute;top:36px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+#marker{position:absolute;top:-2px;width:30px;height:30px;border-radius:50% 50% 50% 8px;transform:translateX(-50%) rotate(-45deg);background:var(--coral);border:3px solid white;box-shadow:0 2px 7px #7c493b55;z-index:2;transition:left .22s cubic-bezier(.2,.8,.2,1),top .2s}
+#marker:after{content:"";position:absolute;width:7px;height:7px;border-radius:50%;background:white;left:8px;top:8px}
+#marker.hop{animation:hop .45s ease}
+@keyframes hop{50%{top:-23px;transform:translateX(-50%) rotate(-45deg) scale(1.15)}}
+#feedback{position:absolute;top:157px;left:12px;right:12px;height:22px;text-align:center;font-size:13px;font-weight:700;color:var(--teal)}
+#controls{height:67px;display:flex;align-items:center;justify-content:center;gap:10px}
+button{font:inherit;border:0;cursor:pointer;touch-action:manipulation;transition:transform .12s,filter .12s}
+button:active{transform:scale(.94)}
+.move{width:60px;height:56px;border-radius:17px;background:var(--mint);color:var(--ink);font-size:13px;font-weight:800;box-shadow:0 3px 0 #b9dfcf}
+#check{height:56px;min-width:92px;padding:0 15px;border-radius:17px;background:var(--teal);color:white;font-size:14px;font-weight:800;box-shadow:0 3px 0 #1c716c}
+#doneScreen{display:none;height:220px;border-radius:20px;background:#fff;align-items:center;justify-content:center;text-align:center;font-size:20px;font-weight:800;color:var(--teal);padding:24px;box-shadow:0 3px 12px #28465312}
+</style>
+<div id="app">
+  <header><h1 id="title"></h1><div id="instr"></div></header>
+  <section id="item" data-item="">
+    <div id="topline"><span id="target"></span></div>
+    <div id="track"><div id="rail"></div><div id="ticks"></div><div id="marker" data-marker data-value=""></div></div>
+    <div id="feedback" aria-live="polite"></div>
+    <div id="controls">
+      <button class="move" id="left" data-action="left" type="button"></button>
+      <button class="move" id="right" data-action="right" type="button"></button>
+      <button id="check" data-action="check" type="button"></button>
+    </div>
+  </section>
+  <div id="doneScreen"></div>
+</div>
+<script>
+
+(()=>{
+const p=Studio.params, t=Studio.t;
+const title=document.getElementById("title"), instr=document.getElementById("instr");
+title.textContent=t("title");instr.textContent=t("instr");
+document.getElementById("left").textContent=t("left");
+document.getElementById("right").textContent=t("right_btn");
+document.getElementById("check").textContent=t("check");
+const itemBox=document.getElementById("item"), targetEl=document.getElementById("target"), marker=document.getElementById("marker"), feedback=document.getElementById("feedback"), ticks=document.getElementById("ticks");
+const count=Math.round((p.max-p.min)/p.step), items=p.items;
+let index=0,k=Math.round((p.start-p.min)/p.step), locked=false;
+const valueAt=i=>Number((p.min+i*p.step).toFixed(6));
+const fmt=v=>{
+ if(p.format==="fraction") return String(Math.round(v*p.den))+"/"+String(p.den);
+ const places=Math.min(6,Math.max(0,((String(p.step).split(".")[1]||"").length)));
+ return Number(v).toFixed(places);
+};
+for(let i=0;i<=count;i++){
+ const val=valueAt(i), x=(i/count)*100, tick=document.createElement("div");
+ tick.className="tick"+(i%p.labelEvery===0?" labelled":"");
+ tick.dataset.tick=String(val);tick.style.left=x+"%";ticks.appendChild(tick);
+ if(i%p.labelEvery===0){const label=document.createElement("div");label.className="tick-label";label.textContent=fmt(val);label.style.left=x+"%";ticks.appendChild(label);}
+}
+function paint(){
+ const val=valueAt(k);
+ marker.dataset.value=String(val);
+ marker.style.left=(count? k/count*100:0)+"%";
+ itemBox.dataset.item=String(items[index].id);
+ targetEl.dataset.target="";
+ targetEl.textContent=fmt(items[index].target);
+}
+function finish(){
+ itemBox.style.display="none";
+ const done=document.getElementById("doneScreen");
+ done.style.display="flex";done.textContent=t("done");Studio.done();
+}
+function next(){
+ index++;
+ if(index>=items.length){finish();return;}
+ k=Math.round((p.start-p.min)/p.step);feedback.textContent="";locked=false;paint();
+}
+document.getElementById("left").addEventListener("click",()=>{if(locked)return;k=Math.max(0,k-1);feedback.textContent="";paint();});
+document.getElementById("right").addEventListener("click",()=>{if(locked)return;k=Math.min(count,k+1);feedback.textContent="";paint();});
+document.getElementById("check").addEventListener("click",()=>{if(!locked)Studio.answer({value:valueAt(k)});});
+Studio.onVerdict(({correct})=>{
+ if(correct){locked=true;feedback.textContent=t("right");marker.classList.remove("hop");void marker.offsetWidth;marker.classList.add("hop");}
+ else {feedback.textContent=t("wrong");}
+});
+marker.addEventListener("animationend",()=>{if(locked){marker.classList.remove("hop");next();}});
+paint();
+Studio.ready();
+})();
+
+</script>

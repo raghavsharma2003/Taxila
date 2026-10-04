@@ -1,0 +1,97 @@
+<style>
+*{box-sizing:border-box}
+#lesson{width:360px;height:320px;overflow:hidden;position:relative;background:#fff8ec;color:#493d36;font-family:system-ui,sans-serif;border-radius:18px;padding:12px;--coral:#ef846c;--gold:#f4c66b;--teal:#66b9a7}
+#lesson h1{height:30px;margin:0;text-align:center;font-size:18px;line-height:26px;font-weight:750;color:#765243}
+#journey{height:168px;position:relative}
+#paths{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#stages{position:absolute;inset:0}
+.stage{position:absolute;top:69px;width:68px;height:70px;border:2px solid #e9d9c3;border-radius:18px;background:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px;transition:transform .28s ease,box-shadow .28s ease,border-color .28s ease}
+.stage[data-lit="true"]{border-color:var(--gold);box-shadow:0 0 0 5px #f4c66b44,0 5px 12px #8f674422;transform:translateY(-3px)}
+.label{font-size:12px;line-height:14px;font-weight:700;overflow-wrap:anywhere}
+#token{position:absolute;top:25px;left:0;width:18px;height:18px;border-radius:50% 50% 50% 10%;background:var(--coral);border:3px solid white;box-shadow:0 2px 7px #8f493955;transform:translate(-50%,-50%) rotate(-45deg);transition:left .75s cubic-bezier(.2,.8,.2,1),top .75s cubic-bezier(.2,.8,.2,1);z-index:3}
+#controls{height:60px;display:flex;justify-content:center;align-items:center}
+button{font:inherit;border:0;cursor:pointer;touch-action:manipulation;transition:transform .15s ease,filter .15s ease}
+button:active{transform:scale(.94)}
+#next{min-width:112px;min-height:52px;padding:0 22px;border-radius:18px;background:var(--teal);color:#fff;font-size:16px;font-weight:750;box-shadow:0 4px 0 #479888}
+#question{display:none;height:132px;text-align:center}
+#question p{margin:0 0 7px;font-size:15px;line-height:19px;font-weight:750;color:#765243}
+#options{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.option{min-width:76px;min-height:52px;padding:6px 10px;border-radius:16px;background:#fff;border:2px solid #e9d9c3;color:#493d36;font-size:13px;font-weight:700}
+.option:hover{filter:brightness(.97)}
+#feedback{height:24px;padding-top:4px;font-size:13px;font-weight:700;color:#548f79}
+#lesson.is-question #controls{display:none}
+#lesson.is-question #question{display:block}
+#lesson.is-done #question p{color:#548f79}
+.arrow{stroke:#cfb89b;stroke-width:3;stroke-linecap:round;fill:none}
+.arrowhead{fill:#cfb89b}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important}}
+</style>
+<div id="lesson" data-active="">
+  <h1 id="title"></h1>
+  <div id="journey">
+    <svg id="paths" aria-hidden="true"></svg>
+    <div id="stages"></div>
+    <div id="token" data-token aria-hidden="true"></div>
+  </div>
+  <div id="controls"><button id="next" data-action="next" type="button"></button></div>
+  <section id="question" aria-live="polite">
+    <p id="ask"></p>
+    <div id="options"></div>
+    <div id="feedback"></div>
+  </section>
+</div>
+<script>
+
+(()=> {
+  const p=Studio.params, root=document.getElementById("lesson"), stageHost=document.getElementById("stages");
+  const svg=document.getElementById("paths"), token=document.querySelector("[data-token]");
+  const keys=p.stages, n=keys.length, positions=keys.map((_,i)=>18+(324*(i+.5)/n));
+  let current=0, answered=false;
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("next").textContent=Studio.t("next");
+  document.getElementById("ask").textContent=Studio.t("ask");
+  root.setAttribute("data-active",keys[0]);
+  const ns="http://www.w3.org/2000/svg";
+  const links=keys.slice(0,-1).map((key,i)=>[key,keys[i+1],i,i+1]);
+  if(p.cycle&&n>1) links.push([keys[n-1],keys[0],n-1,0]);
+  links.forEach(([from,to,i,j])=>{
+    const x1=positions[i]+(j>i?35:-35), x2=positions[j]+(j>i?-35:35);
+    const line=document.createElementNS(ns,"line");
+    line.setAttribute("x1",x1);line.setAttribute("y1","25");line.setAttribute("x2",x2);line.setAttribute("y2","25");
+    line.setAttribute("class","arrow");line.setAttribute("data-arrow",from+">"+to);svg.appendChild(line);
+    const head=document.createElementNS(ns,"path");
+    const direction=j>i?1:-1;
+    head.setAttribute("d",`M ${x2} 25 l ${-8*direction} -5 l 0 10 z`);
+    head.setAttribute("class","arrowhead");svg.appendChild(head);
+  });
+  keys.forEach((key,i)=>{
+    const box=document.createElement("div");box.className="stage";box.setAttribute("data-stage",key);
+    box.style.left=(positions[i]-34)+"px";
+    const label=document.createElement("span");label.className="label";label.setAttribute("data-label",key);label.textContent=Studio.t(key);
+    box.appendChild(label);stageHost.appendChild(box);
+  });
+  const moveToken=()=>{token.style.left=positions[current]+"px";token.style.top="25px";};
+  const light=()=>{document.querySelectorAll(".stage").forEach((el,i)=>el.setAttribute("data-lit",i===current?"true":"false"));root.setAttribute("data-active",keys[current]);};
+  requestAnimationFrame(()=>{moveToken();light();});
+  document.getElementById("next").addEventListener("click",()=>{
+    if(current< n-1){current++;light();moveToken();Studio.event("stage",{index:current});}
+    if(current===n-1){root.classList.add("is-question");buildOptions();}
+  });
+  function buildOptions(){
+    const host=document.getElementById("options");
+    if(host.childElementCount)return;
+    p.options.forEach(key=>{
+      const button=document.createElement("button");button.type="button";button.className="option";
+      button.setAttribute("data-option",key);button.textContent=Studio.t(key);
+      button.addEventListener("click",()=>{Studio.answer(key);});
+      host.appendChild(button);
+    });
+  }
+  Studio.onVerdict(({correct})=>{
+    document.getElementById("feedback").textContent=Studio.t(correct?"right":"wrong");
+    if(correct&&!answered){answered=true;root.classList.add("is-done");document.getElementById("ask").textContent=Studio.t("done");Studio.done();}
+  });
+  Studio.ready();
+})();
+
+</script>

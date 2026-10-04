@@ -1,0 +1,95 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;color:#49372e;font-family:system-ui,sans-serif}
+  .card{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(180deg,#fff5e5,#fffaf2);border-radius:22px}
+  .title{position:absolute;top:15px;left:20px;right:20px;font-size:19px;font-weight:800;line-height:25px}
+  .ask{position:absolute;top:44px;left:20px;right:20px;font-size:15px;line-height:22px}
+  svg{position:absolute;left:0;top:75px;width:360px;height:211px;overflow:visible}
+  .grid{stroke:#e9dcca;stroke-width:1}
+  .axis{stroke:#a99681;stroke-width:1.5}
+  .tick{fill:#786657;font-size:11px;text-anchor:end;dominant-baseline:middle}
+  .axis-title{fill:#786657;font-size:11px;font-weight:600;text-anchor:middle}
+  .name{fill:#49372e;font-size:10.5px;font-weight:650;text-anchor:middle}
+  .bar{fill:#e99766;rx:9;transform-box:fill-box;transform-origin:center bottom;animation:rise .7s cubic-bezier(.2,.8,.3,1) both}
+  @keyframes rise{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  .column{cursor:pointer}
+  .column:active .bar{filter:brightness(.92)}
+  .column.pulse .bar{animation:tap .3s ease-out}
+  @keyframes tap{50%{filter:brightness(1.16);transform:scaleX(1.08)}}
+  .hit{fill:transparent;pointer-events:all}
+  .feedback{position:absolute;left:20px;right:20px;top:286px;min-height:25px;text-align:center;font-size:16px;font-weight:750;color:#775640}
+  .feedback.good{color:#357b60}
+</style>
+<div class="card">
+  <div class="title" id="title"></div>
+  <div class="ask" id="ask"></div>
+  <svg id="chart" viewBox="0 0 360 211" role="img" aria-labelledby="title ask">
+    <g id="grid"></g>
+    <g id="columns"></g>
+  </svg>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const ns="http://www.w3.org/2000/svg";
+  const make=(tag,attrs,parent)=>{
+    const el=document.createElementNS(ns,tag);
+    for(const [k,v] of Object.entries(attrs))el.setAttribute(k,String(v));
+    parent.appendChild(el);
+    return el;
+  };
+  const data=Studio.params.data;
+  const title=document.getElementById("title");
+  const ask=document.getElementById("ask");
+  const feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  ask.textContent=Studio.t("ask");
+  const grid=document.getElementById("grid");
+  const columns=document.getElementById("columns");
+  const maximum=Math.max(...data.map(d=>Number(d.value)));
+  const step=Math.max(1,Math.ceil(maximum/4));
+  const scale=Math.ceil(maximum/step)*step;
+  const top=17,baseline=165,height=baseline-top,left=65,right=345;
+  for(let value=0;value<=scale;value+=step){
+    const y=baseline-height*value/scale;
+    make("line",{x1:left,y1:y,x2:right,y2:y,class:value===0?"axis":"grid"},grid);
+    const label=make("text",{x:53,y,class:"tick","data-tick":value},grid);
+    label.textContent=String(value);
+  }
+  const axisTitle=make("text",{x:15,y:91,transform:"rotate(-90 15 91)",class:"axis-title"},grid);
+  axisTitle.textContent=Studio.t("yaxis");
+  const width=(right-left)/data.length;
+  let waiting=false,finished=false;
+  data.forEach((d,i)=>{
+    const x=left+i*width;
+    const middle=x+width/2;
+    const barHeight=height*Number(d.value)/scale;
+    const group=make("g",{class:"column","data-column":d.key},columns);
+    make("rect",{x:middle-15,y:baseline-barHeight,width:30,height:barHeight,class:"bar","data-bar":d.key,"data-value":d.value},group);
+    const name=make("text",{x:middle,y:189,class:"name"},group);
+    name.textContent=Studio.t(d.key);
+    make("rect",{x,y:0,width,height:211,class:"hit"},group);
+    group.addEventListener("click",()=>{
+      if(waiting||finished)return;
+      waiting=true;
+      group.classList.remove("pulse");
+      void group.getBoundingClientRect();
+      group.classList.add("pulse");
+      Studio.answer(d.key);
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    waiting=false;
+    feedback.textContent=Studio.t(correct?"right":"wrong");
+    feedback.classList.toggle("good",!!correct);
+    if(correct){
+      finished=true;
+      ask.textContent=Studio.t("done");
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

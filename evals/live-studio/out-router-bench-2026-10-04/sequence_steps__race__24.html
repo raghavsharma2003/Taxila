@@ -1,0 +1,86 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff6e9;font-family:system-ui,sans-serif;color:#604432}
+  .board{position:relative;width:360px;height:320px;padding:15px 16px;overflow:hidden}
+  .board:before{content:"";position:absolute;width:150px;height:150px;border-radius:50%;background:#ffe7c8;right:-65px;top:-70px}
+  h1{position:relative;margin:0;font-size:21px;line-height:28px;font-weight:800}
+  .instruction{position:relative;margin:3px 0 10px;font-size:13px;line-height:18px;color:#806652}
+  .cards{display:grid;grid-template-columns:repeat(2,1fr);grid-auto-rows:58px;gap:8px;min-height:124px}
+  .card{width:100%;min-height:58px;border:2px solid #eabf91;border-radius:17px;background:#fffdf8;color:#604432;font:700 16px system-ui,sans-serif;box-shadow:0 4px 0 #e8cba8;cursor:pointer;transition:transform .22s,background .22s,box-shadow .22s}
+  .cards .card:hover{transform:translateY(-2px)}
+  .card:active{transform:scale(.95)}
+  .card:focus-visible{outline:3px solid #b86d45;outline-offset:2px}
+  .card.shake{animation:shake .36s ease-in-out}
+  @keyframes shake{25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+  .track{display:flex;gap:7px;margin-top:14px}
+  .slot{position:relative;flex:1;min-width:0;height:69px;border:2px dashed #d8ac83;border-radius:16px;background:#f9e9d4;display:flex;align-items:center;justify-content:center;padding:5px}
+  .slot-number{position:absolute;top:4px;left:7px;font-size:12px;font-weight:800;color:#9a765b}
+  .slot .card{min-height:52px;height:52px;padding:13px 2px 2px;font-size:12px;line-height:14px;border-color:#93b99a;background:#e6f2df;box-shadow:none;cursor:default;animation:arrive .36s ease-out}
+  @keyframes arrive{from{transform:translateY(-16px) scale(.86);opacity:.4}to{transform:translateY(0) scale(1);opacity:1}}
+  .feedback{height:23px;margin-top:7px;text-align:center;font-size:14px;line-height:23px;font-weight:700;color:#735743}
+  .feedback.good{color:#477e55}
+  .feedback.bad{color:#ad654d}
+</style>
+<main class="board">
+  <h1 id="title"></h1>
+  <div class="instruction" id="instr"></div>
+  <div class="cards" id="cards"></div>
+  <div class="track" id="track"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(() => {
+  const shown = Studio.params.shown;
+  const cards = document.getElementById('cards');
+  const track = document.getElementById('track');
+  const feedback = document.getElementById('feedback');
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('instr').textContent = Studio.t('instr');
+  let placed = 0;
+  let pending = null;
+  shown.forEach((key) => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'card';
+    card.dataset.step = key;
+    card.textContent = Studio.t(key);
+    card.addEventListener('click', () => {
+      if (pending || card.dataset.placed) return;
+      pending = card;
+      feedback.textContent = '';
+      Studio.answer({key});
+    });
+    cards.appendChild(card);
+    const slot = document.createElement('div');
+    slot.className = 'slot';
+    const number = document.createElement('span');
+    number.className = 'slot-number';
+    number.textContent = String(track.children.length + 1);
+    slot.appendChild(number);
+    track.appendChild(slot);
+  });
+  Studio.onVerdict(({correct}) => {
+    if (!pending) return;
+    const card = pending;
+    pending = null;
+    if (correct) {
+      placed += 1;
+      card.dataset.placed = String(placed);
+      card.disabled = true;
+      track.children[placed - 1].appendChild(card);
+      feedback.className = 'feedback good';
+      feedback.textContent = Studio.t(placed === shown.length ? 'done' : 'right');
+      if (placed === shown.length) Studio.done();
+    } else {
+      feedback.className = 'feedback bad';
+      feedback.textContent = Studio.t('wrong');
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

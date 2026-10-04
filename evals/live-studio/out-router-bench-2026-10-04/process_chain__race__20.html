@@ -1,0 +1,116 @@
+<style>
+  *{box-sizing:border-box}
+  #activity{width:360px;height:320px;overflow:hidden;background:#fff7e9;color:#514638;font-family:system-ui,sans-serif;position:relative;text-align:center}
+  #title{height:29px;display:grid;place-items:center;font-size:18px;font-weight:800;color:#79553c}
+  #scene{display:block;width:360px;height:180px}
+  #scene .arrow{fill:none;stroke:#d6a678;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+  #scene .stage rect{fill:#fffdf6;stroke:#e3c7a5;stroke-width:2;transition:fill .3s,stroke .3s,filter .3s}
+  #scene .stage text{fill:#674c39;font-size:12px;font-weight:700;dominant-baseline:middle;text-anchor:middle;pointer-events:none}
+  #scene .stage.active rect{fill:#ffe7a5;stroke:#edaa54;filter:drop-shadow(0 0 7px #f5c869)}
+  #scene .stage.arrive rect{animation:glow .55s ease-out}
+  #scene [data-token]{fill:#69b8b4;stroke:#fff;stroke-width:3;filter:drop-shadow(0 2px 3px #6c9b94)}
+  @keyframes glow{50%{filter:drop-shadow(0 0 13px #efad4d)}}
+  button{border:0;font:700 14px system-ui,sans-serif;cursor:pointer;transition:transform .16s,background .2s;touch-action:manipulation}
+  button:active{transform:scale(.92)}
+  #next{position:absolute;top:92px;left:146px;width:68px;height:54px;border-radius:20px;background:#efae69;color:#493926;box-shadow:0 4px 0 #cb874c}
+  #next:disabled{opacity:.55;cursor:default}
+  #prompt{height:34px;display:grid;place-items:center;font-size:15px;font-weight:750;color:#76513b;padding:0 8px}
+  #options{height:71px;display:flex;align-items:center;justify-content:center;gap:7px;padding:4px 9px 10px}
+  #options button{height:54px;min-width:52px;flex:1;border-radius:17px;background:#dcefeb;color:#335d59;box-shadow:0 3px 0 #a6ceca;font-size:12px;overflow-wrap:anywhere;padding:3px}
+  #options button:disabled{opacity:.65}
+</style>
+<div id="activity">
+  <div id="title"></div>
+  <svg id="scene" viewBox="0 0 360 180" aria-hidden="true">
+    <defs><marker id="arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M1 1 L7 4 L1 7" fill="none" stroke="#d6a678" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+    <g id="arrows"></g><g id="stages"></g>
+    <circle data-token r="10" cx="180" cy="90"/>
+  </svg>
+  <button id="next" type="button" data-action="next"></button>
+  <div id="prompt"></div>
+  <div id="options"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, keys=p.stages, root=document.getElementById('activity');
+  const svg=document.getElementById('scene'), arrows=document.getElementById('arrows');
+  const stages=document.getElementById('stages'), token=svg.querySelector('[data-token]');
+  const next=document.getElementById('next'), prompt=document.getElementById('prompt');
+  const options=document.getElementById('options'), ns='http://www.w3.org/2000/svg';
+  const make=(tag,attrs,parent)=>{const el=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);parent.appendChild(el);return el};
+  document.getElementById('title').textContent=Studio.t('title');
+  next.textContent=Studio.t('next');
+  prompt.textContent=Studio.t('ask');
+  const count=keys.length;
+  const positions=keys.map((_,i)=>{
+    const angle=-Math.PI/2+2*Math.PI*i/count;
+    return {x:180+111*Math.cos(angle),y:90+61*Math.sin(angle)};
+  });
+  const paths=[];
+  const links=p.cycle?count:Math.max(0,count-1);
+  for(let i=0;i<links;i++){
+    const j=(i+1)%count,a=positions[i],b=positions[j],dx=b.x-a.x,dy=b.y-a.y;
+    const horizontal=Math.abs(dx)/94>Math.abs(dy)/48;
+    const sx=a.x+(horizontal?Math.sign(dx)*49:0),sy=a.y+(horizontal?0:Math.sign(dy)*26);
+    const ex=b.x-(horizontal?Math.sign(dx)*55:0),ey=b.y-(horizontal?0:Math.sign(dy)*32);
+    const path=make('path',{d:`M ${sx} ${sy} L ${ex} ${ey}`,class:'arrow','marker-end':'url(#arrowhead)','data-arrow':keys[i]+'>'+keys[j]},arrows);
+    paths.push(path);
+  }
+  const boxes=keys.map((key,i)=>{
+    const pos=positions[i],g=make('g',{'class':'stage','data-stage':key},stages);
+    make('rect',{x:pos.x-47,y:pos.y-24,width:94,height:48,rx:18},g);
+    const label=make('text',{x:pos.x,y:pos.y+1,'data-label':key},g);
+    label.textContent=Studio.t(key);
+    if(label.getComputedTextLength()>82){label.setAttribute('textLength','82');label.setAttribute('lengthAdjust','spacingAndGlyphs')}
+    return g;
+  });
+  let index=0,moving=false,finished=false;
+  const setActive=()=>{
+    root.setAttribute('data-active',keys[index]);
+    boxes.forEach((box,i)=>box.classList.toggle('active',i===index));
+  };
+  const place=(point)=>{token.setAttribute('cx',point.x);token.setAttribute('cy',point.y)};
+  setActive();place(positions[0]);
+  next.addEventListener('click',()=>{
+    if(moving||finished||!links)return;
+    const edge=index;
+    if(!p.cycle&&edge>=count-1)return;
+    const target=(index+1)%count,path=paths[edge];
+    moving=true;next.disabled=true;
+    Studio.event('next',{stage:keys[target]});
+    const length=path.getTotalLength(),start=performance.now(),duration=760;
+    const frame=now=>{
+      const fraction=Math.min(1,(now-start)/duration),ease=fraction*fraction*(3-2*fraction);
+      const point=path.getPointAtLength(length*ease);
+      place(point);
+      if(fraction<1)requestAnimationFrame(frame);
+      else{
+        index=target;place(positions[index]);setActive();
+        boxes[index].classList.remove('arrive');
+        void boxes[index].getBoundingClientRect();
+        boxes[index].classList.add('arrive');
+        moving=false;next.disabled=false;
+      }
+    };
+    requestAnimationFrame(frame);
+  });
+  p.options.forEach(key=>{
+    const button=document.createElement('button');
+    button.type='button';button.setAttribute('data-option',key);
+    button.textContent=Studio.t(key);
+    button.addEventListener('click',()=>{if(!finished)Studio.answer(key)});
+    options.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    prompt.textContent=Studio.t(correct?'done':'wrong');
+    if(correct){
+      finished=true;next.disabled=true;
+      options.querySelectorAll('button').forEach(button=>button.disabled=true);
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

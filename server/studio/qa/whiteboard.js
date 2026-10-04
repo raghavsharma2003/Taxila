@@ -249,7 +249,8 @@ function textsCrossed(ops, byId) {
 
 /**
  * @param {unknown} raw the model's script (already expanded to WhiteboardScript shape)
- * @param {{ reply: string, kit?: any, band?: string, speechMs?: number, extraNumbers?: string[], extraWords?: string[], banned?: string[] }} ctx
+ * @param {{ reply: string, kit?: any, band?: string, speechMs?: number, extraNumbers?: string[], extraWords?: string[], banned?: string[], prior?: any[] }} ctx
+ *   prior: the previous board's ops when this script continues it (mode "continue"): new words must not land on them
  * @returns {{ pass: boolean, checks: {id:string, pass:boolean, detail?:unknown}[], script: any | null, facts: any | null }}
  */
 export function gateWhiteboard(raw, ctx) {
@@ -273,7 +274,17 @@ export function gateWhiteboard(raw, ctx) {
   const outside = lint.filter((i) => i.check === "inside_board");
   add("W1.fits_stage", aspect >= 0.75 && aspect <= 2 && minPx >= MIN_TEXT_PX && outside.length === 0,
     { board: [BW, BH], minTextPx: Number.isFinite(minPx) ? +minPx.toFixed(1) : null, outside: outside.slice(0, 3).map((i) => i.id) });
-  add("W2.no_text_overlap", !lint.some((i) => i.check === "text_overlap"), lint.filter((i) => i.check === "text_overlap").slice(0, 3).map((i) => i.id));
+  // a "continue" board draws on the previous one (ctx.prior: its ops, complete): new words must not land on old words
+  const priorBoxes = (ctx.prior ?? []).filter((o) => o && (o.op === "text" || o.op === "label" || o.op === "numwork")).map((o) => {
+    try { return { id: o.id, b: opGeometry(o.op === "label" ? { ...o, to: undefined, target: undefined } : o, new Map((ctx.prior ?? []).map((x) => [x.id, x]))).box }; } catch { return null; }
+  }).filter(Boolean);
+  const overPrior = [];
+  for (const o of ops.filter((x) => x.op === "text" || x.op === "label" || x.op === "numwork")) {
+    const b = opGeometry(o.op === "label" ? { ...o, to: undefined, target: undefined } : o, byId).box;
+    for (const p of priorBoxes) if (Math.min(b.x + b.w, p.b.x + p.b.w) - Math.max(b.x, p.b.x) > 3 && Math.min(b.y + b.h, p.b.y + p.b.h) - Math.max(b.y, p.b.y) > 3) { overPrior.push(`${o.id}+prior:${p.id}`); break; }
+  }
+  const overlapIds = lint.filter((i) => i.check === "text_overlap").map((i) => i.id);
+  add("W2.no_text_overlap", overlapIds.length === 0 && overPrior.length === 0, [...overlapIds, ...overPrior].slice(0, 3));
   // W3 labels anchored: a leader (to / target) that ends on or within 30 units of a drawn shape on the board then
   const shapes = ops.filter((o) => !["text", "label", "numwork", "highlight", "erase"].includes(o.op));
   const erasedAt = new Map(ops.filter((o) => o.op === "erase").map((o) => [o.target, o.startMs]));

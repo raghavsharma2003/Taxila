@@ -1,0 +1,39 @@
+--- a/server/director/modules.js	2026-10-04 18:54:21.967898144 +0000
++++ b/server/director/modules.js	2026-10-04 18:54:21.992146248 +0000
+@@ -334,5 +334,35 @@
+   if (!m.itemId || m.itemId !== state.activeItemId) return null;
+   const a = mine.filter((e) => e.type === "answer").at(-1);
+   const d = a?.data && typeof a.data === "object" ? a.data : null;
+-  return d && typeof d.correct === "boolean" ? { correct: d.correct, value: d.value, source: "engine" } : null;
++  if (!d || typeof d.correct !== "boolean") return null;
++  // engines-v1-server-recheck (OWNER TEST 2026-10-04 item 1, evals/owner-truth): the frame's `correct` is a claim. When
++  // the committed value and the plan's verified key are both numbers/fractions, the SERVER decides from the value; a
++  // claim that disagrees is recorded (claimMismatch) and never graded. Non-numeric commits keep the engine's verdict.
++  const recheck = recheckValue(d.value, m.key);
++  if (recheck == null) return { correct: d.correct, value: d.value, source: "engine" };
++  return { correct: recheck, value: d.value, source: "engine_rechecked", ...(recheck !== d.correct ? { claimMismatch: true } : {}) };
++}
++
++const FRAC_RE = /^\s*(-?\d+)\s*\/\s*(\d+)\s*$/;
++/** A plain number or fraction string → number; anything else → null. Exported for tests. */
++export function numericOf(v) {
++  const t = String(v ?? "").trim();
++  const f = t.match(FRAC_RE);
++  if (f) return Number(f[2]) ? Number(f[1]) / Number(f[2]) : null;
++  return /^-?\d+(\.\d+)?$/.test(t.replace(/,/g, "")) ? Number(t.replace(/,/g, "")) : null;
++}
++/**
++ * PURE. Is the committed engine value equal to the verified key? null when either side is not a plain number/fraction
++ * (then the engine's own verdict stands). Reads the value the engines commit: value / written / built / claimed / made /
++ * given, or the picked fraction of a compare (chosen/choice indexing fractions). Exported for tests.
++ */
++export function recheckValue(value, key) {
++  const k = numericOf(key);
++  if (k == null || !value || typeof value !== "object") return null;
++  let v = null;
++  for (const f of ["value", "written", "built", "claimed", "made", "given"]) if (v == null && value[f] != null && typeof value[f] !== "object") v = value[f];
++  const pick = value.chosen ?? value.choice;
++  if (v == null && pick != null && Array.isArray(value.fractions)) v = /^\d+$/.test(String(pick)) ? value.fractions[Number(pick)] : pick;
++  const n = numericOf(v);
++  return n == null ? null : Math.abs(n - k) < 1e-9;
+ }

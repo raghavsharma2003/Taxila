@@ -315,7 +315,7 @@ export class Puppet2DRig {
         // over (drawEye: lidmid / lidshut), so the lid skin is never stretched into a smear
         const ml = this.g.lidKeys ? this.g.lidKeys[s].midLash : null;
         const midY = ml ? ml.y[Math.min(ml.y.length - 1, i)] : closed;
-        top = top + (Math.max(top, midY - 1) - top) * clamp01(b / 0.5);
+        top = top + (Math.max(top, midY - 1) - top) * clamp01(b / 0.34);   // r4: lands on the painted lash BEFORE the cross-fade (no ghost)
         if (top > bot) top = bot;
         E.top[i] = top;
         E.bot[i] = bot;
@@ -344,7 +344,7 @@ export class Puppet2DRig {
    *  a clean painted key, never a cross-faded smear. Slow changes (expression half-lids) pass through continuously. */
   blinkShape(t, dt, b) {
     const S = this.bsh || (this.bsh = { active: false, t0: 0, base: 0, prev: b, settle: false });
-    const SEQ = [0.5, 1.0, 1.0, 0.6, 0.45, 0.12];   // every frame a clean key: mid, shut | shut | mid, mid, a barely-lowered live lid
+    const SEQ = [0.5, 1.0, 1.0, 0.5, 0.14, 0.04];   // r4: mid squeeze key, shut | shut | squeeze, a light live lid, open   // every frame a clean key: mid, shut | shut | mid, mid, a barely-lowered live lid
     const rate = dt > 0 ? (b - S.prev) / dt : 0;
     if (!S.active && rate > 5 && b - S.prev > 0.06 && b > 0.15) { S.active = true; S.t0 = t; S.base = Math.min(S.prev, 0.5); }
     S.prev = b;
@@ -619,7 +619,7 @@ export class Puppet2DRig {
     R.drawPaint(E.lmesh, this.tex["lid" + sd], this.g.rects["lid" + sd], 1, shade);
     // r3 painted lid keys over the live eye: mid (a real lowered lid with its crease) then shut
     if (this.g.lidKeys) {
-      const l = E.blink, midA = smooth(0.34, 0.42, l), shutA = smooth(0.72, 0.82, l);
+      const l = E.blink, midA = smooth(0.3, 0.36, l), shutA = smooth(0.72, 0.82, l);
       for (const [kk, a] of [["mid", midA * (1 - (shutA >= 1 ? 1 : 0))], ["shut", shutA]]) {
         if (a <= 0.003) continue;
         const M = this.lidKeyMesh[`lid${kk}${sd}`];

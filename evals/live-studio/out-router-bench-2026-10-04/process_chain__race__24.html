@@ -1,0 +1,117 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;color:#26434a;background:#fff8e9}
+#lesson{position:relative;width:360px;height:320px;padding:8px 12px;overflow:hidden}
+h1{height:26px;margin:0;text-align:center;font-size:18px;line-height:26px;color:#28565a}
+#scene{position:relative;height:124px;margin-top:2px}
+#routes{position:absolute;inset:0;width:336px;height:124px}
+.route{fill:none;stroke:#e8b75d;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.tip{fill:#e8b75d}
+.stage{position:absolute;width:126px;height:44px;border:2px solid #c4d9cf;border-radius:15px;background:#fff;display:flex;align-items:center;justify-content:center;padding:4px 8px;text-align:center;font-size:13px;font-weight:700;line-height:16px;box-shadow:0 3px 0 #e9e1cf;transition:background .25s,border-color .25s,box-shadow .25s,transform .25s}
+.stage[data-stage-pos="0"]{left:3px;top:8px}
+.stage[data-stage-pos="1"]{right:3px;top:8px}
+.stage[data-stage-pos="2"]{right:3px;top:72px}
+.stage[data-stage-pos="3"]{left:3px;top:72px}
+.stage[data-active="true"]{background:#e5f5e9;border-color:#67b888;box-shadow:0 0 0 4px #b9e5c7,0 3px 0 #9bc9a9;transform:scale(1.025)}
+#token{position:absolute;left:0;top:0;width:16px;height:16px;border-radius:50%;background:#f28d62;border:3px solid white;box-shadow:0 2px 7px #97553c88;transform:translate(58px,22px);transition:transform .72s cubic-bezier(.2,.8,.25,1);z-index:3;pointer-events:none}
+button{font:inherit;cursor:pointer;border:0;touch-action:manipulation}
+#next{display:block;width:100%;height:52px;border-radius:17px;background:#397d70;color:white;font-size:17px;font-weight:700;box-shadow:0 4px 0 #276055;transition:transform .12s,background .2s}
+#next:active,.option:active{transform:scale(.96)}
+#question{margin-top:5px;text-align:center}
+#prompt{height:22px;font-size:14px;font-weight:700;line-height:22px}
+#options{display:flex;justify-content:center;gap:6px;margin-top:2px}
+.option{flex:1;min-width:0;height:52px;padding:3px 5px;border-radius:14px;background:#fff;border:2px solid #b8d5c8;color:#28565a;font-size:12px;font-weight:700;line-height:14px;box-shadow:0 3px 0 #e4ddce;transition:transform .12s,background .2s}
+#feedback{height:20px;margin-top:2px;text-align:center;font-size:13px;font-weight:700;color:#397d70}
+</style>
+<div id="lesson">
+  <h1 id="title"></h1>
+  <div id="scene">
+    <svg id="routes" viewBox="0 0 336 124" aria-hidden="true"></svg>
+    <div id="stages"></div>
+    <div id="token" data-token></div>
+  </div>
+  <button id="next" data-action="next" type="button"></button>
+  <div id="question">
+    <div id="prompt"></div>
+    <div id="options"></div>
+    <div id="feedback" aria-live="polite"></div>
+  </div>
+</div>
+<script>
+
+(function(){
+  const p=Studio.params, root=document.getElementById('lesson'), stageBox=document.getElementById('stages'), routes=document.getElementById('routes'), token=document.getElementById('token');
+  const positions=[[66,30],[270,30],[270,94],[66,94]];
+  const title=document.getElementById('title'), next=document.getElementById('next'), prompt=document.getElementById('prompt'), options=document.getElementById('options'), feedback=document.getElementById('feedback');
+  title.textContent=Studio.t('title');
+  next.textContent=Studio.t('next');
+  prompt.textContent=Studio.t('ask')+' '+Studio.t(p.askAfter);
+  const stages=p.stages, nodes=[];
+  root.dataset.active=stages[0];
+  stages.forEach((key,i)=>{
+    const node=document.createElement('div');
+    node.className='stage';
+    node.dataset.stage=key;
+    node.dataset.stagePos=String(i);
+    node.setAttribute('data-label',key);
+    node.textContent=Studio.t(key);
+    stageBox.appendChild(node);
+    nodes.push(node);
+  });
+  const transitions=stages.slice(0,-1).map((key,i)=>[key,stages[i+1]]);
+  if(p.cycle) transitions.push([stages[stages.length-1],stages[0]]);
+  transitions.forEach(([from,to])=>{
+    const a=positions[stages.indexOf(from)],b=positions[stages.indexOf(to)];
+    let x1=a[0],y1=a[1],x2=b[0],y2=b[1];
+    if(y1===y2){x1+=from===stages[0]?59:-59;x2+=to===stages[0]?-59:59}
+    else {x1+=from===stages[0]?48:-48;x2+=to===stages[0]?-48:48}
+    const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',x1);line.setAttribute('y1',y1);line.setAttribute('x2',x2);line.setAttribute('y2',y2);
+    line.setAttribute('class','route');line.dataset.arrow=from+'>'+to;routes.appendChild(line);
+    const angle=Math.atan2(y2-y1,x2-x1),size=8;
+    const tip=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+    tip.setAttribute('points',[[x2,y2],[x2-size*Math.cos(angle-.5),y2-size*Math.sin(angle-.5)],[x2-size*Math.cos(angle+.5),y2-size*Math.sin(angle+.5)]].map(v=>v.join(',')).join(' '));
+    tip.setAttribute('class','tip');routes.appendChild(tip);
+  });
+  function moveToken(i){
+    const q=positions[i];
+    token.style.transform='translate('+(q[0]-8)+'px,'+(q[1]-8)+'px)';
+  }
+  moveToken(0);
+  p.options.forEach(key=>{
+    const b=document.createElement('button');
+    b.type='button';b.className='option';b.dataset.option=key;b.textContent=Studio.t(key);
+    b.addEventListener('click',()=>{
+      feedback.textContent='';
+      Studio.event('answer',{option:key});
+      Studio.answer(key);
+    });
+    options.appendChild(b);
+  });
+  let index=0,complete=false;
+  function setActive(i){
+    nodes.forEach((n,j)=>n.dataset.active=j===i?'true':'false');
+    root.dataset.active=stages[i];
+    moveToken(i);
+  }
+  next.addEventListener('click',()=>{
+    if(complete)return;
+    index=(index+1)%stages.length;
+    setActive(index);
+    Studio.event('advance',{stage:stages[index]});
+    if(stages[index]===stages[(stages.indexOf(p.askAfter)+1)%stages.length]){
+      document.getElementById('question').scrollTop=0;
+    }
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      complete=true;
+      feedback.textContent=Studio.t('done');
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

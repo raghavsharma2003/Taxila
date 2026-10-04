@@ -1,0 +1,129 @@
+<style>
+  *{box-sizing:border-box}
+  #app{width:360px;height:320px;overflow:hidden;position:relative;background:linear-gradient(180deg,#fff7df 0%,#fff1d5 100%);font-family:Arial,sans-serif;color:#5a3b2a}
+  .sun{position:absolute;width:92px;height:92px;border-radius:50%;background:#ffe2a3;right:-26px;top:-35px;opacity:.7}
+  .title{position:absolute;left:18px;top:13px;right:80px;margin:0;font-size:19px;line-height:24px;font-weight:800;color:#754631}
+  .scene{position:absolute;left:0;top:38px;width:360px;height:151px}
+  .paths{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+  .arrow{fill:none;stroke:#d49a61;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+  .stage{position:absolute;width:91px;height:48px;border-radius:17px;background:#fffdf6;border:3px solid #f0bf78;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px 7px;box-shadow:0 4px 0 rgba(154,93,48,.12);transition:transform .26s ease,background .26s ease,border-color .26s ease,box-shadow .26s ease}
+  .stage[data-glow="yes"]{background:#fff0bc;border-color:#ed9d48;box-shadow:0 0 0 5px rgba(255,203,91,.3),0 5px 0 rgba(154,93,48,.15);transform:scale(1.08)}
+  .stage span{font-size:12px;line-height:13px;font-weight:800;color:#754631}
+  .token{position:absolute;width:24px;height:24px;border-radius:50%;background:#55b8c9;border:3px solid #e9ffff;box-shadow:0 3px 0 rgba(35,115,129,.24),0 0 0 3px rgba(85,184,201,.18);z-index:4;transition:transform .68s cubic-bezier(.45,0,.2,1)}
+  .token:after{content:"";position:absolute;width:6px;height:6px;border-radius:50%;background:#fff;left:5px;top:4px}
+  .next{position:absolute;right:12px;top:136px;width:58px;height:52px;border:0;border-radius:18px;background:#e78659;color:#fff;font-size:25px;font-weight:800;box-shadow:0 4px 0 #bd6346;cursor:pointer;transition:transform .16s ease,opacity .2s}
+  .next:active{transform:translateY(3px) scale(.94);box-shadow:0 1px 0 #bd6346}
+  .next[disabled]{opacity:.45;cursor:default}
+  .question{position:absolute;left:12px;right:12px;top:196px;opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .35s ease,transform .35s ease}
+  .question.show{opacity:1;transform:translateY(0);pointer-events:auto}
+  .ask{height:28px;padding:4px 9px;border-radius:13px;background:#f7dca9;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;text-align:center}
+  .options{display:flex;gap:7px;margin-top:7px}
+  .option{height:55px;flex:1;min-width:0;border:2px solid #d8a661;border-radius:16px;background:#fffdf7;color:#754631;padding:4px;font-size:11px;line-height:12px;font-weight:800;box-shadow:0 3px 0 rgba(154,93,48,.14);cursor:pointer;transition:transform .16s ease,background .2s,border-color .2s}
+  .option:active{transform:translateY(2px) scale(.96);box-shadow:0 1px 0 rgba(154,93,48,.14)}
+  .feedback{position:absolute;right:14px;top:178px;min-height:16px;font-size:12px;font-weight:800;color:#b85d43;opacity:0;transform:scale(.8);transition:opacity .22s ease,transform .22s ease}
+  .feedback.show{opacity:1;transform:scale(1)}
+  .feedback.good{color:#4b9677}
+  .finish{position:absolute;inset:0;background:rgba(255,247,223,.76);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .35s ease}
+  .finish.show{opacity:1}
+  .finish div{background:#fff7dc;border:3px solid #f0be73;border-radius:24px;padding:15px 25px;font-size:19px;font-weight:800;color:#5d8d72;box-shadow:0 6px 0 rgba(154,93,48,.12);animation:pop .45s ease}
+  @keyframes pop{0%{transform:scale(.55)}70%{transform:scale(1.08)}100%{transform:scale(1)}}
+</style>
+<div id="app">
+  <div class="sun"></div>
+  <h1 class="title" id="title"></h1>
+  <div class="scene" id="scene">
+    <svg class="paths" id="paths" viewBox="0 0 360 151" aria-hidden="true">
+      <defs><marker id="tip" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M1,1 L8,4.5 L1,8" fill="none" stroke="#d49a61" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+    </svg>
+    <div class="token" data-token></div>
+  </div>
+  <button class="next" data-action="next" id="next">›</button>
+  <div class="feedback" id="feedback"></div>
+  <section class="question" id="question">
+    <div class="ask" id="ask"></div>
+    <div class="options" id="options"></div>
+  </section>
+  <div class="finish" id="finish"><div id="done"></div></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, stages=p.stages, scene=document.getElementById('scene'), paths=document.getElementById('paths');
+  var app=document.getElementById('app'), token=document.querySelector('[data-token]'), next=document.getElementById('next');
+  var question=document.getElementById('question'), feedback=document.getElementById('feedback'), current=0, moving=false, asked=false, finished=false;
+  var spots=[[32,12],[237,12],[237,82],[32,82]];
+  var centers=[], stageEls={};
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('next').textContent=Studio.t('next');
+  document.getElementById('done').textContent=Studio.t('done');
+
+  function svg(tag){
+    return document.createElementNS('http://www.w3.org/2000/svg',tag);
+  }
+  stages.forEach(function(key,i){
+    var pos=spots[i%spots.length], el=document.createElement('div'), label=document.createElement('span');
+    el.className='stage'; el.setAttribute('data-stage',key); el.style.left=pos[0]+'px'; el.style.top=pos[1]+'px';
+    label.setAttribute('data-label',key); label.textContent=Studio.t(key); el.appendChild(label); scene.appendChild(el);
+    stageEls[key]=el; centers.push([pos[0]+45.5,pos[1]+24]);
+  });
+  function edge(a,b){
+    var dx=b[0]-a[0],dy=b[1]-a[1], pad=53, x1=a[0],y1=a[1],x2=b[0],y2=b[1];
+    if(Math.abs(dx)>Math.abs(dy)){x1+=dx>0?pad:-pad;x2+=dx>0?-pad:pad}
+    else{y1+=dy>0?pad:-pad;y2+=dy>0?-pad:pad}
+    return [x1,y1,x2,y2];
+  }
+  stages.forEach(function(key,i){
+    if(i===stages.length-1&&!p.cycle)return;
+    var ni=(i+1)%stages.length, q=edge(centers[i],centers[ni]), line=svg('path');
+    line.setAttribute('class','arrow'); line.setAttribute('data-arrow',key+'>'+stages[ni]);
+    line.setAttribute('d','M '+q[0]+' '+q[1]+' L '+q[2]+' '+q[3]); line.setAttribute('marker-end','url(#tip)');
+    paths.appendChild(line);
+  });
+  function place(i,instant){
+    token.style.transition=instant?'none':'transform .68s cubic-bezier(.45,0,.2,1)';
+    token.style.transform='translate('+(centers[i][0]-12)+'px,'+(centers[i][1]-12)+'px)';
+  }
+  function active(i){
+    app.setAttribute('data-active',stages[i]);
+    stages.forEach(function(k,n){stageEls[k].setAttribute('data-glow',n===i?'yes':'no')});
+  }
+  place(0,true); active(0);
+  function showQuestion(){
+    asked=true; next.disabled=true;
+    document.getElementById('ask').textContent=Studio.t('ask')+' '+Studio.t(p.askAfter);
+    p.options.forEach(function(key){
+      var b=document.createElement('button');
+      b.className='option'; b.setAttribute('data-option',key); b.textContent=Studio.t(key);
+      b.addEventListener('click',function(){
+        if(finished)return;
+        feedback.className='feedback';
+        Studio.answer(key); Studio.event('answer',{});
+      });
+      document.getElementById('options').appendChild(b);
+    });
+    question.classList.add('show');
+  }
+  next.addEventListener('click',function(){
+    if(moving||asked||finished)return;
+    var ni=current+1;
+    if(ni>=stages.length){if(!p.cycle)return;ni=0}
+    moving=true; next.disabled=true; place(ni,false); Studio.event('next',{});
+    setTimeout(function(){
+      current=ni; active(current); moving=false;
+      if(stages[current]===p.askAfter)showQuestion(); else next.disabled=false;
+    },700);
+  });
+  Studio.onVerdict(function(v){
+    if(finished)return;
+    feedback.textContent=Studio.t(v.correct?'right':'wrong');
+    feedback.className='feedback show '+(v.correct?'good':'');
+    if(v.correct){
+      finished=true;
+      Array.prototype.forEach.call(document.querySelectorAll('.option'),function(b){b.disabled=true});
+      setTimeout(function(){document.getElementById('finish').classList.add('show');Studio.done()},420);
+    }
+  });
+  Studio.ready();
+}());
+
+</script>

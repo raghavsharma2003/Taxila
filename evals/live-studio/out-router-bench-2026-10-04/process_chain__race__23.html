@@ -1,0 +1,108 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;color:#543d38;font-family:system-ui,sans-serif}
+  #activity{width:360px;height:320px;padding:6px 12px;display:flex;flex-direction:column;align-items:center;gap:3px;overflow:hidden}
+  h1{height:22px;line-height:22px;margin:0;font-size:18px;text-align:center;flex:none}
+  svg{display:block;width:336px;height:119px;flex:none}
+  .stage rect{fill:#fff;stroke:#e6b99c;stroke-width:2.5;transition:fill .25s,stroke .25s,filter .25s}
+  .stage text{fill:#543d38;font-size:12px;font-weight:700;text-anchor:middle;dominant-baseline:middle}
+  .stage.active rect{fill:#ffdfaa;stroke:#e78c62;filter:drop-shadow(0 0 7px #ffc778)}
+  .arrow{stroke:#ce9e80;stroke-width:3;stroke-linecap:round;fill:none}
+  #token{fill:#ef7868;stroke:#fff;stroke-width:2.5;filter:drop-shadow(0 2px 2px #b87564)}
+  button{border:0;border-radius:16px;background:#e88768;color:#fff;font:700 15px system-ui,sans-serif;min-width:52px;min-height:52px;cursor:pointer;transition:transform .15s,background .2s}
+  button:active{transform:scale(.92)}
+  button:disabled{opacity:.6;cursor:default}
+  #next{width:112px;height:52px;flex:none}
+  #question{height:19px;line-height:19px;font-size:14px;font-weight:700;text-align:center;white-space:nowrap;flex:none}
+  #options{width:100%;height:52px;display:flex;justify-content:center;gap:7px;flex:none}
+  #options button{flex:1;background:#806f9a;padding:4px 2px;font-size:13px}
+  #feedback{height:19px;line-height:19px;font-size:14px;font-weight:700;text-align:center;color:#a75c72;flex:none}
+  #feedback.good{color:#56866b}
+</style>
+<div id="activity">
+  <h1 id="title"></h1>
+  <svg viewBox="0 0 336 139" aria-hidden="true">
+    <defs><marker id="tip" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L7 4 L1 7" fill="none" stroke="#ce9e80" stroke-width="1.7"/></marker></defs>
+    <g id="arrows"></g><g id="stages"></g><circle id="token" data-token r="8"></circle>
+  </svg>
+  <button id="next" data-action="next"></button>
+  <div id="question"></div>
+  <div id="options"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params,keys=p.stages,root=document.getElementById('activity');
+  const ns='http://www.w3.org/2000/svg',arrows=document.getElementById('arrows'),stages=document.getElementById('stages');
+  const token=document.getElementById('token'),next=document.getElementById('next'),feedback=document.getElementById('feedback');
+  const make=(tag,attrs,parent)=>{const el=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);parent.appendChild(el);return el};
+  document.getElementById('title').textContent=Studio.t('title');
+  next.textContent=Studio.t('next');
+  document.getElementById('question').textContent=Studio.t('ask')+' '+Studio.t(p.askAfter);
+  const n=keys.length,cycling=!!p.cycle;
+  const spots=keys.map((_,i)=>{
+    if(cycling){const a=-Math.PI/2+2*Math.PI*i/n;return{x:168+111*Math.cos(a),y:69+46*Math.sin(a)}}
+    return{x:n===1?168:27+i*282/(n-1),y:69};
+  });
+  const boxW=cycling?Math.min(66,Math.max(42,175/n+25)):Math.min(64,Math.max(38,270/n-7));
+  const edges=[];
+  for(let i=0;i<n-(cycling?0:1);i++){
+    const j=(i+1)%n,a=spots[i],b=spots[j],dx=b.x-a.x,dy=b.y-a.y;
+    const scale=Math.max(Math.abs(dx)/(boxW/2+9),Math.abs(dy)/32,1);
+    const sx=a.x+dx/scale,sy=a.y+dy/scale,ex=b.x-dx/scale,ey=b.y-dy/scale;
+    make('line',{x1:sx,y1:sy,x2:ex,y2:ey,class:'arrow','marker-end':'url(#tip)','data-arrow':keys[i]+'>'+keys[j]},arrows);
+    edges[i]={sx,sy,ex,ey};
+  }
+  const groups=keys.map((key,i)=>{
+    const{x,y}=spots[i],g=make('g',{class:'stage','data-stage':key},stages);
+    make('rect',{x:x-boxW/2,y:y-21,width:boxW,height:42,rx:14},g);
+    make('text',{x,y:y+1,'data-label':key},g).textContent=Studio.t(key);
+    return g;
+  });
+  let active=0,moving=false,finished=false;
+  function showActive(){
+    root.setAttribute('data-active',keys[active]);
+    groups.forEach((g,i)=>g.classList.toggle('active',i===active));
+    token.setAttribute('cx',spots[active].x);
+    token.setAttribute('cy',spots[active].y-27);
+  }
+  showActive();
+  next.addEventListener('click',()=>{
+    if(moving||finished||(!cycling&&active===n-1))return;
+    const from=active,to=(active+1)%n,e=edges[from];if(!e)return;
+    moving=true;next.disabled=true;Studio.event('next',{stage:keys[to]});
+    const start=performance.now(),duration=650;
+    function frame(now){
+      const t=Math.min(1,(now-start)/duration);
+      let x,y;
+      if(t<.16){const q=t/.16;x=spots[from].x+(e.sx-spots[from].x)*q;y=spots[from].y-27+(e.sy-spots[from].y+27)*q}
+      else if(t<.84){const q=(t-.16)/.68;x=e.sx+(e.ex-e.sx)*q;y=e.sy+(e.ey-e.sy)*q-7*Math.sin(Math.PI*q)}
+      else{const q=(t-.84)/.16;x=e.ex+(spots[to].x-e.ex)*q;y=e.ey+(spots[to].y-27-e.ey)*q}
+      token.setAttribute('cx',x);token.setAttribute('cy',y);
+      if(t<1)requestAnimationFrame(frame);
+      else{active=to;showActive();moving=false;next.disabled=!cycling&&active===n-1}
+    }
+    requestAnimationFrame(frame);
+  });
+  const options=document.getElementById('options');
+  p.options.forEach(key=>{
+    const b=document.createElement('button');
+    b.setAttribute('data-option',key);
+    b.textContent=Studio.t(key);
+    b.addEventListener('click',()=>{if(!finished)Studio.answer(key)});
+    options.appendChild(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.classList.toggle('good',!!correct);
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      finished=true;next.disabled=true;
+      options.querySelectorAll('button').forEach(b=>b.disabled=true);
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

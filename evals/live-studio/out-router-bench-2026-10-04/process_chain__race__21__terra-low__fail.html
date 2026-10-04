@@ -1,0 +1,220 @@
+<style>
+  *{box-sizing:border-box}
+  #app{
+    position:relative;width:360px;height:320px;overflow:hidden;
+    background:linear-gradient(160deg,#fff5df 0%,#fffaf0 54%,#e9f7ed 100%);
+    color:#554531;font-family:Arial,sans-serif;
+  }
+  #app:before{
+    content:"";position:absolute;width:180px;height:180px;border-radius:50%;
+    background:#ffe3a5;opacity:.3;left:-72px;top:104px;
+  }
+  #title{
+    position:absolute;z-index:2;top:8px;left:14px;right:14px;height:28px;
+    text-align:center;font-size:20px;font-weight:800;line-height:28px;color:#704b2b;
+  }
+  #scene{
+    position:absolute;left:0;top:38px;width:360px;height:170px;overflow:visible;
+  }
+  .arrow{
+    stroke:#d69a54;stroke-width:4;stroke-linecap:round;fill:none;
+    opacity:.8;transition:opacity .25s,stroke .25s;
+  }
+  .arrow.hot{stroke:#ef8054;opacity:1}
+  .stage-box{
+    fill:#fffdf7;stroke:#dca35e;stroke-width:2.5;
+    filter:drop-shadow(0 3px 1px rgba(129,85,35,.13));
+    transition:fill .3s,stroke .3s;
+  }
+  .stage-ring{
+    fill:#fff5d5;stroke:#f3ca83;stroke-width:1.5;
+  }
+  .stage.active .stage-box{
+    fill:#fff0b6;stroke:#ef8154;stroke-width:3.5;
+    filter:drop-shadow(0 0 7px rgba(241,132,79,.6));
+  }
+  .stage.active .stage-ring{fill:#ffd777}
+  .stage-label{
+    font-size:11px;font-weight:800;fill:#67462b;text-anchor:middle;
+    dominant-baseline:middle;pointer-events:none;
+  }
+  #token{
+    position:absolute;z-index:5;width:24px;height:24px;margin-left:-12px;margin-top:-12px;
+    border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff 0 12%,#71c6a4 14% 48%,#33896f 51% 100%);
+    border:2px solid #fff;box-shadow:0 3px 7px rgba(38,105,83,.34);
+    transition:left .68s cubic-bezier(.45,.04,.25,1),top .68s cubic-bezier(.45,.04,.25,1);
+  }
+  #token:after{
+    content:"";position:absolute;width:5px;height:5px;border-radius:50%;background:#fff;
+    left:5px;top:5px;
+  }
+  #token.travel{animation:bob .24s ease-in-out 3}
+  @keyframes bob{50%{transform:scale(1.15) translateY(-3px)}}
+  #prompt{
+    position:absolute;z-index:3;left:12px;right:12px;top:211px;height:39px;
+    display:flex;align-items:center;justify-content:center;gap:5px;
+    font-size:14px;font-weight:800;color:#754d2d;text-align:center;
+  }
+  #prompt .asked-stage{
+    display:inline-block;padding:3px 8px;border-radius:12px;background:#ffe4a7;color:#a35837;
+  }
+  #feedback{
+    position:absolute;z-index:4;left:12px;right:12px;top:241px;height:16px;
+    text-align:center;font-size:12px;font-weight:800;color:#c35c4d;
+  }
+  #controls{
+    position:absolute;z-index:4;left:0;right:0;bottom:8px;height:54px;
+    display:flex;justify-content:center;gap:8px;
+  }
+  button{
+    min-width:52px;height:52px;border:0;border-radius:18px;cursor:pointer;
+    font:800 14px Arial,sans-serif;transition:transform .14s,box-shadow .14s,background .2s;
+    box-shadow:0 4px 0 rgba(103,70,39,.18);
+  }
+  button:active{transform:scale(.94);box-shadow:0 1px 0 rgba(103,70,39,.16)}
+  #next{
+    width:132px;background:#ef8956;color:#fff8ed;
+  }
+  #next:hover{background:#e9784c}
+  .option{
+    flex:1;max-width:105px;padding:3px 5px;background:#fff7e5;color:#7a5131;
+    border:2px solid #e5ba79;
+  }
+  .option:hover{background:#ffe7ad}
+  .option.wiggle{animation:wiggle .35s ease}
+  @keyframes wiggle{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+  .option.good{background:#9bd6b0;border-color:#559c74;color:#245d43}
+  .hidden{display:none!important}
+</style>
+<div id="app" data-active="">
+  <div id="title"></div>
+  <svg id="scene" viewBox="0 0 360 170" aria-hidden="true">
+    <defs>
+      <marker id="arrowhead" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+        <path d="M0,0 L8,4.5 L0,9 Z" fill="#d69a54"></path>
+      </marker>
+    </defs>
+    <g id="arrows"></g>
+    <g id="stages"></g>
+  </svg>
+  <div id="token" data-token></div>
+  <div id="prompt"></div>
+  <div id="feedback"></div>
+  <div id="controls"><button id="next" data-action="next"></button></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, stages=p.stages.slice(), app=document.getElementById("app");
+  var title=document.getElementById("title"), svg=document.getElementById("scene");
+  var arrows=document.getElementById("arrows"), stageLayer=document.getElementById("stages");
+  var token=document.getElementById("token"), prompt=document.getElementById("prompt");
+  var feedback=document.getElementById("feedback"), controls=document.getElementById("controls");
+  var next=document.getElementById("next"), ns="http://www.w3.org/2000/svg";
+  var pos=[], active=0, moving=false, asking=false, finished=false;
+
+  title.textContent=Studio.t("title");
+  next.textContent=Studio.t("next");
+
+  function make(tag){return document.createElementNS(ns,tag)}
+  function positions(){
+    var n=stages.length, i;
+    if(p.cycle){
+      for(i=0;i<n;i++){
+        var a=(-Math.PI/2)+(Math.PI*2*i/n);
+        pos.push({x:180+Math.cos(a)*58,y:85+Math.sin(a)*58});
+      }
+    }else{
+      for(i=0;i<n;i++){
+        pos.push({x:n===1?180:43+(274*i/(n-1)),y:82});
+      }
+    }
+  }
+  function draw(){
+    positions();
+    var n=stages.length, count=p.cycle?n:n-1, i;
+    for(i=0;i<count;i++){
+      var j=(i+1)%n, a=pos[i], b=pos[j], dx=b.x-a.x, dy=b.y-a.y;
+      var len=Math.sqrt(dx*dx+dy*dy)||1, ux=dx/len, uy=dy/len;
+      var line=make("line");
+      line.setAttribute("x1",a.x+ux*35); line.setAttribute("y1",a.y+uy*26);
+      line.setAttribute("x2",b.x-ux*35); line.setAttribute("y2",b.y-uy*26);
+      line.setAttribute("class","arrow");
+      line.setAttribute("marker-end","url(#arrowhead)");
+      line.setAttribute("data-arrow",stages[i]+">"+stages[j]);
+      arrows.appendChild(line);
+    }
+    for(i=0;i<n;i++){
+      var g=make("g"), x=pos[i].x, y=pos[i].y;
+      g.setAttribute("class","stage");g.setAttribute("data-stage",stages[i]);
+      var r=make("rect");
+      r.setAttribute("class","stage-box");r.setAttribute("x",x-34);r.setAttribute("y",y-25);
+      r.setAttribute("width",68);r.setAttribute("height",50);r.setAttribute("rx",15);
+      var c=make("circle");c.setAttribute("class","stage-ring");c.setAttribute("cx",x);c.setAttribute("cy",y-11);c.setAttribute("r",6);
+      var text=make("text");text.setAttribute("class","stage-label");text.setAttribute("data-label",stages[i]);
+      text.setAttribute("x",x);text.setAttribute("y",y+10);text.textContent=Studio.t(stages[i]);
+      g.appendChild(r);g.appendChild(c);g.appendChild(text);stageLayer.appendChild(g);
+    }
+  }
+  function place(i){
+    token.style.left=pos[i].x+"px";
+    token.style.top=(38+pos[i].y)+"px";
+  }
+  function showActive(){
+    var all=stageLayer.querySelectorAll(".stage"), i;
+    for(i=0;i<all.length;i++) all[i].classList.toggle("active",i===active);
+    var aa=arrows.querySelectorAll(".arrow");
+    for(i=0;i<aa.length;i++) aa[i].classList.toggle("hot",i===active-1 || (p.cycle && active===0 && i===aa.length-1));
+    app.setAttribute("data-active",stages[active]);
+  }
+  function question(){
+    asking=true;next.classList.add("hidden");
+    prompt.innerHTML="";
+    var q=document.createElement("span");q.textContent=Studio.t("ask");
+    var name=document.createElement("span");name.className="asked-stage";name.textContent=Studio.t(p.askAfter);
+    prompt.appendChild(q);prompt.appendChild(name);
+    controls.innerHTML="";
+    p.options.forEach(function(key){
+      var b=document.createElement("button");
+      b.className="option";b.setAttribute("data-option",key);b.textContent=Studio.t(key);
+      b.addEventListener("click",function(){
+        if(finished)return;
+        feedback.textContent="";
+        Studio.event("option",{});
+        Studio.answer(key);
+      });
+      controls.appendChild(b);
+    });
+  }
+  function arrive(){
+    moving=false;active=(active+1)%stages.length;showActive();
+    if(stages[active]===p.askAfter) question();
+  }
+  next.addEventListener("click",function(){
+    if(moving||asking)return;
+    if(!p.cycle && active===stages.length-1)return;
+    moving=true;Studio.event("next",{});
+    token.classList.remove("travel");void token.offsetWidth;token.classList.add("travel");
+    var to=(active+1)%stages.length;
+    token.style.left=pos[to].x+"px";token.style.top=(38+pos[to].y)+"px";
+    setTimeout(arrive,700);
+  });
+  Studio.onVerdict(function(v){
+    if(finished)return;
+    if(v.correct){
+      finished=true;feedback.style.color="#397957";feedback.textContent=Studio.t("right");
+      var bs=controls.querySelectorAll("button");
+      for(var i=0;i<bs.length;i++){bs[i].disabled=true;bs[i].classList.add("good")}
+      setTimeout(function(){feedback.textContent=Studio.t("done");Studio.done()},420);
+    }else{
+      feedback.style.color="#c35c4d";feedback.textContent=Studio.t("wrong");
+      var os=controls.querySelectorAll(".option");
+      for(var j=0;j<os.length;j++){os[j].classList.remove("wiggle");void os[j].offsetWidth;os[j].classList.add("wiggle")}
+    }
+  });
+  draw();place(0);showActive();
+  if(stages[0]===p.askAfter) question();
+  Studio.ready();
+})();
+
+</script>

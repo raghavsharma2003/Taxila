@@ -1,0 +1,101 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#503b32;background:#fff5e8}
+.scene{position:relative;width:360px;height:320px;overflow:hidden;padding:14px 16px}
+h1{margin:0;height:31px;font-size:19px;line-height:25px;font-weight:750;color:#744632}
+.ask{height:38px;font-size:14px;line-height:18px;color:#755d50}
+svg{position:absolute;inset:0;width:360px;height:320px;pointer-events:none}
+.axis{stroke:#bc8151;stroke-width:4;stroke-linecap:round}
+.tick{stroke:#bc8151;stroke-width:2}
+.card{position:absolute;width:88px;height:60px;padding:5px 4px;border:2px solid #e8c69d;border-radius:14px;background:#fffdf8;color:#503b32;box-shadow:0 3px 0 #e8d6c2;font:600 12px/15px system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;transition:transform .16s,background .2s,border-color .2s,box-shadow .16s}
+.card:active{transform:scale(.94);box-shadow:0 1px 0 #e8d6c2}
+.card:focus-visible{outline:3px solid #d78a50;outline-offset:2px}
+.card span{font-size:13px;font-weight:750;color:#a35e37}
+.marker{fill:#d47e45;stroke:#fff5e8;stroke-width:3;transition:r .2s}
+.card.selected{background:#fff0d9;border-color:#d78a50}
+.feedback{position:absolute;left:16px;right:16px;bottom:8px;min-height:38px;border-radius:12px;background:#f7e5cc;padding:8px 10px;text-align:center;font-size:14px;font-weight:700;color:#744632;opacity:0;transform:translateY(5px);transition:opacity .2s,transform .2s;pointer-events:none}
+.feedback.show{opacity:1;transform:translateY(0)}
+.scene.complete .card{pointer-events:none}
+</style>
+<main class="scene">
+  <h1 id="title"></h1>
+  <div class="ask" id="ask"></div>
+  <svg viewBox="0 0 360 320" aria-hidden="true">
+    <line data-axis x1="24" y1="166" x2="336" y2="166" class="axis"/>
+    <g id="events"></g>
+  </svg>
+  <div id="cards"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(()=>{
+  const p=Studio.params, events=p.events, scene=document.querySelector(".scene");
+  const title=document.getElementById("title"), ask=document.getElementById("ask");
+  const cards=document.getElementById("cards"), markers=document.getElementById("events");
+  const feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  ask.textContent=Studio.t("ask");
+  const min=Math.min(...events.map(e=>e.year)), max=Math.max(...events.map(e=>e.year));
+  const positions=events.map(e=>({event:e,x:max===min?180:24+(e.year-min)*312/(max-min)}));
+  const sorted=[...positions].sort((a,b)=>a.x-b.x);
+  const lanes=new Map();
+  sorted.forEach((item,i)=>lanes.set(item.event.key,i));
+  positions.forEach(({event,x})=>{
+    const ns="http://www.w3.org/2000/svg";
+    const line=document.createElementNS(ns,"line");
+    const circle=document.createElementNS(ns,"circle");
+    circle.setAttribute("data-event",event.key);
+    circle.setAttribute("data-year",event.year);
+    circle.setAttribute("cx",x);
+    circle.setAttribute("cy","166");
+    circle.setAttribute("r","8");
+    circle.setAttribute("class","marker");
+    markers.append(line,circle);
+    const lane=lanes.get(event.key);
+    const top=lane%2===0?83:194;
+    let left=Math.max(8,Math.min(264,x-44));
+    if(sorted.length===4 && (lane===1 || lane===2)) left=136;
+    const card=document.createElement("button");
+    card.type="button";
+    card.className="card";
+    card.dataset.card=event.key;
+    card.style.left=left+"px";
+    card.style.top=top+"px";
+    card.innerHTML="";
+    const name=document.createElement("span");
+    name.textContent=Studio.t(event.key);
+    const year=document.createElement("span");
+    year.textContent=event.year;
+    card.append(name,year);
+    const x1=Math.max(left+10,Math.min(left+78,x));
+    line.setAttribute("x1",x);
+    line.setAttribute("x2",x1);
+    line.setAttribute("y1","166");
+    line.setAttribute("y2",top<166?top+60:top);
+    line.setAttribute("stroke","#d8a979");
+    line.setAttribute("stroke-width","2");
+    card.addEventListener("click",()=>{
+      if(scene.classList.contains("complete")) return;
+      document.querySelectorAll(".card").forEach(c=>c.classList.remove("selected"));
+      card.classList.add("selected");
+      feedback.classList.remove("show");
+      Studio.event("answer", {key:event.key});
+      Studio.answer(event.key);
+    });
+    cards.appendChild(card);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?"right":"wrong");
+    feedback.classList.add("show");
+    if(correct){
+      scene.classList.add("complete");
+      feedback.textContent=Studio.t("done");
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

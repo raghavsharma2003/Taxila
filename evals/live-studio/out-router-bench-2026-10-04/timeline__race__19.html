@@ -1,0 +1,93 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#49382f;background:#fff8ed}
+#stage{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(ellipse at 50% 48%,#fffdf7 0%,#fff8ed 75%)}
+h1{position:absolute;top:12px;left:16px;right:16px;margin:0;text-align:center;font-size:19px;line-height:25px;font-weight:750;color:#654535}
+#prompt{position:absolute;top:41px;left:14px;right:14px;margin:0;text-align:center;font-size:14px;line-height:19px;color:#86664e}
+#axis{position:absolute;left:22px;top:171px;width:316px;height:18px;overflow:visible}
+#axis line{stroke:#dbad75;stroke-width:4;stroke-linecap:round}
+#axis path{fill:#dbad75}
+.event-card{position:absolute;width:108px;min-height:58px;padding:7px 5px;border:2px solid #e7c18e;border-radius:15px;background:#fffdf8;color:#644633;box-shadow:0 3px 0 #efdcc0;text-align:center;font:700 13px/17px system-ui,-apple-system,"Segoe UI",sans-serif;cursor:pointer;touch-action:manipulation;transition:transform .16s ease,background .2s,border-color .2s,box-shadow .16s;z-index:2}
+.event-card:active{transform:scale(.94)}
+.event-card:hover{background:#fff3dc}
+.event-card:focus-visible{outline:3px solid #d98158;outline-offset:2px}
+.event-card .year{display:block;font-size:12px;color:#a16d45;font-weight:650}
+.connector{position:absolute;width:2px;background:#e4ba85;transform:translateX(-50%);z-index:1;transition:height .2s}
+.marker{position:absolute;width:15px;height:15px;border:3px solid #fff8ed;border-radius:50%;background:#df875c;box-shadow:0 0 0 2px #d99b6d;transform:translate(-50%,-50%);z-index:3;transition:transform .2s}
+#feedback{position:absolute;top:282px;left:12px;right:12px;min-height:25px;text-align:center;font-size:14px;line-height:20px;font-weight:700;color:#7b5944}
+#stage.correct .event-card{pointer-events:none}
+#stage.correct #feedback{color:#51836a}
+#stage.wrong #feedback{color:#b3654d}
+#stage.complete #feedback{top:275px;font-size:16px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
+</style>
+<div id="stage">
+  <h1 id="title"></h1>
+  <p id="prompt"></p>
+  <svg id="axis" data-axis="true" viewBox="0 0 316 18" aria-hidden="true">
+    <line x1="3" y1="9" x2="305" y2="9"></line>
+    <path d="M305 2L316 9 305 16Z"></path>
+  </svg>
+  <div id="events"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const params=Studio.params, stage=document.getElementById("stage");
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("prompt").textContent=Studio.t("ask");
+  const events=[...params.events].sort((a,b)=>a.year-b.year);
+  const low=Math.min(...events.map(e=>e.year)), high=Math.max(...events.map(e=>e.year));
+  const left=27, right=333, axisY=180, cardW=108, cardH=58;
+  const lanes=[[],[]], container=document.getElementById("events");
+  const positions=events.map(e=>({e,x:high===low?180:left+(e.year-low)/(high-low)*(right-left)}));
+  positions.forEach(({e,x})=>{
+    const cx=Math.max(left+cardW/2,Math.min(right-cardW/2,x));
+    const start=lanes.findIndex(lane=>lane.every(item=>Math.abs(item.cx-cx)>=cardW+6));
+    const lane=start<0?lanes.reduce((best,lane,i)=>lane.length<lanes[best].length?i:best,0):start;
+    lanes[lane].push({cx});
+    const card=document.createElement("button");
+    card.type="button"; card.className="event-card"; card.dataset.card=e.key;
+    card.style.left=(cx-cardW/2)+"px";
+    card.style.top=(lane===0?75:218)+"px";
+    card.setAttribute("aria-label",Studio.t(e.key)+" "+e.year);
+    card.innerHTML="";
+    const name=document.createElement("span"); name.textContent=Studio.t(e.key);
+    const year=document.createElement("span"); year.className="year"; year.textContent=e.year;
+    card.append(name,year);
+    const marker=document.createElement("span"); marker.className="marker";
+    marker.dataset.event=e.key; marker.dataset.year=e.year;
+    marker.style.left=x+"px"; marker.style.top=axisY+"px";
+    const connector=document.createElement("span"); connector.className="connector";
+    connector.style.left=x+"px";
+    if(lane===0){connector.style.top="133px";connector.style.height=(axisY-133)+"px"}
+    else{connector.style.top=(axisY+8)+"px";connector.style.height="30px"}
+    card.addEventListener("click",()=>{
+      if(stage.classList.contains("correct")||stage.classList.contains("complete"))return;
+      Studio.event("event_tap",{key:e.key});
+      Studio.answer(e.key);
+    });
+    container.append(connector,marker,card);
+  });
+  const feedback=document.getElementById("feedback");
+  Studio.onVerdict(({correct})=>{
+    stage.classList.remove("wrong","correct");
+    if(correct){
+      stage.classList.add("correct");
+      feedback.textContent=Studio.t("right");
+      Studio.event("verdict",{result:"correct"});
+      stage.classList.add("complete");
+      feedback.textContent=Studio.t("done");
+      Studio.done();
+    }else{
+      stage.classList.add("wrong");
+      feedback.textContent=Studio.t("wrong");
+      Studio.event("verdict",{result:"wrong"});
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

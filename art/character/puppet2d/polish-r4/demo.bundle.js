@@ -1548,7 +1548,7 @@ var _e = class {
 			}, a = this.lid[e], o = i("eyeSquint"), c = s("eyeWide" + r), l = i("cheekSquint"), u = i("mouthSmile");
 			for (let r = 0; r <= t.xb - t.xa; r++) {
 				let i = n.top[r], s = n.bot[r], d = s - i, f = r / (t.xb - t.xa), p = Math.max(0, Math.sin(Math.PI * f)) ** .7, m = .16 * G(.25, .55, a), h = (o * .3 + l * .2 + u * .06 + m) * d * p ** 1.4, g = s - h + c * .05 * d * p, y = (_ * .14 - v * .02) * d * p, b = i + .72 * (s - i) - Math.min(h, .25 * d), x = i + y - c * .2 * d * p, S = this.g.lidKeys ? this.g.lidKeys[e].midLash : null, C = S ? S.y[Math.min(S.y.length - 1, r)] : b;
-				x += (Math.max(x, C - 1) - x) * W(a / .5), x > g && (x = g), t.top[r] = x, t.bot[r] = g;
+				x += (Math.max(x, C - 1) - x) * W(a / .34), x > g && (x = g), t.top[r] = x, t.bot[r] = g;
 			}
 			t.blink = a;
 		}
@@ -1576,9 +1576,9 @@ var _e = class {
 			.5,
 			1,
 			1,
-			.6,
-			.45,
-			.12
+			.5,
+			.14,
+			.04
 		], a = t > 0 ? (n - r.prev) / t : 0;
 		!r.active && a > 5 && n - r.prev > .06 && n > .15 && (r.active = !0, r.t0 = e, r.base = Math.min(r.prev, .5)), r.prev = n;
 		let o = n;
@@ -1749,7 +1749,7 @@ var _e = class {
 			n.lpos[e * 2] = l[0], n.lpos[e * 2 + 1] = l[1];
 		}
 		if (i.update(n.lmesh, "aPos", n.lpos), i.drawPaint(n.lmesh, this.tex["lid" + e], this.g.rects["lid" + e], 1, t), this.g.lidKeys) {
-			let r = n.blink, a = G(.34, .42, r), o = G(.72, .82, r);
+			let r = n.blink, a = G(.3, .36, r), o = G(.72, .82, r);
 			for (let [n, r] of [["mid", a * (1 - (o >= 1))], ["shut", o]]) {
 				if (r <= .003) continue;
 				let a = this.lidKeyMesh[`lid${n}${e}`];

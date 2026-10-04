@@ -1,0 +1,91 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ec;font-family:system-ui,sans-serif;color:#493929}
+  .activity{width:360px;height:320px;padding:14px 16px;background:radial-gradient(circle at 92% 4%,#ffe6ba 0 55px,transparent 56px),#fff8ec}
+  h1{margin:0;font-size:19px;line-height:25px;font-weight:800}
+  .hint{margin:2px 0 10px;font-size:13px;line-height:18px}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:9px;min-height:127px}
+  .card{min-height:59px;border:2px solid #d49a70;border-radius:17px;background:#fff0d8;color:#493929;font:700 16px system-ui,sans-serif;box-shadow:0 4px 0 #e8c7a8;cursor:pointer;transition:transform .2s,box-shadow .2s,opacity .25s}
+  .card:active{transform:scale(.94);box-shadow:0 1px 0 #e8c7a8}
+  .card:focus-visible{outline:3px solid #8066a3;outline-offset:2px}
+  .card.placed{visibility:hidden;pointer-events:none}
+  .card.shake{animation:shake .35s ease}
+  .track{display:flex;gap:6px;margin-top:13px}
+  .slot{width:calc((100% - 18px)/4);height:67px;border:2px dashed #c6a996;border-radius:15px;background:#fffdf8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center}
+  .slot.filled{border-style:solid;border-color:#c78460;background:#fce5c8;animation:pop .35s ease}
+  .number{font-size:12px;font-weight:800;color:#98664e}
+  .slot .card{border:0;box-shadow:none;background:transparent;min-height:0;width:100%;padding:0 3px;font-size:12px;line-height:15px;cursor:default;pointer-events:none}
+  .feedback{height:20px;margin-top:9px;text-align:center;font-size:14px;font-weight:700;color:#805b78}
+  @keyframes shake{25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+  @keyframes pop{50%{transform:scale(1.08)}}
+</style>
+<main class="activity">
+  <h1 id="title"></h1>
+  <p class="hint" id="instr"></p>
+  <div class="cards" id="cards"></div>
+  <div class="track" id="track"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+  const shown=Studio.params.shown;
+  const cards=document.getElementById('cards');
+  const track=document.getElementById('track');
+  const feedback=document.getElementById('feedback');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  const slots=shown.map((_,i)=>{
+    const slot=document.createElement('div');
+    slot.className='slot';
+    const number=document.createElement('span');
+    number.className='number';
+    number.textContent=String(i+1);
+    slot.append(number);
+    track.append(slot);
+    return slot;
+  });
+  let pending=null,placed=0,finished=false;
+  shown.forEach(key=>{
+    const card=document.createElement('button');
+    card.type='button';
+    card.className='card';
+    card.dataset.step=key;
+    card.textContent=Studio.t(key);
+    card.addEventListener('click',()=>{
+      if(pending||finished)return;
+      pending=card;
+      feedback.textContent='';
+      Studio.answer({key});
+    });
+    cards.append(card);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    const card=pending;
+    pending=null;
+    if(correct){
+      placed++;
+      card.classList.add('placed');
+      const moved=document.createElement('div');
+      moved.className='card';
+      moved.dataset.step=card.dataset.step;
+      moved.dataset.placed=String(placed);
+      moved.textContent=Studio.t(card.dataset.step);
+      slots[placed-1].classList.add('filled');
+      slots[placed-1].append(moved);
+      feedback.textContent=Studio.t('right');
+      if(placed===shown.length){
+        finished=true;
+        feedback.textContent=Studio.t('done');
+        Studio.done();
+      }
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+    }
+  });
+  Studio.ready();
+
+</script>

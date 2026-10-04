@@ -1,0 +1,94 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8eb;font-family:system-ui,sans-serif;color:#315744}
+  .card{width:360px;height:320px;overflow:hidden;background:linear-gradient(#fff6df,#f3fae9);border-radius:18px}
+  h1{height:27px;margin:0;padding:4px 12px 0;font-size:17px;line-height:23px;font-weight:750;text-align:center}
+  svg{display:block;width:360px;height:163px}
+  svg text{font:700 12px system-ui,sans-serif;fill:#315744;paint-order:stroke;stroke:#fff9ed;stroke-width:3px;stroke-linejoin:round}
+  .flow{transition:opacity .3s}.flow.soft{opacity:.32}
+  .controls{height:56px;display:flex;align-items:center;gap:7px;padding:2px 9px}
+  button{border:0;border-radius:17px;font:750 14px system-ui,sans-serif;cursor:pointer;touch-action:manipulation;transition:transform .16s,background .2s}
+  button:active{transform:scale(.92)}
+  .control{min-width:62px;height:52px;background:#e5efd3;color:#315744}
+  [data-caption]{flex:1;text-align:center;font-size:13px;font-weight:700;line-height:1.2;padding:0 3px}
+  .ask{height:20px;text-align:center;font-size:13px;font-weight:750;line-height:20px}
+  .options{height:54px;display:flex;align-items:center;justify-content:center;gap:7px;padding:0 8px}
+  .options button{height:52px;min-width:90px;flex:1;background:#d5ede1;color:#244d43}
+  .options button.flash{background:#ffd6b4}.options button.good{background:#a9dfaa}
+</style>
+<div class="card">
+  <h1 id="title"></h1>
+  <svg id="scene" viewBox="0 0 360 163" aria-hidden="true">
+    <path d="M0 157 Q80 145 170 156 T360 150 L360 163 H0Z" fill="#e1edcf"/>
+    <g id="drawing"></g>
+  </svg>
+  <div class="controls">
+    <button class="control" data-action="play" type="button"></button>
+    <div data-caption></div>
+    <button class="control" data-action="next" type="button"></button>
+  </div>
+  <div class="ask" id="ask"></div>
+  <div class="options" id="options"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, svg=document.getElementById('drawing'), ns='http://www.w3.org/2000/svg';
+  const make=(tag,attrs,parent=svg)=>{const el=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);parent.appendChild(el);return el};
+  const text=(key,x,y)=>{const el=make('text',{x,y,'data-label':key});el.textContent=Studio.t(key)};
+  const hub=p.hub, others=p.entities, flows=p.flows;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  make('circle',{cx:54,cy:37,r:29,fill:'#ffe4a0',opacity:'.6'});
+  make('circle',{cx:54,cy:37,r:19,fill:'#ffc75d','data-entity':others[0]});
+  make('path',{d:'M180 78 Q180 107 180 132 M180 125 Q162 127 153 146 M180 128 Q198 128 207 146 M180 135 Q172 142 171 153 M180 135 Q190 143 191 153',fill:'none',stroke:'#98704d','stroke-width':5,'stroke-linecap':'round','data-entity':others[1]});
+  make('path',{d:'M180 84 Q192 75 200 57',fill:'none',stroke:'#579771','stroke-width':5,'stroke-linecap':'round'});
+  make('ellipse',{cx:179,cy:62,rx:30,ry:19,transform:'rotate(-25 179 62)',fill:'#79ba71',stroke:'#418c65','stroke-width':2,'data-entity':hub});
+  make('path',{d:'M155 73 Q179 64 202 51',fill:'none',stroke:'#4b9969','stroke-width':2});
+  text(others[0],15,83);text(hub,216,49);text(others[1],220,150);
+  const routes=[
+    {a:[180,132],b:[180,82],label:[107,143],color:'#60b9d7'},
+    {a:[75,83],b:[150,64],label:[73,107],color:'#b494db'},
+    {a:[208,64],b:[295,83],label:[282,107],color:'#86cbb4'}
+  ];
+  const dots=[];
+  flows.forEach((f,i)=>{
+    const r=routes[i%routes.length],g=make('g',{'class':'flow','data-flow-group':f.key});
+    make('path',{d:`M${r.a[0]} ${r.a[1]} L${r.b[0]} ${r.b[1]}`,fill:'none',stroke:r.color,'stroke-width':3,'stroke-linecap':'round',opacity:'.45'},g);
+    for(let j=0;j<4;j++) dots.push({el:make('circle',{cx:r.a[0],cy:r.a[1],r:4.5,fill:r.color,'data-flow':f.key},g),r,offset:j/4,dir:f.dir});
+    text(f.key,...r.label);
+  });
+  let playing=true,step=0,phase=0,last=0,finished=false;
+  const play=document.querySelector('[data-action="play"]'),next=document.querySelector('[data-action="next"]'),caption=document.querySelector('[data-caption]');
+  function refresh(){
+    play.textContent=Studio.t(playing?'pause':'play');
+    caption.textContent=Studio.t('step'+(step+1));
+    document.querySelectorAll('[data-flow-group]').forEach((g,i)=>g.classList.toggle('soft',step!==0 && i!==(step-1)%flows.length));
+  }
+  play.addEventListener('click',()=>{playing=!playing;refresh();Studio.event('play',{playing:playing?1:0})});
+  next.addEventListener('click',()=>{step=(step+1)%p.steps;refresh();Studio.event('step',{step:step+1})});
+  p.options.forEach(key=>{
+    const b=document.createElement('button');b.type='button';b.dataset.option=key;b.textContent=Studio.t(key);
+    b.addEventListener('click',()=>{if(!finished)Studio.answer(key)});
+    document.getElementById('options').appendChild(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    const chosen=document.activeElement;
+    document.getElementById('ask').textContent=Studio.t(correct?'right':'wrong');
+    if(chosen?.dataset?.option){chosen.classList.add(correct?'good':'flash');setTimeout(()=>chosen.classList.remove('flash'),650)}
+    if(correct&&!finished){finished=true;Studio.done()}
+  });
+  function frame(time){
+    if(playing&&last)phase+=(time-last)*.00035;
+    last=time;
+    dots.forEach(d=>{
+      const t=(phase+d.offset)%1;
+      const x=d.r.a[0]+(d.r.b[0]-d.r.a[0])*t;
+      const y=d.r.a[1]+(d.r.b[1]-d.r.a[1])*t;
+      d.el.setAttribute('cx',x);d.el.setAttribute('cy',y);
+    });
+    requestAnimationFrame(frame);
+  }
+  refresh();requestAnimationFrame(frame);Studio.ready();
+})();
+
+</script>

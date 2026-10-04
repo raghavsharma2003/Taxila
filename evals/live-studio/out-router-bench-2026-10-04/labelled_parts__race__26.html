@@ -1,0 +1,65 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8eb;font-family:system-ui,sans-serif;color:#493b31}
+  .card{width:360px;height:320px;overflow:hidden;background:linear-gradient(180deg,#fff9ed,#fff1dc);border:3px solid #e9cfa9;border-radius:22px}
+  header{height:54px;padding:7px 18px 0}
+  h1{margin:0;font-size:15px;font-weight:700;color:#795840}
+  #question{margin:1px 0 0;font-size:19px;font-weight:800}
+  svg{display:block;width:354px;height:235px}
+  .part{cursor:pointer;transition:transform .2s ease,filter .25s ease;transform-box:fill-box;transform-origin:center}
+  .part:active{transform:scale(.93)}
+  .part.glow{filter:drop-shadow(0 0 9px #ffbd39) drop-shadow(0 0 4px #ffbd39);animation:bloom .55s ease-in-out 2}
+  .part.shake{animation:wiggle .3s ease}
+  .leader{fill:none;stroke:#aa9279;stroke-width:1.7;stroke-linecap:round}
+  .label{fill:#594b3d;font-size:14px;font-weight:700;pointer-events:none}
+  #feedback{height:25px;text-align:center;font-size:16px;font-weight:800;color:#a76238}
+  @keyframes bloom{50%{transform:scale(1.08)}}
+  @keyframes wiggle{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+</style>
+<div class="card">
+  <header><h1 id="title"></h1><div id="question" data-ask></div></header>
+  <svg viewBox="0 0 354 235" aria-hidden="true">
+    <path class="part" data-part="petal" fill="#ef8490" stroke="#d76575" stroke-width="2" d="M172 73 C111 70 107 17 155 17 C168 17 174 29 178 35 C185 20 202 19 214 31 C238 56 204 77 172 73Z"/>
+    <circle class="part" data-part="centre" cx="179" cy="94" r="28" fill="#f5bd52" stroke="#d99b35" stroke-width="2"/>
+    <path class="part" data-part="stem" fill="#69aa71" stroke="#4e905e" stroke-width="2" d="M152 122 Q180 130 207 120 L207 187 Q184 195 152 187Z"/>
+    <path class="part" data-part="leaf" fill="#80bb77" stroke="#549c68" stroke-width="2" d="M204 146 Q247 116 296 139 Q284 191 208 192 Q200 171 204 146Z"/>
+    <path class="part" data-part="root" fill="#bf8d61" stroke="#a57452" stroke-width="2" d="M151 173 L207 173 L215 193 Q249 191 253 224 Q226 214 206 219 Q193 234 179 234 Q166 234 151 219 Q131 214 105 225 Q111 191 145 193Z"/>
+    <path class="leader" d="M215 40 L234 35"/><text class="label" data-label="petal" x="239" y="40"></text>
+    <path class="leader" d="M206 99 L216 105"/><text class="label" data-label="centre" x="220" y="110"></text>
+    <path class="leader" d="M152 142 L137 142"/><text class="label" data-label="stem" x="132" y="147" text-anchor="end"></text>
+    <path class="leader" d="M279 164 L295 164"/><text class="label" data-label="leaf" x="299" y="169"></text>
+    <path class="leader" d="M111 213 L85 213"/><text class="label" data-label="root" x="79" y="218" text-anchor="end"></text>
+  </svg>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+  document.getElementById('title').textContent=Studio.t('title');
+  document.querySelector('[data-ask]').textContent=Studio.t('ask');
+  document.querySelectorAll('[data-label]').forEach(el=>{el.textContent=Studio.t(el.dataset.label)});
+  let pending=false,finished=false,selected=null;
+  document.querySelectorAll('[data-part]').forEach(el=>el.addEventListener('click',()=>{
+    if(pending||finished)return;
+    pending=true;
+    selected=el;
+    Studio.answer(el.dataset.part);
+  }));
+  Studio.onVerdict(({correct})=>{
+    if(!pending||finished)return;
+    pending=false;
+    const feedback=document.getElementById('feedback');
+    if(correct){
+      finished=true;
+      selected.classList.add('glow');
+      feedback.textContent=Studio.t('done');
+      Studio.done();
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      selected.classList.remove('shake');
+      void selected.getBoundingClientRect();
+      selected.classList.add('shake');
+    }
+  });
+  Studio.ready();
+
+</script>

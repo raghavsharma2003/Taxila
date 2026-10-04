@@ -1,0 +1,102 @@
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif}body{background:#fff8e9;color:#344b43}.frame{width:360px;height:320px;padding:5px 9px;display:flex;flex-direction:column;gap:3px}.title{height:24px;text-align:center;font-size:17px;line-height:24px;font-weight:800;color:#39634f}.scene{width:342px;height:139px;display:block;border-radius:19px;background:#f2f8e9}.caption{height:25px;border-radius:12px;background:#e8f2dc;text-align:center;line-height:25px;color:#42604b;font-size:14px;font-weight:700}.controls{height:52px;display:flex;justify-content:center;gap:12px;align-items:center}.controls button,.options button{min-width:52px;height:52px;border:0;border-radius:17px;background:#f6bd61;color:#493b26;font:700 15px system-ui;box-shadow:0 3px 0 #d79c45;cursor:pointer;transition:transform .14s,background .2s}.controls button:active,.options button:active{transform:scale(.94)}#play{min-width:94px;background:#b9dfc2;color:#315940;box-shadow:0 3px 0 #8ebd9a}.question{height:26px;text-align:center;line-height:26px;font-size:15px;font-weight:750;color:#4b6556}.options{height:52px;display:flex;justify-content:center;gap:10px}.options button{flex:1;max-width:98px;background:#f5d58f}.options button.selected{background:#f0a95b}.feedback{position:absolute;left:9px;top:294px;width:342px;height:19px;text-align:center;font-size:13px;font-weight:750;color:#477650}.feedback.bad{color:#a65b45}svg text{font-family:system-ui,sans-serif;font-weight:750;fill:#405b4b;text-anchor:middle} [data-entity="leaf"]{transition:filter .3s,stroke-width .3s}
+</style>
+<div class="frame">
+  <div class="title" id="title"></div>
+  <svg class="scene" id="scene" viewBox="0 0 342 139" aria-label="">
+    <path d="M43 71 Q101 72 142 72" fill="none" stroke="#8fc7b0" stroke-width="3" stroke-dasharray="5 5"/>
+    <path d="M200 72 Q251 72 307 72" fill="none" stroke="#e69b77" stroke-width="3" stroke-dasharray="5 5"/>
+    <path d="M171 126 Q171 105 171 100" fill="none" stroke="#6bb9cf" stroke-width="3" stroke-dasharray="5 5"/>
+    <g id="entities"></g><g id="flows"></g><g id="labels"></g>
+  </svg>
+  <div class="caption" data-caption id="caption"></div>
+  <div class="controls"><button id="play" data-action="play"></button><button id="next" data-action="next"></button></div>
+  <div class="question" id="ask"></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback"></div>
+</div>
+<script>
+
+(()=>{
+const p=Studio.params, svg=document.getElementById("scene"), ns="http://www.w3.org/2000/svg";
+const title=document.getElementById("title"), caption=document.getElementById("caption"), play=document.getElementById("play"), ask=document.getElementById("ask"), feedback=document.getElementById("feedback");
+title.textContent=Studio.t("title");ask.textContent=Studio.t("ask");
+const hub=p.hub, ent=p.entities, flows=p.flows, steps=p.steps;
+let playing=true, step=0, last=0, selected=null, finished=false;
+const keys=["step1","step2","step3","step4"];
+function node(tag,attrs,parent){const n=document.createElementNS(ns,tag);for(const k in attrs)n.setAttribute(k,attrs[k]);parent.appendChild(n);return n}
+const entities=document.getElementById("entities"), labels=document.getElementById("labels"), flowGroup=document.getElementById("flows");
+const pos={};
+pos[hub]=[171,72];
+ent.forEach((key,i)=>pos[key]=i===0?[55,34]:[286,111]);
+function label(key,x,y){const t=node("text",{x,y,"data-label":key,"font-size":11},labels);t.textContent=Studio.t(key)}
+function drawEntity(key){
+ const [x,y]=pos[key];
+ if(key===hub){
+  node("circle",{cx:x,cy:y,r:29,fill:"#a8d99e",stroke:"#579367","stroke-width":3,"data-entity":key},entities);
+  node("path",{d:`M${x-13} ${y+8} Q${x-5} ${y-12} ${x+14} ${y-13} Q${x+12} ${y+10} ${x-13} ${y+8}Z`,fill:"#64a66f",stroke:"#438556","stroke-width":1.5},entities);
+  node("path",{d:`M${x-10} ${y+6} Q${x} ${y-2} ${x+10} ${y-10}`,stroke:"#e9f4cc","stroke-width":2,fill:"none"},entities);
+  label(key,x,y+43);
+ }else{
+  node("circle",{cx:x,cy:y,r:19,fill:key===ent[0]?"#ffe19a":"#d6c6a5",stroke:key===ent[0]?"#e4ad4e":"#a68b67","stroke-width":2,"data-entity":key},entities);
+  node("circle",{cx:x,cy:y,r:8,fill:key===ent[0]?"#fff1bf":"#a18c6c"},entities);
+  label(key,x,y+(iLabel(key)===0?-25:31));
+ }
+}
+function iLabel(key){return ent.indexOf(key)}
+[hub,...ent].forEach(drawEntity);
+flows.forEach(f=>{
+ let a,b,lx,ly;
+ if(f.dir==="up_in"){a=[171,130];b=[171,100];lx=210;ly=116}
+ else if(f.dir==="out"){a=[200,72];b=[307,72];lx=259;ly=57}
+ else{a=[43,72];b=[142,72];lx=91;ly=57}
+ node("text",{x:lx,y:ly,"data-label":f.key,"font-size":11},labels).textContent=Studio.t(f.key);
+ for(let i=0;i<3;i++)node("circle",{cx:a[0],cy:a[1],r:3.2,fill:f.dir==="up_in"?"#46a9c5":f.dir==="out"?"#eb906b":"#70b89a","data-flow":f.key},flowGroup);
+});
+function caption(){captionNode.textContent=Studio.t(keys[step])}
+const captionNode=caption;
+captionNode.textContent=Studio.t("step1");
+document.getElementById("next").textContent=Studio.t("next");
+function syncPlay(){play.textContent=Studio.t(playing?"pause":"play")}
+syncPlay();
+play.addEventListener("click",()=>{playing=!playing;syncPlay();Studio.event("play",{playing:playing?1:0})});
+document.getElementById("next").addEventListener("click",()=>{
+ step=(step+1)%steps;captionNode.textContent=Studio.t(keys[step]);
+ const hubShape=svg.querySelector(`[data-entity="${hub}"]`);
+ hubShape.style.filter="drop-shadow(0 0 5px #e7a94f)";
+ setTimeout(()=>hubShape.style.filter="",450);
+ Studio.event("next",{step:step+1});
+});
+const optionBox=document.getElementById("options");
+p.options.forEach(key=>{
+ const b=document.createElement("button");b.type="button";b.dataset.option=key;b.textContent=Studio.t(key);
+ b.addEventListener("click",()=>{selected=key;optionBox.querySelectorAll("button").forEach(x=>x.classList.toggle("selected",x===b));feedback.textContent="";feedback.className="feedback";Studio.answer(key);Studio.event("answer",{option:key})});
+ optionBox.appendChild(b);
+});
+Studio.onVerdict(v=>{
+ feedback.textContent=Studio.t(v.correct?"right":"wrong");
+ feedback.className="feedback"+(v.correct?"":" bad");
+ if(v.correct&&!finished){finished=true;Studio.done()}
+});
+function animate(t){
+ if(playing){
+  const circles=flowGroup.querySelectorAll("circle");
+  flows.forEach((f,j)=>{
+   const arr=Array.from(circles).filter(c=>c.dataset.flow===f.key);
+   arr.forEach((c,i)=>{
+    const q=((t/1200+i/3)%1);
+    let x,y;
+    if(f.dir==="up_in"){x=171;y=130-q*30}
+    else if(f.dir==="out"){x=200+q*107;y=72}
+    else{x=43+q*99;y=72}
+    c.setAttribute("cx",x);c.setAttribute("cy",y);
+   })
+  });
+ }
+ requestAnimationFrame(animate)
+}
+requestAnimationFrame(animate);
+Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,104 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ee;color:#493b39}
+  #scene{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 85% 8%,#ffe9cc 0 52px,transparent 53px),#fff8ee}
+  #title{position:absolute;top:17px;left:18px;right:18px;margin:0;font-size:21px;font-weight:800}
+  #ask{position:absolute;top:49px;left:18px;right:18px;margin:0;font-size:14px;line-height:1.25;color:#705b54}
+  svg{position:absolute;inset:0;width:360px;height:320px;pointer-events:none}
+  [data-axis]{stroke:#d5a286;stroke-width:5;stroke-linecap:round}
+  .join{stroke:#d5a286;stroke-width:2;stroke-linecap:round}
+  .marker{fill:#fff8ee;stroke:#b9685c;stroke-width:3}
+  .card{position:absolute;width:104px;min-height:62px;border:2px solid #e5af92;border-radius:17px;background:#fffdf8;color:#493b39;box-shadow:0 4px 0 #f2d4bd;font:700 14px/1.15 system-ui,sans-serif;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px;text-align:center;transition:transform .2s,background .2s,box-shadow .2s}
+  .card span{font-size:12px;font-weight:600;color:#8a665c}
+  .card:active{transform:scale(.94)}
+  .card:focus-visible{outline:3px solid #635caa;outline-offset:2px}
+  .card.chosen{background:#ffe1c2;transform:translateY(-3px);box-shadow:0 7px 0 #e9b995}
+  #feedback{position:absolute;left:18px;right:18px;bottom:12px;min-height:30px;text-align:center;font-size:17px;font-weight:800;color:#916052}
+  #feedback.pop{animation:pop .35s ease-out}
+  @keyframes pop{from{transform:scale(.8);opacity:.4}to{transform:scale(1);opacity:1}}
+</style>
+<div id="scene">
+  <h1 id="title"></h1>
+  <p id="ask"></p>
+  <svg viewBox="0 0 360 320" aria-hidden="true">
+    <line data-axis x1="30" y1="172" x2="330" y2="172"></line>
+    <g id="joins"></g>
+    <g id="markers"></g>
+  </svg>
+  <div id="cards"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const events = [...Studio.params.events].sort((a,b) => a.year-b.year);
+  const first = events[0].year, last = events[events.length-1].year;
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const joins = document.getElementById('joins');
+  const markers = document.getElementById('markers');
+  const cards = document.getElementById('cards');
+  const feedback = document.getElementById('feedback');
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('ask').textContent = Studio.t('ask');
+  let pending = false, finished = false, selected = null;
+  const position = year => first === last ? 180 : 30 + (year-first)/(last-first)*300;
+  events.forEach((event, index) => {
+    const x = position(event.year);
+    const above = index % 2 === 1;
+    const top = above ? 91 : 207;
+    const left = Math.max(8, Math.min(248, x-52));
+    const join = document.createElementNS(svgNS, 'line');
+    join.setAttribute('class','join');
+    join.setAttribute('x1',x);
+    join.setAttribute('y1',above ? 166 : 178);
+    join.setAttribute('x2',left+52);
+    join.setAttribute('y2',above ? top+62 : top);
+    joins.appendChild(join);
+    const marker = document.createElementNS(svgNS,'circle');
+    marker.setAttribute('class','marker');
+    marker.setAttribute('cx',x);
+    marker.setAttribute('cy',172);
+    marker.setAttribute('r',6);
+    marker.setAttribute('data-event',event.key);
+    marker.setAttribute('data-year',event.year);
+    markers.appendChild(marker);
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'card';
+    card.setAttribute('data-card',event.key);
+    card.style.left = left+'px';
+    card.style.top = top+'px';
+    const name = document.createElement('strong');
+    name.textContent = Studio.t(event.key);
+    const year = document.createElement('span');
+    year.textContent = event.year;
+    card.append(name,year);
+    card.addEventListener('click',() => {
+      if (pending || finished) return;
+      pending = true;
+      selected?.classList.remove('chosen');
+      selected = card;
+      card.classList.add('chosen');
+      Studio.answer(event.key);
+    });
+    cards.appendChild(card);
+  });
+  Studio.onVerdict(({correct}) => {
+    if (!pending || finished) return;
+    feedback.textContent = Studio.t(correct ? 'right' : 'wrong');
+    feedback.classList.remove('pop');
+    void feedback.offsetWidth;
+    feedback.classList.add('pop');
+    if (correct) {
+      finished = true;
+      document.getElementById('ask').textContent = Studio.t('done');
+      Studio.done();
+    } else {
+      pending = false;
+      selected?.classList.remove('chosen');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

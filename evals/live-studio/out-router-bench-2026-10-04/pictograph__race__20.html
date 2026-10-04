@@ -1,0 +1,117 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8e9;font-family:Arial,sans-serif;color:#5b3a2d}
+  #app{position:relative;width:360px;height:320px;overflow:hidden;background:
+    radial-gradient(circle at 86% 4%,#ffe6a8 0 24px,transparent 25px),
+    radial-gradient(circle at 9% 91%,#ffd9bd 0 34px,transparent 35px),
+    #fff8e9}
+  #title{position:absolute;left:18px;top:10px;font-size:22px;font-weight:800;line-height:26px;letter-spacing:.2px;color:#8e4d35}
+  #key{position:absolute;left:18px;top:40px;height:27px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#8a624d}
+  #key svg{width:23px;height:23px;flex:none}
+  #ask{position:absolute;left:18px;top:70px;width:324px;height:20px;font-size:15px;font-weight:800;color:#6d4535;white-space:nowrap}
+  #rows{position:absolute;left:12px;top:94px;width:336px}
+  .row{position:relative;width:336px;height:54px;border:0;border-radius:17px;background:rgba(255,255,255,.7);display:flex;align-items:center;padding:0 8px;cursor:pointer;transition:transform .18s ease,background .18s ease,box-shadow .18s ease;outline:none}
+  .row:active{transform:scale(.975)}
+  .row:hover{background:#fffdf8;box-shadow:0 4px 0 rgba(186,113,73,.12)}
+  .row:focus-visible{box-shadow:0 0 0 3px #e98b57}
+  .label{width:84px;flex:none;font-size:15px;font-weight:800;color:#8b5038;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .symbols{height:36px;display:flex;align-items:center;gap:5px}
+  .sun{width:29px;height:29px;flex:none;filter:drop-shadow(0 2px 0 rgba(174,95,40,.18));transition:transform .2s ease}
+  .row:hover .sun{animation:wobble .55s ease both}
+  .row:hover .sun:nth-child(2){animation-delay:.05s}
+  .row:hover .sun:nth-child(3){animation-delay:.1s}
+  .row:hover .sun:nth-child(4){animation-delay:.15s}
+  .row:hover .sun:nth-child(5){animation-delay:.2s}
+  .chosen{background:#fff0cd;box-shadow:0 4px 0 rgba(217,125,69,.18)}
+  .chosen .sun{animation:pop .32s ease both}
+  .locked{pointer-events:none}
+  #feedback{position:absolute;right:18px;top:70px;font-size:14px;font-weight:800;color:#cc5b42;opacity:0;transform:translateY(-4px);transition:opacity .2s ease,transform .2s ease}
+  #feedback.show{opacity:1;transform:translateY(0)}
+  #feedback.good{color:#4d8b66}
+  #celebrate{position:absolute;right:17px;top:9px;width:42px;height:42px;opacity:0;transform:scale(.5) rotate(-15deg);transition:opacity .3s ease,transform .4s cubic-bezier(.2,1.4,.4,1)}
+  #celebrate.show{opacity:1;transform:scale(1) rotate(0deg)}
+  @keyframes wobble{0%,100%{transform:rotate(0)}45%{transform:translateY(-3px) rotate(8deg)}75%{transform:rotate(-5deg)}}
+  @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.2) translateY(-3px)}100%{transform:scale(1)}}
+</style>
+<div id="app">
+  <div id="title"></div>
+  <div id="key" data-key></div>
+  <div id="ask"></div>
+  <div id="feedback"></div>
+  <div id="rows"></div>
+  <svg id="celebrate" viewBox="0 0 42 42" aria-hidden="true">
+    <path d="M21 3l3.5 10.2L35 8l-5.2 10.2L40 21l-10.2 3.5L35 35l-10.5-5.2L21 40l-3.5-10.2L7 35l5.2-10.5L2 21l10.2-2.8L7 8l10.5 5.2z" fill="#f6b642"/>
+    <circle cx="21" cy="21" r="7" fill="#ffdd74"/>
+  </svg>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, ns="http://www.w3.org/2000/svg";
+  var title=document.getElementById("title"), key=document.getElementById("key");
+  var ask=document.getElementById("ask"), rows=document.getElementById("rows");
+  var feedback=document.getElementById("feedback"), celebrate=document.getElementById("celebrate");
+  title.textContent=Studio.t("title");
+  ask.textContent=Studio.t("ask");
+
+  function symbol(){
+    var svg=document.createElementNS(ns,"svg");
+    svg.setAttribute("viewBox","0 0 30 30");
+    svg.setAttribute("class","sun");
+    svg.setAttribute("data-symbol","");
+    var rays=document.createElementNS(ns,"path");
+    rays.setAttribute("d","M15 1.5l2.2 6 5.5-3.3-1 6.3 6.5.4-5 4.1 4.2 4.8-6.3-.8-1.1 6.3-3.5-5.5-3.5 5.5-1.1-6.3-6.3.8 4.2-4.8-5-4.1 6.5-.4-1-6.3 5.5 3.3z");
+    rays.setAttribute("fill","#f5a83b");
+    var face=document.createElementNS(ns,"circle");
+    face.setAttribute("cx","15");face.setAttribute("cy","15");face.setAttribute("r","7.3");face.setAttribute("fill","#ffd86b");
+    var dot1=document.createElementNS(ns,"circle");
+    dot1.setAttribute("cx","12.3");dot1.setAttribute("cy","14");dot1.setAttribute("r","1");dot1.setAttribute("fill","#9a5735");
+    var dot2=document.createElementNS(ns,"circle");
+    dot2.setAttribute("cx","17.7");dot2.setAttribute("cy","14");dot2.setAttribute("r","1");dot2.setAttribute("fill","#9a5735");
+    var smile=document.createElementNS(ns,"path");
+    smile.setAttribute("d","M11.7 17c1.8 2 4.8 2 6.6 0");smile.setAttribute("fill","none");smile.setAttribute("stroke","#9a5735");smile.setAttribute("stroke-width","1.2");smile.setAttribute("stroke-linecap","round");
+    svg.appendChild(rays);svg.appendChild(face);svg.appendChild(dot1);svg.appendChild(dot2);svg.appendChild(smile);
+    return svg;
+  }
+  key.appendChild(symbol());
+  var kt=document.createElement("span");
+  kt.textContent=Studio.t("keytext")+" "+p.symbolValue;
+  key.appendChild(kt);
+
+  p.rows.forEach(function(item){
+    var row=document.createElement("button");
+    row.type="button";row.className="row";row.setAttribute("data-row",item.key);
+    var label=document.createElement("span");label.className="label";label.textContent=Studio.t(item.key);
+    var group=document.createElement("span");group.className="symbols";
+    var count=item.value/p.symbolValue;
+    for(var i=0;i<count;i++)group.appendChild(symbol());
+    row.appendChild(label);row.appendChild(group);
+    row.addEventListener("click",function(){
+      if(row.classList.contains("locked"))return;
+      row.classList.add("chosen");
+      Studio.event("row",{key:item.key});
+      Studio.answer(item.key);
+    });
+    rows.appendChild(row);
+  });
+  Studio.onVerdict(function(v){
+    if(v.correct){
+      feedback.textContent=Studio.t("right");
+      feedback.className="show good";
+      ask.textContent=Studio.t("done");
+      celebrate.classList.add("show");
+      var all=rows.querySelectorAll(".row");
+      for(var i=0;i<all.length;i++)all[i].classList.add("locked");
+      Studio.done();
+    }else{
+      feedback.textContent=Studio.t("wrong");
+      feedback.className="show";
+      var selected=rows.querySelector(".chosen");
+      if(selected)selected.classList.remove("chosen");
+      setTimeout(function(){feedback.className="";},900);
+    }
+  });
+  Studio.ready();
+}());
+
+</script>

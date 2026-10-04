@@ -1,0 +1,107 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e9;font-family:system-ui,sans-serif;color:#594636}
+  #card{position:relative;width:360px;height:320px;overflow:hidden;border-radius:22px;background:radial-gradient(circle at 48% 37%,#fffdf7 0%,#fff1dc 100%)}
+  #title{position:absolute;top:8px;left:18px;font-size:15px;font-weight:750;color:#80634a}
+  [data-ask]{position:absolute;top:31px;left:18px;right:18px;font-size:18px;font-weight:800}
+  #feedback{position:absolute;top:9px;right:17px;font-size:14px;font-weight:800;color:#53844e}
+  svg{position:absolute;top:53px;left:0;width:360px;height:267px}
+  .leader{fill:none;stroke:#bda88d;stroke-width:2;stroke-linecap:round}
+  .name{fill:#604b39;font-size:14px;font-weight:750}
+  .art{pointer-events:none}
+  .target{cursor:pointer;fill:transparent;stroke:transparent;stroke-width:2;transform-box:fill-box;transform-origin:center;transition:transform .2s ease,filter .2s ease}
+  .target:active{transform:scale(.94)}
+  .target.glow{filter:drop-shadow(0 0 9px #f5ba37)}
+  .target.wiggle{animation:wiggle .38s ease}
+  @keyframes wiggle{25%{transform:rotate(-5deg)}65%{transform:rotate(5deg)}}
+</style>
+<div id="card">
+  <div id="title"></div>
+  <div data-ask></div>
+  <div id="feedback" aria-live="polite"></div>
+  <svg viewBox="0 0 360 267" role="img">
+    <g data-item="petal">
+      <path class="leader" d="M105 79 L120 83"/>
+      <text class="name" data-label="petal" x="25" y="82"></text>
+      <g class="target" data-part="petal">
+        <path class="art" d="M182 82 Q150 34 133 55 Q122 70 146 89 Q115 81 117 106 Q121 127 153 113 Q141 139 163 143 Q183 142 185 112Z" fill="#f18fa2" stroke="#da7189" stroke-width="3"/>
+        <path d="M117 50 H187 V144 H117Z"/>
+      </g>
+    </g>
+    <g data-item="centre">
+      <path class="leader" d="M217 96 L232 91"/>
+      <text class="name" data-label="centre" x="237" y="96"></text>
+      <g class="target" data-part="centre">
+        <circle class="art" cx="188" cy="107" r="29" fill="#f7cb64" stroke="#e5a944" stroke-width="3"/>
+        <circle cx="188" cy="107" r="29"/>
+      </g>
+    </g>
+    <g data-item="stem">
+      <path class="leader" d="M127 184 L151 184"/>
+      <text class="name" data-label="stem" x="76" y="189"></text>
+      <g class="target" data-part="stem">
+        <path class="art" d="M182 143 Q174 188 181 237" fill="none" stroke="#62a76b" stroke-width="19" stroke-linecap="round"/>
+        <rect x="151" y="148" width="54" height="88" rx="20"/>
+      </g>
+    </g>
+    <g data-item="leaf">
+      <path class="leader" d="M267 187 L276 187"/>
+      <text class="name" data-label="leaf" x="280" y="192"></text>
+      <g class="target" data-part="leaf">
+        <path class="art" d="M188 204 Q218 163 260 170 Q255 213 188 204Z" fill="#75b979" stroke="#4d9765" stroke-width="3"/>
+        <path class="art" d="M198 201 Q226 187 253 175" fill="none" stroke="#4d9765" stroke-width="2"/>
+        <rect x="207" y="158" width="62" height="62" rx="20"/>
+      </g>
+    </g>
+    <g data-item="root">
+      <path class="leader" d="M213 240 L225 242"/>
+      <text class="name" data-label="root" x="230" y="247"></text>
+      <g class="target" data-part="root">
+        <path class="art" d="M180 218 Q173 239 150 256 M180 219 Q188 242 211 257 M180 220 L180 259" fill="none" stroke="#a87b59" stroke-width="12" stroke-linecap="round"/>
+        <rect x="145" y="207" width="68" height="56" rx="19"/>
+      </g>
+    </g>
+  </svg>
+</div>
+<script>
+
+(() => {
+  const allowed=new Set(Studio.params.parts);
+  document.querySelector('#title').textContent=Studio.t('title');
+  document.querySelector('[data-ask]').textContent=Studio.t('ask');
+  document.querySelectorAll('[data-item]').forEach(group=>{
+    const key=group.getAttribute('data-item');
+    if(!allowed.has(key)){group.remove();return}
+    group.querySelector('[data-label]').textContent=Studio.t(key);
+  });
+  const feedback=document.querySelector('#feedback');
+  let pending=false,finished=false,chosen=null;
+  document.querySelector('svg').addEventListener('click',event=>{
+    const target=event.target.closest('[data-part]');
+    if(!target||pending||finished)return;
+    chosen=target.getAttribute('data-part');
+    pending=true;
+    feedback.textContent='';
+    Studio.event('tap',{part:chosen});
+    Studio.answer(chosen);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending||finished)return;
+    pending=false;
+    const target=document.querySelector('[data-part="'+chosen+'"]');
+    if(correct){
+      finished=true;
+      target.classList.add('glow');
+      feedback.textContent=Studio.t('right');
+      setTimeout(()=>{feedback.textContent=Studio.t('done');Studio.done()},650);
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      target.classList.remove('wiggle');
+      void target.getBoundingClientRect();
+      target.classList.add('wiggle');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,40 @@
+<style>
+*{box-sizing:border-box}
+#lesson{width:360px;height:320px;overflow:hidden;position:relative;background:#fff8ed;color:#493d36;font-family:system-ui,sans-serif;padding:12px;border-radius:18px}
+h1{font-size:18px;line-height:24px;text-align:center;margin:0 0 5px;color:#594534}
+#map{height:114px;position:relative}
+.stage{position:absolute;top:11px;width:66px;height:68px;border:2px solid #edc897;border-radius:18px;background:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:5px;transition:box-shadow .3s,transform .3s,border-color .3s}
+.stage[data-on="true"]{border-color:#ec9a55;box-shadow:0 0 0 5px #ffd9a7;transform:translateY(-3px)}
+.label{font-size:13px;line-height:16px;font-weight:700}
+svg#arrows{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.arrow-line{stroke:#d99456;stroke-width:3;stroke-linecap:round;fill:none}
+#token{position:absolute;width:14px;height:14px;border-radius:50%;background:#e8704e;border:3px solid #fff;box-shadow:0 2px 5px #94542f88;z-index:3;pointer-events:none}
+button{font:700 15px system-ui,sans-serif;color:#fff;background:#dc8050;border:0;border-radius:16px;min-width:52px;min-height:52px;padding:10px 16px;box-shadow:0 3px 0 #b8663e;cursor:pointer;transition:transform .12s,background .2s}
+button:active{transform:scale(.94)}
+#next{display:block;margin:0 auto}
+#question{display:none;margin-top:5px;text-align:center}
+#question p{font-size:15px;font-weight:700;line-height:19px;margin:0 0 6px}
+#options{display:flex;justify-content:center;gap:7px;flex-wrap:wrap}
+#options button{min-height:52px;max-width:105px;padding:7px 10px;font-size:13px;background:#7d9c72;box-shadow:0 3px 0 #5b7652}
+#feedback{min-height:21px;margin-top:5px;font-size:14px;font-weight:700;color:#74523a}
+#feedback.good{color:#54804d}
+#feedback.bad{color:#b45a49}
+</style>
+<div id="lesson">
+  <h1 id="title"></h1>
+  <div id="map">
+    <svg id="arrows" aria-hidden="true"></svg>
+    <div id="token" data-token></div>
+  </div>
+  <button id="next" data-action="next"></button>
+  <section id="question">
+    <p id="ask"></p>
+    <div id="options"></div>
+    <div id="feedback" aria-live="polite"></div>
+  </section>
+</div>
+<script>
+
+(()=>{const p=Studio.params,root=document.getElementById("lesson"),map=document.getElementById("map"),svg=document.getElementById("arrows"),token=document.getElementById("token"),next=document.getElementById("next"),question=document.getElementById("question"),options=document.getElementById("options"),feedback=document.getElementById("feedback");document.getElementById("title").textContent=Studio.t("title");next.textContent=Studio.t("next");document.getElementById("ask").textContent=Studio.t("ask");let active=0,moving=false,asked=false;const n=p.stages.length,w=66,centers=p.stages.map((_,i)=>({x:45+i*(270/Math.max(1,n-1)),y:45}));p.stages.forEach((key,i)=>{const card=document.createElement("div");card.className="stage";card.dataset.stage=key;card.dataset.on=String(i===0);card.style.left=(centers[i].x-w/2)+"px";const label=document.createElement("span");label.className="label";label.dataset.label=key;label.textContent=Studio.t(key);card.append(label);map.append(card)});const defs=document.createElementNS("http://www.w3.org/2000/svg","defs"),marker=document.createElementNS("http://www.w3.org/2000/svg","marker"),path=document.createElementNS("http://www.w3.org/2000/svg","path");marker.setAttribute("id","head");marker.setAttribute("markerWidth","8");marker.setAttribute("markerHeight","8");marker.setAttribute("refX","6");marker.setAttribute("refY","4");marker.setAttribute("orient","auto");path.setAttribute("d","M0,0 L8,4 L0,8 z");path.setAttribute("fill","#d99456");marker.append(path);defs.append(marker);svg.append(defs);const edges=[];for(let i=0;i<n-1;i++)edges.push([i,i+1]);if(p.cycle&&n>1)edges.push([n-1,0]);edges.forEach(([a,b])=>{const line=document.createElementNS("http://www.w3.org/2000/svg","line");line.setAttribute("x1",centers[a].x+(b>a?w/2:-w/2));line.setAttribute("y1",centers[a].y);line.setAttribute("x2",centers[b].x+(b>a?-w/2:w/2));line.setAttribute("y2",centers[b].y);line.setAttribute("class","arrow-line");line.setAttribute("marker-end","url(#head)");line.dataset.arrow=p.stages[a]+">"+p.stages[b];svg.append(line)});token.style.left=(centers[0].x-7)+"px";token.style.top=(centers[0].y-7)+"px";root.dataset.active=p.stages[0];function setActive(i){active=i;root.dataset.active=p.stages[i];map.querySelectorAll(".stage").forEach((el,j)=>el.dataset.on=String(j===i))}function showQuestion(){asked=true;next.style.display="none";question.style.display="block";p.options.forEach(key=>{const b=document.createElement("button");b.dataset.option=key;b.textContent=Studio.t(key);b.addEventListener("click",()=>{feedback.textContent="";feedback.className="";Studio.answer(key)});options.append(b)});Studio.onVerdict(v=>{feedback.textContent=Studio.t(v.correct?"right":"wrong");feedback.className=v.correct?"good":"bad";if(v.correct){options.style.display="none";feedback.textContent=Studio.t("done");Studio.done()}})}next.addEventListener("click",()=>{if(moving||asked)return;if(active<n-1||p.cycle){const from=active,to=(active+1)%n,a=centers[from],b=centers[to];moving=true;next.disabled=true;const x1=a.x-7,y1=a.y-7,x2=b.x-7,y2=b.y-7;token.animate([{left:x1+"px",top:y1+"px",offset:0},{left:((x1+x2)/2)+"px",top:(Math.min(y1,y2)-22)+"px",offset:.48},{left:x2+"px",top:y2+"px",offset:1}],{duration:720,easing:"cubic-bezier(.22,.75,.25,1)"}).onfinish=()=>{token.style.left=x2+"px";token.style.top=y2+"px";setActive(to);moving=false;next.disabled=false;Studio.event("stage",{index:to});if(!p.cycle&&to===n-1)showQuestion()}}else showQuestion()});Studio.ready()})()
+
+</script>

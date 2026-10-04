@@ -1,0 +1,75 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#493b34}
+#app{width:360px;height:320px;padding:12px 14px;display:flex;flex-direction:column;gap:9px}
+h1{font-size:19px;line-height:23px;margin:0;color:#6d4d39;font-weight:800}
+#instr{margin:0;font-size:13px;line-height:17px;color:#725f54}
+#track{display:flex;justify-content:center;gap:8px;min-height:62px}
+.slot{width:94px;height:62px;border:2px dashed #d8bca0;background:#fffdf8;border-radius:16px;display:flex;align-items:center;justify-content:center;position:relative}
+.slot-num{position:absolute;left:6px;top:4px;font-size:13px;font-weight:800;color:#b18b68}
+#cards{display:flex;justify-content:center;gap:8px;min-height:62px}
+.card{height:58px;min-width:94px;padding:6px;border:0;border-radius:16px;background:#f3c889;color:#503d30;box-shadow:0 4px 0 #d9a966;font:700 15px/18px system-ui,sans-serif;cursor:pointer;transition:transform .16s,box-shadow .16s,background .2s;display:flex;align-items:center;justify-content:center;text-align:center}
+.card:active{transform:scale(.94);box-shadow:0 1px 0 #d9a966}
+.card:focus-visible{outline:3px solid #679b83;outline-offset:2px}
+.card[ data-placed ]{background:#cfe4d5;box-shadow:0 3px 0 #9bbba4;cursor:default}
+.slot .card{width:82px;min-width:0;height:42px;padding:3px;font-size:13px;line-height:15px;box-shadow:none;border-radius:11px}
+#feedback{height:23px;text-align:center;font-size:14px;font-weight:700;color:#65836d}
+#art{position:absolute;right:18px;top:11px;width:28px;height:28px;pointer-events:none}
+#app{position:relative}
+@keyframes wobble{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.wrong-tap{animation:wobble .28s ease}
+@keyframes pop{0%{transform:scale(.75)}70%{transform:scale(1.08)}100%{transform:scale(1)}}
+.pop{animation:pop .3s ease}
+</style>
+<div id="app">
+  <svg id="art" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2.5l3.2 8.1 8.7.4-6.8 5.5 2.4 8.4-7.5-4.8-7.5 4.8 2.4-8.4-6.8-5.5 8.7-.4z" fill="#f0bd72"/><circle cx="16" cy="15" r="3" fill="#fff8ed"/></svg>
+  <h1 id="title"></h1>
+  <p id="instr"></p>
+  <div id="track"></div>
+  <div id="cards"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+ const p=Studio.params, order=["a","b","c"], keys=["title","instr","right","wrong","done","c","a","b"];
+ const t=k=>Studio.t(k), track=document.getElementById("track"), cards=document.getElementById("cards"), feedback=document.getElementById("feedback");
+ document.getElementById("title").textContent=t("title");
+ document.getElementById("instr").textContent=t("instr");
+ const slots=[];
+ for(let i=0;i<p.shown.length;i++){
+  const s=document.createElement("div");s.className="slot";
+  const n=document.createElement("span");n.className="slot-num";n.textContent=String(i+1);s.appendChild(n);track.appendChild(s);slots.push(s);
+ }
+ const elements={};
+ p.shown.forEach(key=>{
+  const b=document.createElement("button");b.type="button";b.className="card";b.dataset.step=key;b.textContent=t(key);cards.appendChild(b);elements[key]=b;
+ });
+ let index=0,pending=false,complete=false;
+ Studio.ready();
+ p.shown.forEach(key=>elements[key].addEventListener("click",()=>{
+  if(pending||complete||elements[key].hasAttribute("data-placed"))return;
+  pending=true;feedback.textContent="";
+  Studio.event("tap",{key});
+  Studio.answer({key});
+ }));
+ Studio.onVerdict(({correct})=>{
+  if(complete)return;
+  pending=false;
+  const key=order[index], card=elements[key];
+  if(correct&&card){
+   card.dataset.placed=String(index+1);
+   slots[index].appendChild(card);card.classList.add("pop");
+   feedback.textContent=t("right");index++;
+   if(index===p.shown.length){
+    complete=true;feedback.textContent=t("done");Studio.done();
+   }
+  }else{
+   feedback.textContent=t("wrong");
+   const tapped=Object.values(elements).find(x=>!x.hasAttribute("data-placed"));
+   if(tapped){tapped.classList.remove("wrong-tap");void tapped.offsetWidth;tapped.classList.add("wrong-tap");}
+  }
+ });
+})();
+
+</script>

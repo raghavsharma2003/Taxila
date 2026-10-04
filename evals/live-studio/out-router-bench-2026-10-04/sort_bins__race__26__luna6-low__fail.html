@@ -1,0 +1,143 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#493b34;background:#fff8ec}
+#app{width:360px;height:320px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;overflow:hidden}
+header{height:30px;display:flex;align-items:center;gap:8px;flex:none}
+.spark{width:26px;height:26px;flex:none}
+h1{font-size:18px;line-height:1.1;margin:0;font-weight:800;color:#57463d}
+#instruction{height:28px;flex:none;font-size:13px;line-height:1.15;color:#79685d}
+#cards{height:116px;flex:none;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,52px);gap:8px 7px}
+.card{min-width:0;height:52px;border:2px solid #ead9c6;border-radius:15px;background:#fff;box-shadow:0 3px 0 #e5d4c2;color:#59483e;font:700 14px system-ui,sans-serif;padding:4px;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s}
+.card:active,.bin:active{transform:scale(.96)}
+.card.selected{transform:translateY(-4px) scale(1.03);border-color:#e8a84f;box-shadow:0 7px 0 #f1d2a4,0 0 12px #f5d795}
+#bins{height:98px;flex:none;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bin{position:relative;min-width:0;height:98px;border:2px solid #b9d8c5;border-radius:18px;background:#eaf5ec;box-shadow:0 4px 0 #c6dfcb;padding:7px 5px;cursor:pointer;text-align:center;transition:transform .18s,background .18s}
+.bin:nth-child(2){border-color:#d8c8e8;background:#f2edf8;box-shadow:0 4px 0 #ddd1eb}
+.bin-name{display:block;font-size:13px;font-weight:800;color:#4a7257;line-height:20px}
+.bin:nth-child(2) .bin-name{color:#715d8c}
+.contents{height:54px;display:flex;align-content:flex-start;justify-content:center;align-items:flex-start;flex-wrap:wrap;gap:3px;overflow:hidden}
+.placed{font-size:11px;line-height:18px;padding:0 6px;border-radius:9px;background:#fffdf6;color:#59483e;animation:arrive .35s ease-out}
+#feedback{height:20px;flex:none;text-align:center;font-size:13px;line-height:20px;font-weight:700;color:#6b8064}
+.shake{animation:shake .32s ease-in-out}
+@keyframes arrive{from{transform:scale(.5) translateY(-5px);opacity:.4}to{transform:scale(1);opacity:1}}
+@keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+</style>
+<div id="app">
+  <header>
+    <svg class="spark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2l3.2 9.2L29 14l-9.8 3.1L16 27l-3.2-9.9L3 14l9.8-2.8z" fill="#f2be65"/><circle cx="25" cy="25" r="3" fill="#ed9878"/></svg>
+    <h1 id="title"></h1>
+  </header>
+  <div id="instruction"></div>
+  <div id="cards"></div>
+  <div id="bins"></div>
+  <div id="feedback"></div>
+</div>
+<script>
+
+(() => {
+  const p = Studio.params;
+  const wordKeys = ["dog","stone","tree","chair","ant"];
+  const words = Object.fromEntries(wordKeys.map(k => [k, Studio.t(k)]));
+  const title = document.getElementById("title");
+  const instruction = document.getElementById("instruction");
+  const cardArea = document.getElementById("cards");
+  const binArea = document.getElementById("bins");
+  const feedback = document.getElementById("feedback");
+  title.textContent = Studio.t("title");
+  instruction.textContent = Studio.t("instr");
+
+  const binNodes = new Map();
+  p.bins.forEach(key => {
+    const bin = document.createElement("button");
+    bin.type = "button";
+    bin.className = "bin";
+    bin.dataset.bin = key;
+    const name = document.createElement("span");
+    name.className = "bin-name";
+    name.textContent = Studio.t(key);
+    const contents = document.createElement("span");
+    contents.className = "contents";
+    bin.append(name, contents);
+    bin.addEventListener("click", () => {
+      if (selected && !pending) {
+        pending = { card: selected, bin: key };
+        Studio.event("bin_tap", {bin:key});
+        Studio.answer({card:selected, bin:key});
+      }
+    });
+    binArea.appendChild(bin);
+    binNodes.set(key, contents);
+  });
+
+  let selected = null;
+  let pending = null;
+  let completed = 0;
+  let doneSent = false;
+  const cardNodes = new Map();
+
+  p.cards.forEach(key => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "card";
+    card.type = "button";
+    card.dataset.card = key;
+    card.dataset.selected = "false";
+    card.textContent = words[key] || Studio.t(key);
+    card.addEventListener("click", () => {
+      if (pending || card.dataset.placed) return;
+      if (selected === key) {
+        selected = null;
+        card.dataset.selected = "false";
+        card.classList.remove("selected");
+      } else {
+        if (selected) {
+          const prior = cardNodes.get(selected);
+          prior.dataset.selected = "false";
+          prior.classList.remove("selected");
+        }
+        selected = key;
+        card.dataset.selected = "true";
+        card.classList.add("selected");
+      }
+      feedback.textContent = "";
+      Studio.event("card_tap", {card:key});
+    });
+    cardArea.appendChild(card);
+    cardNodes.set(key, card);
+  });
+
+  Studio.onVerdict(({correct}) => {
+    if (!pending) return;
+    const move = pending;
+    const card = cardNodes.get(move.card);
+    pending = null;
+    selected = null;
+    card.dataset.selected = "false";
+    card.classList.remove("selected");
+    if (correct) {
+      card.removeAttribute("data-card");
+      card.setAttribute("data-placed", move.bin);
+      card.className = "placed";
+      card.type = "span";
+      cardNodes.delete(move.card);
+      binNodes.get(move.bin).appendChild(card);
+      completed++;
+      feedback.textContent = Studio.t("right");
+      Studio.event("sorted", {card:move.card, bin:move.bin});
+      if (completed === p.cards.length && !doneSent) {
+        doneSent = true;
+        feedback.textContent = Studio.t("done");
+        Studio.done();
+      }
+    } else {
+      card.classList.add("shake");
+      feedback.textContent = Studio.t("wrong");
+      Studio.event("retry", {card:move.card, bin:move.bin});
+      setTimeout(() => card.classList.remove("shake"), 360);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,106 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff8ed;color:#49382f}
+#scene{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(ellipse at 50% 45%,#fffdf7 0%,#fff8ed 75%)}
+#title{position:absolute;top:12px;left:14px;width:332px;text-align:center;font-size:19px;line-height:24px;font-weight:750;color:#754633}
+#ask{position:absolute;top:39px;left:15px;width:330px;min-height:28px;text-align:center;font-size:14px;line-height:19px;color:#80654e}
+#axis-line{position:absolute;left:18px;top:158px;width:324px;height:4px;border-radius:4px;background:#d7a875;box-shadow:0 2px 0 #f2e1cb}
+#axis-line:before,#axis-line:after{content:"";position:absolute;top:-5px;width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent}
+#axis-line:before{left:-2px;border-right:10px solid #d7a875}
+#axis-line:after{right:-2px;border-left:10px solid #d7a875}
+#connectors{position:absolute;inset:0;width:360px;height:320px;pointer-events:none;overflow:visible}
+.connector{stroke:#d9b28c;stroke-width:2;stroke-linecap:round}
+.card{position:absolute;width:82px;height:62px;padding:5px 3px;border:2px solid #e5c8a8;border-radius:14px;background:#fffdf8;color:#614532;box-shadow:0 3px 0 #ead9c5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;cursor:pointer;user-select:none;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,background .16s ease;animation:appear .38s both}
+.card:hover{transform:translateY(-2px);border-color:#d99e62}
+.card:active{transform:scale(.94);box-shadow:0 1px 0 #ead9c5}
+.card:focus-visible{outline:3px solid #c97947;outline-offset:2px}
+.event-name{font-size:11px;line-height:13px;font-weight:700;overflow-wrap:anywhere}
+.event-year{font-size:12px;line-height:14px;font-weight:750;color:#a4683d}
+.marker{position:absolute;top:151px;width:18px;height:18px;margin-left:-9px;border:4px solid #fff8ed;border-radius:50%;background:#c97848;box-shadow:0 0 0 2px #c97848;transition:transform .2s ease}
+.card.selected{border-color:#c97848;background:#fff3e6;transform:scale(1.04)}
+#feedback{position:absolute;left:14px;right:14px;bottom:12px;min-height:42px;border-radius:14px;background:#f7ead8;color:#77553c;display:flex;align-items:center;justify-content:center;text-align:center;padding:5px 10px;font-size:14px;font-weight:700;opacity:0;transform:translateY(5px);transition:opacity .2s ease,transform .2s ease}
+#feedback.show{opacity:1;transform:translateY(0)}
+#feedback.success{background:#e8f1df;color:#49643e}
+@keyframes appear{from{opacity:0;transform:translateY(5px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+</style>
+<div id="scene">
+  <div id="title"></div>
+  <div id="ask"></div>
+  <div id="axis-line" data-axis="" aria-hidden="true"></div>
+  <svg id="connectors" aria-hidden="true"></svg>
+  <div id="cards"></div>
+  <div id="markers"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const events=Studio.params.events;
+  const title=document.getElementById("title");
+  const ask=document.getElementById("ask");
+  const cards=document.getElementById("cards");
+  const markers=document.getElementById("markers");
+  const connectors=document.getElementById("connectors");
+  const feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  ask.textContent=Studio.t("ask");
+  const sorted=[...events].sort((a,b)=>a.year-b.year);
+  const min=Math.min(...events.map(e=>e.year));
+  const max=Math.max(...events.map(e=>e.year));
+  const left=27,right=333;
+  const xOf=e=>max===min?(left+right)/2:left+(e.year-min)*(right-left)/(max-min);
+  sorted.forEach((e,i)=>{
+    const x=xOf(e);
+    const slot=sorted.length===1?180:42+i*(276/(sorted.length-1));
+    const top=i%2===0?76:184;
+    const card=document.createElement("button");
+    card.type="button";
+    card.className="card";
+    card.dataset.card=e.key;
+    card.style.left=(slot-41)+"px";
+    card.style.top=top+"px";
+    card.style.animationDelay=(i*55)+"ms";
+    const name=document.createElement("span");
+    name.className="event-name";
+    name.textContent=Studio.t(e.key);
+    const year=document.createElement("span");
+    year.className="event-year";
+    year.textContent=String(e.year);
+    card.append(name,year);
+    const marker=document.createElement("div");
+    marker.className="marker";
+    marker.dataset.event=e.key;
+    marker.dataset.year=String(e.year);
+    marker.style.left=x+"px";
+    markers.append(marker);
+    const line=document.createElementNS("http://www.w3.org/2000/svg","line");
+    line.setAttribute("x1",x);
+    line.setAttribute("y1","160");
+    line.setAttribute("x2",slot);
+    line.setAttribute("y2",top<160?top+62:top);
+    line.setAttribute("class","connector");
+    connectors.append(line);
+    card.addEventListener("click",()=>{
+      if(feedback.classList.contains("success"))return;
+      document.querySelectorAll(".card").forEach(c=>c.classList.remove("selected"));
+      card.classList.add("selected");
+      feedback.classList.remove("show");
+      Studio.event("select",{key:e.key});
+      Studio.answer(e.key);
+    });
+    cards.append(card);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?"right":"wrong");
+    feedback.classList.toggle("success",!!correct);
+    feedback.classList.add("show");
+    if(correct){
+      Studio.done();
+      window.setTimeout(()=>{feedback.textContent=Studio.t("done");},650);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

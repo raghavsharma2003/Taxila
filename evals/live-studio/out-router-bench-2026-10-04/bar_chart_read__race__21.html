@@ -1,0 +1,125 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e9;font-family:system-ui,sans-serif;color:#453727}
+  .card{width:360px;height:320px;overflow:hidden;position:relative;background:linear-gradient(160deg,#fff9ed,#ffefd9)}
+  .top{height:80px;padding:10px 18px 0;text-align:center}
+  #title{font-size:19px;font-weight:800;line-height:26px}
+  #message{font-size:15px;font-weight:650;line-height:23px;min-height:23px;transition:transform .22s,color .22s}
+  #message.pop{transform:scale(1.07)}
+  svg{display:block;width:360px;height:240px}
+  .grid{stroke:#decfba;stroke-width:1}
+  .axis{stroke:#a68f73;stroke-width:1.5}
+  .tick{fill:#766651;font-size:11px;text-anchor:end;dominant-baseline:middle}
+  .axis-title{fill:#766651;font-size:11px;font-weight:700;text-anchor:middle}
+  .bar{fill:#e88d68;rx:9;transform-box:fill-box;transform-origin:center bottom;animation:grow .8s cubic-bezier(.2,.8,.25,1) both}
+  @keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  .name{fill:#453727;font-size:11px;font-weight:700;text-anchor:middle}
+  .column{cursor:pointer;outline:none;transform-origin:center 165px;transition:transform .16s}
+  .column:active{transform:scale(.95)}
+  .column:focus-visible .hit{stroke:#865b43;stroke-width:2}
+  .hit{fill:transparent}
+</style>
+<div class="card">
+  <div class="top">
+    <div id="title"></div>
+    <div id="message" aria-live="polite"></div>
+  </div>
+  <svg id="chart" viewBox="0 0 360 240" role="img">
+    <g id="axis"></g>
+    <g id="columns"></g>
+  </svg>
+</div>
+<script>
+
+(() => {
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const data = Studio.params.data;
+  const title = document.getElementById('title');
+  const message = document.getElementById('message');
+  const axis = document.getElementById('axis');
+  const columns = document.getElementById('columns');
+  const make = (tag, attrs, parent) => {
+    const el = document.createElementNS(svgNS, tag);
+    for (const [key, value] of Object.entries(attrs)) el.setAttribute(key, String(value));
+    parent.appendChild(el);
+    return el;
+  };
+  title.textContent = Studio.t('title');
+  message.textContent = Studio.t('ask');
+
+  const highest = Math.max(...data.map(item => item.value));
+  const step = Math.max(1, Math.ceil(highest / 6));
+  const ceiling = Math.ceil(highest / step) * step;
+  const left = 61, right = 350, top = 20, baseline = 174;
+  const height = baseline - top;
+  const y = value => baseline - value / ceiling * height;
+
+  for (let tick = 0; tick <= ceiling; tick += step) {
+    const at = y(tick);
+    make('line', {
+      x1:left, x2:right, y1:at, y2:at,
+      class:tick === 0 ? 'axis' : 'grid'
+    }, axis);
+    const label = make('text', {
+      x:left - 9, y:at, class:'tick', 'data-tick':tick
+    }, axis);
+    label.textContent = String(tick);
+  }
+  const axisTitle = make('text', {
+    x:17, y:96, transform:'rotate(-90 17 96)', class:'axis-title'
+  }, axis);
+  axisTitle.textContent = Studio.t('yaxis');
+
+  const columnWidth = (right - left) / data.length;
+  let waiting = false;
+  let finished = false;
+  data.forEach((item, index) => {
+    const x = left + index * columnWidth;
+    const center = x + columnWidth / 2;
+    const group = make('g', {
+      class:'column', 'data-column':item.key,
+      tabindex:0, role:'button', 'aria-label':Studio.t(item.key)
+    }, columns);
+    make('rect', {
+      x:center - 17, y:y(item.value), width:34,
+      height:baseline - y(item.value),
+      class:'bar', 'data-bar':item.key, 'data-value':item.value
+    }, group);
+    const name = make('text', {x:center, y:201, class:'name'}, group);
+    name.textContent = Studio.t(item.key);
+    make('rect', {
+      x:x, y:top, width:columnWidth, height:202 - top, class:'hit'
+    }, group);
+    const choose = () => {
+      if (waiting || finished) return;
+      waiting = true;
+      Studio.answer(item.key);
+    };
+    group.addEventListener('click', choose);
+    group.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        choose();
+      }
+    });
+  });
+
+  Studio.onVerdict(({correct}) => {
+    message.textContent = Studio.t(correct ? 'right' : 'wrong');
+    message.classList.remove('pop');
+    void message.offsetWidth;
+    message.classList.add('pop');
+    if (correct) {
+      finished = true;
+      setTimeout(() => {
+        message.textContent = Studio.t('done');
+        Studio.done();
+      }, 700);
+    } else {
+      waiting = false;
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

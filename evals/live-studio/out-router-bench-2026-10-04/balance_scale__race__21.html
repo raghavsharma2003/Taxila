@@ -1,0 +1,144 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff6e9;font-family:system-ui,sans-serif;color:#614631}
+  .scene{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 50% 12%,#fffdf5,#fff1dc)}
+  h1{margin:13px 16px 0;text-align:center;font-size:21px;line-height:27px;font-weight:800;color:#855436}
+  .instruction{margin:2px 16px 0;text-align:center;font-size:13px;line-height:18px;color:#785b48}
+  svg{display:block;width:360px;height:183px;margin-top:2px;overflow:visible}
+  [data-beam]{transform-origin:180px 75px;transition:transform 650ms cubic-bezier(.22,1.35,.45,1)}
+  .beam-line{stroke:#ae7045;stroke-width:12;stroke-linecap:round}
+  .cord{stroke:#ad7952;stroke-width:3}
+  .pan-shape{fill:#eebd78;stroke:#a97049;stroke-width:3}
+  .weight-shape{fill:#76a9a0;stroke:#467f79;stroke-width:2}
+  .weight-number{fill:white;font-size:16px;font-weight:800;text-anchor:middle;dominant-baseline:middle}
+  .options{position:absolute;top:236px;left:25px;width:310px;display:flex;justify-content:space-around;gap:12px}
+  .option{width:76px;height:56px;border:2px solid #b87b51;border-radius:15px;background:#f4c988;color:#65462f;font:800 22px system-ui,sans-serif;box-shadow:0 5px 0 #ca9b62;cursor:pointer;transition:transform 180ms,opacity 180ms}
+  .option:active{transform:translateY(4px) scale(.94);box-shadow:0 1px 0 #ca9b62}
+  .option:disabled{cursor:default;opacity:.55}
+  .option.chosen{opacity:0;pointer-events:none}
+  .message{position:absolute;bottom:5px;left:10px;width:340px;min-height:20px;text-align:center;font-size:15px;font-weight:800;color:#54887d}
+  .celebrate .pivot{animation:pop 550ms ease}
+  @keyframes pop{50%{transform:scale(1.25)}}
+</style>
+<div class="scene" id="scene">
+  <h1 id="title"></h1>
+  <div class="instruction" id="instruction"></div>
+  <svg viewBox="0 0 360 183" aria-hidden="true">
+    <path d="M180 75 L157 179 Q180 171 203 179 Z" fill="#d9a67d"/>
+    <g data-beam data-tilt="level">
+      <path class="beam-line" d="M67 75 H293"/>
+      <g data-pan="left" data-total="0">
+        <path class="cord" d="M75 78 V137"/>
+        <path class="pan-shape" d="M26 143 Q75 171 124 143 L116 156 Q75 180 34 156 Z"/>
+        <g class="weights"></g>
+      </g>
+      <g data-pan="right" data-total="0">
+        <path class="cord" d="M285 78 V137"/>
+        <path class="pan-shape" d="M236 143 Q285 171 334 143 L326 156 Q285 180 244 156 Z"/>
+        <g class="weights"></g>
+      </g>
+    </g>
+    <circle class="pivot" cx="180" cy="75" r="12" fill="#da9360" stroke="#a86d49" stroke-width="3"/>
+  </svg>
+  <div class="options" id="options"></div>
+  <div class="message" id="message" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const items=Studio.params.items;
+  const scene=document.getElementById('scene');
+  const beam=document.querySelector('[data-beam]');
+  const pans={left:document.querySelector('[data-pan="left"]'),right:document.querySelector('[data-pan="right"]')};
+  const options=document.getElementById('options');
+  const message=document.getElementById('message');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  const ns='http://www.w3.org/2000/svg';
+  let index=0, selected=null, locked=false, generation=0;
+  function sum(a){return a.reduce((n,v)=>n+Number(v),0)}
+  function drawPan(side,values){
+    const pan=pans[side], holder=pan.querySelector('.weights');
+    pan.dataset.total=String(sum(values));
+    holder.replaceChildren();
+    const center=side==='left'?75:285;
+    const columns=Math.min(4,Math.max(1,values.length));
+    const size=Math.min(30,Math.floor(88/columns));
+    values.forEach((value,i)=>{
+      const row=Math.floor(i/columns), count=Math.min(columns,values.length-row*columns);
+      const x=center+(i%columns-(count-1)/2)*size;
+      const y=133-row*(size-3);
+      const group=document.createElementNS(ns,'g');
+      group.setAttribute('data-weight',String(value));
+      const rect=document.createElementNS(ns,'rect');
+      rect.setAttribute('class','weight-shape');
+      rect.setAttribute('x',String(x-size/2+1));
+      rect.setAttribute('y',String(y-size+2));
+      rect.setAttribute('width',String(size-2));
+      rect.setAttribute('height',String(size-2));
+      rect.setAttribute('rx','5');
+      const text=document.createElementNS(ns,'text');
+      text.setAttribute('class','weight-number');
+      text.setAttribute('x',String(x));
+      text.setAttribute('y',String(y-size/2+1));
+      text.style.fontSize=Math.min(16,size*.58)+'px';
+      text.textContent=String(value);
+      group.append(rect,text);holder.append(group);
+    });
+  }
+  function paint(extra){
+    const item=items[index];
+    const right=extra===null?item.right:item.right.concat([extra]);
+    drawPan('left',item.left);
+    drawPan('right',right);
+    const difference=sum(right)-sum(item.left);
+    const tilt=difference>0?'right':difference<0?'left':'level';
+    beam.dataset.tilt=tilt;
+    beam.style.transform='rotate('+(tilt==='level'?0:tilt==='right'?8:-8)+'deg)';
+  }
+  function show(){
+    generation++;
+    locked=false;selected=null;
+    message.textContent='';
+    options.replaceChildren();
+    items[index].options.forEach(value=>{
+      const button=document.createElement('button');
+      button.type='button';button.className='option';
+      button.dataset.option=String(value);
+      button.textContent=String(value);
+      button.addEventListener('click',()=>{
+        if(locked)return;
+        locked=true;selected=value;
+        button.classList.add('chosen');
+        options.querySelectorAll('button').forEach(b=>b.disabled=true);
+        paint(value);
+        Studio.event('choose',{value});
+        Studio.answer({value});
+      });
+      options.append(button);
+    });
+    paint(null);
+  }
+  Studio.onVerdict(({correct})=>{
+    if(!locked)return;
+    const token=generation;
+    message.textContent=Studio.t(correct?'right':'wrong');
+    if(correct)scene.classList.add('celebrate');
+    setTimeout(()=>{
+      if(token!==generation)return;
+      scene.classList.remove('celebrate');
+      if(correct){
+        index++;
+        if(index===items.length){
+          options.replaceChildren();
+          message.textContent=Studio.t('done');
+          Studio.done();
+        }else show();
+      }else show();
+    },correct?1050:950);
+  });
+  show();
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,115 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#493b48}
+  .card{width:360px;height:320px;padding:5px 10px 0;background:linear-gradient(155deg,#fff9ef,#ffeddc);overflow:hidden}
+  #title{height:29px;text-align:center;font-size:19px;font-weight:800;color:#9b4861;white-space:nowrap;overflow:hidden}
+  #message{height:31px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:15px;font-weight:700;color:#654658;transition:transform .25s,color .25s}
+  #message.pop{transform:scale(1.06)}
+  #rows{height:208px;display:flex;flex-direction:column;gap:0}
+  [data-row]{width:100%;height:52px;min-height:52px;border:2px solid transparent;border-radius:15px;background:transparent;display:flex;align-items:center;padding:0 5px;cursor:pointer;color:inherit;font:inherit;text-align:left;transition:background .2s,transform .2s,border-color .2s}
+  [data-row]:active{transform:scale(.97)}
+  [data-row]:hover,[data-row]:focus-visible{background:#fff3df;outline:none}
+  [data-row].chosen{background:#ffe4ce;border-color:#e9a58b}
+  [data-row].good{background:#e8f4dc;border-color:#8cbf91}
+  .name{width:98px;flex:none;font-size:16px;font-weight:750}
+  .symbols{display:flex;align-items:center;gap:4px;min-width:0}
+  [data-symbol]{display:block;flex:none;width:var(--symbol-size);height:var(--symbol-size);filter:drop-shadow(0 2px 1px #b9828133)}
+  [data-row].chosen [data-symbol]{animation:bloom .42s ease both}
+  @keyframes bloom{50%{transform:translateY(-4px) rotate(-8deg) scale(1.14)}}
+  [data-key]{height:43px;border-radius:13px;background:#fff0df;display:flex;align-items:center;justify-content:center;gap:7px;color:#754f58;font-size:14px;font-weight:700}
+  [data-key] svg{width:27px;height:27px;flex:none}
+</style>
+<div class="card">
+  <div id="title"></div>
+  <div id="message" aria-live="polite"></div>
+  <div id="rows"></div>
+  <div data-key><span id="keytext"></span><span id="keyicon"></span><span id="equals"></span><span id="keynumber"></span></div>
+</div>
+<script>
+
+(() => {
+  const p = Studio.params;
+  const rows = document.getElementById('rows');
+  const message = document.getElementById('message');
+  document.getElementById('title').textContent = Studio.t('title');
+  message.textContent = Studio.t('ask');
+  document.getElementById('keytext').textContent = Studio.t('keytext');
+  document.getElementById('equals').textContent = '=';
+  document.getElementById('keynumber').textContent = p.symbolValue;
+
+  function symbol() {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 32 32');
+    svg.setAttribute('aria-hidden', 'true');
+    const leaf = document.createElementNS(ns, 'path');
+    leaf.setAttribute('d', 'M5 22 C3 11 13 4 27 5 C27 19 18 28 7 25 Z');
+    leaf.setAttribute('fill', '#e99378');
+    const vein = document.createElementNS(ns, 'path');
+    vein.setAttribute('d', 'M7 25 Q14 16 25 8 M15 17 L12 10 M15 17 L23 19');
+    vein.setAttribute('fill', 'none');
+    vein.setAttribute('stroke', '#9c5665');
+    vein.setAttribute('stroke-width', '1.8');
+    vein.setAttribute('stroke-linecap', 'round');
+    svg.append(leaf, vein);
+    return svg;
+  }
+
+  document.getElementById('keyicon').append(symbol());
+  const maxCount = Math.max(...p.rows.map(row => row.value / p.symbolValue));
+  const size = Math.min(30, (225 - Math.max(0, maxCount - 1) * 4) / maxCount);
+  rows.style.setProperty('--symbol-size', size + 'px');
+  let waiting = false;
+  let finished = false;
+  let selected = null;
+
+  p.rows.forEach(row => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.setAttribute('data-row', row.key);
+    const name = document.createElement('span');
+    name.className = 'name';
+    name.textContent = Studio.t(row.key);
+    const icons = document.createElement('span');
+    icons.className = 'symbols';
+    for (let i = 0; i < row.value / p.symbolValue; i++) {
+      const icon = symbol();
+      icon.setAttribute('data-symbol', '');
+      icons.append(icon);
+    }
+    button.append(name, icons);
+    button.addEventListener('click', () => {
+      if (waiting || finished) return;
+      waiting = true;
+      selected = button;
+      button.classList.add('chosen');
+      Studio.event('row_tap', {key: row.key});
+      Studio.answer(row.key);
+    });
+    rows.append(button);
+  });
+
+  Studio.onVerdict(({correct}) => {
+    if (!selected || finished) return;
+    message.classList.remove('pop');
+    void message.offsetWidth;
+    message.classList.add('pop');
+    if (correct) {
+      finished = true;
+      selected.classList.add('good');
+      message.textContent = Studio.t('right');
+      setTimeout(() => {
+        message.textContent = Studio.t('done');
+        Studio.done();
+      }, 650);
+    } else {
+      message.textContent = Studio.t('wrong');
+      selected.classList.remove('chosen');
+      selected = null;
+      waiting = false;
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,78 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8e9;color:#35433b}
+#app{width:360px;height:320px;padding:8px;display:flex;flex-direction:column;gap:5px}
+header{height:27px;display:flex;align-items:center;justify-content:center;color:#385a45;font-weight:800;font-size:17px}
+#scene{height:145px;width:344px;background:#eaf5e7;border-radius:18px;overflow:hidden}
+svg{width:100%;height:100%;display:block}
+.flowpath{fill:none;stroke:#8db4a0;stroke-width:3;stroke-linecap:round;stroke-dasharray:5 5;transition:stroke .25s,stroke-width .25s}
+.entity-shape{transition:filter .25s,transform .25s}
+.entity-shape.emph{filter:drop-shadow(0 0 6px #f7a943)}
+.flowpath.emph{stroke:#e69e41;stroke-width:5}
+.label{font:700 12px system-ui,sans-serif;fill:#35433b;paint-order:stroke;stroke:#eaf5e7;stroke-width:3px;stroke-linejoin:round}
+.particle{fill:#48a7a0}
+#controls{height:52px;display:flex;align-items:center;justify-content:center;gap:12px}
+button{font:700 15px system-ui,sans-serif;color:#fff;background:#528b67;border:0;border-radius:16px;min-width:72px;height:52px;padding:0 15px;box-shadow:0 3px 0 #376548;cursor:pointer;transition:transform .12s,background .2s}
+button:active{transform:scale(.94)}
+#next{background:#df9944;box-shadow:0 3px 0 #b7712a}
+#caption{min-height:22px;text-align:center;font-size:14px;font-weight:700;color:#536b54}
+#ask{height:21px;text-align:center;font-size:14px;font-weight:800;color:#35433b}
+#options{display:flex;justify-content:center;gap:9px}
+#options button{min-width:86px;height:52px;background:#6689a4;box-shadow:0 3px 0 #49687f}
+#feedback{height:18px;text-align:center;font-size:13px;font-weight:700;color:#528b67}
+</style>
+<div id="app">
+  <header id="title"></header>
+  <div id="scene"><svg id="drawing" viewBox="0 0 344 145" role="img"></svg></div>
+  <div id="controls"><button id="play" data-action="play"></button><button id="next" data-action="next"></button></div>
+  <div id="caption" data-caption></div>
+  <div id="ask"></div>
+  <div id="options"></div>
+  <div id="feedback"></div>
+</div>
+<script>
+
+(()=>{
+const p=Studio.params, t=Studio.t, ns="http://www.w3.org/2000/svg";
+const title=document.getElementById("title"), svg=document.getElementById("drawing");
+title.textContent=t("title");
+const play=document.getElementById("play"), next=document.getElementById("next");
+const caption=document.querySelector("[data-caption]"), ask=document.getElementById("ask"), opts=document.getElementById("options"), feedback=document.getElementById("feedback");
+let playing=true, step=0, done=false, last=performance.now();
+function el(tag,attrs={},parent=svg){const n=document.createElementNS(ns,tag);for(const k in attrs)n.setAttribute(k,attrs[k]);parent.appendChild(n);return n}
+function text(key,x,y,anchor="middle"){const n=el("text",{x,y,"text-anchor":anchor,class:"label","data-label":key});n.textContent=t(key);return n}
+const specs={
+ sun:{x:48,y:37,cx:48,cy:37},
+ roots:{x:286,y:119,cx:286,cy:119}
+};
+const hub=el("circle",{cx:172,cy:71,r:29,fill:"#a9d98b",stroke:"#588e5a","stroke-width":3,"data-entity":p.hub,class:"entity-shape"});
+const hubLabel=text(p.hub,172,114);
+for(const key of p.entities){const q=specs[key]||{x:40,y:40,cx:40,cy:40};el("circle",{cx:q.cx,cy:q.cy,r:17,fill:key==="sun"?"#ffd36f":"#bd956f",stroke:key==="sun"?"#e7a93d":"#82644a","stroke-width":2,"data-entity:key,class:"entity-shape"});if(key==="sun"){el("path",{d:`M${q.cx-8} ${q.cy}h16M${q.cx} ${q.cy-8}v16M${q.cx-6} ${q.cy-6}l12 12M${q.cx+6} ${q.cy-6}l-12 12`,stroke:"#e7a93d","stroke-width":2,"stroke-linecap":"round"});text(key,48,14)}else{text(key,286,144)}}
+const flowNodes=[];
+for(const f of p.flows){
+ let a,b,label;
+ if(f.dir==="in"){a={x:15,y:71};b={x:140,y:71};label={x:75,y:57}}
+ else if(f.dir==="out"){a={x:204,y:71};b={x:329,y:71};label={x:269,y:57}}
+ else{a={x:172,y:142};b={x:172,y:100};label={x:212,y:133,"anchor":"start"}}
+ const path=el("path",{d:`M${a.x} ${a.y} L${b.x} ${b.y}`,class:"flowpath", "data-flow-path":f.key});
+ text(f.key,label.x,label.y,label.anchor||"middle");
+ const pts=[];
+ for(let i=0;i<3;i++){const dot=el("circle",{r:4.5,cx:a.x,cy:a.y,class:"particle","data-flow":f.key});pts.push({node:dot,a,b,phase:i/3,dir:f.dir})}
+ flowNodes.push({key:f.key,path,pts});
+}
+function renderStep(){caption.textContent=t("step"+(step+1));const active=p.flows[(step)%p.flows.length];for(const f of flowNodes)f.path.classList.toggle("emph",f.key===active.key);hub.classList.add("emph")}
+function setPlaying(v){playing=v;play.textContent=t(playing?"pause":"play")}
+setPlaying(true);next.textContent=t("next");ask.textContent=t("ask");
+const buttons=[];
+for(const key of p.options){const b=document.createElement("button");b.type="button";b.textContent=t(key);b.dataset.option=key;b.addEventListener("click",()=>{Studio.answer(key)});opts.appendChild(b);buttons.push(b)}
+renderStep();
+play.addEventListener("click",()=>{setPlaying(!playing);Studio.event("play",{playing:playing?1:0})});
+next.addEventListener("click",()=>{step=(step+1)%p.steps;renderStep();Studio.event("next",{step:step+1})});
+function animate(now){const dt=Math.min(40,now-last);last=now;if(playing){for(const f of flowNodes)for(const q of f.pts){q.phase=(q.phase+dt/2600)%1;let u=q.phase;if(q.dir==="out"||q.dir==="up_in")u=1-u;q.node.setAttribute("cx",q.a.x+(q.b.x-q.a.x)*u);q.node.setAttribute("cy",q.a.y+(q.b.y-q.a.y)*u)}}requestAnimationFrame(animate)}
+Studio.onVerdict(({correct})=>{if(correct){feedback.textContent=t("right");if(!done){done=true;Studio.done()}}else feedback.textContent=t("wrong")});
+requestAnimationFrame(animate);
+Studio.ready();
+})();
+
+</script>

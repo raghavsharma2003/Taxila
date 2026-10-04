@@ -1,0 +1,114 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff7eb;color:#513b34}
+  #activity{width:360px;height:320px;padding:12px 16px;display:flex;flex-direction:column;align-items:center;gap:5px;background:radial-gradient(circle at 50% 48%,#fffdf6 0,#fff7eb 75%)}
+  h1{margin:0;font-size:19px;line-height:24px;font-weight:800}
+  #instruction{font-size:13px;line-height:18px;text-align:center}
+  #play{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;flex:1;min-height:0}
+  #picture{width:218px;height:218px;flex:none;overflow:visible;filter:drop-shadow(0 5px 2px #bb8b6240)}
+  [data-part]{cursor:pointer;stroke:#a97553;stroke-width:3;transition:fill .2s,transform .2s;transform-origin:110px 110px}
+  [data-part]:active{transform:scale(.95)}
+  [data-shaded="false"]{fill:#ffe8b6}
+  [data-shaded="true"]{fill:#ec825e}
+  #targetWrap{min-width:76px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:18px;background:#fff0d9;padding:12px 6px}
+  #target{font-size:26px;font-weight:850;line-height:1}
+  #hint{font-size:11px;text-align:center;margin-top:8px}
+  #bottom{height:58px;width:100%;display:flex;align-items:center;justify-content:center;gap:10px}
+  #feedback{font-size:13px;font-weight:750;width:105px;text-align:right}
+  #check{height:54px;min-width:120px;border:0;border-radius:18px;background:#6b9b75;color:white;font:800 17px system-ui;box-shadow:0 5px 0 #487351;cursor:pointer;transition:transform .15s,box-shadow .15s}
+  #check:active{transform:translateY(4px) scale(.97);box-shadow:0 1px 0 #487351}
+  #check:disabled{opacity:.65}
+  .pop{animation:pop .45s ease}
+  .celebrate{animation:cheer .6s ease}
+  @keyframes pop{50%{transform:scale(1.13)}}
+  @keyframes cheer{35%{transform:rotate(-5deg) scale(1.07)}70%{transform:rotate(4deg) scale(1.04)}}
+  #activity.finished #play,#activity.finished #bottom,#activity.finished #instruction{display:none}
+  #activity.finished{justify-content:center;gap:18px}
+  #activity.finished h1{font-size:25px}
+  #doneMessage{display:none;font-size:22px;font-weight:800;color:#6b9b75;text-align:center}
+  #activity.finished #doneMessage{display:block}
+</style>
+<div id="activity" data-item="">
+  <h1 id="title"></h1>
+  <div id="instruction"></div>
+  <div id="play">
+    <svg id="picture" viewBox="0 0 220 220" role="img"></svg>
+    <div id="targetWrap"><div id="target" data-target></div><div id="hint"></div></div>
+  </div>
+  <div id="bottom"><div id="feedback" aria-live="polite"></div><button id="check" data-action="check" type="button"></button></div>
+  <div id="doneMessage"></div>
+</div>
+<script>
+
+  const p=Studio.params, root=document.getElementById('activity'), svg=document.getElementById('picture');
+  const feedback=document.getElementById('feedback'), check=document.getElementById('check');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  document.getElementById('hint').textContent=Studio.t('hint');
+  check.textContent=Studio.t('check');
+  document.getElementById('doneMessage').textContent=Studio.t('done');
+  let index=0,waiting=false;
+  const ns='http://www.w3.org/2000/svg';
+  function shape(tag,attrs){
+    const el=document.createElementNS(ns,tag);
+    for(const [key,value] of Object.entries(attrs))el.setAttribute(key,value);
+    return el;
+  }
+  function render(){
+    const item=p.items[index];
+    root.dataset.item=item.id;
+    document.getElementById('target').textContent=item.n+'/'+item.d;
+    feedback.textContent='';
+    svg.replaceChildren();
+    for(let i=0;i<item.d;i++){
+      let part;
+      if(p.picture==='bar'){
+        const width=196/item.d;
+        part=shape('rect',{x:12+i*width,y:57,width:width,height:106,rx:Math.min(8,width/5)});
+      }else{
+        const a=-Math.PI/2+2*Math.PI*i/item.d,b=-Math.PI/2+2*Math.PI*(i+1)/item.d;
+        const x1=110+96*Math.cos(a),y1=110+96*Math.sin(a);
+        const x2=110+96*Math.cos(b),y2=110+96*Math.sin(b);
+        part=shape('path',{d:`M 110 110 L ${x1} ${y1} A 96 96 0 ${item.d===1?1:0} 1 ${x2} ${y2} Z`});
+        if(item.d===1)part.setAttribute('d','M 110 14 A 96 96 0 1 1 109.99 14 Z');
+      }
+      part.setAttribute('data-part',i);
+      part.setAttribute('data-shaded','false');
+      part.addEventListener('click',()=>{
+        if(waiting)return;
+        part.dataset.shaded=part.dataset.shaded==='true'?'false':'true';
+        feedback.textContent='';
+        Studio.event('part',{index:i});
+      });
+      svg.append(part);
+    }
+    check.disabled=false;
+  }
+  check.addEventListener('click',()=>{
+    if(waiting)return;
+    waiting=true;
+    check.disabled=true;
+    const item=p.items[index];
+    const count=svg.querySelectorAll('[data-part][data-shaded="true"]').length;
+    Studio.answer({n:count,d:item.d});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!waiting)return;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.classList.remove('pop');
+    void feedback.offsetWidth;
+    feedback.classList.add('pop');
+    if(correct){
+      svg.classList.add('celebrate');
+      setTimeout(()=>{
+        svg.classList.remove('celebrate');
+        index++;
+        if(index<p.items.length){waiting=false;render();}
+        else{root.classList.add('finished');root.removeAttribute('data-item');Studio.done();}
+      },650);
+    }else{waiting=false;check.disabled=false;}
+  });
+  render();
+  Studio.ready();
+
+</script>

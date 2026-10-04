@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Taxila · Get started</title>
+<link rel="stylesheet" href="v3.css">
+<style>
+  body { min-height: 100dvh; }
+  .ob { max-width: 520px; margin: 0 auto; min-height: 100dvh; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr auto; padding: 0 var(--gutter); }
+  .ob-top { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 8px; height: 60px; }
+  .bars { display: grid; grid-auto-flow: column; gap: 4px; }
+  .bars i { height: 4px; border-radius: 4px; background: var(--bg-3); transition: background var(--m-base); }
+  .bars i.on { background: var(--ink); }
+  .step { display: none; padding: 12px 0 24px; animation: stepIn var(--m-stage) var(--e-std); }
+  .step.on { display: block; }
+  @keyframes stepIn { from { opacity: 0; transform: translateX(16px); } }
+  .step h1 { margin: 6px 0 6px; }
+  .step .lede { margin: 0 0 22px; color: var(--ink-2); }
+  .ob-foot { position: sticky; bottom: 0; padding: 12px 0 calc(16px + env(safe-area-inset-bottom)); background: linear-gradient(transparent, var(--bg) 30%); display: grid; gap: 8px; }
+  .ob-foot .btn { width: 100%; }
+  .hero { position: relative; border-radius: var(--r-xl); overflow: hidden; aspect-ratio: 4 / 3.4; margin: 6px 0 22px; border: 1px solid var(--line); }
+  .hero img { width: 100%; height: 100%; object-fit: cover; }
+  .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, var(--bg)); }
+  .grid-cls { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .opt { min-height: 64px; border-radius: var(--r-md); border: 1px solid var(--line-2); background: var(--bg-1); display: grid; place-items: center; font: 700 22px/1 var(--f-display); color: var(--ink); transition: all var(--m-quick) var(--e-std); }
+  .opt small { display: block; font: 600 10px/1 var(--f-mono); letter-spacing: .06em; color: var(--ink-3); margin-top: 4px; text-transform: uppercase; }
+  .opt[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: transparent; }
+  .opt[aria-pressed="true"] small { color: var(--bg); opacity: .7; }
+  .lbl { font: 600 12px/1 var(--f-mono); letter-spacing: .07em; text-transform: uppercase; color: var(--ink-3); margin: 22px 0 10px; display: flex; justify-content: space-between; }
+  .field { display: grid; gap: 8px; }
+  .input { min-height: 54px; border-radius: var(--r-md); border: 1px solid var(--line-2); background: var(--bg-1); padding: 0 16px; font-size: 18px; color: var(--ink); outline: none; width: 100%; }
+  .input:focus { border-color: var(--ion); box-shadow: 0 0 0 3px rgba(139,152,255,.2); }
+  .sample { margin-top: 12px; padding: 14px 16px; border-radius: var(--r-md); background: var(--bg-1); border: 1px solid var(--line); display: grid; grid-template-columns: 28px 1fr; gap: 10px; font-size: 15px; }
+  .sample img { width: 28px; height: 28px; border-radius: 9px; object-fit: cover; }
+  .teachers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tcard { position: relative; border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--line-2); background: var(--bg-1); padding: 0; text-align: left; transition: transform var(--m-quick) var(--e-std), border-color var(--m-quick); }
+  .tcard img { aspect-ratio: 1 / 1.1; width: 100%; object-fit: cover; object-position: 50% 25%; }
+  .tcard .meta { padding: 10px 12px 12px; }
+  .tcard .meta b { font: 700 18px/1.1 var(--f-display); display: block; }
+  .tcard .meta span { font-size: 13px; color: var(--ink-2); }
+  .tcard[aria-pressed="true"] { border-color: var(--volt); box-shadow: 0 0 0 1px var(--volt); }
+  .tcard .sel { position: absolute; top: 10px; right: 10px; width: 28px; height: 28px; border-radius: 50%; background: var(--volt); color: var(--on-volt); display: none; place-items: center; }
+  .tcard[aria-pressed="true"] .sel { display: grid; }
+  .tcard .hear { position: absolute; left: 10px; top: 10px; height: 32px; padding: 0 10px; border-radius: 999px; background: rgba(0,0,0,.55); backdrop-filter: blur(8px); color: #fff; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; border: 1px solid rgba(255,255,255,.2); }
+  .tcard .hear .icon { width: 15px; height: 15px; }
+  .ai-note { display: flex; gap: 10px; align-items: flex-start; margin-top: 14px; font-size: 13px; color: var(--ink-2); }
+  .ai-note .icon { color: var(--ion); margin-top: 1px; }
+  /* scheduler */
+  .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .day { min-height: 48px; padding: 0; border-radius: 14px; border: 1px solid var(--line-2); background: var(--bg-1); font: 700 13px/1 var(--f-ui); color: var(--ink-2); display: grid; place-items: center; }
+  .day small { font: 500 10px/1 var(--f-mono); color: var(--ink-3); margin-top: 3px; }
+  .day[aria-pressed="true"] { background: var(--ion-deep); border-color: transparent; color: #fff; }
+  .day[aria-pressed="true"] small { color: rgba(255,255,255,.75); }
+  .quick { display: flex; gap: 8px; flex-wrap: wrap; }
+  .timebox { margin-top: 10px; border-radius: var(--r-lg); background: var(--bg-1); border: 1px solid var(--line); padding: 14px; }
+  .readout { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .readout .t { font: 700 44px/1 var(--f-display); letter-spacing: -.03em; }
+  .readout .t span { font-size: 20px; color: var(--ink-2); margin-left: 6px; }
+  .steps { display: flex; gap: 6px; }
+  .steps .btn { width: 44px; min-height: 44px; padding: 0; }
+  .trail { margin: 14px -14px 0; padding: 0 14px 2px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; display: flex; gap: 6px; }
+  .trail::-webkit-scrollbar { display: none; }
+  .slot { scroll-snap-align: center; flex: none; min-width: 64px; min-height: 44px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg-2); font: 600 14px/1 var(--f-mono); color: var(--ink-2); }
+  .slot.hr { color: var(--ink); }
+  .slot[aria-pressed="true"] { background: var(--volt); color: var(--on-volt); border-color: transparent; }
+  .slot[disabled] { opacity: .3; cursor: not-allowed; }
+  .partofday { display: flex; justify-content: space-between; font: 500 11px/1 var(--f-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); margin-top: 10px; }
+  .summary { margin-top: 14px; display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: center; padding: 12px 14px; border-radius: var(--r-md); border: 1px dashed var(--line-2); font-size: 15px; }
+  .summary .ic { width: 36px; height: 36px; border-radius: 11px; background: var(--bg-3); display: grid; place-items: center; }
+  .summary b { display: block; }
+  .summary span { color: var(--ink-2); font-size: 13px; }
+  .warn { color: var(--amber); }
+  .handoff { display: grid; gap: 10px; }
+  .row-card { display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: center; padding: 14px; border-radius: var(--r-lg); background: var(--bg-1); border: 1px solid var(--line); text-align: left; min-height: 72px; }
+  .row-card .ic { width: 40px; height: 40px; border-radius: 12px; background: var(--bg-3); display: grid; place-items: center; }
+  .row-card b { display: block; } .row-card span { font-size: 13px; color: var(--ink-2); }
+  .done-card { border-radius: var(--r-xl); padding: 20px; background: linear-gradient(160deg, rgba(79,91,213,.25), rgba(16,19,27,.9) 60%); border: 1px solid var(--line-2); display: grid; gap: 14px; }
+  .done-card .who { display: flex; align-items: center; gap: 12px; }
+  .done-card .who img { width: 56px; height: 56px; border-radius: 18px; object-fit: cover; }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; font-size: 14px; }
+  .kv dt { color: var(--ink-3); font-family: var(--f-mono); font-size: 12px; letter-spacing: .05em; text-transform: uppercase; padding-top: 2px; }
+  .kv dd { margin: 0; font-weight: 600; }
+  @media (min-width: 900px) { .ob { padding-top: 24px; } }
+</style>
+</head>
+<body class="grain">
+<script src="sprite.js"></script>
+<div class="ob">
+  <div class="ob-top">
+    <button class="btn btn-icon btn-quiet" id="back" aria-label="Back"><svg class="icon"><use href="#i-left"/></svg></button>
+    <div class="bars" id="bars" aria-hidden="true"></div>
+    <span class="mono small muted" id="count" style="text-align:right">1/6</span>
+  </div>
+
+  <main>
+    <!-- 0 welcome -->
+    <section class="step" data-step="0">
+      <div class="hero"><img src="img/hero-orbit.webp" alt=""></div>
+      <div class="brand" style="margin-bottom:14px"><svg class="brand-mark"><use href="#brand"/></svg>Taxila</div>
+      <h1 class="h-hero">A teacher who actually listens.</h1>
+      <p class="lede" style="margin-top:12px">Talk to her like a person. She builds the lesson around you — games, animations, the works. Classes 4 to 8.</p>
+    </section>
+
+    <!-- 1 class + board -->
+    <section class="step" data-step="1">
+      <div class="eyebrow">Step 1 · Level</div>
+      <h1 class="h-1">Which class are you in?</h1>
+      <p class="lede">She starts at your class level, then adjusts to how you actually do.</p>
+      <div class="grid-cls" role="group" aria-label="Class" id="cls">
+        <button class="opt" aria-pressed="false">4<small>class</small></button>
+        <button class="opt" aria-pressed="false">5<small>class</small></button>
+        <button class="opt" aria-pressed="true">6<small>class</small></button>
+        <button class="opt" aria-pressed="false">7<small>class</small></button>
+        <button class="opt" aria-pressed="false">8<small>class</small></button>
+      </div>
+      <div class="lbl">Board</div>
+      <div class="seg" role="group" aria-label="Board" id="board"><button aria-pressed="true">CBSE</button><button aria-pressed="false">RBSE</button><button aria-pressed="false">ICSE</button><button aria-pressed="false">Other</button></div>
+    </section>
+
+    <!-- 2 you -->
+    <section class="step" data-step="2">
+      <div class="eyebrow">Step 2 · You</div>
+      <h1 class="h-1">What should she call you?</h1>
+      <p class="lede">First name or nickname. You can change it any time.</p>
+      <div class="field"><input class="input" id="name" value="Aarav" autocomplete="given-name" aria-label="Your name"></div>
+      <div class="lbl">How she talks</div>
+      <div class="seg" role="group" aria-label="Language mix" id="lang"><button aria-pressed="false">English</button><button aria-pressed="true">Hinglish</button><button aria-pressed="false">Hindi</button></div>
+      <div class="sample"><img src="img/teacher-ira.webp" alt=""><div id="sampleTxt">Okay Aarav, ek kaam karte hain — pehle quickly dekhte hain tum kahan ho.</div></div>
+    </section>
+
+    <!-- 3 teacher -->
+    <section class="step" data-step="3">
+      <div class="eyebrow">Step 3 · Teacher</div>
+      <h1 class="h-1">Pick your teacher.</h1>
+      <p class="lede">Same brain, different person. Tap to hear each one.</p>
+      <div class="teachers" role="group" aria-label="Teacher" id="teachers">
+        <button class="tcard" aria-pressed="true"><img src="img/teacher-ira.webp" alt=""><span class="hear"><svg class="icon"><use href="#i-volume"/></svg>Hear</span><span class="sel"><svg class="icon" style="width:16px;height:16px"><use href="#i-check"/></svg></span><div class="meta"><b>Ira</b><span>Calm, quick, dry humour</span></div></button>
+        <button class="tcard" aria-pressed="false"><img src="img/teacher-kabir.webp" alt=""><span class="hear"><svg class="icon"><use href="#i-volume"/></svg>Hear</span><span class="sel"><svg class="icon" style="width:16px;height:16px"><use href="#i-check"/></svg></span><div class="meta"><b>Kabir</b><span>Energetic, loves puzzles</span></div></button>
+      </div>
+      <div class="ai-note"><svg class="icon"><use href="#i-shield"/></svg><span>Both are AI teachers, not real people. They'll always tell you that if you ask.</span></div>
+    </section>
+
+    <!-- 4 schedule -->
+    <section class="step" data-step="4">
+      <div class="eyebrow">Step 4 · Schedule</div>
+      <h1 class="h-1">When do you want to learn?</h1>
+      <p class="lede">She'll be ready at this time. A parent can change limits later.</p>
+      <div class="lbl"><span>Days</span><button class="btn-quiet mono" id="weekdays" style="border:0;background:none;color:var(--ion);font-size:12px;letter-spacing:.05em">WEEKDAYS</button></div>
+      <div class="days" role="group" aria-label="Days" id="days"></div>
+      <div class="lbl"><span>Start time</span><span id="tz">IST</span></div>
+      <div class="quick" id="quick">
+        <button class="chip" data-t="990">After school · 4:30</button>
+        <button class="chip" data-t="1080">Evening · 6:00</button>
+        <button class="chip" data-t="1230">After dinner · 8:30</button>
+      </div>
+      <div class="timebox">
+        <div class="readout">
+          <div class="t" id="tRead">5:30<span>PM</span></div>
+          <div class="steps"><button class="btn" id="tMinus" aria-label="15 minutes earlier"><svg class="icon"><use href="#i-left"/></svg></button><button class="btn" id="tPlus" aria-label="15 minutes later"><svg class="icon"><use href="#i-right"/></svg></button></div>
+        </div>
+        <div class="trail hscroll" id="rail" role="listbox" aria-label="Start time"></div>
+        <div class="partofday"><span id="pod">Evening</span><span>6:00 AM – 9:45 PM · swipe or use ‹ ›</span></div>
+      </div>
+      <div class="lbl">Length</div>
+      <div class="seg" role="group" aria-label="Lesson length" id="dur"><button aria-pressed="false">15 min</button><button aria-pressed="true">20 min</button><button aria-pressed="false">30 min</button><button aria-pressed="false">45 min</button></div>
+      <div class="summary" id="sum"><span class="ic"><svg class="icon"><use href="#i-cal"/></svg></span><div><b id="sumA"></b><span id="sumB"></span></div></div>
+    </section>
+
+    <!-- 5 parent handoff -->
+    <section class="step" data-step="5">
+      <div class="eyebrow">Step 5 · Parent</div>
+      <h1 class="h-1">One minute from a parent.</h1>
+      <p class="lede">Your parent approves the account and sets limits. They see what you learned — not a recording of every word.</p>
+      <div class="handoff">
+        <button class="row-card"><span class="ic"><svg class="icon"><use href="#i-user"/></svg></span><div><b>Parent is here</b><span>Hand over the phone · 60 seconds</span></div><svg class="icon"><use href="#i-right"/></svg></button>
+        <button class="row-card"><span class="ic"><svg class="icon"><use href="#i-arrow"/></svg></span><div><b>Send them a link</b><span>WhatsApp or SMS · you can start the warm-up meanwhile</span></div><svg class="icon"><use href="#i-right"/></svg></button>
+      </div>
+    </section>
+
+    <!-- 6 done -->
+    <section class="step" data-step="6">
+      <div class="eyebrow">Ready</div>
+      <h1 class="h-1">You're set, <span id="nm2">Aarav</span>.</h1>
+      <p class="lede">First up: a 6-minute warm-up so she knows where you are. No marks. No pass or fail.</p>
+      <div class="done-card">
+        <div class="who"><img src="img/teacher-ira.webp" alt=""><div><b class="h-3">Ira</b><div class="small muted">AI teacher · Hinglish</div></div></div>
+        <dl class="kv"><dt>Class</dt><dd id="kvC">6 · CBSE</dd><dt>When</dt><dd id="kvW"></dd></dl>
+      </div>
+    </section>
+  </main>
+
+  <div class="ob-foot">
+    <button class="btn btn-primary btn-lg" id="next">Get started</button>
+    <button class="btn btn-quiet" id="alt">I'm a parent</button>
+  </div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const steps = [...document.querySelectorAll(".step")];
+const N = steps.length - 1;
+let cur = +(new URLSearchParams(location.search).get("step") || 0);
+$("bars").innerHTML = Array.from({ length: N - 1 }, () => "<i></i>").join("");
+const cta = ["Get started", "Continue", "Continue", "Choose Ira", "Save schedule", "Continue", "Start warm-up"];
+function show(i) {
+  cur = Math.max(0, Math.min(N, i));
+  steps.forEach((s, k) => s.classList.toggle("on", k === cur));
+  [...$("bars").children].forEach((b, k) => b.classList.toggle("on", k < cur));
+  $("count").textContent = cur === 0 ? "" : `${Math.min(cur, N - 1)}/${N - 1}`;
+  $("back").style.visibility = cur === 0 ? "hidden" : "visible";
+  $("bars").style.visibility = cur === 0 ? "hidden" : "visible";
+  $("next").textContent = cur === 3 ? `Choose ${teacher()}` : cta[cur];
+  $("alt").style.display = cur === 0 ? "" : cur === 5 ? "" : "none";
+  $("alt").textContent = cur === 0 ? "I'm a parent" : "Do this later";
+  if (cur === 6) { $("nm2").textContent = $("name").value || "there"; $("kvW").textContent = $("sumA").textContent; }
+  scrollTo(0, 0);
+}
+$("next").onclick = () => show(cur + 1);
+$("alt").onclick = () => show(cur + 1);
+$("back").onclick = () => show(cur - 1);
+// single-select groups
+function single(id, cb) { const g = $(id); g.addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b || !g.contains(b)) return; [...g.children].forEach((x) => x.setAttribute("aria-pressed", x === b)); cb && cb(b); }); }
+single("cls", () => kv()); single("board", () => kv()); single("dur", () => sum()); single("teachers", () => show(cur));
+single("lang", (b) => { $("sampleTxt").textContent = { English: "Okay Aarav, let's start by seeing where you are — quick, no marks.", Hinglish: "Okay Aarav, ek kaam karte hain — pehle quickly dekhte hain tum kahan ho.", Hindi: "ठीक है आरव, पहले जल्दी से देखते हैं तुम कहाँ हो।" }[b.textContent]; $("sampleTxt").classList.toggle("deva", b.textContent === "Hindi"); });
+function teacher() { return [...$("teachers").children].find((b) => b.getAttribute("aria-pressed") === "true").querySelector("b").textContent; }
+function kv() { const c = [...$("cls").children].find((b) => b.getAttribute("aria-pressed") === "true").firstChild.textContent; const bd = [...$("board").children].find((b) => b.getAttribute("aria-pressed") === "true").textContent; $("kvC").textContent = `${c} · ${bd}`; }
+$("name").addEventListener("input", () => $("sampleTxt").textContent = $("sampleTxt").textContent.replace(/^(Okay )\S+?,/, `$1${$("name").value || "there"},`));
+// --- scheduler: custom controls, no native pickers (owner reset #11) ---
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+let days = new Set([0, 2, 4]); let t = 17 * 60 + 30; // minutes from midnight
+const MIN = 6 * 60, MAX = 22 * 60; // 6:00 AM – 10:00 PM; parent bedtime can narrow this
+$("days").innerHTML = DAYS.map((d, i) => `<button class="day" aria-pressed="${days.has(i)}" aria-label="${d}">${d}</button>`).join("");
+$("days").addEventListener("click", (e) => { const b = e.target.closest(".day"); if (!b) return; const i = [...$("days").children].indexOf(b); days.has(i) ? days.delete(i) : days.add(i); b.setAttribute("aria-pressed", days.has(i)); sum(); });
+$("weekdays").onclick = () => { days = new Set([0, 1, 2, 3, 4]); [...$("days").children].forEach((b, i) => b.setAttribute("aria-pressed", days.has(i))); sum(); };
+const fmt = (m) => { let h = Math.floor(m / 60), mm = m % 60, ap = h >= 12 ? "PM" : "AM"; h = h % 12 || 12; return [`${h}:${String(mm).padStart(2, "0")}`, ap]; };
+let html = ""; for (let m = MIN; m <= MAX - 15; m += 15) { const [a, ap] = fmt(m); html += `<button class="slot ${m % 60 === 0 ? "hr" : ""}" role="option" data-m="${m}" aria-pressed="false">${a}<span style="font-size:10px;opacity:.6;margin-left:2px">${ap[0]}</span></button>`; }
+$("rail").innerHTML = html;
+function setT(m, scroll = true) {
+  t = Math.max(MIN, Math.min(MAX - 15, m));
+  const [a, ap] = fmt(t); $("tRead").innerHTML = `${a}<span>${ap}</span>`;
+  [...$("rail").children].forEach((b) => { const on = +b.dataset.m === t; b.setAttribute("aria-pressed", on); b.setAttribute("aria-selected", on); if (on && scroll) { const r = $("rail"); r.scrollTo({ left: b.offsetLeft - r.clientWidth / 2 + b.clientWidth / 2, behavior: "smooth" }); } });
+  [...$("quick").children].forEach((c) => c.setAttribute("aria-pressed", +c.dataset.t === t));
+  $("pod").textContent = t < 720 ? "Morning" : t < 960 ? "Afternoon" : "Evening";
+  sum();
+}
+$("rail").addEventListener("click", (e) => { const b = e.target.closest(".slot"); if (b) setT(+b.dataset.m); });
+$("quick").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) setT(+b.dataset.t); });
+$("tMinus").onclick = () => setT(t - 15); $("tPlus").onclick = () => setT(t + 15);
+$("rail").addEventListener("keydown", (e) => { if (e.key === "ArrowRight") { setT(t + 15); e.preventDefault(); } if (e.key === "ArrowLeft") { setT(t - 15); e.preventDefault(); } });
+function durMin() { return parseInt([...$("dur").children].find((b) => b.getAttribute("aria-pressed") === "true").textContent); }
+function sum() {
+  const d = [...days].sort(); const names = d.length === 7 ? "Every day" : d.length === 5 && d.every((x) => x < 5) ? "Weekdays" : d.map((i) => DAYS[i]).join(", ");
+  const [a, ap] = fmt(t); const [e, eap] = fmt(t + durMin());
+  if (!d.length) { $("sumA").innerHTML = `<span class="warn">Pick at least one day</span>`; $("sumB").textContent = "Two or three days a week works well."; $("next").disabled = cur === 4; return; }
+  $("next").disabled = false;
+  $("sumA").textContent = `${names} · ${a} ${ap}`;
+  $("sumB").textContent = `${durMin()} min · done by ${e} ${eap} · reminder 10 min before`;
+}
+setT(t, false); kv(); show(cur);
+setTimeout(() => setT(t), 300);
+</script>
+</body>
+</html>

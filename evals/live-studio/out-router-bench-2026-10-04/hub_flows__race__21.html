@@ -1,0 +1,120 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8eb;font-family:system-ui,sans-serif;color:#493b35}
+  #card{width:360px;height:320px;overflow:hidden;background:linear-gradient(#fff9ed,#f9f0e2)}
+  svg{display:block;width:360px;height:188px}
+  text{font-family:system-ui,sans-serif;fill:#493b35;font-size:12px;font-weight:700}
+  .title{font-size:17px;fill:#59453a}.flowLabel{font-size:11px}
+  .entity,.flow{transition:opacity .35s,filter .35s}.soft{opacity:.42}
+  .particle{filter:drop-shadow(0 1px 2px #9c796355)}
+  #controls{height:48px;display:flex;align-items:center;gap:8px;padding:0 12px}
+  button{border:0;border-radius:16px;background:#e8d8c4;color:#493b35;font:700 14px system-ui,sans-serif;cursor:pointer;transition:transform .16s,background .2s}
+  button:active{transform:scale(.93)}
+  #play,#next{width:55px;height:52px;flex:none}
+  #play{background:#f4c879}#next{background:#c9dec2}
+  [data-caption]{flex:1;text-align:center;font-size:13px;font-weight:700;line-height:1.2}
+  #check{height:84px;padding:3px 12px 2px}
+  #ask{height:22px;text-align:center;font-size:13px;font-weight:700}
+  #choices{display:flex;gap:8px}
+  [data-option]{flex:1;min-width:0;height:52px;background:#dce9df}
+  #feedback{position:absolute;top:238px;right:14px;font-size:12px;font-weight:700;pointer-events:none}
+  .pulse{animation:pulse .38s ease}
+  @keyframes pulse{50%{transform:scale(1.06)}}
+</style>
+<div id="card">
+  <svg viewBox="0 0 360 188" aria-hidden="true">
+    <text class="title" x="180" y="23" text-anchor="middle" id="title"></text>
+    <g class="entity" id="sunGroup">
+      <circle id="sunShape" data-entity="" cx="49" cy="65" r="23" fill="#f7c66c" stroke="#e9a94f" stroke-width="3"/>
+      <text data-label="" id="sunLabel" x="21" y="105"></text>
+    </g>
+    <g class="entity" id="rootsGroup">
+      <path id="rootsShape" data-entity="" d="M43 130 Q62 120 81 133 L76 143 Q70 145 67 157 L59 166 L55 150 L43 164 L45 144 L33 151 L37 137 Z" fill="#b98b6d" stroke="#997157" stroke-width="2"/>
+      <text data-label="" id="rootsLabel" x="19" y="181"></text>
+    </g>
+    <g class="entity" id="hubGroup">
+      <path id="hubShape" data-entity="" d="M159 121 Q157 78 215 72 Q233 110 190 132 Q172 138 159 121 Z" fill="#83b983" stroke="#548f69" stroke-width="3"/>
+      <path d="M165 126 Q188 107 214 82" fill="none" stroke="#e6f3c8" stroke-width="3" stroke-linecap="round"/>
+      <text data-label="" id="hubLabel" x="224" y="75"></text>
+    </g>
+    <g class="flow" id="flow0">
+      <path d="M94 161 Q127 151 169 121" fill="none" stroke="#78b9c9" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+      <circle class="particle" data-flow="" r="4" fill="#55abc5"/><circle class="particle" data-flow="" r="4" fill="#55abc5"/><circle class="particle" data-flow="" r="4" fill="#55abc5"/>
+      <text class="flowLabel" data-label="" x="107" y="156"></text>
+    </g>
+    <g class="flow" id="flow1">
+      <path d="M83 110 Q119 103 156 109" fill="none" stroke="#b6a0ce" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+      <circle class="particle" data-flow="" r="4" fill="#a989c7"/><circle class="particle" data-flow="" r="4" fill="#a989c7"/><circle class="particle" data-flow="" r="4" fill="#a989c7"/>
+      <text class="flowLabel" data-label="" x="105" y="92"></text>
+    </g>
+    <g class="flow" id="flow2">
+      <path d="M222 117 Q260 121 309 147" fill="none" stroke="#8fc2b3" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+      <circle class="particle" data-flow="" r="4" fill="#69ad9d"/><circle class="particle" data-flow="" r="4" fill="#69ad9d"/><circle class="particle" data-flow="" r="4" fill="#69ad9d"/>
+      <text class="flowLabel" data-label="" x="270" y="111"></text>
+    </g>
+  </svg>
+  <div id="controls">
+    <button id="play" data-action="play" type="button"></button>
+    <div data-caption></div>
+    <button id="next" data-action="next" type="button"></button>
+  </div>
+  <div id="check">
+    <div id="ask"></div>
+    <div id="choices"><button data-option="" type="button"></button><button data-option="" type="button"></button><button data-option="" type="button"></button></div>
+  </div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, t=k=>Studio.t(k);
+  const byId=id=>document.getElementById(id);
+  byId('title').textContent=t('title');
+  byId('ask').textContent=t('ask');
+  byId('next').textContent=t('next');
+  let playing=true,step=0,finished=false,phase=0,last=0;
+  const play=byId('play'),caption=document.querySelector('[data-caption]');
+  function showStep(){
+    caption.textContent=t('step'+(step+1));
+    p.flows.forEach((_,i)=>byId('flow'+i).classList.toggle('soft',i!==step%p.flows.length));
+  }
+  function showPlay(){play.textContent=t(playing?'pause':'play')}
+  [['hubShape','hubLabel',p.hub],['sunShape','sunLabel',p.entities[0]],['rootsShape','rootsLabel',p.entities[1]]].forEach(([shape,label,key])=>{
+    byId(shape).setAttribute('data-entity',key);
+    byId(label).setAttribute('data-label',key);
+    byId(label).textContent=t(key);
+  });
+  p.flows.forEach((flow,i)=>{
+    const group=byId('flow'+i);
+    group.querySelectorAll('.particle').forEach(c=>c.setAttribute('data-flow',flow.key));
+    const label=group.querySelector('[data-label]');
+    label.setAttribute('data-label',flow.key);
+    label.textContent=t(flow.key);
+  });
+  document.querySelectorAll('[data-option]').forEach((button,i)=>{
+    const key=p.options[i];button.setAttribute('data-option',key);button.textContent=t(key);
+    button.addEventListener('click',()=>{if(!finished){button.classList.remove('pulse');void button.offsetWidth;button.classList.add('pulse');Studio.answer(key)}});
+  });
+  Studio.onVerdict(({correct})=>{
+    byId('feedback').textContent=t(correct?'right':'wrong');
+    if(correct&&!finished){finished=true;Studio.done()}
+  });
+  play.addEventListener('click',()=>{playing=!playing;showPlay();Studio.event('play',{playing:playing?1:0})});
+  byId('next').addEventListener('click',()=>{step=(step+1)%p.steps;showStep();Studio.event('step',{step:step+1})});
+  function frame(now){
+    if(playing&&last)phase+=(now-last)*.00028;
+    last=now;
+    p.flows.forEach((flow,i)=>{
+      byId('flow'+i).querySelectorAll('.particle').forEach((c,j)=>{
+        let u=(phase+j/3)%1,x,y;
+        if(flow.dir==='up_in'){x=94+75*u;y=161-40*u}
+        else if(flow.dir==='in'){x=83+73*u;y=110-4*Math.sin(u*Math.PI)}
+        else{x=222+87*u;y=117+30*u}
+        c.setAttribute('cx',x.toFixed(2));c.setAttribute('cy',y.toFixed(2));
+      });
+    });
+    requestAnimationFrame(frame);
+  }
+  showPlay();showStep();requestAnimationFrame(frame);Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,94 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff8eb;color:#35483c}
+.card{width:360px;height:320px;padding:12px 14px 10px;display:flex;flex-direction:column;align-items:center}
+h1{font-size:17px;line-height:22px;margin:0;color:#47634b;font-weight:750}
+.question{font-size:14px;line-height:19px;margin:2px 0 2px;color:#71543f;text-align:center}
+svg{width:332px;height:252px;overflow:visible}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:filter .22s ease,transform .18s ease}
+.part:active{transform:scale(.94)}
+.part:hover{filter:brightness(1.06)}
+.part.is-correct{filter:drop-shadow(0 0 7px #f3c94f) brightness(1.13)}
+.shape{stroke:#496345;stroke-width:2.5;stroke-linejoin:round}
+.label{font:600 13px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#475b47}
+.leader{stroke:#829079;stroke-width:1.5;stroke-linecap:round}
+.feedback{height:21px;line-height:21px;font-size:13px;font-weight:700;color:#58724c;text-align:center}
+.feedback.is-wrong{color:#a45c43}
+</style>
+<main class="card">
+  <h1 id="title"></h1>
+  <div class="question" data-ask id="question"></div>
+  <svg viewBox="0 0 332 220" role="img" aria-labelledby="title">
+    <g class="part" data-part="petal" tabindex="0" role="button" aria-label="">
+      <path class="shape" fill="#f2a45b" d="M163 53 C138 53 136 23 153 17 C157 4 175 4 180 17 C201 17 202 46 180 53 C175 61 167 61 163 53Z"/>
+    </g>
+    <g class="part" data-part="centre" tabindex="0" role="button" aria-label="">
+      <circle class="shape" fill="#f4ce62" cx="166" cy="38" r="26"/>
+    </g>
+    <g class="part" data-part="stem" tabindex="0" role="button" aria-label="">
+      <path class="shape" fill="#77a866" d="M140 62 Q166 57 192 62 L192 169 Q166 175 140 169Z"/>
+    </g>
+    <g class="part" data-part="leaf" tabindex="0" role="button" aria-label="">
+      <path class="shape" fill="#8fbd72" d="M172 119 C176 91 201 77 224 81 C243 84 250 101 243 117 C233 143 203 153 174 138Z"/>
+    </g>
+    <g class="part" data-part="root" tabindex="0" role="button" aria-label="">
+      <path class="shape" fill="#c58b62" d="M142 164 Q166 173 190 164 L195 178 L184 189 L189 205 L176 218 L166 204 L156 218 L143 205 L148 189 L137 178Z"/>
+    </g>
+
+    <path class="leader" d="M127 25 L143 30"/>
+    <text class="label" data-label="petal" x="77" y="29"></text>
+    <path class="leader" d="M194 61 L184 51"/>
+    <text class="label" data-label="centre" x="198" y="66"></text>
+    <path class="leader" d="M126 145 L140 145"/>
+    <text class="label" data-label="stem" x="83" y="150"></text>
+    <path class="leader" d="M244 150 L237 139"/>
+    <text class="label" data-label="leaf" x="247" y="155"></text>
+    <path class="leader" d="M126 193 L145 188"/>
+    <text class="label" data-label="root" x="81" y="200"></text>
+  </svg>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(() => {
+  const parts = Studio.params.parts;
+  const ask = Studio.params.ask;
+  document.getElementById("title").textContent = Studio.t("title");
+  document.getElementById("question").textContent = Studio.t("ask") + " " + Studio.t(ask);
+  document.querySelectorAll("[data-label]").forEach(label => {
+    label.textContent = Studio.t(label.getAttribute("data-label"));
+  });
+  const feedback = document.getElementById("feedback");
+  let locked = false;
+  const choose = key => {
+    if (locked || !parts.includes(key)) return;
+    Studio.event("tap", {part:key});
+    Studio.answer(key);
+  };
+  document.querySelectorAll("[data-part]").forEach(part => {
+    const key = part.getAttribute("data-part");
+    part.setAttribute("aria-label", Studio.t(key));
+    part.addEventListener("click", () => choose(key));
+    part.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        choose(key);
+      }
+    });
+  });
+  Studio.onVerdict(({correct}) => {
+    if (correct) {
+      locked = true;
+      document.querySelector('[data-part="' + ask + '"]').classList.add("is-correct");
+      feedback.textContent = Studio.t("right") + " " + Studio.t("done");
+      Studio.done();
+    } else {
+      feedback.textContent = Studio.t("wrong");
+      feedback.classList.add("is-wrong");
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,85 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ec;font-family:system-ui,sans-serif;color:#513b38}
+  .board{width:360px;height:320px;padding:10px 16px;display:flex;flex-direction:column;gap:0;background:radial-gradient(circle at 95% 0%,#ffe6b8 0,transparent 43%),#fff8ec}
+  .title{height:30px;margin:0;font-size:21px;font-weight:800;line-height:30px}
+  .ask{height:30px;margin:0;font-size:15px;font-weight:650;line-height:30px}
+  .key{height:38px;display:flex;align-items:center;gap:8px;padding:0 11px;border-radius:14px;background:#fff0d8;font-size:14px}
+  .key [data-key]{display:flex;align-items:center;gap:6px;font-weight:800}
+  .rows{height:174px;display:flex;flex-direction:column;gap:2px;padding-top:2px}
+  .row{width:100%;height:56px;min-height:56px;border:2px solid #eadacb;border-radius:16px;background:#fffdf9;color:#513b38;display:grid;grid-template-columns:88px 1fr;align-items:center;text-align:left;padding:0 10px;cursor:pointer;transition:transform .18s,border-color .18s,background .18s}
+  .row:active{transform:scale(.97)}
+  .row:focus-visible{outline:3px solid #a45d73;outline-offset:-3px}
+  .row.picked{border-color:#d9768f;background:#fff0f2}
+  .row.good{border-color:#69a887;background:#e8f5e9}
+  .name{font-size:16px;font-weight:750}
+  .symbols{display:flex;align-items:center;gap:7px}
+  .symbol{display:block;width:27px;height:27px;min-width:27px;flex:none}
+  .feedback{height:28px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#87546a;transition:transform .2s}
+  .feedback.pop{animation:pop .35s ease-out}
+  @keyframes pop{50%{transform:scale(1.1)}}
+</style>
+<div class="board">
+  <h1 class="title" id="title"></h1>
+  <p class="ask" id="ask"></p>
+  <div class="key"><span id="keytext"></span><span data-key><span id="keySymbol"></span><span>=</span><span id="keyNumber"></span></span></div>
+  <div class="rows" id="rows"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+  const p=Studio.params;
+  const title=document.getElementById('title');
+  const ask=document.getElementById('ask');
+  const keytext=document.getElementById('keytext');
+  const keyNumber=document.getElementById('keyNumber');
+  const rows=document.getElementById('rows');
+  const feedback=document.getElementById('feedback');
+  title.textContent=Studio.t('title');
+  ask.textContent=Studio.t('ask');
+  keytext.textContent=Studio.t('keytext');
+  keyNumber.textContent=p.symbolValue;
+  function symbol(){
+    const el=document.createElement('span');
+    el.className='symbol';
+    el.setAttribute('data-symbol','');
+    el.innerHTML='<svg viewBox="0 0 30 30" width="27" height="27" aria-hidden="true"><path d="M15 5 C19 1 24 5 22 10 C28 10 29 17 24 19 C26 25 20 28 15 24 C10 28 4 25 6 19 C1 17 2 10 8 10 C6 5 11 1 15 5Z" fill="#ec8d79"/><circle cx="15" cy="15" r="4.3" fill="#ffdc79"/></svg>';
+    return el;
+  }
+  document.getElementById('keySymbol').append(symbol());
+  let finished=false;
+  p.rows.forEach(item=>{
+    const row=document.createElement('button');
+    row.type='button';
+    row.className='row';
+    row.setAttribute('data-row',item.key);
+    const name=document.createElement('span');
+    name.className='name';
+    name.textContent=Studio.t(item.key);
+    const pictures=document.createElement('span');
+    pictures.className='symbols';
+    for(let i=0;i<item.value/p.symbolValue;i++) pictures.append(symbol());
+    row.append(name,pictures);
+    rows.append(row);
+    row.addEventListener('click',()=>{
+      if(finished)return;
+      rows.querySelectorAll('.row').forEach(r=>r.classList.remove('picked'));
+      row.classList.add('picked');
+      Studio.answer(item.key);
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.classList.remove('pop');
+    void feedback.offsetWidth;
+    feedback.classList.add('pop');
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct&&!finished){
+      finished=true;
+      rows.querySelector('.picked')?.classList.add('good');
+      rows.querySelectorAll('.row').forEach(r=>r.disabled=true);
+      setTimeout(()=>{feedback.textContent=Studio.t('done');Studio.done()},450);
+    }
+  });
+  Studio.ready();
+
+</script>

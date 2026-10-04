@@ -1,0 +1,107 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#47382e;background:#fff8ee}
+#app{position:relative;width:360px;height:320px;overflow:hidden;padding:10px 12px}
+#title{height:28px;text-align:center;font-size:19px;font-weight:800;line-height:28px;color:#76472e}
+#ask{height:31px;text-align:center;font-size:14px;font-weight:650;line-height:24px;color:#574638}
+#chart{position:relative;width:336px;height:232px}
+#grid{position:absolute;inset:0;width:336px;height:232px;overflow:visible}
+.gridline{stroke:#e9dccc;stroke-width:1}
+.axisline{stroke:#9e8065;stroke-width:1.5}
+.tick{position:absolute;left:0;width:34px;height:18px;transform:translateY(-50%);text-align:right;padding-right:5px;font-size:10px;line-height:18px;color:#806b59}
+#yaxis{position:absolute;left:0;top:25px;height:138px;width:16px;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;font-weight:650;color:#806b59}
+#columns{position:absolute;left:39px;top:8px;width:297px;height:213px;display:flex}
+.column{position:relative;flex:1;min-width:0;height:213px;border:0;padding:0;background:transparent;cursor:pointer;touch-action:manipulation}
+.column:focus-visible{outline:3px solid #e4a34d;outline-offset:-4px;border-radius:12px}
+.column:active .bar{transform:translateX(-50%) scaleX(.88)}
+.bar{position:absolute;left:50%;bottom:28px;width:30px;max-width:calc(100% - 8px);transform:translateX(-50%) scaleY(0);transform-origin:bottom;border-radius:8px 8px 2px 2px;background:#e99c55;box-shadow:inset 0 2px 0 #f6c181;animation:grow .8s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes grow{to{transform:translateX(-50%) scaleY(1)}}
+.name{position:absolute;left:0;right:0;bottom:0;height:28px;text-align:center;white-space:nowrap;font-size:9px;line-height:28px;font-weight:650;color:#685340}
+#feedback{position:absolute;left:12px;right:12px;bottom:3px;height:24px;text-align:center;font-size:14px;line-height:24px;font-weight:750;color:#66814a}
+#feedback.wrong{color:#ae624e}
+#feedback.pop{animation:pop .35s ease-out}
+@keyframes pop{50%{transform:scale(1.12)}}
+</style>
+<div id="app">
+  <div id="title"></div>
+  <div id="ask"></div>
+  <div id="chart">
+    <svg id="grid" viewBox="0 0 336 232" aria-hidden="true"></svg>
+    <div id="yaxis"></div>
+    <div id="columns"></div>
+  </div>
+  <div id="feedback"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const title=document.getElementById("title");
+  const ask=document.getElementById("ask");
+  const yaxis=document.getElementById("yaxis");
+  const columns=document.getElementById("columns");
+  const grid=document.getElementById("grid");
+  const feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  ask.textContent=Studio.t("ask");
+  yaxis.textContent=Studio.t("yaxis");
+  const maxValue=Math.max(...p.data.map(d=>d.value));
+  const step=maxValue<=5?1:maxValue<=10?2:maxValue<=20?5:Math.ceil(maxValue/5);
+  const topValue=Math.ceil(maxValue/step)*step;
+  const plotTop=8, plotHeight=185, baseline=plotTop+plotHeight;
+  for(let value=0;value<=topValue;value+=step){
+    const y=baseline-(value/topValue)*plotHeight;
+    const line=document.createElementNS("http://www.w3.org/2000/svg","line");
+    line.setAttribute("x1","39");
+    line.setAttribute("x2","336");
+    line.setAttribute("y1",String(y));
+    line.setAttribute("y2",String(y));
+    line.setAttribute("class",value===0?"axisline":"gridline");
+    grid.appendChild(line);
+    const tick=document.createElement("div");
+    tick.className="tick";
+    tick.dataset.tick=String(value);
+    tick.style.top=y+"px";
+    tick.textContent=String(value);
+    document.getElementById("chart").appendChild(tick);
+  }
+  let pending=false,finished=false;
+  p.data.forEach(d=>{
+    const col=document.createElement("button");
+    col.type="button";
+    col.className="column";
+    col.dataset.column=d.key;
+    col.setAttribute("aria-label",Studio.t(d.key));
+    const bar=document.createElement("span");
+    bar.className="bar";
+    bar.dataset.bar=d.key;
+    bar.dataset.value=String(d.value);
+    bar.style.height=((d.value/topValue)*plotHeight)+"px";
+    const name=document.createElement("span");
+    name.className="name";
+    name.textContent=Studio.t(d.key);
+    col.append(bar,name);
+    col.addEventListener("click",()=>{
+      if(pending||finished)return;
+      pending=true;
+      Studio.event("select",{key:d.key});
+      Studio.answer(d.key);
+    });
+    columns.appendChild(col);
+  });
+  Studio.onVerdict(({correct})=>{
+    pending=false;
+    feedback.textContent=Studio.t(correct?"right":"wrong");
+    feedback.className=correct?"pop":"wrong pop";
+    if(correct){
+      finished=true;
+      columns.querySelectorAll("button").forEach(b=>b.disabled=true);
+      feedback.textContent=Studio.t("done");
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

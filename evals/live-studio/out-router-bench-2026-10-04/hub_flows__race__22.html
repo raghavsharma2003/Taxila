@@ -1,0 +1,94 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8e9;color:#365347;font-family:system-ui,sans-serif}.card{width:360px;height:320px;overflow:hidden;background:linear-gradient(#fff8e9,#eaf5e9)}.title{height:27px;padding:4px 14px 0;font-size:16px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}svg{display:block;width:360px;height:165px}.entity{transition:filter .3s,opacity .3s}.entity.focus{filter:drop-shadow(0 0 8px #ffc65b)}.label{fill:#365347;font-size:12px;font-weight:750;paint-order:stroke;stroke:#fff8e9;stroke-width:3px;stroke-linejoin:round}.particle{opacity:.85}.controls{height:56px;display:flex;align-items:center;gap:6px;padding:2px 8px}.controls button{width:62px;height:52px;flex:none}.caption{flex:1;text-align:center;font-size:13px;font-weight:700;line-height:1.2;max-height:48px;overflow:hidden}button{border:0;border-radius:16px;background:#d8eadb;color:#285c49;font:700 13px system-ui,sans-serif;cursor:pointer;transition:transform .16s,background .2s}button:active{transform:scale(.92)}button:focus-visible{outline:3px solid #efae45;outline-offset:-3px}.check{height:72px;padding:0 8px}.question{height:18px;font-size:13px;font-weight:750;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.options{display:flex;gap:6px;height:52px}.options button{flex:1;min-width:0;height:52px;background:#f4dba9}.options button.chosen{background:#f3bb78}.feedback{position:absolute;pointer-events:none;right:10px;top:242px;font-size:12px;font-weight:800;color:#24705a;background:#fff8e9;border-radius:8px;padding:2px 5px}
+</style>
+<div class="card">
+  <div class="title" id="title"></div>
+  <svg viewBox="0 0 360 180" aria-hidden="true">
+    <defs><linearGradient id="green" x2="1" y2="1"><stop stop-color="#a5db83"/><stop offset="1" stop-color="#399c6d"/></linearGradient></defs>
+    <circle class="entity" id="sunShape" cx="48" cy="52" r="23" fill="#ffd06d" stroke="#edae4b" stroke-width="4"/>
+    <path class="entity" id="rootShape" d="M175 125 Q177 149 160 164 M175 135 Q187 150 194 163 M175 146 L176 168" fill="none" stroke="#ad8059" stroke-width="7" stroke-linecap="round"/>
+    <path class="entity" id="hubShape" d="M137 102 Q148 49 221 65 Q215 113 168 119 Q147 119 137 102Z" fill="url(#green)" stroke="#438d64" stroke-width="3"/>
+    <path d="M143 107 Q178 94 216 68" fill="none" stroke="#e4f4c9" stroke-width="3" stroke-linecap="round"/>
+    <g id="particles"></g>
+    <g id="labels"></g>
+  </svg>
+  <div class="controls"><button data-action="play" id="play"></button><div class="caption" data-caption></div><button data-action="next" id="next"></button></div>
+  <div class="check"><div class="question" id="ask"></div><div class="options" id="options"></div></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, ns='http://www.w3.org/2000/svg', $=s=>document.querySelector(s);
+  const text=(el,key)=>{el.textContent=Studio.t(key)};
+  text($('#title'),'title');text($('#ask'),'ask');text($('#next'),'next');
+  $('#hubShape').setAttribute('data-entity',p.hub);
+  const entityShapes=[$('#sunShape'),$('#rootShape')];
+  p.entities.forEach((key,i)=>{if(entityShapes[i])entityShapes[i].setAttribute('data-entity',key)});
+  const labels=$('#labels');
+  function label(key,x,y){
+    const el=document.createElementNS(ns,'text');
+    el.setAttribute('class','label');el.setAttribute('x',x);el.setAttribute('y',y);
+    el.setAttribute('data-label',key);text(el,key);labels.appendChild(el);
+  }
+  label(p.hub,186,47);
+  p.entities.forEach((key,i)=>{const pos=[[77,34],[212,161]][i];if(pos)label(key,...pos)});
+  const paths=[
+    {a:[165,141],b:[173,112],color:'#59a9cf',at:[104,151]},
+    {a:[37,88],b:[139,88],color:'#a5a3bf',at:[51,117]},
+    {a:[219,86],b:[324,86],color:'#88bfad',at:[270,116]}
+  ];
+  const dots=[];
+  p.flows.forEach((flow,i)=>{
+    const path=paths[i];if(!path)return;
+    label(flow.key,...path.at);
+    for(let j=0;j<4;j++){
+      const dot=document.createElementNS(ns,'circle');
+      dot.setAttribute('r',i===0?4:3.5);dot.setAttribute('fill',path.color);
+      dot.setAttribute('class','particle');dot.setAttribute('data-flow',flow.key);
+      $('#particles').appendChild(dot);dots.push({dot,path,flow,phase:j/4,i});
+    }
+  });
+  let playing=true,step=0,finished=false,last=0;
+  const play=$('#play'),caption=$('[data-caption]');
+  function refresh(){
+    text(play,playing?'pause':'play');
+    text(caption,'step'+(step+1));
+    [$('#sunShape'),$('#rootShape'),$('#hubShape')].forEach(el=>el.classList.remove('focus'));
+    const target=step===0?$('#sunShape'):step===1?$('#rootShape'):$('#hubShape');
+    target.classList.add('focus');
+    dots.forEach(d=>{d.dot.style.opacity=step===0?'.65':d.i===step-1?'1':'.3'});
+  }
+  refresh();
+  play.addEventListener('click',()=>{playing=!playing;refresh();Studio.event('play',{on:Number(playing)})});
+  $('#next').addEventListener('click',()=>{step=(step+1)%p.steps;refresh();Studio.event('step',{step:step+1})});
+  function tick(time){
+    const dt=last?Math.min((time-last)/1000,.05):0;last=time;
+    if(playing)dots.forEach(d=>{d.phase=(d.phase+dt*.42)%1});
+    dots.forEach(d=>{
+      const t=d.phase,{a,b}=d.path;
+      d.dot.setAttribute('cx',a[0]+(b[0]-a[0])*t);
+      d.dot.setAttribute('cy',a[1]+(b[1]-a[1])*t);
+    });
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+  const options=$('#options'),feedback=$('#feedback');
+  p.options.forEach(key=>{
+    const button=document.createElement('button');
+    button.setAttribute('data-option',key);text(button,key);options.appendChild(button);
+    button.addEventListener('click',()=>{
+      if(finished)return;
+      options.querySelectorAll('button').forEach(b=>b.classList.remove('chosen'));
+      button.classList.add('chosen');feedback.textContent='';
+      Studio.answer(key);
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    text(feedback,correct?'right':'wrong');
+    if(correct&&!finished){finished=true;Studio.done()}
+  });
+  Studio.ready();
+})();
+
+</script>

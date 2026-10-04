@@ -1,0 +1,141 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e9;font-family:Arial,sans-serif;color:#563b32}
+  #app{width:360px;height:320px;position:relative;background:linear-gradient(180deg,#fff9ef 0%,#fff2dc 100%);overflow:hidden}
+  .top{height:54px;text-align:center;padding:8px 12px 0}
+  #title{font-size:20px;font-weight:800;line-height:23px;color:#8d4c30}
+  #instr{font-size:13px;font-weight:700;line-height:17px;color:#805f4c}
+  #balance{height:190px;position:relative}
+  .sun{position:absolute;right:19px;top:7px;width:30px;height:30px;border-radius:50%;background:#ffd36b;opacity:.65}
+  .stand{position:absolute;left:164px;top:92px;width:32px;height:84px;background:#b76d47;clip-path:polygon(42% 0,58% 0,70% 72%,100% 100%,0 100%,30% 72%);border-radius:6px}
+  .base{position:absolute;left:116px;top:169px;width:128px;height:12px;border-radius:20px;background:#8e4b35;box-shadow:0 4px 0 #d9905d}
+  #beamSvg{position:absolute;left:30px;top:43px;width:300px;height:72px;overflow:visible}
+  #beamGroup{transform-origin:150px 38px;transition:transform .65s cubic-bezier(.22,1.25,.35,1)}
+  .beam{stroke:#754535;stroke-width:10;stroke-linecap:round}
+  .hook{stroke:#754535;stroke-width:4;stroke-linecap:round}
+  .pivot{fill:#e6a65f;stroke:#754535;stroke-width:4}
+  .pan{position:absolute;width:132px;min-height:58px;border:3px solid #d99561;border-top:0;border-radius:0 0 22px 22px;background:rgba(255,224,166,.72);display:flex;flex-wrap:wrap;align-content:flex-start;justify-content:center;gap:3px;padding:8px 7px 7px;transition:top .65s cubic-bezier(.22,1.25,.35,1),transform .25s}
+  .pan:before{content:"";position:absolute;left:4px;right:4px;top:-7px;height:9px;border-radius:50%;background:#f5c985;border:2px solid #c77b50}
+  #leftPan{left:19px;top:91px}
+  #rightPan{right:19px;top:91px}
+  .weight{width:31px;height:32px;border-radius:8px 8px 10px 10px;background:linear-gradient(135deg,#74b9d6,#3f87b4);border:2px solid #286a94;color:white;font-weight:800;font-size:15px;line-height:28px;text-align:center;box-shadow:inset 0 2px 0 rgba(255,255,255,.42),0 3px 0 #236187;animation:land .35s ease-out}
+  .weight:before{content:"";display:block;position:absolute}
+  @keyframes land{0%{transform:translateY(-16px) scale(.75)}65%{transform:translateY(3px) scale(1.06)}100%{transform:translateY(0) scale(1)}}
+  #options{height:76px;display:flex;justify-content:center;gap:13px;align-items:center;padding:5px 12px 12px}
+  .option{width:82px;height:58px;border:0;border-radius:16px;background:#fffdf8;box-shadow:0 4px 0 #dfb88a,0 0 0 2px #efc997;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s,box-shadow .15s}
+  .option:active{transform:translateY(3px) scale(.94);box-shadow:0 1px 0 #dfb88a,0 0 0 2px #efc997}
+  .option[disabled]{pointer-events:none;opacity:.42}
+  .option .weight{width:42px;height:42px;line-height:38px;font-size:18px;border-radius:11px}
+  #message{position:absolute;left:45px;right:45px;top:103px;text-align:center;font-size:21px;font-weight:800;color:#ad5a35;opacity:0;transform:scale(.8);pointer-events:none;transition:opacity .25s,transform .25s}
+  #message.show{opacity:1;transform:scale(1)}
+  #app.celebrate .pivot{animation:glow .55s ease-in-out 2}
+  #app.celebrate .pan{animation:bob .45s ease-in-out 2}
+  @keyframes glow{50%{fill:#ffe28d;filter:drop-shadow(0 0 5px #f5a94d)}}
+  @keyframes bob{50%{transform:translateY(-5px)}}
+  #doneScreen{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:35px;font-size:25px;font-weight:800;line-height:32px;color:#995334}
+  #doneScreen:before{content:"";position:absolute;width:210px;height:210px;border-radius:50%;background:#ffe2a3;z-index:0}
+  #doneScreen span{position:relative;z-index:1}
+</style>
+<div id="app">
+  <div class="top">
+    <div id="title"></div>
+    <div id="instr"></div>
+  </div>
+  <div id="balance">
+    <div class="sun"></div>
+    <div class="stand"></div>
+    <div class="base"></div>
+    <svg id="beamSvg" viewBox="0 0 300 72" aria-hidden="true">
+      <g id="beamGroup" data-beam data-tilt="level">
+        <line class="beam" x1="33" y1="38" x2="267" y2="38"></line>
+        <line class="hook" x1="47" y1="41" x2="47" y2="58"></line>
+        <line class="hook" x1="253" y1="41" x2="253" y2="58"></line>
+        <circle class="pivot" cx="150" cy="38" r="12"></circle>
+      </g>
+    </svg>
+    <div id="leftPan" class="pan" data-pan="left" data-total="0"></div>
+    <div id="rightPan" class="pan" data-pan="right" data-total="0"></div>
+    <div id="message"></div>
+  </div>
+  <div id="options"></div>
+  <div id="doneScreen"><span id="doneText"></span></div>
+</div>
+<script>
+
+(function(){
+  var items=Studio.params.items, index=0, chosen=null, busy=false, done=false;
+  var app=document.getElementById('app'), left=document.getElementById('leftPan'), right=document.getElementById('rightPan');
+  var options=document.getElementById('options'), beam=document.getElementById('beamGroup'), message=document.getElementById('message');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+
+  function sum(a){return a.reduce(function(s,n){return s+n;},0)}
+  function weight(value){
+    var d=document.createElement('div');
+    d.className='weight'; d.setAttribute('data-weight',String(value)); d.textContent=value;
+    return d;
+  }
+  function draw(){
+    var item=items[index], l=item.left.slice(), r=item.right.slice();
+    if(chosen!==null) r.push(chosen);
+    left.innerHTML=''; right.innerHTML='';
+    l.forEach(function(v){left.appendChild(weight(v))});
+    r.forEach(function(v){right.appendChild(weight(v))});
+    var lt=sum(l), rt=sum(r), tilt=lt===rt?'level':lt>rt?'left':'right';
+    left.setAttribute('data-total',String(lt)); right.setAttribute('data-total',String(rt));
+    beam.setAttribute('data-tilt',tilt);
+    beam.style.transform=tilt==='left'?'rotate(-8deg)':tilt==='right'?'rotate(8deg)':'rotate(0deg)';
+    left.style.top=tilt==='left'?'103px':tilt==='right'?'79px':'91px';
+    right.style.top=tilt==='right'?'103px':tilt==='left'?'79px':'91px';
+    options.innerHTML='';
+    item.options.forEach(function(v){
+      if(v===chosen) return;
+      var b=document.createElement('button');
+      b.className='option'; b.type='button'; b.setAttribute('data-option',String(v));
+      b.appendChild(weight(v));
+      b.addEventListener('click',function(){
+        if(busy)return;
+        busy=true; chosen=v; draw();
+        Studio.event('choose',{value:v});
+        Studio.answer({value:v});
+      });
+      options.appendChild(b);
+    });
+  }
+  function say(key){
+    message.textContent=Studio.t(key);
+    message.classList.add('show');
+  }
+  function hide(){message.classList.remove('show')}
+  function start(){
+    chosen=null; busy=false; hide(); draw();
+  }
+  Studio.onVerdict(function(result){
+    if(done || chosen===null)return;
+    if(!result.correct){
+      say('wrong');
+      setTimeout(function(){chosen=null; busy=false; draw(); setTimeout(hide,180)},750);
+    }else{
+      say('right');
+      app.classList.add('celebrate');
+      setTimeout(function(){
+        app.classList.remove('celebrate');
+        index++;
+        if(index>=items.length){
+          done=true;
+          document.getElementById('balance').style.display='none';
+          document.querySelector('.top').style.display='none';
+          options.style.display='none';
+          var ds=document.getElementById('doneScreen');
+          document.getElementById('doneText').textContent=Studio.t('done');
+          ds.style.display='flex';
+          Studio.done();
+        }else start();
+      },1050);
+    }
+  });
+  start();
+  Studio.ready();
+}());
+
+</script>

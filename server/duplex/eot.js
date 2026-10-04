@@ -42,7 +42,7 @@ export function decideEnd(note, ctx = {}, pros = {}, opts = {}) {
   // §3.4: a word search ("woh… kya kehte hain") is never a TRP
   if (note.wordSearch) { p = Math.min(p, 0.1); hold = Math.max(hold, row.cap); why = "word search"; }
   // closed form with no value yet: hold briefly (M-B1: hesitation precedes the value)
-  if ((ctx.answerForm === "number" || ctx.answerForm === "choice" || ctx.answerForm === "yesno") && note.lastValue === null && !note.asks && !note.idk && note.lex.cue !== "yield") {
+  if (ctx.answerForm === "number" && note.lastValue === null && !note.asks && !note.idk && note.lex.cue !== "yield") {
     p = Math.min(p, 0.25); hold = Math.max(hold, 700); why = "closed: no value yet";
   }
   if (useRepair && note.repairOpen) { p = Math.min(p, 0.1); hold = row.cap; why = "self-repair in progress"; }

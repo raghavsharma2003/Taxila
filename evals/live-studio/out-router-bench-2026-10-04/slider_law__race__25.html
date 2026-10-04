@@ -1,0 +1,97 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;color:#493a32;font-family:system-ui,sans-serif}
+#app{width:100%;height:100%;padding:10px 14px;display:flex;flex-direction:column;gap:5px}
+header{height:27px;display:flex;align-items:center;justify-content:center;color:#754b37;font-size:19px;font-weight:800}
+.readout{height:31px;display:flex;justify-content:center;align-items:center;gap:25px;font-size:16px;font-weight:700}
+.readout span{display:flex;align-items:center;gap:5px}
+.readout strong{font-size:21px;color:#b45e37}
+.scene{height:76px;position:relative;display:flex;align-items:flex-end;justify-content:center;border-bottom:3px solid #a87d59;background:linear-gradient(#f6e7d2,#fff8ed);border-radius:13px 13px 4px 4px;overflow:hidden}
+#visual{width:48px;height:50px;position:absolute;bottom:3px;left:calc(50% - 24px);border-radius:9px 9px 2px 2px;background:linear-gradient(90deg,#f39b5d,#e36e48);transition:height .38s cubic-bezier(.2,.8,.2,1);box-shadow:inset -5px 0 #d75e3e}
+.controls{height:54px;display:flex;gap:12px}
+button{font:inherit;border:0;cursor:pointer;touch-action:manipulation;transition:transform .12s,filter .12s,background .15s}
+button:active{transform:scale(.94)}
+button:focus-visible{outline:3px solid #513e9a;outline-offset:2px}
+.step{flex:1;min-width:52px;height:54px;border-radius:16px;background:#f0d7ba;color:#603d2d;font-size:17px;font-weight:800;box-shadow:0 3px 0 #d0ad89}
+.step:last-child{background:#cce8d6;color:#315e49;box-shadow:0 3px 0 #a4ceb5}
+.step:disabled{filter:grayscale(.55);opacity:.55;cursor:default}
+.ask{height:23px;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px;font-size:14px;font-weight:700;color:#6d5141}
+.options{height:52px;display:flex;justify-content:center;gap:10px}
+.option{height:52px;min-width:86px;flex:1;border-radius:15px;background:#fff;border:2px solid #e8c9a6;color:#634634;font-size:20px;font-weight:800;box-shadow:0 3px 0 #ead7c2}
+.option:active{background:#ffe3c4}
+.feedback{height:22px;text-align:center;font-size:15px;font-weight:800;color:#528061}
+</style>
+<div id="app">
+  <header id="title"></header>
+  <div class="readout">
+    <span><span id="xname"></span><strong id="xvalue" data-x=""></strong></span>
+    <span><span id="yname"></span><strong id="output" data-output data-value=""></strong></span>
+  </div>
+  <div class="scene">
+    <div id="visual" data-visual data-dim="h"></div>
+  </div>
+  <div class="controls">
+    <button class="step" id="dec" data-action="dec" type="button"></button>
+    <button class="step" id="inc" data-action="inc" type="button"></button>
+  </div>
+  <div class="ask"><span id="asktext"></span><span id="askname"></span><strong id="askvalue"></strong></div>
+  <div class="options" id="options">
+    <button class="option" type="button"></button>
+    <button class="option" type="button"></button>
+    <button class="option" type="button"></button>
+  </div>
+  <div class="feedback" id="feedback"></div>
+</div>
+<script>
+
+(()=>{
+const p=Studio.params;
+const t=key=>Studio.t(key);
+let x=p.x.start;
+const yFor=value=>p.law.k*value+p.law.b;
+const neat=value=>Number.isInteger(value)?String(value):String(Number(value.toFixed(8)));
+const byId=id=>document.getElementById(id);
+byId("title").textContent=t("title");
+byId("xname").textContent=t("xname");
+byId("yname").textContent=t("yname");
+byId("dec").textContent=t("less");
+byId("inc").textContent=t("more");
+byId("asktext").textContent=t("ask");
+byId("askname").textContent=t("xname");
+byId("askvalue").textContent=neat(p.ask.x);
+const optionButtons=[...document.querySelectorAll(".option")];
+optionButtons.forEach((button,i)=>{
+ const value=p.ask.options[i];
+ button.textContent=neat(value);
+ button.dataset.option=String(value);
+ button.addEventListener("click",()=>{
+  Studio.answer({value});
+  Studio.event("answer",{value});
+ });
+});
+function update(){
+ const y=yFor(x);
+ byId("xvalue").textContent=neat(x);
+ byId("xvalue").dataset.x=String(x);
+ const output=byId("output");
+ output.textContent=neat(y);
+ output.dataset.value=neat(y);
+ byId("visual").style.height=(y*p.y.unitsPer)+"px";
+ byId("dec").disabled=x-p.x.step<p.x.min;
+ byId("inc").disabled=x+p.x.step>p.x.max;
+}
+byId("dec").addEventListener("click",()=>{
+ if(x-p.x.step>=p.x.min){x-=p.x.step;update();Studio.event("change",{x});}
+});
+byId("inc").addEventListener("click",()=>{
+ if(x+p.x.step<=p.x.max){x+=p.x.step;update();Studio.event("change",{x});}
+});
+Studio.onVerdict(({correct})=>{
+ byId("feedback").textContent=correct?t("right"):t("wrong");
+ if(correct){byId("feedback").textContent=t("done");Studio.done();}
+});
+update();
+Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,123 @@
+<style>
+*{box-sizing:border-box}
+.stage{width:360px;height:320px;overflow:hidden;position:relative;background:#fff7e9;color:#523a30;font-family:system-ui,sans-serif}
+h1,.instr,.target,.whole,.controls,.message{position:absolute;left:14px;width:332px;text-align:center}
+h1{top:9px;height:25px;margin:0;color:#914c37;font-size:19px;line-height:25px;font-weight:750}
+.instr{top:35px;height:18px;margin:0;color:#755d50;font-size:13px;line-height:18px}
+.target{top:55px;height:37px;color:#914c37;font-size:26px;line-height:37px;font-weight:750;letter-spacing:1px}
+.whole{top:92px;height:146px;display:flex;align-items:center;justify-content:center}
+svg{display:block;width:200px;height:146px;overflow:hidden}
+.part{fill:#f3d69d;stroke:#fff7e9;stroke-width:2.5;cursor:pointer;transition:fill .2s,transform .16s;transform-box:fill-box;transform-origin:center}
+.part[data-shaded="true"]{fill:#ed9169}
+.part:active{transform:scale(.95)}
+.barpart{stroke-width:3}
+.controls{top:244px;height:56px;display:flex;align-items:center;justify-content:center}
+button{min-width:130px;height:52px;border:0;border-radius:18px;background:#d96e50;color:white;font:700 17px system-ui,sans-serif;box-shadow:0 4px 0 #ad5039;cursor:pointer;transition:transform .15s,background .2s}
+button:active{transform:translateY(3px) scale(.97);box-shadow:0 1px 0 #ad5039}
+button[hidden]{display:none}
+.message{top:299px;height:19px;color:#4e8b66;font-size:14px;line-height:19px;font-weight:700}
+.message.wrong{color:#b55b4b}
+</style>
+<div class="stage" id="stage">
+  <h1 id="title"></h1>
+  <div class="instr" id="instr"></div>
+  <div class="target" data-target></div>
+  <div class="whole" id="whole"></div>
+  <div class="controls"><button id="check" data-action="check" type="button"></button></div>
+  <div class="message" id="message"></div>
+</div>
+<script>
+
+(()=>{
+const params=Studio.params;
+const stage=document.getElementById('stage');
+const title=document.getElementById('title');
+const instr=document.getElementById('instr');
+const target=document.querySelector('[data-target]');
+const whole=document.getElementById('whole');
+const check=document.getElementById('check');
+const message=document.getElementById('message');
+const words={title:Studio.t('title'),instr:Studio.t('instr'),check:Studio.t('check'),right:Studio.t('right'),wrong:Studio.t('wrong'),done:Studio.t('done'),hint:Studio.t('hint')};
+title.textContent=words.title;
+instr.textContent=words.instr;
+check.textContent=words.check;
+let index=0,completed=false,advanceTimer;
+const ns='http://www.w3.org/2000/svg';
+function draw(item){
+  stage.setAttribute('data-item',item.id);
+  target.textContent=item.n+'/'+item.d;
+  whole.replaceChildren();
+  const svg=document.createElementNS(ns,'svg');
+  svg.setAttribute('viewBox','0 0 200 146');
+  for(let i=0;i<item.d;i++){
+    let shape;
+    if(params.picture==='pizza'){
+      const cx=100,cy=73,r=65;
+      const a1=-Math.PI/2+2*Math.PI*i/item.d;
+      const a2=-Math.PI/2+2*Math.PI*(i+1)/item.d;
+      const x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+      const x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+      shape=document.createElementNS(ns,'path');
+      shape.setAttribute('d',`M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${item.d>2?1:0} 1 ${x2} ${y2} Z`);
+      shape.classList.add('part');
+    }else{
+      shape=document.createElementNS(ns,'rect');
+      const w=200/item.d;
+      shape.setAttribute('x',String(i*w));
+      shape.setAttribute('y','31');
+      shape.setAttribute('width',String(w));
+      shape.setAttribute('height','84');
+      shape.setAttribute('rx','8');
+      shape.classList.add('part','barpart');
+    }
+    shape.setAttribute('data-part',String(i));
+    shape.setAttribute('data-shaded','false');
+    shape.addEventListener('click',()=>{
+      if(completed)return;
+      const shaded=shape.getAttribute('data-shaded')!=='true';
+      shape.setAttribute('data-shaded',String(shaded));
+      Studio.event('part',{index:i,shaded:shaded?1:0});
+    });
+    svg.appendChild(shape);
+  }
+  whole.appendChild(svg);
+  message.textContent='';
+  message.className='message';
+}
+function finish(){
+  completed=true;
+  clearTimeout(advanceTimer);
+  stage.removeAttribute('data-item');
+  whole.replaceChildren();
+  target.textContent='';
+  instr.textContent='';
+  message.textContent=words.done;
+  check.hidden=true;
+  Studio.done();
+}
+check.addEventListener('click',()=>{
+  if(completed)return;
+  const item=params.items[index];
+  const count=whole.querySelectorAll('[data-shaded="true"]').length;
+  message.textContent='';
+  Studio.answer({n:count,d:item.d});
+});
+Studio.onVerdict(({correct})=>{
+  if(completed)return;
+  message.textContent=correct?words.right:words.wrong;
+  message.className=correct?'message':'message wrong';
+  if(correct){
+    Studio.event('verdict',{correct:1});
+    if(index+1<params.items.length){
+      advanceTimer=setTimeout(()=>{index++;draw(params.items[index]);},850);
+    }else{
+      advanceTimer=setTimeout(finish,850);
+    }
+  }else{
+    Studio.event('verdict',{correct:0});
+  }
+});
+if(params.items.length){draw(params.items[0]);Studio.ready()}else{finish()}
+})();
+
+</script>

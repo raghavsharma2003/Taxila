@@ -1,0 +1,102 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0}
+  #activity{width:360px;height:320px;overflow:hidden;background:#fff7e9;color:#503c42;font-family:system-ui,sans-serif;padding:12px 14px;position:relative}
+  .heading{height:30px;font-size:19px;font-weight:800;line-height:26px}
+  .scene{height:119px;display:flex;gap:12px}
+  .readouts{width:148px;display:flex;flex-direction:column;justify-content:center;gap:9px}
+  .readout{background:#fff;border-radius:15px;padding:7px 11px;box-shadow:0 3px 0 #f0dfca}
+  .name{display:block;font-size:12px;font-weight:700;color:#78656a}
+  .value{display:block;font-size:24px;font-weight:850;line-height:27px;font-variant-numeric:tabular-nums}
+  .picture{flex:1;position:relative;overflow:hidden;border-radius:18px;background:#fce8d2}
+  .picture svg{position:absolute;inset:0;width:100%;height:100%}
+  .bar{position:absolute;bottom:12px;left:50%;width:56px;transform:translateX(-50%);border-radius:14px 14px 3px 3px;background:linear-gradient(90deg,#ed856c,#ffb27b);box-shadow:inset -8px 0 #e77865;transition:height .38s cubic-bezier(.2,.8,.2,1)}
+  .controls{height:66px;display:flex;gap:12px;align-items:center}
+  button{font:inherit;cursor:pointer;border:0;min-width:52px;min-height:52px;transition:transform .16s,background .16s;touch-action:manipulation}
+  button:active{transform:scale(.92)}
+  .control{flex:1;border-radius:17px;background:#eedbd0;color:#563e45;font-weight:800;box-shadow:0 4px 0 #d9beb4}
+  .control:last-child{background:#7bafa0;color:#fff;box-shadow:0 4px 0 #5d9385}
+  .control:disabled{opacity:.46;cursor:default}
+  .question{height:92px;border-radius:18px;background:#fff;box-shadow:0 3px 0 #f0dfca;padding:7px 9px}
+  .prompt{height:27px;font-size:14px;font-weight:750;display:flex;align-items:center;gap:5px}
+  .choices{display:flex;gap:8px}
+  .choice{flex:1;border-radius:14px;background:#fce8d2;color:#503c42;font-weight:850;font-size:19px}
+  .choice.picked{background:#edc9a9}
+  .choice.good{background:#7bafa0;color:white}
+  .feedback{position:absolute;right:17px;top:12px;font-size:12px;font-weight:800;color:#8b6255}
+  .feedback.pop{animation:pop .35s ease-out}
+  @keyframes pop{50%{transform:scale(1.16)}}
+</style>
+<div id="activity">
+  <div class="heading" id="title"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+  <div class="scene">
+    <div class="readouts">
+      <div class="readout"><span class="name" id="xname"></span><span class="value" id="xvalue" data-x=""></span></div>
+      <div class="readout"><span class="name" id="yname"></span><span class="value" id="yvalue" data-output data-value=""></span></div>
+    </div>
+    <div class="picture" aria-hidden="true">
+      <svg viewBox="0 0 170 119" preserveAspectRatio="none"><path d="M0 105 Q43 96 85 105 T170 105 V119 H0Z" fill="#e9cfad"/><circle cx="137" cy="26" r="11" fill="#fff4c4"/><path d="M16 57 Q29 43 42 57 M120 67 Q131 56 142 67" fill="none" stroke="#efcda9" stroke-width="4" stroke-linecap="round"/></svg>
+      <div class="bar" id="visual" data-visual data-dim="h"></div>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="control" id="dec" data-action="dec" type="button"></button>
+    <button class="control" id="inc" data-action="inc" type="button"></button>
+  </div>
+  <div class="question">
+    <div class="prompt"><span id="ask"></span><span id="askx"></span><span id="questionmark"></span></div>
+    <div class="choices" id="choices"></div>
+  </div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, $=id=>document.getElementById(id);
+  for(const key of ['title','xname','yname','less','more','ask']){
+    $(key==='less'?'dec':key==='more'?'inc':key).textContent=Studio.t(key);
+  }
+  $('askx').textContent=p.ask.x;
+  let x=p.x.start, finished=false;
+  const clean=n=>Number(n.toPrecision(12));
+  function draw(){
+    const y=clean(p.law.k*x+p.law.b);
+    $('xvalue').textContent=x;
+    $('xvalue').setAttribute('data-x',String(x));
+    $('yvalue').textContent=y;
+    $('yvalue').setAttribute('data-value',String(y));
+    $('visual').style.height=clean(y*p.y.unitsPer)+'px';
+    $('dec').disabled=x-p.x.step<p.x.min;
+    $('inc').disabled=x+p.x.step>p.x.max;
+  }
+  $('dec').addEventListener('click',()=>{if(x-p.x.step>=p.x.min){x=clean(x-p.x.step);draw();Studio.event('change',{x});}});
+  $('inc').addEventListener('click',()=>{if(x+p.x.step<=p.x.max){x=clean(x+p.x.step);draw();Studio.event('change',{x});}});
+  let selected=null;
+  p.ask.options.forEach(option=>{
+    const b=document.createElement('button');
+    b.type='button';b.className='choice';b.textContent=option;
+    b.setAttribute('data-option',String(option));
+    b.addEventListener('click',()=>{
+      if(finished)return;
+      document.querySelectorAll('.choice').forEach(c=>c.classList.remove('picked'));
+      b.classList.add('picked');selected=b;
+      Studio.answer({value:option});
+    });
+    $('choices').appendChild(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    $('feedback').textContent=Studio.t(correct?'right':'wrong');
+    $('feedback').classList.remove('pop');
+    void $('feedback').offsetWidth;
+    $('feedback').classList.add('pop');
+    if(correct&&!finished){
+      finished=true;
+      if(selected)selected.classList.add('good');
+      Studio.done();
+    }
+  });
+  draw();
+  Studio.ready();
+})();
+
+</script>

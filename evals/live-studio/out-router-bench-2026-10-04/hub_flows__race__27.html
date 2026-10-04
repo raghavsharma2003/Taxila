@@ -1,0 +1,127 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8eb;font-family:system-ui,sans-serif;color:#394c3e}
+  .stage{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(#fff8eb,#f1f8e9)}
+  svg{display:block;width:360px;height:188px}
+  svg text{font-family:system-ui,sans-serif;fill:#394c3e;font-size:12px;font-weight:700}
+  .title{font-size:16px;fill:#365941}
+  .flow-label{font-size:11px}
+  .particle{opacity:.9;transition:r .25s,opacity .25s}
+  .controls{height:55px;display:flex;align-items:center;gap:7px;padding:1px 9px}
+  button{border:0;cursor:pointer;font:700 13px system-ui,sans-serif;transition:transform .16s,background .2s,box-shadow .2s}
+  button:active{transform:scale(.92)}
+  .control{height:52px;min-width:52px;border-radius:17px;background:#dcebd2;color:#345744}
+  [data-action=play]{min-width:70px;background:#d6e9c9}
+  [data-caption]{flex:1;min-width:0;text-align:center;font-size:12px;font-weight:700;line-height:1.2;color:#45634b}
+  .check{padding:0 9px}
+  .question{height:24px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+  .options{display:flex;gap:6px}
+  .options button{width:calc((100% - 12px)/3);height:52px;border-radius:16px;background:#e2edda;color:#345744;box-shadow:0 3px 0 #c8daba}
+  .options button:focus-visible,.control:focus-visible{outline:3px solid #eeaa65;outline-offset:1px}
+  .options button.picked{background:#ffd9a9;box-shadow:0 3px 0 #e9b77e}
+  .feedback{position:absolute;right:10px;top:244px;padding:3px 8px;border-radius:10px;background:#fff0ca;font-size:11px;font-weight:700;pointer-events:none}
+  .glow{filter:drop-shadow(0 0 5px #e9b95d)}
+</style>
+<div class="stage">
+  <svg viewBox="0 0 360 188" aria-hidden="true">
+    <text class="title" x="180" y="19" text-anchor="middle" id="title"></text>
+    <path d="M48 44 Q91 53 125 99" fill="none" stroke="#f5d79b" stroke-width="3" stroke-dasharray="5 6"/>
+    <path d="M174 158 Q174 139 175 118" fill="none" stroke="#a7d7df" stroke-width="4" stroke-linecap="round"/>
+    <path d="M62 104 Q94 102 131 101" fill="none" stroke="#b3c8e4" stroke-width="3" stroke-dasharray="5 6"/>
+    <path d="M219 98 Q261 97 309 96" fill="none" stroke="#d2bce8" stroke-width="3" stroke-dasharray="5 6"/>
+    <circle data-entity="sun" cx="48" cy="43" r="23" fill="#ffd477" stroke="#edaf60" stroke-width="3"/>
+    <path data-entity="roots" d="M175 150 L175 165 M175 159 Q164 159 160 175 M175 160 Q188 161 192 175 M175 165 L173 181" fill="none" stroke="#ae8067" stroke-width="6" stroke-linecap="round"/>
+    <ellipse data-entity="leaf" cx="176" cy="95" rx="45" ry="29" transform="rotate(-25 176 95)" fill="#77bd78" stroke="#4e985f" stroke-width="3"/>
+    <path d="M139 109 Q174 96 212 80" fill="none" stroke="#d6efd0" stroke-width="2.5" stroke-linecap="round"/>
+    <g id="particles"></g>
+    <text data-label="sun" x="18" y="83"></text>
+    <text data-label="leaf" x="187" y="54"></text>
+    <text data-label="roots" x="204" y="176"></text>
+    <text class="flow-label" data-label="water" x="104" y="155"></text>
+    <text class="flow-label" data-label="co2" x="67" y="126"></text>
+    <text class="flow-label" data-label="o2" x="267" y="81"></text>
+  </svg>
+  <div class="controls">
+    <button class="control" data-action="play" type="button"></button>
+    <div data-caption></div>
+    <button class="control" data-action="next" type="button"></button>
+  </div>
+  <div class="check">
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+  </div>
+  <div class="feedback" id="feedback" hidden></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, svgNS="http://www.w3.org/2000/svg";
+  const title=document.getElementById("title"), caption=document.querySelector("[data-caption]");
+  const play=document.querySelector('[data-action="play"]'), next=document.querySelector('[data-action="next"]');
+  const feedback=document.getElementById("feedback"), holder=document.getElementById("particles");
+  title.textContent=Studio.t("title");
+  document.getElementById("question").textContent=Studio.t("ask");
+  document.querySelectorAll("[data-label]").forEach(el=>el.textContent=Studio.t(el.getAttribute("data-label")));
+  let playing=true,step=0,finished=false,last=0,phase=0;
+  const steps=Array.from({length:p.steps},(_,i)=>"step"+(i+1));
+  function showStep(){caption.textContent=Studio.t(steps[step]);next.classList.remove("glow");void next.offsetWidth;next.classList.add("glow")}
+  function showPlay(){play.textContent=Studio.t(playing?"pause":"play")}
+  showStep();showPlay();next.textContent=Studio.t("next");
+  const paths=[
+    {a:[174,153],b:[175,119],color:"#58b8d0"},
+    {a:[66,102],b:[131,101],color:"#799fda"},
+    {a:[225,98],b:[306,96],color:"#b08dd0"}
+  ];
+  const dots=[];
+  p.flows.forEach((flow,i)=>{
+    const path=paths[i%paths.length];
+    for(let j=0;j<4;j++){
+      const c=document.createElementNS(svgNS,"circle");
+      c.setAttribute("data-flow",flow.key);
+      c.setAttribute("fill",path.color);
+      holder.appendChild(c);
+      dots.push({c,flow,path,i,offset:j/4});
+    }
+  });
+  function frame(time){
+    if(!last)last=time;
+    const delta=Math.min(time-last,50);last=time;
+    if(playing)phase+=delta*.00032;
+    dots.forEach(d=>{
+      let t=(phase+d.offset)%1;
+      if(d.flow.dir==="in"||d.flow.dir==="up_in"||d.flow.dir==="out"){
+        const {a,b}=d.path;
+        d.c.setAttribute("cx",(a[0]+(b[0]-a[0])*t).toFixed(2));
+        d.c.setAttribute("cy",(a[1]+(b[1]-a[1])*t).toFixed(2));
+      }
+      d.c.setAttribute("r",d.i===step?5:3.5);
+      d.c.setAttribute("opacity",d.i===step?1:.65);
+    });
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  play.addEventListener("click",()=>{playing=!playing;showPlay();Studio.event("play",{playing:playing?1:0})});
+  next.addEventListener("click",()=>{step=(step+1)%steps.length;showStep();Studio.event("step",{step:step+1})});
+  const optionButtons=new Map();
+  p.options.forEach(key=>{
+    const button=document.createElement("button");
+    button.type="button";button.dataset.option=key;button.textContent=Studio.t(key);
+    document.getElementById("options").appendChild(button);
+    optionButtons.set(key,button);
+    button.addEventListener("click",()=>{
+      if(finished)return;
+      optionButtons.forEach(b=>b.classList.remove("picked"));
+      button.classList.add("picked");
+      feedback.hidden=true;
+      Studio.answer(key);
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?"right":"wrong");
+    feedback.hidden=false;
+    if(correct&&!finished){finished=true;Studio.done()}
+  });
+  Studio.ready();
+})();
+
+</script>

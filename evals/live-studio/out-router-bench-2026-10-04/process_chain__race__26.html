@@ -1,0 +1,119 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff9ee;color:#51413b}
+  #activity{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 50% 35%,#fffdf7,#fff2df)}
+  .title{position:absolute;top:7px;left:12px;width:336px;text-align:center;font-size:19px;font-weight:800;color:#765044}
+  .scene{position:absolute;top:28px;left:0;width:360px;height:180px}
+  .arrows{position:absolute;inset:0;width:360px;height:180px;overflow:visible}
+  .stage{position:absolute;width:110px;height:52px;border:2px solid #e9c9a5;border-radius:19px;background:#fffdf8;box-shadow:0 4px 0 #f3dfc4;display:flex;align-items:flex-end;justify-content:center;padding:0 4px 5px;transition:background .25s,border-color .25s,box-shadow .25s,transform .25s}
+  .stage.active{background:#fff0ba;border-color:#e9a94d;box-shadow:0 0 0 5px #ffe1a477,0 4px 0 #e8c47f;transform:scale(1.04)}
+  .stage-name{font-size:12px;font-weight:750;line-height:1.1;text-align:center;white-space:nowrap}
+  .token{position:absolute;width:18px;height:18px;border-radius:50% 50% 50% 5px;background:#52b9bd;border:2px solid #fff;box-shadow:0 2px 7px #428b94a0;z-index:3;pointer-events:none;transform:translate(-50%,-50%) rotate(-45deg)}
+  .question{position:absolute;top:210px;left:12px;width:230px;font-size:14px;font-weight:700;line-height:1.25}
+  .question strong{color:#a15b62}
+  button{font:inherit;cursor:pointer;touch-action:manipulation;border:0;transition:transform .16s,background .2s}
+  button:active{transform:scale(.93)}
+  .next{position:absolute;top:207px;right:12px;width:102px;height:52px;border-radius:18px;background:#efad64;color:#4b302b;font-weight:800;box-shadow:0 4px 0 #d48c4e}
+  .next:disabled{opacity:.55;cursor:default}
+  .options{position:absolute;left:8px;right:8px;bottom:5px;display:flex;gap:5px}
+  .option{flex:1;min-width:0;height:52px;padding:3px;border:2px solid #85c5bf;border-radius:15px;background:#e5f7ef;color:#355c5b;font-size:12px;font-weight:800;overflow-wrap:anywhere}
+  .feedback{position:absolute;top:238px;left:12px;font-size:12px;font-weight:800;color:#a15b62}
+</style>
+<div id="activity">
+  <div class="title" id="title"></div>
+  <div class="scene" id="scene">
+    <svg class="arrows" id="arrows" viewBox="0 0 360 180" aria-hidden="true">
+      <defs><marker id="arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M1 1 L7 4 L1 7" fill="none" stroke="#bc8a77" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+    </svg>
+    <div class="token" data-token id="token"></div>
+  </div>
+  <div class="question" id="question"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+  <button class="next" data-action="next" id="next" type="button"></button>
+  <div class="options" id="options"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, stages=p.stages, root=document.getElementById('activity');
+  const scene=document.getElementById('scene'), svg=document.getElementById('arrows');
+  const token=document.getElementById('token'), next=document.getElementById('next');
+  const feedback=document.getElementById('feedback');
+  document.getElementById('title').textContent=Studio.t('title');
+  next.textContent=Studio.t('next');
+  const q=document.getElementById('question');
+  q.append(document.createTextNode(Studio.t('ask')+' '));
+  const after=document.createElement('strong');
+  after.textContent=Studio.t(p.askAfter);
+  q.append(after);
+  const n=stages.length;
+  const positions=stages.map((_,i)=>{
+    const angle=(-135+i*360/n)*Math.PI/180;
+    return {x:180+140*Math.cos(angle),y:90+55*Math.sin(angle)};
+  });
+  let active=0, moving=false, finished=false;
+  function place(x,y){token.style.left=x+'px';token.style.top=y+'px'}
+  stages.forEach((key,i)=>{
+    const el=document.createElement('div');
+    el.className='stage';
+    el.setAttribute('data-stage',key);
+    el.style.left=(positions[i].x-55)+'px';
+    el.style.top=(positions[i].y-26)+'px';
+    const label=document.createElement('span');
+    label.className='stage-name';
+    label.setAttribute('data-label',key);
+    label.textContent=Studio.t(key);
+    el.append(label);scene.append(el);
+  });
+  const count=p.cycle?n:Math.max(0,n-1);
+  for(let i=0;i<count;i++){
+    const a=positions[i],b=positions[(i+1)%n],dx=b.x-a.x,dy=b.y-a.y;
+    const scale=Math.min(55/Math.max(Math.abs(dx),.001),26/Math.max(Math.abs(dy),.001));
+    const inset=Math.min(scale,.42);
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',`M ${a.x+dx*inset} ${a.y+dy*inset} L ${b.x-dx*inset} ${b.y-dy*inset}`);
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke','#bc8a77');
+    path.setAttribute('stroke-width','3');
+    path.setAttribute('stroke-linecap','round');
+    path.setAttribute('marker-end','url(#arrowhead)');
+    path.setAttribute('data-arrow',stages[i]+'>'+stages[(i+1)%n]);
+    svg.append(path);
+  }
+  function highlight(){
+    root.setAttribute('data-active',stages[active]);
+    scene.querySelectorAll('.stage').forEach((el,i)=>el.classList.toggle('active',i===active));
+  }
+  place(positions[0].x,positions[0].y);highlight();
+  next.addEventListener('click',()=>{
+    if(moving||finished||(!p.cycle&&active===n-1))return;
+    const from=positions[active],target=(active+1)%n,to=positions[target];
+    moving=true;next.disabled=true;
+    const start=performance.now(),duration=650;
+    function frame(now){
+      const t=Math.min(1,(now-start)/duration);
+      const smooth=t*t*(3-2*t);
+      place(from.x+(to.x-from.x)*smooth,from.y+(to.y-from.y)*smooth);
+      if(t<1)requestAnimationFrame(frame);
+      else{active=target;highlight();moving=false;next.disabled=false;Studio.event('next',{stage:stages[active]})}
+    }
+    requestAnimationFrame(frame);
+  });
+  p.options.forEach(key=>{
+    const button=document.createElement('button');
+    button.className='option';button.type='button';
+    button.setAttribute('data-option',key);
+    button.textContent=Studio.t(key);
+    button.addEventListener('click',()=>{if(!finished)Studio.answer(key)});
+    document.getElementById('options').append(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      finished=true;next.disabled=true;
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

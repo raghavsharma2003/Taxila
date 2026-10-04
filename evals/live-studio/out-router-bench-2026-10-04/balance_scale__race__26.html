@@ -1,0 +1,139 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ec;font-family:system-ui,sans-serif;color:#634535}
+  #scene{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 50% 30%,#fffdf7,#fff3df)}
+  h1{position:absolute;top:10px;left:12px;width:336px;margin:0;text-align:center;font-size:20px;line-height:26px;color:#80513c}
+  #instruction{position:absolute;top:40px;left:15px;width:330px;text-align:center;font-size:14px;line-height:19px}
+  #stand{position:absolute;left:0;top:66px;width:360px;height:165px;pointer-events:none}
+  #rig{position:absolute;left:0;top:74px;width:360px;height:139px;transform-origin:180px 43px;transition:transform .65s cubic-bezier(.2,1.35,.45,1)}
+  .beam{position:absolute;left:59px;top:38px;width:242px;height:10px;border-radius:10px;background:#bd7950;box-shadow:0 3px 0 #885739}
+  .cord{position:absolute;top:43px;width:3px;height:55px;border-radius:4px;background:#c7956b}
+  .cord.left{left:65px}.cord.right{right:65px}
+  .pan{position:absolute;top:92px;width:112px;height:52px;border:3px solid #b97a51;border-radius:12px 12px 27px 27px;background:#ffe2aa;box-shadow:0 5px 0 #e6b875;display:flex;align-items:center;justify-content:center;gap:3px;padding:3px}
+  .pan.left{left:32px}.pan.right{right:32px}
+  .weight{min-width:30px;height:36px;padding:0 3px;border-radius:10px 10px 7px 7px;background:#e68b69;border:2px solid #b7634e;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;color:#fffaf1;box-shadow:inset 0 3px #f6ac88}
+  .pan.right .weight{background:#83a9a0;border-color:#57847e;box-shadow:inset 0 3px #a9c9b9}
+  #message{position:absolute;top:213px;left:12px;width:336px;height:27px;text-align:center;font-size:17px;font-weight:750;color:#638078;opacity:0;transform:scale(.86);transition:opacity .2s,transform .25s}
+  #message.show{opacity:1;transform:scale(1)}
+  #choices{position:absolute;left:34px;top:247px;width:292px;height:59px;display:flex;justify-content:space-between}
+  .choice{width:76px;height:56px;border:3px solid #b7634e;border-radius:14px 14px 10px 10px;background:#e68b69;color:#fffaf1;font:800 24px system-ui,sans-serif;box-shadow:0 5px 0 #aa6148,inset 0 4px #f6ac88;cursor:pointer;transition:transform .18s,box-shadow .18s}
+  .choice:active{transform:translateY(4px) scale(.94);box-shadow:0 1px 0 #aa6148}
+  .choice:disabled{cursor:default}
+  #scene.celebrate .pan{animation:glow .65s ease-in-out}
+  @keyframes glow{50%{filter:brightness(1.17);transform:scale(1.04)}}
+</style>
+<div id="scene">
+  <h1 id="title"></h1>
+  <div id="instruction"></div>
+  <svg id="stand" viewBox="0 0 360 165" aria-hidden="true">
+    <path d="M180 53 L180 141 M145 151 Q180 139 215 151" fill="none" stroke="#a46c4d" stroke-width="13" stroke-linecap="round"/>
+    <circle cx="180" cy="51" r="11" fill="#e6b875" stroke="#a46c4d" stroke-width="4"/>
+  </svg>
+  <div id="rig">
+    <div class="beam" data-beam data-tilt="level"></div>
+    <div class="cord left"></div><div class="cord right"></div>
+    <div class="pan left" data-pan="left" data-total="0"></div>
+    <div class="pan right" data-pan="right" data-total="0"></div>
+  </div>
+  <div id="message" aria-live="polite"></div>
+  <div id="choices"></div>
+</div>
+<script>
+
+(() => {
+  const items = Studio.params.items;
+  const scene = document.getElementById('scene');
+  const rig = document.getElementById('rig');
+  const beam = document.querySelector('[data-beam]');
+  const pans = {
+    left: document.querySelector('[data-pan="left"]'),
+    right: document.querySelector('[data-pan="right"]')
+  };
+  const choices = document.getElementById('choices');
+  const message = document.getElementById('message');
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('instruction').textContent = Studio.t('instr');
+
+  let index = 0, picked = null, locked = false, finished = false;
+
+  function total(values) {
+    return values.reduce((sum, value) => sum + value, 0);
+  }
+  function showMessage(key) {
+    message.textContent = key ? Studio.t(key) : '';
+    message.classList.toggle('show', !!key);
+  }
+  function draw() {
+    const item = items[index];
+    const sides = {left: item.left, right: picked === null ? item.right : [...item.right, picked]};
+    for (const side of ['left', 'right']) {
+      const pan = pans[side];
+      pan.replaceChildren();
+      pan.dataset.total = String(total(sides[side]));
+      sides[side].forEach(value => {
+        const weight = document.createElement('div');
+        weight.className = 'weight';
+        weight.dataset.weight = String(value);
+        weight.textContent = String(value);
+        pan.append(weight);
+      });
+    }
+    const difference = total(sides.right) - total(sides.left);
+    beam.dataset.tilt = difference > 0 ? 'right' : difference < 0 ? 'left' : 'level';
+    rig.style.transform = `rotate(${difference === 0 ? 0 : Math.sign(difference) * Math.min(11, 4 + Math.abs(difference) * 1.5)}deg)`;
+    choices.replaceChildren();
+    item.options.forEach(value => {
+      if (value === picked) return;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'choice';
+      button.dataset.option = String(value);
+      button.textContent = String(value);
+      button.disabled = locked;
+      button.addEventListener('click', () => {
+        if (locked || finished) return;
+        locked = true;
+        picked = value;
+        showMessage(null);
+        draw();
+        Studio.event('choose', {value: String(value)});
+        Studio.answer({value});
+      });
+      choices.append(button);
+    });
+  }
+  Studio.onVerdict(({correct}) => {
+    if (finished || picked === null) return;
+    if (correct) {
+      showMessage('right');
+      scene.classList.add('celebrate');
+      setTimeout(() => {
+        scene.classList.remove('celebrate');
+        if (index + 1 === items.length) {
+          finished = true;
+          choices.replaceChildren();
+          showMessage('done');
+          Studio.done();
+        } else {
+          index++;
+          picked = null;
+          locked = false;
+          showMessage(null);
+          draw();
+        }
+      }, 950);
+    } else {
+      showMessage('wrong');
+      setTimeout(() => {
+        picked = null;
+        locked = false;
+        draw();
+        setTimeout(() => showMessage(null), 650);
+      }, 850);
+    }
+  });
+  draw();
+  Studio.ready();
+})();
+
+</script>

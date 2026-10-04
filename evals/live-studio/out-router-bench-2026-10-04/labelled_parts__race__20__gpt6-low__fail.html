@@ -1,0 +1,95 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ee;font-family:system-ui,sans-serif;color:#51433d}
+  .card{width:360px;height:320px;overflow:hidden;border:3px solid #efdccb;border-radius:23px;background:radial-gradient(circle at 50% 38%,#fffef9,#fff4e5)}
+  .top{height:54px;padding:6px 12px 0;text-align:center}
+  .title{font-size:14px;font-weight:700;color:#956d66;line-height:19px}
+  [data-ask]{font-size:19px;font-weight:800;line-height:25px}
+  svg{display:block;width:354px;height:230px}
+  .leader{fill:none;stroke:#b5a69a;stroke-width:2;stroke-linecap:round;pointer-events:none}
+  .name{font-size:14px;font-weight:750;fill:#604e49;pointer-events:none}
+  [data-part]{cursor:pointer;transition:filter .25s,transform .25s;transform-box:fill-box;transform-origin:center}
+  [data-part]:active{transform:scale(.93)}
+  [data-part].glow{filter:drop-shadow(0 0 9px #ffc65d);animation:happy .7s ease-in-out infinite alternate}
+  @keyframes happy{to{transform:scale(1.06)}}
+  .feedback{height:30px;text-align:center;font-size:16px;font-weight:800;color:#a16859}
+  .feedback.good{color:#43835d}
+  .wobble{animation:wobble .35s ease}
+  @keyframes wobble{25%{transform:rotate(-5deg)}70%{transform:rotate(5deg)}}
+</style>
+<div class="card">
+  <div class="top"><div class="title" id="title"></div><div data-ask id="ask"></div></div>
+  <svg viewBox="0 0 354 230" aria-hidden="true">
+    <path class="leader" data-for="petal" d="M76 32 L111 42"/>
+    <path class="leader" data-for="centre" d="M220 72 L202 71"/>
+    <path class="leader" data-for="stem" d="M103 150 L130 150"/>
+    <path class="leader" data-for="leaf" d="M272 148 L261 148"/>
+    <path class="leader" data-for="root" d="M96 210 L119 205"/>
+
+    <path data-part="stem" d="M165 119 Q161 151 164 181" fill="none" stroke="#69a77b" stroke-width="56" stroke-linecap="round"/>
+    <path data-part="root" d="M164 191 Q143 204 126 204 M164 191 Q183 205 205 204" fill="none" stroke="#a97855" stroke-width="56" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse data-part="leaf" cx="226" cy="148" rx="39" ry="30" fill="#78b981"/>
+    <path data-part="petal" d="M164 76 C124 91 103 65 113 38 C121 16 143 15 160 34 C171 5 194 4 208 25 C228 55 203 88 164 76Z" fill="#ee8eaa"/>
+    <circle data-part="centre" cx="164" cy="69" r="29" fill="#f4be62"/>
+
+    <text class="name" data-label="petal" x="29" y="29"></text>
+    <text class="name" data-label="centre" x="224" y="76"></text>
+    <text class="name" data-label="stem" x="57" y="154"></text>
+    <text class="name" data-label="leaf" x="275" y="152"></text>
+    <text class="name" data-label="root" x="55" y="214"></text>
+  </svg>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+  const parts = new Set(Studio.params.parts);
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('ask').textContent = Studio.t('ask');
+
+  document.querySelectorAll('[data-label]').forEach(el => {
+    if (parts.has(el.dataset.label)) el.textContent = Studio.t(el.dataset.label);
+    else el.style.display = 'none';
+  });
+  document.querySelectorAll('[data-for]').forEach(el => {
+    if (!parts.has(el.dataset.for)) el.style.display = 'none';
+  });
+
+  const feedback = document.getElementById('feedback');
+  let waiting = false;
+  let finished = false;
+  let chosen = null;
+
+  document.querySelectorAll('[data-part]').forEach(el => {
+    if (!parts.has(el.dataset.part)) {
+      el.style.display = 'none';
+      return;
+    }
+    el.addEventListener('click', () => {
+      if (waiting || finished) return;
+      waiting = true;
+      chosen = el;
+      feedback.textContent = '';
+      Studio.answer(el.dataset.part);
+    });
+  });
+
+  Studio.onVerdict(({correct}) => {
+    if (!waiting || !chosen) return;
+    waiting = false;
+    if (correct) {
+      finished = true;
+      chosen.classList.add('glow');
+      feedback.classList.add('good');
+      feedback.textContent = Studio.t('right') + ' ' + Studio.t('done');
+      Studio.done();
+    } else {
+      feedback.classList.remove('good');
+      feedback.textContent = Studio.t('wrong');
+      chosen.classList.remove('wobble');
+      void chosen.getBoundingClientRect();
+      chosen.classList.add('wobble');
+    }
+  });
+  Studio.ready();
+
+</script>

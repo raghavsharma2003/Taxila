@@ -1,0 +1,81 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff5e8;color:#513c35}
+  #activity{width:360px;height:320px;padding:15px 17px;background:radial-gradient(circle at 92% 5%,#ffe2b3,transparent 42%),#fff5e8}
+  h1{margin:0;font-size:21px;line-height:1.2;font-weight:800}
+  #message{min-height:24px;margin:5px 0 10px;font-size:13px;font-weight:600;color:#765b50}
+  #cards{display:grid;grid-template-columns:1fr 1fr;gap:9px;min-height:132px}
+  .card{width:100%;height:60px;border:2px solid #e9b98e;border-radius:17px;background:#fffdf8;color:#513c35;font:700 17px system-ui,sans-serif;box-shadow:0 4px 0 #e8c7a8;cursor:pointer;transition:transform .22s,box-shadow .22s,background .22s}
+  .card:not(:disabled):active{transform:translateY(3px) scale(.97);box-shadow:0 1px 0 #e8c7a8}
+  .card:focus-visible{outline:3px solid #a95748;outline-offset:2px}
+  .card:disabled{cursor:default}
+  #track{display:flex;gap:7px;margin-top:14px}
+  .slot{position:relative;flex:1;min-width:0;height:72px;border:2px dashed #d9ae9a;border-radius:15px;background:#fff9f0;display:flex;align-items:center;justify-content:center}
+  .slotNumber{position:absolute;top:3px;left:8px;font-size:12px;font-weight:800;color:#a36e60}
+  .slot .card{height:52px;width:calc(100% - 8px);padding:15px 2px 2px;font-size:11px;line-height:1.05;border-color:#87b9a5;background:#e7f5e9;box-shadow:0 2px 0 #aed2bc;animation:arrive .35s ease-out}
+  .shake{animation:shake .38s ease-in-out}
+  @keyframes shake{25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+  @keyframes arrive{from{transform:scale(.75);opacity:.4}to{transform:scale(1);opacity:1}}
+</style>
+<main id="activity">
+  <h1 id="title"></h1>
+  <div id="message" aria-live="polite"></div>
+  <div id="cards"></div>
+  <div id="track"></div>
+</main>
+<script>
+
+(()=>{
+  const keys=Studio.params.shown;
+  const cards=document.getElementById('cards');
+  const track=document.getElementById('track');
+  const message=document.getElementById('message');
+  document.getElementById('title').textContent=Studio.t('title');
+  message.textContent=Studio.t('instr');
+  let placed=0,pending=null;
+  const slots=keys.map((_,i)=>{
+    const slot=document.createElement('div');
+    slot.className='slot';
+    const number=document.createElement('span');
+    number.className='slotNumber';
+    number.textContent=String(i+1);
+    slot.append(number);
+    track.append(slot);
+    return slot;
+  });
+  keys.forEach(key=>{
+    const card=document.createElement('button');
+    card.type='button';
+    card.className='card';
+    card.dataset.step=key;
+    card.textContent=Studio.t(key);
+    card.addEventListener('click',()=>{
+      if(pending!==null || card.dataset.placed)return;
+      pending=card;
+      Studio.answer({key});
+    });
+    cards.append(card);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(pending===null)return;
+    const card=pending;
+    pending=null;
+    if(correct){
+      placed++;
+      card.dataset.placed=String(placed);
+      card.disabled=true;
+      slots[placed-1].append(card);
+      message.textContent=Studio.t(placed===keys.length?'done':'right');
+      if(placed===keys.length)Studio.done();
+    }else{
+      message.textContent=Studio.t('wrong');
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+      card.addEventListener('animationend',()=>card.classList.remove('shake'),{once:true});
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

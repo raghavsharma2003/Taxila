@@ -1,0 +1,123 @@
+<style>
+  *{box-sizing:border-box}
+  #activity{width:360px;height:320px;overflow:hidden;position:relative;background:#fff8ed;color:#563d35;font-family:system-ui,sans-serif;border-radius:18px}
+  #title{position:absolute;top:10px;left:16px;right:16px;text-align:center;font-size:19px;font-weight:800}
+  #scene{position:absolute;top:44px;left:0;width:360px;height:126px}
+  #paths{position:absolute;inset:0;width:360px;height:126px;overflow:visible}
+  .stage{position:absolute;height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:2px solid #e7be91;border-radius:18px;background:#fffdf7;box-shadow:0 4px 0 #f2dfc6;transition:background .25s,box-shadow .25s,transform .25s}
+  .stage .picture{width:19px;height:19px;border-radius:50% 50% 46% 46%;background:#f2ac75;box-shadow:inset -4px -3px 0 #d98261}
+  .stage [data-label]{font-size:12px;font-weight:750;white-space:nowrap}
+  #activity[data-active] .stage.active{background:#fff1cb;box-shadow:0 0 0 5px #f9dd91,0 5px 0 #eac18a;transform:translateY(-2px)}
+  #token{fill:#66b5a4;stroke:#fff;stroke-width:3;filter:drop-shadow(0 2px 2px #8c786477)}
+  button{font:inherit;font-weight:800;color:#563d35;border:0;cursor:pointer;transition:transform .16s,background .2s}
+  button:active{transform:scale(.94)}
+  button:disabled{opacity:.55;cursor:default}
+  #next{position:absolute;top:169px;left:137px;width:86px;height:52px;border-radius:18px;background:#f4b678;box-shadow:0 4px 0 #d99061}
+  #prompt{position:absolute;top:224px;left:12px;right:12px;text-align:center;font-size:14px;font-weight:750;white-space:nowrap}
+  #choices{position:absolute;top:257px;left:12px;right:12px;display:flex;gap:8px;justify-content:center}
+  #choices button{height:54px;min-width:52px;flex:1;border-radius:16px;background:#d9efe5;box-shadow:0 3px 0 #a3ccbb;font-size:13px}
+  #feedback{position:absolute;top:195px;right:16px;font-size:13px;font-weight:800;color:#397e6d}
+</style>
+<div id="activity">
+  <div id="title"></div>
+  <div id="scene">
+    <svg id="paths" viewBox="0 0 360 126" aria-hidden="true">
+      <g id="arrows"></g>
+      <circle id="token" data-token r="9" cx="0" cy="0"></circle>
+    </svg>
+    <div id="stages"></div>
+  </div>
+  <button id="next" data-action="next" type="button"></button>
+  <div id="feedback" aria-live="polite"></div>
+  <div id="prompt"></div>
+  <div id="choices"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, keys=p.stages, root=document.getElementById('activity');
+  const stageLayer=document.getElementById('stages'), arrows=document.getElementById('arrows');
+  const token=document.getElementById('token'), next=document.getElementById('next');
+  const feedback=document.getElementById('feedback'), choices=document.getElementById('choices');
+  const svgNS='http://www.w3.org/2000/svg', n=keys.length;
+  const width=Math.min(70,Math.max(48,330/n-8));
+  const spots=keys.map((_,i)=>{
+    if(p.cycle) {
+      const a=-Math.PI/2+i*2*Math.PI/n;
+      return {x:180+112*Math.cos(a),y:65+36*Math.sin(a)};
+    }
+    return {x:n===1?180:46+i*268/(n-1),y:65};
+  });
+  document.getElementById('title').textContent=Studio.t('title');
+  next.textContent=Studio.t('next');
+  const prompt=document.getElementById('prompt');
+  prompt.textContent=Studio.t('ask')+' '+Studio.t(p.askAfter);
+  const stageEls=keys.map((key,i)=>{
+    const box=document.createElement('div');
+    box.className='stage';
+    box.dataset.stage=key;
+    box.style.width=width+'px';
+    box.style.left=(spots[i].x-width/2)+'px';
+    box.style.top=(spots[i].y-32)+'px';
+    const pic=document.createElement('span');pic.className='picture';
+    const label=document.createElement('span');label.dataset.label=key;label.textContent=Studio.t(key);
+    box.append(pic,label);stageLayer.append(box);return box;
+  });
+  function element(tag,attrs){
+    const el=document.createElementNS(svgNS,tag);
+    Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));
+    return el;
+  }
+  const count=p.cycle?n:n-1;
+  for(let i=0;i<count;i++){
+    const j=(i+1)%n,a=spots[i],b=spots[j],dx=b.x-a.x,dy=b.y-a.y;
+    const len=Math.hypot(dx,dy)||1,ux=dx/len,uy=dy/len;
+    const trim=Math.min(width/2+5,len*.32);
+    const x1=a.x+ux*trim,y1=a.y+uy*trim,x2=b.x-ux*trim,y2=b.y-uy*trim;
+    const g=element('g',{'data-arrow':keys[i]+'>'+keys[j]});
+    g.append(element('line',{x1,y1,x2,y2,stroke:'#c98967','stroke-width':3,'stroke-linecap':'round'}));
+    const tipX=x2,tipY=y2,baseX=x2-ux*9,baseY=y2-uy*9;
+    g.append(element('polygon',{points:`${tipX},${tipY} ${baseX-uy*5},${baseY+ux*5} ${baseX+uy*5},${baseY-ux*5}`,fill:'#c98967'}));
+    arrows.append(g);
+  }
+  let current=0,moving=false,complete=false;
+  function position(x,y){token.setAttribute('cx',x);token.setAttribute('cy',y)}
+  function activate(i){
+    current=i;root.dataset.active=keys[i];
+    stageEls.forEach((el,k)=>el.classList.toggle('active',k===i));
+    position(spots[i].x,spots[i].y);
+  }
+  activate(0);
+  next.addEventListener('click',()=>{
+    if(moving||(!p.cycle&&current===n-1))return;
+    const from=current,to=(current+1)%n,a=spots[from],b=spots[to];
+    moving=true;next.disabled=true;
+    Studio.event('next',{from:keys[from],to:keys[to]});
+    const start=performance.now(),duration=650;
+    function frame(now){
+      const t=Math.min(1,(now-start)/duration);
+      const eased=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+      position(a.x+(b.x-a.x)*eased,a.y+(b.y-a.y)*eased-12*Math.sin(Math.PI*t));
+      if(t<1)requestAnimationFrame(frame);
+      else{moving=false;activate(to);next.disabled=!p.cycle&&to===n-1}
+    }
+    requestAnimationFrame(frame);
+  });
+  p.options.forEach(key=>{
+    const button=document.createElement('button');
+    button.type='button';button.dataset.option=key;button.textContent=Studio.t(key);
+    button.addEventListener('click',()=>{if(!complete)Studio.answer(key)});
+    choices.append(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      complete=true;
+      choices.querySelectorAll('button').forEach(button=>button.disabled=true);
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

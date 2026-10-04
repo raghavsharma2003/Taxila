@@ -1,0 +1,161 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8e9;font-family:Arial,sans-serif;color:#4d3b31}
+  #stage{width:360px;height:320px;position:relative;overflow:hidden;background:linear-gradient(180deg,#fff9ed 0%,#f7f0d9 100%)}
+  #top{height:62px;padding:10px 18px 6px;text-align:center}
+  #title{font-size:17px;font-weight:800;color:#79513d;line-height:20px}
+  #question{margin-top:4px;font-size:15px;font-weight:700;color:#a95b45;line-height:18px}
+  #picture{display:block;width:360px;height:190px;overflow:visible}
+  .label{font-size:13px;font-weight:800;fill:#6a5143;paint-order:stroke;stroke:#fff8e9;stroke-width:4px;stroke-linejoin:round}
+  .leader{stroke:#b68a6d;stroke-width:2;stroke-linecap:round}
+  .part{cursor:pointer;transform-origin:center;transition:filter .22s ease,transform .18s ease}
+  .part:active{transform:scale(.96)}
+  .part .hit{fill:transparent;pointer-events:all}
+  .part.is-wrong{animation:wobble .42s ease}
+  .part.is-right{filter:drop-shadow(0 0 7px #ffd75d) drop-shadow(0 0 13px #ffbe42);animation:happy .8s ease-in-out infinite alternate}
+  #message{height:54px;margin:4px 18px 0;border-radius:18px;background:#fffdf7;border:2px solid #f2dfc0;display:flex;align-items:center;justify-content:center;text-align:center;padding:7px 12px;font-size:15px;font-weight:800;color:#79513d;transition:transform .2s ease,background .2s ease}
+  #message.wrong{background:#fff1e8;color:#b05b49;border-color:#f1c1ad}
+  #message.right{background:#fff5c9;color:#8b6532;border-color:#f1d16a;animation:messagePop .45s ease}
+  @keyframes wobble{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px) rotate(-1deg)}75%{transform:translateX(5px) rotate(1deg)}}
+  @keyframes happy{from{transform:scale(1)}to{transform:scale(1.045)}}
+  @keyframes messagePop{0%{transform:scale(.9)}70%{transform:scale(1.04)}100%{transform:scale(1)}}
+  .sway{transform-origin:180px 220px;animation:sway 3s ease-in-out infinite alternate}
+  @keyframes sway{from{transform:rotate(-1.2deg)}to{transform:rotate(1.2deg)}}
+</style>
+<div id="stage">
+  <div id="top">
+    <div id="title"></div>
+    <div id="question" data-ask></div>
+  </div>
+  <svg id="picture" viewBox="0 0 360 190" aria-hidden="true">
+    <ellipse cx="180" cy="184" rx="111" ry="8" fill="#ead7ae" opacity=".62"></ellipse>
+
+    <path d="M142 165 L218 165 L211 188 Q180 194 149 188Z" fill="#d9844e"></path>
+    <path d="M142 165 L218 165" stroke="#b9603c" stroke-width="4" stroke-linecap="round"></path>
+    <path d="M151 173 Q180 181 209 173" fill="none" stroke="#efad6a" stroke-width="3" opacity=".75"></path>
+
+    <g class="sway">
+      <g class="part" data-part="root">
+        <path d="M180 145 C180 155 174 157 166 166 M180 149 C183 158 191 162 197 170 M177 153 C171 160 170 170 163 174 M184 154 C188 161 185 169 190 176" fill="none" stroke="#9a6544" stroke-width="5" stroke-linecap="round"></path>
+        <rect class="hit" x="137" y="136" width="88" height="52" rx="16"></rect>
+      </g>
+
+      <g class="part" data-part="stem">
+        <path d="M180 73 C176 101 183 121 180 151" fill="none" stroke="#5a9a57" stroke-width="10" stroke-linecap="round"></path>
+        <path d="M181 77 C178 102 184 123 181 149" fill="none" stroke="#8cc870" stroke-width="3" stroke-linecap="round" opacity=".8"></path>
+        <rect class="hit" x="154" y="80" width="52" height="70" rx="18"></rect>
+      </g>
+
+      <g class="part" data-part="leaf">
+        <path d="M178 116 C159 105 137 107 121 126 C144 134 163 132 178 116Z" fill="#70b95d" stroke="#4d934d" stroke-width="2"></path>
+        <path d="M181 102 C200 88 222 91 238 108 C217 119 197 117 181 102Z" fill="#77bf62" stroke="#4d934d" stroke-width="2"></path>
+        <path d="M174 118 L132 126 M186 104 L225 108" stroke="#d0e999" stroke-width="2" stroke-linecap="round"></path>
+        <rect class="hit" x="104" y="85" width="148" height="55" rx="18"></rect>
+      </g>
+
+      <g class="part" data-part="petal">
+        <ellipse cx="180" cy="45" rx="15" ry="26" fill="#ff9c9e" stroke="#e97b83" stroke-width="2"></ellipse>
+        <ellipse cx="204" cy="59" rx="15" ry="26" transform="rotate(72 204 59)" fill="#ffadb0" stroke="#e97b83" stroke-width="2"></ellipse>
+        <ellipse cx="195" cy="85" rx="15" ry="26" transform="rotate(144 195 85)" fill="#ff9c9e" stroke="#e97b83" stroke-width="2"></ellipse>
+        <ellipse cx="165" cy="85" rx="15" ry="26" transform="rotate(216 165 85)" fill="#ffadb0" stroke="#e97b83" stroke-width="2"></ellipse>
+        <ellipse cx="156" cy="59" rx="15" ry="26" transform="rotate(288 156 59)" fill="#ff9c9e" stroke="#e97b83" stroke-width="2"></ellipse>
+        <rect class="hit" x="126" y="18" width="108" height="80" rx="28"></rect>
+      </g>
+
+      <g class="part" data-part="centre">
+        <circle cx="180" cy="66" r="18" fill="#f7c94d" stroke="#dc9f32" stroke-width="3"></circle>
+        <circle cx="174" cy="61" r="3" fill="#ffe681"></circle>
+        <circle cx="185" cy="69" r="3" fill="#ffe681"></circle>
+        <circle cx="176" cy="74" r="2.5" fill="#c98527"></circle>
+        <rect class="hit" x="154" y="40" width="52" height="52" rx="24"></rect>
+      </g>
+    </g>
+
+    <g id="labels">
+      <line class="leader" x1="82" y1="38" x2="132" y2="48"></line>
+      <text class="label" data-label="petal" x="28" y="41"></text>
+
+      <line class="leader" x1="255" y1="55" x2="205" y2="64"></line>
+      <text class="label" data-label="centre" x="258" y="58"></text>
+
+      <line class="leader" x1="253" y1="113" x2="205" y2="113"></line>
+      <text class="label" data-label="stem" x="257" y="117"></text>
+
+      <line class="leader" x1="78" y1="125" x2="123" y2="124"></line>
+      <text class="label" data-label="leaf" x="34" y="129"></text>
+
+      <line class="leader" x1="255" y1="159" x2="210" y2="159"></line>
+      <text class="label" data-label="root" x="259" y="163"></text>
+    </g>
+  </svg>
+  <div id="message"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, waiting=false, finished=false;
+  var title=document.getElementById('title');
+  var question=document.querySelector('[data-ask]');
+  var message=document.getElementById('message');
+  title.textContent=Studio.t('title');
+  question.textContent=Studio.t('ask');
+
+  var allowed={};
+  p.parts.forEach(function(k){allowed[k]=true;});
+  document.querySelectorAll('[data-label]').forEach(function(el){
+    var k=el.getAttribute('data-label');
+    el.textContent=Studio.t(k);
+    if(!allowed[k]){el.style.display='none';}
+  });
+  document.querySelectorAll('[data-part]').forEach(function(el){
+    var key=el.getAttribute('data-part');
+    if(!allowed[key]){
+      el.style.display='none';
+      return;
+    }
+    el.addEventListener('click',function(){
+      if(waiting||finished)return;
+      waiting=true;
+      message.textContent='';
+      message.className='';
+      Studio.event('part_tap',{part:key});
+      Studio.answer(key);
+    });
+  });
+
+  Studio.onVerdict(function(result){
+    if(finished)return;
+    var chosen=document.querySelector('[data-part].pending');
+    if(result.correct){
+      finished=true;
+      var correct=document.querySelector('[data-part="'+p.ask+'"]');
+      if(correct)correct.classList.add('is-right');
+      message.textContent=Studio.t('right')+' '+Studio.t('done');
+      message.className='right';
+      Studio.event('verdict',{correct:1});
+      setTimeout(function(){Studio.done();},420);
+    }else{
+      waiting=false;
+      message.textContent=Studio.t('wrong');
+      message.className='wrong';
+      Studio.event('verdict',{correct:0});
+      document.querySelectorAll('[data-part]').forEach(function(el){
+        if(el.classList.contains('pending')){
+          el.classList.remove('pending');
+          el.classList.add('is-wrong');
+          setTimeout(function(){el.classList.remove('is-wrong');},460);
+        }
+      });
+    }
+  });
+
+  document.querySelectorAll('[data-part]').forEach(function(el){
+    el.addEventListener('click',function(){
+      document.querySelectorAll('[data-part]').forEach(function(x){x.classList.remove('pending');});
+      el.classList.add('pending');
+    });
+  });
+  Studio.ready();
+}());
+
+</script>

@@ -1,0 +1,140 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ec;color:#543e39;font-family:system-ui,sans-serif}
+  .game{width:360px;height:320px;padding:14px 18px;display:flex;flex-direction:column;align-items:center}
+  h1{margin:0;font-size:20px;line-height:26px;font-weight:800;text-align:center}
+  .instr{margin:3px 0 0;font-size:14px;line-height:19px;text-align:center}
+  .target{margin-top:5px;padding:2px 18px;border-radius:16px;background:#fff0d6;color:#8b493b;font-size:25px;font-weight:800;line-height:35px}
+  .picture{width:320px;height:145px;flex:none;overflow:visible}
+  [data-part]{cursor:pointer;stroke:#fff8ec;stroke-width:3;transition:fill .2s ease,filter .2s ease,transform .2s ease;transform-box:fill-box;transform-origin:center}
+  [data-part]:active{transform:scale(.93)}
+  [data-part="0"]{outline:none}
+  .bar-part{rx:10}
+  .feedback{height:25px;line-height:25px;font-size:14px;font-weight:700;text-align:center;color:#ae604b}
+  .feedback.good{color:#40856b}
+  button{width:150px;min-height:52px;border:0;border-radius:18px;background:#df765c;color:#fff;font:800 17px system-ui,sans-serif;box-shadow:0 5px 0 #b95140;cursor:pointer;transition:transform .16s,box-shadow .16s}
+  button:active{transform:translateY(4px) scale(.97);box-shadow:0 1px 0 #b95140}
+  button:disabled{opacity:.7;cursor:default}
+  .bump{animation:bump .42s ease}
+  @keyframes bump{50%{transform:scale(1.07)}}
+  .finish{flex:1;display:none;align-items:center;justify-content:center;text-align:center;font-size:27px;font-weight:800;color:#40856b}
+</style>
+<div class="game" id="game">
+  <h1 id="title"></h1>
+  <div class="instr" id="instr"></div>
+  <div class="target" data-target></div>
+  <svg class="picture" id="picture" viewBox="0 0 320 145" role="group"></svg>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+  <button type="button" data-action="check" id="check"></button>
+  <div class="finish" id="finish"></div>
+</div>
+<script>
+
+(() => {
+  const items=Studio.params.items;
+  const game=document.getElementById('game');
+  const picture=document.getElementById('picture');
+  const target=document.querySelector('[data-target]');
+  const feedback=document.getElementById('feedback');
+  const button=document.getElementById('check');
+  let index=0, waiting=false, finished=false;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  button.textContent=Studio.t('check');
+  const ns='http://www.w3.org/2000/svg';
+  function part(shape,i){
+    const el=document.createElementNS(ns,shape);
+    el.setAttribute('data-part',String(i));
+    el.setAttribute('data-shaded','false');
+    el.setAttribute('fill','#f5dbac');
+    el.addEventListener('click',()=>{
+      if(waiting||finished)return;
+      const shaded=el.getAttribute('data-shaded')==='true';
+      el.setAttribute('data-shaded',String(!shaded));
+      el.setAttribute('fill',shaded?'#f5dbac':'#e98466');
+      feedback.textContent='';
+      feedback.classList.remove('good');
+      Studio.event('part',{index:i,shaded:shaded?0:1});
+    });
+    picture.appendChild(el);
+    return el;
+  }
+  function render(){
+    const item=items[index];
+    game.setAttribute('data-item',String(item.id));
+    target.textContent=item.n+'/'+item.d;
+    picture.replaceChildren();
+    feedback.textContent='';
+    feedback.classList.remove('good');
+    button.disabled=false;
+    const d=item.d;
+    if(Studio.params.picture==='pizza'){
+      for(let i=0;i<d;i++){
+        const el=part('path',i);
+        if(d===1){
+          el.setAttribute('d','M 160 72 m -62 0 a 62 62 0 1 0 124 0 a 62 62 0 1 0 -124 0');
+        }else{
+          const a=-Math.PI/2+i*2*Math.PI/d;
+          const b=-Math.PI/2+(i+1)*2*Math.PI/d;
+          const x1=160+62*Math.cos(a),y1=72+62*Math.sin(a);
+          const x2=160+62*Math.cos(b),y2=72+62*Math.sin(b);
+          el.setAttribute('d',`M 160 72 L ${x1} ${y1} A 62 62 0 ${b-a>Math.PI?1:0} 1 ${x2} ${y2} Z`);
+        }
+      }
+    }else{
+      const gap=3, width=(292-gap*(d-1))/d;
+      for(let i=0;i<d;i++){
+        const el=part('rect',i);
+        el.setAttribute('x',String(14+i*(width+gap)));
+        el.setAttribute('y','34');
+        el.setAttribute('width',String(width));
+        el.setAttribute('height','78');
+        el.setAttribute('rx',String(Math.min(10,width/4)));
+      }
+    }
+  }
+  button.addEventListener('click',()=>{
+    if(waiting||finished)return;
+    waiting=true;
+    button.disabled=true;
+    const item=items[index];
+    const n=picture.querySelectorAll('[data-part][data-shaded="true"]').length;
+    Studio.event('check',{n,d:item.d});
+    Studio.answer({n:n,d:item.d});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!waiting||finished)return;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.classList.toggle('good',!!correct);
+    feedback.classList.remove('bump');
+    void feedback.offsetWidth;
+    feedback.classList.add('bump');
+    if(correct){
+      setTimeout(()=>{
+        index++;
+        if(index<items.length){waiting=false;render()}
+        else{
+          finished=true;
+          game.removeAttribute('data-item');
+          document.getElementById('title').style.display='none';
+          document.getElementById('instr').style.display='none';
+          target.style.display='none';
+          picture.style.display='none';
+          feedback.style.display='none';
+          button.style.display='none';
+          const finish=document.getElementById('finish');
+          finish.textContent=Studio.t('done');
+          finish.style.display='flex';
+          Studio.done();
+        }
+      },650);
+    }else{
+      waiting=false;
+      button.disabled=false;
+    }
+  });
+  render();
+  Studio.ready();
+})();
+
+</script>

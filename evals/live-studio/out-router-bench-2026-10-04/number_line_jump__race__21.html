@@ -1,0 +1,147 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e9;font-family:system-ui,sans-serif;color:#493a38}
+  #game{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 315px 25px,#ffe4a7 0 35px,transparent 36px),#fff7e9}
+  h1{position:absolute;top:10px;left:18px;right:18px;margin:0;font-size:20px;line-height:26px}
+  #instr{position:absolute;top:42px;left:18px;right:18px;margin:0;font-size:13px;line-height:18px}
+  #targetCard{position:absolute;top:68px;left:18px;min-width:86px;height:43px;padding:5px 15px;border-radius:17px;background:#ffe0b4;box-shadow:0 3px 0 #efbd88;display:flex;align-items:center;justify-content:center}
+  [data-target]{font-size:25px;font-weight:800;font-variant-numeric:tabular-nums}
+  #lineArea{position:absolute;left:0;top:116px;width:360px;height:91px}
+  #track{position:absolute;left:32px;top:47px;width:296px;height:7px;border-radius:9px;background:#8d9d80}
+  .tick{position:absolute;top:38px;width:2px;height:23px;transform:translateX(-50%);background:#66795f;border-radius:3px}
+  .tick.major{height:28px;top:35px;width:3px}
+  .tick span{position:absolute;top:29px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+  #marker{position:absolute;top:0;width:42px;height:42px;transform:translateX(-50%);transition:left .23s ease;z-index:2}
+  #marker svg{width:42px;height:42px;filter:drop-shadow(0 3px 1px #bd86705c)}
+  #marker.hop svg{animation:hop .48s ease}
+  @keyframes hop{50%{transform:translateY(-13px) rotate(9deg)}}
+  #feedback{position:absolute;top:205px;left:18px;right:18px;height:22px;text-align:center;font-size:16px;font-weight:750;color:#b26950}
+  #feedback.good{color:#53785b}
+  #controls{position:absolute;top:236px;left:18px;right:18px;display:flex;gap:9px}
+  button{height:64px;min-width:72px;border:0;border-radius:19px;background:#f5d2a7;color:#493a38;font:750 16px system-ui,sans-serif;box-shadow:0 5px 0 #d9ac7e;cursor:pointer;transition:transform .14s,box-shadow .14s}
+  button:active{transform:translateY(4px) scale(.96);box-shadow:0 1px 0 #d9ac7e}
+  button:disabled{opacity:.48;cursor:default}
+  [data-action="left"],[data-action="right"]{flex:1}
+  [data-action="check"]{flex:1.25;background:#91b99a;box-shadow:0 5px 0 #668f70}
+  [data-action="check"]:active{box-shadow:0 1px 0 #668f70}
+  #finish{display:none;position:absolute;inset:68px 18px 20px;align-items:center;justify-content:center;text-align:center;border-radius:26px;background:#ffe9c8;font-size:26px;font-weight:800;color:#53785b}
+</style>
+<div id="game">
+  <h1 id="title"></h1>
+  <p id="instr"></p>
+  <div id="item" data-item=""><div id="targetCard"><span data-target></span></div></div>
+  <div id="lineArea">
+    <div id="track"></div>
+    <div id="ticks"></div>
+    <div id="marker" data-marker data-value="">
+      <svg viewBox="0 0 42 42" aria-hidden="true"><path d="M21 39C17 31 5 22 5 15a16 16 0 0 1 32 0c0 7-12 16-16 24Z" fill="#e97761"/><circle cx="21" cy="15" r="6" fill="#fff7e9"/></svg>
+    </div>
+  </div>
+  <div id="feedback" aria-live="polite"></div>
+  <div id="controls">
+    <button type="button" data-action="left"></button>
+    <button type="button" data-action="right"></button>
+    <button type="button" data-action="check"></button>
+  </div>
+  <div id="finish"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params;
+  const $=s=>document.querySelector(s);
+  const min=Number(p.min), max=Number(p.max), step=Number(p.step);
+  const total=Math.round((max-min)/step);
+  const round=n=>Math.round((n+Number.EPSILON)*1e6)/1e6;
+  const value=k=>round(min+k*step);
+  const decimals=n=>{const s=String(n);return s.includes('.')?s.split('.')[1].length:0};
+  const places=Math.min(6,Math.max(decimals(p.min),decimals(p.max),decimals(p.step),...p.items.map(i=>decimals(i.target))));
+  function format(n){
+    if(p.format==='fraction'){
+      for(let d=1;d<=1000;d++){
+        const a=Math.round(n*d);
+        if(Math.abs(a/d-n)<0.0000005)return a+'/'+d;
+      }
+      return String(n);
+    }
+    if(p.format==='integer')return String(Math.round(n));
+    return String(Number(n.toFixed(places)));
+  }
+  const ticks=$('#ticks'),marker=$('#marker'),feedback=$('#feedback');
+  const buttons=[...document.querySelectorAll('button')];
+  ['title','instr','left','right_btn','check'].forEach((key,i)=>{
+    (i<2?$('#'+key):buttons[i-2]).textContent=Studio.t(key);
+  });
+  for(let k=0;k<=total;k++){
+    const tick=document.createElement('div');
+    tick.className='tick'+(k%Number(p.labelEvery)===0?' major':'');
+    tick.dataset.tick=String(value(k));
+    tick.style.left=(32+296*k/total)+'px';
+    if(k%Number(p.labelEvery)===0){
+      const label=document.createElement('span');
+      label.textContent=format(value(k));
+      tick.append(label);
+    }
+    ticks.append(tick);
+  }
+  let index=0,k=0,pending=false;
+  function draw(){
+    marker.style.left=(32+296*k/total)+'px';
+    marker.dataset.value=String(value(k));
+    buttons[0].disabled=pending||k===0;
+    buttons[1].disabled=pending||k===total;
+    buttons[2].disabled=pending;
+  }
+  function showItem(){
+    const item=p.items[index];
+    $('#item').dataset.item=String(item.id);
+    $('[data-target]').textContent=format(Number(item.target));
+    k=Math.max(0,Math.min(total,Math.round((Number(p.start)-min)/step)));
+    feedback.textContent='';
+    feedback.classList.remove('good');
+    draw();
+  }
+  function move(delta){
+    if(pending)return;
+    k=Math.max(0,Math.min(total,k+delta));
+    feedback.textContent='';
+    draw();
+  }
+  $('[data-action="left"]').addEventListener('click',()=>move(-1));
+  $('[data-action="right"]').addEventListener('click',()=>move(1));
+  $('[data-action="check"]').addEventListener('click',()=>{
+    if(pending)return;
+    pending=true;
+    draw();
+    Studio.answer({value:value(k)});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.classList.toggle('good',correct);
+    if(correct){
+      marker.classList.remove('hop');
+      void marker.offsetWidth;
+      marker.classList.add('hop');
+      setTimeout(()=>{
+        marker.classList.remove('hop');
+        index++;
+        if(index===p.items.length){
+          $('#finish').textContent=Studio.t('done');
+          $('#finish').style.display='flex';
+          Studio.done();
+        }else{
+          pending=false;
+          showItem();
+        }
+      },520);
+    }else{
+      pending=false;
+      draw();
+    }
+  });
+  showItem();
+  Studio.ready();
+})();
+
+</script>

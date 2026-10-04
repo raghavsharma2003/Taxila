@@ -1,0 +1,149 @@
+<style>
+  *{box-sizing:border-box}
+  #balance-activity{width:360px;height:320px;overflow:hidden;background:#fff8ed;color:#624738;font-family:system-ui,sans-serif;position:relative;text-align:center}
+  #balance-activity h1{height:38px;margin:0;padding-top:8px;font-size:21px;font-weight:800;color:#8c533c}
+  #balance-activity .instruction{height:25px;font-size:14px;font-weight:650}
+  #balance-activity svg{display:block;width:360px;height:172px;overflow:visible}
+  #balance-activity [data-beam]{transform-origin:180px 65px;transition:transform .65s cubic-bezier(.2,1.35,.45,1)}
+  #balance-activity .beam-line{stroke:#ad7050;stroke-width:10;stroke-linecap:round}
+  #balance-activity .rope{stroke:#b98767;stroke-width:3}
+  #balance-activity .pan-bowl{fill:#f3c993;stroke:#ad7050;stroke-width:3}
+  #balance-activity .weight{fill:#749b8b;stroke:#527768;stroke-width:2}
+  #balance-activity .weight-text{fill:white;font-size:18px;font-weight:800;text-anchor:middle;dominant-baseline:middle}
+  #balance-activity .options{display:flex;justify-content:center;gap:14px;height:68px;align-items:center}
+  #balance-activity button{width:64px;height:58px;border:2px solid #527768;border-radius:15px;background:#749b8b;color:white;font:800 22px system-ui,sans-serif;box-shadow:0 5px 0 #527768;cursor:pointer;transition:transform .18s,box-shadow .18s}
+  #balance-activity button:active{transform:translateY(4px) scale(.94);box-shadow:0 1px 0 #527768}
+  #balance-activity button:disabled{opacity:.55;cursor:default}
+  #balance-activity .message{height:17px;font-size:14px;font-weight:800;color:#a75f47}
+  #balance-activity .message.celebrate{color:#527768;animation:pop .55s ease}
+  @keyframes pop{50%{transform:scale(1.16)}}
+</style>
+<div id="balance-activity">
+  <h1 id="title"></h1>
+  <div class="instruction" id="instruction"></div>
+  <svg viewBox="0 0 360 172" aria-hidden="true">
+    <circle cx="180" cy="67" r="13" fill="#e6ad70"/>
+    <path d="M180 74 L160 162 H200 Z" fill="#d99469"/>
+    <path d="M140 163 H220" stroke="#ad7050" stroke-width="9" stroke-linecap="round"/>
+    <g data-beam data-tilt="level">
+      <path class="beam-line" d="M68 65 H292"/>
+      <g data-pan="left" data-total="0">
+        <path class="rope" d="M72 65 V128 M112 65 V128"/>
+        <path class="pan-bowl" d="M53 127 Q92 155 131 127 Z"/>
+        <g class="contents"></g>
+      </g>
+      <g data-pan="right" data-total="0">
+        <path class="rope" d="M248 65 V128 M288 65 V128"/>
+        <path class="pan-bowl" d="M229 127 Q268 155 307 127 Z"/>
+        <g class="contents"></g>
+      </g>
+    </g>
+    <circle cx="180" cy="65" r="7" fill="#fff1d8"/>
+  </svg>
+  <div class="options" id="options"></div>
+  <div class="message" id="message" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const root=document.getElementById('balance-activity');
+  const beam=root.querySelector('[data-beam]');
+  const pans={left:root.querySelector('[data-pan="left"]'),right:root.querySelector('[data-pan="right"]')};
+  const options=document.getElementById('options');
+  const message=document.getElementById('message');
+  const ns='http://www.w3.org/2000/svg';
+  const items=Studio.params.items;
+  let index=0, chosen=null, waiting=false, finished=false;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+
+  function sum(values){return values.reduce((a,b)=>a+Number(b),0)}
+  function drawWeights(side,values){
+    const holder=pans[side].querySelector('.contents');
+    holder.replaceChildren();
+    const center=side==='left'?92:268;
+    values.forEach((value,i)=>{
+      const g=document.createElementNS(ns,'g');
+      g.setAttribute('data-weight',String(value));
+      const x=center+(i-(values.length-1)/2)*31;
+      const rect=document.createElementNS(ns,'rect');
+      rect.setAttribute('class','weight');
+      rect.setAttribute('x',String(x-14));
+      rect.setAttribute('y','91');
+      rect.setAttribute('width','28');
+      rect.setAttribute('height','32');
+      rect.setAttribute('rx','7');
+      const text=document.createElementNS(ns,'text');
+      text.setAttribute('class','weight-text');
+      text.setAttribute('x',String(x));
+      text.setAttribute('y','107');
+      text.textContent=String(value);
+      g.append(rect,text);
+      holder.append(g);
+    });
+    pans[side].setAttribute('data-total',String(sum(values)));
+  }
+  function render(){
+    if(finished)return;
+    const item=items[index];
+    const left=sum(item.left),right=sum(item.right)+(chosen===null?0:Number(chosen));
+    drawWeights('left',item.left);
+    drawWeights('right',chosen===null?item.right:[...item.right,chosen]);
+    const tilt=left>right?'left':right>left?'right':'level';
+    beam.setAttribute('data-tilt',tilt);
+    const degrees=tilt==='level'?0:Math.min(13,5+Math.abs(left-right)*2)*(tilt==='right'?1:-1);
+    beam.style.transform=`rotate(${degrees}deg)`;
+    options.replaceChildren();
+    item.options.forEach(value=>{
+      if(chosen!==null&&String(value)===String(chosen))return;
+      const button=document.createElement('button');
+      button.type='button';
+      button.setAttribute('data-option',String(value));
+      button.textContent=String(value);
+      button.disabled=waiting;
+      button.addEventListener('click',()=>{
+        if(waiting)return;
+        waiting=true;
+        chosen=value;
+        message.textContent='';
+        Studio.event('choose',{value:String(value)});
+        render();
+        Studio.answer({value});
+      });
+      options.append(button);
+    });
+  }
+  Studio.onVerdict(({correct})=>{
+    if(!waiting||finished)return;
+    message.textContent=Studio.t(correct?'right':'wrong');
+    message.classList.toggle('celebrate',!!correct);
+    if(correct){
+      setTimeout(()=>{
+        index++;
+        chosen=null;
+        waiting=false;
+        message.textContent='';
+        message.classList.remove('celebrate');
+        if(index>=items.length){
+          finished=true;
+          options.replaceChildren();
+          document.getElementById('instruction').textContent=Studio.t('done');
+          beam.style.transform='rotate(0deg)';
+          beam.setAttribute('data-tilt','level');
+          Studio.done();
+        }else render();
+      },1100);
+    }else{
+      setTimeout(()=>{
+        chosen=null;
+        waiting=false;
+        message.textContent='';
+        render();
+      },850);
+    }
+  });
+  render();
+  Studio.ready();
+})();
+
+</script>

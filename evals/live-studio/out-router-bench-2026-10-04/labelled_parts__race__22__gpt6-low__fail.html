@@ -1,0 +1,123 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;font-family:system-ui,sans-serif;color:#634d43}
+  .card{width:360px;height:320px;overflow:hidden;border:3px solid #ead9c2;border-radius:22px;background:radial-gradient(circle at 48% 38%,#fffefa,#fff3e2)}
+  h1{height:27px;margin:8px 8px 0;text-align:center;font-size:19px;line-height:27px;color:#795269}
+  [data-ask]{height:25px;text-align:center;font-size:17px;line-height:25px;font-weight:700;color:#87576d}
+  svg{display:block;width:354px;height:230px}
+  .part{cursor:pointer;outline:none;transition:filter .25s,transform .25s;transform-origin:center}
+  .part:active{transform:scale(.95)}
+  .part.good{filter:drop-shadow(0 0 10px #ffd15f);animation:glow .8s ease-in-out 2}
+  .part.nope{animation:wiggle .32s ease-in-out}
+  .label{font-size:13px;font-weight:700;fill:#654e45;pointer-events:none}
+  .leader{stroke:#a99683;stroke-width:1.8;stroke-linecap:round;pointer-events:none}
+  #feedback{height:24px;text-align:center;font-size:16px;font-weight:700;color:#87576d}
+  @keyframes wiggle{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+  @keyframes glow{50%{filter:drop-shadow(0 0 17px #ffd15f)}}
+</style>
+<div class="card">
+  <h1 id="title"></h1>
+  <div data-ask></div>
+  <svg id="picture" viewBox="0 0 354 230" role="img" aria-labelledby="title"></svg>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const ns="http://www.w3.org/2000/svg";
+  const svg=document.getElementById("picture");
+  const make=(tag,attrs,parent=svg)=>{
+    const el=document.createElementNS(ns,tag);
+    for(const [key,value] of Object.entries(attrs))el.setAttribute(key,value);
+    parent.appendChild(el);
+    return el;
+  };
+  document.getElementById("title").textContent=Studio.t("title");
+  document.querySelector("[data-ask]").textContent=Studio.t("ask");
+
+  const shapes={
+    root:{
+      draw(g){
+        make("path",{d:"M176 166 Q170 201 132 216 M177 170 Q188 204 222 216 M177 170 L177 229",fill:"none",stroke:"#a97c5c","stroke-width":19,"stroke-linecap":"round","stroke-linejoin":"round"},g);
+      },
+      label:[245,215,212,208,234,210]
+    },
+    stem:{
+      draw(g){
+        make("path",{d:"M177 112 Q174 150 177 190",fill:"none",stroke:"#539863","stroke-width":56,"stroke-linecap":"round"},g);
+        make("path",{d:"M177 112 Q174 150 177 190",fill:"none",stroke:"#80be7e","stroke-width":45,"stroke-linecap":"round"},g);
+      },
+      label:[250,148,205,148,239,148]
+    },
+    leaf:{
+      draw(g){
+        make("path",{d:"M151 162 Q119 127 64 145 Q79 195 148 188 Q157 176 151 162 Z",fill:"#76b778",stroke:"#509763","stroke-width":3},g);
+        make("path",{d:"M141 176 Q106 155 77 149",fill:"none",stroke:"#add79b","stroke-width":3},g);
+      },
+      label:[16,207,86,181,64,194]
+    },
+    petal:{
+      draw(g){
+        for(const [x,y,r] of [[177,35,0],[143,52,-50],[211,52,50],[144,79,-112],[210,79,112]])
+          make("ellipse",{cx:x,cy:y,rx:24,ry:31,transform:`rotate(${r} ${x} ${y})`,fill:"#ed91a3",stroke:"#d97890","stroke-width":2},g);
+      },
+      label:[263,38,224,45,252,41]
+    },
+    centre:{
+      draw(g){
+        make("circle",{cx:177,cy:77,r:27,fill:"#f5c464",stroke:"#dca346","stroke-width":3},g);
+      },
+      label:[252,99,204,83,241,94]
+    }
+  };
+
+  const present=new Set(Studio.params.parts);
+  for(const key of ["root","stem","leaf","petal","centre"]){
+    if(!present.has(key))continue;
+    const spec=shapes[key];
+    const part=make("g",{"data-part":key,class:"part",tabindex:"0",role:"button","aria-label":Studio.t(key)});
+    spec.draw(part);
+  }
+  for(const key of ["root","stem","leaf","petal","centre"]){
+    if(!present.has(key))continue;
+    const [lx,ly,px,py,sx,sy]=shapes[key].label;
+    make("line",{x1:sx,y1:sy,x2:px,y2:py,class:"leader"});
+    const label=make("text",{x:lx,y:ly,class:"label","data-label":key});
+    label.textContent=Studio.t(key);
+  }
+
+  let waiting=false,finished=false,selected=null;
+  const feedback=document.getElementById("feedback");
+  function choose(key){
+    if(waiting||finished)return;
+    waiting=true;
+    selected=key;
+    Studio.event("tap",{part:key});
+    Studio.answer(key);
+  }
+  svg.addEventListener("click",e=>{
+    const part=e.target.closest("[data-part]");
+    if(part)choose(part.getAttribute("data-part"));
+  });
+  svg.addEventListener("keydown",e=>{
+    if(e.key!=="Enter"&&e.key!==" ")return;
+    const part=e.target.closest("[data-part]");
+    if(part){e.preventDefault();choose(part.getAttribute("data-part"))}
+  });
+  Studio.onVerdict(({correct})=>{
+    const part=[...svg.querySelectorAll("[data-part]")].find(el=>el.getAttribute("data-part")===selected);
+    if(correct){
+      finished=true;
+      if(part)part.classList.add("good");
+      feedback.textContent=Studio.t("right");
+      setTimeout(()=>{feedback.textContent=Studio.t("done");Studio.done()},650);
+    }else{
+      feedback.textContent=Studio.t("wrong");
+      if(part){part.classList.remove("nope");void part.getBoundingClientRect();part.classList.add("nope")}
+      waiting=false;
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

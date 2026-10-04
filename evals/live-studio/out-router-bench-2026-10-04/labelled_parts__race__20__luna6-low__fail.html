@@ -1,0 +1,85 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff8eb;color:#514039}
+.card{width:360px;height:320px;padding:10px 12px;overflow:hidden;background:radial-gradient(ellipse at 50% 48%,#fffdf6 0%,#fff8eb 78%)}
+h1{height:24px;margin:0;text-align:center;font-size:17px;line-height:24px;font-weight:750;color:#725448}
+.question{height:30px;margin:0;text-align:center;font-size:14px;line-height:27px;font-weight:650;color:#695248}
+svg{display:block;width:336px;height:244px;overflow:visible}
+.leader{fill:none;stroke:#b9a38a;stroke-width:1.5;stroke-linecap:round}
+.label{font:600 12px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#635147}
+.part{cursor:pointer;stroke:#fffdf6;stroke-width:3;stroke-linejoin:round;stroke-linecap:round;transform-box:fill-box;transform-origin:center;transition:filter .24s ease,transform .2s ease,stroke-width .2s ease}
+.part:hover{transform:scale(1.045);filter:brightness(1.04)}
+.part:active{transform:scale(.94)}
+.part.selected{filter:drop-shadow(0 0 7px #ffcd4f) brightness(1.11);stroke:#ffcf55;stroke-width:5;animation:glow .8s ease-in-out infinite alternate}
+@keyframes glow{to{filter:drop-shadow(0 0 12px #ffb928) brightness(1.13)}}
+</style>
+<div class="card">
+  <h1 id="title"></h1>
+  <p class="question" id="question" data-ask></p>
+  <svg viewBox="0 0 336 244" role="img" aria-label="">
+    <path class="leader" d="M151 23 L159 34 M211 68 L207 69 M215 137 L207 137 M111 134 L123 132 M222 212 L216 207"/>
+    <text class="label" data-label="" x="111" y="22"></text>
+    <text class="label" data-label="" x="214" y="72"></text>
+    <text class="label" data-label="" x="216" y="141"></text>
+    <text class="label" data-label="" x="62" y="138"></text>
+    <text class="label" data-label="" x="222" y="216"></text>
+    <g class="part" role="button" tabindex="0" aria-label="">
+      <path d="M168 66 C142 48 143 24 158 21 C171 18 177 39 179 52 C181 30 196 17 208 25 C221 34 204 55 185 68 C207 53 231 57 230 72 C228 88 204 88 185 77 C206 95 201 115 187 116 C174 117 171 97 176 80 C166 102 148 105 140 93 C132 81 151 68 168 66Z" fill="#f28f83"/>
+    </g>
+    <circle class="part" role="button" tabindex="0" aria-label="" cx="180" cy="70" r="29" fill="#f7c84b"/>
+    <path class="part" role="button" tabindex="0" aria-label="" d="M150 91 Q180 84 210 91 L210 177 Q180 187 150 177Z" fill="#5d9e62"/>
+    <path class="part" role="button" tabindex="0" aria-label="" d="M165 124 C146 101 121 103 117 119 C112 139 140 157 168 160 C190 146 190 128 165 124Z M170 133 L133 117" fill="#75b96d" fill-rule="evenodd"/>
+    <path class="part" role="button" tabindex="0" aria-label="" d="M150 175 Q180 187 210 175 L230 202 L207 199 L221 217 L199 208 L196 235 L181 214 L165 236 L163 211 L137 224 L151 202 L125 205Z" fill="#b88761"/>
+  </svg>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const keys=p.parts;
+  const title=document.getElementById("title");
+  const question=document.getElementById("question");
+  title.textContent=Studio.t("title");
+  question.textContent=Studio.t("ask");
+  question.dataset.ask=p.ask;
+  const shapes=[...document.querySelectorAll(".part")];
+  const labels=[...document.querySelectorAll("[data-label]")];
+  keys.forEach((key,i)=>{
+    const shape=shapes[i],label=labels[i];
+    shape.dataset.part=key;
+    shape.setAttribute("aria-label",Studio.t(key));
+    label.dataset.label=key;
+    label.textContent=Studio.t(key);
+  });
+  let pending=null,finished=false;
+  function choose(shape,key){
+    if(finished)return;
+    pending={shape,key};
+    Studio.event("tap",{part:key});
+    Studio.answer(key);
+  }
+  shapes.forEach((shape,i)=>{
+    shape.addEventListener("click",()=>choose(shape,keys[i]));
+    shape.addEventListener("keydown",e=>{
+      if(e.key==="Enter"||e.key===" "){e.preventDefault();choose(shape,keys[i]);}
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    if(correct){
+      finished=true;
+      pending.shape.classList.add("selected");
+      Studio.event("verdict",{result:"correct"});
+      title.textContent=Studio.t("right")+" "+Studio.t("done");
+      Studio.done();
+    }else{
+      Studio.event("verdict",{result:"wrong"});
+      title.textContent=Studio.t("wrong");
+      pending=null;
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

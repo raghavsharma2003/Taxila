@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Taxila · Home</title>
+<link rel="stylesheet" href="v3.css">
+<style>
+  .home { display: grid; gap: 14px; padding-bottom: 20px; }
+  @media (min-width: 900px) { .home { grid-template-columns: 1.35fr 1fr; align-items: start; gap: 18px; } .col-r { position: sticky; top: 12px; } }
+  .col-l, .col-r { display: grid; gap: 14px; min-width: 0; }
+  .hello { padding: 8px 0 2px; }
+  .hello .h-1 { font-size: clamp(26px, 7vw, 34px); }
+  .avatar { width: 36px; height: 36px; border-radius: 12px; background: linear-gradient(135deg, #3a3f5c, #1f2333); display: grid; place-items: center; font: 700 14px/1 var(--f-display); border: 1px solid var(--line-2); }
+  .next { position: relative; overflow: hidden; border-radius: var(--r-xl); border: 1px solid var(--line-2); background: radial-gradient(500px 260px at 90% 0%, rgba(79,91,213,.35), transparent 60%), var(--bg-1); padding: 18px; display: grid; gap: 14px; }
+  .next .art { position: absolute; right: -30px; top: -10px; width: 220px; opacity: .9; pointer-events: none; }
+  @media (max-width: 600px) { .next .art { width: 150px; right: -36px; top: -18px; opacity: .3; } }
+  .next h2 { position: relative; font: 700 26px/1.1 var(--f-display); letter-spacing: -.025em; margin: 6px 0 0; max-width: 15ch; }
+  .next .why { position: relative; color: var(--ink-2); font-size: 15px; max-width: 34ch; margin: 0; }
+  .inside { display: flex; flex-wrap: wrap; gap: 6px; }
+  .next-foot { display: flex; align-items: center; gap: 12px; }
+  .next-foot .btn-primary { flex: 1; }
+  .tface { width: 52px; height: 52px; border-radius: 16px; overflow: hidden; border: 1px solid var(--line-2); flex: none; }
+  .tface img { width: 100%; height: 100%; object-fit: cover; }
+  .note { display: grid; grid-template-columns: 36px 1fr; gap: 12px; padding: 14px; align-items: start; }
+  .note img { width: 36px; height: 36px; border-radius: 11px; object-fit: cover; }
+  .note p { margin: 2px 0 0; font-size: 15px; }
+  .sec-h { display: flex; justify-content: space-between; align-items: baseline; margin: 6px 2px -2px; }
+  .sec-h a { color: var(--ion); text-decoration: none; font-size: 14px; font-weight: 600; }
+  .shelf { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(200px, 44%); gap: 10px; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x mandatory; margin: 0 calc(var(--gutter) * -1); padding: 0 var(--gutter); }
+  .shelf::-webkit-scrollbar { display: none; }
+  @media (min-width: 900px) { .shelf { grid-auto-flow: row; grid-template-columns: repeat(3, 1fr); margin: 0; padding: 0; overflow: visible; } }
+  .made { scroll-snap-align: start; border-radius: var(--r-lg); overflow: hidden; background: var(--bg-1); border: 1px solid var(--line); text-decoration: none; color: inherit; display: grid; }
+  .made svg, .made .ph { aspect-ratio: 16 / 10; width: 100%; display: block; background: #0D1017; }
+  .made .ph { background-size: cover; background-position: center; }
+  .made .m { padding: 10px 12px 12px; }
+  .made .m b { display: block; font-size: 15px; }
+  .made .m span { font-size: 12px; color: var(--ink-3); font-family: var(--f-mono); letter-spacing: .04em; text-transform: uppercase; }
+  .list { display: grid; }
+  .li { display: grid; grid-template-columns: 34px 1fr auto; gap: 12px; align-items: center; padding: 12px 14px; min-height: 60px; }
+  .li + .li { border-top: 1px solid var(--line); }
+  .li .ic { width: 34px; height: 34px; border-radius: 10px; background: var(--bg-3); display: grid; place-items: center; color: var(--ink-2); }
+  .li .ic .icon { width: 18px; height: 18px; }
+  .li b { display: block; font-size: 15px; font-weight: 600; }
+  .li span { font-size: 13px; color: var(--ink-3); }
+  .week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; padding: 14px; }
+  .wd { display: grid; justify-items: center; gap: 6px; font: 600 11px/1 var(--f-mono); color: var(--ink-3); text-transform: uppercase; letter-spacing: .04em; }
+  .wd i { width: 100%; height: 44px; border-radius: 10px; border: 1px solid var(--line); display: grid; place-items: center; font-style: normal; color: var(--ink-2); font: 600 12px/1 var(--f-mono); }
+  .wd.plan i { background: rgba(139,152,255,.12); border-color: rgba(139,152,255,.35); color: var(--ink); }
+  .wd.today { color: var(--ink); }
+  .wd.today i { border-color: var(--ink); }
+  .subjects { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .sj { padding: 14px; display: grid; gap: 8px; text-decoration: none; color: inherit; }
+  .sj b { font-size: 15px; } .sj span { font-size: 13px; color: var(--ink-3); }
+</style>
+</head>
+<body class="grain">
+<script src="sprite.js"></script>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><svg class="brand-mark"><use href="#brand"/></svg>Taxila</div>
+    <div style="display:flex;gap:8px;align-items:center"><button class="btn btn-icon btn-quiet" aria-label="Search"><svg class="icon"><use href="#i-search"/></svg></button><span class="avatar" aria-label="Your profile">A</span></div>
+  </header>
+
+  <div class="hello">
+    <div class="eyebrow">Thursday · 5:24 PM</div>
+    <h1 class="h-1" style="margin-top:6px">Evening, Aarav.</h1>
+  </div>
+
+  <div class="home">
+    <div class="col-l">
+      <section class="next" aria-label="Up next">
+        <svg class="art" viewBox="0 0 220 180" aria-hidden="true"><path d="M30 150 L120 30 L200 150 Z" fill="rgba(203,255,77,.08)" stroke="#CBFF4D" stroke-width="2"/><path d="M30 150 H200 V30 H30 Z" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/><path d="M120 30 V150" stroke="#8B98FF" stroke-dasharray="5 6" stroke-width="2"/><circle cx="120" cy="30" r="6" fill="#CBFF4D"/></svg>
+        <div><span class="subj" style="--c:var(--sub-maths)">Maths · Class 6 · Up next</span>
+          <h2>Why the triangle formula has a half</h2></div>
+        <p class="why">You asked this on Tuesday. 4-minute proof, then you try to break it.</p>
+        <div class="inside"><span class="tag"><svg class="icon" style="width:13px;height:13px"><use href="#i-pencil"/></svg>Board</span><span class="tag"><svg class="icon" style="width:13px;height:13px"><use href="#i-hand"/></svg>Explorable</span><span class="tag"><svg class="icon" style="width:13px;height:13px"><use href="#i-gamepad"/></svg>Game</span><span class="tag"><svg class="icon" style="width:13px;height:13px"><use href="#i-clock"/></svg>~18 min</span></div>
+        <div class="next-foot"><span class="tface"><img src="img/teacher-ira.webp" alt="Ira"></span><a class="btn btn-primary btn-lg" href="03-lesson-whiteboard.html" style="text-decoration:none">Start lesson <svg class="icon"><use href="#i-arrow"/></svg></a></div>
+      </section>
+
+      <div class="card note"><img src="img/teacher-ira.webp" alt=""><div><div class="eyebrow">Ira</div><p>Your “6/8 vs 3/4” instinct on Tuesday was right before you could explain it. Today you'll explain it.</p></div></div>
+
+      <div class="sec-h"><h2 class="h-3">Made for you</h2><a href="#">Library</a></div>
+      <div class="shelf hscroll">
+        <a class="made" href="04-lesson-game.html">
+          <svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" fill="#0D1017"/><g fill="none" stroke="#8B98FF" stroke-width="1.5"><rect x="100" y="14" width="26" height="22" rx="5"/><rect x="100" y="40" width="26" height="22" rx="5" stroke="#3DDC97"/><rect x="100" y="66" width="26" height="22" rx="5"/></g><path d="M30 51 l14 0 -9 -6z M30 51 l14 0 -9 6z" fill="#CBFF4D"/><g fill="#fff" opacity=".5"><circle cx="20" cy="20" r=".8"/><circle cx="70" cy="80" r=".8"/><circle cx="140" cy="30" r=".8"/><circle cx="60" cy="25" r=".8"/></g></svg>
+          <div class="m"><b>Fraction Pilot</b><span>Game · Tuesday</span></div></a>
+        <a class="made" href="05-diversion.html"><div class="ph" style="background-image:url(img/lesson-leaf.webp)"></div><div class="m"><b>Reading a leaf's veins</b><span>Animation · Monday</span></div></a>
+        <a class="made" href="03-lesson-whiteboard.html">
+          <svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" fill="#0F141C"/><path d="M28 80 H132 V20 H28 Z" fill="none" stroke="#EEF2F7" stroke-width="1.5"/><path d="M28 80 L70 20 L132 80" fill="rgba(139,152,255,.25)" stroke="#CBFF4D" stroke-width="1.5"/></svg>
+          <div class="m"><b>Half a rectangle</b><span>Board · Last week</span></div></a>
+      </div>
+    </div>
+
+    <div class="col-r">
+      <div class="sec-h"><h2 class="h-3">Parked questions</h2><a href="#">All 3</a></div>
+      <div class="card list">
+        <div class="li"><span class="ic"><svg class="icon"><use href="#i-pin"/></svg></span><div><b>Why do some leaves have parallel veins?</b><span>Coming up in Science · Saturday</span></div><svg class="icon" style="color:var(--ink-3)"><use href="#i-right"/></svg></div>
+        <div class="li"><span class="ic"><svg class="icon"><use href="#i-pin"/></svg></span><div><b>Is 0.999… really equal to 1?</b><span>She's saving it for decimals</span></div><svg class="icon" style="color:var(--ink-3)"><use href="#i-right"/></svg></div>
+      </div>
+
+      <div class="sec-h"><h2 class="h-3">This week</h2><a href="#">Edit</a></div>
+      <div class="card week" aria-label="Planned lessons this week">
+        <div class="wd plan"><i>✓</i>Mon</div><div class="wd"><i></i>Tue</div><div class="wd plan"><i>✓</i>Wed</div><div class="wd plan today"><i>5:30</i>Thu</div><div class="wd"><i></i>Fri</div><div class="wd plan"><i>11:00</i>Sat</div><div class="wd"><i></i>Sun</div>
+      </div>
+
+      <div class="subjects">
+        <a class="card sj" href="#"><span class="subj" style="--c:var(--sub-maths)">Maths</span><b>Perimeter and area</b><span>Ch 6 · 3 of 6 skills secure</span></a>
+        <a class="card sj" href="#"><span class="subj" style="--c:var(--sub-science)">Science</span><b>Diversity in the living world</b><span>Ch 2 · in progress</span></a>
+        <a class="card sj" href="#"><span class="subj" style="--c:var(--sub-english)">English</span><b>A Bottle of Dew</b><span>Reading · next</span></a>
+        <a class="card sj" href="#"><span class="subj" style="--c:var(--sub-social)">Social</span><b>Locating places on the Earth</b><span>Geography · Ch 1</span></a>
+      </div>
+    </div>
+  </div>
+
+  <nav class="tabbar" aria-label="Main">
+    <a href="02-home.html" aria-current="page"><svg class="icon"><use href="#i-home"/></svg>Home</a>
+    <a href="07-progress.html"><svg class="icon"><use href="#i-map"/></svg>Progress</a>
+    <a href="#"><svg class="icon"><use href="#i-layers"/></svg>Library</a>
+    <a href="#"><svg class="icon"><use href="#i-user"/></svg>You</a>
+  </nav>
+</div>
+</body>
+</html>

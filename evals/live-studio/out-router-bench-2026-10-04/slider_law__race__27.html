@@ -1,0 +1,80 @@
+<style>
+*{box-sizing:border-box}
+#lesson{width:360px;height:320px;padding:10px 14px;background:#fff8ec;color:#493b35;font-family:system-ui,sans-serif;display:flex;flex-direction:column;gap:6px;overflow:hidden;border-radius:18px}
+h1{font-size:18px;line-height:24px;margin:0;color:#714b37}
+#readout{display:flex;justify-content:center;gap:18px;align-items:center;min-height:26px;font-size:16px;font-weight:700}
+#visual-area{height:42px;display:flex;align-items:center;justify-content:center;background:#f7e9d2;border-radius:14px;padding:6px}
+#visual{height:18px;width:0;background:#e99b55;border-radius:9px;transition:width .35s cubic-bezier(.2,.8,.2,1);box-shadow:inset 0 -3px 0 #cf7940}
+#controls{display:flex;gap:10px}
+button{font:700 16px system-ui,sans-serif;color:#493b35;background:#fff;border:2px solid #e9c99e;border-radius:14px;min-height:52px;cursor:pointer;touch-action:manipulation;transition:transform .12s,background .2s,border-color .2s}
+button:active{transform:scale(.94);background:#ffe2b8}
+#controls button{flex:1}
+#question{font-size:14px;line-height:18px;font-weight:650;min-height:18px}
+#options{display:flex;gap:9px}
+#options button{flex:1;min-width:0;background:#fff;border-color:#d8b4ce}
+#feedback{font-size:14px;line-height:18px;min-height:18px;color:#714b37;font-weight:700}
+button:focus-visible{outline:3px solid #e99b55;outline-offset:1px}
+</style>
+<div id="lesson">
+  <h1 id="title"></h1>
+  <div id="readout"><span id="xread"></span><span id="yread" data-output data-value=""></span></div>
+  <div id="visual-area"><div id="visual" data-visual data-dim="w"></div></div>
+  <div id="controls">
+    <button type="button" id="dec" data-action="dec"></button>
+    <button type="button" id="inc" data-action="inc"></button>
+  </div>
+  <div id="question"></div>
+  <div id="options"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+ const p=Studio.params, t=Studio.t, xcfg=p.x, law=p.law;
+ const fmt=n=>{const r=Math.round(n*1e10)/1e10;return String(r)};
+ const title=document.getElementById('title');
+ const xread=document.getElementById('xread');
+ const yread=document.getElementById('yread');
+ const visual=document.getElementById('visual');
+ const feedback=document.getElementById('feedback');
+ title.textContent=Studio.t('title');
+ document.getElementById('dec').textContent=Studio.t('less');
+ document.getElementById('inc').textContent=Studio.t('more');
+ document.getElementById('question').textContent=Studio.t('ask')+' '+Studio.t('xname')+' = '+fmt(p.ask.x)+'?';
+ let x=xcfg.start, completed=false;
+ function update(){
+   const y=law.k*x+law.b, ys=fmt(y);
+   xread.textContent=Studio.t('xname')+' = '+fmt(x);
+   yread.textContent=Studio.t('yname')+' = '+ys;
+   yread.dataset.value=ys;
+   xread.dataset.x=fmt(x);
+   visual.style.width=(y*p.y.unitsPer)+'px';
+ }
+ function change(d){
+   const next=x+d*xcfg.step;
+   if(next<xcfg.min||next>xcfg.max)return;
+   x=next;update();Studio.event('change',{x:x});
+ }
+ document.getElementById('dec').addEventListener('click',()=>change(-1));
+ document.getElementById('inc').addEventListener('click',()=>change(1));
+ const options=document.getElementById('options');
+ p.ask.options.forEach(value=>{
+   const b=document.createElement('button');
+   b.type='button';b.textContent=String(value);b.dataset.option=String(value);
+   b.addEventListener('click',()=>{
+     if(completed)return;
+     feedback.textContent='';
+     Studio.answer({value:value});
+     Studio.event('answer',{value:value});
+   });
+   options.appendChild(b);
+ });
+ Studio.onVerdict(({correct})=>{
+   if(correct){feedback.textContent=Studio.t('right')+' '+Studio.t('done');completed=true;Studio.done();}
+   else{feedback.textContent=Studio.t('wrong');}
+ });
+ update();
+ Studio.ready();
+})();
+
+</script>

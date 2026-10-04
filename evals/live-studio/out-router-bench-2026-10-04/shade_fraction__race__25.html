@@ -1,0 +1,119 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8eb;color:#493b32}
+#app{width:360px;height:320px;padding:12px 16px;display:flex;flex-direction:column;align-items:center;gap:7px}
+h1{font-size:18px;line-height:22px;margin:0;color:#8d4f31;font-weight:800}
+#instr{font-size:13px;line-height:16px;margin:0;text-align:center;color:#725d4a}
+#target{font-size:25px;font-weight:800;line-height:30px;color:#b85637;background:#ffead1;border-radius:14px;padding:1px 14px}
+#picture{width:100%;max-height:132px;overflow:visible}
+.part{fill:#f4d7a2;stroke:#a86b43;stroke-width:3;cursor:pointer;transform-box:fill-box;transform-origin:center;transition:fill .22s ease,transform .18s ease,filter .2s ease}
+.part:hover{filter:brightness(1.04)}
+.part:active{transform:scale(.91)}
+.part[data-shaded="true"]{fill:#ef9362}
+#feedback{height:20px;font-size:14px;line-height:20px;font-weight:700;color:#8d4f31;text-align:center}
+#check{border:0;border-radius:18px;min-width:128px;min-height:52px;padding:0 24px;background:#e68152;color:white;font:700 16px system-ui,sans-serif;box-shadow:0 4px 0 #b95d3c;cursor:pointer;transition:transform .15s,background .2s}
+#check:active{transform:translateY(3px) scale(.97);box-shadow:0 1px 0 #b95d3c}
+#check:disabled{opacity:.75}
+#app.celebrate{animation:bounce .45s ease}
+@keyframes bounce{50%{transform:scale(1.035)}}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <p id="instr"></p>
+  <div id="target" data-target></div>
+  <svg id="picture" role="img"></svg>
+  <div id="feedback" aria-live="polite"></div>
+  <button id="check" data-action="check" type="button"></button>
+</div>
+<script>
+
+(()=>{
+  const items=Studio.params.items;
+  const app=document.getElementById('app');
+  const title=document.getElementById('title');
+  const instr=document.getElementById('instr');
+  const target=document.querySelector('[data-target]');
+  const picture=document.getElementById('picture');
+  const feedback=document.getElementById('feedback');
+  const check=document.querySelector('[data-action="check"]');
+  title.textContent=Studio.t('title');
+  instr.textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+  let index=0;
+  let parts=[];
+  let waiting=false;
+  function draw(){
+    const item=items[index];
+    app.dataset.item=item.id;
+    target.textContent=item.n+'/'+item.d;
+    feedback.textContent='';
+    waiting=false;
+    check.disabled=false;
+    parts=[];
+    picture.replaceChildren();
+    const cols=Math.ceil(Math.sqrt(item.d));
+    const rows=Math.ceil(item.d/cols);
+    const cell=64,gap=4,pad=2;
+    const w=cols*cell+(cols-1)*gap+pad*2;
+    const h=rows*cell+(rows-1)*gap+pad*2;
+    picture.setAttribute('viewBox','0 0 '+w+' '+h);
+    picture.setAttribute('preserveAspectRatio','xMidYMid meet');
+    picture.style.height=Math.min(132,h)+'px';
+    for(let i=0;i<item.d;i++){
+      const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
+      rect.setAttribute('x',pad+(i%cols)*(cell+gap));
+      rect.setAttribute('y',pad+Math.floor(i/cols)*(cell+gap));
+      rect.setAttribute('width',cell);
+      rect.setAttribute('height',cell);
+      rect.setAttribute('rx','12');
+      rect.setAttribute('class','part');
+      rect.setAttribute('data-part',i);
+      rect.setAttribute('data-shaded','false');
+      rect.addEventListener('click',()=>{
+        if(waiting)return;
+        const shaded=rect.getAttribute('data-shaded')!=='true';
+        rect.setAttribute('data-shaded',String(shaded));
+        Studio.event('part_tap',{index:i,shaded:shaded?'true':'false'});
+      });
+      picture.appendChild(rect);
+      parts.push(rect);
+    }
+  }
+  check.addEventListener('click',()=>{
+    if(waiting)return;
+    waiting=true;
+    check.disabled=true;
+    const n=parts.filter(p=>p.getAttribute('data-shaded')==='true').length;
+    Studio.event('check',{n:n,d:items[index].d});
+    Studio.answer({n:n,d:items[index].d});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      feedback.textContent=Studio.t('right');
+      app.classList.remove('celebrate');
+      void app.offsetWidth;
+      app.classList.add('celebrate');
+      window.setTimeout(()=>{
+        index++;
+        if(index<items.length)draw();
+        else{
+          title.textContent=Studio.t('done');
+          instr.textContent='';
+          target.textContent='';
+          picture.replaceChildren();
+          feedback.textContent=Studio.t('done');
+          check.hidden=true;
+          Studio.done();
+        }
+      },650);
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      waiting=false;
+      check.disabled=false;
+    }
+  });
+  draw();
+  Studio.ready();
+})();
+
+</script>

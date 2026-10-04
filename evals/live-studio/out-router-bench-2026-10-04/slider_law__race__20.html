@@ -1,0 +1,88 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0}
+  #activity{width:360px;height:320px;overflow:hidden;background:#fff6e9;color:#584335;font-family:system-ui,sans-serif;position:relative}
+  .title{height:35px;padding:8px 16px 0;font-size:18px;font-weight:750}
+  .scene{height:137px;margin:0 12px;background:#fce8cd;border-radius:19px;position:relative;overflow:hidden}
+  .sun{position:absolute;right:26px;top:14px;width:33px;height:33px;border-radius:50%;background:#ffd27a}
+  .ground{position:absolute;bottom:0;width:100%;height:13px;background:#d7c39d}
+  .tower{position:absolute;left:93px;bottom:13px;width:62px;background:repeating-linear-gradient(0deg,#dd8a65 0 18px,#edaa7d 18px 21px);border:3px solid #b96e52;border-radius:9px 9px 2px 2px;transition:height .38s cubic-bezier(.2,.8,.2,1)}
+  .tower:after{content:"";position:absolute;left:21px;bottom:0;width:15px;height:24px;border-radius:9px 9px 0 0;background:#fff0d8}
+  .readouts{position:absolute;right:15px;top:55px;display:grid;gap:8px;min-width:112px}
+  .readout{background:#fffaf1;border-radius:12px;padding:5px 9px;font-size:13px}
+  .readout strong{float:right;font-size:17px;color:#a3533b}
+  .controls{height:61px;display:flex;align-items:center;justify-content:center;gap:12px}
+  button{font:inherit;cursor:pointer;border:0;min-width:95px;min-height:52px;border-radius:17px;font-weight:750;transition:transform .16s,background .16s,opacity .16s}
+  button:active{transform:scale(.92)}
+  .control{background:#e58d69;color:#422e28}
+  .control:disabled{opacity:.4;cursor:default}
+  .question{height:29px;padding:3px 17px;font-size:15px;font-weight:700}
+  .options{display:flex;justify-content:center;gap:10px}
+  .option{min-width:96px;background:#fff;border:2px solid #e9ad89;color:#633e30;font-size:19px}
+  .option:hover{background:#ffead8}
+  .option.pulse{animation:bump .4s ease}
+  .feedback{position:absolute;right:14px;top:6px;background:#fffaf1;border-radius:11px;padding:3px 9px;font-weight:750;color:#a3533b}
+  @keyframes bump{50%{transform:scale(1.08)}}
+</style>
+<div id="activity">
+  <div class="title" id="title"></div>
+  <div class="scene">
+    <div class="sun"></div><div class="ground"></div>
+    <div class="tower" data-visual data-dim="h"></div>
+    <div class="readouts">
+      <div class="readout"><span id="xname"></span> <strong id="xvalue"></strong></div>
+      <div class="readout"><span id="yname"></span> <strong data-output></strong></div>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="control" data-action="dec"><span id="less"></span></button>
+    <button class="control" data-action="inc"><span id="more"></span></button>
+  </div>
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback" aria-live="polite" hidden></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, root=document.getElementById('activity');
+  const find=s=>root.querySelector(s);
+  const text=(id,key)=>{document.getElementById(id).textContent=Studio.t(key)};
+  ['title','xname','yname','less','more'].forEach(k=>text(k,k));
+  const fmt=n=>String(Number(Number(n).toPrecision(12)));
+  let x=p.x.start, finished=false;
+  const dec=find('[data-action="dec"]'),inc=find('[data-action="inc"]');
+  function render(){
+    const y=p.law.k*x+p.law.b, shown=fmt(x);
+    find('#xvalue').textContent=shown;
+    find('#xvalue').setAttribute('data-x',shown);
+    const out=find('[data-output]');
+    out.textContent=fmt(y);out.dataset.value=fmt(y);
+    find('[data-visual]').style.height=fmt(y*p.y.unitsPer)+'px';
+    dec.disabled=x-p.x.step<p.x.min;
+    inc.disabled=x+p.x.step>p.x.max;
+  }
+  dec.addEventListener('click',()=>{if(x-p.x.step>=p.x.min){x=Number((x-p.x.step).toPrecision(12));render()}});
+  inc.addEventListener('click',()=>{if(x+p.x.step<=p.x.max){x=Number((x+p.x.step).toPrecision(12));render()}});
+  find('#question').textContent=Studio.t('ask')+' '+fmt(p.ask.x);
+  p.ask.options.forEach(value=>{
+    const b=document.createElement('button');
+    b.className='option';b.dataset.option=fmt(value);b.textContent=fmt(value);
+    b.addEventListener('click',()=>{if(!finished)Studio.answer({value})});
+    find('#options').appendChild(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    const feedback=find('#feedback');
+    feedback.hidden=false;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.classList.remove('pulse');void feedback.offsetWidth;feedback.classList.add('pulse');
+    if(correct){
+      finished=true;
+      setTimeout(()=>{feedback.textContent=Studio.t('done');Studio.done()},450);
+    }
+  });
+  render();
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,92 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#49382f;background:#fff8ed}
+.stage{width:360px;height:320px;padding:6px 9px;overflow:hidden}
+h1{height:24px;margin:0;text-align:center;font-size:18px;line-height:24px;color:#7b4939}
+.key{height:34px;margin:2px auto;display:flex;align-items:center;justify-content:center;gap:8px;color:#59473c;font-size:14px}
+.key-symbol{width:28px;height:28px;display:grid;place-items:center}
+.key-symbol svg,.picture svg{width:26px;height:26px;display:block}
+.ask{height:28px;margin:2px 0;text-align:center;font-size:15px;line-height:28px;color:#654b3d}
+.rows{display:flex;flex-direction:column;gap:2px}
+.row{width:100%;height:52px;min-height:52px;border:0;border-radius:14px;padding:0 8px;background:#f5e7d4;color:#49382f;display:flex;align-items:center;text-align:left;cursor:pointer;transition:transform .16s ease,background .2s ease,box-shadow .2s ease}
+.row:active{transform:scale(.98)}
+.row.pulse{animation:tap .28s ease}
+.name{width:88px;flex:0 0 88px;font-size:15px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pictures{display:flex;align-items:center;gap:3px}
+.picture{width:26px;height:30px;flex:0 0 26px;display:grid;place-items:center}
+.picture svg{transition:transform .2s ease}
+.feedback{height:20px;margin-top:2px;text-align:center;font-size:14px;font-weight:650;color:#76513e}
+.row:focus-visible{outline:3px solid #bd805a;outline-offset:1px}
+@keyframes tap{50%{transform:scale(.985);box-shadow:0 0 0 3px #e7bd8e}}
+</style>
+<main class="stage">
+  <h1 id="title"></h1>
+  <div class="key" id="key"></div>
+  <div class="ask" id="ask"></div>
+  <div class="rows" id="rows"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(()=>{
+const p=Studio.params;
+const title=document.getElementById("title");
+const keyBox=document.getElementById("key");
+const ask=document.getElementById("ask");
+const rowsBox=document.getElementById("rows");
+const feedback=document.getElementById("feedback");
+const pictureSvg='<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2.8c-5.2 0-9.4 4.2-9.4 9.4 0 3.1 1.5 5.6 3.7 7.4l-1.1 8.2h13.6l-1.1-8.2c2.2-1.8 3.7-4.3 3.7-7.4 0-5.2-4.2-9.4-9.4-9.4Z" fill="#e7a75c" stroke="#9b603e" stroke-width="1.5"/><path d="M12.1 11.4c1.4-2.2 3-3.1 5-3.2M11.8 16.4c2.1 1.1 5.6 1.1 8.4-.5" fill="none" stroke="#fff0cf" stroke-width="1.6" stroke-linecap="round"/><path d="M12 27.8v2m8-2v2" stroke="#9b603e" stroke-width="1.5" stroke-linecap="round"/></svg>';
+title.textContent=Studio.t("title");
+const keySymbol=document.createElement("span");
+keySymbol.className="key-symbol";
+keySymbol.innerHTML=pictureSvg;
+const keyText=document.createElement("span");
+keyText.textContent=Studio.t("keytext")+" "+String(p.symbolValue);
+keyBox.setAttribute("data-key","");
+keyBox.append(keySymbol,keyText);
+ask.textContent=Studio.t("ask");
+let completed=false;
+for(const entry of p.rows){
+  const row=document.createElement("button");
+  row.type="button";
+  row.className="row";
+  row.setAttribute("data-row",entry.key);
+  const name=document.createElement("span");
+  name.className="name";
+  name.textContent=Studio.t(entry.key);
+  const pictures=document.createElement("span");
+  pictures.className="pictures";
+  const count=entry.value/p.symbolValue;
+  for(let i=0;i<count;i++){
+    const symbol=document.createElement("span");
+    symbol.className="picture";
+    symbol.setAttribute("data-symbol","");
+    symbol.innerHTML=pictureSvg;
+    pictures.appendChild(symbol);
+  }
+  row.append(name,pictures);
+  row.addEventListener("click",()=>{
+    if(completed)return;
+    row.classList.remove("pulse");
+    void row.offsetWidth;
+    row.classList.add("pulse");
+    Studio.event("row_tap",{});
+    Studio.answer(entry.key);
+  });
+  rowsBox.appendChild(row);
+}
+Studio.onVerdict(({correct})=>{
+  if(correct){
+    if(completed)return;
+    completed=true;
+    feedback.textContent=Studio.t("done");
+    Studio.done();
+  }else{
+    feedback.textContent=Studio.t("wrong");
+  }
+});
+Studio.ready();
+})();
+
+</script>

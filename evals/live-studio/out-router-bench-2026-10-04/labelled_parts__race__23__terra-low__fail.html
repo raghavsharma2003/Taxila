@@ -1,0 +1,143 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e8;font-family:Arial,sans-serif;color:#594032}
+#card{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(180deg,#fffaf0 0%,#f7ecd3 100%)}
+#title{position:absolute;top:10px;left:16px;right:16px;text-align:center;font-size:21px;font-weight:800;color:#704937}
+#question{position:absolute;top:42px;left:14px;right:14px;min-height:31px;padding:6px 11px;border-radius:18px;background:#ffe1a0;text-align:center;font-size:15px;font-weight:800;color:#70451f}
+#scene{position:absolute;left:0;top:76px;width:360px;height:210px}
+#message{position:absolute;bottom:8px;left:18px;right:18px;min-height:24px;text-align:center;font-size:16px;font-weight:800;color:#754630}
+.ground{fill:#ddc58e}
+.soil{fill:#ad7348}
+.stemfill{fill:#5d9c4d}
+.leaffill{fill:#7bbb5e}
+.vein{fill:none;stroke:#4a8b43;stroke-width:3;stroke-linecap:round}
+.petalA{fill:#f58ba4}
+.petalB{fill:#f7aac0}
+.centrefill{fill:#f4bd3f}
+.rootfill{fill:none;stroke:#b97948;stroke-width:10;stroke-linecap:round;stroke-linejoin:round}
+.leader{fill:none;stroke:#a47a5a;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.label{fill:#604333;font-size:13px;font-weight:800;paint-order:stroke;stroke:#fff8ec;stroke-width:4;stroke-linejoin:round}
+.hit{fill:transparent}
+[data-part]{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .16s ease,filter .25s ease}
+[data-part]:active{transform:scale(.94)}
+[data-part].waiting{pointer-events:none;opacity:.8}
+[data-part].chosen{filter:drop-shadow(0 0 7px #ffd151);animation:shine .8s ease-in-out infinite alternate}
+.spark{fill:#ffe477;opacity:0}
+[data-part].chosen .spark{opacity:1;animation:twinkle .7s ease-in-out infinite alternate}
+.pop{animation:pop .32s ease}
+@keyframes shine{to{filter:drop-shadow(0 0 13px #ffb938);transform:scale(1.045)}}
+@keyframes twinkle{to{opacity:.75;transform:scale(1.5)}}
+@keyframes pop{0%{opacity:.15;transform:scale(.78)}70%{transform:scale(1.1)}100%{opacity:1;transform:scale(1)}}
+</style>
+<div id="card">
+  <div id="title"></div>
+  <div id="question" data-ask></div>
+  <svg id="scene" viewBox="0 0 360 210" aria-hidden="true">
+    <path class="ground" d="M0 164 Q55 155 112 165 T226 163 T360 162 V210 H0Z"></path>
+    <path class="soil" d="M0 175 Q70 166 140 175 T270 172 T360 174 V210 H0Z"></path>
+
+    <g data-part="root">
+      <rect class="hit" x="106" y="143" width="148" height="64" rx="18"></rect>
+      <path class="rootfill" d="M180 148 C179 166 164 174 148 190 M180 160 C194 173 207 178 218 195 M165 169 C151 174 141 181 132 194 M194 169 C207 164 222 166 233 175"></path>
+      <circle class="spark" cx="146" cy="188" r="5"></circle>
+      <circle class="spark" cx="216" cy="191" r="5"></circle>
+    </g>
+    <path class="leader" d="M235 187 L247 187"></path>
+    <text class="label" data-label="root" x="251" y="191"></text>
+
+    <g data-part="stem">
+      <rect class="hit" x="151" y="72" width="58" height="88" rx="18"></rect>
+      <path class="stemfill" d="M173 152 C175 128 177 105 177 77 L191 77 C189 107 187 130 186 152Z"></path>
+      <circle class="spark" cx="197" cy="119" r="5"></circle>
+    </g>
+    <path class="leader" d="M151 127 L144 127"></path>
+    <text class="label" data-label="stem" x="105" y="131"></text>
+
+    <g data-part="leaf">
+      <rect class="hit" x="181" y="86" width="84" height="64" rx="24"></rect>
+      <path class="leaffill" d="M183 119 C204 83 245 88 260 112 C237 140 204 133 183 119Z"></path>
+      <path class="vein" d="M189 118 Q218 111 248 102 M213 112 L222 125 M226 108 L235 119"></path>
+      <circle class="spark" cx="244" cy="108" r="5"></circle>
+    </g>
+    <path class="leader" d="M260 113 L267 113"></path>
+    <text class="label" data-label="leaf" x="270" y="117"></text>
+
+    <g data-part="petal">
+      <path class="hit" d="M116 28 C124 1 156 4 180 29 C199 2 232 10 235 38 C263 42 263 74 234 83 C237 111 201 117 180 91 C159 116 126 108 128 81 C99 75 94 44 116 28Z"></path>
+      <ellipse class="petalA" cx="151" cy="40" rx="22" ry="31" transform="rotate(-39 151 40)"></ellipse>
+      <ellipse class="petalB" cx="207" cy="40" rx="22" ry="31" transform="rotate(39 207 40)"></ellipse>
+      <ellipse class="petalB" cx="151" cy="74" rx="22" ry="31" transform="rotate(39 151 74)"></ellipse>
+      <ellipse class="petalA" cx="207" cy="74" rx="22" ry="31" transform="rotate(-39 207 74)"></ellipse>
+      <circle class="spark" cx="125" cy="46" r="5"></circle>
+      <circle class="spark" cx="235" cy="62" r="5"></circle>
+    </g>
+    <path class="leader" d="M106 30 L91 30"></path>
+    <text class="label" data-label="petal" x="50" y="34"></text>
+
+    <g data-part="centre">
+      <circle class="hit" cx="180" cy="57" r="32"></circle>
+      <circle class="centrefill" cx="180" cy="57" r="22"></circle>
+      <circle fill="#ffe27a" cx="172" cy="50" r="4"></circle>
+      <circle fill="#d99b2b" cx="188" cy="64" r="4"></circle>
+      <circle class="spark" cx="180" cy="57" r="7"></circle>
+    </g>
+    <path class="leader" d="M205 55 L222 55"></path>
+    <text class="label" data-label="centre" x="226" y="59"></text>
+  </svg>
+  <div id="message"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params;
+  var pending=false;
+  var finished=false;
+  var title=document.getElementById('title');
+  var question=document.getElementById('question');
+  var message=document.getElementById('message');
+
+  title.textContent=Studio.t('title');
+  question.textContent=Studio.t('ask')+' '+Studio.t(p.ask);
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-label]'),function(label){
+    label.textContent=Studio.t(label.getAttribute('data-label'));
+  });
+
+  function say(key){
+    message.textContent=Studio.t(key);
+    message.classList.remove('pop');
+    void message.offsetWidth;
+    message.classList.add('pop');
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-part]'),function(part){
+    part.addEventListener('click',function(){
+      if(pending||finished)return;
+      pending=true;
+      part.classList.add('waiting');
+      Studio.event('tap',{part:part.getAttribute('data-part')});
+      Studio.answer(part.getAttribute('data-part'));
+    });
+  });
+
+  Studio.onVerdict(function(verdict){
+    var selected=document.querySelector('[data-part].waiting');
+    if(verdict.correct){
+      finished=true;
+      if(selected){
+        selected.classList.remove('waiting');
+        selected.classList.add('chosen');
+      }
+      say('right');
+      Studio.done();
+    }else{
+      if(selected)selected.classList.remove('waiting');
+      pending=false;
+      say('wrong');
+    }
+  });
+
+  Studio.ready();
+}());
+
+</script>

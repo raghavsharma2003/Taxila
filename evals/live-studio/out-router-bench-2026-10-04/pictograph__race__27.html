@@ -1,0 +1,88 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#4b3540}
+  .card{width:360px;height:320px;padding:16px 18px;background:radial-gradient(circle at 90% 0%,#ffe9b9 0,transparent 42%),#fff8ed}
+  h1{margin:0;font-size:22px;line-height:28px;font-weight:800}
+  .ask{margin:3px 0 8px;font-size:15px;line-height:20px}
+  .key{height:36px;display:flex;align-items:center;gap:7px;font-size:13px;color:#72545b}
+  .key svg{width:25px;height:25px;flex:none}
+  .rows{display:grid;gap:7px}
+  .row{width:100%;height:54px;border:2px solid #ecd8c7;border-radius:17px;background:#fff;display:flex;align-items:center;padding:0 12px;text-align:left;color:inherit;cursor:pointer;transition:transform .18s,background .18s,border-color .18s,box-shadow .18s}
+  .row:active{transform:scale(.97)}
+  .row:focus-visible{outline:3px solid #bb6d72;outline-offset:2px}
+  .name{width:62px;flex:none;font-size:16px;font-weight:750}
+  .symbols{display:flex;align-items:center;gap:8px;min-width:0}
+  .symbols svg{display:block;width:31px;height:31px;flex:none;animation:pop .35s both}
+  .row:hover{border-color:#d49c8c;box-shadow:0 3px 10px #75412c16}
+  .row.chosen{background:#fff0dc;border-color:#ca876e}
+  .row.correct{background:#e6f4dc;border-color:#76a771}
+  .feedback{height:24px;margin-top:8px;font-size:15px;font-weight:750;color:#845565}
+  .feedback.good{color:#467b57}
+  @keyframes pop{from{transform:scale(.5) rotate(-18deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+</style>
+<div class="card">
+  <h1 id="title"></h1>
+  <p class="ask" id="ask"></p>
+  <div class="key" data-key><span id="key-icon"></span><span id="key-label"></span><strong id="key-number"></strong></div>
+  <div class="rows" id="rows"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+  const p=Studio.params;
+  const icon='<svg viewBox="0 0 36 36" aria-hidden="true"><path d="M18 3c2.7 5.5 4.8 7.5 10.6 7.8-2.5 5.2-2.6 8.1 2.7 12.4-5.9.5-8.8 2.3-13.3 8.8-4.5-6.5-7.4-8.3-13.3-8.8 5.3-4.3 5.2-7.2 2.7-12.4C13.2 10.5 15.3 8.5 18 3Z" fill="#e99a75" stroke="#bc6b64" stroke-width="1.5"/><circle cx="18" cy="18" r="3" fill="#ffe5a2"/></svg>';
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  document.getElementById('key-icon').innerHTML=icon;
+  document.getElementById('key-label').textContent=Studio.t('keytext');
+  document.getElementById('key-number').textContent=p.symbolValue;
+  const holder=document.getElementById('rows');
+  const feedback=document.getElementById('feedback');
+  let selected=null,finished=false,pending=false;
+  p.rows.forEach(r=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='row';
+    button.setAttribute('data-row',r.key);
+    const name=document.createElement('span');
+    name.className='name';
+    name.textContent=Studio.t(r.key);
+    const symbols=document.createElement('span');
+    symbols.className='symbols';
+    for(let i=0;i<r.value/p.symbolValue;i++){
+      const symbol=document.createElement('span');
+      symbol.setAttribute('data-symbol','');
+      symbol.innerHTML=icon;
+      symbols.appendChild(symbol);
+    }
+    button.append(name,symbols);
+    button.addEventListener('click',()=>{
+      if(finished||pending)return;
+      document.querySelectorAll('.row').forEach(x=>x.classList.remove('chosen'));
+      button.classList.add('chosen');
+      feedback.textContent='';
+      selected=button;
+      pending=true;
+      Studio.answer(r.key);
+    });
+    holder.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending||finished)return;
+    pending=false;
+    if(correct){
+      finished=true;
+      selected.classList.remove('chosen');
+      selected.classList.add('correct');
+      feedback.classList.add('good');
+      feedback.textContent=Studio.t('done');
+      Studio.done();
+    }else{
+      feedback.classList.remove('good');
+      feedback.textContent=Studio.t('wrong');
+      selected.classList.remove('chosen');
+    }
+  });
+  Studio.ready();
+
+</script>

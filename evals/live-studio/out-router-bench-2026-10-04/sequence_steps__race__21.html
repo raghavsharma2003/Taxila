@@ -1,0 +1,138 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff5df;font-family:Arial,sans-serif;color:#51382b}
+  #app{width:360px;height:320px;position:relative;overflow:hidden;background:
+    radial-gradient(circle at 16% 12%,#ffe7a5 0 18px,transparent 19px),
+    radial-gradient(circle at 88% 20%,#ffd3a8 0 14px,transparent 15px),
+    linear-gradient(180deg,#fff8e9 0%,#fff0d3 100%)}
+  .top{height:61px;padding:12px 18px 0;text-align:center;position:relative;z-index:2}
+  h1{margin:0;font-size:21px;line-height:24px;font-weight:800;letter-spacing:.1px}
+  #instruction{margin:3px 0 0;font-size:12px;line-height:15px;font-weight:700;color:#9a6545}
+  #track{height:105px;margin:0 14px;padding:11px 9px 10px;display:flex;gap:8px;align-items:center;justify-content:center;border-radius:23px;background:#f8dca8;box-shadow:inset 0 2px 0 #fff4d8,0 4px 0 rgba(164,100,50,.08)}
+  .slot{height:76px;flex:1;min-width:0;border:2px dashed #c88d61;border-radius:18px;background:rgba(255,255,255,.42);display:flex;align-items:center;justify-content:center;position:relative;transition:background .25s,border-color .25s,transform .25s}
+  .slotNum{width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#e9a96e;color:#fff9ec;font-size:13px;font-weight:800;box-shadow:0 2px 0 rgba(126,69,37,.16)}
+  .slot.filled{border-style:solid;border-color:#e0a36d;background:#fffdf6;transform:translateY(-2px);box-shadow:0 4px 0 rgba(164,100,50,.12)}
+  .slot.filled .slotNum{position:absolute;top:-9px;left:50%;transform:translateX(-50%);width:22px;height:22px;background:#df8059;font-size:11px}
+  #feedback{height:33px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#8d533d;opacity:0;transform:translateY(-4px);transition:opacity .2s,transform .2s}
+  #feedback.show{opacity:1;transform:translateY(0)}
+  #tray{height:113px;padding:2px 12px 14px;display:flex;align-items:center;justify-content:center;gap:8px}
+  .card{height:66px;min-width:52px;flex:1;max-width:106px;border:0;border-radius:18px;background:#fffdf7;color:#593c2e;font-size:16px;font-weight:800;box-shadow:0 5px 0 #d78e62,0 9px 15px rgba(132,75,42,.16);cursor:pointer;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s,opacity .25s}
+  .card:before{content:"";position:absolute;width:24px;height:24px;border-radius:50%;right:-5px;top:-7px;background:#ffd889;opacity:.72}
+  .card:after{content:"";position:absolute;width:13px;height:13px;border-radius:50%;left:9px;bottom:8px;background:#f7b777;opacity:.5}
+  .card:active{transform:translateY(4px) scale(.96);box-shadow:0 1px 0 #d78e62,0 3px 7px rgba(132,75,42,.13)}
+  .card.placed{width:100%;min-width:0;max-width:none;height:58px;border-radius:14px;font-size:13px;box-shadow:0 3px 0 #d78e62,0 5px 9px rgba(132,75,42,.13);animation:land .38s cubic-bezier(.2,.9,.35,1.4)}
+  .card.shake{animation:shake .42s ease-in-out}
+  .card.waiting{pointer-events:none;opacity:.68}
+  #sparkles{position:absolute;inset:0;pointer-events:none}
+  .spark{position:absolute;width:7px;height:7px;border-radius:50%;background:#f1ad65;opacity:0}
+  .spark.go{animation:spark .65s ease-out}
+  @keyframes land{0%{transform:scale(.65) translateY(20px);opacity:.35}65%{transform:scale(1.08) translateY(-3px)}100%{transform:scale(1) translateY(0);opacity:1}}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px) rotate(-2deg)}45%{transform:translateX(7px) rotate(2deg)}70%{transform:translateX(-4px)}}
+  @keyframes spark{0%{opacity:0;transform:translate(0,0) scale(.4)}20%{opacity:1}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(1.3)}}
+</style>
+<div id="app">
+  <div class="top">
+    <h1 id="title"></h1>
+    <p id="instruction"></p>
+  </div>
+  <div id="track"></div>
+  <div id="feedback"></div>
+  <div id="tray"></div>
+  <div id="sparkles"></div>
+</div>
+<script>
+
+(function(){
+  var shown=Studio.params.shown;
+  var track=document.getElementById("track");
+  var tray=document.getElementById("tray");
+  var feedback=document.getElementById("feedback");
+  var sparks=document.getElementById("sparkles");
+  var next=0, pending=null, finished=false;
+
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("instruction").textContent=Studio.t("instr");
+
+  shown.forEach(function(key,index){
+    var slot=document.createElement("div");
+    slot.className="slot";
+    var n=document.createElement("div");
+    n.className="slotNum";
+    n.textContent=String(index+1);
+    slot.appendChild(n);
+    track.appendChild(slot);
+
+    var card=document.createElement("button");
+    card.type="button";
+    card.className="card";
+    card.setAttribute("data-step",key);
+    card.textContent=Studio.t(key);
+    card.addEventListener("click",function(){
+      if(pending||finished)return;
+      pending=card;
+      card.classList.add("waiting");
+      Studio.event("tap",{position:next+1});
+      Studio.answer({key:key});
+    });
+    tray.appendChild(card);
+  });
+
+  function say(key){
+    feedback.textContent=Studio.t(key);
+    feedback.classList.remove("show");
+    void feedback.offsetWidth;
+    feedback.classList.add("show");
+  }
+
+  function burst(slot){
+    var r=slot.getBoundingClientRect();
+    var base=document.getElementById("app").getBoundingClientRect();
+    for(var i=0;i<5;i++){
+      var s=document.createElement("i");
+      s.className="spark";
+      s.style.left=(r.left-base.left+r.width/2)+"px";
+      s.style.top=(r.top-base.top+r.height/2)+"px";
+      s.style.setProperty("--x",((i-2)*12)+"px");
+      s.style.setProperty("--y",(-20-(i%2)*11)+"px");
+      sparks.appendChild(s);
+      void s.offsetWidth;
+      s.classList.add("go");
+      setTimeout((function(node){return function(){node.remove();};})(s),700);
+    }
+  }
+
+  Studio.onVerdict(function(result){
+    if(!pending)return;
+    var card=pending;
+    pending=null;
+    card.classList.remove("waiting");
+    if(result.correct){
+      var slot=track.children[next];
+      card.classList.add("placed");
+      card.setAttribute("data-placed",String(next+1));
+      slot.classList.add("filled");
+      slot.appendChild(card);
+      say("right");
+      burst(slot);
+      next++;
+      Studio.event("placed",{position:next});
+      if(next===shown.length){
+        finished=true;
+        setTimeout(function(){
+          say("done");
+          Studio.done();
+        },350);
+      }
+    }else{
+      say("wrong");
+      card.classList.remove("shake");
+      void card.offsetWidth;
+      card.classList.add("shake");
+      Studio.event("try",{position:next+1});
+    }
+  });
+
+  Studio.ready();
+})();
+
+</script>

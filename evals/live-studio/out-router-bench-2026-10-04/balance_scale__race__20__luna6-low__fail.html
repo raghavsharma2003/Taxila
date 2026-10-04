@@ -1,0 +1,135 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ec;color:#433b32}
+#app{width:360px;height:320px;position:relative;padding:10px 14px;overflow:hidden;background:radial-gradient(ellipse at 50% 20%,#fffdf5,#fff4df)}
+#title{height:28px;text-align:center;font-size:18px;line-height:25px;font-weight:800;color:#74533b}
+#instr{height:28px;text-align:center;font-size:13px;line-height:22px;color:#78634d}
+#stage{height:166px;position:relative}
+svg{display:block;width:100%;height:166px;overflow:visible}
+#assembly{transform-box:view-box;transform-origin:166px 87px;transition:transform .65s cubic-bezier(.2,.85,.25,1)}
+#beam{stroke:#a96e3f;stroke-width:12;stroke-linecap:round}
+#pivot{fill:#e3a84f;stroke:#a96e3f;stroke-width:3}
+.rope{stroke:#9d7655;stroke-width:3}
+.pan{fill:#f2c779;stroke:#a96e3f;stroke-width:3}
+.weight{fill:#f5a64d;stroke:#b86f31;stroke-width:2}
+.pweight{font-size:12px;font-weight:800;text-anchor:middle;dominant-baseline:middle;fill:#503a28}
+#options{height:66px;display:flex;justify-content:center;align-items:center;gap:10px}
+.option{min-width:68px;height:58px;border:2px solid #d19a52;border-radius:18px;background:#ffe3ad;color:#543c27;font-size:20px;font-weight:800;box-shadow:0 4px 0 #c88d42;cursor:pointer;transition:transform .16s,background .2s,box-shadow .16s}
+.option:active{transform:scale(.92) translateY(3px);box-shadow:0 1px 0 #c88d42}
+.option:disabled{cursor:default}
+#feedback{position:absolute;left:0;right:0;bottom:3px;height:25px;text-align:center;font-size:15px;font-weight:800;color:#7e674e}
+#feedback.pop{animation:pop .45s ease}
+@keyframes pop{50%{transform:scale(1.16)}}
+</style>
+<div id="app">
+  <div id="title"></div>
+  <div id="instr"></div>
+  <div id="stage">
+    <svg viewBox="0 0 332 166" aria-hidden="true">
+      <g id="assembly">
+        <line id="beam" x1="61" y1="72" x2="271" y2="72"></line>
+        <line class="rope" x1="79" y1="75" x2="79" y2="111"></line>
+        <line class="rope" x1="253" y1="75" x2="253" y2="111"></line>
+        <g id="leftPan" data-pan="left" data-total="0">
+          <path class="pan" d="M45 111 Q79 143 113 111 Z"></path>
+          <g id="leftWeights"></g>
+        </g>
+        <g id="rightPan" data-pan="right" data-total="0">
+          <path class="pan" d="M219 111 Q253 143 287 111 Z"></path>
+          <g id="rightWeights"></g>
+        </g>
+      </g>
+      <path d="M166 76 L143 150 L189 150 Z" fill="#e9b65d" stroke="#a96e3f" stroke-width="3" stroke-linejoin="round"></path>
+      <circle id="pivot" cx="166" cy="72" r="9"></circle>
+    </svg>
+  </div>
+  <div id="options"></div>
+  <div id="feedback"></div>
+</div>
+<script>
+
+(()=>{
+  const params=Studio.params;
+  const title=document.getElementById("title");
+  const instr=document.getElementById("instr");
+  const beam=document.getElementById("beam");
+  const assembly=document.getElementById("assembly");
+  const leftPan=document.getElementById("leftPan");
+  const rightPan=document.getElementById("rightPan");
+  const leftWeights=document.getElementById("leftWeights");
+  const rightWeights=document.getElementById("rightWeights");
+  const optionsBox=document.getElementById("options");
+  const feedback=document.getElementById("feedback");
+  const ns="http://www.w3.org/2000/svg";
+  let index=0, chosen=null, busy=false, completed=false, currentRight=[];
+  title.textContent=Studio.t("title");
+  instr.textContent=Studio.t("instr");
+  function total(a){return a.reduce((s,v)=>s+Number(v),0)}
+  function makeWeight(value,x,y){
+    const g=document.createElementNS(ns,"g");
+    g.setAttribute("data-weight",String(value));
+    const r=document.createElementNS(ns,"rect");
+    r.setAttribute("class","weight");r.setAttribute("x",String(x-15));r.setAttribute("y",String(y-12));
+    r.setAttribute("width","30");r.setAttribute("height","24");r.setAttribute("rx","7");
+    const t=document.createElementNS(ns,"text");
+    t.setAttribute("class","pweight");t.setAttribute("x",String(x));t.setAttribute("y",String(y+1));
+    t.textContent=String(value);g.append(r,t);return g;
+  }
+  function draw(){
+    const item=params.items[index];
+    leftWeights.replaceChildren();rightWeights.replaceChildren();
+    item.left.forEach((v,i)=>leftWeights.append(makeWeight(v,79,106-i*23)));
+    currentRight.forEach((v,i)=>rightWeights.append(makeWeight(v,253,106-i*23)));
+    leftPan.setAttribute("data-total",String(total(item.left)));
+    rightPan.setAttribute("data-total",String(total(currentRight)));
+    const l=total(item.left),r=total(currentRight);
+    const tilt=l>r?"left":r>l?"right":"level";
+    beam.setAttribute("data-beam","");
+    beam.setAttribute("data-tilt",tilt);
+    assembly.style.transform="rotate("+(tilt==="left"?-11:tilt==="right"?11:0)+"deg)";
+  }
+  function renderOptions(){
+    optionsBox.replaceChildren();
+    params.items[index].options.forEach(value=>{
+      const b=document.createElement("button");
+      b.className="option";b.type="button";b.setAttribute("data-option",String(value));b.textContent=String(value);
+      b.addEventListener("click",()=>{
+        if(busy||completed)return;
+        busy=true;chosen=value;currentRight.push(value);draw();
+        Array.from(optionsBox.children).forEach(el=>el.disabled=true);
+        Studio.event("choose",{value:Number(value)});
+        Studio.answer({value:value});
+      });
+      optionsBox.append(b);
+    });
+  }
+  function next(){
+    index++;
+    if(index>=params.items.length){
+      completed=true;optionsBox.replaceChildren();feedback.textContent=Studio.t("done");
+      feedback.classList.remove("pop");void feedback.offsetWidth;feedback.classList.add("pop");
+      Studio.done();return;
+    }
+    currentRight=params.items[index].right.slice();
+    feedback.textContent="";draw();renderOptions();
+  }
+  currentRight=params.items[0].right.slice();
+  draw();renderOptions();Studio.ready();
+  Studio.onVerdict(({correct})=>{
+    if(!busy)return;
+    if(correct){
+      feedback.textContent=Studio.t("right");
+      feedback.classList.remove("pop");void feedback.offsetWidth;feedback.classList.add("pop");
+      currentRight=params.items[index].right.slice();draw();
+      setTimeout(next,850);
+    }else{
+      feedback.textContent=Studio.t("wrong");
+      setTimeout(()=>{
+        currentRight=params.items[index].right.slice();chosen=null;busy=false;
+        feedback.textContent="";draw();renderOptions();
+      },850);
+    }
+  });
+})();
+
+</script>

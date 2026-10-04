@@ -1,0 +1,80 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#493b34;background:#fff8ec}
+#app{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(ellipse at 50% 48%,#fffdf7 0%,#fff8ec 76%)}
+h1{position:absolute;top:9px;left:12px;width:336px;height:32px;margin:0;text-align:center;font-size:20px;line-height:32px;font-weight:750;color:#754a34}
+#question{position:absolute;top:279px;left:12px;width:336px;height:34px;text-align:center;font-size:15px;line-height:20px;font-weight:650;color:#78533e}
+#axis{position:absolute;left:20px;top:157px;width:320px;height:6px;border-radius:8px;background:#c98248;box-shadow:0 2px 0 #f1d2a9}
+#events{position:absolute;inset:0}
+.event{position:absolute;width:104px;height:58px;padding:5px 4px;border:2px solid #e6b875;border-radius:14px;background:#fffdf8;color:#594238;box-shadow:0 3px 0 #edd8b9;text-align:center;cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,background .16s ease}
+.event:hover{transform:translateY(-2px);box-shadow:0 5px 0 #edd8b9}
+.event:active{transform:scale(.96)}
+.event:focus-visible{outline:3px solid #8bb6a0;outline-offset:2px}
+.event .name{display:block;font-size:14px;line-height:19px;font-weight:700;white-space:nowrap}
+.event .year{display:block;font-size:13px;line-height:18px;color:#8a6247}
+.marker{position:absolute;width:14px;height:14px;margin-left:-7px;top:153px;border:3px solid #fff8ec;border-radius:50%;background:#a95e37;box-shadow:0 0 0 2px #a95e37;transition:transform .2s ease}
+.connector{position:absolute;height:2px;background:#d4a16d;transform-origin:0 50%;pointer-events:none}
+.event.chosen{background:#edf5ed;border-color:#83aa8a}
+.event.chosen .name{color:#3f7650}
+#question.complete{color:#4b7957}
+@media(prefers-reduced-motion:reduce){.event,.marker{transition:none}}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <div id="axis" data-axis="" aria-hidden="true"></div>
+  <div id="events"></div>
+  <div id="question"></div>
+</div>
+<script>
+
+(function(){
+  const params=Studio.params, root=document.getElementById("app");
+  const title=document.getElementById("title"), question=document.getElementById("question");
+  const eventsBox=document.getElementById("events");
+  title.textContent=Studio.t("title");
+  question.textContent=Studio.t("ask");
+  const events=params.events.slice().sort((a,b)=>a.year-b.year);
+  const min=events[0].year, max=events[events.length-1].year;
+  const lanes=[{y:49,x:4},{y:49,x:128},{y:207,x:128},{y:207,x:252}];
+  events.forEach(function(ev,i){
+    const x=min===max?180:20+(ev.year-min)*320/(max-min);
+    const lane=lanes[i%lanes.length];
+    const card=document.createElement("button");
+    card.type="button"; card.className="event"; card.dataset.card=ev.key;
+    card.style.left=lane.x+"px"; card.style.top=lane.y+"px";
+    card.setAttribute("aria-label",Studio.t(ev.key)+" "+ev.year);
+    const name=document.createElement("span"); name.className="name"; name.textContent=Studio.t(ev.key);
+    const year=document.createElement("span"); year.className="year"; year.textContent=String(ev.year);
+    card.append(name,year);
+    const marker=document.createElement("div"); marker.className="marker";
+    marker.dataset.event=ev.key; marker.dataset.year=String(ev.year);
+    marker.style.left=x+"px";
+    const cx=lane.x+52, cy=lane.y<157?lane.y+58:lane.y;
+    const dx=x-cx, dy=157-cy, len=Math.hypot(dx,dy);
+    const line=document.createElement("div"); line.className="connector";
+    line.style.left=cx+"px"; line.style.top=cy+"px";
+    line.style.width=len+"px"; line.style.transform="rotate("+Math.atan2(dy,dx)+"rad)";
+    eventsBox.append(line,marker,card);
+    card.addEventListener("click",function(){
+      if(card.disabled)return;
+      card.classList.add("chosen");
+      Studio.event("event_tap",{key:ev.key});
+      Studio.answer(ev.key);
+    });
+  });
+  Studio.onVerdict(function(result){
+    if(result.correct){
+      question.textContent=Studio.t("done");
+      question.classList.add("complete");
+      eventsBox.querySelectorAll(".event").forEach(function(card){card.disabled=true});
+      Studio.done();
+    }else{
+      question.textContent=Studio.t("wrong");
+      setTimeout(function(){question.textContent=Studio.t("ask")},1100);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

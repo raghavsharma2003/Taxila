@@ -1,0 +1,94 @@
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:360px;height:320px;overflow:hidden}body{font-family:system-ui,sans-serif;color:#49392e;background:#fff8e9}.stage{width:360px;height:320px;padding:10px 14px 12px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 36%,#fffdf6 0,#fff8e9 78%)}h1{font-size:18px;line-height:22px;text-align:center;margin:0;color:#684a36;font-weight:800}.instruction{height:30px;text-align:center;font-size:12px;line-height:15px;margin:2px 0 0;color:#785c47}.scene{height:155px;position:relative}.beam{position:absolute;left:50%;top:54px;width:246px;height:10px;border-radius:10px;background:#c97742;transform:translateX(-50%) rotate(0deg);transform-origin:50% 50%;transition:transform .65s cubic-bezier(.2,.8,.25,1);z-index:2;box-shadow:0 3px 0 #a85c34}.beam[data-tilt="left"]{transform:translateX(-50%) rotate(-12deg)}.beam[data-tilt="right"]{transform:translateX(-50%) rotate(12deg)}.fulcrum{position:absolute;left:50%;top:61px;width:0;height:0;border-left:22px solid transparent;border-right:22px solid transparent;border-bottom:52px solid #e2a34c;transform:translateX(-50%);filter:drop-shadow(0 3px 0 #c88437)}.base{position:absolute;left:50%;top:111px;width:104px;height:9px;border-radius:9px;background:#c88437;transform:translateX(-50%)}.pan{position:absolute;top:63px;width:110px;height:78px;display:flex;flex-wrap:wrap;justify-content:center;align-content:flex-start;gap:4px;padding:9px 7px 14px;border-bottom:5px solid #5d9a91;border-radius:0 0 50% 50%;transition:transform .6s cubic-bezier(.2,.8,.25,1)}.pan.left{left:0}.pan.right{right:0}.pan.left[data-tilt="left"]{transform:translateY(13px)}.pan.right[data-tilt="right"]{transform:translateY(13px)}.pan.left[data-tilt="right"],.pan.right[data-tilt="left"]{transform:translateY(-4px)}.weight{width:34px;height:30px;border-radius:10px 10px 7px 7px;background:#f3bd61;border:2px solid #d6913d;display:grid;place-items:center;color:#624324;font-weight:800;font-size:15px;box-shadow:0 2px 0 #cb8738;transition:transform .18s ease,background .2s ease}.pan .weight{width:29px;height:26px;font-size:13px}.options{display:flex;justify-content:center;gap:12px;margin-top:1px}.option{width:76px;height:58px;border:0;border-radius:16px;background:#dceee7;box-shadow:0 4px 0 #9bc6b6;display:grid;place-items:center;cursor:pointer;padding:0;transition:transform .12s ease,background .2s ease,box-shadow .12s ease}.option .weight{pointer-events:none}.option:active{transform:scale(.94);box-shadow:0 1px 0 #9bc6b6}.option:disabled{opacity:.55;cursor:default}.option:focus-visible{outline:3px solid #df9850;outline-offset:2px}.message{height:25px;margin-top:9px;text-align:center;font-size:14px;font-weight:750;color:#8b6040}.celebrate{animation:pop .45s ease 2}.celebrate .beam{filter:drop-shadow(0 0 7px #f4c85e)}@keyframes pop{50%{transform:scale(1.035)}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
+</style>
+<div class="stage">
+  <h1 id="title"></h1>
+  <div class="instruction" id="instr"></div>
+  <div class="scene">
+    <div class="beam" data-beam data-tilt="level"></div>
+    <div class="pan left" data-pan="left" data-total="0"></div>
+    <div class="pan right" data-pan="right" data-total="0"></div>
+    <div class="fulcrum"></div><div class="base"></div>
+  </div>
+  <div class="options" id="options"></div>
+  <div class="message" id="message"></div>
+</div>
+<script>
+
+(function(){
+  const items=Studio.params.items;
+  const title=document.getElementById("title");
+  const instr=document.getElementById("instr");
+  const left=document.querySelector('[data-pan="left"]');
+  const right=document.querySelector('[data-pan="right"]');
+  const beam=document.querySelector("[data-beam]");
+  const options=document.getElementById("options");
+  const message=document.getElementById("message");
+  const stage=document.querySelector(".stage");
+  title.textContent=Studio.t("title");
+  instr.textContent=Studio.t("instr");
+  let index=0, locked=false, chosen=null, serial=0;
+  function total(values){return values.reduce((a,b)=>a+b,0)}
+  function weight(value){const el=document.createElement("div");el.className="weight";el.dataset.weight=String(value);el.textContent=String(value);return el}
+  function tiltFor(a,b){return a>b?"left":b>a?"right":"level"}
+  function setTilt(a,b){const t=tiltFor(a,b);beam.dataset.tilt=t;left.dataset.tilt=t;right.dataset.tilt=t}
+  function render(){
+    const item=items[index];
+    left.replaceChildren();right.replaceChildren();options.replaceChildren();
+    item.left.forEach(v=>left.appendChild(weight(v)));
+    item.right.forEach(v=>right.appendChild(weight(v)));
+    left.dataset.total=String(total(item.left));right.dataset.total=String(total(item.right));
+    setTilt(total(item.left),total(item.right));
+    item.options.forEach(value=>{
+      const button=document.createElement("button");
+      button.className="option";button.type="button";button.dataset.option=String(value);
+      button.appendChild(weight(value));
+      button.addEventListener("click",()=>choose(value,button));
+      options.appendChild(button);
+    });
+    locked=false;message.textContent="";
+  }
+  function choose(value,button){
+    if(locked)return;
+    locked=true;chosen=value;
+    const token=++serial;
+    button.disabled=true;
+    right.appendChild(weight(value));
+    right.dataset.total=String(total(items[index].right)+value);
+    setTilt(total(items[index].left),total(items[index].right)+value);
+    Studio.event("choose",{value:value});
+    Studio.answer({value:value});
+    Studio.onVerdict(({correct})=>{
+      if(token!==serial)return;
+      if(correct){
+        message.textContent=Studio.t("right");
+        setTilt(total(items[index].left),total(items[index].left));
+        stage.classList.add("celebrate");
+        setTimeout(()=>{
+          stage.classList.remove("celebrate");
+          index++;
+          if(index>=items.length){
+            options.replaceChildren();left.replaceChildren();right.replaceChildren();
+            left.dataset.total="0";right.dataset.total="0";setTilt(0,0);
+            message.textContent=Studio.t("done");
+            Studio.done();
+          }else render();
+        },850);
+      }else{
+        message.textContent=Studio.t("wrong");
+        setTimeout(()=>{
+          if(token!==serial)return;
+          const found=Array.from(right.querySelectorAll(".weight")).find(el=>el.textContent===String(chosen)&&el.dataset.weight===String(chosen));
+          if(found)found.remove();
+          right.dataset.total=String(total(items[index].right));
+          setTilt(total(items[index].left),total(items[index].right));
+          button.disabled=false;locked=false;
+        },700);
+      }
+    });
+  }
+  render();
+  Studio.ready();
+})();
+
+</script>

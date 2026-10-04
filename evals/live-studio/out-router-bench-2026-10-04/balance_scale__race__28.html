@@ -1,0 +1,124 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;color:#513b35;background:#fff4e5}
+  .stage{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 50% 15%,#fffaf0,#ffe9d1)}
+  .title{position:absolute;top:12px;width:100%;text-align:center;font-size:21px;font-weight:800}
+  .instr{position:absolute;top:43px;width:100%;text-align:center;font-size:14px}
+  .status{position:absolute;top:70px;width:100%;height:28px;text-align:center;font-size:17px;font-weight:800;color:#a65c55}
+  .stand{position:absolute;left:170px;top:126px;width:20px;height:112px;background:#a57866;border-radius:12px 12px 4px 4px}
+  .stand:after{content:"";position:absolute;left:-27px;bottom:-5px;width:74px;height:12px;border-radius:12px;background:#795d59}
+  .beam{position:absolute;left:70px;top:128px;width:220px;height:9px;border-radius:9px;background:#795d59;transform-origin:center;transition:transform .65s cubic-bezier(.2,1.5,.45,1)}
+  .beam:before,.beam:after{content:"";position:absolute;top:-5px;width:18px;height:18px;border-radius:50%;background:#e9ae74}
+  .beam:before{left:-4px}.beam:after{right:-4px}
+  .pin{position:absolute;left:172px;top:123px;width:16px;height:16px;border-radius:50%;background:#f9c879;border:3px solid #795d59}
+  .pan{position:absolute;top:139px;width:130px;height:91px;transition:transform .65s cubic-bezier(.2,1.5,.45,1)}
+  .pan.left{left:11px}.pan.right{right:11px}
+  .pan svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+  .weights{position:absolute;left:8px;right:8px;bottom:17px;height:43px;display:flex;align-items:flex-end;justify-content:center;gap:3px}
+  .weight,.option{display:flex;align-items:center;justify-content:center;font-weight:850;color:#654139;background:#ffd082;border:3px solid #d99368;box-shadow:0 4px 0 #b8755c;border-radius:13px}
+  .weight{min-width:36px;height:37px;font-size:18px}
+  .options{position:absolute;left:25px;right:25px;bottom:10px;display:flex;justify-content:space-around;gap:12px}
+  .option{width:76px;height:55px;font-size:23px;cursor:pointer;transition:transform .18s,background .18s;touch-action:manipulation}
+  .option:active{transform:scale(.88);background:#ffe19b}
+  .option:disabled{cursor:default}
+  .status.pop{animation:pop .55s ease both}
+  @keyframes pop{50%{transform:scale(1.2)}}
+  .done{position:absolute;inset:90px 20px 40px;display:none;align-items:center;justify-content:center;text-align:center;font-size:28px;font-weight:850;color:#9a665a}
+  .stage.finished .done{display:flex}.stage.finished .scene{display:none}
+</style>
+<div class="stage" id="stage">
+  <div class="title" id="title"></div>
+  <div class="instr" id="instr"></div>
+  <div class="scene" id="scene">
+    <div class="status" id="status" aria-live="polite"></div>
+    <div class="stand"></div>
+    <div class="beam" data-beam data-tilt="level" id="beam"></div>
+    <div class="pin"></div>
+    <div class="pan left" data-pan="left" data-total="0" id="left">
+      <svg viewBox="0 0 130 91" aria-hidden="true"><path d="M65 0 L15 74 M65 0 L115 74" fill="none" stroke="#a57866" stroke-width="3"/><path d="M8 73 Q65 103 122 73" fill="#e9ae74" stroke="#a57866" stroke-width="4" stroke-linecap="round"/></svg>
+      <div class="weights"></div>
+    </div>
+    <div class="pan right" data-pan="right" data-total="0" id="rightPan">
+      <svg viewBox="0 0 130 91" aria-hidden="true"><path d="M65 0 L15 74 M65 0 L115 74" fill="none" stroke="#a57866" stroke-width="3"/><path d="M8 73 Q65 103 122 73" fill="#e9ae74" stroke="#a57866" stroke-width="4" stroke-linecap="round"/></svg>
+      <div class="weights"></div>
+    </div>
+    <div class="options" id="options"></div>
+  </div>
+  <div class="done" id="done"></div>
+</div>
+<script>
+
+(() => {
+  const items=Studio.params.items;
+  const stage=document.getElementById('stage');
+  const left=document.getElementById('left');
+  const right=document.getElementById('rightPan');
+  const beam=document.getElementById('beam');
+  const options=document.getElementById('options');
+  const status=document.getElementById('status');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  document.getElementById('done').textContent=Studio.t('done');
+  let index=0,chosen=null,busy=false;
+  const sum=a=>a.reduce((total,n)=>total+n,0);
+  function weight(n){
+    const el=document.createElement('div');
+    el.className='weight';
+    el.dataset.weight=String(n);
+    el.textContent=String(n);
+    return el;
+  }
+  function paint(){
+    const item=items[index], r=chosen===null?item.right:[...item.right,chosen];
+    left.querySelector('.weights').replaceChildren(...item.left.map(weight));
+    right.querySelector('.weights').replaceChildren(...r.map(weight));
+    const a=sum(item.left),b=sum(r);
+    left.dataset.total=String(a);
+    right.dataset.total=String(b);
+    const tilt=a>b?'left':b>a?'right':'level';
+    beam.dataset.tilt=tilt;
+    beam.style.transform=`rotate(${tilt==='left'?-10:tilt==='right'?10:0}deg)`;
+    left.style.transform=`translateY(${tilt==='left'?19:tilt==='right'?-19:0}px)`;
+    right.style.transform=`translateY(${tilt==='right'?19:tilt==='left'?-19:0}px)`;
+    options.replaceChildren();
+    item.options.forEach(n=>{
+      if(chosen===n)return;
+      const button=document.createElement('button');
+      button.type='button';
+      button.className='option';
+      button.dataset.option=String(n);
+      button.textContent=String(n);
+      button.disabled=busy;
+      button.addEventListener('click',()=>select(n));
+      options.append(button);
+    });
+  }
+  function show(key){
+    status.textContent=Studio.t(key);
+    status.classList.remove('pop');
+    void status.offsetWidth;
+    status.classList.add('pop');
+  }
+  function select(n){
+    if(busy)return;
+    busy=true;chosen=n;status.textContent='';
+    paint();
+    Studio.answer({value:n});
+  }
+  Studio.onVerdict(({correct})=>{
+    if(!busy)return;
+    show(correct?'right':'wrong');
+    if(correct){
+      setTimeout(()=>{
+        index++;
+        if(index===items.length){stage.classList.add('finished');Studio.done();return}
+        chosen=null;busy=false;status.textContent='';paint();
+      },1050);
+    }else{
+      setTimeout(()=>{chosen=null;busy=false;status.textContent='';paint()},850);
+    }
+  });
+  paint();
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,86 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff7e9}
+  #card{width:360px;height:320px;padding:8px;display:flex;flex-direction:column;gap:2px;overflow:hidden;color:#513b39}
+  #title{height:34px;flex:none;margin:0;display:flex;align-items:center;font-size:20px;font-weight:800;color:#925046}
+  #prompt{height:29px;flex:none;display:flex;align-items:center;font-size:15px;font-weight:700}
+  #key{height:27px;flex:none;display:flex;align-items:center;gap:6px;font-size:13px;color:#77534b}
+  #key svg{width:22px;height:22px;flex:none}
+  #rows{flex:1;min-height:0;display:flex;flex-direction:column;gap:2px}
+  .row{width:100%;flex:1;min-height:52px;border:2px solid #ead4bd;border-radius:15px;background:#fffdf7;display:flex;align-items:center;padding:0 9px;gap:4px;color:#513b39;font:700 16px system-ui,sans-serif;cursor:pointer;transition:transform .18s,background .2s,border-color .2s,box-shadow .2s}
+  .row:active{transform:scale(.97)}
+  .row:focus-visible{outline:3px solid #bd7968;outline-offset:-3px}
+  .row.chosen{background:#ffebd7;border-color:#dc8b70;box-shadow:0 0 0 2px #f8d8be inset}
+  .label{width:59px;flex:none;text-align:left}
+  .symbols{display:flex;align-items:center;gap:3px;min-width:0}
+  .symbols svg{display:block;flex:none;transition:transform .25s}
+  .row.chosen .symbols svg{transform:rotate(-12deg) scale(1.08)}
+  .petal{fill:#e9a06f}.center{fill:#f8d266}.leaf{fill:#84ad84}
+</style>
+<div id="card">
+  <h1 id="title"></h1>
+  <div id="prompt" aria-live="polite"></div>
+  <div id="key" data-key>
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path class="leaf" d="M15 22Q8 20 8 26Q13 27 16 23Q19 27 24 26Q24 20 17 22Z"/><path class="petal" d="M16 4C20 4 21 9 19 12C24 9 29 12 28 16C27 20 23 21 20 19C23 24 20 28 16 28C12 28 9 24 12 19C9 21 5 20 4 16C3 12 8 9 13 12C11 9 12 4 16 4Z"/><circle class="center" cx="16" cy="16" r="4"/></svg>
+    <span id="keytext"></span><strong id="keynumber"></strong>
+  </div>
+  <div id="rows"></div>
+</div>
+<script>
+
+(() => {
+  const p = Studio.params;
+  const title = document.getElementById('title');
+  const prompt = document.getElementById('prompt');
+  const rows = document.getElementById('rows');
+  const flower = document.querySelector('#key svg');
+  title.textContent = Studio.t('title');
+  prompt.textContent = Studio.t('ask');
+  document.getElementById('keytext').textContent = Studio.t('keytext');
+  document.getElementById('keynumber').textContent = p.symbolValue;
+  const maximum = Math.max(...p.rows.map(r => r.value / p.symbolValue));
+  const size = Math.min(32, Math.floor((252 - (maximum - 1) * 3) / maximum));
+  let waiting = false, finished = false, selected = null;
+  p.rows.forEach(r => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'row';
+    button.dataset.row = r.key;
+    const label = document.createElement('span');
+    label.className = 'label';
+    label.textContent = Studio.t(r.key);
+    const symbols = document.createElement('span');
+    symbols.className = 'symbols';
+    for (let i = 0; i < r.value / p.symbolValue; i++) {
+      const symbol = flower.cloneNode(true);
+      symbol.setAttribute('data-symbol', '');
+      symbol.style.width = size + 'px';
+      symbol.style.height = size + 'px';
+      symbols.appendChild(symbol);
+    }
+    button.append(label, symbols);
+    button.addEventListener('click', () => {
+      if (waiting || finished) return;
+      waiting = true;
+      selected = button;
+      button.classList.add('chosen');
+      Studio.answer(r.key);
+    });
+    rows.appendChild(button);
+  });
+  Studio.onVerdict(({correct}) => {
+    if (!waiting) return;
+    waiting = false;
+    if (correct) {
+      finished = true;
+      prompt.textContent = Studio.t('done');
+      Studio.done();
+    } else {
+      prompt.textContent = Studio.t('wrong');
+      selected.classList.remove('chosen');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,123 @@
+<style>
+*{box-sizing:border-box}
+#lesson{width:360px;height:320px;overflow:hidden;position:relative;background:#fff8ec;color:#38534b;font-family:system-ui,sans-serif;border-radius:18px;padding:10px}
+#title{height:30px;margin:0;text-align:center;font-size:19px;line-height:28px;color:#315f55}
+#scene{position:relative;width:336px;height:126px;margin:4px auto 0}
+#arrows{position:absolute;inset:0;width:336px;height:126px;overflow:visible}
+.stage{position:absolute;width:76px;height:54px;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;text-align:center;padding:4px;background:#fff;border:2px solid #c7ded0;border-radius:16px;box-shadow:0 3px 0 #dfebdf;transition:background .25s,border-color .25s,box-shadow .25s,transform .25s}
+.stage[data-current="true"]{background:#e8f6df;border-color:#69a98b;box-shadow:0 0 0 5px #dff1d9,0 4px 0 #bdd9c4;transform:translate(-50%,-50%) scale(1.04)}
+.label{font-size:12px;line-height:14px;overflow-wrap:anywhere}
+.arrow{fill:none;stroke:#94b9aa;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+#token{position:absolute;width:14px;height:14px;border-radius:50%;background:#f2aa4c;border:3px solid #fff;box-shadow:0 1px 6px #b9782c88;transform:translate(-50%,-50%);transition:left .7s cubic-bezier(.2,.8,.3,1),top .7s cubic-bezier(.2,.8,.3,1);z-index:3}
+#lower{height:112px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+#prompt{font-size:15px;font-weight:700;text-align:center;line-height:19px}
+#choices{display:flex;justify-content:center;gap:8px}
+button{font:inherit;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#choices button{min-width:82px;height:52px;padding:4px 8px;border-radius:15px;background:#e5f1e7;color:#315f55;font-size:13px;line-height:15px;box-shadow:0 3px 0 #bfd8c5;transition:transform .12s,background .2s}
+#choices button:active,#next:active{transform:scale(.94)}
+#feedback{height:19px;text-align:center;font-size:14px;font-weight:700;color:#56835e}
+#next{position:absolute;left:116px;bottom:8px;width:128px;height:54px;border-radius:18px;background:#f2aa4c;color:#503c25;font-size:16px;font-weight:750;box-shadow:0 4px 0 #d28c36;transition:transform .12s}
+</style>
+<div id="lesson">
+  <h1 id="title"></h1>
+  <div id="scene">
+    <svg id="arrows" viewBox="0 0 336 126" aria-hidden="true"></svg>
+    <div id="token" data-token></div>
+  </div>
+  <div id="lower">
+    <div id="prompt"></div>
+    <div id="choices"></div>
+    <div id="feedback" aria-live="polite"></div>
+  </div>
+  <button id="next" data-action="next"></button>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params,root=document.getElementById("lesson"),scene=document.getElementById("scene");
+  const title=document.getElementById("title"),svg=document.getElementById("arrows");
+  const token=document.getElementById("token"),prompt=document.getElementById("prompt");
+  const choices=document.getElementById("choices"),feedback=document.getElementById("feedback");
+  const next=document.getElementById("next"),ns="http://www.w3.org/2000/svg";
+  const stages=p.stages,count=stages.length,positions=[];
+  title.textContent=Studio.t("title");
+  next.textContent=Studio.t("next");
+  prompt.textContent=Studio.t("ask");
+  stages.forEach((key,i)=>{
+    const x=count===1?168:42+i*252/(count-1),y=76;
+    positions.push({x,y});
+    const box=document.createElement("div");
+    box.className="stage";box.dataset.stage=key;
+    box.style.left=x+"px";box.style.top=y+"px";
+    const label=document.createElement("span");
+    label.className="label";label.dataset.label=key;label.textContent=Studio.t(key);
+    box.appendChild(label);scene.appendChild(box);
+  });
+  const pairs=[];
+  for(let i=0;i<count-1;i++)pairs.push([i,i+1]);
+  if(p.cycle&&count>1)pairs.push([count-1,0]);
+  pairs.forEach(([a,b])=>{
+    const start=positions[a],end=positions[b],path=document.createElementNS(ns,"path");
+    path.setAttribute("class","arrow");path.dataset.arrow=stages[a]+">"+stages[b];
+    if(b===0&&p.cycle){
+      path.setAttribute("d",`M ${start.x} ${start.y-28} C ${start.x} 4, ${end.x} 4, ${end.x} ${end.y-28}`);
+    }else{
+      path.setAttribute("d",`M ${start.x+39} ${start.y} L ${end.x-43} ${end.y}`);
+    }
+    svg.appendChild(path);
+    const tip=document.createElementNS(ns,"path");tip.setAttribute("fill","#94b9aa");
+    if(b===0&&p.cycle){
+      tip.setAttribute("d",`M ${end.x-5} ${end.y-31} L ${end.x+5} ${end.y-31} L ${end.x} ${end.y-23} Z`);
+    }else{
+      tip.setAttribute("d",`M ${end.x-48} ${end.y-5} L ${end.x-39} ${end.y} L ${end.x-48} ${end.y+5} Z`);
+    }
+    svg.appendChild(tip);
+  });
+  p.options.forEach(key=>{
+    const button=document.createElement("button");
+    button.dataset.option=key;button.textContent=Studio.t(key);
+    button.addEventListener("click",()=>{feedback.textContent="";Studio.answer(key);});
+    choices.appendChild(button);
+  });
+  let index=0,moving=false,questionShown=false;
+  function setActive(){
+    root.dataset.active=stages[index];
+    scene.querySelectorAll(".stage").forEach((el,i)=>el.dataset.current=String(i===index));
+  }
+  function showQuestion(){
+    questionShown=true;
+    next.hidden=true;
+    prompt.textContent=Studio.t("ask");
+  }
+  function arrive(){
+    moving=false;setActive();
+    if(!p.cycle&&index===count-1)showQuestion();
+  }
+  token.addEventListener("transitionend",e=>{
+    if(e.propertyName==="left"&&moving)arrive();
+  });
+  next.addEventListener("click",()=>{
+    if(moving||questionShown)return;
+    if(!p.cycle&&index===count-1){showQuestion();return;}
+    moving=true;
+    index=p.cycle?(index+1)%count:Math.min(index+1,count-1);
+    token.style.left=positions[index].x+"px";
+    token.style.top=positions[index].y+"px";
+    Studio.event("move",{stage:index});
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?"right":"wrong");
+    if(correct){
+      feedback.textContent=Studio.t("done");
+      Studio.done();
+    }
+  });
+  root.dataset.active=stages[0];
+  scene.querySelectorAll(".stage").forEach((el,i)=>el.dataset.current=String(i===0));
+  token.style.left=positions[0].x+"px";
+  token.style.top=positions[0].y+"px";
+  void token.offsetWidth;
+  Studio.ready();
+})();
+
+</script>

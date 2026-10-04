@@ -1,0 +1,189 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e9;font-family:Arial,sans-serif}
+  #app{width:360px;height:320px;position:relative;overflow:hidden;background:linear-gradient(180deg,#fff8eb 0%,#fff0d2 100%);color:#5b392d}
+  #title{height:38px;padding-top:8px;text-align:center;font-size:19px;font-weight:800;color:#8b4b32}
+  #instruction{height:24px;text-align:center;font-size:13px;font-weight:700;color:#9b6746}
+  #scene{position:absolute;left:0;top:57px;width:360px;height:181px}
+  #balance{width:360px;height:181px;overflow:visible}
+  #beamGroup{transform-origin:180px 76px;transition:transform .62s cubic-bezier(.2,.86,.28,1.15)}
+  .panGroup{transition:transform .62s cubic-bezier(.2,.86,.28,1.15)}
+  .beam{stroke:#87513a;stroke-width:10;stroke-linecap:round}
+  .beamTop{stroke:#f4b65d;stroke-width:4;stroke-linecap:round}
+  .rope{stroke:#8b563e;stroke-width:3;stroke-linecap:round}
+  .pan{fill:#eaa35b;stroke:#87513a;stroke-width:3}
+  .panLip{fill:#ffd889;stroke:#87513a;stroke-width:3}
+  .stand{fill:#bd7042;stroke:#7b4935;stroke-width:3}
+  .base{fill:#d88b50;stroke:#7b4935;stroke-width:3}
+  .weightShape{fill:#75b7b0;stroke:#356d72;stroke-width:2.5}
+  .weightTop{fill:#a7ded0}
+  .weightNum{font-size:15px;font-weight:800;fill:#164f55;text-anchor:middle;dominant-baseline:middle}
+  #options{position:absolute;left:18px;top:246px;width:324px;height:62px;display:flex;justify-content:space-between;align-items:center}
+  .option{width:92px;height:60px;border:0;border-radius:17px;background:#fffdf7;box-shadow:0 4px 0 #d7a76c,0 7px 14px rgba(126,76,38,.12);padding:2px;cursor:pointer;transition:transform .18s ease,opacity .28s ease,filter .18s ease}
+  .option:active{transform:scale(.91)}
+  .option:hover{filter:brightness(1.03)}
+  .option svg{width:100%;height:100%}
+  .option.chosen{opacity:0;transform:translateY(-45px) scale(.72);pointer-events:none}
+  #message{position:absolute;left:30px;top:216px;width:300px;text-align:center;font-size:15px;font-weight:800;color:#8b4b32;height:24px;line-height:24px;transition:transform .25s ease,opacity .25s ease}
+  #message.pop{animation:pop .62s ease both}
+  #sparkles{position:absolute;left:0;top:45px;width:360px;height:180px;pointer-events:none;opacity:0}
+  #sparkles.show{opacity:1}
+  .spark{position:absolute;width:11px;height:11px;background:#f5b83e;transform:rotate(45deg);border-radius:3px;animation:twinkle .75s ease-in-out both}
+  .s1{left:56px;top:52px}.s2{left:300px;top:45px;animation-delay:.1s}.s3{left:82px;top:125px;animation-delay:.18s}.s4{left:273px;top:116px;animation-delay:.25s}.s5{left:179px;top:34px;animation-delay:.08s}
+  #finish{display:none;position:absolute;inset:74px 22px 45px;border-radius:28px;background:#fffdf8;box-shadow:0 8px 24px rgba(138,82,46,.16);align-items:center;justify-content:center;text-align:center;padding:28px;font-size:22px;font-weight:800;color:#8b4b32}
+  @keyframes pop{0%{transform:scale(.72);opacity:0}55%{transform:scale(1.12);opacity:1}100%{transform:scale(1);opacity:1}}
+  @keyframes twinkle{0%{transform:scale(0) rotate(45deg);opacity:0}48%{transform:scale(1.5) rotate(45deg);opacity:1}100%{transform:scale(.25) rotate(45deg);opacity:0}}
+</style>
+<div id="app">
+  <div id="title"></div>
+  <div id="instruction"></div>
+  <div id="scene">
+    <svg id="balance" viewBox="0 0 360 181" aria-hidden="true">
+      <path class="base" d="M132 169 Q180 151 228 169 L237 177 L123 177 Z"></path>
+      <path class="stand" d="M173 164 L180 80 L187 164 Z"></path>
+      <circle cx="180" cy="76" r="12" fill="#f7c66a" stroke="#7b4935" stroke-width="3"></circle>
+      <g id="beamGroup" data-beam data-tilt="level">
+        <line class="beam" x1="75" y1="76" x2="285" y2="76"></line>
+        <line class="beamTop" x1="78" y1="73" x2="282" y2="73"></line>
+      </g>
+      <g id="leftPan" class="panGroup" data-pan="left" data-total="0">
+        <line class="rope" x1="84" y1="78" x2="70" y2="119"></line>
+        <line class="rope" x1="84" y1="78" x2="99" y2="119"></line>
+        <path class="pan" d="M55 120 Q84 142 114 120 L108 134 Q84 145 61 134 Z"></path>
+        <path class="panLip" d="M54 119 Q84 128 114 119 Q84 137 54 119 Z"></path>
+        <g id="leftWeights"></g>
+      </g>
+      <g id="rightPan" class="panGroup" data-pan="right" data-total="0">
+        <line class="rope" x1="276" y1="78" x2="261" y2="119"></line>
+        <line class="rope" x1="276" y1="78" x2="290" y2="119"></line>
+        <path class="pan" d="M246 120 Q276 142 306 120 L299 134 Q276 145 253 134 Z"></path>
+        <path class="panLip" d="M246 119 Q276 128 306 119 Q276 137 246 119 Z"></path>
+        <g id="rightWeights"></g>
+      </g>
+    </svg>
+  </div>
+  <div id="message"></div>
+  <div id="sparkles"><i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i><i class="spark s4"></i><i class="spark s5"></i></div>
+  <div id="options"></div>
+  <div id="finish"></div>
+</div>
+<script>
+
+(function(){
+  var items=Studio.params.items, index=0, chosen=null, locked=false, finished=false;
+  var leftPan=document.getElementById('leftPan'), rightPan=document.getElementById('rightPan');
+  var leftWeights=document.getElementById('leftWeights'), rightWeights=document.getElementById('rightWeights');
+  var beam=document.getElementById('beamGroup'), options=document.getElementById('options');
+  var message=document.getElementById('message'), sparkles=document.getElementById('sparkles');
+
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+
+  function sum(a){
+    return a.reduce(function(v,n){return v+n;},0);
+  }
+  function weight(value,x,y){
+    var g=document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('data-weight',String(value));
+    g.setAttribute('transform','translate('+x+' '+y+')');
+    var path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('class','weightShape');
+    path.setAttribute('d','M-13 -10 L-8 -17 L8 -17 L13 -10 L13 10 Q0 14 -13 10 Z');
+    var top=document.createElementNS('http://www.w3.org/2000/svg','path');
+    top.setAttribute('class','weightTop');
+    top.setAttribute('d','M-8 -17 L8 -17 L13 -10 L-13 -10 Z');
+    var txt=document.createElementNS('http://www.w3.org/2000/svg','text');
+    txt.setAttribute('class','weightNum');
+    txt.setAttribute('x','0'); txt.setAttribute('y','1');
+    txt.textContent=value;
+    g.appendChild(path);g.appendChild(top);g.appendChild(txt);
+    return g;
+  }
+  function drawWeights(holder,arr,cx){
+    holder.textContent='';
+    arr.forEach(function(v,i){
+      var row=Math.floor(i/3), col=i%3;
+      holder.appendChild(weight(v,cx+(col-1)*19,108-row*25));
+    });
+  }
+  function tilt(){
+    var item=items[index], l=sum(item.left), r=sum(item.right)+(chosen===null?0:chosen);
+    leftPan.setAttribute('data-total',String(l));
+    rightPan.setAttribute('data-total',String(r));
+    var down=l>r?'left':r>l?'right':'level';
+    beam.setAttribute('data-tilt',down);
+    var angle=down==='left'?-8:down==='right'?8:0;
+    beam.style.transform='rotate('+angle+'deg)';
+    var offset=down==='left'?13:down==='right'?-13:0;
+    leftPan.style.transform='translateY('+offset+'px)';
+    rightPan.style.transform='translateY('+(-offset)+'px)';
+  }
+  function optionButton(value){
+    var b=document.createElement('button');
+    b.className='option'; b.setAttribute('data-option',String(value));
+    var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('viewBox','0 0 92 60');
+    var g=weight(value,46,34);
+    g.setAttribute('transform','translate(46 34) scale(1.45)');
+    svg.appendChild(g); b.appendChild(svg);
+    b.addEventListener('click',function(){
+      if(locked)return;
+      locked=true; chosen=value; b.classList.add('chosen');
+      drawWeights(rightWeights,items[index].right.concat([chosen]),276);
+      tilt();
+      Studio.event('choose',{value:value});
+      Studio.answer({value:value});
+    });
+    return b;
+  }
+  function render(){
+    var item=items[index];
+    chosen=null; locked=false; message.textContent=''; message.classList.remove('pop');
+    sparkles.classList.remove('show');
+    drawWeights(leftWeights,item.left,84);
+    drawWeights(rightWeights,item.right,276);
+    options.textContent='';
+    item.options.forEach(function(v){options.appendChild(optionButton(v));});
+    tilt();
+  }
+  Studio.onVerdict(function(result){
+    if(finished)return;
+    if(!result.correct){
+      message.textContent=Studio.t('wrong');
+      message.classList.remove('pop'); void message.offsetWidth; message.classList.add('pop');
+      Studio.event('verdict',{correct:0});
+      setTimeout(function(){
+        chosen=null;
+        drawWeights(rightWeights,items[index].right,276);
+        tilt();
+        options.querySelectorAll('.option').forEach(function(b){b.classList.remove('chosen');});
+        message.textContent='';
+        locked=false;
+      },850);
+    }else{
+      message.textContent=Studio.t('right');
+      message.classList.remove('pop'); void message.offsetWidth; message.classList.add('pop');
+      sparkles.classList.add('show');
+      Studio.event('verdict',{correct:1});
+      setTimeout(function(){
+        index++;
+        if(index<items.length){render();}
+        else{
+          finished=true;
+          document.getElementById('scene').style.display='none';
+          document.getElementById('options').style.display='none';
+          document.getElementById('instruction').style.display='none';
+          message.style.display='none';
+          var finish=document.getElementById('finish');
+          finish.textContent=Studio.t('done');
+          finish.style.display='flex';
+          Studio.done();
+        }
+      },1050);
+    }
+  });
+  render();
+  Studio.ready();
+}());
+
+</script>

@@ -1,0 +1,159 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e8;font-family:Arial,sans-serif;color:#4d352c}
+  #game{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(180deg,#fff2cf 0%,#fff9ed 58%,#e9f7ed 100%)}
+  .sun{position:absolute;right:16px;top:10px;width:42px;height:42px;border-radius:50%;background:#ffd56d;box-shadow:0 0 0 8px rgba(255,213,109,.22)}
+  .cloud{position:absolute;left:10px;top:14px;width:64px;height:27px;opacity:.72}
+  .cloud svg{width:100%;height:100%}
+  #title{position:absolute;left:18px;top:10px;right:70px;height:27px;font-size:21px;font-weight:800;line-height:27px;color:#704a3a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #instruction{position:absolute;left:18px;top:41px;right:18px;height:20px;font-size:13px;font-weight:700;color:#9c6951;line-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #cards{position:absolute;left:20px;top:69px;width:320px;height:108px}
+  .card{position:absolute;width:152px;height:52px;border:0;border-radius:17px;background:#fffdf8;color:#5c4034;box-shadow:0 5px 0 #e8cfae,0 8px 15px rgba(114,76,53,.14);font-size:17px;font-weight:800;cursor:pointer;transition:transform .22s ease,box-shadow .22s ease,opacity .22s ease;display:flex;align-items:center;justify-content:center;padding:4px 10px;overflow:hidden}
+  .card:before{content:"";position:absolute;left:10px;top:9px;width:13px;height:13px;border-radius:50%;background:#ffd883;opacity:.65}
+  .card span{position:relative;text-align:center;line-height:19px}
+  .card:nth-child(1),.card:nth-child(3){left:0}
+  .card:nth-child(2),.card:nth-child(4){left:168px}
+  .card:nth-child(1),.card:nth-child(2){top:0}
+  .card:nth-child(3),.card:nth-child(4){top:56px}
+  .card[data-selected="true"]{transform:translateY(-7px) scale(1.045);background:#fff2c7;box-shadow:0 8px 0 #dfa85f,0 0 0 4px rgba(255,198,78,.35),0 13px 18px rgba(114,76,53,.18);z-index:3}
+  .card:active{transform:scale(.96)}
+  #feedback{position:absolute;left:90px;top:181px;width:180px;height:16px;text-align:center;font-size:13px;font-weight:800;line-height:16px;color:#a5654e;opacity:0;transform:translateY(-4px);transition:opacity .2s ease,transform .2s ease}
+  #feedback.show{opacity:1;transform:translateY(0)}
+  #bins{position:absolute;left:12px;top:202px;width:336px;height:112px;display:flex;gap:6px}
+  .bin{position:relative;width:108px;height:112px;border:0;border-radius:20px 20px 14px 14px;background:#d3ead9;box-shadow:inset 0 0 0 3px rgba(85,139,105,.18),0 5px 0 #a8d0b4;cursor:pointer;padding:0;overflow:hidden;transition:transform .18s ease,filter .18s ease}
+  .bin:nth-child(2){background:#d7eafa;box-shadow:inset 0 0 0 3px rgba(76,132,180,.16),0 5px 0 #a9cae5}
+  .bin:nth-child(3){background:#e8dffa;box-shadow:inset 0 0 0 3px rgba(128,91,180,.16),0 5px 0 #c9b8e7}
+  .bin:active{transform:translateY(3px) scale(.98)}
+  .bin.ready{filter:brightness(1.06);animation:binpulse .75s ease-in-out infinite alternate}
+  .bin-name{position:absolute;left:5px;right:5px;top:9px;min-height:22px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#42634e;line-height:16px;text-align:center;overflow:hidden}
+  .bin:nth-child(2) .bin-name{color:#446682}
+  .bin:nth-child(3) .bin-name{color:#67517f}
+  .bin-floor{position:absolute;left:9px;right:9px;bottom:8px;height:65px;border-radius:12px;background:rgba(255,255,255,.3)}
+  .placed{position:relative!important;left:auto!important;top:auto!important;width:84px!important;height:42px!important;margin:3px auto 0;border-radius:13px;box-shadow:0 3px 0 rgba(104,75,55,.18),0 5px 9px rgba(75,78,71,.13);font-size:13px;animation:land .42s cubic-bezier(.2,.85,.35,1.25) both}
+  .bin .placed:first-of-type{margin-top:36px}
+  .shake{animation:shake .42s ease both}
+  #done{position:absolute;left:18px;right:18px;top:178px;height:22px;text-align:center;font-size:16px;font-weight:800;color:#62865e;line-height:22px;opacity:0;transform:scale(.8);transition:opacity .3s ease,transform .3s ease}
+  #done.show{opacity:1;transform:scale(1)}
+  .finished .bin{transform:translateY(-2px)}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}45%{transform:translateX(7px)}70%{transform:translateX(-4px)}}
+  @keyframes land{0%{transform:translateY(-52px) scale(.72);opacity:.2}70%{transform:translateY(3px) scale(1.08)}100%{transform:translateY(0) scale(1);opacity:1}}
+  @keyframes binpulse{from{box-shadow:inset 0 0 0 3px rgba(85,139,105,.18),0 5px 0 #a8d0b4}to{box-shadow:inset 0 0 0 4px rgba(255,202,87,.7),0 5px 0 #a8d0b4}}
+</style>
+<div id="game">
+  <div class="sun"></div>
+  <div class="cloud"><svg viewBox="0 0 64 27" aria-hidden="true"><path d="M8 23h44c6 0 9-3 9-8s-4-8-9-8c-2 0-4 1-5 2C44 4 40 2 35 2c-7 0-12 4-14 10-2-2-4-3-7-3-5 0-9 3-9 7s2 7 3 7z" fill="#fff" stroke="#f2d9bd" stroke-width="2"/></svg></div>
+  <div id="title"></div>
+  <div id="instruction"></div>
+  <div id="cards"></div>
+  <div id="feedback"></div>
+  <div id="done"></div>
+  <div id="bins"></div>
+</div>
+<script>
+
+  (function(){
+    var p=Studio.params, cardsBox=document.getElementById('cards'), binsBox=document.getElementById('bins');
+    var feedback=document.getElementById('feedback'), done=document.getElementById('done'), game=document.getElementById('game');
+    var selected=null, waiting=false, placed=0, total=p.cards.length;
+
+    document.getElementById('title').textContent=Studio.t('title');
+    document.getElementById('instruction').textContent=Studio.t('instr');
+
+    function say(key){
+      feedback.textContent=Studio.t(key);
+      feedback.classList.add('show');
+      setTimeout(function(){feedback.classList.remove('show')},900);
+    }
+
+    p.cards.forEach(function(key){
+      var el=document.createElement('button');
+      el.type='button';
+      el.className='card';
+      el.setAttribute('data-card',key);
+      el.setAttribute('data-selected','false');
+      var label=document.createElement('span');
+      label.textContent=Studio.t(key);
+      el.appendChild(label);
+      el.addEventListener('click',function(){
+        if(waiting)return;
+        if(selected===el){
+          el.setAttribute('data-selected','false');
+          selected=null;
+          binsBox.querySelectorAll('.bin').forEach(function(b){b.classList.remove('ready')});
+          return;
+        }
+        if(selected)selected.setAttribute('data-selected','false');
+        selected=el;
+        selected.setAttribute('data-selected','true');
+        binsBox.querySelectorAll('.bin').forEach(function(b){b.classList.add('ready')});
+        Studio.event('pick',{});
+      });
+      cardsBox.appendChild(el);
+    });
+
+    p.bins.forEach(function(key){
+      var bin=document.createElement('button');
+      bin.type='button';
+      bin.className='bin';
+      bin.setAttribute('data-bin',key);
+      var name=document.createElement('div');
+      name.className='bin-name';
+      name.textContent=Studio.t(key);
+      var floor=document.createElement('div');
+      floor.className='bin-floor';
+      bin.appendChild(name);
+      bin.appendChild(floor);
+      bin.addEventListener('click',function(){
+        if(!selected||waiting)return;
+        waiting=true;
+        bin.classList.remove('ready');
+        Studio.event('sort',{});
+        Studio.answer({card:selected.getAttribute('data-card'),bin:key});
+      });
+      binsBox.appendChild(bin);
+    });
+
+    Studio.onVerdict(function(result){
+      if(!selected)return;
+      var card=selected;
+      binsBox.querySelectorAll('.bin').forEach(function(b){b.classList.remove('ready')});
+      if(result.correct){
+        var target=binsBox.querySelector('[data-bin="'+card.dataset ? '' : '"]');
+        var all=binsBox.querySelectorAll('.bin'), chosen=null;
+        for(var i=0;i<all.length;i++){
+          if(all[i].getAttribute('data-bin')===lastBin){chosen=all[i];break}
+        }
+        say('right');
+        card.setAttribute('data-selected','false');
+        card.removeAttribute('data-card');
+        card.setAttribute('data-placed',lastBin);
+        card.classList.add('placed');
+        chosen.appendChild(card);
+        placed++;
+        if(placed===total){
+          setTimeout(function(){
+            feedback.classList.remove('show');
+            done.textContent=Studio.t('done');
+            done.classList.add('show');
+            game.classList.add('finished');
+            Studio.done();
+          },480);
+        }
+      }else{
+        say('wrong');
+        card.setAttribute('data-selected','false');
+        card.classList.add('shake');
+        setTimeout(function(){card.classList.remove('shake')},450);
+      }
+      selected=null;
+      waiting=false;
+    });
+
+    var lastBin='';
+    binsBox.querySelectorAll('.bin').forEach(function(bin){
+      bin.addEventListener('click',function(){lastBin=bin.getAttribute('data-bin')},true);
+    });
+    Studio.ready();
+  })();
+
+</script>

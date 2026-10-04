@@ -1,0 +1,100 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff9ef;font-family:system-ui,sans-serif;color:#493d35}
+  .card{width:360px;height:320px;overflow:hidden;position:relative;background:radial-gradient(circle at 50% 38%,#fffef8,#fff8ed 76%);border:3px solid #f2dfc8;border-radius:22px}
+  h1{margin:8px 12px 0;text-align:center;font-size:20px;line-height:25px;color:#655045}
+  [data-ask]{margin:2px 12px 0;text-align:center;font-size:18px;line-height:25px;font-weight:700;color:#865249}
+  svg{display:block;width:354px;height:219px;overflow:hidden}
+  .ground{fill:#f5e9d3}
+  .leader{stroke:#b9a993;stroke-width:2;stroke-linecap:round;fill:none}
+  .name{font-size:14px;font-weight:700;fill:#57483e;pointer-events:none}
+  [data-part]{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .23s ease,filter .25s ease;outline:none}
+  [data-part]:hover,[data-part]:focus-visible{transform:scale(1.05)}
+  [data-part].tap{animation:tap .32s ease}
+  [data-part].glow{filter:drop-shadow(0 0 9px #ffd052) drop-shadow(0 0 4px #fff1a5);transform:scale(1.07)}
+  @keyframes tap{50%{transform:scale(.92)}}
+  #feedback{height:23px;text-align:center;font-size:15px;font-weight:700;color:#aa6852}
+  #feedback.good{color:#42875d}
+</style>
+<div class="card">
+  <h1 id="title"></h1>
+  <div data-ask></div>
+  <svg viewBox="0 0 354 219" role="img">
+    <ellipse class="ground" cx="178" cy="198" rx="109" ry="17"/>
+    <g data-part="stem" tabindex="0" role="button">
+      <path d="M169 86 Q174 120 165 157 L161 193 L211 193 Q196 163 202 135 Q205 108 195 86 Z" fill="#70ad69" stroke="#4d935e" stroke-width="2"/>
+      <path d="M184 99 Q188 142 183 180" fill="none" stroke="#a6d58b" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <g data-part="leaf" tabindex="0" role="button">
+      <path d="M169 146 Q130 108 83 131 Q88 185 144 184 Q166 172 169 146Z" fill="#75bb72" stroke="#519960" stroke-width="2"/>
+      <path d="M97 142 Q129 147 155 168" fill="none" stroke="#acd991" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g data-part="root" tabindex="0" role="button">
+      <path d="M164 159 Q150 181 113 207 Q140 211 165 195 Q165 216 181 217 Q198 213 199 195 Q220 211 249 206 Q213 179 203 159 Q188 170 164 159Z" fill="#b88862" stroke="#946c54" stroke-width="2"/>
+      <path d="M181 175 L181 209 M159 183 L135 201 M205 183 L227 201" fill="none" stroke="#d4aa7c" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g data-part="petal" tabindex="0" role="button">
+      <path d="M165 64 Q116 69 111 43 Q108 19 145 28 Q134 4 157 3 Q179 2 184 33 Q197 9 210 20 Q225 35 200 55 Q214 75 195 95 Q178 111 160 88 Q143 113 121 100 Q105 88 137 69Z" fill="#f49b9e" stroke="#df777e" stroke-width="2"/>
+      <path d="M171 59 L157 18 M160 63 L124 42 M169 73 L136 91" stroke="#ffd2c6" stroke-width="3" stroke-linecap="round" fill="none"/>
+    </g>
+    <g data-part="centre" tabindex="0" role="button">
+      <circle cx="211" cy="68" r="28" fill="#f7c65f" stroke="#dcaa4c" stroke-width="2"/>
+      <circle cx="201" cy="60" r="2.5" fill="#d69647"/><circle cx="220" cy="57" r="2.5" fill="#d69647"/>
+      <circle cx="211" cy="76" r="2.5" fill="#d69647"/><circle cx="225" cy="76" r="2.5" fill="#d69647"/>
+    </g>
+    <path class="leader" d="M98 48 L121 48 M241 68 L250 68 M70 157 L91 155 M207 143 L224 143 M219 199 L249 199"/>
+    <text data-label="petal" class="name" x="17" y="52"></text>
+    <text data-label="centre" class="name" x="253" y="73"></text>
+    <text data-label="leaf" class="name" x="17" y="162"></text>
+    <text data-label="stem" class="name" x="228" y="148"></text>
+    <text data-label="root" class="name" x="253" y="204"></text>
+  </svg>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const p = Studio.params;
+  const ask = document.querySelector('[data-ask]');
+  const feedback = document.getElementById('feedback');
+  document.getElementById('title').textContent = Studio.t('title');
+  ask.textContent = Studio.t('ask');
+  const parts = [...document.querySelectorAll('[data-part]')];
+  parts.forEach(el => { if (!p.parts.includes(el.dataset.part)) el.remove(); });
+  document.querySelectorAll('[data-label]').forEach(el => {
+    if (p.parts.includes(el.dataset.label)) el.textContent = Studio.t(el.dataset.label);
+    else el.remove();
+  });
+  let pending = false, finished = false, selected = null;
+  function choose(el) {
+    if (pending || finished) return;
+    selected = el;
+    pending = true;
+    el.classList.remove('tap');
+    void el.getBoundingClientRect();
+    el.classList.add('tap');
+    Studio.event('part_tap', {part:el.dataset.part});
+    Studio.answer(el.dataset.part);
+  }
+  parts.forEach(el => {
+    el.addEventListener('click', () => choose(el));
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(el); }
+    });
+  });
+  Studio.onVerdict(({correct}) => {
+    if (!pending || finished) return;
+    pending = false;
+    feedback.classList.toggle('good', correct);
+    feedback.textContent = Studio.t(correct ? 'right' : 'wrong');
+    if (correct) {
+      finished = true;
+      selected.classList.add('glow');
+      ask.textContent = Studio.t('done');
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

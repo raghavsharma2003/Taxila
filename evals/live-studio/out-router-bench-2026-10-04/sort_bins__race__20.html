@@ -1,0 +1,118 @@
+<style>
+*{box-sizing:border-box}
+.stage{width:360px;height:320px;overflow:hidden;padding:9px 12px;background:#fff8ed;color:#493b32;font-family:system-ui,sans-serif;display:flex;flex-direction:column;gap:6px}
+h1{font-size:18px;line-height:22px;margin:0;text-align:center;color:#5b483b}
+#instr,#feedback{font-size:13px;line-height:17px;text-align:center;min-height:17px;margin:0}
+#feedback{color:#a65b37;font-weight:700}
+#cards{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:54px;gap:5px 6px}
+.card{border:2px solid #e8cda9;border-radius:13px;background:#fffdfa;color:#493b32;font-size:14px;font-weight:700;padding:3px;box-shadow:0 3px 0 #e8cda9;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s}
+.card:active,.bin:active{transform:scale(.96)}
+.card.selected{transform:translateY(-4px);border-color:#e59b52;box-shadow:0 7px 14px #e9b66e99;animation:glow 1.2s ease-in-out infinite alternate}
+#bins{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;min-height:0}
+.bin{border:2px solid #b4c9a8;border-radius:17px;background:#edf4e8;color:#496143;padding:6px;min-width:0;cursor:pointer;box-shadow:0 3px 0 #c5d3bc;transition:transform .18s,background .2s;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bin:nth-child(2){background:#f5eee1;border-color:#ddc9a4;color:#705b3d;box-shadow:0 3px 0 #e0d1b7}
+.bin-name{font-size:13px;font-weight:800;line-height:17px}
+.placed{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;width:100%}
+.placed-card{font-size:11px;line-height:17px;border-radius:8px;padding:1px 5px;background:#fffefa;color:#51473c;animation:arrive .35s ease-out}
+#feedback.done{font-size:15px;color:#54734c}
+@keyframes glow{from{box-shadow:0 5px 10px #e9b66e66}to{box-shadow:0 7px 17px #e9a34aaa}}
+@keyframes arrive{from{opacity:0;transform:translateY(-7px) scale(.85)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.wrong-shake{animation:shake .25s ease-in-out}
+</style>
+<div class="stage">
+  <h1 id="title"></h1>
+  <p id="instr"></p>
+  <p id="feedback" aria-live="polite"></p>
+  <div id="cards"></div>
+  <div id="bins"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const stage=document.querySelector(".stage");
+  const title=document.getElementById("title");
+  const instr=document.getElementById("instr");
+  const feedback=document.getElementById("feedback");
+  const cardsBox=document.getElementById("cards");
+  const binsBox=document.getElementById("bins");
+  title.textContent=Studio.t("title");
+  instr.textContent=Studio.t("instr");
+  let selected=null,pending=false,finished=false;
+  const placed=new Map();
+  const cardEls=new Map(),binEls=new Map();
+
+  for(const key of p.bins){
+    const b=document.createElement("button");
+    b.type="button";b.className="bin";b.dataset.bin=key;
+    const name=document.createElement("span");name.className="bin-name";name.textContent=Studio.t(key);
+    const contents=document.createElement("span");contents.className="placed";
+    b.append(name,contents);binsBox.append(b);binEls.set(key,b);
+  }
+  function drawCards(){
+    cardsBox.replaceChildren();cardEls.clear();
+    for(const key of p.cards){
+      if(placed.has(key))continue;
+      const c=document.createElement("button");
+      c.type="button";c.className="card";c.dataset.card=key;c.dataset.selected=String(selected===key);
+      c.textContent=Studio.t(key);
+      if(selected===key)c.classList.add("selected");
+      cardsBox.append(c);cardEls.set(key,c);
+    }
+  }
+  function drawPlaced(){
+    for(const b of binEls.values())b.querySelector(".placed").replaceChildren();
+    for(const key of p.cards){
+      if(!placed.has(key))continue;
+      const chip=document.createElement("span");
+      chip.className="placed-card";chip.dataset.placed=placed.get(key);chip.textContent=Studio.t(key);
+      binEls.get(placed.get(key)).querySelector(".placed").append(chip);
+    }
+  }
+  function select(key){
+    if(pending||finished)return;
+    selected=selected===key?null:key;
+    feedback.textContent="";
+    drawCards();
+    Studio.event("card_tap",{});
+  }
+  cardsBox.addEventListener("click",e=>{
+    const c=e.target.closest("[data-card]");
+    if(c)select(c.dataset.card);
+  });
+  binsBox.addEventListener("click",e=>{
+    const b=e.target.closest("[data-bin]");
+    if(!b||selected===null||pending||finished)return;
+    pending=true;
+    const card=selected,bin=b.dataset.bin;
+    Studio.answer({card:card,bin:bin});
+    Studio.event("bin_tap",{});
+  });
+  Studio.onVerdict(v=>{
+    if(!pending)return;
+    pending=false;
+    if(v.correct){
+      placed.set(selected,Array.from(binEls.keys()).find(k=>k===document.querySelector(".bin[data-bin].pending")?.dataset.bin)||lastBin);
+      selected=null;
+      feedback.textContent=Studio.t("right");
+      drawCards();drawPlaced();
+      if(placed.size===p.cards.length){
+        finished=true;feedback.textContent=Studio.t("done");feedback.classList.add("done");Studio.done();
+      }
+    }else{
+      feedback.textContent=Studio.t("wrong");
+      const el=cardEls.get(selected);
+      if(el){el.classList.remove("wrong-shake");void el.offsetWidth;el.classList.add("wrong-shake");}
+      selected=null;drawCards();
+    }
+  });
+  let lastBin=null;
+  binsBox.addEventListener("click",e=>{
+    const b=e.target.closest("[data-bin]");
+    if(b)lastBin=b.dataset.bin;
+  },true);
+  drawCards();drawPlaced();Studio.ready();
+})();
+
+</script>

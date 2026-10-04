@@ -1,0 +1,187 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e8;font-family:Arial,sans-serif;color:#5a3825}
+  #app{width:360px;height:320px;position:relative;overflow:hidden;background:linear-gradient(150deg,#fff9ed 0%,#ffe8bf 100%)}
+  .top{height:72px;padding:14px 20px 8px;text-align:center}
+  h1{margin:0;color:#a64d26;font-size:22px;line-height:27px;letter-spacing:.2px}
+  .instruction{margin:4px 0 0;font-size:13px;line-height:17px;color:#77513c}
+  #card{position:absolute;left:14px;top:70px;width:332px;height:191px;border-radius:24px;background:#fffdf8;box-shadow:0 7px 0 #f2d7ad,0 11px 22px rgba(132,75,38,.13);overflow:hidden}
+  #whole{position:absolute;left:14px;top:8px;width:202px;height:176px;display:flex;align-items:center;justify-content:center}
+  #whole svg{width:174px;height:174px;overflow:visible}
+  .part{fill:#f7dca1;stroke:#b86335;stroke-width:2;stroke-linejoin:round;cursor:pointer;transform-box:fill-box;transform-origin:center;transition:fill .2s ease,transform .16s ease,filter .2s ease}
+  .part:hover{filter:brightness(1.04)}
+  .part:active{transform:scale(.94)}
+  .part.shaded{fill:#ed8d32;filter:drop-shadow(0 2px 1px rgba(142,65,21,.18))}
+  .barpart{fill:#f7dca1;stroke:#b86335;stroke-width:2;cursor:pointer;transition:fill .2s ease,transform .16s ease}
+  .barpart:active{transform:scale(.96)}
+  .barpart.shaded{fill:#ed8d32}
+  #fractionBox{position:absolute;right:16px;top:48px;width:87px;height:94px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:20px;background:#fff0cf}
+  #target{display:flex;flex-direction:column;align-items:center;color:#a64d26;font-weight:bold;font-size:29px;line-height:29px}
+  #target .line{width:42px;height:3px;margin:3px 0;background:#a64d26;border-radius:3px}
+  #spark{position:absolute;right:8px;top:9px;width:28px;height:28px;border-radius:50%;background:#ffd36b;opacity:.7}
+  #feedback{position:absolute;left:28px;right:28px;bottom:62px;height:22px;text-align:center;font-size:14px;font-weight:bold;color:#9a5738;opacity:0;transform:translateY(5px);transition:opacity .22s ease,transform .22s ease}
+  #feedback.show{opacity:1;transform:translateY(0)}
+  #feedback.good{color:#4f8b4b}
+  #check{position:absolute;left:52px;bottom:10px;width:256px;height:52px;border:0;border-radius:18px;background:#d6672e;color:#fffdf8;font-size:18px;font-weight:bold;box-shadow:0 5px 0 #a94928;cursor:pointer;transition:transform .14s ease,box-shadow .14s ease,background .2s ease}
+  #check:active{transform:translateY(4px) scale(.98);box-shadow:0 1px 0 #a94928}
+  #check:disabled{opacity:.72;cursor:default}
+  .burst{animation:burst .48s ease both}
+  @keyframes burst{0%{transform:scale(1)}45%{transform:scale(1.08) rotate(-1deg)}100%{transform:scale(1)}}
+  #doneScreen{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:34px;background:radial-gradient(circle at 50% 35%,#fff8df 0,#ffe6b0 68%,#ffd594 100%)}
+  #doneScreen.show{display:flex}
+  #doneIcon{width:108px;height:108px;border-radius:50%;background:#f29a39;box-shadow:0 7px 0 #c96529;position:relative;margin-bottom:19px;animation:bob 1.5s ease-in-out infinite}
+  #doneIcon:before,#doneIcon:after{content:"";position:absolute;background:#fff4d4;border-radius:50%}
+  #doneIcon:before{width:15px;height:15px;left:26px;top:35px;box-shadow:41px 0 #fff4d4}
+  #doneIcon:after{width:47px;height:20px;left:30px;top:58px;border-radius:0 0 28px 28px}
+  #doneText{font-size:25px;font-weight:bold;color:#9b4929}
+  @keyframes bob{50%{transform:translateY(-7px) rotate(3deg)}}
+</style>
+<div id="app">
+  <div class="top">
+    <h1 id="title"></h1>
+    <p class="instruction" id="instruction"></p>
+  </div>
+  <div id="card" data-item="">
+    <div id="whole">
+      <svg id="picture" viewBox="0 0 220 220" aria-hidden="true"></svg>
+    </div>
+    <div id="fractionBox">
+      <div id="target" data-target=""><span id="num"></span><span class="line"></span><span id="den"></span></div>
+    </div>
+    <div id="spark"></div>
+  </div>
+  <div id="feedback"></div>
+  <button id="check" data-action="check" type="button"></button>
+  <div id="doneScreen">
+    <div id="doneIcon"></div>
+    <div id="doneText"></div>
+  </div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params;
+  var index=0, waiting=false;
+  var card=document.getElementById('card');
+  var svg=document.getElementById('picture');
+  var check=document.getElementById('check');
+  var feedback=document.getElementById('feedback');
+  var app=document.getElementById('app');
+  var doneScreen=document.getElementById('doneScreen');
+
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+
+  function node(name){
+    return document.createElementNS('http://www.w3.org/2000/svg',name);
+  }
+  function polar(cx,cy,r,a){
+    return [cx+r*Math.cos(a),cy+r*Math.sin(a)];
+  }
+  function makePizza(item){
+    var d=item.d, i;
+    svg.setAttribute('viewBox','0 0 220 220');
+    for(i=0;i<d;i++){
+      var a=-Math.PI/2+i*2*Math.PI/d;
+      var b=-Math.PI/2+(i+1)*2*Math.PI/d;
+      var q=polar(110,110,91,a), z=polar(110,110,91,b);
+      var path=node('path');
+      path.setAttribute('d','M 110 110 L '+q[0]+' '+q[1]+' A 91 91 0 '+((b-a)>Math.PI?1:0)+' 1 '+z[0]+' '+z[1]+' Z');
+      path.setAttribute('class','part');
+      path.setAttribute('data-part',String(i));
+      path.setAttribute('data-shaded','false');
+      svg.appendChild(path);
+    }
+    var crust=node('circle');
+    crust.setAttribute('cx','110'); crust.setAttribute('cy','110'); crust.setAttribute('r','94');
+    crust.setAttribute('fill','none'); crust.setAttribute('stroke','#d07836'); crust.setAttribute('stroke-width','5');
+    crust.setAttribute('pointer-events','none');
+    svg.appendChild(crust);
+  }
+  function makeBar(item){
+    var d=item.d, i, gap=3, x=13, total=194, w=(total-gap*(d-1))/d;
+    svg.setAttribute('viewBox','0 0 220 220');
+    for(i=0;i<d;i++){
+      var r=node('rect');
+      r.setAttribute('x',String(x+i*(w+gap)));
+      r.setAttribute('y','68');
+      r.setAttribute('width',String(w));
+      r.setAttribute('height','84');
+      r.setAttribute('rx','8');
+      r.setAttribute('class','barpart');
+      r.setAttribute('data-part',String(i));
+      r.setAttribute('data-shaded','false');
+      svg.appendChild(r);
+    }
+  }
+  function tapPart(e){
+    if(waiting)return;
+    var el=e.currentTarget;
+    var on=el.getAttribute('data-shaded')==='true';
+    el.setAttribute('data-shaded',on?'false':'true');
+    el.classList.toggle('shaded',!on);
+    Studio.event('part',{part:Number(el.getAttribute('data-part')),shaded:on?0:1});
+  }
+  function build(){
+    var item=p.items[index];
+    card.setAttribute('data-item',item.id);
+    document.getElementById('num').textContent=String(item.n);
+    document.getElementById('den').textContent=String(item.d);
+    document.getElementById('target').setAttribute('data-target',String(item.n)+'/'+String(item.d));
+    svg.innerHTML='';
+    if(p.picture==='pizza')makePizza(item); else makeBar(item);
+    var bits=svg.querySelectorAll('[data-part]');
+    for(var i=0;i<bits.length;i++)bits[i].addEventListener('click',tapPart);
+    feedback.className='';
+    feedback.textContent='';
+    check.disabled=false;
+  }
+  function count(){
+    return svg.querySelectorAll('[data-shaded="true"]').length;
+  }
+  check.addEventListener('click',function(){
+    if(waiting)return;
+    waiting=true;
+    check.disabled=true;
+    var item=p.items[index];
+    Studio.event('check',{n:count(),d:item.d});
+    Studio.answer({n:count(),d:item.d});
+  });
+  Studio.onVerdict(function(v){
+    waiting=false;
+    if(v.correct){
+      feedback.textContent=Studio.t('right');
+      feedback.className='show good';
+      app.classList.remove('burst');
+      void app.offsetWidth;
+      app.classList.add('burst');
+      Studio.event('verdict',{correct:1});
+      setTimeout(function(){
+        index++;
+        if(index>=p.items.length){
+          card.style.display='none';
+          check.style.display='none';
+          feedback.style.display='none';
+          doneScreen.classList.add('show');
+          document.getElementById('doneText').textContent=Studio.t('done');
+          Studio.done();
+        }else{
+          build();
+        }
+      },700);
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      feedback.className='show';
+      check.disabled=false;
+      Studio.event('verdict',{correct:0});
+      setTimeout(function(){
+        if(!waiting)feedback.className='';
+      },1300);
+    }
+  });
+  build();
+  Studio.ready();
+}());
+
+</script>

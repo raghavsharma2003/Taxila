@@ -1,0 +1,87 @@
+<style>
+*{box-sizing:border-box}
+#stage{width:360px;height:320px;overflow:hidden;background:#fff8ec;color:#49372c;font-family:system-ui,sans-serif;position:relative;padding:11px 14px;border-radius:18px}
+#title{height:25px;font-size:18px;line-height:24px;font-weight:800;color:#754d34}
+#ask{height:25px;font-size:14px;line-height:22px;font-weight:650}
+#chart{width:332px;height:228px;display:block;overflow:visible}
+#feedback{height:29px;padding-top:2px;font-size:14px;line-height:22px;font-weight:750;text-align:center;color:#754d34}
+.grid{stroke:#eadcc8;stroke-width:1}
+.axis{stroke:#947963;stroke-width:1.5}
+.tick{fill:#745f4f;font-size:11px;text-anchor:end}
+.axis-title{fill:#745f4f;font-size:11px;font-weight:700}
+.bar{fill:#e99a57;transform-box:fill-box;transform-origin:center bottom;animation:grow .75s cubic-bezier(.2,.8,.25,1) both}
+.bar:active{fill:#d87c3b}
+.column-hit{fill:#000;fill-opacity:0;pointer-events:all;cursor:pointer}
+.column-hit:active{fill:#d87c3b;fill-opacity:.12}
+.name{fill:#49372c;font-size:10px;font-weight:700;text-anchor:middle}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+</style>
+<div id="stage">
+  <div id="title"></div>
+  <div id="ask"></div>
+  <svg id="chart" viewBox="0 0 332 228" role="img"></svg>
+  <div id="feedback"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const t=Studio.t;
+  const title=document.getElementById("title");
+  const ask=document.getElementById("ask");
+  const feedback=document.getElementById("feedback");
+  const svg=document.getElementById("chart");
+  title.textContent=t("title");
+  ask.textContent=t("ask");
+  const ns="http://www.w3.org/2000/svg";
+  const make=(tag,attrs={},text)=>{
+    const el=document.createElementNS(ns,tag);
+    Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));
+    if(text!==undefined)el.textContent=text;
+    svg.appendChild(el);
+    return el;
+  };
+  const data=p.data;
+  const max=Math.max(...data.map(d=>d.value));
+  const step=Math.max(1,Math.ceil(max/4));
+  const top=Math.ceil(max/step)*step;
+  const left=43,right=326,topY=11,base=173;
+  const plotH=base-topY;
+  const slot=(right-left)/data.length;
+  const barW=Math.min(36,slot-10);
+  for(let v=0;v<=top;v+=step){
+    const y=base-(v/top)*plotH;
+    make("line",{x1:left,y1:y,x2:right,y2:y,class:v===0?"axis":"grid"});
+    make("text",{x:left-7,y:y+4,class:"tick","data-tick":v},String(v));
+  }
+  make("line",{x1:left,y1:topY,x2:left,y2:base,class:"axis"});
+  make("text",{x:10,y:(topY+base)/2,class:"axis-title",transform:`rotate(-90 10 ${(topY+base)/2})`},t("yaxis"));
+  data.forEach((d,i)=>{
+    const cx=left+slot*(i+.5);
+    const h=(d.value/top)*plotH;
+    make("rect",{x:cx-barW/2,y:base-h,width:barW,height:h,class:"bar","data-bar":d.key,"data-value":d.value,rx:5});
+    make("text",{x:cx,y:base+17,class:"name"},t(d.key));
+    const hit=make("rect",{x:left+slot*i,y:topY,width:slot,height:base+30-topY,class:"column-hit","data-column":d.key,tabindex:"0",role:"button"});
+    const choose=()=>{
+      if(svg.dataset.locked==="true")return;
+      svg.dataset.locked="true";
+      Studio.answer(d.key);
+    };
+    hit.addEventListener("click",choose);
+    hit.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();choose();}});
+  });
+  let completed=false;
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=correct?t("right"):t("wrong");
+    if(correct&&!completed){
+      completed=true;
+      feedback.textContent=t("done");
+      Studio.done();
+    }else if(!correct){
+      svg.dataset.locked="false";
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,162 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;font-family:Arial,sans-serif;background:#fff7e8}
+#card{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(180deg,#fffaf1 0%,#ffedc9 100%);color:#704b34}
+#sunshine{position:absolute;inset:0;background:radial-gradient(circle at 15% 13%,#ffe39a 0 16px,transparent 17px),radial-gradient(circle at 87% 18%,#ffd6a2 0 10px,transparent 11px);pointer-events:none}
+#top{position:absolute;z-index:2;top:0;left:0;width:360px;height:60px;text-align:center;padding:9px 10px 0}
+#title{font-size:18px;line-height:21px;font-weight:700;color:#795033}
+#question{margin-top:4px;min-height:19px;font-size:15px;line-height:18px;font-weight:700;color:#a35b38}
+#scene{position:absolute;left:0;top:57px;width:360px;height:240px}
+.ground{fill:#e4c47d}
+.soil{fill:#bb7e4d}
+.stemshape{fill:#58a968;stroke:#357b49;stroke-width:3}
+.leafshape{fill:#78c46c;stroke:#3c8c51;stroke-width:3}
+.petalshape{fill:#f48c9a;stroke:#d85e75;stroke-width:3}
+.centreshape{fill:#f7ca49;stroke:#d59b2b;stroke-width:3}
+.rootline{fill:none;stroke:#995b39;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+.leader{fill:none;stroke:#aa7651;stroke-width:2;stroke-linecap:round}
+.tag{font-size:14px;font-weight:700;fill:#704b34;paint-order:stroke;stroke:#fff7e8;stroke-width:4;stroke-linejoin:round}
+[data-part]{cursor:pointer;outline:none;transform-box:fill-box;transform-origin:center;transition:transform .16s ease,filter .2s ease}
+[data-part]:hover,[data-part]:focus{filter:brightness(1.07);transform:scale(1.035)}
+[data-part]:active{transform:scale(.94)}
+[data-part].chosen{filter:drop-shadow(0 0 6px #ffd74f) drop-shadow(0 0 14px #fff3a6);animation:happy .75s ease-in-out infinite alternate}
+[data-part].shake{animation:wiggle .4s ease-in-out}
+.spark{fill:#ffe178;opacity:0}
+.chosen .spark{opacity:1;animation:spark .85s ease-in-out infinite}
+#message{position:absolute;z-index:3;left:18px;bottom:4px;width:324px;min-height:20px;text-align:center;font-size:15px;font-weight:700;color:#9b5839;opacity:0;transform:translateY(6px);transition:opacity .2s,transform .2s}
+#message.show{opacity:1;transform:translateY(0)}
+@keyframes happy{to{transform:scale(1.055)}}
+@keyframes wiggle{25%{transform:translateX(-5px) rotate(-2deg)}75%{transform:translateX(5px) rotate(2deg)}}
+@keyframes spark{50%{transform:scale(1.35);opacity:.6}}
+</style>
+<div id="card">
+  <div id="sunshine"></div>
+  <div id="top">
+    <div id="title"></div>
+    <div id="question" data-ask></div>
+  </div>
+  <svg id="scene" viewBox="0 0 360 240">
+    <path class="ground" d="M0 190 Q55 178 111 188 T220 185 T360 184 V240 H0Z"/>
+    <path class="soil" d="M0 202 Q58 190 116 201 T225 198 T360 199 V240 H0Z"/>
+
+    <g data-part="root" tabindex="0">
+      <rect x="130" y="174" width="103" height="64" rx="20" fill="transparent"/>
+      <path class="rootline" d="M180 174 Q178 190 158 204 M180 181 Q195 195 217 204 M170 194 L147 216 M191 194 L204 219"/>
+    </g>
+
+    <g data-part="stem" tabindex="0">
+      <rect x="151" y="70" width="56" height="113" rx="22" fill="transparent"/>
+      <path class="stemshape" d="M170 180 Q174 124 171 72 Q179 67 187 73 Q186 127 184 180Z"/>
+    </g>
+
+    <g data-part="leaf" tabindex="0">
+      <rect x="99" y="108" width="79" height="67" rx="26" fill="transparent"/>
+      <path class="leafshape" d="M172 141 Q138 106 104 120 Q117 159 172 153Z"/>
+      <path d="M114 124 Q140 140 168 149" fill="none" stroke="#3c8c51" stroke-width="2" stroke-linecap="round"/>
+    </g>
+
+    <g data-part="petal" tabindex="0">
+      <rect x="128" y="1" width="107" height="94" rx="35" fill="transparent"/>
+      <ellipse class="petalshape" cx="181" cy="39" rx="20" ry="34"/>
+      <ellipse class="petalshape" cx="207" cy="56" rx="34" ry="20" transform="rotate(24 207 56)"/>
+      <ellipse class="petalshape" cx="197" cy="79" rx="20" ry="34" transform="rotate(53 197 79)"/>
+      <ellipse class="petalshape" cx="164" cy="79" rx="20" ry="34" transform="rotate(-53 164 79)"/>
+      <ellipse class="petalshape" cx="151" cy="56" rx="34" ry="20" transform="rotate(-24 151 56)"/>
+    </g>
+
+    <g data-part="centre" tabindex="0">
+      <circle cx="181" cy="58" r="30" fill="transparent"/>
+      <circle class="centreshape" cx="181" cy="58" r="19"/>
+      <circle cx="174" cy="51" r="3" fill="#fff1a4"/>
+      <circle cx="187" cy="62" r="3" fill="#fff1a4"/>
+      <circle cx="176" cy="67" r="2.5" fill="#fff1a4"/>
+      <circle class="spark" cx="181" cy="23" r="4"/>
+      <circle class="spark" cx="216" cy="58" r="4"/>
+      <circle class="spark" cx="181" cy="93" r="4"/>
+      <circle class="spark" cx="146" cy="58" r="4"/>
+    </g>
+
+    <path class="leader" d="M135 27 L91 19"/>
+    <text class="tag" data-label="petal" x="27" y="23"></text>
+
+    <path class="leader" d="M211 48 L248 39"/>
+    <text class="tag" data-label="centre" x="253" y="43"></text>
+
+    <path class="leader" d="M188 122 L229 122"/>
+    <text class="tag" data-label="stem" x="234" y="127"></text>
+
+    <path class="leader" d="M108 148 L75 148"/>
+    <text class="tag" data-label="leaf" x="26" y="153"></text>
+
+    <path class="leader" d="M217 207 L238 211"/>
+    <text class="tag" data-label="root" x="243" y="216"></text>
+  </svg>
+  <div id="message"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params;
+  var ask=p.ask;
+  var locked=false;
+  var complete=false;
+  var last=null;
+  var title=document.getElementById('title');
+  var question=document.getElementById('question');
+  var message=document.getElementById('message');
+
+  title.textContent=Studio.t('title');
+  question.textContent=Studio.t('ask')+' '+Studio.t(ask);
+
+  document.querySelectorAll('[data-label]').forEach(function(el){
+    el.textContent=Studio.t(el.getAttribute('data-label'));
+  });
+
+  function show(text){
+    message.textContent=text;
+    message.classList.remove('show');
+    requestAnimationFrame(function(){message.classList.add('show');});
+  }
+
+  function choose(el){
+    if(locked||complete)return;
+    locked=true;
+    last=el;
+    var key=el.getAttribute('data-part');
+    Studio.event('tap',{part:key});
+    Studio.answer(key);
+  }
+
+  document.querySelectorAll('[data-part]').forEach(function(el){
+    el.addEventListener('click',function(){choose(el);});
+    el.addEventListener('keydown',function(e){
+      if(e.key==='Enter'||e.key===' '){
+        e.preventDefault();
+        choose(el);
+      }
+    });
+  });
+
+  Studio.onVerdict(function(v){
+    if(v.correct){
+      complete=true;
+      var selected=document.querySelector('[data-part="'+ask+'"]');
+      if(selected)selected.classList.add('chosen');
+      show(Studio.t('right')+' '+Studio.t('done'));
+      Studio.event('verdict',{correct:1});
+      setTimeout(function(){Studio.done();},500);
+    }else{
+      if(last){
+        last.classList.add('shake');
+        setTimeout(function(){last.classList.remove('shake');},420);
+      }
+      show(Studio.t('wrong'));
+      Studio.event('verdict',{correct:0});
+      locked=false;
+    }
+  });
+
+  Studio.ready();
+}());
+
+</script>

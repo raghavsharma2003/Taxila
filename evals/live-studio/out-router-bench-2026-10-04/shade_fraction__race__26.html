@@ -1,0 +1,154 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e9;font-family:Arial,sans-serif;color:#563c2d}
+  #app{width:360px;height:320px;position:relative;overflow:hidden;background:
+    radial-gradient(circle at 18% 10%,#fffdf7 0 12%,transparent 13%),
+    linear-gradient(150deg,#fff5db,#ffe9c0)}
+  .top{height:66px;padding:12px 18px 0;display:flex;align-items:flex-start;justify-content:space-between}
+  h1{margin:0;font-size:21px;line-height:26px;letter-spacing:.1px;color:#9a4c27}
+  .targetCard{min-width:66px;height:48px;border-radius:18px;background:#fffdf8;border:3px solid #f3c46e;
+    display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 #eab55d;color:#8c3b22}
+  .fraction{font-size:25px;font-weight:800;line-height:1}
+  .fraction .slash{font-size:22px;margin:0 2px;color:#d77a30}
+  .instruction{height:35px;text-align:center;font-size:15px;font-weight:700;color:#865a3e;padding:3px 15px}
+  #play{height:219px;position:relative}
+  #wholeWrap{width:304px;height:157px;margin:0 auto;display:flex;justify-content:center;align-items:center}
+  #whole{width:290px;height:154px;overflow:visible}
+  .part{fill:#f9d98a;stroke:#bd6b36;stroke-width:3;stroke-linejoin:round;cursor:pointer;
+    transition:fill .2s ease,transform .16s ease,filter .16s ease}
+  .part[data-shaded="true"]{fill:#e96b45;filter:drop-shadow(0 3px 1px rgba(122,58,29,.22))}
+  .part:active{transform:scale(.96)}
+  .part.pop{animation:pop .3s ease}
+  @keyframes pop{0%{transform:scale(1)}45%{transform:scale(.91)}100%{transform:scale(1)}}
+  #message{height:28px;text-align:center;font-size:15px;font-weight:800;color:#a65332;opacity:0;transform:translateY(4px);
+    transition:opacity .22s,transform .22s}
+  #message.show{opacity:1;transform:translateY(0)}
+  #check{position:absolute;left:126px;bottom:0;width:108px;height:54px;border:0;border-radius:20px;
+    background:#62a86c;color:#fffdf8;font-size:17px;font-weight:800;box-shadow:0 5px 0 #3d7d51;
+    cursor:pointer;transition:transform .15s,box-shadow .15s}
+  #check:active{transform:translateY(4px);box-shadow:0 1px 0 #3d7d51}
+  #check:disabled{opacity:.7}
+  .spark{position:absolute;width:12px;height:12px;border-radius:50%;background:#f5b845;opacity:0;pointer-events:none}
+  .celebrate .spark{animation:spark .7s ease-out forwards}
+  .celebrate .s1{left:62px;top:78px}.celebrate .s2{left:289px;top:88px;background:#e96b45;animation-delay:.08s}
+  .celebrate .s3{left:85px;top:178px;background:#79b977;animation-delay:.15s}.celebrate .s4{left:270px;top:166px;animation-delay:.04s}
+  @keyframes spark{0%{opacity:0;transform:scale(.2)}25%{opacity:1}100%{opacity:0;transform:translate(var(--x,0),-28px) scale(1.8)}}
+  #doneScreen{height:320px;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center}
+  #doneScreen.show{display:flex}
+  #doneText{font-size:26px;font-weight:800;color:#9a4c27;max-width:280px}
+  .sun{width:112px;height:112px;margin-bottom:18px;border-radius:50%;background:#f6bb46;box-shadow:0 0 0 10px #ffe6a3,0 0 0 19px #fff4d6;
+    position:relative;animation:glow 1.4s ease-in-out infinite alternate}
+  .sun:after{content:"";position:absolute;width:14px;height:14px;border-radius:50%;background:#8d4e31;left:31px;top:38px;
+    box-shadow:38px 0 #8d4e31}
+  .sun:before{content:"";position:absolute;width:39px;height:18px;border-bottom:5px solid #8d4e31;border-radius:0 0 30px 30px;left:37px;top:58px}
+  @keyframes glow{to{transform:scale(1.05) rotate(3deg)}}
+</style>
+<div id="app">
+  <main id="game">
+    <div class="top">
+      <h1 id="title"></h1>
+      <div class="targetCard"><div class="fraction" data-target><span id="num"></span><span class="slash">/</span><span id="den"></span></div></div>
+    </div>
+    <div class="instruction" id="instr"></div>
+    <section id="play">
+      <div id="wholeWrap" data-item=""><svg id="whole" viewBox="0 0 290 154" aria-label=""></svg></div>
+      <div id="message"></div>
+      <button id="check" data-action="check" type="button"></button>
+    </section>
+    <i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i><i class="spark s4"></i>
+  </main>
+  <section id="doneScreen"><div class="sun"></div><div id="doneText"></div></section>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, items=p.items, index=0, locked=false;
+  var title=document.getElementById('title'), instr=document.getElementById('instr');
+  var num=document.getElementById('num'), den=document.getElementById('den');
+  var wrap=document.getElementById('wholeWrap'), svg=document.getElementById('whole');
+  var check=document.getElementById('check'), message=document.getElementById('message');
+  var app=document.getElementById('app'), game=document.getElementById('game');
+  var doneScreen=document.getElementById('doneScreen'), doneText=document.getElementById('doneText');
+  title.textContent=Studio.t('title');
+  instr.textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+
+  function partTap(e){
+    if(locked)return;
+    var el=e.currentTarget, on=el.getAttribute('data-shaded')==='true';
+    el.setAttribute('data-shaded',on?'false':'true');
+    el.classList.remove('pop');
+    void el.getBoundingClientRect();
+    el.classList.add('pop');
+    Studio.event('part',{});
+  }
+  function addShape(el,i){
+    el.setAttribute('class','part');
+    el.setAttribute('data-part',i);
+    el.setAttribute('data-shaded','false');
+    el.addEventListener('click',partTap);
+    svg.appendChild(el);
+  }
+  function makePizza(d){
+    var cx=145,cy=77,r=69, ns='http://www.w3.org/2000/svg';
+    for(var i=0;i<d;i++){
+      var a=-Math.PI/2+i*2*Math.PI/d, b=-Math.PI/2+(i+1)*2*Math.PI/d;
+      var x1=cx+r*Math.cos(a),y1=cy+r*Math.sin(a),x2=cx+r*Math.cos(b),y2=cy+r*Math.sin(b);
+      var path=document.createElementNS(ns,'path');
+      path.setAttribute('d','M '+cx+' '+cy+' L '+x1+' '+y1+' A '+r+' '+r+' 0 0 1 '+x2+' '+y2+' Z');
+      addShape(path,i);
+    }
+  }
+  function makeBar(d){
+    var ns='http://www.w3.org/2000/svg', total=270, w=total/d, x=(290-total)/2;
+    for(var i=0;i<d;i++){
+      var rect=document.createElementNS(ns,'rect');
+      rect.setAttribute('x',x+i*w+1.5); rect.setAttribute('y',24);
+      rect.setAttribute('width',w-3); rect.setAttribute('height',106); rect.setAttribute('rx',10);
+      addShape(rect,i);
+    }
+  }
+  function build(){
+    var item=items[index];
+    locked=false; check.disabled=false; message.classList.remove('show'); message.textContent='';
+    wrap.setAttribute('data-item',item.id);
+    num.textContent=item.n; den.textContent=item.d;
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    if(p.picture==='pizza')makePizza(item.d); else makeBar(item.d);
+  }
+  check.addEventListener('click',function(){
+    if(locked)return;
+    var parts=svg.querySelectorAll('[data-part]'), count=0;
+    for(var i=0;i<parts.length;i++)if(parts[i].getAttribute('data-shaded')==='true')count++;
+    locked=true; check.disabled=true;
+    Studio.event('check',{});
+    Studio.answer({n:count,d:items[index].d});
+  });
+  Studio.onVerdict(function(v){
+    if(v.correct){
+      message.textContent=Studio.t('right');
+      message.classList.add('show');
+      app.classList.add('celebrate');
+      Studio.event('right',{});
+      setTimeout(function(){
+        app.classList.remove('celebrate');
+        index++;
+        if(index>=items.length){
+          game.style.display='none';
+          doneText.textContent=Studio.t('done');
+          doneScreen.classList.add('show');
+          Studio.done();
+        }else build();
+      },850);
+    }else{
+      message.textContent=Studio.t('wrong');
+      message.classList.add('show');
+      locked=false; check.disabled=false;
+      Studio.event('wrong',{});
+    }
+  });
+  build();
+  Studio.ready();
+}());
+
+</script>

@@ -1,0 +1,94 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7ec;font-family:system-ui,sans-serif;color:#59463e}
+  .scene{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 48% 38%,#fffdf7,#fff0df)}
+  .heading{height:35px;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800}
+  svg{display:block;width:360px;height:240px}
+  [data-part]{cursor:pointer;transition:filter .25s,transform .25s;transform-box:fill-box;transform-origin:center}
+  [data-part]:active{transform:scale(.94)}
+  [data-part].glow{filter:drop-shadow(0 0 10px #ffc34f);animation:happy .7s ease-in-out 2}
+  [data-part].retry{animation:wiggle .35s ease}
+  @keyframes happy{50%{transform:scale(1.1)}}
+  @keyframes wiggle{25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+  .guide{fill:none;stroke:#a99685;stroke-width:1.5;stroke-linecap:round;pointer-events:none}
+  [data-label]{fill:#59463e;font-size:15px;font-weight:750;pointer-events:none}
+  .question{height:40px;margin:0 12px;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:16px;background:#f7ddc5;font-size:18px;font-weight:750}
+  .note{position:absolute;top:8px;right:12px;font-size:13px;font-weight:750;color:#805747;pointer-events:none}
+</style>
+<div class="scene">
+  <div class="heading" id="title"></div>
+  <div class="note" id="note" aria-live="polite"></div>
+  <svg viewBox="0 0 360 240" role="img">
+    <g data-part="stem">
+      <rect x="199" y="122" width="54" height="84" rx="26" fill="#80b67b"/>
+      <path d="M222 133 Q229 161 224 196" fill="none" stroke="#a3cb91" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <g data-part="root">
+      <ellipse cx="229" cy="214" rx="43" ry="27" fill="#b98766"/>
+      <path d="M218 207 Q210 222 201 231 M231 207 Q233 222 228 236 M241 207 Q251 218 257 230" fill="none" stroke="#96694f" stroke-width="4" stroke-linecap="round"/>
+    </g>
+    <g data-part="leaf">
+      <path d="M203 165 Q160 121 111 143 Q113 195 171 198 Q193 189 203 165Z" fill="#76ad77"/>
+      <path d="M124 155 Q162 157 190 175" fill="none" stroke="#add19a" stroke-width="4" stroke-linecap="round"/>
+    </g>
+    <g data-part="petal">
+      <ellipse cx="143" cy="57" rx="36" ry="38" fill="#ef969e" transform="rotate(-22 143 57)"/>
+      <ellipse cx="143" cy="57" rx="20" ry="29" fill="#f6b1ae" opacity=".55" transform="rotate(-22 143 57)"/>
+    </g>
+    <circle data-part="centre" cx="204" cy="88" r="28" fill="#f1bc63"/>
+    <g class="guide">
+      <path d="M99 39 L115 45"/>
+      <path d="M250 89 L233 89"/>
+      <path d="M270 158 L252 163"/>
+      <path d="M76 173 L117 174"/>
+      <path d="M270 222 L259 218"/>
+    </g>
+    <text data-label="petal" x="46" y="38"></text>
+    <text data-label="centre" x="252" y="94"></text>
+    <text data-label="stem" x="272" y="163"></text>
+    <text data-label="leaf" x="24" y="178"></text>
+    <text data-label="root" x="272" y="227"></text>
+  </svg>
+  <div class="question" data-ask></div>
+</div>
+<script>
+
+  const p=Studio.params;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.querySelector('[data-ask]').textContent=Studio.t('ask');
+  document.querySelectorAll('[data-label]').forEach(el=>{
+    el.textContent=Studio.t(el.dataset.label);
+  });
+  const note=document.getElementById('note');
+  let pending=false,finished=false,chosen=null;
+  document.querySelectorAll('[data-part]').forEach(el=>{
+    if(!p.parts.includes(el.dataset.part))return;
+    el.addEventListener('click',()=>{
+      if(pending||finished)return;
+      chosen=el;
+      pending=true;
+      note.textContent='';
+      Studio.answer(el.dataset.part);
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending||!chosen)return;
+    pending=false;
+    if(correct){
+      finished=true;
+      chosen.classList.add('glow');
+      note.textContent=Studio.t('right');
+      setTimeout(()=>{
+        note.textContent=Studio.t('done');
+        Studio.done();
+      },850);
+    }else{
+      note.textContent=Studio.t('wrong');
+      chosen.classList.remove('retry');
+      void chosen.getBoundingClientRect();
+      chosen.classList.add('retry');
+    }
+  });
+  Studio.ready();
+
+</script>

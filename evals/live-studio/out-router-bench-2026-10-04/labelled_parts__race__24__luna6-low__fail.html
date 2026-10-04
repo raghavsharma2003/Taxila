@@ -1,0 +1,83 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+#scene{width:360px;height:320px;padding:8px 12px;background:#fff8e9;color:#344c3a;font-family:system-ui,sans-serif;overflow:hidden}
+h1{height:27px;margin:0;text-align:center;font-size:19px;line-height:27px;font-weight:750}
+#question{height:38px;margin:3px 0 0;padding:3px 8px;border-radius:14px;background:#f4e8cc;text-align:center;font-size:15px;font-weight:650;line-height:32px}
+svg{display:block;width:336px;height:202px;margin:0 auto}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:filter .22s,transform .18s}
+.part:active{transform:scale(.94)}
+.part.glow{filter:drop-shadow(0 0 8px #f3ae37);animation:glimmer .65s ease-in-out infinite alternate}
+.label{font-size:12px;font-weight:650;fill:#344c3a}
+.leader{fill:none;stroke:#8d927a;stroke-width:1.5;stroke-linecap:round}
+#feedback{height:27px;margin:0;text-align:center;font-size:14px;font-weight:700;line-height:27px;overflow:hidden}
+@keyframes glimmer{to{filter:drop-shadow(0 0 13px #f3ae37)}}
+</style>
+<main id="scene">
+  <h1 id="title"></h1>
+  <div id="question" data-ask></div>
+  <svg id="picture" viewBox="0 0 336 202" role="img" aria-label="">
+    <g id="parts"></g>
+  </svg>
+  <div id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(()=>{
+  const p=Studio.params, svgNS="http://www.w3.org/2000/svg";
+  const title=document.getElementById("title"), question=document.getElementById("question");
+  const group=document.getElementById("parts"), feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  question.textContent=Studio.t("ask")+" "+Studio.t(p.ask);
+  const shapes={
+    petal:{d:"M168 72 C128 68 121 19 168 14 C215 19 208 68 168 72Z",fill:"#f08b78",label:[104,43],line:[109,43,130,43],anchor:"end"},
+    centre:{d:"M168 55 C187 55 198 68 198 85 C198 102 187 114 168 114 C149 114 138 102 138 85 C138 68 149 55 168 55Z",fill:"#f3c94f",label:[245,89],line:[199,86,235,86],anchor:"start"},
+    stem:{d:"M138 105 Q168 113 198 105 L198 177 Q168 169 138 177Z",fill:"#64a96b",label:[229,145],line:[202,145,224,145],anchor:"start"},
+    leaf:{d:"M151 133 C116 99 76 113 80 143 C84 174 124 179 151 149Z",fill:"#83bd72",label:[43,145],line:[48,145,83,143],anchor:"start"},
+    root:{d:"M136 169 Q168 178 200 169 L200 179 Q190 187 185 198 L169 185 L159 201 L150 185 L135 196 L147 178Z",fill:"#b98257",label:[229,188],line:[202,181,224,184],anchor:"start"}
+  };
+  p.parts.forEach(key=>{
+    const s=shapes[key];
+    if(!s)return;
+    const line=document.createElementNS(svgNS,"path");
+    line.setAttribute("d",`M${s.line[0]} ${s.line[1]} L${s.line[2]} ${s.line[3]}`);
+    line.setAttribute("class","leader");
+    group.appendChild(line);
+    const part=document.createElementNS(svgNS,"path");
+    part.setAttribute("d",s.d);
+    part.setAttribute("fill",s.fill);
+    part.setAttribute("stroke","#fff8e9");
+    part.setAttribute("stroke-width","2");
+    part.setAttribute("class","part");
+    part.setAttribute("data-part",key);
+    part.setAttribute("aria-label",Studio.t(key));
+    part.setAttribute("tabindex","0");
+    group.appendChild(part);
+    const label=document.createElementNS(svgNS,"text");
+    label.setAttribute("x",s.label[0]);
+    label.setAttribute("y",s.label[1]);
+    label.setAttribute("text-anchor",s.anchor);
+    label.setAttribute("class","label");
+    label.setAttribute("data-label",key);
+    label.textContent=Studio.t(key);
+    group.appendChild(label);
+    const choose=()=>{
+      Studio.event("tap",{part:key});
+      Studio.answer(key);
+    };
+    part.addEventListener("click",choose);
+    part.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();choose()}});
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?"right":"wrong");
+    if(correct){
+      const target=group.querySelector(`[data-part="${p.ask}"]`);
+      if(target)target.classList.add("glow");
+      feedback.textContent=Studio.t("done");
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

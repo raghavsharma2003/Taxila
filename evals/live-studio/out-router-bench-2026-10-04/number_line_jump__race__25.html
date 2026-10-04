@@ -1,0 +1,111 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff7e9;color:#563b35}
+  #game{width:360px;height:320px;padding:13px 14px;overflow:hidden;background:radial-gradient(circle at 90% 8%,#ffe8bd,transparent 42%),#fff7e9}
+  h1{margin:0;font-size:20px;line-height:25px;font-weight:800;color:#704638}
+  #instruction{margin:2px 0 0;font-size:13px;line-height:19px}
+  #item{height:34px;margin-top:5px;display:flex;align-items:center;justify-content:center;gap:10px}
+  #target{min-width:48px;padding:3px 13px;border-radius:18px;background:#ffe0a1;color:#6b3b2d;text-align:center;font-size:21px;font-weight:800}
+  #track{display:block;width:332px;height:115px;margin:0 auto;overflow:visible}
+  #marker{transition:transform .22s cubic-bezier(.2,1.5,.4,1)}
+  #marker circle{fill:#eb755c;stroke:#fff;stroke-width:3;filter:drop-shadow(0 3px 2px #b97a6270)}
+  #marker polygon{fill:#eb755c}
+  #marker.hop{animation:hop .48s ease-in-out}
+  @keyframes hop{50%{translate:0 -13px;scale:1.12}}
+  .tick line{stroke:#a88773;stroke-width:2;stroke-linecap:round}
+  .tick text{fill:#725d50;font-size:11px;font-weight:700;text-anchor:middle}
+  #controls{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:3px}
+  button{border:0;border-radius:16px;min-width:68px;height:55px;padding:0 13px;font:700 15px system-ui,sans-serif;cursor:pointer;touch-action:manipulation;transition:transform .13s,background .2s;box-shadow:0 4px 0 #cfae91}
+  button:active{transform:translateY(3px) scale(.96);box-shadow:0 1px 0 #cfae91}
+  button:disabled{opacity:.55;cursor:default}
+  .move{background:#f9d8a6;color:#603f34}
+  #check{background:#78b6a4;color:#183f39;min-width:105px;box-shadow:0 4px 0 #589584}
+  #feedback{height:24px;margin-top:10px;text-align:center;font-size:16px;font-weight:750;color:#a95743}
+  #feedback.good{color:#388472}
+  #finished{display:none;height:235px;align-items:center;justify-content:center;text-align:center;font-size:25px;font-weight:800;color:#388472}
+</style>
+<div id="game">
+  <h1 id="title"></h1>
+  <p id="instruction"></p>
+  <div id="play">
+    <div id="item" data-item=""><span id="target" data-target></span></div>
+    <svg id="track" viewBox="0 0 332 115" aria-hidden="true">
+      <path d="M20 68 H312" fill="none" stroke="#d7ab86" stroke-width="7" stroke-linecap="round"/>
+      <g id="ticks"></g>
+      <g id="marker" data-marker data-value=""><polygon points="-7,30 7,30 0,40"/><circle cy="21" r="12"/></g>
+    </svg>
+    <div id="controls">
+      <button class="move" data-action="left" type="button"></button>
+      <button id="check" data-action="check" type="button"></button>
+      <button class="move" data-action="right" type="button"></button>
+    </div>
+    <div id="feedback" aria-live="polite"></div>
+  </div>
+  <div id="finished"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, $=s=>document.querySelector(s);
+  const round=n=>Math.round(n*1000000)/1000000;
+  const count=Math.round((p.max-p.min)/p.step);
+  const value=k=>round(p.min+k*p.step);
+  const gcd=(a,b)=>b?gcd(b,a%b):a;
+  function format(n){
+    if(p.format==="fraction"){
+      let den=1;
+      while(den<1000000 && Math.abs(round(n*den)-n*den)>0.000001)den++;
+      const num=Math.round(n*den),d=gcd(Math.abs(num),den);
+      return (num/d)+"/"+(den/d);
+    }
+    if(p.format==="integer")return String(Math.round(n));
+    const decimals=Math.min(6,(String(p.step).split(".")[1]||"").length);
+    return n.toFixed(decimals).replace(/\.?0+$/,"");
+  }
+  const x=k=>20+292*k/count;
+  const svgNS="http://www.w3.org/2000/svg", ticks=$("#ticks");
+  for(let k=0;k<=count;k++){
+    const g=document.createElementNS(svgNS,"g");
+    g.setAttribute("class","tick");
+    g.setAttribute("data-tick",String(value(k)));
+    g.setAttribute("transform",`translate(${x(k)} 0)`);
+    const line=document.createElementNS(svgNS,"line");
+    line.setAttribute("y1","59");line.setAttribute("y2",k%p.labelEvery===0?"78":"73");
+    g.appendChild(line);
+    if(k%p.labelEvery===0){
+      const text=document.createElementNS(svgNS,"text");
+      text.setAttribute("y","97");text.textContent=format(value(k));g.appendChild(text);
+    }
+    ticks.appendChild(g);
+  }
+  for(const key of ["title","instr","left","right_btn","check","done"]) {
+    const node=({title:$("#title"),instr:$("#instruction"),left:$('[data-action="left"]'),right_btn:$('[data-action="right"]'),check:$("#check"),done:$("#finished")})[key];
+    node.textContent=Studio.t(key);
+  }
+  let itemIndex=0,k=Math.max(0,Math.min(count,Math.round((p.start-p.min)/p.step))),busy=false;
+  const marker=$("#marker"), feedback=$("#feedback");
+  function draw(){marker.setAttribute("transform",`translate(${x(k)} 0)`);marker.setAttribute("data-value",String(value(k)))}
+  function showItem(){k=Math.max(0,Math.min(count,Math.round((p.start-p.min)/p.step)));$("#item").setAttribute("data-item",String(p.items[itemIndex].id));$("#target").textContent=format(p.items[itemIndex].target);feedback.textContent="";feedback.className="";draw()}
+  document.querySelectorAll("[data-action]").forEach(button=>button.addEventListener("click",()=>{
+    if(busy)return;
+    const action=button.getAttribute("data-action");
+    if(action==="check"){busy=true;Studio.answer({value:value(k)});return}
+    k=Math.max(0,Math.min(count,k+(action==="left"?-1:1)));
+    draw();feedback.textContent="";
+    Studio.event("move",{direction:action});
+  }));
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?"right":"wrong");
+    feedback.className=correct?"good":"";
+    if(!correct){busy=false;return}
+    marker.classList.remove("hop");void marker.getBoundingClientRect();marker.classList.add("hop");
+    setTimeout(()=>{
+      marker.classList.remove("hop");
+      itemIndex++;
+      if(itemIndex<p.items.length){showItem();busy=false}
+      else{$("#play").style.display="none";$("#finished").style.display="flex";Studio.done()}
+    },520);
+  });
+  showItem();Studio.ready();
+})();
+
+</script>

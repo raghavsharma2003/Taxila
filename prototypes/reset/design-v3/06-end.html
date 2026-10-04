@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lesson · Wrap-up</title>
+<link rel="stylesheet" href="v3.css">
+<style>
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 var(--gutter) 28px; }
+  .grid2 { display: grid; gap: 14px; }
+  @media (min-width: 900px) { .grid2 { grid-template-columns: 1.2fr 1fr; align-items: start; gap: 18px; } }
+  .col { display: grid; gap: 14px; min-width: 0; }
+  .hero { padding: 22px 18px; border-radius: var(--r-xl); border: 1px solid var(--line-2); background: radial-gradient(600px 300px at 0% 0%, rgba(203,255,77,.10), transparent 60%), radial-gradient(500px 300px at 100% 100%, rgba(79,91,213,.22), transparent 60%), var(--bg-1); display: grid; gap: 14px; animation: rise .6s var(--e-std) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } }
+  .cando { font: 700 clamp(26px, 6.4vw, 38px)/1.08 var(--f-display); letter-spacing: -.03em; margin: 0; }
+  .cando em { font-style: normal; text-decoration: underline 3px var(--ion); text-underline-offset: 6px; }
+  .stats { display: flex; gap: 18px; flex-wrap: wrap; }
+  .stat b { font: 700 22px/1 var(--f-display); display: block; }
+  .stat span { font: 500 11px/1 var(--f-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); }
+  .ev { display: grid; }
+  .ev-row { display: grid; grid-template-columns: 30px 1fr auto; gap: 12px; padding: 13px 14px; align-items: start; animation: rise .5s var(--e-std) both; }
+  .ev-row + .ev-row { border-top: 1px solid var(--line); }
+  .ev-row:nth-child(2) { animation-delay: .1s } .ev-row:nth-child(3) { animation-delay: .2s } .ev-row:nth-child(4) { animation-delay: .3s }
+  .ev-row .mk { width: 30px; height: 30px; border-radius: 10px; display: grid; place-items: center; background: var(--bg-3); }
+  .ev-row .mk .icon { width: 17px; height: 17px; stroke-width: 2.2; }
+  .ev-row b { display: block; font-size: 15px; font-weight: 600; }
+  .ev-row span { font-size: 13px; color: var(--ink-3); }
+  .ev-row time { font: 500 12px/1.6 var(--f-mono); color: var(--ink-3); }
+  .quote { padding: 16px; display: grid; grid-template-columns: 40px 1fr; gap: 12px; }
+  .quote img { width: 40px; height: 40px; border-radius: 12px; object-fit: cover; }
+  .quote blockquote { margin: 4px 0 0; font: 600 18px/1.35 var(--f-display); letter-spacing: -.01em; }
+  .quote small { color: var(--ink-3); font-size: 13px; }
+  .parked { padding: 14px; display: grid; gap: 12px; border-style: dashed; }
+  .parked .q { font-weight: 600; font-size: 16px; }
+  .parked .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .made-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mini { border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--line); background: var(--bg-1); }
+  .mini svg { display: block; width: 100%; aspect-ratio: 16/10; }
+  .mini div { padding: 8px 10px 10px; font-size: 14px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+  .mini div .icon { width: 16px; height: 16px; color: var(--ink-3); }
+  .nextup { padding: 14px; display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: center; }
+  .nextup .ic { width: 40px; height: 40px; border-radius: 12px; background: rgba(139,152,255,.14); color: var(--ion); display: grid; place-items: center; }
+  .foot { display: flex; gap: 10px; margin-top: 18px; }
+  .foot .btn { flex: 1; }
+</style>
+</head>
+<body class="grain">
+<script src="sprite.js"></script>
+<div class="wrap">
+  <header class="topbar">
+    <div><div class="subj" style="--c:var(--sub-maths)">Class 6 · Maths · Perimeter and area</div></div>
+    <a class="btn btn-icon btn-quiet" href="02-home.html" aria-label="Close"><svg class="icon"><use href="#i-x"/></svg></a>
+  </header>
+  <div class="grid2">
+    <div class="col">
+      <section class="hero">
+        <div class="eyebrow">Lesson done · 17 min</div>
+        <h1 class="cando">You can now <em>prove</em> why a triangle is half its rectangle.</h1>
+        <div class="stats">
+          <div class="stat"><b>3</b><span>things shown</span></div>
+          <div class="stat"><b>2/2</b><span>new problems</span></div>
+          <div class="stat"><b>0</b><span>hints used</span></div>
+        </div>
+      </section>
+
+      <div class="card quote"><img src="img/teacher-ira.webp" alt=""><div><small>What you said at 4:12</small><blockquote>“The outside bits fold in, so it's always half.”</blockquote><small>That's the whole proof. In your words.</small></div></div>
+
+      <div class="sec-h" style="display:flex;justify-content:space-between;margin:6px 2px -2px"><h2 class="h-3">How we know</h2><span class="eyebrow" style="align-self:center">evidence</span></div>
+      <div class="card ev">
+        <div class="ev-row"><span class="mk v-got"><svg class="icon"><use href="#i-check"/></svg></span><div><b>Explained the half without help</b><span>Asked “why?” after a right answer — you had the reason</span></div><time>4:12</time></div>
+        <div class="ev-row"><span class="mk v-got"><svg class="icon"><use href="#i-check"/></svg></span><div><b>Predicted the area wouldn't change</b><span>Before sliding the top point, not after</span></div><time>6:40</time></div>
+        <div class="ev-row"><span class="mk v-got"><svg class="icon"><use href="#i-check"/></svg></span><div><b>Two new triangles, first try</b><span>Different numbers, different shapes</span></div><time>11:05</time></div>
+        <div class="ev-row"><span class="mk v-look"><svg class="icon"><use href="#i-search"/></svg></span><div><b>Leaning triangles — worth another look</b><span>When the height falls outside the shape. Saturday.</span></div><time>14:30</time></div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card parked">
+        <div class="eyebrow" style="display:flex;gap:6px;align-items:center"><svg class="icon" style="width:14px;height:14px"><use href="#i-pin"/></svg>You parked this</div>
+        <div class="q">“the new BGMI update”</div>
+        <div class="small muted">She promised two minutes. Your call.</div>
+        <div class="row"><button class="btn btn-primary"><svg class="icon"><use href="#i-mic"/></svg>Talk now · 2 min</button><button class="btn">Skip</button></div>
+      </div>
+
+      <h2 class="h-3" style="margin:6px 2px -2px">Made today</h2>
+      <div class="made-row">
+        <div class="mini"><svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" fill="#0F141C"/><path d="M28 80 H132 V20 H28 Z" fill="none" stroke="#EEF2F7" stroke-width="1.5"/><path d="M28 80 L70 20 L132 80" fill="rgba(139,152,255,.25)" stroke="#CBFF4D" stroke-width="1.5"/><circle cx="70" cy="20" r="3.5" fill="#CBFF4D"/></svg><div>Half a rectangle<svg class="icon"><use href="#i-replay"/></svg></div></div>
+        <div class="mini"><svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" fill="#0D1017"/><path d="M20 80 L140 80 M30 80 V40 M30 40 L70 80" stroke="#8B98FF" stroke-width="1.5" fill="none"/><path d="M30 40 H120 V80" stroke="rgba(255,255,255,.3)" stroke-dasharray="3 4" fill="none"/><path d="M70 80 L120 40 L120 80" fill="rgba(203,255,77,.18)" stroke="#CBFF4D" stroke-width="1.5"/></svg><div>Break-it explorable<svg class="icon"><use href="#i-replay"/></svg></div></div>
+      </div>
+
+      <div class="card nextup"><span class="ic"><svg class="icon"><use href="#i-cal"/></svg></span><div><div class="eyebrow">Next · Saturday 11:00</div><b>Leaning triangles: when the height goes outside</b></div></div>
+
+      <div class="foot"><a class="btn btn-lg" href="07-progress.html" style="text-decoration:none">See progress</a><a class="btn btn-lg btn-quiet" href="02-home.html" style="text-decoration:none;border-color:var(--line-2)">Done</a></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

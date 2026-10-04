@@ -1,0 +1,83 @@
+<style>
+  *{box-sizing:border-box}
+  #activity{width:360px;height:320px;overflow:hidden;padding:8px;background:#fff7e9;color:#5b382d;font-family:system-ui,sans-serif}
+  .title{height:30px;font-size:20px;font-weight:800;line-height:28px}
+  .scene{height:171px;position:relative;overflow:hidden;border-radius:20px;background:#fce8d0}
+  .sun{position:absolute;top:12px;right:22px;width:28px;height:28px;border-radius:50%;background:#ffce74}
+  .readings{position:absolute;top:13px;left:15px;z-index:1;font-weight:750;font-size:18px;line-height:28px}
+  .question{position:absolute;left:15px;top:80px;width:222px;font-size:15px;font-weight:700}
+  .feedback{position:absolute;left:15px;bottom:10px;font-size:16px;font-weight:800;color:#a04d52}
+  .tower{position:absolute;right:32px;bottom:0;width:58px;height:0;border-radius:12px 12px 0 0;background:linear-gradient(90deg,#e98c65,#f5ad76);transition:height .32s cubic-bezier(.2,.8,.3,1)}
+  .tower:after{content:"";position:absolute;inset:9px 15px auto;height:8px;border-radius:8px;background:#ffe7bd;box-shadow:0 24px #ffe7bd,0 48px #ffe7bd,0 72px #ffe7bd,0 96px #ffe7bd,0 120px #ffe7bd,0 144px #ffe7bd}
+  .controls,.options{display:flex;gap:8px;margin-top:5px}
+  button{border:0;border-radius:15px;min-width:52px;height:52px;font:800 17px system-ui,sans-serif;cursor:pointer;transition:transform .16s,background .16s;touch-action:manipulation}
+  button:active{transform:scale(.92)}
+  .controls button{flex:1;background:#f4cb89;color:#593927}
+  .options button{flex:1;background:#7a9e8a;color:white}
+  button:disabled{opacity:.45;cursor:default}
+  .bump{animation:bump .3s ease}
+  @keyframes bump{50%{transform:scale(1.08)}}
+</style>
+<div id="activity">
+  <div class="title" id="title"></div>
+  <div class="scene">
+    <div class="sun"></div>
+    <div class="readings"><div><span id="xname"></span> <span data-x></span></div><div><span id="yname"></span> <span data-output></span></div></div>
+    <div class="question" id="question"></div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+    <div class="tower" data-visual data-dim="h"></div>
+  </div>
+  <div class="controls"><button type="button" data-action="dec" id="dec"></button><button type="button" data-action="inc" id="inc"></button></div>
+  <div class="options" id="options"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const $=s=>document.querySelector(s);
+  const xEl=$('[data-x]'),yEl=$('[data-output]'),visual=$('[data-visual]');
+  const dec=$('[data-action="dec"]'),inc=$('[data-action="inc"]');
+  let x=p.x.start,finished=false;
+  const clean=n=>Number(n.toPrecision(12));
+  const paint=()=>{
+    const y=clean(p.law.k*x+p.law.b);
+    xEl.textContent=x;xEl.setAttribute('data-x',String(x));
+    yEl.textContent=y;yEl.setAttribute('data-value',String(y));
+    visual.style.height=clean(y*p.y.unitsPer)+'px';
+    dec.disabled=x-p.x.step<p.x.min;
+    inc.disabled=x+p.x.step>p.x.max;
+  };
+  $('#title').textContent=Studio.t('title');
+  $('#xname').textContent=Studio.t('xname');
+  $('#yname').textContent=Studio.t('yname');
+  $('#question').textContent=Studio.t('ask')+' '+p.ask.x;
+  dec.textContent=Studio.t('less');
+  inc.textContent=Studio.t('more');
+  const change=direction=>{
+    const next=clean(x+direction*p.x.step);
+    if(next<p.x.min||next>p.x.max)return;
+    x=next;paint();
+    visual.classList.remove('bump');void visual.offsetWidth;visual.classList.add('bump');
+  };
+  dec.addEventListener('click',()=>change(-1));
+  inc.addEventListener('click',()=>change(1));
+  p.ask.options.forEach(value=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.textContent=value;
+    button.setAttribute('data-option',String(value));
+    button.addEventListener('click',()=>{if(!finished)Studio.answer({value});});
+    $('#options').appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    $('#feedback').textContent=Studio.t(correct?'right':'wrong');
+    if(correct&&!finished){
+      finished=true;
+      setTimeout(()=>{$('#feedback').textContent=Studio.t('done');Studio.done();},450);
+    }
+  });
+  paint();
+  Studio.ready();
+})();
+
+</script>

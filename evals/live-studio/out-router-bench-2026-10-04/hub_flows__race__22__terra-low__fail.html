@@ -1,0 +1,121 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7df;font-family:Arial,sans-serif;color:#4d3724}
+  #stage{width:360px;height:320px;position:relative;background:linear-gradient(180deg,#fff4ce 0%,#fff9e9 65%,#e8f5db 100%);overflow:hidden}
+  h1{position:absolute;left:12px;top:3px;right:12px;margin:0;font-size:18px;line-height:21px;text-align:center;color:#704326}
+  #scene{position:absolute;left:0;top:25px;width:360px;height:170px}
+  .label{font-size:12px;font-weight:bold;fill:#5b402d;paint-order:stroke;stroke:#fff9e9;stroke-width:4px;stroke-linejoin:round}
+  .flowlabel{font-size:11px;font-weight:bold;fill:#406443;paint-order:stroke;stroke:#fff9e9;stroke-width:4px;stroke-linejoin:round}
+  [data-entity],.particle{transition:filter .25s,transform .25s,opacity .25s}
+  .focus{filter:drop-shadow(0 0 5px #f9a825)}
+  .particle{filter:drop-shadow(0 1px 1px rgba(70,45,25,.25))}
+  .ground{fill:#c9e5a7}.sunray{stroke:#f4ad2e;stroke-width:4;stroke-linecap:round}
+  #caption{position:absolute;left:130px;top:199px;width:222px;min-height:50px;padding:7px 9px;border-radius:14px;background:#fffdf5;border:2px solid #f1d58b;font-size:12px;line-height:15px;text-align:center;color:#66442e;display:flex;align-items:center;justify-content:center}
+  button{border:0;font:700 12px Arial,sans-serif;color:#fff;background:#7a9c52;border-radius:15px;box-shadow:0 3px 0 #4f7138;cursor:pointer;transition:transform .14s,filter .14s}
+  button:active{transform:translateY(2px) scale(.96);box-shadow:0 1px 0 #4f7138}
+  #play{position:absolute;left:8px;top:198px;width:54px;height:52px;background:#e59645;box-shadow:0 3px 0 #a85c24}
+  #next{position:absolute;left:70px;top:198px;width:54px;height:52px;background:#79a96b}
+  #ask{position:absolute;left:10px;top:252px;right:10px;height:15px;font-size:12px;line-height:15px;text-align:center;font-weight:bold;color:#60422d;white-space:nowrap}
+  #answers{position:absolute;left:10px;top:268px;display:flex;gap:7px;width:340px}
+  #answers button{width:108px;height:52px;background:#628d8f;box-shadow:0 3px 0 #386567;font-size:13px}
+  #answers button:nth-child(2){background:#769b55;box-shadow:0 3px 0 #4f7138}
+  #answers button:nth-child(3){background:#d08b56;box-shadow:0 3px 0 #9c5933}
+  #feedback{position:absolute;right:14px;top:255px;font-size:11px;font-weight:bold;color:#4c7a41;opacity:0;transition:opacity .25s}
+  #feedback.show{opacity:1}
+  .pulse{animation:pulse .45s ease}
+  @keyframes pulse{50%{transform:scale(1.08)}}
+</style>
+<div id="stage">
+  <h1 id="title"></h1>
+  <svg id="scene" viewBox="0 0 360 170" aria-hidden="true">
+    <path class="ground" d="M0 159 Q55 147 110 158 T220 156 T360 157 V170 H0Z"/>
+    <g data-entity="sun">
+      <circle cx="53" cy="44" r="20" fill="#ffd85b"/>
+      <g class="sunray"><path d="M53 14v-7"/><path d="M53 74v7"/><path d="M23 44h-7"/><path d="M83 44h7"/><path d="M32 23l-5-5"/><path d="M74 65l5 5"/><path d="M74 23l5-5"/><path d="M32 65l-5 5"/></g>
+    </g>
+    <text class="label" data-label="sun" x="24" y="92"></text>
+    <path data-entity="roots" d="M178 145 C175 153 170 156 165 160 M180 145 C184 153 191 155 196 160 M178 151 C174 157 174 163 170 167 M183 151 C188 157 189 163 193 167" fill="none" stroke="#9a643d" stroke-width="5" stroke-linecap="round"/>
+    <text class="label" data-label="roots" x="207" y="166"></text>
+    <path data-entity="leaf" d="M181 115 C133 110 127 64 164 46 C196 30 229 49 225 81 C221 108 199 119 181 115Z" fill="#77b95b" stroke="#427a42" stroke-width="4"/>
+    <path d="M146 94 Q177 79 211 55 M176 79v28 M165 86v18 M190 70v21" fill="none" stroke="#d9eea8" stroke-width="3" stroke-linecap="round"/>
+    <text class="label" data-label="leaf" x="155" y="132"></text>
+    <circle class="particle" data-flow="water" cx="176" cy="156" r="5" fill="#4ca9d7"/>
+    <circle class="particle" data-flow="water" cx="182" cy="145" r="5" fill="#4ca9d7"/>
+    <circle class="particle" data-flow="water" cx="178" cy="135" r="5" fill="#4ca9d7"/>
+    <text class="flowlabel" data-label="water" x="211" y="150"></text>
+    <circle class="particle" data-flow="co2" cx="101" cy="111" r="5" fill="#8d8b9a"/>
+    <circle class="particle" data-flow="co2" cx="115" cy="108" r="5" fill="#8d8b9a"/>
+    <circle class="particle" data-flow="co2" cx="130" cy="105" r="5" fill="#8d8b9a"/>
+    <text class="flowlabel" data-label="co2" x="15" y="126"></text>
+    <circle class="particle" data-flow="o2" cx="226" cy="96" r="5" fill="#77cde5"/>
+    <circle class="particle" data-flow="o2" cx="244" cy="91" r="5" fill="#77cde5"/>
+    <circle class="particle" data-flow="o2" cx="264" cy="86" r="5" fill="#77cde5"/>
+    <text class="flowlabel" data-label="o2" x="286" y="113"></text>
+  </svg>
+  <button id="play" data-action="play"></button>
+  <button id="next" data-action="next"></button>
+  <div id="caption" data-caption></div>
+  <div id="ask"></div>
+  <div id="feedback"></div>
+  <div id="answers"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, playing=true, step=1, done=false, t=0;
+  var title=document.getElementById('title'), play=document.getElementById('play'), next=document.getElementById('next');
+  var caption=document.getElementById('caption'), ask=document.getElementById('ask'), feedback=document.getElementById('feedback');
+  title.textContent=Studio.t('title');
+  play.textContent=Studio.t('pause');
+  next.textContent=Studio.t('next');
+  ask.textContent=Studio.t('ask');
+  document.querySelectorAll('[data-label]').forEach(function(el){el.textContent=Studio.t(el.getAttribute('data-label'));});
+  var answers=document.getElementById('answers');
+  p.options.forEach(function(key){
+    var b=document.createElement('button');
+    b.setAttribute('data-option',key); b.textContent=Studio.t(key);
+    b.addEventListener('click',function(){Studio.answer(key);Studio.event('answer',{key:key});});
+    answers.appendChild(b);
+  });
+  function emphasis(){
+    document.querySelectorAll('.focus').forEach(function(x){x.classList.remove('focus');});
+    var targets=step===1?['sun']:step===2?['roots','water']:step===3?['leaf','co2']:['leaf','o2'];
+    targets.forEach(function(k){
+      document.querySelectorAll('[data-entity="'+k+'"],[data-flow="'+k+'"]').forEach(function(x){x.classList.add('focus');});
+    });
+    caption.textContent=Studio.t('step'+step);
+    caption.classList.remove('pulse'); void caption.offsetWidth; caption.classList.add('pulse');
+  }
+  play.addEventListener('click',function(){
+    playing=!playing; play.textContent=Studio.t(playing?'pause':'play'); Studio.event('play',{on:playing?1:0});
+  });
+  next.addEventListener('click',function(){
+    step=step%p.steps+1; emphasis(); Studio.event('next',{step:step});
+  });
+  Studio.onVerdict(function(v){
+    feedback.textContent=Studio.t(v.correct?'right':'wrong');
+    feedback.classList.add('show');
+    if(v.correct&&!done){done=true;Studio.done();}
+  });
+  var flows={
+    water:{a:[179,160],b:[179,119]},
+    co2:{a:[91,113],b:[151,103]},
+    o2:{a:[212,100],b:[307,74]}
+  };
+  function animate(now){
+    if(playing)t=now;
+    Object.keys(flows).forEach(function(key){
+      var arr=document.querySelectorAll('[data-flow="'+key+'"]'), f=flows[key];
+      arr.forEach(function(el,i){
+        var phase=((t/1150+i/3)%1+1)%1;
+        var x=f.a[0]+(f.b[0]-f.a[0])*phase, y=f.a[1]+(f.b[1]-f.a[1])*phase;
+        el.setAttribute('cx',x);el.setAttribute('cy',y);
+      });
+    });
+    requestAnimationFrame(animate);
+  }
+  emphasis();
+  requestAnimationFrame(animate);
+  Studio.ready();
+}());
+
+</script>

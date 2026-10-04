@@ -1,0 +1,119 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff7e9;color:#563a31}
+  .card{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 50% 42%,#fffdf6 0,#fff7e9 75%)}
+  h1{margin:10px 16px 0;text-align:center;font-size:21px;line-height:27px;font-weight:800}
+  .instr{margin:2px 16px 0;text-align:center;font-size:13px;line-height:19px}
+  svg{display:block;width:360px;height:172px;margin-top:2px;overflow:visible}
+  [data-beam]{transform-origin:180px 62px;transition:transform .65s cubic-bezier(.2,1.35,.35,1)}
+  .beamline{stroke:#a86846;stroke-width:11;stroke-linecap:round}
+  .rope{stroke:#b88463;stroke-width:3;stroke-linecap:round}
+  .tray{fill:#e9a46a;stroke:#a86846;stroke-width:3}
+  .weight{fill:#78b4a4;stroke:#458b7c;stroke-width:2}
+  .weightText{fill:#173e3b;font-size:17px;font-weight:800;text-anchor:middle;dominant-baseline:middle}
+  .pivot{fill:#ecb463;stroke:#a86846;stroke-width:3}
+  .base{fill:#a86846}
+  .status{position:absolute;top:234px;left:12px;width:336px;height:21px;text-align:center;font-size:15px;font-weight:800;color:#397d70}
+  .choices{position:absolute;top:259px;left:15px;right:15px;display:flex;justify-content:center;gap:13px}
+  .choices button{min-width:96px;height:54px;border:2px solid #458b7c;border-radius:17px;background:#bce2d4;color:#173e3b;font:800 22px system-ui,sans-serif;box-shadow:0 4px 0 #458b7c;cursor:pointer;transition:transform .18s,opacity .2s}
+  .choices button:active{transform:translateY(3px) scale(.95);box-shadow:0 1px 0 #458b7c}
+  .choices button:disabled{cursor:default}
+  .choices button.chosen{opacity:0;transform:translateY(-35px) scale(.7)}
+  .celebrate .pivot{animation:glow .65s ease-in-out}
+  @keyframes glow{50%{fill:#ffe080;stroke-width:7}}
+</style>
+<div class="card" id="card">
+  <h1 id="title"></h1>
+  <div class="instr" id="instr"></div>
+  <svg viewBox="0 0 360 172" aria-hidden="true">
+    <path class="base" d="M180 65 L168 166 Q180 171 192 166 Z"/>
+    <ellipse class="base" cx="180" cy="167" rx="40" ry="5"/>
+    <g data-beam data-tilt="level">
+      <line class="beamline" x1="75" y1="62" x2="285" y2="62"/>
+      <g data-pan="left" data-total="0" transform="translate(75 0)">
+        <line class="rope" x1="0" y1="62" x2="-43" y2="137"/>
+        <line class="rope" x1="0" y1="62" x2="43" y2="137"/>
+        <path class="tray" d="M-48 137 Q0 154 48 137 Q39 151 0 153 Q-39 151 -48 137Z"/>
+        <g class="weights"></g>
+      </g>
+      <g data-pan="right" data-total="0" transform="translate(285 0)">
+        <line class="rope" x1="0" y1="62" x2="-43" y2="137"/>
+        <line class="rope" x1="0" y1="62" x2="43" y2="137"/>
+        <path class="tray" d="M-48 137 Q0 154 48 137 Q39 151 0 153 Q-39 151 -48 137Z"/>
+        <g class="weights"></g>
+      </g>
+    </g>
+    <circle class="pivot" cx="180" cy="62" r="11"/>
+  </svg>
+  <div class="status" id="status" aria-live="polite"></div>
+  <div class="choices" id="choices"></div>
+</div>
+<script>
+
+(() => {
+  const items=Studio.params.items, svgNS='http://www.w3.org/2000/svg';
+  const card=document.getElementById('card'), beam=document.querySelector('[data-beam]');
+  const pans={left:document.querySelector('[data-pan="left"]'),right:document.querySelector('[data-pan="right"]')};
+  const choices=document.getElementById('choices'), status=document.getElementById('status');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  let index=0, added=null, busy=false, finished=false;
+  const sum=a=>a.reduce((s,n)=>s+Number(n),0);
+  function weight(value,x){
+    const g=document.createElementNS(svgNS,'g');
+    g.setAttribute('data-weight',String(value));
+    const r=document.createElementNS(svgNS,'rect');
+    r.setAttribute('class','weight');r.setAttribute('x',x-15);r.setAttribute('y','106');
+    r.setAttribute('width','30');r.setAttribute('height','30');r.setAttribute('rx','8');
+    const t=document.createElementNS(svgNS,'text');
+    t.setAttribute('class','weightText');t.setAttribute('x',x);t.setAttribute('y','122');
+    t.textContent=String(value);g.append(r,t);return g;
+  }
+  function paint(){
+    const item=items[index], left=item.left, right=added===null?item.right:[...item.right,added];
+    for(const [side,values] of [['left',left],['right',right]]){
+      const pan=pans[side], holder=pan.querySelector('.weights');
+      pan.setAttribute('data-total',String(sum(values)));
+      holder.replaceChildren(...values.map((v,i)=>weight(v,(i-(values.length-1)/2)*32)));
+    }
+    const difference=sum(right)-sum(left);
+    beam.setAttribute('data-tilt',difference>0?'right':difference<0?'left':'level');
+    beam.style.transform=`rotate(${difference>0?11:difference<0?-11:0}deg)`;
+  }
+  function show(){
+    added=null;busy=false;status.textContent='';card.classList.remove('celebrate');
+    choices.replaceChildren();
+    items[index].options.forEach(value=>{
+      const button=document.createElement('button');
+      button.type='button';button.setAttribute('data-option',String(value));
+      button.textContent=String(value);
+      button.addEventListener('click',()=>{
+        if(busy||finished)return;
+        busy=true;added=value;button.classList.add('chosen');
+        [...choices.children].forEach(b=>b.disabled=true);
+        paint();Studio.answer({value});
+      });
+      choices.append(button);
+    });
+    paint();
+  }
+  Studio.onVerdict(({correct})=>{
+    if(!busy||finished)return;
+    status.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      card.classList.add('celebrate');
+      setTimeout(()=>{
+        index++;
+        if(index===items.length){
+          finished=true;choices.replaceChildren();status.textContent=Studio.t('done');Studio.done();
+        }else show();
+      },1050);
+    }else{
+      setTimeout(()=>{added=null;paint();show();},950);
+    }
+  });
+  if(items.length)show();
+  else{finished=true;status.textContent=Studio.t('done');Studio.done();}
+  Studio.ready();
+})();
+
+</script>

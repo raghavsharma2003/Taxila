@@ -1,0 +1,66 @@
+--- a/server/director/state.js	2026-10-04 18:54:21.971984643 +0000
++++ b/server/director/state.js	2026-10-04 18:58:32.152342356 +0000
+@@ -644,6 +644,7 @@
+ }
+ 
+ function toWrap(s, { prefix, stopping = false }) {
++  if (stopping && !["wrap", "done"].includes(s.phase)) s.stoppedEarly = true;   // child.js countsAsDone
+   s.phase = "done"; s.activeItemId = undefined; s.pendingWhy = undefined; s.hintLevel = 0;
+   return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), stopping ? { stopping: true } : {});
+ }
+@@ -676,7 +677,19 @@
+   }
+   // 2. The child wants to stop: whatever was mid-way is over (NEVER MANIPULATE — no holding at goodbye). Only their own
+   // stop words (or Pause → End, which never reaches here) end the lesson: "Skip for now" is a help request below.
+-  if (flags.wantsToStop) return toWrap(s, { stopping: true });
++  // OWNER TEST 2026-10-04 item 3 (evals/owner-truth): the child's stop words alone ('bas', 'lesson khatam', "I'm done",
++  // and a topic-change request the classifier read as a stop) no longer close the lesson on the spot. ONE warm check-in
++  // with three choices (keep going / short break / stop for today); the lesson ends on "stop for today", or on stop words
++  // again on the very next turn. NEVER MANIPULATE holds: one check-in, never a second, no guilt, and the stop chip ends it
++  // at once. Pause → End and the parent's controls never reach here and still end it directly.
++  if (chipId === "stop:end") { s.stopAsked = undefined; return toWrap(s, { stopping: true }); }
++  if (flags.wantsToStop) {
++    // a relational RELEASE (brain/turn.js needRelease, BR5) and a confirmed stop end it now
++    if (cls?.source === "relational" || cls?.relRelease || (s.stopAsked != null && s.turn - s.stopAsked <= 1)) { s.stopAsked = undefined; return toWrap(s, { stopping: true }); }
++    s.stopAsked = s.turn;
++    return plan("break", SH.stopCheck(), { chips: [{ id: "stop:continue", label: labels.go }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }] });
++  }
++  if (chipId === "stop:continue") s.stopAsked = undefined;
+   // 2b. A help request (a client action): acts on the question on the table; never evidence, never a stop.
+   if (cls?.help && ["warmup", "teach", "practice", "teachback"].includes(s.phase)) return helpMove(s, input, item, cls.help);
+   // 3. Choices offered by a break.
+--- a/server/director/shapes.js	2026-10-04 18:54:21.972065991 +0000
++++ b/server/director/shapes.js	2026-10-04 18:54:21.992838715 +0000
+@@ -203,6 +203,8 @@
+   "pause the work; struggling is a normal part of learning (about the work, never about them)",
+   "offer a choice: an easier one, a short stretch break, or keep going",
+ );
++/** The child said they want to stop (state.js decide, OWNER TEST item 3): a shape, never a line she could recite. */
++export const stopCheck = () => "they said they want to stop: acknowledge it warmly in one short line, no guilt and no pressure; offer the three choices on the chips (keep going, a short break, or stop for today) and wait; if they asked to talk about something else, say you can do that too";
+ export const stretch = () => "a 30-second stretch: stand, stretch, say ready when back";
+ 
+ export const safeguard = () => join(
+--- a/server/director/classify.js	2026-10-04 18:54:21.972106999 +0000
++++ b/server/director/classify.js	2026-10-04 18:54:21.993067299 +0000
+@@ -135,7 +135,7 @@
+     "The child may speak Hindi, English or Hinglish, in Roman or Devanagari script. Number words count (aadha = 1/2, ek tihai = 1/3, teen = 3, 'teen wala' = the one with 3). Transcripts come from speech recognition and can have small errors.",
+     "If what the teacher last said asked a DIFFERENT question from the one listed, and the reply answers that other question, label it no_attempt: it is not evidence about the listed question.",
+     "distress: true ONLY for signs the child is unsafe, hurt, abused, frightened, very sad, or may harm themself — never for ordinary frustration with a question.",
+-    "asks_for_answer: they ask to be told the answer. wants_to_stop: they say they want to stop or leave now. off_topic: the reply is about something unrelated to the lesson.",
++    "asks_for_answer: they ask to be told the answer. wants_to_stop: they say they want to stop or leave now (NOT a request to change topic, explain differently, go slower or take a break). off_topic: the reply is about something unrelated to the lesson.",
+   ];
+   if (target.mode === "none" && target.misconceptions.length) {
+     base.push("belief: if the reply expresses one of the listed wrong beliefs (in any words or language), its tag; otherwise none.");
+--- a/server/routes/child.js	2026-10-04 18:54:21.976092540 +0000
++++ b/server/routes/child.js	2026-10-04 18:54:21.993210552 +0000
+@@ -44,7 +44,10 @@
+  * PURE. Does an ended lesson count as today's lesson? Only when the child did something the classifier graded
+  * (state.did) or it ran DONE_MIN_MINUTES; an abandoned zero-turn lesson (closed by lesson start) never does.
+  */
++// OWNER TEST 2026-10-04 item 3: a lesson the child stopped early (a stop-wrap before the plan's own wrap, under the
++// minimum minutes) no longer shuts the day: one 'bas' cost a child every lesson until tomorrow (evals/owner-truth day_closed).
+ export const countsAsDone = (state) => !state?.abandoned
++  && !(state?.stoppedEarly && Number(state?.minutes) < DONE_MIN_MINUTES)
+   && ((Array.isArray(state?.did) && state.did.length > 0) || Number(state?.minutes) >= DONE_MIN_MINUTES);
+ 
+ /** Lesson length shown on the card (V2 §3.4: Young 10-20 min, Older 20-30), never more than what is left today. */

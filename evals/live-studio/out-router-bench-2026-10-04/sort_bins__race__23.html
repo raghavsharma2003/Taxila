@@ -1,0 +1,147 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:Arial,sans-serif;background:#fff5df;color:#563d32}
+  #game{position:relative;width:360px;height:320px;overflow:hidden;padding:10px 10px 8px;background:linear-gradient(180deg,#fff9ea 0%,#fff1d2 100%)}
+  .glow{position:absolute;border-radius:50%;pointer-events:none;opacity:.38}
+  .g1{width:120px;height:120px;background:#ffd879;top:-48px;right:-32px}
+  .g2{width:72px;height:72px;background:#bce7d5;bottom:18px;left:-28px}
+  header{position:relative;height:54px;text-align:center;z-index:1}
+  h1{margin:0;color:#8a4d32;font-size:22px;line-height:27px;font-weight:800}
+  #instruction{margin:2px auto 0;font-size:13px;line-height:17px;color:#76584a;font-weight:700}
+  #feedback{height:18px;margin-top:1px;font-size:13px;font-weight:800;color:#39745c;opacity:0;transform:translateY(-4px);transition:opacity .2s,transform .2s}
+  #feedback.show{opacity:1;transform:translateY(0)}
+  #feedback.wrong{color:#b75b4b}
+  #cards{position:relative;height:122px;display:flex;flex-wrap:wrap;align-content:flex-start;justify-content:center;gap:11px 10px;padding:4px 0 0;z-index:1}
+  .card{width:76px;height:53px;border:0;border-radius:16px;background:#fffdf7;box-shadow:0 4px 0 #dfc8a7,0 7px 14px rgba(115,73,46,.14);color:#563d32;font-size:15px;font-weight:800;cursor:pointer;transition:transform .22s ease,box-shadow .22s ease,opacity .2s;position:relative;touch-action:manipulation}
+  .card:active{transform:scale(.94)}
+  .card[data-selected="true"]{transform:translateY(-8px) scale(1.05);background:#fff6ba;box-shadow:0 6px 0 #e7c55c,0 10px 18px rgba(115,73,46,.2);outline:3px solid #f3c84d}
+  .card.shake{animation:shake .42s ease}
+  .card.fly{z-index:5;transition:transform .42s cubic-bezier(.2,.9,.35,1),opacity .2s}
+  #bins{height:126px;display:flex;gap:7px;align-items:stretch;position:relative;z-index:1}
+  .bin{width:calc((100% - 14px)/3);height:118px;border:0;border-radius:19px 19px 15px 15px;background:#d9edf0;box-shadow:inset 0 -5px 0 rgba(53,112,119,.14),0 3px 0 rgba(92,124,106,.16);cursor:pointer;padding:0 5px 6px;position:relative;overflow:hidden;touch-action:manipulation;transition:transform .18s,filter .18s}
+  .bin:nth-child(2){background:#f3dfb6}
+  .bin:nth-child(3){background:#d9e5c7}
+  .bin:active{transform:scale(.97)}
+  .bin.ready{animation:binpulse .65s ease}
+  .binname{height:33px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#5b5040;position:relative;z-index:2}
+  .binname:before{content:"";position:absolute;bottom:2px;width:42px;height:3px;border-radius:5px;background:rgba(86,61,50,.18)}
+  .placed{display:grid;grid-template-columns:1fr 1fr;gap:4px;align-content:start;justify-items:stretch;height:76px}
+  .placed .card{width:100%;height:32px;min-width:0;border-radius:10px;font-size:11px;box-shadow:0 2px 0 rgba(106,79,56,.2);pointer-events:none}
+  #finish{position:absolute;inset:57px 14px 12px;display:none;align-items:center;justify-content:center;text-align:center;border-radius:24px;background:rgba(255,253,247,.96);box-shadow:0 7px 22px rgba(115,73,46,.18);z-index:8;padding:20px}
+  #finish.show{display:flex;animation:pop .42s cubic-bezier(.2,1.4,.4,1)}
+  #finish p{margin:0;color:#8a4d32;font-size:23px;line-height:30px;font-weight:800}
+  #spark{position:absolute;right:17px;top:18px;width:35px;height:35px;opacity:.75;pointer-events:none}
+  @keyframes shake{0%,100%{transform:translateX(0)}22%{transform:translateX(-8px) rotate(-2deg)}48%{transform:translateX(7px) rotate(2deg)}72%{transform:translateX(-4px)}}
+  @keyframes binpulse{0%,100%{filter:brightness(1)}45%{filter:brightness(1.13);transform:translateY(-3px)}}
+  @keyframes pop{from{opacity:0;transform:scale(.75)}to{opacity:1;transform:scale(1)}}
+</style>
+<div id="game">
+  <div class="glow g1"></div><div class="glow g2"></div>
+  <header>
+    <h1 id="title"></h1>
+    <div id="instruction"></div>
+    <div id="feedback" aria-live="polite"></div>
+  </header>
+  <svg id="spark" viewBox="0 0 40 40" aria-hidden="true">
+    <path d="M20 2 L23 15 L36 12 L25 20 L34 29 L22 25 L18 38 L16 25 L3 29 L13 20 L4 12 L17 15 Z" fill="#f5bd4d"/>
+  </svg>
+  <div id="cards"></div>
+  <div id="bins"></div>
+  <div id="finish"><p id="done"></p></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, selected=null, pending=null, locked=false, sorted=0, done=false;
+  var cards=document.getElementById('cards'), bins=document.getElementById('bins');
+  var feedback=document.getElementById('feedback');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  document.getElementById('done').textContent=Studio.t('done');
+
+  function say(key,bad){
+    feedback.textContent=Studio.t(key);
+    feedback.className='show'+(bad?' wrong':'');
+    setTimeout(function(){ if(!pending) feedback.className=''; },900);
+  }
+  function makeCard(key){
+    var b=document.createElement('button');
+    b.type='button'; b.className='card'; b.textContent=Studio.t(key);
+    b.setAttribute('data-card',key); b.setAttribute('data-selected','false');
+    b.addEventListener('click',function(){
+      if(locked) return;
+      if(selected===b){
+        b.setAttribute('data-selected','false'); selected=null;
+        Studio.event('card_off',{});
+        return;
+      }
+      if(selected) selected.setAttribute('data-selected','false');
+      selected=b; b.setAttribute('data-selected','true');
+      Studio.event('card_pick',{});
+    });
+    return b;
+  }
+  function makeBin(key){
+    var b=document.createElement('button');
+    b.type='button'; b.className='bin'; b.setAttribute('data-bin',key);
+    var name=document.createElement('div'); name.className='binname'; name.textContent=Studio.t(key);
+    var placed=document.createElement('div'); placed.className='placed';
+    b.appendChild(name); b.appendChild(placed);
+    b.addEventListener('click',function(){
+      if(locked || !selected) return;
+      locked=true; pending={card:selected,bin:b,key:key};
+      Studio.event('bin_tap',{});
+      Studio.answer({card:selected.getAttribute('data-card'),bin:key});
+    });
+    return b;
+  }
+  p.cards.forEach(function(key){cards.appendChild(makeCard(key));});
+  p.bins.forEach(function(key){bins.appendChild(makeBin(key));});
+
+  Studio.onVerdict(function(v){
+    if(!pending) return;
+    var move=pending, card=move.card, bin=move.bin;
+    pending=null;
+    if(!v.correct){
+      card.setAttribute('data-selected','false');
+      card.classList.add('shake');
+      selected=null; locked=false; say('wrong',true);
+      Studio.event('try_again',{});
+      setTimeout(function(){card.classList.remove('shake');},450);
+      return;
+    }
+    say('right',false);
+    var from=card.getBoundingClientRect();
+    var holder=bin.querySelector('.placed');
+    card.setAttribute('data-placed',move.key);
+    card.removeAttribute('data-card'); card.removeAttribute('data-selected');
+    card.classList.remove('shake');
+    holder.appendChild(card);
+    var to=card.getBoundingClientRect();
+    var dx=from.left-to.left, dy=from.top-to.top;
+    card.classList.add('fly');
+    card.style.transform='translate('+dx+'px,'+dy+'px)';
+    card.style.opacity='0.35';
+    requestAnimationFrame(function(){
+      card.style.transform='translate(0,0)';
+      card.style.opacity='1';
+      bin.classList.add('ready');
+    });
+    setTimeout(function(){
+      card.classList.remove('fly'); card.style.transform=''; card.style.opacity='';
+      bin.classList.remove('ready');
+    },470);
+    selected=null; locked=false; sorted++;
+    Studio.event('placed',{});
+    if(sorted===p.cards.length && !done){
+      done=true;
+      setTimeout(function(){
+        document.getElementById('finish').classList.add('show');
+        Studio.done();
+      },560);
+    }
+  });
+  Studio.ready();
+}());
+
+</script>

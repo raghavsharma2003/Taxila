@@ -1,0 +1,87 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8ed;color:#49352c}
+#stage{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(160deg,#fff9ef,#f7eddd)}
+#title{position:absolute;top:7px;left:14px;right:14px;text-align:center;font-size:18px;font-weight:800;color:#624431}
+#ask{position:absolute;top:34px;left:12px;right:12px;text-align:center;font-size:14px;font-weight:650;color:#705441}
+#chart{position:absolute;inset:0;width:360px;height:320px}
+.grid{stroke:#e6dac9;stroke-width:1}
+.axis{stroke:#9d836c;stroke-width:1.4}
+.tick{fill:#786451;font-size:10px;text-anchor:end;dominant-baseline:middle}
+.axis-title{fill:#624b38;font-size:11px;font-weight:700;text-anchor:middle}
+.bar{fill:#e9a34f;rx:5;transform-box:fill-box;transform-origin:center bottom;animation:grow .8s cubic-bezier(.2,.85,.2,1) both}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+#columns{position:absolute;inset:0;pointer-events:none}
+.column{position:absolute;top:65px;height:225px;border:0;background:transparent;padding:0;color:transparent;pointer-events:auto;cursor:pointer;border-radius:12px;touch-action:manipulation}
+.column:active{background:rgba(233,163,79,.14);transform:scale(.96)}
+.column:focus-visible{outline:3px solid #8c674a;outline-offset:-3px}
+.column-label{position:absolute;left:0;right:0;top:173px;height:44px;display:flex;align-items:center;justify-content:center;color:#624b38;font-size:11px;font-weight:700;white-space:nowrap;pointer-events:none}
+#feedback{position:absolute;left:10px;right:10px;bottom:4px;height:25px;text-align:center;font-size:13px;font-weight:750;color:#6e563e}
+</style>
+<div id="stage">
+  <div id="title"></div>
+  <div id="ask"></div>
+  <svg id="chart" viewBox="0 0 360 320" aria-hidden="true"></svg>
+  <div id="columns"></div>
+  <div id="feedback"></div>
+</div>
+<script>
+
+(function(){
+  const p=Studio.params,d=p.data;
+  const title=document.getElementById("title"),ask=document.getElementById("ask");
+  const svg=document.getElementById("chart"),columns=document.getElementById("columns");
+  const feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  ask.textContent=Studio.t("ask");
+  const ns="http://www.w3.org/2000/svg", left=63, plotW=282, top=76, plotH=150, base=top+plotH;
+  const max=Math.max.apply(null,d.map(x=>x.value));
+  const step=max<=5?1:max<=10?2:max<=20?2:5;
+  const ceiling=Math.ceil(max/step)*step;
+  function el(tag,attrs,text){
+    const n=document.createElementNS(ns,tag);
+    Object.keys(attrs||{}).forEach(k=>n.setAttribute(k,attrs[k]));
+    if(text!==undefined)n.textContent=text;
+    svg.appendChild(n);return n;
+  }
+  for(let v=0;v<=ceiling;v+=step){
+    const y=base-(v/ceiling)*plotH;
+    el("line",{x1:left,y1:y,x2:left+plotW,y2:y,class:v===0?"axis":"grid"});
+    el("text",{x:left-8,y:y,class:"tick","data-tick":v},String(v));
+  }
+  el("line",{x1:left,y1:top,x2:left,y2:base,class:"axis"});
+  const yt=el("text",{x:14,y:151,class:"axis-title",transform:"rotate(-90 14 151)"},Studio.t("yaxis"));
+  yt.setAttribute("dominant-baseline","middle");
+  const cell=plotW/d.length, barW=Math.min(34,cell*.62);
+  d.forEach((item,i)=>{
+    const x=left+i*cell+(cell-barW)/2;
+    const h=(item.value/ceiling)*plotH;
+    el("rect",{x:x,y:base-h,width:barW,height:h,class:"bar","data-bar":item.key,"data-value":item.value});
+    const b=document.createElement("button");
+    b.type="button";b.className="column";b.setAttribute("data-column",item.key);
+    b.style.left=(left+i*cell)+"px";b.style.width=cell+"px";
+    const label=document.createElement("span");label.className="column-label";label.textContent=Studio.t(item.key);
+    b.appendChild(label);
+    b.addEventListener("click",function(){
+      if(b.disabled)return;
+      Studio.event("column_tap",{key:item.key});
+      Studio.answer(item.key);
+    });
+    columns.appendChild(b);
+  });
+  let finished=false;
+  Studio.onVerdict(function(result){
+    if(result.correct){
+      feedback.textContent=Studio.t("right")+" "+Studio.t("done");
+      finished=true;
+      Array.from(columns.children).forEach(b=>b.disabled=true);
+      Studio.done();
+    }else{
+      feedback.textContent=Studio.t("wrong");
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

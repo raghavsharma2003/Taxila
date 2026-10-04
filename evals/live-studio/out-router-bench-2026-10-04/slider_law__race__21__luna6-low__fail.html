@@ -1,0 +1,100 @@
+<style>
+*{box-sizing:border-box}
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#49392f}
+.frame{width:360px;height:320px;overflow:hidden;padding:10px;background:#fff8eb;display:flex;flex-direction:column;gap:7px}
+header{height:28px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:#ffe3b7;color:#754b2a;font-weight:800;font-size:17px}
+.readout{height:31px;display:flex;justify-content:center;align-items:center;gap:22px;color:#49392f;font-size:15px;font-weight:750}
+.readout span{padding:3px 9px;border-radius:10px;background:#fff}
+.scene{height:77px;position:relative;display:flex;align-items:flex-end;justify-content:center;border-radius:14px;background:#eaf7f4;overflow:hidden}
+.ground{position:absolute;bottom:8px;height:5px;width:220px;border-radius:8px;background:#a9c9bd}
+#resultVisual{position:absolute;bottom:13px;width:55px;min-height:1px;border-radius:12px 12px 4px 4px;background:linear-gradient(90deg,#ffad67,#f47a5c);transition:height .38s cubic-bezier(.2,.8,.2,1);box-shadow:0 3px 7px #b56b4a55}
+.controls{height:52px;display:flex;gap:9px}
+button{font:inherit;border:0;cursor:pointer;touch-action:manipulation;transition:transform .15s,filter .15s,background .2s}
+button:active{transform:scale(.94)}
+.step{flex:1;border-radius:14px;background:#dbefe5;color:#365c4e;font-weight:800;font-size:16px}
+.step:last-child{background:#ffe0be;color:#78492b}
+.prompt{min-height:30px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:14px;font-weight:700;color:#694d3d}
+.options{height:52px;display:flex;gap:8px}
+.option{flex:1;min-width:0;border-radius:14px;background:#fff;border:2px solid #e8cda9;color:#553f33;font-weight:800;font-size:18px}
+.option.selected{background:#ffe3b7;border-color:#e99558;transform:scale(.97)}
+.feedback{flex:1;min-height:20px;display:flex;align-items:center;justify-content:center;text-align:center;color:#7b573d;font-size:14px;font-weight:750}
+</style>
+<div class="frame">
+  <header id="title"></header>
+  <div class="readout">
+    <span><b id="xName"></b> <span id="xValue" data-x=""></span></span>
+    <span data-output data-value=""><b id="yName"></b> <span id="yValue"></span></span>
+  </div>
+  <div class="scene" aria-hidden="true">
+    <div class="ground"></div>
+    <div id="resultVisual" data-visual data-dim="h" style="height:0px"></div>
+  </div>
+  <div class="controls">
+    <button class="step" type="button" data-action="dec" id="less"></button>
+    <button class="step" type="button" data-action="inc" id="more"></button>
+  </div>
+  <div class="prompt"><span id="ask"></span>&nbsp;<span id="askTarget"></span></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, t=Studio.t;
+  const xName=t("xname"), yName=t("yname");
+  let x=p.x.start, submitted=false, completed=false;
+  const byId=id=>document.getElementById(id);
+  byId("title").textContent=t("title");
+  byId("xName").textContent=xName;
+  byId("yName").textContent=yName;
+  byId("less").textContent=t("less");
+  byId("more").textContent=t("more");
+  byId("ask").textContent=t("ask");
+  byId("askTarget").textContent=xName+" = "+p.ask.x;
+  function format(n){return Number.isInteger(n)?String(n):String(Number(n.toFixed(10)));}
+  function render(){
+    const y=p.law.k*x+p.law.b;
+    byId("xValue").textContent=format(x);
+    byId("xValue").setAttribute("data-x",format(x));
+    byId("yValue").textContent=format(y);
+    document.querySelector("[data-output]").setAttribute("data-value",format(y));
+    byId("resultVisual").style.height=(y*p.y.unitsPer)+"px";
+    byId("less").disabled=x<=p.x.min;
+    byId("more").disabled=x>=p.x.max;
+  }
+  document.querySelector('[data-action="dec"]').addEventListener("click",()=>{
+    if(x>p.x.min){x=Math.max(p.x.min,x-p.x.step);render();}
+  });
+  document.querySelector('[data-action="inc"]').addEventListener("click",()=>{
+    if(x<p.x.max){x=Math.min(p.x.max,x+p.x.step);render();}
+  });
+  const optionBox=byId("options");
+  p.ask.options.forEach(value=>{
+    const button=document.createElement("button");
+    button.type="button";
+    button.className="option";
+    button.textContent=String(value);
+    button.setAttribute("data-option",String(value));
+    button.addEventListener("click",()=>{
+      optionBox.querySelectorAll(".option").forEach(el=>el.classList.remove("selected"));
+      button.classList.add("selected");
+      Studio.answer({value});
+    });
+    optionBox.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      if(!completed){
+        completed=true;
+        byId("feedback").textContent=t("right")+" "+t("done");
+        Studio.done();
+      }
+    }else{
+      byId("feedback").textContent=t("wrong");
+    }
+  });
+  render();
+  Studio.ready();
+})();
+
+</script>

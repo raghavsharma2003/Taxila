@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Taxila · Progress</title>
+<link rel="stylesheet" href="v3.css">
+<style>
+  .pg { display: grid; gap: 14px; padding-bottom: 20px; }
+  @media (min-width: 900px) { .pg { grid-template-columns: 1.4fr 1fr; align-items: start; gap: 18px; } }
+  .col { display: grid; gap: 14px; min-width: 0; }
+  .head { display: grid; gap: 14px; padding: 6px 0 4px; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .sw { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
+  .s-sec { background: var(--ion); }
+  .s-work { background: transparent; box-shadow: inset 0 0 0 2px var(--ion); background-image: linear-gradient(135deg, rgba(139,152,255,.55) 50%, transparent 50%); }
+  .s-seen { box-shadow: inset 0 0 0 1.5px var(--ink-3); }
+  .s-new { background: var(--bg-3); }
+  .map { padding: 6px 0; }
+  .ch { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 11px 14px; }
+  .ch + .ch { border-top: 1px solid var(--line); }
+  .ch .n { font: 600 12px/1 var(--f-mono); color: var(--ink-3); }
+  .ch b { font-size: 15px; font-weight: 600; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ch .sub { font-size: 12px; color: var(--ink-3); }
+  .nodes { display: flex; gap: 5px; }
+  .node { width: 22px; height: 22px; border-radius: 6px; border: 0; padding: 0; position: relative; }
+  .node.sec { background: var(--ion); }
+  .node.work { box-shadow: inset 0 0 0 2px var(--ion); background-image: linear-gradient(135deg, rgba(139,152,255,.55) 50%, transparent 50%); }
+  .node.seen { box-shadow: inset 0 0 0 1.5px var(--ink-3); background: transparent; }
+  .node.new { background: var(--bg-3); }
+  .node.due::after { content: ""; position: absolute; right: -3px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 0 2px var(--bg-1); }
+  .ch.cur { background: linear-gradient(90deg, rgba(139,152,255,.08), transparent); }
+  .big { padding: 18px; display: grid; gap: 6px; }
+  .big .num { font: 700 44px/1 var(--f-display); letter-spacing: -.03em; }
+  .big .num small { font-size: 18px; color: var(--ink-3); margin-left: 4px; }
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tile { padding: 14px; display: grid; gap: 4px; }
+  .tile b { font: 700 26px/1 var(--f-display); }
+  .tile span { font-size: 13px; color: var(--ink-2); }
+  .thennow { padding: 16px; display: grid; gap: 12px; }
+  .tn { display: grid; grid-template-columns: 70px 1fr; gap: 12px; align-items: start; }
+  .tn time { font: 600 12px/1.4 var(--f-mono); color: var(--ink-3); text-transform: uppercase; letter-spacing: .04em; }
+  .tn p { margin: 0; font-size: 15px; }
+  .tn.now p { color: var(--ink); font-weight: 600; }
+  .tn.then p { color: var(--ink-2); }
+  .tn-line { height: 1px; background: linear-gradient(90deg, var(--line-2), transparent); margin-left: 82px; }
+  .cracked { padding: 16px; display: grid; grid-template-columns: 64px 1fr; gap: 14px; align-items: center; }
+  .cracked svg { width: 64px; height: 64px; }
+  .detail { padding: 14px; font-size: 14px; color: var(--ink-2); display: grid; gap: 6px; }
+  .detail b { color: var(--ink); font-size: 15px; }
+</style>
+</head>
+<body class="grain">
+<script src="sprite.js"></script>
+<div class="app">
+  <header class="topbar">
+    <h1 class="h-2">Progress</h1>
+    <button class="btn btn-icon btn-quiet" aria-label="Share with parent"><svg class="icon"><use href="#i-arrow"/></svg></button>
+  </header>
+  <div class="head">
+    <div class="seg" role="group" aria-label="Subject"><button aria-pressed="true">Maths</button><button aria-pressed="false">Science</button><button aria-pressed="false">English</button><button aria-pressed="false">Social</button></div>
+  </div>
+  <div class="pg">
+    <div class="col">
+      <div class="card big">
+        <div class="eyebrow">Class 6 Maths · Ganita Prakash</div>
+        <div class="num"><span id="secN">11</span><small>of <span id="totN">36</span> skills secure</small></div>
+        <div class="small muted">Secure means you got it right again days later, without warning. Not just once.</div>
+        <div class="legend" style="margin-top:8px"><span><i class="sw s-sec"></i>Secure</span><span><i class="sw s-work"></i>Working on it</span><span><i class="sw s-seen"></i>Met</span><span><i class="sw s-new"></i>Ahead</span><span><i class="sw" style="background:var(--amber);border-radius:50%;width:9px;height:9px"></i>Check-in due</span></div>
+      </div>
+      <div class="card map" id="map" aria-label="Skill map by chapter"></div>
+      <div class="card detail" id="detail"><b>Tap any square</b>See exactly what counted as evidence for it.</div>
+    </div>
+    <div class="col">
+      <div class="card cracked">
+        <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="2" y="2" width="60" height="60" rx="16" fill="#161A24" stroke="rgba(255,255,255,.12)"/><g fill="none" stroke="#8B98FF" stroke-width="2"><rect x="38" y="12" width="14" height="11" rx="3"/><rect x="38" y="27" width="14" height="11" rx="3" stroke="#3DDC97"/><rect x="38" y="42" width="14" height="11" rx="3"/></g><path d="M12 32 l12 0 -8 -5z M12 32 l12 0 -8 5z" fill="#CBFF4D"/></svg>
+        <div><div class="eyebrow">Hardest thing you've cracked</div><b class="h-3" style="display:block;margin-top:4px">Equivalent fractions at speed</b><span class="small muted">18 clean gates in Fraction Pilot, then explained 9/12 = 3/4 out loud.</span></div>
+      </div>
+      <div class="tiles">
+        <div class="card tile"><b>23</b><span>questions you asked</span></div>
+        <div class="card tile"><b>3</b><span>parked, coming up</span></div>
+        <div class="card tile"><b>14</b><span>lessons this month</span></div>
+        <div class="card tile"><b>9</b><span>things made for you</span></div>
+      </div>
+      <div class="card thennow">
+        <div class="eyebrow">Then and now</div>
+        <div class="tn then"><time>Aug 28</time><p>Needed three hints to find the area of a rectangle.</p></div>
+        <div class="tn-line"></div>
+        <div class="tn now"><time>Oct 4</time><p>Proved why a triangle's area is half — in your own words.</p></div>
+      </div>
+    </div>
+  </div>
+  <nav class="tabbar" aria-label="Main">
+    <a href="02-home.html"><svg class="icon"><use href="#i-home"/></svg>Home</a>
+    <a href="07-progress.html" aria-current="page"><svg class="icon"><use href="#i-map"/></svg>Progress</a>
+    <a href="#"><svg class="icon"><use href="#i-layers"/></svg>Library</a>
+    <a href="#"><svg class="icon"><use href="#i-user"/></svg>You</a>
+  </nav>
+</div>
+<script>
+// Class 6 maths chapters and topics from data/curriculum/c6-maths.json (NCERT Ganita Prakash). States are illustrative.
+const CH = [["Patterns in Mathematics",["Number sequences","Visualising sequences","Relations among sequences","Patterns in shapes"],"ssss"],
+["Lines and Angles",["Point, segment, line, ray","Comparing angles","Measuring angles","Types of angles"],"sss!w"],
+["Number Play",["Numbers that tell us things","Digits and palindromes","Collatz patterns","Estimation"],"sswm"],
+["Data Handling and Presentation",["Organising data","Pictographs","Bar graphs"],"smn"],
+["Prime Time",["Common factors and multiples","Prime and composite","Co-prime numbers","Prime factorisation","Divisibility tests"],"wmnnn"],
+["Perimeter and Area",["Perimeter","Area of rectangles","Area of a triangle"],"ssw"],
+["Fractions",["Equal shares","Number line and mixed","Equivalent fractions","Comparing fractions","Adding and subtracting"],"s!wwmn"],
+["Playing with Constructions",["Circles with a compass","Squares and rectangles","Diagonals"],"nnn"],
+["Symmetry",["Line symmetry","Rotational symmetry"],"nn"],
+["The Other Side of Zero",["Integers in everyday life","Integers on the number line","Adding and subtracting integers"],"nnn"]];
+const ST = { s: "sec", w: "work", m: "seen", n: "new" };
+const EV = { sec: "Secure: right on first try, then right again on a surprise check 3+ days later.", work: "Working on it: some right, one mix-up she's watching for.", seen: "Met: you've seen it in a lesson; no evidence yet either way.", new: "Ahead: not taught yet. She'll get there in order." };
+let html = "", sec = 0, tot = 0;
+CH.forEach(([t, topics, code], i) => {
+  const states = []; for (let k = 0; k < code.length; k++) { if (code[k] === "!") { states[states.length - 1].due = true; continue; } states.push({ st: ST[code[k]] }); }
+  const nodes = topics.map((tp, k) => { const s = states[k] || { st: "new" }; tot++; if (s.st === "sec") sec++; return `<button class="node ${s.st}${s.due ? " due" : ""}" title="${tp}" data-t="${tp}" data-s="${s.st}" data-d="${s.due ? 1 : 0}" aria-label="${tp}: ${s.st}"></button>`; }).join("");
+  const nSec = states.filter((s) => s.st === "sec").length;
+  html += `<div class="ch${i === 5 ? " cur" : ""}"><span class="n">${String(i + 1).padStart(2, "0")}</span><div style="min-width:0"><b>${t}</b><span class="sub">${i === 5 ? "Now · " : ""}${nSec} of ${topics.length} secure</span></div><div class="nodes">${nodes}</div></div>`;
+});
+document.getElementById("map").innerHTML = html; document.getElementById("secN").textContent = sec; document.getElementById("totN").textContent = tot;
+document.getElementById("map").addEventListener("click", (e) => { const b = e.target.closest(".node"); if (!b) return; document.getElementById("detail").innerHTML = `<b>${b.dataset.t}</b>${EV[b.dataset.s]}${b.dataset.d === "1" ? " A quick check-in is due — she'll slip it into a lesson, no test." : ""}`; });
+</script>
+</body>
+</html>

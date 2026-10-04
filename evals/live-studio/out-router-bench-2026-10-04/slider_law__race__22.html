@@ -1,0 +1,45 @@
+<style>
+  *{box-sizing:border-box}body{margin:0}#activity{position:relative;width:360px;height:320px;overflow:hidden;background:#fff4df;color:#634435;font-family:system-ui,sans-serif;border-radius:20px}#title{position:absolute;top:5px;left:16px;right:16px;text-align:center;font-size:19px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.scene{position:absolute;top:31px;left:12px;width:336px;height:160px;border-radius:20px;background:#fce3bd;overflow:hidden}.scene svg{position:absolute;inset:0;width:100%;height:100%}.readout{position:absolute;top:16px;width:94px;text-align:center;font-weight:750}.readout.left{left:9px}.readout.right{right:9px}.name{display:block;font-size:13px}.number{display:block;font-size:25px;line-height:31px;font-variant-numeric:tabular-nums}#visual{position:absolute;bottom:0;left:135px;width:66px;height:0;background:repeating-linear-gradient(0deg,#e88859 0 17px,#f5a66e 17px 20px);border:3px solid #a95d42;border-bottom:0;border-radius:12px 12px 0 0;transition:height .38s cubic-bezier(.2,.8,.2,1)}#visual:after{content:"";position:absolute;top:8px;left:12px;width:12px;height:12px;border-radius:50%;background:#fff1d6;box-shadow:24px 0 #fff1d6}.controls{position:absolute;top:196px;left:15px;width:330px;display:flex;gap:12px}button{border:0;cursor:pointer;font:inherit;font-weight:800;transition:transform .16s,background .2s}button:active{transform:scale(.92)}.controls button{width:159px;height:52px;border-radius:16px;background:#da7957;color:#fff;font-size:18px}.controls button:disabled{opacity:.42;cursor:default}#prompt{position:absolute;top:251px;left:14px;right:14px;height:16px;text-align:center;font-size:13px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.options{position:absolute;top:267px;left:12px;right:12px;display:flex;gap:9px}.options button{flex:1;min-width:0;height:52px;border-radius:16px;background:#fff;border:2px solid #e3a876;color:#754738;font-size:21px;box-shadow:0 3px 0 #e9c9a4}.options button.pulse{animation:bump .35s}.options button.chosen{background:#8ebd86;color:#fff;border-color:#8ebd86}@keyframes bump{50%{transform:scale(1.09)}} 
+</style>
+<div id="activity">
+  <div id="title"></div>
+  <div class="scene">
+    <svg viewBox="0 0 336 160" aria-hidden="true"><circle cx="284" cy="108" r="67" fill="#ffe9ca"/><circle cx="58" cy="133" r="48" fill="#f8d2a5"/><path d="M0 155 Q85 137 168 156 T336 151 V160 H0" fill="#d6bb88"/></svg>
+    <div class="readout left"><span class="name" id="xname"></span><span class="number" id="xvalue" data-x=""></span></div>
+    <div id="visual" data-visual data-dim="h"></div>
+    <div class="readout right"><span class="name" id="yname"></span><span class="number" id="yvalue" data-output data-value=""></span></div>
+  </div>
+  <div class="controls"><button type="button" data-action="dec" id="dec"></button><button type="button" data-action="inc" id="inc"></button></div>
+  <div id="prompt"></div>
+  <div class="options" id="options"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, t=k=>Studio.t(k), $=id=>document.getElementById(id);
+  for(const key of ['title','xname','yname','less','more']) $(key==='less'?'dec':key==='more'?'inc':key).textContent=t(key);
+  let x=p.x.start, finished=false;
+  const clean=n=>String(Number(n.toPrecision(12)));
+  function render(){
+    const y=p.law.k*x+p.law.b;
+    $('xvalue').textContent=clean(x);$('xvalue').setAttribute('data-x',clean(x));
+    $('yvalue').textContent=clean(y);$('yvalue').setAttribute('data-value',clean(y));
+    $('visual').style.height=clean(y*p.y.unitsPer)+'px';
+    $('dec').disabled=x-p.x.step<p.x.min;$('inc').disabled=x+p.x.step>p.x.max;
+  }
+  $('dec').addEventListener('click',()=>{if(x-p.x.step>=p.x.min){x=Number((x-p.x.step).toPrecision(12));render();Studio.event('change',{direction:'less'});}});
+  $('inc').addEventListener('click',()=>{if(x+p.x.step<=p.x.max){x=Number((x+p.x.step).toPrecision(12));render();Studio.event('change',{direction:'more'});}});
+  $('prompt').textContent=t('ask')+' '+t('xname')+' '+clean(p.ask.x);
+  p.ask.options.forEach(value=>{
+    const b=document.createElement('button');b.type='button';b.textContent=clean(value);b.setAttribute('data-option',clean(value));
+    b.addEventListener('click',()=>{if(finished)return;document.querySelectorAll('.options button').forEach(el=>el.classList.remove('chosen','pulse'));b.classList.add('pulse');Studio.answer({value});});
+    $('options').appendChild(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    $('prompt').textContent=t(correct?'right':'wrong');
+    if(correct){finished=true;document.querySelectorAll('.options button').forEach(el=>{if(el.classList.contains('pulse'))el.classList.add('chosen');el.disabled=true;});Studio.done();}
+  });
+  render();Studio.ready();
+})();
+
+</script>

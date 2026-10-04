@@ -16,7 +16,9 @@ from scipy import ndimage as ndi
 K = "art/character/puppet2d/polish-r4/keys"
 L = "art/character/puppet2d/polish-r4/layers"
 front = np.asarray(Image.open("art/character/puppet2d/polish-r4/c-front.png").convert("RGB")).astype(np.float32)
-mid = np.asarray(Image.open(f"{K}/mid-0.png").convert("RGB")).astype(np.float32)
+import os
+MIDF = os.environ.get("P2D_MID", "mid62-0.png")   # r4: the ~0.62 squeeze key (judge r3 fix 5)
+mid = np.asarray(Image.open(f"{K}/{MIDF}").convert("RGB")).astype(np.float32)
 shut = np.asarray(Image.open(f"{K}/closed-0.png").convert("RGB")).astype(np.float32)
 H, W = front.shape[:2]
 yy, xx = np.mgrid[0:H, 0:W]
@@ -84,14 +86,79 @@ for s, b in ELL.items():
             top = np.full(W, np.nan)
             for x in xs_all:
                 top[x] = np.where(lash[:, x])[0][0]
-            tmed = float(np.median(bot[okc] - top[okc]))
+            runs = bot[xs_all] - top[xs_all]
+            tmed = float(np.median(runs[runs <= 9])) if (runs <= 9).sum() >= 4 else float(np.median(bot[okc] - top[okc]))
             topS = ndi.gaussian_filter1d(np.interp(np.arange(W), xs_all, top[xs_all]), 1.5)
             over = (np.abs(np.arange(W) - icx) <= ir + 3) & (np.arange(W) >= xa) & (np.arange(W) <= xb)
+            # r4: the squeeze key's opening is dark across most of the width (pupil / shadow under the low lid): any column
+            # whose dark run is clearly longer than a lash takes the lash top + the measured lash thickness
+            longrun = np.zeros(W, bool); longrun[xs_all] = runs > tmed + 3
+            over |= longrun
             bot[over] = topS[over] + tmed
             print(s, "lash thickness", round(tmed, 1))
             xs = np.where(~np.isnan(bot))[0]
             bs = np.interp(np.arange(W), xs, bot[xs])
             bs = ndi.gaussian_filter1d(ndi.median_filter(bs, 5), 1.5)
+            # r4 (judge r3 fix 5): the squeeze key. The edit painted its lash ~0.85 closed and wavy; the judge wants a ~0.6
+            # squeeze still. Build it from two painted sources: the mid edit's LID SKIN (remapped so it ends on the target
+            # arc) and c-front's OWN lash band (with its flick), carried rigidly per column onto a smooth target arc at
+            # MID_CLOSE of the live opening. Nothing is drawn procedurally; the lash keeps c-front's exact weight.
+            MID_CLOSE = float(os.environ.get("P2D_MIDCLOSE", "0.62"))
+            et, eb = np.array(e["top"], float), np.array(e["bot"], float)
+            lx0, lx1 = e["lashX"]
+            lT, lB = np.array(e["lashTop"], float), np.array(e["lashBot"], float)
+            xs_e = np.arange(xa, xb + 1)
+            want = et + MID_CLOSE * (eb - et)                      # where the lash's lower edge should sit
+            lbx = lB[xs_e - lx0]
+            dy_e = want - lbx
+            # smooth: a quadratic in x over the middle 80% of the opening (the ends' top/bot meet, so they are noisy)
+            m = (xs_e > xa + 0.1 * (xb - xa)) & (xs_e < xb - 0.1 * (xb - xa))
+            cf = np.polyfit(xs_e[m], dy_e[m], 2)
+            xl = np.arange(lx0, lx1 + 1)
+            dyl = np.polyval(cf, np.clip(xl, xa, xb))              # the flick beyond the opening rides rigidly with the end
+            # lash band of c-front: dark pixels between lashTop-3 and lashBot+2 (soft alpha from darkness)
+            Lf = lum(front)
+            lash_rgb = np.zeros_like(front); lash_a = np.zeros((H, W), np.float32)
+            for i, x in enumerate(xl):
+                y0, y1 = int(np.floor(lT[i] - 4)), int(np.ceil(lB[i] + 3))
+                d = dyl[i]
+                for y in range(y0, y1 + 1):
+                    yd = y + d
+                    # sample source at y (integer), place at yd with linear split between the two target rows
+                    al = float(np.clip((125 - Lf[y, x]) / 55.0, 0, 1))
+                    if al <= 0:
+                        continue
+                    yi = int(np.floor(yd)); fr = yd - yi
+                    for yy2, ww in ((yi, 1 - fr), (yi + 1, fr)):
+                        if 0 <= yy2 < H and ww > 0:
+                            lash_rgb[yy2, x] += front[y, x] * al * ww
+                            lash_a[yy2, x] += al * ww
+            lash_a = np.clip(lash_a, 0, 1)
+            lash_rgb = np.where(lash_a[..., None] > 1e-3, lash_rgb / np.maximum(lash_a[..., None], 1e-3), 0)
+            # target lash bottom per column (for the skin cover and the runtime's midLash)
+            tgt = np.full(W, np.nan)
+            tgt[xl] = lB[xl - lx0] + dyl
+            tgtS = np.interp(np.arange(W), xl, tgt[xl])
+            # skin: the edit's lid skin, remapped per column from [ellipse top, its lash TOP] onto [top, target lash top]
+            src_y = yy.astype(np.float32).copy()
+            y0e = b[1]
+            for x in range(b[0], b[2] + 1):
+                ptop = topS[x] if not np.isnan(topS[x]) else bs[x] - tmed      # painted lash top (skin ends there)
+                ttop = tgtS[x] - (lB[min(max(x, lx0), lx1) - lx0] - lT[min(max(x, lx0), lx1) - lx0]) - 1.0
+                ys = np.arange(y0e, H, dtype=np.float32)
+                f = (ys - y0e) / max(1.0, ttop - y0e)
+                src_y[y0e:, x] = np.where(ys <= ttop, y0e + f * (ptop - 1.5 - y0e), ptop - 1.5)
+            skin = np.stack([ndi.map_coordinates(im2[..., c], [src_y, xx.astype(np.float32)], order=1, mode="nearest") for c in range(3)], -1)
+            im2 = skin * (1 - lash_a[..., None]) + lash_rgb * lash_a[..., None]
+            bs = tgtS
+            span_lo, span_hi = lx0, lx1
+            covS = np.clip(tgtS[None, :] - 1.0 - yy, 0, 1)        # skin, opaque above the lash
+            a_mid = np.maximum(covS * ((xx >= span_lo) & (xx <= span_hi)), lash_a)
+            a_mid = a_mid * border
+            out["mid"] = save(f"lidmid{s}", im2, a_mid)
+            out["midLash"] = {"x0": int(xa), "y": [round(float(bs[x]), 2) for x in range(xa, xb + 1)]}
+            print(s, "mid lash bottom at iris x", round(float(bs[int(e["iris"][0])]), 1), "open", e["top"][int(e["iris"][0]) - xa], e["bot"][int(e["iris"][0]) - xa])
+            continue
             # opaque above the lash bottom (+0.5 px AA), only across the eye's opening span; outside it the lid layer is
             # the painted skin (opaque) so the lid continues to the corners
             cov = np.clip(bs[None, :] + 0.5 - yy, 0, 1)

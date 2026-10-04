@@ -1,0 +1,145 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ec;font-family:system-ui,sans-serif;color:#493f53}
+  .game{width:360px;height:320px;overflow:hidden;padding:14px 12px;background:radial-gradient(circle at 90% 8%,#ffe4bb 0 48px,transparent 49px),#fff8ec}
+  .title{text-align:center;font-size:21px;font-weight:800;line-height:27px}
+  .instr{text-align:center;font-size:13px;line-height:19px;margin-top:2px;color:#716579}
+  .item{height:48px;display:flex;justify-content:center;align-items:center;gap:10px;margin-top:5px}
+  .target{min-width:67px;padding:6px 13px;border-radius:17px;background:#ffe3aa;text-align:center;font-size:23px;font-weight:800;color:#75483e}
+  .linebox{height:113px;position:relative}
+  svg{display:block;width:336px;height:108px;overflow:visible}
+  .rail{stroke:#7b6884;stroke-width:5;stroke-linecap:round}
+  .tick{stroke:#826f88;stroke-width:3;stroke-linecap:round}
+  .tick-label{fill:#60556c;font-size:12px;font-weight:700;text-anchor:middle}
+  .marker{transition:transform .23s cubic-bezier(.2,1.5,.45,1)}
+  .marker circle{fill:#ef806c;stroke:#fff8ec;stroke-width:4;filter:drop-shadow(0 3px 2px #c9a493)}
+  .marker path{fill:#ef806c}
+  .marker.hop{animation:hop .48s ease-in-out}
+  @keyframes hop{50%{translate:0 -16px;scale:1.13}}
+  .feedback{height:22px;text-align:center;font-size:14px;font-weight:750;color:#ae635a;transition:opacity .2s}
+  .feedback.good{color:#568575}
+  .controls{display:flex;gap:9px;justify-content:center}
+  button{height:56px;min-width:100px;border:0;border-radius:18px;background:#e9dce9;color:#493f53;font:750 16px system-ui,sans-serif;box-shadow:0 4px 0 #c8b6cc;cursor:pointer;transition:transform .15s,box-shadow .15s}
+  button:active{transform:translateY(3px) scale(.96);box-shadow:0 1px 0 #c8b6cc}
+  button[data-action="check"]{background:#8ccbb4;box-shadow:0 4px 0 #65a48e}
+  button[data-action="check"]:active{box-shadow:0 1px 0 #65a48e}
+  button:disabled{opacity:.62;cursor:default}
+  .finished .item,.finished .linebox,.finished .controls{visibility:hidden}
+  .finished .feedback{height:85px;padding-top:30px;font-size:23px}
+</style>
+<div class="game" id="game">
+  <div class="title" id="title"></div>
+  <div class="instr" id="instr"></div>
+  <div class="item" id="item"><span class="target" data-target></span></div>
+  <div class="linebox">
+    <svg viewBox="0 0 336 108" aria-hidden="true">
+      <line class="rail" x1="16" y1="56" x2="320" y2="56"></line>
+      <g id="ticks"></g>
+      <g class="marker" data-marker data-value="">
+        <path d="M-7 39 L7 39 L0 51 Z"></path>
+        <circle cy="27" r="13"></circle>
+      </g>
+    </svg>
+  </div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+  <div class="controls">
+    <button type="button" data-action="left" id="left"></button>
+    <button type="button" data-action="right" id="rightButton"></button>
+    <button type="button" data-action="check" id="check"></button>
+  </div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, $=s=>document.querySelector(s), svgNS='http://www.w3.org/2000/svg';
+  const game=$('#game'), item=$('#item'), target=$('[data-target]'), marker=$('[data-marker]'), ticks=$('#ticks'), feedback=$('#feedback');
+  $('#title').textContent=Studio.t('title');
+  $('#instr').textContent=Studio.t('instr');
+  $('#left').textContent=Studio.t('left');
+  $('#rightButton').textContent=Studio.t('right_btn');
+  $('#check').textContent=Studio.t('check');
+  const count=Math.round((p.max-p.min)/p.step);
+  const round=v=>Math.round(v*1000000)/1000000;
+  const value=k=>round(p.min+k*p.step);
+  const places=Math.min(6,Math.max(...[p.min,p.max,p.step,...p.items.map(i=>i.target)].map(v=>{
+    const s=String(v);return s.includes('.')?s.split('.')[1].length:0;
+  })));
+  const format=v=>p.format==='fraction'?`${Math.round(v*p.den)}/${p.den}`:String(Number(v.toFixed(places)));
+  const x=k=>16+304*k/count;
+  for(let k=0;k<=count;k++){
+    const g=document.createElementNS(svgNS,'g');
+    g.setAttribute('data-tick',String(value(k)));
+    g.setAttribute('transform',`translate(${x(k)} 0)`);
+    const line=document.createElementNS(svgNS,'line');
+    line.setAttribute('class','tick');
+    line.setAttribute('x1','0');line.setAttribute('x2','0');
+    line.setAttribute('y1','48');line.setAttribute('y2','65');
+    g.append(line);
+    if(k%p.labelEvery===0){
+      const label=document.createElementNS(svgNS,'text');
+      label.setAttribute('class','tick-label');
+      label.setAttribute('y','88');
+      label.textContent=format(value(k));
+      g.append(label);
+    }
+    ticks.append(g);
+  }
+  let index=0,k=Math.max(0,Math.min(count,Math.round((p.start-p.min)/p.step))),busy=false;
+  const buttons=[...document.querySelectorAll('button')];
+  function moveMarker(){
+    marker.setAttribute('data-value',String(value(k)));
+    marker.setAttribute('transform',`translate(${x(k)} 0)`);
+  }
+  function showItem(){
+    item.setAttribute('data-item',String(p.items[index].id));
+    target.textContent=format(p.items[index].target);
+    k=Math.max(0,Math.min(count,Math.round((p.start-p.min)/p.step)));
+    moveMarker();
+    feedback.textContent='';
+    feedback.classList.remove('good');
+  }
+  function shift(delta){
+    if(busy)return;
+    k=Math.max(0,Math.min(count,k+delta));
+    moveMarker();
+    feedback.textContent='';
+    Studio.event('move',{value:value(k)});
+  }
+  $('[data-action="left"]').addEventListener('click',()=>shift(-1));
+  $('[data-action="right"]').addEventListener('click',()=>shift(1));
+  $('[data-action="check"]').addEventListener('click',()=>{
+    if(busy)return;
+    busy=true;
+    buttons.forEach(b=>b.disabled=true);
+    Studio.answer({value:value(k)});
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.classList.toggle('good',correct);
+    if(correct){
+      marker.classList.remove('hop');
+      void marker.getBoundingClientRect();
+      marker.classList.add('hop');
+      setTimeout(()=>{
+        marker.classList.remove('hop');
+        index++;
+        if(index>=p.items.length){
+          game.classList.add('finished');
+          feedback.textContent=Studio.t('done');
+          Studio.done();
+        }else{
+          showItem();
+          busy=false;
+          buttons.forEach(b=>b.disabled=false);
+        }
+      },520);
+    }else{
+      busy=false;
+      buttons.forEach(b=>b.disabled=false);
+    }
+  });
+  showItem();
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,136 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#49342c;background:#fff8eb}
+#app{position:relative;width:360px;height:320px;overflow:hidden}
+h1{position:absolute;left:12px;right:12px;top:7px;height:24px;margin:0;text-align:center;font-size:18px;line-height:24px;font-weight:800;color:#80452e}
+#prompt{position:absolute;left:10px;right:10px;top:34px;min-height:20px;text-align:center;font-size:14px;line-height:20px}
+#target{font-weight:800;color:#a74e32;white-space:nowrap}
+#picture{position:absolute;left:70px;top:58px;width:220px;height:190px;display:block;overflow:hidden}
+.part{fill:#ffe7a6;stroke:#fff8eb;stroke-width:3;cursor:pointer;transform-box:fill-box;transform-origin:center;transition:fill .18s ease,transform .18s ease,filter .18s ease}
+.part:hover{filter:brightness(1.04)}
+.part:active{transform:scale(.94)}
+.part[data-shaded="true"]{fill:#ee925e}
+.barPart{stroke:#fff8eb;stroke-width:4}
+#check{position:absolute;left:124px;bottom:12px;min-width:112px;height:52px;border:0;border-radius:18px;background:#bb6541;color:#fff;font:700 17px system-ui,-apple-system,"Segoe UI",sans-serif;box-shadow:0 4px 0 #91452e;cursor:pointer;transition:transform .16s ease,background .16s ease}
+#check:active{transform:scale(.95) translateY(2px);box-shadow:0 2px 0 #91452e}
+button:focus-visible,.part:focus-visible{outline:3px solid #4f8063;outline-offset:3px}
+#message{position:absolute;left:10px;right:10px;bottom:72px;height:22px;font-size:14px;font-weight:700;text-align:center;color:#4f8063}
+#message.wrong{color:#a74e32}
+#picture.celebrate{animation:pop .45s ease}
+@keyframes pop{50%{transform:scale(1.06)}}
+</style>
+<main id="app">
+  <h1 id="title"></h1>
+  <div id="prompt"><span id="instruction"></span> <span id="target" data-target></span></div>
+  <svg id="picture" viewBox="0 0 220 190" role="group" aria-label=""></svg>
+  <div id="message" aria-live="polite"></div>
+  <button id="check" data-action="check" type="button"></button>
+</main>
+<script>
+
+(function(){
+  const params=Studio.params;
+  const app=document.getElementById("app");
+  const svg=document.getElementById("picture");
+  const target=document.getElementById("target");
+  const message=document.getElementById("message");
+  const check=document.getElementById("check");
+  const words={title:Studio.t("title"),instr:Studio.t("instr"),check:Studio.t("check"),right:Studio.t("right"),wrong:Studio.t("wrong"),done:Studio.t("done"),hint:Studio.t("hint")};
+  document.getElementById("title").textContent=words.title;
+  document.getElementById("instruction").textContent=words.instr;
+  check.textContent=words.check;
+  let index=0,parts=[],locked=false;
+  function draw(){
+    message.textContent="";
+    message.className="";
+    svg.classList.remove("celebrate");
+    svg.replaceChildren();
+    if(index>=params.items.length){
+      document.getElementById("instruction").textContent=words.done;
+      target.textContent="";
+      svg.hidden=true;
+      check.hidden=true;
+      Studio.done();
+      return;
+    }
+    svg.hidden=false;
+    check.hidden=false;
+    const item=params.items[index];
+    app.setAttribute("data-item",item.id);
+    target.textContent=item.n+"/"+item.d;
+    parts=[];
+    if(params.picture==="pizza"){
+      const cx=110,cy=95,r=82;
+      for(let i=0;i<item.d;i++){
+        const a1=-Math.PI/2+2*Math.PI*i/item.d;
+        const a2=-Math.PI/2+2*Math.PI*(i+1)/item.d;
+        const x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+        const x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+        const path=document.createElementNS("http://www.w3.org/2000/svg","path");
+        path.setAttribute("d","M "+cx+" "+cy+" L "+x1+" "+y1+" A "+r+" "+r+" 0 0 1 "+x2+" "+y2+" Z");
+        path.setAttribute("class","part");
+        path.setAttribute("data-part",i);
+        path.setAttribute("data-shaded","false");
+        path.setAttribute("tabindex","0");
+        path.setAttribute("role","button");
+        svg.appendChild(path);
+        parts.push(path);
+        path.addEventListener("click",toggle);
+        path.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle.call(path)}});
+      }
+      const rim=document.createElementNS("http://www.w3.org/2000/svg","circle");
+      rim.setAttribute("cx",cx);rim.setAttribute("cy",cy);rim.setAttribute("r",r);
+      rim.setAttribute("fill","none");rim.setAttribute("stroke","#d47b46");rim.setAttribute("stroke-width","3");rim.setAttribute("pointer-events","none");
+      svg.appendChild(rim);
+    }else{
+      const x=7,y=57,w=206,h=76,seg=w/item.d;
+      for(let i=0;i<item.d;i++){
+        const rect=document.createElementNS("http://www.w3.org/2000/svg","rect");
+        rect.setAttribute("x",x+i*seg);rect.setAttribute("y",y);rect.setAttribute("width",seg);rect.setAttribute("height",h);rect.setAttribute("rx","7");
+        rect.setAttribute("class","part barPart");rect.setAttribute("data-part",i);rect.setAttribute("data-shaded","false");
+        rect.setAttribute("tabindex","0");rect.setAttribute("role","button");
+        svg.appendChild(rect);parts.push(rect);
+        rect.addEventListener("click",toggle);
+        rect.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle.call(rect)}});
+      }
+    }
+    locked=false;
+  }
+  function toggle(){
+    if(locked)return;
+    const on=this.getAttribute("data-shaded")==="true";
+    this.setAttribute("data-shaded",String(!on));
+    Studio.event("part_tap",{part:Number(this.getAttribute("data-part")),shaded:!on});
+  }
+  check.addEventListener("click",function(){
+    if(locked)return;
+    const item=params.items[index];
+    const n=parts.filter(p=>p.getAttribute("data-shaded")==="true").length;
+    Studio.answer({n:n,d:item.d});
+  });
+  Studio.onVerdict(function(result){
+    if(index>=params.items.length)return;
+    if(result.correct){
+      locked=true;
+      message.textContent=words.right;
+      svg.classList.remove("celebrate");
+      void svg.offsetWidth;
+      svg.classList.add("celebrate");
+      svg.addEventListener("animationend",function advance(e){
+        if(e.target!==svg)return;
+        svg.removeEventListener("animationend",advance);
+        index++;
+        draw();
+      });
+    }else{
+      message.textContent=words.wrong;
+      message.className="wrong";
+      svg.classList.remove("celebrate");
+    }
+  });
+  draw();
+  Studio.ready();
+})();
+
+</script>

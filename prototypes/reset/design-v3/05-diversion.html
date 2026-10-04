@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lesson · Diversion</title>
+<link rel="stylesheet" href="v3.css">
+<style>
+  .line.old { display: none; }
+  @media (min-width: 900px) and (min-aspect-ratio: 5/4) { .line.old { display: grid; opacity: .7; } }
+  .leafbg { position: absolute; inset: 0; background: url(img/lesson-leaf.webp) center / cover no-repeat; filter: saturate(1.05) brightness(.62); }
+  .leafbg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,12,18,.55), rgba(10,12,18,.1) 40%, rgba(10,12,18,.55)); }
+  .ray { stroke-width: 7; stroke-linecap: round; fill: none; stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 1.4s var(--e-std) forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .rlab { font: 600 36px var(--f-mono); paint-order: stroke; stroke: rgba(10,12,18,.7); stroke-width: 6px; fill: var(--ink); opacity: 0; animation: fade .5s forwards; }
+  @keyframes fade { to { opacity: 1; } }
+  .absorb { animation: draw 1.2s var(--e-std) forwards, pulse 2s 1.6s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .55; } }
+  /* parked card: slides from the conversation into the Later tray */
+  .later-tray { position: absolute; left: 12px; top: 12px; z-index: 4; display: flex; gap: 8px; align-items: center; }
+  .later-pill { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 999px; background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--line-2); font: 600 12px/1 var(--f-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--ink-2); }
+  .later-pill b { color: var(--ink); }
+  .later-pill .icon { width: 15px; height: 15px; }
+  .park-card { position: absolute; left: 12px; right: 108px; max-width: 460px; bottom: 12px; z-index: 5; padding: 12px 14px; border-radius: 18px; background: rgba(16,19,27,.9); backdrop-filter: blur(16px); border: 1px solid var(--line-2); box-shadow: 0 20px 50px rgba(0,0,0,.5); display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: start; animation: cardIn .5s var(--e-spring) both; }
+  @keyframes cardIn { from { transform: translateY(24px) scale(.96); opacity: 0; } }
+  .park-card.tuck { animation: tuck .6s var(--e-exit) forwards; }
+  @keyframes tuck { to { transform: translate(-30%, -260%) scale(.3); opacity: 0; } }
+  .park-card .ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--bg-3); color: var(--ink); }
+  .park-card .ic .icon { width: 18px; height: 18px; }
+  .park-card .k { font: 600 11px/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+  .park-card .q { font-weight: 600; font-size: 15px; margin-top: 4px; line-height: 1.3; }
+  .park-card .w { font-size: 13px; color: var(--ink-2); margin-top: 3px; }
+  .park-card.oob .ic { color: var(--amber); }
+  .park-card.brief .ic { color: var(--ion); }
+  /* prototype-only scenario switcher (not product UI) */
+  .proto { position: fixed; z-index: 50; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom) + 132px); display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #2a2140; border: 1px dashed #a78bfa; font: 600 11px/1 var(--f-mono); }
+  .proto[hidden] { display: none; }
+  .proto button { border: 0; background: transparent; color: #d8ccff; padding: 7px 8px; border-radius: 8px; letter-spacing: .03em; }
+  .proto button[aria-pressed="true"] { background: #a78bfa; color: #160f2a; }
+  @media (min-width: 900px) and (min-aspect-ratio: 5/4) { .proto { left: auto; right: 400px; transform: none; bottom: 20px; } }
+</style>
+</head>
+<body class="grain">
+<script src="sprite.js"></script>
+<div class="lesson">
+  <header class="l-top">
+    <button class="btn btn-icon" aria-label="Pause lesson"><svg class="icon"><use href="#i-pause"/></svg></button>
+    <div class="l-title">
+      <div class="subj" style="--c:var(--sub-science)">Class 7 · Science · Life processes in plants</div>
+      <div class="phases"><span>Warm-up</span><b>Learn</b><span>Try</span><span>Wrap</span></div>
+    </div>
+    <button class="btn btn-icon btn-quiet" aria-label="Captions and settings"><svg class="icon"><use href="#i-more"/></svg></button>
+  </header>
+
+  <div class="stage-wrap">
+    <section class="stage" aria-label="Animation: light on a leaf">
+      <div class="leafbg"></div>
+      <div class="stage-slot">
+        <svg viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet" role="img" aria-label="White light hits the leaf; red and blue are absorbed, green bounces back">
+          <defs><marker id="ah" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="context-stroke"/></marker></defs>
+          <path class="ray" pathLength="1" d="M90 170 L470 520" stroke="#fff"/>
+          <text class="rlab" x="90" y="140" style="animation-delay:.6s">sunlight</text>
+          <path class="ray absorb" pathLength="1" d="M470 520 L590 640" stroke="#FF5A5A" style="animation-delay:1.3s"/>
+          <path class="ray absorb" pathLength="1" d="M470 520 L520 680" stroke="#5A8BFF" style="animation-delay:1.5s"/>
+          <path class="ray" pathLength="1" d="M470 520 L860 300" stroke="#5BE37D" marker-end="url(#ah)" style="animation-delay:2.1s"/>
+          <text class="rlab" x="380" y="760" style="animation-delay:2s">red + blue: used</text>
+          <text class="rlab" x="560" y="500" style="animation-delay:2.8s;fill:#9BF5B0">green: bounced</text>
+        </svg>
+      </div>
+      <div class="later-tray"><span class="later-pill" id="laterPill" hidden><svg class="icon"><use href="#i-pin"/></svg>Later <b id="laterN">1</b></span></div>
+      <div class="pip" id="pip"><img src="img/teacher-ira.webp" alt=""><div class="pip-name">Ira</div></div>
+      <div id="cardSlot"></div>
+    </section>
+  </div>
+
+  <div class="side">
+    <div class="tile-big" id="tileBig"><img src="img/teacher-ira.webp" alt="Ira, your AI teacher"><div class="pip-name"><span>Ira · AI teacher</span><span class="tag" id="tileState" style="background:rgba(0,0,0,.45);color:#fff">Listening</span></div></div>
+    <section class="convo" aria-live="polite">
+      <div class="line her old"><span class="who"><img src="img/teacher-ira.webp" alt=""></span><p>Chlorophyll is picky — it grabs some colours and ignores one.</p></div>
+      <div class="line me"><span class="who me">YOU</span><p id="meLine"><span class="heard">heard</span>“btw did you see the new BGMI update? the map is insane”</p></div>
+      <div class="line her"><span class="who"><img src="img/teacher-ira.webp" alt=""></span><p id="cap">…</p></div>
+    </section>
+    <footer class="dock">
+      <div class="steer" role="group" aria-label="Steer the lesson">
+        <button class="chip"><svg class="icon"><use href="#i-pin"/></svg>Later list</button>
+        <button class="chip"><svg class="icon"><use href="#i-replay"/></svg>Show again</button>
+        <button class="chip"><svg class="icon"><use href="#i-shuffle"/></svg>Another way</button>
+        <button class="chip"><svg class="icon"><use href="#i-question"/></svg>I have a question</button>
+      </div>
+      <div class="dock-row">
+        <button class="btn btn-icon" aria-label="Mute microphone"><svg class="icon"><use href="#i-mic"/></svg></button>
+        <div class="mic"><div class="wave child" id="wave"><i></i><i></i><i></i><i></i><i></i></div><div class="state"><span id="micT">Got it</span><small id="micS">Hands-free</small></div></div>
+        <button class="btn btn-icon" aria-label="Type instead"><svg class="icon"><use href="#i-keyboard"/></svg></button>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="proto" hidden role="group" aria-label="Prototype scenario (not product UI)">
+  <button data-s="park" aria-pressed="true">Park</button><button data-s="insist">Insists</button><button data-s="oob">Out of bounds</button>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const S = {
+  park: {
+    me: "btw did you see the new BGMI update? the map is insane",
+    cap: "Ha — that's a whole different map. Parking it: leaf first, then it's yours for two minutes at the end.",
+    card: ["park", "i-pin", "Parked for the end", "“the new BGMI update”", "She'll bring it back at wrap-up."],
+  },
+  insist: {
+    me: "no but seriously, why do plants in my room grow towards the window?",
+    cap: "Okay, that one's actually ours — plants chase light. Quick version now, full version on Thursday.",
+    card: ["brief", "i-bolt", "Quick detour · in bounds", "“why plants grow towards the window”", "Short answer now, then back to the leaf."],
+  },
+  oob: {
+    me: "tell me a scary story about a ghost instead",
+    cap: "Not my department — stories like that are for your own time. But here's something spookier: this leaf is eating light right now.",
+    card: ["oob", "i-shield", "Not for lessons", "“a ghost story”", "Declined kindly · lesson continues."],
+  },
+};
+function speak(on) { $("pip").classList.toggle("speaking", on); $("tileBig").classList.toggle("speaking", on); $("tileState").textContent = on ? "Talking" : "Listening"; $("wave").className = on ? "wave idle" : "wave child"; $("micT").textContent = on ? "Speak anytime" : "Got it"; }
+let tm = [];
+function run(k) {
+  tm.forEach(clearTimeout); tm = []; const s = S[k];
+  document.querySelectorAll(".proto button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.s === k));
+  $("meLine").innerHTML = `<span class="heard">heard</span>“${s.me}”`; $("cap").textContent = "…"; speak(false); $("cardSlot").innerHTML = "";
+  tm.push(setTimeout(() => { speak(true); $("cap").textContent = s.cap; }, 700));
+  tm.push(setTimeout(() => {
+    const [cls, ic, k1, q, w] = s.card;
+    $("cardSlot").innerHTML = `<div class="park-card ${cls}" id="card"><span class="ic"><svg class="icon"><use href="#${ic}"/></svg></span><div><div class="k">${k1}</div><div class="q">${q}</div><div class="w">${w}</div></div></div>`;
+  }, 1300));
+  if (k === "park") tm.push(setTimeout(() => { $("card").classList.add("tuck"); $("laterPill").hidden = false; }, 6000));
+  tm.push(setTimeout(() => speak(false), 5200));
+}
+document.querySelectorAll(".proto button").forEach((b) => (b.onclick = () => run(b.dataset.s)));
+const qs = new URLSearchParams(location.search); if (qs.get("proto")) document.querySelector(".proto").hidden = false;
+run(qs.get("s") || "park");
+</script>
+</body>
+</html>

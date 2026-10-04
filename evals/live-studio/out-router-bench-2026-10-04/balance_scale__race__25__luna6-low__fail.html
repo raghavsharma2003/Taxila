@@ -1,0 +1,118 @@
+<style>
+*{box-sizing:border-box}
+:root{font-family:system-ui,sans-serif;color:#35465b}
+#app{width:360px;height:320px;overflow:hidden;position:relative;background:linear-gradient(160deg,#fff9e9,#f4f8ff);padding:12px 14px}
+h1{font-size:17px;line-height:21px;margin:0;color:#36566a}
+#instr{font-size:12px;margin:3px 0 0;color:#617487}
+#scene{height:155px;position:relative;margin-top:2px}
+#beam{position:absolute;width:190px;height:12px;left:71px;top:55px;border-radius:10px;background:#e79b53;transform-origin:50% 50%;transition:transform .6s cubic-bezier(.2,.8,.2,1);box-shadow:0 3px 0 #ca7740}
+#beam[data-tilt="left"]{transform:rotate(13deg)}
+#beam[data-tilt="right"]{transform:rotate(-13deg)}
+#beam[data-tilt="level"]{transform:rotate(0)}
+#pivot{position:absolute;left:165px;top:64px;width:0;height:0;border-left:15px solid transparent;border-right:15px solid transparent;border-bottom:48px solid #7a9ba6;filter:drop-shadow(0 2px 0 #587985)}
+.pan{position:absolute;top:61px;width:112px;height:70px;display:flex;align-items:flex-end;justify-content:center;gap:4px;padding:5px;border-bottom:7px solid #8ab8bb;border-radius:0 0 24px 24px;background:rgba(190,225,220,.4);transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+#leftPan{left:14px}
+#rightPan{right:14px}
+.weight{width:31px;height:30px;border-radius:8px 8px 5px 5px;background:#ffd477;border:2px solid #e9a54b;color:#694d2d;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 #d8973e;animation:pop .25s ease-out}
+#options{display:flex;justify-content:center;gap:12px;margin-top:1px}
+button[data-option]{width:68px;height:58px;border:2px solid #e5a94e;border-radius:15px;background:#ffe3a1;color:#694d2d;font:800 19px system-ui;box-shadow:0 4px 0 #d99a42;cursor:pointer;transition:transform .12s,background .2s,opacity .2s}
+button[data-option]:active{transform:scale(.92)}
+button[data-option]:disabled{opacity:.48;cursor:default}
+#feedback{height:24px;text-align:center;margin-top:7px;font-size:14px;font-weight:750;color:#527b70}
+#feedback.wrong{color:#b76652}
+#done{position:absolute;inset:0;background:rgba(255,249,233,.97);display:none;align-items:center;justify-content:center;text-align:center;padding:24px;font-size:20px;font-weight:800;color:#426d68}
+#done.show{display:flex;animation:pop .4s ease-out}
+@keyframes pop{from{transform:scale(.75);opacity:.5}to{transform:scale(1);opacity:1}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <p id="instr"></p>
+  <div id="scene">
+    <div id="beam" data-beam data-tilt="level"></div>
+    <div id="pivot"></div>
+    <div id="leftPan" class="pan" data-pan="left" data-total="0"></div>
+    <div id="rightPan" class="pan" data-pan="right" data-total="0"></div>
+  </div>
+  <div id="options"></div>
+  <div id="feedback"></div>
+  <div id="done"></div>
+</div>
+<script>
+
+(()=>{
+  const items=Studio.params.items;
+  const title=document.getElementById("title"),instr=document.getElementById("instr");
+  const leftPan=document.getElementById("leftPan"),rightPan=document.getElementById("rightPan");
+  const beam=document.getElementById("beam"),optionsBox=document.getElementById("options");
+  const feedback=document.getElementById("feedback"),done=document.getElementById("done");
+  title.textContent=Studio.t("title");instr.textContent=Studio.t("instr");
+  let index=0,locked=false,finished=false,attempt=0;
+  function weight(value){
+    const el=document.createElement("span");
+    el.className="weight";el.dataset.weight=String(value);el.textContent=String(value);
+    return el;
+  }
+  function setTilt(){
+    const l=Number(leftPan.dataset.total),r=Number(rightPan.dataset.total);
+    const tilt=l>r?"left":r>l?"right":"level";
+    beam.dataset.tilt=tilt;
+    leftPan.style.transform=tilt==="left"?"rotate(-4deg)":tilt==="right"?"rotate(4deg)":"rotate(0)";
+    rightPan.style.transform=tilt==="right"?"rotate(-4deg)":tilt==="left"?"rotate(4deg)":"rotate(0)";
+  }
+  function render(){
+    const item=items[index];
+    leftPan.replaceChildren(...item.left.map(weight));
+    rightPan.replaceChildren(...item.right.map(weight));
+    leftPan.dataset.total=String(item.left.reduce((a,b)=>a+b,0));
+    rightPan.dataset.total=String(item.right.reduce((a,b)=>a+b,0));
+    optionsBox.replaceChildren();
+    item.options.forEach(value=>{
+      const b=document.createElement("button");
+      b.type="button";b.dataset.option=String(value);b.textContent=String(value);
+      b.addEventListener("click",()=>choose(value,b));
+      optionsBox.appendChild(b);
+    });
+    feedback.textContent="";feedback.className="";
+    locked=false;setTilt();
+  }
+  function choose(value,button){
+    if(locked||finished)return;
+    locked=true;
+    const currentAttempt=++attempt;
+    const item=items[index];
+    button.disabled=true;
+    const added=weight(value);rightPan.appendChild(added);
+    rightPan.dataset.total=String(Number(rightPan.dataset.total)+Number(value));
+    setTilt();
+    Studio.event("choose",{value:Number(value)});
+    Studio.answer({value});
+    Studio.onVerdict(({correct})=>{
+      if(finished||currentAttempt!==attempt)return;
+      if(correct){
+        feedback.textContent=Studio.t("right");feedback.className="";
+        leftPan.dataset.total=rightPan.dataset.total;
+        setTilt();
+        setTimeout(()=>{
+          if(finished||currentAttempt!==attempt)return;
+          index++;
+          if(index>=items.length){
+            finished=true;done.textContent=Studio.t("done");done.classList.add("show");Studio.done();
+          }else render();
+        },850);
+      }else{
+        feedback.textContent=Studio.t("wrong");feedback.className="wrong";
+        setTimeout(()=>{
+          if(finished||currentAttempt!==attempt)return;
+          if(added.parentNode===rightPan)rightPan.removeChild(added);
+          rightPan.dataset.total=String(Number(rightPan.dataset.total)-Number(value));
+          button.disabled=false;setTilt();locked=false;
+        },850);
+      }
+    });
+  }
+  render();
+  Studio.ready();
+})();
+
+</script>

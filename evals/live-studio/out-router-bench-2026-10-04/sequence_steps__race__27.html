@@ -1,0 +1,109 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff6e9;color:#563d39}
+  .scene{width:360px;height:320px;padding:17px 18px;background:radial-gradient(circle at 92% 6%,#ffe1ae 0 55px,transparent 56px),#fff6e9}
+  h1{margin:0;font-size:22px;line-height:28px;font-weight:800}
+  .instr{margin:4px 0 0;font-size:14px;line-height:20px;color:#765c53}
+  .track,.cards{display:grid;grid-template-columns:repeat(var(--count),minmax(0,1fr));gap:8px}
+  .track{margin-top:18px}
+  .slot{height:88px;min-width:0;border:2px dashed #ddbda1;border-radius:18px;background:#fffaf2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:background .3s,border-color .3s}
+  .slot.filled{border-style:solid;border-color:#e9a978;background:#ffedda}
+  .slot-number{font-size:16px;font-weight:800;color:#a76550;line-height:18px}
+  .cards{margin-top:16px;min-height:65px}
+  .card{min-width:0;min-height:60px;width:100%;border:2px solid #e8a77d;border-radius:16px;background:#ffd7b0;color:#563d39;font:700 16px/1.15 system-ui,sans-serif;padding:5px;cursor:pointer;box-shadow:0 4px 0 #d68d6d;transition:transform .2s,box-shadow .2s,background .2s;overflow-wrap:anywhere}
+  .card:active{transform:scale(.94);box-shadow:0 1px 0 #d68d6d}
+  .card:focus-visible{outline:3px solid #7d9a76;outline-offset:2px}
+  .slot .card{min-height:52px;box-shadow:none;cursor:default;background:#fff1de;border-color:#e9a978}
+  .card.shake{animation:shake .4s ease}
+  .card.arrive{animation:arrive .4s ease}
+  .feedback{height:33px;margin-top:15px;text-align:center;font-size:16px;font-weight:750;color:#9a654d}
+  .feedback.pop{animation:pop .4s ease}
+  @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+  @keyframes arrive{from{transform:translateY(12px) scale(.85);opacity:.5}to{transform:translateY(0) scale(1);opacity:1}}
+  @keyframes pop{50%{transform:scale(1.07)}}
+</style>
+<div class="scene">
+  <h1 id="title"></h1>
+  <p class="instr" id="instr"></p>
+  <div class="track" id="track"></div>
+  <div class="cards" id="cards"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const shown = Studio.params.shown;
+  const track = document.getElementById('track');
+  const cards = document.getElementById('cards');
+  const feedback = document.getElementById('feedback');
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('instr').textContent = Studio.t('instr');
+  track.style.setProperty('--count', shown.length);
+  cards.style.setProperty('--count', shown.length);
+  let placed = 0;
+  let waiting = false;
+
+  function say(key) {
+    feedback.textContent = Studio.t(key);
+    feedback.classList.remove('pop');
+    void feedback.offsetWidth;
+    feedback.classList.add('pop');
+  }
+
+  shown.forEach((key, index) => {
+    const slot = document.createElement('div');
+    slot.className = 'slot';
+    const number = document.createElement('span');
+    number.className = 'slot-number';
+    number.textContent = index + 1;
+    slot.appendChild(number);
+    track.appendChild(slot);
+
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'card';
+    card.dataset.step = key;
+    card.textContent = Studio.t(key);
+    card.addEventListener('click', () => {
+      if (waiting || card.hasAttribute('data-placed')) return;
+      waiting = true;
+      Studio.answer({key});
+      Studio.event('tap', {step:key});
+      activeCard = card;
+    });
+    cards.appendChild(card);
+  });
+
+  let activeCard = null;
+  Studio.onVerdict(({correct}) => {
+    if (!waiting || !activeCard) return;
+    const card = activeCard;
+    activeCard = null;
+    waiting = false;
+    if (correct) {
+      placed++;
+      card.dataset.placed = placed;
+      card.disabled = true;
+      const slot = track.children[placed - 1];
+      slot.classList.add('filled');
+      slot.appendChild(card);
+      card.classList.add('arrive');
+      card.addEventListener('animationend', () => card.classList.remove('arrive'), {once:true});
+      if (placed === shown.length) {
+        say('done');
+        Studio.done();
+      } else {
+        say('right');
+      }
+    } else {
+      say('wrong');
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+      card.addEventListener('animationend', () => card.classList.remove('shake'), {once:true});
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

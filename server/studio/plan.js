@@ -277,7 +277,7 @@ export function redactLine(text, redact = []) {
  * The deterministic layout fixer (fixes SHAPE, never truth): an op that sticks out of the board but fits inside it is
  * moved in by the smallest shift (a label moves its text, never its leader's point). → { ops, fixes }
  */
-export function fitOps(ops, board, margin = 6) {
+export function fitOps(ops, board, margin = 6, prior = []) {
   const fixes = [];
   const byId = new Map(ops.map((o) => [o.id, o]));
   const sh = (p, dx, dy) => (Array.isArray(p) && p.length === 2 ? [p[0] + dx, p[1] + dy] : p);
@@ -298,7 +298,7 @@ export function fitOps(ops, board, margin = 6) {
     if (Array.isArray(n.points)) n.points = n.points.map((p) => sh(p, dx, dy));
     return n;
   });
-  return { ops: separateTexts(out, board, margin, fixes), fixes };
+  return { ops: separateTexts(out, board, margin, fixes, prior), fixes };
 }
 
 /**
@@ -306,14 +306,18 @@ export function fitOps(ops, board, margin = 6) {
  * code: a later text or label that overlaps an earlier one on the board at the same time slides down (then up) in 4-unit
  * steps, at most 64, staying inside the board. Labels keep their leader's point. Pure shape, never truth.
  */
-function separateTexts(ops, board, margin, fixes) {
+function separateTexts(ops, board, margin, fixes, prior = []) {
   const byId = new Map(ops.map((o) => [o.id, o]));
   const erasedAt = new Map(ops.filter((o) => o?.op === "erase").map((o) => [o.target, o.startMs]));
   const boxOf = (o) => { try { return o.op === "label" ? opGeometry({ ...o, to: undefined, target: undefined }, byId).box : opGeometry(o, byId).box; } catch { return null; } };
   const textual = (o) => o && (o.op === "text" || o.op === "label" || o.op === "numwork");
   const live = (a, b) => !((erasedAt.get(a.id) ?? Infinity) <= b.startMs || (erasedAt.get(b.id) ?? Infinity) <= a.startMs);
   const hit = (A, B) => Math.min(A.x + A.w, B.x + B.w) - Math.max(A.x, B.x) > 3 && Math.min(A.y + A.h, B.y + B.h) - Math.max(A.y, B.y) > 3;
-  const placed = [];
+  // the previous board's words (a "continue" script) are already there: obstacles from t = 0
+  const priorMap = new Map(prior.map((o) => [o.id, o]));
+  const placed = prior.filter((o) => o && (o.op === "text" || o.op === "label" || o.op === "numwork")).map((o) => {
+    try { return { o: { id: `prior:${o.id}`, startMs: 0 }, b: (o.op === "label" ? opGeometry({ ...o, to: undefined, target: undefined }, priorMap) : opGeometry(o, priorMap)).box }; } catch { return null; }
+  }).filter(Boolean);
   const segs = segmentsOf(ops.filter(Boolean));
   const out = ops.slice().sort((a, b) => (a?.startMs ?? 0) - (b?.startMs ?? 0));
   for (let i = 0; i < out.length; i++) {
@@ -391,13 +395,14 @@ export async function planWhiteboard(ask, { kit, prev, redact = [], deployment =
       // the deadline covers a wait for the background bucket too (server/lanes.js may queue the call before it is sent)
       const r = await withDeadline(chatFn(deployment, msgs, { json: true, effort, maxTokens: 2200, timeoutMs: Math.min(left, 9000), retries: 0, trace, quotaLane: "background" }), left);
       usage.push(r.usage);
-      const fit = fitOps(expandOps(r.json?.ops), WB_BOARD);
+      const prior = ask.mode === "continue" ? (prev?.ops ?? []).filter((o) => o.op !== "erase") : [];
+      const fit = fitOps(expandOps(r.json?.ops), WB_BOARD, 6, prior);
       const ops = fit.ops;
       if (!ops.length) return { ok: false, empty: true, script: null, gate: null, ms: ms(), attempts, usage, why: "nothing_to_draw" };
       const raw = { v: 1, scriptId: ask.intent?.intentId ?? "wb", line: { lessonId: ask.line?.lessonId ?? "", ...(ask.line?.teacherReplySeq != null ? { teacherReplySeq: ask.line.teacherReplySeq } : {}) },
         anchor: "line_audio_start", board: { ...WB_BOARD, ground: "chalk" }, mode: ask.mode === "continue" ? "continue" : "fresh",
         durationMs: Math.max(...ops.map((o) => Number(o.endMs) || 0)), ops };
-      gate = gateWhiteboard(raw, { reply: text, kit: kitForGate, band, speechMs, banned: redact });
+      gate = gateWhiteboard(raw, { reply: text, kit: kitForGate, band, speechMs, banned: redact, prior });
       gate.fixes = fit.fixes;
       if (gate.pass) return { ok: true, script: { ...gate.script, facts: gate.facts }, gate, ms: ms(), attempts, usage };
       feedback = gate.checks.filter((c) => !c.pass).map((c) => `${c.id} ${JSON.stringify(c.detail).slice(0, 160)}`).join("; ");

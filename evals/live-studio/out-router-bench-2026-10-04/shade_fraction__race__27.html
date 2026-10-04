@@ -1,0 +1,168 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff4df;font-family:Arial,sans-serif;color:#5b3427}
+  #app{width:360px;height:320px;position:relative;overflow:hidden;background:linear-gradient(160deg,#fff8ea 0%,#ffe7bc 100%)}
+  .sun{position:absolute;width:118px;height:118px;border-radius:50%;background:#ffd36c;right:-35px;top:-42px;opacity:.5}
+  .dot{position:absolute;border-radius:50%;background:#f7b9a7;opacity:.55}
+  .d1{width:12px;height:12px;left:21px;top:77px}.d2{width:8px;height:8px;right:27px;top:135px}.d3{width:16px;height:16px;left:12px;bottom:25px}
+  #game{position:relative;width:100%;height:100%;padding:14px 18px;text-align:center}
+  h1{margin:0;color:#9c4936;font-size:23px;line-height:28px;font-weight:800;letter-spacing:.2px}
+  #instr{margin:4px auto 0;min-height:20px;font-size:14px;line-height:18px;color:#775041;font-weight:600}
+  #fraction{height:42px;margin:5px auto 0;display:flex;align-items:center;justify-content:center;color:#a24c35;font-size:25px;font-weight:800}
+  #target{display:inline-block;min-width:45px;line-height:34px;padding:0 10px;border-radius:17px;background:#fffdfa;box-shadow:0 3px 0 #efc79c}
+  #board{width:324px;height:112px;margin:1px auto 0;display:flex;align-items:center;justify-content:center;transition:transform .28s ease}
+  #whole{width:324px;height:112px;overflow:visible}
+  .part{cursor:pointer;touch-action:manipulation;transition:fill .18s ease,filter .18s ease,transform .18s ease;stroke:#a95c43;stroke-width:2;stroke-linejoin:round}
+  .part[data-shaded="false"]{fill:#ffe0a1}
+  .part[data-shaded="true"]{fill:#ef7655;filter:drop-shadow(0 3px 2px rgba(148,63,41,.22))}
+  .part:active{filter:brightness(1.08)}
+  #feedback{height:24px;margin:2px auto 1px;font-size:15px;line-height:23px;font-weight:800;color:#9e4d3d;opacity:0;transform:translateY(4px);transition:opacity .2s ease,transform .2s ease}
+  #feedback.show{opacity:1;transform:translateY(0)}
+  #feedback.good{color:#4b8b58}
+  #check{display:flex;align-items:center;justify-content:center;width:180px;height:52px;margin:0 auto;border:0;border-radius:26px;background:#a94d39;color:#fffaf0;font-size:18px;font-weight:800;box-shadow:0 5px 0 #7c362b;cursor:pointer;touch-action:manipulation;transition:transform .14s ease,box-shadow .14s ease,background .2s ease}
+  #check:active{transform:translateY(4px) scale(.97);box-shadow:0 1px 0 #7c362b}
+  #check[disabled]{opacity:.65;cursor:default}
+  .bounce{animation:bounce .48s ease}
+  .wiggle{animation:wiggle .4s ease}
+  .pop{animation:pop .45s ease}
+  @keyframes bounce{0%,100%{transform:scale(1)}45%{transform:scale(1.08)}70%{transform:scale(.98)}}
+  @keyframes wiggle{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+  @keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.1) rotate(2deg)}100%{transform:scale(1)}}
+  #finish{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;background:linear-gradient(160deg,#fff6dd,#ffdca7);text-align:center}
+  #finish.show{display:flex}
+  #finish svg{width:154px;height:126px;margin-bottom:7px}
+  #doneText{max-width:280px;color:#9b4936;font-size:25px;line-height:31px;font-weight:800}
+</style>
+<div id="app">
+  <div class="sun"></div><div class="dot d1"></div><div class="dot d2"></div><div class="dot d3"></div>
+  <main id="game" data-item="">
+    <h1 id="title"></h1>
+    <div id="instr"></div>
+    <div id="fraction"><span id="target" data-target></span></div>
+    <div id="board">
+      <svg id="whole" viewBox="0 0 324 112" role="img"></svg>
+    </div>
+    <div id="feedback"></div>
+    <button id="check" data-action="check" type="button"></button>
+  </main>
+  <section id="finish">
+    <svg viewBox="0 0 154 126" aria-hidden="true">
+      <circle cx="77" cy="63" r="48" fill="#ffd35e"/>
+      <path d="M30 63a47 47 0 0 1 94 0" fill="none" stroke="#f29b50" stroke-width="7" stroke-linecap="round"/>
+      <circle cx="59" cy="57" r="5" fill="#704132"/><circle cx="95" cy="57" r="5" fill="#704132"/>
+      <path d="M56 76q21 21 42 0" fill="none" stroke="#704132" stroke-width="5" stroke-linecap="round"/>
+      <path d="M23 25l-10-9M131 25l10-9M77 10V0" stroke="#ef7655" stroke-width="5" stroke-linecap="round"/>
+    </svg>
+    <div id="doneText"></div>
+  </section>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, items=p.items, index=0, locked=false, done=false;
+  var game=document.getElementById('game'), whole=document.getElementById('whole');
+  var target=document.getElementById('target'), feedback=document.getElementById('feedback');
+  var check=document.getElementById('check'), board=document.getElementById('board');
+
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+
+  function partTap(e){
+    if(locked)return;
+    var el=e.currentTarget;
+    var on=el.getAttribute('data-shaded')==='true';
+    el.setAttribute('data-shaded',on?'false':'true');
+    el.classList.remove('pop');
+    void el.getBoundingClientRect();
+    el.classList.add('pop');
+    Studio.event('tap',{i:index,n:on?0:1});
+  }
+
+  function drawBar(item){
+    var w=300, x=12, y=20, h=72, step=w/item.d;
+    for(var k=0;k<item.d;k++){
+      var r=document.createElementNS('http://www.w3.org/2000/svg','rect');
+      r.setAttribute('x',x+k*step);r.setAttribute('y',y);
+      r.setAttribute('width',step);r.setAttribute('height',h);
+      r.setAttribute('rx',item.d===1?14:3);
+      r.setAttribute('class','part');r.setAttribute('data-part',k);
+      r.setAttribute('data-shaded','false');
+      r.addEventListener('click',partTap);
+      whole.appendChild(r);
+    }
+  }
+
+  function drawPizza(item){
+    var cx=162,cy=56,r=48;
+    for(var k=0;k<item.d;k++){
+      var a=-Math.PI/2+k*Math.PI*2/item.d;
+      var b=-Math.PI/2+(k+1)*Math.PI*2/item.d;
+      var x1=cx+r*Math.cos(a),y1=cy+r*Math.sin(a);
+      var x2=cx+r*Math.cos(b),y2=cy+r*Math.sin(b);
+      var path=document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d','M '+cx+' '+cy+' L '+x1+' '+y1+' A '+r+' '+r+' 0 0 1 '+x2+' '+y2+' Z');
+      path.setAttribute('class','part');path.setAttribute('data-part',k);
+      path.setAttribute('data-shaded','false');
+      path.addEventListener('click',partTap);
+      whole.appendChild(path);
+    }
+  }
+
+  function showItem(){
+    var item=items[index];
+    locked=false;
+    game.setAttribute('data-item',item.id);
+    target.textContent=item.n+'/'+item.d;
+    feedback.textContent='';
+    feedback.className='';
+    check.disabled=false;
+    whole.innerHTML='';
+    if(p.picture==='pizza')drawPizza(item);else drawBar(item);
+    board.classList.remove('bounce','wiggle');
+    board.classList.add('bounce');
+    Studio.event('item',{i:index});
+  }
+
+  check.addEventListener('click',function(){
+    if(locked)return;
+    var item=items[index], parts=whole.querySelectorAll('[data-part]'), count=0;
+    for(var q=0;q<parts.length;q++)if(parts[q].getAttribute('data-shaded')==='true')count++;
+    locked=true;
+    check.disabled=true;
+    Studio.event('check',{i:index,n:count,d:item.d});
+    Studio.answer({n:count,d:item.d});
+  });
+
+  Studio.onVerdict(function(v){
+    if(v.correct){
+      feedback.textContent=Studio.t('right');
+      feedback.className='show good';
+      board.classList.remove('bounce','wiggle');
+      board.classList.add('bounce');
+      Studio.event('right',{i:index});
+      setTimeout(function(){
+        index++;
+        if(index>=items.length){
+          document.getElementById('finish').classList.add('show');
+          document.getElementById('doneText').textContent=Studio.t('done');
+          if(!done){done=true;Studio.done();}
+        }else showItem();
+      },700);
+    }else{
+      feedback.textContent=Studio.t('wrong')+' '+Studio.t('hint');
+      feedback.className='show';
+      board.classList.remove('bounce','wiggle');
+      void board.getBoundingClientRect();
+      board.classList.add('wiggle');
+      locked=false;
+      check.disabled=false;
+      Studio.event('wrong',{i:index});
+    }
+  });
+
+  showItem();
+  Studio.ready();
+}());
+
+</script>

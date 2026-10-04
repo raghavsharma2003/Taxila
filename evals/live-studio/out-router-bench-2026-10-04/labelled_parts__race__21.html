@@ -1,0 +1,93 @@
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;width:360px;height:320px;overflow:hidden}
+  #garden{width:360px;height:320px;overflow:hidden;border-radius:18px;background:#fff8eb;color:#493b34;font-family:system-ui,sans-serif}
+  .top{height:67px;padding:10px 18px 0;background:#ffeed7}
+  #title{font-size:17px;font-weight:750;line-height:21px}
+  #question{display:block;margin-top:3px;font-size:19px;font-weight:700;color:#795139}
+  svg{display:block;width:360px;height:214px;overflow:hidden}
+  .leader{fill:none;stroke:#bba58d;stroke-width:1.7;stroke-linecap:round}
+  .name{font:700 15px system-ui,sans-serif;fill:#594b40}
+  .part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .22s ease,filter .25s ease}
+  .part:active{transform:scale(.94)}
+  .part.glow{filter:drop-shadow(0 0 8px #f4b64a) drop-shadow(0 0 4px #fff0a4);transform:scale(1.06)}
+  .part.oops{animation:wobble .32s ease}
+  @keyframes wobble{25%{transform:translateX(-4px)}65%{transform:translateX(4px)}}
+  #status{height:39px;padding:5px 18px;font-size:17px;font-weight:700;color:#806045}
+  #status.good{color:#497947}
+</style>
+<div id="garden">
+  <div class="top"><div id="title"></div><span id="question" data-ask></span></div>
+  <svg viewBox="0 0 360 214" aria-hidden="true">
+    <path class="leader" d="M105 37 L139 44 M211 99 L193 83 M215 133 L193 132 M93 161 L113 148 M216 193 L199 191"/>
+    <g class="part" id="shape0">
+      <ellipse cx="176" cy="38" rx="18" ry="30" fill="#f28f9f"/>
+      <ellipse cx="148" cy="55" rx="19" ry="29" transform="rotate(-55 148 55)" fill="#f5a0ac"/>
+      <ellipse cx="204" cy="55" rx="19" ry="29" transform="rotate(55 204 55)" fill="#f5a0ac"/>
+      <ellipse cx="153" cy="78" rx="18" ry="27" transform="rotate(-116 153 78)" fill="#ed8498"/>
+      <ellipse cx="199" cy="78" rx="18" ry="27" transform="rotate(116 199 78)" fill="#ed8498"/>
+    </g>
+    <g class="part" id="shape2">
+      <rect x="150" y="99" width="53" height="81" rx="26" fill="#529464" opacity=".12"/>
+      <path d="M176 99 Q179 135 174 180" fill="none" stroke="#529464" stroke-width="15" stroke-linecap="round"/>
+    </g>
+    <g class="part" id="shape3">
+      <path d="M172 144 Q126 105 105 141 Q125 169 172 144Z" fill="#75b978"/>
+      <path d="M110 142 Q138 139 166 145" fill="none" stroke="#4d955b" stroke-width="2"/>
+      <ellipse cx="133" cy="140" rx="37" ry="28" fill="transparent"/>
+    </g>
+    <g class="part" id="shape4">
+      <path d="M174 178 Q164 192 143 199 M174 179 Q180 196 206 198 M172 186 Q167 201 158 207 M178 188 Q191 202 194 209 M174 181 L175 211" fill="none" stroke="#af8060" stroke-width="7" stroke-linecap="round"/>
+      <ellipse cx="175" cy="184" rx="35" ry="28" fill="transparent"/>
+    </g>
+    <g class="part" id="shape1"><circle cx="176" cy="65" r="27" fill="#f6c766"/><circle cx="176" cy="65" r="19" fill="#f9d982"/></g>
+    <text class="name" id="label0" x="35" y="37"></text>
+    <text class="name" id="label1" x="214" y="111"></text>
+    <text class="name" id="label2" x="220" y="138"></text>
+    <text class="name" id="label3" x="40" y="174"></text>
+    <text class="name" id="label4" x="220" y="198"></text>
+  </svg>
+  <div id="status" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params;
+  const shapes=[0,1,2,3,4].map(i=>document.getElementById('shape'+i));
+  const status=document.getElementById('status');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('question').textContent=Studio.t('ask');
+  let pending=false,finished=false,chosen=null;
+  shapes.forEach((shape,i)=>{
+    const label=document.getElementById('label'+i),key=p.parts[i];
+    if(key===undefined){shape.style.display='none';label.style.display='none';return}
+    shape.setAttribute('data-part',key);
+    label.setAttribute('data-label',key);
+    label.textContent=Studio.t(key);
+    shape.addEventListener('click',()=>{
+      if(pending||finished)return;
+      pending=true;
+      chosen=shape;
+      shape.classList.remove('oops');
+      Studio.event('tap',{part:key});
+      Studio.answer(key);
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending||finished)return;
+    pending=false;
+    if(correct){
+      finished=true;
+      chosen.classList.add('glow');
+      status.classList.add('good');
+      status.textContent=Studio.t('right');
+      setTimeout(()=>{status.textContent=Studio.t('done');Studio.done()},700);
+    }else{
+      status.textContent=Studio.t('wrong');
+      chosen.classList.add('oops');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

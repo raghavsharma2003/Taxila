@@ -1,0 +1,89 @@
+<style>
+*{box-sizing:border-box}
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#41372f}
+body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8eb}
+#app{width:360px;height:320px;padding:12px;display:flex;flex-direction:column;gap:8px}
+h1{margin:0;text-align:center;font-size:18px;line-height:24px;color:#784f32}
+.readout{display:flex;justify-content:center;gap:24px;align-items:center;background:#ffedce;border-radius:16px;min-height:44px;font-size:16px;font-weight:700}
+.controls{display:flex;justify-content:center;gap:12px}
+button{font:inherit;border:0;border-radius:16px;background:#f3b45a;color:#49351f;font-size:18px;font-weight:800;min-width:76px;height:52px;cursor:pointer;box-shadow:0 3px 0 #cf8840;transition:transform .16s,background .16s}
+button:active{transform:scale(.94)}
+button:focus-visible{outline:3px solid #6353a3;outline-offset:2px}
+button:disabled{opacity:.48;box-shadow:none;cursor:default}
+.scene{height:62px;display:flex;align-items:flex-end;justify-content:center;border-bottom:3px solid #d8c69e;position:relative}
+#visual{width:48px;height:0;background:linear-gradient(90deg,#59b6a0,#9bd5a6);border-radius:10px 10px 2px 2px;transition:height .38s cubic-bezier(.2,.8,.2,1);box-shadow:inset -7px 0 rgba(0,0,0,.07)}
+.question{text-align:center;font-weight:700;font-size:14px;line-height:18px;color:#784f32}
+.options{display:flex;justify-content:center;gap:8px}
+.options button{min-width:96px;height:52px;background:#c9b8f0;box-shadow:0 3px 0 #9683c5;color:#30264a}
+#feedback{min-height:22px;text-align:center;font-size:14px;font-weight:700;color:#568064}
+</style>
+<main id="app">
+  <h1 id="title"></h1>
+  <div class="readout">
+    <span><span id="xname"></span> = <span id="xvalue" data-x="3"></span></span>
+    <span data-output><span id="yname"></span> = <span id="yvalue" data-value="12"></span></span>
+  </div>
+  <div class="controls">
+    <button type="button" data-action="dec" id="dec"></button>
+    <button type="button" data-action="inc" id="inc"></button>
+  </div>
+  <div class="scene"><div id="visual" data-visual data-dim="h"></div></div>
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+  <div id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const t=key=>Studio.t(key);
+  let x=p.x.start;
+  let finished=false;
+  const byId=id=>document.getElementById(id);
+  byId("title").textContent=t("title");
+  byId("xname").textContent=t("xname");
+  byId("yname").textContent=t("yname");
+  byId("dec").textContent=t("less");
+  byId("inc").textContent=t("more");
+  byId("question").textContent=t("ask")+" "+t("xname")+" = "+p.ask.x;
+  const visual=byId("visual");
+  const render=()=>{
+    const y=p.law.k*x+p.law.b;
+    byId("xvalue").textContent=String(x);
+    byId("xvalue").dataset.x=String(x);
+    byId("yvalue").textContent=String(Number(y.toFixed(10)));
+    byId("yvalue").dataset.value=String(Number(y.toFixed(10)));
+    visual.style.height=(y*p.y.unitsPer)+"px";
+    byId("dec").disabled=x<=p.x.min;
+    byId("inc").disabled=x>=p.x.max;
+  };
+  byId("dec").addEventListener("click",()=>{
+    if(x>p.x.min){x=Math.max(p.x.min,x-p.x.step);render();Studio.event("change",{x});}
+  });
+  byId("inc").addEventListener("click",()=>{
+    if(x<p.x.max){x=Math.min(p.x.max,x+p.x.step);render();Studio.event("change",{x});}
+  });
+  const options=byId("options");
+  p.ask.options.forEach(option=>{
+    const button=document.createElement("button");
+    button.type="button";
+    button.dataset.option=String(option);
+    button.textContent=String(option);
+    button.addEventListener("click",()=>{
+      if(!finished)Studio.answer({value:option});
+    });
+    options.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    byId("feedback").textContent=correct?t("right"):t("wrong");
+    if(correct&&!finished){
+      finished=true;
+      byId("feedback").textContent=t("done");
+      Studio.done();
+    }
+  });
+  render();
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,111 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#31564e;background:#fff8e9}
+#app{width:360px;height:320px;padding:4px 8px;display:flex;flex-direction:column;gap:2px}
+header{height:22px;flex:none;text-align:center;font-size:16px;font-weight:800;line-height:22px;color:#28695c;white-space:nowrap;overflow:hidden}
+svg{display:block;width:344px;height:126px;flex:none;border-radius:20px;background:#f4edda}
+svg text{font-family:system-ui,sans-serif;font-weight:700;fill:#35584e}
+.entity-label,.flow-label{font-size:10px}
+.shape{stroke-width:2;transition:filter .25s,transform .25s;transform-box:fill-box;transform-origin:center}
+.emphasis.shape{filter:drop-shadow(0 0 5px #f3a642);transform:scale(1.08)}
+.flow-label.emphasis{fill:#ba7530}
+.particle{stroke:none}
+#caption{height:25px;flex:none;border-radius:13px;background:#e6f3e9;text-align:center;font-size:13px;font-weight:700;line-height:25px;color:#28695c;white-space:nowrap;overflow:hidden}
+.controls{height:52px;flex:none;display:flex;justify-content:center;gap:10px}
+button{font:700 15px system-ui,sans-serif;color:#31564e;background:#fff;border:2px solid #c5ddca;border-radius:16px;min-width:92px;height:52px;cursor:pointer;touch-action:manipulation;transition:transform .12s,background .2s}
+button:active{transform:scale(.94);background:#e0f1e3}
+#ask{height:19px;flex:none;text-align:center;font-size:12px;font-weight:700;line-height:19px;white-space:nowrap;overflow:hidden}
+.options{height:52px;flex:none;display:flex;gap:4px;width:100%}
+.options button{width:0;min-width:0;flex:1;height:52px;padding:2px;font-size:12px;border-radius:14px;white-space:nowrap;overflow:hidden}
+#feedback{position:absolute;left:0;top:0;width:1px;height:1px;overflow:hidden}
+</style>
+<div id="app">
+  <header id="title"></header>
+  <svg id="scene" viewBox="0 0 344 126" aria-label="">
+    <g id="sunGroup"><circle data-entity="sun" class="shape" cx="48" cy="34" r="15" fill="#ffd36e" stroke="#efa939"/><path d="M48 10v-5M48 63v-5M24 34h-5M77 34h-5M31 17l-4-4M69 55l-4-4M65 17l4-4M27 55l4-4" stroke="#efa939" stroke-width="3" stroke-linecap="round"/><text class="entity-label" data-label="sun" x="31" y="13"></text></g>
+    <g id="rootsGroup"><path data-entity="roots" class="shape" d="M48 86v18m0-10-12 11m12-8 12 9m-12-5-7 13m7-13 8 13" fill="none" stroke="#9a7047" stroke-width="4" stroke-linecap="round"/><text class="entity-label" data-label="roots" x="20" y="122"></text></g>
+    <g id="hubGroup"><path data-entity="leaf" class="shape" d="M157 60C159 33 193 28 211 39c-1 27-22 43-48 31z" fill="#8bcf86" stroke="#4f9c67"/><path d="M163 69c13-10 25-18 41-26" fill="none" stroke="#4f9c67" stroke-width="2"/><text class="entity-label" data-label="leaf" x="169" y="23"></text></g>
+    <text class="flow-label" data-label="water" x="193" y="117"></text>
+    <text class="flow-label" data-label="co2" x="225" y="57"></text>
+    <text class="flow-label" data-label="o2" x="225" y="96"></text>
+    <g id="particles"></g>
+  </svg>
+  <div id="caption" data-caption></div>
+  <div class="controls"><button id="play" data-action="play"></button><button id="next" data-action="next"></button></div>
+  <div id="ask"></div>
+  <div class="options" id="options"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params,t=Studio.t,hub=p.hub;
+  const title=document.getElementById("title"),play=document.getElementById("play"),next=document.getElementById("next");
+  title.textContent=t("title");
+  play.textContent=t("pause");
+  next.textContent=t("next");
+  document.getElementById("ask").textContent=t("ask");
+  document.querySelectorAll("[data-label]").forEach(el=>el.textContent=t(el.getAttribute("data-label")));
+  document.querySelectorAll("[data-entity]").forEach(el=>el.setAttribute("data-entity",el.getAttribute("data-entity")));
+  const caption=document.querySelector("[data-caption]");
+  const stepKeys=["step1","step2","step3"];
+  let step=0,playing=true,completed=false;
+  function setStep(){
+    caption.textContent=t(stepKeys[step%stepKeys.length]);
+    document.querySelectorAll(".emphasis").forEach(el=>el.classList.remove("emphasis"));
+    const flow=p.flows[step%p.flows.length];
+    if(flow){
+      const label=document.querySelector('[data-label="'+flow.key+'"]');
+      if(label)label.classList.add("emphasis");
+      const entity=document.querySelector('[data-entity="'+hub+'"]');
+      if(entity)entity.classList.add("emphasis");
+    }
+  }
+  setStep();
+  next.addEventListener("click",()=>{step=(step+1)%p.steps;setStep();Studio.event("next",{step:step+1})});
+  play.addEventListener("click",()=>{
+    playing=!playing;
+    play.textContent=playing?t("pause"):t("play");
+    Studio.event("play",{playing:playing?1:0});
+  });
+  const pg=document.getElementById("particles"),dots=[];
+  const config={
+    water:{a:[181,125],b:[181,77]},
+    co2:{a:[337,61],b:[213,63]},
+    o2:{a:[213,82],b:[337,94]}
+  };
+  p.flows.forEach(flow=>{
+    const path=config[flow.key]||config.co2;
+    for(let i=0;i<3;i++){
+      const c=document.createElementNS("http://www.w3.org/2000/svg","circle");
+      c.setAttribute("r","3.3");c.setAttribute("class","particle");c.setAttribute("data-flow",flow.key);
+      c.setAttribute("fill",flow.key==="water"?"#4aa9d3":flow.key==="co2"?"#c58b55":"#78b7a0");
+      pg.appendChild(c);dots.push({el:c,a:path.a,b:path.b,offset:i/3});
+    }
+  });
+  let start=performance.now();
+  function animate(now){
+    const phase=playing?((now-start)/2200)%1:0;
+    dots.forEach(d=>{
+      const u=(phase+d.offset)%1;
+      d.el.setAttribute("cx",d.a[0]+(d.b[0]-d.a[0])*u);
+      d.el.setAttribute("cy",d.a[1]+(d.b[1]-d.a[1])*u);
+    });
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+  p.options.forEach(key=>{
+    const b=document.createElement("button");
+    b.setAttribute("data-option",key);b.textContent=t(key);
+    b.addEventListener("click",()=>{Studio.answer(key);Studio.event("answer",{option:key})});
+    document.getElementById("options").appendChild(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    document.getElementById("feedback").textContent=t(correct?"right":"wrong");
+    if(correct&&!completed){completed=true;Studio.done()}
+  });
+  Studio.ready();
+})();
+
+</script>

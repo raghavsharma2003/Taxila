@@ -1,0 +1,39 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#513b30;background:#fff8eb}
+#app{width:360px;height:320px;padding:12px 12px 10px;display:flex;flex-direction:column;align-items:center;background:linear-gradient(145deg,#fff9ee,#ffefd8)}
+#title{margin:0 0 3px;font-size:18px;line-height:24px;font-weight:800;color:#70492f;text-align:center}
+#ask{min-height:23px;margin:0;font-size:14px;line-height:20px;font-weight:650;text-align:center}
+#axisTitle{position:absolute;left:8px;top:111px;writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;font-weight:700;color:#8a6a54}
+#chartWrap{position:relative;width:360px;height:209px;margin-top:1px}
+svg{display:block;width:360px;height:209px;overflow:visible}
+.grid{stroke:#eadbc9;stroke-width:1}
+.axis{stroke:#927661;stroke-width:1.5}
+.ticktext{font:11px system-ui,sans-serif;fill:#765b48;text-anchor:end}
+.bar{fill:#eea64e;stroke:#d98a36;stroke-width:1.5;transform-box:fill-box;transform-origin:bottom;animation:grow .8s cubic-bezier(.2,.8,.2,1) both}
+.bar:hover{fill:#f2b35f}
+.bar:active{fill:#df9140}
+.label{font:11px system-ui,sans-serif;fill:#614735;text-anchor:middle}
+.hit{fill:transparent;cursor:pointer;pointer-events:all}
+.hit:active{fill:#e7a44b22}
+#feedback{min-height:30px;margin-top:0;font-size:14px;font-weight:750;text-align:center;color:#765239;line-height:22px}
+#feedback.wrong{color:#a3543c}
+#feedback.right{color:#477454}
+#app.finished #chartWrap,#app.finished #ask{display:none}
+#app.finished #feedback{margin-top:70px;font-size:20px}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@media(prefers-reduced-motion:reduce){.bar{animation:none}}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <p id="ask"></p>
+  <div id="axisTitle"></div>
+  <div id="chartWrap"><svg id="chart" viewBox="0 0 360 209" role="img"></svg></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{const p=Studio.params,app=document.getElementById('app'),svg=document.getElementById('chart'),feedback=document.getElementById('feedback');document.getElementById('title').textContent=Studio.t('title');document.getElementById('ask').textContent=Studio.t('ask');document.getElementById('axisTitle').textContent=Studio.t('yaxis');const data=p.data,max=Math.max(...data.map(d=>d.value));const raw=max/4,pow=Math.pow(10,Math.floor(Math.log10(raw))),n=raw/pow,step=(n<=1?1:n<=2?2:n<=5?5:10)*pow,top=Math.ceil(max/step)*step;const left=44,right=350,base=157,plotTop=13,plotH=base-plotTop,slot=(right-left)/data.length,bw=Math.min(38,slot-12);function el(tag,attrs,text){const e=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(text!==undefined)e.textContent=text;svg.appendChild(e);return e}for(let v=0;v<=top;v+=step){const y=base-(v/top)*plotH;el('line',{x1:left,y1:y,x2:right,y2:y,class:v===0?'axis':'grid'});el('text',{x:left-7,y:y+4,class:'ticktext','data-tick':v},String(v))}el('line',{x1:left,y1:plotTop,x2:left,y2:base,class:'axis'});data.forEach((d,i)=>{const cx=left+slot*(i+.5),h=(d.value/top)*plotH,x=cx-bw/2,y=base-h;el('rect',{x,y,width:bw,height:h,class:'bar','data-bar':d.key,'data-value':d.value,rx:5,style:'animation-delay:'+i*55+'ms'});el('text',{x:cx,y:base+17,class:'label'},Studio.t(d.key));const hit=el('rect',{x:left+slot*i,y:0,width:slot,height:209,class:'hit','data-column':d.key});hit.addEventListener('click',()=>{Studio.event('column_tap',{key:d.key});Studio.answer(d.key)})});Studio.onVerdict(({correct})=>{feedback.textContent=Studio.t(correct?'right':'wrong');feedback.className=correct?'right':'wrong';if(correct){app.classList.add('finished');document.getElementById('ask').textContent='';feedback.textContent=Studio.t('done');Studio.done()}});Studio.ready()})();
+
+</script>

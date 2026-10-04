@@ -1,0 +1,11 @@
+--- a/server/brain/turn.js	2026-10-04 18:58:32.134228214 +0000
++++ b/server/brain/turn.js	2026-10-04 18:58:32.152992701 +0000
+@@ -339,7 +339,7 @@
+   if (needRelease || needSafety || relFx.overlay || relFx.callbackId || relFx.noticeId) {
+     const relCls = needSafety ? { ...(cls ?? { outcome: "no_evidence", confidence: 1 }), source: cls?.source ?? "relational",
+       flags: { ...(cls?.flags ?? fast?.flags ?? {}), distress: true, distressKind: cls?.flags?.distressKind ?? "relational_floor" } }
+-      : needRelease ? { ...(cls ?? { outcome: "no_evidence", confidence: 1, source: "relational" }), flags: { ...(cls?.flags ?? fast?.flags ?? {}), wantsToStop: true } }
++      : needRelease ? { ...(cls ?? { outcome: "no_evidence", confidence: 1, source: "relational" }), relRelease: true, flags: { ...(cls?.flags ?? fast?.flags ?? {}), wantsToStop: true } }
+         : cls;
+     const rel = { turn: next.turn, ...(relFx.overlay ? { overlay: relFx.overlay } : {}), ...(relFx.callbackId ? { callbackId: relFx.callbackId } : {}),
+       ...(relFx.noticeId ? { noticeId: relFx.noticeId } : {}) };

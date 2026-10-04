@@ -1,0 +1,76 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff8ec;color:#493b32}
+#app{width:360px;height:320px;padding:12px 14px;display:flex;flex-direction:column;gap:7px}
+h1{font-size:19px;line-height:23px;margin:0;color:#75462f}
+#ask{font-size:14px;line-height:18px;margin:0;color:#635046}
+#key{height:52px;min-height:52px;display:flex;align-items:center;gap:8px;padding:4px 10px;border:1px solid #f0d5ad;border-radius:14px;background:#fff1d8;font-size:14px}
+#key svg{width:32px;height:32px;flex:none}
+#keynumber{font-weight:750;color:#75462f}
+#rows{display:flex;flex-direction:column;gap:5px}
+.row{width:100%;height:54px;min-height:54px;padding:0 8px;display:grid;grid-template-columns:70px 1fr;align-items:center;text-align:left;border:1px solid #eedcc7;border-radius:14px;background:#fffdfa;color:#493b32;cursor:pointer;transition:transform .16s ease,background .2s ease,border-color .2s ease;touch-action:manipulation}
+.row:active{transform:scale(.975);background:#ffefd9}
+.row:focus-visible{outline:3px solid #e29b54;outline-offset:1px}
+.name{font-size:14px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.symbols{display:flex;align-items:center;gap:3px;white-space:nowrap}
+.symbols svg{width:22px;height:22px;flex:none;transition:transform .2s ease}
+.row:active .symbols svg{transform:scale(1.08)}
+#feedback{min-height:19px;margin:0;text-align:center;font-size:13px;line-height:19px;font-weight:700;color:#75462f}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
+</style>
+<main id="app">
+  <h1 id="title"></h1>
+  <p id="ask"></p>
+  <div id="key" data-key="">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2.8c1.3 0 2.1 2.3 3.1 3.1 1 .8 3.5.6 4.1 1.8.6 1.2-.8 3.2-.6 4.5.2 1.3 2.1 2.8 1.8 4.1-.3 1.3-2.8 1.8-3.5 2.9-.7 1.1-.3 3.6-1.4 4.4-1.1.8-3.3-.3-4.6.1-1.3.4-2.4 2.6-3.7 2.5-1.3-.1-2.2-2.4-3.4-3-1.2-.6-3.7 0-4.6-1-.9-1 .1-3.4-.4-4.6-.5-1.2-2.7-2.5-2.5-3.8.2-1.3 2.6-2.1 3.2-3.3.6-1.2.1-3.7 1.1-4.5 1-.8 3.4.3 4.6-.1 1.2-.4 2.4-2.8 3.7-2.9Z" fill="#f2a84b" stroke="#cf783b" stroke-width="1.3"/><circle cx="13" cy="13" r="1.2" fill="#75462f"/><circle cx="20" cy="13" r="1.2" fill="#75462f"/><path d="M13 17q3.5 3.5 7 0" fill="none" stroke="#75462f" stroke-width="1.3" stroke-linecap="round"/></svg>
+    <span id="keynumber"></span>
+    <span id="keytext"></span>
+  </div>
+  <section id="rows" aria-label=""></section>
+  <p id="feedback" aria-live="polite"></p>
+</main>
+<script>
+
+(function(){
+  const p=Studio.params;
+  const t=Studio.t;
+  document.getElementById("title").textContent=t("title");
+  document.getElementById("ask").textContent=t("ask");
+  document.getElementById("keytext").textContent=t("keytext");
+  document.getElementById("keynumber").textContent=String(p.symbolValue);
+  document.getElementById("key").dataset.key=String(p.symbolValue);
+  const rows=document.getElementById("rows");
+  const icon='<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2.8c1.3 0 2.1 2.3 3.1 3.1 1 .8 3.5.6 4.1 1.8.6 1.2-.8 3.2-.6 4.5.2 1.3 2.1 2.8 1.8 4.1-.3 1.3-2.8 1.8-3.5 2.9-.7 1.1-.3 3.6-1.4 4.4-1.1.8-3.3-.3-4.6.1-1.3.4-2.4 2.6-3.7 2.5-1.3-.1-2.2-2.4-3.4-3-1.2-.6-3.7 0-4.6-1-.9-1 .1-3.4-.4-4.6-.5-1.2-2.7-2.5-2.5-3.8.2-1.3 2.6-2.1 3.2-3.3.6-1.2.1-3.7 1.1-4.5 1-.8 3.4.3 4.6-.1 1.2-.4 2.4-2.8 3.7-2.9Z" fill="#f2a84b" stroke="#cf783b" stroke-width="1.3"/><circle cx="13" cy="13" r="1.2" fill="#75462f"/><circle cx="20" cy="13" r="1.2" fill="#75462f"/><path d="M13 17q3.5 3.5 7 0" fill="none" stroke="#75462f" stroke-width="1.3" stroke-linecap="round"/></svg>';
+  p.rows.forEach(function(item){
+    const row=document.createElement("button");
+    row.type="button";
+    row.className="row";
+    row.dataset.row=item.key;
+    const name=document.createElement("span");
+    name.className="name";
+    name.textContent=t(item.key);
+    const symbols=document.createElement("span");
+    symbols.className="symbols";
+    for(let i=0;i<item.value/p.symbolValue;i++){
+      const holder=document.createElement("span");
+      holder.innerHTML=icon;
+      const symbol=holder.firstElementChild;
+      symbol.setAttribute("data-symbol","");
+      symbols.appendChild(symbol);
+    }
+    row.append(name,symbols);
+    row.addEventListener("click",function(){
+      Studio.event("row_tap",{key:item.key});
+      Studio.answer(item.key);
+    });
+    rows.appendChild(row);
+  });
+  const feedback=document.getElementById("feedback");
+  Studio.onVerdict(function(result){
+    feedback.textContent=result.correct?t("right")+" "+t("done"):t("wrong");
+    if(result.correct) Studio.done();
+  });
+  Studio.ready();
+})();
+
+</script>

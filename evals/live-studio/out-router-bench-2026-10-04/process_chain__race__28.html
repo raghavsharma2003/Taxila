@@ -1,0 +1,124 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;font-family:system-ui,sans-serif;color:#594437}
+  #activity{position:relative;width:360px;height:320px;overflow:hidden}
+  #heading{position:absolute;top:5px;left:12px;width:336px;text-align:center;font-size:19px;font-weight:800;color:#81523d}
+  #scene{position:absolute;top:29px;left:0;width:360px;height:140px;overflow:visible}
+  .arrow{fill:none;stroke:#d99b69;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .stage{fill:#fff;stroke:#e6bea0;stroke-width:2;transition:fill .25s,stroke .25s,filter .25s}
+  .stage.active{fill:#fff0bd;stroke:#ec9e4c;filter:drop-shadow(0 0 7px #f5ba68)}
+  .stage-label{fill:#624737;font-size:12px;font-weight:750;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+  #token{fill:#54adbd;stroke:#fff;stroke-width:3;filter:drop-shadow(0 2px 3px #6a9b9b)}
+  button{border:0;cursor:pointer;font:700 14px system-ui,sans-serif;transition:transform .16s,background .2s}
+  button:active{transform:scale(.93)}
+  #next{position:absolute;top:171px;left:132px;width:96px;height:52px;border-radius:26px;background:#df875b;color:white;box-shadow:0 4px 0 #b66a47}
+  #next:disabled{opacity:.6}
+  #prompt{position:absolute;top:225px;left:10px;width:340px;height:27px;text-align:center;font-size:15px;font-weight:750;color:#765343}
+  #options{position:absolute;top:261px;left:7px;width:346px;height:55px;display:flex;gap:5px;justify-content:center}
+  #options button{min-width:52px;flex:1;height:55px;padding:2px 3px;border-radius:16px;background:#e7f3ee;color:#396b67;border:2px solid #acd5c9;font-size:12px}
+  #options button:disabled{opacity:.6}
+  #prompt.pop{animation:pop .35s ease}
+  @keyframes pop{50%{transform:scale(1.08)}}
+</style>
+<div id="activity">
+  <div id="heading"></div>
+  <svg id="scene" viewBox="0 0 360 140" aria-hidden="true">
+    <defs><marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 L9 5 L1 9 Z" fill="#d99b69"/></marker></defs>
+    <g id="arrows"></g><g id="stages"></g>
+    <circle id="token" data-token r="9" cx="0" cy="0"/>
+  </svg>
+  <button id="next" data-action="next"></button>
+  <div id="prompt"></div>
+  <div id="options"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, keys=p.stages, root=document.getElementById('activity');
+  const svg=document.getElementById('scene'), arrows=document.getElementById('arrows');
+  const boxes=document.getElementById('stages'), token=document.getElementById('token');
+  const next=document.getElementById('next'), prompt=document.getElementById('prompt');
+  const options=document.getElementById('options');
+  const NS='http://www.w3.org/2000/svg';
+  const node=(tag,attrs,parent)=>{
+    const el=document.createElementNS(NS,tag);
+    for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);
+    parent.appendChild(el);return el;
+  };
+  document.getElementById('heading').textContent=Studio.t('title');
+  next.textContent=Studio.t('next');
+  prompt.textContent=Studio.t('ask');
+  const n=keys.length;
+  const positions=keys.map((_,i)=>{
+    const a=(-135+i*360/n)*Math.PI/180;
+    return {x:180+127*Math.cos(a),y:70+57*Math.sin(a)};
+  });
+  const rects=keys.map((key,i)=>{
+    const q=positions[i], g=node('g',{'data-stage':key},boxes);
+    const r=node('rect',{x:q.x-59,y:q.y-24,width:118,height:48,rx:17,class:'stage'},g);
+    const label=node('text',{x:q.x,y:q.y+1,'data-label':key,class:'stage-label'},g);
+    label.textContent=Studio.t(key);
+    return r;
+  });
+  const paths=[];
+  const count=p.cycle?n:n-1;
+  for(let i=0;i<count;i++){
+    const j=(i+1)%n,a=positions[i],b=positions[j],dx=b.x-a.x,dy=b.y-a.y;
+    const t=Math.min(dx?59/Math.abs(dx):Infinity,dy?24/Math.abs(dy):Infinity);
+    const gap=Math.max(0,1-t);
+    const inset=Math.min(.09,gap*.23);
+    const start={x:a.x+dx*(t+inset),y:a.y+dy*(t+inset)};
+    const end={x:b.x-dx*(t+inset),y:b.y-dy*(t+inset)};
+    const path=node('path',{d:`M${start.x} ${start.y} L${end.x} ${end.y}`,class:'arrow','marker-end':'url(#tip)','data-arrow':keys[i]+'>'+keys[j]},arrows);
+    paths.push({path,start,end});
+  }
+  let at=0,moving=false,finished=false;
+  function active(i){
+    at=i;root.setAttribute('data-active',keys[i]);
+    rects.forEach((r,k)=>r.classList.toggle('active',k===i));
+  }
+  active(0);
+  token.setAttribute('cx',positions[0].x);
+  token.setAttribute('cy',positions[0].y);
+  next.addEventListener('click',()=>{
+    if(moving||finished||(!p.cycle&&at===n-1))return;
+    const from=at,to=(at+1)%n, route=paths[from];
+    if(!route)return;
+    moving=true;next.disabled=true;
+    const points=[positions[from],route.start,route.end,positions[to]];
+    const lengths=points.slice(1).map((v,k)=>Math.hypot(v.x-points[k].x,v.y-points[k].y));
+    const total=lengths.reduce((a,b)=>a+b,0);
+    const start=performance.now();
+    function frame(now){
+      let distance=Math.min(1,(now-start)/850)*total,segment=0;
+      while(segment<lengths.length-1&&distance>lengths[segment])distance-=lengths[segment++];
+      const fraction=lengths[segment]?distance/lengths[segment]:1;
+      const a=points[segment],b=points[segment+1];
+      token.setAttribute('cx',a.x+(b.x-a.x)*fraction);
+      token.setAttribute('cy',a.y+(b.y-a.y)*fraction);
+      if(now-start<850)requestAnimationFrame(frame);
+      else{active(to);moving=false;next.disabled=false}
+    }
+    requestAnimationFrame(frame);
+    Studio.event('next',{stage:keys[to]});
+  });
+  p.options.forEach(key=>{
+    const button=document.createElement('button');
+    button.setAttribute('data-option',key);
+    button.textContent=Studio.t(key);
+    button.addEventListener('click',()=>{if(!finished)Studio.answer(key)});
+    options.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    prompt.textContent=Studio.t(correct?'right':'wrong');
+    prompt.classList.remove('pop');void prompt.offsetWidth;prompt.classList.add('pop');
+    if(correct){
+      finished=true;next.disabled=true;
+      options.querySelectorAll('button').forEach(b=>b.disabled=true);
+      setTimeout(()=>{prompt.textContent=Studio.t('done');Studio.done()},500);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

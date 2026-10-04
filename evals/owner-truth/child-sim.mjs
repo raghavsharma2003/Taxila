@@ -221,7 +221,10 @@ function hindiShare(s) {
 function newVisualOf(r, prev) {
   const out = [];
   for (const c of r?.moduleCommands ?? []) if (c.op === "mount") out.push(`mount ${c.engine}`);
-  if (r?.ui?.whiteboard && JSON.stringify(r.ui.whiteboard) !== JSON.stringify(prev?.ui?.whiteboard ?? null)) out.push(`whiteboard ${r.ui.whiteboard.kind} (new)`);
+  // a changed board counts only when it changed for the SAME question (a board that changed because the next item was
+  // posed is that item's question card, not the diagram the child asked for) and is not just the question's text
+  if (r?.ui?.whiteboard && r.ui.whiteboard.kind !== "text" && JSON.stringify(r.ui.whiteboard) !== JSON.stringify(prev?.ui?.whiteboard ?? null)
+    && (r.ui?.ask?.itemId ?? null) === (prev?.ui?.ask?.itemId ?? null)) out.push(`whiteboard ${r.ui.whiteboard.kind} (new)`);
   if (r?.ui?.studioSlot && JSON.stringify(r.ui.studioSlot) !== JSON.stringify(prev?.ui?.studioSlot ?? null)) out.push("studioSlot (new)");
   if (r?.studio && Object.keys(r.studio).length) out.push(`studio ${Object.keys(r.studio).join(",")}`);
   if (r?.ui?.ask?.picture && r.ui.ask.picture !== prev?.ui?.ask?.picture) out.push("ask.picture (new)");
@@ -272,7 +275,7 @@ async function runSession(idx, personaKey) {
   const kit = kitOf(topicId);
   const sess = { id: `s${String(idx + 1).padStart(2, "0")}-${personaKey}-${topicId}`, persona: personaKey, topicId, lane: spoken ? "cascade/spoken" : "text/typed",
     classLevel: persona.classLevel, lang: persona.lang, startedAt: new Date().toISOString(), turns: [], flags: [], lessons: [], account: "deleted in finally" };
-  const plan = planFor(idx + pi, persona);
+  const plan = planFor(idx, persona);   // by session index, so 4 consecutive sessions cover every end/visual phrase
   const replies = [];
   let pending = null;   // a probe whose effect we check on the next teacher reply (visual: also the reply after)
   const fileOf = () => join(OUT, "sessions", `${sess.id}.json`);
@@ -581,7 +584,7 @@ async function browserPhase(mounts) {
         rec.mounted = okMount;
         rec.text = okMount ? (await frame.locator("body").innerText().catch(() => "")).slice(0, 300) : null;
         if (!okMount) { rec.issues.push("the frame showed no engine UI within 20 s"); out.mounts.push(rec); continue; }
-        await page.screenshot({ path: join(OUT, "browser", `${out.mounts.length + 1}-${m.engine.replace(/[@/]/g, "_")}.png`) }).catch(() => {});
+        await page.screenshot({ path: join(OUT, "browser", `${m.session.slice(0, 3)}-${String(m.moduleId).slice(0, 24)}-${m.engine.replace(/[@/]/g, "_")}.png`) }).catch(() => {});
         // Child play, deliberate first, random after: every commit's `correct` claim is compared with its value.
         const truthKey = item?.answer ?? null;
         const answersN = async () => (await page.evaluate(() => window.events)).filter((e) => e.type === "answer").length;
@@ -803,7 +806,14 @@ if (arg("render", null)) {
 }
 
 const keys = ONLY ? [ONLY] : Object.keys(PERSONAS);
-const jobs = Array.from({ length: SESSIONS }, (_, i) => ({ idx: i, persona: keys[i % keys.length] }));
+const OFFSET = Number(arg("offset", 0));   // a later batch into the same --out continues the session numbering
+const jobs = Array.from({ length: SESSIONS }, (_, i) => ({ idx: OFFSET + i, persona: keys[(OFFSET + i) % keys.length] }));
+const health = await fetch(`${BASE}/api/health`).then((r) => r.json()).catch(() => ({}));
+const metaPath = join(OUT, "meta.json");
+const meta = existsSync(metaPath) ? JSON.parse(readFileSync(metaPath, "utf8")) : { batches: [] };
+meta.batches.push({ startedAt: new Date().toISOString(), base: BASE, revision: health.revision ?? null, sha: health.sha ?? null, seed: SEED0, offset: OFFSET, sessions: SESSIONS,
+  plan: "planFor(session index)" });
+writeFileSync(metaPath, JSON.stringify(meta, null, 1));
 const sessions = [];
 const queue = [...jobs];
 await Promise.all(Array.from({ length: Math.min(CONC, jobs.length) }, async () => {
@@ -813,16 +823,24 @@ await Promise.all(Array.from({ length: Math.min(CONC, jobs.length) }, async () =
   }
 }));
 sessions.sort((a, b) => a.id.localeCompare(b.id));
-writeFileSync(join(OUT, "mounts.json"), JSON.stringify(allMounts, null, 1));
+// A batch into an existing --out merges with what is there (rows of other sessions are kept).
+const mine = new Set(sessions.map((x) => x.id));
+const prior = (f) => (existsSync(join(OUT, f)) ? JSON.parse(readFileSync(join(OUT, f), "utf8")) : null);
+const priorMounts = (prior("mounts.json") ?? []).filter((m) => !mine.has(m.session));
+const priorFlags = (prior("flags.json") ?? []).filter((f) => !mine.has(f.session) && !String(f.auto).startsWith("browser_"));
+const priorBrowser = (prior("browser.json")?.mounts ?? []).filter((m) => !mine.has(m.session));
+writeFileSync(join(OUT, "mounts.json"), JSON.stringify([...priorMounts, ...allMounts], null, 1));
 
 let browser = { skipped: "--no-browser" };
 if (!flag("no-browser")) {
   mkdirSync(join(OUT, "browser"), { recursive: true });
   try { browser = await browserPhase(allMounts); } catch (e) { browser = { error: String(e.message) }; }
-  flags.push(...browserFlags(browser));
 }
+if (browser.mounts) browser.mounts = [...priorBrowser, ...browser.mounts];
+const allFlags = [...priorFlags, ...flags, ...browserFlags(browser)];
 writeFileSync(join(OUT, "browser.json"), JSON.stringify(browser, null, 1));
-writeFileSync(join(OUT, "flags.json"), JSON.stringify(flags, null, 1));
+writeFileSync(join(OUT, "flags.json"), JSON.stringify(allFlags, null, 1));
+const allSessions = readdirSync(join(OUT, "sessions")).map((f) => JSON.parse(readFileSync(join(OUT, "sessions", f), "utf8"))).sort((a, b) => a.id.localeCompare(b.id));
 
 // ───────────────────────────── FAILURES.md ─────────────────────────────
 /**
@@ -842,9 +860,10 @@ function writeFailures(OUT, sessions, autoFlags, browser) {
   const graded = probes.filter(({ t }) => t.grade);
   const lines = [];
   lines.push(`# Owner-truth child simulation — ${OUT.split("/").pop()}`, "");
-  lines.push(`Target ${BASE}. ${sessions.length} sessions, ${childTurns} child turns (incl. module-only), seed ${SEED0}. Every test account was deleted in withTestAccount's finally (see each session's "cleanup" log line).`, "");
+  const meta = existsSync(join(OUT, "meta.json")) ? JSON.parse(readFileSync(join(OUT, "meta.json"), "utf8")) : { batches: [] };
+  lines.push(`Target ${BASE}. ${sessions.length} sessions, ${childTurns} child turns (incl. module-only). Batches: ${meta.batches.map((b) => `${b.startedAt} revision ${b.revision ?? "?"} seed ${b.seed} offset ${b.offset} x${b.sessions}`).join("; ") || "(no meta.json)"}. Every test account was deleted in withTestAccount's finally (each session's "cleanup: account deleted" line).`, "");
   lines.push("## Summary", "", "| owner item | probes | failures (auto flags) |", "|---|---|---|");
-  lines.push(`| 1 game/answer grading | ${graded.length} typed answers on kit items, ${count((t) => t.moduleGrade)} module answers, ${(browser.mounts ?? []).reduce((a, m) => a + m.commits.length, 0)} frame commits | ${byItem(1).length} (${byItem(1).filter((f) => !f.soft).length} hard) |`);
+  lines.push(`| 1 game/answer grading | ${graded.length} typed answers on kit items, ${count((t) => t.moduleGrade)} module answers, ${(browser.mounts ?? []).reduce((a, m) => a + m.commits.filter((c) => c.claim != null).length, 0)} graded frame commits (${(browser.mounts ?? []).reduce((a, m) => a + m.commits.filter((c) => c.mismatch).length, 0)} misgraded) | ${byItem(1).length} (${byItem(1).filter((f) => !f.soft).length} hard) |`);
   lines.push(`| 2 confused / failing / repeating | every reply | ${byItem(2).length} |`);
   lines.push(`| 3 child's end phrase ends the lesson | ${count((t) => t.endCheck)} | ${byItem(3).length} |`);
   lines.push(`| 4 steering not understood | ${count((t) => t.steerCheck)} | ${byItem(4).length} |`);
@@ -855,7 +874,8 @@ function writeFailures(OUT, sessions, autoFlags, browser) {
     lines.push(`| ${i + 1}${f.reviewed ? " R" : ""} | ${f.item}${f.soft ? " (soft)" : ""} | ${esc(f.session)} (${esc(f.lane)}) | ${f.turn} | ${esc(f.child)} | ${esc(f.teacher)} | ${esc(f.why)} |`));
   lines.push("", `Rows marked R were added by a reviewer reading the transcripts (review.json); ${(review.drop ?? []).length} auto flag(s) were dropped as heuristic false positives.`);
   writeFileSync(join(OUT, "FAILURES.md"), lines.join("\n") + "\n");
+  writeFileSync(join(OUT, "flags-final.json"), JSON.stringify(flags, null, 1));
   return flags;
 }
-const finalFlags = writeFailures(OUT, sessions, flags, browser);
-console.log(`\n${sessions.length} sessions, ${sessions.reduce((a, s) => a + s.turns.filter((t) => t.who === "child").length, 0)} child turns, ${finalFlags.length} flags → ${OUT}`);
+const finalFlags = writeFailures(OUT, allSessions, allFlags, browser);
+console.log(`\n${allSessions.length} sessions in ${OUT} (${sessions.length} this batch), ${finalFlags.length} flags`);
