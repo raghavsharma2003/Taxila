@@ -110,7 +110,7 @@ test("whiteboard gate: each defect is caught by its check", () => {
     ["W4.numbers_from_truth", [...GOOD_OPS, { id: "e", op: "numwork", at: [40, 40], layout: "column_add", rows: [["1", "2"], ["+", "1", "3"], ["2", "6"]], startMs: 6100, endMs: 6500 }], "a wrong sum"],
     ["W3.labels_anchored", swap("l1", { to: undefined }), "a label with no leader"],
     ["W3.labels_anchored", swap("l1", { to: [380, 20] }), "a leader pointing at nothing"],
-    ["W7.register", swap("t1", { text: "we make four equal parts here" }), "a sentence on the board"],
+    ["W7.register", swap("t1", { text: "cut it in four parts" }), "a sentence on the board"],
     ["W2.no_text_overlap", swap("t1", { at: [300, 66] }), "two texts on top of each other"],
     ["W1.fits_stage", swap("t1", { at: [395, 220] }), "text running off the board"],
     ["W5.words_from_line_or_kit", swap("t1", { text: "4 tasty pizzas" }), "words she never said"],
