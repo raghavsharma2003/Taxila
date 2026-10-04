@@ -3434,6 +3434,7 @@ Nothing on a live path warms it yet (kit narration and Forge narration call site
   validity (then it can join the live path, `hv-live-planner-is-code`'s reversal).
 
 - `owner-duplex-core-2026-10-04` (2026-10-04): owner: the duplex LLM architecture is core; it becomes a first-class Wave 2.5 stream with experience acceptance and replaces click-to-speak (OWNER-RESET item 16).
+- `owner-duplex-no-silence-gate-2026-10-04` (2026-10-04): owner correction: "waiting for silence is the most reliable way to know someone finished" is the wrong premise. The duplex teacher is a continuous conversational engine (Griffin's principle: re-assess every sub-second mini-turn; speak / hold / backchannel / react / yield / keep talking / cut in; perception continuous while she speaks). Generation stays a cascade (Azure router brain, DragonHD voice, safety predicate floor); the decision engine is our own model on top of the streams. Silence becomes one feature and a last-resort backstop, never the gate. Supersedes `duplex-no-model-in-child-turn` and the v1 candidate-silence gate. Measured bars it must beat, not fall back on: Smart Turn off-the-shelf 13.5% cut-offs vs tuned silence 2.7%; SHANKS 24.9% false interruptions. `duplex-fast-mouth-late-verdict` stays: act early, judge an unstable value late. Workstream wf_3622f8d6-318 was re-briefed (Architect v2, then engine + TaxilaFDB benchmark, then runtime, then critique). **Reverse if:** the trained engine, after a real data round, still cuts off thinking pauses more often than tuned 640 ms silence on TaxilaFDB and on real child sessions. Then silence returns as a floor only for that context class. The continuous architecture stays.
 
 
 ## Merged inbox entries (write-up from the entry text)
@@ -3444,3 +3445,16 @@ Nothing on a live path warms it yet (kit narration and Forge narration call site
 - `duplex-safety-sticky-partials` (2026-10-04): scanSafety runs on every partial, on the device (same module, never a copy) and on the server slice route; a hit is sticky for the turn: timers freeze, no nods/backchannels, every non-safety draft and cached audio is quarantined, TurnRequest.duplex.safetyPending forces the rank-0 safeguard even if the ASR revises the final; she speaks only at the TRP or after >= 1.5 s silence (LateIntent). Reverse never as a direction.
 - `duplex-content-blind-nods` (2026-10-04): Listening nods are content-blind (prosody-timed backchannel opportunities only, single continuer form, <= 1 per 3 s, never in number/choice answers or SAFETY_ATTEND); suppressing nods after a wrong step would itself leak the verdict (design-v2-face-verdict-neutral). Audio 'mm' stays off by default (E-C3). Reverse if D5 shows content-blind nods after wrong steps read as agreement by >= 60% of child raters.
 - `duplex-result-triage` (2026-10-04): Speech track and work track are independent: results landing mid-conversation are triaged in code as INTERRUPT (safety only), WHEN_IDLE (builds/whiteboard/library mounts become a Studio reveal proposal at the next /turn, kernel decides) or SILENT (notes, hints, learner updates as quiet context); nothing new reaches the screen while the child holds the floor; partial-intent may launch prefetch only, never live codegen. Reverse if D9 shows WHEN_IDLE reveals ready at the TRP < 50% because of the wait.
+
+## Signals verify review (2026-10-04) — pending merge from `inbox/signals-review.json`
+- **sig-review-safety-backstop:** `server/signals/backstop.js` abstains (and does nothing else) on the 4 distress shapes
+  ES-3 found the floor missing. Routing to the helplines stays with W2-I's scanSafety. *Reverse:* once scanSafety covers
+  these shapes and ES-3 floor misses reach 0.
+- **sig-review-safety-hold:** for 3 child turns after any safety turn, there is no child_joke cause and no choiceDue.
+  *Reverse:* if E1 shows the hold suppresses a wanted LAUGH-WITH after a false-alarm safety turn more than 1 time in 10.
+- **sig-review-g3-not-alone:** under SL-4, G3 (acoustic drift) can fire the composite break offer only alongside G4 > 0.
+  This resolves the spec's D7 row, which conflicted with SL-4 and G-SIG-COST. *Reverse:* if SG-M15 shows G3 adds break
+  precision when G4 ≤ 0.
+- **sig-review-nonanswer-graded:** these are never non-answers: a graded correct or partial answer, any graded
+  choice_spoken answer, and an empty transcript over ≥ 600 ms of detected speech (an STT miss). *Reverse:* if E1 shows
+  choiceDue misses disengaged children's graded minimal answers in more than 30% of runs.

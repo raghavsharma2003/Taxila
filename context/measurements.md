@@ -2092,3 +2092,17 @@ PASS; target p99 ≤ 5 ms PASS in all three runs. Production timing is SG-M18.
 
 ## Merged inbox entries (write-up from the entry text)
 - `m-d1-duplex-budget-sim-2026-10-04` (2026-10-04): M-D1 budget composition (evals/duplex/budget-sim.mjs, 200k seeded draws/scenario; Director bootstrapped from 48 measured cascade turns; India stages lognormal from measured p50/p90; device commit, India RTT, CHN->CI TTS delta and fast-path server time are [E]). First sound p50/p90 ms: today eastus2 3237/4640 (measured 3244/4640, n=48); India app today 3072/3535; +500 ms candidate 2675/3135; +store after audio 2609/3070; +device commit 2486/2949; +uptake prelude first sound 1018/1101 (content 2488); +wait-time drafts TTS at commit 1114/1212; +server-cached audio 849/928; +300 ms candidate 649/727; explanation held 1.5 s: 3987/4450 -> 2553/2949 with candidate speculation. A composition model, not a measurement of the new system; independence assumed.
+
+## Signals verify review (2026-10-04) — pending merge from `inbox/signals-review.json`
+- `m-sig-review-rerun-2026-10-04`: `node evals/signals/run.mjs`, this container.
+  - **Before fixes:** the build's numbers reproduced exactly. ES-1 n = 8,357 turns, ES-3 pipeline 284/300, ES-4 precision
+    as reported, ES-5 p99 0.69 ms, max 5.0 ms.
+  - **After fixes:** ES-1 paceDown recall went from 0.624 to 0.710 (precision 1.0). Every other ES-1 state is unchanged and
+    the guardrails show 0 violations.
+  - **ES-3:** the frame now passes 300/300, but the floor predicate (scanSafety alone) still misses 16 turns, 4 distinct.
+    The backstop abstains on all 16. It had 0 false hits on 9,171 non-distress synthetic turns. I wrote its patterns after
+    seeing the misses, so held-out recall is unknown.
+  - **ES-5:** p50 0.48 ms, p99 0.90 ms, max 6.1 ms (n = 10,000). A pathological 5,000-token transcript took 13.5 ms before
+    the new 1,200-character cap and 1.2 ms after it.
+  - **Naming:** the column the summary calls "AUC" is balanced accuracy ((TPR + TNR) / 2) on boolean rules. It is not a
+    ranking AUC.

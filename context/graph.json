@@ -8826,6 +8826,13 @@
    "title": "The governor's 10-turn window alone (≤ 5 fillers) let 3 fillers into the first 4 turns of a live run (अच्छा, तो, हम्म): a tic at the start of every lesson; a no-consecutive-turns rule was added",
    "at": "2026-10-04",
    "source": "inbox/w2-g.json"
+  },
+  {
+   "id": "owner-duplex-no-silence-gate-2026-10-04",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Owner correction: silence is not the turn-end gate. Continuous conversational engine (Griffin principle) re-decides every ~100 ms mini-turn (speak/hold/backchannel/react/yield/keep-talking/cut-in), perceiving while she speaks; cascade generation kept; silence is a feature + backstop. Supersedes duplex-no-model-in-child-turn. Reverse if the trained engine still cuts off thinking pauses more than tuned 640 ms silence on TaxilaFDB and real child sessions.",
+   "source": "inbox/owner-duplex-correction.json"
   }
  ],
  "edges": [
@@ -14438,6 +14445,11 @@
    "src": "w2g-dhd-cascade-config",
    "rel": "measured_by",
    "dst": "w2g-prosody-baseline-2026-10-04"
+  },
+  {
+   "src": "owner-duplex-no-silence-gate-2026-10-04",
+   "rel": "supersedes",
+   "dst": "duplex-no-model-in-child-turn"
   }
  ]
 }

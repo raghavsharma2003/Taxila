@@ -34,6 +34,9 @@ Node ids: `owner-reset-2026-10-04`, `owner-test-0-of-100-2026-10-04`, `rj-plumbi
     workstream wf_3622f8d6-318) is a first-class Wave 2.5 stream with its own experience acceptance: natural gaps after real turn ends, no
     talking over the child, no cutting off a thinking child, backchannels at the right moments, instant yield on barge-in, builds started from
     what the child is saying. It replaces click-to-speak.
+    **Correction (same day):** silence must not be the turn-end mechanism. Build Griffin's principle: a continuous conversational engine
+    that re-decides every sub-second mini-turn and listens while she speaks. Generation stays cascaded; the decision engine is ours.
+    Silence is only a feature and a backstop (`owner-duplex-no-silence-gate-2026-10-04`).
 
 ## What changes in how we work
 - Acceptance = real child-like sessions judged on experience (transcripts reviewed), plus the owner's own test. Plumbing batteries are necessary,

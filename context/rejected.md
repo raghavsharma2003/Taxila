@@ -1347,3 +1347,17 @@ choice offer. **Instead:** `sig-l15-wordy-forms-only` (precision 0.543 turn-leve
 precision 0.437 (n = 1,615 mastered-item turns): the first session encounter of an already-mastered skill always
 consolidated, spending the 2-item cap on knowers. **Instead:** below 2 session items on the skill, the ledger's mastery rule
 (which carries the history) stands in; precision 0.662.
+
+## Signals verify review (2026-10-04) — pending merge from `inbox/signals-review.json`
+
+### rj-sig-bare-meta-words
+**Tried:** bare "break", "rest", "baad mein", "aaram", "slow", "dheere" as L7 meta-request entries. **Broke:** they are
+lesson content. "pehle 24 ko break karte hain 20 aur 4 mein", "pehle guna karo, baad mein jod do", "ye toh aaram se ho
+jayega", "the rest of the pizza is half" each fired breakDue(child_said), and "kachhua dheere chalta hai" and "the tortoise
+is slow" fired paceDown (6 of 6 probes). **Instead:** request-shaped phrases only ("break chahiye", "thoda dheere bolo",
+"slow down"). On ES-1, child_said break recall stayed at 0.870 and paceDown recall went from 0.624 to 0.710.
+
+### rj-sig-na-post-negator
+**Tried:** treating "na" / "न" within 2 tokens after a hit as negation. **Broke:** in Hinglish "na" after a verb is the tag
+particle, so "thoda dheere bolo na" was read as negated and the request was dropped. **Instead:** "na" negates only
+before the verb ("na karo").

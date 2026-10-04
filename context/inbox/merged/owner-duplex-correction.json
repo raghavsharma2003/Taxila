@@ -1,0 +1,9 @@
+{
+  "nodes": [
+    {"id": "owner-duplex-no-silence-gate-2026-10-04", "kind": "decision", "at": "2026-10-04",
+     "title": "Owner correction: silence is not the turn-end gate. Continuous conversational engine (Griffin principle) re-decides every ~100 ms mini-turn (speak/hold/backchannel/react/yield/keep-talking/cut-in), perceiving while she speaks; cascade generation kept; silence is a feature + backstop. Supersedes duplex-no-model-in-child-turn. Reverse if the trained engine still cuts off thinking pauses more than tuned 640 ms silence on TaxilaFDB and real child sessions."}
+  ],
+  "edges": [
+    {"src": "owner-duplex-no-silence-gate-2026-10-04", "rel": "supersedes", "dst": "duplex-no-model-in-child-turn"}
+  ]
+}
