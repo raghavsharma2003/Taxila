@@ -17,6 +17,7 @@ precision mediump float;
 in vec2 vUv;
 uniform sampler2D uTex; uniform float uAlpha; uniform vec4 uShade; // shade: dirX, x0, x1, amount
 uniform vec4 uRect; // texture rect in rest space (x0,y0,w,h) for shading position
+uniform vec4 uTint; // debug: rgb, amount
 out vec4 o;
 void main(){
   vec4 c = texture(uTex, vUv);
@@ -24,6 +25,7 @@ void main(){
   float s = clamp((x - uShade.y) / (uShade.z - uShade.y), 0.0, 1.0);
   s = uShade.x > 0.0 ? s : 1.0 - s;
   c.rgb *= 1.0 - uShade.w * s * s;
+  c.rgb = mix(c.rgb, uTint.rgb * c.a, uTint.a);
   o = c * uAlpha;
 }`;
 const VS_EYE = `#version 300 es
@@ -164,10 +166,11 @@ export class Renderer {
     this.cam = [x0, y0, this.canvas.width / w, 0];
   }
 
-  drawPaint(mesh, tex, rect, alpha = 1, shade = [1, 0, 1, 0]) {
+  drawPaint(mesh, tex, rect, alpha = 1, shade = [1, 0, 1, 0], tint = null) {
     if (alpha <= 0.001) return;
     const gl = this.gl, P = this.paint;
     gl.useProgram(P.p);
+    gl.uniform4fv(P.u.uTint, tint || [0, 0, 0, 0]);
     gl.uniform2f(P.u.uView, this.canvas.width, this.canvas.height);
     gl.uniform4fv(P.u.uCam, this.cam);
     gl.uniform1f(P.u.uAlpha, alpha);

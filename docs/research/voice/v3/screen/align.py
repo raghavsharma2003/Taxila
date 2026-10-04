@@ -36,7 +36,7 @@ HF = os.environ.get("ALIGN_HF", SP + "/hf")
 from huggingface_hub import snapshot_download
 CTC = snapshot_download("Harveenchadha/vakyansh-wav2vec2-hindi-him-4200", revision="e2568c3f7868d8aa3aaabcf28fa100d10d54c170", cache_dir=HF, allow_patterns=["*.json", "pytorch_model.bin"])
 SV = snapshot_download("microsoft/wavlm-base-plus-sv", revision="feb593a6c23c1cc3d9510425c29b0a14d2b07b1e", cache_dir=HF, allow_patterns=["*.json", "pytorch_model.bin"])
-torch.set_num_threads(4)
+torch.set_num_threads(int(os.environ.get("ALIGN_THREADS", "4")))
 ctc = Wav2Vec2ForCTC.from_pretrained(CTC).eval().to(DEV); fe = Wav2Vec2FeatureExtractor.from_pretrained(CTC)
 VOC = json.load(open(CTC + "/vocab.json")); INV = {v: k for k, v in VOC.items()}; BLANK = VOC["<s>"]; SEP = VOC["|"]  # this fairseq-exported model emits <s> (id 0) as the CTC blank, not its config's pad id
 sv = WavLMForXVector.from_pretrained(SV).eval().to(DEV); sfe = Wav2Vec2FeatureExtractor.from_pretrained(SV)

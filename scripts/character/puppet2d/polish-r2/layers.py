@@ -33,7 +33,9 @@ GEOM = {
     "earL": [(250, 430), (305, 430), (318, 545), (334, 556), (338, 598), (300, 602), (280, 578), (250, 540)],
     "earR": [(745, 420), (808, 420), (808, 548), (788, 588), (748, 592), (738, 560)],
     "lockL": [(278, 440), (318, 440), (330, 560), (320, 640), (338, 700), (322, 730), (296, 730), (300, 690), (282, 600), (284, 520)],
-    "lockR": [(728, 395), (760, 395), (788, 520), (792, 620), (790, 705), (770, 705), (762, 640), (742, 560), (732, 480)],
+    # r2: the strand crosses the bun's right edge at x 749-764, y 630-690 (read at 4x on a 10 px grid), then curls out
+    "lockR": [(728, 395), (760, 395), (788, 520), (792, 620), (788, 640), (772, 652), (765, 668), (766, 690), (777, 706),
+              (764, 708), (751, 688), (749, 660), (751, 632), (742, 560), (732, 480)],
     "bun": [(600, 575), (700, 560), (760, 600), (765, 700), (720, 745), (640, 750), (598, 752), (588, 700)],
     "browLpoly": [(371, 361), (400, 348), (430, 344), (452, 342), (467, 345), (476, 354), (478, 368), (470, 375), (450, 375),
                   (430, 377), (405, 380), (388, 384), (371, 390)],
@@ -204,13 +206,15 @@ _lkL = ndi.binary_dilation(lockLp, iterations=9) & (xx < 345)
 _bun_ell = ((xx - 683) / 80.0) ** 2 + ((yy - 658) / 86.0) ** 2 <= 1
 # lock R: generous above the bun, tight (polygon + 2 px) where it lies over the bun, so the bun's own pixels stay
 # in the bun and the strand's own pixels stay in the lock (dark on dark: the polygon is the separator)
-_lkR = ((ndi.binary_dilation(lockRp, iterations=9) & ~_bun_ell) | (ndi.binary_dilation(lockRp, iterations=2) & _bun_ell)) & (xx > 722)
+_lkR = ((ndi.binary_dilation(lockRp, iterations=9) & ~_bun_ell) | (lockRp & _bun_ell)) & (xx > 722)
 lockL = hair_all & _lkL & (yy > 455)
 lockR = hair_all & _lkR & (yy > 470)
 lockLp, lockRp = _lkL, _lkR
-bun = hair_all & bunP & ~lockR & ndi.binary_dilation(_bun_ell, iterations=3)
-# dark strand bits inside the bun polygon but off the knot belong to the lock
-lockR |= hair_all & bunP & ~bun & (xx > 722) & (yy > 470)
+# r2: the bun is every dark pixel of the lower-right zone that is not the lock (the connected knot), so no part of
+# the visible knot is left to nobody (r1 left a cream wedge between neck and knot at rest)
+_bz = hair_all & ~lockR & (yy > 568) & (xx > 575) & (xx < 800)
+_lb, _ = ndi.label(_bz)
+bun = _lb == _lb[700, 683]
 hair = hair_all & ~lockL & ~lockR & ~bun
 hair &= ~((yy > 560) & (xx > 380) & (xx < 680))
 # jaw curve: below it (between the jaw corners) is neck
@@ -393,7 +397,7 @@ _, fa = matte(face, face_area & ~face)
 # the chin has no contour in c-front, only shading into the neck: feather the face over the neck across ~9 px
 dj = (yy - jaw_y[None, :])
 chin_band = (xx > 440) & (xx < 615) & (np.abs(dj) < 12)
-fa = np.where(chin_band, np.clip(1.0 - dj / 9.0, 0, 1) * (jaw_y[None, :] > 600), fa)
+fa = np.where(chin_band, np.clip(1.0 - dj / 9.0, 0, 1) * (jaw_y[None, :] > 600) * ~ndi.binary_dilation(bgc, iterations=2), fa)
 face_rgb = np.where((chin_band & (dj >= -2))[..., None], im, face_rgb)   # c-front's own pixels across the chin band
 geom_out["rects"]["face"] = save_layer("face", face_rgb, fa)
 
@@ -433,12 +437,16 @@ for name, m, sig in (("hair", hair, 0.7), ("bun", bun, 0.7), ("lockL", lockL, 0.
         over = ndi.binary_dilation(hair, iterations=2) & browL
     if name == "bun":    # the bun is behind the neck, the jaw and the lock: continue it under them
         # the bun is a round knot: its hidden part is the ellipse it belongs to (fitted by eye), under neck/jaw/lock
-        ell = ((xx - 683) / 80.0) ** 2 + ((yy - 658) / 86.0) ** 2 <= 1
-        ext = (xx > 566) & (xx < 700) & (yy > 595) & (yy < 752) & (face | body)
-        # hidden at rest only: the ellipse where c-front is not backdrop, plus a rounder, deeper bottom under the
-        # kurta/neck (so a bun that rises on pitch never shows the kurta's cut line as its own edge)
+        # r2: the knot's whole shape is the convex hull of its visible pixels and a deeper ellipse bottom under the
+        # jaw/neck/kurta (a ball: convex). Hidden at rest = hull minus visible knot minus rest-visible backdrop. A
+        # turn that slides the jaw off it uncovers a round knot, never a rectangle (r1's `ext` box was the debris).
         ell_low = ((xx - 683) / 80.0) ** 2 + ((yy - 662) / 98.0) ** 2 <= 1
-        over = ((ell & ~ndi.binary_dilation(bgc, iterations=1)) | (ell_low & body) | ext) & ~bun
+        _seed = bun | (ell_low & (face | body | lockR) & (yy > 600))
+        _pts = np.argwhere(_seed)[:, ::-1].astype(np.int32)
+        _hull = np.zeros((H, W), np.uint8)
+        cv2.fillConvexPoly(_hull, cv2.convexHull(_pts), 1)
+        bun_shape = _hull.astype(bool)
+        over = bun_shape & ~bun & ~ndi.binary_dilation(bgc, iterations=1)
     if name.startswith("lock"):
         rgb, a = matte(m, None, band=2, erode=2)
         a = np.where(ndi.binary_dilation(m, iterations=2), a, 0)
@@ -476,6 +484,8 @@ for name, m, sig in (("hair", hair, 0.7), ("bun", bun, 0.7), ("lockL", lockL, 0.
         seam = m & ~ndi.binary_erosion(m, iterations=3) & ndi.binary_dilation(over, iterations=4)
         rgb = np.where((over & ~m)[..., None] | seam[..., None], fillc, rgb)
         a = np.where(seam, 1.0, a)
+        # the hidden contour is the hull's, anti-aliased (never the hard edge of a cut)
+        a = np.where(over & ~ndi.binary_dilation(m, iterations=2), soft(bun_shape, 0.8), a)
     elif over is not None:
         rgb = np.where((over & ~m)[..., None], pullpush(im, ndi.binary_erosion(m, iterations=2)), rgb)
     rgb, a = hairfinish(rgb, a)
@@ -509,9 +519,11 @@ nl = int(np.median([r.min() for r in _ne if len(r)])) + 400
 nr = int(np.median([r.max() for r in _ne if len(r)])) + 400
 # r2: the neck flares up into the jaw (a smooth contour, not a column), and is painted only where the face hides it at
 # rest, so the rest pose is unchanged and a chin that moves over it on a turn uncovers neck in jaw shadow, never cream
-_fl = 34.0 * np.clip((742 - yy) / 110.0, 0, 1) ** 1.6
+# r2 rev: a straight column (the visible edges continued up), widening only well under the jaw where no turn in range
+# uncovers it; painted wherever c-front is not backdrop or the knot at rest, so its side is a clean neck line on a turn
+_fl = 12.0 * np.clip((690 - yy) / 60.0, 0, 1)
 neck_shape = (yy > 575) & (yy < 745) & (xx >= nl - _fl) & (xx <= nr + _fl)
-neck_up = neck_shape & ~body & ndi.binary_dilation(face, iterations=2) & ~lockL & ~lockR
+neck_up = neck_shape & ~body & ~ndi.binary_dilation(bgc, iterations=1) & ~lockL & ~lockR & ~ndi.binary_dilation(bun, iterations=1)
 print("neck edges", nl, nr)
 body_area = body | neck_up | (ndi.binary_dilation(body, iterations=8) & (lockL | lockR | hair))
 neck_skin = ndi.binary_erosion(body, iterations=2) & ((R - B) > 60) & (yy < 760)

@@ -66,10 +66,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.log("frames", i);
   } else if (mode === "poses") {
     const poses = JSON.parse(fs.readFileSync(a, "utf8"));
-    fs.mkdirSync(`${ROOT}/work/poses`, { recursive: true });
+    const PD = process.env.P2D_POSEDIR || `${ROOT}/work/poses`;
+    fs.mkdirSync(PD, { recursive: true });
     for (const [name, spec] of Object.entries(poses)) {
       const m = await page.evaluate((s) => window.P2D.pose(s), spec);
-      await canvas.screenshot({ path: `${ROOT}/work/poses/${name}.png` });
+      await canvas.screenshot({ path: `${PD}/${name}.png` });
       console.log("pose", name, m);
     }
   }

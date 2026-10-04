@@ -17,6 +17,8 @@ const smooth = (a, b, x) => {
   return t * t * (3 - 2 * t);
 };
 const D2R = Math.PI / 180;
+// debug (?dbg=tint or ?only=a,b): per-layer false colour for attributing seams and debris
+const DBG_TINT = { hairback: [0, 0, 1, 0.6], bun: [1, 0, 0, 0.6], body: [0, 0.7, 0, 0.5], ears: [1, 0.6, 0, 0.6], face: [1, 1, 0, 0.35], browL: [0, 1, 1, 0.6], browR: [0, 1, 1, 0.6], lockbed: [1, 0, 1, 0.6], hair: [0.3, 0.3, 1, 0.5], lockL: [0, 1, 0.3, 0.7], lockR: [1, 0.3, 0.6, 0.7] };
 
 // r2 head proxy: ONE shared, slope-bounded depth field for every head layer (borrowed idea from arm V's dome).
 // Every layer that overlaps another samples the same z at the same rest point, so the turn is a continuous warp of
@@ -154,6 +156,9 @@ export class Puppet2DRig {
     mk("lockR", 6, "lock");
     // r2: no per-layer depth offsets except the bun, which sits behind the skull (its hidden part is painted)
     { const L = this.layers.bun; for (let i = 0; i < L.n; i++) L.z[i] = L.z[i] - 45; }
+    // the right lock hangs over the knot: its lower part sits half-way to the knot's depth, so lock and knot slide
+    // over each other by ~half as much on a turn (the strand still reads in front)
+    { const L = this.layers.lockR; for (let i = 0; i < L.n; i++) L.z[i] -= 22 * smooth(600, 690, L.rest[i * 2 + 1]); }
     // locks: anchor (top) and length for the pendulum weight
     for (const s of ["L", "R"]) {
       const L = this.layers["lock" + s];
@@ -415,10 +420,12 @@ export class Puppet2DRig {
     R.setCam(this.view[0], this.view[1], this.view[2]);
     const shadeFace = [s.yaw >= 0 ? 1 : -1, s.yaw >= 0 ? 530 : 330, s.yaw >= 0 ? 730 : 530, 0.16 * Math.abs(s.yaw) / 20];
     const shadeHair = [shadeFace[0], s.yaw >= 0 ? 400 : 200, s.yaw >= 0 ? 820 : 660, 0.1 * Math.abs(s.yaw) / 20];
+    const dbg = this.debug;
     const draw = (n, shade) => {
       const L = this.layers[n];
       if (this.deformLayer(L)) R.update(L.mesh, "aPos", L.pos);
-      R.drawPaint(L.mesh, this.tex[n], L.rect, 1, shade);
+      if (dbg && dbg.only && !dbg.only.includes(n)) return;
+      R.drawPaint(L.mesh, this.tex[n], L.rect, 1, shade, dbg && dbg.tint ? DBG_TINT[n] : null);
     };
     // the backdrop is c-front's cream (std < 1.5/255 over the plate): the clear colour, no full-screen pass
     draw("hairback", shadeHair);
