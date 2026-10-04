@@ -48,7 +48,7 @@ const V = {
   viseme_sil: { ...Z, sm: 1 },
   viseme_PP: { ...Z, W: 0.9, flat: 0.5, press: 1, T: 0, sm: 0.6 },
   // f/v: the UPPER lip lifts off the upper teeth, the lower lip rolls in and up to touch their edge; no smile
-  viseme_FF: { ...Z, g: 16, up: 1.0, W: 0.86, flat: 0.85, T: 1, TL: 0, tuck: 1, th: 0, sm: 0.0 },
+  viseme_FF: { ...Z, g: 18, up: 1.0, W: 0.8, flat: 0.9, T: 1, TL: 0, tuck: 1, th: 0, sm: 0.0 },
   viseme_TH: { ...Z, g: 14, up: 0.35, W: 1.0, T: 0.8, TL: 0.5, tip: 1, th: 0.1, sm: 0.45 },
   // t / d / n / l: a clear opening with the tongue TIP up behind the upper teeth (the floor mound drops out of the way)
   viseme_DD: { ...Z, g: 26, up: 0.3, W: 0.88, flat: 0.55, T: 0.35, TL: 0, tip: 1, th: 0.05, sm: 0.2 },
@@ -63,7 +63,7 @@ const V = {
   viseme_E: { ...Z, g: 17, up: 0.35, W: 1.1, T: 1, TL: 0.55, sm: 0.75 },
   viseme_I: { ...Z, g: 9, up: 0.4, W: 1.08, T: 1, TL: 0.75, sm: 0.7 },
   viseme_O: { ...Z, g: 28, up: 0.4, W: 0.68, flat: 0.9, round: 1, T: 0.12, TL: 0, sm: 0.3 },
-  viseme_U: { ...Z, g: 11, up: 0.45, W: 0.54, flat: 0.95, round: 1, pout: 0.5, T: 0, TL: 0, th: 0.3, sm: 0.2 },
+  viseme_U: { ...Z, g: 15, up: 0.45, W: 0.56, flat: 0.95, round: 1, T: 0, TL: 0, th: 0.3, sm: 0.2 },
 };
 const KEYS = Object.keys(Z);
 // per-parameter smoothing time constants (s): the opening tracks the phonemes, the width and curvature glide
@@ -110,7 +110,7 @@ export class LipSolver {
     const cPP = sstep(0.6, 0.92, wPP);   // a plosive releases abruptly (the burst), it does not fade open
     if (cPP > 0) { tgt.g *= 1 - cPP; tgt.press = Math.max(tgt.press, cPP); tgt.tuck *= 1 - cPP; tgt.W = tgt.W * (1 - cPP) + 0.9 * cPP; tgt.flat = tgt.flat * (1 - cPP) + 0.5 * cPP; tgt.round *= 1 - cPP; }
     const cFF = sstep(0.25, 0.7, wFF) * (1 - cPP);
-    if (cFF > 0) { tgt.g = tgt.g * (1 - cFF) + 16 * cFF; tgt.up = tgt.up * (1 - cFF) + cFF; tgt.tuck = Math.max(tgt.tuck, cFF); tgt.T = Math.max(tgt.T, cFF); tgt.TL *= 1 - cFF; tgt.round *= 1 - cFF; tgt.flat = tgt.flat * (1 - cFF) + 0.85 * cFF; tgt.sm = tgt.sm * (1 - cFF); tgt.th *= 1 - cFF; tgt.tip *= 1 - cFF; tgt.W = tgt.W * (1 - cFF) + 0.86 * cFF; }
+    if (cFF > 0) { tgt.g = tgt.g * (1 - cFF) + 18 * cFF; tgt.up = tgt.up * (1 - cFF) + cFF; tgt.tuck = Math.max(tgt.tuck, cFF); tgt.T = Math.max(tgt.T, cFF); tgt.TL *= 1 - cFF; tgt.round *= 1 - cFF; tgt.flat = tgt.flat * (1 - cFF) + 0.85 * cFF; tgt.sm = tgt.sm * (1 - cFF); tgt.th *= 1 - cFF; tgt.tip *= 1 - cFF; tgt.W = tgt.W * (1 - cFF) + 0.8 * cFF; }
     // minimum hold for the closure: once contact is reached it stays >= 66 ms (2 frames at 30 fps)
     // (a MINIMUM closure length counted from contact onset: it never extends a closure that already lasted 66 ms, so the
     // vowel after it keeps its frames)
@@ -327,7 +327,7 @@ export class LipShell {
     for (const name of ["U", "L"]) {
       const sh = this.sheets[name], K = sh.K, R = sh.R, sign = sh.sign, E = sign < 0 ? this.colU : this.colL;
       // lip thickness: fuller when rounded / pouted, thinner when pressed / spread / rolled in (r5: surprise thins them)
-      const thick = 1 + 0.55 * p.round + 0.5 * p.pout - 0.72 * p.press - 0.3 * Math.max(0, p.W - 1) - (sign > 0 ? 0.3 * p.tuck + 0.5 * sur : 0.15 * sur);
+      const thick = 1 + 0.55 * p.round + 0.5 * p.pout - 0.72 * p.press - 0.3 * Math.max(0, p.W - 1) - (sign > 0 ? 0.05 * p.tuck + 0.5 * sur : 0.15 * sur);
       const n = sh.C * R;
       for (let q = 0; q < n; q++) {
         const ci = (q / R) | 0, j = q - ci * R;

@@ -730,10 +730,10 @@ var ne = U(H.cx + 4), re = (e) => (e - H.cx) / (e < H.cx ? H.hwL : H.hwR), ie = 
 	},
 	viseme_FF: {
 		...W,
-		g: 16,
+		g: 18,
 		up: 1,
-		W: .86,
-		flat: .85,
+		W: .8,
+		flat: .9,
 		T: 1,
 		TL: 0,
 		tuck: 1,
@@ -862,12 +862,11 @@ var ne = U(H.cx + 4), re = (e) => (e - H.cx) / (e < H.cx ? H.hwL : H.hwR), ie = 
 	},
 	viseme_U: {
 		...W,
-		g: 11,
+		g: 15,
 		up: .45,
-		W: .54,
+		W: .56,
 		flat: .95,
 		round: 1,
-		pout: .5,
 		T: 0,
 		TL: 0,
 		th: .3,
@@ -934,7 +933,7 @@ var ne = U(H.cx + 4), re = (e) => (e - H.cx) / (e < H.cx ? H.hwL : H.hwR), ie = 
 		let d = n("viseme_PP"), f = n("viseme_FF"), p = B(.6, .92, d);
 		p > 0 && (l.g *= 1 - p, l.press = Math.max(l.press, p), l.tuck *= 1 - p, l.W = l.W * (1 - p) + .9 * p, l.flat = l.flat * (1 - p) + .5 * p, l.round *= 1 - p);
 		let m = B(.25, .7, f) * (1 - p);
-		m > 0 && (l.g = l.g * (1 - m) + 16 * m, l.up = l.up * (1 - m) + m, l.tuck = Math.max(l.tuck, m), l.T = Math.max(l.T, m), l.TL *= 1 - m, l.round *= 1 - m, l.flat = l.flat * (1 - m) + .85 * m, l.sm *= 1 - m, l.th *= 1 - m, l.tip *= 1 - m, l.W = l.W * (1 - m) + .86 * m), p > .85 && !this.inPP && (this.inPP = !0, this.holdPP = this.t + .067), p < .5 && (this.inPP = !1), this.t < this.holdPP && (l.g = 0, l.press = Math.max(l.press, .9));
+		m > 0 && (l.g = l.g * (1 - m) + 18 * m, l.up = l.up * (1 - m) + m, l.tuck = Math.max(l.tuck, m), l.T = Math.max(l.T, m), l.TL *= 1 - m, l.round *= 1 - m, l.flat = l.flat * (1 - m) + .85 * m, l.sm *= 1 - m, l.th *= 1 - m, l.tip *= 1 - m, l.W = l.W * (1 - m) + .8 * m), p > .85 && !this.inPP && (this.inPP = !0, this.holdPP = this.t + .067), p < .5 && (this.inPP = !1), this.t < this.holdPP && (l.g = 0, l.press = Math.max(l.press, .9));
 		let h = (n("eyeWideLeft") + n("eyeWideRight")) / 2;
 		if (this.surprised = s < .2 && h > .45 ? z((h - .45) / .3) : 0, this.surprised > 0) {
 			let e = this.surprised;
@@ -1138,7 +1137,7 @@ var ue = class {
 		}
 		let r = e.jaw(), i = e.surprised || 0, a = [e.side.L.crease, e.side.R.crease], o = t.press * .16, s = t.press * .05, c = t.tuck * .38, l = .04 * t.round + .07 * t.pout;
 		for (let e of ["U", "L"]) {
-			let n = this.sheets[e], u = n.K, d = n.R, f = n.sign, p = f < 0 ? this.colU : this.colL, m = 1 + .55 * t.round + .5 * t.pout - .72 * t.press - .3 * Math.max(0, t.W - 1) - (f > 0 ? .3 * t.tuck + .5 * i : .15 * i), h = n.C * d;
+			let n = this.sheets[e], u = n.K, d = n.R, f = n.sign, p = f < 0 ? this.colU : this.colL, m = 1 + .55 * t.round + .5 * t.pout - .72 * t.press - .3 * Math.max(0, t.W - 1) - (f > 0 ? .05 * t.tuck + .5 * i : .15 * i), h = n.C * d;
 			for (let e = 0; e < h; e++) {
 				let i = e / d | 0, h = e - i * d, g = p[i * 3], _ = p[i * 3 + 1], v = u.T[e], y = r * u.JP[e], b, x;
 				if (u.IN[e]) b = g, x = _ + f * u.FR[e] * (m - 1) * v;
