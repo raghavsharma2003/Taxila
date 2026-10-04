@@ -78,6 +78,7 @@ if __name__ == '__main__':
     mode = sys.argv[1]
     if mode == 'sanity':
         out = sys.argv[2]
+        sfams = sys.argv[3].split(',') if len(sys.argv) > 3 else ['gpt', 'grok']
         neg = [T + 'bakeoff/stylised-premium/renders/teal/emotions/warm.png', T + 'bakeoff/gnm/renders/teal/emotions/warm.png',
                T + 'bakeoff/procedural-v3/renders/teal/emotions/warm.png', T + 'bakeoff/merged/renders/teal/emotions/warm.png',
                T + 'renders/plum/emotions/warm.png', T + 'renders/slate/emotions/warm.png',
@@ -85,7 +86,7 @@ if __name__ == '__main__':
         pos = [REF + 'neutral.webp', REF + 'front-ortho.webp', REF + 'q3-left.webp', REF + 'q3-right.webp',
                C + 'c-talking.webp', C + 'c-listening.webp', C + 'c-thinking.webp', C + 'c-happy.webp']
         jobs = []
-        for fam in ('gpt', 'grok'):
+        for fam in sfams:
             for size in (1024, 128):
                 for p in neg:
                     jobs.append({'family': fam, 'size': size, 'kind': 'neg', 'ref': C + 'c-front.webp', 'cand': p})
@@ -93,7 +94,7 @@ if __name__ == '__main__':
                     jobs.append({'family': fam, 'size': size, 'kind': 'pos', 'ref': C + 'c-front.webp', 'cand': p})
         res = run_jobs(jobs, out)
         summ = {}
-        for fam in ('gpt', 'grok'):
+        for fam in sfams:
             for kind in ('neg', 'pos'):
                 rs = [r for r in res if r['family'] == fam and r['kind'] == kind and 'json' in r]
                 if kind == 'neg':

@@ -12,7 +12,7 @@ const SPEECH = {
   eastus2: { key: process.env.AZURE_OPENAI_API_KEY, region: "eastus2" },
 };
 const tts = (where, ssml) => timedFetch(`https://${SPEECH[where].region}.tts.speech.microsoft.com/cognitiveservices/v1`, { method: "POST",
-  headers: { "Ocp-Apim-Subscription-Key": SPEECH[where].key, "Content-Type": "application/ssml+xml", "X-Microsoft-OutputFormat": "riff-24khz-16bit-mono-pcm", "User-Agent": "taxila-voice-v3" }, body: ssml });
+  headers: { "Ocp-Apim-Subscription-Key": SPEECH[where].key, "Content-Type": "application/ssml+xml", "X-Microsoft-OutputFormat": "raw-24khz-16bit-mono-pcm", "User-Agent": "taxila-voice-v3" }, body: ssml });
 const speak = (lang, voice, inner) => `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="${lang}"><voice name="${voice}">${inner}</voice></speak>`;
 const lineText = (id) => LINES.find((l) => l.id === id).text;
 
@@ -53,7 +53,8 @@ const azArm = (arm, { where, lang, voice, plain, expr, licence, status, notes })
   const inner = cond === "plain" ? plain(l) : expr?.(l);
   if (!inner) return null;
   const ssml = speak(lang, voice, inner);
-  const r = await tts(where, ssml); return { ...r, settings: { region: SPEECH[where].region, format: "riff-24khz-16bit-mono-pcm", ssml, notes } };
+  const r = await tts(where, ssml); if (r.buf) r.buf = wavHdr(r.buf);
+  return { ...r, settings: { region: SPEECH[where].region, format: "raw-24khz-16bit-mono-pcm (streamed; WAV header added locally)", ssml, notes } };
 } });
 
 const ARMS = [
@@ -112,8 +113,11 @@ ARMS.push({ arm: "ctrl-v6-rt-marin", engine: "azure-openai-realtime", where: "ea
   } });
 
 const norm = (s) => (s || "").replace(/[\s।,!?.]/g, "");
+// riff output is NOT streamed by the service (TTFB inflated by ~1-3 s, measured with curl 2026-10-04), so render raw PCM.
+// One unrecorded warm-up call per arm so TTFB is a warm-connection number, as in production.
 for (const a of ARMS) {
   if (FILTER && !FILTER.test(a.arm)) continue;
+  if (a.engine === "azure-speech-tts") await tts(a.where, speak("hi-IN", a.voice, "नमस्ते"));
   for (const l of LINES) for (const cond of ["plain", "expressive"]) {
     const r = await a.run(l, cond);
     if (r === null) continue;

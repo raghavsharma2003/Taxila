@@ -2314,3 +2314,4 @@ Reverse if any of these happens:
 - **Transcribe:** an India-hosted rerun shows multi-LID final text under ~1.0 s after speech end AND answers >= R4 (74/78), or the real-children set E1 favours it.
 - **Polly:** AWS ships a male Hindi voice and a Mumbai generative engine, and the owner's blind panel prefers it to Diya.
 - **Nova 2 Sonic:** access opens AND it passes all of: the child-safety battery 100%; first audio from India <= gpt-realtime-2.1's 776 ms median; Hinglish quality at or above the premium lane on the same judge plus the owner's blind panel.
+- `w1-integration-probe-image-text-voice` (2026-10-04): the Azure probe image now carries tests/prod/w1a-text-voice.mjs so the text-lane timing bar is measured from Azure, not from the US sandbox. Reverse if the timing bar moves into the main battery.

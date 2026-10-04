@@ -1537,3 +1537,6 @@ US container, so the India rows include ~265-330 ms of round trip.
 - Vendor docs [V]: hi-IN voices kiara/arjun, en-IN kiara/arjun, polyglot tiffany/matthew, code-switching within a sentence.
 - AWS Pricing API [V], Nova Sonic 2.0 us-east-1, per 1K tokens: speech in $0.003, speech out $0.012, text in $0.00033, text out $0.00275.
 - Cost per minute: not computed; it needs speech tokens per audio second, measurable only by a call.
+
+## Wave 1 integration (2026-10-04)
+- `w1-integration-local-2026-10-04`: combined Wave 1 tree on a local serve.mjs + worker against the Neon test branch, every tests/prod Wave 1 file run once: w0-smoke 5/5, w1a battery 16/16, practice-ask 23/23, text-voice 3/3 (p50 210 ms, local), young-text 14/14, w1b mounts 52/52, tray 10/10, w1c reteach 13/13, three-day 22/22 (+1 warning), settle 8/8 (13/13 held verdicts settled; the late-correction path was not exercised), w1d conductor 11/11, eyes 12/12, w1f face 32/32. npm test 1198/1202 with the only failure being production migrations 012/013/015 not yet applied.

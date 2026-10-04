@@ -260,7 +260,7 @@ def ear(P, sdf, side, seg=20, rings=12):
             # local: u = forward/back (y), v = up (z), w = outward (x)
             lu = math.sin(th) * math.cos(ph); lv = math.cos(th); lw = math.sin(th) * math.sin(ph)
             # egg: wider top, narrow lobe
-            sc = 1.0 + 0.18 * lv
+            sc = 1.0 + 0.06 * lv
             p = np.array([lw * thk * 0.5, lu * wid * 0.5 * sc, lv * hgt * 0.5])
             # concha: push the outer face in (bowl), keep a rim
             rad = math.hypot(lu, lv * 0.9)
@@ -380,7 +380,8 @@ def hair_shell(P, sdf, side, nv=54, nu=30):
         T = T * (1 - pd * (1 - np.sqrt(np.clip(u / 0.12, 0, 1) * (2 - np.clip(u / 0.12, 0, 1)))))
         # front edge roll into the skin
         edge = np.clip(v / P["edge_roll"], 0, 1)
-        T = T * np.sqrt(np.sin(edge * math.pi / 2)) - P["edge_tuck"] * (1 - edge)
+        T = T * (np.sin(edge * math.pi / 2) ** P.get('edge_pow', 0.5)) - P["edge_tuck"] * (1 - edge)
+        T = np.maximum(T, P.get('hair_T_min', 0.0012) * edge)   # r2: never dips into the skin (temple shards)
         # clumps
         c = (v * G + P.get('clump_jitter', 0.0) * math.sin(2 * math.pi * v * 1.7 + 0.9 * side)) % 1.0
         g = (1 - (2 * c - 1) ** 2) ** P["clump_pow"]
