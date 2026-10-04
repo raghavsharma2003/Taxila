@@ -382,7 +382,11 @@ function engineReteach(s, input, item, v) {
   const { kit } = input;
   const mis = sk.belief.misconception?.mId ? kit.misconceptions.find((m) => m.id === sk.belief.misconception.mId) : null;
   const kitArms = armsFromKit(mis);
+  // ctx.reteach: the child's record (attempts, rep fluency, arm posteriors), pinned at start by the
+  // comprehension/session.js seam (W1-C); absent → selectReteach's empty defaults, as before.
+  const rec = s.ctx.reteach ?? {};
   const d = reteachPlan({ trigger: trig, skillId: k, misId: mis?.id ?? null, kitArms, band: s.probeSess?.band, seed: String(s.seed), pL: sk.belief.pL,
+    attempts: rec.attempts, repFluency: rec.repFluency, posteriors: rec.posteriors,
     lessonArmsUsed: s.armsUsed ?? [], failedArmsThisSession: [], hindiObserved: s.ctx.lang !== "english", safetyFired: !!s.safeguard,
     voiceTie: !!(input.voice?.gentlerHint || input.voice?.slowerPace), now: new Date(input.now ?? 0).toISOString() });
   if (!d || d.move === "none") return null;
@@ -589,7 +593,7 @@ export function step(prev, input) {
   // A reaction keeps the step's content (e.g. the worked example the teacher is in the middle of) and the
   // activity on screen.
   if (!reacting || p.content) s.lastContent = p.content ?? [];
-  const moduleCommands = reacting ? [] : planModule(s, { move, item, kit: input.kit, lang: s.ctx.lang, representation: p.representation });
+  const moduleCommands = reacting ? [] : planModule(s, { kit: input.kit, item, move, lang: s.ctx.lang, band: s.probeSess?.band ?? bandOf(s.ctx.classLevel), representation: p.representation });
   const ui = uiFor(s, p, move, item, input.kit);
   s.lastUi = ui; // what a hold re-sends (chips are momentary on the client: absent would clear them)
   return { state: s, move, moduleCommands, ui, end: s.phase === "done", ...describe(s, input.kit) };

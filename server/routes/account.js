@@ -5,6 +5,7 @@ import { need, bad, send, HttpError } from "../http.js";
 import { createSession, destroySession, requireGuardian, requireChild } from "../auth.js";
 import { requireParentIfPinSet, checkAccountPassword, verifySecret, hashSecret, rateLimit } from "./parent.js";
 import { teacherFor } from "../compiler/characters/index.js";
+import { onConsentChange } from "../conductor/hooks.js";
 
 export const CONSENT_VERSION = "2026-10-02.v1";
 // core_tutoring is required to use the product; the others are separately optional and revocable.
@@ -112,6 +113,9 @@ export async function setConsent(req, res, body) {
       [g.id, childId, purpose, CONSENT_VERSION, !!granted]);
   }
   await q("insert into audit(guardian_id, action, detail) values ($1, 'consent', $2)", [g.id, { childId, grants, version: CONSENT_VERSION }]);
+  // Seam (W1-D): the Conductor's consent event(s), in one transaction right after the consent rows (none until filled).
+  const hookStmts = onConsentChange({ guardianId: g.id, childId, grants: Object.fromEntries(Object.entries(grants).map(([k, v]) => [k, !!v])), version: CONSENT_VERSION, now: Date.now() });
+  if (hookStmts.length) await tx(hookStmts);
   send(res, 200, { ok: true, version: CONSENT_VERSION });
 }
 

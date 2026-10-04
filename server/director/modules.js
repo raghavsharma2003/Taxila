@@ -28,9 +28,13 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
 /**
  * Plan module commands for this move. Mutates `s.module` (the mounted module, if any).
+ * W1 seam signature (BUILD-PLAN §2; W1-B replaces the picker with the catalog's planEngine): `band` is the age band
+ * ("B1".."B4"), passed by director/state.js and unused by this picker.
+ * @param {any} s  the lesson state (s.module, s.turn)
+ * @param {{ kit: any, item: any, move: any, lang: string, band?: string, representation?: string }} args
  * @returns {import("../../shared/contracts").ModuleCommand[]}
  */
-export function planModule(s, { move, item, kit, lang, representation }) {
+export function planModule(s, { kit, item, move, lang, band: _band, representation }) {
   const cmds = [];
   const close = () => {
     if (s.module) cmds.push({ op: "unmount", moduleId: s.module.id });

@@ -141,6 +141,9 @@ export interface DeskActions {
   dismissNoMic(): void;
   finish(): void;
   moduleEvent(ev: unknown): void;
+  /** W1 seam (BUILD-PLAN §2): the WorkTray's module reported an error or never loaded (WorkTray onModuleFailed). A no-op
+   *  until W1-A fills it; moduleEvent still receives the error event as before. */
+  moduleFailed(): void;
   fixAnswer(): void;
   /** Older "123": the NumberPad opens in the tray (§6.3.4 answerForm number). */
   openPad?(): void;

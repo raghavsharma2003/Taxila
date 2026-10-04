@@ -40,6 +40,10 @@ import { teacherFor, teacherForLesson, teacherCard } from "../compiler/character
 import { prewarm, drop as dropPrewarm } from "../voice/prewarm.js";
 import { styleForChild } from "./voice.js";
 import { planFor } from "./child.js";
+// W1 seams (BUILD-PLAN §2): pure modules other streams own, reached from this hot file only here.
+import { forgeSeam } from "../forge/seam.js";
+import { onLessonStart, onTurnCommit, onLessonEnd } from "../conductor/hooks.js";
+import { loadSessionContext, awaitSettled, EMPTY_SESSION_CONTEXT } from "../comprehension/session.js";
 
 /**
  * Debug payloads carry answer keys, so they go only to a loopback caller on a dev machine (never on a
@@ -422,12 +426,10 @@ const weaveEntryOf = (r) => ({ childId: r.child_id, skillId: r.skill_id, kind: r
   earliestAt: new Date(r.earliest_at).toISOString(), dueAt: new Date(r.due_at).toISOString(), topicsSince: r.topics_since,
   hostCandidates: r.host_candidates ?? [], host: r.host ?? undefined, status: r.status });
 
-/**
- * Forge / engine seams the Director would call (no-ops: server/forge/** is another workstream's). A woven sub-step
- * needs a host item that carries the earlier skill as a NECESSARY sub-step (kit isomorph or
- * ModuleRequest.want.subSkill); until one exists the entry stays hosted and expires into a C31 callback.
- */
-export const forgeSeam = { wovenSubStep: (_hosted) => undefined };
+// Forge / engine seams the Director calls: server/forge/seam.js (W1-B). A woven sub-step needs a host item that
+// carries the earlier skill as a NECESSARY sub-step (kit isomorph or ModuleRequest.want.subSkill); until one exists
+// the entry stays hosted and expires into a C31 callback.
+export { forgeSeam };
 
 // ───────────────────────────── POST /api/lesson/start ─────────────────────────────
 
@@ -510,8 +512,10 @@ async function start(req, res, body) {
   if (!kit) throw new HttpError(503, "no teaching content is available for this topic yet");
   // Every later request of this lesson reads back exactly this kit (kitFor).
   const now = Date.now();
-  const [, live, weaveRows] = await Promise.all([pinKit(kit), loadLive(child),
-    q("select * from weave_queue where child_id = $1 and status in ('queued','hosted')", [child.id]).catch(() => [])]);
+  const [, live, weaveRows, sessionCtx] = await Promise.all([pinKit(kit), loadLive(child),
+    q("select * from weave_queue where child_id = $1 and status in ('queued','hosted')", [child.id]).catch(() => []),
+    // Seam (W1-C): what the child's record says this lesson must know (re-teach attempts, fluency, arm posteriors).
+    loadSessionContext(child.id, { skillIds: kit.skills.map((s) => s.id), now }).catch(() => EMPTY_SESSION_CONTEXT)]);
   const ledger = live.state.ledger;
   // Session openers (INTEGRATION.md §4): the ledger's due skills AND every learned skill ≥ 20 h past its anchor with
   // no delayed pass, plus weave entries that expired unhosted; then this topic is planned against the weave queue.
@@ -551,6 +555,8 @@ async function start(req, res, body) {
       ageBand: brief.ageBand, lang: child.language_pref, interests, address,
       firstMeeting: brief.relationshipStage.startsWith("first_meeting"), hasCallback: brief.memoryCallbacks.length > 0,
       topicTitle: topic.title, nextTitle: nextTopic?.title,
+      // selectReteach's record inputs (director/state.js engineReteach); absent until W1-C fills the seam
+      ...(sessionCtx?.reteach ? { reteach: sessionCtx.reteach } : {}),
     },
   });
   const first = step(state0, { event: "start", kit, now });
@@ -579,8 +585,15 @@ async function start(req, res, body) {
     ...(openingIncident ? [openingIncident] : []),
     // the weave queue after this topic was planned (topicsSince, hosted, expired-as-callback): only the open entries
     ...(canWrite(child, "kt") && weaveRows.length ? weaveStmts(child, plannedQ) : []),
+    // Seam (W1-D): the Conductor's lesson-start event lands with the lesson row, or not at all.
+    ...onLessonStart({ child, lessonId, topicId: topic.id, purpose: START_PURPOSES.has(body.purpose) ? body.purpose : "lesson", mode, now }),
   ]);
   if (created.length !== 1) throw new Error("lesson insert did not land");
+  // Seam (W1-B): warm the Forge fills this lesson may need; fire-and-forget, never the start's error.
+  try {
+    Promise.resolve(forgeSeam.prefetchLessonFills({ child, lessonId, topicId: topic.id, kit, lang: child.language_pref, band, mode }))
+      .catch((e) => console.warn("[lesson] forge prefetch failed:", e?.message));
+  } catch (e) { console.warn("[lesson] forge prefetch failed:", e?.message); }
   if (mode === "cascade" && teacherOpeningSeq) {
     prewarm({ lessonId, seq: teacherOpeningSeq, text: teacherOpening, tokenHash: sessionTokenHash(req), guardianId: guardian.id, style: styleForChild(child, undefined, state.ctx?.teacherId, state.ctx?.teacherName) });
   }
@@ -800,7 +813,10 @@ async function turn(req, res, body) {
   const answer = normAnswer(childText);
   const tapped = body.chipId?.startsWith("opt:") ? activeItem?.options?.[Number(body.chipId.slice(4))]?.text : body.chipId?.split(":")[1];
   const said = childText || (moduleOnly ? `(no words; in the activity: ${activitySummary(moduleEvents, 0)})` : `(tapped: ${tapped ?? "nothing"})`);
-  // Last turn's held why / teach-back events, with their blind verdict if it is in (never waited for).
+  // Last turn's held why / teach-back events, with their blind verdict if it is in. Seam (W1-C): awaitSettled may wait
+  // up to 600 ms for those verdicts (a no-op resolves at once: never waited for).
+  const heldIds = (state.kt?.deferred ?? []).map((d) => d.event.id);
+  if (heldIds.length) await awaitSettled(heldIds, 600).catch(() => {});
   const carried = carriedFrom(state);
   const planCtx = { kit, child, lesson, activeItem, moduleOnly, moduleEvents, chipId: body.chipId, answer, leaked, live: liveP, carried,
     childText, typed, asrConfidence: body.asrConfidence, bargeIn: !!body.teacherInterrupted };
@@ -945,6 +961,8 @@ async function turn(req, res, body) {
       turnInsertStmt(lesson.id, staged),
       ...floorIncidents,
       ...writes,
+      // Seam (W1-D): the Conductor's turn event lands with the turn, or not at all.
+      ...onTurnCommit({ child, lessonId: lesson.id, turn: next.turn, move: r.move.kind, end: !!r.end || late, late, now }),
     ]));
   } catch (e) {
     if (prewarmed) dropPrewarm(lesson.id, teacherReplySeq);
@@ -1429,8 +1447,12 @@ async function end(req, res, body) {
         immediate: rows.filter((e) => e.outcome === "correct" && e.hints_used === 0).length / rows.length }));
     }
   }
-  const results = await tx(writes);
-  if (results.some((rows) => rows.length !== 1)) throw new Error("lesson end: a write did not land");
+  // Seam (W1-D): the Conductor's lesson-end event lands with the lesson's record, after the caller's own writes (the
+  // row-count check and the result indexes below read only `writes`).
+  const hookStmts = onLessonEnd({ child, lessonId: lesson.id, topicId: lesson.topic_id, endedBy: endedByPageHide(req, body) ? "pagehide" : "client",
+    turns: state.turn ?? 0, startedAt: lesson.started_at ?? null, now: Date.now() });
+  const results = await tx([...writes, ...hookStmts]);
+  if (results.slice(0, writes.length).some((rows) => rows.length !== 1)) throw new Error("lesson end: a write did not land");
   await heldP;
   const relAt = canWrite(child, "kt") ? 1 : -1;
   send(res, 200, { summary, parentNote, memoriesSaved: writes.filter((w) => /insert into memory/.test(w.text)).length, sessions: relAt > 0 ? results[relAt][0].sessions : null,

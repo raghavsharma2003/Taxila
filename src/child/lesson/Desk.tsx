@@ -188,7 +188,7 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
   const topBar = <TopBar m={m} a={a} notMeWindow={!!(notMeWindow ?? m.notMeWindow)} phaseLine={phaseLine} wide={L.kind === "wide"} />;
   const card = <QuestionCard ask={m.ask} answer={m.answer} young={young} onHear={a.hearQuestion} onFix={a.fixAnswer} goal={m.ask ? null : m.shortTitle ? t("card.goal", { topic: m.shortTitle }) : null} />;
   const tray = m.tray && L.geometry === "work" ? (
-    <WorkTray tray={m.tray} floor={floor} young={young} modules={media.modules} lang={media.lang} ageBand={media.ageBand} actions={a} />
+    <WorkTray tray={m.tray} floor={floor} young={young} modules={media.modules} lang={media.lang} ageBand={media.ageBand} actions={a} onModuleFailed={a.moduleFailed} />
   ) : null;
   const dock = <AnswerDock m={m} a={a} micMeter={media.mic} stripId={stripId} lit={lit} setRef={dockRef} />;
   const strip = stripId ? <TroubleStrip id={stripId} noPack={m.noPack} young={young} teacher={m.teacher.name} onAction={a.troubleAction} text={m.stripText} /> : null;

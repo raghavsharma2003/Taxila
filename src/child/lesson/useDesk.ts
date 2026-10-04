@@ -779,6 +779,8 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
       if (e.type === "error") setModuleFailed(true);
       runtime.moduleEvent(e);
     },
+    // W1 seam: WorkTray onModuleFailed → here (W1-A fills; the error event itself still arrives via moduleEvent).
+    moduleFailed: () => {},
     fixAnswer: () => {
       ptt.stop();
       setFixDraft(item.answer?.text ?? "");

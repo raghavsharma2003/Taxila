@@ -36,7 +36,7 @@ const ACTIONS: DeskActions = {
   start: noop, tapToHear: noop, talk: noop, send: noop, pickTile: noop, padSend: noop, hearQuestion: noop, hearAgain: noop, openHint: noop,
   hintPick: noop, helpMenuPick: noop, openHelpMenu: noop, wait: noop, setTyping: noop, setTypingFocus: noop, toggleCaptions: noop, pause: noop,
   resume: noop, askEnd: noop, cancelEnd: noop, endLesson: noop, openGrownUp: noop, closeGrownUp: noop, grownUpHere: noop, closeHelp: noop,
-  troubleAction: noop, dismissNoMic: noop, finish: noop, moduleEvent: noop, fixAnswer: noop,
+  troubleAction: noop, dismissNoMic: noop, finish: noop, moduleEvent: noop, moduleFailed: noop, fixAnswer: noop,
 };
 
 export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm: "live" | "plate", reducedMotion: boolean): DeskModel {
