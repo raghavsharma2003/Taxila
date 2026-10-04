@@ -31,8 +31,8 @@ console.log("wrote", f);
 // Subscription quota per model in the deployment region: does a twin deployment fit without a quota raise?
 const loc = out.accounts.find((a) => a.deployments.length)?.location || "eastus2";
 const us = await get(`/subscriptions/${sub}/providers/Microsoft.CognitiveServices/locations/${loc}/usages?api-version=2024-10-01`);
-const want = /gpt-5\.6|realtime|flux|image|codex|kimi|grok-4-1-fast|DeepSeek/i;
-out.usages = (us.value || []).filter((u) => want.test(u.name?.value || "") && /GlobalStandard/i.test(u.name?.value || ""))
+const want = /gpt-5\.6|gpt-6|realtime|flux|image|codex|kimi|grok-4|DeepSeek|tts|transcribe|MAI/i;
+out.usages = (us.value || []).filter((u) => want.test(u.name?.value || "") && /GlobalStandard|DataZoneStandard/i.test(u.name?.value || ""))
   .map((u) => ({ name: u.name.value, used: u.currentValue, limit: u.limit }));
 writeFileSync(f, JSON.stringify(out, null, 1));
 console.log(`# quota in ${loc} (GlobalStandard)`);
