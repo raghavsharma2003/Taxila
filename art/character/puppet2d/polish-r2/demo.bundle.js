@@ -820,10 +820,10 @@ var K = class {
 		};
 		o("hairback", 24, "head"), o("bun", 16, "bun"), o("body", 24, "body"), o("ears", 12, "head"), o("face", 14, "face");
 		for (let e of ["L", "R"]) o("brow" + e, 6, "brow");
-		o("hair", 16, "head"), o("lockL", 6, "lock"), o("lockR", 6, "lock");
+		o("lockbed", 8, "head"), o("hair", 16, "head"), o("lockL", 6, "lock"), o("lockR", 6, "lock");
 		{
 			let e = this.layers.bun;
-			for (let t = 0; t < e.n; t++) e.z[t] = e.z[t] - 70;
+			for (let t = 0; t < e.n; t++) e.z[t] = e.z[t] - 45;
 		}
 		for (let e of ["L", "R"]) {
 			let t = this.layers["lock" + e];
@@ -1064,7 +1064,7 @@ var K = class {
 		};
 		i("hairback", r), i("bun", r), i("body"), i("ears", n), i("face", n);
 		for (let e of ["L", "R"]) this.drawEye(e, n);
-		i("browL"), i("browR"), this.drawMouth(n), i("hair", r), i("lockL"), i("lockR");
+		i("browL"), i("browR"), this.drawMouth(n), i("lockbed", n), i("hair", r), i("lockL"), i("lockR");
 	}
 	drawEye(e, t) {
 		let n = this.eyes[e], r = n.e, i = this.R, a = this.st, o = (e, t) => U(e, t), s = 0;

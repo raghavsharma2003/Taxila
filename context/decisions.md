@@ -2453,3 +2453,69 @@ Code keeps hard rules, authority order, budgets and the final decision; models p
 
 - `owner-priorities-2026-10-04` (2026-10-04): owner priorities after child safety: comprehension truth and re-teach, consistent relationship and personality, per-child generated content, contained and interactive artifacts with a designed end-to-end flow, classes 4-7, model optimisation later. Wave 2 (wf_268b9c6f-d05) carries them into every stream.
 - `whiteboard-by-drawing-script-2026-10-04` (2026-10-04): the live whiteboard is a model-written, timed drawing script rendered by our code inside the stage, synced to speech; computer-use agents rejected for live drawing as too slow and unsynced. Reverse if one renders a correct synced drawing under 1 s per step.
+
+## W2 seam commit (2026-10-04)
+
+## w2-seam-contracts
+**Decision (2026-10-04, BUILD-PLAN §4 W2 seam commit):** the contracts the nine W2 streams build against, types only:
+`shared/bands.ts` re-exports the ONE band table (`BANDS` in `shared/learner.ts`, mirrored by `server/learner/bands.js`) plus
+`band4Of` and `LAUNCH_CLASSES` [4-7]; `shared/brain.ts` (TEACHER-BRAIN §4.1 verbatim, plus `VibeKnobs`, `TurnStudio`, `UiBeat`,
+`QuotaLane`); `shared/relational.ts` (RELATIONAL-OS §13 verbatim, plus `RelNoteDraft`, `RelEventDraft`, `TeacherAffectUi`,
+`RelDecideInput`, `RelLessonEnd`); `shared/studio.ts` (LIVE-STUDIO §3.1/§10, plus `StudioTurnView` with `propose`,
+`StudioSlot`, `StudioArtifact`, `StageSize`/`STAGE_DEFAULT` 400x300, and the whiteboard: `StudioKind` gains `whiteboard`,
+`StudioIntent.need` gains `explain`, `StudioWire` gains `{t:"script"}`, and `WhiteboardScript` = timed ops (`stroke`, `line`,
+`arrow`, `rect`, `circle`, `ellipse`, `polygon`, `sector`, `text`, `label`, `numwork`, `highlight`, `erase`) with `startMs/endMs`
+relative to the spoken line's first audio sample and an optional DeliveryPlan `clause` anchor, drawn in board units by our
+code). `shared/contracts.ts` gains `TurnResponse.studio?`/`moment?`, `UiDirectives.beat?`/`studioSlot?`/`teacherAffect?`,
+`tray: "studio"`, `AvatarVoiceEvent {kind: laugh|breath|hum, atMs}` and HUMAN-VOICE §5.3's `DeliveryPlan`; `shared/learner.ts`
+`via` gains `studio` (017 widens the DB check). Deviations from the spec text, each additive: `need: "explain"` (a whiteboard
+explanation is not one of the six needs), `StudioTurnView.propose` (Studio's reveal proposal until the kernel arbitrates).
+- **Reverse if:** an owner needs a different shape: it changes the type in its own stream's first commit and says so in its
+  inbox file; a second band table or a second affect producer is never added (BUILD-PLAN §1.10).
+
+## w2-seam-call-sites-guarded
+**Decision (2026-10-04):** the seam modules are `server/studio/seam.js` (H: `prefetch`, `statusFacts`, `onReveal`),
+`server/relational/seam.js` (I: `snapshot`, `decide`, `onLessonEnd`), `server/voice/expressive/seam.js` (G: `planDelivery`),
+`server/lesson/purpose.js` (A: `routeAsk`, `practiceSet`), `server/voice/realtimeSession.js` (D: `shapeSession`,
+`onMintError`), `server/lanes.js` (E: `admit`, `settle`), `server/relational/writers.js` (I; re-exported by
+`server/learner/writer.js`), `src/lesson/safetyStrings.ts` (I; re-exported by `src/lesson/floor.ts`). Every call site runs
+through `server/seam-safe.js` `seamSafe(name, fn, fallback)`: a throw, a rejected promise or undefined becomes the pre-seam
+value, so an owner's bug never becomes a lesson error. Placement: start: `routeAsk` (doubt with no topic) before topic
+resolution, `snapshot` in the start's parallel reads, `practiceSet` pinned as `ctx.practice` only when non-null, `prefetch`
+fire-and-forget after the lesson row; realtime token: `shapeSession` + `onMintError` (non-null → 503 `{fallback}`); turn:
+`statusFacts` before `planCtx` (added as `planCtx.studio` only when non-null, so speculation keys are unchanged), `decide`
+after the plan (only `ui.teacherAffect` rides out until BR5), `planDelivery(moment = null, reply)` before the cascade prewarm
+(`delivery` passed only when non-null), `studio.propose` → `TurnResponse.studio` (never on a safeguard turn) and `onReveal`
+after commit; end: `onLessonEnd` statements appended after the lesson's writes and BEFORE the Conductor's (child_seq lock
+last). With every seam a no-op the responses are byte-identical; `npm test` (lesson-truth, lesson-safety, replay suites) is the
+check.
+- **Reverse if:** an owner needs I/O inside the turn transaction or a synchronous seam turns out to need a network call (then the
+  seam becomes async and the call site moves in the W3 seam commit), or BR1 moves the turn and a call site cannot keep its order.
+
+## w2-quota-lane-option-quotaLane
+**Decision (2026-10-04):** `server/azure.js` `post()` gains `quotaLane` (BUILD-PLAN §4 says "a `lane` option"), calling
+`lanes.admit()` before each attempt (await only if it returns a promise) and `lanes.settle()` after, both guarded. Both are
+no-ops until W2-E. See `rj-azure-lane-option-for-quota`.
+- **Reverse if:** azure.js's endpoint option is renamed (then the two can be reconciled under one name in a seam commit).
+
+## w2-migration-allotment
+**Decision (2026-10-04):** 016 W2-E (`016_brain.sql`), 017 W2-H (`017_studio.sql`, which also widens `kt_evidence_via_check`
+to include `studio`), 018 W2-I (`018_relational.sql`), 019 W2-A (home states, if needed), 020 reserved for W2-C; written in
+`db/migrations/README.md`. Streams apply only to the Neon test branch; production is the integration step's. 014 stays an
+unused gap. No migration was created or applied by the seam commit.
+- **Reverse if:** a stream needs more than its number: the main loop allots from 021 rather than a stream taking one.
+
+## studio-stage-fitted-box
+**Decision (2026-10-04, owner priority 4):** the Work tray's `studio` kind renders `src/studio/StudioStage.tsx`, which reserves
+ONE box: the largest whole-pixel box with the artifact's design aspect (`stage`, or the whiteboard's `board`, default 400x300,
+accepted range 100-4000 units a side) that fits the tray body with an 8 px inset, centred, upscale capped at 3x, `contain:
+strict` and `overflow: hidden`, refitted by a ResizeObserver. Artifacts render into it through `src/studio/renderers.ts`
+(one line per kind by its owner: whiteboard W2-B, frame/skeleton W2-H, image W2-H/W3-G) and draw in design units (an SVG with
+viewBox = design does both). A kind with no renderer shows the empty ground: never a spinner, percentage, code or error. The
+client shows a studio tray only when the turn carries `ui.studioSlot` (never an empty stage). Pure fit math in
+`src/studio/fit.ts`.
+- **Reverse if:** a real child at 360 dp cannot read or operate a piece at the fitted size (then the tray, not the box, grows: a
+  Desk layout change in W2-A/H), or an archetype needs a scrolling surface (it declares a taller design size instead).
+
+- `owner-2d-bar-4-5-2026-10-04` (2026-10-04): owner set the 2D teacher bar at 4.5/5 or higher with no round limit; the polish loop now runs up to 30 rounds and integration waits for 4.5.
+- `jev-decision-model-candidate-2026-10-04` (2026-10-04): TypeSafe Jev, a decision-only model, is a candidate for comprehension, grading, distress and Brain move choice; needs an owner API key and approval for a non-Azure service receiving child text; bench on our harnesses first.

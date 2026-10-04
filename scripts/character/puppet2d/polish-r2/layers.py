@@ -162,9 +162,13 @@ def hairfinish(rgb, a, shrink=0.14):
     solid = ndi.binary_erosion(a > 0.97, iterations=1)
     ext = pullpush(rgb, solid)
     rgb = np.where(solid[..., None], rgb, ext)
+    # the erode + feather only where the edge faces the background: at internal edges (hair against brow, lock
+    # against ear/jaw/bun) c-front's own AA is kept, or the ground under the edge would peek through as a line
+    near_bg = ndi.gaussian_filter(ndi.binary_dilation(bgc, iterations=2).astype(np.float32), 1.0)
     a2 = np.clip((a - shrink) / (1 - shrink), 0, 1)
     a2 = ndi.gaussian_filter(a2, 0.45)
-    a2 = np.where(solid, 1.0, np.minimum(a2, a))
+    a2 = a * (1 - near_bg) + np.minimum(a2, a) * near_bg
+    a2 = np.where(solid, 1.0, a2)
     return rgb, a2.astype(np.float32)
 
 
@@ -197,15 +201,18 @@ hair_all = ndi.binary_closing(hair_all | rim, iterations=2) & ~browL
 lockLp, lockRp, bunP = poly(GEOM["lockL"]), poly(GEOM["lockR"]), poly(GEOM["bun"])
 earLp, earRp = poly(GEOM["earL"]), poly(GEOM["earR"])
 _lkL = ndi.binary_dilation(lockLp, iterations=9) & (xx < 345)
-_lkR = ndi.binary_dilation(lockRp, iterations=9) & (xx > 722)
-lockL = hair_all & _lkL & (yy > 455)
-lockR = hair_all & _lkR & (yy > 470) & ~(bunP & ~lockRp & (xx < 742))
 _bun_ell = ((xx - 683) / 80.0) ** 2 + ((yy - 658) / 86.0) ** 2 <= 1
+# lock R: generous above the bun, tight (polygon + 2 px) where it lies over the bun, so the bun's own pixels stay
+# in the bun and the strand's own pixels stay in the lock (dark on dark: the polygon is the separator)
+_lkR = ((ndi.binary_dilation(lockRp, iterations=9) & ~_bun_ell) | (ndi.binary_dilation(lockRp, iterations=2) & _bun_ell)) & (xx > 722)
+lockL = hair_all & _lkL & (yy > 455)
+lockR = hair_all & _lkR & (yy > 470)
 lockLp, lockRp = _lkL, _lkR
-bun = hair_all & bunP & ~lockR
+bun = hair_all & bunP & ~lockR & ndi.binary_dilation(_bun_ell, iterations=3)
+# dark strand bits inside the bun polygon but off the knot belong to the lock
+lockR |= hair_all & bunP & ~bun & (xx > 722) & (yy > 470)
 hair = hair_all & ~lockL & ~lockR & ~bun
 hair &= ~((yy > 560) & (xx > 380) & (xx < 680))
-hair &= ~((yy > 600) & ((xx < 345) | (xx > 722)))      # strand tips are lock-owned; stray bits below are debris
 # jaw curve: below it (between the jaw corners) is neck
 jx = [p[0] for p in GEOM["jaw"]]
 jy = [p[1] for p in GEOM["jaw"]]
@@ -391,7 +398,17 @@ face_rgb = np.where((chin_band & (dj >= -2))[..., None], im, face_rgb)   # c-fro
 geom_out["rects"]["face"] = save_layer("face", face_rgb, fa)
 
 # ------------------------------------------------------------------ ears (+ studs), overscan under face/hair/locks
-_under = ndi.binary_closing(ears, structure=_disk(13)) & (lockL | lockR) & (earLp | earRp)
+# ear under a lock: only lock pixels with ear on BOTH sides within 18 px on the same row (never where the lock
+# borders background, or skin would be painted behind the lock's soft edge and fringe at rest)
+_lk = lockL | lockR
+_l = ndi.maximum_filter1d(ears.astype(np.uint8), 18, axis=1, origin=8).astype(bool)
+_r = ndi.maximum_filter1d(ears.astype(np.uint8), 18, axis=1, origin=-9).astype(bool)
+_under = _lk & _l & _r & (earLp | earRp)
+_under = ndi.binary_erosion(_under | ears, iterations=1) & _under & ndi.binary_closing(ears, structure=_disk(12))
+_lb, _nb = ndi.label(_under)
+if _nb:
+    _sz = ndi.sum(_under, _lb, range(1, _nb + 1))
+    _under = np.isin(_lb, 1 + np.where(_sz >= 40)[0])
 ears_full = ears | _under
 ear_area = ears_full | (ndi.binary_dilation(ears, iterations=10) & face)
 ear_rgb = dehalo(im, ears, ear_area, erode=1, smooth=40)
@@ -412,12 +429,16 @@ for name, m, sig in (("hair", hair, 0.7), ("bun", bun, 0.7), ("lockL", lockL, 0.
             y0 = np.where(lk.any(1))[0].min()
             roots |= lk & (yy < y0 + 34)
         m = hair | roots
-        over = None
+        # 2 px overscan over the brow tail where the strand crosses it (no conflation line between hair and brow)
+        over = ndi.binary_dilation(hair, iterations=2) & browL
     if name == "bun":    # the bun is behind the neck, the jaw and the lock: continue it under them
         # the bun is a round knot: its hidden part is the ellipse it belongs to (fitted by eye), under neck/jaw/lock
         ell = ((xx - 683) / 80.0) ** 2 + ((yy - 658) / 86.0) ** 2 <= 1
         ext = (xx > 566) & (xx < 700) & (yy > 595) & (yy < 752) & (face | body)
-        over = (ell | ext) & ~bun & (yy < 752) & ~ndi.binary_dilation(bgc, iterations=1)
+        # hidden at rest only: the ellipse where c-front is not backdrop, plus a rounder, deeper bottom under the
+        # kurta/neck (so a bun that rises on pitch never shows the kurta's cut line as its own edge)
+        ell_low = ((xx - 683) / 80.0) ** 2 + ((yy - 662) / 98.0) ** 2 <= 1
+        over = ((ell & ~ndi.binary_dilation(bgc, iterations=1)) | (ell_low & body) | ext) & ~bun
     if name.startswith("lock"):
         rgb, a = matte(m, None, band=2, erode=2)
         a = np.where(ndi.binary_dilation(m, iterations=2), a, 0)
@@ -459,6 +480,21 @@ for name, m, sig in (("hair", hair, 0.7), ("bun", bun, 0.7), ("lockL", lockL, 0.
         rgb = np.where((over & ~m)[..., None], pullpush(im, ndi.binary_erosion(m, iterations=2)), rgb)
     rgb, a = hairfinish(rgb, a)
     geom_out["rects"][name] = save_layer(name, rgb, a)
+
+# ------------------------------------------------------------------ lock bed (r2): a clean plate under each lock
+# Under a lock's soft edge the layers below are themselves soft-edged (ear, jaw, the cream gap), so two 50% edges
+# let the clear colour bleed through as a light line. The bed is the two-colour matting background: what lies beside
+# the lock, extended under its footprint, opaque. At rest it is invisible (it IS the ground the lock was matted
+# against); when a lock swings on its spring it uncovers a plausible continuation of the ear/jaw/hair beside it.
+_lk_all = lockL | lockR
+_fp = ndi.binary_dilation(_lk_all, iterations=3)
+_known_bed = ~ndi.binary_dilation(_lk_all, iterations=2)
+bed_rgb = pullpush(im, _known_bed, smooth_iters=60, region=_fp & ~_known_bed)
+bed_a = soft(ndi.binary_dilation(_lk_all, iterations=2) & ~ndi.binary_dilation(_bun_ell, iterations=1), 0.7) * (yy > 455)
+bed_rgb = np.where(_known_bed[..., None], im, bed_rgb)
+_bl = 0.299 * bed_rgb[..., 0] + 0.587 * bed_rgb[..., 1] + 0.114 * bed_rgb[..., 2]
+bed_a = bed_a * np.clip((205 - _bl) / 15.0, 0, 1)          # never where the ground is the cream backdrop
+geom_out["rects"]["lockbed"] = save_layer("lockbed", bed_rgb, bed_a)
 
 # ------------------------------------------------------------------ hair back plate (behind the face and ears)
 hb_area = ndi.binary_fill_holes(hair_all | face_poly | ears) & ~(yy > 600)

@@ -1,0 +1,6 @@
+/* The Studio stage (W2 seam commit; OWNED BY W2-H). The stage fills the tray body; the box is the one place a Studio
+   artifact draws. `contain: strict` + overflow hidden: nothing inside can grow the tray or paint outside the box. */
+.st-stage { position: absolute; inset: 0; overflow: hidden; background: var(--paper); }
+.st-box { position: absolute; overflow: hidden; contain: strict; border-radius: calc(var(--radius-card, 16px) - 6px); background: var(--surface); }
+.st-box > * { max-width: 100%; max-height: 100%; }
+.dk-tray--studio { background: var(--paper); }

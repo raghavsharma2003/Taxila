@@ -19,4 +19,14 @@ statement per call).
 --   015_*.sql  W1-A  lesson truth / answer surfaces, if needed
 -- Taken before W1: 001-011 (004 and 007 each hold two files from parallel streams; kept as applied).
 -- Next free after W1: 016 (allotted in the W2 seam commit).
+
+-- W2 seam commit (BUILD-PLAN §1.6, §4), 2026-10-04 — Wave 2 numbers:
+--   016_brain.sql       W2-E  decision_record, brain_trace, lesson_plan, format_posterior (population rows only; no child id)
+--   017_studio.sql      W2-H  studio_build, studio_library, studio_mount; ALSO widens kt_evidence_via_check to add 'studio'
+--                             (012 set it to dialogue, game, module, callback, weave, late; shared/learner.ts `via` has 'studio')
+--   018_relational.sql  W2-I  rel_state (edit), rel_event, relational_note (no NM-3 column)
+--   019_*.sql           W2-A  home states (homework, test_window, safety_hold), if needed
+--   020_*.sql           W2-C  reserved
+-- Streams apply their file ONLY to the Neon test branch (CONDUCTOR_TEST_DATABASE_URL); production is the integration
+-- step's. 014 was never used (W1-D needed none): it stays a gap. W3 numbers are allotted in the W3 seam commit.
 ```

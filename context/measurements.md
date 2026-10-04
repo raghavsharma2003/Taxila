@@ -1713,3 +1713,13 @@ Baseline on the same harness with gpt-4o-transcribe (2026-10-03 lesson-truth/int
 
 ## Merged inbox entries (write-up from the entry text)
 - `stt-v3-scan-2026-10-04` (2026-10-04): STT v3 desk scan (docs/research/voice/stt-v3/SCAN.md; no model run). Prices: AWS L4 g6.xlarge $0.805/h OD us-east-1, $0.966 ap-south-1; Azure CI NC4as_T4 $0.579; ACA T4 GPU $0.367/h. ap-south-1 G/VT quota 0 (OD and spot); us-east-1 8/8. Self-hosted streaming transducer ≈ $0.01-0.02 per session-hour at 40-75 sessions/GPU [estimate], vs $1.02 (gpt-live-transcribe) / $1.30 (Azure RT+LID); 2-warm-GPU floor ≈ $845-1,175/month, break-even ≈ 1.2-1.6 average concurrent sessions. Method: AWS Pricing API, spot history, Service Quotas, Azure Retail Prices API; concurrency scaled from vendor H100 figures (unmeasured).
+
+## studio-stage-geometry-2026-10-04
+**Studio stage box in the real Desk (2026-10-04).** n = 15 (5 viewports x 3 board aspects), one run each. Method:
+`tests/studio-stage-geometry.test.mjs` (in `npm test`): the real child route on the Vite dev server, API mocked by
+`page.route`, start response `ui.tray: "studio"` with a `studioSlot` holding a whiteboard artifact (no renderer registered, so
+the box is the empty ground); Playwright Chromium, deviceScaleFactor 1. Result: 15/15 boxes inside the tray body, aspect within
+2 px, no tray scroll, no horizontal page scroll. Box / tray body (px): 360x800: 4:3 312x234, 3:4 205x274, 16:9 312x175 in
+328x290 (a trouble strip was showing); 412x915: 364x273 / 311x415 / 364x204 in 380x431; 768x1024: 592x444 / 412x550 /
+592x333 in 608x566; 1280x800: 488x366 / 274x366 / 650x366 in 752x382; 1920x1080: 736x552 / 484x646 / 736x414 in 752x662.
+Limits: geometry only (nothing drawn inside yet); no real device; reduced motion and font scale 1.3/2.0 not exercised.

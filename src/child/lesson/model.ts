@@ -7,9 +7,10 @@ import type { CopyKey } from "../../ui/copy.ts";
 import type { StripId } from "../../lesson/trouble.ts";
 import type { Band, Family } from "../band.ts";
 import type { DeskLayout } from "./deskLayout.ts";
+import type { StudioSlot } from "../../../shared/studio.ts";
 
 export type AnswerForm = "words" | "number" | "choice" | "draw" | "read_aloud" | "tap_in_tray";
-export type TrayKind = "module" | "board" | "tiles" | "pad";
+export type TrayKind = "module" | "board" | "tiles" | "pad" | "studio";
 export type Verdict = "correct" | "not_yet" | "partial";
 export type DeskPhase = "warmup" | "teach" | "practice" | "teachback" | "wrap";
 export type Sheet = null | "pause" | "end" | "hint" | "help" | "grownup";
@@ -50,6 +51,8 @@ export interface TrayModel {
   /** tiles */
   tiles?: { id: string; label: string }[];
   board?: Board;
+  /** studio (W2 seam): the piece the StudioStage renders, aspect-fitted inside the tray. */
+  studio?: StudioSlot;
   /** The Young help menu (after tapOptionsS) or the one-time no-mic card replace the tray body. */
   overlay?: "help_menu" | "no_mic" | null;
 }

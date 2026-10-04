@@ -347,7 +347,8 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
       : (serverTray === "module" || modulesMounted.length) && liveModule ? "module"
         : padWanted ? "pad"
           : chips.length ? "tiles"
-            : serverTray && serverTray !== "module" ? serverTray
+            // W2 seam: a studio tray only when the turn carries its slot (never an empty stage)
+            : serverTray && serverTray !== "module" && (serverTray !== "studio" || ui.studioSlot) ? serverTray
               : wb && (phase === "teach" || phase === "practice") ? "board" : null;
   // Geometry is decided at a phase boundary; within a phase it only ever grows Face → Work (legacy: content that
   // the Director did not announce with ui.tray), never back, so nothing reflows mid-item.
@@ -580,6 +581,8 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
           chalked: beats?.chalk || floor === "speaking" ? item.answer?.text ?? null : null,
           mark: item.answer?.verdict === "correct" ? "tick" : item.answer?.verdict === "not_yet" ? "underline" : null,
         } : undefined,
+        // W2 seam (W2-H fills it): the Studio slot the StudioStage renders inside the tray.
+        studio: trayKind === "studio" ? ui.studioSlot : undefined,
         // The timed Young help menu never covers an answer surface (the pad, the choices): Help opens it there on demand.
         overlay: trayOverlay ?? (young && yt.tapOptions && floor === "your_turn" && trayKind !== "pad" && trayKind !== "tiles" ? "help_menu" : null),
       }

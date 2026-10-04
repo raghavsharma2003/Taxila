@@ -1,6 +1,9 @@
 // Taxila shared contracts — the seams between client, server and content.
 // Server code is plain JS (ESM) and documents these shapes with JSDoc `import("../shared/contracts").X`.
 // Change a type here ⇒ update both sides in the same commit.
+import type { Moment, TurnStudio, UiBeat } from "./brain.ts";
+import type { TeacherAffectUi } from "./relational.ts";
+import type { StudioSlot } from "./studio.ts";
 
 // ───────────────────────────── content ─────────────────────────────
 export type TopicType = "T1" | "T2" | "T3" | "T4" | "T5"; // verbatim · vocab · concept · procedure · problem-solving
@@ -108,11 +111,18 @@ export interface UiDirectives {
   /** The phase line (Older) and the geometry decision. */
   phase?: LessonPhase;
   /** What the tray holds this turn: none → Face layout (no empty box, audit #5). */
-  tray?: "none" | "module" | "board" | "tiles" | "pad";
+  tray?: "none" | "module" | "board" | "tiles" | "pad" | "studio";
   /** ≤ 24 chars on a word boundary, for the top bar. Never a syllabus objective (G-OBJ-1). */
   shortTitle?: string;
   /** Demonstration cue → floor SHOWING (not produced yet). */
   cues?: { program?: "demo" | "point"; target?: string };
+  // ── W2 seam commit (BUILD-PLAN §4; TEACHER-BRAIN §3.2, RELATIONAL-OS §13, LIVE-STUDIO §10). Not produced yet. ──
+  /** The beat this turn belongs to (W2-E). The client's end-of-turn threshold reads `type` (TEACHER-BRAIN §5.4 L1). */
+  beat?: UiBeat;
+  /** What the Work tray's `studio` kind holds (W2-H); rendered by src/studio/StudioStage.tsx inside the tray. */
+  studioSlot?: StudioSlot;
+  /** The teacher's face display from RELATIONAL-OS appraise() only (W2-I → W2-D); never keyed to a correct verdict. */
+  teacherAffect?: TeacherAffectUi;
 }
 
 /** The teacher as every surface shows them: the server is the one source (compiler/characters teacherCard). */
@@ -206,6 +216,10 @@ export interface TurnResponse {
    * client raises the Help sheet (runtime.ts flushOthers → LessonState.lateSafeguard) though the lesson stays closed.
    */
   late?: boolean;
+  /** W2 seam (W2-E/W2-H): what Studio does on this turn (reveal / highlight / retire / setParam). Absent = nothing. */
+  studio?: TurnStudio;
+  /** W2 seam (W2-E): the turn's Moment for the voice layer and the face (TEACHER-BRAIN TB6). Absent until BR2. */
+  moment?: Moment;
   debug?: Record<string, unknown>;
 }
 
@@ -320,6 +334,31 @@ export interface ChildMapResponse {
 
 /** POST /api/tts: speak a stored teacher turn of the caller's lesson (never free text). */
 export interface TtsRequest { lessonId: string; seq: number }
+// ───────────────────────────── expressive voice (HUMAN-VOICE §5.3; W2 seam, filled by W2-G) ─────────────────────────────
+export type Emotion = "neutral" | "warm" | "amused" | "delighted" | "surprised" | "calm" | "reassuring" | "curious" | "wonder" | "thinking" | "playful" | "proud";
+export type NonVerbal = "none" | "breath" | "hum" | "chuckle" | "laugh" | "sigh_relief";
+export interface DeliveryClause {
+  text: string;                 // exact reply words (plus at most one inserted filler at the start)
+  emotion: Emotion; intensity: number;      // 0..1, already capped by band
+  pace: "slow" | "normal" | "brisk";
+  pauseBeforeMs: number;        // 0 for clause 0, always
+  nonverbalBefore: NonVerbal;   // licensed by MomentPlan, allowed by Governor
+  emphasis?: string;            // one word of `text`
+  filler?: string;              // which inserted word (for the governor and the logs)
+}
+/** Server-built only (server/voice/expressive/seam.js planDelivery); a client-sent plan is ignored. */
+export interface DeliveryPlan {
+  v: 1; lang: "hi" | "hinglish" | "en"; register: "normal" | "safety";
+  clauses: DeliveryClause[];
+  source: "moment" | "annotator" | "plain";     // plain = fail-closed
+}
+/**
+ * The avatar frame in framed TTS v2 (HUMAN-VOICE B4 / HV-11 → W2-D's face): a laugh, breath or hum at `atMs` from the
+ * first PCM sample of the reply. NOTE (owner 2026-10-04, voice-clips-off-and-numbers-normalised): no spliced
+ * breath/hum clips ship, so today nothing emits these; the frame exists so the face can follow a model-voiced one.
+ */
+export interface AvatarVoiceEvent { kind: "laugh" | "breath" | "hum"; atMs: number; durMs?: number; clause?: number }
+
 /** `session` is the minted session config WITHOUT its instructions (the secret already carries them). */
 export interface RealtimeTokenResponse { token: string; expiresAt: number; base: string; session: Record<string, unknown> }
 

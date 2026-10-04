@@ -15,6 +15,9 @@
 import type { LinkEvent } from "./link.ts";
 import { Store } from "./store.ts";
 import { realTimers, type Timers } from "./timers.ts";
+// W2 seam commit (BUILD-PLAN §4): the fixed safety openings (W2-I) are reached through the floor, which owns the SAFETY
+// state's client side. Re-exported so the runtime and the Desk import them from one place.
+export { safetyOpening, type SafetyLangMode, type SafetyOpening } from "./safetyStrings.ts";
 
 export type Floor = "idle" | "speaking" | "showing" | "yielding" | "your_turn" | "listening" | "heard" | "thinking";
 export type Handover = "chain" | "answer" | "choice" | "judge" | "ready" | "finish";

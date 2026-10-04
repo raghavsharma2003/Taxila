@@ -11,6 +11,9 @@ import { assertWritable, canWrite, classifyChildTable, isRatchetDown, legalModeO
 import { dropReason } from "./kt/bktr.js";
 import { ENGINE_VERSION, currentTheta } from "./kt/ability.js";
 import { foldOrder } from "./kt/ledger.js";
+// W2 seam commit (BUILD-PLAN §4): the Relational OS writers (W2-I) are reached through this module too, so a learner or
+// relational write has one import point. A name defined here shadows a same-named relational export (ESM rule).
+export * from "../relational/writers.js";
 
 /**
  * @param {string} layer

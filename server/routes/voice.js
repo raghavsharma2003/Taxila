@@ -17,6 +17,8 @@ import { splitSentences } from "../voice/sentences.js";
 import { take as prewarmTake } from "../voice/prewarm.js";
 import { spokenOptsForChild } from "../voice/spoken.js";
 import { routes as featureRoutes } from "../voice/features.js";
+import { realtimeSeam } from "../voice/realtimeSession.js";
+import { seamSafe } from "../seam-safe.js";
 
 const VOICES = new Set(["alloy", "ash", "ballad", "coral", "echo", "fable", "nova", "onyx", "sage", "shimmer", "verse", "marin", "cedar"]);
 /** A push-to-talk turn is a child's answer: 30 s of Opus at ~32 kbit/s is ~120 kB; 2 MB is a generous cap. */
@@ -96,7 +98,9 @@ async function sttToken(req, res, body) {
   // The child's voice goes to a model from here on: the same gate as the realtime call.
   if (!(await hasConsent(guardian.id, child.id, "core_tutoring"))) throw forbidden("core_tutoring consent is required for voice");
   if (!allowSttToken(guardian.id)) throw new HttpError(429, "too many voice sessions; wait a minute");
-  const session = sttSession({ ageBand: ageBandOf(lesson, child) });
+  // Seam (W2-D, server/voice/realtimeSession.js): the session config to mint; unchanged until W2-D fills it.
+  const base = sttSession({ ageBand: ageBandOf(lesson, child) });
+  const session = seamSafe("realtime.shapeSession", () => realtimeSeam.shapeSession(base, { kind: "stt", lessonId: lesson.id }), base);
   let secret;
   try {
     secret = await mintRealtimeSecret(session);

@@ -47,6 +47,14 @@ import { requireParentIfPinSet, defaultControls } from "./parent.js";
 import { forgeSeam } from "../forge/seam.js";
 import { onLessonStart, onTurnCommit, onLessonEnd } from "../conductor/hooks.js";
 import { loadSessionContext, awaitSettled, EMPTY_SESSION_CONTEXT } from "../comprehension/session.js";
+// W2 seam commit (BUILD-PLAN §4): each is a no-op until its owner fills it; every call is guarded by seamSafe, so a seam's
+// bug falls back to the pre-seam behaviour and never becomes a lesson error. W2-E keeps these call sites through BR1.
+import { seamSafe } from "../seam-safe.js";
+import { studioSeam } from "../studio/seam.js";
+import { relationalSeam } from "../relational/seam.js";
+import { expressiveSeam } from "../voice/expressive/seam.js";
+import { purposeSeam } from "../lesson/purpose.js";
+import { realtimeSeam } from "../voice/realtimeSession.js";
 
 /**
  * Debug payloads carry answer keys, so they go only to a loopback caller on a dev machine (never on a
@@ -190,6 +198,12 @@ export const lessonInterests = (list) => (list ?? []).map((x) => String(x ?? "")
  * The response's UiDirectives: the Director's, plus — on a text-lane turn with no kit item on the table — the question
  * the teacher actually handed back, for the Question card (G-ASK-1; parity with the words by construction).
  */
+/** W2 seam: the relational directive's face display rides the ui (UiDirectives.teacherAffect); none = the ui unchanged. */
+function withSeamUi(ui, relational) {
+  const affect = relational?.ui?.teacherAffect;
+  return affect ? { ...ui, teacherAffect: { display: affect.display, intensity: affect.intensity } } : ui;
+}
+
 function withAsk(ui, reply, extra = {}) {
   const out = { ...ui, ...extra };
   if (!out.ask && reply && ["answer", "choice"].includes(out.handover)) {
@@ -563,7 +577,14 @@ async function start(req, res, body) {
   ]);
   if (!core) throw forbidden("core_tutoring consent is required before a lesson");
   const mode = body.mode === "text" || body.mode === "cascade" ? body.mode : "voice";
-  const topic = body.topicId ? getTopic(body.topicId) : await nextTopicFor(child);
+  const purpose = START_PURPOSES.has(body.purpose) ? body.purpose : "lesson";
+  // Seam (W2-A, server/lesson/purpose.js): an Ask start with no topic is routed by the child's first words; null (and any
+  // unknown topic id) leaves the topic resolved exactly as before.
+  const asked = purpose === "doubt" && !body.topicId
+    ? await seamSafe("purpose.routeAsk", () => purposeSeam.routeAsk({ child, purpose, firstText: typeof body.firstText === "string" ? body.firstText.slice(0, 500) : undefined }), null)
+    : null;
+  const routed = asked?.topicId ? getTopic(asked.topicId) : null;
+  const topic = routed ?? (body.topicId ? getTopic(body.topicId) : await nextTopicFor(child));
   if (!topic) throw bad(body.topicId ? `unknown topic ${body.topicId}` : "no topic available for this class");
   // before getKit: a topic with no kit would otherwise be generated (a model call) for a refused start
   const dayPlan = await planP;
@@ -576,10 +597,12 @@ async function start(req, res, body) {
   if (!kit) throw new HttpError(503, "no teaching content is available for this topic yet");
   // Every later request of this lesson reads back exactly this kit (kitFor).
   const now = Date.now();
-  const [, live, weaveRows, sessionCtx] = await Promise.all([pinKit(kit), loadLive(child),
+  const [, live, weaveRows, sessionCtx, bond] = await Promise.all([pinKit(kit), loadLive(child),
     q("select * from weave_queue where child_id = $1 and status in ('queued','hosted')", [child.id]).catch(() => []),
     // Seam (W1-C): what the child's record says this lesson must know (re-teach attempts, fluency, arm posteriors).
-    loadSessionContext(child.id, { skillIds: kit.skills.map((s) => s.id), now }).catch(() => EMPTY_SESSION_CONTEXT)]);
+    loadSessionContext(child.id, { skillIds: kit.skills.map((s) => s.id), now }).catch(() => EMPTY_SESSION_CONTEXT),
+    // Seam (W2-I, server/relational/seam.js): the bond snapshot, read once per lesson; null until W2-I fills it.
+    seamSafe("relational.snapshot", () => relationalSeam.snapshot(child.id, { classLevel: child.class_level, lang: child.language_pref }), null)]);
   const ledger = live.state.ledger;
   // Session openers (INTEGRATION.md §4): the ledger's due skills AND every learned skill ≥ 20 h past its anchor with
   // no delayed pass, plus weave entries that expired unhosted; then this topic is planned against the weave queue.
@@ -604,6 +627,8 @@ async function start(req, res, body) {
   const skills = Object.fromEntries(skillIds.filter((id) => ledger.skills[id]).map((id) => [id, { skillId: id, ...snapshotFromKt(ledger.skills[id], now) }]));
   const activeMisconceptionIds = misconceptionView(ledger.mis).slice(0, 5).map((m) => m.id);
   const teacher = teacherFor(child);
+  // Seam (W2-A): a practice start's review-queue set ("Practice · n of 5"); null = today's practice behaviour.
+  const practice = purpose === "practice" ? seamSafe("purpose.practiceSet", () => purposeSeam.practiceSet({ child, purpose, kit, ledger, now }), null) : null;
   const seqIds = topicSequence(topic.classLevel, topic.subject);
   const nextTopic = getTopic(seqIds[seqIds.indexOf(topic.id) + 1]);
   const lessonId = randomUUID();
@@ -621,6 +646,8 @@ async function start(req, res, body) {
       topicTitle: topic.title, nextTitle: nextTopic?.title,
       // selectReteach's record inputs (director/state.js engineReteach); absent until W1-C fills the seam
       ...(sessionCtx?.reteach ? { reteach: sessionCtx.reteach } : {}),
+      // the practice set from the purpose seam (W2-A); absent until it is filled
+      ...(practice ? { practice } : {}),
     },
   });
   const first = step(state0, { event: "start", kit, now });
@@ -650,7 +677,7 @@ async function start(req, res, body) {
     // the weave queue after this topic was planned (topicsSince, hosted, expired-as-callback): only the open entries
     ...(canWrite(child, "kt") && weaveRows.length ? weaveStmts(child, plannedQ) : []),
     // Seam (W1-D): the Conductor's lesson-start event lands with the lesson row, or not at all.
-    ...onLessonStart({ child, lessonId, topicId: topic.id, purpose: START_PURPOSES.has(body.purpose) ? body.purpose : "lesson", mode, now }),
+    ...onLessonStart({ child, lessonId, topicId: topic.id, purpose, mode, now }),
   ]);
   if (created.length !== 1) throw new Error("lesson insert did not land");
   // Seam (W1-B): warm the Forge fills this lesson may need; fire-and-forget, never the start's error.
@@ -658,6 +685,10 @@ async function start(req, res, body) {
     Promise.resolve(forgeSeam.prefetchLessonFills({ child, lessonId, topicId: topic.id, kit, lang: child.language_pref, band, mode }))
       .catch((e) => console.warn("[lesson] forge prefetch failed:", e?.message));
   } catch (e) { console.warn("[lesson] forge prefetch failed:", e?.message); }
+  // Seam (W2-H, server/studio/seam.js): Studio's lesson-start prefetch (library hits, live builds with 3-6 min lead);
+  // fire-and-forget after the lesson row landed, never the start's error.
+  seamSafe("studio.prefetch", () => studioSeam.prefetch({ lessonId, child, topicId: topic.id, kit, band, mode, purpose,
+    skillIds: kit.skills.map((s) => s.id), activeMisconceptionIds, reteach: sessionCtx?.reteach ?? null, bond }), null);
   if ((mode === "cascade" || mode === "text") && teacherOpeningSeq) {
     prewarm({ lessonId, seq: teacherOpeningSeq, text: teacherOpening, tokenHash: sessionTokenHash(req), guardianId: guardian.id, style: styleForChild(child, undefined, state.ctx?.teacherId, state.ctx?.teacherName) });
   }
@@ -699,8 +730,19 @@ async function realtimeToken(req, res, body) {
   // A live call sends the child's voice to the model: it needs consent at the moment it starts.
   if (!(await hasConsent(guardian.id, child.id, "core_tutoring"))) throw forbidden("core_tutoring consent is required for a live call");
   const kit = await kitFor(lesson.topic_id, lesson.state);
-  const session = realtimeSession({ instructions: instructionsFor(lesson.state, kit, "voice"), voice: teacherForLesson(child, lesson.state?.ctx?.teacherId, lesson.state?.ctx?.teacherName).voice });
-  const secret = await mintRealtimeSecret(session);
+  const base = realtimeSession({ instructions: instructionsFor(lesson.state, kit, "voice"), voice: teacherForLesson(child, lesson.state?.ctx?.teacherId, lesson.state?.ctx?.teacherName).voice });
+  // Seam (W2-D, server/voice/realtimeSession.js): the session to mint (unchanged until W2-D fills it), and the lane switch
+  // on a refused mint (null = rethrow, as before).
+  const rtCtx = { kind: "lesson", lessonId: lesson.id, ...(lesson.state?.vibe ? { pace: { waitNudgeSec: lesson.state.vibe.waitNudgeSec, endpointSilenceMs: lesson.state.vibe.endpointSilenceMs } } : {}) };
+  const session = seamSafe("realtime.shapeSession", () => realtimeSeam.shapeSession(base, rtCtx), base);
+  let secret;
+  try {
+    secret = await mintRealtimeSecret(session);
+  } catch (e) {
+    const fb = seamSafe("realtime.onMintError", () => realtimeSeam.onMintError(e, rtCtx), null);
+    if (fb?.fallback) throw new HttpError(503, "realtime lane unavailable", { fallback: fb.fallback });
+    throw e;
+  }
   /** @type {import("../../shared/contracts").RealtimeTokenResponse} */
   // The secret was minted WITH the instructions; the client gets the session back without them (it needs
   // only audio.input, to restore turn detection after push-to-talk) so the key is not in this response.
@@ -904,8 +946,11 @@ async function turn(req, res, body) {
   const clsGate = new Promise((res) => { clsDone = res; });
   const settling = heldIds.length ? awaitSettled(heldIds, 600, { until: clsGate }).catch(() => {}) : null;
   let carried = carriedFrom(state);
+  // Seam (W2-H, server/studio/seam.js): what Studio has on screen / in flight for this lesson, as values (in memory, no
+  // network). null = nothing, and the plan context is exactly the pre-seam one.
+  const studioView = seamSafe("studio.statusFacts", () => studioSeam.statusFacts(lesson.id), null);
   const planCtx = { kit, child, lesson, activeItem, moduleOnly, moduleEvents, chipId: body.chipId, answer: help ? "" : answer, leaked, live: liveP, carried,
-    childText, typed, asrConfidence: body.asrConfidence, bargeIn: !!body.teacherInterrupted };
+    childText, typed, asrConfidence: body.asrConfidence, bargeIn: !!body.teacherInterrupted, ...(studioView ? { studio: studioView } : {}) };
   // A module-only turn or a help request stored no child row, so the whole recent transcript is history.
   const historyOf = (next) => (moduleOnly || help ? next.recent : next.recent.slice(0, -1));
 
@@ -937,6 +982,12 @@ async function turn(req, res, body) {
   let { evidence, writes, skillChanges, incident, r, instructions, skipped } = plan;
   mark("planned");
   let next = r.state;
+  // Seam (W2-I, server/relational/seam.js): one RelationalDirective per turn (pure, ≤ 3 ms). null = no relational move, and
+  // nothing below changes. W2-E's BR5 splits it into the kernel's authority ranks; until then only its face display rides
+  // the ui (teacherAffect, never keyed to a correct verdict).
+  const relational = seamSafe("relational.decide", () => relationalSeam.decide({ lessonId: lesson.id, childId: child.id, turn: next.turn,
+    childText: moduleOnly || help ? "" : childText, cls: cls ? { outcome: cls.outcome, flags: cls.flags } : null, move: r.move.kind,
+    lane: state.mode === "text" || state.mode === "cascade" ? state.mode : "voice", safety: r.move.kind === "safeguard" || !!incident }), null);
   // W1-C settle: start the blind grade of this turn's held why / teach-back NOW (or adopt the pregrade), while the reply
   // is written and the turn commits, not after; the post-commit launchGrades below is then a no-op for the same event
   // ids (later.js gradeLater is idempotent per event id).
@@ -951,7 +1002,9 @@ async function turn(req, res, body) {
   const voiceRow = teacherText ? staged.find((x) => x.speaker === "teacher") : null;
   const voiceIncident = voiceRow ? floorIncidentStmt(child.id, lesson.id, voiceRow.seq, voiceFloor, state.mode) : null;
   if (voiceIncident) floorIncidents.push(voiceIncident);
-  let teacherReply, teacherReplySeq, guard, speculation, prewarmed = false, replyFloor = [];
+  let teacherReply, teacherReplySeq, guard, speculation, prewarmed = false, replyFloor = [], delivery = null;
+  /** @type {import("../../shared/brain").Moment | null} W2-E fills it (momentOf); null until BR2. */
+  const moment = null;
   // The verdict the teacher's words must agree with (G-PRAISE-1; planTurn: only a kit item graded against its key has one).
   const verdict = next.lastVerdict ?? "ungraded";
   if (textLane && !r.hold && !late) {
@@ -995,8 +1048,12 @@ async function turn(req, res, body) {
     // a turn that is not stored drops it.
     // The text lane too (smooth G4): its voice was a whole-mp3 /api/tts call 1.6-2.1 s after the text; TextLink now
     // streams /api/voice/tts-stream, which takes this prewarm (decision cascade-tts-prewarm).
+    // Seam (W2-G, server/voice/expressive/seam.js): the DeliveryPlan for the guarded reply, from the Brain's Moment only.
+    // The Moment is W2-E's (server/brain/moment.js, BR2); until it exists it is null and so is the plan.
+    delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), null);
     if (state.mode === "cascade" || state.mode === "text") {
-      prewarmed = prewarm({ lessonId: lesson.id, seq: teacherReplySeq, text: teacherReply, tokenHash: sessionTokenHash(req), guardianId: guardian.id, style: styleForChild(child, undefined, state.ctx?.teacherId, state.ctx?.teacherName) });
+      prewarmed = prewarm({ lessonId: lesson.id, seq: teacherReplySeq, text: teacherReply, tokenHash: sessionTokenHash(req), guardianId: guardian.id, style: styleForChild(child, undefined, state.ctx?.teacherId, state.ctx?.teacherName),
+        ...(delivery ? { delivery } : {}) });
     }
   } else if (specs.length) {
     speculation = { tried: specs.length, hit: false };
@@ -1012,6 +1069,8 @@ async function turn(req, res, body) {
     teacherReplySeq = row.seq;
   }
 
+  // Studio's proposal for this turn (a reveal on the teacher's cue), never on a safeguarding turn.
+  const turnStudio = !late && r.move.kind !== "safeguard" ? studioView?.propose ?? null : null;
   // Voice lane: what must be heard now rather than on the child's next turn (contracts.ts TurnResponse).
   const speakNow = textLane || late ? undefined
     : r.move.kind === "safeguard" && !prev.safeguard ? "interrupt"
@@ -1024,8 +1083,11 @@ async function turn(req, res, body) {
       ...(lateSafeguard ? { teacherReply, teacherReplySeq } : {}), end: true, late: true }
     : {
       move: r.move, moduleCommands: r.moduleCommands,
-      ui: withAsk(r.ui, teacherReply, uiVerdictOf(cls, target, state)),
+      ui: withSeamUi(withAsk(r.ui, teacherReply, uiVerdictOf(cls, target, state)), relational),
       ...(teacherReply ? { teacherReply, teacherReplySeq } : {}), ...(speakNow ? { speakNow } : {}), ...(r.end ? { end: true } : {}),
+      // W2 seams: what Studio does on this turn (W2-H proposes through statusFacts; W2-E's kernel arbitrates from BR1) and the
+      // turn's Moment (W2-E). Both absent until filled.
+      ...(turnStudio ? { studio: turnStudio } : {}), ...(moment ? { moment } : {}),
       // Pace knobs from the vibe persona (wait before a nudge, end-of-speech silence): session config, never the prompt.
       ...(next.vibe ? { pace: { waitNudgeSec: next.vibe.waitNudgeSec, endpointSilenceMs: next.vibe.endpointSilenceMs } } : {}),
     };
@@ -1077,6 +1139,8 @@ async function turn(req, res, body) {
     throw new HttpError(409, ended && !late ? "lesson has ended" : "another turn for this lesson landed first; retry");
   }
   mark("stored");
+  // Seam (W2-H): the committed turn revealed / retired a Studio piece (mount row, SSE status); after commit, never awaited.
+  if (turnStudio) seamSafe("studio.onReveal", () => studioSeam.onReveal({ lessonId: lesson.id, childId: child.id, turn: next.turn, studio: turnStudio }), null);
   // The online fold is the cache only if our inserts got the next seqs (no interleaved writer); else replay next turn.
   const learner = plan.learner;
   if (canWrite(child, "kt")) commitLive(child, learner.before.maxSeq, learner.after, seqs);
@@ -1550,7 +1614,12 @@ async function end(req, res, body) {
   // row-count check and the result indexes below read only `writes`).
   const hookStmts = onLessonEnd({ child, lessonId: lesson.id, topicId: lesson.topic_id, endedBy: endedByPageHide(req, body) ? "pagehide" : "client",
     turns: state.turn ?? 0, startedAt: lesson.started_at ?? null, now: Date.now() });
-  const results = await tx([...writes, ...hookStmts]);
+  // Seam (W2-I, server/relational/seam.js): the bond's lesson-end rows (rel_state, rel_event, relational_note), appended
+  // after the lesson's own writes and BEFORE the Conductor's (its ingest locks child_seq last). [] until W2-I fills it.
+  const relEnd = seamSafe("relational.onLessonEnd", () => relationalSeam.onLessonEnd(child, { lessonId: lesson.id, childId: child.id,
+    endedBy: endedByPageHide(req, body) ? "pagehide" : "client", turns: state.turn ?? 0 }), []);
+  const relStmts = Array.isArray(relEnd) ? relEnd : [];
+  const results = await tx([...writes, ...relStmts, ...hookStmts]);
   if (results.slice(0, writes.length).some((rows) => rows.length !== 1)) throw new Error("lesson end: a write did not land");
   await heldP;
   const relAt = canWrite(child, "kt") ? 1 : -1;

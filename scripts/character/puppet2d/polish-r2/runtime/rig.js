@@ -148,11 +148,12 @@ export class Puppet2DRig {
     for (const s of ["L", "R"]) {
       mk("brow" + s, 6, "brow");
     }
+    mk("lockbed", 8, "head");
     mk("hair", 16, "head");
     mk("lockL", 6, "lock");
     mk("lockR", 6, "lock");
     // r2: no per-layer depth offsets except the bun, which sits behind the skull (its hidden part is painted)
-    { const L = this.layers.bun; for (let i = 0; i < L.n; i++) L.z[i] = L.z[i] - 70; }
+    { const L = this.layers.bun; for (let i = 0; i < L.n; i++) L.z[i] = L.z[i] - 45; }
     // locks: anchor (top) and length for the pendulum weight
     for (const s of ["L", "R"]) {
       const L = this.layers["lock" + s];
@@ -429,6 +430,7 @@ export class Puppet2DRig {
     draw("browL");
     draw("browR");
     this.drawMouth(shadeFace);
+    draw("lockbed", shadeFace);
     draw("hair", shadeHair);
     draw("lockL");
     draw("lockR");

@@ -80,7 +80,7 @@ def viterbi_fast(lp, labels):
 
 
 def emb(x):
-    if len(x) < 16000 * 0.25: return None
+    if len(x) < 16000 * 0.5: return None  # WavLM's x-vector TDNN needs more frames than a 0.25 s word gives
     with torch.no_grad():
         i = sfe(x.astype(np.float32) / 32768, sampling_rate=16000, return_tensors="pt")
         e = sv(**{k: v.to(DEV) for k, v in i.items()}).embeddings[0].cpu()
@@ -154,6 +154,7 @@ if __name__ == "__main__":
             c["file"] = os.path.join(RR, "r1", os.path.basename(c["file"])) if c["src"] == "round1" else os.path.join(RR, "renders", c["file"].split("/renders/", 1)[1])
     if len(sys.argv) > 1: C = [c for c in C if sys.argv[1] in c["id"]]
     for i, c in enumerate(C):
-        one(c)
+        try: one(c)
+        except Exception as e: print("ERR", c["id"], repr(e)[:200], flush=True)
         if i % 20 == 0: print(i, round(time.time() - t), flush=True)
     print("done", len(C))

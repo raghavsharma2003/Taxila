@@ -2,7 +2,8 @@
 // not render). Kinds: module (the sandboxed engine frame, src/modules/host.tsx, on its dusk ground) · board (the
 // chalkboard) · tiles (2-4 ChoiceTiles) · pad (the NumberPad). In SHOWING the tray is inert and carries a "Watch"
 // eye badge: watch, don't touch. T7: a module that reports an error (or never loads) is taken off the tray, and
-// the item carries on by voice or tiles: the child never sees a placeholder (audit 5).
+// the item carries on by voice or tiles: the child never sees a placeholder (audit 5). studio (W2 seam): the Studio stage,
+// one aspect-fitted box every Studio piece renders into (src/studio/StudioStage.tsx).
 import { useEffect, useState } from "react";
 import type { ModuleEvent } from "../../../shared/contracts.ts";
 import type { Floor } from "../../lesson/floor.ts";
@@ -11,6 +12,7 @@ import { Art } from "../../ui/Art.tsx";
 import { t } from "../../ui/copy.ts";
 import { Glyph } from "../../ui/icons/state.tsx";
 import { Board } from "./Board.tsx";
+import { StudioStage } from "../../studio/StudioStage.tsx";
 import type { DeskActions, TrayModel } from "./model.ts";
 
 export function WorkTray({ tray, floor, young, modules, lang, ageBand, actions, onModuleFailed }:
@@ -25,6 +27,9 @@ export function WorkTray({ tray, floor, young, modules, lang, ageBand, actions, 
           <NoMicCard young={young} onDismiss={actions.dismissNoMic} />
         ) : tray.kind === "module" && modules ? (
           <ModuleTray modules={modules} lang={lang} ageBand={ageBand} onEvent={actions.moduleEvent} onFailed={onModuleFailed} />
+        ) : tray.kind === "studio" && tray.studio ? (
+          // W2 seam: the Studio stage (W2-H) reserves a fixed, aspect-fitted box in the tray for every Studio piece.
+          <StudioStage slot={tray.studio} young={young} lang={lang} />
         ) : tray.kind === "board" && tray.board ? (
           <Board board={tray.board} young={young} />
         ) : tray.kind === "tiles" && tray.tiles?.length ? (

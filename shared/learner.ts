@@ -77,8 +77,12 @@ export interface EvidenceEvent {
   misRoute?: "mis" | "skill";
   paramsVersion?: string;
   // ── comprehension-engine contract additions (COMPREHENSION-ENGINE.md §1.4; kt_evidence columns from 007) ──
-  /** Evidence source: K is tempered ×0.5 for game, ×0.75 for module (kt/bktr.js SOURCE_WEIGHT); U/T by facets.js W_SRC. */
-  via?: "dialogue" | "game" | "module" | "callback" | "weave";
+  /**
+   * Evidence source: K is tempered ×0.5 for game, ×0.75 for module (kt/bktr.js SOURCE_WEIGHT); U/T by facets.js W_SRC.
+   * `studio` (W2 seam commit; LIVE-STUDIO §3.10): a host-graded answer inside a Studio piece, ×0.75 like a module. Nothing
+   * writes it yet: W2-H adds the weight, and 017_studio.sql widens the kt_evidence via check (012 lists the rest).
+   */
+  via?: "dialogue" | "game" | "module" | "callback" | "weave" | "studio";
   ebo?: string;
   /** The probe shape (C01-C36) that elicited the answer. */
   shapeId?: string;

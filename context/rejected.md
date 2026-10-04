@@ -1097,3 +1097,10 @@ Tried 2026-10-04: six models (gpt-6-sol, gpt-6.1-sol, gpt-6-luna, gpt-5.6-luna, 
 ## Merged inbox entries (write-up from the entry text)
 - `rj-sarvam-self-host-not-our-weights` (2026-10-04): Tried (desk, 2026-10-04): Sarvam as a self-hosted STT under the 'own GPU, commercial-OK weights' rule. Broke: Saaras v4 weights are not public (API only); Saaras v3 self-hosting is an encrypted SageMaker Marketplace model package at a $5,000/month contract plus instance cost, with no fine-tuning. Reference-only. Revisit if Sarvam publishes ASR weights under a commercial licence.
 - `rj-shunya-pingala-licence` (2026-10-04): Tried (desk, 2026-10-04): shunyalabs/pingala-v1-universal. Broke: its RAIL-M licence forbids derivatives and redistribution and requires a paid commercial licence (free tier up to 10k h/month); Vaani Hindi WER 22.1. The open shunyalabs/zero-stt-hinglish (OpenRAIL, Whisper-medium) stays a bench candidate.
+
+## rj-azure-lane-option-for-quota
+**Rejected (2026-10-04, W2 seam commit):** tagging model calls hot/background through `server/azure.js`'s `lane` option, as
+BUILD-PLAN §4 words it. `post()` already destructures `lane` (default `"CHAT"`) and calls `endpoint(lane)`; `chat()` passes its
+options straight through, so `chat(dep, msgs, { lane: "hot" })` would resolve the endpoint for a lane named "hot". Checked:
+`endpoint("hot")` throws `AzureError: unknown model lane hot`, i.e. every tagged call would fail before reaching Azure. The
+quota tag is `quotaLane` instead (`w2-quota-lane-option-quotaLane`).

@@ -24,7 +24,7 @@ for n in order: over(n)
 for s in ("L", "R"):
     op = opening(s)
     over("sclera" + s, op); over("iris" + s, op); over("catch" + s, op); over("lower" + s); over("lid" + s)
-for n in ["browL", "browR", "mouth_rest", "hair", "lockL", "lockR"]: over(n)
+for n in ["browL", "browR", "mouth_rest", "lockbed", "hair", "lockL", "lockR"]: over(n)
 Image.fromarray((out * 255).round().astype(np.uint8)).save("art/character/puppet2d/polish-r2/work/rest.png")
 def ssim(a, b):
     a = a.mean(2); b = b.mean(2)

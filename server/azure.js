@@ -4,6 +4,7 @@
 // key and never the payload, because payloads carry children's words.
 
 import { EndpointConfigError, laneEndpoint, laneKey, realtimeLane } from "./endpoints.js";
+import { admit, settle } from "./lanes.js";
 
 const DEFAULT_TIMEOUT_MS = 20_000;
 const RETRY_DELAY_MS = 400;
@@ -89,8 +90,13 @@ function log(entry, trace) {
  * `retries: 0` is for a backup call that must not double the latency of the path it rescues.
  * @returns {Promise<any>} parsed JSON, or a Buffer when `binary`.
  */
-async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_MS, trace, binary = false, retries = 1, lane = "CHAT" } = {}) {
+async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_MS, trace, binary = false, retries = 1, lane = "CHAT", quotaLane } = {}) {
   for (let attempt = 0; ; attempt++) {
+    // Quota lanes (server/lanes.js, W2-E): a background call may wait for its bucket; a hot call never waits. The seam is a
+    // no-op (admit → undefined) until W2-E fills it. `quotaLane` is separate from `lane`, which selects the endpoint.
+    let wait;
+    try { wait = admit({ quotaLane, deployment, kind }); } catch (e) { console.warn("[azure] lanes.admit failed:", e?.message); }
+    if (wait) await Promise.resolve(wait).catch(() => {});
     const t0 = performance.now();
     const ctl = new AbortController();
     const timer = setTimeout(() => ctl.abort(), timeoutMs);
@@ -119,6 +125,10 @@ async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_
     }
     log({ kind, deployment, status: status || err?.code || "error", ms: Math.round(performance.now() - t0), attempt,
       tokens: usage ? { in: usage.prompt_tokens ?? usage.input_tokens, out: usage.completion_tokens ?? usage.output_tokens } : undefined }, trace);
+    try {
+      settle({ quotaLane, deployment, kind, status: status || err?.code || "error",
+        usage: usage ? { in: usage.prompt_tokens ?? usage.input_tokens, out: usage.completion_tokens ?? usage.output_tokens } : undefined });
+    } catch (e) { console.warn("[azure] lanes.settle failed:", e?.message); }
     if (!err) return out;
     const retryable = status === 0 || status === 429 || status >= 500;
     if (attempt >= retries || !retryable) throw err;
@@ -132,7 +142,8 @@ async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_
  * `effort` maps to reasoning_effort ("none" | "low" | "medium" | "high"; "minimal" is rejected).
  * @param {string} deployment
  * @param {{ role: "system"|"developer"|"user"|"assistant", content: string }[]} messages
- * @param {{ schema?: object, schemaName?: string, maxTokens?: number, effort?: string, timeoutMs?: number, retries?: number, trace?: object[] }} [opts]
+ * @param {{ schema?: object, schemaName?: string, maxTokens?: number, effort?: string, timeoutMs?: number, retries?: number, trace?: object[], quotaLane?: "hot" | "background" }} [opts]
+ *   quotaLane: the quota pool this call draws on (server/lanes.js; W2 seam, ignored until W2-E fills the module)
  * @returns {Promise<{ text: string, json?: any, finishReason?: string, usage?: object }>}
  */
 // OpenAI reasoning-family deployments take max_completion_tokens + reasoning_effort; the Direct-from-Azure open

@@ -1,0 +1,89 @@
+{
+"nodes": [
+{
+"id": "w2-seam-contracts",
+"kind": "decision",
+"title": "W2 seam contracts: shared/bands.ts (re-exports the one BANDS table in shared/learner.ts), shared/brain.ts, shared/studio.ts (incl. the whiteboard drawing-script artifact and StudioSlot), shared/relational.ts; contracts.ts gains TurnResponse.studio/moment, UiDirectives.beat/studioSlot/teacherAffect, tray 'studio', AvatarVoiceEvent and DeliveryPlan; evidence via gains 'studio'",
+"at": "2026-10-04"
+},
+{
+"id": "w2-seam-call-sites-guarded",
+"kind": "decision",
+"title": "W2 seam call sites: every studio / relational / expressive / purpose / realtime seam call in lesson.js and voice.js runs through server/seam-safe.js seamSafe (throw, rejection or undefined -> the pre-seam value); all seams are no-ops, so the turn is unchanged until owners fill them",
+"at": "2026-10-04"
+},
+{
+"id": "w2-quota-lane-option-quotaLane",
+"kind": "decision",
+"title": "The quota-lane option on server/azure.js is named quotaLane (not lane as BUILD-PLAN \u00a74 says): post()'s existing lane option selects the endpoint; server/lanes.js admit/settle are no-ops until W2-E",
+"at": "2026-10-04"
+},
+{
+"id": "w2-migration-allotment",
+"kind": "decision",
+"title": "W2 migration numbers: 016 W2-E brain, 017 W2-H studio (also widens kt_evidence via check to 'studio'), 018 W2-I relational, 019 W2-A home states, 020 reserved W2-C (db/migrations/README.md)",
+"at": "2026-10-04"
+},
+{
+"id": "studio-stage-fitted-box",
+"kind": "decision",
+"title": "StudioStage reserves one aspect-fitted box inside the Work tray (artifact design size, default 400x300; 8 px inset; upscale cap 3x; whole px; centred; contain: strict) that every Studio artifact renders into via the src/studio/renderers.ts registry",
+"at": "2026-10-04"
+},
+{
+"id": "studio-stage-geometry-2026-10-04",
+"kind": "measurement",
+"title": "Studio stage box inside the real Desk (Playwright, mocked API, 5 viewports x 3 board aspects = 15): 15/15 inside the tray body, aspect within 2 px, no tray or page scroll; 360x800 4:3 board -> 312x234 box in a 328x290 tray",
+"at": "2026-10-04"
+},
+{
+"id": "rj-azure-lane-option-for-quota",
+"kind": "rejection",
+"title": "Reusing server/azure.js's `lane` option for the hot/background quota tag: post() resolves endpoint(lane), and endpoint('hot') throws 'unknown model lane hot', so every tagged call would fail",
+"at": "2026-10-04"
+}
+],
+"edges": [
+{
+"src": "w2-seam-call-sites-guarded",
+"rel": "part_of",
+"dst": "w2-seam-contracts"
+},
+{
+"src": "w2-quota-lane-option-quotaLane",
+"rel": "part_of",
+"dst": "w2-seam-contracts"
+},
+{
+"src": "w2-migration-allotment",
+"rel": "part_of",
+"dst": "w2-seam-contracts"
+},
+{
+"src": "studio-stage-fitted-box",
+"rel": "part_of",
+"dst": "w2-seam-contracts"
+},
+{
+"src": "studio-stage-fitted-box",
+"rel": "measured_by",
+"dst": "studio-stage-geometry-2026-10-04"
+},
+{
+"src": "w2-quota-lane-option-quotaLane",
+"rel": "caused_by",
+"dst": "rj-azure-lane-option-for-quota"
+},
+{
+"src": "whiteboard-by-drawing-script-2026-10-04",
+"rel": "constrains",
+"dst": "w2-seam-contracts"
+},
+{
+"src": "owner-priorities-2026-10-04",
+"rel": "constrains",
+"dst": "studio-stage-fitted-box"
+}
+],
+"md": {}
+}
