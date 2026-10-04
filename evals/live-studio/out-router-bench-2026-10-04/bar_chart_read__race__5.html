@@ -1,0 +1,111 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff8ed;color:#49392e}
+.panel{position:relative;width:360px;height:320px;padding:8px 10px;display:flex;flex-direction:column;align-items:stretch;overflow:hidden}
+h1{font-size:19px;line-height:24px;margin:0 0 2px;font-weight:750;color:#67452f}
+.ask{font-size:14px;line-height:19px;margin:0;color:#735b49}
+.chart{display:block;width:340px;height:220px;overflow:hidden;flex:none}
+.grid{stroke:#eadfce;stroke-width:1}
+.axis{stroke:#9d8268;stroke-width:1.4}
+.tick{font-size:10px;fill:#735b49;text-anchor:end;dominant-baseline:middle}
+.axis-title{font-size:11px;font-weight:650;fill:#735b49;text-anchor:middle}
+.bar{fill:#e8a34f;transform-box:fill-box;transform-origin:center bottom;animation:grow .85s cubic-bezier(.2,.8,.25,1) both}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.hit{fill:transparent;cursor:pointer;touch-action:manipulation}
+.hit:active{fill:#f5dfbd;fill-opacity:.45}
+.name{font-size:10px;fill:#574638;text-anchor:middle;dominant-baseline:hanging;pointer-events:none}
+.feedback{position:absolute;left:10px;right:10px;bottom:4px;height:26px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#735b49}
+.feedback.good{color:#39764e}
+.feedback.try{color:#a75e3d}
+</style>
+<div class="panel">
+  <h1 id="title"></h1>
+  <p class="ask" id="ask"></p>
+  <svg class="chart" id="chart" viewBox="0 0 340 220" role="group"></svg>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const data = Studio.params.data;
+  const svg = document.getElementById("chart");
+  const ns = "http://www.w3.org/2000/svg";
+  const t = key => Studio.t(key);
+  document.getElementById("title").textContent = t("title");
+  document.getElementById("ask").textContent = t("ask");
+
+  const left = 48, right = 334, top = 14, bottom = 166;
+  const plotHeight = bottom - top;
+  const maxValue = Math.max(...data.map(d => d.value));
+  const rough = maxValue / 4;
+  const magnitude = Math.pow(10, Math.floor(Math.log10(rough)));
+  const scaled = rough / magnitude;
+  const step = (scaled <= 1 ? 1 : scaled <= 2 ? 2 : scaled <= 5 ? 5 : 10) * magnitude;
+  const ceiling = Math.ceil(maxValue / step) * step;
+  const scaleY = value => bottom - value / ceiling * plotHeight;
+
+  function node(tag, attrs, text) {
+    const el = document.createElementNS(ns, tag);
+    Object.entries(attrs || {}).forEach(([key, value]) => el.setAttribute(key, value));
+    if (text !== undefined) el.textContent = text;
+    svg.appendChild(el);
+    return el;
+  }
+
+  for (let value = 0; value <= ceiling; value += step) {
+    const y = scaleY(value);
+    node("line", {x1:left, y1:y, x2:right, y2:y, class:"grid"});
+    node("text", {x:left-7, y, class:"tick", "data-tick":String(value)}, String(value));
+  }
+  node("line", {x1:left, y1:top, x2:left, y2:bottom, class:"axis"});
+  node("line", {x1:left, y1:bottom, x2:right, y2:bottom, class:"axis"});
+  node("text", {x:11, y:(top+bottom)/2, class:"axis-title", transform:`rotate(-90 11 ${(top+bottom)/2})`}, t("yaxis"));
+
+  const plotWidth = right - left;
+  const columnWidth = plotWidth / data.length;
+  let finished = false;
+  data.forEach((item, index) => {
+    const center = left + columnWidth * (index + .5);
+    const y = scaleY(item.value);
+    const hit = node("rect", {
+      x:left + index * columnWidth, y:top, width:columnWidth, height:bottom + 40 - top,
+      class:"hit", "data-column":item.key, tabindex:"0", role:"button"
+    });
+    node("rect", {
+      x:center - Math.min(32, columnWidth * .58) / 2, y,
+      width:Math.min(32, columnWidth * .58), height:bottom - y,
+      rx:5, class:"bar", "data-bar":item.key, "data-value":String(item.value)
+    });
+    node("text", {x:center, y:bottom+8, class:"name"}, t(item.key));
+
+    const choose = () => {
+      if (finished) return;
+      Studio.event("column_tap", {key:item.key});
+      Studio.answer(item.key);
+    };
+    hit.addEventListener("click", choose);
+    hit.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        choose();
+      }
+    });
+  });
+
+  const feedback = document.getElementById("feedback");
+  Studio.onVerdict(({correct}) => {
+    if (correct) {
+      finished = true;
+      feedback.textContent = t("right") + " " + t("done");
+      feedback.className = "feedback good";
+      Studio.done();
+    } else {
+      feedback.textContent = t("wrong");
+      feedback.className = "feedback try";
+    }
+  });
+  Studio.ready();
+})();
+
+</script>
