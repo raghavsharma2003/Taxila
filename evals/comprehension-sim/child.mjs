@@ -113,7 +113,9 @@ async function childSays(P, t, c, cls, kind, llm) {
  * @param {any} P persona @param {any} t effective truth @param {any} c concept @param {any} shape @param {() => number} r
  * @param {{ chat: Function, childModel: string, gradeModels: string[], calls: any, log: any[] } | null} llm
  */
-export async function probeAnswer(P, t, c, shape, r, llm, { game = false } = {}) {
+export async function probeAnswer(P, t, c, shape, r, llm, { game = false, perfect = false } = {}) {
+  // perfect: the oracle-prober control (X1) — the grader returns the TRUE label (no grading noise, no fluency leniency)
+  const grade = (label) => (perfect ? label : noisyGrade(P, label, r));
   const cls = shape.emits;
   const op = shape.op.split("+").at(-1);
   const llmGraded = op === "R-EXP" || op === "R-INST";
@@ -146,10 +148,10 @@ export async function probeAnswer(P, t, c, shape, r, llm, { game = false } = {})
   // ---- code-played ----
   if (cls === "probe.why" || cls === "probe.teachback") {
     if (cls === "probe.teachback") {
-      const labels = [0, 1, 2].map(() => noisyGrade(P, trueWhyLabel(P, t, r), r));
+      const labels = [0, 1, 2].map(() => grade(trueWhyLabel(P, t, r)));
       return { outcome: teachbackOutcome(labels), grader: "llm", spanOk: true, mis: labels.includes("contradicted") && rmis(t, r) };
     }
-    const l = noisyGrade(P, trueWhyLabel(P, t, r), r);
+    const l = grade(trueWhyLabel(P, t, r));
     return { outcome: whyOutcome(l), grader: "llm", spanOk: true, mis: l === "contradicted" && rmis(t, r) };
   }
   if (cls === "probe.errorspot") {

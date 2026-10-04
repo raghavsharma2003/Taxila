@@ -12,7 +12,9 @@ import { isPartial } from "../../server/comprehension/facets.js";
 import { bandOf } from "../../server/comprehension/params.js";
 import { ktView, rank, DELAY_MS } from "../../server/learner/kt/ledger.js";
 import { outcomeIndex, outcomeName } from "../../server/learner/kt/outcomes.js";
-import { concepts as loadConcepts, SESSIONS, sessionStart, hostCandidates, KIT_INPUTS } from "./world.mjs";
+import { concepts as loadConcepts, SESSIONS, sessionStart, hostCandidates, KIT_INPUTS, codeMatchable } from "./world.mjs";
+import { LIVE_PROBE_SHAPES } from "../../server/director/state.js";
+import { kitInputsOf } from "../../server/learner/live.js";
 import { expectedState, truthType } from "./personas.mjs";
 import { rng, itemAnswer, probeAnswer, voiceCues, choiceAnswer, agreesWithTrue } from "./child.mjs";
 
@@ -27,7 +29,26 @@ export const POLICIES = Object.freeze({
   freeze_low: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true, freezeLow: true, e9: true },
   // mutants (§8.3): each must FAIL CE-M3, or the battery cannot see the bug it stands for
   mut_vc2_partial_as_full: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true, e9: true, vc2: true },
-  mut_vc4_game_full_weight: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true, e9: true, vc4: true },
+  // VC4 with the rank-exploit game volume (X7): at 2 commits per fresh topic the battery could not see full-weight game
+  // evidence (review open item); a child replaying the trap level yields 6 commits at ~80% wins
+  mut_vc4_game_full_weight: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true, e9: true, vc4: true, gameRounds: 6, exploit: true },
+  // the same exploit volume at the correct weight (×0.5, ≤ fragile): the control VC4 is compared against
+  engine_game_exploit: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true, e9: true, gameRounds: 6, exploit: true },
+  // The DEPLOYED configuration (W1-C #4; comprehension audit G3): the live probe subset (director/state.js
+  // LIVE_PROBE_SHAPES), the kit fields the real kits carry (learner/live.js kitInputsOf over data/kits), the kit's
+  // predict / transfer / error-spot items graded the way production grades them (code only when the classifier can
+  // match the key; otherwise llm with no span: E6 gives a positive nothing), no woven host items (the hosting seam is a
+  // no-op), and the held why / teach-back verdict settling by the settle-latency model (later.js): settled → folded
+  // now; not settled → folded on the classifier's label with no span, then the verdict lands as a `late` correction.
+  live: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true, e9: true, live: true, settle: "w1c" },
+  // production before W1-C: an unsettled verdict was simply lost (no wait, no correction)
+  live_presettle: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true, e9: true, live: true, settle: "none" },
+  // X1 oracle-prober: every shape, every kit field, and a grader that returns the TRUE label — the ceiling the engine's
+  // ladder reaches on this simulator; every other row is also reported as a fraction of it
+  oracle: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true, e9: true, perfect: true },
+  // X7 gamer / rank-exploit control: a tutor that farms game wins (the child replays the trap level until it passes,
+  // so ~80% of commits are wins whatever the child knows) instead of items and probes. Must fail at least one bar.
+  gamer: { probes: false, delayed: true, games: true, rule: "ladder", reteach: false, gamer: true },
   quiz_bot: { quiz: true, delayed: true, rule: "konly" },
   samjha: { samjha: true, delayed: true, rule: "konly" },
   lecture: { lecture: true, delayed: true, rule: "ladder" },
@@ -56,6 +77,22 @@ function kOnlyState(b, delayedOk) {
 export const FAMILIES = Object.freeze(["bkt2", "cfrag"]);
 const STRENGTH = { hi: [0.65, 0.95], lo: [0.05, 0.40], cut: 0.6, forget: 0.35 };
 
+/**
+ * Settle-latency model for the held why / teach-back verdict (later.js; W1-C #2) [U until production measures it]: the
+ * blind grade's latency is lognormal around GRADE_MEDIAN_MS; the next turn arrives after the reply is heard and the
+ * child answers (a base, more for a hesitant child, plus jitter); awaitSettled then waits up to 600 ms. The verdict
+ * settles iff latency ≤ gap + wait. Override the median with SIM_GRADE_MEDIAN_MS.
+ */
+export const SETTLE = Object.freeze({ gradeMedianMs: Number(process.env.SIM_GRADE_MEDIAN_MS ?? 2500), gradeSigma: 0.5,
+  gapBaseMs: 2500, gapHesitationMs: 4000, gapJitterMs: 3000, waitMs: 600 });
+function settles(P, r) {
+  const z = Math.sqrt(-2 * Math.log(r() || 1e-12)) * Math.cos(2 * Math.PI * r());
+  const latency = SETTLE.gradeMedianMs * Math.exp(SETTLE.gradeSigma * z);
+  return latency <= SETTLE.gapBaseMs + P.hesitation * SETTLE.gapHesitationMs + r() * SETTLE.gapJitterMs + SETTLE.waitMs;
+}
+/** Kit item kind → the evidence class production emits for it (director/items.js PROBE_FOR_KIND → kt/adapter.js). */
+const KIT_KIND_CLASS = Object.freeze({ predict: "probe.predict", near_transfer: "probe.transfer.near", far_transfer: "probe.transfer.far", error_spot: "probe.errorspot" });
+
 export async function runChild({ persona: P, seed, policy: polName, llm = null, family = "bkt2" }) {
   if (!FAMILIES.includes(family)) throw new Error(`sim: unknown truth family ${family}`);
   const cf = family === "cfrag";
@@ -74,7 +111,8 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null, 
   let seq = 0, q = [];
   const band = bandOf(P.classLevel);
   const load = [];
-  const counters = { probeTurns: 0, mandatory: 0, lexicon: 0, repeats: 0, events: 0, reteach: 0, wovenHosted: 0, callbacks: 0, perCS: {} };
+  const counters = { probeTurns: 0, mandatory: 0, lexicon: 0, repeats: 0, events: 0, reteach: 0, wovenHosted: 0, callbacks: 0, perCS: {}, held: 0, settled: 0, late: 0, kitItems: 0, kitCode: 0 };
+  let lateQ = [];                                                          // live: verdicts that land after their event folded
   const posteriors = {};
   const shapesBySession = [];                                              // [si][skillId] = shape ids asked
 
@@ -104,6 +142,11 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null, 
       if (b && info[k].learnedSession === null && rank(b.display) >= rank("learned_today")) info[k].learnedSession = si;
       return b;
     };
+    // live: a verdict that landed late is folded as its correction event before the next answer (later.js lateEvent)
+    const flushLate = () => {
+      for (const ev of lateQ) { fuse({ ...ev, id: `${ev.id}:late`, seq: ++seq, via: "late" }); counters.late++; }
+      lateQ = [];
+    };
     // novelty across days (§3.4): yesterday's shapes per skill, when the previous session was the day before
     const yesterday = si > 0 && SESSIONS[si].day - SESSIONS[si - 1].day === 1 ? shapesBySession[si - 1] ?? {} : {};
     let sess = newProbeSession({ sessionId, band, lessonSeed: `${seed}:${sessionId}`, yesterday, targets: plan.topics.map((id) => cs.find((c) => c.id === id).skillId) });
@@ -120,7 +163,7 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null, 
         const b = belief(k);
         if (!b) continue;
         const sk = S.ledger.skills[k];
-        out[k] = { belief: b, topicType: bySkill[k].topicType, kitInputs: KIT_INPUTS, delayDays: sk.learnedAt ? (Date.parse(now) - Date.parse(sk.learnedAt)) / 86_400_000 : 0 };
+        out[k] = { belief: b, topicType: bySkill[k].topicType, kitInputs: pol.live ? kitInputsOf(bySkill[k].kit, k) : KIT_INPUTS, delayDays: sk.learnedAt ? (Date.parse(now) - Date.parse(sk.learnedAt)) / 86_400_000 : 0 };
       }
       return out;
     };
@@ -156,7 +199,7 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null, 
         a = { outcome: outcomeIndex(shape.emits, agreed ? "first_correct" : "wrong"), grader: "code" };
         lastChar = { planted: false, agreed };
       } else {
-        a = await probeAnswer(P, t, c, shape, r, llm, { game: shape.via === "game" });
+        a = await probeAnswer(P, t, c, shape, r, llm, { game: shape.via === "game", perfect: !!pol.perfect });
         if (puppet && a.outcome != null && a.outcome >= 0) lastChar = { planted: true, agreed: ["missed", "wrong"].includes(outcomeName(shape.emits, a.outcome)) };
       }
       if (a.outcome === null || a.outcome === undefined || a.outcome < 0) return null;                    // NA: no update
@@ -165,7 +208,11 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null, 
       const misHit = a.mis && mis && ["misconception", "mapped_wrong", "wrong"].includes(name);
       const ev = { ...base(), skillIds: [k], cls: shape.emits, outcome: a.outcome, grader: a.grader, shapeId: shape.id, via: shape.via, spanOk: a.spanOk, ...(dd ? { deferenceDiscount: true } : {}),
         ...(misHit ? { misconceptionId: mis } : {}), ...(!misHit && mis && shape.verifier ? { discriminates: mis } : {}) };
-      fuse(ev);
+      if (pol.live && (shape.emits === "probe.why" || shape.emits === "probe.teachback") && ev.grader === "llm") {
+        counters.held++;
+        if (settles(P, r)) { counters.settled++; fuse(ev); }
+        else { fuse({ ...ev, spanOk: false }); if (pol.settle === "w1c") lateQ.push(ev); }
+      } else fuse(ev);
       if (shape.facets.includes("U")) info[k].uProbes++;
       if (shape.emits === "probe.transfer.near" && name === "fail") info[k].nearFail = true;
       info[k].probes++;
@@ -173,7 +220,8 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null, 
     };
     const askProbe = async (current, voice) => {
       if (!pol.probes) return false;
-      const pl = nextProbe(skillsMap(current), sess, { currentSkill: current, voice: pol.voice ? voice : undefined, freezeLow: !!pol.freezeLow });
+      flushLate();
+      const pl = nextProbe(skillsMap(current), sess, { currentSkill: current, voice: pol.voice ? voice : undefined, freezeLow: !!pol.freezeLow, ...(pol.live ? { allow: LIVE_PROBE_SHAPES } : {}) });
       if (!pl) return false;
       if (!pol.delayed && pl.reason === "delayed_check") { sess = { ...sess, pending: sess.pending.filter((x) => x.reason !== "delayed_check") }; return false; }
       const ev = await serve(pl);
@@ -190,6 +238,7 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null, 
       return true;
     };
     const item = async (k, kind, { woven } = {}) => {
+      flushLate();
       const t = eff(k), c = bySkill[k], mis = c.misconceptions[0]?.id;
       const a = itemAnswer(P, t, kind, r);
       const seek = P.answerSeek && r() < P.answerSeek;
@@ -221,6 +270,34 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null, 
         counters.wovenHosted++;
       }
       return { b, correct: a.o === "C0", lucky: a.o === "C0" && !t.K };
+    };
+    // live: one of the kit's own predict / transfer / error-spot items, graded the way the classifier grades it in
+    // production — code when the key can be matched, else llm with no span (E6: a positive carries no U/T)
+    const kitItem = async (k, kind) => {
+      flushLate();
+      const c = bySkill[k], it = c.kit.items.find((i) => i.kind === kind), cls = KIT_KIND_CLASS[kind];
+      if (!it || !cls) return null;
+      const code = codeMatchable(it), mis = c.misconceptions[0]?.id;
+      const t = eff(k);
+      const a = await probeAnswer(P, t, c, { id: "KIT", emits: cls, op: "R-KEY", via: "dialogue", facets: [] }, r, null);
+      if (a.outcome == null || a.outcome < 0) return null;
+      const ev = { ...base(), skillIds: [k], cls, outcome: a.outcome, grader: code ? "code" : "llm", ...(code ? {} : { spanOk: false }), via: "dialogue", target: k,
+        ...(a.mis && mis ? { misconceptionId: mis } : {}) };
+      const b = fuse(ev);
+      counters.kitItems++; if (code) counters.kitCode++;
+      if (cls === "probe.transfer.near" && outcomeName(cls, a.outcome) === "fail") info[k].nearFail = true;
+      turn({ kind: "item", weight: fits(sess, 1.0) ? 1.0 : 0.25, skillId: k });
+      sess = noteOutcome(sess, ev, b);
+      const correct = ["right", "pass", "caught_fixed"].includes(outcomeName(cls, a.outcome));
+      return { b, correct, lucky: correct && !t.K };
+    };
+    // a game round (Forge module, C35): host-graded; `exploit` = the child replays the level until it passes (~80% wins)
+    const gameRound = async (k, exploit) => {
+      const shape = shapeById("C35"), c = bySkill[k], mis = c.misconceptions[0]?.id;
+      let a = await probeAnswer(P, eff(k), c, shape, r, null, { game: true });
+      if (exploit && r() < 0.8) a = { ...a, outcome: outcomeIndex(shape.emits, "right"), mis: false };
+      fuse({ ...base(), skillIds: [k], cls: shape.emits, outcome: a.outcome, grader: "code", shapeId: "C35", via: pol.vc4 ? "dialogue" : "game", ...(a.mis && mis ? { misconceptionId: mis } : {}) });
+      turn({ kind: "play", weight: 0.25, skillId: k });
     };
     const reteach = (k) => {
       if (!pol.reteach) return;
@@ -284,12 +361,18 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null, 
       const c = cs.find((x) => x.id === cid), k = c.skillId;
       if (info[k].firstSeen === null) info[k].firstSeen = si;
       let hosted = [];
-      if (pol.delayed) { const res = onTopicPlanned(q, [k], now); q = res.q; hosted = res.hosted; }
+      // live: the weave queue is planned and persisted, but a hosted sub-step has no host item (forgeSeam.wovenSubStep
+      // is a no-op in production), so nothing is woven; entries expire into C31 callbacks
+      if (pol.delayed) { const res = onTopicPlanned(q, [k], now); q = res.q; hosted = pol.live ? [] : res.hosted; }
       const fresh = plan.fresh.includes(cid);
       if (fresh || belief(k)?.refresh) teach(k);
       else sessionSeen.add(k);
       if (pol.samjha) { turn({ kind: "probe", weight: 1.0, skillId: k }); if (lexiconHit("Samjha? Did you understand?")) counters.lexicon++; }
       const nItems = pol.quiz ? 4 : fresh ? 6 : 4;
+      if (pol.gamer) {                                                           // the rank-exploit tutor: game wins instead of items
+        for (let j = 0; j < nItems; j++) { await gameRound(k, true); await gameRound(k, true); turn({ kind: "teach", skillId: k }); }
+        continue;
+      }
       const kinds = ["std", "disc", "std", "coinc", "std", "disc"];
       for (let j = 0; j < nItems; j++) {
         if (pol.quiz && (j === 1 || j === 2)) {                                    // the quiz-bot's mcq4 items
@@ -298,7 +381,10 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null, 
           fuse(ev); turn({ kind: "item", weight: 1.0, skillId: k });
           continue;
         }
-        const res = await item(k, kinds[j % kinds.length], { woven: j === 0 ? hosted[0] : null });
+        // live: the kit's predict / transfer / error-spot items take some practice slots, as the Director's practice
+        // phase serves them (director/items.js KIND_ORDER), graded the production way (kitItem)
+        const kitKind = pol.live ? (fresh ? { 1: "predict", 3: "near_transfer", 4: "error_spot" }[j] : { 1: "near_transfer" }[j]) : null;
+        const res = (kitKind && await kitItem(k, kitKind)) || await item(k, kinds[j % kinds.length], { woven: j === 0 ? hosted[0] : null });
         if (pol.whyEvery) {
           await serve({ skillId: k, shapeId: "C06", facet: "U", reason: "voi" });
           turn({ kind: "probe", weight: 1.0, skillId: k });
@@ -308,18 +394,11 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null, 
         turn({ kind: "teach", skillId: k });
         reteach(k);
         // a game round mid-topic (Forge module): two commits on the misconception-trap level, host-graded, w = 0.5
-        if (pol.games && j === 2 && fresh) {
-          for (const sid of ["C35", "C35"]) {
-            const shape = shapeById(sid);
-            const a = await probeAnswer(P, eff(k), c, shape, r, null, { game: true });
-            const mis = c.misconceptions[0]?.id;
-            fuse({ ...base(), skillIds: [k], cls: shape.emits, outcome: a.outcome, grader: "code", shapeId: sid, via: pol.vc4 ? "dialogue" : "game", ...(a.mis && mis ? { misconceptionId: mis } : {}) });
-            turn({ kind: "play", weight: 0.25, skillId: k });
-          }
-        }
+        if (pol.games && j === 2 && fresh) for (let g = 0; g < (pol.gameRounds ?? 2); g++) await gameRound(k, !!pol.exploit);
       }
     }
 
+    flushLate();                                                           // lesson end: flushHeld folds what is still held
     if (process.env.SIM_DEBUG) for (const c of cs) { const b = belief(c.skillId); if (b) console.log(`  s${si} ${c.id} ${b.state}/${b.reason} pL ${b.pL.toFixed(2)} U ${b.U.toFixed(2)} T ${b.T.toFixed(2)} ${b.display} M* ${b.misconception.mStar.toFixed(2)} v=${b.misconception.verified} truth ${JSON.stringify(truth[c.skillId])}`); }
     // ---- end of session: record every seen concept's state vs its truth ----
     for (const c of cs) {

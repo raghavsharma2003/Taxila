@@ -83,6 +83,9 @@ export function metrics(runs) {
     CE_M5_lexicon_hits: runs.reduce((a, r) => a + r.counters.lexicon, 0), CE_M5_repeat_questions: runs.reduce((a, r) => a + r.counters.repeats, 0),
     reteaches_per_child: r3(mean(runs.map((r) => r.counters.reteach))), woven_per_child: r3(mean(runs.map((r) => r.counters.wovenHosted))),
     callbacks_per_child: r3(mean(runs.map((r) => r.counters.callbacks))),
+    held_settle_rate: (() => { const h = runs.reduce((a, r) => a + (r.counters.held ?? 0), 0); return h ? r3(runs.reduce((a, r) => a + (r.counters.settled ?? 0), 0) / h) : null; })(),
+    late_corrections_per_child: r3(mean(runs.map((r) => r.counters.late ?? 0))),
+    kit_items_code_share: (() => { const n = runs.reduce((a, r) => a + (r.counters.kitItems ?? 0), 0); return n ? r3(runs.reduce((a, r) => a + (r.counters.kitCode ?? 0), 0) / n) : null; })(),
     probe_shape: probeShape(runs),
     by_type: byType, by_archetype: byArch,
   };
@@ -120,6 +123,60 @@ for (const fam of FAMS) {
 }
 result.policies = result.families.bkt2?.policies;                          // back-compat: the bkt2 table at the old key
 
+// ---- the honest number, its ceiling, the battery's validity, and the engine-vs-live divergence (W1-C #4) ----
+/** The spec bars (COMPREHENSION-ENGINE.md §8.2): a row "fails a bar" when any of these does not hold. */
+const BARS = {
+  CE_M1: (m) => m.CE_M1_macro_acc_final >= 0.70,
+  CE_M3: (m) => m.CE_M3_false_mastery <= 0.05 && (m.CE_M3_false_mastery_shallow ?? 0) <= 0.02,
+  CE_M4: (m) => m.CE_M4_missed_understanding_verbal_gap_pp == null || m.CE_M4_missed_understanding_verbal_gap_pp <= 10,
+  CE_M5: (m) => m.CE_M5_session_weight_over_cap === 0 && m.CE_M5_lexicon_hits === 0,
+};
+/** Rows that must FAIL at least one bar, or the battery cannot see what they stand for (§8.3; X7). */
+const MUST_FAIL = ["mut_vc2_partial_as_full", "mut_vc4_game_full_weight", "quiz_bot", "samjha", "lecture", "why_every_turn", "gamer"];
+/**
+ * Why `engine` and `live` may differ by more than 0.03 (macro accuracy, final). A divergence with no entry here FAILS
+ * the run: the published engine number must never drift from the deployed one silently.
+ */
+const DIVERGENCE_REASONS = {
+  bkt2: "live poses 6 of 36 shapes (LIVE_PROBE_SHAPES: why-class only; R-CATCH / predict / transfer shapes need graders the live lane lacks), real kits carry none of characterView/myth/counterfactual/instances/representations/weaveHosts/solver, kit error-spot and most transfer answers are llm-graded with no span (no U/T), and woven sub-steps have no host item. Closing it is W3-A (code-graded R-CATCH, verbal-fair grading) and W3-B (kit fields, CMP probes).",
+  cfrag: "same causes as bkt2 (live shape subset, kit fields absent, llm-graded kit items carry no U/T, no woven hosting); W3-A and W3-B close it.",
+};
+let runFails = false;
+result.headline = { policy: "live", note: "THE comprehension number: the deployed configuration; engine is the spec configuration", families: {} };
+result.battery = {};
+for (const [fam, { policies: P }] of Object.entries(result.families)) {
+  const failed = (m) => Object.entries(BARS).filter(([, ok]) => !ok(m)).map(([k]) => k);
+  for (const [name, m] of Object.entries(P)) {
+    m.bars_failed = failed(m);
+    if (P.oracle?.CE_M1_macro_acc_final) m.frac_of_oracle = r3(m.CE_M1_macro_acc_final / P.oracle.CE_M1_macro_acc_final);
+  }
+  const must = MUST_FAIL.filter((k) => P[k]).map((k) => ({ policy: k, bars_failed: P[k].bars_failed, fails_any: P[k].bars_failed.length > 0, fails_CE_M3: P[k].bars_failed.includes("CE_M3") }));
+  // Differential check: a bar the reference ALSO fails says nothing about the mutant. The mutant must be worse than its
+  // own reference by ≥ 0.02 on false mastery, macro accuracy, or the truth type its bug inflates (not_yet / shallow).
+  const REFERENCE = { mut_vc2_partial_as_full: "engine", mut_vc4_game_full_weight: "engine_game_exploit" };
+  const diff = Object.entries(REFERENCE).filter(([m, ref]) => P[m] && P[ref]).map(([m, ref]) => {
+    const a = P[m], b = P[ref];
+    const d = { false_mastery: r3(a.CE_M3_false_mastery - b.CE_M3_false_mastery), macro_acc: r3(b.CE_M1_macro_acc_final - a.CE_M1_macro_acc_final),
+      not_yet_acc: r3((b.by_type.not_yet.acc_final ?? 0) - (a.by_type.not_yet.acc_final ?? 0)), shallow_acc: r3((b.by_type.shallow.acc_final ?? 0) - (a.by_type.shallow.acc_final ?? 0)) };
+    return { mutant: m, reference: ref, worse_by: d, seen: Object.values(d).some((x) => x >= 0.02) };
+  });
+  result.battery[fam] = { valid: must.every((x) => x.fails_any), must_fail: must, differential: diff, differential_valid: diff.every((x) => x.seen) };
+  for (const x of diff) console.log(`${fam} ${x.mutant} vs ${x.reference}: worse by ${JSON.stringify(x.worse_by)} → ${x.seen ? "SEEN" : "NOT SEEN"}`);
+  if (must.length) console.log(`${fam} battery ${result.battery[fam].valid ? "VALID" : "INVALID"}: ${must.map((x) => `${x.policy} fails [${x.bars_failed.join(",") || "none"}]`).join(" · ")}`);
+  if (P.live) {
+    result.headline.families[fam] = { macro_acc_final: P.live.CE_M1_macro_acc_final, macro_acc_after3: P.live.CE_M1_macro_acc_after3, understood_found: P.live.CE_M2_understood_detected_final,
+      false_mastery: P.live.CE_M3_false_mastery, verbal_gap_pp: P.live.CE_M4_missed_understanding_verbal_gap_pp, settle_rate: P.live.held_settle_rate, frac_of_oracle: P.live.frac_of_oracle ?? null };
+    console.log(`HEADLINE ${fam} live: acc ${P.live.CE_M1_macro_acc_final} · understood found ${P.live.CE_M2_understood_detected_final} · false-mastery ${P.live.CE_M3_false_mastery} · verbal gap ${P.live.CE_M4_missed_understanding_verbal_gap_pp}pp · settle ${P.live.held_settle_rate}${P.live.frac_of_oracle ? ` · ${P.live.frac_of_oracle} of oracle` : ""}`);
+  }
+  if (P.live && P.engine) {
+    const gap = Math.abs(P.engine.CE_M1_macro_acc_final - P.live.CE_M1_macro_acc_final);
+    const reason = gap > 0.03 ? DIVERGENCE_REASONS[fam] ?? null : null;
+    (result.divergence ??= {})[fam] = { engine: P.engine.CE_M1_macro_acc_final, live: P.live.CE_M1_macro_acc_final, gap: r3(gap), reason };
+    if (gap > 0.03 && !reason) { runFails = true; console.error(`FAIL ${fam}: engine ${P.engine.CE_M1_macro_acc_final} vs live ${P.live.CE_M1_macro_acc_final} diverge by ${r3(gap)} > 0.03 with no logged reason (DIVERGENCE_REASONS)`); }
+    else if (gap > 0.03) console.log(`${fam} engine-vs-live divergence ${r3(gap)} > 0.03, logged reason: ${reason}`);
+  }
+}
+
 if (LLM) {
   loadEnv();
   const { chat } = await import("../../server/azure.js");
@@ -156,3 +213,4 @@ mkdirSync(dir, { recursive: true });
 const out = opt("--out", null) ?? new URL(`comp-sim-${result.date}${LLM ? "-llm" : ""}.json`, dir).pathname;
 writeFileSync(out, JSON.stringify(result, null, 1) + "\n");
 console.log("wrote", out, `${(result.ms / 1000).toFixed(1)} s`);
+if (runFails) process.exitCode = 1;

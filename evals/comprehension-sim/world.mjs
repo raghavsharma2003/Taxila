@@ -18,9 +18,25 @@ export function concepts() {
     const t = kit(f).topics.find((x) => x.topicId === topicId);
     if (!t) throw new Error(`world: topic ${topicId} missing from ${f}`);
     const sk = t.skills[0];
-    return { id: `c${i + 1}`, topicId, skillId: sk.id, title: sk.title, topicType: t.topicType, subject: f.split("-")[1],
+    const c = { id: `c${i + 1}`, topicId, skillId: sk.id, title: sk.title, topicType: t.topicType, subject: f.split("-")[1],
       expectations: t.expectations.slice(0, 3), misconceptions: t.misconceptions.slice(0, 2).map((m) => ({ id: m.id, belief: m.belief, options: m.diagnostic?.options ?? [] })) };
+    // the REAL kit topic (the `live` policy reads its fields through server/learner/live.js kitInputsOf, and plays its
+    // item kinds); non-enumerable so result files never copy it
+    Object.defineProperty(c, "kit", { value: t, enumerable: false });
+    return c;
   });
+}
+
+/**
+ * Will the production classifier decide this kit item's answer in CODE (an exact / lexical match against the verified
+ * key; classify.js sources exact|lexical) rather than with the model (grader llm, no span → a positive carries no U/T,
+ * E6)? [U] a short answer that is a number, a numeral phrase or one or two words is matchable; a sentence is not.
+ */
+export function codeMatchable(item) {
+  const a = String(Array.isArray(item?.answer) ? item.answer[0] : item?.answer ?? "").trim();
+  if (!a) return false;
+  if (/^[₹\d,.\s/:%-]+$/.test(a)) return true;
+  return a.split(/\s+/).length <= 2 && a.length <= 24;
 }
 
 /** Kit inputs available for every simulated topic (the kits carry expectations, misconceptions + diagnostics, items). */
