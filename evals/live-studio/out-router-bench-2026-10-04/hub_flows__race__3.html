@@ -1,0 +1,106 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8e9;color:#394b3f;font-family:system-ui,sans-serif}
+  .card{width:360px;height:320px;overflow:hidden;background:linear-gradient(#fff8e9,#f4f8df)}
+  h1{height:29px;margin:0;padding:5px 12px 0;text-align:center;font-size:16px;font-weight:800}
+  svg{display:block;width:360px;height:156px}
+  svg text{fill:#405344;font:700 12px system-ui,sans-serif}
+  .controls{height:53px;display:flex;align-items:center;gap:8px;padding:0 10px}
+  button{border:0;border-radius:16px;min-width:52px;min-height:52px;font:700 14px system-ui,sans-serif;cursor:pointer;transition:transform .16s,background .2s}
+  button:active{transform:scale(.92)}
+  .control{background:#dcecc5;color:#315d43;padding:0 12px}
+  [data-caption]{flex:1;text-align:center;font-size:13px;font-weight:700;line-height:1.2}
+  .check{height:82px;padding:0 10px}
+  .question{height:27px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:750}
+  .options{display:flex;gap:7px}
+  .options button{flex:1;background:#fff;border:2px solid #afcfaa;color:#315d43}
+  .options button.chosen{background:#dcecc5}
+  .feedback{position:absolute;left:10px;top:238px;width:340px;text-align:center;pointer-events:none;font-size:13px;font-weight:800;color:#39764c}
+  .flow-dot{transition:opacity .25s}
+  .quiet{opacity:.27}
+  .glow{filter:drop-shadow(0 0 5px #ffc567)}
+</style>
+<div class="card">
+  <h1 id="title"></h1>
+  <svg id="scene" viewBox="0 0 360 156" aria-hidden="true">
+    <ellipse cx="180" cy="140" rx="150" ry="13" fill="#e8edce"/>
+    <g id="flows"></g><g id="figures"></g><g id="labels"></g>
+  </svg>
+  <div class="controls"><button class="control" data-action="play"></button><div data-caption></div><button class="control" data-action="next"></button></div>
+  <div class="check"><div class="question" id="question"></div><div class="options" id="options"></div></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, ns='http://www.w3.org/2000/svg', svg=(tag,attrs,parent)=>{
+    const el=document.createElementNS(ns,tag);
+    Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));
+    parent.appendChild(el);return el;
+  };
+  const flows=document.getElementById('flows'),figures=document.getElementById('figures'),labels=document.getElementById('labels');
+  const putLabel=(key,x,y)=>{const el=svg('text',{'data-label':key,x,y,'text-anchor':'middle'},labels);el.textContent=Studio.t(key)};
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('question').textContent=Studio.t('ask');
+  const hub=svg('path',{d:'M 180 104 C 142 98 137 53 193 43 C 227 62 214 99 180 104 Z',fill:'#75ae63',stroke:'#3f8050','stroke-width':3,'data-entity':p.hub},figures);
+  svg('path',{d:'M 177 105 Q 183 79 199 60',fill:'none',stroke:'#e8f3b6','stroke-width':3},figures);
+  putLabel(p.hub,169,37);
+  p.entities.forEach((key,i)=>{
+    if(i===0){
+      svg('circle',{cx:53,cy:64,r:23,fill:'#ffc763',stroke:'#efa742','stroke-width':3,'data-entity':key},figures);
+      putLabel(key,53,30);
+    }else{
+      svg('path',{d:'M 180 103 L 180 127 M 180 118 Q 160 120 151 139 M 180 119 Q 197 120 207 139 M 177 125 L 170 143 M 184 126 L 190 143',fill:'none',stroke:'#a4744f','stroke-width':6,'stroke-linecap':'round','data-entity':key},figures);
+      putLabel(key,110,146);
+    }
+  });
+  const routes={
+    up_in:{a:[180,130],b:[180,106],label:[225,137],color:'#61b9d5'},
+    in:{a:[302,91],b:[215,80],label:[285,112],color:'#8aafe0'},
+    out:{a:[210,58],b:[304,45],label:[284,32],color:'#e7a5a3'}
+  };
+  const dots=[];
+  p.flows.forEach((f,i)=>{
+    const r=routes[f.dir]||{a:[54,91+i*12],b:[148,80],label:[65,111+i*12],color:'#d6a676'};
+    svg('path',{d:`M ${r.a.join(' ')} L ${r.b.join(' ')}`,stroke:r.color,'stroke-width':3,'stroke-linecap':'round',opacity:.42,fill:'none','data-part':i},flows);
+    for(let j=0;j<4;j++)dots.push({el:svg('circle',{r:4.5,fill:r.color,'data-flow':f.key,'data-part':i,class:'flow-dot'},flows),r,offset:j/4});
+    putLabel(f.key,...r.label);
+  });
+  let playing=true,step=0,phase=0,last=0,finished=false;
+  const play=document.querySelector('[data-action="play"]'),next=document.querySelector('[data-action="next"]'),caption=document.querySelector('[data-caption]');
+  const count=Math.max(1,Math.min(p.steps,3));
+  function show(){
+    play.textContent=Studio.t(playing?'pause':'play');
+    caption.textContent=Studio.t(['step1','step2','step3'][step]);
+    flows.querySelectorAll('[data-part]').forEach(el=>el.classList.toggle('quiet',Number(el.getAttribute('data-part'))!==step));
+    hub.classList.toggle('glow',step===0);
+  }
+  play.addEventListener('click',()=>{playing=!playing;show();Studio.event('play',{playing:playing?1:0})});
+  next.addEventListener('click',()=>{step=(step+1)%count;show();Studio.event('step',{step:step+1})});
+  function animate(t){
+    if(playing&&last)phase+=(t-last)*.00032;
+    last=t;
+    dots.forEach(({el,r,offset})=>{
+      const v=(phase+offset)%1;
+      el.setAttribute('cx',r.a[0]+(r.b[0]-r.a[0])*v);
+      el.setAttribute('cy',r.a[1]+(r.b[1]-r.a[1])*v);
+    });
+    requestAnimationFrame(animate);
+  }
+  p.options.forEach(key=>{
+    const b=document.createElement('button');b.setAttribute('data-option',key);b.textContent=Studio.t(key);
+    b.addEventListener('click',()=>{
+      if(finished)return;
+      document.querySelectorAll('[data-option]').forEach(x=>x.classList.remove('chosen'));
+      b.classList.add('chosen');
+      Studio.answer(key);
+    });
+    document.getElementById('options').appendChild(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    document.getElementById('feedback').textContent=Studio.t(correct?'right':'wrong');
+    if(correct&&!finished){finished=true;Studio.done()}
+  });
+  show();requestAnimationFrame(animate);Studio.ready();
+})();
+
+</script>

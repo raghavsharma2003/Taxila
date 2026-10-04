@@ -1,0 +1,116 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff7e9;color:#554537}
+  .scene{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 50% 42%,#fffdf5 0,#fff7e9 75%);border:3px solid #f5dfc4;border-radius:22px}
+  .title{position:absolute;top:9px;left:18px;font-size:19px;font-weight:800;color:#805b49}
+  .ask{position:absolute;top:39px;left:18px;right:18px;min-height:27px;font-size:16px;font-weight:700;color:#675448}
+  .status{position:absolute;top:9px;right:16px;max-width:165px;text-align:right;font-size:14px;font-weight:800;color:#477c54}
+  svg{position:absolute;left:0;top:67px;width:354px;height:247px}
+  [data-part]{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .18s ease,filter .25s ease}
+  [data-part]:active{transform:scale(.94)}
+  [data-part].picked{animation:bloom .5s ease-in-out 2;filter:drop-shadow(0 0 9px #ffd25d)}
+  [data-part].retry{animation:wiggle .35s ease}
+  .hit{fill:transparent}
+  .leaders{fill:none;stroke:#b99b7d;stroke-width:1.6;stroke-linecap:round;pointer-events:none}
+  .names{fill:#665449;font-size:15px;font-weight:700;pointer-events:none}
+  @keyframes bloom{50%{transform:scale(1.1)}}
+  @keyframes wiggle{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+</style>
+<div class="scene">
+  <div class="title" id="title"></div>
+  <div class="ask" data-ask></div>
+  <div class="status" id="status" aria-live="polite"></div>
+  <svg viewBox="0 0 354 247" role="img">
+    <path d="M117 224 Q174 232 239 223 L239 247 L117 247Z" fill="#f2dfc0"/>
+    <g data-part="petal">
+      <rect class="hit" x="108" y="5" width="113" height="64"/>
+      <ellipse cx="163" cy="36" rx="24" ry="34" fill="#f29a9e" transform="rotate(-35 163 36)"/>
+      <ellipse cx="191" cy="33" rx="23" ry="33" fill="#f7b0a6" transform="rotate(32 191 33)"/>
+      <ellipse cx="132" cy="52" rx="24" ry="29" fill="#f5a4a6" transform="rotate(-64 132 52)"/>
+      <ellipse cx="210" cy="52" rx="24" ry="29" fill="#ee919b" transform="rotate(63 210 52)"/>
+      <ellipse cx="172" cy="57" rx="28" ry="22" fill="#f7b5a9"/>
+    </g>
+    <g data-part="centre">
+      <rect class="hit" x="145" y="50" width="56" height="56"/>
+      <circle cx="173" cy="76" r="22" fill="#f6c568" stroke="#dfaa4e" stroke-width="2"/>
+      <circle cx="166" cy="71" r="2" fill="#a87536"/><circle cx="180" cy="70" r="2" fill="#a87536"/>
+      <path d="M167 83 Q173 89 180 82" fill="none" stroke="#a87536" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <g data-part="stem">
+      <rect class="hit" x="146" y="102" width="56" height="88"/>
+      <path d="M173 99 Q180 151 173 201" fill="none" stroke="#568f57" stroke-width="15" stroke-linecap="round"/>
+      <path d="M169 109 Q175 151 170 185" fill="none" stroke="#81b86d" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g data-part="leaf">
+      <rect class="hit" x="185" y="128" width="68" height="75"/>
+      <path d="M177 180 Q197 130 245 143 Q239 186 177 180Z" fill="#72ad67" stroke="#508b57" stroke-width="2"/>
+      <path d="M181 178 Q211 158 239 147" fill="none" stroke="#b0d18a" stroke-width="2"/>
+    </g>
+    <g data-part="root">
+      <rect class="hit" x="137" y="185" width="76" height="60"/>
+      <path d="M173 190 L171 218 M171 211 Q153 218 148 240 M171 210 Q190 217 199 239 M171 222 Q177 231 177 242" fill="none" stroke="#a87650" stroke-width="7" stroke-linecap="round"/>
+      <path d="M151 232 L143 235 M196 231 L207 234" fill="none" stroke="#a87650" stroke-width="4" stroke-linecap="round"/>
+    </g>
+    <g class="leaders">
+      <path d="M212 25 L228 22"/>
+      <path d="M146 79 L157 77"/>
+      <path d="M135 145 L160 145"/>
+      <path d="M235 168 L257 168"/>
+      <path d="M132 220 L150 220"/>
+    </g>
+    <g class="names">
+      <text data-label="petal" x="232" y="26"></text>
+      <text data-label="centre" x="94" y="84"></text>
+      <text data-label="stem" x="92" y="150"></text>
+      <text data-label="leaf" x="261" y="173"></text>
+      <text data-label="root" x="94" y="225"></text>
+    </g>
+  </svg>
+</div>
+<script>
+
+(() => {
+  const p = Studio.params;
+  const parts = Array.from(document.querySelectorAll('[data-part]'));
+  const status = document.getElementById('status');
+  let waiting = false, finished = false, selected = null;
+  document.getElementById('title').textContent = Studio.t('title');
+  document.querySelector('[data-ask]').textContent = Studio.t('ask');
+  document.querySelectorAll('[data-label]').forEach(label => {
+    const key = label.getAttribute('data-label');
+    if (p.parts.includes(key)) label.textContent = Studio.t(key);
+    else label.style.display = 'none';
+  });
+  parts.forEach(shape => {
+    const key = shape.getAttribute('data-part');
+    if (!p.parts.includes(key)) { shape.style.display = 'none'; return; }
+    shape.addEventListener('click', () => {
+      if (waiting || finished) return;
+      selected = shape;
+      waiting = true;
+      Studio.event('part_tap', {part:key});
+      Studio.answer(key);
+    });
+  });
+  Studio.onVerdict(({correct}) => {
+    if (!waiting || !selected) return;
+    waiting = false;
+    selected.classList.remove('retry', 'picked');
+    void selected.getBoundingClientRect();
+    if (correct) {
+      finished = true;
+      selected.classList.add('picked');
+      status.textContent = Studio.t('right');
+      window.setTimeout(() => {
+        status.textContent = Studio.t('done');
+        Studio.done();
+      }, 700);
+    } else {
+      selected.classList.add('retry');
+      status.textContent = Studio.t('wrong');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

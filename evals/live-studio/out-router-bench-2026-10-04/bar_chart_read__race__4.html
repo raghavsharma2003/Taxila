@@ -1,0 +1,109 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e9;font-family:system-ui,sans-serif;color:#493a32}
+  .card{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(155deg,#fffaf0,#ffefdb)}
+  h1{margin:12px 16px 2px;font-size:20px;line-height:26px;font-weight:750}
+  .ask{margin:0 16px;font-size:15px;line-height:23px;font-weight:600}
+  svg{position:absolute;top:68px;left:0;display:block;width:360px;height:205px}
+  .grid{stroke:#e5d8c7;stroke-width:1}
+  .axis{stroke:#927b6a;stroke-width:1.5}
+  .tick,.name,.axis-name{fill:#68574d;font-family:system-ui,sans-serif}
+  .tick{font-size:11px;text-anchor:end;dominant-baseline:middle}
+  .name{font-size:11px;text-anchor:middle;font-weight:650}
+  .axis-name{font-size:11px;text-anchor:middle}
+  .bar{fill:#e58b68;rx:8;transform-box:fill-box;transform-origin:center bottom;transform:scaleY(0);transition:transform .72s cubic-bezier(.22,1.25,.45,1)}
+  .grown .bar{transform:scaleY(1)}
+  .column{cursor:pointer}
+  .column:active .bar{filter:brightness(1.12)}
+  .hit{fill:transparent}
+  .feedback{position:absolute;left:16px;right:16px;bottom:7px;height:28px;margin:0;text-align:center;font-size:16px;line-height:28px;font-weight:750;color:#a65342}
+  .feedback.good{color:#527c58}
+  .feedback.pop{animation:pop .3s ease-out}
+  @keyframes pop{from{transform:scale(.86);opacity:.4}to{transform:scale(1);opacity:1}}
+</style>
+<div class="card">
+  <h1 id="title"></h1>
+  <p class="ask" id="ask"></p>
+  <svg id="chart" viewBox="0 0 360 205" role="img">
+    <g id="lines"></g>
+    <g id="columns"></g>
+  </svg>
+  <p class="feedback" id="feedback" aria-live="polite"></p>
+</div>
+<script>
+
+(() => {
+  const data = Studio.params.data;
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const make = (tag, attrs, parent) => {
+    const el = document.createElementNS(svgNS, tag);
+    for (const [key, value] of Object.entries(attrs)) el.setAttribute(key, String(value));
+    parent.appendChild(el);
+    return el;
+  };
+
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('ask').textContent = Studio.t('ask');
+
+  const lines = document.getElementById('lines');
+  const columns = document.getElementById('columns');
+  const max = Math.max(...data.map(item => item.value));
+  const rough = max / 6;
+  const magnitude = 10 ** Math.floor(Math.log10(rough || 1));
+  const step = [1, 2, 5, 10].map(n => n * magnitude).find(n => n >= rough);
+  const ceiling = Math.ceil(max / step) * step;
+  const baseline = 159;
+  const top = 15;
+  const plotHeight = baseline - top;
+  const y = value => baseline - value / ceiling * plotHeight;
+
+  for (let value = 0; value <= ceiling; value += step) {
+    const yy = y(value);
+    make('line', {x1:49,y1:yy,x2:347,y2:yy,class:value === 0 ? 'axis' : 'grid'}, lines);
+    const tick = make('text', {x:42,y:yy,'data-tick':value,class:'tick'}, lines);
+    tick.textContent = value;
+  }
+
+  const axisName = make('text', {x:12,y:86,transform:'rotate(-90 12 86)',class:'axis-name'}, lines);
+  axisName.textContent = Studio.t('yaxis');
+
+  const width = 298 / data.length;
+  let finished = false;
+  data.forEach((item, index) => {
+    const center = 49 + width * (index + .5);
+    const group = make('g', {class:'column','data-column':item.key}, columns);
+    make('rect', {
+      x:center-16,y:y(item.value),width:32,height:baseline-y(item.value),
+      class:'bar','data-bar':item.key,'data-value':item.value
+    }, group);
+    const label = make('text', {x:center,y:183,class:'name'}, group);
+    label.textContent = Studio.t(item.key);
+    make('rect', {x:center-width/2,y:top,width:width,height:184,class:'hit'}, group);
+    group.addEventListener('click', () => {
+      if (!finished) Studio.answer(item.key);
+    });
+  });
+
+  const feedback = document.getElementById('feedback');
+  Studio.onVerdict(({correct}) => {
+    feedback.textContent = Studio.t(correct ? 'right' : 'wrong');
+    feedback.classList.toggle('good', correct);
+    feedback.classList.remove('pop');
+    void feedback.offsetWidth;
+    feedback.classList.add('pop');
+    if (correct && !finished) {
+      finished = true;
+      setTimeout(() => {
+        feedback.textContent = Studio.t('done');
+        Studio.done();
+      }, 650);
+    }
+  });
+
+  requestAnimationFrame(() => {
+    document.getElementById('chart').classList.add('grown');
+    Studio.ready();
+  });
+})();
+
+</script>

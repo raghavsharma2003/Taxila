@@ -59,7 +59,7 @@ export function validateAnnotation(json, n, mp) {
     if (!r || !EMOTIONS.includes(r.emotion) || !PACES.includes(r.pace) || !PAUSES.map(String).includes(String(r.pause_before))) return null;
     const lo = Math.min(mp.sentencePause[0], mp.commaPause[0]), hi = Math.max(mp.sentencePause[1], mp.lastPause?.[1] ?? 0) * 1.25;
     out.push({ emotion: mp.register === "safety" ? "calm" : allowed.has(r.emotion) ? r.emotion : mp.arc[Math.min(i, 2)],
-      pace: mp.register === "safety" ? "slow" : r.pace, pauseBeforeMs: i === 0 ? 0 : Math.round(Math.max(lo, Math.min(hi, Number(r.pause_before)))) });
+      pace: mp.register === "safety" ? "slow" : r.pace, pauseBeforeMs: i === 0 ? 0 : Math.floor(Math.max(lo, Math.min(hi, Number(r.pause_before)))) });
   }
   return out;
 }

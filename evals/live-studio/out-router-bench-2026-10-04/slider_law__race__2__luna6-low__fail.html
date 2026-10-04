@@ -1,0 +1,49 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#3b3027;background:#fff8ec}
+#app{width:360px;height:320px;padding:4px 10px;display:flex;flex-direction:column;gap:3px}
+header{height:28px;flex:none;display:flex;align-items:center;justify-content:center;color:#684b31;font-size:18px;font-weight:800}
+#scene{height:160px;flex:none;position:relative;overflow:hidden;border:2px solid #ead8ba;border-radius:18px;background:linear-gradient(#f8efdd,#fffaf0)}
+#readout{position:absolute;z-index:2;top:7px;left:10px;display:flex;gap:14px;font-size:16px;font-weight:750}
+#picture{position:absolute;bottom:0;left:50%;width:58px;transform:translateX(-50%);border-radius:12px 12px 0 0;background:linear-gradient(90deg,#e7934e,#ffc06e 48%,#e7934e);box-shadow:0 0 0 3px #fff1d8 inset;transition:height .35s cubic-bezier(.2,.8,.2,1)}
+#picture:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(to bottom,transparent 0 18px,#fff4dc 18px 21px)}
+#controls{height:52px;flex:none;display:flex;gap:8px}
+button{font:inherit;border:0;border-radius:15px;background:#f0d8b5;color:#563d2c;font-size:17px;font-weight:750;cursor:pointer;touch-action:manipulation;transition:transform .12s,background .2s}
+button:active{transform:scale(.94)}
+#controls button{flex:1}
+#controls button:last-child{background:#e9a45d;color:#fff}
+#prompt{height:22px;flex:none;text-align:center;font-size:15px;font-weight:750;color:#684b31;display:flex;align-items:center;justify-content:center;gap:5px}
+#options{height:52px;flex:none;display:flex;gap:8px}
+#options button{flex:1;background:#fff;border:2px solid #e7c99f;font-size:18px}
+#options button.selected{background:#e9a45d;color:#fff;border-color:#e9a45d}
+#feedback{height:20px;flex:none;text-align:center;font-size:14px;font-weight:750;color:#684b31}
+</style>
+<div id="app">
+  <header id="title"></header>
+  <section id="scene">
+    <div id="readout"><span id="xread"></span><span id="yread" data-output></span></div>
+    <div id="picture" data-visual data-dim="h"></div>
+  </section>
+  <div id="controls">
+    <button id="dec" data-action="dec"></button>
+    <button id="inc" data-action="inc"></button>
+  </div>
+  <div id="prompt"><span id="asktext"></span><span id="askx"></span></div>
+  <div id="options"></div>
+  <div id="feedback"></div>
+</div>
+<script>
+
+(()=>{const p=Studio.params, t=Studio.t, xcfg=p.x, law=p.law, units=p.y.unitsPer;let x=xcfg.start, finished=false;
+const el=id=>document.getElementById(id), clean=n=>String(Number(Number(n).toFixed(10))), value=()=>law.k*x+law.b;
+el("title").textContent=t("title");el("dec").textContent=t("less");el("inc").textContent=t("more");el("asktext").textContent=t("ask");el("askx").textContent=clean(p.ask.x);
+const options=el("options");
+p.ask.options.forEach(n=>{const b=document.createElement("button");b.type="button";b.dataset.option=String(n);b.textContent=String(n);b.addEventListener("click",()=>{if(finished)return;options.querySelectorAll("button").forEach(q=>q.classList.remove("selected"));b.classList.add("selected");Studio.answer({value:n})});options.appendChild(b)});
+function render(){const y=value(), yr=clean(y);el("xread").textContent=t("xname")+" "+clean(x);const out=el("yread);out.textContent=t("yname")+" "+yr;out.dataset.value=yr;el("xread").dataset.x=clean(x);el("picture").style.height=(y*units)+"px";el("dec").disabled=x<=xcfg.min;el("inc").disabled=x>=xcfg.max}
+el("dec").addEventListener("click",()=>{if(x>xcfg.min){x=Math.max(xcfg.min,x-xcfg.step);render();Studio.event("change",{x})}});
+el("inc").addEventListener("click",()=>{if(x<xcfg.max){x=Math.min(xcfg.max,x+xcfg.step);render();Studio.event("change",{x})}});
+Studio.onVerdict(({correct})=>{el("feedback").textContent=correct?t("right"):t("wrong");if(correct&&!finished){finished=true;el("feedback").textContent=t("done");Studio.done()}});
+render();Studio.ready()})();
+
+</script>

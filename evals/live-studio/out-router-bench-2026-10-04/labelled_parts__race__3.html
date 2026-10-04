@@ -1,0 +1,95 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{background:#fff8e9;color:#344d3c;font-family:system-ui,sans-serif}
+.scene{width:360px;height:320px;padding:10px 12px;display:flex;flex-direction:column;align-items:center}
+h1{height:25px;line-height:25px;margin:0 0 4px;font-size:17px;font-weight:750;color:#375d45}
+.question{height:42px;width:336px;padding:8px 12px;border-radius:14px;background:#f4e8cc;text-align:center;font-size:14px;line-height:20px;color:#614f36}
+svg{display:block;width:336px;height:212px;margin-top:5px}
+.part{cursor:pointer;transition:filter .22s ease,transform .18s ease;transform-box:fill-box;transform-origin:center}
+.part:active{transform:scale(.95)}
+.part.glow{filter:drop-shadow(0 0 8px #ffca45);animation:bloom .65s ease-out}
+.label{font:600 12px system-ui,sans-serif;fill:#4e5d49}
+.leader{stroke:#8c9d80;stroke-width:1.5;stroke-linecap:round}
+.feedback{height:23px;margin-top:0;font-size:14px;font-weight:700;color:#54764c;text-align:center}
+@keyframes bloom{50%{transform:scale(1.12)}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.part,.part.glow{animation:none;transition:none}}
+</style>
+<main class="scene">
+  <h1 id="title"></h1>
+  <div class="question" id="question" data-ask></div>
+  <svg viewBox="0 0 336 212" aria-hidden="true">
+    <g class="part" id="petal" tabindex="0">
+      <rect x="45" y="15" width="58" height="58" rx="22" fill="transparent"/>
+      <ellipse cx="74" cy="43" rx="19" ry="25" fill="#f4a44d"/>
+    </g>
+    <g class="part" id="centre" tabindex="0">
+      <rect x="119" y="15" width="58" height="58" rx="22" fill="transparent"/>
+      <circle cx="148" cy="44" r="22" fill="#805b35"/>
+      <circle cx="142" cy="39" r="2.5" fill="#f3d17a"/><circle cx="153" cy="46" r="2.5" fill="#f3d17a"/>
+    </g>
+    <g class="part" id="stem" tabindex="0">
+      <rect x="119" y="82" width="58" height="60" rx="18" fill="transparent"/>
+      <path d="M143 76Q149 107 144 139Q148 145 153 139Q150 107 155 76Z" fill="#538b50"/>
+    </g>
+    <g class="part" id="leaf" tabindex="0">
+      <rect x="205" y="83" width="62" height="58" rx="22" fill="transparent"/>
+      <path d="M211 114Q230 86 260 103Q251 132 211 114Z" fill="#69a85e"/>
+      <path d="M215 113Q235 112 255 104" fill="none" stroke="#d8edaa" stroke-width="2"/>
+    </g>
+    <g class="part" id="root" tabindex="0">
+      <rect x="119" y="150" width="58" height="58" rx="18" fill="transparent"/>
+      <path d="M148 141Q140 161 133 188M148 143Q149 169 146 199M152 143Q163 162 169 188M143 162L132 175M151 168L163 180" fill="none" stroke="#9b7148" stroke-width="6" stroke-linecap="round"/>
+    </g>
+    <g fill="none">
+      <path class="leader" d="M45 42L66 43"/>
+      <path class="leader" d="M177 43L148 44"/>
+      <path class="leader" d="M119 111L143 111"/>
+      <path class="leader" d="M267 112L249 112"/>
+      <path class="leader" d="M177 179L158 179"/>
+    </g>
+    <g id="labels">
+      <text class="label" x="4" y="46"></text>
+      <text class="label" x="181" y="47"></text>
+      <text class="label" x="77" y="115"></text>
+      <text class="label" x="271" y="116"></text>
+      <text class="label" x="181" y="183"></text>
+    </g>
+  </svg>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(function(){
+  const keys=Studio.params.parts;
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("question").textContent=Studio.t("ask");
+  const labels=[...document.querySelectorAll("#labels text")];
+  let completed=false;
+  keys.forEach((key,i)=>{
+    const label=labels[i];
+    label.textContent=Studio.t(key);
+    label.setAttribute("data-label",key);
+    const target=document.getElementById(key);
+    if(!target)return;
+    target.setAttribute("data-part",key);
+    target.addEventListener("click",()=>{
+      if(completed)return;
+      Studio.event("tap",{part:key});
+      Studio.answer(key);
+      Studio.onVerdict(({correct})=>{
+        const feedback=document.getElementById("feedback");
+        feedback.textContent=Studio.t(correct?"right":"wrong");
+        if(correct&&!completed){
+          completed=true;
+          target.classList.add("glow");
+          feedback.textContent=Studio.t("done");
+          Studio.done();
+        }
+      });
+    });
+  });
+  Studio.ready();
+})();
+
+</script>

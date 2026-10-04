@@ -1,0 +1,87 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;font-family:system-ui,sans-serif;color:#694632}
+  .board{width:360px;height:320px;padding:16px;display:flex;flex-direction:column;align-items:center;background:radial-gradient(circle at 92% 8%,#ffe5b9 0 18%,transparent 19%),#fff8ed}
+  h1{margin:0;width:100%;font-size:21px;line-height:26px;text-align:center}
+  .instr{margin:5px 0 0;min-height:35px;max-width:315px;text-align:center;font-size:14px;line-height:17px}
+  .tray,.track{width:100%;display:flex;justify-content:center;align-items:center;gap:9px}
+  .tray{min-height:76px;margin-top:10px}
+  .track{min-height:92px;margin-top:14px}
+  .card{min-width:52px;min-height:58px;max-width:105px;flex:1;border:2px solid #db9270;border-radius:16px;background:#ffdfb0;color:#694632;font:700 16px/1.15 system-ui,sans-serif;box-shadow:0 5px 0 #e9b781;cursor:pointer;overflow-wrap:anywhere;padding:6px;transition:transform .22s,box-shadow .22s,background .22s}
+  .card:active{transform:scale(.93);box-shadow:0 2px 0 #e9b781}
+  .card:focus-visible{outline:3px solid #6657a5;outline-offset:2px}
+  .slot{position:relative;min-width:52px;height:82px;max-width:105px;flex:1;border:2px dashed #cca98e;border-radius:18px;background:#fff2dc;display:flex;align-items:flex-end;justify-content:center;padding:4px}
+  .slot .num{position:absolute;top:4px;left:0;right:0;text-align:center;font-size:13px;font-weight:800;color:#966b52}
+  .slot .card{min-height:52px;width:100%;flex:none;background:#d9ead6;border-color:#81ad88;box-shadow:none;cursor:default;animation:land .36s ease-out}
+  .slot.filled{border-style:solid;border-color:#a8c9a4}
+  .feedback{min-height:27px;margin-top:auto;margin-bottom:9px;text-align:center;font-size:17px;font-weight:750;color:#7a7350}
+  .shake{animation:shake .36s ease-in-out}
+  .pulse{animation:pulse .4s ease-out}
+  @keyframes shake{25%{transform:translateX(-5px) rotate(-2deg)}50%{transform:translateX(5px) rotate(2deg)}75%{transform:translateX(-3px)}}
+  @keyframes land{from{transform:translateY(-18px) scale(1.08);opacity:.5}to{transform:translateY(0) scale(1);opacity:1}}
+  @keyframes pulse{50%{transform:scale(1.08)}}
+</style>
+<main class="board">
+  <h1 id="title"></h1>
+  <div class="instr" id="instr"></div>
+  <div class="tray" id="tray"></div>
+  <div class="track" id="track"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+  const shown=Studio.params.shown;
+  const tray=document.getElementById('tray');
+  const track=document.getElementById('track');
+  const feedback=document.getElementById('feedback');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  let placed=0,pending=null;
+  shown.forEach((key,index)=>{
+    const card=document.createElement('button');
+    card.type='button';
+    card.className='card';
+    card.dataset.step=key;
+    card.textContent=Studio.t(key);
+    card.addEventListener('click',()=>{
+      if(pending!==null||card.hasAttribute('data-placed'))return;
+      pending=card;
+      Studio.answer({key});
+    });
+    tray.appendChild(card);
+    const slot=document.createElement('div');
+    slot.className='slot';
+    const num=document.createElement('span');
+    num.className='num';
+    num.textContent=String(index+1);
+    slot.appendChild(num);
+    track.appendChild(slot);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    const card=pending;
+    pending=null;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.classList.remove('pulse');
+    void feedback.offsetWidth;
+    feedback.classList.add('pulse');
+    if(correct){
+      placed++;
+      card.dataset.placed=String(placed);
+      card.disabled=true;
+      const slot=track.children[placed-1];
+      slot.classList.add('filled');
+      slot.appendChild(card);
+      if(placed===shown.length){
+        feedback.textContent=Studio.t('done');
+        Studio.done();
+      }
+    }else{
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+    }
+  });
+  Studio.ready();
+
+</script>

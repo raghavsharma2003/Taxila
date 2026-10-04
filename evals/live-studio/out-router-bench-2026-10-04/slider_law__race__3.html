@@ -1,0 +1,86 @@
+<style>
+  *{box-sizing:border-box}
+  #activity{width:360px;height:320px;overflow:hidden;position:relative;background:#fff8ed;color:#493b35;font-family:system-ui,sans-serif;border-radius:18px}
+  .title{position:absolute;top:10px;left:18px;right:18px;font-size:19px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .scene{position:absolute;top:43px;left:14px;width:332px;height:112px;background:#f9e8d5;border-radius:20px;overflow:hidden}
+  .scene svg{position:absolute;inset:0}
+  .readings{position:absolute;top:11px;right:13px;display:grid;gap:6px;text-align:right;font-size:15px;font-weight:700}
+  .reading{background:#fffaf2e8;border-radius:11px;padding:3px 9px}
+  .bar{position:absolute;left:24px;bottom:22px;height:28px;width:0;background:#e77d5a;border-radius:7px 13px 13px 7px;box-shadow:0 5px 0 #bf6049;transition:width .38s cubic-bezier(.2,.9,.3,1.15)}
+  .bar:after{content:"";position:absolute;right:7px;top:7px;width:8px;height:8px;border-radius:50%;background:#ffe7ae}
+  .controls{position:absolute;top:165px;left:14px;right:14px;display:flex;gap:12px}
+  button{border:0;font:700 16px system-ui,sans-serif;cursor:pointer;touch-action:manipulation;transition:transform .16s,background .2s;min-height:52px}
+  button:active{transform:scale(.93)}
+  .control{flex:1;border-radius:16px;background:#f4c895;color:#493b35}
+  .control:disabled{opacity:.45;cursor:default}
+  .question{position:absolute;top:226px;left:17px;right:17px;height:27px;font-size:16px;font-weight:700;display:flex;align-items:center;gap:7px}
+  .question strong{color:#b65c43}
+  .options{position:absolute;top:260px;left:14px;right:14px;display:flex;gap:10px}
+  .option{flex:1;border-radius:16px;background:#fff;border:2px solid #eabf9f;color:#493b35;font-size:20px}
+  .option.chosen{background:#f4c895;transform:scale(.96)}
+  .option.correct{background:#bfe4b5;border-color:#70ae78}
+  .message{color:#a34d39}
+</style>
+<div id="activity">
+  <div class="title" id="title"></div>
+  <div class="scene">
+    <svg viewBox="0 0 332 112" aria-hidden="true"><circle cx="41" cy="25" r="13" fill="#ffe0a2"/><path d="M0 89 Q75 70 145 88 T332 83 V112 H0Z" fill="#d9e8bd"/><path d="M13 91 H207" stroke="#a47965" stroke-width="3" stroke-linecap="round"/></svg>
+    <div class="bar" data-visual data-dim="w"></div>
+    <div class="readings"><div class="reading"><span id="xname"></span> <span data-x></span></div><div class="reading"><span id="yname"></span> <span data-output></span></div></div>
+  </div>
+  <div class="controls"><button class="control" data-action="dec" type="button"></button><button class="control" data-action="inc" type="button"></button></div>
+  <div class="question"><span id="ask"></span> <strong id="askX"></strong><span class="message" id="message" aria-live="polite"></span></div>
+  <div class="options" id="options"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, root=document.getElementById('activity');
+  const one=s=>root.querySelector(s);
+  const text=(s,k)=>{one(s).textContent=Studio.t(k)};
+  const neat=n=>Number(n.toPrecision(12)).toString();
+  text('#title','title');text('#xname','xname');text('#yname','yname');
+  text('[data-action="dec"]','less');text('[data-action="inc"]','more');text('#ask','ask');
+  one('#askX').textContent=neat(p.ask.x);
+  let x=p.x.start, finished=false;
+  function render(){
+    const y=p.law.k*x+p.law.b;
+    one('[data-x]').textContent=neat(x);
+    one('[data-x]').dataset.x=neat(x);
+    one('[data-output]').textContent=neat(y);
+    one('[data-output]').dataset.value=neat(y);
+    one('[data-visual]').style.width=neat(y*p.y.unitsPer)+'px';
+    one('[data-action="dec"]').disabled=x-p.x.step<p.x.min;
+    one('[data-action="inc"]').disabled=x+p.x.step>p.x.max;
+  }
+  for(const [action,delta] of [['dec',-1],['inc',1]]){
+    one('[data-action="'+action+'"]').addEventListener('click',()=>{
+      const next=x+delta*p.x.step;
+      if(next<p.x.min||next>p.x.max)return;
+      x=Number(next.toPrecision(12));render();
+      Studio.event('change',{x:neat(x)});
+    });
+  }
+  p.ask.options.forEach(value=>{
+    const b=document.createElement('button');
+    b.type='button';b.className='option';b.dataset.option=neat(value);b.textContent=neat(value);
+    b.addEventListener('click',()=>{
+      if(finished)return;
+      root.querySelectorAll('.option').forEach(el=>el.classList.remove('chosen'));
+      b.classList.add('chosen');
+      Studio.answer({value});
+    });
+    one('#options').appendChild(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    one('#message').textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      finished=true;
+      one('.option.chosen')?.classList.add('correct');
+      Studio.done();
+    }
+  });
+  render();Studio.ready();
+})();
+
+</script>

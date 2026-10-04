@@ -1,0 +1,97 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ec;color:#594536}
+  .card{width:360px;height:320px;padding:14px 16px;background:radial-gradient(circle at 90% 8%,#ffe7bd 0,transparent 33%),#fff8ec}
+  h1{margin:0;font-size:20px;line-height:27px;font-weight:800;color:#744a38}
+  .ask{min-height:29px;margin:3px 0 5px;font-size:15px;font-weight:650}
+  .rows{display:flex;flex-direction:column;gap:7px}
+  .row{width:100%;min-height:58px;border:2px solid #efdcc8;border-radius:17px;background:#fffdf8;display:flex;align-items:center;padding:5px 9px;text-align:left;color:inherit;cursor:pointer;transition:transform .18s,border-color .18s,background .18s,box-shadow .18s}
+  .row:active{transform:scale(.97)}
+  .row:focus-visible{outline:3px solid #d57d56;outline-offset:2px}
+  .row.chosen{border-color:#dc9067;background:#fff0df;box-shadow:0 3px 0 #edc8aa}
+  .name{width:58px;flex:none;font-size:16px;font-weight:750}
+  .symbols{display:flex;align-items:center;gap:4px;min-width:0}
+  [data-symbol]{display:block;width:25px;height:25px;flex:none;animation:pop .42s both}
+  @keyframes pop{from{transform:scale(.55) rotate(-15deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+  .bottom{display:flex;align-items:center;justify-content:space-between;gap:7px;margin-top:9px;min-height:39px}
+  [data-key]{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:14px;background:#f9ead3;font-size:13px;font-weight:700;white-space:nowrap}
+  [data-key] [data-symbol]{width:23px;height:23px}
+  .feedback{flex:1;text-align:right;font-size:14px;font-weight:800;color:#ad6045}
+  .feedback.good{color:#487e61}
+</style>
+<main class="card">
+  <h1 id="title"></h1>
+  <div class="ask" id="ask"></div>
+  <div class="rows" id="rows"></div>
+  <div class="bottom">
+    <div data-key id="key"></div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+  </div>
+</main>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const title=document.getElementById('title');
+  const ask=document.getElementById('ask');
+  const rows=document.getElementById('rows');
+  const key=document.getElementById('key');
+  const feedback=document.getElementById('feedback');
+  title.textContent=Studio.t('title');
+  ask.textContent=Studio.t('ask');
+  const symbol=()=>{
+    const s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    s.setAttribute('viewBox','0 0 32 32');
+    s.setAttribute('data-symbol','');
+    s.setAttribute('aria-hidden','true');
+    const shape=document.createElementNS('http://www.w3.org/2000/svg','path');
+    shape.setAttribute('d','M16 3 C19 9 26 8 28 15 C30 23 23 29 16 29 C9 29 2 23 4 15 C6 8 13 9 16 3Z');
+    shape.setAttribute('fill','#e99a70');
+    shape.setAttribute('stroke','#bd7057');
+    shape.setAttribute('stroke-width','1.5');
+    s.append(shape);
+    const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    dot.setAttribute('cx','12');dot.setAttribute('cy','15');dot.setAttribute('r','2');
+    dot.setAttribute('fill','#fff4df');s.append(dot);
+    return s;
+  };
+  key.append(symbol(),document.createTextNode('= '+String(p.symbolValue)+' '+Studio.t('keytext')));
+  let selected=null,finished=false;
+  p.rows.forEach(row=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='row';
+    button.setAttribute('data-row',row.key);
+    const name=document.createElement('span');
+    name.className='name';
+    name.textContent=Studio.t(row.key);
+    const symbols=document.createElement('span');
+    symbols.className='symbols';
+    for(let i=0;i<row.value/p.symbolValue;i++)symbols.append(symbol());
+    button.append(name,symbols);
+    button.addEventListener('click',()=>{
+      if(finished)return;
+      if(selected)selected.classList.remove('chosen');
+      selected=button;
+      button.classList.add('chosen');
+      feedback.textContent='';
+      feedback.classList.remove('good');
+      Studio.event('row_tap',{row:row.key});
+      Studio.answer(row.key);
+    });
+    rows.append(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(finished)return;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.classList.toggle('good',correct);
+    if(correct){
+      finished=true;
+      feedback.textContent=Studio.t('done');
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

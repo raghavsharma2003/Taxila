@@ -1,0 +1,79 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+#stage{position:relative;width:360px;height:320px;overflow:hidden;background:#fff8eb;color:#49372b;font-family:system-ui,sans-serif}
+#title{position:absolute;left:16px;top:9px;font-size:17px;font-weight:800;color:#68452f}
+#ask{position:absolute;left:16px;top:34px;font-size:14px;font-weight:650;color:#725a48}
+#chart{position:absolute;left:0;top:0;width:360px;height:320px}
+.grid{stroke:#eadfce;stroke-width:1}
+.axis{stroke:#927d68;stroke-width:1.5}
+.ticktext{font-size:10px;fill:#766653;text-anchor:end;dominant-baseline:middle}
+.axislabel{font-size:11px;font-weight:700;fill:#725a48}
+.bar{fill:#eea84b;stroke:#d58b34;stroke-width:1}
+.bar-grow{transform-box:fill-box;transform-origin:center bottom;animation:grow .72s cubic-bezier(.2,.8,.25,1) both}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.namelabel{font-size:10px;font-weight:650;fill:#604c3a;text-anchor:middle}
+.column{position:absolute;top:62px;height:212px;border:0;background:transparent;border-radius:10px;cursor:pointer;padding:0;touch-action:manipulation}
+.column:active{background:#f4d9ad55;transform:scale(.97)}
+.column:focus-visible{outline:3px solid #7f9d6a;outline-offset:-3px}
+#feedback{position:absolute;left:12px;right:12px;bottom:7px;min-height:30px;text-align:center;font-size:13px;font-weight:750;color:#54764d}
+</style>
+<div id="stage">
+  <div id="title"></div>
+  <div id="ask"></div>
+  <svg id="chart" viewBox="0 0 360 320" aria-hidden="true"></svg>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, data=p.data;
+  const stage=document.getElementById('stage'), svg=document.getElementById('chart');
+  const title=document.getElementById('title'), ask=document.getElementById('ask');
+  const feedback=document.getElementById('feedback');
+  title.textContent=Studio.t('title');
+  ask.textContent=Studio.t('ask');
+  const left=64, right=344, top=62, base=224, plotH=base-top;
+  const max=Math.max(...data.map(d=>d.value));
+  const step=max<=6?1:max<=12?2:max<=25?5:max<=60?10:Math.pow(10,Math.floor(Math.log10(max)));
+  const upper=Math.ceil(max/step)*step;
+  const ns='http://www.w3.org/2000/svg';
+  const el=(name,attrs,parent=svg,text)=>{
+    const n=document.createElementNS(ns,name);
+    for(const [k,v] of Object.entries(attrs||{})) n.setAttribute(k,v);
+    if(text!==undefined)n.textContent=text;
+    parent.appendChild(n);return n;
+  };
+  for(let v=0;v<=upper;v+=step){
+    const y=base-(v/upper)*plotH;
+    el('line',{x1:left,y1:y,x2:right,y2:y,class:v===0?'axis':'grid'});
+    el('text',{x:57,y:y,'data-tick':v,class:'ticktext'},svg,String(v));
+  }
+  el('line',{x1:left,y1:top,x2:left,y2:base,class:'axis'});
+  el('text',{x:15,y:(top+base)/2,class:'axislabel',transform:`rotate(-90 15 ${(top+base)/2})`},svg,Studio.t('yaxis'));
+  const width=(right-left)/data.length;
+  data.forEach((d,i)=>{
+    const cx=left+width*(i+.5), h=(d.value/upper)*plotH, y=base-h;
+    const r=el('rect',{x:cx-width*.29,y,width:width*.58,height:h,rx:4,class:'bar bar-grow','data-bar':d.key,'data-value':d.value});
+    const label=el('text',{x:cx,y:242,class:'namelabel'},svg,Studio.t(d.key));
+    const hit=document.createElement('button');
+    hit.className='column';hit.type='button';hit.setAttribute('data-column',d.key);
+    hit.setAttribute('aria-label',Studio.t(d.key));
+    hit.style.left=(left+i*width)+'px';hit.style.width=width+'px';
+    hit.addEventListener('click',()=>{
+      Studio.event('column_tap',{key:d.key});
+      Studio.answer(d.key);
+    });
+    stage.appendChild(hit);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      feedback.textContent=Studio.t('right')+'  '+Studio.t('done');
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

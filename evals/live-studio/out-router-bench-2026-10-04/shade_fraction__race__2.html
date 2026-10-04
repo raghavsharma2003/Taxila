@@ -1,0 +1,45 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#493a36;background:#fff8ed}
+#app{width:360px;height:320px;padding:12px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+header{height:43px;display:flex;align-items:center;justify-content:center;flex:none}
+h1{font-size:19px;line-height:1.15;margin:0;font-weight:800;color:#754b39;text-align:center}
+#card{flex:1;min-height:0;background:#fff;border:2px solid #f1dfca;border-radius:22px;padding:10px 14px;display:flex;flex-direction:column;align-items:center;box-shadow:0 4px 0 #ead7c1}
+#topline{width:100%;height:46px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+#instr{font-size:14px;line-height:1.2;font-weight:650;color:#725a50}
+#target{font-size:25px;font-weight:850;color:#b85e3d;background:#fff0df;border-radius:13px;min-width:58px;height:42px;display:flex;align-items:center;justify-content:center;padding:0 9px}
+#picture{width:174px;height:150px;overflow:visible;flex:none}
+.part{cursor:pointer;fill:#f8ddb1;transition:fill .18s ease,transform .18s ease,filter .18s ease;transform-box:fill-box;transform-origin:center}
+.part[data-shaded="true"]{fill:#ef8b54;filter:drop-shadow(0 2px 2px #d8956870)}
+.part:active{transform:scale(.94)}
+.pizzapart{stroke:none}
+.barpart{stroke:#fffdf8;stroke-width:3;rx:9}
+#hint{font-size:12px;line-height:1.15;color:#947c70;text-align:center;margin:0;height:18px}
+#feedback{height:24px;font-size:15px;font-weight:750;color:#578456;text-align:center;line-height:24px}
+#feedback.wrong{color:#b46754}
+#check{border:0;border-radius:16px;background:#ce7048;color:white;font:800 17px system-ui,sans-serif;min-height:54px;width:100%;box-shadow:0 4px 0 #a85437;cursor:pointer;transition:transform .15s,background .2s;flex:none}
+#check:active{transform:scale(.97) translateY(2px);box-shadow:0 2px 0 #a85437}
+#check.celebrate{background:#73a56b;animation:bounce .42s ease}
+@keyframes bounce{50%{transform:scale(1.06)}}
+#whole{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;min-height:0}
+#doneScreen{display:none;flex:1;align-items:center;justify-content:center;text-align:center;font-size:22px;font-weight:850;color:#754b39}
+</style>
+<div id="app">
+  <header><h1 id="title"></h1></header>
+  <section id="card">
+    <div id="whole">
+      <div id="topline"><div id="instr"></div><div id="target" data-target></div></div>
+      <svg id="picture" viewBox="0 0 180 160" aria-label=""></svg>
+      <p id="hint"></p>
+      <div id="feedback" aria-live="polite"></div>
+      <button id="check" type="button" data-action="check"></button>
+    </div>
+    <div id="doneScreen"></div>
+  </section>
+</div>
+<script>
+
+(()=>{const p=Studio.params,items=p.items;let index=0,locked=false;const $=id=>document.getElementById(id),title=$("title"),instr=$("instr"),target=$("target"),svg=$("picture"),hint=$("hint"),feedback=$("feedback"),check=$("check"),whole=$("whole"),doneScreen=$("doneScreen");title.textContent=Studio.t("title");instr.textContent=Studio.t("instr");hint.textContent=Studio.t("hint");check.textContent=Studio.t("check");function render(){const item=items[index];locked=false;feedback.textContent="";feedback.className="";check.classList.remove("celebrate");$("card").setAttribute("data-item",item.id);target.textContent=item.n+"/"+item.d;svg.replaceChildren();const ns="http://www.w3.org/2000/svg";if(p.picture==="pizza"){const cx=90,cy=80,r=68;for(let i=0;i<item.d;i++){const a1=(i*2*Math.PI/item.d)-Math.PI/2,a2=((i+1)*2*Math.PI/item.d)-Math.PI/2,x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2),path=document.createElementNS(ns,"path");path.setAttribute("d",`M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${item.d>2?0:1} 1 ${x2} ${y2} Z`);path.classList.add("pizzapart");partSetup(path,i);svg.append(path)}}else{const gap=3,width=156/item.d,x0=12;for(let i=0;i<item.d;i++){const rect=document.createElementNS(ns,"rect");rect.setAttribute("x",x0+i*156/item.d);rect.setAttribute("y",48);rect.setAttribute("width",Math.max(0,width-gap));rect.setAttribute("height",64);rect.setAttribute("rx","9");rect.classList.add("barpart");partSetup(rect,i);svg.append(rect)}}}function partSetup(el,i){el.classList.add("part");el.setAttribute("data-part",i);el.setAttribute("data-shaded","false");el.addEventListener("click",()=>{if(locked)return;const on=el.getAttribute("data-shaded")!=="true";el.setAttribute("data-shaded",String(on));Studio.event("part_tap",{index:i,shaded:on})})}check.addEventListener("click",()=>{if(locked)return;const n=svg.querySelectorAll('[data-shaded="true"]').length;Studio.event("check",{n:n});Studio.answer({n:n,d:items[index].d})});Studio.onVerdict(v=>{if(v.correct){locked=true;feedback.textContent=Studio.t("right");check.classList.add("celebrate");Studio.event("correct",{item:index});check.addEventListener("animationend",function advance(){check.removeEventListener("animationend",advance);index++;if(index<items.length)render();else{whole.style.display="none";doneScreen.style.display="flex";doneScreen.textContent=Studio.t("done");Studio.done()}},{once:true})}else{feedback.textContent=Studio.t("wrong");feedback.className="wrong";Studio.event("wrong",{item:index})}});render();Studio.ready()})();
+
+</script>

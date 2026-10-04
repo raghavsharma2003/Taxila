@@ -1,0 +1,73 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;font-family:system-ui,sans-serif;color:#49372f}
+  #activity{width:360px;height:320px;padding:5px 12px;overflow:hidden}
+  #title{height:31px;margin:0;text-align:center;font-size:19px;font-weight:800;line-height:31px;color:#8b493d}
+  #prompt{height:30px;margin:0;text-align:center;font-size:15px;font-weight:650;line-height:30px}
+  #key{height:43px;display:flex;align-items:center;justify-content:center;gap:7px;border-radius:15px;background:#f9e7d4;font-size:14px;font-weight:700}
+  #key [data-key]{display:flex;align-items:center;gap:6px}
+  #rows{display:grid;grid-template-rows:repeat(4,52px);gap:0;margin-top:1px}
+  [data-row]{width:100%;min-height:52px;border:0;border-radius:15px;background:transparent;display:grid;grid-template-columns:76px 1fr;align-items:center;text-align:left;padding:0 7px;color:inherit;font:700 16px system-ui,sans-serif;cursor:pointer;transition:background .2s,transform .2s}
+  [data-row]:hover,[data-row]:focus-visible{background:#f8e9d9;outline:none}
+  [data-row]:active{transform:scale(.97)}
+  [data-row].picked{background:#f5dfc7}
+  .symbols{display:flex;align-items:center;gap:7px;white-space:nowrap}
+  [data-symbol]{display:inline-flex;width:27px;height:27px;flex:0 0 27px}
+  [data-symbol] svg{width:100%;height:100%;filter:drop-shadow(0 2px 1px #b66d4640)}
+  .picked [data-symbol]{animation:pop .35s ease both}
+  @keyframes pop{50%{transform:scale(1.18) rotate(-9deg)}}
+</style>
+<div id="activity">
+  <h1 id="title"></h1>
+  <div id="prompt" aria-live="polite"></div>
+  <div id="key"><span id="keytext"></span><span data-key></span></div>
+  <div id="rows"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params;
+  const flower='<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3c3 0 4 4 4 6 2-2 6-3 8-1s1 6-1 8c3 1 5 4 4 7s-5 4-8 2c-1 3-4 5-7 5s-5-3-6-5c-3 2-7 1-8-2s1-6 4-7c-2-2-3-6-1-8s6-1 8 1c0-2 1-6 3-6Z" fill="#e89570"/><circle cx="16" cy="17" r="5" fill="#ffd985"/></svg>';
+  const symbol=()=>{const s=document.createElement('span');s.setAttribute('data-symbol','');s.innerHTML=flower;return s};
+  document.getElementById('title').textContent=Studio.t('title');
+  const prompt=document.getElementById('prompt');
+  prompt.textContent=Studio.t('ask');
+  document.getElementById('keytext').textContent=Studio.t('keytext');
+  const key=document.querySelector('[data-key]');
+  key.append(symbol(),document.createTextNode(' = '+p.symbolValue));
+  const rows=document.getElementById('rows');
+  let waiting=false,finished=false,selected=null;
+  p.rows.forEach(entry=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.setAttribute('data-row',entry.key);
+    const label=document.createElement('span');
+    label.textContent=Studio.t(entry.key);
+    const icons=document.createElement('span');
+    icons.className='symbols';
+    for(let i=0;i<entry.value/p.symbolValue;i++)icons.appendChild(symbol());
+    button.append(label,icons);
+    button.addEventListener('click',()=>{
+      if(waiting||finished)return;
+      waiting=true;selected=button;
+      button.classList.add('picked');
+      Studio.answer(entry.key);
+    });
+    rows.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!waiting||finished)return;
+    if(correct){
+      finished=true;
+      prompt.textContent=Studio.t('done');
+      Studio.done();
+    }else{
+      prompt.textContent=Studio.t('wrong');
+      if(selected)selected.classList.remove('picked');
+      waiting=false;
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

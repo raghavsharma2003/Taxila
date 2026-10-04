@@ -1,0 +1,36 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff8ec;color:#49382f}
+.sim{width:360px;height:320px;padding:10px 12px;display:flex;flex-direction:column;gap:7px}
+header{height:28px;display:flex;align-items:center;justify-content:center;color:#714b36;font-size:19px;font-weight:800}
+.readings{height:34px;display:flex;justify-content:center;align-items:center;gap:18px;font-size:15px;font-weight:750}
+.readings span{background:#fff;border:1px solid #f0ddc8;border-radius:14px;padding:5px 11px}
+.scene{height:86px;border-radius:18px;background:#e8f6f1;position:relative;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+.ground{position:absolute;bottom:10px;width:190px;height:5px;border-radius:5px;background:#7eb89c}
+.visual{width:86px;min-height:1px;max-height:170px;border-radius:13px 13px 5px 5px;background:repeating-linear-gradient(to bottom,#f5a65b 0px,#f5a65b 9px,#ffd18e 9px,#ffd18e 12px);border:3px solid #d88646;box-shadow:0 4px 9px #6c493222;transform-origin:bottom;transition:height .35s cubic-bezier(.2,.8,.2,1),transform .18s}
+.controls{height:56px;display:flex;justify-content:center;gap:12px}
+button{font:inherit;cursor:pointer;border:0;touch-action:manipulation}
+.change{min-width:124px;height:56px;border-radius:18px;background:#f3b263;color:#513820;font-size:17px;font-weight:800;box-shadow:0 4px 0 #d58d46;transition:transform .12s,filter .12s}
+.change:last-child{background:#84c4a2;box-shadow:0 4px 0 #5b9d7c}
+button:active{transform:scale(.94);filter:brightness(.96)}
+.question{min-height:29px;display:flex;justify-content:center;align-items:center;gap:6px;font-size:14px;font-weight:700;text-align:center}
+.options{display:flex;justify-content:center;gap:10px}
+.option{width:82px;height:52px;border-radius:16px;background:#fff;border:2px solid #e9c9a6;color:#62432e;font-size:18px;font-weight:800;box-shadow:0 3px 0 #e9d7c4;transition:transform .12s,background .18s,border-color .18s}
+.option:active{transform:scale(.94)}
+.feedback{height:22px;text-align:center;font-size:14px;font-weight:800;color:#4f9270}
+</style>
+<main class="sim">
+  <header id="title"></header>
+  <section class="readings"><span id="xread"></span><span id="yread" data-output data-value=""></span></section>
+  <section class="scene" aria-hidden="true"><div class="ground"></div><div class="visual" data-visual data-dim="h"></div></section>
+  <nav class="controls"><button class="change" data-action="dec" id="less"></button><button class="change" data-action="inc" id="more"></button></nav>
+  <div class="question"><span id="ask"></span><span id="askx"></span><span>=</span><span id="asky"></span><span>?</span></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(()=>{const p=Studio.params;const t=Studio.t;const law=p.law;let x=p.x.start;const title=document.getElementById("title"),xr=document.getElementById("xread"),yr=document.getElementById("yread"),visual=document.querySelector("[data-visual]"),fb=document.getElementById("feedback");title.textContent=t("title");document.getElementById("less").textContent=t("less");document.getElementById("more").textContent=t("more");document.getElementById("ask").textContent=t("ask");document.getElementById("askx").textContent=t("xname")+" "+p.ask.x;document.getElementById("asky").textContent=t("yname");function tidy(n){return String(Number(n.toFixed(10)))}function update(){const y=law.k*x+law.b;xr.textContent=t("xname")+" "+tidy(x);yr.textContent=t("yname")+" "+tidy(y);yr.dataset.value=tidy(y);visual.style.height=(y*p.y.unitsPer)+"px";document.querySelector('[data-action="dec"]').disabled=x<=p.x.min;document.querySelector('[data-action="inc"]').disabled=x>=p.x.max}document.querySelector('[data-action="dec"]').addEventListener("click",()=>{if(x>p.x.min){x=Math.max(p.x.min,x-p.x.step);update();Studio.event("change",{x})}});document.querySelector('[data-action="inc"]').addEventListener("click",()=>{if(x<p.x.max){x=Math.min(p.x.max,x+p.x.step);update();Studio.event("change",{x})}});const opts=document.getElementById("options");p.ask.options.forEach(value=>{const b=document.createElement("button");b.className="option";b.dataset.option=String(value);b.textContent=String(value);b.addEventListener("click",()=>Studio.answer({value}));opts.appendChild(b)});Studio.onVerdict(v=>{fb.textContent=v.correct?t("right"):t("wrong");if(v.correct){fb.textContent=t("done");Studio.done()}});update();Studio.ready()})();
+
+</script>
