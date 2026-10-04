@@ -1,3 +1,10 @@
+OWNER-TRUTH PATCH 01 of 10 (evals/owner-truth/ROOT-CAUSES.md). Apply from the repo root, in order: patch -p1 < 01-F1-engine-server-recheck.patch
+Root causes: F1
+Files (Wave-2 notes): server/director/modules.js (W2-B touched this file: moduleFacts/screenContradiction; this hunk is only moduleAnswerOf)
+Depends on: none
+Tests: tests/owner-truth-guards.test.mjs (patch 10) 'F1'
+Base: working tree snapshot 2026-10-04 20:47Z; applies cleanly on the live tree at 21:18Z. Rebase hunks by their context lines if Wave 2 moved them.
+
 diff -ruN a/server/director/modules.js b/server/director/modules.js
 --- a/server/director/modules.js	2026-10-04 21:17:48.814116452 +0000
 +++ b/server/director/modules.js	2026-10-04 21:17:48.817120857 +0000

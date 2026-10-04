@@ -35,7 +35,12 @@ GATES = {
     "loudness": "raw true peak > -0.1 dBFS (clipping), or one static gain to -26 LUFS would push true peak above -2 dBFS (the round-2 encode() refusal)",
 }
 FLAGS = "not gates, reported only: words/s outside 1.8-3.6; level drift (a quarter's median active-frame level > 6 dB from the clip median); trailing silence > 1.5 s"
-POST_HOC = []  # (date, change, reason) for anything changed after a transcript was seen
+POST_HOC = []  # (date, change, reason) for anything changed after a transcript was seen; no gate was changed
+OBSERVED_AFTER_SCREEN = [
+    "2026-10-04: the 'truncation: beat<40%' part fires falsely when an STT writes English words in Devanagari (mai P3 t1: gptx transliterated both English beats, Azure hi-IN always does), because beat coverage is a literal word alignment. The gate was NOT changed; mai P3 has no passing take either way (all fail silence+loudness), and the fallback rule picks t2 (2 fails) over t1 (3 fails, one of them this artefact).",
+    "2026-10-04: oai P3 'truncation: tail' is real: in 3/3 takes both STTs end at 'okay' and the audio ends 0.08-0.10 s after it; the closing 'Bye bye!' is not spoken.",
+    "2026-10-04: words inserted by BOTH STTs (not gated, reported as ins_both): MAI adds words not in the text (e.g. 'अब बताओ', 'तुम', 'बहुत', 'तो', and a 'छछ' mouth noise), see each take's screen.ins_both.",
+]
 
 PUNCT_NAMES = ["comma", "कॉमा", "कोमा", "full stop", "फुल स्टॉप", "फुलस्टॉप", "पूर्ण विराम", "पूर्णविराम", "question mark", "क्वेश्चन मार्क",
                "प्रश्नवाचक", "exclamation", "एक्सक्लेमेशन", "विस्मयादिबोधक", "डॉट", " dot ", "डैश", "dash", "हाइफ़न", "हाइफन", "hyphen",
@@ -148,9 +153,9 @@ def screen_clip(c):
     exp = count_items(c["text"], items)
     got = {k: count_items(h, items) for k, h in hyps.items()}
     miss_both = [l for l, (kind, n) in exp.items() if all(got[k][l][1] < n for k in got)]
-    ins_both = [l for l, (kind, n) in exp.items() if kind == "num" and all(got[k][l][1] > n for k in got)]
+    ins_num_both = [l for l, (kind, n) in exp.items() if kind == "num" and all(got[k][l][1] > n for k in got)]
     fails = []
-    if [l for l in miss_both if exp[l][0] == "num"] or ins_both: fails.append("numbers")
+    if [l for l in miss_both if exp[l][0] == "num"] or ins_num_both: fails.append("numbers")
     if [l for l in miss_both if exp[l][0] == "term"]: fails.append("terms")
     punct = [n for n in PUNCT_NAMES for k, h in hyps.items() if norm(n).strip() and re.search(r"(?<= )" + re.escape(norm(n).strip()) + r"(?= )", norm(h))]
     if punct: fails.append("punct_read")
@@ -177,6 +182,8 @@ def screen_clip(c):
     L = r["loud"]; gain = R2.TARGET - L["input_i"]
     if L["input_tp"] > -0.1 or L["input_tp"] + gain > R2.TP: fails.append("loudness")
     wer = {k: round(S3.align(ref, words(h))[0], 3) if words(h) else None for k, h in hyps.items()}
+    insl = {k: S3.align(ref, words(h))[2] if words(h) else [] for k, h in hyps.items()}
+    ins_both = sorted(set(insl["gptx"]) & set(insl["az"]))  # observation only (not a gate)
     # flags
     span = v.get("speech_span_s") or v["dur_s"]; wps = round(len(c["text"].split()) / span, 2)
     xf = x.astype(np.float64); fr = 320; nfr = len(xf) // fr
@@ -190,7 +197,7 @@ def screen_clip(c):
     if v.get("trail_s", 0) > 1.5: flags.append(f"trailing silence {v['trail_s']} s")
     return {"id": c["id"], "dur_s": v["dur_s"], "speech_span_s": span, "words_per_s": wps, "max_pause_s": round(maxp, 2),
             "lead_s": v.get("lead_s"), "trail_s": v.get("trail_s"), "input_lufs": L["input_i"], "input_tp": L["input_tp"],
-            "miss_both": miss_both, "ins_num_both": ins_both, "punct_read": sorted(set(punct)), "tail_hit": tail_hit,
+            "miss_both": miss_both, "ins_num_both": ins_num_both, "ins_both": ins_both, "punct_read": sorted(set(punct)), "tail_hit": tail_hit,
             "beat_cov": beat_cov, "trunc": trunc, "len_ratio": ratio, "wer": wer, "level_drift_db": drift,
             "per_stt": {k: {l: got[k][l][1] for l in exp} for k in got}, "expected": {l: n for l, (kind, n) in exp.items()},
             "stt_err": {k: r.get(k + "_err") for k in ("gptx", "az") if r.get(k + "_err")},
@@ -257,26 +264,35 @@ def main():
             ch = sum(r["billed_chars"] for r in R); usd = ch * PRICE["azure_hd_chars_per_M"] / 1e6
             unit = {"billed_chars": ch, "text_chars": sum(r["text_chars"] for r in R)}
         else:
-            ti = sum((r.get("usage") or {}).get("input_tokens", 0) for r in R); to = sum((r.get("usage") or {}).get("output_tokens", 0) for r in R)
+            # non-streamed renders carry no usage: billed tokens = SSE calibration rates (render.mjs calib stage)
+            cal = [r for r in man["renders"] if r.get("stage") == "calib" and r.get("usage")]
+            tps = [r["usage"]["output_tokens"] / r["audio_s"] for r in cal]
+            rate = statistics.median(tps)
+            # input tokens = a + b*chars, least squares over the calibration calls (instructions repeated in each)
+            xs = [r["text_chars"] for r in cal]; ys = [r["usage"]["input_tokens"] for r in cal]
+            b = np.polyfit(xs, ys, 1); ti = sum(float(np.polyval(b, r["text_chars"])) for r in R)
+            to = rate * sum(r["audio_s"] for r in R)
             usd = ti * PRICE["oai_text_in_per_M"] / 1e6 + to * PRICE["oai_audio_out_per_M"] / 1e6
-            unit = {"input_tokens": ti, "output_tokens": to, "renders_with_usage": sum(1 for r in R if r.get("usage")),
-                    "audio_tokens_per_s": round(to / (mins * 60), 2) if mins else None}
+            unit = {"input_tokens_est": round(ti), "output_tokens_est": round(to), "method": "estimated from SSE calibration (n=%d single-beat calls): median %.2f audio tokens per second of output audio (range %.2f-%.2f); input tokens by a linear fit on characters" % (len(cal), rate, min(tps), max(tps)),
+                    "calib": [{"beat": r["beat"], "audio_s": r["audio_s"], **r["usage"]} for r in cal]}
         cost[eng] = {"renders": len(R), "audio_min": round(mins, 2), "speech_min": round(spk, 2), "usd": round(usd, 4), **unit,
                      "usd_per_min": round(usd / mins, 4), "inr_per_min": round(usd / mins * PRICE["inr_per_usd"], 2),
-                     "usd_per_speech_min": round(usd / spk, 4)}
+                     "usd_per_speech_min": round(usd / spk, 4), "usd_per_passage": round(usd / len(R), 4), "inr_per_passage": round(usd / len(R) * PRICE["inr_per_usd"], 2)}
     doc = {"v": "taxila-voice-final-manifest/1", "date": "2026-10-04", "built_by": "docs/research/voice/final/screen.py",
-           "rules": man["rules"], "gates": GATES, "flags": FLAGS, "post_hoc": POST_HOC,
+           "rules": man["rules"], "gates": GATES, "flags": FLAGS, "post_hoc": POST_HOC, "observed_after_screen": OBSERVED_AFTER_SCREEN,
+           "measured_while_rendering": ["gpt-4o-mini-tts with stream_format 'sse' stalled on the full P1 after 33.85 s of audio (86 deltas, no speech.audio.done, server closed after ~5 min, n=1); the same body non-streamed returned 83.8 s of audio in 12.4 s, so every oai render here is non-streamed WAV (render.mjs oai())",
+                                        "gpt-4o-mini-tts is offered in no India region (ARM model catalogue centralindia and southindia: none; eastus2: 2025-03-20 and 2025-12-15), so oai renders came from eastus2; Diya and MAI from centralindia"],
            "mai_live_stylelist": man.get("mai_live_stylelist"),
            "script_choice": {k: v for k, v in json.load(open(os.path.join(OUT, "script-choice.json"))).items() if k != "screens"},
            "prices": PRICE, "cost": cost, "picks": picks,
            "takes": [{**{k: r.get(k) for k in ("id", "engine", "passage", "take", "voice", "file", "audio_s", "ttfb_ms", "billed_chars", "text_chars", "usage", "styles", "script")},
                       "screen": res[r["id"]]} for r in sorted(rows, key=lambda r: r["id"])]}
     json.dump(doc, open(os.path.join(OUT, "manifest.json"), "w"), ensure_ascii=False, indent=1)
-    print("| take | dur s | w/s | max pause | LUFS / TP | WER gptx / az | both-STT misses | fails | flags |")
+    print("| take | dur s | w/s | max pause | LUFS / TP | WER gptx / az | both-STT misses | words inserted (both STTs) | fails | flags |")
     for r in sorted(rows, key=lambda r: (r["engine"], r["passage"], r["take"])):
         m = res[r["id"]]
         print(f"| {r['id']} | {m['dur_s']:.1f} | {m['words_per_s']} | {m['max_pause_s']} | {m['input_lufs']:.1f} / {m['input_tp']:.1f} | "
-              f"{m['wer']['gptx']} / {m['wer']['az']} | {', '.join(m['miss_both']) or '-'} | {', '.join(m['fails']) or 'PASS'} | {'; '.join(m['flags']) or '-'} |")
+              f"{m['wer']['gptx']} / {m['wer']['az']} | {', '.join(m['miss_both']) or '-'} | {' '.join(m['ins_both']) or '-'} | {', '.join(m['fails']) or 'PASS'} | {'; '.join(m['flags']) or '-'} |")
     for p in picks: print("PICK", p["engine"], p["passage"], "t%d" % p["take"], "NO TAKE PASSED" if p["no_take_passed"] else "")
     print(json.dumps(cost, indent=1))
 

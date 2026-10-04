@@ -450,6 +450,8 @@ export class EngineHost {
       } else if (e.kind === "resume") {
         if (live) this.o.emit({ to: "voice", op: "resume", t: e.at });
         this.ducked = false;
+        // the burst that caused the yield is settled (a continuer): never reclassify it once she has resumed
+        this.overlapOnset = null;
       } else if (e.kind === "fallback") {
         this.o.emit({ to: "log", row: { t: e.at, cause: "timer", phase: this.governor.phase, action: `fallback:${e.to}`, proposed: "-", detail: e.error, reasons: [e.to === "rules" ? "fallback_rules" : "fallback_silence"], pComplete: 0, pHoldWanted: 0, engine: this.engine.id.id, turnSeq: this.governor.turnSeq } });
       }

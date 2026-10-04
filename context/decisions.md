@@ -3719,3 +3719,114 @@ reads join `lesson.child_id`. "Not this one" is `not_this_at` (7 days).
 - `owner-voice-scope-mai-openai-2026-10-04` (2026-10-04): Owner: voice candidates narrowed to MAI-Voice and OpenAI TTS (DragonHD Diya stays as the anchor and current production voice). Open models (Veena, Svara, Chatterbox, Indic Parler, VoxCPM2) and Nova are dropped for now. Finalize the production voice fast and move on to deploy. Round 4 (wf_39e7e463-899) was rescoped and the AWS open-model render arm cancelled before it ran.
 
 - `owner-no-realtime-quota-2026-10-04` (2026-10-04): owner questioned the quota list. The realtime-model quota asks (gpt-realtime-2.1, -2.1-mini, gpt-live-1) are dropped. Per lesson-hour: realtime-2.1-mini costs ~₹132 windowed and ~₹1,063 unpruned, against ~₹142 for the cascade; it was rejected by ear (accent) and would lose the brain, voice and safety lanes. Only gpt-live-transcribe (STT) capacity stays requested. Support tickets can be filed by the service principal via Microsoft.Support. This was verified, but a ticket needs the owner's contact name and email. **Reverse if:** a realtime model beats the cascade blind on voice AND costs ≤ the cascade per lesson-hour.
+
+
+## Owner truth (2026-10-04; inbox `context/inbox/owner-truth.json`): pending merge
+
+### `ot-child-requests-lexical-first`
+A child's free-form request is read from their words by a closed taxonomy (`server/director/requests.js`: goodbye, stop,
+continue, break, change_topic, topic, language, another, example, story, slower, visual), lexical first and never
+evidence. A whole-turn steering request is decided in code (no classifier call) and mapped onto moves the Director
+already had and only chips could reach (helpMove, break, a re-teach with the diagram representation); a stop or goodbye
+still goes to the classifier for its distress read (the floor's backup is never skipped). Why: every steering request was
+`unclear` (a re-ask), and the stop depended on a one-clause model flag. **Reverse if:** a two-rater set shows the lexicon
+below 0.9 precision on real child turns, or the W2-E signals block reaches >= 0.95 agreement on these acts and can
+replace it.
+
+### `ot-stop-one-checkin`
+A stop phrase gets ONE warm check-in (keep going / short break / stop for today). Stop words again on the next turn or the
+stop chip end the lesson; a real goodbye and a relational RELEASE end it that turn (NEVER MANIPULATE: no second check-in,
+no guilt, no hold at goodbye). A child-stopped lesson never closes the day (`countsAsDone` reads `stoppedEarly`); the
+parent's hours and daily minutes still decide every start. Supersedes the "stop words end the lesson" half of
+`skip-skips-the-item` (its skip half stands). **Reverse if:** the owner or a child-safety review finds the check-in holds
+children who meant to leave (e.g. > 5% of check-ins followed by the app closing with no answer).
+
+### Open items
+- `ot-open-leftover-test-account`: prod-owner3+1791143713628akvxra@taxila.test (1 child) is held by the safeguarding
+  erase guard; a human reviews and marks the test child's incident handled, then deletes the account.
+- `ot-open-w2i-release-gate`: BUILD-PLAN:684 and :865 must read "a stop phrase → one check-in; a true goodbye or a second
+  stop ends" before W2-I builds `w2i-release.mjs`.
+- `ot-open-visual-reference-timing`: the whiteboard arrives 2.8-6.3 s after the ask, so the move shape can say "point at
+  it" only when a module is mounted; needs a reveal-turn cue (W2-H) and a production owner-5 run.
+- `ot-open-resume-ended-lesson`: a new start after a child stop still builds a fresh state; resuming the stopped lesson is
+  unbuilt.
+- `ot-open-statement-key-spoiled`: patch 06 lets explanations state statement-shaped upcoming keys and relies on
+  `spoiled` to discount the answer; how many kit items that zeroes is unmeasured.
+- `ot-open-item4-owner`: no Wave-2 stream owns free-form steering; patches 07-08 supply the Director side only.
+
+## Duplex v2 runtime (2026-10-04; inbox `context/inbox/duplex-runtime.json`; merge after `duplex-v2.json`)
+
+### `duplex-runtime-2026-10-04`
+**Decision:** the v2 Continuous Conversational Engine runs as:
+- **a device-side host** (`src/duplex/host.ts`): it builds one `EngineTick` on every 100 ms timer and on every stream event
+  (voice edges from the 20 ms frames, STT partial/final, her playback start/verdict/end/stopped, screen, Director context,
+  async estimate);
+- **one code governor** (`src/duplex/governor.ts`, G1-G11) behind which every engine runs;
+- **one engine factory** (`src/duplex/adapter.ts createEngine`): stage A rules today; `TrainedEngine` (ONNX through an injected
+  onnxruntime, spec `cce-features/1`, ≤ 20 MB, falls back to stage A on any stale tick) once `flags.trained` and a model exist.
+  Stage B therefore lands with no code change;
+- **a server slice** (`server/duplex/slice.js` + `routes.js`) that keeps the authorities the device must not hold: the
+  fan-in with the lexical horizon, known-text echo subtraction of her own TTS words, sticky safety on every partial,
+  speculative drafts + TTS warm-up of the code-built uptake (driven by the PrepareHint stream, with cancellation), and
+  build intents from partials (misconception values stay server-side).
+
+Hands-free and full-session: the duplex modules have no press/release API (a test asserts it). Shadow mode emits log rows
+only (numbers and closed codes, never the child's words). Wiring into W2 is a plan: `docs/research/duplex/INTEGRATION.md`.
+
+**Reverse if** DX-1 measures the host above 5 ms p95 per tick on a low-end Android, or the event ticks miss a decision the
+timer would have caught. Then decisions fold into the 100 ms timer; perception stays continuous.
+
+### `duplex-verdict-delay-2s`
+**Decision:** a closed-answer verdict plays no earlier than the child's last value end + **2.0 s** (`VERDICT.delayMs`; the
+v2 draft had 1.2 s). The uptake (the child's value re-voiced, verdict-free) is not delayed; the player holds only the
+verdict segment.
+
+**Evidence (M-D7, fast lane, 960 turns):** verdicts before the child finished / on a value they then repaired: 13/9 at 1.2 s,
+4/4 at 1.6 s, 0/0 at 2.0 s; first audio unchanged. A bound on one author's scripted repairs, not a child bound.
+
+**Reverse if** DX-6 / real children show repairs after > 2.0 s value pauses at a rate that matters (raise it, or key it to
+the child's own repair-pause p90), or a blind listen finds 2.0 s unnatural against 1.2-1.6 s at 0 wrong-value verdicts.
+
+### `duplex-overlap-stay-ducked`
+**Decision:** a burst over her still voicing at 250-449 ms is undecided (she stays ducked and listens:
+`OVERLAP.earlyVoicedZ = 0`). It yields at the 450 ms sustain, on a raised/rising onset, after her yes/no question
+(~200-300 ms), or when words land; a burst that ends short is a continuer and she un-ducks.
+
+**Evidence (M-D7):** the eager +1.0 rule yielded on 20/30 continuers and resumed ~0.8 s later; now 0/30. Cost: barge-in
+yield p50 500 ms vs 300 ms. See `rj-duplex-eager-overlap-yield`.
+
+**Reverse if** DX-5 on real audio shows yield p50 > 600 ms or children re-trying interruptions, while the eager rule's
+continuer false-yields stay < 10 %.
+
+### `duplex-explain-sentence-cap`
+**Decision:** with no fresh semantic read, a finished sentence inside a teach-back caps pComplete at 0.8 (< speakPc 0.9).
+Only a semantic estimate, an idk / complete question / repeat request, or the context backstop (B3 2.0 s, ×2.5 on an open
+tail) ends an explanation.
+
+**Evidence (M-D7):** before the cap, "triangle के तीन sides होते हैं" + 1.6 s pause and "जो ऊपर होता है ना" were taken
+over 3/3 each (silent only because the reply was slow). After it: 0 hard cut-offs; explanation gap p50 ~2.03 s on every
+lane (the price until `open-duplex-semantic-call` lands).
+
+**Reverse when** the semantic arm is measured on TaxilaFDB F2 with thinking-pause cut-offs ≤ silence-640 on the same audio;
+then the cap applies only while the semantic estimate is stale.
+
+### `duplex-safeguard-defer-on-onset`
+**Decision:** a child onset while the safeguard is committed or audible defers it (YIELD reason safety → safety_attend →
+re-decided at the next pause). Distress stays sticky; the safeguard is never dropped.
+
+**Evidence (M-D7 j05):** 5/10 seeds had the child resume 16-130 ms before the safeguard's first sound. After the fix: 0
+safeguards audible over child voice for > 100 ms; brushes < 100 ms (onset detector + word-boundary stop) counted apart:
+3 (D4) / 10 (fast) of 70 distress turns.
+
+**Reverse if** real sessions show a child talking in short bursts never gets the safeguard within 10 s; then speak it at
+the first ≥ 1.5 s pause (still never over voice).
+
+### `duplex-hold-grant-fresh-words`
+**Decision:** G3 grants a hold only on words that cover the child's latest audio (unseen ≤ 120 ms), once per text; the
+hold ends when new words land that no longer end on a hold request; the answer is read on the words after the hold
+phrase ("एक मिनट … बारह" = 12). See `rj-duplex-stale-hold-regrant`.
+
+**Evidence (M-D7):** hold violations 0 and missed turn ends 0 on every CCE lane; hold-request gap p50 365-469 ms (MAI/fast).
+
+**Reverse if** real partials revise a hold phrase into the tail often enough to drop real holds; then key the grant on the
+hold words' own end time.

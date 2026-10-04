@@ -24,6 +24,15 @@
  },
  "flags": "not gates, reported only: words/s outside 1.8-3.6; level drift (a quarter's median active-frame level > 6 dB from the clip median); trailing silence > 1.5 s",
  "post_hoc": [],
+ "observed_after_screen": [
+  "2026-10-04: the 'truncation: beat<40%' part fires falsely when an STT writes English words in Devanagari (mai P3 t1: gptx transliterated both English beats, Azure hi-IN always does), because beat coverage is a literal word alignment. The gate was NOT changed; mai P3 has no passing take either way (all fail silence+loudness), and the fallback rule picks t2 (2 fails) over t1 (3 fails, one of them this artefact).",
+  "2026-10-04: oai P3 'truncation: tail' is real: in 3/3 takes both STTs end at 'okay' and the audio ends 0.08-0.10 s after it; the closing 'Bye bye!' is not spoken.",
+  "2026-10-04: words inserted by BOTH STTs (not gated, reported as ins_both): MAI adds words not in the text (e.g. 'अब बताओ', 'तुम', 'बहुत', 'तो', and a 'छछ' mouth noise), see each take's screen.ins_both."
+ ],
+ "measured_while_rendering": [
+  "gpt-4o-mini-tts with stream_format 'sse' stalled on the full P1 after 33.85 s of audio (86 deltas, no speech.audio.done, server closed after ~5 min, n=1); the same body non-streamed returned 83.8 s of audio in 12.4 s, so every oai render here is non-streamed WAV (render.mjs oai())",
+  "gpt-4o-mini-tts is offered in no India region (ARM model catalogue centralindia and southindia: none; eastus2: 2025-03-20 and 2025-12-15), so oai renders came from eastus2; Diya and MAI from centralindia"
+ ],
  "mai_live_stylelist": {
   "region": "centralindia",
   "fetched_at": "2026-10-04T21:11:31.073Z",
@@ -84,7 +93,9 @@
    "text_chars": 9480,
    "usd_per_min": 0.0272,
    "inr_per_min": 2.39,
-   "usd_per_speech_min": 0.0273
+   "usd_per_speech_min": 0.0273,
+   "usd_per_passage": 0.0293,
+   "inr_per_passage": 2.58
   },
   "mai": {
    "renders": 9,
@@ -95,20 +106,60 @@
    "text_chars": 9480,
    "usd_per_min": 0.0141,
    "inr_per_min": 1.24,
-   "usd_per_speech_min": 0.0142
+   "usd_per_speech_min": 0.0142,
+   "usd_per_passage": 0.0255,
+   "inr_per_passage": 2.25
   },
   "oai": {
    "renders": 9,
    "audio_min": 12.92,
    "speech_min": 12.86,
-   "usd": 0.0,
-   "input_tokens": 0,
-   "output_tokens": 0,
-   "renders_with_usage": 0,
-   "audio_tokens_per_s": 0.0,
-   "usd_per_min": 0.0,
-   "inr_per_min": 0.0,
-   "usd_per_speech_min": 0.0
+   "usd": 0.2388,
+   "input_tokens_est": 5612,
+   "output_tokens_est": 19622,
+   "method": "estimated from SSE calibration (n=5 single-beat calls): median 25.31 audio tokens per second of output audio (range 25.11-25.80); input tokens by a linear fit on characters",
+   "calib": [
+    {
+     "beat": "greet",
+     "audio_s": 6.55,
+     "input_tokens": 294,
+     "output_tokens": 169,
+     "total_tokens": 463
+    },
+    {
+     "beat": "think-aloud",
+     "audio_s": 27.4,
+     "input_tokens": 377,
+     "output_tokens": 692,
+     "total_tokens": 1069
+    },
+    {
+     "beat": "joke-laugh",
+     "audio_s": 17.5,
+     "input_tokens": 334,
+     "output_tokens": 443,
+     "total_tokens": 777
+    },
+    {
+     "beat": "back-to-point",
+     "audio_s": 12.75,
+     "input_tokens": 319,
+     "output_tokens": 325,
+     "total_tokens": 644
+    },
+    {
+     "beat": "surprise",
+     "audio_s": 20.15,
+     "input_tokens": 345,
+     "output_tokens": 506,
+     "total_tokens": 851
+    }
+   ],
+   "usd_per_min": 0.0185,
+   "inr_per_min": 1.63,
+   "usd_per_speech_min": 0.0186,
+   "usd_per_passage": 0.0265,
+   "inr_per_passage": 2.34
   }
  },
  "picks": [
@@ -380,6 +431,7 @@
     "input_tp": -2.7,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -489,6 +541,7 @@
     "input_tp": -1.2,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -598,6 +651,7 @@
     "input_tp": -1.7,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -707,6 +761,7 @@
     "input_tp": -3.6,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -807,6 +862,7 @@
     "input_tp": -1.4,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -907,6 +963,7 @@
     "input_tp": -2.9,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -1007,6 +1064,7 @@
     "input_tp": -2.6,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -1142,6 +1200,7 @@
     "input_tp": -1.0,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -1277,6 +1336,7 @@
     "input_tp": -2.7,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -1433,6 +1493,7 @@
     "input_tp": 0.1,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -1566,6 +1627,7 @@
     "input_tp": -0.0,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -1699,6 +1761,11 @@
     "input_tp": 0.0,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [
+     "तो",
+     "बहुत",
+     "मैं"
+    ],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -1831,6 +1898,9 @@
     "input_tp": 0.1,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [
+     "तुम"
+    ],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -1955,6 +2025,9 @@
     "input_tp": 0.4,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [
+     "बताओ"
+    ],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -2079,6 +2152,11 @@
     "input_tp": 0.2,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [
+     "छछ",
+     "तो",
+     "सच"
+    ],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -2211,6 +2289,10 @@
     "input_tp": 0.0,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [
+     "की",
+     "हूं"
+    ],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -2381,6 +2463,7 @@
     "input_tp": 0.0,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -2548,6 +2631,9 @@
     "input_tp": 0.0,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [
+     "सच"
+    ],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -2686,6 +2772,7 @@
     "input_tp": -4.0,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -2795,6 +2882,7 @@
     "input_tp": -2.6,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -2904,6 +2992,7 @@
     "input_tp": -4.0,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -3013,6 +3102,7 @@
     "input_tp": -2.6,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -3113,6 +3203,7 @@
     "input_tp": -4.7,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -3213,6 +3304,7 @@
     "input_tp": -3.3,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": true,
     "beat_cov": [
@@ -3313,6 +3405,7 @@
     "input_tp": -2.5,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": false,
     "beat_cov": [
@@ -3452,6 +3545,7 @@
     "input_tp": -4.2,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": false,
     "beat_cov": [
@@ -3591,6 +3685,7 @@
     "input_tp": -3.3,
     "miss_both": [],
     "ins_num_both": [],
+    "ins_both": [],
     "punct_read": [],
     "tail_hit": false,
     "beat_cov": [

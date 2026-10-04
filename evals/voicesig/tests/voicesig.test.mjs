@@ -434,7 +434,8 @@ const AFFECT = /frustrat|bored|anxi|sad\b|happy|arous|valence|mood|stress|tired|
  * lint and is a research inventory that names EXCLUDED models; it ships nothing.
  */
 const ALLOW = new Set(["asrConfidence", "asrConf", "unsureCorrect"]);
-const ALLOW_DIRS = ["evals/voicesig/placement/"];
+/** The lint's own file holds the forbidden list itself. */
+const ALLOW_DIRS = ["evals/voicesig/placement/", "evals/voicesig/tests/"];
 
 test("G-VS-LABEL: no state-of-mind or affect word in any identifier, key or string under the voicesig folders", () => {
   const scope = ["src/voicesig", "server/voicesig", "evals/voicesig", "scripts/voicesig"].flatMap((d) => files(join(ROOT, d)));
@@ -470,5 +471,21 @@ test("boundaries: voicesig imports nothing from duplex or server/signals interna
       assert.ok(!/duplex|server\/signals|\/signals\//.test(m[1]) || f.includes("/tests/"), `${f.slice(ROOT.length)} imports ${m[1]}`);
       assert.ok(!/research|shadow-arm|placement/.test(m[1]), `${f.slice(ROOT.length)} imports ${m[1]}`);
     }
+  }
+});
+
+test("A3 precondition: server/voice/features.js validateUtterance ignores a top-level kv (no HTTP 400 before A3 lands)", async () => {
+  const vf = await import("../../../server/voice/features.js");
+  const u = vf.validateUtterance({ context: "answer", bargeIn: false, features: { durationMs: 900, voicedFrac: 0.6, words: 2 }, kv: kvOf() });
+  assert.equal(u.reliable, true);
+  assert.equal("kv" in u, false, "kv is dropped, not stored, until A3 admits it");
+  assert.throws(() => vf.validateUtterance({ features: { durationMs: 900, voicedFrac: 0.6, words: 2, fillerLeadMs: 300 } }), /unknown feature/, "kv fields inside `features` WOULD 400: never put them there");
+});
+
+test("G-VS-PURE: the adapter path (adapter, rules, ladder, calibrate, baseline) has no clock, randomness, env, network or DB import", () => {
+  const banned = /Date\.now|new Date\(|Math\.random|performance\.now|\bfetch\(|process\.env|from\s+["'][^"']*(?:db\.js|pg|@neondatabase|azure\.js|http\.js)["']/;
+  for (const n of ["adapter.js", "rules.js", "ladder.js", "calibrate.js", "baseline.js"]) {
+    const code = stripComments(readFileSync(join(ROOT, "server/voicesig", n), "utf8"), false);
+    assert.ok(!banned.test(code), `${n}: ${code.match(banned)?.[0]}`);
   }
 });

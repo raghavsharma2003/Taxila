@@ -100,7 +100,7 @@ export const OVERLAP = {
   /** The acoustic decision window opens after this much child voicing over her. */
   decideMs: 150 as Ms,
   /** Voicing this long without a break is a barge-in whatever else is true [E; DX-5 fits it]. */
-  sustainedMs: 450 as Ms,
+  sustainedMs: 600 as Ms, // 450 → 600 (TaxilaFDB train split 2026-10-04: TTS continuers 380-530 ms, n=36; barge-in turns 980+ ms; answers / repairs are told apart by the yes-no and rising-burst terms, not by length)
   /** G11: child voicing this long over her forces a yield. */
   forceYieldMs: 1000 as Ms,
   /** A yield that turns out to be a continuer resumes from heardUpTo if the overlap ended within this (Voice-Light 800 ms). */

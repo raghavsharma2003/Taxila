@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teacher C Puppet r4</title>
+<style>
+  :root { --bg: #fbe5bd; --ink: #3a2c22; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.4 system-ui, sans-serif; }
+  #wrap { display: flex; flex-direction: column; align-items: center; padding: 12px 16px; gap: 8px; }
+  #c { width: min(92vw, 720px); aspect-ratio: 1 / 1; display: block; border-radius: 16px; }
+  #hud { font-variant-numeric: tabular-nums; opacity: 0.8; min-height: 1.4em; text-align: center; }
+  body.facerig #hud { font-size: 18px; opacity: 1; background: #fff6e6; border: 1px solid #c9a77a; border-radius: 12px; padding: 8px 12px; }
+  button { font: inherit; padding: 6px 14px; border-radius: 999px; border: 1px solid #c9a77a; background: #fff6e6; }
+  body.capture #hud, body.capture button, body.capture #note { display: none; }
+  body.capture #wrap { padding: 0; }
+  body.capture #c { width: 720px; border-radius: 0; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="c"></canvas>
+  <div id="hud"></div>
+  <button id="start">Restart timeline</button>
+  <div id="note">Polish r4 of arm P. New in r4: visemes re-derived so the mouth SHAPE varies independently of the smile (rounded o/u, full m/b/p closure with a press, a real aa jaw drop, f/v tuck, a visible tongue tip for t/d/n/l); teeth drawn from the painted contour with an antialiased edge; the head turn is a true two-texture keyform (the painted 3/4 face cross-dissolves in through the shared field, no extrapolation; bun repainted on the correct side); stronger surprise / concern / delight; a clean painted 0.62 mid-blink key. Tap Restart to hear the voice. Options: ?facerig=1 performance read-out (fps, work p95), ?bg=r,g,b backdrop, ?start=seconds, ?base=./layers/ for the PNG layers.</div>
+</div>
+<script>if (new URLSearchParams(location.search).has("capture")) document.body.classList.add("capture");</script>
+<script type="module" src="./demo.bundle.js"></script>
+</body>
+</html>

@@ -1,3 +1,10 @@
+OWNER-TRUTH PATCH 09 of 10 (evals/owner-truth/ROOT-CAUSES.md). Apply from the repo root, in order: patch -p1 < 09-F16-visual-request.patch
+Root causes: F16 (child-request source for the whiteboard/Studio ask, any lane), F21-adjacent shape fix (no promised picture)
+Files (Wave-2 notes): server/director/state.js, shapes.js; server/brain/propose.js (W2-E), server/brain/turn.js (W2-E/W2-H hot: whiteboardAskOf arg, requestIntent guard, a voice-lane requestIntent block)
+Depends on: 07, 08
+Tests: patch 10 'F16'
+Base: working tree snapshot 2026-10-04 20:47Z; applies cleanly on the live tree at 21:18Z. Rebase hunks by their context lines if Wave 2 moved them.
+
 diff -ruN a/server/brain/propose.js b/server/brain/propose.js
 --- a/server/brain/propose.js	2026-10-04 21:17:49.473163254 +0000
 +++ b/server/brain/propose.js	2026-10-04 21:17:49.478800394 +0000

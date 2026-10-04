@@ -66,10 +66,11 @@ export function simulate({ children = 30, effect = 1, seed = 1, safetyRate = 0.0
         else if (idk === "not_known") text = pick(["pata nahi", "nahi aata", "mujhe nahi pata"]);
         else text = `${fillerLex ? "umm " : ""}${hedge ? "shayad " : ""}${ans}`;
         words = text.split(/\s+/).length;
-        const z = rapid ? -2.6 + 0.3 * gauss(R) : gauss(R) + effect * S.shift;
+        // Every voice difference scales with `effect`, so effect 0 is a TRUE null (the harness must then report dAUROC ~ 0).
+        const z = rapid ? effect * -2.6 + (1 - Math.min(1, effect) * 0.7) * gauss(R) : gauss(R) + effect * S.shift;
         const onsetMs = Math.max(150, 100 * Math.expm1(mu + sd * z));
         const lead = filler ? 300 + 900 * R() : 0;
-        const durationMs = rapid ? 350 + 150 * R() : 600 + 700 * R() + lead;
+        const durationMs = rapid ? (1 - Math.min(1, effect)) * (600 + 700 * R()) + Math.min(1, effect) * (350 + 150 * R()) : 600 + 700 * R() + lead;
         const pauseFrac = Math.min(0.9, Math.max(0, 0.08 + 0.06 * gauss(R) + effect * (st === "fragile" || st === "retrievable" ? 0.06 : 0)));
         const qAudio = R() < 0.05 ? 0.4 : 1;
         const safety = R() < safetyRate;

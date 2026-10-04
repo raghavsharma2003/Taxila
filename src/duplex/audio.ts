@@ -77,7 +77,17 @@ export class ChildAudioTracker {
   }
 
   /** Her playback level at the device output while she speaks (null when silent or unknown). */
-  setHerLevel(db: number | null): void { this.herDb = db; }
+  setHerLevel(db: number | null): void {
+    // peak-hold over 250 ms: the echo path rings (room + AEC residue) after her output dips between words, so the
+    // threshold follows her recent envelope, not the instantaneous frame (TaxilaFDB F12 train: tail onsets at -20 dB)
+    if (db === null) { this.herDb = null; this.herHist = []; return; }
+    this.herHist.push([this.t, db]);
+    while (this.herHist.length && this.herHist[0][0] < this.t - 250) this.herHist.shift();
+    let m = -Infinity;
+    for (const [, v] of this.herHist) if (v > m) m = v;
+    this.herDb = m;
+  }
+  private herHist: Array<[number, number]> = [];
 
   /**
    * Minimum-statistics noise floor (Martin 2001, simplified): the 5th percentile of the last 5 s of frame levels. The shipped
@@ -86,6 +96,7 @@ export class ChildAudioTracker {
    * (TaxilaFDB noisy streams, 2026-10-04: 0 offsets in 8.4 s). This floor needs no speech/non-speech decision.
    */
   private lvl: number[] = [];
+  private f0InRun = false;
   private minStatFloor(): number {
     if (this.lvl.length < 10) return -90;
     const s = [...this.lvl].sort((a, b) => a - b);
@@ -110,13 +121,16 @@ export class ChildAudioTracker {
     let edge: AudioEdge = null;
     let edgeAt: Ms | null = null;
     if (loud) {
-      if (this.firstLoudOfRun === null) this.firstLoudOfRun = t;
+      if (this.firstLoudOfRun === null) { this.firstLoudOfRun = t; this.f0InRun = false; }
+      if (f0) this.f0InRun = true;
       this.loudRun += this.frameMs;
       this.lastLoudAt = t;
       this.hist.push([t, db, f0]);
       if (f0) { this.f0s.push(f0); if (this.f0s.length > 3000) this.f0s.splice(0, 1000); }
       // onset: 2 loud frames (40 ms) after a quiet spell longer than the hangover; back-dated to the first loud frame
-      if (!this.voicingNow && this.loudRun >= 2 * this.frameMs) {
+      // ...and periodic: at least one YIN f0 frame in the loud run (fan / traffic / TV-bed bursts carry none; TaxilaFDB noisy
+      // beds: 0 f0 frames in 149 post-turn frames, child speech 43% f0 frames). Without this, noise bursts reopen the turn.
+      if (!this.voicingNow && this.loudRun >= 2 * this.frameMs && this.f0InRun) {
         this.voicingNow = true;
         edge = "onset";
         edgeAt = this.firstLoudOfRun;

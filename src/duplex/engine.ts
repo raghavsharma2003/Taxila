@@ -10,10 +10,10 @@
  * no silence to be finished.
  *
  * Who implements it. Two engines implement `DuplexEngine` and are interchangeable behind the same host and harness:
- *   - stage A: rules + fast Azure LLM semantic completeness (src/duplex/engineRules.ts, planned);
+ *   - stage A: rules + fast Azure LLM semantic completeness (src/duplex/engineRules.ts, built; semantic call pending);
  *   - stage B: a trained small multimodal model (audio encoder + text prefix + context tokens; ONNX on the device or ACA
- *     CPU in India) (src/duplex/engineTrained.ts, planned).
- * Both MUST be wrapped by the one shared governor (src/duplex/governor.ts, planned). The governor is code, owns
+ *     CPU in India) (src/duplex/adapter.ts TrainedEngine, built; no model yet).
+ * Both MUST be wrapped by the one shared governor (src/duplex/governor.ts, built). The governor is code, owns
  * `FloorPhase`, and applies the hard vetoes no model can override: safety, hold requests, verdict stability ("fast mouth,
  * late verdict"), the lexical horizon, the closed CUT_IN list, rate limits, WT1 protection. An engine proposes; the
  * governor disposes. `EngineDecision.proposed` records what the engine wanted before the vetoes.

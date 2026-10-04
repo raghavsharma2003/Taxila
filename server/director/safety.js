@@ -473,7 +473,7 @@ const PHONE_SAID = /(?<!\d)(?:\+?91[\s-]?)?[6-9]\d(?:[\s-]?\d){8}(?!\d)/;
 const REL_RULES = {
   contact: {
     en_offer: R(`${NOT_BEFORE}(?:my|here'?s my|here is my|this is my) (?:number|phone number|mobile number|whatsapp|email|insta|instagram|snapchat)|${NOT_BEFORE}(?:call|text|message|whatsapp|dm|email) me (?:at|on|any ?time|tonight|later)|${NOT_BEFORE}(?:let'?s|we can|we could|i can|i could|i'?ll) (?:meet|video call|chat on whatsapp|talk on whatsapp|text you|call you|message you|add you)|${NOT_BEFORE}(?:okay|ok|sure|yes),? (?:send|share) (?:it|me|the photo|your photo|a photo|a pic)|${NOT_BEFORE}i(?:'ll| will) (?:send you|call you|text you|message you)`),
-    hl_offer: R(`(?:mera|meri) (?:number|phone number|whatsapp|insta|email) (?:hai|le lo|lo|note karo)|(?:mujhe|muje) (?:call|message|whatsapp|text) (?:karna|kar dena|karo|kariye)(?! (?:\\S+ )?(?:nahi|mat))|(?:theek hai|thik hai|haan|ok),? (?:photo|pic|selfie) bhej(?:o|do|dena)|(?:hum|main) (?:mil sakte|milte hain|video call kar)`),
+    hl_offer: R(`(?:mera|meri) (?:number|phone number|whatsapp|insta|email) (?:hai|le lo|lo|note karo)|(?:mujhe|muje) (?:call|message|whatsapp|text) (?:karna|kar dena|karo|kariye)(?! (?:\\S+ )?(?:nahi|mat))|(?:theek hai|thik hai|haan|ok),? (?:photo|pic|selfie) bhej(?:o| do| dena|na)|(?:hum|main) (?:mil sakte|milte hain|video call kar)`),
   },
   memory_claim: {
     en_past: R(`(?:last time|the other day|yesterday|last week|last lesson|in our last (?:lesson|class|chat)|before today)(?: \\S+){0,3} you (?:told|said|showed|played|mentioned|shared|asked)|(?:remember|you remember) when (?:we|you)|you (?:told|said|showed|mentioned) (?:me )?(?:last time|yesterday|last week|the other day)`),
@@ -520,7 +520,8 @@ export function relationalHits(text, opts = {}) {
       for (const [rule, re] of Object.entries(rules)) {
         if (!re.test(norm)) continue;
         // a question about memory ("do you remember…?") is not a claim; a claim naming a listed callback is allowed
-        if (family === "memory_claim" && rule !== "promise" && (isQ || allowed.some((f) => norm.includes(f)))) continue;
+        // ("remember when we played…?" is still a claim: only a real question about remembering is exempt)
+        if (family === "memory_claim" && rule !== "promise" && ((isQ && /^(?:\S+ )?(?:do|did|will|can|would) you (?:still )?remember|^kya /.test(norm)) || allowed.some((f) => norm.includes(f)))) continue;
         // "I can't promise I'll remember everything" is the honest answer, not a promise
         if (family === "memory_claim" && rule === "promise" && NO_PROMISE.test(norm)) continue;
         hits.push({ family, rule: `${family}.${rule}` });
@@ -528,7 +529,9 @@ export function relationalHits(text, opts = {}) {
     }
     if ((opts.gender === "f" || opts.gender === "m") && GENDER_FORMS[opts.gender].test(norm)) hits.push({ family: "gender_agreement", rule: `gender_agreement.${opts.gender}` });
   }
-  if (PHONE_SAID.test(raw.replace(DEVA_DIGITS, (d) => String(d.charCodeAt(0) - 0x0966)))) hits.push({ family: "contact", rule: "contact.number_repeated" });
+  const said = PHONE_SAID.exec(raw.replace(DEVA_DIGITS, (d) => String(d.charCodeAt(0) - 0x0966)));
+  // a contiguous ascending/descending run is a maths answer (9876543210), not a phone (scrubPii's rule)
+  if (said && !(/^\d+$/.test(said[0]) && monotone(said[0]))) hits.push({ family: "contact", rule: "contact.number_repeated" });
   return hits;
 }
 

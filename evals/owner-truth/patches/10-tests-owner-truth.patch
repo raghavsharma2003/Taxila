@@ -1,3 +1,10 @@
+OWNER-TRUTH PATCH 10 of 10 (evals/owner-truth/ROOT-CAUSES.md). Apply from the repo root, in order: patch -p1 < 10-tests-owner-truth.patch
+Root causes: tests for 01-09
+Files (Wave-2 notes): NEW tests/owner-requests.test.mjs, tests/owner-truth-guards.test.mjs
+Depends on: 01-09
+Tests: node --test tests/owner-requests.test.mjs tests/owner-truth-guards.test.mjs
+Base: working tree snapshot 2026-10-04 20:47Z; applies cleanly on the live tree at 21:18Z. Rebase hunks by their context lines if Wave 2 moved them.
+
 diff -ruN a/tests/owner-requests.test.mjs b/tests/owner-requests.test.mjs
 --- a/tests/owner-requests.test.mjs	1970-01-01 00:00:00.000000000 +0000
 +++ b/tests/owner-requests.test.mjs	2026-10-04 21:17:49.514025063 +0000

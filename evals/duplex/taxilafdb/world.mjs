@@ -109,7 +109,8 @@ export async function runStream(id, arm) {
   const r = rng(h32(`${sid}|${arm.lane}`));
   const tl = sttTimeline(d);
   const lane = STT[arm.lane];
-  const stt = new SttSim(tl, r, lane, { serverVadMs: arm.vad ?? 1500 });
+  // the STT: the reactive simulator, or an injected source (live.mjs: the real streaming transcriber, paced in real time)
+  const stt = arm.sttFactory ? await arm.sttFactory(d) : new SttSim(tl, r, lane, { serverVadMs: arm.vad ?? 1500 });
   const stage = () => STAGES[Math.floor(r() * STAGES.length)];
   const dmod = draftModel();
   const spec = arm.spec !== false && !arm.baseline ? new Speculator({ launchDraft: simLauncher(r, dmod, stage), launchWarm: (job, now) => ({ readyAt: now + stage().tts, abort: () => 0 }), lessonId: "fdb" }) : null;
@@ -238,6 +239,8 @@ export async function runStream(id, arm) {
   for (let i = 0; i < T.length; i++) {
     const t = T[i];
     if (t > endMs) break;
+    rec.now = t;
+    if (arm.pace) await arm.pace(t, i);
     while (pending.length && pending[0].t <= t) {
       const { t: et, ev } = pending.shift();
       if (ev.kind === "her_line") {
@@ -289,6 +292,7 @@ export async function runStream(id, arm) {
       if (arm.model) { await null; await null; }
     }
   }
+  if (stt.close) rec.stt = await stt.close();
   rec.ticks = host.stats.ticks;
   rec.endMs = endMs;
   if (spec) { spec.close(endMs); rec.spec = spec.summary().prepare; }

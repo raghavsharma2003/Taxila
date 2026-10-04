@@ -99,7 +99,10 @@ function choiceValues(toks: string[], options: string[] | undefined): ValueSpan[
     if (ORDINAL[w] !== undefined && (w.length > 1 || toks.length <= 2)) out.push({ v: `opt${ORDINAL[w]}`, kind: "integer", start: i, end: i, open: false });
     optToks.forEach((o, k) => { if (o[o.length - 1] === w && (o.length === 1 || toks.slice(Math.max(0, i - o.length + 1), i + 1).join(" ") === o.join(" "))) out.push({ v: `opt${k + 1}`, kind: "integer", start: i - o.length + 1, end: i, open: false }); });
   });
-  return out;
+  // "दूसरा वाला" is ONE pick: the ordinal and the option label covering it are the same value (M-D7 a09 read it as two
+  // values, form "overfull", and waited for the backstop)
+  out.sort((a, b) => a.start - b.start || b.end - a.end);
+  return out.filter((v, k) => !out.slice(0, k).some((u) => u.v === v.v && v.start <= u.end && v.end >= u.start));
 }
 
 /** The tail after the last value: closed (only closers/units), open (an opener last), or other words. */

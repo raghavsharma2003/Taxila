@@ -2332,3 +2332,89 @@ reached the wire 2.8-6.3 s after the ask. The refusals were `W2.no_text_overlap`
 ### `w2h-reveal-narration-gap-2026-10-04`
 **Result:** in 3/3 local probe lessons, the reveal-turn reply did not point at the piece, although the facts row was in the
 move's content. The piece's numbers are the kit's most frequent fractions, not the current item's.
+
+
+## Owner truth (2026-10-04; inbox `context/inbox/owner-truth.json`): pending merge
+Experience acceptance tests for OWNER TEST items 1-5 (`tests/prod/owner-<item>-*.mjs`, shared harness
+`tests/prod/_owner.mjs`), run against production 9242020 (revision taxila-web--s9242020-kj16) from the sandbox, code
+rubric only (no `--judge model`), every account deleted except the one listed under `ot-open-leftover-test-account`.
+Raw transcripts: `evals/owner-truth/results/acceptance-2026-10-04-prod9242020/`. Root causes: `evals/owner-truth/ROOT-CAUSES.md`.
+
+### `ot-acceptance-item1-prod9242020-2026-10-04`
+**Run:** `owner-1-grading.mjs --seed 1101`, 8 maths topics, typed and spoken (cascade) lanes, 2026-10-04.
+**Result:**
+- Kit answers: n = 77 graded (20 correct, 45 wrong, 12 key + filler; 38 typed, 39 spoken). 0 wrong grades; 1 key +
+  filler answer got no verdict.
+- Module answers: n = 23 over 8 engines (place-value, number-line, multiply-divide, data-graphs, geoboard, fractions,
+  patterns, fraction-bars). 16/16 frames that claimed `correct: true` for a wrong value were graded correct (F1: no server
+  re-check of a bound engine). 7/7 honest wrong commits were graded not_yet.
+- Caveat: the forged claims need a modified client in real use; the number shows the server trusts the claim, not how
+  often a real engine lies.
+
+### `ot-acceptance-item2-prod9242020-2026-10-04`
+**Run:** `owner-2-no-confusion.mjs --seed 2101`, 6 sessions (6 personas), 90 child turns, code rubric written in the test.
+**Result:** 17/90 turns (18.9%) had at least one defect; 20 defects: bare question 7, the same card question 4 turns
+running 5, repeat of an earlier teacher line 2, gutted teaching turn 2, fixed fallback line 1, stray script 1, dangling
+quote 1, "samajh nahi aaya" answered with the same words 1. 0 HTTP errors. The model judge was not run (it would only add
+defects: strict OR).
+
+### `ot-acceptance-item3-prod9242020-2026-10-04`
+**Run:** `owner-3-ending.mjs --seed 3101 --lanes typed` and `--seed 3102 --lanes spoken`, 8 stop phrases per lane.
+**Result:** 0/16 check-ins. 15/16 ended the lesson that turn (end:true, move wrap). 1/16 (spoken "I'm done") went to
+safeguarding with the fixed disclosure line ("Aapne jo bataya, woh zaroori hai…"), which is F10; the account then could not
+be deleted (409 erase_review).
+
+### `ot-acceptance-item4-prod9242020-2026-10-04`
+**Run:** `owner-4-steering.mjs --seed 4101`, 8 requests x typed/spoken = 16.
+**Result:** 8/16 acted on in the next turn. "can we talk about something else" ended the lesson 2/2 (F8). English
+switch 0/2, Hindi 1/2 (spoken failed), story 1/2, example 1/2, cricket topic 1/2, differently 2/2, slowly 2/2 (the
+rubric's slower test is lenient: a shorter turn passes).
+
+### `ot-acceptance-item5-prod9242020-2026-10-04`
+**Run:** `owner-5-visual.mjs --seed 5101`, 6 requests x typed/spoken = 12, plus one routed-Chromium replay.
+**Result:** 0/12 put a picture on the stage in that turn or the next (counting only a mount, an image board, a Studio slot
+that becomes real or a reveal). The run's own first scoring counted the written-problem math board and reported 6/12 (see
+`rj-ot-visual-counts-math-board`); the 0/12 is recomputed from the saved transcripts with the current rule.
+
+### `ot-patch-series-2026-10-04`
+**Run:** the 10-patch series in `evals/owner-truth/patches/` built as cumulative stages on a copy of the working tree
+(snapshot 2026-10-04 20:47Z), each stage run through 11 core suites; then the series applied with `patch -p1` to the live
+tree at 21:18Z (clean). Full `node --test tests/` on a copy with the whole series: no new failure beyond the two stop tests
+the series rewrites (`tests/state.test.mjs`, `tests/director-truth.test.mjs`); the remaining failures are the copy's
+missing `public/`, `db/` and `scripts/` and are identical on the unpatched copy.
+**Result:** 155/155 at every stage; 180/180 with the 25 new tests (`tests/owner-requests.test.mjs`,
+`tests/owner-truth-guards.test.mjs`). No model calls, no production run of the fixes (the owner tests are the production
+gate after deploy).
+
+## Duplex v2 runtime (2026-10-04; inbox `context/inbox/duplex-runtime.json`)
+
+### `m-d7-duplex-runtime-tick-sim-2026-10-04`
+**What:** the v2 runtime at tick level, $0, no network. `evals/duplex/tick-sim.mjs` → `evals/duplex/results/tick-sim-2026-10-04.json`.
+
+**Method:** 96 scripted Hinglish child turns (`evals/duplex/scenarios.mjs`, 10 categories, one author) × 10 seeds = 960
+turns per arm, through the real `host.ts → engineRules.ts → governor.ts` with `speculator.js` on the think track.
+Streams: `streams.mjs` 20 ms RMS/F0 frames and a reactive STT (D4 calibrated from M-D2 n=28; MAI_HOME and FAST are [E]).
+Her replies are scheduled from the host's own speak commands: first audio = decision + bootstrapped measured Director/TTS
+stages, or the warm uptake / promoted draft. Baselines run the same host with a "final lands → speak" engine and the
+governor in baseline mode (safety + legality only).
+
+| arm | gap p50 / p90 | first audio p50 | hard cut-off | early uptake (revoked) | hold viol. | wrong-value verdicts | overlap acc. |
+|---|---|---|---|---|---|---|---|
+| cce-mai | 362 / 2,046 | 1,888 | 0.0 % | 8.4 % | 0 % | 0 / 370 | 99.5 % |
+| cce-fast | 406 / 2,044 | 2,031 | 0.0 % | 8.4 % | 0 % | 0 / 370 | 99.5 % |
+| cce-d4 | 1,285 / 2,046 | 2,539 | 0.0 % | 1.3 % | 0 % | 0 / 370 | 97.4 % |
+| cascade-900 (today) | 1,895 / 2,360 | 3,800 | 2.9 % | — | 31.7 % | 8 / 325 | 79.5 % |
+| silence-640 | 1,590 / 2,077 | 3,500 | 3.9 % | — | 38.3 % | 13 / 314 | 77.4 % |
+
+- Closed answers: gap p50 319-351 ms (MAI), 312-367 ms (fast); p90 419-449 (MAI), 537-605 (fast; closed_fluent 1,030).
+- Explanations end by the stage A backstop, ~2.03 s on every lane: that is what drives the pooled p90.
+- Think-while-listening cuts first-audio p50 by 496-929 ms (d4 2,539 vs 3,468 without; fast 2,031 vs 2,527).
+- Warm uptake promoted on 44-47 % of speaks; wasted speculative tokens 22 % (MAI) to 63 % (fast).
+- Safety: unsafe non-safeguard lines 0 (cce-fast-nospec 1: an idk reply audible 7 ms after the distress segment began,
+  before its words existed); safeguard over child voice > 100 ms: 0.
+- Ablations: eager overlap 20/30 continuers yielded-then-resumed (yield p50 300 vs 500 ms); verdict delay 1.2 / 1.6 / 2.0 s
+  → wrong-value verdicts 9 / 4 / 0.
+
+**Caveats:** synthetic voice and contours (a short rising "क्या?" is too flat to exercise the acoustic repair rule); no
+echo in the frames; MAI/FAST latencies are estimates; one author; category mix chosen (per-scenario rates, not per-lesson);
+Smart Turn off the shelf not an arm. The gap p90 target (≤ 700 ms) is met for closed answers on MAI/fast, not pooled.

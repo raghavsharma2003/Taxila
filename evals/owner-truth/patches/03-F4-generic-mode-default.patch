@@ -1,3 +1,10 @@
+OWNER-TRUTH PATCH 03 of 10 (evals/owner-truth/ROOT-CAUSES.md). Apply from the repo root, in order: patch -p1 < 03-F4-generic-mode-default.patch
+Root causes: F4 (and the same bug on collections, fractions, geoboard, multiply-divide, patterns, place-value)
+Files (Wave-2 notes): src/modules/frame/params.ts (W2-B owns src/modules/**)
+Depends on: none
+Tests: patch 10 'F4'; also run tests/engines-browser.test.mjs after applying
+Base: working tree snapshot 2026-10-04 20:47Z; applies cleanly on the live tree at 21:18Z. Rebase hunks by their context lines if Wave 2 moved them.
+
 diff -ruN a/src/modules/frame/params.ts b/src/modules/frame/params.ts
 --- a/src/modules/frame/params.ts	2026-10-04 21:17:49.058775433 +0000
 +++ b/src/modules/frame/params.ts	2026-10-04 21:17:49.067367296 +0000

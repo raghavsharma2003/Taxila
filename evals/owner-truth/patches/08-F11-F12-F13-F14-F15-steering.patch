@@ -1,3 +1,10 @@
+OWNER-TRUTH PATCH 08 of 10 (evals/owner-truth/ROOT-CAUSES.md). Apply from the repo root, in order: patch -p1 < 08-F11-F12-F13-F14-F15-steering.patch
+Root causes: F11, F12, F13, F14 (the shape half; W2-C pace.js already slows timing), F15
+Files (Wave-2 notes): server/director/state.js, shapes.js; server/compiler/compile.js (W2-C brief v2 area: languageRule only)
+Depends on: 07 (requestMove)
+Tests: patch 10 'F11', 'F12', 'F13/F15/F14'
+Base: working tree snapshot 2026-10-04 20:47Z; applies cleanly on the live tree at 21:18Z. Rebase hunks by their context lines if Wave 2 moved them.
+
 diff -ruN a/server/compiler/compile.js b/server/compiler/compile.js
 --- a/server/compiler/compile.js	2026-10-04 21:17:49.429844051 +0000
 +++ b/server/compiler/compile.js	2026-10-04 21:17:49.432777089 +0000

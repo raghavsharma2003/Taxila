@@ -681,7 +681,8 @@ pulled two waves earlier. The real gate for the turn model (SHIFT/HOLD AUC on E1
 **Acceptance:**
 - **Code gates in `npm test`** (TEACHER-BRAIN §15.1): G-KERNEL-PURE, G-KERNEL-ORDER, G-BUDGET, G-LAT (kernel p99 ≤
   10 ms over 10k turns on the ACA image), **G-AUTHORITY** (a child goodbye beside any pedagogy, plan or Studio
-  proposal: RELEASE wins in 100% of 10k generated turns; a teacher-owned repair precedes the next item), G-MOMENT,
+  proposal: RELEASE wins in 100% of 10k generated turns, where RELEASE for a lesson-stop phrase is the single check-in of
+  OWNER-RESET item 7 and for a real goodbye is the end of the lesson; a teacher-owned repair precedes the next item), G-MOMENT,
   and **G-QUOTA** (20 concurrent Studio races plus a consolidation burst on a shared deployment: 0 hot-path 429s).
 - **Replay:** 30 recorded lessons replay byte-identical through `server/brain/turn.js` (BR0/BR1).
 - **G-SIG:** label agreement with the plain arm ≥ 99% on the full classify item set. Act accuracy ≥ 0.9 on a
@@ -862,8 +863,13 @@ These are floor defects, so they are fixed in the first wave that can fix them.
   - neutral-turn false triggers ≤ 2%;
   - **AT-B6:** crisis outranks relational, with 100% recall on scripted items and a check-in before release 100%;
   - the safety opening has no preface and is in the child's language mode.
-- `w2i-release.mjs`: a child says goodbye mid-practice. The lesson ends that turn, with no "one more", no
-  question and no guilt.
+- `w2i-release.mjs` (rewritten 2026-10-04 per OWNER-RESET item 7 and owner-truth F6): two cases.
+  - A real goodbye ("bye", "good night", "mujhe jaana hai") ends the lesson that turn, with no "one more" and no guilt.
+  - A lesson-stop phrase ("lesson khatam", "end the lesson", "I'm done", "bas") gets exactly ONE warm check-in: keep going / short
+    break / stop for today, with no guilt, no pressure and no second ask.
+  - The lesson ends on the stop choice, or on the stop phrase repeated on the next turn. Parent controls and Pause→End still end it at once.
+  - "Talk about something else" is steering, never a stop.
+  - A stopped lesson does not close the day.
 
 **Wave 2 exit (integration day, ≈ 1.5 d):**
 - merge the inbox files;
@@ -1703,3 +1709,15 @@ Nothing reads it yet. The order is SIGNALS-SPEC §8.2 steps 1-14, plus the verif
 - `docs/research/voice/v4/prompt-patch.diff` (a superset of `talking-rules.patch`) is NOT applied. Apply it after the round-3 ratings, if arm C (new line plus delivery plan) beats arm A, by the thresholds in TALKING-RULES §6. It touches say.js, compile.js, shapes.js, dhd.js, moment.js and two persona sheets, so re-check it against the Wave 2 tree first.
 - **Blocker for any live voice gain:** the Hinglish lane writes Hindi in Roman letters, and Diya then mispronounces Hindi number words (पैंतीस → "पेंटीज", 4/4 takes). Rounds 1-3 were rendered from Devanagari the Director never writes. A Roman → Devanagari step before TTS is a Wave 2.5 voice item. When it lands, the -35% rate decision's reversal condition fires (that rate was measured on Roman script).
 - The rule placing the spoken-register note mid-prompt needs a fire-rate test on the cascade lane, because the last section has no room left (position is mechanism).
+
+## Owner-truth (workstream wf_e4aeffad-357 done 2026-10-04): apply after Wave 2 integrates
+- Root causes are in `evals/owner-truth/ROOT-CAUSES.md`. Wave 2 as built fixes none of the 21 failures; F14, F16 and F21 are partly fixed.
+- Apply `evals/owner-truth/patches/01..10` in order (`patch -p1`). Patches 05-09 touch Wave 2 files, so rebase their hunks onto the integrated tree.
+- Then run the full suite, and `tests/prod/owner-1..5-*.mjs` against prod after deploy. The prod baseline at 9242020:
+  - grading: F1 16/16 trusted wrong claims;
+  - 18.9% defective turns;
+  - stop: 0/16 check-ins;
+  - steering: 8/16;
+  - visual: 0/12.
+- Still open, and Wave 2.5 owns them: resuming a stopped lesson; the whiteboard taking 2.8-6.3 s to arrive (pre-draw or reveal on request); patch 06's full-sentence answer leak; item 4 steering has no owner, so assign it to the conversation-intelligence stream.
+- A leftover prod test account is blocked by its own safeguarding case. See `evals/owner-truth/results/acceptance-2026-10-04-prod9242020/LEFTOVER-ACCOUNTS.json`; it needs an owner-approved cleanup.

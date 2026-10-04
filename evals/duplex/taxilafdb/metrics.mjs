@@ -54,6 +54,9 @@ const insideWord = (r, t) => r.g.words.some(([a, b]) => t >= a && t <= b);
 const isSafeguard = (c) => (c.op === "speak" && c.reason === "safeguard") || (c.op === "cut_in" && c.reason === "safety");
 /** A CUT_IN allowed in this pause class with this reason (and the hold offer only after 15 s of its silence). */
 function allowedCutIn(c, p) {
+  // a question to her answered in the pause after it is the policy's intent whether it was proposed as CUT_IN question_to_her
+  // or as a SPEAK (the child plainly yielded after asking)
+  if (p.cls === "question_pause" && c.op === "speak" && c.reason !== "wt1_nudge") return true;
   if (c.op !== "cut_in") return false;
   const want = CUTIN_OK[p.cls];
   if (!want || c.reason !== want) return false;
@@ -95,14 +98,21 @@ export function facts(r) {
     const want = sg.cutIn.reason;
     let win = null;
     if (sg.cutIn.afterSeg !== undefined && g.pauses?.[sg.cutIn.afterSeg]) win = g.pauses[sg.cutIn.afterSeg];
-    const hits = r.speaks.filter((c) => c.op === "cut_in" && c.reason === want && (!win || (c.t >= win.start && c.t < win.end + 300)));
+    const hits = r.speaks.filter((c) => ((c.op === "cut_in" && c.reason === want) || (want === "question_to_her" && c.op === "speak" && c.reason !== "wt1_nudge")) && (!win || (c.t >= win.start && c.t < win.end + 300)));
     f.cutInExpected = want;
     f.cutInHit = hits.length > 0;
-    if (want === "off_task_drift") f.cutInHit = r.speaks.some((c) => c.op === "cut_in" && c.reason === want && firstChild !== null && c.t - firstChild >= (sg.cutIn.minOffTaskMs ?? 20000) - 1000);
+    if (want === "off_task_drift") {
+      // feasible only if the rendered drift outlasts the band's off-task limit (the first release's drift renders are
+      // 11-15 s against 20 / 30 s limits: infeasible; then the correct behaviour is NO drift cut-in, and one is out of policy)
+      const lim = sg.cutIn.minOffTaskMs ?? 20000;
+      const feasible = firstChild !== null && g.trueEnd !== null && g.trueEnd - firstChild >= lim;
+      if (feasible) f.cutInHit = r.speaks.some((c) => c.op === "cut_in" && c.reason === want && c.t - firstChild >= lim - 1000);
+      else { delete f.cutInExpected; delete f.cutInHit; f.driftInfeasible = true; }
+    }
   }
   f.cutIns = r.speaks.filter((c) => c.op === "cut_in").map((c) => {
     const p = (g.pauses || []).find((pp) => c.t >= pp.start && c.t < pp.end + 300);
-    const inPolicy = (p && allowedCutIn(c, p)) || isSafeguard(c) || (sg.cutIn && c.reason === sg.cutIn.reason);
+    const inPolicy = (p && allowedCutIn(c, p)) || isSafeguard(c) || (sg.cutIn && c.reason === sg.cutIn.reason && !(f.driftInfeasible && c.reason === "off_task_drift"));
     return { reason: c.reason, inPolicy: !!inPolicy };
   });
   // ── holds (M12) ──
@@ -221,6 +231,7 @@ export function aggregate(F) {
     M10_cutInRecallByReason: Object.fromEntries([...new Set(cutExp.map((f) => f.cutInExpected))].sort().map((k) => [k, rate(cutExp.filter((f) => f.cutInExpected === k).map((f) => ({ c: f.c, y: f.cutInHit })))])),
     M10_cutInPrecision: rate(allCut.map((x) => ({ c: x.c, y: x.inPolicy }))),
     M10_outOfPolicy: allCut.filter((x) => !x.inPolicy).length,
+    M10_driftInfeasibleStreams: F.filter((f) => f.driftInfeasible).length,
     M11_verdictOnRepaired: rate(F.filter((f) => f.repair).map((f) => ({ c: f.c, y: f.verdictOnRepaired }))),
     M11_repairCollision: rate(F.filter((f) => f.repair).map((f) => ({ c: f.c, y: f.repairCollision }))),
     M12_holdViolation: rate(F.filter((f) => f.holdViolation !== undefined).map((f) => ({ c: f.c, y: f.holdViolation }))),

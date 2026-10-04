@@ -8938,6 +8938,160 @@
    "at": "2026-10-04",
    "title": "Owner: voice candidates narrowed to MAI-Voice and OpenAI TTS (DragonHD Diya stays as the anchor and current production voice). Open models (Veena, Svara, Chatterbox, Indic Parler, VoxCPM2) and Nova are dropped for now. Finalize the production voice fast and move on to deploy. Round 4 (wf_39e7e463-899) was rescoped and the AWS open-model render arm cancelled before it ran.",
    "source": "inbox/owner-voice-scope.json"
+  },
+  {
+   "id": "ot-acceptance-item1-prod9242020-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Owner item 1 (grading truth) on prod 9242020, tests/prod/owner-1-grading.mjs seed 1101, 8 maths topics, typed + spoken: kit answers 77 graded (20 correct, 45 wrong, 12 key+filler), 0 wrong grades (1 key+filler got no verdict); module answers 23 over 8 engines: 16/16 frames that claimed correct:true for a wrong value were graded correct (the server never re-checks a bound engine, F1), 7/7 honest wrong commits graded not_yet",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "ot-acceptance-item2-prod9242020-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Owner item 2 (no confused replies) on prod 9242020, tests/prod/owner-2-no-confusion.mjs seed 2101, code rubric only (no model judge), 6 sessions / 90 child turns: 17/90 turns (18.9%) had at least one defect, 20 defects: bare question 7, same card question 4 turns running 5, repeat of an earlier line 2, gutted teaching turn 2, fixed fallback line 1, stray script 1, dangling quote 1, 'samajh nahi aaya' answered with the same words 1",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "ot-acceptance-item3-prod9242020-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Owner item 3 (child-requested ending) on prod 9242020, tests/prod/owner-3-ending.mjs seeds 3101 (typed) and 3102 (spoken), 8 stop phrases per lane: 0/16 got a check-in; 15/16 ended the lesson that turn (end:true, move wrap) and 1/16 (spoken \"I'm done\") was routed to safeguarding with the fixed disclosure line (F10); that test account could not be deleted (409 erase_review, safeguarding guard)",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "ot-acceptance-item4-prod9242020-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Owner item 4 (steering requests) on prod 9242020, tests/prod/owner-4-steering.mjs seed 4101, 8 requests x typed/spoken = 16, code rubric only: 8/16 acted on the next turn; 'can we talk about something else' ended the lesson on both lanes (F8); English switch failed 2/2, Hindi 1/2 (spoken), story 1/2, example 1/2, cricket topic 1/2",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "ot-acceptance-item5-prod9242020-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Owner item 5 (visual requests) on prod 9242020, tests/prod/owner-5-visual.mjs seed 5101, 6 requests x typed/spoken = 12: 0/12 put a picture on the stage (no mount, no image board, no Studio slot or reveal in that turn or the next) when only image boards count; the first scoring, which counted the written-problem math board, reported 6/12 and passed one reply that drew the number line in box characters",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "ot-patch-series-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "evals/owner-truth/patches 01-10 (series against the working tree snapshot of 20:47Z, re-checked to apply cleanly on the live tree at 21:18Z): every stage passes the 11 core suites (155/155 tests: state, classify, director-truth, lesson-truth, brain-turn incl. BR5 RELEASE, safety, compiler, director-module-turn, engines-logic, client-runtime, child-lesson-pure); stage 10 adds 25 tests (180/180); full `node --test tests/` on a copy with the series has no new failure beyond the two stop tests the series rewrites; no model calls, no production run of the fixes yet",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "ot-child-requests-lexical-first",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "A child's free-form request is read from their words by a closed taxonomy (server/director/requests.js: goodbye, stop, continue, break, change_topic, topic, language, another, example, story, slower, visual), lexical first and never evidence; a whole-turn steering request is decided in code with no classifier call and mapped onto existing Director moves (helpMove, break, reteach with the diagram representation), a stop or goodbye still goes to the classifier for its distress read. Reverse if a two-rater set shows the lexicon below 0.9 precision on real child turns, or if the classifier's signals block (W2-E) reaches >= 0.95 agreement on these acts and can replace it",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "ot-stop-one-checkin",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "A child's stop phrase ('lesson khatam', 'I'm done', 'bas', 'end the lesson', or the classifier's wants_to_stop) gets ONE warm check-in with keep going / short break / stop for today; stop words again on the next turn or the stop chip end the lesson; a real goodbye ('bye', 'mujhe jaana hai', 'I have to go now') and a relational RELEASE end it that turn (NEVER MANIPULATE); a child-stopped lesson never closes the day (countsAsDone stoppedEarly). Reverse if the owner or a child-safety review finds the check-in holds children who meant to leave (e.g. > 5% of check-ins followed by the app being closed without an answer)",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "rj-ot-stop-flag-ends-lesson",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: one stop flag (lexical OR the classifier's one-clause wants_to_stop) going straight to toWrap(stopping) → end:true. Broke: 15/16 owner stop phrases ended the lesson that turn with no check-in; 'can we talk about something else' was read as a stop (2/2); a missed flag left 'Yahin rok dete hain' in a turn that went on; the ended lesson then closed the whole day (409 \"today's lesson is done\")",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "rj-ot-frame-claim-as-grade",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: grading a bound engine by the frame's own data.correct, and telling the reply model 'answer (right)/(wrong)' from that claim while the verdict note came from the server grade. Broke: 16/16 forged claims graded correct on prod; with a claim that disagreed with the server grade, her words followed the claim ('Bilkul … sahi number chuna' on a wrong value; 'yahan galti hui' on a right one), and the praise/deny guards missed the tick emoji and 'galti hui'",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "rj-ot-gut-or-bare-question",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: when a leak or drift survived the rewrite, replacing the turn with the bare pinned question, and on a teaching turn deleting every sentence that 'reveals' the next item. Broke: 38/394 owner-session replies (9.6%) were byte-identical to the question (the child's words got no answer), and definition-style next items ('Any question that can be checked by trying something') left remainders like '” Aapka question?'",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "rj-ot-shape-slowly-recited",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: the repairUnclear shape 'ask them to say it once more, slowly'. Broke: a child who said 'slowly please' (read as unclear) was told to speak slowly — the shape recited at the wrong person (another instance of the recited-prompt law)",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "rj-ot-picture-promised-not-drawn",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: the explain shape 'objects first, then a picture, then the symbol; point at the whiteboard anchor' and the characters' 'picture → rule → number', while explain mounts no whiteboard and no child request ever triggers one. Broke: she drew number lines in box characters (read aloud on the spoken lane), recited 'Whiteboard anchor:', or said she cannot show pictures; 0/12 visual requests produced a picture",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "rj-ot-generic-mode-default",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: frame params.ts filling the EngineDef default for an absent mode ('place' for number-line@1) while shared/engine-catalog.js deliberately sends no mode on an unbound plan. Broke: every unbound fraction show became an integer 0-10 line with no target and Check disabled; the same default skipped the generic path on 6 other engines whose normalize reads an absent mode as show/predict (collections, fractions, geoboard, multiply-divide, patterns, place-value)",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "rj-ot-any-script-marks",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: the reply script check LATIN = [Latin Common \\p{M}]. Broke: \\p{M} admits every script's combining marks, so Gujarati vowel signs (U+0A82, U+0AC7) reached a Hinglish child (owner session s09 t17); Script=Inherited is the shared set",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "rj-ot-visual-counts-math-board",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried (test harness): counting any new non-text whiteboard as the visual artifact in owner-5. Broke: the written-problem math board changes on its own every teaching turn, so 6/12 visual requests 'passed' with no picture, one of them a box-character number line; owner-5 now counts only a mount, an image board, a Studio slot that becomes real, or a reveal",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "ot-open-leftover-test-account",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "Production test account prod-owner3+1791143713628akvxra@taxila.test (1 child) is held by the safeguarding erase guard (409 erase_review) after the spoken \"I'm done\" probe; a human must review and mark the test child's incident handled, then DELETE /api/account (evals/owner-truth/results/acceptance-2026-10-04-prod9242020/LEFTOVER-ACCOUNTS.json)",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "ot-open-w2i-release-gate",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "BUILD-PLAN:684 ('RELEASE wins in 100%') and :865 (w2i-release.mjs 'the lesson ends that turn, no one more') encode the immediate end the owner rejected for stop phrases; they must read 'a stop phrase → one check-in; a true goodbye or a second stop ends' before W2-I builds its gate",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "ot-open-visual-reference-timing",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "A child's visual request now mounts the item's engine / explainer board and asks Studio for the whiteboard on any lane, but the whiteboard arrives 2.8-6.3 s after the ask, so the move shape can only say 'point at it' when a module is mounted; a turn whose only picture is the async whiteboard still gets the words-only note. Needs a reveal-turn cue (W2-H) and a production run of owner-5",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "ot-open-resume-ended-lesson",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "F7 half-fixed: a child-stopped lesson no longer closes the day, but a new start still builds a fresh state (new opening, the stopped lesson's place lost). A resume of today's stopped lesson is unbuilt",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "ot-open-statement-key-spoiled",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "Patch 06 lets an explanation state an upcoming statement-shaped key (why/teach-back or a 6+ word key) instead of gutting the turn; turn.js spoiledBy then marks that item spoiled, so its answer carries no evidence. Unmeasured how many kit items this zeroes; measure over the kits before release",
+   "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "ot-open-item4-owner",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "Owner item 4 (free-form steering) has no Wave-2 stream; patches 07-08 supply the Director side, but no stream owns the acceptance run, the lexicon's precision on real child turns, or the voice lane's language pin",
+   "source": "inbox/owner-truth.json"
   }
  ],
  "edges": [
@@ -14605,6 +14759,86 @@
    "src": "owner-voice-scope-mai-openai-2026-10-04",
    "rel": "constrains",
    "dst": "voice-r3-next-expressive-engine-2026-10-04"
+  },
+  {
+   "src": "ot-acceptance-item1-prod9242020-2026-10-04",
+   "rel": "part_of",
+   "dst": "owner-test-0-of-100-2026-10-04"
+  },
+  {
+   "src": "ot-acceptance-item2-prod9242020-2026-10-04",
+   "rel": "part_of",
+   "dst": "owner-test-0-of-100-2026-10-04"
+  },
+  {
+   "src": "ot-acceptance-item3-prod9242020-2026-10-04",
+   "rel": "part_of",
+   "dst": "owner-test-0-of-100-2026-10-04"
+  },
+  {
+   "src": "ot-acceptance-item4-prod9242020-2026-10-04",
+   "rel": "part_of",
+   "dst": "owner-test-0-of-100-2026-10-04"
+  },
+  {
+   "src": "ot-acceptance-item5-prod9242020-2026-10-04",
+   "rel": "part_of",
+   "dst": "owner-test-0-of-100-2026-10-04"
+  },
+  {
+   "src": "rj-ot-stop-flag-ends-lesson",
+   "rel": "measured_by",
+   "dst": "ot-acceptance-item3-prod9242020-2026-10-04"
+  },
+  {
+   "src": "rj-ot-frame-claim-as-grade",
+   "rel": "measured_by",
+   "dst": "ot-acceptance-item1-prod9242020-2026-10-04"
+  },
+  {
+   "src": "rj-ot-gut-or-bare-question",
+   "rel": "measured_by",
+   "dst": "ot-acceptance-item2-prod9242020-2026-10-04"
+  },
+  {
+   "src": "rj-ot-picture-promised-not-drawn",
+   "rel": "measured_by",
+   "dst": "ot-acceptance-item5-prod9242020-2026-10-04"
+  },
+  {
+   "src": "ot-stop-one-checkin",
+   "rel": "supersedes",
+   "dst": "rj-ot-stop-flag-ends-lesson"
+  },
+  {
+   "src": "ot-stop-one-checkin",
+   "rel": "measured_by",
+   "dst": "ot-patch-series-2026-10-04"
+  },
+  {
+   "src": "ot-child-requests-lexical-first",
+   "rel": "measured_by",
+   "dst": "ot-patch-series-2026-10-04"
+  },
+  {
+   "src": "ot-child-requests-lexical-first",
+   "rel": "caused_by",
+   "dst": "ot-acceptance-item4-prod9242020-2026-10-04"
+  },
+  {
+   "src": "rj-ot-visual-counts-math-board",
+   "rel": "caused_by",
+   "dst": "rj-plumbing-batteries-as-acceptance"
+  },
+  {
+   "src": "ot-open-w2i-release-gate",
+   "rel": "blocks",
+   "dst": "ot-stop-one-checkin"
+  },
+  {
+   "src": "ot-open-leftover-test-account",
+   "rel": "caused_by",
+   "dst": "ot-acceptance-item3-prod9242020-2026-10-04"
   }
  ]
 }

@@ -1455,3 +1455,95 @@ and the migration scan fails.
 **Replaced by:** assertions on `requestfinished`, and on `requestfailed` other than `csp`.
 
 - `rj-support-api-tickets-developer-plan` (2026-10-04): tried filing the South India PostgreSQL and Azure OpenAI quota tickets through the ARM Support API with the Contributor service principal. The PUT returns 202, but the async operation fails with `InvalidSupportPlan`: the subscription is on the Developer support plan, and the API needs Professional Direct or higher. Quota tickets must be filed by the owner in the portal (free). **Reverse if:** the support plan is upgraded.
+
+
+## Owner truth (2026-10-04; inbox `context/inbox/owner-truth.json`): pending merge
+
+### `rj-ot-stop-flag-ends-lesson`
+Tried: one stop flag (the lexical `wantsToStop` OR the classifier's one-clause `wants_to_stop`) going straight to
+`toWrap(stopping)` → `end: true`. Broke: 15/16 owner stop phrases ended the lesson that turn with no check-in; "can we talk
+about something else" was read as a stop (2/2); when the flag missed, "Yahin rok dete hain" went out in a turn that went on;
+and the ended lesson then counted as today's lesson (409 "today's lesson is done"). Replaced by `ot-stop-one-checkin`
+(patch 07). Do not take back: W2-I's planned release gate (BUILD-PLAN:684, :865) would re-encode it.
+
+### `rj-ot-frame-claim-as-grade`
+Tried: grading a bound engine by the frame's own `data.correct`, and writing that claim into the reply model's user turn
+("answer (right)"), while the verdict note came from the server grade. Broke: 16/16 forged claims graded correct on prod;
+when the claim and the server grade disagreed, her words followed the claim, and the praise/deny guards missed the tick
+emoji and "yahan galti hui". Patches 01 (server re-check of numeric commits) and 02 (no claim in the reply model's turn;
+emoji and "galti hui" in the guards).
+
+### `rj-ot-gut-or-bare-question`
+Tried: when a leak or drift survived the rewrite, replacing the whole turn with the bare pinned question; on a teaching
+turn, deleting every sentence that "reveals" the next item. Broke: 38/394 owner-session replies (9.6%) were byte-identical
+to the question; definition-style next items left remainders like "” Aapka question?" and "Great, Meher. Why? At the end,
+teach Bittu.". Patch 06 keeps the acknowledgement before the question, requires a coherent remainder, exempts
+statement-shaped keys from the ahead check (their answers are still discounted via `spoiled`), and de-duplicates a draft
+that quotes part of the question.
+
+### `rj-ot-shape-slowly-recited`
+Tried: the `repairUnclear` shape "ask them to say it once more, slowly". Broke: "slowly please" (read as unclear) got
+"thoda dheere boliye" — the child was told to slow down. The recited-prompt law at the wrong addressee. Patch 08 removes
+the word and routes "slowly" to the SLOWER move, which now says the pace is hers.
+
+### `rj-ot-picture-promised-not-drawn`
+Tried: the explain shape "objects first, then a picture, then the symbol; point at the whiteboard anchor" (and the
+characters' "picture → rule → number") while explain mounts no whiteboard and no child request triggers one. Broke: box-
+character number lines (read aloud on the spoken lane), "Whiteboard anchor:" recited, "main picture nahi dikha sakti";
+0/12 visual requests produced a picture. Patch 09: a visual request is a re-teach with the diagram representation (mount
+or explainer board), Studio is asked on any lane, and the shapes name the screen only from the on-screen facts.
+
+### `rj-ot-generic-mode-default`
+Tried: `src/modules/frame/params.ts` filling the EngineDef default for an absent `mode` ("place" for number-line@1) while
+`shared/engine-catalog.js` deliberately sends no mode on an unbound plan. Broke: every unbound fraction show became an
+integer 0-10 line with no target and Check disabled; the same default skipped the generic path of collections, fractions,
+geoboard, multiply-divide, patterns and place-value. Patch 03.
+
+### `rj-ot-any-script-marks`
+Tried: the reply script check `[Latin Common \p{M}]`. Broke: `\p{M}` admits every script's combining marks, so Gujarati
+vowel signs reached a Hinglish child (s09 t17). Patch 06 uses `Script=Inherited`.
+
+### `rj-ot-visual-counts-math-board`
+Tried (test harness, owner-5 first scoring): counting any new non-text whiteboard as the visual artifact. Broke: the
+written-problem math board changes on its own every teaching turn, so 6/12 visual requests "passed" with no picture, one
+with a box-character number line. A harness that can pass the defect it tests for is the plumbing-battery failure again
+(`rj-plumbing-batteries-as-acceptance`). owner-5 now counts only a mount, an image board, a Studio slot that becomes real,
+or a reveal.
+
+## Duplex v2 runtime rejections (2026-10-04; inbox `context/inbox/duplex-runtime.json`)
+
+### `rj-duplex-fanin-single-commit-slot`
+**Tried:** the fan-in kept one pending client-commit time and gave it to the next final as its audio coverage.
+
+**What broke (M-D7 b04, D4):** a second micro-commit probe (3,300 ms) overwrote the first (2,400 ms) before the first final
+landed. That final ("हम्म सात आठ") was read as covering audio to 3,300 ms, the horizon saw no unseen voice while "छप्पन"
+had no words yet, and a verdict played on 8 instead of 56 (2/30 runs; 4/30 without speculation).
+
+**Replaced by:** a FIFO commit queue: each final takes the oldest commit at or after its item's start; coverage is the
+earlier of that commit and the source's own audio end. Unit-tested.
+
+### `rj-duplex-stale-hold-regrant`
+**Tried:** G3 entered hold_requested whenever the markers showed a hold request on a silent child's floor, and left only
+on a voice onset.
+
+**What broke (M-D7 h01):** at the offset after the answer, the transcript still showed only "एक मिनट", so the hold was
+re-granted on stale words. When "हाँ, बारह" landed (pComplete 0.997) the phase stayed held: the turn never ended and the 8 s
+check-in look played to a child who had answered.
+
+**Replaced by:** `duplex-hold-grant-fresh-words`.
+
+### `rj-duplex-no-text-resume-1600`
+**Tried:** after a resumable yield with no words yet, resume her line after 1,600 ms of silence (v1 `NO_TEXT_RESUME_MS`).
+
+**What broke (M-D7 i08):** D4's first words of a fresh burst arrive 1.7-2.0 s after onset (M-D2 p90 2,048 ms), so she
+resumed over a "रुको" whose words had not arrived yet. "No text" meant "not transcribed yet".
+
+**Replaced by:** resume only after the source's first-text p90 + 300 ms from the overlap onset (`FIRST_TEXT_P90`).
+
+### `rj-duplex-eager-overlap-yield`
+**Tried:** +1.0 barge-in evidence once a burst over her had voiced 250 ms (aiming at "yield ≤ 200 ms").
+
+**What broke (M-D7):** continuers last ~300-400 ms, so "हम्म / अच्छा / ओके" crossed 250 ms still voicing: she stopped
+mid-sentence and resumed ~0.8 s later on 20/30 continuer turns.
+
+**Replaced by:** `duplex-overlap-stay-ducked` (the reflex duck carries the first 450 ms).

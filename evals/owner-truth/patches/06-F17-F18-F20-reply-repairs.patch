@@ -1,3 +1,10 @@
+OWNER-TRUTH PATCH 06 of 10 (evals/owner-truth/ROOT-CAUSES.md). Apply from the repo root, in order: patch -p1 < 06-F17-F18-F20-reply-repairs.patch
+Root causes: F17, F18, F20 (and F19's verbatim re-append de-dup)
+Files (Wave-2 notes): server/brain/say.js (W2-E hot), server/director/say.js
+Depends on: 05 (brain/say.js), 02/04 (director/say.js)
+Tests: patch 10 'F17', 'F18', 'F20'
+Base: working tree snapshot 2026-10-04 20:47Z; applies cleanly on the live tree at 21:18Z. Rebase hunks by their context lines if Wave 2 moved them.
+
 diff -ruN a/server/brain/say.js b/server/brain/say.js
 --- a/server/brain/say.js	2026-10-04 21:17:49.303985598 +0000
 +++ b/server/brain/say.js	2026-10-04 21:17:49.308969882 +0000

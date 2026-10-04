@@ -1,3 +1,10 @@
+OWNER-TRUTH PATCH 04 of 10 (evals/owner-truth/ROOT-CAUSES.md). Apply from the repo root, in order: patch -p1 < 04-F5-partial-and-attempt.patch
+Root causes: F5
+Files (Wave-2 notes): server/director/classify.js (W2-E signals block nearby, untouched), server/director/say.js
+Depends on: 02 (same file, adjacent hunks)
+Tests: patch 10 'F5'
+Base: working tree snapshot 2026-10-04 20:47Z; applies cleanly on the live tree at 21:18Z. Rebase hunks by their context lines if Wave 2 moved them.
+
 diff -ruN a/server/director/classify.js b/server/director/classify.js
 --- a/server/director/classify.js	2026-10-04 21:17:49.156543676 +0000
 +++ b/server/director/classify.js	2026-10-04 21:17:49.162300446 +0000

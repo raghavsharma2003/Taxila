@@ -1,3 +1,10 @@
+OWNER-TRUTH PATCH 07 of 10 (evals/owner-truth/ROOT-CAUSES.md). Apply from the repo root, in order: patch -p1 < 07-F6-F7-F8-F9-stop-checkin.patch
+Root causes: F6, F7 (day not closed; resume is still open), F8, F9
+Files (Wave-2 notes): NEW server/director/requests.js; server/director/classify.js, state.js, shapes.js, say.js; server/routes/child.js; server/brain/turn.js (W2-E/W2-I hot: one relRelease marker in the BR5 re-plan); rewrites the stop cases in tests/state.test.mjs and tests/director-truth.test.mjs. CONFLICTS WITH BUILD-PLAN:684/:865 (W2-I release gate) as written: rewrite that gate first
+Depends on: 01-06
+Tests: patch 10 'F6/F9', 'F7', 'F8'; tests/brain-turn.test.mjs BR5 RELEASE still passes
+Base: working tree snapshot 2026-10-04 20:47Z; applies cleanly on the live tree at 21:18Z. Rebase hunks by their context lines if Wave 2 moved them.
+
 diff -ruN a/server/brain/turn.js b/server/brain/turn.js
 --- a/server/brain/turn.js	2026-10-04 21:17:49.379536541 +0000
 +++ b/server/brain/turn.js	2026-10-04 21:17:49.387858244 +0000

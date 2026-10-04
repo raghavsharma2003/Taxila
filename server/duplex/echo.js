@@ -11,14 +11,15 @@
 //   - a run of >= 2 consecutive transcript tokens that matches a consecutive run of her recent words;
 //   - every matching token when the whole text is echo-shaped (>= 4 tokens, >= 70 % of them hers: the shipped isEcho rule).
 // What is KEPT: an isolated single-token match. A child repeating one word of hers as an answer ("चौथाई", "बारह") is a
-// turn, not an echo, and deleting it would delete an answer.
+// turn, not an echo, and deleting it would delete an answer — except a FRESH one (her word ended <= 1 s before the text's
+// audio time): that is her echo arriving token by token on a word-timed stream.
 import { skeleton } from "../../src/lesson/cascadeLink.ts";
 
 const WORD = /[^\p{L}\p{M}\p{N}]+/u;
 const split = (t) => String(t ?? "").split(/\s+/).filter(Boolean);
 const sk = (w) => skeleton(String(w).replace(new RegExp(WORD.source, "gu"), ""));
 
-export const ECHO = { windowMs: 2000, minRun: 2, echoShare: 0.7, echoMinTokens: 4 };
+export const ECHO = { windowMs: 2000, minRun: 2, echoShare: 0.7, echoMinTokens: 4, freshMs: 1000 };
 
 export class EchoSubtractor {
   /** @param {{ windowMs?: number, minRun?: number }} [o] */
@@ -90,7 +91,11 @@ export class EchoSubtractor {
           if (ts[a] !== hs[b]) break;
           a++; b++; n++;
         }
-        if (n >= this.o.minRun) for (let x = i; x < a; x++) drop[x] = true;
+        // a single matching token is kept (a child repeating one word of hers is a turn) UNLESS it is FRESH: her word ended
+        // within freshMs of the text's own audio time (t - lag). While she is mid-sentence that is her echo arriving word by
+        // word (word-timed streaming STT emits it one token at a time: TaxilaFDB F12, 2026-10-04, 26/40 self-yields).
+        const fresh = n === 1 && her[k].endMs >= t - lagMs - this.o.freshMs && her[k].endMs <= t + 100;
+        if (n >= this.o.minRun || fresh) for (let x = i; x < a; x++) drop[x] = true;
       }
     }
     // the whole text is echo-shaped: the shipped isEcho rule (>= 4 tokens, >= 70 % hers)
