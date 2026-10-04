@@ -34,8 +34,8 @@
     "n": 5
    },
    "rtf_median": 2.615,
-   "deva_cer_median": null,
-   "takes_with_defects": 0,
+   "deva_cer_median": 0.075,
+   "takes_with_defects": 3,
    "arm_dir": "veena",
    "job": "voice-v3-open-20261004-115139-533b",
    "arm_cost_usd_est": 0.3979,
@@ -63,8 +63,8 @@
     "n": 5
    },
    "rtf_median": 2.653,
-   "deva_cer_median": null,
-   "takes_with_defects": 0,
+   "deva_cer_median": 0.091,
+   "takes_with_defects": 2,
    "arm_dir": "veena",
    "job": "voice-v3-open-20261004-115139-533b",
    "arm_cost_usd_est": 0.3979,
@@ -92,8 +92,8 @@
     "n": 5
    },
    "rtf_median": 2.62,
-   "deva_cer_median": null,
-   "takes_with_defects": 0,
+   "deva_cer_median": 0.091,
+   "takes_with_defects": 3,
    "arm_dir": "veena",
    "job": "voice-v3-open-20261004-115139-533b",
    "arm_cost_usd_est": 0.3979,
@@ -121,8 +121,8 @@
     "n": 5
    },
    "rtf_median": 2.589,
-   "deva_cer_median": null,
-   "takes_with_defects": 0,
+   "deva_cer_median": 0.091,
+   "takes_with_defects": 3,
    "arm_dir": "veena",
    "job": "voice-v3-open-20261004-115139-533b",
    "arm_cost_usd_est": 0.3979,
@@ -151,7 +151,7 @@
     "n": 10
    },
    "rtf_median": 2.581,
-   "deva_cer_median": null,
+   "deva_cer_median": 0.075,
    "takes_with_defects": 0,
    "arm_dir": "svara",
    "job": "voice-v3-open-20261004-115139-533b",
@@ -181,7 +181,7 @@
     "n": 10
    },
    "rtf_median": 2.582,
-   "deva_cer_median": null,
+   "deva_cer_median": 0.1,
    "takes_with_defects": 0,
    "arm_dir": "svara",
    "job": "voice-v3-open-20261004-115139-533b",
@@ -211,8 +211,8 @@
     "n": 10
    },
    "rtf_median": 1.408,
-   "deva_cer_median": null,
-   "takes_with_defects": 0,
+   "deva_cer_median": 0.091,
+   "takes_with_defects": 1,
    "arm_dir": "voxcpm2",
    "job": "voice-v3-open-20261004-115139-533b",
    "arm_cost_usd_est": 0.3296,
@@ -241,7 +241,7 @@
     "n": 10
    },
    "rtf_median": 1.401,
-   "deva_cer_median": null,
+   "deva_cer_median": 0.091,
    "takes_with_defects": 0,
    "arm_dir": "voxcpm2",
    "job": "voice-v3-open-20261004-115139-533b",
@@ -270,8 +270,8 @@
     "n": 5
    },
    "rtf_median": 1.617,
-   "deva_cer_median": null,
-   "takes_with_defects": 0,
+   "deva_cer_median": 0.091,
+   "takes_with_defects": 3,
    "arm_dir": "vibevoice-hindi-7b",
    "job": "voice-v3-open-20261004-115139-533b",
    "arm_cost_usd_est": 0.2644,
@@ -299,8 +299,8 @@
     "n": 5
    },
    "rtf_median": 1.619,
-   "deva_cer_median": null,
-   "takes_with_defects": 0,
+   "deva_cer_median": 0.114,
+   "takes_with_defects": 3,
    "arm_dir": "vibevoice-hindi-7b",
    "job": "voice-v3-open-20261004-115139-533b",
    "arm_cost_usd_est": 0.2644,
@@ -310,8 +310,8 @@
  "cost": {
   "this_run_estimate_usd": {
    "aws": "see arms[].job_cost_usd (EC2 spot, run.json estimate)",
-   "azure_stt_screen_s": 0.0,
-   "azure_stt_usd_est": 0.0
+   "azure_stt_screen_s": 1885.6,
+   "azure_stt_usd_est": 0.524
   }
  },
  "renders": [
@@ -362,7 +362,29 @@
     "speech_span_s": 9.77,
     "chars_per_s": 10.2
    },
-   "defects": []
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले तेंस जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बास्ट",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच"
+    ],
+    "deva_cer": 0.169
+   },
+   "defects": [
+    "numbers_missing_in_asr: बासठ"
+   ]
   },
   {
    "arm": "oss-veena-kavya",
@@ -408,7 +430,29 @@
     "speech_span_s": 9.3,
     "chars_per_s": 10.8
    },
-   "defects": []
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंट्स जोड़ते हैं बीस और तीस पच्चास फिर सात और पांच बारह तो टोटल हुआ बास्ट",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच"
+    ],
+    "deva_cer": 0.231
+   },
+   "defects": [
+    "numbers_missing_in_asr: बासठ"
+   ]
   },
   {
    "arm": "oss-veena-kavya",
@@ -455,6 +499,27 @@
     "speech_span_s": 9.04,
     "chars_per_s": 11.1
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंस जोड़तें हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.154
+   },
    "defects": []
   },
   {
@@ -499,6 +564,13 @@
     ],
     "speech_span_s": 6.32,
     "chars_per_s": 15.2
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्ब करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.267
    },
    "defects": []
   },
@@ -546,6 +618,13 @@
     "speech_span_s": 6.02,
     "chars_per_s": 15.9
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्ब करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.267
+   },
    "defects": []
   },
   {
@@ -591,6 +670,13 @@
     ],
     "speech_span_s": 6.49,
     "chars_per_s": 14.8
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमने में बर्ब करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.283
    },
    "defects": []
   },
@@ -639,6 +725,17 @@
     "speech_span_s": 8.05,
     "chars_per_s": 14.3
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -683,6 +780,17 @@
     ],
     "speech_span_s": 8.45,
     "chars_per_s": 13.6
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
    },
    "defects": []
   },
@@ -729,6 +837,17 @@
     ],
     "speech_span_s": 8.62,
     "chars_per_s": 13.3
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
    },
    "defects": []
   },
@@ -777,6 +896,21 @@
     "speech_span_s": 8.16,
     "chars_per_s": 15.2
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.091
+   },
    "defects": []
   },
   {
@@ -823,6 +957,21 @@
     ],
     "speech_span_s": 9.13,
     "chars_per_s": 13.6
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पीछा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.239
    },
    "defects": []
   },
@@ -872,6 +1021,21 @@
     "speech_span_s": 9.05,
     "chars_per_s": 13.7
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.091
+   },
    "defects": []
   },
   {
@@ -916,6 +1080,17 @@
     ],
     "speech_span_s": 8.02,
     "chars_per_s": 13.6
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
    },
    "defects": []
   },
@@ -963,6 +1138,17 @@
     "speech_span_s": 7.68,
     "chars_per_s": 14.2
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
+   },
    "defects": []
   },
   {
@@ -1005,6 +1191,17 @@
     "internal_gaps_s": [],
     "speech_span_s": 7.59,
     "chars_per_s": 14.4
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर फैक चक्कर लगा लेता है सोचो अभी सी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.061
    },
    "defects": []
   },
@@ -1053,7 +1250,29 @@
     "speech_span_s": 9.98,
     "chars_per_s": 10.0
    },
-   "defects": []
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंस जोड़ते हैं बीस और तीस पच्चास फिर सात और पांच बारह तो टोटल हुआ बास्ट",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच"
+    ],
+    "deva_cer": 0.2
+   },
+   "defects": [
+    "numbers_missing_in_asr: बासठ"
+   ]
   },
   {
    "arm": "oss-veena-maitri",
@@ -1100,7 +1319,29 @@
     "speech_span_s": 8.93,
     "chars_per_s": 11.2
    },
-   "defects": []
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंस जोड़ते हैं बीस और तीस पच्चास फिर सात और पांच बारह तो टोटल हुआ बास्ट",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच"
+    ],
+    "deva_cer": 0.2
+   },
+   "defects": [
+    "numbers_missing_in_asr: बासठ"
+   ]
   },
   {
    "arm": "oss-veena-maitri",
@@ -1149,7 +1390,29 @@
     "speech_span_s": 9.71,
     "chars_per_s": 10.3
    },
-   "defects": []
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंस जोड़ते हैं बीस और तीस पच्चास फिर सात और पांच बारह तो टोटल हुआ बास्ट",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच"
+    ],
+    "deva_cer": 0.2
+   },
+   "defects": [
+    "numbers_missing_in_asr: बासठ"
+   ]
   },
   {
    "arm": "oss-veena-maitri",
@@ -1194,6 +1457,13 @@
     ],
     "speech_span_s": 6.16,
     "chars_per_s": 15.6
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्ब करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.267
    },
    "defects": []
   },
@@ -1243,6 +1513,13 @@
     "speech_span_s": 7.32,
     "chars_per_s": 13.1
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्ब करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.267
+   },
    "defects": []
   },
   {
@@ -1287,6 +1564,13 @@
     ],
     "speech_span_s": 6.45,
     "chars_per_s": 14.9
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्ब करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.267
    },
    "defects": []
   },
@@ -1334,6 +1618,17 @@
     ],
     "speech_span_s": 8.53,
     "chars_per_s": 13.5
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
    },
    "defects": []
   },
@@ -1383,6 +1678,17 @@
     "speech_span_s": 7.83,
     "chars_per_s": 14.7
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -1430,6 +1736,17 @@
     "speech_span_s": 8.09,
     "chars_per_s": 14.2
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -1476,6 +1793,21 @@
     "speech_span_s": 8.9,
     "chars_per_s": 13.9
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.091
+   },
    "defects": []
   },
   {
@@ -1518,6 +1850,21 @@
     "internal_gaps_s": [],
     "speech_span_s": 8.5,
     "chars_per_s": 14.6
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.091
    },
    "defects": []
   },
@@ -1567,6 +1914,21 @@
     "speech_span_s": 9.11,
     "chars_per_s": 13.6
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.091
+   },
    "defects": []
   },
   {
@@ -1613,6 +1975,17 @@
     ],
     "speech_span_s": 8.79,
     "chars_per_s": 12.4
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
    },
    "defects": []
   },
@@ -1661,6 +2034,17 @@
     "speech_span_s": 7.74,
     "chars_per_s": 14.1
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
+   },
    "defects": []
   },
   {
@@ -1705,6 +2089,17 @@
     ],
     "speech_span_s": 9.66,
     "chars_per_s": 11.3
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
    },
    "defects": []
   },
@@ -1751,7 +2146,29 @@
     "speech_span_s": 7.75,
     "chars_per_s": 12.9
    },
-   "defects": []
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंट्स जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बास्ट",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच"
+    ],
+    "deva_cer": 0.2
+   },
+   "defects": [
+    "numbers_missing_in_asr: बासठ"
+   ]
   },
   {
    "arm": "oss-veena-agastya",
@@ -1797,7 +2214,29 @@
     "speech_span_s": 8.7,
     "chars_per_s": 11.5
    },
-   "defects": []
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंट्स जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बास्ट",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच"
+    ],
+    "deva_cer": 0.2
+   },
+   "defects": [
+    "numbers_missing_in_asr: बासठ"
+   ]
   },
   {
    "arm": "oss-veena-agastya",
@@ -1844,7 +2283,28 @@
     "speech_span_s": 7.96,
     "chars_per_s": 12.6
    },
-   "defects": []
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेन स्टोरते हैं बीस और तीस पचास हिरसाक और पांच बारह तो टोटल हुआ बास",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "पाँच"
+    ],
+    "deva_cer": 0.246
+   },
+   "defects": [
+    "numbers_missing_in_asr: सात बासठ"
+   ]
   },
   {
    "arm": "oss-veena-agastya",
@@ -1889,6 +2349,13 @@
     ],
     "speech_span_s": 6.66,
     "chars_per_s": 14.4
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमने में बर्क करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.283
    },
    "defects": []
   },
@@ -1936,6 +2403,13 @@
     "speech_span_s": 6.32,
     "chars_per_s": 15.2
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमने में बर्व करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.283
+   },
    "defects": []
   },
   {
@@ -1981,6 +2455,13 @@
     ],
     "speech_span_s": 6.23,
     "chars_per_s": 15.4
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे दमले में बर्ब करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.283
    },
    "defects": []
   },
@@ -2029,6 +2510,17 @@
     "speech_span_s": 7.53,
     "chars_per_s": 15.3
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -2073,6 +2565,17 @@
     ],
     "speech_span_s": 7.73,
     "chars_per_s": 14.9
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
    },
    "defects": []
   },
@@ -2121,6 +2624,17 @@
     "speech_span_s": 9.04,
     "chars_per_s": 12.7
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -2167,6 +2681,21 @@
     ],
     "speech_span_s": 9.02,
     "chars_per_s": 13.7
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चर में से तीन हिस्से लेते हैं यानी लगभग पूरा पीसा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.057
    },
    "defects": []
   },
@@ -2215,6 +2744,21 @@
     "speech_span_s": 9.01,
     "chars_per_s": 13.8
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा टीम बंटाचार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.318
+   },
    "defects": []
   },
   {
@@ -2262,6 +2806,21 @@
     "speech_span_s": 9.31,
     "chars_per_s": 13.3
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पीसा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.045
+   },
    "defects": []
   },
   {
@@ -2308,6 +2867,17 @@
     "speech_span_s": 8.88,
     "chars_per_s": 12.3
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
+   },
    "defects": []
   },
   {
@@ -2353,6 +2923,17 @@
     "speech_span_s": 8.19,
     "chars_per_s": 13.3
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
+   },
    "defects": []
   },
   {
@@ -2397,6 +2978,17 @@
     ],
     "speech_span_s": 8.02,
     "chars_per_s": 13.6
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
    },
    "defects": []
   },
@@ -2446,7 +3038,29 @@
     "speech_span_s": 10.15,
     "chars_per_s": 9.9
    },
-   "defects": []
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंट्स जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बास्ट",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच"
+    ],
+    "deva_cer": 0.2
+   },
+   "defects": [
+    "numbers_missing_in_asr: बासठ"
+   ]
   },
   {
    "arm": "oss-veena-vinaya",
@@ -2492,7 +3106,29 @@
     "speech_span_s": 8.78,
     "chars_per_s": 11.4
    },
-   "defects": []
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंट्स जोड़ते हैं बीस और तीस पच्चास फिर सात और पांच बारह तो टोटल हुआ बाश्ड",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच"
+    ],
+    "deva_cer": 0.246
+   },
+   "defects": [
+    "numbers_missing_in_asr: बासठ"
+   ]
   },
   {
    "arm": "oss-veena-vinaya",
@@ -2539,7 +3175,29 @@
     "speech_span_s": 9.3,
     "chars_per_s": 10.8
    },
-   "defects": []
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंट्स जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बास्ट",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच"
+    ],
+    "deva_cer": 0.2
+   },
+   "defects": [
+    "numbers_missing_in_asr: बासठ"
+   ]
   },
   {
    "arm": "oss-veena-vinaya",
@@ -2587,6 +3245,13 @@
     "speech_span_s": 6.64,
     "chars_per_s": 14.5
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्ब करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.267
+   },
    "defects": []
   },
   {
@@ -2633,6 +3298,13 @@
     "speech_span_s": 6.2,
     "chars_per_s": 15.5
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्ब करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.267
+   },
    "defects": []
   },
   {
@@ -2678,6 +3350,13 @@
     ],
     "speech_span_s": 6.74,
     "chars_per_s": 14.2
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमने में बर्ब करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.283
    },
    "defects": []
   },
@@ -2726,6 +3405,17 @@
     "speech_span_s": 8.11,
     "chars_per_s": 14.2
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -2773,6 +3463,17 @@
     "speech_span_s": 8.02,
     "chars_per_s": 14.3
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -2819,6 +3520,17 @@
     "speech_span_s": 7.94,
     "chars_per_s": 14.5
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -2863,6 +3575,21 @@
     ],
     "speech_span_s": 8.11,
     "chars_per_s": 15.3
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पीछा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.045
    },
    "defects": []
   },
@@ -2911,6 +3638,21 @@
     "speech_span_s": 8.88,
     "chars_per_s": 14.0
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.091
+   },
    "defects": []
   },
   {
@@ -2958,6 +3700,21 @@
     "speech_span_s": 8.66,
     "chars_per_s": 14.3
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.091
+   },
    "defects": []
   },
   {
@@ -3000,6 +3757,17 @@
     "internal_gaps_s": [],
     "speech_span_s": 8.11,
     "chars_per_s": 13.4
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
    },
    "defects": []
   },
@@ -3048,6 +3816,17 @@
     "speech_span_s": 8.25,
     "chars_per_s": 13.2
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
+   },
    "defects": []
   },
   {
@@ -3093,6 +3872,17 @@
     "speech_span_s": 7.94,
     "chars_per_s": 13.7
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
+   },
    "defects": []
   },
   {
@@ -3135,6 +3925,27 @@
     "internal_gaps_s": [],
     "speech_span_s": 10.58,
     "chars_per_s": 9.5
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंट्स जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.169
    },
    "defects": []
   },
@@ -3181,6 +3992,27 @@
     "speech_span_s": 9.9,
     "chars_per_s": 10.1
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंट्स जोड़ते हैं बीस और तीस पच्चास फिर सात और पांच बारह तो टोटल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.2
+   },
    "defects": []
   },
   {
@@ -3225,6 +4057,27 @@
     ],
     "speech_span_s": 10.75,
     "chars_per_s": 9.3
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले पेंस जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.138
    },
    "defects": []
   },
@@ -3275,6 +4128,27 @@
     "speech_span_s": 8.91,
     "chars_per_s": 11.2
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंस जोड़ती हैं बीस और तीस पच्चास फिर सात और पांच बारह तो तोल्लू हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.215
+   },
    "defects": []
   },
   {
@@ -3321,6 +4195,27 @@
     ],
     "speech_span_s": 8.02,
     "chars_per_s": 12.5
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंस जोड़ती हैं बीस और तीस पच्चास फिर सात और पांच बारह तो टोटल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.185
    },
    "defects": []
   },
@@ -3370,6 +4265,27 @@
     "speech_span_s": 8.64,
     "chars_per_s": 11.6
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहली टेंस जोड़तें हैं बीस और तीस पच्चास फिर सात और पांच बारह तो टोटल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.185
+   },
    "defects": []
   },
   {
@@ -3414,6 +4330,13 @@
     ],
     "speech_span_s": 7.34,
     "chars_per_s": 13.1
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में वर्क करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.267
    },
    "defects": []
   },
@@ -3460,6 +4383,13 @@
     "speech_span_s": 7.17,
     "chars_per_s": 13.4
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पूल ड्रिंक फिर तो सारे पौधे गमले में बर्फ़ करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.25
+   },
    "defects": []
   },
   {
@@ -3502,6 +4432,13 @@
     "internal_gaps_s": [],
     "speech_span_s": 7.42,
     "chars_per_s": 12.9
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्फ़ करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.283
    },
    "defects": []
   },
@@ -3548,6 +4485,13 @@
     ],
     "speech_span_s": 6.38,
     "chars_per_s": 15.0
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बप करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.233
    },
    "defects": []
   },
@@ -3596,6 +4540,13 @@
     "speech_span_s": 7.0,
     "chars_per_s": 13.7
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्फ़ करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.283
+   },
    "defects": []
   },
   {
@@ -3643,6 +4594,13 @@
     "speech_span_s": 7.21,
     "chars_per_s": 13.3
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्फ़ करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.283
+   },
    "defects": []
   },
   {
@@ -3685,6 +4643,17 @@
     "internal_gaps_s": [],
     "speech_span_s": 8.62,
     "chars_per_s": 13.3
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
    },
    "defects": []
   },
@@ -3730,6 +4699,17 @@
     ],
     "speech_span_s": 8.28,
     "chars_per_s": 13.9
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
    },
    "defects": []
   },
@@ -3777,6 +4757,17 @@
     "speech_span_s": 8.62,
     "chars_per_s": 13.3
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -3822,6 +4813,17 @@
     ],
     "speech_span_s": 8.41,
     "chars_per_s": 13.7
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
    },
    "defects": []
   },
@@ -3871,6 +4873,17 @@
     "speech_span_s": 8.84,
     "chars_per_s": 13.0
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -3918,6 +4931,17 @@
     "speech_span_s": 9.22,
     "chars_per_s": 12.5
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -3962,6 +4986,21 @@
     ],
     "speech_span_s": 10.92,
     "chars_per_s": 11.4
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पीसा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.045
    },
    "defects": []
   },
@@ -4013,6 +5052,21 @@
     "speech_span_s": 10.23,
     "chars_per_s": 12.1
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार मी हम चार्मी से तीन हिस्से लेते हैं यानी लगभग पूरा पीसा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.102
+   },
    "defects": []
   },
   {
@@ -4058,6 +5112,21 @@
     ],
     "speech_span_s": 9.64,
     "chars_per_s": 12.9
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पीसा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.045
    },
    "defects": []
   },
@@ -4107,6 +5176,21 @@
     "speech_span_s": 8.64,
     "chars_per_s": 14.4
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लीपे हैं यानी लगभग पूरा पीसा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.068
+   },
    "defects": []
   },
   {
@@ -4153,6 +5237,21 @@
     ],
     "speech_span_s": 8.49,
     "chars_per_s": 14.6
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यह थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पीसा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.068
    },
    "defects": []
   },
@@ -4203,6 +5302,21 @@
     "speech_span_s": 9.98,
     "chars_per_s": 12.4
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पीसा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.045
+   },
    "defects": []
   },
   {
@@ -4245,6 +5359,17 @@
     "internal_gaps_s": [],
     "speech_span_s": 10.32,
     "chars_per_s": 10.6
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
    },
    "defects": []
   },
@@ -4289,6 +5414,17 @@
     "speech_span_s": 9.04,
     "chars_per_s": 12.1
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
+   },
    "defects": []
   },
   {
@@ -4331,6 +5467,17 @@
     "internal_gaps_s": [],
     "speech_span_s": 8.88,
     "chars_per_s": 12.3
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
    },
    "defects": []
   },
@@ -4376,6 +5523,17 @@
     ],
     "speech_span_s": 8.32,
     "chars_per_s": 13.1
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
    },
    "defects": []
   },
@@ -4423,6 +5581,17 @@
     "speech_span_s": 8.51,
     "chars_per_s": 12.8
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
+   },
    "defects": []
   },
   {
@@ -4469,6 +5638,17 @@
     ],
     "speech_span_s": 8.39,
     "chars_per_s": 13.0
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
    },
    "defects": []
   },
@@ -4519,6 +5699,27 @@
     "speech_span_s": 9.75,
     "chars_per_s": 10.3
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंस जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोला हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.138
+   },
    "defects": []
   },
   {
@@ -4568,6 +5769,27 @@
     "speech_span_s": 9.7,
     "chars_per_s": 10.3
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले तंज जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह टोटोला हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.138
+   },
    "defects": []
   },
   {
@@ -4613,6 +5835,27 @@
     ],
     "speech_span_s": 9.81,
     "chars_per_s": 10.2
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले ट्रेन जोड़ते हैं बीस और तीस पच्चास फिर सात और पांच बारह तो टोल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.169
    },
    "defects": []
   },
@@ -4663,6 +5906,27 @@
     "speech_span_s": 9.63,
     "chars_per_s": 10.4
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंस जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.138
+   },
    "defects": []
   },
   {
@@ -4710,6 +5974,27 @@
     ],
     "speech_span_s": 8.69,
     "chars_per_s": 11.5
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंस जोड़ते हैं बीस ऑफ तीस पचास फिर सात और पांच बारह तो टोटल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.169
    },
    "defects": []
   },
@@ -4761,6 +6046,27 @@
     "speech_span_s": 10.06,
     "chars_per_s": 9.9
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और तैंतीस पहले टेस्ट जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.169
+   },
    "defects": []
   },
   {
@@ -4808,6 +6114,13 @@
     "speech_span_s": 7.31,
     "chars_per_s": 13.1
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर परते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.25
+   },
    "defects": []
   },
   {
@@ -4852,6 +6165,13 @@
     ],
     "speech_span_s": 7.46,
     "chars_per_s": 12.9
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर परते नहीं पौधे सिर्फ पानी बीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.267
    },
    "defects": []
   },
@@ -4900,6 +6220,13 @@
     "speech_span_s": 8.67,
     "chars_per_s": 11.1
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बरकरते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.233
+   },
    "defects": []
   },
   {
@@ -4945,6 +6272,13 @@
     ],
     "speech_span_s": 7.75,
     "chars_per_s": 12.4
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर परते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.25
    },
    "defects": []
   },
@@ -4992,6 +6326,13 @@
     "speech_span_s": 8.06,
     "chars_per_s": 11.9
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर परते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.25
+   },
    "defects": []
   },
   {
@@ -5034,6 +6375,13 @@
     "internal_gaps_s": [],
     "speech_span_s": 7.77,
     "chars_per_s": 12.4
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्फ़ करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.283
    },
    "defects": []
   },
@@ -5081,6 +6429,17 @@
     "speech_span_s": 9.3,
     "chars_per_s": 12.4
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -5126,6 +6485,17 @@
     "speech_span_s": 8.86,
     "chars_per_s": 13.0
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -5168,6 +6538,17 @@
     "internal_gaps_s": [],
     "speech_span_s": 8.45,
     "chars_per_s": 13.6
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
    },
    "defects": []
   },
@@ -5217,6 +6598,17 @@
     "speech_span_s": 9.98,
     "chars_per_s": 11.5
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुममें ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.1
+   },
    "defects": []
   },
   {
@@ -5265,6 +6657,17 @@
     "speech_span_s": 9.56,
     "chars_per_s": 12.0
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुममें ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.1
+   },
    "defects": []
   },
   {
@@ -5310,6 +6713,17 @@
     ],
     "speech_span_s": 9.54,
     "chars_per_s": 12.1
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
    },
    "defects": []
   },
@@ -5357,6 +6771,21 @@
     "speech_span_s": 9.85,
     "chars_per_s": 12.6
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं टीम बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.114
+   },
    "defects": []
   },
   {
@@ -5402,6 +6831,21 @@
     ],
     "speech_span_s": 9.87,
     "chars_per_s": 12.6
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन ही से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.125
    },
    "defects": []
   },
@@ -5449,6 +6893,21 @@
     "speech_span_s": 9.9,
     "chars_per_s": 12.5
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पीजा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.045
+   },
    "defects": []
   },
   {
@@ -5494,6 +6953,21 @@
     "speech_span_s": 9.64,
     "chars_per_s": 12.9
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पीछा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.045
+   },
    "defects": []
   },
   {
@@ -5538,6 +7012,21 @@
     ],
     "speech_span_s": 9.39,
     "chars_per_s": 13.2
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन भगाचार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पीजा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.068
    },
    "defects": []
   },
@@ -5585,6 +7074,21 @@
     "speech_span_s": 9.57,
     "chars_per_s": 13.0
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा या थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पीछा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.068
+   },
    "defects": []
   },
   {
@@ -5627,6 +7131,17 @@
     "internal_gaps_s": [],
     "speech_span_s": 8.45,
     "chars_per_s": 12.9
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
    },
    "defects": []
   },
@@ -5674,6 +7189,17 @@
     "speech_span_s": 9.3,
     "chars_per_s": 11.7
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
+   },
    "defects": []
   },
   {
@@ -5716,6 +7242,17 @@
     "internal_gaps_s": [],
     "speech_span_s": 8.45,
     "chars_per_s": 12.9
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
    },
    "defects": []
   },
@@ -5763,6 +7300,17 @@
     "speech_span_s": 9.01,
     "chars_per_s": 12.1
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
+   },
    "defects": []
   },
   {
@@ -5808,6 +7356,17 @@
     "speech_span_s": 8.16,
     "chars_per_s": 13.4
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
+   },
    "defects": []
   },
   {
@@ -5850,6 +7409,17 @@
     "internal_gaps_s": [],
     "speech_span_s": 9.71,
     "chars_per_s": 11.2
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
    },
    "defects": []
   },
@@ -5896,6 +7466,27 @@
     ],
     "speech_span_s": 9.6,
     "chars_per_s": 10.4
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंस जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.138
    },
    "defects": []
   },
@@ -5944,6 +7535,27 @@
     ],
     "speech_span_s": 9.12,
     "chars_per_s": 11.0
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंस जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.138
    },
    "defects": []
   },
@@ -5994,6 +7606,27 @@
     "speech_span_s": 11.04,
     "chars_per_s": 9.1
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेन्स जोड़ते हैं बीस और तीस पच्चास फिर सात और पांच बारह तो टोटल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.185
+   },
    "defects": []
   },
   {
@@ -6042,6 +7675,27 @@
     "speech_span_s": 10.4,
     "chars_per_s": 9.6
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंस जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.138
+   },
    "defects": []
   },
   {
@@ -6088,6 +7742,27 @@
     ],
     "speech_span_s": 10.72,
     "chars_per_s": 9.3
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंस जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.138
    },
    "defects": []
   },
@@ -6137,7 +7812,29 @@
     "speech_span_s": 10.88,
     "chars_per_s": 9.2
    },
-   "defects": []
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेन्स जोड़ते हैं बीस और तीस पच्चास फिर सात और पांच बारह तो टोटल हुआ बासर",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच"
+    ],
+    "deva_cer": 0.2
+   },
+   "defects": [
+    "numbers_missing_in_asr: बासठ"
+   ]
   },
   {
    "arm": "oss-voxcpm2-design-f",
@@ -6183,6 +7880,13 @@
     ],
     "speech_span_s": 9.12,
     "chars_per_s": 10.5
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "फिर तो सारे पौधे गमले में बर्ब करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.083
    },
    "defects": []
   },
@@ -6232,6 +7936,13 @@
     "speech_span_s": 8.64,
     "chars_per_s": 11.1
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बग करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.233
+   },
    "defects": []
   },
   {
@@ -6280,6 +7991,13 @@
     "speech_span_s": 9.44,
     "chars_per_s": 10.2
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्क करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.267
+   },
    "defects": []
   },
   {
@@ -6326,6 +8044,13 @@
     ],
     "speech_span_s": 8.0,
     "chars_per_s": 12.0
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "फूड ड्रिंक फिर तो सारे पौधे गमले में बर्फ़ करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.25
    },
    "defects": []
   },
@@ -6376,6 +8101,13 @@
     "speech_span_s": 11.68,
     "chars_per_s": 8.2
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्फ़ करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.283
+   },
    "defects": []
   },
   {
@@ -6424,6 +8156,13 @@
     "speech_span_s": 9.28,
     "chars_per_s": 10.3
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "ओके फिर तो सारे पौधे गमले में बर्फ़ करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.15
+   },
    "defects": []
   },
   {
@@ -6469,6 +8208,17 @@
     ],
     "speech_span_s": 9.92,
     "chars_per_s": 11.6
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
    },
    "defects": []
   },
@@ -6518,6 +8268,17 @@
     "speech_span_s": 10.88,
     "chars_per_s": 10.6
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -6564,6 +8325,17 @@
     ],
     "speech_span_s": 9.44,
     "chars_per_s": 12.2
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
    },
    "defects": []
   },
@@ -6614,6 +8386,17 @@
     "speech_span_s": 9.6,
     "chars_per_s": 12.0
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -6660,6 +8443,17 @@
     ],
     "speech_span_s": 9.12,
     "chars_per_s": 12.6
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
    },
    "defects": []
   },
@@ -6709,6 +8503,17 @@
     "speech_span_s": 9.6,
     "chars_per_s": 12.0
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -6757,6 +8562,21 @@
     "speech_span_s": 11.68,
     "chars_per_s": 10.6
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.091
+   },
    "defects": []
   },
   {
@@ -6803,6 +8623,21 @@
     ],
     "speech_span_s": 10.08,
     "chars_per_s": 12.3
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटक तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.102
    },
    "defects": []
   },
@@ -6852,6 +8687,21 @@
     "speech_span_s": 10.08,
     "chars_per_s": 12.3
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.091
+   },
    "defects": []
   },
   {
@@ -6899,6 +8749,21 @@
     "speech_span_s": 11.36,
     "chars_per_s": 10.9
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.091
+   },
    "defects": []
   },
   {
@@ -6945,6 +8810,21 @@
     ],
     "speech_span_s": 10.24,
     "chars_per_s": 12.1
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.091
    },
    "defects": []
   },
@@ -6994,6 +8874,21 @@
     "speech_span_s": 11.04,
     "chars_per_s": 11.2
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटाक तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.102
+   },
    "defects": []
   },
   {
@@ -7041,6 +8936,17 @@
     "speech_span_s": 9.28,
     "chars_per_s": 11.7
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
+   },
    "defects": []
   },
   {
@@ -7087,6 +8993,17 @@
     ],
     "speech_span_s": 9.76,
     "chars_per_s": 11.2
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
    },
    "defects": []
   },
@@ -7137,6 +9054,17 @@
     "speech_span_s": 11.68,
     "chars_per_s": 9.3
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
+   },
    "defects": []
   },
   {
@@ -7182,6 +9110,17 @@
     ],
     "speech_span_s": 10.72,
     "chars_per_s": 10.2
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
    },
    "defects": []
   },
@@ -7232,6 +9171,17 @@
     "speech_span_s": 11.2,
     "chars_per_s": 9.7
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "होता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.037
+   },
    "defects": []
   },
   {
@@ -7280,6 +9230,17 @@
     "speech_span_s": 10.24,
     "chars_per_s": 10.6
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
+   },
    "defects": []
   },
   {
@@ -7322,6 +9283,27 @@
     "internal_gaps_s": [],
     "speech_span_s": 6.72,
     "chars_per_s": 14.9
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंस जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.138
    },
    "defects": []
   },
@@ -7369,6 +9351,27 @@
     "speech_span_s": 6.88,
     "chars_per_s": 14.5
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंस जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.138
+   },
    "defects": []
   },
   {
@@ -7414,6 +9417,27 @@
     ],
     "speech_span_s": 6.88,
     "chars_per_s": 14.5
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंस जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.138
    },
    "defects": []
   },
@@ -7463,6 +9487,27 @@
     "speech_span_s": 10.56,
     "chars_per_s": 9.5
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेन्स जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.154
+   },
    "defects": []
   },
   {
@@ -7508,6 +9553,27 @@
     "speech_span_s": 7.2,
     "chars_per_s": 13.9
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंस जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.138
+   },
    "defects": []
   },
   {
@@ -7551,6 +9617,27 @@
     "speech_span_s": 7.2,
     "chars_per_s": 13.9
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेन्स जोड़ते हैं बीस और तीस पच्चास फिर सात और पांच बारह तो टोटल हुआ बासठ",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "deva_cer": 0.185
+   },
    "defects": []
   },
   {
@@ -7593,6 +9680,13 @@
     "internal_gaps_s": [],
     "speech_span_s": 6.08,
     "chars_per_s": 15.8
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्फ़ करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.283
    },
    "defects": []
   },
@@ -7640,6 +9734,13 @@
     "speech_span_s": 6.4,
     "chars_per_s": 15.0
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्फ़ करते हैं नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.333
+   },
    "defects": []
   },
   {
@@ -7684,6 +9785,13 @@
     ],
     "speech_span_s": 6.24,
     "chars_per_s": 15.4
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्फ़ करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.283
    },
    "defects": []
   },
@@ -7730,6 +9838,13 @@
     "speech_span_s": 5.92,
     "chars_per_s": 16.2
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "ओल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्फ़ करते हैं नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.317
+   },
    "defects": []
   },
   {
@@ -7775,6 +9890,13 @@
     "speech_span_s": 7.2,
     "chars_per_s": 13.3
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्व करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.267
+   },
    "defects": []
   },
   {
@@ -7817,6 +9939,13 @@
     "internal_gaps_s": [],
     "speech_span_s": 6.4,
     "chars_per_s": 15.0
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "ऑल ड्रिंक फिर तो सारे पौधे गमले में बर्ब करते हैं नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.267
    },
    "defects": []
   },
@@ -7865,6 +9994,17 @@
     "speech_span_s": 7.36,
     "chars_per_s": 15.6
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -7911,6 +10051,17 @@
     "speech_span_s": 7.68,
     "chars_per_s": 15.0
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -7955,6 +10106,17 @@
     ],
     "speech_span_s": 7.04,
     "chars_per_s": 16.3
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
    },
    "defects": []
   },
@@ -8001,6 +10163,17 @@
     ],
     "speech_span_s": 7.36,
     "chars_per_s": 15.6
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
    },
    "defects": []
   },
@@ -8049,6 +10222,17 @@
     "speech_span_s": 8.16,
     "chars_per_s": 14.1
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -8096,6 +10280,17 @@
     "speech_span_s": 7.36,
     "chars_per_s": 15.6
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -8139,6 +10334,21 @@
     "speech_span_s": 6.72,
     "chars_per_s": 18.5
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.091
+   },
    "defects": []
   },
   {
@@ -8181,6 +10391,21 @@
     "internal_gaps_s": [],
     "speech_span_s": 7.04,
     "chars_per_s": 17.6
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.091
    },
    "defects": []
   },
@@ -8228,6 +10453,21 @@
     "speech_span_s": 7.52,
     "chars_per_s": 16.5
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.091
+   },
    "defects": []
   },
   {
@@ -8273,6 +10513,21 @@
     "speech_span_s": 7.36,
     "chars_per_s": 16.8
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.091
+   },
    "defects": []
   },
   {
@@ -8315,6 +10570,21 @@
     "internal_gaps_s": [],
     "speech_span_s": 7.84,
     "chars_per_s": 15.8
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा हाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.102
    },
    "defects": []
   },
@@ -8361,6 +10631,21 @@
     "speech_span_s": 7.84,
     "chars_per_s": 15.8
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.091
+   },
    "defects": []
   },
   {
@@ -8403,6 +10688,17 @@
     "internal_gaps_s": [],
     "speech_span_s": 7.04,
     "chars_per_s": 15.5
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
    },
    "defects": []
   },
@@ -8449,6 +10745,17 @@
     "speech_span_s": 6.88,
     "chars_per_s": 15.8
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
+   },
    "defects": []
   },
   {
@@ -8491,6 +10798,17 @@
     "internal_gaps_s": [],
     "speech_span_s": 6.4,
     "chars_per_s": 17.0
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
    },
    "defects": []
   },
@@ -8535,6 +10853,17 @@
     "speech_span_s": 6.88,
     "chars_per_s": 15.8
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त ही",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.024
+   },
    "defects": []
   },
   {
@@ -8578,6 +10907,17 @@
     "speech_span_s": 7.52,
     "chars_per_s": 14.5
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
+   },
    "defects": []
   },
   {
@@ -8620,6 +10960,17 @@
     "internal_gaps_s": [],
     "speech_span_s": 7.2,
     "chars_per_s": 15.1
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
    },
    "defects": []
   },
@@ -8671,7 +11022,29 @@
     "speech_span_s": 11.1,
     "chars_per_s": 9.0
    },
-   "defects": []
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंट्स जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बास्थ स्थित",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच"
+    ],
+    "deva_cer": 0.277
+   },
+   "defects": [
+    "numbers_missing_in_asr: बासठ"
+   ]
   },
   {
    "arm": "oss-vibevoice-hindi-7b-vox-design-f",
@@ -8721,7 +11094,29 @@
     "speech_span_s": 10.94,
     "chars_per_s": 9.1
    },
-   "defects": []
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंट्स जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बा",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच"
+    ],
+    "deva_cer": 0.2
+   },
+   "defects": [
+    "numbers_missing_in_asr: बासठ"
+   ]
   },
   {
    "arm": "oss-vibevoice-hindi-7b-vox-design-f",
@@ -8772,7 +11167,29 @@
     "speech_span_s": 10.95,
     "chars_per_s": 9.1
    },
-   "defects": []
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंड्स जोड़ते हैं बीस और तीस पच्चास फिर सात और पांच बारह तो टोटल हुआ बास्ट",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच"
+    ],
+    "deva_cer": 0.231
+   },
+   "defects": [
+    "numbers_missing_in_asr: बासठ"
+   ]
   },
   {
    "arm": "oss-vibevoice-hindi-7b-vox-design-f",
@@ -8821,6 +11238,13 @@
     ],
     "speech_span_s": 7.59,
     "chars_per_s": 12.6
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्ब करते नहीं पौधे सिर पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.3
    },
    "defects": []
   },
@@ -8872,6 +11296,13 @@
     "speech_span_s": 7.99,
     "chars_per_s": 12.0
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्ब करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.267
+   },
    "defects": []
   },
   {
@@ -8922,6 +11353,13 @@
     "speech_span_s": 8.51,
     "chars_per_s": 11.3
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्ब करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.267
+   },
    "defects": []
   },
   {
@@ -8970,6 +11408,17 @@
     ],
     "speech_span_s": 9.64,
     "chars_per_s": 11.9
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
    },
    "defects": []
   },
@@ -9021,6 +11470,17 @@
     "speech_span_s": 10.05,
     "chars_per_s": 11.4
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
+   },
    "defects": []
   },
   {
@@ -9069,6 +11529,17 @@
     ],
     "speech_span_s": 10.0,
     "chars_per_s": 11.5
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
    },
    "defects": []
   },
@@ -9120,6 +11591,21 @@
     "speech_span_s": 10.69,
     "chars_per_s": 11.6
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.091
+   },
    "defects": []
   },
   {
@@ -9167,6 +11653,21 @@
     ],
     "speech_span_s": 11.07,
     "chars_per_s": 11.2
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.091
    },
    "defects": []
   },
@@ -9218,6 +11719,21 @@
     "speech_span_s": 10.67,
     "chars_per_s": 11.6
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.091
+   },
    "defects": []
   },
   {
@@ -9267,6 +11783,17 @@
     "speech_span_s": 9.79,
     "chars_per_s": 11.1
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारी शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त ही",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.037
+   },
    "defects": []
   },
   {
@@ -9315,6 +11842,17 @@
     "speech_span_s": 9.2,
     "chars_per_s": 11.8
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
+   },
    "defects": []
   },
   {
@@ -9362,6 +11900,17 @@
     ],
     "speech_span_s": 9.35,
     "chars_per_s": 11.7
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
    },
    "defects": []
   },
@@ -9413,7 +11962,29 @@
     "speech_span_s": 10.41,
     "chars_per_s": 9.6
    },
-   "defects": []
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंट्स जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बाजहर",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच"
+    ],
+    "deva_cer": 0.215
+   },
+   "defects": [
+    "numbers_missing_in_asr: बासठ"
+   ]
   },
   {
    "arm": "oss-vibevoice-hindi-7b-vox-design-m",
@@ -9465,7 +12036,29 @@
     "speech_span_s": 10.94,
     "chars_per_s": 9.1
    },
-   "defects": []
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंट्स जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बा",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच"
+    ],
+    "deva_cer": 0.2
+   },
+   "defects": [
+    "numbers_missing_in_asr: बासठ"
+   ]
   },
   {
    "arm": "oss-vibevoice-hindi-7b-vox-design-m",
@@ -9516,7 +12109,29 @@
     "speech_span_s": 10.67,
     "chars_per_s": 9.4
    },
-   "defects": []
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "सत्ताईस और पैंतीस पहले टेंट्स जोड़ते हैं बीस और तीस पचास फिर सात और पांच बारह तो टोटल हुआ बास्ट",
+    "numbers_expected": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच",
+     "बासठ"
+    ],
+    "numbers_heard": [
+     "सत्ताईस",
+     "बीस",
+     "तीस",
+     "सात",
+     "पाँच"
+    ],
+    "deva_cer": 0.2
+   },
+   "defects": [
+    "numbers_missing_in_asr: बासठ"
+   ]
   },
   {
    "arm": "oss-vibevoice-hindi-7b-vox-design-m",
@@ -9564,6 +12179,13 @@
     ],
     "speech_span_s": 7.62,
     "chars_per_s": 12.6
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्ब करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ोसी",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.3
    },
    "defects": []
   },
@@ -9615,6 +12237,13 @@
     "speech_span_s": 7.6,
     "chars_per_s": 12.6
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्ब करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.267
+   },
    "defects": []
   },
   {
@@ -9664,6 +12293,13 @@
     ],
     "speech_span_s": 7.86,
     "chars_per_s": 12.2
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "कोल्ड ड्रिंक फिर तो सारे पौधे गमले में बर्फ़ करते नहीं पौधे सिर्फ पानी पीते हैं अपनी जड़ों से",
+    "numbers_expected": [],
+    "numbers_heard": [],
+    "deva_cer": 0.283
    },
    "defects": []
   },
@@ -9715,6 +12351,17 @@
     "speech_span_s": 9.87,
     "chars_per_s": 11.7
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिलकुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.087
+   },
    "defects": []
   },
   {
@@ -9765,6 +12412,17 @@
     "speech_span_s": 9.73,
     "chars_per_s": 11.8
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिलकुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.087
+   },
    "defects": []
   },
   {
@@ -9813,6 +12471,17 @@
     ],
     "speech_span_s": 9.51,
     "chars_per_s": 12.1
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अरे पहली बार में ही तुमने ऊपर और नीचे दोनों को चार से डिवाइड किया बिल्कुल सही ये वाला तो बहुत लोग गलत करते हैं",
+    "numbers_expected": [
+     "चार"
+    ],
+    "numbers_heard": [
+     "चार"
+    ],
+    "deva_cer": 0.075
    },
    "defects": []
   },
@@ -9864,6 +12533,21 @@
     "speech_span_s": 11.1,
     "chars_per_s": 11.2
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यहाँ थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.091
+   },
    "defects": []
   },
   {
@@ -9914,6 +12598,21 @@
     "speech_span_s": 10.93,
     "chars_per_s": 11.3
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यह थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.114
+   },
    "defects": []
   },
   {
@@ -9963,6 +12662,21 @@
     "speech_span_s": 10.53,
     "chars_per_s": 11.8
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "अच्छा यह थोड़ा रुकते हैं तीन बटा चार में हम चार में से तीन हिस्से लेते हैं यानी लगभग पूरा पिज़्ज़ा अब दो बटा तीन को देखो",
+    "numbers_expected": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "numbers_heard": [
+     "चार",
+     "तीन",
+     "दो"
+    ],
+    "deva_cer": 0.114
+   },
    "defects": []
   },
   {
@@ -10010,6 +12724,17 @@
     ],
     "speech_span_s": 8.53,
     "chars_per_s": 12.8
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
    },
    "defects": []
   },
@@ -10059,6 +12784,17 @@
     "speech_span_s": 8.93,
     "chars_per_s": 12.2
    },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
+   },
    "defects": []
   },
   {
@@ -10106,6 +12842,17 @@
     ],
     "speech_span_s": 8.53,
     "chars_per_s": 12.8
+   },
+   "asr": {
+    "engine": "azure-stt hi-IN short-audio (Lexical)",
+    "lexical": "पता है तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है सोचो अभी इसी वक्त भी",
+    "numbers_expected": [
+     "एक"
+    ],
+    "numbers_heard": [
+     "एक"
+    ],
+    "deva_cer": 0.012
    },
    "defects": []
   }

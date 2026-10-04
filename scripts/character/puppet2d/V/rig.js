@@ -382,7 +382,7 @@ export class PuppetV {
       for (let i = 0; i < n; i++) {
         const s = i / (n - 1), bump = Math.pow(Math.sin(Math.PI * s), 0.7);
         const u0 = E.U0[i], l0 = E.L0[i], h = E.h[i];
-        const cl = [lerp(l0[0], u0[0], 0.24), lerp(l0[1], u0[1], 0.24) - happy * 9 * Math.sin(Math.PI * s)];
+        const cl = [lerp(l0[0], u0[0], 0.24), lerp(l0[1], u0[1], 0.24) - happy * 15 * Math.sin(Math.PI * s)];
         Cl.push(cl);
         let uy = u0[1] + bump * (-wide * 0.12 * 30 + lookDown * 0.16 * h - lookUp * 0.06 * h);
         const ly0 = l0[1] - bump * squint * 0.3 * h;
@@ -503,7 +503,7 @@ export class PuppetV {
     const smile = (ms.smileL + ms.smileR) / 2;
     const halfW = M.halfW * (1 + 0.13 * wide - 0.33 * round + 0.07 * Math.max(0, smile - s0) - 0.04 * press - 0.1 * ms.frown - 0.16 * open * (1 - wide));
     // the smile curve flattens as the jaw opens (the corners stay, the centre of the seam rises toward them)
-    const sagSide = (sm) => (M.sag + 17 * (sm - s0) - 15 * ms.frown - 7 * round + 3 * wide) * (1 - 0.45 * open);
+    const sagSide = (sm) => (M.sag + 17 * (sm - s0) - 15 * ms.frown - 16 * round + 3 * wide) * (1 - 0.45 * open);
     const sagL = sagSide(ms.smileL), sagR = sagSide(ms.smileR);
     const drop = 50 * open + 6 * ms.lowerDown;
     const raise = 4 * open + 6 * ms.upperUp;
@@ -541,7 +541,8 @@ export class PuppetV {
       B.begin(2, 3);
       // tongue: a soft blob resting on the floor of the mouth; Hindi keys lift (dental/alveolar), curl (retroflex),
       // widen (lateral) or push it to the teeth (TH)
-      const teethH = Math.min(9, gap * 0.3 + 1.5) + 3 * ms.teeth * Math.min(1, gap / 6) + 4 * ms.upperUp;
+      const lift0 = Math.max(ms.tipUp, 0.8 * ms.curl, ms.tongueOut);
+      const teethH = (Math.min(9, gap * 0.3 + 1.5) + 3 * ms.teeth * Math.min(1, gap / 6) + 4 * ms.upperUp) * (1 - 0.35 * lift0);
       const NT = 21, top = [], hi = [], bot = [];
       const tw = 0.62 + 0.2 * ms.tongueWide - 0.1 * round;
       const th = Math.max(3, gap * 0.34 + 2) * (1 - 0.2 * ms.tongueWide);

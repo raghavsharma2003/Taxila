@@ -84,8 +84,8 @@ function compile(gl, vs, fs) {
 }
 
 export class Renderer {
-  constructor(canvas, { clear = [0.98, 0.9, 0.74] } = {}) {
-    const gl = canvas.getContext("webgl2", { alpha: false, antialias: false, premultipliedAlpha: true, preserveDrawingBuffer: true, powerPreference: "high-performance" });
+  constructor(canvas, { clear = [0.98, 0.9, 0.74], preserve = false } = {}) {
+    const gl = canvas.getContext("webgl2", { alpha: false, antialias: false, premultipliedAlpha: true, preserveDrawingBuffer: preserve, powerPreference: "high-performance" });
     if (!gl) throw new Error("WebGL2 unavailable");
     this.gl = gl;
     this.canvas = canvas;

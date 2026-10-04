@@ -9,12 +9,14 @@ const opt = (f, d) => (argv.includes(f) ? argv[argv.indexOf(f) + 1] : d);
 const OUT = opt("--out", "art/character/puppet2d/P/work/mouths");
 const BASE = opt("--base", "art/character/puppet2d/P/work/mouth-base.png");
 const MASK = opt("--mask", "art/character/puppet2d/P/work/mouth-mask.png");
+const REFIMG = opt("--ref", null);
 fs.mkdirSync(OUT, { recursive: true });
 const PRE = "Close-up of the same 3D emoji-avatar character's lower face: identical style, matte soft Memoji shading, lighting and warm skin colour. "
   + "Paint her mouth in the editable area (it is blank skin now), centred under the nose: soft muted dusty-rose lips, a thin upper lip and a slightly fuller soft lower lip, "
   + "a small cute mouth whose relaxed width is about the width of the nose plus a third on each side; include the mouth corners and their soft creases appropriate to the shape. "
   + "The nose, cheeks, chin and jaw outline stay exactly where they are. "
   + "If teeth show they are one smooth soft white row inside the lips, never poking out; the mouth interior is a soft dark warm red. The mouth: ";
+const REFPRE = "The second image shows her real mouth at rest: copy its lips exactly - the same thin delicate upper lip, the same modest lower lip, the same muted mauve-rose lip colour with soft matte shading and no gloss, the same mouth width - and only change the pose of the mouth. ";
 export const SHAPES = {
   // warm (speaking) column: c-front's gentle pleasant register
   PP: "lips gently pressed together for the 'p / b / m' sound: closed, slightly flattened and pressed, a faint pleasant upturn at the corners.",
@@ -58,7 +60,7 @@ const worker = async () => {
   while (queue.length) {
     const n = queue.shift();
     try {
-      const buf = await edit({ tag: `mouth-${n}${suffix}`, quality, prompt: PRE + SHAPES[n] + " No text.", images: [{ file: BASE }], mask: MASK });
+      const buf = await edit({ tag: `mouth-${n}${suffix}`, quality, prompt: (REFIMG ? REFPRE : "") + PRE + SHAPES[n] + " No text.", images: REFIMG ? [{ file: BASE }, { file: REFIMG }] : [{ file: BASE }], mask: MASK });
       fs.writeFileSync(`${OUT}/${n}${suffix}.png`, buf);
     } catch (e) { console.log(`[mouths] FAIL ${n}: ${e.message}`); }
   }

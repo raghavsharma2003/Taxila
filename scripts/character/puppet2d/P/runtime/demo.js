@@ -76,7 +76,7 @@ async function main() {
   const canvas = document.getElementById("c");
   const view = (Q.get("view") || "92,40,840").split(",").map(Number);
   if (Q.get("px")) canvas.style.width = Q.get("px") + "px";
-  const rig = await Puppet2DRig.load(canvas, BASE, { dpr: CAPTURE ? 1 : Math.min(2, devicePixelRatio || 1), view });
+  const rig = await Puppet2DRig.load(canvas, BASE, { dpr: CAPTURE ? 1 : Math.min(2, devicePixelRatio || 1), view, preserve: CAPTURE });
   const align = await fetch("./audio/voice.align.json").then((r) => r.json());
   const segs = visemeTrack(align);
   // decode the voice once; the "tap" window is read from the PCM at the line's clock (identical math to the live tap)

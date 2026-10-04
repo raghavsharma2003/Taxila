@@ -19,18 +19,23 @@ g = json.load(open(f"{L}/geom.json"))
 mcx, mcy, mrx, mry = g["geom"]["mouth_patch"]
 ecx, ecy, erx, ery = g["geom"]["mouth_ellipse"]
 ref = np.asarray(Image.open("art/character/puppet2d/P/c-front.png").convert("RGB")).astype(np.float32)[Y0:Y0 + S, X0:X0 + S]
+import sys
+sys.path.insert(0, "scripts/character/puppet2d/P")
+import mouthshape
+from scipy import ndimage as ndi
+SRCDIR = sys.argv[1] if len(sys.argv) > 1 else f"{WORK}/mouths2"
 yy, xx = np.mgrid[0:S, 0:S]
-ed = np.sqrt(((xx + X0 - mcx) / mrx) ** 2 + ((yy + Y0 - mcy) / mry) ** 2)
-em = np.sqrt(((xx + X0 - ecx) / erx) ** 2 + ((yy + Y0 - ecy) / ery) ** 2)
-alpha = np.clip((1 - ed) / 0.22, 0, 1)
-alpha = alpha * alpha * (3 - 2 * alpha)
-ring = (ed > 0.85) & (em < 0.97)          # inside the editable area, under the feather: what must match c-front
-outside = em > 1.08                      # unedited by the mask: registration region
-bx0, by0 = int(mcx - mrx - 2 - X0), int(mcy - mry - 2 - Y0)
-bx1, by1 = int(mcx + mrx + 3 - X0), int(mcy + mry + 3 - Y0)
+alpha = mouthshape.alpha()[Y0:Y0 + S, X0:X0 + S]
+reg = mouthshape.region()[Y0:Y0 + S, X0:X0 + S]
+emask = mouthshape.edit_mask()[Y0:Y0 + S, X0:X0 + S]
+ed = 1.0 - alpha                          # 0 inside .. 1 at the edge (used for the skin-correction ramp)
+ring = (alpha < 0.55) & emask             # under the feather: what must match c-front
+outside = ~ndi.binary_dilation(emask, iterations=6)
+ys_, xs_ = np.where(alpha > 0.002)
+bx0, by0, bx1, by1 = int(xs_.min() - 1), int(ys_.min() - 1), int(xs_.max() + 2), int(ys_.max() + 2)
 cw, ch = bx1 - bx0, by1 - by0
 
-files = sorted(glob.glob(f"{WORK}/mouths/*.png"))
+files = sorted(glob.glob(f"{SRCDIR}/*.png"))
 names = ["rest"] + [os.path.basename(f)[:-4] for f in files]
 cols = 6
 rows = (len(names) + cols - 1) // cols
@@ -43,7 +48,7 @@ for i, n in enumerate(names):
         p = ref.copy()
         info = {"shift": [0, 0], "gain": [1, 1, 1]}
     else:
-        e = np.asarray(Image.open(f"{WORK}/mouths/{n}.png").convert("RGB").resize((S, S), Image.LANCZOS)).astype(np.float32)
+        e = np.asarray(Image.open(f"{SRCDIR}/{n}.png").convert("RGB").resize((S, S), Image.LANCZOS)).astype(np.float32)
         warp = np.eye(2, 3, dtype=np.float32)
         try:
             _, warp = cv2.findTransformECC(cv2.cvtColor(ref, cv2.COLOR_RGB2GRAY), cv2.cvtColor(e, cv2.COLOR_RGB2GRAY), warp,
@@ -73,7 +78,7 @@ for i, n in enumerate(names):
         resid = cv2.GaussianBlur(resid, (0, 0), 8)
         wgt = cv2.GaussianBlur(wgt, (0, 0), 8)[..., None]
         corr = np.clip(resid / np.maximum(wgt, 0.05), -25, 25)
-        skinish = np.clip(1 - (np.abs(p - ref).max(2) - 10) / 20, 0, 1) * np.clip((ed - 0.6) / 0.3, 0, 1)
+        skinish = np.clip(1 - (np.abs(p - ref).max(2) - 10) / 20, 0, 1) * np.clip((ed - 0.3) / 0.4, 0, 1)
         p = p + corr * skinish[..., None]
         info = {"shift": [round(float(warp[0, 2]), 2), round(float(warp[1, 2]), 2)], "gain": gain}
     cell = np.dstack([np.clip(p, 0, 255), alpha * 255])[by0:by1, bx0:bx1].round().astype(np.uint8)
@@ -82,7 +87,7 @@ for i, n in enumerate(names):
     meta["patches"][n] = {"cell": [c * cw, r * ch], **info}
     comp = rest[Y0:Y0 + S, X0:X0 + S].copy()
     comp = comp * (1 - alpha[..., None]) + p * alpha[..., None]
-    review.append((n, comp[40:220, 20:236]))
+    review.append((n, comp[50:230, 20:236]))
 Image.fromarray(atlas, "RGBA").save(f"{L}/mouths.png", optimize=True)
 json.dump(meta, open(f"{L}/mouths.json", "w"), indent=1)
 from PIL import ImageDraw

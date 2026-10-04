@@ -115,7 +115,7 @@ export class Puppet2DRig {
   constructor(canvas, geom, mouths, imgs, opts) {
     this.g = geom;
     this.M = mouths;
-    this.R = new Renderer(canvas, { clear: opts.clear || [251 / 255, 229 / 255, 189 / 255] });
+    this.R = new Renderer(canvas, { clear: opts.clear || [251.4 / 255, 229.4 / 255, 188.6 / 255], preserve: !!opts.preserve });
     this.R.dpr = opts.dpr || Math.min(2, window.devicePixelRatio || 1);
     this.reduced = !!opts.reducedMotion;
     this.view = opts.view || [140, 20, 744]; // x0, y0, width of the rest-space window shown
@@ -135,12 +135,11 @@ export class Puppet2DRig {
       const mesh = this.R.mesh(P, { aPos: { data: pos, size: 2, dynamic: true }, aUv: { data: gr.uv, size: 2 } }, gr.idx);
       this.layers[name] = { name, rect, rest: gr.rest, z, pos, mesh, kind, n: gr.n };
     };
-    mk("bg", 512, "static");
-    mk("hairback", 24, "head");
+        mk("hairback", 24, "head");
     mk("bun", 16, "bun");
     mk("body", 24, "body");
     mk("ears", 12, "head");
-    mk("face", 12, "face");
+    mk("face", 14, "face");
     for (const s of ["L", "R"]) {
       mk("brow" + s, 6, "brow");
     }
@@ -419,7 +418,7 @@ export class Puppet2DRig {
       if (this.deformLayer(L)) R.update(L.mesh, "aPos", L.pos);
       R.drawPaint(L.mesh, this.tex[n], L.rect, 1, shade);
     };
-    draw("bg");
+    // the backdrop is c-front's cream (std < 1.5/255 over the plate): the clear colour, no full-screen pass
     draw("hairback", shadeHair);
     draw("bun", shadeHair);
     draw("body");

@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teacher C, vector puppet</title>
+<style>
+:root{--bg:#fce6bc;--ink:#3b2a1e;--muted:#8a6a4f}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,sans-serif}
+#wrap{position:fixed;inset:0 0 56px 0;display:flex;align-items:center;justify-content:center}
+canvas{display:block}
+#bar{position:fixed;left:0;right:0;bottom:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;box-sizing:border-box}
+#cap{font-weight:600}#st{color:var(--muted);font-size:13px}
+a{color:var(--muted)}
+</style></head>
+<body>
+<div id="wrap"><canvas id="c"></canvas></div>
+<div id="bar"><span id="cap">idle</span><span id="st"></span><span><a href="?lip=visemes">visemes</a> · <a href="?lip=jaw">live jaw</a></span></div>
+<script src="puppet-v.js"></script>
+<script src="../../../../scripts/character/puppet2d/V/dist/demo.js"></script>
+</body></html>

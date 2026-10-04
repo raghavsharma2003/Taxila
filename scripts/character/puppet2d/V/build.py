@@ -125,6 +125,8 @@ for b in FEAT["brows"].values():
     pts = catmull(b["c"], 10, closed=False)
     th = np.interp(np.linspace(0, 1, len(pts)), np.linspace(0, 1, len(b["th"])), b["th"])
     for i in range(len(pts) - 1):
+        if not (386 <= pts[i][0] <= 697):
+            continue  # the tails run under the hair: leave those pixels to the hair
         cv2.line(BROWS, tuple(np.round(pts[i]).astype(int)), tuple(np.round(pts[i + 1]).astype(int)), 1, max(1, int(round(th[i] + 3))))
     cv2.circle(BROWS, tuple(np.round(pts[0]).astype(int)), int(th[0] / 2 + 2), 1, -1)
 BROWS = BROWS.astype(bool)
@@ -173,7 +175,7 @@ HAIR_BACK &= ~(EAR_L | EAR_R) | dil(HAIR_NL, 3) | (FACE & (yy < S["hair_back_fac
 # behind-lock fill where the lock sits over the hair mass
 HAIR_BACK |= LOCKS & dil(HAIR_NL, 10)
 
-NECK_VIS = SKIN & ~FACE & ~EAR_L & ~EAR_R & (yy > 600) & (xx > 380) & (xx < 690) & ~STUDS
+NECK_VIS = SKIN & ~FACE & ~EAR_L & ~EAR_R & (yy > 600) & (xx > 380) & (xx < 690) & ~STUDS & ~dil(BG, 2)
 k, lb, st, _ = cv2.connectedComponentsWithStats(NECK_VIS.astype(np.uint8))
 NECK_VIS = lb == (1 + np.argmax(st[1:, 4]))
 KURTA = fill_holes(TEAL | PIPE)
