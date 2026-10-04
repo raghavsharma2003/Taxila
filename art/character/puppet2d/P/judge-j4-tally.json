@@ -1,0 +1,322 @@
+{
+ "sanity-bad-3d": {
+  "taxila-brain": {
+   "meanScore": 2.0,
+   "n": 2,
+   "fails": [
+    "E2",
+    "I1",
+    "I2",
+    "I3",
+    "M1",
+    "S1",
+    "S2",
+    "S3"
+   ],
+   "defects": [
+    "Flat, low-detail rendering with jagged cut-out-like contours",
+    "Uncanny facial construction, especially the smeared mouth and elongated neck",
+    "Angular low-poly rendering destroys the premium soft Memoji finish.",
+    "Uncanny facial deformation, especially the staring eyes, pinched mouth and elongated neck."
+   ]
+  },
+  "grok-4-20-reasoning": {
+   "meanScore": 3.0,
+   "n": 2,
+   "fails": [
+    "E2",
+    "I2",
+    "M1",
+    "S3"
+   ],
+   "defects": [
+    "flattened Memoji shading",
+    "lips lack soft volume",
+    "lips completely lack soft volume",
+    "harder, less Memoji-style shading + weak eyelid wrap"
+   ]
+  }
+ },
+ "sanity-ref-ref": {
+  "taxila-brain": {
+   "meanScore": 4.0,
+   "n": 2,
+   "fails": [],
+   "defects": [
+    "The neutral mouth is comparatively stiff and loses some of the appealing soft curvature and personality of REF.",
+    "Lower-face shading is slightly subdued, making the mouth and chin area feel flatter than the rest of the polished 3D render.",
+    "The neutral mouth makes the character less warm and engaging than the approved reference.",
+    "The fixed frontal gaze and subdued expression feel slightly less animated and delightful than ship-best quality."
+   ]
+  },
+  "grok-4-20-reasoning": {
+   "meanScore": 3.0,
+   "n": 2,
+   "fails": [
+    "M1"
+   ],
+   "defects": [
+    "Flatter lip volume lacking Memoji softness",
+    "Mouth shape less charming and expressive than REF",
+    "lips lack soft volume",
+    "mouth feels stiff and characterless vs REF smile"
+   ]
+  }
+ },
+ "rest": {
+  "taxila-brain": {
+   "meanScore": 4.0,
+   "n": 2,
+   "fails": [
+    "E2",
+    "I2",
+    "I3",
+    "S1"
+   ],
+   "defects": [
+    "Obvious compositing seams, jagged cut edges and dark holes around the face and hair",
+    "Left eye and eyelid are warped with a broken, untapered lash line",
+    "Very slight edge aliasing around the lower jaw/hair contour.",
+    "Expression is nearly identical to the reference, so the animation variation is minimal."
+   ]
+  },
+  "grok-4-20-reasoning": {
+   "meanScore": 4.5,
+   "n": 2,
+   "fails": [],
+   "defects": [
+    "Micro-level flattening of cheek shading vs REF",
+    "Slightly less crisp edge definition on lower lip",
+    "Slightly flatter cheek shading and lost subtlety in lip highlight",
+    "Left-side hair volume and shadow transition less refined than REF"
+   ]
+  }
+ },
+ "talk_aa": {
+  "grok-4-20-reasoning": {
+   "meanScore": 3.0,
+   "n": 2,
+   "fails": [
+    "E2",
+    "M1"
+   ],
+   "defects": [
+    "Lips lack soft volume in open expression",
+    "Mouth opening feels slightly stretched/less sculpted than REF standard",
+    "lips lack soft volume",
+    "lash line not smoothly tapered"
+   ]
+  },
+  "taxila-brain": {
+   "meanScore": 3.5,
+   "n": 2,
+   "fails": [
+    "E2",
+    "I2",
+    "S1"
+   ],
+   "defects": [
+    "Jagged cut/compositing edge at the lower right cheek, bun and neck junction",
+    "Angular, blunt eyelash edges that look pasted on rather than smoothly modeled",
+    "The surprised mouth is slightly generic and less appealing than REF's expressive smile.",
+    "The face is subtly longer and narrower than REF, causing minor character-model drift."
+   ]
+  }
+ },
+ "delight": {
+  "taxila-brain": {
+   "meanScore": 3.5,
+   "n": 2,
+   "fails": [
+    "E2",
+    "I2",
+    "M2",
+    "S1"
+   ],
+   "defects": [
+    "Jagged compositing/cut edges around the right earring, neck and bun",
+    "Clipped, uneven eyelid/eye-corner construction",
+    "Facial proportions drift slightly: X has a narrower jaw and a broader, more exaggerated mouth than REF.",
+    "The tight crop largely hides the teal kurta and orange piping, weakening costume continuity."
+   ]
+  },
+  "grok-4-20-reasoning": {
+   "meanScore": 3.5,
+   "n": 2,
+   "fails": [
+    "E2",
+    "I3",
+    "M1"
+   ],
+   "defects": [
+    "Mouth opened too wide for the established model, stretches cheek contour unnaturally",
+    "Subtle flattening of neck/chin shading compared to REF's softer falloff",
+    "stretched mouth losing lip volume",
+    "lash line not smoothly tapered"
+   ]
+  }
+ },
+ "thinking": {
+  "taxila-brain": {
+   "meanScore": 3.5,
+   "n": 2,
+   "fails": [
+    "E2",
+    "I2",
+    "S1"
+   ],
+   "defects": [
+    "Severely jagged cut-out edges around the hair, lashes, jaw and neck",
+    "Uneven eyelid and lash construction makes the eyes look crudely composited",
+    "Ragged, artifact-like silhouette around the lower-right bun and neck",
+    "Loose side hair strands look slightly stiff and cutout-like rather than fully integrated"
+   ]
+  },
+  "grok-4-20-reasoning": {
+   "meanScore": 3.5,
+   "n": 2,
+   "fails": [
+    "S2",
+    "S3"
+   ],
+   "defects": [
+    "mouth smile is too generic/symmetric vs REF's nuanced smirk",
+    "eye direction and brow angle feel less character-specific",
+    "flattened Memoji shading on cheeks and hair",
+    "missing orange piping and shifted kurta color"
+   ]
+  }
+ },
+ "listening": {
+  "taxila-brain": {
+   "meanScore": 3.5,
+   "n": 2,
+   "fails": [
+    "E2",
+    "I2",
+    "S1"
+   ],
+   "defects": [
+    "Jagged white/black cut-edge artifacts around the eyelids and lash lines.",
+    "Messy silhouette artifacts around the earrings, loose hair tips, and hair-neck boundary.",
+    "Facial proportions drift from REF: the eyes are larger and more exposed, while the jaw is narrower, slightly weakening character consistency.",
+    "The low crop hides almost all of the teal kurta and orange piping, removing important costume-identification detail."
+   ]
+  },
+  "grok-4-20-reasoning": {
+   "meanScore": 4.0,
+   "n": 2,
+   "fails": [
+    "M1"
+   ],
+   "defects": [
+    "lips lack REF\u2019s plush volume",
+    "smile curve is marginally flatter and less delightful",
+    "Cheek shading slightly flatter/harder than REF's signature softness",
+    "Hair volume and silhouette marginally simplified vs REF"
+   ]
+  }
+ },
+ "yaw_p20": {
+  "taxila-brain": {
+   "meanScore": 3.0,
+   "n": 2,
+   "fails": [
+    "E2",
+    "I2",
+    "S1"
+   ],
+   "defects": [
+    "Severe jagged cut-out edges and floating debris around the hair silhouette",
+    "Broken compositing around the jaw and neck, including visible holes and hard seams",
+    "Severe jagged cut edges and pale compositing debris around the jaw, neck, and hair",
+    "Loose side hair and ear-area silhouettes are fragmented and malformed"
+   ]
+  },
+  "grok-4-20-reasoning": {
+   "meanScore": 3.0,
+   "n": 2,
+   "fails": [
+    "E2",
+    "I2",
+    "S1",
+    "S3"
+   ],
+   "defects": [
+    "visible seam/cut under jaw",
+    "jagged cut-out hair strands on left",
+    "flattened Memoji shading",
+    "blunt, untapered lash line"
+   ]
+  }
+ },
+ "blink_mid": {
+  "taxila-brain": {
+   "meanScore": 3.5,
+   "n": 2,
+   "fails": [
+    "E1",
+    "E2",
+    "I2",
+    "I3",
+    "S1"
+   ],
+   "defects": [
+    "Crude, uneven half-lidded eyes with missing catchlights and jagged lash lines",
+    "Visible compositing halos and cut edges around hair, earrings and face",
+    "The heavy half-lids obscure much of the irises, reducing the lively eye readability of the reference.",
+    "The upper lash lines are slightly thick and blunt, making the sleepy expression a little less refined."
+   ]
+  },
+  "grok-4-20-reasoning": {
+   "meanScore": 3.5,
+   "n": 2,
+   "fails": [
+    "E2",
+    "I2",
+    "I3"
+   ],
+   "defects": [
+    "Heavy graphic eyeliner and sharper eye shape deviate from approved soft Memoji style",
+    "Lash line too thick and stylized, reads as cheap illustration instead of premium 3D",
+    "imperfect eyelid wrap & lash taper on squinting eye",
+    "asymmetric eye squint feels slightly off for premium polish"
+   ]
+  }
+ },
+ "tongue_RETRO": {
+  "taxila-brain": {
+   "meanScore": 3.0,
+   "n": 2,
+   "fails": [
+    "E2",
+    "I2",
+    "I3",
+    "M2",
+    "S1",
+    "S2"
+   ],
+   "defects": [
+    "Jagged visible cut seam along the lower-right cheek and hair bun",
+    "Uncanny mouth with uneven individual teeth and a malformed dark tongue",
+    "The teeth are irregular and visually muddy, making the smile less premium.",
+    "The signature teal kurta and orange piping are effectively missing because of the tighter crop."
+   ]
+  },
+  "grok-4-20-reasoning": {
+   "meanScore": 3.5,
+   "n": 2,
+   "fails": [
+    "I3",
+    "M1",
+    "M2"
+   ],
+   "defects": [
+    "stretched unnatural mouth shape",
+    "lips lacking soft volume",
+    "upper lip slightly thinner than REF",
+    "eye shape/expression not 100% on-model"
+   ]
+  }
+ }
+}

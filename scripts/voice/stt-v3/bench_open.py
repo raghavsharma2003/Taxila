@@ -64,11 +64,11 @@ ARMS = {
     "N3hi": dict(fam="nemo", model="nemotron", lang="hi-IN", la=3, label="nemotron-3.5 stream hi-IN 320 ms"),
     "N6hi": dict(fam="nemo", model="nemotron", lang="hi-IN", la=6, label="nemotron-3.5 stream hi-IN 560 ms"),
     "N13hi": dict(fam="nemo", model="nemotron", lang="hi-IN", la=13, label="nemotron-3.5 stream hi-IN 1120 ms"),
-    "N6auto": dict(fam="nemo", model="nemotron", lang="auto", la=6, label="nemotron-3.5 stream auto-LID 560 ms"),
+    "N6auto": dict(fam="nemo", model="nemotron", lang="auto", la=6, skip=["paced", "load", "soak"], label="nemotron-3.5 stream auto-LID 560 ms"),
     "NOhi": dict(fam="nemo_off", model="nemotron", lang="hi-IN", label="nemotron-3.5 offline (full context) hi-IN"),
     # Voxtral Mini 4B Realtime (causal encoder + LM decoder); delay = transcription_delay_ms (80 ms multiples)
     "V480": dict(fam="vox", model="voxtral", delay=480, label="voxtral-realtime stream 480 ms"),
-    "V960": dict(fam="vox", model="voxtral", delay=960, label="voxtral-realtime stream 960 ms"),
+    "V960": dict(fam="vox", model="voxtral", delay=960, skip=["load", "soak"], label="voxtral-realtime stream 960 ms"),
     "VO": dict(fam="vox_off", model="voxtral", label="voxtral-realtime offline"),
     # Qwen3-ASR (audio encoder + Qwen3 LM), batch; language None = auto
     "Q17": dict(fam="qwen", model="qwen17", lang=None, label="qwen3-asr-1.7b auto"),
@@ -206,7 +206,7 @@ class Streamer:
     def run(self, audios, pace=False, record=True, max_new_tokens=None):
         """audios: list of equal-length float32 arrays (a batch of synchronous streams). Returns dict."""
         import torch
-        state = {"audioMs": 0, "pulls": [], "avail": [], "t0": None}
+        state = {"audioMs": 0, "pulls": [], "avail": [], "t0": None, "feat": []}
         first_inputs, chunks = self.schedule(audios)          # chunks: list of (end_sample, fn -> input_features)
         rec = Recorder(state) if record and len(audios) == 1 else None
 
@@ -217,8 +217,10 @@ class Streamer:
                     now = time.perf_counter()
                     if now < due:
                         time.sleep(due - now)
+                tf = time.perf_counter()
                 feats = make()
                 t = time.perf_counter()
+                state["feat"].append((t - tf) * 1000)
                 state["pulls"].append(t)
                 state["avail"].append(state["t0"] + end_sample / SR)
                 state["audioMs"] = round(end_sample * 1000 / SR)
@@ -244,7 +246,7 @@ class Streamer:
         th.join()
         sync()
         t_done = time.perf_counter()
-        r = {"t0": state["t0"], "tDone": t_done, "pulls": state["pulls"], "avail": state["avail"], "rec": rec,
+        r = {"t0": state["t0"], "tDone": t_done, "pulls": state["pulls"], "avail": state["avail"], "rec": rec, "feat": state["feat"],
              "nChunks": len(chunks), "audioS": len(audios[0]) / SR}
         if "err" in res:
             r["err"], r["tb"] = res["err"], res.get("tb")
@@ -300,6 +302,64 @@ class NemoStreamer(Streamer):
 
     def decode_ids(self, ids):
         return clean_text(self.proc.decode(ids, skip_special_tokens=True))        # processor.decode: no RNN-T token grouping
+
+    def run_batched(self, audios, pace=False):
+        """B synchronous streams, one cache-aware encoder step + batched greedy RNN-T decode per chunk.
+
+        Needed because transformers' streaming generate() is only correct at batch 1: its encoder-exhausted stopping
+        criterion permanently finishes a stream that runs out of frames before the batch pulls the next chunk (seen in
+        the GPU smoke run: B=2 stopped after ~2 chunks). This loop calls the same model modules generate() uses
+        (get_audio_features with the encoder KV + conv padding caches, decoder LSTM cache, joint) and is checked
+        against generate() at B=1 (`matchesGenerate` in load.json)."""
+        import torch
+        m, cfg = self.model, self.model.config
+        blank = cfg.blank_token_id
+        maxsym = getattr(m, "max_symbols_per_step", None) or getattr(cfg, "max_symbols_per_step", None) or 10
+        first, chunks = self.schedule(audios)
+        B = len(audios)
+        pids = first["prompt_ids"].to(self.device)
+        la = int(first["num_lookahead_tokens"]) if not hasattr(first["num_lookahead_tokens"], "shape") else int(first["num_lookahead_tokens"].reshape(-1)[0])
+        from transformers.models.nemotron3_5_asr.generation_nemotron3_5_asr import Nemotron3_5AsrRNNTDecoderCache
+        state = {"pulls": [], "avail": [], "steps": [], "feat": []}
+        toks = [[] for _ in range(B)]
+        t0 = time.perf_counter()
+        with torch.inference_mode():
+            dcache = Nemotron3_5AsrRNNTDecoderCache(cfg)
+            dec = m.decoder(torch.full((B, 1), blank, dtype=torch.long, device=self.device), cache=dcache)
+            pkv = pc = None
+            for i, (end_sample, make) in enumerate(chunks):
+                if pace:
+                    due = t0 + end_sample / SR
+                    now = time.perf_counter()
+                    if now < due:
+                        time.sleep(due - now)
+                ts = time.perf_counter()
+                state["pulls"].append(ts)
+                state["avail"].append(t0 + end_sample / SR)
+                feats = make().to(self.device, dtype=self.dtype)
+                state["feat"].append((time.perf_counter() - ts) * 1000)
+                kw = dict(input_features=feats, num_lookahead_tokens=la, use_cache=True, output_attention_mask=False, prompt_ids=pids)
+                if pkv is not None:
+                    kw.update(past_key_values=pkv, padding_cache=pc)
+                eo = m.get_audio_features(**kw)
+                if pkv is None:
+                    pkv, pc = eo.past_key_values, eo.padding_cache
+                enc = eo.pooler_output
+                for t in range(enc.shape[1]):
+                    e = enc[:, t:t + 1, :]
+                    for _ in range(maxsym):
+                        tok = m.joint(decoder_hidden_states=dec, encoder_hidden_states=e).argmax(-1)[:, 0]
+                        emit = tok != blank
+                        if not bool(emit.any()):
+                            break
+                        for b in emit.nonzero().reshape(-1).tolist():
+                            toks[b].append(int(tok[b]))
+                        dec = m.decoder(torch.where(emit, tok, torch.full_like(tok, blank))[:, None], cache=dcache)
+                sync()
+                state["steps"].append((time.perf_counter() - ts) * 1000)
+        t_done = time.perf_counter()
+        return {"t0": t0, "tDone": t_done, "pulls": state["pulls"], "avail": state["avail"], "steps": state["steps"], "feat": state["feat"],
+                "nChunks": len(chunks), "audioS": len(audios[0]) / SR, "texts": [self.decode_ids(x) for x in toks], "rec": None}
 
 
 class VoxStreamer(Streamer):
@@ -519,8 +579,13 @@ def stream_row(r, st, m, paced):
         if ev:
             row["firstPartialMs"] = round(ms(ev[0][0]) - on)
             row["lastTextMs"] = round(ms(ev[-1][0]) - end)
-            gaps = [ms(b[0]) - ms(a[0]) for a, b in zip(ev, ev[1:])]
-            row["partials"] = len(ev)
+            # partial cadence: text changes closer than 30 ms apart are one update burst (one chunk's tokens)
+            starts = [ms(ev[0][0])]
+            for x, y in zip(ev, ev[1:]):
+                if ms(y[0]) - ms(x[0]) > 30:
+                    starts.append(ms(y[0]))
+            gaps = [q - p for p, q in zip(starts, starts[1:])]
+            row["partials"] = len(starts)
             row["partialGapP50Ms"] = round(float(np.median(gaps))) if gaps else None
         row["doneMs"] = round(ms(r["tDone"]) - end)
         lags = [(p - a) * 1000 for p, a in zip(r["pulls"], r["avail"])]
@@ -602,8 +667,13 @@ def run_load(arm, model, proc, dev, dt, meta, clips, out, deadline, smoke=False)
     if a["fam"] in STREAMING:
         st = make_streamer(arm, model, proc, dev, dt)
         res.update(mode="batched-synchronous-streams", chunkMs=st.chunk_ms, latencyMs=st.latency_ms,
-                   method="B equal-length streams (concatenated corpus clips) advanced one chunk per generate step; "
-                          "unpaced; step = interval between successive chunk pulls by generate(); RTF = step / chunk")
+                   method=("B equal-length streams (concatenated corpus clips) advanced one chunk per step, unpaced; "
+                           + ("nemo: own batched loop over the model's encoder-cache step + greedy RNN-T decode (generate() "
+                              "is wrong at B>1), step = synced compute per chunk" if a["fam"] == "nemo" else
+                              "vox: generate() with a chunk generator, step = interval between successive chunk pulls")
+                           + "; RTF = step / chunk duration"))
+        runb = (lambda auds, pace=False: st.run_batched(auds, pace=pace)) if a["fam"] == "nemo" else \
+               (lambda auds, pace=False: st.run(auds, pace=pace, record=False))
         secs = 6 if smoke else 20
         ref = None
         best = None
@@ -618,7 +688,7 @@ def run_load(arm, model, proc, dev, dt, meta, clips, out, deadline, smoke=False)
                 auds[0] = ref_audio
             peak_gb(reset=True)
             try:
-                r = st.run(auds, record=False)
+                r = runb(auds)
             except torch.cuda.OutOfMemoryError as e:
                 res["levels"].append({"B": B, "err": "OOM " + str(e)[:120]})
                 torch.cuda.empty_cache()
@@ -628,14 +698,25 @@ def run_load(arm, model, proc, dev, dt, meta, clips, out, deadline, smoke=False)
                 if "out of memory" in r["err"].lower():
                     torch.cuda.empty_cache()
                 break
-            steps = np.diff(np.array(r["pulls"])) * 1000
+            steps = np.array(r["steps"]) if r.get("steps") else np.diff(np.array(r["pulls"])) * 1000
             steps = steps[2:] if len(steps) > 4 else steps                 # drop warm-up steps
             lvl = {"B": B, "chunks": r["nChunks"], "stepP50Ms": round(float(np.median(steps)), 2),
                    "stepP95Ms": round(float(np.percentile(steps, 95)), 2), "stepMaxMs": round(float(steps.max()), 2),
                    "rtfP50": round(float(np.median(steps)) / st.chunk_ms, 4), "rtfP95": round(float(np.percentile(steps, 95)) / st.chunk_ms, 4),
                    "wallS": round(r["tDone"] - r["t0"], 2), "audioS": secs, "peakGB": peak_gb()}
+            ft = np.array(r.get("feat") or [0.0])
+            ft = ft[2:] if len(ft) > 4 else ft
+            # CPU log-mel feature extraction is inside the step (processor on 4-8 vCPU); split it out so the GPU-only
+            # capacity is visible too (a production server would batch features on the GPU)
+            lvl["featP50Ms"] = round(float(np.median(ft)), 2)
+            lvl["modelStepP95Ms"] = round(float(np.percentile(steps, 95)) - float(np.median(ft)), 2)
+            lvl["modelRtfP95"] = round(lvl["modelStepP95Ms"] / st.chunk_ms, 4)
             if ref is None:
                 ref = r["texts"][0]
+                if a["fam"] == "nemo":          # validate the batched loop against generate() on the same audio
+                    g = st.run([auds[0]], record=False)
+                    lvl["matchesGenerate"] = (g.get("texts") or [None])[0] == ref
+                    lvl["generateText"] = (g.get("texts") or [g.get("err")])[0][:160]
             else:
                 lvl["stream0SameAsB1"] = r["texts"][0] == ref
             lvl["stream0Text"] = r["texts"][0][:160]
@@ -643,16 +724,23 @@ def run_load(arm, model, proc, dev, dt, meta, clips, out, deadline, smoke=False)
             log(f"{arm} load B={B}: step p50 {lvl['stepP50Ms']} p95 {lvl['stepP95Ms']} ms (chunk {st.chunk_ms:.0f}) peak {lvl['peakGB']} GB")
             if lvl["rtfP95"] <= 1.0:
                 best = B
-            if lvl["rtfP50"] > 1.5:
+            if lvl["modelRtfP95"] <= 1.0:
+                res["maxBModelOnlyAtRtfP95le1"] = B
+            if lvl["rtfP50"] > 1.5 and lvl["modelRtfP95"] > 1.0:
                 break
         res["maxBAtRtfP95le1"] = best
         # paced confirmation at the largest sustainable B: every chunk is fed only when its audio exists
         if best and time.time() < deadline:
             B, secs2 = best, (8 if smoke else 30)
             auds = [long_audio(clips, sp, secs2, rng) for _ in range(B)]
-            r = st.run(auds, pace=True, record=False)
+            r = runb(auds, pace=True)
             if not r.get("err"):
-                lags = np.array([(p - av) * 1000 for p, av in zip(r["pulls"], r["avail"])])
+                # lag = when chunk i's compute finished minus when its audio existed (= latency the server adds)
+                if r.get("steps"):
+                    done = [p + s / 1000 for p, s in zip(r["pulls"], r["steps"])]
+                else:
+                    done = list(r["pulls"][1:]) + [r["tDone"]]
+                lags = np.array([(d - av) * 1000 for d, av in zip(done, r["avail"])])
                 th = max(1, len(lags) // 3)
                 res["pacedAtBest"] = {"B": B, "seconds": secs2, "lagP50Ms": round(float(np.median(lags)), 1),
                                       "lagP95Ms": round(float(np.percentile(lags, 95)), 1), "lagMaxMs": round(float(lags.max()), 1),
@@ -772,6 +860,8 @@ def cmd_run(a):
         env["accuracy"] = run_accuracy(a.arm, model, proc, dev, dt, meta, clips, ids, out)
         env["accuracyS"] = round(time.time() - t0, 1)
         fam = ARMS[a.arm]["fam"]
+        skip = set(ARMS[a.arm].get("skip", []))      # same compute as a sibling arm: accuracy only
+        a.no_paced, a.no_load, a.no_soak = a.no_paced or "paced" in skip, a.no_load or "load" in skip, a.no_soak or "soak" in skip
         if fam in STREAMING and not a.no_paced:
             run_paced(a.arm, model, proc, dev, dt, meta, clips, smoke_ids(meta) if a.smoke else paced_ids(meta), out)
         if not a.no_load and time.time() < deadline:

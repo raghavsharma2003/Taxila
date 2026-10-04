@@ -187,7 +187,7 @@ export class Puppet2DRig {
       const lr = geom.rects["lid" + s];
       for (let i = 0; i < LC; i++) {
         const x = Math.min(lx1, lx0 + i * 3);
-        const lt = interp(lx0, e.lashTop, x) - e.fall, lb = interp(lx0, e.lashBot, x) + 2.5;
+        const lt = interp(lx0, e.lashTop, x) - e.fall, lb = interp(lx0, e.lashBot, x) + 8.5;
         for (let jj = 0; jj < LR; jj++) {
           const v = jj / (LR - 1);
           const y = lt + v * (lb - lt);
@@ -196,7 +196,7 @@ export class Puppet2DRig {
           lrest[k * 2 + 1] = y;
           luv[k * 2] = (x - lr[0]) / (lr[2] - lr[0]);
           luv[k * 2 + 1] = (y - lr[1]) / (lr[3] - lr[1]);
-          lv[k] = smooth(0.12, 0.64, v);
+          lv[k] = smooth(0.1, 0.55, v);
         }
       }
       const lpos = new Float32Array(lrest);

@@ -285,13 +285,14 @@ for side in ("L", "R"):
     # bottom edge: c-front's own AA. Near the lash bottom the alpha is the pixel's lash-ness (dark AND neutral, so
     # the brown iris under the lid is never baked into the lid); above it the lid is opaque, below it transparent
     lashness = np.clip((200 - lum) / 150.0, 0, 1) * np.clip((40 - (R - B)) / 15.0, 0, 1)
+    lashness = lashness * ~((xx - icx) ** 2 + (yy - icy) ** 2 <= (ir + 1.5) ** 2) * (yy < np.interp(xx, LX, LB) + 2.5)
     lid_alpha = lid_top.copy()
     for i, x in enumerate(LX):
         yb = LB[i]
-        for y in range(int(np.floor(yb)) - 3, int(np.ceil(yb)) + 5):
+        for y in range(int(np.floor(yb)) - 3, int(np.ceil(yb)) + 9):
             if 0 <= y < H:
                 if y >= yb - 2.5:
-                    lid_alpha[y, x] = lashness[y, x] if y < yb + 4 else 0
+                    lid_alpha[y, x] = lashness[y, x] if y < yb + 8 else 0
                 lidmask[y, x] = True
     # sides: the flick tip and the inner corner fade over 2 px (c-front's own AA)
     side_fade = np.clip(np.minimum(xx - LX[0], LX[-1] - xx) / 2.0, 0, 1)

@@ -858,10 +858,10 @@ var K = class {
 				}
 			}, W(o, 4)), f = n.lashX[0], p = n.lashX[1], m = Math.floor((p - f) / 3) + 1, h = new Float32Array(m * 8 * 2), g = new Float32Array(m * 8 * 2), _ = new Float32Array(m * 8), v = t.rects["lid" + e];
 			for (let e = 0; e < m; e++) {
-				let t = Math.min(p, f + e * 3), r = G(f, n.lashTop, t) - n.fall, i = G(f, n.lashBot, t) + 2.5;
+				let t = Math.min(p, f + e * 3), r = G(f, n.lashTop, t) - n.fall, i = G(f, n.lashBot, t) + 8.5;
 				for (let n = 0; n < 8; n++) {
 					let a = n / 7, o = r + a * (i - r), s = e * 8 + n;
-					h[s * 2] = t, h[s * 2 + 1] = o, g[s * 2] = (t - v[0]) / (v[2] - v[0]), g[s * 2 + 1] = (o - v[1]) / (v[3] - v[1]), _[s] = B(.12, .64, a);
+					h[s * 2] = t, h[s * 2 + 1] = o, g[s * 2] = (t - v[0]) / (v[2] - v[0]), g[s * 2 + 1] = (o - v[1]) / (v[3] - v[1]), _[s] = B(.1, .55, a);
 				}
 			}
 			let y = new Float32Array(h), b = this.R.mesh(a, {

@@ -1,0 +1,40 @@
+{
+ "source": "puppet2d arm P build (subagent), 2026-10-04",
+ "entries": [
+  {
+   "type": "measurement",
+   "id": "meas-puppet2d-P-rest-ssim-2026-10-04",
+   "text": "Arm P painted puppet rest pose vs c-front, head-bust crop 1024: SSIM 0.9863 (numpy recomposite) / 0.9855 (WebGL render, earlier rev); bar 0.97. n=1 render, method scripts/character/puppet2d/P/restcheck.py."
+  },
+  {
+   "type": "measurement",
+   "id": "meas-puppet2d-P-spend-2026-10-04",
+   "text": "Arm P image spend 87 gpt-image-2 edits, ledger estimate $7.38 (list-price model, overestimates). 3 output-moderation 400s on mouth prompts ('aa' vowel, 'grin' x2), passed after rewording."
+  },
+  {
+   "type": "measurement",
+   "id": "meas-puppet2d-P-fps-proxy-2026-10-04",
+   "text": "Headless Chromium + SwiftShader (CPU raster), CDP CPU throttle 4x, 15 s realtime demo, 17 draws / 15k tris: 360 px canvas fps p50 30, work p95 11.2 ms; 720 px canvas fps p50 15, work p95 13 ms. Unthrottled 360 px: 60 fps, work p95 3.3 ms. Proxy only; no Mali-G52 run yet."
+  },
+  {
+   "type": "measurement",
+   "id": "meas-puppet2d-P-bilabial-2026-10-04",
+   "text": "Clip 1 (teal.mp3, forced-aligned visemes): 21/23 bilabial frames drew a closed patch (91%), bar 80%."
+  },
+  {
+   "type": "measurement",
+   "id": "meas-puppet2d-P-panel-j4-2026-10-04",
+   "text": "Blind panel j4 (taxila-brain + grok-4-20-reasoning, 1024+256 px, n=4 per still): sanity ok (3D arm A 2.0/3.0, ref-ref 4.0/3.0). Means: rest 4.0/4.5, talk_aa 3.5/3.0, delight 3.5/3.5, thinking 3.5/3.5, listening 3.5/4.0, yaw+20 3.0/3.0, blink 3.5/3.5, retroflex 3.0/3.5. sol fails S1 (cut edges) on every still. Emotion forced choice 7/16: playful, listening, thinking, talking all read as 'warm smile'."
+  },
+  {
+   "type": "rejection",
+   "id": "rj-puppet2d-P-mouth-edits-on-cfront-mouth",
+   "text": "Tried: masked mouth edits on the 4x close-up WITH c-front's own mouth inside the mask. Broke: every patch kept c-front's smile-corner creases as fixed dimples and lips came back thick and glossy. Instead: blank the mouth + corner creases first (mouthshape.py region), edit the blank face, pass c-front's mouth as a second reference image for lip thickness and colour."
+  },
+  {
+   "type": "rejection",
+   "id": "rj-puppet2d-P-per-vertex-depth-on-silhouette-parts",
+   "text": "Tried: ellipsoid per-vertex depth for locks and ears. Broke: at yaw 20 the steep depth gradient near the silhouette sheared the locks into slices. Instead: one rigid depth per silhouette part."
+  }
+ ]
+}

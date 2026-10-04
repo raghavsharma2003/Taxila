@@ -4,6 +4,7 @@ import { build } from "vite";
 await build({
   configFile: false,
   logLevel: "warn",
+  publicDir: false,
   build: {
     outDir: "art/character/puppet2d/P",
     emptyOutDir: false,

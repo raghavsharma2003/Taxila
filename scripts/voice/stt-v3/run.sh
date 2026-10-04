@@ -10,7 +10,7 @@ cd "$JOB_DIR"
 T() { echo "[stt-v3 $(date -u +%T)] $*"; }
 export UV_CACHE_DIR=/opt/uv-cache UV_PYTHON_INSTALL_DIR=/opt/uv-python HF_HOME=/opt/hf HF_HUB_DISABLE_TELEMETRY=1 \
        PIP_DISABLE_PIP_VERSION_CHECK=1 TOKENIZERS_PARALLELISM=false PYTHONUNBUFFERED=1 WEIGHTS=/opt/w
-DEFAULT_ARMS="N6hi N3hi N13hi N6auto NOhi V480 V960 VO Q17 Q17hi Q17p Q17pk Q06 Q06hi Z0 Z0hi"
+DEFAULT_ARMS="N6hi N3hi N13hi N6auto NOhi Q17 Q17hi Q17p Q17pk Q06 Q06hi Z0 Z0hi V480 V960"
 ARMS=${ARMS:-$DEFAULT_ARMS}
 R=$OUT/results; P=$OUT/pins; LG=$OUT/logs
 mkdir -p $R $P $LG /opt/w

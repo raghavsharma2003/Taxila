@@ -18,7 +18,19 @@ DEV = "cuda" if torch.cuda.is_available() else "cpu"
 import parselmouth
 from transformers import Wav2Vec2ForCTC, Wav2Vec2FeatureExtractor, WavLMForXVector
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
-from collect import clips, pcm16k
+from collect import clips, pcm16k as _pcm16k_ffmpeg
+import shutil
+
+
+def pcm16k(f):
+    # the GPU job has no ffmpeg (apt is locked right after boot); every clip is WAV, so decode + polyphase resample there
+    if shutil.which("ffmpeg"): return _pcm16k_ffmpeg(f)
+    import soundfile as sf
+    from math import gcd
+    from scipy.signal import resample_poly
+    y, sr = sf.read(f, dtype="float32", always_2d=True); y = y.mean(1)
+    if sr != 16000: g = gcd(sr, 16000); y = resample_poly(y, 16000 // g, sr // g)
+    return np.clip(y * 32768, -32768, 32767).astype(np.int16)
 OUT = os.path.join(HERE, "align"); os.makedirs(OUT, exist_ok=True)
 HF = os.environ.get("ALIGN_HF", SP + "/hf")
 from huggingface_hub import snapshot_download
