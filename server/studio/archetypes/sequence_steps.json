@@ -1,0 +1,29 @@
+{
+  "id": "sequence_steps", "v": 1, "kind": "explorable", "title": "put the steps in order",
+  "truth": "ordered_steps",
+  "stage": { "w": 360, "h": 320 },
+  "paramsSchema": { "type": "object", "required": ["shown"], "properties": {
+    "shown": { "type": "array", "minItems": 3, "maxItems": 5, "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,15}$" } } } },
+  "hostOnly": ["order"],
+  "stringsKeys": ["title", "instr", "right", "wrong", "done", "$shown"],
+  "seam": [
+    "each step card: data-step=\"<key>\" (its words on it); when placed, data-placed=\"<position from 1>\"",
+    "the cards are shown in the order of Studio.params.shown until the child places them"
+  ],
+  "brief": [
+    "KIND: explorable. Putting the steps of a process in order.",
+    "BOARD: the step cards in the order of Studio.params.shown (this order is NOT the answer), and a numbered track of empty slots (1, 2, 3 ...) for the ordered steps.",
+    "ACTIVITY: the child taps the card that comes next -> Studio.answer({key: <card key>}). On correct it moves into the next empty slot with its number (data-placed). On wrong it shakes gently and stays. When all are placed: the done text and Studio.done().",
+    "Every card looks the same before it is placed."
+  ],
+  "states": ["boot", "ready", "answering", "verdict_wrong", "verdict_right", "done"],
+  "checks": ["G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"],
+  "player": "sequence_steps", "grader": "sequence",
+  "skeleton": "sequence",
+  "budgets": { "bytes": 60000, "genMs": 90000 },
+  "antiPatterns": [
+    "the cards shown already in the right order",
+    "a card placed on a wrong tap",
+    "numbers written on the cards before they are placed"
+  ]
+}

@@ -7,6 +7,58 @@ import { chat, DEPLOY, isReasoningFamily, isContentFilter } from "../azure.js";
 import { readUtterance } from "../learner/affect.js";
 import { scanSafety, wantsToStop, scrubPii } from "./safety.js";
 import { whyKey, norm as normAnswer, posesItem, revealsAnswer } from "./items.js";
+import { INTEREST_IDS } from "../../shared/interests.js";
+
+// ───────────── the signals block (W2-E BR2; TEACHER-BRAIN TB4, §14.2-14.3; owner of this block: W2-E) ─────────────
+// Per-turn perception rides on the SAME classify call (no new model call on the turn): the dialogue act (with the IDK
+// split: can't recall vs never learned), a personal share, an interest tag, humour. A HYPOTHESIS about this turn, never
+// a stored trait (NM-3): the turn's consumers read it (affect counters, persona pace/humour, the Moment) and it is gone.
+// The grading labels are unchanged (M2b: 30/30 labels with and without the block). Off unless TAXILA_CLASSIFY_SIGNALS=1
+// until G-SIG passes on the full item set (label agreement ≥ 99%, acts ≥ 0.9 on a two-rater set). A malformed block
+// drops the signals for the turn; the labels stand.
+export const SIGNAL_ACTS = Object.freeze(["answer", "question_curious", "question_clarify", "chit_chat", "idk_not_known", "idk_cant_recall",
+  "frustration_words", "pride_words", "meta_slow", "meta_break"]);
+export const signalsOn = () => process.env.TAXILA_CLASSIFY_SIGNALS === "1";
+
+/**
+ * The deployment a failed classify call is retried on once (W2-E L5): TAXILA_CLASSIFY_FALLBACK, else taxila-fast (MODEL-
+ * ROUTER §0's fallback for the production classifier), never the deployment that just failed. "0" turns it off.
+ */
+export function classifyFallback() {
+  const v = process.env.TAXILA_CLASSIFY_FALLBACK;
+  if (v === "0") return null;
+  const fb = v || DEPLOY.fast;
+  return fb && fb !== DEPLOY.classify ? fb : null;
+}
+const SIGNAL_PROPS = () => ({
+  act: { type: "string", enum: [...SIGNAL_ACTS] }, personal_share: { type: "boolean" },
+  interest: { type: "string", enum: [...INTEREST_IDS, "none"] }, humour: { type: "boolean" },
+});
+const SIGNALS_NOTE = [
+  "signals (about THIS reply only; a guess, never a judgement of the child):",
+  "- act: answer (attempts the question) | question_curious (asks something new out of interest) | question_clarify (asks what the question means) | chit_chat | idk_not_known (says they never learned it) | idk_cant_recall (knew it once, cannot remember now) | frustration_words | pride_words | meta_slow (asks her to go slower) | meta_break (asks for a break or to stop for now).",
+  "- personal_share: they tell something about their own life. interest: a listed interest they name as theirs, else none (a thing merely mentioned is none). humour: they joke or laugh.",
+].join("\n");
+
+/** The signals block of a model reply → TurnSignals, or null when absent or malformed (the labels are unaffected). */
+export function parseSignals(json) {
+  if (!json || typeof json !== "object" || !SIGNAL_ACTS.includes(json.act)) return null;
+  const interest = typeof json.interest === "string" && (INTEREST_IDS.includes(json.interest) || json.interest === "none") ? json.interest : "none";
+  return { act: json.act, personalShare: json.personal_share === true, interest, humour: json.humour === true };
+}
+
+/**
+ * The actionable part of the signals, as flags the affect machine reads (learner/affect.js nextAffect gets the flags as
+ * its `read`): only the ones a consumer acts on, and only when true, so a turn without signals is byte-identical.
+ */
+export function signalFlags(sig) {
+  if (!sig) return {};
+  return {
+    ...(sig.act === "frustration_words" ? { frustrationWords: true } : {}), ...(sig.act === "meta_break" ? { metaBreak: true } : {}),
+    ...(sig.act === "meta_slow" ? { metaSlow: true } : {}), ...(sig.act === "idk_cant_recall" ? { idkCantRecall: true } : {}),
+    ...(sig.act === "idk_not_known" ? { idkNotKnown: true } : {}), ...(sig.humour ? { humour: true } : {}),
+  };
+}
 
 /** Below this ASR confidence a transcript is not evidence (signal-fusion rule 3: never score it wrong). */
 export const ASR_MIN = 0.5;
@@ -60,7 +112,8 @@ function fromMatch(match, target) {
 const optionTag = (o, target) => (o.correct ? "key" : target.misconceptions.find((m) => m.id === o.misconceptionId)?.tag ?? "other_wrong");
 
 function schemaFor(target) {
-  const flags = { off_topic: { type: "boolean" }, distress: { type: "boolean" }, asks_for_answer: { type: "boolean" }, wants_to_stop: { type: "boolean" } };
+  const flags = { off_topic: { type: "boolean" }, distress: { type: "boolean" }, asks_for_answer: { type: "boolean" }, wants_to_stop: { type: "boolean" },
+    ...(signalsOn() ? SIGNAL_PROPS() : {}) };
   const obj = (properties) => ({ type: "object", additionalProperties: false, required: Object.keys(properties), properties });
   const tags = target.misconceptions.map((m) => m.tag);
   if (target.mode === "teachback") {
@@ -106,6 +159,7 @@ function systemPrompt(target, classLevel) {
       "confidence: 0-1, how sure you are of the label.",
     ].filter(Boolean).join("\n"));
   }
+  if (signalsOn()) base.push(SIGNALS_NOTE);
   return base.join("\n");
 }
 
@@ -345,29 +399,47 @@ export async function classify(args) {
     return done("no_evidence", "asr");
   }
 
-  try {
-    const { json } = await hedged(() => chat(DEPLOY.classify, [
-      { role: "system", content: systemPrompt(target, classLevel) },
-      // the bytes decided nothing (classifyFast); the model gets the child's words with direct identifiers masked
-      { role: "user", content: userPrompt(target, scrubPii(text).text, heard) },
-    ], {
-      schema: schemaFor(target), schemaName: `classify_${target.mode}`,
-      effort: target.mode === "none" ? "none" : "low", maxTokens: target.mode === "none" ? 120 : 900, timeoutMs: 7000, trace,
-    }), classifyHedgeMs());
+  const messages = [
+    { role: "system", content: systemPrompt(target, classLevel) },
+    // the bytes decided nothing (classifyFast); the model gets the child's words with direct identifiers masked
+    { role: "user", content: userPrompt(target, scrubPii(text).text, heard) },
+  ];
+  const opts = { schema: schemaFor(target), schemaName: `classify_${target.mode}`,
+    effort: target.mode === "none" ? "none" : "low", maxTokens: target.mode === "none" ? 120 : 900, timeoutMs: 7000, trace, quotaLane: "hot" };
+  const labelled = (json) => {
     const { modelFlags, ...label } = parseClassification(json, target);
     for (const k of Object.keys(modelFlags)) flags[k] = flags[k] || modelFlags[k];
-    return { ...label, source: "model", flags };
+    const signals = signalsOn() ? parseSignals(json) : null;
+    if (signals) Object.assign(flags, signalFlags(signals));
+    return { ...label, source: "model", flags, ...(signals ? { signals } : {}) };
+  };
+  const filtered = () => {
+    console.warn("[classify] blocked by the content filter: routed to safeguarding");
+    flags.distress = true;
+    flags.distressKind ??= "content_filter";
+    return done("no_evidence", "content_filter");
+  };
+  try {
+    const { json } = await hedged(() => chat(DEPLOY.classify, messages, opts), classifyHedgeMs());
+    return labelled(json);
   } catch (e) {
     // The content filter blocked the child's turn: fail CLOSED to the safeguarding protocol (never "safe",
     // never a normal reply). No second model call — the same words would be blocked again.
-    if (isContentFilter(e)) {
-      console.warn("[classify] blocked by the content filter: routed to safeguarding");
-      flags.distress = true;
-      flags.distressKind ??= "content_filter";
-      return done("no_evidence", "content_filter");
+    if (isContentFilter(e)) return filtered();
+    console.warn("[classify] model unavailable:", e.message);
+    // W2-E L5 / failure drill (BUILD-PLAN W2-E acceptance): the classify deployment is down → the same call once on the
+    // fallback deployment (MODEL-ROUTER §0: taxila-fast, the OpenAI family), so the turn keeps its evidence.
+    const fb = classifyFallback();
+    if (fb) {
+      try {
+        const { json } = await chat(fb, messages, { ...opts, timeoutMs: 6000, retries: 0 });
+        return labelled(json);
+      } catch (e2) {
+        if (isContentFilter(e2)) return filtered();
+        console.warn("[classify] fallback unavailable:", e2.message);
+      }
     }
     // A classifier outage costs one turn of evidence, never the lesson.
-    console.warn("[classify] model unavailable:", e.message);
     flags.distress = flags.distress || await distressCheck(text, classLevel, trace);
     if (flags.distress) flags.distressKind ??= "model";
     return done("no_evidence", "error");

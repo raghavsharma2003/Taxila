@@ -1,0 +1,30 @@
+<style>
+*{box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#f7fff7;color:#1b4332}
+h1{position:absolute;left:10px;top:4px;margin:0;font-size:15px}.ask{position:absolute;left:10px;top:26px;width:340px;font-size:13px;margin:0}
+svg{position:absolute;left:0;top:46px}.lab{font-size:12px;fill:#1b4332;font-weight:600}.ld{stroke:#1b4332;stroke-width:1}
+[data-part]{cursor:pointer}
+.msg{position:absolute;left:10px;top:300px;width:340px;text-align:center;font-size:13px}
+</style>
+<h1 id="t"></h1><p class="ask" id="a" data-ask></p>
+<svg width="360" height="250" viewBox="0 0 360 250">
+<g data-part="petal"><circle cx="150" cy="40" r="30" fill="#ff8fab"/><circle cx="210" cy="40" r="30" fill="#ff8fab"/><circle cx="180" cy="10" r="0" fill="#ff8fab"/></g>
+<circle data-part="centre" cx="180" cy="48" r="28" fill="#ffd166"/>
+<rect data-part="stem" x="160" y="76" width="54" height="100" rx="8" fill="#40916c"/>
+<path data-part="leaf" d="M214,100 C250,70 300,90 300,124 C276,160 236,156 214,134 Z" fill="#52b788"/>
+<path data-part="root" d="M140,178 L220,178 L236,240 L124,240 Z" fill="#b08968"/>
+<text class="lab" data-label="petal" x="60" y="34"></text><line class="ld" x1="92" y1="36" x2="118" y2="40"/>
+<text class="lab" data-label="centre" x="180" y="52" text-anchor="middle" pointer-events="none"></text>
+<text class="lab" data-label="stem" x="104" y="130"></text><line class="ld" x1="132" y1="126" x2="160" y2="126"/>
+<text class="lab" data-label="leaf" x="300" y="170" text-anchor="middle"></text>
+<text class="lab" data-label="root" x="250" y="214"></text>
+</svg><div class="msg" id="m"></div>
+<script>
+(function(){
+var P=Studio.params,done=false;
+document.getElementById("t").textContent=Studio.t("title");document.getElementById("a").textContent=Studio.t("ask");
+[].forEach.call(document.querySelectorAll("[data-label]"),function(e){e.textContent=Studio.t(e.getAttribute("data-label"));});
+[].forEach.call(document.querySelectorAll("[data-part]"),function(e){e.addEventListener("click",function(){if(!done)Studio.answer(e.getAttribute("data-part"));});});
+Studio.onVerdict(function(v){var m=document.getElementById("m");if(v.correct){done=true;m.textContent=Studio.t("right")+" "+Studio.t("done");Studio.done();}else m.textContent=Studio.t("wrong");});
+Studio.ready();
+})();
+</script>

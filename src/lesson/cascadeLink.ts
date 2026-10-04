@@ -25,6 +25,7 @@ import type { LinkEvent, LinkLevels, MicTap, TeacherLink, TeacherReply } from ".
 import { Emitter } from "./store.ts";
 import { fetchSpeechStream, PcmStreamPlayer, type SpeechStreamFetch, type StreamPlayback } from "./ttsStream.ts";
 import { MicVad } from "./vad.ts";
+import { FragmentMerger, PREDICTIVE_SILENCE_MS, predictiveEnabled, turnContext, type TurnFinal } from "./turnModel.ts";
 
 export type CascadeTransport = "webrtc" | "recording" | "typed";
 
@@ -57,6 +58,11 @@ export interface CascadeLinkOptions {
   maxReconnects?: number;
   /** Told when the link falls back to push-to-talk recording (the UI must then show a talk button). */
   onTransport?: (t: CascadeTransport) => void;
+  /**
+   * W2-E L1 (turn.predictive, default from predictiveEnabled()): the server VAD ends a fragment at 500 ms and a fragment
+   * that reads unfinished is held briefly and merged with what the child says next (turnModel.ts FragmentMerger).
+   */
+  predictive?: boolean;
 }
 
 /** Per-turn latency marks (epoch ms, client clock) for dev UIs and on-device measurement. */
@@ -329,6 +335,9 @@ export class CascadeLink implements TeacherLink {
   /** The reply being fetched, played or held paused; null when the teacher is quiet. */
   private current: CurrentReply | null = null;
   private turn: CascadeTiming = {};
+  /** turn.predictive: holds an unfinished-sounding fragment and merges the next one into it (null when off). */
+  private readonly merger: FragmentMerger | null;
+  private mergeTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(opts: CascadeLinkOptions) {
     this.lessonId = opts.lessonId;
@@ -342,6 +351,7 @@ export class CascadeLink implements TeacherLink {
     this.maxReconnects = opts.maxReconnects ?? 2;
     this.onTransport = opts.onTransport;
     this.ctx = opts.audioContext ?? null;
+    this.merger = opts.predictive ?? predictiveEnabled() ? new FragmentMerger() : null;
     this.protocol = new TranscriptionProtocol({
       emit: (e) => this.onChildEvent(e),
       onSpeechStart: () => this.onServerSpeechStart(),
@@ -506,6 +516,7 @@ export class CascadeLink implements TeacherLink {
   close(): void {
     if (this.closed) return;
     this.closed = true;
+    this.clearMergeTimer();
     this.clearPttTail();
     this.clearBargeTimers();
     if (this.disconnectTimer) clearTimeout(this.disconnectTimer);
@@ -555,6 +566,34 @@ export class CascadeLink implements TeacherLink {
   // ───────────── child side ─────────────
 
   private onChildEvent(e: LinkEvent): void {
+    // turn.predictive (W2-E L1): a final that reads unfinished waits for the child to go on, and merges with the next.
+    if (this.merger && !this.current?.paused) {
+      if (e.type === "child_speech_start" && this.merger.onSpeechStart()) this.clearMergeTimer();
+      if (e.type === "child_silent" && this.merger.holding) {
+        // the resumed speech was nothing (a cough): the held fragment is the turn
+        const held = this.merger.flush(true);
+        this.clearMergeTimer();
+        if (held) { this.deliverChild(held); return; }
+      }
+      if (e.type === "child_final" && !e.typed) {
+        const r = this.merger.onFinal(e as TurnFinal, turnContext());
+        if (r.holdMs) {
+          this.clearMergeTimer();
+          this.mergeTimer = setTimeout(() => {
+            this.mergeTimer = null;
+            const held = this.merger?.flush();
+            if (held) this.deliverChild(held);
+          }, r.holdMs);
+          return;
+        }
+        if (r.emit) e = r.emit; // the fragment, or the held one merged with it: one turn
+      }
+    }
+    this.deliverChild(e);
+  }
+
+  /** A child event after the merger: barge-in verdicts, timings, then the runtime. */
+  private deliverChild(e: LinkEvent): void {
     if (e.type === "child_speech_end") {
       this.turn = { speechEndAt: e.at };
       // The transcript decides a paused reply; if it never comes, she carries on.
@@ -732,6 +771,10 @@ export class CascadeLink implements TeacherLink {
     const tok = await this.fetchToken(this.lessonId);
     if (this.closed) throw new Error("the voice lesson was closed");
     this.audioInput = { ...obj(obj(obj(tok.session).audio).input) };
+    // turn.predictive: the candidate endpoint is 500 ms of silence; the merger keeps a mid-thought pause from ending the turn.
+    if (this.merger && obj(this.audioInput.turn_detection).type === "server_vad") {
+      this.audioInput = { ...this.audioInput, turn_detection: { ...obj(this.audioInput.turn_detection), silence_duration_ms: PREDICTIVE_SILENCE_MS } };
+    }
     const pc = new RTCPeerConnection();
     this.pc = pc;
     for (const track of this.mic!.getAudioTracks()) pc.addTrack(track, this.mic!);
@@ -797,6 +840,12 @@ export class CascadeLink implements TeacherLink {
     if (this.pc !== pc) throw new Error("the transcription call was replaced");
     this.callUp = true;
     if (this.pushToTalk) this.sendSession(null);
+    else if (this.merger) this.sendSession(this.audioInput.turn_detection);
+  }
+
+  private clearMergeTimer(): void {
+    if (this.mergeTimer) clearTimeout(this.mergeTimer);
+    this.mergeTimer = null;
   }
 
   private onServerError(e: Json): void {

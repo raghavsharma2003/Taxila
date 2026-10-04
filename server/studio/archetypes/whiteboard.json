@@ -1,0 +1,15 @@
+{
+  "id": "whiteboard", "v": 1, "kind": "whiteboard", "title": "the live whiteboard: her explanation drawn step by step, in sync with her voice",
+  "truth": "reply_and_kit",
+  "stage": { "w": 400, "h": 300 },
+  "build": "script",
+  "checks": ["W0", "W1", "W2", "W3", "W4", "W5", "W6", "W7"],
+  "skeleton": "board",
+  "budgets": { "genMs": 4000, "ops": 60 },
+  "antiPatterns": [
+    "sentences written on the board (labels, numbers and short terms only)",
+    "a number on the board that she did not say and the book does not have",
+    "a label floating away from the thing it names",
+    "everything drawn at once at the start instead of following her words"
+  ]
+}

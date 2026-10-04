@@ -1,0 +1,31 @@
+{
+  "id": "sort_bins", "v": 1, "kind": "game", "title": "sort cards into bins",
+  "truth": "bins",
+  "stage": { "w": 360, "h": 320 },
+  "paramsSchema": { "type": "object", "required": ["bins", "cards"], "properties": {
+    "bins": { "type": "array", "minItems": 2, "maxItems": 3, "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,15}$" } },
+    "cards": { "type": "array", "minItems": 3, "maxItems": 6, "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,15}$" } } } },
+  "hostOnly": ["binOf"],
+  "stringsKeys": ["title", "instr", "right", "wrong", "done", "$bins", "$cards"],
+  "seam": [
+    "each card still to sort: data-card=\"<key>\" (its word on it), data-selected=\"true|false\" kept current",
+    "each bin (the whole bin area is the target): data-bin=\"<key>\" (its name on it)",
+    "a sorted card: it shows inside its bin with data-placed=\"<bin key>\""
+  ],
+  "brief": [
+    "KIND: game. Sorting things into groups.",
+    "BOARD: the bins (Studio.params.bins) side by side, each named; the cards (Studio.params.cards, in that order) laid out above them, each showing its word. Every card looks the same: nothing tells which bin it belongs to.",
+    "ACTIVITY: tap a card to pick it up (it lifts / glows), then tap a bin -> Studio.answer({card: <card key>, bin: <bin key>}). On correct the card slides into the bin and stays there. On wrong it shakes gently and returns to its place, unselected. When every card is sorted: the done text and Studio.done().",
+    "Tap-tap only (no dragging needed)."
+  ],
+  "states": ["boot", "ready", "answering", "verdict_wrong", "verdict_right", "done"],
+  "checks": ["G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"],
+  "player": "sort_bins", "grader": "card_bins",
+  "skeleton": "bins",
+  "budgets": { "bytes": 60000, "genMs": 90000 },
+  "antiPatterns": [
+    "cards coloured by their bin before they are sorted",
+    "a wrongly sorted card staying in the bin",
+    "cards reordered or grouped by answer"
+  ]
+}

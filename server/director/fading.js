@@ -118,6 +118,8 @@ export function fadeStepIndex(we) {
  * Null when the kit has no recoverable blank or the item would not fit the prompt budget (compile.js checkFits).
  */
 export function fadeItem(kit, { band = "B3", index } = {}) {
+  // only a verified kit's worked example is trusted to yield a key (a mini-kit's steps are unreviewed model text)
+  if (!kit?.verified) return null;
   const we = kit?.workedExample;
   const i = Number.isInteger(index) ? index : fadeStepIndex(we);
   if (i == null || i < 0) return null;

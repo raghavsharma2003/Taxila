@@ -395,3 +395,17 @@ features are parametric shapes rebuilt per frame. Image spend for this arm: USD 
 | Foundry `taxila-brain` (gpt-5.6-sol) + `grok-4-20-reasoning` | advisory blind panel + forced-choice recognition (`judge-r2.mjs`, `emo-ceiling.mjs`) | Azure AI Foundry (sold direct) | Azure terms | text/vision tokens only; raw replies in `art/character/puppet2d/polish-r2/judge-*.json` |
 
 Not used: Live2D (licence blocked), Rive (GUI authoring), PixiJS (plain WebGL2 suffices).
+
+## 2D puppet, polish r3 of arm P, 2026-10-04 (`art/character/puppet2d/polish-r3/`, `scripts/character/puppet2d/polish-r3/`)
+
+| What | Used for | Source | Licence | Notes |
+|---|---|---|---|---|
+| c-front + the r2 layers (`layers.py` cut, carried over) | every head/body layer; r3 edits them in `fixups.py` (no new pixels except below) | ours | ours / Azure OpenAI terms | |
+| 4 painted keys on `taxila-image` (gpt-image-2 edit, c-front as identity reference, high quality): `keys/yawL-0`, `keys/yawR-0` (with `build/refs/q3-left/right` as pose reference), `keys/mid-0`, `keys/closed-0` (masked eye edits) (`gen-keys.mjs`) | turn keyforms (landmark TPS field, `keyfield.py`; the yaw plates are fitting targets, NOT shipped as pixels); painted mid / shut lids (`lidkeys.py`, shipped as 4 small layers) | Azure AI Foundry `taxila-image` (sold direct) | our output under the Azure OpenAI terms | USD 1.19 in `art/character/puppet2d/ledger.json` (total 8.76 of the 30 cap) |
+| The arm-P gpt-image-2 mouth atlas | ONLY the mouth interior now: upper teeth row (from `laugh`), cavity gradient (`aa`), tongue surface (`LL`), cut to `interior.png` by `interior.py` | carried over | ours / Azure OpenAI terms | the lips are c-front's own lips on the warped shell (`runtime/lips.js`) |
+| Own WebGL2 renderer, rig, lip shell + solver, blink shaper, expression emitters (`scripts/character/puppet2d/polish-r3/runtime/*.js`) | runtime | ours | ours | zero runtime dependencies |
+| numpy, scipy (ndimage, RBFInterpolator thin-plate spline, optimize), OpenCV, Pillow (WebP encode) | build-time cutting, TPS keyform fit, brow fit, WebP packing | pip | BSD-3 / BSD-3 / Apache-2.0 / HPND | build-time only; libwebp (BSD-3) via Pillow |
+| vite 8, Playwright 1.63 + Chromium (SwiftShader), ffmpeg | bundle, battery renders, clips | npm / system | MIT / Apache-2.0 / BSD / LGPL | build/evidence only; nothing ships |
+| Foundry `taxila-brain` (gpt-5.6-sol) | advisory blind judge (`scripts/character/puppet2d/judge-r3-blind.mjs`) | Azure AI Foundry (sold direct) | Azure terms | raw replies in `docs/design/teacher/puppet2d/judge-r3/` |
+
+Not used: Live2D (licence blocked), Rive (GUI authoring), PixiJS (plain WebGL2 suffices).

@@ -1,0 +1,1030 @@
+{
+ "date": "2026-10-04",
+ "model": "grok-4-1-fast-non-reasoning",
+ "n": 120,
+ "right": 115,
+ "byAct": {
+  "answer": {
+   "n": 12,
+   "right": 12,
+   "confusions": {}
+  },
+  "question_curious": {
+   "n": 12,
+   "right": 12,
+   "confusions": {}
+  },
+  "question_clarify": {
+   "n": 12,
+   "right": 11,
+   "confusions": {
+    "question_curious": 1
+   }
+  },
+  "chit_chat": {
+   "n": 12,
+   "right": 12,
+   "confusions": {}
+  },
+  "idk_not_known": {
+   "n": 12,
+   "right": 12,
+   "confusions": {}
+  },
+  "idk_cant_recall": {
+   "n": 12,
+   "right": 12,
+   "confusions": {}
+  },
+  "frustration_words": {
+   "n": 12,
+   "right": 10,
+   "confusions": {
+    "idk_cant_recall": 1,
+    "meta_break": 1
+   }
+  },
+  "pride_words": {
+   "n": 12,
+   "right": 11,
+   "confusions": {
+    "chit_chat": 1
+   }
+  },
+  "meta_slow": {
+   "n": 12,
+   "right": 11,
+   "confusions": {
+    "meta_break": 1
+   }
+  },
+  "meta_break": {
+   "n": 12,
+   "right": 12,
+   "confusions": {}
+  }
+ },
+ "rows": [
+  {
+   "text": "mujhe lagta hai cube ke chhe faces hote hain",
+   "want": "answer",
+   "got": "answer",
+   "source": "model",
+   "ms": 3306,
+   "outcome": "correct"
+  },
+  {
+   "text": "शायद चार faces हैं dice के",
+   "want": "answer",
+   "got": "answer",
+   "source": "model",
+   "ms": 3118,
+   "outcome": "incorrect"
+  },
+  {
+   "text": "I think it has six flat sides",
+   "want": "answer",
+   "got": "answer",
+   "source": "model",
+   "ms": 3082,
+   "outcome": "correct"
+  },
+  {
+   "text": "Teen dikhte hain toh teen hi honge",
+   "want": "answer",
+   "got": "answer",
+   "source": "model",
+   "ms": 3168,
+   "outcome": "misconception"
+  },
+  {
+   "text": "dice ke saare taraf gin ke chhe aaye",
+   "want": "answer",
+   "got": "answer",
+   "source": "model",
+   "ms": 3069,
+   "outcome": "correct"
+  },
+  {
+   "text": "पाँच faces होंगे शायद",
+   "want": "answer",
+   "got": "answer",
+   "source": "model",
+   "ms": 3107,
+   "outcome": "incorrect"
+  },
+  {
+   "text": "six hain didi, upar neeche aur chaar side",
+   "want": "answer",
+   "got": "answer",
+   "source": "model",
+   "ms": 3480,
+   "outcome": "correct"
+  },
+  {
+   "text": "It has eight faces maybe",
+   "want": "answer",
+   "got": "answer",
+   "source": "model",
+   "ms": 2516,
+   "outcome": "incorrect"
+  },
+  {
+   "text": "chhe wale faces, ek se chhe tak dots",
+   "want": "answer",
+   "got": "answer",
+   "source": "model",
+   "ms": 2783,
+   "outcome": "correct"
+  },
+  {
+   "text": "मेरे हिसाब से छह",
+   "want": "answer",
+   "got": "answer",
+   "source": "model",
+   "ms": 2517,
+   "outcome": "correct"
+  },
+  {
+   "text": "four sides and top bottom so six",
+   "want": "answer",
+   "got": "answer",
+   "source": "model",
+   "ms": 2590,
+   "outcome": "correct"
+  },
+  {
+   "text": "teen faces hi hote hain na",
+   "want": "answer",
+   "got": "answer",
+   "source": "model",
+   "ms": 2587,
+   "outcome": "misconception"
+  },
+  {
+   "text": "didi dice pe dots kyun hote hain numbers kyun nahi",
+   "want": "question_curious",
+   "got": "question_curious",
+   "source": "model",
+   "ms": 772,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "kya football bhi cube hota hai?",
+   "want": "question_curious",
+   "got": "question_curious",
+   "source": "model",
+   "ms": 834,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "Why do dice have opposite sides that add up to seven?",
+   "want": "question_curious",
+   "got": "question_curious",
+   "source": "model",
+   "ms": 848,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "सूरज किस shape का होता है दीदी?",
+   "want": "question_curious",
+   "got": "question_curious",
+   "source": "model",
+   "ms": 994,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "kya koi dice gol bhi hota hai?",
+   "want": "question_curious",
+   "got": "question_curious",
+   "source": "model",
+   "ms": 952,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "Can a shape have a hundred faces?",
+   "want": "question_curious",
+   "got": "question_curious",
+   "source": "model",
+   "ms": 2053,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "didi pyramid ke kitne faces hote hain?",
+   "want": "question_curious",
+   "got": "question_curious",
+   "source": "model",
+   "ms": 1976,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "रुबिक क्यूब में कितने छोटे cube होते हैं?",
+   "want": "question_curious",
+   "got": "question_curious",
+   "source": "model",
+   "ms": 2275,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "Who made the first dice?",
+   "want": "question_curious",
+   "got": "question_curious",
+   "source": "model",
+   "ms": 2085,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "kya ghar bhi cuboid hota hai?",
+   "want": "question_curious",
+   "got": "question_curious",
+   "source": "model",
+   "ms": 890,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "didi ice cube bhi cube hai kya?",
+   "want": "question_curious",
+   "got": "question_curious",
+   "source": "model",
+   "ms": 916,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "What shape is a TV remote?",
+   "want": "question_curious",
+   "got": "question_curious",
+   "source": "model",
+   "ms": 1002,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "face matlab kya didi?",
+   "want": "question_clarify",
+   "got": "question_clarify",
+   "source": "model",
+   "ms": 1225,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "flat face ka matlab kya hota hai?",
+   "want": "question_clarify",
+   "got": "question_clarify",
+   "source": "model",
+   "ms": 1241,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "What do you mean by flat faces?",
+   "want": "question_clarify",
+   "got": "question_clarify",
+   "source": "model",
+   "ms": 1200,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "फेस मतलब चेहरा?",
+   "want": "question_clarify",
+   "got": "question_clarify",
+   "source": "model",
+   "ms": 1104,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "didi dobara bolo kya poocha",
+   "want": "question_clarify",
+   "got": "question_clarify",
+   "source": "model",
+   "ms": 1152,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "Do you mean the sides with dots?",
+   "want": "question_clarify",
+   "got": "question_clarify",
+   "source": "model",
+   "ms": 1121,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "kaunsa dice, ludo wala?",
+   "want": "question_clarify",
+   "got": "question_curious",
+   "source": "model",
+   "ms": 1155,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "सवाल समझ नहीं आया, फिर से बताइए",
+   "want": "question_clarify",
+   "got": "question_clarify",
+   "source": "model",
+   "ms": 1272,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "are corners also faces?",
+   "want": "question_clarify",
+   "got": "question_clarify",
+   "source": "model",
+   "ms": 1376,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "andar ke bhi gine kya?",
+   "want": "question_clarify",
+   "got": "question_clarify",
+   "source": "model",
+   "ms": 1504,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "kya side ko face bolte hain?",
+   "want": "question_clarify",
+   "got": "question_clarify",
+   "source": "model",
+   "ms": 1233,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "Should I count the bottom one too?",
+   "want": "question_clarify",
+   "got": "question_clarify",
+   "source": "model",
+   "ms": 1237,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "didi aaj school mein holiday thi",
+   "want": "chit_chat",
+   "got": "chit_chat",
+   "source": "model",
+   "ms": 1723,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "mere paas naya cycle aaya hai",
+   "want": "chit_chat",
+   "got": "chit_chat",
+   "source": "model",
+   "ms": 2777,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "My brother is watching cartoons",
+   "want": "chit_chat",
+   "got": "chit_chat",
+   "source": "model",
+   "ms": 2668,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "आज बहुत गर्मी है दीदी",
+   "want": "chit_chat",
+   "got": "chit_chat",
+   "source": "model",
+   "ms": 2565,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "didi aapne khana khaya?",
+   "want": "chit_chat",
+   "got": "chit_chat",
+   "source": "model",
+   "ms": 2471,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "kal mera birthday hai pata hai",
+   "want": "chit_chat",
+   "got": "chit_chat",
+   "source": "model",
+   "ms": 2385,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "We went to the market today",
+   "want": "chit_chat",
+   "got": "chit_chat",
+   "source": "model",
+   "ms": 1949,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "मम्मी ने आज पराठे बनाए",
+   "want": "chit_chat",
+   "got": "chit_chat",
+   "source": "model",
+   "ms": 998,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "didi baarish ho rahi hai bahar",
+   "want": "chit_chat",
+   "got": "chit_chat",
+   "source": "model",
+   "ms": 1228,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "mera dost aaj nahi aaya school",
+   "want": "chit_chat",
+   "got": "chit_chat",
+   "source": "model",
+   "ms": 1275,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "I have a new pencil box",
+   "want": "chit_chat",
+   "got": "chit_chat",
+   "source": "model",
+   "ms": 1304,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "हमारे घर बिल्ली आई थी",
+   "want": "chit_chat",
+   "got": "chit_chat",
+   "source": "model",
+   "ms": 1264,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "maine yeh kabhi padha hi nahi didi",
+   "want": "idk_not_known",
+   "got": "idk_not_known",
+   "source": "model",
+   "ms": 1145,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "humein school mein abhi faces nahi padhaya",
+   "want": "idk_not_known",
+   "got": "idk_not_known",
+   "source": "model",
+   "ms": 1062,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "We have not learnt shapes like this yet",
+   "want": "idk_not_known",
+   "got": "idk_not_known",
+   "source": "model",
+   "ms": 1051,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "यह तो मुझे सिखाया ही नहीं गया",
+   "want": "idk_not_known",
+   "got": "idk_not_known",
+   "source": "model",
+   "ms": 1093,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "face wala chapter abhi aaya hi nahi",
+   "want": "idk_not_known",
+   "got": "idk_not_known",
+   "source": "model",
+   "ms": 1911,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "I never learned what a face is",
+   "want": "idk_not_known",
+   "got": "idk_not_known",
+   "source": "model",
+   "ms": 1331,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "mujhe yeh topic bilkul nahi aata, kabhi nahi padha",
+   "want": "idk_not_known",
+   "got": "idk_not_known",
+   "source": "model",
+   "ms": 1267,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "ये हमने कभी नहीं पढ़ा दीदी",
+   "want": "idk_not_known",
+   "got": "idk_not_known",
+   "source": "model",
+   "ms": 1447,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "teacher ne yeh abhi tak nahi sikhaya",
+   "want": "idk_not_known",
+   "got": "idk_not_known",
+   "source": "model",
+   "ms": 1439,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "This is new for me, never studied it",
+   "want": "idk_not_known",
+   "got": "idk_not_known",
+   "source": "model",
+   "ms": 1478,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "cube ke baare mein kuch nahi padha maine",
+   "want": "idk_not_known",
+   "got": "idk_not_known",
+   "source": "model",
+   "ms": 1483,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "हमारी किताब में यह नहीं है",
+   "want": "idk_not_known",
+   "got": "idk_not_known",
+   "source": "model",
+   "ms": 1671,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "yaad tha didi par abhi bhool gaya",
+   "want": "idk_cant_recall",
+   "got": "idk_cant_recall",
+   "source": "model",
+   "ms": 1901,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "pichle hafte padha tha, abhi yaad nahi aa raha",
+   "want": "idk_cant_recall",
+   "got": "idk_cant_recall",
+   "source": "model",
+   "ms": 3519,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "I knew this yesterday but I forgot",
+   "want": "idk_cant_recall",
+   "got": "idk_cant_recall",
+   "source": "model",
+   "ms": 2855,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "पढ़ा था पर अभी याद नहीं आ रहा",
+   "want": "idk_cant_recall",
+   "got": "idk_cant_recall",
+   "source": "model",
+   "ms": 4190,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "zubaan pe hai par yaad nahi aa raha",
+   "want": "idk_cant_recall",
+   "got": "idk_cant_recall",
+   "source": "model",
+   "ms": 4180,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "I learnt it in class, it slipped my mind",
+   "want": "idk_cant_recall",
+   "got": "idk_cant_recall",
+   "source": "model",
+   "ms": 4264,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "sir ne bataya tha, bhool gayi main",
+   "want": "idk_cant_recall",
+   "got": "idk_cant_recall",
+   "source": "model",
+   "ms": 4029,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "याद था, अब भूल गया दीदी",
+   "want": "idk_cant_recall",
+   "got": "idk_cant_recall",
+   "source": "model",
+   "ms": 3691,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "ek minute, yaad karta hoon, bhool gaya",
+   "want": "idk_cant_recall",
+   "got": "idk_cant_recall",
+   "source": "model",
+   "ms": 3497,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "We did it last week, I can't remember now",
+   "want": "idk_cant_recall",
+   "got": "idk_cant_recall",
+   "source": "model",
+   "ms": 3917,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "pehle aata tha ab bhool gaya",
+   "want": "idk_cant_recall",
+   "got": "idk_cant_recall",
+   "source": "model",
+   "ms": 4226,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "मैंने रटा था पर भूल गई",
+   "want": "idk_cant_recall",
+   "got": "idk_cant_recall",
+   "source": "model",
+   "ms": 1935,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "ye bahut mushkil hai, mujhse nahi hoga",
+   "want": "frustration_words",
+   "got": "frustration_words",
+   "source": "model",
+   "ms": 2523,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "uff mujhe gussa aa raha hai is sawaal pe",
+   "want": "frustration_words",
+   "got": "frustration_words",
+   "source": "model",
+   "ms": 2659,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "This is so hard, I hate this",
+   "want": "frustration_words",
+   "got": "frustration_words",
+   "source": "model",
+   "ms": 2923,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "मुझसे नहीं होता यह, बहुत मुश्किल है",
+   "want": "frustration_words",
+   "got": "frustration_words",
+   "source": "model",
+   "ms": 2864,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "har baar galat ho jata hai mera",
+   "want": "frustration_words",
+   "got": "frustration_words",
+   "source": "model",
+   "ms": 4718,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "I'm so bad at this, it's annoying",
+   "want": "frustration_words",
+   "got": "frustration_words",
+   "source": "model",
+   "ms": 5261,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "bas karo didi, samajh hi nahi aata",
+   "want": "frustration_words",
+   "got": "frustration_words",
+   "source": "model",
+   "ms": 4260,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "यह सवाल बेकार है",
+   "want": "frustration_words",
+   "got": "frustration_words",
+   "source": "model",
+   "ms": 5530,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "main kabhi sahi nahi kar paunga",
+   "want": "frustration_words",
+   "got": "idk_cant_recall",
+   "source": "model",
+   "ms": 4132,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "Ugh, this is too difficult for me",
+   "want": "frustration_words",
+   "got": "frustration_words",
+   "source": "model",
+   "ms": 4187,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "dimaag kharab ho gaya is se",
+   "want": "frustration_words",
+   "got": "frustration_words",
+   "source": "model",
+   "ms": 3482,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "मैं थक गया हूँ इससे, बहुत कठिन",
+   "want": "frustration_words",
+   "got": "meta_break",
+   "source": "model",
+   "ms": 2316,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "maine khud se gin liya, mujhe aata hai!",
+   "want": "pride_words",
+   "got": "pride_words",
+   "source": "model",
+   "ms": 2459,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "dekha didi main sahi tha",
+   "want": "pride_words",
+   "got": "pride_words",
+   "source": "model",
+   "ms": 2513,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "I knew it! I'm good at shapes",
+   "want": "pride_words",
+   "got": "pride_words",
+   "source": "model",
+   "ms": 2638,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "मैंने खुद से निकाला!",
+   "want": "pride_words",
+   "got": "pride_words",
+   "source": "model",
+   "ms": 901,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "main toh class mein sabse pehle batata hoon",
+   "want": "pride_words",
+   "got": "pride_words",
+   "source": "model",
+   "ms": 1026,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "Yes! I solved it myself",
+   "want": "pride_words",
+   "got": "pride_words",
+   "source": "model",
+   "ms": 1028,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "mujhe yeh bahut achhe se aata hai",
+   "want": "pride_words",
+   "got": "pride_words",
+   "source": "model",
+   "ms": 1251,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "मुझे पहले से पता था",
+   "want": "pride_words",
+   "got": "pride_words",
+   "source": "model",
+   "ms": 1190,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "easy tha, maine turant kar diya",
+   "want": "pride_words",
+   "got": "pride_words",
+   "source": "model",
+   "ms": 1191,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "I'm really good at this one",
+   "want": "pride_words",
+   "got": "pride_words",
+   "source": "model",
+   "ms": 1279,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "maine apne bhai ko bhi sikhaya tha",
+   "want": "pride_words",
+   "got": "chit_chat",
+   "source": "model",
+   "ms": 1219,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "वाह, मैं सही था!",
+   "want": "pride_words",
+   "got": "pride_words",
+   "source": "model",
+   "ms": 1173,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "didi thoda dheere boliye",
+   "want": "meta_slow",
+   "got": "meta_slow",
+   "source": "model",
+   "ms": 1194,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "aap bahut fast bol rahe ho",
+   "want": "meta_slow",
+   "got": "meta_slow",
+   "source": "model",
+   "ms": 1142,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "Can you speak slower please",
+   "want": "meta_slow",
+   "got": "meta_slow",
+   "source": "model",
+   "ms": 1302,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "धीरे-धीरे समझाइए",
+   "want": "meta_slow",
+   "got": "meta_slow",
+   "source": "model",
+   "ms": 1420,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "aaram se batao na",
+   "want": "meta_slow",
+   "got": "meta_break",
+   "source": "model",
+   "ms": 1206,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "Please slow down a little",
+   "want": "meta_slow",
+   "got": "meta_slow",
+   "source": "model",
+   "ms": 1279,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "itna jaldi mat bolo didi",
+   "want": "meta_slow",
+   "got": "meta_slow",
+   "source": "model",
+   "ms": 1278,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "थोड़ा धीरे बोलिए दीदी",
+   "want": "meta_slow",
+   "got": "meta_slow",
+   "source": "model",
+   "ms": 1378,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "ek ek karke dheere batao",
+   "want": "meta_slow",
+   "got": "meta_slow",
+   "source": "model",
+   "ms": 1351,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "You're going too fast for me",
+   "want": "meta_slow",
+   "got": "meta_slow",
+   "source": "model",
+   "ms": 1371,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "thoda ruk ruk ke bolo",
+   "want": "meta_slow",
+   "got": "meta_slow",
+   "source": "model",
+   "ms": 1337,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "आप जल्दी जल्दी बोल रही हो",
+   "want": "meta_slow",
+   "got": "meta_slow",
+   "source": "model",
+   "ms": 1355,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "didi thoda break le sakte hain?",
+   "want": "meta_break",
+   "got": "meta_break",
+   "source": "model",
+   "ms": 1274,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "main thak gaya, baad mein karte hain",
+   "want": "meta_break",
+   "got": "meta_break",
+   "source": "model",
+   "ms": 885,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "Can we take a break now?",
+   "want": "meta_break",
+   "got": "meta_break",
+   "source": "model",
+   "ms": 1060,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "अभी बस, बाद में पढ़ेंगे",
+   "want": "meta_break",
+   "got": "meta_break",
+   "source": "model",
+   "ms": 1082,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "paani peeke aata hoon, ruko",
+   "want": "meta_break",
+   "got": "meta_break",
+   "source": "model",
+   "ms": 1008,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "I want to stop for today",
+   "want": "meta_break",
+   "got": "meta_break",
+   "source": "model",
+   "ms": 1014,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "5 minute ka break chahiye",
+   "want": "meta_break",
+   "got": "meta_break",
+   "source": "model",
+   "ms": 1008,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "थोड़ी देर रुकते हैं दीदी",
+   "want": "meta_break",
+   "got": "meta_break",
+   "source": "model",
+   "ms": 1143,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "ab khelne jaana hai, kal karenge",
+   "want": "meta_break",
+   "got": "meta_break",
+   "source": "model",
+   "ms": 1073,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "Let's continue later please",
+   "want": "meta_break",
+   "got": "meta_break",
+   "source": "model",
+   "ms": 1090,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "aaj ke liye itna kaafi hai",
+   "want": "meta_break",
+   "got": "meta_break",
+   "source": "model",
+   "ms": 1222,
+   "outcome": "no_evidence"
+  },
+  {
+   "text": "मुझे आराम करना है अभी",
+   "want": "meta_break",
+   "got": "meta_break",
+   "source": "model",
+   "ms": 1026,
+   "outcome": "no_evidence"
+  }
+ ],
+ "rater": "single (W2-E author)"
+}

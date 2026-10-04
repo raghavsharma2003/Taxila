@@ -1,0 +1,50 @@
+<style>
+*{box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#eef8f0;color:#22392b}
+h1{position:absolute;left:8px;top:2px;margin:0;font-size:14px}
+svg{position:absolute;left:0;top:16px}
+.lab{font-size:11px;fill:#1d3b2a;font-weight:600}
+.cap{position:absolute;left:8px;top:170px;width:344px;font-size:12px;height:20px}
+.ctl{position:absolute;top:194px;height:52px;width:100px;border:0;border-radius:12px;background:#2d6a4f;color:#fff;font-size:14px}
+#play{left:8px}#next{left:116px}
+.ask{position:absolute;left:224px;top:196px;width:130px;font-size:11px;margin:0}
+.opts{position:absolute;left:8px;top:256px;width:344px;display:flex;gap:6px}
+.opt{flex:1;height:52px;border:2px solid #2d6a4f;border-radius:12px;background:#fff;font-size:12px;color:#22392b}
+</style>
+<h1 id="t"></h1>
+<svg id="s" width="360" height="152" viewBox="0 0 360 176">
+<circle data-entity="sun" cx="40" cy="30" r="20" fill="#ffd166"/>
+<path data-entity="leaf" d="M180,40 C230,30 260,70 230,100 C200,120 160,100 160,80 C160,60 165,45 180,40 Z" fill="#52b788"/>
+<rect x="198" y="100" width="6" height="50" fill="#6b4f2a"/>
+<path data-entity="roots" d="M190,150 L210,150 L216,170 L184,170 Z" fill="#8d6e46"/>
+<text class="lab" data-label="sun" x="66" y="26"></text>
+<text class="lab" data-label="leaf" x="236" y="58"></text>
+<text class="lab" data-label="roots" x="222" y="168"></text>
+<text class="lab" data-label="water" x="214" y="132"></text>
+<text class="lab" data-label="co2" x="96" y="96"></text>
+<text class="lab" data-label="o2" x="276" y="104"></text>
+<g id="pp"></g>
+</svg>
+<div class="cap" data-caption id="cap"></div>
+<button class="ctl" id="play" data-action="play"></button><button class="ctl" id="next" data-action="next"></button>
+<p class="ask" id="ask"></p>
+<div class="opts" id="opts"></div>
+<script>
+(function(){
+var P=Studio.params,NS="http://www.w3.org/2000/svg",g=document.getElementById("pp"),playing=true,step=1,t=0,done=false;
+var lab=document.querySelectorAll("[data-label]");for(var i=0;i<lab.length;i++)lab[i].textContent=Studio.t(lab[i].getAttribute("data-label"));
+document.getElementById("t").textContent=Studio.t("title");document.getElementById("ask").textContent=Studio.t("ask");
+var pb=document.getElementById("play"),nb=document.getElementById("next"),cap=document.getElementById("cap");
+pb.textContent=Studio.t("pause");nb.textContent=Studio.t("next");cap.textContent=Studio.t("step1");
+var paths={water:[[201,168],[201,92]],co2:[[100,80],[170,72]],o2:[[226,80],[300,92]]};
+var ps=[];
+P.flows.forEach(function(f){var pa=paths[f.key];if(!pa)return;for(var k=0;k<4;k++){var c=document.createElementNS(NS,"circle");c.setAttribute("r","3.5");c.setAttribute("fill",f.key==="water"?"#4cc9f0":f.key==="o2"?"#90e0ef":"#adb5bd");c.setAttribute("data-flow",f.key);g.appendChild(c);ps.push({el:c,pa:pa,ph:k/4});}});
+function frame(){if(playing){t+=0.008;}ps.forEach(function(p){var u=(p.ph+t)%1;var x=p.pa[0][0]+(p.pa[1][0]-p.pa[0][0])*u,y=p.pa[0][1]+(p.pa[1][1]-p.pa[0][1])*u;p.el.setAttribute("cx",x.toFixed(1));p.el.setAttribute("cy",y.toFixed(1));});requestAnimationFrame(frame);}
+frame();
+pb.addEventListener("click",function(){playing=!playing;pb.textContent=Studio.t(playing?"pause":"play");});
+nb.addEventListener("click",function(){step=step%P.steps+1;cap.textContent=Studio.t("step"+step);});
+var o=document.getElementById("opts");
+P.options.forEach(function(k){var b=document.createElement("button");b.className="opt";b.setAttribute("data-option",k);b.textContent=Studio.t(k);b.addEventListener("click",function(){if(!done)Studio.answer(k);});o.appendChild(b);});
+Studio.onVerdict(function(v){if(v.correct){done=true;cap.textContent=Studio.t("right");Studio.done();}else cap.textContent=Studio.t("wrong");});
+Studio.ready();
+})();
+</script>

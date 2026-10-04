@@ -168,6 +168,9 @@ export async function chat(deployment, messages, opts = {}) {
   if (effort) body.reasoning_effort = effort;
   if (opts.schema) {
     body.response_format = { type: "json_schema", json_schema: { name: opts.schemaName || "result", strict: true, schema: opts.schema } };
+  } else if (opts.json) {
+    // json_object mode: valid JSON with no schema (compact payloads whose optional keys a strict schema would force)
+    body.response_format = { type: "json_object" };
   }
   const j = await post("chat", deployment, "/chat/completions", body, opts);
   const choice = j?.choices?.[0];
@@ -175,6 +178,11 @@ export async function chat(deployment, messages, opts = {}) {
   const finishReason = choice?.finish_reason;
   // A filtered completion is never an answer (empty or partial content): it surfaces as a content_filter error.
   if (finishReason === CONTENT_FILTER) throw new AzureError(`chat ${deployment} completion blocked by the content filter`, 200, CONTENT_FILTER);
+  if (opts.json && !opts.schema) {
+    if (finishReason === "length") throw new AzureError(`chat ${deployment} JSON truncated at max tokens`, 200, "truncated");
+    try { return { text, json: JSON.parse(text), finishReason, usage: j?.usage }; }
+    catch { throw new AzureError(`chat ${deployment} returned invalid JSON`, 200, "bad_json"); }
+  }
   if (!opts.schema) return { text, finishReason, usage: j?.usage };
   if (choice?.message?.refusal) throw new AzureError(`chat ${deployment} refused: ${String(choice.message.refusal).slice(0, 200)}`, 200, "refusal");
   if (finishReason === "length") throw new AzureError(`chat ${deployment} JSON truncated at max tokens`, 200, "truncated");
@@ -183,6 +191,147 @@ export async function chat(deployment, messages, opts = {}) {
   } catch {
     throw new AzureError(`chat ${deployment} returned invalid JSON`, 200, "bad_json");
   }
+}
+
+// ───────────────────────────── streaming (W2-F, LIVE-STUDIO S3) ─────────────────────────────
+// Studio builders stream a whole single-file artifact (6-16 k tokens, 20-60 s) so the stream guard can rewrite it at
+// token time and the veil can paint it. Same rules as post(): the key only in the api-key header, payloads never
+// logged, the quota lane admitted before and settled after. No retry: a builder that fails is the race partner's
+// turn (and a retry would double a 40 s call). Cancellation: the caller's AbortSignal (the race loser) and a stall
+// watchdog (no bytes for `stallMs`, LIVE-STUDIO §9: 20 s) both abort the socket.
+
+/** $ per 1M tokens, Azure retail Global Standard eastus2 (MODEL-ROUTER §2 / model-refresh prices, read 2026-10-04). */
+export const PRICES = Object.freeze({
+  "taxila-codex": { in: 1.75, cached: 0.175, out: 14 },
+  "taxila-brain": { in: 4, cached: 0.4, out: 20 },
+  "gpt-5.6-terra": { in: 2, cached: 0.2, out: 12 },
+  "taxila-gpt6": { in: 2, cached: 0.2, out: 10 },
+  "taxila-gpt6-luna": { in: 0.1, cached: 0.01, out: 0.5 },
+  "taxila-fast": { in: 0.2, cached: 0.02, out: 1.2 },
+  "taxila-kimi-code": { in: 0.95, cached: 0.95, out: 4 },
+  "DeepSeek-V4-Flash": { in: 0.19, cached: 0.19, out: 0.51 },
+  "DeepSeek-V4-Pro": { in: 1.74, cached: 1.74, out: 3.48 },
+  "grok-4.3": { in: 1.25, cached: 1.25, out: 2.5 },
+});
+/** Dollars for one call's usage ({in, cached, out}); an unpriced deployment costs the dearest row (never 0: caps must bite). */
+export function usdOf(deployment, u) {
+  if (!u) return 0;
+  const p = PRICES[deployment] ?? PRICES["taxila-brain"];
+  const cached = u.cached || 0;
+  return (Math.max(0, (u.in || 0) - cached) * p.in + cached * p.cached + (u.out || 0) * p.out) / 1e6;
+}
+/** One usage shape from either API ({in, cached, out, reasoning}). Exported for tests. */
+export function normUsage(u) {
+  if (!u) return null;
+  return {
+    in: u.prompt_tokens ?? u.input_tokens ?? 0,
+    cached: u.prompt_tokens_details?.cached_tokens ?? u.input_tokens_details?.cached_tokens ?? 0,
+    out: u.completion_tokens ?? u.output_tokens ?? 0,
+    reasoning: u.completion_tokens_details?.reasoning_tokens ?? u.output_tokens_details?.reasoning_tokens ?? 0,
+  };
+}
+
+/** Server-sent events → parsed JSON objects (keep-alives and [DONE] skipped). Exported for tests. */
+export async function* sseEvents(body) {
+  const dec = new TextDecoder();
+  let buf = "";
+  for await (const chunk of body) {
+    buf += typeof chunk === "string" ? chunk : dec.decode(chunk, { stream: true });
+    let i;
+    while ((i = buf.search(/\r?\n\r?\n/)) >= 0) {
+      const block = buf.slice(0, i);
+      buf = buf.slice(i + (buf[i] === "\r" ? 4 : 2));
+      const data = block.split(/\r?\n/).filter((l) => l.startsWith("data:")).map((l) => l.slice(5).trim()).join("\n");
+      if (!data || data === "[DONE]") continue;
+      try { yield JSON.parse(data); } catch { /* keep-alive or a partial line */ }
+    }
+  }
+}
+
+/**
+ * Stream one generation (chat completions, or the Responses API when `api: "responses"`, e.g. taxila-codex).
+ * Never retries. Resolves with what arrived; throws AzureError on an HTTP error, a filter block, a stall, a timeout or
+ * a cancel (code "cancelled": the caller's signal fired). `onDelta(text, soFar)` is called per content delta.
+ * @param {string} deployment
+ * @param {{ role: string, content: string }[]} messages  system/developer first, then user
+ * @param {{ api?: "chat" | "responses", effort?: string, maxTokens?: number, timeoutMs?: number, stallMs?: number,
+ *   signal?: AbortSignal, onDelta?: (d: string, soFar: string) => void, quotaLane?: "hot" | "background", trace?: object[], kind?: string }} [opts]
+ * @returns {Promise<{ text: string, ttftMs: number | null, ms: number, usage: { in: number, cached: number, out: number, reasoning: number } | null, finishReason?: string, usd: number }>}
+ */
+export async function chatStream(deployment, messages, opts = {}) {
+  const { api = "chat", effort, maxTokens = 16_000, timeoutMs = 300_000, stallMs = 20_000, signal, onDelta, quotaLane = "background", trace } = opts;
+  const kind = opts.kind ?? (api === "responses" ? "responses_stream" : "chat_stream");
+  const lane = api === "responses" ? "RESPONSES" : "CHAT";
+  let wait;
+  try { wait = admit({ quotaLane, deployment, kind }); } catch (e) { console.warn("[azure] lanes.admit failed:", e?.message); }
+  if (wait) await Promise.resolve(wait).catch(() => {});
+  const t0 = performance.now();
+  const ctl = new AbortController();
+  let why = "";
+  const abort = (w) => { if (!why) why = w; ctl.abort(); };
+  const timer = setTimeout(() => abort("timeout"), timeoutMs);
+  let stall = setTimeout(() => abort("stalled"), stallMs);
+  const onCancel = () => abort("cancelled");
+  if (signal) { if (signal.aborted) abort("cancelled"); else signal.addEventListener("abort", onCancel, { once: true }); }
+  let text = "", ttftMs = null, usage = null, finishReason, status = 0, err;
+  const reasoning = isReasoningFamily(deployment);
+  const eff = effortFor(deployment, effort);
+  let body;
+  if (api === "responses") {
+    const [sys, ...rest] = messages;
+    body = { model: deployment, stream: true, max_output_tokens: maxTokens, ...(eff ? { reasoning: { effort: eff } } : {}),
+      input: [{ role: "developer", content: sys?.content ?? "" }, ...rest.map((m) => ({ role: m.role, content: m.content }))] };
+  } else {
+    body = { model: deployment, stream: true, stream_options: { include_usage: true }, messages, [reasoning ? "max_completion_tokens" : "max_tokens"]: maxTokens };
+    if (eff) body.reasoning_effort = eff;
+  }
+  const push = (d) => {
+    if (!d) return;
+    if (ttftMs === null) ttftMs = Math.round(performance.now() - t0);
+    text += d;
+    try { onDelta?.(d, text); } catch (e) { console.warn("[azure] onDelta threw:", e?.message); }
+  };
+  try {
+    const res = await fetch(endpoint(lane) + (api === "responses" ? "/responses" : "/chat/completions"), {
+      method: "POST", headers: { "api-key": apiKey(lane), "content-type": "application/json" }, body: JSON.stringify(body), signal: ctl.signal,
+    });
+    status = res.status;
+    if (!res.ok) {
+      const t = await res.text();
+      err = new AzureError(`${kind} ${deployment} HTTP ${status}: ${excerpt(t)}`, status, bodyIsContentFilter(t) ? CONTENT_FILTER : "");
+    } else {
+      for await (const ev of sseEvents(res.body)) {
+        clearTimeout(stall); stall = setTimeout(() => abort("stalled"), stallMs);
+        if (ev.type === "response.output_text.delta") push(ev.delta);
+        else if (ev.type === "response.completed" || ev.type === "response.incomplete") {
+          usage = normUsage(ev.response?.usage) ?? usage;
+          if (ev.response?.status === "incomplete") finishReason = "length";
+        } else if (ev.type === "response.failed" || ev.type === "error") {
+          err = new AzureError(`${kind} ${deployment} failed: ${excerpt(JSON.stringify(ev.response?.error ?? ev.error ?? ev))}`, 200,
+            bodyIsContentFilter(ev.response ?? ev) ? CONTENT_FILTER : "failed");
+        } else if (Array.isArray(ev.choices)) {
+          for (const c of ev.choices) {
+            push(c.delta?.content);
+            if (c.finish_reason) finishReason = c.finish_reason;
+          }
+        }
+        if (ev.usage && !ev.type) usage = normUsage(ev.usage);
+      }
+      if (finishReason === CONTENT_FILTER) err = new AzureError(`${kind} ${deployment} completion blocked by the content filter`, 200, CONTENT_FILTER);
+    }
+  } catch (e) {
+    err = why ? new AzureError(`${kind} ${deployment} ${why} after ${Math.round(performance.now() - t0)} ms`, 0, why)
+      : new AzureError(`${kind} ${deployment} network error: ${e?.message || e}`, 0, "network");
+  } finally {
+    clearTimeout(timer); clearTimeout(stall);
+    signal?.removeEventListener?.("abort", onCancel);
+  }
+  const ms = Math.round(performance.now() - t0);
+  log({ kind, deployment, status: status && !err ? status : err?.code || status || "error", ms, tokens: usage ? { in: usage.in, out: usage.out } : undefined }, trace);
+  try { settle({ quotaLane, deployment, kind, status: err ? (err.status || err.code) : status, usage: usage ? { in: usage.in, out: usage.out } : undefined }); }
+  catch (e) { console.warn("[azure] lanes.settle failed:", e?.message); }
+  if (err) { err.partial = { text, ttftMs, ms, usage, usd: usdOf(deployment, usage) }; throw err; }
+  return { text, ttftMs, ms, usage, finishReason, usd: usdOf(deployment, usage) };
 }
 
 /**

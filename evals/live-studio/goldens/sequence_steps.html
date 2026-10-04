@@ -1,0 +1,25 @@
+<style>
+*{box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#fffaf0;color:#3d2c2e}
+h1{position:absolute;left:10px;top:4px;margin:0;font-size:15px}.instr{position:absolute;left:10px;top:24px;font-size:12px;margin:0}
+.track{position:absolute;left:10px;top:44px;width:340px;display:flex;gap:4px}
+.slot{flex:1;height:30px;border:2px dashed #c9a227;border-radius:8px;font-size:12px;display:flex;align-items:center;justify-content:center}
+.cards{position:absolute;left:10px;top:84px;width:340px;display:flex;flex-direction:column;gap:6px}
+.step{height:54px;border:2px solid #9c6644;border-radius:12px;background:#fff;font-size:13px;color:#3d2c2e;text-align:left;padding-left:12px}
+.step[data-placed]{background:#ddb892}
+.msg{position:absolute;left:10px;top:300px;width:340px;text-align:center;font-size:12px}
+</style>
+<h1 id="t"></h1><p class="instr" id="i"></p><div class="track" id="tr"></div><div class="cards" id="cs"></div><div class="msg" id="m"></div>
+<script>
+(function(){
+var P=Studio.params,n=0,done=false,tr=document.getElementById("tr"),cs=document.getElementById("cs"),m=document.getElementById("m"),last=null;
+document.getElementById("t").textContent=Studio.t("title");document.getElementById("i").textContent=Studio.t("instr");
+var slots=P.shown.map(function(_,i){var d=document.createElement("div");d.className="slot";d.textContent=String(i+1);tr.appendChild(d);return d;});
+P.shown.forEach(function(k){var b=document.createElement("button");b.className="step";b.setAttribute("data-step",k);b.textContent=Studio.t(k);
+  b.addEventListener("click",function(){if(done||b.hasAttribute("data-placed"))return;last=b;Studio.answer({key:k});});cs.appendChild(b);});
+Studio.onVerdict(function(v){if(!last)return;var b=last;last=null;
+  if(v.correct){n++;b.setAttribute("data-placed",String(n));b.textContent=n+". "+Studio.t(b.getAttribute("data-step"));slots[n-1].style.background="#ddb892";m.textContent=Studio.t("right");
+    if(n===P.shown.length){done=true;m.textContent=Studio.t("done");Studio.done();}}
+  else m.textContent=Studio.t("wrong");});
+Studio.ready();
+})();
+</script>

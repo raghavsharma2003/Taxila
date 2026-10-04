@@ -1,0 +1,40 @@
+{
+  "id": "number_line_jump", "v": 1, "kind": "game", "title": "move the marker to a number on the number line",
+  "truth": "numbers",
+  "stage": { "w": 360, "h": 320 },
+  "paramsSchema": { "type": "object", "required": ["min", "max", "step", "labelEvery", "format", "start", "items"], "properties": {
+    "min": { "type": "number", "minimum": -1000, "maximum": 1000 }, "max": { "type": "number", "minimum": -1000, "maximum": 1000 },
+    "step": { "type": "number", "minimum": 0.01, "maximum": 1000 },
+    "labelEvery": { "type": "integer", "minimum": 1, "maximum": 10 },
+    "format": { "type": "string", "enum": ["integer", "decimal", "fraction"] },
+    "den": { "type": "integer", "minimum": 2, "maximum": 12 },
+    "start": { "type": "number" },
+    "items": { "type": "array", "minItems": 1, "maxItems": 4, "items": { "type": "object", "required": ["id", "target"], "properties": {
+      "id": { "type": "string", "maxLength": 16 }, "target": { "type": "number" } } } } } },
+  "hostOnly": [],
+  "stringsKeys": ["title", "instr", "left", "right_btn", "check", "right", "wrong", "done"],
+  "seam": [
+    "each tick: data-tick=\"<value>\" (one element per tick, from min to max every step), centred on its value",
+    "the marker: data-marker and data-value=\"<its current value>\" kept current, centred on its value's tick",
+    "move controls: data-action=\"left\" and data-action=\"right\" (one step each; the marker never leaves min..max)",
+    "the check control: data-action=\"check\" -> Studio.answer({value: <marker value>})",
+    "the target, as a number: an element with data-target; the current item's container: data-item=\"<item.id>\""
+  ],
+  "brief": [
+    "KIND: game. Placing a number on a number line.",
+    "LINE: a horizontal number line from Studio.params.min to max with a tick every step; every labelEvery-th tick labelled with its value written in Studio.params.format (fraction: numerator/den, e.g. 3/4 written with numerals). Ticks are evenly spaced: the x of a value is linear in the value.",
+    "ACTIVITY: for each item in order: show the target (data-target) as a number in the same format; the marker starts at Studio.params.start; the child moves it with the two big step buttons (strings left, right_btn) and presses check -> Studio.answer({value: <marker value>}).",
+    "On correct: a little hop of the marker, then the next item (the marker returns to start). On wrong: gentle feedback, the marker stays so the child can move it and check again. After the last item: the done text and Studio.done().",
+    "Keep values exact: compute marker values as min + k*step and round to 6 decimals; never show more decimals than the format needs."
+  ],
+  "states": ["boot", "ready", "answering", "verdict_wrong", "verdict_right", "done"],
+  "checks": ["G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"],
+  "player": "number_line_jump", "grader": "value_items",
+  "skeleton": "number-line",
+  "budgets": { "bytes": 60000, "genMs": 90000 },
+  "antiPatterns": [
+    "ticks placed by index with a different spacing for labelled ticks",
+    "floating point drift in the marker value (0.30000000000000004)",
+    "the marker starting on the target"
+  ]
+}

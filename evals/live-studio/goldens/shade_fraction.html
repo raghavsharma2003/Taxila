@@ -1,0 +1,46 @@
+<style>
+*{box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#fdf6ec;color:#3b2f2a}
+.wrap{position:relative;width:360px;height:320px}
+h1{position:absolute;left:12px;top:6px;margin:0;font-size:18px}
+svg.whole{position:absolute;left:8px;top:40px;width:230px;height:230px}
+.part{fill:#fff3d6;stroke:#a0522d;stroke-width:2;cursor:pointer;transition:fill .2s}
+.part[data-shaded=true]{fill:#f4a259}
+.side{position:absolute;left:246px;top:44px;width:106px;text-align:center}
+.instr{font-size:13px;margin:0 0 6px}
+.target{font-size:34px;font-weight:700;margin:4px 0 10px}
+button{width:100px;height:68px;border:0;border-radius:16px;background:#2a9d8f;color:#fff;font-size:17px}
+.msg{position:absolute;left:12px;top:280px;width:336px;font-size:14px;text-align:center}
+</style>
+<div class="wrap"><h1 id="t"></h1>
+<svg class="whole" viewBox="0 0 230 230" id="w"></svg>
+<div class="side"><p class="instr" id="i"></p><div class="target" data-target id="tg"></div><button data-action="check" id="c"></button></div>
+<div class="msg" id="m"></div></div>
+<script>
+(function(){
+var P=Studio.params,items=P.items,k=0,shaded=[];
+var w=document.getElementById("w"),m=document.getElementById("m");
+document.getElementById("t").textContent=Studio.t("title");
+document.getElementById("i").textContent=Studio.t("instr");
+document.getElementById("c").textContent=Studio.t("check");
+function draw(){
+  var it=items[k];shaded=[];w.innerHTML="";w.setAttribute("data-item",it.id);
+  document.getElementById("tg").textContent=it.n+"/"+it.d;
+  var cx=115,cy=115,r=110;
+  for(var i=0;i<it.d;i++){
+    var el;
+    if(P.picture==="bar"){el=document.createElementNS("http://www.w3.org/2000/svg","rect");var bw=220/it.d;el.setAttribute("x",5+i*bw);el.setAttribute("y",60);el.setAttribute("width",bw);el.setAttribute("height",110);}
+    else{var a0=2*Math.PI*i/it.d-Math.PI/2,a1=2*Math.PI*(i+1)/it.d-Math.PI/2;el=document.createElementNS("http://www.w3.org/2000/svg","path");
+      el.setAttribute("d","M"+cx+","+cy+" L"+(cx+r*Math.cos(a0))+","+(cy+r*Math.sin(a0))+" A"+r+","+r+" 0 "+(a1-a0>Math.PI?1:0)+",1 "+(cx+r*Math.cos(a1))+","+(cy+r*Math.sin(a1))+" Z");}
+    el.setAttribute("class","part");el.setAttribute("data-part",String(i));el.setAttribute("data-shaded","false");
+    (function(i,el){el.addEventListener("click",function(){shaded[i]=!shaded[i];el.setAttribute("data-shaded",shaded[i]?"true":"false");});})(i,el);
+    w.appendChild(el);
+  }
+}
+document.getElementById("c").addEventListener("click",function(){var n=shaded.filter(Boolean).length;Studio.answer({n:n,d:items[k].d});});
+Studio.onVerdict(function(v){
+  if(v.correct){m.textContent=Studio.t("right");k++;if(k>=items.length){setTimeout(function(){m.textContent=Studio.t("done");Studio.done();},300);}else setTimeout(draw,600);}
+  else m.textContent=Studio.t("wrong");
+});
+draw();Studio.ready();
+})();
+</script>

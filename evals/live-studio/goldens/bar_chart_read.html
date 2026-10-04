@@ -1,0 +1,32 @@
+<style>
+*{box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#f3f7fb;color:#1f2d3d}
+h1{position:absolute;left:10px;top:4px;margin:0;font-size:15px}
+.ask{position:absolute;left:10px;top:24px;width:340px;font-size:12px;margin:0}
+svg{position:absolute;left:0;top:44px}
+.bar{fill:#5b8def}
+.col{fill:transparent;cursor:pointer}
+.tick{font-size:10px;fill:#555}.name{font-size:11px;fill:#1f2d3d}
+.msg{position:absolute;left:10px;top:298px;width:340px;font-size:13px;text-align:center}
+</style>
+<h1 id="t"></h1><p class="ask" id="a"></p>
+<svg id="s" width="360" height="252" viewBox="0 0 360 252"></svg>
+<div class="msg" id="m"></div>
+<script>
+(function(){
+var D=Studio.params.data,NS="http://www.w3.org/2000/svg",s=document.getElementById("s"),m=document.getElementById("m"),done=false;
+document.getElementById("t").textContent=Studio.t("title");document.getElementById("a").textContent=Studio.t("ask");
+function el(n,a){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);s.appendChild(e);return e;}
+var max=Math.max.apply(null,D.map(function(d){return d.value;}));var step=max<=10?2:max<=25?5:max<=50?10:20;var top=Math.ceil(max/step)*step;
+var x0=40,base=210,H=180,W=310,cw=W/D.length,sc=H/top;
+for(var v=0;v<=top;v+=step){var y=base-v*sc;el("line",{x1:x0,x2:x0+W,y1:y,y2:y,stroke:"#dde3ea"});var t=el("text",{x:x0-6,y:y+3.5,"text-anchor":"end","class":"tick","data-tick":String(v)});t.textContent=String(v);}
+var yl=el("text",{x:10,y:110,"class":"tick",transform:"rotate(-90 10 110)","text-anchor":"middle"});yl.textContent=Studio.t("yaxis");
+D.forEach(function(d,i){var cx=x0+i*cw;var h=d.value*sc;
+  var b=el("rect",{x:cx+cw*0.2,y:base-h,width:cw*0.6,height:h,rx:4,"class":"bar","data-bar":d.key,"data-value":String(d.value)});
+  var n=el("text",{x:cx+cw/2,y:base+16,"text-anchor":"middle","class":"name"});n.textContent=Studio.t(d.key);
+  var c=el("rect",{x:cx+2,y:base-H,width:cw-4,height:H+30,"class":"col","data-column":d.key});
+  c.addEventListener("click",function(){if(done)return;Studio.answer(d.key);});
+});
+Studio.onVerdict(function(v){if(v.correct){done=true;m.textContent=Studio.t("right")+" "+Studio.t("done");Studio.done();}else m.textContent=Studio.t("wrong");});
+Studio.ready();
+})();
+</script>

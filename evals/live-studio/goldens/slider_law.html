@@ -1,0 +1,33 @@
+<style>
+*{box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#eef6ff;color:#14213d}
+h1{position:absolute;left:10px;top:4px;margin:0;font-size:15px}
+svg{position:absolute;left:10px;top:26px}
+.read{position:absolute;left:170px;top:40px;font-size:14px;line-height:1.6}
+.b{position:absolute;top:150px;width:76px;height:56px;border:0;border-radius:14px;background:#fca311;font-size:15px}
+#d{left:170px}#u{left:256px}
+.ask{position:absolute;left:10px;top:212px;width:340px;font-size:12px;margin:0}
+.opts{position:absolute;left:10px;top:236px;width:340px;display:flex;gap:8px}
+.opt{flex:1;height:56px;border:2px solid #14213d;border-radius:14px;background:#fff;font-size:16px}
+.msg{position:absolute;left:10px;top:298px;width:340px;text-align:center;font-size:12px}
+</style>
+<h1 id="t"></h1>
+<svg width="150" height="184" viewBox="0 0 150 184"><line x1="0" y1="182" x2="150" y2="182" stroke="#14213d" stroke-width="2"/><rect id="v" data-visual data-dim="h" x="45" width="60" y="182" height="0" rx="4" fill="#219ebc"/></svg>
+<div class="read"><div><span id="xn"></span>: <b id="x" data-x></b></div><div><span id="yn"></span>: <b id="y" data-output></b></div></div>
+<button class="b" id="d" data-action="dec"></button><button class="b" id="u" data-action="inc"></button>
+<p class="ask" id="a"></p><div class="opts" id="o"></div><div class="msg" id="m"></div>
+<script>
+(function(){
+var P=Studio.params,x=P.x.start,done=false;
+function r2(v){return Math.round(v*100)/100;}
+function y(x){return r2(P.law.k*x+P.law.b);}
+var v=document.getElementById("v");
+function render(){var yy=y(x);document.getElementById("x").textContent=String(r2(x));document.getElementById("x").setAttribute("data-x",String(r2(x)));
+  var o=document.getElementById("y");o.textContent=String(yy);o.setAttribute("data-value",String(yy));var h=yy*P.y.unitsPer;v.setAttribute("height",h);v.setAttribute("y",182-h);}
+["t","title","xn","xname","yn","yname","d","less","u","more","a","ask"].forEach(function(_,i,a){if(i%2===0)document.getElementById(a[i]).textContent=Studio.t(a[i+1]);});
+document.getElementById("d").addEventListener("click",function(){if(x>P.x.min+1e-9){x=r2(x-P.x.step);render();}});
+document.getElementById("u").addEventListener("click",function(){if(x<P.x.max-1e-9){x=r2(x+P.x.step);render();}});
+var o=document.getElementById("o");P.ask.options.forEach(function(n){var b=document.createElement("button");b.className="opt";b.setAttribute("data-option",String(n));b.textContent=String(n);b.addEventListener("click",function(){if(!done)Studio.answer({value:n});});o.appendChild(b);});
+Studio.onVerdict(function(r){var m=document.getElementById("m");if(r.correct){done=true;m.textContent=Studio.t("right")+" "+Studio.t("done");Studio.done();}else m.textContent=Studio.t("wrong");});
+render();Studio.ready();
+})();
+</script>

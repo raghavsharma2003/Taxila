@@ -1,0 +1,35 @@
+{
+  "id": "process_chain", "v": 1, "kind": "animation", "title": "a process step by step (a chain or a cycle)",
+  "truth": "flow_list",
+  "stage": { "w": 360, "h": 320 },
+  "paramsSchema": { "type": "object", "required": ["stages", "cycle", "options"], "properties": {
+    "stages": { "type": "array", "minItems": 3, "maxItems": 5, "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,15}$" } },
+    "cycle": { "type": "boolean" },
+    "askAfter": { "type": "string" },
+    "options": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "string" } } } },
+  "hostOnly": [],
+  "stringsKeys": ["title", "next", "ask", "right", "wrong", "done", "$stages"],
+  "seam": [
+    "each stage (the drawn box or picture): data-stage=\"<key>\"; its name: data-label=\"<key>\" inside or right beside it",
+    "each arrow from one stage to the next: data-arrow=\"<from key>><to key>\" (and last>first when cycle is true), pointing from the first to the second",
+    "a moving token that travels along the arrows: data-token",
+    "the active stage: data-active=\"<key>\" on the root element kept current; the next control: data-action=\"next\"",
+    "the answer options: data-option=\"<key>\""
+  ],
+  "brief": [
+    "KIND: animated explanation. A process as stages in order (Studio.params.stages), joined by arrows; a cycle when Studio.params.cycle is true (the last stage leads back to the first).",
+    "SCENE: the stages laid out in reading order (a row, a zig-zag or a ring for a cycle), each named, arrows between consecutive stages. A token (a drop, a dot, a small creature) travels along the arrow to each stage in turn and the arriving stage glows.",
+    "The token starts at the first stage (data-active = first). The next button moves it, with a visible journey along the arrow, to the following stage.",
+    "QUESTION: ask (which stage comes after Studio.params.askAfter) with one option button per key in Studio.params.options -> Studio.answer(\"<key>\"); feedback from Studio.onVerdict; options stay tappable after wrong; on correct Studio.done()."
+  ],
+  "states": ["boot", "ready", "answering", "verdict_wrong", "verdict_right", "done"],
+  "checks": ["G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"],
+  "player": "process_chain", "grader": "next_stage",
+  "skeleton": "chain",
+  "budgets": { "bytes": 60000, "genMs": 90000 },
+  "antiPatterns": [
+    "an arrow drawn pointing backwards",
+    "the token jumping to a stage without travelling",
+    "stage names placed away from their stage"
+  ]
+}

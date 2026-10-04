@@ -1,0 +1,31 @@
+{
+  "id": "timeline", "v": 1, "kind": "explorable", "title": "events on a timeline",
+  "truth": "events",
+  "stage": { "w": 360, "h": 320 },
+  "paramsSchema": { "type": "object", "required": ["events", "question"], "properties": {
+    "events": { "type": "array", "minItems": 3, "maxItems": 5, "items": { "type": "object", "required": ["key", "year"], "properties": {
+      "key": { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,15}$" }, "year": { "type": "integer", "minimum": -3000, "maximum": 2100 } } } },
+    "question": { "type": "string", "enum": ["earliest", "latest"] } } },
+  "hostOnly": [],
+  "stringsKeys": ["title", "ask", "right", "wrong", "done", "$events.key"],
+  "seam": [
+    "the time axis: data-axis (a horizontal line, earlier on the left)",
+    "each event: a marker on the axis with data-event=\"<key>\" and data-year=\"<year>\", centred at its year's x (x linear in the year); its card (name and year, the tap target) with data-card=\"<key>\""
+  ],
+  "brief": [
+    "KIND: explorable. Events on a timeline.",
+    "AXIS: a horizontal time line with earlier years on the left; each event of Studio.params.events (in any order) is a marker exactly at its year's position (x linear in the year between the first and last year, with a margin) and a card with its name and year joined to the marker by a short line; cards never overlap (stagger above and below the line).",
+    "QUESTION: ask; the child taps an event card -> Studio.answer(\"<key>\"); feedback from Studio.onVerdict; on correct Studio.done() and the done text.",
+    "All events look the same before the answer."
+  ],
+  "states": ["boot", "ready", "answering", "verdict_wrong", "verdict_right", "done"],
+  "checks": ["G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"],
+  "player": "timeline", "grader": "extreme_events",
+  "skeleton": "timeline",
+  "budgets": { "bytes": 60000, "genMs": 90000 },
+  "antiPatterns": [
+    "events spaced evenly instead of by year",
+    "later years on the left",
+    "cards overlapping each other"
+  ]
+}

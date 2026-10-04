@@ -1,0 +1,42 @@
+<style>
+*{box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#f6f4ff;color:#2d2a4a}
+h1{position:absolute;left:10px;top:4px;margin:0;font-size:16px}.instr{position:absolute;left:10px;top:26px;font-size:12px;margin:0}
+svg{position:absolute;left:0;top:44px}
+.opts{position:absolute;left:10px;top:200px;width:340px;display:flex;gap:10px}
+.opt{flex:1;height:62px;border:0;border-radius:31px;background:#ffb703;font-size:20px;font-weight:700;color:#2d2a4a}
+.msg{position:absolute;left:10px;top:278px;width:340px;text-align:center;font-size:13px}
+.wt{font-size:11px;fill:#fff;font-weight:700}
+</style>
+<h1 id="t"></h1><p class="instr" id="i"></p>
+<svg id="s" width="360" height="150" viewBox="0 0 360 150">
+<polygon points="170,140 190,140 180,70" fill="#6d6a8a"/>
+<g id="beam" data-beam data-tilt="level"><line x1="60" y1="70" x2="300" y2="70" stroke="#2d2a4a" stroke-width="6" stroke-linecap="round"/>
+<g id="L" data-pan="left"><rect x="20" y="96" width="80" height="10" rx="4" fill="#8e8bb0"/><g id="lw"></g></g>
+<g id="R" data-pan="right"><rect x="260" y="96" width="80" height="10" rx="4" fill="#8e8bb0"/><g id="rw"></g></g>
+<line x1="60" y1="70" x2="60" y2="96" stroke="#8e8bb0"/><line x1="300" y1="70" x2="300" y2="96" stroke="#8e8bb0"/></g>
+</svg>
+<div class="opts" id="o"></div><div class="msg" id="m"></div>
+<script>
+(function(){
+var P=Studio.params,NS="http://www.w3.org/2000/svg",k=0,extra=null,done=false,busy=false;
+var beam=document.getElementById("beam"),L=document.getElementById("L"),R=document.getElementById("R"),m=document.getElementById("m"),o=document.getElementById("o");
+document.getElementById("t").textContent=Studio.t("title");document.getElementById("i").textContent=Studio.t("instr");
+function sum(a){return a.reduce(function(s,x){return s+x;},0);}
+function weights(g,arr,x){g.innerHTML="";arr.forEach(function(w,i){var c=document.createElementNS(NS,"g");c.setAttribute("data-weight",String(w));
+  var r=document.createElementNS(NS,"rect");r.setAttribute("x",x+i*20);r.setAttribute("y",78);r.setAttribute("width",18);r.setAttribute("height",18);r.setAttribute("rx",3);r.setAttribute("fill","#6a4c93");
+  var t=document.createElementNS(NS,"text");t.setAttribute("x",x+i*20+9);t.setAttribute("y",91);t.setAttribute("text-anchor","middle");t.setAttribute("class","wt");t.textContent=String(w);c.appendChild(r);c.appendChild(t);g.appendChild(c);});}
+var ang=0,target=0;
+function render(){var it=P.items[k];var r=it.right.concat(extra==null?[]:[extra]);var lt=sum(it.left),rt=sum(r);
+  weights(document.getElementById("lw"),it.left,22);weights(document.getElementById("rw"),r,262);
+  L.setAttribute("data-total",String(lt));R.setAttribute("data-total",String(rt));
+  target=lt>rt?-8:lt<rt?8:0;beam.setAttribute("data-tilt",lt>rt?"left":lt<rt?"right":"level");}
+function anim(){ang+=(target-ang)*0.2;if(Math.abs(target-ang)<0.05)ang=target;beam.setAttribute("transform","rotate("+ang.toFixed(2)+" 180 70)");
+  // pans hang level: counter-rotate around their hook
+  L.setAttribute("transform","rotate("+(-ang).toFixed(2)+" 60 70)");R.setAttribute("transform","rotate("+(-ang).toFixed(2)+" 300 70)");requestAnimationFrame(anim);}
+function opts(){o.innerHTML="";P.items[k].options.forEach(function(v){if(v===extra)return;var b=document.createElement("button");b.className="opt";b.setAttribute("data-option",String(v));b.textContent=String(v);
+  b.addEventListener("click",function(){if(busy||done)return;busy=true;extra=v;render();opts();Studio.answer({value:v});});o.appendChild(b);});}
+Studio.onVerdict(function(v){if(v.correct){m.textContent=Studio.t("right");setTimeout(function(){k++;extra=null;busy=false;if(k>=P.items.length){done=true;m.textContent=Studio.t("done");Studio.done();}else{render();opts();}},1200);}
+  else{m.textContent=Studio.t("wrong");setTimeout(function(){extra=null;busy=false;render();opts();},900);}});
+render();opts();anim();Studio.ready();
+})();
+</script>

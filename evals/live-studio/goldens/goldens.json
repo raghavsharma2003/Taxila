@@ -1,0 +1,720 @@
+{
+ "shade_fraction": {
+  "band": "B3",
+  "params": {
+   "items": [
+    {
+     "id": "i1",
+     "n": 3,
+     "d": 4
+    },
+    {
+     "id": "i2",
+     "n": 2,
+     "d": 5
+    }
+   ],
+   "picture": "pizza"
+  },
+  "alt": {
+   "items": [
+    {
+     "id": "j1",
+     "n": 1,
+     "d": 3
+    },
+    {
+     "id": "j2",
+     "n": 5,
+     "d": 8
+    }
+   ],
+   "picture": "bar"
+  },
+  "strings": {
+   "title": "Pizza Party",
+   "instr": "Itne hisse rang do:",
+   "check": "Check karo",
+   "right": "Shabaash! Bilkul sahi.",
+   "wrong": "Dhyan se gino, phir try karo.",
+   "done": "Saari pizza taiyaar!",
+   "hint": "Ek hissa tap karo."
+  }
+ },
+ "bar_chart_read": {
+  "band": "B3",
+  "params": {
+   "data": [
+    {
+     "key": "mango",
+     "value": 12
+    },
+    {
+     "key": "banana",
+     "value": 7
+    },
+    {
+     "key": "apple",
+     "value": 9
+    },
+    {
+     "key": "guava",
+     "value": 4
+    },
+    {
+     "key": "orange",
+     "value": 6
+    }
+   ],
+   "question": "most"
+  },
+  "alt": {
+   "data": [
+    {
+     "key": "mango",
+     "value": 5
+    },
+    {
+     "key": "banana",
+     "value": 11
+    },
+    {
+     "key": "apple",
+     "value": 8
+    },
+    {
+     "key": "guava",
+     "value": 3
+    },
+    {
+     "key": "orange",
+     "value": 10
+    }
+   ],
+   "question": "least"
+  },
+  "strings": {
+   "title": "Class 5 ke favourite phal",
+   "mango": "Aam",
+   "banana": "Kela",
+   "apple": "Seb",
+   "guava": "Amrood",
+   "orange": "Santra",
+   "yaxis": "Bachche",
+   "ask": "Sabse zyada bachchon ko kaunsa phal pasand hai? Us bar ko tap karo.",
+   "right": "Bilkul sahi!",
+   "wrong": "Bars ki lambai dobara dekho.",
+   "done": "Shabaash!"
+  },
+  "altStrings": {
+   "title": "Class 5 ke favourite phal",
+   "mango": "Aam",
+   "banana": "Kela",
+   "apple": "Seb",
+   "guava": "Amrood",
+   "orange": "Santra",
+   "yaxis": "Bachche",
+   "ask": "Sabse kam bachchon ko kaunsa phal pasand hai? Us bar ko tap karo.",
+   "right": "Bilkul sahi!",
+   "wrong": "Bars ki lambai dobara dekho.",
+   "done": "Shabaash!"
+  }
+ },
+ "hub_flows": {
+  "band": "B3",
+  "params": {
+   "hub": "leaf",
+   "entities": [
+    "sun",
+    "roots"
+   ],
+   "flows": [
+    {
+     "key": "water",
+     "dir": "up_in"
+    },
+    {
+     "key": "co2",
+     "dir": "in"
+    },
+    {
+     "key": "o2",
+     "dir": "out"
+    }
+   ],
+   "steps": 4,
+   "options": [
+    "co2",
+    "o2",
+    "water"
+   ],
+   "answer": "o2"
+  },
+  "alt": {
+   "hub": "leaf",
+   "entities": [
+    "sun",
+    "roots"
+   ],
+   "flows": [
+    {
+     "key": "water",
+     "dir": "up_in"
+    },
+    {
+     "key": "co2",
+     "dir": "in"
+    },
+    {
+     "key": "o2",
+     "dir": "out"
+    }
+   ],
+   "steps": 3,
+   "options": [
+    "water",
+    "co2",
+    "o2"
+   ],
+   "answer": "co2"
+  },
+  "strings": {
+   "title": "Paudha khana kaise banata hai",
+   "play": "Chalao",
+   "pause": "Roko",
+   "next": "Aage",
+   "ask": "Patti kaunsi gas bahar chhodti hai?",
+   "leaf": "Patti",
+   "sun": "Sooraj",
+   "roots": "Jadein",
+   "water": "Paani",
+   "co2": "Carbon dioxide",
+   "o2": "Oxygen",
+   "step1": "Sooraj ki roshni patti par padti hai.",
+   "step2": "Jadein paani upar bhejti hain.",
+   "step3": "Patti hawa se carbon dioxide leti hai.",
+   "step4": "Patti oxygen bahar chhodti hai.",
+   "right": "Bilkul sahi!",
+   "wrong": "Phir se dekho."
+  },
+  "altStrings": {
+   "title": "How a plant makes food",
+   "play": "Play",
+   "pause": "Pause",
+   "next": "Next",
+   "ask": "Which gas does the leaf take in?",
+   "leaf": "Leaf",
+   "sun": "Sun",
+   "roots": "Roots",
+   "water": "Water",
+   "co2": "Carbon dioxide",
+   "o2": "Oxygen",
+   "step1": "Sunlight falls on the leaf.",
+   "step2": "Roots send water up.",
+   "step3": "The leaf gives out oxygen.",
+   "right": "Right!",
+   "wrong": "Look again."
+  }
+ },
+ "number_line_jump": {
+  "band": "B3",
+  "params": {
+   "min": 0,
+   "max": 1,
+   "step": 0.25,
+   "labelEvery": 1,
+   "format": "fraction",
+   "den": 4,
+   "start": 0,
+   "items": [
+    {
+     "id": "a",
+     "target": 0.75
+    },
+    {
+     "id": "b",
+     "target": 0.5
+    }
+   ]
+  },
+  "alt": {
+   "min": 0,
+   "max": 10,
+   "step": 1,
+   "labelEvery": 2,
+   "format": "integer",
+   "start": 0,
+   "items": [
+    {
+     "id": "a",
+     "target": 7
+    }
+   ]
+  },
+  "strings": {
+   "title": "Number line par jaao",
+   "instr": "Marker ko is number tak le jao:",
+   "left": "Peeche",
+   "right_btn": "Aage",
+   "check": "Check",
+   "right": "Sahi!",
+   "wrong": "Phir se dekho.",
+   "done": "Bahut badhiya!"
+  }
+ },
+ "balance_scale": {
+  "band": "B3",
+  "params": {
+   "items": [
+    {
+     "id": "a",
+     "left": [
+      5,
+      3
+     ],
+     "right": [
+      2
+     ],
+     "options": [
+      4,
+      6,
+      8
+     ]
+    },
+    {
+     "id": "b",
+     "left": [
+      9
+     ],
+     "right": [
+      4
+     ],
+     "options": [
+      3,
+      5,
+      7
+     ]
+    }
+   ]
+  },
+  "alt": {
+   "items": [
+    {
+     "id": "c",
+     "left": [
+      7,
+      7
+     ],
+     "right": [
+      6
+     ],
+     "options": [
+      8,
+      9,
+      10
+     ]
+    }
+   ]
+  },
+  "strings": {
+   "title": "Taraazu barabar karo",
+   "instr": "Kaunsa vazan daalein ki dono taraf barabar ho?",
+   "right": "Barabar! Shabaash.",
+   "wrong": "Abhi barabar nahi hua.",
+   "done": "Sab barabar!"
+  }
+ },
+ "sort_bins": {
+  "band": "B3",
+  "params": {
+   "bins": [
+    "living",
+    "nonliving"
+   ],
+   "cards": [
+    "dog",
+    "stone",
+    "tree",
+    "chair",
+    "ant"
+   ],
+   "binOf": {
+    "dog": "living",
+    "stone": "nonliving",
+    "tree": "living",
+    "chair": "nonliving",
+    "ant": "living"
+   }
+  },
+  "alt": {
+   "bins": [
+    "solid",
+    "liquid",
+    "gas"
+   ],
+   "cards": [
+    "ice",
+    "milk",
+    "steam",
+    "wood"
+   ],
+   "binOf": {
+    "ice": "solid",
+    "milk": "liquid",
+    "steam": "gas",
+    "wood": "solid"
+   }
+  },
+  "strings": {
+   "title": "Sajeev ya nirjeev?",
+   "instr": "Card chuno, phir uska dabba.",
+   "right": "Sahi!",
+   "wrong": "Is dabbe mein nahi.",
+   "done": "Sab sort ho gaye!",
+   "living": "Sajeev",
+   "nonliving": "Nirjeev",
+   "dog": "Kutta",
+   "stone": "Patthar",
+   "tree": "Ped",
+   "chair": "Kursi",
+   "ant": "Cheenti"
+  },
+  "altStrings": {
+   "title": "Solid, liquid or gas?",
+   "instr": "Pick a card, then its box.",
+   "right": "Right!",
+   "wrong": "Not this box.",
+   "done": "All sorted!",
+   "solid": "Solid",
+   "liquid": "Liquid",
+   "gas": "Gas",
+   "ice": "Ice",
+   "milk": "Milk",
+   "steam": "Steam",
+   "wood": "Wood"
+  }
+ },
+ "sequence_steps": {
+  "band": "B3",
+  "params": {
+   "shown": [
+    "boil",
+    "pour",
+    "leaves",
+    "sugar"
+   ],
+   "order": [
+    "boil",
+    "leaves",
+    "sugar",
+    "pour"
+   ]
+  },
+  "alt": {
+   "shown": [
+    "c",
+    "a",
+    "b"
+   ],
+   "order": [
+    "a",
+    "b",
+    "c"
+   ]
+  },
+  "strings": {
+   "title": "Chai banane ke steps",
+   "instr": "Agla step tap karo.",
+   "right": "Sahi!",
+   "wrong": "Yeh abhi nahi.",
+   "done": "Chai taiyaar!",
+   "boil": "Paani ubaalo",
+   "pour": "Cup mein daalo",
+   "leaves": "Patti daalo",
+   "sugar": "Cheeni milao"
+  },
+  "altStrings": {
+   "title": "Seed to plant",
+   "instr": "Tap the next step.",
+   "right": "Right!",
+   "wrong": "Not yet.",
+   "done": "Done!",
+   "a": "Seed in soil",
+   "b": "Seed sprouts",
+   "c": "Young plant"
+  }
+ },
+ "slider_law": {
+  "band": "B3",
+  "params": {
+   "x": {
+    "min": 1,
+    "max": 10,
+    "step": 1,
+    "start": 3
+   },
+   "y": {
+    "unitsPer": 4
+   },
+   "law": {
+    "type": "linear",
+    "k": 4,
+    "b": 0
+   },
+   "ask": {
+    "x": 5,
+    "options": [
+     9,
+     20,
+     25
+    ]
+   }
+  },
+  "alt": {
+   "x": {
+    "min": 0,
+    "max": 8,
+    "step": 1,
+    "start": 2
+   },
+   "y": {
+    "unitsPer": 10
+   },
+   "law": {
+    "type": "linear",
+    "k": 2,
+    "b": 1
+   },
+   "ask": {
+    "x": 4,
+    "options": [
+     9,
+     8,
+     6
+    ]
+   }
+  },
+  "strings": {
+   "title": "Square ka perimeter",
+   "xname": "Side",
+   "yname": "Perimeter",
+   "less": "Kam",
+   "more": "Zyada",
+   "ask": "Side 5 ho to perimeter kitna?",
+   "right": "Sahi!",
+   "wrong": "Phir socho.",
+   "done": "Shabaash!"
+  }
+ },
+ "process_chain": {
+  "band": "B3",
+  "params": {
+   "stages": [
+    "evaporation",
+    "condensation",
+    "rain",
+    "collection"
+   ],
+   "cycle": true,
+   "askAfter": "condensation",
+   "options": [
+    "rain",
+    "collection",
+    "evaporation"
+   ]
+  },
+  "alt": {
+   "stages": [
+    "egg",
+    "larva",
+    "pupa",
+    "adult"
+   ],
+   "cycle": false,
+   "askAfter": "larva",
+   "options": [
+    "adult",
+    "egg",
+    "pupa"
+   ]
+  },
+  "strings": {
+   "title": "Paani ka chakkar",
+   "next": "Aage",
+   "ask": "Condensation ke baad kya hota hai?",
+   "right": "Sahi!",
+   "wrong": "Phir dekho.",
+   "done": "Shabaash!",
+   "evaporation": "Vaashp",
+   "condensation": "Badal",
+   "rain": "Baarish",
+   "collection": "Jama"
+  },
+  "altStrings": {
+   "title": "Butterfly life cycle",
+   "next": "Next",
+   "ask": "What comes after the larva?",
+   "right": "Right!",
+   "wrong": "Look again.",
+   "done": "Well done!",
+   "egg": "Egg",
+   "larva": "Larva",
+   "pupa": "Pupa",
+   "adult": "Adult"
+  }
+ },
+ "labelled_parts": {
+  "band": "B3",
+  "params": {
+   "subject": "plant",
+   "parts": [
+    "petal",
+    "centre",
+    "stem",
+    "leaf",
+    "root"
+   ],
+   "ask": "stem"
+  },
+  "alt": {
+   "subject": "plant",
+   "parts": [
+    "petal",
+    "centre",
+    "stem",
+    "leaf",
+    "root"
+   ],
+   "ask": "root"
+  },
+  "strings": {
+   "title": "Paudhe ke hisse",
+   "ask": "Tana kahan hai? Tap karo.",
+   "right": "Sahi!",
+   "wrong": "Yeh nahi.",
+   "done": "Shabaash!",
+   "petal": "Pankhudi",
+   "centre": "Beech",
+   "stem": "Tana",
+   "leaf": "Patti",
+   "root": "Jad"
+  }
+ },
+ "pictograph": {
+  "band": "B3",
+  "params": {
+   "symbolValue": 2,
+   "rows": [
+    {
+     "key": "mon",
+     "value": 6
+    },
+    {
+     "key": "tue",
+     "value": 10
+    },
+    {
+     "key": "wed",
+     "value": 4
+    },
+    {
+     "key": "thu",
+     "value": 8
+    }
+   ],
+   "question": "most"
+  },
+  "alt": {
+   "symbolValue": 5,
+   "rows": [
+    {
+     "key": "mon",
+     "value": 15
+    },
+    {
+     "key": "tue",
+     "value": 5
+    },
+    {
+     "key": "wed",
+     "value": 20
+    }
+   ],
+   "question": "least"
+  },
+  "strings": {
+   "title": "Kitni kitaabein padhi",
+   "ask": "Kis din sabse zyada? Row tap karo.",
+   "keytext": "kitaabein",
+   "right": "Sahi!",
+   "wrong": "Symbols gino.",
+   "done": "Shabaash!",
+   "mon": "Somvaar",
+   "tue": "Mangal",
+   "wed": "Budh",
+   "thu": "Guru"
+  }
+ },
+ "timeline": {
+  "band": "B3",
+  "params": {
+   "events": [
+    {
+     "key": "taj",
+     "year": 1653
+    },
+    {
+     "key": "qutub",
+     "year": 1220
+    },
+    {
+     "key": "redfort",
+     "year": 1648
+    },
+    {
+     "key": "gateway",
+     "year": 1924
+    }
+   ],
+   "question": "earliest"
+  },
+  "alt": {
+   "events": [
+    {
+     "key": "a",
+     "year": 1947
+    },
+    {
+     "key": "b",
+     "year": 1950
+    },
+    {
+     "key": "c",
+     "year": 1857
+    }
+   ],
+   "question": "latest"
+  },
+  "strings": {
+   "title": "Kab bana?",
+   "ask": "Sabse pehle kaun bana?",
+   "right": "Sahi!",
+   "wrong": "Saal dekho.",
+   "done": "Shabaash!",
+   "taj": "Taj Mahal",
+   "qutub": "Qutub Minar",
+   "redfort": "Lal Qila",
+   "gateway": "Gateway"
+  },
+  "altStrings": {
+   "title": "When?",
+   "ask": "Which came last?",
+   "right": "Right!",
+   "wrong": "Check the years.",
+   "done": "Well done!",
+   "a": "Independence",
+   "b": "Republic",
+   "c": "Revolt"
+  }
+ }
+}

@@ -1,0 +1,39 @@
+{
+  "id": "hub_flows", "v": 1, "kind": "animation", "title": "flows into and out of a hub (e.g. photosynthesis)",
+  "probe": "photosynthesis_anim",
+  "truth": "flow_list",
+  "stage": { "w": 360, "h": 320 },
+  "paramsSchema": { "type": "object", "required": ["hub", "entities", "flows", "steps", "options"], "properties": {
+    "hub": { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,15}$" },
+    "entities": { "type": "array", "minItems": 1, "maxItems": 4, "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,15}$" } },
+    "flows": { "type": "array", "minItems": 2, "maxItems": 4, "items": { "type": "object", "required": ["key", "dir"], "properties": {
+      "key": { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,15}$" }, "dir": { "type": "string", "enum": ["in", "out", "up_in"] }, "from": { "type": "string" } } } },
+    "steps": { "type": "integer", "minimum": 2, "maximum": 5 },
+    "options": { "type": "array", "minItems": 2, "maxItems": 3, "items": { "type": "string" } } } },
+  "hostOnly": ["answer"],
+  "stringsKeys": ["title", "play", "pause", "next", "ask", "right", "wrong", "$hub", "$entities", "$flows.key", "$steps"],
+  "seam": [
+    "the hub (the drawn shape): data-entity=\"<hub>\"; each other entity: data-entity=\"<key>\"",
+    "particles: one element per particle, data-flow=\"<flow key>\", at least 3 per flow, moved by cx/cy or transform; a flow \"in\" moves toward the hub, \"out\" away from the hub, \"up_in\" upward (from below) into the hub",
+    "labels: one text element per entity and per flow, data-label=\"<key>\", placed next to what it names",
+    "the play/pause toggle: data-action=\"play\"; the next-step control: data-action=\"next\"; the caption: data-caption",
+    "the answer options: data-option=\"<key>\""
+  ],
+  "brief": [
+    "KIND: animated explanation. A process where things flow into and out of one place (the hub).",
+    "SCENE (inline SVG): the hub drawn large in the middle, the other entities around it where they belong; particles of each flow keep moving while playing, in the flow's direction (see the seam).",
+    "LABELS: every entity and flow named with its string, next to the thing it names, never overlapping, all inside the stage.",
+    "CONTROLS: play/pause toggle (strings play/pause) and one next-step button (string next). The caption shows step1 at the start; each next press shows the following step's caption (step2, step3 ... wrapping to step1) and emphasises that part of the process. It starts PLAYING.",
+    "CHECK: the question (ask) and one option button per key in Studio.params.options, visible from the first screen -> Studio.answer(\"<key>\"); feedback from Studio.onVerdict; options stay tappable after a wrong answer; on correct Studio.done()."
+  ],
+  "states": ["boot", "ready", "answering", "verdict_wrong", "verdict_right", "done"],
+  "checks": ["G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"],
+  "player": "hub_flows", "grader": "host_key",
+  "skeleton": "flow-hub",
+  "budgets": { "bytes": 60000, "genMs": 90000 },
+  "antiPatterns": [
+    "a label placed by the wrong thing (oxygen written by the sun): every label sits beside its own referent",
+    "particles of an outgoing flow drawn moving into the hub",
+    "the seam's data-entity on an empty group instead of the drawn shape"
+  ]
+}

@@ -1,0 +1,29 @@
+<style>
+*{box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#f1faee;color:#1d3557}
+h1{position:absolute;left:10px;top:4px;margin:0;font-size:15px}.instr{position:absolute;left:10px;top:24px;font-size:12px;margin:0}
+.cards{position:absolute;left:10px;top:44px;width:340px;display:flex;flex-wrap:wrap;gap:6px}
+.card{width:106px;height:54px;border:2px solid #457b9d;border-radius:12px;background:#fff;font-size:13px;color:#1d3557;transition:transform .15s}
+.card[data-selected=true]{transform:translateY(-3px);box-shadow:0 4px 0 #457b9d}
+.bins{position:absolute;left:10px;top:168px;width:340px;display:flex;gap:8px}
+.bin{flex:1;height:112px;border:2px dashed #1d3557;border-radius:14px;background:#a8dadc;padding:4px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:13px}
+.bin .nm{font-weight:700}.placed{font-size:11px;background:#fff;border-radius:6px;padding:2px 6px}
+.msg{position:absolute;left:10px;top:290px;width:340px;text-align:center;font-size:13px}
+</style>
+<h1 id="t"></h1><p class="instr" id="i"></p><div class="cards" id="cs"></div><div class="bins" id="bs"></div><div class="msg" id="m"></div>
+<script>
+(function(){
+var P=Studio.params,sel=null,done=false,cs=document.getElementById("cs"),bs=document.getElementById("bs"),m=document.getElementById("m"),left=P.cards.length;
+document.getElementById("t").textContent=Studio.t("title");document.getElementById("i").textContent=Studio.t("instr");
+var cardEl={},binEl={};
+P.cards.forEach(function(k){var b=document.createElement("button");b.className="card";b.setAttribute("data-card",k);b.setAttribute("data-selected","false");b.textContent=Studio.t(k);
+  b.addEventListener("click",function(){if(done)return;if(sel)cardEl[sel].setAttribute("data-selected","false");sel=k;b.setAttribute("data-selected","true");});cs.appendChild(b);cardEl[k]=b;});
+P.bins.forEach(function(k){var d=document.createElement("div");d.className="bin";d.setAttribute("data-bin",k);var n=document.createElement("div");n.className="nm";n.textContent=Studio.t(k);d.appendChild(n);
+  d.addEventListener("click",function(){if(!sel||done)return;pending={card:sel,bin:k};Studio.answer(pending);});bs.appendChild(d);binEl[k]=d;});
+var pending=null;
+Studio.onVerdict(function(v){if(!pending)return;var p=pending;pending=null;
+  if(v.correct){cardEl[p.card].remove();var s=document.createElement("div");s.className="placed";s.setAttribute("data-placed",p.bin);s.setAttribute("data-card-done",p.card);s.textContent=Studio.t(p.card);binEl[p.bin].appendChild(s);sel=null;m.textContent=Studio.t("right");
+    if(--left===0){done=true;m.textContent=Studio.t("done");Studio.done();}}
+  else{cardEl[p.card].setAttribute("data-selected","false");sel=null;m.textContent=Studio.t("wrong");}});
+Studio.ready();
+})();
+</script>

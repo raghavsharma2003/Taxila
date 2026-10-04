@@ -5,7 +5,7 @@
 import type { Band4 } from "./bands.ts";
 import type { Move, MoveKind, UiDirectives } from "./contracts.ts";
 import type { RelationalDirective, Stage, TeacherAffect } from "./relational.ts";
-import type { StudioIntent } from "./studio.ts";
+import type { StudioIntent, StudioSlot } from "./studio.ts";
 
 export type BeatType = "arrive" | "warmup" | "hook" | "explain" | "worked_example" | "contrast" | "practice_set"
   | "probe" | "explore_question" | "teachback" | "reflect" | "recap" | "wrap" | "break" | "safeguard";
@@ -50,10 +50,12 @@ export type ProposalSource = "safety" | "consent" | "conductor" | "governor" | "
 export interface ProposalCosts { latencyMs: number; attention: 0 | 1; testWeight: number; novelty: number; usd: number }
 export interface Proposal {
   source: ProposalSource; kind: string;            // e.g. "move", "probe", "open_callback", "reveal", "wrap"
-  payload: unknown; priority: number;              // derived from source authority + urgency (§10)
+  payload: unknown; priority: number;              // derived from source authority + urgency (§10): 100 − 10 × rank + urgency
   costs: ProposalCosts;
   mandatory?: boolean;                             // safety, mandatory probes, parent limits
   reason: ReasonCode[];
+  /** What this proposal vetoes BELOW its own authority (server/brain/kernel.js): "*", a source, or "kind:<kind>". */
+  vetoes?: string[];
 }
 /** What the turn tells Studio to do (TurnPlan.studio, and TurnResponse.studio on the wire). */
 export interface TurnStudio {
@@ -83,3 +85,21 @@ export interface UiBeat { beatId: string; type: BeatType; index?: number; of?: n
 
 /** Quota lanes (BUILD-PLAN §1.3, server/lanes.js): hot and background calls never share a quota pool. */
 export type QuotaLane = "hot" | "background";
+
+/**
+ * The whiteboard ask (owner priority 6, W2-E → W2-H): on an explanation beat whose kernel arbitration accepted it, the turn
+ * hands Studio the guarded line she is about to speak, so the drawing script (W2-F's archetype; rendered by W2-B's player
+ * inside the StudioStage box) follows her words: `server/studio/seam.js` `requestIntent(ask) → StudioAskAck | null`,
+ * synchronous (it starts the async work itself), never throwing. Never the child's id or words; never the answer of an
+ * item still to be asked (the drawing's numbers come from `line.text` and `kit.content`, the move's own kit content).
+ */
+export interface StudioAsk {
+  intent: StudioIntent;
+  /** The line the drawing anchors to (`WhiteboardScript.line`, anchor "line_audio_start"). */
+  line: { lessonId: string; teacherReplySeq?: number; text: string };
+  /** "continue" while the same explanation beat goes on (draw on the previous board); "fresh" clears it. */
+  mode: "fresh" | "continue";
+  kit: { topicId: string; kitHash?: string; content: string[]; item?: { id: string; prompt_en: string; prompt_hi: string }; onScreen?: boolean };
+}
+/** Studio accepted the ask: the slot the script will stream into (`StudioWire` {t: "script"} on SSE). */
+export interface StudioAskAck { slotId: string; intentId: string; state?: StudioSlot["state"] }

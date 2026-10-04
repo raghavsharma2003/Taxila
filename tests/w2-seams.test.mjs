@@ -64,7 +64,8 @@ test("server/learner/writer.js re-exports the relational writers (one import poi
 });
 
 test("lesson.js keeps every W2 call site, each guarded by seamSafe", () => {
-  const src = read("server/routes/lesson.js");
+  // W2-E BR1 moved the turn into server/brain/turn.js with its call sites intact: the route and the Brain are searched.
+  const src = read("server/routes/lesson.js") + "\n" + read("server/brain/turn.js");
   for (const call of ["purpose.routeAsk", "purpose.practiceSet", "relational.snapshot", "studio.prefetch", "realtime.shapeSession",
     "realtime.onMintError", "studio.statusFacts", "relational.decide", "expressive.planDelivery", "studio.onReveal", "relational.onLessonEnd"]) {
     assert.ok(src.includes(`seamSafe("${call}"`), `missing guarded call site ${call}`);

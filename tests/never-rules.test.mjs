@@ -3,7 +3,7 @@
 // eval measures it on recorded corpora too); these tests pin its behaviour and its two inherited fixes.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { floorViolations, neverRuleHits, normForMatch, NEVER_FAMILIES, CONTENT_MIN } from "../server/director/safety.js";
 import { FLOOR_FIX } from "../server/compiler/compile.js";
 import { POSITIVES, NEGATIVES, GOODBYE, SAFEGUARD, SAFEGUARD_CLEAN } from "../evals/never-rules.data.mjs";
@@ -130,7 +130,9 @@ test("one door: the NEVER predicate is defined only in server/director/safety.js
 
 // Integration status, reported (not failed): the reply guards in server/routes/lesson.js are another
 // workstream's file. When they call floorViolations this TODO turns into a plain pass.
-const lessonSrc = readFileSync(new URL("../server/routes/lesson.js", import.meta.url), "utf8");
+// W2-E BR1 moved the reply guards into server/brain/say.js and the voice-transcript check into server/brain/turn.js.
+const lessonSrc = ["../server/routes/lesson.js", "../server/brain/say.js", "../server/brain/turn.js"]
+  .map((p) => (existsSync(new URL(p, import.meta.url)) ? readFileSync(new URL(p, import.meta.url), "utf8") : "")).join("\n");
 const wired = /floorViolations\s*\(/.test(lessonSrc);
 test("lesson.js reply guards call floorViolations (text draft + voice transcript → state.correction)", { todo: !wired && "not wired yet: see context/inbox/harvest-ports.json integration call sites" }, () => {
   assert.ok(wired);

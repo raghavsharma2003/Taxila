@@ -1,0 +1,32 @@
+{
+  "id": "labelled_parts", "v": 1, "kind": "diagram", "title": "a labelled picture: find the part",
+  "truth": "parts",
+  "pictureTruth": "human_review",
+  "stage": { "w": 360, "h": 320 },
+  "paramsSchema": { "type": "object", "required": ["subject", "parts", "ask"], "properties": {
+    "subject": { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,23}$" },
+    "parts": { "type": "array", "minItems": 3, "maxItems": 6, "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,15}$" } },
+    "ask": { "type": "string" } } },
+  "hostOnly": [],
+  "stringsKeys": ["title", "ask", "right", "wrong", "done", "$parts"],
+  "seam": [
+    "each part of the picture (the drawn shape itself, the whole part is the target): data-part=\"<key>\"",
+    "each part's name: data-label=\"<key>\" placed beside its part, with a short leader line to it",
+    "the question text: data-ask"
+  ],
+  "brief": [
+    "KIND: diagram. A clear, friendly picture of Studio.params.subject with its parts (Studio.params.parts), each part a separate shape, each named with its string next to it.",
+    "QUESTION: ask (find the part named Studio.params.ask). The child taps a part -> Studio.answer(\"<part key>\"); feedback from Studio.onVerdict; on wrong the child can tap again; on correct the part glows and Studio.done().",
+    "Before the answer every part is drawn in its natural colour with no highlight."
+  ],
+  "states": ["boot", "ready", "answering", "verdict_wrong", "verdict_right", "done"],
+  "checks": ["G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"],
+  "player": "labelled_parts", "grader": "ask_key",
+  "skeleton": "parts",
+  "budgets": { "bytes": 60000, "genMs": 90000 },
+  "antiPatterns": [
+    "a label far from its part or pointing at another part",
+    "the asked part highlighted before the tap",
+    "tiny parts that cannot be tapped"
+  ]
+}

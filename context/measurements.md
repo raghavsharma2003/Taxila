@@ -1868,3 +1868,41 @@ W2-B acceptance run locally against `node server/serve.mjs` (dist built) on the 
 
 ## Merged inbox entries (write-up from the entry text)
 - `p2d-r2-measures` (2026-10-04): Puppet2D r2: rest SSIM vs c-front 0.9852 head crop (CPU composite, n=1); hair/lock/bun light-fringe gate 0 px on cream/black/magenta/white/teal grounds; blind two-family panel (gpt-5.6-sol + grok-4-20) mean ~3.5 over 14 stills x 2 sizes x 2 models (r2final 3.46; c-front vs its own sheet scores 3.5-4.0 on the same panel); forced-choice emotion recognition 7-10/16 over 6 runs (final 9/16; r1 7/16); the same classifier on the concepts themselves 5/10 (c-listening and c-talking read 'warm smile'); fps proxy headless SwiftShader: work p50/p95 1.2/2.1 ms unthrottled, 5.5/8.8 ms at 4x CPU throttle, 18-19 draws, ~19k tris (rAF capped at 30 in headless; NOT a device number). Image spend this round USD 0.18 (2 mouth patches), ledger total 7.48.
+
+## W2-D: voice lanes and presence (2026-10-04)
+- `w2d-realtime-truncation-accepted-2026-10-04`: `client_secrets` mint with the shaped session on taxila-realtime
+  (gpt-realtime-2.1) and DEPLOY_REALTIME_MINI: both accept `truncation {type: retention_ratio, retention_ratio: 0.8}` and
+  echo it (with `token_limits: null`); `silence_duration_ms` 1100 echoed. n = 1 mint per arm, eastus2, US sandbox.
+- `w2d-realtime-soak-2026-10-04`: `evals/realtime-soak.mjs`, US sandbox → eastus2, taxila-realtime, truncation on, one child
+  turn every 15 s, turn detection off (turns driven by the script). Text child turns, 4 lessons × 4 min: 64 responses, 0
+  failed, 0 silences > 5 s, first audio p50 1095 / p90 1271 / max 1958 ms, last-turn input 1.7k tokens (1.5k cached).
+  Audio child turns (a 7.85 s Hinglish clip appended as fast as possible, then committed), 4 × 8 min: 128 responses, 0
+  failed, 1 over 5 s (max 12.6 s), first audio p50 2829 / p90 3290 ms (includes the upload), last-turn input 4.8-5.4k
+  tokens. This is a quota check from the sandbox, NOT the BUILD-PLAN 4 × 20 min Central India acceptance run, and the
+  realtime quota is shared with whatever else ran that hour. Files: `evals/results/w2d/realtime-soak-*.json`.
+- `w2d-realtime-no-rate-limits-events-2026-10-04`: 0 `rate_limits.updated` events in 192 soak responses (8 sessions):
+  Azure's gpt-realtime-2.1 does not send them today, so headroom cannot be read client-side; the client logs them if they
+  appear.
+- `w2d-lip-bench-expander-2026-10-04`: `evals/avatar/lip-bench.mjs` (14 utterances, 84 hi / 34 en bilabial segments; WAVs
+  regenerated as in avatar-m0-lip-bench-2026-10-03), arm m0 = the new default, m0_noexpand = before: hi-IN 60 fps 43/84
+  (24/84), vowel false-close 0.187 (0.148), r(open) 0.533 (0.542), lag 50 ms; hi-IN 30 fps 37/84 at 0.193 (23/84 at 0.159);
+  en-IN 60 fps 24/34 at 0.112 (15/34 at 0.089); input at −10.5 dB: hi 43/84 at 0.192 (60 fps), 40/84 at 0.203 (30 fps).
+  Sweep (≈ 25 configs) in the W2-D transcript; the bar 76/84 at ≤ 0.20 was not reached by any amplitude-only config.
+  File: `evals/avatar/results/lip-bench-2026-10-04-w2d.json`.
+- `p-vl-voice-live-probe-2026-10-04`: `evals/voice-live-probe.mjs`, Voice Live api 2026-04-10, model gpt-realtime-2.1, a
+  reader prompt repeating 4 stimuli × 3 reps per region, audio transcribed by taxila-transcribe. centralindia
+  (hi-in-diya:DragonHDOmniIndicNeural): [calm] spoken 0/3 (Δdur −0.1 s), [laughter] spoken 0/3 (+1.0 s: rendered),
+  SSML break spoken 3/3; first audio p50 1134 ms (n = 12). eastus2 (en-IN-Diya:DragonHDLatestNeural): [calm] 0/3
+  (+0.45 s), [laughter] spoken 3/3, SSML break 3/3; first audio p50 1544 ms (n = 12). Server audio access: yes. From the US
+  sandbox (not an India latency). File: `evals/results/w2d/p-vl-2026-10-04.json`.
+- `hv13-lane-a-2026-10-04`: `evals/realtime-lane-a.mjs`, taxila-realtime, text child turns, the lane-A note as the last
+  instructions line vs a no-note control on the same 45 items (40 teaching turns over 8 displays × 5 moves × 3 bands, 5
+  identity probes), parallel sessions: sound words caused by the note 0 (one "Haha" per arm, both answering the child's own
+  laugh line), leaks of the note 0/40, identity probes disclose AI 5/5 in both arms, mean words 20.3 (note) vs 21.8.
+  File: `evals/results/w2d/hv13-lane-a-2026-10-04.json`.
+- `w2d-acceptance-local-2026-10-04`: `tests/prod/w2d-voice-lanes.mjs` against `node server/serve.mjs` (dist built) on the
+  Neon test branch: 18/18. The token carries truncation 0.8 and VAD silence 700 ms (this child's pace knob), logprobs kept,
+  no instructions; a voice turn → `POST /api/lesson/lane` 214 ms → the repair turn answered with a Director-written reply
+  (explain) → its `/api/voice/tts-stream` 200, 873,600 PCM bytes, first-byte header 758 ms → the next turn answered
+  (worked_example) → end 200; a text lesson 409, an ended lesson 409, a reverse switch 400, a bad id 400. Account deleted,
+  leftover @taxila.test guardians 4 → 4. Local, not Central India; no timing claim.

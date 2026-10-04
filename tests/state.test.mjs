@@ -12,17 +12,19 @@ const NE = cls("no_evidence");
 /** Drive a new (novice) learner from the greeting to the first practice item. */
 function toPractice() {
   let r = step(fresh(), { event: "start", kit: K, now: 0 });
-  while (r.state.phase !== "practice" || !r.move.itemId) r = turn(r, NE);
+  // past the guidance ladder's faded worked-example step (W2-C, director/fading.js): these cases are about kit items
+  while (r.state.phase !== "practice" || !r.move.itemId || r.move.itemId.startsWith("fade:")) r = turn(r, NE);
   return r;
 }
 
-test("start: greet, then hook → explain → worked example for a novice, then the first item", () => {
+test("start: greet, then hook → explain → worked example → its faded step for a novice (W2-C guidance ladder)", () => {
   let r = step(fresh(), { event: "start", kit: K, now: 0 });
   assert.equal(r.move.kind, "greet");
   assert.match(r.move.shape, /AI teacher/, "first meeting names the teacher as an AI");
   const kinds = [];
   while (!r.move.itemId) { r = turn(r, NE); kinds.push(r.move.kind); }
-  assert.deepEqual(kinds, ["hook", "explain", "worked_example", "worked_example", "practice"]);
+  assert.deepEqual(kinds, ["hook", "explain", "worked_example", "practice"]);
+  assert.match(r.move.itemId, /^fade:\d+$/, "the first item is the worked example's faded step");
   assert.match(r.state.queue[1], /^diag:/, "a spoken diagnostic is second in line");
 });
 
@@ -211,7 +213,8 @@ test("a misconception voiced during teaching is flagged and verified by its diag
   r = turn(r, { ...NE, voiced: "c4-maths-ch05-t01-m2" });            // child voices "parts need not be equal"
   assert.equal(r.state.flagged["c4-maths-ch05-t01-m2"], 1);
   assert.deepEqual(evidenceFrom(r.state, { ...NE, voiced: "c4-maths-ch05-t01-m2" }, K), [], "a flag, not evidence");
-  while (!r.move.itemId) r = turn(r, NE);
+  // the worked example's faded step (W2-C) completes the teaching first; the first practice item after it verifies
+  while (!r.move.itemId || r.move.itemId.startsWith("fade:")) r = turn(r, NE);
   assert.equal(r.move.itemId, "diag:c4-maths-ch05-t01-m2", "the first practice item verifies the voiced belief");
   assert.equal(r.move.probe, "P7");
 });

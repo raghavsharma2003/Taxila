@@ -25,10 +25,16 @@ const has = (t, words) => words.some((w) => new RegExp(`(^|[^a-z])${w.replace(/[
 
 /**
  * One child turn → closed signal record.
+ * `signals` (W2-E BR2): the classify call's TurnSignals when the signals block is on. They ADD to the regex reads, never
+ * replace them (the regexes are the fallback when the block is off or malformed): meta_slow → slower pace; humour →
+ * laughter. The model's interest tag is deliberately NOT read: an interest moves content only after the child names it
+ * on two separate days (teacher-brain-interest-two-day; M2 over-inference), so session interests stay the cue words.
  * @param {{ text: string, bargeIn?: boolean, afterHumour?: boolean, offeredHarder?: boolean, acceptedHarder?: boolean,
- *   afterError?: boolean, retried?: boolean, onsetZ?: number|null, slowerPace?: boolean, thinkQuestion?: boolean }} turn
+ *   afterError?: boolean, retried?: boolean, onsetZ?: number|null, slowerPace?: boolean, thinkQuestion?: boolean,
+ *   signals?: import("../../shared/brain").TurnSignals | null }} turn
  */
 export function turnSignals(turn) {
+  const sig = turn.signals && typeof turn.signals === "object" ? turn.signals : null;
   const t = String(turn.text ?? "").toLowerCase();
   const words = t.split(/[^a-zऀ-ॿ']+/).filter(Boolean);
   const hi = words.filter((w) => HINDI_FUNCTION.has(w) || /[ऀ-ॿ]/.test(w)).length;
@@ -38,7 +44,7 @@ export function turnSignals(turn) {
     bargeIn: !!turn.bargeIn,
     tellMore: has(t, ["tell me more", "aur batao", "aur bataiye", "phir kya hua", "then what", "more please", "aage batao"]),
     shorter: has(t, ["too long", "bas", "jaldi", "skip", "boring"]),
-    laughter: /\b(ha){2,}\b|\bhehe+\b|\blol\b|😂|🤣/.test(t),
+    laughter: /\b(ha){2,}\b|\bhehe+\b|\blol\b|😂|🤣/.test(t) || sig?.humour === true,
     builtOnHumour: !!turn.afterHumour && (/\b(ha){2,}\b|\bhehe\b|\bfunny\b|\bmazaa\b|\bmaza\b/.test(t) || words.length > 6),
     noJokes: has(t, ["no jokes", "stop joking", "not funny", "mazak mat", "majak mat", "joke mat"]),
     moreJokes: has(t, ["another joke", "ek aur joke", "more jokes", "tell a joke", "joke sunao"]),
@@ -51,6 +57,6 @@ export function turnSignals(turn) {
     retryAfterError: !!(turn.afterError && turn.retried),
     hindiShare: words.length ? hi / words.length : 0,
     slowOnset: !!turn.thinkQuestion && turn.onsetZ != null && turn.onsetZ >= 1.0,
-    slowerPace: !!turn.slowerPace,
+    slowerPace: !!turn.slowerPace || sig?.act === "meta_slow",
   };
 }

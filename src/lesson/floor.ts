@@ -15,6 +15,7 @@
 import type { LinkEvent } from "./link.ts";
 import { Store } from "./store.ts";
 import { realTimers, type Timers } from "./timers.ts";
+import { setTurnContext } from "./turnModel.ts";
 // W2 seam commit (BUILD-PLAN §4): the fixed safety openings (W2-I) are reached through the floor, which owns the SAFETY
 // state's client side. Re-exported so the runtime and the Desk import them from one place.
 export { safetyOpening, type SafetyLangMode, type SafetyOpening } from "./safetyStrings.ts";
@@ -224,6 +225,9 @@ export class FloorController {
         if (e.typed) this.feed({ type: "commit" });
         return;
       case "ui":
+        // W2-E L1: the turn's context (beat, answer form, hand-over) sets how long a pause may be a thought, not an end
+        // (turnModel.ts; read by the cascade link's fragment merger when turn.predictive is on).
+        setTurnContext(e.ui);
         return this.feed({ type: "ui", handover: e.ui.handover, cues: (e.ui.cues as { program?: string } | undefined) ?? null });
       case "settle":
         if (this.turnInFlight()) return;

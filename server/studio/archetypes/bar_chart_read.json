@@ -1,0 +1,35 @@
+{
+  "id": "bar_chart_read", "v": 1, "kind": "chart", "title": "read a bar chart",
+  "probe": "bar_chart_viz",
+  "truth": "data_set",
+  "stage": { "w": 360, "h": 320 },
+  "paramsSchema": { "type": "object", "required": ["data", "question"], "properties": {
+    "data": { "type": "array", "minItems": 3, "maxItems": 6, "items": { "type": "object", "required": ["key", "value"], "properties": {
+      "key": { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,15}$" }, "value": { "type": "integer", "minimum": 1, "maximum": 100 } } } },
+    "question": { "type": "string", "enum": ["most", "least"] } } },
+  "hostOnly": [],
+  "stringsKeys": ["title", "ask", "yaxis", "right", "wrong", "done", "$data.key"],
+  "seam": [
+    "each bar (the drawn bar, full height): data-bar=\"<key>\" and data-value=\"<value>\"",
+    "each bar's column hit area (bar + its name, the whole column height, at least the minimum target width): data-column=\"<key>\"; tapping it answers",
+    "each y-axis tick label: data-tick=\"<number>\", centred at that value's height",
+    "the zero baseline is the bottom of every bar"
+  ],
+  "brief": [
+    "KIND: data visualisation. Reading a bar chart.",
+    "CHART: vertical bars of Studio.params.data (value = how many), growing in once on first paint; a y-axis with numeric ticks and light gridlines at a sensible step, the axis title (yaxis), each bar's name under it (the string with the bar's key).",
+    "Bar heights EXACTLY proportional to value on the same scale as the ticks (baseline 0).",
+    "QUESTION: show ask. The child taps a column -> Studio.answer(\"<key>\"); feedback from Studio.onVerdict (right / wrong); on correct Studio.done() and the done text.",
+    "Every bar looks identical (same colour, same style) before the child answers: no hint of the answer."
+  ],
+  "states": ["boot", "ready", "answering", "verdict_wrong", "verdict_right", "done"],
+  "checks": ["G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"],
+  "player": "bar_chart_read", "grader": "extreme_key",
+  "skeleton": "chart-bars",
+  "budgets": { "bytes": 60000, "genMs": 90000 },
+  "antiPatterns": [
+    "tick labels placed as evenly spaced text instead of at their value's height",
+    "a tap target that is only the bar (a short bar becomes a tiny target): the column is the target",
+    "the tallest bar coloured or animated differently before the answer"
+  ]
+}

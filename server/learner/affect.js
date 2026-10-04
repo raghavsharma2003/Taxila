@@ -29,18 +29,30 @@ export const initialAffect = () => ({ dontKnowStreak: 0, minimalStreak: 0, asks:
  */
 export function nextAffect(prev, { read, outcome, itemId, answer = "" }) {
   const recent = outcome && outcome !== "no_evidence" ? [...prev.recent, { itemId, outcome, answer }].slice(-WINDOW) : prev.recent;
+  // W2-E BR2 (TEACHER-BRAIN TB4): the classify signals block's acts, when on (classify.js signalFlags). The child's OWN
+  // words saying they are frustrated, or asking for a break, count here; a counter only exists once it is non-zero, so a
+  // lesson without signals keeps exactly the state it always had.
+  const fw = read.frustrationWords ? (prev.frustrationStreak ?? 0) + 1 : 0;
   return {
     dontKnowStreak: read.dontKnow ? prev.dontKnowStreak + 1 : 0,
     minimalStreak: read.minimal ? prev.minimalStreak + 1 : 0,
     // "just tell me" over the last WINDOW turns only: an early ask must not discount the whole lesson.
     asks: [...prev.asks, !!read.asksForAnswer].slice(-WINDOW),
     recent,
+    ...(fw ? { frustrationStreak: fw } : {}),
+    ...(read.metaBreak ? { breakAsked: true } : {}),
+    // The IDK split (steal 8): "I knew it, I can't recall" wants a recall cue; "never learned it" wants teaching. Read by
+    // the Director's hint choice (W2-C); this turn only.
+    ...(read.idkCantRecall ? { idk: "cant_recall" } : read.idkNotKnown ? { idk: "not_known" } : {}),
   };
 }
 
-/** P20: unresolved confusion turning into frustration — time to offer a break or an easier step. */
+/**
+ * P20: unresolved confusion turning into frustration — time to offer a break or an easier step. With the signals block on,
+ * also two turns of the child's own frustration words in a row, or the child asking for a break.
+ */
 export function frustrationLoop(a) {
-  return a.dontKnowStreak >= 3 || a.minimalStreak >= 4;
+  return a.dontKnowStreak >= 3 || a.minimalStreak >= 4 || (a.frustrationStreak ?? 0) >= 2 || !!a.breakAsked;
 }
 
 /**
@@ -75,4 +87,21 @@ export function wheelSpinning(outcomes, window = WINDOW) {
     if (run >= 3) return false;
   }
   return true;
+}
+
+/**
+ * The engagement state for the turn's Moment (TEACHER-BRAIN §4.1 EngagementState; TB6): from the counters above (what
+ * the child says and does) and the turn count only, never tone, voice prosody, a camera or timing (ct-no-voice-emotion-
+ * inference). Session-only: it is never stored (NM-3).
+ * @param {ReturnType<typeof initialAffect> | undefined} a
+ * @param {{ turn?: number, stopping?: boolean }} [o]
+ * @returns {"warming" | "engaged" | "strained" | "disengaging" | "stopped"}
+ */
+export function engagementOf(a, { turn = 0, stopping = false } = {}) {
+  if (stopping) return "stopped";
+  const x = a ?? initialAffect();
+  if (frustrationLoop(x)) return "strained";
+  if (x.minimalStreak >= 2) return "disengaging";
+  if (turn <= 2) return "warming";
+  return "engaged";
 }

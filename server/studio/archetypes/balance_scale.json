@@ -1,0 +1,35 @@
+{
+  "id": "balance_scale", "v": 1, "kind": "simulation", "title": "balance the scale: find the missing weight",
+  "truth": "numbers",
+  "stage": { "w": 360, "h": 320 },
+  "paramsSchema": { "type": "object", "required": ["items"], "properties": {
+    "items": { "type": "array", "minItems": 1, "maxItems": 3, "items": { "type": "object", "required": ["id", "left", "right", "options"], "properties": {
+      "id": { "type": "string", "maxLength": 16 },
+      "left": { "type": "array", "minItems": 1, "maxItems": 4, "items": { "type": "integer", "minimum": 1, "maximum": 99 } },
+      "right": { "type": "array", "minItems": 0, "maxItems": 3, "items": { "type": "integer", "minimum": 1, "maximum": 99 } },
+      "options": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "integer", "minimum": 1, "maximum": 99 } } } } } } },
+  "hostOnly": [],
+  "stringsKeys": ["title", "instr", "right", "wrong", "done"],
+  "seam": [
+    "each pan: data-pan=\"left|right\" with data-total=\"<sum of the weights on it>\" kept current",
+    "each weight drawn on a pan: data-weight=\"<value>\" (its number written on it)",
+    "the beam: data-beam with data-tilt=\"left|right|level\" (the side that is DOWN) kept current; the drawing tilts the same way",
+    "the option weights to choose from: data-option=\"<value>\""
+  ],
+  "brief": [
+    "KIND: simulation. A two-pan balance: the heavier side goes down.",
+    "SCENE: a balance with a beam and two pans. For each item in order: the left pan holds item.left weights, the right pan holds item.right weights; below, the three option weights (item.options). Each weight shows its number.",
+    "The beam tilts by the TOTALS: heavier pan lower, equal totals level. It updates (with a smooth swing) whenever a weight is added or removed.",
+    "ACTIVITY: the child taps an option: it moves onto the right pan, the beam swings to the new totals, and -> Studio.answer({value: <that option>}). On a wrong verdict, after a moment, the weight goes back to the options. On correct: the beam rests level, a short celebration, then the next item. After the last: the done text and Studio.done()."
+  ],
+  "states": ["boot", "ready", "answering", "verdict_wrong", "verdict_right", "done"],
+  "checks": ["G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"],
+  "player": "balance_scale", "grader": "balance_items",
+  "skeleton": "balance",
+  "budgets": { "bytes": 60000, "genMs": 90000 },
+  "antiPatterns": [
+    "the beam tilting toward the lighter side",
+    "data-tilt not updated when a weight returns",
+    "the right option highlighted before the child chooses"
+  ]
+}

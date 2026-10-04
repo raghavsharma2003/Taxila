@@ -1,0 +1,23 @@
+<style>
+*{box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#faf3e0;color:#432818}
+h1{position:absolute;left:10px;top:4px;margin:0;font-size:15px}.ask{position:absolute;left:10px;top:24px;width:340px;font-size:12px;margin:0}
+svg{position:absolute;left:0;top:44px}
+.card{position:absolute;width:76px;height:56px;border:2px solid #99582a;border-radius:10px;background:#fff;font-size:11px;color:#432818;padding:2px}
+.msg{position:absolute;left:10px;top:300px;width:340px;text-align:center;font-size:12px}
+</style>
+<h1 id="t"></h1><p class="ask" id="a"></p><svg id="s" width="360" height="250" viewBox="0 0 360 250"><line data-axis x1="10" y1="125" x2="350" y2="125" stroke="#432818" stroke-width="3"/></svg><div id="cs"></div><div class="msg" id="m"></div>
+<script>
+(function(){
+var P=Studio.params,NS="http://www.w3.org/2000/svg",s=document.getElementById("s"),cs=document.getElementById("cs"),done=false;
+document.getElementById("t").textContent=Studio.t("title");document.getElementById("a").textContent=Studio.t("ask");
+var ys=P.events.map(function(e){return e.year;}),y0=Math.min.apply(null,ys),y1=Math.max.apply(null,ys);
+function xOf(y){return 40+(y-y0)/(y1-y0)*280;}
+var sorted=P.events.slice().sort(function(a,b){return a.year-b.year;});
+sorted.forEach(function(e,i){var x=xOf(e.year);var c=document.createElementNS(NS,"circle");c.setAttribute("cx",x);c.setAttribute("cy",125);c.setAttribute("r",7);c.setAttribute("fill","#bb9457");c.setAttribute("data-event",e.key);c.setAttribute("data-year",String(e.year));s.appendChild(c);
+  var up=i%2===0,top=up?44+20:44+150;var l=document.createElementNS(NS,"line");l.setAttribute("x1",x);l.setAttribute("x2",x);l.setAttribute("y1",up?76:132);l.setAttribute("y2",up?118:150);l.setAttribute("stroke","#99582a");s.appendChild(l);
+  var b=document.createElement("button");b.className="card";b.setAttribute("data-card",e.key);b.style.left=Math.max(2,Math.min(282,x-38))+"px";b.style.top=top+"px";b.textContent=Studio.t(e.key)+" "+e.year;
+  b.addEventListener("click",function(){if(!done)Studio.answer(e.key);});cs.appendChild(b);});
+Studio.onVerdict(function(v){var m=document.getElementById("m");if(v.correct){done=true;m.textContent=Studio.t("right")+" "+Studio.t("done");Studio.done();}else m.textContent=Studio.t("wrong");});
+Studio.ready();
+})();
+</script>

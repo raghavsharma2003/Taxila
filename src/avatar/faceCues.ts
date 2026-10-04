@@ -75,6 +75,9 @@ export function faceUiOf(ui: UiDirectives | Record<string, unknown> | null | und
   return { teacherAffect: u.teacherAffect, studioSlot: u.studioSlot, cues: u.cues, whiteboard: u.whiteboard };
 }
 
+/** Slot states in which a Studio piece is on show (LIVE-STUDIO §3.1): the look happens once, at the first of these. */
+const SHOWN_STATES: ReadonlySet<string> = new Set(["revealed", "in_use", "fallback_shown"]);
+
 /** How long her eyes stay on the work before they come back to the child (a look, not a stare). */
 export const GAZE_HOLD_MS = { studio_reveal: 1600, cue: 1200, board: 900 } as const;
 
@@ -85,7 +88,7 @@ export const GAZE_HOLD_MS = { studio_reveal: 1600, cue: 1200, board: 900 } as co
 export class FaceProducer {
   private gate = new ReactionGate();
   private seq = 0;
-  private lastSlot: string | null = null;
+  private seenSlots = new Set<string>();
   private lastBoard: string | null = null;
 
   program(ui: FaceUi, turn: number): FaceCue[] {
@@ -94,9 +97,12 @@ export class FaceProducer {
     if (ta && typeof ta === "object") {
       if (DISPLAY_FACE[ta.display] && (!GATED.has(ta.display) || this.gate.allow(turn))) out.push({ kind: "affect", display: ta.display, seq: ++this.seq });
     }
-    // Gaze: a Studio reveal draws her eyes to the stage once per slot; a demo/point cue to its target; a new board line.
-    const slot = ui.studioSlot ? JSON.stringify(ui.studioSlot).slice(0, 200) : null;
-    if (slot && slot !== this.lastSlot) {
+    // Gaze: a Studio piece on show draws her eyes to the stage once per slot (on reveal, or when the ladder's fallback
+    // is shown); a demo/point cue looks at its target; a new board line at the board.
+    const slot = ui.studioSlot;
+    const shown = !!slot && typeof slot.slotId === "string" && SHOWN_STATES.has(slot.state);
+    if (shown && !this.seenSlots.has(slot!.slotId)) {
+      this.seenSlots.add(slot!.slotId);
       out.push({ kind: "gaze", target: "tray", holdMs: GAZE_HOLD_MS.studio_reveal, reason: "studio_reveal", seq: ++this.seq });
     } else if (ui.cues?.program === "demo" || ui.cues?.program === "point") {
       out.push({ kind: "gaze", target: ui.cues.target === "board" ? "board" : "tray", holdMs: GAZE_HOLD_MS.cue, reason: "cue", seq: ++this.seq });
@@ -104,7 +110,6 @@ export class FaceProducer {
       const wb = ui.whiteboard?.value ? JSON.stringify(ui.whiteboard.value).slice(0, 200) : null;
       if (wb && wb !== this.lastBoard) out.push({ kind: "gaze", target: "board", holdMs: GAZE_HOLD_MS.board, reason: "board", seq: ++this.seq });
     }
-    this.lastSlot = slot ?? this.lastSlot;
     if (ui.whiteboard?.value) this.lastBoard = JSON.stringify(ui.whiteboard.value).slice(0, 200);
     return out;
   }

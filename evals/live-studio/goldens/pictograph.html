@@ -1,0 +1,22 @@
+<style>
+*{box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#fffdf5;color:#3a3a3a}
+h1{position:absolute;left:10px;top:4px;margin:0;font-size:15px}.ask{position:absolute;left:10px;top:24px;width:340px;font-size:12px;margin:0}
+.rows{position:absolute;left:10px;top:48px;width:340px;display:flex;flex-direction:column;gap:4px}
+.row{height:54px;border:2px solid #e9c46a;border-radius:12px;background:#fff;display:flex;align-items:center;padding:0 8px;gap:4px;cursor:pointer}
+.nm{width:70px;font-size:12px}.sym{width:22px;height:22px;border-radius:50%;background:#f4a261}
+.key{position:absolute;left:10px;top:286px;font-size:12px;display:flex;align-items:center;gap:6px}
+.msg{position:absolute;left:170px;top:288px;width:180px;font-size:12px;text-align:right}
+</style>
+<h1 id="t"></h1><p class="ask" id="a"></p><div class="rows" id="r"></div><div class="key" data-key id="k"><span class="sym"></span><span id="kt"></span></div><div class="msg" id="m"></div>
+<script>
+(function(){
+var P=Studio.params,done=false,r=document.getElementById("r");
+document.getElementById("t").textContent=Studio.t("title");document.getElementById("a").textContent=Studio.t("ask");
+document.getElementById("kt").textContent="= "+P.symbolValue+" "+Studio.t("keytext");
+P.rows.forEach(function(row){var d=document.createElement("div");d.className="row";d.setAttribute("data-row",row.key);var n=document.createElement("span");n.className="nm";n.textContent=Studio.t(row.key);d.appendChild(n);
+  for(var i=0;i<row.value/P.symbolValue;i++){var s=document.createElement("span");s.className="sym";s.setAttribute("data-symbol","");d.appendChild(s);}
+  d.addEventListener("click",function(){if(!done)Studio.answer(row.key);});r.appendChild(d);});
+Studio.onVerdict(function(v){var m=document.getElementById("m");if(v.correct){done=true;m.textContent=Studio.t("right")+" "+Studio.t("done");Studio.done();}else m.textContent=Studio.t("wrong");});
+Studio.ready();
+})();
+</script>

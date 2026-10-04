@@ -7978,6 +7978,139 @@
    "title": "Personalisation acceptance (b) (the arm that repaired the child's mix-up first on day 2; not after two failures) is proven offline over selectReteach only; a production two-day scripted mix-up run is not built",
    "at": "2026-10-04",
    "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "owner-stt-order-2026-10-04",
+   "kind": "decision",
+   "title": "Owner STT order (2026-10-04): production now = gpt-live-transcribe; India app = MAI-Transcribe-2-Streaming primary with gpt-live-transcribe as fallback; self-hosted open models (Nemotron-3.5) only later at scale. Hugging Face terms for SraVaani/IndicConformer not pursued for now. Reverse on the owner's word or when scale economics change.",
+   "at": "2026-10-04",
+   "source": "inbox/owner-stt-order.json"
+  },
+  {
+   "id": "w2d-realtime-session-shape",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "The live-call session is shaped in server/voice/realtimeSession.js shapeSession: truncation {type: retention_ratio, retention_ratio 0.8}; the Director's vibe endpointSilenceMs sets server VAD silence_duration_ms clamped to 600-1200 ms (same clamp re-applied by the client on TurnResponse.pace via session.update); TAXILA_REALTIME_TIER=mini mints on DEPLOY_REALTIME_MINI (config only, default unchanged); the voice is never chosen here; the STT transcription session is untouched; onMintError → {fallback: cascade} only for a quota refusal (HTTP 429 or a rate-limit/quota code)",
+   "source": "inbox/w2-d.json"
+  },
+  {
+   "id": "w2d-lane-switch-mid-sitting",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "A realtime lesson whose response the model refuses for quota (response.done failed inference_rate_limit_exceeded, or an error event with a rate_limit code → link error code rate_limited) moves to the cascade lane mid-sitting, once: POST /api/lesson/lane (voice → cascade only, idempotent, one guarded UPDATE of state.mode + state.laneSwitch) on the runtime's ordered turn chain, then the realtime link closes and a CascadeLink connects (through the same factory, so the UI bridge sees it) on audio primed at start, then a repair turn (empty spoken turn, ASR confidence 0) makes her speak again; a safeguarding hand-off the realtime lane never voiced raises the Help sheet (lateSafeguard). A start refused at mint (503 {fallback: cascade}) closes the empty realtime lesson and starts the same topic on cascade, which greets the child itself. Flag voice.laneSwitch (default on)",
+   "source": "inbox/w2-d.json"
+  },
+  {
+   "id": "w2d-stall-notice-4500",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "The app-voice network-loss notice (T2) shows 4.5 s after the link reports itself down (was 20 s); the realtime link reports down at ICE 'disconnected' (rebuild still waits its 4 s grace) and reports 'connected' if ICE heals inside the grace (RC 'Back online.')",
+   "source": "inbox/w2-d.json"
+  },
+  {
+   "id": "w2d-lane-a-delivery-flagged",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Lane A delivery note: server/voice/expressive/compile/realtime.js realtimeDeliveryLine(Moment) → one row '- voice (how it sounds, never said aloud): <arc> · pace <band> · pause <where> · energy <band>' from Moment.teacherAffect (or the move/verdict licence row), null on safety turns, linted for sound words/brackets; the browser appends it as the LAST instructions line (VoiceLink.setDelivery). Behind voice.laneA.delivery, default OFF (RELATIONAL-OS P1: a tail row did not move gpt-realtime-2.1 delivery)",
+   "source": "inbox/w2-d.json"
+  },
+  {
+   "id": "w2d-face-producer-r4",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "The face half of RELATIONAL-OS R4: src/avatar/faceCues.ts FaceProducer reads ONLY ui.teacherAffect / studioSlot / cues / whiteboard (faceUiOf: verdict-blind by type), maps display → Emotion per §7.2 at the face's own band (B3 steps delight/playful down, B4 steps all but concern down; neutral_warm = rest pose, calm_steady = concerned 1), gates delight+warm_pride at ≤ 1 per 5 child turns (ReactionGate), and emits gaze cues: the tray once per Studio slot when it is on show (revealed / in_use / fallback_shown), the board/tray on a demo/point cue, the board on a new board line. Cues reach every live TutorFace through one page bus; a face still loading queues the newest affect and look. AvatarVoiceEvent → Behaviour.voiceEvent (none ship while clips are off)",
+   "source": "inbox/w2-d.json"
+  },
+  {
+   "id": "w2d-lip-closure-expander",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "LipDriver closure expander on by default: a dip of the fast RMS under a 120 ms slow envelope inside speech counts as a p/b/m closure when it is near silence (ratio < 0.35) or dark (brightness < 0.1 and ratio < 0.9), and pushes the jaw target down by (ratio/0.9)^4; symmetric 50 ms smoothing kept (an asymmetric fast close failed the vowel bar)",
+   "source": "inbox/w2-d.json"
+  },
+  {
+   "id": "w2d-hum-bank-not-built",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "The marin/cedar pre-reply hum bank and its client hum (HUMAN-VOICE B6, BUILD-PLAN W2-D #3) are NOT built: the owner turned non-verbal clips off for every voice (voice-clips-off-and-numbers-normalised). Lane A carries no sound in speech; the face carries the thinking state",
+   "source": "inbox/w2-d.json"
+  },
+  {
+   "id": "w2d-lane-b-bracket-markers-only",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "From P-VL: if lane B (Voice Live) ships (W4-A, O17c), its delivery transform may only use bracket STYLE markers in the model's text (silent 6/6 on both DragonHD voices); paralinguistic tags only on OmniIndic (silent there, read out by en-IN DragonHD Latest 3/3); never SSML in the text (read out 6/6). Until then voicelive.js gives lane B the lane-A note",
+   "source": "inbox/w2-d.json"
+  },
+  {
+   "id": "w2d-realtime-truncation-accepted-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Azure gpt-realtime-2.1 (taxila-realtime) and gpt-realtime-2.1-mini (DEPLOY_REALTIME_MINI) accept truncation {type: retention_ratio, retention_ratio: 0.8} at client_secrets mint and echo it back; silence_duration_ms 1100 echoed. n=1 mint per arm, eastus2, 2026-10-04",
+   "source": "inbox/w2-d.json"
+  },
+  {
+   "id": "w2d-realtime-soak-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Realtime soak (evals/realtime-soak.mjs, US sandbox → eastus2, taxila-realtime, truncation on, one turn per 15 s): text child turns 4 lessons × 4 min = 64 responses, 0 failed, 0 silences > 5 s, first audio p50 1095 / p90 1271 / max 1958 ms, last-turn input 1.7k tokens; audio child turns (7.85 s Hinglish clip) 4 × 8 min = 128 responses, 0 failed, 1 > 5 s (max 12.6 s), first audio p50 2829 / p90 3290 ms (includes uploading the clip), last-turn input 4.8-5.4k tokens. Not the 4 × 20 min probe-fleet acceptance run",
+   "source": "inbox/w2-d.json"
+  },
+  {
+   "id": "w2d-realtime-no-rate-limits-events-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Azure gpt-realtime-2.1 sent 0 rate_limits.updated events in 192 soak responses (4 sessions × 2 runs): the client logs them when they arrive, but quota headroom cannot be read from them on Azure today",
+   "source": "inbox/w2-d.json"
+  },
+  {
+   "id": "w2d-lip-bench-expander-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "evals/avatar/lip-bench.mjs (14 utterances, 84 hi / 34 en bilabial segments, causal 2048-sample window): closure expander default hi-IN 60 fps 43/84 closures (was 24/84), vowel false-close 0.187 (was 0.148), r 0.533 (was 0.542); 30 fps 37/84 at 0.193; en-IN 24/34 at 0.112; at -10.5 dB input 43/84 at 0.192. Bar (76/84 at ≤ 0.20) NOT met",
+   "source": "inbox/w2-d.json"
+  },
+  {
+   "id": "p-vl-voice-live-probe-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "P-VL (evals/voice-live-probe.mjs, Voice Live api 2026-04-10, gpt-realtime-2.1 + DragonHD, reader prompt, 3 reps × 4 stimuli per region, scored by transcribing the returned audio): (a) [calm] style marker silent 0/3 centralindia (OmniIndic Diya) and 0/3 eastus2 (en-IN Diya DragonHD Latest); [laughter] tag silent 0/3 on OmniIndic (+1.0 s, rendered) but read out 3/3 on en-IN DragonHD; SSML <break> read out 3/3 on both; (b) server audio access yes (the server-side WebSocket receives the PCM); (c) first audio p50 1134 ms centralindia, 1544 ms eastus2, from the US sandbox (n=12 each)",
+   "source": "inbox/w2-d.json"
+  },
+  {
+   "id": "hv13-lane-a-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "HV-13 (evals/realtime-lane-a.mjs, taxila-realtime, text child turns, US → eastus2): 40 turns with the lane-A note last vs 40 control turns on the same items: sound words caused by the note 0 (one 'Haha' in each arm, both replying to the child's own laugh line), note leaks 0, identity probes disclose AI 5/5 in both arms, mean words 20.3 vs 21.8",
+   "source": "inbox/w2-d.json"
+  },
+  {
+   "id": "w2d-acceptance-local-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "tests/prod/w2d-voice-lanes.mjs against node server/serve.mjs on the Neon test branch: 18/18 (token minted with truncation and VAD silence 700 ms, logprobs kept, no instructions; voice turn → POST /api/lesson/lane 214 ms → repair turn answered with a Director-written reply → its tts-stream 200 (873,600 PCM bytes, first-byte header 758 ms) → next turn answered → end 200; refusals 409/409/400/400); test account deleted, leftover guardians 4 → 4",
+   "source": "inbox/w2-d.json"
+  },
+  {
+   "id": "rj-lip-fast-close-tau",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "An asymmetric fast close for the lip jaw (closeTauMs 10-15 ms, with or without the expander) raised Hindi closures to 45-72/84 but put vowel false-close at 0.25-0.36, over the 0.20 bar; a closing time constant ≥ 45 ms still crossed 0.20 at 30 fps",
+   "source": "inbox/w2-d.json"
+  },
+  {
+   "id": "rj-hv13-hindi-hum-and-no-control",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "The first HV-13 scan counted 8 'sound words' in 40 lane-A replies: 4 were the Hindi pronoun 'hum' (we) matched by a /hum+/ pattern, 4 were 'Haha' answering the child's own laugh line, which the model also says with no note. A sound-word gate on Hinglish needs no bare 'hum' and a no-note control arm on the same items",
+   "source": "inbox/w2-d.json"
+  },
+  {
+   "id": "rj-ssml-in-voice-live-text",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "SSML in the model's text on Voice Live (<break time=\"600ms\"/> repeated by a reader prompt) is spoken as words ('time equal 600 mi', 'break time ...') on OmniIndic Diya and en-IN DragonHD Latest, 6/6",
+   "source": "inbox/w2-d.json"
   }
  ],
  "edges": [
@@ -13185,6 +13318,71 @@
    "src": "open-w2c-lesson-purpose-talk-patch",
    "rel": "blocks",
    "dst": "w2c-ask-purpose-director"
+  },
+  {
+   "src": "w2d-realtime-session-shape",
+   "rel": "measured_by",
+   "dst": "w2d-realtime-truncation-accepted-2026-10-04"
+  },
+  {
+   "src": "w2d-realtime-session-shape",
+   "rel": "measured_by",
+   "dst": "w2d-realtime-soak-2026-10-04"
+  },
+  {
+   "src": "w2d-lane-switch-mid-sitting",
+   "rel": "measured_by",
+   "dst": "w2d-acceptance-local-2026-10-04"
+  },
+  {
+   "src": "w2d-lane-switch-mid-sitting",
+   "rel": "part_of",
+   "dst": "voice-lane-budget"
+  },
+  {
+   "src": "w2d-lane-a-delivery-flagged",
+   "rel": "measured_by",
+   "dst": "hv13-lane-a-2026-10-04"
+  },
+  {
+   "src": "w2d-lane-b-bracket-markers-only",
+   "rel": "measured_by",
+   "dst": "p-vl-voice-live-probe-2026-10-04"
+  },
+  {
+   "src": "w2d-lip-closure-expander",
+   "rel": "measured_by",
+   "dst": "w2d-lip-bench-expander-2026-10-04"
+  },
+  {
+   "src": "w2d-lip-bench-expander-2026-10-04",
+   "rel": "supersedes",
+   "dst": "avatar-m0-lip-bench-2026-10-03"
+  },
+  {
+   "src": "w2d-face-producer-r4",
+   "rel": "part_of",
+   "dst": "teacher-presets-per-face"
+  },
+  {
+   "src": "w2d-lip-closure-expander",
+   "rel": "caused_by",
+   "dst": "rj-lip-fast-close-tau"
+  },
+  {
+   "src": "hv13-lane-a-2026-10-04",
+   "rel": "caused_by",
+   "dst": "rj-hv13-hindi-hum-and-no-control"
+  },
+  {
+   "src": "w2d-lane-b-bracket-markers-only",
+   "rel": "caused_by",
+   "dst": "rj-ssml-in-voice-live-text"
+  },
+  {
+   "src": "w2d-hum-bank-not-built",
+   "rel": "caused_by",
+   "dst": "voice-clips-off-and-numbers-normalised"
   }
  ]
 }

@@ -1206,3 +1206,22 @@ its first item.
 - `rj-p2d-rect-hidden-fill` (2026-10-04): A rectangular hidden fill behind the jaw (r1 bun `ext`) is uncovered by any turn as dark cut debris; hidden fills must be the hidden object's own plausible shape (convex hull / traced neck column).
 - `rj-p2d-lid-mixed-colour-alpha` (2026-10-04): Lid layer bottom edge with c-front's mixed lash-over-sclera colour at partial alpha double-counts the white (light streak + stairs = the r1 'lid seam'); the lash bottom must be an analytic coverage edge in decontaminated lash colour, ~2-3 px below the hand-read opening line, with a lid shadow on the sclera.
 - `rj-p2d-trapped-cream-in-locks` (2026-10-04): Mask closing traps the cream gap between two strands of a lock inside the lock layer; invisible over cream, a light line over skin/teal (the r1 lock 'halo'). Warm-light interior pixels must be matted out by colour.
+
+## W2-D (2026-10-04)
+
+### rj-lip-fast-close-tau
+An asymmetric fast close for the lip jaw (a falling jaw following a 10-15 ms time constant instead of 50 ms, with or
+without the closure expander) raised Hindi closures to 45-72/84 on lip-bench, but every such config put the vowel
+false-close at 0.25-0.36 (bar ≤ 0.20); even a 45 ms close crossed 0.20 at 30 fps. The fast close shuts the mouth inside
+vowels at every small level dip. Kept: symmetric smoothing with a spectrally gated expander (w2d-lip-closure-expander).
+
+### rj-hv13-hindi-hum-and-no-control
+The first HV-13 scan of 40 lane-A replies counted 8 "sound words": 4 were the Hindi pronoun "hum" (we) matched by a
+`/hum+/` pattern, and 4 were "Haha" answering the child's own laugh line, which the model also says with no note at all.
+A sound-word gate on Hinglish transcripts must not match a bare "hum", and needs a no-note control arm on the same items to
+attribute a sound to the note.
+
+### rj-ssml-in-voice-live-text
+SSML in the model's own text on Voice Live (a reader prompt repeating `<break time="600ms"/>`) is spoken as words ("time
+equal 600 mi", "break time …") on OmniIndic Diya and en-IN DragonHD Latest Diya, 6/6. A lane-B transform cannot carry
+pauses as SSML in the text stream.

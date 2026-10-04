@@ -326,9 +326,10 @@ test("ReactionGate: delight and warm_pride share one big expression per 5 child 
 test("gaze: a Studio reveal looks at the tray once per slot; a cue at its target; a new board line at the board", () => {
   const p = new FaceProducer();
   const gaze = (ui) => p.program(ui, 1).filter((c) => c.kind === "gaze").map((c) => `${c.target}:${c.reason}`);
-  const slot = { slotId: "s1", kind: "frame" };
-  assert.deepEqual(gaze({ studioSlot: slot }), ["tray:studio_reveal"]);
-  assert.deepEqual(gaze({ studioSlot: slot }), [], "the same slot does not re-draw her eyes");
+  assert.deepEqual(gaze({ studioSlot: { slotId: "s1", state: "building" } }), [], "a slot still building is not on show");
+  assert.deepEqual(gaze({ studioSlot: { slotId: "s1", state: "revealed" } }), ["tray:studio_reveal"], "the reveal draws her eyes");
+  assert.deepEqual(gaze({ studioSlot: { slotId: "s1", state: "in_use" } }), [], "the same slot does not re-draw her eyes");
+  assert.deepEqual(gaze({ studioSlot: { slotId: "s2", state: "fallback_shown" } }), ["tray:studio_reveal"], "a ladder fallback on show counts");
   assert.deepEqual(gaze({ cues: { program: "demo", target: "board" } }), ["board:cue"]);
   assert.deepEqual(gaze({ whiteboard: { kind: "text", value: "1/2" } }), ["board:board"]);
   assert.deepEqual(gaze({ whiteboard: { kind: "text", value: "1/2" } }), []);

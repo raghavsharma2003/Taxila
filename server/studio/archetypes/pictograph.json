@@ -1,0 +1,33 @@
+{
+  "id": "pictograph", "v": 1, "kind": "chart", "title": "read a pictograph",
+  "truth": "data_set",
+  "stage": { "w": 360, "h": 320 },
+  "paramsSchema": { "type": "object", "required": ["symbolValue", "rows", "question"], "properties": {
+    "symbolValue": { "type": "integer", "minimum": 1, "maximum": 100 },
+    "rows": { "type": "array", "minItems": 3, "maxItems": 5, "items": { "type": "object", "required": ["key", "value"], "properties": {
+      "key": { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,15}$" }, "value": { "type": "integer", "minimum": 1, "maximum": 800 } } } },
+    "question": { "type": "string", "enum": ["most", "least"] } } },
+  "hostOnly": [],
+  "stringsKeys": ["title", "ask", "keytext", "right", "wrong", "done", "$rows.key"],
+  "seam": [
+    "each row (its name and its symbols; the whole row is the target): data-row=\"<key>\"",
+    "each symbol: data-symbol, inside its row; a row has exactly value / symbolValue symbols, all the same size",
+    "the key: data-key containing one symbol and the number symbolValue"
+  ],
+  "brief": [
+    "KIND: data visualisation. A pictograph: each symbol stands for Studio.params.symbolValue (shown in a key: one symbol = that number, with keytext).",
+    "CHART: one row per entry of Studio.params.rows: its name, then value / symbolValue identical symbols in a line, every row starting at the same x.",
+    "QUESTION: ask; the child taps a row -> Studio.answer(\"<key>\"); feedback from Studio.onVerdict; on correct Studio.done() and the done text.",
+    "All rows look the same before the answer."
+  ],
+  "states": ["boot", "ready", "answering", "verdict_wrong", "verdict_right", "done"],
+  "checks": ["G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"],
+  "player": "pictograph", "grader": "extreme_rows",
+  "skeleton": "pictograph",
+  "budgets": { "bytes": 60000, "genMs": 90000 },
+  "antiPatterns": [
+    "symbols scaled to fit the row (they must all be one size)",
+    "a symbol count off by one",
+    "rows starting at different x"
+  ]
+}

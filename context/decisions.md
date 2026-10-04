@@ -2854,3 +2854,89 @@ Source: `docs/research/voice/stt-v3/RECOMMENDATION.md`. All accuracy evidence is
 ## Merged inbox entries (write-up from the entry text)
 - `p2d-r2-turn-shared-depth` (2026-10-04): Puppet2D r2 head turn: every head layer samples ONE slope-bounded depth field (skull paraboloid + face bump, the idea borrowed from arm V's dome); only the bun takes -45 depth, and the right lock's lower part takes the bun's depth so lock and knot never slide over each other. Hidden fills are shaped (convex-hull knot, neck column traced from the visible neck edges, face overscan kept 6 px off the backdrop). Reverse if a frame-by-frame sweep at |yaw| 20 shows debris again or if the yaw range must exceed 20 deg (then a 3/4 sprite-switch is needed).
 - `p2d-r2-expr-emitters` (2026-10-04): Surprise, playful, thinking (and warm/delight/concern/listening) are compositor presets in scripts/character/puppet2d/polish-r2/runtime/expr.js mixed into behaviour.ts's frame before the Compositor; behaviour.ts is unchanged (its Emotion union is the main loop's call). Listening nods come from the child's mic level at phrase pauses (Listener), not a script. Reverse if the main loop adds these emotions to behaviour.ts.
+
+## W2-D: voice lanes and presence (2026-10-04)
+
+### w2d-realtime-session-shape
+**Decision (2026-10-04, BUILD-PLAN W2-D #1-#2):** `server/voice/realtimeSession.js` `shapeSession` shapes only the live-call
+session (`kind: "lesson"`, `type: "realtime"`): `truncation: {type: "retention_ratio", retention_ratio: 0.8}` (the session
+set none, so every response re-read the whole conversation against the 100k TPM quota, smooth-reliability G7); the
+Director's vibe `endpointSilenceMs` → server VAD `silence_duration_ms`, clamped to 600-1200 ms, and the browser applies the
+same clamp when `TurnResponse.pace` moves mid-lesson (`VoiceLink.setPace` → `session.update` with the whole `audio.input`);
+`TAXILA_REALTIME_TIER=mini` mints on `DEPLOY_REALTIME_MINI` (the soak-failure fallback, config only, off by default). The
+voice is whatever the teacher config says (the persona may change after the next blind test). The STT transcription
+session is minted unchanged. `onMintError` answers `{fallback: "cascade"}` only for a quota refusal (HTTP 429, or a
+rate-limit / quota code in the body); a bad parameter or an auth error still throws, loudly.
+- **Reverse if:** the 4 × 20 min probe-fleet soak shows truncation cutting context a lesson needs (a reply that forgets the
+  current item after a cut), then raise the ratio or add `token_limits`; or the mini wins the soak, then set the tier env.
+
+### w2d-lane-switch-mid-sitting
+**Decision (2026-10-04, W2-D #1):** a rate-limited realtime response (`response.done` failed with
+`inference_rate_limit_exceeded`, or an `error` event with a rate-limit code; `src/lesson/realtime.ts isRateLimit` → link
+error code `rate_limited`) moves THAT lesson to the cascade lane, once, in order on the runtime's turn chain:
+`POST /api/lesson/lane` (voice → cascade only, idempotent, one UPDATE guarded on the mode; writes `state.laneSwitch`), the
+realtime link closes, a `CascadeLink` connects through the same factory (the UI bridge sees a cascade lesson) on the audio
+primed at start, then a repair turn (an empty spoken turn with ASR confidence 0: no evidence either way) makes her speak.
+Safety by predicate: if the last realtime instruction was a safeguarding hand-off whose audio never started, the Help sheet
+(helplines) opens (`lateSafeguard`) whatever the switch does. A start refused at mint (503 `{fallback: "cascade"}`)
+closes the empty realtime lesson and starts the same topic on cascade, which greets the child itself. The route is
+registered by a one-line seam in `server/index.js`. Flag `voice.laneSwitch` (default on; `?laneswitch=0` for a raw soak).
+- **Reverse if:** children notice the voice change on a switch day (the `voice-lane-budget` reversal: a drop in the vibe
+  close on switch days, n ≥ 30), then hold the realtime lane with retries instead; or W2-E marks a lane-switch resume turn
+  in `TurnRequest` (then the empty repair turn is replaced by that marker, so no "[no speech]" child row is stored).
+
+### w2d-stall-notice-4500
+**Decision (2026-10-04, W2-D #1; RELATIONAL-OS NR):** the app-voice notice for a lost link (T2) shows 4.5 s after the link
+reports itself down (was 20 s, `T2_LINK_MS`); the realtime link now reports down at ICE "disconnected" and rebuilds only
+after its 4 s grace, and reports "connected" when ICE heals inside the grace (RC "Back online.").
+- **Reverse if:** the probe fleet or the owner sees T2 flash on healthy connections (ICE blips that heal in < 1 s), then
+  raise T2 toward the heal time measured there; or the cascade link gets its own stall signal (W2-E's file).
+
+### w2d-lane-a-delivery-flagged
+**Decision (2026-10-04, W2-D #3, HUMAN-VOICE B6):** lane A's delivery note is `server/voice/expressive/compile/realtime.js`
+`realtimeDeliveryLine(Moment)`: one row `- voice (how it sounds, never said aloud): <arc> · pace <band> · pause <where> ·
+energy <band>` from `Moment.teacherAffect` (RELATIONAL-OS's display; the verdict picks only the correction licence row), null
+on safety turns and without a moment, linted for sound words, brackets and newlines. The browser appends it as the LAST
+instructions line (`VoiceLink.setDelivery`; one `session.update` per turn). Behind `voice.laneA.delivery`, **default off**:
+RELATIONAL-OS P1 measured that a tail row did not move gpt-realtime-2.1's delivery, and HV-13 measured only that it is
+safe (0 caused sound words, 0 leaks, identity 5/5), not that it helps. `voicelive.js` gives lane B the same note.
+- **Reverse if:** a blind listening check (≥ 10 per moment × arm) hears the note change delivery, then default it on; or a
+  lane-A transcript ever voices the note, then delete it.
+
+### w2d-face-producer-r4
+**Decision (2026-10-04, W2-D #4, RELATIONAL-OS R4 face half, TEACHER-BRAIN TB6):** `src/avatar/faceCues.ts`. The runtime runs
+one `FaceProducer` per lesson over each turn's `faceUiOf(ui)` (teacherAffect, studioSlot, cues, whiteboard only: the
+verdict cannot reach the face by type, AT-U12). Display → face per RELATIONAL-OS §7.2 at the face's own band
+(`faceAffectOf`: B3 one step down on delight/playful, B4 one step down on all but concern; `neutral_warm` is the warm rest
+pose, no cue; `calm_steady` → concerned 1, TA8); delight and warm_pride share ≤ 1 per 5 child turns (ReactionGate). Gaze:
+the tray once per Studio slot when it is on show (revealed / in_use / fallback_shown), the board or tray on a demo/point
+cue, the board on a new board line; `gazeAngles` turns the face host's and the target's screen boxes into eye degrees; a
+look is skipped while the child talks or she thinks. Cues reach every live `TutorFace` through one page bus (no new props
+in W2-A's Desk); a face still loading queues the newest affect and look and plays them when the stage is up (the old
+`affect` prop was dropped while the 3D chunk loaded). `AvatarVoiceEvent` → `Behaviour.voiceEvent` (breath lift, laugh
+smile + nod, hum glance), honoured but unused while clips are off.
+- **Reverse if:** AT-C5 (RELATIONAL-OS) shows displays raise children's belief that she has feelings (then lower the
+  intensities); or the O1 face's own presets (teacher-presets-per-face) score the §7.2 mapping differently, then the
+  per-face table replaces `DISPLAY_FACE`.
+
+### w2d-lip-closure-expander
+**Decision (2026-10-04, W2-D #5):** `LipDriver` closure expander on by default (expandRatio 0.9, expandPow 4, expandDark 0.1,
+hardRatio 0.35, slowMs 120, symmetric 50 ms smoothing): Hindi closures 24 → 43/84 at a vowel false-close of 0.187. The
+76/84 bar is NOT met: it needs the HeadAudio viseme classes (BUILD-PLAN W2-D #5 second half), not more amplitude DSP.
+- **Reverse if:** the viseme-class driver lands and beats it on lip-bench, or a real-device check shows the lips
+  chattering on vowels (then the expander's dark gate tightens).
+
+### w2d-hum-bank-not-built
+**Decision (2026-10-04):** the marin/cedar hum bank and the client pre-reply hum (HUMAN-VOICE B6, W2-D #3) are not built:
+the owner turned non-verbal clips off for every voice (`voice-clips-off-and-numbers-normalised`). The face's thinking
+state carries the gap.
+- **Reverse if:** the owner reopens clips (a blind round prefers clipped renders).
+
+### w2d-lane-b-bracket-markers-only
+**Decision (2026-10-04, from P-VL):** if lane B (Voice Live) ships (W4-A, O17c), its delivery transform uses bracket style
+markers in the model's text only (silent 6/6); paralinguistic tags only on OmniIndic voices; never SSML in the text (read
+out 6/6). Server audio access exists (a server-side WebSocket session), so the cascade's splicer could run on lane B, at
+the cost of relaying audio. Until then `voicelive.js` gives lane B the lane-A note.
+- **Reverse if:** a Voice Live API version renders SSML in text silently, or Azure exposes a text-transform hook.
+
+- `owner-stt-order-2026-10-04` (2026-10-04): owner STT order: gpt-live-transcribe in production now; MAI-Transcribe-2-Streaming primary on the India app with gpt-live-transcribe fallback; self-hosted open STT only at scale; Hugging Face-gated models not pursued now.

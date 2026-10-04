@@ -1,0 +1,37 @@
+{
+  "id": "slider_law", "v": 1, "kind": "simulation", "title": "change one thing, watch another follow a rule",
+  "truth": "law",
+  "stage": { "w": 360, "h": 320 },
+  "paramsSchema": { "type": "object", "required": ["x", "y", "law", "ask"], "properties": {
+    "x": { "type": "object", "required": ["min", "max", "step", "start"], "properties": {
+      "min": { "type": "number" }, "max": { "type": "number" }, "step": { "type": "number", "minimum": 0.01 }, "start": { "type": "number" } } },
+    "y": { "type": "object", "required": ["unitsPer"], "properties": { "unitsPer": { "type": "number", "minimum": 0.1, "maximum": 200 } } },
+    "law": { "type": "object", "required": ["type", "k", "b"], "properties": {
+      "type": { "type": "string", "enum": ["linear"] }, "k": { "type": "number" }, "b": { "type": "number" } } },
+    "ask": { "type": "object", "required": ["x", "options"], "properties": {
+      "x": { "type": "number" }, "options": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" } } } } } },
+  "hostOnly": [],
+  "stringsKeys": ["title", "xname", "yname", "less", "more", "ask", "right", "wrong", "done"],
+  "seam": [
+    "the changeable quantity: buttons data-action=\"dec\" and data-action=\"inc\" (one step each, never beyond min..max); its value shown in data-x=\"<x>\"",
+    "the result: data-output with data-value=\"<y>\" kept current, y = law.k * x + law.b, written as a number",
+    "the picture of the result: data-visual whose height (data-dim=\"h\") or width (data-dim=\"w\") is y * Studio.params.y.unitsPer px",
+    "the answer options: data-option=\"<number>\""
+  ],
+  "brief": [
+    "KIND: simulation. One quantity (xname) changes another (yname) by a rule: y = k * x + b (Studio.params.law).",
+    "SCENE: a picture of y that grows and shrinks smoothly (a bar, a tower, a fence ...) whose size is exactly y * unitsPer; the current x and y written as numbers with their names.",
+    "CONTROLS: two big buttons (strings less / more) change x by one step (Studio.params.x). Everything follows at once.",
+    "QUESTION: ask, about x = Studio.params.ask.x, with three option buttons (Studio.params.ask.options) -> Studio.answer({value: <option>}). Feedback from Studio.onVerdict; options stay tappable after wrong; on correct Studio.done()."
+  ],
+  "states": ["boot", "ready", "answering", "verdict_wrong", "verdict_right", "done"],
+  "checks": ["G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"],
+  "player": "slider_law", "grader": "law_value",
+  "skeleton": "slider",
+  "budgets": { "bytes": 60000, "genMs": 90000 },
+  "antiPatterns": [
+    "the picture scaled to fit instead of y * unitsPer",
+    "floating point noise in the shown numbers",
+    "x allowed outside min..max"
+  ]
+}
