@@ -330,7 +330,14 @@ export async function chatStream(deployment, messages, opts = {}) {
   log({ kind, deployment, status: status && !err ? status : err?.code || status || "error", ms, tokens: usage ? { in: usage.in, out: usage.out } : undefined }, trace);
   try { settle({ quotaLane, deployment, kind, status: err ? (err.status || err.code) : status, usage: usage ? { in: usage.in, out: usage.out } : undefined }); }
   catch (e) { console.warn("[azure] lanes.settle failed:", e?.message); }
-  if (err) { err.partial = { text, ttftMs, ms, usage, usd: usdOf(deployment, usage) }; throw err; }
+  if (err) {
+    // a cancelled or failed stream is still billed for what it generated: estimate (≈ 4 chars per input token, 3.5 per
+    // output token; reasoning tokens unknown) so spend caps never count a cancelled race arm as free
+    const est = usage ?? (text || status === 200 ? { in: Math.round(messages.reduce((s, m) => s + String(m.content ?? "").length, 0) / 4), cached: 0,
+      out: Math.round(text.length / 3.5), reasoning: 0, estimated: true } : null);
+    err.partial = { text, ttftMs, ms, usage: est, usd: usdOf(deployment, est) };
+    throw err;
+  }
   return { text, ttftMs, ms, usage, finishReason, usd: usdOf(deployment, usage) };
 }
 

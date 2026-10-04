@@ -43,7 +43,7 @@ const V = {
   viseme_SS: { ...Z, g: 5, up: 0.4, wid: 3, T: 1, TL: 1 },
   viseme_nn: { ...Z, g: 10, up: 0.3, T: 0.7, TL: 0.4, tip: 0.8 },
   viseme_RR: { ...Z, g: 9, up: 0.35, wid: -9, round: 0.5, T: 0.6, TL: 0.3, tip: 0.6 },
-  viseme_aa: { ...Z, g: 25, up: 0.24, wid: -3, round: 0.25, T: 0.8, TL: 0.1, th: 0.22 },
+  viseme_aa: { ...Z, g: 31, up: 0.24, wid: -7, round: 0.5, T: 0.6, TL: 0.05, th: 0.3 },
   viseme_E: { ...Z, g: 11, up: 0.35, wid: 5, T: 1, TL: 0.7 },
   viseme_I: { ...Z, g: 7, up: 0.4, wid: 5, T: 1, TL: 0.8 },
   viseme_O: { ...Z, g: 19, up: 0.35, wid: -17, round: 0.9, T: 0.45, TL: 0.1 },
@@ -86,7 +86,7 @@ export class LipSolver {
     if (W > 0) tgt.g *= 0.85 + 0.35 * clamp01(open / 0.45);
     // expression jaw (surprise / delight / listening, no viseme): opening from jawOpen, an "o" when surprised
     const wide = (k("eyeWideLeft") + k("eyeWideRight")) / 2;
-    if (W < 0.2 && wide > 0.45) { tgt.round = Math.max(tgt.round, 0.75); tgt.wid -= 12; tgt.T = 0.45; tgt.up = 0.3; }
+    if (W < 0.2 && wide > 0.45) { tgt.round = Math.max(tgt.round, 0.95); tgt.wid -= 18; tgt.T = 0.3; tgt.up = 0.32; tgt.g *= 1.15; }
     // an open-mouthed smile (delight / laugh): the D-shape. More opening, the upper lip stays high and flat, the
     // lower lip carries the drop, and the teeth show
     const smAvg = (k("mouthSmileLeft") + k("mouthSmileRight")) / 2;

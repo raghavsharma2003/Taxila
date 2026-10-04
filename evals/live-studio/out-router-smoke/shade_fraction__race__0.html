@@ -1,0 +1,115 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff6e8;color:#55372f}
+#app{width:360px;height:320px;padding:8px 12px;display:flex;flex-direction:column;align-items:center;gap:3px}
+header{width:100%;height:36px;flex:none;display:flex;align-items:center;justify-content:center;border-radius:16px;background:#ffe2b8;color:#743d2e;font-size:19px;font-weight:800}
+#instr{height:24px;flex:none;font-size:14px;font-weight:650;text-align:center}
+#board{width:100%;height:150px;flex:none;border-radius:22px;background:#fffdf8;display:flex;align-items:center;justify-content:center;position:relative}
+#whole{width:150px;height:150px;overflow:visible}
+.part{fill:#ffd98c;stroke:#a95737;stroke-width:2.5;stroke-linejoin:round;cursor:pointer;transition:fill .18s,transform .15s,filter .18s;transform-origin:100px 100px}
+.part:hover{filter:brightness(1.04)}
+.part:active{transform:scale(.94)}
+.part[data-shaded="true"]{fill:#ee875b}
+#fraction{position:absolute;right:13px;top:8px;min-width:62px;height:52px;padding:3px 7px;border-radius:14px;background:#fff0d7;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:20px;font-weight:800;line-height:20px;color:#743d2e}
+#fraction span:first-child{border-bottom:2px solid #743d2e;padding:0 7px 2px}
+#fraction span:last-child{padding-top:2px}
+#feedback{height:22px;flex:none;font-size:15px;font-weight:750;color:#b4573b;text-align:center}
+#check{height:56px;min-height:56px;flex:none;min-width:146px;padding:0 22px;border:0;border-radius:18px;background:#d66c48;color:white;font:700 17px system-ui,sans-serif;box-shadow:0 4px 0 #a74e34;cursor:pointer;transition:transform .12s,box-shadow .12s}
+#check:active{transform:translateY(3px) scale(.97);box-shadow:0 1px 0 #a74e34}
+#check:disabled{opacity:.7}
+#app.celebrate #board{animation:pop .45s ease}
+#app.celebrate #feedback{animation:pop .45s ease}
+@keyframes pop{50%{transform:scale(1.04)}}
+#doneScreen{display:none;flex:1;width:100%;align-items:center;justify-content:center;border-radius:24px;background:#fff0d7;color:#a95737;font-size:24px;font-weight:800;text-align:center}
+#app.finished #doneScreen{display:flex}
+#app.finished header,#app.finished #instr,#app.finished #board,#app.finished #feedback,#app.finished #check{display:none}
+</style>
+<div id="app">
+  <header id="title"></header>
+  <div id="instr"></div>
+  <div id="board" data-item="">
+    <svg id="whole" viewBox="0 0 200 200" aria-hidden="true"></svg>
+    <div id="fraction" data-target><span></span><span></span></div>
+  </div>
+  <div id="feedback"></div>
+  <button id="check" type="button" data-action="check"></button>
+  <div id="doneScreen"></div>
+</div>
+<script>
+
+(()=>{
+  const items=Studio.params.items;
+  const app=document.getElementById("app");
+  const title=document.getElementById("title");
+  const instr=document.getElementById("instr");
+  const board=document.getElementById("board");
+  const svg=document.getElementById("whole");
+  const fraction=document.querySelector("[data-target]");
+  const check=document.getElementById("check");
+  const feedback=document.getElementById("feedback");
+  const doneScreen=document.getElementById("doneScreen");
+  title.textContent=Studio.t("title");
+  instr.textContent=Studio.t("instr");
+  check.textContent=Studio.t("check");
+  doneScreen.textContent=Studio.t("done");
+  let index=0,locked=false;
+  function paint(){
+    const item=items[index];
+    board.dataset.item=item.id;
+    fraction.children[0].textContent=item.n;
+    fraction.children[1].textContent=item.d;
+    feedback.textContent="";
+    svg.replaceChildren();
+    for(let i=0;i<item.d;i++){
+      const a0=-Math.PI/2+2*Math.PI*i/item.d;
+      const a1=-Math.PI/2+2*Math.PI*(i+1)/item.d;
+      const x0=100+94*Math.cos(a0),y0=100+94*Math.sin(a0);
+      const x1=100+94*Math.cos(a1),y1=100+94*Math.sin(a1);
+      const part=document.createElementNS(svg.namespaceURI,"path");
+      part.setAttribute("d","M 100 100 L "+x0+" "+y0+" A 94 94 0 0 1 "+x1+" "+y1+" Z");
+      part.setAttribute("class","part");
+      part.setAttribute("data-part",i);
+      part.setAttribute("data-shaded","false");
+      part.addEventListener("click",()=>{
+        if(locked)return;
+        const shaded=part.dataset.shaded!=="true";
+        part.dataset.shaded=String(shaded);
+        Studio.event("part",{index:i,shaded:shaded?"true":"false"});
+      });
+      svg.appendChild(part);
+    }
+    check.disabled=false;
+    locked=false;
+  }
+  check.addEventListener("click",()=>{
+    if(locked)return;
+    locked=true;
+    check.disabled=true;
+    const n=svg.querySelectorAll('[data-shaded="true"]').length;
+    Studio.event("check",{n:n});
+    Studio.answer({n:n,d:items[index].d});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      feedback.textContent=Studio.t("right");
+      app.classList.add("celebrate");
+      setTimeout(()=>{
+        app.classList.remove("celebrate");
+        index++;
+        if(index>=items.length){
+          app.classList.add("finished");
+          Studio.done();
+        }else paint();
+      },650);
+    }else{
+      feedback.textContent=Studio.t("wrong");
+      locked=false;
+      check.disabled=false;
+    }
+  });
+  paint();
+  Studio.ready();
+})();
+
+</script>

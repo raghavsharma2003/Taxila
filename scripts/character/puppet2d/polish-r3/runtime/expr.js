@@ -35,8 +35,10 @@ export const EXPRESSIONS = {
   },
   // gentle concern: inner brows up and knit, lids lowered, lips pressed, corners slightly down, head tilted in
   concern: {
-    bs: { browInnerUp: 1.0, browDownLeft: 0.3, browDownRight: 0.3, eyeBlinkLeft: 0.22, eyeBlinkRight: 0.22,
-      mouthPressLeft: 0.25, mouthPressRight: 0.25, mouthFrownLeft: 0.2, mouthFrownRight: 0.2, mouthSmileLeft: -1, mouthSmileRight: -1 },
+    // r3: the lowered lids read as sleepy / sceptical to the blind judge (3 of 3 runs): concern is carried by the brows
+    // (inner ends up, knit), soft open eyes and a small pressed, down-turned mouth
+    bs: { browInnerUp: 1.0, browDownLeft: 0.2, browDownRight: 0.2, eyeWideLeft: 0.12, eyeWideRight: 0.12,
+      mouthPressLeft: 0.3, mouthPressRight: 0.3, mouthFrownLeft: 0.4, mouthFrownRight: 0.4, mouthSmileLeft: -1, mouthSmileRight: -1 },
     head: [4, 2, 7], gaze: [0, -4], env: [0.45, 0, 0.6],
   },
   surprise: {

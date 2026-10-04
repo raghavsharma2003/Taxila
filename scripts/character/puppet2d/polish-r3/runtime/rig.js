@@ -261,7 +261,7 @@ export class Puppet2DRig {
     this.bs = bs;
     this.gaze = gaze;
     const k = (n) => bs[n] ?? 0;
-    const yaw = clamp(head[1], -25, 25), pitch = clamp(head[0], -10, 12), roll = clamp(head[2], -12, 12);
+    const yaw = clamp(head[1], -20, 20), pitch = clamp(head[0], -10, 12), roll = clamp(head[2], -12, 12);
     const st = {
       sy: Math.sin(yaw * D2R) * PX.gain, cy: Math.cos(yaw * D2R),
       sp: Math.sin(pitch * D2R) * PX.gain, cp: Math.cos(pitch * D2R),
@@ -476,7 +476,7 @@ export class Puppet2DRig {
   browChannels(s) {
     const bs = this.bs, sfx = s === "L" ? "Right" : "Left";
     const inner = bs.browInnerUp ?? 0, outer = bs["browOuterUp" + sfx] ?? 0, down = bs["browDown" + sfx] ?? 0, wide = bs["eyeWide" + sfx] ?? 0;
-    return { lift: 10 * wide + 9 * outer + 4 * inner, inner: 28 * inner, arch: 30 * outer, knit: 16 * down };
+    return { lift: 10 * wide + 9 * outer + 4 * inner, inner: 34 * inner, arch: 30 * outer, knit: 16 * down };
   }
 
   browOffset(s, x, y) {
@@ -490,7 +490,7 @@ export class Puppet2DRig {
     const dyAt = (xx) => {
       const ui = s === "L" ? clamp01((x1 - xx) / (x1 - x0)) : clamp01((xx - x0) / (x1 - x0));
       const peak = Math.exp(-(((ui - 0.62) / 0.3) ** 2));
-      return 3.2 * (this.blinkDip || 0) - c.lift - c.inner * Math.pow(1 - ui, 1.3) - c.arch * (0.35 + 0.65 * peak) * Math.pow(ui, 0.5) + c.knit * (1 - 0.6 * ui);
+      return 3.2 * Math.max(this.blinkDip || 0, smooth(0.3, 0.6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : 0.8)) - c.lift - c.inner * Math.pow(1 - ui, 1.3) - c.arch * (0.35 + 0.65 * peak) * Math.pow(ui, 0.5) + c.knit * (1 - 0.6 * ui);
     };
     const dy = dyAt(x);
     const th = Math.atan((dyAt(x + 3) - dyAt(x - 3)) / 6);
