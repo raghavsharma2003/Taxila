@@ -19,7 +19,7 @@ const smooth = (a, b, x) => {
 const D2R = Math.PI / 180;
 
 // head proxy (PLAN §5), fitted to c-front by eye: the hair silhouette is ~z 0, the face centre ~z Rz
-const PX = { cx: 530, cy: 430, rx: 312, ry: 345, rz: 260, gain: 0.5, pivot: [530, 728] };
+const PX = { cx: 530, cy: 430, rx: 312, ry: 345, rz: 260, gain: 0.66, pivot: [530, 728] };
 function zHead(x, y) {
   const u = (x - PX.cx) / PX.rx, v = (y - PX.cy) / PX.ry;
   let z = PX.rz * Math.sqrt(Math.max(0, 1 - u * u - v * v));
@@ -150,7 +150,7 @@ export class Puppet2DRig {
     const off = { hairback: -20, bun: 0, ears: -25, hair: 6, lockL: 10, lockR: 10, browL: 4, browR: 4 };
     for (const [n, o] of Object.entries(off)) {
       const L = this.layers[n];
-      for (let i = 0; i < L.n; i++) L.z[i] = n === "bun" ? -120 : L.z[i] + o;
+      for (let i = 0; i < L.n; i++) L.z[i] = n === "bun" ? -80 : L.z[i] + o;
     }
     // locks: anchor (top) and length for the pendulum weight
     for (const s of ["L", "R"]) {
@@ -380,11 +380,11 @@ export class Puppet2DRig {
       } else if (isLock) {
         const v = clamp01((y - L.y0) / L.len);
         const w = Math.pow(v, 1.4);
-        x += L.sx * w;
-        y += L.sy * w * 0.3;
+        x += (L.sx || 0) * w;
+        y += (L.sy || 0) * w * 0.3;
       } else if (bun) {
-        x += this.bunOff[0];
-        y += this.bunOff[1];
+        x += this.bunOff ? this.bunOff[0] : 0;
+        y += this.bunOff ? this.bunOff[1] : 0;
       }
       const p = this.project(x, y, z[i]);
       pos[i * 2] = p[0];
@@ -508,6 +508,10 @@ export class Puppet2DRig {
       // lattice between swaps: continuous width / roundness / skew around the mouth centre
       const cx = 530, cy = 628;
       const bell = Math.exp(-(((y - cy) / 50) ** 2));
+      // talking mouths read a touch bigger (c-talking): scale about the mouth centre with the open amount
+      const sc = 1 + 0.1 * this.expr.open;
+      x = cx + (x - cx) * sc;
+      y = cy + (y - cy) * sc;
       x += (x - cx) * (m.wide * 0.05 - m.round * 0.04) * bell + m.skew * 6 * bell * Math.exp(-(((x - cx) / 90) ** 2));
       y += m.lowerDrop * smooth(cy - 5, cy + 40, y) * Math.exp(-(((x - cx) / 90) ** 2));
       const p = this.project(x, y, this.mouthZ[i]);
@@ -519,6 +523,16 @@ export class Puppet2DRig {
       R.update(this.mouthMesh[n], "aPos", pos);
       R.drawPaint(this.mouthMesh[n], this.tex.mouths, this.mouthRect, a, shade);
     }
+  }
+
+  resetPhysics() {
+    for (const s of ["L", "R"]) {
+      const L = this.layers["lock" + s];
+      L.spring.x = L.spring.v = L.springY.x = L.springY.v = 0;
+    }
+    for (const sp of this.bunSpring) sp.x = sp.v = 0;
+    this.prevAnchor = null;
+    this.prevVel.L = [0, 0];
   }
 
   /** Convenience: apply + render with the gaze kept for the eye pass. */

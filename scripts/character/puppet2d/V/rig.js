@@ -523,7 +523,7 @@ export class PuppetV {
     const tu = M.tu * (1 + 0.45 * round - 0.5 * press - 0.65 * ms.rollIn - 0.2 * open);
     const tl = M.tl * (1 + 0.22 * round - 0.3 * press - 0.55 * ms.rollIn - 0.28 * open - 0.12 * wide);
     const ct = Math.cos(M.tilt), st = Math.sin(M.tilt);
-    const cx = M.cx + ms.skew * 9, cy = M.cy + 1.0 * open;
+    const cx = M.cx + ms.skew * 15, cy = M.cy + 1.0 * open;
     const P = (lx, ly) => [cx + lx * ct - ly * st, cy + lx * st + ly * ct];
     const Uin = [], Lin = [], Uout = [], Lout = [], seam = [], prL = [], prU = [], lU = [], lL = [], xs = [];
     for (let i = 0; i < N; i++) {
@@ -533,7 +533,7 @@ export class PuppetV {
       const pl = Math.pow(q, eL), pu = Math.pow(q, eU);
       prL.push(pl); prU.push(pu);
       const x = t * halfW;
-      const sy = -sag * Math.pow(at, M.pseam || 2.3) + ms.skew * 2 * t;
+      const sy = -sag * Math.pow(at, M.pseam || 2.3) - ms.skew * 7 * t;
       const uin = sy - raise * pu;
       const lin = sy + drop * pl;
       const tU = t / (M.extU || 1), tL = t / ((M.extL || 1) * (1 + 0.15 * open));
@@ -554,7 +554,7 @@ export class PuppetV {
       // tongue: a soft blob resting on the floor of the mouth; Hindi keys lift (dental/alveolar), curl (retroflex),
       // widen (lateral) or push it to the teeth (TH)
       const lift0 = Math.max(ms.tipUp, 0.8 * ms.curl, ms.tongueOut);
-      const teethH = (Math.min(9, Math.max(0, gap - 2.5) * 0.3 + 0.5) + 3 * ms.teeth * Math.min(1, gap / 6) + 4 * ms.upperUp) * (1 - 0.35 * lift0);
+      const teethH = (Math.min(9, Math.max(0, gap - 2.5) * 0.3 + 0.5) + 3 * ms.teeth * Math.min(1, gap / 6) + 4 * ms.upperUp) * (1 - 0.6 * lift0);
       const NT = 15, top = [], hi = [], bot = [];
       const tw = 0.62 + 0.2 * ms.tongueWide - 0.1 * round;
       const th = Math.max(3, gap * 0.34 + 2) * (1 - 0.2 * ms.tongueWide);
@@ -566,15 +566,15 @@ export class PuppetV {
         const dome = Math.pow(Math.max(0, 1 - u * u), 0.5);
         let y = floor + 3 - th * dome;
         const tipW = Math.exp(-((u / 0.45) ** 2));
-        y = lerp(y, Math.min(y, roof), lift * tipW);
+        y = lerp(y, roof + 1, lift * Math.pow(tipW, 0.8));
         const x = at(xs, t) * (1 - 0.18 * ms.curl * tipW);
         top.push(P(x, y)); hi.push(P(x * 0.7, lerp(y, floor, 0.4))); bot.push(P(x * 1.05, floor + 10));
       }
       const tc = C.tongue;
       B.rows([top, hi, bot], [tc[1], tc[2], tc[0]], zl - 2);
       if (ms.curl > 0.05) {
-        const und = top.map((p, k) => { const u = -1 + (2 * k) / (NT - 1), w = Math.exp(-((u / 0.38) ** 2)); return [p[0], p[1] + 8 * ms.curl * w]; });
-        B.rows([top, und], [alpha(C.tongueUnder, Math.min(1, ms.curl * 1.4)), alpha(C.tongueUnder, 0)], zl - 1.5);
+        const und = top.map((p, k) => { const u = -1 + (2 * k) / (NT - 1), w = Math.exp(-((u / 0.38) ** 2)); return [p[0], p[1] + 11 * ms.curl * w]; });
+        B.rows([top, und], [(i) => alpha(C.tongueUnder, Math.min(1, ms.curl * 1.6) * Math.exp(-(((i - (NT - 1) / 2) / (NT * 0.2)) ** 2))), alpha(C.tongueUnder, 0)], zl - 1.5);
       }
       if (ms.tipUp > 0.05 || ms.tongueOut > 0.05) {
         // a lighter tip where it touches the teeth ridge
@@ -588,7 +588,7 @@ export class PuppetV {
       const edge = (c) => (i, n) => scale(c, 0.92 + 0.08 * Math.pow(Math.sin((Math.PI * i) / (n - 1)), 0.5));
       B.rows([tTop, tRow(0.25), tRow(1), tRow(1.12)], [edge(tcol[0]), edge(tcol[1]), edge(tcol[2]), alpha(tcol[2], 0)], zl - 1);
       // lower teeth: only a hint in the centre on teeth-forward shapes (SS, E, I) or a wide-open laugh
-      const lowH = 2.5 * ms.teeth * Math.min(1, gap / 5) + Math.max(0, gap - 30) * 0.12;
+      const lowH = (2.5 * ms.teeth * c01((gap - 16) / 8) + Math.max(0, gap - 30) * 0.12) * (1 - c01(lift0 * 2));
       if (lowH > 0.5) {
         const a = 1 - 0.85 * ms.tongueOut;
         const cprof = Lin.map((p, i) => Math.pow(Math.max(0, 1 - ((-1 + (2 * i) / (N - 1)) / 0.6) ** 2), 0.6));
@@ -716,6 +716,7 @@ export class PuppetV {
       gl.disable(gl.STENCIL_TEST);
     };
     // bun sway on hair_back via the w3 weight
+    drawRegion("nape");
     drawRegion("hair_back", () => gl.uniform3f(this.U.uSway, P.bun.x, P.bun.y, 1));
     drawRegion("hair_back_strokes", () => gl.uniform3f(this.U.uSway, P.bun.x, P.bun.y, 1));
     drawRegion("neck");

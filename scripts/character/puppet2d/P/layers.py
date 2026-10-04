@@ -136,7 +136,7 @@ def matte(mask, overscan=None, band=2, erode=2):
     """Two-colour edge matting: in a band around the mask edge, alpha = the projection of the observed pixel onto
     the segment (background colour -> foreground colour), each colour extended from its own side by pull-push.
     Returns (rgb, alpha): rgb is the de-haloed foreground colour (exact c-front inside), alpha is c-front's own AA."""
-    inner = ndi.binary_erosion(mask, iterations=erode)
+    inner = ndi.binary_erosion(mask, iterations=erode) if erode > 0 else mask.copy()
     outer = ~ndi.binary_dilation(mask, iterations=band)
     F = pullpush(im, inner)
     Bk = pullpush(im, outer)
@@ -350,7 +350,11 @@ lips = ndi.binary_dilation(mouthshape.region(H, W), iterations=2)
 
 # ------------------------------------------------------------------ face base: skin, features removed, overscan
 over_face = hair | lockL | lockR                  # layers drawn above the face edge (ears are below it)
-face_area = face | (ndi.binary_dilation(face, iterations=26) & over_face)
+# under the hair the face continues widely; under the locks only its own silhouette continues (a closing), so a
+# lock that swings away uncovers jaw, never a lock-shaped skin flap
+_disk = lambda r: (np.add.outer(np.arange(-r, r + 1) ** 2, np.arange(-r, r + 1) ** 2) <= r * r)
+face_sil = ndi.binary_closing(face, structure=_disk(16)) & ~ndi.binary_dilation(bgc & ~(lockL | lockR), iterations=0)
+face_area = face | (ndi.binary_dilation(face, iterations=26) & hair) | (face_sil & (lockL | lockR | ndi.binary_dilation(lockL | lockR, iterations=3)))
 holes = eye_fill | brow_fill | lips
 known = ndi.binary_erosion(face, iterations=3) & ~holes
 face_rgb = pullpush(im, known, smooth_iters=400, region=face_area & ~known)
@@ -360,7 +364,8 @@ _, fa = matte(face, face_area & ~face)
 geom_out["rects"]["face"] = save_layer("face", face_rgb, fa)
 
 # ------------------------------------------------------------------ ears (+ studs), overscan under face/hair/locks
-ear_area = ears | (ndi.binary_dilation(ears, iterations=10) & (face | hair | lockL | lockR))
+ear_area = ears | (ndi.binary_dilation(ears, iterations=10) & (face | hair)) | (ndi.binary_closing(ears, structure=_disk(10)) & ndi.binary_dilation(lockL | lockR, iterations=3))
+ear_area = ndi.binary_opening(ear_area, structure=_disk(3)) | ears
 ear_rgb = dehalo(im, ears, ear_area, erode=1, smooth=40)
 inner = ndi.binary_erosion(ears, iterations=1)
 ear_rgb[inner] = im[inner]
@@ -374,9 +379,15 @@ for name, m, sig in (("hair", hair, 0.7), ("bun", bun, 0.7), ("lockL", lockL, 0.
     if name == "hair":   # opaque under the locks' roots so a lock edge never shows what is behind the hair
         over = ndi.binary_dilation(hair, iterations=8) & (lockL | lockR) & (yy < 560)
     if name == "bun":    # the bun is behind the neck, the jaw and the lock: continue it under them
-        over = ndi.binary_dilation(bun, iterations=34) & (body | face | lockR | hair | ears)
-        over = ndi.binary_fill_holes(ndi.binary_closing(over | bun, iterations=8)) & ~bun & ~(bgc & ~ndi.binary_dilation(bun, iterations=2))
-    rgb, a = matte(m, over)
+        # the bun is a round knot: its hidden part is the ellipse it belongs to (fitted by eye), under neck/jaw/lock
+        ell = ((xx - 683) / 80.0) ** 2 + ((yy - 658) / 86.0) ** 2 <= 1
+        over = ell & ~bun & (yy < 752) & ~(bgc & ~ndi.binary_dilation(bun | face | lockR | body, iterations=4))
+    if name.startswith("lock"):
+        core = m & (lum < 95)
+        rgb, a = matte(core, None, band=2, erode=0)
+        a = np.where(m | ndi.binary_dilation(m, iterations=2), a, 0)
+    else:
+        rgb, a = matte(m, over)
     if over is not None:
         rgb = np.where((over & ~m)[..., None], pullpush(im, ndi.binary_erosion(m, iterations=2)), rgb)
     geom_out["rects"][name] = save_layer(name, rgb, a)

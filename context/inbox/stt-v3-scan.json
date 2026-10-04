@@ -1,0 +1,29 @@
+{
+ "nodes": [
+  {
+   "id": "stt-always-on-session-hour-basis",
+   "kind": "decision",
+   "title": "Owner directive 2026-10-04: the child is heard for the whole session (always-on, full-duplex), so STT is costed per session-hour, not per speech-minute; MODEL-STACK §275 lever 1 (stream only child-turn windows) is off the table. Reverse if: the owner withdraws the directive, or E1 shows barge-in and mid-turn questions work equally well with device-VAD-gated windows.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "stt-v3-scan-2026-10-04",
+   "kind": "measurement",
+   "title": "STT v3 desk scan (docs/research/voice/stt-v3/SCAN.md; no model run). Prices: AWS L4 g6.xlarge $0.805/h OD us-east-1, $0.966 ap-south-1; Azure CI NC4as_T4 $0.579; ACA T4 GPU $0.367/h. ap-south-1 G/VT quota 0 (OD and spot); us-east-1 8/8. Self-hosted streaming transducer ≈ $0.01-0.02 per session-hour at 40-75 sessions/GPU [estimate], vs $1.02 (gpt-live-transcribe) / $1.30 (Azure RT+LID); 2-warm-GPU floor ≈ $845-1,175/month, break-even ≈ 1.2-1.6 average concurrent sessions. Method: AWS Pricing API, spot history, Service Quotas, Azure Retail Prices API; concurrency scaled from vendor H100 figures (unmeasured).",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-sarvam-self-host-not-our-weights",
+   "kind": "rejection",
+   "title": "Tried (desk, 2026-10-04): Sarvam as a self-hosted STT under the 'own GPU, commercial-OK weights' rule. Broke: Saaras v4 weights are not public (API only); Saaras v3 self-hosting is an encrypted SageMaker Marketplace model package at a $5,000/month contract plus instance cost, with no fine-tuning. Reference-only. Revisit if Sarvam publishes ASR weights under a commercial licence.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-shunya-pingala-licence",
+   "kind": "rejection",
+   "title": "Tried (desk, 2026-10-04): shunyalabs/pingala-v1-universal. Broke: its RAIL-M licence forbids derivatives and redistribution and requires a paid commercial licence (free tier up to 10k h/month); Vaani Hindi WER 22.1. The open shunyalabs/zero-stt-hinglish (OpenRAIL, Whisper-medium) stays a bench candidate.",
+   "at": "2026-10-04"
+  }
+ ],
+ "edges": []
+}

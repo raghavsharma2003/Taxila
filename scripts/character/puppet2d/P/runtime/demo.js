@@ -29,10 +29,10 @@ const SCENES = [
 ];
 export const DURATION = 45.2;
 const PRESETS = {
-  thinking: { mouthLeft: 0.32, mouthPressLeft: 0.12, mouthPressRight: 0.12, browDownRight: 0.3, browInnerUp: 0.18, browOuterUpLeft: 0.1, tilt: 4 },
+  thinking: { mouthLeft: 0.32, mouthPressLeft: 0.12, mouthPressRight: 0.12, browDownRight: 0.25, browInnerUp: 0.12, browOuterUpLeft: 0.45, tilt: 4 },
   warm: { mouthSmileLeft: 0.3, mouthSmileRight: 0.3, cheekSquintLeft: 0.15, cheekSquintRight: 0.15, eyeSquintLeft: 0.12, eyeSquintRight: 0.12, browOuterUpLeft: 0.05, browOuterUpRight: 0.05, tilt: 2 },
   delight: { mouthSmileLeft: 0.75, mouthSmileRight: 0.75, cheekSquintLeft: 0.45, cheekSquintRight: 0.45, eyeSquintLeft: 0.35, eyeSquintRight: 0.35, browOuterUpLeft: 0.28, browOuterUpRight: 0.28, jawOpen: 0.42, tilt: 3, bounce: true },
-  concern: { browInnerUp: 0.55, browDownLeft: 0.06, browDownRight: 0.06, mouthPressLeft: 0.15, mouthPressRight: 0.15, eyeSquintLeft: 0.06, eyeSquintRight: 0.06, mouthSmileLeft: -1, tilt: 5, pitch: 3 },
+  concern: { browInnerUp: 0.7, browDownLeft: 0.06, browDownRight: 0.06, mouthPressLeft: 0.15, mouthPressRight: 0.15, eyeSquintLeft: 0.06, eyeSquintRight: 0.06, mouthSmileLeft: -1, tilt: 5, pitch: 3 },
   surprise: { eyeWideLeft: 0.55, eyeWideRight: 0.55, browOuterUpLeft: 0.55, browOuterUpRight: 0.55, browInnerUp: 0.45, jawOpen: 0.38, mouthSmileLeft: -1, pitch: -3 },
   playful: { mouthSmileLeft: 0.18, mouthSmileRight: 0.48, browOuterUpLeft: 0.35, eyeSquintLeft: 0.16, eyeSquintRight: 0.16, cheekSquintRight: 0.2, tilt: 6 },
 };
@@ -156,7 +156,7 @@ async function main() {
     renderAt: (t) => step(t),
     pose: (spec) => {  // a fixed pose for the frames sheet: {bs, head, gaze}
       rig.lastT = -1;
-      for (let i = 0; i < 6; i++) { rig.clock = 1000 + i / 60; rig.frame(spec.bs || {}, spec.head || [0, 0, 0], spec.gaze || [0, 0], spec.lean || 0, 0); }
+      for (let i = 0; i < 6; i++) { rig.clock = 1000 + i / 60; rig.resetPhysics(); rig.frame(spec.bs || {}, spec.head || [0, 0, 0], spec.gaze || [0, 0], spec.lean || 0, 0); }
       return rig.mouth.name;
     },
   };

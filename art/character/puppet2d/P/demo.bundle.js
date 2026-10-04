@@ -696,7 +696,7 @@ var P = class {
 	rx: 312,
 	ry: 345,
 	rz: 260,
-	gain: .5,
+	gain: .66,
 	pivot: [530, 728]
 };
 function U(e, t) {
@@ -827,7 +827,7 @@ var q = class {
 			browR: 4
 		})) {
 			let n = this.layers[e];
-			for (let r = 0; r < n.n; r++) n.z[r] = e === "bun" ? -120 : n.z[r] + t;
+			for (let r = 0; r < n.n; r++) n.z[r] = e === "bun" ? -80 : n.z[r] + t;
 		}
 		for (let e of ["L", "R"]) {
 			let t = this.layers["lock" + e];
@@ -1037,8 +1037,8 @@ var q = class {
 				a += t, l += n;
 			} else if (s) {
 				let t = z((l - e.y0) / e.len) ** 1.4;
-				a += e.sx * t, l += e.sy * t * .3;
-			} else c && (a += this.bunOff[0], l += this.bunOff[1]);
+				a += (e.sx || 0) * t, l += (e.sy || 0) * t * .3;
+			} else c && (a += this.bunOff ? this.bunOff[0] : 0, l += this.bunOff ? this.bunOff[1] : 0);
 			let u = this.project(a, l, i[t]);
 			n[t * 2] = u[0], n[t * 2 + 1] = u[1];
 		}
@@ -1128,12 +1128,20 @@ var q = class {
 		for (let e = 0; e < this.mouthN; e++) {
 			let n = r[e * 2], a = r[e * 2 + 1], [o, s] = this.faceOffset(n, a);
 			n += o, a += s;
-			let c = Math.exp(-(((a - 628) / 50) ** 2));
-			n += (n - 530) * (t.wide * .05 - t.round * .04) * c + t.skew * 6 * c * Math.exp(-(((n - 530) / 90) ** 2)), a += t.lowerDrop * B(623, 668, a) * Math.exp(-(((n - 530) / 90) ** 2));
-			let l = this.project(n, a, this.mouthZ[e]);
-			i[e * 2] = l[0], i[e * 2 + 1] = l[1];
+			let c = Math.exp(-(((a - 628) / 50) ** 2)), l = 1 + .1 * this.expr.open;
+			n = 530 + (n - 530) * l, a = 628 + (a - 628) * l, n += (n - 530) * (t.wide * .05 - t.round * .04) * c + t.skew * 6 * c * Math.exp(-(((n - 530) / 90) ** 2)), a += t.lowerDrop * B(623, 668, a) * Math.exp(-(((n - 530) / 90) ** 2));
+			let u = this.project(n, a, this.mouthZ[e]);
+			i[e * 2] = u[0], i[e * 2 + 1] = u[1];
 		}
 		for (let [r, a] of t.draw) n.update(this.mouthMesh[r], "aPos", i), n.drawPaint(this.mouthMesh[r], this.tex.mouths, this.mouthRect, a, e);
+	}
+	resetPhysics() {
+		for (let e of ["L", "R"]) {
+			let t = this.layers["lock" + e];
+			t.spring.x = t.spring.v = t.springY.x = t.springY.v = 0;
+		}
+		for (let e of this.bunSpring) e.x = e.v = 0;
+		this.prevAnchor = null, this.prevVel.L = [0, 0];
 	}
 	frame(e, t, n, r, i) {
 		this.apply(e, t, n, r, i), this.render();
@@ -1225,9 +1233,9 @@ var q = class {
 		mouthLeft: .32,
 		mouthPressLeft: .12,
 		mouthPressRight: .12,
-		browDownRight: .3,
-		browInnerUp: .18,
-		browOuterUpLeft: .1,
+		browDownRight: .25,
+		browInnerUp: .12,
+		browOuterUpLeft: .45,
 		tilt: 4
 	},
 	warm: {
@@ -1255,7 +1263,7 @@ var q = class {
 		bounce: !0
 	},
 	concern: {
-		browInnerUp: .55,
+		browInnerUp: .7,
 		browDownLeft: .06,
 		browDownRight: .06,
 		mouthPressLeft: .15,
@@ -1414,7 +1422,7 @@ async function le() {
 		renderAt: (e) => w(e),
 		pose: (e) => {
 			n.lastT = -1;
-			for (let t = 0; t < 6; t++) n.clock = 1e3 + t / 60, n.frame(e.bs || {}, e.head || [
+			for (let t = 0; t < 6; t++) n.clock = 1e3 + t / 60, n.resetPhysics(), n.frame(e.bs || {}, e.head || [
 				0,
 				0,
 				0

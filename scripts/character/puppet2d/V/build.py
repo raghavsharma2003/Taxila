@@ -180,6 +180,9 @@ k, lb, st, _ = cv2.connectedComponentsWithStats(NECK_VIS.astype(np.uint8))
 NECK_VIS = lb == (1 + np.argmax(st[1:, 4]))
 KURTA = fill_holes(TEAL | PIPE)
 KURTA = ero(dil(KURTA, 2), 2)
+KURTA = cv2.morphologyEx(KURTA.astype(np.uint8), cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))).astype(bool)
+_k, _lb, _st, _ = cv2.connectedComponentsWithStats(KURTA.astype(np.uint8))
+KURTA = _lb == (1 + np.argmax(_st[1:, 4]))
 NECK = NECK_VIS | (poly_mask(S["neck_hidden"]) & FACE) | (dil(NECK_VIS, 10) & KURTA & ~TEAL) | (dil(NECK_VIS, 8) & KURTA)
 NECK = fill_holes(NECK)
 PIPING = PIPE
@@ -547,6 +550,8 @@ def add_strokes(rid, region, F, group="head", zoff=0.6):
     print(f"{rid:12s} verts {len(P):6d} tris {len(T):6d}", file=sys.stderr)
 
 
+NAPE = (poly_mask(S["nape"]["R"]) | poly_mask(S["nape"]["L"])) & ~BG | (poly_mask(S["nape"]["R"]) | poly_mask(S["nape"]["L"]))
+add_region("nape", NAPE, HAIR_NL & NAPE, 8, 24, group="neck", z=-60)
 FHB = add_region("hair_back", HAIR_BACK, HAIR_NL, 6, 12, [(tuple(b), sp) for b, sp in S["fine"]["hair"]], z="hair", extra=bunw)
 add_region("neck", NECK, NECK_VIS, 7, 12, [((430, 690, 640, 760), 7)], group="neck", z=lambda P: 20 + 0 * P[:, 0])
 add_region("kurta", KURTA, TEAL, 9, 22, [((380, 720, 680, 1024), 11)], group="body", z=0)
@@ -567,7 +572,7 @@ ZG = cv2.resize(FACE_Z.astype(np.float32), (128, 128), interpolation=cv2.INTER_A
 out = dict(W=W, H=H, bg=[int(v) for v in bgc], spec=dict(jaw=S["jaw"], cheek=S["cheek"], pivots=S["pivots"]),
            zgrid=dict(n=128, data=[round(float(v), 1) for v in ZG.ravel()]), regions=[])
 total_v = total_t = 0
-ORDER = ["hair_back", "hair_back_strokes", "neck", "kurta", "piping", "ear_L", "ear_R", "face", "hair_front", "hair_front_strokes", "lock_L", "lock_R"]
+ORDER = ["nape", "hair_back", "hair_back_strokes", "neck", "kurta", "piping", "ear_L", "ear_R", "face", "hair_front", "hair_front_strokes", "lock_L", "lock_R"]
 regions.sort(key=lambda r: ORDER.index(r["id"]))
 for r in regions:
     P = r["P"]
