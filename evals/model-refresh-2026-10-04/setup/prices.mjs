@@ -7,5 +7,5 @@ for (const svc of ["Foundry Models", "Foundry Tools", "Cognitive Services", "Azu
   while (u) { const j = await (await fetch(u)).json(); out.push(...(j.Items || [])); n += (j.Items || []).length; u = j.NextPageLink; }
   console.log(svc, n);
 }
-writeFileSync("results/prices-2026-10-04.json", JSON.stringify(out));
+writeFileSync("results/prices-2026-10-04.raw.json", JSON.stringify(out)); // raw (31 MB) was filtered afterwards; see results/prices-2026-10-04.json
 console.log("total", out.length);

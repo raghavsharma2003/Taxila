@@ -463,9 +463,11 @@
  {
   "name": "measure-cohere-embed5-pro",
   "ms": 747,
-  "ok": false,
-  "http": 404,
+  "ok": true,
+  "http": 200,
   "err": "v1: {\"error\":{\"code\":\"api_not_supported\",\"message\":\"Requested API is currently not supported\",\"details\":\"Requested API is cu | models: {\"error\":{\"code\":\"api_not_supported\",\"message\":\"Requested API is currently not supported\",\"details\":\"Requested API is currently not supported\"}}",
-  "at": "2026-10-04T10:56:14.881Z"
+  "at": "2026-10-04T10:56:14.881Z",
+  "out": "callable only via POST <account>.services.ai.azure.com/providers/cohere/v2/embed (texts, input_type, embedding_types); /openai/v1/embeddings and /models/embeddings return 404 api_not_supported",
+  "note": "probe script e5.mjs"
  }
 ]

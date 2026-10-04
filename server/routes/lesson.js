@@ -25,10 +25,11 @@ import {
   newLearnerState, fuseEvidence, beliefFor, noteOutcome, auditRow, weaveEnqueue, planChecks, onTopicPlanned, consumeExpired, weaveExpire, BAND_BUDGET, bandOf,
 } from "../comprehension/index.js";
 import { facetStmts, probeLogStmt, reteachStmt, gradeAuditStmt, weaveEnqueueStmt, weaveStmts } from "../comprehension/store.js";
-import { gradeLater, settledGrade, finalEvent, awaitGrade, forgetGrade } from "../comprehension/later.js";
+import { gradeLater, settledGrade, finalEvent, awaitGrade, forgetGrade, pregrade } from "../comprehension/later.js";
 import { classify, classifyFast, targetFor, helpOf } from "../director/classify.js";
 import { scanSafety, floorViolations, scrubPii } from "../director/safety.js";
 import { initLessonState, step, evidenceFrom, upcomingItem, LIMITS, shortTitleOf } from "../director/state.js";
+import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, whyKey, norm as normAnswer } from "../director/items.js";
 import { TURN_WORDS, FLOOR_FIX } from "../compiler/compile.js";
 import { HELPLINES } from "../compiler/floor.js";
@@ -823,6 +824,9 @@ async function turn(req, res, body) {
   // contracts.ts TurnRequest: the child acted in an activity and said nothing. Never graded as a reply —
   // it was once stored as "[no speech]", classified unclear, and walked the lesson plan.
   const moduleOnly = !childText && !body.chipId && body.asrConfidence !== 0 && moduleEvents.length > 0;
+  // W1-B #4: a frame `error` on the mounted module clears it (no screen target, no module tray, never mounted again in
+  // this lesson), BEFORE anything below reads state.module.
+  noteModuleEvents(state, moduleEvents);
   // A help request (the Hint sheet, the Young Help menu: classify.js HELP_REQUESTS) is a client action, never the child's
   // words: stored as a system row (never in a transcript, the parent's quote or "In {child}'s words"), never graded.
   // Same predicate as classifyFast: words that trip the safety scan are never a help request, so a disclosure that rides on a
@@ -874,8 +878,9 @@ async function turn(req, res, body) {
   // Classify against the active item's key (never free grading). A module answer on the active item's own
   // module is machine truth; a module-only turn has nothing else to classify.
   const target = targetFor(state, kit, activeItem);
-  const moduleAnswer = moduleEvents
-    .filter((e) => e?.type === "answer" && state.module && e.moduleId === state.module.id && state.module.itemId === state.activeItemId).at(-1)?.data ?? null;
+  // W1-B #5/#6: a G1 fill is graded by its server-side binding (forge/grade.js gradeEvent), never by the frame's
+  // `correct`; a bound catalog engine carries the engine's verdict (director/modules.js moduleAnswerOf).
+  const moduleAnswer = moduleAnswerOf(state, moduleEvents);
   const machineAnswer = typeof moduleAnswer?.correct === "boolean" && target.mode === "item";
   const clsArgs = { target, childText, heard, lang: state.ctx?.lang, asrConfidence: body.asrConfidence, typed, chipId: body.chipId, moduleAnswer, classLevel: child.class_level, trace };
   const classified = !(moduleOnly && !machineAnswer);
@@ -884,11 +889,21 @@ async function turn(req, res, body) {
     : body.chipId?.startsWith("pick:") ? state.offered?.options?.[Number(body.chipId.slice(5))] : body.chipId?.split(":")[1];
   const said = help ? `(the child tapped a help button: ${HELP_SAID[help] ?? help} — not an answer)`
     : childText || (moduleOnly ? `(no words; in the activity: ${activitySummary(moduleEvents, 0)})` : `(tapped: ${tapped ?? "nothing"})`);
-  // Last turn's held why / teach-back events, with their blind verdict if it is in. Seam (W1-C): awaitSettled may wait
-  // up to 600 ms for those verdicts (a no-op resolves at once: never waited for).
+  // W1-C settle: the child is answering a pending why → this turn will hold a probe.why on the active item with exactly
+  // this grade request; its blind grade starts NOW, beside the classifier and the reply (later.js pregrade; gradeLater
+  // adopts the running calls when the plan holds the event, so the grade is never run twice).
+  if (childText && !moduleOnly && !help && activeItem && state.pendingWhy === activeItem.id) {
+    try { pregrade(lesson.id, gradeRequestFor({ cls: "probe.why", target: activeItem.skillId }, { kit, activeItem, state, childText })); } catch { /* the post-plan launch still grades it */ }
+  }
+  // Last turn's held why / teach-back events, with their blind verdict if it is in. Seam (W1-C): the settle runs BESIDE
+  // the classifier — at least 600 ms, as long as the classifier takes, at most later.js SETTLE_CAP_MS — so a verdict
+  // that lands while the classifier runs is folded at no cost to the turn (the serial 600 ms wait used to sit in front
+  // of it). The speculative replies are planned on what is in now; the real plan re-reads the carried events after.
   const heldIds = (state.kt?.deferred ?? []).map((d) => d.event.id);
-  if (heldIds.length) await awaitSettled(heldIds, 600).catch(() => {});
-  const carried = carriedFrom(state);
+  let clsDone = () => {};
+  const clsGate = new Promise((res) => { clsDone = res; });
+  const settling = heldIds.length ? awaitSettled(heldIds, 600, { until: clsGate }).catch(() => {}) : null;
+  let carried = carriedFrom(state);
   const planCtx = { kit, child, lesson, activeItem, moduleOnly, moduleEvents, chipId: body.chipId, answer: help ? "" : answer, leaked, live: liveP, carried,
     childText, typed, asrConfidence: body.asrConfidence, bargeIn: !!body.teacherInterrupted };
   // A module-only turn or a help request stored no child row, so the whole recent transcript is history.
@@ -908,8 +923,10 @@ async function turn(req, res, body) {
   const specs = textLane && !late && fast && !fast.result
     ? speculate(state, target, fast.flags, { ...planCtx, now }, { said, historyOf }, fast.lowAsr ? { outcomes: ["no_evidence"], source: "asr" } : {})
     : [];
-  const cls = classified ? await classify(clsArgs) : null;
+  let cls;
+  try { cls = classified ? await classify(clsArgs) : null; } finally { clsDone(); }
   mark("classified");
+  if (settling) { await settling; carried = carriedFrom(state); planCtx.carried = carried; mark("settled"); }
   // This utterance's voice tie-breakers (features.js signalsFrom: capped booleans) reach the plan only if they are
   // already in when the classification is: the turn never waits on them (CE8: zero evidence weight, tie-break and
   // pacing only). A speculative reply was planned without them, so a non-empty signal set can only miss it.
@@ -920,6 +937,10 @@ async function turn(req, res, body) {
   let { evidence, writes, skillChanges, incident, r, instructions, skipped } = plan;
   mark("planned");
   let next = r.state;
+  // W1-C settle: start the blind grade of this turn's held why / teach-back NOW (or adopt the pregrade), while the reply
+  // is written and the turn commits, not after; the post-commit launchGrades below is then a no-op for the same event
+  // ids (later.js gradeLater is idempotent per event id).
+  launchGrades(next);
   // What the child did on this turn, for the lesson summary (DidCards): graded answers only, from the classifier.
   noteDid(next, { cls, target, activeItem, kit, childText, tapped, hintLevel: state.hintLevel, seq: childRowSeq(staged), leaked });
   // Voice lane: the floor families the heard teacher turn broke → the next compile's correction (cleared when clean).

@@ -1,0 +1,17 @@
+You are a harsh art director for a premium children's app. Image REF is the approved concept of a cartoon character (Memoji/Bitmoji-style 3D cartoon Indian woman teacher). Images X and Y are two 3D renders attempting to reproduce that character. Judge each of X and Y against REF independently and strictly. Anything uncanny, doll-like, plastic, lifeless-eyed, or "cheap game" fails.
+
+For EACH of X and Y answer yes/no with a one-line reason:
+1 same character in the same art style as REF
+2 Memoji/Bitmoji phone-avatar register (not realistic CG, not a doll)
+3 not scary or uncanny (no dead eyes, stretched mouth, plastic look)
+4 head-to-shoulder ratio matches
+5 eyes big, round, well apart, matching
+6 brows thick soft rounded
+7 nose small soft button
+8 mouth small soft, lips as soft volume, pleasant expression like REF
+9 glossy eyes with catchlight
+12 solid sculpted hair with broad soft grooves, clean, like REF
+16 skin matte-soft, warm, no blotches or artefacts
+Then: a score 1-5 for each (4 = clearly the same character at Memoji quality, would ship; 5 = delightful; 3 = recognisable but clearly not shippable; 2 = rough attempt; 1 = wrong).
+Then: forced choice, which of X or Y is closer to REF overall, and the three most damaging defects of each.
+Reply as compact JSON: {"X":{"items":{"1":[bool,"reason"],...},"score":n,"defects":[...]},"Y":{...},"closer":"X|Y","why":"..."}
