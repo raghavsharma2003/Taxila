@@ -1362,3 +1362,82 @@ n = 20 seeds × 240 children × 4 days; method `node evals/comprehension-sim/rtm
 
 ## w1c-settle-local (2026-10-04)
 n = 8 lessons (2 per delay), 12 held events; method `tests/prod/w1c-settle.mjs` against a local `server/serve.mjs` on the Neon test branch, with the early-grade patch applied, reading pending_grade rows. 0 s: 2/3; 1 s: 4/4; 2 s: 2/2; 4 s: 3/3 → 11/12 = 91.7%; the miss was corrected late (1/1). The grader (DeepSeek-V4-Pro) took 0.67-1.47 s per target in the server log. Sandbox → Azure network adds latency that production (eastus2) does not have; the plan's 30-lesson production run is still owed.
+
+
+<!-- merged from inbox/w1-a.json -->
+## w1a-fixer-local-acceptance-2026-10-04
+2026-10-04. Local server.mjs (port 6419, TAXILA_DB=test, dist built from the fixed tree), runner = tests/prod/w1a-*.mjs, typed text lane, real Azure models.
+- battery: 16/16 at class 5 and class 8, n = 30 typed turns each. 0 turns failed the new independent check (the normalised reply must end on the normalised ui.ask.text, without the server's askParity). Skip now has to reach a question on a different item within 2 turns: c5 i01 -> diag comma-anywhere (explain, then probe); c8 i01 -> diag square-double (probe).
+- practice-ask: 23/23. The real Controls "Open now" button was tapped and returned 200. A missing button now FAILS instead of warning (the API fallback runs only with W1A_API_OPEN=1).
+- young-text: 14/14. 3 answers in 11 turns. NumberPad on 2/2 number items (the first is now checked before the Help menu covers it). Key in the tiles 1/1, with the key from the debug payload or the repo's kit file, so this check runs on production too. Dock count is now required to be > 0.
+- text-voice: 3/3. Streamed 20/20, prewarmed 20/20, first byte p50 211 ms, p90 257 ms, n = 20. Sandbox numbers, a correctness check only. The 400 ms bar applies on the Azure probe only. The file is now self-contained (imports only ./lib.mjs), but the probe image does not copy it yet (infra is W1-D's).
+- One battery run lost its local server mid-run, with no error in the log; another process probably killed it. That left one test account behind. It was deleted with scripts/sweep-test-accounts.mjs --db test, and 3 older uibg accounts were deferred because a safety matter is open on them. Leftover count was 4 before and after each clean run.
+- Not a kit defect: c2 restart-ones (key 9; option 10 = m-partial-as-full) is correct. The builder's "fix the kit" action is withdrawn. "isliye 10" was a reply-model maths error, and G-PRAISE-2 catches it.
+
+
+<!-- merged from inbox/w1-b.json -->
+## w1b-fix-acceptance-2026-10-04
+Method: the W1-B review fixes, against a LOCAL `serve.mjs` + `dist` on the Neon test branch (CONDUCTOR_TEST_DATABASE_URL), TAXILA_DB_URL set to the same branch, 2026-10-04. Two servers: one from a scratch copy with `server/forge/seam-patches/w1b-lesson-wiring.patch` applied, one from the unpatched tree. Production has not been measured.
+
+- **w1b-tray, patched, n=1:** 10/10. iframe 404 px = tray 404 px, 0 controls outside; forced unknown engine leaves no empty tray; the next turn's tray is none; `lesson.state.module` null; `failedEngines` = [number-line@1]; 3 following lines with nothing on screen have no screen reference.
+- **w1b-tray, unpatched, n=1:** 4/7. Tray `module`, `state.module` still m2 number-line@1, `failedEngines` []. The mechanism checks separate the builds; the old sampled check did not.
+- **w1b-mounts, patched, final run:** 51/52. The only failure was the shared-branch leftover-guardian count (4 -> 6 from W1-C's `prod-w1c-settle-*` guardians; all 8 W1-B accounts deleted). A forged `correct:true` on a WRONG G1 commit was graded `wrong` in 3 lessons (mcq classes). A RIGHT G1 commit claiming `correct:false` was graded `first_correct` (or `C0`) in 4 lessons. Each lesson usually poses one G1 item, because diagnostic items are asked once, so the commit direction alternates by topic. Catalog-bound + G1 mounts per lesson: c5-maths-ch02 2+1, c6-maths-ch07 0+1, c4-maths-ch05 1+0, c7-maths-ch08 0+1, c6-science-ch02 0+1, c4-evs-ch01 0+0, c5-english-ch02 0+3, c7-english-ch01 0+1.
+- **Encoding learned:** `kt_evidence.outcome` is an INDEX into the class's outcome list (`server/learner/kt/outcomes.js` OUTCOMES): mcq 0 = first_correct, 1 = wrong; item.open 0..6 = C0..C4, IDK, NA. It is not 1 = correct. item.open C4 means either correct after 4+ hint rungs or the episode ended unsolved, so only mcq names and C0 are asserted.
+- **tests/forge-turn-warm.test.mjs:** 3/3. With the import-time registration removed it fails 2/3.
+- **Gates:** `tsc -b` 0, `vite build` 0, prompt budget PASS. `npm test` 1190 tests: 1184 pass, 3 fail, 3 skipped. The failures are `migrations-applied` (012, 013 and 015 not on production; other streams) and the 2 `module-wiring` tests, which fail by design until the patch lands. `module-tray-geometry` runs in `npm test` (2/2) when PLAYWRIGHT_BROWSERS_PATH is set and is skipped without it.
+
+
+<!-- merged from inbox/w1-c.json -->
+## w1c-settle-local-2 (2026-10-04)
+n = 22 lessons, 46 held why/teach-back events; method `tests/prod/w1c-settle.mjs` (W1C_SETTLE_DELAYS per run, 6+6/4/3/3 lessons at 0/1/2/4 s) against a local `server/serve.mjs` (TAXILA_DB=test) with `w1c-lesson-early-grade.patch` (pregrade + beside-classifier) and `w1c-state-reteach.patch` applied in a scratch copy, plus the grader hedge; settled = pending_grade row with results and no fallback_at. 0 s 27/27, 1 s 8/8, 2 s 5/5, 4 s 6/6 = 46/46 (100%); 0 late corrections needed. Server `[settle] turn` waits: n 41, p50 1 ms, p90 2 ms, max 469 ms. Grader latency per event (slowest target, pending_grade results[].ms) hedged: n 46, lognormal median 1219 ms, sigma 0.35, p90 2439, max 2988 ms. Same harness before the hedge (two runs): 0 s 7/9 then 11/12; unhedged latency n 29, median 1440, sigma 0.63, p90 4571, max 11028 ms. Sandbox -> Azure; production (eastus2) still owes the 30-lesson run.
+
+## w1c-live-sim-headline-2 (2026-10-04)
+n = 4,320 child-concepts per row per family (24 personas x 30 seeds x 6 concepts x 5 sessions); method `node evals/comprehension-sim/run.mjs --seeds 30` in four chunks merged with `--merge` -> `evals/comprehension-sim/results/comp-sim-2026-10-04-w1c-fix.json`. Settle model fitted to w1c-settle-local-2 (hedged median 1220 ms, sigma 0.35; beside-classifier wait; gap terms [U]); live_presettle models the old regime (post-commit start, unhedged fit, no wait). live: bkt2 macro 0.496 (after3 0.478), understood found 0.022, false mastery 0, verbal gap 55.1 pp, settle 1.00, 0.699 of oracle; cfrag 0.412, 0.004, 0.001, 39.3 pp, 0.764 of oracle. live_presettle: 0.468 / 0.409 (sim settle 0.89 includes child think time; the real 0 s case was 0/5). engine 0.674 / 0.470; oracle-prober 0.710 / 0.539; engine+perfect grader 0.682 / 0.472. Divergence engine-live 0.178 (band 0.185+-0.03) and 0.058 (0.040+-0.03): in band. Battery valid in both families (every MUST_FAIL row fails >= 1 bar; VC2, VC4 differential SEEN). Between-policy RNG noise is ~+-0.02 (policy name seeds the child stream). Simulated, author-set gains.
+
+## w1c-oracle-prober (2026-10-04)
+Same run. X1 = the engine's scheduler offered only the facets whose belief is > 0.3 from the hidden truth bit (after forgetting), plus a perfect grader, same budget and eligibility. bkt2 0.710 (false mastery 0.003, probes 3.11 per concept-session) vs engine 0.674 (0.024, 4.42); cfrag 0.539 (0.012, 3.29) vs 0.470 (0.040, 4.60).
+
+## w1c-reteach-descent-local (2026-10-04)
+n = 1 scripted lesson (30 turns, always wrong, c5-maths-ch02-t01); method `tests/prod/w1c-reteach.mjs` against the patched local server, reading reteach_attempts, lesson.state and arm_posteriors on the test branch: attempts gen:story -> gen:pictorial (two_fails_post_rung3, thompson); state failedArms s1 = [gen:story, gen:pictorial, descent:c4-maths-ch05-t01-s1], parked [s1]; +1 d start resolves both failed/final with reward and cluster; arm_posteriors n unchanged. 13/13 checks (two runs: arms story→pictorial and story→worked, both then descent→park).
+
+## w1c-three-day-local (2026-10-04)
+n = 1 test account, 4 lessons over +0/+1/+2/+3 d; method `tests/prod/w1c-three-day.mjs` against the patched local server (test branch). 22/22 checks + 1 warn: +1 d lesson on c5-maths-ch01-t02 opens with c5-maths-ch01-t01-i14, lesson.state pendingProbe C31/delayed_check; answered correct; card s1 shallow (2 -> 3 chips; state unchanged); +2 d reasons -> s1 fragile; +3 d c5-maths-ch02-t01 opener asks c5-maths-ch01-t01-i03 (C31). Real account: 403 on read and set.
+
+
+<!-- merged from inbox/w1-d.json -->
+## w1d-probe-fleet-first-run-2026-10-04 (2026-10-04)
+Method: infra/probes/probe.mjs in ACA jobs taxila-probe-ci (Central India, env taxila-probes-ci) and taxila-probe-eus2 (eastus2, taxila-env), Playwright Chromium 1.63, no route interception, against production taxila-web (eastus2), 08:10-08:11 UTC, n=1 run per region. Legs: rtt = 20× GET /api/health (p50 over the last 19); pages = 4 public pages × 3 cold loads at 360×740 DPR 2; realtime = lesson/start voice → /api/realtime/token → RTCPeerConnection + oai-events data channel, fake mic = infra/probes/child-answer.wav (gpt-4o-mini-tts child-like Hinglish "Mujhe lagta hai... answer baarah hai. Twelve!" framed by 8 s / 10 s silence), transcript sent to /api/lesson/turn; cascade = transcribe (the 1 MB WAV) → turn → tts-stream first byte, n=5.
+| leg | Central India | eastus2 |
+|---|---|---|
+| RTT p50 / p90 (first incl. TLS) | 196 / 212 ms (696) | 4 / 7 ms (103) |
+| page FCP / LCP (/, /start, /who, /promises) | 1780/1988, 1744/1744, 1944/1944, 1728/1728 ms; TTFB ~600 ms | 432/464, 492/492, 496/496, 464/464 ms |
+| realtime ICE connected / channel open / first teacher audio | 1466 / 2233 / 3964 ms | 332 / 339 / 1138 ms |
+| realtime media RTT (candidate pair) | 191 ms | 1 ms |
+| child answer transcribed | "मुझे लगता है, आंसर बारा है।" | "मुझे लगता है आंसर बारा है." |
+| turn after the transcript | advanced (move hook, 1163 ms) | advanced (hook, 632 ms) |
+| cascade composite p50 / p90 | 3411 / 3916 ms | 1776 / 1950 ms |
+| transcribe / turn / TTS first byte p50 | 1738 / 1378 / 203 ms | 358 / 1228 / 155 ms |
+Caveats: one run per region; the cascade transcribe hop uploads a 1 MB WAV (a real client clip is a few-KB webm), so its India number is pessimistic; endpoint silence (~0.9 s) is not in the composite. This replaces smooth audit G5's [U] India estimate (220-280 ms RTT) with 196 ms measured. Results: blob container `probes` (private) `<region>/last-run.json`.
+
+## w1d-rollback-timing-2026-10-04 (2026-10-04)
+n=2 rollbacks on taxila-gatetest (a copy of taxila-web on the Neon test branch, Multiple mode): 14.7 s and 14.0 s from `node scripts/deploy-azure.mjs --rollback` to three consecutive /api/health answers from the previous revision through the app URL (the previous revision was active). Canary deploys: 88.6 s with an existing image, 153.7 s and 180.4 s including an ACR build of the working tree (102 MB context). Bar: < 2 min. PASS.
+
+## w1d-restore-drill-2026-10-04 (2026-10-04)
+n=1. Neon project taxila-us: branch `restore-drill-2026-10-04` created from main at 07:58:18 UTC (MCP create_branch; ready at 07:58:20 + compute start), then infra/restore-drill.mjs: row counts of guardian, child, lesson, turn, kt_evidence, consent, schema_migrations identical to prod (9/8/12/134/36/43/13); server/serve.mjs on the branch answered /api/health?ready=1 db=ok at +1.3 s and GET /api/me 401. Wall clock from drill start (07:57:49) to a serving app: 69 s. The branch expires 2026-10-05 08:00 UTC. A real fail-over additionally needs the database-url secret switched and a deploy (~90 s measured above).
+
+## w1d-la-ingest-latency-2026-10-04 (2026-10-04)
+Log Analytics workspace taxila-logs (eastus2, PerGB2018, 1 GB/day cap, 30-day retention) attached to taxila-env, taxila-forge-untrusted and taxila-probes-ci. The forced 500 (GET /api/test/boom as a @taxila.test account on taxila-gatetest) was found by a 15 s poll 36 s after the request; TimeGenerated lagged the line's own timestamp by ~1 s (n=2). Bar: within 5 min. PASS.
+
+## w1d-test-account-sweep-2026-10-04 (2026-10-04)
+scripts/sweep-test-accounts.mjs: Neon test branch 146 @taxila.test guardians older than 1 h → 143 deleted, 3 deferred (open safety matters); production 6 → 0 deleted, 6 deferred: each holds 1-2 unhandled safeguarding incidents (kind safeguarding, handled=false), so the safety-first erasure guard refuses, exactly as DELETE /api/account does.
+
+
+<!-- merged from inbox/w1-f.json -->
+## w1f-rig-swiftshader-correctness-2026-10-04
+Method: local `node server/serve.mjs` against dist, with the Neon test branch as the database. Ran `tests/prod/w1f-face.mjs` with Playwright Chromium (SwiftShader, GPU-spoof arm: renderer reported as Adreno 650, failIfMajorPerformanceCaveat dropped) on a class-5 child (Arjun → slate), n = 1 run per arm.
+- Rig arm: `Bplus-5d1279c372.glb` loaded with status 200, `data-face=rig`, `data-tier=B`. In a separate screenshot run it was still B after 10 s, so the probe did not demote it.
+- Forced .glb failure: the face fell to D with the slate plate, which loaded.
+- Flag off: no .glb was requested, and the face was the procedural head.
+- 14/14 checks passed. These are correctness checks only, not performance.
+- Bundle: stage3d chunk 721,786 B raw, 176,882 B brotli q9 (bar ≤ 230 KB, plus the 527 KB basis wasm, self-hosted).
+- Image: `public/assets/teacher` went from 25 MB to 8.2 MB, and `public/assets/teacher-bakeoff` (52 MB) left `public/`. `public/assets/teacher-candidates` (22 MB, item 2's workflow) is still in `public/`.

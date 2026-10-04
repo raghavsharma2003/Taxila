@@ -74,3 +74,11 @@ LIVE-STUDIO §8 requires human review of 100% of the first 50 promotions per arc
 
 ## open-turn-model-before-e1 (2026-10-04)
 Smart Turn v3.2 reports Hindi 93.4% (n = 1,295) on adult data; the child result (IWSDS 2026) is English ages 4-9. Before E1 consent there is no Hindi/Hinglish child audio, so W2's only gate for `turn.predictive` is the probe-fleet cut-off rate with child-like (synthesised) clips. The real SHIFT/HOLD AUC >= 0.85 gate is at the pilot (W4-A data engine).
+
+
+<!-- merged from inbox/w1-c.json -->
+## w1c-delayed-check-cannot-lift-shallow (2026-10-04)
+BUILD-PLAN W1-C acceptance reads "+1 d: the C31 check fires in the opener, and a correct answer moves the state above shallow". The check fires and is answered right (w1c-three-day-local), but the ladder leaves shallow only with U >= U_FRAGILE; a delayed check is K/D evidence. The test now reports this as a warn and shows the rise from reasons separately instead of borrowing it. Decision needed (owner / W3-A): should a delayed first-attempt success carry U weight? Until then the acceptance item as written cannot pass.
+
+## w1c-late-double-count-reports (2026-10-04)
+`server/reports/*` count the fallback event and its `<id>:late` correction as two events. W2-A (one parent truth) should treat kt_evidence via='late' as a correction of its parent id (strip `:late[:via]`), not a new event.

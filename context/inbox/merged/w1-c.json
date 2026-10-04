@@ -1,91 +1,150 @@
 {
  "nodes": [
   {
-   "id": "w1c-test-clock",
+   "id": "w1c-settle-beside-classifier",
    "kind": "decision",
-   "title": "Test clock: @taxila.test guardians may move their own clock forward (POST /api/test/clock, ≤60 d, forward only); requests run in an AsyncLocalStorage context that shifts Date; a lesson trigger shifts started_at/ended_at; every other account gets 403",
-   "at": "2026-10-04"
+   "at": "2026-10-04",
+   "title": "Held-verdict settle, made to work on the real turn: the why's blind grade starts BEFORE the turn is classified (later.js pregrade, adopted by gradeLater by lesson x request), again at plan time if no pregrade (early launch), and the next turn's settle runs BESIDE its classifier (>= 600 ms, as long as the classifier, cap 2.5 s) instead of a serial 600 ms wait in front of it"
   },
   {
-   "id": "w1c-settle-db-by-event-id",
+   "id": "w1c-grader-hedge",
    "kind": "decision",
-   "title": "Held why/teach-back verdicts are written to pending_grade by event id the moment they land; the next turn waits ≤600 ms (local promise, or DB poll for another replica); at the deadline it claims the fallback under the row lock, and a verdict landing later is applied once as a `<id>:late` correction (via 'late': U/T only, no second K step)",
-   "at": "2026-10-04"
+   "at": "2026-10-04",
+   "title": "R-EXP grader calls still out after 1.8 s are hedged: the identical request is sent once more to the same chain and the first real verdict wins (same model and prompt: changes when a verdict lands, never what it is)"
   },
   {
-   "id": "w1c-why-decided-by-first-present",
+   "id": "w1c-test-accounts-no-population-posterior",
    "kind": "decision",
-   "title": "A why is folded as soon as ONE target comes back present with a code-checked span (present is the best label, slower targets cannot change it); a teach-back still waits for all targets",
-   "at": "2026-10-04"
+   "at": "2026-10-04",
+   "title": "A @taxila.test child's re-teach resolutions update its own reteach_attempts rows but never arm_posteriors (the population priors real children's arm choice reads); the guard is in the resolution SQL"
   },
   {
-   "id": "w1c-reteach-resolved-at-start",
+   "id": "w1c-late-keeps-source-weight",
    "kind": "decision",
-   "title": "reteach_attempts resolve at the next lesson start from the child's own later answers (repaired_now / resolved_next / resolved_delayed / failed / induced_bug / contaminated); a final outcome pays arm_posteriors once (rewarded_at guard, cluster = subject×band, no child id)",
-   "at": "2026-10-04"
+   "at": "2026-10-04",
+   "title": "A late correction of a held event from a game/module turn carries the source in its id (`<id>:late:<via>`); bktr.js temper() reads it back, so the correction weighs x0.5/x0.75 like its event, replay-safe"
   },
   {
-   "id": "w1c-unhostable-weave-callback",
+   "id": "w1c-real-clock-for-process-state",
    "kind": "decision",
-   "title": "A weave entry with no host candidates (0/830 kits carry weaveHosts) becomes a C31 callback at the session its woven check was due (the MIN_TOPICS-th topic since, ≥20 h), not after dueAt + 2 d grace",
-   "at": "2026-10-04"
+   "at": "2026-10-04",
+   "title": "Process-wide settle bookkeeping (PENDING ages, sweep, settle deadlines) runs on realNow(), never the test-clock-shifted Date: a test request 60 days ahead swept real children's in-flight verdicts"
   },
   {
-   "id": "w1c-facet-source-weight-once",
-   "kind": "decision",
-   "title": "facets.js applied the game/module source weight twice (temper() already carries it since integration): fixed to once; module/forge_g1 classifier sources map to via 'module' (×0.75) and forge_g1 counts as a code grader",
-   "at": "2026-10-04"
-  },
-  {
-   "id": "w1c-live-sim-headline",
+   "id": "w1c-settle-local-2",
    "kind": "measurement",
-   "title": "THE comprehension number (sim `live` policy, deployed configuration): bkt2 macro 0.489, cfrag 0.430; understood found 0.021/0.012; verbal gap 52.6/38.1 pp; 0.716/0.903 of the oracle-prober; engine 0.674/0.470 (divergence logged)",
-   "at": "2026-10-04"
+   "at": "2026-10-04",
+   "title": "Held-verdict settle, local server on the Neon test branch with both W1-C seam patches + hedge: 22 lessons, 46/46 held events settled (0 s 27/27, 1 s 8/8, 2 s 5/5, 4 s 6/6); turn settle wait p50 1 ms, p90 2 ms, max 469 ms (n = 41 turns). Grader per event (slowest target) hedged: median 1219 ms, p90 2.4 s, max 3.0 s; unhedged: median 1440 ms, p90 4.6 s, max 11.0 s"
   },
   {
-   "id": "w1c-rtm2",
+   "id": "w1c-live-sim-headline-2",
    "kind": "measurement",
-   "title": "RT-M2 (sim): the re-teach loop beats random arms on DRS — 0.582 vs 0.559, Δ 0.023 ± 0.017, 18/20 seeds, sign test p = 0.0004",
-   "at": "2026-10-04"
+   "at": "2026-10-04",
+   "title": "THE comprehension number, re-run with the oracle-prober and the fitted settle model: live bkt2 0.496, cfrag 0.412 (live_presettle 0.468 / 0.409; engine 0.674 / 0.470; oracle-prober 0.710 / 0.539); live = 0.699 / 0.764 of the oracle-prober; divergence in band (0.178 vs 0.185+-0.03; 0.058 vs 0.040+-0.03); battery valid both families"
   },
   {
-   "id": "w1c-settle-local",
+   "id": "w1c-oracle-prober",
    "kind": "measurement",
-   "title": "Held-verdict settle, local server (sandbox → Azure grader, Neon test branch), 8 lessons at 0/1/2/4 s: 11/12 = 91.7% settled (0 s: 2/3, 1-4 s: 9/9); the one miss was applied as a late correction. Before W1-C (audit): 0/5 at 0 s",
-   "at": "2026-10-04"
+   "at": "2026-10-04",
+   "title": "X1 delivered as an oracle-PROBER (probes chosen from the hidden truth + perfect grader): bkt2 0.710 vs engine 0.674 vs engine+perfect grader 0.682; cfrag 0.539 vs 0.470 vs 0.472, with fewer probes (3.1 vs 4.4 per concept-session)"
   },
   {
-   "id": "w1c-rejected-oracle-as-ceiling",
+   "id": "w1c-reteach-descent-local",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Re-teach on a scripted always-wrong child (local, test branch, state patch applied): gen:story -> gen:pictorial (rerun: gen:worked) -> prerequisite descent to c4-maths-ch05-t01-s1 -> park, read from lesson.state; both attempts resolve failed/final at the next start; arm_posteriors unchanged for the test account"
+  },
+  {
+   "id": "w1c-three-day-local",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Three days on the test clock (local): +1 d lesson on ANOTHER topic opens with the day-0 item as C31/delayed_check (lesson state), answered right; the card's chips change but the state stays shallow; +2 d reasons lift it to fragile; +3 d a third topic's opener re-checks day 0 (C31)"
+  },
+  {
+   "id": "w1c-rejected-serial-settle-after-commit",
    "kind": "rejection",
-   "title": "An oracle-prober defined as 'engine + perfect grader' is barely above the engine (bkt2 0.683 vs 0.674): grading noise is not what limits the ladder on this simulator",
-   "at": "2026-10-04"
+   "at": "2026-10-04",
+   "title": "A serial 600 ms settle wait in front of the classifier, with the grade started after commit, settles 0/4 at a 0 s reply (fixer run, unpatched tree); early launch at plan time alone 11/12; settle beside the classifier 7/9 at 0 s; + pregrade 11/12 at 0 s but still lost to the grader's 4.6-11 s tail. Only pregrade + beside-classifier + hedge reached 27/27 at 0 s"
+  },
+  {
+   "id": "w1c-delayed-check-cannot-lift-shallow",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "The plan's '+1 d: a correct C31 answer moves the state above shallow' cannot hold: the ladder (state.js) leaves shallow only with U >= U_FRAGILE, and a delayed check is K/D evidence. The card's chips change; the state rises only with a reason. Owner/W3-A to decide whether a delayed success should count toward U"
+  },
+  {
+   "id": "w1c-late-double-count-reports",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "server/reports/* count both a fallback row and its `<id>:late` correction row (parent counts inflated by late corrections): W2-A (one parent truth) to count via='late' as a correction, not a new event"
   }
  ],
  "edges": [
   {
-   "src": "w1c-settle-db-by-event-id",
+   "src": "w1c-settle-beside-classifier",
    "rel": "part_of",
-   "dst": "w1c-why-decided-by-first-present"
-  },
-  {
-   "src": "w1c-live-sim-headline",
-   "rel": "measures",
    "dst": "w1c-settle-db-by-event-id"
   },
   {
-   "src": "w1c-rtm2",
-   "rel": "measures",
+   "src": "w1c-grader-hedge",
+   "rel": "part_of",
+   "dst": "w1c-settle-beside-classifier"
+  },
+  {
+   "src": "w1c-settle-beside-classifier",
+   "rel": "measured_by",
+   "dst": "w1c-settle-local-2"
+  },
+  {
+   "src": "w1c-settle-local-2",
+   "rel": "supersedes",
+   "dst": "w1c-settle-local"
+  },
+  {
+   "src": "w1c-live-sim-headline-2",
+   "rel": "supersedes",
+   "dst": "w1c-live-sim-headline"
+  },
+  {
+   "src": "w1c-oracle-prober",
+   "rel": "supersedes",
+   "dst": "w1c-rejected-oracle-as-ceiling"
+  },
+  {
+   "src": "w1c-reteach-resolved-at-start",
+   "rel": "measured_by",
+   "dst": "w1c-reteach-descent-local"
+  },
+  {
+   "src": "w1c-test-clock",
+   "rel": "measured_by",
+   "dst": "w1c-three-day-local"
+  },
+  {
+   "src": "w1c-test-accounts-no-population-posterior",
+   "rel": "part_of",
    "dst": "w1c-reteach-resolved-at-start"
   },
   {
-   "src": "w1c-settle-local",
-   "rel": "measures",
+   "src": "w1c-settle-beside-classifier",
+   "rel": "supersedes",
+   "dst": "w1c-rejected-serial-settle-after-commit"
+  },
+  {
+   "src": "w1c-late-double-count-reports",
+   "rel": "caused_by",
    "dst": "w1c-settle-db-by-event-id"
+  },
+  {
+   "src": "w1c-delayed-check-cannot-lift-shallow",
+   "rel": "caused_by",
+   "dst": "w1c-three-day-local"
   }
  ],
  "md": {
-  "decisions": "## w1c-test-clock (2026-10-04)\n`server/conductor/clock.js` (pure: isTestAccount, nextTestOffset, shiftNow, TEST_CLOCK_MAX_MS) + `server/comprehension/testclock.js` (runtime) + migration 012 (test_clock table, lesson trigger). The router wraps each request in `runRequestClock` (W1-D applied it); inside, `Date.now()` and `new Date()` (no args) read real + offset; outside (every real account, every background job) the clock is real. The offset table is read once a second per replica (stale-while-revalidate, never per request). The DB's own `now()` is not shifted: the lesson trigger shifts `started_at`/`ended_at`, because the learner ledger uses them as the session time. Conductor jobs outside a request use `offsetForChild` + `runWithOffset`/`shiftNow`. **Reverse if** a real-account request is ever seen with a non-zero offset, or the Date patch breaks a library (then move to explicit `nowFor(child)` call sites).\n\n## w1c-settle-db-by-event-id (2026-10-04)\n`later.js`: gradeLater persists verdicts (span nulled) to pending_grade as they land; `settleHeld` (called by session.js awaitSettled) waits ≤ 600 ms, reading other replicas' verdicts from pending_grade, and claims the fallback for ids still out; the verdict upsert returns `fallback_at`, so exactly one of {fold the verdict now, write the correction} happens. The correction (`lateEvent`) goes through the writer under the child's advisory lock; ledger.js records via 'late' as seen without a K/θ/session step; fuse.js applies its U/T. Settle lines `[settle] …` are logged per turn; counters in `settleStats()`. **Reverse if** production settle at realistic delays stays < 95% after the early-grade patch (then raise the wait or change the grader model), or if corrections ever double count in reports (open item below).\n\n## w1c-why-decided-by-first-present (2026-10-04)\nA why has up to 4 targets graded in parallel (~0.7-1.5 s each); the slowest one used to decide the settle. `present` is the top rank, so once one target is present with spanOk the outcome cannot change. Placeholders for the targets still out carry no `op`, so no NA grade_audit rows are written. **Reverse if** finalEvent's rule changes so a later target could change a present outcome.\n\n## w1c-reteach-resolved-at-start (2026-10-04)\n`resolve.js` (pure) + `session.js loadSessionContext` (reads attempts, evidence after the oldest open attempt, rep_fluency, arm_posteriors for subject×band, cross-topic prerequisite pLs; 800 ms budget; writes resolutions off the start path with `resolutionStmt`, which pays the posterior inside the guarded update). In-lesson failed arms and prerequisites come from `reteach.js reteachSessionInputs/noteReteach`, which director/state.js must call (seam-patches/w1c-state-reteach.patch; a descent that still fails counts as a third failure → park). rep_fluency is read, never written (no measured basis for what moves it). **Reverse if** RT-M2 on real children (population MRT) shows the reward resolves arms worse than kit-primary-only.\n\n## w1c-unhostable-weave-callback (2026-10-04)\nweave.js expire(): `!hostCandidates.length && topicsSince + 1 >= MIN_TOPICS && now >= earliestAt` → expired → planChecks takes it as a C31 opener. Without it, production had no +3 d check at all (no kit has weaveHosts and the forge hosting seam is a no-op). **Reverse if** kits carry weaveHosts and the hosting seam serves woven sub-steps (then hostable entries use them; this rule only touches entries with no candidates).\n\n## w1c-facet-source-weight-once (2026-10-04)\nfacetWeight now uses temper(ev) alone. The engine sim moved bkt2 0.659 → 0.674 between the integration baseline and this run (this fix plus later changes; not isolated). **Reverse if** the 50-session module agreement gate passes (module → 1 in both K and facets).",
-  "measurements": "## w1c-live-sim-headline (2026-10-04)\nn = 24 personas × 30 seeds × 6 concepts × 5 sessions = 4,320 child-concepts per row per family; method `node evals/comprehension-sim/run.mjs --seeds 30` → `evals/comprehension-sim/results/comp-sim-2026-10-04-w1c.json`. Policy `live` = LIVE_PROBE_SHAPES, real kitInputsOf over data/kits, kit predict/near-transfer/error-spot items graded code only when the key is matchable (else llm, no span), no woven hosting, settle-latency model (grade median 2.5 s [U], 600 ms wait) with late corrections. bkt2: macro 0.489 (after3 0.473), understood found 0.021, false mastery 0, verbal gap 52.6 pp, settle 0.917, 0.716 of oracle. cfrag: 0.430, 0.012, 0.001, 38.1 pp, 0.903 of oracle. live_presettle (production before W1-C): bkt2 0.468, cfrag 0.414. engine: bkt2 0.674, cfrag 0.470 (gap 0.185 / 0.040, logged reason: live shape subset, kit fields absent, llm-graded kit items, no hosting). oracle (engine + perfect grader): 0.683 / 0.476. Battery: every MUST_FAIL row fails ≥ 1 bar in both families; differential check (mutant worse than its reference by ≥ 0.02 on some metric) SEEN for VC2 and VC4 in both families (VC4 vs engine_game_exploit at the rank-exploit volume: not_yet acc −0.034 bkt2, shallow acc −0.033 cfrag). Gamer control: macro 0.20. Simulated, author-set gains: gates mechanics, not efficacy.\n\n## w1c-rtm2 (2026-10-04)\nn = 20 seeds × 240 children × 4 days; method `node evals/comprehension-sim/rtm2.mjs` → `results/rtm2-2026-10-04.json`. Real selectReteach + reteachSessionInputs/noteReteach + resolveAttempts + once-only posterior update vs the same loop with no posteriors. DRS (share of episodes with a later delayed success) 0.582 vs 0.559, Δ 0.023 ± 0.017 sd, 18/20 seeds, sign test p = 0.0004 → PASS. Moves (loop): reteach 47,726, park 7,406, prereq_descent 4,140. Arm efficacies author-set [U].\n\n## w1c-settle-local (2026-10-04)\nn = 8 lessons (2 per delay), 12 held events; method `tests/prod/w1c-settle.mjs` against a local `server/serve.mjs` on the Neon test branch, with the early-grade patch applied, reading pending_grade rows. 0 s: 2/3; 1 s: 4/4; 2 s: 2/2; 4 s: 3/3 → 11/12 = 91.7%; the miss was corrected late (1/1). The grader (DeepSeek-V4-Pro) took 0.67-1.47 s per target in the server log. Sandbox → Azure network adds latency that production (eastus2) does not have; the plan's 30-lesson production run is still owed.",
-  "rejected": "## w1c-rejected-oracle-as-ceiling (2026-10-04)\nTried: X1 oracle-prober = the engine with every shape, every kit field and a grader that returns the true label. Result: bkt2 0.683 vs engine 0.674, cfrag 0.476 vs 0.470. Grading noise is not what limits the ladder on this simulator, so this oracle is a weak ceiling (\"frac of oracle\" near 1 means little). A stronger oracle (one that also chooses the probe from the hidden truth) is needed before X1 can say how far the engine is from the best possible."
+  "decisions": "## w1c-settle-beside-classifier (2026-10-04)\nFixer finding: the settle did not work on the tree (0/4 at a 0 s reply) because the grade started after commit and the 600 ms wait sat in front of the classifier. Now, in `server/comprehension/seam-patches/w1c-lesson-early-grade.patch` (W1-A's `lesson.js`; the main loop applies it): (1) when the child is answering a pending why, `later.js pregrade(lesson.id, gradeRequestFor(...))` starts the R-EXP calls before classification; `gradeLater` adopts them by lesson x request fingerprint (never a guessed event id), so nothing is graded twice; (2) `launchGrades(next)` right after planning (idempotent with the post-commit call); (3) `awaitSettled(heldIds, 600, { until: classifier })` starts before the classifier and ends at max(600 ms, classifier), capped at `SETTLE_CAP_MS` 2.5 s; the speculative replies plan on what is in, the real plan re-reads the carried events. The turn never waits longer than the old serial 600 ms; measured p90 wait 2 ms. A pregrade whose answer turns out not to be a why costs up to 4 dropped R-EXP calls. **Reverse if** production settle at 0 s stays < 95% over 30 lessons (then a faster grader deployment for R-EXP), or speculation hit rate falls measurably after the patch (the carried re-read can change the plan key).\n\n## w1c-grader-hedge (2026-10-04)\n`later.js hedgedGrade`: a call still out after `HEDGE_MS` 1.8 s gets one identical duplicate on the same chain; the first real verdict wins, an NA waits for the other call. Result carries `hedged: true` and `ms` from the first call; counters in `gradeHedgeStats()`. Extra spend: only the tail (in the local runs, events whose slowest target exceeded 1.8 s: 6/46). **Reverse if** the grader deployment's tail shortens so hedges stop winning (gradeHedgeStats hedgeWon/hedged < 0.2), or if grading turns out non-deterministic enough that first-wins biases labels (compare hedged vs unhedged label rates).\n\n## w1c-test-accounts-no-population-posterior (2026-10-04)\n`session.js resolutionStmt`: the attempt update returns `test_account` (its child's guardian email ~* '@taxila\\.test$') and the arm_posteriors insert skips it. The attempt row itself still resolves and is rewarded (so the acceptance can read it). **Reverse if** test traffic is ever moved to a separate database (then the guard is redundant, not wrong).\n\n## w1c-late-keeps-source-weight (2026-10-04)\n`lateEvent` ids a correction of a game/module held event `<id>:late:<via>`; `bktr.js sourceOf()` maps via 'late' back to that source for `temper()`. kt_evidence.via stays 'late' (the 012 constraint), so no migration. Dialogue corrections keep `<id>:late`. **Reverse if** a schema change gives kt_evidence a source column (then store it there).\n\n## w1c-real-clock-for-process-state (2026-10-04)\n`later.js` uses `testclock.js realNow()` for PENDING ages, the sweep and settle deadlines. The global Date patch itself stays (scoped by AsyncLocalStorage); the correction's own belief time still reads the child's (shifted) clock, which is right for a test child. **Reverse if** the Date patch is replaced by explicit per-child now (then realNow is the default).\n",
+  "measurements": "## w1c-settle-local-2 (2026-10-04)\nn = 22 lessons, 46 held why/teach-back events; method `tests/prod/w1c-settle.mjs` (W1C_SETTLE_DELAYS per run, 6+6/4/3/3 lessons at 0/1/2/4 s) against a local `server/serve.mjs` (TAXILA_DB=test) with `w1c-lesson-early-grade.patch` (pregrade + beside-classifier) and `w1c-state-reteach.patch` applied in a scratch copy, plus the grader hedge; settled = pending_grade row with results and no fallback_at. 0 s 27/27, 1 s 8/8, 2 s 5/5, 4 s 6/6 = 46/46 (100%); 0 late corrections needed. Server `[settle] turn` waits: n 41, p50 1 ms, p90 2 ms, max 469 ms. Grader latency per event (slowest target, pending_grade results[].ms) hedged: n 46, lognormal median 1219 ms, sigma 0.35, p90 2439, max 2988 ms. Same harness before the hedge (two runs): 0 s 7/9 then 11/12; unhedged latency n 29, median 1440, sigma 0.63, p90 4571, max 11028 ms. Sandbox -> Azure; production (eastus2) still owes the 30-lesson run.\n\n## w1c-live-sim-headline-2 (2026-10-04)\nn = 4,320 child-concepts per row per family (24 personas x 30 seeds x 6 concepts x 5 sessions); method `node evals/comprehension-sim/run.mjs --seeds 30` in four chunks merged with `--merge` -> `evals/comprehension-sim/results/comp-sim-2026-10-04-w1c-fix.json`. Settle model fitted to w1c-settle-local-2 (hedged median 1220 ms, sigma 0.35; beside-classifier wait; gap terms [U]); live_presettle models the old regime (post-commit start, unhedged fit, no wait). live: bkt2 macro 0.496 (after3 0.478), understood found 0.022, false mastery 0, verbal gap 55.1 pp, settle 1.00, 0.699 of oracle; cfrag 0.412, 0.004, 0.001, 39.3 pp, 0.764 of oracle. live_presettle: 0.468 / 0.409 (sim settle 0.89 includes child think time; the real 0 s case was 0/5). engine 0.674 / 0.470; oracle-prober 0.710 / 0.539; engine+perfect grader 0.682 / 0.472. Divergence engine-live 0.178 (band 0.185+-0.03) and 0.058 (0.040+-0.03): in band. Battery valid in both families (every MUST_FAIL row fails >= 1 bar; VC2, VC4 differential SEEN). Between-policy RNG noise is ~+-0.02 (policy name seeds the child stream). Simulated, author-set gains.\n\n## w1c-oracle-prober (2026-10-04)\nSame run. X1 = the engine's scheduler offered only the facets whose belief is > 0.3 from the hidden truth bit (after forgetting), plus a perfect grader, same budget and eligibility. bkt2 0.710 (false mastery 0.003, probes 3.11 per concept-session) vs engine 0.674 (0.024, 4.42); cfrag 0.539 (0.012, 3.29) vs 0.470 (0.040, 4.60).\n\n## w1c-reteach-descent-local (2026-10-04)\nn = 1 scripted lesson (30 turns, always wrong, c5-maths-ch02-t01); method `tests/prod/w1c-reteach.mjs` against the patched local server, reading reteach_attempts, lesson.state and arm_posteriors on the test branch: attempts gen:story -> gen:pictorial (two_fails_post_rung3, thompson); state failedArms s1 = [gen:story, gen:pictorial, descent:c4-maths-ch05-t01-s1], parked [s1]; +1 d start resolves both failed/final with reward and cluster; arm_posteriors n unchanged. 13/13 checks (two runs: arms story→pictorial and story→worked, both then descent→park).\n\n## w1c-three-day-local (2026-10-04)\nn = 1 test account, 4 lessons over +0/+1/+2/+3 d; method `tests/prod/w1c-three-day.mjs` against the patched local server (test branch). 22/22 checks + 1 warn: +1 d lesson on c5-maths-ch01-t02 opens with c5-maths-ch01-t01-i14, lesson.state pendingProbe C31/delayed_check; answered correct; card s1 shallow (2 -> 3 chips; state unchanged); +2 d reasons -> s1 fragile; +3 d c5-maths-ch02-t01 opener asks c5-maths-ch01-t01-i03 (C31). Real account: 403 on read and set.\n",
+  "rejected": "## w1c-rejected-serial-settle-after-commit (2026-10-04)\nTried, in order, on the local harness (0 s reply is the hard case): the W0 seam as committed (grade after commit, 600 ms wait before the classifier): 0/4 at 0 s (fixer run). + early launch at plan time: 11/12 overall, 2/3 at 0 s (builder run). + settle beside the classifier: 7/9 at 0 s (misses waited 649 ms: fast classifier, grade still out). + pregrade before classification: 11/12 at 0 s, the misses were the grader's tail (4.6 s, 7.0 s, 11.0 s on the same deployment). Only pregrade + beside-classifier + hedge reached 27/27 at 0 s. Lengthening the serial wait was not tried: it adds its full length to every turn after a why.\n",
+  "open": "## w1c-delayed-check-cannot-lift-shallow (2026-10-04)\nBUILD-PLAN W1-C acceptance reads \"+1 d: the C31 check fires in the opener, and a correct answer moves the state above shallow\". The check fires and is answered right (w1c-three-day-local), but the ladder leaves shallow only with U >= U_FRAGILE; a delayed check is K/D evidence. The test now reports this as a warn and shows the rise from reasons separately instead of borrowing it. Decision needed (owner / W3-A): should a delayed first-attempt success carry U weight? Until then the acceptance item as written cannot pass.\n\n## w1c-late-double-count-reports (2026-10-04)\n`server/reports/*` count the fallback event and its `<id>:late` correction as two events. W2-A (one parent truth) should treat kt_evidence via='late' as a correction of its parent id (strip `:late[:via]`), not a new event.\n"
  }
 }

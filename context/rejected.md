@@ -891,3 +891,41 @@ Tried: pixiv's VRM1 sample, arms solved down from T-pose, head 0.88x and eye are
 <!-- merged from inbox/w1-c.json -->
 ## w1c-rejected-oracle-as-ceiling (2026-10-04)
 Tried: X1 oracle-prober = the engine with every shape, every kit field and a grader that returns the true label. Result: bkt2 0.683 vs engine 0.674, cfrag 0.476 vs 0.470. Grading noise is not what limits the ladder on this simulator, so this oracle is a weak ceiling ("frac of oracle" near 1 means little). A stronger oracle (one that also chooses the probe from the hidden truth) is needed before X1 can say how far the engine is from the best possible.
+
+
+<!-- merged from inbox/w1-a.json -->
+## g-praise-2-any-mention
+2026-10-04. Tried: after a right answer, flag any acknowledgement sentence that holds a wrong option's number and not the key's digits (W1-A G-PRAISE-2 v1). Broke: the class-2 distractors are small numbers like 1, so specific praise that explains the reasoning was flagged. That cost a rewrite call, and then the "why" was stripped ("8 ke baad 1 aur chappal" -> "Bilkul sahi!"). The key said as a word ("nau") still read as missing. Replaced by g-praise-2-result-shaped.
+
+
+<!-- merged from inbox/w1-b.json -->
+## w1b-rj-warmer-on-start
+Tried: registering the turn-path warmer inside `forgeSeam.prefetchLessonFills`, on the first lesson start a process serves. This replaced an import-time registration that made pure Director tests fire real fills. What broke: `wantLessonFill` does nothing without a warmer, so a replica that never served a start never warmed a miss. A replica started by a restart, deploy or scale-out gave its in-progress lessons no G1 fills for their whole remaining length. The code comment "misses once, then warms itself" was false in exactly the case it described. Now: registered at import, but not under NODE_TEST_CONTEXT, and only for uuid lesson ids.
+
+## w1b-rj-sampled-screen-check
+Tried: proving that a failed module stops being a screen target by checking that the next teacher line has no screen reference (`refersToScreen`). What broke: it PASSED on the unwired server, which still held the failed module, because the model simply did not mention the screen that turn. A sampled LLM line is not a test of the mechanism. Now `w1b-tray` asserts the mechanism: no module tray, `lesson.state.module` cleared, and the engine in `failedEngines`. It samples three lines only when nothing is on screen. Likewise, the G1 "claim ignored" check had only asserted that some `via = 'module'` row existed, which a server trusting the claim would also have written. It now asserts the row's outcome in both directions.
+
+
+<!-- merged from inbox/w1-c.json -->
+## w1c-rejected-serial-settle-after-commit (2026-10-04)
+Tried, in order, on the local harness (0 s reply is the hard case): the W0 seam as committed (grade after commit, 600 ms wait before the classifier): 0/4 at 0 s (fixer run). + early launch at plan time: 11/12 overall, 2/3 at 0 s (builder run). + settle beside the classifier: 7/9 at 0 s (misses waited 649 ms: fast classifier, grade still out). + pregrade before classification: 11/12 at 0 s, the misses were the grader's tail (4.6 s, 7.0 s, 11.0 s on the same deployment). Only pregrade + beside-classifier + hedge reached 27/27 at 0 s. Lengthening the serial wait was not tried: it adds its full length to every turn after a why.
+
+
+<!-- merged from inbox/w1-d.json -->
+## w1d-worker-image-never-bootable
+Dockerfile.worker copied server/, shared/, data/ but not db/migrations/; the worker's boot check lists db/migrations/*.sql and threw `ENOENT scandir /app/db/migrations/` on every start (first ACA deploy, 2026-10-04: revision Failed/Unhealthy, 6 ContainerTerminated). The worker had never been deployed, so the image was never booted. Fixed (COPY db/migrations). Lesson: an image is untested until it has booted once on its target.
+
+## w1d-worker-track-unhandled-rejection
+`const track = (p) => { inflight.add(p); p.finally(() => inflight.delete(p)); return p; }`: finally() returns a new promise that re-rejects; nothing handled it, so ANY step() failure (seen: ChildNotFound for a child erased between the dirty scan and its step) crashed the worker process. Fixed with `.catch(() => {})` on the bookkeeping branch; callers still handle `p`.
+
+## w1d-deploy-pinned-latest-not-serving
+The first canary deploy pinned traffic to `latestReadyRevisionName` while creating the new revision. After a --rollback the latest-ready revision is the one rolled back FROM, so the canary phase silently moved 100% back onto it (scratch app, 2026-10-04: the deploy then deactivated the revision that had been serving). The serving revision is now read from the ingress traffic table.
+
+## w1d-beacon-sendbeacon-through-proxy
+src/app/beacon.ts first used navigator.sendBeacon(Blob). Through the sandbox's HTTP proxy Chromium aborted the beacon (net::ERR_ABORTED) while `fetch(..., {keepalive: true})` with the same body got 204 (2026-10-04). Some school and office networks proxy too; the beacon now uses keepalive fetch and falls back to sendBeacon only where fetch is missing.
+
+
+<!-- merged from inbox/w1-f.json -->
+## w1f-rejected-spa-404
+What was tried: meeting "`/assets/teacher-bakeoff/*` returns 404" by moving the files out of `public/`.
+What broke: `server/serve.mjs` answers every missing path, including `/assets/*`, with `index.html` and status 200, so the old URLs return 200 text/html. The identities are unreachable, since no GLB bytes are served, but the status is not 404. A strict 404 needs `serve.mjs` to skip the SPA fallback for paths under `/assets/`. That file is not in W1-F's paths.

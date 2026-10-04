@@ -2145,3 +2145,84 @@ facetWeight now uses temper(ev) alone. The engine sim moved bkt2 0.659 → 0.674
 
 ## `foundry-w2-deployments-2026-10-04` (2026-10-04)
 The main loop created the W2 Foundry deployments itself under SP Contributor: taxila-fast-bg (gpt-5.6-luna 500), taxila-studio-sol (gpt-5.6-sol 500), gpt-5.6-terra 500->1000, taxila-realtime-dz (gpt-realtime-2.1 DataZoneStandard 10), taxila-gpt6 (gpt-6-sol 500), taxila-flux2 1->4, and the private voice-bank container. Why: they were owner actions in BUILD-PLAN §10 that needed no quota request, and W2 Studio/voice streams depend on them. Reverse if a deployment shows zero use after W2 exits or its quota is needed elsewhere.
+
+## `owner-india-region-2026-10-04` (2026-10-04)
+Owner: users are India-only, move production to Azure South India, database option (a) Azure PostgreSQL Flexible in Chennai (Neon has no India region; nearest is Singapore). Central India was checked and rejected: its Foundry catalogue lists 20 models and none of ours; South India lists almost all, incl. MAI-Transcribe-2-Streaming and the gpt-6 family. gpt-image-2/2.5 and gpt-4o-mini-tts are absent there and stay on eastus2. Reverse if India-side latency does not improve or South India quota cannot carry the live lanes. Runbook: docs/ops/INDIA-MOVE.md.
+
+
+<!-- merged from inbox/w1-a.json -->
+## g-praise-2-result-shaped
+Fixer review of W1-A (2026-10-04) reproduced v1 false positives with key 9 and wrong options [1, 10]. "Bilkul sahi! 8 ke baad 1 aur chappal, toh count aage badha." became "Bilkul sahi!". "Shabaash, tumne 1 chappal ko bhi gina." was removed. "Sahi! 10 se ek kam." was flagged. Now, in say.js correctsRight, a sentence is a correction only when a wrong option is the result: either (a) it follows a result word (isliye / toh / so / answer / jawab / uttar / = / matlab / hoga / ...) and closes its clause or takes a copula ("isliye 10.", "jawab 10 hai", "toh 10"), or (b) it comes before a copula ("10 hota hai", "10 tha", "10 is the answer"). The key and the wrong options also match their number words (romanised Hindi, English, Devanagari, 0-20), so "haan nau, 10 nahi" counts as a contrast. A sentence under 4 words is never treated as "mostly the next question". Before this, "Jawab 10 hai." was skipped whenever the next prompt held "10" and "hai". The false positives above are now negatives in tests/director-truth.test.mjs. The local class-2 run kept "bilkul, 9 chappal hui".
+**Reverse if:** a listening review or guard.final shows corrections of right answers that use none of these shapes (then add the shape), or a correct praise line is still stripped (then narrow the lead word list; "toh" and "is" are the broadest).
+
+## help-row-needs-no-distress
+lesson.js decided help from chipId alone. A help chip id that came with distress words was stored as "[help: hint]", which dropped the child's words from the transcript and the safeguarding record, and the reply model was told it was "not an answer". classifyFast already fell through to normal classification on distress. The route now uses the same predicate: help = helpOf(chipId) && !scanSafety(childText).distress. The real client sends only fixed labels, so only a non-standard client can reach this path. It sits next to the child-safety floor.
+**Reverse if:** never on safety grounds. Revisit only if scanSafety gains a false-positive family that matches the fixed help labels themselves.
+
+## tap-and-type-device-local
+BUILD-PLAN W1-A item 9 asks for "Tap and type only" in Controls, per child. It ships as a localStorage pref on the parent's device, and the copy says "on this phone". The fix is a child_controls column read at lesson start, which needs a migration number not allotted in W1.
+**Reverse if:** W2 allots the migration. Then move the setting server-side and delete the device pref.
+
+
+<!-- merged from inbox/w1-b.json -->
+## w1b-turn-warmer-at-import
+**The turn-path Forge warmer is registered when `server/forge/seam.js` is imported by the live server (serve.mjs -> index.js -> routes/lesson.js -> seam.js), not on the first lesson start.** A replica that served no start (scale-out, restart, a deploy with lessons in progress) now misses an item once and warms it for its next posing, which is what `w1b-g1-lesson-table` already claimed. It is not registered at import under the test runner (`NODE_TEST_CONTEXT`, which `node --test` sets for `npm test`), because `npm test` imports every file into one process and pure Director tests would fire real fills; a test that drives `prefetchLessonFills` still registers it as before. `FORGE_TURN_WARM=off` disables it anywhere. The default warmer warms only uuid lesson ids, so evals that step lessons with made-up session ids (`evals/lesson-truth.mjs` "eval") never fire fills. Pinned by `tests/forge-turn-warm.test.mjs` (fresh processes). The fill table is still process memory: a deploy drops in-progress lessons' fills, and each item then misses once. **Reversal:** production shows turn-path warms costing more than they serve (warmed fills never posed again in more than about 80% of cases), or the fill table moves to the DB cache (then the warmer writes there).
+
+## w1b-coverage-gate-metric
+**The W1-B coverage gate is hint coverage**, as BUILD-PLAN §3 wrote it: c4-c7 maths >= 105/141, science >= 21, EVS >= 6, plus 0 bound items disagreeing with the frame's logic. `evals/engines-coverage.mjs` now prints PASS/FAIL per subject and exits 1 below a threshold. What the live Director mounts (maths 99/141, science 21, EVS 11) is printed beside it and not gated: some hint-resolved topics have no item the planner reaches with a mount (show moves on topics whose only engine needs an item). The production M1 probe reports catalog-bound (goal `item:`) and G1 (goal `g1:`) mounts separately per maths lesson, counts either as item-bound, and WARNs on a G1-only maths lesson (c6-maths-ch07, c7-maths-ch08 in the local run). **Reversal:** the production probe shows more than a quarter of maths lessons with no catalog-bound mount, or the owner's O5a review asks for the Director-mount metric; then the gate moves to `director` and its threshold is re-set from that run.
+
+
+<!-- merged from inbox/w1-c.json -->
+## w1c-settle-beside-classifier (2026-10-04)
+Fixer finding: the settle did not work on the tree (0/4 at a 0 s reply) because the grade started after commit and the 600 ms wait sat in front of the classifier. Now, in `server/comprehension/seam-patches/w1c-lesson-early-grade.patch` (W1-A's `lesson.js`; the main loop applies it): (1) when the child is answering a pending why, `later.js pregrade(lesson.id, gradeRequestFor(...))` starts the R-EXP calls before classification; `gradeLater` adopts them by lesson x request fingerprint (never a guessed event id), so nothing is graded twice; (2) `launchGrades(next)` right after planning (idempotent with the post-commit call); (3) `awaitSettled(heldIds, 600, { until: classifier })` starts before the classifier and ends at max(600 ms, classifier), capped at `SETTLE_CAP_MS` 2.5 s; the speculative replies plan on what is in, the real plan re-reads the carried events. The turn never waits longer than the old serial 600 ms; measured p90 wait 2 ms. A pregrade whose answer turns out not to be a why costs up to 4 dropped R-EXP calls. **Reverse if** production settle at 0 s stays < 95% over 30 lessons (then a faster grader deployment for R-EXP), or speculation hit rate falls measurably after the patch (the carried re-read can change the plan key).
+
+## w1c-grader-hedge (2026-10-04)
+`later.js hedgedGrade`: a call still out after `HEDGE_MS` 1.8 s gets one identical duplicate on the same chain; the first real verdict wins, an NA waits for the other call. Result carries `hedged: true` and `ms` from the first call; counters in `gradeHedgeStats()`. Extra spend: only the tail (in the local runs, events whose slowest target exceeded 1.8 s: 6/46). **Reverse if** the grader deployment's tail shortens so hedges stop winning (gradeHedgeStats hedgeWon/hedged < 0.2), or if grading turns out non-deterministic enough that first-wins biases labels (compare hedged vs unhedged label rates).
+
+## w1c-test-accounts-no-population-posterior (2026-10-04)
+`session.js resolutionStmt`: the attempt update returns `test_account` (its child's guardian email ~* '@taxila\.test$') and the arm_posteriors insert skips it. The attempt row itself still resolves and is rewarded (so the acceptance can read it). **Reverse if** test traffic is ever moved to a separate database (then the guard is redundant, not wrong).
+
+## w1c-late-keeps-source-weight (2026-10-04)
+`lateEvent` ids a correction of a game/module held event `<id>:late:<via>`; `bktr.js sourceOf()` maps via 'late' back to that source for `temper()`. kt_evidence.via stays 'late' (the 012 constraint), so no migration. Dialogue corrections keep `<id>:late`. **Reverse if** a schema change gives kt_evidence a source column (then store it there).
+
+## w1c-real-clock-for-process-state (2026-10-04)
+`later.js` uses `testclock.js realNow()` for PENDING ages, the sweep and settle deadlines. The global Date patch itself stays (scoped by AsyncLocalStorage); the correction's own belief time still reads the child's (shifted) clock, which is right for a test child. **Reverse if** the Date patch is replaced by explicit per-child now (then realNow is the default).
+
+
+<!-- merged from inbox/w1-d.json -->
+## w1d-gated-canary-deploys (2026-10-04)
+`scripts/deploy-azure.mjs` (BUILD-PLAN W1-D item 1): `--gate` runs `npx tsc -b && npx vite build && npm test && node scripts/check-prompt-budget.mjs` on a CLEAN tree and stamps `node_modules/.cache/taxila-gate/<sha>.json` (infra/gate.mjs); a deploy without a passing stamp, or a successful `gates` check run on GitHub (.github/workflows/gates.yml), is refused, also in `--dry-run`. A dirty-tree gate run can block but never counts as evidence. The app moves to Multiple revision mode: the new revision (1 vCPU/2 GiB, liveness /api/health, readiness /api/health?ready=1) gets 0% and label `canary`, `tests/prod/w0-smoke.mjs` runs against `https://<app>---canary.<domain>`, then traffic moves 100%; the old revision keeps label `previous` and stays active; older ones are deactivated. A failed smoke deactivates the new revision. Verified on the scratch app taxila-gatetest (test DB): a deliberately failing test blocked `--gate --dry-run --allow-dirty` ("gate FAILED: npm test exited 1. Refusing to deploy"), canary deploys passed their smoke, rollback 14-15 s. **Reverse if** a managed progressive-delivery feature on ACA gives a 0% canary with session affinity, or two active revisions cost more than the rollback time they buy.
+
+## w1d-no-session-affinity-in-multiple-mode (2026-10-04)
+ARM refused `stickySessions: {affinity: sticky}` on a Multiple-mode app: `ContainerAppInvalidIngressStickySessionRevisionMode: Sticky Session is not supported for Multiple revision mode` (taxila-gatetest, 2026-10-04). Canary + one-PATCH rollback won over affinity; at owner-testing scale taxila-web runs 1 replica. `TAXILA_STICKY=1` requests it (it will be refused until the mode changes). **Reverse if** taxila-web routinely runs >1 replica before prewarm / PENDING / limiters move to shared state: then either cap maxReplicas at 1 or go back to Single mode with affinity and accept a slower rollback (re-deploy of the previous image, ~90 s).
+
+## w1d-app-opened-at-lesson-start (2026-10-04)
+`server/conductor/hooks.js` onLessonStart returns two ingest statements, app.opened {device web, replicaId lesson, bootId d<learning day IST>} then lesson.started {kind from purpose: lesson→live, practice→practice, doubt→homework; lane from mode: voice→realtime, cascade→cascade, text→tap}. app.opened arms day_start/night wakeups and does the first-open replan (decide.js). Measured: the w1d-conductor e2e (Neon test branch, 2026-10-04) produced app.opened/lesson.started/lesson.ended, conductor_state cursor 6/6, a day_plan v1, and after +1 d report.daily + parent.letter listed and opened in the parent reports area. **Reverse if** the home screen calls planToday() (then this app.opened is a redundant extra key per day and can go).
+
+## w1d-turn-commit-no-event (2026-10-04)
+Per-turn events would add a child_seq lock and a fold to every turn for nothing the day plan reads. **Reverse if** the Conductor gains a per-turn input (e.g. a live budget governor reading turn counts).
+
+## w1d-inline-step-by-timer (2026-10-04)
+conductor-hosting-lanes asks for one inline step() after each ingest. lesson.js is W1-A's hot file, so the hooks schedule `kick(childId)` 400 ms later on an unref'd timer (it inherits AsyncLocalStorage, so a test account's shifted clock). Only when NODE_ENV=production or CONDUCTOR_INLINE=on, so unit tests that run routes on a fake DB never open a Conductor pool. **Reverse if** the next seam commit adds an explicit post-commit call (preferred), or the timer's misses (step before commit) show up as fold latency above the worker's 2 s grace.
+
+## w1d-forge-nightly-paused (2026-10-04)
+`server/conductor/handlers.js` re-registers forge.g2.nightly with a handler that returns `paused:w1-d` unless FORGE_G2_NIGHTLY=on. The fold still enqueues it, so replay and decide.js are unchanged. **Reverse when** W3-D delivers next-day Forge to children.
+
+## w1d-worker-on-test-clock (2026-10-04)
+Without it a test child's report.daily (due 04:10 tomorrow in shifted time) waits a real day, and the worker would fold with a `now` behind events already folded. offsets.js reads every positive test_clock offset once per 5 s, claimJobs adds the offset to now() for that child's run_after (only when test_clock exists), and step()/handlers run in runWithOffset. **Reverse if** the test clock is removed or moves into the database (then use the DB's own shifted now).
+
+
+<!-- merged from inbox/w1-f.json -->
+## w1f-rig-runtime-behind-flag
+**The licensed/pipeline GLB rig runs in lessons behind `face.rig` (default off).** `src/avatar/three/rig.ts`, `shaders.ts`, `presets.ts` and `contract.ts` port `scripts/character/bakeoff/merged/viewer/*` behind the `HeadRig` contract. `Stage3D` gets a rig mode: a hand-made opaque WebGL2 context, Neutral tone mapping and the look's own light rig. `TutorFace` paints the look's plate (`PlatePerson`) at t = 0, loads the GLB after the page is idle, and cross-fades the canvas in only when her silence reaches 300 ms. After 8 s it stays on the plate. Every failure (load, timeout, context loss, probe or governor demotion) falls to D, which is the same look. When the flag is on, `Plate2D` renders the look plate on every surface (landing, picker, Hello, lesson). (2026-10-04)
+- Rationale: teacher-anim gap 1 (the rig was built but never loaded) blocks the owner testing a human-like face. The runtime does not depend on which face is chosen, because the contract is the seam.
+- Flag: localStorage `tx.flag.face.rig` (`"1"`/`"0"`) for one device, which is how the prod test and the owner turn it on. `VITE_FACE_RIG=1` turns it on for the whole deploy (W2-D, after O1). A remote per-account flag needs a server field that is not in W1-F's paths.
+- Reverse if: the device lab (E-T2/E-T7) shows B+ or B-lite missing the tier bars on the declared phones even after the governor runs, or the owner prefers the procedural head (teacher-anim §5.2). Either way the flag stays off.
+
+## w1f-per-look-shading-is-data
+**Each look declares its art fixes in its runtime.json, and they switch shader defines.** The fields are `shading.{profile,pupil,lidShadow,hairKK,cardRim,hairLumaGate}`, `eyePass` and `mouthInterior`; `EYE_TEX` is detected from the GLB. The merged bake-off, the candidate c1 and iteration 2 had each forked the viewer. Now one runtime loads all of them. With nothing declared, the iteration-2 shading runs exactly as G9 solved it. (2026-10-04)
+- Reverse if: a face needs a shading change that cannot be stated as one of these flags or uniforms. Add a flag; never fork per look.
+
+## w1f-versioned-look-urls
+**Looks are published to `/assets/teacher/<look>/<lookRev>/` with content-hashed names, using `node scripts/character/publish-look.mjs --src <contract dir>`.** The published files are B+, B-lite, the plate, the mouth strip, the blink overlay and runtime.json. Hashed names are immutable under `serve.mjs`'s existing rule. `src/avatar/looks.gen.json` is bundled, so the plate needs no lookup round trip. H.glb is not shipped. Bake-off identities moved to `art/character/bakeoff-assets/`, and the pipeline output moved to `art/character/looks-out/`. (2026-10-04)
+- Reverse if: looks must change without a client rebuild. In that case fetch the index at runtime and accept one extra round trip before the plate.

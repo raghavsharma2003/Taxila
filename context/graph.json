@@ -5717,6 +5717,398 @@
    "title": "Main loop created the W2 Foundry deployments itself (SP Contributor): taxila-fast-bg (gpt-5.6-luna 500), taxila-studio-sol (gpt-5.6-sol 500), gpt-5.6-terra raised 500->1000, taxila-realtime-dz (gpt-realtime-2.1 DataZoneStandard 10), taxila-gpt6 (gpt-6-sol 2026-09-22, 500), taxila-flux2 raised 1->4; private Blob container voice-bank on taxilaforge. Closes BUILD-PLAN O13a/b/c, O14 (twin), O15 (FLUX part), O17 (voice-bank), O26. Reverse if a deployment shows zero use after W2 exits or quota is needed elsewhere.",
    "at": "2026-10-04",
    "source": "inbox/foundry-deployments-w2.json"
+  },
+  {
+   "id": "owner-india-region-2026-10-04",
+   "kind": "decision",
+   "title": "Owner directive: users are India-only, so production moves to Azure South India (Chennai): Foundry/Speech, Container Apps, and Azure PostgreSQL Flexible in the same region replacing Neon prod (Neon kept as rollback and for test branches). Central India rejected: its Foundry catalogue has 20 models, none we use. Image generation and gpt-4o-mini-tts stay in eastus2 (not offered in South India; nothing waits on them live). Reverse if measured India-side turn latency does not improve, or South India quota cannot carry the live lanes.",
+   "at": "2026-10-04",
+   "source": "inbox/owner-india-region.json"
+  },
+  {
+   "id": "g-praise-2-result-shaped",
+   "kind": "decision",
+   "title": "G-PRAISE-2 flags a wrong option only when it is stated AS the result (after a result word closing its clause, or before a copula), never a number used in the explanation; the key said in words counts as the key",
+   "at": "2026-10-04",
+   "source": "inbox/w1-a.json"
+  },
+  {
+   "id": "g-praise-2-any-mention",
+   "kind": "rejection",
+   "title": "G-PRAISE-2 v1: any sentence naming a wrong option's number without the key's digits was a correction. It stripped explanatory praise on right answers",
+   "at": "2026-10-04",
+   "source": "inbox/w1-a.json"
+  },
+  {
+   "id": "help-row-needs-no-distress",
+   "kind": "decision",
+   "title": "A help chip id is a help turn (system row, 'tapped a help button' said) only when the words with it do not trip scanSafety; otherwise the child's row and real words are stored and given to the reply model",
+   "at": "2026-10-04",
+   "source": "inbox/w1-a.json"
+  },
+  {
+   "id": "tap-and-type-device-local",
+   "kind": "decision",
+   "title": "Known gap: Controls' 'Tap and type only' is a device-local pref (prefs.quiet keyed by childId), so a parent setting it on their own phone does not reach the child's tablet. Server-side child_controls column deferred to W2 (needs an allotted migration number)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-a.json"
+  },
+  {
+   "id": "w1a-fixer-local-acceptance-2026-10-04",
+   "kind": "measurement",
+   "title": "W1-A after the fixer pass, local server on the Neon test branch: battery 16/16 (incl. a new independent ends-on-card check), practice-ask 23/23, young-text 14/14, text-voice 3/3 (p50 211 ms, p90 257 ms, n = 20, sandbox)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-a.json"
+  },
+  {
+   "id": "w1b-turn-warmer-at-import",
+   "kind": "decision",
+   "title": "W1-B fix: the turn-path Forge warmer is registered when server/forge/seam.js is imported by the live server (not on the first lesson start), so a replica that served no start (scale-out, restart, deploy mid-lesson) still warms a G1 miss for the next posing; not registered under the test runner (NODE_TEST_CONTEXT) or with FORGE_TURN_WARM=off, and the default warmer warms only uuid lesson ids (evals' made-up session ids fire nothing)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
+  },
+  {
+   "id": "w1b-coverage-gate-metric",
+   "kind": "decision",
+   "title": "W1-B: the engines-coverage gate is hint coverage (kit hints that resolve to a catalog engine), as BUILD-PLAN §3 wrote it; what the live Director mounts is printed beside it and not gated; evals/engines-coverage.mjs now exits 1 below maths 105 / science 21 / EVS 6 (c4-c7) or on any bound item that disagrees with the frame's logic",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
+  },
+  {
+   "id": "w1b-rj-warmer-on-start",
+   "kind": "rejection",
+   "title": "Registering the turn-path warmer only inside prefetchLessonFills (on a lesson start served by this process): a replica that never served a start never warmed a miss, so lessons moved to it by a restart or deploy got no G1 fills for their remaining length",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
+  },
+  {
+   "id": "w1b-rj-sampled-screen-check",
+   "kind": "rejection",
+   "title": "Proving 'a failed module stops being a screen target' by checking the next teacher line for a screen reference: it passed on the unwired server (the model simply did not mention the screen); w1b-tray now asserts the mechanism (no module tray, lesson.state.module cleared, the engine in failedEngines) and samples 3 lines only when nothing is on screen",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
+  },
+  {
+   "id": "w1b-fix-acceptance-2026-10-04",
+   "kind": "measurement",
+   "title": "W1-B review-fix acceptance, LOCAL serve.mjs on the Neon test branch, 2026-10-04: patched lesson.js (server/forge/seam-patches/w1b-lesson-wiring.patch) w1b-tray 10/10, w1b-mounts 51/52 (only failure: W1-C's prod-w1c-settle guardians on the shared branch; all 8 W1-B accounts deleted); a forged correct:true on a WRONG G1 commit graded wrong (3 lessons, mcq), a RIGHT G1 commit claiming correct:false graded right (4 lessons); unpatched lesson.js w1b-tray 4/7 (tray module, state.module kept, failedEngines empty); tests/forge-turn-warm.test.mjs 3/3 and fails 2/3 with the import-time registration removed",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
+  },
+  {
+   "id": "w1b-open-lesson-wiring-guard",
+   "kind": "open",
+   "title": "The W1-B lesson.js call sites are still not applied (lesson.js is W1-A's hot file). The patch is regenerated against the current lesson.js at server/forge/seam-patches/w1b-lesson-wiring.patch (git apply --check clean), and tests/module-wiring.test.mjs FAILS until it lands, so the gap can no longer pass npm test silently",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
+  },
+  {
+   "id": "w1b-open-g1-misconception",
+   "kind": "open",
+   "title": "moduleAnswerOf returns the G1 distractor's misconceptionId, but director/classify.js classifyFast reduces a module answer to correct/incorrect, so the diagnosed misconception never reaches kt_evidence.misconception_id; a small classify.js change for its owner (pass misconceptionId as cls.misconception)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
+  },
+  {
+   "id": "w1b-open-interaction-facts",
+   "kind": "open",
+   "title": "W1-B #6 asks for interaction facts as evidence events tagged source module; only the final graded answer becomes evidence (attempts, reveals and goal_met emit nothing to kt_evidence)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
+  },
+  {
+   "id": "w1c-settle-beside-classifier",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Held-verdict settle, made to work on the real turn: the why's blind grade starts BEFORE the turn is classified (later.js pregrade, adopted by gradeLater by lesson x request), again at plan time if no pregrade (early launch), and the next turn's settle runs BESIDE its classifier (>= 600 ms, as long as the classifier, cap 2.5 s) instead of a serial 600 ms wait in front of it",
+   "source": "inbox/w1-c.json"
+  },
+  {
+   "id": "w1c-grader-hedge",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "R-EXP grader calls still out after 1.8 s are hedged: the identical request is sent once more to the same chain and the first real verdict wins (same model and prompt: changes when a verdict lands, never what it is)",
+   "source": "inbox/w1-c.json"
+  },
+  {
+   "id": "w1c-test-accounts-no-population-posterior",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "A @taxila.test child's re-teach resolutions update its own reteach_attempts rows but never arm_posteriors (the population priors real children's arm choice reads); the guard is in the resolution SQL",
+   "source": "inbox/w1-c.json"
+  },
+  {
+   "id": "w1c-late-keeps-source-weight",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "A late correction of a held event from a game/module turn carries the source in its id (`<id>:late:<via>`); bktr.js temper() reads it back, so the correction weighs x0.5/x0.75 like its event, replay-safe",
+   "source": "inbox/w1-c.json"
+  },
+  {
+   "id": "w1c-real-clock-for-process-state",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Process-wide settle bookkeeping (PENDING ages, sweep, settle deadlines) runs on realNow(), never the test-clock-shifted Date: a test request 60 days ahead swept real children's in-flight verdicts",
+   "source": "inbox/w1-c.json"
+  },
+  {
+   "id": "w1c-settle-local-2",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Held-verdict settle, local server on the Neon test branch with both W1-C seam patches + hedge: 22 lessons, 46/46 held events settled (0 s 27/27, 1 s 8/8, 2 s 5/5, 4 s 6/6); turn settle wait p50 1 ms, p90 2 ms, max 469 ms (n = 41 turns). Grader per event (slowest target) hedged: median 1219 ms, p90 2.4 s, max 3.0 s; unhedged: median 1440 ms, p90 4.6 s, max 11.0 s",
+   "source": "inbox/w1-c.json"
+  },
+  {
+   "id": "w1c-live-sim-headline-2",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "THE comprehension number, re-run with the oracle-prober and the fitted settle model: live bkt2 0.496, cfrag 0.412 (live_presettle 0.468 / 0.409; engine 0.674 / 0.470; oracle-prober 0.710 / 0.539); live = 0.699 / 0.764 of the oracle-prober; divergence in band (0.178 vs 0.185+-0.03; 0.058 vs 0.040+-0.03); battery valid both families",
+   "source": "inbox/w1-c.json"
+  },
+  {
+   "id": "w1c-oracle-prober",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "X1 delivered as an oracle-PROBER (probes chosen from the hidden truth + perfect grader): bkt2 0.710 vs engine 0.674 vs engine+perfect grader 0.682; cfrag 0.539 vs 0.470 vs 0.472, with fewer probes (3.1 vs 4.4 per concept-session)",
+   "source": "inbox/w1-c.json"
+  },
+  {
+   "id": "w1c-reteach-descent-local",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Re-teach on a scripted always-wrong child (local, test branch, state patch applied): gen:story -> gen:pictorial (rerun: gen:worked) -> prerequisite descent to c4-maths-ch05-t01-s1 -> park, read from lesson.state; both attempts resolve failed/final at the next start; arm_posteriors unchanged for the test account",
+   "source": "inbox/w1-c.json"
+  },
+  {
+   "id": "w1c-three-day-local",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Three days on the test clock (local): +1 d lesson on ANOTHER topic opens with the day-0 item as C31/delayed_check (lesson state), answered right; the card's chips change but the state stays shallow; +2 d reasons lift it to fragile; +3 d a third topic's opener re-checks day 0 (C31)",
+   "source": "inbox/w1-c.json"
+  },
+  {
+   "id": "w1c-rejected-serial-settle-after-commit",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "A serial 600 ms settle wait in front of the classifier, with the grade started after commit, settles 0/4 at a 0 s reply (fixer run, unpatched tree); early launch at plan time alone 11/12; settle beside the classifier 7/9 at 0 s; + pregrade 11/12 at 0 s but still lost to the grader's 4.6-11 s tail. Only pregrade + beside-classifier + hedge reached 27/27 at 0 s",
+   "source": "inbox/w1-c.json"
+  },
+  {
+   "id": "w1c-delayed-check-cannot-lift-shallow",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "The plan's '+1 d: a correct C31 answer moves the state above shallow' cannot hold: the ladder (state.js) leaves shallow only with U >= U_FRAGILE, and a delayed check is K/D evidence. The card's chips change; the state rises only with a reason. Owner/W3-A to decide whether a delayed success should count toward U",
+   "source": "inbox/w1-c.json"
+  },
+  {
+   "id": "w1c-late-double-count-reports",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "server/reports/* count both a fallback row and its `<id>:late` correction row (parent counts inflated by late corrections): W2-A (one parent truth) to count via='late' as a correction, not a new event",
+   "source": "inbox/w1-c.json"
+  },
+  {
+   "id": "w1d-gated-canary-deploys",
+   "kind": "decision",
+   "title": "deploy-azure.mjs refuses a sha without gate evidence (clean-tree local stamp or a successful `gates` GitHub Actions run), runs taxila-web in Multiple revision mode, smokes the new revision at 0% on its `canary` label URL, keeps the previous revision active as `previous`; --rollback is one traffic PATCH",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-no-session-affinity-in-multiple-mode",
+   "kind": "decision",
+   "title": "Session affinity is NOT enabled on taxila-web: ACA refuses sticky sessions in Multiple revision mode (measured), and the 0% canary + one-PATCH rollback need Multiple mode; per-process state (prewarm, PENDING, limiters) stays a >1-replica risk",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-app-opened-at-lesson-start",
+   "kind": "decision",
+   "title": "onLessonStart ingests app.opened (key app.opened:lesson:d<learning day>) with lesson.started, because nothing in the product calls planToday(); without it no wakeups are armed, so no night fold, report.daily or letter",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-turn-commit-no-event",
+   "kind": "decision",
+   "title": "onTurnCommit ingests nothing: the event catalogue carries the Director's boundary facts only; lesson.ended (or the 3 h stale-lesson clock close) is what the Conductor folds",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-inline-step-by-timer",
+   "kind": "decision",
+   "title": "The inline step after a hooked commit is a 400 ms unref'd timer scheduled by the hook (production only, CONDUCTOR_INLINE overrides), because lesson.js is W1-A's hot file; a kick that beats the commit is a no-op and the worker folds within ~2 s",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-forge-nightly-paused",
+   "kind": "decision",
+   "title": "forge.g2.nightly stays enqueued by the night fold (decide.js and replay unchanged) but its handler completes at once as paused:w1-d unless FORGE_G2_NIGHTLY=on, until W3-D delivers next-day Forge",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-worker-on-test-clock",
+   "kind": "decision",
+   "title": "The worker claims a test child's job against now() + its guardian's test-clock offset and runs that child's step() and job handler inside runWithOffset (server/conductor/offsets.js); real children have no offset",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-probe-fleet-first-run-2026-10-04",
+   "kind": "measurement",
+   "title": "Probe fleet first run (ACA jobs, n=1 run per region): Central India → prod eastus2: /api/health RTT p50 196 ms; page FCP/LCP ~1.7-2.0 s; realtime WebRTC lesson ICE 1.47 s, first teacher audio 3.96 s, child answer transcribed, turn advanced; cascade composite p50 3.41 s (transcribe 1.74 s with a 1 MB WAV upload, turn 1.38 s, TTS first byte 203 ms). eastus2: RTT p50 4 ms, realtime ICE 0.33 s, first audio 1.14 s, cascade p50 1.78 s",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-rollback-timing-2026-10-04",
+   "kind": "measurement",
+   "title": "--rollback on the scratch app taxila-gatetest: 14.7 s and 14.0 s from the command to 3 consecutive /api/health answers from the previous revision (n=2); a full canary deploy of an existing image took 88.6 s, a working-tree build + deploy 153.7-180.4 s",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-restore-drill-2026-10-04",
+   "kind": "measurement",
+   "title": "Neon restore drill: branch restore-drill-2026-10-04 from main (create call → ready ~30 s), infra/restore-drill.mjs: identical row counts on 7 tables, a server on the branch answered readiness db=ok 1.3 s after the script started; 69 s wall from start to a serving app (n=1)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-la-ingest-latency-2026-10-04",
+   "kind": "measurement",
+   "title": "Log Analytics: the forced 500's access-log line was queryable ≤ 36 s after the request (n=2 runs, 15 s polling; TimeGenerated lag ~1 s)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-test-account-sweep-2026-10-04",
+   "kind": "measurement",
+   "title": "Test-account sweep: test branch 146 → 143 deleted, 3 deferred; prod 6 → 0 deleted, 6 deferred by unhandled test safeguarding incidents (the safety-first erasure guard)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-worker-image-never-bootable",
+   "kind": "rejection",
+   "title": "Dockerfile.worker shipped without db/migrations, so the worker's boot check (unappliedMigrations) threw ENOENT and the worker could never start; found on its first ACA deploy (2026-10-04) and fixed",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-worker-track-unhandled-rejection",
+   "kind": "rejection",
+   "title": "worker.mjs track() did p.finally(...) without a catch: any step() rejection (e.g. a child erased between the dirty scan and its step) became an unhandled rejection that killed the whole worker; fixed with .catch on the bookkeeping branch",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-deploy-pinned-latest-not-serving",
+   "kind": "rejection",
+   "title": "The first canary deploy took latestReadyRevisionName as the serving revision; after a --rollback that is the rolled-back revision, so the canary phase pinned 100% onto it (seen on the scratch app). Now the serving revision is read from the traffic table",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-beacon-sendbeacon-through-proxy",
+   "kind": "rejection",
+   "title": "navigator.sendBeacon was aborted (net::ERR_ABORTED) by Chromium through an HTTP proxy while a keepalive fetch of the same body landed 204; the client beacon uses keepalive fetch first",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "open-home-calls-plan-today",
+   "kind": "open",
+   "title": "Nothing calls conductor planToday(): the home screen (server/routes/child.js GET /api/child/plan) reads day_plan but never opens the actor. W1-D bridges with app.opened at lesson start; the owner of child.js (W2-A) should call planToday on home open. Owner: W2-A",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "open-prod-test-incidents-block-sweep",
+   "kind": "open",
+   "title": "The 6 leftover @taxila.test guardians on prod each hold 1-2 unhandled safeguarding incidents from test runs, so erasure (and the sweeper) correctly defers them; a human must mark those test incidents handled, then the nightly sweep removes them. Owner: owner / safeguarding queue",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "open-worker-liveness-rule-enable",
+   "kind": "open",
+   "title": "After the first production taxila-worker deploy: run `TAXILA_WORKER_LIVE=1 node infra/eyes.mjs` to enable the worker-liveness alert and add taxila-worker to the replica-restart alert. The worker refuses to boot on prod until 012/013/015 are applied. Owner: main loop",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "open-route-errors-not-beaconed",
+   "kind": "open",
+   "title": "React Router's errorElement (RouteError) swallows render errors before window.onerror, so a route crash is not beaconed; RouteError should call reportClientError('react', err). Owner: W2-A (src/app/Shell.tsx)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1f-rig-runtime-behind-flag",
+   "kind": "decision",
+   "title": "The GLB rig runtime is ported into src/avatar/three/{rig,shaders,presets,contract}.ts behind HeadRig and the flag face.rig (default off; localStorage tx.flag.face.rig per device, VITE_FACE_RIG at build; any URL with ?facerig=1|0|default writes the device key, so the owner can see the rig for O1 without DevTools; a per-account flag needs a server field): opaque WebGL2 context, the look's own light rig, plate at t = 0, GLB after idle, 8 s timeout, reveal only in her silence >= 300 ms, every failure falls to the SAME look's plate",
+   "at": "2026-10-04",
+   "source": "inbox/w1-f.json"
+  },
+  {
+   "id": "w1f-per-look-shading-is-data",
+   "kind": "decision",
+   "title": "Per-face art fixes (merged eye pass / mouth floors / bounce, candidate photo eyes, card rim, scalp-luma gate, hair KK) are runtime.json data (shading, eyePass, mouthInterior; EYE_TEX detected from the GLB) switching shader defines, never a code fork per look; with none declared the iteration-2 shading runs exactly as G9 solved it",
+   "at": "2026-10-04",
+   "source": "inbox/w1-f.json"
+  },
+  {
+   "id": "w1f-versioned-look-urls",
+   "kind": "decision",
+   "title": "Looks publish via scripts/character/publish-look.mjs to /assets/teacher/<look>/<lookRev>/ with content-hashed file names (immutable under serve.mjs's existing HASHED rule) and a bundled src/avatar/looks.gen.json index; H.glb and every bake-off identity stay out of public/ (art/character/looks-out, art/character/bakeoff-assets)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-f.json"
+  },
+  {
+   "id": "w1f-rig-swiftshader-correctness-2026-10-04",
+   "kind": "measurement",
+   "title": "Local serve.mjs, Chromium SwiftShader with the GPU-spoof arm, slate look: B+ GLB loads, revealed at data-tier=B and still B after 10 s; forced .glb failure -> D with the same look's plate; flag off -> no .glb (w1f-face 14/14, n = 1 run each arm). stage3d chunk 721,786 B raw / 176,882 B brotli-9 (bar 230 KB). public/assets/teacher 25 MB + teacher-bakeoff 52 MB -> 8.2 MB",
+   "at": "2026-10-04",
+   "source": "inbox/w1-f.json"
+  },
+  {
+   "id": "w1f-rejected-spa-404",
+   "kind": "rejection",
+   "title": "(superseded by w1f-assets-404) Builder pass: '/assets/teacher-bakeoff/* returns 404' looked unmeetable from the asset side because server/serve.mjs answers every missing path, /assets/* included, with index.html 200; the builder weakened the check to 'not a GLB' + WARN, which reported PASS while the criterion failed",
+   "at": "2026-10-04",
+   "source": "inbox/w1-f.json"
+  },
+  {
+   "id": "w1f-assets-404",
+   "kind": "decision",
+   "title": "A missing /assets/* path is a 404, never the SPA shell: removed identities and old unversioned look URLs must not answer 200, and a stale hashed chunk fails as a chunk. serve.mjs is W1-D's file, so the change ships as scripts/character/seam-patches/w1f-serve-assets-404.patch for integration to apply; tests/prod/w1f-face.mjs asserts a strict 404 and FAILS until it is applied. Reverse if some client path depends on index.html under /assets/ (none found)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-f.json"
+  },
+  {
+   "id": "w1f-rig-failure-remembered-per-page",
+   "kind": "decision",
+   "title": "A rig failure (8 s timeout, GLB/chunk error, governor or probe demotion to D) is remembered per page by look id (TutorFace rigFailedThisPage): later TutorFace mounts start at D on the same look's plate instead of re-downloading ~1.9 MB against her TTS audio on every desk relayout; a new page load retries. Reverse if field data shows transient failures where a same-page retry would usually succeed",
+   "at": "2026-10-04",
+   "source": "inbox/w1-f.json"
+  },
+  {
+   "id": "w1f-publish-requires-plate",
+   "kind": "decision",
+   "title": "publish-look.mjs refuses (exit 1, before writing) a source without plate/plate.json + plate/mouth/blink webp unless --no-plate: rigLookFor() needs the plate, so a plate-less publish silently sent a tutor back to the procedural head with face.rig on (seen on candidate c4). Backdrop comes from --backdrop, then plate.json/runtime.json 'backdrop', then the pipeline default with a warning",
+   "at": "2026-10-04",
+   "source": "inbox/w1-f.json"
+  },
+  {
+   "id": "w1f-fixer-acceptance-2026-10-04",
+   "kind": "measurement",
+   "title": "Fixer pass, local serve.mjs with the 404 patch (scratch copy) + Neon test branch, Chromium SwiftShader GPU-spoof: w1f-face 30/30 (n = 1 run): strict 404 for bake-off and old unversioned URLs; slate and teal (class-2 Asha) each load B+ and reveal at data-tier=B; forced GLB failure -> D same look and no new GLB request across two relayouts (a remount was not separately confirmed); GLB held 11 s -> D same look, never revealed; flag-on landing / Hello / teacher / child home show only look faces (0 drawn SVG, 0 pre-rig); flag off -> no .glb. avatar-rig unit 16/16 incl. a real MeshoptDecoder decode of all 113 compressed buffer views per GLB (KTX2 not decoded in node)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-f.json"
   }
  ],
  "edges": [
@@ -9674,6 +10066,226 @@
    "src": "w1c-settle-db-by-event-id",
    "rel": "part_of",
    "dst": "w1c-why-decided-by-first-present"
+  },
+  {
+   "src": "g-praise-2-result-shaped",
+   "rel": "supersedes",
+   "dst": "g-praise-2-no-correction-after-right"
+  },
+  {
+   "src": "g-praise-2-result-shaped",
+   "rel": "supersedes",
+   "dst": "g-praise-2-any-mention"
+  },
+  {
+   "src": "w1b-turn-warmer-at-import",
+   "rel": "part_of",
+   "dst": "w1b-g1-lesson-table"
+  },
+  {
+   "src": "w1b-turn-warmer-at-import",
+   "rel": "supersedes",
+   "dst": "w1b-rj-warmer-on-start"
+  },
+  {
+   "src": "w1b-turn-warmer-at-import",
+   "rel": "measured_by",
+   "dst": "w1b-fix-acceptance-2026-10-04"
+  },
+  {
+   "src": "w1b-coverage-gate-metric",
+   "rel": "measured_by",
+   "dst": "w1b-engines-coverage-2026-10-04"
+  },
+  {
+   "src": "w1b-fix-acceptance-2026-10-04",
+   "rel": "supersedes",
+   "dst": "w1b-local-acceptance-2026-10-04"
+  },
+  {
+   "src": "w1b-open-lesson-wiring-guard",
+   "rel": "supersedes",
+   "dst": "w1b-open-lesson-wiring"
+  },
+  {
+   "src": "w1b-open-lesson-wiring-guard",
+   "rel": "blocks",
+   "dst": "w1b-g1-lesson-table"
+  },
+  {
+   "src": "w1b-open-g1-misconception",
+   "rel": "part_of",
+   "dst": "w1b-g1-lesson-table"
+  },
+  {
+   "src": "w1b-open-interaction-facts",
+   "rel": "part_of",
+   "dst": "w1b-planner-one-resolver"
+  },
+  {
+   "src": "w1b-rj-sampled-screen-check",
+   "rel": "part_of",
+   "dst": "w1b-module-failure-clears"
+  },
+  {
+   "src": "w1c-settle-beside-classifier",
+   "rel": "part_of",
+   "dst": "w1c-settle-db-by-event-id"
+  },
+  {
+   "src": "w1c-grader-hedge",
+   "rel": "part_of",
+   "dst": "w1c-settle-beside-classifier"
+  },
+  {
+   "src": "w1c-settle-beside-classifier",
+   "rel": "measured_by",
+   "dst": "w1c-settle-local-2"
+  },
+  {
+   "src": "w1c-settle-local-2",
+   "rel": "supersedes",
+   "dst": "w1c-settle-local"
+  },
+  {
+   "src": "w1c-live-sim-headline-2",
+   "rel": "supersedes",
+   "dst": "w1c-live-sim-headline"
+  },
+  {
+   "src": "w1c-oracle-prober",
+   "rel": "supersedes",
+   "dst": "w1c-rejected-oracle-as-ceiling"
+  },
+  {
+   "src": "w1c-reteach-resolved-at-start",
+   "rel": "measured_by",
+   "dst": "w1c-reteach-descent-local"
+  },
+  {
+   "src": "w1c-test-clock",
+   "rel": "measured_by",
+   "dst": "w1c-three-day-local"
+  },
+  {
+   "src": "w1c-test-accounts-no-population-posterior",
+   "rel": "part_of",
+   "dst": "w1c-reteach-resolved-at-start"
+  },
+  {
+   "src": "w1c-settle-beside-classifier",
+   "rel": "supersedes",
+   "dst": "w1c-rejected-serial-settle-after-commit"
+  },
+  {
+   "src": "w1c-late-double-count-reports",
+   "rel": "caused_by",
+   "dst": "w1c-settle-db-by-event-id"
+  },
+  {
+   "src": "w1c-delayed-check-cannot-lift-shallow",
+   "rel": "caused_by",
+   "dst": "w1c-three-day-local"
+  },
+  {
+   "src": "w1d-no-session-affinity-in-multiple-mode",
+   "rel": "part_of",
+   "dst": "w1d-gated-canary-deploys"
+  },
+  {
+   "src": "w1d-app-opened-at-lesson-start",
+   "rel": "part_of",
+   "dst": "conductor-hosting-lanes"
+  },
+  {
+   "src": "w1d-inline-step-by-timer",
+   "rel": "part_of",
+   "dst": "conductor-hosting-lanes"
+  },
+  {
+   "src": "w1d-worker-on-test-clock",
+   "rel": "part_of",
+   "dst": "conductor-hosting-lanes"
+  },
+  {
+   "src": "open-home-calls-plan-today",
+   "rel": "part_of",
+   "dst": "w1d-app-opened-at-lesson-start"
+  },
+  {
+   "src": "w1d-deploy-pinned-latest-not-serving",
+   "rel": "part_of",
+   "dst": "w1d-gated-canary-deploys"
+  },
+  {
+   "src": "w1f-rig-runtime-behind-flag",
+   "rel": "supersedes",
+   "dst": "avatar-m0-procedural-head"
+  },
+  {
+   "src": "w1f-rig-runtime-behind-flag",
+   "rel": "part_of",
+   "dst": "avatar-v1-stack"
+  },
+  {
+   "src": "w1f-rig-runtime-behind-flag",
+   "rel": "constrains",
+   "dst": "owner-rejects-generated-faces"
+  },
+  {
+   "src": "w1f-per-look-shading-is-data",
+   "rel": "part_of",
+   "dst": "w1f-rig-runtime-behind-flag"
+  },
+  {
+   "src": "w1f-per-look-shading-is-data",
+   "rel": "constrains",
+   "dst": "teacher-presets-per-face"
+  },
+  {
+   "src": "w1f-versioned-look-urls",
+   "rel": "part_of",
+   "dst": "w1f-rig-runtime-behind-flag"
+  },
+  {
+   "src": "w1f-rig-runtime-behind-flag",
+   "rel": "measured_by",
+   "dst": "w1f-rig-swiftshader-correctness-2026-10-04"
+  },
+  {
+   "src": "w1f-rejected-spa-404",
+   "rel": "constrains",
+   "dst": "w1f-versioned-look-urls"
+  },
+  {
+   "src": "w1f-rig-runtime-behind-flag",
+   "rel": "constrains",
+   "dst": "b4-rejected-rig-plates-on-landing"
+  },
+  {
+   "src": "w1f-assets-404",
+   "rel": "supersedes",
+   "dst": "w1f-rejected-spa-404"
+  },
+  {
+   "src": "w1f-assets-404",
+   "rel": "part_of",
+   "dst": "w1f-versioned-look-urls"
+  },
+  {
+   "src": "w1f-rig-failure-remembered-per-page",
+   "rel": "part_of",
+   "dst": "w1f-rig-runtime-behind-flag"
+  },
+  {
+   "src": "w1f-publish-requires-plate",
+   "rel": "constrains",
+   "dst": "w1f-versioned-look-urls"
+  },
+  {
+   "src": "w1f-rig-runtime-behind-flag",
+   "rel": "measured_by",
+   "dst": "w1f-fixer-acceptance-2026-10-04"
   }
  ]
 }
