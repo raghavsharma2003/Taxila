@@ -32,11 +32,12 @@ Rules:
 - segment boundaries at clauses where delivery changes. 2-5 segments.
 - never write brackets, stage directions, or any word describing a sound.`;
 
-export async function plan(line, { model = process.env.DEPLOY_FAST || "taxila-fast" } = {}) {
+export async function plan(line, { model = process.env.DEPLOY_FAST || "taxila-fast", effort = process.env.PLAN_EFFORT || "low" } = {}) {
   const user = JSON.stringify({ line: line.text, intent: line.intent, moment: line.scene, child_last_turn: line.child, child_laughed: !!line.childLaughed, child_wrong: !!line.childWrong, class_band: line.band });
   const t0 = performance.now();
   const r = await fetch(`${OAI()}/chat/completions`, { method: "POST", headers: { "api-key": KEY(), "content-type": "application/json" },
-    body: JSON.stringify({ model, messages: [{ role: "system", content: BRIEF }, { role: "user", content: user }], response_format: { type: "json_object" }, max_completion_tokens: 2500, reasoning_effort: "low" }) });
+    body: JSON.stringify({ model, messages: [{ role: "system", content: BRIEF }, { role: "user", content: user }], response_format: { type: "json_object" },
+      ...(/^(taxila-|gpt-)/.test(model) ? { max_completion_tokens: 2500, reasoning_effort: effort } : { max_tokens: 1200 }) }) });
   const ms = Math.round(performance.now() - t0);
   const j = await r.json();
   if (!r.ok) return { plan: null, ms, error: JSON.stringify(j).slice(0, 200) };

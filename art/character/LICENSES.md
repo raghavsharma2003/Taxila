@@ -171,3 +171,32 @@ tracking path depends on non-commercial OpenFace), MoveBox, and the `.max` sourc
 is the bake-off's existing Azure `gpt-4o-mini-tts` sentence (first 6.0 s), re-used unchanged. Build-time tools: the same
 pinned `bpy` 4.2 / gltf-transform / KTX-Software set as the in-house pipeline (Blender's bundled FBX importer, GPL; output
 is ours).
+
+## Polished-face candidate `c1` (2026-10-04; outputs under `public/assets/teacher-candidates/c1/**` only)
+
+Slot 1 of `docs/design/teacher/polished/SCOUT.md` is **MetaHuman → GLB**. It is not a purchase, but it is blocked here on
+three owner-only items: an Epic account login (UE 5.7 Linux and MetaHuman Creator both require one; Creator's rig and
+texture solve runs in Epic's cloud), counsel's read of the UE/MetaHuman EULA for plain-GLB browser delivery, and the
+Azure-only call on a one-off third-party cloud step. Nothing of MetaHuman was downloaded or used. Per the brief, c1
+builds the best free alternative on the scout's list instead: **Microsoft Rocketbox** (the scout's licence-perfect
+reserve), avatar **Female_Adult_11**, with the face texels of **Female_Adult_10** composited in (Rocketbox heads share
+one UV template). Note: slot c2 also fell back to Rocketbox (a different avatar, Business_Female_01); no other free,
+licence-clean, ARKit-ready option exists on the scout's list (Riya is $10; CharacterZ has no published licence), so
+the two slots share a library, not a character. Not shipped to `public/assets/teacher/**`.
+
+| input | used for | source | licence / terms | evidence |
+|---|---|---|---|---|
+| `Female_Adult_11_facial.fbx` (2,126,800 B, sha256 `7ddb77aedb39fa1dd17dc3b5beffaf260769f39cbace52e9e6cc62cd93ee1af9`) | every vertex, UV and skin weight of the c1 face, eyes, lash cards, hair (shell + bun cards) and garment; the source's authored ARKit 52 (`AK_01..52`) and 15 visemes (`AA_VI_00..14`), copied as authored deltas; `HB_12_TongueUp` / `HB_09_TongueIn` seed `tongueTipUp` / `tongueCurl` | github.com/microsoft/Microsoft-Rocketbox @ `0943055db6ec570bcef9f2c8b41c9e5467c808f9`, `Assets/Avatars/Adults/Female_Adult_11/Export/` | **MIT** ("Copyright (c) 2020 Microsoft") | repo `LICENSE.md` sha256 `17474e386e0b9e1a700cc3d06b2b0882a2c376d9c6b49c7f8274409b8f8d2352`, verbatim copy at `art/character/candidates/c1/third_party/ROCKETBOX-LICENSE.txt`; licence URL https://github.com/microsoft/Microsoft-Rocketbox/blob/master/LICENSE.md |
+| `f011_head_color.tga` (sha256 `f2439ebb800708c467f3cf0147568d3e9c3c61ac76977363fc992d16e8b38efe`), `f011_head_normal.tga` (`3271569db6b47df4d388d92cd622ab194a84f222109b4910e5376c72b12d328a`), `f011_head_specular.tga` (`31ec6dba7675e53f03e3e2258ad4878ef01d4cff118b8339de7d8d54ef9aa747`), `f011_body_color.tga` (`e9797c77c32009ba0485aa351876063daa0e88250fba4884377faf8cea1d5eb6`), `f011_opacity_color.tga` (`07d5e246c49b95a15c336e4135d1d9a5cebfe2e3cb68b6041346ddf8c61b12f0`) | skin albedo outside the face oval (one linear gain to MST 6, G9-solved then warmed), normal, packed (roughness from specular, cavity from normal slope), garment (knit dress re-toned to teal in L\*a\*b\*, V-neck skin matched to the head's chest colour), hair-tie re-toned plum-brown, hair/lash alpha cards (padding dilated) | same repo and commit, `.../Female_Adult_11/Textures/` | **MIT** | as above |
+| `f201_head_color.tga` (12,582,956 B, sha256 `a35402c2a3c7155b57f26724b5ca61bdde2d6ae05a7a7ef5aa782eb83d1fc90a`) | the face oval (feathered ellipse, colour-matched at forehead and cheek, green/lilac lid shadow neutralised, lips deepened to rose-brown) | same repo and commit, `Assets/Avatars/Adults/Female_Adult_10/Textures/` | **MIT** | as above |
+| our armature, eye UV remap, `_region` attribute, the bust cut, the recolour, tongue extras | | written by us (`scripts/character/candidates/c1/**`) | ours | — |
+| Monk Skin Tone scale MST 6 hex `#a07e56` | G9 target | skintone.google | CC BY 4.0 | — |
+
+Terms that matter for a paid children's web app: identical to c2 above. MIT has no field-of-use, revenue, platform or
+protected-format clause, so a plain GLB in a browser or Android WebView is permitted, modification and sale included.
+The only obligation is to carry the copyright notice and permission text; if c1 ships, the app's third-party notices
+carry the verbatim MIT text and "Teacher character derived from the Microsoft Rocketbox Avatar Library
+(Female_Adult_11, Female_Adult_10 face texture), MIT License; modified by Taxila." No warranty. The lip-sync clip's
+audio is the bake-off's existing Azure `gpt-4o-mini-tts` sentence (`docs/design/teacher/renders/audio/teal.mp3`),
+re-used unchanged. Build-time tools: pinned `bpy` 4.2 (Blender FBX importer, GPL; output is ours), gltf-transform
+(MIT), meshoptimizer (MIT), KTX-Software 4.4.0 (Apache-2.0).

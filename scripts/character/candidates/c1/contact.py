@@ -46,7 +46,7 @@ W = max(s[1].width for s in sec)
 H = sum(s[1].height + 30 for s in sec) + 40
 sheet = Image.new("RGB", (W, H), (16, 16, 18))
 dr = ImageDraw.Draw(sheet)
-dr.text((10, 10), f"candidate c1 (Microsoft Rocketbox Female_Adult_11, MIT; re-toned + re-rigged to the Taxila contract): OUR three.js renderer + rig, SwiftShader (software GL) renders", fill=(255, 255, 255))
+dr.text((10, 10), f"candidate c1 (Microsoft Rocketbox Female_Adult_11 + Female_Adult_10 face texels, MIT; polish pass 2026-10-04; re-toned + re-rigged to the Taxila contract): OUR three.js renderer + rig, SwiftShader (software GL) renders", fill=(255, 255, 255))
 y = 40
 for title, im in sec:
     dr.text((10, y + 8), title, fill=(160, 210, 255))

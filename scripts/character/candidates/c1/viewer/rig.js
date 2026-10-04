@@ -8,6 +8,7 @@ import { KTX2Loader } from "three/examples/jsm/loaders/KTX2Loader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { SHADERS, lightUniforms, makeSkinLUT } from "./shaders.js";
 import { correctiveParents, VISEME_TO_ARKIT, wrinkleWeights } from "./presets.js";
+const VISEME_OPEN = Object.entries({ viseme_aa: 0.55, viseme_O: 0.42, viseme_E: 0.32, viseme_I: 0.26, viseme_U: 0.22, viseme_CH: 0.22, viseme_kk: 0.26, viseme_DD: 0.22, viseme_TH: 0.22, viseme_RR: 0.22, viseme_nn: 0.16, viseme_SS: 0.14, viseme_FF: 0.14 });
 
 const DEG = Math.PI / 180;
 // Runtime calibration gains. The first build needed 1.2-1.6 on smile / squint / brow because the CC0 units are soft;
@@ -53,7 +54,7 @@ export async function loadTeacher(renderer, url, opts = {}) {
     const u = {
       tAlbedo: { value: s.map }, tLUT: { value: LUT },
       uTeeth: { value: new THREE.Vector3(0.6, 0.55, 0.46) }, uGum: { value: new THREE.Vector3(0.30, 0.10, 0.09) },
-      uTongue: { value: new THREE.Vector3(0.40, 0.13, 0.11) }, uBag: { value: new THREE.Vector3(0.09, 0.022, 0.018) },
+      uTongue: { value: new THREE.Vector3(0.40, 0.13, 0.11) }, uBag: { value: new THREE.Vector3(0.15, 0.045, 0.04) } /* c1 polish: was 0.09/0.022/0.018, an ink-black void */,
       uAlbedoGain: { value: new THREE.Vector3(1, 1, 1) },
       uMouthOpen: { value: 0 }, uMouthFront: { value: new THREE.Vector3() },
       uFlush: { value: 0 }, uCheekL: { value: new THREE.Vector3() }, uCheekR: { value: new THREE.Vector3() }, uSpec: { value: 0.42 },
@@ -196,7 +197,12 @@ export async function loadTeacher(renderer, url, opts = {}) {
     }
     const u = face.material.uniforms;
     if (u.uWrA) { const w = wrinkleWeights(final); u.uWrA.value.fromArray(w.A); u.uWrB.value.fromArray(w.B); if (u.uStretch) u.uStretch.value = w.stretch * 0.6; }
-    u.uMouthOpen.value = final.jawOpen || 0;
+    // c1 polish: the source's visemes open the mouth by their own deltas, not through jawOpen, so the interior light
+    // term read every viseme as a closed mouth (black void behind aa / O, grey teeth on FF). Opening proxy = the larger
+    // of jawOpen and each viseme's jaw-equivalent opening.
+    let open = final.jawOpen || 0;
+    for (const [k, g] of VISEME_OPEN) if (final[k]) open = Math.max(open, final[k] * g);
+    u.uMouthOpen.value = open;
     u.uFlush.value = tier === "H" ? (extra.flush || 0) : 0;
     // head: neck carries 35%, head 65%; + = chin down / her left; roll sign matches head.ts
     const [p, y, r] = head;

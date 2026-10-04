@@ -15,6 +15,9 @@ await withTestAccount(async ({ api, child, password }) => {
   try {
     await page.addInitScript((cid) => { try { localStorage.setItem(`taxila.child.${cid}.prefs`, JSON.stringify({ hello: true, quiet: true })); } catch { /* */ } }, child.id);
     const responses = [];
+    // the text lane speaks through the streamed path (W1-A item 10), /api/tts only as its fallback or for "Hear"
+    const speech = { stream: 0, clip: 0 };
+    page.on("request", (r) => { const u = r.url(); if (u.endsWith("/api/voice/tts-stream")) speech.stream += 1; else if (u.endsWith("/api/tts")) speech.clip += 1; });
     page.on("response", async (r) => {
       const u = r.url();
       if (!u.endsWith("/api/lesson/turn") && !u.endsWith("/api/lesson/start")) return;
@@ -94,6 +97,7 @@ await withTestAccount(async ({ api, child, password }) => {
       }
       last = r;
     }
+    ok(speech.stream > 0 && speech.stream >= speech.clip, `text-lane speech streams (${speech.stream} tts-stream, ${speech.clip} whole-clip requests)`);
     ok(commits >= 3, `committed ${commits} answers in ${turns} turns (≥ 3 in ≤ ${MAX_TURNS})`);
     ok(numberItems === 0 || padShown === numberItems, `NumberPad visible on ${padShown}/${numberItems} number items`);
     if (numberItems === 0) warn("no number item came up in this lesson");

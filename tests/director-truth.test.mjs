@@ -285,3 +285,29 @@ test("client: start purpose per variant, the 409 refusal body, help chip states,
   assert.ok(A.fractionQuestion("Compare them", "Fractions: halves"));
   assert.ok(!A.fractionQuestion("13 ka square kitna hai?", "Squares and square roots"));
 });
+
+// ───────────── G-PRAISE-2: a right answer is never corrected (W1-A local battery, 2026-10-04) ─────────────
+
+test("G-PRAISE-2: after a right diagnostic tap (9), 'isliye 10' is caught and removed; the next question stays", async () => {
+  const { wrongAnswersOf, correctsRight, stripCorrection } = await import("../server/director/say.js");
+  const target = { mode: "item", key: "9", also: [], options: [{ text: "9" }, { text: "10" }, { text: "1" }] };
+  const wrong = wrongAnswersOf(target);
+  assert.deepEqual(wrong.sort(), ["1", "10"]);
+  const next = "5, 10, 15, ___, 25. Beech mein kaunsa number gayab hai?";
+  const said = "Aarav, yahan 8 ke baad 2 jodna tha, isliye 10. Ab 5-5 karke gino: 5, 10, 15, ___, 25. Beech mein kaunsa number gayab hai?";
+  assert.equal(correctsRight(said, { key: "9", wrong, nextPrompt: next }), true, "the audit's line is a correction");
+  // the next question's own 10 and a contrast that says the key are not corrections
+  assert.equal(correctsRight("Bilkul, 9. Ab 5-5 karke gino: 5, 10, 15, ___, 25. Beech mein kaunsa number gayab hai?", { key: "9", wrong, nextPrompt: next }), false);
+  assert.equal(correctsRight("Haan, 9 hi, 10 nahi: ek hi chappal bachi thi.", { key: "9", wrong, nextPrompt: next }), false);
+  assert.equal(correctsRight("Theek hai, 19 tak gino.", { key: "9", wrong, nextPrompt: next }), false, "19 is not 1 or 9's neighbour token");
+  assert.equal(stripCorrection(said, { key: "9", wrong, nextPrompt: next }), "Ab 5-5 karke gino: 5, 10, 15, ___, 25. Beech mein kaunsa number gayab hai?");
+  // through the reply guard: a draft and a rewrite that both correct the child end with the correction removed
+  const r = toItem(SK, { lang: "hinglish", classLevel: 2, ageBand: "6-9" });
+  const state = { ...r.state, lastRight: { key: "9", wrong } };
+  const item = findItem(state, SK, r.move.itemId);
+  const bad = `Aarav, yahan 8 ke baad 2 jodna tha, isliye 10. ${promptFor(item, "hinglish")}`;
+  const out = await withReply([bad, bad], () => L.textReply({ instructions: "x", state, kit: SK, childText: "9", verdict: "correct", ui: r.ui, module: null }));
+  assert.ok(out.guard.caught.includes("corrects"), JSON.stringify(out.guard));
+  assert.doesNotMatch(out.reply, /isliye 10/, out.reply);
+  assert.ok(!out.guard.final?.includes("corrects"), JSON.stringify(out.guard));
+});

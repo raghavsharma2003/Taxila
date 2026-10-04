@@ -118,12 +118,18 @@ if ylw.any():
 # feathered ellipse on the mouth, texels redder than the cheek median are taken to a deeper rose-brown: L* down by up
 # to 9, b* pulled toward the skin's, a* kept (lips stay lips, no lipstick).
 lab_l = to_lab(s2l(head))
-dl = np.sqrt(((xx - 1022) / 105.0) ** 2 + ((yy - 822) / 38.0) ** 2)
+dl = np.sqrt(((xx - 1022) / 105.0) ** 2 + ((yy - 830) / 52.0) ** 2)  # (polish 3) taller: the lower lip stayed pale
 ck = lab_l[870:930, 760:840].reshape(-1, 3)
 a_ck, b_ck = np.median(ck[:, 1]), np.median(ck[:, 2])
-lipm = (1 - smooth(0.7, 1.0, dl)) * np.clip((lab_l[..., 1] - a_ck - 1.5) / 5, 0, 1) * skin_m
+lipm = (1 - smooth(0.7, 1.0, dl)) * np.clip((lab_l[..., 1] - a_ck - 0.5) / 4, 0, 1) * skin_m
 lab_l[..., 0] -= 9 * lipm
 lab_l[..., 2] = lab_l[..., 2] * (1 - 0.5 * lipm) + b_ck * 0.5 * lipm
+# (polish 3) the donor's LOWER lip is a lighter, pinker photo than her upper lip (atlas rows ~828-870) and stayed
+# "pasted on" after the pass above: its own ellipse, L* down 8 more and a* trimmed by a quarter (rose-brown, not pink)
+dlo = np.sqrt(((xx - 1022) / 84.0) ** 2 + ((yy - 850) / 23.0) ** 2)
+lom = (1 - smooth(0.6, 1.0, dlo)) * skin_m
+lab_l[..., 0] -= 8 * lom
+lab_l[..., 1] -= 0.25 * np.clip(lab_l[..., 1] - a_ck, 0, None) * lom
 head = l2s(from_lab(lab_l))
 lin = s2l(head)
 alb = l2s(lin * (1 - skin_m[..., None] + skin_m[..., None] * gain))

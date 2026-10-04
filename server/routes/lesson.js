@@ -34,7 +34,7 @@ import { TURN_WORDS, FLOOR_FIX } from "../compiler/compile.js";
 import { HELPLINES } from "../compiler/floor.js";
 import { resolveAddress, registerBroken, toAap } from "../director/register.js";
 import { verdictFor, uiVerdict, praiseProblem, stripPraise, screenProblem, stripScreenRefs, askFromReply, askText, refersToScreen, leaksStage, stripStage,
-  askParity, endOnAsk, lastQuestionOnly, wrapsUp, stripWrap } from "../director/say.js";
+  askParity, endOnAsk, lastQuestionOnly, wrapsUp, stripWrap, wrongAnswersOf, correctsRight, stripCorrection } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
 import { teacherFor, teacherForLesson, teacherCard } from "../compiler/characters/index.js";
@@ -293,10 +293,13 @@ async function textReply({ instructions, state, kit, childText, trace, history =
   const parityOf = (t) => askParity(t, pinned);
   const wrapping = !CLOSING_MOVES.has(kindNow);
   const praiseOf = (t) => praiseProblem(t, verdict);
+  // G-PRAISE-2: after a right answer the acknowledgement never states a wrong option as the result (say.js correctsRight).
+  const right = verdict === "correct" && state.lastRight?.wrong?.length ? { ...state.lastRight, nextPrompt: item ? promptFor(item, lang) : ahead ? promptFor(ahead, lang) : "" } : null;
   const problems = (t) => [
     floorOf(t).length && "floor",
     praiseOf(t) === "praise" && "praise",
     praiseOf(t) === "contradicts" && "deny",
+    right && correctsRight(t, right) && "corrects",
     screenProblem(t, ui, module) && "screen",
     registerBroken(t, address) && "register",
     leaksStage(t) && "stage",
@@ -372,6 +375,7 @@ async function textReply({ instructions, state, kit, childText, trace, history =
       found.includes("floor") && `it breaks the safety floor — ${floorOf(reply).map((k) => FLOOR_FIX[k]).filter(Boolean).join("; ")}`,
       found.includes("praise") && "it agrees with or praises their answer, but their answer was not marked right — no agreement or praise word for it; name what is sensible in it, then the next step",
       found.includes("deny") && "it says their answer is wrong, but it was right — confirm it plainly",
+      found.includes("corrects") && `it implies their answer was wrong or that the answer is something else, but their answer ${JSON.stringify(String(right.key))} was right — confirm it plainly and do not name any other answer as the result`,
       found.includes("screen") && "it tells them to tap or pick something on the screen, but nothing is on the screen to tap this turn — ask them to say it",
       found.includes("stage") && "it reads out a field name or markup (like 'Whiteboard:' or brackets) — plain spoken words only",
       found.includes("register") && (address === "aap" ? "it uses tum forms — address the child with aap forms only (aap, aapka; verbs ending -iye)" : "it uses aap — address the child with tum forms (tum, tumhara)"),
@@ -406,6 +410,7 @@ async function textReply({ instructions, state, kit, childText, trace, history =
       const keepOr = (t) => (t && handsBack(t) ? t : item && !CLOSING_MOVES.has(kindNow) && state.pendingWhy !== item.id
         ? `${t ?? ""} ${promptFor(item, lang)}`.trim() : t || fallbackReply(state, item));
       if (found.includes("praise")) { reply = keepOr(stripPraise(reply)); guard.replaced = true; }
+      if (found.includes("corrects")) { reply = keepOr(stripCorrection(reply, right)); guard.replaced = true; }
       if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply)); guard.replaced = true; }
       if (found.includes("register") && address === "aap") { reply = toAap(reply); guard.repaired = true; }
       if (found.includes("stage")) { reply = stripStage(reply) || fallbackReply(state, item); guard.replaced = true; }
@@ -1171,7 +1176,12 @@ async function planTurn(base, cls, c) {
   const { r, instructions, skipped } = instructionsAfter(stepped, kit, now);
   const next = r.state;
   // The verdict this turn's words must agree with (G-PRAISE-1): a kit item graded against its key, or "ungraded".
-  next.lastVerdict = verdictFor(cls, targetFor(state, kit, activeItem), { childText: c.childText });
+  const gradedTarget = targetFor(state, kit, activeItem);
+  next.lastVerdict = verdictFor(cls, gradedTarget, { childText: c.childText });
+  // What a right answer's acknowledgement must not name as the result (G-PRAISE-2): the key and the wrong options shown.
+  const wrongShown = next.lastVerdict === "correct" ? wrongAnswersOf(gradedTarget) : [];
+  if (wrongShown.length) next.lastRight = { key: String(gradedTarget.key), wrong: wrongShown };
+  else delete next.lastRight;
   // 3. the episode that just closed without a correct answer, and a teaching move's teach event
   const b2 = closeEvents({ ...ev0, next, hold: !!r.hold }, a);
   const after = b2.events.length ? fuseEvidence(fused, b2.events, LIVE_FOLD_CTX) : fused;

@@ -66,7 +66,9 @@ test("practice queue: kit order, teach-back held back, a diagnostic second; isom
   assert.notEqual(iso.id, "i1");
   const d = diagnosticItem(K, K.misconceptions[0]);
   assert.equal(d.answer, "1/2");
-  assert.equal(d.hints.length, 4);
+  // W1-A item 6: four teacher rung shapes stay server-side; the card shows three child-facing lines (never rung 4).
+  assert.equal(d.rungShapes.length, 4);
+  assert.equal(d.hints.length, 3);
 });
 
 test("safety predicate: self-harm, abuse and fear families in three scripts; idioms stay quiet", () => {

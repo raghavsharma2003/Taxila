@@ -210,3 +210,40 @@ const WRAP_WORDS = /\b(?:aaj\s+ke\s+liye\s+(?:bas\s+)?(?:itna|itni|yahin|ye(?:h)
 export const wrapsUp = (text) => WRAP_WORDS.test(String(text ?? ""));
 /** The line without its closing sentences. */
 export const stripWrap = (text) => sentencesOf(text).filter((x) => !wrapsUp(x)).join(" ").trim();
+
+// ── G-PRAISE-2: the words never correct a right answer (W1-A local battery, 2026-10-04: a class-2 diagnostic "2, 4, 6,
+// 8… and one more: how many?" key 9; the child tapped 9, graded correct, and she said "yahan 8 ke baad 2 jodna tha,
+// isliye 10" — no "wrong" word for G-PRAISE-1 to catch, only a wrong option stated as the result) ──
+const tokenRe = (a) => {
+  const s = String(a).trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
+  return new RegExp(`(?<![\\p{L}\\p{N}/.])${s}(?![\\p{L}\\p{N}/]|\\.\\d)`, "iu");
+};
+/**
+ * The wrong answers a graded target put in front of the child: a diagnostic's other options and the offered
+ * "Show me choices" tiles that are not the key. Short labels only (a long option is a sentence, not an answer token).
+ * @param {{ mode?: string, key?: string, also?: string[], options?: { text: string }[], offered?: string[] } | null} target
+ */
+export function wrongAnswersOf(target) {
+  if (!target || target.mode !== "item") return [];
+  const keys = new Set([target.key, ...(target.also ?? [])].filter((k) => k != null).map((k) => normQ(k)));
+  const all = [...(target.options ?? []).map((o) => o?.text), ...(target.offered ?? [])];
+  return [...new Set(all.filter((x) => typeof x === "string" && x.trim() && x.length <= 20 && !keys.has(normQ(x))))];
+}
+/**
+ * Does a reply to a RIGHT answer state one of the wrong answers as the result, in its acknowledgement? The
+ * acknowledgement is every non-question sentence that is not mostly the next question (`nextPrompt`, which may
+ * itself hold the same numbers). A sentence that also says the key is a contrast ("9, not 10"), never a correction.
+ * @returns {boolean}
+ */
+export function correctsRight(reply, { key, wrong = [], nextPrompt = "" } = {}) {
+  if (!wrong.length || key == null || String(key).trim() === "") return false;
+  const p = new Set(normQ(nextPrompt).split(" ").filter(Boolean));
+  const mostlyNext = (x) => { const w = normQ(x).split(" ").filter(Boolean); return p.size > 0 && w.length > 0 && w.filter((v) => p.has(v)).length / w.length >= 0.6; };
+  const keyRe = tokenRe(key);
+  return sentencesOf(reply).filter((x) => !isQuestion(x) && !mostlyNext(x))
+    .some((x) => !keyRe.test(x) && wrong.some((w) => tokenRe(w).test(x)));
+}
+/** The reply without the acknowledgement sentences that state a wrong answer (what is left, possibly empty). */
+export function stripCorrection(reply, { key, wrong = [], nextPrompt = "" } = {}) {
+  return sentencesOf(reply).filter((x) => !correctsRight(x, { key, wrong, nextPrompt })).join(" ").trim();
+}
