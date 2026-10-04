@@ -1,0 +1,36 @@
+{
+  "nodes": [
+    {"id": "design-v3-one-band-9-15", "kind": "decision", "at": "2026-10-04",
+     "title": "Design v3 (docs/design/reset/DESIGN-V3.md): one design band for classes 4-7 / ages 9-15, reference child 12 (class 6); no Young (6-9) variant, no mascots/stars/coins/confetti/bubbly type on any screen. Reverse only by a theme default (Day) if X1/X2 show class 4-5 children fail or reject the dark UI; never by reintroducing a kids' visual language."},
+    {"id": "design-v3-dark-instrument-identity", "kind": "decision", "at": "2026-10-04",
+     "title": "Child screens default to a dark 'instrument' identity (ground #0A0C12, brand ion #8B98FF, one volt lime #CBFF4D 'your move' carrier per screen state; Bricolage Grotesque / Atkinson Hyperlegible Next / Geist Mono / Mukta); Day theme is child opt-in and the parent default. Replaces V2's Lamp-and-Paper painted world. Reverse to Day default if X1 (>=80% 'for my age' per age half) or X2 (>=90% class-4 task success) fails."},
+    {"id": "design-v3-volt-one-carrier", "kind": "decision", "at": "2026-10-04",
+     "title": "Volt lime is the single 'your move' colour: at most one volt element per screen state (primary CTA or your-move rail cue or the child's voice waveform), no other token within 12 deg hue. Inherits the one-turn-colour law (ds-status-carriers). Reverse if colour-blind CIEDE2000 vs mint < 12 in the same state, or X4 shows the cue missed > 10%."},
+    {"id": "design-v3-stage-contract", "kind": "decision", "at": "2026-10-04",
+     "title": "Stage contract: one absolutely-positioned slot (stage minus a 62 px HUD rail), fixed design canvas scaled with meet + letterbox, never scrolls; safe zones for the type label (top-left) and phone PiP (top-right, 26% of short side); labels >= 38 canvas units per 1000 width (>= 12.4 px at the 326 px floor slot), targets >= 130 units; text/interactive boxes leaving the canvas or entering a safe zone fail the Studio gate (never reach the child). Reverse if a needed artifact class cannot meet the minimums at the floor slot."},
+    {"id": "design-v3-no-visible-build", "kind": "decision", "at": "2026-10-04",
+     "title": "The child never sees generation machinery: no '{teacher} is making this' caption, no labelled skeleton, no progress bar, no error card; if a piece is not ready the teacher draws on the board and the piece arrives at a later turn boundary only if it passes the gate. Supersedes LIVE-STUDIO 4.2's visible caption (owner reset R9). Network/mic trouble states still shown (real-world facts the child must act on)."},
+    {"id": "design-v3-no-streaks-mastery", "kind": "decision", "at": "2026-10-04",
+     "title": "No streaks, points, XP, levels or leaderboards on child screens; progress is shape-coded skill mastery (secure = right again days later), then-and-now lines and the child's own words. In-game HUD numbers (hit/combo/clean) are allowed only inside a running game and never totalled or carried out. Revisit only if X7 shows > 5 pp lessons/week loss AND no anxiety signal."},
+    {"id": "design-v3-scheduler-no-native-pickers", "kind": "decision", "at": "2026-10-04",
+     "title": "Date/time selection (owner reset R11) uses custom controls, never native input type=date/time: day toggles + quick picks + 15-minute time rail with steppers and arrow keys (onboarding); 14-day date strip + time grid that disables clashes, past times and times beyond parent lesson hours (parent reschedule). Reverse only if a native picker passes the same Android WebView + desktop battery."},
+    {"id": "design-v3-diversions-not-reported", "kind": "decision", "at": "2026-10-04",
+     "title": "The parent corner's curiosity list shows learning questions only; off-topic diversions (a game, a film) are not reported to parents, so the corner is not surveillance. Safety events always go through the safety channel regardless. Reverse if pilot parents (n >= 20) rate the corner as hiding something important."},
+    {"id": "design-v3-checks-2026-10-04", "kind": "measurement", "at": "2026-10-04",
+     "title": "Design-v3 mockups, Playwright Chromium on file:// with routed Google Fonts: 55 renders (11 page states x 360x640, 390x844, 768x1024, 1024x768, 1440x900) 0 h-scroll, 0 page errors; 3 lesson screens x 5 viewports: 0 doc scroll, 0 artifact overflow/under-rail, 0 SVG ink outside viewport, dock visible 15/15, transcript clipped 0/15, buttons < 36 px 0/15. Floor 360x640 zones: top 52, stage 362-414, slot 326 x 334-360, rail 62, dock 108. Board label glyph box 10 px -> 16-19 px after raising labels to 38/48 units. Contrast: all text pairs >= 5:1 except day mint 4.36 -> #0B7D55 5.15. 18/18 scripted interaction assertions (reschedule, clash, lesson-hours, onboarding zero-days, 4 diversion scenarios)."},
+    {"id": "design-v3-unmeasured-2026-10-04", "kind": "open", "at": "2026-10-04",
+     "title": "Design v3 is unvalidated with children: 'for my age' (X1), class-4 task success on dark UI (X2), onboarding time <= 90 s (X3), hands-free understanding (X4), greyscale mastery legibility (X5), game frame time on a Rs 10k phone (X6), no-streak retention (X7). Experiments in DESIGN-V3.md section 15."}
+  ],
+  "edges": [
+    {"src": "design-v3-one-band-9-15", "rel": "supersedes", "dst": "ds-band-fork-older"},
+    {"src": "design-v3-dark-instrument-identity", "rel": "supersedes", "dst": "design-v2-painted-world"},
+    {"src": "design-v3-volt-one-carrier", "rel": "supersedes", "dst": "design-v2-lamp-on-dock"},
+    {"src": "design-v3-volt-one-carrier", "rel": "inherits", "dst": "ds-status-carriers"},
+    {"src": "design-v3-stage-contract", "rel": "inherits", "dst": "ds-layout-dp-budget"},
+    {"src": "design-v3-stage-contract", "rel": "supersedes", "dst": "design-v2-desk-layout"},
+    {"src": "owner-reset-2026-10-04", "rel": "constrains", "dst": "design-v3-one-band-9-15"},
+    {"src": "owner-reset-2026-10-04", "rel": "constrains", "dst": "design-v3-no-visible-build"},
+    {"src": "owner-reset-2026-10-04", "rel": "constrains", "dst": "design-v3-scheduler-no-native-pickers"},
+    {"src": "design-v2-face-verdict-neutral", "rel": "constrains", "dst": "design-v3-dark-instrument-identity"}
+  ]
+}

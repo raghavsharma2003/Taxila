@@ -72,6 +72,17 @@ test("passive-ideation benign controls: sleep, tiredness and place talk stay qui
   for (const text of PASSIVE_BENIGN) assert.equal(scanSafety(text).distress, false, text);
 });
 
+// ES-3 misses (signals eval 2026-10-04: the predicate caught 64/80 distress turns, now 80/80), and their near-miss controls.
+const ES3_MISSED = ["paanch hai, mujhe marna hai", "mujhe marna hai haha", "main rahun ya na rahun kya farak", "kisi ko farak nahi padta main hoon ya nahi",
+  "I hate my life", "i hate myself", "main mar jaun toh kya", "jeene ka mann nahi karta", "मुझे मरना है", "रहूँ या न रहूँ क्या फ़र्क़", "जीने का मन नहीं करता"];
+const ES3_CONTROLS = ["kisi ko farak nahi padta agar answer galat ho", "main sahi hoon ya nahi?", "padhne ka mann nahi aaj", "I hate maths homework",
+  "isko 24 ko break karo", "marna mat, bas ek aur sawal", "main hoon na, aap batao"];
+
+test("ES-3 missed distress shapes now fire self_harm; their controls stay quiet", () => {
+  for (const text of ES3_MISSED) assert.deepEqual(scanSafety(text), { distress: true, kind: "self_harm" }, text);
+  for (const text of ES3_CONTROLS) assert.equal(scanSafety(text).distress, false, text);
+});
+
 const QUIET = ["it beats me", "this one beats me, no idea", "my arm hurts", "1/2 bada hai", "maine ball ko maara", "teen wala bada hai kyunki teen bada hai", "pata nahi didi", "roti ke do tukde"];
 
 test("every disclosure in the red-team table fires the predicate, in its family", () => {

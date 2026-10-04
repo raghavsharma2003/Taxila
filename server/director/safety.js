@@ -96,6 +96,12 @@ const FAMILIES = {
     /\b(kill|hurt|cut|harm)\s*(myself|me)\b|\b(want(?:\s*to|na)?|wanna)\s*(die|disappear)\b|\b(don'?t|dont|do\s*not)\s*want\s*to\s*(live|be\s*alive)\b|\bend\s*my\s*life\b|\bsuicid/i,
     /\b(mar\s*ja(a)?na|marna\s*chaht[ai]|marne\s*ka\s*(mann|man)|mar\s*jaa?(?:u|o|oo)n?g[aie]|khud\s*ko\s*(maar|hurt|chot|kaat)|jee?na\s*nahi+n?\s*(chaht|hai)|zinda\s*nahi+n?\s*rehna|gaa?yab\s*ho\s*jaa?n[ae]\s*(chaht|hai)|hamesha\s*ke\s*liye\s*(chala|chali|chale)\s*jaa?n[ae]\s*(chaht|hai))/i,
     /(मर\s*जाना|मरना\s*चाहत|मर\s*जाऊं?ग[ीा]|खुद\s*को\s*(मार|चोट|काट)|आत्महत्या|जीना\s*नहीं|गायब\s*हो\s*जाना\s*चाहत|हमेशा\s*के\s*लिए\s*चल[ाी]\s*जाना\s*चाहत)/,
+    // Shapes ES-3 found missing (signals eval, 16/80 distress turns, 2026-10-04), kept self-referential so a bare
+    // "kisi ko farak nahi padta" about a wrong answer stays quiet: "mujhe marna hai", "main mar jaun",
+    // "main rahun ya na rahun", "main hoon ya nahi", "jeene ka mann nahi", "I hate my life".
+    /(?<![\p{L}\p{M}])(?:(?:mujhe|mereko|mujhko|main|mai)\s+(?:bas\s+)?(?:marna|mar\s+jaa?na)\s+(?:hai|h|he|hain)|marna\s+(?:hai|h)\s+(?:mujhe|mereko|mujhko)|(?:main|mai)\s+mar\s+jaa?(?:u|un|oon|aun)|rah(?:u|uu|oo)n?\s+ya\s+naa?\s+rah(?:u|uu|oo)n?|(?:main|mai)\s+(?:hoon|hun|hu)\s+ya\s+(?:nahi+n?|na|naa)|(?:jeene|jine)\s+ka\s+(?:mann|man|mnn)\s+nahi+n?)(?![\p{L}\p{M}])/iu,
+    /\bi\s+hate\s+(?:my\s+life|myself|being\s+alive|living)\b|\b(?:no|nothing\s+to)\s+(?:reason|point)\s+(?:to|in)\s+(?:live|living)\b|\b(?:i\s+)?(?:want|wanna)\s+to\s+be\s+dead\b/i,
+    /((?:मुझे|मैं)\s+(?:बस\s+)?मरना\s+है|रहूं\s+या\s+न\s+रहूं|मैं\s+हूं\s+या\s+नहीं|जीने\s+का\s+मन\s+नहीं)/,
   ],
   abuse: [
     // A named actor keeps idioms out ("beats me" = no idea; "it hurts me" = a sore arm).
@@ -117,7 +123,9 @@ const FAMILIES = {
 /** @returns {{ distress: boolean, kind: "self_harm"|"abuse"|"fear"|null }} */
 export function scanSafety(text) {
   const t = String(text || "");
-  for (const [kind, res] of Object.entries(FAMILIES)) if (res.some((re) => re.test(t))) return { distress: true, kind };
+  // Devanagari also matched on NFC + nukta dropped + chandrabindu → anusvara ("पड़ता"/"पडता", "रहूँ"/"रहूं").
+  const tn = t.normalize("NFC").replace(/़/g, "").replace(/ँ/g, "ं");
+  for (const [kind, res] of Object.entries(FAMILIES)) if (res.some((re) => re.test(t) || (tn !== t && re.test(tn)))) return { distress: true, kind };
   return { distress: false, kind: null };
 }
 
