@@ -18493,7 +18493,67 @@
     },
     "total_tokens": 647
    },
-   "usd": 0.0142
+   "usd": 0.0142,
+   "judge": {
+    "brain": {
+     "adherence": 5,
+     "text": 5,
+     "authenticity": 5,
+     "appeal": 5,
+     "artifacts": 5,
+     "any_text": false,
+     "house_style": true,
+     "forbidden_colour": false,
+     "hands_or_faces_defect": false,
+     "issue": "The scene closely matches the prompt, with a blank slate, natural Indian setting, and no visible text or defects."
+    },
+    "kimi": {
+     "adherence": 3,
+     "text": 5,
+     "authenticity": 4,
+     "appeal": 4,
+     "artifacts": 5,
+     "any_text": false,
+     "house_style": false,
+     "forbidden_colour": false,
+     "hands_or_faces_defect": false,
+     "issue": "The image looks photorealistic rather than the requested matte gouache-and-pencil painting with soft edges and visible brush texture."
+    },
+    "mistral": {
+     "adherence": 5,
+     "text": 5,
+     "authenticity": 5,
+     "appeal": 5,
+     "artifacts": 5,
+     "any_text": false,
+     "house_style": true,
+     "forbidden_colour": false,
+     "hands_or_faces_defect": false,
+     "issue": "None"
+    }
+   },
+   "judgeErr": {},
+   "verdict": {
+    "brain": {
+     "pass": true,
+     "any_text": false,
+     "house_style": true,
+     "forbidden_colour": false
+    },
+    "kimi": {
+     "pass": false,
+     "any_text": false,
+     "house_style": false,
+     "forbidden_colour": false
+    },
+    "mistral": {
+     "pass": true,
+     "any_text": false,
+     "house_style": true,
+     "forbidden_colour": false
+    }
+   },
+   "judgeUsd": 0.0261
   },
   {
    "prompt": "d2-watercycle",
@@ -19401,6 +19461,179 @@
     }
    },
    "judgeUsd": 0.0283
+  },
+  {
+   "prompt": "d5-flower",
+   "kind": "diagram",
+   "arm": "flare-low",
+   "region": "eastus2",
+   "rep": 1,
+   "ms": 16591,
+   "n429": 0,
+   "err": null,
+   "at": "2026-10-04T12:40:28.025Z",
+   "file": "evals/model-refresh-2026-10-04/images/results/img/d5-flower__flare-low__1.jpg",
+   "usage": {
+    "input_tokens": 79,
+    "input_tokens_details": {
+     "image_tokens": 0,
+     "text_tokens": 79
+    },
+    "output_tokens": 196,
+    "output_tokens_details": {
+     "image_tokens": 196,
+     "text_tokens": 0
+    },
+    "total_tokens": 275
+   },
+   "usd": 0.0063,
+   "judge": {
+    "brain": {
+     "adherence": 5,
+     "text": 5,
+     "authenticity": 5,
+     "appeal": 5,
+     "artifacts": 5,
+     "labels": [
+      {
+       "label": "Petal",
+       "present": true,
+       "spelled_right": true,
+       "points_to_right_part": true,
+       "note": "Leader line ends on the right pink petal."
+      },
+      {
+       "label": "Sepal",
+       "present": true,
+       "spelled_right": true,
+       "points_to_right_part": true,
+       "note": "Leader line ends on the right green leaf-like sepal at the flower base."
+      },
+      {
+       "label": "Stamen",
+       "present": true,
+       "spelled_right": true,
+       "points_to_right_part": true,
+       "note": "Leader line ends on a yellow anther of a stamen."
+      },
+      {
+       "label": "Pistil",
+       "present": true,
+       "spelled_right": true,
+       "points_to_right_part": true,
+       "note": "Leader line ends on the green stigma at the top of the central pistil."
+      }
+     ],
+     "extra_text": "",
+     "science_ok": true,
+     "science_note": "Green sepals are outside the petals at the base, and the stamens surround the central pistil.",
+     "issue": "No significant issues."
+    },
+    "kimi": {
+     "adherence": 5,
+     "text": 5,
+     "authenticity": 5,
+     "appeal": 5,
+     "artifacts": 5,
+     "labels": [
+      {
+       "label": "Petal",
+       "present": true,
+       "spelled_right": true,
+       "points_to_right_part": true,
+       "note": "leader ends on the pink petal blade"
+      },
+      {
+       "label": "Sepal",
+       "present": true,
+       "spelled_right": true,
+       "points_to_right_part": true,
+       "note": "leader ends on the small green leaf-like sepal at the base outside the petals"
+      },
+      {
+       "label": "Stamen",
+       "present": true,
+       "spelled_right": true,
+       "points_to_right_part": true,
+       "note": "leader ends on a yellow anther atop its filament"
+      },
+      {
+       "label": "Pistil",
+       "present": true,
+       "spelled_right": true,
+       "points_to_right_part": true,
+       "note": "leader ends on the top/stigma of the central pistil"
+      }
+     ],
+     "extra_text": "",
+     "science_ok": true,
+     "science_note": "sepals are basal green outer parts; stamens surround the central pistil",
+     "issue": "No issues."
+    },
+    "mistral": {
+     "adherence": 5,
+     "text": 5,
+     "authenticity": 5,
+     "appeal": 5,
+     "artifacts": 5,
+     "labels": [
+      {
+       "label": "Petal",
+       "present": true,
+       "spelled_right": true,
+       "points_to_right_part": true,
+       "note": "Correctly points to the petal"
+      },
+      {
+       "label": "Sepal",
+       "present": true,
+       "spelled_right": true,
+       "points_to_right_part": true,
+       "note": "Correctly points to the sepal"
+      },
+      {
+       "label": "Stamen",
+       "present": true,
+       "spelled_right": true,
+       "points_to_right_part": true,
+       "note": "Correctly points to the stamen"
+      },
+      {
+       "label": "Pistil",
+       "present": true,
+       "spelled_right": true,
+       "points_to_right_part": true,
+       "note": "Correctly points to the pistil"
+      }
+     ],
+     "extra_text": "",
+     "science_ok": true,
+     "science_note": "All parts correctly labeled and positioned",
+     "issue": ""
+    }
+   },
+   "judgeErr": {},
+   "verdict": {
+    "brain": {
+     "labels_correct": 4,
+     "labels_total": 4,
+     "science_ok": true,
+     "pass": true
+    },
+    "kimi": {
+     "labels_correct": 4,
+     "labels_total": 4,
+     "science_ok": true,
+     "pass": true
+    },
+    "mistral": {
+     "labels_correct": 4,
+     "labels_total": 4,
+     "science_ok": true,
+     "pass": true
+    }
+   },
+   "judgeUsd": 0.0208
   }
  ]
 }
