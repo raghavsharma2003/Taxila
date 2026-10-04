@@ -3206,6 +3206,27 @@ called 31x, the check question graded wrong 22x, labels overlapping 16x, flows t
 - **Reverse if:** a memory line is recited into builds as a phrase (then it is rewritten as a shape) or stops recurring over 4
   weekly benches (then it is retired to rejected.md).
 
+### w2f-builder-unreachable-is-infra
+**Decision:** a race in which EVERY arm died on a network error before any gate ran (`build.js isNetworkError`: azure.js code
+`network`, ECONN*, fetch failed, UND_ERR ...) returns `reason: "builder_unreachable"`. It reveals nothing (the fallback ladder,
+like `gate_unavailable`), it does not feed the breaker's failure streak (it spent nothing; a dead gate still does, because it
+did spend), and the router bench skips and re-runs it instead of counting it. A race with one arm down on the wire and another
+arm's real gate failure is a real failed race. Tested in `tests/studio-router.test.mjs`.
+- **Reverse if:** network faults turn out to correlate with a model arm (a deployment that times out under load): then they are
+  that arm's failures and count against its P(pass by lead).
+
+### w2f-bench-fixed-lead
+**Decision:** the router bench counts P(pass by lead) against the FIXED bench lead (`routes.json defaults.leadMs`, 90 s, the
+prefetch lead W2-H plans for), never the archetype's own `leadMs`, which `--write` sets to 1.1 x the measured p90 (the router
+uses that to mark a too-short lead opportunistic). `rj-w2f-bench-lead-from-route`.
+- **Reverse if:** W2-H measures a different typical lead from prefetch to the explain move (then defaults.leadMs follows it).
+
+### w2f-studio-qa-service: deployed (2026-10-04)
+`scripts/deploy-studio-qa.mjs` ran: image `studio-qa:wt-66d1a6f9d19b` built in ACR, Container App `studio-qa` in
+`taxila-forge-untrusted`, token-locked external ingress. **taxila-web is not wired** (`--wire-web` makes a new taxila-web
+revision; that is the main loop's deploy). Until it is, the API has no `STUDIO_QA_URL`, `gateClient()` has no gate, and every
+live build reveals nothing (`gate_unavailable`), which is the safe direction.
+
 ## `owner-reset-2026-10-04` (2026-10-04)
 Owner reset after rating the live product 0/100: the 15 requirements in docs/design/OWNER-RESET-2026-10-04.md bind every stream (ages 9-15 design, class-calibrated difficulty, real-time games, cinematic animation, reasoning, diversion handling, no child-triggered ending, steering, zero visible failure, hands-free duplex, working controls, frequent adaptive generation). Outranked only by child safety.
 

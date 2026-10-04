@@ -111,14 +111,16 @@ export class LipSolver {
     this.surprised = Wsum < 0.2 && wide > 0.45 ? clamp01((wide - 0.45) / 0.3) : 0;
     if (this.surprised > 0) {
       const s = this.surprised;
-      tgt.round = Math.max(tgt.round, s); tgt.flat = Math.max(tgt.flat, 0.95 * s); tgt.W = tgt.W * (1 - s) + 0.66 * s;
-      tgt.T = tgt.T * (1 - s) + 0.35 * s; tgt.TL = 0; tgt.up = 0.36; tgt.g = Math.max(tgt.g, 40 * s * clamp01(open / 0.3));
+      // r4: a DROPPED jaw-O (taller than wide, the lower lip carries the drop), not a full-lipped pucker (it read "ooh")
+      tgt.round = Math.max(tgt.round, 0.7 * s); tgt.flat = Math.max(tgt.flat, 0.95 * s); tgt.W = tgt.W * (1 - s) + 0.8 * s;
+      tgt.T = tgt.T * (1 - s) + 0.55 * s; tgt.TL = 0; tgt.up = 0.26; tgt.th = Math.max(tgt.th, 0.3); tgt.g = Math.max(tgt.g, 54 * s * clamp01(open / 0.3));
     }
     // an open-mouthed smile (delight / laugh): the D-shape. More opening, the upper lip stays high and flat, the
     // lower lip carries the drop, upper teeth show
     const smAvg = (k("mouthSmileLeft") + k("mouthSmileRight")) / 2;
     const joy = clamp01((smAvg - 0.35) / 0.4) * clamp01(open / 0.18) * (1 - this.surprised);
-    if (joy > 0) { tgt.g += 26 * joy * (1 - Math.min(1, Wsum)); tgt.up = tgt.up * (1 - 0.65 * joy); tgt.T = Math.max(tgt.T, 0.95 * joy); tgt.th = Math.max(tgt.th, 0.35 * joy); tgt.W = Math.max(tgt.W, 1.02 * joy + tgt.W * (1 - joy)); }
+    // r4: ~35% more (c-happy: a wide D with the upper teeth row and the tongue showing)
+    if (joy > 0) { tgt.g += 36 * joy * (1 - Math.min(1, Wsum)); tgt.up = tgt.up * (1 - 0.7 * joy); tgt.T = Math.max(tgt.T, 1.0 * joy); tgt.th = Math.max(tgt.th, 0.42 * joy); tgt.W = Math.max(tgt.W, 1.08 * joy + tgt.W * (1 - joy)); }
     // tongue keys from the contract (Hindi dental / retroflex / lateral)
     tgt.tip = clamp01(Math.max(tgt.tip, k("tongueTipUp")));
     tgt.curl = clamp01(Math.max(tgt.curl, k("tongueCurl")));
@@ -152,7 +154,7 @@ export class LipSolver {
       const se = lift(smile[s]) * (1 - 0.5 * rc);   // capped smile
       const hw = s === "L" ? MOUTH.hwL : MOUTH.hwR;
       const wid = hw * (p.W - 1) + (se - 0.45) * 13 * (1 - 0.6 * rc);
-      const dy = -(se - 0.45) * 19 * (1 - 0.6 * rc) * (1 - 0.7 * this.surprised) + frown[s] * 9 + p.press * 1.5;
+      const dy = -(se - 0.45) * 19 * (1 - 0.6 * rc) * (1 - 0.7 * this.surprised) + frown[s] * 12.5 + p.press * 1.5;   // r4: frown 9 -> 12.5 (concern)
       const crease = clamp01((se - 0.16) / 0.29) * (1 - 0.7 * rc);
       const S = this.side[s], tc = this.first ? 1 : 1 - Math.exp(-dt / 0.045);
       S.wid += tc * (wid - S.wid);

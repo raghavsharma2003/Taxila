@@ -14,8 +14,8 @@
   .ink { fill: none; stroke: var(--board-ink); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
   .ink.on { transition: stroke-dashoffset .9s var(--e-std); stroke-dashoffset: 0; }
   .dim { stroke: var(--ink-3); stroke-width: 2; fill: none; opacity: 0; transition: opacity .4s; }
-  .lab { fill: var(--ink-2); font: 600 30px var(--f-mono); opacity: 0; transition: opacity .4s; }
-  .lab.big { font: 700 44px var(--f-display); fill: var(--board-ink); }
+  .lab { fill: var(--ink-2); font: 600 38px var(--f-mono); opacity: 0; transition: opacity .4s; }
+  .lab.big { font: 700 48px var(--f-display); fill: var(--board-ink); }
   .on.dim, .on.lab, .on.fade { opacity: 1; }
   .fade { opacity: 0; transition: opacity .5s; }
   .alt { stroke: var(--sub-maths); stroke-width: 3; stroke-dasharray: 10 10; fill: none; }
@@ -74,7 +74,7 @@
           <text id="labB" class="lab" x="480" y="668" text-anchor="middle">b = 8 cm</text>
           <g id="dimH" class="dim"><path d="M850 180 V580 M838 180 H862 M838 580 H862"/></g>
           <text id="labH" class="lab" x="874" y="390">h</text>
-          <text id="labH2" class="lab" x="874" y="426" style="font-size:24px">5 cm</text>
+          <text id="labH2" class="lab" x="874" y="440">5 cm</text>
           <!-- formula -->
           <text id="f1" class="lab big" x="160" y="735">Area = ½ × b × h</text>
           <text id="f2" class="lab big" x="560" y="735" style="fill:var(--volt)">= 20 cm²</text>

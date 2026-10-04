@@ -1295,6 +1295,19 @@ balance_scale rows read as "failed" in the n = 30 table. A gate that cannot run 
 and re-runs those keys, and in a lesson it reveals nothing (`gate_unavailable`), which is the fallback ladder, not a build
 result.
 
+### rj-w2f-network-as-build-failure
+Tried: the router bench recorded every race as a build result unless the gate itself was down. What broke: the container
+restarted at the end of the n = 30 run, every arm of the last race of 11 archetypes failed with `network` in 1-20 ms, and
+the table read 29/30 for archetypes that were 30/30 (one, bar_chart_read, had its primary arm cut by the wire while the other
+two failed real checks; it was re-run too). In a lesson the same fault fed the breaker's failure streak, so 8 network blips
+would have shut Studio for 15 minutes with nothing spent. Replaced by `w2f-builder-unreachable-is-infra`.
+
+### rj-w2f-bench-lead-from-route
+Tried: counting P(pass by lead) against the archetype's own `routes.json leadMs`. What broke: `--write` sets that to
+1.1 x p90 (e.g. 35.9 s for bar_chart_read), so re-running `--write` over the SAME rows re-counted against ~35 s instead of
+90 s, and the inbox titles said "passed by the 39 s lead" for passes counted at 90 s. A re-run with no new data would have
+flipped live archetypes to library-only. Replaced by `w2f-bench-fixed-lead`.
+
 ## W2-G (2026-10-04)
 
 ### rj-w2g-identity-word-safety

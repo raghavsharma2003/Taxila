@@ -58,6 +58,17 @@ def sstep(a, b, x):
     t = np.clip((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t)
 
 
+# the bindi: a tiny hole (the plate's hand-read bindi is a few px off; it ghosted at small yaw)
+holes.append({"c": [525.0, 354.0], "h": [13.0, 13.0], "r": 12.0, "f": 7})
+src_kf = open("scripts/character/puppet2d/polish-r4/keyfield.py").read()
+_ns = {}
+exec(src_kf[src_kf.index("LM = {"):src_kf.index("FILES =")], _ns)
+LMk = _ns["LM"]
+import os as _os
+if _os.path.exists(f"{K}/lmR-r4.json"):
+    _m = json.load(open(f"{K}/lmR-r4.json"))
+    for _k in LMk:
+        LMk[_k][2] = tuple(_m[_k])
 MOUTH = {"c": [530, 615], "h": [96, 52], "r": 40, "f": 12}   # static stand-in for the colour band only (runtime hole is live)
 for side, f in (("L", "yawL-0"), ("R", "yawR-2")):
     im = np.asarray(Image.open(f"{K}/{f}.png").convert("RGB")).astype(np.float32)
@@ -89,6 +100,14 @@ for side, f in (("L", "yawL-0"), ("R", "yawR-2")):
         if (dist[b] < 12).any() and b.sum() > 30:
             keep |= b
     lockm = ndi.binary_dilation(keep, iterations=3)
+    # the plate's own brows go too (the live brows draw in their holes; a plate brow edge peeked out as a speck)
+    ki = 1 if side == "L" else 2
+    for a_, b_ in (("browL_out", "browL_in"), ("browR_in", "browR_out")):
+        (xa_, ya_), (xb_, yb_) = LMk[a_][ki], LMk[b_][ki]
+        bx0, bx1 = int(min(xa_, xb_) - 22), int(max(xa_, xb_) + 22)
+        by0, by1 = int(min(ya_, yb_) - 24), int(max(ya_, yb_) + 16)
+        sub = np.zeros_like(lockm); sub[by0:by1, bx0:bx1] = True
+        lockm |= ndi.binary_dilation(sub & (lum(im) < 120), iterations=3)
     im8 = im.clip(0, 255).astype(np.uint8)
     inp = cv2.inpaint(im8[..., ::-1].copy(), (lockm * 255).astype(np.uint8), 7, cv2.INPAINT_TELEA)[..., ::-1].astype(np.float32)
     im = np.where(lockm[..., None], inp, im)

@@ -19,6 +19,7 @@ which is 00:00 to 02:30 IST on 5 Oct. No product code was changed and nothing wa
   `gpt-4o-mini-tts` (10 calls, well under USD 0.01). They were injected into `getUserMedia` through a controllable fake
   microphone. Production's own `/api/voice/transcribe` heard every clip correctly (8/8 and 3/3, ASR confidence
   0.94-0.99). So every voice failure below is **the teacher's reasoning, not ASR**.
+- **Volume:** 13 lesson starts (some resumes, practice and ask), 52 successful `/api/lesson/turn` replies, 11 voice turns.
 - **Typed lessons:**
   - class 7, tablet: an owner-probe script (`k-t7-*`, `l-t7-*`)
   - class 6, laptop: a working-child script (`k-d6-*`, `l-d6-*`)
@@ -60,26 +61,26 @@ performance, accessibility, conversation (the teacher's reasoning).
 
 | rank | id | one line |
 |---|---|---|
-| 1 | T-7 | Asking "Can we play a game instead?" **ends the lesson** — "game" is classified as "they want to stop" |
+| 1 | T-7 | "Can we play a game instead?" (class 4) and "can we talk about something else" (class 7) both **end the lesson**: they are classified as "they want to stop" (2/2) |
 | 2 | T-1 | Child says "a cube has 6 faces, 12 edges, 8 corners"; she then asks "how many flat faces does a dice have?" **three times** |
 | 3 | T-6 | "I want to end the lesson now" ends it instantly, no check-in, no wrap-up (owner #7 reproduced, n=1/1) |
-| 4 | S-1 | Zero diagrams, whiteboard writes, images, animations or Studio artifacts in 5 lessons / 40+ turns; "show me a diagram" → "I can describe it" |
+| 4 | S-1 | No diagram, drawing, image, animation or Studio artifact in 52 lesson turns; "show me a diagram" → "I can describe it"; the "whiteboard" is the question restated as text |
 | 5 | K-1 | Class 6 practice asks "7 plus 2 kitna hota hai?"; class 4 asks "how many faces does a dice have" (owner #2 reproduced) |
-| 6 | G-1 | "Make a game for this" → "Lakhs-Crores Scoreboard khelo: main number bolunga…" — a quiz with a calculator pad (owner #3 reproduced) |
+| 6 | G-1 | "Make a game for this" → "Lakhs-Crores Scoreboard khelo…" / "game: place-value detective — find the 6" — a renamed question (2/2, owner #3 reproduced) |
 | 7 | O-12 | Time picker on phone: tap the field and type 04:30 PM → value unchanged; on the onboarding step the same typing turned 07:00 AM into 07:00 PM (owner #11 reproduced) |
 | 8 | H-9 | After all setup, a child at night gets "Lessons open at 7:00 pm" as the first lesson — a dead end with one button |
 | 9 | T-3 | Diversion: "who's the best cricketer?" — once engaged and continued, once brushed off; never parked, never returned to (owner #6) |
 | 10 | T-4 | "This is too easy, I'm not a baby" → "You're right" then an easier question (matchbox faces) |
 | 11 | T-5 | "Explain it a different way" → same question, same words, with a hint appended |
-| 12 | G-2 | Wrong engine mounted: odd-number sequence question shows "paint a shape of area 7" (geoboard) and it stays on screen for later questions |
+| 12 | G-2 | Module and question disagree: "paint area 7" for an odd-number sequence; "make 99,99,999" (no crore column) for "value of 6 in 5,06,08,020"; "find the next number" keypad for "Is Ravi right?" (3 of 6 mounts) |
 | 13 | X-1 | Whole visual language is cartoon flat-vector, toddler props (baby animals, building blocks, rolling pin, watering can, "Garden") — age-wrong for 9-15 (owner #1) |
-| 14 | L-12 | Number-pad answer mode traps the child: no keyboard, no "Type", 220 px-tall calculator keys; and no comma key for a question that demands Indian commas |
+| 14 | L-12 | Number-pad mode traps a typing child. There is no keyboard and "123" does not bring one back, so 5 typed lines in a row could not be sent (class 6) and the class 7 run stalled. The keys are 220 px tall, and there is no comma key for a question that demands Indian commas |
 | 15 | L-13 | Multiple-choice mode removes the keyboard: the child cannot type "why?" or "I don't get it" |
 | 16 | A-1 | "Ask" a question → it is injected into the half-finished lesson; the answer pivots back to the lesson topic |
 | 17 | R-1 | "Practice" is not practice: it reopens the lesson desk at the warm-up ("Tumhe maths mein kaunsa topic pasand hai?") |
 | 18 | E-1 | End summary after a correct answer: "You listened to Babu today." — no cards, tried 0 |
 | 19 | L-1 | Click-to-speak: tap Talk, speak, tap Done; she can be cut off by tapping; no hands-free (owner #10) |
-| 20 | C-1 | Laptop home: "Getting today ready" skeleton still at 9 s with no Start button; 45% of the screen is empty navy |
+| 20 | C-1 | Home sometimes stuck on "Getting today ready" with no Start (2/11 loads, ≥9 s); 45% of the laptop screen empty navy |
 | 21 | T-2 | Opening question ignored: "What shape has a round face?" → child "haan, chalo" → she asks something else |
 | 22 | L-2 | Teacher face is a static flat SVG; the "talking" state shows a fixed toothy smile; 45-55% of a phone screen |
 | 23 | T-8 | "Show me a diagram" is classified as "you did not catch it clearly" (repair) |
@@ -94,7 +95,7 @@ performance, accessibility, conversation (the teacher's reasoning).
 | 32 | O-14 | Language chosen in onboarding (Hindi-English mix) shows as English in Controls and lessons ran in English (class 4, n=1/3) |
 | 33 | PC-6 | No date picker anywhere: no days off, exams, holidays or weekly schedule in Controls |
 | 34 | L-3 | Class 4 lesson dock has no keyboard at all — a child who can't or won't speak cannot answer |
-| 35 | T-10 | Turn latency after Done: median 3.6 s, max 9.3 s (n=11 voice turns) with a static face — feels like a call centre |
+| 35 | T-10 | Turn latency: voice Done → reply median 3.9 s, max 9.3 s (n=11); typed send → reply median 2.6 s, max 9.5 s (n=25), with a frozen face |
 | 36 | C-3 | Class 4 home has no topic name, no Ask, no navigation; class 6-7 home hides the teacher's face at the bottom of a tall blank card |
 | 37 | X-2 | Every lesson, Studio and practice surface is the same beige card stack — no motion, no depth, no game-grade UI |
 | 38 | O-8 | Consent default "Remember what your child likes: No" silently discards the interests the parent just picked |
@@ -172,7 +173,7 @@ performance, accessibility, conversation (the teacher's reasoning).
 
 | id | screen | sev | category | feels | fix |
 |---|---|---|---|---|---|
-| C-1 | laptop home `s-d6-d-00` | **blocker** | failure visible, performance | "Getting today ready" skeleton still at 9 s; no Start; navy void; avatar shows a bare "O" circle | Server-render today's plan; never block Start on the plan |
+| C-1 | laptop home `s-d6-d-00` | **blocker** | failure visible, performance | Intermittent: "Getting today ready" skeleton still showing at 9 s with no Start button, a navy void, and the avatar as a bare "O" circle (2 of 11 home loads, at d6 and t7). In 9 clean loads Start appeared in 0.80-1.44 s (median 0.93 s), after a skeleton at ~0.7 s. "The app is broken today" | Server-render today's plan; never block Start on the plan; time out to a default plan |
 | C-2 | tablet home `s-t7-t-01` | major | failure visible | Same skeleton with Ask only; picture missing ("O") | As C-1 |
 | C-3 | class 4 home `s-m4-m-01` | major | age-wrong design | Teacher bust fills 55% of the screen; "Today's lesson" has no topic; Garden/Practice/Notebook tiles | Show the topic, time and a hook; drop the garden |
 | C-4 | phone home `s-m4-m-01` | major | performance | Tile images pop in late (blank tiles in the first shot) | Inline small art; reserve space |
@@ -206,6 +207,8 @@ performance, accessibility, conversation (the teacher's reasoning).
 | L-17 | "Babu is thinking" | minor | visual quality | Text label plus a spinner word; no thinking animation | Thinking expressed by the teacher (look, gesture) |
 | L-18 | tablet lesson `k-t7` | major | visual quality | Teacher shrinks to a 80 px circle with an "AI" badge during practice; the screen is a form | Composed layout that keeps the teacher present |
 | L-19 | laptop lesson `l-d6-d-answer-12` | major | visual quality | Face card on the left; caption fragment "3," floating under it; bottom-left empty | Coherent 3-zone layout |
+| L-21 | choices `k-d6-d-work3-16` | major | visual quality | Choice text cut mid-word: "Yes, because every sequence adds the sam", "the next number is alway" | Wrap text; size cards to content |
+| L-22 | dock while she talks | minor | flow | Typing is disabled while she speaks (my lines waited up to 50 s for the input to reopen) — no barge-in by text either | Let the child type any time; she yields |
 | L-20 | "Wait" button `k-d6-d-work-06` | minor | copy/tone | Unexplained "Wait" chip on the dock | Label ("Give me a sec") |
 
 ## T — Conversation intelligence (what she says)
@@ -224,13 +227,20 @@ second lesson of 3 turns (`v-m4-m-end.json`). The typed lessons are in `l-*.json
 | T-7 | class 4 "game" | **blocker** | conversation | "Can we play a game instead?" → move "they want to stop: stop now" → lesson **ended** | Game request = engagement signal → launch a real game on the concept |
 | T-8 | class 4 "diagram" | **blocker** | conversation | "Show me a diagram" → move "you did not catch it clearly" → "I can describe it: draw a cube like a box" | Show it — whiteboard or Studio visual within 2 s |
 | T-9 | class 7 "too easy" | major | conversation | "Fair point" then the comma rule for crores — a skim, not a level change | Same as T-4 |
-| T-10 | voice latency | major | performance | Done → reply 2.1-9.3 s (n=11, median ≈3.6 s), face frozen | Stream; backchannel; start speaking within 700 ms |
+| T-10 | turn latency | major | performance | Voice: Done → `/turn` reply 2.1-9.3 s (n=11, median 3.9 s). Typed: send → reply 1.7-9.5 s (n=25, median 2.6 s). Audio starts later still; the face is frozen throughout | Stream; backchannel; start speaking within 700 ms |
 | T-11 | ASR misfire `y-m-04` (tone, earlier run) | major | conversation | Non-speech noise heard as "keeda" → "keeda means insect. Did you want to talk about an insect?" | Confidence and VAD gate; "didn't catch that" instead of acting on garbage |
 | T-12 | language | minor | conversation | Lesson language flips between English and Hinglish turn to turn (class 4: English, then "Theek hai, Aarav. Aaj ka lesson yahin rokte hain") | Hold the chosen register |
 | T-13 | class 7 Minecraft (earlier run) | major | conversation | "Tell me about Minecraft first" → "Minecraft mein blocks… 1 crore blocks ko commas mein kaise likhoge?" — a one-line hijack back to the topic | Brief real engagement, then a link back that feels earned |
 | T-14 | class 6 "12" | minor | conversation | Warm-up "Which topic is familiar?" → "I think it's 12" → "12 tumne kis sequence ke liye socha?" — good recovery, but the warm-up question is vague | Concrete hooks |
 | T-15 | wrap | major | flow | Lesson ends with no recap, no teach-back, no "next time" | Short recap + what's next |
 | T-16 | address | minor | copy/tone | Teacher payload `addressedAs: "Babu didi"` / "Babu bhaiya" — didi/bhaiya appended to a custom name | Don't append kin terms to custom names |
+| T-18 | class 7 "something else" | **blocker** | conversation | "Can we talk about something else" → "Bilkul, Aarav. Maths yahin stop karte hain… Bye, take care!" → lesson ended (owner #8: steering treated as quitting) | Steering = change the activity or angle; never end |
+| T-19 | class 7 Minecraft | major | conversation | "Who made Minecraft?" → one fact + the old question; "no seriously, tell me first" → the **same** fact again + the old question. No parking, no real engagement | See T-3 |
+| T-20 | every reply | major | conversation, copy/tone | The question is appended verbatim after her sentence, so it is said twice in one turn ("“Chaar lakh…” ko… likho. 'Chaar lakh…' ko… likho.") | Compose the turn once; never concatenate the item text |
+| T-21 | class 6 "harder" | major | conversation | "Give me a harder one" → "challenge: 1, 3, 6, 10 — agla number? 11 ke baad agle do odd numbers kaun se hain?" — two questions at once; then "48 is challenge ka answer nahi: agla difference 5 hoga" gives the method away | One question per turn; really change the item |
+| T-22 | class 6 "why?" | minor | conversation | "why?" → a hint for the current item instead of the reason | Answer why, then continue |
+| T-23 | class 6 correct choice | minor | conversation | Correct "Not necessarily…" → "theek hai — ek naya sequence: 2, 4, 6, 8. Ravi kehta hai…" (re-asks), credit only on the next turn | Credit at once |
+| T-24 | class 6 retrieval | minor | copy/tone | "Jaldi batao!" (quick, tell me!) — pressure for a slow thinker | Calm prompts |
 | T-17 | API | major | failure visible | `/api/lesson/turn` sends the Director's internal `move.shape` prompt to the client ("kit contexts: ludo dice, carrom-striker box… never 'samjha?'") | Strip internal fields from child responses |
 
 ## K — Content level
@@ -242,6 +252,7 @@ second lesson of 3 turns (`v-m4-m-end.json`). The typed lessons are in `l-*.json
 | K-3 | hooks | major | age-wrong design | "At the end you will teach this to Golu (a pretend baby elephant just starting school)", "Bittu ko yahi trick sikhaoge" | Teach-back to a peer or a younger sibling, framed as being the expert — no baby animals |
 | K-4 | class 6 sequences | major | content level | 1, 3, 5, 7 → "next number?" then "7 ke baad 2 jodkar" — repeats an easy step after a wrong "48" | Diagnose the error ("48? tell me how") and adapt |
 | K-5 | class 7 lakhs/crores | minor | content level | Good level (7,35,42,018 in words), but no stretch beyond reading numerals | Estimation, comparison with millions, real data |
+| K-7 | grading | major | content level | "Write with Indian commas" answered "425000" (no commas: the pad has no comma key) → "Sahi: 4,25,000", ticked on the summary | Grade the skill asked; accept typed commas |
 | K-6 | class 6 practice | major | content level | Practice items repeat the lesson warm-up rather than spaced, mixed review | Practice = mixed retrieval of secured skills |
 
 ## G — Activities and games (modules)
@@ -253,13 +264,19 @@ second lesson of 3 turns (`v-m4-m-end.json`). The typed lessons are in `l-*.json
 | G-3 | all lessons | major | flow | 1 module mount in ~25 typed turns; 0 in 11 voice turns | Activities driven by the conversation, frequently |
 | G-4 | geoboard | major | visual quality | Dotted 6x6 grid, Clear/Check — a worksheet | Game-grade interaction, feedback, juice |
 | G-5 | geoboard | minor | copy/tone | "kshetrafal" in Devanagari-transliterated Hindi for an English-medium child | Match school medium for terms |
+| G-7 | class 7 place-value `k-t7-t-probe4-26` | **blocker** | content level, broken control | "Yeh number banao: 99,99,999" with columns Das lakh…Ikai, while the question is "value of 6 in 5,06,08,020" — and there is no crore column at all | Generate the module from the item; schema-check columns ≥ the number |
+| G-8 | class 7 "Chhoti paheli" `k-t7-t-probe4-11` | major | age-wrong design | A "puzzle" card that restates the question I had already answered ("Your answer: 10 ✓"), three stacked tiles and a book emoji | Puzzles that are puzzles; never re-ask an answered item |
+| G-9 | class 6 "show me a picture" | **blocker** | failure visible | Server mounted Forge `scene@1` template `choice-card@1` titled "Let's check" (a quiz, not a picture); nothing rendered in 21 s (no frame) | A real picture; when the build fails, keep the current visual and say nothing |
+| G-10 | class 6 patterns `k-d6-d-work3-18` | major | content level | The requested representation was "difference ladder + growing dot squares". It rendered as an "Agle number dhoondo 1 4 7 ? ?" keypad, under the question "Is Ravi right?" | Render the representation the Director asked for |
+| G-11 | modules | major | visual quality | 3 of 6 mounts were unmounted on the very next turn: activities flash in and vanish | Activities persist while relevant; exits are animated and explained |
+| G-12 | coverage | major | flow | 6 mounts in 52 turns (12%); 0 in class 4 | Conversation-driven, frequent activities |
 | G-6 | earlier audit | major | failure visible | Earlier gap audit: 7 of 9 mounts named non-existent engines → "This activity can't open here" | Never mount an unknown engine; invisible fallback |
 
 ## S — Studio, whiteboard, visuals
 
 | id | where | sev | category | feels | fix |
 |---|---|---|---|---|---|
-| S-1 | every lesson | **blocker** | flow | 0 diagrams, whiteboard writes, images, animations or Studio artifacts across 5 lessons / 40+ turns, including explicit "show me a diagram", "show me on the whiteboard", "show me a picture" | Frequent, conversation-driven generation (owner #14) |
+| S-1 | every lesson | **blocker** | flow | No diagrams, drawings, images, animations or Studio artifacts in any lesson, including after explicit requests: "show me a diagram", "show me on the whiteboard", "show me a picture". Whenever `ui.whiteboard` was present (18 of 29 turns), it was only a plain-text copy of the question, e.g. `{"kind":"text","value":"A dice is a cube. How many flat faces does it have?"}`. "It's just a chat with a cartoon." | Frequent, conversation-driven generation (owner #14): real diagrams and animations on the board within 2 s of the request |
 | S-2 | Notebook "made for you" | major | flow | No "made for you" shelf content ever appears | Forge output lands in the notebook |
 | S-3 | whiteboard | major | visual quality | Teacher's shape text says "point at the whiteboard anchor" but no whiteboard is on screen | Wire the board; cinematic writing |
 | S-4 | Studio | major | flow | No Studio surface was reachable by a child in production | Ship W2-H Studio in the lesson |
@@ -304,9 +321,10 @@ second lesson of 3 turns (`v-m4-m-end.json`). The typed lessons are in `l-*.json
 | id | where | sev | category | feels | fix |
 |---|---|---|---|---|---|
 | E-1 | summary `v-m4-m-27` | **blocker** | copy/tone | "What you did today: You listened to Babu today." after I correctly said 6/12/8; `cards: []`, `tried: 0` | Credit what I did ("you nailed 6 faces, 12 edges, 8 corners") |
-| E-2 | next lesson | major | flow | `nextTitle: "Right angles and circles"`, but Start reopens "Faces, edges and corners" from "Hello Aarav!" (3 lessons, same opener) | Resume or advance; reference last time |
+| E-2 | next lesson | major | flow | Class 4: `nextTitle: "Right angles and circles"`, but Start reopens "Faces, edges and corners" from "Hello Aarav!" (3 starts, same opener). Class 6: 4 starts of "Number sequences", each from the warm-up "Maths mein tumhe kaunsa topic pasand hai?" | Resume or advance; reference last time |
 | E-3 | summary | major | visual quality | One line and a Finish button, 80% empty | A real recap moment: what I made, what's next |
 | E-4 | summary | minor | flow | No "show my grown-up" share, no next step | Share card; next challenge |
+| E-6 | class 7 summary `k-t7-t-probe4-31` | minor | visual quality | Better: two cards "You said 10 ✓ · On your own". But 70% of the screen is empty, and an interim "Saving today's lesson" state shows first | Recap moment; no visible saving state |
 | E-5 | parent note vs child summary | major | copy/tone | Parent note: "Aarav correctly stated the cube counts"; child summary: "You listened". Two stories of one lesson | One evidence source for both |
 
 ## PC — Parent corner (gate, home, progress, lessons, notes, controls, children, data, help, PIN, more)
@@ -348,6 +366,7 @@ second lesson of 3 turns (`v-m4-m-end.json`). The typed lessons are in `l-*.json
 | X-7 | laptop | major | visual quality | Laptop = sparse column with huge voids | Desktop layouts |
 | X-8 | performance | major | performance | Home plan and images arrive late (C-1, C-4) | Server-side plan, preloading |
 | X-9 | console | minor | failure visible | 401/409/422 errors in console on normal flows | Quiet states |
-| X-10 | dark mode | minor | visual quality | Theme "Match phone" exists, but the screens are light-only in the shots | Verify dark |
+| X-10 | dark mode | minor | visual quality | Theme "Match phone" exists; dark was not exercised in this audit (all shots light) — unverified | Verify dark on every screen |
 | X-11 | accessibility | minor | accessibility | Waveform-only answer echo, icon-only CC, PIN pad ignores the keyboard | Labels, keyboard, transcripts |
+| X-13 | what worked | — | (pass) | "Explain it differently, use cricket" → a cricket scoreboard analogy for crores (class 7); ASR heard 11/11 clips right; the class 7 summary cards are honest | Keep and build on these |
 | X-12 | safety floor | — | (pass) | AI disclosure at hello; Childline 1098 and Tele-MANAS 14416 on pause, help and landing — present and correct | Keep exactly; restyle only |

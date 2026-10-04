@@ -12,7 +12,7 @@ import { frameRuntimeSource, type RuntimeInput } from "./runtime.ts";
 const SCRIPT_RE = /<script\b[^>]*>([\s\S]*?)<\/script\s*>/gi;
 export const scriptsOf = (fragment: string): string[] => [...String(fragment).matchAll(SCRIPT_RE)].map((m) => m[1]);
 
-function bytes(s: string): Uint8Array { return new TextEncoder().encode(s); }
+function bytes(s: string): Uint8Array<ArrayBuffer> { return new TextEncoder().encode(s) as Uint8Array<ArrayBuffer>; }
 function b64(buf: ArrayBuffer): string {
   const a = new Uint8Array(buf);
   let s = "";

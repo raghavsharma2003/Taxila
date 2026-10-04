@@ -1,0 +1,11 @@
+--- a/server/director/say.js	2026-10-04 19:36:48.830044069 +0000
++++ b/server/director/say.js	2026-10-04 19:36:58.592791575 +0000
+@@ -110,7 +110,7 @@
+  * What the child can act on in this response: Director chips, or a module mounted in the tray.
+  * @param {{ chips?: unknown[] } | null | undefined} ui  @param {{ id?: string } | null | undefined} module  state.module after step()
+  */
+-export const screenHasTargets = (ui, module) => !!(ui?.chips?.length || module?.id);
++export const screenHasTargets = (ui, module) => !!(ui?.chips?.length || module?.id || (ui?.studioSlot?.artifact && ui.studioSlot.artifact.kind !== "whiteboard"));
+ 
+ /** G-SAY-1 → true when the line refers to the screen and nothing on it can be acted on. */
+ export const screenProblem = (text, ui, module) => refersToScreen(text) && !screenHasTargets(ui, module);

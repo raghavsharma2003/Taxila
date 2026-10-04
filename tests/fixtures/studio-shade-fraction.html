@@ -1,0 +1,117 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e9;font-family:system-ui,sans-serif;color:#583c30}
+  #game{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 50% 45%,#fffdf7 0,#fff7e9 72%)}
+  h1{margin:13px 16px 2px;text-align:center;font-size:20px;line-height:25px;font-weight:800}
+  #instruction{text-align:center;font-size:13px;line-height:19px}
+  #target{position:absolute;top:54px;right:18px;min-width:54px;height:54px;padding:0 8px;border-radius:17px;background:#fff;box-shadow:0 3px 0 #ead7bf;display:grid;place-items:center;font-size:22px;font-weight:800;color:#a44734}
+  #picture{position:absolute;left:18px;top:91px;width:324px;height:157px;overflow:visible}
+  [data-part]{cursor:pointer;transition:fill .22s ease,filter .22s ease,transform .18s ease;transform-box:fill-box;transform-origin:center;stroke:#fff7e9;stroke-width:3}
+  [data-part]:active{transform:scale(.94)}
+  [data-shaded="false"]{fill:#f5ce91}
+  [data-shaded="true"]{fill:#e98262;filter:drop-shadow(0 2px 2px #b85a4440)}
+  #message{position:absolute;left:16px;right:16px;bottom:66px;height:19px;text-align:center;font-size:14px;font-weight:700;color:#a75d42}
+  #check{position:absolute;left:122px;bottom:10px;width:116px;height:52px;border:0;border-radius:18px;background:#648b73;color:white;font:800 17px system-ui,sans-serif;box-shadow:0 5px 0 #416b53;cursor:pointer;transition:transform .16s,box-shadow .16s}
+  #check:active{transform:translateY(4px) scale(.97);box-shadow:0 1px 0 #416b53}
+  #check:disabled{opacity:.7}
+  .bump{animation:bump .48s ease}
+  @keyframes bump{50%{transform:scale(1.08)}}
+</style>
+<div id="game" data-item="">
+  <h1 id="title"></h1>
+  <div id="instruction"></div>
+  <div id="target" data-target></div>
+  <svg id="picture" viewBox="0 0 324 157" aria-hidden="true"></svg>
+  <div id="message" aria-live="polite"></div>
+  <button id="check" data-action="check" type="button"></button>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, items=p.items;
+  const game=document.getElementById('game'), picture=document.getElementById('picture');
+  const title=document.getElementById('title'), instruction=document.getElementById('instruction');
+  const target=document.getElementById('target'), message=document.getElementById('message');
+  const check=document.getElementById('check');
+  const ns='http://www.w3.org/2000/svg';
+  let index=0, locked=false;
+  title.textContent=Studio.t('title');
+  instruction.textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+  function draw(){
+    const item=items[index];
+    game.dataset.item=item.id;
+    target.textContent=item.n+'/'+item.d;
+    message.textContent='';
+    picture.replaceChildren();
+    for(let i=0;i<item.d;i++){
+      let shape;
+      if(p.picture==='pizza'){
+        shape=document.createElementNS(ns,'path');
+        const a=-Math.PI/2+i*2*Math.PI/item.d;
+        const b=a+2*Math.PI/item.d;
+        const cx=162,cy=78,r=73;
+        const x1=cx+r*Math.cos(a),y1=cy+r*Math.sin(a);
+        const x2=cx+r*Math.cos(b),y2=cy+r*Math.sin(b);
+        shape.setAttribute('d',`M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${b-a>Math.PI?1:0} 1 ${x2} ${y2} Z`);
+        shape.setAttribute('stroke-linejoin','round');
+      }else{
+        shape=document.createElementNS(ns,'rect');
+        shape.setAttribute('x',12+i*300/item.d);
+        shape.setAttribute('y',38);
+        shape.setAttribute('width',300/item.d);
+        shape.setAttribute('height',80);
+        shape.setAttribute('rx',Math.min(9,90/item.d));
+      }
+      shape.dataset.part=i;
+      shape.dataset.shaded='false';
+      shape.addEventListener('click',()=>{
+        if(locked)return;
+        shape.dataset.shaded=shape.dataset.shaded==='true'?'false':'true';
+        message.textContent='';
+        Studio.event('part',{index:i});
+      });
+      picture.append(shape);
+    }
+  }
+  check.addEventListener('click',()=>{
+    if(locked)return;
+    locked=true;
+    check.disabled=true;
+    const n=picture.querySelectorAll('[data-shaded="true"]').length;
+    Studio.event('check',{n:n,d:items[index].d});
+    Studio.answer({n:n,d:items[index].d});
+  });
+  Studio.onVerdict(({correct})=>{
+    message.textContent=Studio.t(correct?'right':'wrong');
+    message.classList.remove('bump');
+    void message.offsetWidth;
+    message.classList.add('bump');
+    if(correct){
+      setTimeout(()=>{
+        index++;
+        if(index===items.length){
+          picture.replaceChildren();
+          game.removeAttribute('data-item');
+          target.textContent='';
+          instruction.textContent='';
+          title.textContent=Studio.t('done');
+          message.textContent='';
+          check.style.display='none';
+          Studio.done();
+        }else{
+          draw();
+          locked=false;
+          check.disabled=false;
+        }
+      },850);
+    }else{
+      locked=false;
+      check.disabled=false;
+    }
+  });
+  draw();
+  Studio.ready();
+})();
+
+</script>

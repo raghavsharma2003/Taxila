@@ -198,7 +198,9 @@ function reteachMis(reteach) {
 }
 
 /** Injected dependencies (tests swap them; production never does). */
-const deps = { planBuild, q8Strings, planWhiteboard, gate: (job) => gateClient().gate(job), buildRace: null, writeEvidence: writeStudioEvidence, mountRow: null, q: null };
+/** A gate lane exists (the studio-qa service, or a local Chromium where the operator allows it: qa/pool.js gateClient). */
+const gateConfigured = () => !!process.env.STUDIO_QA_URL || process.env.STUDIO_QA_LOCAL === "1";
+const deps = { planBuild, q8Strings, planWhiteboard, gateAvailable: gateConfigured, gate: (job) => gateClient().gate(job), buildRace: null, writeEvidence: writeStudioEvidence, mountRow: null, q: null };
 export const _setDeps = (d) => Object.assign(deps, d);
 async function dbq(text, params) {
   if (deps.q) return deps.q(text, params);
@@ -239,12 +241,18 @@ async function runPiece(L, piece) {
     const ok = await mountLibrary(L, piece, lib, a).catch(() => false);
     if (ok) return;
     piece.reasons.push("studio.gmount_failed");
+  } else if (decision.action === "live" && !deps.gateAvailable()) {
+    // no gate lane in this process: a live build could never be revealed (never un-gated), so none is paid for
+    piece.reasons.push("studio.gate_down");
   } else if (decision.action === "live" && plan && Object.keys(strings).length) {
     L.liveBuilds++;
     piece.state = "building";
     piece.etaAt = Date.now() + (decision.deadlineMs ?? 90_000);
     const r = await race({ ...plan, strings }, { band: idx.band, lang: idx.lang, opportunistic: decision.opportunistic, identity: piece.identity,
-      onStatus: (s) => { if (s.state === "ready") piece.etaAt = Date.now(); } }).catch(() => null);
+      onStatus: (s) => { if (s.state === "ready") piece.etaAt = Date.now(); },
+      // the streamed paint goes to the wire for the veil (≤ 1 per second; the client sanitises it and shows it inert)
+      onPartial: (_arm, html) => { const t = Date.now(); if (t - (piece.partialAt ?? 0) < 1000) return; piece.partialAt = t; push(L, { t: "partial", intentId: piece.intentId, html: String(html).slice(0, 60_000) }); },
+    }).catch(() => null);
     piece.usd = r?.usd ?? 0;
     if (r?.ok && r.winner && revealable({ gate: r.winner.gate })) {
       const put = await putBuild({ identity: piece.identity, archetype: a.id, kind: a.kind, fragment: r.winner.html, plan, record: r.winner.record ?? {} }).catch(() => null);
@@ -337,7 +345,7 @@ export const studioSeam = {
     }
     if (L.safety || L.turn < STUDIO_LIMITS.firstRevealTurn || L.turn - L.lastRevealTurn < STUDIO_LIMITS.turnsBetweenReveals) return view;
     const next = pieces.filter((p) => isRevealable(p) && p.neededAtMs <= clock).sort((x, y) => x.neededAtMs - y.neededAtMs)[0];
-    if (next) view.propose = { reveal: next.intentId };
+    if (next) { view.propose = { reveal: next.intentId }; if (next.facts) view.revealing = next.facts; }
     return view;
   },
 
@@ -543,6 +551,17 @@ export function slotSnapshot(lessonId, intentId) {
   const p = L?.pieces.get(intentId);
   if (!p) return null;
   return slotOf(p, p.state === "planning" && p.kind === "whiteboard" ? "planning" : p.state);
+}
+
+/**
+ * The telegraphic facts row for a turn view (both voice lanes; director/modules.js factsRow shape): the piece on screen,
+ * else the piece the turn proposes to reveal (only when the kernel accepted that reveal: pass `revealAccepted`).
+ */
+export function factsRowOfView(view, { revealAccepted = false } = {}) {
+  const f = view?.onScreen ?? (revealAccepted ? view?.revealing : null);
+  if (!f) return null;
+  const parts = [f.archetype, ...Object.entries(f.onScreen ?? {}).map(([k, v]) => `${k} ${v}`)];
+  return `on screen now (values to use when you point at the screen; never what is hidden): ${parts.join(" · ")}`.slice(0, 360);
 }
 
 /** The seam with every entry point behind seamSafe (the brain's call sites use these through seamSafe anyway). */

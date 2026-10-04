@@ -1,0 +1,877 @@
+prompt-patch.diff: the proposed teacher-line writer and TTS-compiler change (TALKING-RULES.md section 1.3 and section 2), 2026-10-04
+====================================================================================================================
+
+For the main loop to apply: `git apply docs/research/voice/v4/prompt-patch.diff`. `git apply --check` was clean against
+the live tree at 19:40 UTC on 2026-10-04. Nothing under server/ or src/ was edited by this workstream.
+This patch is a SUPERSET of talking-rules.patch, so apply one or the other, not both.
+
+STATUS: nobody has heard speech produced by this code path. The round-3 renders (renders/manifest.json) are the
+evidence for the direction. Arms B, C and D used hand-written lines and plans (lines.mjs), not this code.
+The decision belongs to the round-3 ear test (TALKING-RULES section 6).
+
+WRITER (the words she says)
+- shapes.js: SPOKEN_SHAPE (one telegraphic shape per situation: think, correct, success, wonder, explain, greet,
+  effort, ask, and joke), plus situationOf(move) and spokenNote(). These are shapes, never lines: no Hindi word, marker,
+  praise phrase or quote. A test enforces this, under repo law `recited-prompt`.
+- compile.js: a heard turn gets a "- said aloud (a note, not words to say): ..." line in the MOVE section.
+  - Droppable at SPOKEN_DROP 4.5: it sheds after brief callbacks, wins, interests and vibe, and before relationship,
+    misconceptions and content. It sheds instead of ever making a section throw.
+  - The voice lane's reply answers a branch, so its note covers both outcomes: right → success, otherwise → correct.
+  - The joke shape rides on every heard turn, because a child may joke on any turn.
+- FIX vs talking-rules.patch: the cascade lane is the one DragonHD Diya actually speaks, and it compiles as lane "text"
+  (instructions.js: state.mode "cascade" → "text"). talking-rules.patch gated SPOKEN_NOTE on lane === "voice", so the
+  Diya lane never got it. Here, instructions.js passes spoken: true for voice and cascade. The screen-read text lane
+  gets neither note.
+- Budget, measured over every kit file with the first 4 items of every topic: 3 languages × 2 age bands × 4 variants
+  (cascade rung 0/3, voice rung 0/3), with a full-size brief. That is 79,680 compiles.
+  - The note was shed 0 times. No other part was newly shed. No BudgetError.
+  - It adds 105 estimated tokens (156 on a voiced voice turn, which carries both branch shapes).
+  - Script: probe/measure-spoken-note.mjs.
+- NOT measured: whether the model follows a mid-prompt note. The last section has no room, and position is mechanism:
+  a rule buried mid-brief fired 0 times in 8 in html-portfolio. The next step is a fire-rate eval of the said-aloud
+  line on the cascade lane: generate replies per situation and score the echo, the key word last and the feeling held.
+- NOT in this patch: the Roman → Devanagari step for the Hindi words before DragonHD (TALKING-RULES section 5.3). Diya
+  read पैंतीस as "पेंटीज" 4 of 4 times from Roman input. Every v3 and v4 render was made from Devanagari the Director
+  never writes. This step blocks any live gain on numbers.
+
+TTS COMPILER (delivery plan to DragonHD SSML)
+- From talking-rules.patch:
+  - PACE_DELTA.brisk 0;
+  - CALM_PITCH -8;
+  - breakFor(): a planned pause P is written as a break of P-200 ms, and nothing is written under 250 ms;
+  - think-aloud commaPause off;
+  - Hindi think fillers हम्म and उम्म → अच्छा and चलो.
+- moment.js rows follow the section 1.3 delivery rules:
+  - every sentence pause inside a part is at least 300 ms (a sentence end with no break gets ~70 ms, the "reading"
+    pause);
+  - think-aloud ends at the base rate;
+  - correction lowers pitch on its opening sentence only (pitchScope "first");
+  - a wonder hook starts slow at -8 % pitch;
+  - success (insight) is slower on the method;
+  - joke (laughter) gets pivotPause 550-650 ms before the clause that turns back to the fact.
+- align.js:
+  - echoIndex() gives a 300-550 ms beat after a short turn-initial echo question of the child's words. It mirrors
+    say.js isUptakeQuestion.
+  - PIVOT is a closed per-language list of pivot words.
+  - Per-clause pitch is 0 or -8, scoped by the row. Safety is always 0.
+- dhd.js:
+  - compileDhd follows clause.pitch, not the emotion. A "reassuring" middle clause no longer drops pitch.
+  - clausesValid() is a fail-closed validator: a known pace, pitch 0 or -8..-20, a pause of 0..3000 ms, no markup.
+    render.js speaks an invalid part plain and counts voice.expr.plan_invalid.
+- render.js FIX vs talking-rules.patch: preludeRender stripped / pitch="-6%"/ as a string. With CALM_PITCH at -8, the
+  uptake prelude would silently have gone out at -8 %. It now passes pitch 0 explicitly.
+- governor.js: a per-row silence budget, plan.silenceCap:
+  - think-aloud 3.0 s;
+  - correction and wonder 2.5 s;
+  - joke and success 1.8 s;
+  - every other row keeps 1.5 s;
+  - hard ceiling SILENCE_CAP_MAX_MS 3.0 s.
+  These are proposals, to be settled by ear. The arm C renders carried 1.3-2.7 s of pause per line (screen
+  pause_total_s).
+- shared/contracts.ts: DeliveryClause.pitch?.
+- KNOWN GAP, rate: production baseRate is -35 % (w2g-base-rate-minus-35), measured on ROMAN-script input. The v4 renders
+  used Devanagari at -10 / -20 % absolute. -35 plus slow -10 = -45 %, and the v4 caps probe saw a clause pushed past
+  about -30 % gain extra 100-290 ms gaps. When the Devanagari step lands, that decision's own reversal condition fires:
+  re-run evals/tts-pace.mjs on Devanagari before trusting any pace in this patch.
+
+TESTS
+- New: tests/voice-talking-rules.test.mjs (8 tests). It covers the dhd.js and moment.js edits that talking-rules.patch
+  shipped with no test.
+- Updated: compiler, director-truth, voice-cascade-lane and voice-expressive-governor tests.
+- On a scratch copy: 22 relevant test files, 202 tests, 199 pass, 0 fail, 3 browser-only not run.
+  - The unpatched baseline was 192 tests, 188 pass, and the same browser files.
+  - The full `node --test tests/` in the scratch copy has the same failure set patched and unpatched, apart from the
+    new tests: 988 env failures (a missing evals/live-studio goldens file aborts the shared process), and every
+    compiler test is in that set both ways.
+  - Run the real gates on the live tree before committing: `npx tsc -b && npx vite build && npm test`.
+
+====================================================================================================================
+diff --git a/server/compiler/characters/arjun.js b/server/compiler/characters/arjun.js
+index da86717..80afd08 100644
+--- a/server/compiler/characters/arjun.js
++++ b/server/compiler/characters/arjun.js
+@@ -16,6 +16,7 @@ export default {
+     "praise: names the exact step or method, never ability; no comparisons with other children",
+     "mistakes: say plainly which step broke, with no softening, then the next nudge",
+     "humour: dry and light, about the problem or everyday life; never about the child; none while they struggle",
++    "when the child jokes: play along one beat (echo, push the picture further), then the fact, still smiling",
+     "address: the child's first name; no nicknames",
+     "pace: brisk but patient; waits for a full answer",
+   ],
+diff --git a/server/compiler/characters/asha.js b/server/compiler/characters/asha.js
+index cc08cb1..c1277af 100644
+--- a/server/compiler/characters/asha.js
++++ b/server/compiler/characters/asha.js
+@@ -18,6 +18,7 @@ export default {
+     "praise: names the exact step or method, never the child's ability",
+     "mistakes: normal and interesting; name the wrong step plainly, then the next small nudge",
+     "humour: light and situational, about things in the problem; never about the child; none while they struggle",
++    "when the child jokes: play along one beat (echo, push the picture further), then the fact, still smiling",
+     "address: the child's first name; no pet names or endearments",
+     "pace: unhurried, waits for the child; short simple words",
+   ],
+diff --git a/server/compiler/compile.js b/server/compiler/compile.js
+index 8f2e2a2..609b412 100644
+--- a/server/compiler/compile.js
++++ b/server/compiler/compile.js
+@@ -153,17 +153,27 @@ function lessonParts({ lessonState: s, item, content = [], branches, topic, lang
+   return parts;
+ }
+ 
+-function moveParts(move, voiced) {
++/**
++ * Drop priority of the said-aloud note (TALKING-RULES §1.3): after the brief's callbacks/wins/interests and the vibe row,
++ * before relationship, misconceptions and content. It is the only droppable part of the move section, so a long move
++ * shape sheds it (the turn is then written as before) and never makes the section throw.
++ */
++export const SPOKEN_DROP = 4.5;
++function moveParts(move, voiced, { spoken = false, branches = null } = {}) {
+   const rung = move.hintLevel ? ` · ladder rung ${move.hintLevel} of 4` : "";
+   const kind = move.kind.replace(/_/g, " ");
++  const note = spoken ? SH.spokenNote({ move, branches: voiced ? branches : null }) : null;
++  const said = note ? [{ text: `- said aloud (a note, not words to say): ${note}`, drop: SPOKEN_DROP, id: "spoken" }] : [];
+   return voiced
+     ? [
+       { text: `YOUR LAST TURN (already said — do not repeat it): ${kind}${rung}`, drop: null },
+       { text: `- what it did (a note): ${move.shape}`, drop: null },
++      ...said,
+     ]
+     : [
+       { text: `YOUR MOVE THIS TURN: ${kind}${rung}`, drop: null },
+       { text: `- shape (a note, not words to say): ${move.shape}`, drop: null },
++      ...said,
+     ];
+ }
+ 
+@@ -172,9 +182,11 @@ const LANGUAGE = {
+   hindi: "mirror the child. Default simple spoken Hindi (Roman script when written), common English words allowed. If they switch to English or Hinglish, follow them.",
+   english: "mirror the child. Default simple Indian English. If they speak Hindi or Hinglish, reply in natural Hinglish.",
+ };
+-function languageRule(language, ageBand) {
++/** Heard lanes only (TALKING-RULES §1, docs/research/voice/v4): her words are heard. A shape, never a line; sized to the cap. */
++export const SPOKEN_NOTE = " Said aloud: short chunks, key word last, feeling held to the end.";
++function languageRule(language, ageBand, spoken = false) {
+   const words = ageBand === "6-9" ? " Short everyday words a 7-year-old knows." : "";
+-  return `LANGUAGE: ${LANGUAGE[language] ?? LANGUAGE.hinglish} Maths and science words in English, with the Hindi word beside a new one.${words} Plain speech only: no markdown, no emoji, no symbols like ÷ or =.`;
++  return `LANGUAGE: ${LANGUAGE[language] ?? LANGUAGE.hinglish} Maths and science words in English, with the Hindi word beside a new one.${words} Plain speech only: no markdown, no emoji, no symbols like ÷ or =.${spoken ? SPOKEN_NOTE : ""}`;
+ }
+ 
+ const SAME_ITEM_MOVES = new Set(["hint", "reteach", "repair"]);
+@@ -260,6 +272,9 @@ export function compileWithReport(input, { budget = TOKEN_BUDGET, caps = {} } =
+   const ageBand = input.brief.ageBand;
+   const lane = input.lane === "voice" ? "voice" : "text";
+   const voiced = lane === "voice" && !!input.lessonState.moveVoiced;
++  // Heard lanes: the realtime voice, and a text-written reply that a TTS voice speaks (the cascade lane compiles as
++  // "text": instructions.js passes spoken: true for state.mode "cascade"). The text lane read on screen gets neither note.
++  const spoken = input.spoken ?? lane === "voice";
+   const sections = [
+     { id: "character", parts: characterParts(input.character) },
+     { id: "floor", parts: [{ text: floorText(), drop: null }] },
+@@ -270,8 +285,8 @@ export function compileWithReport(input, { budget = TOKEN_BUDGET, caps = {} } =
+     // VIBE (COMPREHENSION-ENGINE.md §6.4): ONE key=value row of closed-vocabulary shapes, after LESSON NOW and before
+     // the move; it sheds before anything but the brief's callbacks/wins/interests (drop 4). Pace knobs never go here.
+     { id: "vibe", parts: (input.vibe ?? input.lessonState?.vibe) ? [{ text: vibeRow(input.vibe ?? input.lessonState.vibe), drop: 4 }] : [] },
+-    { id: "move", parts: moveParts(input.move, voiced) },
+-    { id: "language", parts: [{ text: languageRule(input.language, ageBand), drop: null }] },
++    { id: "move", parts: moveParts(input.move, voiced, { spoken, branches: input.branches }) },
++    { id: "language", parts: [{ text: languageRule(input.language, ageBand, spoken), drop: null }] },
+     { id: "last", parts: lastParts({ ...input, lane, ageBand, protegeName: input.character.protege.name }) },
+   ];
+   // The voice branch's next question is posed in spoken notation when it fits the `last` cap; when the reading is
+diff --git a/server/compiler/instructions.js b/server/compiler/instructions.js
+index 3dc3c98..301d432 100644
+--- a/server/compiler/instructions.js
++++ b/server/compiler/instructions.js
+@@ -19,6 +19,9 @@ export function instructionsFor(state, kit, lane = state.mode === "voice" || !st
+     character: characterForState(state), brief: state.brief, briefView: briefViewFor(state, kit) ?? undefined, lessonState: state, move: state.lastMove,
+     ...describe(state, kit), ...(lane === "voice" ? { branches: branchesFor(state, kit) } : {}),
+     topic: getTopic(state.topicId), language: state.ctx.lang, lane,
++    // the cascade lane compiles as "text" (the reply is written after the director step) but DragonHD speaks it: its
++    // words are heard, so it gets the voice lane's spoken-register notes (TALKING-RULES §1)
++    spoken: lane === "voice" || state.mode === "cascade",
+   };
+   try {
+     return compile(input);
+diff --git a/server/director/say.js b/server/director/say.js
+index 2aea47c..bdb0105 100644
+--- a/server/director/say.js
++++ b/server/director/say.js
+@@ -164,7 +164,33 @@ export const stripStage = (text) => String(text ?? "")
+ // questions in one turn) ──
+ const normQ = (t) => String(t ?? "").toLowerCase().replace(/…/g, " ").replace(/[^\p{L}\p{N}/]+/gu, " ").trim();
+ const sentencesOf = (t) => (String(t ?? "").replace(/\s+/g, " ").match(/[^.!?।？]+[.!?।？]*/g) ?? []).map((x) => x.trim()).filter(Boolean);
++/**
++ * TALKING-RULES §1.2 (docs/research/voice/v4): a short echo of the child's words with a rising tune at the START of
++ * a turn ("<their words>?", a disbelief echo) is spoken-register uptake, not a second question put to the child.
++ * Exempt: only the FIRST question sentence, beginning within the turn's first UPTAKE_LEAD_WORDS words, at most
++ * UPTAKE_MAX_WORDS words, with no question word and no imperative ending (bataiye / batao / socho …), and never
++ * the turn's last sentence. Without this, lastQuestionOnly / endOnAsk delete the echo that carries the reaction.
++ */
++export const UPTAKE_MAX_WORDS = 4;
++export const UPTAKE_LEAD_WORDS = 6;
++const WH = /(?:^|[^\p{L}])(?:kya|kaun|kaunsa|kaunsi|kitna|kitne|kitni|kaise|kyun|kyon|kyu|kab|kahan|kidhar|why|how|what|which|who|when|where|क्या|कौन|कौनसा|कितना|कितने|कितनी|कैसे|क्यों|कब|कहाँ|कहां)(?![\p{L}\p{M}])/iu;
++const IMPERATIVE_END = /(?:[a-z]{2,}(?:iye|iyega|ao|o)|[\p{Script=Devanagari}]+(?:िए|िये|ो|ाओ))$/iu;
++const wordsIn = (t) => String(t ?? "").split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w));
++export const isUptakeQuestion = (x) => {
++  const t = String(x ?? "").trim();
++  if (!/[?？]\s*$/.test(t)) return false;
++  const w = wordsIn(t.replace(/[?？!.,।]+/g, " "));
++  return w.length > 0 && w.length <= UPTAKE_MAX_WORDS && !WH.test(t) && !IMPERATIVE_END.test(w.at(-1));
++};
+ const isQuestion = (x) => /[?？]/.test(x);
++/** The index of the one exempt uptake echo in a turn's sentences, or -1. */
++const uptakeIndex = (ss) => {
++  const i = ss.findIndex(isQuestion);
++  if (i < 0 || i === ss.length - 1 || !isUptakeQuestion(ss[i])) return -1;
++  return wordsIn(ss.slice(0, i).join(" ")).length <= UPTAKE_LEAD_WORDS ? i : -1;
++};
++/** The turn's sentences that put a question to the child (the exempt uptake echo does not). */
++const askingIdx = (ss) => { const u = uptakeIndex(ss); return ss.map((x, i) => isQuestion(x) && i !== u); };
+ 
+ /**
+  * How a reply stands against the pinned question (UiDirectives.ask.text): does it END on that question (its last words
+@@ -179,7 +205,8 @@ export function askParity(reply, ask) {
+   // A card ask cut with "…" (askText: no sentence fits 120 characters) is a prefix of the question: contained is enough.
+   const endsOnAsk = !a || (!!r && (/…\s*$/.test(String(ask)) ? r.includes(a) : r.endsWith(a)));
+   const rest = a && r.includes(a) ? String(reply).split(new RegExp(escapeRe(String(ask).replace(/…$/, "").trim()), "i")).join(" ") : String(reply ?? "");
+-  const others = sentencesOf(rest).filter(isQuestion).length;
++  const restS = sentencesOf(rest);
++  const others = askingIdx(restS).filter(Boolean).length;
+   const askIn = a && r.includes(a) ? 1 : 0;
+   const finalQuestion = [...sentencesOf(reply)].reverse().find(isQuestion) ?? null;
+   return { endsOnAsk, questions: others + askIn, finalQuestion };
+@@ -193,15 +220,17 @@ const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  */
+ export function endOnAsk(reply, askFull) {
+   const a = normQ(askFull);
+-  const kept = sentencesOf(reply).filter((x) => !isQuestion(x) && !(a && normQ(x) && a.includes(normQ(x))));
++  const ss = sentencesOf(reply), asking = askingIdx(ss);
++  const kept = ss.filter((x, i) => !asking[i] && !(a && normQ(x) && a.includes(normQ(x))));
+   return `${kept.join(" ").trim()} ${askFull}`.replace(/\s{2,}/g, " ").trim();
+ }
+ 
+ /** Keep only the LAST question of a turn with no pinned item (one question per turn). */
+ export function lastQuestionOnly(reply) {
+   const ss = sentencesOf(reply);
+-  const lastQ = ss.map(isQuestion).lastIndexOf(true);
+-  return ss.filter((x, i) => !isQuestion(x) || i === lastQ).join(" ").trim();
++  const asking = askingIdx(ss);
++  const lastQ = asking.lastIndexOf(true);
++  return ss.filter((x, i) => !asking[i] || i === lastQ).join(" ").trim();
+ }
+ 
+ // ── wrap language only on a wrap move (personalisation 13: "Aaj ke liye bas itna." in a probe turn, mid-lesson) ──
+diff --git a/server/director/shapes.js b/server/director/shapes.js
+index d4e8b14..ab7113f 100644
+--- a/server/director/shapes.js
++++ b/server/director/shapes.js
+@@ -240,7 +240,7 @@ export const wrap = ({ prefix, nextTitle, stopping }) => stopping
+  * answer). The correct case needs none: CONFIRM / retrievalNext already confirm it.
+  */
+ export const VERDICT_NOTE = {
+-  not_yet: "their answer was not right: no agreement or praise word for it; name what is sensible in it, then the step",
++  not_yet: "their answer was not right: no agreement or praise word for it; name what is sensible in it, then the step, curious and slower",
+   partial: "their answer was partly right: name the right part, no full agreement",
+   unverified: "no verdict on their reply: neither praise nor 'wrong'",
+ };
+@@ -252,3 +252,48 @@ export const CONFIRM = {
+   whyMissed: "give the reason yourself in one plain line (their answer was right)",
+   teachbackPass: "celebrate the explanation specifically — which idea they made clear",
+ };
++
++// ── spoken register by situation (docs/research/voice/v4/TALKING-RULES §1.3) ──
++// For lanes whose words are HEARD (realtime voice, and the cascade lane whose text DragonHD speaks). Shapes of a turn,
++// never lines: no quotable word, marker or praise phrase is named here (repo law `recited-prompt`; a named marker
++// becomes a tic, `rj-static-filler-list`). Round-2 raters (v3/blind/RESULTS-R2): every voice sounded read; each
++// situation needs its own reaction, held through the whole line, not only at its start.
++export const SPOKEN_SHAPE = Object.freeze({
++  think: "working it aloud: name each step, then work it out; a small landing on each part; a beat, then the result last, pleased",
++  correct: "no verdict word; look at it together; their own item again, slowly, as a picture, the key amount last; curious, never disappointed; end on a look-again ask",
++  success: "react first to what they did (a short echo of it, a question tune if it surprised you); then slower, the exact method, key word last; specific, never ability",
++  wonder: "start quiet, inviting; the surprising amount last in its chunk, then once more on its own; then pull it into right now",
++  explain: "one idea in short chunks, each new word last; then a pause and one use-it question",
++  greet: "their name early; one warm chunk about today; then a pause and one easy question about them",
++  effort: "name the exact thing they kept doing; the hard part is about the work; one small next step",
++  ask: "a short lead-in, a beat, then the question as one chunk",
++  joke: "if they joke: echo it with a question tune, play along one beat, a beat, then the fact, still smiling",
++});
++
++/** The situation a move puts the heard turn in (TALKING-RULES §1.3), or null (safety and goodbyes keep their own shape). */
++export function situationOf(move) {
++  if (!move || move.kind === "safeguard" || move.kind === "wrap") return null;
++  const k = move.kind, s = String(move.shape ?? "");
++  if (k === "worked_example") return "think";
++  if (k === "hint" || k === "reteach" || s.includes(VERDICT_NOTE.not_yet)) return "correct";
++  if (k === "greet") return "greet";
++  if (k === "hook") return "wonder";
++  if (k === "break") return "effort";
++  if (k === "celebrate" || s.startsWith(CONFIRM.correct) || s.startsWith(CONFIRM.whyGood) || s.startsWith(CONFIRM.teachbackPass)) return "success";
++  if (k === "explain" || k === "show_module") return "explain";
++  if (k === "practice" || k === "probe" || k === "retrieval" || k === "teachback" || k === "repair") return "ask";
++  return null;
++}
++
++/**
++ * The said-aloud note for one heard turn: the situation's shape, plus the joke shape (a child may joke on any turn and
++ * the writer cannot know it in advance). Voice lane: the reply answers a branch the director pre-computed, so the
++ * note covers both outcomes (right → success, anything else → correct); text-written lanes know the move.
++ * @param {{ move?: any, branches?: any }} x
++ */
++export function spokenNote({ move, branches } = {}) {
++  if (!move || move.kind === "safeguard") return null;
++  const parts = branches?.wrong ? [`right → ${SPOKEN_SHAPE.success}`, `otherwise → ${SPOKEN_SHAPE.correct}`]
++    : [situationOf(move)].filter(Boolean).map((k) => SPOKEN_SHAPE[k]);
++  return [...parts, SPOKEN_SHAPE.joke].join("; ");
++}
+diff --git a/server/voice/expressive/align.js b/server/voice/expressive/align.js
+index ee2527e..227c55c 100644
+--- a/server/voice/expressive/align.js
++++ b/server/voice/expressive/align.js
+@@ -57,6 +57,23 @@ export function vary(lo, hi, seed) {
+   return Math.round(lo + ((h >>> 0) % 1000) / 999 * (hi - lo));
+ }
+ 
++/**
++ * TALKING-RULES §1.2 T5: a short echo of the child's words with a question tune at the START of a turn is the reaction
++ * ("their word?"), and it needs a beat after it. Mirrors director/say.js isUptakeQuestion (no question word, at most
++ * ECHO_MAX_WORDS words, beginning within the first ECHO_LEAD_WORDS words, never the turn's last clause).
++ */
++export const ECHO_MAX_WORDS = 4, ECHO_LEAD_WORDS = 6;
++const WH = /(?:^|[^\p{L}])(?:kya|kaun|kaunsa|kaunsi|kitna|kitne|kitni|kaise|kyun|kyon|kyu|kab|kahan|kidhar|why|how|what|which|who|when|where|क्या|कौन|कौनसा|कितना|कितने|कितनी|कैसे|क्यों|कब|कहाँ|कहां)(?![\p{L}\p{M}])/iu;
++const wordCount = (t) => String(t ?? "").split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
++/** The index of the turn-initial echo question among the clauses, or -1. */
++export function echoIndex(clauses) {
++  const i = clauses.findIndex((c) => /\?["'”’)]*$/.test(c.text));
++  if (i < 0 || i === clauses.length - 1 || WH.test(clauses[i].text) || wordCount(clauses[i].text) > ECHO_MAX_WORDS) return -1;
++  return wordCount(clauses.slice(0, i).map((c) => c.text).join(" ")) <= ECHO_LEAD_WORDS ? i : -1;
++}
++/** TALKING-RULES §1.3 (joke): the clause that turns back to the fact opens with a pivot word (closed list, per language). */
++export const PIVOT = /^(?:par|pr|lekin|magar|sach mein|sach me|asal mein|but|actually|पर|लेकिन|मगर|सच में|असल में)(?=[\s,!।]|$)/iu;
++
+ /** The arc value for clause i of n. */
+ const arcAt = (arc, i, n) => (n <= 1 ? arc[0] : i === 0 ? arc[0] : i === n - 1 ? arc[2] ?? arc[arc.length - 1] : arc[1]);
+ 
+@@ -93,6 +110,17 @@ export function align(reply, moment) {
+     if (mp.askPause && /\?["'”’)]*$/.test(c.text)) pause = Math.max(pause, mp.askPause);
+     c.pauseBeforeMs = mp.register === "safety" ? (prev.part !== c.part || SENT_END.test(prev.text) ? 300 : 0) : pause;
+   });
++  // TALKING-RULES §1.3: the beat after a turn-initial echo, and the "turn" before the pivot back from a joke (first only)
++  const echo = mp.echoPause ? echoIndex(clauses) : -1;
++  if (echo >= 0) clauses[echo + 1].pauseBeforeMs = Math.max(clauses[echo + 1].pauseBeforeMs, vary(mp.echoPause[0], mp.echoPause[1], `${text}#E`));
++  const pivot = mp.pivotPause ? clauses.findIndex((c, i) => i > 0 && SENT_END.test(clauses[i - 1].text) && PIVOT.test(c.text)) : -1;
++  if (pivot > 0) clauses[pivot].pauseBeforeMs = Math.max(clauses[pivot].pauseBeforeMs, vary(mp.pivotPause[0], mp.pivotPause[1], `${text}#P`));
++  // per-clause pitch (v4 caps: only -8 and lower is heard): the row's, on every clause or only the first sentence
++  let firstSentence = true;
++  for (const c of clauses) {
++    c.pitch = mp.register !== "safety" && mp.pitch < 0 && (mp.pitchScope !== "first" || firstSentence) ? mp.pitch : 0;
++    if (SENT_END.test(c.text)) firstSentence = false;
++  }
+   // licensed non-verbal: before clause 0 (hum / breath opening a think-aloud or a hook, a chuckle after the child's
+   // laugh), or a breath before the reveal / a long clause. Kept for telemetry and the face; engines without a native
+   // rendering emit nothing (caps.js, owner: no clips).
+@@ -132,7 +160,8 @@ export function align(reply, moment) {
+     clauses[0].text = `${f}, ${clauses[0].text}`;
+   }
+   const plan = { v: /** @type {1} */ (1), lang: mp.lang, register: mp.register, clauses, source: /** @type {"moment"} */ ("moment"),
+-    row: mp.row, licence: mp.licence, fillerCandidates: candidates, pitch: mp.pitch, ...(prelude ? { prelude } : {}) };
++    row: mp.row, licence: mp.licence, fillerCandidates: candidates, pitch: mp.pitch, ...(mp.silenceCap ? { silenceCap: mp.silenceCap } : {}),
++    ...(prelude ? { prelude } : {}) };
+   return preserved(plan, text) ? plan : null;
+ }
+ 
+diff --git a/server/voice/expressive/compile/dhd.js b/server/voice/expressive/compile/dhd.js
+index 5cee381..87aa40b 100644
+--- a/server/voice/expressive/compile/dhd.js
++++ b/server/voice/expressive/compile/dhd.js
+@@ -2,18 +2,41 @@
+ // Pure. What it writes, and why (every claim measured on en-IN DragonHD, caps.js):
+ //   - a style marker at the start of EVERY sentence (markers reset at sentence boundaries [V]; the round-2 raters heard
+ //     "the context only at the start of a line, not sustained"), only markers proven silent (caps.js DHD_SILENT_MARKERS);
+-//   - <prosody rate> per clause = the voice's base rate (voices.js, HV-15) + {slow -10, normal 0, brisk +8};
+-//   - <prosody pitch="-6%"> for calm and reassuring rows only (pitch-up is ineffective: +15% gave +4.4%);
+-//   - <break> for planned pauses inside the part (pauses BETWEEN parts are exact silence written by the pause realiser);
++//   - <prosody rate> per clause = the voice's base rate (voices.js, HV-15) + {slow -10, normal 0, brisk 0}: a clause-level
++//     speed-UP is not honoured (v4 caps probe: +12% / +25% vs default and -14% vs a -22% base came out no faster,
++//     n=3-4), a slow-down is (-15% → +18% duration; -32% on the -22% base → +40%); brisk is carried by the TEXT (short
++//     chunks, no break), never by rate;
++//   - <prosody pitch="-8%"> for calm and reassuring rows only: -8% → -1.6 st (n=3); -6% and -4% moved nothing measurable
++//     (n=4, n=3); pitch-up, contour, <emphasis>, express-as, mstts:silence and temperature: no measurable effect;
++//   - <break> for planned pauses inside the part (pauses BETWEEN parts are exact silence written by the pause realiser).
++//     A <break> of X ms yields ≈ max(~300, X + ~200) ms of silence, so a planned pause P is written as max(50, P - 200)
++//     and a planned pause under 250 ms is not written (it would come out ~300 ms). A sentence end with NO break gets
++//     ~70 ms (the uniform-pause "reading" tell), so the aligner gives every sentence end a pause;
+ //   - Devanagari runs inside <lang xml:lang="hi-IN"> (voice-choice-v2);
+ //   - the text is speakable() output: numbers and terms as words, no digit, no "..." (owner 2026-10-04);
+ //   - NEVER a paralinguistic tag (they are spoken on en-IN: 12/12) — lint.js asserts it on every document.
+ import { speakable } from "../../spoken.js";
+ import { dhdMarker } from "../caps.js";
+ 
+-export const PACE_DELTA = Object.freeze({ slow: -10, normal: 0, brisk: 8 });
++export const PACE_DELTA = Object.freeze({ slow: -10, normal: 0, brisk: 0 });
++export const CALM_PITCH = -8;
++/** Planned pause (ms) → the <break> that yields it on DragonHD, or "" (v4 caps: break X → ~max(300, X + 200) ms). */
++export const breakFor = (ms) => (ms >= 250 ? `<break time="${Math.max(50, Math.round(ms) - 200)}ms"/>` : "");
+ const XMLNS = 'version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts"';
+ 
++/**
++ * TALKING-RULES §2.1 validator, fail closed (render.js speaks the part plain): only what DragonHD was measured to honour
++ * — a known pace (slow-downs only: brisk compiles at the base rate), a pitch of 0 or -8 … -20 %, a finite pause — and
++ * no digit or "..." left after speakable() (lint.js counts those; this refuses a plan that carries markup in its text).
++ */
++export function clausesValid(clauses) {
++  return Array.isArray(clauses) && clauses.length > 0 && clauses.every((c) => typeof c?.text === "string"
++    && Object.hasOwn(PACE_DELTA, c.pace ?? "normal")
++    && (c.pitch == null || c.pitch === 0 || (c.pitch <= CALM_PITCH && c.pitch >= -20))
++    && Number.isFinite(c.pauseBeforeMs ?? 0) && (c.pauseBeforeMs ?? 0) >= 0 && (c.pauseBeforeMs ?? 0) <= 3000
++    && !/[<>]/.test(c.text));
++}
++
+ export const escapeXml = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+ /** Wrap Devanagari runs (words joined by spaces / commas, with a closing danda) in <lang hi-IN>. Input already escaped. */
+ export function langRuns(escaped) {
+@@ -49,11 +72,14 @@ export function compileDhd(clauses, v, { register = "normal", pitch = 0, spoken,
+   clauses.forEach((c, j) => {
+     const run = spokenRun(c.text, spoken);
+     if (!run) return;
+-    if (j > 0 && c.pauseBeforeMs > 0) parts.push(`<break time="${Math.round(c.pauseBeforeMs)}ms"/>`);
++    if (j > 0 && c.pauseBeforeMs > 0) parts.push(breakFor(c.pauseBeforeMs));
+     const emotion = register === "safety" ? "calm" : c.emotion;
+     const marker = (c.sentenceStart ?? j === 0) ? dhdMarker(emotion, env) : null;
+     const rate = v.baseRate + (PACE_DELTA[register === "safety" ? "slow" : c.pace] ?? 0);
+-    const lowPitch = register !== "safety" && (pitch < 0 || emotion === "calm" || emotion === "reassuring") ? ` pitch="${pitch < 0 ? pitch : -6}%"` : "";
++    // the aligner's per-clause pitch when it set one (TALKING-RULES §2: 0 or -8, scoped by the row); else the row rule
++    const p = register === "safety" ? 0 : Number.isFinite(c.pitch) ? c.pitch
++      : pitch < 0 || emotion === "calm" || emotion === "reassuring" ? Math.min(pitch, CALM_PITCH) : 0;
++    const lowPitch = p < 0 ? ` pitch="${Math.round(p)}%"` : "";
+     parts.push(`<prosody rate="${rateAttr(rate)}"${lowPitch}>${marker ? `[${marker}] ` : ""}${run}</prosody>`);
+   });
+   return speak(v.voice, parts.join(""));
+diff --git a/server/voice/expressive/governor.js b/server/voice/expressive/governor.js
+index dafa8f0..8789444 100644
+--- a/server/voice/expressive/governor.js
++++ b/server/voice/expressive/governor.js
+@@ -9,7 +9,9 @@
+ //   hum       ≥ 180 s since the last
+ //   laugh / chuckle  ≥ 300 s since the last; never in the 2 turns after a not_yet verdict
+ //   sigh_relief      ≥ 600 s apart
+-//   silence   planned pauses ≤ 1.5 s per turn; any excess is trimmed proportionally
++//   silence   planned pauses ≤ the row's silenceCap (moment.js; think-aloud 3.0 s, correction and wonder 2.5 s, joke and
++//             surprise 1.8 s: TALKING-RULES §2.1, to be settled by ear) or SILENCE_CAP_MS (1.5 s) per turn; any excess
++//             is trimmed proportionally
+ // DEVIATION (w2g-governor-in-memory): the spec persists this in lesson.state.voice so a resume keeps it; the turn's
+ // writer is W2-E's hot file and the seam passes no lesson id, so the state lives here, per process. A different
+ // replica or a restart starts a fresh window: at worst one extra filler, never a broken floor rule.
+@@ -18,6 +20,8 @@ import { withoutFiller } from "./align.js";
+ export const FILLER_WINDOW = 10, FILLER_MAX_IN_WINDOW = 5, FILLER_NO_REPEAT = 6;
+ export const BREATH_GAP_S = 20, HUM_GAP_S = 180, LAUGH_GAP_S = 300, SIGH_GAP_S = 600;
+ export const SILENCE_CAP_MS = 1500;
++/** No row may plan more than this (a plan carrying a bigger silenceCap is held to it). */
++export const SILENCE_CAP_MAX_MS = 3000;
+ const AFTER_NOT_YET_TURNS = 2;
+ const MAX_LESSONS = 2000;
+ 
+@@ -79,8 +83,9 @@ export function createGovernor({ now = () => Date.now() } = {}) {
+       }
+       // ── silence cap (planned pauses only)
+       const total = clauses.reduce((a, c) => a + (c.pauseBeforeMs || 0), 0);
+-      if (total > SILENCE_CAP_MS) {
+-        const k = SILENCE_CAP_MS / total;
++      const cap = Math.min(SILENCE_CAP_MAX_MS, plan.silenceCap ?? SILENCE_CAP_MS);
++      if (total > cap) {
++        const k = cap / total;
+         for (const c of clauses) c.pauseBeforeMs = Math.floor((c.pauseBeforeMs || 0) * k);
+         out.governed.trimmedMs = total - clauses.reduce((a, c) => a + c.pauseBeforeMs, 0);
+       }
+diff --git a/server/voice/expressive/moment.js b/server/voice/expressive/moment.js
+index 0f1c3c1..4af3d0a 100644
+--- a/server/voice/expressive/moment.js
++++ b/server/voice/expressive/moment.js
+@@ -26,27 +26,37 @@ export const BAND_CAP = Object.freeze({ B1: 0.8, B2: 0.7, B3: 0.6, B4: 0.5 });
+  * own); lastPause: ms range before the LAST clause (the reveal / the look-again / the fact after a laugh), when set;
+  * askPause: ms before a clause that asks (ends with "?"); licence: non-verbals this row may carry (the governor and
+  * the engine still decide); fillers: the inventory key, or null (no inserted word on this row).
++ * TALKING-RULES §1.3 / §2 (v4): pitch: the row's lowered pitch (-8 or 0); pitchScope "first" = only the turn's first
++ * sentence (the opening of a correction, the quiet start of a wonder hook), otherwise every clause; echoPause: ms
++ * after a short turn-initial echo question of the child's words (the beat after the reaction); pivotPause: ms before
++ * the clause that turns from a joke back to the fact (it opens with a pivot word); silenceCap: the row's planned-
++ * silence budget per turn (governor.js; default SILENCE_CAP_MS). The caps are proposals to settle by ear.
+  */
+ export const ROWS = Object.freeze({
+-  greet: { arc: ["warm", "warm", "curious"], pace: ["normal", "normal"], sentencePause: [200, 320], commaPause: [0, 0], licence: ["breath"], fillers: null, base: 0.55 },
+-  hook: { arc: ["wonder", "wonder", "delighted"], pace: ["slow", "normal"], sentencePause: [300, 450], commaPause: [0, 0], lastPause: [450, 700], licence: ["breath", "hum"], fillers: "hook", base: 0.6 },
+-  explain: { arc: ["calm", "warm", "warm"], pace: ["normal", "normal"], sentencePause: [250, 450], commaPause: [0, 0], licence: ["breath"], fillers: "explain", base: 0.5 },
+-  think_aloud: { arc: ["thinking", "thinking", "proud"], pace: ["slow", "slow"], lastPace: "brisk", sentencePause: [150, 500], commaPause: [150, 350], lastPause: [300, 450], licence: ["hum", "breath"], fillers: "think", base: 0.5 },
+-  pose: { arc: ["curious", "curious", "curious"], pace: ["normal", "normal"], sentencePause: [220, 360], commaPause: [0, 0], askPause: 300, licence: [], fillers: "pose", base: 0.5 },
+-  affirm: { arc: ["warm", "warm", "warm"], pace: ["brisk", "normal"], sentencePause: [180, 280], commaPause: [0, 0], licence: [], fillers: null, base: 0.45 },
+-  insight: { arc: ["curious", "delighted", "warm"], pace: ["normal", "normal"], sentencePause: [250, 400], commaPause: [0, 0], licence: ["breath"], fillers: null, base: 0.6 },
+-  effort: { arc: ["warm", "proud", "proud"], pace: ["normal", "slow"], sentencePause: [220, 360], commaPause: [0, 0], licence: ["sigh_relief"], fillers: null, base: 0.55 },
+-  correct: { arc: ["calm", "reassuring", "curious"], pace: ["slow", "slow"], sentencePause: [350, 500], commaPause: [0, 0], lastPause: [400, 650], licence: [], fillers: null, base: 0.45, pitch: -6 },
+-  laughter: { arc: ["amused", "playful", "warm"], pace: ["brisk", "normal"], sentencePause: [220, 360], commaPause: [0, 0], lastPause: [300, 550], licence: ["chuckle", "laugh"], fillers: "laugh", base: 0.6 },
+-  comfort: { arc: ["calm", "calm", "calm"], pace: ["slow", "slow"], sentencePause: [400, 600], commaPause: [0, 0], licence: ["breath"], fillers: null, base: 0.4, cap: 0.4, pitch: -6 },
+-  own_slip: { arc: ["warm", "warm", "warm"], pace: ["normal", "normal"], sentencePause: [220, 320], commaPause: [0, 0], licence: [], fillers: null, base: 0.4 },
+-  wrap: { arc: ["warm", "warm", "proud"], pace: ["normal", "normal"], sentencePause: [250, 400], commaPause: [0, 0], licence: [], fillers: "wrap", base: 0.5 },
++  // TALKING-RULES §1.3 delivery (docs/research/voice/v4, 2026-10-04): every sentence pause inside a part is >= 300 ms (a
++  // DragonHD sentence end with no <break> gets ~70 ms, the uniform "reading" pause; a break cannot render under ~300 ms);
++  // pitch only DOWN and only at -8 (-6 / -4 moved nothing measurable); pace slow or normal (brisk renders as normal).
++  greet: { arc: ["warm", "warm", "curious"], pace: ["normal", "normal"], sentencePause: [300, 400], commaPause: [0, 0], askPause: 300, licence: ["breath"], fillers: null, base: 0.55 },
++  hook: { arc: ["wonder", "wonder", "delighted"], pace: ["slow", "normal"], sentencePause: [400, 500], commaPause: [0, 0], lastPause: [450, 600], licence: ["breath", "hum"], fillers: "hook", base: 0.6, pitch: -8, pitchScope: "first", silenceCap: 2500 },
++  explain: { arc: ["calm", "warm", "warm"], pace: ["normal", "normal"], sentencePause: [300, 450], commaPause: [0, 0], askPause: 300, licence: ["breath"], fillers: "explain", base: 0.5 },
++  think_aloud: { arc: ["thinking", "thinking", "proud"], pace: ["slow", "slow"], lastPace: "normal", sentencePause: [300, 500], commaPause: [0, 0], lastPause: [300, 450], licence: ["hum", "breath"], fillers: "think", base: 0.5, silenceCap: 3000 },
++  pose: { arc: ["curious", "curious", "curious"], pace: ["normal", "normal"], sentencePause: [300, 400], commaPause: [0, 0], askPause: 300, licence: [], fillers: "pose", base: 0.5 },
++  affirm: { arc: ["warm", "warm", "warm"], pace: ["normal", "normal"], sentencePause: [300, 350], commaPause: [0, 0], echoPause: [400, 500], licence: [], fillers: null, base: 0.45 },
++  insight: { arc: ["curious", "delighted", "warm"], pace: ["normal", "slow"], sentencePause: [300, 400], commaPause: [0, 0], echoPause: [450, 550], licence: ["breath"], fillers: null, base: 0.6, silenceCap: 1800 },
++  effort: { arc: ["warm", "proud", "proud"], pace: ["normal", "slow"], sentencePause: [300, 400], commaPause: [0, 0], echoPause: [400, 500], licence: ["sigh_relief"], fillers: null, base: 0.55 },
++  correct: { arc: ["calm", "reassuring", "curious"], pace: ["slow", "slow"], sentencePause: [400, 600], commaPause: [0, 0], lastPause: [400, 650], licence: [], fillers: null, base: 0.45, pitch: -8, pitchScope: "first", silenceCap: 2500 },
++  laughter: { arc: ["amused", "playful", "warm"], pace: ["normal", "normal"], sentencePause: [300, 400], commaPause: [0, 0], lastPause: [300, 550], echoPause: [300, 400], pivotPause: [550, 650], licence: ["chuckle", "laugh"], fillers: "laugh", base: 0.6, silenceCap: 1800 },
++  comfort: { arc: ["calm", "calm", "calm"], pace: ["slow", "slow"], sentencePause: [400, 600], commaPause: [0, 0], licence: ["breath"], fillers: null, base: 0.4, cap: 0.4, pitch: -8 },
++  own_slip: { arc: ["warm", "warm", "warm"], pace: ["normal", "normal"], sentencePause: [300, 350], commaPause: [0, 0], licence: [], fillers: null, base: 0.4 },
++  wrap: { arc: ["warm", "warm", "proud"], pace: ["normal", "normal"], sentencePause: [300, 400], commaPause: [0, 0], licence: [], fillers: "wrap", base: 0.5 },
+   safety: { arc: ["calm", "calm", "calm"], pace: ["slow", "slow"], sentencePause: [300, 300], commaPause: [0, 0], licence: [], fillers: null, base: 0.3, cap: 0.3 },
+ });
+ 
+ /** Filler inventories (HUMAN-VOICE §5.2): closed, per language. Hesitant ones (umm) only in think-aloud. */
+ export const FILLERS = Object.freeze({
+-  hi: Object.freeze({ explain: ["तो", "देखो", "अच्छा"], hook: ["अच्छा", "देखो"], think: ["हम्म", "उम्म"], pose: ["अच्छा", "तो"], laugh: ["अरे"], wrap: ["चलो"] }),
++  // think: हम्म was heard in 1/3 DragonHD renders (v4 caps dm_hmm: the voice swallows it) and उम्म is unmeasured, so the
++  // think inventory uses lexical markers the voice renders 3/3 until an ear check clears a non-lexical one.
++  hi: Object.freeze({ explain: ["तो", "देखो", "अच्छा"], hook: ["अच्छा", "देखो"], think: ["अच्छा", "चलो"], pose: ["अच्छा", "तो"], laugh: ["अरे"], wrap: ["चलो"] }),
+   en: Object.freeze({ explain: ["so", "okay"], hook: ["so", "well"], think: ["hmm", "umm"], pose: ["okay", "so"], laugh: ["oh"], wrap: ["okay"] }),
+ });
+ 
+@@ -79,7 +89,8 @@ const NEGATIVE = new Set(["not_yet", "partial"]);
+  * @param {Moment} m
+  * @returns {{ row: string, arc: Emotion[], pace: string[], lastPace?: string, intensity: number, pitch: number,
+  *   licence: NonVerbal[], fillerKey: string | null, register: "normal" | "safety", lang: "hi" | "hinglish" | "en",
+- *   sentencePause: number[], commaPause: number[], lastPause?: number[], askPause?: number }}
++ *   sentencePause: number[], commaPause: number[], lastPause?: number[], askPause?: number, pitchScope?: "first",
++ *   echoPause?: number[], pivotPause?: number[], silenceCap?: number }}
+  */
+ export function momentPlan(m) {
+   const rowName = rowOf(m);
+@@ -107,6 +118,9 @@ export function momentPlan(m) {
+     register: safety ? "safety" : "normal", lang: m?.lang === "en" || m?.lang === "hi" ? m.lang : "hinglish",
+     sentencePause: [...row.sentencePause], commaPause: [...row.commaPause],
+     ...(row.lastPause ? { lastPause: [...row.lastPause] } : {}), ...(row.askPause ? { askPause: row.askPause } : {}),
++    ...(row.pitchScope ? { pitchScope: row.pitchScope } : {}),
++    ...(!safety && row.echoPause ? { echoPause: [...row.echoPause] } : {}), ...(!safety && row.pivotPause ? { pivotPause: [...row.pivotPause] } : {}),
++    ...(row.silenceCap ? { silenceCap: row.silenceCap } : {}),
+   };
+ }
+ 
+diff --git a/server/voice/expressive/render.js b/server/voice/expressive/render.js
+index a40c559..a38294b 100644
+--- a/server/voice/expressive/render.js
++++ b/server/voice/expressive/render.js
+@@ -10,7 +10,7 @@
+ import { splitSentences } from "../sentences.js";
+ import { governor as defaultGovernor } from "./governor.js";
+ import { planInfo } from "./seam.js";
+-import { compileDhd, plainSsml } from "./compile/dhd.js";
++import { compileDhd, plainSsml, clausesValid } from "./compile/dhd.js";
+ import { compileOai } from "./compile/oai-tts.js";
+ import { lintSsml } from "./lint.js";
+ import { count, logPlan } from "./telemetry.js";
+@@ -23,6 +23,10 @@ import { expressiveOn } from "../voices.js";
+ 
+ /** The dhd document for a part, linted; plain on a lint failure. */
+ function dhdDoc(clauses, written, style, plan) {
++  if (!clausesValid(clauses)) {
++    count("plan_invalid");
++    return plainSsml(written, style.dhd, style.spoken);
++  }
+   const ssml = compileDhd(clauses, style.dhd, { register: plan.register, pitch: plan.pitch ?? 0, spoken: style.spoken });
+   const bad = lintSsml(ssml, "dhd");
+   if (bad.some((b) => b === "paralinguistic_tag" || b.startsWith("unknown_marker"))) {
+@@ -78,8 +82,10 @@ export function preludeRender(token, style) {
+   const t = String(token ?? "").trim();
+   if (!t) return null;
+   if (style?.engine === "dhd") {
+-    const c = { text: t, emotion: "calm", intensity: 0.3, pace: "normal", pauseBeforeMs: 0, nonverbalBefore: "none", sentenceStart: true };
+-    return { engine: "dhd", ssml: compileDhd([c], { ...style.dhd, baseRate: style.dhd.baseRate }, { register: "normal", pitch: 0, spoken: style.spoken }).replace(/ pitch="-6%"/g, ""), store: "memory" };
++    // neutral pitch, explicitly: the calm emotion alone would lower it (CALM_PITCH), and a string strip of one value
++    // broke silently when that value moved (-6 → -8, TALKING-RULES §2.3)
++    const c = { text: t, emotion: "calm", intensity: 0.3, pace: "normal", pitch: 0, pauseBeforeMs: 0, nonverbalBefore: "none", sentenceStart: true };
++    return { engine: "dhd", ssml: compileDhd([c], { ...style.dhd, baseRate: style.dhd.baseRate }, { register: "normal", pitch: 0, spoken: style.spoken }), store: "memory" };
+   }
+   return { engine: "oai", text: t, instructions: style?.instructions ?? "", store: "memory" };
+ }
+diff --git a/shared/contracts.ts b/shared/contracts.ts
+index 60edef1..4b54040 100644
+--- a/shared/contracts.ts
++++ b/shared/contracts.ts
+@@ -378,6 +378,7 @@ export interface DeliveryClause {
+   pace: "slow" | "normal" | "brisk";
+   pauseBeforeMs: number;        // 0 for clause 0, always
+   nonverbalBefore: NonVerbal;   // licensed by MomentPlan, allowed by Governor
++  pitch?: number;               // 0 or -8 (%): DragonHD honours lowering only, from -8 (TALKING-RULES §2.2); set by the aligner
+   emphasis?: string;            // one word of `text`
+   filler?: string;              // which inserted word (for the governor and the logs)
+ }
+diff --git a/tests/compiler.test.mjs b/tests/compiler.test.mjs
+index bca1da5..9c7fea0 100644
+--- a/tests/compiler.test.mjs
++++ b/tests/compiler.test.mjs
+@@ -1,6 +1,6 @@
+ import { test } from "node:test";
+ import assert from "node:assert/strict";
+-import { compile, compileWithReport, BudgetError, TURN_WORDS, TURN_SHAPE_PREFIX, voiceSafe } from "../server/compiler/compile.js";
++import { compile, compileWithReport, BudgetError, TURN_WORDS, TURN_SHAPE_PREFIX, voiceSafe, SPOKEN_NOTE } from "../server/compiler/compile.js";
+ import { FLOOR_HEADING } from "../server/compiler/floor.js";
+ import { CHARACTERS } from "../server/compiler/characters/index.js";
+ import * as SH from "../server/director/shapes.js";
+@@ -73,10 +73,14 @@ test("lanes share every byte except the voice-only branch lines", () => {
+   assert.doesNotMatch(text, /when they reply/);
+   // The voice lane adds its branch check and the next turn's content lines, says the helpline numbers as digit
+   // words (voiceSafe) and POSES the question in spoken notation (toSpoken); every other byte is shared.
+-  const strip = (t) => t.split("\n").filter((l) => !l.startsWith("ONE MORE CHECK") && !l.startsWith("- for your next turn")).join("\n");
++  // ... and, being heard, its move section carries the said-aloud note (TALKING-RULES §1.3) and its language line the
++  // spoken-register note (§1); the text lane, read on screen, carries neither.
++  const strip = (t) => t.split("\n").filter((l) => !l.startsWith("ONE MORE CHECK") && !l.startsWith("- for your next turn") && !l.startsWith("- said aloud")).join("\n");
+   const written = promptFor(input.item, input.language);
+   const spoken = toSpoken(written, { mode: input.language, ageBand: input.brief.ageBand });
+-  assert.equal(strip(voice), voiceSafe(strip(text).split(`"${written}"`).join(`"${spoken}"`), input.language));
++  assert.ok(voice.includes(SPOKEN_NOTE.trim()) && !text.includes(SPOKEN_NOTE.trim()));
++  assert.ok(voice.includes("\n- said aloud (a note, not words to say): ") && !text.includes("said aloud"));
++  assert.equal(strip(voice).replace(SPOKEN_NOTE, ""), voiceSafe(strip(text).split(`"${written}"`).join(`"${spoken}"`), input.language));
+ });
+ 
+ test("voice lane poses the item in spoken notation; the key line, the text lane and the guards keep the written form", () => {
+@@ -219,3 +223,47 @@ test("safeguard and wrap turns get their own last rules; the floor still precede
+   assert.match(text.split("\n").at(-1), /at most 35 words/);
+   assert.ok(text.indexOf(FLOOR_HEADING) < text.indexOf("ONE MORE CHECK"));
+ });
++
++// ── spoken register by situation (docs/research/voice/v4/TALKING-RULES §1.3) ──
++test("heard lanes get the said-aloud note for the move's situation; the screen-read text lane and safety turns never do", () => {
++  const input = inputAfter(toFirstItem());
++  const cascade = compile({ ...input, lane: "text", spoken: true });
++  const text = compile({ ...input, lane: "text" });
++  const line = cascade.split("\n").find((l) => l.startsWith("- said aloud"));
++  assert.ok(line, "the cascade lane (text-written, DragonHD-spoken) carries the note");
++  assert.ok(line.includes(SH.SPOKEN_SHAPE.joke), "the joke shape rides on every heard turn");
++  assert.ok(cascade.includes(SPOKEN_NOTE.trim()));
++  assert.ok(!text.includes("said aloud") && !text.includes(SPOKEN_NOTE.trim()));
++  // the note sits in the move section, never after the appended-last rules (position is mechanism: they stay last)
++  assert.ok(cascade.split("\n").at(-1).startsWith(TURN_SHAPE_PREFIX));
++  assert.ok(cascade.indexOf("- said aloud") < cascade.indexOf("LANGUAGE:"));
++  const care = compile({ ...input, lane: "text", spoken: true, move: { kind: "safeguard", shape: SH.safeguard() } });
++  assert.ok(!care.includes("said aloud"), "a safety turn keeps its own shape only");
++});
++
++test("situationOf: each move lands in the situation the round-2 raters named", () => {
++  const S = SH.situationOf;
++  assert.equal(S({ kind: "worked_example", shape: SH.worked({ part: 1, parts: 2 }) }), "think");
++  assert.equal(S({ kind: "hint", shape: "x" }), "correct");
++  assert.equal(S({ kind: "practice", shape: `${SH.pose({ item: { kind: "retrieval" } })}; ${SH.VERDICT_NOTE.not_yet}` }), "correct");
++  assert.equal(S({ kind: "practice", shape: SH.pose({ item: { kind: "retrieval" }, prefix: SH.CONFIRM.correct }) }), "success");
++  assert.equal(S({ kind: "practice", shape: SH.pose({ item: { kind: "retrieval" } }) }), "ask");
++  assert.equal(S({ kind: "hook", shape: "x" }), "wonder");
++  assert.equal(S({ kind: "greet", shape: "x" }), "greet");
++  assert.equal(S({ kind: "break", shape: SH.takeBreak() }), "effort");
++  assert.equal(S({ kind: "explain", shape: "x" }), "explain");
++  assert.equal(S({ kind: "safeguard", shape: SH.safeguard() }), null);
++  assert.equal(S({ kind: "wrap", shape: "x" }), null);
++  // a voiced move: the reply answers a branch, so the note covers both outcomes
++  const n = SH.spokenNote({ move: { kind: "practice", shape: "x" }, branches: { wrong: {} } });
++  assert.ok(n.includes(SH.SPOKEN_SHAPE.success) && n.includes(SH.SPOKEN_SHAPE.correct));
++});
++
++test("the said-aloud shapes are notes, never lines: no quotable words, markers, scripts or praise phrases", () => {
++  for (const [k, v] of Object.entries(SH.SPOKEN_SHAPE)) {
++    assert.doesNotMatch(v, /["'“”‘’]/, `${k}: no quotes`);
++    assert.doesNotMatch(v, /[\u0900-\u097F]/, `${k}: no Hindi word to recite`);
++    assert.doesNotMatch(v, /\b(?:arre|achha|accha|acha|hmm+|wah|shabash|bahut badhiya|great|well done|chalo|dekho)\b/i, `${k}: no marker or praise word`);
++    assert.ok(v.length <= 170, `${k}: a short note (${v.length})`);
++  }
++});
+diff --git a/tests/director-truth.test.mjs b/tests/director-truth.test.mjs
+index b6f735a..210cf2f 100644
+--- a/tests/director-truth.test.mjs
++++ b/tests/director-truth.test.mjs
+@@ -85,6 +85,13 @@ test("G-ASK parity predicates: ends-on-ask, one question, and the code repairs",
+   assert.equal(fixed, "Achha. Socho. 13 ka square kitna hai?");
+   assert.deepEqual(askParity(fixed, ask), { endsOnAsk: true, questions: 1, finalQuestion: "13 ka square kitna hai?" });
+   assert.equal(lastQuestionOnly("Kya socha? Kaunsa bada hai?"), "Kaunsa bada hai?");
++  // TALKING-RULES §1.2: a turn-initial echo of the child's words is uptake, not a second question — kept, not counted
++  assert.equal(lastQuestionOnly("Cold drink? Phir toh saare paudhe burp karte! Paudhe kya peete hain?"), "Cold drink? Phir toh saare paudhe burp karte! Paudhe kya peete hain?");
++  assert.equal(askParity("Arre! Pehli baar mein hi? Ab 13 ka square kitna hai?", ask).questions, 1);
++  assert.equal(endOnAsk("Arre! Pehli baar mein hi? Socho.", ask), "Arre! Pehli baar mein hi? Socho. 13 ka square kitna hai?");
++  // ... but never a real ask: a question word, an imperative, a second short question, or one deep in the turn
++  assert.equal(askParity("Kitna hua? 13 ka square kitna hai?", ask).questions, 2);
++  assert.equal(askParity("Achha, ek kaam karte hain, ab is wale ko dekhte hain. Pizza dekha? 13 ka square kitna hai?", ask).questions, 2);
+   // an ask the card cut with "…" is a prefix of the full question
+   assert.ok(askParity("Hmm. Ek bahut lambi baat, phir yeh poora sawaal hai?", "Ek bahut lambi baat…").endsOnAsk);
+ });
+diff --git a/tests/voice-cascade-lane.test.mjs b/tests/voice-cascade-lane.test.mjs
+index d44f84b..0751e6b 100644
+--- a/tests/voice-cascade-lane.test.mjs
++++ b/tests/voice-cascade-lane.test.mjs
+@@ -12,6 +12,7 @@ import { classify, targetFor } from "../server/director/classify.js";
+ import { initLessonState, step } from "../server/director/state.js";
+ import { findItem } from "../server/director/items.js";
+ import { instructionsFor } from "../server/compiler/instructions.js";
++import { SPOKEN_NOTE } from "../server/compiler/compile.js";
+ import { writable, allowSttToken, STT_TOKENS_PER_MINUTE } from "../server/routes/voice.js";
+ import { readJson, MAX_BODY_BYTES } from "../server/http.js";
+ import { kit, CTX, BRIEF, cls } from "./fixtures/kit.mjs";
+@@ -59,7 +60,12 @@ function lessonAt(n, mode = "cascade") {
+ }
+ 
+ test("a cascade lesson compiles text-lane instructions (the Director writes the reply)", () => {
+-  assert.equal(instructionsFor(lessonAt(5, "cascade"), K), instructionsFor(lessonAt(5, "text"), K));
++  // ... the same instructions as the text lane, except the two heard-lane notes (TALKING-RULES §1: DragonHD speaks
++  // the cascade reply, so it is written to be said): the said-aloud line and the language line's spoken note
++  const heard = (t) => t.split("\n").filter((l) => !l.startsWith("- said aloud")).join("\n").replace(SPOKEN_NOTE, "");
++  const cascade = instructionsFor(lessonAt(5, "cascade"), K), text = instructionsFor(lessonAt(5, "text"), K);
++  assert.ok(cascade.includes("\n- said aloud") && cascade.includes(SPOKEN_NOTE) && !text.includes("said aloud"));
++  assert.equal(heard(cascade), text);
+   assert.notEqual(instructionsFor(lessonAt(5, "cascade"), K), instructionsFor(lessonAt(5, "voice"), K));
+ });
+ 
+diff --git a/tests/voice-expressive-governor.test.mjs b/tests/voice-expressive-governor.test.mjs
+index b47fb8e..afaff8c 100644
+--- a/tests/voice-expressive-governor.test.mjs
++++ b/tests/voice-expressive-governor.test.mjs
+@@ -1,7 +1,7 @@
+ // HUMAN-VOICE B2: the governor (HV-4: 50 seeds × 60 turns stay in bounds) and its unit rules.
+ import test from "node:test";
+ import assert from "node:assert/strict";
+-import { createGovernor, FILLER_NO_REPEAT, SILENCE_CAP_MS, LAUGH_GAP_S } from "../server/voice/expressive/governor.js";
++import { createGovernor, FILLER_NO_REPEAT, SILENCE_CAP_MS, SILENCE_CAP_MAX_MS, LAUGH_GAP_S } from "../server/voice/expressive/governor.js";
+ import { align } from "../server/voice/expressive/align.js";
+ import { REPLY_SHAPES } from "../evals/voice-expressive-corpus.mjs";
+ 
+@@ -27,7 +27,7 @@ test("HV-4: 50 seeds × 60 turns: fillers ≤ 0.5/turn, no repeat within 6 turns
+       const f = g.clauses[0].filler;
+       if (f) fillers.push({ t, f });
+       if (g.clauses.some((c) => c.nonverbalBefore === "laugh" || c.nonverbalBefore === "chuckle")) laughs.push(clock / 1000);
+-      assert.ok(g.clauses.reduce((a, c) => a + (c.pauseBeforeMs || 0), 0) <= SILENCE_CAP_MS);
++      assert.ok(g.clauses.reduce((a, c) => a + (c.pauseBeforeMs || 0), 0) <= (plan.silenceCap ?? SILENCE_CAP_MS));
+       assert.ok(g.clauses.filter((c) => c.nonverbalBefore === "breath").length <= 1);
+     }
+     assert.ok(fillers.length / 60 <= 0.5, `seed ${seed}: ${fillers.length} fillers in 60 turns`);
+@@ -54,5 +54,15 @@ test("governor: no filler and no laugh in the 2 turns after a not_yet; the exces
+   // silence cap
+   const long = align("Pehle tens. Phir ones. Phir jodo. Phir check karo. Phir likho. Phir padho. Phir socho.", m({ move: "worked_example" }));
+   const g = createGovernor({ now: () => 0 }).apply("Y", long, {});
+-  assert.ok(g.clauses.reduce((a, c) => a + c.pauseBeforeMs, 0) <= SILENCE_CAP_MS);
++  // a think-aloud row plans up to its own budget (TALKING-RULES §2.1: 3.0 s), never more
++  assert.equal(long.silenceCap, 3000);
++  assert.ok(g.clauses.reduce((a, c) => a + c.pauseBeforeMs, 0) <= long.silenceCap);
++  const plainRow = align("Pehle tens. Phir ones. Phir jodo. Phir check karo. Phir likho. Phir padho. Phir socho.", m({ move: "explain" }));
++  assert.equal(plainRow.silenceCap, undefined);
++  assert.ok(createGovernor({ now: () => 0 }).apply("Z", plainRow, {}).clauses.reduce((a, c) => a + c.pauseBeforeMs, 0) <= SILENCE_CAP_MS);
++  // a plan carrying an oversized budget is held to the ceiling, and the excess is trimmed proportionally
++  const huge = { ...long, silenceCap: 99_999, clauses: long.clauses.map((c, i) => ({ ...c, pauseBeforeMs: i ? 900 : 0 })) };
++  const h = createGovernor({ now: () => 0 }).apply("W", huge, {});
++  assert.ok(h.clauses.reduce((a, c) => a + c.pauseBeforeMs, 0) <= SILENCE_CAP_MAX_MS);
++  assert.ok(h.governed.trimmedMs > 0);
+ });
+diff --git a/tests/voice-talking-rules.test.mjs b/tests/voice-talking-rules.test.mjs
+new file mode 100644
+index 0000000..9f1cd6d
+--- /dev/null
++++ b/tests/voice-talking-rules.test.mjs
+@@ -0,0 +1,102 @@
++// TALKING-RULES (docs/research/voice/v4, 2026-10-04): the delivery plan → DragonHD SSML compiler, held to what the v4
++// capability probe measured DragonHD Diya honouring: <break> (floor ~300 ms, X → ~X + 200 ms), slow-downs only,
++// pitch only down and only from -8 %, a question tune from "?". Every rule here is a measured cap, not a taste.
++import test from "node:test";
++import assert from "node:assert/strict";
++import { align, echoIndex, PIVOT } from "../server/voice/expressive/align.js";
++import { momentPlan, ROWS, FILLERS } from "../server/voice/expressive/moment.js";
++import { compileDhd, breakFor, clausesValid, PACE_DELTA, CALM_PITCH } from "../server/voice/expressive/compile/dhd.js";
++import { renderParts, preludeRender } from "../server/voice/expressive/render.js";
++import { createGovernor } from "../server/voice/expressive/governor.js";
++
++const V = { voice: "en-IN-Diya:DragonHDLatestNeural", baseRate: -35 };
++const style = { engine: "dhd", dhd: V, voice: "marin", instructions: "", version: "t", spoken: { mode: "hinglish" } };
++const m = (o) => ({ move: "explain", verdict: "ungraded", engagement: "engaged", childLaughed: false, safety: false, thinkAloud: false,
++  teacherAffect: { display: "neutral_warm", intensity: 1, cause: "none", turn: 1 }, bondStage: "first_sessions", band: "B2", lang: "hinglish", ...o });
++
++test("caps: no speed-up and no pitch-up is ever written; a calm row lowers pitch by 8 %, never 6", () => {
++  assert.equal(PACE_DELTA.brisk, 0, "a clause-level speed-up is not honoured (v4 caps, n=3-4)");
++  assert.ok(Object.values(PACE_DELTA).every((d) => d <= 0));
++  assert.equal(CALM_PITCH, -8);
++  for (const [k, r] of Object.entries(ROWS)) {
++    assert.ok(r.pitch == null || r.pitch === -8, `${k}: pitch ${r.pitch}`);
++    if (k !== "safety") assert.ok(r.sentencePause[0] >= 300, `${k}: a sentence pause under 300 ms cannot be rendered (and none reads as reading)`);
++    assert.deepEqual(r.commaPause, [0, 0], `${k}: a comma is a tune boundary, not a pause`);
++  }
++  assert.ok(!FILLERS.hi.think.includes("हम्म"), "हम्म was heard in 1 of 3 renders");
++});
++
++test("breakFor: a planned pause is written as the break that yields it on DragonHD", () => {
++  assert.equal(breakFor(0), "");
++  assert.equal(breakFor(200), "", "under 250 ms it would come out ~300 ms: not written");
++  assert.equal(breakFor(300), '<break time="100ms"/>');
++  assert.equal(breakFor(600), '<break time="400ms"/>');
++});
++
++test("echo: a short turn-initial echo question gets a beat after it; a real question does not count as one", () => {
++  const joke = align("Cold drink? Phir toh saare paudhe burp karte! Par nahi, paudhe sirf paani peete hain, apni jadon se.",
++    m({ move: "practice", teacherAffect: { display: "playful", intensity: 1, cause: "child_joke", turn: 2 }, childLaughed: true }));
++  assert.equal(joke.row, "laughter");
++  assert.equal(echoIndex(joke.clauses), 0);
++  assert.ok(joke.clauses[1].pauseBeforeMs >= 300, `beat after the echo: ${joke.clauses[1].pauseBeforeMs}`);
++  // the pivot back to the fact gets the "turn" (~600 ms)
++  const pv = joke.clauses.findIndex((c) => PIVOT.test(c.text));
++  assert.ok(pv > 0 && joke.clauses[pv].pauseBeforeMs >= 550, `pivot pause: ${joke.clauses[pv]?.pauseBeforeMs}`);
++  assert.equal(echoIndex([{ text: "Kitna hua?" }, { text: "Socho." }]), -1, "a question word is a real question");
++  assert.equal(echoIndex([{ text: "Achha, ek kaam karte hain, dekho na yeh wala?" }, { text: "Socho." }]), -1, "too long to be an echo");
++  assert.equal(echoIndex([{ text: "Cold drink?" }]), -1, "never the last clause");
++});
++
++test("pitch scope: a correction lowers only its opening sentence; a calm comfort row lowers all; safety never", () => {
++  const corr = align("Achha, chalo isko saath mein dekhte hain. Teen bata chaar, matlab chaar hisse. Ab do bata teen ko dekho.", m({ move: "hint", verdict: "not_yet" }));
++  assert.equal(corr.row, "correct");
++  const firstEnd = corr.clauses.findIndex((c) => /[.!?।]$/.test(c.text));
++  corr.clauses.forEach((c, i) => assert.equal(c.pitch, i <= firstEnd ? -8 : 0, `clause ${i}`));
++  const comfort = align("Koi baat nahi. Thoda ruk jaate hain.", m({ move: "break" }));
++  assert.ok(comfort.clauses.every((c) => c.pitch === -8));
++  const safe = align("Tum safe ho? Kisi bade ko abhi batao.", m({ safety: true }));
++  assert.ok(safe.clauses.every((c) => c.pitch === 0));
++  // ... and the compiled document follows the clause pitch, not the emotion (the middle "reassuring" clause stays level)
++  const ssml = compileDhd(corr.clauses.filter((c) => c.part === corr.clauses.at(-1).part), V, { pitch: corr.pitch });
++  assert.doesNotMatch(ssml, /pitch=/, "the last sentence of a correction is at neutral pitch");
++});
++
++test("think-aloud: slow working, the result at the base rate (never a speed-up), and a >= 300 ms beat at each sentence end", () => {
++  const p = align("Pehle tens, bees aur tees, pachaas. Phir saat aur paanch, baarah. Toh pachaas aur baarah, baasath!", m({ move: "worked_example" }));
++  assert.equal(p.row, "think_aloud");
++  assert.equal(p.clauses.at(-1).pace, "normal");
++  p.clauses.forEach((c, i) => { if (i && /[.!?]$/.test(p.clauses[i - 1].text)) assert.ok(c.pauseBeforeMs >= 300, `clause ${i}`); });
++  assert.ok(p.clauses.every((c, i) => !i || /[.!?]$/.test(p.clauses[i - 1].text) || c.pauseBeforeMs === 0 || i === p.clauses.length - 1), "no comma pause");
++  const r = renderParts({ lessonId: "T", text: "Pehle tens, bees aur tees, pachaas. Phir saat aur paanch, baarah.", style, delivery: p, gov: createGovernor({ now: () => 0 }), log: false });
++  for (const part of r.parts) {
++    for (const rate of part.render.ssml.matchAll(/rate="([-+]\d+)%"/g)) assert.ok(Number(rate[1]) <= V.baseRate, `rate ${rate[1]}`);
++    for (const b of part.render.ssml.matchAll(/<break time="(\d+)ms"\/>/g)) assert.ok(Number(b[1]) >= 50);
++  }
++});
++
++test("validator fails closed: an out-of-range clause is spoken plain", () => {
++  const ok = [{ text: "Achha.", pace: "slow", pitch: -8, pauseBeforeMs: 0 }];
++  assert.ok(clausesValid(ok));
++  assert.ok(!clausesValid([{ ...ok[0], pitch: -6 }]), "pitch -6 is not heard: refused");
++  assert.ok(!clausesValid([{ ...ok[0], pitch: 12 }]), "pitch up is not honoured: refused");
++  assert.ok(!clausesValid([{ ...ok[0], pace: "rushed" }]));
++  assert.ok(!clausesValid([{ ...ok[0], pauseBeforeMs: 9000 }]));
++  assert.ok(!clausesValid([{ ...ok[0], text: "<break/>" }]));
++  const plan = align("Achha, chalo dekhte hain.", m({ move: "hint", verdict: "not_yet" }));
++  const bad = { ...plan, clauses: plan.clauses.map((c) => ({ ...c, pitch: 15 })) };
++  const r = renderParts({ lessonId: "V", text: "Achha, chalo dekhte hain.", style, delivery: bad, gov: createGovernor({ now: () => 0 }), log: false });
++  assert.doesNotMatch(r.parts[0].render.ssml, /pitch=/);
++});
++
++test("the uptake prelude is spoken at neutral pitch whatever CALM_PITCH is", () => {
++  const r = preludeRender("baasath", style);
++  assert.doesNotMatch(r.ssml, /pitch=/);
++});
++
++test("momentPlan carries the row's silence budget; safety plans never get an echo or pivot beat", () => {
++  assert.equal(momentPlan(m({ move: "worked_example" })).silenceCap, 3000);
++  assert.equal(momentPlan(m({ move: "hint", verdict: "not_yet" })).silenceCap, 2500);
++  const s = momentPlan(m({ safety: true }));
++  assert.equal(s.echoPause, undefined);
++  assert.equal(s.pivotPause, undefined);
++});

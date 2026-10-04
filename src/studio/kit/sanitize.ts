@@ -25,7 +25,7 @@ export function cleanCss(css: string): string {
     .replace(/\/\*[\s\S]*?\*\//g, "")
     .replace(/@import[^;]*;?/gi, "")
     .replace(/url\s*\([^)]*\)/gi, "none")
-    .replace(/expression\s*\(/gi, "x(")
+    .replace(/expression\s*\([^)]*\)?/gi, "none")
     .replace(/-moz-binding|behavior\s*:/gi, "x:")
     .replace(/<\/?\s*style/gi, "");
 }

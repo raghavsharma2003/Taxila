@@ -905,10 +905,10 @@ var ae = ie(B.cx + 4), V = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), oe = 
 		let h = (n("eyeWideLeft") + n("eyeWideRight")) / 2;
 		if (this.surprised = s < .2 && h > .45 ? L((h - .45) / .3) : 0, this.surprised > 0) {
 			let e = this.surprised;
-			l.round = Math.max(l.round, e), l.flat = Math.max(l.flat, .95 * e), l.W = l.W * (1 - e) + .66 * e, l.T = l.T * (1 - e) + .35 * e, l.TL = 0, l.up = .36, l.g = Math.max(l.g, 40 * e * L(r / .3));
+			l.round = Math.max(l.round, .7 * e), l.flat = Math.max(l.flat, .95 * e), l.W = l.W * (1 - e) + .8 * e, l.T = l.T * (1 - e) + .55 * e, l.TL = 0, l.up = .26, l.th = Math.max(l.th, .3), l.g = Math.max(l.g, 54 * e * L(r / .3));
 		}
 		let g = L(((n("mouthSmileLeft") + n("mouthSmileRight")) / 2 - .35) / .4) * L(r / .18) * (1 - this.surprised);
-		g > 0 && (l.g += 26 * g * (1 - Math.min(1, s)), l.up *= 1 - .65 * g, l.T = Math.max(l.T, .95 * g), l.th = Math.max(l.th, .35 * g), l.W = Math.max(l.W, 1.02 * g + l.W * (1 - g))), l.tip = L(Math.max(l.tip, n("tongueTipUp"))), l.curl = L(Math.max(l.curl, n("tongueCurl"))), l.tip > .5 && !this.inTip && (this.inTip = !0, this.holdTip = this.t + .045), l.tip < .3 && (this.inTip = !1), this.t < this.holdTip && p < .5 && (l.tip = Math.max(l.tip, .85)), l.tip > .3 && (l.TL = Math.min(l.TL, .1), l.T = Math.min(l.T, .45), l.g = Math.max(l.g, 15 * l.tip * (1 - p))), l.curl > .3 && (l.T = Math.min(l.T, .5), l.TL = 0, l.g = Math.max(l.g, 15), l.up = .38), n("tongueWide") > .2 && (l.th = Math.max(l.th, .35)), l.press = L(Math.max(l.press, (n("mouthPressLeft") + n("mouthPressRight")) / 2 * 1.4));
+		g > 0 && (l.g += 36 * g * (1 - Math.min(1, s)), l.up *= 1 - .7 * g, l.T = Math.max(l.T, 1 * g), l.th = Math.max(l.th, .42 * g), l.W = Math.max(l.W, 1.08 * g + l.W * (1 - g))), l.tip = L(Math.max(l.tip, n("tongueTipUp"))), l.curl = L(Math.max(l.curl, n("tongueCurl"))), l.tip > .5 && !this.inTip && (this.inTip = !0, this.holdTip = this.t + .045), l.tip < .3 && (this.inTip = !1), this.t < this.holdTip && p < .5 && (l.tip = Math.max(l.tip, .85)), l.tip > .3 && (l.TL = Math.min(l.TL, .1), l.T = Math.min(l.T, .45), l.g = Math.max(l.g, 15 * l.tip * (1 - p))), l.curl > .3 && (l.T = Math.min(l.T, .5), l.TL = 0, l.g = Math.max(l.g, 15), l.up = .38), n("tongueWide") > .2 && (l.th = Math.max(l.th, .35)), l.press = L(Math.max(l.press, (n("mouthPressLeft") + n("mouthPressRight")) / 2 * 1.4));
 		let _ = this.p;
 		for (let e of U) {
 			if (this.first) {
@@ -927,7 +927,7 @@ var ae = ie(B.cx + 4), V = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), oe = 
 			R: n("mouthFrownLeft")
 		}, b = L((n("mouthFrownLeft") + n("mouthFrownRight")) / 2 * 4 + Math.max(0, n("browInnerUp") - .5) * 1.2), x = (e) => .22 * (1 - b) + .23 * L(e / .045) + .6 * L((e - .045) / .8), S = n("mouthLeft") - n("mouthRight"), C = Math.max(_.round, _.flat);
 		for (let e of ["L", "R"]) {
-			let n = x(v[e]) * (1 - .5 * C), r = (e === "L" ? B.hwL : B.hwR) * (_.W - 1) + (n - .45) * 13 * (1 - .6 * C), i = -(n - .45) * 19 * (1 - .6 * C) * (1 - .7 * this.surprised) + y[e] * 9 + _.press * 1.5, a = L((n - .16) / .29) * (1 - .7 * C), o = this.side[e], s = this.first ? 1 : 1 - Math.exp(-t / .045);
+			let n = x(v[e]) * (1 - .5 * C), r = (e === "L" ? B.hwL : B.hwR) * (_.W - 1) + (n - .45) * 13 * (1 - .6 * C), i = -(n - .45) * 19 * (1 - .6 * C) * (1 - .7 * this.surprised) + y[e] * 12.5 + _.press * 1.5, a = L((n - .16) / .29) * (1 - .7 * C), o = this.side[e], s = this.first ? 1 : 1 - Math.exp(-t / .045);
 			o.wid += s * (r - o.wid), o.dy += s * (i - o.dy), o.crease += s * (a - o.crease);
 		}
 		let w = ne(S * 1.6, -1, 1) * 13;
@@ -1601,7 +1601,7 @@ var ge = class {
 				return Math.abs(t - n) < .12 ? (t + n) / 2 : s(e + r);
 			}, a = this.lid[e], o = i("eyeSquint"), c = s("eyeWide" + r), l = i("cheekSquint"), u = i("mouthSmile");
 			for (let r = 0; r <= t.xb - t.xa; r++) {
-				let i = n.top[r], s = n.bot[r], d = s - i, f = r / (t.xb - t.xa), p = Math.max(0, Math.sin(Math.PI * f)) ** .7, m = .16 * K(.25, .55, a), h = (o * .3 + l * .2 + u * .06 + m) * d * p ** 1.4, g = s - h + c * .05 * d * p, y = (_ * .14 - v * .02) * d * p, b = i + .72 * (s - i) - Math.min(h, .25 * d), x = i + y - c * .2 * d * p, S = this.g.lidKeys ? this.g.lidKeys[e].midLash : null, C = S ? S.y[Math.min(S.y.length - 1, r)] : b;
+				let i = n.top[r], s = n.bot[r], d = s - i, f = r / (t.xb - t.xa), p = Math.max(0, Math.sin(Math.PI * f)) ** .7, m = .24 * K(.25, .55, a) * (this.bsh && this.bsh.active ? 1 : .6), h = (o * .36 + l * .32 + u * .07 + m) * d * p ** 1.4, g = s - h + c * .09 * d * p, y = (_ * .14 - v * .02) * d * p, b = i + .72 * (s - i) - Math.min(h, .25 * d), x = i + y - c * .32 * d * p, S = this.g.lidKeys ? this.g.lidKeys[e].midLash : null, C = S ? S.y[Math.min(S.y.length - 1, r)] : b;
 				x += (Math.max(x, C - 1) - x) * G(a / .34), x > g && (x = g), t.top[r] = x, t.bot[r] = g;
 			}
 			t.blink = a;
@@ -1663,7 +1663,7 @@ var ge = class {
 		let { smile: r, cheek: i } = this.expr, a = 0, o = 0;
 		for (let n of [455, 605]) {
 			let s = Math.exp(-((e - n) ** 2 + (t - 585) ** 2) / 3528);
-			o -= (r * 4 + i * 3) * s, a += Math.sign(e - 530) * r * 1.5 * s;
+			o -= (r * 4.5 + i * 5.5) * s, a += Math.sign(e - 530) * r * 1.5 * s;
 		}
 		return !n && this.solver && (o += this.solver.jaw() * de(e, t)), [a, o];
 	}
@@ -1702,16 +1702,16 @@ var ge = class {
 	browChannels(e) {
 		let t = this.bs, n = e === "L" ? "Right" : "Left", r = t.browInnerUp ?? 0, i = t["browOuterUp" + n] ?? 0, a = t["browDown" + n] ?? 0;
 		return {
-			lift: 10 * (t["eyeWide" + n] ?? 0) + 9 * i + 4 * r,
-			inner: 40 * r,
-			arch: 30 * i,
-			knit: 16 * a
+			lift: 14 * (t["eyeWide" + n] ?? 0) + 12 * i + 5 * r,
+			inner: 53 * r,
+			arch: 38 * i,
+			knit: 21 * a
 		};
 	}
 	browOffset(e, t, n) {
 		let r = this.g.brows[e], i = r.x[0], a = r.x[1], o = this.browCh[e], s = (t) => {
 			let n = G(e === "L" ? (a - t) / (a - i) : (t - i) / (a - i)), r = Math.exp(-(((n - .62) / .3) ** 2));
-			return 3.2 * Math.max(this.blinkDip || 0, K(.3, .6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : .8)) - o.lift - o.inner * (1 - n) ** 1.3 - o.arch * (.35 + .65 * r) * n ** .5 + o.knit * (1 - .6 * n);
+			return 5 * Math.max(this.blinkDip || 0, K(.3, .6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : .8)) - o.lift - o.inner * (1 - n) ** 1.3 - o.arch * (.35 + .65 * r) * n ** .5 + o.knit * (1 - .6 * n);
 		}, c = s(t), l = Math.atan((s(t + 3) - s(t - 3)) / 6), u = r.cl, d = n - (u ? u.y[W(Math.round(t - u.x0), 0, u.y.length - 1)] : n);
 		return [(e === "L" ? 1 : -1) * (o.knit * .3 + o.inner * .05) - d * Math.sin(l), c + d * (Math.cos(l) - 1)];
 	}
@@ -1798,7 +1798,7 @@ var ge = class {
 		let M = n.LC * n.LR;
 		for (let e = 0; e < M; e++) {
 			let t = n.lrest[e * 2], i = n.lrest[e * 2 + 1], a = Math.round(t - n.xa), s = 1;
-			a < 0 && (s = Math.max(.45, 1 + a / 30), a = 0), a > n.xb - n.xa && (s = Math.max(.45, 1 - (a - (n.xb - n.xa)) / 30), a = n.xb - n.xa);
+			a < 0 && (s = Math.max(.45, 1 + a / 30), a = 0), a > n.xb - n.xa && (s = Math.max(.45, 1 - (a - (n.xb - n.xa)) / 30), a = n.xb - n.xa), s += (1 - s) * G(n.blink / .34);
 			let c = i + (n.top[a] - r.top[a]) * s * n.lv[e], l = p(this.project(t, c, o(t, c)));
 			n.lpos[e * 2] = l[0], n.lpos[e * 2 + 1] = l[1];
 		}

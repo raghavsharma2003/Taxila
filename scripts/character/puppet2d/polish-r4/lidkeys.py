@@ -59,6 +59,64 @@ for s, b in ELL.items():
         if key == "shut":
             a = border.copy()
             out["shut"] = save(f"lidshut{s}", im2, a)
+        elif os.environ.get("P2D_MIDFROM", "shut") == "shut":
+            # r4c (judge r3 fix 5): the ~0.62 squeeze key built from the PAINTED CLOSED key (clean lid skin + a clean
+            # crease-arc lash; the mid62 edit's skin remap left a two-tone band and smeared lash ends). Per column the
+            # shut lid is compressed vertically so its lash lands on the target arc: skin rows [Y0, sb - lt] -> [Y0, tg - lt]
+            # (squash), the lash band [sb - lt, sb] -> [tg - lt, tg] (1:1, same weight). Below the lash: transparent.
+            MID_CLOSE = float(os.environ.get("P2D_MIDCLOSE", "0.62"))
+            gs = (front[ring].mean(0) + 1) / (shut[ring].mean(0) + 1)
+            S = shut * gs[None, None, :]
+            Ls = lum(S)
+            dark = (Ls < 80) & inside
+            sb = np.full(W, np.nan); st = np.full(W, np.nan)
+            for x in range(b[0], b[2] + 1):
+                ys = np.where(dark[:, x])[0]
+                if len(ys) < 2:
+                    continue
+                # the bottom-most run of lash pixels (the closed lid's crease arc)
+                r1 = ys[-1]; r0 = r1
+                for y in ys[::-1][1:]:
+                    if r0 - y > 2:
+                        break
+                    r0 = y
+                if r1 - r0 >= 2:
+                    sb[x] = r1 + 1.0; st[x] = r0
+            xs_ok = np.where(~np.isnan(sb))[0]
+            sx0, sx1 = xs_ok.min(), xs_ok.max()
+            lt = float(np.median((sb - st)[xs_ok])) + 1.0
+            sbS = ndi.gaussian_filter1d(np.interp(np.arange(W), xs_ok, sb[xs_ok]), 1.2)
+            et, eb = np.array(e["top"], float), np.array(e["bot"], float)
+            xs_e = np.arange(xa, xb + 1)
+            want = et + MID_CLOSE * (eb - et)
+            m = (xs_e > xa + 0.1 * (xb - xa)) & (xs_e < xb - 0.1 * (xb - xa))
+            cf = np.polyfit(xs_e[m], want[m], 2)
+            # the target lash bottom: the fitted arc across the opening; toward the lash ends it eases onto the shut arc's
+            # own end heights (the canthi do not move)
+            tg = np.polyval(cf, np.arange(W).astype(float))
+            # a lid wraps the eyeball: a slight arch (the flat fit read as a bored, level bar in a still)
+            ARCH = float(os.environ.get("P2D_MIDARCH", "3.0"))
+            uu = (np.arange(W) - (xa + xb) / 2) / ((xb - xa) / 2)
+            tg = tg - ARCH * np.clip(1 - uu * uu, 0, 1)
+            ease = np.clip(np.minimum(np.arange(W) - sx0, sx1 - np.arange(W)) / 14.0, 0, 1)
+            ease = ease * ease * (3 - 2 * ease)
+            tg = sbS + (tg - sbS) * ease
+            Y0 = float(b[1])
+            src_y = yy.astype(np.float32).copy()
+            for x in range(sx0, sx1 + 1):
+                ys = np.arange(H, dtype=np.float32)
+                k = (sbS[x] - lt - Y0) / max(1.0, tg[x] - lt - Y0)
+                sy = np.where(ys <= tg[x] - lt, Y0 + (ys - Y0) * k, ys + (sbS[x] - tg[x]))
+                sy = np.where(ys < Y0, ys, sy)
+                src_y[:, x] = sy
+            im2 = np.stack([ndi.map_coordinates(S[..., c], [src_y, xx.astype(np.float32)], order=1, mode="nearest") for c in range(3)], -1)
+            cov = np.clip(tg[None, :] + 0.5 - yy, 0, 1)
+            endf = np.clip(np.minimum(xx - sx0, sx1 - xx) / 5.0, 0, 1)
+            a_mid = border * cov * endf * ((xx >= sx0) & (xx <= sx1))
+            out["mid"] = save(f"lidmid{s}", im2, a_mid)
+            out["midLash"] = {"x0": int(xa), "y": [round(float(tg[x]), 2) for x in range(xa, xb + 1)]}
+            print(s, "mid-from-shut: lash", round(lt, 1), "px; bottom at iris", round(float(tg[int(e["iris"][0])]), 1), "open", e["top"][int(e["iris"][0]) - xa], e["bot"][int(e["iris"][0]) - xa])
+            continue
         else:
             # lash bottom per column: last neutral-dark (lash) row below the lash's top, above the opening
             Lm = lum(img)
@@ -108,6 +166,8 @@ for s, b in ELL.items():
             lx0, lx1 = e["lashX"]
             lT, lB = np.array(e["lashTop"], float), np.array(e["lashBot"], float)
             xs_e = np.arange(xa, xb + 1)
+            # the canthi are fixed: a closing lid margin flattens from the open arch toward the lower lid's curve (r4b tried
+            # translating the arch down and clipping it at the corners: it made a W-shaped lash with spikes at both ends)
             want = et + MID_CLOSE * (eb - et)                      # where the lash's lower edge should sit
             lbx = lB[xs_e - lx0]
             dy_e = want - lbx
@@ -125,7 +185,10 @@ for s, b in ELL.items():
                 for y in range(y0, y1 + 1):
                     yd = y + d
                     # sample source at y (integer), place at yd with linear split between the two target rows
-                    al = float(np.clip((125 - Lf[y, x]) / 55.0, 0, 1))
+                    # r4b: tighter: the brown corner shadows (lum 100-125) were carried along as chips at both ends
+                    if y < lT[i] - 2 or y > lB[i] + 1.5:
+                        continue
+                    al = float(np.clip((105 - Lf[y, x]) / 40.0, 0, 1))
                     if al <= 0:
                         continue
                     yi = int(np.floor(yd)); fr = yd - yi
@@ -149,6 +212,20 @@ for s, b in ELL.items():
                 f = (ys - y0e) / max(1.0, ttop - y0e)
                 src_y[y0e:, x] = np.where(ys <= ttop, y0e + f * (ptop - 1.5 - y0e), ptop - 1.5)
             skin = np.stack([ndi.map_coordinates(im2[..., c], [src_y, xx.astype(np.float32)], order=1, mode="nearest") for c in range(3)], -1)
+            # r4b: low-frequency tone match of the lid skin to c-front's own lid skin (above c-front's lash, where both are
+            # skin), extended down by normalised convolution: the edit's lid was lighter and showed as a pale oval
+            lt_full = np.full(W, np.nan); lt_full[lx0:lx1 + 1] = lT
+            ltS = np.interp(np.arange(W), np.arange(lx0, lx1 + 1), lT)
+            okm = inside & (yy < ltS[None, :] - 3) & (lum(front) > 110) & (lum(skin) > 110)
+            sg = 7.0
+            wv = ndi.gaussian_filter(okm.astype(np.float32), sg) + 1e-4
+            lf = np.stack([ndi.gaussian_filter(front[..., c] * okm, sg) for c in range(3)], -1) / wv[..., None]
+            ls = np.stack([ndi.gaussian_filter(skin[..., c] * okm, sg) for c in range(3)], -1) / wv[..., None]
+            # far from valid samples, fall back to the mean ratio
+            mr = (front[okm].mean(0) + 1) / (skin[okm].mean(0) + 1)
+            rr = np.where(wv[..., None] > 0.05, (lf + 1) / (ls + 1), mr[None, None, :])
+            skin = skin * np.clip(rr, 0.8, 1.2)
+            print(s, "lid skin tone ratio", mr.round(3))
             im2 = skin * (1 - lash_a[..., None]) + lash_rgb * lash_a[..., None]
             bs = tgtS
             span_lo, span_hi = lx0, lx1

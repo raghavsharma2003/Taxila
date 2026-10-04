@@ -345,12 +345,13 @@ export class Puppet2DRig {
         const hump = Math.pow(Math.max(0, Math.sin(Math.PI * u)), 0.7);
         // r3: in a blink the lower lid comes up a little too (both lids move: a squeeze, not a heavy upper lid), so a
         // mid-blink frame reads as motion, never as a sleepy hold
-        const blinkSq = 0.16 * smooth(0.25, 0.55, b);
-        const rise = (q * 0.3 + c * 0.2 + sm * 0.06 + blinkSq) * H * Math.pow(hump, 1.4);
-        let bot = B - rise + w * 0.05 * H * hump;
+        const blinkSq = 0.24 * smooth(0.25, 0.55, b) * (this.bsh && this.bsh.active ? 1 : 0.6);   // r4: a stronger squeeze in a real blink
+        // r4: delight's eyes SMILE: the cheek pushes the lower lid up harder (judge r3: 'delight without an eye squint')
+        const rise = (q * 0.36 + c * 0.32 + sm * 0.07 + blinkSq) * H * Math.pow(hump, 1.4);
+        let bot = B - rise + w * 0.09 * H * hump;
         const follow = (lookDown * 0.14 - lookUp * 0.02) * H * hump;
         const closed = T + 0.72 * (B - T) - Math.min(rise, 0.25 * H);   // the lids meet ~70% down (Memoji)
-        let top = T + follow - w * 0.2 * H * hump;   // r3: surprise opens the eye more (0.13 -> 0.2)
+        let top = T + follow - w * 0.32 * H * hump;   // r4: surprise shows sclera ABOVE the iris (0.2 -> 0.32)
         // blink: the upper lid travels to the meeting line, the lower lid rises the last part (eased: fast close)
         // r3: the live lid only travels to the PAINTED mid lid's lash line (l = 0.5); beyond it the painted keys take
         // over (drawEye: lidmid / lidshut), so the lid skin is never stretched into a smear
@@ -448,7 +449,7 @@ export class Puppet2DRig {
     // cheeks lift and widen a touch on a smile
     for (const cx of [455, 605]) {
       const f = Math.exp(-((x - cx) ** 2 + (y - 585) ** 2) / (2 * 42 * 42));
-      dy -= (smile * 4 + cheek * 3) * f;
+      dy -= (smile * 4.5 + cheek * 5.5) * f;   // r4: a stronger cheek push on delight
       dx += Math.sign(x - 530) * smile * 1.5 * f;
     }
     // r4: the jaw carries lower lip, skin and chin together (lips.js jaw()), so the skin between them never crushes
@@ -518,7 +519,8 @@ export class Puppet2DRig {
   browChannels(s) {
     const bs = this.bs, sfx = s === "L" ? "Right" : "Left";
     const inner = bs.browInnerUp ?? 0, outer = bs["browOuterUp" + sfx] ?? 0, down = bs["browDown" + sfx] ?? 0, wide = bs["eyeWide" + sfx] ?? 0;
-    return { lift: 10 * wide + 9 * outer + 4 * inner, inner: 40 * inner, arch: 30 * outer, knit: 16 * down };
+    // r4 (judge r3 fix 4): ~35% more range: surprise / concern read as 'mild' at thumbnail size
+    return { lift: 14 * wide + 12 * outer + 5 * inner, inner: 53 * inner, arch: 38 * outer, knit: 21 * down };
   }
 
   browOffset(s, x, y) {
@@ -532,7 +534,7 @@ export class Puppet2DRig {
     const dyAt = (xx) => {
       const ui = s === "L" ? clamp01((x1 - xx) / (x1 - x0)) : clamp01((xx - x0) / (x1 - x0));
       const peak = Math.exp(-(((ui - 0.62) / 0.3) ** 2));
-      return 3.2 * Math.max(this.blinkDip || 0, smooth(0.3, 0.6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : 0.8)) - c.lift - c.inner * Math.pow(1 - ui, 1.3) - c.arch * (0.35 + 0.65 * peak) * Math.pow(ui, 0.5) + c.knit * (1 - 0.6 * ui);
+      return 5.0 * Math.max(this.blinkDip || 0, smooth(0.3, 0.6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : 0.8)) - c.lift - c.inner * Math.pow(1 - ui, 1.3) - c.arch * (0.35 + 0.65 * peak) * Math.pow(ui, 0.5) + c.knit * (1 - 0.6 * ui);
     };
     const dy = dyAt(x);
     const th = Math.atan((dyAt(x + 3) - dyAt(x - 3)) / 6);
@@ -651,6 +653,8 @@ export class Puppet2DRig {
       let ii = Math.round(x - E.xa), f = 1;
       if (ii < 0) { f = Math.max(0.45, 1 + ii / 30); ii = 0; }
       if (ii > E.xb - E.xa) { f = Math.max(0.45, 1 - (ii - (E.xb - E.xa)) / 30); ii = E.xb - E.xa; }
+      // r4: once the painted mid key shows, the wing rides fully with the lid (its tip peeked above the key's lash end)
+      f += (1 - f) * clamp01(E.blink / 0.34);
       const dy = (E.top[ii] - e.top[ii]) * f;
       const yy = y + dy * E.lv[q];
       const p = fixX(this.project(x, yy, zEye(x, yy)));

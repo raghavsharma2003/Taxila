@@ -99,12 +99,14 @@ clearInterval(keepAlive);
 const table = [];
 for (const id of ids) for (const label of [...new Set(rows.filter((r) => r.archetype === id).map((r) => r.set))]) {
   const r = rows.filter((x) => x.archetype === id && x.set === label);
-  const route = routeFor(id);
-  const lead = route.leadMs ?? 90_000;
+  // P(pass by lead) is counted against the FIXED bench lead (routes.json defaults, 90 s: the prefetch lead W2-H plans for),
+  // never the archetype's own leadMs, which --write sets from this table's p90 (re-counting against it would shrink the
+  // bar on every re-run)
+  const lead = loadRoutes().defaults?.leadMs ?? 90_000;
   const passed = r.filter((x) => x.ok), byLead = passed.filter((x) => x.toPlayableMs <= lead);
   const failChecks = {};
   for (const x of r) for (const a of x.arms) for (const f of a.failed) failChecks[f] = (failChecks[f] ?? 0) + 1;
-  table.push({ archetype: id, set: label, n: r.length, passFirst: r.filter((x) => x.passFirst).length, passFinal: passed.length, passByLead: byLead.length,
+  table.push({ archetype: id, set: label, leadMs: lead, n: r.length, passFirst: r.filter((x) => x.passFirst).length, passFinal: passed.length, passByLead: byLead.length,
     pByLead: +(byLead.length / Math.max(1, r.length)).toFixed(3), wilson80: wilson(byLead.length, r.length),
     p50ms: q(passed.map((x) => x.toPlayableMs), 0.5), p90ms: q(passed.map((x) => x.toPlayableMs), 0.9),
     usdPerPassed: passed.length ? +(r.reduce((s, x) => s + x.usd, 0) / passed.length).toFixed(4) : null,
@@ -154,7 +156,7 @@ if (process.argv.includes("--write") && MODE === "race") {
     r.bench = { date: new Date().toISOString().slice(0, 10), n: t.n, passFirst: t.passFirst, passFinal: t.passFinal, pByLead: t.pByLead, wilson80: t.wilson80, p50ms: t.p50ms, p90ms: t.p90ms, usdPerPassed: t.usdPerPassed };
     if (t.usdPerPassed) r.estUsd = t.usdPerPassed;
     inbox.push({ id: `studio-bench-${t.archetype}-${r.bench.date}`, kind: "measurement", at: r.bench.date,
-      title: `Router bench (${MODE}, server code path) ${t.archetype}: ${t.passByLead}/${t.n} passed by the ${Math.round((r.leadMs ?? 90000) / 1000)} s lead (80% Wilson ${t.wilson80.join("-")}), first try ${t.passFirst}/${t.n}, after repair ${t.passFinal}/${t.n}, time to playable p50 ${t.p50ms} ms / p90 ${t.p90ms} ms, $${t.usdPerPassed} per passed build; live=${live}.` });
+      title: `Router bench (${MODE}, server code path) ${t.archetype}: ${t.passByLead}/${t.n} passed by the ${Math.round(t.leadMs / 1000)} s bench lead (80% Wilson ${t.wilson80.join("-")}), first try ${t.passFirst}/${t.n}, after repair ${t.passFinal}/${t.n}, time to playable p50 ${t.p50ms} ms / p90 ${t.p90ms} ms, $${t.usdPerPassed} per passed build; live=${live}; route leadMs now ${r.leadMs} (1.1 x p90).` });
   }
   _setRoutes(routes);
   fs.writeFileSync(path.join(ROOT, "server/studio/routes.json"), JSON.stringify(routes, null, 1));

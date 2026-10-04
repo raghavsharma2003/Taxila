@@ -69,6 +69,8 @@ export interface StudioTurnView {
   statuses: StudioStatus[];
   /** Facts of the revealed / in-use piece only: the reply may refer to nothing else (screenHasTargets). */
   onScreen: StudioFacts | null;
+  /** Facts of the piece Studio proposes to reveal this turn (if the kernel accepts the reveal, the reply is grounded in these). */
+  revealing?: StudioFacts;
   /**
    * What Studio proposes for this turn (reveal a `ready` piece on the teacher's cue, retire one at a beat exit). Until
    * W2-E's kernel arbitrates proposals (BR1) the call site applies it as is (never on a safeguarding turn); from BR1 it is

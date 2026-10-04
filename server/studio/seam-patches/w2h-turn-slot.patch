@@ -1,0 +1,46 @@
+--- a/server/brain/turn.js	2026-10-04 19:36:48.826801497 +0000
++++ b/server/brain/turn.js	2026-10-04 19:37:27.506727394 +0000
+@@ -31,7 +31,7 @@
+ import { onTurnCommit } from "../conductor/hooks.js";
+ import { awaitSettled } from "../comprehension/session.js";
+ import { seamSafe } from "../seam-safe.js";
+-import { studioSeam } from "../studio/seam.js";
++import { studioSeam, factsRowOfView } from "../studio/seam.js";
+ import { relationalSeam } from "../relational/seam.js";
+ import { expressiveSeam } from "../voice/expressive/seam.js";
+ import { fallbackReply, floorContentOf, safeguardLine, scrubbed, textReply } from "./say.js";
+@@ -374,7 +374,12 @@
+     childLaughed: !!cls?.flags?.humour || (!moduleOnly && !help && turnSignals({ text: childText }).laughter),
+     studio: turnStudioOf(kernel.arb)?.reveal || studioSlot ? "revealing" : undefined, lane, childText: moduleOnly || help ? "" : childText, typed });
+   let moment = null;
+-  let studioSlot = null;
++  // Seam (W2-H, server/studio/seam.js slotFor): the Studio slot this turn shows: the piece the kernel let Studio reveal, or
++  // the piece already on screen (it stays in the tray across turns until retired). Known BEFORE the reply, so the reply
++  // guard counts it as a screen target (director/say.js screenHasTargets reads ui.studioSlot). A whiteboard ack below
++  // replaces it. null = nothing from Studio (the pre-seam turn).
++  let studioSlot = late || r.move.kind === "safeguard" ? null
++    : seamSafe("studio.slotFor", () => (typeof studioSeam.slotFor === "function" ? studioSeam.slotFor(lesson.id, turnStudioOf(kernel.arb)) : null), null);
+   // The verdict the teacher's words must agree with (G-PRAISE-1; planTurn: only a kit item graded against its key has one).
+   const verdict = next.lastVerdict ?? "ungraded";
+   if (textLane && !r.hold && !late) {
+@@ -385,7 +390,7 @@
+     let filtered;
+     ({ reply: teacherReply, guard, filtered, floor: replyFloor = [] } = hit
+       ? hit.result
+-      : await textReply({ instructions, state: next, kit, childText: said, trace, history: historyOf(next), verdict, ui: r.ui, module: next.module }));
++      : await textReply({ instructions, state: next, kit, childText: said, trace, history: historyOf(next), verdict, ui: withStudioSlot(r.ui, studioSlot), module: next.module }));
+     // The content filter blocked the reply call that carried the child's words: fail CLOSED. The turn is
+     // re-planned as a disclosure (safeguard move, incident row) and the fixed helpline line is sent, with no
+     // further model call on the same words.
+@@ -664,6 +669,11 @@
+   const stepped = moduleOnly
+     ? step(state, { ...stepIn, event: "module", moduleEvents: c.moduleEvents })
+     : step(state, { ...stepIn, event: "turn" });
++  // Seam (W2-H): what Studio has on screen (or is revealing this turn) as ONE telegraphic facts row in the move's content,
++  // beside a module's (director/modules.js factsRow shape): both lanes' compile see values, never prose. A reveal the kernel
++  // then refuses leaves a row with no slot, and the reply guard strips any line that points at the screen (screenProblem).
++  const studioRow = c.studio && !moduleOnly ? seamSafe("studio.factsRow", () => factsRowOfView(c.studio, { revealAccepted: true }), null) : null;
++  if (studioRow && stepped.state) stepped.state.lastContent = [...(stepped.state.lastContent ?? []).filter((l) => l !== studioRow), studioRow];
+   const { r, instructions, skipped } = instructionsAfter(stepped, kit, now);
+   const next = r.state;
+   // The verdict this turn's words must agree with (G-PRAISE-1): a kit item graded against its key, or "ungraded".
