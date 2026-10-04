@@ -1,0 +1,101 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff8ed;color:#493b32}
+#app{width:360px;height:320px;padding:12px;display:flex;flex-direction:column;gap:8px}
+h1{font-size:19px;line-height:23px;margin:0;color:#713f35}
+#instruction,#feedback{font-size:13px;line-height:17px;margin:0;min-height:17px}
+#track{display:flex;justify-content:center;gap:7px;min-height:78px;align-items:center}
+.slot{width:101px;height:72px;border:2px dashed #e8b978;border-radius:15px;background:#fff2d9;display:flex;align-items:center;justify-content:center;position:relative;transition:background .25s,border-color .25s,transform .25s}
+.slot-number{position:absolute;top:4px;left:7px;width:24px;height:24px;border-radius:50%;background:#f4ca7c;color:#674a2a;font-weight:800;font-size:14px;display:grid;place-items:center}
+.slot.filled{border-style:solid;background:#edf4df;border-color:#a9c77d;animation:pop .32s ease-out}
+#cards{display:flex;justify-content:center;gap:8px;align-items:center;flex:1}
+.card{border:0;border-radius:15px;width:101px;height:60px;padding:5px;background:#f2a66d;color:#442f29;font:700 14px/17px system-ui,-apple-system,"Segoe UI",sans-serif;box-shadow:0 4px 0 #d27b4d;cursor:pointer;transition:transform .16s,box-shadow .16s,background .2s;overflow-wrap:anywhere}
+.card:active{transform:scale(.94);box-shadow:0 1px 0 #d27b4d}
+.card:focus-visible{outline:3px solid #648e70;outline-offset:2px}
+.card.placed{width:75px;height:48px;padding:3px;font-size:11px;line-height:13px;background:#c9dda8;box-shadow:0 3px 0 #91ac68;cursor:default}
+.card.shake{animation:shake .35s ease-in-out}
+#feedback{color:#6d573d;text-align:center}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pop{0%{transform:scale(.92)}65%{transform:scale(1.04)}100%{transform:scale(1)}}
+</style>
+<main id="app">
+  <h1 id="title"></h1>
+  <p id="instruction"></p>
+  <div id="track" aria-live="polite"></div>
+  <div id="cards"></div>
+  <p id="feedback" aria-live="polite"></p>
+</main>
+<script>
+
+(()=>{
+  const shown=Studio.params.shown;
+  const title=document.getElementById("title");
+  const instruction=document.getElementById("instruction");
+  const track=document.getElementById("track");
+  const cards=document.getElementById("cards");
+  const feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  instruction.textContent=Studio.t("instr");
+  const slots=shown.map((key,i)=>{
+    const slot=document.createElement("div");
+    slot.className="slot";
+    slot.dataset.position=String(i+1);
+    const number=document.createElement("span");
+    number.className="slot-number";
+    number.textContent=String(i+1);
+    slot.appendChild(number);
+    track.appendChild(slot);
+    return slot;
+  });
+  const cardByKey=new Map();
+  shown.forEach(key=>{
+    const card=document.createElement("button");
+    card.type="button";
+    card.className="card";
+    card.dataset.step=key;
+    card.textContent=Studio.t(key);
+    cards.appendChild(card);
+    cardByKey.set(key,card);
+    card.addEventListener("click",()=>{
+      if(pending || card.dataset.placed) return;
+      pending=key;
+      Studio.event("tap",{key});
+      Studio.answer({key});
+    });
+  });
+  let next=0;
+  let pending=null;
+  let completed=false;
+  Studio.onVerdict(({correct})=>{
+    if(pending===null || completed) return;
+    const key=pending;
+    pending=null;
+    const card=cardByKey.get(key);
+    if(correct){
+      const position=next+1;
+      card.dataset.placed=String(position);
+      card.classList.add("placed");
+      card.setAttribute("aria-disabled","true");
+      slots[next].appendChild(card);
+      slots[next].classList.add("filled");
+      next++;
+      feedback.textContent=Studio.t("right");
+      Studio.event("placed",{position});
+      if(next===shown.length){
+        completed=true;
+        feedback.textContent=Studio.t("done");
+        Studio.done();
+      }
+    }else{
+      feedback.textContent=Studio.t("wrong");
+      card.classList.remove("shake");
+      void card.offsetWidth;
+      card.classList.add("shake");
+      Studio.event("miss",{key});
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

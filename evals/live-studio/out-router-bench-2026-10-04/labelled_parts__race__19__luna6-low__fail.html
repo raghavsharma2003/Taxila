@@ -1,0 +1,97 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8e9;color:#493c32}
+.stage{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(ellipse at 50% 60%,#fffdf6 0,#fff8e9 75%)}
+h1{position:absolute;top:8px;left:0;width:100%;margin:0;text-align:center;font-size:19px;line-height:25px;font-weight:750;color:#48634a}
+.question{position:absolute;top:34px;left:0;width:100%;text-align:center;font-size:15px;line-height:21px;color:#705442}
+svg{position:absolute;inset:0;width:360px;height:320px}
+.leader{stroke:#aa987d;stroke-width:1.5;stroke-linecap:round;fill:none}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:filter .25s,transform .18s}
+.part:active{transform:scale(.94)}
+.part.glow{filter:drop-shadow(0 0 9px #ffd84a);animation:shine .65s ease-in-out 2}
+.label{font:600 13px system-ui,sans-serif;fill:#554a3d}
+.feedback{position:absolute;left:0;bottom:4px;width:100%;height:28px;text-align:center;font-size:15px;font-weight:700;color:#48634a}
+@keyframes shine{50%{transform:scale(1.12)}}
+</style>
+<div class="stage">
+  <h1 id="title"></h1>
+  <div class="question" id="question" data-ask></div>
+  <svg id="picture" viewBox="0 0 360 320" aria-label="">
+    <g id="leaders"></g>
+    <g id="parts"></g>
+    <g id="labels"></g>
+  </svg>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+const p=Studio.params, ns="http://www.w3.org/2000/svg";
+const title=document.getElementById("title"), question=document.getElementById("question");
+title.textContent=Studio.t("title");
+question.textContent=Studio.t("ask")+" "+Studio.t(p.ask);
+const parts=document.getElementById("parts"), labels=document.getElementById("labels"), leaders=document.getElementById("leaders");
+const feedback=document.getElementById("feedback");
+const layouts={
+ petal:{x:270,y:77,tx:207,ty:78,anchor:"end"},
+ centre:{x:218,y:99,tx:194,ty:95,anchor:"start"},
+ stem:{x:236,y:146,tx:193,ty:153,anchor:"start"},
+ leaf:{x:58,y:192,tx:139,ty:171,anchor:"start"},
+ root:{x:267,y:263,tx:211,ty:263,anchor:"end"}
+};
+function el(tag,attrs={}){const n=document.createElementNS(ns,tag);for(const k in attrs)n.setAttribute(k,attrs[k]);return n}
+function makeShape(key){
+ const g=el("g",{class:"part","data-part":key,tabindex:"0","role":"button"});
+ if(key==="petal"){
+  for(let i=0;i<6;i++){const a=i*Math.PI/3;const x=180+Math.cos(a)*20,y=92+Math.sin(a)*20;
+   g.append(el("ellipse",{cx:x,cy:y,rx:12,ry:21,fill:"#f28c70",transform:"rotate("+(i*60)+" "+x+" "+y+")",stroke:"#df705e","stroke-width":"2"}))}
+  g.append(el("rect",{x:150,y:62,width:60,height:60,fill:"transparent","pointer-events":"all"}))
+ }else if(key==="centre"){
+  g.append(el("circle",{cx:180,cy:92,r:15,fill:"#f6c84c",stroke:"#dda936","stroke-width":"2"}));
+  g.append(el("rect",{x:150,y:62,width:60,height:60,fill:"transparent","pointer-events":"all"}))
+ }else if(key==="stem"){
+  g.append(el("path",{d:"M180 107 C178 145 182 185 180 224",fill:"none",stroke:"#568b55","stroke-width":"18","stroke-linecap":"round"}));
+  g.append(el("rect",{x:150,y:125,width:60,height:100,fill:"transparent","pointer-events":"all"}))
+ }else if(key==="leaf"){
+  g.append(el("path",{d:"M176 164 C151 137 123 148 124 169 C126 190 153 194 176 164Z",fill:"#83b96d",stroke:"#5b9655","stroke-width":"2"}));
+  g.append(el("path",{d:"M130 161 Q151 164 172 164",fill:"none",stroke:"#4d8750","stroke-width":"2"}));
+  g.append(el("rect",{x:119,y:141,width:62,height:60,fill:"transparent","pointer-events":"all"}))
+ }else if(key==="root"){
+  g.append(el("path",{d:"M180 216 C180 233 177 244 180 260 M180 237 C164 245 155 257 150 273 M179 244 C194 250 204 263 209 278 M170 248 C167 260 168 271 165 281 M191 251 C190 263 195 273 197 283",fill:"none",stroke:"#a9784f","stroke-width":"8","stroke-linecap":"round","stroke-linejoin":"round"}));
+  g.append(el("rect",{x:145,y:225,width:72,height:65,fill:"transparent","pointer-events":"all"}))
+ }
+ return g
+}
+let current=null,done=false;
+for(const key of p.parts){
+ const layout=layouts[key], shape=makeShape(key);
+ parts.append(shape);
+ leaders.append(el("path",{class:"leader",d:"M"+layout.x+" "+layout.y+" L"+layout.tx+" "+layout.ty}));
+ const label=el("text",{class:"label","data-label":key,x:layout.x,y:layout.y+4,"text-anchor":layout.anchor});
+ label.textContent=Studio.t(key);labels.append(label);
+ const commit=()=>{
+  if(done)return;
+  Studio.event("tap",{part:key});
+  current=key;Studio.answer(key)
+ };
+ shape.addEventListener("click",commit);
+ shape.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();commit()}});
+}
+Studio.onVerdict(({correct})=>{
+ if(correct){
+  done=true;
+  const shape=parts.querySelector('[data-part="'+current+'"]');
+  if(shape)shape.classList.add("glow");
+  feedback.textContent=Studio.t("right")+" "+Studio.t("done");
+  Studio.event("verdict",{result:"correct"});
+  Studio.done()
+ }else{
+  feedback.textContent=Studio.t("wrong");
+  Studio.event("verdict",{result:"wrong"})
+ }
+});
+Studio.ready();
+})();
+
+</script>

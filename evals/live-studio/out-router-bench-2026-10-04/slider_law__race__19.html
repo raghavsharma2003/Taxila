@@ -1,0 +1,85 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;color:#49372f;background:#fff8ed}
+.stage{width:360px;height:320px;padding:12px;display:flex;flex-direction:column;gap:8px}
+h1{font-size:18px;line-height:24px;margin:0;color:#704b38}
+.panel{background:#fff;border:1px solid #f0dfcc;border-radius:16px;padding:9px 11px}
+.readout{display:flex;justify-content:space-between;align-items:center;min-height:30px;font-weight:700;font-size:15px}
+.readout span:last-child{color:#ba633d}
+.scene{display:flex;align-items:center;gap:10px;min-height:38px;overflow:hidden}
+.ground{height:30px;display:flex;align-items:center;border-bottom:3px solid #d3a66f;flex:1;overflow:hidden}
+.visual{height:20px;min-width:0;max-width:none;border-radius:5px 12px 5px 5px;background:linear-gradient(90deg,#eca85b,#e77c4c);position:relative;transition:width .35s cubic-bezier(.2,.8,.2,1);box-shadow:0 3px 0 #ca6940}
+.visual:before,.visual:after{content:"";position:absolute;top:-6px;width:5px;height:9px;background:#7caa76;border-radius:5px}
+.visual:before{left:18%}.visual:after{right:16%}
+.controls{display:flex;gap:8px}
+button{font:700 15px system-ui,sans-serif;color:#704b38;border:0;border-radius:14px;background:#f4dfc5;min-width:0;min-height:54px;padding:8px 10px;cursor:pointer;transition:transform .12s,background .2s;touch-action:manipulation}
+button:active{transform:scale(.94);background:#edc99f}
+.controls button{flex:1}
+.ask{font-weight:700;font-size:14px;line-height:18px;margin-bottom:6px}
+.options{display:flex;gap:8px}
+.options button{flex:1;background:#e9f1df}
+.feedback{min-height:19px;font-size:13px;font-weight:700;color:#578050;padding-top:3px}
+@media (prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important}}
+</style>
+<main class="stage">
+  <h1 id="title"></h1>
+  <section class="panel">
+    <div class="readout"><span id="xread"></span><span data-output><span id="yread"></span></span></div>
+    <div class="scene"><div class="ground"><div class="visual" data-visual data-dim="w"></div></div></div>
+  </section>
+  <div class="controls">
+    <button type="button" data-action="dec" id="less"></button>
+    <button type="button" data-action="inc" id="more"></button>
+  </div>
+  <section class="panel">
+    <div class="ask" id="ask"></div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+  </section>
+</main>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const t=Studio.t;
+  let x=p.x.start;
+  const output=document.querySelector('[data-output]');
+  const visual=document.querySelector('[data-visual]');
+  const fmt=n=>Number.isInteger(n)?String(n):String(Number(n.toFixed(8)));
+  document.getElementById('title').textContent=t('title');
+  document.getElementById('less').textContent=t('less');
+  document.getElementById('more').textContent=t('more');
+  document.getElementById('ask').textContent=t('ask')+' '+fmt(p.ask.x);
+  function update(){
+    const y=p.law.k*x+p.law.b;
+    document.getElementById('xread').textContent=t('xname')+' = '+fmt(x);
+    document.getElementById('yread').textContent=t('yname')+' = '+fmt(y);
+    output.dataset.value=fmt(y);
+    output.dataset.x=fmt(x);
+    visual.style.width=(y*p.y.unitsPer)+'px';
+  }
+  document.getElementById('less').addEventListener('click',()=>{
+    if(x-p.x.step>=p.x.min){x-=p.x.step;update();Studio.event('change',{direction:'less'});}
+  });
+  document.getElementById('more').addEventListener('click',()=>{
+    if(x+p.x.step<=p.x.max){x+=p.x.step;update();Studio.event('change',{direction:'more'});}
+  });
+  const options=document.getElementById('options');
+  p.ask.options.forEach(value=>{
+    const b=document.createElement('button');
+    b.type='button';b.textContent=fmt(value);b.dataset.option=fmt(value);
+    b.addEventListener('click',()=>Studio.answer({value}));
+    options.appendChild(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    document.getElementById('feedback').textContent=correct?t('right'):t('wrong');
+    if(correct){
+      document.getElementById('feedback').textContent=t('done');
+      Studio.done();
+    }
+  });
+  update();
+  Studio.ready();
+})();
+
+</script>

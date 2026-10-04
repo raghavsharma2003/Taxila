@@ -1,0 +1,92 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;font-family:system-ui,sans-serif;color:#584438}
+  .card{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 50% 60%,#fffdf7,#fff8ed 75%)}
+  .title{position:absolute;top:8px;left:18px;right:18px;height:28px;font-size:19px;font-weight:750}
+  .question{position:absolute;top:40px;left:18px;right:18px;min-height:34px;padding:6px 12px;border-radius:14px;background:#f5e8d3;font-size:16px;font-weight:650}
+  .status{position:absolute;top:76px;right:15px;min-height:22px;font-size:14px;font-weight:750;pointer-events:none}
+  svg{position:absolute;inset:78px 0 0;width:360px;height:242px}
+  .part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .22s ease,filter .25s ease}
+  .part:active{transform:scale(.93)}
+  .part.wrong{animation:wobble .4s ease}
+  .part.correct{filter:drop-shadow(0 0 8px #ffbf48);animation:glow .75s ease-in-out infinite alternate}
+  .leader{fill:none;stroke:#a99785;stroke-width:1.7;stroke-linecap:round;pointer-events:none}
+  .label{fill:#594839;font-size:13px;font-weight:700;pointer-events:none}
+  @keyframes wobble{25%{transform:rotate(-5deg)}65%{transform:rotate(5deg)}}
+  @keyframes glow{to{filter:drop-shadow(0 0 13px #ffac28);transform:scale(1.035)}}
+</style>
+<div class="card">
+  <div class="title" id="title"></div>
+  <div class="question" data-ask id="ask"></div>
+  <div class="status" id="status" aria-live="polite"></div>
+  <svg viewBox="0 78 360 242" role="img">
+    <path d="M18 302 Q180 309 342 302" fill="none" stroke="#e8d6ba" stroke-width="3"/>
+    <g class="part" data-part="petal">
+      <path d="M164 143 C132 145 113 129 120 113 C127 98 148 103 164 125 C148 104 153 84 171 82 C190 80 197 101 183 123 C201 99 223 98 234 111 C248 128 226 146 198 145 C221 150 229 166 216 174 C200 184 185 166 180 151 C167 169 146 174 135 162 C127 153 139 145 164 143Z" fill="#ed8495" stroke="#d96b80" stroke-width="3"/>
+    </g>
+    <g class="part" data-part="stem">
+      <path d="M155 175 Q164 183 167 200 L168 251 Q179 257 191 250 L192 204 Q193 181 207 171 L194 168 Q177 181 173 191 Q168 181 165 172Z" fill="#73ad69" stroke="#548d55" stroke-width="3"/>
+    </g>
+    <g class="part" data-part="leaf">
+      <path d="M187 222 Q215 184 275 192 Q272 234 229 244 Q203 246 187 222Z" fill="#82bd70" stroke="#589a60" stroke-width="3"/>
+      <path d="M198 225 Q233 221 263 201" fill="none" stroke="#5b9b60" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g class="part" data-part="root">
+      <path d="M168 247 Q158 261 145 270 L134 283 L151 281 Q156 291 151 301 L168 294 L178 307 L188 293 L208 300 L205 284 L222 282 L209 268 Q193 263 190 248 Q179 255 168 247Z" fill="#b98760" stroke="#936744" stroke-width="3"/>
+      <path d="M178 257 L178 294 M168 268 L156 283 M190 267 L204 284" fill="none" stroke="#986c48" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+    <g class="part" data-part="centre">
+      <circle cx="181" cy="150" r="29" fill="#f7c65b" stroke="#dc9d42" stroke-width="3"/>
+      <circle cx="172" cy="143" r="2.5" fill="#dc9d42"/><circle cx="189" cy="143" r="2.5" fill="#dc9d42"/>
+      <path d="M173 157 Q181 164 190 156" fill="none" stroke="#dc9d42" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <path class="leader" d="M107 113 L121 113"/><text class="label" data-label="petal" x="17" y="117"></text>
+    <path class="leader" d="M203 169 L211 177"/><text class="label" data-label="centre" x="215" y="185"></text>
+    <path class="leader" d="M147 202 L165 202"/><text class="label" data-label="stem" x="143" y="206" text-anchor="end"></text>
+    <path class="leader" d="M268 218 L280 218"/><text class="label" data-label="leaf" x="285" y="222"></text>
+    <path class="leader" d="M218 279 L231 279"/><text class="label" data-label="root" x="236" y="283"></text>
+  </svg>
+</div>
+<script>
+
+(() => {
+  const p = Studio.params;
+  const status = document.getElementById('status');
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('ask').textContent = Studio.t('ask');
+  document.querySelectorAll('[data-label]').forEach(el => {
+    const key = el.getAttribute('data-label');
+    el.textContent = p.parts.includes(key) ? Studio.t(key) : '';
+  });
+  let waiting = false, finished = false, selected = null;
+  document.querySelectorAll('[data-part]').forEach(el => {
+    el.addEventListener('click', () => {
+      if (waiting || finished) return;
+      const key = el.getAttribute('data-part');
+      if (!p.parts.includes(key)) return;
+      selected = el;
+      waiting = true;
+      Studio.event('tap', {part:key});
+      Studio.answer(key);
+    });
+  });
+  Studio.onVerdict(({correct}) => {
+    if (!waiting || !selected) return;
+    waiting = false;
+    if (correct) {
+      finished = true;
+      selected.classList.add('correct');
+      status.textContent = Studio.t('right');
+      Studio.event('complete', {});
+      Studio.done();
+    } else {
+      status.textContent = Studio.t('wrong');
+      selected.classList.remove('wrong');
+      void selected.getBoundingClientRect();
+      selected.classList.add('wrong');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lesson · Live game</title>
+<link rel="stylesheet" href="v3.css">
+<style>
+  .line.old { display: none; }
+  @media (min-width: 900px) and (min-aspect-ratio: 5/4) { .line.old { display: grid; opacity: .7; } }
+  #game { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: ns-resize; }
+  .hud { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .hud .box { display: flex; align-items: baseline; gap: 6px; padding: 7px 10px; border-radius: 12px; background: var(--glass); border: 1px solid var(--line); backdrop-filter: blur(10px); font: 600 11px/1 var(--f-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); }
+  .hud .box b { font: 700 18px/1 var(--f-display); letter-spacing: -.01em; color: var(--ink); text-transform: none; }
+  .hud .target { border-color: rgba(203,255,77,.45); }
+  .hud .target b { color: var(--volt); }
+  .hud .combo b { color: var(--ion); }
+  @container (max-width: 400px) { .hud .acc { display: none; } }
+  .flash { position: absolute; inset: 0; pointer-events: none; z-index: 2; border-radius: inherit; box-shadow: inset 0 0 0 0 transparent; transition: box-shadow .25s; }
+  .flash.good { box-shadow: inset 0 0 60px -10px rgba(61,220,151,.55); }
+  .flash.look { box-shadow: inset 0 0 60px -10px rgba(255,181,71,.5); }
+  .hint { position: absolute; left: 50%; top: 14px; transform: translateX(-50%); z-index: 3; font: 600 12px/1 var(--f-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--ink-2); background: var(--glass); border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; white-space: nowrap; transition: opacity .4s; }
+</style>
+</head>
+<body class="grain">
+<script src="sprite.js"></script>
+<div class="lesson">
+  <header class="l-top">
+    <button class="btn btn-icon" aria-label="Pause lesson"><svg class="icon"><use href="#i-pause"/></svg></button>
+    <div class="l-title">
+      <div class="subj" style="--c:var(--sub-maths)">Class 6 · Maths · Equivalent fractions</div>
+      <div class="phases" aria-label="Lesson phase"><span>Warm-up</span><span>Learn</span><b>Try</b><span>Wrap</span></div>
+    </div>
+    <button class="btn btn-icon btn-quiet" aria-label="Captions and settings"><svg class="icon"><use href="#i-more"/></svg></button>
+  </header>
+
+  <div class="stage-wrap">
+    <section class="stage has-rail" aria-label="Game: Fraction Pilot">
+      <div class="stage-slot"><canvas id="game" aria-label="Steer the ship up and down through the gate equal to the target fraction"></canvas><div class="flash" id="flash"></div></div>
+      <div class="stage-label"><span class="tag"><svg class="icon" style="width:13px;height:13px"><use href="#i-gamepad"/></svg>Fraction Pilot</span></div>
+      <div class="hint" id="hint">Drag to steer · or ↑ ↓</div>
+      <div class="pip speaking" id="pip"><img src="img/teacher-ira.webp" alt=""><div class="pip-name">Ira</div></div>
+      <div class="rail">
+        <div class="hud">
+          <div class="box target">Hit <b id="tgt">3/4</b></div>
+          <div class="box combo">Combo <b id="combo">×0</b></div>
+          <div class="box acc">Clean <b id="acc">0/0</b></div>
+        </div>
+        <button class="btn btn-icon" id="pauseGame" aria-label="Pause game" style="min-height:40px;width:40px;border-radius:12px"><svg class="icon"><use href="#i-pause"/></svg></button>
+      </div>
+    </section>
+  </div>
+
+  <div class="side">
+    <div class="tile-big speaking" id="tileBig"><img src="img/teacher-ira.webp" alt="Ira, your AI teacher"><div class="pip-name"><span>Ira · AI teacher</span><span class="tag" id="tileState" style="background:rgba(0,0,0,.45);color:#fff">Watching</span></div></div>
+    <section class="convo" aria-live="polite">
+      <div class="line her old"><span class="who"><img src="img/teacher-ira.webp" alt=""></span><p>You said 3/4 and 6/8 look different but feel the same. Let's test that at speed.</p></div>
+      <div class="line me old"><span class="who me">YOU</span><p><span class="heard">heard</span>“okay but make it hard”</p></div>
+      <div class="line me"><span class="who me">YOU</span><p><span class="heard">heard</span>“wait, is nine by twelve also the same?”</p></div>
+      <div class="line her"><span class="who"><img src="img/teacher-ira.webp" alt=""></span><p id="cap">Fly through it and find out.</p></div>
+    </section>
+    <footer class="dock">
+      <div class="steer" role="group" aria-label="Steer the lesson">
+        <button class="chip" id="restart"><svg class="icon"><use href="#i-replay"/></svg>Restart</button>
+        <button class="chip" id="slower"><svg class="icon"><use href="#i-slow"/></svg>Slower</button>
+        <button class="chip"><svg class="icon"><use href="#i-eye"/></svg>Explain it</button>
+        <button class="chip"><svg class="icon"><use href="#i-bolt"/></svg>Harder</button>
+      </div>
+      <div class="dock-row">
+        <button class="btn btn-icon" aria-label="Mute microphone"><svg class="icon"><use href="#i-mic"/></svg></button>
+        <div class="mic"><div class="wave idle" id="wave"><i></i><i></i><i></i><i></i><i></i></div><div class="state"><span>Speak anytime</span><small>She's watching you play</small></div></div>
+        <button class="btn btn-icon" aria-label="Type instead"><svg class="icon"><use href="#i-keyboard"/></svg></button>
+      </div>
+    </footer>
+  </div>
+</div>
+<script>
+// Fraction Pilot — a real-time game for equivalent fractions (class 6, NCERT Ch. Fractions).
+// Responsive artifact: it sizes itself to the stage slot it is given (stage contract §6). Session-local HUD only; nothing persisted.
+const cv = document.getElementById("game"), ctx = cv.getContext("2d");
+const $ = (id) => document.getElementById(id);
+const css = getComputedStyle(document.documentElement);
+const C = { volt: "#CBFF4D", ion: "#8B98FF", mint: "#3DDC97", amber: "#FFB547", ink: "#F2F4F8", ink2: "#A9B0C0", ink3: "#848CA0", teal: "#2FD3C7" };
+let W = 0, H = 0, dpr = 1;
+function fit() { const r = cv.getBoundingClientRect(); dpr = Math.min(2, devicePixelRatio || 1); W = r.width; H = r.height; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+new ResizeObserver(fit).observe(cv); fit();
+
+const TARGETS = [
+  { t: [3, 4], eq: [[6, 8], [9, 12], [15, 20], [12, 16]], near: [[4, 3], [3, 8], [6, 9], [2, 4], [4, 6], [7, 8]] },
+  { t: [2, 3], eq: [[4, 6], [6, 9], [10, 15], [8, 12]], near: [[3, 2], [2, 6], [4, 9], [3, 4], [6, 8], [5, 6]] },
+  { t: [2, 5], eq: [[4, 10], [6, 15], [8, 20], [10, 25]], near: [[5, 2], [2, 10], [4, 5], [3, 5], [1, 4], [6, 10]] },
+];
+let ti = 0, gates = [], stars = [], parts = [], shipY = 0.5, targetY = 0.5, speed = 0.17, combo = 0, clean = 0, total = 0, sinceT = 0, last = performance.now(), paused = false, lastInput = 0, misses = 0, shake = 0;
+for (let i = 0; i < 90; i++) stars.push({ x: Math.random(), y: Math.random(), z: Math.random() * 0.8 + 0.2 });
+const lanesY = [0.22, 0.5, 0.78];
+const pick = (a) => a[Math.floor(Math.random() * a.length)];
+function spawn(x) {
+  const T = TARGETS[ti]; const good = Math.floor(Math.random() * 3);
+  const used = new Set(); const labels = [0, 1, 2].map((i) => { if (i === good) return pick(T.eq); let n; do n = pick(T.near); while (used.has(n.join())); used.add(n.join()); return n; });
+  gates.push({ x, good, labels, done: false, res: null });
+}
+function reset() { gates = []; parts = []; combo = 0; clean = 0; total = 0; sinceT = 0; ti = 0; misses = 0; speed = 0.17; for (let i = 0; i < 3; i++) spawn(1.1 + i * 0.62); hud(); }
+function hud() { const T = TARGETS[ti].t; $("tgt").textContent = T[0] + "/" + T[1]; $("combo").textContent = "×" + combo; $("acc").textContent = clean + "/" + total; }
+function say(s, look) {
+  $("cap").textContent = s; const p = $("pip"), t = $("tileBig"); p.classList.add("speaking"); t.classList.add("speaking"); $("tileState").textContent = "Talking";
+  clearTimeout(say.t); say.t = setTimeout(() => { p.classList.remove("speaking"); t.classList.remove("speaking"); $("tileState").textContent = "Watching"; }, 2200);
+}
+function flash(k) { const f = $("flash"); f.className = "flash " + k; setTimeout(() => (f.className = "flash"), 380); }
+function burst(x, y, col, n = 26) { for (let i = 0; i < n; i++) { const a = Math.random() * 6.28, v = 60 + Math.random() * 220; parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1, col }); } }
+const fr = (n) => n[0] / n[1];
+
+// input: drag / touch / keys. Autopilot demo when idle (gallery + screenshots).
+function setFromEvent(e) { const r = cv.getBoundingClientRect(); targetY = Math.max(0.08, Math.min(0.92, (e.clientY - r.top) / r.height)); lastInput = performance.now(); $("hint").style.opacity = 0; }
+cv.addEventListener("pointerdown", (e) => { cv.setPointerCapture(e.pointerId); setFromEvent(e); });
+cv.addEventListener("pointermove", (e) => { if (e.buttons || e.pointerType === "touch") setFromEvent(e); });
+addEventListener("keydown", (e) => { if (e.key === "ArrowUp") { targetY = Math.max(0.08, targetY - 0.28); lastInput = performance.now(); } if (e.key === "ArrowDown") { targetY = Math.min(0.92, targetY + 0.28); lastInput = performance.now(); } });
+$("restart").onclick = reset; $("slower").onclick = () => { speed = Math.max(0.1, speed - 0.04); say("Slowing it down. Same rule: same value, different look."); };
+$("pauseGame").onclick = () => (paused = !paused);
+
+function step(dt) {
+  const auto = performance.now() - lastInput > 2500;
+  const shipX = 0.16;
+  // autopilot: aims at the correct lane of the next gate, makes an occasional mistake
+  if (auto) { const g = gates.find((g) => !g.done); if (g) { if (g.aim == null) g.aim = Math.random() < 0.8 ? g.good : (g.good + 1) % 3; targetY = lanesY[g.aim]; } }
+  shipY += (targetY - shipY) * Math.min(1, dt * 9);
+  for (const s of stars) { s.x -= dt * speed * s.z * 1.6; if (s.x < 0) { s.x = 1; s.y = Math.random(); } }
+  for (const g of gates) {
+    g.x -= dt * speed;
+    if (!g.done && g.x < shipX) {
+      g.done = true; total++; const lane = lanesY.reduce((b, y, i) => Math.abs(y - shipY) < Math.abs(lanesY[b] - shipY) ? i : b, 0);
+      const T = TARGETS[ti].t, L = g.labels[lane];
+      if (lane === g.good) {
+        combo++; clean++; misses = 0; g.res = "good"; flash("good"); burst(shipX * W, shipY * H, C.mint);
+        speed = Math.min(0.32, speed + 0.008);
+        if (combo === 3) say(`Three clean. ${L[0]}/${L[1]} and ${T[0]}/${T[1]} land on the same spot on the line.`);
+        else if (combo % 5 === 0) say("You're reading these faster than you can say them.");
+      } else {
+        combo = 0; misses++; g.res = "look"; flash("look"); shake = 0.3;
+        const G = g.labels[g.good];
+        say(`${L[0]}/${L[1]} sits ${fr(L) > fr(T) ? "right of" : "left of"} ${T[0]}/${T[1]} on the line. ${G[0]}/${G[1]} was the twin.`);
+        if (misses >= 2) speed = Math.max(0.12, speed - 0.03);
+      }
+      sinceT++; if (sinceT >= 5) { sinceT = 0; ti = (ti + 1) % TARGETS.length; gates.filter((x) => !x.done).forEach((x) => { const t = TARGETS[ti]; x.labels = x.labels.map((_, i) => i === x.good ? pick(t.eq) : pick(t.near)); }); }
+      hud();
+    }
+  }
+  if (gates.length && gates[0].x < -0.2) gates.shift();
+  while (gates.length < 4) spawn(gates[gates.length - 1].x + 0.62);
+  for (const p of parts) { p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= 0.96; p.vy *= 0.96; p.life -= dt * 1.4; }
+  parts = parts.filter((p) => p.life > 0);
+  if (shake > 0) shake -= dt;
+  // thruster trail
+  parts.push({ x: shipX * W - 18, y: shipY * H + (Math.random() - 0.5) * 6, vx: -120 - Math.random() * 80, vy: (Math.random() - 0.5) * 30, life: 0.5, col: C.ion });
+}
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  const sx = shake > 0 ? (Math.random() - 0.5) * 8 : 0; ctx.save(); ctx.translate(sx, 0);
+  // background glow + stars
+  const g0 = ctx.createRadialGradient(W * 0.7, H * 0.3, 10, W * 0.7, H * 0.3, Math.max(W, H)); g0.addColorStop(0, "rgba(79,91,213,.20)"); g0.addColorStop(1, "rgba(13,16,23,0)"); ctx.fillStyle = g0; ctx.fillRect(0, 0, W, H);
+  for (const s of stars) { ctx.fillStyle = `rgba(255,255,255,${0.15 + s.z * 0.5})`; ctx.fillRect(s.x * W, s.y * H, s.z * 2.2, s.z * 2.2); }
+  // lane guides
+  ctx.setLineDash([2, 10]); ctx.strokeStyle = "rgba(255,255,255,.06)"; ctx.lineWidth = 1;
+  for (const y of lanesY) { ctx.beginPath(); ctx.moveTo(0, y * H); ctx.lineTo(W, y * H); ctx.stroke(); }
+  ctx.setLineDash([]);
+  // gates
+  const gw = Math.max(64, Math.min(110, W * 0.14)), gh = H * 0.2, fs = Math.max(18, Math.min(34, H * 0.065));
+  for (const g of gates) {
+    const x = g.x * W;
+    lanesY.forEach((ly, i) => {
+      const y = ly * H - gh / 2; let col = "rgba(139,152,255,.55)", fill = "rgba(139,152,255,.08)";
+      if (g.res && i === g.good) { col = C.mint; fill = "rgba(61,220,151,.14)"; }
+      else if (g.res === "look") { col = "rgba(255,181,71,.35)"; fill = "rgba(255,181,71,.05)"; }
+      rr(x - gw / 2, y, gw, gh, 16); ctx.fillStyle = fill; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = col; ctx.stroke();
+      const L = g.labels[i]; ctx.fillStyle = g.res && i !== g.good ? "rgba(242,244,248,.35)" : C.ink; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.font = `700 ${fs}px "Bricolage Grotesque", sans-serif`; ctx.fillText(String(L[0]), x, ly * H - fs * 0.52);
+      ctx.fillRect(x - fs * 0.6, ly * H - 1, fs * 1.2, 2.5);
+      ctx.fillText(String(L[1]), x, ly * H + fs * 0.6);
+    });
+  }
+  // particles
+  for (const p of parts) { ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.col; ctx.fillRect(p.x, p.y, 3, 3); }
+  ctx.globalAlpha = 1;
+  // ship
+  const shx = 0.16 * W, shy = shipY * H, tilt = (targetY - shipY) * 1.2;
+  ctx.save(); ctx.translate(shx, shy); ctx.rotate(tilt);
+  ctx.shadowColor = C.volt; ctx.shadowBlur = 18; ctx.fillStyle = C.volt;
+  ctx.beginPath(); ctx.moveTo(22, 0); ctx.lineTo(-14, -13); ctx.lineTo(-7, 0); ctx.lineTo(-14, 13); ctx.closePath(); ctx.fill();
+  ctx.restore();
+  // number line scaffold (0..2): where the target and the last gate value sit
+  const nl = { x0: W * 0.08, x1: W * 0.92, y: H - 22 };
+  ctx.strokeStyle = "rgba(255,255,255,.25)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(nl.x0, nl.y); ctx.lineTo(nl.x1, nl.y); ctx.stroke();
+  ctx.font = `500 11px "Geist Mono", monospace`; ctx.fillStyle = C.ink3; ctx.textAlign = "center";
+  [0, 0.5, 1, 1.5, 2].forEach((v) => { const x = nl.x0 + (nl.x1 - nl.x0) * v / 2; ctx.fillRect(x - 1, nl.y - 5, 2, 10); ctx.fillText(v === 0.5 ? "½" : v === 1.5 ? "1½" : String(v), x, nl.y - 12); });
+  const T = TARGETS[ti].t; const tx = nl.x0 + (nl.x1 - nl.x0) * fr(T) / 2;
+  ctx.fillStyle = C.volt; ctx.beginPath(); ctx.arc(tx, nl.y, 6, 0, 7); ctx.fill();
+  const done = gates.filter((g) => g.res).slice(-1)[0];
+  if (done) { const L = done.labels[done.res === "good" ? done.good : lanesY.reduce((b, y, i) => Math.abs(y - shipY) < Math.abs(lanesY[b] - shipY) ? i : b, 0)]; const lx = nl.x0 + (nl.x1 - nl.x0) * Math.min(2, fr(L)) / 2; ctx.strokeStyle = done.res === "good" ? C.mint : C.amber; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(lx, nl.y, 10, 0, 7); ctx.stroke(); }
+  ctx.restore();
+}
+function loop(now) { const dt = Math.min(0.05, (now - last) / 1000); last = now; if (!paused) step(dt); draw(); requestAnimationFrame(loop); }
+document.fonts.ready.then(() => { reset(); requestAnimationFrame(loop); });
+</script>
+</body>
+</html>

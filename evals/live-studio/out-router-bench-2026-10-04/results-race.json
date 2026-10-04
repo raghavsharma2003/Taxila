@@ -12896,5 +12896,171 @@
     "fixes": []
    }
   ]
+ },
+ {
+  "key": "sequence_steps|race|19",
+  "archetype": "sequence_steps",
+  "set": "race",
+  "which": "alt",
+  "ok": true,
+  "passFirst": true,
+  "ms": 20896,
+  "usd": 0.02724,
+  "reason": "won",
+  "winner": "luna6-low",
+  "toPlayableMs": 14414,
+  "arms": [
+   {
+    "arm": "luna6-low",
+    "pass": true,
+    "repairs": 0,
+    "ttftMs": 4571,
+    "firstPaintMs": 7463,
+    "genMs": 9484,
+    "qaMs": 4922,
+    "usd": 0.00094,
+    "failed": [],
+    "fixes": []
+   },
+   {
+    "arm": "terra-low",
+    "pass": false,
+    "repairs": 0,
+    "ttftMs": 10831,
+    "firstPaintMs": null,
+    "genMs": 14412,
+    "qaMs": 0,
+    "usd": 0.00797,
+    "failed": [],
+    "fixes": [],
+    "error": "cancelled"
+   },
+   {
+    "arm": "gpt6-low",
+    "pass": false,
+    "repairs": 0,
+    "ttftMs": 4274,
+    "firstPaintMs": 8613,
+    "genMs": 11153,
+    "qaMs": 9741,
+    "usd": 0.01833,
+    "failed": [
+     "G6.placed_in_order",
+     "G1.no_errors",
+     "G7.state_graph"
+    ],
+    "fixes": []
+   }
+  ]
+ },
+ {
+  "key": "slider_law|race|19",
+  "archetype": "slider_law",
+  "set": "race",
+  "which": "alt",
+  "ok": true,
+  "passFirst": true,
+  "ms": 24644,
+  "usd": 0.05565,
+  "reason": "won",
+  "winner": "luna6-low",
+  "toPlayableMs": 19947,
+  "arms": [
+   {
+    "arm": "luna6-low",
+    "pass": true,
+    "repairs": 0,
+    "ttftMs": 6545,
+    "firstPaintMs": 9290,
+    "genMs": 12336,
+    "qaMs": 7603,
+    "usd": 0.00103,
+    "failed": [],
+    "fixes": []
+   },
+   {
+    "arm": "gpt6-low",
+    "pass": false,
+    "repairs": 1,
+    "ttftMs": 3020,
+    "firstPaintMs": 7552,
+    "genMs": 14278,
+    "qaMs": 5667,
+    "usd": 0.02232,
+    "failed": [
+     "G4.inside_after_play"
+    ],
+    "fixes": [],
+    "error": "cancelled"
+   },
+   {
+    "arm": "terra-low",
+    "pass": true,
+    "repairs": 0,
+    "ttftMs": 6330,
+    "firstPaintMs": 14351,
+    "genMs": 18654,
+    "qaMs": 5988,
+    "usd": 0.0323,
+    "failed": [],
+    "fixes": []
+   }
+  ]
+ },
+ {
+  "key": "labelled_parts|race|19",
+  "archetype": "labelled_parts",
+  "set": "race",
+  "which": "alt",
+  "ok": true,
+  "passFirst": false,
+  "ms": 65126,
+  "usd": 0.16507,
+  "reason": "won",
+  "winner": "gpt6-low",
+  "toPlayableMs": 60876,
+  "arms": [
+   {
+    "arm": "luna6-low",
+    "pass": false,
+    "repairs": 2,
+    "ttftMs": 6520,
+    "firstPaintMs": 8386,
+    "genMs": 32665,
+    "qaMs": 15569,
+    "usd": 0.00365,
+    "failed": [
+     "G4.targets_reachable",
+     "G5.play_truth"
+    ],
+    "fixes": []
+   },
+   {
+    "arm": "gpt6-low",
+    "pass": true,
+    "repairs": 2,
+    "ttftMs": 8017,
+    "firstPaintMs": 10390,
+    "genMs": 44066,
+    "qaMs": 16795,
+    "usd": 0.07809,
+    "failed": [],
+    "fixes": []
+   },
+   {
+    "arm": "terra-low",
+    "pass": false,
+    "repairs": 1,
+    "ttftMs": 12646,
+    "firstPaintMs": 17144,
+    "genMs": 47724,
+    "qaMs": 17395,
+    "usd": 0.08333,
+    "failed": [
+     "G4.labels_anchored"
+    ],
+    "fixes": []
+   }
+  ]
  }
 ]
