@@ -237,7 +237,7 @@ def build_head(P, N, warp, K_eye, K_mouth, eye_patch, mouth_patch):
     def patch(centre, ax, az):
         return [f for f, c in fc.items() if ((c[0] - centre[0]) / ax) ** 2 + ((c[2] - centre[2]) / az) ** 2 <= 1.0]
 
-    eyeL_c = np.array(P["eye_c"]) + [0, 0, P["eye_patch_dz"]]
+    eyeL_c = np.array(P["eye_c"]) + [P.get("eye_patch_dx", 0.0), 0, P["eye_patch_dz"]]
     eyeR_c = eyeL_c * [-1, 1, 1]
     mouth_c = np.array([0.0, -0.05, P["mouth_z"] + P.get("mouth_patch_dz", 0.0)])
     pL = patch(eyeL_c, *eye_patch); pR = patch(eyeR_c, *eye_patch); pM = patch(mouth_c, *mouth_patch)
@@ -297,6 +297,32 @@ def ring_param(ring, axis_x, centre):
     return t, upper, i0, i1
 
 
+def angle_param(ringK, cx, cz, sx, ax, az, curve, i0, i1):
+    """Give each ring vertex the curve parameter at the same normalised angle as its boundary vertex, so the
+    spokes between rings run straight (the inset correspondence alone is rotated by up to 30 degrees)."""
+    X = (np.array([v.co.x for v in ringK]) - cx) * sx / ax
+    Z = (np.array([v.co.z for v in ringK]) - cz) / az
+    th = np.arctan2(Z, X)
+    ts = np.linspace(0, 1, 400)
+    out_t = np.zeros(len(ringK)); out_u = np.zeros(len(ringK), bool)
+    for upper in (True, False):
+        x, z = curve(ts, upper)
+        a = np.arctan2((z - cz) / az, (x - cx) * sx / ax)
+        if not upper:
+            a = np.where(a > 0.5, a - 2 * np.pi, a)  # lower half: angles in (-pi, 0]
+        order = np.argsort(a)
+        for j in range(len(ringK)):
+            if j in (i0, i1):
+                continue
+            tj = th[j]
+            if upper and tj > 0:
+                out_t[j] = np.interp(tj, a[order], ts[order]); out_u[j] = True
+            elif not upper and tj <= 0:
+                out_t[j] = np.interp(tj if tj < 0.5 else tj - 2 * np.pi, a[order], ts[order])
+    out_t[i0] = 0.0; out_t[i1] = 1.0
+    return out_t, out_u
+
+
 def place(bm, loops, sdf, P):
     """Put the named rings on their analytic curves, then relax the band around them onto the SDF."""
     pinned = {}
@@ -309,8 +335,14 @@ def place(bm, loops, sdf, P):
         # corners: inner corner = min "out" coordinate
         r0 = rings[0]
         t, upper, i0, i1 = ring_param(rings[-1], side, None)  # x*side: min = inner (towards nose)
-        meta[key] = (t, upper)
         R0 = P["eye_r"] + P["lid_t"]
+
+        def curve(ts, up, Fr=Fr, R0=R0):
+            a, e = lid_margin(P, ts, up)
+            q = Fr[0] + eye_dir(Fr, a, e) * R0
+            return q[:, 0], q[:, 2]
+        t, upper = angle_param(rings[-1], Fr[0][0], Fr[0][2], side, 1.0, 1.0, curve, i0, i1)
+        meta[key] = (t, upper)
         face = HeadSDF(P, with_eyes=False)
         for k in range(K):
             ring = rings[k]
@@ -392,12 +424,12 @@ def place(bm, loops, sdf, P):
                 Q = 0.5 * Q + 0.25 * (np.roll(Q, 1, 0) + np.roll(Q, -1, 0))
             Q = proj(Q)
             if k == K:
+                for v, q in zip(rings[k], Q):
+                    pinned[v] = (q, 0.0)
                 continue
             for v, q in zip(rings[k], Q):
                 v.co = Vector(q)
                 pinned[v] = (q, 1.0)
-        for v in rings[K]:
-            pinned[v] = (np.array(list(v.co)), 0.0)
     # relax band: vertices within `band` edges of a feature ring (excluding pinned) + unpinned rings
     bm.verts.ensure_lookup_table()
     hard = set(v for v, (q, w) in pinned.items() if w >= 1.0)

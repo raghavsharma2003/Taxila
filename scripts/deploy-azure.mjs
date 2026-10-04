@@ -113,7 +113,9 @@ async function deploy() {
   }
   // --allow-dirty: gate the working tree as it is; a failure still blocks, a pass is never accepted as evidence
   if (GATE) runGates(full, { allowDirty: flag("--allow-dirty") });
-  const evidence = await gateEvidence(full);
+  // --scratch: a throwaway app (infra/scratch-web.mjs) exercising this script's canary/traffic/rollback; never taxila-web
+  const scratch = flag("--scratch") && APP !== "taxila-web";
+  const evidence = scratch ? "SCRATCH APP: gate not required (not production)" : await gateEvidence(full);
   if (!evidence) throw new Error(`no passing gate for ${full.slice(0, 7)}: run \`node scripts/deploy-azure.mjs --gate\` (or wait for the gates workflow). Refusing to deploy.`);
   console.log(`gate: ${evidence}`);
 

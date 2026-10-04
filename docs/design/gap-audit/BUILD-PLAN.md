@@ -1648,3 +1648,10 @@ need a quota request:
 - **The simulator flatters.** The `live` policy is the headline, the oracle defines 100%, and a third truth family
   is added before X2 conclusions. Sim results are mechanics, never efficacy.
 - **Agents leaving WIP on the branch.** W0 gates it once, and W1-D makes ungated deploys impossible.
+
+### Owner actions closed by the main loop (2026-10-04)
+`foundry-w2-deployments-2026-10-04`: with Contributor on the subscription, the main loop created taxila-fast-bg (gpt-5.6-luna, 500),
+taxila-studio-sol (gpt-5.6-sol, 500), raised gpt-5.6-terra to 1000, created taxila-realtime-dz (gpt-realtime-2.1 DataZoneStandard, 10) and
+taxila-gpt6 (gpt-6-sol 2026-09-22, 500), raised taxila-flux2 to 4, and created the private `voice-bank` container on taxilaforge. That
+closes O13a/b/c, the O14 twin, the FLUX half of O15, the container in O17, and O26. Quota increases beyond current limits (realtime,
+gpt-image-2, sandbox cores) still need Microsoft quota requests.
