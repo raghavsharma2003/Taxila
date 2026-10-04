@@ -34,7 +34,8 @@ await withTestAccount(async ({ api, child, password }) => {
   else {
     const types = rows.map((r) => r.type);
     ok(["app.opened", "lesson.started", "lesson.ended"].every((t) => types.includes(t)), `student_event rows: ${types.join(", ")}`);
-    const st = await waitFor(async () => (await dbq("select mode, cursor_seq from conductor_state where child_id = $1", [child.id]))?.[0], { maxMs: 60_000 });
+    let st = null;
+    await waitFor(async () => { st = (await dbq("select mode, cursor_seq from conductor_state where child_id = $1", [child.id]))?.[0]; return st && Number(st.cursor_seq) >= types.length; }, { everyMs: 2000, maxMs: 60_000 });
     ok(!!st && Number(st.cursor_seq) >= types.length, `conductor_state folded the lesson (mode ${st?.mode}, cursor ${st?.cursor_seq}/${types.length})`);
     const plan = await waitFor(async () => (await dbq("select day, version from day_plan where child_id = $1 order by adopted_at desc limit 1", [child.id]))?.[0], { maxMs: 60_000 });
     ok(!!plan, `day_plan row (${plan ? `${String(plan.day).slice(0, 10)} v${plan.version}` : "none"})`);

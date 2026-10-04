@@ -123,7 +123,7 @@ for (const look of LOOKS) {
 
   // ---------------- 2D plates (tier D), rendered from the B+ runtime so B+ -> D keeps the same person
   if (only.includes("plates")) {
-    const pd = path.join("public/assets/teacher-bakeoff/stylised-premium", look, "plate");
+    const pd = path.join("art/character/bakeoff-assets/stylised-premium", look, "plate");
     fs.mkdirSync(pd, { recursive: true });
     hx = await openHarness({ w: 360, h: 450 });
     try {

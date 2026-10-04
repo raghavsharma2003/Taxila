@@ -138,3 +138,37 @@ test("folding a correction: K is untouched (the fallback took the K step), U mov
   assert.equal(JSON.stringify(replay.comp.skills), JSON.stringify(s2.comp.skills), "replay = online");
   assert.equal(JSON.stringify(fuseEvidence(s2, [late]).comp), JSON.stringify(s2.comp), "re-delivery is a no-op");
 });
+
+test("a why is folded as soon as ONE target comes back present with a checked span (the slower targets cannot change it)", quiet(async () => {
+  const s = memStore(); _setStore(s);
+  const ev = why();
+  const two = { ...req, targets: [{ id: "s1:e1", textEn: "a" }, { id: "s1:e2", textEn: "b" }] };
+  let call = 0;
+  const grade = (r) => new Promise((res) => { const i = call++; setTimeout(() => res(i === 0 ? { ...PRESENT[0], targetId: r.target.id } : { label: "absent", spanOk: false, op: "R-EXP", targetId: r.target.id }), i === 0 ? 60 : 900); });
+  gradeLater(ev, two, { grade });
+  const t0 = Date.now();
+  const r = await settleHeld([ev.id], 600);
+  assert.equal(r.settled, 1); assert.ok(Date.now() - t0 < 400, "decided by the first present, not the 900 ms target");
+  const got = settledGrade(ev.id);
+  assert.equal(got.length, 2);
+  assert.equal(got.filter((x) => x.op).length, 1, "the pending target is a placeholder with no op (never audited)");
+  const fe = finalEvent(ev, got);
+  assert.equal(fe.graded, true); assert.equal(fe.event.spanOk, true);
+  assert.equal(fe.event.outcome, outcomeIndex("probe.why", "full"));
+  assert.deepEqual(s.calls.claim, []);
+  forgetGrade(ev.id);
+}));
+
+test("a teach-back waits for every target (its coverage rule needs all of them)", quiet(async () => {
+  const s = memStore(); _setStore(s);
+  const ev = { ...why(), cls: "probe.teachback", outcome: outcomeIndex("probe.teachback", "high") };
+  const two = { ...req, targets: [{ id: "s1:e1", textEn: "a" }, { id: "s1:e2", textEn: "b" }] };
+  let call = 0;
+  const grade = (r) => new Promise((res) => { const i = call++; setTimeout(() => res({ ...PRESENT[0], targetId: r.target.id }), i === 0 ? 30 : 700); });
+  const p = gradeLater(ev, two, { grade });
+  const r = await settleHeld([ev.id], 200);
+  assert.equal(r.settled, 0, "not decided by one target");
+  await p; await new Promise((r2) => setTimeout(r2, 20));
+  assert.equal(s.calls.correct.length, 1, "it lands as a correction instead");
+  forgetGrade(ev.id);
+}));

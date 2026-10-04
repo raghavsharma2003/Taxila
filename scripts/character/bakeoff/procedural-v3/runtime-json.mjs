@@ -40,7 +40,7 @@ const out = {
   visemeFold: { when: "the tier has no viseme_* morphs (B+, B-lite)", map: VISEME_TO_ARKIT },
   faceStyle: L.faceStyle, iris: L.eyes.iris,
   emotions: EMOTIONS, states: STATES,
-  plates: fs.existsSync(`public/assets/teacher-bakeoff/procedural-v3/${look}/plate/plate.json`) ? JSON.parse(fs.readFileSync(`public/assets/teacher-bakeoff/procedural-v3/${look}/plate/plate.json`)) : null,
+  plates: fs.existsSync(`art/character/bakeoff-assets/procedural-v3/${look}/plate/plate.json`) ? JSON.parse(fs.readFileSync(`art/character/bakeoff-assets/procedural-v3/${look}/plate/plate.json`)) : null,
 };
-fs.writeFileSync(`public/assets/teacher-bakeoff/procedural-v3/${look}/runtime.json`, JSON.stringify(out, null, 1));
+fs.writeFileSync(`art/character/bakeoff-assets/procedural-v3/${look}/runtime.json`, JSON.stringify(out, null, 1));
 console.log(`[runtime] ${look} runtime.json`);

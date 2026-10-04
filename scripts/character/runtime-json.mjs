@@ -1,4 +1,4 @@
-// Writes public/assets/teacher/<look>/runtime.json: everything the src/avatar runtime needs that glTF cannot carry
+// Writes art/character/looks-out/<look>/runtime.json: everything the src/avatar runtime needs that glTF cannot carry
 // (correctives as products of parents, calibration gains, asymmetry, tier files and budgets). No names in it.
 //   node scripts/character/runtime-json.mjs <buildDir> <look>
 import fs from "node:fs";
@@ -40,7 +40,7 @@ const out = {
   visemeFold: { when: "the tier has no viseme_* morphs (B+, B-lite)", map: VISEME_TO_ARKIT },
   faceStyle: L.faceStyle, iris: L.eyes.iris,
   emotions: EMOTIONS, states: STATES,
-  plates: fs.existsSync(`public/assets/teacher/${look}/plate/plate.json`) ? JSON.parse(fs.readFileSync(`public/assets/teacher/${look}/plate/plate.json`)) : null,
+  plates: fs.existsSync(`art/character/looks-out/${look}/plate/plate.json`) ? JSON.parse(fs.readFileSync(`art/character/looks-out/${look}/plate/plate.json`)) : null,
 };
-fs.writeFileSync(`public/assets/teacher/${look}/runtime.json`, JSON.stringify(out, null, 1));
+fs.writeFileSync(`art/character/looks-out/${look}/runtime.json`, JSON.stringify(out, null, 1));
 console.log(`[runtime] ${look} runtime.json`);

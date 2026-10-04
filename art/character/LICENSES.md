@@ -288,3 +288,12 @@ carry the verbatim MIT text and "Teacher character derived from the Microsoft Ro
 Azure `gpt-4o-mini-tts` sentence (`docs/design/teacher/renders/audio/teal.mp3`, first 6.0 s, 0.25 s fade), re-used
 unchanged. Build-time tools: pinned `bpy` 4.2 (Blender FBX importer, GPL; output is ours), gltf-transform (MIT),
 meshoptimizer (MIT), KTX-Software 4.4.0 (Apache-2.0), numpy / pillow / scipy.
+
+## Style C stylised build (2026-10-04, plan phase; nothing shipped yet)
+
+| input | used for | source | licence | evidence |
+|---|---|---|---|---|
+| 19 reference images `docs/design/teacher/stylised/build/refs/*.webp` | fitting targets and judge stimuli (not shipped pixels) | Azure Foundry `taxila-image` (gpt-image-2) edits of our concept `c-front.webp`, `scripts/character/stylised/gen-refs.mjs` | our output under the Azure OpenAI terms | prompts, dates and usage in `refs/refs.json`; sha256 in `build/TECH-PLAN.md` §2.1 |
+
+Planned tools and models, with licence status, are listed in `docs/design/teacher/stylised/build/TECH-PLAN.md` §11.
+Each is added to the tables above only once it is actually used, with source and hash.

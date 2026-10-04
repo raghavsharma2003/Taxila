@@ -30,8 +30,12 @@ try {
   const sent = await req;
   ok(!!sent, "an uncaught page error sends POST /api/client-error");
   if (sent) {
-    const body = JSON.parse(sent.postData() || "{}");
-    ok(body.name === "TypeError" && body.kind === "error", `beacon body: ${body.kind} ${body.name} on ${body.path}`);
+    // sendBeacon posts a Blob; Playwright may not expose its bytes (then only the 204 is checked here, the row in LA)
+    const raw = sent.postDataBuffer()?.toString() || sent.postData() || "";
+    if (raw) {
+      const body = JSON.parse(raw);
+      ok(body.name === "TypeError" && body.kind === "error", `beacon body: ${body.kind} ${body.name} on ${body.path}`);
+    } else warn("beacon body not visible to Playwright (Blob); checked by its 204 and the Log Analytics row");
     const res = await sent.response();
     ok(res?.status() === 204, `beacon answered ${res?.status()}`);
   }

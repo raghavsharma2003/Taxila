@@ -1,0 +1,17 @@
+{
+ "name": "stylised3d",
+ "gpuTypes": ["g6.2xlarge", "g5.2xlarge", "g6e.xlarge"],
+ "maxMinutes": 110,
+ "diskGb": 200,
+ "amiSsm": "/aws/service/deeplearning/ami/x86_64/oss-nvidia-driver-gpu-pytorch-2.7-ubuntu-22.04/latest/ami-id",
+ "include": {"inputs/refs": "docs/design/teacher/stylised/build/refs"},
+ "exclude": ["runs", "__pycache__", "*.in"],
+ "env": {
+  "S3D_H21": "front-ortho:fo:0,1,2;neutral:ne:0,1",
+  "S3D_MV": "A:profile-left:profile-right:0,1;B:profile-right:profile-left:0,1",
+  "S3D_OCTREE": "512",
+  "S3D_STEPS": "50",
+  "S3D_GUIDANCE": "5.0",
+  "S3D_PAINT": "auto"
+ }
+}

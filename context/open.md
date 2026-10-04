@@ -66,3 +66,11 @@ Word boundary events exist only on Dragon HD Omni (not production). Voice Live r
 
 ## open-live-reference-aec
 Voice Live Live-Reference AEC (`reference_source: client`, `channels: 2`, API >= 2026-07-15). Default server AEC assumes immediate playback and degrades past 2 s delay, which pause-then-decide barge-in produces. Measure bargeStats.resumedEcho per 100 teacher turns on 3 low-end Android phones, speaker vs headset.
+
+
+<!-- merged from inbox/superhuman-specs.json -->
+## open-studio-review-capacity (2026-10-04)
+LIVE-STUDIO §8 requires human review of 100% of the first 50 promotions per archetype, then 10%: ~600 reviews for the 12 W2 archetypes, ~1,400 more for 13-40. At 1-2 min each that is 10-20 h in W2 and ~25-45 h in W3. Owner input O22a (default: one hired teacher). Until reviewed, builds stay transfer_passed (<= 20 mounts each), which caps reuse and raises live spend.
+
+## open-turn-model-before-e1 (2026-10-04)
+Smart Turn v3.2 reports Hindi 93.4% (n = 1,295) on adult data; the child result (IWSDS 2026) is English ages 4-9. Before E1 consent there is no Hindi/Hinglish child audio, so W2's only gate for `turn.predictive` is the probe-fleet cut-off rate with child-like (synthesised) clips. The real SHIFT/HOLD AUC >= 0.85 gate is at the pilot (W4-A data engine).

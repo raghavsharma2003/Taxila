@@ -51,7 +51,7 @@ def build_and_shoot(tag):
     run([PY, f"{S}/fork/build_look.py", "--look", LOOK, "--out", BD])
     for t in ("H",):
         run([PY, "scripts/character/blender/export_tier.py", "--look", LOOK, "--build", BD, "--tier", t])
-    run(["node", "scripts/character/finish.mjs", BD, "teal", "public/assets/teacher-bakeoff/ai-portrait-wrap/teal"])
+    run(["node", "scripts/character/finish.mjs", BD, "teal", "art/character/bakeoff-assets/ai-portrait-wrap/teal"])
     run(["node", f"{S}/shoot.mjs", "--look", "teal", "--yaws", f"0,{a.q3yaw:g},27", "--out", SHOTS])
     lmf = f"{SHOTS}/lm_{tag}.json"
     if os.path.exists(lmf):

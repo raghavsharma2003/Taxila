@@ -4,9 +4,10 @@
 // the account's own pending_grade rows before the account is deleted (TAXILA_DB_URL = the target's database):
 //   settled = the verdict was in when its event folded (fallback_at null); not settled = the turn claimed the fallback.
 // A verdict that lands late is still applied once as a correction (corrected_at): reported, never counted as settled.
-// Size: W1C_SETTLE_LESSONS (default 8 = 2 per delay; the plan's full run is 30). Lessons run in parallel per delay.
+// Size: W1C_SETTLE_LESSONS (default 8 = 2 per delay; the plan's full run is 30). One account per delay; its lessons run
+// one per test-clock day. Run this file alone: the leftover-guardian count is global.
 import { withTestAccount, ok, warn, done } from "./lib.mjs";
-import { driveLesson, targetDb } from "./_w1c.mjs";
+import { driveLesson, targetDb, advanceClock } from "./_w1c.mjs";
 
 const N = Number(process.env.W1C_SETTLE_LESSONS ?? 8);
 const DELAYS = [0, 1000, 2000, 4000];
@@ -23,6 +24,7 @@ for (const delay of DELAYS) {
     const lessonIds = [];
     for (let i = 0; i < perDelay; i++) {
       try {
+        if (i > 0) await advanceClock(api, 1);                               // one lesson a learning day ("done for today")
         const d = await driveLesson(api, child.id, { topicId: TOPICS[(i + DELAYS.indexOf(delay)) % TOPICS.length], maxTurns: 14, delayMs: delay, explain: true });
         lessonIds.push(d.lessonId);
         tally[delay].lessons++;
@@ -32,9 +34,6 @@ for (const delay of DELAYS) {
     await new Promise((r) => setTimeout(r, 4000));                       // late verdicts land and are corrected
     const rows = await db(`select event_id, results is not null as graded, fallback_at is not null as fallback, corrected_at is not null as corrected
       from pending_grade where lesson_id = any($1::uuid[])`, [lessonIds]);
-    // only events a NEXT turn folded count; the last held event of a lesson is flushed at lesson end (6 s wait)
-    const ends = await db(`select count(*)::int as n from pending_grade p where p.lesson_id = any($1::uuid[]) and p.fallback_at is null and p.results is not null`, [lessonIds]);
-    void ends;
     for (const r of rows) {
       tally[delay].held++;
       if (!r.fallback && r.graded) tally[delay].settled++;

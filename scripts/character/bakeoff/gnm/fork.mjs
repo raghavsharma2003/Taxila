@@ -11,7 +11,7 @@ const B = "scripts/character/bakeoff", SRC = `${B}/merged`, DST = `${B}/gnm`;
 const REPL = [
   ["scripts/character/bakeoff/merged/", "scripts/character/bakeoff/gnm/"],
   ["art/character/bakeoff/merged/", "art/character/bakeoff/gnm/"],
-  ["public/assets/teacher-bakeoff/merged/", "public/assets/teacher-bakeoff/gnm/"],
+  ["art/character/bakeoff-assets/merged/", "art/character/bakeoff-assets/gnm/"],
   ["docs/design/teacher/bakeoff/merged/", "docs/design/teacher/bakeoff/gnm/"],
   ['const A = "merged";', 'const A = "gnm";'],
   ["bakeoff-merged", "bakeoff-gnm"],

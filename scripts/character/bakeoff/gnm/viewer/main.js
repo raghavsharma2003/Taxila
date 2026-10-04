@@ -64,7 +64,7 @@ window.TX = {
   async load(lookId, tier, row = "gnm") {
     if (rig) { pivot.remove(rig.root); rig.dispose(); }
     look = await (await fetch(`/art/character/bakeoff/gnm/looks/${lookId}.json`)).json();
-    rig = await loadTeacher(renderer, `/public/assets/teacher-bakeoff/${row}/${lookId}/${tier}.glb?v=${Date.now()}`, { tier, look: { iris: look.eyes.iris, sclera: look.eyes.sclera, restLid: look.faceStyle?.restBlink ?? 0 }, jawCeiling: look.jawCeiling ?? 1, ktxRaw: qs.get("ktxRaw") === "1" });
+    rig = await loadTeacher(renderer, `/art/character/bakeoff-assets/${row}/${lookId}/${tier}.glb?v=${Date.now()}`, { tier, look: { iris: look.eyes.iris, sclera: look.eyes.sclera, restLid: look.faceStyle?.restBlink ?? 0 }, jawCeiling: look.jawCeiling ?? 1, ktxRaw: qs.get("ktxRaw") === "1" });
     pivot.add(rig.root);
     eyeY = rig.landmarks.eyeL.y;
     lipY = rig.landmarks.mouthFront.y - 0.003;   // the incisor front sits on the lip line

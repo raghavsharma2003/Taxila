@@ -126,7 +126,7 @@ for (const look of LOOKS) {
     if (at("texture")) { console.log(`=== ${look}: textures`); blend("texture.py", ["--look", lj, "--build", bd]); }
     if (at("export")) for (const tier of ["H", "Bplus"]) blend("export_tier.py", ["--look", lj, "--build", bd, "--tier", tier]);
     console.log(`=== ${look}: KTX2 + meshopt`);
-    sh("node", [path.join(ROOT, "scripts/character/finish.mjs"), bd, look, path.join(ROOT, "public/assets/teacher", look)]);
+    sh("node", [path.join(ROOT, "scripts/character/finish.mjs"), bd, look, path.join(ROOT, "art/character/looks-out", look)]);
     // keep the per-look report next to the sources (small, diffable): gates, counts, budgets
     const rep = JSON.parse(fs.readFileSync(path.join(bd, "report.json")));
     rep.tiers = JSON.parse(fs.readFileSync(path.join(bd, "finish.json")));
@@ -141,7 +141,7 @@ if (flag("--solve-g9")) {
   for (const look of LOOKS) {
     const lj = path.join(ROOT, "art/character/looks", `${look}.json`), bd = path.join(BUILD, look);
     blend("texture.py", ["--look", lj, "--build", bd]);
-    sh("node", [path.join(ROOT, "scripts/character/finish.mjs"), bd, look, path.join(ROOT, "public/assets/teacher", look)]);
+    sh("node", [path.join(ROOT, "scripts/character/finish.mjs"), bd, look, path.join(ROOT, "art/character/looks-out", look)]);
   }
 }
 if (!flag("--skip-render")) {

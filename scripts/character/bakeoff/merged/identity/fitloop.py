@@ -67,7 +67,7 @@ def sim2(A, B):
 def build_and_shoot(tag):
     run([PY, f"{S}/blender/build_look.py", "--look", LOOK, "--out", BD])
     run([PY, f"{S}/blender/export_tier.py", "--look", LOOK, "--build", BD, "--tier", "H"])
-    run(["node", f"{S}/finish.mjs", BD, "teal", f"{ROOT}/public/assets/teacher-bakeoff/merged/teal"])
+    run(["node", f"{S}/finish.mjs", BD, "teal", f"{ROOT}/art/character/bakeoff-assets/merged/teal"])
     run(["node", f"{S}/identity/shoot.mjs", "--look", "teal", "--yaws", ",".join(map(str, YAWS)), "--out", SHOTS])
     lmf = f"{SHOTS}/lm_{tag}.json"
     if os.path.exists(lmf):

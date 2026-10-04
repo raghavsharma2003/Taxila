@@ -46,7 +46,9 @@ export function replyFor(ui, topicId, { wrong = false, explain = true } = {}) {
     if (match) return { chip: match };
     if (!item) return { chip: ui.chips[0] };
   }
-  if (item) return { text: wrong && !item.wrong ? "mujhe lagta hai pata nahi" : String(want) };
+  // a wrong answer is a real attempt (the misconception's own option, else a number no key holds), never "pata nahi",
+  // which the Director counts as unclear and moves past
+  if (item) return { text: wrong && !item.wrong ? "999" : String(want) };
   if (ui?.ask?.text) {
     const t = kitTopic(topicId);
     return { text: wrong ? "pata nahi, bas aise hi" : `Kyunki ${String(t?.expectations?.[0] ?? "yeh aise hi kaam karta hai").replace(/\.$/, "")}.` };

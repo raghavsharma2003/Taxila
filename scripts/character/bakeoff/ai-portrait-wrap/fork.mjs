@@ -6,7 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 const SRC = "scripts/character", DST = "scripts/character/bakeoff/ai-portrait-wrap/fork";
-const ASSETS = "public/assets/teacher-bakeoff/ai-portrait-wrap", LOOKS = "art/character/bakeoff/ai-portrait-wrap/looks";
+const ASSETS = "art/character/bakeoff-assets/ai-portrait-wrap", LOOKS = "art/character/bakeoff/ai-portrait-wrap/looks";
 const RENDERS = "docs/design/teacher/bakeoff/ai-portrait-wrap/renders";
 fs.mkdirSync(path.join(DST, "viewer"), { recursive: true });
 function fork(file, out, reps) {

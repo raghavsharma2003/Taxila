@@ -44,7 +44,7 @@ const out = {
   eyePass: { sclera: L.eyes.sclera ?? null, restLid: L.faceStyle?.restBlink ?? 0, uniforms: "TaxilaEye uSclera (linear albedo), uLidClose (vec2 per eye: restLid + (1 - restLid) * blink - 0.35 wide + 0.25 squint + 0.3 lookDown - 0.3 lookUp)" },
   mouthInterior: { teeth: [0.86, 0.78, 0.64], gum: [0.30, 0.10, 0.09], tongue: [0.46, 0.16, 0.14], bag: [0.16, 0.045, 0.04], note: "merged: tongue and bag keep a floor of warm light when the jaw is open; iteration 3: warm ivory teeth with a front-incisor light floor, the bag and tongue fall off toward the throat (shaders.js SKIN_FRAG)" },
   emotions: EMOTIONS, states: STATES, clips: CLIPS,
-  plates: fs.existsSync(`public/assets/teacher-bakeoff/merged/${look}/plate/plate.json`) ? JSON.parse(fs.readFileSync(`public/assets/teacher-bakeoff/merged/${look}/plate/plate.json`)) : null,
+  plates: fs.existsSync(`art/character/bakeoff-assets/merged/${look}/plate/plate.json`) ? JSON.parse(fs.readFileSync(`art/character/bakeoff-assets/merged/${look}/plate/plate.json`)) : null,
 };
-fs.writeFileSync(`public/assets/teacher-bakeoff/merged/${look}/runtime.json`, JSON.stringify(out, null, 1));
+fs.writeFileSync(`art/character/bakeoff-assets/merged/${look}/runtime.json`, JSON.stringify(out, null, 1));
 console.log(`[runtime] ${look} runtime.json`);

@@ -82,7 +82,7 @@ export async function laQuery(workspaceId, kql, timespan = "PT1H") {
  * local directory uploaded as a tarball (`dir`), which is how an unpushed tree (a probe image, a test worker) is built.
  * Returns when the run finishes; throws with the log tail on failure.
  */
-export async function acrBuild({ registry = "taxilacr", images, dockerfile, git, dir, timeoutSec = 1800, log = console.log }) {
+export async function acrBuild({ registry = "taxilacr", images, dockerfile, git, dir, files: only, timeoutSec = 1800, log = console.log }) {
   let sourceLocation;
   if (git) sourceLocation = `https://github.com/${git.repo}.git#${git.branch}`;
   else {
@@ -90,7 +90,8 @@ export async function acrBuild({ registry = "taxilacr", images, dockerfile, git,
     const { tmpdir } = await import("os");
     const tgz = `${tmpdir()}/acr-src-${Date.now()}.tar.gz`;
     // the tree as git sees it (tracked + untracked-not-ignored), so node_modules, dist and .env.local never leave
-    const files = execFileSync("git", ["ls-files", "-co", "--exclude-standard", "-z"], { cwd: dir, maxBuffer: 64 << 20 }).toString().split("\0").filter(Boolean)
+    // `files`: an explicit context (a small image that must not see the repo's .dockerignore), else the whole tree
+    const files = (only ?? execFileSync("git", ["ls-files", "-co", "--exclude-standard", "-z"], { cwd: dir, maxBuffer: 64 << 20 }).toString().split("\0").filter(Boolean))
       .filter((f) => existsSync(dir + "/" + f));
     execFileSync("tar", ["-czf", tgz, "--null", "-T", "-"], { cwd: dir, input: files.join("\0"), maxBuffer: 64 << 20 });
     const up = await arm("POST", `/providers/Microsoft.ContainerRegistry/registries/${registry}/listBuildSourceUploadUrl?api-version=2019-06-01-preview`);

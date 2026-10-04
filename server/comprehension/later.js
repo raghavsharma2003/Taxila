@@ -93,9 +93,10 @@ export function gradeLater(ev, { childText, targets, echo = [], lang = "en" }, {
   const text = String(childText ?? "").trim();
   const ts = (targets ?? []).filter((t) => t?.id && t?.textEn).slice(0, MAX_TARGETS);
   if (!text || !ts.length) return null;
-  const entry = { at: Date.now(), settled: false, results: null, fallback: false };
-  entry.promise = Promise.all(ts.map((target) => grade({ op: "R-EXP", childSpan: text, target, lang }, { echo })
-    .catch(() => ({ label: "NA", spanOk: false, op: "R-EXP", targetId: target.id, graderVersion: GRADER_VERSION, model: null, ms: 0, span: null }))))
+  const entry = { at: Date.now(), settled: false, results: null, fallback: false, partial: ts.map(() => null), decided: false, cls: ev.cls };
+  entry.promise = Promise.all(ts.map((target, i) => grade({ op: "R-EXP", childSpan: text, target, lang }, { echo })
+    .catch(() => ({ label: "NA", spanOk: false, op: "R-EXP", targetId: target.id, graderVersion: GRADER_VERSION, model: null, ms: 0, span: null }))
+    .then((res) => { entry.partial[i] = res; if (!entry.decided && decides(entry)) entry.decided = true; return res; })))
     .then((results) => { entry.results = results; entry.settled = true; return results; });
   PENDING.set(ev.id, entry);
   entry.persisted = entry.promise.then((results) => landed(ev, results)).catch((e) => console.warn("[settle] verdict not stored:", String(e?.message ?? e).slice(0, 160)));
@@ -115,10 +116,24 @@ async function landed(ev, results) {
   console.info(`[settle] late verdict applied ev=${ev.id} outcome=${fe.event.outcome} spanOk=${fe.event.spanOk} wrote=${!!wrote}`);
 }
 
+/**
+ * A why is DECIDED before every target is back once one target came back `present` with a code-checked span: present
+ * is the best label (finalEvent takes the best), so the slower targets cannot change the outcome. (A teach-back's
+ * coverage rule needs every target.) This is what lets a fast reply still fold its verdict (W1-C #2).
+ */
+function decides(entry) {
+  return entry.cls === "probe.why" && entry.partial.some((r) => r && r.label === "present" && r.spanOk === true);
+}
+const isIn = (e) => !!e && !e.fallback && (e.settled || e.decided);
+
 /** The verdicts for a held event if they are in (non-blocking), else undefined. A claimed fallback reads undefined. */
 export function settledGrade(evId) {
   const e = PENDING.get(evId);
-  return e?.settled && !e.fallback ? e.results : undefined;
+  if (!isIn(e)) return undefined;
+  if (e.settled) return e.results;
+  // decided: the targets still out count as NA (finalEvent ignores NA)
+  // (no `op`: the route writes a grade_audit row only for a real verdict; the late targets are never audited as NA)
+  return e.partial.map((r, i) => r ?? { label: "NA", spanOk: false, targetId: `pending:${i}` });
 }
 /** Adopt verdicts read from the database (another replica graded them) as settled here. */
 function adopt(evId, results) {
@@ -130,6 +145,7 @@ function adopt(evId, results) {
 // ───────────── the settle (the next turn, and lesson end) ─────────────
 
 const POLL_MS = 100;
+const LOCAL_POLL_MS = 40;
 const stats = { turns: 0, held: 0, settled: 0, local: 0, db: 0, fallback: 0, late: 0, waitedMs: 0 };
 /** Settle counters since process start (the per-turn line is logged; this is for probes and tests). */
 export const settleStats = () => ({ ...stats, rate: stats.held ? Math.round((stats.settled / stats.held) * 1000) / 1000 : null });
@@ -148,7 +164,7 @@ export async function settleHeld(eventIds, maxMs = 600, { log = true, label = "t
   const t0 = Date.now();
   const out = { held: ids.length, settled: 0, fallback: [], waitedMs: 0, via: { local: 0, db: 0 } };
   if (!ids.length) return out;
-  const done = (id) => PENDING.get(id)?.settled === true && !PENDING.get(id)?.fallback;
+  const done = (id) => isIn(PENDING.get(id));
   const deadline = t0 + Math.max(0, maxMs);
   let s = null;
   try { s = await dbStore(); } catch { s = null; }
@@ -164,7 +180,8 @@ export async function settleHeld(eventIds, maxMs = 600, { log = true, label = "t
     if (left <= 0 || !ids.some((id) => !done(id))) break;
     // wake on the first local verdict, at the deadline, or (when some are graded elsewhere) at the next poll
     const local = ids.filter((id) => !done(id) && PENDING.has(id)).map((id) => PENDING.get(id).promise);
-    await Promise.race([sleep(remote.length ? Math.min(left, POLL_MS) : left), ...(local.length ? [Promise.race(local)] : [])]);
+    // (a local why can be DECIDED by its first present target before the promise settles: poll for that too)
+    await Promise.race([sleep(Math.min(left, remote.length ? POLL_MS : LOCAL_POLL_MS)), ...(local.length ? [Promise.race(local)] : [])]);
   }
   const unsettled = ids.filter((id) => !done(id));
   if (unsettled.length) {

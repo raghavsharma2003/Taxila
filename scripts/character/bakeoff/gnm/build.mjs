@@ -32,7 +32,7 @@ process.env.CHAR_TOOLS ||= path.join(HOME, "tools");
 // iteration-2 build; every look's keys are solved against v3's teal key shapes, carried by its own correspondence)
 const LOOK = opt("--look", "teal");
 const BD = path.join(HOME, "bakeoff-gnm", LOOK);
-const OUTA = path.join(ROOT, "public/assets/teacher-bakeoff", A, LOOK);
+const OUTA = path.join(ROOT, "art/character/bakeoff-assets", A, LOOK);
 const REP = path.join(ROOT, "art/character/bakeoff", A, "reports");
 const RENDERS = path.join(ROOT, "docs/design/teacher/bakeoff", A, "renders");
 const sh = (cmd, args, o = {}) => {
@@ -61,14 +61,14 @@ if (!fs.existsSync(path.join(V3S, "procedural-v3_pick.json"))) {
   sh("node", [path.join(HERE, "shoot.mjs"), "--row", "procedural-v3", "--yaws", "0", "--out", V3S, "--pick", path.join(V3S, "lm.json")]);
 }
 // slate / plum: the PARTS field (hair, cards, glasses, garment) is built from the look's own iteration-2 source face, shot
-// through its published H.glb (row "../teacher" = public/assets/teacher/<look>, read-only) and picked the same way
+// through its published H.glb (row "../looks-out" = art/character/looks-out/<look>, read-only) and picked the same way
 const SS = path.join(HOME, "bakeoff-gnm", `srcshots-${LOOK}`);
 if (LOOK !== "teal" && !fs.existsSync(path.join(SS, "___teacher_pick.json"))) {
   const ys = ["0", "25", "-25"];
-  sh("node", [path.join(HERE, "shoot.mjs"), "--look", LOOK, "--row", "../teacher", "--yaws", ys.join(","), "--out", SS]);
+  sh("node", [path.join(HERE, "shoot.mjs"), "--look", LOOK, "--row", "../looks-out", "--yaws", ys.join(","), "--out", SS]);
   sh(PY, [path.join(ROOT, "scripts/character/bakeoff/merged/identity/landmarks.py"), "--model", MPM, "--out", path.join(SS, "lm.json"),
     ...ys.map((y) => path.join(SS, `___teacher_yaw${y}.png`))]);
-  sh("node", [path.join(HERE, "shoot.mjs"), "--look", LOOK, "--row", "../teacher", "--yaws", "0", "--out", SS, "--pick", path.join(SS, "lm.json")]);
+  sh("node", [path.join(HERE, "shoot.mjs"), "--look", LOOK, "--row", "../looks-out", "--yaws", "0", "--out", SS, "--pick", path.join(SS, "lm.json")]);
 }
 if (at("corr")) { console.log("=== corr"); py("corr.py"); if (LOOK !== "teal") py("corr.py", ["--parts"]); }
 if (at("keys")) { console.log("=== keys"); py("keys.py"); }

@@ -11,7 +11,7 @@ const B = "scripts/character/bakeoff", DST = `${B}/merged`;
 const REPL = [
   ["scripts/character/bakeoff/procedural-v3/", "scripts/character/bakeoff/merged/"],
   ["art/character/bakeoff/procedural-v3/", "art/character/bakeoff/merged/"],
-  ["public/assets/teacher-bakeoff/procedural-v3/", "public/assets/teacher-bakeoff/merged/"],
+  ["art/character/bakeoff-assets/procedural-v3/", "art/character/bakeoff-assets/merged/"],
   ["docs/design/teacher/bakeoff/procedural-v3/", "docs/design/teacher/bakeoff/merged/"],
   ['const A = "procedural-v3";', 'const A = "merged";'],
   ['"bakeoff-pv3"', '"bakeoff-merged"'],
@@ -20,7 +20,7 @@ const REPL = [
   ["scripts/character/bakeoff/ai-portrait-wrap/fork/", "scripts/character/bakeoff/merged/"],
   ["scripts/character/bakeoff/ai-portrait-wrap", "scripts/character/bakeoff/merged"],
   ["art/character/bakeoff/ai-portrait-wrap", "art/character/bakeoff/merged"],
-  ["public/assets/teacher-bakeoff/ai-portrait-wrap", "public/assets/teacher-bakeoff/merged"],
+  ["art/character/bakeoff-assets/ai-portrait-wrap", "art/character/bakeoff-assets/merged"],
   ["/tmp/claude-0/char/bakeoff-sp/", "/tmp/claude-0/char/bakeoff-merged/"],
 ];
 function copy(src, dst) {

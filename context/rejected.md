@@ -867,3 +867,27 @@ Tried: making a G1 fill count by setting `s.module.itemId` to the item. What bro
 
 ## w1b-rj-fresh-forced-id
 Tried: forcing an unknown engine in the Playwright tray test by mounting `nope@1` under a new moduleId. What broke: the frame's error named a module the Director never held, so the server kept its own module. The "no screen reference" check then measured nothing. Now the test reuses the moduleId the server holds.
+
+
+<!-- merged from inbox/superhuman-specs.json -->
+## rj-studio-after-beats (2026-10-04)
+Tried (as a sequencing option, from the specs' own dependency graph): LIVE-STUDIO S5 depends on TEACHER-BRAIN BR4, which depends on BR3 (beats) and W2-C fading; TEACHER-BRAIN placed BR3-BR5 in W3. Following it literally puts the first child-visible live build in W3. What breaks: the owner's first-named ask waits a full wave although its lead-time need (>= 90 s) is met by lesson-start prefetch. Replaced by `plan-studio-prefetch-before-beats`.
+
+## rj-two-owners-turn-path (2026-10-04)
+Rev-1 gave W2-A `server/routes/lesson.js` (hot). BR1 must extract turn() and planTurn from the same file in W2. Two owners of one hot file in one wave is what BUILD-PLAN §1.5 exists to prevent. W2-A's start-route needs (Ask routing, practice set) moved to `server/lesson/purpose.js`, called through the seam.
+
+## rj-realtime-default-at-current-quota (2026-10-04)
+Realtime as the default lesson lane: taxila-realtime is capacity 10 with gpt-realtime-2.1 quota 10/10 and the mini 30/30 (measured today); RELATIONAL-OS P2 had 66/168 responses fail with inference_rate_limit_exceeded at 3-wide, and a rate-limited heavy turn is silence to a child. Not viable until O14 and the W2-D soak pass.
+
+
+<!-- merged from inbox/teacher-polished.json -->
+## rocketbox-as-premium-face (2026-10-04)
+Tried: three Rocketbox women (Female_Adult_11, Business_Female_01, Female_Adult_07) re-toned to MST 6, lips/hair/eyes/garments recoloured, expression gains boosted, mouth interior relit. Broke: the art ceiling, not the pipeline. Low-poly jaw/cheek silhouettes facet in 3/4, hair is a painted skull cap or helmet shell, source smiles move the mouth corner ~4.6 mm so emotions look alike, skin reads olive/waxy under our tone mapping, and the faces read only broadly South Asian or mixed. Kept as the licence-perfect floor (c1 best).
+
+## vroid-sample-as-teacher (2026-10-04)
+Tried: pixiv's VRM1 sample, arms solved down from T-pose, head 0.88x and eye area 0.9x, MST 6, kurta top, 52 ARKit built from its own morphs, toon shader fork. Broke: register. Big anime eyes, near-absent nose, tiny mouth and waist-length fringe hair read as a young anime girl, not a mid-30s Indian teacher; proportion shrinks helped only a little. What it did prove: a stylised base is never uncanny and drops into the contract cleanly, which supports buying a professional adult stylised design (ThreeDee).
+
+
+<!-- merged from inbox/w1-c.json -->
+## w1c-rejected-oracle-as-ceiling (2026-10-04)
+Tried: X1 oracle-prober = the engine with every shape, every kit field and a grader that returns the true label. Result: bkt2 0.683 vs engine 0.674, cfrag 0.476 vs 0.470. Grading noise is not what limits the ladder on this simulator, so this oracle is a weak ceiling ("frac of oracle" near 1 means little). A stronger oracle (one that also chooses the probe from the hidden truth) is needed before X1 can say how far the engine is from the best possible.

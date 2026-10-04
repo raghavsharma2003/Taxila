@@ -42,7 +42,7 @@ const out = {
   style: { approach: "stylised-premium", skin: JSON.parse(shSrc.match(/export const STYLE = (\{[\s\S]*?\});/)[1].replace(/(\w+):/g, '"$1":')),
     rule: "toon-PBR hybrid TaxilaSkin (wrap + two-tone ramp + warm shade tint + terminator band + fresnel rim), eye limbus 0.528 r; port this shaders.js / rig.js with the assets", stylise: L.stylise },
   emotions: EMOTIONS, states: STATES,
-  plates: fs.existsSync(`public/assets/teacher-bakeoff/stylised-premium/${look}/plate/plate.json`) ? JSON.parse(fs.readFileSync(`public/assets/teacher-bakeoff/stylised-premium/${look}/plate/plate.json`)) : null,
+  plates: fs.existsSync(`art/character/bakeoff-assets/stylised-premium/${look}/plate/plate.json`) ? JSON.parse(fs.readFileSync(`art/character/bakeoff-assets/stylised-premium/${look}/plate/plate.json`)) : null,
 };
-fs.writeFileSync(`public/assets/teacher-bakeoff/stylised-premium/${look}/runtime.json`, JSON.stringify(out, null, 1));
+fs.writeFileSync(`art/character/bakeoff-assets/stylised-premium/${look}/runtime.json`, JSON.stringify(out, null, 1));
 console.log(`[runtime] ${look} runtime.json`);

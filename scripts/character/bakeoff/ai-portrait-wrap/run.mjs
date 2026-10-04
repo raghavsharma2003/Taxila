@@ -14,7 +14,7 @@ const CH = process.env.CHAR_HOME || "/tmp/claude-0/char", AP = process.env.APW_H
 const PY = `${CH}/bpyenv/bin/python`, MP = `${AP}/venv/bin/python`, MODEL = `${AP}/face_landmarker.task`;
 const S = "scripts/character/bakeoff/ai-portrait-wrap", D = "art/character/bakeoff/ai-portrait-wrap";
 const REF = `${D}/refs/${LOOK}`, BD = `${AP}/build/${LOOK}`, LJ = `${D}/looks/${LOOK}.json`;
-const ASSETS = `public/assets/teacher-bakeoff/ai-portrait-wrap/${LOOK}`;
+const ASSETS = `art/character/bakeoff-assets/ai-portrait-wrap/${LOOK}`;
 const env = { ...process.env, CHAR_TOOLS: `${CH}/tools` };
 const sh = (cmd, args) => { console.log(`$ ${cmd} ${args.join(" ")}`); const r = spawnSync(cmd, args, { stdio: "inherit", env }); if (r.status) throw new Error(`${cmd} exit ${r.status}`); };
 const stage = () => {
@@ -32,7 +32,7 @@ if (FROM <= 0) {
 }
 if (FROM <= 1) {
   // correspondence: MediaPipe on a neutral render of the CURRENT pipeline head -> (vid, barycentric) on our topology
-  // (needs public/assets/teacher-bakeoff/ai-portrait-wrap/_base/H.glb = a copy of the pipeline's teal H, and its build)
+  // (needs art/character/bakeoff-assets/ai-portrait-wrap/_base/H.glb = a copy of the pipeline's teal H, and its build)
   sh("node", [`${S}/shoot.mjs`, "--look", "_base", "--yaws", "0,20", "--out", `${AP}/corr`]);
   sh(MP, [`${S}/landmarks.py`, "--model", MODEL, "--out", `${AP}/corr/lm.json`, `${AP}/corr/_base_yaw0.png`, `${AP}/corr/_base_yaw20.png`]);
   sh("node", [`${S}/shoot.mjs`, "--look", "_base", "--yaws", "0", "--out", `${AP}/corr`, "--pick", `${AP}/corr/lm.json`]);

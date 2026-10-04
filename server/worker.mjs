@@ -52,7 +52,10 @@ await configure({ url: URL_, max: Number(process.env.CONDUCTOR_POOL_MAX || 12), 
 const log = (msg, extra = {}) => console.log(JSON.stringify({ at: new Date().toISOString(), worker: ID, msg, ...extra }));
 let stopping = false;
 const inflight = new Set();
-const track = (p) => { inflight.add(p); p.finally(() => inflight.delete(p)); return p; };
+// the bookkeeping branch must swallow: p.finally() returns a NEW promise that re-rejects, and an unhandled rejection
+// kills the process (seen: a child erased between the dirty scan and its step crashed the whole worker). Callers still
+// get `p` and handle its rejection themselves.
+const track = (p) => { inflight.add(p); p.finally(() => inflight.delete(p)).catch(() => {}); return p; };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // ───────────── liveness ─────────────

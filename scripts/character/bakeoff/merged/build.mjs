@@ -26,7 +26,7 @@ const PY = path.join(HOME, "bpyenv/bin/python");
 process.env.CHAR_TOOLS ||= path.join(HOME, "tools");
 const BUILD = path.join(HOME, "bakeoff-merged");
 const LOOKS = opt("--looks", "teal").split(",");
-const OUTA = path.join(ROOT, "public/assets/teacher-bakeoff", A);
+const OUTA = path.join(ROOT, "art/character/bakeoff-assets", A);
 const REP = path.join(ROOT, "art/character/bakeoff", A, "reports");
 const sh = (cmd, args, o = {}) => {
   const r = spawnSync(cmd, args, { stdio: "inherit", cwd: ROOT, ...o });

@@ -1,0 +1,36 @@
+# The release gates on every push (BUILD-PLAN §1.1, W1-D item 1). scripts/deploy-azure.mjs accepts a successful run of
+# this workflow's `gates` job for a sha as deploy evidence (infra/gate.mjs gateEvidence), as it accepts a local stamp.
+# No production secrets here: DB-backed tests skip without a database url, and a test branch url may be supplied as
+# the TEST_DATABASE_URL repository secret (never the production DATABASE_URL).
+name: gates
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+concurrency:
+  group: gates-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  gates:
+    name: gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      CI: "1"
+      TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: tsc
+        run: npx tsc -b
+      - name: vite build
+        run: npx vite build
+      - name: npm test
+        run: npm test
+      - name: prompt budget
+        run: node scripts/check-prompt-budget.mjs
