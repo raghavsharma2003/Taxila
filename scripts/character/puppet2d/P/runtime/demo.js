@@ -74,7 +74,7 @@ function visemesAt(segs, t) {
 
 async function main() {
   const canvas = document.getElementById("c");
-  const view = (Q.get("view") || "92,40,840").split(",").map(Number);
+  const view = (Q.get("view") || "60,8,904").split(",").map(Number);
   if (Q.get("px")) canvas.style.width = Q.get("px") + "px";
   const rig = await Puppet2DRig.load(canvas, BASE, { dpr: CAPTURE ? 1 : Math.min(2, devicePixelRatio || 1), view, preserve: CAPTURE });
   const align = await fetch("./audio/voice.align.json").then((r) => r.json());
@@ -122,6 +122,7 @@ async function main() {
         if (k === "tilt") head[2] += v * e;
         else if (k === "pitch") head[0] += v * e;
         else if (k === "bounce") {}
+        else if (k === "jawOpen") {}
         else if (v < 0) beh[k] = (beh[k] ?? 0) * (1 - e);   // -1: suppress the resting smile
         else beh[k] = Math.max(beh[k] ?? 0, v * e);
       }
@@ -139,6 +140,8 @@ async function main() {
       head[0] += u > 4.6 && u < 5.6 ? 8 * Math.sin(((u - 4.6) / 1.0) * Math.PI) : 0;
     }
     const lipL = lipKeys(lf);
+    // the Director's expression beats that open the jaw belong to the lip layer (the compositor gives it jawOpen)
+    if (sc.preset && PRESETS[sc.preset].jawOpen) lipL.jawOpen = Math.max(lipL.jawOpen, PRESETS[sc.preset].jawOpen * env(t, sc.t0, sc.t1, 0.3, 0.4));
     const bs = comp.compose(beh, lipL, dt);
     // visemes and tongue keys bypass the compositor's 0.06/frame anti-snap (they are lip keys; see notes)
     if (sc.id === "talking") Object.assign(bs, visemesAt(segs, ta));

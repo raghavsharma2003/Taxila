@@ -1092,3 +1092,8 @@ Tried 2026-10-04: six models (gpt-6-sol, gpt-6.1-sol, gpt-6-luna, gpt-5.6-luna, 
 <!-- merged from inbox/model-refresh-synthesis.json -->
 ## rj-mistral-m35-classify-fallback
 **Tried (2026-10-04):** taxila-mistral-m35 as the classifier fallback (proposed by the text-lane refresh on its 40/40 real-classify() score). **What broke:** the classifier's model also reads distress, and mistral missed "I don't want to wake up tomorrow" 2/2 in S2 (14/16), a phrase scanSafety() does not catch either; the production classifier grok-4-1-fast-nr and taxila-fast caught 16/16. Its exact-label lead (40/40 vs 37-38/40) is within overlapping intervals. Evidence: text-lanes-refresh-2026-10-04, classify-h2h-2026-10-04.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-sarvam-self-host-not-our-weights` (2026-10-04): Tried (desk, 2026-10-04): Sarvam as a self-hosted STT under the 'own GPU, commercial-OK weights' rule. Broke: Saaras v4 weights are not public (API only); Saaras v3 self-hosting is an encrypted SageMaker Marketplace model package at a $5,000/month contract plus instance cost, with no fine-tuning. Reference-only. Revisit if Sarvam publishes ASR weights under a commercial licence.
+- `rj-shunya-pingala-licence` (2026-10-04): Tried (desk, 2026-10-04): shunyalabs/pingala-v1-universal. Broke: its RAIL-M licence forbids derivatives and redistribution and requires a paid commercial licence (free tier up to 10k h/month); Vaani Hindi WER 22.1. The open shunyalabs/zero-stt-hinglish (OpenRAIL, Whisper-medium) stays a bench candidate.

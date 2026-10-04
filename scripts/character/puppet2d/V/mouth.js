@@ -63,6 +63,8 @@ export function mouthState(bs, out = {}) {
   }
   out.smile = c01(avg("mouthSmile") + g("mouthSmile") + (acc.smile || 0));
   out.frown = c01(avg("mouthFrown"));
+  out.frownL = c01(g("mouthFrownRight") + 0.5 * g("mouthRight") * 0); // screen-left corner = her right
+  out.frownR = c01(g("mouthFrownLeft"));
   // skew: + = toward screen right. mouthLeft moves the mouth to HER left = screen right.
   out.skew = Math.max(-1, Math.min(1, g("mouthLeft") - g("mouthRight") + 0.6 * (g("mouthSmileLeft") - g("mouthSmileRight"))));
   out.smileL = c01(g("mouthSmileRight") + g("mouthSmile")); // screen-left corner = her right

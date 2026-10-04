@@ -705,7 +705,7 @@ function U(e, t) {
 	for (let n of [452, 608]) i += 8 * Math.exp(-((e - n) ** 2 + (t - 585) ** 2) / 4050);
 	return i -= 5 * Math.exp(-((e - 428) ** 2 + (t - 455) ** 2) / 3200) + 5 * Math.exp(-((e - 630) ** 2 + (t - 448) ** 2) / 3200), i;
 }
-function W(e, t) {
+function ne(e, t) {
 	let [n, r, i, a] = e, o = Math.max(1, Math.ceil((i - n) / t)), s = Math.max(1, Math.ceil((a - r) / t)), c = (o + 1) * (s + 1), l = new Float32Array(c * 2), u = new Float32Array(c * 2), d = 0;
 	for (let e = 0; e <= s; e++) for (let t = 0; t <= o; t++) {
 		let c = t / o, f = e / s;
@@ -731,7 +731,7 @@ function W(e, t) {
 		n: c
 	};
 }
-function G(e, t) {
+function W(e, t) {
 	let n = new Uint16Array((e - 1) * (t - 1) * 6), r = 0;
 	for (let i = 0; i < e - 1; i++) for (let e = 0; e < t - 1; e++) {
 		let a = i * t + e, o = a + 1, s = a + t, c = s + 1;
@@ -746,14 +746,14 @@ function G(e, t) {
 	}
 	return n;
 }
-function K(e, t, n) {
+function G(e, t, n) {
 	let r = n - e;
 	if (r <= 0) return t[0];
 	if (r >= t.length - 1) return t[t.length - 1];
 	let i = Math.floor(r), a = r - i;
 	return t[i] * (1 - a) + t[i + 1] * a;
 }
-var q = class {
+var K = class {
 	constructor(e, t) {
 		this.k = e, this.c = 2 * t * Math.sqrt(e), this.x = 0, this.v = 0;
 	}
@@ -765,7 +765,7 @@ var q = class {
 		}
 		return this.x;
 	}
-}, ne = class e {
+}, re = class e {
 	static async load(t, n, r = {}) {
 		let i = (e) => fetch(n + e).then((e) => e.json()), [a, o] = await Promise.all([i("geom.json"), i("mouths.json")]), s = Object.keys(a.rects).concat(["mouths"]), c = {};
 		return await Promise.all(s.map(async (e) => {
@@ -789,7 +789,7 @@ var q = class {
 		for (let [e, t] of Object.entries(r)) this.tex[e] = this.R.texture(t);
 		this.solver = new te(Object.keys(n.patches)), this.clock = null, this.lastT = -1, this.layers = {};
 		let a = this.R.paint, o = (e, n, r) => {
-			let i = t.rects[e], o = W(i, n), s = new Float32Array(o.rest), c = new Float32Array(o.n);
+			let i = t.rects[e], o = ne(i, n), s = new Float32Array(o.rest), c = new Float32Array(o.n);
 			for (let e = 0; e < o.n; e++) c[e] = U(o.rest[e * 2], o.rest[e * 2 + 1]);
 			let l = this.R.mesh(a, {
 				aPos: {
@@ -831,9 +831,9 @@ var q = class {
 		}
 		for (let e of ["L", "R"]) {
 			let t = this.layers["lock" + e];
-			t.y0 = t.rect[1] + 6, t.len = t.rect[3] - t.y0, t.spring = new q(55, .22), t.springY = new q(70, .3);
+			t.y0 = t.rect[1] + 6, t.len = t.rect[3] - t.y0, t.spring = new K(55, .22), t.springY = new K(70, .3);
 		}
-		this.bunSpring = [new q(90, .5), new q(90, .5)], this.eyes = {};
+		this.bunSpring = [new K(90, .5), new K(90, .5)], this.eyes = {};
 		for (let e of ["L", "R"]) {
 			let n = t.eyes[e], r = n.x[0], i = n.x[1], o = Math.floor((i - r) / 2) + 1, s = o * 4, c = new Float32Array(s * 2), l = new Float32Array(s * 2), u = new Float32Array(s);
 			for (let e = 0; e < o; e++) for (let t = 0; t < 4; t++) u[e * 4 + t] = t === 0 || t === 3 ? 0 : 1;
@@ -852,9 +852,9 @@ var q = class {
 					data: u,
 					size: 1
 				}
-			}, G(o, 4)), f = n.lashX[0], p = n.lashX[1], m = Math.floor((p - f) / 3) + 1, h = new Float32Array(m * 8 * 2), g = new Float32Array(m * 8 * 2), _ = new Float32Array(m * 8), v = t.rects["lid" + e];
+			}, W(o, 4)), f = n.lashX[0], p = n.lashX[1], m = Math.floor((p - f) / 3) + 1, h = new Float32Array(m * 8 * 2), g = new Float32Array(m * 8 * 2), _ = new Float32Array(m * 8), v = t.rects["lid" + e];
 			for (let e = 0; e < m; e++) {
-				let t = Math.min(p, f + e * 3), r = K(f, n.lashTop, t) - n.fall, i = K(f, n.lashBot, t) + 2.5;
+				let t = Math.min(p, f + e * 3), r = G(f, n.lashTop, t) - n.fall, i = G(f, n.lashBot, t) + 2.5;
 				for (let n = 0; n < 8; n++) {
 					let a = n / 7, o = r + a * (i - r), s = e * 8 + n;
 					h[s * 2] = t, h[s * 2 + 1] = o, g[s * 2] = (t - v[0]) / (v[2] - v[0]), g[s * 2 + 1] = (o - v[1]) / (v[3] - v[1]), _[s] = B(.12, .64, a);
@@ -870,9 +870,9 @@ var q = class {
 					data: g,
 					size: 2
 				}
-			}, G(m, 8)), x = Math.floor((i - r) / 3) + 1, S = new Float32Array(x * 5 * 2), C = new Float32Array(x * 5 * 2), w = new Float32Array(x * 5), T = t.rects["lower" + e];
+			}, W(m, 8)), x = Math.floor((i - r) / 3) + 1, S = new Float32Array(x * 5 * 2), C = new Float32Array(x * 5 * 2), w = new Float32Array(x * 5), T = t.rects["lower" + e];
 			for (let e = 0; e < x; e++) {
-				let t = Math.min(i, r + e * 3), a = K(r, n.bot, t);
+				let t = Math.min(i, r + e * 3), a = G(r, n.bot, t);
 				for (let n = 0; n < 5; n++) {
 					let r = n / 4, i = Math.max(T[1], a - 3) + r * (Math.min(T[3], a + 19) - Math.max(T[1], a - 3)), o = e * 5 + n;
 					S[o * 2] = t, S[o * 2 + 1] = i, C[o * 2] = (t - T[0]) / (T[2] - T[0]), C[o * 2 + 1] = (i - T[1]) / (T[3] - T[1]), w[o] = r;
@@ -888,7 +888,7 @@ var q = class {
 					data: C,
 					size: 2
 				}
-			}, G(x, 5));
+			}, W(x, 5));
 			this.eyes[e] = {
 				e: n,
 				xa: r,
@@ -921,7 +921,7 @@ var q = class {
 			l + s,
 			u + c
 		];
-		let d = W(this.mouthRect, 14);
+		let d = ne(this.mouthRect, 14);
 		this.mouthRest = d.rest, this.mouthPos = new Float32Array(d.rest), this.mouthZ = new Float32Array(d.n);
 		for (let e = 0; e < d.n; e++) this.mouthZ[e] = U(d.rest[e * 2], d.rest[e * 2 + 1]) + 4;
 		let f = r.mouths.width, p = r.mouths.height;
@@ -1107,7 +1107,7 @@ var q = class {
 			catchOff: [l * .45, u * .45],
 			catchA: 1,
 			lidShade: .06,
-			topY: K(n.xa, n.top, f)
+			topY: G(n.xa, n.top, f)
 		});
 		for (let e = 0; e < n.BC; e++) for (let t = 0; t < n.BR; t++) {
 			let i = e * n.BR + t, a = n.brest[i * 2], s = n.brest[i * 2 + 1], c = Math.round(a - n.xa), l = s - (r.bot[R(c, 0, r.bot.length - 1)] - n.bot[R(c, 0, n.bot.length - 1)]) * (1 - .75 * n.bv[i]), u = this.project(a, l, o(a, l));
@@ -1155,7 +1155,7 @@ var q = class {
 	dispose() {
 		this.R.gl.getExtension("WEBGL_lose_context")?.loseContext();
 	}
-}, J = new URLSearchParams(location.search), Y = J.has("capture"), re = J.get("base") || "./layers/", X = 5, Z = [
+}, q = new URLSearchParams(location.search), J = q.has("capture"), ie = q.get("base") || "./layers/", Y = 5, X = [
 	{
 		id: "idle",
 		t0: 0,
@@ -1164,7 +1164,7 @@ var q = class {
 	},
 	{
 		id: "talking",
-		t0: X,
+		t0: Y,
 		t1: 17.9,
 		status: "speaking"
 	},
@@ -1228,7 +1228,7 @@ var q = class {
 		status: null,
 		turn: !0
 	}
-], Q = 45.2, ie = {
+], Z = 45.2, Q = {
 	thinking: {
 		mouthLeft: .32,
 		mouthPressLeft: .12,
@@ -1295,8 +1295,8 @@ var q = class {
 	}
 };
 function ae(e) {
-	for (let t of Z) if (e >= t.t0 && e < t.t1) return t;
-	return Z[Z.length - 1];
+	for (let t of X) if (e >= t.t0 && e < t.t1) return t;
+	return X[X.length - 1];
 }
 var oe = (e, t, n, r = .35, i = .35) => Math.max(0, Math.min(1, (e - t) / r, (n - e) / i)), $ = { baanta: "t" };
 function se(e) {
@@ -1334,12 +1334,12 @@ function ce(e, t) {
 	return n;
 }
 async function le() {
-	let e = document.getElementById("c"), t = (J.get("view") || "92,40,840").split(",").map(Number);
-	J.get("px") && (e.style.width = J.get("px") + "px");
-	let n = await ne.load(e, re, {
-		dpr: Y ? 1 : Math.min(2, devicePixelRatio || 1),
+	let e = document.getElementById("c"), t = (q.get("view") || "60,8,904").split(",").map(Number);
+	q.get("px") && (e.style.width = q.get("px") + "px");
+	let n = await re.load(e, ie, {
+		dpr: J ? 1 : Math.min(2, devicePixelRatio || 1),
 		view: t,
-		preserve: Y
+		preserve: J
 	}), a = se(await fetch("./audio/voice.align.json").then((e) => e.json())), o = await fetch("./audio/voice.mp3").then((e) => e.arrayBuffer()), s = await new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100).decodeAudioData(o.slice(0)), c = s.getChannelData(0), l = s.sampleRate, u = new r(l), d = new C({
 		band: "b2",
 		seed: 7,
@@ -1358,7 +1358,7 @@ async function le() {
 		m = e;
 		let o = ae(e);
 		o.status !== g && (g = o.status, h = e, _ = !1);
-		let s = e - X, C = Math.floor(s * l);
+		let s = e - Y, C = Math.floor(s * l);
 		for (let e = 0; e < 1024; e++) {
 			let t = C - 1024 + e;
 			p[e] = t >= 0 && t < c.length ? c[t] : 0;
@@ -1378,8 +1378,8 @@ async function le() {
 			childLevel: o.id === "listening" ? .4 : 0
 		}), D = { ...E.bs }, O = [...E.head];
 		if (o.preset) {
-			let t = ie[o.preset], n = oe(e, o.t0, o.t1, .3, .4);
-			for (let [e, r] of Object.entries(t)) e === "tilt" ? O[2] += r * n : e === "pitch" ? O[0] += r * n : e === "bounce" || (D[e] = r < 0 ? (D[e] ?? 0) * (1 - n) : Math.max(D[e] ?? 0, r * n));
+			let t = Q[o.preset], n = oe(e, o.t0, o.t1, .3, .4);
+			for (let [e, r] of Object.entries(t)) e === "tilt" ? O[2] += r * n : e === "pitch" ? O[0] += r * n : e === "bounce" || e === "jawOpen" || (D[e] = r < 0 ? (D[e] ?? 0) * (1 - n) : Math.max(D[e] ?? 0, r * n));
 			(o.preset === "concern" || o.preset === "surprise") && (D.mouthSmileRight = (D.mouthSmileRight ?? 0) * (1 - n)), t.bounce && e - o.t0 < .05 && b < o.t0 && (y.v -= 60, b = e);
 		}
 		if (o.nods) for (let t of o.nods) e >= t && b < t && (y.v += 110, b = e);
@@ -1394,7 +1394,9 @@ async function le() {
 			let t = e - o.t0;
 			O[1] = t < 1.5 ? -20 * Math.sin(t / 1.5 * Math.PI / 2) : t < 4 ? -20 + 40 * (.5 - .5 * Math.cos((t - 1.5) / 2.5 * Math.PI)) : 20 * Math.cos((t - 4) / 2 * Math.PI / 2), O[0] += t > 4.6 && t < 5.6 ? 8 * Math.sin((t - 4.6) / 1 * Math.PI) : 0;
 		}
-		let k = i(w), A = f.compose(D, k, r);
+		let k = i(w);
+		o.preset && Q[o.preset].jawOpen && (k.jawOpen = Math.max(k.jawOpen, Q[o.preset].jawOpen * oe(e, o.t0, o.t1, .3, .4)));
+		let A = f.compose(D, k, r);
 		o.id === "talking" && Object.assign(A, ce(a, s));
 		let j = Math.sin(e * 2 * Math.PI * .25);
 		n.frame(A, O, E.gaze, E.lean, j);
@@ -1415,8 +1417,8 @@ async function le() {
 		};
 	}
 	if (window.P2D = {
-		duration: Q,
-		scenes: Z,
+		duration: Z,
+		scenes: X,
 		stats: x,
 		rig: n,
 		renderAt: (e) => w(e),
@@ -1429,13 +1431,13 @@ async function le() {
 			], e.gaze || [0, 0], e.lean || 0, 0);
 			return n.mouth.name;
 		}
-	}, Y) {
+	}, J) {
 		window.P2D.ready = !0;
 		return;
 	}
 	let T = new Audio("./audio/voice.mp3"), E = !1, D = performance.now(), k = -1, A = document.getElementById("hud"), j = (e) => {
-		let t = (e - D) / 1e3 % Q;
-		k > 0 && x.intervals.push(e - k), k = e, n.clock = t + Math.floor((e - D) / 1e3 / Q) * Q, t < m && (m = -1), !E && t >= X && (E = !0, T.currentTime = 0, T.play().catch(() => {})), t < X && (E = !1);
+		let t = (e - D) / 1e3 % Z;
+		k > 0 && x.intervals.push(e - k), k = e, n.clock = t + Math.floor((e - D) / 1e3 / Z) * Z, t < m && (m = -1), !E && t >= Y && (E = !0, T.currentTime = 0, T.play().catch(() => {})), t < Y && (E = !1);
 		let r = w(t);
 		if (A && x.frames % 15 == 0) {
 			let e = x.intervals.slice(-120), t = e.length ? 1e3 / (e.reduce((e, t) => e + t, 0) / e.length) : 0, i = x.work.slice(-120).sort((e, t) => e - t);
@@ -1451,4 +1453,4 @@ le().catch((e) => {
 	document.body.insertAdjacentHTML("beforeend", `<pre style="color:red">${e.stack}</pre>`), window.P2D = { error: String(e) };
 });
 //#endregion
-export { Q as DURATION };
+export { Z as DURATION };

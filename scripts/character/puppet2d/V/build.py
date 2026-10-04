@@ -550,7 +550,7 @@ def add_strokes(rid, region, F, group="head", zoff=0.6):
     print(f"{rid:12s} verts {len(P):6d} tris {len(T):6d}", file=sys.stderr)
 
 
-NAPE = (poly_mask(S["nape"]["R"]) | poly_mask(S["nape"]["L"])) & ~BG | (poly_mask(S["nape"]["R"]) | poly_mask(S["nape"]["L"]))
+NAPE = (poly_mask(S["nape"]["R"]) | poly_mask(S["nape"]["L"])) & ero(HAIR_NL | NECK | FACE | EAR_L | EAR_R, 2)
 add_region("nape", NAPE, HAIR_NL & NAPE, 8, 24, group="neck", z=-60)
 FHB = add_region("hair_back", HAIR_BACK, HAIR_NL, 6, 12, [(tuple(b), sp) for b, sp in S["fine"]["hair"]], z="hair", extra=bunw)
 add_region("neck", NECK, NECK_VIS, 7, 12, [((430, 690, 640, 760), 7)], group="neck", z=lambda P: 20 + 0 * P[:, 0])

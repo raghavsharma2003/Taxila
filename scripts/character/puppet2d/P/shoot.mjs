@@ -45,7 +45,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     // the timeline is causal: step from 0 at 60 Hz up to each requested time
     let t = 0;
     for (const target of ts) {
-      await page.evaluate(([t0, t1]) => { for (let x = t0; x < t1; x += 1 / 60) window.P2D.renderAt(x); return window.P2D.renderAt(t1); }, [t, target]);
+      for (let c = t; c < target; c += 1) await page.evaluate(([t0, t1]) => { for (let x = t0; x < t1; x += 1 / 60) window.P2D.renderAt(x); }, [c, Math.min(target, c + 1)]);
+      await page.evaluate((t1) => window.P2D.renderAt(t1), target);
       t = target + 1 / 60;
       await canvas.screenshot({ path: `${ROOT}/work/shots/t-${target}.png` });
       console.log("shot", target);

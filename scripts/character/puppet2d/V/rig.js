@@ -515,8 +515,8 @@ export class PuppetV {
     const smile = (ms.smileL + ms.smileR) / 2;
     const halfW = M.halfW * (1 + 0.13 * wide - 0.33 * round + 0.07 * Math.max(0, smile - s0) - 0.04 * press - 0.1 * ms.frown - 0.16 * open * (1 - wide));
     // the smile curve flattens as the jaw opens (the corners stay, the centre of the seam rises toward them)
-    const sagSide = (sm) => (M.sag + 17 * (sm - s0) - 15 * ms.frown - 16 * round + 3 * wide) * (1 - 0.45 * open);
-    const sagL = sagSide(ms.smileL), sagR = sagSide(ms.smileR);
+    const sagSide = (sm, fr) => (M.sag * (0.25 + 0.75 * Math.min(1, sm / s0)) + 17 * Math.max(0, sm - s0) - 26 * fr + 3 * wide) * (1 - 0.6 * press) * (1 - 0.5 * round) * (1 - 0.45 * open);
+    const sagL = sagSide(ms.smileL, ms.frownL), sagR = sagSide(ms.smileR, ms.frownR);
     const drop = 50 * open + 6 * ms.lowerDown;
     const raise = 4 * open + 6 * ms.upperUp;
     const eL = 0.75 - 0.35 * round + 0.25 * wide, eU = 1.2 - 0.5 * round;

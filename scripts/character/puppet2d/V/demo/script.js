@@ -42,7 +42,7 @@ export const MIXES = {
   surprise: { eyeWideLeft: 0.8, eyeWideRight: 0.8, browInnerUp: 0.6, browOuterUpLeft: 0.7, browOuterUpRight: 0.7, jawOpen: 0.3, mouthFunnel: 0.5 },
   concern: { browInnerUp: 0.55, browDownLeft: 0.08, browDownRight: 0.08, mouthPressLeft: 0.2, mouthPressRight: 0.2, mouthFrownLeft: 0.22, mouthFrownRight: 0.22, eyeBlinkLeft: 0.1, eyeBlinkRight: 0.1 },
   playful: { mouthSmileLeft: 0.55, mouthSmileRight: 0.2, mouthLeft: 0.25, browOuterUpLeft: 0.45, eyeSquintLeft: 0.15, eyeSquintRight: 0.12, cheekSquintLeft: 0.25 },
-  thinkLips: { mouthRight: 0.55, mouthPressLeft: 0.35, mouthPressRight: 0.35, mouthPucker: 0.25, mouthFrownLeft: 0.15, mouthSmileRight: 0.05, browDownRight: 0.35, browOuterUpLeft: 0.3, browInnerUp: 0.2 },
+  thinkLips: { mouthRight: 0.55, mouthPressLeft: 0.6, mouthPressRight: 0.6, mouthPucker: 0.25, mouthFrownLeft: 0.15, mouthSmileRight: 0.05, browDownRight: 0.35, browOuterUpLeft: 0.3, browInnerUp: 0.2 },
 };
 export const MIX_HEAD = { delight: [-2, 0, 3], surprise: [-3, 0, 0], concern: [3, 0, 5], playful: [0, 3, 6], thinkLips: [0, 0, 0] };
 

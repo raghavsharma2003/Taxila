@@ -1709,3 +1709,7 @@ Baseline on the same harness with gpt-4o-transcribe (2026-10-03 lesson-truth/int
 
 ## stt-live-concurrency-2026-10-04
 2026-10-04, `evals/model-refresh-2026-10-04/router-shipnow/stt-live-concurrency.mjs`: K simultaneous transcription sessions on taxila-live-transcribe (capacity 10, quota pooled 10/10 per INDIA-MOVE §2.1), sttSession config, one ~3 s synthetic clip each at real time, US container -> eastus2, runs 5 s apart. K = 4, 8, 12, 24: every session updated and completed (48/48). K = 40: 39/40; one WebSocket failed at the upgrade ("non-101 status", cause, proxy or rate limit, not determinable from the client). So the capacity-10 deployment held at least 24 concurrent child sessions; the ceiling and its 429 shape were not found. Outputs `stt-live-concurrency-2026-10-04.json`, `stt-live-concurrency-hi-2026-10-04.json`.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `stt-v3-scan-2026-10-04` (2026-10-04): STT v3 desk scan (docs/research/voice/stt-v3/SCAN.md; no model run). Prices: AWS L4 g6.xlarge $0.805/h OD us-east-1, $0.966 ap-south-1; Azure CI NC4as_T4 $0.579; ACA T4 GPU $0.367/h. ap-south-1 G/VT quota 0 (OD and spot); us-east-1 8/8. Self-hosted streaming transducer ≈ $0.01-0.02 per session-hour at 40-75 sessions/GPU [estimate], vs $1.02 (gpt-live-transcribe) / $1.30 (Azure RT+LID); 2-warm-GPU floor ≈ $845-1,175/month, break-even ≈ 1.2-1.6 average concurrent sessions. Method: AWS Pricing API, spot history, Service Quotas, Azure Retail Prices API; concurrency scaled from vendor H100 figures (unmeasured).

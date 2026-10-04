@@ -2442,3 +2442,9 @@ Code keeps hard rules, authority order, budgets and the final decision; models p
 - **Reverse if:** the conditions of `image-lanes-flare-low-both-2026-10-04` (blind preference or a 20-diagram set below gpt-image-2), or flare's 4 RPM cannot be raised before a live image lane ships (then gpt-image-2 low is the primary).
 
 - `owner-always-listen-full-session-2026-10-04` (2026-10-04): owner decision: live STT streams the whole session so the child can interrupt or ask at any time; the speech-only streaming lever in docs/ops/MODEL-STACK.md is rejected. Savings come from the STT model and hosting instead. Reverse only on the owner's word.
+
+- `owner-stt-cost-plan-2026-10-04` (2026-10-04): owner approved the STT cost plan: MAI-Transcribe-2 preferred (price to confirm from the bill on 6 Oct), gpt-transcribe tested as the cheap Azure option, and speech-gated streaming with an always-on mic plus on-device speech detector and ~300 ms pre-roll, so barge-in and mid-turn questions still work while silence is not transcribed. Partly supersedes owner-always-listen-full-session-2026-10-04. Reverse if gating clips any child speech or barge-in in testing, or MAI bills above gpt-live-transcribe.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `stt-always-on-session-hour-basis` (2026-10-04): Owner directive 2026-10-04: the child is heard for the whole session (always-on, full-duplex), so STT is costed per session-hour, not per speech-minute; MODEL-STACK §275 lever 1 (stream only child-turn windows) is off the table. Reverse if: the owner withdraws the directive, or E1 shows barge-in and mid-turn questions work equally well with device-VAD-gated windows.

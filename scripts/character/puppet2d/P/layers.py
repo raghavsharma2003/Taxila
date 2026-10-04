@@ -30,8 +30,8 @@ GEOM = {
     "jaw": [(322, 470), (326, 520), (338, 565), (356, 605), (380, 640), (410, 668), (450, 691), (490, 705), (530, 711),
             (570, 705), (603, 691), (640, 662), (675, 628), (705, 590), (726, 545), (736, 500), (738, 460)],
     "face_top": [(738, 420), (700, 300), (600, 215), (530, 200), (450, 215), (360, 300), (322, 420)],
-    "earL": [(250, 430), (305, 430), (318, 545), (332, 556), (332, 582), (305, 586), (285, 575), (250, 540)],
-    "earR": [(745, 420), (808, 420), (808, 545), (775, 572), (740, 560)],
+    "earL": [(250, 430), (305, 430), (318, 545), (334, 556), (338, 598), (300, 602), (280, 578), (250, 540)],
+    "earR": [(745, 420), (808, 420), (808, 548), (788, 588), (748, 592), (738, 560)],
     "lockL": [(278, 440), (318, 440), (330, 560), (320, 640), (338, 700), (322, 730), (296, 730), (300, 690), (282, 600), (284, 520)],
     "lockR": [(728, 395), (760, 395), (788, 520), (792, 620), (790, 705), (770, 705), (762, 640), (742, 560), (732, 480)],
     "bun": [(600, 575), (700, 560), (760, 600), (765, 700), (720, 745), (640, 745), (600, 700)],
@@ -354,7 +354,7 @@ over_face = hair | lockL | lockR                  # layers drawn above the face 
 # lock that swings away uncovers jaw, never a lock-shaped skin flap
 _disk = lambda r: (np.add.outer(np.arange(-r, r + 1) ** 2, np.arange(-r, r + 1) ** 2) <= r * r)
 face_sil = ndi.binary_closing(face, structure=_disk(16)) & ~ndi.binary_dilation(bgc & ~(lockL | lockR), iterations=0)
-face_area = face | (ndi.binary_dilation(face, iterations=26) & hair) | (face_sil & (lockL | lockR | ndi.binary_dilation(lockL | lockR, iterations=3)))
+face_area = face | (ndi.binary_dilation(face, iterations=26) & hair) | (face_sil & (lockL | lockR | ndi.binary_dilation(lockL | lockR, iterations=3)) & ~bgc)
 holes = eye_fill | brow_fill | lips
 known = ndi.binary_erosion(face, iterations=3) & ~holes
 face_rgb = pullpush(im, known, smooth_iters=400, region=face_area & ~known)
@@ -364,8 +364,7 @@ _, fa = matte(face, face_area & ~face)
 geom_out["rects"]["face"] = save_layer("face", face_rgb, fa)
 
 # ------------------------------------------------------------------ ears (+ studs), overscan under face/hair/locks
-ear_area = ears | (ndi.binary_dilation(ears, iterations=10) & (face | hair)) | (ndi.binary_closing(ears, structure=_disk(10)) & ndi.binary_dilation(lockL | lockR, iterations=3))
-ear_area = ndi.binary_opening(ear_area, structure=_disk(3)) | ears
+ear_area = ears | (ndi.binary_dilation(ears, iterations=10) & face) | (ndi.binary_dilation(ears, iterations=6) & hair & (lum < 80))
 ear_rgb = dehalo(im, ears, ear_area, erode=1, smooth=40)
 inner = ndi.binary_erosion(ears, iterations=1)
 ear_rgb[inner] = im[inner]
@@ -376,16 +375,24 @@ geom_out["rects"]["ears"] = save_layer("ears", ear_rgb, ea)
 print({k:int(v.sum()) for k,v in dict(hair=hair,bun=bun,lockL=lockL,lockR=lockR,hair_all=hair_all).items()})
 for name, m, sig in (("hair", hair, 0.7), ("bun", bun, 0.7), ("lockL", lockL, 0.6), ("lockR", lockR, 0.6)):
     over = None
-    if name == "hair":   # opaque under the locks' roots so a lock edge never shows what is behind the hair
-        over = ndi.binary_dilation(hair, iterations=8) & (lockL | lockR) & (yy < 560)
+    if name == "hair":   # the hair owns the locks' roots: opaque under their top 34 px (the locks fade in over it)
+        roots = np.zeros_like(hair)
+        for lk in (lockL, lockR):
+            y0 = np.where(lk.any(1))[0].min()
+            roots |= lk & (yy < y0 + 34)
+        m = hair | roots
+        over = None
     if name == "bun":    # the bun is behind the neck, the jaw and the lock: continue it under them
         # the bun is a round knot: its hidden part is the ellipse it belongs to (fitted by eye), under neck/jaw/lock
         ell = ((xx - 683) / 80.0) ** 2 + ((yy - 658) / 86.0) ** 2 <= 1
-        over = ell & ~bun & (yy < 752) & ~(bgc & ~ndi.binary_dilation(bun | face | lockR | body, iterations=4))
+        over = ell & ~bun & (yy < 752) & ~ndi.binary_dilation(bgc, iterations=1)
     if name.startswith("lock"):
-        core = m & (lum < 95)
+        core = m & (lum < 125)
         rgb, a = matte(core, None, band=2, erode=0)
         a = np.where(m | ndi.binary_dilation(m, iterations=2), a, 0)
+        # the root fades into the hair mass over 14 px (same colour underneath: no visible top edge)
+        y0 = np.where(m.any(1))[0].min()
+        a = a * np.clip((yy - y0 - 6) / 24.0, 0, 1)
     else:
         rgb, a = matte(m, over)
     if over is not None:
