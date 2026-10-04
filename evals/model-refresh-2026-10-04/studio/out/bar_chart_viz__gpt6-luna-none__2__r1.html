@@ -1,0 +1,295 @@
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    color-scheme: light;
+    --ink: #27374c;
+    --paper: #fffdf7;
+    --line: #e7e5dc;
+  }
+  body {
+    margin: 0;
+    background: #f2f5fb;
+    color: var(--ink);
+    font-family: ui-rounded, "Trebuchet MS", system-ui, sans-serif;
+  }
+  .stage {
+    width: 100%;
+    min-height: 100vh;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .card {
+    width: min(100%, 520px);
+    padding: 18px 16px 14px;
+    border: 1px solid #e9edf4;
+    border-radius: 26px;
+    background: var(--paper);
+    box-shadow: 0 12px 34px #334b7020;
+    overflow: hidden;
+  }
+  h1 {
+    margin: 0 0 12px;
+    font-size: clamp(21px, 6vw, 27px);
+    line-height: 1.15;
+    letter-spacing: -.4px;
+    text-align: center;
+  }
+  .chart-shell {
+    position: relative;
+    width: 100%;
+    padding-left: 43px;
+  }
+  .axis-title {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 29px;
+    transform: translateY(-50%) rotate(180deg);
+    writing-mode: vertical-rl;
+    text-align: center;
+    color: #61738b;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .plot {
+    position: relative;
+    height: 252px;
+    border-bottom: 2px solid #53657c;
+    border-left: 2px solid #53657c;
+  }
+  .gridline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--line);
+    pointer-events: none;
+  }
+  .tick-label {
+    position: absolute;
+    left: -42px;
+    width: 34px;
+    transform: translateY(50%);
+    text-align: right;
+    color: #738197;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .bars {
+    position: absolute;
+    inset: 0 3px 0 5px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 4px;
+    align-items: end;
+  }
+  .bar-slot {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    min-width: 0;
+  }
+  .bar {
+    appearance: none;
+    display: block;
+    width: min(100%, 44px);
+    min-width: 0;
+    height: var(--height);
+    padding: 0;
+    border: 0;
+    border-radius: 11px 11px 3px 3px;
+    background: #718fca;
+    box-shadow: inset 0 2px 0 #ffffff50, 0 3px 7px #35445a17;
+    cursor: pointer;
+    transform-origin: center bottom;
+    animation: grow .85s cubic-bezier(.2,.8,.25,1) both;
+    animation-delay: var(--delay);
+    transition: filter .18s ease, transform .18s ease, box-shadow .18s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .bar:hover { filter: brightness(1.06); }
+  .bar:active { transform: scaleX(.92) scaleY(.97); }
+  .bar:focus-visible { outline: 3px solid #354d78; outline-offset: 2px; }
+  .bar.selected {
+    box-shadow: inset 0 2px 0 #ffffff70, 0 0 0 3px #27374c27, 0 5px 10px #35445a20;
+    transform: scaleX(1.06);
+  }
+  @keyframes grow {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
+  }
+  .labels {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 4px;
+    margin: 9px 3px 0 5px;
+  }
+  .fruit-label {
+    min-width: 0;
+    text-align: center;
+    color: #52627a;
+    font-size: 11px;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+  .value-bubble {
+    min-height: 27px;
+    margin: 8px auto 0;
+    padding: 4px 14px;
+    width: fit-content;
+    border-radius: 999px;
+    background: #edf2fb;
+    color: #344968;
+    font-size: 15px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    opacity: 0;
+    transform: translateY(4px) scale(.92);
+    transition: opacity .2s ease, transform .2s ease;
+    pointer-events: none;
+  }
+  .value-bubble.visible { opacity: 1; transform: translateY(0) scale(1); }
+  .prompt {
+    margin: 10px 0 0;
+    min-height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #344968;
+    font-size: 16px;
+    font-weight: 750;
+    line-height: 1.3;
+  }
+  .feedback {
+    min-height: 25px;
+    margin-top: 2px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #527862;
+  }
+  .feedback.wrong { color: #a35951; }
+  @media (max-height: 700px) {
+    .stage { padding: 8px; }
+    .card { padding-top: 13px; padding-bottom: 10px; }
+    .plot { height: 220px; }
+    h1 { margin-bottom: 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+</style>
+
+<main class="stage">
+  <section class="card">
+    <h1 id="title"></h1>
+    <div class="chart-shell">
+      <div class="axis-title" id="axis-title"></div>
+      <div class="plot" id="plot">
+        <div class="bars" id="bars"></div>
+      </div>
+    </div>
+    <div class="labels" id="labels"></div>
+    <div class="value-bubble" id="value-bubble" aria-live="polite"></div>
+    <div class="prompt" id="prompt"></div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const data = Studio.params.data;
+  const t = key => Studio.t(key);
+  const maxValue = Math.max(...data.map(item => item.value));
+  const step = maxValue <= 5 ? 1 : maxValue <= 10 ? 2 : maxValue <= 20 ? 5 : Math.ceil(maxValue / 25) * 5;
+  const topTick = Math.ceil(maxValue / step) * step;
+  const plot = document.getElementById("plot");
+  const bars = document.getElementById("bars");
+  const labels = document.getElementById("labels");
+  const bubble = document.getElementById("value-bubble");
+  const prompt = document.getElementById("prompt");
+  const feedback = document.getElementById("feedback");
+
+  document.getElementById("title").textContent = t("title");
+  document.getElementById("axis-title").textContent = t("yaxis");
+  prompt.textContent = t("ask");
+
+  for (let tick = 0; tick <= topTick; tick += step) {
+    const y = tick / topTick * 100;
+    const label = document.createElement("div");
+    label.className = "tick-label";
+    label.dataset.tick = String(tick);
+    label.style.bottom = y + "%";
+    label.textContent = String(tick);
+    plot.appendChild(label);
+
+    if (tick > 0) {
+      const line = document.createElement("div");
+      line.className = "gridline";
+      line.style.bottom = y + "%";
+      plot.appendChild(line);
+    }
+  }
+
+  let chosen = null;
+  let submitted = false;
+
+  data.forEach((item, index) => {
+    const slot = document.createElement("div");
+    slot.className = "bar-slot";
+
+    const bar = document.createElement("button");
+    bar.type = "button";
+    bar.className = "bar";
+    bar.dataset.bar = item.key;
+    bar.dataset.value = String(item.value);
+    bar.setAttribute("aria-label", t(item.key));
+    bar.style.setProperty("--height", (item.value / topTick * 100) + "%");
+    bar.style.setProperty("--delay", (index * 90) + "ms");
+    bar.addEventListener("click", () => {
+      if (submitted) return;
+      if (chosen) chosen.classList.remove("selected");
+      chosen = bar;
+      bar.classList.add("selected");
+      bubble.textContent = String(item.value);
+      bubble.classList.add("visible");
+      feedback.textContent = "";
+      feedback.classList.remove("wrong");
+      Studio.event("bar_tap", {key: item.key});
+      Studio.answer(item.key);
+    });
+
+    slot.appendChild(bar);
+    bars.appendChild(slot);
+
+    const fruit = document.createElement("div");
+    fruit.className = "fruit-label";
+    fruit.textContent = t(item.key);
+    labels.appendChild(fruit);
+  });
+
+  Studio.onVerdict(({correct}) => {
+    if (!chosen) return;
+    if (correct) {
+      submitted = true;
+      feedback.textContent = t("right");
+      feedback.classList.remove("wrong");
+      prompt.textContent = t("done");
+      Studio.done();
+    } else {
+      feedback.textContent = t("wrong");
+      feedback.classList.add("wrong");
+      chosen.classList.remove("selected");
+      chosen = null;
+      bubble.classList.remove("visible");
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

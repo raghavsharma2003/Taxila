@@ -1,0 +1,420 @@
+<style>
+  .stage{
+    --ink:#2b2350;
+    --paper:#fff9f2;
+    --panel:#ffffff;
+    --grid:#e7e0f5;
+    --axis:#8f86b8;
+    --accent:#ff8a3d;
+    --accent2:#5ec3a5;
+    --accent3:#8f7bd6;
+    --accent4:#f2c14e;
+    --accent5:#ef6f8b;
+    --shadow:0 6px 18px rgba(60,40,120,.14);
+    --radius:20px;
+    font-family:"Trebuchet MS","Segoe UI",system-ui,-apple-system,sans-serif;
+    box-sizing:border-box;
+    width:100%;
+    max-width:420px;
+    margin:0 auto;
+    padding:12px 12px 20px;
+    background:
+      radial-gradient(120% 80% at 50% 0%, #f3ecff 0%, var(--paper) 60%);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .stage *{ box-sizing:border-box; }
+
+  .card{
+    background:var(--panel);
+    border-radius:var(--radius);
+    padding:12px 14px;
+    box-shadow:var(--shadow);
+    border:1.5px solid #f0e9ff;
+  }
+
+  .title{
+    margin:0;
+    font-size:19px;
+    line-height:1.25;
+    letter-spacing:.2px;
+    text-align:center;
+    color:#3a2f6b;
+  }
+
+  .ask{
+    margin:0;
+    font-size:14.5px;
+    line-height:1.35;
+    text-align:center;
+    color:#5d5290;
+    font-weight:600;
+  }
+
+  .chartcard{
+    padding:10px 10px 6px;
+  }
+
+  .chartwrap{
+    position:relative;
+    width:100%;
+    aspect-ratio: 4 / 3.4;
+    min-height:250px;
+  }
+  svg{ display:block; width:100%; height:100%; overflow:visible; }
+
+  .gridline{
+    stroke:var(--grid);
+    stroke-width:1.4;
+    stroke-dasharray:5 6;
+  }
+  .axisline{
+    stroke:var(--axis);
+    stroke-width:1.8;
+  }
+  .ticklabel{
+    fill:#7a6fa8;
+    font-size:12px;
+    font-weight:700;
+    font-family:inherit;
+  }
+  .axisTitle{
+    fill:#7a6fa8;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.6px;
+    font-family:inherit;
+  }
+  .fruitlabel{
+    fill:#5d5290;
+    font-size:12.5px;
+    font-weight:800;
+    font-family:inherit;
+  }
+
+  .bar{
+    cursor:pointer;
+    transform-box:fill-box;
+    transform-origin:50% 100%;
+    transition: transform .18s ease, filter .18s ease;
+    filter:drop-shadow(0 4px 6px rgba(80,50,150,.16));
+  }
+  .bar:active{ transform:scaleY(.94) }
+  .bar.tapped{ transform:scaleY(1.03) }
+
+  .barmask{
+    transform-box:fill-box;
+    transform-origin:50% 100%;
+    transform:scaleY(0);
+    animation:grow .85s cubic-bezier(.22,1.05,.42,1) forwards;
+  }
+  @keyframes grow{ to { transform:scaleY(1) } }
+
+  .valtag{
+    font-family:inherit;
+    font-size:13px;
+    font-weight:900;
+    fill:#fff;
+    text-anchor:middle;
+    opacity:0;
+    transition:opacity .2s ease;
+    pointer-events:none;
+  }
+  .valtag.show{ opacity:1 }
+
+  .feedback{
+    min-height:26px;
+    text-align:center;
+    font-size:15px;
+    font-weight:800;
+    letter-spacing:.2px;
+    opacity:0;
+    transform:translateY(4px);
+    transition:opacity .25s ease, transform .25s ease;
+  }
+  .feedback.show{ opacity:1; transform:translateY(0) }
+  .feedback.ok{ color:#2f9e7a }
+  .feedback.no{ color:#e05a72 }
+
+  .hintdot{
+    display:flex;
+    justify-content:center;
+    gap:6px;
+    padding-bottom:2px;
+  }
+  .hintdot i{
+    width:7px;height:7px;border-radius:50%;
+    background:#d9cff5;
+    animation:pulse 1.6s ease-in-out infinite;
+  }
+  .hintdot i:nth-child(2){ animation-delay:.2s }
+  .hintdot i:nth-child(3){ animation-delay:.4s }
+  @keyframes pulse{
+    0%,100%{ transform:scale(.7); background:#e4dcf7 }
+    50%{ transform:scale(1); background:#bda9ef }
+  }
+  @media (max-width:360px){
+    .title{font-size:17px}
+    .ask{font-size:13.5px}
+    .chartwrap{min-height:220px}
+  }
+</style>
+
+<div class="stage" id="stage">
+  <div class="card">
+    <h1 class="title" id="title"></h1>
+  </div>
+
+  <div class="card">
+    <p class="ask" id="ask"></p>
+  </div>
+
+  <div class="card chartcard">
+    <div class="chartwrap">
+      <svg id="chart" viewBox="0 0 340 270" role="img" aria-labelledby="title">
+        <g id="gridGroup"></g>
+        <line class="axisline" id="yaxisLine"></line>
+        <line class="axisline" id="xAxisLine"></line>
+        <g id="tickGroup"></g>
+        <g id="barGroup"></g>
+        <g id="fruitGroup"></g>
+        <text class="axisTitle" id="yaxisTitle"></text>
+      </svg>
+    </div>
+    <div class="hintdot" aria-hidden="true"><i></i><i></i><i></i></div>
+  </div>
+
+  <div class="feedback" id="feedback"></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var titleEl = document.getElementById("title");
+  var askEl = document.getElementById("ask");
+  var feedbackEl = document.getElementById("feedback");
+  var svg = document.getElementById("chart");
+  var gridGroup = document.getElementById("gridGroup");
+  var tickGroup = document.getElementById("tickGroup");
+  var barGroup = document.getElementById("barGroup");
+  var fruitGroup = document.getElementById("fruitGroup");
+  var yaxisTitle = document.getElementById("yaxisTitle");
+  var yaxisLine = document.getElementById("yaxisLine");
+  var xAxisLine = document.getElementById("xAxisLine");
+
+  var P = Studio.params || {};
+  var data = Array.isArray(P.data) ? P.data.slice() : [];
+
+  var SVG_NS = "http://www.w3.org/2000/svg";
+
+  // geometry inside the viewBox 340 x 270
+  var VB_W = 340, VB_H = 270;
+  var padLeft = 40, padRight = 14, padTop = 26, padBottom = 42;
+  var plotX = padLeft;
+  var plotY = padTop;
+  var plotW = VB_W - padLeft - padRight;
+  var plotH = VB_H - padTop - padBottom;
+  var baseY = plotY + plotH;
+
+  // scale
+  var maxVal = 0;
+  for (var i = 0; i < data.length; i++) {
+    var v = Number(data[i].value) || 0;
+    if (v > maxVal) maxVal = v;
+  }
+  if (maxVal <= 0) maxVal = 1;
+
+  var step = 1;
+  if (maxVal > 10) step = 2;
+  if (maxVal > 24) step = 5;
+  if (maxVal > 50) step = 10;
+  var topTick = Math.ceil(maxVal / step) * step;
+  if (topTick <= maxVal) topTick = maxVal + step;
+  var ticks = [];
+  for (var t = 0; t <= topTick; t += step) ticks.push(t);
+  var axisMax = topTick;
+
+  function yFor(val){ return baseY - (val / axisMax) * plotH; }
+
+  var COLORS = ["#ff8a3d", "#5ec3a5", "#8f7bd6", "#f2c14e", "#ef6f8b", "#4fb8e8", "#d97ed1"];
+
+  function el(tag, attrs){
+    var e = document.createElementNS(SVG_NS, tag);
+    for (var k in attrs){ if (attrs.hasOwnProperty(k)) e.setAttribute(k, attrs[k]); }
+    return e;
+  }
+
+  // ---- y-axis ticks + gridlines
+  for (var gi = 0; gi < ticks.length; gi++){
+    var tv = ticks[gi];
+    var gy = yFor(tv);
+    var grid = el("line", {x1:plotX, y1:gy, x2:plotX+plotW, y2:gy, "class":"gridline"});
+    gridGroup.appendChild(grid);
+
+    var lbl = el("text", {
+      "class":"ticklabel",
+      x: plotX - 8,
+      y: gy + 4,
+      "text-anchor":"end",
+      "data-tick": String(tv)
+    });
+    lbl.textContent = String(tv);
+    tickGroup.appendChild(lbl);
+  }
+
+  yaxisLine.setAttribute("x1", plotX);
+  yaxisLine.setAttribute("y1", plotY);
+  yaxisLine.setAttribute("x2", plotX);
+  yaxisLine.setAttribute("y2", baseY);
+
+  xAxisLine.setAttribute("x1", plotX);
+  xAxisLine.setAttribute("y1", baseY);
+  xAxisLine.setAttribute("x2", plotX + plotW);
+  xAxisLine.setAttribute("y2", baseY);
+
+  yaxisTitle.setAttribute("x", 12);
+  yaxisTitle.setAttribute("y", plotY - 10);
+
+  // ---- bars
+  var n = data.length || 1;
+  var slotW = plotW / n;
+  var barW = Math.min(slotW * 0.62, 40);
+
+  var bars = [];       // { key, value, rect, valueText }
+  var answered = false;
+
+  function fruitName(key){
+    try { return Studio.t(key); } catch(e){ return key; }
+  }
+
+  for (var bi = 0; bi < data.length; bi++){
+    var item = data[bi];
+    var key = item.key;
+    var val = Number(item.value) || 0;
+
+    var cx = plotX + slotW * bi + slotW / 2;
+    var x = cx - barW / 2;
+    var yTop = yFor(val);
+    var h = baseY - yTop;
+
+    var rect = el("rect", {
+      "class":"bar",
+      x: x,
+      y: yTop,
+      width: barW,
+      height: Math.max(h, 1),
+      rx: 8,
+      ry: 8,
+      fill: COLORS[bi % COLORS.length],
+      tabindex: "0",
+      role: "button"
+    });
+    rect.setAttribute("data-bar", String(key));
+    rect.setAttribute("data-value", String(val));
+
+    // grow mask: animate the rect itself via class on a wrapper-ish technique
+    // We animate transform on the rect (transform-box fill-box, origin bottom).
+    rect.style.transform = "scaleY(0)";
+    rect.style.transformBox = "fill-box";
+    rect.style.transformOrigin = "50% 100%";
+
+    var delay = 0.06 * bi + 0.1;
+    rect.style.animation = "grow .85s cubic-bezier(.22,1.05,.42,1) " + delay + "s forwards";
+
+    barGroup.appendChild(rect);
+
+    // value tag shown above bar when tapped
+    var tag = el("text", {
+      "class":"valtag",
+      x: cx,
+      y: yTop - 8
+    });
+    tag.textContent = String(val);
+    barGroup.appendChild(tag);
+
+    var label = el("text", {
+      "class":"fruitlabel",
+      x: cx,
+      y: baseY + 20,
+      "text-anchor":"middle"
+    });
+    label.textContent = fruitName(key);
+    fruitGroup.appendChild(label);
+
+    rect.__tag = tag;
+    rect.__cx = cx;
+    rect.__yTop = yTop;
+    rect.__key = key;
+    rect.__value = val;
+
+    (function(r){
+      r.addEventListener("click", function(){ onBarTap(r); });
+      r.addEventListener("keydown", function(ev){
+        if (ev.key === "Enter" || ev.key === " " || ev.key === "Spacebar"){
+          ev.preventDefault();
+          onBarTap(r);
+        }
+      });
+    })(rect);
+  }
+
+  // ---- show value on tap + commit answer
+  function showTag(rect){
+    if (rect.__tag){
+      // place tag just above bar top, but keep inside chart
+      var ty = rect.__yTop - 8;
+      if (ty < plotY + 10) ty = rect.__yTop + 16;
+      rect.__tag.setAttribute("y", ty);
+      rect.__tag.classList.add("show");
+    }
+  }
+
+  function onBarTap(rect){
+    if (answered) return;
+
+    showTag(rect);
+
+    rect.classList.add("tapped");
+    setTimeout(function(){ rect.classList.remove("tapped"); }, 180);
+
+    var key = rect.getAttribute("data-bar");
+    Studio.event("bar_tap", { key: key, value: Number(rect.getAttribute("data-value")) });
+    answered = true;
+    Studio.answer(key);
+  }
+
+  // ---- verdict
+  Studio.onVerdict(function(res){
+    var correct = !!(res && res.correct);
+    feedbackEl.classList.remove("ok","no");
+    if (correct){
+      feedbackEl.classList.add("ok","show");
+      feedbackEl.textContent = Studio.t("right");
+      askEl.textContent = Studio.t("done");
+      askEl.style.color = "#2f9e7a";
+      Studio.done();
+    } else {
+      feedbackEl.classList.add("no","show");
+      feedbackEl.textContent = Studio.t("wrong");
+      // allow retry after a beat
+      setTimeout(function(){
+        answered = false;
+        feedbackEl.classList.remove("show");
+      }, 1100);
+    }
+  });
+
+  // ---- strings
+  titleEl.textContent = Studio.t("title");
+  askEl.textContent = Studio.t("ask");
+  yaxisTitle.textContent = Studio.t("yaxis");
+
+  // ---- ready
+  Studio.ready();
+})();
+</script>

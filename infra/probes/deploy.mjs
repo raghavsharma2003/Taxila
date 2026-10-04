@@ -61,7 +61,7 @@ async function deploy() {
     tag = `p${Date.now().toString(36)}`;
     console.log(`building taxila-probe:${tag}…`);
     await acrBuild({ images: [`taxila-probe:${tag}`, "taxila-probe:latest"], dockerfile: "infra/probes/Dockerfile", dir: ROOT,
-      files: ["infra/azure.mjs", "infra/probes/Dockerfile", "infra/probes/probe.mjs", "infra/probes/child-answer.wav", "infra/probes/make-wav.mjs", "tests/prod/lib.mjs", "tests/prod/w1d-eyes.mjs"] });
+      files: ["infra/azure.mjs", "infra/probes/Dockerfile", "infra/probes/probe.mjs", "infra/probes/child-answer.wav", "infra/probes/make-wav.mjs", "tests/prod/lib.mjs", "tests/prod/w1d-eyes.mjs", "tests/prod/w1a-text-voice.mjs"] });
     mkdirSync(ROOT + "node_modules/.cache", { recursive: true });
     writeFileSync(CACHE, tag);
   }

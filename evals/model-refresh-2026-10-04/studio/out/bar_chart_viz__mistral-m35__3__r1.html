@@ -1,0 +1,252 @@
+<style>
+  :root {
+    --bg: #fff9f0;
+    --bar-fill: #ff8c42;
+    --bar-hover: #ffb366;
+    --text: #3d2914;
+    --grid: #e0d8c8;
+    --axis: #8b7355;
+    --correct: #4caf50;
+    --wrong: #e74c3c;
+    --font: 500 16px system-ui, sans-serif;
+  }
+  body {
+    margin: 0;
+    padding: 16px;
+    background: var(--bg);
+    font: var(--font);
+    color: var(--text);
+    overflow: hidden;
+    height: 640px;
+    box-sizing: border-box;
+    width: 360px;
+  }
+  .title {
+    text-align: center;
+    font-size: 1.2em;
+    margin-bottom: 12px;
+    color: var(--axis);
+  }
+  .chart-container {
+    display: flex;
+    align-items: flex-end;
+    height: 400px;
+    gap: 12px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--grid);
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+  .y-axis {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-right: 1px solid var(--grid);
+  }
+  .y-axis .label {
+    transform: translateY(50%);
+    text-align: right;
+    font-size: 0.85em;
+    color: var(--axis);
+  }
+  .grid-lines {
+    position: absolute;
+    left: 40px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+  .grid-line {
+    width: 100%;
+    height: 1px;
+    background: var(--grid);
+  }
+  .bars {
+    display: flex;
+    align-items: flex-end;
+    height: 100%;
+    gap: 12px;
+    margin-left: 48px;
+    flex-grow: 1;
+    width: calc(100% - 48px);
+    justify-content: space-around;
+  }
+  .bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1 0 44px;
+    min-width: 44px;
+    max-width: 60px;
+  }
+  .bar {
+    width: 44px;
+    background: var(--bar-fill);
+    border-radius: 8px 8px 0 0;
+    transition: height 0.6s ease-out, transform 0.2s ease;
+    transform-origin: bottom center;
+    cursor: pointer;
+    position: relative;
+    height: 0%;
+  }
+  .bar:active {
+    transform: scale(0.95);
+  }
+  .bar-label {
+    margin-top: 8px;
+    font-size: 0.9em;
+    color: var(--text);
+    text-align: center;
+    word-break: break-word;
+    width: 100%;
+  }
+  .value-popup {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    margin-bottom: 8px;
+  }
+  .bar:hover .value-popup {
+    opacity: 1;
+  }
+  .question {
+    text-align: center;
+    margin: 16px 0;
+    font-size: 1.1em;
+    color: var(--axis);
+  }
+  .feedback {
+    text-align: center;
+    font-size: 1.2em;
+    margin: 16px 0;
+    min-height: 28px;
+    color: var(--axis);
+  }
+  .correct {
+    color: var(--correct);
+  }
+  .wrong {
+    color: var(--wrong);
+  }
+</style>
+
+<div class="title"></div>
+<div class="chart-container">
+  <div class="y-axis">
+    <div class="label" data-tick="0">0</div>
+    <div class="label" data-tick="2">2</div>
+    <div class="label" data-tick="4">4</div>
+    <div class="label" data-tick="6">6</div>
+    <div class="label" data-tick="8">8</div>
+    <div class="label" data-tick="10">10</div>
+    <div class="label" data-tick="12">12</div>
+  </div>
+  <div class="grid-lines">
+    <div class="grid-line"></div>
+    <div class="grid-line"></div>
+    <div class="grid-line"></div>
+    <div class="grid-line"></div>
+    <div class="grid-line"></div>
+    <div class="grid-line"></div>
+  </div>
+  <div class="bars">
+    <div class="bar-wrapper">
+      <div class="bar" data-bar="mango" data-value="12"></div>
+      <div class="value-popup">12</div>
+      <div class="bar-label"></div>
+    </div>
+    <div class="bar-wrapper">
+      <div class="bar" data-bar="banana" data-value="7"></div>
+      <div class="value-popup">7</div>
+      <div class="bar-label"></div>
+    </div>
+    <div class="bar-wrapper">
+      <div class="bar" data-bar="apple" data-value="9"></div>
+      <div class="value-popup">9</div>
+      <div class="bar-label"></div>
+    </div>
+    <div class="bar-wrapper">
+      <div class="bar" data-bar="guava" data-value="4"></div>
+      <div class="value-popup">4</div>
+      <div class="bar-label"></div>
+    </div>
+    <div class="bar-wrapper">
+      <div class="bar" data-bar="orange" data-value="6"></div>
+      <div class="value-popup">6</div>
+      <div class="bar-label"></div>
+    </div>
+  </div>
+</div>
+<div class="question"></div>
+<div class="feedback"></div>
+
+<script>
+  (function() {
+    const params = Studio.params;
+    const t = Studio.t;
+    const data = params.data;
+    const maxValue = Math.max(...data.map(d => d.value));
+    const scale = 100 / maxValue;
+
+    document.querySelector('.title').textContent = t('title');
+    document.querySelector('.y-axis').title = t('yaxis');
+    document.querySelector('.question').textContent = t('ask');
+
+    data.forEach(d => {
+      const label = document.querySelector(`[data-bar="${d.key}"]`).nextElementSibling.nextElementSibling;
+      label.textContent = t(d.key);
+    });
+
+    const bars = document.querySelectorAll('.bar');
+    let delay = 0;
+    bars.forEach(bar => {
+      const value = parseInt(bar.dataset.value);
+      const height = value * scale;
+      setTimeout(() => {
+        bar.style.height = `${height}%`;
+      }, delay);
+      delay += 150;
+    });
+
+    bars.forEach(bar => {
+      bar.addEventListener('click', () => {
+        Studio.answer(bar.dataset.bar);
+      });
+    });
+
+    Studio.onVerdict(({ correct }) => {
+      const feedbackEl = document.querySelector('.feedback');
+      feedbackEl.textContent = t(correct ? 'right' : 'wrong');
+      feedbackEl.className = 'feedback ' + (correct ? 'correct' : 'wrong');
+      if (correct) {
+        Studio.done();
+        setTimeout(() => {
+          feedbackEl.textContent = t('done');
+          feedbackEl.className = 'feedback';
+        }, 1000);
+      }
+    });
+
+    Studio.ready();
+  })();
+</script>

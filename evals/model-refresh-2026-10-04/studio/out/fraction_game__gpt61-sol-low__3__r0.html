@@ -1,0 +1,93 @@
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow-x:hidden}body{background:#fff8ed;color:#42352f;font-family:system-ui,sans-serif}button{font:inherit;-webkit-tap-highlight-color:transparent}#activity{height:100dvh;min-height:600px;max-width:520px;margin:auto;padding:12px 20px;display:flex;flex-direction:column;align-items:center;background:radial-gradient(ellipse at top right,#ffeacb,transparent 65%)}header{width:100%;text-align:center}h1{font-size:22px;line-height:1.2;margin:0 0 6px;font-weight:800}#instruction{font-size:15px;line-height:1.35;margin:0}#item{width:100%;display:flex;flex-direction:column;align-items:center;flex:1;justify-content:center;gap:10px;min-height:0}#fraction{display:flex;flex-direction:column;align-items:center;font-size:25px;font-weight:800;line-height:1.05;color:#80502d;min-width:48px}#numerator{border-bottom:2px solid #80502d;width:100%;text-align:center;padding-bottom:3px}#denominator{padding-top:3px}#whole{width: min(100%,260px);border:3px solid #986947;border-radius:19px;overflow:hidden;background:#ffefd5;box-shadow:0 7px 0 #ecdac4;display:flex;flex-direction:column;flex-shrink:0} .part{display:block;position:relative;width:100%;height:44px;min-height:44px;border:0;border-bottom:2px solid #986947;background:#fff0d5;cursor:pointer;transition:background .2s,box-shadow .2s;overflow:hidden}.part:last-child{border-bottom:0}.part::before{content:"";position:absolute;inset:7px 14px;border-radius:8px;background:linear-gradient(110deg,#ffffff75,transparent);pointer-events:none}.part[data-shaded="true"]{background:#f4ad48;box-shadow:inset 0 0 0 2px #ffffff35}.part:active{background:#ffd189}.part:focus-visible{outline:3px solid #287f78;outline-offset:-5px}.part:disabled{cursor:default}#footer{width:100%;text-align:center;flex-shrink:0;padding-top:9px}#feedback{height:24px;font-size:15px;color:#80502d;margin:0 0 5px}#check{width:100%;height:48px;border:0;border-radius:16px;background:#247e76;color:white;font-weight:750;font-size:18px;box-shadow:0 4px 0 #175951;transition:transform .15s,opacity .15s;cursor:pointer}#check:active{transform:translateY(3px);box-shadow:0 1px 0 #175951}#check:disabled{opacity:.65;cursor:default}#check:focus-visible{outline:3px solid #d89436;outline-offset:3px}#hint{font-size:12px;line-height:1.3;margin:7px 0 0;color:#8a7564}#complete{display:none;flex:1;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:20px}#complete svg{width:140px;height:140px}#complete p{font-size:25px;font-weight:800;margin:0;color:#247e76}.success #whole{animation:happy .65s ease}.success #feedback{color:#247e76;font-weight:750}.complete #item,.complete #footer,.complete #instruction{display:none}.complete #complete{display:flex}@keyframes happy{0%,100%{transform:scale(1)}40%{transform:scale(1.035) rotate(-1deg)}70%{transform:scale(1.02) rotate(1deg)}}@media(max-height:620px){#activity{padding:8px 16px}h1{font-size:20px}#item{gap:6px}#hint{margin-top:5px}#fraction{font-size:23px}}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<main id="activity">
+<header><h1 id="title"></h1><p id="instruction"></p></header>
+<section id="item" data-item="">
+<div id="fraction"><span id="numerator"></span><span id="denominator"></span></div>
+<div id="whole" role="group"></div>
+</section>
+<footer id="footer">
+<p id="feedback" aria-live="polite"></p>
+<button id="check" data-action="check" type="button"></button>
+<p id="hint"></p>
+</footer>
+<section id="complete">
+<svg viewBox="0 0 160 160" aria-hidden="true">
+<circle cx="80" cy="80" r="66" fill="#d9eee2"/>
+<path d="M46 81L69 104L115 57" fill="none" stroke="#247e76" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M20 30l4-9 4 9 9 4-9 4-4 9-4-9-9-4zM132 117l3-7 3 7 7 3-7 3-3 7-3-7-7-3z" fill="#f4ad48"/>
+<circle cx="132" cy="33" r="6" fill="#f4ad48"/>
+</svg>
+<p id="done"></p>
+</section>
+</main>
+<script>
+(()=>{
+const root=document.getElementById('activity');
+const items=Studio.params.items;
+const whole=document.getElementById('whole');
+const itemBox=document.getElementById('item');
+const check=document.getElementById('check');
+const feedback=document.getElementById('feedback');
+for(const [id,key] of [['title','title'],['instruction','instr'],['check','check'],['hint','hint'],['done','done']]){
+document.getElementById(id).textContent=Studio.t(key);
+}
+whole.setAttribute('aria-label',Studio.t('instr'));
+let index=0,shaded=[],pending=false,finished=false;
+function render(){
+const item=items[index];
+pending=false;shaded=Array(item.d).fill(false);
+root.classList.remove('success');
+feedback.textContent='';
+itemBox.setAttribute('data-item',item.id);
+document.getElementById('numerator').textContent=item.n;
+document.getElementById('denominator').textContent=item.d;
+whole.replaceChildren();
+for(let i=0;i<item.d;i++){
+const part=document.createElement('button');
+part.type='button';part.className='part';
+part.setAttribute('data-part',i);
+part.setAttribute('data-shaded','false');
+part.setAttribute('aria-pressed','false');
+part.setAttribute('aria-label',Studio.t('instr'));
+part.addEventListener('click',()=>{
+if(pending||finished)return;
+shaded[i]=!shaded[i];
+part.setAttribute('data-shaded',String(shaded[i]));
+part.setAttribute('aria-pressed',String(shaded[i]));
+feedback.textContent='';
+Studio.event('toggle',{id:item.id,part:i,shaded:shaded[i]});
+});
+whole.appendChild(part);
+}
+check.disabled=false;
+}
+function finish(){
+finished=true;root.classList.add('complete');Studio.done();
+}
+check.addEventListener('click',()=>{
+if(pending||finished)return;
+pending=true;check.disabled=true;
+whole.querySelectorAll('button').forEach(b=>b.disabled=true);
+const item=items[index];
+Studio.answer({n:shaded.filter(Boolean).length,d:item.d});
+});
+Studio.onVerdict(({correct})=>{
+if(!pending||finished)return;
+feedback.textContent=Studio.t(correct?'right':'wrong');
+if(correct){
+root.classList.add('success');
+setTimeout(()=>{
+index++;
+if(index<items.length)render();else finish();
+},900);
+}else{
+pending=false;check.disabled=false;
+whole.querySelectorAll('button').forEach(b=>b.disabled=false);
+}
+});
+if(items.length)render();else finish();
+Studio.ready();
+})();
+</script>

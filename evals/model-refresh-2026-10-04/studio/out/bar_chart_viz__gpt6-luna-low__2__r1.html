@@ -1,0 +1,95 @@
+<style>
+*{box-sizing:border-box}
+.lesson{width:100%;max-width:520px;margin:0 auto;min-height:100vh;padding:18px 14px 22px;background:#fffaf0;color:#29443f;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;flex-direction:column;align-items:center}
+.title{margin:0 0 10px;text-align:center;font-size:clamp(21px,6vw,28px);line-height:1.15;font-weight:800;color:#285c50}
+.card{width:100%;padding:12px 8px 8px;border-radius:24px;background:#fff;box-shadow:0 8px 24px #35584b16;border:1px solid #eee8dc}
+.chart{display:block;width:100%;height:auto;overflow:visible}
+.grid{stroke:#e7ece7;stroke-width:1}
+.axis{stroke:#71877d;stroke-width:1.5}
+.tick{fill:#60756d;font-size:11px;font-weight:600;text-anchor:end}
+.fruit{fill:#435d55;font-size:10px;font-weight:700;text-anchor:middle}
+.axis-title{fill:#435d55;font-size:11px;font-weight:700;text-anchor:middle}
+.bar{fill:#efaa58;stroke:#dd8e3d;stroke-width:1;transform-box:fill-box;transform-origin:center bottom;animation:grow .85s cubic-bezier(.2,.75,.25,1) both}
+.hit{fill:transparent;cursor:pointer}
+.bar-group{cursor:pointer;outline:none}
+.bar-group:focus .bar{stroke:#4d8c7c;stroke-width:3}
+.bar-group:active .bar{fill:#e99542}
+.prompt{min-height:58px;margin:14px 8px 0;padding:14px 16px;width:100%;border-radius:18px;background:#eaf4ee;color:#285c50;text-align:center;font-size:17px;line-height:1.35;font-weight:750}
+.prompt.wrong{background:#fff0e8;color:#a75c3b;animation:nudge .28s ease}
+.prompt.right{background:#e4f4e9;color:#2e7656}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes nudge{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+@media(prefers-reduced-motion:reduce){.bar{animation:none}.prompt.wrong{animation:none}}
+</style>
+<main class="lesson">
+<h1 class="title" id="title"></h1>
+<section class="card">
+<svg class="chart" id="chart" viewBox="0 0 360 390" role="img"></svg>
+</section>
+<div class="prompt" id="prompt" aria-live="polite"></div>
+</main>
+<script>
+(()=>{
+  const data=Studio.params.data;
+  const t=Studio.t;
+  const title=document.getElementById("title");
+  const svg=document.getElementById("chart");
+  const prompt=document.getElementById("prompt");
+  title.textContent=t("title");
+  prompt.textContent=t("ask");
+  const max=Math.max(...data.map(d=>d.value));
+  const raw=max/5;
+  const magnitude=Math.pow(10,Math.floor(Math.log10(raw||1)));
+  const step=Math.max(1,Math.ceil(raw/magnitude)*magnitude);
+  const top=Math.ceil(max/step)*step;
+  const left=58,right=352,topY=24,baseY=316,plotH=baseY-topY;
+  const make=(tag,attrs,parent=svg)=>{
+    const el=document.createElementNS("http://www.w3.org/2000/svg",tag);
+    for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);
+    parent.appendChild(el);
+    return el;
+  };
+  for(let v=0;v<=top;v+=step){
+    const y=baseY-(v/top)*plotH;
+    make("line",{x1:left,y1:y,x2:right,y2:y,class:"grid"});
+    const lab=make("text",{x:left-9,y:y+4,class:"tick","data-tick":v});
+    lab.textContent=String(v);
+  }
+  make("line",{x1:left,y1:topY,x2:left,y2:baseY,class:"axis"});
+  make("line",{x1:left,y1:baseY,x2:right,y2:baseY,class:"axis"});
+  const axis=make("text",{x:15,y:(topY+baseY)/2,class:"axis-title",transform:`rotate(-90 15 ${(topY+baseY)/2})`});
+  axis.textContent=t("yaxis");
+  const band=(right-left)/data.length;
+  data.forEach((d,i)=>{
+    const x=left+band*(i+.5);
+    const h=(d.value/top)*plotH;
+    const group=make("g",{class:"bar-group",tabindex:"0",role:"button","data-key":d.key});
+    make("rect",{x:x-26,y:baseY-h,width:52,height:h,rx:7,class:"bar","data-bar":d.key,"data-value":d.value},group);
+    make("rect",{x:x-band*.46,y:topY,width:band*.92,height:baseY-topY+40,class:"hit"},group);
+    const label=make("text",{x,y:baseY+22,class:"fruit"});
+    label.textContent=t(d.key);
+    const choose=()=>{
+      if(prompt.classList.contains("right"))return;
+      Studio.event("bar_tap",{key:d.key});
+      Studio.answer(d.key);
+    };
+    group.addEventListener("click",choose);
+    group.addEventListener("keydown",e=>{
+      if(e.key==="Enter"||e.key===" "){e.preventDefault();choose();}
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    prompt.classList.remove("wrong","right");
+    if(correct){
+      prompt.textContent=t("right");
+      prompt.classList.add("right");
+      Studio.done();
+      window.setTimeout(()=>{prompt.textContent=t("done");},850);
+    }else{
+      prompt.textContent=t("wrong");
+      prompt.classList.add("wrong");
+    }
+  });
+  Studio.ready();
+})();
+</script>

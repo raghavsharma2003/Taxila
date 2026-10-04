@@ -1,0 +1,357 @@
+<style>
+  :root {
+    --bg: #fff9f0;
+    --primary: #ff6b47;
+    --primary-light: #ffb399;
+    --secondary: #4ecdc4;
+    --text: #2c3e50;
+    --text-light: #7f8c8d;
+    --correct: #2ecc71;
+    --wrong: #e74c3c;
+    --shadow: 0 2px 4px rgba(0,0,0,0.1);
+    --round: 16px;
+    --transition: all 0.2s ease;
+  }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 640px;
+    box-sizing: border-box;
+  }
+  .title {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 8px 0 4px;
+    color: var(--primary);
+  }
+  .instr {
+    font-size: 14px;
+    color: var(--text-light);
+    margin: 0 0 16px;
+    text-align: center;
+  }
+  .item-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 0.4s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fraction-display {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 12px 0;
+    color: var(--text);
+  }
+  .pizza-container, .bar-container {
+    width: 280px;
+    height: 280px;
+    margin: 16px 0;
+    position: relative;
+  }
+  .pizza {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--primary-light);
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .slice {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    transform-origin: 50% 50%;
+    cursor: pointer;
+    transition: var(--transition);
+    fill: var(--primary-light);
+  }
+  .slice.shaded {
+    fill: var(--primary);
+  }
+  .bar {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    border-radius: var(--round);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    background: var(--primary-light);
+  }
+  .segment {
+    flex: 1;
+    height: 100%;
+    background: var(--primary-light);
+    cursor: pointer;
+    transition: var(--transition);
+    border-right: 1px solid rgba(255,255,255,0.5);
+    min-width: 44px;
+  }
+  .segment:last-child {
+    border-right: none;
+  }
+  .segment.shaded {
+    background: var(--primary);
+  }
+  .controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+    gap: 12px;
+  }
+  .btn {
+    padding: 12px 28px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: var(--round);
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .btn-check {
+    background: var(--secondary);
+    color: white;
+  }
+  .btn-check:active {
+    transform: scale(0.95);
+  }
+  .feedback {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 12px 0;
+    height: 24px;
+    color: transparent;
+    transition: var(--transition);
+  }
+  .feedback.correct {
+    color: var(--correct);
+  }
+  .feedback.wrong {
+    color: var(--wrong);
+  }
+  .hint {
+    font-size: 12px;
+    color: var(--text-light);
+    margin: 4px 0 0;
+    text-align: center;
+  }
+  .done-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    animation: fadeIn 0.4s ease;
+  }
+  .done-screen.show {
+    display: flex;
+  }
+  .done-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary);
+    margin-bottom: 8px;
+  }
+  .done-message {
+    font-size: 16px;
+    color: var(--text-light);
+  }
+</style>
+
+<div class="title" data-test="title"></div>
+<div class="instr" data-test="instr"></div>
+
+<div class="item-container" data-item="i1">
+  <div class="fraction-display" data-test="fraction"></div>
+  <div class="pizza-container" data-picture="pizza">
+    <svg class="pizza" viewBox="0 0 100 100">
+      <g data-test="slices"></g>
+    </svg>
+  </div>
+  <div class="bar-container" data-picture="bar" style="display:none;">
+    <div class="bar" data-test="segments"></div>
+  </div>
+  <div class="feedback" data-test="feedback"></div>
+  <div class="hint" data-test="hint"></div>
+  <div class="controls">
+    <button class="btn btn-check" data-action="check" data-test="check"></button>
+  </div>
+</div>
+
+<div class="done-screen" data-test="done-screen">
+  <div class="done-title" data-test="done-title"></div>
+  <div class="done-message" data-test="done-message"></div>
+</div>
+
+<script>
+  (function() {
+    'use strict';
+
+    const params = Studio.params;
+    const items = params.items;
+    let currentItemIndex = 0;
+    let currentItem = items[0];
+    let shadedCount = 0;
+    let isChecking = false;
+
+    const titleEl = document.querySelector('.title');
+    const instrEl = document.querySelector('.instr');
+    const fractionEl = document.querySelector('.fraction-display');
+    const pizzaContainer = document.querySelector('.pizza-container');
+    const barContainer = document.querySelector('.bar-container');
+    const slicesContainer = document.querySelector('.pizza g');
+    const segmentsContainer = document.querySelector('.bar');
+    const feedbackEl = document.querySelector('.feedback');
+    const hintEl = document.querySelector('.hint');
+    const checkBtn = document.querySelector('.btn-check');
+    const itemContainer = document.querySelector('.item-container');
+    const doneScreen = document.querySelector('.done-screen');
+    const doneTitleEl = document.querySelector('.done-title');
+
+    function updateText() {
+      titleEl.textContent = Studio.t('title');
+      instrEl.textContent = Studio.t('instr');
+      checkBtn.textContent = Studio.t('check');
+      hintEl.textContent = Studio.t('hint');
+      doneTitleEl.textContent = Studio.t('done');
+    }
+
+    function createPizza(d) {
+      slicesContainer.innerHTML = '';
+      const angle = 360 / d;
+      for (let i = 0; i < d; i++) {
+        const slice = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const startAngle = i * angle;
+        const endAngle = (i + 1) * angle;
+        const startRad = (startAngle - 90) * Math.PI / 180;
+        const endRad = (endAngle - 90) * Math.PI / 180;
+        const x1 = 50 + 45 * Math.cos(startRad);
+        const y1 = 50 + 45 * Math.sin(startRad);
+        const x2 = 50 + 45 * Math.cos(endRad);
+        const y2 = 50 + 45 * Math.sin(endRad);
+        const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+        slice.setAttribute('d', `M50,50 L${x1},${y1} A45,45 0 ${largeArc},1 ${x2},${y2} Z`);
+        slice.setAttribute('data-part', i);
+        slice.setAttribute('data-shaded', 'false');
+        slice.classList.add('slice');
+        slice.addEventListener('click', toggleShade);
+        slicesContainer.appendChild(slice);
+      }
+    }
+
+    function createBar(d) {
+      segmentsContainer.innerHTML = '';
+      for (let i = 0; i < d; i++) {
+        const segment = document.createElement('div');
+        segment.classList.add('segment');
+        segment.setAttribute('data-part', i);
+        segment.setAttribute('data-shaded', 'false');
+        segment.addEventListener('click', toggleShade);
+        segmentsContainer.appendChild(segment);
+      }
+    }
+
+    function toggleShade(e) {
+      if (isChecking) return;
+      const part = e.target;
+      const isShaded = part.getAttribute('data-shaded') === 'true';
+      if (isShaded) {
+        part.setAttribute('data-shaded', 'false');
+        part.classList.remove('shaded');
+        shadedCount--;
+      } else {
+        part.setAttribute('data-shaded', 'true');
+        part.classList.add('shaded');
+        shadedCount++;
+      }
+      Studio.event('toggle', { part: part.getAttribute('data-part'), shaded: !isShaded });
+    }
+
+    function updateDisplay() {
+      currentItem = items[currentItemIndex];
+      itemContainer.setAttribute('data-item', currentItem.id);
+      fractionEl.textContent = `${currentItem.n}/${currentItem.d}`;
+
+      if (params.picture === 'pizza') {
+        pizzaContainer.style.display = 'block';
+        barContainer.style.display = 'none';
+        createPizza(currentItem.d);
+      } else {
+        pizzaContainer.style.display = 'none';
+        barContainer.style.display = 'block';
+        createBar(currentItem.d);
+      }
+
+      shadedCount = 0;
+      feedbackEl.textContent = '';
+      feedbackEl.classList.remove('correct', 'wrong');
+      isChecking = false;
+    }
+
+    function handleCheck() {
+      if (isChecking) return;
+      isChecking = true;
+      Studio.answer({ n: shadedCount, d: currentItem.d });
+      Studio.event('check', { n: shadedCount, d: currentItem.d });
+    }
+
+    function handleVerdict(verdict) {
+      isChecking = false;
+      if (verdict.correct) {
+        feedbackEl.textContent = Studio.t('right');
+        feedbackEl.classList.add('correct');
+        feedbackEl.classList.remove('wrong');
+
+        const parts = document.querySelectorAll('[data-shaded="true"]');
+        parts.forEach(part => {
+          part.style.transform = 'scale(1.05)';
+          setTimeout(() => {
+            part.style.transform = '';
+          }, 200);
+        });
+
+        setTimeout(() => {
+          currentItemIndex++;
+          if (currentItemIndex < items.length) {
+            updateDisplay();
+          } else {
+            itemContainer.style.display = 'none';
+            doneScreen.classList.add('show');
+            Studio.done();
+          }
+        }, 1000);
+      } else {
+        feedbackEl.textContent = Studio.t('wrong');
+        feedbackEl.classList.add('wrong');
+        feedbackEl.classList.remove('correct');
+      }
+    }
+
+    function init() {
+      updateText();
+      updateDisplay();
+      checkBtn.addEventListener('click', handleCheck);
+      Studio.onVerdict(handleVerdict);
+      Studio.ready();
+    }
+
+    init();
+  })();
+</script>

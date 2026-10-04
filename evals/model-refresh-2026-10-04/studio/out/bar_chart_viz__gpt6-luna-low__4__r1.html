@@ -1,0 +1,115 @@
+<style>
+  *{box-sizing:border-box}
+  :root{color-scheme:light}
+  body{margin:0;background:#fff9ed;color:#243b42;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+  .lesson{width:min(100%,520px);min-height:100vh;margin:auto;padding:clamp(14px,4vw,24px);display:flex;flex-direction:column;gap:14px}
+  h1{font-size:clamp(23px,6vw,30px);line-height:1.15;margin:0;color:#254d50}
+  .card{background:#fff;border:1px solid #f1e3ca;border-radius:24px;padding:14px 12px 12px;box-shadow:0 7px 20px #745e2710}
+  .chart{position:relative;height:clamp(275px,45vh,360px);padding:12px 8px 42px 48px}
+  .axis-title{position:absolute;left:0;top:50%;transform:translate(-36%,-50%) rotate(-90deg);font-size:13px;font-weight:700;color:#587276;white-space:nowrap}
+  .plot{position:absolute;left:49px;right:9px;top:12px;bottom:43px;border-bottom:2px solid #526b6d}
+  .gridline{position:absolute;left:0;right:0;border-top:1px solid #e8edf0}
+  .tick{position:absolute;left:-39px;transform:translateY(50%);width:30px;text-align:right;font-size:12px;font-variant-numeric:tabular-nums;color:#61777b}
+  .bars{position:absolute;inset:0;display:flex;align-items:stretch;justify-content:space-around}
+  .bar-slot{height:100%;min-width:0;flex:1;display:flex;justify-content:center;align-items:stretch;position:relative}
+  .bar-hit{position:absolute;inset:0;z-index:2;border:0;background:transparent;padding:0;cursor:pointer;border-radius:12px 12px 0 0;-webkit-tap-highlight-color:transparent}
+  .bar-hit:focus-visible{outline:3px solid #e6a541;outline-offset:1px}
+  .bar{position:absolute;bottom:0;width:44px;max-width:100%;min-width:0;border-radius:10px 10px 2px 2px;background:linear-gradient(180deg,#f3b957,#e98e59);transform:scaleY(0);transform-origin:bottom;transition:transform 850ms cubic-bezier(.2,.8,.2,1),filter 180ms,background 180ms;pointer-events:none}
+  .bar-slot:nth-child(2) .bar{background:linear-gradient(180deg,#84c5a1,#55a681)}
+  .bar-slot:nth-child(3) .bar{background:linear-gradient(180deg,#ee8c78,#db665f)}
+  .bar-slot:nth-child(4) .bar{background:linear-gradient(180deg,#a9c978,#79a957)}
+  .bar-slot:nth-child(5) .bar{background:linear-gradient(180deg,#f1a45d,#e57b50)}
+  .bar.grown{transform:scaleY(1)}
+  .bar-slot.selected .bar{filter:brightness(.91) saturate(1.12)}
+  .bar-slot:active .bar{filter:brightness(.88)}
+  .fruit-label{position:absolute;left:50%;bottom:-32px;transform:translateX(-50%);font-size:clamp(10px,3vw,13px);font-weight:650;color:#496469;white-space:nowrap}
+  .ask{font-size:17px;line-height:1.35;font-weight:700;margin:0;color:#36585c}
+  .feedback{min-height:28px;font-size:16px;font-weight:750;color:#38785b;margin:0}
+  .feedback.wrong{color:#b45c4f}
+  .value{min-height:22px;font-size:14px;color:#687d7e;margin:0}
+  @media(max-width:380px){.lesson{gap:11px}.card{padding-left:8px;padding-right:8px}.chart{padding-left:43px}.plot{left:44px}.axis-title{left:-2px}}
+</style>
+<main class="lesson">
+  <h1 id="title"></h1>
+  <section class="card" aria-label="">
+    <div class="chart">
+      <div class="axis-title" id="axisTitle"></div>
+      <div class="plot" id="plot">
+        <div class="bars" id="bars"></div>
+      </div>
+    </div>
+  </section>
+  <p class="ask" id="ask"></p>
+  <p class="value" id="value" aria-live="polite"></p>
+  <p class="feedback" id="feedback" aria-live="polite"></p>
+</main>
+<script>
+(()=>{
+  const data=Studio.params.data;
+  const words={};
+  ["title","mango","banana","apple","guava","orange","yaxis","ask","right","wrong","done"].forEach(k=>words[k]=Studio.t(k));
+  document.getElementById("title").textContent=words.title;
+  document.getElementById("axisTitle").textContent=words.yaxis;
+  document.getElementById("ask").textContent=words.ask;
+  const plot=document.getElementById("plot");
+  const bars=document.getElementById("bars");
+  const maxValue=Math.max(...data.map(d=>d.value));
+  const rough=maxValue/4;
+  const magnitude=Math.pow(10,Math.floor(Math.log10(rough||1)));
+  const choices=[1,2,5,10].map(n=>n*magnitude);
+  const step=choices.find(n=>n>=rough)||choices[choices.length-1];
+  const top=Math.ceil(maxValue/step)*step;
+  for(let tick=0;tick<=top;tick+=step){
+    const line=document.createElement("div");
+    line.className="gridline";
+    line.style.bottom=(tick/top*100)+"%";
+    const label=document.createElement("span");
+    label.className="tick";
+    label.dataset.tick=String(tick);
+    label.textContent=String(tick);
+    label.style.bottom=(tick/top*100)+"%";
+    line.appendChild(label);
+    plot.insertBefore(line,bars);
+  }
+  let locked=false;
+  data.forEach((item,index)=>{
+    const slot=document.createElement("div");
+    slot.className="bar-slot";
+    const bar=document.createElement("div");
+    bar.className="bar";
+    bar.dataset.bar=item.key;
+    bar.dataset.value=String(item.value);
+    bar.style.height=(item.value/top*100)+"%";
+    const hit=document.createElement("button");
+    hit.className="bar-hit";
+    hit.type="button";
+    hit.setAttribute("aria-label",words[item.key]);
+    hit.addEventListener("click",()=>{
+      if(locked)return;
+      bars.querySelectorAll(".bar-slot").forEach(el=>el.classList.remove("selected"));
+      slot.classList.add("selected");
+      document.getElementById("value").textContent=String(item.value);
+      Studio.event("bar_tap",{key:item.key,value:item.value});
+      Studio.answer(item.key);
+    });
+    slot.append(bar,hit);
+    const label=document.createElement("span");
+    label.className="fruit-label";
+    label.textContent=words[item.key];
+    slot.appendChild(label);
+    bars.appendChild(slot);
+    requestAnimationFrame(()=>setTimeout(()=>bar.classList.add("grown"),index*95));
+  });
+  Studio.onVerdict(({correct})=>{
+    const feedback=document.getElementById("feedback");
+    feedback.classList.toggle("wrong",!correct);
+    feedback.textContent=correct?words.right:words.wrong;
+    if(correct){
+      locked=true;
+      document.getElementById("ask").textContent=words.done;
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+</script>

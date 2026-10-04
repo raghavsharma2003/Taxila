@@ -1,0 +1,367 @@
+<style>
+  *{box-sizing:border-box}
+  :root{
+    color-scheme:light;
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  .activity{
+    width:100%;
+    min-height:100vh;
+    margin:0;
+    padding:16px 14px 20px;
+    overflow:hidden;
+    background:linear-gradient(180deg,#fff9ec 0%,#f3fbff 54%,#eefaf4 100%);
+    color:#26364a;
+  }
+  .hero{
+    position:relative;
+    padding:14px 12px 12px;
+    text-align:center;
+  }
+  .hero h1{
+    position:relative;
+    z-index:1;
+    margin:0;
+    font-size:clamp(22px,7vw,30px);
+    line-height:1.15;
+    font-weight:800;
+    letter-spacing:.01em;
+  }
+  .fruit-doodle{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    opacity:.55;
+  }
+  .question{
+    min-height:52px;
+    margin:2px auto 10px;
+    padding:10px 14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-size:17px;
+    line-height:1.3;
+    font-weight:700;
+    color:#3c4960;
+    background:rgba(255,255,255,.82);
+    border:1px solid rgba(83,116,143,.13);
+    border-radius:18px;
+    box-shadow:0 5px 16px rgba(52,87,110,.08);
+  }
+  .chart-card{
+    width:100%;
+    max-width:430px;
+    margin:0 auto;
+    padding:8px 5px 5px;
+    background:#fff;
+    border:1px solid #dcecf1;
+    border-radius:24px;
+    box-shadow:0 12px 30px rgba(42,84,102,.12);
+  }
+  #chart{
+    display:block;
+    width:100%;
+    height:auto;
+    overflow:visible;
+  }
+  .gridline{
+    stroke:#dce8ec;
+    stroke-width:1;
+  }
+  .baseline{
+    stroke:#607689;
+    stroke-width:2;
+  }
+  .axis-label,.tick-label,.fruit-label,.value-label{
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  .axis-label{
+    fill:#526679;
+    font-size:12px;
+    font-weight:700;
+  }
+  .tick-label{
+    fill:#66798a;
+    font-size:11px;
+    font-weight:650;
+  }
+  .fruit-label{
+    fill:#34495c;
+    font-size:11px;
+    font-weight:750;
+  }
+  .bar-hit{
+    cursor:pointer;
+    outline:none;
+  }
+  .bar{
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    transform:scaleY(0);
+    transition:transform .75s cubic-bezier(.2,.85,.3,1),filter .18s ease,opacity .18s ease;
+    filter:drop-shadow(0 4px 3px rgba(31,70,89,.14));
+  }
+  .bar.grown{transform:scaleY(1)}
+  .bar-hit:active .bar{filter:brightness(.98);transform:scaleY(.97)}
+  .bar-hit.selected .bar{
+    filter:brightness(1.04) drop-shadow(0 0 6px rgba(51,119,148,.3));
+  }
+  .bar-hit.selected{animation:tapPulse .34s ease}
+  .bar-hit.locked{cursor:default}
+  .value-bubble{
+    opacity:0;
+    transform-box:fill-box;
+    transform-origin:center;
+    transform:translateY(5px) scale(.75);
+    transition:opacity .2s ease,transform .25s cubic-bezier(.2,.9,.3,1.25);
+    pointer-events:none;
+  }
+  .bar-hit.selected .value-bubble{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+  .value-pill{
+    fill:#263f54;
+    stroke:#fff;
+    stroke-width:2;
+  }
+  .value-label{
+    fill:#fff;
+    font-size:12px;
+    font-weight:850;
+    text-anchor:middle;
+  }
+  .feedback{
+    width:min(100%,430px);
+    min-height:58px;
+    margin:10px auto 0;
+    padding:8px 14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    border-radius:18px;
+    font-size:18px;
+    line-height:1.25;
+    font-weight:850;
+    opacity:0;
+    transform:translateY(5px);
+    transition:opacity .22s ease,transform .22s ease,background .22s ease;
+  }
+  .feedback.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+  .feedback.good{
+    color:#166044;
+    background:#dff7e9;
+  }
+  .feedback.try{
+    color:#8a4b25;
+    background:#fff0d8;
+  }
+  @keyframes tapPulse{
+    0%{transform:scale(1)}
+    45%{transform:scale(1.035)}
+    100%{transform:scale(1)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .bar,.value-bubble,.feedback{transition-duration:.01ms}
+    .bar-hit.selected{animation:none}
+  }
+</style>
+
+<main class="activity">
+  <header class="hero">
+    <svg class="fruit-doodle" viewBox="0 0 360 80" aria-hidden="true">
+      <circle cx="24" cy="24" r="12" fill="#ffca57"/>
+      <path d="M24 12c2-7 8-8 12-5-3 5-7 7-12 5Z" fill="#55a768"/>
+      <circle cx="334" cy="45" r="13" fill="#ff8d68"/>
+      <path d="M333 32c-1-7 4-11 10-10 0 6-4 9-10 10Z" fill="#64ad72"/>
+      <path d="M48 64c7-10 16-10 22-2-6 8-15 9-22 2Z" fill="#8acb6c"/>
+    </svg>
+    <h1 id="title"></h1>
+  </header>
+
+  <div class="question" id="ask"></div>
+
+  <section class="chart-card">
+    <svg id="chart" viewBox="0 0 332 400" role="img">
+      <g id="grid"></g>
+      <g id="axis"></g>
+      <g id="bars"></g>
+    </svg>
+  </section>
+
+  <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+</main>
+
+<script>
+(() => {
+  const data = Studio.params.data;
+  const svgNS = "http://www.w3.org/2000/svg";
+  const title = document.getElementById("title");
+  const ask = document.getElementById("ask");
+  const grid = document.getElementById("grid");
+  const axis = document.getElementById("axis");
+  const barsGroup = document.getElementById("bars");
+  const feedback = document.getElementById("feedback");
+
+  title.textContent = Studio.t("title");
+  ask.textContent = Studio.t("ask");
+
+  const maxValue = Math.max(...data.map(item => item.value));
+  const roughStep = maxValue / 6;
+  const magnitude = Math.pow(10, Math.floor(Math.log10(roughStep || 1)));
+  const normalized = roughStep / magnitude;
+  const nice = normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
+  const step = nice * magnitude;
+  const scaleMax = Math.ceil(maxValue / step) * step;
+
+  const plotLeft = 48;
+  const plotRight = 324;
+  const plotTop = 24;
+  const baseline = 320;
+  const plotHeight = baseline - plotTop;
+  const slot = (plotRight - plotLeft) / data.length;
+  const barWidth = Math.min(44, slot * .72);
+  const colors = ["#f4a340","#f4ca4e","#e96f65","#63b879","#f08b46"];
+
+  const make = (name, attrs, text) => {
+    const node = document.createElementNS(svgNS, name);
+    Object.keys(attrs || {}).forEach(key => node.setAttribute(key, attrs[key]));
+    if (text !== undefined) node.textContent = text;
+    return node;
+  };
+
+  for (let tick = 0; tick <= scaleMax; tick += step) {
+    const y = baseline - (tick / scaleMax) * plotHeight;
+    grid.appendChild(make("line", {
+      x1: plotLeft,
+      x2: plotRight,
+      y1: y,
+      y2: y,
+      class: tick === 0 ? "baseline" : "gridline"
+    }));
+    axis.appendChild(make("text", {
+      x: plotLeft - 8,
+      y: y + 4,
+      "text-anchor": "end",
+      class: "tick-label",
+      "data-tick": tick
+    }, String(tick)));
+  }
+
+  axis.appendChild(make("text", {
+    x: 15,
+    y: (plotTop + baseline) / 2,
+    transform: "rotate(-90 15 " + ((plotTop + baseline) / 2) + ")",
+    "text-anchor": "middle",
+    class: "axis-label"
+  }, Studio.t("yaxis")));
+
+  let locked = false;
+  const barElements = [];
+
+  data.forEach((item, index) => {
+    const center = plotLeft + slot * index + slot / 2;
+    const height = (item.value / scaleMax) * plotHeight;
+    const y = baseline - height;
+    const group = make("g", {
+      class: "bar-hit",
+      tabindex: "0",
+      role: "button"
+    });
+
+    const rect = make("rect", {
+      x: center - barWidth / 2,
+      y: y,
+      width: barWidth,
+      height: height,
+      rx: Math.min(12, barWidth / 4),
+      fill: colors[index % colors.length],
+      class: "bar",
+      "data-bar": item.key,
+      "data-value": item.value
+    });
+
+    const bubble = make("g", {class: "value-bubble"});
+    bubble.appendChild(make("rect", {
+      x: center - 19,
+      y: Math.max(2, y - 31),
+      width: 38,
+      height: 25,
+      rx: 12,
+      class: "value-pill"
+    }));
+    bubble.appendChild(make("text", {
+      x: center,
+      y: Math.max(2, y - 31) + 17,
+      class: "value-label"
+    }, String(item.value)));
+
+    const label = make("text", {
+      x: center,
+      y: baseline + 27,
+      "text-anchor": "middle",
+      class: "fruit-label"
+    }, Studio.t(item.key));
+
+    group.appendChild(rect);
+    group.appendChild(bubble);
+    group.appendChild(label);
+    barsGroup.appendChild(group);
+    barElements.push(rect);
+
+    const choose = () => {
+      if (locked) return;
+      barsGroup.querySelectorAll(".bar-hit").forEach(node => node.classList.remove("selected"));
+      group.classList.add("selected");
+      feedback.className = "feedback";
+      feedback.textContent = "";
+      Studio.event("bar_tap", {key:item.key, value:item.value});
+      Studio.answer(item.key);
+    };
+
+    group.addEventListener("click", choose);
+    group.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        choose();
+      }
+    });
+  });
+
+  Studio.onVerdict(result => {
+    feedback.textContent = result.correct ? Studio.t("right") : Studio.t("wrong");
+    feedback.className = "feedback show " + (result.correct ? "good" : "try");
+    Studio.event("verdict_shown", {correct:result.correct});
+
+    if (result.correct) {
+      locked = true;
+      barsGroup.querySelectorAll(".bar-hit").forEach(node => {
+        node.classList.add("locked");
+        node.removeAttribute("tabindex");
+      });
+      window.setTimeout(() => {
+        feedback.textContent = Studio.t("done");
+        Studio.done();
+      }, 650);
+    }
+  });
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      barElements.forEach((bar, index) => {
+        window.setTimeout(() => bar.classList.add("grown"), index * 90);
+      });
+    });
+  });
+
+  Studio.ready();
+})();
+</script>

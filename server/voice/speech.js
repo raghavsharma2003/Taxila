@@ -4,6 +4,7 @@
 // and logged (kind, deployment, status, ms) — never the payload, because payloads carry children's words.
 import { createHash } from "crypto";
 import { DEPLOY, AzureError, endpoint } from "../azure.js";
+import { EndpointConfigError, laneKey } from "../endpoints.js";
 import { q, one } from "../db.js";
 import { toSpoken } from "./spoken.js";
 
@@ -11,10 +12,9 @@ export const PCM_RATE = 24_000;
 /** Bytes per second of PCM16 mono at PCM_RATE. */
 export const PCM_BPS = PCM_RATE * 2;
 
-function apiKey() {
-  const k = process.env.AZURE_OPENAI_API_KEY;
-  if (!k) throw new AzureError("AZURE_OPENAI_API_KEY not set");
-  return k;
+/** The lane's key (server/endpoints.js: TTS for speech, TRANSCRIBE for transcription), as an AzureError when unset. */
+function apiKey(lane) {
+  try { return laneKey(lane); } catch (e) { throw e instanceof EndpointConfigError ? new AzureError(e.message, 0, "config") : e; }
 }
 const log = (kind, deployment, status, ms, extra = "") => console.info(`[azure] ${kind} ${deployment} ${status} ${ms}ms${extra}`);
 
@@ -138,8 +138,8 @@ export async function speechStream(text, { voice, instructions, signal, timeoutM
   if (instructions) body.instructions = instructions;
   let res;
   try {
-    res = await fetch(endpoint() + "/audio/speech", {
-      method: "POST", headers: { "api-key": apiKey(), "content-type": "application/json" }, body: JSON.stringify(body), signal: ctl.signal,
+    res = await fetch(endpoint("TTS") + "/audio/speech", {
+      method: "POST", headers: { "api-key": apiKey("TTS"), "content-type": "application/json" }, body: JSON.stringify(body), signal: ctl.signal,
     });
   } catch (e) {
     clearTimeout(timer);
@@ -255,8 +255,8 @@ export async function transcribeClip(audio, { mime = "audio/webm", prompt, model
   const timer = setTimeout(() => ctl.abort(), timeoutMs);
   try {
     // The v1 surface answers DeploymentNotFound for transcriptions (probe 2026-10-02); the deployment route works.
-    const url = `${endpoint().replace(/\/openai\/v1$/, "")}/openai/deployments/${encodeURIComponent(model)}/audio/transcriptions?api-version=2025-03-01-preview`;
-    const res = await fetch(url, { method: "POST", headers: { "api-key": apiKey() }, body: fd, signal: ctl.signal });
+    const url = `${endpoint("TRANSCRIBE").replace(/\/openai\/v1$/, "")}/openai/deployments/${encodeURIComponent(model)}/audio/transcriptions?api-version=2025-03-01-preview`;
+    const res = await fetch(url, { method: "POST", headers: { "api-key": apiKey("TRANSCRIBE") }, body: fd, signal: ctl.signal });
     const raw = await res.text();
     log("transcribe", model, res.status, Math.round(performance.now() - t0));
     if (!res.ok) throw new AzureError(`transcribe ${model} HTTP ${res.status}: ${raw.slice(0, 200)}`, res.status);

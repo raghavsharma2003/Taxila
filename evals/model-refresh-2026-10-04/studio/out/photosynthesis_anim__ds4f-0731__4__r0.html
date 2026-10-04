@@ -1,0 +1,549 @@
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: #f9f3e7;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    width: 100vw;
+    overflow-x: hidden;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 360px;
+    min-height: 640px;
+    background: #fefaf2;
+    border-radius: 32px 32px 24px 24px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+    padding: 12px 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* title */
+  .title {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #2e5a2a;
+    letter-spacing: 0.3px;
+    margin-bottom: 2px;
+  }
+
+  /* scene container */
+  .scene-wrapper {
+    background: #d9eef7;
+    border-radius: 24px;
+    padding: 4px 2px 0;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 2px #c0dce8;
+    position: relative;
+  }
+
+  svg.scene {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: 250px;
+    max-height: 290px;
+    margin: 0 auto;
+  }
+
+  /* controls area */
+  .controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+
+  .play-pause-btn {
+    background: #f5b84e;
+    border: none;
+    border-radius: 40px;
+    padding: 10px 18px;
+    min-width: 84px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #3d2f1b;
+    box-shadow: 0 4px 0 #c47f2c;
+    transition: transform 0.1s ease, box-shadow 0.1s;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .play-pause-btn:active {
+    transform: scale(0.96);
+    box-shadow: 0 2px 0 #c47f2c;
+  }
+
+  .steps-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .step-btn {
+    background: #d9e6d2;
+    border: none;
+    border-radius: 30px;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f421d;
+    box-shadow: 0 3px 0 #8eaa86;
+    transition: all 0.1s;
+    cursor: pointer;
+  }
+
+  .step-btn.active {
+    background: #4f9e4a;
+    color: white;
+    box-shadow: 0 3px 0 #2b6e28;
+    transform: scale(1.04);
+  }
+
+  .step-btn:active {
+    transform: scale(0.93);
+  }
+
+  /* caption */
+  .caption {
+    background: #f1e7d2;
+    border-radius: 22px;
+    padding: 10px 14px;
+    font-size: 15px;
+    color: #263f1e;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    border-left: 6px solid #7ca86e;
+    line-height: 1.3;
+  }
+
+  /* question & options */
+  .question-area {
+    background: #f6f0dc;
+    border-radius: 24px;
+    padding: 12px 12px;
+    margin-top: 6px;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.02);
+  }
+
+  .question-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f3f1d;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .options {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .option-btn {
+    background: white;
+    border: 2px solid #9db99b;
+    padding: 10px 0;
+    min-width: 86px;
+    border-radius: 40px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #173616;
+    cursor: pointer;
+    transition: transform 0.1s, background 0.1s, border-color 0.1s;
+    flex: 1;
+    max-width: 100px;
+  }
+
+  .option-btn:active {
+    transform: scale(0.92);
+    background: #e6f0e0;
+  }
+
+  .feedback {
+    margin-top: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    text-align: center;
+    min-height: 26px;
+    color: #1d411d;
+  }
+
+  .feedback.correct {
+    color: #1c6b1c;
+  }
+
+  .feedback.incorrect {
+    color: #a13d2d;
+  }
+
+  /* labels inside svg and general */
+  .label {
+    font-family: system-ui, sans-serif;
+    font-weight: 600;
+    fill: #1d3a1a;
+    paint-order: stroke;
+    stroke: #fefaf2;
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    font-size: 12px;
+    pointer-events: none;
+  }
+
+  @media (max-width: 380px) {
+    .app { padding: 8px; }
+    .scene-wrapper { padding: 2px; }
+    .steps-group { gap: 4px; }
+    .step-btn { width: 38px; height: 38px; }
+  }
+</style>
+
+<div class="app">
+  <div class="title" data-label="title">🌻 <span data-label="title">PHOTOSYNTHESIS</span></div>
+
+  <!-- SCENE SVG -->
+  <div class="scene-wrapper">
+    <svg class="scene" viewBox="0 0 340 280" xmlns="http://www.w3.org/2000/svg">
+      <!-- background sky -->
+      <rect width="340" height="280" fill="#c7e5f2" rx="18"/>
+
+      <!-- sun and rays -->
+      <circle cx="285" cy="45" r="22" fill="#FADF5E" stroke="#f5b84e" stroke-width="3"/>
+      <g stroke="#f7cf6b" stroke-width="2.4" stroke-linecap="round">
+        <line x1="285" y1="15" x2="285" y2="7"/>
+        <line x1="308" y1="28" x2="316" y2="20"/>
+        <line x1="315" y1="48" x2="322" y2="48"/>
+        <line x1="305" y1="68" x2="313" y2="76"/>
+        <line x1="267" y1="28" x2="258" y2="20"/>
+        <line x1="260" y1="52" x2="252" y2="52"/>
+      </g>
+      <!-- sun label -->
+      <text data-label="sun" x="285" y="95" text-anchor="middle" class="label" fill="#8d5f1a" font-size="12">☀</text>
+      <text data-label="sun" x="285" y="110" text-anchor="middle" class="label" fill="#5e4312" font-size="11">सूरज</text>
+
+      <!-- soil -->
+      <ellipse cx="170" cy="246" rx="110" ry="30" fill="#7a5c3a"/>
+      <ellipse cx="170" cy="250" rx="110" ry="24" fill="#5f452b"/>
+
+      <!-- roots group (data-entity on g with shapes) -->
+      <g data-entity="roots" stroke="#8b5a2b" fill="none" stroke-width="5" stroke-linecap="round">
+        <path d="M170 219 L160 235 L142 244"/>
+        <path d="M165 219 L172 237 L188 246"/>
+        <path d="M175 219 L188 232 L205 240"/>
+        <path d="M168 219 L148 240 L130 248"/>
+      </g>
+
+      <!-- plant stem -->
+      <path d="M162 222 L166 205 L170 220" fill="#3f6e36" stroke="#2c5627" stroke-width="4"/>
+      <!-- leaf shape -->
+      <g data-entity="leaf">
+        <path d="M166 150 Q145 110 170 80 Q200 112 180 152 Z" fill="#4d9442" stroke="#336432" stroke-width="3"/>
+        <path d="M168 150 Q160 125 170 90" stroke="#2b6525" fill="none" stroke-width="2"/>
+      </g>
+      <!-- roots label -->
+      <text data-label="roots" x="94" y="262" class="label" fill="#f7e9c3" font-size="11" text-anchor="middle">जड़ें</text>
+      <!-- leaf label -->
+      <text data-label="leaf" x="228" y="112" class="label" fill="#1f5e18" font-size="12" text-anchor="middle">पत्ती</text>
+
+      <!-- water label -->
+      <text data-label="water" x="120" y="235" class="label" fill="#c9e7f7" font-size="11" text-anchor="middle">💧 जल</text>
+      <!-- co2 label -->
+      <text data-label="co2" x="60" y="95" class="label" fill="#325c2b" font-size="11" text-anchor="middle">CO₂</text>
+      <!-- o2 label -->
+      <text data-label="o2" x="265" y="160" class="label" fill="#1f5e18" font-size="11" text-anchor="middle">O₂</text>
+      <!-- glucose label -->
+      <text data-label="glucose" x="158" y="145" class="label" fill="#3f6e1a" font-size="11" text-anchor="middle">ग्लूकोज़</text>
+
+      <!-- dynamic particles will be inserted here -->
+      <g id="particles"></g>
+    </svg>
+  </div>
+
+  <!-- controls -->
+  <div class="controls-row">
+    <button class="play-pause-btn" data-action="play">
+      <span data-label="play">▶ खेलें</span>
+    </button>
+    <div class="steps-group">
+      <button class="step-btn" data-action="step-1">1</button>
+      <button class="step-btn" data-action="step-2">2</button>
+      <button class="step-btn" data-action="step-3">3</button>
+      <button class="step-btn" data-action="step-4">4</button>
+      <button class="step-btn" data-action="step-5">5</button>
+    </div>
+  </div>
+
+  <!-- caption -->
+  <div class="caption" data-caption>
+    <span>✅ पहला कदम: सूरज की रोशनी</span>
+  </div>
+
+  <!-- question and options (visible from start) -->
+  <div class="question-area">
+    <div class="question-text" data-label="ask">प्रकाश संश्लेषण में पत्ती क्या ग्रहण करती है?</div>
+    <div class="options">
+      <button class="option-btn" data-option="co2">CO₂</button>
+      <button class="option-btn" data-option="o2">O₂</button>
+      <button class="option-btn" data-option="water">जल</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const params = Studio.params;
+    const steps = params.steps || 5;
+    const T = Studio.t;
+
+    // flow animation state
+    let playing = true;
+    let currentStep = 1;
+    let animInterval = null;
+    const particleLayer = document.getElementById('particles');
+
+    // captions array (must use Studio.t)
+    const captions = {
+      1: T('step1'),
+      2: T('step2'),
+      3: T('step3'),
+      4: T('step4'),
+      5: T('step5')
+    };
+
+    // update caption element
+    const captionEl = document.querySelector('[data-caption]');
+    function updateCaption(step) {
+      captionEl.textContent = '✅ ' + captions[step] || '';
+    }
+
+    // create particle element with flow type
+    function makeParticle(flow) {
+      const ns = 'http://www.w3.org/2000/svg';
+      const circle = document.createElementNS(ns, 'circle');
+      const r = (flow === 'water') ? 3.5 : (flow === 'co2' ? 4 : 4.2);
+      circle.setAttribute('r', r);
+      circle.setAttribute('data-flow', flow);
+      // color per flow
+      if (flow === 'water') circle.setAttribute('fill', '#3f7dc2');
+      else if (flow === 'co2') circle.setAttribute('fill', '#849b7a');
+      else if (flow === 'o2') circle.setAttribute('fill', '#7aa76b');
+      circle.setAttribute('opacity', '0.85');
+      particleLayer.appendChild(circle);
+      return circle;
+    }
+
+    // spawn default particles (at least 3 per each flow)
+    function initParticles() {
+      // clear existing
+      particleLayer.innerHTML = '';
+      // water particles (from stem up)
+      const waterCoords = [
+        {x:168, y:225}, {x:172, y:230}, {x:164, y:228}
+      ];
+      for (let i=0; i<3; i++) {
+        const p = makeParticle('water');
+        p.setAttribute('cx', waterCoords[i].x);
+        p.setAttribute('cy', waterCoords[i].y);
+        p.setAttribute('data-startx', waterCoords[i].x);
+        p.setAttribute('data-starty', waterCoords[i].y);
+      }
+      // co2 particles (air -> leaf)
+      const co2Coords = [
+        {x:80, y:85}, {x:95, y:75}, {x:70, y:110}
+      ];
+      for (let i=0; i<3; i++) {
+        const p = makeParticle('co2');
+        p.setAttribute('cx', co2Coords[i].x);
+        p.setAttribute('cy', co2Coords[i].y);
+        p.setAttribute('data-startx', co2Coords[i].x);
+        p.setAttribute('data-starty', co2Coords[i].y);
+      }
+      // o2 particles (from leaf -> air)
+      const o2Coords = [
+        {x:240, y:130}, {x:265, y:125}, {x:250, y:155}
+      ];
+      for (let i=0; i<3; i++) {
+        const p = makeParticle('o2');
+        p.setAttribute('cx', o2Coords[i].x);
+        p.setAttribute('cy', o2Coords[i].y);
+        p.setAttribute('data-startx', o2Coords[i].x);
+        p.setAttribute('data-starty', o2Coords[i].y);
+      }
+    }
+
+    // animate a particle based on its flow
+    function animParticle(particle) {
+      const flow = particle.getAttribute('data-flow');
+      let cx = parseFloat(particle.getAttribute('cx'));
+      let cy = parseFloat(particle.getAttribute('cy'));
+      const stepShift = 0.8;
+
+      if (flow === 'water') {
+        // move up along stem/leaf
+        cy -= stepShift;
+        if (cy < 92) {
+          cy = 230;
+          cx = 168 + (Math.random()*8 - 4);
+        }
+        particle.setAttribute('cx', cx);
+        particle.setAttribute('cy', cy);
+      } else if (flow === 'co2') {
+        // move toward leaf center (170, 135)
+        let dx = 170 - cx, dy = 132 - cy;
+        const dist = Math.hypot(dx, dy);
+        if (dist < 15 || isNaN(dist)) {
+          // reset to left side
+          cx = 65 + Math.random()*40;
+          cy = 80 + Math.random()*35;
+        } else {
+          const step = 1.2;
+          cx += (dx / dist) * step;
+          cy += (dy / dist) * step;
+        }
+        particle.setAttribute('cx', cx);
+        particle.setAttribute('cy', cy);
+      } else if (flow === 'o2') {
+        // move from leaf outward to right
+        let dx = 240 + Math.random()*40 - cx;
+        let dy = 120 + Math.random()*40 - cy;
+        const dist = Math.hypot(dx, dy);
+        if (dist < 12 || cx > 320) {
+          // reset near leaf right
+          cx = 205 + Math.random()*15;
+          cy = 120 + Math.random()*20;
+        } else {
+          const step = 1.1;
+          cx += (dx / dist) * step;
+          cy += (dy / dist) * step;
+        }
+        particle.setAttribute('cx', cx);
+        particle.setAttribute('cy', cy);
+      }
+    }
+
+    function tick() {
+      if (!playing) return;
+      const allParticles = document.querySelectorAll('[data-flow]');
+      allParticles.forEach(p => {
+        if (p.getBoundingClientRect) {
+          animParticle(p);
+        }
+      });
+    }
+
+    // start/stop interval
+    function startLoop() {
+      if (animInterval) clearInterval(animInterval);
+      animInterval = setInterval(tick, 70);
+    }
+    function stopLoop() {
+      if (animInterval) {
+        clearInterval(animInterval);
+        animInterval = null;
+      }
+    }
+
+    // set active step and caption
+    function setStep(step) {
+      currentStep = step;
+      document.querySelectorAll('.step-btn').forEach((btn, idx) => {
+        btn.classList.toggle('active', idx === step-1);
+      });
+      updateCaption(step);
+      // emphasise flow: could alter opacity but fine
+      Studio.event('step_select', {step});
+    }
+
+    // play/pause toggle
+    const playBtn = document.querySelector('[data-action="play"]');
+    function togglePlay() {
+      playing = !playing;
+      if (playing) {
+        playBtn.innerHTML = '<span data-label="pause">⏸ विराम</span>';
+        startLoop();
+      } else {
+        playBtn.innerHTML = '<span data-label="play">▶ खेलें</span>';
+        stopLoop();
+      }
+      Studio.event('play_toggle', {playing});
+    }
+    playBtn.addEventListener('click', togglePlay);
+
+    // step buttons
+    document.querySelectorAll('[data-action^="step-"]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const stepNum = parseInt(btn.getAttribute('data-action').split('-')[1], 10);
+        setStep(stepNum);
+      });
+    });
+
+    // init question handling
+    const optionButtons = document.querySelectorAll('[data-option]');
+    const feedbackEl = document.getElementById('feedback');
+    let answered = false;
+    optionButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.getAttribute('data-option');
+        // hide previous feedback class
+        feedbackEl.textContent = '';
+        feedbackEl.classList.remove('correct','incorrect');
+        Studio.answer(key);
+        // feedback appears via onVerdict
+      });
+    });
+
+    Studio.onVerdict(({correct}) => {
+      if (correct) {
+        feedbackEl.textContent = '✅ सही! शानदार!';
+        feedbackEl.classList.add('correct');
+        Studio.done();
+        // optionally stop loop
+      } else {
+        feedbackEl.textContent = '❌ फिर कोशिश करो';
+        feedbackEl.classList.add('incorrect');
+      }
+    });
+
+    // initial
+    initParticles();
+    setStep(1);
+    startLoop();
+
+    // aspect / ensure particles exist
+    window.addEventListener('load', () => {
+      // make sure at least 3 each type
+      const flows = ['water','co2','o2'];
+      flows.forEach(f => {
+        const count = document.querySelectorAll(`[data-flow="${f}"]`).length;
+        for (let i=count; i<3; i++) makeParticle(f);
+      });
+    });
+
+    // ready
+    Studio.ready();
+  })();
+</script>

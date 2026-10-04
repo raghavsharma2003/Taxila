@@ -1,0 +1,379 @@
+<style>
+  :root {
+    --bg: #fff9f0;
+    --primary: #ff6b47;
+    --primary-light: #ffb399;
+    --secondary: #4ecdc4;
+    --text: #2c3e50;
+    --text-light: #7f8c8d;
+    --correct: #2ecc71;
+    --wrong: #e74c3c;
+    --shadow: 0 4px 8px rgba(0,0,0,0.1);
+    --round: 16px;
+    --transition: all 0.3s ease;
+  }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 640px;
+    box-sizing: border-box;
+  }
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: var(--primary);
+  }
+  .instr {
+    font-size: 16px;
+    margin-bottom: 16px;
+    text-align: center;
+    color: var(--text-light);
+    max-width: 300px;
+  }
+  .item-container {
+    width: 100%;
+    max-width: 320px;
+    background: white;
+    border-radius: var(--round);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: var(--transition);
+  }
+  .fraction-display {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: var(--primary);
+  }
+  .whole {
+    width: 100%;
+    height: 200px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .pizza {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+  .slice {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform-origin: center;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .slice svg {
+    width: 100%;
+    height: 100%;
+  }
+  .slice path {
+    stroke: white;
+    stroke-width: 2;
+  }
+  .slice.uncolored path {
+    fill: var(--primary-light);
+  }
+  .slice.colored path {
+    fill: var(--primary);
+  }
+  .bar {
+    width: 100%;
+    height: 40px;
+    display: flex;
+    border-radius: var(--round);
+    overflow: hidden;
+    background: var(--primary-light);
+    border: 2px solid white;
+  }
+  .segment {
+    flex: 1;
+    height: 100%;
+    cursor: pointer;
+    transition: var(--transition);
+    border-right: 2px solid white;
+  }
+  .segment:last-child {
+    border-right: none;
+  }
+  .segment.uncolored {
+    background: var(--primary-light);
+  }
+  .segment.colored {
+    background: var(--primary);
+  }
+  .check-btn {
+    background: var(--secondary);
+    color: white;
+    border: none;
+    border-radius: var(--round);
+    padding: 12px 24px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: 8px;
+    width: 100%;
+  }
+  .check-btn:hover {
+    transform: scale(1.02);
+  }
+  .check-btn:active {
+    transform: scale(0.98);
+  }
+  .feedback {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 12px;
+    height: 24px;
+    text-align: center;
+    color: transparent;
+    transition: var(--transition);
+  }
+  .feedback.correct {
+    color: var(--correct);
+  }
+  .feedback.wrong {
+    color: var(--wrong);
+  }
+  .hint {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-top: 8px;
+    text-align: center;
+    display: none;
+  }
+  .done-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    width: 100%;
+    max-width: 320px;
+    background: white;
+    border-radius: var(--round);
+    box-shadow: var(--shadow);
+  }
+  .done-screen .title {
+    margin-bottom: 16px;
+  }
+  .done-screen .message {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: var(--text-light);
+  }
+  .celebration {
+    font-size: 40px;
+    margin-bottom: 20px;
+    animation: bounce 0.5s;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+  }
+  .pulse {
+    animation: pulse 1s;
+  }
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+</style>
+
+<div class="title" data-string="title"></div>
+<div class="instr" data-string="instr"></div>
+
+<div class="item-container" data-item="i1">
+  <div class="fraction-display"></div>
+  <div class="whole"></div>
+  <div class="hint" data-string="hint"></div>
+  <button class="check-btn" data-action="check" data-string="check"></button>
+  <div class="feedback"></div>
+</div>
+
+<div class="done-screen">
+  <div class="title" data-string="done"></div>
+  <div class="celebration">🎉</div>
+  <div class="message" data-string="done"></div>
+</div>
+
+<script>
+  (function() {
+    'use strict';
+
+    const params = Studio.params;
+    const items = params.items;
+    let currentItemIndex = 0;
+    let currentItem = items[currentItemIndex];
+    let shadedCount = 0;
+    let isChecking = false;
+
+    const titleEl = document.querySelector('.title[data-string="title"]');
+    const instrEl = document.querySelector('.instr[data-string="instr"]');
+    const fractionDisplayEl = document.querySelector('.fraction-display');
+    const wholeEl = document.querySelector('.whole');
+    const hintEl = document.querySelector('.hint');
+    const checkBtn = document.querySelector('[data-action="check"]');
+    const feedbackEl = document.querySelector('.feedback');
+    const doneScreen = document.querySelector('.done-screen');
+    const itemContainer = document.querySelector('.item-container');
+
+    function setStrings() {
+      titleEl.textContent = Studio.t('title');
+      instrEl.textContent = Studio.t('instr');
+      checkBtn.textContent = Studio.t('check');
+      hintEl.textContent = Studio.t('hint');
+      doneScreen.querySelector('.title').textContent = Studio.t('done');
+      doneScreen.querySelector('.message').textContent = Studio.t('done');
+    }
+
+    function createWhole() {
+      wholeEl.innerHTML = '';
+      const d = currentItem.d;
+      const picture = params.picture;
+
+      if (picture === 'pizza') {
+        wholeEl.classList.add('pizza');
+        wholeEl.classList.remove('bar');
+        const radius = 80;
+        const center = { x: 160, y: 100 };
+        const svgNS = 'http://www.w3.org/2000/svg';
+
+        for (let i = 0; i < d; i++) {
+          const slice = document.createElement('div');
+          slice.className = 'slice uncolored';
+          slice.dataset.part = i;
+          slice.dataset.shaded = 'false';
+
+          const angle = (360 / d) * i;
+          const endAngle = angle + (360 / d);
+          const largeArc = d > 2 ? 1 : 0;
+
+          const startX = center.x + radius * Math.cos(angle * Math.PI / 180);
+          const startY = center.y + radius * Math.sin(angle * Math.PI / 180);
+          const endX = center.x + radius * Math.cos(endAngle * Math.PI / 180);
+          const endY = center.y + radius * Math.sin(endAngle * Math.PI / 180);
+
+          const path = document.createElementNS(svgNS, 'path');
+          path.setAttribute('d', `M ${center.x} ${center.y} L ${startX} ${startY} A ${radius} ${radius} 0 ${largeArc} 1 ${endX} ${endY} Z`);
+
+          const svg = document.createElementNS(svgNS, 'svg');
+          svg.setAttribute('viewBox', '0 0 320 200');
+          svg.appendChild(path);
+          slice.appendChild(svg);
+
+          slice.addEventListener('click', togglePart);
+          wholeEl.appendChild(slice);
+        }
+      } else {
+        wholeEl.classList.add('bar');
+        wholeEl.classList.remove('pizza');
+        for (let i = 0; i < d; i++) {
+          const segment = document.createElement('div');
+          segment.className = 'segment uncolored';
+          segment.dataset.part = i;
+          segment.dataset.shaded = 'false';
+          segment.addEventListener('click', togglePart);
+          wholeEl.appendChild(segment);
+        }
+      }
+    }
+
+    function togglePart(e) {
+      if (isChecking) return;
+      const part = e.currentTarget;
+      const isShaded = part.dataset.shaded === 'true';
+
+      if (isShaded) {
+        part.classList.remove('colored');
+        part.classList.add('uncolored');
+        part.dataset.shaded = 'false';
+        shadedCount--;
+      } else {
+        part.classList.remove('uncolored');
+        part.classList.add('colored');
+        part.dataset.shaded = 'true';
+        shadedCount++;
+        part.classList.add('pulse');
+        setTimeout(() => part.classList.remove('pulse'), 300);
+      }
+      Studio.event('togglePart', { part: part.dataset.part, shaded: !isShaded });
+    }
+
+    function updateFractionDisplay() {
+      fractionDisplayEl.textContent = `${currentItem.n}/${currentItem.d}`;
+    }
+
+    function checkAnswer() {
+      if (isChecking) return;
+      isChecking = true;
+      checkBtn.disabled = true;
+      Studio.answer({ n: shadedCount, d: currentItem.d });
+
+      Studio.onVerdict(function(verdict) {
+        isChecking = false;
+        checkBtn.disabled = false;
+
+        if (verdict.correct) {
+          feedbackEl.textContent = Studio.t('right');
+          feedbackEl.className = 'feedback correct';
+          hintEl.style.display = 'none';
+
+          setTimeout(() => {
+            feedbackEl.textContent = '';
+            feedbackEl.className = 'feedback';
+            currentItemIndex++;
+            if (currentItemIndex < items.length) {
+              currentItem = items[currentItemIndex];
+              shadedCount = 0;
+              itemContainer.dataset.item = currentItem.id;
+              updateFractionDisplay();
+              createWhole();
+            } else {
+              itemContainer.style.display = 'none';
+              doneScreen.style.display = 'flex';
+              Studio.done();
+            }
+          }, 1000);
+        } else {
+          feedbackEl.textContent = Studio.t('wrong');
+          feedbackEl.className = 'feedback wrong';
+          hintEl.style.display = 'block';
+          setTimeout(() => {
+            feedbackEl.textContent = '';
+            feedbackEl.className = 'feedback';
+          }, 1000);
+        }
+      });
+    }
+
+    function init() {
+      setStrings();
+      updateFractionDisplay();
+      createWhole();
+      checkBtn.addEventListener('click', checkAnswer);
+      Studio.ready();
+    }
+
+    init();
+  })();
+</script>

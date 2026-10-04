@@ -1,0 +1,398 @@
+<style>
+  *{box-sizing:border-box}
+  :root{
+    color-scheme:light;
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+  }
+  .activity{
+    width:100%;
+    min-height:100vh;
+    margin:0;
+    padding:12px 12px 16px;
+    overflow-x:hidden;
+    background:linear-gradient(180deg,#fff9ed 0%,#f3fbff 55%,#eefaf4 100%);
+    color:#28394a
+  }
+  .hero{
+    position:relative;
+    min-height:48px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:5px 42px;
+    text-align:center
+  }
+  .hero h1{
+    position:relative;
+    z-index:1;
+    margin:0;
+    font-size:clamp(21px,6.7vw,29px);
+    line-height:1.15;
+    font-weight:850
+  }
+  .doodle{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    opacity:.68
+  }
+  .question{
+    width:100%;
+    max-width:430px;
+    min-height:52px;
+    margin:4px auto 9px;
+    padding:9px 13px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    border:1px solid #e0edf0;
+    border-radius:18px;
+    background:rgba(255,255,255,.9);
+    box-shadow:0 5px 15px rgba(48,86,103,.08);
+    color:#3d4d60;
+    font-size:17px;
+    line-height:1.28;
+    font-weight:750
+  }
+  .chart-card{
+    width:100%;
+    max-width:430px;
+    margin:0 auto;
+    padding:5px 3px 3px;
+    overflow:hidden;
+    border:1px solid #dcebef;
+    border-radius:23px;
+    background:#fff;
+    box-shadow:0 11px 28px rgba(44,83,100,.12)
+  }
+  #chart{
+    display:block;
+    width:100%;
+    height:auto;
+    touch-action:manipulation
+  }
+  .gridline{
+    stroke:#dbe8ec;
+    stroke-width:1
+  }
+  .baseline{
+    stroke:#617789;
+    stroke-width:2
+  }
+  .axis-label,.tick-label,.fruit-label,.value-label{
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+  }
+  .axis-label{
+    fill:#53697b;
+    font-size:12px;
+    font-weight:750
+  }
+  .tick-label{
+    fill:#667b8c;
+    font-size:11px;
+    font-weight:700
+  }
+  .fruit-label{
+    fill:#344b5d;
+    font-size:10.5px;
+    font-weight:800;
+    pointer-events:none
+  }
+  .bar-hit{
+    cursor:pointer;
+    outline:none;
+    transform-box:fill-box;
+    transform-origin:center;
+    transition:transform .16s ease
+  }
+  .bar-hit:active{
+    transform:scale(.97)
+  }
+  .bar{
+    fill:#4f9fbd;
+    stroke:#397f9b;
+    stroke-width:1;
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    transform:scaleY(0);
+    transition:transform .76s cubic-bezier(.18,.84,.28,1),filter .18s ease;
+    filter:drop-shadow(0 4px 3px rgba(35,78,96,.15))
+  }
+  .bar.grown{
+    transform:scaleY(1)
+  }
+  .bar-hit.selected .bar{
+    filter:brightness(1.08) drop-shadow(0 0 6px rgba(52,126,155,.38))
+  }
+  .bar-hit.selected{
+    animation:tapPulse .34s ease
+  }
+  .bar-hit.locked{
+    cursor:default
+  }
+  .value-bubble{
+    opacity:0;
+    pointer-events:none;
+    transform-box:fill-box;
+    transform-origin:center;
+    transform:translateY(5px) scale(.78);
+    transition:opacity .18s ease,transform .24s cubic-bezier(.2,.9,.3,1.2)
+  }
+  .bar-hit.selected .value-bubble{
+    opacity:1;
+    transform:translateY(0) scale(1)
+  }
+  .value-pill{
+    fill:#273f52;
+    stroke:#fff;
+    stroke-width:2
+  }
+  .value-label{
+    fill:#fff;
+    font-size:12px;
+    font-weight:850;
+    text-anchor:middle
+  }
+  .feedback{
+    width:100%;
+    max-width:430px;
+    min-height:52px;
+    margin:8px auto 0;
+    padding:8px 13px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    border-radius:17px;
+    font-size:18px;
+    line-height:1.2;
+    font-weight:850;
+    opacity:0;
+    transform:translateY(5px);
+    transition:opacity .22s ease,transform .22s ease,background .22s ease
+  }
+  .feedback.show{
+    opacity:1;
+    transform:translateY(0)
+  }
+  .feedback.good{
+    color:#176047;
+    background:#ddf7e8
+  }
+  .feedback.try{
+    color:#874b28;
+    background:#fff0d8
+  }
+  @keyframes tapPulse{
+    0%{transform:scale(1)}
+    48%{transform:scale(1.035)}
+    100%{transform:scale(1)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .bar,.bar-hit,.value-bubble,.feedback{transition-duration:.01ms}
+    .bar-hit.selected{animation:none}
+  }
+</style>
+
+<main class="activity">
+  <header class="hero">
+    <svg class="doodle" viewBox="0 0 360 60" aria-hidden="true">
+      <circle cx="22" cy="29" r="11" fill="#f4be51"/>
+      <path d="M22 18c2-7 8-8 12-5-3 5-7 7-12 5Z" fill="#5aa86c"/>
+      <circle cx="338" cy="31" r="11" fill="#ef8f62"/>
+      <path d="M337 20c0-6 5-9 10-8-1 5-4 8-10 8Z" fill="#62aa70"/>
+    </svg>
+    <h1 id="title"></h1>
+  </header>
+
+  <div class="question" id="ask"></div>
+
+  <section class="chart-card">
+    <svg id="chart" viewBox="0 0 332 382" role="img">
+      <g id="grid"></g>
+      <g id="axis"></g>
+      <g id="bars"></g>
+    </svg>
+  </section>
+
+  <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+</main>
+
+<script>
+(() => {
+  const data = Studio.params.data;
+  const ns = "http://www.w3.org/2000/svg";
+  const title = document.getElementById("title");
+  const ask = document.getElementById("ask");
+  const grid = document.getElementById("grid");
+  const axis = document.getElementById("axis");
+  const barsGroup = document.getElementById("bars");
+  const feedback = document.getElementById("feedback");
+
+  title.textContent = Studio.t("title");
+  ask.textContent = Studio.t("ask");
+
+  const make = (name, attrs, text) => {
+    const node = document.createElementNS(ns, name);
+    Object.keys(attrs || {}).forEach(key => node.setAttribute(key, attrs[key]));
+    if (text !== undefined) node.textContent = text;
+    return node;
+  };
+
+  const maxValue = Math.max(...data.map(item => item.value));
+  const desiredTicks = Math.max(2, data.length + 1);
+  const roughStep = maxValue / desiredTicks;
+  const magnitude = Math.pow(10, Math.floor(Math.log10(roughStep || 1)));
+  const normalized = roughStep / magnitude;
+  const niceFactor = normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
+  const step = niceFactor * magnitude;
+  const scaleMax = Math.ceil(maxValue / step) * step;
+
+  const plotLeft = 48;
+  const plotRight = 326;
+  const plotTop = 24;
+  const baseline = 310;
+  const plotHeight = baseline - plotTop;
+  const slot = (plotRight - plotLeft) / data.length;
+  const barWidth = Math.max(44, Math.min(48, slot * .8));
+
+  for (let tick = 0; tick <= scaleMax; tick += step) {
+    const y = baseline - (tick / scaleMax) * plotHeight;
+
+    grid.appendChild(make("line", {
+      x1: plotLeft,
+      x2: plotRight,
+      y1: y,
+      y2: y,
+      class: tick === 0 ? "baseline" : "gridline"
+    }));
+
+    axis.appendChild(make("text", {
+      x: plotLeft - 8,
+      y: y + 4,
+      "text-anchor": "end",
+      class: "tick-label",
+      "data-tick": tick
+    }, String(tick)));
+  }
+
+  const axisCenter = (plotTop + baseline) / 2;
+  axis.appendChild(make("text", {
+    x: 15,
+    y: axisCenter,
+    transform: "rotate(-90 15 " + axisCenter + ")",
+    "text-anchor": "middle",
+    class: "axis-label"
+  }, Studio.t("yaxis")));
+
+  let pending = false;
+  let completed = false;
+  const barElements = [];
+
+  data.forEach((item, index) => {
+    const center = plotLeft + slot * index + slot / 2;
+    const height = (item.value / scaleMax) * plotHeight;
+    const y = baseline - height;
+
+    const group = make("g", {
+      class: "bar-hit",
+      tabindex: "0",
+      role: "button"
+    });
+
+    const bar = make("rect", {
+      x: center - barWidth / 2,
+      y: y,
+      width: barWidth,
+      height: height,
+      rx: Math.min(11, barWidth / 4),
+      class: "bar",
+      "data-bar": item.key,
+      "data-value": item.value
+    });
+
+    const bubbleY = Math.max(2, y - 30);
+    const bubble = make("g", {class: "value-bubble"});
+    bubble.appendChild(make("rect", {
+      x: center - 20,
+      y: bubbleY,
+      width: 40,
+      height: 25,
+      rx: 12,
+      class: "value-pill"
+    }));
+    bubble.appendChild(make("text", {
+      x: center,
+      y: bubbleY + 17,
+      class: "value-label"
+    }, String(item.value)));
+
+    const label = make("text", {
+      x: center,
+      y: baseline + 27,
+      "text-anchor": "middle",
+      class: "fruit-label"
+    }, Studio.t(item.key));
+
+    group.appendChild(bar);
+    group.appendChild(bubble);
+    group.appendChild(label);
+    barsGroup.appendChild(group);
+    barElements.push(bar);
+
+    const choose = () => {
+      if (pending || completed) return;
+
+      pending = true;
+      barsGroup.querySelectorAll(".bar-hit").forEach(node => node.classList.remove("selected"));
+      group.classList.add("selected");
+      feedback.className = "feedback";
+      feedback.textContent = "";
+
+      Studio.event("bar_tap", {key:item.key, value:item.value});
+      Studio.answer(item.key);
+    };
+
+    group.addEventListener("click", choose);
+    group.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        choose();
+      }
+    });
+  });
+
+  Studio.onVerdict(result => {
+    pending = false;
+    feedback.textContent = result.correct ? Studio.t("right") : Studio.t("wrong");
+    feedback.className = "feedback show " + (result.correct ? "good" : "try");
+    Studio.event("verdict_shown", {correct:result.correct});
+
+    if (result.correct) {
+      completed = true;
+      barsGroup.querySelectorAll(".bar-hit").forEach(node => {
+        node.classList.add("locked");
+        node.removeAttribute("tabindex");
+      });
+
+      window.setTimeout(() => {
+        feedback.textContent = Studio.t("done");
+        Studio.done();
+      }, 650);
+    }
+  });
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      barElements.forEach((bar, index) => {
+        window.setTimeout(() => bar.classList.add("grown"), index * 85);
+      });
+    });
+  });
+
+  Studio.ready();
+})();
+</script>

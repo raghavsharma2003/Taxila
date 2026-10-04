@@ -1,0 +1,123 @@
+<style>
+*{box-sizing:border-box}
+:root{font-family:system-ui,-apple-system,sans-serif;color:#243f4b;background:#f4f8f3}
+main{max-width:540px;margin:auto;padding:18px 12px}
+.heading{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.badge{width:48px;height:48px;flex:none;border-radius:17px;background:#dceee5;display:grid;place-items:center}
+h1{font-size:22px;line-height:1.25;margin:0;font-weight:750}
+.card{background:#fff;border:1px solid #deE8e1;border-radius:24px;padding:12px;box-shadow:0 8px 25px #25483c0a}
+.axis-title{font-size:13px;font-weight:650;margin:5px 0 2px 36px;color:#59716d}
+.chart{width:100%;height:302px;display:block;overflow:visible}
+.question{margin:18px 4px 10px;font-size:19px;line-height:1.4;font-weight:650}
+.response{min-height:66px;border-radius:18px;background:#eaf3ee;padding:12px 16px;display:flex;align-items:center;gap:12px}
+.value{display:none;min-width:44px;height:44px;align-items:center;justify-content:center;background:#fff;border-radius:14px;font-size:22px;font-weight:750;color:#23695b}
+.feedback{font-size:16px;line-height:1.35}
+.bar{fill:#4b9d8b;cursor:pointer;transform-box:fill-box;transform-origin:center bottom;animation:grow .85s cubic-bezier(.2,.75,.25,1) both;transition:fill .2s,filter .2s}
+.bar:hover,.bar:focus{fill:#378572;outline:none;filter:drop-shadow(0 0 3px #73bba6)}
+.bar.selected{fill:#327f70}
+.bar.tap{animation:tap .25s ease}
+.bar[aria-disabled=true]{cursor:default}
+.grid{stroke:#e0eae5;stroke-width:1}
+.baseline{stroke:#829c94;stroke-width:1.5}
+.tick{fill:#71877e;font-size:12px}
+.fruit{fill:#344f47;font-size:12px;font-weight:600}
+.response.success{background:#dceee5}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes tap{50%{filter:brightness(1.18)}}
+@media(prefers-reduced-motion:reduce){.bar{animation:none;transition:none}}
+</style>
+<main>
+  <header class="heading">
+    <div class="badge" aria-hidden="true">
+      <svg width="30" height="30" viewBox="0 0 30 30"><path d="M4 4v22h23" fill="none" stroke="#326f60" stroke-width="2" stroke-linecap="round"/><rect x="8" y="15" width="4" height="8" rx="2" fill="#4b9d8b"/><rect x="15" y="8" width="4" height="15" rx="2" fill="#4b9d8b"/><rect x="22" y="11" width="4" height="12" rx="2" fill="#4b9d8b"/></svg>
+    </div>
+    <h1 id="title"></h1>
+  </header>
+  <section class="card">
+    <div class="axis-title" id="axis-title"></div>
+    <svg id="chart" class="chart" aria-labelledby="title axis-title"></svg>
+  </section>
+  <p class="question" id="ask"></p>
+  <div id="response" class="response" aria-live="polite">
+    <span id="value" class="value"></span>
+    <span id="feedback" class="feedback"></span>
+  </div>
+</main>
+<script>
+(function(){
+const data=Studio.params.data;
+const chart=document.getElementById('chart');
+const value=document.getElementById('value');
+const feedback=document.getElementById('feedback');
+document.getElementById('title').textContent=Studio.t('title');
+document.getElementById('axis-title').textContent=Studio.t('yaxis');
+document.getElementById('ask').textContent=Studio.t('ask');
+const ns='http://www.w3.org/2000/svg';
+function node(tag,attrs,text){
+ const el=document.createElementNS(ns,tag);
+ Object.keys(attrs).forEach(k=>el.setAttribute(k,attrs[k]));
+ if(text!==undefined)el.textContent=text;
+ chart.appendChild(el);
+ return el;
+}
+const width=chart.getBoundingClientRect().width;
+chart.setAttribute('viewBox','0 0 '+width+' 302');
+const left=36,right=4,top=18,bottom=252;
+const maximum=Math.max.apply(null,data.map(d=>d.value));
+const raw=(maximum||1)/6;
+const magnitude=Math.pow(10,Math.floor(Math.log10(raw)));
+const step=[1,2,5,10].map(n=>n*magnitude).find(n=>n>=raw);
+const ceiling=Math.ceil((maximum||1)/step)*step;
+const y=n=>bottom-(n/ceiling)*(bottom-top);
+for(let i=0;i<=Math.round(ceiling/step);i++){
+ const tick=Number((i*step).toPrecision(12));
+ node('line',{x1:left,y1:y(tick),x2:width-right,y2:y(tick),class:tick===0?'baseline':'grid'});
+ node('text',{x:left-9,y:y(tick),'text-anchor':'end','dominant-baseline':'middle','data-tick':tick,class:'tick'},String(tick));
+}
+node('line',{x1:left,y1:top,x2:left,y2:bottom,class:'baseline'});
+const slot=(width-left-right)/data.length;
+let waiting=false,finished=false,selected=null;
+const bars=[];
+function choose(d,bar){
+ if(waiting||finished)return;
+ waiting=true;
+ if(selected)selected.classList.remove('selected','tap');
+ selected=bar;
+ bar.classList.add('selected','tap');
+ value.textContent=String(d.value);
+ value.style.display='inline-flex';
+ feedback.textContent='';
+ bars.forEach(b=>b.setAttribute('aria-disabled','true'));
+ Studio.event('bar_tap',{key:d.key,value:d.value});
+ Studio.answer(d.key);
+}
+data.forEach((d,i)=>{
+ const bar=node('rect',{
+ x:left+i*slot+3,y:y(d.value),width:slot-6,height:bottom-y(d.value),
+ rx:6,class:'bar','data-bar':d.key,'data-value':d.value,
+ tabindex:0,role:'button','aria-label':Studio.t(d.key)
+ });
+ bars.push(bar);
+ bar.addEventListener('click',()=>choose(d,bar));
+ bar.addEventListener('keydown',e=>{
+  if(e.key==='Enter'||e.key===' '){e.preventDefault();choose(d,bar);}
+ });
+ node('text',{x:left+(i+.5)*slot,y:277,'text-anchor':'middle',class:'fruit'},Studio.t(d.key));
+});
+Studio.onVerdict(function(verdict){
+ if(!waiting||finished)return;
+ waiting=false;
+ feedback.textContent=Studio.t(verdict.correct?'right':'wrong');
+ if(verdict.correct){
+  finished=true;
+  document.getElementById('response').classList.add('success');
+  document.getElementById('ask').textContent=Studio.t('done');
+  bars.forEach(b=>{b.setAttribute('aria-disabled','true');b.setAttribute('tabindex','-1');});
+  Studio.done();
+ }else{
+  bars.forEach(b=>b.setAttribute('aria-disabled','false'));
+ }
+});
+Studio.ready();
+})();
+</script>

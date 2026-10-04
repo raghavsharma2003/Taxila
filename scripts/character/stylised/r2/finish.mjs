@@ -17,7 +17,7 @@ await MeshoptEncoder.ready; await MeshoptDecoder.ready;
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({
   "meshopt.encoder": MeshoptEncoder, "meshopt.decoder": MeshoptDecoder });
 const doc = await io.read(src);
-await doc.transform(dedup(), prune(), meshopt({ encoder: MeshoptEncoder, level: "high" }));
+await doc.transform(dedup(), prune({ keepAttributes: true, keepLeaves: false }), meshopt({ encoder: MeshoptEncoder, level: "high" }));
 await io.write(out, doc);
 const sz = fs.statSync(out).size;
 let tris = 0, morphs = {};

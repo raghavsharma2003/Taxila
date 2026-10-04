@@ -1,0 +1,473 @@
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --ink:#40354f;
+    --cream:#fff9ed;
+    --card:#ffffff;
+    --purple:#7454c8;
+    --purple-dark:#563b9d;
+    --gold:#ffbf47;
+    --gold-light:#ffe29a;
+    --mint:#63c7a4;
+    --coral:#ef7e73;
+    --line:#e8ddca;
+  }
+  body{
+    margin:0;
+    min-width:0;
+    min-height:100vh;
+    overflow-x:hidden;
+    background:
+      radial-gradient(circle at 12% 8%,rgba(255,191,71,.2) 0 28px,transparent 29px),
+      radial-gradient(circle at 92% 22%,rgba(99,199,164,.16) 0 38px,transparent 39px),
+      linear-gradient(180deg,#fffaf0 0%,#f7f0ff 100%);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    -webkit-tap-highlight-color:transparent;
+  }
+  button{font:inherit}
+  .app{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    margin:0 auto;
+    padding:18px 16px 22px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .top{
+    width:100%;
+    text-align:center;
+  }
+  .title{
+    margin:2px 0 6px;
+    font-size:clamp(24px,7vw,31px);
+    line-height:1.15;
+    font-weight:850;
+    letter-spacing:-.02em;
+  }
+  .instr{
+    margin:0 auto;
+    max-width:330px;
+    min-height:42px;
+    color:#6a6075;
+    font-size:16px;
+    line-height:1.35;
+    font-weight:600;
+  }
+  .progress{
+    height:18px;
+    margin-top:9px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:8px;
+  }
+  .progress-dot{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:#ddd1e9;
+    transition:width .25s ease,background .25s ease,transform .25s ease;
+  }
+  .progress-dot.active{
+    width:24px;
+    border-radius:9px;
+    background:var(--purple);
+  }
+  .progress-dot.past{background:var(--mint)}
+  .item{
+    position:relative;
+    width:100%;
+    margin-top:8px;
+    display:flex;
+    flex:1;
+    flex-direction:column;
+    align-items:center;
+  }
+  .fraction{
+    min-width:94px;
+    min-height:64px;
+    padding:7px 19px;
+    border:2px solid #e5d9f4;
+    border-radius:22px;
+    background:rgba(255,255,255,.9);
+    box-shadow:0 8px 20px rgba(73,50,112,.09);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:31px;
+    line-height:1;
+    font-weight:900;
+    color:var(--purple-dark);
+    font-variant-numeric:tabular-nums;
+  }
+  .picture-wrap{
+    position:relative;
+    width:min(292px,82vw);
+    height:min(292px,82vw);
+    margin:8px auto 5px;
+    display:grid;
+    place-items:center;
+  }
+  .pizza-shadow{
+    position:absolute;
+    inset:8%;
+    border-radius:50%;
+    background:rgba(86,59,157,.13);
+    filter:blur(8px);
+    transform:translateY(9px);
+  }
+  .pizza{
+    position:relative;
+    width:100%;
+    height:100%;
+    overflow:visible;
+    touch-action:manipulation;
+    filter:drop-shadow(0 5px 2px rgba(73,50,50,.08));
+  }
+  .crust{
+    fill:#d8943e;
+    stroke:#bd7131;
+    stroke-width:4;
+  }
+  .part{
+    fill:#fff0bd;
+    stroke:#b76c37;
+    stroke-width:3;
+    stroke-linejoin:round;
+    cursor:pointer;
+    transform-origin:150px 150px;
+    transition:fill .2s ease,transform .15s ease,filter .2s ease;
+    outline:none;
+  }
+  .part[data-shaded="true"]{
+    fill:var(--gold);
+    filter:drop-shadow(0 2px 2px rgba(150,88,20,.22));
+  }
+  .part:active{transform:scale(.96)}
+  .part.popped{animation:pop .28s ease}
+  .feedback{
+    min-height:45px;
+    width:100%;
+    margin:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    color:#665b70;
+    font-size:17px;
+    line-height:1.25;
+    font-weight:800;
+  }
+  .feedback.good{color:#218365;animation:feedback .4s ease}
+  .feedback.try{color:#b65652;animation:shake .38s ease}
+  .check{
+    width:min(290px,88vw);
+    min-height:54px;
+    margin-top:auto;
+    border:0;
+    border-radius:18px;
+    background:linear-gradient(180deg,#8062d4,var(--purple));
+    color:#fff;
+    box-shadow:0 7px 0 var(--purple-dark),0 12px 22px rgba(86,59,157,.23);
+    font-size:19px;
+    font-weight:850;
+    cursor:pointer;
+    transition:transform .12s ease,box-shadow .12s ease,opacity .2s ease;
+    touch-action:manipulation;
+  }
+  .check:active{
+    transform:translateY(5px) scale(.985);
+    box-shadow:0 2px 0 var(--purple-dark),0 6px 12px rgba(86,59,157,.18);
+  }
+  .check:disabled{opacity:.62;cursor:default}
+  .burst{
+    position:absolute;
+    inset:68px 0 auto;
+    height:265px;
+    pointer-events:none;
+    overflow:hidden;
+  }
+  .spark{
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:13px;
+    height:13px;
+    border-radius:4px;
+    background:var(--gold);
+    opacity:0;
+  }
+  .celebrate .spark{animation:burst .75s ease-out forwards}
+  .spark:nth-child(2n){background:var(--mint);border-radius:50%}
+  .spark:nth-child(3n){background:var(--coral)}
+  .done-screen{
+    flex:1;
+    width:100%;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    text-align:center;
+  }
+  .done-screen.show{display:flex;animation:feedback .5s ease}
+  .done-icon{
+    width:154px;
+    height:154px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    background:linear-gradient(145deg,#fff0a7,#ffbd47);
+    box-shadow:0 12px 0 #e59437,0 20px 35px rgba(149,94,40,.2);
+    color:#fff;
+    font-size:82px;
+    font-weight:900;
+    line-height:1;
+    transform:rotate(-4deg);
+  }
+  .done-text{
+    margin:38px 0 0;
+    font-size:30px;
+    font-weight:900;
+    color:var(--purple-dark);
+  }
+  @keyframes pop{
+    0%{transform:scale(1)}
+    45%{transform:scale(.91)}
+    75%{transform:scale(1.045)}
+    100%{transform:scale(1)}
+  }
+  @keyframes feedback{
+    0%{opacity:0;transform:translateY(7px) scale(.97)}
+    100%{opacity:1;transform:none}
+  }
+  @keyframes shake{
+    0%,100%{transform:translateX(0)}
+    25%{transform:translateX(-6px)}
+    55%{transform:translateX(5px)}
+    80%{transform:translateX(-2px)}
+  }
+  @keyframes burst{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}
+    18%{opacity:1}
+    100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(190deg) scale(1.15)}
+  }
+  @media (max-height:620px){
+    .app{padding-top:10px;padding-bottom:15px}
+    .title{font-size:24px}
+    .instr{min-height:34px;font-size:14px}
+    .picture-wrap{width:min(246px,68vw);height:min(246px,68vw);margin:4px auto}
+    .fraction{min-height:54px;font-size:27px}
+    .feedback{min-height:36px;font-size:15px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  }
+</style>
+
+<main class="app">
+  <section class="top">
+    <h1 class="title" id="title"></h1>
+    <p class="instr" id="instr"></p>
+    <div class="progress" id="progress"></div>
+  </section>
+
+  <section class="item" id="item">
+    <div class="fraction" id="fraction"></div>
+    <div class="picture-wrap">
+      <div class="pizza-shadow"></div>
+      <svg class="pizza" id="pizza" viewBox="0 0 300 300" role="group">
+        <circle class="crust" cx="150" cy="150" r="137"></circle>
+        <g id="parts"></g>
+      </svg>
+    </div>
+    <div class="burst" id="burst">
+      <i class="spark"></i><i class="spark"></i><i class="spark"></i>
+      <i class="spark"></i><i class="spark"></i><i class="spark"></i>
+      <i class="spark"></i><i class="spark"></i><i class="spark"></i>
+      <i class="spark"></i>
+    </div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+    <button class="check" id="check" type="button" data-action="check"></button>
+  </section>
+
+  <section class="done-screen" id="doneScreen">
+    <div class="done-icon">✓</div>
+    <div class="done-text" id="doneText"></div>
+  </section>
+</main>
+
+<script>
+  (() => {
+    const items = Studio.params.items;
+    const title = document.getElementById('title');
+    const instr = document.getElementById('instr');
+    const progress = document.getElementById('progress');
+    const itemBox = document.getElementById('item');
+    const fraction = document.getElementById('fraction');
+    const pizza = document.getElementById('pizza');
+    const partsGroup = document.getElementById('parts');
+    const feedback = document.getElementById('feedback');
+    const check = document.getElementById('check');
+    const burst = document.getElementById('burst');
+    const doneScreen = document.getElementById('doneScreen');
+    const doneText = document.getElementById('doneText');
+
+    let current = 0;
+    let shaded = 0;
+    let waiting = false;
+    let finished = false;
+
+    title.textContent = Studio.t('title');
+    instr.textContent = Studio.t('instr');
+    check.textContent = Studio.t('check');
+    doneText.textContent = Studio.t('done');
+    pizza.setAttribute('aria-label', Studio.t('instr'));
+
+    items.forEach((entry, index) => {
+      const dot = document.createElement('span');
+      dot.className = 'progress-dot';
+      progress.appendChild(dot);
+    });
+
+    const polar = (angle, radius) => {
+      const radians = (angle - 90) * Math.PI / 180;
+      return {
+        x: 150 + radius * Math.cos(radians),
+        y: 150 + radius * Math.sin(radians)
+      };
+    };
+
+    const wedgePath = (start, end) => {
+      const first = polar(start, 127);
+      const second = polar(end, 127);
+      const large = end - start > 180 ? 1 : 0;
+      return [
+        'M', 150, 150,
+        'L', first.x, first.y,
+        'A', 127, 127, 0, large, 1, second.x, second.y,
+        'Z'
+      ].join(' ');
+    };
+
+    const updateProgress = () => {
+      Array.from(progress.children).forEach((dot, index) => {
+        dot.className = 'progress-dot';
+        if (index < current) dot.classList.add('past');
+        if (index === current) dot.classList.add('active');
+      });
+    };
+
+    const render = () => {
+      const entry = items[current];
+      shaded = 0;
+      waiting = false;
+      itemBox.dataset.item = String(entry.id);
+      fraction.textContent = String(entry.n) + '/' + String(entry.d);
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+      check.disabled = false;
+      partsGroup.replaceChildren();
+      burst.classList.remove('celebrate');
+      updateProgress();
+
+      for (let index = 0; index < entry.d; index += 1) {
+        const part = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const start = index * 360 / entry.d;
+        const end = (index + 1) * 360 / entry.d;
+        part.setAttribute('d', wedgePath(start, end));
+        part.setAttribute('class', 'part');
+        part.setAttribute('data-part', String(index));
+        part.setAttribute('data-shaded', 'false');
+        part.setAttribute('tabindex', '0');
+        part.setAttribute('role', 'button');
+
+        const toggle = () => {
+          if (waiting) return;
+          const next = part.dataset.shaded !== 'true';
+          part.dataset.shaded = String(next);
+          shaded += next ? 1 : -1;
+          part.classList.remove('popped');
+          void part.getBoundingClientRect();
+          part.classList.add('popped');
+          feedback.textContent = '';
+          feedback.className = 'feedback';
+          Studio.event('part_toggle', {
+            item: entry.id,
+            part: index,
+            shaded: next
+          });
+        };
+
+        part.addEventListener('click', toggle);
+        part.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggle();
+          }
+        });
+        partsGroup.appendChild(part);
+      }
+
+      Studio.event('item_view', {item: entry.id});
+    };
+
+    Array.from(burst.children).forEach((spark, index) => {
+      const angle = index * 360 / burst.children.length;
+      const radius = index % 2 ? 118 : 92;
+      const radians = angle * Math.PI / 180;
+      spark.style.setProperty('--x', Math.cos(radians) * radius + 'px');
+      spark.style.setProperty('--y', Math.sin(radians) * radius + 'px');
+      spark.style.animationDelay = (index % 3) * 40 + 'ms';
+    });
+
+    check.addEventListener('click', () => {
+      if (waiting || finished) return;
+      const entry = items[current];
+      waiting = true;
+      check.disabled = true;
+      feedback.textContent = '';
+      Studio.event('check', {item: entry.id, n: shaded, d: entry.d});
+      Studio.answer({n: shaded, d: entry.d});
+    });
+
+    Studio.onVerdict(verdict => {
+      if (!waiting || finished) return;
+
+      if (verdict.correct) {
+        feedback.textContent = Studio.t('right');
+        feedback.className = 'feedback good';
+        burst.classList.remove('celebrate');
+        void burst.getBoundingClientRect();
+        burst.classList.add('celebrate');
+        Studio.event('verdict', {item: items[current].id, correct: true});
+
+        window.setTimeout(() => {
+          current += 1;
+          if (current < items.length) {
+            render();
+          } else {
+            finished = true;
+            itemBox.style.display = 'none';
+            progress.style.display = 'none';
+            instr.style.display = 'none';
+            doneScreen.classList.add('show');
+            Studio.event('complete', {});
+            Studio.done();
+          }
+        }, 850);
+      } else {
+        waiting = false;
+        check.disabled = false;
+        feedback.textContent = Studio.t('wrong') + ' ' + Studio.t('hint');
+        feedback.className = 'feedback try';
+        Studio.event('verdict', {item: items[current].id, correct: false});
+      }
+    });
+
+    render();
+    Studio.ready();
+  })();
+</script>

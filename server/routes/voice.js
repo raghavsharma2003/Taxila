@@ -7,7 +7,7 @@
 // Like /api/tts, nothing here speaks free text: only lines the Director stored for that lesson.
 import { one } from "../db.js";
 import { requireChild, hasConsent, sessionTokenHash } from "../auth.js";
-import { AzureError, endpoint, mintRealtimeSecret } from "../azure.js";
+import { AzureError, endpoint, mintRealtimeSecret, realtimeLane } from "../azure.js";
 import { bad, need, notFound, forbidden, unauthorized, HttpError } from "../http.js";
 import { teacherFor, teacherForLesson } from "../compiler/characters/index.js";
 import { allowSpeech, MAX_TTS_CHARS, DEFAULT_VOICE } from "./tts.js";
@@ -105,7 +105,7 @@ async function sttToken(req, res, body) {
     throw e;
   }
   /** @type {import("../../shared/contracts").RealtimeTokenResponse} */
-  const out = { token: secret.value, expiresAt: secret.expires_at, base: endpoint(), session };
+  const out = { token: secret.value, expiresAt: secret.expires_at, base: endpoint(realtimeLane(session)), session };
   res.statusCode = 200;
   res.setHeader("content-type", "application/json; charset=utf-8");
   res.setHeader("cache-control", "no-store");

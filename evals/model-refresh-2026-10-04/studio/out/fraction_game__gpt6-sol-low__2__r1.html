@@ -1,0 +1,223 @@
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  #fraction-game {
+    height: 100dvh;
+    min-height: 0;
+    padding: 8px;
+    overflow: hidden;
+    background: #fff7e9;
+    color: #344b52;
+    font-family: system-ui, sans-serif;
+  }
+  .card {
+    width: min(100%, 400px);
+    height: 100%;
+    margin: auto;
+    padding: 12px;
+    border-radius: 24px;
+    background: #fffdf8;
+    box-shadow: 0 6px 24px #76593b20;
+    display: flex;
+    flex-direction: column;
+  }
+  .top { display: flex; align-items: center; gap: 10px; flex: none; }
+  .badge { width: 42px; height: 42px; flex: none; }
+  h1 { margin: 0; font-size: 20px; line-height: 1.15; }
+  #item {
+    min-height: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .instruction {
+    width: 100%;
+    margin: 7px 0 2px;
+    font-size: 14px;
+    line-height: 1.25;
+  }
+  .fraction {
+    flex: none;
+    min-height: 36px;
+    color: #ad5745;
+    font-size: 28px;
+    line-height: 36px;
+    font-weight: 800;
+  }
+  #parts {
+    width: min(100%, 270px);
+    min-height: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 5px;
+    border: 3px solid #d99e65;
+    border-radius: 19px;
+    background: #f3d2a3;
+    box-shadow: 0 4px 0 #e8bd89;
+  }
+  .part {
+    width: 100%;
+    min-height: 44px;
+    flex: 1 1 0;
+    border: 0;
+    border-radius: 9px;
+    background: #fff0d6;
+    box-shadow: inset 0 0 0 2px #e9c9a0;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: background .2s, box-shadow .2s, transform .16s;
+  }
+  .part[data-shaded="true"] {
+    background: #ed876a;
+    box-shadow: inset 0 0 0 2px #c96650;
+  }
+  .part:active, #check:active { transform: scale(.96); }
+  .part:focus-visible, #check:focus-visible {
+    outline: 3px solid #397f79;
+    outline-offset: 2px;
+  }
+  #feedback {
+    flex: none;
+    width: 100%;
+    min-height: 23px;
+    margin: 5px 0 2px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #a85c4b;
+  }
+  #feedback.good { color: #327d69; }
+  #check {
+    width: 100%;
+    min-height: 48px;
+    flex: none;
+    border: 0;
+    border-radius: 15px;
+    background: #397e79;
+    color: white;
+    font: 700 17px system-ui, sans-serif;
+    box-shadow: 0 3px 0 #285b57;
+    cursor: pointer;
+    transition: transform .16s;
+  }
+  #check:disabled { opacity: .7; }
+  #item.celebrate #parts { animation: happy .65s ease-in-out; }
+  @keyframes happy { 50% { transform: translateY(-5px) rotate(1deg); } }
+  #finish {
+    display: none;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #397e79;
+    font-size: 27px;
+    font-weight: 800;
+  }
+</style>
+<main id="fraction-game">
+  <section class="card">
+    <div class="top">
+      <svg class="badge" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="29" fill="#f3d2a3"/>
+        <circle cx="32" cy="32" r="23" fill="#fff0d6" stroke="#d99e65" stroke-width="2"/>
+        <path d="M32 32V9A23 23 0 0 1 55 32Z" fill="#ed876a"/>
+        <path d="M32 32H55A23 23 0 0 1 32 55Z" fill="#ed876a"/>
+      </svg>
+      <h1 id="title"></h1>
+    </div>
+    <div id="item" data-item="">
+      <p class="instruction" id="instruction"></p>
+      <div class="fraction" id="fraction"></div>
+      <div id="parts"></div>
+      <div id="feedback" aria-live="polite"></div>
+      <button id="check" data-action="check" type="button"></button>
+    </div>
+    <div id="finish" aria-live="polite"></div>
+  </section>
+</main>
+<script>
+(() => {
+  const items = Studio.params.items;
+  const itemBox = document.getElementById('item');
+  const partsBox = document.getElementById('parts');
+  const fraction = document.getElementById('fraction');
+  const feedback = document.getElementById('feedback');
+  const check = document.getElementById('check');
+  const finish = document.getElementById('finish');
+  let index = 0;
+  let waiting = false;
+
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('instruction').textContent = Studio.t('instr');
+  check.textContent = Studio.t('check');
+
+  function showItem() {
+    const item = items[index];
+    itemBox.dataset.item = item.id;
+    itemBox.classList.remove('celebrate');
+    fraction.textContent = item.n + '/' + item.d;
+    feedback.textContent = '';
+    feedback.classList.remove('good');
+    partsBox.replaceChildren();
+    waiting = false;
+    check.disabled = false;
+
+    for (let i = 0; i < item.d; i++) {
+      const part = document.createElement('button');
+      part.type = 'button';
+      part.className = 'part';
+      part.dataset.part = String(i);
+      part.dataset.shaded = 'false';
+      part.setAttribute('aria-pressed', 'false');
+      part.addEventListener('click', () => {
+        if (waiting) return;
+        const shaded = part.dataset.shaded !== 'true';
+        part.dataset.shaded = String(shaded);
+        part.setAttribute('aria-pressed', String(shaded));
+        feedback.textContent = '';
+        Studio.event('part_toggle', { item: item.id, part: i, shaded });
+      });
+      partsBox.appendChild(part);
+    }
+  }
+
+  check.addEventListener('click', () => {
+    if (waiting) return;
+    waiting = true;
+    check.disabled = true;
+    const n = partsBox.querySelectorAll('[data-shaded="true"]').length;
+    Studio.event('check', { item: items[index].id, n });
+    Studio.answer({ n: n, d: items[index].d });
+  });
+
+  Studio.onVerdict(({ correct }) => {
+    if (!waiting) return;
+    if (correct) {
+      feedback.textContent = Studio.t('right');
+      feedback.classList.add('good');
+      itemBox.classList.add('celebrate');
+      setTimeout(() => {
+        index++;
+        if (index < items.length) {
+          showItem();
+        } else {
+          itemBox.style.display = 'none';
+          finish.style.display = 'flex';
+          finish.textContent = Studio.t('done');
+          Studio.done();
+        }
+      }, 650);
+    } else {
+      feedback.textContent = Studio.t('wrong') + ' ' + Studio.t('hint');
+      waiting = false;
+      check.disabled = false;
+    }
+  });
+
+  showItem();
+  Studio.ready();
+})();
+</script>

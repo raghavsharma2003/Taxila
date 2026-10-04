@@ -1,0 +1,448 @@
+<style>
+  :root{
+    --bg:#fff7ef;
+    --ink:#33302e;
+    --muted:#8a7f78;
+    --pizza:#f2b64c;
+    --pizza-dark:#e39a2b;
+    --bar:#ffe1b8;
+    --shade:#e0533d;
+    --shade-dark:#c9412c;
+    --good:#3f9d63;
+    --soft:#eee1d6;
+    --card:#ffffff;
+    --shadow:0 6px 18px rgba(120,90,60,.16);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    overflow-x:hidden;
+  }
+  .app{
+    width:100%;
+    max-width:420px;
+    padding:14px 14px 22px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .title{
+    font-size:20px;
+    font-weight:800;
+    letter-spacing:.2px;
+    text-align:center;
+    color:var(--ink);
+    margin:2px 0 0;
+  }
+  .card{
+    background:var(--card);
+    border-radius:22px;
+    padding:14px 14px 16px;
+    box-shadow:var(--shadow);
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    align-items:center;
+  }
+  .target{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    font-size:30px;
+    font-weight:800;
+    color:var(--shade);
+    min-height:44px;
+  }
+  .frac{
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    line-height:1;
+    font-variant-numeric:tabular-nums;
+  }
+  .frac .num{padding:0 4px;}
+  .frac .den{padding:0 4px;border-top:3px solid currentColor;}
+  .instr{
+    font-size:15px;
+    color:var(--muted);
+    text-align:center;
+    line-height:1.35;
+    margin:0;
+    max-width:320px;
+  }
+  .stage{
+    position:relative;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:6px 0 2px;
+  }
+  .pizza{
+    width:min(300px,86vw);
+    height:min(300px,86vw);
+    display:block;
+    touch-action:manipulation;
+  }
+  .slice{
+    cursor:pointer;
+    transition:fill .28s ease, transform .18s ease;
+    transform-origin:center;
+  }
+  .slice .piece{
+    fill:var(--pizza);
+    stroke:#d5872f;
+    stroke-width:2;
+    transition:fill .28s ease;
+  }
+  .slice .topping{
+    fill:#fff;
+    opacity:.5;
+    transition:fill .28s ease, opacity .28s ease;
+  }
+  .slice.shaded .piece{fill:var(--shade);}
+  .slice.shaded .topping{fill:#ffd9cf;opacity:.75;}
+  .slice .hit{fill:transparent;}
+  .slice.bump{transform:scale(.96);}
+  .bar-wrap{
+    width:min(330px,88vw);
+    display:none;
+  }
+  .bar{
+    display:flex;
+    height:78px;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:inset 0 0 0 3px #e6c79c;
+    background:var(--bar);
+  }
+  .bar .seg{
+    flex:1 1 0;
+    position:relative;
+    border-right:3px solid #e6c79c;
+    cursor:pointer;
+    transition:background .28s ease, transform .18s ease;
+    background:var(--bar);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .bar .seg:last-child{border-right:none;}
+  .bar .seg.shaded{background:var(--shade);}
+  .bar .seg .dot{
+    width:14px;height:14px;border-radius:50%;
+    background:#d9b184;opacity:.55;
+    transition:background .28s ease, opacity .28s ease;
+  }
+  .bar .seg.shaded .dot{background:#ffd9cf;opacity:.9;}
+  .bar .seg.bump{transform:scale(.94);}
+  .live{
+    min-height:24px;
+    font-size:15px;
+    font-weight:700;
+    text-align:center;
+    border-radius:12px;
+    padding:3px 10px;
+    opacity:0;
+    transition:opacity .25s ease;
+  }
+  .live.show{opacity:1;}
+  .live.good{color:var(--good);}
+  .live.soft{color:#c07a24;}
+  .check{
+    width:100%;
+    min-height:56px;
+    border:none;
+    border-radius:18px;
+    background:var(--shade);
+    color:#fff;
+    font-size:20px;
+    font-weight:800;
+    letter-spacing:.3px;
+    cursor:pointer;
+    box-shadow:0 6px 0 var(--shade-dark);
+    transition:transform .12s ease, box-shadow .12s ease, background .2s ease;
+    touch-action:manipulation;
+  }
+  .check:active{transform:translateY(4px);box-shadow:0 2px 0 var(--shade-dark);}
+  .check.sending{background:#c07a24;box-shadow:0 6px 0 #9e5f15;}
+  .hint{
+    font-size:14px;
+    color:var(--muted);
+    text-align:center;
+    margin:0;
+    line-height:1.3;
+  }
+  .done-wrap{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    gap:14px;
+    padding:20px 8px 8px;
+    text-align:center;
+  }
+  .done-wrap.show{display:flex;}
+  .badge{
+    width:110px;height:110px;border-radius:50%;
+    background:#ffe6dc;
+    display:flex;align-items:center;justify-content:center;
+    animation:pop .5s cubic-bezier(.2,1.4,.5,1);
+  }
+  .badge svg{width:66px;height:66px;}
+  .done-text{font-size:24px;font-weight:800;color:var(--good);}
+  @keyframes pop{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
+  @keyframes gentle{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
+  .card.celebrate{animation:gentle .5s ease;}
+  .card.wobble{animation:wob .42s ease;}
+  @keyframes wob{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  @media (max-width:360px){
+    .title{font-size:18px;}
+    .target{font-size:26px;}
+  }
+</style>
+<div class="app">
+  <div class="title" id="appTitle"></div>
+  <div class="card" id="card">
+    <div class="target" id="target"></div>
+    <p class="instr" id="instr"></p>
+    <div class="stage" id="stage">
+      <svg class="pizza" id="pizza" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true"></svg>
+      <div class="bar-wrap" id="barWrap">
+        <div class="bar" id="bar"></div>
+      </div>
+    </div>
+    <div class="live" id="live" aria-live="polite"></div>
+    <button class="check" id="checkBtn" data-action="check" type="button"></button>
+    <p class="hint" id="hint"></p>
+  </div>
+  <div class="done-wrap" id="doneWrap">
+    <div class="badge">
+      <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 34l14 14 26-30" fill="none" stroke="#3f9d63" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="done-text" id="doneText"></div>
+  </div>
+</div>
+<script>
+(function(){
+  "use strict";
+  var P = (Studio && Studio.params) ? Studio.params : {};
+  var items = Array.isArray(P.items) ? P.items : [];
+  var mode = P.picture || "pizza";
+
+  var appTitle = document.getElementById("appTitle");
+  var card = document.getElementById("card");
+  var targetEl = document.getElementById("target");
+  var instrEl = document.getElementById("instr");
+  var stage = document.getElementById("stage");
+  var pizza = document.getElementById("pizza");
+  var barWrap = document.getElementById("barWrap");
+  var bar = document.getElementById("bar");
+  var live = document.getElementById("live");
+  var checkBtn = document.getElementById("checkBtn");
+  var hint = document.getElementById("hint");
+  var doneWrap = document.getElementById("doneWrap");
+  var doneText = document.getElementById("doneText");
+
+  appTitle.textContent = Studio.t("title");
+  instrEl.textContent = Studio.t("instr");
+  checkBtn.textContent = Studio.t("check");
+  hint.textContent = Studio.t("hint");
+  doneText.textContent = Studio.t("done");
+
+  var itemIdx = 0;
+  var shaded = [];
+  var current = null;
+  var locked = false;
+
+  function fracMarkup(n, d){
+    return '<span class="frac"><span class="num">' + n + '</span><span class="den">' + d + '</span></span>';
+  }
+
+  function renderTarget(item){
+    targetEl.innerHTML = fracMarkup(item.n, item.d);
+  }
+
+  function setLive(text, cls){
+    live.textContent = text || "";
+    live.className = "live" + (text ? " show " + (cls || "") : "");
+  }
+
+  function makePizza(d, id){
+    pizza.style.display = "block";
+    barWrap.style.display = "none";
+    var cx = 100, cy = 100, r = 92;
+    var svg = "";
+    svg += '<circle cx="100" cy="100" r="96" fill="#fff3e2" stroke="#e6c79c" stroke-width="3"/>';
+    if (d === 1){
+      svg += '<g class="slice" data-part="0" data-shaded="false">';
+      svg += '<circle class="piece" cx="100" cy="100" r="' + r + '"/>';
+      svg += '<circle class="topping" cx="80" cy="78" r="8"/><circle class="topping" cx="122" cy="90" r="8"/>';
+      svg += '<circle class="topping" cx="98" cy="128" r="8"/>';
+      svg += '<circle class="hit" cx="100" cy="100" r="' + r + '"/>';
+      svg += '</g>';
+    } else {
+      var step = (Math.PI * 2) / d;
+      var start = -Math.PI / 2;
+      for (var i = 0; i < d; i++){
+        var a0 = start + i * step;
+        var a1 = a0 + step;
+        var x0 = cx + r * Math.cos(a0);
+        var y0 = cy + r * Math.sin(a0);
+        var x1 = cx + r * Math.cos(a1);
+        var y1 = cy + r * Math.sin(a1);
+        var large = step > Math.PI ? 1 : 0;
+        var midA = (a0 + a1) / 2;
+        var tx = cx + r * 0.55 * Math.cos(midA);
+        var ty = cy + r * 0.55 * Math.sin(midA);
+        var path = 'M' + cx + ' ' + cy + ' L' + x0.toFixed(2) + ' ' + y0.toFixed(2) +
+                   ' A' + r + ' ' + r + ' 0 ' + large + ' 1 ' + x1.toFixed(2) + ' ' + y1.toFixed(2) + ' Z';
+        svg += '<g class="slice" data-part="' + i + '" data-shaded="false">';
+        svg += '<path class="piece" d="' + path + '"/>';
+        svg += '<circle class="topping" cx="' + tx.toFixed(2) + '" cy="' + ty.toFixed(2) + '" r="6"/>';
+        svg += '<path class="hit" d="' + path + '"/>';
+        svg += '</g>';
+      }
+    }
+    svg += '<circle cx="100" cy="100" r="16" fill="#fff3e2" stroke="#e6c79c" stroke-width="3"/>';
+    pizza.innerHTML = svg;
+  }
+
+  function makeBar(d, id){
+    pizza.style.display = "none";
+    barWrap.style.display = "block";
+    var html = "";
+    for (var i = 0; i < d; i++){
+      html += '<div class="seg" data-part="' + i + '" data-shaded="false"><span class="dot"></span></div>';
+    }
+    bar.innerHTML = html;
+  }
+
+  function partsOf(){
+    var root = (mode === "pizza-or-bar" ? stage : stage);
+    return Array.prototype.slice.call(root.querySelectorAll("[data-part]"));
+  }
+
+  function buildItem(){
+    current = items[itemIdx];
+    shaded = new Array(current.d).fill(false);
+    card.setAttribute("data-item", String(current.id));
+    renderTarget(current);
+    setLive("");
+    checkBtn.disabled = false;
+    checkBtn.classList.remove("sending");
+    locked = false;
+    if (mode === "bar"){
+      makeBar(current.d, current.id);
+    } else if (mode === "pizza"){
+      makePizza(current.d, current.id);
+    } else {
+      if (current.d === 4 || current.d === 8){ makePizza(current.d, current.id); }
+      else { makeBar(current.d, current.id); }
+    }
+    updateShaded();
+  }
+
+  function updateShaded(){
+    var parts = partsOf();
+    for (var i = 0; i < parts.length; i++){
+      var el = parts[i];
+      var idx = parseInt(el.getAttribute("data-part"), 10);
+      if (shaded[idx]){
+        el.setAttribute("data-shaded", "true");
+        el.classList.add("shaded");
+      } else {
+        el.setAttribute("data-shaded", "false");
+        el.classList.remove("shaded");
+      }
+    }
+  }
+
+  function countShaded(){
+    var c = 0;
+    for (var i = 0; i < shaded.length; i++){ if (shaded[i]) c++; }
+    return c;
+  }
+
+  function togglePart(el){
+    if (locked) return;
+    var idx = parseInt(el.getAttribute("data-part"), 10);
+    if (isNaN(idx)) return;
+    shaded[idx] = !shaded[idx];
+    updateShaded();
+    el.classList.add("bump");
+    setTimeout(function(){ el.classList.remove("bump"); }, 180);
+    Studio.event("part_toggle", {item: current.id, part: idx, shaded: shaded[idx]});
+    if (live.classList.contains("show") && live.classList.contains("soft")){ setLive(""); }
+  }
+
+  stage.addEventListener("click", function(e){
+    var t = e.target;
+    while (t && t !== stage && !t.hasAttribute("data-part")){ t = t.parentNode; }
+    if (t && t !== stage && t.hasAttribute("data-part")){
+      togglePart(t);
+    }
+  });
+
+  function flashing(el, cls, ms){
+    el.classList.add(cls);
+    setTimeout(function(){ el.classList.remove(cls); }, ms);
+  }
+
+  function check(){
+    if (locked || !current) return;
+    locked = true;
+    checkBtn.classList.add("sending");
+    Studio.answer({ n: countShaded(), d: current.d });
+  }
+
+  checkBtn.addEventListener("click", function(){
+    if (checkBtn.disabled) return;
+    check();
+  });
+
+  Studio.onVerdict(function(v){
+    if (v && v.correct){
+      setLive(Studio.t("right"), "good");
+      flashing(card, "celebrate", 520);
+      Studio.event("item_correct", {item: current.id});
+      checkBtn.disabled = true;
+      setTimeout(function(){
+        itemIdx++;
+        if (itemIdx < items.length){
+          buildItem();
+        } else {
+          card.style.display = "none";
+          doneWrap.classList.add("show");
+          Studio.done();
+        }
+      }, 900);
+    } else {
+      setLive(Studio.t("wrong"), "soft");
+      flashing(card, "wobble", 440);
+      checkBtn.classList.remove("sending");
+      locked = false;
+      Studio.event("item_wrong", {item: current.id});
+    }
+  });
+
+  if (items.length === 0){
+    card.style.display = "none";
+    doneWrap.classList.add("show");
+    Studio.ready();
+    Studio.done();
+  } else {
+    buildItem();
+    Studio.ready();
+  }
+})();
+</script>

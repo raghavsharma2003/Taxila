@@ -1,0 +1,331 @@
+<style>
+  .stage{
+    --ink:#2b2350;
+    --paper:#fff9f2;
+    --panel:#ffffff;
+    --grid:#e7e0f5;
+    --axis:#8f86b8;
+    --shadow:0 6px 18px rgba(60,40,120,.14);
+    --radius:20px;
+    font-family:"Trebuchet MS","Segoe UI",system-ui,-apple-system,sans-serif;
+    box-sizing:border-box;
+    width:100%;
+    max-width:420px;
+    margin:0 auto;
+    padding:12px 12px 20px;
+    background:radial-gradient(120% 80% at 50% 0%, #f3ecff 0%, var(--paper) 60%);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .stage *{ box-sizing:border-box; }
+
+  .card{
+    background:var(--panel);
+    border-radius:var(--radius);
+    padding:12px 14px;
+    box-shadow:var(--shadow);
+    border:1.5px solid #f0e9ff;
+  }
+
+  .title{
+    margin:0;
+    font-size:19px;
+    line-height:1.25;
+    letter-spacing:.2px;
+    text-align:center;
+    color:#3a2f6b;
+  }
+
+  .ask{
+    margin:0;
+    font-size:14.5px;
+    line-height:1.35;
+    text-align:center;
+    color:#5d5290;
+    font-weight:600;
+  }
+
+  .chartcard{ padding:10px 10px 6px; }
+
+  .chartwrap{
+    position:relative;
+    width:100%;
+    aspect-ratio: 4 / 3.3;
+    min-height:250px;
+  }
+  svg{ display:block; width:100%; height:100%; overflow:visible; }
+
+  .gridline{ stroke:var(--grid); stroke-width:1.4; stroke-dasharray:5 6; }
+  .axisline{ stroke:var(--axis); stroke-width:1.8; }
+  .ticklabel{
+    fill:#7a6fa8; font-size:12px; font-weight:700; font-family:inherit;
+  }
+  .axisTitle{
+    fill:#7a6fa8; font-size:12px; font-weight:800; letter-spacing:.6px;
+    font-family:inherit;
+  }
+  .fruitlabel{
+    fill:#5d5290; font-size:12.5px; font-weight:800; font-family:inherit;
+  }
+
+  .bar{
+    cursor:pointer;
+    transition: opacity .18s ease;
+  }
+  .barwrap{
+    transform-box:fill-box;
+    transform-origin:50% 100%;
+    transform:scaleY(0);
+    animation:grow .8s cubic-bezier(.22,1.05,.42,1) forwards;
+  }
+  @keyframes grow{ to { transform:scaleY(1) } }
+
+  .hitpad{
+    fill:transparent;
+    cursor:pointer;
+  }
+  .hitpad:active{ }
+  .bar:active{ opacity:.85; }
+
+  .valtag{
+    font-family:inherit; font-size:13px; font-weight:900; fill:#4a3f7d;
+    text-anchor:middle; opacity:0; transition:opacity .2s ease;
+    pointer-events:none;
+  }
+  .valtag.show{ opacity:1 }
+
+  .feedback{
+    min-height:26px; text-align:center; font-size:15px; font-weight:800;
+    letter-spacing:.2px; opacity:0; transform:translateY(4px);
+    transition:opacity .25s ease, transform .25s ease;
+  }
+  .feedback.show{ opacity:1; transform:translateY(0) }
+  .feedback.ok{ color:#2f9e7a }
+  .feedback.no{ color:#e05a72 }
+
+  .hintdot{ display:flex; justify-content:center; gap:6px; padding-bottom:2px; }
+  .hintdot i{
+    width:7px;height:7px;border-radius:50%;background:#d9cff5;
+    animation:pulse 1.6s ease-in-out infinite;
+  }
+  .hintdot i:nth-child(2){ animation-delay:.2s }
+  .hintdot i:nth-child(3){ animation-delay:.4s }
+  @keyframes pulse{
+    0%,100%{ transform:scale(.7); background:#e4dcf7 }
+    50%{ transform:scale(1); background:#bda9ef }
+  }
+  @media (max-width:360px){
+    .title{font-size:17px}
+    .ask{font-size:13.5px}
+    .chartwrap{min-height:220px}
+  }
+</style>
+
+<div class="stage" id="stage">
+  <div class="card">
+    <h1 class="title" id="title"></h1>
+  </div>
+
+  <div class="card">
+    <p class="ask" id="ask"></p>
+  </div>
+
+  <div class="card chartcard">
+    <div class="chartwrap">
+      <svg id="chart" viewBox="0 0 340 270" preserveAspectRatio="none" aria-labelledby="title">
+        <g id="gridGroup"></g>
+        <g id="tickGroup"></g>
+        <line class="axisline" id="yaxisLine"></line>
+        <line class="axisline" id="xAxisLine"></line>
+        <g id="barGroup"></g>
+        <g id="fruitGroup"></g>
+        <text class="axisTitle" id="yaxisTitle"></text>
+      </svg>
+    </div>
+    <div class="hintdot" aria-hidden="true"><i></i><i></i><i></i></div>
+  </div>
+
+  <div class="feedback" id="feedback"></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var titleEl = document.getElementById("title");
+  var askEl = document.getElementById("ask");
+  var feedbackEl = document.getElementById("feedback");
+  var gridGroup = document.getElementById("gridGroup");
+  var tickGroup = document.getElementById("tickGroup");
+  var barGroup = document.getElementById("barGroup");
+  var fruitGroup = document.getElementById("fruitGroup");
+  var yaxisTitle = document.getElementById("yaxisTitle");
+  var yaxisLine = document.getElementById("yaxisLine");
+  var xAxisLine = document.getElementById("xAxisLine");
+  var chart = document.getElementById("chart");
+
+  var P = Studio.params || {};
+  var data = Array.isArray(P.data) ? P.data.slice() : [];
+
+  var SVG_NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs){
+    var e = document.createElementNS(SVG_NS, tag);
+    for (var k in attrs){ if (attrs.hasOwnProperty(k)) e.setAttribute(k, attrs[k]); }
+    return e;
+  }
+
+  var VB_W = 340, VB_H = 270;
+  var padLeft = 40, padRight = 14, padTop = 26, padBottom = 44;
+  var plotX = padLeft, plotY = padTop;
+  var plotW = VB_W - padLeft - padRight;
+  var plotH = VB_H - padTop - padBottom;
+  var baseY = plotY + plotH;
+
+  var maxVal = 0;
+  for (var i = 0; i < data.length; i++){
+    var v = Number(data[i].value) || 0;
+    if (v > maxVal) maxVal = v;
+  }
+  if (maxVal <= 0) maxVal = 1;
+
+  var step = 1;
+  if (maxVal > 10) step = 2;
+  if (maxVal > 24) step = 5;
+  if (maxVal > 50) step = 10;
+  var axisMax = Math.ceil(maxVal / step) * step;
+  if (axisMax <= maxVal) axisMax = maxVal + step;
+  var ticks = [];
+  for (var t = 0; t <= axisMax; t += step) ticks.push(t);
+
+  function yFor(val){ return baseY - (val / axisMax) * plotH; }
+
+  for (var gi = 0; gi < ticks.length; gi++){
+    var tv = ticks[gi];
+    var gy = yFor(tv);
+    gridGroup.appendChild(el("line", {x1:plotX, y1:gy, x2:plotX+plotW, y2:gy, "class":"gridline"}));
+    var lbl = el("text", {
+      "class":"ticklabel", x: plotX - 8, y: gy + 4,
+      "text-anchor":"end", "data-tick": String(tv)
+    });
+    lbl.textContent = String(tv);
+    tickGroup.appendChild(lbl);
+  }
+
+  yaxisLine.setAttribute("x1", plotX);
+  yaxisLine.setAttribute("y1", plotY);
+  yaxisLine.setAttribute("x2", plotX);
+  yaxisLine.setAttribute("y2", baseY);
+
+  xAxisLine.setAttribute("x1", plotX);
+  xAxisLine.setAttribute("y1", baseY);
+  xAxisLine.setAttribute("x2", plotX + plotW);
+  xAxisLine.setAttribute("y2", baseY);
+
+  yaxisTitle.setAttribute("x", 10);
+  yaxisTitle.setAttribute("y", plotY - 10);
+
+  var n = data.length || 1;
+  var slotW = plotW / n;
+  var barW = Math.min(slotW * 0.6, 38);
+  var answered = false;
+
+  function fruitName(key){
+    return Studio.t(key);
+  }
+
+  var barRects = [];
+
+  for (var bi = 0; bi < data.length; bi++){
+    var item = data[bi];
+    var key = item.key;
+    var val = Number(item.value) || 0;
+
+    var cx = plotX + slotW * bi + slotW / 2;
+    var x = cx - barW / 2;
+    var yTop = yFor(val);
+    var h = Math.max(baseY - yTop, 0.5);
+
+    var wrap = el("g", { "class":"barwrap" });
+    wrap.style.animationDelay = (0.06 * bi + 0.1) + "s";
+
+    var rect = el("rect", {
+      "class":"bar",
+      x: x, y: yTop, width: barW, height: h,
+      rx: 7, ry: 7,
+      fill: "#ffb27a"
+    });
+    rect.setAttribute("data-bar", String(key));
+    rect.setAttribute("data-value", String(val));
+
+    wrap.appendChild(rect);
+    barGroup.appendChild(wrap);
+
+    var tag = el("text", { "class":"valtag", x: cx, y: yTop - 8 });
+    tag.textContent = String(val);
+    barGroup.appendChild(tag);
+
+    var label = el("text", {
+      "class":"fruitlabel", x: cx, y: baseY + 20, "text-anchor":"middle"
+    });
+    label.textContent = fruitName(key);
+    fruitGroup.appendChild(label);
+
+    var rec = { key:key, value:val, cx:cx, yTop:yTop, barW:barW, tag:tag, hit:rect };
+    barRects.push(rec);
+
+    (function(r){
+      r.hit.addEventListener("click", function(){ onBarTap(r); });
+      r.hit.addEventListener("keydown", function(ev){
+        if (ev.key === "Enter" || ev.key === " " || ev.key === "Spacebar"){
+          ev.preventDefault(); onBarTap(r);
+        }
+      });
+    })(rec);
+  }
+
+  function resetLook(){
+    for (var j = 0; j < barRects.length; j++){
+      barRects[j].tag.classList.remove("show");
+    }
+  }
+
+  function onBarTap(rec){
+    if (answered) return;
+    answered = true;
+
+    rec.tag.classList.add("show");
+
+    Studio.event("bar_tap", { key: rec.key, value: rec.value });
+    Studio.answer(rec.key);
+  }
+
+  Studio.onVerdict(function(res){
+    var correct = !!(res && res.correct);
+    feedbackEl.classList.remove("ok","no");
+    if (correct){
+      feedbackEl.classList.add("ok","show");
+      feedbackEl.textContent = Studio.t("right");
+      askEl.textContent = Studio.t("done");
+      askEl.style.color = "#2f9e7a";
+      Studio.done();
+    } else {
+      feedbackEl.classList.add("no","show");
+      feedbackEl.textContent = Studio.t("wrong");
+      setTimeout(function(){
+        answered = false;
+        feedbackEl.classList.remove("show");
+        resetLook();
+      }, 1100);
+    }
+  });
+
+  titleEl.textContent = Studio.t("title");
+  askEl.textContent = Studio.t("ask");
+  yaxisTitle.textContent = Studio.t("yaxis");
+
+  Studio.ready();
+})();
+</script>

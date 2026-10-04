@@ -1,0 +1,357 @@
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: #fef9ef;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+    color: #3d3d3d;
+    overflow-x: hidden;
+  }
+  .container {
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2d5a3d;
+    margin: 6px 0 8px;
+    letter-spacing: 0.5px;
+  }
+  .chart-wrap {
+    background: #ffffff;
+    border-radius: 28px;
+    padding: 16px 10px 6px;
+    box-shadow: 0 6px 20px rgba(0,40,20,0.10);
+    margin-bottom: 8px;
+  }
+  .chart-area {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .chart-svg-wrap {
+    width: 100%;
+    max-width: 360px;
+    overflow: visible;
+  }
+  .axis-label {
+    font-size: 13px;
+    font-weight: 600;
+    fill: #3d5a4b;
+    letter-spacing: 0.3px;
+  }
+  .tick-text {
+    font-size: 11px;
+    fill: #607060;
+    font-weight: 500;
+  }
+  .gridline {
+    stroke: #dce6dc;
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+  }
+  .bar-rect {
+    fill: #5b9279;
+    rx: 4;
+    ry: 4;
+    cursor: pointer;
+    transition: fill 0.2s, opacity 0.2s;
+  }
+  .bar-rect:hover {
+    fill: #7ab594;
+    opacity: 0.9;
+  }
+  .bar-rect:active {
+    transform-origin: bottom center;
+    animation: tapPulse 0.2s ease-out;
+  }
+  @keyframes tapPulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+  }
+  .bar-label {
+    font-size: 11px;
+    font-weight: 600;
+    fill: #2d4a38;
+    text-anchor: middle;
+  }
+  .x-label {
+    font-size: 11px;
+    font-weight: 600;
+    fill: #2d4a38;
+    text-anchor: middle;
+  }
+  .ask-question {
+    background: #ebf5eb;
+    padding: 12px 16px;
+    border-radius: 40px;
+    margin: 8px 0 12px;
+    font-size: 17px;
+    font-weight: 600;
+    color: #1c3d2b;
+    line-height: 1.4;
+    box-shadow: 0 2px 8px rgba(0,30,10,0.06);
+  }
+  .feedback-box {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 32px;
+    padding: 10px 18px;
+    margin: 4px 0;
+    transition: all 0.3s;
+  }
+  .feedback-correct {
+    background: #c8e6c9;
+    color: #1b5e20;
+  }
+  .feedback-wrong {
+    background: #ffcdd2;
+    color: #b71c1c;
+  }
+  .feedback-done {
+    background: #bbdefb;
+    color: #0d3b66;
+  }
+  .hidden {
+    display: none;
+  }
+  button {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+  }
+  .value-tooltip {
+    fill: #1a3b2a;
+    font-size: 14px;
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: hanging;
+  }
+  @media (max-width: 380px) {
+    h1 { font-size: 19px; }
+    .ask-question { font-size: 15px; padding: 10px 12px; }
+  }
+</style>
+<div class="container">
+  <h1 id="title"></h1>
+  <div class="chart-wrap">
+    <div class="chart-area" id="chartArea">
+      <svg class="chart-svg-wrap" id="chartSvg" viewBox="0 0 340 260" preserveAspectRatio="xMidYMid meet">
+        <text class="axis-label" x="12" y="28" transform="rotate(-90,12,28)">y-axis</text>
+        <g id="yTicks"></g>
+        <g id="barsGroup"></g>
+        <g id="xLabels"></g>
+      </svg>
+    </div>
+  </div>
+  <div class="ask-question" id="askText"></div>
+  <div id="feedback" class="feedback-box hidden"></div>
+</div>
+<script>
+  (function() {
+    const params = Studio.params;
+    const data = params.data;
+    const svg = document.getElementById('chartSvg');
+    const yTicksG = document.getElementById('yTicks');
+    const barsG = document.getElementById('barsGroup');
+    const xLabelsG = document.getElementById('xLabels');
+    const titleEl = document.getElementById('title');
+    const askEl = document.getElementById('askText');
+    const feedbackEl = document.getElementById('feedback');
+
+    // strings
+    titleEl.textContent = Studio.t('title');
+    askEl.textContent = Studio.t('ask');
+
+    // chart dimensions
+    const margin = {top: 26, right: 12, bottom: 36, left: 42};
+    const chartW = 340 - margin.left - margin.right;
+    const chartH = 240 - margin.top - margin.bottom;
+    const baseY = margin.top + chartH;
+
+    // find max value, round up to nice step
+    const maxVal = Math.max(...data.map(d => d.value));
+    let step = 5;
+    if (maxVal > 20) step = 10;
+    if (maxVal > 50) step = 20;
+    if (maxVal > 100) step = 50;
+    const maxTick = Math.ceil(maxVal / step) * step;
+    if (maxTick === 0) step = 1;
+    const ticks = [];
+    for (let v = 0; v <= maxTick; v += step) {
+      ticks.push(v);
+    }
+    // ensure last tick if not covered
+    if (ticks[ticks.length-1] < maxTick && maxTick % step !== 0) ticks.push(maxTick);
+
+    const scaleY = (val) => baseY - (val / maxTick) * chartH;
+
+    // y-axis gridlines + ticks
+    ticks.forEach(tickVal => {
+      const yPos = scaleY(tickVal);
+      // gridline
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('class', 'gridline');
+      line.setAttribute('x1', margin.left);
+      line.setAttribute('y1', yPos);
+      line.setAttribute('x2', margin.left + chartW);
+      line.setAttribute('y2', yPos);
+      yTicksG.appendChild(line);
+      // tick label
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', margin.left - 8);
+      text.setAttribute('y', yPos + 4);
+      text.setAttribute('class', 'tick-text');
+      text.setAttribute('text-anchor', 'end');
+      text.setAttribute('data-tick', tickVal);
+      text.textContent = tickVal;
+      yTicksG.appendChild(text);
+    });
+
+    // bars & x-labels
+    const barWidth = Math.min(38, (chartW - 8) / data.length);
+    const spacing = (chartW - barWidth * data.length) / (data.length + 1);
+    const yaxisLabel = svg.querySelector('.axis-label');
+    yaxisLabel.textContent = Studio.t('yaxis');
+
+    // store bars for tap
+    const barElements = [];
+
+    data.forEach((item, i) => {
+      const xPos = margin.left + spacing + i * (barWidth + spacing);
+      const barH = item.value / maxTick * chartH;
+      const yTop = baseY - barH;
+
+      // bar (will animate height)
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', xPos);
+      rect.setAttribute('y', baseY); // start at base for animation
+      rect.setAttribute('width', barWidth);
+      rect.setAttribute('height', 0);
+      rect.setAttribute('class', 'bar-rect');
+      rect.setAttribute('data-bar', item.key);
+      rect.setAttribute('data-value', item.value);
+      rect.style.transition = 'y 0.7s cubic-bezier(0.22, 1, 0.36, 1), height 0.7s cubic-bezier(0.22, 1, 0.36, 1)';
+      barsG.appendChild(rect);
+
+      // value tooltip (hidden until tap)
+      const valLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      valLabel.setAttribute('x', xPos + barWidth/2);
+      valLabel.setAttribute('y', yTop - 8);
+      valLabel.setAttribute('class', 'value-tooltip');
+      valLabel.setAttribute('opacity', '0');
+      valLabel.textContent = item.value;
+      barsG.appendChild(valLabel);
+
+      // fruit name below
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', xPos + barWidth/2);
+      label.setAttribute('y', baseY + 20);
+      label.setAttribute('class', 'x-label');
+      label.textContent = Studio.t(item.key);
+      xLabelsG.appendChild(label);
+
+      barElements.push({
+        key: item.key,
+        value: item.value,
+        rect: rect,
+        tooltip: valLabel,
+        targetY: yTop,
+        targetH: barH
+      });
+    });
+
+    // animate bars after paint
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        barElements.forEach(b => {
+          b.rect.setAttribute('y', b.targetY);
+          b.rect.setAttribute('height', b.targetH);
+        });
+      });
+    });
+
+    // tap handler
+    let answered = false;
+    let locked = false;
+
+    function handleBarTap(key, value, rect, tooltip) {
+      if (locked || answered) return;
+      // show tooltip
+      tooltip.setAttribute('opacity', '1');
+      // answer
+      Studio.answer(key);
+      locked = true;
+      // disable further taps
+    }
+
+    // use event delegation
+    barsG.addEventListener('click', function(e) {
+      const rect = e.target.closest('[data-bar]');
+      if (!rect) return;
+      if (locked || answered) return;
+      const key = rect.getAttribute('data-bar');
+      const val = parseInt(rect.getAttribute('data-value'), 10);
+      // find tooltip
+      const idx = barElements.findIndex(b => b.key === key);
+      if (idx === -1) return;
+      const bar = barElements[idx];
+      // show value
+      bar.tooltip.setAttribute('opacity', '1');
+      // pulse
+      rect.style.animation = 'none';
+      rect.offsetHeight;
+      rect.style.animation = 'tapPulse 0.25s ease-out';
+      Studio.answer(key);
+      locked = true;
+    });
+
+    // onVerdict
+    Studio.onVerdict(function(result) {
+      feedbackEl.classList.remove('hidden', 'feedback-correct', 'feedback-wrong', 'feedback-done');
+      if (result.correct) {
+        feedbackEl.textContent = Studio.t('right');
+        feedbackEl.classList.add('feedback-correct');
+        answered = true;
+        // after short delay show done
+        setTimeout(() => {
+          feedbackEl.textContent = Studio.t('done');
+          feedbackEl.classList.remove('feedback-correct');
+          feedbackEl.classList.add('feedback-done');
+          Studio.done();
+        }, 1000);
+      } else {
+        feedbackEl.textContent = Studio.t('wrong');
+        feedbackEl.classList.add('feedback-wrong');
+        locked = false;
+        // hide tooltips of wrong answer? keep visible but allow retry
+        // but we need to clear previous tooltip? reset all tooltips
+        barElements.forEach(b => b.tooltip.setAttribute('opacity', '0'));
+        // re-enable after 1s
+        setTimeout(() => {
+          feedbackEl.classList.add('hidden');
+          feedbackEl.classList.remove('feedback-wrong');
+          // if answered became true due to correct, ignore
+          if (!answered) locked = false;
+        }, 1200);
+      }
+    });
+
+    Studio.ready();
+  })();
+</script>

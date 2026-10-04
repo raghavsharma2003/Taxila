@@ -1,0 +1,207 @@
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, sans-serif; background: linear-gradient(180deg, #FFF8E1, #FFE0B2); color: #4E342E; -webkit-tap-highlight-color: transparent; }
+  #app { max-width: 360px; margin: 0 auto; padding: 8px; }
+  .card { background: #fff; border-radius: 20px; padding: 16px; box-shadow: 0 10px 30px rgba(255,112,67,0.12); }
+  .screen { display: flex; flex-direction: column; gap: 8px; }
+  .hidden { display: none !important; }
+  h1 { font-size: 20px; margin: 0 0 4px; text-align: center; }
+  #instr { font-size: 14px; margin: 0 0 8px; text-align: center; color: #6D4C41; line-height: 1.4; }
+  .fraction-box { text-align: center; font-size: 36px; font-weight: 800; color: #E65100; margin: 8px 0; letter-spacing: 2px; }
+  #item-container { margin: 8px 0; text-align: center; user-select: none; }
+  #visual { display: block; margin: 0 auto; max-width: 100%; }
+  .part { cursor: pointer; transition: fill .25s ease, transform .12s ease; transform-box: fill-box; transform-origin: center; stroke: #FFB74D; stroke-width: 2; }
+  .pizza-part { fill: #FFF3E0; }
+  .bar-part { fill: #FFF8E1; }
+  .part:active { transform: scale(0.92); }
+  .part.shaded, .part[data-shaded="true"] { fill: #FF7043; }
+  #hint-text { text-align: center; font-size: 13px; color: #8D6E63; margin: 4px 0; min-height: 20px; }
+  .feedback { text-align: center; padding: 10px; border-radius: 12px; font-weight: 700; font-size: 15px; margin: 4px 0; transition: opacity .3s; }
+  .feedback.correct { background: #C8E6C9; color: #1B5E20; }
+  .feedback.wrong { background: #FFCCBC; color: #BF360C; }
+  #check-btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: #FF7043; color: #fff; font-size: 17px; font-weight: 700; cursor: pointer; touch-action: manipulation; transition: transform .1s, background .2s; margin-top: 6px; }
+  #check-btn:active { transform: scale(0.97); background: #F4511E; }
+  @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.04); } 100% { transform: scale(1); } }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
+  .celebrate { animation: pulse 0.6s ease; }
+  .shake { animation: shake 0.4s ease; }
+  .center { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 16px; }
+</style>
+
+<div id="app">
+  <div id="game-screen" class="screen">
+    <div class="card">
+      <h1 id="title"></h1>
+      <p id="instr"></p>
+      <div class="fraction-box">
+        <span id="target-n"></span><span class="f-line">/</span><span id="target-d"></span>
+      </div>
+      <div id="item-container" data-item="">
+        <svg id="visual" width="100%" height="240" viewBox="0 0 280 240" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+      <p id="hint-text"></p>
+      <div id="feedback" class="feedback hidden"></div>
+      <button id="check-btn" data-action="check"></button>
+    </div>
+  </div>
+  <div id="done-screen" class="hidden">
+    <div class="card center">
+      <svg width="120" height="120" viewBox="0 0 120 120" style="margin-bottom:16px;">
+        <circle cx="60" cy="60" r="52" fill="#C8E6C9"/>
+        <path d="M38 62 L52 76 L82 46" fill="none" stroke="#2E7D32" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h2 id="done-title"></h2>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const items = Studio.params.items;
+  const picture = String(Studio.params.picture || '');
+  let currentIndex = 0;
+  const shaded = new Set();
+
+  const els = {
+    title: document.getElementById('title'),
+    instr: document.getElementById('instr'),
+    hint: document.getElementById('hint-text'),
+    checkBtn: document.getElementById('check-btn'),
+    doneTitle: document.getElementById('done-title'),
+    targetN: document.getElementById('target-n'),
+    targetD: document.getElementById('target-d'),
+    container: document.getElementById('item-container'),
+    svg: document.getElementById('visual'),
+    feedback: document.getElementById('feedback'),
+    gameScreen: document.getElementById('game-screen'),
+    doneScreen: document.getElementById('done-screen')
+  };
+
+  function fmt(n) { return Math.round(n * 100) / 100; }
+
+  function setText() {
+    els.title.textContent = Studio.t('title');
+    els.instr.textContent = Studio.t('instr');
+    els.hint.textContent = Studio.t('hint');
+    els.checkBtn.textContent = Studio.t('check');
+    els.doneTitle.textContent = Studio.t('done');
+  }
+
+  function renderItem(index) {
+    const item = items[index];
+    els.container.setAttribute('data-item', item.id);
+    els.container.classList.remove('celebrate', 'shake');
+    shaded.clear();
+
+    els.targetN.textContent = String(item.n);
+    els.targetD.textContent = String(item.d);
+
+    while (els.svg.firstChild) els.svg.removeChild(els.svg.firstChild);
+
+    if (picture.indexOf('pizza') !== -1) {
+      renderPizza(item.d);
+    } else {
+      renderBar(item.d);
+    }
+
+    els.feedback.className = 'feedback hidden';
+    els.feedback.textContent = '';
+  }
+
+  function renderPizza(d) {
+    els.svg.setAttribute('viewBox', '0 0 200 200');
+    els.svg.setAttribute('height', '200');
+    const cx = 100, cy = 100, r = 90;
+    for (let i = 0; i < d; i++) {
+      const start = (i * 2 * Math.PI / d) - Math.PI / 2;
+      const end = ((i + 1) * 2 * Math.PI / d) - Math.PI / 2;
+      const x1 = cx + r * Math.cos(start);
+      const y1 = cy + r * Math.sin(start);
+      const x2 = cx + r * Math.cos(end);
+      const y2 = cy + r * Math.sin(end);
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', 'M ' + fmt(cx) + ' ' + fmt(cy) + ' L ' + fmt(x1) + ' ' + fmt(y1) + ' A ' + fmt(r) + ' ' + fmt(r) + ' 0 0 1 ' + fmt(x2) + ' ' + fmt(y2) + ' Z');
+      path.setAttribute('class', 'part pizza-part');
+      path.setAttribute('data-part', String(i));
+      path.setAttribute('data-shaded', 'false');
+      els.svg.appendChild(path);
+    }
+  }
+
+  function renderBar(d) {
+    const segH = 44;
+    const h = d * segH;
+    els.svg.setAttribute('viewBox', '0 0 260 ' + h);
+    els.svg.setAttribute('height', String(h));
+    for (let i = 0; i < d; i++) {
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', '0');
+      rect.setAttribute('y', String(i * segH));
+      rect.setAttribute('width', '260');
+      rect.setAttribute('height', String(segH));
+      rect.setAttribute('rx', '8');
+      rect.setAttribute('class', 'part bar-part');
+      rect.setAttribute('data-part', String(i));
+      rect.setAttribute('data-shaded', 'false');
+      els.svg.appendChild(rect);
+    }
+  }
+
+  els.svg.addEventListener('click', function(e) {
+    const part = e.target.closest('.part');
+    if (!part) return;
+    const idx = part.getAttribute('data-part');
+    const isShaded = part.getAttribute('data-shaded') === 'true';
+    if (isShaded) {
+      part.setAttribute('data-shaded', 'false');
+      part.classList.remove('shaded');
+      shaded.delete(idx);
+    } else {
+      part.setAttribute('data-shaded', 'true');
+      part.classList.add('shaded');
+      shaded.add(idx);
+    }
+    Studio.event('part_toggle', { itemId: items[currentIndex].id, part: Number(idx), shaded: !isShaded });
+  });
+
+  els.checkBtn.addEventListener('click', function() {
+    const item = items[currentIndex];
+    Studio.answer({ n: shaded.size, d: item.d });
+  });
+
+  Studio.onVerdict(function(verdict) {
+    const container = els.container;
+    if (verdict.correct) {
+      els.feedback.textContent = Studio.t('right');
+      els.feedback.className = 'feedback correct';
+      container.classList.add('celebrate');
+      Studio.event('item_correct', { itemId: items[currentIndex].id });
+      setTimeout(function() {
+        container.classList.remove('celebrate');
+        advance();
+      }, 1200);
+    } else {
+      els.feedback.textContent = Studio.t('wrong');
+      els.feedback.className = 'feedback wrong';
+      container.classList.add('shake');
+      Studio.event('item_wrong', { itemId: items[currentIndex].id });
+      setTimeout(function() { container.classList.remove('shake'); }, 500);
+    }
+  });
+
+  function advance() {
+    currentIndex++;
+    if (currentIndex < items.length) {
+      renderItem(currentIndex);
+    } else {
+      els.gameScreen.classList.add('hidden');
+      els.doneScreen.classList.remove('hidden');
+      Studio.done();
+    }
+  }
+
+  setText();
+  renderItem(0);
+  Studio.ready();
+})();
+</script>

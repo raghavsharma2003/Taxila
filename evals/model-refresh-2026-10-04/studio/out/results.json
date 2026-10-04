@@ -7652,5 +7652,10088 @@
   "roundsUsed": 3,
   "timeToPlayableMs": null,
   "usd": 0.0195105
+ },
+ {
+  "id": "fraction_game__gpt6-luna-low__2",
+  "kind": "fraction_game",
+  "arm": "gpt6-luna-low",
+  "s": 2,
+  "dep": "taxila-gpt6-luna",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:15:14.440Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 11088,
+    "ttftMs": 5119,
+    "firstAnyMs": 5119,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 2020,
+     "reasoning": 544
+    },
+    "usd": 0.0010891,
+    "error": null,
+    "chars": 5208,
+    "streamPaintMs": null,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11569,
+     "readyMs": 30,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 22657
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 22657,
+  "usd": 0.0010891
+ },
+ {
+  "id": "fraction_game__terra-low__2",
+  "kind": "fraction_game",
+  "arm": "terra-low",
+  "s": 2,
+  "dep": "gpt-5.6-terra",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:14:58.402Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 28096,
+    "ttftMs": 7505,
+    "firstAnyMs": 7505,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-terra-2026-07-09",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 3824,
+     "reasoning": 512
+    },
+    "usd": 0.04747,
+    "error": null,
+    "chars": 10794,
+    "streamPaintMs": 20005,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11770,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 39866
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 39866,
+  "usd": 0.04747
+ },
+ {
+  "id": "fraction_game__kimi26__1",
+  "kind": "fraction_game",
+  "arm": "kimi26",
+  "s": 1,
+  "dep": "taxila-kimi26",
+  "effort": null,
+  "startedAt": "2026-10-04T11:10:51.050Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 165752,
+    "ttftMs": 156328,
+    "firstAnyMs": 838,
+    "reasoningChars": 81629,
+    "served": "Kimi-K2.6",
+    "usage": {
+     "in": 792,
+     "cached": 768,
+     "out": 24000,
+     "reasoning": 0
+    },
+    "usd": 0.09614568,
+    "error": "length",
+    "chars": 8090,
+    "streamPaintMs": 161828,
+    "cumWallMs": 165752
+   },
+   {
+    "round": 1,
+    "genMs": 22725,
+    "ttftMs": 3882,
+    "firstAnyMs": 1085,
+    "reasoningChars": 2891,
+    "served": "Kimi-K2.6",
+    "usage": {
+     "in": 792,
+     "cached": 448,
+     "out": 6451,
+     "reasoning": 0
+    },
+    "usd": 0.02620248,
+    "error": null,
+    "chars": 19187,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 6732,
+     "readyMs": null,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "boot_ready_le_5s",
+       "detail": null
+      },
+      {
+       "id": "starts_unshaded",
+       "detail": 0
+      },
+      {
+       "id": "play_all_items_truth",
+       "detail": [
+        "item0: 0 parts, want 4"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 15
+    },
+    "cumWallMs": 195209
+   },
+   {
+    "round": 2,
+    "genMs": 52948,
+    "ttftMs": 43122,
+    "firstAnyMs": 1897,
+    "reasoningChars": 39706,
+    "served": "Kimi-K2.6",
+    "usage": {
+     "in": 6731,
+     "cached": 768,
+     "out": 13981,
+     "reasoning": 0
+    },
+    "usd": 0.06171173,
+    "error": null,
+    "chars": 10966,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 11568,
+     "readyMs": 25,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 15
+    },
+    "cumWallMs": 259725
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.18405989
+ },
+ {
+  "id": "fraction_game__gpt6-sol-low__2",
+  "kind": "fraction_game",
+  "arm": "gpt6-sol-low",
+  "s": 2,
+  "dep": "taxila-gpt6",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:15:08.156Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 15013,
+    "ttftMs": 5515,
+    "firstAnyMs": 5515,
+    "reasoningChars": 0,
+    "served": "gpt-6-sol-2026-09-22",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 2394,
+     "reasoning": 349
+    },
+    "usd": 0.025522,
+    "error": null,
+    "chars": 6692,
+    "streamPaintMs": 12515,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 2880,
+     "readyMs": 26,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_in_viewport",
+       "detail": [
+        [
+         36,
+         620,
+         288,
+         52
+        ]
+       ]
+      },
+      {
+       "id": "play_all_items_truth",
+       "detail": [
+        "item0: wrong answer posted as undefined"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 15
+    },
+    "cumWallMs": 17893
+   },
+   {
+    "round": 1,
+    "genMs": 10414,
+    "ttftMs": 3179,
+    "firstAnyMs": 3179,
+    "reasoningChars": 0,
+    "served": "gpt-6-sol-2026-09-22",
+    "usage": {
+     "in": 2898,
+     "cached": 0,
+     "out": 2045,
+     "reasoning": 162
+    },
+    "usd": 0.026246,
+    "error": null,
+    "chars": 6163,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11535,
+     "readyMs": 24,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 39842
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 39842,
+  "usd": 0.051767999999999995
+ },
+ {
+  "id": "fraction_game__gpt61-sol-low__2",
+  "kind": "fraction_game",
+  "arm": "gpt61-sol-low",
+  "s": 2,
+  "dep": "taxila-gpt61-sol",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:15:09.380Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 21030,
+    "ttftMs": 4728,
+    "firstAnyMs": 4728,
+    "reasoningChars": 0,
+    "served": "gpt-6.1-sol-2026-09-29",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 1999,
+     "reasoning": 135
+    },
+    "usd": 0.021572,
+    "error": null,
+    "chars": 6041,
+    "streamPaintMs": 13228,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11482,
+     "readyMs": 25,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 32512
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 32512,
+  "usd": 0.021572
+ },
+ {
+  "id": "fraction_game__sol-low__2",
+  "kind": "fraction_game",
+  "arm": "sol-low",
+  "s": 2,
+  "dep": "taxila-brain",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:15:03.262Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 30023,
+    "ttftMs": 9922,
+    "firstAnyMs": 9922,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-sol-2026-07-09",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 3888,
+     "reasoning": 573
+    },
+    "usd": 0.080924,
+    "error": null,
+    "chars": 11133,
+    "streamPaintMs": 22922,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11525,
+     "readyMs": 29,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 41548
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 41548,
+  "usd": 0.080924
+ },
+ {
+  "id": "bar_chart_viz__dsv4-flash__1",
+  "kind": "bar_chart_viz",
+  "arm": "dsv4-flash",
+  "s": 1,
+  "dep": "DeepSeek-V4-Flash",
+  "effort": null,
+  "startedAt": "2026-10-04T11:14:07.320Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 9584,
+    "ttftMs": 1007,
+    "firstAnyMs": 1007,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 845,
+     "cached": 0,
+     "out": 2408,
+     "reasoning": 0
+    },
+    "usd": 0.0013886299999999999,
+    "error": null,
+    "chars": 8117,
+    "streamPaintMs": 5507,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4841,
+     "readyMs": 30,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "axis_ticks_tell_truth",
+       "detail": "5 ticks, worst 37.9 px"
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 14425
+   },
+   {
+    "round": 1,
+    "genMs": 21672,
+    "ttftMs": 1280,
+    "firstAnyMs": 1280,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 3315,
+     "cached": 768,
+     "out": 2532,
+     "reasoning": 0
+    },
+    "usd": 0.00192117,
+    "error": null,
+    "chars": 8773,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4901,
+     "readyMs": 30,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "heights_proportional",
+       "detail": "max err 14.13 px"
+      },
+      {
+       "id": "axis_ticks_tell_truth",
+       "detail": "5 ticks, worst 21.2 px"
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 40998
+   },
+   {
+    "round": 2,
+    "genMs": 18135,
+    "ttftMs": 986,
+    "firstAnyMs": 986,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 3449,
+     "cached": 768,
+     "out": 2234,
+     "reasoning": 0
+    },
+    "usd": 0.0017946499999999998,
+    "error": null,
+    "chars": 7681,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4823,
+     "readyMs": 33,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "heights_proportional",
+       "detail": "max err 14.13 px"
+      },
+      {
+       "id": "axis_ticks_tell_truth",
+       "detail": "5 ticks, worst 11.2 px"
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 63956
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.00510445
+ },
+ {
+  "id": "fraction_game__gpt6-luna-none__2",
+  "kind": "fraction_game",
+  "arm": "gpt6-luna-none",
+  "s": 2,
+  "dep": "taxila-gpt6-luna",
+  "effort": "none",
+  "startedAt": "2026-10-04T11:15:17.839Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 17983,
+    "ttftMs": 1274,
+    "firstAnyMs": 1274,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 4836,
+     "reasoning": 0
+    },
+    "usd": 0.0024971,
+    "error": null,
+    "chars": 15707,
+    "streamPaintMs": 10274,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11842,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 29825
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 29825,
+  "usd": 0.0024971
+ },
+ {
+  "id": "fraction_game__kimi-code__1",
+  "kind": "fraction_game",
+  "arm": "kimi-code",
+  "s": 1,
+  "dep": "taxila-kimi-code",
+  "effort": null,
+  "startedAt": "2026-10-04T11:11:16.148Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 187353,
+    "ttftMs": 152684,
+    "firstAnyMs": 1316,
+    "reasoningChars": 38989,
+    "served": "Kimi-K2.7-Code",
+    "usage": {
+     "in": 792,
+     "cached": 0,
+     "out": 13734,
+     "reasoning": 0
+    },
+    "usd": 0.0556884,
+    "error": null,
+    "chars": 8565,
+    "streamPaintMs": 173184,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 2905,
+     "readyMs": 30,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_in_viewport",
+       "detail": [
+        [
+         16,
+         627,
+         328,
+         56
+        ]
+       ]
+      },
+      {
+       "id": "play_all_items_truth",
+       "detail": [
+        "item0: wrong answer posted as undefined"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 15
+    },
+    "cumWallMs": 190258
+   },
+   {
+    "round": 1,
+    "genMs": 59015,
+    "ttftMs": 50123,
+    "firstAnyMs": 2184,
+    "reasoningChars": 30306,
+    "served": "Kimi-K2.7-Code",
+    "usage": {
+     "in": 3471,
+     "cached": 0,
+     "out": 10527,
+     "reasoning": 0
+    },
+    "usd": 0.04540545,
+    "error": null,
+    "chars": 8428,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11552,
+     "readyMs": 28,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 260825
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 260825,
+  "usd": 0.10109385
+ },
+ {
+  "id": "photosynthesis_anim__kimi26__1",
+  "kind": "photosynthesis_anim",
+  "arm": "kimi26",
+  "s": 1,
+  "dep": "taxila-kimi26",
+  "effort": null,
+  "startedAt": "2026-10-04T11:12:23.526Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 71116,
+    "ttftMs": 59456,
+    "firstAnyMs": 384,
+    "reasoningChars": 45242,
+    "served": "Kimi-K2.6",
+    "usage": {
+     "in": 1104,
+     "cached": 0,
+     "out": 16970,
+     "reasoning": 0
+    },
+    "usd": 0.0689288,
+    "error": null,
+    "chars": 12121,
+    "streamPaintMs": 62456,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8246,
+     "readyMs": 41,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_in_viewport",
+       "detail": [
+        [
+         20,
+         637,
+         100,
+         54
+        ],
+        [
+         130,
+         637,
+         100,
+         54
+        ],
+        [
+         240,
+         637,
+         100,
+         54
+        ]
+       ]
+      },
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "out:co2"
+       ]
+      },
+      {
+       "id": "science_direction_of_flows",
+       "detail": [
+        "water not moving up (dy 67.6)"
+       ]
+      },
+      {
+       "id": "check_question_truth",
+       "detail": [
+        "co2 posted undefined",
+        "o2 posted undefined"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      },
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "water label 116 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 79362
+   },
+   {
+    "round": 1,
+    "genMs": 96904,
+    "ttftMs": 85130,
+    "firstAnyMs": 1539,
+    "reasoningChars": 65190,
+    "served": "Kimi-K2.6",
+    "usage": {
+     "in": 5185,
+     "cached": 1088,
+     "out": 23759,
+     "reasoning": 0
+    },
+    "usd": 0.09910223,
+    "error": null,
+    "chars": 12727,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8308,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 184574
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 184574,
+  "usd": 0.16803103
+ },
+ {
+  "id": "bar_chart_viz__mistral-m35__1",
+  "kind": "bar_chart_viz",
+  "arm": "mistral-m35",
+  "s": 1,
+  "dep": "taxila-mistral-m35",
+  "effort": null,
+  "startedAt": "2026-10-04T11:14:45.229Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 14943,
+    "ttftMs": 1249,
+    "firstAnyMs": 1249,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 872,
+     "cached": 768,
+     "out": 2534,
+     "reasoning": 0
+    },
+    "usd": 0.020313,
+    "error": null,
+    "chars": 8460,
+    "streamPaintMs": 7249,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4906,
+     "readyMs": 32,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         41,
+         33,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\"}"
+        ],
+        [
+         41,
+         19,
+         "{\"data-bar\":\"banana\",\"data-value\":\"7\"}"
+        ],
+        [
+         41,
+         25,
+         "{\"data-bar\":\"apple\",\"data-value\":\"9\"}"
+        ]
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 19849
+   },
+   {
+    "round": 1,
+    "genMs": 12802,
+    "ttftMs": 1728,
+    "firstAnyMs": 1728,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 3526,
+     "cached": 384,
+     "out": 2384,
+     "reasoning": 0
+    },
+    "usd": 0.023169,
+    "error": null,
+    "chars": 7863,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4782,
+     "readyMs": 23,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 37433
+   },
+   {
+    "round": 2,
+    "genMs": 12270,
+    "ttftMs": 1236,
+    "firstAnyMs": 1236,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 3305,
+     "cached": 896,
+     "out": 2384,
+     "reasoning": 0
+    },
+    "usd": 0.0228375,
+    "error": null,
+    "chars": 7863,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4809,
+     "readyMs": 24,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 54512
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.0663195
+ },
+ {
+  "id": "fraction_game__dsv4-flash__2",
+  "kind": "fraction_game",
+  "arm": "dsv4-flash",
+  "s": 2,
+  "dep": "DeepSeek-V4-Flash",
+  "effort": null,
+  "startedAt": "2026-10-04T11:15:44.290Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 10136,
+    "ttftMs": 635,
+    "firstAnyMs": 635,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 809,
+     "cached": 256,
+     "out": 2795,
+     "reasoning": 0
+    },
+    "usd": 0.00157916,
+    "error": null,
+    "chars": 9299,
+    "streamPaintMs": 4135,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11531,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 21667
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 21667,
+  "usd": 0.00157916
+ },
+ {
+  "id": "fraction_game__ds4f-0731__2",
+  "kind": "fraction_game",
+  "arm": "ds4f-0731",
+  "s": 2,
+  "dep": "taxila-ds4f-0731",
+  "effort": null,
+  "startedAt": "2026-10-04T11:15:54.545Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 5480,
+    "ttftMs": 981,
+    "firstAnyMs": 981,
+    "reasoningChars": 0,
+    "served": "taxila-ds4f-0731",
+    "usage": {
+     "in": 809,
+     "cached": 768,
+     "out": 2447,
+     "reasoning": 0
+    },
+    "usd": 0.0032588319999999997,
+    "error": null,
+    "chars": 8974,
+    "streamPaintMs": null,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11500,
+     "readyMs": 23,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 16980
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 16980,
+  "usd": 0.0032588319999999997
+ },
+ {
+  "id": "fraction_game__codex-low__2",
+  "kind": "fraction_game",
+  "arm": "codex-low",
+  "s": 2,
+  "dep": "taxila-codex",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:15:32.522Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 30282,
+    "ttftMs": 15315,
+    "firstAnyMs": 15315,
+    "reasoningChars": 0,
+    "served": "taxila-codex",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 3767,
+     "reasoning": 1390
+    },
+    "usd": 0.05412225,
+    "error": null,
+    "chars": 8019,
+    "streamPaintMs": 23315,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11554,
+     "readyMs": 28,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 41836
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 41836,
+  "usd": 0.05412225
+ },
+ {
+  "id": "photosynthesis_anim__gpt6-sol-low__2",
+  "kind": "photosynthesis_anim",
+  "arm": "gpt6-sol-low",
+  "s": 2,
+  "dep": "taxila-gpt6",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:16:17.869Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 15471,
+    "ttftMs": 3565,
+    "firstAnyMs": 3565,
+    "reasoningChars": 0,
+    "served": "gpt-6-sol-2026-09-22",
+    "usage": {
+     "in": 1103,
+     "cached": 1100,
+     "out": 2424,
+     "reasoning": 127
+    },
+    "usd": 0.024466,
+    "error": null,
+    "chars": 7239,
+    "streamPaintMs": 8565,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8208,
+     "readyMs": 25,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 23679
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 23679,
+  "usd": 0.024466
+ },
+ {
+  "id": "photosynthesis_anim__gpt6-luna-low__2",
+  "kind": "photosynthesis_anim",
+  "arm": "gpt6-luna-low",
+  "s": 2,
+  "dep": "taxila-gpt6-luna",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:16:30.747Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 17614,
+    "ttftMs": 5220,
+    "firstAnyMs": 5220,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 1103,
+     "cached": 1100,
+     "out": 3335,
+     "reasoning": 455
+    },
+    "usd": 0.0016788,
+    "error": null,
+    "chars": 8853,
+    "streamPaintMs": 9720,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8416,
+     "readyMs": 48,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 26030
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 26030,
+  "usd": 0.0016788
+ },
+ {
+  "id": "fraction_game__ds41-flash__2",
+  "kind": "fraction_game",
+  "arm": "ds41-flash",
+  "s": 2,
+  "dep": "taxila-ds41",
+  "effort": null,
+  "startedAt": "2026-10-04T11:15:42.787Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 7404,
+    "ttftMs": 861,
+    "firstAnyMs": 861,
+    "reasoningChars": 0,
+    "served": "taxila-ds41",
+    "usage": {
+     "in": 810,
+     "cached": 256,
+     "out": 3656,
+     "reasoning": 0
+    },
+    "usd": 0.00578775,
+    "error": null,
+    "chars": 12108,
+    "streamPaintMs": 3861,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 2237,
+     "readyMs": 30,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "play_all_items_truth",
+       "detail": [
+        "item0: tapped 4, shaded 0"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 15
+    },
+    "cumWallMs": 9641
+   },
+   {
+    "round": 1,
+    "genMs": 10219,
+    "ttftMs": 1208,
+    "firstAnyMs": 1208,
+    "reasoningChars": 0,
+    "served": "taxila-ds41",
+    "usage": {
+     "in": 4529,
+     "cached": 768,
+     "out": 4368,
+     "reasoning": 0
+    },
+    "usd": 0.008250375,
+    "error": null,
+    "chars": 14128,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 2253,
+     "readyMs": 29,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "play_all_items_truth",
+       "detail": [
+        "item0: tapped 4, shaded 0"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 15
+    },
+    "cumWallMs": 22113
+   },
+   {
+    "round": 2,
+    "genMs": 14990,
+    "ttftMs": 2621,
+    "firstAnyMs": 2621,
+    "reasoningChars": 0,
+    "served": "taxila-ds41",
+    "usage": {
+     "in": 5245,
+     "cached": 0,
+     "out": 4095,
+     "reasoning": 0
+    },
+    "usd": 0.008109375,
+    "error": null,
+    "chars": 13052,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11575,
+     "readyMs": 33,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 48678
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 3,
+  "timeToPlayableMs": 48678,
+  "usd": 0.0221475
+ },
+ {
+  "id": "fraction_game__mistral-m35__2",
+  "kind": "fraction_game",
+  "arm": "mistral-m35",
+  "s": 2,
+  "dep": "taxila-mistral-m35",
+  "effort": null,
+  "startedAt": "2026-10-04T11:16:06.030Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 16297,
+    "ttftMs": 1611,
+    "firstAnyMs": 1611,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 829,
+     "cached": 768,
+     "out": 2813,
+     "reasoning": 0
+    },
+    "usd": 0.022341,
+    "error": null,
+    "chars": 10104,
+    "streamPaintMs": 8611,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 11517,
+     "readyMs": 22,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         134,
+         38,
+         "{\"data-action\":\"check\",\"data-test\":\"check\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 15
+    },
+    "cumWallMs": 27814
+   },
+   {
+    "round": 1,
+    "genMs": 14446,
+    "ttftMs": 1207,
+    "firstAnyMs": 1207,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 3716,
+     "cached": 768,
+     "out": 2757,
+     "reasoning": 0
+    },
+    "usd": 0.0262515,
+    "error": null,
+    "chars": 9791,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11550,
+     "readyMs": 28,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 53810
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 53810,
+  "usd": 0.0485925
+ },
+ {
+  "id": "photosynthesis_anim__gpt6-luna-none__2",
+  "kind": "photosynthesis_anim",
+  "arm": "gpt6-luna-none",
+  "s": 2,
+  "dep": "taxila-gpt6-luna",
+  "effort": "none",
+  "startedAt": "2026-10-04T11:16:34.431Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 13308,
+    "ttftMs": 970,
+    "firstAnyMs": 970,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 1103,
+     "cached": 1100,
+     "out": 3256,
+     "reasoning": 0
+    },
+    "usd": 0.0016393,
+    "error": null,
+    "chars": 10250,
+    "streamPaintMs": 5470,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8483,
+     "readyMs": 30,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "science_direction_of_flows",
+       "detail": [
+        "co2 not moving into leaf (dd 4.0)"
+       ]
+      },
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "water label 98 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 21791
+   },
+   {
+    "round": 1,
+    "genMs": 12004,
+    "ttftMs": 1000,
+    "firstAnyMs": 1000,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 4434,
+     "cached": 0,
+     "out": 3276,
+     "reasoning": 0
+    },
+    "usd": 0.0020814,
+    "error": null,
+    "chars": 10287,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8418,
+     "readyMs": 33,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 42213
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 42213,
+  "usd": 0.0037207000000000004
+ },
+ {
+  "id": "photosynthesis_anim__terra-low__2",
+  "kind": "photosynthesis_anim",
+  "arm": "terra-low",
+  "s": 2,
+  "dep": "gpt-5.6-terra",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:16:12.558Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 27690,
+    "ttftMs": 6268,
+    "firstAnyMs": 6268,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-terra-2026-07-09",
+    "usage": {
+     "in": 1103,
+     "cached": 1100,
+     "out": 3735,
+     "reasoning": 430
+    },
+    "usd": 0.045046,
+    "error": null,
+    "chars": 10041,
+    "streamPaintMs": 14768,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8396,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "out:co2"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 36086
+   },
+   {
+    "round": 1,
+    "genMs": 22469,
+    "ttftMs": 5601,
+    "firstAnyMs": 5601,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-terra-2026-07-09",
+    "usage": {
+     "in": 4447,
+     "cached": 0,
+     "out": 3543,
+     "reasoning": 386
+    },
+    "usd": 0.05141,
+    "error": null,
+    "chars": 9738,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8345,
+     "readyMs": 25,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 66900
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 66900,
+  "usd": 0.096456
+ },
+ {
+  "id": "photosynthesis_anim__sol-low__2",
+  "kind": "photosynthesis_anim",
+  "arm": "sol-low",
+  "s": 2,
+  "dep": "taxila-brain",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:16:17.385Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 30671,
+    "ttftMs": 8711,
+    "firstAnyMs": 8711,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-sol-2026-07-09",
+    "usage": {
+     "in": 1103,
+     "cached": 1100,
+     "out": 3728,
+     "reasoning": 504
+    },
+    "usd": 0.075012,
+    "error": null,
+    "chars": 9993,
+    "streamPaintMs": 19211,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8369,
+     "readyMs": 31,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "out:co2"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 39040
+   },
+   {
+    "round": 1,
+    "genMs": 20137,
+    "ttftMs": 3753,
+    "firstAnyMs": 3753,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-sol-2026-07-09",
+    "usage": {
+     "in": 4366,
+     "cached": 0,
+     "out": 3571,
+     "reasoning": 205
+    },
+    "usd": 0.088884,
+    "error": null,
+    "chars": 10485,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8244,
+     "readyMs": 32,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 67421
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 67421,
+  "usd": 0.163896
+ },
+ {
+  "id": "photosynthesis_anim__gpt61-sol-low__2",
+  "kind": "photosynthesis_anim",
+  "arm": "gpt61-sol-low",
+  "s": 2,
+  "dep": "taxila-gpt61-sol",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:16:22.290Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 30825,
+    "ttftMs": 3709,
+    "firstAnyMs": 3709,
+    "reasoningChars": 0,
+    "served": "gpt-6.1-sol-2026-09-29",
+    "usage": {
+     "in": 1103,
+     "cached": 1100,
+     "out": 2747,
+     "reasoning": 63
+    },
+    "usd": 0.027696,
+    "error": null,
+    "chars": 8165,
+    "streamPaintMs": 11209,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": true,
+     "ms": 8368,
+     "readyMs": 26,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "water label 103 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 39193
+   },
+   {
+    "round": 1,
+    "genMs": 20742,
+    "ttftMs": 3005,
+    "firstAnyMs": 3005,
+    "reasoningChars": 0,
+    "served": "gpt-6.1-sol-2026-09-29",
+    "usage": {
+     "in": 3834,
+     "cached": 0,
+     "out": 2751,
+     "reasoning": 64
+    },
+    "usd": 0.035178,
+    "error": null,
+    "chars": 8182,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8239,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 68174
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 68174,
+  "usd": 0.062874
+ },
+ {
+  "id": "photosynthesis_anim__ds41-flash__2",
+  "kind": "photosynthesis_anim",
+  "arm": "ds41-flash",
+  "s": 2,
+  "dep": "taxila-ds41",
+  "effort": null,
+  "startedAt": "2026-10-04T11:16:45.930Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 16418,
+    "ttftMs": 936,
+    "firstAnyMs": 936,
+    "reasoningChars": 0,
+    "served": "taxila-ds41",
+    "usage": {
+     "in": 1127,
+     "cached": 1024,
+     "out": 7097,
+     "reasoning": 0
+    },
+    "usd": 0.011068125,
+    "error": null,
+    "chars": 21002,
+    "streamPaintMs": 4936,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8318,
+     "readyMs": 28,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_in_viewport",
+       "detail": [
+        [
+         320,
+         457,
+         44,
+         46
+        ]
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 24736
+   },
+   {
+    "round": 1,
+    "genMs": 12534,
+    "ttftMs": 742,
+    "firstAnyMs": 742,
+    "reasoningChars": 0,
+    "served": "taxila-ds41",
+    "usage": {
+     "in": 8280,
+     "cached": 1024,
+     "out": 6681,
+     "reasoning": 0
+    },
+    "usd": 0.0131265,
+    "error": null,
+    "chars": 19736,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8339,
+     "readyMs": 38,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 45609
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 45609,
+  "usd": 0.024194624999999997
+ },
+ {
+  "id": "fraction_game__kimi26__2",
+  "kind": "fraction_game",
+  "arm": "kimi26",
+  "s": 2,
+  "dep": "taxila-kimi26",
+  "effort": null,
+  "startedAt": "2026-10-04T11:16:01.033Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 13109,
+    "ttftMs": 3148,
+    "firstAnyMs": 715,
+    "reasoningChars": 2812,
+    "served": "Kimi-K2.6",
+    "usage": {
+     "in": 792,
+     "cached": 448,
+     "out": 3659,
+     "reasoning": 0
+    },
+    "usd": 0.01503448,
+    "error": null,
+    "chars": 10364,
+    "streamPaintMs": 8648,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 2978,
+     "readyMs": 23,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "play_all_items_truth",
+       "detail": [
+        "item0: wrong answer posted as undefined"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 15
+    },
+    "cumWallMs": 16087
+   },
+   {
+    "round": 1,
+    "genMs": 90133,
+    "ttftMs": 82814,
+    "firstAnyMs": 946,
+    "reasoningChars": 67241,
+    "served": "Kimi-K2.6",
+    "usage": {
+     "in": 3984,
+     "cached": 768,
+     "out": 19271,
+     "reasoning": 0
+    },
+    "usd": 0.08026208,
+    "error": null,
+    "chars": 8430,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11474,
+     "readyMs": 21,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 117694
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 117694,
+  "usd": 0.09529656
+ },
+ {
+  "id": "bar_chart_viz__terra-low__2",
+  "kind": "bar_chart_viz",
+  "arm": "terra-low",
+  "s": 2,
+  "dep": "gpt-5.6-terra",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:17:42.310Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 24854,
+    "ttftMs": 6592,
+    "firstAnyMs": 6592,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-terra-2026-07-09",
+    "usage": {
+     "in": 824,
+     "cached": 0,
+     "out": 3216,
+     "reasoning": 423
+    },
+    "usd": 0.04024,
+    "error": null,
+    "chars": 9077,
+    "streamPaintMs": 15092,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 4794,
+     "readyMs": 22,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 19
+    },
+    "cumWallMs": 29648
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 29648,
+  "usd": 0.04024
+ },
+ {
+  "id": "photosynthesis_anim__ds4f-0731__2",
+  "kind": "photosynthesis_anim",
+  "arm": "ds4f-0731",
+  "s": 2,
+  "dep": "taxila-ds4f-0731",
+  "effort": null,
+  "startedAt": "2026-10-04T11:17:07.626Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 9153,
+    "ttftMs": 1017,
+    "firstAnyMs": 1017,
+    "reasoningChars": 0,
+    "served": "taxila-ds4f-0731",
+    "usage": {
+     "in": 1126,
+     "cached": 1024,
+     "out": 3456,
+     "reasoning": 0
+    },
+    "usd": 0.0046211360000000005,
+    "error": null,
+    "chars": 10315,
+    "streamPaintMs": 3017,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": true,
+     "ms": 8178,
+     "readyMs": 24,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "water label 101 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 17331
+   },
+   {
+    "round": 1,
+    "genMs": 6112,
+    "ttftMs": 543,
+    "firstAnyMs": 543,
+    "reasoningChars": 0,
+    "served": "taxila-ds4f-0731",
+    "usage": {
+     "in": 4644,
+     "cached": 1024,
+     "out": 3431,
+     "reasoning": 0
+    },
+    "usd": 0.006136056000000001,
+    "error": null,
+    "chars": 10266,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": true,
+     "ms": 8217,
+     "readyMs": 55,
+     "perf": {
+      "p95": 17,
+      "frames": 88,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "water label 106 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 31660
+   },
+   {
+    "round": 2,
+    "genMs": 9235,
+    "ttftMs": 1001,
+    "firstAnyMs": 1001,
+    "reasoningChars": 0,
+    "served": "taxila-ds4f-0731",
+    "usage": {
+     "in": 4619,
+     "cached": 1024,
+     "out": 3428,
+     "reasoning": 0
+    },
+    "usd": 0.0061210959999999995,
+    "error": null,
+    "chars": 10242,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8167,
+     "readyMs": 29,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "out:co2"
+       ]
+      },
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "water label 111 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 49062
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": true,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.016878288
+ },
+ {
+  "id": "bar_chart_viz__gpt61-sol-low__2",
+  "kind": "bar_chart_viz",
+  "arm": "gpt61-sol-low",
+  "s": 2,
+  "dep": "taxila-gpt61-sol",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:18:01.242Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 25874,
+    "ttftMs": 8618,
+    "firstAnyMs": 8618,
+    "reasoningChars": 0,
+    "served": "gpt-6.1-sol-2026-09-29",
+    "usage": {
+     "in": 824,
+     "cached": 0,
+     "out": 2272,
+     "reasoning": 304
+    },
+    "usd": 0.024368,
+    "error": null,
+    "chars": 6787,
+    "streamPaintMs": 19618,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 4834,
+     "readyMs": 22,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 19
+    },
+    "cumWallMs": 30708
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 30708,
+  "usd": 0.024368
+ },
+ {
+  "id": "photosynthesis_anim__codex-low__2",
+  "kind": "photosynthesis_anim",
+  "arm": "codex-low",
+  "s": 2,
+  "dep": "taxila-codex",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:16:44.957Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 42172,
+    "ttftMs": 15184,
+    "firstAnyMs": 15184,
+    "reasoningChars": 0,
+    "served": "taxila-codex",
+    "usage": {
+     "in": 1103,
+     "cached": 0,
+     "out": 5511,
+     "reasoning": 1294
+    },
+    "usd": 0.07908425,
+    "error": null,
+    "chars": 12924,
+    "streamPaintMs": 21684,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8320,
+     "readyMs": 46,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "leaf~glucose",
+        "out:co2"
+       ]
+      },
+      {
+       "id": "pause_freezes",
+       "detail": "particles still moving after pause"
+      },
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "water label 115 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 50492
+   },
+   {
+    "round": 1,
+    "genMs": 35904,
+    "ttftMs": 12674,
+    "firstAnyMs": 12674,
+    "reasoningChars": 0,
+    "served": "taxila-codex",
+    "usage": {
+     "in": 5400,
+     "cached": 0,
+     "out": 4755,
+     "reasoning": 1054
+    },
+    "usd": 0.07602,
+    "error": null,
+    "chars": 11130,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8208,
+     "readyMs": 26,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 94604
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 94604,
+  "usd": 0.15510425
+ },
+ {
+  "id": "bar_chart_viz__gpt6-sol-low__2",
+  "kind": "bar_chart_viz",
+  "arm": "gpt6-sol-low",
+  "s": 2,
+  "dep": "taxila-gpt6",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:17:59.481Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 12587,
+    "ttftMs": 5433,
+    "firstAnyMs": 5433,
+    "reasoningChars": 0,
+    "served": "gpt-6-sol-2026-09-22",
+    "usage": {
+     "in": 824,
+     "cached": 0,
+     "out": 1907,
+     "reasoning": 370
+    },
+    "usd": 0.020718,
+    "error": null,
+    "chars": 4915,
+    "streamPaintMs": 9433,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4812,
+     "readyMs": 25,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         41,
+         40,
+         "{\"data-bar\":\"banana\",\"data-value\":\"7\"}"
+        ],
+        [
+         41,
+         23,
+         "{\"data-bar\":\"guava\",\"data-value\":\"4\"}"
+        ],
+        [
+         41,
+         34,
+         "{\"data-bar\":\"orange\",\"data-value\":\"6\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 17399
+   },
+   {
+    "round": 1,
+    "genMs": 11820,
+    "ttftMs": 6696,
+    "firstAnyMs": 6696,
+    "reasoningChars": 0,
+    "served": "gpt-6-sol-2026-09-22",
+    "usage": {
+     "in": 2450,
+     "cached": 0,
+     "out": 1998,
+     "reasoning": 512
+    },
+    "usd": 0.02488,
+    "error": null,
+    "chars": 4675,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 4904,
+     "readyMs": 47,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 19
+    },
+    "cumWallMs": 34123
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 34123,
+  "usd": 0.045598
+ },
+ {
+  "id": "bar_chart_viz__sol-low__2",
+  "kind": "bar_chart_viz",
+  "arm": "sol-low",
+  "s": 2,
+  "dep": "taxila-brain",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:17:50.934Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 28519,
+    "ttftMs": 13661,
+    "firstAnyMs": 13661,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-sol-2026-07-09",
+    "usage": {
+     "in": 824,
+     "cached": 0,
+     "out": 3255,
+     "reasoning": 823
+    },
+    "usd": 0.068396,
+    "error": null,
+    "chars": 8220,
+    "streamPaintMs": 20661,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4814,
+     "readyMs": 24,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         40,
+         28,
+         "{\"data-bar\":\"guava\",\"data-value\":\"4\"}"
+        ]
+       ]
+      },
+      {
+       "id": "no_answer_hint_before_tap",
+       "detail": [
+        "rgb(242, 139, 91)|rgba(0, 0, 0, 0)|1",
+        "rgb(245, 196, 81)|rgba(0, 0, 0, 0)|1",
+        "rgb(232, 111, 117)|rgba(0, 0, 0, 0)|1"
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 33333
+   },
+   {
+    "round": 1,
+    "genMs": 19281,
+    "ttftMs": 6093,
+    "firstAnyMs": 6093,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-sol-2026-07-09",
+    "usage": {
+     "in": 3387,
+     "cached": 0,
+     "out": 2723,
+     "reasoning": 309
+    },
+    "usd": 0.068008,
+    "error": null,
+    "chars": 8132,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 4840,
+     "readyMs": 23,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 19
+    },
+    "cumWallMs": 57454
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 57454,
+  "usd": 0.136404
+ },
+ {
+  "id": "bar_chart_viz__gpt6-luna-none__2",
+  "kind": "bar_chart_viz",
+  "arm": "gpt6-luna-none",
+  "s": 2,
+  "dep": "taxila-gpt6-luna",
+  "effort": "none",
+  "startedAt": "2026-10-04T11:18:24.507Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 9812,
+    "ttftMs": 1344,
+    "firstAnyMs": 1344,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 824,
+     "cached": 0,
+     "out": 2549,
+     "reasoning": 0
+    },
+    "usd": 0.0013569,
+    "error": null,
+    "chars": 8340,
+    "streamPaintMs": 6844,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4842,
+     "readyMs": 30,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         42,
+         5,
+         "{\"data-bar\":\"banana\",\"data-value\":\"7\"}"
+        ]
+       ]
+      },
+      {
+       "id": "no_answer_hint_before_tap",
+       "detail": [
+        "rgb(0, 0, 0)|rgb(239, 173, 104)|1",
+        "rgb(0, 0, 0)|rgb(119, 184, 161)|1",
+        "rgb(0, 0, 0)|rgb(223, 130, 144)|1"
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 14654
+   },
+   {
+    "round": 1,
+    "genMs": 7804,
+    "ttftMs": 1025,
+    "firstAnyMs": 1025,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 3506,
+     "cached": 0,
+     "out": 2388,
+     "reasoning": 0
+    },
+    "usd": 0.0015446,
+    "error": null,
+    "chars": 7895,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 4842,
+     "readyMs": 43,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 19
+    },
+    "cumWallMs": 27300
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 27300,
+  "usd": 0.0029015
+ },
+ {
+  "id": "photosynthesis_anim__mistral-m35__2",
+  "kind": "photosynthesis_anim",
+  "arm": "mistral-m35",
+  "s": 2,
+  "dep": "taxila-mistral-m35",
+  "effort": null,
+  "startedAt": "2026-10-04T11:17:36.357Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 24199,
+    "ttftMs": 741,
+    "firstAnyMs": 741,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 1155,
+     "cached": 1152,
+     "out": 4383,
+     "reasoning": 0
+    },
+    "usd": 0.034605,
+    "error": null,
+    "chars": 13316,
+    "streamPaintMs": 9741,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8143,
+     "readyMs": 30,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "leaf~glucose"
+       ]
+      },
+      {
+       "id": "science_direction_of_flows",
+       "detail": [
+        "co2 not moving into leaf (dd 3.5)"
+       ]
+      },
+      {
+       "id": "only_table_keys",
+       "detail": [
+        "wrong",
+        "correct"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 32342
+   },
+   {
+    "round": 1,
+    "genMs": 20665,
+    "ttftMs": 1411,
+    "firstAnyMs": 1411,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 5627,
+     "cached": 1152,
+     "out": 4033,
+     "reasoning": 0
+    },
+    "usd": 0.038688,
+    "error": null,
+    "chars": 12065,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8166,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "science_direction_of_flows",
+       "detail": [
+        "water not moving up (dy 6.9)",
+        "co2 not moving into leaf (dd 3.8)"
+       ]
+      },
+      {
+       "id": "only_table_keys",
+       "detail": [
+        "wrong",
+        "correct"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 61173
+   },
+   {
+    "round": 2,
+    "genMs": 18453,
+    "ttftMs": 1002,
+    "firstAnyMs": 1002,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 5275,
+     "cached": 1152,
+     "out": 3654,
+     "reasoning": 0
+    },
+    "usd": 0.0353175,
+    "error": null,
+    "chars": 11085,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8236,
+     "readyMs": 48,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "only_table_keys",
+       "detail": [
+        "wrong",
+        "correct"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 87862
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.1086105
+ },
+ {
+  "id": "bar_chart_viz__gpt6-luna-low__2",
+  "kind": "bar_chart_viz",
+  "arm": "gpt6-luna-low",
+  "s": 2,
+  "dep": "taxila-gpt6-luna",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:18:16.131Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 11745,
+    "ttftMs": 5854,
+    "firstAnyMs": 5854,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 824,
+     "cached": 0,
+     "out": 2015,
+     "reasoning": 563
+    },
+    "usd": 0.0010899,
+    "error": null,
+    "chars": 4556,
+    "streamPaintMs": 8854,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4819,
+     "readyMs": 32,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         31,
+         102,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\"}"
+        ],
+        [
+         31,
+         59,
+         "{\"data-bar\":\"banana\",\"data-value\":\"7\"}"
+        ],
+        [
+         31,
+         76,
+         "{\"data-bar\":\"apple\",\"data-value\":\"9\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 16564
+   },
+   {
+    "round": 1,
+    "genMs": 7495,
+    "ttftMs": 2847,
+    "firstAnyMs": 2847,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 2359,
+     "cached": 0,
+     "out": 1649,
+     "reasoning": 249
+    },
+    "usd": 0.0010604000000000002,
+    "error": null,
+    "chars": 4505,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4844,
+     "readyMs": 28,
+     "perf": {
+      "p95": 17,
+      "frames": 89,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         43,
+         39,
+         "{\"data-bar\":\"guava\",\"data-value\":\"4\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 28903
+   },
+   {
+    "round": 2,
+    "genMs": 9290,
+    "ttftMs": 4535,
+    "firstAnyMs": 4535,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 2277,
+     "cached": 0,
+     "out": 1838,
+     "reasoning": 414
+    },
+    "usd": 0.0011467,
+    "error": null,
+    "chars": 4530,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 4957,
+     "readyMs": 44,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 19
+    },
+    "cumWallMs": 43150
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 3,
+  "timeToPlayableMs": 43150,
+  "usd": 0.003297
+ },
+ {
+  "id": "bar_chart_viz__ds41-flash__2",
+  "kind": "bar_chart_viz",
+  "arm": "ds41-flash",
+  "s": 2,
+  "dep": "taxila-ds41",
+  "effort": null,
+  "startedAt": "2026-10-04T11:18:41.221Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 6869,
+    "ttftMs": 1004,
+    "firstAnyMs": 1004,
+    "reasoningChars": 0,
+    "served": "taxila-ds41",
+    "usage": {
+     "in": 846,
+     "cached": 768,
+     "out": 3076,
+     "reasoning": 0
+    },
+    "usd": 0.00493125,
+    "error": null,
+    "chars": 10057,
+    "streamPaintMs": 4504,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4810,
+     "readyMs": 31,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "axis_ticks_tell_truth",
+       "detail": "8 ticks, worst 18.1 px"
+      },
+      {
+       "id": "no_answer_hint_before_tap",
+       "detail": [
+        "rgb(0, 0, 0)|rgb(242, 169, 59)|1",
+        "rgb(0, 0, 0)|rgb(245, 213, 71)|1",
+        "rgb(0, 0, 0)|rgb(228, 87, 61)|1"
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 11679
+   },
+   {
+    "round": 1,
+    "genMs": 6140,
+    "ttftMs": 626,
+    "firstAnyMs": 626,
+    "reasoningChars": 0,
+    "served": "taxila-ds41",
+    "usage": {
+     "in": 4057,
+     "cached": 768,
+     "out": 3182,
+     "reasoning": 0
+    },
+    "usd": 0.006294375,
+    "error": null,
+    "chars": 10411,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4820,
+     "readyMs": 24,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "no_answer_hint_before_tap",
+       "detail": [
+        "rgb(0, 0, 0)|rgb(242, 169, 59)|1",
+        "rgb(0, 0, 0)|rgb(245, 213, 71)|1",
+        "rgb(0, 0, 0)|rgb(228, 87, 61)|1"
+       ]
+      },
+      {
+       "id": "tap_answer_truth",
+       "detail": "guava"
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 22639
+   },
+   {
+    "round": 2,
+    "genMs": 5938,
+    "ttftMs": 1169,
+    "firstAnyMs": 1169,
+    "reasoningChars": 0,
+    "served": "taxila-ds41",
+    "usage": {
+     "in": 4163,
+     "cached": 768,
+     "out": 2931,
+     "reasoning": 0
+    },
+    "usd": 0.005957625,
+    "error": null,
+    "chars": 9696,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4904,
+     "readyMs": 30,
+     "perf": {
+      "p95": 17,
+      "frames": 87,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         31,
+         22,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\"}"
+        ]
+       ]
+      },
+      {
+       "id": "axis_ticks_tell_truth",
+       "detail": "14 ticks, worst 28.0 px"
+      },
+      {
+       "id": "tap_answer_truth",
+       "detail": "guava"
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 33481
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.01718325
+ },
+ {
+  "id": "photosynthesis_anim__dsv4-flash__2",
+  "kind": "photosynthesis_anim",
+  "arm": "dsv4-flash",
+  "s": 2,
+  "dep": "DeepSeek-V4-Flash",
+  "effort": null,
+  "startedAt": "2026-10-04T11:16:56.511Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 36498,
+    "ttftMs": 1048,
+    "firstAnyMs": 1048,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 1126,
+     "cached": 0,
+     "out": 4810,
+     "reasoning": 0
+    },
+    "usd": 0.00266704,
+    "error": null,
+    "chars": 15315,
+    "streamPaintMs": 11048,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8253,
+     "readyMs": 26,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "words_from_table",
+       "detail": [
+        "CO₂",
+        "Water"
+       ]
+      },
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         75,
+         32,
+         "{\"data-action\":\"play\"}"
+        ],
+        [
+         70,
+         36,
+         "{\"data-option\":\"co2\"}"
+        ],
+        [
+         70,
+         36,
+         "{\"data-option\":\"o2\"}"
+        ]
+       ]
+      },
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "o2 label 90 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 44751
+   },
+   {
+    "round": 1,
+    "genMs": 23716,
+    "ttftMs": 996,
+    "firstAnyMs": 996,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 6066,
+     "cached": 0,
+     "out": 4932,
+     "reasoning": 0
+    },
+    "usd": 0.0036678600000000002,
+    "error": null,
+    "chars": 15690,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8184,
+     "readyMs": 32,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "words_from_table",
+       "detail": [
+        "CO₂",
+        "Water"
+       ]
+      },
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "o2 label 95 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 76651
+   },
+   {
+    "round": 2,
+    "genMs": 46192,
+    "ttftMs": 1927,
+    "firstAnyMs": 1927,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 6128,
+     "cached": 1024,
+     "out": 4753,
+     "reasoning": 0
+    },
+    "usd": 0.0035883500000000006,
+    "error": null,
+    "chars": 15259,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8376,
+     "readyMs": 66,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 131219
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 3,
+  "timeToPlayableMs": 131219,
+  "usd": 0.009923250000000002
+ },
+ {
+  "id": "fraction_game__gpt6-sol-low__3",
+  "kind": "fraction_game",
+  "arm": "gpt6-sol-low",
+  "s": 3,
+  "dep": "taxila-gpt6",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:19:25.215Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 11999,
+    "ttftMs": 5076,
+    "firstAnyMs": 5076,
+    "reasoningChars": 0,
+    "served": "gpt-6-sol-2026-09-22",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 1759,
+     "reasoning": 318
+    },
+    "usd": 0.019172,
+    "error": null,
+    "chars": 5131,
+    "streamPaintMs": 9076,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11604,
+     "readyMs": 44,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 23603
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 23603,
+  "usd": 0.019172
+ },
+ {
+  "id": "fraction_game__terra-low__3",
+  "kind": "fraction_game",
+  "arm": "terra-low",
+  "s": 3,
+  "dep": "gpt-5.6-terra",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:19:17.166Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 22962,
+    "ttftMs": 7088,
+    "firstAnyMs": 7088,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-terra-2026-07-09",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 3118,
+     "reasoning": 512
+    },
+    "usd": 0.038998,
+    "error": null,
+    "chars": 8323,
+    "streamPaintMs": 16588,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11594,
+     "readyMs": 36,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 34556
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 34556,
+  "usd": 0.038998
+ },
+ {
+  "id": "bar_chart_viz__ds4f-0731__2",
+  "kind": "bar_chart_viz",
+  "arm": "ds4f-0731",
+  "s": 2,
+  "dep": "taxila-ds4f-0731",
+  "effort": null,
+  "startedAt": "2026-10-04T11:18:59.205Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 6946,
+    "ttftMs": 1269,
+    "firstAnyMs": 1269,
+    "reasoningChars": 0,
+    "served": "taxila-ds4f-0731",
+    "usage": {
+     "in": 845,
+     "cached": 256,
+     "out": 2493,
+     "reasoning": 0
+    },
+    "usd": 0.0035535040000000003,
+    "error": null,
+    "chars": 8203,
+    "streamPaintMs": 3269,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4833,
+     "readyMs": 44,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "words_from_table",
+       "detail": [
+        "Studio.t('title')",
+        "Studio.t('ask')",
+        "👆 bar dabao"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 11779
+   },
+   {
+    "round": 1,
+    "genMs": 5793,
+    "ttftMs": 1062,
+    "firstAnyMs": 1062,
+    "reasoningChars": 0,
+    "served": "taxila-ds4f-0731",
+    "usage": {
+     "in": 3410,
+     "cached": 768,
+     "out": 2457,
+     "reasoning": 0
+    },
+    "usd": 0.004416471999999999,
+    "error": null,
+    "chars": 8110,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 5031,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         24,
+         54,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\"}"
+        ]
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 22603
+   },
+   {
+    "round": 2,
+    "genMs": 5368,
+    "ttftMs": 572,
+    "firstAnyMs": 572,
+    "reasoningChars": 0,
+    "served": "taxila-ds4f-0731",
+    "usage": {
+     "in": 3382,
+     "cached": 256,
+     "out": 2639,
+     "reasoning": 0
+    },
+    "usd": 0.004862504,
+    "error": null,
+    "chars": 8818,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4823,
+     "readyMs": 34,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         34,
+         107,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\"}"
+        ]
+       ]
+      },
+      {
+       "id": "all_bars_present",
+       "detail": {
+        "missing": [],
+        "n": 10
+       }
+      },
+      {
+       "id": "no_answer_hint_before_tap",
+       "detail": [
+        "rgb(0, 0, 0)|rgba(0, 0, 0, 0)|1",
+        "rgb(255, 183, 77)|rgba(0, 0, 0, 0)|1"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 32794
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.01283248
+ },
+ {
+  "id": "bar_chart_viz__mistral-m35__2",
+  "kind": "bar_chart_viz",
+  "arm": "mistral-m35",
+  "s": 2,
+  "dep": "taxila-mistral-m35",
+  "effort": null,
+  "startedAt": "2026-10-04T11:19:10.519Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 12100,
+    "ttftMs": 1187,
+    "firstAnyMs": 1187,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 872,
+     "cached": 768,
+     "out": 1950,
+     "reasoning": 0
+    },
+    "usd": 0.015933,
+    "error": null,
+    "chars": 6530,
+    "streamPaintMs": null,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4789,
+     "readyMs": 22,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "common_baseline",
+       "detail": [
+        "351.0",
+        "351.0",
+        "351.0",
+        "334.0",
+        "351.0"
+       ]
+      },
+      {
+       "id": "axis_ticks_tell_truth",
+       "detail": "5 ticks, worst 278.0 px"
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 16889
+   },
+   {
+    "round": 1,
+    "genMs": 9730,
+    "ttftMs": 766,
+    "firstAnyMs": 766,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 2924,
+     "cached": 896,
+     "out": 1943,
+     "reasoning": 0
+    },
+    "usd": 0.0189585,
+    "error": null,
+    "chars": 6516,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4821,
+     "readyMs": 34,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "common_baseline",
+       "detail": [
+        "351.0",
+        "351.0",
+        "351.0",
+        "334.0",
+        "351.0"
+       ]
+      },
+      {
+       "id": "axis_ticks_tell_truth",
+       "detail": "6 ticks, worst 21.0 px"
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 31440
+   },
+   {
+    "round": 2,
+    "genMs": 10217,
+    "ttftMs": 1154,
+    "firstAnyMs": 1154,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 2916,
+     "cached": 896,
+     "out": 1944,
+     "reasoning": 0
+    },
+    "usd": 0.018954,
+    "error": null,
+    "chars": 6533,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4884,
+     "readyMs": 32,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         36,
+         84,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\",\"data-test\":\"bar-mango\"}"
+        ],
+        [
+         36,
+         49,
+         "{\"data-bar\":\"banana\",\"data-value\":\"7\",\"data-test\":\"bar-banana\"}"
+        ],
+        [
+         36,
+         63,
+         "{\"data-bar\":\"apple\",\"data-value\":\"9\",\"data-test\":\"bar-apple\"}"
+        ]
+       ]
+      },
+      {
+       "id": "common_baseline",
+       "detail": [
+        "351.0",
+        "351.0",
+        "351.0",
+        "334.0",
+        "351.0"
+       ]
+      },
+      {
+       "id": "axis_ticks_tell_truth",
+       "detail": "6 ticks, worst 21.0 px"
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 46541
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.0538455
+ },
+ {
+  "id": "photosynthesis_anim__kimi-code__1",
+  "kind": "photosynthesis_anim",
+  "arm": "kimi-code",
+  "s": 1,
+  "dep": "taxila-kimi-code",
+  "effort": null,
+  "startedAt": "2026-10-04T11:13:29.695Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 85228,
+    "ttftMs": 66528,
+    "firstAnyMs": 1732,
+    "reasoningChars": 51624,
+    "served": "Kimi-K2.7-Code",
+    "usage": {
+     "in": 1104,
+     "cached": 0,
+     "out": 19827,
+     "reasoning": 0
+    },
+    "usd": 0.0803568,
+    "error": null,
+    "chars": 14799,
+    "streamPaintMs": 72528,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8382,
+     "readyMs": 36,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "sun~o2"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 93610
+   },
+   {
+    "round": 1,
+    "genMs": 153009,
+    "ttftMs": 120662,
+    "firstAnyMs": 1496,
+    "reasoningChars": 24518,
+    "served": "Kimi-K2.7-Code",
+    "usage": {
+     "in": 6174,
+     "cached": 0,
+     "out": 11919,
+     "reasoning": 0
+    },
+    "usd": 0.0535413,
+    "error": null,
+    "chars": 14828,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8289,
+     "readyMs": 43,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 254908
+   },
+   {
+    "round": 2,
+    "genMs": 104167,
+    "ttftMs": 62289,
+    "firstAnyMs": 2324,
+    "reasoningChars": 16815,
+    "served": "Kimi-K2.7-Code",
+    "usage": {
+     "in": 6185,
+     "cached": 1088,
+     "out": 8994,
+     "reasoning": 0
+    },
+    "usd": 0.04185175,
+    "error": null,
+    "chars": 14762,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8305,
+     "readyMs": 24,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 367380
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 3,
+  "timeToPlayableMs": 367380,
+  "usd": 0.17574985
+ },
+ {
+  "id": "fraction_game__sol-low__3",
+  "kind": "fraction_game",
+  "arm": "sol-low",
+  "s": 3,
+  "dep": "taxila-brain",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:19:20.371Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 34085,
+    "ttftMs": 11997,
+    "firstAnyMs": 11997,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-sol-2026-07-09",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 4292,
+     "reasoning": 655
+    },
+    "usd": 0.089004,
+    "error": null,
+    "chars": 12065,
+    "streamPaintMs": 26497,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11685,
+     "readyMs": 25,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 45770
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 45770,
+  "usd": 0.089004
+ },
+ {
+  "id": "bar_chart_viz__dsv4-flash__2",
+  "kind": "bar_chart_viz",
+  "arm": "dsv4-flash",
+  "s": 2,
+  "dep": "DeepSeek-V4-Flash",
+  "effort": null,
+  "startedAt": "2026-10-04T11:18:54.371Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 21913,
+    "ttftMs": 1303,
+    "firstAnyMs": 1303,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 845,
+     "cached": 0,
+     "out": 2639,
+     "reasoning": 0
+    },
+    "usd": 0.00150644,
+    "error": null,
+    "chars": 8637,
+    "streamPaintMs": null,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4829,
+     "readyMs": 28,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "heights_proportional",
+       "detail": "max err 208.05 px"
+      },
+      {
+       "id": "axis_ticks_tell_truth",
+       "detail": "4 ticks, worst 324.8 px"
+      },
+      {
+       "id": "tap_answer_truth",
+       "detail": "guava"
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 26742
+   },
+   {
+    "round": 1,
+    "genMs": 13255,
+    "ttftMs": 1068,
+    "firstAnyMs": 1068,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 3577,
+     "cached": 768,
+     "out": 2437,
+     "reasoning": 0
+    },
+    "usd": 0.0019225000000000002,
+    "error": null,
+    "chars": 8004,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4872,
+     "readyMs": 61,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "heights_proportional",
+       "detail": "max err 208.05 px"
+      },
+      {
+       "id": "axis_ticks_tell_truth",
+       "detail": "4 ticks, worst 325.3 px"
+      },
+      {
+       "id": "tap_answer_truth",
+       "detail": "guava"
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 44869
+   },
+   {
+    "round": 2,
+    "genMs": 14994,
+    "ttftMs": 1097,
+    "firstAnyMs": 1097,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 3371,
+     "cached": 256,
+     "out": 2361,
+     "reasoning": 0
+    },
+    "usd": 0.0018446,
+    "error": null,
+    "chars": 7718,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4844,
+     "readyMs": 63,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "heights_proportional",
+       "detail": "max err 30.76 px"
+      },
+      {
+       "id": "axis_ticks_tell_truth",
+       "detail": "4 ticks, worst 68.0 px"
+      },
+      {
+       "id": "tap_answer_truth",
+       "detail": "guava"
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 64707
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.00527354
+ },
+ {
+  "id": "fraction_game__gpt6-luna-low__3",
+  "kind": "fraction_game",
+  "arm": "gpt6-luna-low",
+  "s": 3,
+  "dep": "taxila-gpt6-luna",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:19:48.314Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 12360,
+    "ttftMs": 4415,
+    "firstAnyMs": 4415,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 2304,
+     "reasoning": 424
+    },
+    "usd": 0.0012311,
+    "error": null,
+    "chars": 6212,
+    "streamPaintMs": null,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11510,
+     "readyMs": 31,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 23870
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 23870,
+  "usd": 0.0012311
+ },
+ {
+  "id": "fraction_game__gpt6-luna-none__3",
+  "kind": "fraction_game",
+  "arm": "gpt6-luna-none",
+  "s": 3,
+  "dep": "taxila-gpt6-luna",
+  "effort": "none",
+  "startedAt": "2026-10-04T11:19:53.221Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 15914,
+    "ttftMs": 1480,
+    "firstAnyMs": 1480,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 3859,
+     "reasoning": 0
+    },
+    "usd": 0.0020085999999999997,
+    "error": null,
+    "chars": 12424,
+    "streamPaintMs": 11480,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11604,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 27518
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 27518,
+  "usd": 0.0020085999999999997
+ },
+ {
+  "id": "fraction_game__gpt61-sol-low__3",
+  "kind": "fraction_game",
+  "arm": "gpt61-sol-low",
+  "s": 3,
+  "dep": "taxila-gpt61-sol",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:19:43.357Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 25850,
+    "ttftMs": 9083,
+    "firstAnyMs": 9083,
+    "reasoningChars": 0,
+    "served": "gpt-6.1-sol-2026-09-29",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 2177,
+     "reasoning": 327
+    },
+    "usd": 0.023352,
+    "error": null,
+    "chars": 6234,
+    "streamPaintMs": null,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11668,
+     "readyMs": 28,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 37518
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 37518,
+  "usd": 0.023352
+ },
+ {
+  "id": "fraction_game__ds41-flash__3",
+  "kind": "fraction_game",
+  "arm": "ds41-flash",
+  "s": 3,
+  "dep": "taxila-ds41",
+  "effort": null,
+  "startedAt": "2026-10-04T11:20:09.819Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 9660,
+    "ttftMs": 846,
+    "firstAnyMs": 846,
+    "reasoningChars": 0,
+    "served": "taxila-ds41",
+    "usage": {
+     "in": 810,
+     "cached": 768,
+     "out": 4132,
+     "reasoning": 0
+    },
+    "usd": 0.00650175,
+    "error": null,
+    "chars": 13137,
+    "streamPaintMs": 5346,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11558,
+     "readyMs": 24,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 21218
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 21218,
+  "usd": 0.00650175
+ },
+ {
+  "id": "fraction_game__ds4f-0731__3",
+  "kind": "fraction_game",
+  "arm": "ds4f-0731",
+  "s": 3,
+  "dep": "taxila-ds4f-0731",
+  "effort": null,
+  "startedAt": "2026-10-04T11:20:14.642Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 6665,
+    "ttftMs": 1055,
+    "firstAnyMs": 1055,
+    "reasoningChars": 0,
+    "served": "taxila-ds4f-0731",
+    "usage": {
+     "in": 809,
+     "cached": 768,
+     "out": 3058,
+     "reasoning": 0
+    },
+    "usd": 0.004065352,
+    "error": null,
+    "chars": 10614,
+    "streamPaintMs": null,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11601,
+     "readyMs": 48,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 18266
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 18266,
+  "usd": 0.004065352
+ },
+ {
+  "id": "fraction_game__codex-low__3",
+  "kind": "fraction_game",
+  "arm": "codex-low",
+  "s": 3,
+  "dep": "taxila-codex",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:19:57.291Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 24814,
+    "ttftMs": 7909,
+    "firstAnyMs": 7909,
+    "reasoningChars": 0,
+    "served": "taxila-codex",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 3273,
+     "reasoning": 635
+    },
+    "usd": 0.04720625,
+    "error": null,
+    "chars": 8780,
+    "streamPaintMs": 16409,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11643,
+     "readyMs": 38,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 36457
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 36457,
+  "usd": 0.04720625
+ },
+ {
+  "id": "fraction_game__dsv4-flash__3",
+  "kind": "fraction_game",
+  "arm": "dsv4-flash",
+  "s": 3,
+  "dep": "DeepSeek-V4-Flash",
+  "effort": null,
+  "startedAt": "2026-10-04T11:20:13.757Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 39878,
+    "ttftMs": 1188,
+    "firstAnyMs": 1188,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 809,
+     "cached": 0,
+     "out": 4324,
+     "reasoning": 0
+    },
+    "usd": 0.0023589500000000003,
+    "error": null,
+    "chars": 15511,
+    "streamPaintMs": null,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11607,
+     "readyMs": 31,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 51485
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 51485,
+  "usd": 0.0023589500000000003
+ },
+ {
+  "id": "photosynthesis_anim__gpt6-sol-low__3",
+  "kind": "photosynthesis_anim",
+  "arm": "gpt6-sol-low",
+  "s": 3,
+  "dep": "taxila-gpt6",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:20:42.336Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 17382,
+    "ttftMs": 4501,
+    "firstAnyMs": 4501,
+    "reasoningChars": 0,
+    "served": "gpt-6-sol-2026-09-22",
+    "usage": {
+     "in": 1103,
+     "cached": 1100,
+     "out": 2659,
+     "reasoning": 204
+    },
+    "usd": 0.026816,
+    "error": null,
+    "chars": 7564,
+    "streamPaintMs": 8501,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8386,
+     "readyMs": 60,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "out:co2"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 25768
+   },
+   {
+    "round": 1,
+    "genMs": 11276,
+    "ttftMs": 2195,
+    "firstAnyMs": 2195,
+    "reasoningChars": 0,
+    "served": "gpt-6-sol-2026-09-22",
+    "usage": {
+     "in": 3597,
+     "cached": 0,
+     "out": 2544,
+     "reasoning": 47
+    },
+    "usd": 0.032634,
+    "error": null,
+    "chars": 7682,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8306,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 45350
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 45350,
+  "usd": 0.05945
+ },
+ {
+  "id": "bar_chart_viz__kimi26__1",
+  "kind": "bar_chart_viz",
+  "arm": "kimi26",
+  "s": 1,
+  "dep": "taxila-kimi26",
+  "effort": null,
+  "startedAt": "2026-10-04T11:14:40.362Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 100969,
+    "ttftMs": 94068,
+    "firstAnyMs": 357,
+    "reasoningChars": 75067,
+    "served": "Kimi-K2.6",
+    "usage": {
+     "in": 829,
+     "cached": 768,
+     "out": 21551,
+     "reasoning": 0
+    },
+    "usd": 0.08638483,
+    "error": null,
+    "chars": 7607,
+    "streamPaintMs": 98068,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4852,
+     "readyMs": 23,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "axis_ticks_tell_truth",
+       "detail": "7 ticks, worst 14.0 px"
+      },
+      {
+       "id": "no_answer_hint_before_tap",
+       "detail": [
+        "rgb(0, 0, 0)|rgb(255, 183, 77)|1",
+        "rgb(0, 0, 0)|rgb(255, 224, 130)|1",
+        "rgb(0, 0, 0)|rgb(239, 83, 80)|1"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 105821
+   },
+   {
+    "round": 1,
+    "genMs": 170123,
+    "ttftMs": null,
+    "firstAnyMs": 2282,
+    "reasoningChars": 89099,
+    "served": "Kimi-K2.6",
+    "usage": {
+     "in": 3100,
+     "cached": 448,
+     "out": 24000,
+     "reasoning": 0
+    },
+    "usd": 0.09859108,
+    "error": "length",
+    "chars": 0,
+    "cumWallMs": 275944
+   },
+   {
+    "round": 2,
+    "genMs": 134144,
+    "ttftMs": null,
+    "firstAnyMs": 1281,
+    "reasoningChars": 94213,
+    "served": "Kimi-K2.6",
+    "usage": {
+     "in": 3100,
+     "cached": 832,
+     "out": 24000,
+     "reasoning": 0
+    },
+    "usd": 0.09828772,
+    "error": "length",
+    "chars": 0,
+    "cumWallMs": 410088
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.28326363
+ },
+ {
+  "id": "fraction_game__kimi-code__2",
+  "kind": "fraction_game",
+  "arm": "kimi-code",
+  "s": 2,
+  "dep": "taxila-kimi-code",
+  "effort": null,
+  "startedAt": "2026-10-04T11:16:29.523Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 174650,
+    "ttftMs": 142506,
+    "firstAnyMs": 1875,
+    "reasoningChars": 42775,
+    "served": "Kimi-K2.7-Code",
+    "usage": {
+     "in": 792,
+     "cached": 448,
+     "out": 15276,
+     "reasoning": 0
+    },
+    "usd": 0.0618564,
+    "error": null,
+    "chars": 13279,
+    "streamPaintMs": 155006,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 11631,
+     "readyMs": 25,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_in_viewport",
+       "detail": [
+        [
+         40,
+         604,
+         280,
+         52
+        ]
+       ]
+      }
+     ],
+     "nChecks": 15
+    },
+    "cumWallMs": 186281
+   },
+   {
+    "round": 1,
+    "genMs": 119606,
+    "ttftMs": 85309,
+    "firstAnyMs": 10289,
+    "reasoningChars": 18269,
+    "served": "Kimi-K2.7-Code",
+    "usage": {
+     "in": 4733,
+     "cached": 768,
+     "out": 8756,
+     "reasoning": 0
+    },
+    "usd": 0.039520349999999996,
+    "error": null,
+    "chars": 13194,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11640,
+     "readyMs": 25,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 317527
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 317527,
+  "usd": 0.10137674999999999
+ },
+ {
+  "id": "fraction_game__mistral-m35__3",
+  "kind": "fraction_game",
+  "arm": "mistral-m35",
+  "s": 3,
+  "dep": "taxila-mistral-m35",
+  "effort": null,
+  "startedAt": "2026-10-04T11:20:19.526Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 16278,
+    "ttftMs": 707,
+    "firstAnyMs": 707,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 829,
+     "cached": 768,
+     "out": 2921,
+     "reasoning": 0
+    },
+    "usd": 0.023151,
+    "error": null,
+    "chars": 10551,
+    "streamPaintMs": null,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 5033,
+     "readyMs": 41,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "play_all_items_truth",
+       "detail": [
+        "item1: 8 parts, want 5"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 15
+    },
+    "cumWallMs": 21311
+   },
+   {
+    "round": 1,
+    "genMs": 13985,
+    "ttftMs": 761,
+    "firstAnyMs": 761,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 3818,
+     "cached": 768,
+     "out": 2807,
+     "reasoning": 0
+    },
+    "usd": 0.0267795,
+    "error": null,
+    "chars": 10124,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4926,
+     "readyMs": 23,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "play_all_items_truth",
+       "detail": [
+        "item1: 8 parts, want 5"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 15
+    },
+    "cumWallMs": 40222
+   },
+   {
+    "round": 2,
+    "genMs": 14141,
+    "ttftMs": 1122,
+    "firstAnyMs": 1122,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 3704,
+     "cached": 1408,
+     "out": 2779,
+     "reasoning": 0
+    },
+    "usd": 0.0263985,
+    "error": null,
+    "chars": 10007,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4950,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "play_all_items_truth",
+       "detail": [
+        "item1: 8 parts, want 5"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 15
+    },
+    "cumWallMs": 59313
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.07632900000000001
+ },
+ {
+  "id": "photosynthesis_anim__gpt6-luna-low__3",
+  "kind": "photosynthesis_anim",
+  "arm": "gpt6-luna-low",
+  "s": 3,
+  "dep": "taxila-gpt6-luna",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:20:54.011Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 16503,
+    "ttftMs": 5143,
+    "firstAnyMs": 5143,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 1103,
+     "cached": 1100,
+     "out": 3111,
+     "reasoning": 498
+    },
+    "usd": 0.0015668,
+    "error": null,
+    "chars": 7820,
+    "streamPaintMs": 10143,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": true,
+     "ms": 8195,
+     "readyMs": 28,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "water label 113 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 24698
+   },
+   {
+    "round": 1,
+    "genMs": 11731,
+    "ttftMs": 2909,
+    "firstAnyMs": 2909,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 3763,
+     "cached": 0,
+     "out": 2825,
+     "reasoning": 207
+    },
+    "usd": 0.0017888,
+    "error": null,
+    "chars": 7842,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8347,
+     "readyMs": 48,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 44776
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 44776,
+  "usd": 0.0033556
+ },
+ {
+  "id": "photosynthesis_anim__sol-low__3",
+  "kind": "photosynthesis_anim",
+  "arm": "sol-low",
+  "s": 3,
+  "dep": "taxila-brain",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:20:36.553Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 31635,
+    "ttftMs": 6975,
+    "firstAnyMs": 6975,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-sol-2026-07-09",
+    "usage": {
+     "in": 1103,
+     "cached": 1100,
+     "out": 4198,
+     "reasoning": 440
+    },
+    "usd": 0.084412,
+    "error": null,
+    "chars": 11950,
+    "streamPaintMs": 17975,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8403,
+     "readyMs": 41,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "out:co2"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 40038
+   },
+   {
+    "round": 1,
+    "genMs": 22355,
+    "ttftMs": 2828,
+    "firstAnyMs": 2828,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-sol-2026-07-09",
+    "usage": {
+     "in": 4900,
+     "cached": 0,
+     "out": 3995,
+     "reasoning": 130
+    },
+    "usd": 0.0995,
+    "error": null,
+    "chars": 12306,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8436,
+     "readyMs": 37,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 70829
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 70829,
+  "usd": 0.18391200000000002
+ },
+ {
+  "id": "photosynthesis_anim__terra-low__3",
+  "kind": "photosynthesis_anim",
+  "arm": "terra-low",
+  "s": 3,
+  "dep": "gpt-5.6-terra",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:20:31.709Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 28608,
+    "ttftMs": 7019,
+    "firstAnyMs": 7019,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-terra-2026-07-09",
+    "usage": {
+     "in": 1103,
+     "cached": 1100,
+     "out": 3808,
+     "reasoning": 484
+    },
+    "usd": 0.045922,
+    "error": null,
+    "chars": 10003,
+    "streamPaintMs": 16019,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8359,
+     "readyMs": 26,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         38,
+         44,
+         "{\"data-action\":\"step-1\"}"
+        ],
+        [
+         38,
+         44,
+         "{\"data-action\":\"step-2\"}"
+        ],
+        [
+         38,
+         44,
+         "{\"data-action\":\"step-3\"}"
+        ]
+       ]
+      },
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "out:co2"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 36967
+   },
+   {
+    "round": 1,
+    "genMs": 26004,
+    "ttftMs": 8794,
+    "firstAnyMs": 8794,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-terra-2026-07-09",
+    "usage": {
+     "in": 4519,
+     "cached": 0,
+     "out": 3968,
+     "reasoning": 698
+    },
+    "usd": 0.056654,
+    "error": null,
+    "chars": 9940,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8438,
+     "readyMs": 41,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 71409
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 71409,
+  "usd": 0.102576
+ },
+ {
+  "id": "photosynthesis_anim__gpt6-luna-none__3",
+  "kind": "photosynthesis_anim",
+  "arm": "gpt6-luna-none",
+  "s": 3,
+  "dep": "taxila-gpt6-luna",
+  "effort": "none",
+  "startedAt": "2026-10-04T11:21:00.267Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 11919,
+    "ttftMs": 952,
+    "firstAnyMs": 952,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 1103,
+     "cached": 1100,
+     "out": 2874,
+     "reasoning": 0
+    },
+    "usd": 0.0014483,
+    "error": null,
+    "chars": 8790,
+    "streamPaintMs": 3952,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": true,
+     "ms": 8332,
+     "readyMs": 50,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "water label 106 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 20251
+   },
+   {
+    "round": 1,
+    "genMs": 9862,
+    "ttftMs": 1374,
+    "firstAnyMs": 1374,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 4030,
+     "cached": 0,
+     "out": 2869,
+     "reasoning": 0
+    },
+    "usd": 0.0018375,
+    "error": null,
+    "chars": 8765,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8370,
+     "readyMs": 31,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 38483
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 38483,
+  "usd": 0.0032858
+ },
+ {
+  "id": "photosynthesis_anim__codex-low__3",
+  "kind": "photosynthesis_anim",
+  "arm": "codex-low",
+  "s": 3,
+  "dep": "taxila-codex",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:21:05.611Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 42388,
+    "ttftMs": 15312,
+    "firstAnyMs": 15312,
+    "reasoningChars": 0,
+    "served": "taxila-codex",
+    "usage": {
+     "in": 1103,
+     "cached": 0,
+     "out": 5373,
+     "reasoning": 1273
+    },
+    "usd": 0.07715225,
+    "error": null,
+    "chars": 12309,
+    "streamPaintMs": 24812,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8280,
+     "readyMs": 39,
+     "perf": {
+      "p95": 17,
+      "frames": 88,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 50668
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 50668,
+  "usd": 0.07715225
+ },
+ {
+  "id": "photosynthesis_anim__gpt61-sol-low__3",
+  "kind": "photosynthesis_anim",
+  "arm": "gpt61-sol-low",
+  "s": 3,
+  "dep": "taxila-gpt61-sol",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:20:48.268Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 30223,
+    "ttftMs": 3868,
+    "firstAnyMs": 3868,
+    "reasoningChars": 0,
+    "served": "gpt-6.1-sol-2026-09-29",
+    "usage": {
+     "in": 1103,
+     "cached": 1100,
+     "out": 2672,
+     "reasoning": 67
+    },
+    "usd": 0.026946,
+    "error": null,
+    "chars": 7915,
+    "streamPaintMs": 11868,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": true,
+     "ms": 8286,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "water label 91 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 38509
+   },
+   {
+    "round": 1,
+    "genMs": 20735,
+    "ttftMs": 2734,
+    "firstAnyMs": 2734,
+    "reasoningChars": 0,
+    "served": "gpt-6.1-sol-2026-09-29",
+    "usage": {
+     "in": 3755,
+     "cached": 0,
+     "out": 2685,
+     "reasoning": 39
+    },
+    "usd": 0.03436,
+    "error": null,
+    "chars": 8046,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8277,
+     "readyMs": 32,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 67521
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 67521,
+  "usd": 0.061306
+ },
+ {
+  "id": "photosynthesis_anim__kimi26__2",
+  "kind": "photosynthesis_anim",
+  "arm": "kimi26",
+  "s": 2,
+  "dep": "taxila-kimi26",
+  "effort": null,
+  "startedAt": "2026-10-04T11:17:24.665Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 155519,
+    "ttftMs": 129142,
+    "firstAnyMs": 1111,
+    "reasoningChars": 65475,
+    "served": "Kimi-K2.6",
+    "usage": {
+     "in": 1104,
+     "cached": 448,
+     "out": 22466,
+     "reasoning": 0
+    },
+    "usd": 0.09055888000000001,
+    "error": null,
+    "chars": 11919,
+    "streamPaintMs": 139642,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8219,
+     "readyMs": 38,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "leaf~glucose"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 163738
+   },
+   {
+    "round": 1,
+    "genMs": 72403,
+    "ttftMs": 59418,
+    "firstAnyMs": 1664,
+    "reasoningChars": 37132,
+    "served": "Kimi-K2.6",
+    "usage": {
+     "in": 5108,
+     "cached": 448,
+     "out": 14707,
+     "reasoning": 0
+    },
+    "usd": 0.06332668,
+    "error": null,
+    "chars": 12081,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": true,
+     "ms": 8294,
+     "readyMs": 26,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "water label 120 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 244435
+   },
+   {
+    "round": 2,
+    "genMs": 64830,
+    "ttftMs": 53409,
+    "firstAnyMs": 1410,
+    "reasoningChars": 43211,
+    "served": "Kimi-K2.6",
+    "usage": {
+     "in": 5155,
+     "cached": 1088,
+     "out": 17226,
+     "reasoning": 0
+    },
+    "usd": 0.07294173,
+    "error": null,
+    "chars": 12565,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8324,
+     "readyMs": 54,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 317589
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 3,
+  "timeToPlayableMs": 317589,
+  "usd": 0.22682729000000001
+ },
+ {
+  "id": "photosynthesis_anim__ds41-flash__3",
+  "kind": "photosynthesis_anim",
+  "arm": "ds41-flash",
+  "s": 3,
+  "dep": "taxila-ds41",
+  "effort": null,
+  "startedAt": "2026-10-04T11:21:11.912Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 26164,
+    "ttftMs": 709,
+    "firstAnyMs": 709,
+    "reasoningChars": 0,
+    "served": "taxila-ds41",
+    "usage": {
+     "in": 1127,
+     "cached": 1024,
+     "out": 7568,
+     "reasoning": 0
+    },
+    "usd": 0.011774625,
+    "error": null,
+    "chars": 22126,
+    "streamPaintMs": 6709,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8440,
+     "readyMs": 28,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "no_hscroll",
+       "detail": 8
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 34604
+   },
+   {
+    "round": 1,
+    "genMs": 61583,
+    "ttftMs": 34458,
+    "firstAnyMs": 34458,
+    "reasoningChars": 0,
+    "served": "taxila-ds41",
+    "usage": {
+     "in": 8744,
+     "cached": 1024,
+     "out": 6940,
+     "reasoning": 0
+    },
+    "usd": 0.013689,
+    "error": null,
+    "chars": 20165,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8530,
+     "readyMs": 31,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 104717
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 104717,
+  "usd": 0.025463625
+ },
+ {
+  "id": "photosynthesis_anim__ds4f-0731__3",
+  "kind": "photosynthesis_anim",
+  "arm": "ds4f-0731",
+  "s": 3,
+  "dep": "taxila-ds4f-0731",
+  "effort": null,
+  "startedAt": "2026-10-04T11:21:45.221Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 8662,
+    "ttftMs": 704,
+    "firstAnyMs": 704,
+    "reasoningChars": 0,
+    "served": "taxila-ds4f-0731",
+    "usage": {
+     "in": 1126,
+     "cached": 1024,
+     "out": 4298,
+     "reasoning": 0
+    },
+    "usd": 0.0057325760000000005,
+    "error": null,
+    "chars": 13502,
+    "streamPaintMs": 2704,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8257,
+     "readyMs": 24,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "words_from_table",
+       "detail": [
+        "Sun",
+        "Glucose"
+       ]
+      },
+      {
+       "id": "label_text_from_table",
+       "detail": [
+        "glucose"
+       ]
+      },
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "sun~sun"
+       ]
+      },
+      {
+       "id": "science_direction_of_flows",
+       "detail": [
+        "water: not moving",
+        "o2 not moving out of leaf (dd -23.8)"
+       ]
+      },
+      {
+       "id": "steps_drive_caption",
+       "detail": [
+        "step-3 caption \"Patti mein glucose banta hai.\""
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 16919
+   },
+   {
+    "round": 1,
+    "genMs": 8881,
+    "ttftMs": 788,
+    "firstAnyMs": 788,
+    "reasoningChars": 0,
+    "served": "taxila-ds4f-0731",
+    "usage": {
+     "in": 5551,
+     "cached": 1024,
+     "out": 4202,
+     "reasoning": 0
+    },
+    "usd": 0.007552856000000001,
+    "error": null,
+    "chars": 12869,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8217,
+     "readyMs": 35,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "sun~glucose"
+       ]
+      },
+      {
+       "id": "steps_drive_caption",
+       "detail": [
+        "step-3 caption \"Patti mein glucose banta hai.\""
+       ]
+      },
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "o2 label 114 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 34017
+   },
+   {
+    "round": 2,
+    "genMs": 8643,
+    "ttftMs": 1489,
+    "firstAnyMs": 1489,
+    "reasoningChars": 0,
+    "served": "taxila-ds4f-0731",
+    "usage": {
+     "in": 5428,
+     "cached": 1024,
+     "out": 4349,
+     "reasoning": 0
+    },
+    "usd": 0.007692776,
+    "error": null,
+    "chars": 13522,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8382,
+     "readyMs": 38,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "sun~sun"
+       ]
+      },
+      {
+       "id": "steps_drive_caption",
+       "detail": [
+        "step-3 caption \"Patti mein glucose banta hai.\""
+       ]
+      },
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "o2 label 117 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 51042
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.020978208
+ },
+ {
+  "id": "bar_chart_viz__gpt6-sol-low__3",
+  "kind": "bar_chart_viz",
+  "arm": "gpt6-sol-low",
+  "s": 3,
+  "dep": "taxila-gpt6",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:22:19.461Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 13975,
+    "ttftMs": 6385,
+    "firstAnyMs": 6385,
+    "reasoningChars": 0,
+    "served": "gpt-6-sol-2026-09-22",
+    "usage": {
+     "in": 824,
+     "cached": 0,
+     "out": 2027,
+     "reasoning": 405
+    },
+    "usd": 0.021918,
+    "error": null,
+    "chars": 5339,
+    "streamPaintMs": 10385,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4904,
+     "readyMs": 30,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         43,
+         34,
+         "{\"data-bar\":\"banana\",\"data-value\":\"7\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 18879
+   },
+   {
+    "round": 1,
+    "genMs": 9166,
+    "ttftMs": 3486,
+    "firstAnyMs": 3486,
+    "reasoningChars": 0,
+    "served": "gpt-6-sol-2026-09-22",
+    "usage": {
+     "in": 2498,
+     "cached": 0,
+     "out": 1794,
+     "reasoning": 156
+    },
+    "usd": 0.022936,
+    "error": null,
+    "chars": 5426,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4911,
+     "readyMs": 33,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         48,
+         34,
+         "{\"data-bar\":\"banana\",\"data-value\":\"7\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 32956
+   },
+   {
+    "round": 2,
+    "genMs": 10791,
+    "ttftMs": 4581,
+    "firstAnyMs": 4581,
+    "reasoningChars": 0,
+    "served": "gpt-6-sol-2026-09-22",
+    "usage": {
+     "in": 2514,
+     "cached": 0,
+     "out": 1911,
+     "reasoning": 254
+    },
+    "usd": 0.024138,
+    "error": null,
+    "chars": 5443,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 4952,
+     "readyMs": 32,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 19
+    },
+    "cumWallMs": 48699
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 3,
+  "timeToPlayableMs": 48699,
+  "usd": 0.068992
+ },
+ {
+  "id": "bar_chart_viz__gpt61-sol-low__3",
+  "kind": "bar_chart_viz",
+  "arm": "gpt61-sol-low",
+  "s": 3,
+  "dep": "taxila-gpt61-sol",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:22:27.185Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 24959,
+    "ttftMs": 9390,
+    "firstAnyMs": 9390,
+    "reasoningChars": 0,
+    "served": "gpt-6.1-sol-2026-09-29",
+    "usage": {
+     "in": 824,
+     "cached": 0,
+     "out": 2048,
+     "reasoning": 323
+    },
+    "usd": 0.022128,
+    "error": null,
+    "chars": 5705,
+    "streamPaintMs": 17890,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4938,
+     "readyMs": 40,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         45,
+         33,
+         "{\"data-bar\":\"guava\",\"data-value\":\"4\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 29897
+   },
+   {
+    "round": 1,
+    "genMs": 15231,
+    "ttftMs": 3898,
+    "firstAnyMs": 3898,
+    "reasoningChars": 0,
+    "served": "gpt-6.1-sol-2026-09-29",
+    "usage": {
+     "in": 2602,
+     "cached": 0,
+     "out": 1803,
+     "reasoning": 79
+    },
+    "usd": 0.023234,
+    "error": null,
+    "chars": 5647,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 4851,
+     "readyMs": 32,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 19
+    },
+    "cumWallMs": 49979
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 49979,
+  "usd": 0.045362
+ },
+ {
+  "id": "bar_chart_viz__gpt6-luna-low__3",
+  "kind": "bar_chart_viz",
+  "arm": "gpt6-luna-low",
+  "s": 3,
+  "dep": "taxila-gpt6-luna",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:22:27.784Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 13060,
+    "ttftMs": 5650,
+    "firstAnyMs": 5650,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 824,
+     "cached": 0,
+     "out": 2851,
+     "reasoning": 578
+    },
+    "usd": 0.0015079000000000002,
+    "error": null,
+    "chars": 7607,
+    "streamPaintMs": 9650,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4823,
+     "readyMs": 24,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         29,
+         76,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\"}"
+        ],
+        [
+         29,
+         19,
+         "{\"data-bar\":\"banana\",\"data-value\":\"7\"}"
+        ],
+        [
+         29,
+         4,
+         "{\"data-bar\":\"apple\",\"data-value\":\"9\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 17883
+   },
+   {
+    "round": 1,
+    "genMs": 8959,
+    "ttftMs": 2524,
+    "firstAnyMs": 2524,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 3179,
+     "cached": 0,
+     "out": 2457,
+     "reasoning": 219
+    },
+    "usd": 0.0015464,
+    "error": null,
+    "chars": 7514,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4856,
+     "readyMs": 60,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         44,
+         19,
+         "{\"data-bar\":\"banana\",\"data-value\":\"7\"}"
+        ],
+        [
+         44,
+         4,
+         "{\"data-bar\":\"apple\",\"data-value\":\"9\"}"
+        ],
+        [
+         44,
+         2,
+         "{\"data-bar\":\"guava\",\"data-value\":\"4\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 31698
+   },
+   {
+    "round": 2,
+    "genMs": 10175,
+    "ttftMs": 3376,
+    "firstAnyMs": 3376,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 3151,
+     "cached": 0,
+     "out": 2566,
+     "reasoning": 328
+    },
+    "usd": 0.0015980999999999999,
+    "error": null,
+    "chars": 7514,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4789,
+     "readyMs": 28,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         44,
+         17,
+         "{\"data-bar\":\"banana\",\"data-value\":\"7\"}"
+        ],
+        [
+         44,
+         6,
+         "{\"data-bar\":\"apple\",\"data-value\":\"9\"}"
+        ],
+        [
+         44,
+         3,
+         "{\"data-bar\":\"guava\",\"data-value\":\"4\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 46662
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.0046524
+ },
+ {
+  "id": "bar_chart_viz__gpt6-luna-none__3",
+  "kind": "bar_chart_viz",
+  "arm": "gpt6-luna-none",
+  "s": 3,
+  "dep": "taxila-gpt6-luna",
+  "effort": "none",
+  "startedAt": "2026-10-04T11:22:36.108Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 8215,
+    "ttftMs": 983,
+    "firstAnyMs": 983,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 824,
+     "cached": 0,
+     "out": 2115,
+     "reasoning": 0
+    },
+    "usd": 0.0011399000000000001,
+    "error": null,
+    "chars": 6959,
+    "streamPaintMs": 5483,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4833,
+     "readyMs": 39,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         38,
+         68,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\"}"
+        ]
+       ]
+      },
+      {
+       "id": "common_baseline",
+       "detail": [
+        "304.5",
+        "530.5",
+        "756.5",
+        "982.5",
+        "1208.5"
+       ]
+      },
+      {
+       "id": "axis_ticks_tell_truth",
+       "detail": "4 ticks, worst 904.0 px"
+      },
+      {
+       "id": "no_answer_hint_before_tap",
+       "detail": [
+        "rgb(0, 0, 0)|rgb(250, 128, 109)|1",
+        "rgb(0, 0, 0)|rgb(243, 190, 82)|1",
+        "rgb(0, 0, 0)|rgb(105, 169, 219)|1"
+       ]
+      },
+      {
+       "id": "tap_answer_truth",
+       "detail": "mango"
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 13048
+   },
+   {
+    "round": 1,
+    "genMs": 7726,
+    "ttftMs": 1378,
+    "firstAnyMs": 1378,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 3127,
+     "cached": 0,
+     "out": 2145,
+     "reasoning": 0
+    },
+    "usd": 0.0013852,
+    "error": null,
+    "chars": 7025,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4888,
+     "readyMs": 24,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "no_answer_hint_before_tap",
+       "detail": [
+        "rgb(0, 0, 0)|rgb(250, 128, 109)|1",
+        "rgb(0, 0, 0)|rgb(243, 190, 82)|1",
+        "rgb(0, 0, 0)|rgb(105, 169, 219)|1"
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 25662
+   },
+   {
+    "round": 2,
+    "genMs": 7644,
+    "ttftMs": 1504,
+    "firstAnyMs": 1504,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 3076,
+     "cached": 0,
+     "out": 2145,
+     "reasoning": 0
+    },
+    "usd": 0.0013801,
+    "error": null,
+    "chars": 7025,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4807,
+     "readyMs": 41,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "no_answer_hint_before_tap",
+       "detail": [
+        "rgb(0, 0, 0)|rgb(250, 128, 109)|1",
+        "rgb(0, 0, 0)|rgb(243, 190, 82)|1",
+        "rgb(0, 0, 0)|rgb(105, 169, 219)|1"
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 38113
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.0039052
+ },
+ {
+  "id": "photosynthesis_anim__mistral-m35__3",
+  "kind": "photosynthesis_anim",
+  "arm": "mistral-m35",
+  "s": 3,
+  "dep": "taxila-mistral-m35",
+  "effort": null,
+  "startedAt": "2026-10-04T11:22:10.158Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 23263,
+    "ttftMs": 1392,
+    "firstAnyMs": 1392,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 1155,
+     "cached": 1152,
+     "out": 4000,
+     "reasoning": 0
+    },
+    "usd": 0.0317325,
+    "error": null,
+    "chars": 11654,
+    "streamPaintMs": 6392,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8184,
+     "readyMs": 32,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "leaf~glucose"
+       ]
+      },
+      {
+       "id": "only_table_keys",
+       "detail": [
+        "try_again",
+        "correct"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 31447
+   },
+   {
+    "round": 1,
+    "genMs": 19369,
+    "ttftMs": 1055,
+    "firstAnyMs": 1055,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 5224,
+     "cached": 1152,
+     "out": 3872,
+     "reasoning": 0
+    },
+    "usd": 0.036876,
+    "error": null,
+    "chars": 11331,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8336,
+     "readyMs": 32,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "science_direction_of_flows",
+       "detail": [
+        "co2 not moving into leaf (dd 1.0)"
+       ]
+      },
+      {
+       "id": "only_table_keys",
+       "detail": [
+        "correct"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 59152
+   },
+   {
+    "round": 2,
+    "genMs": 19767,
+    "ttftMs": 1343,
+    "firstAnyMs": 1343,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 5100,
+     "cached": 1152,
+     "out": 3895,
+     "reasoning": 0
+    },
+    "usd": 0.0368625,
+    "error": null,
+    "chars": 11424,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8145,
+     "readyMs": 23,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "science_direction_of_flows",
+       "detail": [
+        "o2 not moving out of leaf (dd -0.7)"
+       ]
+      },
+      {
+       "id": "only_table_keys",
+       "detail": [
+        "correct"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 87064
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.10547099999999998
+ },
+ {
+  "id": "bar_chart_viz__codex-low__3",
+  "kind": "bar_chart_viz",
+  "arm": "codex-low",
+  "s": 3,
+  "dep": "taxila-codex",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:23:11.958Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 31125,
+    "ttftMs": 16362,
+    "firstAnyMs": 16362,
+    "reasoningChars": 0,
+    "served": "taxila-codex",
+    "usage": {
+     "in": 824,
+     "cached": 0,
+     "out": 3639,
+     "reasoning": 1300
+    },
+    "usd": 0.052388,
+    "error": null,
+    "chars": 7464,
+    "streamPaintMs": 22362,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 4841,
+     "readyMs": 33,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 19
+    },
+    "cumWallMs": 35966
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 35966,
+  "usd": 0.052388
+ },
+ {
+  "id": "bar_chart_viz__sol-low__3",
+  "kind": "bar_chart_viz",
+  "arm": "sol-low",
+  "s": 3,
+  "dep": "taxila-brain",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:22:18.775Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 24369,
+    "ttftMs": 9011,
+    "firstAnyMs": 9011,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-sol-2026-07-09",
+    "usage": {
+     "in": 824,
+     "cached": 0,
+     "out": 3082,
+     "reasoning": 512
+    },
+    "usd": 0.064936,
+    "error": null,
+    "chars": 8657,
+    "streamPaintMs": 17511,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4871,
+     "readyMs": 25,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         41,
+         38,
+         "{\"data-bar\":\"banana\",\"data-value\":\"7\"}"
+        ],
+        [
+         41,
+         22,
+         "{\"data-bar\":\"guava\",\"data-value\":\"4\"}"
+        ],
+        [
+         41,
+         33,
+         "{\"data-bar\":\"orange\",\"data-value\":\"6\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 29240
+   },
+   {
+    "round": 1,
+    "genMs": 12928,
+    "ttftMs": 1698,
+    "firstAnyMs": 1698,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-sol-2026-07-09",
+    "usage": {
+     "in": 3483,
+     "cached": 0,
+     "out": 2155,
+     "reasoning": 0
+    },
+    "usd": 0.057032,
+    "error": null,
+    "chars": 7219,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4922,
+     "readyMs": 26,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         42,
+         36,
+         "{\"data-bar\":\"guava\",\"data-value\":\"4\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 47090
+   },
+   {
+    "round": 2,
+    "genMs": 16503,
+    "ttftMs": 6581,
+    "firstAnyMs": 6581,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-sol-2026-07-09",
+    "usage": {
+     "in": 3038,
+     "cached": 0,
+     "out": 2502,
+     "reasoning": 388
+    },
+    "usd": 0.062192,
+    "error": null,
+    "chars": 7099,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 4947,
+     "readyMs": 30,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 19
+    },
+    "cumWallMs": 68540
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 3,
+  "timeToPlayableMs": 68540,
+  "usd": 0.18416
+ },
+ {
+  "id": "fraction_game__kimi26__3",
+  "kind": "fraction_game",
+  "arm": "kimi26",
+  "s": 3,
+  "dep": "taxila-kimi26",
+  "effort": null,
+  "startedAt": "2026-10-04T11:21:58.029Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 104810,
+    "ttftMs": 93763,
+    "firstAnyMs": 518,
+    "reasoningChars": 63544,
+    "served": "Kimi-K2.6",
+    "usage": {
+     "in": 792,
+     "cached": 768,
+     "out": 19847,
+     "reasoning": 0
+    },
+    "usd": 0.07953368,
+    "error": null,
+    "chars": 8634,
+    "streamPaintMs": 99763,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11569,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 116379
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 116379,
+  "usd": 0.07953368
+ },
+ {
+  "id": "bar_chart_viz__terra-low__3",
+  "kind": "bar_chart_viz",
+  "arm": "terra-low",
+  "s": 3,
+  "dep": "gpt-5.6-terra",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:22:10.968Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 24738,
+    "ttftMs": 6065,
+    "firstAnyMs": 6065,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-terra-2026-07-09",
+    "usage": {
+     "in": 824,
+     "cached": 0,
+     "out": 3499,
+     "reasoning": 405
+    },
+    "usd": 0.043636,
+    "error": null,
+    "chars": 9849,
+    "streamPaintMs": 15565,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4903,
+     "readyMs": 28,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         40,
+         101,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\"}"
+        ],
+        [
+         40,
+         26,
+         "{\"data-bar\":\"banana\",\"data-value\":\"7\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 29641
+   },
+   {
+    "round": 1,
+    "genMs": 22007,
+    "ttftMs": 6341,
+    "firstAnyMs": 6341,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-terra-2026-07-09",
+    "usage": {
+     "in": 3989,
+     "cached": 0,
+     "out": 3539,
+     "reasoning": 452
+    },
+    "usd": 0.050446,
+    "error": null,
+    "chars": 9866,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4985,
+     "readyMs": 30,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         48,
+         4,
+         "{\"data-bar\":\"apple\",\"data-value\":\"9\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 56633
+   },
+   {
+    "round": 2,
+    "genMs": 21853,
+    "ttftMs": 7649,
+    "firstAnyMs": 7649,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-terra-2026-07-09",
+    "usage": {
+     "in": 3963,
+     "cached": 0,
+     "out": 3029,
+     "reasoning": 512
+    },
+    "usd": 0.044274,
+    "error": null,
+    "chars": 7770,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 4902,
+     "readyMs": 26,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 19
+    },
+    "cumWallMs": 83388
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 3,
+  "timeToPlayableMs": 83388,
+  "usd": 0.138356
+ },
+ {
+  "id": "fraction_game__terra-low__4",
+  "kind": "fraction_game",
+  "arm": "terra-low",
+  "s": 4,
+  "dep": "gpt-5.6-terra",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:23:49.383Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 23451,
+    "ttftMs": 6124,
+    "firstAnyMs": 6124,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-terra-2026-07-09",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 3221,
+     "reasoning": 433
+    },
+    "usd": 0.040234,
+    "error": null,
+    "chars": 8902,
+    "streamPaintMs": 15624,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11609,
+     "readyMs": 23,
+     "perf": {
+      "p95": 17,
+      "frames": 89,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 35060
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 35060,
+  "usd": 0.040234
+ },
+ {
+  "id": "fraction_game__gpt6-sol-low__4",
+  "kind": "fraction_game",
+  "arm": "gpt6-sol-low",
+  "s": 4,
+  "dep": "taxila-gpt6",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:24:02.707Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 12387,
+    "ttftMs": 3238,
+    "firstAnyMs": 3238,
+    "reasoningChars": 0,
+    "served": "gpt-6-sol-2026-09-22",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 2089,
+     "reasoning": 125
+    },
+    "usd": 0.022472,
+    "error": null,
+    "chars": 6455,
+    "streamPaintMs": 9238,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11584,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 23971
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 23971,
+  "usd": 0.022472
+ },
+ {
+  "id": "fraction_game__gpt6-luna-low__4",
+  "kind": "fraction_game",
+  "arm": "gpt6-luna-low",
+  "s": 4,
+  "dep": "taxila-gpt6-luna",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:24:08.493Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 10663,
+    "ttftMs": 4611,
+    "firstAnyMs": 4611,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 2108,
+     "reasoning": 460
+    },
+    "usd": 0.0011331,
+    "error": null,
+    "chars": 5761,
+    "streamPaintMs": null,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11609,
+     "readyMs": 46,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 22272
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 22272,
+  "usd": 0.0011331
+ },
+ {
+  "id": "photosynthesis_anim__dsv4-flash__3",
+  "kind": "photosynthesis_anim",
+  "arm": "dsv4-flash",
+  "s": 3,
+  "dep": "DeepSeek-V4-Flash",
+  "effort": null,
+  "startedAt": "2026-10-04T11:21:23.254Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 41085,
+    "ttftMs": 815,
+    "firstAnyMs": 815,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 1126,
+     "cached": 0,
+     "out": 5996,
+     "reasoning": 0
+    },
+    "usd": 0.0032719,
+    "error": null,
+    "chars": 18874,
+    "streamPaintMs": 8815,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8460,
+     "readyMs": 26,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "words_from_table",
+       "detail": [
+        "<%= Studio.t('sun') %>",
+        "<%= Studio.t('roots') %>",
+        "<%= Studio.t('leaf') %>",
+        "<%= Studio.t('water') %>"
+       ]
+      },
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         38,
+         38,
+         "{\"data-action\":\"step-2\",\"data-step\":\"2\"}"
+        ],
+        [
+         38,
+         38,
+         "{\"data-action\":\"step-3\",\"data-step\":\"3\"}"
+        ],
+        [
+         38,
+         38,
+         "{\"data-action\":\"step-4\",\"data-step\":\"4\"}"
+        ]
+       ]
+      },
+      {
+       "id": "targets_in_viewport",
+       "detail": [
+        [
+         77,
+         602,
+         206,
+         44
+        ]
+       ]
+      },
+      {
+       "id": "label_text_from_table",
+       "detail": [
+        "leaf",
+        "roots",
+        "water",
+        "co2",
+        "o2",
+        "glucose"
+       ]
+      },
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "out:sun",
+        "out:leaf"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 49545
+   },
+   {
+    "round": 1,
+    "genMs": 29127,
+    "ttftMs": 703,
+    "firstAnyMs": 703,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 7338,
+     "cached": 0,
+     "out": 6265,
+     "reasoning": 0
+    },
+    "usd": 0.00458937,
+    "error": null,
+    "chars": 19030,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8410,
+     "readyMs": 38,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "words_from_table",
+       "detail": [
+        "<%= Studio.t('sun') %>",
+        "<%= Studio.t('roots') %>",
+        "<%= Studio.t('leaf') %>",
+        "<%= Studio.t('water') %>"
+       ]
+      },
+      {
+       "id": "targets_in_viewport",
+       "detail": [
+        [
+         75,
+         600,
+         210,
+         44
+        ]
+       ]
+      },
+      {
+       "id": "label_text_from_table",
+       "detail": [
+        "leaf",
+        "roots",
+        "water",
+        "co2",
+        "o2",
+        "glucose"
+       ]
+      },
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "out:leaf",
+        "out:glucose"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 87082
+   },
+   {
+    "round": 2,
+    "genMs": 53286,
+    "ttftMs": 863,
+    "firstAnyMs": 863,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 7525,
+     "cached": 256,
+     "out": 6050,
+     "reasoning": 0
+    },
+    "usd": 0.00451525,
+    "error": null,
+    "chars": 18170,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8256,
+     "readyMs": 25,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "words_from_table",
+       "detail": [
+        "<%= Studio.t('sun') %>",
+        "<%= Studio.t('roots') %>",
+        "<%= Studio.t('leaf') %>",
+        "<%= Studio.t('water') %>"
+       ]
+      },
+      {
+       "id": "targets_in_viewport",
+       "detail": [
+        [
+         75,
+         600,
+         210,
+         44
+        ]
+       ]
+      },
+      {
+       "id": "label_text_from_table",
+       "detail": [
+        "leaf",
+        "roots",
+        "water",
+        "co2",
+        "o2",
+        "glucose"
+       ]
+      },
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "out:leaf",
+        "out:glucose"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 148624
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.01237652
+ },
+ {
+  "id": "fraction_game__sol-low__4",
+  "kind": "fraction_game",
+  "arm": "sol-low",
+  "s": 4,
+  "dep": "taxila-brain",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:23:56.860Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 31404,
+    "ttftMs": 8851,
+    "firstAnyMs": 8851,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-sol-2026-07-09",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 4374,
+     "reasoning": 505
+    },
+    "usd": 0.090644,
+    "error": null,
+    "chars": 13463,
+    "streamPaintMs": 22351,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11629,
+     "readyMs": 29,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 43033
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 43033,
+  "usd": 0.090644
+ },
+ {
+  "id": "bar_chart_viz__ds4f-0731__3",
+  "kind": "bar_chart_viz",
+  "arm": "ds4f-0731",
+  "s": 3,
+  "dep": "taxila-ds4f-0731",
+  "effort": null,
+  "startedAt": "2026-10-04T11:23:43.891Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 4164,
+    "ttftMs": 509,
+    "firstAnyMs": 509,
+    "reasoningChars": 0,
+    "served": "taxila-ds4f-0731",
+    "usage": {
+     "in": 845,
+     "cached": 256,
+     "out": 2075,
+     "reasoning": 0
+    },
+    "usd": 0.003001744,
+    "error": null,
+    "chars": 6288,
+    "streamPaintMs": 2009,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4908,
+     "readyMs": 30,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "words_from_table",
+       "detail": [
+        "Studio.t('title')",
+        "Studio.t('ask')",
+        "Studio.t('yaxis')",
+        "Studio.t('mango')"
+       ]
+      },
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         32,
+         59,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\"}"
+        ],
+        [
+         32,
+         35,
+         "{\"data-bar\":\"banana\",\"data-value\":\"7\"}"
+        ],
+        [
+         32,
+         45,
+         "{\"data-bar\":\"apple\",\"data-value\":\"9\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 9072
+   },
+   {
+    "round": 1,
+    "genMs": 4530,
+    "ttftMs": 974,
+    "firstAnyMs": 974,
+    "reasoningChars": 0,
+    "served": "taxila-ds4f-0731",
+    "usage": {
+     "in": 3068,
+     "cached": 768,
+     "out": 2210,
+     "reasoning": 0
+    },
+    "usd": 0.003939952,
+    "error": null,
+    "chars": 6966,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4829,
+     "readyMs": 35,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         32,
+         50,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\"}"
+        ],
+        [
+         32,
+         29,
+         "{\"data-bar\":\"banana\",\"data-value\":\"7\"}"
+        ],
+        [
+         32,
+         38,
+         "{\"data-bar\":\"apple\",\"data-value\":\"9\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 18431
+   },
+   {
+    "round": 2,
+    "genMs": 6281,
+    "ttftMs": 1951,
+    "firstAnyMs": 1951,
+    "reasoningChars": 0,
+    "served": "taxila-ds4f-0731",
+    "usage": {
+     "in": 3171,
+     "cached": 768,
+     "out": 2131,
+     "reasoning": 0
+    },
+    "usd": 0.003880992,
+    "error": null,
+    "chars": 6594,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4776,
+     "readyMs": 23,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         33,
+         51,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\"}"
+        ],
+        [
+         33,
+         30,
+         "{\"data-bar\":\"banana\",\"data-value\":\"7\"}"
+        ],
+        [
+         33,
+         38,
+         "{\"data-bar\":\"apple\",\"data-value\":\"9\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 29488
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.010822688
+ },
+ {
+  "id": "bar_chart_viz__mistral-m35__3",
+  "kind": "bar_chart_viz",
+  "arm": "mistral-m35",
+  "s": 3,
+  "dep": "taxila-mistral-m35",
+  "effort": null,
+  "startedAt": "2026-10-04T11:23:48.680Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 11332,
+    "ttftMs": 891,
+    "firstAnyMs": 891,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 872,
+     "cached": 768,
+     "out": 1993,
+     "reasoning": 0
+    },
+    "usd": 0.0162555,
+    "error": null,
+    "chars": 6317,
+    "streamPaintMs": null,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 3269,
+     "readyMs": 31,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "no_hscroll",
+       "detail": 23
+      },
+      {
+       "id": "all_bars_present",
+       "detail": {
+        "missing": [
+         "mango",
+         "banana",
+         "apple",
+         "guava",
+         "orange"
+        ],
+        "n": 0
+       }
+      }
+     ],
+     "nChecks": 13
+    },
+    "cumWallMs": 14601
+   },
+   {
+    "round": 1,
+    "genMs": 10431,
+    "ttftMs": 1166,
+    "firstAnyMs": 1166,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 2946,
+     "cached": 896,
+     "out": 1930,
+     "reasoning": 0
+    },
+    "usd": 0.018894,
+    "error": null,
+    "chars": 6071,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 3242,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "all_bars_present",
+       "detail": {
+        "missing": [
+         "mango",
+         "banana",
+         "apple",
+         "guava",
+         "orange"
+        ],
+        "n": 0
+       }
+      }
+     ],
+     "nChecks": 13
+    },
+    "cumWallMs": 28274
+   },
+   {
+    "round": 2,
+    "genMs": 10616,
+    "ttftMs": 1492,
+    "firstAnyMs": 1492,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 2874,
+     "cached": 896,
+     "out": 1935,
+     "reasoning": 0
+    },
+    "usd": 0.0188235,
+    "error": null,
+    "chars": 6094,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 3213,
+     "readyMs": 23,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "all_bars_present",
+       "detail": {
+        "missing": [
+         "mango",
+         "banana",
+         "apple",
+         "guava",
+         "orange"
+        ],
+        "n": 0
+       }
+      }
+     ],
+     "nChecks": 13
+    },
+    "cumWallMs": 42103
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.053973
+ },
+ {
+  "id": "fraction_game__gpt61-sol-low__4",
+  "kind": "fraction_game",
+  "arm": "gpt61-sol-low",
+  "s": 4,
+  "dep": "taxila-gpt61-sol",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:24:07.654Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 30823,
+    "ttftMs": 12088,
+    "firstAnyMs": 12088,
+    "reasoningChars": 0,
+    "served": "gpt-6.1-sol-2026-09-29",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 2515,
+     "reasoning": 426
+    },
+    "usd": 0.026732,
+    "error": null,
+    "chars": 7269,
+    "streamPaintMs": 22588,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11731,
+     "readyMs": 23,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 42554
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 42554,
+  "usd": 0.026732
+ },
+ {
+  "id": "fraction_game__ds41-flash__4",
+  "kind": "fraction_game",
+  "arm": "ds41-flash",
+  "s": 4,
+  "dep": "taxila-ds41",
+  "effort": null,
+  "startedAt": "2026-10-04T11:24:29.465Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 13462,
+    "ttftMs": 2120,
+    "firstAnyMs": 2120,
+    "reasoningChars": 0,
+    "served": "taxila-ds41",
+    "usage": {
+     "in": 810,
+     "cached": 256,
+     "out": 3538,
+     "reasoning": 0
+    },
+    "usd": 0.00561075,
+    "error": null,
+    "chars": 11816,
+    "streamPaintMs": 6620,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11578,
+     "readyMs": 22,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 25040
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 25040,
+  "usd": 0.00561075
+ },
+ {
+  "id": "fraction_game__codex-low__4",
+  "kind": "fraction_game",
+  "arm": "codex-low",
+  "s": 4,
+  "dep": "taxila-codex",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:24:28.473Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 31587,
+    "ttftMs": 13310,
+    "firstAnyMs": 13310,
+    "reasoningChars": 0,
+    "served": "taxila-codex",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 3903,
+     "reasoning": 1091
+    },
+    "usd": 0.05602625,
+    "error": null,
+    "chars": 9434,
+    "streamPaintMs": 22310,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11537,
+     "readyMs": 22,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 43124
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 43124,
+  "usd": 0.05602625
+ },
+ {
+  "id": "fraction_game__gpt6-luna-none__4",
+  "kind": "fraction_game",
+  "arm": "gpt6-luna-none",
+  "s": 4,
+  "dep": "taxila-gpt6-luna",
+  "effort": "none",
+  "startedAt": "2026-10-04T11:24:12.691Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 13756,
+    "ttftMs": 1492,
+    "firstAnyMs": 1492,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 791,
+     "cached": 0,
+     "out": 3282,
+     "reasoning": 0
+    },
+    "usd": 0.0017201,
+    "error": null,
+    "chars": 11345,
+    "streamPaintMs": 7492,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 5417,
+     "readyMs": 33,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_in_viewport",
+       "detail": [
+        [
+         180,
+         97,
+         197,
+         197
+        ],
+        [
+         180,
+         294,
+         197,
+         197
+        ],
+        [
+         -17,
+         294,
+         197,
+         197
+        ]
+       ]
+      },
+      {
+       "id": "play_all_items_truth",
+       "detail": [
+        "item1: tapped 3, shaded 2"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 15
+    },
+    "cumWallMs": 19173
+   },
+   {
+    "round": 1,
+    "genMs": 9552,
+    "ttftMs": 960,
+    "firstAnyMs": 960,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 4160,
+     "cached": 0,
+     "out": 2645,
+     "reasoning": 0
+    },
+    "usd": 0.0017385,
+    "error": null,
+    "chars": 8946,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 5384,
+     "readyMs": 31,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_in_viewport",
+       "detail": [
+        [
+         180,
+         79,
+         197,
+         197
+        ],
+        [
+         180,
+         276,
+         197,
+         197
+        ],
+        [
+         -17,
+         276,
+         197,
+         197
+        ]
+       ]
+      },
+      {
+       "id": "play_all_items_truth",
+       "detail": [
+        "item1: tapped 3, shaded 2"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 15
+    },
+    "cumWallMs": 34109
+   },
+   {
+    "round": 2,
+    "genMs": 8744,
+    "ttftMs": 888,
+    "firstAnyMs": 888,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 3523,
+     "cached": 0,
+     "out": 2645,
+     "reasoning": 0
+    },
+    "usd": 0.0016748,
+    "error": null,
+    "chars": 8938,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 5472,
+     "readyMs": 44,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_in_viewport",
+       "detail": [
+        [
+         180,
+         85,
+         184,
+         184
+        ],
+        [
+         180,
+         269,
+         184,
+         184
+        ],
+        [
+         -4,
+         269,
+         184,
+         184
+        ]
+       ]
+      },
+      {
+       "id": "play_all_items_truth",
+       "detail": [
+        "item1: tapped 3, shaded 2"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 15
+    },
+    "cumWallMs": 48325
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.0051334
+ },
+ {
+  "id": "bar_chart_viz__dsv4-flash__3",
+  "kind": "bar_chart_viz",
+  "arm": "dsv4-flash",
+  "s": 3,
+  "dep": "DeepSeek-V4-Flash",
+  "effort": null,
+  "startedAt": "2026-10-04T11:23:29.031Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 26525,
+    "ttftMs": 726,
+    "firstAnyMs": 726,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 845,
+     "cached": 0,
+     "out": 2786,
+     "reasoning": 0
+    },
+    "usd": 0.00158141,
+    "error": null,
+    "chars": 9456,
+    "streamPaintMs": 7726,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4858,
+     "readyMs": 24,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "heights_proportional",
+       "detail": "max err 164.57 px"
+      },
+      {
+       "id": "axis_ticks_tell_truth",
+       "detail": "5 ticks, worst 164.9 px"
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 31383
+   },
+   {
+    "round": 1,
+    "genMs": 32191,
+    "ttftMs": 18204,
+    "firstAnyMs": 18204,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 3707,
+     "cached": 0,
+     "out": 2969,
+     "reasoning": 0
+    },
+    "usd": 0.00221852,
+    "error": null,
+    "chars": 9993,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4813,
+     "readyMs": 23,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "heights_proportional",
+       "detail": "max err 164.57 px"
+      },
+      {
+       "id": "axis_ticks_tell_truth",
+       "detail": "5 ticks, worst 164.3 px"
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 68387
+   },
+   {
+    "round": 2,
+    "genMs": 17614,
+    "ttftMs": 1090,
+    "firstAnyMs": 1090,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 3886,
+     "cached": 768,
+     "out": 2669,
+     "reasoning": 0
+    },
+    "usd": 0.0020995299999999996,
+    "error": null,
+    "chars": 8971,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4858,
+     "readyMs": 23,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "heights_proportional",
+       "detail": "max err 164.57 px"
+      },
+      {
+       "id": "axis_ticks_tell_truth",
+       "detail": "5 ticks, worst 164.3 px"
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 90859
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.00589946
+ },
+ {
+  "id": "fraction_game__ds4f-0731__4",
+  "kind": "fraction_game",
+  "arm": "ds4f-0731",
+  "s": 4,
+  "dep": "taxila-ds4f-0731",
+  "effort": null,
+  "startedAt": "2026-10-04T11:24:52.121Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 7330,
+    "ttftMs": 1084,
+    "firstAnyMs": 1084,
+    "reasoningChars": 0,
+    "served": "taxila-ds4f-0731",
+    "usage": {
+     "in": 809,
+     "cached": 768,
+     "out": 3320,
+     "reasoning": 0
+    },
+    "usd": 0.004411192000000001,
+    "error": null,
+    "chars": 11260,
+    "streamPaintMs": 4084,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 5017,
+     "readyMs": 31,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "play_all_items_truth",
+       "detail": [
+        "item1: 0 parts, want 5"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 15
+    },
+    "cumWallMs": 12347
+   },
+   {
+    "round": 1,
+    "genMs": 6286,
+    "ttftMs": 908,
+    "firstAnyMs": 908,
+    "reasoningChars": 0,
+    "served": "taxila-ds4f-0731",
+    "usage": {
+     "in": 4196,
+     "cached": 768,
+     "out": 3320,
+     "reasoning": 0
+    },
+    "usd": 0.0059014720000000005,
+    "error": null,
+    "chars": 11260,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11522,
+     "readyMs": 26,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 30155
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 30155,
+  "usd": 0.010312664000000003
+ },
+ {
+  "id": "photosynthesis_anim__terra-low__4",
+  "kind": "photosynthesis_anim",
+  "arm": "terra-low",
+  "s": 4,
+  "dep": "gpt-5.6-terra",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:24:59.843Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 27229,
+    "ttftMs": 7118,
+    "firstAnyMs": 7118,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-terra-2026-07-09",
+    "usage": {
+     "in": 1103,
+     "cached": 1100,
+     "out": 3584,
+     "reasoning": 448
+    },
+    "usd": 0.043234,
+    "error": null,
+    "chars": 9283,
+    "streamPaintMs": 14118,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8346,
+     "readyMs": 31,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 35575
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 35575,
+  "usd": 0.043234
+ },
+ {
+  "id": "fraction_game__dsv4-flash__4",
+  "kind": "fraction_game",
+  "arm": "dsv4-flash",
+  "s": 4,
+  "dep": "DeepSeek-V4-Flash",
+  "effort": null,
+  "startedAt": "2026-10-04T11:24:44.914Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 19384,
+    "ttftMs": 787,
+    "firstAnyMs": 787,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 809,
+     "cached": 0,
+     "out": 3397,
+     "reasoning": 0
+    },
+    "usd": 0.00188618,
+    "error": null,
+    "chars": 12305,
+    "streamPaintMs": null,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8777,
+     "readyMs": 21,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "play_all_items_truth",
+       "detail": [
+        "item2: tapped 6, shaded 4"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 15
+    },
+    "cumWallMs": 28161
+   },
+   {
+    "round": 1,
+    "genMs": 12781,
+    "ttftMs": 963,
+    "firstAnyMs": 963,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 4273,
+     "cached": 256,
+     "out": 3244,
+     "reasoning": 0
+    },
+    "usd": 0.0024663099999999998,
+    "error": null,
+    "chars": 11676,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11521,
+     "readyMs": 28,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 52463
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 52463,
+  "usd": 0.00435249
+ },
+ {
+  "id": "photosynthesis_anim__gpt6-sol-low__4",
+  "kind": "photosynthesis_anim",
+  "arm": "gpt6-sol-low",
+  "s": 4,
+  "dep": "taxila-gpt6",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:25:18.805Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 16211,
+    "ttftMs": 3558,
+    "firstAnyMs": 3558,
+    "reasoningChars": 0,
+    "served": "gpt-6-sol-2026-09-22",
+    "usage": {
+     "in": 1103,
+     "cached": 1100,
+     "out": 2614,
+     "reasoning": 111
+    },
+    "usd": 0.026366,
+    "error": null,
+    "chars": 7753,
+    "streamPaintMs": 9058,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8301,
+     "readyMs": 35,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 24512
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 24512,
+  "usd": 0.026366
+ },
+ {
+  "id": "fraction_game__mistral-m35__4",
+  "kind": "fraction_game",
+  "arm": "mistral-m35",
+  "s": 4,
+  "dep": "taxila-mistral-m35",
+  "effort": null,
+  "startedAt": "2026-10-04T11:24:57.029Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 15422,
+    "ttftMs": 1289,
+    "firstAnyMs": 1289,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 829,
+     "cached": 768,
+     "out": 2702,
+     "reasoning": 0
+    },
+    "usd": 0.0215085,
+    "error": null,
+    "chars": 9717,
+    "streamPaintMs": 7289,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4964,
+     "readyMs": 26,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "play_all_items_truth",
+       "detail": [
+        "item1: 0 parts, want 5"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 15
+    },
+    "cumWallMs": 20386
+   },
+   {
+    "round": 1,
+    "genMs": 16236,
+    "ttftMs": 1197,
+    "firstAnyMs": 1197,
+    "reasoningChars": 0,
+    "served": "mistral-medium-3-5",
+    "usage": {
+     "in": 3599,
+     "cached": 768,
+     "out": 3144,
+     "reasoning": 0
+    },
+    "usd": 0.0289785,
+    "error": null,
+    "chars": 11497,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11567,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 48189
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 48189,
+  "usd": 0.050487000000000004
+ },
+ {
+  "id": "photosynthesis_anim__gpt6-luna-none__4",
+  "kind": "photosynthesis_anim",
+  "arm": "gpt6-luna-none",
+  "s": 4,
+  "dep": "taxila-gpt6-luna",
+  "effort": "none",
+  "startedAt": "2026-10-04T11:25:33.502Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 15383,
+    "ttftMs": 1422,
+    "firstAnyMs": 1422,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 1103,
+     "cached": 1100,
+     "out": 3348,
+     "reasoning": 0
+    },
+    "usd": 0.0016853,
+    "error": null,
+    "chars": 10104,
+    "streamPaintMs": 5922,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8243,
+     "readyMs": 26,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 23626
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 23626,
+  "usd": 0.0016853
+ },
+ {
+  "id": "bar_chart_viz__kimi-code__1",
+  "kind": "bar_chart_viz",
+  "arm": "kimi-code",
+  "s": 1,
+  "dep": "taxila-kimi-code",
+  "effort": null,
+  "startedAt": "2026-10-04T11:14:20.654Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 220229,
+    "ttftMs": 163319,
+    "firstAnyMs": 1022,
+    "reasoningChars": 35714,
+    "served": "Kimi-K2.7-Code",
+    "usage": {
+     "in": 829,
+     "cached": 448,
+     "out": 11927,
+     "reasoning": 0
+    },
+    "usd": 0.048495550000000005,
+    "error": null,
+    "chars": 9027,
+    "streamPaintMs": 175319,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4855,
+     "readyMs": 22,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         41,
+         39,
+         "{\"data-bar\":\"guava\",\"data-value\":\"4\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 225084
+   },
+   {
+    "round": 1,
+    "genMs": 161847,
+    "ttftMs": null,
+    "firstAnyMs": 1525,
+    "reasoningChars": 86112,
+    "served": "Kimi-K2.7-Code",
+    "usage": {
+     "in": 3638,
+     "cached": 0,
+     "out": 24000,
+     "reasoning": 0
+    },
+    "usd": 0.0994561,
+    "error": "length",
+    "chars": 0,
+    "cumWallMs": 386931
+   },
+   {
+    "round": 2,
+    "genMs": 300001,
+    "ttftMs": null,
+    "firstAnyMs": 2064,
+    "reasoningChars": 62832,
+    "served": "Kimi-K2.7-Code",
+    "usage": null,
+    "usd": 0,
+    "error": "timeout",
+    "chars": 0,
+    "cumWallMs": 686932
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.14795165000000002
+ },
+ {
+  "id": "photosynthesis_anim__gpt61-sol-low__4",
+  "kind": "photosynthesis_anim",
+  "arm": "gpt61-sol-low",
+  "s": 4,
+  "dep": "taxila-gpt61-sol",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:25:28.643Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 30772,
+    "ttftMs": 4473,
+    "firstAnyMs": 4473,
+    "reasoningChars": 0,
+    "served": "gpt-6.1-sol-2026-09-29",
+    "usage": {
+     "in": 1103,
+     "cached": 1100,
+     "out": 2802,
+     "reasoning": 113
+    },
+    "usd": 0.028246,
+    "error": null,
+    "chars": 8160,
+    "streamPaintMs": 12973,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8247,
+     "readyMs": 30,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 39019
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 39019,
+  "usd": 0.028246
+ },
+ {
+  "id": "photosynthesis_anim__sol-low__4",
+  "kind": "photosynthesis_anim",
+  "arm": "sol-low",
+  "s": 4,
+  "dep": "taxila-brain",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:25:11.574Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 32844,
+    "ttftMs": 9120,
+    "firstAnyMs": 9120,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-sol-2026-07-09",
+    "usage": {
+     "in": 1103,
+     "cached": 1100,
+     "out": 4137,
+     "reasoning": 512
+    },
+    "usd": 0.083192,
+    "error": null,
+    "chars": 11603,
+    "streamPaintMs": 17620,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8268,
+     "readyMs": 25,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "science_direction_of_flows",
+       "detail": [
+        "water: not moving",
+        "co2: not moving",
+        "o2: not moving"
+       ]
+      },
+      {
+       "id": "no_console_errors",
+       "detail": [
+        "Cannot read properties of undefined (reading '0')"
+       ]
+      },
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "water label 231 px from its referent",
+        "co2 label 96 px from its referent",
+        "o2 label 300 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 41112
+   },
+   {
+    "round": 1,
+    "genMs": 24017,
+    "ttftMs": 3849,
+    "firstAnyMs": 3849,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-sol-2026-07-09",
+    "usage": {
+     "in": 4839,
+     "cached": 0,
+     "out": 3310,
+     "reasoning": 116
+    },
+    "usd": 0.085556,
+    "error": null,
+    "chars": 10216,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8255,
+     "readyMs": 24,
+     "perf": {
+      "p95": 17,
+      "frames": 89,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 73384
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 73384,
+  "usd": 0.168748
+ },
+ {
+  "id": "photosynthesis_anim__gpt6-luna-low__4",
+  "kind": "photosynthesis_anim",
+  "arm": "gpt6-luna-low",
+  "s": 4,
+  "dep": "taxila-gpt6-luna",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:25:33.176Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 17542,
+    "ttftMs": 6036,
+    "firstAnyMs": 6036,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 1103,
+     "cached": 1100,
+     "out": 3418,
+     "reasoning": 643
+    },
+    "usd": 0.0017203,
+    "error": null,
+    "chars": 8647,
+    "streamPaintMs": 11536,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": true,
+     "ms": 8221,
+     "readyMs": 28,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "water label 114 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 25763
+   },
+   {
+    "round": 1,
+    "genMs": 11507,
+    "ttftMs": 2797,
+    "firstAnyMs": 2797,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 3919,
+     "cached": 0,
+     "out": 2930,
+     "reasoning": 205
+    },
+    "usd": 0.0018569,
+    "error": null,
+    "chars": 8512,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8308,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 45578
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 45578,
+  "usd": 0.0035772
+ },
+ {
+  "id": "bar_chart_viz__ds41-flash__3",
+  "kind": "bar_chart_viz",
+  "arm": "ds41-flash",
+  "s": 3,
+  "dep": "taxila-ds41",
+  "effort": null,
+  "startedAt": "2026-10-04T11:23:20.556Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 138865,
+    "ttftMs": 118225,
+    "firstAnyMs": 118225,
+    "reasoningChars": 0,
+    "served": "taxila-ds41",
+    "usage": {
+     "in": 846,
+     "cached": 768,
+     "out": 3441,
+     "reasoning": 0
+    },
+    "usd": 0.00547875,
+    "error": null,
+    "chars": 10736,
+    "streamPaintMs": 126225,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4952,
+     "readyMs": 42,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         31,
+         14,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\"}"
+        ]
+       ]
+      },
+      {
+       "id": "no_answer_hint_before_tap",
+       "detail": [
+        "rgb(255, 138, 61)|rgba(0, 0, 0, 0)|1",
+        "rgb(94, 195, 165)|rgba(0, 0, 0, 0)|1",
+        "rgb(143, 123, 214)|rgba(0, 0, 0, 0)|1"
+       ]
+      },
+      {
+       "id": "tap_answer_truth",
+       "detail": "guava"
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 143817
+   },
+   {
+    "round": 1,
+    "genMs": 10499,
+    "ttftMs": 1447,
+    "firstAnyMs": 1447,
+    "reasoningChars": 0,
+    "served": "taxila-ds41",
+    "usage": {
+     "in": 4462,
+     "cached": 768,
+     "out": 3353,
+     "reasoning": 0
+    },
+    "usd": 0.00670275,
+    "error": null,
+    "chars": 10366,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4897,
+     "readyMs": 26,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         31,
+         14,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\"}"
+        ]
+       ]
+      },
+      {
+       "id": "all_bars_present",
+       "detail": {
+        "missing": [],
+        "n": 10
+       }
+      },
+      {
+       "id": "heights_proportional",
+       "detail": "max err 12.77 px"
+      },
+      {
+       "id": "axis_ticks_tell_truth",
+       "detail": "8 ticks, worst 33.8 px"
+      },
+      {
+       "id": "no_answer_hint_before_tap",
+       "detail": [
+        "rgb(255, 138, 61)|rgba(0, 0, 0, 0)|1",
+        "rgba(0, 0, 0, 0)|rgba(0, 0, 0, 0)|1",
+        "rgb(94, 195, 165)|rgba(0, 0, 0, 0)|1"
+       ]
+      },
+      {
+       "id": "tap_answer_truth",
+       "detail": "guava"
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 159213
+   },
+   {
+    "round": 2,
+    "genMs": 9178,
+    "ttftMs": 1204,
+    "firstAnyMs": 1204,
+    "reasoningChars": 0,
+    "served": "taxila-ds41",
+    "usage": {
+     "in": 4433,
+     "cached": 768,
+     "out": 2961,
+     "reasoning": 0
+    },
+    "usd": 0.006103875,
+    "error": null,
+    "chars": 9140,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4999,
+     "readyMs": 42,
+     "perf": {
+      "p95": 17,
+      "frames": 89,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         30,
+         65,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\"}"
+        ],
+        [
+         30,
+         12,
+         "{\"data-bar\":\"banana\",\"data-value\":\"7\"}"
+        ]
+       ]
+      },
+      {
+       "id": "tap_answer_truth",
+       "detail": "guava"
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 173390
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.018285375
+ },
+ {
+  "id": "bar_chart_viz__kimi26__3",
+  "kind": "bar_chart_viz",
+  "arm": "kimi26",
+  "s": 3,
+  "dep": "taxila-kimi26",
+  "effort": null,
+  "startedAt": "2026-10-04T11:23:44.448Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 96054,
+    "ttftMs": 89324,
+    "firstAnyMs": 544,
+    "reasoningChars": 76689,
+    "served": "Kimi-K2.6",
+    "usage": {
+     "in": 829,
+     "cached": 448,
+     "out": 23439,
+     "reasoning": 0
+    },
+    "usd": 0.09418963000000001,
+    "error": null,
+    "chars": 7593,
+    "streamPaintMs": 91824,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4825,
+     "readyMs": 25,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "all_bars_present",
+       "detail": {
+        "missing": [],
+        "n": 10
+       }
+      },
+      {
+       "id": "no_answer_hint_before_tap",
+       "detail": [
+        "rgb(245, 158, 11)|rgba(0, 0, 0, 0)|1",
+        "rgba(0, 0, 0, 0)|rgba(0, 0, 0, 0)|1",
+        "rgb(250, 204, 21)|rgba(0, 0, 0, 0)|1"
+       ]
+      },
+      {
+       "id": "done_called",
+       "detail": ""
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 100879
+   },
+   {
+    "round": 1,
+    "genMs": 81020,
+    "ttftMs": 74985,
+    "firstAnyMs": 898,
+    "reasoningChars": 65605,
+    "served": "Kimi-K2.6",
+    "usage": {
+     "in": 3332,
+     "cached": 832,
+     "out": 19886,
+     "reasoning": 0
+    },
+    "usd": 0.08205211999999999,
+    "error": null,
+    "chars": 6937,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 4871,
+     "readyMs": 30,
+     "perf": {
+      "p95": 17,
+      "frames": 89,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 19
+    },
+    "cumWallMs": 186770
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 186770,
+  "usd": 0.17624175
+ },
+ {
+  "id": "photosynthesis_anim__ds4f-0731__4",
+  "kind": "photosynthesis_anim",
+  "arm": "ds4f-0731",
+  "s": 4,
+  "dep": "taxila-ds4f-0731",
+  "effort": null,
+  "startedAt": "2026-10-04T11:26:00.311Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 10380,
+    "ttftMs": 715,
+    "firstAnyMs": 715,
+    "reasoningChars": 0,
+    "served": "taxila-ds4f-0731",
+    "usage": {
+     "in": 1126,
+     "cached": 1024,
+     "out": 4900,
+     "reasoning": 0
+    },
+    "usd": 0.006527216000000001,
+    "error": null,
+    "chars": 15722,
+    "streamPaintMs": 3715,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8434,
+     "readyMs": 244,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "words_from_table",
+       "detail": [
+        "PHOTOSYNTHESIS",
+        "सूरज",
+        "जड़ें",
+        "पत्ती"
+       ]
+      },
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         84,
+         39,
+         "{\"data-action\":\"play\"}"
+        ],
+        [
+         40,
+         40,
+         "{\"data-action\":\"step-1\"}"
+        ],
+        [
+         38,
+         38,
+         "{\"data-action\":\"step-2\"}"
+        ]
+       ]
+      },
+      {
+       "id": "label_text_from_table",
+       "detail": [
+        "leaf",
+        "roots",
+        "water",
+        "co2",
+        "o2",
+        "glucose"
+       ]
+      },
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "title~title"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 18814
+   },
+   {
+    "round": 1,
+    "genMs": 8171,
+    "ttftMs": 1124,
+    "firstAnyMs": 1124,
+    "reasoningChars": 0,
+    "served": "taxila-ds4f-0731",
+    "usage": {
+     "in": 6181,
+     "cached": 1024,
+     "out": 3901,
+     "reasoning": 0
+    },
+    "usd": 0.0074327360000000006,
+    "error": null,
+    "chars": 12243,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8253,
+     "readyMs": 28,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "words_from_table",
+       "detail": [
+        "Photosynthesis",
+        "Sun",
+        "Leaf",
+        "Roots"
+       ]
+      },
+      {
+       "id": "label_text_from_table",
+       "detail": [
+        "roots",
+        "water",
+        "co2",
+        "o2",
+        "glucose"
+       ]
+      },
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "title~title"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 35238
+   },
+   {
+    "round": 2,
+    "genMs": 9921,
+    "ttftMs": 2263,
+    "firstAnyMs": 2263,
+    "reasoningChars": 0,
+    "served": "taxila-ds4f-0731",
+    "usage": {
+     "in": 5117,
+     "cached": 1024,
+     "out": 3870,
+     "reasoning": 0
+    },
+    "usd": 0.006923656000000001,
+    "error": null,
+    "chars": 12137,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8174,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "words_from_table",
+       "detail": [
+        "Photosynthesis",
+        "Sun",
+        "Leaf",
+        "Roots"
+       ]
+      },
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         39,
+         39,
+         "{\"data-action\":\"step-1\"}"
+        ],
+        [
+         36,
+         36,
+         "{\"data-action\":\"step-2\"}"
+        ],
+        [
+         36,
+         36,
+         "{\"data-action\":\"step-3\"}"
+        ]
+       ]
+      },
+      {
+       "id": "label_text_from_table",
+       "detail": [
+        "roots",
+        "water",
+        "co2",
+        "o2",
+        "glucose"
+       ]
+      },
+      {
+       "id": "labels_no_overlap_in_view",
+       "detail": [
+        "title~title"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 53333
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.020883608
+ },
+ {
+  "id": "fraction_game__kimi26__4",
+  "kind": "fraction_game",
+  "arm": "kimi26",
+  "s": 4,
+  "dep": "taxila-kimi26",
+  "effort": null,
+  "startedAt": "2026-10-04T11:24:56.540Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 124830,
+    "ttftMs": 118076,
+    "firstAnyMs": 871,
+    "reasoningChars": 60631,
+    "served": "Kimi-K2.6",
+    "usage": {
+     "in": 792,
+     "cached": 448,
+     "out": 18277,
+     "reasoning": 0
+    },
+    "usd": 0.07350648,
+    "error": null,
+    "chars": 8383,
+    "streamPaintMs": 121076,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 11532,
+     "readyMs": 21,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 15
+    },
+    "cumWallMs": 136362
+   }
+  ],
+  "passFirst": true,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 1,
+  "timeToPlayableMs": 136362,
+  "usd": 0.07350648
+ },
+ {
+  "id": "bar_chart_viz__gpt6-sol-low__4",
+  "kind": "bar_chart_viz",
+  "arm": "gpt6-sol-low",
+  "s": 4,
+  "dep": "taxila-gpt6",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:26:25.544Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 12014,
+    "ttftMs": 5197,
+    "firstAnyMs": 5197,
+    "reasoningChars": 0,
+    "served": "gpt-6-sol-2026-09-22",
+    "usage": {
+     "in": 824,
+     "cached": 0,
+     "out": 1925,
+     "reasoning": 276
+    },
+    "usd": 0.020898,
+    "error": null,
+    "chars": 5336,
+    "streamPaintMs": 8197,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4882,
+     "readyMs": 30,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         40,
+         90,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\"}"
+        ],
+        [
+         40,
+         23,
+         "{\"data-bar\":\"banana\",\"data-value\":\"7\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 16896
+   },
+   {
+    "round": 1,
+    "genMs": 10166,
+    "ttftMs": 4216,
+    "firstAnyMs": 4216,
+    "reasoningChars": 0,
+    "served": "gpt-6-sol-2026-09-22",
+    "usage": {
+     "in": 2544,
+     "cached": 0,
+     "out": 1882,
+     "reasoning": 227
+    },
+    "usd": 0.023908,
+    "error": null,
+    "chars": 5303,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 4915,
+     "readyMs": 29,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 19
+    },
+    "cumWallMs": 31977
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 31977,
+  "usd": 0.044806
+ },
+ {
+  "id": "photosynthesis_anim__codex-low__4",
+  "kind": "photosynthesis_anim",
+  "arm": "codex-low",
+  "s": 4,
+  "dep": "taxila-codex",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:25:44.791Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 43565,
+    "ttftMs": 11595,
+    "firstAnyMs": 11595,
+    "reasoningChars": 0,
+    "served": "taxila-codex",
+    "usage": {
+     "in": 1103,
+     "cached": 0,
+     "out": 5409,
+     "reasoning": 936
+    },
+    "usd": 0.07765625,
+    "error": null,
+    "chars": 13434,
+    "streamPaintMs": 21595,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": true,
+     "ms": 8353,
+     "readyMs": 33,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "water label 104 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 51918
+   },
+   {
+    "round": 1,
+    "genMs": 26577,
+    "ttftMs": 2812,
+    "firstAnyMs": 2812,
+    "reasoningChars": 0,
+    "served": "taxila-codex",
+    "usage": {
+     "in": 5626,
+     "cached": 1024,
+     "out": 4394,
+     "reasoning": 114
+    },
+    "usd": 0.0697487,
+    "error": null,
+    "chars": 12927,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 8391,
+     "readyMs": 38,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 21
+    },
+    "cumWallMs": 86886
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": true,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 86886,
+  "usd": 0.14740494999999998
+ },
+ {
+  "id": "bar_chart_viz__gpt6-luna-low__4",
+  "kind": "bar_chart_viz",
+  "arm": "gpt6-luna-low",
+  "s": 4,
+  "dep": "taxila-gpt6-luna",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:26:43.103Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 11307,
+    "ttftMs": 4163,
+    "firstAnyMs": 4163,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 824,
+     "cached": 0,
+     "out": 2214,
+     "reasoning": 421
+    },
+    "usd": 0.0011894000000000002,
+    "error": null,
+    "chars": 5990,
+    "streamPaintMs": 8663,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4848,
+     "readyMs": 25,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         31,
+         72,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 16155
+   },
+   {
+    "round": 1,
+    "genMs": 8065,
+    "ttftMs": 2625,
+    "firstAnyMs": 2625,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 2670,
+     "cached": 0,
+     "out": 2046,
+     "reasoning": 252
+    },
+    "usd": 0.00129,
+    "error": null,
+    "chars": 5993,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 4870,
+     "readyMs": 50,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 19
+    },
+    "cumWallMs": 29090
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 29090,
+  "usd": 0.0024794
+ },
+ {
+  "id": "photosynthesis_anim__dsv4-flash__4",
+  "kind": "photosynthesis_anim",
+  "arm": "dsv4-flash",
+  "s": 4,
+  "dep": "DeepSeek-V4-Flash",
+  "effort": null,
+  "startedAt": "2026-10-04T11:25:56.584Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 27349,
+    "ttftMs": 1242,
+    "firstAnyMs": 1242,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 1126,
+     "cached": 0,
+     "out": 3799,
+     "reasoning": 0
+    },
+    "usd": 0.0021514299999999997,
+    "error": null,
+    "chars": 12400,
+    "streamPaintMs": 6242,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8208,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "words_from_table",
+       "detail": [
+        "Play",
+        "CO₂",
+        "Pani"
+       ]
+      },
+      {
+       "id": "labels_present",
+       "detail": [
+        "water",
+        "co2",
+        "o2",
+        "glucose"
+       ]
+      },
+      {
+       "id": "label_text_from_table",
+       "detail": [
+        "water",
+        "co2",
+        "o2",
+        "glucose"
+       ]
+      },
+      {
+       "id": "science_direction_of_flows",
+       "detail": [
+        "co2: not moving",
+        "o2: not moving"
+       ]
+      },
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "water label 999 px from its referent",
+        "co2 label 999 px from its referent",
+        "o2 label 999 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 35557
+   },
+   {
+    "round": 1,
+    "genMs": 13954,
+    "ttftMs": 730,
+    "firstAnyMs": 730,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 5079,
+     "cached": 0,
+     "out": 3480,
+     "reasoning": 0
+    },
+    "usd": 0.00273981,
+    "error": null,
+    "chars": 11232,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8365,
+     "readyMs": 31,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_present",
+       "detail": [
+        "water",
+        "co2",
+        "o2",
+        "glucose"
+       ]
+      },
+      {
+       "id": "label_text_from_table",
+       "detail": [
+        "water",
+        "co2",
+        "o2",
+        "glucose"
+       ]
+      },
+      {
+       "id": "science_direction_of_flows",
+       "detail": [
+        "co2: not moving",
+        "o2: not moving"
+       ]
+      },
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "water label 999 px from its referent",
+        "co2 label 999 px from its referent",
+        "o2 label 999 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 57876
+   },
+   {
+    "round": 2,
+    "genMs": 20342,
+    "ttftMs": 1083,
+    "firstAnyMs": 1083,
+    "reasoningChars": 0,
+    "served": "DeepSeek-V4-Flash",
+    "usage": {
+     "in": 4746,
+     "cached": 1024,
+     "out": 3480,
+     "reasoning": 0
+    },
+    "usd": 0.00267654,
+    "error": null,
+    "chars": 11232,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 8353,
+     "readyMs": 35,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "labels_present",
+       "detail": [
+        "water",
+        "co2",
+        "o2",
+        "glucose"
+       ]
+      },
+      {
+       "id": "label_text_from_table",
+       "detail": [
+        "water",
+        "co2",
+        "o2",
+        "glucose"
+       ]
+      },
+      {
+       "id": "science_direction_of_flows",
+       "detail": [
+        "co2: not moving",
+        "o2: not moving"
+       ]
+      },
+      {
+       "id": "labels_anchored_to_referent",
+       "detail": [
+        "water label 999 px from its referent",
+        "co2 label 999 px from its referent",
+        "o2 label 999 px from its referent"
+       ]
+      }
+     ],
+     "nChecks": 21
+    },
+    "cumWallMs": 86571
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.00756778
+ },
+ {
+  "id": "bar_chart_viz__terra-low__4",
+  "kind": "bar_chart_viz",
+  "arm": "terra-low",
+  "s": 4,
+  "dep": "gpt-5.6-terra",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:26:17.254Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 32125,
+    "ttftMs": 14073,
+    "firstAnyMs": 14073,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-terra-2026-07-09",
+    "usage": {
+     "in": 824,
+     "cached": 0,
+     "out": 4079,
+     "reasoning": 1083
+    },
+    "usd": 0.050596,
+    "error": null,
+    "chars": 9525,
+    "streamPaintMs": 24573,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 5001,
+     "readyMs": 35,
+     "perf": {
+      "p95": 17,
+      "frames": 89,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         32,
+         178,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\"}"
+        ],
+        [
+         32,
+         104,
+         "{\"data-bar\":\"banana\",\"data-value\":\"7\"}"
+        ],
+        [
+         32,
+         133,
+         "{\"data-bar\":\"apple\",\"data-value\":\"9\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 37126
+   },
+   {
+    "round": 1,
+    "genMs": 22449,
+    "ttftMs": 7270,
+    "firstAnyMs": 7270,
+    "reasoningChars": 0,
+    "served": "gpt-5.6-terra-2026-07-09",
+    "usage": {
+     "in": 3897,
+     "cached": 0,
+     "out": 3446,
+     "reasoning": 512
+    },
+    "usd": 0.049146,
+    "error": null,
+    "chars": 9455,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 4971,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 19
+    },
+    "cumWallMs": 64546
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 64546,
+  "usd": 0.099742
+ },
+ {
+  "id": "bar_chart_viz__gpt61-sol-low__4",
+  "kind": "bar_chart_viz",
+  "arm": "gpt61-sol-low",
+  "s": 4,
+  "dep": "taxila-gpt61-sol",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:26:42.463Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 23400,
+    "ttftMs": 9361,
+    "firstAnyMs": 9361,
+    "reasoningChars": 0,
+    "served": "gpt-6.1-sol-2026-09-29",
+    "usage": {
+     "in": 824,
+     "cached": 0,
+     "out": 1957,
+     "reasoning": 351
+    },
+    "usd": 0.021218,
+    "error": null,
+    "chars": 5694,
+    "streamPaintMs": 17361,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4953,
+     "readyMs": 32,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         45,
+         35,
+         "{\"data-bar\":\"guava\",\"data-value\":\"4\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 28353
+   },
+   {
+    "round": 1,
+    "genMs": 14043,
+    "ttftMs": 3090,
+    "firstAnyMs": 3090,
+    "reasoningChars": 0,
+    "served": "gpt-6.1-sol-2026-09-29",
+    "usage": {
+     "in": 2483,
+     "cached": 0,
+     "out": 1667,
+     "reasoning": 41
+    },
+    "usd": 0.021636,
+    "error": null,
+    "chars": 5782,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 4966,
+     "readyMs": 27,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 19
+    },
+    "cumWallMs": 47362
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 2,
+  "timeToPlayableMs": 47362,
+  "usd": 0.042854
  }
 ]

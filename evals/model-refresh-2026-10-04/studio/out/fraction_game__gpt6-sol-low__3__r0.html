@@ -1,0 +1,105 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#fff8ed;color:#493627;font-family:system-ui,sans-serif}
+  .activity{min-height:100svh;max-width:420px;margin:auto;padding:18px 18px 22px;display:flex;flex-direction:column;align-items:center;text-align:center}
+  .top{width:100%;padding:14px 16px;background:#ffe6b9;border-radius:22px}
+  h1{font-size:1.35rem;margin:0 0 5px;font-weight:800}
+  .instruction{font-size:.98rem;margin:0}
+  .target{margin:14px 0 8px;padding:7px 22px;border-radius:999px;background:#fff;color:#a34839;font-size:1.7rem;font-weight:800;box-shadow:0 3px 0 #f3dfc7}
+  .picture{width:100%;flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+  svg{display:block;width:260px;max-width:100%;height:auto;max-height:100%}
+  .part{fill:#fff0d5;stroke:#a76a47;stroke-width:2;cursor:pointer;transition:fill .2s,filter .2s}
+  .part[data-shaded="true"]{fill:#f28b65}
+  .part:active{filter:brightness(1.12)}
+  .part:focus{outline:none;stroke:#6145a3;stroke-width:4}
+  .bottom{width:100%;display:flex;flex-direction:column;align-items:center;gap:9px}
+  .feedback{min-height:25px;font-weight:700;color:#796049}
+  button{min-width:180px;min-height:48px;border:0;border-radius:17px;background:#694f9f;color:white;font:700 1.05rem system-ui,sans-serif;box-shadow:0 5px 0 #453373;cursor:pointer;transition:transform .15s,box-shadow .15s}
+  button:active{transform:translateY(3px) scale(.98);box-shadow:0 2px 0 #453373}
+  button:disabled{opacity:.65;cursor:default}
+  .celebrate .target{animation:pop .45s ease}
+  @keyframes pop{50%{transform:scale(1.13)}}
+  .finished{justify-content:center}
+  .finished .top{padding:30px}
+  .finished .target,.finished .picture,.finished .bottom{display:none}
+  @media(max-height:620px){.activity{padding:10px 16px}.top{padding:9px}.target{margin:8px 0 4px}.bottom{gap:4px}}
+</style>
+<main class="activity" id="activity">
+  <header class="top"><h1 id="title"></h1><p class="instruction" id="instruction"></p></header>
+  <div class="target" id="target"></div>
+  <div class="picture" id="item"><svg id="bar" xmlns="http://www.w3.org/2000/svg" role="group"><g id="parts"></g></svg></div>
+  <div class="bottom"><div class="feedback" id="feedback" aria-live="polite"></div><button type="button" data-action="check" id="check"></button></div>
+</main>
+<script>
+(()=>{
+  const items=Studio.params.items;
+  const root=document.getElementById('activity'),item=document.getElementById('item');
+  const bar=document.getElementById('bar'),parts=document.getElementById('parts');
+  const target=document.getElementById('target'),feedback=document.getElementById('feedback');
+  const check=document.getElementById('check');
+  let index=0,locked=false;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+  function show(){
+    const current=items[index];
+    item.dataset.item=current.id;
+    target.textContent=current.n+'/'+current.d;
+    feedback.textContent=Studio.t('hint');
+    parts.replaceChildren();
+    const height=current.d*45;
+    bar.setAttribute('viewBox',`0 0 260 ${height}`);
+    for(let i=0;i<current.d;i++){
+      const part=document.createElementNS('http://www.w3.org/2000/svg','rect');
+      part.setAttribute('x','2');part.setAttribute('y',String(i*45+1));
+      part.setAttribute('width','256');part.setAttribute('height','43');
+      part.setAttribute('rx','8');
+      part.setAttribute('class','part');
+      part.setAttribute('tabindex','0');
+      part.setAttribute('role','button');
+      part.setAttribute('data-part',String(i));
+      part.setAttribute('data-shaded','false');
+      const toggle=()=>{
+        if(locked)return;
+        part.dataset.shaded=part.dataset.shaded==='true'?'false':'true';
+        feedback.textContent='';
+        Studio.event('part_toggle',{item:current.id,part:i,shaded:part.dataset.shaded==='true'});
+      };
+      part.addEventListener('click',toggle);
+      part.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle()}});
+      parts.appendChild(part);
+    }
+    locked=false;check.disabled=false;
+  }
+  check.addEventListener('click',()=>{
+    if(locked)return;
+    locked=true;check.disabled=true;
+    const current=items[index];
+    const n=parts.querySelectorAll('[data-shaded="true"]').length;
+    Studio.event('check',{item:current.id,n:n});
+    Studio.answer({n:n,d:current.d});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      feedback.textContent=Studio.t('right');
+      root.classList.add('celebrate');
+      setTimeout(()=>{
+        root.classList.remove('celebrate');
+        index++;
+        if(index<items.length)show();
+        else{
+          root.classList.add('finished');
+          document.getElementById('title').textContent=Studio.t('done');
+          document.getElementById('instruction').textContent='';
+          Studio.done();
+        }
+      },850);
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      locked=false;check.disabled=false;
+    }
+  });
+  show();
+  Studio.ready();
+})();
+</script>

@@ -9,5 +9,7 @@ COPY infra/probes infra/probes
 COPY tests/prod/lib.mjs tests/prod/lib.mjs
 # W1-D acceptance files that must run from Azure (no sandbox proxy): the eyes check runs ad hoc (deploy.mjs --adhoc)
 COPY tests/prod/w1d-eyes.mjs tests/prod/w1d-eyes.mjs
+# W1-A: the text-lane timing bar (self-contained; imports only ./lib.mjs) must run from Azure, not the sandbox
+COPY tests/prod/w1a-text-voice.mjs tests/prod/w1a-text-voice.mjs
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright NODE_ENV=production
 CMD ["node", "infra/probes/probe.mjs"]

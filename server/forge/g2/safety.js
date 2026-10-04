@@ -7,6 +7,7 @@
 //   3. a taxila-brain classifier for the Hindi / Hinglish rows (Content Safety is not trained on Hindi:
 //      rejected.md#content-safety-sole-gate), strict schema; a content-filter refusal counts as unsafe.
 // The SEVERE/MILD lists mirror server/forge/gate.js (G1), which does not export them; a test pins the overlap.
+import { resolveLane } from "../../endpoints.js";
 export const SEVERE = [
   /\b(suicide|sex|sexy|nude|porn|girlfriend|boyfriend|date me|love you|i love you|baby\s*girl|ishq|mohabbat|kiss)\b/i,
   /\b(chutiya|bhenchod|madarchod|harami|kamina|randi)\b/i,
@@ -53,12 +54,14 @@ export function checkStringsLocal(design) {
 
 /** Azure AI Content Safety text:analyze on the Foundry AIServices resource. → max severity, or throws. */
 export async function contentSafetySeverity(text, { timeoutMs = 8000 } = {}) {
-  const host = (process.env.AZURE_OPENAI_ENDPOINT || "").replace(/(https:\/\/[^/]+).*/, "$1");
-  if (!host || !process.env.AZURE_OPENAI_API_KEY) throw new Error("content safety not configured");
+  // SAFETY lane (server/endpoints.js): the primary account's host unless AZURE_OPENAI_ENDPOINT_SAFETY overrides it
+  const { endpoint, key } = resolveLane("SAFETY");
+  const host = endpoint.replace(/(https:\/\/[^/]+).*/, "$1");
+  if (!host || !key) throw new Error("content safety not configured");
   const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), timeoutMs);
   try {
     const res = await fetch(`${host}/contentsafety/text:analyze?api-version=2024-09-01`, { method: "POST", signal: ctl.signal,
-      headers: { "Ocp-Apim-Subscription-Key": process.env.AZURE_OPENAI_API_KEY, "content-type": "application/json" },
+      headers: { "Ocp-Apim-Subscription-Key": key, "content-type": "application/json" },
       body: JSON.stringify({ text, outputType: "FourSeverityLevels" }) });
     if (!res.ok) throw new Error(`content safety HTTP ${res.status}`);
     return (await res.json()).categoriesAnalysis.reduce((m, c) => Math.max(m, c.severity), 0);

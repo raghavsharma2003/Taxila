@@ -1,0 +1,457 @@
+<style>
+  :root {
+    color-scheme: light;
+    --ink: #303650;
+    --muted: #70768b;
+    --cream: #fff9ed;
+    --paper: #ffffff;
+    --coral: #ff806e;
+    --coral-dark: #e66758;
+    --gold: #ffc95f;
+    --teal: #65cdb9;
+    --lavender: #ecebff;
+    --line: #eee7db;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  .learning-app {
+    width: 100%;
+    min-height: 100vh;
+    padding: 20px 18px 24px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse at 8% 6%, rgba(255,201,95,.22), transparent 31%),
+      radial-gradient(ellipse at 95% 82%, rgba(101,205,185,.19), transparent 33%),
+      var(--cream);
+    color: var(--ink);
+    font-family: ui-rounded, "Trebuchet MS", system-ui, sans-serif;
+  }
+  .activity-card {
+    width: min(100%, 470px);
+    min-height: 520px;
+    padding: 23px 20px 20px;
+    border: 1px solid rgba(238,231,219,.9);
+    border-radius: 28px;
+    background: rgba(255,255,255,.92);
+    box-shadow: 0 16px 42px rgba(68,57,37,.10), 0 3px 8px rgba(68,57,37,.05);
+    animation: card-in .55s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 13px;
+  }
+  .brand-dot {
+    width: 12px;
+    height: 12px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--coral);
+    box-shadow: 18px 0 0 var(--gold), 36px 0 0 var(--teal);
+    margin-right: 36px;
+  }
+  .fraction-pill {
+    min-width: 58px;
+    min-height: 44px;
+    padding: 6px 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    color: #5a4b86;
+    background: var(--lavender);
+    font-size: 19px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .02em;
+  }
+  h1 {
+    margin: 0 0 9px;
+    font-size: clamp(23px, 7vw, 30px);
+    line-height: 1.14;
+    letter-spacing: -.035em;
+    font-weight: 850;
+  }
+  .instructions {
+    min-height: 44px;
+    margin: 0;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.48;
+  }
+  .picture-wrap {
+    min-height: 265px;
+    margin: 9px 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .food-picture {
+    width: min(100%, 340px);
+    height: 255px;
+    overflow: visible;
+    filter: drop-shadow(0 8px 7px rgba(90,65,35,.12));
+  }
+  .piece {
+    cursor: pointer;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform .16s ease, filter .2s ease, opacity .2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .piece:hover { filter: brightness(1.045); }
+  .piece:active { transform: scale(.94); }
+  .piece[aria-pressed="true"] { filter: drop-shadow(0 3px 3px rgba(92,54,30,.18)); }
+  .piece[aria-pressed="true"] .piece-fill { fill: var(--coral); }
+  .piece[aria-pressed="false"] .piece-fill { fill: #ffe8ad; }
+  .piece[aria-pressed="true"] .crust { fill: #f5ad52; }
+  .piece:focus-visible { outline: none; }
+  .piece:focus-visible .piece-outline {
+    stroke: #51438a;
+    stroke-width: 4;
+  }
+  .bar-picture {
+    width: min(100%, 350px);
+    min-height: 160px;
+    padding: 17px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    border-radius: 22px;
+    background: #fff5df;
+    box-shadow: inset 0 0 0 1px #f0e4cd;
+  }
+  .bar-part {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 100px;
+    padding: 0;
+    border: 3px solid #fffaf0;
+    border-radius: 12px;
+    background: #ffe8ad;
+    cursor: pointer;
+    transition: transform .16s ease, background .2s ease, box-shadow .2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .bar-part[data-shaded="true"] {
+    background: var(--coral);
+    box-shadow: inset 0 -5px 0 rgba(171,73,62,.12);
+  }
+  .bar-part:active { transform: scale(.92); }
+  .bar-part:focus-visible { outline: 3px solid #51438a; outline-offset: 2px; }
+  .controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    margin-top: 2px;
+  }
+  .count-readout {
+    min-height: 31px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    color: var(--muted);
+    font-size: 15px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .count-number {
+    min-width: 30px;
+    min-height: 30px;
+    padding: 2px 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: #5a4b86;
+    background: var(--lavender);
+    font-size: 16px;
+  }
+  .check-button {
+    width: min(100%, 260px);
+    min-height: 54px;
+    border: 0;
+    border-radius: 18px;
+    background: var(--coral);
+    color: #fff;
+    font: inherit;
+    font-size: 17px;
+    font-weight: 800;
+    box-shadow: 0 5px 0 var(--coral-dark), 0 9px 16px rgba(230,103,88,.18);
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease, opacity .2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .check-button:hover { background: #ff8c7c; }
+  .check-button:active { transform: translateY(3px) scale(.985); box-shadow: 0 2px 0 var(--coral-dark); }
+  .check-button:focus-visible { outline: 3px solid #51438a; outline-offset: 4px; }
+  .check-button:disabled { opacity: .72; cursor: default; }
+  .feedback {
+    min-height: 27px;
+    margin: 2px 0 0;
+    text-align: center;
+    color: #558c7e;
+    font-size: 15px;
+    line-height: 1.4;
+    font-weight: 750;
+  }
+  .feedback.is-wrong { color: #bd675b; }
+  .done-card {
+    min-height: 470px;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 24px;
+    background: linear-gradient(145deg, #fff8df, #effbf6 78%);
+    animation: card-in .45s ease both;
+  }
+  .done-art {
+    width: 150px;
+    height: 150px;
+    margin-bottom: 16px;
+    animation: bob 2.5s ease-in-out infinite;
+  }
+  .done-card h1 { margin: 0; }
+  .sparkle { transform-box: fill-box; transform-origin: center; animation: twinkle 1.8s ease-in-out infinite alternate; }
+  .sparkle:nth-child(2) { animation-delay: .4s; }
+  .sparkle:nth-child(3) { animation-delay: .8s; }
+  @keyframes card-in {
+    from { opacity: 0; transform: translateY(9px) scale(.985); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes bob { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-7px) rotate(2deg); } }
+  @keyframes twinkle { from { opacity: .55; transform: scale(.82) rotate(-8deg); } to { opacity: 1; transform: scale(1.08) rotate(8deg); } }
+  @media (max-width: 390px) {
+    .learning-app { padding: 12px 12px 18px; }
+    .activity-card { padding: 19px 15px 17px; border-radius: 24px; }
+    .picture-wrap { min-height: 244px; }
+    .food-picture { height: 235px; }
+    .bar-part { height: 86px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+  }
+</style>
+<main class="learning-app">
+  <section class="activity-card" id="activity" aria-live="polite">
+    <div class="topline">
+      <span class="brand-dot" aria-hidden="true"></span>
+      <span class="fraction-pill" id="targetFraction"></span>
+    </div>
+    <h1 id="title"></h1>
+    <p class="instructions" id="instructions"></p>
+    <div class="picture-wrap" id="pictureWrap"></div>
+    <div class="controls">
+      <div class="count-readout" aria-live="polite">
+        <span class="count-number" id="countNumber">0</span>
+        <span id="hint"></span>
+      </div>
+      <button class="check-button" id="checkButton" data-action="check" type="button"></button>
+      <p class="feedback" id="feedback" aria-live="polite"></p>
+    </div>
+  </section>
+  <section class="activity-card done-card" id="doneScreen" hidden aria-live="polite">
+    <svg class="done-art" viewBox="0 0 160 160" role="img" aria-hidden="true">
+      <circle cx="80" cy="84" r="53" fill="#f5ad52"/>
+      <circle cx="80" cy="80" r="49" fill="#ffe8ad"/>
+      <path d="M80 31 A49 49 0 0 1 122.4 105.5 L80 80Z" fill="#ff806e"/>
+      <path d="M122.4 105.5 A49 49 0 0 1 51.2 119.6 L80 80Z" fill="#ff806e"/>
+      <path d="M51.2 119.6 A49 49 0 0 1 80 31 L80 80Z" fill="#ff806e"/>
+      <circle cx="80" cy="80" r="49" fill="none" stroke="#f5ad52" stroke-width="5"/>
+      <path d="M80 31v49l42.4 25.5M80 80l-28.8 39.6M80 80V31" fill="none" stroke="#fff7df" stroke-width="3"/>
+      <path class="sparkle" d="M27 38l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="#65cdb9"/>
+      <path class="sparkle" d="M130 37l2.5 6.5L139 46l-6.5 2.5L130 55l-2.5-6.5L121 46l6.5-2.5z" fill="#ffc95f"/>
+      <path class="sparkle" d="M132 112l2.5 6.5L141 121l-6.5 2.5L132 130l-2.5-6.5L123 121l6.5-2.5z" fill="#ff806e"/>
+    </svg>
+    <h1 id="doneText"></h1>
+  </section>
+</main>
+<script>
+(() => {
+  const items = Studio.params.items;
+  const pictureChoice = Studio.params.picture;
+  const words = key => Studio.t(key);
+  const activity = document.getElementById("activity");
+  const doneScreen = document.getElementById("doneScreen");
+  const title = document.getElementById("title");
+  const instructions = document.getElementById("instructions");
+  const targetFraction = document.getElementById("targetFraction");
+  const pictureWrap = document.getElementById("pictureWrap");
+  const countNumber = document.getElementById("countNumber");
+  const hint = document.getElementById("hint");
+  const checkButton = document.getElementById("checkButton");
+  const feedback = document.getElementById("feedback");
+  let itemIndex = 0;
+  let shadedCount = 0;
+  let awaitingVerdict = false;
+  let finished = false;
+
+  title.textContent = words("title");
+  instructions.textContent = words("instr");
+  hint.textContent = words("hint");
+  checkButton.textContent = words("check");
+
+  const setCount = () => { countNumber.textContent = String(shadedCount); };
+
+  function makePizza(d) {
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("class", "food-picture");
+    svg.setAttribute("viewBox", "0 0 300 260");
+    svg.setAttribute("role", "group");
+    svg.setAttribute("aria-label", "");
+    const cx = 150, cy = 130, radius = 105;
+    const point = (angle, r) => {
+      const a = (angle - 90) * Math.PI / 180;
+      return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+    };
+    const pathForSlice = (start, end, r) => {
+      const a = point(start, r), b = point(end, r);
+      const large = end - start > 180 ? 1 : 0;
+      return `M ${cx} ${cy} L ${a[0]} ${a[1]} A ${r} ${r} 0 ${large} 1 ${b[0]} ${b[1]} Z`;
+    };
+    for (let index = 0; index < d; index++) {
+      const start = index * 360 / d + .8;
+      const end = (index + 1) * 360 / d - .8;
+      const group = document.createElementNS(ns, "g");
+      group.setAttribute("class", "piece");
+      group.setAttribute("data-part", String(index));
+      group.setAttribute("data-shaded", "false");
+      group.setAttribute("role", "button");
+      group.setAttribute("tabindex", "0");
+      group.setAttribute("aria-pressed", "false");
+      group.setAttribute("aria-label", "");
+      const slice = document.createElementNS(ns, "path");
+      slice.setAttribute("class", "piece-fill piece-outline");
+      slice.setAttribute("d", pathForSlice(start, end, radius));
+      slice.setAttribute("stroke", "#f5ad52");
+      slice.setAttribute("stroke-width", "2");
+      slice.setAttribute("stroke-linejoin", "round");
+      const crust = document.createElementNS(ns, "path");
+      crust.setAttribute("class", "crust");
+      const outerA = point(start + .5, 115), outerB = point(end - .5, 115);
+      crust.setAttribute("d", `M ${outerA[0]} ${outerA[1]} A 115 115 0 ${end-start > 180 ? 1 : 0} 1 ${outerB[0]} ${outerB[1]}`);
+      crust.setAttribute("fill", "none");
+      crust.setAttribute("stroke", "#f5ad52");
+      crust.setAttribute("stroke-width", "12");
+      crust.setAttribute("stroke-linecap", "round");
+      const dot = document.createElementNS(ns, "circle");
+      const mid = point((start + end) / 2, radius * .56);
+      dot.setAttribute("cx", mid[0]);
+      dot.setAttribute("cy", mid[1]);
+      dot.setAttribute("r", "4");
+      dot.setAttribute("fill", "#d98545");
+      group.append(slice, crust, dot);
+      group.addEventListener("click", () => togglePart(group));
+      group.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          togglePart(group);
+        }
+      });
+      svg.appendChild(group);
+    }
+    return svg;
+  }
+
+  function makeBar(d) {
+    const bar = document.createElement("div");
+    bar.className = "bar-picture";
+    bar.setAttribute("role", "group");
+    for (let index = 0; index < d; index++) {
+      const part = document.createElement("button");
+      part.type = "button";
+      part.className = "bar-part";
+      part.setAttribute("data-part", String(index));
+      part.setAttribute("data-shaded", "false");
+      part.setAttribute("aria-pressed", "false");
+      part.setAttribute("aria-label", "");
+      part.addEventListener("click", () => togglePart(part));
+      bar.appendChild(part);
+    }
+    return bar;
+  }
+
+  function togglePart(part) {
+    if (awaitingVerdict || finished) return;
+    const shaded = part.getAttribute("data-shaded") === "true";
+    part.setAttribute("data-shaded", shaded ? "false" : "true");
+    part.setAttribute("aria-pressed", shaded ? "false" : "true");
+    shadedCount += shaded ? -1 : 1;
+    setCount();
+    feedback.textContent = "";
+    feedback.classList.remove("is-wrong");
+    Studio.event("part_toggle", { index: itemIndex, part: Number(part.getAttribute("data-part")), shaded: !shaded });
+  }
+
+  function renderItem() {
+    const item = items[itemIndex];
+    shadedCount = 0;
+    setCount();
+    awaitingVerdict = false;
+    feedback.textContent = "";
+    feedback.classList.remove("is-wrong");
+    checkButton.disabled = false;
+    activity.setAttribute("data-item", String(item.id));
+    targetFraction.textContent = `${item.n}/${item.d}`;
+    pictureWrap.replaceChildren(
+      pictureChoice === "bar" ? makeBar(item.d) : makePizza(item.d)
+    );
+  }
+
+  checkButton.addEventListener("click", () => {
+    if (awaitingVerdict || finished) return;
+    awaitingVerdict = true;
+    checkButton.disabled = true;
+    Studio.event("check", { index: itemIndex, shaded: shadedCount });
+    Studio.answer({ n: shadedCount, d: items[itemIndex].d });
+  });
+
+  Studio.onVerdict(({ correct }) => {
+    if (finished || !awaitingVerdict) return;
+    awaitingVerdict = false;
+    if (correct) {
+      feedback.textContent = words("right");
+      feedback.classList.remove("is-wrong");
+      Studio.event("verdict", { index: itemIndex, correct: true });
+      if (itemIndex + 1 < items.length) {
+        checkButton.disabled = true;
+        window.setTimeout(() => {
+          if (finished) return;
+          itemIndex++;
+          renderItem();
+        }, 950);
+      } else {
+        checkButton.disabled = true;
+        window.setTimeout(() => {
+          finished = true;
+          activity.hidden = true;
+          document.getElementById("doneText").textContent = words("done");
+          doneScreen.hidden = false;
+          Studio.done();
+        }, 950);
+      }
+    } else {
+      feedback.textContent = words("wrong");
+      feedback.classList.add("is-wrong");
+      checkButton.disabled = false;
+      Studio.event("verdict", { index: itemIndex, correct: false });
+    }
+  });
+
+  renderItem();
+  Studio.ready();
+})();
+</script>

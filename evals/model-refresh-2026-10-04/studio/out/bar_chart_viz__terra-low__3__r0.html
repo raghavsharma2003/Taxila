@@ -1,0 +1,360 @@
+<style>
+  :root{
+    --ink:#243552;
+    --muted:#71819a;
+    --paper:#fffdf8;
+    --sky:#eaf6ff;
+    --line:#cfe2ed;
+    --coral:#f57d6b;
+    --coral-dark:#d95a54;
+    --mint:#dff4e8;
+    --good:#287a58;
+    --bad:#bb5353;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-width:320px;
+    background:linear-gradient(160deg,#e9f7ff 0%,#fff8e8 100%);
+    color:var(--ink);
+    font-family:Arial,sans-serif;
+  }
+  #app{
+    width:100%;
+    min-height:640px;
+    padding:18px 14px 20px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .top{
+    width:min(100%,390px);
+    display:flex;
+    align-items:center;
+    gap:11px;
+    margin:2px 0 14px;
+  }
+  .fruit-badge{
+    width:48px;
+    height:48px;
+    flex:0 0 48px;
+    border-radius:17px;
+    background:#fff;
+    box-shadow:0 5px 14px rgba(55,94,120,.13);
+    display:grid;
+    place-items:center;
+  }
+  .fruit-badge svg{width:34px;height:34px}
+  h1{
+    margin:0;
+    font-size:22px;
+    line-height:1.15;
+    letter-spacing:-.3px;
+  }
+  .card{
+    width:min(100%,390px);
+    background:rgba(255,253,248,.95);
+    border:2px solid rgba(255,255,255,.9);
+    border-radius:25px;
+    box-shadow:0 10px 26px rgba(48,91,117,.14);
+    overflow:hidden;
+  }
+  .chart-wrap{
+    position:relative;
+    padding:14px 7px 4px 2px;
+  }
+  #chart{
+    width:100%;
+    height:auto;
+    display:block;
+    overflow:visible;
+  }
+  .axis-title{
+    fill:var(--muted);
+    font-size:10px;
+    font-weight:bold;
+    letter-spacing:.2px;
+  }
+  .tick{
+    fill:var(--muted);
+    font-size:10px;
+    font-weight:bold;
+  }
+  .fruit-label{
+    fill:var(--ink);
+    font-size:10px;
+    font-weight:bold;
+  }
+  .grid{
+    stroke:var(--line);
+    stroke-width:1;
+    stroke-dasharray:3 4;
+  }
+  .axis{
+    stroke:#8493a8;
+    stroke-width:1.5;
+  }
+  .bar{
+    fill:var(--coral);
+    stroke:var(--coral-dark);
+    stroke-width:1;
+    cursor:pointer;
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    transition:filter .18s ease,transform .18s ease,opacity .18s ease;
+  }
+  .bar.ready:hover,.bar.ready:focus{
+    filter:brightness(1.08);
+    transform:scaleX(1.06);
+    outline:none;
+  }
+  .bar.pressed{
+    transform:scale(.96,1.02);
+    filter:brightness(.92);
+  }
+  .bar.waiting{opacity:.65}
+  .bar.grow{animation:grow .72s cubic-bezier(.22,.8,.28,1) both}
+  @keyframes grow{
+    from{transform:scaleY(0)}
+    to{transform:scaleY(1)}
+  }
+  .value-bubble{
+    pointer-events:none;
+    opacity:0;
+    transform:translateY(5px) scale(.8);
+    transition:opacity .2s ease,transform .2s ease;
+  }
+  .value-bubble.show{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+  .bubble-shape{fill:#243552}
+  .bubble-text{
+    fill:#fff;
+    font-size:12px;
+    font-weight:bold;
+    text-anchor:middle;
+  }
+  .question-panel{
+    margin:4px 12px 13px;
+    padding:13px 14px;
+    border-radius:17px;
+    background:var(--sky);
+    border:1px solid #d2eafa;
+  }
+  #ask{
+    margin:0;
+    font-size:16px;
+    font-weight:bold;
+    line-height:1.32;
+  }
+  #feedback{
+    min-height:23px;
+    margin:8px 1px 0;
+    font-size:14px;
+    font-weight:bold;
+    opacity:0;
+    transform:translateY(-4px);
+    transition:opacity .25s ease,transform .25s ease;
+  }
+  #feedback.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+  #feedback.good{color:var(--good)}
+  #feedback.bad{color:var(--bad)}
+  #finish{
+    display:none;
+    margin:0 12px 15px;
+    padding:13px 15px;
+    border-radius:16px;
+    background:var(--mint);
+    color:var(--good);
+    font-size:16px;
+    font-weight:bold;
+    animation:pop .35s ease both;
+  }
+  #finish.show{display:block}
+  @keyframes pop{
+    from{transform:scale(.88);opacity:0}
+    to{transform:scale(1);opacity:1}
+  }
+  .spark{
+    fill:#ffcf5a;
+    opacity:0;
+  }
+  .spark.show{animation:spark .7s ease both}
+  @keyframes spark{
+    0%{opacity:0;transform:scale(.3)}
+    40%{opacity:1}
+    100%{opacity:0;transform:translateY(-10px) scale(1.15)}
+  }
+</style>
+
+<main id="app">
+  <header class="top">
+    <div class="fruit-badge" aria-hidden="true">
+      <svg viewBox="0 0 40 40">
+        <path d="M21 10c3-6 8-7 12-6-2 4-6 7-12 7Z" fill="#61b883"/>
+        <path d="M19 12c-8 1-12 8-11 15 1 7 6 11 13 11 8 0 13-6 13-14 0-8-6-13-15-12Z" fill="#ffb84e"/>
+        <path d="M14 17c-3 5-2 12 2 16" fill="none" stroke="#ffe09b" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h1 id="title"></h1>
+  </header>
+
+  <section class="card">
+    <div class="chart-wrap">
+      <svg id="chart" viewBox="0 0 360 350" role="img">
+        <g id="grid-layer"></g>
+        <g id="axis-layer"></g>
+        <g id="bar-layer"></g>
+        <g id="label-layer"></g>
+        <g class="value-bubble" id="bubble">
+          <rect class="bubble-shape" id="bubble-box" x="0" y="0" width="34" height="25" rx="10"></rect>
+          <text class="bubble-text" id="bubble-text" x="0" y="17"></text>
+        </g>
+        <g id="sparkles">
+          <circle class="spark" cx="0" cy="0" r="3"></circle>
+          <circle class="spark" cx="0" cy="0" r="2"></circle>
+        </g>
+      </svg>
+    </div>
+    <div class="question-panel">
+      <p id="ask"></p>
+      <div id="feedback" aria-live="polite"></div>
+    </div>
+    <div id="finish" aria-live="polite"></div>
+  </section>
+</main>
+
+<script>
+(function(){
+  var data=Studio.params.data;
+  var svg=document.getElementById('chart');
+  var grid=document.getElementById('grid-layer');
+  var axes=document.getElementById('axis-layer');
+  var bars=document.getElementById('bar-layer');
+  var labels=document.getElementById('label-layer');
+  var bubble=document.getElementById('bubble');
+  var bubbleBox=document.getElementById('bubble-box');
+  var bubbleText=document.getElementById('bubble-text');
+  var feedback=document.getElementById('feedback');
+  var finish=document.getElementById('finish');
+  var ns='http://www.w3.org/2000/svg';
+  var left=49, right=346, top=25, bottom=267;
+  var height=bottom-top;
+  var max=0, i;
+  var waiting=false, complete=false;
+
+  function node(name,attrs,text){
+    var el=document.createElementNS(ns,name);
+    for(var k in attrs){el.setAttribute(k,attrs[k]);}
+    if(text!==undefined){el.textContent=text;}
+    return el;
+  }
+  function niceStep(value){
+    var rough=value/5;
+    var power=Math.pow(10,Math.floor(Math.log(rough)/Math.LN10));
+    var unit=rough/power;
+    var base=unit<=1?1:unit<=2?2:unit<=5?5:10;
+    return base*power;
+  }
+
+  for(i=0;i<data.length;i++){if(data[i].value>max)max=data[i].value;}
+  var step=niceStep(max);
+  var chartMax=Math.ceil(max/step)*step;
+
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+
+  axes.appendChild(node('line',{x1:left,y1:top,x2:left,y2:bottom,class:'axis'}));
+  axes.appendChild(node('line',{x1:left,y1:bottom,x2:right,y2:bottom,class:'axis'}));
+  axes.appendChild(node('text',{
+    x:15,y:(top+bottom)/2,class:'axis-title',
+    transform:'rotate(-90 15 '+((top+bottom)/2)+')',
+    'text-anchor':'middle'
+  },Studio.t('yaxis')));
+
+  for(var tick=0;tick<=chartMax;tick+=step){
+    var y=bottom-(tick/chartMax)*height;
+    grid.appendChild(node('line',{x1:left,y1:y,x2:right,y2:y,class:'grid'}));
+    labels.appendChild(node('text',{
+      x:left-8,y:y+4,class:'tick','text-anchor':'end','data-tick':tick
+    },String(tick)));
+  }
+
+  var space=(right-left)/data.length;
+  var barWidth=Math.min(45,space-12);
+  for(i=0;i<data.length;i++){
+    (function(item,index){
+      var cx=left+space*(index+.5);
+      var barH=(item.value/chartMax)*height;
+      var y=bottom-barH;
+      var rect=node('rect',{
+        x:cx-barWidth/2,y:y,width:barWidth,height:barH,rx:9,
+        class:'bar grow ready',
+        'data-bar':item.key,
+        'data-value':item.value,
+        tabindex:0,
+        role:'button'
+      });
+      rect.style.animationDelay=(index*.08)+'s';
+      rect.addEventListener('click',function(){choose(item,rect,cx,y);});
+      rect.addEventListener('keydown',function(e){
+        if(e.key==='Enter'||e.key===' '){e.preventDefault();choose(item,rect,cx,y);}
+      });
+      bars.appendChild(rect);
+      labels.appendChild(node('text',{
+        x:cx,y:bottom+20,class:'fruit-label','text-anchor':'middle'
+      },Studio.t(item.key)));
+    })(data[i],i);
+  }
+
+  function choose(item,rect,cx,y){
+    if(waiting||complete)return;
+    waiting=true;
+    var all=bars.querySelectorAll('.bar');
+    for(var j=0;j<all.length;j++){all[j].classList.remove('ready');all[j].classList.add('waiting');}
+    rect.classList.add('pressed');
+    bubbleText.textContent=String(item.value);
+    var bw=34;
+    bubbleBox.setAttribute('x',cx-bw/2);
+    bubbleBox.setAttribute('y',Math.max(3,y-31));
+    bubbleText.setAttribute('x',cx);
+    bubbleText.setAttribute('y',Math.max(3,y-31)+17);
+    bubble.classList.add('show');
+    var sparks=document.querySelectorAll('.spark');
+    for(var s=0;s<sparks.length;s++){
+      sparks[s].setAttribute('cx',cx+(s?18:-18));
+      sparks[s].setAttribute('cy',y+8);
+      sparks[s].classList.remove('show');
+      void sparks[s].offsetWidth;
+      sparks[s].classList.add('show');
+    }
+    Studio.event('bar_tap',{key:item.key,value:item.value});
+    Studio.answer(item.key);
+  }
+
+  Studio.onVerdict(function(result){
+    if(complete)return;
+    feedback.className='';
+    if(result.correct){
+      complete=true;
+      feedback.textContent=Studio.t('right');
+      feedback.className='show good';
+      finish.textContent=Studio.t('done');
+      finish.className='show';
+      Studio.done();
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      feedback.className='show bad';
+      waiting=false;
+      var all=bars.querySelectorAll('.bar');
+      for(var j=0;j<all.length;j++){all[j].classList.remove('waiting','pressed');all[j].classList.add('ready');}
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

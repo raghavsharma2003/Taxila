@@ -1,0 +1,162 @@
+<style>
+*{box-sizing:border-box}
+:root{font-family:system-ui,sans-serif;color:#25453e;background:#fff8ec}
+body{margin:0}
+.activity{width:100%;max-width:480px;min-height:100svh;margin:auto;padding:20px 18px;display:flex;flex-direction:column;align-items:center;gap:14px;background:radial-gradient(ellipse at top,#fffdf5,#fff3df)}
+header{text-align:center;width:100%}
+h1{font-size:24px;line-height:1.2;margin:0 0 8px;font-weight:800}
+.instructions{font-size:16px;line-height:1.4;margin:0;color:#587066}
+.item{width:100%;display:flex;flex-direction:column;align-items:center;gap:8px}
+.fraction{display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:28px;line-height:1.08;font-weight:800;color:#305d50;min-width:64px;padding:6px 14px;border-radius:16px;background:#fff;box-shadow:0 4px 0 #eadcc4}
+.numerator{border-bottom:2px solid #305d50;width:100%;text-align:center;padding-bottom:3px}
+.denominator{padding-top:3px}
+.picture{width:min(100%,300px);aspect-ratio:1;overflow:visible;filter:drop-shadow(0 9px 0 #eadcc4)}
+.crust{fill:#e4a650;stroke:#cf873a;stroke-width:3}
+.part{cursor:pointer;outline:none;transform-origin:160px 160px;transition:filter .18s,transform .18s}
+.part path{fill:#ffebbd;stroke:#b17b3c;stroke-width:2;stroke-linejoin:round;transition:fill .22s}
+.part[data-shaded="true"] path{fill:#ed9062}
+.part:hover{filter:brightness(1.04)}
+.part:active{transform:scale(.97)}
+.part:focus-visible path{stroke:#245d58;stroke-width:5}
+.picture.locked .part{pointer-events:none}
+footer{width:100%;text-align:center;margin-top:auto}
+.feedback{min-height:44px;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1.35;color:#64766c;margin:0 0 10px}
+.feedback.right{color:#257154;font-weight:700}
+.feedback.wrong{color:#93613d}
+.check{width:100%;min-height:52px;border:0;border-radius:18px;background:#326d5c;color:white;font:700 18px system-ui;box-shadow:0 5px 0 #234c41;cursor:pointer;transition:transform .15s,background .2s}
+.check:active{transform:translateY(3px);box-shadow:0 2px 0 #234c41}
+.check:disabled{opacity:.65;cursor:default}
+.celebrate{animation:happy .65s ease-in-out}
+@keyframes happy{0%,100%{transform:scale(1)}45%{transform:scale(1.045) rotate(3deg)}}
+.done-art{display:none;width:230px;height:230px;margin:auto;color:#326d5c}
+.activity.finished{justify-content:center}
+.finished .item,.finished footer,.finished .instructions{display:none}
+.finished .done-art{display:block;animation:happy .8s ease-in-out}
+@media(max-height:600px){.activity{padding:12px 16px;gap:8px}h1{font-size:21px}.picture{width:min(100%,250px)}.feedback{margin-bottom:6px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<main class="activity" id="activity">
+<header>
+<h1 id="title"></h1>
+<p class="instructions" id="instructions"></p>
+</header>
+<section class="item" id="item">
+<div class="fraction" id="fraction">
+<span class="numerator" id="numerator"></span>
+<span class="denominator" id="denominator"></span>
+</div>
+<svg class="picture" id="picture" viewBox="0 0 320 320">
+<circle cx="160" cy="160" r="148" fill="#fffdf6"/>
+<circle class="crust" cx="160" cy="160" r="140"/>
+<g id="parts"></g>
+</svg>
+</section>
+<svg class="done-art" viewBox="0 0 240 240" aria-hidden="true">
+<circle cx="120" cy="120" r="100" fill="#dfedde"/>
+<circle cx="120" cy="120" r="78" fill="#fffdf5" stroke="#e4a650" stroke-width="10"/>
+<path d="M78 121l28 28 56-61" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M28 42l8 10M203 45l-8 10M26 191l10-5M205 192l-10-5" stroke="#ed9062" stroke-width="7" stroke-linecap="round"/>
+</svg>
+<footer>
+<p class="feedback" id="feedback" aria-live="polite"></p>
+<button class="check" id="check" data-action="check" type="button"></button>
+</footer>
+</main>
+<script>
+(function(){
+const items=Studio.params.items;
+const root=document.getElementById('activity');
+const itemBox=document.getElementById('item');
+const picture=document.getElementById('picture');
+const parts=document.getElementById('parts');
+const check=document.getElementById('check');
+const feedback=document.getElementById('feedback');
+const title=document.getElementById('title');
+const ns='http://www.w3.org/2000/svg';
+let position=0,shaded=[],pending=false,complete=false;
+title.textContent=Studio.t('title');
+document.getElementById('instructions').textContent=Studio.t('instr');
+check.textContent=Studio.t('check');
+function finish(){
+complete=true;
+root.classList.add('finished');
+title.textContent=Studio.t('done');
+Studio.done();
+}
+function toggle(index){
+if(pending||complete)return;
+shaded[index]=!shaded[index];
+const part=parts.children[index];
+part.setAttribute('data-shaded',String(shaded[index]));
+part.setAttribute('aria-pressed',String(shaded[index]));
+feedback.textContent=Studio.t('hint');
+feedback.className='feedback';
+Studio.event('toggle',{id:items[position].id,index:index,shaded:shaded[index]});
+}
+function render(){
+if(position>=items.length){finish();return;}
+const item=items[position];
+itemBox.setAttribute('data-item',item.id);
+document.getElementById('numerator').textContent=item.n;
+document.getElementById('denominator').textContent=item.d;
+shaded=Array(item.d).fill(false);
+parts.replaceChildren();
+picture.classList.remove('locked','celebrate');
+feedback.className='feedback';
+feedback.textContent=Studio.t('hint');
+pending=false;
+check.disabled=false;
+for(let index=0;index<item.d;index++){
+const start=-Math.PI/2+index*2*Math.PI/item.d;
+const end=-Math.PI/2+(index+1)*2*Math.PI/item.d;
+const radius=130;
+const x1=160+radius*Math.cos(start),y1=160+radius*Math.sin(start);
+const x2=160+radius*Math.cos(end),y2=160+radius*Math.sin(end);
+const group=document.createElementNS(ns,'g');
+group.setAttribute('class','part');
+group.setAttribute('data-part',index);
+group.setAttribute('data-shaded','false');
+group.setAttribute('role','button');
+group.setAttribute('tabindex','0');
+group.setAttribute('aria-pressed','false');
+group.setAttribute('aria-label',Studio.t('hint'));
+const path=document.createElementNS(ns,'path');
+if(item.d===1){
+path.setAttribute('d','M160 30 A130 130 0 1 1 160 290 A130 130 0 1 1 160 30 Z');
+}else{
+path.setAttribute('d',`M160 160 L${x1} ${y1} A${radius} ${radius} 0 ${end-start>Math.PI?1:0} 1 ${x2} ${y2} Z`);
+}
+group.appendChild(path);
+group.addEventListener('click',()=>toggle(index));
+group.addEventListener('keydown',event=>{
+if(event.key==='Enter'||event.key===' '){event.preventDefault();toggle(index);}
+});
+parts.appendChild(group);
+}
+}
+check.addEventListener('click',()=>{
+if(pending||complete)return;
+pending=true;
+check.disabled=true;
+picture.classList.add('locked');
+const answer={n:shaded.filter(Boolean).length,d:items[position].d};
+Studio.event('check',{id:items[position].id,n:answer.n,d:answer.d});
+Studio.answer(answer);
+});
+Studio.onVerdict(verdict=>{
+if(!pending||complete)return;
+feedback.textContent=Studio.t(verdict.correct?'right':'wrong');
+feedback.className='feedback '+(verdict.correct?'right':'wrong');
+if(verdict.correct){
+picture.classList.add('celebrate');
+setTimeout(()=>{position++;render();},900);
+}else{
+pending=false;
+check.disabled=false;
+picture.classList.remove('locked');
+}
+});
+render();
+Studio.ready();
+})();
+</script>

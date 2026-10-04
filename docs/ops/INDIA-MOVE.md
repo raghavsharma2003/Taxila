@@ -205,6 +205,20 @@ linked to the VNet. Public network access stays Disabled. TLS: `require_secure_t
 `sslmode=require` in the URL, same as Neon today. Extension `pgcrypto` must be allow-listed
 (`azure.extensions=PGCRYPTO`) before the migrations replay.
 
+> **Correction (Provision, 2026-10-04, after the provider registered):** the southindia capabilities call now returns
+> `restricted: Enabled`, reason "Subscriptions are restricted from provisioning in this region ... open a support
+> request with Issue type 'Service and subscription limits'", and **no versions or SKUs**. The PUT for
+> `taxila-sin-pg` fails with `ParameterOutOfRange: Version should be in: []`. The 11-18 list above was read before the
+> provider registered and is not valid for this subscription. Central India reads `restricted: Disabled` with PG
+> 11-18 and D2ds_v5/D4ds_v5 offered (n=1 read). Options for the main loop:
+> 1. Owner files the support request (quota type "Service and subscription limits", PostgreSQL Flexible, South India,
+>    GeneralPurpose D2ds_v5, PG 17). Then re-run `scripts/region/provision.mjs`. Nothing else changes.
+> 2. Put the server in centralindia: a centralindia VNet + delegated /28, peered with `taxila-sin-vnet`, and the
+>    private DNS zone linked to both. The cost is a Chennai-Pune hop on every query. The RTT is not measured, so
+>    measure it before choosing this option.
+> 3. Move the whole compute stack to centralindia instead. Foundry has no models we use there, but GlobalStandard
+>    deployments on the southindia account can be called from any region.
+
 ### 2.6 Other gaps
 
 - **G2 data move path**: the sandbox cannot reach Postgres directly (5432 does not pass the proxy). Neon →
@@ -245,7 +259,46 @@ linked to the VNet. Public network access stays Disabled. TLS: `require_secure_t
 
 | date | name | type | region | by |
 |---|---|---|---|---|
-| (none yet; Survey was read-only except two provider registrations: Microsoft.DBforPostgreSQL, Microsoft.Network) | | | | |
+| 2026-10-04 | (provider registrations only) Microsoft.DBforPostgreSQL, Microsoft.Network | provider | subscription | Survey |
+| 2026-10-04 | taxila-sin | resource group | southindia | Provision |
+| 2026-10-04 | taxila-sin-vnet (10.60.0.0/16; subnet `aca` 10.60.0.0/23 → Microsoft.App/environments; subnet `pg` 10.60.2.0/28 → flexibleServers) | virtual network | southindia | Provision |
+| 2026-10-04 | taxila-sin.private.postgres.database.azure.com + link taxila-sin-vnet-link | private DNS zone | global | Provision |
+| 2026-10-04 | taxila-sin-logs (PerGB2018, 30 d) | Log Analytics workspace | southindia | Provision |
+| 2026-10-04 | taxila-sin-env (workload profiles: Consumption; VNet-integrated, external ingress; static outbound IP 20.235.16.222) | ACA managed environment | southindia | Provision |
+| 2026-10-04 | taxila-sin-pull | user-assigned managed identity (AcrPull role assignment FAILED, see below) | southindia | Provision |
+| NOT CREATED | taxila-sin-pg (PG 17, D2ds_v5, 64 GB autogrow, 14 d backup, private only, TLS) | PostgreSQL Flexible | southindia | blocked: region restricted for subscription (§2.5) |
+
+**Provision failures (2026-10-04):**
+- **AcrPull on taxilacr for taxila-sin-pull → 403 AuthorizationFailed.** The SP is Contributor, and Contributor
+  cannot write `Microsoft.Authorization/roleAssignments`. Fix: the owner (or anyone with User Access Administrator or
+  Owner) assigns AcrPull on `taxilacr` to principal `25e26486-2c49-479e-8496-c9fb340b5913`. Until then, an app in
+  `taxila-sin-env` can pull the way `taxila-web` does today, with the ACR admin user and the `acr-password` secret.
+- **taxila-sin-pg was not created** (§2.5 correction). The admin creds `AZURE_PG_SIN_USER` and `AZURE_PG_SIN_PASSWORD`
+  are already in `.env.local` and get reused on re-run. `AZURE_PG_SIN_HOST`, `_DATABASE` and `_URL` are added once
+  the server exists. Once created, the script sets `azure.extensions=PGCRYPTO,UUID-OSSP,CITEXT,PG_STAT_STATEMENTS`
+  (the migrations need only pgcrypto), `require_secure_transport=ON` and `ssl_min_protocol_version=TLSv1.2`, and
+  creates database `taxila`.
+
+Script: `scripts/region/provision.mjs` (safe to re-run; `--dry` checks only the providers). Machine report:
+`node_modules/.cache/india-move/provision.json`.
+| 2026-10-04 | `taxila-ai-southindia` (REUSED, pre-existing AIServices S0; not created) | Cognitive Services account | southindia | Provision AI |
+| 2026-10-04 | `taxila-fast` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
+| 2026-10-04 | `taxila-brain` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
+| 2026-10-04 | `grok-4-1-fast-non-reasoning` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
+| 2026-10-04 | `DeepSeek-V4-Pro` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
+| 2026-10-04 | `taxila-transcribe` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
+| 2026-10-04 | `text-embedding-3-small` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
+| 2026-10-04 | `taxila-gpt6` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
+| 2026-10-04 | `taxila-gpt6-luna` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
+| 2026-10-04 | `taxila-codex` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
+| 2026-10-04 | `gpt-5.6-terra` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
+| 2026-10-04 | `DeepSeek-V4-Flash` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
+| 2026-10-04 | `grok-4-20-non-reasoning` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
+| 2026-10-04 | `taxila-oss120` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
+| 2026-10-04 | `taxila-flux2` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
+| 2026-10-04 | `taxila-kontext` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
+| 2026-10-04 | `taxila-fast-bg` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
+| 2026-10-04 | `taxila-studio-sol` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
 
 ## §5 Spend estimates (Azure retail, South India, read 2026-10-04 from prices.azure.com; monthly = 730 h)
 
@@ -257,9 +310,81 @@ linked to the VNet. Public network access stays Disabled. TLS: `require_secure_t
 | PG storage 64 GB + backup (backup up to 100% of storage free; above that $0.144/GB-mo) | storage meter not read | ~$8-10 (unverified) |
 | ACA `taxila-web-si` 1 vCPU / 2 GiB, 1 replica always active | $0.000024/vCPU-s + $0.000003/GiB-s | ~$78 (less when idle) |
 | ACA workload-profiles env, Consumption profile only | no env fee (Environment Management $0.151/h applies to Dedicated profiles) | $0 |
+| Log Analytics taxila-sin-logs (PerGB2018, SI) | ~$2.76/GB ingested (retail, not read for SI) | ~$3-15 at expected volume (unmeasured) |
 | Private DNS zone + VNet | VNet free; zone ~$0.50 | ~$1 |
 | ACR Basic in SI (optional) | $0.1666/day | ~$5 |
-| Foundry twins (GlobalStandard) | per token, same prices as eastus2. No fixed cost | $0 fixed |
+| Foundry twins (GlobalStandard), 17 created 2026-10-04 | per token, same prices as eastus2. No fixed cost. Verification run cost < $1 (≈100 tiny chat/embed/STT calls + 2 images: FLUX.2-pro 512² ≈ $0.03, Kontext 1024² ≈ $0.04) | $0 fixed |
 | DragonHD TTS (centralindia) | ~$22 / 1M chars (MODEL-ROUTER) | usage-based |
 | **Fixed new spend** | | **~$290/mo** (~$495 with HA) |
 | Rehearsal overlap | eastus2 stack keeps running until cutover | existing spend continues |
+
+## §6 Provision AI: South India Foundry twins (2026-10-04)
+
+Script: `node scripts/region/foundry-si.mjs --deploy --verify --env` (idempotent ARM; copies model, version, format,
+SKU, capacity, upgrade option and RAI policy `Microsoft.DefaultV2` from the live eastus2 deployment of the same
+name; checks the SI usages row before every PUT and skips a twin that does not fit). Results JSON:
+`node_modules/.cache/india-move/foundry-si-*.json`. Account: the existing `taxila-ai-southindia` (reused).
+Nothing on the eastus2 account or `taxila-web` was changed.
+
+**Env names added to .env.local (values not shown):** `AZURE_OPENAI_ENDPOINT_SIN` (`https://taxila-ai-southindia.openai.azure.com/openai/v1`),
+`AZURE_OPENAI_API_KEY_SIN`, `AZURE_AI_SERVICES_ENDPOINT_SIN` (`https://taxila-ai-southindia.services.ai.azure.com`, for FLUX.2 and MAI),
+`AZURE_SPEECH_REGION_SIN` (= `centralindia`), `AZURE_SPEECH_KEY_SIN` (the `taxila-ai-centralindia` key). South India serves
+no Azure Speech, so the Speech/DragonHD lane for the India stack is Central India by design.
+
+**Speech DragonHD, re-verified:** `en-IN-Diya`, `en-IN-Arjun`, `en-IN-Meera` `:DragonHDLatestNeural` on
+`centralindia.tts.speech.microsoft.com` → 200 PCM each (n=1, from the US sandbox).
+
+### 6.1 Deployments and verification (TTFT from the US sandbox; NOT India latency)
+
+Method: one SI call then one eastus2 call to the same deployment name, interleaved, n=3 pairs (images n=1, SI only).
+Chat lanes use streamed chat completions (`reasoning_effort: none` on gpt-5.6/gpt-6), TTFT = first content delta. Codex
+uses streamed Responses (effort low). Transcribe and embeddings are total time. MAI-Transcribe-2-Streaming is measured
+from commit to transcript.completed on the realtime transcription socket. The sandbox sits in the US, so SI is expected
+to be slower here; these numbers only prove each twin answers. The India comparison has to come from `taxila-probe-ci`.
+
+| deployment | model | cap SI (= eastus2) | pooled quota after | verify | SI median ms (n) | eastus2 median ms (n) |
+|---|---|---|---|---|---|---|
+| taxila-fast | gpt-5.6-luna | 500 | 2000/2000 FULL | ok | 1521 TTFT (3) | 592 (3) |
+| taxila-brain | gpt-5.6-sol | 500 | 2000/2000 FULL | ok | 1115 (3) | 979 (3) |
+| grok-4-1-fast-non-reasoning | grok-4-1-fast-non-reasoning | 500 | 1000/1000 FULL | ok | 1505 (3) | 479 (3) |
+| DeepSeek-V4-Pro | DeepSeek-V4-Pro | 500 | 1000/1000 FULL | ok | 1435 (3) | 792 (3) |
+| taxila-transcribe | gpt-4o-transcribe | 100 | 100/400 (per region) | ok (404 for ~6 min after create) | 1311 total (3) | 472 (3) |
+| text-embedding-3-small | text-embedding-3-small | 500 | 1000/2000 | ok (same propagation delay) | 734 total (3) | 169 (3) |
+| taxila-gpt6 | gpt-6-sol | 500 | 1000/2000 | ok | 2339 (3) | 960 (3) |
+| taxila-gpt6-luna | gpt-6-luna | 500 | 1000/2000 | ok | 1434 (3) | 983 (3) |
+| taxila-codex | gpt-5.3-codex | 500 | 1000/3000 | ok | 2385 (3) | 1574 (3) |
+| gpt-5.6-terra | gpt-5.6-terra | 1000 | 2000/2000 FULL | ok | 1785 (3) | 726 (3) |
+| DeepSeek-V4-Flash | DeepSeek-V4-Flash | 125 | 250/250 FULL | ok | 832 (3) | 673 (3) |
+| grok-4-20-non-reasoning | grok-4-20-non-reasoning | 500 | 1000/1000 FULL | ok | 1386 (3) | 297 (3) |
+| taxila-oss120 | gpt-oss-120b | 200 | 400/5000 | ok | 1134 (3) | 739 (3) |
+| taxila-flux2 | FLUX.2-pro | 4 | 4/4 (per region) | ok | 8644 total, 512² (1) | — |
+| taxila-kontext | FLUX.1-Kontext-pro | 10 | 10/30 (per region) | ok | 9150 total, 1024² (1) | — |
+| taxila-fast-bg | gpt-5.6-luna | 500 | 2000/2000 FULL | ok | 2945 (3) | 788 (3) |
+| taxila-studio-sol | gpt-5.6-sol | 500 | 2000/2000 FULL | ok | 1337 (3) | 845 (3) |
+| taxila-mai-tx2-stream | MAI-Transcribe-2-Streaming | 10 (pre-existing) | 10/10 | ok | 320 commit→final (3) | no eastus2 twin |
+| taxila-realtime | gpt-realtime-2.1 | **NOT DEPLOYED** | 10/10 | quota | — | — |
+| gpt-realtime-2.1-mini | gpt-realtime-2.1-mini | **NOT DEPLOYED** | 30/30 | quota | — | — |
+| taxila-live | gpt-live-1 | **NOT DEPLOYED** | 10/10 | quota | — | — |
+| taxila-live-transcribe | gpt-live-transcribe | **NOT DEPLOYED** | 10/10 | quota | — | — |
+
+**Pooled quota is now full for gpt-5.6-luna, gpt-5.6-sol, gpt-5.6-terra, grok-4-1-fast-non-reasoning,
+grok-4-20-non-reasoning, DeepSeek-V4-Pro and DeepSeek-V4-Flash** (eastus2 deployments + SI twins). Any other workflow
+that tries to create or scale up one of these models in ANY region will now get a quota error until either a raise lands
+or the main loop deletes the eastus2 copies at cutover. If that blocks a bench, the fix is to scale down
+`taxila-fast-bg` / `taxila-studio-sol` (SI), which are background lanes. Do not touch the eastus2 copies.
+
+### 6.2 Quota requests for the owner (portal → Azure AI Foundry → Quotas, subscription of the grant)
+
+| model | region | SKU | quota row | today | request | why |
+|---|---|---|---|---|---|---|
+| gpt-realtime-2.1 | southindia (pool is subscription-wide) | GlobalStandard | OpenAI.GlobalStandard.gpt-realtime-2.1 | 10 | **20** (+10) | `taxila-realtime` twin, cap 10 |
+| gpt-realtime-2.1-mini | southindia | GlobalStandard | OpenAI.GlobalStandard.gpt-realtime-2.1-mini | 30 | **60** (+30) | `gpt-realtime-2.1-mini` twin, cap 30 |
+| gpt-live-1 | southindia | GlobalStandard | OpenAI.GlobalStandard.gpt-live-1 | 10 | **20** (+10) | `taxila-live` twin, cap 10 |
+| gpt-live-transcribe | southindia | GlobalStandard | OpenAI.GlobalStandard.gpt-live-transcribe | 10 | **20** (+10) | `taxila-live-transcribe` twin, cap 10 |
+| optional headroom: gpt-5.6-luna, gpt-5.6-sol | southindia | GlobalStandard | OpenAI.GlobalStandard.gpt-5.6-{luna,sol} | 2000 | 3000 | the pools are full; benches need room |
+| optional headroom: grok-4-1-fast-non-reasoning, DeepSeek-V4-Pro | southindia | GlobalStandard | AIServices.GlobalStandard.* | 1000 | 1500 | same |
+
+After a raise lands, re-run `node scripts/region/foundry-si.mjs --deploy --verify --only 'realtime|live'`. It creates the four
+missing twins under the same names. Realtime voice verification is not wired in the script yet (the live-transcribe
+twin is verified through the transcription socket).
+

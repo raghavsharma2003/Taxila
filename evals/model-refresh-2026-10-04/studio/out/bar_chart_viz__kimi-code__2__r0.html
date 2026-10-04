@@ -1,0 +1,302 @@
+<style>
+  * { box-sizing: border-box; }
+  .app {
+    min-height: 100vh;
+    background: #FDF6E3;
+    color: #4A3B2A;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .card, .chart-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  }
+  h1 {
+    margin: 0 0 8px 0;
+    font-size: 1.25rem;
+    line-height: 1.3;
+  }
+  .question {
+    margin: 0;
+    font-size: 1rem;
+    color: #5D4037;
+    line-height: 1.4;
+  }
+  .chart-card {
+    position: relative;
+    padding-left: 44px;
+    flex: 1;
+    min-height: 320px;
+  }
+  .y-axis-title {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%) rotate(180deg);
+    writing-mode: vertical-rl;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #8D6E63;
+    letter-spacing: 0.04em;
+  }
+  .chart-wrap {
+    position: relative;
+    width: 100%;
+    height: 260px;
+  }
+  .grid {
+    position: absolute;
+    inset: 0;
+  }
+  .gridline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    border-top: 1px dashed #E0D4C5;
+  }
+  .gridline.baseline {
+    border-top: 2px solid #8D6E63;
+  }
+  .tick-label {
+    position: absolute;
+    left: -36px;
+    width: 30px;
+    text-align: right;
+    font-size: 0.7rem;
+    color: #8D6E63;
+    transform: translateY(-50%);
+    font-weight: 600;
+  }
+  .bars-layer {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    padding: 0 4px;
+  }
+  .bar-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    min-width: 52px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0 4px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: transform 0.1s ease;
+  }
+  .bar-slot:active {
+    transform: scale(0.96);
+  }
+  .bar {
+    width: 42px;
+    background: linear-gradient(180deg, #FFB347, #FF8C42);
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    height: 0;
+    transition: height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    will-change: height;
+  }
+  .bar.grow {
+    height: var(--target-pct);
+  }
+  .bar-value {
+    margin-bottom: 6px;
+    padding: 3px 9px;
+    border-radius: 14px;
+    background: #4A3B2A;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 800;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+  }
+  .bar-value.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .bar-label {
+    margin-top: 10px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #5D4037;
+    text-align: center;
+    line-height: 1.1;
+    pointer-events: none;
+  }
+  .bar-slot.selected .bar {
+    box-shadow: 0 0 0 4px rgba(255,140,66,0.35);
+    filter: brightness(1.05);
+  }
+  .feedback {
+    min-height: 52px;
+    border-radius: 18px;
+    padding: 14px 18px;
+    font-weight: 800;
+    font-size: 1rem;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: all 0.3s ease;
+  }
+  .feedback.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .feedback.success {
+    background: #D4EDDA;
+    color: #155724;
+  }
+  .feedback.error {
+    background: #F8D7DA;
+    color: #721C24;
+  }
+</style>
+
+<div class="app">
+  <div class="card">
+    <h1 id="title"></h1>
+    <p id="ask" class="question"></p>
+  </div>
+  <div class="chart-card">
+    <div class="y-axis-title" id="yaxis"></div>
+    <div class="chart-wrap">
+      <div class="grid" id="grid"></div>
+      <div class="bars-layer" id="bars"></div>
+    </div>
+  </div>
+  <div id="feedback" class="feedback" aria-live="polite"></div>
+</div>
+
+<script>
+(function(){
+  const params = Studio.params;
+  const data = params.data;
+  const maxVal = Math.max.apply(null, data.map(function(d){ return d.value; }));
+
+  function getScale(max){
+    var steps = [1,2,5,10,20,50,100,200,500];
+    var step = 1;
+    for (var i = 0; i < steps.length; i++){
+      if (max / steps[i] <= 8){
+        step = steps[i];
+        break;
+      }
+      step = steps[i];
+    }
+    var maxTick = Math.ceil(max / step) * step;
+    if (maxTick === 0) maxTick = step;
+    return { step: step, maxTick: maxTick };
+  }
+
+  var scale = getScale(maxVal);
+
+  var titleEl = document.getElementById('title');
+  var askEl = document.getElementById('ask');
+  var yaxisEl = document.getElementById('yaxis');
+  var gridEl = document.getElementById('grid');
+  var barsEl = document.getElementById('bars');
+  var feedbackEl = document.getElementById('feedback');
+
+  titleEl.textContent = Studio.t('title');
+  askEl.textContent = Studio.t('ask');
+  yaxisEl.textContent = Studio.t('yaxis');
+
+  for (var v = 0; v <= scale.maxTick; v += scale.step){
+    var pct = (v / scale.maxTick) * 100;
+    var line = document.createElement('div');
+    line.className = v === 0 ? 'gridline baseline' : 'gridline';
+    line.style.bottom = pct + '%';
+    gridEl.appendChild(line);
+    if (v > 0){
+      var label = document.createElement('span');
+      label.className = 'tick-label';
+      label.setAttribute('data-tick', v);
+      label.textContent = v;
+      label.style.bottom = pct + '%';
+      gridEl.appendChild(label);
+    }
+  }
+
+  var selectedSlot = null;
+  var awaitingVerdict = false;
+  var finished = false;
+
+  data.forEach(function(item){
+    var slot = document.createElement('button');
+    slot.className = 'bar-slot';
+    slot.type = 'button';
+    slot.setAttribute('aria-label', Studio.t(item.key));
+
+    var badge = document.createElement('div');
+    badge.className = 'bar-value';
+    badge.textContent = item.value;
+
+    var bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.setAttribute('data-bar', item.key);
+    bar.setAttribute('data-value', item.value);
+    bar.style.setProperty('--target-pct', (item.value / scale.maxTick) * 100 + '%');
+
+    var label = document.createElement('div');
+    label.className = 'bar-label';
+    label.textContent = Studio.t(item.key);
+
+    slot.appendChild(badge);
+    slot.appendChild(bar);
+    slot.appendChild(label);
+    barsEl.appendChild(slot);
+
+    slot.addEventListener('click', function(){
+      if (finished || awaitingVerdict) return;
+      if (selectedSlot && selectedSlot !== slot){
+        selectedSlot.classList.remove('selected');
+        var prevBadge = selectedSlot.querySelector('.bar-value');
+        if (prevBadge) prevBadge.classList.remove('show');
+      }
+      selectedSlot = slot;
+      slot.classList.add('selected');
+      badge.classList.add('show');
+      awaitingVerdict = true;
+      Studio.event('bar_tap', { key: item.key, value: item.value });
+      Studio.answer(item.key);
+    });
+  });
+
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      barsEl.querySelectorAll('.bar').forEach(function(b){ b.classList.add('grow'); });
+    });
+  });
+
+  Studio.onVerdict(function(result){
+    awaitingVerdict = false;
+    if (finished) return;
+    if (result && result.correct){
+      finished = true;
+      feedbackEl.textContent = '\u2713 ' + Studio.t('right') + ' ' + Studio.t('done');
+      feedbackEl.className = 'feedback success show';
+      Studio.event('verdict', { correct: true });
+      Studio.done();
+    } else {
+      feedbackEl.textContent = Studio.t('wrong');
+      feedbackEl.className = 'feedback error show';
+      Studio.event('verdict', { correct: false });
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

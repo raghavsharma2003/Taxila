@@ -1,0 +1,51 @@
+{
+ "nodes": [
+  {
+   "id": "scout-2026-10-04-mai-image26-flash",
+   "kind": "measurement",
+   "title": "MAI-Image-2.6-Flash (southindia, Preview) on image-bench prompts, n=6: 5 images all-5, 1 artifacts 4, label errors 0/10, p50 16.7 s, $0.019/image; MAI-Image-2.5-Pro n=6: 1 diagram with 4 misplaced labels, 32-47 s, $0.109/image",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "scout-2026-10-04-transcribe-hi",
+   "kind": "measurement",
+   "title": "Amazon Transcribe streaming ap-south-1 on stt-hinglish v2 corpus (n=180 speech + 3 non-speech): hi-IN CER 0.086, numbers 67/96, answers 51/78, final-after-speech-end p50 2.10 s; en-IN CER 0.277, numbers 23/96",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-aws-transcribe-live-stt",
+   "kind": "rejection",
+   "title": "Amazon Transcribe streaming (hi-IN, en-IN) rejected for live child STT: hi-IN CER 0.086 vs 0.026 and numbers 67/96 vs 92/96 against taxila-live-transcribe D4, and 0.8 s slower to final text",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "scout-2026-10-04-bedrock-blocked",
+   "kind": "measurement",
+   "title": "Bedrock runtime from account 780899467240 blocked 2026-10-04: ap-south-1 'account is being verified'; us-east-1 tokens-per-day quota 0 (not adjustable) for Nova, Kimi K3 et al. Control plane (list/availability/pricing) works",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "scout-2026-10-04-aws-credit-eligibility",
+   "kind": "decision",
+   "title": "AWS credit eligibility: AWS-sold Bedrock models (no Marketplace agreement: Nova, Kimi K3, grok-4.7, GLM, MiniMax, Qwen, Mistral, DeepSeek, gpt-oss[-safeguard], Voxtral) are eligible; Marketplace-sold (OpenAI, Anthropic, Cohere, Stability) eligible for Activate credits only via Activate Terms s1.2 (2026-01-22); verify on first bill",
+   "at": "2026-10-04"
+  }
+ ],
+ "edges": [
+  {
+   "src": "scout-2026-10-04-transcribe-hi",
+   "rel": "informs",
+   "dst": "rj-aws-transcribe-live-stt"
+  },
+  {
+   "src": "stt-hinglish-v2-synthetic",
+   "rel": "informs",
+   "dst": "rj-aws-transcribe-live-stt"
+  }
+ ],
+ "md": {
+  "measurements": "## scout-2026-10-04-mai-image26-flash\n2026-10-04, US container -> southindia, `evals/model-refresh-2026-10-04/scout/mai-image.mjs`. Prompts, judge (taxila-brain gpt-5.6-sol, effort medium) and rubric verbatim from `docs/research/models/image-bench.mjs`; n=2 per prompt per arm (diagram, classroom, tutor). MAI-Image-2.6-Flash: 5/6 images all criteria 5, one diagram artifacts 4; 0/10 label errors (one diagram also checked by eye); 13.3-17.5 s, p50 16.7 s; 1,024 output tokens/image = $0.019. MAI-Image-2.5-Pro: one diagram adherence 2 / text 2 with Root, Stem, Flower, Fruit pointing at the wrong part; one classroom artifacts 4; 31.9-46.6 s; $0.109/image. Judge is OpenAI (out of family for MAI). Small n: direction only.\n\n## scout-2026-10-04-transcribe-hi\n2026-10-04, US container -> ap-south-1, `scout/transcribe-stream.py` (amazon-transcribe 0.6.x, 16 kHz PCM, 100 ms chunks at real-time pace), scored by `scout/score-transcribe.mjs` with the stt-hinglish v2 scorer. n=180 speech clips + 3 non-speech. hi-IN: cerNorm 0.086 (clean 0.053, white 0.085, pink 0.121), werNorm 0.163, keyRecall 0.794, numbers 67/96, answers 51/78, wrong script 0, non-speech hallucination 0/3, first partial p50 1.90 s, final after speech end p50 2.10 s / p90 3.00 s. en-IN: cerNorm 0.277, numbers 23/96, answers 26/78. Multi-language ID arm not run (SDK lacks LID args).\n\n## scout-2026-10-04-bedrock-blocked\n2026-10-04. Converse/ConverseStream on 9 arms (Kimi K3, grok-4.7, Nova 2 Lite, GLM-5, MiniMax M2.5, Qwen3-next-80B, Mistral Large 3, gpt-oss-safeguard-120b; Nova Micro in us-east-1): 0 successes. ap-south-1 AccessDenied 'account is currently being verified'; us-east-1 ThrottlingException 'Too many tokens per day'; Service Quotas tokens/day = 0, Adjustable=false, both regions.\n",
+  "rejected": "## rj-aws-transcribe-live-stt\n**Tried (2026-10-04):** Amazon Transcribe streaming hi-IN and en-IN from ap-south-1 on the stt-hinglish v2 synthetic corpus (n=180). **Broke:** hi-IN CER 0.086 vs 0.026 (taxila-live-transcribe D4), numbers 67/96 vs 92/96, answers 51/78 vs 76/78, final text 2.10 s vs 1.32 s after speech end; en-IN CER 0.277. Re-test only with real children (E1) or if Transcribe adds hi-IN/en-IN code-switch LID that a new SDK exposes.\n",
+  "decisions": "## scout-2026-10-04-aws-credit-eligibility\n2026-10-04. Seller of record read from `ListFoundationModelAgreementOffers`: a Marketplace offer exists for OpenAI, Anthropic, Cohere and Stability models on Bedrock; all others return 'Agreement not supported' (AWS-sold). AWS-sold models are covered by promotional credits; Marketplace Bedrock 3P spend is covered by Activate credits under AWS Activate Terms s1.2 (last updated 2026-01-22), while general promotional credit terms s1 exclude Marketplace (so the USD 100 Free Tier credit may not cover it). Prefer AWS-sold models; never route OpenAI models via Bedrock Marketplace when Azure sells them Direct. Reverse if: the first bill shows AWS-sold Bedrock charges not offset, or Marketplace lines offset/not offset contrary to s1.2.\n"
+ }
+}

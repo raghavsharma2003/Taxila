@@ -1,0 +1,182 @@
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --ink: #263b45; --muted: #71858a; --paper: #fffdf7; --line: #e4ece8;
+    --coral: #fa806d; --gold: #f3be52; --mint: #59bda4; --blue: #69a9db; --plum: #a687cf;
+  }
+  html, body { margin: 0; min-height: 100%; background: #eff6f2; }
+  body {
+    color: var(--ink); font-family: ui-rounded, "Trebuchet MS", system-ui, sans-serif;
+    padding: 12px; overflow-x: hidden;
+  }
+  .lesson {
+    width: min(100%, 520px); margin: 0 auto; padding: 20px 16px 16px;
+    background: var(--paper); border: 1px solid #e5eee8; border-radius: 26px;
+    box-shadow: 0 10px 30px rgba(39, 75, 67, .09);
+  }
+  h1 { margin: 0 0 14px; font-size: clamp(21px, 6vw, 28px); line-height: 1.18; text-align: center; }
+  .chart-shell {
+    position: relative; height: 330px; padding: 12px 8px 0 43px;
+    border-radius: 19px; background: #fbfdf9;
+  }
+  .axis-title {
+    position: absolute; top: 50%; left: 0; writing-mode: vertical-rl; transform: rotate(180deg) translateY(50%);
+    font-size: 12px; font-weight: 700; color: #586f74; letter-spacing: .02em;
+  }
+  .plot { position: relative; height: 264px; border-bottom: 2px solid #60767a; }
+  .gridline {
+    position: absolute; left: 0; right: 0; border-top: 1px solid var(--line);
+    pointer-events: none;
+  }
+  .tick {
+    position: absolute; left: -34px; width: 27px; height: 22px; margin-top: -11px;
+    text-align: right; color: #74868a; font-size: 12px; line-height: 22px;
+  }
+  .bars {
+    position: absolute; inset: 0 0 -2px; display: flex; align-items: stretch;
+    justify-content: space-around; gap: 5px;
+  }
+  .bar-slot {
+    position: relative; flex: 1; min-width: 0; height: 100%;
+    display: flex; justify-content: center; align-items: flex-end;
+  }
+  .bar-hit {
+    appearance: none; border: 0; background: transparent; padding: 0;
+    width: 100%; height: 100%; display: flex; align-items: flex-end; justify-content: center;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .bar {
+    width: min(72%, 38px); height: var(--bar-height); min-height: 0;
+    border-radius: 10px 10px 3px 3px; display: block;
+    transform-origin: bottom; transform: scaleY(0);
+    animation: grow .85s cubic-bezier(.2,.8,.25,1) forwards;
+    animation-delay: var(--delay); transition: filter .2s, transform .16s;
+    box-shadow: inset 0 2px 0 rgba(255,255,255,.42);
+  }
+  .bar-hit:active .bar { filter: brightness(.94); }
+  .bar-hit:focus-visible { outline: 3px solid #354f5a; outline-offset: -3px; border-radius: 10px; }
+  @keyframes grow { to { transform: scaleY(1); } }
+  .fruit-labels { display: flex; justify-content: space-around; gap: 5px; padding-top: 8px; }
+  .fruit-label {
+    flex: 1; min-width: 0; text-align: center; color: #65787c;
+    font-size: clamp(10px, 2.8vw, 12px); font-weight: 700; line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+  .question {
+    min-height: 56px; display: grid; place-items: center; text-align: center;
+    margin-top: 13px; padding: 10px 12px; border-radius: 16px;
+    background: #fff4df; color: #634e30; font-weight: 750; font-size: 16px;
+  }
+  .feedback { min-height: 27px; text-align: center; padding-top: 7px; font-size: 15px; font-weight: 750; }
+  .feedback.good { color: #21876c; }
+  .feedback.bad { color: #c45a4c; }
+  @media (max-height: 680px) {
+    .lesson { padding-top: 14px; }
+    .chart-shell { height: 290px; }
+    .plot { height: 228px; }
+  }
+</style>
+
+<main class="lesson" aria-label="Bar chart activity">
+  <h1 id="title"></h1>
+  <section class="chart-shell" aria-label="Fruit bar chart">
+    <div class="axis-title" id="axis-title"></div>
+    <div class="plot" id="plot"></div>
+    <div class="fruit-labels" id="fruit-labels"></div>
+  </section>
+  <div class="question" id="question"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+
+<script>
+(() => {
+  const data = Studio.params.data;
+  const t = key => Studio.t(key);
+  const colors = ["#fa806d", "#f3be52", "#69a9db", "#59bda4", "#a687cf"];
+  const maxValue = Math.max(...data.map(item => Number(item.value)));
+  const step = maxValue <= 5 ? 1 : maxValue <= 10 ? 2 : maxValue <= 20 ? 5 : Math.ceil(maxValue / 4 / 5) * 5;
+  const ceiling = Math.ceil(maxValue / step) * step;
+  const plot = document.getElementById("plot");
+  const labels = document.getElementById("fruit-labels");
+  const title = document.getElementById("title");
+  const axisTitle = document.getElementById("axis-title");
+  const question = document.getElementById("question");
+  const feedback = document.getElementById("feedback");
+
+  title.textContent = t("title");
+  axisTitle.textContent = t("yaxis");
+  question.textContent = t("ask");
+
+  for (let tick = 0; tick <= ceiling; tick += step) {
+    const y = 100 - (tick / ceiling) * 100;
+    const line = document.createElement("div");
+    line.className = "gridline";
+    line.style.top = y + "%";
+    plot.appendChild(line);
+
+    const mark = document.createElement("div");
+    mark.className = "tick";
+    mark.dataset.tick = String(tick);
+    mark.textContent = String(tick);
+    mark.style.top = y + "%";
+    plot.appendChild(mark);
+  }
+
+  let submitted = false;
+  let completed = false;
+  data.forEach((item, index) => {
+    const slot = document.createElement("div");
+    slot.className = "bar-slot";
+
+    const button = document.createElement("button");
+    button.className = "bar-hit";
+    button.type = "button";
+    button.setAttribute("aria-label", t(item.key));
+
+    const bar = document.createElement("span");
+    bar.className = "bar";
+    bar.dataset.bar = item.key;
+    bar.dataset.value = String(item.value);
+    bar.style.setProperty("--bar-height", (Number(item.value) / ceiling * 100) + "%");
+    bar.style.setProperty("--delay", (index * 110) + "ms");
+    bar.style.background = colors[index % colors.length];
+
+    button.appendChild(bar);
+    button.addEventListener("click", () => {
+      if (submitted || completed) return;
+      button.animate(
+        [{ transform: "scale(1)" }, { transform: "scale(.93)" }, { transform: "scale(1)" }],
+        { duration: 190, easing: "ease-out" }
+      );
+      submitted = true;
+      feedback.className = "feedback";
+      feedback.textContent = "";
+      Studio.event("bar_tap", { key: item.key });
+      Studio.answer(item.key);
+    });
+    slot.appendChild(button);
+    plot.appendChild(slot);
+
+    const label = document.createElement("div");
+    label.className = "fruit-label";
+    label.textContent = t(item.key);
+    labels.appendChild(label);
+  });
+
+  Studio.onVerdict(({ correct }) => {
+    submitted = false;
+    if (correct) {
+      completed = true;
+      feedback.className = "feedback good";
+      feedback.textContent = t("right") + " " + t("done");
+      Studio.event("verdict", { correct: true });
+      Studio.done();
+    } else {
+      feedback.className = "feedback bad";
+      feedback.textContent = t("wrong");
+      Studio.event("verdict", { correct: false });
+    }
+  });
+  Studio.ready();
+})();
+</script>

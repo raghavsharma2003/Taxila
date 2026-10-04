@@ -1,0 +1,8 @@
+{"nodes":[
+{"id":"voice-blind-ab-2026-10-04","kind":"measurement","title":"Blind A/B, 2 raters x 40 pairs (owner + 1), 6 voices x 5 Hinglish lines: plain beat spliced-clip expressive on DragonHD Diya 7-2 and Arjun 7-3 and on gpt-4o-mini-tts 8-1; no-clip beat clip 5-2 (Diya), 4-3 (Arjun); expressive (prose direction) beat plain on gpt-realtime-2.1 8-1 and DragonHD Omni 7-0; MAI Priya plain 5-2","at":"2026-10-04"},
+{"id":"voice-blind-spliced-breaths-rejected","kind":"rejection","title":"Spliced breath/hum/exhale clips between TTS words: both raters heard 'random exhale/moaning', a timbre that does not match, and broken flow; lost to the same voice without clips. In-context laugh on a joke line was the only liked splice, with an awkward hand-off","at":"2026-10-04"},
+{"id":"voice-blind-none-human-2026-10-04","kind":"measurement","title":"Written remarks, 2 raters x 40 cards: no tested Azure voice sounded like a human teacher; recurring defects = reading not talking, English-accented Hindi and accent switching, mid-line timbre change, wrong numbers/words, fake-emphasis pauses, punctuation read aloud (MAI)","at":"2026-10-04"},
+{"id":"voice-clips-off-and-numbers-normalised","kind":"decision","title":"Non-verbal clips off for every voice; laughs only when the engine renders them natively in context; numbers/terms normalised to spoken Hindi words plus a lexicon before TTS; voice search continues (VOICE-V3). Reverse if a future blind round prefers clipped renders","at":"2026-10-04"}],
+"edges":[
+{"from":"voice-blind-ab-2026-10-04","to":"voice-clips-off-and-numbers-normalised","rel":"measured_by"},
+{"from":"voice-blind-spliced-breaths-rejected","to":"voice-clips-off-and-numbers-normalised","rel":"caused_by"}]}

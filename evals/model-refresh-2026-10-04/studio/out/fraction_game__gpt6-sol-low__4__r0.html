@@ -1,0 +1,143 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#fff8ec;font-family:system-ui,sans-serif;color:#47372f}
+  .activity{min-height:100dvh;padding:22px 18px 28px;display:flex;flex-direction:column;align-items:center}
+  .card{width:min(100%,430px);background:#fffdf8;border:2px solid #f3dfc5;border-radius:28px;padding:22px 18px 24px;box-shadow:0 12px 30px #8b57371a}
+  .heading{display:flex;align-items:center;gap:12px}
+  .badge{width:54px;height:54px;flex:none;border-radius:18px;background:#ffe5bd;display:grid;place-items:center}
+  .badge svg{width:37px;height:37px}
+  h1{font-size:clamp(22px,7vw,29px);line-height:1.15;margin:0;color:#694335}
+  .instruction{margin:17px 0 8px;font-size:17px;line-height:1.4}
+  .fraction{margin:10px auto 20px;width:max-content;min-width:82px;padding:8px 21px;border-radius:18px;background:#e8f3ef;color:#267567;text-align:center;font-size:32px;font-weight:800;letter-spacing:2px}
+  .tray{padding:18px 12px 21px;background:#fff2d9;border-radius:25px;border:2px solid #f6dfb6}
+  .bar{display:flex;width:100%;height:126px;gap:3px;padding:7px;border-radius:21px;background:#d49a69;box-shadow:0 7px 0 #b77e54}
+  .part{appearance:none;flex:1;min-width:0;min-height:44px;border:0;border-radius:10px;background:#fff7e8;box-shadow:inset 0 0 0 2px #edd6b9;cursor:pointer;touch-action:manipulation;transition:background .2s,transform .18s,box-shadow .2s}
+  .part[data-shaded="true"]{background:#f18267;box-shadow:inset 0 0 0 2px #d65e4c,inset 0 -13px 0 #e9715d}
+  .part:active,.check:active{transform:scale(.94)}
+  .part:focus-visible,.check:focus-visible{outline:3px solid #287c70;outline-offset:3px}
+  .hint{min-height:25px;margin:20px 0 11px;text-align:center;color:#715e50;font-size:16px}
+  .check{display:block;width:100%;min-height:54px;border:0;border-radius:17px;background:#287c70;color:white;font:700 19px system-ui,sans-serif;cursor:pointer;box-shadow:0 6px 0 #195b53;transition:transform .18s,background .2s}
+  .check:disabled{opacity:.65;cursor:default}
+  .feedback{min-height:29px;margin:17px 0 0;text-align:center;font-size:19px;font-weight:700;color:#287c70}
+  .feedback.wrong{color:#ad6551}
+  .celebrate .tray{animation:pop .5s ease}
+  @keyframes pop{50%{transform:scale(1.035)}}
+  .finish{text-align:center;padding:42px 12px}
+  .finish svg{width:105px;height:105px}
+  .finish h2{font-size:27px;color:#287c70}
+  [hidden]{display:none!important}
+</style>
+<main class="activity">
+  <section class="card" id="game">
+    <div class="heading">
+      <div class="badge" aria-hidden="true">
+        <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#e79765"/><circle cx="24" cy="24" r="16" fill="#ffd780"/><path d="M24 24V8M24 24l14 8" stroke="#fff8ec" stroke-width="2.5"/><circle cx="17" cy="19" r="2" fill="#db7258"/><circle cx="28" cy="16" r="2" fill="#db7258"/><circle cx="24" cy="32" r="2" fill="#db7258"/></svg>
+      </div>
+      <h1 id="title"></h1>
+    </div>
+    <p class="instruction" id="instr"></p>
+    <div id="item" data-item="">
+      <div class="fraction" id="fraction"></div>
+      <div class="tray"><div class="bar" id="bar"></div></div>
+    </div>
+    <p class="hint" id="hint"></p>
+    <button class="check" data-action="check" id="check" type="button"></button>
+    <p class="feedback" id="feedback" aria-live="polite"></p>
+  </section>
+  <section class="card finish" id="finish" hidden>
+    <svg viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="47" fill="#e8f3ef"/><path d="M30 56l17 17 34-37" fill="none" stroke="#287c70" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <h2 id="doneText"></h2>
+  </section>
+</main>
+<script>
+(() => {
+  const items = Studio.params.items;
+  const game = document.getElementById('game');
+  const itemBox = document.getElementById('item');
+  const bar = document.getElementById('bar');
+  const fraction = document.getElementById('fraction');
+  const feedback = document.getElementById('feedback');
+  const check = document.getElementById('check');
+  let position = 0;
+  let waiting = false;
+  let moving = false;
+
+  for (const key of ['title','instr','hint','check']) {
+    document.getElementById(key).textContent = Studio.t(key);
+  }
+  document.getElementById('doneText').textContent = Studio.t('done');
+
+  function showItem() {
+    const item = items[position];
+    itemBox.dataset.item = item.id;
+    fraction.textContent = `${item.n}/${item.d}`;
+    bar.replaceChildren();
+    feedback.textContent = '';
+    feedback.className = 'feedback';
+    game.classList.remove('celebrate');
+    check.disabled = false;
+    waiting = false;
+    moving = false;
+    for (let index = 0; index < item.d; index++) {
+      const part = document.createElement('button');
+      part.type = 'button';
+      part.className = 'part';
+      part.dataset.part = String(index);
+      part.dataset.shaded = 'false';
+      part.setAttribute('aria-label', String(index + 1));
+      part.setAttribute('aria-pressed', 'false');
+      part.addEventListener('click', () => {
+        if (waiting || moving) return;
+        const shaded = part.dataset.shaded !== 'true';
+        part.dataset.shaded = String(shaded);
+        part.setAttribute('aria-pressed', String(shaded));
+        feedback.textContent = '';
+        Studio.event('part_toggled', {item: item.id, part: index, shaded});
+      });
+      bar.appendChild(part);
+    }
+  }
+
+  check.addEventListener('click', () => {
+    if (waiting || moving) return;
+    waiting = true;
+    check.disabled = true;
+    const item = items[position];
+    const n = bar.querySelectorAll('[data-shaded="true"]').length;
+    Studio.event('check', {item: item.id, n});
+    Studio.answer({n, d: item.d});
+  });
+
+  Studio.onVerdict(({correct}) => {
+    if (!waiting) return;
+    waiting = false;
+    feedback.textContent = Studio.t(correct ? 'right' : 'wrong');
+    feedback.className = correct ? 'feedback' : 'feedback wrong';
+    if (!correct) {
+      check.disabled = false;
+      return;
+    }
+    moving = true;
+    game.classList.add('celebrate');
+    setTimeout(() => {
+      position++;
+      if (position < items.length) {
+        showItem();
+      } else {
+        game.hidden = true;
+        document.getElementById('finish').hidden = false;
+        Studio.done();
+      }
+    }, 850);
+  });
+
+  if (items.length) {
+    showItem();
+  } else {
+    game.hidden = true;
+    document.getElementById('finish').hidden = false;
+    Studio.done();
+  }
+  Studio.ready();
+})();
+</script>

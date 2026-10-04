@@ -1,0 +1,384 @@
+<style>
+  :root {
+    --bg: #FFF9F0;
+    --card: #FFFFFF;
+    --ink: #3B2E2A;
+    --ink-soft: #7A6A62;
+    --mango: #F2A93B;
+    --banana: #F5D547;
+    --apple: #E4573D;
+    --guava: #E58AA8;
+    --orange: #F07C29;
+    --grid: #EADFD3;
+    --axis: #C9B8A8;
+    --good: #3EA35C;
+    --bad: #D6604B;
+    --shadow: 0 8px 22px rgba(120, 90, 60, 0.14);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  .wrap {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 14px 12px 18px;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .title {
+    font-size: 20px;
+    font-weight: 800;
+    text-align: center;
+    color: var(--ink);
+    padding: 4px 2px;
+    letter-spacing: 0.2px;
+  }
+  .chart-card {
+    background: var(--card);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 14px 10px 8px 8px;
+    position: relative;
+  }
+  .chart-inner {
+    display: flex;
+    align-items: stretch;
+  }
+  .yaxis-title {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 30px;
+    padding-right: 2px;
+    flex: 0 0 auto;
+  }
+  .plot {
+    position: relative;
+    flex: 1 1 auto;
+    height: 260px;
+    margin-left: 6px;
+    border-left: 2px solid var(--axis);
+    border-bottom: 2px solid var(--axis);
+    overflow: visible;
+  }
+  .gridline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--grid);
+  }
+  .tick-label {
+    position: absolute;
+    left: -2px;
+    transform: translate(-100%, 50%);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+  .bars {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    padding: 0 6px;
+  }
+  .bar-col {
+    flex: 1 1 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    position: relative;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+    min-height: 44px;
+    min-width: 44px;
+  }
+  .bar {
+    width: 62%;
+    max-width: 44px;
+    border-radius: 8px 8px 0 0;
+    transform-origin: bottom center;
+    transform: scaleY(0);
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), filter 0.2s ease;
+    box-shadow: inset 0 -6px 0 rgba(0,0,0,0.06);
+    position: relative;
+  }
+  .bar.grown { transform: scaleY(1); }
+  .bar[data-key="mango"] { background: var(--mango); }
+  .bar[data-key="banana"] { background: var(--banana); }
+  .bar[data-key="apple"] { background: var(--apple); }
+  .bar[data-key="guava"] { background: var(--guava); }
+  .bar[data-key="orange"] { background: var(--orange); }
+  .bar-col:active .bar { filter: brightness(0.92); }
+  .bar-col.picked .bar {
+    filter: brightness(1.06) saturate(1.1);
+    box-shadow: inset 0 -6px 0 rgba(0,0,0,0.08), 0 0 0 3px rgba(59,46,42,0.14);
+  }
+  .fruit-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    margin-top: 6px;
+    text-align: center;
+    line-height: 1.1;
+    max-width: 100%;
+  }
+  .value-bubble {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translate(-50%, 6px);
+    background: var(--ink);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    white-space: nowrap;
+  }
+  .value-bubble.show { opacity: 1; transform: translate(-50%, -2px); }
+  .value-bubble::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--ink);
+  }
+  .ask {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    background: #FFFFFF;
+    border-radius: 14px;
+    padding: 12px 14px;
+    box-shadow: var(--shadow);
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .feedback {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 800;
+    padding: 10px;
+    border-radius: 14px;
+    min-height: 44px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .feedback.show { display: flex; }
+  .feedback.right { color: var(--good); background: #EAF7EE; }
+  .feedback.wrong { color: var(--bad); background: #FBEDEA; }
+  .check {
+    display: inline-flex;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    align-items: center; justify-content: center;
+    color: #fff; font-size: 14px; font-weight: 800;
+  }
+  .check.right { background: var(--good); }
+  .check.wrong { background: var(--bad); }
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+    100% { transform: scale(1); }
+  }
+  .pulse { animation: pulse 0.4s ease; }
+</style>
+
+<div class="wrap">
+  <div class="title" id="title"></div>
+
+  <div class="chart-card">
+    <div class="chart-inner">
+      <div class="yaxis-title" id="yaxis"></div>
+      <div class="plot" id="plot">
+        <div class="gridlines" id="gridlines"></div>
+        <div class="bars" id="bars"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ask" id="ask"></div>
+  <div class="feedback" id="feedback"></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var params = Studio.params || {};
+  var data = Array.isArray(params.data) ? params.data : [];
+  var T = Studio.t;
+
+  var titleEl = document.getElementById("title");
+  var yaxisEl = document.getElementById("yaxis");
+  var askEl = document.getElementById("ask");
+  var feedbackEl = document.getElementById("feedback");
+  var plot = document.getElementById("plot");
+  var gridlinesHost = document.getElementById("gridlines");
+  var barsHost = document.getElementById("bars");
+
+  titleEl.textContent = T("title");
+  yaxisEl.textContent = T("yaxis");
+  askEl.textContent = T("ask");
+
+  var maxVal = 0;
+  for (var i = 0; i < data.length; i++) {
+    if (typeof data[i].value === "number" && data[i].value > maxVal) maxVal = data[i].value;
+  }
+  if (maxVal <= 0) maxVal = 1;
+
+  var step = 2;
+  if (maxVal > 12) step = 5;
+  if (maxVal > 25) step = 10;
+  var top = Math.ceil(maxVal / step) * step;
+  if (top === maxVal) top += step;
+
+  var plotH = 260;
+
+  function yPct(v) { return (v / top) * 100; }
+
+  // gridlines + tick labels
+  for (var t = 0; t <= top; t += step) {
+    var gl = document.createElement("div");
+    gl.className = "gridline";
+    gl.style.bottom = yPct(t) + "%";
+    gl.setAttribute("data-grid", String(t));
+    gridlinesHost.appendChild(gl);
+
+    var tl = document.createElement("div");
+    tl.className = "tick-label";
+    tl.setAttribute("data-tick", String(t));
+    tl.style.bottom = yPct(t) + "%";
+    tl.textContent = String(t);
+    gridlinesHost.appendChild(tl);
+  }
+
+  // bars
+  var barEls = {};
+  for (var j = 0; j < data.length; j++) {
+    (function (item, idx) {
+      var key = item.key;
+      var val = item.value;
+
+      var col = document.createElement("button");
+      col.className = "bar-col";
+      col.type = "button";
+      col.setAttribute("aria-label", T(key));
+
+      var bar = document.createElement("div");
+      bar.className = "bar";
+      bar.setAttribute("data-bar", key);
+      bar.setAttribute("data-value", String(val));
+      bar.setAttribute("data-key", key);
+      bar.style.height = yPct(val) + "%";
+
+      var bubble = document.createElement("div");
+      bubble.className = "value-bubble";
+      bubble.textContent = String(val);
+
+      var name = document.createElement("div");
+      name.className = "fruit-name";
+      name.textContent = T(key);
+
+      col.appendChild(bar);
+      bar.appendChild(bubble);
+      col.appendChild(name);
+      barsHost.appendChild(col);
+      barEls[key] = { col: col, bar: bar, bubble: bubble };
+
+      col.addEventListener("click", function () {
+        if (answered) return;
+        selectBar(key);
+      });
+    })(data[j], j);
+  }
+
+  // grow-in animation
+  var growDelay = 90;
+  data.forEach(function (item, idx) {
+    setTimeout(function () {
+      var b = barEls[item.key].bar;
+      b.classList.add("grown");
+    }, 120 + idx * growDelay);
+  });
+
+  var answered = false;
+
+  function selectBar(key) {
+    // show value bubble on tapped bar
+    Object.keys(barEls).forEach(function (k) {
+      barEls[k].bubble.classList.remove("show");
+      barEls[k].col.classList.remove("picked");
+    });
+    var ref = barEls[key];
+    if (!ref) return;
+    ref.col.classList.add("picked");
+    ref.bubble.classList.add("show");
+    ref.bar.classList.remove("pulse");
+    void ref.bar.offsetWidth;
+    ref.bar.classList.add("pulse");
+
+    Studio.event("bar_tap", { key: key, value: ref.bar.getAttribute("data-value") });
+
+    answered = true;
+    askEl.textContent = T("ask");
+    Studio.answer(key);
+  }
+
+  Studio.onVerdict(function (v) {
+    var correct = v && v.correct;
+    feedbackEl.className = "feedback show " + (correct ? "right" : "wrong");
+    feedbackEl.innerHTML = "";
+
+    var check = document.createElement("span");
+    check.className = "check " + (correct ? "right" : "wrong");
+    check.textContent = correct ? "\u2713" : "\u2715";
+    feedbackEl.appendChild(check);
+
+    var txt = document.createElement("span");
+    txt.textContent = correct ? T("right") : T("wrong");
+    feedbackEl.appendChild(txt);
+
+    if (correct) {
+      Studio.done();
+      askEl.textContent = T("done");
+      askEl.classList.add("pulse");
+    } else {
+      answered = false;
+      Object.keys(barEls).forEach(function (k) {
+        barEls[k].bubble.classList.remove("show");
+        barEls[k].col.classList.remove("picked");
+      });
+    }
+    Studio.event("verdict", { correct: correct });
+  });
+
+  Studio.ready();
+})();
+</script>

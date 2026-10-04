@@ -101,7 +101,7 @@ const jobs = [];
 for (let s = 0; s < N; s++) for (const kind of kinds) for (const arm of arms) jobs.push({ kind, arm, s });
 
 function repairPrompt(kind, frag, qa) {
-  const fails = qa.checks.filter((c) => !c.pass).map((c) => `- ${c.id}: ${JSON.stringify(c.detail).slice(0, 240)}`).join("\n");
+  const fails = qa.checks.filter((c) => !c.pass).map((c) => `- ${c.id}: ${String(JSON.stringify(c.detail ?? "") ?? "").slice(0, 240)}`).join("\n");
   return `${userPrompt(kind)}\n\nYOUR PREVIOUS FRAGMENT FAILED THE AUTOMATED GATE. Failing checks (id: detail):\n${fails}\n\nPREVIOUS FRAGMENT:\n${frag}\n\nReturn the complete corrected fragment (same output rules).`;
 }
 

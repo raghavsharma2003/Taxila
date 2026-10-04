@@ -1,0 +1,301 @@
+<style>
+  :root {
+    color-scheme: light;
+    --ink: #35444c;
+    --muted: #728087;
+    --cream: #fffaf0;
+    --paper: #ffffff;
+    --peach: #ffd0a9;
+    --coral: #ed8064;
+    --coral-dark: #cf654f;
+    --gold: #f1bb51;
+    --line: #f0e8dc;
+    --mint: #d9eee3;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-width: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background:
+      radial-gradient(ellipse at 92% 7%, rgba(241,187,81,.16), transparent 29%),
+      var(--cream);
+    color: var(--ink);
+    font-family: ui-rounded, "Trebuchet MS", system-ui, sans-serif;
+  }
+  .app {
+    width: min(100%, 520px);
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 18px 18px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .topline { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .brand { display:flex; align-items:center; gap:10px; min-height:44px; }
+  .brand-mark {
+    width:40px; height:40px; display:grid; place-items:center; flex:none;
+    border-radius:14px; background:#ffe5c9; box-shadow: inset 0 -3px 0 rgba(207,101,79,.12);
+  }
+  .brand-mark svg { width:27px; height:27px; }
+  .title { margin:0; font-size:clamp(17px,5vw,21px); line-height:1.15; font-weight:800; letter-spacing:-.35px; }
+  .step-pill {
+    flex:none; min-width:50px; height:34px; border-radius:17px; display:grid; place-items:center;
+    padding:0 11px; background:#fff; border:1px solid var(--line); color:var(--muted);
+    font-size:14px; font-weight:800;
+  }
+  .card {
+    background:var(--paper); border:1px solid rgba(218,204,184,.55); border-radius:24px;
+    padding:20px 18px; box-shadow:0 9px 24px rgba(94,72,45,.07);
+  }
+  .instruction {
+    margin:0; color:#56656b; text-align:center; font-size:15px; line-height:1.5;
+    min-height:44px; display:flex; align-items:center; justify-content:center;
+  }
+  .fraction-card { padding:17px 18px 19px; }
+  .fraction-label { margin:0 0 10px; text-align:center; color:var(--muted); font-size:13px; font-weight:700; }
+  .fraction {
+    width:72px; min-height:81px; margin:0 auto; display:flex; flex-direction:column;
+    justify-content:center; align-items:center; color:var(--ink); font-size:28px; font-weight:850;
+    line-height:1.05; font-variant-numeric:tabular-nums;
+  }
+  .fraction-rule { width:54px; height:3px; margin:5px 0; border-radius:3px; background:var(--coral); }
+  .picture-card {
+    position:relative; min-height:245px; display:flex; align-items:center; justify-content:center;
+    overflow:hidden; padding:21px 12px;
+    background:linear-gradient(155deg,#fff 20%,#fff9ef 100%);
+  }
+  .picture-card::before, .picture-card::after {
+    content:""; position:absolute; width:86px; height:86px; border-radius:50%;
+    background:rgba(241,187,81,.1); pointer-events:none;
+  }
+  .picture-card::before { left:-35px; top:-35px; }
+  .picture-card::after { right:-39px; bottom:-43px; width:112px; height:112px; }
+  .parts {
+    position:relative; z-index:1; width:100%; display:flex; justify-content:center; align-items:center;
+    flex-wrap:wrap; gap:10px; padding:3px 0;
+  }
+  .part {
+    width:clamp(47px, 12vw, 58px); height:clamp(47px, 12vw, 58px);
+    padding:0; border:2px solid #e5aa74; background:#fff3df; color:var(--coral-dark);
+    cursor:pointer; touch-action:manipulation; display:grid; place-items:center;
+    box-shadow:inset 0 -4px 0 rgba(183,117,64,.1), 0 3px 6px rgba(79,59,38,.07);
+    transition:transform .17s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .part:hover { transform:translateY(-2px); }
+  .part:active { transform:scale(.91); }
+  .part[aria-pressed="true"] {
+    background:#f5a16e; border-color:#df7959; color:#fffaf2;
+    box-shadow:inset 0 -4px 0 rgba(158,70,51,.14), 0 4px 9px rgba(207,101,79,.2);
+    animation:pop .24s ease-out;
+  }
+  .part svg { width:27px; height:27px; overflow:visible; pointer-events:none; }
+  .part svg * { pointer-events:none; }
+  .part:focus-visible, .check:focus-visible { outline:3px solid #548b78; outline-offset:3px; }
+  .hint { margin:0; color:var(--muted); text-align:center; font-size:13px; line-height:1.4; }
+  .actions { margin-top:auto; display:flex; flex-direction:column; gap:10px; }
+  .feedback {
+    min-height:34px; display:flex; align-items:center; justify-content:center; text-align:center;
+    color:#638271; font-size:15px; font-weight:750; line-height:1.35;
+  }
+  .feedback.error { color:#bd6654; }
+  .feedback.pop { animation:softPop .35s ease-out; }
+  .check {
+    width:100%; min-height:54px; border:0; border-radius:18px; padding:12px 20px;
+    background:var(--coral); color:#fff; font:inherit; font-size:17px; font-weight:850;
+    cursor:pointer; touch-action:manipulation; box-shadow:0 5px 0 var(--coral-dark), 0 9px 16px rgba(207,101,79,.17);
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .check:hover { background:#e7795c; }
+  .check:active { transform:translateY(3px) scale(.99); box-shadow:0 2px 0 var(--coral-dark); }
+  .check:disabled { opacity:.75; cursor:default; }
+  .done-card {
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:14px; text-align:center; min-height:280px;
+    animation:softPop .42s ease-out;
+  }
+  .done-art {
+    width:112px; height:112px; border-radius:38px; display:grid; place-items:center;
+    background:#fff0d7; box-shadow:inset 0 -5px 0 rgba(207,101,79,.1);
+  }
+  .done-art svg { width:76px; height:76px; }
+  .done-text { margin:0; font-size:25px; line-height:1.2; font-weight:850; }
+  .hidden { display:none !important; }
+  @keyframes pop { 0%{transform:scale(.86)} 70%{transform:scale(1.09)} 100%{transform:scale(1)} }
+  @keyframes softPop { 0%{opacity:.5; transform:translateY(5px) scale(.97)} 100%{opacity:1; transform:translateY(0) scale(1)} }
+  @media (max-height:700px) {
+    .app { gap:11px; padding-top:12px; padding-bottom:14px; }
+    .card { padding-top:15px; padding-bottom:15px; }
+    .picture-card { min-height:205px; }
+    .fraction-card { padding-top:12px; padding-bottom:13px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration:.01ms !important; transition-duration:.01ms !important; scroll-behavior:auto !important; }
+  }
+</style>
+<main class="app" aria-live="polite">
+  <header class="topline">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none">
+          <path d="M16 4.2c-6.5 0-11.8 5.3-11.8 11.8S9.5 27.8 16 27.8V4.2Z" fill="#F5A16E" stroke="#CF7656" stroke-width="1.5"/>
+          <path d="M17.5 4.3c6 .8 10.3 5.9 10.3 11.7S23.5 27 17.5 27.7V4.3Z" fill="#FFF1D9" stroke="#DCA56D" stroke-width="1.5"/>
+          <path d="M16.8 4.5v22.9" stroke="#FFF9EE" stroke-width="1.8"/>
+          <circle cx="10.5" cy="12" r="1" fill="#FFF7E7"/><circle cx="10.5" cy="20" r="1" fill="#FFF7E7"/>
+        </svg>
+      </div>
+      <h1 class="title" id="title"></h1>
+    </div>
+    <div class="step-pill" id="step" aria-hidden="true"></div>
+  </header>
+
+  <section class="card fraction-card" id="work" aria-label="">
+    <p class="instruction" id="instr"></p>
+    <p class="fraction-label" id="fraction-label"></p>
+    <div class="fraction" aria-label="" id="fraction">
+      <span id="numerator"></span><span class="fraction-rule"></span><span id="denominator"></span>
+    </div>
+  </section>
+
+  <section class="card picture-card" id="item-container" data-item="" aria-label="">
+    <div class="parts" id="parts"></div>
+  </section>
+
+  <p class="hint" id="hint"></p>
+
+  <footer class="actions" id="actions">
+    <div class="feedback" id="feedback" role="status"></div>
+    <button class="check" id="check" type="button" data-action="check"></button>
+  </footer>
+
+  <section class="card done-card hidden" id="done-screen">
+    <div class="done-art" aria-hidden="true">
+      <svg viewBox="0 0 80 80" fill="none">
+        <path d="M40 8 47 29 69 29 51 42 58 64 40 51 22 64 29 42 11 29 33 29 40 8Z" fill="#F1BB51" stroke="#D99B32" stroke-width="2" stroke-linejoin="round"/>
+        <path d="m31 39 6 6 13-14" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="65" cy="13" r="3" fill="#ED8064"/><circle cx="14" cy="55" r="3" fill="#75AA8D"/>
+      </svg>
+    </div>
+    <p class="done-text" id="done-text"></p>
+  </section>
+</main>
+<script>
+(() => {
+  const items = Studio.params.items;
+  const words = {
+    title: Studio.t("title"),
+    instr: Studio.t("instr"),
+    check: Studio.t("check"),
+    right: Studio.t("right"),
+    wrong: Studio.t("wrong"),
+    done: Studio.t("done"),
+    hint: Studio.t("hint")
+  };
+  const el = id => document.getElementById(id);
+  el("title").textContent = words.title;
+  el("instr").textContent = words.instr;
+  el("check").textContent = words.check;
+  el("hint").textContent = words.hint;
+  el("fraction-label").textContent = words.instr;
+
+  let itemIndex = 0;
+  let locked = false;
+  let completed = false;
+
+  function makePart(index) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "part";
+    button.dataset.part = String(index);
+    button.dataset.shaded = "false";
+    button.setAttribute("aria-pressed", "false");
+    button.setAttribute("aria-label", String(index + 1));
+    button.innerHTML =
+      '<svg viewBox="0 0 32 32" aria-hidden="true">' +
+        '<path d="M9.5 17.1 14 21.5 23 11.8" fill="none" stroke="currentColor" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '</svg>';
+    button.addEventListener("click", () => {
+      if (locked || completed) return;
+      const shaded = button.dataset.shaded !== "true";
+      button.dataset.shaded = String(shaded);
+      button.setAttribute("aria-pressed", String(shaded));
+      Studio.event("part_toggle", {item: items[itemIndex].id, part: index, shaded});
+    });
+    return button;
+  }
+
+  function renderItem() {
+    const item = items[itemIndex];
+    locked = false;
+    el("item-container").dataset.item = String(item.id);
+    el("numerator").textContent = String(item.n);
+    el("denominator").textContent = String(item.d);
+    el("fraction").setAttribute("aria-label", String(item.n) + "/" + String(item.d));
+    el("step").textContent = String(itemIndex + 1) + "/" + String(items.length);
+    const parts = el("parts");
+    parts.replaceChildren();
+    for (let i = 0; i < item.d; i++) parts.appendChild(makePart(i));
+    const feedback = el("feedback");
+    feedback.textContent = "";
+    feedback.className = "feedback";
+    const check = el("check");
+    check.disabled = false;
+    check.dataset.action = "check";
+    el("work").classList.remove("hidden");
+    el("item-container").classList.remove("hidden");
+    el("hint").classList.remove("hidden");
+    el("actions").classList.remove("hidden");
+    el("done-screen").classList.add("hidden");
+  }
+
+  el("check").addEventListener("click", () => {
+    if (locked || completed) return;
+    const item = items[itemIndex];
+    const n = el("parts").querySelectorAll('[data-shaded="true"]').length;
+    locked = true;
+    el("check").disabled = true;
+    Studio.event("check", {item: item.id, n, d: item.d});
+    Studio.answer({n, d: item.d});
+  });
+
+  Studio.onVerdict(({correct}) => {
+    if (completed) return;
+    const feedback = el("feedback");
+    feedback.textContent = correct ? words.right : words.wrong;
+    feedback.className = correct ? "feedback pop" : "feedback error pop";
+    if (correct) {
+      locked = true;
+      if (itemIndex + 1 < items.length) {
+        window.setTimeout(() => {
+          if (completed) return;
+          itemIndex++;
+          renderItem();
+        }, 850);
+      } else {
+        window.setTimeout(() => {
+          if (completed) return;
+          completed = true;
+          el("work").classList.add("hidden");
+          el("item-container").classList.add("hidden");
+          el("hint").classList.add("hidden");
+          el("actions").classList.add("hidden");
+          el("step").classList.add("hidden");
+          el("done-text").textContent = words.done;
+          el("done-screen").classList.remove("hidden");
+          Studio.done();
+        }, 850);
+      }
+    } else {
+      locked = false;
+      el("check").disabled = false;
+    }
+  });
+
+  renderItem();
+  Studio.ready();
+})();
+</script>

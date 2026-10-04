@@ -1,0 +1,211 @@
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#fdf6e3; font-family:system-ui,sans-serif; overflow:hidden; width:360px; height:640px; }
+  #app { display:flex; flex-direction:column; height:100%; padding:6px; }
+  h1 { font-size:15px; color:#2d5a27; text-align:center; padding:3px 0; }
+  #scene { position:relative; width:100%; height:250px; background:linear-gradient(#87ceeb,#e0f7fa 70%,#8b5a2b); border-radius:20px; overflow:hidden; }
+  svg { position:absolute; width:100%; height:100%; }
+  #labels { position:absolute; inset:0; pointer-events:none; font-size:11px; font-weight:bold; color:#333; }
+  .lab { position:absolute; background:rgba(255,255,255,.75); padding:1px 5px; border-radius:10px; }
+  #controls { display:flex; flex-wrap:wrap; gap:4px; justify-content:center; align-items:center; padding:5px 0; }
+  button { min-width:44px; min-height:44px; border-radius:20px; border:2px solid #4a8a3a; background:#dff0d8; color:#2d5a27; font-weight:bold; font-size:13px; cursor:pointer; transition:transform .15s, background .3s; padding:0 10px; }
+  button.active { background:#f0c040; border-color:#a07000; transform:scale(1.05); }
+  button:active { transform:scale(.93); }
+  #playbtn { background:#2d5a27; color:white; border-color:#1a3a15; }
+  #steps { display:flex; gap:4px; }
+  #caption { text-align:center; font-size:12px; font-weight:bold; color:#1a3a15; background:#e8f0e0; border-radius:12px; padding:3px; margin:3px 0; min-height:34px; display:flex; align-items:center; justify-content:center; }
+  #askbox { text-align:center; font-size:13px; color:#333; margin:2px 0; font-weight:bold; }
+  #options { display:flex; gap:6px; justify-content:center; }
+  .opt { background:#fff; border-color:#5a9a4a; }
+  .opt.correct { background:#90ee90; border-color:#2d8a2d; }
+  .opt.wrong { background:#ff9999; border-color:#cc3333; }
+  #msg { height:30px; font-size:12px; text-align:center; color:#1a3a15; padding-top:3px; font-weight:bold; }
+  .pulse { animation:pulse .4s; }
+  @keyframes pulse { 0%{transform:scale(1)} 50%{transform:scale(1.2)} 100%{transform:scale(1)} }
+</style>
+<div id="app">
+  <h1 data-label="title">🌿</h1>
+  <div id="scene">
+    <svg viewBox="0 0 360 250" preserveAspectRatio="xMidYMid slice">
+      <line id="ray1" x1="80" y1="20" x2="180" y2="80" stroke="#f0c040" stroke-width="3" stroke-dasharray="6 6"/>
+      <line id="ray2" x1="120" y1="15" x2="200" y2="75" stroke="#f0c040" stroke-width="3" stroke-dasharray="6 6"/>
+      <line id="ray3" x1="160" y1="10" x2="220" y2="80" stroke="#f0c040" stroke-width="3" stroke-dasharray="6 6"/>
+      <circle cx="60" cy="40" r="22" fill="#ffd700" stroke="#e0a800" stroke-width="2"/>
+      <g data-entity="leaf">
+        <path d="M180,120 Q220,90 240,120 Q220,150 180,120" fill="#3a9a2a" stroke="#2d7a1f" stroke-width="2"/>
+        <path d="M180,120 L210,120" stroke="#2d7a1f" stroke-width="2"/>
+        <text x="160" y="95" font-size="12" fill="#2d5a27" data-label="leaf">leaf</text>
+      </g>
+      <path d="M180,130 L180,170" stroke="#3a5a2a" stroke-width="6" fill="none"/>
+      <g data-entity="roots">
+        <path d="M180,175 L150,210 L140,230" stroke="#7a5a2a" stroke-width="3" fill="none"/>
+        <path d="M180,175 L200,210 L215,230" stroke="#7a5a2a" stroke-width="3" fill="none"/>
+        <path d="M180,175 L180,225" stroke="#7a5a2a" stroke-width="3" fill="none"/>
+      </g>
+      <g id="waterParticles"></g>
+      <g id="co2Particles"></g>
+      <g id="o2Particles"></g>
+      <g id="glucoseGlow">
+        <circle cx="190" cy="120" r="15" fill="#ff6600" opacity="0"/>
+      </g>
+    </svg>
+    <div id="labels">
+      <div class="lab" style="left:8px;top:5px" data-label="sun">☀️</div>
+      <div class="lab" style="left:130px;top:200px" data-label="roots">roots</div>
+      <div class="lab" style="left:20px;top:100px" data-label="water">water</div>
+      <div class="lab" style="left:290px;top:60px" data-label="co2">co2</div>
+      <div class="lab" style="left:300px;top:110px" data-label="o2">o2</div>
+      <div class="lab" style="left:230px;top:140px" data-label="glucose">glucose</div>
+    </div>
+  </div>
+  <div id="controls">
+    <button id="playbtn" data-action="play">▶</button>
+    <div id="steps">
+      <button data-action="step-1">1</button>
+      <button data-action="step-2">2</button>
+      <button data-action="step-3">3</button>
+      <button data-action="step-4">4</button>
+      <button data-action="step-5">5</button>
+    </div>
+  </div>
+  <div id="caption" data-caption></div>
+  <div id="askbox" data-label="ask"></div>
+  <div id="options">
+    <button class="opt" data-option="co2"></button>
+    <button class="opt" data-option="o2"></button>
+    <button class="opt" data-option="water"></button>
+  </div>
+  <div id="msg"></div>
+</div>
+<script>
+(function(){
+  const T = Studio.t;
+  const captions = [T('step1'), T('step2'), T('step3'), T('step4'), T('step5')];
+  document.querySelector('[data-label="title"]').textContent = T('title');
+  document.querySelector('[data-label="leaf"]').textContent = T('leaf');
+  document.querySelector('[data-label="roots"]').textContent = T('roots');
+  document.querySelector('[data-label="water"]').textContent = T('water');
+  document.querySelector('[data-label="co2"]').textContent = T('co2');
+  document.querySelector('[data-label="o2"]').textContent = T('o2');
+  document.querySelector('[data-label="glucose"]').textContent = T('glucose');
+  document.querySelector('[data-caption]').textContent = captions[0];
+  document.querySelector('[data-label="ask"]').textContent = T('ask');
+  document.querySelector('[data-option="co2"]').textContent = T('co2');
+  document.querySelector('[data-option="o2"]').textContent = T('o2');
+  document.querySelector('[data-option="water"]').textContent = T('water');
+  const playBtn = document.querySelector('[data-action="play"]');
+  let playing = true; let step = 1; let answered = false;
+  playBtn.textContent = T('pause');
+  function setPlay(p){
+    playing = p;
+    if(playing && step>=1 && step<=5) playBtn.textContent = T('pause');
+    else playBtn.textContent = T('play');
+    playBtn.classList.toggle('active', playing);
+  }
+  function setStep(n){
+    step = n;
+    document.querySelectorAll('[data-action^="step-"]').forEach((b,i)=> b.classList.toggle('active', i+1===n));
+    document.querySelector('[data-caption]').textContent = captions[n-1];
+    document.querySelector('[data-caption]').classList.remove('pulse'); void document.querySelector('[data-caption]').offsetWidth; document.querySelector('[data-caption]').classList.add('pulse');
+    setPlay(true);
+    Studio.event('step', {n});
+  }
+  document.querySelectorAll('[data-action^="step-"]').forEach((b,i)=>{
+    b.addEventListener('click', ()=>setStep(i+1));
+  });
+  playBtn.addEventListener('click', ()=>{ setPlay(!playing); Studio.event('play', {playing}); });
+  // particles
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const wg = document.getElementById('waterParticles');
+  const cg = document.getElementById('co2Particles');
+  const og = document.getElementById('o2Particles');
+  const glow = document.getElementById('glucoseGlow');
+  function makeParticles(g, n, color, r){
+    for(let i=0;i<n;i++){
+      const c = document.createElementNS(svgNS,'circle');
+      c.setAttribute('r', r||3);
+      c.setAttribute('fill', color);
+      c.setAttribute('data-flow', '');
+      g.appendChild(c);
+    }
+    return [...g.children];
+  }
+  const waters = makeParticles(wg,4,'#2196f3');
+  const co2s = makeParticles(cg,3,'#9e9e9e');
+  const o2s = makeParticles(og,3,'#ff9800');
+  const waterFlow = [
+    {s:{x:175,y:210}, mid:{x:180,y:130}, e:{x:175,y:110}},
+    {s:{x:185,y:210}, mid:{x:180,y:130}, e:{x:185,y:110}},
+    {s:{x:165,y:220}, mid:{x:180,y:130}, e:{x:170,y:115}},
+    {s:{x:195,y:220}, mid:{x:180,y:130}, e:{x:195,y:115}}
+  ];
+  const co2Flow = [
+    {s:{x:280,y:50}, e:{x:200,y:115}},
+    {s:{x:270,y:80}, e:{x:190,y:120}},
+    {s:{x:260,y:60}, e:{x:185,y:112}}
+  ];
+  const o2Flow = [
+    {s:{x:200,y:115}, e:{x:290,y:60}},
+    {s:{x:195,y:120}, e:{x:280,y:90}},
+    {s:{x:205,y:112}, e:{x:300,y:70}}
+  ];
+  let t = 0;
+  function animate(){
+    t += 0.008;
+    waters.forEach((c,i)=>{
+      const f = waterFlow[i];
+      const k = (t + i*0.2) % 1;
+      const x = f.s.x + (f.e.x-f.s.x)*k;
+      const y = f.s.y + (f.e.y-f.s.y)*k;
+      c.setAttribute('cx', x); c.setAttribute('cy', y);
+      c.setAttribute('data-flow','water');
+      c.setAttribute('opacity', k<0.15 ? k*7 : (k>0.85 ? (1-k)*7 : 1));
+    });
+    co2s.forEach((c,i)=>{
+      const f = co2Flow[i];
+      const k = (t*0.8 + i*0.3) % 1;
+      const x = f.s.x - (f.s.x-f.e.x)*k;
+      const y = f.s.y + (f.e.y-f.s.y)*k;
+      c.setAttribute('cx', x); c.setAttribute('cy', y);
+      c.setAttribute('data-flow','co2');
+      c.setAttribute('opacity', k<0.15 ? k*7 : (k>0.85 ? (1-k)*7 : 1));
+    });
+    o2s.forEach((c,i)=>{
+      const f = o2Flow[i];
+      const k = (t*0.7 + i*0.25) % 1;
+      const x = f.s.x + (f.e.x-f.s.x)*k;
+      const y = f.s.y + (f.e.y-f.s.y)*k;
+      c.setAttribute('cx', x); c.setAttribute('cy', y);
+      c.setAttribute('data-flow','o2');
+      c.setAttribute('opacity', k<0.15 ? k*7 : (k>0.85 ? (1-k)*7 : 1));
+    });
+    const glowScale = 0.5 + 0.5*Math.sin(t*10);
+    glow.setAttribute('opacity', step===4 || step===5 ? 0.7*glowScale : 0.2*glowScale);
+    if(playing) requestAnimationFrame(animate);
+  }
+  animate();
+  Studio.onVerdict((verdict)=>{
+    if(!answered){
+      const msg = document.getElementById('msg');
+      msg.textContent = verdict.correct ? '✓' : '✗';
+      msg.classList.remove('pulse'); void msg.offsetWidth; msg.classList.add('pulse');
+      document.querySelectorAll('.opt').forEach(b=>{
+        b.classList.remove('wrong','correct');
+        if(b.dataset.option===answerKey) b.classList.add(verdict.correct ? 'correct' : 'wrong');
+        if(!verdict.correct && b.dataset.option===answerKey) b.classList.add('wrong');
+      });
+      if(verdict.correct){ Studio.done(); answered=true; }
+    }
+  });
+  let answerKey = '';
+  document.querySelectorAll('[data-option]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      if(answered) return;
+      answerKey = b.dataset.option;
+      Studio.answer(answerKey);
+      Studio.event('answer', {key:answerKey});
+    });
+  });
+  Studio.ready();
+})();
+</script>

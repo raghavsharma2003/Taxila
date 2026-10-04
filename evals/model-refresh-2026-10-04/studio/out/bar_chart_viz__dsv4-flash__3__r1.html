@@ -1,0 +1,333 @@
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #FFF8E7;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px;
+    user-select: none;
+  }
+  .container {
+    width: 100%;
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #5D4037;
+    text-align: center;
+    padding: 4px 0;
+  }
+  .ask {
+    font-size: 16px;
+    font-weight: 600;
+    color: #6D4C41;
+    text-align: center;
+    background: #FFE0B2;
+    padding: 8px 16px;
+    border-radius: 20px;
+    width: 100%;
+  }
+  .chart-wrap {
+    background: white;
+    border-radius: 20px;
+    padding: 12px 8px 0 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    width: 100%;
+    overflow: hidden;
+  }
+  .chart-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .bar {
+    transition: opacity 0.2s;
+    cursor: pointer;
+  }
+  .bar:hover { opacity: 0.85; }
+  .bar:active { opacity: 0.7; }
+  .bar-bg {
+    fill: transparent;
+  }
+  .bar-fill {
+    transition: y 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .axis-label {
+    font-size: 10px;
+    fill: #8D6E63;
+    text-anchor: middle;
+    font-weight: 500;
+  }
+  .fruit-label {
+    font-size: 11px;
+    fill: #5D4037;
+    font-weight: 600;
+    text-anchor: middle;
+  }
+  .tick-label {
+    font-size: 9px;
+    fill: #A1887F;
+    text-anchor: end;
+    dominant-baseline: middle;
+  }
+  .gridline {
+    stroke: #EFEBE9;
+    stroke-width: 0.8;
+  }
+  .yaxis-title {
+    font-size: 10px;
+    fill: #8D6E63;
+    text-anchor: middle;
+    font-weight: 600;
+  }
+  .value-popup {
+    font-size: 16px;
+    font-weight: 700;
+    fill: #4E342E;
+    text-anchor: middle;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .feedback {
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+    padding: 8px;
+    border-radius: 16px;
+    min-height: 36px;
+    width: 100%;
+  }
+  .feedback.right { color: #2E7D32; background: #C8E6C9; }
+  .feedback.wrong { color: #C62828; background: #FFCDD2; }
+  .feedback.done { color: #1B5E20; background: #A5D6A7; }
+  .done-text {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1B5E20;
+    text-align: center;
+    padding: 8px;
+  }
+  @media (max-height: 640px) {
+    .title { font-size: 16px; }
+    .ask { font-size: 14px; padding: 6px 12px; }
+  }
+</style>
+<div class="container">
+  <div class="title" id="title"></div>
+  <div class="ask" id="ask"></div>
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 340 260" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+  <div class="feedback" id="feedback"></div>
+  <div class="done-text" id="doneText" style="display:none"></div>
+</div>
+
+<script>
+  (function(){
+    var data = Studio.params.data;
+    var keys = data.map(function(d) { return d.key; });
+    var values = data.map(function(d) { return d.value; });
+    var maxVal = Math.max.apply(null, values);
+    
+    // Compute nice step: step must divide max evenly and give 3-7 ticks
+    var rawMax = maxVal;
+    var step = 5;
+    if (rawMax <= 4) step = 1;
+    else if (rawMax <= 8) step = 2;
+    else if (rawMax <= 15) step = 3;
+    else if (rawMax <= 20) step = 5;
+    else step = 10;
+    
+    var tickMax = Math.ceil(rawMax / step) * step;
+    // Ensure tickMax >= maxVal
+    if (tickMax < rawMax) tickMax += step;
+    // At least 2 ticks
+    var tickCount = tickMax / step;
+    if (tickCount < 2) { step = Math.ceil(rawMax / 2); tickMax = step * 2; tickCount = 2; }
+    
+    var svg = document.querySelector('.chart-svg');
+    var margin = { top: 18, right: 8, bottom: 26, left: 30 };
+    var width = 340;
+    var height = 260;
+    var plotW = width - margin.left - margin.right;
+    var plotH = height - margin.top - margin.bottom;
+    var barCount = data.length;
+    var barGap = 6;
+    var barTotalW = plotW / barCount;
+    var barW = barTotalW - barGap;
+    
+    // y scale: maps value to y pixel from top
+    function yScale(val) {
+      return margin.top + plotH - (val / tickMax) * plotH;
+    }
+    
+    // Draw gridlines and tick labels
+    for (var i = 0; i <= tickCount; i++) {
+      var val = i * step;
+      var yPos = yScale(val);
+      // gridline
+      if (val > 0) {
+        var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('y1', yPos);
+        line.setAttribute('x2', margin.left + plotW);
+        line.setAttribute('y2', yPos);
+        line.setAttribute('class', 'gridline');
+        svg.appendChild(line);
+      }
+      // tick label
+      var tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      tick.setAttribute('x', margin.left - 4);
+      tick.setAttribute('y', yPos);
+      tick.setAttribute('class', 'tick-label');
+      tick.setAttribute('data-tick', val);
+      tick.textContent = val;
+      svg.appendChild(tick);
+    }
+    
+    // y-axis title
+    var yTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    yTitle.setAttribute('x', 10);
+    yTitle.setAttribute('y', margin.top + plotH/2);
+    yTitle.setAttribute('transform', 'rotate(-90, 10, ' + (margin.top + plotH/2) + ')');
+    yTitle.setAttribute('class', 'yaxis-title');
+    yTitle.textContent = 'बच्चों की संख्या';
+    svg.appendChild(yTitle);
+    
+    // Draw bars
+    var bars = [];
+    data.forEach(function(d, i) {
+      var x = margin.left + i * barTotalW + barGap/2;
+      var barH = (d.value / tickMax) * plotH;
+      var y = yScale(d.value);
+      
+      // Invisible tap target (covers whole bar column from zero to top)
+      var bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      bg.setAttribute('x', x);
+      bg.setAttribute('y', margin.top);
+      bg.setAttribute('width', barW);
+      bg.setAttribute('height', plotH);
+      bg.setAttribute('class', 'bar-bg');
+      bg.setAttribute('data-bar', d.key);
+      bg.setAttribute('data-value', d.value);
+      bg.style.cursor = 'pointer';
+      
+      // Visible bar fill (will animate from bottom)
+      var fill = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      fill.setAttribute('x', x);
+      fill.setAttribute('y', margin.top + plotH); // start at bottom
+      fill.setAttribute('width', barW);
+      fill.setAttribute('height', 0);
+      fill.setAttribute('rx', 4);
+      fill.setAttribute('ry', 4);
+      fill.setAttribute('class', 'bar-fill');
+      
+      // Color
+      var colors = {
+        mango: '#FFA000',
+        banana: '#FDD835',
+        apple: '#E53935',
+        guava: '#43A047',
+        orange: '#FB8C00'
+      };
+      fill.setAttribute('fill', colors[d.key] || '#8D6E63');
+      
+      // Fruit label
+      var label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', x + barW/2);
+      label.setAttribute('y', height - 4);
+      label.setAttribute('class', 'fruit-label');
+      label.textContent = Studio.t(d.key);
+      
+      // Value popup (shown on tap)
+      var popup = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      popup.setAttribute('x', x + barW/2);
+      popup.setAttribute('y', y - 6);
+      popup.setAttribute('class', 'value-popup');
+      popup.textContent = d.value;
+      
+      var group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      group.setAttribute('class', 'bar');
+      group.appendChild(bg);
+      group.appendChild(fill);
+      group.appendChild(label);
+      group.appendChild(popup);
+      
+      // Tap handler
+      group.addEventListener('click', function(e) {
+        // show value popup
+        popup.style.opacity = 1;
+        setTimeout(function() { popup.style.opacity = 0; }, 800);
+        
+        // pulse animation
+        fill.style.transition = 'transform 0.15s';
+        fill.style.transformOrigin = (x + barW/2) + 'px ' + (y + barH/2) + 'px';
+        fill.style.transform = 'scale(1.05)';
+        setTimeout(function() { fill.style.transform = 'scale(1)'; }, 150);
+        
+        // commit answer
+        Studio.answer(d.key);
+        Studio.event('tap_bar', { bar: d.key });
+      });
+      
+      svg.appendChild(group);
+      
+      // Store for later
+      bars.push({ key: d.key, value: d.value, element: group, fill: fill, popup: popup, y: y, h: barH });
+    });
+    
+    // Set strings
+    document.getElementById('title').textContent = Studio.t('title');
+    document.getElementById('ask').textContent = Studio.t('ask');
+    // Set y-axis title dynamically
+    yTitle.textContent = Studio.t('yaxis');
+    
+    // Animate bars after paint
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        data.forEach(function(d, i) {
+          var bar = bars[i];
+          var barH = (d.value / tickMax) * plotH;
+          var y = bar.y;
+          bar.fill.setAttribute('y', y);
+          bar.fill.setAttribute('height', barH);
+        });
+      });
+    });
+    
+    // Feedback handling
+    var feedbackEl = document.getElementById('feedback');
+    var doneTextEl = document.getElementById('doneText');
+    
+    Studio.onVerdict(function(result) {
+      if (result.correct) {
+        feedbackEl.className = 'feedback right';
+        feedbackEl.textContent = Studio.t('right');
+        setTimeout(function() {
+          feedbackEl.className = 'feedback done';
+          feedbackEl.textContent = '';
+          doneTextEl.style.display = 'block';
+          doneTextEl.textContent = Studio.t('done');
+          Studio.done();
+        }, 800);
+      } else {
+        feedbackEl.className = 'feedback wrong';
+        feedbackEl.textContent = Studio.t('wrong');
+        setTimeout(function() {
+          feedbackEl.className = 'feedback';
+          feedbackEl.textContent = '';
+        }, 1000);
+      }
+    });
+    
+    Studio.ready();
+  })();
+</script>

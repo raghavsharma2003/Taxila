@@ -1,0 +1,425 @@
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #fff7ed;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  #app {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    max-width: 360px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .header {
+    text-align: center;
+    width: 100%;
+  }
+  .title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #c2410c;
+    margin-bottom: 4px;
+  }
+  .instr {
+    font-size: 14px;
+    color: #9a3412;
+  }
+  .fraction-display {
+    font-size: 28px;
+    font-weight: 800;
+    color: #7c2d12;
+    background: #fed7aa;
+    padding: 12px 24px;
+    border-radius: 16px;
+    display: inline-block;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .picture-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 8px 0;
+  }
+  .pizza-container, .bar-container {
+    transition: transform 0.2s;
+  }
+  .pizza-container:active, .bar-container:active {
+    transform: scale(0.97);
+  }
+  .part {
+    cursor: pointer;
+    transition: fill 0.2s ease, transform 0.15s;
+  }
+  .part:active {
+    transform: scale(0.92);
+  }
+  .part.unshaded {
+    fill: #fde68a;
+    stroke: #b45309;
+    stroke-width: 2;
+  }
+  .part.shaded {
+    fill: #ea580c;
+    stroke: #b45309;
+    stroke-width: 2;
+  }
+  .part-border {
+    stroke: #b45309;
+    stroke-width: 2;
+    fill: none;
+  }
+  .check-btn {
+    background: #ea580c;
+    color: white;
+    border: none;
+    border-radius: 40px;
+    padding: 14px 48px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(234,88,12,0.3);
+    transition: transform 0.15s, box-shadow 0.15s;
+    touch-action: manipulation;
+    min-height: 48px;
+  }
+  .check-btn:active {
+    transform: scale(0.94);
+    box-shadow: 0 2px 6px rgba(234,88,12,0.3);
+  }
+  .check-btn:disabled {
+    background: #ccc;
+    box-shadow: none;
+    cursor: default;
+  }
+  .feedback {
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 12px;
+    width: 100%;
+    transition: opacity 0.3s;
+  }
+  .feedback.right {
+    color: #166534;
+    background: #dcfce7;
+  }
+  .feedback.wrong {
+    color: #991b1b;
+    background: #fee2e2;
+  }
+  .feedback.done {
+    color: #7c2d12;
+    background: #fed7aa;
+    font-size: 20px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .feedback.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .done-emoji {
+    font-size: 32px;
+  }
+  .progress {
+    font-size: 13px;
+    color: #9a3412;
+    font-weight: 500;
+  }
+  @media (max-width: 360px) {
+    body { padding: 10px; }
+  }
+</style>
+<div id="app">
+  <div class="header">
+    <div class="title" id="title"></div>
+    <div class="instr" id="instr"></div>
+  </div>
+  <div class="fraction-display" id="fractionDisplay"></div>
+  <div class="picture-area" id="pictureArea"></div>
+  <button class="check-btn" data-action="check" id="checkBtn"></button>
+  <div class="feedback hidden" id="feedback"></div>
+  <div class="progress" id="progress"></div>
+</div>
+<script>
+  (function() {
+    const app = document.getElementById('app');
+    const titleEl = document.getElementById('title');
+    const instrEl = document.getElementById('instr');
+    const fractionDisplay = document.getElementById('fractionDisplay');
+    const pictureArea = document.getElementById('pictureArea');
+    const checkBtn = document.getElementById('checkBtn');
+    const feedback = document.getElementById('feedback');
+    const progress = document.getElementById('progress');
+
+    const items = Studio.params.items;
+    const pictureType = Studio.params.picture; // 'pizza-or-bar' but we choose pizza always for fun
+    const usePizza = true; // pizza style
+
+    let currentIndex = 0;
+    let currentItem = null;
+    let partsState = []; // {index, shaded}
+    let allowCheck = true;
+    let waitingVerdict = false;
+    let doneFlag = false;
+
+    function t(key) { return Studio.t(key); }
+
+    function render() {
+      titleEl.textContent = t('title');
+      instrEl.textContent = t('instr');
+      checkBtn.textContent = t('check');
+      showCurrentItem();
+    }
+
+    function showCurrentItem() {
+      if (currentIndex >= items.length) {
+        showDoneScreen();
+        return;
+      }
+      currentItem = items[currentIndex];
+      const { id, n, d } = currentItem;
+      const container = document.createElement('div');
+      container.setAttribute('data-item', id);
+      container.style.width = '100%';
+      container.style.display = 'flex';
+      container.style.flexDirection = 'column';
+      container.style.alignItems = 'center';
+      container.style.gap = '8px';
+
+      // fraction display
+      fractionDisplay.textContent = `${n}/${d}`;
+
+      // picture
+      const picDiv = document.createElement('div');
+      picDiv.style.display = 'flex';
+      picDiv.style.justifyContent = 'center';
+      picDiv.style.alignItems = 'center';
+      picDiv.style.width = '240px';
+      picDiv.style.height = '240px';
+
+      partsState = [];
+      for (let i = 0; i < d; i++) {
+        partsState.push({ index: i, shaded: false });
+      }
+
+      let svg;
+      if (usePizza) {
+        svg = buildPizza(d);
+      } else {
+        svg = buildBar(d);
+      }
+      picDiv.appendChild(svg);
+      container.appendChild(picDiv);
+
+      // replace picture area content
+      const oldPic = pictureArea.querySelector('[data-item]');
+      if (oldPic) oldPic.remove();
+      pictureArea.appendChild(container);
+
+      // update progress
+      progress.textContent = `${currentIndex+1}/${items.length}`;
+
+      // enable check
+      checkBtn.disabled = false;
+      allowCheck = true;
+      waitingVerdict = false;
+      feedback.className = 'feedback hidden';
+      feedback.textContent = '';
+    }
+
+    function buildPizza(parts) {
+      const svgns = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(svgns, 'svg');
+      svg.setAttribute('viewBox', '0 0 200 200');
+      svg.setAttribute('width', '200');
+      svg.setAttribute('height', '200');
+      svg.style.display = 'block';
+      svg.style.margin = '0 auto';
+      svg.style.filter = 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))';
+
+      const cx = 100, cy = 100, r = 85;
+      const angleStep = (2 * Math.PI) / parts;
+
+      // whole circle base
+      const baseCircle = document.createElementNS(svgns, 'circle');
+      baseCircle.setAttribute('cx', cx);
+      baseCircle.setAttribute('cy', cy);
+      baseCircle.setAttribute('r', r);
+      baseCircle.setAttribute('fill', '#fde68a');
+      baseCircle.setAttribute('stroke', '#b45309');
+      baseCircle.setAttribute('stroke-width', '2');
+      svg.appendChild(baseCircle);
+
+      // draw slices as paths
+      for (let i = 0; i < parts; i++) {
+        const startAngle = i * angleStep - Math.PI/2;
+        const endAngle = (i+1) * angleStep - Math.PI/2;
+        const x1 = cx + r * Math.cos(startAngle);
+        const y1 = cy + r * Math.sin(startAngle);
+        const x2 = cx + r * Math.cos(endAngle);
+        const y2 = cy + r * Math.sin(endAngle);
+        const largeArc = (angleStep > Math.PI) ? 1 : 0;
+
+        const path = document.createElementNS(svgns, 'path');
+        const d = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+        path.setAttribute('d', d);
+        path.setAttribute('data-part', i);
+        path.setAttribute('data-shaded', 'false');
+        path.setAttribute('class', 'part unshaded');
+        path.style.cursor = 'pointer';
+        path.style.transition = 'fill 0.2s ease';
+        path.addEventListener('click', makePartClickHandler(i));
+        svg.appendChild(path);
+      }
+
+      // inner circle for crust look
+      const inner = document.createElementNS(svgns, 'circle');
+      inner.setAttribute('cx', cx);
+      inner.setAttribute('cy', cy);
+      inner.setAttribute('r', 12);
+      inner.setAttribute('fill', '#fed7aa');
+      inner.setAttribute('stroke', '#b45309');
+      inner.setAttribute('stroke-width', '2');
+      svg.appendChild(inner);
+
+      return svg;
+    }
+
+    function buildBar(parts) {
+      const svgns = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(svgns, 'svg');
+      svg.setAttribute('viewBox', '0 0 240 80');
+      svg.setAttribute('width', '240');
+      svg.setAttribute('height', '80');
+      svg.style.display = 'block';
+      svg.style.margin = '0 auto';
+      svg.style.filter = 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))';
+
+      const totalWidth = 220;
+      const barHeight = 60;
+      const startX = 10;
+      const startY = 10;
+      const segWidth = totalWidth / parts;
+
+      for (let i = 0; i < parts; i++) {
+        const x = startX + i * segWidth;
+        const rect = document.createElementNS(svgns, 'rect');
+        rect.setAttribute('x', x);
+        rect.setAttribute('y', startY);
+        rect.setAttribute('width', segWidth);
+        rect.setAttribute('height', barHeight);
+        rect.setAttribute('rx', 4);
+        rect.setAttribute('data-part', i);
+        rect.setAttribute('data-shaded', 'false');
+        rect.setAttribute('class', 'part unshaded');
+        rect.style.cursor = 'pointer';
+        rect.style.transition = 'fill 0.2s ease';
+        rect.addEventListener('click', makePartClickHandler(i));
+        svg.appendChild(rect);
+      }
+
+      // border
+      const border = document.createElementNS(svgns, 'rect');
+      border.setAttribute('x', startX);
+      border.setAttribute('y', startY);
+      border.setAttribute('width', totalWidth);
+      border.setAttribute('height', barHeight);
+      border.setAttribute('rx', 4);
+      border.setAttribute('fill', 'none');
+      border.setAttribute('stroke', '#b45309');
+      border.setAttribute('stroke-width', '2');
+      svg.appendChild(border);
+
+      return svg;
+    }
+
+    function makePartClickHandler(idx) {
+      return function(evt) {
+        if (!allowCheck || waitingVerdict || doneFlag) return;
+        const state = partsState[idx];
+        const el = evt.currentTarget;
+        state.shaded = !state.shaded;
+        if (state.shaded) {
+          el.setAttribute('data-shaded', 'true');
+          el.setAttribute('class', 'part shaded');
+          el.style.fill = '#ea580c';
+        } else {
+          el.setAttribute('data-shaded', 'false');
+          el.setAttribute('class', 'part unshaded');
+          el.style.fill = '#fde68a';
+        }
+        // also update data-shaded exact
+        el.setAttribute('data-shaded', state.shaded ? 'true' : 'false');
+      };
+    }
+
+    checkBtn.addEventListener('click', function() {
+      if (!allowCheck || waitingVerdict || doneFlag) return;
+      if (currentIndex >= items.length) return;
+
+      const coloured = partsState.filter(p => p.shaded).length;
+      const answer = { n: coloured, d: currentItem.d };
+
+      // disable button while waiting
+      checkBtn.disabled = true;
+      waitingVerdict = true;
+      Studio.answer(answer);
+    });
+
+    Studio.onVerdict(function(result) {
+      waitingVerdict = false;
+      if (result.correct) {
+        feedback.className = 'feedback right';
+        feedback.textContent = t('right');
+        // advance after short celebration
+        setTimeout(() => {
+          if (currentIndex < items.length - 1) {
+            currentIndex++;
+            showCurrentItem();
+          } else {
+            showDoneScreen();
+          }
+        }, 800);
+      } else {
+        feedback.className = 'feedback wrong';
+        feedback.textContent = t('wrong');
+        checkBtn.disabled = false;
+        allowCheck = true;
+        // Let them fix
+      }
+    });
+
+    function showDoneScreen() {
+      doneFlag = true;
+      fractionDisplay.textContent = '🎉';
+      pictureArea.innerHTML = '';
+      checkBtn.disabled = true;
+      feedback.className = 'feedback done';
+      feedback.innerHTML = `<span class="done-emoji">✨</span> ${t('done')} <span class="done-emoji">✨</span>`;
+      progress.textContent = '';
+      Studio.done();
+    }
+
+    // init
+    render();
+    Studio.ready();
+  })();
+</script>

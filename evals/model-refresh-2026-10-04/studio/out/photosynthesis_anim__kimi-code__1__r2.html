@@ -1,0 +1,506 @@
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 0;
+  background: #f5f0e8;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #3a3a3a;
+  display: flex;
+  justify-content: center;
+  overflow-x: hidden;
+}
+#app {
+  width: 100%;
+  max-width: 360px;
+  min-height: 640px;
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+#title {
+  margin: 0;
+  font-size: 22px;
+  color: #2d5a27;
+  text-align: center;
+  font-weight: 700;
+  line-height: 1.2;
+  word-break: break-word;
+}
+svg {
+  width: 100%;
+  height: auto;
+  max-height: 240px;
+  background: #e8f4f8;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+text {
+  font-family: inherit;
+  font-weight: 600;
+  fill: #3a3a3a;
+}
+.particle {
+  opacity: 0.9;
+}
+#glucose circle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: glucosePulse 2s ease-in-out infinite;
+}
+@keyframes glucosePulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; }
+}
+#rays line {
+  animation: raySpin 3s linear infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes raySpin {
+  to { transform: rotate(45deg); }
+}
+#light-rays line {
+  stroke-dasharray: 6, 5;
+  animation: dashMove 0.8s linear infinite;
+}
+@keyframes dashMove {
+  to { stroke-dashoffset: -11; }
+}
+.emphasis-water [data-flow="water"] { filter: drop-shadow(0 0 5px #4a90d9); opacity: 1; }
+.emphasis-co2 [data-flow="co2"] { filter: drop-shadow(0 0 5px #7a7a7a); opacity: 1; }
+.emphasis-o2 [data-flow="o2"] { filter: drop-shadow(0 0 5px #5bc0de); opacity: 1; }
+#scene.emphasis-water [data-flow]:not([data-flow="water"]),
+#scene.emphasis-co2 [data-flow]:not([data-flow="co2"]),
+#scene.emphasis-o2 [data-flow]:not([data-flow="o2"]) { opacity: 0.25; }
+.emphasis-roots [data-entity="roots"] path { stroke: #e0b83d; stroke-width: 7; }
+.emphasis-leaf [data-entity="leaf"] > path:first-child { filter: drop-shadow(0 0 12px #6bbf47); }
+.emphasis-sun #sun-body { filter: drop-shadow(0 0 16px #ffd93d); }
+.emphasis-glucose #glucose circle { filter: drop-shadow(0 0 14px #ffd93d); }
+#caption {
+  margin: 0;
+  padding: 10px 14px;
+  min-height: 44px;
+  background: #fff9e6;
+  border-radius: 14px;
+  font-size: 15px;
+  color: #5a4a00;
+  text-align: center;
+  width: 100%;
+  line-height: 1.35;
+}
+.controls {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.play-row {
+  display: flex;
+  justify-content: center;
+}
+#playBtn {
+  min-width: 104px;
+  height: 44px;
+  border: none;
+  border-radius: 22px;
+  background: #5a9a3d;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.2s;
+}
+#playBtn:active { transform: scale(0.95); }
+.step-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+.step-buttons button {
+  flex: 1;
+  height: 44px;
+  border: none;
+  border-radius: 14px;
+  background: #d4e8cc;
+  color: #2d5a27;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.2s;
+}
+.step-buttons button:active { transform: scale(0.92); }
+.step-buttons button.active {
+  background: #6bbf47;
+  color: #fff;
+}
+#question {
+  width: 100%;
+  background: #fff;
+  border-radius: 18px;
+  padding: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+#question p {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #3a3a3a;
+  text-align: center;
+  line-height: 1.3;
+}
+.options {
+  display: flex;
+  gap: 10px;
+}
+.options button {
+  flex: 1;
+  min-height: 56px;
+  border: 2px solid #d4e8cc;
+  border-radius: 16px;
+  background: #f8fdf6;
+  color: #2d5a27;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.2s, background 0.2s;
+  padding: 6px;
+}
+.options button:active { transform: scale(0.95); }
+.options button.correct {
+  border-color: #6bbf47;
+  background: #e8f5e4;
+}
+.options button.wrong {
+  border-color: #e74c3c;
+  background: #fdeaea;
+}
+#feedback {
+  margin-top: 10px;
+  min-height: 26px;
+  text-align: center;
+  font-size: 22px;
+  line-height: 1.2;
+}
+</style>
+
+<div id="app">
+  <h1 id="title" data-label="title"></h1>
+
+  <svg id="scene" viewBox="0 0 360 300" preserveAspectRatio="xMidYMid meet">
+    <rect width="360" height="300" fill="#e8f4f8"/>
+
+    <g id="sun-group" transform="translate(270, 55)">
+      <circle id="sun-body" r="24" fill="#ffd93d" stroke="#f7b731" stroke-width="2"/>
+      <g id="rays" stroke="#ffd93d" stroke-width="3" stroke-linecap="round">
+        <line x1="0" y1="-36" x2="0" y2="-30"/>
+        <line x1="25" y1="-25" x2="21" y2="-21"/>
+        <line x1="36" y1="0" x2="30" y2="0"/>
+        <line x1="25" y1="25" x2="21" y2="21"/>
+        <line x1="0" y1="36" x2="0" y2="30"/>
+        <line x1="-25" y1="25" x2="-21" y2="21"/>
+        <line x1="-36" y1="0" x2="-30" y2="0"/>
+        <line x1="-25" y1="-25" x2="-21" y2="-21"/>
+      </g>
+      <text data-label="sun" x="0" y="44" font-size="14" text-anchor="middle"></text>
+    </g>
+
+    <g id="light-rays" stroke="#ffd93d" stroke-width="3" stroke-linecap="round" opacity="0.8">
+      <line x1="255" y1="70" x2="200" y2="120"/>
+      <line x1="262" y1="80" x2="207" y2="130"/>
+    </g>
+
+    <text data-label="co2" x="15" y="35" font-size="13" text-anchor="start"></text>
+    <text data-label="o2" x="345" y="35" font-size="13" text-anchor="end"></text>
+
+    <path d="M0,245 Q90,235 180,243 Q270,235 360,245 L360,300 L0,300 Z" fill="#8b5a2b"/>
+    <path d="M0,262 Q90,252 180,260 Q270,252 360,262 L360,300 L0,300 Z" fill="#6b4221" opacity="0.5"/>
+
+    <g data-entity="roots" stroke="#a67c2e" stroke-width="5" fill="none" stroke-linecap="round">
+      <path d="M158,245 Q142,268 126,290"/>
+      <path d="M174,245 Q170,272 170,295"/>
+      <path d="M196,245 Q212,268 228,290"/>
+      <text data-label="roots" x="150" y="298" font-size="13" stroke="none" fill="#3a3a3a" text-anchor="middle"></text>
+    </g>
+
+    <text data-label="water" x="60" y="282" font-size="13" text-anchor="middle"></text>
+
+    <path d="M180,245 L180,150" stroke="#5a9a3d" stroke-width="12" stroke-linecap="round"/>
+
+    <g data-entity="leaf" transform="translate(180, 140)">
+      <path d="M0,0 C-42,-34 -72,-12 -72,12 C-72,40 -30,40 0,22 C30,40 72,40 72,12 C72,-12 42,-34 0,0 Z" fill="#6bbf47" stroke="#4a8f32" stroke-width="2"/>
+      <path d="M0,0 L0,22" stroke="#4a8f32" stroke-width="2" stroke-linecap="round"/>
+      <path d="M0,6 L-24,-3 M0,11 L24,1 M0,16 L-20,22 M0,13 L22,18" stroke="#7bc85a" stroke-width="2" stroke-linecap="round"/>
+      <text data-label="leaf" x="0" y="58" font-size="14" stroke="none" fill="#3a3a3a" text-anchor="middle"></text>
+    </g>
+
+    <g id="glucose" transform="translate(218, 132)">
+      <circle r="12" fill="#ffd93d" stroke="#f7b731" stroke-width="2"/>
+      <text data-label="glucose" x="0" y="30" font-size="11" fill="#5a4a00" stroke="none" text-anchor="middle"></text>
+    </g>
+
+    <g id="particles">
+      <circle class="particle" data-flow="water" r="5" fill="#4a90d9" cx="0" cy="0"/>
+      <circle class="particle" data-flow="water" r="5" fill="#4a90d9" cx="0" cy="0"/>
+      <circle class="particle" data-flow="water" r="5" fill="#4a90d9" cx="0" cy="0"/>
+      <circle class="particle" data-flow="water" r="5" fill="#4a90d9" cx="0" cy="0"/>
+      <circle class="particle" data-flow="co2" r="5" fill="#7a7a7a" cx="0" cy="0"/>
+      <circle class="particle" data-flow="co2" r="5" fill="#7a7a7a" cx="0" cy="0"/>
+      <circle class="particle" data-flow="co2" r="5" fill="#7a7a7a" cx="0" cy="0"/>
+      <circle class="particle" data-flow="co2" r="5" fill="#7a7a7a" cx="0" cy="0"/>
+      <circle class="particle" data-flow="o2" r="5" fill="#a8e6ff" stroke="#5bc0de" stroke-width="1" cx="0" cy="0"/>
+      <circle class="particle" data-flow="o2" r="5" fill="#a8e6ff" stroke="#5bc0de" stroke-width="1" cx="0" cy="0"/>
+      <circle class="particle" data-flow="o2" r="5" fill="#a8e6ff" stroke="#5bc0de" stroke-width="1" cx="0" cy="0"/>
+      <circle class="particle" data-flow="o2" r="5" fill="#a8e6ff" stroke="#5bc0de" stroke-width="1" cx="0" cy="0"/>
+    </g>
+  </svg>
+
+  <p id="caption" data-caption></p>
+
+  <div class="controls">
+    <div class="play-row">
+      <button id="playBtn" data-action="play"></button>
+    </div>
+    <div class="step-buttons" id="stepButtons"></div>
+  </div>
+
+  <div id="question">
+    <p data-label="ask"></p>
+    <div class="options">
+      <button data-option="co2"></button>
+      <button data-option="o2"></button>
+      <button data-option="water"></button>
+    </div>
+    <div id="feedback"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var scene = document.getElementById('scene');
+  var captionEl = document.getElementById('caption');
+  var playBtn = document.getElementById('playBtn');
+  var stepContainer = document.getElementById('stepButtons');
+  var feedbackEl = document.getElementById('feedback');
+  var optionBtns = document.querySelectorAll('[data-option]');
+
+  document.querySelectorAll('[data-label]').forEach(function(el) {
+    el.textContent = Studio.t(el.getAttribute('data-label'));
+  });
+
+  var isPlaying = true;
+  function updatePlayButton() {
+    playBtn.textContent = Studio.t(isPlaying ? 'pause' : 'play');
+  }
+  updatePlayButton();
+
+  var steps = Studio.params.steps;
+  var stepButtons = [];
+  for (var i = 1; i <= steps; i++) {
+    var btn = document.createElement('button');
+    btn.setAttribute('data-action', 'step-' + i);
+    btn.textContent = String(i);
+    stepContainer.appendChild(btn);
+    stepButtons.push(btn);
+  }
+
+  function setEmphasis(step) {
+    scene.classList.remove('emphasis-water', 'emphasis-co2', 'emphasis-o2', 'emphasis-sun', 'emphasis-leaf', 'emphasis-roots', 'emphasis-glucose');
+    switch (step) {
+      case 1:
+        scene.classList.add('emphasis-sun', 'emphasis-leaf');
+        break;
+      case 2:
+        scene.classList.add('emphasis-roots', 'emphasis-water');
+        break;
+      case 3:
+        scene.classList.add('emphasis-co2', 'emphasis-leaf');
+        break;
+      case 4:
+        scene.classList.add('emphasis-sun', 'emphasis-leaf', 'emphasis-glucose');
+        break;
+      case 5:
+        scene.classList.add('emphasis-o2', 'emphasis-leaf');
+        break;
+    }
+  }
+
+  var currentStep = 1;
+  function setStep(step, emit) {
+    currentStep = step;
+    captionEl.textContent = Studio.t('step' + step);
+    stepButtons.forEach(function(btn, idx) {
+      btn.classList.toggle('active', idx + 1 === step);
+    });
+    setEmphasis(step);
+    if (emit) {
+      Studio.event('step', { step: step });
+    }
+  }
+
+  playBtn.addEventListener('click', function() {
+    isPlaying = !isPlaying;
+    updatePlayButton();
+    Studio.event('playToggle', { playing: isPlaying });
+  });
+
+  stepContainer.addEventListener('click', function(e) {
+    var btn = e.target.closest('button[data-action^="step-"]');
+    if (!btn) return;
+    var step = parseInt(btn.getAttribute('data-action').split('-')[1], 10);
+    setStep(step, true);
+    if (!isPlaying) {
+      isPlaying = true;
+      updatePlayButton();
+    }
+  });
+
+  var particles = Array.from(document.querySelectorAll('[data-flow]'));
+  var particleStates = [];
+  var flowCounts = { water: 0, co2: 0, o2: 0 };
+
+  particles.forEach(function(p) {
+    var flow = p.getAttribute('data-flow');
+    var variant = flowCounts[flow]++;
+    particleStates.push({
+      el: p,
+      flow: flow,
+      variant: variant,
+      progress: (variant / 4) % 1,
+      speed: 0.00022 + Math.random() * 0.0001
+    });
+  });
+
+  function lerp(a, b, t) {
+    return a + (b - a) * t;
+  }
+
+  function waterPos(t, v) {
+    var starts = [
+      {x: 126, y: 290},
+      {x: 170, y: 295},
+      {x: 228, y: 290},
+      {x: 150, y: 285}
+    ];
+    var s = starts[v % 4];
+    var x, y;
+    if (t < 0.3) {
+      var k = t / 0.3;
+      x = lerp(s.x, 180, k);
+      y = lerp(s.y, 245, k);
+    } else if (t < 0.75) {
+      var k2 = (t - 0.3) / 0.45;
+      x = 180;
+      y = lerp(245, 148, k2);
+    } else {
+      var k3 = (t - 0.75) / 0.25;
+      x = lerp(180, 172, k3);
+      y = lerp(148, 142, k3);
+    }
+    return {x: x + Math.sin(t * Math.PI * 2) * 1.5, y: y};
+  }
+
+  function co2Pos(t, v) {
+    var starts = [
+      {x: 15, y: 65},
+      {x: 15, y: 105},
+      {x: 15, y: 145},
+      {x: 15, y: 185}
+    ];
+    var s = starts[v % 4];
+    return {
+      x: lerp(s.x, 120, t),
+      y: lerp(s.y, 140, t) + Math.sin(t * Math.PI * 3) * 4
+    };
+  }
+
+  function o2Pos(t, v) {
+    var ends = [
+      {x: 345, y: 65},
+      {x: 345, y: 105},
+      {x: 345, y: 145},
+      {x: 345, y: 185}
+    ];
+    var e = ends[v % 4];
+    return {
+      x: lerp(240, e.x, t),
+      y: lerp(140, e.y, t) + Math.sin(t * Math.PI * 3) * 4
+    };
+  }
+
+  function renderParticles() {
+    particleStates.forEach(function(s) {
+      var pos;
+      if (s.flow === 'water') {
+        pos = waterPos(s.progress, s.variant);
+      } else if (s.flow === 'co2') {
+        pos = co2Pos(s.progress, s.variant);
+      } else {
+        pos = o2Pos(s.progress, s.variant);
+      }
+      s.el.setAttribute('cx', pos.x.toFixed(1));
+      s.el.setAttribute('cy', pos.y.toFixed(1));
+    });
+  }
+
+  renderParticles();
+
+  var lastTime = 0;
+  function tick(timestamp) {
+    if (!lastTime) lastTime = timestamp;
+    var dt = timestamp - lastTime;
+    lastTime = timestamp;
+    if (isPlaying) {
+      particleStates.forEach(function(s) {
+        s.progress += s.speed * dt;
+        if (s.progress >= 1) s.progress -= 1;
+      });
+      renderParticles();
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  optionBtns.forEach(function(btn) {
+    btn.textContent = Studio.t(btn.getAttribute('data-option'));
+    btn.addEventListener('click', function() {
+      var answer = btn.getAttribute('data-option');
+      feedbackEl.textContent = '';
+      optionBtns.forEach(function(b) {
+        b.classList.remove('correct', 'wrong');
+      });
+      Studio.answer(answer);
+      Studio.event('answer', { option: answer });
+    });
+  });
+
+  Studio.onVerdict(function(verdict) {
+    optionBtns.forEach(function(b) {
+      b.classList.remove('correct', 'wrong');
+    });
+    if (verdict && verdict.correct) {
+      feedbackEl.textContent = '✓';
+      feedbackEl.style.color = '#2d5a27';
+      optionBtns.forEach(function(b) {
+        if (b.getAttribute('data-option') === verdict.option) {
+          b.classList.add('correct');
+        }
+      });
+      Studio.done();
+    } else {
+      feedbackEl.textContent = '✗';
+      feedbackEl.style.color = '#c0392b';
+      optionBtns.forEach(function(b) {
+        if (b.getAttribute('data-option') === verdict.option) {
+          b.classList.add('wrong');
+        }
+      });
+    }
+  });
+
+  setStep(1, false);
+  Studio.ready();
+})();
+</script>

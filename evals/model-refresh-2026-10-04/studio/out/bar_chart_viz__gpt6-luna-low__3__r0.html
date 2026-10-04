@@ -1,0 +1,251 @@
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    color-scheme: light;
+    --ink: #263c49;
+    --muted: #667c83;
+    --paper: #fffaf0;
+    --teal: #3c9d91;
+    --grid: #dce9e3;
+    --coral: #e99070;
+  }
+  html, body {
+    margin: 0;
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: system-ui, sans-serif;
+  }
+  .lesson {
+    width: min(100%, 760px);
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 22px 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(23px, 6vw, 32px);
+    line-height: 1.15;
+    letter-spacing: -.02em;
+  }
+  .prompt {
+    margin: 0;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    color: var(--muted);
+    font-size: 17px;
+    font-weight: 600;
+  }
+  .chart-card {
+    width: 100%;
+    border: 1px solid #e8e3d7;
+    border-radius: 22px;
+    background: #fffefb;
+    box-shadow: 0 8px 24px #344b3c10;
+    overflow: hidden;
+  }
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    touch-action: manipulation;
+  }
+  .gridline { stroke: var(--grid); stroke-width: 1.5; }
+  .axisline { stroke: #647b7c; stroke-width: 2; }
+  .tick-label {
+    fill: var(--muted);
+    font-size: 15px;
+    font-weight: 600;
+    text-anchor: end;
+    dominant-baseline: middle;
+  }
+  .fruit-label {
+    fill: var(--ink);
+    font-size: 14px;
+    font-weight: 650;
+    text-anchor: middle;
+  }
+  .axis-title {
+    fill: var(--muted);
+    font-size: 14px;
+    font-weight: 650;
+    text-anchor: middle;
+  }
+  .bar-hit {
+    fill: transparent;
+    cursor: pointer;
+    pointer-events: all;
+  }
+  .bar-hit:focus { outline: none; }
+  .bar-hit:focus-visible + .bar-shape { stroke: #263c49; stroke-width: 3; }
+  .bar-shape {
+    fill: var(--teal);
+    rx: 9;
+    transform-box: fill-box;
+    transform-origin: center bottom;
+    animation: bar-rise 650ms cubic-bezier(.2,.8,.25,1) both;
+    transition: fill 180ms ease, filter 180ms ease;
+    cursor: pointer;
+  }
+  .bar-group { cursor: pointer; }
+  .bar-group:active .bar-shape { filter: brightness(.88); }
+  .bar-group:hover .bar-shape { fill: #32877f; }
+  .bar-group.selected .bar-shape { fill: var(--coral); }
+  .feedback {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8px 12px;
+    border-radius: 15px;
+    font-size: 17px;
+    font-weight: 700;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 180ms ease, transform 180ms ease, background 180ms ease;
+  }
+  .feedback.show { opacity: 1; transform: translateY(0); }
+  .feedback.right { color: #226b5e; background: #e4f4ec; }
+  .feedback.wrong { color: #9b5947; background: #fff0e9; }
+  @keyframes bar-rise {
+    from { transform: scaleY(.04); }
+    to { transform: scaleY(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+</style>
+
+<main class="lesson">
+  <h1 id="title"></h1>
+  <p class="prompt" id="ask"></p>
+  <section class="chart-card" aria-label="">
+    <svg id="chart" viewBox="0 0 600 360" role="img"></svg>
+  </section>
+  <div id="feedback" class="feedback" aria-live="polite"></div>
+</main>
+
+<script>
+(() => {
+  const data = Studio.params.data;
+  const t = key => Studio.t(key);
+  const title = document.getElementById("title");
+  const ask = document.getElementById("ask");
+  const svg = document.getElementById("chart");
+  const feedback = document.getElementById("feedback");
+  title.textContent = t("title");
+  ask.textContent = t("ask");
+
+  const left = 72, right = 586, top = 30, base = 278;
+  const plotHeight = base - top;
+  const maxValue = Math.max(...data.map(d => Number(d.value)));
+  const step = Math.max(1, Math.ceil(maxValue / 4));
+  const topValue = Math.ceil(maxValue / step) * step;
+  const xStep = (right - left) / data.length;
+  const barWidth = Math.min(54, xStep * 0.56);
+
+  for (let value = 0; value <= topValue; value += step) {
+    const y = base - (value / topValue) * plotHeight;
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", left);
+    line.setAttribute("x2", right);
+    line.setAttribute("y1", y);
+    line.setAttribute("y2", y);
+    line.setAttribute("class", value === 0 ? "axisline" : "gridline");
+    svg.appendChild(line);
+
+    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.setAttribute("x", left - 12);
+    label.setAttribute("y", y);
+    label.setAttribute("class", "tick-label");
+    label.setAttribute("data-tick", String(value));
+    label.textContent = String(value);
+    svg.appendChild(label);
+  }
+
+  const axis = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  axis.setAttribute("x", 18);
+  axis.setAttribute("y", (top + base) / 2);
+  axis.setAttribute("class", "axis-title");
+  axis.setAttribute("transform", `rotate(-90 18 ${(top + base) / 2})`);
+  axis.textContent = t("yaxis");
+  svg.appendChild(axis);
+
+  let pendingKey = null;
+  let complete = false;
+  data.forEach((item, index) => {
+    const center = left + xStep * (index + 0.5);
+    const height = (Number(item.value) / topValue) * plotHeight;
+    const x = center - barWidth / 2;
+    const y = base - height;
+
+    const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    group.setAttribute("class", "bar-group");
+    group.setAttribute("tabindex", "0");
+    group.setAttribute("role", "button");
+    group.setAttribute("aria-label", t(item.key));
+
+    const hit = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    hit.setAttribute("class", "bar-hit");
+    hit.setAttribute("x", center - Math.max(22, xStep * 0.48));
+    hit.setAttribute("y", top);
+    hit.setAttribute("width", Math.max(44, xStep * 0.96));
+    hit.setAttribute("height", base - top + 54);
+
+    const bar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    bar.setAttribute("class", "bar-shape");
+    bar.setAttribute("x", x);
+    bar.setAttribute("y", y);
+    bar.setAttribute("width", barWidth);
+    bar.setAttribute("height", height);
+    bar.setAttribute("data-bar", item.key);
+    bar.setAttribute("data-value", String(item.value));
+    bar.style.animationDelay = `${index * 65}ms`;
+
+    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.setAttribute("x", center);
+    label.setAttribute("y", base + 35);
+    label.setAttribute("class", "fruit-label");
+    label.textContent = t(item.key);
+
+    group.append(hit, bar, label);
+    svg.appendChild(group);
+
+    const choose = () => {
+      if (complete) return;
+      pendingKey = item.key;
+      svg.querySelectorAll(".bar-group").forEach(el => el.classList.remove("selected"));
+      group.classList.add("selected");
+      Studio.event("bar_tap", { key: item.key, value: item.value });
+      Studio.answer(item.key);
+    };
+    group.addEventListener("click", choose);
+    group.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        choose();
+      }
+    });
+  });
+
+  Studio.onVerdict(({ correct }) => {
+    feedback.textContent = t(correct ? "right" : "wrong");
+    feedback.className = `feedback show ${correct ? "right" : "wrong"}`;
+    if (correct && !complete) {
+      complete = true;
+      ask.textContent = "";
+      feedback.textContent = t("done");
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+</script>

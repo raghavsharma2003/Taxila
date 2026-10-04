@@ -1,0 +1,315 @@
+<style>
+  :root{
+    --bg:#fff8ef;
+    --card:#ffffff;
+    --ink:#3b2f2f;
+    --muted:#7a6c64;
+    --accent:#ff8a65;
+    --accent2:#ffd166;
+    --good:#2e9e6f;
+    --bad:#d9534f;
+    --line:#f1dfd2;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .app{
+    width:100%;
+    min-height:100vh;
+    background:linear-gradient(180deg,#fffaf4 0%, var(--bg) 100%);
+    font-family: ui-rounded, "Noto Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    color:var(--ink);
+    padding:6px;
+    overflow-x:hidden;
+  }
+  .head{
+    text-align:center;
+    padding:6px 8px 4px;
+  }
+  #title{
+    margin:0;
+    font-size:24px;
+    line-height:1.2;
+  }
+  #instr{
+    margin:6px 0 0;
+    color:var(--muted);
+    font-size:16px;
+    min-height:22px;
+  }
+  .card{
+    background:var(--card);
+    border:2px solid var(--line);
+    border-radius:20px;
+    padding:10px 8px 12px;
+    box-shadow:0 6px 14px rgba(120,84,53,.12);
+    max-width:352px;
+    margin:8px auto 0;
+    transition:transform .2s ease;
+  }
+  .card.wiggle{animation:wiggle .34s ease}
+  .target{
+    text-align:center;
+    font-size:30px;
+    font-weight:800;
+    letter-spacing:.5px;
+    margin:4px 0 8px;
+  }
+  .whole-wrap{
+    width:100%;
+    border-radius:16px;
+    background:#fff3e8;
+    border:2px solid #f6dcc8;
+    padding:8px 0;
+  }
+  #whole{
+    width:100%;
+    height:auto;
+    display:block;
+  }
+  .part{
+    fill:#fff;
+    stroke:#e9b28c;
+    stroke-width:2;
+    cursor:pointer;
+    transform-origin:center;
+    transition:fill .2s ease, transform .12s ease, filter .2s ease;
+  }
+  .part:hover{filter:brightness(.98)}
+  .part:active{transform:scale(.97)}
+  .part.shaded{
+    fill:var(--accent2);
+  }
+  .part.locked{cursor:default}
+  #feedback{
+    text-align:center;
+    min-height:24px;
+    font-size:20px;
+    font-weight:700;
+    margin-top:8px;
+  }
+  #feedback.good{color:var(--good)}
+  #feedback.bad{color:var(--bad)}
+  #hint{
+    text-align:center;
+    color:var(--muted);
+    font-size:14px;
+    min-height:20px;
+    margin-top:4px;
+  }
+  .actions{
+    display:flex;
+    justify-content:center;
+    margin-top:8px;
+  }
+  #checkBtn{
+    min-width:140px;
+    min-height:48px;
+    border:none;
+    border-radius:14px;
+    background:var(--accent);
+    color:#fff;
+    font-size:20px;
+    font-weight:800;
+    letter-spacing:.3px;
+    box-shadow:0 4px 0 #db6f4f;
+    transform:translateY(0);
+    transition:transform .08s ease, box-shadow .08s ease, filter .2s ease;
+    cursor:pointer;
+  }
+  #checkBtn:active{
+    transform:translateY(3px) scale(.99);
+    box-shadow:0 1px 0 #db6f4f;
+  }
+  #checkBtn[disabled]{opacity:.65; cursor:default}
+  .celebrate{animation:pop .45s ease}
+  .done{
+    max-width:352px;
+    margin:16px auto 0;
+    background:#ffffff;
+    border:2px solid #d8efdf;
+    color:var(--good);
+    border-radius:20px;
+    padding:26px 16px;
+    text-align:center;
+    font-size:30px;
+    font-weight:800;
+    display:none;
+  }
+  @keyframes pop{
+    0%{transform:scale(1)}
+    35%{transform:scale(1.03)}
+    100%{transform:scale(1)}
+  }
+  @keyframes wiggle{
+    0%,100%{transform:translateX(0)}
+    20%{transform:translateX(-4px)}
+    40%{transform:translateX(4px)}
+    60%{transform:translateX(-3px)}
+    80%{transform:translateX(3px)}
+  }
+</style>
+
+<div class="app" id="app">
+  <div class="head">
+    <h1 id="title"></h1>
+    <p id="instr"></p>
+  </div>
+
+  <div class="card" id="card">
+    <div id="itemBox" data-item="">
+      <div class="target" id="fraction"></div>
+      <div class="whole-wrap">
+        <svg id="whole" viewBox="0 0 352 140" role="img" aria-hidden="true"></svg>
+      </div>
+      <div id="feedback" aria-live="polite"></div>
+      <div id="hint"></div>
+      <div class="actions">
+        <button id="checkBtn" data-action="check"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="done" id="doneScreen"></div>
+</div>
+
+<script>
+(function(){
+  const items = (Studio.params && Array.isArray(Studio.params.items)) ? Studio.params.items : [];
+  const titleEl = document.getElementById('title');
+  const instrEl = document.getElementById('instr');
+  const fractionEl = document.getElementById('fraction');
+  const whole = document.getElementById('whole');
+  const feedbackEl = document.getElementById('feedback');
+  const hintEl = document.getElementById('hint');
+  const checkBtn = document.getElementById('checkBtn');
+  const itemBox = document.getElementById('itemBox');
+  const card = document.getElementById('card');
+  const doneScreen = document.getElementById('doneScreen');
+
+  let index = 0;
+  let waitingVerdict = false;
+  let locked = false;
+  let isDone = false;
+
+  titleEl.textContent = Studio.t('title');
+  instrEl.textContent = Studio.t('instr');
+  checkBtn.textContent = Studio.t('check');
+  hintEl.textContent = Studio.t('hint');
+
+  function partElements(){
+    return Array.from(whole.querySelectorAll('.part'));
+  }
+
+  function shadedCount(){
+    return whole.querySelectorAll('.part[data-shaded="true"]').length;
+  }
+
+  function setFeedback(kind){
+    feedbackEl.className = '';
+    if(kind === 'right'){
+      feedbackEl.textContent = Studio.t('right');
+      feedbackEl.classList.add('good');
+    }else if(kind === 'wrong'){
+      feedbackEl.textContent = Studio.t('wrong');
+      feedbackEl.classList.add('bad');
+    }else{
+      feedbackEl.textContent = '';
+    }
+  }
+
+  function makePart(i, d){
+    const ns = "http://www.w3.org/2000/svg";
+    const g = document.createElementNS(ns, 'g');
+    const r = document.createElementNS(ns, 'rect');
+    const gap = 2;
+    const seg = 352 / d;
+    const x = i * seg + gap/2;
+    const w = seg - gap;
+    r.setAttribute('x', x.toFixed(2));
+    r.setAttribute('y', '10');
+    r.setAttribute('width', w.toFixed(2));
+    r.setAttribute('height', '120');
+    r.setAttribute('rx', '10');
+    r.setAttribute('class', 'part');
+    r.setAttribute('data-part', String(i));
+    r.setAttribute('data-shaded', 'false');
+    g.appendChild(r);
+
+    g.addEventListener('click', function(){
+      if(locked || waitingVerdict) return;
+      const cur = r.getAttribute('data-shaded') === 'true';
+      const next = !cur;
+      r.setAttribute('data-shaded', next ? 'true' : 'false');
+      r.classList.toggle('shaded', next);
+      Studio.event('tap_part', {id: items[index].id, part: i, shaded: next});
+    });
+
+    return g;
+  }
+
+  function renderItem(){
+    const item = items[index];
+    waitingVerdict = false;
+    locked = false;
+    setFeedback('');
+    card.classList.remove('celebrate','wiggle');
+    itemBox.setAttribute('data-item', item.id);
+    fractionEl.textContent = item.n + "/" + item.d;
+    whole.innerHTML = '';
+    for(let i=0;i<item.d;i++){
+      whole.appendChild(makePart(i, item.d));
+    }
+  }
+
+  function goDone(){
+    if(isDone) return;
+    isDone = true;
+    card.style.display = 'none';
+    doneScreen.style.display = 'block';
+    doneScreen.textContent = Studio.t('done');
+    Studio.done();
+  }
+
+  checkBtn.addEventListener('click', function(){
+    if(waitingVerdict || locked || isDone || !items[index]) return;
+    const item = items[index];
+    waitingVerdict = true;
+    Studio.event('check', {id:item.id, n:shadedCount(), d:item.d});
+    Studio.answer({n: shadedCount(), d: item.d});
+  });
+
+  Studio.onVerdict(function(v){
+    if(isDone || !items[index]) return;
+    waitingVerdict = false;
+    if(v && v.correct){
+      locked = true;
+      setFeedback('right');
+      card.classList.remove('wiggle');
+      card.classList.add('celebrate');
+      partElements().forEach(function(p){ p.classList.add('locked'); });
+      Studio.event('correct', {id: items[index].id});
+      setTimeout(function(){
+        index += 1;
+        if(index >= items.length){
+          goDone();
+        }else{
+          renderItem();
+        }
+      }, 700);
+    }else{
+      setFeedback('wrong');
+      card.classList.remove('celebrate');
+      card.classList.add('wiggle');
+      Studio.event('wrong', {id: items[index].id});
+    }
+  });
+
+  if(items.length){
+    renderItem();
+  }else{
+    goDone();
+  }
+
+  Studio.ready();
+})();
+</script>

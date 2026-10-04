@@ -1,0 +1,278 @@
+<style>
+  :root {
+    --bg: #fff9f2;
+    --bar0: #ffb366;
+    --bar1: #ff8c42;
+    --bar2: #ff6600;
+    --bar3: #e65c00;
+    --bar4: #cc4d00;
+    --text: #3a2c1a;
+    --grid: #e0d8c8;
+    --axis: #a08c68;
+    --feedback-bg: rgba(255,255,255,0.9);
+    --feedback-right: #4caf50;
+    --feedback-wrong: #f44336;
+    --shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  body {
+    font-family: system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 16px;
+    overflow: hidden;
+    touch-action: manipulation;
+  }
+  .title {
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .chart-container {
+    position: relative;
+    width: 100%;
+    height: 320px;
+    margin: 16px 0;
+  }
+  .chart {
+    width: 100%;
+    height: 100%;
+  }
+  .axis-title {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    transform-origin: left center;
+    font-size: 14px;
+    font-weight: 500;
+    fill: var(--axis);
+  }
+  .gridline {
+    stroke: var(--grid);
+    stroke-width: 1;
+    stroke-dasharray: 2,2;
+  }
+  .tick text {
+    font-size: 12px;
+    fill: var(--axis);
+    text-anchor: end;
+    dx: -4px;
+    dy: 4px;
+  }
+  .bar-group {
+    cursor: pointer;
+  }
+  .bar {
+    fill: var(--bar0);
+    rx: 4px;
+    ry: 4px;
+    transition: height 0.6s ease-out, fill 0.2s ease;
+    transform-origin: bottom center;
+    opacity: 0;
+  }
+  .bar-label {
+    font-size: 12px;
+    fill: var(--text);
+    text-anchor: middle;
+    dy: 16px;
+  }
+  .bar-value-popup {
+    position: absolute;
+    background: var(--feedback-bg);
+    color: var(--text);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    box-shadow: var(--shadow);
+    z-index: 10;
+  }
+  .question {
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    margin: 12px 0;
+  }
+  .feedback {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--feedback-bg);
+    color: var(--text);
+    padding: 16px 24px;
+    border-radius: 16px;
+    font-size: 18px;
+    font-weight: 600;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 20;
+    text-align: center;
+  }
+  .feedback.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .feedback.right {
+    color: var(--feedback-right);
+  }
+  .feedback.wrong {
+    color: var(--feedback-wrong);
+  }
+  .done {
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    margin-top: 16px;
+    display: none;
+  }
+  .done.show {
+    display: block;
+  }
+</style>
+
+<svg class="chart" viewBox="0 0 320 320" preserveAspectRatio="none">
+  <text class="title" x="160" y="20" text-anchor="middle" data-t="title"></text>
+  <g class="axis-title">
+    <text x="12" y="160" data-t="yaxis"></text>
+  </g>
+  <g class="gridlines"></g>
+  <g class="ticks"></g>
+  <g class="bars"></g>
+</svg>
+<div class="question" data-t="ask"></div>
+<div class="feedback" data-t="right"></div>
+<div class="feedback wrong" data-t="wrong"></div>
+<div class="done" data-t="done"></div>
+<div class="bar-value-popup" id="popup"></div>
+
+<script>
+  (() => {
+    const params = Studio.params;
+    const data = params.data;
+    const colors = ['var(--bar0)', 'var(--bar1)', 'var(--bar2)', 'var(--bar3)', 'var(--bar4)'];
+
+    const svg = document.querySelector('.chart');
+    const gridlines = document.querySelector('.gridlines');
+    const ticks = document.querySelector('.ticks');
+    const bars = document.querySelector('.bars');
+    const question = document.querySelector('.question');
+    const feedbackRight = document.querySelector('.feedback:not(.wrong)');
+    const feedbackWrong = document.querySelector('.feedback.wrong');
+    const done = document.querySelector('.done');
+    const popup = document.getElementById('popup');
+
+    const chartWidth = 320;
+    const chartHeight = 320;
+    const margin = { top: 40, right: 20, bottom: 40, left: 40 };
+    const barWidth = 44;
+    const gap = 16;
+    const totalBars = data.length;
+    const totalWidth = totalBars * (barWidth + gap) - gap;
+    const startX = (chartWidth - totalWidth) / 2;
+
+    const maxValue = Math.max(...data.map(d => d.value));
+    const step = Math.ceil(maxValue / 5);
+    const yTicks = [];
+    for (let i = 0; i <= maxValue; i += step) yTicks.push(i);
+
+    const yScale = (value) => chartHeight - margin.bottom - (value / maxValue) * (chartHeight - margin.top - margin.bottom);
+
+    yTicks.forEach(value => {
+      const y = yScale(value);
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('class', 'gridline');
+      line.setAttribute('x1', margin.left);
+      line.setAttribute('y1', y);
+      line.setAttribute('x2', chartWidth - margin.right);
+      line.setAttribute('y2', y);
+      gridlines.appendChild(line);
+
+      const tickGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      tickGroup.setAttribute('class', 'tick');
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', margin.left);
+      text.setAttribute('y', y);
+      text.setAttribute('data-tick', value);
+      text.textContent = value;
+      tickGroup.appendChild(text);
+      ticks.appendChild(tickGroup);
+    });
+
+    data.forEach((d, i) => {
+      const x = startX + i * (barWidth + gap);
+      const barHeight = yScale(0) - yScale(d.value);
+      const barY = yScale(d.value);
+
+      const barGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      barGroup.setAttribute('class', 'bar-group');
+      barGroup.setAttribute('transform', `translate(${x}, 0)`);
+
+      const bar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      bar.setAttribute('class', 'bar');
+      bar.setAttribute('data-bar', d.key);
+      bar.setAttribute('data-value', d.value);
+      bar.setAttribute('x', 0);
+      bar.setAttribute('y', chartHeight - margin.bottom);
+      bar.setAttribute('width', barWidth);
+      bar.setAttribute('height', 0);
+      bar.setAttribute('fill', colors[i % colors.length]);
+      barGroup.appendChild(bar);
+
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('class', 'bar-label');
+      label.setAttribute('x', barWidth / 2);
+      label.setAttribute('y', chartHeight - margin.bottom + 20);
+      label.setAttribute('data-t', d.key);
+      label.textContent = Studio.t(d.key);
+      barGroup.appendChild(label);
+
+      bars.appendChild(barGroup);
+
+      setTimeout(() => {
+        bar.setAttribute('height', barHeight);
+        bar.setAttribute('y', barY);
+        bar.style.opacity = '1';
+      }, 100);
+    });
+
+    question.textContent = Studio.t('ask');
+    feedbackRight.textContent = Studio.t('right');
+    feedbackWrong.textContent = Studio.t('wrong');
+    done.textContent = Studio.t('done');
+    document.querySelector('[data-t="title"]').textContent = Studio.t('title');
+    document.querySelector('[data-t="yaxis"]').textContent = Studio.t('yaxis');
+
+    bars.addEventListener('click', (e) => {
+      const bar = e.target.closest('[data-bar]');
+      if (!bar) return;
+
+      const key = bar.getAttribute('data-bar');
+      Studio.answer(key);
+    });
+
+    Studio.onVerdict(({ correct }) => {
+      if (correct) {
+        feedbackRight.classList.add('show');
+        setTimeout(() => {
+          feedbackRight.classList.remove('show');
+          done.classList.add('show');
+          Studio.done();
+        }, 1000);
+      } else {
+        feedbackWrong.classList.add('show');
+        setTimeout(() => {
+          feedbackWrong.classList.remove('show');
+        }, 1000);
+      }
+    });
+
+    Studio.ready();
+  })();
+</script>

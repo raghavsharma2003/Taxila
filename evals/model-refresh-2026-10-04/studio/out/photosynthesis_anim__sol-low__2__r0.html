@@ -1,0 +1,237 @@
+<style>
+  *{box-sizing:border-box}
+  .photo-card{
+    width:100%;max-width:360px;height:640px;margin:0 auto;padding:8px;
+    overflow:hidden;background:linear-gradient(#e8f8ff 0 52%,#fff8dc 100%);
+    color:#173f35;font-family:system-ui,sans-serif;display:flex;flex-direction:column;
+    gap:6px;touch-action:manipulation
+  }
+  .photo-title{height:30px;margin:0;text-align:center;font-size:20px;line-height:30px;font-weight:800}
+  .scene{
+    width:100%;height:286px;display:block;border-radius:22px;
+    background:linear-gradient(#ccefff 0 73%,#9c693f 73% 100%);
+    box-shadow:inset 0 0 0 2px #fff9
+  }
+  .scene text{font-family:system-ui,sans-serif;font-size:12px;font-weight:800;fill:#173f35;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+  .ray{stroke:#ffd43b;stroke-width:4;stroke-linecap:round;opacity:.75;animation:rayGlow 1.4s ease-in-out infinite alternate}
+  .particle{transform-box:fill-box;transform-origin:center;filter:drop-shadow(0 1px 1px #0003)}
+  [data-flow="water"]{fill:#2196f3;animation:waterFlow 2.4s linear infinite}
+  [data-flow="co2"]{fill:#7e57c2;animation:co2Flow 2.6s linear infinite}
+  [data-flow="o2"]{fill:#f6a623;animation:o2Flow 2.2s linear infinite}
+  .p2{animation-delay:-.8s}.p3{animation-delay:-1.6s}.p4{animation-delay:-2s}
+  .glucose-core{fill:#ffe66d;opacity:.72;animation:sugarGlow 1.3s ease-in-out infinite alternate}
+  .paused .particle,.paused .ray,.paused .glucose-core{animation-play-state:paused}
+  .scene[data-step="1"] .ray{stroke-width:7;opacity:1}
+  .scene[data-step="2"] [data-flow="water"]{filter:drop-shadow(0 0 5px #0b7ee8)}
+  .scene[data-step="3"] [data-flow="co2"]{filter:drop-shadow(0 0 6px #6333b5)}
+  .scene[data-step="4"] .glucose-core{stroke:#ffb300;stroke-width:4}
+  .scene[data-step="5"] [data-flow="o2"]{filter:drop-shadow(0 0 6px #ff8f00)}
+  @keyframes rayGlow{to{opacity:.35}}
+  @keyframes waterFlow{from{transform:translate(0,66px)}to{transform:translate(34px,-54px)}}
+  @keyframes co2Flow{from{transform:translate(70px,-24px)}to{transform:translate(0,0)}}
+  @keyframes o2Flow{from{transform:translate(0,0)}to{transform:translate(-76px,-46px)}}
+  @keyframes sugarGlow{to{opacity:1;transform:scale(1.18)}}
+  .controls{display:grid;grid-template-columns:72px 1fr;gap:6px;align-items:center}
+  button{
+    border:0;min-height:44px;border-radius:14px;font:700 15px system-ui,sans-serif;
+    color:#173f35;background:#fff;box-shadow:0 3px 0 #b8d7cf;cursor:pointer;
+    transition:transform .14s,background .18s,box-shadow .18s
+  }
+  button:active{transform:scale(.94);box-shadow:0 1px 0 #b8d7cf}
+  .play{background:#ffe277}
+  .steps{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+  .step{padding:0;font-size:17px}
+  .step.active{background:#55c878;color:#fff;box-shadow:0 3px 0 #278f4c;transform:translateY(-1px)}
+  [data-caption]{
+    min-height:42px;margin:0;padding:7px 10px;border-radius:14px;background:#fff;
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    font-size:14px;font-weight:700;line-height:1.25;box-shadow:0 2px 8px #3d6b5a1c
+  }
+  .check{padding:7px;border-radius:18px;background:#ffffffc9}
+  .ask{min-height:34px;margin:0 0 5px;text-align:center;font-weight:800;font-size:15px;line-height:1.2}
+  .options{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+  .option{padding:3px;font-size:14px}
+  .check.wrong{animation:shake .28s ease}
+  .check.wrong .option{background:#fff0ed}
+  .check.correct .option{background:#ddf8e5;box-shadow:0 3px 0 #54ad70}
+  .feedback{height:18px;display:flex;justify-content:center;align-items:center}
+  .feedback-mark{width:12px;height:12px;border-radius:50%;opacity:0;transform:scale(.2);transition:.25s}
+  .wrong .feedback-mark{opacity:1;transform:scale(1);background:#ef6a5b}
+  .correct .feedback-mark{opacity:1;transform:scale(1);background:#38b96a;box-shadow:0 0 0 5px #bff0ce}
+  @keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+  @media(max-height:600px){
+    .photo-card{height:600px}
+    .scene{height:250px}
+  }
+</style>
+
+<main class="photo-card">
+  <h1 class="photo-title" id="title"></h1>
+
+  <svg class="scene" id="scene" data-step="1" viewBox="0 0 344 286" role="img">
+    <g>
+      <circle cx="286" cy="42" r="25" fill="#ffd43b"/>
+      <g stroke="#ffd43b" stroke-width="4" stroke-linecap="round">
+        <path d="M286 7v-7M286 84v-7M251 42h-8M329 42h-8M261 17l-6-6M311 67l6 6M311 17l6-6M261 67l-6 6"/>
+      </g>
+      <text data-label="sun" x="258" y="79"></text>
+    </g>
+
+    <g>
+      <path class="ray" d="M267 63L200 121"/>
+      <path class="ray" d="M283 69L221 128"/>
+      <path class="ray" d="M300 67L238 132"/>
+    </g>
+
+    <path d="M0 210H344V286H0Z" fill="#95623f"/>
+    <path d="M0 210Q55 198 108 210T218 209T344 208" fill="none" stroke="#6fb44d" stroke-width="7"/>
+
+    <path d="M170 235Q171 190 174 150" fill="none" stroke="#2d8f4d" stroke-width="10" stroke-linecap="round"/>
+    <g data-entity="roots" fill="none" stroke="#e8c28d" stroke-width="5" stroke-linecap="round">
+      <path d="M170 230Q146 244 138 270"/>
+      <path d="M170 231Q180 253 179 278"/>
+      <path d="M170 232Q198 244 210 270"/>
+      <path d="M151 244l-15 10M190 247l14 8"/>
+    </g>
+    <text data-label="roots" x="121" y="281"></text>
+
+    <path data-entity="leaf" d="M171 151C190 111 249 104 273 126C252 172 201 184 171 151Z" fill="#51bd63" stroke="#247f43" stroke-width="4"/>
+    <path d="M174 153Q215 142 258 126" fill="none" stroke="#247f43" stroke-width="3"/>
+    <text data-label="leaf" x="207" y="111"></text>
+
+    <g>
+      <circle class="glucose-core" cx="220" cy="146" r="9"/>
+      <circle class="glucose-core" cx="239" cy="143" r="6"/>
+      <text data-label="glucose" x="202" y="177"></text>
+    </g>
+
+    <g>
+      <circle data-flow="water" class="particle" cx="154" cy="206" r="5"/>
+      <circle data-flow="water" class="particle p2" cx="160" cy="215" r="5"/>
+      <circle data-flow="water" class="particle p3" cx="166" cy="220" r="5"/>
+      <circle data-flow="water" class="particle p4" cx="148" cy="218" r="4"/>
+      <text data-label="water" x="74" y="232"></text>
+    </g>
+
+    <g>
+      <circle data-flow="co2" class="particle" cx="205" cy="135" r="6"/>
+      <circle data-flow="co2" class="particle p2" cx="216" cy="145" r="6"/>
+      <circle data-flow="co2" class="particle p3" cx="229" cy="153" r="6"/>
+      <text data-label="co2" x="287" y="103"></text>
+    </g>
+
+    <g>
+      <circle data-flow="o2" class="particle" cx="204" cy="130" r="5"/>
+      <circle data-flow="o2" class="particle p2" cx="218" cy="136" r="5"/>
+      <circle data-flow="o2" class="particle p3" cx="232" cy="140" r="5"/>
+      <text data-label="o2" x="88" y="82"></text>
+    </g>
+  </svg>
+
+  <section class="controls">
+    <button class="play" type="button" data-action="play"></button>
+    <div class="steps" id="steps"></div>
+  </section>
+
+  <p data-caption></p>
+
+  <section class="check" id="check">
+    <p class="ask" id="ask"></p>
+    <div class="options">
+      <button class="option" type="button" data-option="co2"></button>
+      <button class="option" type="button" data-option="o2"></button>
+      <button class="option" type="button" data-option="water"></button>
+    </div>
+    <div class="feedback" aria-live="polite"><span class="feedback-mark"></span></div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const p = Studio.params;
+  const scene = document.getElementById('scene');
+  const stepsBox = document.getElementById('steps');
+  const playButton = document.querySelector('[data-action="play"]');
+  const caption = document.querySelector('[data-caption]');
+  const check = document.getElementById('check');
+  let current = 1;
+  let playing = true;
+  let finished = false;
+  let cycle;
+
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('ask').textContent = Studio.t('ask');
+
+  document.querySelectorAll('[data-label]').forEach(el => {
+    el.textContent = Studio.t(el.dataset.label);
+  });
+
+  document.querySelectorAll('[data-option]').forEach(button => {
+    button.textContent = Studio.t(button.dataset.option);
+    button.addEventListener('click', () => {
+      if (finished) return;
+      check.classList.remove('wrong', 'correct');
+      void check.offsetWidth;
+      Studio.event('answer', {option: button.dataset.option});
+      Studio.answer(button.dataset.option);
+    });
+  });
+
+  for (let index = 1; index <= p.steps; index += 1) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'step';
+    button.dataset.action = 'step-' + index;
+    button.textContent = String(index);
+    button.addEventListener('click', () => {
+      selectStep(index);
+      Studio.event('step', {step:index});
+    });
+    stepsBox.appendChild(button);
+  }
+
+  function selectStep(index) {
+    current = index;
+    scene.dataset.step = String(index);
+    caption.textContent = Studio.t('step' + index);
+    document.querySelectorAll('.step').forEach((button, position) => {
+      button.classList.toggle('active', position + 1 === index);
+    });
+  }
+
+  function updatePlay() {
+    playButton.textContent = Studio.t(playing ? 'pause' : 'play');
+    scene.classList.toggle('paused', !playing);
+    clearInterval(cycle);
+    if (playing) {
+      cycle = setInterval(() => {
+        const next = current >= p.steps ? 1 : current + 1;
+        selectStep(next);
+      }, 3200);
+    }
+  }
+
+  playButton.addEventListener('click', () => {
+    playing = !playing;
+    updatePlay();
+    Studio.event('play', {playing:playing});
+  });
+
+  Studio.onVerdict(result => {
+    check.classList.remove('wrong', 'correct');
+    void check.offsetWidth;
+    if (result.correct) {
+      finished = true;
+      check.classList.add('correct');
+      document.querySelectorAll('[data-option]').forEach(button => button.disabled = true);
+      Studio.done();
+    } else {
+      check.classList.add('wrong');
+    }
+  });
+
+  selectStep(current);
+  updatePlay();
+  Studio.ready();
+})();
+</script>

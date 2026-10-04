@@ -150,6 +150,12 @@ const PGV = process.env.TAXILA_PG_VERSION || "17"; // Neon prod is PG 17.11
 let pgOk = await step(`postgres ${N.pg}`, async () => {
   let cur = await get(`${pgPath}?api-version=${V.pg}`);
   if (!cur) {
+    // 2026-10-04: southindia returned restricted=Enabled ("Subscriptions are restricted from provisioning in this
+    // region", support request needed); the PUT then fails with "Version should be in: []". Fail fast with the reason.
+    const caps = await arm("GET", `${S}/providers/Microsoft.DBforPostgreSQL/locations/${LOC}/capabilities?api-version=${V.pg}`);
+    const c = (caps.value || [])[0];
+    if (c?.restricted === "Enabled" || !(c?.supportedServerVersions || []).some((v) => v.name === PGV))
+      throw new Error(`PG Flexible not provisionable in ${LOC} for this subscription: ${c?.reason || "no version " + PGV}`);
     const body = (geo) => ({ location: LOC, sku: { name: "Standard_D2ds_v5", tier: "GeneralPurpose" }, properties: {
       version: PGV, administratorLogin: process.env.AZURE_PG_SIN_USER, administratorLoginPassword: process.env.AZURE_PG_SIN_PASSWORD,
       storage: { storageSizeGB: 64, autoGrow: "Enabled" },

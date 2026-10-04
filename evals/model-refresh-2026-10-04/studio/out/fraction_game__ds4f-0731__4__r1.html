@@ -1,0 +1,248 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+  body { font-family: 'Segoe UI', Roboto, sans-serif; background: #fff8e7; min-height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
+  .app { width: 100%; max-width: 360px; min-height: 640px; display: flex; flex-direction: column; align-items: center; padding: 20px 16px; position: relative; }
+  .title { font-size: 22px; font-weight: 800; color: #d35400; margin-top: 8px; text-align: center; }
+  .instr { font-size: 15px; color: #5d4037; margin: 9px 0 6px; text-align: center; line-height: 1.45; }
+  .item-wrap { width: 100%; display: flex; flex-direction: column; align-items: center; }
+  .card { background: #ffffff; border-radius: 24px; padding: 22px 16px 18px; box-shadow: 0 6px 0 rgba(215, 140, 80, 0.15); width: 100%; display: flex; flex-direction: column; align-items: center; margin-top: 6px; border: 2px solid #f3d8b0; transition: transform 0.3s ease; }
+  .card.pop { transform: scale(1.03); }
+  .fraction-label { font-size: 40px; font-weight: 900; color: #a04000; background: #fdebd0; border-radius: 18px; padding: 8px 24px; margin-bottom: 18px; box-shadow: 0 3px 0 #e0c3a0; }
+  .fraction-label sup { font-size: 22px; }
+  .fraction-label sub { font-size: 22px; }
+
+  .pizza { width: 160px; height: 160px; position: relative; margin: 8px 0; filter: drop-shadow(0 6px 4px rgba(0,0,0,0.1)); }
+  .pizza .slice { transform-origin: 80px 80px; transition: fill 0.25s ease, stroke-width 0.2s; cursor: pointer; }
+  .pizza .slice:active { filter: brightness(1.2); }
+  .pizza .slice-out { fill: #f5c680; stroke: #b4591a; stroke-width: 3; stroke-linejoin: round; }
+  .pizza .slice-in { fill: #f5c680; stroke: #b4591a; stroke-width: 2; }
+  .pizza .slice.shaded .slice-in { fill: #ff8c42; }
+  .pizza .slice.shaded .slice-out { fill: #ff8c42; }
+  .pizza .dot { fill: #d35400; }
+
+  .bar { width: 220px; height: 70px; border: 3px solid #b4591a; border-radius: 14px; display: flex; overflow: hidden; background: #f5c680; box-shadow: 0 4px 4px rgba(0,0,0,0.06); margin: 14px 0 8px; }
+  .seg { flex: 1; border-right: 2.5px solid #a04b14; cursor: pointer; transition: background 0.25s ease, transform 0.1s; }
+  .seg:last-child { border-right: none; }
+  .seg:active { transform: scaleY(1.06); }
+  .seg.shaded { background: #ff8c42; }
+
+  .check-btn { margin-top: 18px; background: #27ae60; color: white; border: none; border-radius: 40px; padding: 14px 52px; font-size: 19px; font-weight: 700; letter-spacing: 0.6px; box-shadow: 0 5px 0 #1e8449; cursor: pointer; transition: all 0.12s ease; min-height: 44px; }
+  .check-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #1e8449; }
+  .check-btn:disabled { opacity: 0.6; transform: none; box-shadow: 0 5px 0 #1e8449; cursor: default; }
+  .feedback { min-height: 52px; font-size: 16px; font-weight: 600; color: #555; margin-top: 10px; text-align: center; }
+  .feedback.correct { color: #1e8449; animation: bounce 0.4s; }
+  .feedback.wrong { color: #c0392b; animation: shake 0.4s; }
+  .hint { font-size: 12px; color: #a08060; margin-top: 4px; }
+
+  @keyframes bounce { 0%{transform:scale(0.6)} 50%{transform:scale(1.1)} 100%{transform:scale(1)} }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+
+  .done-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh; text-align: center; animation: bounce 0.6s; }
+  .done-circle { width: 100px; height: 100px; border-radius: 50%; background: #fdb813; display: flex; align-items: center; justify-content: center; font-size: 52px; margin-bottom: 24px; box-shadow: 0 6px 0 #e09f0a; }
+  .done-text { font-size: 24px; font-weight: 800; color: #5d4037; }
+</style>
+
+<div class="app">
+  <div class="title" data-test="title">🍕</div>
+  <div class="instr" data-test="instr"></div>
+  <div class="item-wrap" data-test="item-wrap">
+    <div class="card" data-item="">
+      <div class="fraction-label"><sup id="lbl-n">0</sup>/<sub id="lbl-d">0</sub></div>
+      <div class="pizza" id="pizza-container"></div>
+      <div class="bar" id="bar-container"></div>
+      <button class="check-btn" data-action="check">✔</button>
+      <div class="feedback" data-test="feedback"></div>
+      <div class="hint" data-test="hint"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const params = Studio.params;
+    const items = params.items;
+    let currentIndex = 0;
+    let currentItem = null;
+    const itemWrap = document.querySelector('.item-wrap');
+    const card = itemWrap.querySelector('.card');
+    const pizzaContainer = document.getElementById('pizza-container');
+    const barContainer = document.getElementById('bar-container');
+    const lblN = document.getElementById('lbl-n');
+    const lblD = document.getElementById('lbl-d');
+    const checkBtn = document.querySelector('[data-action="check"]');
+    const feedback = document.querySelector('.feedback');
+    const hint = document.querySelector('.hint');
+    const titleEl = document.querySelector('.title');
+    const instrEl = document.querySelector('.instr');
+
+    // strings
+    titleEl.textContent = Studio.t('title');
+    instrEl.textContent = Studio.t('instr');
+    hint.textContent = Studio.t('hint');
+    checkBtn.textContent = Studio.t('check');
+
+    let parts = []; // dom elements
+
+    function renderItem(item) {
+      currentItem = item;
+      card.dataset.item = item.id;
+      card.classList.remove('pop');
+      feedback.textContent = '';
+      feedback.classList.remove('correct','wrong');
+      checkBtn.disabled = false;
+
+      lblN.textContent = item.n;
+      lblD.textContent = item.d;
+
+      // clear previous
+      pizzaContainer.innerHTML = '';
+      barContainer.innerHTML = '';
+      parts = [];
+
+      if (params.picture === 'pizza-or-bar' && item.d % 2 === 0) {
+        renderPizza(item.d);
+        pizzaContainer.style.display = 'block';
+        barContainer.style.display = 'none';
+      } else {
+        renderBar(item.d);
+        pizzaContainer.style.display = 'none';
+        barContainer.style.display = 'block';
+      }
+    }
+
+    function renderPizza(d) {
+      const NS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(NS, 'svg');
+      svg.setAttribute('viewBox', '0 0 160 160');
+      svg.setAttribute('width', '160');
+      svg.setAttribute('height', '160');
+      svg.classList.add('pizza');
+
+      const angle = 360 / d;
+      for (let i = 0; i < d; i++) {
+        const group = document.createElementNS(NS, 'g');
+        group.setAttribute('data-part', i);
+        group.setAttribute('data-shaded', 'false');
+        group.classList.add('slice');
+        const startAngle = i * angle - 90;
+        const endAngle = (i+1) * angle - 90;
+
+        const startRad = (startAngle) * Math.PI/180;
+        const endRad = (endAngle) * Math.PI/180;
+        const x1 = 80 + 70 * Math.cos(startRad);
+        const y1 = 80 + 70 * Math.sin(startRad);
+        const x2 = 80 + 70 * Math.cos(endRad);
+        const y2 = 80 + 70 * Math.sin(endRad);
+        const largeArc = (angle > 180) ? 1 : 0;
+
+        // outer path (thicker stroke edge)
+        const pathOut = document.createElementNS(NS, 'path');
+        pathOut.setAttribute('d', `M80,80 L${x1},${y1} A70,70 0 ${largeArc},1 ${x2},${y2} Z`);
+        pathOut.setAttribute('stroke-width', '3');
+        pathOut.setAttribute('class', 'slice-out');
+
+        // inner path (for fill)
+        const x1i = 80 + 63 * Math.cos(startRad);
+        const y1i = 80 + 63 * Math.sin(startRad);
+        const x2i = 80 + 63 * Math.cos(endRad);
+        const y2i = 80 + 63 * Math.sin(endRad);
+        const pathIn = document.createElementNS(NS, 'path');
+        pathIn.setAttribute('d', `M80,80 L${x1i},${y1i} A63,63 0 ${largeArc},1 ${x2i},${y2i} Z`);
+        pathIn.setAttribute('class', 'slice-in');
+
+        group.appendChild(pathOut);
+        group.appendChild(pathIn);
+        group.addEventListener('click', function(ev) {
+          ev.stopPropagation();
+          togglePart(i, group);
+        });
+        svg.appendChild(group);
+        parts.push(group);
+      }
+
+      // center dot
+      const dot = document.createElementNS(NS, 'circle');
+      dot.setAttribute('cx', '80');
+      dot.setAttribute('cy', '80');
+      dot.setAttribute('r', '5');
+      dot.setAttribute('class', 'dot');
+      svg.appendChild(dot);
+
+      pizzaContainer.appendChild(svg);
+    }
+
+    function renderBar(d) {
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      for (let i = 0; i < d; i++) {
+        const seg = document.createElement('div');
+        seg.className = 'seg';
+        seg.dataset.part = i;
+        seg.dataset.shaded = 'false';
+        seg.addEventListener('click', function(ev) {
+          ev.stopPropagation();
+          togglePart(i, seg);
+        });
+        bar.appendChild(seg);
+        parts.push(seg);
+      }
+      barContainer.appendChild(bar);
+    }
+
+    function togglePart(idx, el) {
+      const isShaded = el.dataset.shaded === 'true';
+      const newState = !isShaded;
+      el.dataset.shaded = String(newState);
+      el.classList.toggle('shaded', newState);
+      if (params.picture === 'pizza-or-bar' && el.classList.contains('slice')) {
+        el.querySelector('.slice-in').style.fill = newState ? '#ff8c42' : '#f5c680';
+        el.querySelector('.slice-out').style.fill = newState ? '#ff8c42' : '#f5c680';
+      }
+      feedback.textContent = '';
+      feedback.classList.remove('wrong','correct');
+      Studio.event('tap_part', { item: currentItem.id, part: idx, shaded: newState });
+    }
+
+    // check logic
+    checkBtn.addEventListener('click', function() {
+      const count = parts.filter(p => p.dataset.shaded === 'true').length;
+      if (checkBtn.disabled) return;
+      checkBtn.disabled = true;
+      Studio.answer({ n: count, d: currentItem.d });
+      Studio.event('check_pressed', { item: currentItem.id, n: count, d: currentItem.d });
+    });
+
+    Studio.onVerdict(function(result) {
+      checkBtn.disabled = false;
+      if (result.correct) {
+        feedback.textContent = Studio.t('right');
+        feedback.className = 'feedback correct';
+        card.classList.add('pop');
+        setTimeout(() => card.classList.remove('pop'), 350);
+        currentIndex++;
+        if (currentIndex < items.length) {
+          setTimeout(() => {
+            renderItem(items[currentIndex]);
+          }, 1200);
+        } else {
+          // done screen
+          itemWrap.innerHTML = '';
+          const doneScreen = document.createElement('div');
+          doneScreen.className = 'done-screen';
+          doneScreen.innerHTML = `<div class="done-circle">🎉</div><div class="done-text">${Studio.t('done')}</div>`;
+          itemWrap.appendChild(doneScreen);
+          Studio.done();
+        }
+      } else {
+        feedback.textContent = Studio.t('wrong');
+        feedback.className = 'feedback wrong';
+        // allow fix
+      }
+      Studio.event('verdict', { correct: result.correct, item: currentItem.id });
+    });
+
+    // init first item
+    renderItem(items[0]);
+    Studio.ready();
+  })();
+</script>

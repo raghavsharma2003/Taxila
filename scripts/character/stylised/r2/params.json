@@ -113,66 +113,66 @@
   "k_bridge": 0.0,
   "nose_c": [
    0.0,
-   -0.04,
+   -0.041,
    -0.028
   ],
   "nose_r": [
-   0.0085,
-   0.0085,
-   0.0078
+   0.01,
+   0.0095,
+   0.009
   ],
   "k_nose": 0.008,
   "wing_c": [
-   0.0075,
+   0.0085,
    -0.035,
-   -0.031
+   -0.032
   ],
   "wing_r": [
-   0.0045,
-   0.0045,
-   0.004
+   0.005,
+   0.005,
+   0.0045
   ],
-  "k_wing": 0.004,
+  "k_wing": 0.005,
   "lipU_c": [
    0.0,
    -0.0375,
    -0.0435
   ],
   "lipU_r": [
-   0.017,
+   0.022,
    0.005,
    0.0035
   ],
   "lipL_c": [
    0.0,
-   -0.036,
+   -0.0355,
    -0.0505
   ],
   "lipL_r": [
-   0.0165,
-   0.0065,
+   0.02,
+   0.0075,
    0.0052
   ],
-  "k_lip": 0.004,
+  "k_lip": 0.006,
   "muzzle_c": [
    0.0,
    -0.01,
    -0.046
   ],
   "muzzle_r": [
-   0.024,
+   0.032,
    0.03,
    0.02
   ],
-  "k_muzzle": 0.012,
+  "k_muzzle": 0.016,
   "neck_cut_z": -0.135,
   "eye_patch_dz": 0.0,
-  "eye_A_in": 41.0,
-  "eye_A_out": 44.0,
-  "eye_e_inner": -6.0,
-  "eye_e_outer": 2.0,
-  "eye_E_up": 26.0,
-  "eye_E_lo": 30.0,
+  "eye_A_in": 36.0,
+  "eye_A_out": 58.0,
+  "eye_e_inner": -4.0,
+  "eye_e_outer": 3.0,
+  "eye_E_up": 35.0,
+  "eye_E_lo": 35.0,
   "eye_u_pow": 0.75,
   "eye_l_pow": 0.85,
   "eye_u_skew": 1.0,
@@ -289,12 +289,15 @@
   "skin_with_eyes": false,
   "push_margin": 0.0012,
   "eye_blend": 0.011,
-  "eye_blend_off": 0.0012,
+  "eye_blend_off": 0.0006,
   "eye_blend_scale": [
    1.0,
    1.0,
    1.15
-  ]
+  ],
+  "conform_iters": 20,
+  "neck_recast_z": -0.075,
+  "conform_mouth_fixed": 2
  },
  "grid": {
   "H": {
@@ -334,13 +337,13 @@
   ],
   "lash_t0": 0.15,
   "lash_w": [
-   0.003,
-   0.0056
+   0.0028,
+   0.0065
   ],
   "lash_h": 0.0022,
   "lash_flick": [
    0.0,
-   24.0
+   28.0
   ],
   "brow_pts": [
    [
@@ -365,11 +368,11 @@
    ]
   ],
   "brow_thick": [
-   0.0088,
-   0.0088,
-   0.0042
+   0.0105,
+   0.0105,
+   0.0055
   ],
-  "brow_h": 0.0022,
+  "brow_h": 0.0024,
   "teeth_back": 0.0058,
   "teeth_half_w": 0.0135,
   "teeth_arch": 0.55,
@@ -415,9 +418,9 @@
    0.02
   ],
   "bun_c": [
-   0.026,
-   0.13,
-   -0.062
+   0.02,
+   0.118,
+   -0.047
   ],
   "bun_r": [
    0.042,
@@ -425,16 +428,16 @@
    0.04
   ],
   "bun_attach": [
-   0.02,
-   0.1,
-   -0.05
+   0.015,
+   0.095,
+   -0.04
   ],
   "bun_coils": 3.0,
   "bun_groove": 0.1,
-  "hair_clumps": 9,
+  "hair_clumps": 6,
   "part_el": [
    32.0,
-   185.0
+   125.0
   ],
   "way_az": [
    52.0,
@@ -453,12 +456,12 @@
    0.012,
    0.006
   ],
-  "part_depth": 1.0,
+  "part_depth": 0.7,
   "part_len": 0.55,
   "edge_roll": 0.08,
   "edge_tuck": 0.002,
-  "clump_pow": 0.2,
-  "clump_depth": 0.4,
+  "clump_pow": 0.4,
+  "clump_depth": 0.2,
   "lock_L": [
    [
     0.064,
@@ -627,18 +630,18 @@
    ]
   ],
   "piping_r": 0.0019,
-  "placket_dx": 0.0032,
+  "placket_dx": 0.0034,
   "placket_z1": -0.26,
   "colors": {
    "skin": [
     240,
-    152,
-    94
+    160,
+    100
    ],
    "lip": [
-    192,
-    96,
-    70
+    178,
+    82,
+    64
    ],
    "blush": [
     246,
@@ -706,9 +709,9 @@
     48
    ],
    "lip_lo": [
-    210,
-    112,
-    84
+    214,
+    118,
+    96
    ]
   },
   "part_dx": 0.02,
@@ -758,10 +761,10 @@
    ]
   ],
   "hair_v_pow": 0.8,
-  "lash_e_off": 0.05,
-  "lash_r_off": 0.0012,
+  "lash_e_off": -0.3,
+  "lash_r_off": 0.0009,
   "lash_r_rise": 0.0012,
-  "lash_wing_len": 0.0072,
+  "lash_wing_len": 0.009,
   "hair_T2": [
    [
     0.013,
@@ -787,7 +790,9 @@
   ],
   "ball_tuck": 0.5,
   "ball_tuck_deg": 43.0,
-  "ball_tuck_ramp": 22.0
+  "ball_tuck_ramp": 22.0,
+  "clump_jitter": 0.12,
+  "neck_v_pow": 2.0
  },
  "rig": {
   "blink_overlap_deg": 0.0

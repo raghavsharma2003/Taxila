@@ -1,0 +1,147 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;min-width:320px;background:#fff7e8;font-family:Arial,sans-serif;color:#50364d}
+  #app{min-height:640px;min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow:hidden;background:
+    radial-gradient(circle at 12% 8%,#ffe2a9 0 22px,transparent 23px),
+    radial-gradient(circle at 90% 19%,#d9f1d7 0 34px,transparent 35px),
+    linear-gradient(180deg,#fffaf0 0%,#fff4dd 100%)}
+  .top{width:100%;padding:18px 20px 8px;text-align:center}
+  h1{margin:0;color:#8b4d72;font-size:27px;line-height:1.15;font-weight:800;letter-spacing:.2px}
+  .instruction{margin:10px auto 0;max-width:322px;color:#76586a;font-size:16px;line-height:1.35;font-weight:600}
+  #game{width:min(100%,390px);padding:7px 18px 20px;display:flex;flex-direction:column;align-items:center}
+  .fraction-card{width:154px;min-height:83px;border-radius:23px;background:#fff;border:3px solid #f4c567;box-shadow:0 6px 0 #f3d893;display:flex;align-items:center;justify-content:center;margin:8px 0 14px}
+  .fraction{font-weight:800;color:#875275;font-size:29px;line-height:1;text-align:center}
+  .fraction .topnum{display:block;padding:0 13px 4px;border-bottom:3px solid #875275}
+  .fraction .bottomnum{display:block;padding-top:4px}
+  .pizza-wrap{width:316px;height:316px;position:relative;display:grid;place-items:center}
+  .pizza-wrap:before{content:"";position:absolute;width:278px;height:278px;border-radius:50%;background:#dba96f;transform:translateY(8px);box-shadow:0 10px 0 #bd805b}
+  #pizza{position:relative;width:300px;height:300px;overflow:visible;filter:drop-shadow(0 3px 1px rgba(111,64,60,.14))}
+  .part{fill:#fff4c7;stroke:#fffaf0;stroke-width:3;stroke-linejoin:round;cursor:pointer;transition:fill .18s ease,transform .18s ease,filter .18s ease;transform-origin:150px 150px}
+  .part[data-shaded="true"]{fill:#f47b57;filter:brightness(1.04)}
+  .part:active{transform:scale(.965)}
+  .part.pulse{animation:pulse .28s ease}
+  @keyframes pulse{50%{transform:scale(.94)}}
+  .pepper{fill:#f5cf51;pointer-events:none}
+  .status{height:48px;display:flex;align-items:center;justify-content:center;text-align:center;color:#875275;font-size:17px;font-weight:800;margin:5px 0}
+  .status.show{animation:pop .3s ease both}
+  @keyframes pop{0%{transform:scale(.7);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+  #check{border:0;min-width:192px;min-height:52px;padding:10px 24px;border-radius:18px;background:#8b4d72;color:#fff;font-size:19px;font-weight:800;box-shadow:0 6px 0 #653550;cursor:pointer;transition:transform .14s ease,box-shadow .14s ease}
+  #check:active{transform:translateY(5px);box-shadow:0 1px 0 #653550}
+  #check:disabled{opacity:.6;transform:translateY(3px);box-shadow:0 3px 0 #653550}
+  .celebrate #pizza{animation:spinpop .75s ease}
+  @keyframes spinpop{0%{transform:scale(.84) rotate(-8deg)}45%{transform:scale(1.08) rotate(8deg)}100%{transform:scale(1) rotate(0)}}
+  .spark{position:absolute;width:12px;height:12px;border-radius:50%;background:#f4c567;opacity:0;pointer-events:none}
+  .celebrate .spark{animation:spark .7s ease-out forwards}
+  .spark.a{left:25px;top:68px;background:#f47b57}.spark.b{right:22px;top:86px;background:#8fc891}.spark.c{left:44px;bottom:49px;background:#ad75a4}.spark.d{right:36px;bottom:57px;background:#f4c567}
+  @keyframes spark{20%{opacity:1}100%{opacity:0;transform:translateY(-36px) scale(.4)}}
+  .done-card{margin-top:70px;width:300px;padding:31px 20px;border-radius:30px;background:#fff;border:3px solid #f4c567;box-shadow:0 8px 0 #f0d58f;text-align:center;animation:pop .45s ease both}
+  .done-art{width:126px;height:106px;margin:0 auto 10px}
+  .done-text{color:#8b4d72;font-size:25px;font-weight:800;line-height:1.25}
+</style>
+
+<div id="app">
+  <div class="top">
+    <h1 id="title"></h1>
+    <div class="instruction" id="instruction"></div>
+  </div>
+  <main id="game">
+    <section id="item" data-item="">
+      <div class="fraction-card" aria-live="polite">
+        <div class="fraction"><span class="topnum" id="numerator"></span><span class="bottomnum" id="denominator"></span></div>
+      </div>
+      <div class="pizza-wrap" id="pizzaWrap">
+        <span class="spark a"></span><span class="spark b"></span><span class="spark c"></span><span class="spark d"></span>
+        <svg id="pizza" viewBox="0 0 300 300" role="img"></svg>
+      </div>
+      <div class="status" id="status" aria-live="polite"></div>
+      <button id="check" type="button" data-action="check"></button>
+    </section>
+  </main>
+</div>
+
+<script>
+(function(){
+  var items=Studio.params.items, index=0, waiting=false;
+  var title=document.getElementById("title"), instruction=document.getElementById("instruction");
+  var itemBox=document.getElementById("item"), numerator=document.getElementById("numerator");
+  var denominator=document.getElementById("denominator"), pizza=document.getElementById("pizza");
+  var status=document.getElementById("status"), check=document.getElementById("check");
+  var wrap=document.getElementById("pizzaWrap"), game=document.getElementById("game");
+
+  title.textContent=Studio.t("title");
+  instruction.textContent=Studio.t("instr");
+  check.textContent=Studio.t("check");
+
+  function sectorPath(i,d){
+    var cx=150,cy=150,r=142,a1=(-Math.PI/2)+(i*2*Math.PI/d),a2=(-Math.PI/2)+((i+1)*2*Math.PI/d);
+    var x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+    var x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+    var large=(2*Math.PI/d)>Math.PI?1:0;
+    return "M "+cx+" "+cy+" L "+x1+" "+y1+" A "+r+" "+r+" 0 "+large+" 1 "+x2+" "+y2+" Z";
+  }
+  function draw(){
+    var current=items[index];
+    itemBox.setAttribute("data-item",current.id);
+    numerator.textContent=current.n;
+    denominator.textContent=current.d;
+    pizza.innerHTML="";
+    for(var i=0;i<current.d;i++){
+      var p=document.createElementNS("http://www.w3.org/2000/svg","path");
+      p.setAttribute("d",sectorPath(i,current.d));
+      p.setAttribute("class","part");
+      p.setAttribute("data-part",i);
+      p.setAttribute("data-shaded","false");
+      p.addEventListener("click",toggle);
+      pizza.appendChild(p);
+    }
+    status.textContent="";
+    status.className="status";
+    check.disabled=false;
+    waiting=false;
+  }
+  function toggle(e){
+    if(waiting)return;
+    var p=e.currentTarget, on=p.getAttribute("data-shaded")==="true";
+    p.setAttribute("data-shaded",on?"false":"true");
+    p.classList.remove("pulse");
+    void p.getBoundingClientRect();
+    p.classList.add("pulse");
+    Studio.event("part_tap",{item:items[index].id,part:Number(p.getAttribute("data-part")),shaded:!on});
+  }
+  check.addEventListener("click",function(){
+    if(waiting)return;
+    var shaded=pizza.querySelectorAll('[data-shaded="true"]').length;
+    waiting=true;
+    check.disabled=true;
+    Studio.event("check",{item:items[index].id,n:shaded,d:items[index].d});
+    Studio.answer({n:shaded,d:items[index].d});
+  });
+  Studio.onVerdict(function(result){
+    if(result.correct){
+      status.textContent=Studio.t("right");
+      status.className="status show";
+      wrap.classList.add("celebrate");
+      Studio.event("verdict",{item:items[index].id,correct:true});
+      setTimeout(function(){
+        wrap.classList.remove("celebrate");
+        index++;
+        if(index<items.length){draw();}
+        else{finish();}
+      },850);
+    }else{
+      status.textContent=Studio.t("wrong")+" "+Studio.t("hint");
+      status.className="status show";
+      check.disabled=false;
+      waiting=false;
+      Studio.event("verdict",{item:items[index].id,correct:false});
+    }
+  });
+  function finish(){
+    game.innerHTML='<div class="done-card"><svg class="done-art" viewBox="0 0 126 106" aria-hidden="true"><path d="M22 72 Q17 38 42 42 Q45 16 63 33 Q81 16 84 42 Q109 38 104 72 Q99 96 63 91 Q27 96 22 72" fill="#f4c567" stroke="#d79661" stroke-width="4"/><circle cx="45" cy="61" r="6" fill="#8b4d72"/><circle cx="81" cy="61" r="6" fill="#8b4d72"/><path d="M45 76 Q63 88 81 76" fill="none" stroke="#8b4d72" stroke-width="5" stroke-linecap="round"/><circle cx="18" cy="25" r="7" fill="#8fc891"/><circle cx="109" cy="20" r="7" fill="#f47b57"/></svg><div class="done-text" id="doneText"></div></div>';
+    document.getElementById("doneText").textContent=Studio.t("done");
+    Studio.done();
+  }
+  draw();
+  Studio.ready();
+}());
+</script>

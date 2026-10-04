@@ -1,0 +1,143 @@
+<style>
+  * { box-sizing: border-box; }
+  .activity {
+    min-height: 100vh;
+    padding: 20px 14px 28px;
+    background: #fff8ed;
+    color: #28384a;
+    font-family: system-ui, sans-serif;
+    text-align: center;
+  }
+  .card {
+    width: min(100%, 410px);
+    margin: 0 auto;
+    padding: 20px 12px 24px;
+    border-radius: 28px;
+    background: #fff;
+    box-shadow: 0 10px 30px #795f3220;
+  }
+  h1 { margin: 0 0 8px; font-size: 1.55rem; line-height: 1.2; }
+  .ask { margin: 0 0 12px; font-size: 1.08rem; line-height: 1.4; }
+  svg { display: block; width: 100%; max-width: 340px; height: auto; margin: auto; overflow: visible; }
+  .grid { stroke: #dce5e4; stroke-width: 1; }
+  .axis { stroke: #74879a; stroke-width: 2; }
+  .tick, .fruit, .axis-title { fill: #435568; font-family: system-ui, sans-serif; }
+  .tick { font-size: 12px; text-anchor: end; dominant-baseline: middle; }
+  .fruit { font-size: 11px; text-anchor: middle; }
+  .axis-title { font-size: 12px; text-anchor: middle; }
+  .bar {
+    fill: #f4a261;
+    rx: 9;
+    cursor: pointer;
+    transform-box: fill-box;
+    transform-origin: center bottom;
+    animation: grow .8s cubic-bezier(.2,.8,.2,1) both;
+    transition: fill .2s, filter .2s;
+  }
+  .bar:hover, .bar:focus-visible { fill: #e8894c; filter: drop-shadow(0 3px 3px #744b3440); outline: none; }
+  .bar:active { fill: #d97742; }
+  @keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  .response { min-height: 56px; margin: 12px 4px 0; font-size: 1.1rem; font-weight: 700; line-height: 1.5; }
+  .response.pop { animation: pop .3s ease-out; }
+  @keyframes pop { 50% { transform: scale(1.06); } }
+  @media (prefers-reduced-motion: reduce) { .bar, .response.pop { animation: none; } }
+</style>
+
+<main class="activity">
+  <section class="card">
+    <h1 id="title"></h1>
+    <p class="ask" id="ask"></p>
+    <svg id="chart" viewBox="0 0 340 350" role="img" aria-labelledby="title ask">
+      <g id="grid"></g>
+      <g id="ticks"></g>
+      <line class="axis" x1="57" y1="290" x2="334" y2="290"></line>
+      <g id="bars"></g>
+      <g id="labels"></g>
+      <text class="axis-title" id="axisTitle" x="18" y="160" transform="rotate(-90 18 160)"></text>
+    </svg>
+    <div class="response" id="response" aria-live="polite"></div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const data = Studio.params.data;
+  const svgNS = "http://www.w3.org/2000/svg";
+  const base = 290;
+  const plotHeight = 240;
+  const grid = document.getElementById("grid");
+  const ticks = document.getElementById("ticks");
+  const bars = document.getElementById("bars");
+  const labels = document.getElementById("labels");
+  const response = document.getElementById("response");
+  let pending = null;
+  let finished = false;
+
+  document.getElementById("title").textContent = Studio.t("title");
+  document.getElementById("ask").textContent = Studio.t("ask");
+  document.getElementById("axisTitle").textContent = Studio.t("yaxis");
+
+  const highest = Math.max(...data.map(item => Number(item.value)));
+  const rough = highest / 4;
+  const magnitude = Math.pow(10, Math.floor(Math.log10(rough)));
+  const step = [1, 2, 5, 10].map(n => n * magnitude).find(n => n >= rough);
+  const ceiling = Math.ceil(highest / step) * step;
+  const make = (tag, attributes, parent) => {
+    const node = document.createElementNS(svgNS, tag);
+    for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, value);
+    parent.appendChild(node);
+    return node;
+  };
+
+  for (let value = 0; value <= ceiling; value += step) {
+    const y = base - value / ceiling * plotHeight;
+    make("line", { class: "grid", x1: 57, x2: 334, y1: y, y2: y }, grid);
+    const tick = make("text", { class: "tick", x: 49, y, "data-tick": value }, ticks);
+    tick.textContent = value;
+  }
+
+  const slot = 272 / data.length;
+  data.forEach((item, index) => {
+    const center = 60 + slot * (index + .5);
+    const height = Number(item.value) / ceiling * plotHeight;
+    const bar = make("rect", {
+      class: "bar", x: center - 23, y: base - height,
+      width: 46, height, "data-bar": item.key, "data-value": item.value,
+      tabindex: 0, role: "button", "aria-label": Studio.t(item.key)
+    }, bars);
+    bar.style.animationDelay = `${index * 70}ms`;
+    const label = make("text", { class: "fruit", x: center, y: 317 }, labels);
+    label.textContent = Studio.t(item.key);
+
+    const choose = () => {
+      if (finished || pending !== null) return;
+      pending = item;
+      response.textContent = `${Studio.t(item.key)}: ${item.value}`;
+      response.classList.remove("pop");
+      void response.offsetWidth;
+      response.classList.add("pop");
+      Studio.event("bar_tap", { key: item.key });
+      Studio.answer(item.key);
+    };
+    bar.addEventListener("click", choose);
+    bar.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        choose();
+      }
+    });
+  });
+
+  Studio.onVerdict(({ correct }) => {
+    if (pending === null || finished) return;
+    response.textContent = `${Studio.t(pending.key)}: ${pending.value} · ${Studio.t(correct ? "right" : "wrong")}`;
+    pending = null;
+    if (correct) {
+      finished = true;
+      response.textContent = Studio.t("done");
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+</script>

@@ -1,0 +1,351 @@
+<style>
+  :root {
+    --bg: #fff9f0;
+    --primary: #ff6b47;
+    --primary-light: #ffb399;
+    --secondary: #4ecdc4;
+    --text: #2c3e50;
+    --text-light: #7f8c8d;
+    --correct: #2ecc71;
+    --wrong: #e74c3c;
+    --shadow: 0 2px 6px rgba(0,0,0,0.1);
+    --round: 16px;
+    --transition: all 0.2s ease;
+  }
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 640px;
+    box-sizing: border-box;
+  }
+  .title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--primary);
+  }
+  .instr {
+    font-size: 16px;
+    color: var(--text-light);
+    margin-bottom: 20px;
+    text-align: center;
+    max-width: 300px;
+  }
+  .item-container {
+    width: 100%;
+    max-width: 320px;
+    background: white;
+    border-radius: var(--round);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+    display: none;
+  }
+  .item-container.active {
+    display: block;
+  }
+  .fraction-display {
+    font-size: 28px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--primary);
+  }
+  .visual {
+    width: 100%;
+    height: 200px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .pizza {
+    width: 100%;
+    height: 100%;
+    viewBox: "0 0 100 100";
+  }
+  .slice {
+    fill: var(--primary-light);
+    stroke: white;
+    stroke-width: 1;
+    cursor: pointer;
+    transition: var(--transition);
+    transform-origin: center;
+  }
+  .slice.shaded {
+    fill: var(--primary);
+  }
+  .slice:active {
+    transform: scale(0.95);
+  }
+  .bar-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    border-radius: var(--round);
+    overflow: hidden;
+    background: var(--primary-light);
+  }
+  .bar-segment {
+    flex: 1;
+    background: var(--primary-light);
+    border-right: 1px solid white;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .bar-segment:last-child {
+    border-right: none;
+  }
+  .bar-segment.shaded {
+    background: var(--primary);
+  }
+  .bar-segment:active {
+    transform: scale(0.95);
+  }
+  .check-btn {
+    background: var(--secondary);
+    color: white;
+    border: none;
+    border-radius: var(--round);
+    padding: 12px 24px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: var(--transition);
+    margin-top: 10px;
+  }
+  .check-btn:active {
+    transform: scale(0.98);
+  }
+  .feedback {
+    text-align: center;
+    font-size: 18px;
+    margin-top: 10px;
+    min-height: 24px;
+    color: var(--text-light);
+  }
+  .feedback.correct {
+    color: var(--correct);
+    animation: pulse 0.5s;
+  }
+  .feedback.wrong {
+    color: var(--wrong);
+  }
+  .done-screen {
+    display: none;
+    text-align: center;
+    padding: 20px;
+  }
+  .done-screen.active {
+    display: block;
+  }
+  .done-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--correct);
+    margin-bottom: 10px;
+  }
+  .hint {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-top: 10px;
+    text-align: center;
+  }
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+</style>
+
+<div class="title" data-test="title"></div>
+<div class="instr" data-test="instr"></div>
+
+<div class="item-container active" data-item="i1">
+  <div class="fraction-display" data-test="fraction"></div>
+  <div class="visual" data-test="visual">
+    <svg class="pizza" data-picture="pizza">
+      <circle cx="50" cy="50" r="45" fill="none" stroke="none"/>
+    </svg>
+    <div class="bar-container" data-picture="bar" style="display:none;"></div>
+  </div>
+  <div class="feedback" data-test="feedback"></div>
+  <button class="check-btn" data-action="check" data-test="check"></button>
+  <div class="hint" data-test="hint"></div>
+</div>
+
+<div class="done-screen" data-test="done-screen">
+  <div class="done-title" data-test="done-title"></div>
+</div>
+
+<script>
+  (function() {
+    const params = Studio.params;
+    const items = params.items;
+    const picture = params.picture;
+    let currentIndex = 0;
+    let currentItem = items[0];
+    let shadedCount = 0;
+
+    // DOM elements
+    const titleEl = document.querySelector('[data-test="title"]');
+    const instrEl = document.querySelector('[data-test="instr"]');
+    const fractionEl = document.querySelector('[data-test="fraction"]');
+    const visualEl = document.querySelector('[data-test="visual"]');
+    const pizzaSvg = document.querySelector('[data-picture="pizza"]');
+    const barContainer = document.querySelector('[data-picture="bar"]');
+    const feedbackEl = document.querySelector('[data-test="feedback"]');
+    const checkBtn = document.querySelector('[data-action="check"]');
+    const hintEl = document.querySelector('[data-test="hint"]');
+    const doneScreen = document.querySelector('[data-test="done-screen"]');
+    const doneTitleEl = document.querySelector('[data-test="done-title"]');
+
+    // Set static strings
+    titleEl.textContent = Studio.t('title');
+    instrEl.textContent = Studio.t('instr');
+    checkBtn.textContent = Studio.t('check');
+    hintEl.textContent = Studio.t('hint');
+    doneTitleEl.textContent = Studio.t('done');
+
+    // Initialize first item
+    function initItem(item) {
+      shadedCount = 0;
+      fractionEl.textContent = `${item.n}/${item.d}`;
+      feedbackEl.textContent = '';
+      feedbackEl.className = 'feedback';
+
+      // Clear previous visual
+      pizzaSvg.innerHTML = '<circle cx="50" cy="50" r="45" fill="none" stroke="none"/>';
+      barContainer.innerHTML = '';
+
+      // Create visual based on picture type
+      if (picture === 'pizza') {
+        pizzaSvg.style.display = 'block';
+        barContainer.style.display = 'none';
+        createPizza(item.d);
+      } else {
+        pizzaSvg.style.display = 'none';
+        barContainer.style.display = 'flex';
+        createBar(item.d);
+      }
+
+      // Update item container
+      const itemContainers = document.querySelectorAll('.item-container');
+      itemContainers.forEach((container, index) => {
+        container.classList.toggle('active', index === currentIndex);
+        container.setAttribute('data-item', items[index].id);
+      });
+    }
+
+    function createPizza(parts) {
+      const center = { x: 50, y: 50 };
+      const radius = 45;
+      const anglePerSlice = (2 * Math.PI) / parts;
+
+      for (let i = 0; i < parts; i++) {
+        const startAngle = i * anglePerSlice;
+        const endAngle = (i + 1) * anglePerSlice;
+
+        const startX = center.x + radius * Math.cos(startAngle);
+        const startY = center.y + radius * Math.sin(startAngle);
+        const endX = center.x + radius * Math.cos(endAngle);
+        const endY = center.y + radius * Math.sin(endAngle);
+
+        const largeArc = endAngle - startAngle <= Math.PI ? 0 : 1;
+
+        const pathData = [
+          `M ${center.x} ${center.y}`,
+          `L ${startX} ${startY}`,
+          `A ${radius} ${radius} 0 ${largeArc} 1 ${endX} ${endY}`,
+          'Z'
+        ].join(' ');
+
+        const slice = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        slice.setAttribute('d', pathData);
+        slice.setAttribute('class', 'slice');
+        slice.setAttribute('data-part', i);
+        slice.setAttribute('data-shaded', 'false');
+        slice.addEventListener('click', toggleShade);
+
+        pizzaSvg.appendChild(slice);
+      }
+    }
+
+    function createBar(parts) {
+      for (let i = 0; i < parts; i++) {
+        const segment = document.createElement('div');
+        segment.className = 'bar-segment';
+        segment.setAttribute('data-part', i);
+        segment.setAttribute('data-shaded', 'false');
+        segment.addEventListener('click', toggleShade);
+        barContainer.appendChild(segment);
+      }
+    }
+
+    function toggleShade(e) {
+      const part = e.currentTarget;
+      const isShaded = part.getAttribute('data-shaded') === 'true';
+
+      if (isShaded) {
+        part.classList.remove('shaded');
+        part.setAttribute('data-shaded', 'false');
+        shadedCount--;
+      } else {
+        part.classList.add('shaded');
+        part.setAttribute('data-shaded', 'true');
+        shadedCount++;
+      }
+
+      Studio.event('toggle', { part: part.getAttribute('data-part'), shaded: !isShaded });
+    }
+
+    function handleCheck() {
+      Studio.answer({ n: shadedCount, d: currentItem.d });
+    }
+
+    function handleVerdict({ correct }) {
+      if (correct) {
+        feedbackEl.textContent = Studio.t('right');
+        feedbackEl.className = 'feedback correct';
+
+        // Celebrate with animation
+        const parts = document.querySelectorAll('[data-shaded="true"]');
+        parts.forEach(part => {
+          part.style.transform = 'scale(1.05)';
+          setTimeout(() => {
+            part.style.transform = '';
+          }, 300);
+        });
+
+        // Move to next item or done
+        setTimeout(() => {
+          currentIndex++;
+          if (currentIndex < items.length) {
+            currentItem = items[currentIndex];
+            initItem(currentItem);
+          } else {
+            document.querySelectorAll('.item-container').forEach(c => c.style.display = 'none');
+            doneScreen.classList.add('active');
+            Studio.done();
+          }
+        }, 1000);
+      } else {
+        feedbackEl.textContent = Studio.t('wrong');
+        feedbackEl.className = 'feedback wrong';
+      }
+    }
+
+    // Event listeners
+    checkBtn.addEventListener('click', handleCheck);
+    Studio.onVerdict(handleVerdict);
+
+    // Initialize first item
+    initItem(currentItem);
+    Studio.ready();
+  })();
+</script>

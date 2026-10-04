@@ -7,7 +7,7 @@ import { q, one, tx, guardStmt, GUARD_FAILED } from "../db.js";
 import { need, bad, forbidden, notFound, unauthorized, send, HttpError } from "../http.js";
 import { requireChild, hasConsent, sessionTokenHash } from "../auth.js";
 import { turnVoice } from "../voice/features.js";
-import { chat, mintRealtimeSecret, endpoint, DEPLOY, isContentFilter } from "../azure.js";
+import { chat, mintRealtimeSecret, endpoint, realtimeLane, DEPLOY, isContentFilter } from "../azure.js";
 import { getTopic, getKit, pinKit, pinnedKit, topicOf, topicSequence } from "../content/index.js";
 import { nextTopicFor } from "../content/next-topic.js";
 import { gamingDiscount, nextAffect } from "../learner/affect.js";
@@ -705,7 +705,7 @@ async function realtimeToken(req, res, body) {
   // The secret was minted WITH the instructions; the client gets the session back without them (it needs
   // only audio.input, to restore turn detection after push-to-talk) so the key is not in this response.
   const { instructions: _minted, ...clientSession } = session;
-  const out = { token: secret.value, expiresAt: secret.expires_at, base: endpoint(), session: clientSession };
+  const out = { token: secret.value, expiresAt: secret.expires_at, base: endpoint(realtimeLane(session)), session: clientSession };
   send(res, 200, out);
 }
 

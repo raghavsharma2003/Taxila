@@ -1,7 +1,9 @@
 // Azure OpenAI (Foundry, OpenAI-compatible v1 surface) — the only module that talks to Azure.
-// $AZURE_OPENAI_ENDPOINT already ends in /openai/v1; the deployment name goes in `model`; the key goes in
-// the `api-key` header. Every call is timed and logged (kind, deployment, status, ms, tokens) — never the
+// $AZURE_OPENAI_ENDPOINT already ends in /openai/v1 (per-lane overrides: server/endpoints.js); the deployment name
+// goes in `model`; the key goes in the `api-key` header. Every call is timed and logged (kind, deployment, status, ms, tokens) — never the
 // key and never the payload, because payloads carry children's words.
+
+import { EndpointConfigError, laneEndpoint, laneKey, realtimeLane } from "./endpoints.js";
 
 const DEFAULT_TIMEOUT_MS = 20_000;
 const RETRY_DELAY_MS = 400;
@@ -41,17 +43,16 @@ export function bodyIsContentFilter(text) {
     || j?.choices?.some?.((c) => c?.finish_reason === CONTENT_FILTER) || /content management policy|content_filter/i.test(String(e.message ?? ""));
 }
 
-/** The v1 base URL (no trailing slash). Not a secret: the browser posts its SDP offer under it. */
-export function endpoint() {
-  const e = (process.env.AZURE_OPENAI_ENDPOINT || "").replace(/\/+$/, "");
-  if (!e) throw new AzureError("AZURE_OPENAI_ENDPOINT not set");
-  return e;
-}
-function apiKey() {
-  const k = process.env.AZURE_OPENAI_API_KEY;
-  if (!k) throw new AzureError("AZURE_OPENAI_API_KEY not set");
-  return k;
-}
+/** A config error from server/endpoints.js surfaces as an AzureError, as the old inline env reads did. */
+const asAzure = (fn) => { try { return fn(); } catch (e) { throw e instanceof EndpointConfigError ? new AzureError(e.message, 0, "config") : e; } };
+/**
+ * The v1 base URL (no trailing slash) for a model lane (server/endpoints.js; default CHAT = AZURE_OPENAI_ENDPOINT unless
+ * AZURE_OPENAI_ENDPOINT_CHAT overrides it). Not a secret: the browser posts its SDP offer under the realtime one —
+ * use realtimeLane(session) for that, so the base matches the account that minted the key.
+ */
+export function endpoint(lane = "CHAT") { return asAzure(() => laneEndpoint(lane)); }
+function apiKey(lane = "CHAT") { return asAzure(() => laneKey(lane)); }
+export { realtimeLane };
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 /** Azure error bodies are JSON with a message; keep a short, key-free excerpt for the log/exception. */
@@ -72,16 +73,16 @@ function log(entry, trace) {
  * `retries: 0` is for a backup call that must not double the latency of the path it rescues.
  * @returns {Promise<any>} parsed JSON, or a Buffer when `binary`.
  */
-async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_MS, trace, binary = false, retries = 1 } = {}) {
+async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_MS, trace, binary = false, retries = 1, lane = "CHAT" } = {}) {
   for (let attempt = 0; ; attempt++) {
     const t0 = performance.now();
     const ctl = new AbortController();
     const timer = setTimeout(() => ctl.abort(), timeoutMs);
     let status = 0, err, out, usage;
     try {
-      const res = await fetch(endpoint() + path, {
+      const res = await fetch(endpoint(lane) + path, {
         method: "POST",
-        headers: { "api-key": apiKey(), "content-type": "application/json" },
+        headers: { "api-key": apiKey(lane), "content-type": "application/json" },
         body: JSON.stringify(body),
         signal: ctl.signal,
       });
@@ -153,7 +154,7 @@ export async function chat(deployment, messages, opts = {}) {
  */
 export async function mintRealtimeSecret(session, { ttlSeconds = 120, trace } = {}) {
   const j = await post("realtime_secret", session.model, "/realtime/client_secrets",
-    { expires_after: { anchor: "created_at", seconds: ttlSeconds }, session }, { trace, timeoutMs: 10_000 });
+    { expires_after: { anchor: "created_at", seconds: ttlSeconds }, session }, { trace, timeoutMs: 10_000, lane: realtimeLane(session) });
   if (!j?.value) throw new AzureError("realtime client_secrets returned no value", 200, "no_value");
   return j;
 }
@@ -162,5 +163,5 @@ export async function mintRealtimeSecret(session, { ttlSeconds = 120, trace } = 
 export async function tts(text, voice, instructions, { trace } = {}) {
   const body = { model: DEPLOY.tts, input: String(text).slice(0, 4000), voice, response_format: "mp3" };
   if (instructions) body.instructions = instructions;
-  return post("tts", DEPLOY.tts, "/audio/speech", body, { trace, binary: true, timeoutMs: 30_000 });
+  return post("tts", DEPLOY.tts, "/audio/speech", body, { trace, binary: true, timeoutMs: 30_000, lane: "TTS" });
 }

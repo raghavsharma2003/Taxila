@@ -1,0 +1,326 @@
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; padding: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #FFF8F0; color: #5D4037; min-height: 100vh; display: flex; justify-content: center; }
+#app { width: 100%; max-width: 360px; min-height: 640px; padding: 20px 0; display: flex; flex-direction: column; align-items: center; gap: 16px; background: #FFF8F0; }
+.hidden { display: none !important; }
+.padded { width: 100%; padding: 0 16px; text-align: center; }
+.app-header { text-align: center; }
+#title { font-size: 22px; font-weight: 700; margin: 0; color: #D35400; }
+.progress { display: flex; justify-content: center; gap: 8px; padding-top: 4px; padding-bottom: 4px; }
+.progress-dot { width: 10px; height: 10px; border-radius: 50%; background: #E5E7E9; transition: background 0.2s ease, transform 0.2s ease; }
+.progress-dot.active { background: #E67E22; transform: scale(1.3); }
+.progress-dot.done { background: #27AE60; }
+#instr { font-size: 16px; line-height: 1.4; margin: 0; min-height: 44px; }
+.fraction-wrap { display: flex; justify-content: center; }
+.fraction-card { background: #fff; border-radius: 20px; padding: 14px 28px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+.fraction { display: inline-flex; flex-direction: column; align-items: center; font-size: 42px; font-weight: 800; line-height: 1; color: #D35400; }
+.fraction .bar { width: 60px; height: 4px; background: #D35400; border-radius: 2px; margin: 6px 0; }
+#picture-container { width: 100%; display: flex; justify-content: center; align-items: center; min-height: 240px; position: relative; transition: transform 0.2s ease; }
+.pizza-svg { max-width: 280px; width: 100%; height: auto; overflow: visible; }
+.pizza-plate { fill: #FAD7A0; }
+.pizza-base { fill: #FCEBC5; stroke: #E67E22; stroke-width: 3; }
+.pizza-part { fill: #FCEBC5; stroke: #fff; stroke-width: 2; cursor: pointer; transform-origin: center; transition: fill 0.15s ease, transform 0.1s ease; outline: none; }
+.pizza-part.shaded { fill: #E67E22; }
+.bar-svg { max-width: 360px; width: 100%; height: auto; overflow: visible; }
+.bar-bg { fill: #EAF2F8; }
+.bar-part { fill: #D6EAF8; stroke: #fff; stroke-width: 2; cursor: pointer; transform-origin: center; transition: fill 0.15s ease, transform 0.1s ease; outline: none; }
+.bar-part.shaded { fill: #2980B9; }
+.part:focus { filter: drop-shadow(0 0 4px rgba(230,126,34,0.6)); }
+.part:active { transform: scale(0.95); }
+.check-wrap { display: flex; justify-content: center; margin-top: 4px; }
+#check-btn { width: 100%; max-width: 280px; min-height: 52px; border: none; border-radius: 30px; background: linear-gradient(135deg, #E67E22, #D35400); color: #fff; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 6px 16px rgba(230,126,34,0.3); transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.2s ease; }
+#check-btn:active { transform: scale(0.97); box-shadow: 0 3px 10px rgba(230,126,34,0.25); }
+#check-btn:disabled { opacity: 0.7; cursor: wait; }
+#feedback { min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+#feedback-main { font-size: 17px; font-weight: 700; }
+#feedback-hint { font-size: 15px; font-weight: 500; color: #7F8C8D; }
+#feedback.right #feedback-main { color: #27AE60; }
+#feedback.wrong #feedback-main { color: #C0392B; }
+.shake { animation: shake 0.4s ease; }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+.celebrate { animation: pop 0.5s ease; }
+@keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.06); } 100% { transform: scale(1); } }
+.done-screen { position: fixed; inset: 0; background: #FFF8F0; display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 10; }
+.done-card { background: #fff; border-radius: 28px; padding: 40px 30px; text-align: center; box-shadow: 0 12px 32px rgba(0,0,0,0.1); max-width: 320px; width: 100%; }
+.done-icon { font-size: 64px; line-height: 1; margin-bottom: 16px; animation: bounce 1.2s infinite ease-in-out; }
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+#done-title { font-size: 24px; color: #27AE60; margin: 0; }
+</style>
+
+<div id="app">
+  <header class="padded app-header">
+    <h1 id="title"></h1>
+  </header>
+  <div id="progress" class="progress"></div>
+  <p id="instr" class="padded"></p>
+  <div class="padded fraction-wrap">
+    <div class="fraction-card">
+      <div class="fraction">
+        <span id="numerator" class="num"></span>
+        <span class="bar"></span>
+        <span id="denominator" class="den"></span>
+      </div>
+    </div>
+  </div>
+  <div id="picture-container" class="picture-container"></div>
+  <div class="padded check-wrap">
+    <button id="check-btn" data-action="check"></button>
+  </div>
+  <div id="feedback" class="padded" aria-live="polite">
+    <span id="feedback-main"></span>
+    <span id="feedback-hint"></span>
+  </div>
+</div>
+
+<div id="done-screen" class="done-screen hidden">
+  <div class="done-card">
+    <div class="done-icon">🎉</div>
+    <h2 id="done-title"></h2>
+  </div>
+</div>
+
+<script>
+(function() {
+  const items = Studio.params.items;
+  const pictureType = Studio.params.picture || 'pizza';
+  let currentIndex = 0;
+  let isLocked = false;
+
+  const els = {
+    title: document.getElementById('title'),
+    instr: document.getElementById('instr'),
+    numerator: document.getElementById('numerator'),
+    denominator: document.getElementById('denominator'),
+    pictureContainer: document.getElementById('picture-container'),
+    checkBtn: document.getElementById('check-btn'),
+    feedback: document.getElementById('feedback'),
+    feedbackMain: document.getElementById('feedback-main'),
+    feedbackHint: document.getElementById('feedback-hint'),
+    progress: document.getElementById('progress'),
+    app: document.getElementById('app'),
+    doneScreen: document.getElementById('done-screen'),
+    doneTitle: document.getElementById('done-title')
+  };
+
+  function t(key) { return Studio.t(key); }
+
+  function init() {
+    els.title.textContent = t('title');
+    els.instr.textContent = t('instr');
+    els.checkBtn.textContent = t('check');
+    renderProgress();
+    loadItem(0);
+    Studio.ready();
+  }
+
+  function renderProgress() {
+    els.progress.innerHTML = '';
+    items.forEach(function(item, idx) {
+      const dot = document.createElement('span');
+      dot.className = 'progress-dot' + (idx === currentIndex ? ' active' : '') + (idx < currentIndex ? ' done' : '');
+      els.progress.appendChild(dot);
+    });
+  }
+
+  function loadItem(index) {
+    currentIndex = index;
+    isLocked = false;
+    const item = items[index];
+    els.numerator.textContent = item.n;
+    els.denominator.textContent = item.d;
+    els.feedbackMain.textContent = '';
+    els.feedbackHint.textContent = '';
+    els.feedback.className = 'padded';
+    els.checkBtn.disabled = false;
+    renderPicture(item);
+    renderProgress();
+  }
+
+  function renderPicture(item) {
+    els.pictureContainer.innerHTML = '';
+    els.pictureContainer.setAttribute('data-item', item.id);
+    if (pictureType === 'bar') {
+      renderBar(item);
+    } else {
+      renderPizza(item);
+    }
+  }
+
+  function renderPizza(item) {
+    const d = item.d;
+    const cx = 110, cy = 110, r = 100;
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('viewBox', '0 0 220 220');
+    svg.setAttribute('class', 'pizza-svg');
+
+    const plate = document.createElementNS(svgNS, 'circle');
+    plate.setAttribute('cx', cx);
+    plate.setAttribute('cy', cy);
+    plate.setAttribute('r', r + 4);
+    plate.setAttribute('class', 'pizza-plate');
+    svg.appendChild(plate);
+
+    const base = document.createElementNS(svgNS, 'circle');
+    base.setAttribute('cx', cx);
+    base.setAttribute('cy', cy);
+    base.setAttribute('r', r);
+    base.setAttribute('class', 'pizza-base');
+    svg.appendChild(base);
+
+    if (d === 1) {
+      const part = document.createElementNS(svgNS, 'circle');
+      part.setAttribute('cx', cx);
+      part.setAttribute('cy', cy);
+      part.setAttribute('r', r);
+      part.setAttribute('class', 'part pizza-part');
+      part.setAttribute('data-part', '0');
+      part.setAttribute('data-shaded', 'false');
+      part.setAttribute('role', 'button');
+      part.setAttribute('tabindex', '0');
+      bindPart(part);
+      svg.appendChild(part);
+    } else {
+      for (let i = 0; i < d; i++) {
+        const startAngle = -90 + i * (360 / d);
+        const endAngle = startAngle + (360 / d);
+        const rad1 = (startAngle * Math.PI) / 180;
+        const rad2 = (endAngle * Math.PI) / 180;
+        const x1 = cx + r * Math.cos(rad1);
+        const y1 = cy + r * Math.sin(rad1);
+        const x2 = cx + r * Math.cos(rad2);
+        const y2 = cy + r * Math.sin(rad2);
+        const largeArc = (endAngle - startAngle) > 180 ? 1 : 0;
+
+        const path = document.createElementNS(svgNS, 'path');
+        path.setAttribute('d', 'M ' + cx + ' ' + cy + ' L ' + x1 + ' ' + y1 + ' A ' + r + ' ' + r + ' 0 ' + largeArc + ' 1 ' + x2 + ' ' + y2 + ' Z');
+        path.setAttribute('class', 'part pizza-part');
+        path.setAttribute('data-part', i);
+        path.setAttribute('data-shaded', 'false');
+        path.setAttribute('role', 'button');
+        path.setAttribute('tabindex', '0');
+        bindPart(path);
+        svg.appendChild(path);
+      }
+    }
+
+    els.pictureContainer.appendChild(svg);
+  }
+
+  function renderBar(item) {
+    const d = item.d;
+    const segW = 44;
+    const totalW = d * segW;
+    const x0 = (360 - totalW) / 2;
+    const y0 = 10;
+    const h = 100;
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('viewBox', '0 0 360 120');
+    svg.setAttribute('class', 'bar-svg');
+
+    const bg = document.createElementNS(svgNS, 'rect');
+    bg.setAttribute('x', x0 - 4);
+    bg.setAttribute('y', y0 - 4);
+    bg.setAttribute('width', totalW + 8);
+    bg.setAttribute('height', h + 8);
+    bg.setAttribute('rx', 12);
+    bg.setAttribute('class', 'bar-bg');
+    svg.appendChild(bg);
+
+    for (let i = 0; i < d; i++) {
+      const rect = document.createElementNS(svgNS, 'rect');
+      rect.setAttribute('x', x0 + i * segW);
+      rect.setAttribute('y', y0);
+      rect.setAttribute('width', segW);
+      rect.setAttribute('height', h);
+      rect.setAttribute('rx', 8);
+      rect.setAttribute('class', 'part bar-part');
+      rect.setAttribute('data-part', i);
+      rect.setAttribute('data-shaded', 'false');
+      rect.setAttribute('role', 'button');
+      rect.setAttribute('tabindex', '0');
+      bindPart(rect);
+      svg.appendChild(rect);
+    }
+
+    els.pictureContainer.appendChild(svg);
+  }
+
+  function bindPart(part) {
+    part.addEventListener('click', onPartClick);
+    part.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        onPartClick({ currentTarget: part });
+      }
+    });
+  }
+
+  function onPartClick(e) {
+    if (isLocked) return;
+    const part = e.currentTarget;
+    const shaded = part.getAttribute('data-shaded') === 'true';
+    const newShaded = !shaded;
+    part.setAttribute('data-shaded', newShaded.toString());
+    if (newShaded) {
+      part.classList.add('shaded');
+    } else {
+      part.classList.remove('shaded');
+    }
+    part.style.transform = 'scale(0.95)';
+    setTimeout(function() { part.style.transform = ''; }, 120);
+    Studio.event('part_tap', { item: items[currentIndex].id, part: part.getAttribute('data-part'), shaded: newShaded });
+  }
+
+  function getColoredCount() {
+    return els.pictureContainer.querySelectorAll('[data-shaded="true"]').length;
+  }
+
+  function onCheck() {
+    if (isLocked) return;
+    const item = items[currentIndex];
+    const count = getColoredCount();
+    isLocked = true;
+    els.checkBtn.disabled = true;
+    Studio.event('check', { item: item.id, n: count, d: item.d });
+    Studio.answer({ n: count, d: item.d });
+  }
+
+  Studio.onVerdict(function(verdict) {
+    if (verdict.correct) {
+      els.feedbackMain.textContent = t('right');
+      els.feedbackHint.textContent = '';
+      els.feedback.className = 'padded right';
+      els.pictureContainer.classList.add('celebrate');
+      setTimeout(function() { els.pictureContainer.classList.remove('celebrate'); }, 600);
+      setTimeout(function() {
+        if (currentIndex + 1 < items.length) {
+          loadItem(currentIndex + 1);
+        } else {
+          showDone();
+        }
+      }, 1200);
+    } else {
+      els.feedbackMain.textContent = t('wrong');
+      els.feedbackHint.textContent = t('hint');
+      els.feedback.className = 'padded wrong';
+      els.pictureContainer.classList.add('shake');
+      setTimeout(function() { els.pictureContainer.classList.remove('shake'); }, 400);
+      isLocked = false;
+      els.checkBtn.disabled = false;
+    }
+  });
+
+  function showDone() {
+    els.app.classList.add('hidden');
+    els.doneScreen.classList.remove('hidden');
+    els.doneTitle.textContent = t('done');
+    Studio.done();
+  }
+
+  els.checkBtn.addEventListener('click', onCheck);
+
+  init();
+})();
+</script>

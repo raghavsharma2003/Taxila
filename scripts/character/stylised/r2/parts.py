@@ -194,7 +194,8 @@ def brow(P, sdf, side, n=22, M=10):
     th = np.array(P["brow_thick"], float)  # inner, mid, outer full thickness
     w = np.interp(ts, [0, 0.35, 1.0], th) * 0.5
     # rounded blunt inner end, tapered outer tip
-    w = w * np.sqrt(np.clip(ts / 0.06, 0, 1)) ** 0.5 * (1 - 0.85 * np.clip((ts - 0.82) / 0.18, 0, 1) ** 1.5)
+    ti = np.clip(ts / 0.10, 0, 1)
+    w = w * np.sqrt(1 - (1 - ti) ** 2) * (1 - 0.8 * np.clip((ts - 0.62) / 0.38, 0, 1) ** 1.6)  # round head, soft tapered tail
     w = np.maximum(w, 0.0003)
     h = np.full(n, P["brow_h"]) * (0.6 + 0.4 * w / w.max())
     C = C0 + Ns * (h * 0.35)[:, None]
@@ -381,7 +382,7 @@ def hair_shell(P, sdf, side, nv=54, nu=30):
         edge = np.clip(v / P["edge_roll"], 0, 1)
         T = T * np.sqrt(np.sin(edge * math.pi / 2)) - P["edge_tuck"] * (1 - edge)
         # clumps
-        c = (v * G) % 1.0
+        c = (v * G + P.get('clump_jitter', 0.0) * math.sin(2 * math.pi * v * 1.7 + 0.9 * side)) % 1.0
         g = (1 - (2 * c - 1) ** 2) ** P["clump_pow"]
         T = T * (1 - P["clump_depth"] + P["clump_depth"] * g) if v > 0.02 else T
         nrm = sdf.normal(base)
@@ -396,12 +397,13 @@ def hair_shell(P, sdf, side, nv=54, nu=30):
             a = i * (nu + 1) + j; b = a + 1; c2 = a + (nu + 1); d = c2 + 1
             q = [a, b, d, c2]
             F.append(q if side > 0 else q[::-1])
-    return verts, F, {"flow": flow.reshape(-1, 3), "grid": (nv, nu)}
+    uv = [(j / nu, i / nv) for i in range(nv + 1) for j in range(nu + 1)]
+    return verts, F, {"flow": flow.reshape(-1, 3), "grid": (nv, nu), "uv": uv}
 
 
 def bun(P, seg=28, rings=18):
     c = np.array(P["bun_c"], float); r = np.array(P["bun_r"], float)
-    V, F = [], []
+    V, F, UV = [], [], []
     for i in range(rings + 1):
         th = math.pi * i / rings
         for j in range(seg):
@@ -411,11 +413,12 @@ def bun(P, seg=28, rings=18):
             swirl = math.cos(P["bun_coils"] * (ph + 1.8 * th))
             k = 1 + P["bun_groove"] * (0.5 + 0.5 * swirl) ** 3 - P["bun_groove"] * 0.5
             V.append(c + d * r * k)
+            UV.append((j / seg, i / rings))
     for i in range(rings):
         for j in range(seg):
             a = i * seg + j; b = i * seg + (j + 1) % seg
             F.append([a, b, b + seg, a + seg])
-    return np.array(V), F, {}
+    return np.array(V), F, {"uv": UV}
 
 
 def lock(P, pts, thick, M=6, n=26):
@@ -430,7 +433,8 @@ def lock(P, pts, thick, M=6, n=26):
     Nn = np.tile([0, -1.0, 0], (n, 1))
     Nv, Bv = frames_from_normals(C, Nn)
     V, F = tube(C, Nv, Bv, w * 1.4, w * 0.8, M=M)
-    return V, F, {}
+    uv = [(i / (n - 1), j / M) for i in range(n) for j in range(M)] + [(0.0, 0.0), (1.0, 0.0)]
+    return V, F, {"uv": uv}
 
 
 # ------------------------------------------------------------------ kurta bust
@@ -446,7 +450,7 @@ def kurta(P, M=56):
             # superellipse
             sx = np.sign(cx) * abs(cx) ** (2 / ex); sy = np.sign(cy) * abs(cy) ** (2 / ex)
             p_body = np.array([sx * hw, yc + sy * hd, z])
-            p_coll = np.array([cx * rr[0] * rs, nc[1] + cy * rr[1] * rs, z + P["neck_v"] * max(0, -cy) ** 4])
+            p_coll = np.array([cx * rr[0] * rs, nc[1] + cy * rr[1] * rs, z + P["neck_v"] * max(0, -cy) ** P.get("neck_v_pow", 4)])
             V.append(p_body * (1 - cb) + p_coll * cb)
     V = np.array(V)
     F = []

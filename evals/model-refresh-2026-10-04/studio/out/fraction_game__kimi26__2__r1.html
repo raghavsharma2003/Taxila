@@ -1,0 +1,322 @@
+<style>
+  :root {
+    --bg: #FFF8F0;
+    --orange: #E65100;
+    --light-orange: #FFF3E0;
+    --stroke: #E67E22;
+    --fill-shade: #FF8C42;
+    --green: #43A047;
+    --brown: #5D4037;
+    --cream: #FFFFFF;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', 'Nirmala UI', sans-serif;
+    background: var(--bg);
+    color: var(--brown);
+    overflow-x: hidden;
+  }
+  #app {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+    position: relative;
+  }
+  #title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--orange);
+    text-align: center;
+    margin-top: 8px;
+  }
+  #instr {
+    font-size: 1rem;
+    color: #8D6E63;
+    text-align: center;
+    margin-top: 4px;
+    margin-bottom: 14px;
+    line-height: 1.4;
+  }
+  #stage {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  #target-frac {
+    font-size: 3.2rem;
+    font-weight: 900;
+    color: var(--orange);
+    margin-bottom: 14px;
+    letter-spacing: 2px;
+    user-select: none;
+  }
+  #shape-box {
+    width: 280px;
+    height: 280px;
+    position: relative;
+  }
+  #shape-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .slice {
+    fill: var(--light-orange);
+    stroke: var(--stroke);
+    stroke-width: 3;
+    cursor: pointer;
+    transition: fill .25s ease, transform .18s cubic-bezier(.34,1.56,.64,1), filter .25s ease;
+    transform-origin: center;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.08));
+  }
+  .slice:active { transform: scale(0.92); }
+  .slice.shaded {
+    fill: url(#orangeGrad);
+    filter: drop-shadow(0 0 10px rgba(255,140,66,0.45));
+  }
+  #hint {
+    min-height: 44px;
+    margin-top: 14px;
+    font-size: 1rem;
+    color: var(--brown);
+    text-align: center;
+    padding: 0 12px;
+  }
+  #check-btn {
+    width: 100%;
+    max-width: 320px;
+    margin: 14px 0 24px;
+    padding: 16px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--cream);
+    background: var(--green);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .2s;
+    box-shadow: 0 4px 14px rgba(67,160,71,0.35);
+  }
+  #check-btn:active {
+    transform: scale(0.96);
+    box-shadow: 0 2px 8px rgba(67,160,71,0.25);
+  }
+  .shake { animation: shake .45s ease; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-10px); }
+    40% { transform: translateX(10px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+  }
+  .pop { animation: pop .6s ease; }
+  @keyframes pop {
+    0% { transform: scale(0.85); opacity: 0.6; }
+    60% { transform: scale(1.08); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  #done-screen {
+    position: fixed;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,248,240,0.98);
+    z-index: 20;
+    text-align: center;
+    padding: 24px;
+  }
+  #done-screen.show {
+    display: flex;
+    animation: fadeIn .4s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  #done-emoji {
+    font-size: 4.5rem;
+    margin-bottom: 12px;
+  }
+  #done-text {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #2E7D32;
+  }
+</style>
+
+<div id="app">
+  <div id="title"></div>
+  <div id="instr"></div>
+  <div id="stage" data-item="">
+    <div id="target-frac"></div>
+    <div id="shape-box"></div>
+    <div id="hint"></div>
+  </div>
+  <button id="check-btn" data-action="check"></button>
+</div>
+
+<div id="done-screen">
+  <div id="done-emoji">🎉</div>
+  <div id="done-text"></div>
+</div>
+
+<script>
+(function(){
+  const items = Studio.params.items || [];
+  let current = 0;
+  let selected = new Set();
+  let awaiting = false;
+  let doneCalled = false;
+
+  const titleEl = document.getElementById('title');
+  const instrEl = document.getElementById('instr');
+  const stageEl = document.getElementById('stage');
+  const targetEl = document.getElementById('target-frac');
+  const shapeBox = document.getElementById('shape-box');
+  const hintEl = document.getElementById('hint');
+  const checkBtn = document.getElementById('check-btn');
+  const doneScreen = document.getElementById('done-screen');
+  const doneText = document.getElementById('done-text');
+
+  function init(){
+    titleEl.textContent = Studio.t('title');
+    instrEl.textContent = Studio.t('instr');
+    checkBtn.textContent = Studio.t('check');
+    doneText.textContent = Studio.t('done');
+    loadItem(0);
+    Studio.ready();
+  }
+
+  function loadItem(idx){
+    current = idx;
+    selected.clear();
+    awaiting = false;
+    hintEl.textContent = '';
+    hintEl.className = '';
+    shapeBox.className = '';
+    if (idx >= items.length){
+      showDone();
+      return;
+    }
+    const item = items[idx];
+    stageEl.setAttribute('data-item', item.id);
+    targetEl.textContent = item.n + '/' + item.d;
+    renderShape(item.d);
+    updateHint();
+  }
+
+  function renderShape(d){
+    shapeBox.innerHTML = '';
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('id', 'shape-svg');
+    svg.setAttribute('viewBox', '0 0 300 300');
+
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    defs.innerHTML = '<radialGradient id="orangeGrad" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFB74D"/><stop offset="100%" stop-color="#FF8C42"/></radialGradient>';
+    svg.appendChild(defs);
+
+    const cx = 150, cy = 150, R = 135;
+    const angle = 2 * Math.PI / d;
+    const large = angle > Math.PI ? 1 : 0;
+
+    for (let i = 0; i < d; i++){
+      const a1 = i * angle - Math.PI / 2;
+      const a2 = (i + 1) * angle - Math.PI / 2;
+      const x1 = cx + R * Math.cos(a1);
+      const y1 = cy + R * Math.sin(a1);
+      const x2 = cx + R * Math.cos(a2);
+      const y2 = cy + R * Math.sin(a2);
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', `M${cx},${cy} L${x1},${y1} A${R},${R} 0 ${large},1 ${x2},${y2} Z`);
+      path.setAttribute('class', 'slice');
+      path.setAttribute('data-part', String(i));
+      path.setAttribute('data-shaded', 'false');
+      path.addEventListener('click', toggleSlice);
+      svg.appendChild(path);
+    }
+    shapeBox.appendChild(svg);
+  }
+
+  function toggleSlice(e){
+    if (awaiting) return;
+    const slice = e.currentTarget;
+    const idx = parseInt(slice.getAttribute('data-part'), 10);
+    if (selected.has(idx)){
+      selected.delete(idx);
+      slice.classList.remove('shaded');
+      slice.setAttribute('data-shaded', 'false');
+    } else {
+      selected.add(idx);
+      slice.classList.add('shaded');
+      slice.setAttribute('data-shaded', 'true');
+    }
+    updateHint();
+    Studio.event('toggle', { idx: idx, count: selected.size, item: items[current].id });
+  }
+
+  function updateHint(){
+    const item = items[current];
+    if (!item) return;
+    const raw = Studio.t('hint') || '';
+    if (!raw.includes('{}')){
+      hintEl.textContent = raw;
+      return;
+    }
+    const need = item.n - selected.size;
+    if (need > 0){
+      hintEl.textContent = raw.replace('{}', String(need));
+    } else if (need < 0){
+      hintEl.textContent = raw.replace('{}', String(Math.abs(need)));
+    } else {
+      hintEl.textContent = '';
+    }
+  }
+
+  checkBtn.addEventListener('click', function(){
+    if (awaiting) return;
+    const item = items[current];
+    if (!item) return;
+    awaiting = true;
+    Studio.answer({ n: selected.size, d: item.d });
+  });
+
+  Studio.onVerdict(function(v){
+    if (v.correct){
+      hintEl.textContent = Studio.t('right');
+      hintEl.className = 'pop';
+      shapeBox.classList.add('pop');
+      setTimeout(function(){
+        shapeBox.classList.remove('pop');
+        loadItem(current + 1);
+      }, 1000);
+    } else {
+      hintEl.textContent = Studio.t('wrong');
+      hintEl.className = 'shake';
+      shapeBox.classList.add('shake');
+      setTimeout(function(){
+        shapeBox.classList.remove('shake');
+        hintEl.className = '';
+      }, 500);
+      awaiting = false;
+    }
+  });
+
+  function showDone(){
+    if (doneCalled) return;
+    doneCalled = true;
+    doneScreen.classList.add('show');
+    Studio.done();
+  }
+
+  init();
+})();
+</script>

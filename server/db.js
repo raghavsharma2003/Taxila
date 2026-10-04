@@ -2,7 +2,8 @@
 // - long-lived host (Azure Container Apps, DB_DRIVER=pg): a persistent pg Pool — one TLS handshake per pooled
 //   connection instead of one HTTPS request per query (Neon HTTP measured ~230 ms/query from eastus2).
 // - serverless / sandbox (default): Neon SQL-over-HTTP (the inherited api/_db.js pattern; works through HTTPS proxies).
-import { neon } from "@neondatabase/serverless";
+// The Neon package is imported only on that path, so a DB_DRIVER=pg host (Azure Database for PostgreSQL, India move)
+// never loads it and does not need Neon to exist.
 
 let _driver;
 /**
@@ -29,18 +30,30 @@ export function dbUrl(env = process.env, { direct = false } = {}) {
   if (env.TAXILA_DB && env.TAXILA_DB !== "prod") throw new Error(`TAXILA_DB=${env.TAXILA_DB}: expected test or prod`);
   return (direct && env.DATABASE_URL_DIRECT) || env.DATABASE_URL;
 }
+/**
+ * The pg Pool config for a database url — Neon or Azure Database for PostgreSQL Flexible Server alike. Exported for
+ * tests. node-postgres does not implement channel_binding (Neon urls carry it), so it is stripped; TLS stays enforced:
+ * pg 8.x treats sslmode=require as verify-full (certificate chain AND hostname checked against Node's CA store, which
+ * holds the DigiCert / Microsoft roots Azure PG presents), and with no sslmode at all `ssl` below still verifies.
+ * A url that ASKS for no TLS (sslmode=disable/allow/prefer) is refused: production databases are TLS-only.
+ * @param {string} url
+ */
+export function pgPoolConfig(url) {
+  const mode = /[?&]sslmode=([^&]+)/.exec(url)?.[1];
+  if (mode && !["require", "verify-ca", "verify-full"].includes(mode)) throw new Error(`DATABASE_URL sslmode=${mode}: TLS is required (sslmode=require)`);
+  return { connectionString: url.replace(/([?&])channel_binding=require(&?)/, (m, a, b) => (b ? a : "")).replace(/[?&]$/, ""),
+    max: Number(process.env.DB_POOL_MAX || 10), idleTimeoutMillis: IDLE_MS,
+    // TCP keepalive under the idle window: Azure's outbound SNAT drops an idle flow after ~4 min [V Azure LB docs],
+    // which would turn a 10-min idle connection into a hung first query instead of a warm one.
+    keepAlive: true, keepAliveInitialDelayMillis: 30_000, ssl: { rejectUnauthorized: true } };
+}
 async function driver() {
   if (_driver) return _driver;
   const url = dbUrl();
   if (!url) throw new Error("DATABASE_URL not set");
   if (process.env.DB_DRIVER === "pg") {
     const { default: pg } = await import("pg");
-    // node-postgres does not implement channel_binding; TLS is still enforced (sslmode=require + verify)
-    const pool = new pg.Pool({ connectionString: url.replace(/[?&]channel_binding=require/, (m) => (m[0] === "?" ? "?" : "")),
-      max: Number(process.env.DB_POOL_MAX || 10), idleTimeoutMillis: IDLE_MS,
-      // TCP keepalive under the idle window: Azure's outbound SNAT drops an idle flow after ~4 min [V Azure LB docs],
-      // which would turn a 10-min idle connection into a hung first query instead of a warm one.
-      keepAlive: true, keepAliveInitialDelayMillis: 30_000, ssl: { rejectUnauthorized: true } });
+    const pool = new pg.Pool(pgPoolConfig(url));
     pool.on("error", (e) => console.error("pg pool error", e.message));
     _driver = {
       query: async (text, params) => (await pool.query(text, params)).rows,
@@ -61,6 +74,7 @@ async function driver() {
       },
     };
   } else {
+    const { neon } = await import("@neondatabase/serverless");
     const sql = neon(url);
     _driver = {
       query: (text, params) => sql.query(text, params),

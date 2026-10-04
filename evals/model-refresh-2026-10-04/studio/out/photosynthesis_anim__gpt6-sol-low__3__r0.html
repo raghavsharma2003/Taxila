@@ -1,0 +1,143 @@
+<style>
+  *{box-sizing:border-box}
+  .garden{width:100%;max-width:360px;margin:auto;padding:10px 12px 14px;background:#f4faef;color:#244934;font-family:system-ui,sans-serif;border-radius:24px;overflow:hidden}
+  .garden h2{min-height:30px;margin:0 0 4px;text-align:center;font-size:20px;line-height:1.3;color:#27553c}
+  .scene{display:block;width:100%;height:330px;border-radius:20px;background:linear-gradient(#dff4fa 0%,#f3fbec 75%,#e6f1d4 100%)}
+  .scene text{font:600 13px system-ui,sans-serif;fill:#294c40}
+  .scene [data-flow]{transition:opacity .3s;filter:drop-shadow(0 1px 2px #ffffff)}
+  .rays{transform-origin:58px 53px;animation:breathe 2.5s ease-in-out infinite}
+  .glow{animation:breathe 1.8s ease-in-out infinite}
+  @keyframes breathe{50%{opacity:.45;transform:scale(.94)}}
+  .controls{display:flex;gap:7px;margin-top:9px}
+  button{font:700 15px system-ui,sans-serif;border:0;cursor:pointer;touch-action:manipulation;transition:transform .18s,background .18s,box-shadow .18s}
+  button:active{transform:scale(.91)}
+  button:focus-visible{outline:3px solid #edaa45;outline-offset:2px}
+  .toggle{min-width:84px;min-height:46px;padding:0 9px;border-radius:14px;background:#286d54;color:white}
+  .steps{display:flex;flex:1;gap:5px;min-width:0}
+  .steps button{flex:1;min-width:0;min-height:46px;border-radius:13px;background:#e1ebd6;color:#315c43}
+  .steps button.active{background:#f4bd65;box-shadow:0 3px 0 #d99b46}
+  [data-caption]{min-height:40px;margin:8px 2px 4px;text-align:center;font-size:15px;font-weight:650;line-height:1.3;color:#315540}
+  .question{margin:0 2px 8px;text-align:center;font-size:15px;font-weight:700;line-height:1.3}
+  .options{display:flex;gap:8px}
+  .options button{flex:1;min-width:0;min-height:48px;padding:4px;border-radius:15px;background:white;color:#315540;border:2px solid #b8d5bc}
+  .options button.good{background:#d6f3c4;border-color:#66a75a}
+  .options button.try{background:#ffe5da;border-color:#e49b82}
+</style>
+
+<div class="garden">
+  <h2 data-title></h2>
+  <svg class="scene" viewBox="0 0 336 330" role="img">
+    <defs>
+      <linearGradient id="leafFill"><stop stop-color="#a3dc72"/><stop offset="1" stop-color="#388c55"/></linearGradient>
+    </defs>
+    <g class="rays" stroke="#f8c75e" stroke-width="4" stroke-linecap="round" opacity=".8">
+      <path d="M58 12v9M58 85v9M17 53h9M90 53h9M29 24l7 7M80 75l7 7M87 24l-7 7M36 75l-7 7"/>
+      <path d="M82 72Q119 103 158 126" stroke-dasharray="5 8"/>
+    </g>
+    <circle cx="58" cy="53" r="29" fill="#ffd36d" stroke="#f4b94e" stroke-width="3"/>
+    <path d="M0 270Q85 258 168 270T336 269V330H0Z" fill="#af805e"/>
+    <path d="M0 285Q90 273 168 287T336 282V330H0Z" fill="#926d54" opacity=".5"/>
+    <path d="M166 278Q168 228 170 180" fill="none" stroke="#478957" stroke-width="10" stroke-linecap="round"/>
+    <g data-entity="roots" fill="none" stroke="#e6c69a" stroke-width="4" stroke-linecap="round">
+      <path d="M166 270Q145 288 119 305M166 270Q183 288 210 306M166 270L163 315M150 286L137 313M184 286L197 316"/>
+    </g>
+    <ellipse class="glow" cx="214" cy="152" rx="65" ry="36" fill="#f9e98e" opacity=".55"/>
+    <path data-entity="leaf" d="M169 178Q170 119 265 117Q251 178 169 178Z" fill="url(#leafFill)" stroke="#388457" stroke-width="3"/>
+    <path d="M177 172Q212 150 253 128" fill="none" stroke="#d5ed9b" stroke-width="2"/>
+    <circle class="glow" cx="215" cy="148" r="12" fill="#ffdc77" opacity=".85"/>
+    <g fill="#55aee1">
+      <circle data-flow="water" r="5"/><circle data-flow="water" r="5"/><circle data-flow="water" r="5"/>
+    </g>
+    <g fill="#8c83d8">
+      <circle data-flow="co2" r="5"/><circle data-flow="co2" r="5"/><circle data-flow="co2" r="5"/>
+    </g>
+    <g fill="#f1a66d">
+      <circle data-flow="o2" r="5"/><circle data-flow="o2" r="5"/><circle data-flow="o2" r="5"/>
+    </g>
+    <text data-label="sun" x="96" y="43"></text>
+    <text data-label="leaf" x="205" y="106"></text>
+    <text data-label="glucose" x="216" y="195"></text>
+    <text data-label="roots" x="214" y="299"></text>
+    <text data-label="water" x="36" y="243"></text>
+    <text data-label="co2" x="272" y="78"></text>
+    <text data-label="o2" x="274" y="218"></text>
+  </svg>
+  <div class="controls">
+    <button class="toggle" data-action="play" type="button"></button>
+    <div class="steps" data-steps></div>
+  </div>
+  <div data-caption></div>
+  <div class="question" data-ask></div>
+  <div class="options">
+    <button type="button" data-option="co2"></button>
+    <button type="button" data-option="o2"></button>
+    <button type="button" data-option="water"></button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const root=document.querySelector('.garden');
+  const p=Studio.params;
+  const count=p.steps;
+  let step=1,playing=true,finished=false,previous=0,elapsed=0;
+  root.querySelector('[data-title]').textContent=Studio.t('title');
+  root.querySelector('[data-ask]').textContent=Studio.t('ask');
+  root.querySelectorAll('[data-label]').forEach(el=>el.textContent=Studio.t(el.dataset.label));
+  root.querySelectorAll('[data-option]').forEach(el=>el.textContent=Studio.t(el.dataset.option));
+  const toggle=root.querySelector('[data-action="play"]');
+  const caption=root.querySelector('[data-caption]');
+  const steps=root.querySelector('[data-steps]');
+  for(let n=1;n<=count;n++){
+    const b=document.createElement('button');
+    b.type='button';b.dataset.action='step-'+n;b.textContent=String(n);
+    b.addEventListener('click',()=>{step=n;refresh();Studio.event('step',{step:n})});
+    steps.appendChild(b);
+  }
+  function refresh(){
+    toggle.textContent=Studio.t(playing?'pause':'play');
+    caption.textContent=Studio.t('step'+step);
+    steps.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('active',i+1===step));
+    const focus=['water','co2','o2'];
+    root.querySelectorAll('[data-flow]').forEach(el=>{
+      el.style.opacity=(step===1||step===count||el.dataset.flow===focus[(step-2)%focus.length])?'1':'.28';
+    });
+  }
+  toggle.addEventListener('click',()=>{playing=!playing;refresh();Studio.event('play',{playing})});
+  const routes={
+    water:[[132,300],[165,268],[169,216],[173,177],[210,150]],
+    co2:[[320,115],[288,117],[259,128],[229,145]],
+    o2:[[224,146],[258,161],[291,181],[324,194]]
+  };
+  function point(path,t){
+    const pos=t*(path.length-1),i=Math.min(Math.floor(pos),path.length-2),f=pos-i;
+    return [path[i][0]+(path[i+1][0]-path[i][0])*f,path[i][1]+(path[i+1][1]-path[i][1])*f];
+  }
+  function frame(now){
+    if(previous&&playing)elapsed+=(now-previous);
+    previous=now;
+    Object.keys(routes).forEach(key=>{
+      root.querySelectorAll('[data-flow="'+key+'"]').forEach((el,i)=>{
+        const t=((elapsed/2600+i/3)%1);
+        const xy=point(routes[key],t);
+        el.setAttribute('cx',xy[0]);el.setAttribute('cy',xy[1]);
+      });
+    });
+    requestAnimationFrame(frame);
+  }
+  root.querySelectorAll('[data-option]').forEach(b=>b.addEventListener('click',()=>{
+    if(finished)return;
+    root.querySelectorAll('[data-option]').forEach(x=>x.classList.remove('good','try'));
+    b.classList.add('try');
+    Studio.answer(b.dataset.option);
+    Studio.event('answer',{option:b.dataset.option});
+  }));
+  Studio.onVerdict(({correct})=>{
+    const selected=root.querySelector('[data-option].try');
+    if(!selected||finished)return;
+    if(correct){selected.classList.remove('try');selected.classList.add('good');finished=true;Studio.done()}
+    else {setTimeout(()=>selected.classList.remove('try'),450)}
+  });
+  refresh();requestAnimationFrame(frame);Studio.ready();
+})();
+</script>

@@ -1,0 +1,318 @@
+<style>
+  *{box-sizing:border-box}
+  .viz{
+    width:100%;
+    min-height:100vh;
+    margin:0;
+    padding:18px 12px 22px;
+    overflow:hidden;
+    color:#26334a;
+    background:linear-gradient(180deg,#fff8e8 0%,#eef9f4 100%);
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  .card{
+    width:100%;
+    max-width:520px;
+    margin:0 auto;
+    padding:16px 10px 18px;
+    border:2px solid #fff;
+    border-radius:28px;
+    background:rgba(255,255,255,.9);
+    box-shadow:0 12px 30px rgba(48,76,90,.13);
+  }
+  .title{
+    min-height:34px;
+    margin:0 8px 4px;
+    text-align:center;
+    font-size:clamp(21px,7vw,29px);
+    line-height:1.15;
+    font-weight:850;
+    color:#275b52;
+  }
+  .ask{
+    min-height:46px;
+    margin:7px 10px 8px;
+    padding:10px 13px;
+    border-radius:18px;
+    background:#fff0b8;
+    text-align:center;
+    font-size:17px;
+    line-height:1.35;
+    font-weight:750;
+    color:#704d20;
+  }
+  .chart-wrap{
+    position:relative;
+    width:100%;
+    border-radius:22px;
+    background:linear-gradient(180deg,#f8fcff,#ffffff);
+    box-shadow:inset 0 0 0 1px #dcebe7;
+    overflow:hidden;
+  }
+  #chart{
+    display:block;
+    width:100%;
+    height:auto;
+    max-height:410px;
+    touch-action:manipulation;
+  }
+  .grid{
+    stroke:#cddfdc;
+    stroke-width:1;
+    stroke-dasharray:4 5;
+  }
+  .axis{
+    stroke:#617873;
+    stroke-width:2;
+    stroke-linecap:round;
+  }
+  .tick-label{
+    fill:#566c68;
+    font-size:12px;
+    font-weight:700;
+    text-anchor:end;
+    dominant-baseline:middle;
+  }
+  .fruit-label{
+    fill:#354d49;
+    font-size:11px;
+    font-weight:750;
+    text-anchor:middle;
+  }
+  .axis-title{
+    fill:#49665f;
+    font-size:12px;
+    font-weight:800;
+    text-anchor:middle;
+  }
+  .bar{
+    fill:#43a98f;
+    stroke:#287d6d;
+    stroke-width:2;
+    rx:10;
+    cursor:pointer;
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    transition:y 850ms cubic-bezier(.2,.78,.25,1),height 850ms cubic-bezier(.2,.78,.25,1),transform 150ms ease,filter 180ms ease,fill 180ms ease;
+    filter:drop-shadow(0 5px 4px rgba(36,110,94,.18));
+    outline:none;
+  }
+  .bar:hover,.bar:focus-visible{fill:#36a184;filter:drop-shadow(0 7px 5px rgba(36,110,94,.25))}
+  .bar:active,.bar.picked{transform:scale(.93,1.03)}
+  .value-pill{
+    fill:#275b52;
+    opacity:0;
+    transform:translateY(5px);
+    transform-box:fill-box;
+    transform-origin:center;
+    transition:opacity 180ms ease,transform 180ms ease;
+    pointer-events:none;
+  }
+  .value-pill.show{opacity:1;transform:translateY(0)}
+  .value-text{
+    fill:#fff;
+    font-size:13px;
+    font-weight:850;
+    text-anchor:middle;
+    dominant-baseline:middle;
+    pointer-events:none;
+  }
+  .feedback{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:52px;
+    margin:10px 10px 0;
+    padding:9px 12px;
+    border-radius:18px;
+    text-align:center;
+    font-size:19px;
+    font-weight:850;
+    opacity:0;
+    transform:translateY(7px);
+    transition:opacity 220ms ease,transform 220ms ease,background 220ms ease;
+  }
+  .feedback.show{opacity:1;transform:translateY(0)}
+  .feedback.good{color:#176548;background:#dff7e7}
+  .feedback.try{color:#8a4d29;background:#ffe4d5}
+  .feedback.good.show{animation:softPulse 560ms ease}
+  @keyframes softPulse{
+    0%{transform:scale(.96)}
+    55%{transform:scale(1.025)}
+    100%{transform:scale(1)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .bar,.value-pill,.feedback{transition-duration:1ms;animation:none!important}
+  }
+</style>
+<main class="viz">
+  <section class="card">
+    <h1 class="title" id="title"></h1>
+    <div class="ask" id="ask"></div>
+    <div class="chart-wrap">
+      <svg id="chart" viewBox="0 0 360 390" role="img">
+        <g id="gridLayer"></g>
+        <g id="axisLayer"></g>
+        <g id="barLayer"></g>
+        <g id="labelLayer"></g>
+        <g id="valueLayer"></g>
+      </svg>
+    </div>
+    <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+  </section>
+</main>
+<script>
+(() => {
+  const data = Studio.params.data;
+  const ns = "http://www.w3.org/2000/svg";
+  const title = document.getElementById("title");
+  const ask = document.getElementById("ask");
+  const feedback = document.getElementById("feedback");
+  const gridLayer = document.getElementById("gridLayer");
+  const axisLayer = document.getElementById("axisLayer");
+  const barLayer = document.getElementById("barLayer");
+  const labelLayer = document.getElementById("labelLayer");
+  const valueLayer = document.getElementById("valueLayer");
+
+  title.textContent = Studio.t("title");
+  ask.textContent = Studio.t("ask");
+
+  const make = (tag, attrs, parent) => {
+    const node = document.createElementNS(ns, tag);
+    Object.keys(attrs).forEach(key => node.setAttribute(key, attrs[key]));
+    parent.appendChild(node);
+    return node;
+  };
+
+  const values = data.map(item => item.value);
+  const maxValue = Math.max.apply(null, values);
+  const roughStep = maxValue / Math.max(data.length - 1, 1);
+  const power = Math.pow(10, Math.floor(Math.log10(roughStep)));
+  const fraction = roughStep / power;
+  const niceFraction = fraction <= 1 ? 1 : fraction <= 2 ? 2 : fraction <= 5 ? 5 : 10;
+  const step = niceFraction * power;
+  const scaleTop = Math.ceil(maxValue / step) * step;
+
+  const left = 52;
+  const right = 348;
+  const top = 28;
+  const baseline = 300;
+  const plotHeight = baseline - top;
+  const barWidth = 50;
+  const slot = (right - left) / data.length;
+
+  for (let tick = 0; tick <= scaleTop; tick += step) {
+    const y = baseline - (tick / scaleTop) * plotHeight;
+    make("line", {x1:left, y1:y, x2:right, y2:y, class:"grid"}, gridLayer);
+    const label = make("text", {
+      x:left - 8,
+      y:y,
+      class:"tick-label",
+      "data-tick":tick
+    }, axisLayer);
+    label.textContent = tick;
+  }
+
+  make("line", {x1:left, y1:top, x2:left, y2:baseline, class:"axis"}, axisLayer);
+  make("line", {x1:left, y1:baseline, x2:right, y2:baseline, class:"axis"}, axisLayer);
+
+  const yTitle = make("text", {
+    x:16,
+    y:(top + baseline) / 2,
+    class:"axis-title",
+    transform:"rotate(-90 16 " + ((top + baseline) / 2) + ")"
+  }, axisLayer);
+  yTitle.textContent = Studio.t("yaxis");
+
+  let locked = false;
+  let active = null;
+
+  data.forEach((item, index) => {
+    const center = left + slot * index + slot / 2;
+    const finalHeight = (item.value / scaleTop) * plotHeight;
+    const finalY = baseline - finalHeight;
+
+    const bar = make("rect", {
+      x:center - barWidth / 2,
+      y:baseline,
+      width:barWidth,
+      height:0,
+      class:"bar",
+      tabindex:0,
+      role:"button",
+      "data-bar":item.key,
+      "data-value":item.value
+    }, barLayer);
+
+    const fruit = make("text", {
+      x:center,
+      y:326,
+      class:"fruit-label"
+    }, labelLayer);
+    fruit.textContent = Studio.t(item.key);
+
+    const pill = make("g", {class:"value-pill"}, valueLayer);
+    make("rect", {
+      x:center - 20,
+      y:Math.max(finalY - 29, top - 4),
+      width:40,
+      height:24,
+      rx:12
+    }, pill);
+    const valueText = make("text", {
+      x:center,
+      y:Math.max(finalY - 17, top + 8),
+      class:"value-text"
+    }, pill);
+    valueText.textContent = item.value;
+
+    const choose = () => {
+      if (locked) return;
+      if (active) {
+        active.bar.classList.remove("picked");
+        active.pill.classList.remove("show");
+      }
+      active = {bar, pill};
+      bar.classList.add("picked");
+      pill.classList.add("show");
+      feedback.className = "feedback";
+      feedback.textContent = "";
+      Studio.event("bar_tap", {key:item.key, value:item.value});
+      Studio.answer(item.key);
+      locked = true;
+    };
+
+    bar.addEventListener("click", choose);
+    bar.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        choose();
+      }
+    });
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        bar.setAttribute("y", finalY);
+        bar.setAttribute("height", finalHeight);
+      });
+    });
+  });
+
+  Studio.onVerdict(result => {
+    if (result.correct) {
+      feedback.textContent = Studio.t("right") + " " + Studio.t("done");
+      feedback.className = "feedback good show";
+      Studio.event("verdict", {correct:true});
+      Studio.done();
+    } else {
+      feedback.textContent = Studio.t("wrong");
+      feedback.className = "feedback try show";
+      Studio.event("verdict", {correct:false});
+      locked = false;
+      if (active) active.bar.classList.remove("picked");
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

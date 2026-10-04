@@ -1,0 +1,498 @@
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+  font-family: sans-serif; 
+  background: #FFF5E6; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  min-height: 100vh; 
+  padding: 16px; 
+  user-select: none; 
+  -webkit-tap-highlight-color: transparent;
+}
+.game-container {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+h2 { 
+  font-size: 20px; 
+  color: #5D4037; 
+  text-align: center;
+  font-weight: 700;
+}
+.instr {
+  font-size: 14px;
+  color: #8D6E63;
+  text-align: center;
+  padding: 0 8px;
+  line-height: 1.4;
+}
+.item-wrapper {
+  width: 100%;
+  background: #FFE0B2;
+  border-radius: 24px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: opacity 0.3s;
+  position: relative;
+}
+.fraction-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #BF360C;
+  margin-bottom: 12px;
+  font-family: serif;
+}
+.pizza-container, .bar-container {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0;
+  min-height: 180px;
+  align-items: center;
+}
+.pizza-svg, .bar-svg {
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+}
+.part {
+  cursor: pointer;
+  transition: transform 0.15s, opacity 0.2s;
+}
+.part:active {
+  transform: scale(0.95);
+}
+.part:hover {
+  opacity: 0.9;
+}
+.check-btn {
+  display: block;
+  margin: 12px auto 0;
+  padding: 14px 36px;
+  font-size: 18px;
+  font-weight: 700;
+  background: #FF8A65;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  box-shadow: 0 4px 8px rgba(255,138,101,0.4);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  min-width: 120px;
+}
+.check-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 4px rgba(255,138,101,0.3);
+}
+.feedback {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  min-height: 36px;
+  padding: 8px;
+  border-radius: 12px;
+  margin-top: 4px;
+  transition: opacity 0.3s;
+}
+.feedback.right {
+  color: #2E7D32;
+  background: #C8E6C9;
+}
+.feedback.wrong {
+  color: #C62828;
+  background: #FFCDD2;
+}
+.done-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px 0;
+}
+.done-icon {
+  font-size: 64px;
+  animation: bounce 1s infinite;
+}
+@keyframes bounce {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+.done-text {
+  font-size: 28px;
+  font-weight: 700;
+  color: #5D4037;
+}
+.hint-text {
+  font-size: 13px;
+  color: #A1887F;
+  text-align: center;
+  margin-top: 4px;
+  padding: 0 12px;
+}
+</style>
+<div class="game-container" id="app">
+  <h2 id="title"></h2>
+  <div class="instr" id="instr"></div>
+  <div id="itemContainer"></div>
+  <div class="feedback" id="feedback"></div>
+  <div class="hint-text" id="hintText"></div>
+</div>
+<script>
+(function() {
+  const items = Studio.params.items;
+  const picture = Studio.params.picture; // "pizza-or-bar"
+  const container = document.getElementById('itemContainer');
+  const feedbackEl = document.getElementById('feedback');
+  const titleEl = document.getElementById('title');
+  const instrEl = document.getElementById('instr');
+  const hintEl = document.getElementById('hintText');
+  
+  titleEl.textContent = Studio.t('title');
+  instrEl.textContent = Studio.t('instr');
+  hintEl.textContent = Studio.t('hint');
+  
+  let currentIndex = 0;
+  let currentItemId = null;
+  let shadedParts = []; // array of boolean for current item
+  let checkBtn = null;
+  
+  function clearContainer() {
+    container.innerHTML = '';
+    feedbackEl.className = 'feedback';
+    feedbackEl.textContent = '';
+  }
+  
+  function buildPizza(d, shaded) {
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("viewBox", "0 0 240 240");
+    svg.setAttribute("class", "pizza-svg");
+    svg.setAttribute("width", "240");
+    svg.setAttribute("height", "240");
+    
+    const cx = 120, cy = 120, r = 100;
+    const angleStep = 360 / d;
+    let startAngle = -90; // start from top
+    
+    // outer circle base
+    const baseCircle = document.createElementNS(svgNS, "circle");
+    baseCircle.setAttribute("cx", cx);
+    baseCircle.setAttribute("cy", cy);
+    baseCircle.setAttribute("r", r);
+    baseCircle.setAttribute("fill", "#F9A825");
+    baseCircle.setAttribute("stroke", "#E65100");
+    baseCircle.setAttribute("stroke-width", "2");
+    svg.appendChild(baseCircle);
+    
+    // inner circle for crust look
+    const innerCircle = document.createElementNS(svgNS, "circle");
+    innerCircle.setAttribute("cx", cx);
+    innerCircle.setAttribute("cy", cy);
+    innerCircle.setAttribute("r", r - 12);
+    innerCircle.setAttribute("fill", "#FFB300");
+    baseCircle.appendChild(innerCircle); // under slices
+    
+    // slices
+    for (let i = 0; i < d; i++) {
+      const isShaded = shaded[i];
+      const sliceGroup = document.createElementNS(svgNS, "g");
+      sliceGroup.setAttribute("data-part", i);
+      sliceGroup.setAttribute("data-shaded", isShaded ? "true" : "false");
+      sliceGroup.classList.add("part");
+      sliceGroup.style.cursor = "pointer";
+      
+      const startRad = (startAngle * Math.PI) / 180;
+      const endRad = ((startAngle + angleStep) * Math.PI) / 180;
+      
+      const x1 = cx + r * Math.cos(startRad);
+      const y1 = cy + r * Math.sin(startRad);
+      const x2 = cx + r * Math.cos(endRad);
+      const y2 = cy + r * Math.sin(endRad);
+      
+      const largeArc = angleStep > 180 ? 1 : 0;
+      
+      const path = document.createElementNS(svgNS, "path");
+      const dStr = `M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${largeArc} 1 ${x2},${y2} Z`;
+      path.setAttribute("d", dStr);
+      path.setAttribute("fill", isShaded ? "#E65100" : "#FFCC80");
+      path.setAttribute("stroke", "#E65100");
+      path.setAttribute("stroke-width", "2");
+      sliceGroup.appendChild(path);
+      
+      // add topping dots for fun
+      if (isShaded) {
+        const dotX = cx + (r * 0.6) * Math.cos((startRad + endRad)/2);
+        const dotY = cy + (r * 0.6) * Math.sin((startRad + endRad)/2);
+        const circle = document.createElementNS(svgNS, "circle");
+        circle.setAttribute("cx", dotX);
+        circle.setAttribute("cy", dotY);
+        circle.setAttribute("r", 6);
+        circle.setAttribute("fill", "#D84315");
+        circle.setAttribute("opacity", "0.6");
+        sliceGroup.appendChild(circle);
+      }
+      
+      svg.appendChild(sliceGroup);
+      startAngle += angleStep;
+    }
+    
+    // center dot
+    const centerDot = document.createElementNS(svgNS, "circle");
+    centerDot.setAttribute("cx", cx);
+    centerDot.setAttribute("cy", cy);
+    centerDot.setAttribute("r", 6);
+    centerDot.setAttribute("fill", "#E65100");
+    svg.appendChild(centerDot);
+    
+    return svg;
+  }
+  
+  function buildBar(d, shaded) {
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("viewBox", "0 0 240 120");
+    svg.setAttribute("class", "bar-svg");
+    svg.setAttribute("width", "240");
+    svg.setAttribute("height", "120");
+    
+    const barWidth = 200;
+    const barHeight = 60;
+    const startX = 20;
+    const startY = 30;
+    const segmentWidth = barWidth / d;
+    
+    // outer rounded rect
+    const outer = document.createElementNS(svgNS, "rect");
+    outer.setAttribute("x", startX);
+    outer.setAttribute("y", startY);
+    outer.setAttribute("width", barWidth);
+    outer.setAttribute("height", barHeight);
+    outer.setAttribute("rx", "8");
+    outer.setAttribute("ry", "8");
+    outer.setAttribute("fill", "#FFCC80");
+    outer.setAttribute("stroke", "#E65100");
+    outer.setAttribute("stroke-width", "2");
+    svg.appendChild(outer);
+    
+    for (let i = 0; i < d; i++) {
+      const isShaded = shaded[i];
+      const x = startX + i * segmentWidth;
+      const segGroup = document.createElementNS(svgNS, "g");
+      segGroup.setAttribute("data-part", i);
+      segGroup.setAttribute("data-shaded", isShaded ? "true" : "false");
+      segGroup.classList.add("part");
+      segGroup.style.cursor = "pointer";
+      
+      const rect = document.createElementNS(svgNS, "rect");
+      rect.setAttribute("x", x + 1);
+      rect.setAttribute("y", startY + 1);
+      rect.setAttribute("width", segmentWidth - 2);
+      rect.setAttribute("height", barHeight - 2);
+      rect.setAttribute("fill", isShaded ? "#E65100" : "#FFCC80");
+      rect.setAttribute("stroke", "#E65100");
+      rect.setAttribute("stroke-width", "1.5");
+      rect.setAttribute("rx", "4");
+      rect.setAttribute("ry", "4");
+      segGroup.appendChild(rect);
+      
+      // vertical divider lines (except first)
+      if (i > 0) {
+        const line = document.createElementNS(svgNS, "line");
+        line.setAttribute("x1", x);
+        line.setAttribute("y1", startY + 2);
+        line.setAttribute("x2", x);
+        line.setAttribute("y2", startY + barHeight - 2);
+        line.setAttribute("stroke", "#E65100");
+        line.setAttribute("stroke-width", "1.5");
+        segGroup.appendChild(line);
+      }
+      
+      svg.appendChild(segGroup);
+    }
+    
+    // bottom label placeholder
+    return svg;
+  }
+  
+  function renderCurrentItem() {
+    clearContainer();
+    if (currentIndex >= items.length) {
+      showDone();
+      return;
+    }
+    
+    const item = items[currentIndex];
+    currentItemId = item.id;
+    const d = item.d;
+    shadedParts = new Array(d).fill(false);
+    
+    const wrapper = document.createElement('div');
+    wrapper.className = 'item-wrapper';
+    wrapper.setAttribute('data-item', item.id);
+    
+    // fraction display
+    const fracDiv = document.createElement('div');
+    fracDiv.className = 'fraction-display';
+    const numSpan = document.createElement('span');
+    numSpan.style.fontSize = '28px';
+    numSpan.textContent = item.n;
+    const fracLine = document.createElement('span');
+    fracLine.style.fontSize = '28px';
+    fracLine.textContent = '/';
+    const denSpan = document.createElement('span');
+    denSpan.style.fontSize = '28px';
+    denSpan.textContent = item.d;
+    fracDiv.appendChild(numSpan);
+    fracDiv.appendChild(fracLine);
+    fracDiv.appendChild(denSpan);
+    wrapper.appendChild(fracDiv);
+    
+    // picture area
+    const picDiv = document.createElement('div');
+    picDiv.className = picture === 'pizza-or-bar' ? 'pizza-container' : 'bar-container';
+    // For this build, since picture is "pizza-or-bar", we alternate? But spec says for each item, choose one.
+    // Let's alternate for visual interest: pizza for first, bar for second, pizza for third...
+    // Actually spec says "show a whole divided into item.d EQUAL parts (a pizza with equal slices or a bar with equal segments)"
+    // Studio.params.picture is "pizza-or-bar" so we can use both. Let's alternate.
+    const usePizza = (currentIndex % 2 === 0);
+    const svg = usePizza ? buildPizza(d, shadedParts) : buildBar(d, shadedParts);
+    picDiv.appendChild(svg);
+    wrapper.appendChild(picDiv);
+    
+    // check button
+    checkBtn = document.createElement('button');
+    checkBtn.className = 'check-btn';
+    checkBtn.setAttribute('data-action', 'check');
+    checkBtn.textContent = Studio.t('check');
+    wrapper.appendChild(checkBtn);
+    
+    container.appendChild(wrapper);
+    
+    // attach click handlers to parts
+    const parts = wrapper.querySelectorAll('.part');
+    parts.forEach((part, idx) => {
+      part.addEventListener('click', function(e) {
+        if (feedbackEl.classList.contains('right')) return; // locked after correct
+        shadedParts[idx] = !shadedParts[idx];
+        const newShaded = shadedParts[idx];
+        part.setAttribute('data-shaded', newShaded ? 'true' : 'false');
+        // update visual
+        updatePartVisual(currentIndex, idx, newShaded);
+        // animation feedback
+        part.style.transform = 'scale(0.9)';
+        setTimeout(() => { part.style.transform = ''; }, 150);
+        Studio.event('part_tap', { itemId: currentItemId, partIndex: idx, shaded: newShaded });
+      });
+    });
+    
+    checkBtn.addEventListener('click', function(e) {
+      if (feedbackEl.classList.contains('right')) return;
+      const colouredCount = shadedParts.filter(s => s).length;
+      Studio.answer({ n: colouredCount, d: item.d });
+      // The grading happens via onVerdict callback
+    });
+  }
+  
+  function updatePartVisual(itemIndex, partIdx, isShaded) {
+    const wrapper = container.querySelector('[data-item]');
+    if (!wrapper) return;
+    const svg = wrapper.querySelector('svg');
+    if (!svg) return;
+    // Find the part element (g) with data-part
+    const partEl = svg.querySelector(`[data-part="${partIdx}"]`);
+    if (!partEl) return;
+    // Update fill of path or rect
+    const shape = partEl.querySelector('path, rect');
+    if (shape) {
+      shape.setAttribute('fill', isShaded ? '#E65100' : '#FFCC80');
+    }
+    // Update topping dots for pizza
+    if (isShaded && !partEl.querySelector('circle[fill="#D84315"]')) {
+      // Add a dot for fun if pizza
+      const viewBox = svg.getAttribute('viewBox');
+      if (viewBox && viewBox.includes('240 240')) {
+        const cx = 120, cy = 120, r = 100;
+        const d = items[currentIndex].d;
+        const angleStep = 360 / d;
+        const startAngle = -90 + partIdx * angleStep;
+        const endAngle = startAngle + angleStep;
+        const startRad = (startAngle * Math.PI) / 180;
+        const endRad = (endAngle * Math.PI) / 180;
+        const midAngle = (startRad + endRad)/2;
+        const dotX = cx + (r * 0.6) * Math.cos(midAngle);
+        const dotY = cy + (r * 0.6) * Math.sin(midAngle);
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', dotX);
+        circle.setAttribute('cy', dotY);
+        circle.setAttribute('r', 6);
+        circle.setAttribute('fill', '#D84315');
+        circle.setAttribute('opacity', '0.6');
+        partEl.appendChild(circle);
+      }
+    } else if (!isShaded) {
+      const dots = partEl.querySelectorAll('circle[fill="#D84315"]');
+      dots.forEach(d => d.remove());
+    }
+    partEl.setAttribute('data-shaded', isShaded ? 'true' : 'false');
+  }
+  
+  function showFeedback(correct) {
+    feedbackEl.className = 'feedback';
+    if (correct) {
+      feedbackEl.classList.add('right');
+      feedbackEl.textContent = Studio.t('right');
+      // brief celebration
+      setTimeout(() => {
+        currentIndex++;
+        if (currentIndex >= items.length) {
+          showDone();
+        } else {
+          renderCurrentItem();
+          Studio.event('item_complete', { itemId: currentItemId });
+        }
+      }, 1200);
+    } else {
+      feedbackEl.classList.add('wrong');
+      feedbackEl.textContent = Studio.t('wrong');
+    }
+  }
+  
+  function showDone() {
+    clearContainer();
+    const doneDiv = document.createElement('div');
+    doneDiv.className = 'done-screen';
+    const icon = document.createElement('div');
+    icon.className = 'done-icon';
+    icon.textContent = '🎉';
+    const text = document.createElement('div');
+    text.className = 'done-text';
+    text.textContent = Studio.t('done');
+    doneDiv.appendChild(icon);
+    doneDiv.appendChild(text);
+    container.appendChild(doneDiv);
+    Studio.done();
+  }
+  
+  Studio.onVerdict(function(result) {
+    if (result.correct) {
+      showFeedback(true);
+    } else {
+      showFeedback(false);
+    }
+  });
+  
+  // start
+  renderCurrentItem();
+  Studio.ready();
+})();
+</script>

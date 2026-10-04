@@ -1,0 +1,145 @@
+<style>
+*{box-sizing:border-box}
+:root{color-scheme:light}
+body{margin:0;background:#f1f8ed;font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif;color:#244b3c}
+.wrap{width:min(100%,420px);min-height:100svh;margin:auto;padding:10px 14px 14px;display:flex;flex-direction:column;gap:8px}
+h1{font-size:21px;line-height:1.12;text-align:center;margin:0;color:#285c44}
+.scene{width:100%;height:auto;max-height:390px;flex:1;min-height:270px;border-radius:24px;background:#e4f5f1;box-shadow:0 5px 14px #264c3014;overflow:hidden}
+.controls{display:flex;align-items:center;justify-content:center;gap:8px}
+button{font:inherit;color:#285c44;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s,background .2s,box-shadow .2s}
+button:active{transform:scale(.94)}
+.play{min-width:86px;height:44px;padding:0 13px;border-radius:22px;background:#d7edc9;font-weight:700}
+.steps{display:flex;gap:6px}
+.step{width:44px;height:44px;border-radius:15px;background:white;font-weight:800;box-shadow:0 2px 5px #244b3c16}
+.step.active{background:#75bd77;color:#fff;box-shadow:0 3px 9px #438b5266;transform:translateY(-2px)}
+.caption{min-height:46px;border-radius:16px;padding:9px 12px;background:#fff;color:#315b49;font-size:14px;line-height:1.3;text-align:center;box-shadow:0 2px 8px #244b3c10}
+.ask{font-size:15px;font-weight:750;text-align:center;margin:0;color:#285c44}
+.options{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.option{height:46px;border-radius:16px;background:#fff;font-weight:750;box-shadow:0 2px 7px #244b3c16}
+.option:focus-visible,.step:focus-visible,.play:focus-visible{outline:3px solid #edae54;outline-offset:2px}
+.feedback{min-height:20px;text-align:center;font-size:13px;color:#387750}
+svg text{font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif;font-weight:700;fill:#315b49}
+.particle{filter:drop-shadow(0 1px 2px #ffffffaa)}
+.ray{animation:ray 2s ease-in-out infinite alternate;transform-origin:center}
+.leafshine{animation:shine 2s ease-in-out infinite alternate;transform-origin:center}
+@keyframes ray{from{opacity:.35}to{opacity:.8}}
+@keyframes shine{from{opacity:.45}to{opacity:1}}
+@media(max-height:700px){.wrap{padding-top:6px;gap:5px}.scene{min-height:245px;max-height:350px}.caption{min-height:42px}}
+</style>
+<div class="wrap">
+  <h1 id="title"></h1>
+  <svg class="scene" viewBox="0 0 360 350" role="img" aria-label="">
+    <defs>
+      <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#dff5f5"/><stop offset="1" stop-color="#edf8e8"/></linearGradient>
+      <linearGradient id="leafFill" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9bdd78"/><stop offset="1" stop-color="#39a768"/></linearGradient>
+      <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <rect width="360" height="350" rx="24" fill="url(#sky)"/>
+    <circle cx="293" cy="48" r="26" fill="#ffd56a"/>
+    <g class="ray" stroke="#f5c956" stroke-width="3" stroke-linecap="round">
+      <path d="M276 76L227 139"/><path d="M287 80L252 145"/><path d="M299 81L275 143"/>
+    </g>
+    <text data-label="sun" x="293" y="89" text-anchor="middle" font-size="13"></text>
+    <path d="M0 231 Q70 222 129 232 T250 230 T360 232 V350 H0Z" fill="#bd875d"/>
+    <path d="M0 229 Q70 220 129 230 T250 228 T360 230" fill="none" stroke="#85bf77" stroke-width="9"/>
+    <path d="M178 242 C177 211 181 174 178 139" fill="none" stroke="#37965c" stroke-width="12" stroke-linecap="round"/>
+    <path d="M178 181 C159 163 141 162 129 173 C139 191 159 195 178 181Z" fill="#68b96e" stroke="#398d57" stroke-width="2"/>
+    <path d="M179 158 C196 136 219 131 236 139 C227 161 206 174 179 158Z" data-entity="leaf" fill="url(#leafFill)" stroke="#328a50" stroke-width="3"/>
+    <path d="M183 157 Q207 150 230 141" fill="none" stroke="#d8f5a9" stroke-width="2"/>
+    <path d="M197 153l-3-9m14 5-1-10m-2 18 9 3" stroke="#d8f5a9" stroke-width="1.5"/>
+    <ellipse class="leafshine" cx="205" cy="151" rx="14" ry="8" fill="#d8ff9b" opacity=".32" filter="url(#glow)"/>
+    <g fill="none" stroke="#805b43" stroke-width="4" stroke-linecap="round" data-entity="roots">
+      <path d="M178 237Q167 258 155 278M179 239Q190 263 201 280M174 246Q155 252 144 268M184 247Q205 251 218 269M164 262l-6 13m43-11 8 14"/>
+    </g>
+    <text data-label="leaf" x="215" y="125" text-anchor="middle" font-size="13"></text>
+    <text data-label="roots" x="179" y="306" text-anchor="middle" font-size="13"></text>
+    <text data-label="water" x="177" y="219" text-anchor="middle" font-size="12"></text>
+    <text data-label="co2" x="111" y="139" text-anchor="middle" font-size="12"></text>
+    <text data-label="o2" x="260" y="174" text-anchor="middle" font-size="12"></text>
+    <text data-label="glucose" x="207" y="169" text-anchor="middle" font-size="10"></text>
+    <g class="particle" fill="#48b9e8">
+      <circle data-flow="water" cx="164" cy="271" r="5"/><circle data-flow="water" cx="181" cy="225" r="5"/><circle data-flow="water" cx="179" cy="192" r="5"/>
+    </g>
+    <g class="particle" fill="#9c78d5">
+      <circle data-flow="co2" cx="77" cy="146" r="5"/><circle data-flow="co2" cx="116" cy="155" r="5"/><circle data-flow="co2" cx="146" cy="160" r="5"/>
+    </g>
+    <g class="particle" fill="#f29e62">
+      <circle data-flow="o2" cx="239" cy="146" r="5"/><circle data-flow="o2" cx="269" cy="132" r="5"/><circle data-flow="o2" cx="310" cy="117" r="5"/>
+    </g>
+    <g id="glucoseMark" fill="#f5c949" filter="url(#glow)">
+      <circle cx="198" cy="158" r="3"/><circle cx="208" cy="154" r="3"/><circle cx="217" cy="150" r="3"/>
+    </g>
+  </svg>
+  <div class="controls">
+    <button class="play" data-action="play" type="button"></button>
+    <div class="steps" aria-label="">
+      <button class="step" data-action="step-1" type="button">1</button>
+      <button class="step" data-action="step-2" type="button">2</button>
+      <button class="step" data-action="step-3" type="button">3</button>
+      <button class="step" data-action="step-4" type="button">4</button>
+      <button class="step" data-action="step-5" type="button">5</button>
+    </div>
+  </div>
+  <div class="caption" data-caption></div>
+  <p class="ask" id="ask"></p>
+  <div class="options">
+    <button class="option" data-option="co2" type="button"></button>
+    <button class="option" data-option="o2" type="button"></button>
+    <button class="option" data-option="water" type="button"></button>
+  </div>
+  <div class="feedback" aria-live="polite"></div>
+</div>
+<script>
+(()=>{
+const params=Studio.params;
+const words=["title","sun","leaf","roots","water","co2","o2","glucose","play","pause","step1","step2","step3","step4","step5","ask"];
+for(const key of words){
+ const el=document.querySelector(`[data-label="${key}"]`)||document.getElementById(key);
+ if(el)el.textContent=Studio.t(key);
+}
+document.querySelectorAll("[data-option]").forEach(el=>el.textContent=Studio.t(el.dataset.option));
+let playing=true,step=1,tick=0,done=false;
+const play=document.querySelector('[data-action="play"]');
+const caption=document.querySelector("[data-caption]");
+const feedback=document.querySelector(".feedback");
+const setStep=n=>{
+ step=Math.max(1,Math.min(params.steps,n));
+ caption.textContent=Studio.t("step"+step);
+ document.querySelectorAll(".step").forEach((b,i)=>b.classList.toggle("active",i+1===step));
+};
+const setPlayLabel=()=>{play.textContent=Studio.t(playing?"pause":"play")};
+play.addEventListener("click",()=>{
+ playing=!playing;setPlayLabel();
+ Studio.event("play_toggle",{playing});
+});
+document.querySelectorAll(".step").forEach((b,i)=>b.addEventListener("click",()=>{
+ setStep(i+1);Studio.event("step_select",{step:i+1});
+}));
+const particles=[...document.querySelectorAll("[data-flow]")];
+function animate(){
+ if(playing){
+  tick+=1;
+  const phase=tick%100;
+  particles.forEach((p,i)=>{
+   const f=p.dataset.flow,offset=(phase+i*31)%100,t=offset/100;
+   if(f==="water"){p.setAttribute("cx",178+Math.sin(t*6.28+i)*3);p.setAttribute("cy",282-t*117)}
+   else if(f==="co2"){p.setAttribute("cx",72+t*91);p.setAttribute("cy",147+Math.sin(t*6.28+i)*10)}
+   else {p.setAttribute("cx",236+t*93);p.setAttribute("cy",145-t*37+Math.sin(t*6.28+i)*6)}
+  });
+ }
+ requestAnimationFrame(animate);
+}
+setPlayLabel();setStep(1);requestAnimationFrame(animate);
+document.querySelectorAll(".option").forEach(b=>b.addEventListener("click",()=>{
+ if(done)return;
+ feedback.textContent="";
+ Studio.event("answer_submit",{option:b.dataset.option});
+ Studio.answer(b.dataset.option);
+}));
+Studio.onVerdict(({correct})=>{
+ if(correct){feedback.textContent=Studio.t("glucose");done=true;Studio.done()}
+ else feedback.textContent=Studio.t("ask");
+});
+Studio.ready();
+})();
+</script>

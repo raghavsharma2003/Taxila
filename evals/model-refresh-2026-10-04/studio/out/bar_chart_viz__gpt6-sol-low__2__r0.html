@@ -1,0 +1,105 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#fff8ed;color:#334052;font-family:system-ui,-apple-system,sans-serif}
+  .card{width:min(100%,480px);min-height:100vh;margin:auto;padding:20px 12px 24px;background:linear-gradient(180deg,#fff3d9 0%,#fffaf2 58%);display:flex;flex-direction:column;align-items:center}
+  .heading{width:100%;padding:12px 16px 4px;text-align:center;font-size:clamp(23px,7vw,30px);font-weight:800;line-height:1.2}
+  .question{width:100%;margin:8px 0 14px;padding:13px 16px;border-radius:18px;background:#fff;color:#384356;text-align:center;font-size:18px;font-weight:650;box-shadow:0 5px 16px #75542a12}
+  .chart-wrap{width:100%;padding:8px 2px;border-radius:24px;background:#fff;box-shadow:0 9px 25px #75542a18}
+  svg{display:block;width:100%;height:auto;overflow:visible}
+  .grid{stroke:#e6e9eb;stroke-width:1.5}
+  .axis{stroke:#77818a;stroke-width:2.5;stroke-linecap:round}
+  .tick,.fruit,.axis-title{fill:#4b5867;font-family:inherit}
+  .tick{font-size:15px;text-anchor:end;dominant-baseline:middle}
+  .fruit{font-size:14px;font-weight:700;text-anchor:middle}
+  .axis-title{font-size:15px;font-weight:700;text-anchor:middle}
+  .bar{fill:#f5a765;stroke:#e58951;stroke-width:2;rx:10;cursor:pointer;transform-box:fill-box;transform-origin:center bottom;transition:filter .2s,fill .2s,transform .2s}
+  .bar.grow{animation:rise .8s cubic-bezier(.2,.8,.3,1) both}
+  .bar:active{filter:brightness(1.12);transform:scaleX(.94)}
+  .bar:focus-visible{outline:none;stroke:#405d82;stroke-width:4}
+  @keyframes rise{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  .value{fill:#354456;font-family:inherit;font-weight:800;font-size:17px;text-anchor:middle}
+  .feedback{min-height:56px;margin-top:16px;padding:12px 20px;border-radius:18px;text-align:center;font-size:20px;font-weight:750}
+  .feedback.good{background:#e2f4df;color:#286849}
+  .feedback.try{background:#fff0df;color:#965936}
+  @media(prefers-reduced-motion:reduce){.bar.grow{animation:none}.bar{transition:none}}
+</style>
+<main class="card">
+  <div class="heading" id="title"></div>
+  <div class="question" id="ask"></div>
+  <div class="chart-wrap">
+    <svg id="chart" viewBox="0 0 400 410" role="img" aria-labelledby="title ask">
+      <g id="grid"></g>
+      <line class="axis" x1="67" y1="45" x2="67" y2="335"></line>
+      <line class="axis" x1="67" y1="335" x2="382" y2="335"></line>
+      <text class="axis-title" id="yaxis" transform="translate(19 190) rotate(-90)"></text>
+      <g id="bars"></g>
+      <g id="labels"></g>
+      <g id="values"></g>
+    </svg>
+  </div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+<script>
+(() => {
+  const ns="http://www.w3.org/2000/svg";
+  const data=Studio.params.data;
+  const $=id=>document.getElementById(id);
+  const make=(tag,attrs,parent,text)=>{
+    const el=document.createElementNS(ns,tag);
+    Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,String(v)));
+    if(text!==undefined)el.textContent=text;
+    parent.appendChild(el);
+    return el;
+  };
+  $("title").textContent=Studio.t("title");
+  $("ask").textContent=Studio.t("ask");
+  $("yaxis").textContent=Studio.t("yaxis");
+  const highest=Math.max(1,...data.map(d=>d.value));
+  const rough=highest/5;
+  const magnitude=10**Math.floor(Math.log10(rough));
+  const step=[1,2,5,10].map(n=>n*magnitude).find(n=>n>=rough);
+  const top=Math.ceil(highest/step)*step;
+  const baseline=335, height=270;
+  for(let n=0;n<=top;n+=step){
+    const y=baseline-height*n/top;
+    make("line",{class:"grid",x1:67,x2:382,y1:y,y2:y},$("grid"));
+    make("text",{class:"tick","data-tick":n,x:57,y:y},$("grid"),String(n));
+  }
+  const gap=315/data.length;
+  let selected=null, pending=false, complete=false;
+  data.forEach((d,i)=>{
+    const x=67+gap*(i+.5);
+    const y=baseline-height*d.value/top;
+    const bar=make("rect",{class:"bar",x:x-25,y:y,width:50,height:baseline-y,
+      "data-bar":d.key,"data-value":d.value,tabindex:0,role:"button",
+      "aria-label":Studio.t(d.key)},$("bars"));
+    make("text",{class:"fruit",x:x,y:365},$("labels"),Studio.t(d.key));
+    const choose=()=>{
+      if(pending||complete)return;
+      pending=true;
+      selected=d;
+      $("values").replaceChildren();
+      make("text",{class:"value",x:x,y:Math.max(34,y-9)},$("values"),String(d.value));
+      Studio.answer(d.key);
+    };
+    bar.addEventListener("click",choose);
+    bar.addEventListener("keydown",e=>{
+      if(e.key==="Enter"||e.key===" "){e.preventDefault();choose();}
+    });
+    requestAnimationFrame(()=>bar.classList.add("grow"));
+  });
+  Studio.onVerdict(({correct})=>{
+    const box=$("feedback");
+    box.className="feedback "+(correct?"good":"try");
+    box.textContent=Studio.t(correct?"right":"wrong");
+    if(correct){
+      complete=true;
+      $("ask").textContent=Studio.t("done");
+      Studio.done();
+    }else{
+      pending=false;
+    }
+  });
+  Studio.ready();
+})();
+</script>

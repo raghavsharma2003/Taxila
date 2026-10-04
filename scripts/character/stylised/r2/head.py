@@ -203,6 +203,19 @@ def build_head(P, N, warp, K_eye, K_mouth, eye_patch, mouth_patch):
     S, F, grid = cube_sphere(N, warp)
     H = np.array(P["ray_centre"], float)
     V = march_out(sdf, H, S)
+    # below the jaw the head-centred rays graze the neck and fold; re-cast those rows horizontally from the neck
+    # axis instead (a clean cylinder), blending in over 1 cm (polish r2)
+    if P.get("neck_recast_z") is not None:
+        z0 = P["neck_recast_z"]; ny = P["neck_a"][1]
+        sel = V[:, 2] < z0 + 0.01
+        if sel.any():
+            w = np.clip((z0 + 0.01 - V[sel, 2]) / 0.01, 0, 1)[:, None]
+            zt = np.minimum(V[sel, 2], z0) * w[:, 0] + V[sel, 2] * (1 - w[:, 0])
+            ang = np.arctan2(S[sel, 1], S[sel, 0])
+            dirs = np.stack([np.cos(ang), np.sin(ang), np.zeros(len(ang))], 1)
+            o = np.stack([np.zeros(len(ang)), np.full(len(ang), ny), zt], 1)
+            Q = march_out(sdf, o, dirs)
+            V[sel] = V[sel] * (1 - w) + Q * w
     bm = bmesh.new()
     bv = [bm.verts.new(Vector(p)) for p in V]
     for f in F:
@@ -514,3 +527,42 @@ def place(bm, loops, sdf, P):
         for v, q in zip(band, pr):
             v.co = Vector(q)
     return meta
+
+
+# ---------------------------------------------------------------- conform (polish r2)
+def conform(bm, loops, sdf, P, iters=12, lam=0.5):
+    """Tangential Laplacian relax + closest-point projection onto the skin SDF for every vertex that is not an
+    analytic feature ring. The SDF carries the smooth eye surround and lower face, so the mesh inherits its smoothness
+    (the r1 dents and ring seams came from ring-to-boundary interpolation that never touched the true surface)."""
+    bm.verts.ensure_lookup_table()
+    n = len(bm.verts)
+    fixed = np.zeros(n, bool)
+    for key in ("eye_L", "eye_R"):
+        for k in range(P.get("conform_eye_fixed", 1)):
+            fixed[[v.index for v in loops[key][k]]] = True
+        fixed[[v.index for v in loops[key + "_tuck"][0]]] = True
+    for k in range(P.get("conform_mouth_fixed", 3)):
+        fixed[[v.index for v in loops["mouth"][k]]] = True
+    for ring in loops["mouth_in"]:
+        fixed[[v.index for v in ring]] = True
+    fixed[loops["mouth_bag_c"][0][0].index] = True
+    for v in bm.verts:
+        if v.is_boundary:
+            fixed[v.index] = True
+    E = np.array([[e.verts[0].index, e.verts[1].index] for e in bm.edges])
+    X = np.array([v.co[:] for v in bm.verts])
+    deg = np.bincount(E.ravel(), minlength=n).astype(float)
+    free = ~fixed
+    for _ in range(iters):
+        acc = np.zeros_like(X)
+        np.add.at(acc, E[:, 0], X[E[:, 1]]); np.add.at(acc, E[:, 1], X[E[:, 0]])
+        avg = acc / np.maximum(deg, 1)[:, None]
+        Nn = sdf.normal(X[free])
+        dlt = avg[free] - X[free]
+        dlt -= (dlt * Nn).sum(1, keepdims=True) * Nn       # tangential only
+        X[free] = X[free] + lam * dlt
+        X[free] = sdf.project(X[free], iters=4)
+    for v in bm.verts:
+        if free[v.index]:
+            v.co = Vector(X[v.index])
+    return int(free.sum())

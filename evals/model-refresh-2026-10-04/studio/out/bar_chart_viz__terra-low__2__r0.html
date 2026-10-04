@@ -1,0 +1,322 @@
+<style>
+  :root{
+    --ink:#243248;
+    --muted:#637188;
+    --paper:#fffdf8;
+    --sky:#e8f5ff;
+    --mint:#dff5e8;
+    --peach:#fff0d8;
+    --coral:#ff936f;
+    --blue:#4d91e8;
+    --line:#c8dceb;
+    --white:#ffffff;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-width:320px;
+    background:linear-gradient(180deg,var(--sky) 0%,var(--paper) 58%);
+    color:var(--ink);
+    font-family:Arial,Helvetica,sans-serif;
+  }
+  #app{
+    width:100%;
+    max-width:520px;
+    min-height:640px;
+    margin:0 auto;
+    padding:18px 14px 22px;
+    overflow:hidden;
+  }
+  .top{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:12px;
+  }
+  .fruit-badge{
+    width:52px;
+    height:52px;
+    border-radius:18px;
+    flex:0 0 52px;
+    background:var(--peach);
+    display:grid;
+    place-items:center;
+    box-shadow:0 5px 0 rgba(255,147,111,.16);
+  }
+  .fruit-badge svg{width:38px;height:38px}
+  h1{
+    margin:0;
+    font-size:23px;
+    line-height:1.14;
+    letter-spacing:-.4px;
+  }
+  .chart-card{
+    background:var(--white);
+    border:2px solid rgba(77,145,232,.15);
+    border-radius:24px;
+    padding:8px 4px 5px;
+    box-shadow:0 10px 25px rgba(65,101,139,.11);
+  }
+  #chart{
+    width:100%;
+    height:auto;
+    display:block;
+    overflow:visible;
+  }
+  .grid{
+    stroke:var(--line);
+    stroke-width:1;
+    stroke-dasharray:3 4;
+  }
+  .axis{
+    stroke:#7191aa;
+    stroke-width:2;
+    stroke-linecap:round;
+  }
+  .tick-label{
+    fill:var(--muted);
+    font-size:11px;
+    font-weight:700;
+    text-anchor:end;
+  }
+  .axis-title{
+    fill:var(--muted);
+    font-size:11px;
+    font-weight:700;
+  }
+  .fruit-label{
+    fill:var(--ink);
+    font-size:11px;
+    font-weight:700;
+    text-anchor:middle;
+  }
+  .bar{
+    fill:var(--blue);
+    cursor:pointer;
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    transition:filter .16s ease,transform .16s ease;
+  }
+  .bar:focus{outline:none;filter:brightness(1.08) drop-shadow(0 3px 3px rgba(34,91,154,.28))}
+  .bar:hover{filter:brightness(1.06)}
+  .bar.pressed{transform:scaleX(.94)}
+  .bar.selected{fill:var(--coral)}
+  .value-bubble{
+    opacity:0;
+    transform:translateY(5px);
+    transition:opacity .2s ease,transform .2s ease;
+    pointer-events:none;
+  }
+  .value-bubble.show{opacity:1;transform:translateY(0)}
+  .bubble-bg{fill:var(--ink)}
+  .bubble-text{
+    fill:white;
+    font-size:12px;
+    font-weight:700;
+    text-anchor:middle;
+  }
+  .question{
+    margin-top:15px;
+    background:var(--mint);
+    border-radius:19px;
+    padding:14px 16px;
+    font-size:18px;
+    font-weight:700;
+    line-height:1.28;
+    box-shadow:0 5px 0 rgba(88,180,126,.13);
+  }
+  .feedback{
+    min-height:48px;
+    margin-top:13px;
+    border-radius:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:10px 14px;
+    font-size:17px;
+    font-weight:700;
+    opacity:0;
+    transform:translateY(8px);
+    transition:opacity .25s ease,transform .25s ease,background .25s ease;
+  }
+  .feedback.show{opacity:1;transform:translateY(0)}
+  .feedback.good{background:#d9f6dd;color:#267044}
+  .feedback.bad{background:#ffe3dd;color:#ad4b36}
+  .feedback.done{background:#d9f6dd;color:#267044}
+  .waiting .bar{pointer-events:none}
+  .waiting .bar.selected{animation:gentlePulse .8s ease-in-out infinite alternate}
+  @keyframes gentlePulse{
+    from{filter:brightness(1)}
+    to{filter:brightness(1.12) drop-shadow(0 3px 5px rgba(255,147,111,.35))}
+  }
+  @media (max-width:370px){
+    #app{padding-left:10px;padding-right:10px}
+    h1{font-size:21px}
+    .question{font-size:16px}
+  }
+</style>
+
+<div id="app">
+  <div class="top">
+    <div class="fruit-badge" aria-hidden="true">
+      <svg viewBox="0 0 48 48">
+        <path d="M25 12c3-7 9-9 14-8-2 5-6 9-13 10" fill="#55a96c"/>
+        <path d="M22 12c-10 2-15 10-13 20 2 10 11 14 20 11 10-3 14-13 10-22-3-8-9-11-17-9z" fill="#ffad38"/>
+        <path d="M17 20c-3 5-2 11 1 15" fill="none" stroke="#ffd36f" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h1 id="title"></h1>
+  </div>
+
+  <div class="chart-card">
+    <svg id="chart" viewBox="0 0 360 330" role="img">
+      <g id="grid-layer"></g>
+      <g id="axis-layer"></g>
+      <g id="bar-layer"></g>
+      <g id="label-layer"></g>
+    </svg>
+  </div>
+
+  <div class="question" id="ask"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+
+<script>
+(function(){
+  var data=Studio.params.data;
+  var title=document.getElementById('title');
+  var ask=document.getElementById('ask');
+  var svg=document.getElementById('chart');
+  var grid=document.getElementById('grid-layer');
+  var axes=document.getElementById('axis-layer');
+  var bars=document.getElementById('bar-layer');
+  var labels=document.getElementById('label-layer');
+  var feedback=document.getElementById('feedback');
+  var ns='http://www.w3.org/2000/svg';
+  var active=null;
+  var waiting=false;
+  var finished=false;
+
+  title.textContent=Studio.t('title');
+  ask.textContent=Studio.t('ask');
+
+  function node(name,attrs,text){
+    var el=document.createElementNS(ns,name);
+    for(var key in attrs) el.setAttribute(key,attrs[key]);
+    if(text!==undefined) el.textContent=text;
+    return el;
+  }
+
+  var max=0;
+  data.forEach(function(d){if(d.value>max)max=d.value;});
+  function niceStep(n){
+    var rough=n/4;
+    var power=Math.pow(10,Math.floor(Math.log(rough)/Math.LN10));
+    var unit=rough/power;
+    var nice=unit<=1?1:unit<=2?2:unit<=5?5:10;
+    return nice*power;
+  }
+  var step=niceStep(max);
+  var top=Math.ceil(max/step)*step;
+  var left=48, right=340, plotTop=36, base=255, plotHeight=base-plotTop;
+  var count=data.length;
+  var slot=(right-left)/count;
+  var barWidth=Math.min(42,slot-12);
+
+  for(var tick=0;tick<=top;tick+=step){
+    var y=base-(tick/top)*plotHeight;
+    grid.appendChild(node('line',{x1:left,y1:y,x2:right,y2:y,class:'grid'}));
+    labels.appendChild(node('text',{x:left-8,y:y+4,class:'tick-label','data-tick':tick},String(tick)));
+  }
+  axes.appendChild(node('line',{x1:left,y1:plotTop,x2:left,y2:base,class:'axis'}));
+  axes.appendChild(node('line',{x1:left,y1:base,x2:right,y2:base,class:'axis'}));
+  axes.appendChild(node('text',{x:15,y:(plotTop+base)/2,class:'axis-title',transform:'rotate(-90 15 '+((plotTop+base)/2)+')'},Studio.t('yaxis')));
+
+  data.forEach(function(item,i){
+    var cx=left+slot*(i+.5);
+    var height=(item.value/top)*plotHeight;
+    var rect=node('rect',{
+      x:cx-barWidth/2,
+      y:base,
+      width:barWidth,
+      height:0,
+      rx:10,
+      class:'bar',
+      tabindex:0,
+      role:'button',
+      'data-bar':item.key,
+      'data-value':item.value
+    });
+    var bubble=node('g',{class:'value-bubble'});
+    var bw=30, by=base-height-28;
+    bubble.appendChild(node('rect',{x:cx-bw/2,y:by,width:bw,height:21,rx:10,class:'bubble-bg'}));
+    bubble.appendChild(node('text',{x:cx,y:by+15,class:'bubble-text'},String(item.value)));
+    bars.appendChild(rect);
+    bars.appendChild(bubble);
+    labels.appendChild(node('text',{x:cx,y:279,class:'fruit-label'},Studio.t(item.key)));
+
+    rect._targetY=base-height;
+    rect._targetH=height;
+    rect._bubble=bubble;
+    rect.addEventListener('click',function(){choose(rect,item);});
+    rect.addEventListener('keydown',function(e){
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();choose(rect,item);}
+    });
+  });
+
+  function grow(){
+    var all=bars.querySelectorAll('.bar');
+    all.forEach(function(rect,i){
+      setTimeout(function(){
+        rect.style.transition='y .7s cubic-bezier(.22,.8,.3,1),height .7s cubic-bezier(.22,.8,.3,1),filter .16s ease,transform .16s ease';
+        rect.setAttribute('y',rect._targetY);
+        rect.setAttribute('height',rect._targetH);
+      },70+i*90);
+    });
+  }
+
+  function choose(rect,item){
+    if(waiting||finished)return;
+    waiting=true;
+    document.getElementById('app').classList.add('waiting');
+    if(active){
+      active.classList.remove('selected');
+      active._bubble.classList.remove('show');
+    }
+    active=rect;
+    rect.classList.add('selected','pressed');
+    rect._bubble.classList.add('show');
+    setTimeout(function(){rect.classList.remove('pressed');},180);
+    Studio.event('bar_tap',{key:item.key,value:item.value});
+    Studio.answer(item.key);
+  }
+
+  Studio.onVerdict(function(result){
+    if(finished)return;
+    feedback.className='feedback show '+(result.correct?'good':'bad');
+    feedback.textContent=Studio.t(result.correct?'right':'wrong');
+    if(result.correct){
+      finished=true;
+      setTimeout(function(){
+        feedback.className='feedback show done';
+        feedback.textContent=Studio.t('done');
+        Studio.done();
+      },650);
+    }else{
+      waiting=false;
+      document.getElementById('app').classList.remove('waiting');
+      if(active){
+        active.classList.remove('selected');
+        active._bubble.classList.remove('show');
+      }
+      active=null;
+    }
+  });
+
+  requestAnimationFrame(function(){
+    requestAnimationFrame(grow);
+  });
+  Studio.ready();
+}());
+</script>

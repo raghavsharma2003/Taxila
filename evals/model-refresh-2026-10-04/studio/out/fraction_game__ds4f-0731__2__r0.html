@@ -1,0 +1,221 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: sans-serif; background: #FFF9E6; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .game { width: 100%; max-width: 360px; text-align: center; }
+  h1 { font-size: 22px; color: #5B3E1D; margin-bottom: 6px; }
+  .instr { font-size: 15px; color: #7A5A2E; margin-bottom: 14px; background: #FFE8B3; border-radius: 14px; padding: 8px 12px; }
+  .item-wrap { background: #FFFFFF; border-radius: 20px; padding: 16px 14px 18px; box-shadow: 0 4px 10px rgba(91,62,29,0.12); }
+  .target-visual { font-size: 40px; font-weight: bold; color: #2E6B2E; margin-bottom: 12px; }
+  .visual-holder { display: flex; justify-content: center; margin-bottom: 12px; }
+  .pizza-svg, .bar-svg { width: 220px; height: 130px; }
+  .pizza-part, .bar-part { cursor: pointer; transition: transform 0.15s ease; }
+  .pizza-part:hover, .bar-part:hover { transform: scale(1.02); }
+  .shaded-pizza { fill: #F5A623; }
+  .unshaded-pizza { fill: #FFE9C7; }
+  .shaded-bar { fill: #3B8CBF; }
+  .unshaded-bar { fill: #D6E9F5; }
+  .pizza-part:active, .bar-part:active { transform: scale(0.96); }
+  .check-btn { margin-top: 12px; padding: 14px 30px; font-size: 18px; border: none; border-radius: 30px; background: #4CAF50; color: white; cursor: pointer; font-weight: bold; letter-spacing: 0.5px; transition: transform 0.15s ease, background 0.15s ease; box-shadow: 0 3px 8px rgba(0,0,0,0.2); }
+  .check-btn:active { transform: scale(0.92); }
+  .feedback { margin-top: 12px; min-height: 30px; font-size: 17px; font-weight: bold; color: #D32F2F; }
+  .feedback.correct { color: #2E7D32; }
+  .done-screen { background: white; border-radius: 20px; padding: 30px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+  .done-screen .big { font-size: 52px; margin-bottom: 10px; }
+  .done-screen .text { font-size: 21px; color: #5B3E1D; font-weight: bold; }
+</style>
+
+<div class="game" id="game-wrap">
+  <h1 data-test="title">⏳</h1>
+  <div class="instr" data-test="instr">⏳</div>
+  <div id="content-holder"></div>
+</div>
+
+<script>
+  (function(){
+    var params = Studio.params;
+    var items = params.items.slice();
+    var picture = params.picture;
+    var currentIndex = 0;
+    var currentItem = null;
+    var partsShaded = [];
+    var tapped = false;
+
+    var titleEl = document.querySelector('[data-test="title"]');
+    var instrEl = document.querySelector('[data-test="instr"]');
+    var contentHolder = document.getElementById('content-holder');
+    titleEl.textContent = Studio.t('title');
+    instrEl.textContent = Studio.t('instr');
+
+    function renderItem(item) {
+      currentItem = item;
+      partsShaded = new Array(item.d).fill(false);
+      var container = document.createElement('div');
+      container.className = 'item-wrap';
+      container.setAttribute('data-item', item.id);
+
+      var targetDiv = document.createElement('div');
+      targetDiv.className = 'target-visual';
+      targetDiv.textContent = item.n + '/' + item.d;
+
+      var visualHolder = document.createElement('div');
+      visualHolder.className = 'visual-holder';
+
+      var svg;
+      if (picture === 'pizza') {
+        svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 0 200 180');
+        svg.setAttribute('class', 'pizza-svg');
+        var cx = 100, cy = 90, r = 75;
+        var angleStep = 360 / item.d;
+        for (var i = 0; i < item.d; i++) {
+          var startAngle = i * angleStep - 90;
+          var endAngle = (i + 1) * angleStep - 90;
+          var largeArc = angleStep > 180 ? 1 : 0;
+          var x1 = cx + r * Math.cos(startAngle * Math.PI / 180);
+          var y1 = cy + r * Math.sin(startAngle * Math.PI / 180);
+          var x2 = cx + r * Math.cos(endAngle * Math.PI / 180);
+          var y2 = cy + r * Math.sin(endAngle * Math.PI / 180);
+          var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          var d = 'M ' + cx + ' ' + cy + ' L ' + x1 + ' ' + y1 + ' A ' + r + ' ' + r + ' 0 ' + largeArc + ' 1 ' + x2 + ' ' + y2 + ' Z';
+          path.setAttribute('d', d);
+          path.setAttribute('fill', '#FFE9C7');
+          path.setAttribute('stroke', '#B8860B');
+          path.setAttribute('stroke-width', '2');
+          path.setAttribute('data-part', i);
+          path.setAttribute('data-shaded', 'false');
+          path.classList.add('pizza-part');
+          (function(idx, el){
+            el.addEventListener('click', function(){
+              tapped = true;
+              partsShaded[idx] = !partsShaded[idx];
+              el.setAttribute('data-shaded', partsShaded[idx] ? 'true' : 'false');
+              if (partsShaded[idx]) {
+                el.setAttribute('fill', '#F5A623');
+              } else {
+                el.setAttribute('fill', '#FFE9C7');
+              }
+              clearFeedback();
+            });
+          })(i, path);
+          svg.appendChild(path);
+        }
+      } else {
+        svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 0 220 90');
+        svg.setAttribute('class', 'bar-svg');
+        var rectW = 220 / item.d;
+        for (var j = 0; j < item.d; j++) {
+          var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          rect.setAttribute('x', j * rectW);
+          rect.setAttribute('y', 10);
+          rect.setAttribute('width', rectW - 2);
+          rect.setAttribute('height', 60);
+          rect.setAttribute('rx', 4);
+          rect.setAttribute('fill', '#D6E9F5');
+          rect.setAttribute('stroke', '#4A90A4');
+          rect.setAttribute('stroke-width', '1.5');
+          rect.setAttribute('data-part', j);
+          rect.setAttribute('data-shaded', 'false');
+          rect.classList.add('bar-part');
+          (function(idx, el){
+            el.addEventListener('click', function(){
+              tapped = true;
+              partsShaded[idx] = !partsShaded[idx];
+              el.setAttribute('data-shaded', partsShaded[idx] ? 'true' : 'false');
+              if (partsShaded[idx]) {
+                el.setAttribute('fill', '#3B8CBF');
+              } else {
+                el.setAttribute('fill', '#D6E9F5');
+              }
+              clearFeedback();
+            });
+          })(j, rect);
+          svg.appendChild(rect);
+        }
+      }
+
+      visualHolder.appendChild(svg);
+
+      var checkBtn = document.createElement('button');
+      checkBtn.className = 'check-btn';
+      checkBtn.setAttribute('data-action', 'check');
+      checkBtn.textContent = Studio.t('check');
+      checkBtn.addEventListener('click', function(){
+        if (!tapped) {
+          showHint();
+          return;
+        }
+        var count = partsShaded.filter(Boolean).length;
+        Studio.event('check', {item: currentItem.id, count: count});
+        Studio.answer({n: count, d: currentItem.d});
+      });
+
+      var feedback = document.createElement('div');
+      feedback.className = 'feedback';
+      feedback.id = 'feedback-area';
+
+      container.appendChild(targetDiv);
+      container.appendChild(visualHolder);
+      container.appendChild(checkBtn);
+      container.appendChild(feedback);
+
+      contentHolder.innerHTML = '';
+      contentHolder.appendChild(container);
+    }
+
+    function showHint() {
+      var fb = document.getElementById('feedback-area');
+      fb.textContent = Studio.t('hint');
+      fb.classList.remove('correct');
+    }
+
+    function clearFeedback() {
+      var fb = document.getElementById('feedback-area');
+      if (fb) { fb.textContent = ''; }
+    }
+
+    function showCorrectFeedback() {
+      var fb = document.getElementById('feedback-area');
+      fb.textContent = Studio.t('right');
+      fb.classList.add('correct');
+    }
+
+    function showWrongFeedback() {
+      var fb = document.getElementById('feedback-area');
+      fb.textContent = Studio.t('wrong');
+      fb.classList.remove('correct');
+    }
+
+    Studio.onVerdict(function(result){
+      if (result.correct) {
+        showCorrectFeedback();
+        setTimeout(function(){
+          currentIndex++;
+          if (currentIndex < items.length) {
+            renderItem(items[currentIndex]);
+            tapped = false;
+          } else {
+            contentHolder.innerHTML = '';
+            var doneDiv = document.createElement('div');
+            doneDiv.className = 'done-screen';
+            var emoji = document.createElement('div');
+            emoji.className = 'big';
+            emoji.textContent = '🎉';
+            var text = document.createElement('div');
+            text.className = 'text';
+            text.textContent = Studio.t('done');
+            doneDiv.appendChild(emoji);
+            doneDiv.appendChild(text);
+            contentHolder.appendChild(doneDiv);
+            Studio.done();
+          }
+        }, 1200);
+      } else {
+        showWrongFeedback();
+      }
+    });
+
+    renderItem(items[0]);
+    Studio.ready();
+  })();
+</script>

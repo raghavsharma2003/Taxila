@@ -1,0 +1,265 @@
+<style>
+  :root{
+    --bg:#f6fbff;
+    --card:#ffffff;
+    --ink:#1f2a44;
+    --muted:#6b7a99;
+    --axis:#8aa0c8;
+    --grid:#d9e5f7;
+    --bar:#5b8def;
+    --barTap:#3f74df;
+    --ok:#1f9d66;
+    --bad:#d64545;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    width:100%;
+    max-width:420px;
+    min-height:100vh;
+    margin:0 auto;
+    background:var(--bg);
+    font-family:ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color:var(--ink);
+    padding:14px 12px 18px;
+    overflow:hidden;
+  }
+  .card{
+    background:var(--card);
+    border-radius:18px;
+    box-shadow:0 8px 24px rgba(38,79,151,.12);
+    padding:12px 10px 14px;
+  }
+  h1{
+    margin:2px 6px 8px;
+    font-size:22px;
+    line-height:1.2;
+  }
+  .ask{
+    margin:4px 6px 10px;
+    font-size:17px;
+    color:var(--ink);
+  }
+  .chartBox{
+    width:100%;
+    border-radius:14px;
+    background:linear-gradient(180deg,#f9fcff 0%, #f2f7ff 100%);
+    padding:6px 2px 4px;
+  }
+  svg{display:block;width:100%;height:auto}
+  .axis{stroke:var(--axis);stroke-width:2}
+  .grid{stroke:var(--grid);stroke-width:1.5}
+  .tickText{fill:var(--muted);font-size:12px}
+  .xText{fill:var(--ink);font-size:13px}
+  .yTitle{fill:var(--muted);font-size:13px;font-weight:600}
+  .bar{
+    fill:var(--bar);
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    transform:scaleY(0);
+    transition:transform .75s cubic-bezier(.2,.8,.2,1), fill .2s ease, filter .2s ease;
+    filter:drop-shadow(0 2px 2px rgba(64,102,179,.25));
+    cursor:pointer;
+  }
+  .bar.grow{transform:scaleY(1)}
+  .bar:active{fill:var(--barTap)}
+  .bar.selected{fill:var(--barTap)}
+  .status{
+    min-height:28px;
+    margin:10px 6px 0;
+    font-size:18px;
+    font-weight:700;
+  }
+  .status.ok{color:var(--ok)}
+  .status.bad{color:var(--bad)}
+  .readout{
+    min-height:22px;
+    margin:4px 6px 0;
+    color:var(--ink);
+    font-size:16px;
+  }
+  .done{
+    margin:6px 6px 0;
+    color:var(--ok);
+    font-size:18px;
+    font-weight:800;
+    opacity:0;
+    transform:translateY(6px);
+    transition:all .3s ease;
+  }
+  .done.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+</style>
+
+<div class="wrap">
+  <div class="card">
+    <h1 id="title"></h1>
+    <div class="ask" id="ask"></div>
+
+    <div class="chartBox">
+      <svg id="chart" viewBox="0 0 340 360" aria-hidden="true">
+        <g id="gridLayer"></g>
+        <line class="axis" id="yAxis" x1="52" y1="20" x2="52" y2="290"></line>
+        <line class="axis" id="xAxis" x1="52" y1="290" x2="324" y2="290"></line>
+        <text id="yTitle" class="yTitle" x="18" y="165" transform="rotate(-90 18 165)"></text>
+        <g id="barsLayer"></g>
+        <g id="labelsLayer"></g>
+      </svg>
+    </div>
+
+    <div class="readout" id="readout"></div>
+    <div class="status" id="status"></div>
+    <div class="done" id="done"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const data = (Studio.params && Array.isArray(Studio.params.data)) ? Studio.params.data.slice() : [];
+  const titleEl = document.getElementById('title');
+  const askEl = document.getElementById('ask');
+  const yTitleEl = document.getElementById('yTitle');
+  const gridLayer = document.getElementById('gridLayer');
+  const barsLayer = document.getElementById('barsLayer');
+  const labelsLayer = document.getElementById('labelsLayer');
+  const readout = document.getElementById('readout');
+  const status = document.getElementById('status');
+  const doneEl = document.getElementById('done');
+
+  titleEl.textContent = Studio.t('title');
+  askEl.textContent = Studio.t('ask');
+  yTitleEl.textContent = Studio.t('yaxis');
+  doneEl.textContent = Studio.t('done');
+
+  const plotLeft = 52, plotRight = 324, plotTop = 20, plotBottom = 290;
+  const plotW = plotRight - plotLeft, plotH = plotBottom - plotTop;
+
+  const maxVal = data.reduce((m,d)=>Math.max(m, Number(d.value)||0), 0);
+
+  function niceStep(max){
+    if (max <= 5) return 1;
+    const rough = max / 5;
+    const p = Math.pow(10, Math.floor(Math.log10(rough)));
+    const n = rough / p;
+    let base = 10;
+    if (n <= 1) base = 1;
+    else if (n <= 2) base = 2;
+    else if (n <= 5) base = 5;
+    return base * p;
+  }
+
+  const step = niceStep(maxVal || 1);
+  const topVal = Math.max(step, Math.ceil((maxVal || 1) / step) * step);
+
+  function yFor(v){
+    return plotBottom - (v / topVal) * plotH;
+  }
+
+  for(let t = 0; t <= topVal; t += step){
+    const y = yFor(t);
+
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('class','grid');
+    line.setAttribute('x1', plotLeft);
+    line.setAttribute('x2', plotRight);
+    line.setAttribute('y1', y);
+    line.setAttribute('y2', y);
+    gridLayer.appendChild(line);
+
+    const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+    txt.setAttribute('class','tickText');
+    txt.setAttribute('x', plotLeft - 8);
+    txt.setAttribute('y', y + 4);
+    txt.setAttribute('text-anchor','end');
+    txt.setAttribute('data-tick', String(t));
+    txt.textContent = String(t);
+    gridLayer.appendChild(txt);
+  }
+
+  const n = data.length || 1;
+  const gap = 12;
+  const barW = (plotW - gap * (n - 1)) / n;
+
+  let locked = false;
+  let finished = false;
+  const bars = [];
+
+  data.forEach((d, i) => {
+    const v = Number(d.value) || 0;
+    const h = (v / topVal) * plotH;
+    const x = plotLeft + i * (barW + gap);
+    const y = plotBottom - h;
+
+    const r = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    r.setAttribute('x', x);
+    r.setAttribute('y', y);
+    r.setAttribute('width', barW);
+    r.setAttribute('height', h);
+    r.setAttribute('rx', 10);
+    r.setAttribute('ry', 10);
+    r.setAttribute('class', 'bar');
+    r.setAttribute('data-bar', d.key);
+    r.setAttribute('data-value', String(v));
+    r.setAttribute('tabindex', '0');
+
+    const lx = x + barW / 2;
+    const label = document.createElementNS('http://www.w3.org/2000/svg','text');
+    label.setAttribute('class','xText');
+    label.setAttribute('x', lx);
+    label.setAttribute('y', plotBottom + 26);
+    label.setAttribute('text-anchor','middle');
+    label.textContent = Studio.t(d.key);
+
+    function pick(){
+      if (locked || finished) return;
+      locked = true;
+      bars.forEach(b => b.classList.remove('selected'));
+      r.classList.add('selected');
+      readout.textContent = Studio.t(d.key) + ': ' + String(v);
+      status.textContent = '';
+      status.className = 'status';
+      Studio.event('bar_tap', { key: d.key, value: v });
+      Studio.answer(String(d.key));
+    }
+
+    r.addEventListener('click', pick);
+    r.addEventListener('keydown', (e)=>{
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        pick();
+      }
+    });
+
+    bars.push(r);
+    barsLayer.appendChild(r);
+    labelsLayer.appendChild(label);
+  });
+
+  requestAnimationFrame(() => {
+    bars.forEach((b, i) => {
+      setTimeout(() => b.classList.add('grow'), i * 80);
+    });
+  });
+
+  Studio.onVerdict(function(v){
+    if (finished) return;
+    if (v && v.correct){
+      status.textContent = Studio.t('right');
+      status.className = 'status ok';
+      doneEl.classList.add('show');
+      finished = true;
+      Studio.event('verdict', { correct: true });
+      Studio.done();
+    } else {
+      status.textContent = Studio.t('wrong');
+      status.className = 'status bad';
+      Studio.event('verdict', { correct: false });
+      locked = false;
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

@@ -1,0 +1,123 @@
+<style>
+  *{box-sizing:border-box}
+  :root{color-scheme:light}
+  body{margin:0;font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif;background:#fff8ed;color:#30394a}
+  .stage{min-height:100svh;display:grid;place-items:center;padding:18px}
+  .card{width:min(100%,440px);min-height:560px;padding:24px 20px 22px;border-radius:30px;background:#fff;box-shadow:0 12px 35px #62462a18;display:flex;flex-direction:column;align-items:center;text-align:center;overflow:hidden}
+  h1{font-size:clamp(24px,7vw,32px);line-height:1.15;margin:2px 0 9px;color:#374469}
+  .instr{font-size:16px;line-height:1.45;margin:0;max-width:340px;color:#667085}
+  .fraction{display:flex;flex-direction:column;align-items:center;justify-content:center;margin:19px 0 17px;font-size:30px;font-weight:800;color:#374469;line-height:1.05;min-width:54px}
+  .fraction .rule{width:100%;height:3px;border-radius:3px;background:#ef9c61;margin:5px 0}
+  .whole{width:100%;display:grid;grid-template-columns:repeat(var(--denom),minmax(0,1fr));gap:7px;margin:8px 0 12px}
+  .part{appearance:none;border:2px solid #e2c6a6;border-radius:13px;background:#fff4e5;min-width:0;height:76px;min-height:52px;padding:0;cursor:pointer;transition:transform .16s ease,background .2s ease,border-color .2s ease,box-shadow .2s ease}
+  .part:hover{transform:translateY(-2px)}
+  .part:active{transform:scale(.94)}
+  .part[ data-shaded="true"],.part[data-shaded="true"]{background:#ffbd75;border-color:#ec9551;box-shadow:inset 0 -5px 0 #e88b48}
+  .part svg{width:32px;height:32px;opacity:.66}
+  .part[data-shaded="true"] svg{opacity:1}
+  .hint{font-size:14px;line-height:1.35;color:#8991a1;margin:0 0 12px;min-height:20px}
+  .feedback{font-weight:750;font-size:17px;min-height:25px;margin:0 0 8px;color:#4f8c68}
+  .feedback.wrong{color:#b97855}
+  .check{border:0;border-radius:17px;background:#50699e;color:#fff;font:700 18px inherit;font-size:18px;font-weight:750;padding:13px 24px;min-height:52px;min-width:150px;cursor:pointer;box-shadow:0 5px 0 #384d79;transition:transform .15s,box-shadow .15s}
+  .check:active{transform:translateY(3px);box-shadow:0 2px 0 #384d79}
+  .check:disabled{opacity:.7;cursor:default}
+  .celebrate{animation:pop .45s ease}
+  @keyframes pop{50%{transform:scale(1.05)}}
+  .done-screen{justify-content:center;gap:15px}
+  .done-mark{width:105px;height:105px;border-radius:50%;display:grid;place-items:center;background:#e6f3e9;color:#4f8c68}
+  .done-mark svg{width:58px;height:58px}
+  @media(max-width:390px){.card{padding:20px 15px}.part{height:68px;gap:5px}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+<main class="stage">
+  <section class="card" id="card" aria-live="polite">
+    <h1 id="title"></h1>
+    <p class="instr" id="instr"></p>
+    <div class="fraction" aria-label="target fraction">
+      <span id="numerator"></span><span class="rule"></span><span id="denominator"></span>
+    </div>
+    <div class="whole" id="whole"></div>
+    <p class="hint" id="hint"></p>
+    <p class="feedback" id="feedback"></p>
+    <button class="check" id="check" data-action="check" type="button"></button>
+  </section>
+</main>
+<script>
+(()=>{
+  const items=Studio.params.items;
+  let current=0,locked=false,finished=false;
+  const $=id=>document.getElementById(id);
+  $("title").textContent=Studio.t("title");
+  $("instr").textContent=Studio.t("instr");
+  $("check").textContent=Studio.t("check");
+  $("hint").textContent=Studio.t("hint");
+
+  function render(){
+    if(current>=items.length){showDone();return}
+    locked=false;
+    const item=items[current];
+    const card=$("card"),whole=$("whole");
+    card.dataset.item=item.id;
+    $("numerator").textContent=item.n;
+    $("denominator").textContent=item.d;
+    $("feedback").textContent="";
+    $("feedback").className="feedback";
+    $("check").disabled=false;
+    whole.style.setProperty("--denom",item.d);
+    whole.replaceChildren();
+    for(let i=0;i<item.d;i++){
+      const part=document.createElement("button");
+      part.type="button";
+      part.className="part";
+      part.dataset.part=i;
+      part.dataset.shaded="false";
+      part.setAttribute("aria-pressed","false");
+      part.setAttribute("aria-label",String(i+1));
+      part.innerHTML='<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3a13 13 0 1 0 0 26 13 13 0 0 0 0-26Z" fill="none" stroke="currentColor" stroke-width="2.3"/><path d="M16 4v24M4.8 10h22.4M4.8 22h22.4" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".55"/></svg>';
+      part.addEventListener("click",()=>{
+        if(locked)return;
+        const shaded=part.dataset.shaded!=="true";
+        part.dataset.shaded=String(shaded);
+        part.setAttribute("aria-pressed",String(shaded));
+        Studio.event("part_toggle",{item:item.id,part:i,shaded});
+      });
+      whole.appendChild(part);
+    }
+    $("check").onclick=()=>{
+      if(locked)return;
+      const n=whole.querySelectorAll('[data-shaded="true"]').length;
+      locked=true;
+      $("check").disabled=true;
+      Studio.event("check",{item:item.id,n,d:item.d});
+      Studio.answer({n,d:item.d});
+    };
+  }
+  function showDone(){
+    if(finished)return;
+    finished=true;
+    const card=$("card");
+    card.className="card done-screen";
+    card.innerHTML='<div class="done-mark" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="m14 33 12 12 25-27" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h1></h1>';
+    card.querySelector("h1").textContent=Studio.t("done");
+    Studio.done();
+  }
+  Studio.onVerdict(({correct})=>{
+    if(finished)return;
+    const feedback=$("feedback");
+    if(correct){
+      feedback.textContent=Studio.t("right");
+      feedback.className="feedback celebrate";
+      Studio.event("verdict",{correct:true,item:items[current].id});
+      window.setTimeout(()=>{current++;render()},650);
+    }else{
+      locked=false;
+      $("check").disabled=false;
+      feedback.textContent=Studio.t("wrong");
+      feedback.className="feedback wrong";
+      Studio.event("verdict",{correct:false,item:items[current].id});
+    }
+  });
+  render();
+  Studio.ready();
+})();
+</script>

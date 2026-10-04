@@ -1,0 +1,105 @@
+<style>
+*{box-sizing:border-box}body{margin:0;background:#edf5ec;font-family:system-ui,sans-serif;color:#234738} .activity{max-width:460px;margin:auto;padding:12px;display:flex;flex-direction:column;gap:9px}h1{font-size:19px;line-height:1.2;margin:0;min-height:24px}.scene{width:100%;height:302px;background:linear-gradient(#f5fbff,#e7f4e6);border-radius:24px;border:1px solid #d3e5d4;overflow:hidden}svg{display:block;width:100%;height:100%}svg text{font-size:12px;font-weight:650;fill:#294a3b} .controls{display:flex;gap:6px}button{font:inherit;border:0;border-radius:14px;min-width:44px;min-height:44px;cursor:pointer;transition:transform .15s,background .2s,box-shadow .2s;color:#254c3a;background:#e0ebdf}button:active{transform:scale(.93)}button:focus-visible{outline:3px solid #e2aa28;outline-offset:2px}.play{padding:0 12px;background:#285c47;color:white;flex:1}.steps{display:flex;gap:4px}.step{padding:0;width:44px}.step[aria-pressed=true]{background:#ffd879;box-shadow:inset 0 0 0 2px #dcaf4f}.caption{margin:0;padding:10px 12px;background:#fff9e9;border-radius:15px;font-size:14px;line-height:1.35;min-height:59px}.check{background:white;border:1px solid #d8e6d6;border-radius:18px;padding:10px}.ask{font-size:14px;line-height:1.3;margin:0 0 8px}.options{display:flex;gap:7px}.options button{flex:1;min-width:0;font-size:13px;padding:6px;overflow-wrap:anywhere}.options button.chosen{box-shadow:inset 0 0 0 2px #799c85}.feedback{display:inline-block;float:right;font-size:21px;line-height:22px;color:#24794f}.emphasis{transition:opacity .4s,filter .4s}.activity[data-step="1"] .light,.activity[data-step="2"] .water,.activity[data-step="3"] .carbon,.activity[data-step="4"] .sugar,.activity[data-step="5"] .oxygen{filter:drop-shadow(0 0 4px #dfb441)}.sugar-glow{animation:breathe 2.5s ease-in-out infinite}.paused .sugar-glow{animation-play-state:paused}@keyframes breathe{50%{opacity:.5;transform:scale(.93)}}@media(max-width:374px){.activity{padding:10px;gap:8px}.play{padding:0 7px;font-size:13px}.controls{gap:4px}.steps{gap:3px}}
+</style>
+<section class="activity" data-step="1">
+<h1 data-word="title"></h1>
+<div class="scene">
+<svg viewBox="0 0 340 302" role="img" aria-labelledby="sceneTitle">
+<title id="sceneTitle"></title>
+<defs>
+<linearGradient id="leafPaint" x2="1" y2="1"><stop stop-color="#81ca63"/><stop offset="1" stop-color="#278352"/></linearGradient>
+</defs>
+<g class="light emphasis">
+<path d="M94 65L164 115M109 59L192 109M83 77L145 131" stroke="#f5ce61" stroke-width="5" stroke-linecap="round" opacity=".6"/>
+<g stroke="#f0bd43" stroke-width="3" stroke-linecap="round"><path d="M70 12V20M70 72V80M36 46H44M96 46H105M46 22L52 28M89 65L95 71M45 70L51 64M89 27L95 21"/></g>
+<circle cx="70" cy="46" r="22" fill="#ffd66b"/>
+</g>
+<text data-label="sun" x="113" y="35"></text>
+<path d="M0 236Q90 223 172 238T340 235V302H0Z" fill="#bf9b74"/>
+<path d="M0 254Q89 244 163 256T340 255" stroke="#ac855f" stroke-width="2" fill="none" opacity=".4"/>
+<g data-entity="roots" stroke="#886543" stroke-width="5" stroke-linecap="round" fill="none">
+<path d="M164 229L159 266L140 288M160 259L179 275L189 289M160 248L139 264L127 270M162 245L182 256L204 261"/>
+</g>
+<path d="M164 237V175Q164 155 183 141" stroke="#428651" stroke-width="10" fill="none" stroke-linecap="round"/>
+<path d="M162 204Q126 207 113 181Q148 179 162 204" fill="#69ad5b"/>
+<path data-entity="leaf" d="M172 157Q163 103 249 98Q255 163 172 157Z" fill="url(#leafPaint)" stroke="#388750" stroke-width="2"/>
+<path d="M174 155L231 113M189 144L189 124M204 134L229 137" fill="none" stroke="#b4e386" stroke-width="2"/>
+<text data-label="leaf" x="270" y="109"></text>
+<text data-label="roots" x="215" y="283"></text>
+<g class="sugar emphasis">
+<g class="sugar-glow" style="transform-origin:211px 145px"><circle cx="211" cy="145" r="15" fill="#ffe990" opacity=".4"/><path d="M211 136L219 141V150L211 155L203 150V141Z" fill="#ffde67" stroke="#f8f0a7"/></g>
+</g>
+<text data-label="glucose" x="205" y="185"></text>
+<text data-label="water" x="22" y="220"></text>
+<text data-label="co2" x="16" y="116"></text>
+<text data-label="o2" x="270" y="160"></text>
+<path d="M38 138Q110 126 173 141" fill="none" stroke="#8bb0bf" stroke-dasharray="3 6" opacity=".45"/>
+<path d="M241 145Q278 181 313 195" fill="none" stroke="#d5aa77" stroke-dasharray="3 6" opacity=".45"/>
+<g class="water emphasis" fill="#328fce">
+<circle data-flow="water" cx="160" cy="255" r="4"/><circle data-flow="water" cx="164" cy="217" r="4"/><circle data-flow="water" cx="165" cy="180" r="4"/>
+</g>
+<g class="carbon emphasis" fill="#7c96b4">
+<circle data-flow="co2" cx="43" cy="138" r="4"/><circle data-flow="co2" cx="87" cy="133" r="4"/><circle data-flow="co2" cx="132" cy="136" r="4"/>
+</g>
+<g class="oxygen emphasis" fill="#ebaa57">
+<circle data-flow="o2" cx="240" cy="145" r="4"/><circle data-flow="o2" cx="267" cy="169" r="4"/><circle data-flow="o2" cx="295" cy="187" r="4"/>
+</g>
+</svg>
+</div>
+<div class="controls">
+<button class="play" data-action="play" type="button"></button>
+<div class="steps">
+<button class="step" data-action="step-1" type="button"></button>
+<button class="step" data-action="step-2" type="button"></button>
+<button class="step" data-action="step-3" type="button"></button>
+<button class="step" data-action="step-4" type="button"></button>
+<button class="step" data-action="step-5" type="button"></button>
+</div>
+</div>
+<p class="caption" data-caption aria-live="polite"></p>
+<div class="check">
+<span class="feedback" aria-live="polite"></span>
+<p class="ask" data-word="ask"></p>
+<div class="options">
+<button data-option="co2" type="button"></button>
+<button data-option="o2" type="button"></button>
+<button data-option="water" type="button"></button>
+</div>
+</div>
+</section>
+<script>
+(()=>{
+const p=Studio.params,root=document.querySelector('.activity');
+document.querySelectorAll('[data-word]').forEach(e=>e.textContent=Studio.t(e.dataset.word));
+document.querySelectorAll('[data-label]').forEach(e=>e.textContent=Studio.t(e.dataset.label));
+document.querySelector('#sceneTitle').textContent=Studio.t('title');
+let playing=true,complete=false,waiting=false,elapsed=0,last;
+const play=document.querySelector('[data-action="play"]'),steps=[...document.querySelectorAll('.step')],caption=document.querySelector('[data-caption]');
+function select(n){root.dataset.step=String(n);caption.textContent=Studio.t('step'+n);steps.forEach((b,i)=>b.setAttribute('aria-pressed',String(i+1===n)));}
+steps.forEach((b,i)=>{const n=i+1;b.textContent=String(n);b.hidden=n>p.steps;b.onclick=()=>{select(n);Studio.event('step',{step:n});};});
+select(p.steps-p.steps+1);
+function setPlay(){play.textContent=Studio.t(playing?'pause':'play');play.setAttribute('aria-pressed',String(playing));root.classList.toggle('paused',!playing);}
+play.onclick=()=>{playing=!playing;setPlay();Studio.event('play',{playing});};setPlay();
+const feedback=document.querySelector('.feedback');
+document.querySelectorAll('[data-option]').forEach(b=>{
+b.textContent=Studio.t(b.dataset.option);
+b.onclick=()=>{if(complete||waiting)return;waiting=true;feedback.textContent='';document.querySelectorAll('[data-option]').forEach(x=>x.classList.toggle('chosen',x===b));Studio.answer(b.dataset.option);};
+});
+Studio.onVerdict(v=>{waiting=false;feedback.textContent=v.correct?'✓':'↻';if(v.correct&&!complete){complete=true;document.querySelectorAll('[data-option]').forEach(b=>b.disabled=true);Studio.done();}});
+const flows={};
+Object.keys(p.flows).forEach(k=>flows[k]=[...document.querySelectorAll('[data-flow="'+k+'"]')]);
+function frame(now){
+if(last!==undefined&&playing)elapsed+=Math.min(now-last,60);last=now;
+Object.entries(flows).forEach(([key,particles])=>particles.forEach((c,i)=>{
+const t=(elapsed/3300+i/particles.length)%1;let x,y;
+if(key==='water'){x=160+8*t+17*Math.max(0,(t-.7)/.3);y=267-120*t;}
+else if(key==='co2'){x=38+148*t;y=138-8*Math.sin(t*Math.PI);}
+else if(key==='o2'){x=240+77*t;y=145+54*t-6*Math.sin(t*Math.PI);}
+else return;
+c.setAttribute('cx',x);c.setAttribute('cy',y);c.style.opacity=String(.35+.65*Math.sin(Math.PI*t));
+}));
+requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);Studio.ready();
+})();
+</script>

@@ -1,0 +1,475 @@
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+  body {
+    background: #e8f4f8;
+    width: 360px;
+    height: 640px;
+    overflow: hidden;
+    position: relative;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .scene {
+    position: absolute;
+    top: 0; left: 0;
+    width: 360px;
+    height: 400px;
+  }
+  .scene svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .controls {
+    position: absolute;
+    bottom: 200px;
+    left: 0;
+    width: 360px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 8px;
+  }
+  .play-btn {
+    width: 50px;
+    height: 40px;
+    border-radius: 20px;
+    border: none;
+    background: #2e7d32;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.1s, background 0.2s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    line-height: 40px;
+    text-align: center;
+    padding: 0 10px;
+  }
+  .play-btn:active {
+    transform: scale(0.92);
+  }
+  .step-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2px solid #388e3c;
+    background: #fff;
+    color: #1b5e20;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.1s, background 0.2s, border-color 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    line-height: 34px;
+    text-align: center;
+  }
+  .step-btn.active {
+    background: #388e3c;
+    color: #fff;
+    border-color: #1b5e20;
+    transform: scale(1.08);
+  }
+  .step-btn:active {
+    transform: scale(0.88);
+  }
+  .caption-area {
+    position: absolute;
+    bottom: 152px;
+    left: 0;
+    width: 360px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #1b5e20;
+    background: rgba(255,255,255,0.85);
+    border-radius: 12px;
+    backdrop-filter: blur(2px);
+    text-align: center;
+    line-height: 1.3;
+  }
+  .question-area {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 360px;
+    height: 150px;
+    background: #f1f8e9;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    padding: 10px 12px;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .question-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1b5e20;
+    text-align: center;
+    line-height: 1.3;
+  }
+  .options {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .option-btn {
+    min-width: 64px;
+    height: 44px;
+    border-radius: 22px;
+    border: 2px solid #388e3c;
+    background: #fff;
+    color: #1b5e20;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 0 16px;
+    cursor: pointer;
+    transition: transform 0.1s, background 0.2s, border-color 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    line-height: 40px;
+    text-align: center;
+  }
+  .option-btn:active {
+    transform: scale(0.92);
+  }
+  .option-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+    transform: none;
+  }
+  .feedback {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 12px;
+    text-align: center;
+    transition: opacity 0.3s;
+  }
+  .feedback.correct {
+    color: #1b5e20;
+    background: #c8e6c9;
+  }
+  .feedback.wrong {
+    color: #b71c1c;
+    background: #ffcdd2;
+  }
+  @keyframes twinkle {
+    0%,100% { opacity: 0.6; r: 3; }
+    50% { opacity: 1; r: 4.5; }
+  }
+  .glow-pulse {
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 0.4; r: 4; }
+    50% { opacity: 1; r: 7; }
+  }
+</style>
+<div class="scene">
+  <svg viewBox="0 0 360 400" preserveAspectRatio="xMidYMid meet">
+    <!-- Sky gradient -->
+    <defs>
+      <radialGradient id="skyGrad" cx="50%" cy="20%" r="60%">
+        <stop offset="0%" stop-color="#87CEEB"/>
+        <stop offset="100%" stop-color="#c8e6c9"/>
+      </radialGradient>
+      <radialGradient id="sunGrad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fff176"/>
+        <stop offset="70%" stop-color="#fdd835"/>
+        <stop offset="100%" stop-color="#f9a825"/>
+      </radialGradient>
+      <linearGradient id="soilGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#6d4c41"/>
+        <stop offset="100%" stop-color="#4e342e"/>
+      </linearGradient>
+    </defs>
+    <rect width="360" height="400" fill="url(#skyGrad)"/>
+    
+    <!-- Sun -->
+    <circle cx="300" cy="50" r="30" fill="url(#sunGrad)"/>
+    <text x="300" y="55" text-anchor="middle" fill="#4e3000" font-size="12" font-weight="bold" data-label="sun"><%= Studio.t('sun') %></text>
+    
+    <!-- Sun rays (animated lines) -->
+    <g id="rays" opacity="0.5">
+      <line x1="280" y1="60" x2="250" y2="90" stroke="#fdd835" stroke-width="2.5" stroke-dasharray="4 4">
+        <animate attributeName="stroke-dashoffset" from="0" to="20" dur="2s" repeatCount="indefinite"/>
+      </line>
+      <line x1="300" y1="75" x2="280" y2="110" stroke="#fdd835" stroke-width="2.5" stroke-dasharray="4 4">
+        <animate attributeName="stroke-dashoffset" from="0" to="20" dur="2.3s" repeatCount="indefinite"/>
+      </line>
+      <line x1="320" y1="60" x2="310" y2="95" stroke="#fdd835" stroke-width="2.5" stroke-dasharray="4 4">
+        <animate attributeName="stroke-dashoffset" from="0" to="20" dur="1.8s" repeatCount="indefinite"/>
+      </line>
+    </g>
+
+    <!-- Soil -->
+    <rect x="60" y="260" width="240" height="140" fill="url(#soilGrad)" rx="8"/>
+    <rect x="60" y="260" width="240" height="16" fill="#5d4037" rx="4"/>
+
+    <!-- Roots (data-entity="roots") -->
+    <g data-entity="roots">
+      <path d="M180 270 Q165 310 140 350" stroke="#795548" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M180 270 Q190 320 200 360" stroke="#795548" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M180 270 Q175 330 160 370" stroke="#795548" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M180 270 Q185 300 210 340" stroke="#795548" stroke-width="4" fill="none" stroke-linecap="round"/>
+    </g>
+    <text x="140" y="375" text-anchor="middle" fill="#efebe9" font-size="11" font-weight="bold" data-label="roots"><%= Studio.t('roots') %></text>
+
+    <!-- Stem -->
+    <path d="M178 270 Q176 220 180 170" stroke="#2e7d32" stroke-width="8" fill="none" stroke-linecap="round"/>
+
+    <!-- Leaf (data-entity="leaf") -->
+    <g data-entity="leaf">
+      <ellipse cx="200" cy="150" rx="55" ry="32" fill="#43a047" transform="rotate(-15 200 150)"/>
+      <ellipse cx="200" cy="150" rx="48" ry="26" fill="#66bb6a" transform="rotate(-15 200 150)"/>
+      <path d="M160 140 Q200 120 230 145" stroke="#2e7d32" stroke-width="2" fill="none"/>
+      <path d="M170 148 Q200 135 220 155" stroke="#2e7d32" stroke-width="1.5" fill="none"/>
+    </g>
+    <text x="250" y="148" text-anchor="start" fill="#1b5e20" font-size="11" font-weight="bold" data-label="leaf"><%= Studio.t('leaf') %></text>
+
+    <!-- Glucose glow inside leaf -->
+    <circle cx="195" cy="148" r="4" fill="#fdd835" class="glow-pulse" id="glucoseGlow" opacity="0.4"/>
+
+    <!-- Water particles (from roots up stem to leaf) -->
+    <circle cx="178" cy="255" r="3" fill="#42a5f5" data-flow="water"><animate attributeName="cy" from="255" to="165" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.7;1;0.7" dur="3s" repeatCount="indefinite"/></circle>
+    <circle cx="180" cy="250" r="3" fill="#42a5f5" data-flow="water"><animate attributeName="cy" from="250" to="160" dur="3s" begin="0.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.7;1;0.7" dur="3s" begin="0.8s" repeatCount="indefinite"/></circle>
+    <circle cx="176" cy="245" r="3" fill="#42a5f5" data-flow="water"><animate attributeName="cy" from="245" to="155" dur="3s" begin="1.6s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.7;1;0.7" dur="3s" begin="1.6s" repeatCount="indefinite"/></circle>
+    <circle cx="182" cy="240" r="3" fill="#42a5f5" data-flow="water"><animate attributeName="cy" from="240" to="170" dur="3.5s" begin="0.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.7;1;0.7" dur="3.5s" begin="0.4s" repeatCount="indefinite"/></circle>
+
+    <!-- CO2 particles (from air into leaf) -->
+    <circle cx="150" cy="100" r="3" fill="#78909c" data-flow="co2"><animate attributeName="cx" from="140" to="195" dur="4s" repeatCount="indefinite"/><animate attributeName="cy" from="90" to="145" dur="4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;1;0.6" dur="4s" repeatCount="indefinite"/></circle>
+    <circle cx="160" cy="95" r="3" fill="#78909c" data-flow="co2"><animate attributeName="cx" from="150" to="200" dur="4.2s" begin="1.2s" repeatCount="indefinite"/><animate attributeName="cy" from="85" to="140" dur="4.2s" begin="1.2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;1;0.6" dur="4.2s" begin="1.2s" repeatCount="indefinite"/></circle>
+    <circle cx="145" cy="110" r="3" fill="#78909c" data-flow="co2"><animate attributeName="cx" from="135" to="190" dur="3.8s" begin="2s" repeatCount="indefinite"/><animate attributeName="cy" from="100" to="150" dur="3.8s" begin="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;1;0.6" dur="3.8s" begin="2s" repeatCount="indefinite"/></circle>
+
+    <!-- O2 particles (out of leaf into air) -->
+    <circle cx="220" cy="130" r="3" fill="#afb42b" data-flow="o2"><animate attributeName="cx" from="220" to="290" dur="4s" repeatCount="indefinite"/><animate attributeName="cy" from="130" to="60" dur="4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;1;0.6" dur="4s" repeatCount="indefinite"/></circle>
+    <circle cx="225" cy="140" r="3" fill="#afb42b" data-flow="o2"><animate attributeName="cx" from="225" to="300" dur="4.5s" begin="1.5s" repeatCount="indefinite"/><animate attributeName="cy" from="140" to="70" dur="4.5s" begin="1.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;1;0.6" dur="4.5s" begin="1.5s" repeatCount="indefinite"/></circle>
+    <circle cx="215" cy="135" r="3" fill="#afb42b" data-flow="o2"><animate attributeName="cx" from="215" to="280" dur="3.8s" begin="0.6s" repeatCount="indefinite"/><animate attributeName="cy" from="135" to="80" dur="3.8s" begin="0.6s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;1;0.6" dur="3.8s" begin="0.6s" repeatCount="indefinite"/></circle>
+
+    <!-- Labels for water, co2, o2, glucose -->
+    <text x="120" y="210" text-anchor="middle" fill="#1565c0" font-size="10" font-weight="bold" data-label="water"><%= Studio.t('water') %></text>
+    <text x="100" y="105" text-anchor="middle" fill="#546e7a" font-size="10" font-weight="bold" data-label="co2"><%= Studio.t('co2') %></text>
+    <text x="300" y="90" text-anchor="middle" fill="#827717" font-size="10" font-weight="bold" data-label="o2"><%= Studio.t('o2') %></text>
+    <text x="230" y="180" text-anchor="start" fill="#f9a825" font-size="10" font-weight="bold" data-label="glucose"><%= Studio.t('glucose') %></text>
+  </svg>
+</div>
+
+<div class="controls">
+  <button class="play-btn" data-action="play" id="playBtn"><%= Studio.t('pause') %></button>
+  <button class="step-btn active" data-action="step-1" data-step="1">1</button>
+  <button class="step-btn" data-action="step-2" data-step="2">2</button>
+  <button class="step-btn" data-action="step-3" data-step="3">3</button>
+  <button class="step-btn" data-action="step-4" data-step="4">4</button>
+  <button class="step-btn" data-action="step-5" data-step="5">5</button>
+</div>
+
+<div class="caption-area" data-caption id="caption"><%= Studio.t('step1') %></div>
+
+<div class="question-area">
+  <div class="question-text" id="questionText"><%= Studio.t('ask') %></div>
+  <div class="options" id="optionsContainer">
+    <button class="option-btn" data-option="co2"><%= Studio.t('co2') %></button>
+    <button class="option-btn" data-option="o2"><%= Studio.t('o2') %></button>
+    <button class="option-btn" data-option="water"><%= Studio.t('water') %></button>
+  </div>
+  <div class="feedback" id="feedback" style="opacity:0; height:0; overflow:hidden;"></div>
+</div>
+
+<script>
+  (function() {
+    // Step captions from Studio.t
+    const stepCaptions = [
+      Studio.t('step1'),
+      Studio.t('step2'),
+      Studio.t('step3'),
+      Studio.t('step4'),
+      Studio.t('step5')
+    ];
+
+    let currentStep = 1; // 1-indexed
+    let isPlaying = true;
+    const maxStep = 5;
+
+    // DOM elements
+    const playBtn = document.getElementById('playBtn');
+    const captionEl = document.getElementById('caption');
+    const stepBtns = document.querySelectorAll('[data-action^="step-"]');
+    const optionBtns = document.querySelectorAll('.option-btn');
+    const feedbackEl = document.getElementById('feedback');
+    const rays = document.getElementById('rays');
+    const glucoseGlow = document.getElementById('glucoseGlow');
+    // Get all animated elements
+    const waterParticles = document.querySelectorAll('[data-flow="water"]');
+    const co2Particles = document.querySelectorAll('[data-flow="co2"]');
+    const o2Particles = document.querySelectorAll('[data-flow="o2"]');
+
+    // Helper to pause/resume all SMIL animations
+    function setAnimationsPaused(paused) {
+      // SMIL animations: we can pause by setting the pause attribute on the SVG
+      const svg = document.querySelector('svg');
+      if (!svg) return;
+      if (paused) {
+        svg.pauseAnimations();
+      } else {
+        svg.unpauseAnimations();
+      }
+    }
+
+    // Update UI to current step
+    function setStep(step) {
+      if (step < 1) step = 1;
+      if (step > maxStep) step = maxStep;
+      currentStep = step;
+
+      // Update step buttons active state
+      stepBtns.forEach(btn => {
+        const s = parseInt(btn.getAttribute('data-step'), 10);
+        if (s === currentStep) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      // Update caption
+      captionEl.textContent = stepCaptions[currentStep - 1];
+
+      // Adjust animations per step:
+      // Step 1: water flow prominent (others slow/reduced)
+      // Step 2: CO2 flow prominent
+      // Step 3: oxygen flow prominent
+      // Step 4: glucose glow strong
+      // Step 5: all active
+      
+      // Since we cannot easily change SMIL durations dynamically without restarting,
+      // we adjust visibility / opacity to "emphasise".
+      
+      // Reset all to full
+      waterParticles.forEach(p => { p.style.opacity = ''; });
+      co2Particles.forEach(p => { p.style.opacity = ''; });
+      o2Particles.forEach(p => { p.style.opacity = ''; });
+      if (glucoseGlow) glucoseGlow.style.opacity = '0.4';
+      
+      if (currentStep === 1) {
+        // water emphasis
+        co2Particles.forEach(p => p.style.opacity = '0.15');
+        o2Particles.forEach(p => p.style.opacity = '0.15');
+        if (glucoseGlow) glucoseGlow.style.opacity = '0.2';
+      } else if (currentStep === 2) {
+        waterParticles.forEach(p => p.style.opacity = '0.15');
+        co2Particles.forEach(p => p.style.opacity = '');
+        o2Particles.forEach(p => p.style.opacity = '0.15');
+        if (glucoseGlow) glucoseGlow.style.opacity = '0.2';
+      } else if (currentStep === 3) {
+        waterParticles.forEach(p => p.style.opacity = '0.15');
+        co2Particles.forEach(p => p.style.opacity = '0.15');
+        o2Particles.forEach(p => p.style.opacity = '');
+        if (glucoseGlow) glucoseGlow.style.opacity = '0.3';
+      } else if (currentStep === 4) {
+        waterParticles.forEach(p => p.style.opacity = '0.3');
+        co2Particles.forEach(p => p.style.opacity = '0.3');
+        o2Particles.forEach(p => p.style.opacity = '0.3');
+        if (glucoseGlow) glucoseGlow.style.opacity = '1';
+      } else if (currentStep === 5) {
+        // all full
+        waterParticles.forEach(p => p.style.opacity = '');
+        co2Particles.forEach(p => p.style.opacity = '');
+        o2Particles.forEach(p => p.style.opacity = '');
+        if (glucoseGlow) glucoseGlow.style.opacity = '1';
+      }
+
+      Studio.event('step_changed', { step: currentStep });
+    }
+
+    // Toggle play/pause
+    function togglePlay() {
+      isPlaying = !isPlaying;
+      if (isPlaying) {
+        playBtn.textContent = Studio.t('pause');
+        setAnimationsPaused(false);
+        // Unpause children if any
+      } else {
+        playBtn.textContent = Studio.t('play');
+        setAnimationsPaused(true);
+      }
+      Studio.event('play_toggle', { playing: isPlaying });
+    }
+
+    // Step button click
+    function onStepClick(e) {
+      const btn = e.currentTarget;
+      const step = parseInt(btn.getAttribute('data-step'), 10);
+      if (step >= 1 && step <= maxStep) {
+        // If paused, resume
+        if (!isPlaying) togglePlay();
+        setStep(step);
+      }
+    }
+
+    // Option button click (answer)
+    function onOptionClick(e) {
+      const btn = e.currentTarget;
+      const option = btn.getAttribute('data-option');
+      // Disable temporarily to avoid double answer while grading? No, keep enabled for re-answer.
+      Studio.answer(option);
+    }
+
+    // Setup listeners
+    playBtn.addEventListener('click', togglePlay);
+    stepBtns.forEach(btn => btn.addEventListener('click', onStepClick));
+    optionBtns.forEach(btn => btn.addEventListener('click', onOptionClick));
+
+    // Handle verdict
+    Studio.onVerdict(function(result) {
+      if (result.correct) {
+        feedbackEl.textContent = 'Sahi! ✅';
+        feedbackEl.className = 'feedback correct';
+        feedbackEl.style.opacity = '1';
+        feedbackEl.style.height = 'auto';
+        feedbackEl.style.padding = '4px 12px';
+        // Disable options
+        optionBtns.forEach(btn => btn.disabled = true);
+        // Done
+        Studio.done();
+      } else {
+        feedbackEl.textContent = 'Galat, phir try karo!';
+        feedbackEl.className = 'feedback wrong';
+        feedbackEl.style.opacity = '1';
+        feedbackEl.style.height = 'auto';
+        feedbackEl.style.padding = '4px 12px';
+        // Options remain clickable; clear feedback after 1s to allow retry
+        setTimeout(() => {
+          feedbackEl.style.opacity = '0';
+          feedbackEl.style.height = '0';
+          feedbackEl.style.padding = '0';
+        }, 1500);
+      }
+      Studio.event('answer_verdict', { correct: result.correct });
+    });
+
+    // Start with step 1, playing
+    setStep(1);
+    // Ensure playing
+    setAnimationsPaused(false);
+    playBtn.textContent = Studio.t('pause');
+
+    // Signal ready
+    Studio.ready();
+  })();
+</script>

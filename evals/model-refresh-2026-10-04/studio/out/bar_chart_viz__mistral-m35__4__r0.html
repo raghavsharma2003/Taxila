@@ -1,0 +1,292 @@
+<style>
+  :root {
+    --bg: #fff9f2;
+    --bar-color: #ff8c42;
+    --bar-hover: #ffb366;
+    --text: #2d2d2d;
+    --grid: #e0e0e0;
+    --axis: #4a4a4a;
+    --correct: #4caf50;
+    --wrong: #f44336;
+    --font: 14px;
+    --radius: 8px;
+    --transition: 0.3s ease;
+  }
+  body {
+    font-family: Arial, sans-serif;
+    font-size: var(--font);
+    color: var(--text);
+    background: var(--bg);
+    margin: 0;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 640px;
+    box-sizing: border-box;
+  }
+  .title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .chart-container {
+    width: 100%;
+    max-width: 320px;
+    height: 360px;
+    position: relative;
+    margin-bottom: 16px;
+  }
+  .chart {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    padding: 20px 0;
+    box-sizing: border-box;
+    position: relative;
+  }
+  .bar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 40px;
+    height: 100%;
+  }
+  .bar {
+    width: 32px;
+    background: var(--bar-color);
+    border-radius: var(--radius) var(--radius) 0 0;
+    transition: height var(--transition), transform 0.1s ease;
+    cursor: pointer;
+    position: relative;
+    bottom: 0;
+    height: 0;
+    opacity: 0;
+  }
+  .bar.animated {
+    animation: growBar 0.8s ease forwards;
+  }
+  .bar:hover {
+    background: var(--bar-hover);
+  }
+  .bar.tapped {
+    transform: scale(1.05);
+  }
+  .bar-label {
+    margin-top: 8px;
+    font-size: 12px;
+    text-align: center;
+    word-break: break-word;
+  }
+  .y-axis {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 20px;
+    width: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0 8px;
+    box-sizing: border-box;
+  }
+  .y-axis-title {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    transform-origin: 0 0;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .tick {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    font-size: 10px;
+  }
+  .tick::before {
+    content: '';
+    width: 100%;
+    height: 1px;
+    background: var(--grid);
+    margin-right: 4px;
+  }
+  .tick-label {
+    position: absolute;
+    right: -24px;
+    font-size: 10px;
+  }
+  .gridlines {
+    position: absolute;
+    top: 0;
+    left: 40px;
+    right: 0;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .gridline {
+    width: 100%;
+    height: 1px;
+    background: var(--grid);
+  }
+  .question {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 12px 0;
+    text-align: center;
+  }
+  .feedback {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 12px 0;
+    text-align: center;
+    min-height: 24px;
+    opacity: 0;
+    transition: opacity var(--transition);
+  }
+  .feedback.show {
+    opacity: 1;
+  }
+  .feedback.correct {
+    color: var(--correct);
+  }
+  .feedback.wrong {
+    color: var(--wrong);
+  }
+  .done {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 12px 0;
+    text-align: center;
+    opacity: 0;
+    transition: opacity var(--transition);
+  }
+  .done.show {
+    opacity: 1;
+  }
+  @keyframes growBar {
+    from {
+      height: 0;
+      opacity: 0;
+    }
+    to {
+      height: var(--bar-height);
+      opacity: 1;
+    }
+  }
+</style>
+
+<div class="title" data-test="title"></div>
+<div class="chart-container">
+  <div class="y-axis-title" data-test="yaxis"></div>
+  <div class="y-axis" id="y-axis"></div>
+  <div class="gridlines" id="gridlines"></div>
+  <div class="chart" id="chart"></div>
+</div>
+<div class="question" data-test="ask"></div>
+<div class="feedback" id="feedback"></div>
+<div class="done" id="done"></div>
+
+<script>
+  (function() {
+    const params = Studio.params;
+    const data = params.data;
+    const maxValue = Math.max(...data.map(d => d.value));
+    const step = Math.ceil(maxValue / 5);
+    const chartHeight = 300;
+    const barWidth = 32;
+    const barSpacing = 8;
+    const chart = document.getElementById('chart');
+    const yAxis = document.getElementById('y-axis');
+    const gridlines = document.getElementById('gridlines');
+    const feedbackEl = document.getElementById('feedback');
+    const doneEl = document.getElementById('done');
+
+    // Set title and question
+    document.querySelector('[data-test="title"]').textContent = Studio.t('title');
+    document.querySelector('[data-test="yaxis"]').textContent = Studio.t('yaxis');
+    document.querySelector('[data-test="ask"]').textContent = Studio.t('ask');
+
+    // Create y-axis ticks and gridlines
+    for (let i = 0; i <= maxValue; i += step) {
+      const tick = document.createElement('div');
+      tick.className = 'tick';
+      tick.setAttribute('data-tick', i);
+      tick.style.height = `${(i / maxValue) * chartHeight}px`;
+
+      const tickLabel = document.createElement('div');
+      tickLabel.className = 'tick-label';
+      tickLabel.textContent = i;
+      tickLabel.setAttribute('data-tick', i);
+      tick.appendChild(tickLabel);
+
+      yAxis.appendChild(tick);
+
+      const gridline = document.createElement('div');
+      gridline.className = 'gridline';
+      gridline.style.bottom = `${((maxValue - i) / maxValue) * chartHeight}px`;
+      gridlines.appendChild(gridline);
+    }
+
+    // Create bars
+    data.forEach((d, i) => {
+      const barContainer = document.createElement('div');
+      barContainer.className = 'bar-container';
+
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      bar.setAttribute('data-bar', d.key);
+      bar.setAttribute('data-value', d.value);
+      bar.style.height = `${(d.value / maxValue) * chartHeight}px`;
+      bar.style.setProperty('--bar-height', `${(d.value / maxValue) * chartHeight}px`);
+
+      const barLabel = document.createElement('div');
+      barLabel.className = 'bar-label';
+      barLabel.textContent = Studio.t(d.key);
+
+      barContainer.appendChild(bar);
+      barContainer.appendChild(barLabel);
+      chart.appendChild(barContainer);
+
+      // Add animation class after a small delay to trigger animation
+      setTimeout(() => {
+        bar.classList.add('animated');
+      }, 100 * i);
+    });
+
+    // Handle bar taps
+    chart.addEventListener('click', (e) => {
+      const bar = e.target.closest('.bar');
+      if (!bar) return;
+
+      // Visual feedback
+      bar.classList.add('tapped');
+      setTimeout(() => bar.classList.remove('tapped'), 200);
+
+      const fruitKey = bar.getAttribute('data-bar');
+      Studio.answer(fruitKey);
+    });
+
+    // Handle verdict
+    Studio.onVerdict(({ correct }) => {
+      feedbackEl.textContent = Studio.t(correct ? 'right' : 'wrong');
+      feedbackEl.className = `feedback ${correct ? 'correct' : 'wrong'} show`;
+
+      if (correct) {
+        Studio.done();
+        setTimeout(() => {
+          doneEl.textContent = Studio.t('done');
+          doneEl.classList.add('show');
+        }, 500);
+      }
+    });
+
+    Studio.ready();
+  })();
+</script>

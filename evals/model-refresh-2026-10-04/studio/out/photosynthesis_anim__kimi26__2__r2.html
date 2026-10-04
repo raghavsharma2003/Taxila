@@ -1,0 +1,245 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #E8F5E9; color: #212121; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+  #app { width: 360px; margin: 0 auto; min-height: 640px; display: flex; flex-direction: column; align-items: center; position: relative; }
+  #title { margin-top: 8px; font-size: 18px; text-align: center; color: #1B5E20; font-weight: 700; padding: 0 12px; }
+  svg { width: 360px; height: 340px; display: block; }
+  .particle { transition: opacity 0.45s ease; }
+  .glucose { fill: #FFB300; }
+  @keyframes pulse { 0%,100%{ opacity: 0.5; } 50%{ opacity: 1; } }
+  .glucose { animation: pulse 2s ease-in-out infinite; }
+  @keyframes raydash { to { stroke-dashoffset: -16; } }
+  .ray { stroke: #FFD54F; stroke-width: 2; stroke-dasharray: 8 6; stroke-linecap: round; animation: raydash 1s linear infinite; opacity: 0.7; transition: opacity 0.45s ease, stroke 0.45s ease, stroke-width 0.45s ease; }
+  #leaf-group { transform-origin: 180px 210px; animation: sway 5s ease-in-out infinite; }
+  @keyframes sway { 0%,100%{ transform: rotate(0deg); } 50%{ transform: rotate(1.5deg); } }
+  button { touch-action: manipulation; }
+  #controls { width: 100%; padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
+  #play-btn { align-self: flex-start; padding: 10px 18px; border: none; border-radius: 24px; background: #43A047; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; min-height: 44px; min-width: 90px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); transition: transform 0.1s ease, background 0.2s; }
+  #play-btn:active { transform: scale(0.95); }
+  #steps { display: flex; justify-content: center; gap: 6px; }
+  #steps button { width: 46px; height: 46px; border-radius: 50%; border: 2.5px solid #388E3C; background: #fff; color: #2E7D32; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: all 0.2s ease; }
+  #steps button.active { background: #388E3C; color: #fff; transform: scale(1.1); box-shadow: 0 3px 8px rgba(56,142,60,0.3); }
+  #steps button:active { transform: scale(0.95); }
+  #caption { width: 100%; min-height: 28px; font-size: 13px; text-align: center; color: #37474F; padding: 4px 14px; font-weight: 600; line-height: 1.3; }
+  #quiz { width: 100%; padding: 8px 14px 16px; margin-top: auto; }
+  #ask-text { font-size: 15px; font-weight: 700; margin-bottom: 10px; text-align: center; color: #1B5E20; line-height: 1.3; }
+  #options { display: flex; gap: 8px; justify-content: center; }
+  #options button { flex: 1; max-width: 104px; height: 48px; border-radius: 14px; border: 2px solid #81C784; background: #C8E6C9; color: #1B5E20; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s ease; }
+  #options button:active { transform: scale(0.96); }
+  #options button.correct { background: #66BB6A; color: #fff; border-color: #2E7D32; }
+  #options button.wrong { background: #EF9A9A; color: #B71C1C; border-color: #E53935; animation: shake 0.4s; }
+  @keyframes shake { 0%,100%{ transform: translateX(0); } 25%{ transform: translateX(-4px); } 75%{ transform: translateX(4px); } }
+  #feedback { min-height: 22px; margin-top: 6px; text-align: center; font-size: 13px; font-weight: 600; }
+  #scene.step-1 .particle { opacity: 1; }
+  #scene.step-2 .particle:not([data-flow="water"]) { opacity: 0.25; }
+  #scene.step-2 [data-flow="water"] { opacity: 1; filter: drop-shadow(0 0 4px #2196F3); }
+  #scene.step-3 .particle:not([data-flow="co2"]) { opacity: 0.25; }
+  #scene.step-3 [data-flow="co2"] { opacity: 1; filter: drop-shadow(0 0 4px #78909C); }
+  #scene.step-4 .particle:not(.glucose) { opacity: 0.25; }
+  #scene.step-4 .glucose { opacity: 1; filter: drop-shadow(0 0 6px #FFB300); }
+  #scene.step-4 .ray { stroke: #FFF59D; stroke-width: 3; opacity: 1; }
+  #scene.step-5 .particle:not([data-flow="o2"]) { opacity: 0.25; }
+  #scene.step-5 [data-flow="o2"] { opacity: 1; filter: drop-shadow(0 0 4px #E0E0E0); }
+</style>
+
+<div id="app">
+  <h1 id="title"></h1>
+  <svg id="scene" class="step-1" viewBox="0 0 360 340" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <filter id="sun-glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="4" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <rect x="0" y="300" width="360" height="40" fill="#5D4037" rx="4"/>
+    <g id="roots-group" data-entity="roots">
+      <path d="M 176 300 Q 155 318 135 332" stroke="#4E342E" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M 184 300 Q 205 318 225 332" stroke="#4E342E" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M 180 300 L 180 332" stroke="#4E342E" stroke-width="3" fill="none" stroke-linecap="round"/>
+    </g>
+    <rect id="stem" x="176" y="210" width="8" height="90" fill="#795548" rx="4"/>
+    <g id="leaf-group" data-entity="leaf">
+      <path d="M 180 132 Q 238 162 180 210 Q 122 162 180 132" fill="#66BB6A" stroke="#2E7D32" stroke-width="2"/>
+    </g>
+    <circle cx="180" cy="42" r="26" fill="#FFCA28" filter="url(#sun-glow)"/>
+    <circle cx="180" cy="42" r="20" fill="#FFC107"/>
+    <line class="ray" x1="162" y1="64" x2="155" y2="128"/>
+    <line class="ray" x1="180" y1="66" x2="180" y2="132"/>
+    <line class="ray" x1="198" y1="64" x2="205" y2="128"/>
+    <circle class="particle" data-flow="water" cx="180" cy="300" r="5" fill="#2196F3" opacity="1"/>
+    <circle class="particle" data-flow="water" cx="180" cy="270" r="5" fill="#2196F3" opacity="1"/>
+    <circle class="particle" data-flow="water" cx="180" cy="240" r="5" fill="#2196F3" opacity="1"/>
+    <circle class="particle" data-flow="co2" cx="120" cy="150" r="5" fill="#78909C" opacity="1"/>
+    <circle class="particle" data-flow="co2" cx="100" cy="172" r="5" fill="#78909C" opacity="1"/>
+    <circle class="particle" data-flow="co2" cx="130" cy="188" r="5" fill="#78909C" opacity="1"/>
+    <circle class="particle" data-flow="o2" cx="240" cy="150" r="5" fill="#ECEFF1" opacity="1"/>
+    <circle class="particle" data-flow="o2" cx="260" cy="172" r="5" fill="#ECEFF1" opacity="1"/>
+    <circle class="particle" data-flow="o2" cx="230" cy="188" r="5" fill="#ECEFF1" opacity="1"/>
+    <circle class="glucose particle" cx="170" cy="162" r="3" fill="#FFB300" opacity="1"/>
+    <circle class="glucose particle" cx="185" cy="172" r="3" fill="#FFB300" opacity="1"/>
+    <circle class="glucose particle" cx="180" cy="152" r="3" fill="#FFB300" opacity="1"/>
+    <text x="180" y="76" text-anchor="middle" font-size="12" fill="#BF360C" font-weight="700" data-label="sun"></text>
+    <text x="180" y="118" text-anchor="middle" font-size="12" fill="#1B5E20" font-weight="700" data-label="leaf"></text>
+    <text x="180" y="330" text-anchor="middle" font-size="11" fill="#3E2723" font-weight="700" data-label="roots"></text>
+    <text x="82" y="160" text-anchor="middle" font-size="12" fill="#455A64" font-weight="700" data-label="co2"></text>
+    <text x="288" y="160" text-anchor="middle" font-size="12" fill="#455A64" font-weight="700" data-label="o2"></text>
+    <text x="158" y="268" text-anchor="middle" font-size="12" fill="#0D47A1" font-weight="700" data-label="water"></text>
+    <text x="210" y="168" text-anchor="middle" font-size="11" fill="#E65100" font-weight="700" data-label="glucose"></text>
+  </svg>
+  <div id="controls">
+    <button id="play-btn" data-action="play"></button>
+    <div id="steps"></div>
+  </div>
+  <div id="caption" data-caption></div>
+  <div id="quiz">
+    <div id="ask-text"></div>
+    <div id="options">
+      <button data-option="co2"></button>
+      <button data-option="o2"></button>
+      <button data-option="water"></button>
+    </div>
+    <div id="feedback"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const stepsBox = document.getElementById('steps');
+  const stepCount = Studio.params.steps || 5;
+  const stepButtons = [];
+  for (let i = 1; i <= stepCount; i++) {
+    const b = document.createElement('button');
+    b.dataset.action = 'step-' + i;
+    b.textContent = String(i);
+    stepsBox.appendChild(b);
+    stepButtons.push(b);
+  }
+
+  document.querySelectorAll('[data-label]').forEach(el => {
+    el.textContent = Studio.t(el.dataset.label);
+  });
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('ask-text').textContent = Studio.t('ask');
+  document.querySelectorAll('#options button').forEach(btn => {
+    btn.textContent = Studio.t(btn.dataset.option);
+  });
+
+  const playBtn = document.getElementById('play-btn');
+  let playing = true;
+  function renderPlay(){
+    playBtn.textContent = Studio.t(playing ? 'pause' : 'play');
+  }
+  renderPlay();
+
+  const captionEl = document.getElementById('caption');
+  const sceneEl = document.getElementById('scene');
+  let currentStep = 1;
+  function showStep(step){
+    currentStep = step;
+    sceneEl.setAttribute('class', 'step-' + step);
+    captionEl.textContent = Studio.t('step' + step);
+    stepButtons.forEach((b, idx) => b.classList.toggle('active', idx + 1 === step));
+  }
+  showStep(1);
+
+  playBtn.addEventListener('click', () => {
+    playing = !playing;
+    renderPlay();
+    Studio.event('play', {playing});
+  });
+
+  stepsBox.addEventListener('click', e => {
+    const b = e.target.closest('button[data-action]');
+    if (!b) return;
+    const step = parseInt(b.dataset.action.split('-')[1], 10);
+    if (!isNaN(step) && step >= 1 && step <= stepCount) {
+      showStep(step);
+      Studio.event('select-step', {step});
+    }
+  });
+
+  const flowEls = {
+    water: Array.from(document.querySelectorAll('[data-flow="water"]')),
+    co2: Array.from(document.querySelectorAll('[data-flow="co2"]')),
+    o2: Array.from(document.querySelectorAll('[data-flow="o2"]'))
+  };
+  const CYCLE = 3000;
+  let playTime = 0;
+  let lastTs = null;
+
+  function animate(ts){
+    if (lastTs == null) lastTs = ts;
+    const dt = ts - lastTs;
+    lastTs = ts;
+    if (playing) {
+      playTime += dt;
+      const t = (playTime % CYCLE) / CYCLE;
+
+      flowEls.water.forEach((el, i) => {
+        const offset = (i / flowEls.water.length) % 1;
+        const p = (t + offset) % 1;
+        const cx = 180 + Math.sin(p * Math.PI * 4) * 3;
+        const cy = 300 - p * 90;
+        el.setAttribute('cx', cx.toFixed(1));
+        el.setAttribute('cy', cy.toFixed(1));
+      });
+
+      flowEls.co2.forEach((el, i) => {
+        const offset = (i / flowEls.co2.length) % 1;
+        const p = (t + offset) % 1;
+        const side = (i % 2 === 0) ? -1 : 1;
+        const startX = 180 + side * 70;
+        const endX = 180 + side * 14;
+        const cx = startX + (endX - startX) * p;
+        const cy = 165 + Math.sin(p * Math.PI) * 20 * ((i % 3 === 0) ? -1 : 1);
+        el.setAttribute('cx', cx.toFixed(1));
+        el.setAttribute('cy', cy.toFixed(1));
+      });
+
+      flowEls.o2.forEach((el, i) => {
+        const offset = (i / flowEls.o2.length) % 1;
+        const p = (t + offset) % 1;
+        const side = (i % 2 === 0) ? 1 : -1;
+        const startX = 180 + side * 12;
+        const endX = 180 + side * 75;
+        const cx = startX + (endX - startX) * p;
+        const cy = 165 - Math.sin(p * Math.PI) * 20 * ((i % 3 === 0) ? 1 : 0.6);
+        el.setAttribute('cx', cx.toFixed(1));
+        el.setAttribute('cy', cy.toFixed(1));
+      });
+    }
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+
+  let lastAnswer = null;
+  let answeredCorrect = false;
+  const feedbackEl = document.getElementById('feedback');
+  const optionBtns = Array.from(document.querySelectorAll('#options button'));
+
+  optionBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (answeredCorrect) return;
+      lastAnswer = btn.dataset.option;
+      optionBtns.forEach(b => b.classList.remove('correct','wrong'));
+      Studio.answer(lastAnswer);
+      Studio.event('answer', {option: lastAnswer});
+    });
+  });
+
+  Studio.onVerdict(result => {
+    const btn = document.querySelector('#options button[data-option="' + (lastAnswer || '') + '"]');
+    if (result.correct) {
+      answeredCorrect = true;
+      if (btn) btn.classList.add('correct');
+      feedbackEl.textContent = '';
+      setTimeout(() => Studio.done(), 700);
+    } else {
+      if (btn) btn.classList.add('wrong');
+      feedbackEl.textContent = '';
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

@@ -1,0 +1,222 @@
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; overflow-x: hidden; background: #FFF3E0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, sans-serif; }
+  .app { width: 100%; max-width: 360px; margin: 0 auto; min-height: 640px; padding: 20px 16px 32px; display: flex; flex-direction: column; align-items: center; color: #3E2723; }
+  .header { text-align: center; margin-bottom: 12px; }
+  #title { font-size: 24px; font-weight: 800; color: #BF360C; margin: 0 0 6px; letter-spacing: 0.2px; }
+  #instr { font-size: 16px; color: #5D4037; margin: 0; line-height: 1.45; }
+  .stage { width: 100%; display: flex; flex-direction: column; align-items: center; flex: 1; justify-content: center; }
+  .fraction-area { margin-bottom: 16px; }
+  #item-container { width: 100%; display: flex; flex-direction: column; align-items: center; }
+  .visual { width: 280px; height: 280px; max-width: 100%; }
+  .controls { width: 100%; max-width: 280px; margin-top: 12px; }
+  #check-btn { width: 100%; padding: 16px; font-size: 20px; font-weight: 700; color: #fff; background: #66BB6A; border: none; border-radius: 14px; box-shadow: 0 4px 0 #388E3C; cursor: pointer; transition: transform .1s ease, box-shadow .1s ease; }
+  #check-btn:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 0 0 #388E3C; }
+  #check-btn:disabled { opacity: .6; cursor: not-allowed; }
+  #feedback { min-height: 28px; margin-top: 14px; font-size: 18px; font-weight: 700; text-align: center; }
+  .right-bounce { color: #2E7D32; animation: bounceIn .5s ease; }
+  .wrong-shake { color: #C62828; animation: shake .4s ease; }
+  @keyframes bounceIn { 0% { transform: scale(.9); opacity: 0; } 60% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); } }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+  .done-screen { display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; flex: 1; }
+  #done-title { font-size: 28px; font-weight: 800; color: #BF360C; }
+  .target-fraction { display: inline-flex; flex-direction: column; align-items: center; }
+  .target-num, .target-den { font-size: 44px; font-weight: 800; color: #BF360C; line-height: 1; }
+  .target-bar { width: 56px; height: 5px; background: #BF360C; border-radius: 3px; margin: 4px 0; }
+  .part { transition: fill .25s ease, transform .15s ease; transform-box: fill-box; transform-origin: center; cursor: pointer; outline: none; }
+  .part:active { transform: scale(.93); }
+</style>
+<div class="app">
+  <header class="header">
+    <h1 id="title"></h1>
+    <p id="instr"></p>
+  </header>
+  <div class="stage">
+    <div class="fraction-area" id="fraction"></div>
+    <div id="item-container">
+      <div id="visual" class="visual"></div>
+    </div>
+  </div>
+  <div class="controls">
+    <button id="check-btn" data-action="check"></button>
+  </div>
+  <div id="feedback"></div>
+  <div id="done-screen" class="done-screen">
+    <h2 id="done-title"></h2>
+  </div>
+</div>
+<script>
+(function(){
+  var items = Studio.params.items;
+  var currentIndex = 0;
+  var shaded = new Set();
+
+  var titleEl = document.getElementById('title');
+  var instrEl = document.getElementById('instr');
+  var itemContainer = document.getElementById('item-container');
+  var fractionEl = document.getElementById('fraction');
+  var visualEl = document.getElementById('visual');
+  var checkBtn = document.getElementById('check-btn');
+  var feedbackEl = document.getElementById('feedback');
+  var doneScreen = document.getElementById('done-screen');
+  var doneTitle = document.getElementById('done-title');
+
+  function t(k){ return Studio.t(k); }
+
+  function init(){
+    titleEl.textContent = t('title');
+    instrEl.textContent = t('instr');
+    checkBtn.textContent = t('check');
+    doneTitle.textContent = t('done');
+    loadItem(0);
+    Studio.ready();
+  }
+
+  function loadItem(idx){
+    var item = items[idx];
+    shaded.clear();
+    itemContainer.setAttribute('data-item', String(item.id));
+    feedbackEl.textContent = '';
+    feedbackEl.className = '';
+    checkBtn.disabled = false;
+    renderFraction(item.n, item.d);
+    renderVisual(item.d);
+  }
+
+  function renderFraction(n, d){
+    fractionEl.innerHTML = '';
+    var wrap = document.createElement('div');
+    wrap.className = 'target-fraction';
+    var num = document.createElement('span');
+    num.className = 'target-num';
+    num.textContent = String(n);
+    var bar = document.createElement('div');
+    bar.className = 'target-bar';
+    var den = document.createElement('span');
+    den.className = 'target-den';
+    den.textContent = String(d);
+    wrap.appendChild(num);
+    wrap.appendChild(bar);
+    wrap.appendChild(den);
+    fractionEl.appendChild(wrap);
+  }
+
+  function renderVisual(d){
+    visualEl.innerHTML = '';
+    var size = 280;
+    var ns = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 ' + size + ' ' + size);
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('height', '100%');
+
+    var cx = size / 2;
+    var cy = size / 2;
+    var outerR = size / 2 - 12;
+    var r = outerR - 6;
+
+    var crust = document.createElementNS(ns, 'circle');
+    crust.setAttribute('cx', cx);
+    crust.setAttribute('cy', cy);
+    crust.setAttribute('r', outerR);
+    crust.setAttribute('fill', '#F57C00');
+    crust.setAttribute('stroke', '#E65100');
+    crust.setAttribute('stroke-width', '4');
+    svg.appendChild(crust);
+
+    var cheese = document.createElementNS(ns, 'circle');
+    cheese.setAttribute('cx', cx);
+    cheese.setAttribute('cy', cy);
+    cheese.setAttribute('r', r);
+    cheese.setAttribute('fill', '#FFE082');
+    svg.appendChild(cheese);
+
+    var anglePer = (2 * Math.PI) / d;
+    for(var i = 0; i < d; i++){
+      var start = i * anglePer - Math.PI / 2;
+      var end = start + anglePer;
+      var x1 = cx + r * Math.cos(start);
+      var y1 = cy + r * Math.sin(start);
+      var x2 = cx + r * Math.cos(end);
+      var y2 = cy + r * Math.sin(end);
+      var large = anglePer > Math.PI ? 1 : 0;
+      var dPath = 'M ' + cx + ' ' + cy + ' L ' + x1 + ' ' + y1 + ' A ' + r + ' ' + r + ' 0 ' + large + ' 1 ' + x2 + ' ' + y2 + ' Z';
+      var path = document.createElementNS(ns, 'path');
+      path.setAttribute('d', dPath);
+      path.setAttribute('fill', '#FFE082');
+      path.setAttribute('stroke', '#FFFFFF');
+      path.setAttribute('stroke-width', '2');
+      path.setAttribute('data-part', String(i));
+      path.setAttribute('data-shaded', 'false');
+      path.setAttribute('class', 'part');
+      path.addEventListener('click', onPartClick);
+      svg.appendChild(path);
+    }
+    visualEl.appendChild(svg);
+  }
+
+  function onPartClick(e){
+    var part = e.currentTarget;
+    var idx = parseInt(part.getAttribute('data-part'), 10);
+    var isShaded = part.getAttribute('data-shaded') === 'true';
+    if(isShaded){
+      part.setAttribute('data-shaded', 'false');
+      part.setAttribute('fill', '#FFE082');
+      shaded.delete(idx);
+    }else{
+      part.setAttribute('data-shaded', 'true');
+      part.setAttribute('fill', '#FF7043');
+      shaded.add(idx);
+    }
+    feedbackEl.textContent = '';
+    feedbackEl.className = '';
+  }
+
+  function showFeedback(cls, text){
+    feedbackEl.className = '';
+    void feedbackEl.offsetWidth;
+    feedbackEl.textContent = text;
+    feedbackEl.className = cls;
+  }
+
+  function onCheck(){
+    var item = items[currentIndex];
+    Studio.answer({ n: shaded.size, d: item.d });
+    checkBtn.disabled = true;
+  }
+
+  Studio.onVerdict(function(verdict){
+    if(verdict.correct){
+      showFeedback('right-bounce', t('right'));
+      setTimeout(function(){
+        nextItem();
+      }, 900);
+    }else{
+      showFeedback('wrong-shake', t('wrong'));
+      checkBtn.disabled = false;
+    }
+  });
+
+  function nextItem(){
+    currentIndex++;
+    if(currentIndex >= items.length){
+      showDone();
+    }else{
+      loadItem(currentIndex);
+    }
+  }
+
+  function showDone(){
+    document.querySelector('.stage').style.display = 'none';
+    document.querySelector('.controls').style.display = 'none';
+    feedbackEl.style.display = 'none';
+    instrEl.style.display = 'none';
+    doneScreen.style.display = 'flex';
+    Studio.done();
+  }
+
+  checkBtn.addEventListener('click', onCheck);
+
+  init();
+})();
+</script>

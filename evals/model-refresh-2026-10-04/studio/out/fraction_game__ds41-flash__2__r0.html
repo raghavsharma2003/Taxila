@@ -1,0 +1,467 @@
+<style>
+  :root{
+    --bg:#FFF7EC;
+    --card:#FFFFFF;
+    --ink:#3B2A1A;
+    --soft:#8A7A68;
+    --line:#EADFCF;
+    --good:#2FA36B;
+    --oops:#E08A2E;
+    --accent:#F2994A;
+    --tap:rgba(242,153,74,0.18);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  .wrap{
+    width:100%;
+    max-width:420px;
+    margin:0 auto;
+    padding:14px 14px 22px;
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+    color:var(--ink);
+    background:var(--bg);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:var(--card);
+    border:2px solid var(--line);
+    border-radius:18px;
+    padding:10px 14px;
+  }
+  .title{
+    font-size:19px;
+    font-weight:800;
+    letter-spacing:.2px;
+  }
+  .badge{
+    font-size:14px;
+    font-weight:800;
+    background:var(--tap);
+    color:var(--accent);
+    border-radius:999px;
+    padding:4px 10px;
+    white-space:nowrap;
+  }
+  .instr{
+    font-size:15px;
+    line-height:1.35;
+    color:var(--soft);
+    text-align:center;
+    padding:0 4px;
+  }
+  .stage{
+    background:var(--card);
+    border:2px solid var(--line);
+    border-radius:22px;
+    padding:12px 10px 6px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+  }
+  .target{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+    padding:2px 4px;
+  }
+  .target-top{
+    font-size:34px;
+    font-weight:900;
+    line-height:1;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .frac{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    line-height:1;
+  }
+  .frac .num{font-size:32px;font-weight:900;}
+  .frac .bar{width:100%;height:3px;background:var(--ink);border-radius:2px;margin:3px 0;}
+  .frac .den{font-size:32px;font-weight:900;}
+  .of{
+    font-size:20px;
+    font-weight:800;
+    color:var(--soft);
+  }
+  .pizza-slot{
+    position:relative;
+    width:min(72vw,300px);
+    aspect-ratio:1/1;
+    margin:2px auto 4px;
+  }
+  .part{
+    position:absolute;
+    inset:0;
+    cursor:pointer;
+    transition:transform .16s ease, filter .16s ease;
+    transform-origin:50% 50%;
+  }
+  .part svg{display:block;width:100%;height:100%;}
+  .part .wedge{
+    fill:#FDF1DF;
+    stroke:#D9C7AE;
+    stroke-width:2;
+    transition:fill .22s ease, stroke .22s ease;
+  }
+  .part.shaded .wedge{
+    fill:var(--accent);
+    stroke:#C97A2B;
+  }
+  .part:active{transform:scale(.97);}
+  .part.shaded:active{transform:scale(.97);}
+  .pop{
+    animation:pop .34s ease;
+  }
+  @keyframes pop{
+    0%{transform:scale(.9);}
+    55%{transform:scale(1.06);}
+    100%{transform:scale(1);}
+  }
+  .row{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+  }
+  .btn{
+    flex:1;
+    min-height:52px;
+    border:none;
+    border-radius:16px;
+    background:var(--accent);
+    color:#fff;
+    font-size:18px;
+    font-weight:800;
+    letter-spacing:.3px;
+    box-shadow:0 4px 0 #C97A2B;
+    transition:transform .1s ease, box-shadow .1s ease, opacity .2s;
+    padding:0 12px;
+  }
+  .btn:active{transform:translateY(3px);box-shadow:0 1px 0 #C97A2B;}
+  .btn.hidden{display:none;}
+  .hint{
+    min-height:22px;
+    font-size:14px;
+    font-weight:700;
+    text-align:center;
+    color:var(--soft);
+    transition:color .2s;
+  }
+  .hint.ok{color:var(--good);}
+  .hint.no{color:var(--oops);}
+  .shake{
+    animation:shake .4s ease;
+  }
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    20%{transform:translateX(-5px);}
+    40%{transform:translateX(5px);}
+    60%{transform:translateX(-3px);}
+    80%{transform:translateX(3px);}
+  }
+  .celebrate{
+    animation:celebrate .7s ease;
+  }
+  @keyframes celebrate{
+    0%{transform:scale(1);}
+    30%{transform:scale(1.05);}
+    60%{transform:scale(.98);}
+    100%{transform:scale(1);}
+  }
+  .done-screen{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    gap:14px;
+    padding:24px 12px;
+    text-align:center;
+  }
+  .done-screen.show{display:flex;}
+  .done-emoji{
+    font-size:56px;
+    animation:pop .5s ease;
+  }
+  .done-text{
+    font-size:22px;
+    font-weight:900;
+    color:var(--good);
+  }
+  .dots{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    margin-top:2px;
+  }
+  .dot{
+    width:9px;height:9px;border-radius:50%;
+    background:var(--line);
+    transition:background .3s, transform .3s;
+  }
+  .dot.on{background:var(--accent);transform:scale(1.25);}
+  .hidden{display:none !important;}
+</style>
+
+<div class="wrap">
+  <div class="head">
+    <div class="title" id="titleEl">—</div>
+    <div class="badge" id="progressEl">—</div>
+  </div>
+  <div class="instr" id="instrEl">—</div>
+
+  <div class="stage" id="stageEl">
+    <div class="target" id="targetEl"></div>
+    <div class="pizza-slot" id="pizzaSlot"></div>
+    <div class="hint" id="hintEl"></div>
+    <div class="row">
+      <button class="btn" id="checkBtn" data-action="check">—</button>
+    </div>
+  </div>
+
+  <div class="stage done-screen" id="doneScreen">
+    <div class="done-emoji">🎉</div>
+    <div class="done-text" id="doneText">—</div>
+  </div>
+
+  <div class="dots" id="dotsEl"></div>
+</div>
+
+<script>
+(function(){
+  var P = Studio.params || {};
+  var items = (P.items || []).slice();
+  var total = items.length;
+  var idx = 0;
+  var shaded = [];
+  var locked = false;
+
+  var titleEl = document.getElementById('titleEl');
+  var instrEl = document.getElementById('instrEl');
+  var progressEl = document.getElementById('progressEl');
+  var targetEl = document.getElementById('targetEl');
+  var pizzaSlot = document.getElementById('pizzaSlot');
+  var hintEl = document.getElementById('hintEl');
+  var checkBtn = document.getElementById('checkBtn');
+  var stageEl = document.getElementById('stageEl');
+  var doneScreen = document.getElementById('doneScreen');
+  var doneText = document.getElementById('doneText');
+  var dotsEl = document.getElementById('dotsEl');
+
+  function T(k){
+    try{
+      var v = Studio.t(k);
+      return (v === undefined || v === null) ? '' : String(v);
+    }catch(e){ return ''; }
+  }
+
+  function makeDots(){
+    dotsEl.innerHTML = '';
+    for(var i=0;i<total;i++){
+      var d = document.createElement('div');
+      d.className = 'dot' + (i === idx ? ' on' : '');
+      d.setAttribute('data-dot', String(i));
+      dotsEl.appendChild(d);
+    }
+  }
+
+  function updateDots(){
+    var ds = dotsEl.querySelectorAll('.dot');
+    for(var i=0;i<ds.length;i++){
+      ds[i].className = 'dot' + (i === idx ? ' on' : '');
+    }
+  }
+
+  var TAU = Math.PI * 2;
+  function makePizzaSlice(d, i, selected){
+    var gap = 0.035;
+    var a0 = -Math.PI/2 + (i * TAU / d) + gap/2;
+    var a1 = -Math.PI/2 + ((i+1) * TAU / d) - gap/2;
+    var cx = 100, cy = 100, rOut = 96, rIn = 0;
+    var x0 = cx + rOut*Math.cos(a0), y0 = cy + rOut*Math.sin(a0);
+    var x1 = cx + rOut*Math.cos(a1), y1 = cy + rOut*Math.sin(a1);
+    var dPath = 'M' + cx + ' ' + cy +
+      ' L' + x0.toFixed(2) + ' ' + y0.toFixed(2) +
+      ' A' + rOut + ' ' + rOut + ' 0 ' + (d > 2 ? 1 : 0) + ' 1 ' +
+      x1.toFixed(2) + ' ' + y1.toFixed(2) + ' Z';
+    return '<svg viewBox="0 0 200 200" aria-hidden="true">' +
+      '<path class="wedge" d="' + dPath + '"></path>' +
+      '</svg>';
+  }
+
+  function renderParts(item){
+    pizzaSlot.innerHTML = '';
+    for(var i=0;i<item.d;i++){
+      var p = document.createElement('div');
+      p.className = 'part' + (shaded[i] ? ' shaded' : '');
+      p.setAttribute('data-part', String(i));
+      p.setAttribute('data-shaded', shaded[i] ? 'true' : 'false');
+      p.innerHTML = makePizzaSlice(item.d, i, shaded[i]);
+      (function(part, index){
+        function toggle(e){
+          if(locked) return;
+          e.preventDefault();
+          shaded[index] = !shaded[index];
+          part.className = 'part' + (shaded[index] ? ' shaded' : '');
+          part.setAttribute('data-shaded', shaded[index] ? 'true' : 'false');
+          part.classList.remove('pop');
+          void part.offsetWidth;
+          part.classList.add('pop');
+          hintEl.textContent = '';
+          hintEl.className = 'hint';
+          Studio.event('part_toggle', {item: item.id, part: index, shaded: shaded[index]});
+        }
+        part.addEventListener('click', toggle);
+        part.addEventListener('touchstart', function(e){
+          if(locked) return;
+          part.style.filter = 'brightness(0.96)';
+        }, {passive:true});
+        part.addEventListener('touchend', function(){
+          part.style.filter = '';
+        });
+      })(p, i);
+      pizzaSlot.appendChild(p);
+    }
+  }
+
+  function renderTarget(item){
+    targetEl.innerHTML = '';
+    var wrap = document.createElement('div');
+    wrap.className = 'target-top';
+    var f = document.createElement('div');
+    f.className = 'frac';
+    var num = document.createElement('div');
+    num.className = 'num';
+    num.textContent = String(item.n);
+    var bar = document.createElement('div');
+    bar.className = 'bar';
+    var den = document.createElement('div');
+    den.className = 'den';
+    den.textContent = String(item.d);
+    f.appendChild(num);
+    f.appendChild(bar);
+    f.appendChild(den);
+    var of = document.createElement('div');
+    of.className = 'of';
+    of.textContent = '/';
+    wrap.appendChild(f);
+    targetEl.appendChild(wrap);
+  }
+
+  function renderItem(){
+    var item = items[idx];
+    var host = stageEl;
+    host.setAttribute('data-item', item.id);
+    shaded = [];
+    for(var i=0;i<item.d;i++) shaded.push(false);
+    locked = false;
+    hintEl.textContent = '';
+    hintEl.className = 'hint';
+    checkBtn.classList.remove('hidden');
+    checkBtn.disabled = false;
+    progressEl.textContent = (idx+1) + ' / ' + total;
+    renderTarget(item);
+    renderParts(item);
+    updateDots();
+    Studio.ready();
+  }
+
+  function currentShadedCount(){
+    var c = 0;
+    for(var i=0;i<shaded.length;i++) if(shaded[i]) c++;
+    return c;
+  }
+
+  function doCheck(){
+    if(locked) return;
+    var item = items[idx];
+    var n = currentShadedCount();
+    locked = true;
+    checkBtn.disabled = true;
+    Studio.event('check', {item: item.id, n: n, d: item.d});
+    Studio.answer({n: n, d: item.d});
+  }
+
+  checkBtn.addEventListener('click', doCheck);
+
+  function celebrate(){
+    stageEl.classList.remove('celebrate');
+    void stageEl.offsetWidth;
+    stageEl.classList.add('celebrate');
+    setTimeout(function(){ stageEl.classList.remove('celebrate'); }, 750);
+  }
+
+  function shake(){
+    stageEl.classList.remove('shake');
+    void stageEl.offsetWidth;
+    stageEl.classList.add('shake');
+    setTimeout(function(){ stageEl.classList.remove('shake'); }, 450);
+  }
+
+  Studio.onVerdict(function(verdict){
+    var item = items[idx];
+    if(verdict && verdict.correct){
+      hintEl.textContent = T('right');
+      hintEl.className = 'hint ok';
+      celebrate();
+      Studio.event('correct', {item: item.id});
+      setTimeout(function(){
+        idx++;
+        if(idx >= total){
+          finish();
+        } else {
+          renderItem();
+        }
+      }, 850);
+    } else {
+      hintEl.textContent = T('wrong');
+      hintEl.className = 'hint no';
+      shake();
+      Studio.event('wrong', {item: item.id});
+      setTimeout(function(){
+        locked = false;
+        checkBtn.disabled = false;
+      }, 500);
+    }
+  });
+
+  function finish(){
+    stageEl.classList.add('hidden');
+    doneScreen.classList.add('show');
+    doneText.textContent = T('done');
+    progressEl.textContent = total + ' / ' + total;
+    var ds = dotsEl.querySelectorAll('.dot');
+    for(var i=0;i<ds.length;i++) ds[i].className = 'dot on';
+    Studio.event('complete', {});
+    Studio.done();
+  }
+
+  function init(){
+    titleEl.textContent = T('title');
+    instrEl.textContent = T('instr');
+    checkBtn.textContent = T('check');
+    makeDots();
+    if(total === 0){
+      finish();
+      return;
+    }
+    renderItem();
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>

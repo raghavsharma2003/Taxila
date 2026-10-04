@@ -1,0 +1,314 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #FFF8E7;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .container {
+    width: 100%;
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #5D4037;
+    text-align: center;
+    margin-top: 4px;
+  }
+  .instr {
+    font-size: 15px;
+    color: #6D4C41;
+    text-align: center;
+    line-height: 1.4;
+    padding: 0 8px;
+  }
+  .fraction-display {
+    font-size: 32px;
+    font-weight: 700;
+    color: #BF360C;
+    background: #FFE0B2;
+    padding: 8px 24px;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .visual-area {
+    width: 240px;
+    height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #FFF3E0;
+    border-radius: 32px;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.08);
+    padding: 8px;
+    margin: 4px 0;
+  }
+  .visual-area svg {
+    width: 100%;
+    height: 100%;
+  }
+  .part {
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+  .part:active {
+    transform: scale(0.92);
+  }
+  .check-btn {
+    background: #FF8A65;
+    border: none;
+    border-radius: 30px;
+    padding: 14px 48px;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.12s;
+    box-shadow: 0 4px 10px rgba(255,138,101,0.4);
+    margin: 4px 0;
+    min-width: 120px;
+  }
+  .check-btn:active {
+    transform: scale(0.95);
+    background: #F4511E;
+  }
+  .check-btn:disabled {
+    background: #BCAAA4;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+  .feedback {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    border-radius: 16px;
+    padding: 8px 16px;
+    width: 100%;
+    transition: opacity 0.3s;
+  }
+  .feedback.right {
+    color: #2E7D32;
+    background: #C8E6C9;
+  }
+  .feedback.wrong {
+    color: #B71C1C;
+    background: #FFCDD2;
+  }
+  .feedback.hint {
+    color: #6D4C41;
+    background: #FFF3E0;
+  }
+  .done-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 40px 20px;
+  }
+  .done-icon {
+    font-size: 72px;
+    animation: bounce 0.8s ease infinite alternate;
+  }
+  @keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-12px); }
+  }
+  .done-text {
+    font-size: 28px;
+    font-weight: 700;
+    color: #5D4037;
+    text-align: center;
+  }
+  .hidden { display: none; }
+</style>
+<div class="container" id="app" data-item="">
+  <div class="title" id="title"></div>
+  <div class="instr" id="instr"></div>
+  <div class="fraction-display" id="fractionDisplay"></div>
+  <div class="visual-area" id="visualArea"></div>
+  <button class="check-btn" id="checkBtn" data-action="check"></button>
+  <div class="feedback" id="feedback"></div>
+</div>
+<script>
+  (function(){
+    const items = Studio.params.items || [];
+    const pictureType = Studio.params.picture || 'pizza-or-bar';
+    let currentIndex = 0;
+    let currentItem = null;
+    let partsState = []; // true if shaded
+    let waitingForVerdict = false;
+    let verdictReceived = false;
+
+    const app = document.getElementById('app');
+    const titleEl = document.getElementById('title');
+    const instrEl = document.getElementById('instr');
+    const fractionDisplay = document.getElementById('fractionDisplay');
+    const visualArea = document.getElementById('visualArea');
+    const checkBtn = document.getElementById('checkBtn');
+    const feedbackEl = document.getElementById('feedback');
+
+    function t(key) { return Studio.t(key) || key; }
+
+    function buildPizza(d) {
+      const cx = 120, cy = 120, r = 100;
+      let svg = `<svg viewBox="0 0 240 240" width="240" height="240">`;
+      const angleStep = 360 / d;
+      let angle = -90 + angleStep / 2; // start from top center
+      for (let i = 0; i < d; i++) {
+        const startAngle = angle - angleStep/2;
+        const endAngle = angle + angleStep/2;
+        const x1 = cx + r * Math.cos(startAngle * Math.PI / 180);
+        const y1 = cy + r * Math.sin(startAngle * Math.PI / 180);
+        const x2 = cx + r * Math.cos(endAngle * Math.PI / 180);
+        const y2 = cy + r * Math.sin(endAngle * Math.PI / 180);
+        const largeArc = angleStep > 180 ? 1 : 0;
+        const pathD = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+        svg += `<path class="part" data-part="${i}" data-shaded="false" d="${pathD}" fill="#FFCC80" stroke="#8D6E63" stroke-width="2" transform="rotate(${i * angleStep - 90}, ${cx}, ${cy})" />`;
+        // simpler: use transform rotate
+        // actually rebuild with transform approach for cleaner code:
+      }
+      // rebuild properly
+      svg = `<svg viewBox="0 0 240 240" width="240" height="240">`;
+      for (let i = 0; i < d; i++) {
+        const deg = i * angleStep;
+        svg += `<g transform="rotate(${deg}, ${cx}, ${cy})">`;
+        svg += `<path class="part" data-part="${i}" data-shaded="false" d="M ${cx} ${cy} L ${cx} ${cy - r} A ${r} ${r} 0 0 1 ${cx + r * Math.sin(angleStep * Math.PI / 180)} ${cy - r * Math.cos(angleStep * Math.PI / 180)} Z" fill="#FFCC80" stroke="#8D6E63" stroke-width="2" />`;
+        svg += `</g>`;
+      }
+      svg += `<circle cx="${cx}" cy="${cy}" r="${r*0.15}" fill="#8D6E63"/>`;
+      svg += `</svg>`;
+      return svg;
+    }
+
+    function buildBar(d) {
+      const w = 220, h = 60, segW = w / d;
+      let svg = `<svg viewBox="0 0 220 60" width="220" height="60">`;
+      for (let i = 0; i < d; i++) {
+        const x = i * segW;
+        svg += `<rect class="part" data-part="${i}" data-shaded="false" x="${x}" y="0" width="${segW-2}" height="58" rx="6" fill="#FFCC80" stroke="#8D6E63" stroke-width="2" />`;
+      }
+      svg += `</svg>`;
+      return svg;
+    }
+
+    function renderItem(item) {
+      currentItem = item;
+      const d = item.d;
+      partsState = new Array(d).fill(false);
+      waitingForVerdict = false;
+      verdictReceived = false;
+      app.dataset.item = item.id;
+      titleEl.textContent = t('title');
+      instrEl.textContent = t('instr');
+      fractionDisplay.textContent = `${item.n} / ${item.d}`;
+      checkBtn.textContent = t('check');
+      checkBtn.disabled = false;
+      feedbackEl.className = 'feedback hidden';
+      feedbackEl.textContent = '';
+
+      let svgContent = '';
+      if (pictureType === 'pizza-or-bar' || pictureType === 'pizza') {
+        svgContent = buildPizza(d);
+      } else {
+        svgContent = buildBar(d);
+      }
+      visualArea.innerHTML = svgContent;
+
+      // attach click listeners to parts
+      const parts = visualArea.querySelectorAll('.part');
+      parts.forEach((el, idx) => {
+        el.addEventListener('click', function(e) {
+          if (waitingForVerdict || verdictReceived) return;
+          const i = parseInt(this.dataset.part);
+          partsState[i] = !partsState[i];
+          this.dataset.shaded = partsState[i] ? 'true' : 'false';
+          // update fill
+          if (partsState[i]) {
+            this.setAttribute('fill', '#FF8A65');
+          } else {
+            this.setAttribute('fill', '#FFCC80');
+          }
+          // pulse feedback
+          this.style.transform = 'scale(0.9)';
+          setTimeout(() => { this.style.transform = ''; }, 150);
+          Studio.event('tap_part', {item: item.id, part: i, shaded: partsState[i]});
+        });
+      });
+      Studio.ready();
+    }
+
+    function showFeedback(type, msg) {
+      feedbackEl.className = 'feedback ' + type;
+      feedbackEl.textContent = msg;
+    }
+
+    function handleCheck() {
+      if (waitingForVerdict || verdictReceived) return;
+      const n = partsState.filter(v => v).length;
+      const d = currentItem.d;
+      checkBtn.disabled = true;
+      showFeedback('hint', t('hint')); // temporary
+      waitingForVerdict = true;
+      Studio.answer({n: n, d: d});
+    }
+
+    function onVerdict(result) {
+      waitingForVerdict = false;
+      if (result.correct) {
+        verdictReceived = true;
+        showFeedback('right', t('right') + ' ✅');
+        checkBtn.disabled = true;
+        // celebrate and advance
+        setTimeout(() => {
+          currentIndex++;
+          if (currentIndex < items.length) {
+            renderItem(items[currentIndex]);
+          } else {
+            showDone();
+          }
+        }, 1200);
+      } else {
+        showFeedback('wrong', t('wrong') + ' 😕');
+        checkBtn.disabled = false;
+        // allow retry
+      }
+    }
+
+    function showDone() {
+      app.innerHTML = `
+        <div class="done-screen">
+          <div class="done-icon">🎉</div>
+          <div class="done-text">${t('done')}</div>
+        </div>
+      `;
+      Studio.done();
+    }
+
+    // init
+    if (items.length === 0) {
+      showDone();
+    } else {
+      renderItem(items[0]);
+    }
+
+    checkBtn.addEventListener('click', handleCheck);
+
+    Studio.onVerdict(onVerdict);
+
+  })();
+</script>

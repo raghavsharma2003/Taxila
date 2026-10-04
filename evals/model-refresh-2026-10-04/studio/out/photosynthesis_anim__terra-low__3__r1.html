@@ -1,0 +1,118 @@
+<style>
+*{box-sizing:border-box}body{margin:0;overflow:hidden;background:#eef9ff;font-family:system-ui,sans-serif;color:#234d5d}
+#app{width:100%;max-width:360px;height:640px;margin:auto;padding:7px 10px;background:linear-gradient(180deg,#e5f7ff 0%,#f7fbed 70%,#f7e6cf 100%);display:flex;flex-direction:column;gap:6px}
+h1{height:29px;margin:0;text-align:center;font-size:19px;line-height:29px;font-weight:850;color:#24566c}
+#scene{width:100%;height:255px;display:block;flex:none;border-radius:21px;background:linear-gradient(180deg,#beeaff,#e8f8dd);box-shadow:inset 0 0 0 2px rgba(255,255,255,.72),0 4px 11px rgba(47,100,111,.14)}
+svg text{font-family:system-ui,sans-serif;font-size:10px;font-weight:850;fill:#24566c;paint-order:stroke;stroke:#fafff8;stroke-width:3px;stroke-linejoin:round}
+.sunCore{fill:#ffda55;stroke:#f1aa32;stroke-width:2}.ray{stroke:#ffdc68;stroke-width:4;stroke-linecap:round;animation:ray 1.8s ease-in-out infinite}.soil{fill:#ad714c}.soilDot{fill:#84543d}.stem{fill:none;stroke:#398a56;stroke-width:10;stroke-linecap:round}.branch{fill:none;stroke:#398a56;stroke-width:6;stroke-linecap:round}.leafShape{fill:#58b968;stroke:#278551;stroke-width:3}.vein{fill:none;stroke:#d8f6a4;stroke-width:2;stroke-linecap:round}.root{fill:none;stroke:#9b6840;stroke-width:5;stroke-linecap:round}.water{fill:#44b3e7;stroke:#117dab;stroke-width:1}.co2{fill:#8b79df;stroke:#5747ac;stroke-width:1}.o2{fill:#75c96b;stroke:#348e49;stroke-width:1}.glow{fill:#ffe767;stroke:#efa827;stroke-width:2;transform-origin:225px 114px;animation:glow 1.4s ease-in-out infinite}
+.particle{opacity:.9;transition:opacity .25s,filter .25s}.muted{opacity:.13}.focus{opacity:1;filter:drop-shadow(0 0 4px white)}.paused .particle,.paused .ray,.paused .glow{animation-play-state:paused}
+@keyframes ray{50%{opacity:.35;stroke-width:2}}@keyframes glow{50%{transform:scale(1.3);opacity:.72}}
+#controls{height:44px;display:flex;align-items:center;justify-content:center;gap:4px;flex:none}button{border:0;font:inherit;font-weight:850;color:#24566c;cursor:pointer;min-height:44px;touch-action:manipulation;transition:transform .14s,box-shadow .14s,background .14s}button:active{transform:scale(.92)}
+#play{width:78px;border-radius:15px;background:#ffdc74;box-shadow:0 3px 0 #e3ac35;font-size:13px}.step{width:44px;border-radius:50%;background:#fff;box-shadow:0 3px 0 #9dcbd5;font-size:15px}.step.active{background:#54b969;color:#fff;box-shadow:0 3px 0 #278850;transform:translateY(-2px)}
+#caption{height:40px;flex:none;border-radius:15px;background:#fffdf5;box-shadow:0 2px 8px rgba(56,103,99,.12);display:flex;align-items:center;justify-content:center;text-align:center;padding:3px 11px;font-size:13px;font-weight:780;color:#346376;line-height:16px}
+#quiz{display:flex;flex-direction:column;align-items:center;gap:5px}#ask{min-height:19px;text-align:center;font-size:14px;line-height:19px;font-weight:850}#options{width:100%;display:flex;gap:7px;justify-content:center}.option{flex:1;max-width:106px;border-radius:15px;background:#edf8fc;box-shadow:0 3px 0 #9acbd5;font-size:14px}.option.wait{opacity:.55}.option.good{background:#b7e8a4;box-shadow:0 3px 0 #58a456}.option.try{background:#ffd4ca;box-shadow:0 3px 0 #df887b}#feedback{height:15px;font-size:14px;line-height:15px;font-weight:900;color:#338d47}.bad{color:#cf665c!important}
+</style>
+
+<div id="app">
+  <h1 id="title"></h1>
+  <svg id="scene" viewBox="0 0 340 270">
+    <g>
+      <line class="ray" x1="68" y1="42" x2="180" y2="103"></line>
+      <line class="ray" x1="80" y1="36" x2="196" y2="86" style="animation-delay:.4s"></line>
+      <line class="ray" x1="61" y1="52" x2="164" y2="119" style="animation-delay:.8s"></line>
+      <circle class="sunCore" cx="54" cy="34" r="21"></circle>
+      <path d="M54 4v-3M25 34h-4M83 34h4M33 13l-3-3M75 13l3-3M33 55l-3 3M75 55l3 3" stroke="#f5b638" stroke-width="3" stroke-linecap="round"></path>
+      <text data-label="sun" x="24" y="72"></text>
+    </g>
+    <path class="soil" d="M0 214Q45 205 88 215T176 211T257 215T340 210V270H0Z"></path>
+    <circle class="soilDot" cx="29" cy="234" r="3"></circle><circle class="soilDot" cx="92" cy="247" r="3"></circle><circle class="soilDot" cx="286" cy="237" r="3"></circle><circle class="soilDot" cx="321" cy="252" r="2"></circle>
+    <path class="root" data-entity="roots" d="M177 205q-8 20-31 27m34-24q8 21 31 29m-28-27q-2 22-14 34m19-34q4 19 18 27"></path>
+    <path class="stem" d="M180 208Q182 159 187 120"></path>
+    <path class="branch" d="M184 157Q156 140 141 132"></path><path class="branch" d="M184 141Q214 129 226 119"></path>
+    <path class="leafShape" data-entity="leaf" d="M188 122Q204 76 257 87Q249 136 195 131Q188 129 188 122Z"></path>
+    <path class="leafShape" d="M158 139Q130 109 102 125Q119 156 155 149Z"></path>
+    <path class="vein" d="M194 123q27-13 51-28m-49 29q22 1 40 3m-42-3q4-17 9-30M151 141q-19-10-35-13m35 14q-12 1-22 5"></path>
+    <circle class="glow" cx="225" cy="114" r="7"></circle>
+    <text data-label="glucose" x="198" y="100"></text>
+    <text data-label="leaf" x="241" y="158"></text>
+    <text data-label="roots" x="104" y="253"></text>
+    <text data-label="water" x="194" y="198"></text>
+    <text data-label="co2" x="331" y="72" text-anchor="end"></text>
+    <text data-label="o2" x="331" y="151" text-anchor="end"></text>
+    <circle class="particle water" data-flow="water" cx="177" cy="204" r="4"></circle><circle class="particle water" data-flow="water" cx="180" cy="181" r="4"></circle><circle class="particle water" data-flow="water" cx="182" cy="158" r="4"></circle>
+    <circle class="particle co2" data-flow="co2" cx="310" cy="95" r="4"></circle><circle class="particle co2" data-flow="co2" cx="287" cy="101" r="4"></circle><circle class="particle co2" data-flow="co2" cx="267" cy="108" r="4"></circle>
+    <circle class="particle o2" data-flow="o2" cx="251" cy="119" r="4"></circle><circle class="particle o2" data-flow="o2" cx="275" cy="126" r="4"></circle><circle class="particle o2" data-flow="o2" cx="300" cy="133" r="4"></circle>
+  </svg>
+  <div id="controls">
+    <button id="play" data-action="play"></button>
+    <button class="step active" data-action="step-1"></button>
+    <button class="step" data-action="step-2"></button>
+    <button class="step" data-action="step-3"></button>
+    <button class="step" data-action="step-4"></button>
+    <button class="step" data-action="step-5"></button>
+  </div>
+  <div id="caption" data-caption></div>
+  <div id="quiz">
+    <div id="ask"></div>
+    <div id="options">
+      <button class="option" data-option="co2"></button>
+      <button class="option" data-option="o2"></button>
+      <button class="option" data-option="water"></button>
+    </div>
+    <div id="feedback" aria-live="polite"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var playing=true,step=1,pending=false,phase=0,finished=false;
+  var scene=document.getElementById('scene'),play=document.getElementById('play'),feedback=document.getElementById('feedback');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  document.querySelectorAll('[data-label]').forEach(function(el){el.textContent=Studio.t(el.getAttribute('data-label'));});
+  document.querySelectorAll('[data-option]').forEach(function(el){el.textContent=Studio.t(el.getAttribute('data-option'));});
+  var steps=document.querySelectorAll('.step');
+  steps.forEach(function(el,i){el.textContent=String(i+1);});
+  function setPlay(){play.textContent=Studio.t(playing?'pause':'play');scene.classList.toggle('paused',!playing);}
+  function setStep(n){
+    step=n;
+    document.querySelector('[data-caption]').textContent=Studio.t('step'+n);
+    steps.forEach(function(el,i){el.classList.toggle('active',i===n-1);});
+    var flow=n===2?'water':n===3?'co2':n===5?'o2':'';
+    document.querySelectorAll('.particle').forEach(function(el){el.classList.toggle('muted',!!flow&&el.getAttribute('data-flow')!==flow);el.classList.toggle('focus',!!flow&&el.getAttribute('data-flow')===flow);});
+    Studio.event('step',{step:n});
+  }
+  play.addEventListener('click',function(){playing=!playing;setPlay();Studio.event('play',{playing:playing});});
+  steps.forEach(function(el,i){el.addEventListener('click',function(){setStep(i+1);});});
+  var waters=document.querySelectorAll('[data-flow="water"]'),co2s=document.querySelectorAll('[data-flow="co2"]'),o2s=document.querySelectorAll('[data-flow="o2"]');
+  function animate(){
+    if(playing){
+      phase=(phase+1)%180;
+      waters.forEach(function(el,i){var q=(phase+i*55)%180;el.setAttribute('cy',String(207-q*.48));el.setAttribute('cx',String(178+q*.035));});
+      co2s.forEach(function(el,i){var q=(phase+i*58)%180;el.setAttribute('cx',String(322-q*.43));el.setAttribute('cy',String(91+q*.12));});
+      o2s.forEach(function(el,i){var q=(phase+i*60)%180;el.setAttribute('cx',String(239+q*.43));el.setAttribute('cy',String(114+q*.13));});
+    }
+    requestAnimationFrame(animate);
+  }
+  document.querySelectorAll('[data-option]').forEach(function(button){
+    button.addEventListener('click',function(){
+      if(pending||finished)return;
+      pending=true;feedback.textContent='';
+      document.querySelectorAll('.option').forEach(function(el){el.classList.add('wait');});
+      Studio.event('answer',{option:button.getAttribute('data-option')});
+      Studio.answer(button.getAttribute('data-option'));
+    });
+  });
+  Studio.onVerdict(function(v){
+    document.querySelectorAll('.option').forEach(function(el){el.classList.remove('wait');});
+    if(v.correct){
+      finished=true;feedback.textContent='✓';feedback.className='';
+      Studio.done();
+    }else{
+      pending=false;feedback.textContent='↻';feedback.className='bad';
+      document.querySelectorAll('.option').forEach(function(el){el.classList.add('try');setTimeout(function(){el.classList.remove('try');},500);});
+    }
+  });
+  setStep(1);setPlay();animate();Studio.ready();
+})();
+</script>

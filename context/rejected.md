@@ -945,3 +945,11 @@ ops.mjs --nightly did `import('../../scripts/sweep-test-accounts.mjs')`, which i
 
 ## w1d-dirty-stamp-poisoned-sha
 infra/gate.mjs wrote a failed --allow-dirty run as `<sha>.json {pass:false}`, and gateEvidence lets a failed stamp win over everything, so a dirty acceptance run (deliberately failing test) left HEAD 624298b permanently undeployable even with green GitHub evidence. The cleanliness check also ignored untracked files the build imports (src/avatar/looks.ts etc.), which ACR's GitHub build never sees. Fix: dirty runs are keyed `<sha>-dirty` and never consulted; untracked non-ignored files count as dirt. The poisoned stamp was deleted.
+
+
+<!-- merged from inbox/scout-2026-10-04.json -->
+## rj-aws-transcribe-live-stt
+**Tried (2026-10-04):** Amazon Transcribe streaming hi-IN and en-IN from ap-south-1 on the stt-hinglish v2 synthetic corpus (n=180). **Broke:** hi-IN CER 0.086 vs 0.026 (taxila-live-transcribe D4), numbers 67/96 vs 92/96, answers 51/78 vs 76/78, final text 2.10 s vs 1.32 s after speech end; en-IN CER 0.277. Re-test only with real children (E1) or if Transcribe adds hi-IN/en-IN code-switch LID that a new SDK exposes.
+
+## `voice-blind-spliced-breaths-rejected` (2026-10-04)
+Tried: splicing breath, hum and exhale clips (rendered offline from the Omni twin) into DragonHD and gpt-4o-mini-tts audio at planned pauses. Broke: both blind raters heard "random exhale" or "moaning", a timbre that did not match the voice, and broken flow; the clipped renders lost to the same voice without clips. Only an in-context laugh on a joke line was liked, and its hand-off into the next sentence was awkward.

@@ -1,0 +1,123 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #fdf3e7; color: #3e2f1c; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 12px; }
+  .wrap { width: 100%; max-width: 360px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  h1 { font-size: 20px; text-align: center; color: #7a4a2b; }
+  .ask { font-size: 16px; text-align: center; background: #ffe8d0; border-radius: 16px; padding: 8px 14px; width: 100%; }
+  .chart-box { background: #fff; border-radius: 20px; padding: 12px 8px 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); width: 100%; }
+  .chart-svg { display: block; width: 100%; height: auto; }
+  .bar { fill: #f4a258; cursor: pointer; transition: fill 0.2s; transform-box: fill-box; transform-origin: bottom; }
+  .bar.tappable { animation: grow 0.6s ease-out backwards; }
+  .bar.tappable:nth-child(1) { animation-delay: 0.05s; }
+  .bar.tappable:nth-child(2) { animation-delay: 0.15s; }
+  .bar.tappable:nth-child(3) { animation-delay: 0.25s; }
+  .bar.tappable:nth-child(4) { animation-delay: 0.35s; }
+  .bar.tappable:nth-child(5) { animation-delay: 0.45s; }
+  @keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  .bar:active { fill: #e08a3a; }
+  .gridline { stroke: #e8d9c8; stroke-width: 1; }
+  .tick-text { fill: #9c7b5a; font-size: 10px; text-anchor: end; }
+  .axis-title { fill: #7a4a2b; font-size: 11px; font-weight: bold; }
+  .fruit-label { fill: #5c3f28; font-size: 11px; text-anchor: middle; font-weight: 600; }
+  .value-tooltip { fill: #fff; font-size: 11px; font-weight: bold; text-anchor: middle; pointer-events: none; }
+  .feedback { font-size: 16px; text-align: center; min-height: 24px; font-weight: bold; }
+  .done-text { font-size: 16px; text-align: center; color: #2e7d32; font-weight: bold; }
+</style>
+
+<div class="wrap">
+  <h1 data-test="title">Studio.t('title')</h1>
+  <div class="ask">Studio.t('ask')</div>
+  <div class="chart-box">
+    <svg class="chart-svg" viewBox="0 0 320 240" role="img" aria-label="bar chart">
+      <g class="plot-area">
+        <!-- gridlines and ticks -->
+        <line class="gridline" x1="45" y1="20" x2="300" y2="20" />
+        <text class="tick-text" x="40" y="24" data-tick="12">12</text>
+        <line class="gridline" x1="45" y1="58" x2="300" y2="58" />
+        <text class="tick-text" x="40" y="62" data-tick="10">10</text>
+        <line class="gridline" x1="45" y1="96" x2="300" y2="96" />
+        <text class="tick-text" x="40" y="100" data-tick="8">8</text>
+        <line class="gridline" x1="45" y1="134" x2="300" y2="134" />
+        <text class="tick-text" x="40" y="138" data-tick="6">6</text>
+        <line class="gridline" x1="45" y1="172" x2="300" y2="172" />
+        <text class="tick-text" x="40" y="176" data-tick="4">4</text>
+        <line class="gridline" x1="45" y1="210" x2="300" y2="210" />
+        <text class="tick-text" x="40" y="214" data-tick="2">2</text>
+        <line class="gridline" x1="45" y1="248" x2="300" y2="248" />
+        <text class="tick-text" x="40" y="252" data-tick="0">0</text>
+        <!-- axis title -->
+        <text class="axis-title" x="10" y="135" transform="rotate(-90 10 135)">Studio.t('yaxis')</text>
+        <!-- bars -->
+        <rect class="bar tappable" data-bar="mango" data-value="12" x="58" y="20" width="32" height="228" rx="6" />
+        <rect class="bar tappable" data-bar="banana" data-value="7" x="106" y="115" width="32" height="133" rx="6" />
+        <rect class="bar tappable" data-bar="apple" data-value="9" x="154" y="77" width="32" height="171" rx="6" />
+        <rect class="bar tappable" data-bar="guava" data-value="4" x="202" y="172" width="32" height="76" rx="6" />
+        <rect class="bar tappable" data-bar="orange" data-value="6" x="250" y="134" width="32" height="114" rx="6" />
+        <!-- labels -->
+        <text class="fruit-label" x="74" y="264">Studio.t('mango')</text>
+        <text class="fruit-label" x="122" y="264">Studio.t('banana')</text>
+        <text class="fruit-label" x="170" y="264">Studio.t('apple')</text>
+        <text class="fruit-label" x="218" y="264">Studio.t('guava')</text>
+        <text class="fruit-label" x="266" y="264">Studio.t('orange')</text>
+      </g>
+    </svg>
+  </div>
+  <div class="feedback" data-test="feedback"></div>
+  <div class="done-text" data-test="done" hidden>Studio.t('done')</div>
+</div>
+
+<script>
+  (function() {
+    const bars = document.querySelectorAll('.bar');
+    const feedbackEl = document.querySelector('[data-test="feedback"]');
+    const doneEl = document.querySelector('[data-test="done"]');
+    const svg = document.querySelector('.chart-svg');
+    
+    // value tooltip near bar
+    let tooltip = null;
+    
+    bars.forEach(bar => {
+      bar.addEventListener('click', () => {
+        if (doneEl.hidden === false) return;
+        // tap feedback
+        bar.style.transform = 'scaleY(0.95)';
+        setTimeout(() => { bar.style.transform = ''; }, 120);
+        
+        // show value tooltip
+        const value = bar.getAttribute('data-value');
+        if (!tooltip) {
+          tooltip = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          tooltip.setAttribute('class', 'value-tooltip');
+          tooltip.setAttribute('y', '0');
+          svg.querySelector('.plot-area').appendChild(tooltip);
+        }
+        const barRect = bar.getBBox();
+        const cx = barRect.x + barRect.width / 2;
+        const cy = barRect.y - 8;
+        tooltip.setAttribute('x', cx);
+        tooltip.setAttribute('y', cy);
+        tooltip.textContent = value;
+        
+        // commit answer
+        Studio.answer(bar.getAttribute('data-bar'));
+        Studio.event('bar_tap', { key: bar.getAttribute('data-bar') });
+      });
+    });
+    
+    Studio.onVerdict(function(verdict) {
+      if (verdict.correct) {
+        feedbackEl.textContent = Studio.t('right');
+        feedbackEl.style.color = '#2e7d32';
+        doneEl.hidden = false;
+        Studio.done();
+      } else {
+        feedbackEl.textContent = Studio.t('wrong');
+        feedbackEl.style.color = '#c62828';
+        // allow retry – clear tooltip
+        if (tooltip) tooltip.textContent = '';
+      }
+    });
+    
+    Studio.ready();
+  })();
+</script>

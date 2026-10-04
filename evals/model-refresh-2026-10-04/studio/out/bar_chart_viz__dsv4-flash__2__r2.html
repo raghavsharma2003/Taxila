@@ -1,0 +1,192 @@
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f0f7fb; font-family: 'Segoe UI', Tahoma, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 640px; width: 360px; padding: 8px; }
+  .container { width: 100%; max-width: 344px; background: white; border-radius: 28px; padding: 16px 12px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); display: flex; flex-direction: column; align-items: center; }
+  .title { font-size: 20px; font-weight: 700; color: #1e3a5f; text-align: center; margin-bottom: 4px; letter-spacing: 0.3px; }
+  .ask { font-size: 15px; color: #2c4c7a; background: #eef5ff; border-radius: 16px; padding: 8px 14px; margin: 6px 0 10px; text-align: center; width: fit-content; max-width: 90%; }
+  .chart-wrap { width: 100%; overflow-x: visible; }
+  .chart-wrap svg { display: block; margin: 0 auto; }
+  .feedback { font-size: 17px; font-weight: 600; margin-top: 10px; min-height: 28px; text-align: center; transition: all 0.2s; }
+  .feedback.correct { color: #0f7b3a; }
+  .feedback.wrong { color: #b33a3a; }
+  .done-text { font-size: 18px; font-weight: 700; color: #1e5a3e; background: #dff5e6; border-radius: 20px; padding: 8px 20px; margin-top: 8px; }
+  .bar { cursor: pointer; }
+  .bar:active .bar-rect { filter: brightness(0.82); }
+  .bar-rect { transition: y 0.5s ease-out, height 0.5s ease-out; }
+  .tick-label { font-size: 10px; fill: #4a5e77; }
+  .axis-title { font-size: 11px; fill: #1e3a5f; font-weight: 600; }
+  .fruit-label { font-size: 11px; text-anchor: middle; fill: #1e3a5f; font-weight: 500; }
+  .value-label { font-size: 12px; font-weight: 600; fill: #1e3a5f; text-anchor: middle; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+  .bar-tapped .value-label { opacity: 1; }
+  .grid-line { stroke: #dbe3ed; stroke-width: 0.8; }
+</style>
+<div class="container" id="app">
+  <div class="title" id="titleEl"></div>
+  <div class="ask" id="askEl"></div>
+  <div class="chart-wrap" id="chartWrap"></div>
+  <div class="feedback" id="feedbackEl"></div>
+</div>
+<script>
+(function(){
+  const params = Studio.params;
+  const data = params.data;
+  
+  const t = (k) => Studio.t(k);
+  document.getElementById('titleEl').textContent = t('title');
+  document.getElementById('askEl').textContent = t('ask');
+  
+  const svgW = 330, svgH = 280;
+  const margin = { top: 8, right: 8, bottom: 34, left: 38 };
+  const chartW = svgW - margin.left - margin.right;
+  const chartH = svgH - margin.top - margin.bottom;
+  const barGap = 6;
+  const barCount = data.length;
+  const totalGap = barGap * (barCount - 1);
+  let barW = Math.floor((chartW - totalGap) / barCount);
+  if (barW < 24) barW = 24;
+  
+  const maxVal = Math.max(...data.map(d => d.value));
+  const step = 5;
+  const roundedMax = Math.ceil(maxVal / step) * step;
+  const ticks = [];
+  for (let v = 0; v <= roundedMax; v += step) ticks.push(v);
+  const yScale = chartH / roundedMax;
+  
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', svgW);
+  svg.setAttribute('height', svgH);
+  svg.setAttribute('viewBox', `0 0 ${svgW} ${svgH}`);
+  svg.style.display = 'block';
+  
+  const yGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  ticks.forEach(v => {
+    const y = margin.top + chartH - v * yScale;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', margin.left);
+    line.setAttribute('x2', svgW - margin.right);
+    line.setAttribute('y1', y);
+    line.setAttribute('y2', y);
+    line.setAttribute('class', 'grid-line');
+    yGroup.appendChild(line);
+    
+    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    txt.setAttribute('x', margin.left - 6);
+    txt.setAttribute('y', y + 3.5);
+    txt.setAttribute('class', 'tick-label');
+    txt.setAttribute('text-anchor', 'end');
+    txt.setAttribute('data-tick', v);
+    txt.textContent = v;
+    yGroup.appendChild(txt);
+  });
+  svg.appendChild(yGroup);
+  
+  const axisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  axisTitle.setAttribute('x', 10);
+  axisTitle.setAttribute('y', margin.top + chartH/2);
+  axisTitle.setAttribute('class', 'axis-title');
+  axisTitle.setAttribute('text-anchor', 'middle');
+  axisTitle.setAttribute('transform', `rotate(-90, 10, ${margin.top + chartH/2})`);
+  axisTitle.textContent = t('yaxis');
+  svg.appendChild(axisTitle);
+  
+  let tappedKey = null;
+  let feedbackPending = false;
+  
+  const colors = { mango: '#f5a623', banana: '#f7d94e', apple: '#e74c3c', guava: '#7bc47f', orange: '#f39c12' };
+  
+  data.forEach((d, i) => {
+    const barX = margin.left + i * (barW + barGap);
+    const barH = d.value * yScale;
+    const barY = margin.top + chartH - barH;
+    
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', 'bar');
+    g.setAttribute('data-bar', d.key);
+    g.setAttribute('data-value', d.value);
+    
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', barX);
+    rect.setAttribute('y', margin.top + chartH);
+    rect.setAttribute('width', barW);
+    rect.setAttribute('height', 0);
+    rect.setAttribute('class', 'bar-rect');
+    rect.setAttribute('fill', colors[d.key] || '#4a90d9');
+    rect.setAttribute('rx', 4);
+    g.appendChild(rect);
+    
+    const vLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    vLabel.setAttribute('x', barX + barW/2);
+    vLabel.setAttribute('y', barY - 8);
+    vLabel.setAttribute('class', 'value-label');
+    vLabel.textContent = d.value;
+    g.appendChild(vLabel);
+    
+    const fLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    fLabel.setAttribute('x', barX + barW/2);
+    fLabel.setAttribute('y', margin.top + chartH + 16);
+    fLabel.setAttribute('class', 'fruit-label');
+    fLabel.textContent = t(d.key);
+    g.appendChild(fLabel);
+    
+    g.addEventListener('click', function(e) {
+      if (tappedKey !== null || feedbackPending) return;
+      const key = this.getAttribute('data-bar');
+      if (key === null) return;
+      this.classList.add('bar-tapped');
+      tappedKey = key;
+      Studio.answer(key);
+    });
+    
+    svg.appendChild(g);
+  });
+  
+  document.getElementById('chartWrap').appendChild(svg);
+  
+  requestAnimationFrame(() => {
+    data.forEach((d, i) => {
+      const barH = d.value * yScale;
+      const barY = margin.top + chartH - barH;
+      const rect = svg.querySelectorAll('.bar-rect')[i];
+      if (rect) {
+        rect.setAttribute('y', barY);
+        rect.setAttribute('height', barH);
+      }
+    });
+  });
+  
+  Studio.onVerdict(function(result) {
+    feedbackPending = true;
+    const fb = document.getElementById('feedbackEl');
+    if (result.correct) {
+      fb.textContent = t('right');
+      fb.className = 'feedback correct';
+      setTimeout(() => {
+        fb.textContent = '';
+        const doneDiv = document.createElement('div');
+        doneDiv.className = 'done-text';
+        doneDiv.textContent = t('done');
+        document.getElementById('app').appendChild(doneDiv);
+        Studio.done();
+      }, 700);
+    } else {
+      fb.textContent = t('wrong');
+      fb.className = 'feedback wrong';
+      const prevTapped = tappedKey;
+      setTimeout(() => {
+        fb.textContent = '';
+        fb.className = 'feedback';
+        const bars = document.querySelectorAll('.bar');
+        bars.forEach(b => {
+          if (b.getAttribute('data-bar') === prevTapped) {
+            b.classList.remove('bar-tapped');
+          }
+        });
+        tappedKey = null;
+        feedbackPending = false;
+      }, 900);
+    }
+  });
+  
+  Studio.ready();
+})();
+</script>

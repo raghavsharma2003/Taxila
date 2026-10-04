@@ -1,0 +1,148 @@
+<style>
+*{box-sizing:border-box}
+:root{font-family:system-ui,sans-serif;color:#233e49;background:#eef5f3}
+body{margin:0}
+.activity{width:min(100%,540px);margin:auto;padding:18px 14px}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.icon{flex:none;width:48px;height:48px;background:#d7ede6;border-radius:16px;padding:9px}
+h1{font-size:22px;line-height:1.25;margin:0;font-weight:750}
+.card{background:#fff;border-radius:24px;padding:18px 10px 14px;box-shadow:0 8px 28px #244c4210;border:1px solid #dcebe5}
+.axis-title{margin:0 0 18px 32px;font-size:13px;font-weight:650;color:#536c75}
+.chart{position:relative;margin-left:32px;margin-right:2px;height:260px}
+.grid{position:absolute;inset:0;pointer-events:none}
+.line{position:absolute;left:0;right:0;border-top:1px solid #e0e9e6}
+.line.zero{border-color:#7a9992;border-top-width:2px}
+.tick{position:absolute;right:calc(100% + 8px);transform:translateY(50%);font-size:12px;color:#60767e;font-variant-numeric:tabular-nums}
+.bars{position:absolute;inset:0;display:grid;gap:8px}
+.slot{position:relative;min-width:0;height:100%}
+.bar{position:absolute;bottom:0;width:100%;min-width:44px;border-radius:12px 12px 0 0;background:#399b89;box-shadow:inset 0 0 0 1px #23796720;cursor:pointer;transform-origin:bottom;animation:grow 850ms cubic-bezier(.2,.7,.2,1) both;transition:filter 160ms,box-shadow 160ms;outline:none;-webkit-tap-highlight-color:transparent}
+.bar:hover{filter:brightness(1.06)}
+.bar:focus-visible{outline:3px solid #e4a947;outline-offset:3px}
+.bar.selected{box-shadow:inset 0 0 0 3px #20594e}
+.bar:active{filter:brightness(.88)}
+.bar[aria-disabled=true]{cursor:default}
+.labels{margin:10px 2px 0 32px;display:grid;gap:8px}
+.fruit{text-align:center;font-size:12px;line-height:1.3;overflow-wrap:anywhere;color:#38565f}
+.question{margin:18px 4px 0;font-size:18px;font-weight:650;line-height:1.4}
+.response{margin:12px 4px 0;min-height:64px;display:flex;align-items:center;gap:10px}
+.value{display:none;min-width:48px;height:48px;border-radius:16px;background:#dcefe9;color:#236957;align-items:center;justify-content:center;font-size:22px;font-weight:750;flex:none}
+.value.visible{display:flex;animation:pop 230ms ease-out}
+.feedback{font-size:15px;line-height:1.4}
+.finished{margin:4px 4px 0;font-weight:700;color:#236957}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes pop{from{transform:scale(.85)}to{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media(max-height:580px){.activity{padding-top:10px}.chart{height:220px}.header{margin-bottom:10px}.question{margin-top:12px}}
+</style>
+<main class="activity">
+  <header class="header">
+    <svg class="icon" viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M5 5v23h24" fill="none" stroke="#346e60" stroke-width="2" stroke-linecap="round"/>
+      <rect x="9" y="16" width="4" height="10" rx="2" fill="#399b89"/>
+      <rect x="16" y="8" width="4" height="18" rx="2" fill="#399b89"/>
+      <rect x="23" y="12" width="4" height="14" rx="2" fill="#399b89"/>
+    </svg>
+    <h1 id="title"></h1>
+  </header>
+  <section class="card">
+    <p class="axis-title" id="axis-title"></p>
+    <div class="chart" id="chart">
+      <div class="grid" id="grid"></div>
+      <div class="bars" id="bars"></div>
+    </div>
+    <div class="labels" id="labels"></div>
+  </section>
+  <p class="question" id="question"></p>
+  <div class="response" aria-live="polite">
+    <span class="value" id="value"></span>
+    <span class="feedback" id="feedback"></span>
+  </div>
+  <p class="finished" id="finished" aria-live="polite"></p>
+</main>
+<script>
+(function(){
+  const data=Studio.params.data;
+  const title=document.getElementById('title');
+  const axis=document.getElementById('axis-title');
+  const question=document.getElementById('question');
+  const grid=document.getElementById('grid');
+  const bars=document.getElementById('bars');
+  const labels=document.getElementById('labels');
+  const value=document.getElementById('value');
+  const feedback=document.getElementById('feedback');
+  const finished=document.getElementById('finished');
+  title.textContent=Studio.t('title');
+  axis.textContent=Studio.t('yaxis');
+  question.textContent=Studio.t('ask');
+  const maximum=Math.max(...data.map(d=>d.value));
+  const rough=maximum/6;
+  const magnitude=Math.pow(10,Math.floor(Math.log10(rough||1)));
+  const step=[1,2,5,10].map(n=>n*magnitude).find(n=>n>=rough)||magnitude;
+  const ceiling=Math.ceil(maximum/step)*step;
+  const scale=ceiling||step;
+  bars.style.gridTemplateColumns='repeat('+data.length+',minmax(44px,1fr))';
+  labels.style.gridTemplateColumns=bars.style.gridTemplateColumns;
+  for(let i=0;i<=Math.round(scale/step);i++){
+    const number=Number((i*step).toPrecision(12));
+    const height=number/scale*100;
+    const line=document.createElement('div');
+    line.className='line'+(i===0?' zero':'');
+    line.style.bottom=height+'%';
+    grid.appendChild(line);
+    const tick=document.createElement('span');
+    tick.className='tick';
+    tick.dataset.tick=String(number);
+    tick.textContent=String(number);
+    tick.style.bottom=height+'%';
+    grid.appendChild(tick);
+  }
+  let pending=false,complete=false;
+  const elements=[];
+  data.forEach(d=>{
+    const slot=document.createElement('div');
+    slot.className='slot';
+    const bar=document.createElement('div');
+    bar.className='bar';
+    bar.dataset.bar=d.key;
+    bar.dataset.value=String(d.value);
+    bar.style.height=(d.value/scale*100)+'%';
+    bar.setAttribute('role','button');
+    bar.tabIndex=0;
+    bar.setAttribute('aria-label',Studio.t(d.key));
+    function choose(){
+      if(pending||complete)return;
+      pending=true;
+      elements.forEach(el=>el.classList.remove('selected'));
+      bar.classList.add('selected');
+      value.textContent=String(d.value);
+      value.classList.add('visible');
+      feedback.textContent='';
+      Studio.event('bar_tap',{key:d.key,value:d.value});
+      Studio.answer(d.key);
+    }
+    bar.addEventListener('click',choose);
+    bar.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();choose();}
+    });
+    slot.appendChild(bar);
+    bars.appendChild(slot);
+    elements.push(bar);
+    const label=document.createElement('div');
+    label.className='fruit';
+    label.textContent=Studio.t(d.key);
+    labels.appendChild(label);
+  });
+  Studio.onVerdict(verdict=>{
+    if(!pending||complete)return;
+    pending=false;
+    feedback.textContent=Studio.t(verdict.correct?'right':'wrong');
+    if(verdict.correct){
+      complete=true;
+      elements.forEach(el=>el.setAttribute('aria-disabled','true'));
+      finished.textContent=Studio.t('done');
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+</script>

@@ -1,0 +1,253 @@
+<style>
+  :root {
+    --bg: #fff9f0;
+    --bar-fill: #ff8c42;
+    --bar-hover: #ffb366;
+    --text: #2d2d2d;
+    --axis: #5d4037;
+    --grid: #e0d8c8;
+    --correct: #4caf50;
+    --wrong: #f44336;
+    --font: 500 14px system-ui, sans-serif;
+  }
+  body {
+    margin: 0;
+    padding: 16px;
+    background: var(--bg);
+    font: var(--font);
+    color: var(--text);
+    overflow: hidden;
+    touch-action: manipulation;
+  }
+  .title {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .chart-container {
+    position: relative;
+    width: 100%;
+    height: 320px;
+    margin-bottom: 16px;
+  }
+  .chart {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 280px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    gap: 8px;
+    padding: 0 8px;
+    box-sizing: border-box;
+  }
+  .bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 44px;
+  }
+  .bar {
+    width: 36px;
+    background: var(--bar-fill);
+    border-radius: 4px 4px 0 0;
+    transition: height 0.6s ease-out, transform 0.2s ease;
+    transform-origin: bottom center;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .bar:hover, .bar:active {
+    background: var(--bar-hover);
+    transform: scale(1.05);
+  }
+  .bar-label {
+    font-size: 12px;
+    margin-top: 4px;
+    text-align: center;
+    word-break: break-word;
+  }
+  .axis {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 4px 0;
+    box-sizing: border-box;
+  }
+  .tick {
+    position: relative;
+    width: 100%;
+    text-align: right;
+    font-size: 12px;
+    padding-right: 8px;
+    transform: translateY(50%);
+  }
+  .tick::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+    background: var(--grid);
+    transform: translateY(-50%);
+  }
+  .tick:last-child::after {
+    display: none;
+  }
+  .axis-title {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    transform-origin: left center;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .question {
+    text-align: center;
+    font-size: 16px;
+    margin: 12px 0;
+  }
+  .feedback {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    min-height: 20px;
+    margin: 8px 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .feedback.show {
+    opacity: 1;
+  }
+  .feedback.correct {
+    color: var(--correct);
+  }
+  .feedback.wrong {
+    color: var(--wrong);
+  }
+  .done {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--correct);
+    margin-top: 16px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .done.show {
+    opacity: 1;
+  }
+</style>
+
+<div class="title" data-test="title"></div>
+<div class="chart-container">
+  <div class="axis" data-test="yaxis-container">
+    <div class="axis-title" data-test="yaxis-title"></div>
+  </div>
+  <div class="chart" data-test="chart">
+    <div class="bar-wrapper">
+      <div class="bar" data-bar="mango" data-value="12" data-test="bar-mango"></div>
+      <div class="bar-label" data-test="label-mango"></div>
+    </div>
+    <div class="bar-wrapper">
+      <div class="bar" data-bar="banana" data-value="7" data-test="bar-banana"></div>
+      <div class="bar-label" data-test="label-banana"></div>
+    </div>
+    <div class="bar-wrapper">
+      <div class="bar" data-bar="apple" data-value="9" data-test="bar-apple"></div>
+      <div class="bar-label" data-test="label-apple"></div>
+    </div>
+    <div class="bar-wrapper">
+      <div class="bar" data-bar="guava" data-value="4" data-test="bar-guava"></div>
+      <div class="bar-label" data-test="label-guava"></div>
+    </div>
+    <div class="bar-wrapper">
+      <div class="bar" data-bar="orange" data-value="6" data-test="bar-orange"></div>
+      <div class="bar-label" data-test="label-orange"></div>
+    </div>
+  </div>
+</div>
+<div class="question" data-test="ask"></div>
+<div class="feedback" data-test="feedback"></div>
+<div class="done" data-test="done"></div>
+
+<script>
+  (function() {
+    const params = Studio.params;
+    const data = params.data;
+    const maxValue = Math.max(...data.map(d => d.value));
+    const chartHeight = 280;
+    const barScale = chartHeight / maxValue;
+
+    // Set strings
+    document.querySelector('[data-test="title"]').textContent = Studio.t('title');
+    document.querySelector('[data-test="yaxis-title"]').textContent = Studio.t('yaxis');
+    document.querySelector('[data-test="ask"]').textContent = Studio.t('ask');
+    document.querySelector('[data-test="done"]').textContent = Studio.t('done');
+
+    // Set bar labels
+    data.forEach(d => {
+      const label = document.querySelector(`[data-test="label-${d.key}"]`);
+      if (label) label.textContent = Studio.t(d.key);
+    });
+
+    // Create y-axis ticks
+    const axis = document.querySelector('[data-test="yaxis-container"]');
+    const step = Math.ceil(maxValue / 5);
+    const tickCount = Math.ceil(maxValue / step);
+    for (let i = 0; i <= tickCount; i++) {
+      const value = i * step;
+      const tick = document.createElement('div');
+      tick.className = 'tick';
+      tick.textContent = value;
+      tick.setAttribute('data-tick', value);
+      tick.style.bottom = `${(chartHeight * value / maxValue)}px`;
+      axis.appendChild(tick);
+    }
+
+    // Animate bars
+    data.forEach(d => {
+      const bar = document.querySelector(`[data-bar="${d.key}"]`);
+      if (bar) {
+        bar.style.height = '0px';
+        setTimeout(() => {
+          bar.style.height = `${d.value * barScale}px`;
+        }, 100);
+      }
+    });
+
+    // Handle bar taps
+    document.querySelectorAll('.bar').forEach(bar => {
+      bar.addEventListener('click', () => {
+        const key = bar.getAttribute('data-bar');
+        Studio.answer(key);
+        Studio.event('bar_tap', { fruit: key });
+      });
+    });
+
+    // Handle verdict
+    Studio.onVerdict(({ correct }) => {
+      const feedback = document.querySelector('[data-test="feedback"]');
+      feedback.textContent = Studio.t(correct ? 'right' : 'wrong');
+      feedback.className = 'feedback show ' + (correct ? 'correct' : 'wrong');
+
+      if (correct) {
+        Studio.done();
+        setTimeout(() => {
+          document.querySelector('[data-test="done"]').classList.add('show');
+        }, 300);
+      }
+    });
+
+    Studio.ready();
+  })();
+</script>

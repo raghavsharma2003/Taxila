@@ -1,0 +1,170 @@
+<style>
+*{box-sizing:border-box}
+:root{color-scheme:light}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#f4f8ed;color:#203d36}
+.wrap{width:min(100%,420px);min-height:100vh;margin:auto;padding:10px 12px 14px;display:flex;flex-direction:column;gap:8px}
+h1{font-size:20px;line-height:1.15;text-align:center;margin:0;color:#245746;font-weight:800}
+.scene{width:100%;height:auto;max-height:370px;display:block;background:#eaf6f7;border-radius:24px;box-shadow:inset 0 0 0 1px #d9e9df}
+svg text{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:12px;font-weight:750;fill:#244a40}
+.label{paint-order:stroke;stroke:#f7fbf2;stroke-width:4px;stroke-linejoin:round}
+.sun-glow{animation:sunglow 3s ease-in-out infinite alternate;transform-origin:180px 51px}
+.ray{animation:raypulse 2s ease-in-out infinite alternate}
+.plant-sway{transform-origin:180px 251px;animation:sway 4s ease-in-out infinite}
+.particle{filter:drop-shadow(0 0 2px #fff);animation-timing-function:linear;animation-iteration-count:infinite}
+.water-p{fill:#269bd0;animation-name:waterflow;animation-duration:2.4s}
+.co2-p{fill:#d8932b;animation-name:coflow;animation-duration:3s}
+.o2-p{fill:#785fc2;animation-name:oflow;animation-duration:2.8s}
+.particle:nth-of-type(2){animation-delay:-.8s}
+.particle:nth-of-type(3){animation-delay:-1.6s}
+.glucose-glow{animation:glow 1.8s ease-in-out infinite alternate}
+@keyframes sunglow{to{opacity:.66;transform:scale(1.08)}}
+@keyframes raypulse{to{opacity:.38}}
+@keyframes sway{50%{transform:rotate(1deg)}}
+@keyframes waterflow{0%{transform:translateY(0)}100%{transform:translateY(-45px)}}
+@keyframes coflow{0%{transform:translateX(0)}100%{transform:translateX(37px)}}
+@keyframes oflow{0%{transform:translateX(0)}100%{transform:translateX(44px)}}
+@keyframes glow{to{opacity:.45;filter:drop-shadow(0 0 7px #ffe778)}}
+.controls{display:flex;align-items:center;justify-content:center;gap:8px}
+button{font:inherit;color:#244a40;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.play{min-width:100px;height:46px;padding:0 14px;border-radius:16px;background:#d7edda;font-weight:750;box-shadow:0 3px 0 #a8cdb1;transition:transform .15s,background .2s}
+.play:active,.step:active,.option:active{transform:scale(.95)}
+.steps{display:flex;gap:6px}
+.step{width:44px;height:44px;border-radius:14px;background:#fff;border:2px solid #d9e8dc;font-weight:800;transition:.2s}
+.step.active{background:#f5d979;border-color:#e6bf43;transform:translateY(-2px);box-shadow:0 3px 0 #d2a933}
+.caption{min-height:42px;padding:9px 12px;border-radius:14px;background:#fffdf2;text-align:center;font-size:14px;line-height:1.25;font-weight:650;color:#3c5549;box-shadow:0 2px 8px #234a4010}
+.question{padding:9px 10px 10px;border-radius:18px;background:#e4f0df}
+.ask{margin:0 0 8px;text-align:center;font-size:14px;line-height:1.2;font-weight:800}
+.options{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.option{height:46px;border-radius:14px;background:#fff;font-size:14px;font-weight:750;border:2px solid transparent;transition:transform .15s,background .2s,border .2s}
+.option.selected{border-color:#7bb78b;background:#f4fff0}
+.feedback{min-height:19px;text-align:center;font-size:13px;font-weight:700;color:#286847}
+[hidden]{display:none!important}
+@media(max-height:700px){.wrap{padding-top:6px;gap:6px}.scene{max-height:340px}.caption{min-height:38px;padding:7px 10px}.question{padding:7px 9px}.ask{margin-bottom:6px}}
+</style>
+<div class="wrap">
+  <h1 id="title"></h1>
+  <svg class="scene" viewBox="0 0 360 350" role="img" aria-label="">
+    <defs>
+      <radialGradient id="sky"><stop offset="0" stop-color="#f8fff2"/><stop offset="1" stop-color="#e8f5f6"/></radialGradient>
+      <linearGradient id="soil" x2="0" y2="1"><stop stop-color="#9b744c"/><stop offset="1" stop-color="#775739"/></linearGradient>
+    </defs>
+    <rect width="360" height="350" rx="24" fill="url(#sky)"/>
+    <circle class="sun-glow" cx="180" cy="46" r="29" fill="#ffd65f" opacity=".35"/>
+    <circle cx="180" cy="46" r="20" fill="#ffcf4a"/>
+    <g stroke="#f3b735" stroke-width="3" stroke-linecap="round">
+      <path d="M180 15V8M180 84v-7M149 46h-7M218 46h-7M158 24l-5-5M207 73l-5-5M202 24l5-5M153 73l5-5"/>
+    </g>
+    <text class="label" data-label="sun" x="180" y="17" text-anchor="middle"></text>
+    <path class="ray" d="M169 69L135 137M180 69v65M191 69l34 68" stroke="#f6c94e" stroke-width="3" stroke-dasharray="5 7" opacity=".75"/>
+    <path d="M0 258Q74 250 137 258T260 257T360 255V350H0Z" fill="url(#soil)"/>
+    <path d="M0 257Q60 250 125 257T260 256T360 254" fill="none" stroke="#6d9a62" stroke-width="5"/>
+    <g class="plant-sway">
+      <path d="M180 267C179 235 180 205 180 167" fill="none" stroke="#318451" stroke-width="9" stroke-linecap="round"/>
+      <path d="M180 207C159 201 145 185 140 163C163 160 180 171 184 193Z" fill="#60b96a" stroke="#33844b" stroke-width="2" data-entity="leaf"/>
+      <path d="M144 165Q163 178 181 196" fill="none" stroke="#33844b" stroke-width="2"/>
+      <path d="M181 187C196 165 216 160 237 166C231 189 212 201 184 201Z" fill="#73c875" stroke="#33844b" stroke-width="2"/>
+      <path d="M185 198Q210 181 232 168" fill="none" stroke="#33844b" stroke-width="2"/>
+      <path d="M180 264C170 276 165 291 159 301M181 266C185 280 191 291 200 303M176 268C170 282 172 294 174 306M184 269C198 279 204 290 207 298" fill="none" stroke="#e6c58c" stroke-width="4" stroke-linecap="round" data-entity="roots"/>
+      <circle class="glucose-glow" cx="164" cy="179" r="5" fill="#ffe374"/>
+      <circle class="glucose-glow" cx="171" cy="187" r="4" fill="#ffd45c" style="animation-delay:-.6s"/>
+      <circle class="glucose-glow" cx="160" cy="188" r="3" fill="#fff19a" style="animation-delay:-1s"/>
+    </g>
+    <text class="label" data-label="leaf" x="137" y="146" text-anchor="middle"></text>
+    <text class="label" data-label="glucose" x="164" y="217" text-anchor="middle"></text>
+    <text class="label" data-label="roots" x="180" y="327" text-anchor="middle"></text>
+    <text class="label" data-label="water" x="51" y="289" text-anchor="middle"></text>
+    <text class="label" data-label="co2" x="290" y="132" text-anchor="middle"></text>
+    <text class="label" data-label="o2" x="294" y="205" text-anchor="middle"></text>
+    <g aria-hidden="true">
+      <circle class="particle water-p" data-flow="water" cx="177" cy="286" r="4"/>
+      <circle class="particle water-p" data-flow="water" cx="182" cy="271" r="4"/>
+      <circle class="particle water-p" data-flow="water" cx="178" cy="253" r="4"/>
+      <circle class="particle co2-p" data-flow="co2" cx="244" cy="171" r="4"/>
+      <circle class="particle co2-p" data-flow="co2" cx="263" cy="180" r="4"/>
+      <circle class="particle co2-p" data-flow="co2" cx="278" cy="165" r="4"/>
+      <circle class="particle o2-p" data-flow="o2" cx="208" cy="177" r="4"/>
+      <circle class="particle o2-p" data-flow="o2" cx="216" cy="187" r="4"/>
+      <circle class="particle o2-p" data-flow="o2" cx="224" cy="177" r="4"/>
+    </g>
+  </svg>
+  <div class="controls">
+    <button class="play" type="button" data-action="play"><span id="playLabel"></span></button>
+    <div class="steps" id="steps"></div>
+  </div>
+  <div class="caption" data-caption></div>
+  <section class="question">
+    <p class="ask" id="ask"></p>
+    <div class="options">
+      <button class="option" type="button" data-option="co2"></button>
+      <button class="option" type="button" data-option="o2"></button>
+      <button class="option" type="button" data-option="water"></button>
+    </div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+  </section>
+</div>
+<script>
+(()=>{
+  const params=Studio.params;
+  const t=k=>Studio.t(k);
+  const title=document.getElementById("title");
+  title.textContent=t("title");
+  const labels=["sun","leaf","roots","water","co2","o2","glucose"];
+  document.querySelectorAll("[data-label]").forEach(el=>{el.textContent=t(el.dataset.label)});
+  document.getElementById("ask").textContent=t("ask");
+  const playButton=document.querySelector('[data-action="play"]');
+  const playLabel=document.getElementById("playLabel");
+  let playing=true, current=1, awaiting=false, completed=false;
+  const particles=[...document.querySelectorAll("[data-flow]")];
+  const caption=document.querySelector("[data-caption]");
+  const stepButtons=[];
+  for(let i=1;i<=params.steps;i++){
+    const b=document.createElement("button");
+    b.type="button";b.className="step";b.dataset.action="step-"+i;b.textContent=String(i);
+    b.setAttribute("aria-label",t("step"+i));
+    b.addEventListener("click",()=>setStep(i,true));
+    document.getElementById("steps").appendChild(b);stepButtons.push(b);
+  }
+  function setPlaying(value){
+    playing=value;
+    playLabel.textContent=t(playing?"pause":"play");
+    particles.forEach(p=>p.style.animationPlayState=playing?"running":"paused");
+    playButton.setAttribute("aria-pressed",String(playing));
+  }
+  function setStep(n,manual){
+    current=n;caption.textContent=t("step"+n);
+    stepButtons.forEach((b,i)=>b.classList.toggle("active",i+1===n));
+    if(manual){Studio.event("step",{step:n});}
+  }
+  playButton.addEventListener("click",()=>{setPlaying(!playing);Studio.event("play",{playing})});
+  const options=[...document.querySelectorAll("[data-option]")];
+  options.forEach(b=>b.textContent=t(b.dataset.option));
+  let selected="";
+  options.forEach(b=>b.addEventListener("click",()=>{
+    if(completed)return;
+    selected=b.dataset.option;
+    options.forEach(x=>x.classList.toggle("selected",x===b));
+    document.getElementById("feedback").textContent="";
+    awaiting=true;
+    Studio.event("answer",{option:selected});
+    Studio.answer(selected);
+  }));
+  Studio.onVerdict(result=>{
+    if(!awaiting||completed)return;
+    awaiting=false;
+    const feedback=document.getElementById("feedback");
+    if(result.correct){
+      completed=true;
+      feedback.textContent="✓";
+      options.forEach(b=>b.disabled=true);
+      Studio.done();
+    }else{
+      feedback.textContent="";
+      options.forEach(b=>b.classList.remove("selected"));
+      selected="";
+    }
+  });
+  setPlaying(true);
+  setStep(1,false);
+  Studio.ready();
+})();
+</script>

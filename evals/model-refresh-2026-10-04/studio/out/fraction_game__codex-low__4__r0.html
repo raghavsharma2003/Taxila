@@ -1,0 +1,343 @@
+<style>
+  :root{
+    --bg:#fff7ef;
+    --card:#ffffff;
+    --ink:#2f2a3a;
+    --muted:#7b748d;
+    --accent:#ff8a65;
+    --accent2:#ffd166;
+    --good:#2dbb7f;
+    --bad:#ef6f6c;
+    --shade:#ff7043;
+    --unshade:#ffe0b2;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+  }
+  .app{
+    width:100%;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:stretch;
+    padding:10px;
+  }
+  .card{
+    width:100%;
+    max-width:430px;
+    background:var(--card);
+    border-radius:20px;
+    box-shadow:0 8px 24px rgba(56,35,93,.12);
+    padding:14px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    overflow:hidden;
+  }
+  .title{
+    margin:0;
+    font-size:24px;
+    line-height:1.2;
+    text-align:center;
+  }
+  .instr{
+    margin:0;
+    text-align:center;
+    color:var(--muted);
+    min-height:22px;
+  }
+  .frac{
+    text-align:center;
+    font-weight:800;
+    font-size:34px;
+    line-height:1;
+    letter-spacing:.5px;
+    color:#6d4c41;
+    margin-top:2px;
+  }
+  .boardWrap{
+    flex:1;
+    min-height:300px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:6px 0;
+  }
+  .board{
+    width:min(88vw,320px);
+    height:min(88vw,320px);
+    max-height:320px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #fff8e1 0%, #ffe0b2 56%, #ffcc80 100%);
+    box-shadow: inset 0 0 0 8px #ffb74d, inset 0 0 0 14px #ffe082, 0 8px 20px rgba(0,0,0,.08);
+    position:relative;
+    overflow:hidden;
+  }
+  svg{width:100%;height:100%;display:block}
+  .slice{
+    fill:var(--unshade);
+    stroke:#fff3e0;
+    stroke-width:3;
+    cursor:pointer;
+    transform-origin:150px 150px;
+    transition:fill .2s ease, transform .12s ease, filter .2s ease;
+    filter:drop-shadow(0 1px 0 rgba(255,255,255,.6));
+  }
+  .slice[data-shaded="true"]{
+    fill:var(--shade);
+  }
+  .slice:active{
+    transform:scale(.98);
+  }
+  .centerDot{
+    fill:#fff3e0;
+    stroke:#ffcc80;
+    stroke-width:3;
+  }
+  .controls{
+    display:flex;
+    justify-content:center;
+    padding-bottom:2px;
+  }
+  .checkBtn{
+    min-width:140px;
+    min-height:48px;
+    border:none;
+    border-radius:999px;
+    background:linear-gradient(180deg,var(--accent),#ff7043);
+    color:white;
+    font-weight:700;
+    font-size:18px;
+    padding:10px 20px;
+    cursor:pointer;
+    transition:transform .12s ease, filter .2s ease, opacity .2s ease;
+  }
+  .checkBtn:active{transform:scale(.97)}
+  .checkBtn[disabled]{opacity:.6;cursor:not-allowed}
+  .msg{
+    min-height:44px;
+    text-align:center;
+    font-weight:700;
+    border-radius:12px;
+    padding:8px 10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:2px;
+    transition:background .25s ease, color .25s ease, transform .2s ease;
+  }
+  .msg.good{background:rgba(45,187,127,.12); color:var(--good); transform:scale(1.02)}
+  .msg.bad{background:rgba(239,111,108,.12); color:var(--bad)}
+  .hint{font-weight:600; font-size:13px}
+  .burst{
+    position:absolute; inset:0; pointer-events:none;
+  }
+  .dot{
+    position:absolute; width:10px; height:10px; border-radius:50%;
+    background:var(--accent2); opacity:0;
+    transform:translate(-50%,-50%) scale(.4);
+  }
+  .done{
+    flex:1;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-size:28px;
+    font-weight:800;
+    color:#5d4037;
+    background:linear-gradient(180deg,#fff8e1,#ffecb3);
+    border-radius:16px;
+  }
+</style>
+
+<div class="app">
+  <div class="card">
+    <h1 class="title" id="title"></h1>
+    <p class="instr" id="instr"></p>
+    <div class="frac" id="fraction"></div>
+
+    <div class="boardWrap" id="itemCard" data-item="">
+      <div class="board">
+        <svg id="pizza" viewBox="0 0 300 300" aria-hidden="true"></svg>
+        <div class="burst" id="burst"></div>
+      </div>
+    </div>
+
+    <div class="msg" id="msg"></div>
+
+    <div class="controls">
+      <button class="checkBtn" id="checkBtn" data-action="check"></button>
+    </div>
+
+    <div class="done" id="done"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const params = Studio.params || {};
+  const items = Array.isArray(params.items) ? params.items : [];
+  const el = {
+    title: document.getElementById('title'),
+    instr: document.getElementById('instr'),
+    fraction: document.getElementById('fraction'),
+    itemCard: document.getElementById('itemCard'),
+    pizza: document.getElementById('pizza'),
+    msg: document.getElementById('msg'),
+    checkBtn: document.getElementById('checkBtn'),
+    done: document.getElementById('done'),
+    burst: document.getElementById('burst')
+  };
+
+  el.title.textContent = Studio.t('title');
+  el.instr.textContent = Studio.t('instr');
+  el.checkBtn.textContent = Studio.t('check');
+
+  let index = 0;
+  let awaitingVerdict = false;
+  let completed = false;
+
+  function clearMsg(){
+    el.msg.className = 'msg';
+    el.msg.innerHTML = '';
+  }
+
+  function setMsg(type){
+    el.msg.className = 'msg ' + type;
+    if(type === 'good'){
+      el.msg.innerHTML = '<div>'+Studio.t('right')+'</div>';
+    }else{
+      el.msg.innerHTML = '<div>'+Studio.t('wrong')+'</div><div class="hint">'+Studio.t('hint')+'</div>';
+    }
+  }
+
+  function currentItem(){
+    return items[index];
+  }
+
+  function makeSlicePath(i, d){
+    const cx = 150, cy = 150, r = 132;
+    const a0 = -Math.PI/2 + (i * 2 * Math.PI / d);
+    const a1 = -Math.PI/2 + ((i+1) * 2 * Math.PI / d);
+    const x1 = cx + r * Math.cos(a0);
+    const y1 = cy + r * Math.sin(a0);
+    const x2 = cx + r * Math.cos(a1);
+    const y2 = cy + r * Math.sin(a1);
+    const large = (a1 - a0) > Math.PI ? 1 : 0;
+    return `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`;
+  }
+
+  function toggleSlice(node){
+    const next = node.getAttribute('data-shaded') !== 'true';
+    node.setAttribute('data-shaded', next ? 'true' : 'false');
+    Studio.event('tap_part', { item: currentItem().id, part: Number(node.getAttribute('data-part')), shaded: next });
+  }
+
+  function renderItem(){
+    const item = currentItem();
+    if(!item){ return; }
+
+    awaitingVerdict = false;
+    el.checkBtn.disabled = false;
+    clearMsg();
+
+    el.itemCard.setAttribute('data-item', item.id);
+    el.fraction.textContent = String(item.n) + '/' + String(item.d);
+
+    el.pizza.innerHTML = '';
+    for(let i=0;i<item.d;i++){
+      const p = document.createElementNS('http://www.w3.org/2000/svg','path');
+      p.setAttribute('class','slice');
+      p.setAttribute('d', makeSlicePath(i, item.d));
+      p.setAttribute('data-part', String(i));
+      p.setAttribute('data-shaded', 'false');
+      p.addEventListener('click', function(){ if(!awaitingVerdict) toggleSlice(p); });
+      el.pizza.appendChild(p);
+    }
+    const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    dot.setAttribute('cx','150'); dot.setAttribute('cy','150'); dot.setAttribute('r','12');
+    dot.setAttribute('class','centerDot');
+    el.pizza.appendChild(dot);
+
+    Studio.event('item_view', { item: item.id, d: item.d, n: item.n });
+  }
+
+  function shadedCount(){
+    const nodes = el.pizza.querySelectorAll('[data-part]');
+    let c = 0;
+    nodes.forEach(n => { if(n.getAttribute('data-shaded') === 'true') c++; });
+    return c;
+  }
+
+  function burst(){
+    el.burst.innerHTML = '';
+    const colors = ['#ffd166','#ff8a65','#81c784','#64b5f6','#ba68c8'];
+    for(let i=0;i<14;i++){
+      const d = document.createElement('div');
+      d.className = 'dot';
+      d.style.background = colors[i % colors.length];
+      d.style.left = '50%';
+      d.style.top = '50%';
+      el.burst.appendChild(d);
+      const ang = (Math.PI*2*i)/14;
+      const dist = 65 + (i%4)*16;
+      requestAnimationFrame(() => {
+        d.style.transition = 'transform .55s cubic-bezier(.2,.7,.2,1), opacity .55s ease';
+        d.style.opacity = '1';
+        d.style.transform = `translate(${Math.cos(ang)*dist}px, ${Math.sin(ang)*dist}px) scale(1)`;
+        setTimeout(()=>{ d.style.opacity='0'; }, 360);
+      });
+    }
+  }
+
+  el.checkBtn.addEventListener('click', function(){
+    if(awaitingVerdict || completed) return;
+    awaitingVerdict = true;
+    el.checkBtn.disabled = true;
+    const item = currentItem();
+    const answer = { n: shadedCount(), d: item.d };
+    Studio.event('check', { item: item.id, n: answer.n, d: answer.d });
+    Studio.answer(answer);
+  });
+
+  Studio.onVerdict(function(v){
+    if(completed) return;
+    if(v && v.correct){
+      setMsg('good');
+      burst();
+      Studio.event('correct', { item: currentItem().id });
+      setTimeout(function(){
+        index++;
+        if(index >= items.length){
+          completed = true;
+          el.itemCard.style.display = 'none';
+          el.checkBtn.style.display = 'none';
+          el.fraction.style.display = 'none';
+          el.instr.style.display = 'none';
+          el.msg.className = 'msg';
+          el.msg.innerHTML = '';
+          el.done.style.display = 'flex';
+          el.done.textContent = Studio.t('done');
+          Studio.done();
+        }else{
+          renderItem();
+        }
+      }, 700);
+    }else{
+      awaitingVerdict = false;
+      el.checkBtn.disabled = false;
+      setMsg('bad');
+      Studio.event('wrong', { item: currentItem().id });
+    }
+  });
+
+  renderItem();
+  Studio.ready();
+})();
+</script>

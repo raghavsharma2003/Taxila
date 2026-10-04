@@ -1,0 +1,373 @@
+<style>
+  :root{
+    --ink:#24334a;
+    --muted:#66758c;
+    --paper:#fffdf8;
+    --sky:#eaf6ff;
+    --line:#c9ddeb;
+    --bar:#ff8c62;
+    --bar-edge:#df664d;
+    --leaf:#54ad78;
+    --gold:#ffd66b;
+    --good:#2d9a68;
+    --bad:#dc615b;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-width:320px;
+    min-height:100vh;
+    overflow-x:hidden;
+    background:linear-gradient(155deg,#e8f6ff,#fff8e7);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  .page{
+    width:min(100%,430px);
+    min-height:100vh;
+    margin:auto;
+    padding:16px 12px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .heading{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:2px 4px;
+  }
+  .fruit-mark{
+    width:44px;
+    height:44px;
+    flex:none;
+    filter:drop-shadow(0 4px 3px rgba(48,91,117,.13));
+  }
+  h1{
+    margin:0;
+    font-size:clamp(20px,6vw,27px);
+    line-height:1.12;
+    letter-spacing:-.4px;
+  }
+  .chart-card{
+    background:var(--paper);
+    border:2px solid rgba(255,255,255,.95);
+    border-radius:24px;
+    padding:8px 3px 2px;
+    box-shadow:0 10px 27px rgba(69,112,141,.14);
+    overflow:hidden;
+  }
+  #chart{
+    display:block;
+    width:100%;
+    height:auto;
+    overflow:visible;
+  }
+  .grid{
+    stroke:var(--line);
+    stroke-width:1;
+    stroke-dasharray:3 4;
+  }
+  .axis{
+    stroke:#7890a8;
+    stroke-width:1.7;
+    stroke-linecap:round;
+  }
+  .tick-label,.fruit-label,.axis-title{
+    fill:var(--muted);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  .tick-label{
+    font-size:11px;
+    text-anchor:end;
+    dominant-baseline:middle;
+  }
+  .fruit-label{
+    font-size:11px;
+    text-anchor:middle;
+    font-weight:750;
+  }
+  .axis-title{
+    font-size:11px;
+    font-weight:750;
+    text-anchor:middle;
+  }
+  .bar{
+    fill:var(--bar);
+    stroke:var(--bar-edge);
+    stroke-width:1.4;
+    cursor:pointer;
+    touch-action:manipulation;
+    transition:filter .18s ease,fill .18s ease,stroke .18s ease;
+  }
+  .bar:focus{
+    outline:none;
+    stroke:#345174;
+    stroke-width:3;
+  }
+  .bar.picked{
+    fill:var(--gold);
+    stroke:#c58d27;
+    filter:drop-shadow(0 5px 4px rgba(170,105,35,.22));
+  }
+  .bar.correct{
+    fill:var(--good);
+    stroke:#18744b;
+  }
+  .value-bubble{
+    pointer-events:none;
+    opacity:0;
+    transform:translateY(6px);
+    transition:opacity .2s ease,transform .2s ease;
+  }
+  .value-bubble.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+  .value-pill{fill:var(--ink)}
+  .value-text{
+    fill:#fff;
+    font-size:12px;
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    text-anchor:middle;
+    dominant-baseline:middle;
+    font-weight:800;
+  }
+  .question-card{
+    position:relative;
+    background:rgba(255,255,255,.86);
+    border:1px solid rgba(255,255,255,.94);
+    border-radius:20px;
+    padding:14px 17px;
+    min-height:76px;
+    box-shadow:0 7px 18px rgba(69,112,141,.11);
+  }
+  .question-card:before{
+    content:"";
+    position:absolute;
+    left:25px;
+    top:-8px;
+    width:16px;
+    height:16px;
+    background:rgba(255,255,255,.86);
+    transform:rotate(45deg);
+  }
+  #ask{
+    position:relative;
+    margin:0;
+    font-size:17px;
+    line-height:1.32;
+    font-weight:750;
+  }
+  #feedback{
+    position:relative;
+    min-height:21px;
+    margin-top:7px;
+    color:var(--muted);
+    font-size:15px;
+    font-weight:750;
+  }
+  #feedback.good{
+    color:var(--good);
+    animation:rise .3s ease both;
+  }
+  #feedback.bad{
+    color:var(--bad);
+    animation:nudge .3s ease;
+  }
+  #completion{
+    position:relative;
+    display:none;
+    margin-top:4px;
+    color:var(--good);
+    font-size:15px;
+    font-weight:800;
+  }
+  #completion.show{
+    display:block;
+    animation:rise .35s ease both;
+  }
+  @keyframes nudge{
+    0%,100%{transform:translateX(0)}
+    30%{transform:translateX(-5px)}
+    65%{transform:translateX(4px)}
+  }
+  @keyframes rise{
+    from{opacity:0;transform:translateY(7px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+  @media(max-height:680px){
+    .page{padding-top:10px;gap:8px}
+    .chart-card{padding-top:4px}
+    .question-card{padding:11px 16px;min-height:67px}
+  }
+</style>
+
+<main class="page">
+  <header class="heading">
+    <svg class="fruit-mark" viewBox="0 0 48 48" aria-hidden="true">
+      <path d="M24 8c4-6 10-6 14-5-1 6-5 11-12 12" fill="#54ad78"/>
+      <path d="M23 12C12 12 7 20 8 30c1 10 8 14 16 14s15-5 16-14c1-10-5-18-17-18Z" fill="#ffb64d"/>
+      <path d="M15 22c-2 4-1 10 1 13" fill="none" stroke="#ffe2a2" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="30" cy="28" r="2" fill="#fff3cf"/>
+    </svg>
+    <h1 id="title"></h1>
+  </header>
+
+  <section class="chart-card">
+    <svg id="chart" viewBox="0 0 330 350" role="img">
+      <g id="grid-layer"></g>
+      <g id="axis-layer"></g>
+      <g id="bar-layer"></g>
+      <g id="label-layer"></g>
+      <g id="bubble-layer"></g>
+    </svg>
+  </section>
+
+  <section class="question-card" aria-live="polite">
+    <p id="ask"></p>
+    <div id="feedback"></div>
+    <div id="completion"></div>
+  </section>
+</main>
+
+<script>
+(function(){
+  var data=Studio.params.data;
+  var ns="http://www.w3.org/2000/svg";
+  var title=document.getElementById("title");
+  var ask=document.getElementById("ask");
+  var feedback=document.getElementById("feedback");
+  var completion=document.getElementById("completion");
+  var grid=document.getElementById("grid-layer");
+  var axes=document.getElementById("axis-layer");
+  var bars=document.getElementById("bar-layer");
+  var labels=document.getElementById("label-layer");
+  var bubbles=document.getElementById("bubble-layer");
+  var left=39,right=325,top=40,base=273;
+  var maxValue=0;
+  var pending=false,finished=false,selected=null;
+  var barNodes=[],bubbleNodes=[];
+
+  title.textContent=Studio.t("title");
+  ask.textContent=Studio.t("ask");
+
+  data.forEach(function(item){
+    if(item.value>maxValue) maxValue=item.value;
+  });
+
+  var rough=maxValue/5;
+  var power=Math.pow(10,Math.floor(Math.log(rough||1)/Math.LN10));
+  var unit=rough/power;
+  var nice=unit<=1?1:(unit<=2?2:(unit<=5?5:10));
+  var step=nice*power;
+  var ceiling=Math.ceil(maxValue/step)*step;
+  if(!ceiling) ceiling=step;
+  var scale=(base-top)/ceiling;
+
+  function el(name,attrs,parent){
+    var node=document.createElementNS(ns,name);
+    Object.keys(attrs).forEach(function(key){node.setAttribute(key,attrs[key]);});
+    (parent||grid).appendChild(node);
+    return node;
+  }
+  function line(x1,y1,x2,y2,cls,parent){
+    return el("line",{x1:x1,y1:y1,x2:x2,y2:y2,"class":cls},parent);
+  }
+
+  for(var tick=0;tick<=ceiling;tick+=step){
+    var tickY=base-tick*scale;
+    line(left,tickY,right,tickY,"grid",grid);
+    var tickLabel=el("text",{x:left-7,y:tickY,"class":"tick-label","data-tick":tick},labels);
+    tickLabel.textContent=tick;
+  }
+
+  line(left,top,left,base,"axis",axes);
+  line(left,base,right,base,"axis",axes);
+
+  var titleY=(top+base)/2;
+  var axisTitle=el("text",{x:13,y:titleY,"class":"axis-title",transform:"rotate(-90 13 "+titleY+")"},labels);
+  axisTitle.textContent=Studio.t("yaxis");
+
+  var span=right-left;
+  var slot=span/data.length;
+  var barWidth=52;
+
+  data.forEach(function(item,index){
+    var x=left+slot*index+(slot-barWidth)/2;
+    var height=item.value*scale;
+    var rect=el("rect",{
+      x:x,
+      y:base,
+      width:barWidth,
+      height:0,
+      rx:10,
+      ry:10,
+      "class":"bar",
+      tabindex:0,
+      role:"button",
+      "data-bar":item.key,
+      "data-value":item.value
+    },bars);
+
+    var fruit=el("text",{x:x+barWidth/2,y:base+22,"class":"fruit-label"},labels);
+    fruit.textContent=Studio.t(item.key);
+
+    var bubble=el("g",{"class":"value-bubble"},bubbles);
+    var bubbleY=Math.max(top+12,base-height-17);
+    el("rect",{x:x+barWidth/2-16,y:bubbleY-11,width:32,height:22,rx:11,ry:11,"class":"value-pill"},bubble);
+    var valueText=el("text",{x:x+barWidth/2,y:bubbleY,"class":"value-text"},bubble);
+    valueText.textContent=item.value;
+
+    function choose(){
+      if(pending||finished)return;
+      pending=true;
+      selected=rect;
+      barNodes.forEach(function(node){node.classList.remove("picked");});
+      bubbleNodes.forEach(function(node){node.classList.remove("show");});
+      rect.classList.add("picked");
+      bubble.classList.add("show");
+      feedback.textContent="";
+      feedback.className="";
+      Studio.event("bar_tap",{key:item.key,value:item.value});
+      Studio.answer(item.key);
+    }
+
+    rect.addEventListener("click",choose);
+    rect.addEventListener("keydown",function(event){
+      if(event.key==="Enter"||event.key===" "){
+        event.preventDefault();
+        choose();
+      }
+    });
+
+    barNodes.push(rect);
+    bubbleNodes.push(bubble);
+
+    requestAnimationFrame(function(){
+      rect.setAttribute("y",base-height);
+      rect.setAttribute("height",height);
+    });
+  });
+
+  Studio.onVerdict(function(result){
+    pending=false;
+    if(result.correct){
+      finished=true;
+      if(selected)selected.classList.add("correct");
+      feedback.textContent=Studio.t("right");
+      feedback.className="good";
+      completion.textContent=Studio.t("done");
+      completion.className="show";
+      Studio.done();
+    }else{
+      feedback.textContent=Studio.t("wrong");
+      feedback.className="bad";
+      if(selected)selected.classList.remove("picked");
+      selected=null;
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

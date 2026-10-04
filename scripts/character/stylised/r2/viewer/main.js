@@ -36,7 +36,7 @@ const VIEWS = {
   face: { t: [0, -0.012, 0.02], h: 0.21, yaw: 0 },
   close: { t: [0, -0.018, 0.02], h: 0.17, yaw: 0 },
   eyes: { t: [0, -0.006, 0.02], h: 0.12, yaw: 0 },
-  mouth: { t: [0, -0.05, 0.03], h: 0.075, yaw: 0 },
+  mouth: { t: [0, -0.044, 0.03], h: 0.075, yaw: 0 },
   bust: { t: [0, -0.05, -0.02], h: 0.42, yaw: 0 },
 };
 function view(name, yawOverride) {

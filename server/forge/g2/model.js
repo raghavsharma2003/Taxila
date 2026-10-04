@@ -4,6 +4,7 @@
 // azure.js: the key goes only in the api-key header, payloads are never logged, every call is timed.
 // Pricing ($/1M tokens, Azure retail, MODEL-ROUTER.md §2, read 2026-10-02); cached input for codex is [U] 10% of
 // input (the retail page lists no cached meter for gpt-5.3-codex on Azure).
+import { resolveLane } from "../../endpoints.js";
 export const PRICING = {
   "taxila-codex": { inPerM: 1.75, cachedInPerM: 0.175, outPerM: 14.0 },
   "taxila-brain": { inPerM: 4.0, cachedInPerM: 0.4, outPerM: 20.0 },
@@ -30,8 +31,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
  * @returns {Promise<{ id: string, status: string, output: object[], usage: object, ms: number }>}
  */
 export async function respond(body, { timeoutMs = 180_000 } = {}) {
-  const base = (process.env.AZURE_OPENAI_ENDPOINT || "").replace(/\/+$/, "");
-  const key = process.env.AZURE_OPENAI_API_KEY;
+  // RESPONSES lane (server/endpoints.js): AZURE_OPENAI_ENDPOINT unless AZURE_OPENAI_ENDPOINT_RESPONSES overrides it
+  const { endpoint: base, key } = resolveLane("RESPONSES");
   if (!base || !key) throw new Error("AZURE_OPENAI_ENDPOINT / AZURE_OPENAI_API_KEY not set");
   for (let attempt = 0; ; attempt++) {
     const t0 = performance.now();

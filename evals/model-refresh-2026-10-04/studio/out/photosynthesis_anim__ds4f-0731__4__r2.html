@@ -1,0 +1,425 @@
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    background: #f9f3e7;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100vw;
+    overflow-x: hidden;
+  }
+  .app {
+    width: 100%;
+    max-width: 360px;
+    min-height: 640px;
+    background: #fefaf2;
+    border-radius: 24px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    overflow: hidden;
+    position: relative;
+  }
+  .title {
+    text-align: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: #2e5a2a;
+    letter-spacing: 0.2px;
+    padding: 1px 0;
+  }
+  .scene-wrapper {
+    background: #d9eef7;
+    border-radius: 18px;
+    padding: 2px;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 2px #c0dce8;
+    position: relative;
+  }
+  svg.scene {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: 230px;
+    max-height: 270px;
+    margin: 0 auto;
+  }
+  .controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-top: 3px;
+  }
+  .play-pause-btn {
+    background: #f5b84e;
+    border: none;
+    border-radius: 40px;
+    padding: 10px 12px;
+    min-width: 70px;
+    min-height: 44px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #3d2f1b;
+    box-shadow: 0 4px 0 #c47f2c;
+    transition: transform 0.1s ease, box-shadow 0.1s;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .play-pause-btn:active {
+    transform: scale(0.96);
+    box-shadow: 0 2px 0 #c47f2c;
+  }
+  .steps-group {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex: 1;
+  }
+  .step-btn {
+    background: #d9e6d2;
+    border: none;
+    border-radius: 20px;
+    min-width: 36px;
+    min-height: 36px;
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1f421d;
+    box-shadow: 0 3px 0 #8eaa86;
+    transition: all 0.1s;
+    cursor: pointer;
+  }
+  .step-btn.active {
+    background: #4f9e4a;
+    color: white;
+    box-shadow: 0 3px 0 #2b6e28;
+    transform: scale(1.08);
+  }
+  .step-btn:active {
+    transform: scale(0.92);
+  }
+  .caption {
+    background: #f1e7d2;
+    border-radius: 16px;
+    padding: 6px 10px;
+    font-size: 13px;
+    color: #263f1e;
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    border-left: 5px solid #7ca86e;
+    line-height: 1.25;
+  }
+  .question-area {
+    background: #f6f0dc;
+    border-radius: 18px;
+    padding: 8px;
+    margin-top: 2px;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.02);
+  }
+  .question-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f3f1d;
+    margin-bottom: 6px;
+    text-align: center;
+  }
+  .options {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+  }
+  .option-btn {
+    background: white;
+    border: 2px solid #9db99b;
+    padding: 8px 2px;
+    min-width: 64px;
+    min-height: 44px;
+    border-radius: 28px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #173616;
+    cursor: pointer;
+    transition: transform 0.1s, background 0.1s, border-color 0.1s;
+    flex: 1;
+    max-width: 88px;
+  }
+  .option-btn:active {
+    transform: scale(0.92);
+    background: #e6f0e0;
+  }
+  .feedback {
+    margin-top: 5px;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    min-height: 20px;
+    color: #1d411d;
+  }
+  .feedback.correct {
+    color: #1c6b1c;
+  }
+  .feedback.incorrect {
+    color: #a13d2d;
+  }
+  .label {
+    font-family: system-ui, sans-serif;
+    font-weight: 600;
+    fill: #1d3a1a;
+    paint-order: stroke;
+    stroke: #fefaf2;
+    stroke-width: 2px;
+    stroke-linejoin: round;
+    font-size: 10px;
+    pointer-events: none;
+  }
+</style>
+
+<div class="app">
+  <div class="title" data-label="title"> <span data-label="title">Photosynthesis</span></div>
+
+  <!-- SCENE SVG -->
+  <div class="scene-wrapper">
+    <svg class="scene" viewBox="0 0 340 280" xmlns="http://www.w3.org/2000/svg">
+      <rect width="340" height="280" fill="#c7e5f2" rx="16"/>
+
+      <!-- sun and rays -->
+      <circle cx="282" cy="42" r="18" fill="#FADF5E" stroke="#f5b84e" stroke-width="3"/>
+      <g stroke="#f7cf6b" stroke-width="2.2" stroke-linecap="round">
+        <line x1="282" y1="16" x2="282" y2="8"/>
+        <line x1="303" y1="25" x2="310" y2="18"/>
+        <line x1="309" y1="44" x2="316" y2="44"/>
+        <line x1="301" y1="62" x2="308" y2="70"/>
+        <line x1="265" y1="25" x2="258" y2="18"/>
+        <line x1="259" y1="48" x2="252" y2="48"/>
+      </g>
+      <!-- sun label -->
+      <text data-label="sun" x="282" y="78" text-anchor="middle" class="label" fill="#8d5f1a">Sun</text>
+
+      <!-- soil -->
+      <ellipse cx="170" cy="246" rx="100" ry="26" fill="#7a5c3a"/>
+      <ellipse cx="170" cy="250" rx="100" ry="20" fill="#5f452b"/>
+
+      <!-- roots -->
+      <g data-entity="roots" stroke="#8b5a2b" fill="none" stroke-width="5" stroke-linecap="round">
+        <path d="M170 215 L158 235 L140 246"/>
+        <path d="M166 215 L172 237 L188 246"/>
+        <path d="M174 215 L186 232 L204 240"/>
+        <path d="M168 215 L148 240 L130 248"/>
+      </g>
+
+      <!-- stem -->
+      <path d="M164 220 L167 200 L171 220" fill="#3f6e36" stroke="#2c5627" stroke-width="4"/>
+
+      <!-- leaf -->
+      <g data-entity="leaf">
+        <path d="M167 145 Q148 105 170 78 Q198 110 182 148 Z" fill="#4d9442" stroke="#336432" stroke-width="3"/>
+        <path d="M169 145 Q161 122 170 90" stroke="#2b6525" fill="none" stroke-width="2"/>
+      </g>
+
+      <!-- labels -->
+      <text data-label="leaf" x="222" y="112" class="label" fill="#1f5e18">Leaf</text>
+      <text data-label="roots" x="92" y="258" class="label" fill="#f7e9c3">Roots</text>
+      <text data-label="water" x="90" y="232" class="label" fill="#2a6ea8">Water</text>
+      <text data-label="co2" x="48" y="135" class="label" fill="#325c2b">CO2</text>
+      <text data-label="o2" x="238" y="165" class="label" fill="#1f5e18">O2</text>
+      <text data-label="glucose" x="150" y="132" class="label" fill="#3f6e1a">Glucose</text>
+
+      <!-- particle layer -->
+      <g id="particles"></g>
+    </svg>
+  </div>
+
+  <!-- controls -->
+  <div class="controls-row">
+    <button class="play-pause-btn" data-action="play">
+      <span data-label="pause">Pause</span>
+    </button>
+    <div class="steps-group">
+      <button class="step-btn" data-action="step-1">1</button>
+      <button class="step-btn" data-action="step-2">2</button>
+      <button class="step-btn" data-action="step-3">3</button>
+      <button class="step-btn" data-action="step-4">4</button>
+      <button class="step-btn" data-action="step-5">5</button>
+    </div>
+  </div>
+
+  <!-- caption -->
+  <div class="caption" data-caption></div>
+
+  <!-- question -->
+  <div class="question-area">
+    <div class="question-text" data-label="ask"></div>
+    <div class="options">
+      <button class="option-btn" data-option="co2">CO2</button>
+      <button class="option-btn" data-option="o2">O2</button>
+      <button class="option-btn" data-option="water">Water</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const T = Studio.t;
+    const steps = 5;
+    const particleLayer = document.getElementById('particles');
+    let playing = true;
+    let currentStep = 1;
+    let animInterval = null;
+
+    // captions
+    const captions = {1: T('step1'), 2: T('step2'), 3: T('step3'), 4: T('step4'), 5: T('step5')};
+    const captionEl = document.querySelector('[data-caption]');
+    function updateCaption(step) {
+      captionEl.textContent = captions[step] || '';
+    }
+
+    // particles
+    function makeParticle(flow) {
+      const ns = 'http://www.w3.org/2000/svg';
+      const circle = document.createElementNS(ns, 'circle');
+      circle.setAttribute('data-flow', flow);
+      circle.setAttribute('r', flow === 'water' ? 3.5 : 4);
+      circle.setAttribute('fill', flow === 'water' ? '#3f7dc2' : flow === 'co2' ? '#849b7a' : '#7aa76b');
+      circle.setAttribute('opacity', '0.85');
+      particleLayer.appendChild(circle);
+      return circle;
+    }
+
+    function initParticles() {
+      particleLayer.innerHTML = '';
+      for (let i=0; i<3; i++) {
+        const p = makeParticle('water');
+        p.setAttribute('cx', 165 + Math.random()*10);
+        p.setAttribute('cy', 225);
+      }
+      for (let i=0; i<3; i++) {
+        const p = makeParticle('co2');
+        p.setAttribute('cx', 60 + Math.random()*40);
+        p.setAttribute('cy', 80 + Math.random()*30);
+      }
+      for (let i=0; i<3; i++) {
+        const p = makeParticle('o2');
+        p.setAttribute('cx', 210 + Math.random()*20);
+        p.setAttribute('cy', 120 + Math.random()*20);
+      }
+    }
+
+    function animParticle(p) {
+      const flow = p.getAttribute('data-flow');
+      let cx = parseFloat(p.getAttribute('cx'));
+      let cy = parseFloat(p.getAttribute('cy'));
+
+      if (flow === 'water') {
+        cy -= 0.9;
+        if (cy < 90) {
+          cy = 225;
+          cx = 165 + Math.random()*10;
+        }
+      } else if (flow === 'co2') {
+        let dx = 170 - cx, dy = 130 - cy;
+        const dist = Math.hypot(dx, dy);
+        if (dist < 20) {
+          cx = 60 + Math.random()*40;
+          cy = 80 + Math.random()*30;
+        } else {
+          cx += (dx/dist) * 1.2;
+          cy += (dy/dist) * 1.2;
+        }
+      } else if (flow === 'o2') {
+        let targetX = 280 + Math.random()*30, targetY = 120 + Math.random()*50;
+        let dx = targetX - cx, dy = targetY - cy;
+        const dist = Math.hypot(dx, dy);
+        if (dist < 20 || cx > 330) {
+          cx = 210 + Math.random()*20;
+          cy = 120 + Math.random()*20;
+        } else {
+          cx += (dx/dist) * 1.1;
+          cy += (dy/dist) * 1.1;
+        }
+      }
+      p.setAttribute('cx', cx);
+      p.setAttribute('cy', cy);
+    }
+
+    function tick() {
+      if (!playing) return;
+      document.querySelectorAll('[data-flow]').forEach(animParticle);
+    }
+
+    function startLoop() { if (!animInterval) animInterval = setInterval(tick, 70); }
+    function stopLoop() { if (animInterval) { clearInterval(animInterval); animInterval = null; } }
+
+    // step control
+    function setStep(step) {
+      currentStep = step;
+      document.querySelectorAll('.step-btn').forEach((btn, idx) => {
+        btn.classList.toggle('active', idx === step-1);
+      });
+      updateCaption(step);
+      Studio.event('step_select', {step});
+    }
+
+    // play/pause
+    const playBtn = document.querySelector('[data-action="play"]');
+    const pauseLabel = '<span data-label="pause">Pause</span>';
+    const playLabel = '<span data-label="play">Play</span>';
+    function togglePlay() {
+      playing = !playing;
+      playBtn.innerHTML = playing ? pauseLabel : playLabel;
+      if (playing) startLoop(); else stopLoop();
+      Studio.event('play_toggle', {playing});
+    }
+    playBtn.addEventListener('click', togglePlay);
+
+    // step buttons
+    document.querySelectorAll('[data-action^="step-"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const n = parseInt(btn.getAttribute('data-action').split('-')[1], 10);
+        setStep(n);
+      });
+    });
+
+    // question
+    const feedbackEl = document.getElementById('feedback');
+    document.querySelectorAll('[data-option]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        feedbackEl.textContent = '';
+        feedbackEl.classList.remove('correct','incorrect');
+        Studio.answer(btn.getAttribute('data-option'));
+      });
+    });
+
+    Studio.onVerdict(({correct}) => {
+      if (correct) {
+        feedbackEl.textContent = '✅ Correct';
+        feedbackEl.classList.add('correct');
+        Studio.done();
+      } else {
+        feedbackEl.textContent = 'Try again';
+        feedbackEl.classList.add('incorrect');
+      }
+    });
+
+    // init
+    document.querySelector('[data-label="ask"]').textContent = T('ask');
+    initParticles();
+    setStep(1);
+    startLoop();
+    Studio.ready();
+  })();
+</script>

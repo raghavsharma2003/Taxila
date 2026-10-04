@@ -108,14 +108,14 @@ for ob, bn in ((eyeL, 'LeftEye'), (eyeR, 'RightEye')):
     skin(ob, {bn: np.ones(len(ob.data.vertices))})
 
 # custom data trims: no UVs on meshes that do not sample a texture
-for ob in (head, browlash, mouth, hair, bust):
+for ob in (browlash, mouth, bust):
     me = ob.data
     while me.uv_layers:
         me.uv_layers.remove(me.uv_layers[0])
 
 bpy.ops.export_scene.gltf(
     filepath=out, export_format='GLB', use_selection=False, export_apply=False,
-    export_morph=True, export_morph_normal=False, export_skins=True, export_yup=True,
+    export_morph=True, export_morph_normal=True, export_skins=True, export_yup=True,
     export_texcoords=True, export_normals=True, export_tangents=False,
     export_attributes=True, export_animations=False, export_extras=True)
 stats = {o.name: {'verts': len(o.data.vertices), 'tris': sum(len(p.vertices) - 2 for p in o.data.polygons),

@@ -1,0 +1,187 @@
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #FFF8E7; color: #3E2723; }
+  #app { position: relative; max-width: 360px; min-height: 640px; margin: 0 auto; padding: 16px; overflow-x: hidden; }
+  .card { background: #fff; border-radius: 24px; padding: 18px; box-shadow: 0 8px 24px rgba(93, 64, 55, 0.12); }
+  h1 { font-size: 22px; font-weight: 700; text-align: center; margin: 0 0 10px; color: #5D4037; line-height: 1.25; }
+  .ask { font-size: 17px; font-weight: 600; text-align: center; margin: 0 0 14px; min-height: 44px; display: flex; align-items: center; justify-content: center; padding: 8px; background: #FFF3E0; border-radius: 14px; color: #3E2723; }
+  .svg-wrap { width: 100%; max-width: 360px; margin: 0 auto; }
+  svg { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; }
+  .bar { cursor: pointer; transition: height 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), y 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), fill 0.2s ease, filter 0.15s ease; transform-box: fill-box; transform-origin: 50% 50%; touch-action: manipulation; }
+  .bar:hover { filter: brightness(1.06); }
+  .bar:active { filter: brightness(1.12); }
+  .bar.grown { height: var(--final-h); y: var(--final-y); }
+  .bar.shake { animation: shake 0.4s ease-in-out; }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-3px); } 40% { transform: translateX(3px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } }
+  #tooltip { position: absolute; pointer-events: none; background: #3E2723; color: #fff; padding: 6px 12px; border-radius: 12px; font-size: 16px; font-weight: 700; transform: translate(-50%, -115%); opacity: 0; transition: opacity 0.2s ease, transform 0.2s ease; z-index: 10; }
+  #tooltip.show { opacity: 1; transform: translate(-50%, -130%); }
+  #tooltip::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: #3E2723 transparent transparent transparent; }
+  .feedback { margin-top: 12px; min-height: 26px; text-align: center; font-weight: 700; font-size: 17px; opacity: 0; transition: opacity 0.25s ease; }
+  .feedback.correct { color: #2E7D32; opacity: 1; }
+  .feedback.wrong { color: #C62828; opacity: 1; }
+  .done { position: fixed; inset: 0; background: rgba(255, 248, 231, 0.96); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 30; }
+  .done.visible { opacity: 1; pointer-events: auto; }
+  .done-card { background: #fff; border-radius: 24px; padding: 32px 24px; text-align: center; box-shadow: 0 10px 30px rgba(93, 64, 55, 0.14); transform: translateY(20px); transition: transform 0.4s ease; }
+  .done.visible .done-card { transform: translateY(0); }
+  .done-emoji { font-size: 52px; line-height: 1; margin-bottom: 10px; }
+  #doneText { font-size: 19px; font-weight: 700; color: #3E2723; margin: 0; }
+</style>
+
+<div id="app">
+  <div class="card">
+    <h1 id="title"></h1>
+    <p id="ask" class="ask"></p>
+    <div class="svg-wrap">
+      <svg id="chart" viewBox="0 0 360 320" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="barGrad" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stop-color="#FFAB91"/>
+            <stop offset="100%" stop-color="#FF7043"/>
+          </linearGradient>
+        </defs>
+        <g id="gridlines"></g>
+        <line x1="38" y1="32" x2="38" y2="272" stroke="#5D4037" stroke-width="2" stroke-linecap="round"/>
+        <line x1="38" y1="272" x2="348" y2="272" stroke="#5D4037" stroke-width="2" stroke-linecap="round"/>
+        <g id="bars"></g>
+        <g id="ticks"></g>
+        <g id="xlabels"></g>
+        <text id="yaxis-title" transform="rotate(-90 12 152)" x="12" y="152" text-anchor="middle" font-size="13" font-weight="600" fill="#5D4037"></text>
+      </svg>
+    </div>
+    <div id="feedback" class="feedback"></div>
+  </div>
+  <div id="tooltip"></div>
+  <div id="done" class="done">
+    <div class="done-card">
+      <div class="done-emoji">🎉</div>
+      <p id="doneText"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const data = Studio.params.data;
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('ask').textContent = Studio.t('ask');
+  document.getElementById('yaxis-title').textContent = Studio.t('yaxis');
+  document.getElementById('doneText').textContent = Studio.t('done');
+
+  const values = data.map(function(d) { return d.value; });
+  const maxRaw = Math.max.apply(null, values);
+  const step = maxRaw <= 5 ? 1 : (maxRaw <= 10 ? 2 : 2);
+  const yMax = Math.ceil(maxRaw / step) * step;
+
+  const chartW = 310;
+  const chartH = 240;
+  const left = 38;
+  const baseline = 272;
+  const gap = 14;
+  const barW = (chartW - gap * (data.length - 1)) / data.length;
+
+  const gridGroup = document.getElementById('gridlines');
+  const tickGroup = document.getElementById('ticks');
+  for (let t = 0; t <= yMax; t += step) {
+    const y = baseline - (t / yMax) * chartH;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', left);
+    line.setAttribute('x2', left + chartW);
+    line.setAttribute('y1', y);
+    line.setAttribute('y2', y);
+    line.setAttribute('stroke', '#D7CCC8');
+    line.setAttribute('stroke-width', '1');
+    line.setAttribute('stroke-dasharray', t === 0 ? '0' : '3 3');
+    gridGroup.appendChild(line);
+
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', left - 8);
+    label.setAttribute('y', y);
+    label.setAttribute('text-anchor', 'end');
+    label.setAttribute('dominant-baseline', 'middle');
+    label.setAttribute('font-size', '12');
+    label.setAttribute('fill', '#5D4037');
+    label.setAttribute('data-tick', String(t));
+    label.textContent = String(t);
+    tickGroup.appendChild(label);
+  }
+
+  const barsGroup = document.getElementById('bars');
+  const labelsGroup = document.getElementById('xlabels');
+  const tooltip = document.getElementById('tooltip');
+  const feedback = document.getElementById('feedback');
+  let answered = false;
+
+  data.forEach(function(d, i) {
+    const x = left + i * (barW + gap);
+    const h = (d.value / yMax) * chartH;
+    const y = baseline - h;
+
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', x);
+    rect.setAttribute('y', baseline);
+    rect.setAttribute('width', barW);
+    rect.setAttribute('height', 0);
+    rect.setAttribute('rx', 6);
+    rect.setAttribute('ry', 6);
+    rect.setAttribute('fill', 'url(#barGrad)');
+    rect.setAttribute('data-bar', d.key);
+    rect.setAttribute('data-value', String(d.value));
+    rect.style.setProperty('--final-h', h + 'px');
+    rect.style.setProperty('--final-y', y + 'px');
+    rect.classList.add('bar');
+
+    rect.addEventListener('click', function() {
+      if (answered) return;
+      const box = rect.getBoundingClientRect();
+      const wrap = document.getElementById('app').getBoundingClientRect();
+      tooltip.textContent = String(d.value);
+      tooltip.style.left = (box.left + box.width / 2 - wrap.left) + 'px';
+      tooltip.style.top = (box.top - wrap.top) + 'px';
+      tooltip.classList.add('show');
+      Studio.event('bar_tap', { key: d.key, value: d.value });
+      Studio.answer(d.key);
+    });
+
+    barsGroup.appendChild(rect);
+
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', x + barW / 2);
+    label.setAttribute('y', baseline + 24);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('font-size', '13');
+    label.setAttribute('fill', '#3E2723');
+    label.setAttribute('font-weight', '600');
+    label.textContent = Studio.t(d.key);
+    labelsGroup.appendChild(label);
+  });
+
+  requestAnimationFrame(function() {
+    document.querySelectorAll('.bar').forEach(function(b) { b.classList.add('grown'); });
+  });
+
+  Studio.onVerdict(function(v) {
+    if (v.correct) {
+      answered = true;
+      feedback.textContent = Studio.t('right');
+      feedback.className = 'feedback correct';
+      Studio.event('verdict', { correct: true });
+      setTimeout(function() {
+        Studio.done();
+        document.getElementById('done').classList.add('visible');
+        tooltip.classList.remove('show');
+      }, 700);
+    } else {
+      feedback.textContent = Studio.t('wrong');
+      feedback.className = 'feedback wrong';
+      document.querySelectorAll('.bar').forEach(function(b) { b.classList.add('shake'); });
+      setTimeout(function() {
+        document.querySelectorAll('.bar').forEach(function(b) { b.classList.remove('shake'); });
+      }, 400);
+      setTimeout(function() { tooltip.classList.remove('show'); }, 900);
+      Studio.event('verdict', { correct: false });
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

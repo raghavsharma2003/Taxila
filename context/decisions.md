@@ -2279,3 +2279,11 @@ Without it a test child's report.daily (due 04:10 tomorrow in shifted time) wait
 ## w1d-test-clock-wakeups-real-clock (2026-10-04)
 **fire_wakeups stays on the real clock for test children; a test-clock day advances by events and reads.** The real-clock timer path is exercised by real children and watched by the canary's wakeups_late.
 - Reverse if: a test needs the 04:10 timer itself; then add an offset-aware fire_wakeups for test children.
+
+
+<!-- merged from inbox/scout-2026-10-04.json -->
+## scout-2026-10-04-aws-credit-eligibility
+2026-10-04. Seller of record read from `ListFoundationModelAgreementOffers`: a Marketplace offer exists for OpenAI, Anthropic, Cohere and Stability models on Bedrock; all others return 'Agreement not supported' (AWS-sold). AWS-sold models are covered by promotional credits; Marketplace Bedrock 3P spend is covered by Activate credits under AWS Activate Terms s1.2 (last updated 2026-01-22), while general promotional credit terms s1 exclude Marketplace (so the USD 100 Free Tier credit may not cover it). Prefer AWS-sold models; never route OpenAI models via Bedrock Marketplace when Azure sells them Direct. Reverse if: the first bill shows AWS-sold Bedrock charges not offset, or Marketplace lines offset/not offset contrary to s1.2.
+
+## `voice-clips-off-and-numbers-normalised` (2026-10-04)
+Non-verbal clips are off for every voice; laughs only where the engine renders them natively and in context; numbers and terms are normalised to spoken Hindi words plus a lexicon before TTS (no digits, no "..." sent). The voice search continues because nothing met the bar. Reverse if a future blind round prefers clipped renders.

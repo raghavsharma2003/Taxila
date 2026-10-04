@@ -91,6 +91,8 @@ def build():
     bm, loops, _ = HD.build_head(PH, G['N'], G['warp'], G['K_eye'], G['K_mouth'], G['eye_patch'], G['mouth_patch'])
     meta = HD.place(bm, loops, sdf, PH | {k: PP[k] for k in ('ball_tuck', 'ball_tuck_deg', 'ball_tuck_ramp') if k in PP})
     bm.verts.index_update()
+    if PH.get('conform_iters', 0):
+        HD.conform(bm, loops, sdf, PH, iters=PH['conform_iters'])
     tk = set(loops['eye_L_tuck'][0]) | set(loops['eye_R_tuck'][0])
     vs = [v for v in bm.verts if v not in tk]
     Xp = HD.push_out(np.array([v.co[:] for v in vs]), PH | PP)
@@ -215,18 +217,22 @@ def build():
     V, F, _ = PT.disc(c, n, PP['bindi_r'])
     objs['bindi'] = obj_from('bindi', V, F, mat('bindi', rgb=COL['bindi'], rough=0.35, spec=0.5))
     # ---------------- hair
-    m_hair = mat('hair', rgb=COL['hair'], rough=0.58, spec=0.28, sheen=0.12)
+    m_hair = mat('hair', rgb=COL['hair'], rough=0.58, spec=0.28, sheen=0.12, vcol=True)
     hs = HeadSDF(PH, with_eyes=False)
     for s, tag in ((1, 'L'), (-1, 'R')):
         V, F, ex = PT.hair_shell(PH | PP, hs, s)
-        objs['hair_' + tag] = obj_from('hair_' + tag, V, F, m_hair)
-    V, F, _ = PT.bun(PP); objs['bun'] = obj_from('bun', V, F, m_hair)
-    V, F, _ = PT.lock(PP, PP['lock_L'], PP['lock_thick']); objs['lock_L'] = obj_from('lock_L', V, F, m_hair)
-    V, F, _ = PT.lock(PP, PP['lock_R'], PP['lock_thick']); objs['lock_R'] = obj_from('lock_R', V, F, m_hair)
+        objs['hair_' + tag] = obj_from('hair_' + tag, V, F, m_hair, uv=ex['uv'])
+    V, F, ex = PT.bun(PP); objs['bun'] = obj_from('bun', V, F, m_hair, uv=ex['uv'])
+    V, F, ex = PT.lock(PP, PP['lock_L'], PP['lock_thick']); objs['lock_L'] = obj_from('lock_L', V, F, m_hair, uv=ex['uv'])
+    V, F, ex = PT.lock(PP, PP['lock_R'], PP['lock_thick']); objs['lock_R'] = obj_from('lock_R', V, F, m_hair, uv=ex['uv'])
     # ---------------- kurta
-    m_kurta = mat('kurta', rgb=COL['kurta'], rough=0.85, spec=0.2, sheen=0.1)
+    m_kurta = mat('kurta', rgb=COL['kurta'], rough=0.85, spec=0.2, sheen=0.1, vcol=True)
     m_pipe = mat('piping', rgb=COL['piping'], rough=0.7, spec=0.25, sheen=0.2)
     V, F, ex = PT.kurta(PP)
+    V = np.array(V, float)
+    for _ in range(3):
+        dk = sdf(V); nk = sdf.normal(V); gap = PP.get('kurta_gap', 0.0012)
+        V = V + nk * np.clip(gap - dk, 0, None)[:, None]
     objs['kurta'] = obj_from('kurta', V, F, m_kurta)
     Mk = ex['M']
     ring = V[Mk:2 * Mk]  # the outer collar edge (second section)
@@ -244,7 +250,7 @@ def build():
             secs = PP['kurta_secs']
             zz = [sc[0] for sc in secs[2:]]; yy = [sc[3] - sc[2] for sc in secs[2:]]
             y = float(np.interp(-z, [-q for q in zz], yy)) - 0.0012
-            pts.append([s * PP['placket_dx'] * (1 + 0.0 * (z - zs[0])), y, z])
+            pts.append([s * PP['placket_dx'] * (1 - 0.7 * (zs[0] - z) / max(zs[0] - zs[-1], 1e-6)), y, z])
         pts = np.array(pts)
         Nv, Bv = PT.frames_from_normals(pts, np.tile([0, -1.0, 0], (len(pts), 1)))
         Vp, Fp = PT.tube(pts, Nv, Bv, np.full(len(pts), PP['piping_r'] * 0.9), np.full(len(pts), PP['piping_r'] * 0.9), M=6)
@@ -286,8 +292,34 @@ def iris_image():
     return img
 
 
+def bake_ao(objs):
+    import ao as AO
+    bvh = AO.scene_bvh()
+    res = {}
+    for n in ['head', 'hair_L', 'hair_R', 'bun', 'lock_L', 'lock_R', 'kurta']:
+        ob = objs[n]
+        a = AO.bake(ob, bvh, n=24 if n == 'head' else 16, dist=0.03 if n != 'kurta' else 0.05)
+        me = ob.data
+        E = np.zeros(len(me.edges) * 2, int); me.edges.foreach_get('vertices', E); E = E.reshape(-1, 2)
+        deg = np.bincount(E.ravel(), minlength=len(a)).astype(float)
+        for _ in range(8 if n == 'head' else 4):   # AO is a soft field: no per-vertex speckle
+            acc = np.zeros(len(a)); np.add.at(acc, E[:, 0], a[E[:, 1]]); np.add.at(acc, E[:, 1], a[E[:, 0]])
+            a = 0.5 * a + 0.5 * np.where(deg > 0, acc / np.maximum(deg, 1), a)
+        if n == 'head':
+            ul = me.uv_layers.new(name='UVMap')
+            for li, l in enumerate(me.loops):
+                ul.data[li].uv = (float(a[l.vertex_index]), 0.0)
+        else:
+            ca = me.color_attributes.get('Col') or me.color_attributes.new('Col', 'FLOAT_COLOR', 'POINT')
+            for i in range(len(me.vertices)):
+                ca.data[i].color = (float(a[i]), float(a[i]), float(a[i]), 1.0)
+        res[n] = float(a.mean())
+    print('AO', res)
+
+
 if __name__ == '__main__':
     objs, L, M = build()
+    bake_ao(objs)
     try:
         import keys as KY
         KY.author(objs, L, M, P)

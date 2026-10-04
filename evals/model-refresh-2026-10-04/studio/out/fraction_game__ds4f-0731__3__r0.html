@@ -1,0 +1,361 @@
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #FFF8E7;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 16px;
+    width: 100%;
+    overflow-x: hidden;
+  }
+  .title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #5B3A29;
+    text-align: center;
+    margin-bottom: 12px;
+    text-shadow: 2px 2px 0 #F0DDB8;
+  }
+  .instr {
+    font-size: 15px;
+    color: #7A5C46;
+    text-align: center;
+    margin-bottom: 12px;
+    line-height: 1.4;
+    background: #FFEED9;
+    padding: 8px 16px;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  .fraction-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #FFD9A8;
+    border-radius: 18px;
+    padding: 10px 28px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 8px rgba(91,58,41,0.15);
+  }
+  .fraction-num {
+    font-size: 38px;
+    font-weight: 800;
+    color: #5B3A29;
+    line-height: 1;
+  }
+  .fraction-bar {
+    width: 6px;
+    height: 48px;
+    background: #5B3A29;
+    margin: 0 12px;
+    border-radius: 4px;
+  }
+  .fraction-den {
+    font-size: 38px;
+    font-weight: 800;
+    color: #5B3A29;
+    line-height: 1;
+  }
+  .visual {
+    width: 100%;
+    max-width: 340px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+  }
+  .visual svg {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+  }
+  .part {
+    cursor: pointer;
+    transition: fill 0.25s ease, transform 0.1s ease;
+  }
+  .part:active {
+    transform: scale(0.98);
+  }
+  .check-btn {
+    background: #4CAF7D;
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 12px 40px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #3A8B63, 0 6px 12px rgba(0,0,0,0.15);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    margin-top: 8px;
+    min-height: 44px;
+  }
+  .check-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #3A8B63, 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .check-btn:disabled {
+    background: #A8C9B5;
+    box-shadow: 0 4px 0 #8AADA0;
+    cursor: not-allowed;
+  }
+  .feedback {
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    margin-top: 12px;
+    min-height: 24px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .feedback.show {
+    opacity: 1;
+  }
+  .feedback.right {
+    color: #2E7D32;
+  }
+  .feedback.wrong {
+    color: #D32F2F;
+  }
+  .hint {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #A0876F;
+    text-align: center;
+    font-style: italic;
+  }
+  .done-screen {
+    text-align: center;
+    background: #FFD9A8;
+    border-radius: 30px;
+    padding: 40px 20px;
+    margin-top: 20px;
+    box-shadow: 0 6px 16px rgba(91,58,41,0.2);
+  }
+  .done-emoji {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 16px;
+    animation: bounce 1s infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .hello-msg {
+    font-size: 26px;
+    font-weight: 800;
+    color: #5B3A29;
+  }
+</style>
+
+<div class="title" data-test="title">🍕 Fractions Fun!</div>
+<div class="instr" data-test="instr">Tap the parts to color them!</div>
+<div class="fraction-display" data-test="fraction">
+  <span class="fraction-num" id="fnum">3</span>
+  <span class="fraction-bar"></span>
+  <span class="fraction-den" id="fden">4</span>
+</div>
+<div class="visual" id="visual"></div>
+<button class="check-btn" data-action="check" disabled>✔ Check!</button>
+<div class="feedback" id="feedback"></div>
+<div class="hint" data-test="hint">Hint: Tap parts to match the fraction!</div>
+<div id="done-container"></div>
+
+<script>
+  (function(){
+    const items = Studio.params.items || [];
+    const picture = Studio.params.picture || 'pizza-or-bar';
+    let currentIndex = 0;
+    let parts = [];
+    let shadedCount = 0;
+
+    const visual = document.getElementById('visual');
+    const fnum = document.getElementById('fnum');
+    const fden = document.getElementById('fden');
+    const checkBtn = document.querySelector('[data-action="check"]');
+    const feedback = document.getElementById('feedback');
+    const doneContainer = document.getElementById('done-container');
+    const instr = document.querySelector('.instr');
+
+    instr.textContent = Studio.t('instr');
+    document.querySelector('.title').textContent = Studio.t('title');
+    document.querySelector('.hint').textContent = Studio.t('hint');
+    checkBtn.textContent = Studio.t('check');
+
+    function renderCurrent(){
+      const item = items[currentIndex];
+      currentItemId = item.id;
+      // Reset state
+      parts = [];
+      shadedCount = 0;
+      fnum.textContent = item.n;
+      fden.textContent = item.d;
+      visual.innerHTML = '';
+      feedback.textContent = '';
+      feedback.classList.remove('show', 'right', 'wrong');
+      checkBtn.disabled = true;
+
+      const container = document.createElement('div');
+      container.setAttribute('data-item', item.id);
+      visual.appendChild(container);
+
+      if(picture === 'pizza-or-bar' && currentIndex % 2 === 0){
+        // Pizza
+        const svgNS = "http://www.w3.org/2000/svg";
+        const svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('viewBox', '0 0 300 300');
+        svg.setAttribute('width', '260');
+        svg.setAttribute('height', '260');
+
+        const cx = 150, cy = 150, r = 120;
+        const startAngle = -90 * Math.PI / 180;
+        const sliceAngle = (360 / item.d) * Math.PI / 180;
+
+        for(let i = 0; i < item.d; i++){
+          const part = document.createElementNS(svgNS, 'path');
+          const a1 = startAngle + i * sliceAngle;
+          const a2 = a1 + sliceAngle;
+          const x1 = cx + r * Math.cos(a1);
+          const y1 = cy + r * Math.sin(a1);
+          const x2 = cx + r * Math.cos(a2);
+          const y2 = cy + r * Math.sin(a2);
+          const large = (sliceAngle > Math.PI) ? 1 : 0;
+          const d = `M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${large} 1 ${x2},${y2} Z`;
+          part.setAttribute('d', d);
+          part.setAttribute('data-part', i);
+          part.setAttribute('data-shaded', 'false');
+          part.style.fill = '#F8B878';
+          part.style.stroke = '#5B3A29';
+          part.style.strokeWidth = '2';
+          part.classList.add('part');
+          part.addEventListener('click', () => togglePart(i, part));
+          svg.appendChild(part);
+          parts.push(part);
+        }
+        // Pizza crust border
+        const circle = document.createElementNS(svgNS, 'circle');
+        circle.setAttribute('cx', cx);
+        circle.setAttribute('cy', cy);
+        circle.setAttribute('r', r);
+        circle.style.fill = 'none';
+        circle.style.stroke = '#C4844F';
+        circle.style.strokeWidth = '8';
+        svg.appendChild(circle);
+
+        container.appendChild(svg);
+      } else {
+        // Bar (rectangular divided into equal parts)
+        const svgNS = "http://www.w3.org/2000/svg";
+        const svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('viewBox', '0 0 320 100');
+        svg.setAttribute('width', '280');
+        svg.setAttribute('height', '88');
+
+        const barWidth = 280;
+        const barHeight = 68;
+        const segWidth = barWidth / item.d;
+        const startX = (320 - barWidth) / 2;
+        const y = (100 - barHeight) / 2;
+
+        for(let i = 0; i < item.d; i++){
+          const part = document.createElementNS(svgNS, 'rect');
+          part.setAttribute('x', startX + i * segWidth);
+          part.setAttribute('y', y);
+          part.setAttribute('width', segWidth);
+          part.setAttribute('height', barHeight);
+          part.setAttribute('data-part', i);
+          part.setAttribute('data-shaded', 'false');
+          part.style.fill = '#6BB8DE';
+          part.style.stroke = '#FFFFFF';
+          part.style.strokeWidth = '3';
+          part.classList.add('part');
+          part.addEventListener('click', () => togglePart(i, part));
+          svg.appendChild(part);
+          parts.push(part);
+        }
+        container.appendChild(svg);
+      }
+    }
+
+    function togglePart(index, el){
+      const isShaded = el.getAttribute('data-shaded') === 'true';
+      if(isShaded){
+        el.setAttribute('data-shaded', 'false');
+        el.style.fill = (picture === 'pizza-or-bar' && currentIndex % 2 === 0) ? '#F8B878' : '#6BB8DE';
+        shadedCount--;
+      } else {
+        el.setAttribute('data-shaded', 'true');
+        el.style.fill = (picture === 'pizza-or-bar' && currentIndex % 2 === 0) ? '#FF8C42' : '#2E7D32';
+        shadedCount++;
+      }
+      checkBtn.disabled = (shadedCount === 0);
+      Studio.event('part_tapped', {part: index, shaded: !isShaded});
+    }
+
+    function showFeedback(type){
+      feedback.textContent = Studio.t(type);
+      if(type === 'right'){
+        feedback.classList.add('right');
+      } else {
+        feedback.classList.add('wrong');
+      }
+      feedback.classList.add('show');
+    }
+
+    function celebrateAndNext(){
+      showFeedback('right');
+      checkBtn.disabled = true;
+      // Disable parts during celebration
+      parts.forEach(p => p.style.pointerEvents = 'none');
+      setTimeout(() => {
+        currentIndex++;
+        if(currentIndex < items.length){
+          parts.forEach(p => p.style.pointerEvents = 'auto');
+          renderCurrent();
+        } else {
+          showDoneScreen();
+        }
+      }, 1200);
+    }
+
+    function showDoneScreen(){
+      visual.innerHTML = '';
+      checkBtn.style.display = 'none';
+      document.querySelector('.fraction-display').style.display = 'none';
+      document.querySelector('.hint').style.display = 'none';
+      doneContainer.innerHTML = '';
+      const doneDiv = document.createElement('div');
+      doneDiv.className = 'done-screen';
+      doneDiv.innerHTML = `<span class="done-emoji">🎉</span><div class="hello-msg">${Studio.t('done')}</div>`;
+      doneContainer.appendChild(doneDiv);
+      Studio.done();
+    }
+
+    checkBtn.addEventListener('click', () => {
+      const item = items[currentIndex];
+      Studio.answer({n: shadedCount, d: item.d});
+      checkBtn.disabled = true;
+    });
+
+    Studio.onVerdict(({correct}) => {
+      if(correct){
+        celebrateAndNext();
+      } else {
+        showFeedback('wrong');
+        checkBtn.disabled = false;
+      }
+    });
+
+    // Initial render
+    if(items.length > 0){
+      renderCurrent();
+    } else {
+      showDoneScreen();
+    }
+
+    Studio.ready();
+  })();
+</script>

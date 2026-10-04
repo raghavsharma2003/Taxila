@@ -1,0 +1,237 @@
+<style>
+  * { box-sizing: border-box; }
+  :root { color-scheme: light; --ink:#40364f; --muted:#746b80; --cream:#fff9ec; --plum:#7351a1; --plum-dark:#563780; --peach:#ffc982; --coral:#f18470; --mint:#d9f1df; }
+  html, body { margin:0; width:100%; min-height:100%; font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif; color:var(--ink); }
+  body { min-height:100vh; background:linear-gradient(155deg,#fff8e9,#f1eafa 72%,#e4f5ed); }
+  #app { width:min(100%,520px); min-height:100vh; margin:auto; padding:20px 18px 24px; display:flex; flex-direction:column; align-items:center; }
+  header { width:100%; text-align:center; }
+  h1 { margin:2px 0 9px; font-size:clamp(23px,7vw,30px); line-height:1.12; font-weight:850; letter-spacing:-.5px; }
+  .instruction { margin:0 auto; max-width:390px; color:var(--muted); font-size:16px; line-height:1.4; }
+  #work { width:100%; margin-top:17px; flex:1; display:flex; flex-direction:column; align-items:center; }
+  .item-card { width:100%; max-width:440px; min-height:350px; padding:18px 16px 20px; border:2px solid rgba(115,81,161,.13); border-radius:27px; background:rgba(255,255,255,.78); box-shadow:0 10px 26px rgba(77,56,100,.09); display:flex; flex-direction:column; align-items:center; }
+  .fraction { display:flex; flex-direction:column; align-items:center; margin:1px 0 8px; font-size:31px; line-height:1.05; font-weight:850; color:var(--plum-dark); }
+  .fraction .rule { width:43px; height:3px; margin:4px 0; border-radius:4px; background:var(--plum); }
+  .picture { width:min(72vw,280px); height:min(72vw,280px); max-height:280px; overflow:visible; touch-action:manipulation; }
+  .part { cursor:pointer; transform-box:fill-box; transform-origin:center; transition:fill .2s ease,transform .16s ease,filter .2s ease; }
+  .part:hover { filter:brightness(1.04); }
+  .part:active { transform:scale(.96); }
+  .part:focus-visible { outline:none; filter:drop-shadow(0 0 4px #5b378e); }
+  .part[data-shaded="true"] { fill:var(--coral); }
+  .part[data-shaded="false"] { fill:var(--peach); }
+  .bar-part[data-shaded="true"] { fill:var(--coral); }
+  .part-outline { fill:none; stroke:#fffaf1; stroke-width:3.3; stroke-linejoin:round; pointer-events:none; }
+  .tip { min-height:24px; margin:11px 0 0; color:var(--muted); text-align:center; font-size:14px; line-height:1.35; }
+  .feedback { min-height:27px; margin:6px 0 0; font-size:17px; font-weight:800; text-align:center; color:var(--plum-dark); }
+  .feedback.bad { color:#bd5c52; }
+  button { min-height:52px; border:0; border-radius:18px; padding:0 34px; background:var(--plum); color:white; font:800 17px/1 ui-rounded,"Trebuchet MS",system-ui,sans-serif; box-shadow:0 5px 0 var(--plum-dark),0 8px 15px rgba(75,48,107,.17); cursor:pointer; touch-action:manipulation; transition:transform .14s ease,box-shadow .14s ease,background .2s ease; }
+  button:active { transform:translateY(3px) scale(.98); box-shadow:0 2px 0 var(--plum-dark); }
+  button:focus-visible { outline:3px solid #eab45c; outline-offset:3px; }
+  #check { margin:17px 0 5px; }
+  .celebrate { animation:pop .48s ease both; }
+  @keyframes pop { 0%{transform:scale(.94)} 55%{transform:scale(1.045)} 100%{transform:scale(1)} }
+  .done-card { width:100%; max-width:440px; min-height:310px; margin-top:20px; border-radius:28px; background:rgba(255,255,255,.82); display:flex; flex-direction:column; justify-content:center; align-items:center; gap:17px; box-shadow:0 10px 26px rgba(77,56,100,.09); }
+  .done-mark { width:110px; height:110px; border-radius:50%; background:var(--mint); display:grid; place-items:center; color:#39835c; font-size:54px; animation:pop .55s ease both; }
+  .done-text { margin:0; font-weight:850; font-size:25px; text-align:center; }
+  @media (max-height:700px) {
+    #app { padding-top:12px; }
+    #work { margin-top:10px; }
+    .item-card { min-height:0; padding:12px; }
+    .picture { width:min(62vw,230px); height:min(62vw,230px); }
+    #check { margin-top:11px; }
+  }
+</style>
+<main id="app">
+  <header><h1 id="title"></h1><p class="instruction" id="instr"></p></header>
+  <section id="work" aria-live="polite"></section>
+</main>
+<script>
+(() => {
+  const params = Studio.params;
+  const items = params.items;
+  const t = key => Studio.t(key);
+  const work = document.getElementById("work");
+  document.getElementById("title").textContent = t("title");
+  document.getElementById("instr").textContent = t("instr");
+
+  let index = 0;
+  let pending = false;
+  let finished = false;
+  let verdictHandler = null;
+
+  function makePizza(d) {
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("class", "picture");
+    svg.setAttribute("viewBox", "0 0 240 240");
+    svg.setAttribute("role", "group");
+    svg.setAttribute("aria-label", `${d}`);
+    const cx = 120, cy = 120, r = 106;
+    const parts = [];
+    for (let i = 0; i < d; i++) {
+      const a1 = -Math.PI / 2 + 2 * Math.PI * i / d;
+      const a2 = -Math.PI / 2 + 2 * Math.PI * (i + 1) / d;
+      const p1 = [cx + r * Math.cos(a1), cy + r * Math.sin(a1)];
+      const p2 = [cx + r * Math.cos(a2), cy + r * Math.sin(a2)];
+      const path = document.createElementNS(ns, "path");
+      path.setAttribute("d", `M ${cx} ${cy} L ${p1[0]} ${p1[1]} A ${r} ${r} 0 ${d > 2 ? 1 : 0} 1 ${p2[0]} ${p2[1]} Z`);
+      path.setAttribute("class", "part");
+      path.setAttribute("data-part", String(i));
+      path.setAttribute("data-shaded", "false");
+      path.setAttribute("fill", "#ffc982");
+      path.setAttribute("stroke", "#fffaf1");
+      path.setAttribute("stroke-width", "3.3");
+      path.setAttribute("tabindex", "0");
+      path.setAttribute("role", "button");
+      path.setAttribute("aria-pressed", "false");
+      path.addEventListener("click", () => toggle(path));
+      path.addEventListener("keydown", e => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(path); }
+      });
+      svg.appendChild(path);
+      parts.push(path);
+    }
+    const rim = document.createElementNS(ns, "circle");
+    rim.setAttribute("cx", cx); rim.setAttribute("cy", cy); rim.setAttribute("r", r);
+    rim.setAttribute("fill", "none"); rim.setAttribute("stroke", "#d89b52"); rim.setAttribute("stroke-width", "6");
+    rim.setAttribute("pointer-events", "none");
+    svg.appendChild(rim);
+    return {svg, parts};
+  }
+
+  function makeBar(d) {
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("class", "picture");
+    svg.setAttribute("viewBox", "0 0 280 180");
+    svg.setAttribute("role", "group");
+    svg.setAttribute("aria-label", `${d}`);
+    const gap = 4, x0 = 8, y = 46, totalW = 264, h = 88;
+    const w = (totalW - gap * (d - 1)) / d;
+    const parts = [];
+    for (let i = 0; i < d; i++) {
+      const rect = document.createElementNS(ns, "rect");
+      rect.setAttribute("x", String(x0 + i * (w + gap)));
+      rect.setAttribute("y", String(y));
+      rect.setAttribute("width", String(w));
+      rect.setAttribute("height", String(h));
+      rect.setAttribute("rx", d > 6 ? "7" : "12");
+      rect.setAttribute("class", "part bar-part");
+      rect.setAttribute("data-part", String(i));
+      rect.setAttribute("data-shaded", "false");
+      rect.setAttribute("fill", "#ffc982");
+      rect.setAttribute("stroke", "#fffaf1");
+      rect.setAttribute("stroke-width", "3");
+      rect.setAttribute("tabindex", "0");
+      rect.setAttribute("role", "button");
+      rect.setAttribute("aria-pressed", "false");
+      rect.addEventListener("click", () => toggle(rect));
+      rect.addEventListener("keydown", e => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(rect); }
+      });
+      svg.appendChild(rect);
+      parts.push(rect);
+    }
+    return {svg, parts};
+  }
+
+  function toggle(part) {
+    if (pending || finished) return;
+    const shaded = part.getAttribute("data-shaded") !== "true";
+    part.setAttribute("data-shaded", String(shaded));
+    part.setAttribute("aria-pressed", String(shaded));
+    Studio.event("part_toggle", {item: items[index].id, part: Number(part.getAttribute("data-part")), shaded});
+  }
+
+  function render() {
+    if (index >= items.length) { showDone(); return; }
+    const item = items[index];
+    pending = false;
+    const card = document.createElement("div");
+    card.className = "item-card";
+    card.setAttribute("data-item", String(item.id));
+
+    const fraction = document.createElement("div");
+    fraction.className = "fraction";
+    fraction.setAttribute("aria-label", `${item.n}/${item.d}`);
+    const numerator = document.createElement("span");
+    numerator.textContent = String(item.n);
+    const rule = document.createElement("span");
+    rule.className = "rule";
+    const denominator = document.createElement("span");
+    denominator.textContent = String(item.d);
+    fraction.append(numerator, rule, denominator);
+
+    const art = params.picture === "bar" ? makeBar(item.d) : makePizza(item.d);
+    const tip = document.createElement("p");
+    tip.className = "tip";
+    tip.textContent = t("hint");
+    const feedback = document.createElement("p");
+    feedback.className = "feedback";
+    feedback.setAttribute("role", "status");
+
+    const check = document.createElement("button");
+    check.id = "check";
+    check.type = "button";
+    check.textContent = t("check");
+    check.setAttribute("data-action", "check");
+    check.addEventListener("click", () => {
+      if (pending || finished) return;
+      const n = art.parts.filter(part => part.getAttribute("data-shaded") === "true").length;
+      pending = true;
+      check.disabled = true;
+      Studio.event("check", {item: item.id, n, d: item.d});
+      Studio.answer({n, d: item.d});
+    });
+
+    card.append(fraction, art.svg, tip, feedback, check);
+    work.replaceChildren(card);
+
+    if (!verdictHandler) {
+      verdictHandler = Studio.onVerdict(({correct}) => {
+        if (finished || !pending) return;
+        const currentCard = work.querySelector(".item-card");
+        const msg = currentCard.querySelector(".feedback");
+        const button = currentCard.querySelector('[data-action="check"]');
+        pending = false;
+        if (correct) {
+          msg.textContent = t("right");
+          msg.classList.remove("bad");
+          currentCard.classList.add("celebrate");
+          button.disabled = true;
+          Studio.event("verdict", {correct:true, item:items[index].id});
+          window.setTimeout(() => {
+            if (finished) return;
+            index++;
+            render();
+          }, 850);
+        } else {
+          msg.textContent = t("wrong");
+          msg.classList.add("bad");
+          button.disabled = false;
+          Studio.event("verdict", {correct:false, item:items[index].id});
+        }
+      });
+    }
+  }
+
+  function showDone() {
+    finished = true;
+    work.replaceChildren();
+    const card = document.createElement("div");
+    card.className = "done-card";
+    const mark = document.createElement("div");
+    mark.className = "done-mark";
+    mark.setAttribute("aria-hidden", "true");
+    mark.textContent = "✓";
+    const text = document.createElement("p");
+    text.className = "done-text";
+    text.textContent = t("done");
+    card.append(mark, text);
+    work.append(card);
+    Studio.done();
+  }
+
+  render();
+  Studio.ready();
+})();
+</script>

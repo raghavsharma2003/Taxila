@@ -1,0 +1,218 @@
+<style>
+*{box-sizing:border-box}
+:root{--ink:#23443c;--sky:#e8f8ff;--soil:#c99d67;--green:#55a85d;--deep:#347c49;--sun:#ffd45b;--water:#2d9ed8;--co2:#806bc1;--o2:#ed826b;--sugar:#f4b936}
+.artifact{width:100%;max-width:360px;height:640px;margin:auto;padding:6px 8px;background:linear-gradient(#f4fcff,#fff9e9);color:var(--ink);font-family:system-ui,sans-serif;overflow:hidden}
+.title{height:25px;margin:0;text-align:center;font-size:19px;line-height:25px;font-weight:850}
+.scene{display:block;width:100%;height:315px;border-radius:20px;background:var(--sky);box-shadow:inset 0 0 0 2px #23443c14}
+.scene text{fill:var(--ink);font-size:11px;font-weight:850;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+.ray{fill:none;stroke:var(--sun);stroke-width:4;stroke-linecap:round;opacity:.58}
+.sun-core{transform-box:fill-box;transform-origin:center}
+.stem{fill:none;stroke:var(--deep);stroke-width:11;stroke-linecap:round}
+.root{fill:none;stroke:#79583a;stroke-width:5;stroke-linecap:round}
+[data-entity="leaf"]{fill:#67b960;stroke:var(--deep);stroke-width:3;transform-box:fill-box;transform-origin:center}
+.vein{fill:none;stroke:var(--deep);stroke-width:2}
+.particle{stroke:#fff;stroke-width:1.5;filter:drop-shadow(0 1px 2px #23443c55)}
+[data-flow="water"]{fill:var(--water)}
+[data-flow="co2"]{fill:var(--co2)}
+[data-flow="o2"]{fill:var(--o2)}
+.glucose{fill:var(--sugar);opacity:.35;transform-box:fill-box;transform-origin:center}
+.artifact[data-step="1"] .ray,.artifact[data-step="1"] .sun-core{animation:pulse 1.2s ease-in-out infinite}
+.artifact[data-step="2"] [data-flow="water"]{stroke:var(--water);stroke-width:4}
+.artifact[data-step="3"] [data-flow="co2"]{stroke:var(--co2);stroke-width:4}
+.artifact[data-step="4"] [data-flow="o2"]{stroke:var(--o2);stroke-width:4}
+.artifact[data-step="5"] .glucose{animation:pulse .9s ease-in-out infinite;opacity:.8}
+.artifact[data-step="5"] [data-entity="leaf"]{filter:drop-shadow(0 0 7px var(--sugar))}
+@keyframes pulse{50%{transform:scale(1.12);opacity:.9}}
+.controls{height:47px;display:flex;align-items:center;gap:5px;margin-top:4px}
+button{min-width:44px;min-height:44px;border:0;border-radius:13px;background:#fff;color:var(--ink);font:800 13px system-ui,sans-serif;box-shadow:0 3px 0 #23443c22;transition:transform .12s,background .2s;cursor:pointer}
+button:active{transform:translateY(2px) scale(.95)}
+.play{flex:1;background:#ffe28d;padding:2px}
+.steps{display:flex;gap:4px}
+.steps button{width:44px;padding:0}
+.steps button.active{background:var(--green);color:#fff;transform:translateY(-2px)}
+[data-caption]{height:38px;margin:3px 0;padding:4px 9px;border-radius:12px;background:#e4f3dc;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;font-weight:750;line-height:14px}
+.ask{height:33px;margin:0;display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;font-weight:850;line-height:15px}
+.options{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.options button{padding:3px}
+.options button.selected{outline:3px solid #70a9d3;background:#eef8ff}
+.feedback{height:20px;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:900}
+.feedback.good{color:#388f4b;animation:pop .35s}
+.feedback.try{color:#d27342;animation:shake .3s}
+@keyframes pop{50%{transform:scale(1.4)}}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@media(max-width:340px){.artifact{padding-left:5px;padding-right:5px}.controls{gap:3px}.steps{gap:2px}.steps button{width:42px;min-width:42px}}
+</style>
+
+<main class="artifact" data-step="1">
+<h1 class="title" data-ui="title"></h1>
+<svg class="scene" viewBox="0 0 344 315" role="img">
+<defs>
+<radialGradient id="sf"><stop stop-color="#fff7a4"/><stop offset="1" stop-color="#ffc747"/></radialGradient>
+<linearGradient id="ground" x2="0" y2="1"><stop stop-color="#deb981"/><stop offset="1" stop-color="#ba8553"/></linearGradient>
+</defs>
+
+<g class="sun-core">
+<circle cx="285" cy="43" r="24" fill="url(#sf)" stroke="#edae34" stroke-width="3"/>
+<g stroke="#efb93a" stroke-width="4" stroke-linecap="round">
+<path d="M285 11V4M285 82v-7M253 43h-7M324 43h-7M262 20l-5-5M308 66l5 5M308 20l5-5M262 66l-5 5"/>
+</g>
+</g>
+<text data-label="sun" x="285" y="79" text-anchor="middle"></text>
+
+<g>
+<path class="ray" d="M267 63L230 127"/>
+<path class="ray" d="M281 68L243 135"/>
+<path class="ray" d="M296 67L256 138"/>
+</g>
+
+<rect x="0" y="220" width="344" height="95" fill="url(#ground)"/>
+<path d="M0 222Q29 209 58 222T116 222T174 222T232 222T290 222T348 222" fill="#8fc66b" stroke="#5a9d52" stroke-width="3"/>
+
+<path class="stem" d="M174 252Q175 208 188 166"/>
+<g data-entity="roots">
+<path class="root" d="M174 248Q151 270 132 302M174 252Q176 279 174 308M175 260Q201 279 218 304M154 274l-13 18M195 280l14 17"/>
+</g>
+<text data-label="roots" x="229" y="299"></text>
+
+<path data-entity="leaf" d="M185 170C188 123 244 111 268 135C255 177 222 198 185 170Z"/>
+<path class="vein" d="M188 168Q224 151 260 136M214 156l-7-18M231 149l9 15"/>
+<text data-label="leaf" x="214" y="119" text-anchor="middle"></text>
+
+<ellipse class="glucose" cx="222" cy="162" rx="20" ry="12"/>
+<circle class="glucose" cx="222" cy="162" r="6"/>
+<text data-label="glucose" x="225" y="193" text-anchor="middle"></text>
+
+<circle class="particle" data-flow="water" cx="143" cy="294" r="5"/>
+<circle class="particle" data-flow="water" cx="158" cy="270" r="5"/>
+<circle class="particle" data-flow="water" cx="174" cy="244" r="5"/>
+<circle class="particle" data-flow="water" cx="178" cy="210" r="5"/>
+<text data-label="water" x="105" y="280"></text>
+
+<circle class="particle" data-flow="co2" cx="28" cy="150" r="5"/>
+<circle class="particle" data-flow="co2" cx="70" cy="151" r="5"/>
+<circle class="particle" data-flow="co2" cx="112" cy="153" r="5"/>
+<circle class="particle" data-flow="co2" cx="153" cy="156" r="5"/>
+<text data-label="co2" x="24" y="134"></text>
+
+<circle class="particle" data-flow="o2" cx="248" cy="145" r="5"/>
+<circle class="particle" data-flow="o2" cx="272" cy="128" r="5"/>
+<circle class="particle" data-flow="o2" cx="299" cy="111" r="5"/>
+<circle class="particle" data-flow="o2" cx="324" cy="94" r="5"/>
+<text data-label="o2" x="306" y="132" text-anchor="middle"></text>
+</svg>
+
+<div class="controls">
+<button class="play" data-action="play" type="button"></button>
+<div class="steps">
+<button data-action="step-1" type="button"></button>
+<button data-action="step-2" type="button"></button>
+<button data-action="step-3" type="button"></button>
+<button data-action="step-4" type="button"></button>
+<button data-action="step-5" type="button"></button>
+</div>
+</div>
+<div data-caption></div>
+<p class="ask"></p>
+<div class="options">
+<button data-option="co2" type="button"></button>
+<button data-option="o2" type="button"></button>
+<button data-option="water" type="button"></button>
+</div>
+<div class="feedback" aria-live="polite"></div>
+</main>
+
+<script>
+(() => {
+const root=document.querySelector('.artifact');
+const play=document.querySelector('[data-action="play"]');
+const caption=document.querySelector('[data-caption]');
+const feedback=document.querySelector('.feedback');
+const stepButtons=Array.from(document.querySelectorAll('.steps button'));
+const optionButtons=Array.from(document.querySelectorAll('[data-option]'));
+const total=Studio.params.steps;
+let step=1;
+let playing=true;
+let last=performance.now();
+let phase=0;
+let finished=false;
+
+document.querySelector('[data-ui="title"]').textContent=Studio.t('title');
+document.querySelector('.ask').textContent=Studio.t('ask');
+document.querySelectorAll('[data-label]').forEach(node=>node.textContent=Studio.t(node.getAttribute('data-label')));
+optionButtons.forEach(node=>node.textContent=Studio.t(node.getAttribute('data-option')));
+stepButtons.forEach((node,index)=>node.textContent=String(index+1));
+
+function updatePlay(){
+const key=playing?'pause':'play';
+play.textContent=Studio.t(key);
+play.setAttribute('aria-label',Studio.t(key));
+}
+function selectStep(value,emit){
+step=Math.max(1,Math.min(total,value));
+root.setAttribute('data-step',String(step));
+caption.textContent=Studio.t('step'+step);
+stepButtons.forEach((node,index)=>node.classList.toggle('active',index+1===step));
+if(emit)Studio.event('step',{step:step});
+}
+play.addEventListener('click',()=>{
+playing=!playing;
+last=performance.now();
+updatePlay();
+Studio.event('play_toggle',{playing:playing});
+});
+stepButtons.forEach((node,index)=>node.addEventListener('click',()=>selectStep(index+1,true)));
+
+optionButtons.forEach(node=>node.addEventListener('click',()=>{
+if(finished)return;
+optionButtons.forEach(item=>item.classList.remove('selected'));
+node.classList.add('selected');
+feedback.className='feedback';
+feedback.textContent='';
+const key=node.getAttribute('data-option');
+Studio.event('answer',{option:key});
+Studio.answer(key);
+}));
+Studio.onVerdict(result=>{
+feedback.className='feedback '+(result.correct?'good':'try');
+feedback.textContent=result.correct?'✓':'↻';
+if(result.correct&&!finished){
+finished=true;
+optionButtons.forEach(node=>node.disabled=true);
+Studio.done();
+}
+});
+
+const flows={
+water:{nodes:Array.from(document.querySelectorAll('[data-flow="water"]')),from:[142,302],to:[207,162]},
+co2:{nodes:Array.from(document.querySelectorAll('[data-flow="co2"]')),from:[20,150],to:[218,158]},
+o2:{nodes:Array.from(document.querySelectorAll('[data-flow="o2"]')),from:[225,157],to:[334,86]}
+};
+function move(flow,p){
+let x=flow.from[0]+(flow.to[0]-flow.from[0])*p;
+let y=flow.from[1]+(flow.to[1]-flow.from[1])*p;
+if(flow===flows.water)x+=Math.sin(p*Math.PI)*22;
+if(flow===flows.co2)y+=Math.sin(p*Math.PI*2)*5;
+if(flow===flows.o2)y-=Math.sin(p*Math.PI)*10;
+return [x,y];
+}
+function animate(now){
+const delta=Math.max(0,Math.min(50,now-last));
+last=now;
+if(playing)phase=(phase+delta/2600)%1;
+Object.keys(flows).forEach(key=>{
+const flow=flows[key];
+flow.nodes.forEach((node,index)=>{
+const p=(phase+index/flow.nodes.length)%1;
+const pos=move(flow,p);
+node.setAttribute('cx',String(pos[0]));
+node.setAttribute('cy',String(pos[1]));
+});
+});
+requestAnimationFrame(animate);
+}
+selectStep(step,false);
+updatePlay();
+requestAnimationFrame(animate);
+Studio.ready();
+})();
+</script>

@@ -1,0 +1,212 @@
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f0f7fb; font-family: 'Segoe UI', Tahoma, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 640px; width: 360px; padding: 8px; }
+  .container { width: 100%; max-width: 344px; background: white; border-radius: 28px; padding: 16px 12px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); display: flex; flex-direction: column; align-items: center; }
+  .title { font-size: 20px; font-weight: 700; color: #1e3a5f; text-align: center; margin-bottom: 4px; letter-spacing: 0.3px; }
+  .ask { font-size: 15px; color: #2c4c7a; background: #eef5ff; border-radius: 16px; padding: 8px 14px; margin: 6px 0 10px; text-align: center; width: fit-content; max-width: 90%; }
+  .chart-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .chart-wrap svg { display: block; margin: 0 auto; }
+  .feedback { font-size: 17px; font-weight: 600; margin-top: 10px; min-height: 28px; text-align: center; transition: all 0.2s; }
+  .feedback.correct { color: #0f7b3a; }
+  .feedback.wrong { color: #b33a3a; }
+  .done-text { font-size: 18px; font-weight: 700; color: #1e5a3e; background: #dff5e6; border-radius: 20px; padding: 8px 20px; margin-top: 8px; }
+  .bar { cursor: pointer; transition: opacity 0.15s; }
+  .bar:active { opacity: 0.7; }
+  .bar-bg { fill: rgba(0,0,0,0.04); rx: 6; }
+  .bar-rect { rx: 6; transition: filter 0.1s; }
+  .bar:hover .bar-rect { filter: brightness(0.92); }
+  .tick-label { font-size: 10px; fill: #4a5e77; }
+  .axis-title { font-size: 11px; fill: #1e3a5f; font-weight: 600; }
+  .fruit-label { font-size: 11px; text-anchor: middle; fill: #1e3a5f; font-weight: 500; }
+  .value-label { font-size: 12px; font-weight: 600; fill: #1e3a5f; text-anchor: middle; opacity: 0; transition: opacity 0.2s; }
+  .bar-tapped .value-label { opacity: 1; }
+</style>
+<div class="container" id="app">
+  <div class="title" id="titleEl"></div>
+  <div class="ask" id="askEl"></div>
+  <div class="chart-wrap" id="chartWrap"></div>
+  <div class="feedback" id="feedbackEl"></div>
+</div>
+<script>
+(function(){
+  const params = Studio.params;
+  const data = params.data; // [{"key":"mango","value":12},...]
+  const fruits = { mango: 'mango', banana: 'banana', apple: 'apple', guava: 'guava', orange: 'orange' };
+
+  // translate keys
+  const t = (k) => Studio.t(k);
+  document.getElementById('titleEl').textContent = t('title');
+  document.getElementById('askEl').textContent = t('ask');
+
+  // dimensions
+  const svgW = 320, svgH = 280;
+  const margin = { top: 8, right: 8, bottom: 34, left: 36 };
+  const chartW = svgW - margin.left - margin.right;
+  const chartH = svgH - margin.top - margin.bottom;
+  const barGap = 6;
+  const barCount = data.length;
+  const totalGap = barGap * (barCount - 1);
+  const barW = Math.floor((chartW - totalGap) / barCount);
+  if (barW < 20) barW = 20; // safety
+
+  // compute y scale
+  const maxVal = Math.max(...data.map(d => d.value));
+  const roundedMax = Math.ceil(maxVal / 5) * 5; // step 5
+  const step = 5;
+  const ticks = [];
+  for (let v = 0; v <= roundedMax; v += step) ticks.push(v);
+  const yScale = chartH / roundedMax; // pixels per unit
+
+  // build SVG
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', svgW);
+  svg.setAttribute('height', svgH);
+  svg.setAttribute('viewBox', `0 0 ${svgW} ${svgH}`);
+  svg.style.display = 'block';
+
+  // y-axis group
+  const yGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  // gridlines & tick labels
+  ticks.forEach(v => {
+    const y = margin.top + chartH - v * yScale;
+    // gridline
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', margin.left);
+    line.setAttribute('x2', svgW - margin.right);
+    line.setAttribute('y1', y);
+    line.setAttribute('y2', y);
+    line.setAttribute('stroke', '#dbe3ed');
+    line.setAttribute('stroke-width', 0.8);
+    yGroup.appendChild(line);
+    // tick label
+    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    txt.setAttribute('x', margin.left - 6);
+    txt.setAttribute('y', y + 3);
+    txt.setAttribute('class', 'tick-label');
+    txt.setAttribute('text-anchor', 'end');
+    txt.setAttribute('data-tick', v);
+    txt.textContent = v;
+    yGroup.appendChild(txt);
+  });
+  svg.appendChild(yGroup);
+
+  // axis title
+  const axisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  axisTitle.setAttribute('x', 8);
+  axisTitle.setAttribute('y', margin.top + chartH/2);
+  axisTitle.setAttribute('class', 'axis-title');
+  axisTitle.setAttribute('text-anchor', 'middle');
+  axisTitle.setAttribute('transform', `rotate(-90, 8, ${margin.top + chartH/2})`);
+  axisTitle.textContent = t('yaxis');
+  svg.appendChild(axisTitle);
+
+  // bars
+  let tappedKey = null;
+
+  data.forEach((d, i) => {
+    const barX = margin.left + i * (barW + barGap);
+    const barH = d.value * yScale;
+    const barY = margin.top + chartH - barH; // baseline at margin.top+chartH
+
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', 'bar');
+    g.setAttribute('data-bar', d.key);
+    g.setAttribute('data-value', d.value);
+
+    // background rect (for tap area)
+    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    bg.setAttribute('x', barX);
+    bg.setAttribute('y', margin.top);
+    bg.setAttribute('width', barW);
+    bg.setAttribute('height', chartH);
+    bg.setAttribute('class', 'bar-bg');
+    bg.setAttribute('fill', 'transparent');
+    g.appendChild(bg);
+
+    // colored bar (with animation)
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', barX);
+    rect.setAttribute('y', margin.top + chartH); // start at baseline
+    rect.setAttribute('width', barW);
+    rect.setAttribute('height', 0);
+    rect.setAttribute('class', 'bar-rect');
+    // color based on key
+    const colors = { mango: '#f5a623', banana: '#f7d94e', apple: '#e74c3c', guava: '#7bc47f', orange: '#f39c12' };
+    rect.setAttribute('fill', colors[d.key] || '#4a90d9');
+    g.appendChild(rect);
+
+    // value label (appears on tap)
+    const vLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    vLabel.setAttribute('x', barX + barW/2);
+    vLabel.setAttribute('y', barY - 8);
+    vLabel.setAttribute('class', 'value-label');
+    vLabel.textContent = d.value;
+    g.appendChild(vLabel);
+
+    // fruit label under bar
+    const fLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    fLabel.setAttribute('x', barX + barW/2);
+    fLabel.setAttribute('y', margin.top + chartH + 16);
+    fLabel.setAttribute('class', 'fruit-label');
+    fLabel.textContent = t(d.key);
+    g.appendChild(fLabel);
+
+    // tap handler
+    g.addEventListener('click', function(e) {
+      if (tappedKey) return; // already answered? prevent double tap
+      const key = this.getAttribute('data-bar');
+      // show value label
+      this.classList.add('bar-tapped');
+      tappedKey = key;
+      // commit answer
+      Studio.answer(key);
+    });
+
+    svg.appendChild(g);
+
+    // animate bar grow after mount
+    setTimeout(() => {
+      rect.setAttribute('y', barY);
+      rect.setAttribute('height', barH);
+      rect.style.transition = 'y 0.5s ease-out, height 0.5s ease-out';
+      // force reflow then set
+      rect.getBoundingClientRect(); // force
+      rect.setAttribute('y', barY);
+      rect.setAttribute('height', barH);
+    }, 100 + i * 80); // stagger
+  });
+
+  document.getElementById('chartWrap').appendChild(svg);
+
+  Studio.onVerdict(function(result) {
+    const fb = document.getElementById('feedbackEl');
+    if (result.correct) {
+      fb.textContent = t('right');
+      fb.className = 'feedback correct';
+      // show done text after short delay
+      setTimeout(() => {
+        fb.textContent = '';
+        const doneDiv = document.createElement('div');
+        doneDiv.className = 'done-text';
+        doneDiv.textContent = t('done');
+        document.getElementById('app').appendChild(doneDiv);
+        Studio.done();
+      }, 800);
+    } else {
+      fb.textContent = t('wrong');
+      fb.className = 'feedback wrong';
+      // reset tap so child can try again
+      setTimeout(() => {
+        fb.textContent = '';
+        fb.className = 'feedback';
+        // remove value label highlight
+        const bars = document.querySelectorAll('.bar');
+        bars.forEach(b => b.classList.remove('bar-tapped'));
+        tappedKey = null;
+      }, 1000);
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

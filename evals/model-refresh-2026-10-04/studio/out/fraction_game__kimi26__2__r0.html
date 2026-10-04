@@ -1,0 +1,315 @@
+<style>
+  :root {
+    --bg: #FFF8F0;
+    --warm-orange: #FF8C42;
+    --warm-green: #2ECC71;
+    --warm-red: #E74C3C;
+    --text: #4A3728;
+    --sugar-white: #FFFFFF;
+    --cream: #FFF0D6;
+    --soft: #C8E6C9;
+    --gentle: #FFCDD2;
+    --tap: #FF7B54;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  #app {
+    width: 100%; height: 100vh; overflow: hidden;
+    background: var(--bg); color: var(--text);
+    font-family: 'Segoe UI', 'Nirmala UI', system-ui, sans-serif;
+    display: flex; flex-direction: column; align-items: center;
+    position: relative; padding: 16px;
+  }
+  #title {
+    font-size: 1.4rem; font-weight: 700; color: var(--warm-orange);
+    text-align: center; margin-top: 12px; margin-bottom: 8px;
+  }
+  #subtitle {
+    font-size: 1.1rem; color: var(--dark-orange);
+    text-align: center; margin-bottom: 16px; font-weight: 600;
+  }
+  #main-area {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; width: 100%;
+  }
+  #pizza-container {
+    width: 280px; height: 280px; position: relative; margin-bottom: 20px;
+  }
+  #pizza-svg { width: 100%; height: 100%; overflow: visible; }
+  .slice {
+    fill: var(--cream); stroke: var(--warm-orange); stroke-width: 3; cursor: pointer;
+    transition: fill .25s ease, transform .18s cubic-bezier(.34,1.56,.64,1), filter .2s ease;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,.1));
+    transform-origin: center;
+  }
+  .slice:active { transform: scale(0.92); }
+  .slice.selected {
+    fill: url(#sliceGrad);
+    filter: drop-shadow(0 0 8px rgba(255,140,66,.5));
+  }
+  #fraction-display {
+    font-size: 3rem; font-weight: 800;
+    color: var(--warm-orange); margin-bottom: 16px;
+    text-shadow: 0 2px 8px rgba(255,140,66,.2);
+    user-select: none;
+  }
+  #hint-area {
+    font-size: 1rem; color: var(--text); text-align: center;
+    min-height: 48px; padding: 8px 12px; line-height: 1.4;
+    opacity: 0; transform: translateY(8px);
+    transition: opacity .4s ease, transform .4s ease;
+  }
+  #hint-area.visible { opacity: 1; transform: translateY(0); }
+  #controls { width: 100%; margin-bottom: 24px; padding: 0 16px; }
+  #check-btn {
+    width: 100%; padding: 16px 24px; font-size: 1.2rem; font-weight: 700;
+    color: var(--sugar-white); background: var(--warm-green);
+    border: none; border-radius: 50px; cursor: pointer;
+    transition: background .3s, transform .2s, box-shadow .3s;
+    box-shadow: 0 4px 12px rgba(46,204,113,.3);
+    position: relative; overflow: hidden;
+  }
+  #check-btn::after {
+    content: ''; position: absolute; inset: 0; border-radius: 50px;
+    background: rgba(255,255,255,0); transition: background .3s;
+  }
+  #check-btn:hover::after { background: rgba(255,255,255,.15); }
+  #check-btn:active { transform: scale(0.96); }
+  #check-btn:disabled {
+    background: #E0E0E0; color: #A0A0A0; cursor: not-allowed;
+    box-shadow: none; transform: none;
+  }
+  #check-btn.bloom {
+    animation: bloom .8s ease forwards;
+  }
+  @keyframes bloom {
+    0% { transform: scale(1); box-shadow: 0 4px 12px rgba(46,204,113,.3); }
+    50% { transform: scale(1.05); box-shadow: 0 8px 24px rgba(46,204,113,.5); }
+    100% { transform: scale(1); box-shadow: 0 4px 12px rgba(46,204,113,.3); }
+  }
+  .celebrate { animation: popOut .5s ease forwards; }
+  @keyframes popOut {
+    0% { transform: scale(0.8); opacity: 0; }
+    50% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .shake { animation: shake .5s ease; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+  }
+  #done-screen {
+    position: absolute; inset: 0; display: none;
+    flex-direction: column; align-items: center; justify-content: center;
+    background: var(--bg); z-index: 10; text-align: center; padding: 24px;
+  }
+  #done-screen.visible { display: flex; }
+  .done-star {
+    font-size: 5rem; margin-bottom: 16px;
+    animation: starSpin 1s ease;
+  }
+  @keyframes starSpin {
+    0% { transform: rotate(-30deg) scale(0.5); opacity: 0; }
+    100% { transform: rotate(0) scale(1); opacity: 1; }
+  }
+  #done-text { font-size: 1.6rem; font-weight: 700; color: var(--warm-green); }
+  .particle {
+    position: absolute; width: 8px; height: 8px; border-radius: 50%;
+    pointer-events: none; z-index: 20;
+  }
+</style>
+
+<div id="app">
+  <div id="title"></div>
+  <div id="subtitle"></div>
+  <div id="main-area">
+    <div id="pizza-container" data-item=""></div>
+    <div id="fraction-display"></div>
+    <div id="hint-area"></div>
+  </div>
+  <div id="controls">
+    <button id="check-btn" data-action="check" disabled></button>
+  </div>
+</div>
+
+<div id="done-screen">
+  <div class="done-star">🌟</div>
+  <div id="done-text"></div>
+</div>
+
+<script>
+(function() {
+  const items = Studio.params.items || [];
+  let current = 0;
+  let selected = new Set();
+
+  const app = document.getElementById('app');
+  const title = document.getElementById('title');
+  const subtitle = document.getElementById('subtitle');
+  const container = document.getElementById('pizza-container');
+  const fractionDisplay = document.getElementById('fraction-display');
+  const hintArea = document.getElementById('hint-area');
+  const checkBtn = document.getElementById('check-btn');
+  const doneScreen = document.getElementById('done-screen');
+  const doneText = document.getElementById('done-text');
+
+  function init() {
+    title.textContent = Studio.t('title');
+    subtitle.textContent = Studio.t('instr');
+    checkBtn.textContent = Studio.t('check');
+    doneText.textContent = Studio.t('done');
+    loadItem(0);
+    Studio.ready();
+  }
+
+  function loadItem(index) {
+    current = index;
+    selected.clear();
+    updateHint();
+    if (index >= items.length) {
+      showDone();
+      return;
+    }
+    const item = items[index];
+    container.setAttribute('data-item', item.id);
+    renderPizza(item.d);
+    fractionDisplay.textContent = item.n + '/' + item.d;
+    updateCheckBtn();
+  }
+
+  function renderPizza(d) {
+    container.innerHTML = '';
+    const R = 120, cx = 140, cy = 140;
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('id', 'pizza-svg');
+    svg.setAttribute('viewBox', '0 0 280 280');
+
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    defs.innerHTML = `
+      <radialGradient id="sliceGrad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#FFD54F"/>
+        <stop offset="100%" stop-color="#FF8C42"/>
+      </radialGradient>
+    `;
+    svg.appendChild(defs);
+
+    for (let i = 0; i < d; i++) {
+      const a1 = (i * 2 * Math.PI / d) - Math.PI / 2;
+      const a2 = ((i + 1) * 2 * Math.PI / d) - Math.PI / 2;
+      const x1 = cx + R * Math.cos(a1);
+      const y1 = cy + R * Math.sin(a1);
+      const x2 = cx + R * Math.cos(a2);
+      const y2 = cy + R * Math.sin(a2);
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', `M${cx},${cy} L${x1},${y1} A${R},${R} 0 0,1 ${x2},${y2} Z`);
+      path.setAttribute('class', 'slice');
+      path.setAttribute('data-part', i);
+      path.setAttribute('data-shaded', 'false');
+      path.addEventListener('click', toggleSlice);
+      svg.appendChild(path);
+    }
+    container.appendChild(svg);
+  }
+
+  function toggleSlice(e) {
+    const slice = e.target;
+    const idx = parseInt(slice.getAttribute('data-part'), 10);
+    if (selected.has(idx)) {
+      selected.delete(idx);
+      slice.classList.remove('selected');
+      slice.setAttribute('data-shaded', 'false');
+    } else {
+      selected.add(idx);
+      slice.classList.add('selected');
+      slice.setAttribute('data-shaded', 'true');
+    }
+    updateHint();
+    updateCheckBtn();
+    Studio.event('toggle', { idx, selected: selected.size, item: items[current].id });
+  }
+
+  function updateHint() {
+    const item = items[current];
+    if (!item) return;
+    const needed = item.n - selected.size;
+    if (needed < 0) {
+      hintArea.textContent = Studio.t('hint').replace('{}', Math.abs(needed));
+    } else if (needed > 0) {
+      hintArea.textContent = Studio.t('hint').replace('{}', needed);
+    } else {
+      hintArea.textContent = '';
+    }
+    hintArea.classList.add('visible');
+  }
+
+  function updateCheckBtn() {
+    const item = items[current];
+    checkBtn.disabled = selected.size !== item.n;
+  }
+
+  checkBtn.addEventListener('click', function() {
+    const item = items[current];
+    Studio.answer({ n: selected.size, d: item.d });
+  });
+
+  Studio.onVerdict(function(verdict) {
+    if (verdict.correct) {
+      hintArea.textContent = Studio.t('right');
+      hintArea.classList.add('visible');
+      celebrate();
+      setTimeout(function() {
+        Studio.event('advance', { from: items[current].id });
+        loadItem(current + 1);
+      }, 1200);
+    } else {
+      hintArea.textContent = Studio.t('wrong');
+      hintArea.classList.add('visible');
+      container.classList.add('shake');
+      setTimeout(function() {
+        container.classList.remove('shake');
+      }, 500);
+    }
+  });
+
+  function celebrate() {
+    checkBtn.classList.add('bloom');
+    container.classList.add('celebrate');
+    spawnParticles();
+
+    setTimeout(function() {
+      checkBtn.classList.remove('bloom');
+      container.classList.remove('celebrate');
+    }, 1000);
+  }
+
+  function spawnParticles() {
+    const colors = ['#FF8C42','#FFD54F','#2ECC71','#E74C3C','#9B59B6'];
+    for (let i = 0; i < 20; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      p.style.left = (Math.random() * 280) + 'px';
+      p.style.top = (Math.random() * 280) + 'px';
+      container.appendChild(p);
+
+      const tx = (Math.random() - 0.5) * 200;
+      const ty = (Math.random() - 0.5) * 200;
+      p.animate([
+        { transform: 'translate(0,0) scale(1)', opacity: 1 },
+        { transform: `translate(${tx}px,${ty}px) scale(0)`, opacity: 0 }
+      ], { duration: 800, easing: 'cubic-bezier(.25,.46,.45,.94)' });
+
+      setTimeout(function() { p.remove(); }, 800);
+    }
+  }
+
+  function showDone() {
+    doneScreen.classList.add('visible');
+    Studio.done();
+  }
+
+  init();
+})();
+</script>

@@ -1456,3 +1456,18 @@ Method: local `node server/serve.mjs` against dist, with the Neon test branch as
 <!-- merged from inbox/w1-d.json -->
 ## w1d-nightly-job-azure-run-2026-10-04
 The nightly ops job run from the worker image on Azure: `scripts/deploy-worker.mjs --app taxila-wfix --db test --local --jobs-only --manual` (image taxila-worker:cdb64af-local-p1jyo built from the working tree, 290 files), then a manual start of `taxila-wfix-nightly`. n = 1. Execution Succeeded about 43 s after start (polled every 10 s). Log Analytics held the `conductor_rollup` line and `test_account_sweep {found 3, deleted 0, deferred 3, failed 0}` (3 test-branch accounts with open safety matters, deferred as designed). The scratch jobs were deleted afterwards; the image tag remains in ACR. Before the fix, the same tree layout reproduced ERR_MODULE_NOT_FOUND for /scripts/sweep-test-accounts.mjs.
+
+
+<!-- merged from inbox/scout-2026-10-04.json -->
+## scout-2026-10-04-mai-image26-flash
+2026-10-04, US container -> southindia, `evals/model-refresh-2026-10-04/scout/mai-image.mjs`. Prompts, judge (taxila-brain gpt-5.6-sol, effort medium) and rubric verbatim from `docs/research/models/image-bench.mjs`; n=2 per prompt per arm (diagram, classroom, tutor). MAI-Image-2.6-Flash: 5/6 images all criteria 5, one diagram artifacts 4; 0/10 label errors (one diagram also checked by eye); 13.3-17.5 s, p50 16.7 s; 1,024 output tokens/image = $0.019. MAI-Image-2.5-Pro: one diagram adherence 2 / text 2 with Root, Stem, Flower, Fruit pointing at the wrong part; one classroom artifacts 4; 31.9-46.6 s; $0.109/image. Judge is OpenAI (out of family for MAI). Small n: direction only.
+
+## scout-2026-10-04-transcribe-hi
+2026-10-04, US container -> ap-south-1, `scout/transcribe-stream.py` (amazon-transcribe 0.6.x, 16 kHz PCM, 100 ms chunks at real-time pace), scored by `scout/score-transcribe.mjs` with the stt-hinglish v2 scorer. n=180 speech clips + 3 non-speech. hi-IN: cerNorm 0.086 (clean 0.053, white 0.085, pink 0.121), werNorm 0.163, keyRecall 0.794, numbers 67/96, answers 51/78, wrong script 0, non-speech hallucination 0/3, first partial p50 1.90 s, final after speech end p50 2.10 s / p90 3.00 s. en-IN: cerNorm 0.277, numbers 23/96, answers 26/78. Multi-language ID arm not run (SDK lacks LID args).
+
+## scout-2026-10-04-bedrock-blocked
+2026-10-04. Converse/ConverseStream on 9 arms (Kimi K3, grok-4.7, Nova 2 Lite, GLM-5, MiniMax M2.5, Qwen3-next-80B, Mistral Large 3, gpt-oss-safeguard-120b; Nova Micro in us-east-1): 0 successes. ap-south-1 AccessDenied 'account is currently being verified'; us-east-1 ThrottlingException 'Too many tokens per day'; Service Quotas tokens/day = 0, Adjustable=false, both regions.
+
+## Voice blind A/B, 2026-10-04 (docs/design/superhuman/voice-clips/results/BLIND-RESULTS-2026-10-04.md)
+- `voice-blind-ab-2026-10-04`: 2 raters (owner + 1) x 40 pairs. Plain beat spliced-clip expressive on DragonHD Diya 7-2, Arjun 7-3, gpt-4o-mini-tts 8-1; no-clip beat clip 5-2 / 4-3; prose-directed expressive beat plain on gpt-realtime-2.1 8-1 and DragonHD Omni 7-0.
+- `voice-blind-none-human-2026-10-04`: from the written remarks, no tested Azure voice passed as a human teacher: reading not talking, English-accented Hindi and accent switching, timbre changes, wrong numbers/words, fake-emphasis pauses, punctuation read aloud (MAI).

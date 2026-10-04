@@ -26,6 +26,7 @@ const page = await browser.newPage({ viewport: { width: size, height: size } });
 const errors = [];
 page.on("console", (m) => { if (m.type() === "error" || m.type() === "warning") errors.push(m.text()); });
 page.on("pageerror", (e) => errors.push(String(e)));
+if (process.env.AOLIFT) await page.addInitScript((v) => { globalThis.AOLIFT = +v; }, process.env.AOLIFT);
 await page.goto(`${url}/scripts/character/stylised/r2/viewer/index.html?w=${size}&h=${size}`);
 await page.waitForFunction(() => window.TX_READY === true, null, { timeout: 120000 });
 const glbUrl = "/@fs" + path.resolve(glb);

@@ -1,0 +1,187 @@
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #FFF7ED; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: #431407; }
+#app { width: 100%; max-width: 360px; margin: 0 auto; padding: 12px; display: flex; flex-direction: column; align-items: center; touch-action: manipulation; }
+#title { font-size: 1.25rem; text-align: center; margin: 8px 0 12px; color: #7C2D12; font-weight: 800; line-height: 1.3; }
+#chart-wrap { width: 100%; }
+svg { width: 100%; height: auto; display: block; }
+.axis { stroke: #9CA3AF; stroke-width: 2; stroke-linecap: round; }
+.gridline { stroke: #E7E5E4; stroke-width: 1; }
+.tick-label { font-size: 12px; fill: #78716C; font-family: inherit; }
+.axis-title { font-size: 13px; fill: #57534E; font-weight: 600; font-family: inherit; }
+.fruit-label { font-size: 13px; fill: #44403C; font-weight: 600; font-family: inherit; }
+.bar-value { font-size: 14px; fill: #1C1917; font-weight: 700; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; font-family: inherit; }
+.bar-value.visible { opacity: 1; }
+.bar-group { cursor: pointer; transform-box: fill-box; transform-origin: center bottom; transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.bar-group.pressed { transform: scale(1.06); }
+.bar {
+  transform-box: fill-box;
+  transform-origin: bottom;
+  transform: scaleY(0);
+  transition: transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1), fill 0.2s;
+}
+.bar.grown { transform: scaleY(1); }
+#ask { text-align: center; font-size: 1.05rem; margin: 14px 16px 8px; color: #57534E; font-weight: 500; line-height: 1.4; min-height: 44px; }
+.feedback { margin: 8px 16px; padding: 12px; border-radius: 14px; text-align: center; font-weight: 700; opacity: 0; transition: opacity 0.3s; min-height: 44px; display: flex; align-items: center; justify-content: center; font-size: 1rem; width: 100%; max-width: 320px; }
+.feedback.visible { opacity: 1; }
+.feedback.right { background: #DCFCE7; color: #166534; }
+.feedback.wrong { background: #FEE2E2; color: #991B1B; }
+#done { text-align: center; font-size: 1.15rem; margin: 16px; color: #0C4A6E; font-weight: 800; display: none; line-height: 1.4; }
+</style>
+
+<div id="app">
+  <h1 id="title"></h1>
+  <div id="chart-wrap">
+    <svg id="chart" viewBox="0 0 360 400" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+  <p id="ask"></p>
+  <div id="feedback" class="feedback"></div>
+  <p id="done"></p>
+</div>
+
+<script>
+(function() {
+  const data = Studio.params.data || [];
+  if (!data.length) return;
+
+  const titleEl = document.getElementById('title');
+  const askEl = document.getElementById('ask');
+  const feedbackEl = document.getElementById('feedback');
+  const doneEl = document.getElementById('done');
+  const svg = document.getElementById('chart');
+
+  titleEl.textContent = Studio.t('title');
+  askEl.textContent = Studio.t('ask');
+  doneEl.textContent = Studio.t('done');
+
+  const chartLeft = 50;
+  const chartRight = 350;
+  const chartBottom = 340;
+  const chartTop = 20;
+  const chartH = chartBottom - chartTop;
+
+  const maxVal = Math.max(...data.map(d => d.value));
+  const rough = maxVal / 5 || 1;
+  const pow10 = Math.pow(10, Math.floor(Math.log10(rough)));
+  const d = rough / pow10;
+  let step = pow10;
+  if (d >= 5) step = 5 * pow10;
+  else if (d >= 2) step = 2 * pow10;
+  else step = pow10;
+  if (step < 1) step = 1;
+  let maxTick = Math.ceil(maxVal / step) * step;
+  if (maxTick === 0) maxTick = step;
+  const unit = chartH / maxTick;
+
+  const ns = 'http://www.w3.org/2000/svg';
+  function $svg(tag, attrs) {
+    const el = document.createElementNS(ns, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, '' + v);
+    return el;
+  }
+
+  const axisGroup = $svg('g', {});
+  axisGroup.appendChild($svg('line', { x1: chartLeft, y1: chartBottom, x2: chartRight, y2: chartBottom, class: 'axis' }));
+  axisGroup.appendChild($svg('line', { x1: chartLeft, y1: chartBottom, x2: chartLeft, y2: chartTop, class: 'axis' }));
+  svg.appendChild(axisGroup);
+
+  const yTitle = $svg('text', { x: 18, y: (chartTop + chartBottom) / 2, class: 'axis-title', transform: 'rotate(-90,18,' + ((chartTop + chartBottom) / 2) + ')', 'text-anchor': 'middle' });
+  yTitle.textContent = Studio.t('yaxis');
+  svg.appendChild(yTitle);
+
+  const tickGroup = $svg('g', {});
+  for (let t = 0; t <= maxTick; t += step) {
+    const y = chartBottom - t * unit;
+    tickGroup.appendChild($svg('line', { x1: chartLeft, y1: y, x2: chartRight, y2: y, class: 'gridline' }));
+    const tText = $svg('text', { x: 42, y: y + 4, class: 'tick-label', 'data-tick': String(t), 'text-anchor': 'end' });
+    tText.textContent = String(t);
+    tickGroup.appendChild(tText);
+  }
+  svg.appendChild(tickGroup);
+
+  const palette = ['#F59E0B', '#FACC15', '#EF4444', '#4ADE80', '#FB923C'];
+  const barWidth = 48;
+  const totalBarW = data.length * barWidth;
+  const gap = (chartRight - chartLeft - totalBarW) / (data.length + 1);
+  let x = chartLeft + gap;
+  let isDone = false;
+
+  data.forEach((item, i) => {
+    const h = item.value * unit;
+    const y = chartBottom - h;
+    const color = palette[i % palette.length];
+    const g = $svg('g', { class: 'bar-group' });
+
+    const valText = $svg('text', { x: x + barWidth / 2, y: y - 10, class: 'bar-value', 'text-anchor': 'middle' });
+    valText.textContent = String(item.value);
+    g.appendChild(valText);
+
+    const bar = $svg('rect', {
+      x: x, y: y, width: barWidth, height: h, rx: 4, fill: color,
+      class: 'bar', 'data-bar': item.key, 'data-value': String(item.value)
+    });
+    g.appendChild(bar);
+
+    const hitH = Math.max(h, 44);
+    const hitY = chartBottom - hitH;
+    const hit = $svg('rect', {
+      x: x, y: hitY, width: barWidth, height: hitH, fill: 'transparent',
+      class: 'hit', 'data-bar': item.key, style: 'pointer-events:all;'
+    });
+    g.appendChild(hit);
+
+    const label = $svg('text', { x: x + barWidth / 2, y: chartBottom + 24, class: 'fruit-label', 'text-anchor': 'middle' });
+    label.textContent = Studio.t(item.key);
+    g.appendChild(label);
+
+    svg.appendChild(g);
+
+    const onTap = function(e) {
+      if (isDone) return;
+      e.stopPropagation();
+      valText.classList.add('visible');
+      g.classList.add('pressed');
+      setTimeout(function() { g.classList.remove('pressed'); }, 180);
+      Studio.event('tap', { key: item.key });
+      Studio.answer(item.key);
+    };
+    hit.addEventListener('click', onTap);
+    bar.addEventListener('click', onTap);
+    x += barWidth + gap;
+  });
+
+  requestAnimationFrame(function() {
+    const bars = svg.querySelectorAll('.bar');
+    bars.forEach(function(bar, i) {
+      setTimeout(function() { bar.classList.add('grown'); }, i * 100);
+    });
+  });
+
+  Studio.onVerdict(function(result) {
+    if (isDone) return;
+    feedbackEl.classList.remove('visible', 'right', 'wrong');
+    void feedbackEl.offsetWidth;
+    if (result.correct) {
+      feedbackEl.textContent = Studio.t('right');
+      feedbackEl.classList.add('right', 'visible');
+      isDone = true;
+      Studio.event('verdict', { correct: true });
+      setTimeout(function() {
+        Studio.done();
+        askEl.style.display = 'none';
+        feedbackEl.style.display = 'none';
+        doneEl.style.display = 'block';
+      }, 1000);
+    } else {
+      feedbackEl.textContent = Studio.t('wrong');
+      feedbackEl.classList.add('wrong', 'visible');
+      Studio.event('verdict', { correct: false });
+      setTimeout(function() {
+        feedbackEl.classList.remove('visible');
+      }, 1800);
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

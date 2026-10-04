@@ -112,16 +112,17 @@ void main() {
   if (!gl_FrontFacing) N = -N;
   vec3 V = normalize(cameraPosition - vW);
   vec3 L = normalize(uKeyDir);
-  vec3 albedo = uBase * vColor2;
+  float ao = mix(1.0, vColor2.r, 0.6);
+  vec3 albedo = uBase;
   float ndl = dot(N, L);
   float w = smoothstep(0.0, 1.0, wrapL(ndl, uWrap));
-  vec3 col = albedo * (uKeyCol * w + ambient(N));
+  vec3 col = albedo * (vec3(1.0, 0.97, 0.94) * w * ao + vec3(0.62, 0.62, 0.64) * ao);
   mat3 tbn = cotangentFrame(N, vW, vUv);
   vec3 T = normalize(tbn[0]);
   vec3 H = normalize(L + V);
-  float s1 = kk(normalize(T + N * 0.12), H, 70.0);
-  float s2 = kk(normalize(T - N * 0.08), H, 18.0);
-  col += uKeyCol * (s1 * 0.10 + s2 * vec3(0.30, 0.22, 0.17) * 0.18) * w * uSpec;
+  float s1 = kk(normalize(T + N * 0.12), H, 28.0);
+  float s2 = kk(normalize(T - N * 0.08), H, 8.0);
+  col += (s1 * vec3(0.16) + s2 * vec3(0.10, 0.09, 0.085)) * w * ao * uSpec;
   float fr = pow(1.0 - clamp(dot(N, V), 0.0, 1.0), 3.0);
   col += uRimCol * fr * smoothstep(-0.2, 0.5, dot(N, normalize(uRimDir))) * uRim;
   gl_FragColor = vec4(col, 1.0);
@@ -161,7 +162,7 @@ void main() {
 }`;
 
 export const RIG = {
-  keyDir: new THREE.Vector3(-0.42, 0.55, 0.95),   // from viewer's upper-left, near frontal (c-front)
+  keyDir: new THREE.Vector3(-0.5, 0.75, 0.85),   // from viewer's upper-left, near frontal (c-front)
   keyCol: new THREE.Color(1.0, 0.94, 0.86).multiplyScalar(1.05),
   rimDir: new THREE.Vector3(0.75, 0.35, -0.6),
   rimCol: new THREE.Color(1.0, 0.86, 0.70),
@@ -178,7 +179,7 @@ function make(frag, kind, o = {}) {
     uSky: { value: RIG.sky }, uGround: { value: RIG.ground },
     uBase: { value: o.base || new THREE.Color(1, 1, 1) }, uKind: { value: kind },
     uWrap: { value: o.wrap ?? 0.45 }, uSpec: { value: o.spec ?? 0.3 }, uRough: { value: o.rough ?? 0.55 },
-    uRim: { value: o.rim ?? 0.25 }, uSSS: { value: o.sss ?? 0.0 }, uAOLift: { value: o.aoLift ?? 0.45 },
+    uRim: { value: o.rim ?? 0.25 }, uSSS: { value: o.sss ?? 0.0 }, uAOLift: { value: o.aoLift ?? (globalThis.AOLIFT ?? 0.6) },
     uSheen: { value: o.sheen ?? 0.0 },
     tMap: { value: o.map || null }, uHasMap: { value: o.map ? 1 : 0 },
     uEyeC: { value: new THREE.Vector3() }, uEyeR: { value: 0.025 },
@@ -193,16 +194,16 @@ function make(frag, kind, o = {}) {
 // material name (from the GLB) -> TaxilaToon material
 export function toonFor(name, src, tier = "H") {
   const C = {
-    skin: [240, 152, 94], hair: [40, 34, 32], brow: [52, 42, 38], lash: [18, 12, 10], bindi: [110, 30, 34],
-    gold: [236, 184, 96], kurta: [6, 92, 104], piping: [200, 102, 48], teeth: [246, 240, 230], tongue: [190, 80, 72],
+    skin: [240, 160, 100], hair: [62, 56, 54], brow: [52, 42, 38], lash: [18, 12, 10], bindi: [110, 30, 34],
+    gold: [236, 184, 96], kurta: [18, 108, 118], piping: [200, 102, 48], teeth: [246, 240, 230], tongue: [190, 80, 72],
   };
   switch (name) {
-    case "skin": return make(FRAG_SURF, 0, { vcol: true, uv: true, sss: 0.38, rim: 0.22, spec: 0.35, rough: 0.6, wrap: 0.5 });
+    case "skin": return make(FRAG_SURF, 0, { vcol: true, uv: true, sss: 0.38, rim: 0.22, spec: 0.35, rough: 0.6, wrap: 0.35 });
     case "skin_ear": return make(FRAG_SURF, 1, { base: lin(C.skin), sss: 0.38, rim: 0.22, spec: 0.3, wrap: 0.5 });
     case "eye": return make(FRAG_EYE, 4, { map: src.map, uv: true });
     case "cornea": return make(FRAG_CORNEA, 5, { transparent: true });
-    case "hair": return make(tier === "H" ? FRAG_HAIR : FRAG_SURF, 2, { base: lin(C.hair), uv: tier === "H", spec: 1.0, rim: 0.35, wrap: 0.35 });
-    case "kurta": return make(FRAG_SURF, 3, { base: lin(C.kurta), sheen: 0.10, spec: 0.1, rim: 0.2, wrap: 0.45 });
+    case "hair": return make(tier === "H" ? FRAG_HAIR : FRAG_SURF, 2, { base: lin(C.hair), vcol: true, uv: tier === "H", spec: 1.0, rim: 0.35, wrap: 0.35 });
+    case "kurta": return make(FRAG_SURF, 3, { base: lin(C.kurta), vcol: true, sheen: 0.10, spec: 0.1, rim: 0.2, wrap: 0.45 });
     case "piping": return make(FRAG_SURF, 3, { base: lin(C.piping), sheen: 0.1, spec: 0.1, rim: 0.15 });
     case "gold": return make(FRAG_SURF, 1, { base: lin(C.gold), spec: 2.5, rough: 0.3, rim: 0.3, wrap: 0.2 });
     case "brow": return make(FRAG_SURF, 1, { base: lin(C.brow), spec: 0.1, rim: 0.05, wrap: 0.6 });
