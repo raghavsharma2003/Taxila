@@ -1,0 +1,110 @@
+<style>
+*{box-sizing:border-box}body{margin:0;background:#fff7e9;color:#40352d;font-family:system-ui,sans-serif}button{font:inherit;-webkit-tap-highlight-color:transparent} .activity{width:min(100%,460px);margin:auto;min-height:100svh;padding:22px 20px 24px;display:flex;flex-direction:column;align-items:center;gap:14px}h1{font-size:24px;line-height:1.2;margin:0;text-align:center;color:#28594d}p{margin:0;text-align:center;font-size:16px;line-height:1.45}.prompt{max-width:340px}.item{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px}.fraction{display:grid;justify-items:center;font-size:29px;font-weight:800;line-height:1.1;color:#28594d;min-width:54px}.fraction span:first-child{border-bottom:3px solid #28594d;padding:0 12px 5px}.fraction span:last-child{padding-top:5px}.pizza{width:min(100%,300px);overflow:visible;filter:drop-shadow(0 8px 0 #ecdcc3)}.part{fill:#fff0c9;stroke:#ac7440;stroke-width:2;stroke-linejoin:round;cursor:pointer;transition:fill .2s,filter .2s;outline:none}.part[data-shaded=true]{fill:#f6a349}.part:focus-visible{stroke:#28594d;stroke-width:5}.part:hover{filter:brightness(1.04)}.pizza.tap{animation:tap .22s ease}.pizza.celebrate{animation:celebrate .65s ease}.feedback{min-height:25px;color:#28594d;font-weight:700}.check{border:0;border-radius:18px;background:#28594d;color:white;min-height:54px;width:100%;max-width:300px;font-size:19px;font-weight:750;box-shadow:0 5px 0 #173e34;cursor:pointer;transition:transform .15s,opacity .15s}.check:active{transform:translateY(3px);box-shadow:0 2px 0 #173e34}.check:disabled{opacity:.55;cursor:default}.hint{font-size:13px;color:#796b5e;max-width:310px}.complete{display:none;flex-direction:column;align-items:center;gap:22px;margin:auto;text-align:center}.complete svg{width:160px;height:160px}.finished .complete{display:flex}.finished .item,.finished .prompt,.finished .check,.finished .hint,.finished .feedback{display:none}@keyframes tap{50%{transform:scale(.98)}}@keyframes celebrate{35%{transform:scale(1.04) rotate(-3deg)}70%{transform:scale(1.02) rotate(3deg)}}@media(max-height:660px){.activity{padding-top:16px;gap:10px}.pizza{width:min(100%,264px)}h1{font-size:22px}.fraction{font-size:26px}}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<main class="activity" id="activity">
+<h1 id="title"></h1>
+<p class="prompt" id="instr"></p>
+<section class="item" id="item">
+<div class="fraction" id="fraction"><span id="numerator"></span><span id="denominator"></span></div>
+<svg class="pizza" id="pizza" viewBox="0 0 320 320">
+<circle cx="160" cy="160" r="148" fill="#ddaa68"/>
+<circle cx="160" cy="160" r="138" fill="#fff0c9"/>
+<g id="parts"></g>
+<circle cx="160" cy="160" r="4" fill="#ac7440" pointer-events="none"/>
+</svg>
+</section>
+<p class="feedback" id="feedback" aria-live="polite"></p>
+<button class="check" id="check" data-action="check"></button>
+<p class="hint" id="hint"></p>
+<section class="complete" id="complete" aria-live="polite">
+<svg viewBox="0 0 160 160" aria-hidden="true">
+<circle cx="80" cy="80" r="67" fill="#e1efdb"/>
+<path d="M48 81l22 22 43-47" fill="none" stroke="#28594d" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M22 30l4-10 4 10 10 4-10 4-4 10-4-10-10-4zM128 116l3-8 3 8 8 3-8 3-3 8-3-8-8-3z" fill="#f6a349"/>
+</svg>
+<h1 id="done"></h1>
+</section>
+</main>
+<script>
+(function(){
+const items=Studio.params.items;
+const el=id=>document.getElementById(id);
+["title","instr","check","hint","done"].forEach(key=>el(key).textContent=Studio.t(key));
+let index=0,selected=new Set(),pending=false,completed=false;
+const svgNS="http://www.w3.org/2000/svg";
+function finish(){
+completed=true;
+el("activity").classList.add("finished");
+el("item").removeAttribute("data-item");
+Studio.done();
+}
+function render(){
+if(index>=items.length){finish();return;}
+const item=items[index];
+selected=new Set();
+pending=false;
+el("check").disabled=false;
+el("feedback").textContent="";
+el("item").setAttribute("data-item",item.id);
+el("numerator").textContent=item.n;
+el("denominator").textContent=item.d;
+el("parts").replaceChildren();
+el("pizza").classList.remove("celebrate");
+for(let i=0;i<item.d;i++){
+const start=-Math.PI/2+i*2*Math.PI/item.d;
+const end=start+2*Math.PI/item.d;
+const x1=160+136*Math.cos(start),y1=160+136*Math.sin(start);
+const x2=160+136*Math.cos(end),y2=160+136*Math.sin(end);
+const part=document.createElementNS(svgNS,"path");
+if(item.d===1){
+part.setAttribute("d","M160 24 A136 136 0 1 1 160 296 A136 136 0 1 1 160 24Z");
+}else{
+part.setAttribute("d",`M160 160 L${x1} ${y1} A136 136 0 ${end-start>Math.PI?1:0} 1 ${x2} ${y2} Z`);
+}
+part.classList.add("part");
+part.setAttribute("data-part",i);
+part.setAttribute("data-shaded","false");
+part.setAttribute("role","button");
+part.setAttribute("tabindex","0");
+part.setAttribute("aria-label",Studio.t("hint"));
+part.setAttribute("aria-pressed","false");
+function toggle(){
+if(pending||completed)return;
+if(selected.has(i))selected.delete(i);else selected.add(i);
+const shaded=selected.has(i);
+part.setAttribute("data-shaded",String(shaded));
+part.setAttribute("aria-pressed",String(shaded));
+el("feedback").textContent="";
+el("pizza").classList.remove("tap");
+void el("pizza").getBoundingClientRect();
+el("pizza").classList.add("tap");
+Studio.event("toggle",{item:item.id,part:i,shaded});
+}
+part.addEventListener("click",toggle);
+part.addEventListener("keydown",e=>{
+if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle();}
+});
+el("parts").appendChild(part);
+}
+}
+el("check").addEventListener("click",()=>{
+if(pending||completed)return;
+pending=true;
+el("check").disabled=true;
+Studio.answer({n:selected.size,d:items[index].d});
+});
+Studio.onVerdict(verdict=>{
+if(!pending||completed)return;
+el("feedback").textContent=Studio.t(verdict.correct?"right":"wrong");
+if(verdict.correct){
+el("pizza").classList.add("celebrate");
+setTimeout(()=>{index++;render();},950);
+}else{
+pending=false;
+el("check").disabled=false;
+}
+});
+render();
+Studio.ready();
+})();
+</script>
