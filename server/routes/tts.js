@@ -8,7 +8,13 @@ import { requireChild } from "../auth.js";
 import { AzureError, tts } from "../azure.js";
 import { bad, need, notFound, HttpError } from "../http.js";
 import { teacherForLesson } from "../compiler/characters/index.js";
-import { toSpoken, spokenOptsForChild } from "../voice/spoken.js";
+import { speakable, spokenOptsForChild } from "../voice/spoken.js";
+import { cascadeEngine, dhdVoiceFor, expressiveOn } from "../voice/voices.js";
+import { dhdClip } from "../voice/azureTts.js";
+import { compileDhd, plainSsml } from "../voice/expressive/compile/dhd.js";
+import { lintSsml } from "../voice/expressive/lint.js";
+import { deliveryFor } from "../voice/prewarm.js";
+import { count } from "../voice/expressive/telemetry.js";
 
 /** Teacher replies are a few sentences; anything longer is a bug upstream, not a reply. */
 export const MAX_TTS_CHARS = 1200;
@@ -46,13 +52,32 @@ export async function speak(req, res, body) {
   if (text.length > MAX_TTS_CHARS) throw bad(`teacher turn is longer than ${MAX_TTS_CHARS} characters`);
   // The lesson's own teacher (pinned at start), never the child's CURRENT pick: a switch between turns of an
   // open lesson must not change the voice under the same persona and face.
-  const { voice } = teacherForLesson(child, lesson.teacher_id);
+  const teacher = teacherForLesson(child, lesson.teacher_id);
+  const { voice } = teacher;
   let audio;
+  // HUMAN-VOICE B5: the text lane's "Hear" speaks in the SAME voice as the streamed reply (one identity across paths):
+  // DragonHD when it is the configured engine, with the delivery plan /turn made for this turn when this process has it.
+  if (cascadeEngine() === "dhd") {
+    try {
+      audio = await dhdHear(lessonId, seq, text, teacher.id, spokenOptsForChild(child));
+    } catch (e) {
+      count("engine_fallback");
+      console.warn(`[voice] identity change on Hear: dhd → oai ${voice} (${e?.code || e?.status || "error"})`);
+    }
+  }
+  if (audio) {
+    res.statusCode = 200;
+    res.setHeader("content-type", "audio/mpeg");
+    res.setHeader("content-length", String(audio.length));
+    res.setHeader("cache-control", "no-store");
+    res.end(audio);
+    return;
+  }
   try {
     // No delivery `instructions`: the teacher's voice is chosen by blind ear, not by an unmeasured prompt.
     // The voice gets the SPOKEN form (numerals, notation, helplines digit by digit: server/voice/spoken.js);
     // the stored turn and the caption keep the written text.
-    const said = process.env.TAXILA_TTS_SPOKEN === "0" ? text : toSpoken(text, spokenOptsForChild(child));
+    const said = process.env.TAXILA_TTS_SPOKEN === "0" ? text : speakable(text, spokenOptsForChild(child));
     audio = await tts(said, VOICES.has(voice) ? voice : DEFAULT_VOICE);
   } catch (e) {
     if (e instanceof AzureError) throw new HttpError(502, "speech service unavailable");
@@ -63,6 +88,16 @@ export async function speak(req, res, body) {
   res.setHeader("content-length", String(audio.length));
   res.setHeader("cache-control", "no-store");
   res.end(audio);
+}
+
+/** One DragonHD document for the whole turn (planned when the plan is known, else plain), as mp3. */
+async function dhdHear(lessonId, seq, text, teacherId, spoken) {
+  const v = dhdVoiceFor(teacherId);
+  const dv = { voice: v.dhd, baseRate: v.baseRate };
+  const d = expressiveOn("dhd") ? deliveryFor(lessonId, seq) : null;
+  let ssml = d?.plan ? compileDhd(d.plan.clauses.map((c, i) => ({ ...c, sentenceStart: i === 0 || c.sentenceStart })), dv, { register: d.plan.register, pitch: d.plan.pitch ?? 0, spoken }) : null;
+  if (ssml && lintSsml(ssml, "dhd").some((b) => b === "paralinguistic_tag" || b.startsWith("unknown_marker"))) { count("lint_fail"); ssml = null; }
+  return dhdClip(ssml ?? plainSsml(text, dv, spoken));
 }
 
 export const routes = { "POST /api/tts": speak };

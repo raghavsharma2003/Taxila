@@ -29,17 +29,19 @@ export const EXPRESSIONS = {
   // c-happy: open smile, cheeks up, eyes smiling but open, brows lifted
   delight: {
     // c-happy keeps the eyes OPEN (no lower-lid squint across the iris): the joy is in the brows, cheeks and mouth
-    bs: { mouthSmileLeft: 0.85, mouthSmileRight: 0.85, cheekSquintLeft: 0.4, cheekSquintRight: 0.4, eyeSquintLeft: 0.12, eyeSquintRight: 0.12,
-      browOuterUpLeft: 0.6, browOuterUpRight: 0.6, browInnerUp: 0.3, eyeWideLeft: 0.08, eyeWideRight: 0.08, jawOpen: 0.26 },
+    // r3: delight escalates over talking (blind judge: "the same open smile as talk"): the eyes smile (cheeks push the
+    // lower lids up, c-happy), a bigger open D-mouth, brows up
+    bs: { mouthSmileLeft: 1.0, mouthSmileRight: 1.0, cheekSquintLeft: 0.75, cheekSquintRight: 0.75, eyeSquintLeft: 0.3, eyeSquintRight: 0.3,
+      browOuterUpLeft: 0.7, browOuterUpRight: 0.7, browInnerUp: 0.35, jawOpen: 0.34 },
     head: [-2, 0, 4], gaze: [0, 2], env: [0.25, 0, 0.45], bounce: 4,
   },
   // gentle concern: inner brows up and knit, lids lowered, lips pressed, corners slightly down, head tilted in
   concern: {
     // r3: the lowered lids read as sleepy / sceptical to the blind judge (3 of 3 runs): concern is carried by the brows
     // (inner ends up, knit), soft open eyes and a small pressed, down-turned mouth
-    bs: { browInnerUp: 1.0, browDownLeft: 0.2, browDownRight: 0.2, eyeWideLeft: 0.12, eyeWideRight: 0.12,
-      mouthPressLeft: 0.3, mouthPressRight: 0.3, mouthFrownLeft: 0.4, mouthFrownRight: 0.4, mouthSmileLeft: -1, mouthSmileRight: -1 },
-    head: [4, 2, 7], gaze: [0, -4], env: [0.45, 0, 0.6],
+    bs: { browInnerUp: 1.0, browDownLeft: 0.45, browDownRight: 0.45, eyeWideLeft: 0.15, eyeWideRight: 0.15,
+      mouthPressLeft: 0.35, mouthPressRight: 0.35, mouthFrownLeft: 0.7, mouthFrownRight: 0.7, mouthSmileLeft: -1, mouthSmileRight: -1 },
+    head: [4, 2, 7], gaze: [0, 3], env: [0.45, 0, 0.6],
   },
   surprise: {
     bs: { eyeWideLeft: 0.9, eyeWideRight: 0.9, browInnerUp: 0.6, browOuterUpLeft: 0.85, browOuterUpRight: 0.85, jawOpen: 0.42,

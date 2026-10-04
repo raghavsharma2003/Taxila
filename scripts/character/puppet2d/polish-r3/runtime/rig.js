@@ -271,7 +271,7 @@ export class Puppet2DRig {
     };
     // yaw keyform: side + weight (an ease-in so small drifts stay subtle and the key is reached at +-keyDeg)
     if (this.g.yawKeys) {
-      const K = this.g.yawKeys, f = clamp(yaw / K.keyDeg, -1, 1);
+      const K = this.g.yawKeys, f = clamp(yaw / K.keyDeg, -1.3, 1.3);   // up to 1.25x the painted key at the yaw limit: the turn must read at thumbnail size
       st.yk = f >= 0 ? K.R : K.L;
       st.ykf = Math.abs(f);
       this.yawStep = K.grid.step; this.yawN = K.grid.n;
@@ -344,7 +344,7 @@ export class Puppet2DRig {
    *  a clean painted key, never a cross-faded smear. Slow changes (expression half-lids) pass through continuously. */
   blinkShape(t, dt, b) {
     const S = this.bsh || (this.bsh = { active: false, t0: 0, base: 0, prev: b, settle: false });
-    const SEQ = [0.5, 1.0, 1.0, 0.6, 0.3, 0.1];
+    const SEQ = [0.5, 1.0, 1.0, 0.6, 0.45, 0.12];   // every frame a clean key: mid, shut | shut | mid, mid, a barely-lowered live lid
     const rate = dt > 0 ? (b - S.prev) / dt : 0;
     if (!S.active && rate > 5 && b - S.prev > 0.06 && b > 0.15) { S.active = true; S.t0 = t; S.base = Math.min(S.prev, 0.5); }
     S.prev = b;
@@ -479,7 +479,7 @@ export class Puppet2DRig {
   browChannels(s) {
     const bs = this.bs, sfx = s === "L" ? "Right" : "Left";
     const inner = bs.browInnerUp ?? 0, outer = bs["browOuterUp" + sfx] ?? 0, down = bs["browDown" + sfx] ?? 0, wide = bs["eyeWide" + sfx] ?? 0;
-    return { lift: 10 * wide + 9 * outer + 4 * inner, inner: 34 * inner, arch: 30 * outer, knit: 16 * down };
+    return { lift: 10 * wide + 9 * outer + 4 * inner, inner: 40 * inner, arch: 30 * outer, knit: 16 * down };
   }
 
   browOffset(s, x, y) {

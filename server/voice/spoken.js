@@ -562,3 +562,27 @@ export function spokenOptsForChild(child, ageBand) {
   const band = ageBand === "6-9" || ageBand === "10-15" ? ageBand : (child?.class_level ?? 9) <= 4 ? "6-9" : "10-15";
   return { mode: MODES[child?.language_pref] ?? "hinglish", schoolMedium: child?.school_medium ?? undefined, ageBand: band };
 }
+
+// ───────────── speakable(): the last step before ANY voice ─────────────
+
+const TERM_KEYS = Object.keys(LX.TERMS).sort((a, b) => b.length - a.length);
+const TERM_RE = new RegExp(`(?<=^|[\\s(“"'])(${TERM_KEYS.map(escapeRe).join("|")})(?=$|[\\s,;:!?)”"'])`, "g");
+const RESIDUAL_RE = /\d+(?:\.\d+)?/g;
+
+/**
+ * toSpoken(), then the owner's rules (2026-10-04, voice-clips-off-and-numbers-normalised): NO digit and NO "..." ever
+ * reaches a voice, and the term lexicon (spoken-lexicon.js TERMS) is applied. A digit toSpoken left (a pattern its token
+ * walk does not know) is read as a plain number in the cell's words; "..." and "…" become a comma pause (the delivery
+ * plan, when there is one, has already turned them into a timed pause).
+ * @param {string} text  written teacher text
+ * @param {Parameters<typeof toSpoken>[1]} [opts]
+ */
+export function speakable(text, opts = {}) {
+  const cell = cellFor(opts);
+  const lang = cell.words === "hi" ? "hi" : "en";
+  let x = toSpoken(text, opts);
+  x = x.replace(RESIDUAL_RE, (m) => numWords(m, cell.W));
+  x = x.replace(TERM_RE, (m) => LX.TERMS[m]?.[lang] ?? m);
+  x = x.replace(/\s*(?:\.{3,}|…)+\s*(?=[.!?।]|$)/g, "").replace(/\s*(?:\.{3,}|…)+\s*/g, ", ").replace(/,\s*,/g, ",").replace(/^\s*,\s*/, "");
+  return x;
+}

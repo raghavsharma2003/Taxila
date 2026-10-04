@@ -24,6 +24,6 @@ export default {
     const pick = p.question === "earliest" ? (a, b) => (b.year < a.year ? b : a) : (a, b) => (b.year > a.year ? b : a);
     const right = p.events.reduce(pick).key;
     await wrongThenRight(c, { sel: "[data-card]", attr: "data-card", wrong: p.events.find((e) => e.key !== right).key, right });
-    doneCalled(c);
+    await doneCalled(c);
   },
 };

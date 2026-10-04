@@ -44,6 +44,6 @@ export default {
     await c.tap("[data-option]", { attr: "data-option", value: String(right) });
     a = await c.waitAnswer(n1 + 1);
     c.add("G5.play_truth", w1 && a?.correct === true, { wrongOk: w1, right: a?.value });
-    doneCalled(c);
+    await doneCalled(c);
   },
 };

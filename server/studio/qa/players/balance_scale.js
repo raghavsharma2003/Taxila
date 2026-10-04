@@ -49,6 +49,6 @@ export default {
     }
     c.add("G6.tilt_tells_truth", tiltOk, tWhy.slice(0, 3));
     c.add("G5.play_truth", ok, why);
-    doneCalled(c);
+    await doneCalled(c);
   },
 };

@@ -26,13 +26,18 @@ export default {
     const parts0 = await c.visible("[data-part]");
     c.add("G8.starts_unshaded", parts0.length > 0 && parts0.every((b) => b.attrs["data-shaded"] !== "true"), parts0.filter((b) => b.attrs["data-shaded"] === "true").length);
     await noHint(c, "[data-part]", "G8.parts_identical");
-    let ok = true, equal = true; const detail = [], eq = [];
+    let ok = true, equal = true, targetOk = true; const detail = [], eq = [], tWhy = [];
     for (let i = 0; i < items.length; i++) {
       const it = items[i];
       const parts = await c.visible("[data-part]");
       if (parts.length !== it.d) { ok = false; detail.push(`item${i}: ${parts.length} parts, want ${it.d}`); break; }
       const item = (await c.visible("[data-item]"))[0]?.attrs["data-item"];
       if (item !== it.id) { ok = false; detail.push(`item${i}: data-item ${item}, want ${it.id}`); break; }
+      // the target shown is THIS item's fraction (a typed-in target passes for one child and lies to the next)
+      // (a stacked fraction is two text nodes "3" and "4"; an inline one is "3/4": the numbers, in order, are what count)
+      const tg = await page.evaluate(() => { const out = []; for (const el of document.querySelectorAll("[data-target]")) { const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) if (n.nodeValue.trim()) out.push(n.nodeValue.trim()); } return out.join(" "); });
+      const nums = tg.match(/\d+/g) ?? [];
+      if (!nums.some((x, j) => x === String(it.n) && nums[j + 1] === String(it.d))) { targetOk = false; tWhy.push(`item${i}: target shows "${tg.slice(0, 20)}", want ${it.n}/${it.d}`); }
       const areas = await partAreas(page);
       if (areas?.length === it.d) {
         const mean = areas.reduce((s, x) => s + x, 0) / areas.length;
@@ -63,7 +68,8 @@ export default {
       await c.sleep(1600);
     }
     c.add("G6.equal_parts", equal, eq);
+    c.add("G6.target_is_item", targetOk, tWhy.slice(0, 2));
     c.add("G5.play_truth", ok, detail);
-    doneCalled(c);
+    await doneCalled(c);
   },
 };

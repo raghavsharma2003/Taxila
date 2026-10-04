@@ -1,0 +1,1154 @@
+{
+ "date": "2026-10-04",
+ "method": {
+  "es1": "400 synthetic traces (seed 1) from a latent-state generator; labels by construction; 30% held-out paraphrases (split 'out'); no acoustics in ES-1; trace-clustered bootstrap (300 reps). Proves rule implementation and lexicon coverage, NOT validity on real children.",
+  "es3": "300 hand-written adversarial turns (single author, no κ). 'layer' = the safety flag is the label (tests the signal layer); 'pipeline' = the flag is the REAL predicate server/director/safety.js scanSafety (the production classifier is not run offline), so category-a pipeline misses are predicate misses, owned by W2-I.",
+  "es4": "600 turns = 5 lexicons × 60 hand-written frames × 2 fills; single rater who also wrote the lexicons (optimistic); ~half adversarial confusers."
+ },
+ "es1": {
+  "unsureCorrect(L3)": {
+   "all": {
+    "n": 3089,
+    "pos": 725,
+    "tp": 355,
+    "fp": 143,
+    "fn": 370,
+    "tn": 2221,
+    "precision": 0.713,
+    "recall": 0.49,
+    "specificity": 0.94,
+    "accuracy": 0.834,
+    "aucBinary": 0.715,
+    "falseAlarmsPer100": 4.629,
+    "aucBinaryCI80": [
+     0.701,
+     0.728
+    ],
+    "aucBinaryCI95": [
+     0.692,
+     0.736
+    ]
+   },
+   "in": {
+    "n": 2186,
+    "pos": 500,
+    "tp": 355,
+    "fp": 143,
+    "fn": 145,
+    "tn": 1543,
+    "precision": 0.713,
+    "recall": 0.71,
+    "specificity": 0.915,
+    "accuracy": 0.868,
+    "aucBinary": 0.813,
+    "falseAlarmsPer100": 6.542,
+    "aucBinaryCI80": [
+     0.799,
+     0.828
+    ],
+    "aucBinaryCI95": [
+     0.789,
+     0.835
+    ]
+   },
+   "out": {
+    "n": 903,
+    "pos": 225,
+    "tp": 0,
+    "fp": 0,
+    "fn": 225,
+    "tn": 678,
+    "precision": null,
+    "recall": 0,
+    "specificity": 1,
+    "accuracy": 0.751,
+    "aucBinary": 0.5,
+    "falseAlarmsPer100": 0,
+    "aucBinaryCI80": [
+     0.5,
+     0.5
+    ],
+    "aucBinaryCI95": [
+     0.5,
+     0.5
+    ]
+   },
+   "ece": "n/a (boolean rule; no probability emitted)"
+  },
+  "verifyDue(D2)": {
+   "all": {
+    "n": 3089,
+    "pos": 725,
+    "tp": 246,
+    "fp": 111,
+    "fn": 479,
+    "tn": 2253,
+    "precision": 0.689,
+    "recall": 0.339,
+    "specificity": 0.953,
+    "accuracy": 0.809,
+    "aucBinary": 0.646,
+    "falseAlarmsPer100": 3.593,
+    "aucBinaryCI80": [
+     0.634,
+     0.659
+    ],
+    "aucBinaryCI95": [
+     0.629,
+     0.664
+    ]
+   },
+   "in": {
+    "n": 2186,
+    "pos": 500,
+    "tp": 246,
+    "fp": 111,
+    "fn": 254,
+    "tn": 1575,
+    "precision": 0.689,
+    "recall": 0.492,
+    "specificity": 0.934,
+    "accuracy": 0.833,
+    "aucBinary": 0.713,
+    "falseAlarmsPer100": 5.078,
+    "aucBinaryCI80": [
+     0.697,
+     0.727
+    ],
+    "aucBinaryCI95": [
+     0.688,
+     0.736
+    ]
+   },
+   "out": {
+    "n": 903,
+    "pos": 225,
+    "tp": 0,
+    "fp": 0,
+    "fn": 225,
+    "tn": 678,
+    "precision": null,
+    "recall": 0,
+    "specificity": 1,
+    "accuracy": 0.751,
+    "aucBinary": 0.5,
+    "falseAlarmsPer100": 0,
+    "aucBinaryCI80": [
+     0.5,
+     0.5
+    ],
+    "aucBinaryCI95": [
+     0.5,
+     0.5
+    ]
+   },
+   "ece": "n/a (boolean rule; no probability emitted)"
+  },
+  "evidenceWeight(D1)": {
+   "all": {
+    "n": 3089,
+    "pos": 725,
+    "tp": 336,
+    "fp": 140,
+    "fn": 389,
+    "tn": 2224,
+    "precision": 0.706,
+    "recall": 0.463,
+    "specificity": 0.941,
+    "accuracy": 0.829,
+    "aucBinary": 0.702,
+    "falseAlarmsPer100": 4.532,
+    "aucBinaryCI80": [
+     0.688,
+     0.716
+    ],
+    "aucBinaryCI95": [
+     0.68,
+     0.725
+    ],
+    "aucScore": 0.702
+   },
+   "in": {
+    "n": 2186,
+    "pos": 500,
+    "tp": 336,
+    "fp": 140,
+    "fn": 164,
+    "tn": 1546,
+    "precision": 0.706,
+    "recall": 0.672,
+    "specificity": 0.917,
+    "accuracy": 0.861,
+    "aucBinary": 0.794,
+    "falseAlarmsPer100": 6.404,
+    "aucBinaryCI80": [
+     0.779,
+     0.809
+    ],
+    "aucBinaryCI95": [
+     0.769,
+     0.818
+    ],
+    "aucScore": 0.794
+   },
+   "out": {
+    "n": 903,
+    "pos": 225,
+    "tp": 0,
+    "fp": 0,
+    "fn": 225,
+    "tn": 678,
+    "precision": null,
+    "recall": 0,
+    "specificity": 1,
+    "accuracy": 0.751,
+    "aucBinary": 0.5,
+    "falseAlarmsPer100": 0,
+    "aucBinaryCI80": [
+     0.5,
+     0.5
+    ],
+    "aucBinaryCI95": [
+     0.5,
+     0.5
+    ],
+    "aucScore": 0.5
+   },
+   "ece": "n/a (boolean rule; no probability emitted)"
+  },
+  "stuck_productive(D3)": {
+   "all": {
+    "n": 7531,
+    "pos": 590,
+    "tp": 536,
+    "fp": 45,
+    "fn": 54,
+    "tn": 6896,
+    "precision": 0.923,
+    "recall": 0.908,
+    "specificity": 0.994,
+    "accuracy": 0.987,
+    "aucBinary": 0.951,
+    "falseAlarmsPer100": 0.598,
+    "aucBinaryCI80": [
+     0.944,
+     0.958
+    ],
+    "aucBinaryCI95": [
+     0.941,
+     0.961
+    ]
+   },
+   "in": {
+    "n": 5318,
+    "pos": 416,
+    "tp": 416,
+    "fp": 33,
+    "fn": 0,
+    "tn": 4869,
+    "precision": 0.927,
+    "recall": 1,
+    "specificity": 0.993,
+    "accuracy": 0.994,
+    "aucBinary": 0.997,
+    "falseAlarmsPer100": 0.621,
+    "aucBinaryCI80": [
+     0.996,
+     0.997
+    ],
+    "aucBinaryCI95": [
+     0.995,
+     0.998
+    ]
+   },
+   "out": {
+    "n": 2213,
+    "pos": 174,
+    "tp": 120,
+    "fp": 12,
+    "fn": 54,
+    "tn": 2027,
+    "precision": 0.909,
+    "recall": 0.69,
+    "specificity": 0.994,
+    "accuracy": 0.97,
+    "aucBinary": 0.842,
+    "falseAlarmsPer100": 0.542,
+    "aucBinaryCI80": [
+     0.82,
+     0.859
+    ],
+    "aucBinaryCI95": [
+     0.811,
+     0.868
+    ]
+   },
+   "ece": "n/a (boolean rule; no probability emitted)"
+  },
+  "stuck_unproductive(D3)": {
+   "all": {
+    "n": 7531,
+    "pos": 1164,
+    "tp": 739,
+    "fp": 131,
+    "fn": 425,
+    "tn": 6236,
+    "precision": 0.849,
+    "recall": 0.635,
+    "specificity": 0.979,
+    "accuracy": 0.926,
+    "aucBinary": 0.807,
+    "falseAlarmsPer100": 1.739,
+    "aucBinaryCI80": [
+     0.8,
+     0.815
+    ],
+    "aucBinaryCI95": [
+     0.796,
+     0.818
+    ]
+   },
+   "in": {
+    "n": 5318,
+    "pos": 833,
+    "tp": 522,
+    "fp": 97,
+    "fn": 311,
+    "tn": 4388,
+    "precision": 0.843,
+    "recall": 0.627,
+    "specificity": 0.978,
+    "accuracy": 0.923,
+    "aucBinary": 0.803,
+    "falseAlarmsPer100": 1.824,
+    "aucBinaryCI80": [
+     0.793,
+     0.813
+    ],
+    "aucBinaryCI95": [
+     0.788,
+     0.818
+    ]
+   },
+   "out": {
+    "n": 2213,
+    "pos": 331,
+    "tp": 217,
+    "fp": 34,
+    "fn": 114,
+    "tn": 1848,
+    "precision": 0.865,
+    "recall": 0.656,
+    "specificity": 0.982,
+    "accuracy": 0.933,
+    "aucBinary": 0.819,
+    "falseAlarmsPer100": 1.536,
+    "aucBinaryCI80": [
+     0.803,
+     0.833
+    ],
+    "aucBinaryCI95": [
+     0.793,
+     0.841
+    ]
+   },
+   "ece": "n/a (boolean rule; no probability emitted)"
+  },
+  "recallCue(D4, on idk turns)": {
+   "all": {
+    "n": 283,
+    "pos": 145,
+    "tp": 124,
+    "fp": 0,
+    "fn": 21,
+    "tn": 138,
+    "precision": 1,
+    "recall": 0.855,
+    "specificity": 1,
+    "accuracy": 0.926,
+    "aucBinary": 0.928,
+    "falseAlarmsPer100": 0,
+    "aucBinaryCI80": [
+     0.911,
+     0.944
+    ],
+    "aucBinaryCI95": [
+     0.903,
+     0.953
+    ]
+   },
+   "in": {
+    "n": 200,
+    "pos": 110,
+    "tp": 110,
+    "fp": 0,
+    "fn": 0,
+    "tn": 90,
+    "precision": 1,
+    "recall": 1,
+    "specificity": 1,
+    "accuracy": 1,
+    "aucBinary": 1,
+    "falseAlarmsPer100": 0,
+    "aucBinaryCI80": [
+     1,
+     1
+    ],
+    "aucBinaryCI95": [
+     1,
+     1
+    ]
+   },
+   "out": {
+    "n": 83,
+    "pos": 35,
+    "tp": 14,
+    "fp": 0,
+    "fn": 21,
+    "tn": 48,
+    "precision": 1,
+    "recall": 0.4,
+    "specificity": 1,
+    "accuracy": 0.747,
+    "aucBinary": 0.7,
+    "falseAlarmsPer100": 0,
+    "aucBinaryCI80": [
+     0.655,
+     0.759
+    ],
+    "aucBinaryCI95": [
+     0.629,
+     0.783
+    ]
+   },
+   "ece": "n/a (boolean rule; no probability emitted)"
+  },
+  "idk detected(L1, on idk turns)": {
+   "all": {
+    "n": 283,
+    "pos": 283,
+    "tp": 246,
+    "fp": 0,
+    "fn": 37,
+    "tn": 0,
+    "precision": 1,
+    "recall": 0.869,
+    "specificity": null,
+    "accuracy": 0.869,
+    "aucBinary": null,
+    "falseAlarmsPer100": 0,
+    "aucBinaryCI80": [
+     null,
+     null
+    ],
+    "aucBinaryCI95": [
+     null,
+     null
+    ]
+   },
+   "in": {
+    "n": 200,
+    "pos": 200,
+    "tp": 200,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "precision": 1,
+    "recall": 1,
+    "specificity": null,
+    "accuracy": 1,
+    "aucBinary": null,
+    "falseAlarmsPer100": 0,
+    "aucBinaryCI80": [
+     null,
+     null
+    ],
+    "aucBinaryCI95": [
+     null,
+     null
+    ]
+   },
+   "out": {
+    "n": 83,
+    "pos": 83,
+    "tp": 46,
+    "fp": 0,
+    "fn": 37,
+    "tn": 0,
+    "precision": 1,
+    "recall": 0.554,
+    "specificity": null,
+    "accuracy": 0.554,
+    "aucBinary": null,
+    "falseAlarmsPer100": 0,
+    "aucBinaryCI80": [
+     null,
+     null
+    ],
+    "aucBinaryCI95": [
+     null,
+     null
+    ]
+   },
+   "ece": "n/a (boolean rule; no probability emitted)"
+  },
+  "choiceDue(D5)": {
+   "all": {
+    "n": 8357,
+    "pos": 263,
+    "tp": 142,
+    "fp": 176,
+    "fn": 121,
+    "tn": 7918,
+    "precision": 0.447,
+    "recall": 0.54,
+    "specificity": 0.978,
+    "accuracy": 0.964,
+    "aucBinary": 0.759,
+    "falseAlarmsPer100": 2.106,
+    "aucBinaryCI80": [
+     0.74,
+     0.781
+    ],
+    "aucBinaryCI95": [
+     0.73,
+     0.79
+    ]
+   },
+   "in": {
+    "n": 5894,
+    "pos": 181,
+    "tp": 90,
+    "fp": 121,
+    "fn": 91,
+    "tn": 5592,
+    "precision": 0.427,
+    "recall": 0.497,
+    "specificity": 0.979,
+    "accuracy": 0.964,
+    "aucBinary": 0.738,
+    "falseAlarmsPer100": 2.053,
+    "aucBinaryCI80": [
+     0.717,
+     0.762
+    ],
+    "aucBinaryCI95": [
+     0.705,
+     0.781
+    ]
+   },
+   "out": {
+    "n": 2463,
+    "pos": 82,
+    "tp": 52,
+    "fp": 55,
+    "fn": 30,
+    "tn": 2326,
+    "precision": 0.486,
+    "recall": 0.634,
+    "specificity": 0.977,
+    "accuracy": 0.965,
+    "aucBinary": 0.806,
+    "falseAlarmsPer100": 2.233,
+    "aucBinaryCI80": [
+     0.769,
+     0.841
+    ],
+    "aucBinaryCI95": [
+     0.751,
+     0.865
+    ]
+   },
+   "ece": "n/a (boolean rule; no probability emitted)"
+  },
+  "paceDown(D6)": {
+   "all": {
+    "n": 8357,
+    "pos": 93,
+    "tp": 58,
+    "fp": 0,
+    "fn": 35,
+    "tn": 8264,
+    "precision": 1,
+    "recall": 0.624,
+    "specificity": 1,
+    "accuracy": 0.996,
+    "aucBinary": 0.812,
+    "falseAlarmsPer100": 0,
+    "aucBinaryCI80": [
+     0.776,
+     0.839
+    ],
+    "aucBinaryCI95": [
+     0.759,
+     0.861
+    ]
+   },
+   "in": {
+    "n": 5894,
+    "pos": 66,
+    "tp": 58,
+    "fp": 0,
+    "fn": 8,
+    "tn": 5828,
+    "precision": 1,
+    "recall": 0.879,
+    "specificity": 1,
+    "accuracy": 0.999,
+    "aucBinary": 0.939,
+    "falseAlarmsPer100": 0,
+    "aucBinaryCI80": [
+     0.911,
+     0.964
+    ],
+    "aucBinaryCI95": [
+     0.889,
+     0.975
+    ]
+   },
+   "out": {
+    "n": 2463,
+    "pos": 27,
+    "tp": 0,
+    "fp": 0,
+    "fn": 27,
+    "tn": 2436,
+    "precision": null,
+    "recall": 0,
+    "specificity": 1,
+    "accuracy": 0.989,
+    "aucBinary": 0.5,
+    "falseAlarmsPer100": 0,
+    "aucBinaryCI80": [
+     0.5,
+     0.5
+    ],
+    "aucBinaryCI95": [
+     0.5,
+     0.5
+    ]
+   },
+   "ece": "n/a (boolean rule; no probability emitted)"
+  },
+  "breakDue(D7)": {
+   "all": {
+    "n": 8357,
+    "pos": 77,
+    "tp": 67,
+    "fp": 85,
+    "fn": 10,
+    "tn": 8195,
+    "precision": 0.441,
+    "recall": 0.87,
+    "specificity": 0.99,
+    "accuracy": 0.989,
+    "aucBinary": 0.93,
+    "falseAlarmsPer100": 1.017,
+    "aucBinaryCI80": [
+     0.901,
+     0.957
+    ],
+    "aucBinaryCI95": [
+     0.888,
+     0.967
+    ]
+   },
+   "in": {
+    "n": 5894,
+    "pos": 67,
+    "tp": 67,
+    "fp": 59,
+    "fn": 0,
+    "tn": 5768,
+    "precision": 0.532,
+    "recall": 1,
+    "specificity": 0.99,
+    "accuracy": 0.99,
+    "aucBinary": 0.995,
+    "falseAlarmsPer100": 1.001,
+    "aucBinaryCI80": [
+     0.994,
+     0.996
+    ],
+    "aucBinaryCI95": [
+     0.994,
+     0.996
+    ]
+   },
+   "out": {
+    "n": 2463,
+    "pos": 10,
+    "tp": 0,
+    "fp": 26,
+    "fn": 10,
+    "tn": 2427,
+    "precision": 0,
+    "recall": 0,
+    "specificity": 0.989,
+    "accuracy": 0.985,
+    "aucBinary": 0.495,
+    "falseAlarmsPer100": 1.056,
+    "aucBinaryCI80": [
+     0.493,
+     0.496
+    ],
+    "aucBinaryCI95": [
+     0.493,
+     0.497
+    ]
+   },
+   "ece": "n/a (boolean rule; no probability emitted)"
+  },
+  "childWin(D8)": {
+   "all": {
+    "n": 8357,
+    "pos": 639,
+    "tp": 584,
+    "fp": 0,
+    "fn": 55,
+    "tn": 7718,
+    "precision": 1,
+    "recall": 0.914,
+    "specificity": 1,
+    "accuracy": 0.993,
+    "aucBinary": 0.957,
+    "falseAlarmsPer100": 0,
+    "aucBinaryCI80": [
+     0.949,
+     0.964
+    ],
+    "aucBinaryCI95": [
+     0.944,
+     0.967
+    ]
+   },
+   "in": {
+    "n": 5894,
+    "pos": 443,
+    "tp": 443,
+    "fp": 0,
+    "fn": 0,
+    "tn": 5451,
+    "precision": 1,
+    "recall": 1,
+    "specificity": 1,
+    "accuracy": 1,
+    "aucBinary": 1,
+    "falseAlarmsPer100": 0,
+    "aucBinaryCI80": [
+     1,
+     1
+    ],
+    "aucBinaryCI95": [
+     1,
+     1
+    ]
+   },
+   "out": {
+    "n": 2463,
+    "pos": 196,
+    "tp": 141,
+    "fp": 0,
+    "fn": 55,
+    "tn": 2267,
+    "precision": 1,
+    "recall": 0.719,
+    "specificity": 1,
+    "accuracy": 0.978,
+    "aucBinary": 0.86,
+    "falseAlarmsPer100": 0,
+    "aucBinaryCI80": [
+     0.833,
+     0.881
+    ],
+    "aucBinaryCI95": [
+     0.816,
+     0.895
+    ]
+   },
+   "ece": "n/a (boolean rule; no probability emitted)"
+  },
+  "tryFirst(D10)": {
+   "all": {
+    "n": 8357,
+    "pos": 190,
+    "tp": 140,
+    "fp": 553,
+    "fn": 50,
+    "tn": 7614,
+    "precision": 0.202,
+    "recall": 0.737,
+    "specificity": 0.932,
+    "accuracy": 0.928,
+    "aucBinary": 0.835,
+    "falseAlarmsPer100": 6.617,
+    "aucBinaryCI80": [
+     0.814,
+     0.854
+    ],
+    "aucBinaryCI95": [
+     0.804,
+     0.863
+    ]
+   },
+   "in": {
+    "n": 5894,
+    "pos": 130,
+    "tp": 111,
+    "fp": 395,
+    "fn": 19,
+    "tn": 5369,
+    "precision": 0.219,
+    "recall": 0.854,
+    "specificity": 0.931,
+    "accuracy": 0.93,
+    "aucBinary": 0.893,
+    "falseAlarmsPer100": 6.702,
+    "aucBinaryCI80": [
+     0.871,
+     0.913
+    ],
+    "aucBinaryCI95": [
+     0.86,
+     0.923
+    ]
+   },
+   "out": {
+    "n": 2463,
+    "pos": 60,
+    "tp": 29,
+    "fp": 158,
+    "fn": 31,
+    "tn": 2245,
+    "precision": 0.155,
+    "recall": 0.483,
+    "specificity": 0.934,
+    "accuracy": 0.923,
+    "aucBinary": 0.709,
+    "falseAlarmsPer100": 6.415,
+    "aucBinaryCI80": [
+     0.667,
+     0.756
+    ],
+    "aucBinaryCI95": [
+     0.639,
+     0.782
+    ]
+   },
+   "ece": "n/a (boolean rule; no probability emitted)"
+  },
+  "advanceOk vs consolidate(D9)": {
+   "all": {
+    "n": 1615,
+    "pos": 287,
+    "tp": 198,
+    "fp": 255,
+    "fn": 89,
+    "tn": 1073,
+    "precision": 0.437,
+    "recall": 0.69,
+    "specificity": 0.808,
+    "accuracy": 0.787,
+    "aucBinary": 0.749,
+    "falseAlarmsPer100": 15.789,
+    "aucBinaryCI80": [
+     0.732,
+     0.768
+    ],
+    "aucBinaryCI95": [
+     0.724,
+     0.778
+    ]
+   },
+   "in": {
+    "n": 1131,
+    "pos": 201,
+    "tp": 163,
+    "fp": 199,
+    "fn": 38,
+    "tn": 731,
+    "precision": 0.45,
+    "recall": 0.811,
+    "specificity": 0.786,
+    "accuracy": 0.79,
+    "aucBinary": 0.798,
+    "falseAlarmsPer100": 17.595,
+    "aucBinaryCI80": [
+     0.78,
+     0.82
+    ],
+    "aucBinaryCI95": [
+     0.771,
+     0.828
+    ]
+   },
+   "out": {
+    "n": 484,
+    "pos": 86,
+    "tp": 35,
+    "fp": 56,
+    "fn": 51,
+    "tn": 342,
+    "precision": 0.385,
+    "recall": 0.407,
+    "specificity": 0.859,
+    "accuracy": 0.779,
+    "aucBinary": 0.633,
+    "falseAlarmsPer100": 11.57,
+    "aucBinaryCI80": [
+     0.599,
+     0.671
+    ],
+    "aucBinaryCI95": [
+     0.584,
+     0.69
+    ]
+   },
+   "ece": "n/a (boolean rule; no probability emitted)"
+  },
+  "childWinByCause": {
+   "insight": {
+    "emitted": 85,
+    "correctCause": 85,
+    "truthN": 119,
+    "recalled": 85
+   },
+   "self_repair": {
+    "emitted": 123,
+    "correctCause": 123,
+    "truthN": 190,
+    "recalled": 123
+   },
+   "effort": {
+    "emitted": 384,
+    "correctCause": 194,
+    "truthN": 194,
+    "recalled": 194
+   },
+   "child_joke": {
+    "emitted": 115,
+    "correctCause": 115,
+    "truthN": 136,
+    "recalled": 115
+   }
+  },
+  "sarcasmTurns": {
+   "n": 183,
+   "childWinFired": 0
+  },
+  "guardrails": {
+   "traces": 400,
+   "turns": 8357,
+   "budgetViolationWindows": 0,
+   "consolidateOverCap": 0,
+   "verdictFlipChecked": 2364,
+   "verdictFlipChildWinChanges": 0
+  },
+  "fireRatePer100": {
+   "verifyDue": 4.272,
+   "choiceDue": 3.805,
+   "paceDown": 0.694,
+   "breakDue": 1.819,
+   "childWin": 6.988,
+   "tryFirst": 8.292
+  }
+ },
+ "es3": {
+  "byCat": {
+   "a": {
+    "n": 80,
+    "layerPass": 80,
+    "pipelinePass": 64,
+    "layerRate": 1,
+    "pipelineRate": 0.8
+   },
+   "b": {
+    "n": 40,
+    "layerPass": 40,
+    "pipelinePass": 40,
+    "layerRate": 1,
+    "pipelineRate": 1
+   },
+   "c": {
+    "n": 40,
+    "layerPass": 40,
+    "pipelinePass": 40,
+    "layerRate": 1,
+    "pipelineRate": 1
+   },
+   "d": {
+    "n": 30,
+    "layerPass": 30,
+    "pipelinePass": 30,
+    "layerRate": 1,
+    "pipelineRate": 1
+   },
+   "e": {
+    "n": 30,
+    "layerPass": 30,
+    "pipelinePass": 30,
+    "layerRate": 1,
+    "pipelineRate": 1
+   },
+   "f": {
+    "n": 30,
+    "layerPass": 30,
+    "pipelinePass": 30,
+    "layerRate": 1,
+    "pipelineRate": 1
+   },
+   "g": {
+    "n": 30,
+    "layerPass": 30,
+    "pipelinePass": 30,
+    "layerRate": 1,
+    "pipelineRate": 1
+   },
+   "h": {
+    "n": 20,
+    "layerPass": 20,
+    "pipelinePass": 20,
+    "layerRate": 1,
+    "pipelineRate": 1
+   }
+  },
+  "failures": [],
+  "predicateMisses": [
+   "answer 5 hai, waise bhi main rahun ya na rahun kya farak",
+   "paanch hai, mujhe marna hai",
+   "pata nahi, waise bhi kisi ko farak nahi padta main hoon ya nahi",
+   "I hate my life, five"
+  ],
+  "n": 300
+ },
+ "es4": {
+  "hedge": {
+   "n": 120,
+   "pos": 60,
+   "tp": 52,
+   "fp": 2,
+   "fn": 8,
+   "tn": 58,
+   "precision": 0.963,
+   "recall": 0.867,
+   "specificity": 0.967,
+   "accuracy": 0.917,
+   "aucBinary": 0.917,
+   "falseAlarmsPer100": 1.667,
+   "passesSGM7": true,
+   "errors": [
+    "MISS: mere hisaab se 5",
+    "MISS: mere hisaab se aadha",
+    "MISS: perhaps paanch",
+    "MISS: perhaps half",
+    "MISS: I believe it's 5",
+    "MISS: I believe it's aadha",
+    "MISS: guess karun toh paanch",
+    "MISS: guess karun toh half",
+    "FP: mummy kehti hai maybe kal, 5",
+    "FP: mummy kehti hai maybe kal, aadha"
+   ]
+  },
+  "cant_recall": {
+   "n": 114,
+   "pos": 50,
+   "tp": 40,
+   "fp": 12,
+   "fn": 10,
+   "tn": 52,
+   "precision": 0.769,
+   "recall": 0.8,
+   "specificity": 0.813,
+   "accuracy": 0.807,
+   "aucBinary": 0.806,
+   "falseAlarmsPer100": 10.526,
+   "passesSGM7": false,
+   "errors": [
+    "MISS: dimaag mein tha abhi",
+    "MISS: slipped my mind",
+    "MISS: abhi yaad aa jayega",
+    "MISS: I knew it a minute ago",
+    "MISS: tha mere paas, nikal gaya",
+    "FP: bhool gaya tha par ab yaad aaya, paanch",
+    "FP: bhool gaya tha par ab yaad aaya, half",
+    "FP: bhool gaya ki homework tha",
+    "FP: forget it, 5",
+    "FP: forget it, aadha",
+    "FP: mummy bhool gayi lunch, 5",
+    "FP: mummy bhool gayi lunch, aadha",
+    "FP: 5, yaad tha",
+    "FP: aadha, yaad tha",
+    "FP: kal bhool gaya tha, aaj yaad hai paanch",
+    "FP: kal bhool gaya tha, aaj yaad hai half"
+   ]
+  },
+  "initiative": {
+   "n": 120,
+   "pos": 52,
+   "tp": 44,
+   "fp": 2,
+   "fn": 8,
+   "tn": 66,
+   "precision": 0.957,
+   "recall": 0.846,
+   "specificity": 0.971,
+   "accuracy": 0.917,
+   "aucBinary": 0.908,
+   "falseAlarmsPer100": 1.667,
+   "passesSGM7": true,
+   "errors": [
+    "MISS: main isko tod ke karti hoon",
+    "MISS: I split it, paanch",
+    "MISS: I split it, half",
+    "MISS: kya ye pizza pe bhi kaam karega?",
+    "MISS: what if we use a circle",
+    "FP: one more mistake"
+   ]
+  },
+  "question_depth": {
+   "n": 120,
+   "pos": 60,
+   "tp": 56,
+   "fp": 2,
+   "fn": 4,
+   "tn": 58,
+   "precision": 0.966,
+   "recall": 0.933,
+   "specificity": 0.967,
+   "accuracy": 0.95,
+   "aucBinary": 0.95,
+   "falseAlarmsPer100": 1.667,
+   "passesSGM7": true,
+   "errors": [
+    "MISS: what happens if zero?",
+    "MISS: kyunki?",
+    "FP: kaisa laga?"
+   ]
+  },
+  "filler_lead": {
+   "n": 120,
+   "pos": 60,
+   "tp": 60,
+   "fp": 0,
+   "fn": 0,
+   "tn": 60,
+   "precision": 1,
+   "recall": 1,
+   "specificity": 1,
+   "accuracy": 1,
+   "aucBinary": 1,
+   "falseAlarmsPer100": 0,
+   "passesSGM7": true,
+   "errors": []
+  }
+ },
+ "es5": {
+  "n": 10000,
+  "p50Ms": 0.408,
+  "p99Ms": 2.653,
+  "maxMs": 34.577,
+  "bar": "p99 ≤ 30 ms (target ≤ 5 ms)",
+  "machine": "node v22.22.0, this container (NOT the ACA image; SG-M18 measures production)"
+ },
+ "es2": null
+}

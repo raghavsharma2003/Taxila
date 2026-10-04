@@ -8307,6 +8307,69 @@
    "title": "Owner: crack liveliness at research level (reference: Tavus Griffin full-duplex + cascade): the teacher listens, thinks and can answer mid-utterance or wait, backchannels, handles interruptions and builds content in parallel while the child speaks. Workstream wf_3622f8d6-318 studies products/papers/turn-taking science for children, designs our duplex architecture on the cascade, and prototypes it with a measured simulator. Reverse only on the owner's word.",
    "at": "2026-10-04",
    "source": "inbox/owner-duplex.json"
+  },
+  {
+   "id": "m-b1-prefix-commit-2026-10-04",
+   "kind": "measurement",
+   "title": "M-B1 (duplex Study B, 2026-10-04): committing to a child's numeric answer mid-utterance (first value confirmed by one following non-number word) grades the wrong value on 5/13 reference stimuli [80% Wilson 0.23-0.56], 35/78 production D4 transcripts [0.38-0.52] and 30/78 MAI-Tx-2-Streaming transcripts [0.32-0.46]; an oracle that knew the final value saves median 0 words (mean 0.85) because the answer is the last content (Hindi verb tails ~2 words). Method: word-prefix replay through the repo's extractValues()/answerOK rule, deterministic, synthetic child TTS stimuli (stimuli.mjs, 13 gradable), 6 transcripts per stimulus so effective n=13; text prefixes understate real partial-revision error. Harness evals/duplex/prefix-commit.mjs, results evals/duplex/results/prefix-commit-2026-10-04.json. Re-run on E1 streaming partials (X6).",
+   "at": "2026-10-04",
+   "source": "inbox/duplex-study-b.json"
+  },
+  {
+   "id": "rj-native-duplex-teacher-2026-10-04",
+   "kind": "rejection",
+   "title": "Rejected by evidence (not trial): a native full-duplex speech model as the teacher. IndicFDB Hindi (NVIDIA 2609.31967): Human-1 content rating 0.564/5 at 2.02 s; GPT Live takes over in 38% of natural pauses (61.6% pause success) and fails 85% of backchannel samples; FDB-v2 open duplex correction/entity 2.6-2.9; DuplexJail +34-39 pt attack success on PersonaPlex; HumDial 2026 ranks 1-3 were cascaded/semi-cascaded, Moshi 34.5 and Freeze-Omni 43.8 final vs 76.6. GPT-Live-1 is out on cost (owner). Revisit if an Azure duplex model passes our Hindi safety evals with IndicFDB content rating >= 4.5 and pause success >= 95%.",
+   "at": "2026-10-04",
+   "source": "inbox/duplex-study-b.json"
+  },
+  {
+   "id": "rj-mid-utterance-model-grading-2026-10-04",
+   "kind": "rejection",
+   "title": "Rejected by evidence: grading or correcting the child mid-utterance (by a model or by first-value code). M-B1: 38-45% wrong early verdicts on numeric answers; SHANKS (2510.06917, cascade arm) interrupts 24.9% of fully correct spoken solutions (E2E 30.6%, 3 s chunks 41.1%); 'take the floor when asked' (2609.19596): duplex models challenge false claims in only 14-15% of replies. Grading waits for the committed endpoint. Revisit if a code-keyed early verdict reaches <= 2% error on E1 streaming partials.",
+   "at": "2026-10-04",
+   "source": "inbox/duplex-study-b.json"
+  },
+  {
+   "id": "smart-turn-unproven-vs-silence-2026-10-04",
+   "kind": "measurement",
+   "title": "External (Voice-Light 2609.20995, locked test, 1,673 real English silence candidates, HOLD n=37): Smart Turn v3.2 (threshold 0.95) 13.51% false cut-offs and 20.72% EOT recall vs a tuned Silero 640 ms silence policy 2.70% and 95.60% (LiveKit v1-mini 2.70%/91.50%). Small HOLD n and possible training overlap; caution on wb-predictive-endpoint: keep tuned silence as the floor and adopt a learned scorer only if it beats Silero-640 on child HOLDs (duplex X1).",
+   "at": "2026-10-04",
+   "source": "inbox/duplex-study-b.json"
+  },
+  {
+   "id": "duplex-cascade-listening-teacher-2026-10-04",
+   "kind": "decision",
+   "title": "Proposed (Study B, docs/research/duplex/MODELS-PAPERS.md §7): the 'listening teacher' cascade. Always-on ear; a code floor FSM fed by device VAD, personalised VAD, STT partials, prosodic EoT score and answer-form completeness computed in code; listening notes per stable slice (code first, gated fast model for why/teach-back, never speech); speculation (classify + replies + prelude warm-up) fired at the endpoint candidate, promoted only on lexical identity; speech only at the committed endpoint; commit-safe uptake prefix from the child's token; playback-anchored history (heardUpTo); Studio intents may fire from notes, kernel decides reveal. Mid-utterance teacher action only for distress, explicit wait/stop, repeat requests, fold-in of a called-out answer, long off-task hold. Reverse if X1 shows the completeness feature adds no AUC over silence on child HOLDs, or X2 saves < 150 ms p50 first reply audio.",
+   "at": "2026-10-04",
+   "source": "inbox/duplex-study-b.json"
+  },
+  {
+   "id": "duplex-partial-safety-first-2026-10-04",
+   "kind": "decision",
+   "title": "Proposed: run scanSafety on every STT partial/slice (not only finals); a distress hit stops teacher speech immediately and routes the turn to safeguard at turn end or after 1.5 s of silence (LateIntent 2610.00272: 1.5 s pause after intent revelation keeps premature response near baseline). First item in the duplex rollout because it only adds detection points. Reverse if the false-attend rate on E1 exceeds 1 per lesson-hour.",
+   "at": "2026-10-04",
+   "source": "inbox/duplex-study-b.json"
+  },
+  {
+   "id": "duplex-heard-upto-2026-10-04",
+   "kind": "decision",
+   "title": "Proposed: the client reports heardUpTo {responseId, chars, ms} (last fully played word boundary) instead of only teacher_interrupted; the server keeps only heard teacher text in history and re-says unheard safety lines. Evidence: PACE (2608.07631) referent anchoring 25.0% -> 96.3%; Self-Listening (2609.05592) 7.8% -> 73.0%; Voice-Light builds history only from browser-acknowledged audio. Reverse if duplex X5 shows no anchoring gain on tutor repeat/continue requests.",
+   "at": "2026-10-04",
+   "source": "inbox/duplex-study-b.json"
+  },
+  {
+   "id": "owner-test-0-of-100-2026-10-04",
+   "kind": "measurement",
+   "title": "Owner hands-on test of production (s9242020), n=1 session, 2026-10-04: rated 0/100. Failures: game grading nonsense; teacher often confused/failing; child saying 'end the lesson' ends it immediately; free-form steering ('talk about something else', 'explain it this way') not understood; 'show me a diagram' ignored; robotic voice; poor teacher animation; weak product design. The automated Wave 1 battery passed while these failed: the batteries test plumbing, not the experience.",
+   "at": "2026-10-04",
+   "source": "inbox/owner-test-zero.json"
+  },
+  {
+   "id": "rj-plumbing-batteries-as-acceptance",
+   "kind": "rejection",
+   "title": "Treating green plumbing batteries (API/flow checks) as product acceptance: Wave 1 passed every prod test yet the owner rated the live product 0/100. Acceptance now requires experience tests with real child-like sessions (steering, requests, grading truth, ending) and the owner's own test.",
+   "at": "2026-10-04",
+   "source": "inbox/owner-test-zero.json"
   }
  ],
  "edges": [

@@ -1,0 +1,3112 @@
+{
+ "measurement": "M-C1 turn-markers",
+ "date": "2026-10-04",
+ "method": "deterministic replay of the shipped scorer (turnModel.ts) and the Study C candidate (src/duplex/turnPolicy.ts) over STT transcripts of the 30 stimuli from the 2026-10-04 refresh rows (dev = D4 + S0, the arms the candidate lexicon was written against; test = the other 18 configs), plus an authored marker set and an overlap set; see header",
+ "sources": {
+  "rows": "evals/model-refresh-2026-10-04/stt/results/rows-2026-10-04.json",
+  "devCfgs": [
+   "D4 live-tx kw+prompt (CURRENT)",
+   "S0 MAI-Tx-2-Streaming nohint"
+  ]
+ },
+ "splits": {
+  "dev": {
+   "rows": 360,
+   "spellings": {
+    "उम": 4,
+    "उम्मा": 3,
+    "उम्म": 8,
+    "आम": 3,
+    "अम": 4,
+    "अं": 1,
+    "अम्म": 1,
+    "ام": 1,
+    "अम्": 1,
+    "um": 8,
+    "vol": 1,
+    "ओम": 1
+   },
+   "nF": 36,
+   "nP": 152,
+   "nU": 360,
+   "qPrefixes": 12,
+   "shipped": {
+    "F_fillerSent": {
+     "number": {
+      "n": 36,
+      "wrong": 36,
+      "rate": 1
+     },
+     "default": {
+      "n": 36,
+      "wrong": 17,
+      "rate": 0.472
+     },
+     "probe": {
+      "n": 36,
+      "wrong": 0,
+      "rate": 0
+     },
+     "explain": {
+      "n": 36,
+      "wrong": 0,
+      "rate": 0
+     }
+    },
+    "P_prematureSend": {
+     "number": {
+      "n": 152,
+      "wrong": 152,
+      "rate": 1
+     },
+     "default": {
+      "n": 152,
+      "wrong": 51,
+      "rate": 0.336
+     },
+     "probe": {
+      "n": 152,
+      "wrong": 35,
+      "rate": 0.23
+     },
+     "explain": {
+      "n": 152,
+      "wrong": 24,
+      "rate": 0.158
+     }
+    },
+    "U_late": {
+     "number": {
+      "n": 360,
+      "wrong": 0,
+      "rate": 0,
+      "meanAddedMs": 0
+     },
+     "default": {
+      "n": 360,
+      "wrong": 0,
+      "rate": 0,
+      "meanAddedMs": 0
+     },
+     "probe": {
+      "n": 360,
+      "wrong": 0,
+      "rate": 0,
+      "meanAddedMs": 0
+     },
+     "explain": {
+      "n": 360,
+      "wrong": 37,
+      "rate": 0.103,
+      "meanAddedMs": 154
+     }
+    }
+   },
+   "candidate": {
+    "F_fillerSent": {
+     "number": {
+      "n": 36,
+      "wrong": 1,
+      "rate": 0.028
+     },
+     "default": {
+      "n": 36,
+      "wrong": 1,
+      "rate": 0.028
+     },
+     "probe": {
+      "n": 36,
+      "wrong": 0,
+      "rate": 0
+     },
+     "explain": {
+      "n": 36,
+      "wrong": 0,
+      "rate": 0
+     }
+    },
+    "P_prematureSend": {
+     "number": {
+      "n": 152,
+      "wrong": 69,
+      "rate": 0.454
+     },
+     "default": {
+      "n": 152,
+      "wrong": 38,
+      "rate": 0.25
+     },
+     "probe": {
+      "n": 152,
+      "wrong": 35,
+      "rate": 0.23
+     },
+     "explain": {
+      "n": 152,
+      "wrong": 17,
+      "rate": 0.112
+     }
+    },
+    "U_late": {
+     "number": {
+      "n": 360,
+      "wrong": 0,
+      "rate": 0,
+      "meanAddedMs": 0
+     },
+     "default": {
+      "n": 360,
+      "wrong": 0,
+      "rate": 0,
+      "meanAddedMs": 0
+     },
+     "probe": {
+      "n": 360,
+      "wrong": 0,
+      "rate": 0,
+      "meanAddedMs": 0
+     },
+     "explain": {
+      "n": 360,
+      "wrong": 60,
+      "rate": 0.167,
+      "meanAddedMs": 250
+     }
+    }
+   }
+  },
+  "test": {
+   "rows": 3222,
+   "spellings": {
+    "umm": 12,
+    "आम": 17,
+    "हम": 5,
+    "उम": 31,
+    "उम्म": 44,
+    "उम्": 4,
+    "अम्म": 24,
+    "अम": 21,
+    "um": 59,
+    "ओम": 13,
+    "उम्मा": 10,
+    "अं": 9,
+    "अम्": 4,
+    "vol": 2
+   },
+   "nF": 255,
+   "nP": 1417,
+   "nU": 3222,
+   "qPrefixes": 115,
+   "shipped": {
+    "F_fillerSent": {
+     "number": {
+      "n": 255,
+      "wrong": 255,
+      "rate": 1
+     },
+     "default": {
+      "n": 255,
+      "wrong": 103,
+      "rate": 0.404
+     },
+     "probe": {
+      "n": 255,
+      "wrong": 3,
+      "rate": 0.012
+     },
+     "explain": {
+      "n": 255,
+      "wrong": 3,
+      "rate": 0.012
+     }
+    },
+    "P_prematureSend": {
+     "number": {
+      "n": 1417,
+      "wrong": 1417,
+      "rate": 1
+     },
+     "default": {
+      "n": 1417,
+      "wrong": 470,
+      "rate": 0.332
+     },
+     "probe": {
+      "n": 1417,
+      "wrong": 336,
+      "rate": 0.237
+     },
+     "explain": {
+      "n": 1417,
+      "wrong": 233,
+      "rate": 0.164
+     }
+    },
+    "U_late": {
+     "number": {
+      "n": 3222,
+      "wrong": 0,
+      "rate": 0,
+      "meanAddedMs": 0
+     },
+     "default": {
+      "n": 3222,
+      "wrong": 5,
+      "rate": 0.002,
+      "meanAddedMs": 1
+     },
+     "probe": {
+      "n": 3222,
+      "wrong": 49,
+      "rate": 0.015,
+      "meanAddedMs": 18
+     },
+     "explain": {
+      "n": 3222,
+      "wrong": 467,
+      "rate": 0.145,
+      "meanAddedMs": 217
+     }
+    }
+   },
+   "candidate": {
+    "F_fillerSent": {
+     "number": {
+      "n": 255,
+      "wrong": 1,
+      "rate": 0.004
+     },
+     "default": {
+      "n": 255,
+      "wrong": 1,
+      "rate": 0.004
+     },
+     "probe": {
+      "n": 255,
+      "wrong": 0,
+      "rate": 0
+     },
+     "explain": {
+      "n": 255,
+      "wrong": 0,
+      "rate": 0
+     }
+    },
+    "P_prematureSend": {
+     "number": {
+      "n": 1417,
+      "wrong": 606,
+      "rate": 0.428
+     },
+     "default": {
+      "n": 1417,
+      "wrong": 358,
+      "rate": 0.253
+     },
+     "probe": {
+      "n": 1417,
+      "wrong": 339,
+      "rate": 0.239
+     },
+     "explain": {
+      "n": 1417,
+      "wrong": 163,
+      "rate": 0.115
+     }
+    },
+    "U_late": {
+     "number": {
+      "n": 3222,
+      "wrong": 19,
+      "rate": 0.006,
+      "meanAddedMs": 6
+     },
+     "default": {
+      "n": 3222,
+      "wrong": 19,
+      "rate": 0.006,
+      "meanAddedMs": 7
+     },
+     "probe": {
+      "n": 3222,
+      "wrong": 61,
+      "rate": 0.019,
+      "meanAddedMs": 25
+     },
+     "explain": {
+      "n": 3222,
+      "wrong": 634,
+      "rate": 0.197,
+      "meanAddedMs": 297
+     }
+    }
+   }
+  }
+ },
+ "markers": {
+  "shipped": {
+   "summary": {
+    "number": {
+     "holdHonoured": 0,
+     "holdItems": 28,
+     "yieldHonoured": 11,
+     "yieldItems": 11
+    },
+    "default": {
+     "holdHonoured": 6,
+     "holdItems": 28,
+     "yieldHonoured": 11,
+     "yieldItems": 11
+    },
+    "probe": {
+     "holdHonoured": 22,
+     "holdItems": 28,
+     "yieldHonoured": 6,
+     "yieldItems": 11
+    },
+    "explain": {
+     "holdHonoured": 28,
+     "holdItems": 28,
+     "yieldHonoured": 2,
+     "yieldItems": 11
+    }
+   },
+   "failuresDefault": [
+    {
+     "text": "ek minute",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "score": 0.75
+    },
+    {
+     "text": "एक मिनट",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "score": 0.75
+    },
+    {
+     "text": "ruko",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "score": 0.75
+    },
+    {
+     "text": "रुको",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "score": 0.75
+    },
+    {
+     "text": "soch raha hoon",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "score": 0.75
+    },
+    {
+     "text": "सोच रही हूँ",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "score": 0.75
+    },
+    {
+     "text": "सोचने दो",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "score": 0.75
+    },
+    {
+     "text": "wait",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "score": 0.75
+    },
+    {
+     "text": "let me think",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "score": 0.75
+    },
+    {
+     "text": "woh",
+     "truth": "HOLD",
+     "fn": "preface/word search",
+     "score": 0.75
+    },
+    {
+     "text": "वो",
+     "truth": "HOLD",
+     "fn": "preface/word search",
+     "score": 0.75
+    },
+    {
+     "text": "वो जो",
+     "truth": "HOLD",
+     "fn": "word search",
+     "score": 0.75
+    },
+    {
+     "text": "kya bolte hain",
+     "truth": "HOLD",
+     "fn": "word search",
+     "score": 0.75
+    },
+    {
+     "text": "क्या कहते हैं",
+     "truth": "HOLD",
+     "fn": "word search",
+     "score": 0.75
+    },
+    {
+     "text": "मुझे लगता है",
+     "truth": "HOLD",
+     "fn": "projects a complement",
+     "score": 0.75
+    },
+    {
+     "text": "answer hai",
+     "truth": "HOLD",
+     "fn": "projects a value",
+     "score": 0.75
+    },
+    {
+     "text": "उत्तर है",
+     "truth": "HOLD",
+     "fn": "projects a value",
+     "score": 0.75
+    },
+    {
+     "text": "उम्म।",
+     "truth": "HOLD",
+     "fn": "filler",
+     "score": 0.75
+    },
+    {
+     "text": "उम",
+     "truth": "HOLD",
+     "fn": "filler",
+     "score": 0.75
+    },
+    {
+     "text": "अं",
+     "truth": "HOLD",
+     "fn": "filler",
+     "score": 0.75
+    },
+    {
+     "text": "हम्म",
+     "truth": "HOLD",
+     "fn": "filler",
+     "score": 0.75
+    },
+    {
+     "text": "Um.",
+     "truth": "HOLD",
+     "fn": "filler",
+     "score": 0.75
+    }
+   ],
+   "items": [
+    {
+     "text": "ek minute",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "एक मिनट",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "ruko",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "रुको",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "soch raha hoon",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "सोच रही हूँ",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "सोचने दो",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "wait",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "let me think",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "haan toh",
+     "truth": "HOLD",
+     "fn": "preface",
+     "per": {
+      "number": {
+       "score": 0.15,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.15,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.15,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.15,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "हाँ तो",
+     "truth": "HOLD",
+     "fn": "preface",
+     "per": {
+      "number": {
+       "score": 0.15,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.15,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.15,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.15,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "matlab",
+     "truth": "HOLD",
+     "fn": "preface/reformulation",
+     "per": {
+      "number": {
+       "score": 0.15,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.15,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.15,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.15,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "मतलब",
+     "truth": "HOLD",
+     "fn": "preface/reformulation",
+     "per": {
+      "number": {
+       "score": 0.15,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.15,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.15,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.15,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "woh",
+     "truth": "HOLD",
+     "fn": "preface/word search",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "वो",
+     "truth": "HOLD",
+     "fn": "preface/word search",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "वो जो",
+     "truth": "HOLD",
+     "fn": "word search",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "kya bolte hain",
+     "truth": "HOLD",
+     "fn": "word search",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "क्या कहते हैं",
+     "truth": "HOLD",
+     "fn": "word search",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "jaise ki",
+     "truth": "HOLD",
+     "fn": "projects continuation",
+     "per": {
+      "number": {
+       "score": 0.15,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.15,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.15,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.15,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "मुझे लगता है",
+     "truth": "HOLD",
+     "fn": "projects a complement",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "answer hai",
+     "truth": "HOLD",
+     "fn": "projects a value",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "उत्तर है",
+     "truth": "HOLD",
+     "fn": "projects a value",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "उम्म।",
+     "truth": "HOLD",
+     "fn": "filler",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "उम",
+     "truth": "HOLD",
+     "fn": "filler",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "अं",
+     "truth": "HOLD",
+     "fn": "filler",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "हम्म",
+     "truth": "HOLD",
+     "fn": "filler",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "umm",
+     "truth": "HOLD",
+     "fn": "filler",
+     "per": {
+      "number": {
+       "score": 0.15,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.15,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.15,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.15,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "Um.",
+     "truth": "HOLD",
+     "fn": "filler",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": false
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "दो बटा चार और एक बटा दो same होते हैं ना",
+     "truth": "YIELD",
+     "fn": "clause-final na tag",
+     "per": {
+      "number": {
+       "score": 0.85,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.85,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.85,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.85,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "same hai na?",
+     "truth": "YIELD",
+     "fn": "tag question",
+     "per": {
+      "number": {
+       "score": 0.9,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.9,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.9,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.9,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "bas",
+     "truth": "YIELD",
+     "fn": "closure",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": false
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": false
+      }
+     }
+    },
+    {
+     "text": "बस इतना ही",
+     "truth": "YIELD",
+     "fn": "closure",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": false
+      }
+     }
+    },
+    {
+     "text": "that's it",
+     "truth": "YIELD",
+     "fn": "closure",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": false
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": false
+      }
+     }
+    },
+    {
+     "text": "pata nahi",
+     "truth": "YIELD",
+     "fn": "IDK",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": false
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": false
+      }
+     }
+    },
+    {
+     "text": "मुझे नहीं पता",
+     "truth": "YIELD",
+     "fn": "IDK",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": false
+      }
+     }
+    },
+    {
+     "text": "समझ नहीं आया",
+     "truth": "YIELD",
+     "fn": "trouble claim",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": false
+      }
+     }
+    },
+    {
+     "text": "phir se bolo",
+     "truth": "YIELD",
+     "fn": "repair request",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": false
+      }
+     }
+    },
+    {
+     "text": "पंद्रह",
+     "truth": "YIELD",
+     "fn": "bare value",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": false
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": false
+      }
+     }
+    },
+    {
+     "text": "haan",
+     "truth": "YIELD",
+     "fn": "yes answer",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": false
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": false
+      }
+     }
+    }
+   ]
+  },
+  "candidate": {
+   "summary": {
+    "number": {
+     "holdHonoured": 28,
+     "holdItems": 28,
+     "yieldHonoured": 11,
+     "yieldItems": 11
+    },
+    "default": {
+     "holdHonoured": 28,
+     "holdItems": 28,
+     "yieldHonoured": 11,
+     "yieldItems": 11
+    },
+    "probe": {
+     "holdHonoured": 28,
+     "holdItems": 28,
+     "yieldHonoured": 10,
+     "yieldItems": 11
+    },
+    "explain": {
+     "holdHonoured": 28,
+     "holdItems": 28,
+     "yieldHonoured": 9,
+     "yieldItems": 11
+    }
+   },
+   "failuresDefault": [],
+   "items": [
+    {
+     "text": "ek minute",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "per": {
+      "number": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "एक मिनट",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "per": {
+      "number": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "ruko",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "per": {
+      "number": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "रुको",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "per": {
+      "number": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "soch raha hoon",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "per": {
+      "number": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "सोच रही हूँ",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "per": {
+      "number": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "सोचने दो",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "per": {
+      "number": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "wait",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "per": {
+      "number": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "let me think",
+     "truth": "HOLD",
+     "fn": "explicit hold request",
+     "per": {
+      "number": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.02,
+       "send": false,
+       "allowMs": 8500,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "haan toh",
+     "truth": "HOLD",
+     "fn": "preface",
+     "per": {
+      "number": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1200,
+       "ok": true
+      },
+      "default": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "हाँ तो",
+     "truth": "HOLD",
+     "fn": "preface",
+     "per": {
+      "number": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1200,
+       "ok": true
+      },
+      "default": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "matlab",
+     "truth": "HOLD",
+     "fn": "preface/reformulation",
+     "per": {
+      "number": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1200,
+       "ok": true
+      },
+      "default": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "मतलब",
+     "truth": "HOLD",
+     "fn": "preface/reformulation",
+     "per": {
+      "number": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1200,
+       "ok": true
+      },
+      "default": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "woh",
+     "truth": "HOLD",
+     "fn": "preface/word search",
+     "per": {
+      "number": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1200,
+       "ok": true
+      },
+      "default": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "वो",
+     "truth": "HOLD",
+     "fn": "preface/word search",
+     "per": {
+      "number": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1200,
+       "ok": true
+      },
+      "default": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "वो जो",
+     "truth": "HOLD",
+     "fn": "word search",
+     "per": {
+      "number": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1200,
+       "ok": true
+      },
+      "default": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "kya bolte hain",
+     "truth": "HOLD",
+     "fn": "word search",
+     "per": {
+      "number": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1200,
+       "ok": true
+      },
+      "default": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "क्या कहते हैं",
+     "truth": "HOLD",
+     "fn": "word search",
+     "per": {
+      "number": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1200,
+       "ok": true
+      },
+      "default": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "jaise ki",
+     "truth": "HOLD",
+     "fn": "projects continuation",
+     "per": {
+      "number": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1200,
+       "ok": true
+      },
+      "default": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "मुझे लगता है",
+     "truth": "HOLD",
+     "fn": "projects a complement",
+     "per": {
+      "number": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1200,
+       "ok": true
+      },
+      "default": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "answer hai",
+     "truth": "HOLD",
+     "fn": "projects a value",
+     "per": {
+      "number": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1200,
+       "ok": true
+      },
+      "default": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "उत्तर है",
+     "truth": "HOLD",
+     "fn": "projects a value",
+     "per": {
+      "number": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1200,
+       "ok": true
+      },
+      "default": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.12,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "उम्म।",
+     "truth": "HOLD",
+     "fn": "filler",
+     "per": {
+      "number": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 1200,
+       "ok": true
+      },
+      "default": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "उम",
+     "truth": "HOLD",
+     "fn": "filler",
+     "per": {
+      "number": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 1200,
+       "ok": true
+      },
+      "default": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "अं",
+     "truth": "HOLD",
+     "fn": "filler",
+     "per": {
+      "number": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 1200,
+       "ok": true
+      },
+      "default": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "हम्म",
+     "truth": "HOLD",
+     "fn": "filler",
+     "per": {
+      "number": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 1200,
+       "ok": true
+      },
+      "default": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "umm",
+     "truth": "HOLD",
+     "fn": "filler",
+     "per": {
+      "number": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 1200,
+       "ok": true
+      },
+      "default": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "Um.",
+     "truth": "HOLD",
+     "fn": "filler",
+     "per": {
+      "number": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 1200,
+       "ok": true
+      },
+      "default": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 1300,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 1700,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.1,
+       "send": false,
+       "allowMs": 2000,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "दो बटा चार और एक बटा दो same होते हैं ना",
+     "truth": "YIELD",
+     "fn": "clause-final na tag",
+     "per": {
+      "number": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "same hai na?",
+     "truth": "YIELD",
+     "fn": "tag question",
+     "per": {
+      "number": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "bas",
+     "truth": "YIELD",
+     "fn": "closure",
+     "per": {
+      "number": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "बस इतना ही",
+     "truth": "YIELD",
+     "fn": "closure",
+     "per": {
+      "number": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "that's it",
+     "truth": "YIELD",
+     "fn": "closure",
+     "per": {
+      "number": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "pata nahi",
+     "truth": "YIELD",
+     "fn": "IDK",
+     "per": {
+      "number": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "मुझे नहीं पता",
+     "truth": "YIELD",
+     "fn": "IDK",
+     "per": {
+      "number": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "समझ नहीं आया",
+     "truth": "YIELD",
+     "fn": "trouble claim",
+     "per": {
+      "number": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "phir se bolo",
+     "truth": "YIELD",
+     "fn": "repair request",
+     "per": {
+      "number": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      }
+     }
+    },
+    {
+     "text": "पंद्रह",
+     "truth": "YIELD",
+     "fn": "bare value",
+     "per": {
+      "number": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.95,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.8,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "explain": {
+       "score": 0.6,
+       "send": false,
+       "allowMs": 2000,
+       "ok": false
+      }
+     }
+    },
+    {
+     "text": "haan",
+     "truth": "YIELD",
+     "fn": "yes answer",
+     "per": {
+      "number": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "default": {
+       "score": 0.75,
+       "send": true,
+       "allowMs": 500,
+       "ok": true
+      },
+      "probe": {
+       "score": 0.45,
+       "send": false,
+       "allowMs": 1700,
+       "ok": false
+      },
+      "explain": {
+       "score": 0.4,
+       "send": false,
+       "allowMs": 2000,
+       "ok": false
+      }
+     }
+    }
+   ]
+  }
+ },
+ "overlap": {
+  "items": [
+   {
+    "text": "haan",
+    "askedYesNo": false,
+    "expect": "resume",
+    "note": "continuer when she asked nothing (flat haan, Bali 2009)",
+    "shipped": "resume",
+    "candidate": "resume",
+    "candidateKind": "continuer"
+   },
+   {
+    "text": "haan",
+    "askedYesNo": true,
+    "expect": "stop",
+    "note": "answer when she just asked a yes/no check",
+    "shipped": "resume",
+    "candidate": "stop",
+    "candidateKind": "answer"
+   },
+   {
+    "text": "हाँ",
+    "askedYesNo": true,
+    "expect": "stop",
+    "note": "answer to her yes/no check, Devanagari",
+    "shipped": "resume",
+    "candidate": "stop",
+    "candidateKind": "answer"
+   },
+   {
+    "text": "haan?",
+    "askedYesNo": false,
+    "expect": "stop",
+    "note": "rising haan = repair request (Bali 2009)",
+    "shipped": "resume",
+    "candidate": "stop",
+    "candidateKind": "repair"
+   },
+   {
+    "text": "हाँ?",
+    "askedYesNo": false,
+    "expect": "stop",
+    "note": "same, Devanagari",
+    "shipped": "resume",
+    "candidate": "stop",
+    "candidateKind": "repair"
+   },
+   {
+    "text": "achha",
+    "askedYesNo": false,
+    "expect": "resume",
+    "note": "receipt / continuer",
+    "shipped": "resume",
+    "candidate": "resume",
+    "candidateKind": "continuer"
+   },
+   {
+    "text": "ok",
+    "askedYesNo": false,
+    "expect": "resume",
+    "note": "continuer",
+    "shipped": "resume",
+    "candidate": "resume",
+    "candidateKind": "continuer"
+   },
+   {
+    "text": "hmm",
+    "askedYesNo": false,
+    "expect": "resume",
+    "note": "continuer",
+    "shipped": "resume",
+    "candidate": "resume",
+    "candidateKind": "continuer"
+   },
+   {
+    "text": "theek hai",
+    "askedYesNo": false,
+    "expect": "resume",
+    "note": "continuer (multi-word)",
+    "shipped": "stop",
+    "candidate": "resume",
+    "candidateKind": "continuer"
+   },
+   {
+    "text": "ji",
+    "askedYesNo": false,
+    "expect": "resume",
+    "note": "continuer / polite yes",
+    "shipped": "resume",
+    "candidate": "resume",
+    "candidateKind": "continuer"
+   },
+   {
+    "text": "nahi",
+    "askedYesNo": false,
+    "expect": "stop",
+    "note": "disagreement",
+    "shipped": "stop",
+    "candidate": "stop",
+    "candidateKind": "turn"
+   },
+   {
+    "text": "नहीं",
+    "askedYesNo": true,
+    "expect": "stop",
+    "note": "answer to her yes/no check",
+    "shipped": "stop",
+    "candidate": "stop",
+    "candidateKind": "answer"
+   },
+   {
+    "text": "kya?",
+    "askedYesNo": false,
+    "expect": "stop",
+    "note": "repair request",
+    "shipped": "stop",
+    "candidate": "stop",
+    "candidateKind": "repair"
+   },
+   {
+    "text": "क्या?",
+    "askedYesNo": false,
+    "expect": "stop",
+    "note": "repair request",
+    "shipped": "stop",
+    "candidate": "stop",
+    "candidateKind": "repair"
+   },
+   {
+    "text": "ruko",
+    "askedYesNo": false,
+    "expect": "stop",
+    "note": "stop request",
+    "shipped": "stop",
+    "candidate": "stop",
+    "candidateKind": "stop"
+   },
+   {
+    "text": "ek minute",
+    "askedYesNo": false,
+    "expect": "stop",
+    "note": "hold request",
+    "shipped": "stop",
+    "candidate": "stop",
+    "candidateKind": "stop"
+   }
+  ],
+  "shippedCorrect": 11,
+  "candidateCorrect": 16,
+  "n": 16
+ }
+}

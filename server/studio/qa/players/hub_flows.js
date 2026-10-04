@@ -72,6 +72,6 @@ export default {
     await noHint(c, "[data-option]", "G8.options_identical");
     const wrong = p.options.find((o) => o !== p.answer);
     await wrongThenRight(c, { sel: "[data-option]", attr: "data-option", wrong, right: p.answer });
-    doneCalled(c);
+    await doneCalled(c);
   },
 };

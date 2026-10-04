@@ -885,7 +885,7 @@ var ae = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), oe = (e) => e >= 1 ? 0 
 		let d = (n("eyeWideLeft") + n("eyeWideRight")) / 2;
 		s < .2 && d > .45 && (l.round = Math.max(l.round, .95), l.wid -= 18, l.T = .3, l.up = .32, l.g *= 1.15);
 		let f = R(((n("mouthSmileLeft") + n("mouthSmileRight")) / 2 - .35) / .4) * R(r / .18);
-		f > 0 && (l.g += 16 * f * (1 - Math.min(1, s)), l.up *= 1 - .6 * f, l.T = Math.max(l.T, .9 * f), l.th = Math.max(l.th, .35 * f)), this.surprised = +(s < .2 && d > .45), l.tip = R(Math.max(l.tip, n("tongueTipUp"))), l.curl = R(Math.max(l.curl, n("tongueCurl"))), l.curl > .3 && (l.T = Math.min(l.T, .5), l.TL = 0, l.g = Math.max(l.g, 13), l.up = .38), l.tip > .3 && (l.TL = Math.min(l.TL, .15)), n("tongueWide") > .2 && (l.th = Math.max(l.th, .35)), l.press = R(Math.max(l.press, (n("mouthPressLeft") + n("mouthPressRight")) / 2 * 1.4));
+		f > 0 && (l.g += 22 * f * (1 - Math.min(1, s)), l.up *= 1 - .6 * f, l.T = Math.max(l.T, .9 * f), l.th = Math.max(l.th, .35 * f)), this.surprised = +(s < .2 && d > .45), l.tip = R(Math.max(l.tip, n("tongueTipUp"))), l.curl = R(Math.max(l.curl, n("tongueCurl"))), l.curl > .3 && (l.T = Math.min(l.T, .5), l.TL = 0, l.g = Math.max(l.g, 13), l.up = .38), l.tip > .3 && (l.TL = Math.min(l.TL, .15)), n("tongueWide") > .2 && (l.th = Math.max(l.th, .35)), l.press = R(Math.max(l.press, (n("mouthPressLeft") + n("mouthPressRight")) / 2 * 1.4));
 		let p = this.p;
 		for (let e of H) {
 			if (this.first) {
@@ -902,7 +902,7 @@ var ae = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), oe = (e) => e >= 1 ? 0 
 			R: n("mouthFrownLeft")
 		}, g = R((n("mouthFrownLeft") + n("mouthFrownRight")) / 2 * 4 + Math.max(0, n("browInnerUp") - .5) * 1.2), _ = (e) => .22 * (1 - g) + .23 * R(e / .045) + .6 * R((e - .045) / .8), v = n("mouthLeft") - n("mouthRight");
 		for (let e of ["L", "R"]) {
-			let n = _(m[e]), r = 1 - .45 * p.round, i = (n - .45) * 13 * r + p.wid, a = -(n - .45) * 19 * (1 - .3 * p.round) * (1 - .7 * (this.surprised || 0)) + h[e] * 9 + p.press * 1.5, o = R((n - .16) / .29) * (1 - .6 * p.round), s = this.side[e], c = this.first ? 1 : 1 - Math.exp(-t / .06);
+			let n = _(m[e]), r = 1 - .7 * p.round, i = (n - .45) * 13 * r + p.wid, a = -(n - .45) * 19 * (1 - .5 * p.round) * (1 - .7 * (this.surprised || 0)) + h[e] * 9 + p.press * 1.5, o = R((n - .16) / .29) * (1 - .6 * p.round), s = this.side[e], c = this.first ? 1 : 1 - Math.exp(-t / .06);
 			s.wid += c * (i - s.wid), s.dy += c * (a - s.dy), s.crease += c * (o - s.crease);
 		}
 		let y = L(v * 1.6, -1, 1) * 13;
@@ -1464,7 +1464,7 @@ var he = class {
 			leanY: 7 * r
 		};
 		if (this.g.yawKeys) {
-			let e = this.g.yawKeys, t = U(c / e.keyDeg, -1, 1);
+			let e = this.g.yawKeys, t = U(c / e.keyDeg, -1.3, 1.3);
 			d.yk = t >= 0 ? e.R : e.L, d.ykf = Math.abs(t), this.yawStep = e.grid.step, this.yawN = e.grid.n;
 		}
 		this.st = d;
@@ -1528,8 +1528,8 @@ var he = class {
 			1,
 			1,
 			.6,
-			.3,
-			.1
+			.45,
+			.12
 		], a = t > 0 ? (n - r.prev) / t : 0;
 		!r.active && a > 5 && n - r.prev > .06 && n > .15 && (r.active = !0, r.t0 = e, r.base = Math.min(r.prev, .5)), r.prev = n;
 		let o = n;
@@ -1601,7 +1601,7 @@ var he = class {
 		let t = this.bs, n = e === "L" ? "Right" : "Left", r = t.browInnerUp ?? 0, i = t["browOuterUp" + n] ?? 0, a = t["browDown" + n] ?? 0;
 		return {
 			lift: 10 * (t["eyeWide" + n] ?? 0) + 9 * i + 4 * r,
-			inner: 34 * r,
+			inner: 40 * r,
 			arch: 30 * i,
 			knit: 16 * a
 		};
@@ -1843,18 +1843,16 @@ var he = class {
 	},
 	delight: {
 		bs: {
-			mouthSmileLeft: .85,
-			mouthSmileRight: .85,
-			cheekSquintLeft: .4,
-			cheekSquintRight: .4,
-			eyeSquintLeft: .12,
-			eyeSquintRight: .12,
-			browOuterUpLeft: .6,
-			browOuterUpRight: .6,
-			browInnerUp: .3,
-			eyeWideLeft: .08,
-			eyeWideRight: .08,
-			jawOpen: .26
+			mouthSmileLeft: 1,
+			mouthSmileRight: 1,
+			cheekSquintLeft: .75,
+			cheekSquintRight: .75,
+			eyeSquintLeft: .3,
+			eyeSquintRight: .3,
+			browOuterUpLeft: .7,
+			browOuterUpRight: .7,
+			browInnerUp: .35,
+			jawOpen: .34
 		},
 		head: [
 			-2,
@@ -1872,14 +1870,14 @@ var he = class {
 	concern: {
 		bs: {
 			browInnerUp: 1,
-			browDownLeft: .2,
-			browDownRight: .2,
-			eyeWideLeft: .12,
-			eyeWideRight: .12,
-			mouthPressLeft: .3,
-			mouthPressRight: .3,
-			mouthFrownLeft: .4,
-			mouthFrownRight: .4,
+			browDownLeft: .45,
+			browDownRight: .45,
+			eyeWideLeft: .15,
+			eyeWideRight: .15,
+			mouthPressLeft: .35,
+			mouthPressRight: .35,
+			mouthFrownLeft: .7,
+			mouthFrownRight: .7,
 			mouthSmileLeft: -1,
 			mouthSmileRight: -1
 		},
@@ -1888,7 +1886,7 @@ var he = class {
 			2,
 			7
 		],
-		gaze: [0, -4],
+		gaze: [0, 3],
 		env: [
 			.45,
 			0,

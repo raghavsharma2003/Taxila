@@ -41,6 +41,6 @@ export default {
     const i = p.stages.indexOf(p.askAfter);
     const right = p.stages[(i + 1) % p.stages.length];
     await wrongThenRight(c, { sel: "[data-option]", attr: "data-option", wrong: p.options.find((o) => o !== right), right });
-    doneCalled(c);
+    await doneCalled(c);
   },
 };

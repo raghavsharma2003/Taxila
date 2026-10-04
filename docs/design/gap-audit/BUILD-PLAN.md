@@ -1667,3 +1667,18 @@ STT stream carries audio only while speech is present plus ~300 ms pre-roll and 
 with full streaming. Acceptance: on the synthetic child corpus and recorded barge-in scripts, 0 clipped onsets and 0 missed barge-ins vs full
 streaming, and STT billed seconds reduced in proportion to speech share. MAI-Transcribe-2 is the preferred STT (India app), gpt-live-transcribe the
 fallback, gpt-transcribe benchmarked as the low-cost option.
+
+## OWNER TEST 2026-10-04 (production, revision s9242020): rated 0/100 — these MUST pass before Wave 2 exits
+Owner-reported failures, verbatim intent. Each becomes an acceptance test under tests/prod/owner-*.mjs with real child-like turns (typed AND spoken):
+1. **Game grading is nonsense** — activity/game answers graded wrong (right marked wrong or vice versa). Every module's grading must be checked against the
+   verified key with randomized correct/incorrect/partial inputs; 0 wrong grades.
+2. **Teacher often confused / things fail** — any turn that errors, falls back, loops, repeats, or answers something the child didn't say is a defect.
+3. **"Lesson is over / end the lesson" from the child ends the lesson immediately** — a child saying it must NOT simply end the session: the teacher
+   acknowledges, checks in warmly, offers a tiny wrap-up or break, and respects parent-set limits; only parent controls / explicit confirmation end it.
+4. **"I want to talk about something else" / "explain it in this way" is not understood** — free-form steering requests (change topic, explain
+   differently, slower, with an example, in Hindi/English, as a story, with a picture) must be understood and acted on within the next turn.
+5. **"Show me a diagram" is ignored** — any request for a diagram/picture/whiteboard/game/animation produces it inside the stage (library or live build
+   or whiteboard) within the lesson, with the teacher referring to it.
+6. **Voice is robotic** — tracked by the voice v4 workstream (spoken-register lines + delivery plans); ship the round-3 winner.
+7. **Teacher animation is not good** — the 2D puppet at >= 4.5/5 replaces the current face; until then use the best available.
+8. **Product design needs to improve** — full design/flow review with screenshots on phone/tablet/laptop after Wave 2 integration.

@@ -1,0 +1,104 @@
+{
+ "date": "2026-10-04",
+ "round": "polish-r3 of arm P",
+ "blind_gpt56sol_3x3_grid": {
+  "iter1_after_method_changes": [
+   3.6,
+   3.4,
+   3.4
+  ],
+  "iter2": [
+   3.7,
+   3.7,
+   3.6
+  ],
+  "iter3_final": [
+   3.8,
+   3.7,
+   3.7
+  ],
+  "note": "n=3 per iteration, same prompt as judge-r2-blind; r2 single run 3.7"
+ },
+ "rest_ssim_head_static_png": 0.9845,
+ "rest_ssim_rendered_webp_vs_cfront": "~0.985 (render at view 0,0,1024)",
+ "payload": {
+  "layers_webp_bytes": 95898,
+  "geom_json_gzip_bytes": 9079,
+  "payload_bytes_wire": 104977,
+  "png_payload_bytes_before": 1155817,
+  "ssim_webp_vs_png_head": 0.9892
+ },
+ "battery": {
+  "poses": 154,
+  "renders": 308,
+  "automated_flags_after_fix": {
+   "holes": 74,
+   "seams": 120,
+   "islands": 0
+  },
+  "note": "remaining flags are the left lock's design strand gap (backdrop seen between two strands, as in c-front); r3 start: holes 2434 seams 2086 with the lock gaps excluded -> 54/106"
+ },
+ "silhouette_iou_vs_rest_head_angles_cancelled": {
+  "concern": 1.0,
+  "delight": 0.9819,
+  "listening": 0.998,
+  "playful": 0.9999,
+  "rest": 1.0,
+  "surprise": 0.9927,
+  "talk_aa": 0.9826,
+  "thinking": 1.0,
+  "warm": 0.9999
+ },
+ "turn_keyform": {
+  "L": {
+   "scale": 1.0799,
+   "kcx": 508.4,
+   "fcx": 506.2,
+   "nose_dx": -65.2,
+   "J_min_head": 0.612,
+   "J_max_head": 1.444,
+   "lm_resid_px_max": 0.04,
+   "far_eye_width_ratio": null,
+   "eye_width_ratio_L_R": [
+    0.853,
+    1.029
+   ]
+  },
+  "R": {
+   "scale": 1.0489,
+   "kcx": 502.3,
+   "fcx": 506.2,
+   "nose_dx": 65.6,
+   "J_min_head": 0.479,
+   "J_max_head": 1.806,
+   "lm_resid_px_max": 0.02,
+   "far_eye_width_ratio": null,
+   "eye_width_ratio_L_R": [
+    0.951,
+    0.722
+   ]
+  }
+ },
+ "turn_runtime": "field reaches the painted key at |yaw|=16 and 1.25x at the contract limit 20; far-eye compression capped at 15%; iris/pupil/catchlight screen-space, uniform scale",
+ "fps_proxy": {
+  "headless_swiftshader_cpu_4x_throttle": {
+   "fps_p50": "15-20",
+   "work_p50_ms": 10.2,
+   "work_p95_ms": 17.3
+  },
+  "unthrottled": {
+   "work_p50_ms": 2.3,
+   "work_p95_ms": 4.4
+  },
+  "r2_same_bench_4x": {
+   "work_p50_ms": 5.5,
+   "work_p95_ms": 9.8
+  },
+  "profile": "JS self time ~5% of frame; the rest is SwiftShader raster (CPU-emulated GPU) - NOT a phone measurement. Owner must read ?facerig=1 on the cheap Android."
+ },
+ "image_spend_usd": {
+  "r3": 1.19,
+  "ledger_total": 8.76,
+  "cap": 30
+ }
+}

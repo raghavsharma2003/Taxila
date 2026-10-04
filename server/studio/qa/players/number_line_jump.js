@@ -59,6 +59,6 @@ export default {
     // bounds: pressing left past min never leaves the line (only when the activity is still open is this observable)
     c.add("G6.marker_on_tick", markerOk, mWhy);
     c.add("G5.play_truth", ok, why);
-    doneCalled(c);
+    await doneCalled(c);
   },
 };

@@ -31,6 +31,6 @@ export default {
     }
     c.add("G6.placed_in_order", placedOk, pWhy.slice(0, 3));
     c.add("G5.play_truth", ok, why);
-    doneCalled(c);
+    await doneCalled(c);
   },
 };

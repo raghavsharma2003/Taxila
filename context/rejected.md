@@ -1242,3 +1242,11 @@ comprehension engine and the re-teach depend on — for +127 ms p50 (`w2e-g-sig-
 Running W2-B's `screenContradiction` over the whole reply: in the replay it flagged the kit's own verified question
 ("Halves, quarters aur eighths wali fraction wall par kaun se fractions 1/2 ke saath…") beside a 1/2-only predict screen,
 which cost a rewrite call and her lead-in sentence. It now judges her own words only.
+
+## `rj-plumbing-batteries-as-acceptance` (2026-10-04)
+Tried: accepting Wave 1 on green production batteries (API and flow checks). Broke: the owner rated the same live product 0/100 in one real session. Acceptance now needs experience tests with child-like sessions and the owner's own test.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-native-duplex-teacher-2026-10-04` (2026-10-04): Rejected by evidence (not trial): a native full-duplex speech model as the teacher. IndicFDB Hindi (NVIDIA 2609.31967): Human-1 content rating 0.564/5 at 2.02 s; GPT Live takes over in 38% of natural pauses (61.6% pause success) and fails 85% of backchannel samples; FDB-v2 open duplex correction/entity 2.6-2.9; DuplexJail +34-39 pt attack success on PersonaPlex; HumDial 2026 ranks 1-3 were cascaded/semi-cascaded, Moshi 34.5 and Freeze-Omni 43.8 final vs 76.6. GPT-Live-1 is out on cost (owner). Revisit if an Azure duplex model passes our Hindi safety evals with IndicFDB content rating >= 4.5 and pause success >= 95%.
+- `rj-mid-utterance-model-grading-2026-10-04` (2026-10-04): Rejected by evidence: grading or correcting the child mid-utterance (by a model or by first-value code). M-B1: 38-45% wrong early verdicts on numeric answers; SHANKS (2510.06917, cascade arm) interrupts 24.9% of fully correct spoken solutions (E2E 30.6%, 3 s chunks 41.1%); 'take the floor when asked' (2609.19596): duplex models challenge false claims in only 14-15% of replies. Grading waits for the committed endpoint. Revisit if a code-keyed early verdict reaches <= 2% error on E1 streaming partials.

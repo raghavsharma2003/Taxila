@@ -6,7 +6,10 @@ import { createHash } from "crypto";
 import { DEPLOY, AzureError, endpoint } from "../azure.js";
 import { EndpointConfigError, laneKey } from "../endpoints.js";
 import { q, one } from "../db.js";
-import { toSpoken } from "./spoken.js";
+import { speakable } from "./spoken.js";
+import { dhdStream } from "./azureTts.js";
+import { plainSsml } from "./expressive/compile/dhd.js";
+import { count } from "./expressive/telemetry.js";
 
 export const PCM_RATE = 24_000;
 /** Bytes per second of PCM16 mono at PCM_RATE. */
@@ -59,7 +62,9 @@ export function speechStyle(teacher, voice, spoken) {
 
 /**
  * The text a speech model is given for written teacher text: numerals and notation rendered into the spoken
- * form for the lesson's mode (server/voice/spoken.js; helplines always digit by digit). EVERY TTS call goes
+ * form for the lesson's mode (server/voice/spoken.js; helplines always digit by digit), then the owner's rules
+ * (2026-10-04, voice-clips-off-and-numbers-normalised): no digit and no "..." reach the voice, terms from the lexicon
+ * (spoken.js speakable). EVERY TTS call goes
  * through this; captions, stored turns and the leak/safety guards keep the written text. Pass complete
  * sentences (splitSentences output): a number cut mid-token ("12" | ",50") cannot be rendered right.
  * TAXILA_TTS_SPOKEN=0 sends the written text (measurement A/B only; the helplines then lose digit-exactness).
@@ -68,7 +73,7 @@ export function speechStyle(teacher, voice, spoken) {
  */
 export function ttsInput(text, style) {
   if (process.env.TAXILA_TTS_SPOKEN === "0") return String(text);
-  return toSpoken(text, style?.spoken ?? {});
+  return speakable(text, style?.spoken ?? {});
 }
 
 // ───────────── short-phrase cache ─────────────
@@ -97,9 +102,11 @@ export let cacheStore = {
 };
 export const setCacheStore = (s) => { cacheStore = s; mem.clear(); };
 
-export async function cacheGet(key) {
+/** @param {string} key @param {"memory" | "db"} [store] "memory" = never read from / written to the database */
+export async function cacheGet(key, store) {
   const hit = mem.get(key);
   if (hit) { mem.delete(key); mem.set(key, hit); return hit; }
+  if (store === "memory") return null;
   let timer;
   const pcm = await Promise.race([
     cacheStore.get(key).catch(() => null),
@@ -109,8 +116,9 @@ export async function cacheGet(key) {
   if (pcm) memPut(key, pcm);
   return pcm;
 }
-export function cachePut(key, pcm) {
+export function cachePut(key, pcm, store) {
   memPut(key, pcm);
+  if (store === "memory") return;
   void Promise.resolve().then(() => cacheStore.put(key, pcm)).catch((e) => console.warn("[voice] tts cache write failed:", e.message));
 }
 function memPut(key, pcm) {
@@ -215,24 +223,72 @@ export class Prefetch {
 }
 
 /**
+ * Identity of the non-verbal bank in every cache key (HUMAN-VOICE §5.7: the bank manifest hash is part of the voice's
+ * identity). Owner 2026-10-04 (voice-clips-off-and-numbers-normalised): no bank ships, so it is the constant "nobank".
+ */
+export const BANK_HASH = "nobank";
+
+/**
  * Start speaking one chunk of WRITTEN teacher text: rendered by ttsInput(), then memory/DB cache for short
  * ones, else streamed from Azure (and cached). The cache key is the rendered text, so a renderer change never
  * replays audio of an old reading.
+ *
+ * `render` (server/voice/expressive/render.js) is what the expressive layer compiled for this part:
+ *   { engine: "dhd", ssml }                    Azure Speech DragonHD (the key is the whole document: plan + voice + rate)
+ *   { engine: "oai", text?, instructions? }    gpt-4o-mini-tts with band instructions
+ *   store: "memory"                            never written to asset_cache (the uptake prelude carries a child's words)
+ * Without `render`, a style whose engine is "dhd" speaks the plain DragonHD document at the voice's base rate, and any
+ * other style speaks exactly as before. A DragonHD failure before the first byte falls back to the character's
+ * gpt-4o-mini-tts voice: an IDENTITY CHANGE, logged and counted (voice.expr.engine_fallback) every time.
  */
-export function speakChunk(written, style, signal) {
-  const text = ttsInput(written, style);
-  const key = cacheable(text) ? cacheKey({ voice: style.voice, version: style.version, text }) : null;
+export function speakChunk(written, style, signal, render) {
+  const dhd = render ? render.engine === "dhd" : style?.engine === "dhd" && !!style?.dhd;
+  if (dhd) return speakDhd(written, style, signal, render);
+  const text = ttsInput(render?.text ?? written, style);
+  const instructions = render?.instructions ?? style.instructions;
+  const version = render?.instructions && render.instructions !== style.instructions ? `${style.version}:i${createHash("sha256").update(render.instructions).digest("hex").slice(0, 8)}` : style.version;
+  const key = cacheable(text) ? cacheKey({ voice: style.voice, version, text }) : null;
   return new Prefetch(async (self) => {
     if (key) {
-      const pcm = await cacheGet(key);
+      const pcm = await cacheGet(key, render?.store);
       if (pcm) { self.cached = true; return [pcm]; }
     }
-    const { chunks } = await speechStream(text, { voice: style.voice, instructions: style.instructions, signal });
+    const { chunks } = await speechStream(text, { voice: style.voice, instructions, signal });
     if (!key) return chunks;
     return (async function* () {
       const all = [];
       for await (const c of chunks) { all.push(Buffer.from(c)); yield c; }
-      if (!signal?.aborted) cachePut(key, Buffer.concat(all));
+      if (!signal?.aborted) cachePut(key, Buffer.concat(all), render?.store);
+    })();
+  });
+}
+
+function speakDhd(written, style, signal, render) {
+  const ssml = render?.ssml ?? plainSsml(written, style.dhd, style.spoken);
+  const spokenLen = ttsInput(written, style).length;
+  const key = spokenLen <= CACHE_MAX_CHARS ? cacheKey({ voice: style.dhd.voice, model: "dhd", version: `${style.version}:${BANK_HASH}`, text: ssml }) : null;
+  return new Prefetch(async (self) => {
+    if (key) {
+      const pcm = await cacheGet(key, render?.store);
+      if (pcm) { self.cached = true; return [pcm]; }
+    }
+    let chunks;
+    try {
+      ({ chunks } = await dhdStream(ssml, { signal }));
+    } catch (e) {
+      if (signal?.aborted || e?.code === "aborted") throw e;
+      // identity change: the character's gpt-4o-mini-tts voice speaks this part (no expressive markup: plain words)
+      count("engine_fallback");
+      console.warn(`[voice] identity change: dhd ${style.dhd.voice} → oai ${style.voice} (${e?.code || e?.status || "error"}: ${String(e?.message || e).slice(0, 120)})`);
+      self.fellBack = true;
+      ({ chunks } = await speechStream(ttsInput(written, style), { voice: style.voice, instructions: style.instructions, signal }));
+      return chunks;
+    }
+    if (!key) return chunks;
+    return (async function* () {
+      const all = [];
+      for await (const c of chunks) { all.push(Buffer.from(c)); yield c; }
+      if (!signal?.aborted) cachePut(key, Buffer.concat(all), render?.store);
     })();
   });
 }

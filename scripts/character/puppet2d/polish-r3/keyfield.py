@@ -68,7 +68,7 @@ def cranium_cx(bg, y0, y1):
 bgs = [bgmask(f) for f in FILES]
 fe, fm = eye_mouth(0)
 fcx = cranium_cx(bgs[0], 80, 300)
-out = {"keyDeg": 20.0,  # the painted plate is reached at the contract's yaw limit (+-20)
+out = {"keyDeg": 16.0,  # the painted plate is reached at the contract's yaw limit (+-20)
        "grid": {"x0": 0, "y0": 0, "step": 32, "n": 33}}
 report = {}
 for ki, name in ((1, "L"), (2, "R")):

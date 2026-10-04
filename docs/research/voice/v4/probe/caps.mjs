@@ -35,6 +35,11 @@ export const VARIANTS = {
   pitch_m4: doc(`${A}${GAP}<prosody pitch="-4%">${B}</prosody>`),
   // pause before the key word WITHOUT a comma there (the comma pause and the break may add)
   micro_nc_150: doc(`${A}${GAP}${hi("फिर सात और पाँच")}<break time="150ms"/>${hi("बारह।")}`),
+  // production base rate (voices.js asha -22): is a relative speed-up (brisk = base + 8 = -14) honoured, and -32 (slow)?
+  base22: doc(`<prosody rate="-22%">${A}</prosody>${GAP}<prosody rate="-22%">${B}</prosody>`),
+  base22_brisk: doc(`<prosody rate="-22%">${A}</prosody>${GAP}<prosody rate="-14%">${B}</prosody>`),
+  base22_slow: doc(`<prosody rate="-22%">${A}</prosody>${GAP}<prosody rate="-32%">${B}</prosody>`),
+  base22_pitch6: doc(`<prosody rate="-22%">${A}</prosody>${GAP}<prosody rate="-22%" pitch="-6%">${B}</prosody>`),
   micro_300: doc(`${A}${GAP}${hi("फिर सात और पाँच,")}<break time="300ms"/>${hi("बारह।")}`),
   question: doc(`${A}${GAP}${Bq}`),
   style_curious: doc(`${A}${GAP}[curious] ${B}`),

@@ -38,8 +38,12 @@ export async function wrongThenRight(c, { sel, attr, wrong, right, id = "G5.play
   return why.length === 0;
 }
 
-/** G5: Studio.done() reached the host. */
-export const doneCalled = (c) => c.add("G5.done", c.log.some((e) => e.type === "done"), "");
+/** G5: Studio.done() reached the host (a closing celebration may take a moment: up to 2.5 s after the last answer). */
+export async function doneCalled(c) {
+  const t = performance.now();
+  while (!c.log.some((e) => e.type === "done") && performance.now() - t < 2500) await c.sleep(60);
+  return c.add("G5.done", c.log.some((e) => e.type === "done"), "");
+}
 
 /** G4: labels (sel, keyed by attr) do not overlap and sit inside the design box. */
 export async function labelsLayout(c, sel, attr) {

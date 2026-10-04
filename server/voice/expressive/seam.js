@@ -1,4 +1,5 @@
-// The expressive-voice seam into the turn (BUILD-PLAN §4, W2 seam commit). OWNED BY W2-G; call site owned by W2-E.
+// The expressive-voice seam into the turn (BUILD-PLAN §4, W2 seam commit). OWNED BY W2-G; call site owned by W2-E
+// (server/brain/turn.js after the guard and before prewarm; server/routes/lesson.js for the opening).
 // HUMAN-VOICE B5: the layer reads ONLY the Brain's Moment (never the verdict for affect: HV-17) and the guarded reply,
 // and returns a DeliveryPlan the TTS path speaks. Contract, binding on the owner:
 //   - pure and synchronous (code only, ≤ 3 ms; TEACHER-BRAIN §5.1 stage 7), never throws into the turn;
@@ -8,14 +9,37 @@
 //   - owner 2026-10-04 (voice-clips-off-and-numbers-normalised): no spliced breath/hum clips; numbers are normalised to
 //     spoken words before TTS; the voice choice stays config-driven (server/voice/voices.js), never hard-coded here.
 //
-// Until W2-G fills it: planDelivery → null (the reply is spoken exactly as today). The call site passes moment = null
-// until W2-E's momentOf (server/brain/moment.js) exists, so null in → null out.
+// The plan is ENGINE-FREE: the governor (per lesson) and the engine compiler run where the lesson and the voice are
+// known (server/voice/prewarm.js, render.js). TAXILA_VOICE_EXPRESSIVE=0 turns the layer off (null: plain speech).
+import { align } from "./align.js";
+import { safetyRegister } from "./safety.js";
+import { count } from "./telemetry.js";
+
+/** What the governor needs from the Moment that the DeliveryPlan contract does not carry (verdict as licence only). */
+const info = new WeakMap();
+/** @param {object} plan @returns {{ verdict?: string, band?: string } | undefined} */
+export const planInfo = (plan) => (plan && typeof plan === "object" ? info.get(plan) : undefined);
 
 export const expressiveSeam = {
   /**
-   * @param {import("../../../shared/brain").Moment | null} _moment
-   * @param {string} _reply the guarded reply text (exactly what will be spoken)
+   * @param {import("../../../shared/brain").Moment | null} moment
+   * @param {string} reply the guarded reply text (exactly what will be spoken)
    * @returns {import("../../../shared/contracts").DeliveryPlan | null}
    */
-  planDelivery(_moment, _reply) { return null; },
+  planDelivery(moment, reply) {
+    if (!moment || !reply || !String(reply).trim()) return null;
+    if (String(process.env.TAXILA_VOICE_EXPRESSIVE ?? "").toLowerCase() === "0") return null;
+    try {
+      // the safety predicate runs on the moment AND the words: a helpline number in the reply is a safety turn
+      const m = safetyRegister(moment, reply) ? { ...moment, safety: true, childLaughed: false, uptakePrelude: undefined } : moment;
+      const plan = align(reply, m);
+      if (!plan) { count("plain_fallback"); return null; }
+      info.set(plan, { verdict: moment.verdict, band: moment.band });
+      return plan;
+    } catch (e) {
+      count("plain_fallback");
+      console.warn("[voice] expressive plan failed (plain speech):", e?.message);
+      return null;
+    }
+  },
 };

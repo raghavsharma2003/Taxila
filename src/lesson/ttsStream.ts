@@ -5,7 +5,7 @@
 // Stopping is synchronous (every scheduled source is stopped and the fetch aborted), which is what makes
 // barge-in immediate. Pausing is too, but keeps the reply: the stream keeps arriving into the buffer and
 // resume() replays from just before where she was cut (a cough, the TV or a "hmm" must not eat her question).
-import type { TtsRequest } from "../../shared/contracts.ts";
+import type { TtsRequest, TurnRequest, TurnResponse } from "../../shared/contracts.ts";
 import { ApiError } from "./api.ts";
 
 export const PCM_RATE = 24_000;
@@ -86,17 +86,254 @@ export interface StreamPlayback {
 
 export type SpeechStreamFetch = (req: TtsRequest, signal: AbortSignal) => Promise<ReadableStream<Uint8Array>>;
 
-/** POST /api/voice/tts-stream → the PCM body stream. */
+// ───────────── framed TTS v2 (HUMAN-VOICE §5.14, server/voice/frames.js) ─────────────
+// `[type u8][len u24 BE][payload]`: 0 PCM, 1 event JSON, 2 header JSON, 3 turn JSON (turn-audio), 4 end JSON. The
+// server frames only when asked (Accept below); an older server answers raw audio/pcm and the client reads it as before.
+
+export const FRAMES_ACCEPT = "application/x-taxila-pcm-frames;v=2";
+export const FRAME = { pcm: 0, event: 1, header: 2, turn: 3, end: 4 } as const;
+export interface TtsFrame {
+  type: number;
+  /** PCM bytes for type 0, the parsed JSON otherwise. */
+  payload: Uint8Array | Record<string, unknown>;
+}
+/** A clause onset in the reply's audio: `atMs` from the reply's first sample (the whiteboard's clause anchor). */
+export interface TtsClauseEvent { t: "clause"; clause: number; part: number; atSample: number; atMs: number }
+/** What the frame stream tells listeners: the reply it belongs to, plus the frame's JSON. */
+export type TtsEvent = { req: TtsRequest } & ({ kind: "header"; data: Record<string, unknown> } | { kind: "clause"; data: TtsClauseEvent }
+  | { kind: "voice"; data: Record<string, unknown> } | { kind: "end"; data: Record<string, unknown> });
+
+const listeners = new Set<(e: TtsEvent) => void>();
+/** Subscribe to framed-TTS events (clause onsets, header, end); returns the unsubscribe. */
+export function onTtsEvent(fn: (e: TtsEvent) => void): () => void {
+  listeners.add(fn);
+  return () => listeners.delete(fn);
+}
+function emit(e: TtsEvent): void {
+  for (const fn of listeners) {
+    try {
+      fn(e);
+    } catch {
+      /* a listener's bug never stops the voice */
+    }
+  }
+}
+
+/** Incremental frame parser over arbitrary chunk boundaries. Pure (tested in Node). */
+export class FrameParser {
+  private buf = new Uint8Array(0);
+  push(bytes: Uint8Array): TtsFrame[] {
+    const merged = new Uint8Array(this.buf.length + bytes.length);
+    merged.set(this.buf, 0);
+    merged.set(bytes, this.buf.length);
+    const out: TtsFrame[] = [];
+    let i = 0;
+    while (i + 4 <= merged.length) {
+      const len = (merged[i + 1] << 16) | (merged[i + 2] << 8) | merged[i + 3];
+      if (i + 4 + len > merged.length) break;
+      const type = merged[i];
+      const body = merged.subarray(i + 4, i + 4 + len);
+      if (type === FRAME.pcm) out.push({ type, payload: body.slice() });
+      else {
+        try {
+          out.push({ type, payload: JSON.parse(new TextDecoder().decode(body)) as Record<string, unknown> });
+        } catch {
+          /* a malformed JSON frame is skipped, never fatal */
+        }
+      }
+      i += 4 + len;
+    }
+    this.buf = merged.slice(i);
+    return out;
+  }
+}
+
+/** Async iteration over the frames of a framed body. */
+export async function* readFrames(body: ReadableStream<Uint8Array>): AsyncGenerator<TtsFrame> {
+  const reader = body.getReader();
+  const parser = new FrameParser();
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) return;
+      for (const f of parser.push(value)) yield f;
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
+
+/**
+ * A framed body → a PCM-only stream (what PcmStreamPlayer plays), JSON frames going to `onFrame`. The first frame is
+ * awaited by the caller of `onTurn`-style consumers through `onFrame`.
+ */
+export function pcmOfFrames(body: ReadableStream<Uint8Array>, onFrame: (f: TtsFrame) => void): ReadableStream<Uint8Array> {
+  const reader = body.getReader();
+  const parser = new FrameParser();
+  return new ReadableStream<Uint8Array>({
+    async pull(ctl) {
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) {
+          ctl.close();
+          return;
+        }
+        let pushed = false;
+        for (const f of parser.push(value)) {
+          if (f.type === FRAME.pcm) {
+            ctl.enqueue(f.payload as Uint8Array);
+            pushed = true;
+          } else onFrame(f);
+        }
+        if (pushed) return;
+      }
+    },
+    cancel(reason) {
+      return reader.cancel(reason);
+    },
+  });
+}
+
+const isFramed = (res: Response) => /x-taxila-pcm-frames/i.test(res.headers.get("content-type") ?? "");
+const eventOf = (req: TtsRequest, f: TtsFrame): TtsEvent | null => {
+  const data = f.payload as Record<string, unknown>;
+  if (f.type === FRAME.header) return { req, kind: "header", data };
+  if (f.type === FRAME.end) return { req, kind: "end", data };
+  if (f.type === FRAME.event) return data.t === "clause" ? { req, kind: "clause", data: data as unknown as TtsClauseEvent } : { req, kind: "voice", data };
+  return null;
+};
+
+// ───────────── the round-trip fold (POST /api/lesson/turn-audio, BUILD-PLAN W2-G #7) ─────────────
+// postTurnAudio() is a drop-in for the runtime's POST /api/lesson/turn: it resolves with the same TurnResponse, and the
+// reply's audio that came on the same response is parked by (lessonId, seq), so the link's next fetchSpeechStream for
+// that turn plays it with no second request. Flag `voice.turnAudio` (default OFF until the probe fleet measures it):
+// `?turnaudio=1`, localStorage "tx.flag.voice.turnAudio" = "1", or VITE_TURN_AUDIO=1.
+export const TURN_AUDIO_KEY = "tx.flag.voice.turnAudio";
+export function turnAudioEnabled(): boolean {
+  try {
+    if (typeof location !== "undefined") {
+      const v = new URLSearchParams(location.search).get("turnaudio");
+      if (v === "1" || v === "0") localStorage.setItem(TURN_AUDIO_KEY, v);
+    }
+    const v = typeof localStorage !== "undefined" ? localStorage.getItem(TURN_AUDIO_KEY) : null;
+    if (v === "1") return true;
+    if (v === "0") return false;
+  } catch {
+    /* storage blocked */
+  }
+  return (import.meta as { env?: Record<string, string> }).env?.VITE_TURN_AUDIO === "1";
+}
+
+const folded = new Map<string, { stream: ReadableStream<Uint8Array>; at: number }>();
+const FOLD_TTL_MS = 30_000;
+const foldKey = (lessonId: string, seq: number) => `${lessonId}:${seq}`;
+/** The audio a turn-audio response carried for (lessonId, seq), once; null when none is parked. */
+export function takeFoldedAudio(lessonId: string, seq: number): ReadableStream<Uint8Array> | null {
+  const k = foldKey(lessonId, seq);
+  const f = folded.get(k);
+  folded.delete(k);
+  if (!f) return null;
+  if (Date.now() - f.at > FOLD_TTL_MS) {
+    void f.stream.cancel().catch(() => {});
+    return null;
+  }
+  return f.stream;
+}
+
+/** POST /api/lesson/turn-audio → the TurnResponse; the reply's audio is parked for the link's speech fetch. */
+export async function postTurnAudio(req: TurnRequest, signal?: AbortSignal): Promise<TurnResponse> {
+  const res = await fetch("/api/lesson/turn-audio", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: { "content-type": "application/json", accept: FRAMES_ACCEPT },
+    body: JSON.stringify(req),
+    signal,
+  });
+  if (!res.ok || !res.body || !isFramed(res)) {
+    const text = await res.text().catch(() => "");
+    let data: unknown = text;
+    try {
+      data = text ? JSON.parse(text) : null;
+    } catch {
+      /* not JSON */
+    }
+    const msg = (data as { error?: unknown } | null)?.error;
+    throw new ApiError(res.status, typeof msg === "string" ? msg : `POST /api/lesson/turn-audio failed (${res.status})`, data);
+  }
+  let resolveTurn!: (t: TurnResponse) => void;
+  let rejectTurn!: (e: unknown) => void;
+  const turn = new Promise<TurnResponse>((a, b) => {
+    resolveTurn = a;
+    rejectTurn = b;
+  });
+  // PCM frames go into a stream the player reads later (backpressure holds the body until it does); JSON frames are
+  // the turn (resolves the call), then the reply's events.
+  const { readable, writable } = new TransformStream<Uint8Array, Uint8Array>();
+  const writer = writable.getWriter();
+  const body = res.body;
+  let ttsReq: TtsRequest | null = null;
+  let gotTurn = false;
+  let audioFollows = false;
+  void (async () => {
+    try {
+      for await (const f of readFrames(body)) {
+        if (f.type === FRAME.header && !gotTurn) {
+          audioFollows = (f.payload as Record<string, unknown>).audio === "follows";
+        } else if (f.type === FRAME.turn) {
+          gotTurn = true;
+          const t = f.payload as unknown as TurnResponse;
+          if (Number.isInteger(t.teacherReplySeq)) {
+            ttsReq = { lessonId: req.lessonId, seq: t.teacherReplySeq as number };
+            // parked only when this response carries the audio; else the link fetches it by seq as before
+            if (audioFollows) {
+              const k = foldKey(req.lessonId, ttsReq.seq);
+              folded.set(k, { stream: readable, at: Date.now() });
+              // nobody took it (the runtime chose not to speak): release the response
+              setTimeout(() => {
+                if (folded.get(k)?.stream === readable) {
+                  folded.delete(k);
+                  void readable.cancel().catch(() => {});
+                }
+              }, FOLD_TTL_MS);
+            }
+          }
+          resolveTurn(t);
+        } else if (f.type === FRAME.pcm) {
+          await writer.write(f.payload as Uint8Array);
+        } else if (ttsReq) {
+          const e = eventOf(ttsReq, f);
+          if (e?.kind === "end" && (e.data.audio === "none" || e.data.audio === "rate_limited")) folded.delete(foldKey(ttsReq.lessonId, ttsReq.seq));
+          if (e) emit(e);
+        }
+      }
+      if (!gotTurn) rejectTurn(new ApiError(502, "turn-audio ended without a turn", null));
+      await writer.close().catch(() => {});
+    } catch (e) {
+      if (!gotTurn) rejectTurn(e);
+      await writer.abort(e).catch(() => {});
+      void body.cancel().catch(() => {});
+    }
+  })();
+  return turn;
+}
+
+/** POST /api/voice/tts-stream → the PCM body stream (framed v2 when the server supports it; events to onTtsEvent). */
 export const fetchSpeechStream: SpeechStreamFetch = async (req, signal) => {
+  const parked = takeFoldedAudio(req.lessonId, req.seq);
+  if (parked) return parked;
   const res = await fetch("/api/voice/tts-stream", {
     method: "POST",
     credentials: "same-origin",
-    headers: { "content-type": "application/json" },
+    headers: { "content-type": "application/json", accept: FRAMES_ACCEPT },
     body: JSON.stringify(req),
     signal,
   });
   if (!res.ok || !res.body) throw new ApiError(res.status, `speech failed (${res.status})`, await res.text().catch(() => ""));
-  return res.body;
+  if (!isFramed(res)) return res.body;
+  return pcmOfFrames(res.body, (f) => {
+    const e = eventOf(req, f);
+    if (e) emit(e);
+  });
 };
 
 export class PcmStreamPlayer {

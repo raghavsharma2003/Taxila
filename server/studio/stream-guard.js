@@ -12,7 +12,8 @@
 // hints go to the repair prompt so the next round is told what was removed.
 //
 // Streaming discipline: a rule can only fire on text it can see whole, so the guard COMMITS a prefix only up to a point
-// no pattern can straddle: it holds back the last HOLD chars and, before that, any suspicious token that has not ended.
+// no pattern can straddle: the end of a tag / statement / rule / line before the last HOLD chars, and never inside a
+// suspicious token that has not ended there.
 // Rules are local (no match spans a commit point), so guard(a) + guard(b) === guard(a + b) for every split (tested).
 
 const HOLD = 96;
@@ -34,7 +35,8 @@ function rules(keys) {
     ["css_url", /url\(\s*(?!["']?\s*(?:data:|#))[^)]*\)/gi, () => "none"],
     ["proto_rel", /\b(src|href|xlink:href|action|formaction|poster|data)\s*=\s*(["'])\s*\/\/[^"']*\2/gi, (_m, a, q) => `${a}=${q}${q}`],
     ["url", /\bhttps?:\/\/[^\s"'<>()`\\]*/gi, (m) => (NS_OK.test(m) || NS_OK.test(m + '"') ? m : "")],
-    ["www", /\bwww\.[a-z0-9-]+\.[a-z]{2,}[^\s"'<>()`\\]*/gi, () => ""],
+    // a bare www. host (not the tail of a URL the rule above kept, e.g. the SVG namespace http://www.w3.org/2000/svg)
+    ["www", /(?<![\/\w.])www\.[a-z0-9-]+\.[a-z]{2,}[^\s"'<>()`\\]*/gi, () => ""],
     ["fetch", /\bfetch\s*\(/g, () => "(function(){return Promise.reject()})("],
     ["xhr", /\b(?:XMLHttpRequest|WebSocket|EventSource|SharedWorker|Worker|BroadcastChannel|RTCPeerConnection)\b/g, () => "Object"],
     ["beacon", /\bnavigator\s*\.\s*sendBeacon\s*\(/g, () => "(function(){return false})("],
@@ -92,12 +94,16 @@ export function createStreamGuard({ keys = null } = {}) {
       raw += String(delta ?? "");
       let n = raw.length - HOLD;
       if (n <= 0) return "";
-      // never cut inside a suspicious token: move the cut back to where it starts
+      // commit only up to the end of a tag, statement, rule or line (">", ";", "}", newline): no rule's match can span one
+      const head0 = raw.slice(0, n);
+      const safe = Math.max(head0.lastIndexOf(">"), head0.lastIndexOf(";"), head0.lastIndexOf("}"), head0.lastIndexOf("\n"));
+      if (safe < 0) return "";
+      n = safe + 1;
+      // ... and never inside a suspicious token still open at that point (an attribute value, url(, a URL, Studio.t( …)
       const head = raw.slice(0, n);
-      const m = OPENERS.exec(head.slice(-400));
-      if (m) n = head.length - (head.slice(-400).length - m.index);
-      // never cut a word or a tag name in two (a rule's \b anchors need the whole token)
-      while (n > 0 && /[\w$.]/.test(raw[n - 1]) && /[\w$.(]/.test(raw[n])) n--;
+      const tail = head.slice(-400);
+      const m = OPENERS.exec(tail);
+      if (m) n = head.length - (tail.length - m.index);
       return commit(n);
     },
     end() { return commit(raw.length); },

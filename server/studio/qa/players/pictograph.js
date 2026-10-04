@@ -26,6 +26,6 @@ export default {
     const vs = p.rows.map((r) => r.value), ext = p.question === "most" ? Math.max(...vs) : Math.min(...vs);
     const right = p.rows.find((r) => r.value === ext).key;
     await wrongThenRight(c, { sel: "[data-row]", attr: "data-row", wrong: p.rows.find((r) => r.key !== right).key, right });
-    doneCalled(c);
+    await doneCalled(c);
   },
 };

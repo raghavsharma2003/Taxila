@@ -100,17 +100,28 @@ export function strayWords(texts, strings) {
   return stray;
 }
 
-/** Content extent beyond the design box (any visible element right/bottom past it, or left/top before 0). */
+/**
+ * Content extent beyond the design box: any visible CONTENT element (it carries text, a data-* seam attribute, or is
+ * interactive) whose box leaves the stage. Purely decorative shapes (no text, no seam, not interactive: a corner blob,
+ * a sun bleeding off the edge) may bleed: the stage clips them, and a clipped decoration is a design choice, while a
+ * clipped word, target or truth shape is a defect. Scroll extents count either way.
+ */
 export async function overflow(page, stage) {
   return page.evaluate(({ W, H }) => {
     let right = 0, bottom = 0, left = 0, top = 0;
+    const offenders = [];
+    const content = (e) => [...e.attributes].some((a) => a.name.startsWith("data-")) || /^(BUTTON|INPUT|SELECT|TEXTAREA|A|LABEL)$/.test(e.tagName)
+      || [...e.childNodes].some((n) => n.nodeType === 3 && n.nodeValue.trim()) || e.tagName === "text" || e.tagName === "tspan";
     for (const e of document.body.querySelectorAll("*")) {
-      const r = e.getBoundingClientRect(); if (!r.width || !r.height) continue;
+      const r = e.getBoundingClientRect(); if (!r.width && !r.height) continue;
       const cs = getComputedStyle(e); if (cs.visibility === "hidden" || cs.display === "none" || +cs.opacity < 0.05) continue;
-      right = Math.max(right, r.right - W); bottom = Math.max(bottom, r.bottom - H); left = Math.max(left, -r.left); top = Math.max(top, -r.top);
+      if (/^(SCRIPT|STYLE)$/.test(e.tagName) || !content(e)) continue;
+      const dr = r.right - W, db = r.bottom - H, dl = -r.left, dt = -r.top;
+      if (Math.max(dr, db, dl, dt) > 1) offenders.push(((e.id ? "#" + e.id : e.tagName.toLowerCase()) + " " + [...e.attributes].filter((a) => a.name.startsWith("data-")).map((a) => a.name + "=" + a.value).join(" ")).slice(0, 50));
+      right = Math.max(right, dr); bottom = Math.max(bottom, db); left = Math.max(left, dl); top = Math.max(top, dt);
     }
     const sw = document.documentElement.scrollWidth - W, sh = document.documentElement.scrollHeight - H;
-    return { right: Math.round(right), bottom: Math.round(bottom), left: Math.round(left), top: Math.round(top), scrollX: sw, scrollY: sh };
+    return { right: Math.round(right), bottom: Math.round(bottom), left: Math.round(left), top: Math.round(top), scrollX: sw, scrollY: sh, offenders: offenders.slice(0, 3) };
   }, { W: stage.w, H: stage.h });
 }
 

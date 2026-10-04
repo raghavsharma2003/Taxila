@@ -91,7 +91,7 @@ export class LipSolver {
     // lower lip carries the drop, and the teeth show
     const smAvg = (k("mouthSmileLeft") + k("mouthSmileRight")) / 2;
     const joy = clamp01((smAvg - 0.35) / 0.4) * clamp01(open / 0.18);
-    if (joy > 0) { tgt.g += 16 * joy * (1 - Math.min(1, W)); tgt.up = tgt.up * (1 - 0.6 * joy); tgt.T = Math.max(tgt.T, 0.9 * joy); tgt.th = Math.max(tgt.th, 0.35 * joy); }
+    if (joy > 0) { tgt.g += 22 * joy * (1 - Math.min(1, W)); tgt.up = tgt.up * (1 - 0.6 * joy); tgt.T = Math.max(tgt.T, 0.9 * joy); tgt.th = Math.max(tgt.th, 0.35 * joy); }
     this.surprised = W < 0.2 && wide > 0.45 ? 1 : 0;
     // tongue keys from the contract (Hindi dental / retroflex / lateral)
     tgt.tip = clamp01(Math.max(tgt.tip, k("tongueTipUp")));
@@ -118,9 +118,9 @@ export class LipSolver {
     const side = k("mouthLeft") - k("mouthRight");   // + = her left = screen right
     for (const s of ["L", "R"]) {
       const se = lift(smile[s]);
-      const roundK = 1 - 0.45 * p.round;          // a rounded mouth keeps less of the smile's spread
+      const roundK = 1 - 0.7 * p.round;          // a rounded mouth keeps less of the smile's spread
       const wid = (se - 0.45) * 13 * roundK + p.wid;
-      const dy = -(se - 0.45) * 19 * (1 - 0.3 * p.round) * (1 - 0.7 * (this.surprised || 0)) + frown[s] * 9 + p.press * 1.5;
+      const dy = -(se - 0.45) * 19 * (1 - 0.5 * p.round) * (1 - 0.7 * (this.surprised || 0)) + frown[s] * 9 + p.press * 1.5;
       const crease = clamp01((se - 0.16) / 0.29) * (1 - 0.6 * p.round);
       const S = this.side[s], tc = this.first ? 1 : 1 - Math.exp(-dt / 0.06);
       S.wid += tc * (wid - S.wid);

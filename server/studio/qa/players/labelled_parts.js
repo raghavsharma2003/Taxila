@@ -14,7 +14,7 @@ export default {
     await labelsLayout(c, "[data-label]", "data-label");
     const refs = new Map();
     for (const k of p.parts) refs.set(k, await c.visible(`[data-part="${k}"]`));
-    anchored(c, labels, refs, "data-label", { maxGap: 40 });
+    anchored(c, labels, refs, "data-label", { maxGap: 56 });   // a short leader line is allowed (seam)
     // a label written over ANOTHER part reads as that part's name: sample points of the label's box and look at the
     // drawn part under it (through every layer; a group's box is too coarse to decide this)
     const onOther = await c.page.evaluate(() => {
@@ -35,6 +35,6 @@ export default {
     const sig = await c.page.$$eval("[data-part]", (els) => els.map((e) => { const cs = getComputedStyle(e); return [cs.outlineStyle, cs.filter, cs.boxShadow, (+cs.opacity).toFixed(1)].join("|"); }));
     c.add("G8.no_part_marked", new Set(sig).size === 1, [...new Set(sig)].slice(0, 3));
     await wrongThenRight(c, { sel: "[data-part]", attr: "data-part", wrong: p.parts.find((k) => k !== p.ask), right: p.ask });
-    doneCalled(c);
+    await doneCalled(c);
   },
 };

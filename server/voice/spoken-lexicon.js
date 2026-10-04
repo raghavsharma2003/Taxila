@@ -220,3 +220,19 @@ export const CELLS = {
   "hindi.english": { words: "en", frame: "hl" },
 };
 export const DEFAULT_MEDIUM = { english: "english", hinglish: "english", hindi: "hindi" };
+
+// ── terms the voice misreads (owner 2026-10-04, voice-clips-off-and-numbers-normalised: "numbers and terms are
+// normalised ... plus a lexicon before TTS") ─────────────────────────────────────────────────────────────────────
+// Whole-token, case-sensitive written forms → per word language. Only abbreviations a TTS voice reads wrongly or as
+// punctuation belong here; ordinary words never do (the voice reads them in context). Applied by spoken.js speakable().
+export const TERMS = {
+  "e.g.": { en: "for example", hi: "जैसे" },
+  "eg.": { en: "for example", hi: "जैसे" },
+  "i.e.": { en: "that is", hi: "यानी" },
+  "etc.": { en: "and so on", hi: "वगैरह" },
+  "vs": { en: "versus", hi: "बनाम" },
+  "vs.": { en: "versus", hi: "बनाम" },
+  "&": { en: "and", hi: "और" },
+  "w.r.t.": { en: "with respect to", hi: "के सापेक्ष" },
+  "approx.": { en: "approximately", hi: "लगभग" },
+};
