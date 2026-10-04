@@ -1136,3 +1136,12 @@ Proposed in `context/inbox/reset-plan.json`, and written up in `context/decision
 - **O-R6:** approved. A consented real-child panel; the owner recruits, and the protocol is shared with the voice-signals pilot.
 - **O-R7:** done 2026-10-04. The 14 synthetic safeguarding incidents on @taxila.test children were marked handled with a note. `sweep-test-accounts --db prod --apply` deleted 11 test guardians (0 deferred, 0 failed), and 0 remain.
 - **O-R9:** approved: USD 60-90 Azure for Wave 2.5.
+
+### Owner priority order (2026-10-04, after §9): build these into production first
+1. **The Griffin-style duplex teacher, deployed.** This is the continuous decision engine on the cascade, hands-free; it replaces click-to-speak (RS-3, wf_3622f8d6-318).
+2. **The 2D teacher face** (style C, ≥ 4.5/5), live in the lesson tile (RS-7, wf_a63dfff5-f3f).
+3. **Voice feature extraction** for comprehension knowledge states: on-device, then shadow, then on (wf_085e782c-74c, plus server/signals).
+4. **Live-built resources shown to the student:** Studio games, animations, whiteboard and images on the stage, triggered by beats AND child requests, with zero visible failure (RS-4, W2-H, patch 09).
+5. **Student ↔ tutor interaction:** conversation v2, steering, diversion parking, stop check-in, real listening (RS-5, patches 02-08).
+
+Sequencing follows this order whenever streams compete for the main loop, integration slots or quota.

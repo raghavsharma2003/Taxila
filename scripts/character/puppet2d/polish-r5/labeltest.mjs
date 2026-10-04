@@ -11,7 +11,8 @@ const LABELS = { A: "aa (as in 'baat', 'father')", B: "o (as in 'go', 'bol')", C
   H: "ch / j / sh (as in 'chalo', 'jaana', 'shaam')", I: "a surprised 'oh!' expression (not a speech sound)" };
 const CLS = { aa: "A", o: "B", ee: "C", oo: "D", mbp: "E", fv: "F", ltdn: "G", ch: "H", surprise: "I" };
 const prompt = `This is a close-up of the mouth of an animated cartoon character (soft 3D cartoon style) captured in one frame while speaking a Hindi-English sentence, or making a facial expression. Which ONE of these is the mouth shape showing? Choose the single best match.\n${Object.entries(LABELS).map(([k, v]) => `${k}: ${v}`).join("\n")}\nReply JSON only: {"label":"<letter>","why":"<10 words>"}`;
-const ids = Object.keys(key).sort();
+const REPS = +(process.env.REPS || 1);   // independent calls per crop (n = crops x REPS)
+const ids = Object.keys(key).sort().flatMap((id) => Array(REPS).fill(id));
 const res = [];
 let ok = 0;
 for (const id of ids) {

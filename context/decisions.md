@@ -4159,3 +4159,7 @@ the no-preface line).
 
 ## Merged inbox entries (write-up from the entry text)
 - `owner-reset-answers-2026-10-04` (2026-10-04): Owner answered RESET-PLAN §9: the teacher is the in-house 2D/3D style-C model (never the mockup portraits); diversions hidden from parents; reference phone approved; MAI India approved; real-child panel approved; Wave 2.5 Azure envelope USD 60-90 approved; test accounts deleted after synthetic incidents were marked handled (11 guardians, 14 incidents).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `owner-priority-order-2026-10-04` (2026-10-04): Owner priority order for production: (1) Griffin-style duplex teacher deployed, hands-free; (2) 2D teacher face live; (3) voice feature extraction for comprehension; (4) live-built Studio resources displayed to the student; (5) student-tutor interaction (conversation v2). Sequencing follows this order whenever streams compete.
