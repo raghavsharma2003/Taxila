@@ -1,0 +1,174 @@
+{
+ "nodes": [
+  {
+   "id": "w2h-studio-pieces-invisible-until-cue",
+   "kind": "decision",
+   "title": "Studio pieces prefetched at lesson start (plan skills, kit misconceptions, re-teach rows; <=3 per lesson) stay invisible until the kernel accepts a Studio reveal; seam.statusFacts proposes a reveal only in a beat the piece fits (answer pieces: worked_example/contrast/practice_set; watch pieces: explain/worked_example/contrast), its own beat's piece first, never before turn 3, >=4 turns apart; slotFor withholds a reveal (and onReveal skips it) when the turn moved to another beat or the Director's move needs the tray (module/board/tiles/pad); a revealed piece stays in the tray across turns until retired (8 turns, or 2 after its last item)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2h-skeleton-as-activity-first-rung",
+   "kind": "decision",
+   "title": "When no gate-passed build is admissible (router fallback, no gate lane, a failed race, G-mount refused) the piece IS the code skeleton: 12 skeleton renderers in src/studio/skeletons.tsx draw the correct minimal piece from kit params and are interactive and host-graded; words come from the plan's Q8-passed strings or English chrome (src/copy/en.ts W2H) when Q8 fails or the model is down; nothing on screen ever says a build failed",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2h-host-assembles-frame",
+   "kind": "decision",
+   "title": "The child's frame is assembled in the host (src/studio/kit/bundle.ts) from the fragment fetched by sha and re-hashed (mismatch = never mounted, skeleton instead) plus the studio-kit@1 runtime (src/studio/kit/runtime.ts, API- and freeze-identical to qa/page.js), under a hash-only meta CSP (runtime + one build script), in an iframe with sandbox=allow-scripts and srcdoc (opaque origin); one MessagePort is transferred in studio:init after load and only accepted from window.parent; the host listens on the port only, a second load drops the frame, and Studio.answer goes to POST /api/studio/answer where the HOST grades",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2h-library-identity-gate-cache",
+   "kind": "decision",
+   "title": "Studio library (server/studio/library.js, 017_studio.sql): identity = sha256(kind, archetype, skill, Band4, lang family, kit hash, studio-kit version), model never in the key; live_passed -> transfer_passed (2nd distinct param pass) -> promoted (>=3 distinct passes + human review via scripts/studio-review.mjs, name-asserted, <=3 variants) -> retired (incident/review/kit change); gate-result cache studio_gate_pass(build, params hash, strings hash); a library mount reuses the strings that already passed with those params so the cache can hit when the gate is down; never an un-gated reveal (router.revealable)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2h-studio-evidence-one-event-per-item",
+   "kind": "decision",
+   "title": "A Studio answer is graded by the host with the gate's own grader (qa/graders.js via server/studio/grade.js); ONE kt_evidence event per item episode, on the host's first correct grade, via='studio' (x0.75 in bktr.js SOURCE_WEIGHT), grader 'code', open-item outcome by wrong tries before (C0/C1), deterministic id (resend = no-op), written under the child's advisory lock + mode guard like later.js writeCorrection; wrong answers alone are no event; replays write no evidence in W2",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2h-no-live-build-without-gate-lane",
+   "kind": "decision",
+   "title": "A live build is never started when the process has no gate lane (STUDIO_QA_URL unset and not STUDIO_QA_LOCAL=1): it could never be revealed (never un-gated), so no race is paid for; the piece falls back to the skeleton activity with reason studio.gate_down",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2h-studio-mount-lesson-keyed",
+   "kind": "decision",
+   "title": "studio_mount / studio_build / studio_library / studio_gate_pass carry no child_id column (016's rule): mounts are keyed by lesson_id ON DELETE CASCADE, so erasure and the M0 ratchet remove them with the lesson, and learner/mode.js needs no new classification; per-child reads (exclusions, spend caps, Made for you) join lesson.child_id; 'Not this one' is studio_mount.not_this_at (archetype excluded for that child 7 days)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2h-fraction-archetype-topic-guard",
+   "kind": "decision",
+   "title": "seam.aboutTopic: a fraction archetype (shade_fraction, number_line_jump) is admissible only when the topic's own skill titles are about parts of a whole (fraction / equal parts / halves / tenths / hundredths / number line / decimal / bhinn), because plan.js paramsFromKit admits on any fraction mention",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2h-seam-patches-turn-say",
+   "kind": "decision",
+   "title": "W2-H needs three call-site changes in W2-E-owned files, delivered as server/studio/seam-patches/w2h-turn-slot.patch (statusFacts gets {beat}; slotFor(lessonId, turnStudio, {beat, tray}) gives ui.studioSlot before the reply; the Studio facts row joins the move's content in planTurn) and w2h-say-screen-targets.patch (screenHasTargets counts a non-whiteboard ui.studioSlot); server/index.js gets a one-line route registration (as W2-D did)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2h-local-acceptance-2026-10-04",
+   "kind": "measurement",
+   "title": "tests/prod/w2h-studio.mjs against node server/serve.mjs (scratch tree = repo + the two seam patches) on the Neon test branch, 2026-10-04, n=2 runs: 18/18 checks both runs (SSE 200/401, reveal on cue in practice_set with tray slot fallback_shown skeleton fraction-parts, no host-only params, no failure words, forged correct:true graded wrong, right answer graded right, 1 kt_evidence via=studio grader=code, studio_mount row, Made for you card, account deleted 4 -> 4); 0 [seam] warnings in the server log",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2h-stage-browser-2026-10-04",
+   "kind": "measurement",
+   "title": "tests/studio-stage-states.test.mjs (real Desk via Vite, mocked API, Chromium, 2026-10-04): 12 skeletons at 360x800 + 4 at 768x1024 and 1366x768 = 20 cases, 0 failures (drawing inside box inside tray, every target >= 44 CSS px, no tray or page scroll); 6 tray states with tray and box within 4 px and no spinner/percent/error text; a router-bench winner (shade_fraction) mounted from re-hashed bytes, played with real taps, host-graded (2 answers reached the host, verdict advanced the item); from inside the frame fetch refused, image and CSS url() loads failed 'csp', top navigation refused, storage refused, a forged postMessage answer never reached the host; tampered bytes -> skeleton, frame-error reported",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2h-kit-coverage-2026-10-04",
+   "kind": "measurement",
+   "title": "Kit coverage for code-proven Studio params (plan.js chooseArchetype over every file kit, 2026-10-04, n=830 topics): 47/830 (5.7%) admit a frame archetype, all fraction games; classes 1-3 0/206; classes 4-7 23/385, of which 6 off-topic (capacity, km conversion, rotation, magic squares, equations); after the topic guard 16/385 class 4-7 topics get a prefetched piece. Everything else depends on the whiteboard (explanation beats) until W3-B truth packs",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2h-whiteboard-path-2026-10-04",
+   "kind": "measurement",
+   "title": "Whiteboard via the seam (2026-10-04): in 2 local text lessons (c5 fractions, c6 science) the explanation beats' whiteboard asks were all rejected by the kernel (4/4 over_budget.attention: the Director mounted a module on explain and worked_example); requestIntent with the real planner (taxila-gpt6-luna, W2-F's gate) drew 2 of 4 lines, script on the wire 2.8-6.3 s after the ask; the 2 refusals were W2.no_text_overlap + W2.text_clear_of_lines (one logged) and the board stays calm",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2h-reveal-narration-gap-2026-10-04",
+   "kind": "measurement",
+   "title": "On the reveal turn in 3/3 local probe lessons the teacher's reply did not point at the revealed piece (it continued the Director's practice item) although the facts row was in the move content; the piece's numbers come from the kit's most frequent fractions, not the current item",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-studio-fraction-mention-as-topic",
+   "kind": "rejection",
+   "title": "Admitting a fraction game whenever the kit mentions a fraction (plan.js paramsFromKit): 6 of 23 class 4-7 admissions were off-topic (a pizza game in a lesson on litres, km, rotation, magic squares, equations); replaced by the topic guard",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-studio-reveal-on-clock-only",
+   "kind": "rejection",
+   "title": "Proposing a reveal from the lesson clock alone (statusFacts has no move): in 2/2 probes an explain piece was revealed as a practice item started and the teacher talked only about the item; replaced by the beat hint + slotFor withholding outside the piece's beats or when the Director needs the tray",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-studio-mount-child-id-column",
+   "kind": "rejection",
+   "title": "A child_id column on studio_mount / a studio_exclusion table: every child_id table must be classified in learner/mode.js (W2-I's carve-out) or the ratchet refuses and the migration scan test fails; keyed by lesson_id instead",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-playwright-request-event-as-network",
+   "kind": "rejection",
+   "title": "Asserting 'nothing reached the network' on Playwright request events: Chromium emits a request event for a CSP-blocked load (it fails with errorText 'csp'); assert on requestfinished and on requestfailed other than csp",
+   "at": "2026-10-04"
+  }
+ ],
+ "edges": [
+  {
+   "src": "w2h-skeleton-as-activity-first-rung",
+   "rel": "part_of",
+   "dst": "w2h-studio-pieces-invisible-until-cue"
+  },
+  {
+   "src": "w2h-host-assembles-frame",
+   "rel": "measured_by",
+   "dst": "w2h-stage-browser-2026-10-04"
+  },
+  {
+   "src": "w2h-studio-pieces-invisible-until-cue",
+   "rel": "measured_by",
+   "dst": "w2h-local-acceptance-2026-10-04"
+  },
+  {
+   "src": "w2h-studio-evidence-one-event-per-item",
+   "rel": "measured_by",
+   "dst": "w2h-local-acceptance-2026-10-04"
+  },
+  {
+   "src": "w2h-fraction-archetype-topic-guard",
+   "rel": "caused_by",
+   "dst": "rj-studio-fraction-mention-as-topic"
+  },
+  {
+   "src": "w2h-fraction-archetype-topic-guard",
+   "rel": "measured_by",
+   "dst": "w2h-kit-coverage-2026-10-04"
+  },
+  {
+   "src": "w2h-studio-pieces-invisible-until-cue",
+   "rel": "caused_by",
+   "dst": "rj-studio-reveal-on-clock-only"
+  },
+  {
+   "src": "w2h-studio-mount-lesson-keyed",
+   "rel": "caused_by",
+   "dst": "rj-studio-mount-child-id-column"
+  },
+  {
+   "src": "w2h-seam-patches-turn-say",
+   "rel": "constrains",
+   "dst": "w2h-studio-pieces-invisible-until-cue"
+  },
+  {
+   "src": "w2h-library-identity-gate-cache",
+   "rel": "constrains",
+   "dst": "w2h-no-live-build-without-gate-lane"
+  },
+  {
+   "src": "w2h-studio-pieces-invisible-until-cue",
+   "rel": "part_of",
+   "dst": "w2-seam-contracts"
+  },
+  {
+   "src": "w2h-studio-evidence-one-event-per-item",
+   "rel": "part_of",
+   "dst": "w2-seam-contracts"
+  }
+ ]
+}

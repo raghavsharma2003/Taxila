@@ -2263,3 +2263,56 @@ container to eastus2.
 
 ## Merged inbox entries (write-up from the entry text)
 - `m-voice-blind-r3-2026-10-04` (2026-10-04): Voice blind round 3, n = 2 raters x 20 clips, equal weight: Diya anchor 2.40, Diya new spoken line plain 2.40, Diya + SSML delivery plan 2.10, Nova kiara 1.60; joke card 1.0-1.5 on every arm (docs/research/voice/v4/blind/RESULTS-R3.md)
+
+## W2-H: Studio in the lesson (2026-10-04; inbox `context/inbox/w2-h.json`)
+
+### `w2h-local-acceptance-2026-10-04`
+**Run:** `tests/prod/w2h-studio.mjs` against a local `server/serve.mjs`.
+- **Tree:** the repo plus `seam-patches/w2h-turn-slot.patch` and `w2h-say-screen-targets.patch`.
+- **Data:** the Neon test branch.
+- **n:** 2 runs, 2026-10-04.
+
+**Result: 18/18 checks in both runs.**
+- The stream answered 200 to the signed-in guardian and 401 to a signed-out caller.
+- A piece was revealed on her cue in practice_set, with the tray slot (`fallback_shown`, skeleton `fraction-parts`).
+- No host-only params and no failure words.
+- A forged `correct: true` was graded wrong. The right answer was graded right, giving 1 kt_evidence row (via=studio,
+  grader=code).
+- A `studio_mount` row and a Made for you card were written.
+- The account was deleted (4 → 4). There were 0 `[seam]` warnings.
+
+### `w2h-stage-browser-2026-10-04`
+**Run:** `tests/studio-stage-states.test.mjs` (the real Desk, a mocked API, Chromium).
+
+**Layout and tray states:**
+- **Layout:** 20 cases, 0 failures: 12 skeletons at 360×800, plus 4 at 768×1024 and 1366×768. Every target is ≥ 44 px,
+  and nothing overflows the box, the tray or the page.
+- **Tray states:** 6 states, with the tray and the box within 4 px and no forbidden text.
+
+**Frame (a router-bench shade_fraction winner):**
+- It mounted from re-hashed bytes, played with real taps and was graded by the host.
+- From inside the frame:
+  - fetch was refused;
+  - image and CSS `url()` loads failed with `csp`;
+  - top navigation and storage were refused;
+  - a forged postMessage answer never reached the host.
+- Tampered bytes → skeleton.
+
+### `w2h-kit-coverage-2026-10-04`
+**Run:** `plan.js chooseArchetype` over every file kit (n = 830 topics).
+
+**Result:**
+- 47/830 topics (5.7%) admit a frame archetype, all of them fraction games.
+- Classes 1-3: 0/206.
+- Classes 4-7: 23/385, of which 6 were off-topic. After the topic guard, 16/385 class 4-7 topics get a piece.
+
+### `w2h-whiteboard-path-2026-10-04`
+**Text lessons:** 2 local text lessons (c5 fractions, c6 science). All 4 whiteboard asks on explanation beats were
+rejected with `over_budget.attention`: the Director mounted a module on explain and on worked_example.
+
+**Direct `requestIntent`:** with the real planner (taxila-gpt6-luna and W2-F's gate), 2 of 4 lines were drawn. The script
+reached the wire 2.8-6.3 s after the ask. The refusals were `W2.no_text_overlap` and `W2.text_clear_of_lines`.
+
+### `w2h-reveal-narration-gap-2026-10-04`
+**Result:** in 3/3 local probe lessons, the reveal-turn reply did not point at the piece, although the facts row was in the
+move's content. The piece's numbers are the kit's most frequent fractions, not the current item's.

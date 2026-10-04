@@ -8931,6 +8931,13 @@
    "at": "2026-10-04",
    "title": "After three rounds at a 2.4-2.6 ceiling on stock Diya, stop iterating markup: keep spoken-register writing (minus fragmenting), drop the SSML delivery plan, test emotion-capable engines next (round 4), and pursue a custom voice from a consented Indian teacher's emotional child-directed recordings. Reverse if a round-4 engine fails to beat Diya B on the joke and surprise cards.",
    "source": "inbox/voice-r3-results.json"
+  },
+  {
+   "id": "owner-voice-scope-mai-openai-2026-10-04",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Owner: voice candidates narrowed to MAI-Voice and OpenAI TTS (DragonHD Diya stays as the anchor and current production voice). Open models (Veena, Svara, Chatterbox, Indic Parler, VoxCPM2) and Nova are dropped for now. Finalize the production voice fast and move on to deploy. Round 4 (wf_39e7e463-899) was rescoped and the AWS open-model render arm cancelled before it ran.",
+   "source": "inbox/owner-voice-scope.json"
   }
  ],
  "edges": [
@@ -14593,6 +14600,11 @@
    "src": "voice-r3-next-expressive-engine-2026-10-04",
    "rel": "measured_by",
    "dst": "m-voice-blind-r3-2026-10-04"
+  },
+  {
+   "src": "owner-voice-scope-mai-openai-2026-10-04",
+   "rel": "constrains",
+   "dst": "voice-r3-next-expressive-engine-2026-10-04"
   }
  ]
 }

@@ -1,0 +1,33 @@
+{
+ "nodes": [
+  {"id": "p2d-r4-viseme-shape-space", "kind": "decision", "at": "2026-10-04",
+   "title": "Puppet visemes own SHAPE independently of the smile (lips.js): width W (o 0.7, u 0.6, ee 1.1), curvature flattening, rounded profile, press (m/b/p full contact + bulge, 67 ms min hold from contact), tuck (f/v), tongue lobe (t/d/n/l, 60 ms hold, >=20 px gap); smile is a bias capped to half while rounding; PP / FF dominate the weighted mix instead of averaging. Reverse if a phone-recorded talk clip shows the shapes as chattering (too many distinct shapes per second) to the owner's eye."},
+  {"id": "p2d-r4-two-texture-yaw", "kind": "decision", "at": "2026-10-04",
+   "title": "Head turn = two-texture keyform: the painted three-quarter key's FACE SKIN (plates.py: matte = face alpha forward-mapped through the field, eroded 16 px; plate locks/brows/bindi inpainted; colour band-matched round the holes and the matte border) cross-dissolves in with the key weight while both warp through the shared TPS field; live eyes/brows/mouth draw through holes; key reached at the +-20 contract limit, never extrapolated. Reverse if the phone shows the plate dissolve as a visible cross-fade ghost in motion, or if a true painted multi-key (+-10 / +-20 / +-30) set becomes affordable."},
+  {"id": "p2d-r4-blink-mid-088", "kind": "decision", "at": "2026-10-04",
+   "title": "Mid-blink key built from the painted CLOSED key compressed per column to land its lash at 0.88 of the opening (lidkeys.py P2D_MIDFROM=shut), not at the judge-requested ~0.6. Reverse if a ~0.6 still can be made to read as motion (e.g. with motion-blurred lash) in a blind run."},
+  {"id": "p2d-r4-blind-panel", "kind": "measurement", "at": "2026-10-04",
+   "title": "Blind gpt-5.6-sol (taxila-brain), r3 prompt, 3x3 grid vs c-front, n=3 per iteration: a 3.6/3.5/3.5 (r3-strength yaw keys, mid 0.62), b 3.7/3.5/3.8 (mid 0.75), c 4.0/3.8/3.8 (strong keys, mid 0.88), d 3.7/4.2/3.5 (thinking eased), e 3.7/3.5/3.6 (final: aa flatter, far eye 0.6). Pooled c-e n=9 mean 3.76 (r3 final 3.73, n=3). Categorical: turn reads '~20 deg head turn' 9/9 c-e vs 0/3 a; surprise clear 8/9; concern reads concern 9/9; mid-blink never 'sleepy' after 0.88 (9/9 'full blink'); every run also flags 'proportions drift' on the rest cell, which is pixel-identical to c-front (rendered SSIM 0.984), i.e. panel noise of ~+-0.2 per n=3 mean."},
+  {"id": "p2d-r4-gate-articulation", "kind": "measurement", "at": "2026-10-04",
+   "title": "Articulation gate (shoot.mjs gate, 30 fps, 'chalo, aao, mama, bubbly' through visemesAt -> LipSolver -> rig; gatestrip-e.png): ch teeth spread, a/aa jaw drop with cavity, chalo l tongue lobe on 3 frames, o/u rounded (0.6-0.7 width), m 3 closed frames x2, b 3 closed frames x2, ee spread with teeth; bubbly l (80 ms after b) shows a small lobe on 2 frames. Judged by eye, builder."},
+  {"id": "p2d-r4-payload-rest", "kind": "measurement", "at": "2026-10-04",
+   "title": "r4 payload 142 KB wire (r3 105 KB; +37 KB = two face plates); rest rendered SSIM vs c-front 0.9841 (= r3 0.9841, same renderer, view 0,0,1024); static head crop 0.9847 (r3 0.9845). Image spend r4 USD 1.22, ledger 9.98 of 30."},
+  {"id": "rj-p2d-masked-edit-not-honoured", "kind": "rejection", "at": "2026-10-04",
+   "title": "gpt-image-2 masked edit of the yawR plate (bun fix, mask round the bun only) repainted the WHOLE image ~8-11 px off; composing only the masked region back (bunfix.py) left two cream discs and no bun. Fix: take the full repaint and carry the hand-read landmarks over by dense optical flow (DIS; face residual 32 -> 9 grey levels)."},
+  {"id": "rj-p2d-whole-head-plate", "kind": "rejection", "at": "2026-10-04",
+   "title": "Cross-dissolving the WHOLE painted head plate (hair + locks included) doubled the hair outline mid-dissolve and ghosted the painted locks beside the live sprung ones. Fix: plate restricted to the face skin, hair stays the warped frontal layers."},
+  {"id": "rj-p2d-mid-blink-06-still", "kind": "rejection", "at": "2026-10-04",
+   "title": "A painted ~0.6 mid-blink (mid62 edit, then the shut key compressed to 0.62 and 0.75) read 'sleepy / smug / unimpressed' as a still in 6/6 blind runs regardless of squeeze, arch or brow dip; the mid62 edit's own skin also left a two-tone band and smeared lash ends."},
+  {"id": "rj-p2d-small-turn-keys", "kind": "rejection", "at": "2026-10-04",
+   "title": "Painted yaw keys prompted as 'a small turn' (r3 yawL-0 / yawR-0) give a ~12-15 deg turn: even as a true two-texture blend at the +-20 limit the blind panel read 'features sliding inside a frontal skull' (3/3). Stronger ~35 deg-prompted keys (yawL30 / yawR30) fixed the read (9/9)."}
+ ],
+ "edges": [
+  {"src": "p2d-r4-viseme-shape-space", "rel": "measured_by", "dst": "p2d-r4-gate-articulation"},
+  {"src": "p2d-r4-two-texture-yaw", "rel": "measured_by", "dst": "p2d-r4-blind-panel"},
+  {"src": "p2d-r4-blink-mid-088", "rel": "caused_by", "dst": "rj-p2d-mid-blink-06-still"},
+  {"src": "p2d-r4-two-texture-yaw", "rel": "caused_by", "dst": "rj-p2d-whole-head-plate"},
+  {"src": "p2d-r4-two-texture-yaw", "rel": "caused_by", "dst": "rj-p2d-small-turn-keys"},
+  {"src": "p2d-r4-two-texture-yaw", "rel": "supersedes", "dst": "p2d-r2-turn-shared-depth"},
+  {"src": "p2d-r4-payload-rest", "rel": "part_of", "dst": "p2d-r2-measures"}
+ ]
+}

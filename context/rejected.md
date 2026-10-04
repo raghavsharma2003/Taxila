@@ -1420,3 +1420,36 @@ manager is frozen as TaxilaFDB baseline B3.
 
 ## Merged inbox entries (write-up from the entry text)
 - `rj-ssml-delivery-plan-2026-10-04` (2026-10-04): Per-clause SSML delivery plan on DragonHD Diya (breaks, slow-only rate, pitch -8%): planned pauses landed 21/21, yet listeners scored it lower than the plain line (2.10 vs 2.40) and ticked choppy/slow; exact pause placement does not create feeling on a stock voice
+
+## W2-H: Studio in the lesson (2026-10-04; inbox `context/inbox/w2-h.json`)
+
+### rj-studio-fraction-mention-as-topic
+**Tried:** admitting a fraction game whenever a kit mentions a fraction (`plan.js paramsFromKit`).
+
+**What broke:** 6 of 23 class 4-7 admissions were off-topic. For example: a pizza game in a lesson on litres, km
+conversion, rotation, magic squares or equations.
+
+**Replaced by:** `w2h-fraction-archetype-topic-guard`.
+
+### rj-studio-reveal-on-clock-only
+**Tried:** proposing reveals from the lesson clock alone.
+
+**What broke:** in 2/2 probes an explain piece landed as a practice item started, and the teacher ignored it.
+
+**Replaced by:** the beat hint, plus `slotFor` withholding the slot outside the piece's beats or when the tray is the
+Director's.
+
+### rj-studio-mount-child-id-column
+**Tried:** a `child_id` column on `studio_mount`, and a separate `studio_exclusion` table.
+
+**What broke:** every child_id table must be classified in `learner/mode.js` (W2-I's file). Otherwise the ratchet refuses
+and the migration scan fails.
+
+**Replaced by:** lesson-keyed tables.
+
+### rj-playwright-request-event-as-network
+**Tried:** asserting "nothing reached the network" on Playwright `request` events.
+
+**What broke:** Chromium emits a `request` event even for a CSP-blocked load (it then fails with `csp`).
+
+**Replaced by:** assertions on `requestfinished`, and on `requestfailed` other than `csp`.

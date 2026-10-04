@@ -3215,6 +3215,14 @@ arm's real gate failure is a real failed race. Tested in `tests/studio-router.te
 - **Reverse if:** network faults turn out to correlate with a model arm (a deployment that times out under load): then they are
   that arm's failures and count against its P(pass by lead).
 
+### w2f-chatstream-empty-is-error
+**Decision:** `server/azure.js chatStream` throws `AzureError(code "empty_stream")` when a 200 stream closes before a single SSE
+event. Before, it resolved `{ text: "" }` as a success; in two full `npm test` runs on the loaded sandbox the chatStream unit test
+saw exactly that (`200 1ms`, no usage) and could not be reproduced in isolation. Whatever cut the connection, an empty success
+would let a caller treat a dropped stream as a model answer. Tested with a scripted empty 200.
+- **Reverse if:** a deployment legitimately streams zero events for a valid request (none known; a refusal still streams a
+  delta or a finish_reason).
+
 ### w2f-bench-fixed-lead
 **Decision:** the router bench counts P(pass by lead) against the FIXED bench lead (`routes.json defaults.leadMs`, 90 s, the
 prefetch lead W2-H plans for), never the archetype's own `leadMs`, which `--write` sets to 1.1 x the measured p90 (the router
@@ -3613,3 +3621,99 @@ in the code.
 
 ## Merged inbox entries (write-up from the entry text)
 - `voice-r3-next-expressive-engine-2026-10-04` (2026-10-04): After three rounds at a 2.4-2.6 ceiling on stock Diya, stop iterating markup: keep spoken-register writing (minus fragmenting), drop the SSML delivery plan, test emotion-capable engines next (round 4), and pursue a custom voice from a consented Indian teacher's emotional child-directed recordings. Reverse if a round-4 engine fails to beat Diya B on the joke and surprise cards.
+
+## W2-H: Studio in the lesson (2026-10-04; inbox `context/inbox/w2-h.json`)
+
+### `w2h-studio-pieces-invisible-until-cue`
+**Decision:** pieces prefetched at lesson start stay invisible until the kernel accepts a Studio reveal.
+- Prefetch takes the plan's skills, the kit's misconceptions and this child's open re-teach rows, at most 3 pieces a lesson.
+- `statusFacts` proposes a reveal only in a beat the piece fits, the piece made for that beat first, never before turn 3,
+  and at least 4 turns apart:
+  - pieces the child answers (game, chart, explorable, simulation): worked_example, contrast, practice_set;
+  - pieces the child watches (animation, diagram): explain, worked_example, contrast.
+- `slotFor` withholds a reveal, and `onReveal` skips it, when the turn has moved into another beat or the Director's
+  move needs the tray (module, board, tiles, pad).
+- A revealed piece stays in the tray across turns. It is retired after 8 turns, or 2 turns after its last item.
+
+**Why:** a clock-only reveal put an explain piece into a practice item's turn, and the teacher ignored it
+(`rj-studio-reveal-on-clock-only`).
+
+**Reverse if** W3-E beats drive Studio intents directly (then the beat plan, not this heuristic, says when), or if the
+owner's test shows pieces arriving too rarely in the beats where they would help.
+
+### `w2h-skeleton-as-activity-first-rung`
+**Decision:** when no gate-passed build is admissible, the piece is the code skeleton.
+- "Not admissible" covers: the router falls back, there is no gate lane, the race fails, or G-mount refuses.
+- The skeleton is one of 12 renderers. It is correct from kit params, interactive and graded by the host.
+- Its words come from the plan's Q8-passed strings. When Q8 fails, it uses the English chrome instead.
+- Nothing on screen ever says that a build failed.
+
+**Reverse if** a measured comparison shows the T1 engine rung teaches better than the skeleton for the same archetype
+(then the ladder order changes).
+
+### `w2h-host-assembles-frame`
+**Decision:** the host assembles the frame document itself.
+- **Bytes:** fetched by sha and re-hashed. A mismatch is never mounted; the skeleton shows instead.
+- **Runtime:** studio-kit@1, identical to the gate's runtime API for API and freeze for freeze.
+- **CSP:** a hash-only meta CSP, with exactly two scripts.
+- **Isolation:** `sandbox="allow-scripts"` with srcdoc, so the frame has an opaque origin.
+- **Channel:** one MessagePort, accepted only from `window.parent`. The host listens on that port only, and a second load
+  drops the frame.
+- **Grading:** answers are graded by the host.
+
+**Reverse if** an opaque srcdoc frame is found to inherit anything from the lesson page. Then the frame moves to the
+separate play origin that G2 uses, and the sha check is kept.
+
+### `w2h-library-identity-gate-cache`
+**Decision:** library identity = sha256(kind, archetype, skill, Band4, lang family, kit hash, studio-kit version). The
+builder model is never part of the key.
+- **States:** live_passed → transfer_passed at the 2nd distinct param pass → promoted → retired.
+- **Promotion:** at least 3 distinct passes plus a human review in the name-asserted `scripts/studio-review.mjs`; at most
+  3 variants per identity.
+- **Gate-result cache:** `studio_gate_pass` records each passed (build, params hash, strings hash).
+- **Strings reuse:** a library mount reuses the strings that already passed with those params, so the cache can hit when
+  the gate is down.
+
+**Reverse if** G-mount runs on every mount with p95 ≤ 2 s on the studio-qa lane. Then the cache becomes an optimisation,
+not the rule.
+
+### `w2h-studio-evidence-one-event-per-item`
+**Decision:** the host grades every Studio answer, with the gate's own grader. Each item episode writes ONE kt_evidence
+event, on the first correct grade.
+- **Event:** via 'studio' (×0.75), grader 'code', a C0/C1 outcome by the wrong tries before it.
+- **Id:** deterministic, so a resend is a no-op.
+- **Write:** under the advisory lock and the mode guard.
+- Wrong answers alone are no event. Replays write no evidence.
+
+**Reverse if** `ledger-game-full-weight` resolves (the weight changes), or if replay calibration (STUDENT-FLOW §9.3, ×0.5)
+is measured.
+
+### `w2h-no-live-build-without-gate-lane`
+**Decision:** no live race is started without a gate lane (STUDIO_QA_URL, or STUDIO_QA_LOCAL=1). Such a build could never
+be revealed, so it would be paid for and thrown away.
+
+**Reverse:** automatically, once the studio-qa lane is configured in production.
+
+### `w2h-studio-mount-lesson-keyed`
+**Decision:** the Studio tables have no child_id column. `studio_mount` is keyed by lesson with a cascade, and per-child
+reads join `lesson.child_id`. "Not this one" is `not_this_at` (7 days).
+
+**Reverse if** W2-I classifies a Studio table in `learner/mode.js` and a per-child index is measured as needed.
+
+### `w2h-fraction-archetype-topic-guard`
+**Decision:** fraction archetypes need the topic's skill titles to be about parts of a whole
+(`rj-studio-fraction-mention-as-topic`).
+
+**Reverse when** W3-B truth packs carry a topic-relevance flag. Then this regex goes.
+
+### `w2h-seam-patches-turn-say`
+**Decision:** W2-H's call sites in W2-E-owned files ship as patches in `server/studio/seam-patches/`:
+- **turn.js:** `statusFacts` beat hint; `slotFor` gives `ui.studioSlot` before the reply; the facts row joins the move's
+  content;
+- **say.js:** `screenHasTargets` counts a Studio slot.
+
+**Reverse:** the patches become moot once W2-E applies them, or moves the turn again with the same call sites.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `owner-voice-scope-mai-openai-2026-10-04` (2026-10-04): Owner: voice candidates narrowed to MAI-Voice and OpenAI TTS (DragonHD Diya stays as the anchor and current production voice). Open models (Veena, Svara, Chatterbox, Indic Parler, VoxCPM2) and Nova are dropped for now. Finalize the production voice fast and move on to deploy. Round 4 (wf_39e7e463-899) was rescoped and the AWS open-model render arm cancelled before it ran.
