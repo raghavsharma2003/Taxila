@@ -14,6 +14,9 @@
 import { understand, textHash } from "./understand.js";
 import { RevealQueue, triage } from "./triage.js";
 
+/** v2 FloorPhase → the RevealQueue's turn-boundary states (triage.js). Anything absent is not a boundary. */
+export const PHASE_BOUNDARY = { her_turn: "T_SPEAKING", committed: "COMMITTED", handover: "C_WAITING" };
+
 export class BuildIntents {
   /** @param {{ launch?: (intent:object, now:number) => Promise<object>|object|null, reveal?: RevealQueue }} [o] */
   constructor(o = {}) {
@@ -88,4 +91,10 @@ export class BuildIntents {
 
   /** Drained only at a turn boundary (triage.js RevealQueue): never mid-utterance. */
   drain(floorState) { return this.reveal.drain(floorState); }
+
+  /**
+   * The same, keyed by the v2 governor's FloorPhase (src/duplex/engine.ts): her floor, a committed reply and her hand-over
+   * are turn boundaries; the child's floor, a hold, an overlap and safety_attend are not (law: never mid-utterance).
+   */
+  drainAtPhase(phase) { return this.reveal.drain(PHASE_BOUNDARY[phase] ?? ""); }
 }

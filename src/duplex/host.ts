@@ -431,6 +431,9 @@ export class EngineHost {
         this.semantic = null;
         this.lastPrepare = null;
         if (e.carryFrom === null) this.overlapOnset = null;
+        // carried words (a fold-in) were checked under the old epoch: re-check them under this one, or G2 would wait forever
+        // for a partial that never comes (M-D7 i16)
+        this.recheckSafety(e.at);
         if (live) this.o.emit({ to: "think", op: "handover", t: e.at, turnSeq: e.turnSeq, itemId: this.ctx.itemId });
       } else if (e.kind === "quarantine") {
         if (live) {
@@ -442,6 +445,7 @@ export class EngineHost {
         this.fanin.begin(this.prevTurnStart);
         this.markers.beginTurn();
         this.overlapOnset = null;
+        this.recheckSafety(e.at);
         if (live) this.o.emit({ to: "think", op: "revoke", t: e.at });
       } else if (e.kind === "resume") {
         if (live) this.o.emit({ to: "voice", op: "resume", t: e.at });
@@ -450,6 +454,12 @@ export class EngineHost {
         this.o.emit({ to: "log", row: { t: e.at, cause: "timer", phase: this.governor.phase, action: `fallback:${e.to}`, proposed: "-", detail: e.error, reasons: [e.to === "rules" ? "fallback_rules" : "fallback_silence"], pComplete: 0, pHoldWanted: 0, engine: this.engine.id.id, turnSeq: this.governor.turnSeq } });
       }
     }
+  }
+
+  /** Run the sticky predicate over the current epoch's text (after a re-epoch: turn begin with carried words, revoke). */
+  private recheckSafety(t: Ms): void {
+    const v = this.fanin.view(t, (from) => this.audio.voicedAfter(from));
+    if (v.text) this.safety.check(v.text, v.coverageEndMs, t);
   }
 
   /** The governed decision → actuator commands (changes only; one-shot acts always). */

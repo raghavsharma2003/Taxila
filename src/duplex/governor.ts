@@ -107,6 +107,7 @@ export class Governor {
   private yielded: { at: Ms; resumable: boolean; onsetAt: Ms } | null = null;
   private overlapOnsetAt: Ms | null = null;
   private pendingRevoke = false;
+  private pendingSafeguardDefer = false;
   private pose: string | null = null;
   private quarantined = false;
   private childSpoke = false;
@@ -178,7 +179,10 @@ export class Governor {
         break;
       case "child_onset":
         this.childSpoke = true;
-        if (this.phase === "committed") this.pendingRevoke = true;
+        // the safeguard never plays over the child (M-D7 j05: decided in a 1.2 s pause, the child resumed 16 ms before its
+        // first sound): defer it to the next pause instead of talking over them
+        if ((this.phase === "committed" || this.phase === "her_turn") && this.spoke?.safeguard) this.pendingSafeguardDefer = true;
+        else if (this.phase === "committed") this.pendingRevoke = true;
         else if (this.phase === "her_turn" && this.spoke && !this.spoke.safeguard && this.revocable(o.at)) this.pendingRevoke = true;
         else if (this.phase === "her_turn") { this.overlapOnsetAt = o.at; this.go("overlap", o.t); }
         else if (this.phase === "handover" || this.phase === "idle" || this.phase === "hold_requested") this.go("child_turn", o.t);
@@ -238,6 +242,14 @@ export class Governor {
     if (tick.safety.distress) {
       if (!this.quarantined) { this.quarantined = true; this.events.push({ kind: "quarantine", at: t, safetyKind: tick.safety.kind }); }
       const speakingSafeguard = !!this.spoke?.safeguard && (ph === "committed" || herAudible);
+      if (speakingSafeguard && this.pendingSafeguardDefer) {
+        this.pendingSafeguardDefer = false;
+        veto("YIELD", "veto_safety", { action: "YIELD", reason: "safety", atWordBoundary: true, resumable: false });
+        this.spoke = null;
+        this.go("safety_attend", t);
+        return this.finish(tick, d);
+      }
+      this.pendingSafeguardDefer = false;
       if (!speakingSafeguard) {
         if (herAudible || ph === "committed") {
           veto("YIELD", "veto_safety", { action: "YIELD", reason: "safety", atWordBoundary: true, resumable: false });

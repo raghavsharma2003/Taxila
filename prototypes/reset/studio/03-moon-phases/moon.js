@@ -28,7 +28,7 @@
   /* ------------------------------------------------------------------ captions: phrase chunks snapped to measured pauses */
   function chunksOf(id) {
     const ln = NARR.lines[id];
-    const text = ln ? ln.text : (SPEC_TEXT[id] || "");
+    const text = ln ? ln.text : (typeof SPEC_TEXT[id] === "string" ? SPEC_TEXT[id].slice(0, 220) : "");
     const dur = ln ? ln.dur : Math.max(1.6, text.length / 14);
     const parts = text.split(/(?<=[.?!:])\s+/).filter(Boolean);
     const speechStart = ln ? ln.lead : 0, speechEnd = dur - (ln ? ln.tail : 0);
@@ -57,15 +57,17 @@
     for (const k in INIT) tracks[k] = [];
     const lines = [];                 // {id, start, dur, chunks}
     let t = 0.8, interactiveAt = null;
-    SPEC_TEXT = (raw && raw.text) || {};
+    SPEC_TEXT = raw && raw.text && typeof raw.text === "object" && !Array.isArray(raw.text) ? raw.text : {};
     const beats = raw && Array.isArray(raw.beats) ? raw.beats : [];
     for (const b of beats) {
+      if (!b || typeof b !== "object" || Array.isArray(b)) { repairs.push("beat:not-an-object"); continue; }
       const id = String(b.line || "");
       if (!NARR.lines[id] && !SPEC_TEXT[id]) { repairs.push("line:" + id); continue; }
       const c = chunksOf(id);
       const start = t;
       lines.push({ id, start, dur: c.dur, chunks: c.chunks });
       for (const cue of Array.isArray(b.cues) ? b.cues : []) {
+        if (!cue || typeof cue !== "object" || Array.isArray(cue)) { repairs.push("cue:not-an-object"); continue; }
         let off = 0;
         if (typeof cue.at === "number") off = clamp(cue.at, 0, c.dur);
         else if (typeof cue.at === "string" && /^s\d+$/.test(cue.at)) { const k = +cue.at.slice(1) - 1; off = c.chunks[k] ? c.chunks[k].t0 : 0; }
@@ -120,10 +122,26 @@
   S.hostChrome();
   const st = S.stage({ el: "#stage" });
   const fx = S.fx(st);
-  const raw = S.studio.params();
-  const TL = compile(raw);
+  // Zero visible failure: a spec that compiles to nothing usable (or throws) is replaced by the archetype's reviewed
+  // default spec (#spec-default; in production the kit-seeded default), and the swap is recorded, never shown.
+  let raw = S.studio.params(), TL;
+  const defaultSpec = () => { try { return JSON.parse(document.getElementById("spec-default").textContent); } catch (e) { return null; } };
+  try { TL = compile(raw); } catch (e) { TL = { lines: [], repairs: ["compile-threw"] }; }
+  if (!TL.lines.length || TL.lines.length < 0.5 * ((raw && Array.isArray(raw.beats) && raw.beats.length) || 1)) {
+    const d = defaultSpec(), prior = TL.repairs;
+    if (d) { raw = d; TL = compile(d); TL.repairs = prior.concat(["fallback-default"], TL.repairs); }
+  }
+  const SAFE_STR = (v, max) => typeof v === "string" && v.length <= max && !/[<>{}]/.test(v);
+  const userStrings = {};
+  if (raw && raw.strings && typeof raw.strings === "object") {
+    for (const [k, v] of Object.entries(raw.strings)) {
+      if (k === "phases") { if (Array.isArray(v) && v.length === 8 && v.every((x) => SAFE_STR(x, 24))) userStrings.phases = v; else TL.repairs.push("string:phases"); }
+      else if (SAFE_STR(v, k === "title" ? 40 : 24)) userStrings[k] = v;
+      else TL.repairs.push("string:" + k);
+    }
+  }
   const T = Object.assign({ fromEarth: "FROM EARTH", sun: "SUN", earth: "EARTH", moon: "MOON", light: "SUNLIGHT", scale: "NOT TO SCALE", eclipse: "LUNAR ECLIPSE", shadow: "EARTH'S SHADOW", title: "Why the Moon has phases",
-    phases: ["NEW · AMAVASYA", "WAXING CRESCENT", "FIRST QUARTER", "WAXING GIBBOUS", "FULL · PURNIMA", "WANING GIBBOUS", "THIRD QUARTER", "WANING CRESCENT"] }, (raw && raw.strings) || {});
+    phases: ["NEW · AMAVASYA", "WAXING CRESCENT", "FIRST QUARTER", "WAXING GIBBOUS", "FULL · PURNIMA", "WANING GIBBOUS", "THIRD QUARTER", "WANING CRESCENT"] }, userStrings);
   if (TL.repairs.length) S.studio.event("spec_repaired", { repairs: TL.repairs });
 
   const capEl = document.createElement("div"); capEl.className = "captions off"; st.el.appendChild(capEl);
@@ -213,6 +231,50 @@
     const gr = g.createLinearGradient(0, 0, 220, 0); gr.addColorStop(0, "rgba(255,210,122,0)"); gr.addColorStop(1, "rgba(255,210,122,.95)");
     g.fillStyle = gr; g.fillRect(0, 1, 220, 6);
     return _ray;
+  }
+
+  /* ------------------------------------------------------------------ static layers (perf)
+     Full-screen gradients, 150 stars and the Sun's 1120 px additive glow were re-composited every frame; on a
+     software-raster or low-end GPU canvas that fill rate was most of the frame (§14 M3, before/after). They are
+     painted once per backing-store size into a layer and blitted; only the twinkling bright stars stay live. */
+  const _layers = new Map();
+  const TWINKLE = stars.filter((x) => x.z > 0.78);
+  const LIVE_LAYERS = S.qs.get("layers") === "0";             // A/B knob for the perf measurement only
+  function blit(ctx, key, paint) {
+    if (!LIVE_LAYERS) { ctx.drawImage(layer(key, paint), 0, 0, W, H); return; }
+    const ga = ctx.globalAlpha; ctx.save(); paint(ctx); ctx.restore(); ctx.globalAlpha = ga;
+  }
+  function layer(key, paint) {
+    const c0 = st.canvas, k = `${key}@${c0.width}x${c0.height}`;
+    let c = _layers.get(k);
+    if (!c) {
+      for (const kk of [..._layers.keys()]) if (kk.startsWith(key + "@")) _layers.delete(kk);
+      c = document.createElement("canvas"); c.width = c0.width; c.height = c0.height;
+      const g = c.getContext("2d"); g.setTransform(c0.width / W, 0, 0, c0.height / H, 0, 0);
+      paint(g);
+      _layers.set(k, c);
+    }
+    return c;
+  }
+  function paintSpaceBase(g) {
+    g.drawImage(spaceBg(), 0, 0, W, H);
+    for (const s of stars) { if (s.z > 0.78) continue; g.globalAlpha = 0.15 + 0.45 * s.z; g.fillStyle = "#C9D2F2"; const r = 0.6 + s.z * 1.3; g.fillRect(s.x, s.y, r, r); }
+    g.globalAlpha = 1;
+  }
+  function paintSun(g) {
+    g.globalCompositeOperation = "lighter";
+    g.drawImage(S.glow("#FFB24A", 300, 0.15), SUN.x - 560, SUN.y - 560, 1120, 1120);
+    g.globalCompositeOperation = "source-over";
+    const sg = g.createRadialGradient(SUN.x + 60, SUN.y - 40, 40, SUN.x, SUN.y, SUN.r);
+    sg.addColorStop(0, "#FFF4D6"); sg.addColorStop(0.7, "#FFD27A"); sg.addColorStop(1, "#FFA94A");
+    g.fillStyle = sg; g.beginPath(); g.arc(SUN.x, SUN.y, SUN.r, 0, Math.PI * 2); g.fill();
+  }
+  function paintSkyBase(g) {
+    const gr = g.createLinearGradient(0, 0, 0, 560);
+    gr.addColorStop(0, "#070A1C"); gr.addColorStop(0.55, "#1A1D46"); gr.addColorStop(0.82, "#4A2E58"); gr.addColorStop(1, "#C0705A");
+    g.fillStyle = gr; g.fillRect(0, 0, W, H);
+    for (const s of stars) { if (s.y > 470 || s.z > 0.78) continue; g.globalAlpha = (0.25 + 0.6 * s.z * 0.8) * (1 - s.y / 520); g.fillStyle = "#E8ECFF"; const r = 0.7 + s.z * 1.5; g.fillRect(s.x, s.y, r, r); }
+    g.globalAlpha = 1;
   }
 
   /* ------------------------------------------------------------------ drawing primitives */
@@ -318,10 +380,8 @@
   function drawSky(ctx, V, a, now) {
     ctx.save();
     ctx.globalAlpha = a;
-    const g = ctx.createLinearGradient(0, 0, 0, 560);
-    g.addColorStop(0, "#070A1C"); g.addColorStop(0.55, "#1A1D46"); g.addColorStop(0.82, "#4A2E58"); g.addColorStop(1, "#C0705A");
-    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-    for (const s of stars) { if (s.y > 470) continue; ctx.globalAlpha = a * (0.25 + 0.6 * s.z * (0.6 + 0.4 * Math.sin(now * 1.3 + s.tw))) * (1 - s.y / 520); ctx.fillStyle = "#E8ECFF"; const r = 0.7 + s.z * 1.5; ctx.fillRect(s.x, s.y, r, r); }
+    blit(ctx, "sky", paintSkyBase);
+    for (const s of TWINKLE) { if (s.y > 470) continue; ctx.globalAlpha = a * (0.25 + 0.6 * s.z * (0.6 + 0.4 * Math.sin(now * 1.3 + s.tw))) * (1 - s.y / 520); ctx.fillStyle = "#E8ECFF"; const r = 0.7 + s.z * 1.5; ctx.fillRect(s.x, s.y, r, r); }
     ctx.globalAlpha = a;
     // the Moon in the evening sky (phase from the spec's skyPhase cues)
     const E = V("skyMoon.E"), mx = 300, my = 190, mr = 50;
@@ -338,21 +398,12 @@
     ctx.save();
     ctx.globalAlpha = a;
     // deep space (cached gradient)
-    ctx.drawImage(spaceBg(), 0, 0, W, H);
-    for (const s of stars) { ctx.globalAlpha = a * (0.15 + 0.45 * s.z) * (0.75 + 0.25 * Math.sin(now + s.tw)); ctx.fillStyle = "#C9D2F2"; const r = 0.6 + s.z * 1.3; ctx.fillRect(s.x, s.y, r, r); }
-    ctx.globalAlpha = a;
-    // the Sun (far left, screen-fixed) and its light
+    // the Sun (far left, screen-fixed) and its light: two cached layers, cross-faded while the Sun fades in
     const sunA = V("sun.a");
-    if (sunA > 0.01) {
-      ctx.save(); ctx.globalAlpha = a * sunA;
-      ctx.globalCompositeOperation = "lighter";
-      ctx.drawImage(S.glow("#FFB24A", 300, 0.15), SUN.x - 560, SUN.y - 560, 1120, 1120);
-      ctx.globalCompositeOperation = "source-over";
-      const sg = ctx.createRadialGradient(SUN.x + 60, SUN.y - 40, 40, SUN.x, SUN.y, SUN.r);
-      sg.addColorStop(0, "#FFF4D6"); sg.addColorStop(0.7, "#FFD27A"); sg.addColorStop(1, "#FFA94A");
-      ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(SUN.x, SUN.y, SUN.r, 0, Math.PI * 2); ctx.fill();
-      ctx.restore();
-    }
+    if (sunA < 0.995) blit(ctx, "space", paintSpaceBase);
+    if (sunA > 0.01) { ctx.globalAlpha = a * sunA; blit(ctx, "space-sun", (g) => { paintSpaceBase(g); paintSun(g); }); }
+    for (const s of TWINKLE) { ctx.globalAlpha = a * (0.15 + 0.45 * s.z) * (0.75 + 0.25 * Math.sin(now + s.tw)); ctx.fillStyle = "#C9D2F2"; const r = 0.6 + s.z * 1.3; ctx.fillRect(s.x, s.y, r, r); }
+    ctx.globalAlpha = a;
     const raysA = V("rays.a");
     if (raysA > 0.01) {
       ctx.save(); ctx.globalAlpha = a * raysA * 0.5; ctx.strokeStyle = "#FFD27A"; ctx.lineWidth = 4; ctx.lineCap = "round";
@@ -455,7 +506,7 @@
     if (L("scale") > 0.01) S.text(ctx, T.scale, 200, 60, { font: "mono", size: 38, weight: 500, color: C.ink3, alpha: a * 0.75 * L("scale") });
     if (shA > 0.01) {
       // below the cone, stacked, left of the "from Earth" window: never collides with EARTH, FROM EARTH or LUNAR ECLIPSE
-      const words = String(T.shadow).split(/\s+/), sx = ep.x + RE * zoom + 34, sy = ep.y + RE * zoom + 46;
+      const words = String(T.shadow).split(/\s+/), sx = ep.x + Math.max(150, RE * zoom + 40), sy = ep.y + RE * zoom + 46;   // clears the EARTH label (fixed screen size)
       const lines = words.length > 1 ? [words.slice(0, Math.ceil(words.length / 2)).join(" "), words.slice(Math.ceil(words.length / 2)).join(" ")] : words;
       lines.forEach((ln, i) => S.text(ctx, ln, sx, sy + i * 42, { font: "mono", size: 38, weight: 600, color: "#9AA6C8", alpha: a * shA }));
     }

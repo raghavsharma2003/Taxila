@@ -117,7 +117,8 @@ export class DuplexSlice {
     };
   }
 
-  drainReveals(floorState) { return this.builds.drain(floorState); }
+  /** Reveals at a turn boundary; `phase` is the device governor's FloorPhase (v2) — v1 floor states still accepted. */
+  drainReveals(phase) { return /^[a-z_]+$/.test(String(phase)) ? this.builds.drainAtPhase(phase) : this.builds.drain(phase); }
 
   close(t) { this.spec.close(t); }
 

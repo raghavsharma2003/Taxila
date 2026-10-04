@@ -82,7 +82,8 @@ export function estimate(tick: EngineTick): Estimate {
   const low = pr.f0RelRange !== null && pr.f0RelRange <= 0.4;
   const eFall = pr.energySlopeDbPerS !== null && pr.energySlopeDbPerS <= -10;
   const prosodyFinal = !c.voicing && ((falling && (low || eFall)) || (falling && (pr.finalLengthening ?? 0) > 1.3));
-  const prosodyContinue = !c.voicing && !prosodyFinal && pr.f0SlopeStPerS !== null && pr.f0SlopeStPerS > -2;
+  // a rise that closes a complete question is the question's own end, not a continuation (P7)
+  const prosodyContinue = !c.voicing && !prosodyFinal && !m.questionComplete && pr.f0SlopeStPerS !== null && pr.f0SlopeStPerS > -2;
   if (prosodyFinal) reasons.push("prosody_final");
   if (prosodyContinue) reasons.push("prosody_continue");
   // the horizon: lexical evidence is about an old prefix while unseen child voice > 120 ms

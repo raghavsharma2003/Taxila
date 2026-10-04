@@ -55,11 +55,13 @@
     for (const k in strings) if (typeof strings[k] !== "string" || strings[k].length > 70 || /[<>{}]/.test(strings[k])) { strings[k] = DEFAULT_STRINGS[k] || ""; repairs.push("string:" + k); }
     const steps = [];
     for (const st of (raw && Array.isArray(raw.steps) ? raw.steps : [])) {
-      const pred = st.check && Object.keys(st.check)[0];
+      if (!st || typeof st !== "object" || Array.isArray(st)) { repairs.push("step:not-an-object"); continue; }
+      const pred = st.check && typeof st.check === "object" && Object.keys(st.check)[0];
       if (!PREDICATES.includes(pred)) { repairs.push("predicate:" + pred); continue; }
       const tray = (Array.isArray(st.tray) ? st.tray : []).filter((t) => TOOLS[t] || MATERIALS[t]);
       const preset = [];
       for (const p of Array.isArray(st.preset) ? st.preset : []) {
+        if (!p || typeof p !== "object") { repairs.push("preset:not-an-object"); continue; }
         const e = edgeAt(p.at);
         if (!e || !["wire", "bulb", "switch", "cell", "tester", "empty"].includes(p.put)) { repairs.push("preset:" + p.at); continue; }
         const plus = p.plus != null ? parseNode(p.plus) : -1;

@@ -3,6 +3,7 @@
 # max_length=128000, truncation=True, do_normalize=True) to float32 tolerance; checked by `python3 stmel.py --check`.
 # Preprocessing per pipecat-ai/smart-turn inference.py + audio_utils.py (BSD-2, read 2026-10-04): keep the LAST 8 s,
 # zero-pad at the BEGINNING, then the extractor (zero-mean unit-variance over the padded 8 s, log-mel, max-8 clamp).
+import os
 import numpy as np
 
 SR = 16000
@@ -14,6 +15,8 @@ _MEL = None
 
 def mel_filters():
     global _MEL
+    if _MEL is None and os.environ.get("TAXILA_MEL_NPY"):
+        _MEL = np.load(os.environ["TAXILA_MEL_NPY"]).astype(np.float64)  # the same matrix, saved once (no transformers needed)
     if _MEL is None:
         from transformers import WhisperFeatureExtractor
         _MEL = WhisperFeatureExtractor(chunk_length=8).mel_filters.astype(np.float64)  # [201, 80]

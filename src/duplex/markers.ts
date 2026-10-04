@@ -81,25 +81,32 @@ export class MarkerTracker {
     const beat = ctx.beat ?? undefined;
     const n = understand(text, { answerForm, beat });
     // the hold lexicon first: a hold-request tail means no value reading of the words before it
-    const formText = n.holdTail ? "" : text;
+    // and after a granted hold only the words AFTER it are the answer ("एक मिनट … बारह" is 12, not the list 1, 12)
+    const formText = n.holdTail ? "" : n.tailText;
     const form = readForm(formText, ctx.expected);
     const t = normText(text);
     const toks = t ? t.split(" ") : [];
     const last2 = toks.slice(-2);
-    const cue = (n.holdTail ? "hold_request" : n.lex.cue === "projection" ? "open" : n.lex.cue) as CueClass;
+    // the form grammar reads numerals in every script (understand.js's list is partial: "बासठ" read as "plain", p 0.75):
+    // a COMPLETE answer of the asked form is a value cue whatever the shorter lexicon thought
+    const formValue = !n.holdTail && form.state === "complete" && form.lastValue !== null;
+    const cue = (n.holdTail ? "hold_request" : formValue ? "value" : n.lex.cue === "projection" ? "open" : n.lex.cue) as CueClass;
     const asks = n.asks;
-    const questionComplete = asks && (/[?？]\s*$/.test(text.trim()) || (QWORDS.test(t) && (n.lex.cue === "verb_final" || n.lex.cue === "yield" || n.lex.cue === "plain")));
+    const qMark = /[?？]\s*$/.test(text.trim());
+    const questionComplete = asks && (qMark || (QWORDS.test(t) && (n.lex.cue === "verb_final" || n.lex.cue === "yield" || n.lex.cue === "plain")));
+    // the ASR's question mark is the child's own closing intonation: "matlab?" is a question, not the filler "matlab…" (M-D7 f08)
+    const closedByQuestion = asks && qMark;
     const codeSwitchAtEdge = last2.length === 2 && ((DEVANAGARI.test(last2[0]) && LATIN.test(last2[1])) || (LATIN.test(last2[0]) && DEVANAGARI.test(last2[1])))
       && n.lex.cue !== "verb_final" && n.lex.cue !== "value" && n.lex.cue !== "yield";
     const markers: LexicalMarkers = {
       cue,
-      lexP: n.lex.p,
+      lexP: formValue ? Math.max(n.lex.p, 0.95) : closedByQuestion ? Math.max(n.lex.p, 0.85) : n.lex.p,
       form: form.state,
       values: form.values.length ? form.values : n.values,
       lastValueAgeMs: null,
       holdRequest: n.holdTail,
-      fillerTail: n.lex.cue === "filler",
-      openTail: n.lex.cue === "open",
+      fillerTail: n.lex.cue === "filler" && !closedByQuestion,
+      openTail: n.lex.cue === "open" && !closedByQuestion,
       projection: n.lex.cue === "projection",
       wordSearch: n.wordSearch,
       // closed forms: the form grammar reads values in every script (understand.js's number list is partial and has no

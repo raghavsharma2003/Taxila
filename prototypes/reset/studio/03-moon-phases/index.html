@@ -100,6 +100,86 @@
   ]
 }
 </script>
+<!-- ENGINE-OWNED. The archetype's reviewed default spec (production: kit-seeded, shipped with the engine). Used only
+     when the generated spec above compiles to nothing usable. Never generated. -->
+<script type="application/json" id="spec-default">
+{
+  "archetype": "orbital-explainer@1",
+  "skills": ["c4-evs-ch10-t02", "c7-science-ch12-t03"],
+  "lang": "en",
+  "strings": {
+    "fromEarth": "FROM EARTH", "sun": "SUN", "earth": "EARTH", "moon": "MOON", "light": "SUNLIGHT",
+    "scale": "NOT TO SCALE", "eclipse": "LUNAR ECLIPSE", "shadow": "EARTH'S SHADOW", "title": "Why the Moon has phases",
+    "phases": ["NEW · AMAVASYA", "WAXING CRESCENT", "FIRST QUARTER", "WAXING GIBBOUS", "FULL · PURNIMA", "WANING GIBBOUS", "THIRD QUARTER", "WANING CRESCENT"]
+  },
+  "beats": [
+    { "line": "L01", "gap": 0.3, "cues": [] },
+    { "line": "L02", "gap": 0.4, "cues": [
+      { "at": "s2", "do": "skyPhase", "to": 90, "dur": 0.9 },
+      { "at": "s3", "do": "skyPhase", "to": 180, "dur": 0.9 },
+      { "at": "s4", "do": "skyPhase", "to": 320, "dur": 2.0 } ] },
+    { "line": "L03", "gap": 1.3, "cues": [
+      { "at": "s2", "do": "show", "target": "title", "dur": 0.9 },
+      { "at": "end", "do": "skyPhase", "to": 400, "dur": 1.6 } ] },
+    { "line": "L04", "gap": 0.5, "cues": [
+      { "at": 0, "do": "hide", "target": "title", "dur": 0.6 },
+      { "at": 0.3, "do": "hide", "target": "sky", "dur": 1.8 },
+      { "at": 0.3, "do": "show", "target": "space", "dur": 1.4 },
+      { "at": 0.3, "do": "camera", "zoom": 1, "dur": 2.8, "ease": "outCubic" },
+      { "at": "end", "do": "show", "target": ["lbl.earth", "lbl.scale"], "dur": 0.6 } ] },
+    { "line": "L05", "gap": 0.4, "cues": [
+      { "at": 0, "do": "show", "target": ["sun", "rays"], "dur": 1.2 },
+      { "at": 0.4, "do": "show", "target": ["lbl.light", "lbl.sun"], "dur": 0.6 } ] },
+    { "line": "L06", "gap": 0.5, "cues": [
+      { "at": 0, "do": "show", "target": ["moon", "orbit", "lbl.moon"], "dur": 0.8 },
+      { "at": "s2", "do": "show", "target": "arcSun", "dur": 0.6 },
+      { "at": "s2", "do": "ghosts", "n": 8, "dur": 2.6 } ] },
+    { "line": "L07", "gap": 0.6, "cues": [
+      { "at": 0, "do": "orbit", "to": 900, "dur": 5.0, "ease": "inOutSine" },
+      { "at": 0, "do": "hide", "target": "lbl.moon", "dur": 0.4 },
+      { "at": 0, "do": "set", "prop": "ghosts.a", "to": 0.45, "dur": 1.0 },
+      { "at": "end", "do": "hide", "target": "lbl.light", "dur": 0.5 } ] },
+    { "line": "L08", "gap": 0.5, "cues": [
+      { "at": 0, "do": "camera", "x": 640, "y": 320, "dur": 1.6 },
+      { "at": 0, "do": "hide", "target": ["ghosts", "lbl.sun"], "dur": 0.8 },
+      { "at": 0.3, "do": "show", "target": ["inset", "sight"], "dur": 0.9 },
+      { "at": 1.3, "do": "show", "target": "arcNear", "dur": 0.6 } ] },
+    { "line": "L09", "gap": 0.4, "cues": [
+      { "at": 0, "do": "show", "target": ["phase", "strip"], "dur": 0.6 },
+      { "at": 0, "do": "strip", "n": 1, "dur": 0.4 } ] },
+    { "line": "L10", "gap": 0.3, "cues": [
+      { "at": 0, "do": "orbit", "to": 945, "dur": 2.0 },
+      { "at": 0.6, "do": "strip", "n": 2, "dur": 0.4 } ] },
+    { "line": "L11", "gap": 0.5, "cues": [
+      { "at": 0, "do": "orbit", "to": 990, "dur": 1.8 },
+      { "at": 0.6, "do": "strip", "n": 3, "dur": 0.4 },
+      { "at": "s2", "do": "show", "target": "overlap", "dur": 0.4 } ] },
+    { "line": "L12", "gap": 0.5, "cues": [
+      { "at": 0, "do": "hide", "target": "overlap", "dur": 0.3 },
+      { "at": 0, "do": "orbit", "to": 1080, "dur": 2.6 },
+      { "at": 0.3, "do": "strip", "n": 5, "dur": 1.6 } ] },
+    { "line": "L13", "gap": 0.7, "cues": [
+      { "at": 0, "do": "orbit", "to": 1260, "dur": 4.6 },
+      { "at": 0.2, "do": "strip", "n": 8, "dur": 3.6 },
+      { "at": "end", "do": "hide", "target": ["arcSun", "arcNear", "sight"], "dur": 0.6 } ] },
+    { "line": "L14", "gap": 0.4, "cues": [
+      { "at": 0, "do": "show", "target": "shadow", "dur": 1.0 } ] },
+    { "line": "L15", "gap": 0.5, "cues": [
+      { "at": "s2", "do": "orbit", "to": 1350, "dur": 1.8 },
+      { "at": "s2", "do": "show", "target": "arcSun", "dur": 0.5 } ] },
+    { "line": "L16", "gap": 0.8, "cues": [
+      { "at": 0, "do": "hide", "target": "arcSun", "dur": 0.4 },
+      { "at": 0, "do": "orbit", "to": 1440, "dur": 2.2 },
+      { "at": "s2", "do": "eclipse", "k": 1, "dur": 1.2 },
+      { "at": "s2", "do": "show", "target": "lbl.eclipse", "dur": 0.6 } ] },
+    { "line": "L17", "gap": 0, "cues": [
+      { "at": 0, "do": "eclipse", "k": 0, "dur": 0.8 },
+      { "at": 0, "do": "hide", "target": ["shadow", "lbl.eclipse"], "dur": 0.8 },
+      { "at": 0.2, "do": "orbit", "to": 1640, "dur": 2.4 },
+      { "at": "end", "do": "interactive" } ] }
+  ]
+}
+</script>
 <script src="narration.js"></script>
 <script src="../lib/stage.js"></script>
 <script src="moon.js"></script>

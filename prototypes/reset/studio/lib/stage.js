@@ -191,10 +191,27 @@
       let dt = Math.min(raw / 1000, 1 / 30);
       if (api.paused) dt = 0;
       if (hitstop > 0) { hitstop -= dt; dt = 0; }
-      stepTweens(dt);
-      update(dt, now / 1000);
-      st.begin();
-      render(st.ctx, now / 1000);
+      // Frame guard (STUDIO-V2 §8): a throwing frame never reaches the child. The last good image (snapshotted
+      // every ~0.5 s, one blit) is put back; 3 errors inside 1 s stop the loop and raise engine_failed so the host
+      // cross-fades to the board version of the same idea.
+      try {
+        stepTweens(dt);
+        update(dt, now / 1000);
+        st.begin();
+        render(st.ctx, now / 1000);
+        if (now - goodAt > 500) { snapshot(); goodAt = now; }
+      } catch (e) {
+        errTimes.push(now); errTimes = errTimes.filter((t) => now - t < 1000);
+        if (!errLogged) { errLogged = true; studio.event("frame_error", { message: String(e && e.message || e).slice(0, 160) }); }
+        try { const c = st.ctx; if (c.reset) c.reset(); else c.setTransform(1, 0, 0, 1, 0, 0); if (good) { c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = "source-over"; c.drawImage(good, 0, 0, st.canvas.width, st.canvas.height); } } catch (e2) { /* nothing more to do */ }
+        if (errTimes.length >= 3) { running = false; studio.event("engine_failed", { errors: errTimes.length }); }
+      }
+    }
+    let good = null, goodAt = -1e9, errTimes = [], errLogged = false;
+    function snapshot() {
+      if (!good) good = document.createElement("canvas");
+      if (good.width !== st.canvas.width || good.height !== st.canvas.height) { good.width = st.canvas.width; good.height = st.canvas.height; }
+      const g = good.getContext("2d"); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, good.width, good.height); g.drawImage(st.canvas, 0, 0);
     }
     requestAnimationFrame(frame);
     return api;

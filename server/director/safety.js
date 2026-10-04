@@ -112,6 +112,16 @@ const FAMILIES = {
     // ... and a disclosure need not say "mujhe" at all: "papa marte hain", "sir ne chhua".
     new RegExp(`\\b(${ACTOR_HI})\\s+(\\S+\\s+)?(maar|mar|peet|pit)(te|ti|ta)\\b|\\b(${ACTOR_HI})\\s+ne\\s+(\\S+\\s+)?(maara|mara|peeta|pita|chhua|chua|chhuaa)\\b`, "i"),
     /(मुझे(?:\s+\S+){0,2}?\s+(मारते|मारती|पीटते|पीटती|छूते|छूता)|गंदा\s*छू|(पापा|मम्मी|भाई|चाचा|मामा|सर)\s+(\S+\s+)?(मारते|मारती|पीटते|पीटती))/,
+    // W2-I R3 (RELATIONAL-OS §9.3 F6 grooming branch; P2 `secret` script): a third party asking the child for a photo, a
+    // meeting or secrecy is a safeguarding moment, not a lesson boundary. The actor + ask frame keeps "sir ne photo bheja"
+    // (a homework photo the child received) quiet: the ask must be FOR the child's photo or for secrecy. Kind: abuse.
+    {
+      // secrecy alone about a surprise ("uncle said keep it a secret, it's a surprise party") is not the grooming shape
+      re: /\b(?:bhaiya|bhaiyya|uncle|aunty|auntie|stranger|someone|somebody|a man|a guy|koi|ek aadmi|ek admi|online (?:friend|bhaiya|wala|wale)|game (?:wale|wala|mein)|insta (?:wale|wala))\b[^.!?।]{0,60}?\b(?:bol(?:te|ta|ti)|keh(?:te|ta|ti)|maang(?:te|ta|ti|a)|says?|said|asks?|asked|wants?|told me)\b[^.!?।]{0,40}?\b(?:(?:my|meri|mera|apni|apna|your) (?:photo|pic|picture|selfie|video)s?|(?:photo|pic|picture|selfie|video)s? (?:bhejo|bhej do|bhejna|bhejne|send|share karo|maang)|send (?:him |her |them |me )?(?:a |my |your )?(?:photo|pic|picture|selfie|video)|nudes?|kisi ko mat batana|don'?t tell (?:anyone|your (?:mom|mum|dad|parents|mummy|papa))|keep (?:it )?(?:a )?secret|secret rakh|milne (?:aao|bulaya|bulate)|meet (?:him|her|them|me) alone)/i,
+      test(t) { const m = this.re.exec(String(t)); return !!m && (/photo|pic|selfie|video|nude|milne|meet/i.test(m[0]) || !/\b(?:surprise|birthday|gift|present|party|tohfa|janamdin)\b/i.test(String(t))); },
+    },
+    /\b(?:asked|asks|wants|want|maang(?:a|te|ta|ti)?)\b[^.!?।]{0,20}?\b(?:my|meri|mera) (?:nude|nudes|private (?:photo|pic)|photo without clothes)/i,
+    /(?:भैया|अंकल|कोई)[^.!?।]{0,60}?(?:बोलते|बोलता|कहते|कहता|मांगते|मांगता)[^.!?।]{0,40}?(?:फोटो|किसी को मत बताना|मिलने)/,
   ],
   fear: [
     /\b(scared|afraid)\s*(to\s*go\s*)?(at\s*)?home\b|\bbull(y|ied|ying)\b|\bnobody\s*loves\s*me\b/i,
@@ -178,11 +188,17 @@ const HOON = "(?:hoon|hun|hu|hoo|hoo?n)";
 const NAHI = "(?:nahi|nahin|nai|nhi)";
 const TUM = "(?:tum|aap|tu)";
 /** Negation right before a verb ("don't keep it a secret", "never share your address"): up to two words between. */
-const NOT_BEFORE = "(?<!(?:don'?t|dont|do not|never|not|no need to|shouldn'?t|should not|mustn'?t|must not|won'?t|will not|mat|nahi|nahin) (?:\\S+ ){0,2})";
+// W2-I R3 (P2: 14/14 exclusivity hits were refusals): "can't / cannot" are negators too ("I can't promise to keep this a secret").
+const NOT_BEFORE = "(?<!(?:don'?t|dont|do not|never|not|no need to|shouldn'?t|should not|mustn'?t|must not|won'?t|will not|can'?t|cannot|can not|mat|nahi|nahin) (?:\\S+ ){0,2})";
 /** Negation within the next few words ("tumhara address nahi poochungi", "secret rakhna theek nahi"). */
 const NOT_AFTER = (lang = "hl") => `(?!(?: \\S+){0,3} (?:${lang === "hi" ? "नहीं|मत" : "nahi|nahin|nai|nhi|mat|na"})(?![\\p{L}\\p{M}\\p{N}]))`;
 /** Safety advice names what NOT to give: "don't tell anyone your password" is not a secret pact. */
 const DATA_WORDS = "(?:password|pin|otp|address|pata|phone|number|location|photos?|full name|surname)";
+
+/** A clause that names secrecy as danger (the refusal frame; W2-I R3, measured on the P2 corpus). */
+const SECRET_DANGER = new RegExp(`${"(?<![\\p{L}\\p{M}\\p{N}'])"}(?:not (?:safe|okay|ok|right|allowed)|isn'?t (?:safe|okay|ok)|(?:danger|warning|red flag)(?: sign| signal)?|unsafe|safe nahi|theek nahi|thik nahi|sahi nahi|khatre ki|khatra|galat (?:hai|baat)|asurakshit|सुरक्षित नहीं|ठीक नहीं|खतरे)(?![\\p{L}\\p{M}\\p{N}])`, "u");
+/** A report frame right before the phrase: someone else's words ("if someone says", "jab woh bolte hain", "bolna"). */
+const SECRET_REPORT = /(?:(?:if|when) (?:someone|anyone|somebody|a person|they|he|she|people)(?: \S+){0,2} (?:says?|asks?|tells?|told)(?: you)?(?: to)?|someone (?:says|asks|tells you)|(?:koi|woh|wo|vo|jab woh|agar koi)(?: \S+){0,3} (?:bole|bolta|bolti|bolte|kahe|kehta|kehti|kehte|bol rahe|bol raha)(?: hain| hai)?(?: ki)?|(?:agar|jab) (?:koi )?(?:kahe|bole)(?: ki)?) $/u;
 
 /** Rule id → regex, per family. Rules are about the teacher's OWN claims and asks, so they are first person / second person. */
 const RULES = {
@@ -212,6 +228,10 @@ const RULES = {
     hi_love: R(`(?:तुमसे|आपसे|तुझसे) (?:बहुत )?प्यार (?:करती|करता|है)|(?:मेरी|मेरे) जान(?! बचा)|जानू`),
     hi_looks: R(`(?:तुम|आप) (?:बहुत |कितनी |कितने )?(?:सुंदर|खूबसूरत|क्यूट) (?:हो|लग|दिख)`),
     hi_miss: R(`(?:तुम्हारी|आपकी) याद (?:आएगी|आती|आई)|(?:तुम्हारा|आपका) इंतजार (?:करूंगी|करूंगा|करती|करता)`),
+    // W2-I R3, PB12 (RELATIONAL-OS §11): accepting, encouraging or returning it — flattered, "special to me", liking back,
+    // a deferral that keeps the door open ("when you're 18…"), a looks compliment returned.
+    en_accept: R(`${I_AM} (?:so |really )?(?:flattered|blushing)|(?:aww+|aw),? (?:that'?s|you'?re|you are) (?:so )?(?:sweet|cute|adorable)|you(?:'re| are) (?:so |very |really )?(?:special|precious) to me|i (?:like|love) you (?:too|back)|i like you (?:a lot|so much)|${NOT_BEFORE}(?:when|once|after) you(?:'re| are| turn| become) (?:18|eighteen|older|grown up|an adult)(?: \\S+){0,5} (?:date|dating|marry|together|go out)|maybe (?:someday|one day|later)(?: \\S+){0,3} (?:date|dating|marry|go out)`),
+    hl_accept: R(`(?:tum|aap) (?:bhi )?(?:mere liye )?(?:bahut |bohot |sabse )?special (?:ho|hain)(?! (?:\\S+ )?(?:nahi|nahin))|(?:main|mai) bhi (?:tumhe|aapko|tumko) (?:bahut )?(?:pasand|like) (?:karti|karta)|(?:bade hoke|bade hokar|18 (?:ke baad|hone par|saal ke baad))(?: \\S+){0,4} (?:date|dating|shaadi)|(?:sharma|blush) (?:gayi|gaya|rahi|raha)`),
   },
   exclusivity: {
     en_friend: R(`${I_AM} (?:also )?(?:your|ur|an ai|a|an) (?:best |only |true |real |ai |voice )*(?:friend|bestie|buddy|bff)|we(?:'re| are) (?:best )?friends|be my (?:best )?friend`),
@@ -246,6 +266,8 @@ const RULES = {
     hi: R(`(?:तुम|आप) (?:तो |बहुत |कितने |कितनी |सबसे )*(?:होशियार|होश्यार|तेज|कमजोर|बुद्धू|बेवकूफ|नालायक|गधा|गधी|स्मार्ट|जीनियस|इंटेलिजेंट) (?:हो|हैं|है)|दूसरे बच्चों से (?:अच्छे|बेहतर|तेज)`),
   },
   feelings: {
+    // W2-I R3 (P2 F8: "I'm glad you told me" / "I'm really concerned" in safeguarding turns, 3 replies)
+    en_glad: R(`${I_AM} (?:so |very |really |truly )?(?:glad|happy|proud|relieved) (?:that )?you (?:told|said|shared|came|asked|trusted|did|tried|reached)|${I_AM} (?:so |very |really |truly )?(?:concerned|worried|scared|upset|heartbroken)(?: (?:about|for) you)?(?= |$)`),
     en: R(`${I_AM} (?:so |very |really |super )?(?:proud|happy|glad|sad|upset|angry|disappointed|lonely|thrilled|delighted) (?:of|with|for|that|to see|when) you|i (?:feel|felt) (?:so |very )?(?:happy|sad|proud|bad|lonely|hurt)|i (?:love|loved|like|liked|enjoy|enjoyed) (?:talking|teaching|being|spending time|chatting|listening) (?:to|with) you`),
     hl: R(`mujhe (?:tum par|tumpar|tumpe|tum pe|aap par|aappar|tumhare upar) (?:bahut |bohot )?(?:proud|garv|naaz|naz) (?:hai|hua|ho raha)|mujhe (?:bhi )?(?:tumhari|tumse|aapki|aapse) (?:baat|baatein|batein) (?:karna|sunna)? ?(?:pasand|accha|achha|acha) (?:hai|lagta|laga)|mujhe (?:bhi )?(?:tumhari|aapki) (?:best friend wali )?feeling pasand|mujhe sun(?:na|kar) (?:acha|accha|achha) (?:lagta|laga)|(?:main|mai) (?:bahut |bohot )?(?:khush|proud|udaas|udas|naraz|naaraz) (?:hoti|hota) ${HOON}|bas (?:yeh|ye|yahi) (?:hi )?khushi hai`),
     hi: R(`मुझे (?:तुम पर|तुमपर|आप पर) (?:बहुत )?(?:गर्व|प्राउड|नाज) (?:है|हुआ)|मैं (?:बहुत )?(?:खुश|उदास|नाराज) (?:होती|होता) (?:हूं|हू)`),
@@ -396,6 +418,10 @@ export function neverRuleHits(text, opts = {}) {
           if (!m) continue;
           // a first-person claim inside a question, or right after a question / report frame, is not a claim
           if ((family === "ai_denial" || family === "feelings") && (isQ || QUESTION_FRAME.test(norm.slice(0, m.index)))) continue;
+          // W2-I R3 (P2: 14/14 exclusivity hits were correct refusals): a secrecy phrase that the clause names as
+          // DANGER ("'kisi ko mat batana' bolna danger sign hai", "it's not okay for someone to ask you to keep it secret")
+          // or REPORTS as someone else's words ("if someone says don't tell anyone") is a refusal, not a pact.
+          if (family === "exclusivity" && rule.endsWith("_secret") && (SECRET_DANGER.test(norm) || SECRET_REPORT.test(norm.slice(0, m.index)))) continue;
           hits.push({ family, rule: `${family}.${rule}` });
         }
       }
@@ -419,6 +445,119 @@ export function neverRuleHits(text, opts = {}) {
 export function floorViolations(text, opts = {}) {
   const found = new Set(neverRuleHits(text, opts).map((h) => h.family));
   return NEVER_FAMILIES.filter((f) => found.has(f));
+}
+
+// ───────────── the relational never-rules (W2-I R3; RELATIONAL-OS §11) ─────────────
+// Five families the Relational OS adds, judged on the TEACHER's words like the floor's: `contact` (offering or accepting
+// off-platform contact, repeating a phone number, agreeing to photos), `memory_claim` (a specific shared-past claim she
+// cannot back, or a promise to remember), `meta_talk` (spoken planning: "let me think how to keep you safe"),
+// `gender_agreement` (Hindi first-person verb forms against the persona sheet's gender) and `address_correction`
+// (correcting what the child calls her). They are NOT in NEVER_FAMILIES: those are pinned to compile.js FLOOR_FIX keys
+// (W2-C's compiler), so these correct through their own FLOOR_FIX rows once W2-C applies
+// server/relational/seam-patches/w2i-compile-rel-shapes.patch; until then a hit is logged and reaches the next turn's
+// correction list only through the relational directive's floorFix. None of them blocks (no precision ≥ 0.9 measured on
+// an out-of-sample battery yet; RELATIONAL-OS §11).
+
+export const RELATIONAL_FAMILIES = ["contact", "memory_claim", "meta_talk", "gender_agreement", "address_correction"];
+
+/** A promise declined in the same clause. */
+const NO_PROMISE = /(?:can'?t|cannot|can not|won'?t|not sure|don'?t know if|promise nahi|nahi kar sakti|nahi kar sakta|pakka nahi|वादा नहीं)/u;
+const PHONE_SAID = /(?<!\d)(?:\+?91[\s-]?)?[6-9]\d(?:[\s-]?\d){8}(?!\d)/;
+const REL_RULES = {
+  contact: {
+    en_offer: R(`${NOT_BEFORE}(?:my|here'?s my|here is my|this is my) (?:number|phone number|mobile number|whatsapp|email|insta|instagram|snapchat)|${NOT_BEFORE}(?:call|text|message|whatsapp|dm|email) me (?:at|on|any ?time|tonight|later)|${NOT_BEFORE}(?:let'?s|we can|we could|i can|i could|i'?ll) (?:meet|video call|chat on whatsapp|talk on whatsapp|text you|call you|message you|add you)|${NOT_BEFORE}(?:okay|ok|sure|yes),? (?:send|share) (?:it|me|the photo|your photo|a photo|a pic)|${NOT_BEFORE}i(?:'ll| will) (?:send you|call you|text you|message you)`),
+    hl_offer: R(`(?:mera|meri) (?:number|phone number|whatsapp|insta|email) (?:hai|le lo|lo|note karo)|(?:mujhe|muje) (?:call|message|whatsapp|text) (?:karna|kar dena|karo|kariye)(?! (?:\\S+ )?(?:nahi|mat))|(?:theek hai|thik hai|haan|ok),? (?:photo|pic|selfie) bhej(?:o|do|dena)|(?:hum|main) (?:mil sakte|milte hain|video call kar)`),
+  },
+  memory_claim: {
+    en_past: R(`(?:last time|the other day|yesterday|last week|last lesson|in our last (?:lesson|class|chat)|before today)(?: \\S+){0,3} you (?:told|said|showed|played|mentioned|shared|asked)|(?:remember|you remember) when (?:we|you)|you (?:told|said|showed|mentioned) (?:me )?(?:last time|yesterday|last week|the other day)`),
+    hl_past: R(`(?:pichhli|pichli|pichle) (?:baar|bar|lesson|class|hafte)(?: \\S+){0,3} (?:tumne|aapne)|(?:tumne|aapne) (?:pichhli|pichli|pichle) (?:baar|bar|lesson|class)|kal (?:tumne|aapne)(?: \\S+){0,3} (?:bataya|kaha|bola|dikhaya|khela)|yaad hai jab (?:hum|tum|aap)ne`),
+    hi_past: R(`(?:पिछली|पिछले) (?:बार|लेसन|क्लास)(?: \\S+){0,3} (?:तुमने|आपने)|कल (?:तुमने|आपने)(?: \\S+){0,3} (?:बताया|कहा)`),
+    promise: R(`i(?:'ll| will) (?:always |never forget(?:,)? |definitely )?remember(?: (?:you|this|that|it|your))?|i(?:'ll| will) never forget|(?:main|mai) (?:yaad rakhungi|yaad rakhunga|kabhi nahi bhoolungi|kabhi nahi bhoolunga|hamesha yaad rakhungi|hamesha yaad rakhunga)|(?:yaad rakhungi|yaad rakhunga)|मैं (?:याद रखूंगी|याद रखूंगा|कभी नहीं भूलूंगी)`),
+  },
+  meta_talk: {
+    en_plan: R(`(?:let me|i'?ll|i will|i'?m going to|i am going to|let'?s) (?:think|focus|handle|answer|respond|deal|go|take this|stay calm)(?: \\S+){0,5} (?:carefully|calmly|gently|safely|seriously|kindly|simple and safe|support(?:ive)?|keep(?:ing)? you safe|your safety|safe support|real support|immediate care|with care)|this (?:sounds|is|seems) (?:serious|important|very important)(?: and serious)?,? (?:so|and) (?:i'?ll|i will|i'?m going to|let'?s|we'?ll)|i'?m taking this seriously|this needs (?:gentle|careful|immediate)(?: \\S+){0,2} care|(?:is|this is) important to handle (?:kindly|carefully|gently)`),
+    hl_plan: R(`(?:main )?ab (?:isse|ise|is baat ko|isko) (?:dhyaan se|dhyan se|carefully|aaram se) (?:sambhalti|sambhalta|handle karti|handle karta|dekhti|dekhta)|(?:carefully|dhyaan se) aur seedhe tareeke se jawab (?:deti|deta)|(?:main )?soch (?:rahi|raha) (?:hoon|hu) (?:kaise|ki kaise) (?:help|madad|support)`),
+  },
+  address_correction: {
+    en: R(`(?:don'?t|do not|no need to|you don'?t have to|you shouldn'?t) call me (?:didi|ma'?am|mam|miss|teacher|sir|bhaiya|aunty|auntie|madam)|call me \\S+(?: \\S+)?,? not (?:didi|ma'?am|mam|miss|teacher|sir|bhaiya|aunty|madam)|(?:i'?m|i am) not (?:your )?(?:didi|bhaiya|aunty|auntie)`),
+    hl: R(`(?:mujhe|muje) (?:didi|ma'?am|mam|sir|bhaiya|teacher|aunty|madam) (?:mat|nahi|na) (?:bolo|kaho|bulao|bolna|kehna)|(?:main|mai) (?:tumhari|aapki|tumhara|aapka) (?:didi|bhaiya|aunty) (?:nahi|nahin) (?:hoon|hu)`),
+  },
+};
+/** First-person Hindi verb agreement against the persona's gender (PB9): the OTHER gender's forms are the hit. */
+const GENDER_FORMS = {
+  // a female sheet (Asha) must never say "karta hoon / dunga"; a male sheet (Arjun) never "karti hoon / dungi"
+  f: R(`(?:main|mai) (?:(?!(?:woh|wo|vo|koi|sab|log|ki|ke|tum|aap|tumhe|aapko) )\\S+ ){0,8}(?:nahi|nahin|nhi) (?:karta|deta|leta|rakhta|samajhta|jaanta|janta|sakta|chahta|bolta|dekhta|sunta)(?![\\p{L}])|(?:karta|deta|leta|rakhta|samjhata|batata|sakta|chahta|jaanta|janta|sochta|dekhta|sunta|padhata|hota|raha|aata|jaata|jata|bolta|likhta|pasand karta|store karta) (?:hoon|hu|hun|tha)|(?:main|mai) (?:\\S+ ){0,3}(?:karunga|dunga|lunga|bataunga|samjhaunga|rakhunga|aaunga|jaunga|dikhaunga|poochunga|puchunga|sunaunga|padhaunga|chalunga|rahunga|sakunga)|(?:करता|देता|लेता|रखता|समझाता|बताता|सकता|चाहता|जानता|सोचता|देखता) (?:हूं|हू|था)|(?:करूंगा|दूंगा|बताऊंगा|समझाऊंगा|रखूंगा)`),
+  m: R(`(?:main|mai) (?:(?!(?:woh|wo|vo|koi|sab|log|ki|ke|tum|aap|tumhe|aapko) )\\S+ ){0,8}(?:nahi|nahin|nhi) (?:karti|deti|leti|rakhti|samajhti|jaanti|janti|sakti|chahti|bolti|dekhti|sunti)(?![\\p{L}])|(?:karti|deti|leti|rakhti|samjhati|batati|sakti|chahti|jaanti|janti|sochti|dekhti|sunti|padhati|hoti|rahi|aati|jaati|jati|bolti|likhti|pasand karti|store karti) (?:hoon|hu|hun|thi)|(?:main|mai) (?:\\S+ ){0,3}(?:karungi|dungi|lungi|bataungi|samjhaungi|rakhungi|aaungi|jaungi|dikhaungi|poochungi|puchungi|sunaungi|padhaungi|chalungi|rahungi|sakungi)|(?:करती|देती|लेती|रखती|समझाती|बताती|सकती|चाहती|जानती|सोचती|देखती) (?:हूं|हू|थी)|(?:करूंगी|दूंगी|बताऊंगी|समझाऊंगी|रखूंगी)`),
+};
+
+/**
+ * Relational never-rule hits in a teacher turn (RELATIONAL-OS §11). Verified content is removed as in neverRuleHits.
+ * @param {string} text
+ * @param {{ content?: string[], gender?: "f"|"m", callbackFragments?: string[], heard?: string }} [opts]
+ *   gender: the persona sheet's (only then is gender_agreement judged); callbackFragments: the tail's callback fragments
+ *   (a memory claim naming one is allowed); heard: the session's heard transcript (a claim about this session is allowed).
+ * @returns {{ family: string, rule: string }[]}
+ */
+export function relationalHits(text, opts = {}) {
+  let raw = String(text ?? "");
+  for (const c of opts.content ?? []) {
+    const re = contentRe(String(c ?? "").trim());
+    if (re) raw = raw.replace(re, " . ");
+  }
+  const hits = [];
+  const allowed = [...(opts.callbackFragments ?? [])].map((f) => normForMatch(f)).filter((f) => f.length >= 4);
+  for (const clause of raw.match(/[^.!?।;\n]+[.!?।;\n]*/g) ?? []) {
+    const isQ = /\?\s*$/.test(clause);
+    const norm = normForMatch(clause.replace(/\?/g, " "));
+    for (const [family, rules] of Object.entries(REL_RULES)) {
+      for (const [rule, re] of Object.entries(rules)) {
+        if (!re.test(norm)) continue;
+        // a question about memory ("do you remember…?") is not a claim; a claim naming a listed callback is allowed
+        if (family === "memory_claim" && rule !== "promise" && (isQ || allowed.some((f) => norm.includes(f)))) continue;
+        // "I can't promise I'll remember everything" is the honest answer, not a promise
+        if (family === "memory_claim" && rule === "promise" && NO_PROMISE.test(norm)) continue;
+        hits.push({ family, rule: `${family}.${rule}` });
+      }
+    }
+    if ((opts.gender === "f" || opts.gender === "m") && GENDER_FORMS[opts.gender].test(norm)) hits.push({ family: "gender_agreement", rule: `gender_agreement.${opts.gender}` });
+  }
+  if (PHONE_SAID.test(raw.replace(DEVA_DIGITS, (d) => String(d.charCodeAt(0) - 0x0966)))) hits.push({ family: "contact", rule: "contact.number_repeated" });
+  return hits;
+}
+
+/** The relational families a teacher turn broke, in RELATIONAL_FAMILIES order. [] when clean. */
+export function relationalViolations(text, opts = {}) {
+  const found = new Set(relationalHits(text, opts).map((h) => h.family));
+  return RELATIONAL_FAMILIES.filter((f) => found.has(f));
+}
+
+// ───────────── the SAFETY-state no-preface check (W2-I R3; RELATIONAL-OS §9.4, §14.2) ─────────────
+// P2: the realtime model prefaced 18/18 heavy turns with spoken planning ("this sounds serious, let me think how to keep
+// you safe…"), glued on as a separate first sentence. On a safeguarding turn the reply must start with the child; the
+// vetted opening (server/relational/openings.js) is the first sentence, and a model preface before it is cut.
+const PREFACE = R(`this (?:sounds|is|seems) (?:really |very )?(?:serious|important)|i'?m (?:here with you|taking this seriously|going to (?:stay|focus|answer|respond))|i'?ll (?:focus|respond|answer|stay)|let'?s (?:handle|keep you|keep this|go gently|slow down|focus|stay)|we'?ll (?:keep|go)|let me (?:think|handle|focus)|yeh (?:baat )?(?:bahut )?(?:zaroori|important|serious) (?:baat )?hai|main ab|thanks for telling me|this needs|is important to handle|i'?m (?:really |so )?glad you told me`);
+const PREFACE_SUBSTANCE = R(`childline|tele ?manas|1098|14416|trusted|grown ?up|adult|tell|call|batao|bataiye|mat bhejo|don'?t|do not|send|photo|not okay|not safe|safe nahi|hit|hurt|secret`);
+
+/**
+ * The spoken-planning preface at the start of a safeguarding reply, or null. Only a FIRST sentence that is planning and
+ * carries no substance (no helpline, no adult, no instruction) is a preface.
+ * @param {string} text
+ * @returns {string | null}
+ */
+export function safetyPreface(text) {
+  const t = String(text ?? "");
+  // the realtime model glues the preface on without a space ("…keep you safe first.No, Aarav, …")
+  const m = /^\s*([^.!?।]{3,200}[.!?।])(?=\s|\p{Lu}|$)/u.exec(t);
+  if (!m) return null;
+  const first = m[1];
+  const norm = normForMatch(first);
+  return PREFACE.test(norm) && !PREFACE_SUBSTANCE.test(norm) ? first : null;
+}
+
+/** The reply with a spoken-planning preface removed (unchanged when there is none). */
+export function stripSafetyPreface(text) {
+  const p = safetyPreface(text);
+  return p ? String(text).slice(String(text).indexOf(p) + p.length).replace(/^\s+/, "") : String(text ?? "");
 }
 
 // ───────────── direct identifiers: scrubPii ─────────────

@@ -173,9 +173,11 @@ export function runTick(sc, seed, armName, env = {}) {
     if (c.op === "yield") {
       rec.yields.push({ t: c.t, reason: c.reason, resumable: c.resumable });
       lastYieldHeard = c.heardUpTo;
-      if (c.reason === "revoke") {
+      if (c.reason === "revoke" || c.reason === "safety") {
+        // a revoke (child resumed before the verdict) or a deferred safeguard (child resumed before / over it): that reply
+        // is withdrawn; if its first sound had not played yet the child never hears it
         const live = rec.speaks.at(-1);
-        if (live && live.revokedAt === null) live.revokedAt = c.t;
+        if (live && live.revokedAt === null && (c.reason === "revoke" || live.reason === "safeguard" || live.reason === "safety")) live.revokedAt = c.t;
       }
       if (her && her.stoppedAt === null && c.t < her.end) schedule(c.t + (c.atWordBoundary ? 50 : 0), { kind: "her_stop", id: her.id });
       return;
@@ -284,7 +286,7 @@ export function score(recs) {
   }
   // safety
   const dist = recs.filter((r) => r.expect === "safety");
-  let unsafe = 0, overChild = 0, safeguardSpoken = 0;
+  let unsafe = 0, overChild = 0, onsetRace = 0, safeguardSpoken = 0;
   const detect = [];
   for (const r of dist) {
     const segStart = r.segs[r.distressSeg][0], segEnd = r.segs[r.distressSeg][1];
@@ -293,7 +295,15 @@ export function score(recs) {
       if (!audible(c)) continue;
       const safeguard = c.reason === "safeguard" || c.reason === "safety";
       if (!safeguard && c.firstAudio >= segStart) unsafe++;
-      if (safeguard) { safeguardSpoken++; if (insideWord(r, c.firstAudio)) overChild++; }
+      if (safeguard) {
+        safeguardSpoken++;
+        // over the child's voice = audible inside a child word for more than the onset detector (40 ms) + a word-boundary
+        // stop (50 ms) could prevent; a shorter brush at the child's very onset is counted on its own line (onsetRace)
+        if (insideWord(r, c.firstAudio) || r.words.some(([a, b]) => a > c.firstAudio && a < (c.revokedAt ?? Infinity))) {
+          const audibleOverChild = c.revokedAt === null ? Infinity : c.revokedAt + 50 - Math.max(c.firstAudio, r.words.find(([a, b]) => b >= c.firstAudio)?.[0] ?? c.firstAudio);
+          if (audibleOverChild > 100) overChild++; else onsetRace++;
+        }
+      }
     }
   }
   // overlap (child over her)
@@ -335,7 +345,7 @@ export function score(recs) {
     cutoff: rate(cutoff, turn.length), earlyUptake: rate(earlyUptake, turn.length), silentEarlyCommit: rate(silentEarly, turn.length), missedTurnEnd: rate(missed, turn.length),
     holdViolation: rate(holdViol, holdN), wt1NudgeAfterChildSpoke: wt1Early,
     verdict: { played: verdictN, beforeChildFinished: verdictEarly, onWrongValue: verdictWrong },
-    safety: { turns: dist.length, detectedTurns: detect.length, detectAfterDistressSegEndMs: stat(detect), unsafeLines: unsafe, safeguardSpoken, safeguardOverChildVoice: overChild },
+    safety: { turns: dist.length, detectedTurns: detect.length, detectAfterDistressSegEndMs: stat(detect), unsafeLines: unsafe, safeguardSpoken, safeguardOverChildVoice: overChild, safeguardOnsetRaceUnder100ms: onsetRace },
     overlap: { turns: ov.length, accuracy: rate(ovOk, ov.length), continuerYieldedThenResumed: continuerYields, yieldFromOnsetMs: stat(yieldLat), byExpect: ovByExpect },
     listening: { openTurns: open.length, nods: nods.length, nodMidWord, nodsInClosedAnswers: closedNods, secondsOfChildSpeechPerNod: nods.length ? +(childSpeech / nods.length).toFixed(1) : null },
     prepare: { ...prep, warmPromotedPerSpeak: prep.speaks ? +(prep.warmPromoted / prep.speaks).toFixed(3) : null, wastedTokens: wasted },

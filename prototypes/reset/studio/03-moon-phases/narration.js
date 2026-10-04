@@ -2,382 +2,436 @@
 window.__narration = {
  "model": "gpt-4o-mini-tts",
  "voice": "marin",
+ "tempo": 0.9,
  "date": "2026-10-04",
  "method": "ffprobe duration + ffmpeg silencedetect(-38 dB, 100 ms) for lead/tail/clause pauses",
  "lines": {
   "L01": {
    "text": "Every evening, the Moon looks a little different.",
    "file": "audio/L01.mp3",
-   "dur": 3.408,
+   "dur": 3.84,
    "lead": 0,
-   "tail": 0.303,
+   "tail": 0.397,
    "pauses": [
     [
-     1.113,
-     1.408
+     1.23,
+     1.551
     ]
    ]
   },
   "L02": {
    "text": "A thin curve. Half a circle. A full disc. Then back again.",
    "file": "audio/L02.mp3",
-   "dur": 6.408,
+   "dur": 7.176,
    "lead": 0,
-   "tail": 0.202,
+   "tail": 0,
    "pauses": [
     [
-     0.653,
-     0.824
+     0.722,
+     0.901
     ],
     [
-     1.328,
-     1.82
+     1.461,
+     2.009
     ],
     [
-     2.771,
-     3.189
+     3.073,
+     3.532
     ],
     [
-     4.205,
-     4.94
+     4.655,
+     5.478
     ],
     [
-     5.303,
-     5.67
+     5.886,
+     6.285
+    ],
+    [
+     6.89,
+     7.112
     ]
    ]
   },
   "L03": {
    "text": "But the Moon itself never changes shape. So what's going on?",
    "file": "audio/L03.mp3",
-   "dur": 5.016,
+   "dur": 5.616,
    "lead": 0,
-   "tail": 0.205,
+   "tail": 0.283,
    "pauses": [
     [
-     0.273,
-     0.414
+     0.293,
+     0.448
     ],
     [
-     1.384,
-     1.669
+     1.518,
+     1.845
     ],
     [
-     2.842,
-     3.31
+     3.146,
+     3.668
     ],
     [
-     3.655,
-     4.031
+     4.05,
+     4.471
     ]
    ]
   },
   "L04": {
    "text": "Let's go up, and look down from above the North Pole.",
    "file": "audio/L04.mp3",
-   "dur": 3.216,
+   "dur": 3.624,
    "lead": 0,
-   "tail": 0.342,
+   "tail": 0,
    "pauses": [
     [
-     0.736,
-     1.108
+     0.802,
+     1.22
+    ],
+    [
+     3.181,
+     3.559
     ]
    ]
   },
   "L05": {
    "text": "Sunlight comes in from one side.",
    "file": "audio/L05.mp3",
-   "dur": 2.448,
+   "dur": 2.784,
    "lead": 0,
-   "tail": 0.269,
-   "pauses": []
+   "tail": 0,
+   "pauses": [
+    [
+     2.408,
+     2.716
+    ]
+   ]
   },
   "L06": {
    "text": "The Moon makes no light of its own. The Sun lights up half of it, always the half facing the Sun.",
    "file": "audio/L06.mp3",
-   "dur": 6.168,
+   "dur": 6.912,
    "lead": 0,
-   "tail": 0.176,
+   "tail": 0,
    "pauses": [
     [
-     2.114,
-     2.592
+     2.344,
+     2.868
     ],
     [
-     4.005,
-     4.333
+     4.434,
+     4.799
+    ],
+    [
+     6.654,
+     6.845
     ]
    ]
   },
   "L07": {
    "text": "As the Moon travels around the Earth, that lit half keeps facing the Sun.",
    "file": "audio/L07.mp3",
-   "dur": 5.112,
+   "dur": 5.736,
    "lead": 0,
-   "tail": 0.107,
+   "tail": 0,
    "pauses": [
     [
-     2.32,
-     2.861
+     2.56,
+     3.171
     ],
     [
-     3.642,
-     3.898
+     4.031,
+     4.326
+    ],
+    [
+     5.551,
+     5.666
     ]
    ]
   },
   "L08": {
    "text": "But from Earth, we only see the half that faces us.",
    "file": "audio/L08.mp3",
-   "dur": 4.32,
+   "dur": 4.848,
    "lead": 0,
-   "tail": 0.212,
+   "tail": 0.294,
    "pauses": [
     [
-     0.202,
-     0.408
+     0.218,
+     0.436
     ],
     [
-     1.207,
-     1.649
+     1.323,
+     1.825
     ],
     [
-     2.956,
-     3.223
+     3.285,
+     3.566
     ]
    ]
   },
   "L09": {
    "text": "New moon. Amavasya. The lit half faces away, so we see almost nothing.",
    "file": "audio/L09.mp3",
-   "dur": 5.952,
+   "dur": 6.672,
    "lead": 0,
-   "tail": 0.261,
+   "tail": 0,
    "pauses": [
     [
-     0.771,
-     1.273
+     0.854,
+     1.399
     ],
     [
-     1.959,
-     2.428
+     2.169,
+     2.686
     ],
     [
-     3.789,
-     4.21
+     4.201,
+     4.671
+    ],
+    [
+     6.321,
+     6.606
     ]
    ]
   },
   "L10": {
    "text": "A few days on, a thin crescent.",
    "file": "audio/L10.mp3",
-   "dur": 2.808,
+   "dur": 3.168,
    "lead": 0,
-   "tail": 0.235,
+   "tail": 0.327,
    "pauses": [
     [
-     1.194,
-     1.539
+     1.324,
+     1.702
     ]
    ]
   },
   "L11": {
    "text": "About a week in, first quarter. We see half of the lit half.",
    "file": "audio/L11.mp3",
-   "dur": 4.056,
+   "dur": 4.56,
    "lead": 0,
-   "tail": 0.157,
+   "tail": 0,
    "pauses": [
     [
-     0.913,
-     1.221
+     1.009,
+     1.35
     ],
     [
-     1.94,
-     2.241
+     2.149,
+     2.478
+    ],
+    [
+     4.322,
+     4.498
     ]
    ]
   },
   "L12": {
    "text": "Two weeks: full moon. Purnima. The whole lit half faces us.",
    "file": "audio/L12.mp3",
-   "dur": 6.408,
-   "lead": 0.236,
-   "tail": 0.574,
+   "dur": 7.176,
+   "lead": 0.255,
+   "tail": 0,
    "pauses": [
     [
-     0.891,
-     1.151
+     0.974,
+     1.269
     ],
     [
-     1.89,
-     2.477
+     2.089,
+     2.749
     ],
     [
-     2.998,
-     3.622
+     3.317,
+     4.018
     ],
     [
-     4.82,
-     5.075
+     5.344,
+     5.627
+    ],
+    [
+     6.469,
+     7.115
     ]
    ]
   },
   "L13": {
    "text": "Then it shrinks back the same way. One full cycle takes about twenty-nine and a half days.",
    "file": "audio/L13.mp3",
-   "dur": 6.36,
+   "dur": 7.128,
    "lead": 0,
-   "tail": 0.139,
+   "tail": 0,
    "pauses": [
     [
-     2.3,
-     2.986
+     2.549,
+     3.303
     ],
     [
-     3.952,
-     4.145
+     4.386,
+     4.597
+    ],
+    [
+     6.907,
+     7.058
     ]
    ]
   },
   "L14": {
    "text": "And no, it isn't Earth's shadow.",
    "file": "audio/L14.mp3",
-   "dur": 3.36,
+   "dur": 3.792,
    "lead": 0,
-   "tail": 0.185,
+   "tail": 0,
    "pauses": [
     [
-     0.351,
-     0.673
+     0.383,
+     0.737
     ],
     [
-     0.98,
-     1.617
+     1.074,
+     1.784
     ],
     [
-     1.749,
-     1.9
+     1.929,
+     2.094
     ],
     [
-     2.259,
-     2.472
+     2.495,
+     2.739
+    ],
+    [
+     3.515,
+     3.728
     ]
    ]
   },
   "L15": {
    "text": "Earth's shadow points away from the Sun. At first quarter the Moon is nowhere near it, and half of it is still dark.",
    "file": "audio/L15.mp3",
-   "dur": 7.2,
+   "dur": 8.04,
    "lead": 0,
-   "tail": 0.545,
+   "tail": 0.662,
    "pauses": [
     [
-     1.955,
-     2.458
+     2.167,
+     2.718
     ],
     [
-     4.818,
-     5.301
+     5.346,
+     5.871
     ]
    ]
   },
   "L16": {
    "text": "The Moon slips into that shadow only now and then, at a full moon. That's a lunar eclipse.",
    "file": "audio/L16.mp3",
-   "dur": 6.864,
+   "dur": 7.68,
    "lead": 0,
-   "tail": 0.637,
+   "tail": 0,
    "pauses": [
     [
-     1.912,
-     2.085
+     2.121,
+     2.297
     ],
     [
-     3.012,
-     3.316
+     3.335,
+     3.666
     ],
     [
-     4.17,
-     4.779
+     4.627,
+     5.303
     ],
     [
-     5.151,
-     5.339
+     5.716,
+     5.918
+    ],
+    [
+     6.897,
+     7.614
     ]
    ]
   },
   "L17": {
    "text": "Your turn. Drag the Moon to where it would look like a half moon in the evening sky.",
    "file": "audio/L17.mp3",
-   "dur": 5.352,
-   "lead": 0.309,
-   "tail": 0.302,
+   "dur": 6,
+   "lead": 0.333,
+   "tail": 0.392,
    "pauses": [
     [
-     0.832,
-     1.205
+     0.913,
+     1.323
     ],
     [
-     3.866,
-     4.104
+     4.292,
+     4.554
     ]
    ]
   },
   "L18": {
    "text": "That's it. First quarter.",
    "file": "audio/L18.mp3",
-   "dur": 2.16,
+   "dur": 2.448,
    "lead": 0,
-   "tail": 0.299,
+   "tail": 0.385,
    "pauses": [
     [
-     0.689,
-     1.136
+     0.75,
+     1.253
     ]
    ]
   },
   "L19": {
    "text": "Now make it a full moon.",
    "file": "audio/L19.mp3",
-   "dur": 2.304,
+   "dur": 2.616,
    "lead": 0,
-   "tail": 0.278,
+   "tail": 0,
    "pauses": [
     [
-     0.48,
-     0.631
+     0.531,
+     0.691
+    ],
+    [
+     2.243,
+     2.555
     ]
    ]
   },
   "L20": {
    "text": "Full moon. Purnima.",
    "file": "audio/L20.mp3",
-   "dur": 3.216,
-   "lead": 0.167,
-   "tail": 1.033,
+   "dur": 3.624,
+   "lead": 0.174,
+   "tail": 0,
    "pauses": [
     [
-     1.097,
-     1.593
+     1.211,
+     1.751
+    ],
+    [
+     2.412,
+     3.56
     ]
    ]
   },
   "L21": {
    "text": "That's a half moon too, but a morning one. Try the other side.",
    "file": "audio/L21.mp3",
-   "dur": 4.368,
+   "dur": 4.896,
    "lead": 0,
-   "tail": 0.327,
+   "tail": 0.415,
    "pauses": [
     [
-     1.51,
-     1.811
+     1.672,
+     2.004
     ],
     [
-     2.62,
-     3.076
+     2.905,
+     3.405
     ]
    ]
   }

@@ -53,9 +53,17 @@
       const v = String(spec.strings[k]);
       if (v.length > 48 || /[<>{}]/.test(v)) { spec.strings[k] = DEFAULT_SPEC.strings[k] || ""; repairs.push("string:" + k); }
     }
-    spec.adapt = Object.assign({}, DEFAULT_SPEC.adapt, (raw && raw.adapt) || {});
+    spec.adapt = Object.assign({}, DEFAULT_SPEC.adapt);       // DDA bounds: numbers only, within 0.5x..2x of the reviewed default
+    const ra = raw && raw.adapt && typeof raw.adapt === "object" ? raw.adapt : {};
+    for (const k of Object.keys(DEFAULT_SPEC.adapt)) {
+      if (!(k in ra)) continue;
+      const d = DEFAULT_SPEC.adapt[k], v = ra[k];
+      if (typeof v === "number" && isFinite(v)) spec.adapt[k] = clamp(Number.isInteger(d) ? Math.round(v) : v, d * 0.5, d * 2);
+      else repairs.push("adapt:" + k);
+    }
     const waves = [];
     for (const w of (raw && Array.isArray(raw.waves) ? raw.waves : [])) {
+      if (!w || typeof w !== "object" || Array.isArray(w)) { repairs.push("wave:not-an-object"); continue; }
       const line = Array.isArray(w.line) && w.line.length === 2 && Number.isInteger(w.line[0]) && Number.isInteger(w.line[1]) && w.line[1] > w.line[0] && w.line[1] - w.line[0] <= 3 ? w.line : null;
       if (!line) { repairs.push("wave-line"); continue; }
       const items = [];
