@@ -131,7 +131,7 @@ export const CONFIGS = {
   "D0 live-tx nohint": live(EH, KEY, LT),
   // newer OpenAI-family deployments
   "W0 rt-whisper nohint": live(EH, KEY, RW),
-  "W1 rt-whisper kw only (prompt refused)": live(EH, KEY, RW, { keywords: KW }),
+  "W1 rt-whisper language=hi (prompt+keywords refused)": live(EH, KEY, RW, { language: "hi" }),
   "G0 gpt-transcribe nohint": oai(GT),
   "G3 gpt-transcribe hi+prompt": oai(GT, { language: "hi", prompt: SCRIPT_PROMPT }),
   // older gpt-4o family (excluded since v2; re-measured for drift)
@@ -145,7 +145,7 @@ export const CONFIGS = {
   "X15 MAI-Transcribe-1.5": mai("MAI-Transcribe-1.5"),
   "X15k MAI-Transcribe-1.5 +phraseList": mai("MAI-Transcribe-1.5", { phrases: KW }),
   "S0 MAI-Tx-2-Streaming nohint": live(SH, SIK, MS),
-  "S1 MAI-Tx-2-Streaming kw only (prompt refused)": live(SH, SIK, MS, { keywords: KW }),
+  "S1 MAI-Tx-2-Streaming language=hi (prompt+keywords refused)": live(SH, SIK, MS, { language: "hi" }),
   // Azure Speech classic
   "C1 azure-fast hi-IN+en-IN": fast(SPEECH_EUS2, KEY, { locales: ["hi-IN", "en-IN"] }),
   "R4 azure-rt LID(hi,en)+phrases": azrt({ lid: ["hi-IN", "en-IN"], phrases: KW }),
