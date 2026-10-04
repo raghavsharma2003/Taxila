@@ -86,6 +86,10 @@ const storable = (results) => (results ?? []).map(({ span: _s, ...r }) => ({ ...
  */
 export function gradeLater(ev, { childText, targets, echo = [], lang = "en" }, { grade = gradeClosed } = {}) {
   sweep();
+  // idempotent per event id: the turn may launch the grade as soon as the plan holds the event (before the reply is
+  // written: seam-patches/w1c-lesson-early-grade.patch) and again after its commit; the second call is the first's promise
+  const had = PENDING.get(ev.id);
+  if (had?.promise && !had.adopted) return had.promise;
   const text = String(childText ?? "").trim();
   const ts = (targets ?? []).filter((t) => t?.id && t?.textEn).slice(0, MAX_TARGETS);
   if (!text || !ts.length) return null;
@@ -120,7 +124,7 @@ export function settledGrade(evId) {
 function adopt(evId, results) {
   const e = PENDING.get(evId);
   if (e) { e.results = results; e.settled = true; e.fallback = false; return; }
-  PENDING.set(evId, { at: Date.now(), settled: true, results, fallback: false, promise: Promise.resolve(results) });
+  PENDING.set(evId, { at: Date.now(), settled: true, results, fallback: false, adopted: true, promise: Promise.resolve(results) });
 }
 
 // ───────────── the settle (the next turn, and lesson end) ─────────────
@@ -164,7 +168,7 @@ export async function settleHeld(eventIds, maxMs = 600, { log = true, label = "t
   }
   const unsettled = ids.filter((id) => !done(id));
   if (unsettled.length) {
-    for (const id of unsettled) { const e = PENDING.get(id); if (e) e.fallback = true; else PENDING.set(id, { at: Date.now(), settled: false, results: null, fallback: true, promise: Promise.resolve(null) }); }
+    for (const id of unsettled) { const e = PENDING.get(id); if (e) e.fallback = true; else PENDING.set(id, { at: Date.now(), settled: false, results: null, fallback: true, adopted: true, promise: Promise.resolve(null) }); }
     if (s) {
       try { for (const [id, res] of Object.entries(await s.claim(unsettled))) { adopt(id, res); fromDb.add(id); } } catch (e) { console.warn("[settle] claim failed:", String(e?.message ?? e).slice(0, 160)); }
     }

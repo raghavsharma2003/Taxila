@@ -47,10 +47,16 @@ export function onTopicPlanned(q, topicSkillIds, now) {
 /** A hosted sub-step was graded (any outcome): the entry is done. */
 export const markDone = (q, skillId, kind = "woven") => q.map((e) => (e.skillId === skillId && e.kind === kind && e.status !== "expired" ? { ...e, status: "done" } : e));
 
-/** Entries with no host in time become callbacks (C31) at the next session open (§3.5.4). */
+/**
+ * Entries with no host in time become callbacks (C31) at the next session open (§3.5.4). An entry with NO host
+ * candidates can never be hosted (0/830 kits carry weaveHosts today), so it does not wait out the grace period: it
+ * becomes the callback at the session where its woven check was due — the topic about to be planned is the
+ * MIN_TOPICS-th since, and ≥ 20 h have passed (W1-C; without this the +3 d check came only after dueAt + 2 days).
+ */
 export function expire(q, now) {
   const t = new Date(now).getTime();
-  return q.map((e) => (e.status === "queued" && (e.topicsSince > WEAVE.EXPIRE_TOPICS || t > new Date(e.dueAt).getTime() + WEAVE.EXPIRE_GRACE_MS)
+  const unhostableDue = (e) => !(e.hostCandidates ?? []).length && e.topicsSince + 1 >= WEAVE.MIN_TOPICS && t >= new Date(e.earliestAt).getTime();
+  return q.map((e) => (e.status === "queued" && (e.topicsSince > WEAVE.EXPIRE_TOPICS || t > new Date(e.dueAt).getTime() + WEAVE.EXPIRE_GRACE_MS || unhostableDue(e))
     ? { ...e, status: "expired" } : e));
 }
 

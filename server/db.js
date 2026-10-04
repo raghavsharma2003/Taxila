@@ -5,15 +5,36 @@
 import { neon } from "@neondatabase/serverless";
 
 let _driver;
+/**
+ * Idle pooled connections live 10 min (smooth G10: at 60 s the first turn after a child paused a minute paid a new TLS
+ * handshake to Neon, 101 ms vs 7 ms warm). Neon's own idle limit is far longer; the pool is per replica, max 10.
+ */
+const IDLE_MS = Number(process.env.DB_POOL_IDLE_MS || 600_000);
+/**
+ * TAXILA_DB=test points this process at the Neon TEST branch (CONDUCTOR_TEST_DATABASE_URL, else TEST_DATABASE_URL)
+ * whatever DATABASE_URL says (BUILD-PLAN W1-D item 3: test scripts default to the test branch; a test run against prod
+ * is recoverable only for the PITR window). Production never sets it.
+ */
+export function dbUrl(env = process.env) {
+  if (env.TAXILA_DB === "test") {
+    const u = env.CONDUCTOR_TEST_DATABASE_URL || env.TEST_DATABASE_URL;
+    if (!u) throw new Error("TAXILA_DB=test but no CONDUCTOR_TEST_DATABASE_URL / TEST_DATABASE_URL is set");
+    return u;
+  }
+  return env.DATABASE_URL;
+}
 async function driver() {
   if (_driver) return _driver;
-  const url = process.env.DATABASE_URL;
+  const url = dbUrl();
   if (!url) throw new Error("DATABASE_URL not set");
   if (process.env.DB_DRIVER === "pg") {
     const { default: pg } = await import("pg");
     // node-postgres does not implement channel_binding; TLS is still enforced (sslmode=require + verify)
     const pool = new pg.Pool({ connectionString: url.replace(/[?&]channel_binding=require/, (m) => (m[0] === "?" ? "?" : "")),
-      max: Number(process.env.DB_POOL_MAX || 10), idleTimeoutMillis: 60_000, ssl: { rejectUnauthorized: true } });
+      max: Number(process.env.DB_POOL_MAX || 10), idleTimeoutMillis: IDLE_MS,
+      // TCP keepalive under the idle window: Azure's outbound SNAT drops an idle flow after ~4 min [V Azure LB docs],
+      // which would turn a 10-min idle connection into a hung first query instead of a warm one.
+      keepAlive: true, keepAliveInitialDelayMillis: 30_000, ssl: { rejectUnauthorized: true } });
     pool.on("error", (e) => console.error("pg pool error", e.message));
     _driver = {
       query: async (text, params) => (await pool.query(text, params)).rows,

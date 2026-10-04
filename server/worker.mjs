@@ -18,6 +18,7 @@ import { fireDue } from "./conductor/timers.js";
 import { claimJobs, runJob } from "./conductor/jobs.js";
 import { stepBackoff } from "./conductor/backoff.js";
 import { unappliedMigrations } from "./conductor/migrations.js";
+import { onChildClock } from "./conductor/offsets.js";
 import "./conductor/handlers.js";
 
 const ONCE = process.argv.includes("--once");
@@ -124,7 +125,8 @@ async function dirtyOnce() {
     while (i < rows.length && !stopping) {
       const { child_id } = rows[i++];
       try {
-        const r = await track(step(child_id));
+        // a test child folds on its own (shifted) clock, never behind the events it already folded (offsets.js)
+        const r = await track(onChildClock(q, child_id, () => step(child_id)));
         backoff.ok(child_id);
         if (r.events) log("stepped", { child: child_id.slice(0, 8), events: r.events, retries: r.retries });
       } catch (e) {
@@ -197,6 +199,8 @@ function startLiveness() {
   srv.on("error", (e) => log("health server failed", { error: e.message }));
   srv.listen(HEALTH_PORT);
   srv.unref();
+  // the heartbeat the "worker liveness" alert reads (infra/eyes.mjs: no heartbeat line for 10 min → email the owner)
+  setInterval(() => log("worker heartbeat", { kind: "heartbeat", leader, stalled: stalled(), inflight: inflight.size, running }), 60_000).unref();
   // the watchdog: exit on a wedged loop so ACA restarts the replica even if the probe is misconfigured
   setInterval(() => {
     const bad = stalled();

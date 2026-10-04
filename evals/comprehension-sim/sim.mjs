@@ -137,7 +137,8 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null, 
       const k = ev.target ?? ev.skillIds[0];
       const b = belief(k);
       if (pol.delayed && b && rank(b.display) >= rank("learned_today") && !q.some((e) => e.skillId === k && e.kind === "woven")) {
-        q = enqueue(q, { childId, skillId: k, anchorAt: S.ledger.skills[k].anchorAt ?? now, dueAt: S.ledger.skills[k].nextReviewAt, hostCandidates: hostCandidates(cs, bySkill[k]) });
+        q = enqueue(q, { childId, skillId: k, anchorAt: S.ledger.skills[k].anchorAt ?? now, dueAt: S.ledger.skills[k].nextReviewAt,
+          hostCandidates: pol.live ? (bySkill[k].kit.weaveHosts?.[k] ?? []) : hostCandidates(cs, bySkill[k]) });   // live: the real kits' weaveHosts (none today)
       }
       if (b && info[k].learnedSession === null && rank(b.display) >= rank("learned_today")) info[k].learnedSession = si;
       return b;

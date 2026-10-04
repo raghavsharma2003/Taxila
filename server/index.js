@@ -11,6 +11,8 @@ import { routes as voice } from "./routes/voice.js";
 import { routes as tutor } from "./routes/tutor.js";
 import { routes as forge } from "./routes/forge.js";
 import { routes as child } from "./routes/child.js";
+// W1-C: the test clock (GET/POST /api/test/clock; @taxila.test accounts only). Seam applied by W1-D, owner of this file.
+import { routes as testClock } from "./comprehension/testclock.js";
 
-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child });
+register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock });
 export { handle, register };

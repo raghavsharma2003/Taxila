@@ -166,3 +166,15 @@ test("E9 deference discount: on only when the child agrees with a character's tr
   u = say(say(say(u, true, false), true, true), false, true);
   assert.equal(deferenceDiscountOn(u), false, "rejects a planted error: off");
 });
+
+test("weave (W1-C): an entry no kit can host becomes the callback when its woven check was due, not after the grace", () => {
+  let q = enqueue([], { childId: "c", skillId: "a", anchorAt: "2026-10-01T05:00:00Z", hostCandidates: [] });
+  q = enqueue(q, { childId: "c", skillId: "b", anchorAt: "2026-10-01T05:00:00Z", hostCandidates: ["h"] });
+  assert.equal(expire(q, "2026-10-02T06:00:00Z").filter((e) => e.status === "expired").length, 0, "no topic planned since yet");
+  q = onTopicPlanned(q, ["x"], "2026-10-02T06:00:00Z").q;                    // 1 topic since
+  const e = expire(q, "2026-10-04T06:00:00Z");                              // the 2nd topic is about to be planned
+  assert.deepEqual(e.map((x) => [x.skillId, x.status]), [["a", "expired"], ["b", "queued"]], "the hostable one still waits for its host");
+  assert.deepEqual(planChecks({ q: e, due: [], now: "2026-10-04T06:00:00Z" }).openers, ["a"], "→ a C31 callback in the opener");
+  const early = enqueue([], { childId: "c", skillId: "a", anchorAt: "2026-10-01T05:00:00Z" });
+  assert.equal(expire(onTopicPlanned(early, ["x"], "2026-10-01T06:00:00Z").q, "2026-10-01T10:00:00Z")[0].status, "queued", "never before 20 h");
+});

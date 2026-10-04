@@ -83,6 +83,29 @@ export async function countTestGuardians() {
 }
 
 /**
+ * A read query against the target's database (TAXILA_DB_URL: the Neon test branch for a local run, prod for the main
+ * loop's run). null when no url is configured: a test then skips its DB checks with a WARN, never a false PASS.
+ * @returns {Promise<any[] | null>}
+ */
+export async function dbq(text, params = []) {
+  const url = process.env.TAXILA_DB_URL;
+  if (!url) return null;
+  const { neon } = await import("@neondatabase/serverless");
+  return neon(url).query(text, params);
+}
+
+/** Poll fn() every `everyMs` until it returns a truthy value (→ that value) or `maxMs` passes (→ null). */
+export async function waitFor(fn, { everyMs = 3000, maxMs = 120_000 } = {}) {
+  const t0 = Date.now();
+  for (;;) {
+    const v = await fn().catch(() => null);
+    if (v) return v;
+    if (Date.now() - t0 > maxMs) return null;
+    await new Promise((r) => setTimeout(r, everyMs));
+  }
+}
+
+/**
  * Run `fn` with a fresh test account, and delete the account afterwards, pass or fail.
  * @param {(ctx: { api: ReturnType<typeof apiClient>, child: any, email: string, password: string }) => Promise<void>} fn
  * @param {{ child?: object, grants?: Record<string, boolean>, controls?: object | null, tag?: string }} [opts]

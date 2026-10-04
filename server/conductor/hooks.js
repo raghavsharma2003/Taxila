@@ -14,6 +14,8 @@
 import { ingestStmt, kick } from "./index.js";
 import { PURPOSES } from "./events.js";
 import { ulid } from "./ids.js";
+import { learningDay } from "./clock.js";
+import { ROUTINE_DEFAULT } from "./config.js";
 
 /** @typedef {{ text: string, params?: unknown[] }} Stmt */
 /** @typedef {{ id: string, class_level?: number, legal_mode?: string }} HookChild */
@@ -42,6 +44,7 @@ export function scheduleKick(childId) {
 
 /** ingestStmt that never throws (logs the refusal instead): a hook must not break the write it rides on. */
 function safeIngest(childId, event, opts = {}) {
+  if (!childId) { console.warn(`[conductor] hook ${event.type} not ingested: no child id`); return []; }
   try {
     const { text, params } = ingestStmt(childId, event, opts);
     return [{ text, params }];
@@ -52,14 +55,26 @@ function safeIngest(childId, event, opts = {}) {
 }
 
 /**
- * A lesson row is created (POST /api/lesson/start, inside the lesson-insert transaction) → lesson.started.
+ * A lesson row is created (POST /api/lesson/start, inside the lesson-insert transaction) → app.opened (once per
+ * learning day) + lesson.started.
+ *
+ * Why app.opened here: nothing in the product calls planToday() yet (the home screen reads day_plan but never opens
+ * the actor; server/routes/child.js is outside W1-D's paths, open item `home-calls-plan-today`). Without an
+ * app.opened the actor never arms its day_start / night wakeups (decide.js "app.opened" → armAhead), so no night fold,
+ * no report.daily, no letter. A lesson start is proof the app was open; the key `app.opened:lesson:d<day>` makes it
+ * once per learning day (IST default; the fold uses the child's own tz), and a real planToday() later is a distinct key.
  * @param {{ child: HookChild, lessonId: string, topicId: string, purpose: "lesson"|"practice"|"doubt", mode: "voice"|"text"|"cascade", now: number }} e
  * @returns {Stmt[]}
  */
 export function onLessonStart(e) {
-  const out = safeIngest(e.child?.id, { type: "lesson.started", lessonId: e.lessonId, topicId: e.topicId,
-    kind: KIND_OF[e.purpose] ?? "live", lanes: [LANE_OF[e.mode] ?? "tap"] }, { occurredAt: iso(e.now) });
-  if (out.length) scheduleKick(e.child.id);
+  const at = iso(e.now);
+  const day = learningDay(new Date(at), ROUTINE_DEFAULT.tz);
+  const out = [
+    ...safeIngest(e.child?.id, { type: "app.opened", device: "web", replicaId: "lesson", bootId: `d${day}` }, { occurredAt: at }),
+    ...safeIngest(e.child?.id, { type: "lesson.started", lessonId: e.lessonId, topicId: e.topicId,
+      kind: KIND_OF[e.purpose] ?? "live", lanes: [LANE_OF[e.mode] ?? "tap"] }, { occurredAt: at }),
+  ];
+  if (out.length) scheduleKick(e.child?.id);
   return out;
 }
 
@@ -86,7 +101,7 @@ export function onLessonEnd(e) {
   const out = safeIngest(e.child?.id, { type: "lesson.ended", lessonId: e.lessonId, reason: REASON_OF[e.endedBy] ?? "completed",
     // a lesson with turns counts as at least a tenth of a minute (a fast test lesson is still an active day)
     minutes: e.turns > 0 ? Math.max(0.1, minutes) : minutes }, { occurredAt: iso(end) });
-  if (out.length) scheduleKick(e.child.id);
+  if (out.length) scheduleKick(e.child?.id);
   return out;
 }
 

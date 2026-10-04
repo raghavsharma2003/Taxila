@@ -1,0 +1,13 @@
+diff -ru a/server/routes/lesson.js b/server/routes/lesson.js
+--- a/server/routes/lesson.js	2026-10-04 07:33:07.261832794 +0000
++++ b/server/routes/lesson.js	2026-10-04 07:33:07.274871983 +0000
+@@ -918,6 +918,9 @@
+   let { evidence, writes, skillChanges, incident, r, instructions, skipped } = plan;
+   mark("planned");
+   let next = r.state;
++  // W1-C settle: start the blind grade of this turn's held why / teach-back NOW, while the reply is written and the
++  // turn commits (≈ 1-2 s), not after; the post-commit launchGrades below is then a no-op for the same event ids.
++  launchGrades(next);
+   // What the child did on this turn, for the lesson summary (DidCards): graded answers only, from the classifier.
+   noteDid(next, { cls, target, activeItem, kit, childText, tapped, hintLevel: state.hintLevel, seq: childRowSeq(staged), leaked });
+   // Voice lane: the floor families the heard teacher turn broke → the next compile's correction (cleared when clean).

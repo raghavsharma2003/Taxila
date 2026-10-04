@@ -4,6 +4,7 @@
 import { JOB_KINDS } from "./config.js";
 import { consentGrantedSql } from "./consent.js";
 import { one, q, withTx } from "./pg.js";
+import { dueSql, hasTestClock, onChildClock } from "./offsets.js";
 
 /**
  * What job.failed carries into the append-only log: a CODE, never exception text (§2.3: events carry no free
@@ -50,12 +51,14 @@ export async function enqueueJob(childId, job, { correlationId = "direct", causa
 export async function claimJobs(lane, { limit = 4, worker = "worker", kinds = null, childIds = null } = {}) {
   await sweepCancelled(lane, { kinds, childIds });
   await sweepPoison(lane, { kinds, childIds });
+  // A test child's job is due on ITS clock (offsets.js: run_after <= now() + the guardian's test-clock offset).
+  const due = dueSql("j", await hasTestClock(q));
   // Never re-claimed: a dead worker's job that was asked to cancel (sweepCancelled finalises it), and any job of
   // a child being erased (ws SW6; complete_job would fence it anyway, but the handler must not even run).
   return q(`with c as (
       select j.id from job j
        where j.lane = $1
-         and ((j.status in ('queued','retry') and j.run_after <= now())
+         and ((j.status in ('queued','retry') and ${due})
               or (j.status = 'running' and j.lease_until < now() and j.attempts < j.max_attempts and not j.cancel_requested))
          and (j.child_id is null or not exists (select 1 from workspace w where w.child_id = j.child_id and w.state = 'erasing'))
          and ($4::text[] is null or j.kind = any($4))
@@ -151,7 +154,8 @@ export async function runJob(job) {
   const hbEvery = Math.max(1000, (job.lease_sec * 1000) / 3);
   const timer = setInterval(() => { heartbeat(job.id, job.attempts).catch(() => {}); }, hbEvery);
   try {
-    const result = await fn(job, { heartbeat: () => heartbeat(job.id, job.attempts) });
+    // on the child's clock: a test child's report reads "now" as its guardian's shifted instant (offsets.js)
+    const result = await onChildClock(q, job.child_id, () => fn(job, { heartbeat: () => heartbeat(job.id, job.attempts) }));
     return await completeJob(job.id, job.attempts, { ok: true, result: result ?? null });
   } catch (e) {
     return await completeJob(job.id, job.attempts, { ok: false, code: jobErrorCode(e), error: e?.message || String(e), final: !!e?.final });
