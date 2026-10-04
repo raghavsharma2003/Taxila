@@ -2142,3 +2142,6 @@ weave.js expire(): `!hostCandidates.length && topicsSince + 1 >= MIN_TOPICS && n
 
 ## w1c-facet-source-weight-once (2026-10-04)
 facetWeight now uses temper(ev) alone. The engine sim moved bkt2 0.659 → 0.674 between the integration baseline and this run (this fix plus later changes; not isolated). **Reverse if** the 50-session module agreement gate passes (module → 1 in both K and facets).
+
+## `foundry-w2-deployments-2026-10-04` (2026-10-04)
+The main loop created the W2 Foundry deployments itself under SP Contributor: taxila-fast-bg (gpt-5.6-luna 500), taxila-studio-sol (gpt-5.6-sol 500), gpt-5.6-terra 500->1000, taxila-realtime-dz (gpt-realtime-2.1 DataZoneStandard 10), taxila-gpt6 (gpt-6-sol 500), taxila-flux2 1->4, and the private voice-bank container. Why: they were owner actions in BUILD-PLAN §10 that needed no quota request, and W2 Studio/voice streams depend on them. Reverse if a deployment shows zero use after W2 exits or its quota is needed elsewhere.
