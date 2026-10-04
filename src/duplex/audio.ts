@@ -124,7 +124,8 @@ export class ChildAudioTracker {
       if (this.firstLoudOfRun === null) { this.firstLoudOfRun = t; this.f0InRun = false; }
       if (f0) this.f0InRun = true;
       this.loudRun += this.frameMs;
-      this.lastLoudAt = t;
+      // the silence clock runs from the last VOICED frame: an aperiodic noise burst (no onset) does not reset it
+      if (this.voicingNow || this.f0InRun) this.lastLoudAt = t;
       this.hist.push([t, db, f0]);
       if (f0) { this.f0s.push(f0); if (this.f0s.length > 3000) this.f0s.splice(0, 1000); }
       // onset: 2 loud frames (40 ms) after a quiet spell longer than the hangover; back-dated to the first loud frame

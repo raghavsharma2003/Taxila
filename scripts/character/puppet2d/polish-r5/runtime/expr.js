@@ -54,10 +54,12 @@ export const EXPRESSIONS = {
     head: [-5, 0, 0], gaze: [0, 2], env: [0.12, 0, 0.5],
   },
   // playful: lopsided smirk, one brow up, the other eye squinting, head cocked
+  // r5 (judge r4): a real WINK: her right eye (screen left) fully shut on the curved happy-closed lid, that cheek raised
+  // and the smirk on the same side; the other brow up, the open eye bright
   playful: {
-    bs: { mouthSmileLeft: 0.75, mouthSmileRight: 0.05, cheekSquintLeft: 0.5, browOuterUpLeft: 1.0, browDownRight: 0.45,
-      eyeSquintRight: 0.3, eyeBlinkRight: 0.5, cheekSquintRight: 0.25, eyeSquintLeft: 0.05 },
-    head: [-2, 7, -9], gaze: [-6, 3], env: [0.25, 0, 0.45],
+    bs: { mouthSmileRight: 0.8, mouthSmileLeft: 0.12, cheekSquintRight: 0.85, browOuterUpLeft: 0.9, browDownRight: 0.35,
+      eyeBlinkRight: 1.0, eyeWideLeft: 0.1, eyeSquintLeft: 0.04 },
+    head: [-2, -6, 8], gaze: [-5, 3], env: [0.22, 0, 0.4],
   },
 };
 /** behaviour.ts's Emotion names -> the preset that renders them on this rig (so arm()/emote() map 1:1). */

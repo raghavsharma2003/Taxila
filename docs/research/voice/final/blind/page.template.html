@@ -1,0 +1,182 @@
+<meta charset="utf-8">
+<title>Teacher Voice Final</title>
+<style>
+/* layout: one column; a section per passage (scene, full text, its 3 voices as rows), then the final pick panel */
+:root{--bg:#f7f6f3;--panel:#fff;--fg:#1d1c1a;--mut:#6b6862;--line:#e3e0da;--accent:#2f5d8a;--accent-fg:#fff;--ok:#2e7d4f;--warn:#9a5b00;--chip:#efece6;--focus:#7aa7d6;--quote:#faf8f4}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161614;--panel:#201f1d;--fg:#ecebe7;--mut:#a3a09a;--line:#34322e;--accent:#7fb0e0;--accent-fg:#0d1a26;--ok:#6cc596;--warn:#e0a24a;--chip:#2a2926;--focus:#7fb0e0;--quote:#1a1917;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#161614;--panel:#201f1d;--fg:#ecebe7;--mut:#a3a09a;--line:#34322e;--accent:#7fb0e0;--accent-fg:#0d1a26;--ok:#6cc596;--warn:#e0a24a;--chip:#2a2926;--focus:#7fb0e0;--quote:#1a1917;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--fg)}
+body{font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Noto Sans Devanagari",sans-serif;padding:16px}
+main{max-width:780px;margin:0 auto}h1{font-size:1.3rem;margin:.2rem 0;text-wrap:balance}h2{font-size:1.1rem;margin:.1rem 0 .3rem;text-wrap:balance}p{color:var(--mut)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0}
+button{font:inherit;border-radius:8px;border:1px solid var(--line);background:var(--chip);color:var(--fg);padding:8px 12px;cursor:pointer;min-height:40px}
+button.primary,button.on{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--focus);outline-offset:2px}button:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.scene{font-size:.92rem;color:var(--mut);margin:.2rem 0 .5rem}
+details.text{background:var(--quote);border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:0 0 12px}
+details.text summary{cursor:pointer;font-size:.88rem;color:var(--mut)}
+.text p{color:var(--fg);margin:.5rem 0;font-size:1rem;line-height:1.65}.text p .cue{display:block;color:var(--mut);font-size:.85rem;font-style:italic}
+.voices{display:grid;gap:10px}
+.clip{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;gap:8px;min-width:0}
+.clip.done{border-color:var(--ok)}
+.clip .top{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.clip h3{margin:0;font-size:.98rem;min-width:84px;font-variant-numeric:tabular-nums}
+.play{min-width:92px}
+.bar{height:6px;background:var(--chip);border-radius:3px;overflow:hidden;flex:1;min-width:80px}.bar>i{display:block;height:100%;background:var(--ok);width:0}
+.heard{font-size:.8rem;color:var(--mut);font-variant-numeric:tabular-nums;min-width:74px;text-align:right}
+.score{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.85rem;color:var(--mut)}
+.score span{flex-basis:100%}
+.score button{min-width:44px;padding:6px 0;font-variant-numeric:tabular-nums}
+.chk{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.85rem;color:var(--mut)}
+.chk label{display:flex;gap:5px;align-items:center}
+.locked{font-size:.82rem;color:var(--warn)}
+.prog{font-size:.85rem;color:var(--mut)}
+input.note,textarea{width:100%;font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.scale{font-size:.85rem;color:var(--mut);margin:.2rem 0 0}
+.pick{display:grid;gap:8px;margin:8px 0}
+.pick label{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;font-weight:600}
+.pick label.on{border-color:var(--accent);outline:1px solid var(--accent)}
+.pick input{width:18px;height:18px}
+.need{color:var(--warn);font-size:.88rem}.okmsg{color:var(--ok);font-size:.92rem;font-weight:600}
+</style>
+<main>
+<h1>Teacher voice, final round: which one should be her voice?</h1>
+<p>There are three short lessons. In each one the same three voices say exactly the same words, which are printed above the voices so you can read along. The voices keep the same name in every lesson (for example, Voice ABC is the same voice each time), but their order changes. Listen to each voice, then score how much it <b>sounds like a real teacher talking to me</b>, tick anything that went wrong, and write a note if something stands out. Notes matter most: write what you hear, in any language. The score unlocks once you have heard most of a voice. At the end, pick the one voice she should have. Use headphones. Ratings save automatically under your name.</p>
+<p class="scale">1 = clearly a machine reading · 3 = could pass, but something is off · 5 = a real teacher talking to me</p>
+<div class="panel" id="gate"><p><b>Each person types their own name before starting.</b> Several people can use the same account or phone: ratings are kept separately under each name.</p><div class="row"><input id="who" placeholder="Your name" autocomplete="off" style="font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);flex:1;min-width:160px"><button id="go" class="primary">Start</button></div></div>
+<div class="panel row" id="me" hidden><span>Rating as <b id="mename"></b></span><span class="prog" id="prog"></span><button id="switch">Not you? Switch person</button></div>
+<div id="cards"></div>
+<section class="panel" id="final" hidden>
+  <h2>Which voice should be her voice?</h2>
+  <p>Pick one. This is the voice children will hear every day, so pick the one you would want for your own child.</p>
+  <p class="need" id="pickneed"></p>
+  <div class="pick" id="pick"></div>
+  <p class="scale">Why this one? What made you choose it over the other two?</p>
+  <textarea id="reason" rows="3" placeholder="Your reason"></textarea>
+  <p id="donemsg"></p>
+</section>
+<p id="store" class="prog" role="status"></p>
+<div class="panel" id="after" hidden><p>If the line above says your ratings are not saving: when you finish, press the button, copy all the text in the box and send it to the person who shared this page.</p><button id="code">Show my ratings text</button><textarea id="codebox" rows="4" readonly hidden></textarea></div>
+</main>
+<script>
+const M=/*__M__*/null;
+const LS="taxila-voice-final:";
+const NB=50,UNLOCK=.8;// a clip unlocks after 80% of its 50 time-buckets were actually played (seeking past does not count)
+let store=null;try{localStorage.setItem("_t","1");localStorage.removeItem("_t");store=localStorage}catch(e){}
+const $=id=>document.getElementById(id);
+let R={},NAME="",slug="",dbDoc=null,dbT=null,api=null,apiDone=false,attaching=false,indexed="";
+const status=t=>{$("store").textContent=t};
+const slugOf=n=>n.trim().toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,40);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function saveLocal(){try{store&&store.setItem(LS+slug,JSON.stringify(R))}catch(e){}}
+function addName(){const names=[...new Set([...(api.names||[]),NAME])];return api.db.doc(`ratings/${api.id}`).set({names}).then(()=>{indexed=slug;api.names=names})}
+function save(){saveLocal();prog();if(!dbDoc){attach();return}const doc=dbDoc,who=NAME;clearTimeout(dbT);dbT=setTimeout(()=>(indexed===slug||!api?Promise.resolve():addName().catch(()=>{}))
+  .then(()=>doc.set({v:M.v,who,ratings:JSON.stringify(R)}).then(()=>status(`Saved for "${who}".`)).catch(()=>status("Your ratings are NOT saving: ask the person who shared this to give you edit/use access (not view-only), then open the page again."))),800)}
+const covOr=(a,b)=>{a=a||"";b=b||"";let s="";for(let i=0;i<NB;i++)s+=(a[i]==="1"||b[i]==="1")?"1":"0";return s};
+const covN=c=>(c||"").split("").filter(x=>x==="1").length;
+// merge one saved record into the local one: listening coverage is OR-ed, a score/pick/note is never dropped from either side
+function mergeIn(d){let changed=false;const fresh=!M.clips.some(c=>isDone(c.c))&&!(R.final&&R.final.pick);
+  for(const k in d){const a=R[k],b=d[k];if(k==="__who")continue;
+    if(k==="__seed"){if(fresh&&b&&b!==R.__seed){R.__seed=b;changed=true}continue}
+    if(!b||typeof b!=="object")continue;
+    if(!a||typeof a!=="object"){R[k]=b;changed=true;continue}
+    if(k==="final"){if(!a.pick&&b.pick){a.pick=b.pick;a.at=b.at;changed=true}if(!a.reason&&b.reason){a.reason=b.reason;changed=true}continue}
+    if(k.startsWith("sec:")){if(!a.note&&b.note){a.note=b.note;changed=true}continue}
+    if(b.cov){const c=covOr(a.cov,b.cov);if(c!==a.cov){a.cov=c;a.heard=+(covN(c)/NB).toFixed(2);changed=true}}
+    if(!(a.score>=1)&&b.score>=1){for(const f of ["score","fail","note","at","pos","p"])if(b[f]!==undefined)a[f]=b[f];changed=true}
+    else{if(!a.note&&b.note){a.note=b.note;changed=true}if(!(a.fail&&a.fail.length)&&b.fail&&b.fail.length){a.fail=b.fail;changed=true}}
+    if((b.plays||0)>(a.plays||0)){a.plays=b.plays;changed=true}}
+  return changed}
+// per-name db sync: read this name's saved ratings once, merge them in, then every save writes the merged whole
+async function attach(){if(!api||!NAME||dbDoc||attaching)return;attaching=true;const mySlug=slug,doc=api.db.doc(`ratings/${api.id}/people/${slug}`);
+  try{const snap=await doc.get();if(slug!==mySlug)return;let changed=false;
+    if(snap.exists){let d={};try{d=JSON.parse(snap.data().ratings||"{}")}catch(e){}changed=mergeIn(d)}
+    dbDoc=doc;status(`Ratings save automatically for "${NAME}".`);if(changed){R.__who=NAME;saveLocal();render()}save()}
+  catch(e){if(slug===mySlug)status("Could not reach your saved ratings yet; keep going, they save once the connection is back.")}
+  finally{attaching=false;if(NAME&&!dbDoc&&slug!==mySlug)attach()}}
+function offline(){status(store?"Not signed in: ratings stay on this device only. Use the ratings text button at the end.":"Not signed in: use the ratings text button at the end before closing.")}
+// seeded shuffle per listener: section order, voice order in each section and the final pick list differ between
+// listeners but stay stable for that listener
+let seed;const rnd=()=>{seed=(seed*1103515245+12345)%2147483648;return seed/2147483648};
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+let order=[],pickOrder=[];
+function makeOrder(){seed=R.__seed||(R.__seed=Math.floor(Math.random()*1e9)+1);
+  order=shuffle(Object.keys(M.passages)).map(p=>({p,clips:shuffle(M.clips.filter(c=>c.p===p))}));pickOrder=shuffle(M.voices)}
+const total=()=>M.clips.length;
+const isDone=c=>R[c]&&R[c].score>=1;
+const nDone=()=>M.clips.filter(c=>isDone(c.c)).length;
+function prog(){if(!NAME){$("prog").textContent="";return}const f=R.final||{};
+  $("prog").textContent=`${nDone()} / ${total()} voices rated · final pick: ${f.pick?"Voice "+f.pick:"not yet"}`;finalState()}
+const FAIL=[["reading","reading, not talking"],["flat","no feeling, even on the joke or surprise"],["mood","feeling does not fit the moment"],["fades","feeling fades after the start"],
+  ["eng_hindi","English-accented Hindi"],["accent_switch","accent changes on English words"],["pron","a word pronounced strangely"],["voice","voice changed partway"],
+  ["wrong","wrong, missing or extra words, or punctuation said aloud"],["cut","stops before the end"],["pause","pause in a weird place"],["silence","long silence"],["choppy","choppy, too many pauses"],
+  ["noise","weird breath or noise"],["pace","too slow or too fast"]];
+const players=[];
+function stopAll(except){players.forEach(a=>{if(a!==except&&!a.paused)a.pause()})}
+function clipRow(clip,label,refresh){const code=clip.c;
+  const r0=R[code]||{};const d=document.createElement("div");d.className="clip"+(isDone(code)?" done":"");
+  d.innerHTML=`<div class="top"><h3>${esc(label)}</h3><button class="play">Play</button><div class="bar"><i></i></div><span class="heard"></span></div>
+  <div class="locked">Listen to at least 80% of this voice before scoring it.</div>
+  <div class="score"><span>Sounds like a real teacher talking to me:</span>${[1,2,3,4,5].map(n=>`<button data-s="${n}" disabled aria-label="score ${n}">${n}</button>`).join("")}</div>
+  <div class="chk">${FAIL.map(([k,t])=>`<label><input type="checkbox" data-k="${k}" disabled> ${t}</label>`).join("")}</div>
+  <input class="note" placeholder="Optional note on this voice in this lesson" disabled>`;
+  const a=new Audio(`${code}.mp3`);a.preload="metadata";players.push(a);
+  const pb=d.querySelector(".play"),bar=d.querySelector(".bar>i"),lock=d.querySelector(".locked"),hd=d.querySelector(".heard");
+  const ctrls=[...d.querySelectorAll(".score button,.chk input,input.note")];
+  const rec=()=>R[code]||(R[code]={});
+  const setLock=()=>{const h=(R[code]||{}).heard||0,ok=h>=UNLOCK;ctrls.forEach(e=>e.disabled=!ok);lock.hidden=ok;hd.textContent=`heard ${Math.round(100*h)}%`};setLock();
+  let last=null,savedAt=(r0.heard||0);
+  const mark=(t0,t1)=>{const dur=a.duration;if(!(dur>0))return;const r=rec();let c=(r.cov&&r.cov.length===NB)?r.cov.split(""):Array(NB).fill("0");
+    const i0=Math.max(0,Math.floor(t0/dur*NB)),i1=Math.min(NB-1,Math.floor(t1/dur*NB));for(let i=i0;i<=i1;i++)c[i]="1";
+    r.cov=c.join("");r.heard=+(covN(r.cov)/NB).toFixed(2);
+    if(r.heard>=savedAt+.1||(r.heard>=UNLOCK&&savedAt<UNLOCK)){savedAt=r.heard;save()}setLock()};
+  pb.onclick=()=>{if(a.paused){stopAll(a);a.play().then(()=>{pb.textContent="Pause"}).catch(()=>{status("This browser blocked playback; tap Play again.")})}else a.pause()};
+  a.onplay=()=>{last=a.currentTime};
+  a.onpause=()=>{pb.textContent=a.ended?"Play again":"Resume";last=null;if(((R[code]||{}).heard||0)>savedAt){savedAt=R[code].heard;save()}};
+  a.onseeking=()=>{last=null};a.onseeked=()=>{if(!a.paused)last=a.currentTime};
+  a.onerror=()=>{status("A clip could not load; check your connection and tap Play again.")};
+  a.ontimeupdate=()=>{const t=a.currentTime;bar.style.width=(100*t/(a.duration||1))+"%";
+    if(last!==null&&t>=last&&t-last<=1.5)mark(last,t);last=a.paused?null:t};
+  a.onended=()=>{if(last!==null&&a.duration-last<=1.5)mark(last,a.duration);last=null;const r=rec();r.plays=(r.plays||0)+1;savedAt=r.heard||0;save();setLock()};
+  const sb=[...d.querySelectorAll(".score button")];
+  const paint=()=>{const r=R[code]||{};sb.forEach(b=>b.classList.toggle("on",r.score===+b.dataset.s));d.classList.toggle("done",isDone(code))};paint();
+  sb.forEach(b=>b.onclick=()=>{const r=rec();r.score=+b.dataset.s;r.p=clip.p;r.pos=label;r.at=new Date().toISOString();save();paint();refresh()});
+  d.querySelectorAll(".chk input").forEach(cb=>{cb.checked=(r0.fail||[]).includes(cb.dataset.k);
+    cb.onchange=()=>{const r=rec();const s=new Set(r.fail||[]);cb.checked?s.add(cb.dataset.k):s.delete(cb.dataset.k);r.fail=[...s];save()}});
+  const note=d.querySelector("input.note");note.value=r0.note||"";note.onchange=()=>{rec().note=note.value.slice(0,600);save()};
+  return d}
+function finalState(){if(!NAME)return;const n=nDone(),open=n>=total(),f=R.final||{};
+  $("pick").querySelectorAll("input").forEach(i=>{i.disabled=!open;i.checked=f.pick===i.value;i.parentNode.classList.toggle("on",i.checked)});
+  $("reason").disabled=!open;
+  $("pickneed").textContent=open?"":`Score all ${total()} voices first (${n} / ${total()} done), then pick one here. This pick is required.`;
+  const dm=$("donemsg");
+  if(open&&f.pick){dm.className="okmsg";dm.textContent=`Done: you picked Voice ${f.pick}.`+(f.reason?" Thank you.":" Please add a reason above, even one line.")}
+  else if(open){dm.className="need";dm.textContent="Required: pick one voice."}else{dm.className="";dm.textContent=""}}
+const cards=$("cards");
+function render(){makeOrder();stopAll();players.length=0;cards.textContent="";
+  order.forEach((o,i)=>{const s=M.passages[o.p];const c=document.createElement("section");c.className="panel";
+    c.innerHTML=`<div class="prog">Lesson ${i+1} of ${order.length} · <span class="cp"></span></div><h2>${esc(s.title)}</h2><p class="scene">${esc(s.scene)}</p>
+    <details class="text" open><summary>What the teacher says (every voice says exactly these words)</summary>${s.beats.map(b=>`<p>${b.cue?`<span class="cue">(${esc(b.cue)})</span>`:""}${esc(b.t)}</p>`).join("")}</details>
+    <div class="voices"></div>
+    <p class="scale">Anything about this lesson as a whole? Which voice would you want for your child here, and why?</p><textarea rows="2" placeholder="Optional note on this lesson"></textarea>`;
+    const cp=c.querySelector(".cp");const refresh=()=>{cp.textContent=`${o.clips.filter(x=>isDone(x.c)).length} / ${o.clips.length} voices rated`;prog()};
+    const box=c.querySelector(".voices");o.clips.forEach(x=>box.append(clipRow(x,`Voice ${x.v}`,refresh)));refresh();
+    const ta=c.querySelector("textarea");const k="sec:"+o.p;ta.value=(R[k]||{}).note||"";ta.onchange=()=>{(R[k]||(R[k]={})).note=ta.value.slice(0,1500);save()};
+    cards.append(c)});
+  const pk=$("pick");pk.textContent="";
+  pickOrder.forEach(v=>{const l=document.createElement("label");l.innerHTML=`<input type="radio" name="pick" value="${esc(v)}"> Voice ${esc(v)}`;
+    l.querySelector("input").onchange=e=>{const f=R.final||(R.final={});f.pick=e.target.value;f.at=new Date().toISOString();f.order=pickOrder.slice();save()};pk.append(l)});
+  $("reason").value=(R.final||{}).reason||"";$("final").hidden=false;prog()}
+$("reason").onchange=()=>{const f=R.final||(R.final={});f.reason=$("reason").value.slice(0,2000);save()};
+async function start(){const n=$("who").value.trim();if(!slugOf(n)){status("Type your name first (letters or numbers).");return}
+  NAME=n;slug=slugOf(n);R={};try{R=JSON.parse((store&&store.getItem(LS+slug))||"{}")}catch(e){R={}}
+  R.__who=NAME;$("gate").hidden=true;$("me").hidden=false;$("mename").textContent=NAME;$("after").hidden=false;dbDoc=null;render();
+  if(api)attach();else if(apiDone)offline();else status("Connecting so your ratings save…")}
+$("go").onclick=start;$("who").onkeydown=e=>{if(e.key==="Enter")start()};
+$("switch").onclick=()=>{clearTimeout(dbT);stopAll();NAME="";slug="";dbDoc=null;cards.textContent="";$("final").hidden=true;$("gate").hidden=false;$("me").hidden=true;$("after").hidden=true;$("who").value="";prog();status("")};
+$("code").onclick=()=>{const t=$("codebox");t.hidden=false;t.value=JSON.stringify({v:M.v,who:NAME,ratings:R});t.focus();t.select()};
+(async()=>{try{const db=await claude.use("db"),user=await claude.use("user");if(db&&user){const id=await user.id();if(id){api={db,id};
+  try{const s=await db.doc(`ratings/${id}`).get();if(s.exists)api.names=(s.data().names||[])}catch(e){}}}}catch(e){}
+  apiDone=true;if(NAME){if(api)attach();else offline()}})();
+</script>

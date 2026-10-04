@@ -43,7 +43,7 @@ kind) and rule 6 (stopwatch-only time pressure) are amended in narrow, reversibl
    from the other side: "the breakthrough didn't come from upgrading to r1 or o3; it came from making the
    representations in our game engine more LLM-friendly" [V: Brilliant blog].
 3. **The bar is testable.** §1 lists 10 checks for games and 10 for animations. Every exemplar was built to pass them.
-   §14 has the measurements.
+   §14 has the measurements, including the one check not yet demonstrated: QB-G9, 60 fps on a real mid phone.
 4. **The catalogue.** §6 has 36 game and simulation archetypes and 27 animation archetypes, mapped to NCERT classes
    4-7 maths and science by curriculum id (`data/curriculum/*.json`) and, where the kit has one, by misconception id.
    Three are built: `catch-on-line@1`, `circuit-bench@1` and `orbital-explainer@1`.
@@ -55,10 +55,11 @@ kind) and rule 6 (stopwatch-only time pressure) are amended in narrow, reversibl
 6. **Zero visible failure (R9).** There is a five-rung ladder inside the frame: repaired spec, then the archetype's
    kit-seeded default spec, then the board version of the same idea. The engine loop traps errors and freezes on the
    last good frame. There is no caption, no spinner and no error card. In fuzzing, 87 mutated specs across the three
-   exemplars produced 0 visible failures (§14, M5).
-7. **Latency.** Engines are precached with the shell. A spec fits inside the teacher's spoken lead-in, and the first
-   frame paints in under 300 ms after the spec arrives [M: §14]. The rare live code build (LIVE-STUDIO) keeps its 90 s
-   lead-time rule.
+   exemplars produced 0 visible failures, and injected runtime faults were held on the last good frame 3/3 (§14, M5).
+   The first version of that harness was broken and tested nothing; finding that exposed two real crash paths (§14).
+7. **Latency.** Engines are precached with the shell. A spec fits inside the teacher's spoken lead-in. The pieces
+   reported ready 0.23-0.79 s after navigation, fonts included, on a heavily loaded shared host [M: §14]; from a warm
+   frame the target is ≤ 300 ms [U]. The rare live code build (LIVE-STUDIO) keeps its 90 s lead-time rule.
 8. **Engine choice per archetype.** Vector and diagram archetypes (number lines, circuits, orbits) run on a small
    Canvas 2D studio core: about 8 KB gz, crisp text and exact geometry. Sprite and physics arcade archetypes run on
    Phaser 4 through `tgk@1` (decided in `game-kit-frameworks.md`). three.js is loaded lazily for the few 3D archetypes.
@@ -81,7 +82,7 @@ kind) and rule 6 (stopwatch-only time pressure) are amended in narrow, reversibl
 | QB-G6 | **The score measures mastery, not currency.** Precision (100 − mean PAE), landed/total and chain, inside the run only. No coins, XP, persisted points or leaderboards against other children. | spec + engine review | §12 D-S2 |
 | QB-G7 | **Waves escalate and include a twist that targets a named misconception.** | spec lint: each wave names its target (kit id) | wave 3 "Same spot?" (`m-bigger-numbers-bigger`); wave 4 "Past one" (`m-less-than-one`, `m-mixed-wrong`) |
 | QB-G8 | **Runs are short (45-120 s) and want a second go.** | session log; owner and child playtest (Fun Toolkit "again-again") [U] | the Landfall run is about 90 s |
-| QB-G9 | **60 fps target on a mid phone**, with an adaptive-resolution floor so it never stutters into unplayability. | rAF trace under CDP CPU throttle on the 915×412 @ 2.625 profile (§14 M3) | engine drops resolution 2 → 1.5 → 1.25 → 1 when the median frame is slower than 52 fps |
+| QB-G9 | **60 fps target on a mid phone**, with an adaptive-resolution floor so it never stutters into unplayability. | rAF trace under CDP CPU throttle on the 915×412 @ 2.625 profile (§14 M3), then a real-device trace | engine drops resolution 2 → 1.5 → 1.25 → 1 when the median frame is slower than 52 fps. Proxy: 43-51 fps at 4× on software raster. **Not yet shown on a phone.** |
 | QB-G10 | **Every act is evidence**: an estimate plus the truth, graded by the host and never by the frame. | `Studio.answer` rows carry estimate, PAE and verdict | 21 `answer` rows per Landfall run; 5 step answers and 4 observations per Circuit Lab run |
 
 ### 1.2 Animations and explainers
@@ -97,7 +98,7 @@ kind) and rule 6 (stopwatch-only time pressure) are amended in narrow, reversibl
 | QB-A7 | **It ends interactive where that helps, with a question graded by code.** | `answer` rows | drag the Moon: a morning half moon gets a "look again"; the evening half and the full moon get a tick |
 | QB-A8 | **Deterministic and scrubbable**: state = f(t), so "show again", "slower" and seek are exact. | seek to any t gives the same frame | `?t=` and ←/→ seeking; the screenshot sheets were taken by seeking |
 | QB-A9 | **Stage contract.** Labels ≥ 38 units, safe zones clear, nothing overflows at any size. | engine records every label under the minimum (`TaxStudio.tooSmall`) | 0 undersized labels across all three runs [M] |
-| QB-A10 | **Pace.** 45-120 s, with pauses after reveals and a narration rate a 10-year-old can follow. | timeline length; words per minute of speech (≤ 150 for class 4) | 94 s timeline; narration measured at **166 wpm, over the bar** (§14 M6): the fix is a slower pace instruction on the TTS call, not yet re-synthesized |
+| QB-A10 | **Pace.** 45-120 s, with pauses after reveals and a narration rate a 10-year-old can follow. | timeline length; words per minute of speech (≤ 150 for class 4) | first synthesis measured **166 wpm, over the bar**, despite an "unhurried" instruction; re-paced offline (pitch-preserving `atempo` 0.9, no new model call) to **141 wpm**; timeline 104 s (§14 M6) |
 
 ---
 
@@ -134,8 +135,12 @@ kind) and rule 6 (stopwatch-only time pressure) are amended in narrow, reversibl
 | Offline explainer video for the library | **Manim** (Community) and/or Motion Canvas rendered by the Forge offline, then reviewed. | Programmatic and exact; the cost is minutes per clip, which is acceptable offline. | Never live (ManiBench, ManimAgent numbers above) [V]. |
 | Sound | Synthesized WebAudio (`stage.js sfx`). ZzFX-style presets for arcade engines. | 0 bytes of assets; pitch rises with chain; muted under narration. | Howler (duplicates the runtime; last release 2023) [T]. |
 
-**Engine rule learned while building:** never put `backdrop-filter` over a live canvas. On software and low-end
-compositing it re-blurs every frame. The exemplars' HUD, captions and task pill use solid translucent fills (§14 M3).
+**Engine rules learned while building:**
+- Never put `backdrop-filter` over a live canvas. On software and low-end compositing it re-blurs every frame. The
+  exemplars' HUD, captions and task pill use solid translucent fills.
+- Never re-rasterise static art per frame. Full-screen gradients, star fields, floor grids and large additive glows
+  are painted once per backing-store size into a layer (`st.layer`) and blitted 1:1. On the throttled profile this
+  took the Moon explainer from 22 to 43 fps (interleaved A/B, §14 M3).
 
 ---
 
@@ -331,8 +336,10 @@ host. Every rung is a correct artifact.
 5. **Voice only**, as the last resort.
 
 Runtime rules:
-- The loop runs each frame inside a guard. A thrown frame keeps the last good image. Three errors in a second raise
-  `engine_failed` to the host (rung 4).
+- The loop runs each frame inside a guard (`lib/stage.js`). A thrown frame puts back the last good image, which is
+  snapshotted every 0.5 s with one blit. Three errors in a second stop the loop and raise `engine_failed` to the host
+  (rung 4). A malformed spec (truncated JSON, an array, `null`) never throws: `params()` hands the engine `{}` and logs
+  `spec_unparseable`, and the engine plays its reviewed default.
 - Adaptive resolution and reduced motion handle slow devices before frames drop.
 - `visibilitychange` pauses everything.
 - There is no "making this for you", no skeleton label, no spinner and no error card. This aligns with DESIGN-V3
@@ -341,9 +348,11 @@ Runtime rules:
 **Hot-swap.** A better version (a passed live build, or a promoted library variant) replaces a running piece only at a
 turn boundary, with state handed over through the same params. The swap is a cross-fade, never a reload.
 
-**Measured (§14 M5):** 87 route-served mutated specs (dropped keys, junk types, out-of-range values, unequal "equal"
-pairs, divide-by-zero fractions, unknown verbs and predicates, markup in strings, truncated JSON, `{}`, `[]`) plus 3
-controls gave **0 visible failures**: no page errors, every piece reported ready and painted a non-blank stage.
+**Measured (§14 M5):** 87 route-served mutated specs (dropped keys, junk types, out-of-range values, holes in arrays,
+unequal "equal" pairs, divide-by-zero fractions, unknown verbs and predicates, markup in strings, truncated JSON, `{}`,
+`[]`) plus 3 controls gave **0 visible failures**: no page errors, every piece reported ready and painted a non-blank
+stage. 70 of the 87 were repaired and 28 fell back to the archetype default. Injected canvas faults: transient faults
+were held on the last good frame and permanent ones raised `engine_failed` with the stage still painted, 3/3 engines.
 
 ---
 
@@ -351,9 +360,9 @@ controls gave **0 visible failures**: no page errors, every piece reported ready
 
 | stage | budget | how it is hidden |
 |---|---|---|
-| Engines (code + fonts) | 0 at lesson time | precached with the shell. Each engine is 10-12 KB gz plus the 8 KB core [M]; Phaser engines share one precached runtime |
+| Engines (code + fonts) | 0 at lesson time | precached with the shell. Each engine is 10.5-13.5 KB gz plus the 8.9 KB core [M]; Phaser engines share one precached runtime |
 | Spec generation | 1-4 s | started from the Brain's lookahead at the beat's opening, or on the child's request while she speaks her uptake line ("okay, let me make that a race"). Never a visible wait |
-| Mount → first frame | ≤ 300 ms | engines boot from a warm frame; Landfall, Circuit Lab and Moon reported ready 0.10-0.25 s after navigation in the recordings [M] |
+| Mount → first frame | ≤ 300 ms [U] | engines boot from a warm frame. Cold, from navigation and including font loading, the three reported ready in 0.23-0.79 s during the recordings, with host load average 10-28 on 4 cores [M] |
 | Narration | 0 | the explainer's audio is the teacher's turn; cues are compiled from durations that are already measured (offline lines) or known on arrival (live TTS returns duration with the audio) |
 | Live code build (T-build only) | 37-54 s p50 | LIVE-STUDIO's 90 s lookahead rule; the spec-driven engine piece plays meanwhile, and the build hot-swaps in at a turn boundary if it passes |
 
@@ -435,9 +444,10 @@ The tray offers only the tools each step needs (PhET implicit scaffolding). Afte
 7. Hands-on ending: drag the Moon. A morning half moon gets "a morning one, try the other side", then the evening
    half and the full moon get ticks.
 
-**Narration:** 21 lines synthesized once with the product's TTS call (`gpt-4o-mini-tts`, voice `marin`, Azure grant).
-Their measured durations and pauses drive every cue with a 400 ms pre-roll. Captions are phrase chunks snapped to
-measured pauses.
+**Narration:** 21 lines synthesized once with the product's TTS call (`gpt-4o-mini-tts`, voice `marin`, Azure grant),
+kept as `audio-src/`, then re-paced offline to 141 wpm (`narrate.mjs --offline --tempo 0.9`). The measured durations
+and pauses of the paced clips drive every cue with a 400 ms pre-roll. Captions are phrase chunks snapped to measured
+pauses.
 
 ---
 
@@ -470,6 +480,10 @@ measured pauses.
 - **D-S6 Archetype engines own min sizes and safe zones**, and record every undersized label at runtime
   (`tooSmall`). A non-zero count fails the engine's release.
   - *Reverse:* never for the floor sizes. The sizes themselves follow DESIGN-V3 §6.4.
+- **D-S7 Engines cache static art as backing-size layers** and keep only moving or twinkling elements live.
+  - *Why:* interleaved A/B on the throttled profile, Moon 22.1 → 43.3 fps median (n = 3 pairs, §14 M3).
+  - *Reverse if:* a real-device trace on the reference phone shows the layer's memory (one backing-size canvas per
+    layer, about 4 MB at 1830×824) costs more frames, through GC or upload stalls, than it saves.
 
 ---
 
@@ -503,11 +517,105 @@ measured pauses.
 
 ## 14. Measurements (this session, 2026-10-04)
 
-All runs were from this container: Playwright 1.63, Chromium headless shell (software raster), 4 shared cores. The
-host load average was 7.6-8.9 from other agents during the perf runs, so every frame-time number is a pessimistic
-proxy, not a phone measurement.
+All runs were from this container: Playwright, Chromium headless shell (software raster), 4 shared cores. The host
+load average was 10-28 from other agents, so every frame-time number is a pessimistic proxy, not a phone
+measurement. The container restarted once mid-session. Every number below was re-run after the restart.
 
-{{MEASUREMENTS}}
+**M1. Stage fit and labels.** All three run in the 16:10 stage box (largest 16:10 rectangle in the viewport, never
+scrolls) at 1280×800 (recordings), 960×600 (fuzz) and 915×412 @ 2.625 DSF (perf). Undersized labels recorded by
+`TaxStudio.tooSmall`: **0** in each of the 3 full recorded runs. Page errors in the recorded runs: **0**.
+
+**M2. Recordings** (`tools/record.mjs`, Playwright video 1280×800; every interaction is a real pointer event chosen by
+a bot reading the test seam):
+
+| piece | video | what the run did | ready after navigation |
+|---|---|---|---|
+| Landfall | `landfall.webm`, 157 s | 4 waves, 21 pods, 18 landed, precision 98, best chain ×7, mean PAE 2; 4 `adapt` events (two scripted misreads in wave 2 brought in the eighths scaffold); 5 SAME SPOT pairs | 0.42 s |
+| Circuit Lab | `circuit.webm`, 78 s | 5 steps passed by predicate; switch cycled; coin and pencil conduct, ruler and eraser block; reversed cell flipped | 0.23 s |
+| Moon | `moon.webm` 157 s; `moon-narrated.mp4` 152 s with the 21 clips muxed at the page's own `say` timestamps | full timeline, then 3 drag attempts: a morning half (E = 270, "look again"), the evening half (E = 90, tick), full (E = 180, tick) | 0.79 s |
+
+Ready times include font loading and were taken with host load average 10-28 on 4 cores (other agents running).
+
+**M3. Frame times.** Profile: 915×412 CSS px landscape at DSF 2.625 (Pixel-7-class screen), CDP CPU throttle,
+headless Chromium with **software raster** on a shared 4-core host. This is a pessimistic proxy: a phone composites
+canvas on its GPU. It is not a phone measurement.
+
+*Interleaved A/B* (`tools/perf-ab.mjs`, DPR pinned at 2 so arms are comparable, 4× throttle, 3 s warm-up + 12 s
+sample, n = 3 runs per arm, arms alternating; host load average 9-12):
+
+| arm | fps median | p95 frame | frames > 20 ms |
+|---|---|---|---|
+| Moon, static layers (shipped) | **43.3** | 33.4 ms | 33% |
+| Moon, live re-raster (`?layers=0`, the previous engine) | 22.1 | 83.4 ms | 81% |
+| Landfall (backdrop layer) | 51.0 | 33.4 ms | 11% |
+| Circuit Lab | 57.4 | 16.8 ms | 3% |
+
+Before the layer change, the same harness gave Landfall 30.7 fps and Circuit Lab 50.3 (host load 17-20). The Moon
+live arm, which did not change, read 20.6 then and 22.1 now, so the Landfall gain is not a load artefact.
+
+*Shipped behaviour with adaptive resolution* (`record.mjs --perf-only`, 20 s sample while the bot plays):
+
+| piece | 4× throttle | 6× throttle |
+|---|---|---|
+| Landfall | 45.7 fps, stayed at DPR 2 | 46.2 fps, DPR 2 → 1.5 |
+| Circuit Lab | 44.5 fps, DPR 2 → 1.5 | 34.7 fps, DPR 2 → 1.25 |
+| Moon | 43.0 fps, DPR 2 → 1.5 | 38.8 fps, DPR 2 → 1 |
+
+**Verdict on QB-G9:** 60 fps on a mid phone is **not demonstrated**. On this proxy the median frame is 16.7 ms in
+every 4× run, but 11-33% of frames exceed 20 ms. A real-device trace on the reference ₹10k phone is the gate before
+any of these engines ships (§13).
+
+**M4. Circuit solver truth** (`tools/solver-test.mjs`: the real solver source extracted from `circuit.js`, ring
+circuits, hand-computed Ohm's-law values, 0.2% tolerance): **9/9**. The cases are: single loop, the same current before
+and after the bulb, an open switch after the bulb, two cells aiding, two cells opposing, pencil lead (dim), eraser
+(blocks), short circuit (3.41 A), two bulbs in series.
+
+**M5. Zero visible failure** (`tools/spec-fuzz.mjs 30`; 30 page loads per exemplar = 1 control + 29 mutations;
+"visible failure" = a page error, no `ready` within 3 s, or a blank stage, i.e. luma stdev ≤ 6 on a 64×40 downsample):
+
+| exemplar | visible failures | repaired | fell back to default |
+|---|---|---|---|
+| Landfall | 0/30 | 21 | 7 |
+| Circuit Lab | 0/30 | 24 | 11 |
+| Moon | 0/30 | 25 | 10 |
+
+*Runtime faults* (canvas `save()` made to throw, first for 30 ms, then permanently): no page error; transient: stage
+kept painted, `frame_error` logged; permanent: `engine_failed` raised, with the last good image still on screen.
+**3/3 engines.**
+
+*What the fuzz found.* The harness inherited from the first session matched its route on the URL **without** the
+query string, while every page was loaded with `?seed=`. So every "mutated" load had served the control page, and its
+"87 specs, 0 failures" measured nothing (0 repairs across 29 mutations was the tell). Fixed, and the harness now
+throws if a mutation is not served. Run honestly, it found real crash paths:
+- the Moon engine threw on a `null` beat (2/30, an uncaught `TypeError` before the first frame);
+- `params()` threw on truncated JSON;
+- by inspection, the same `null`-element crash existed in Landfall (`waves`) and Circuit Lab (`steps`, `preset`);
+- the frame guard that §8 described did not exist in the loop.
+
+All are fixed. The fuzz gained an array-hole mutation, and the loop gained the guard. Rejection logged as
+`rj-fuzz-that-never-served-the-mutation`.
+
+**M6. Narration** (`tools/narrate.mjs`): 21 lines, 246 words, synthesized once (`gpt-4o-mini-tts`, `marin`). The
+first synthesis measured **166 wpm** of speech (lead and tail silence excluded, clause pauses included). It was
+re-paced offline with `atempo` 0.9 to **141 wpm**, 108.3 s of audio, with 47 clause pauses found by `silencedetect`
+(−38 dB, 100 ms). Timeline: 104.2 s, and the interactive ending opens at 98.2 s. Azure spend this session: $0 (the
+re-pacing made no model call). Listening quality after the stretch has not been rated by a person.
+
+**M7. Terminator truth** (`window.__moonTest.pixelCheck`, 49 phase angles, 0-360° in 7.5° steps; 220 px canvas,
+R = 100 disc; each pixel inside r = 97 is compared with the exact projected-hemisphere mask, excluding pixels within
+1.5 px of the terminator or centre line): **0 disagreeing pixels** at every angle. Lit fraction vs the exact mask: max
+error 0.0014. Waxing is lit on the right, as seen from India: 34/34 crescent-to-gibbous angles (near-full discs are
+too symmetric to call by design). The earlier "≤ 0.01 vs (1 − cos E)/2" claim compared the r = 97 core against the
+full-disc formula and actually read 0.022. The pixel test replaces it.
+
+**M8. Spec and engine sizes.** Specs (minified JSON): Landfall 1,193 B, Circuit Lab 1,786 B, Moon 3,412 B. Gzipped
+code: `stage.js` 8.9 KB, `landfall.js` 10.5 KB, `circuit.js` 12.4 KB, `moon.js` 13.5 KB. No runtime dependencies and
+no network.
+
+**Raw data:** `prototypes/reset/studio/recordings/`: `run-all.json` (all three recordings and the pre-layer perf;
+its Landfall and Moon recordings are superseded by `run-landfall.json` and `run-moon.json`), `run-all-perf.json`
+(adaptive perf, shipped engines), `perf-ab.json`, `spec-fuzz.json`, `solver-test.json`. Re-run with the tools in
+`prototypes/reset/studio/tools/`.
 
 **Not measured (and not claimed):**
 - real-device frame times on a Mali/Adreno phone with GPU canvas;

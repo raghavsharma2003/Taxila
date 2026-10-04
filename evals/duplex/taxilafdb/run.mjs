@@ -8,6 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
 import { fork } from "node:child_process";
+import crypto from "node:crypto";
 import { listStreams, loadStream, runStream } from "./world.mjs";
 import { armSpec, FeatStore } from "./arms.mjs";
 import { facts, aggregate } from "./metrics.mjs";
@@ -92,7 +93,11 @@ if (process.env.FDB_WORKER) {
     table[`${a}@${lane}`] = { ...aggregate(F), probesPerStream: +(ex.reduce((s, e) => s + (e.probes || 0), 0) / Math.max(1, ex.length)).toFixed(2),
       semCallsPerStream: +(ex.reduce((s, e) => s + (e.semCalls || 0), 0) / Math.max(1, ex.length)).toFixed(2) };
   }
-  const out = { id: `taxilafdb-${name}`, date: DATE, split, splitVersion: SPLIT_VERSION, streams: ids.length, scenarios: new Set(ids.map((i) => i.split("~")[0])).size,
+  // the exact runtime measured: one hash over every src/duplex and server/duplex source (other workstreams edit them too)
+  const ROOT = path.resolve(HERE, "../../..");
+  const h = crypto.createHash("sha1");
+  for (const dir of ["src/duplex", "server/duplex"]) for (const f of fs.readdirSync(path.join(ROOT, dir)).sort()) if (/\.(ts|js)$/.test(f)) h.update(f).update(fs.readFileSync(path.join(ROOT, dir, f)));
+  const out = { id: `taxilafdb-${name}`, date: DATE, runtimeHash: h.digest("hex").slice(0, 12), split, splitVersion: SPLIT_VERSION, streams: ids.length, scenarios: new Set(ids.map((i) => i.split("~")[0])).size,
     arms, lanes, method: "evals/duplex/taxilafdb/{world,arms,metrics,run}.mjs: L1 simulation on rendered TaxilaFDB streams (Azure TTS child-like voices + mixed echo/overlays/noise), reactive STT model (D4 calibrated on M-D2 n=28; FAST [E]), the real src/duplex runtime; CIs = 95% bootstrap over scenarios (1,000)",
     seconds: Math.round((Date.now() - t0) / 1000), errors: errors.slice(0, 20), nErrors: errors.length, table };
   fs.mkdirSync(RESULTS, { recursive: true });

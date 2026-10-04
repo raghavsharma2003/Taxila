@@ -266,7 +266,8 @@ export async function runStream(id, arm) {
         if (her && her.stoppedAt === null) continue;
         host.herEvent(startHer(et, ev.text, "asked_open", true, cm));
         const vAt = Math.max(et + cm.uptakeMs, cm.vnb ?? 0);
-        if (cm.closed && cm.reason !== "safeguard") schedule(vAt, { kind: "verdict", commit: cm, id: her.id });
+        // a verdict-free first sound (a prompt: wt1 nudge, an open repair) carries no verdict
+        if (cm.closed && cm.reason !== "safeguard" && cm.firstSound !== "prompt" && cm.op === "speak") schedule(vAt, { kind: "verdict", commit: cm, id: her.id });
       } else if (ev.kind === "verdict") {
         if (!her || her.id !== ev.id || her.stoppedAt !== null || ev.commit.revokedAt !== null) continue;
         ev.commit.verdictAt = et;

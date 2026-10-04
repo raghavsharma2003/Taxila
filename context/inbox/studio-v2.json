@@ -1,0 +1,60 @@
+{
+ "nodes": [
+  {
+   "id": "studio-v2-engine-plus-spec",
+   "kind": "decision",
+   "title": "Studio V2 (docs/design/reset/STUDIO-V2.md, answers owner-reset R3/R4/R9/R14): the default generation path is a hand-built archetype engine (craft, physics, truth, juice, failure handling) driven by a small model-written JSON spec (items, pairing, pacing, goals from a closed predicate list, narration cues, strings; 1.2-3.4 KB). The engine validates, recomputes every truth from the kit, repairs or falls back to its reviewed default. Live code builds (LIVE-STUDIO) become the opportunistic fallback for needs no engine covers. Catalogue: 36 game/sim and 27 animation archetypes mapped to NCERT 4-7 ids. Reverse if a live code arm reaches P(strict gate pass by deadline) >= 0.95 on n >= 30 per archetype AND blind child/owner craft ratings match the engine pieces (>= 4/5).",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "studio-v2-static-layers",
+   "kind": "decision",
+   "title": "Studio engines paint static art (full-screen gradients, star fields, floor grids, large additive glows) once per backing-store size into a layer (lib/stage.js st.layer) and blit it 1:1; only moving or twinkling elements stay live. Reverse if a real-device trace on the reference phone shows layer memory (about 4 MB per layer at 1830x824) costs more frames, through GC or upload stalls, than it saves.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "studio-v2-frame-guard",
+   "kind": "decision",
+   "title": "Studio loop runs every frame inside a guard: a throwing frame restores the last good image (snapshotted every 0.5 s); 3 errors in 1 s stop the loop and raise engine_failed so the host cross-fades to the board version; a malformed spec (truncated JSON, array, null) never throws, params() returns {} and the engine plays its reviewed default (spec_unparseable logged). Reverse: never (zero visible failure is owner-reset R9).",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "studio-v2-fuzz-2026-10-04",
+   "kind": "measurement",
+   "title": "prototypes/reset/studio/tools/spec-fuzz.mjs 30, 2026-10-04, headless Chromium: 87 route-served mutated specs + 3 controls across Landfall, Circuit Lab and Moon -> 0 visible failures (page error / no ready in 3 s / blank stage); 70 repaired, 28 fell back to the archetype default. Runtime faults (canvas save() throwing, transient then permanent): last good frame held and engine_failed raised, 3/3 engines.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "studio-v2-perf-ab-2026-10-04",
+   "kind": "measurement",
+   "title": "prototypes/reset/studio/tools/perf-ab.mjs, 2026-10-04: 915x412 @2.625 DSF, DPR pinned 2, CDP 4x CPU throttle, headless software raster on a shared 4-core host (load 9-12), interleaved arms, n=3 each, 12 s samples. Moon explainer with static layers 43.3 fps median vs 22.1 with per-frame re-raster; Landfall 51.0 (30.7 before its backdrop layer); Circuit Lab 57.4. With adaptive resolution: 43-46 fps at 4x, 35-46 at 6x. 60 fps on a real mid phone NOT demonstrated; a real-device trace is required before shipping.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "studio-v2-truth-probes-2026-10-04",
+   "kind": "measurement",
+   "title": "2026-10-04: Moon phase terminator, 49 angles x every disc pixel vs the exact projected-hemisphere mask -> 0 disagreeing pixels, waxing lit on the right 34/34 (tools/spec-fuzz.mjs). Circuit Lab solver, real source extracted from circuit.js, 9/9 hand-computed Ohm's-law loops within 0.2% (tools/solver-test.mjs). Narration: 21 lines, 246 words; first synthesis 166 wpm, re-paced offline with atempo 0.9 to 141 wpm (tools/narrate.mjs --offline --tempo 0.9), timeline 104.2 s.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-fuzz-that-never-served-the-mutation",
+   "kind": "rejection",
+   "title": "The first Studio spec-fuzz matched its Playwright route on the page URL without the query string while every load used ?seed=, so all 87 'mutated' loads served the unmutated control and the reported '0 visible failures' measured nothing (tell: 0 repairs across 29 mutations). Run honestly it found a Moon crash on a null beat (2/30), params() throwing on truncated JSON, the same null-element crash in Landfall and Circuit Lab, and a frame guard the spec described but the loop lacked. Rule: a fault-injection harness must assert its injection happened (the harness now throws if a mutation is not served) and a zero-failure result with zero repairs is a harness bug until shown otherwise.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-tts-pace-by-instruction",
+   "kind": "rejection",
+   "title": "Asking gpt-4o-mini-tts (voice marin) for an 'unhurried' teacher still produced 166 wpm of speech for the Moon explainer, over the 150 wpm bar for class 4 (n=21 lines, 2026-10-04). Pace is set by measurement and an offline pitch-preserving time-stretch (atempo 0.9 -> 141 wpm), not by the instruction. Listening quality after the stretch is not yet rated by a person.",
+   "at": "2026-10-04"
+  }
+ ],
+ "edges": [
+  { "src": "studio-v2-engine-plus-spec", "rel": "measured_by", "dst": "studio-v2-fuzz-2026-10-04" },
+  { "src": "studio-v2-static-layers", "rel": "measured_by", "dst": "studio-v2-perf-ab-2026-10-04" },
+  { "src": "studio-v2-frame-guard", "rel": "measured_by", "dst": "studio-v2-fuzz-2026-10-04" },
+  { "src": "rj-fuzz-that-never-served-the-mutation", "rel": "part_of", "dst": "studio-v2-fuzz-2026-10-04" },
+  { "src": "studio-v2-engine-plus-spec", "rel": "measured_by", "dst": "studio-v2-truth-probes-2026-10-04" },
+  { "src": "rj-tts-pace-by-instruction", "rel": "part_of", "dst": "studio-v2-truth-probes-2026-10-04" }
+ ]
+}

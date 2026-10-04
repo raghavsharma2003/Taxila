@@ -1,0 +1,111 @@
+# W2-I → W2-E (hot files server/brain/turn.js, server/brain/say.js; BUILD-PLAN §1.5). Apply with `git apply -p1` from the
+# repo root (generated with diff -u against the tree at 8ea09e0 + W2-I; re-check if turn.js moved). Validated in a scratch
+# copy: tests/brain-*.test.mjs, tests/relational-*.test.mjs, never-rules and the prompt budget pass with all W2-I patches.
+#
+# 1. The vetted safety opening (RELATIONAL-OS §9.4, R3): a safeguarding reply starts with the fixed wording in the child's
+#    language mode and address form (server/relational/openings.js = src/lesson/safetyStrings.ts), and a spoken-planning
+#    preface before it is cut (P2: 18/18 heavy turns prefaced; English on 24/30 safety turns to a Hinglish child).
+#    safeguardLine() (the fixed line for a late or failed reply) becomes the opening + one check-in question; fallbackReply()
+#    on a safeguard move returns it.
+# 2. The relational never-rules on her words (RELATIONAL-OS §11): text lanes judge the final reply, the voice lane the heard
+#    transcript (plus the SAFETY-state preface → meta_talk); hits join state.correction (W2-C renders REL_FLOOR_FIX rows).
+#    They never block.
+# 3. item3b (owner-truth): a relational RELEASE re-plans with cls.relRelease, so W2-C's stop check lets a TRUE goodbye go.
+# 4. decide() gets verdictReversed (cls.flags.verdictReversed, when W1-C's held-verdict settle or grade_audit reverses a
+#    verdict against the key): the teacher-owned OWN_SLIP. Absent = false (no slip is ever owned without the key).
+--- a/server/brain/turn.js	2026-10-04 21:25:44.345675439 +0000
++++ b/server/brain/turn.js	2026-10-04 21:26:18.975977761 +0000
+@@ -38,6 +38,9 @@
+ import { arbitrate } from "./kernel.js";
+ import { proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf } from "./propose.js";
+ import { relationalEffects } from "./relational-adapter.js";
++import { withSafetyOpening } from "../relational/openings.js";
++import { relationalViolations, safetyPreface, stripSafetyPreface } from "../director/safety.js";
++import { characterForState } from "../compiler/characters/index.js";
+ import { nextBeat, uiBeatOf } from "./beat.js";
+ import { momentOf } from "./moment.js";
+ import { brainTraceStmt, inputsHashOf, reteachDecisionOf, tableReady } from "./trace.js";
+@@ -224,8 +227,12 @@
+   // screen mismatch is flagged on the row for review (it cannot be unsaid).
+   // The call-site recipe: the posed item's verified content is passed (floorContentOf); the turn being judged is the one
+   // the last move asked for, so a safeguard turn must carry the helpline and a goodbye must not hook (NEVER MANIPULATE).
+-  const voiceFloor = teacherText ? floorViolations(teacherText, { content: floorContentOf(activeItem),
+-    requireHelpline: state.lastMove?.kind === "safeguard", goodbye: state.lastMove?.kind === "wrap" }) : [];
++  const voiceFloor = teacherText ? [...floorViolations(teacherText, { content: floorContentOf(activeItem),
++    requireHelpline: state.lastMove?.kind === "safeguard", goodbye: state.lastMove?.kind === "wrap" }),
++    // W2-I R3: the realtime lane composes its own safeguarding words; a spoken-planning preface on a safeguard turn (P2:
++    // 18/18) and the relational families correct on the next turn (the fixed opening is the client's, safetyStrings.ts)
++    ...(state.lastMove?.kind === "safeguard" && safetyPreface(teacherText) ? ["meta_talk"] : []),
++    ...relationalViolations(teacherText, { content: floorContentOf(activeItem), gender: characterForState(state)?.pronouns?.subject === "he" ? "m" : "f" })] : [];
+   if (teacherText) {
+     turnRows.push({ speaker: "teacher", text: teacherText,
+       meta: { interrupted: !!body.teacherInterrupted, ...(leaked ? { answerLeak: true } : {}), ...(spoils ? { spoils } : {}),
+@@ -315,7 +322,9 @@
+   // the ui (teacherAffect, never keyed to a correct verdict).
+   const relational = seamSafe("relational.decide", () => relationalSeam.decide({ lessonId: lesson.id, childId: child.id, turn: next.turn,
+     childText: moduleOnly || help ? "" : childText, cls: cls ? { outcome: cls.outcome, flags: cls.flags } : null, move: r.move.kind,
+-    lane: state.mode === "text" || state.mode === "cascade" ? state.mode : "voice", safety: r.move.kind === "safeguard" || !!incident }), null);
++    lane: state.mode === "text" || state.mode === "cascade" ? state.mode : "voice", safety: r.move.kind === "safeguard" || !!incident,
++    // W2-I: a verdict reversed on re-check against the key (W1-C held-verdict settle / grade_audit) is the teacher-owned slip
++    verdictReversed: !!cls?.flags?.verdictReversed }), null);
+   // ── The kernel (BR1/BR5; TEACHER-BRAIN TB1, §10): every component's proposals, one arbitration by authority and budget.
+   // Today's proposers: the Director (its move; a safeguard is the safety floor), the relational directive (split into its
+   // ranks by relational-adapter.js), Studio's turn view, the whiteboard ask on an explanation beat, the vibe knobs.
+@@ -339,7 +348,7 @@
+   if (needRelease || needSafety || relFx.overlay || relFx.callbackId || relFx.noticeId) {
+     const relCls = needSafety ? { ...(cls ?? { outcome: "no_evidence", confidence: 1 }), source: cls?.source ?? "relational",
+       flags: { ...(cls?.flags ?? fast?.flags ?? {}), distress: true, distressKind: cls?.flags?.distressKind ?? "relational_floor" } }
+-      : needRelease ? { ...(cls ?? { outcome: "no_evidence", confidence: 1, source: "relational" }), flags: { ...(cls?.flags ?? fast?.flags ?? {}), wantsToStop: true } }
++      : needRelease ? { ...(cls ?? { outcome: "no_evidence", confidence: 1, source: "relational" }), relRelease: true, flags: { ...(cls?.flags ?? fast?.flags ?? {}), wantsToStop: true } }
+         : cls;
+     const rel = { turn: next.turn, ...(relFx.overlay ? { overlay: relFx.overlay } : {}), ...(relFx.callbackId ? { callbackId: relFx.callbackId } : {}),
+       ...(relFx.noticeId ? { noticeId: relFx.noticeId } : {}) };
+@@ -406,6 +415,16 @@
+     // Text lanes: what will be said (the cascade speaks exactly this) is clean after the guard; if even the fixed
+     // line broke a family, the next compile renders the fix first, as on the voice lane.
+     if (replyFloor.length) next.correction = replyFloor;
++    // W2-I R3 (RELATIONAL-OS §9.4; P2: spoken planning on 18/18 heavy turns, English on 24/30 safety turns to a Hinglish
++    // child): a safeguarding reply starts with the vetted opening in the child's language mode and address form
++    // (server/relational/openings.js = src/lesson/safetyStrings.ts), and a model preface before it is cut. Both helplines
++    // are in the opening, so the floor's requireHelpline check holds even when the model's words are dropped.
++    if (r.move.kind === "safeguard" && teacherReply) teacherReply = withSafetyOpening(teacherReply, next.ctx?.lang, { address: next.ctx?.address, stripPreface: stripSafetyPreface });
++    // W2-I R3 (RELATIONAL-OS §11): the relational never-rules on her final words. They correct on the next turn (W2-C renders
++    // their REL_FLOOR_FIX rows) and never block: no precision ≥ 0.9 is measured out of sample yet.
++    const relFloor = relationalViolations(teacherReply, { content: floorContentOf(next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null),
++      gender: characterForState(next)?.pronouns?.subject === "he" ? "m" : "f" });
++    if (relFloor.length) next.correction = [...new Set([...(next.correction ?? []), ...relFloor])];
+     const replyItem = next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null;
+     const replySpoils = spoiledBy(teacherReply, next, kit, replyItem);
+     if (replySpoils) next.spoiled = [...(next.spoiled ?? []), replySpoils];
+--- a/server/brain/say.js	2026-10-04 21:25:44.345738733 +0000
++++ b/server/brain/say.js	2026-10-04 21:26:28.184369223 +0000
+@@ -2,6 +2,7 @@
+ // instructions string (one compile() for every lane) and guarded on the bytes by code: answer leaks, drift, floor
+ // breaks, praise/verdict agreement, the screen, register, script, length and the turn's shape. Moved out of
+ // server/routes/lesson.js unchanged by W2-E BR1 (BUILD-PLAN W2-E #2); the lesson start and the turn both call it.
++import { safetyOpeningFor } from "../relational/openings.js";
+ import { chat, DEPLOY, isContentFilter } from "../azure.js";
+ import { floorViolations, scrubPii } from "../director/safety.js";
+ import { upcomingItem } from "../director/state.js";
+@@ -82,12 +83,18 @@
+   hinglish: { wrap: "Aaj ke liye itna hi. Phir milte hain!", safeguard: `Tumne jo bataya, woh zaroori hai. Kisi bade ko batao jis par bharosa ho, ya ${HELPLINE_LINE_HI} pe call karo. Kya tum abhi theek ho?`,
+     other: "Ek second, meri baat atak gayi. Kya tum phir se bata sakte ho?" },
+ };
+-/** The fixed safeguarding line (both helplines) in the child's language and address form. */
++/**
++ * The fixed safeguarding line (both helplines) in the child's language mode and address form: W2-I's vetted opening
++ * (server/relational/openings.js, identical to the client's src/lesson/safetyStrings.ts) and then one check-in question.
++ */
++const CHECK_Q = { en: "Are you safe right now?", hinglish: { tum: "Kya tum abhi safe ho?", aap: "Kya aap abhi safe hain?" }, hi: { tum: "क्या तुम अभी सुरक्षित हो?", aap: "क्या आप अभी सुरक्षित हैं?" } };
+ export function safeguardLine(ctx = {}) {
+-  const line = FALLBACK[ctx.lang === "english" ? "english" : "hinglish"].safeguard;
+-  return ctx.address === "aap" && ctx.lang !== "english" ? toAap(line) : line;
++  const open = safetyOpeningFor(ctx.lang, { address: ctx.address });
++  const q = open.mode === "en" ? CHECK_Q.en : CHECK_Q[open.mode][ctx.address === "aap" ? "aap" : "tum"];
++  return `${open.text} ${q}`;
+ }
+ export function fallbackReply(state, item) {
++  if (state.lastMove?.kind === "safeguard") return safeguardLine(state.ctx);
+   const lang = state.ctx.lang;
+   const kind = state.lastMove?.kind;
+   if (item && !CLOSING_MOVES.has(kind)) return promptFor(item, lang);

@@ -32,7 +32,7 @@ export const SEMANTIC_SCHEMA = {
   properties: { pComplete: { type: "number" }, pHoldWanted: { type: "number" }, asksHer: { type: "number" }, offTask: { type: "number" } },
 };
 
-const clamp01 = (x) => (Number.isFinite(Number(x)) ? Math.max(0, Math.min(1, Number(x))) : null);
+const clamp01 = (x) => (x === null || x === undefined || x === "" || !Number.isFinite(Number(x)) ? null : Math.max(0, Math.min(1, Number(x))));
 
 /** The user message: closed fields only plus the prefix (truncated to the last 60 words). */
 export function semanticUser({ text, context = {}, herAct = null }) {

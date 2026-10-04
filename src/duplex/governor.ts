@@ -371,7 +371,9 @@ export class Governor {
           const hardEnough = sil >= bs + 2000;
           if ((text && (!unseen || hardEnough)) || (!text && hardEnough && c.turnVoicedMs >= 300)) {
             const closed = tick.context.exchange === "closed_answer";
-            const fs = closed && m.values.length ? "uptake" : text ? "body" : "prompt";
+            // a repair still open (or no words): a verdict-free prompt, never an uptake of the abandoned value (law 3;
+            // TaxilaFDB train: "आठ पैर … नहीं नहीं [छह dropped by the STT] पैर" got a verdict on 8 from the backstop, 3/40)
+            const fs = m.repairOpen || !text ? "prompt" : closed && m.values.length ? "uptake" : "body";
             veto("SPEAK", "backstop", { action: "SPEAK", reason: "backstop_silence", firstSound: fs, verdictNotBefore: null });
           }
         }
@@ -396,7 +398,8 @@ export class Governor {
     }
 
     // ── G7 (stamp half): a closed-answer SPEAK carries its verdict gate ──
-    if (d.action === "SPEAK" && d.detail?.action === "SPEAK" && d.detail.reason !== "safeguard" && tick.context.exchange === "closed_answer" && m.lastValueAgeMs !== null && m.values.length) {
+    if (d.action === "SPEAK" && d.detail?.action === "SPEAK" && d.detail.firstSound === "prompt" && m.repairOpen) d = { ...d, detail: { ...d.detail, verdictNotBefore: null } };
+    else if (d.action === "SPEAK" && d.detail?.action === "SPEAK" && d.detail.reason !== "safeguard" && tick.context.exchange === "closed_answer" && m.lastValueAgeMs !== null && m.values.length) {
       const vnb = t - m.lastValueAgeMs + VERDICT.delayMs;
       if (d.detail.verdictNotBefore === null || d.detail.verdictNotBefore < vnb) d = { ...d, detail: { ...d.detail, verdictNotBefore: vnb } };
     }

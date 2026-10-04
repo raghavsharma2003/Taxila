@@ -1,4 +1,4 @@
-"""r4 frames sheet: c-front beside the puppet's key poses (renders at 1024, view 0,0,1024, cream), labelled; the
+"""r5 frames sheet: c-front beside the puppet's key poses (renders at 1024, view 0,0,1024, cream), labelled; the
 articulation row (aa, O, E/ee, U, m-b-p closure, f/v tuck, l/t/d tongue tip, ch) is new in r4.
 -> art/character/puppet2d/polish-r5/frames-sheet.jpg  (+ the 3x3 blind-judge grid, same cells/order as judge-r3)
     python3 scripts/character/puppet2d/polish-r5/sheet.py"""
@@ -8,12 +8,12 @@ B = "art/character/puppet2d/polish-r5/work/sheet/"
 OUT = "art/character/puppet2d/polish-r5/frames-sheet.jpg"
 cells = [("c-front (reference)", "art/character/puppet2d/polish-r5/c-front.png"), ("rest", "rest"), ("talk aa (jaw drop)", "talk_aa"),
          ("talk O (rounded)", "talk_O"), ("talk E / ee (spread)", "talk_E"), ("talk U (pucker)", "talk_U"),
-         ("talk m / b / p (closure)", "talk_PP"), ("talk f / v (tuck)", "talk_FF"), ("talk l / t / d (tongue tip)", "talk_L"),
-         ("talk ch", "talk_CH"), ("listening", "listening"), ("thinking", "thinking"),
-         ("warm", "warm"), ("delight", "delight"), ("concern", "concern"), ("surprise", "surprise"), ("playful", "playful"),
-         ("blink: frame 1 of the real blink (mid key, lids 0.6)", "blink_mid"), ("turn yaw -20 (painted plate)", "yaw_m20"), ("turn yaw -10 (blend)", "yaw_m10"),
-         ("turn yaw +10 (blend)", "yaw_p10"), ("turn yaw +20 (painted plate)", "yaw_p20"), ("roll +8, thinking", "thinking_r8"),
-         ("yaw +20, delight", "delight_yp20")]
+         ("talk m / b / p (closure)", "talk_PP"), ("talk f / v (teeth on lip)", "talk_FF"), ("talk l / t / d (tongue tip)", "talk_L"),
+         ("talk ch (squared, teeth)", "talk_CH"), ("listening", "listening"), ("thinking", "thinking"),
+         ("warm", "warm"), ("delight", "delight"), ("concern", "concern"), ("surprise", "surprise"), ("playful (wink)", "playful"),
+         ("blink: frame 1 of the real blink (mid key, lids 0.6)", "blink_mid"), ("turn: asks -20, product clamp -10 (blend)", "yaw_m20"), ("turn yaw -10 (blend)", "yaw_m10"),
+         ("turn yaw +10 (blend)", "yaw_p10"), ("turn: asks +20, product clamp +10 (blend)", "yaw_p20"), ("roll +8, thinking", "thinking_r8"),
+         ("delight, asks yaw +20 (clamped)", "delight_yp20")]
 S, cols = 400, 6
 rows = (len(cells) + cols - 1) // cols
 M = Image.new("RGB", (S * cols, (S + 22) * rows), (250, 240, 225))

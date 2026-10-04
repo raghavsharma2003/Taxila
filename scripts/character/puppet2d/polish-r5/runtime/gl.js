@@ -127,13 +127,16 @@ void main(){
   // cavity: roof (dark) to floor
   vec3 col = rowc(32.0 + clamp(dt / gap, 0.0, 1.0) * 15.0, u);
   col = col * 1.22 + vec3(0.035, 0.012, 0.01);   // r4: the refs' cavity is a warm brown, not a black-maroon hole
+  col *= 1.0 - 0.28 * uTongue.y;                  // r5: a deeper cavity behind a raised tip (contrast for the lobe)
   col *= 1.0 - 0.35 * pow(a, 3.0);
   // ---- tongue: body mound on the floor; tip = a rounded LOBE that rises to the upper teeth (t d n l); curl = the
   // retroflex underside up at the palate
   float th = uTeeth.z, rp = 12.0 / th;
   float upVis = th * uTeeth.x * contourRows(0.0) / 12.0;          // upper teeth hanging at the centre (px)
-  float mound = min(gap * uTongue.x, 7.0 + 0.12 * gap) * pow(max(0.0, 1.0 - pow(vS / 0.85, 2.0)), 0.8);
-  float lw = 0.40;                                                // lobe half-width (s units)
+  // r5 (judge r4: 'the L tongue tip is barely visible'): while the tip is up the floor mound drops away, so the lobe
+  // stands alone against a dark cavity on both sides and reads as a tongue tip, not as a second lower lip
+  float mound = min(gap * uTongue.x, 7.0 + 0.12 * gap) * pow(max(0.0, 1.0 - pow(vS / 0.85, 2.0)), 0.8) * (1.0 - 0.85 * clamp(uTongue.y * 1.4, 0.0, 1.0));
+  float lw = 0.33;                                                // lobe half-width (s units)
   float lob = max(0.0, 1.0 - pow(vS / lw, 2.0));
   // r4b: a soft DOME (wider at the base), not a flat-sided tombstone
   float tipH = max(0.0, gap - upVis * 0.35) * uTongue.y * pow(lob, 0.85);
@@ -148,6 +151,8 @@ void main(){
     t *= 0.86 * vec3(1.0, 0.80, 0.86) * (1.0 - 0.3 * pow(a / 0.8, 2.0));
     t *= mix(0.86, 1.04, smoothstep(0.0, 0.7 * max(h, 0.5), h - db));
     if (isTip) {
+      // r5: a saturated pink lobe, lighter than the cavity and redder than the orange lip
+      t = mix(t, vec3(0.80, 0.40, 0.44), 0.55);
       // the lobe: lit on top, a soft groove down its middle, shadowed where it meets the cavity at the sides
       // r4b: rounded like the Memoji shading: cylindrical falloff to the sides, a soft lit crown, a faint groove
       float top = clamp((h - db) / 4.0, 0.0, 1.0);
@@ -158,7 +163,7 @@ void main(){
       t = mix(under, t * 1.08, 1.0 - smoothstep(0.0, 1.4, h - db));
     }
     // a contact shadow just outside the tongue's edge keeps it legible against the cavity at 1x
-    col *= 1.0 - 0.25 * clamp(1.0 - abs(h - db) / 2.0, 0.0, 1.0) * (1.0 - cov);
+    col *= 1.0 - (0.25 + 0.3 * uTongue.y) * clamp(1.0 - abs(h - db) / 2.5, 0.0, 1.0) * (1.0 - cov);
     col = mix(col, t, cov);
   }
   // ---- lower teeth (bottom-anchored on the lower lip), then upper teeth (hang from the upper lip, slide up as they hide)
@@ -169,7 +174,7 @@ void main(){
     float hL = th * 0.8 * smoothstep(0.2, 0.5, uTeeth.y) * contourRows(vS / lwT) / 12.0;       // visible height above the lower lip
     float cov = clamp((hL - db) / px + 0.5, 0.0, 1.0) * (1.0 - smoothstep(lwT - 0.12, lwT, a)) * gapT;
     float row = 31.0 - clamp(db * rp, 0.0, contourRows(vS / lwT) - 2.5);
-    vec3 lt = rowc(row, ul) * (1.0 - 0.3 * pow(a / lwT, 2.0));
+    vec3 lt = rowc(row, ul) * (1.0 - 0.3 * pow(a / lwT, 2.0)) * vec3(1.12, 1.09, 1.04);   // r5: the lower row read grey beside the upper one
     col = mix(col, lt, cov);
   }
   if (a < uwT && uTeeth.x > 0.01) {

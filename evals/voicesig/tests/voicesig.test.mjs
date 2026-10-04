@@ -489,3 +489,18 @@ test("G-VS-PURE: the adapter path (adapter, rules, ladder, calibrate, baseline) 
     assert.ok(!banned.test(code), `${n}: ${code.match(banned)?.[0]}`);
   }
 });
+
+test("log-mel FFT: the mixed-radix 400-point transform equals the direct DFT (relative error < 1e-9)", async () => {
+  const { power400 } = await import("../../../src/voicesig/frontend/logmel.ts");
+  let s = 9;
+  const x = new Float64Array(400).map(() => ((s = (s * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff - 0.5));
+  const p = power400(x);
+  let maxRel = 0;
+  for (let k = 0; k <= 200; k++) {
+    let re = 0, im = 0;
+    for (let n = 0; n < 400; n++) { re += x[n] * Math.cos((2 * Math.PI * k * n) / 400); im -= x[n] * Math.sin((2 * Math.PI * k * n) / 400); }
+    const d = re * re + im * im;
+    maxRel = Math.max(maxRel, Math.abs(p[k] - d) / Math.max(d, 1e-12));
+  }
+  assert.ok(maxRel < 1e-9, `max relative error ${maxRel}`);
+});

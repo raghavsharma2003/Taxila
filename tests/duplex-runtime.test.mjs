@@ -486,7 +486,11 @@ test("echo subtraction removes a run of her words and keeps a single-word answer
   const e = new EchoSubtractor();
   e.heardText("u1", "हर हिस्सा एक चौथाई होता है", 0, 70);
   assert.deepEqual(e.subtract("हिस्सा एक चौथाई", 1500), { text: "", removed: 3 });
-  assert.equal(e.subtract("चौथाई", 1500).text, "चौथाई");
+  assert.equal(e.subtract("चौथाई", 3000).text, "चौथाई", "a lone repeat of her word, not fresh echo, is a turn");
+  assert.equal(new EchoSubtractor().subtract("हाँ", 100).text, "हाँ");
+  const yn = new EchoSubtractor();
+  yn.heardText("u2", "दोनों हिस्से बराबर हैं?", 0, 70);
+  assert.equal(yn.subtract("हाँ", 1700).text, "हाँ", "a yes over her yes/no question is never her 'हैं' (skeleton collision)");
   e.stopAt("u1", 300);
   assert.equal(e.subtract("चौथाई होता है", 2500).removed, 0, "words after her stop were never audible");
 });

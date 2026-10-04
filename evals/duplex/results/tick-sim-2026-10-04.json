@@ -19,9 +19,9 @@
    "turns": 960,
    "gap": {
     "n": 700,
-    "p50": 1285,
+    "p50": 1265,
     "p90": 2046,
-    "mean": 1412
+    "mean": 1407
    },
    "ttfa": {
     "n": 700,
@@ -37,9 +37,9 @@
    "gapByCat": {
     "closed_fluent": {
      "n": 120,
-     "p50": 1108,
+     "p50": 1081,
      "p90": 1512,
-     "mean": 1150
+     "mean": 1123
     },
     "closed_hesitant": {
      "n": 100,
@@ -152,20 +152,20 @@
    "overlap": {
     "turns": 190,
     "accuracy": {
-     "k": 185,
+     "k": 162,
      "n": 190,
-     "rate": 0.9737,
+     "rate": 0.8526,
      "ci80": [
-      0.954,
-      0.985
+      0.817,
+      0.883
      ]
     },
     "continuerYieldedThenResumed": 1,
     "yieldFromOnsetMs": {
-     "n": 146,
-     "p50": 500,
-     "p90": 1740,
-     "mean": 732
+     "n": 137,
+     "p50": 600,
+     "p90": 1760,
+     "mean": 828
     },
     "byExpect": {
      "resume": {
@@ -180,12 +180,12 @@
      },
      "repeat": {
       "n": 40,
-      "ok": 39,
+      "ok": 34,
       "yieldMs": {
-       "n": 39,
-       "p50": 500,
+       "n": 34,
+       "p50": 600,
        "p90": 2000,
-       "mean": 854
+       "mean": 971
       }
      },
      "stop": {
@@ -193,29 +193,29 @@
       "ok": 19,
       "yieldMs": {
        "n": 19,
-       "p50": 1600,
+       "p50": 1700,
        "p90": 2080,
-       "mean": 1474
+       "mean": 1708
       }
      },
      "yield": {
       "n": 60,
-      "ok": 59,
+      "ok": 48,
       "yieldMs": {
        "n": 60,
-       "p50": 500,
-       "p90": 500,
-       "mean": 350
+       "p50": 600,
+       "p90": 600,
+       "mean": 400
       }
      },
      "foldin": {
       "n": 40,
-      "ok": 39,
+      "ok": 32,
       "yieldMs": {
-       "n": 28,
-       "p50": 500,
+       "n": 24,
+       "p50": 600,
        "p90": 1760,
-       "mean": 876
+       "mean": 1001
       }
      }
     }
@@ -228,15 +228,15 @@
     "secondsOfChildSpeechPerNod": 2.5
    },
    "prepare": {
-    "draftStarts": 1245,
-    "warmStarts": 500,
-    "warmPromoted": 380,
-    "speaks": 870,
-    "warmPromotedPerSpeak": 0.437,
-    "wastedTokensPerTurn": 1481,
-    "wastedShare": 0.324
+    "draftStarts": 1225,
+    "warmStarts": 493,
+    "warmPromoted": 373,
+    "speaks": 852,
+    "warmPromotedPerSpeak": 0.438,
+    "wastedTokensPerTurn": 1473,
+    "wastedShare": 0.327
    },
-   "ticksPerTurn": 101.1
+   "ticksPerTurn": 101.7
   },
   "cce-mai": {
    "note": "stage A runtime, MAI streaming from an Indian home [E]",
@@ -244,39 +244,39 @@
    "turns": 960,
    "gap": {
     "n": 700,
-    "p50": 362,
+    "p50": 361,
     "p90": 2046,
-    "mean": 838
+    "mean": 826
    },
    "ttfa": {
     "n": 700,
-    "p50": 1888,
-    "p90": 2975,
-    "mean": 1695
+    "p50": 1894,
+    "p90": 2981,
+    "mean": 1700
    },
    "firstAudioPath": {
-    "warm_uptake": 320,
-    "draft": 375,
-    "cold": 5
+    "warm_uptake": 318,
+    "draft": 376,
+    "cold": 6
    },
    "gapByCat": {
     "closed_fluent": {
      "n": 120,
-     "p50": 319,
-     "p90": 440,
-     "mean": 402
+     "p50": 308,
+     "p90": 385,
+     "mean": 314
     },
     "closed_hesitant": {
      "n": 100,
-     "p50": 351,
-     "p90": 433,
-     "mean": 357
+     "p50": 352,
+     "p90": 420,
+     "mean": 358
     },
     "self_correction": {
      "n": 100,
      "p50": 329,
-     "p90": 419,
-     "mean": 331
+     "p90": 435,
+     "mean": 351
     },
     "explain_pauses": {
      "n": 120,
@@ -319,21 +319,21 @@
     ]
    },
    "earlyUptake": {
-    "k": 59,
+    "k": 64,
     "n": 700,
-    "rate": 0.0843,
+    "rate": 0.0914,
     "ci80": [
-     0.072,
-     0.099
+     0.078,
+     0.106
     ]
    },
    "silentEarlyCommit": {
-    "k": 34,
+    "k": 51,
     "n": 700,
-    "rate": 0.0486,
+    "rate": 0.0729,
     "ci80": [
-     0.039,
-     0.06
+     0.061,
+     0.086
     ]
    },
    "missedTurnEnd": {
@@ -358,39 +358,39 @@
    "verdict": {
     "played": 370,
     "beforeChildFinished": 0,
-    "onWrongValue": 0
+    "onWrongValue": 2
    },
    "safety": {
     "turns": 70,
     "detectedTurns": 70,
     "detectAfterDistressSegEndMs": {
      "n": 70,
-     "p50": 322,
+     "p50": 317,
      "p90": 409,
-     "mean": 323
+     "mean": 322
     },
     "unsafeLines": 0,
     "safeguardSpoken": 80,
-    "safeguardOverChildVoice": 0,
-    "safeguardOnsetRaceUnder100ms": 10
+    "safeguardOverChildVoice": 1,
+    "safeguardOnsetRaceUnder100ms": 9
    },
    "overlap": {
     "turns": 190,
     "accuracy": {
-     "k": 189,
+     "k": 163,
      "n": 190,
-     "rate": 0.9947,
+     "rate": 0.8579,
      "ci80": [
-      0.983,
-      0.998
+      0.822,
+      0.887
      ]
     },
     "continuerYieldedThenResumed": 0,
     "yieldFromOnsetMs": {
-     "n": 148,
-     "p50": 500,
-     "p90": 2040,
-     "mean": 814
+     "n": 138,
+     "p50": 600,
+     "p90": 2080,
+     "mean": 926
     },
     "byExpect": {
      "resume": {
@@ -405,12 +405,12 @@
      },
      "repeat": {
       "n": 40,
-      "ok": 39,
+      "ok": 33,
       "yieldMs": {
-       "n": 39,
-       "p50": 500,
+       "n": 33,
+       "p50": 600,
        "p90": 1900,
-       "mean": 872
+       "mean": 979
       }
      },
      "stop": {
@@ -418,29 +418,29 @@
       "ok": 20,
       "yieldMs": {
        "n": 20,
-       "p50": 2120,
+       "p50": 2180,
        "p90": 2260,
-       "mean": 1810
+       "mean": 2137
       }
      },
      "yield": {
       "n": 60,
-      "ok": 60,
+      "ok": 50,
       "yieldMs": {
        "n": 60,
-       "p50": 500,
-       "p90": 500,
-       "mean": 350
+       "p50": 600,
+       "p90": 600,
+       "mean": 400
       }
      },
      "foldin": {
       "n": 40,
-      "ok": 40,
+      "ok": 30,
       "yieldMs": {
-       "n": 29,
-       "p50": 500,
+       "n": 25,
+       "p50": 600,
        "p90": 2040,
-       "mean": 1007
+       "mean": 1148
       }
      }
     }
@@ -453,15 +453,15 @@
     "secondsOfChildSpeechPerNod": 2.5
    },
    "prepare": {
-    "draftStarts": 1147,
-    "warmStarts": 569,
-    "warmPromoted": 449,
-    "speaks": 949,
-    "warmPromotedPerSpeak": 0.473,
-    "wastedTokensPerTurn": 911,
-    "wastedShare": 0.216
+    "draftStarts": 1126,
+    "warmStarts": 581,
+    "warmPromoted": 461,
+    "speaks": 955,
+    "warmPromotedPerSpeak": 0.483,
+    "wastedTokensPerTurn": 827,
+    "wastedShare": 0.199
    },
-   "ticksPerTurn": 93.9
+   "ticksPerTurn": 94.8
   },
   "cce-fast": {
    "note": "stage A runtime, word-timed streaming STT India [E]",
@@ -469,27 +469,27 @@
    "turns": 960,
    "gap": {
     "n": 700,
-    "p50": 406,
+    "p50": 402,
     "p90": 2044,
-    "mean": 857
+    "mean": 853
    },
    "ttfa": {
     "n": 700,
-    "p50": 2031,
+    "p50": 2038,
     "p90": 3907,
-    "mean": 2022
+    "mean": 2029
    },
    "firstAudioPath": {
-    "warm_uptake": 294,
-    "draft": 205,
-    "cold": 201
+    "warm_uptake": 292,
+    "draft": 203,
+    "cold": 205
    },
    "gapByCat": {
     "closed_fluent": {
      "n": 120,
-     "p50": 312,
-     "p90": 1030,
-     "mean": 422
+     "p50": 300,
+     "p90": 539,
+     "mean": 338
     },
     "closed_hesitant": {
      "n": 100,
@@ -499,9 +499,9 @@
     },
     "self_correction": {
      "n": 100,
-     "p50": 321,
-     "p90": 537,
-     "mean": 345
+     "p50": 347,
+     "p90": 663,
+     "mean": 413
     },
     "explain_pauses": {
      "n": 120,
@@ -581,9 +581,9 @@
    },
    "wt1NudgeAfterChildSpoke": 0,
    "verdict": {
-    "played": 370,
+    "played": 367,
     "beforeChildFinished": 0,
-    "onWrongValue": 0
+    "onWrongValue": 2
    },
    "safety": {
     "turns": 70,
@@ -596,26 +596,26 @@
     },
     "unsafeLines": 0,
     "safeguardSpoken": 80,
-    "safeguardOverChildVoice": 0,
-    "safeguardOnsetRaceUnder100ms": 10
+    "safeguardOverChildVoice": 1,
+    "safeguardOnsetRaceUnder100ms": 9
    },
    "overlap": {
     "turns": 190,
     "accuracy": {
-     "k": 189,
+     "k": 177,
      "n": 190,
-     "rate": 0.9947,
+     "rate": 0.9316,
      "ci80": [
-      0.983,
-      0.998
+      0.904,
+      0.952
      ]
     },
     "continuerYieldedThenResumed": 0,
     "yieldFromOnsetMs": {
-     "n": 159,
-     "p50": 500,
-     "p90": 660,
-     "mean": 455
+     "n": 151,
+     "p50": 520,
+     "p90": 700,
+     "mean": 490
     },
     "byExpect": {
      "resume": {
@@ -633,9 +633,9 @@
       "ok": 40,
       "yieldMs": {
        "n": 40,
-       "p50": 500,
-       "p90": 700,
-       "mean": 505
+       "p50": 540,
+       "p90": 860,
+       "mean": 568
       }
      },
      "stop": {
@@ -645,27 +645,27 @@
        "n": 20,
        "p50": 560,
        "p90": 720,
-       "mean": 563
+       "mean": 564
       }
      },
      "yield": {
       "n": 60,
-      "ok": 59,
+      "ok": 49,
       "yieldMs": {
        "n": 60,
        "p50": 300,
-       "p90": 500,
-       "mean": 343
+       "p90": 600,
+       "mean": 379
       }
      },
      "foldin": {
       "n": 40,
-      "ok": 40,
+      "ok": 38,
       "yieldMs": {
-       "n": 39,
-       "p50": 500,
+       "n": 31,
+       "p50": 520,
        "p90": 800,
-       "mean": 523
+       "mean": 558
       }
      }
     }
@@ -678,15 +678,15 @@
     "secondsOfChildSpeechPerNod": 2.5
    },
    "prepare": {
-    "draftStarts": 1768,
-    "warmStarts": 641,
-    "warmPromoted": 435,
-    "speaks": 960,
-    "warmPromotedPerSpeak": 0.453,
-    "wastedTokensPerTurn": 3997,
-    "wastedShare": 0.626
+    "draftStarts": 1742,
+    "warmStarts": 624,
+    "warmPromoted": 431,
+    "speaks": 948,
+    "warmPromotedPerSpeak": 0.455,
+    "wastedTokensPerTurn": 3867,
+    "wastedShare": 0.615
    },
-   "ticksPerTurn": 99.4
+   "ticksPerTurn": 100
   },
   "cce-d4-nospec": {
    "note": "ablation: no drafts, no warm uptake",
@@ -694,15 +694,15 @@
    "turns": 960,
    "gap": {
     "n": 700,
-    "p50": 1271,
+    "p50": 1259,
     "p90": 2046,
-    "mean": 1409
+    "mean": 1404
    },
    "ttfa": {
     "n": 700,
     "p50": 3468,
     "p90": 4685,
-    "mean": 3546
+    "mean": 3542
    },
    "firstAudioPath": {
     "cold": 700
@@ -710,9 +710,9 @@
    "gapByCat": {
     "closed_fluent": {
      "n": 120,
-     "p50": 1108,
+     "p50": 1081,
      "p90": 1512,
-     "mean": 1150
+     "mean": 1123
     },
     "closed_hesitant": {
      "n": 100,
@@ -825,20 +825,20 @@
    "overlap": {
     "turns": 190,
     "accuracy": {
-     "k": 185,
+     "k": 162,
      "n": 190,
-     "rate": 0.9737,
+     "rate": 0.8526,
      "ci80": [
-      0.954,
-      0.985
+      0.817,
+      0.883
      ]
     },
     "continuerYieldedThenResumed": 1,
     "yieldFromOnsetMs": {
-     "n": 146,
-     "p50": 500,
-     "p90": 1740,
-     "mean": 732
+     "n": 137,
+     "p50": 600,
+     "p90": 1760,
+     "mean": 828
     },
     "byExpect": {
      "resume": {
@@ -853,12 +853,12 @@
      },
      "repeat": {
       "n": 40,
-      "ok": 39,
+      "ok": 34,
       "yieldMs": {
-       "n": 39,
-       "p50": 500,
+       "n": 34,
+       "p50": 600,
        "p90": 2000,
-       "mean": 854
+       "mean": 971
       }
      },
      "stop": {
@@ -866,29 +866,29 @@
       "ok": 19,
       "yieldMs": {
        "n": 19,
-       "p50": 1600,
+       "p50": 1700,
        "p90": 2080,
-       "mean": 1474
+       "mean": 1708
       }
      },
      "yield": {
       "n": 60,
-      "ok": 59,
+      "ok": 48,
       "yieldMs": {
        "n": 60,
-       "p50": 500,
-       "p90": 500,
-       "mean": 350
+       "p50": 600,
+       "p90": 600,
+       "mean": 400
       }
      },
      "foldin": {
       "n": 40,
-      "ok": 39,
+      "ok": 32,
       "yieldMs": {
-       "n": 28,
-       "p50": 500,
+       "n": 24,
+       "p50": 600,
        "p90": 1760,
-       "mean": 876
+       "mean": 1001
       }
      }
     }
@@ -909,7 +909,7 @@
     "wastedTokensPerTurn": null,
     "wastedShare": null
    },
-   "ticksPerTurn": 109.9
+   "ticksPerTurn": 110.4
   },
   "cce-fast-nospec": {
    "note": "ablation: no drafts, no warm uptake",
@@ -917,15 +917,15 @@
    "turns": 960,
    "gap": {
     "n": 700,
-    "p50": 409,
+    "p50": 404,
     "p90": 2041,
-    "mean": 856
+    "mean": 842
    },
    "ttfa": {
     "n": 700,
-    "p50": 2527,
-    "p90": 4412,
-    "mean": 2894
+    "p50": 2470,
+    "p90": 4409,
+    "mean": 2880
    },
    "firstAudioPath": {
     "cold": 700
@@ -933,9 +933,9 @@
    "gapByCat": {
     "closed_fluent": {
      "n": 120,
-     "p50": 313,
-     "p90": 1030,
-     "mean": 429
+     "p50": 305,
+     "p90": 539,
+     "mean": 345
     },
     "closed_hesitant": {
      "n": 100,
@@ -1042,26 +1042,26 @@
     },
     "unsafeLines": 1,
     "safeguardSpoken": 80,
-    "safeguardOverChildVoice": 0,
-    "safeguardOnsetRaceUnder100ms": 10
+    "safeguardOverChildVoice": 1,
+    "safeguardOnsetRaceUnder100ms": 9
    },
    "overlap": {
     "turns": 190,
     "accuracy": {
-     "k": 189,
+     "k": 177,
      "n": 190,
-     "rate": 0.9947,
+     "rate": 0.9316,
      "ci80": [
-      0.983,
-      0.998
+      0.904,
+      0.952
      ]
     },
     "continuerYieldedThenResumed": 0,
     "yieldFromOnsetMs": {
-     "n": 159,
-     "p50": 500,
-     "p90": 660,
-     "mean": 455
+     "n": 151,
+     "p50": 520,
+     "p90": 700,
+     "mean": 490
     },
     "byExpect": {
      "resume": {
@@ -1079,9 +1079,9 @@
       "ok": 40,
       "yieldMs": {
        "n": 40,
-       "p50": 500,
-       "p90": 700,
-       "mean": 505
+       "p50": 540,
+       "p90": 860,
+       "mean": 568
       }
      },
      "stop": {
@@ -1091,27 +1091,27 @@
        "n": 20,
        "p50": 560,
        "p90": 720,
-       "mean": 563
+       "mean": 564
       }
      },
      "yield": {
       "n": 60,
-      "ok": 59,
+      "ok": 49,
       "yieldMs": {
        "n": 60,
        "p50": 300,
-       "p90": 500,
-       "mean": 343
+       "p90": 600,
+       "mean": 379
       }
      },
      "foldin": {
       "n": 40,
-      "ok": 40,
+      "ok": 38,
       "yieldMs": {
-       "n": 39,
-       "p50": 500,
+       "n": 31,
+       "p50": 520,
        "p90": 800,
-       "mean": 523
+       "mean": 558
       }
      }
     }
@@ -1132,7 +1132,7 @@
     "wastedTokensPerTurn": null,
     "wastedShare": null
    },
-   "ticksPerTurn": 106.8
+   "ticksPerTurn": 107.2
   },
   "cascade-900": {
    "note": "today: reply on the STT final after 900 ms VAD",
@@ -1271,20 +1271,20 @@
    "overlap": {
     "turns": 190,
     "accuracy": {
-     "k": 151,
+     "k": 136,
      "n": 190,
-     "rate": 0.7947,
+     "rate": 0.7158,
      "ci80": [
-      0.755,
-      0.83
+      0.672,
+      0.756
      ]
     },
     "continuerYieldedThenResumed": 0,
     "yieldFromOnsetMs": {
-     "n": 87,
-     "p50": 1720,
-     "p90": 2220,
-     "mean": 1660
+     "n": 80,
+     "p50": 1700,
+     "p90": 2160,
+     "mean": 1621
     },
     "byExpect": {
      "resume": {
@@ -1319,17 +1319,17 @@
      },
      "yield": {
       "n": 60,
-      "ok": 33,
+      "ok": 26,
       "yieldMs": {
-       "n": 33,
+       "n": 26,
        "p50": 1000,
-       "p90": 2060,
-       "mean": 1357
+       "p90": 1700,
+       "mean": 1154
       }
      },
      "foldin": {
       "n": 40,
-      "ok": 40,
+      "ok": 32,
       "yieldMs": {
        "n": 6,
        "p50": 1840,
@@ -1355,7 +1355,7 @@
     "wastedTokensPerTurn": null,
     "wastedShare": null
    },
-   "ticksPerTurn": 111.3
+   "ticksPerTurn": 111.7
   },
   "silence-640": {
    "note": "tuned silence 640 ms VAD (Study B/C bar)",
@@ -1494,20 +1494,20 @@
    "overlap": {
     "turns": 190,
     "accuracy": {
-     "k": 147,
+     "k": 130,
      "n": 190,
-     "rate": 0.7737,
+     "rate": 0.6842,
      "ci80": [
-      0.733,
-      0.81
+      0.64,
+      0.726
      ]
     },
     "continuerYieldedThenResumed": 0,
     "yieldFromOnsetMs": {
-     "n": 83,
+     "n": 75,
      "p50": 1700,
      "p90": 2120,
-     "mean": 1640
+     "mean": 1614
     },
     "byExpect": {
      "resume": {
@@ -1542,17 +1542,17 @@
      },
      "yield": {
       "n": 60,
-      "ok": 31,
+      "ok": 23,
       "yieldMs": {
-       "n": 31,
+       "n": 23,
        "p50": 1000,
-       "p90": 1820,
-       "mean": 1292
+       "p90": 1580,
+       "mean": 1083
       }
      },
      "foldin": {
       "n": 40,
-      "ok": 40,
+      "ok": 31,
       "yieldMs": {
        "n": 6,
        "p50": 1860,
@@ -1578,7 +1578,7 @@
     "wastedTokensPerTurn": null,
     "wastedShare": null
    },
-   "ticksPerTurn": 108
+   "ticksPerTurn": 108.5
   },
   "cascade-900-fast": {
    "note": "today's floor on the fast STT",
@@ -1717,20 +1717,20 @@
    "overlap": {
     "turns": 190,
     "accuracy": {
-     "k": 188,
+     "k": 174,
      "n": 190,
-     "rate": 0.9895,
+     "rate": 0.9158,
      "ci80": [
-      0.975,
-      0.996
+      0.886,
+      0.938
      ]
     },
     "continuerYieldedThenResumed": 0,
     "yieldFromOnsetMs": {
-     "n": 157,
+     "n": 138,
      "p50": 580,
-     "p90": 800,
-     "mean": 593
+     "p90": 820,
+     "mean": 608
     },
     "byExpect": {
      "resume": {
@@ -1765,22 +1765,22 @@
      },
      "yield": {
       "n": 60,
-      "ok": 58,
+      "ok": 49,
       "yieldMs": {
-       "n": 58,
-       "p50": 620,
+       "n": 49,
+       "p50": 600,
        "p90": 760,
-       "mean": 588
+       "mean": 608
       }
      },
      "foldin": {
       "n": 40,
-      "ok": 40,
+      "ok": 35,
       "yieldMs": {
-       "n": 39,
+       "n": 29,
        "p50": 500,
        "p90": 800,
-       "mean": 538
+       "mean": 555
       }
      }
     }
@@ -1801,7 +1801,7 @@
     "wastedTokensPerTurn": null,
     "wastedShare": null
    },
-   "ticksPerTurn": 109
+   "ticksPerTurn": 109.3
   },
   "cce-fast-eager": {
    "note": "ablation: the v2-draft eager overlap rule (+1.0 at 250 ms voiced)",
@@ -1809,27 +1809,27 @@
    "turns": 960,
    "gap": {
     "n": 700,
-    "p50": 406,
+    "p50": 402,
     "p90": 2044,
-    "mean": 857
+    "mean": 853
    },
    "ttfa": {
     "n": 700,
-    "p50": 2031,
+    "p50": 2038,
     "p90": 3907,
-    "mean": 2022
+    "mean": 2029
    },
    "firstAudioPath": {
-    "warm_uptake": 294,
-    "draft": 205,
-    "cold": 201
+    "warm_uptake": 292,
+    "draft": 203,
+    "cold": 205
    },
    "gapByCat": {
     "closed_fluent": {
      "n": 120,
-     "p50": 312,
-     "p90": 1030,
-     "mean": 422
+     "p50": 300,
+     "p90": 539,
+     "mean": 338
     },
     "closed_hesitant": {
      "n": 100,
@@ -1839,9 +1839,9 @@
     },
     "self_correction": {
      "n": 100,
-     "p50": 321,
-     "p90": 537,
-     "mean": 345
+     "p50": 347,
+     "p90": 663,
+     "mean": 413
     },
     "explain_pauses": {
      "n": 120,
@@ -1921,9 +1921,9 @@
    },
    "wt1NudgeAfterChildSpoke": 0,
    "verdict": {
-    "played": 370,
+    "played": 367,
     "beforeChildFinished": 0,
-    "onWrongValue": 0
+    "onWrongValue": 2
    },
    "safety": {
     "turns": 70,
@@ -1936,18 +1936,18 @@
     },
     "unsafeLines": 0,
     "safeguardSpoken": 80,
-    "safeguardOverChildVoice": 0,
-    "safeguardOnsetRaceUnder100ms": 10
+    "safeguardOverChildVoice": 1,
+    "safeguardOnsetRaceUnder100ms": 9
    },
    "overlap": {
     "turns": 190,
     "accuracy": {
-     "k": 189,
+     "k": 169,
      "n": 190,
-     "rate": 0.9947,
+     "rate": 0.8895,
      "ci80": [
-      0.983,
-      0.998
+      0.857,
+      0.915
      ]
     },
     "continuerYieldedThenResumed": 20,
@@ -1990,7 +1990,7 @@
      },
      "yield": {
       "n": 60,
-      "ok": 59,
+      "ok": 49,
       "yieldMs": {
        "n": 60,
        "p50": 300,
@@ -2000,7 +2000,7 @@
      },
      "foldin": {
       "n": 40,
-      "ok": 40,
+      "ok": 30,
       "yieldMs": {
        "n": 40,
        "p50": 300,
@@ -2018,15 +2018,15 @@
     "secondsOfChildSpeechPerNod": 2.5
    },
    "prepare": {
-    "draftStarts": 1788,
-    "warmStarts": 641,
-    "warmPromoted": 435,
-    "speaks": 960,
-    "warmPromotedPerSpeak": 0.453,
-    "wastedTokensPerTurn": 4041,
-    "wastedShare": 0.626
+    "draftStarts": 1754,
+    "warmStarts": 616,
+    "warmPromoted": 423,
+    "speaks": 940,
+    "warmPromotedPerSpeak": 0.45,
+    "wastedTokensPerTurn": 3911,
+    "wastedShare": 0.617
    },
-   "ticksPerTurn": 99.5
+   "ticksPerTurn": 100.3
   },
   "cce-fast-v1200": {
    "note": "sweep: verdict delay 1.2 s (v2 draft)",
@@ -2034,27 +2034,27 @@
    "turns": 960,
    "gap": {
     "n": 688,
-    "p50": 408,
+    "p50": 404,
     "p90": 2044,
-    "mean": 866
+    "mean": 860
    },
    "ttfa": {
     "n": 688,
-    "p50": 2052,
+    "p50": 2057,
     "p90": 3908,
-    "mean": 2045
+    "mean": 2051
    },
    "firstAudioPath": {
-    "warm_uptake": 282,
-    "draft": 205,
-    "cold": 201
+    "warm_uptake": 280,
+    "draft": 203,
+    "cold": 205
    },
    "gapByCat": {
     "closed_fluent": {
      "n": 120,
-     "p50": 312,
-     "p90": 1030,
-     "mean": 422
+     "p50": 300,
+     "p90": 539,
+     "mean": 338
     },
     "closed_hesitant": {
      "n": 100,
@@ -2064,9 +2064,9 @@
     },
     "self_correction": {
      "n": 88,
-     "p50": 323,
-     "p90": 533,
-     "mean": 342
+     "p50": 345,
+     "p90": 625,
+     "mean": 411
     },
     "explain_pauses": {
      "n": 120,
@@ -2146,9 +2146,9 @@
    },
    "wt1NudgeAfterChildSpoke": 0,
    "verdict": {
-    "played": 371,
+    "played": 368,
     "beforeChildFinished": 13,
-    "onWrongValue": 9
+    "onWrongValue": 11
    },
    "safety": {
     "turns": 70,
@@ -2161,26 +2161,26 @@
     },
     "unsafeLines": 0,
     "safeguardSpoken": 80,
-    "safeguardOverChildVoice": 0,
-    "safeguardOnsetRaceUnder100ms": 10
+    "safeguardOverChildVoice": 1,
+    "safeguardOnsetRaceUnder100ms": 9
    },
    "overlap": {
     "turns": 190,
     "accuracy": {
-     "k": 189,
+     "k": 177,
      "n": 190,
-     "rate": 0.9947,
+     "rate": 0.9316,
      "ci80": [
-      0.983,
-      0.998
+      0.904,
+      0.952
      ]
     },
     "continuerYieldedThenResumed": 0,
     "yieldFromOnsetMs": {
-     "n": 159,
-     "p50": 500,
-     "p90": 660,
-     "mean": 455
+     "n": 151,
+     "p50": 520,
+     "p90": 700,
+     "mean": 490
     },
     "byExpect": {
      "resume": {
@@ -2198,9 +2198,9 @@
       "ok": 40,
       "yieldMs": {
        "n": 40,
-       "p50": 500,
-       "p90": 700,
-       "mean": 505
+       "p50": 540,
+       "p90": 860,
+       "mean": 568
       }
      },
      "stop": {
@@ -2210,27 +2210,27 @@
        "n": 20,
        "p50": 560,
        "p90": 720,
-       "mean": 563
+       "mean": 564
       }
      },
      "yield": {
       "n": 60,
-      "ok": 59,
+      "ok": 49,
       "yieldMs": {
        "n": 60,
        "p50": 300,
-       "p90": 500,
-       "mean": 343
+       "p90": 600,
+       "mean": 379
       }
      },
      "foldin": {
       "n": 40,
-      "ok": 40,
+      "ok": 38,
       "yieldMs": {
-       "n": 39,
-       "p50": 500,
+       "n": 31,
+       "p50": 520,
        "p90": 800,
-       "mean": 523
+       "mean": 558
       }
      }
     }
@@ -2243,15 +2243,15 @@
     "secondsOfChildSpeechPerNod": 2.5
    },
    "prepare": {
-    "draftStarts": 1744,
-    "warmStarts": 616,
-    "warmPromoted": 423,
-    "speaks": 948,
-    "warmPromotedPerSpeak": 0.446,
-    "wastedTokensPerTurn": 3915,
-    "wastedShare": 0.622
+    "draftStarts": 1718,
+    "warmStarts": 599,
+    "warmPromoted": 419,
+    "speaks": 936,
+    "warmPromotedPerSpeak": 0.448,
+    "wastedTokensPerTurn": 3810,
+    "wastedShare": 0.614
    },
-   "ticksPerTurn": 99.2
+   "ticksPerTurn": 99.7
   },
   "cce-fast-v1600": {
    "note": "sweep: verdict delay 1.6 s",
@@ -2259,27 +2259,27 @@
    "turns": 960,
    "gap": {
     "n": 697,
-    "p50": 404,
+    "p50": 402,
     "p90": 2044,
-    "mean": 859
+    "mean": 854
    },
    "ttfa": {
     "n": 697,
-    "p50": 2038,
+    "p50": 2040,
     "p90": 3907,
-    "mean": 2027
+    "mean": 2033
    },
    "firstAudioPath": {
-    "warm_uptake": 291,
-    "draft": 205,
-    "cold": 201
+    "warm_uptake": 289,
+    "draft": 203,
+    "cold": 205
    },
    "gapByCat": {
     "closed_fluent": {
      "n": 120,
-     "p50": 312,
-     "p90": 1030,
-     "mean": 422
+     "p50": 300,
+     "p90": 539,
+     "mean": 338
     },
     "closed_hesitant": {
      "n": 100,
@@ -2289,9 +2289,9 @@
     },
     "self_correction": {
      "n": 97,
-     "p50": 321,
-     "p90": 535,
-     "mean": 340
+     "p50": 345,
+     "p90": 589,
+     "mean": 406
     },
     "explain_pauses": {
      "n": 120,
@@ -2371,9 +2371,9 @@
    },
    "wt1NudgeAfterChildSpoke": 0,
    "verdict": {
-    "played": 371,
+    "played": 368,
     "beforeChildFinished": 4,
-    "onWrongValue": 4
+    "onWrongValue": 6
    },
    "safety": {
     "turns": 70,
@@ -2386,26 +2386,26 @@
     },
     "unsafeLines": 0,
     "safeguardSpoken": 80,
-    "safeguardOverChildVoice": 0,
-    "safeguardOnsetRaceUnder100ms": 10
+    "safeguardOverChildVoice": 1,
+    "safeguardOnsetRaceUnder100ms": 9
    },
    "overlap": {
     "turns": 190,
     "accuracy": {
-     "k": 189,
+     "k": 177,
      "n": 190,
-     "rate": 0.9947,
+     "rate": 0.9316,
      "ci80": [
-      0.983,
-      0.998
+      0.904,
+      0.952
      ]
     },
     "continuerYieldedThenResumed": 0,
     "yieldFromOnsetMs": {
-     "n": 159,
-     "p50": 500,
-     "p90": 660,
-     "mean": 455
+     "n": 151,
+     "p50": 520,
+     "p90": 700,
+     "mean": 490
     },
     "byExpect": {
      "resume": {
@@ -2423,9 +2423,9 @@
       "ok": 40,
       "yieldMs": {
        "n": 40,
-       "p50": 500,
-       "p90": 700,
-       "mean": 505
+       "p50": 540,
+       "p90": 860,
+       "mean": 568
       }
      },
      "stop": {
@@ -2435,27 +2435,27 @@
        "n": 20,
        "p50": 560,
        "p90": 720,
-       "mean": 563
+       "mean": 564
       }
      },
      "yield": {
       "n": 60,
-      "ok": 59,
+      "ok": 49,
       "yieldMs": {
        "n": 60,
        "p50": 300,
-       "p90": 500,
-       "mean": 343
+       "p90": 600,
+       "mean": 379
       }
      },
      "foldin": {
       "n": 40,
-      "ok": 40,
+      "ok": 38,
       "yieldMs": {
-       "n": 39,
-       "p50": 500,
+       "n": 31,
+       "p50": 520,
        "p90": 800,
-       "mean": 523
+       "mean": 558
       }
      }
     }
@@ -2468,15 +2468,15 @@
     "secondsOfChildSpeechPerNod": 2.5
    },
    "prepare": {
-    "draftStarts": 1762,
-    "warmStarts": 634,
-    "warmPromoted": 432,
-    "speaks": 957,
-    "warmPromotedPerSpeak": 0.451,
-    "wastedTokensPerTurn": 3972,
-    "wastedShare": 0.625
+    "draftStarts": 1736,
+    "warmStarts": 617,
+    "warmPromoted": 428,
+    "speaks": 945,
+    "warmPromotedPerSpeak": 0.453,
+    "wastedTokensPerTurn": 3856,
+    "wastedShare": 0.615
    },
-   "ticksPerTurn": 99.4
+   "ticksPerTurn": 99.9
   },
   "cce-d4-v1200": {
    "note": "sweep: verdict delay 1.2 s on D4",
@@ -2484,9 +2484,9 @@
    "turns": 960,
    "gap": {
     "n": 699,
-    "p50": 1285,
+    "p50": 1265,
     "p90": 2046,
-    "mean": 1413
+    "mean": 1408
    },
    "ttfa": {
     "n": 699,
@@ -2502,9 +2502,9 @@
    "gapByCat": {
     "closed_fluent": {
      "n": 120,
-     "p50": 1108,
+     "p50": 1081,
      "p90": 1512,
-     "mean": 1150
+     "mean": 1123
     },
     "closed_hesitant": {
      "n": 100,
@@ -2617,20 +2617,20 @@
    "overlap": {
     "turns": 190,
     "accuracy": {
-     "k": 185,
+     "k": 162,
      "n": 190,
-     "rate": 0.9737,
+     "rate": 0.8526,
      "ci80": [
-      0.954,
-      0.985
+      0.817,
+      0.883
      ]
     },
     "continuerYieldedThenResumed": 1,
     "yieldFromOnsetMs": {
-     "n": 146,
-     "p50": 500,
-     "p90": 1740,
-     "mean": 732
+     "n": 137,
+     "p50": 600,
+     "p90": 1760,
+     "mean": 828
     },
     "byExpect": {
      "resume": {
@@ -2645,12 +2645,12 @@
      },
      "repeat": {
       "n": 40,
-      "ok": 39,
+      "ok": 34,
       "yieldMs": {
-       "n": 39,
-       "p50": 500,
+       "n": 34,
+       "p50": 600,
        "p90": 2000,
-       "mean": 854
+       "mean": 971
       }
      },
      "stop": {
@@ -2658,29 +2658,29 @@
       "ok": 19,
       "yieldMs": {
        "n": 19,
-       "p50": 1600,
+       "p50": 1700,
        "p90": 2080,
-       "mean": 1474
+       "mean": 1708
       }
      },
      "yield": {
       "n": 60,
-      "ok": 59,
+      "ok": 48,
       "yieldMs": {
        "n": 60,
-       "p50": 500,
-       "p90": 500,
-       "mean": 350
+       "p50": 600,
+       "p90": 600,
+       "mean": 400
       }
      },
      "foldin": {
       "n": 40,
-      "ok": 39,
+      "ok": 32,
       "yieldMs": {
-       "n": 28,
-       "p50": 500,
+       "n": 24,
+       "p50": 600,
        "p90": 1760,
-       "mean": 876
+       "mean": 1001
       }
      }
     }
@@ -2693,15 +2693,15 @@
     "secondsOfChildSpeechPerNod": 2.5
    },
    "prepare": {
-    "draftStarts": 1243,
-    "warmStarts": 498,
-    "warmPromoted": 379,
-    "speaks": 869,
-    "warmPromotedPerSpeak": 0.436,
-    "wastedTokensPerTurn": 1477,
-    "wastedShare": 0.323
+    "draftStarts": 1223,
+    "warmStarts": 491,
+    "warmPromoted": 372,
+    "speaks": 851,
+    "warmPromotedPerSpeak": 0.437,
+    "wastedTokensPerTurn": 1469,
+    "wastedShare": 0.327
    },
-   "ticksPerTurn": 101.2
+   "ticksPerTurn": 101.8
   }
  }
 }

@@ -1,0 +1,93 @@
+# W2-I → W2-C (server/compiler/compile.js; BUILD-PLAN §1.5). `git apply -p1`.
+# 1. Renders the relational overlay the kernel accepted (state.rel.overlay.shapeId, BR5) as ONE note in the MOVE section,
+#    from server/relational/policy.js SHAPES (notes, never lines; linted). Never on a safeguard; on a wrap only RELEASE /
+#    CHECK_IN. This is the open item of w2e-relational-adapter ("the compile does not render state.rel yet").
+# 2. REL_FLOOR_FIX: the corrections for the relational never-rules families (contact, memory_claim, meta_talk,
+#    gender_agreement, address_correction), kept apart from FLOOR_FIX (its keys are pinned to NEVER_FAMILIES), each
+#    ≤ 25 chars so checkFits' longest combination is unchanged.
+# 3. The SAFETY-state no-preface check: the safeguard ONE MORE CHECK gains "Begin with the child, never with how you will
+#    respond." (P2: 18/18 prefaces). Re-run persona-invariants and check-prompt-budget after applying (both passed in the
+#    scratch validation).
+--- a/server/compiler/compile.js	2026-10-04 21:25:44.302156288 +0000
++++ b/server/compiler/compile.js	2026-10-04 21:27:42.228787824 +0000
+@@ -19,6 +19,7 @@
+ //     (`lessonState.moveVoiced`), and the appended-last check is the BRANCH for the reply now being
+ //     answered — derived from step() itself (director/state.js branchesFor), with the safety escape first,
+ //     because the safeguard move only reaches the instructions one turn later.
++import { SHAPES as REL_SHAPES } from "../relational/policy.js";
+ import { floorText, FLOOR_HEADING } from "./floor.js";
+ import { gatesFor, assertMinorGates } from "./gates.js";
+ import { spokenSafetyNumbers, toSpoken } from "../voice/spoken.js";
+@@ -84,6 +85,19 @@
+   ability: "name the step, no labels",
+   feelings: "no feelings of your own",
+ };
++/**
++ * W2-I R3 (RELATIONAL-OS §11): corrections for the relational never-rules families (safety.js RELATIONAL_FAMILIES). Kept
++ * apart from FLOOR_FIX, whose keys are pinned to NEVER_FAMILIES (tests/never-rules.test.mjs). Notes, not lines; each
++ * ≤ 25 chars, so the longest FIX_MAX combination stays the FLOOR_FIX one (checkFits is unchanged).
++ */
++export const REL_FLOOR_FIX = {
++  contact: "no off-lesson contact",
++  memory_claim: "no claims of shared past",
++  meta_talk: "begin with the child",
++  gender_agreement: "verbs in your own gender",
++  address_correction: "accept their name for you",
++};
++
+ /** The correction checkFits renders: the longest combination of FIX_MAX keys, computed (never hard-coded). */
+ export const FIX_LOAD_GATE = (() => {
+   const keys = Object.keys(FLOOR_FIX);
+@@ -153,9 +167,14 @@
+   return parts;
+ }
+ 
+-function moveParts(move, voiced) {
++function moveParts(move, voiced, rel) {
+   const rung = move.hintLevel ? ` · ladder rung ${move.hintLevel} of 4` : "";
+   const kind = move.kind.replace(/_/g, " ");
++  // W2-I (BR5): the relational overlay the kernel accepted this turn (state.rel, ids only) as ONE more note in the MOVE
++  // section — RELATIONAL-OS SHAPES are notes, never lines (tests/relational-policy.test.mjs lints them). A safeguard or a
++  // closing wrap carries no rapport note (the kernel already refuses those; this is the compile's own guard).
++  const shape = rel?.overlay?.shapeId && REL_SHAPES[rel.overlay.shapeId]
++    && (move.kind !== "safeguard") && (move.kind !== "wrap" || ["RELEASE", "CHECK_IN"].includes(rel.overlay.kind)) ? REL_SHAPES[rel.overlay.shapeId] : null;
+   return voiced
+     ? [
+       { text: `YOUR LAST TURN (already said — do not repeat it): ${kind}${rung}`, drop: null },
+@@ -164,6 +183,7 @@
+     : [
+       { text: `YOUR MOVE THIS TURN: ${kind}${rung}`, drop: null },
+       { text: `- shape (a note, not words to say): ${move.shape}`, drop: null },
++      ...(shape ? [{ text: `- relational note (a note, not words to say): ${shape}`, drop: null }] : []),
+     ];
+ }
+ 
+@@ -203,7 +223,8 @@
+   const n = TURN_WORDS[ageBand] ?? TURN_WORDS["10-15"];
+   const voice = lane === "voice";
+   const lvl = s.hintLevel;
+-  const fix = Object.keys(FLOOR_FIX).filter((k) => s.correction?.includes(k)).slice(0, FIX_MAX).map((k) => FLOOR_FIX[k]);
++  const fix = [...Object.keys(FLOOR_FIX).filter((k) => s.correction?.includes(k)), ...Object.keys(REL_FLOOR_FIX).filter((k) => s.correction?.includes(k))]
++    .slice(0, FIX_MAX).map((k) => FLOOR_FIX[k] ?? REL_FLOOR_FIX[k]);
+   const open = item && ["why", "teachback"].includes(item.kind);
+   const keyRule = !item || lvl >= 4 || s.pendingWhy === item.id ? null
+     : voice ? `the key${open ? " idea" : ""} stays unsaid until rung 4 (now ${lvl}); if they ask for it, nudge`
+@@ -212,6 +233,9 @@
+   let check, shape;
+   if (move.kind === "safeguard") {
+     check = voice ? SAFEGUARD_CHECK_VOICE : SAFEGUARD_CHECK;
++    // W2-I R3 (P2: a spoken-planning preface on 18/18 heavy turns): the reply begins with the child, never with a sentence
++    // about how she will respond; the vetted opening is prepended in code (server/relational/openings.js).
++    check = `${check} Begin with the child, never with how you will respond.`;
+     shape = "at most 35 words, short calm sentences. End by asking if they are okay right now, then stop.";
+   } else if (voice) {
+     check = [`when they reply: ${ESCAPE_VOICE}`, STOP, branchClause(branches, poser(writtenAsk ? "text" : lane, language, s, ageBand)), keyRule].filter(Boolean).join("; ");
+@@ -270,7 +294,7 @@
+     // VIBE (COMPREHENSION-ENGINE.md §6.4): ONE key=value row of closed-vocabulary shapes, after LESSON NOW and before
+     // the move; it sheds before anything but the brief's callbacks/wins/interests (drop 4). Pace knobs never go here.
+     { id: "vibe", parts: (input.vibe ?? input.lessonState?.vibe) ? [{ text: vibeRow(input.vibe ?? input.lessonState.vibe), drop: 4 }] : [] },
+-    { id: "move", parts: moveParts(input.move, voiced) },
++    { id: "move", parts: moveParts(input.move, voiced, input.lessonState?.rel) },
+     { id: "language", parts: [{ text: languageRule(input.language, ageBand), drop: null }] },
+     { id: "last", parts: lastParts({ ...input, lane, ageBand, protegeName: input.character.protege.name }) },
+   ];

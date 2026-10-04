@@ -34,7 +34,9 @@ export const CONTEXT: Record<ExchangeContext, ContextRow> = {
   },
   open_explanation: {
     speakPc: 0.9, speakPh: 0.1, nods: true, bC: -1.0, bH: -1.5, wSil: 1.0, wHSil: 2.0,
-    backstopMs: (_p50, p90) => Math.min(3000, Math.max(2000, 1.2 * p90)),
+    // wait time II: 2.5-3.5 s (was 2-3 s: TaxilaFDB train 2026-10-04, 49/440 mid-explanation pauses of 2.2-2.8 s were cut
+    // by the backstop on the fast lane; ends with a yield tag no longer wait for it)
+    backstopMs: (_p50, p90) => Math.min(3500, Math.max(2500, 1.5 * p90)),
   },
   question_to_her: { speakPc: 0.75, speakPh: 0.25, nods: true, bC: -0.5, bH: -1.5, wSil: 1.0, wHSil: 1.5, backstopMs: () => 800 },
   chit_chat: { speakPc: 0.7, speakPh: 0.3, nods: true, bC: -0.5, bH: -1.2, wSil: 1.0, wHSil: 1.5, backstopMs: () => 700 },

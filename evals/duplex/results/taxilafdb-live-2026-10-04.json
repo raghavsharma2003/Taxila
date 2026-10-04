@@ -1,0 +1,704 @@
+{
+ "id": "taxilafdb-live-L2",
+ "date": "2026-10-04",
+ "arm": "stage-a",
+ "stt": "taxila-live-transcribe (D4, eastus2) from the US sandbox",
+ "streams": 48,
+ "ok": 48,
+ "errors": [],
+ "seconds": 154,
+ "sttTiming": {
+  "live": {
+   "firstPartialAfterOnsetMs": {
+    "n": 48,
+    "p50": 1086,
+    "p90": 1561
+   },
+   "partialLagMs": {
+    "n": 316,
+    "p50": 525,
+    "p90": 1229
+   }
+  },
+  "simModelD4_M2": {
+   "firstPartialAfterOnsetMs": {
+    "n": 28,
+    "p10": 1473,
+    "p50": 1743,
+    "p90": 2048,
+    "mean": 1785
+   },
+   "partialLagMs": {
+    "n": 266,
+    "p10": -63,
+    "p50": 713,
+    "p90": 1477,
+    "mean": 794
+   }
+  }
+ },
+ "live": {
+  "M2_thinkingCutoff": {
+   "k": 1,
+   "n": 38,
+   "rate": 0.026,
+   "ci95": [
+    0,
+    0.083
+   ]
+  },
+  "M2_turnCutoff": {
+   "k": 1,
+   "n": 29,
+   "rate": 0.034,
+   "ci95": [
+    0,
+    0.103
+   ]
+  },
+  "M3_gapDecision": {
+   "n": 28,
+   "p50": 825,
+   "p90": 1489,
+   "ci95p50": [
+    790,
+    945
+   ],
+   "ci95p90": [
+    1163,
+    1520
+   ],
+   "mean": 958
+  },
+  "M3_gapAudible": {
+   "n": 28,
+   "p50": 2430,
+   "p90": 3878,
+   "ci95p50": [
+    1898,
+    2874
+   ],
+   "ci95p90": [
+    3035,
+    4685
+   ],
+   "mean": 2436
+  },
+  "M4_missedRespond": {
+   "k": 8,
+   "n": 36,
+   "rate": 0.222,
+   "ci95": [
+    0.111,
+    0.361
+   ]
+  },
+  "M7_yieldLatency": {
+   "n": 4,
+   "p50": 296,
+   "p90": 599,
+   "ci95p50": [
+    71,
+    710
+   ],
+   "ci95p90": [
+    196,
+    710
+   ],
+   "mean": 343
+  },
+  "M11_verdictOnRepaired": {
+   "k": 0,
+   "n": 2,
+   "rate": 0,
+   "ci95": [
+    0,
+    0
+   ]
+  },
+  "M12_holdViolation": {
+   "k": 1,
+   "n": 5,
+   "rate": 0.2,
+   "ci95": [
+    0,
+    0.6
+   ]
+  },
+  "M13_nonSafetySpeechAfterDistress": {
+   "k": 1,
+   "n": 4,
+   "rate": 0.25,
+   "ci95": [
+    0,
+    0.75
+   ]
+  },
+  "M13_detected": {
+   "k": 3,
+   "n": 4,
+   "rate": 0.75,
+   "ci95": [
+    0.25,
+    1
+   ]
+  }
+ },
+ "sim": {
+  "M2_thinkingCutoff": {
+   "k": 0,
+   "n": 38,
+   "rate": 0,
+   "ci95": [
+    0,
+    0
+   ]
+  },
+  "M2_turnCutoff": {
+   "k": 0,
+   "n": 29,
+   "rate": 0,
+   "ci95": [
+    0,
+    0
+   ]
+  },
+  "M3_gapDecision": {
+   "n": 33,
+   "p50": 1090,
+   "p90": 1472,
+   "ci95p50": [
+    979,
+    1210
+   ],
+   "ci95p90": [
+    1270,
+    1590
+   ],
+   "mean": 1098
+  },
+  "M3_gapAudible": {
+   "n": 33,
+   "p50": 2739,
+   "p90": 3289,
+   "ci95p50": [
+    1704,
+    3003
+   ],
+   "ci95p90": [
+    3127,
+    3804
+   ],
+   "mean": 2486
+  },
+  "M4_missedRespond": {
+   "k": 3,
+   "n": 36,
+   "rate": 0.083,
+   "ci95": [
+    0.027,
+    0.194
+   ]
+  },
+  "M7_yieldLatency": {
+   "n": 5,
+   "p50": 701,
+   "p90": 1300,
+   "ci95p50": [
+    250,
+    1693
+   ],
+   "ci95p90": [
+    689,
+    1693
+   ],
+   "mean": 805
+  },
+  "M11_verdictOnRepaired": {
+   "k": 0,
+   "n": 2,
+   "rate": 0,
+   "ci95": [
+    0,
+    0
+   ]
+  },
+  "M12_holdViolation": {
+   "k": 0,
+   "n": 5,
+   "rate": 0,
+   "ci95": [
+    0,
+    0
+   ]
+  },
+  "M13_nonSafetySpeechAfterDistress": {
+   "k": 0,
+   "n": 4,
+   "rate": 0,
+   "ci95": [
+    0,
+    0
+   ]
+  },
+  "M13_detected": {
+   "k": 4,
+   "n": 4,
+   "rate": 1,
+   "ci95": [
+    1,
+    1
+   ]
+  }
+ },
+ "agreement": {
+  "turnCutoff": [
+   28,
+   29
+  ],
+  "missedRespond": [
+   31,
+   36
+  ],
+  "gapLiveMinusSimMs": {
+   "n": 28,
+   "p50": -140,
+   "p10": -526,
+   "p90": 198
+  }
+ },
+ "perStream": [
+  {
+   "id": "f1-fluent_choice_yn-0033~Kavya~noisy",
+   "commits": 1,
+   "events": 9,
+   "gap": 950,
+   "simGap": 890,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f1-fluent_dec_unit-0027~Rehaan~noisy",
+   "commits": 1,
+   "events": 10,
+   "gap": 630,
+   "simGap": 1130,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f1-fluent_choice_yn-0029~Kavya~clean",
+   "commits": 1,
+   "events": 25,
+   "gap": null,
+   "simGap": null,
+   "missed": true,
+   "turnCutoff": false
+  },
+  {
+   "id": "f1-fluent_dec_unit-0023~Rehaan~clean",
+   "commits": 1,
+   "events": 35,
+   "gap": 1520,
+   "simGap": 740,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f1-hes_preface-0086~Kavya~clean",
+   "commits": 2,
+   "events": 28,
+   "gap": 2330,
+   "simGap": 810,
+   "missed": true,
+   "turnCutoff": false
+  },
+  {
+   "id": "f1-hes_preface-0110~Rehaan~clean",
+   "commits": 2,
+   "events": 31,
+   "gap": 1510,
+   "simGap": 850,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f1-hes_preface-0098~Kavya~noisy",
+   "commits": 2,
+   "events": 19,
+   "gap": 1160,
+   "simGap": 980,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f1-rep_marker-0121~Rehaan~noisy",
+   "commits": 3,
+   "events": 35,
+   "gap": 840,
+   "simGap": 1360,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f1-tail-0053~Kavya~noisy",
+   "commits": 1,
+   "events": 10,
+   "gap": 1180,
+   "simGap": 1680,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f1-tail-0057~Rehaan~clean",
+   "commits": 1,
+   "events": 21,
+   "gap": null,
+   "simGap": 1120,
+   "missed": true,
+   "turnCutoff": false
+  },
+  {
+   "id": "f1-tail-0061~Rehaan~noisy",
+   "commits": 1,
+   "events": 11,
+   "gap": 630,
+   "simGap": 850,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f1-rep_marker-0136~Kavya~clean",
+   "commits": 3,
+   "events": 56,
+   "gap": 750,
+   "simGap": 1350,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f2-cue_maths-0168~Kavya~noisy",
+   "commits": 3,
+   "events": 45,
+   "gap": 810,
+   "simGap": 1210,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f2-cue_maths-0141~Kavya~clean",
+   "commits": 3,
+   "events": 63,
+   "gap": 760,
+   "simGap": 720,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f2-cue_maths-0183~Rehaan~clean",
+   "commits": 4,
+   "events": 60,
+   "gap": 890,
+   "simGap": 1430,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f2-cue_maths-0216~Rehaan~noisy",
+   "commits": 3,
+   "events": 35,
+   "gap": 810,
+   "simGap": 790,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f2-nocue_sci-0164~Kavya~clean",
+   "commits": 3,
+   "events": 50,
+   "gap": 2990,
+   "simGap": 2990,
+   "missed": true,
+   "turnCutoff": false
+  },
+  {
+   "id": "f2-nocue_sci-0172~Kavya~noisy",
+   "commits": 3,
+   "events": 47,
+   "gap": 2520,
+   "simGap": 2520,
+   "missed": true,
+   "turnCutoff": false
+  },
+  {
+   "id": "f2-nocue_sci-0197~Rehaan~noisy",
+   "commits": 3,
+   "events": 49,
+   "gap": 2440,
+   "simGap": 2440,
+   "missed": true,
+   "turnCutoff": false
+  },
+  {
+   "id": "f2-nocue_sci-0184~Rehaan~clean",
+   "commits": 3,
+   "events": 52,
+   "gap": 2970,
+   "simGap": 2970,
+   "missed": true,
+   "turnCutoff": false
+  },
+  {
+   "id": "f3-initial_address-0225~Kavya~clean",
+   "commits": 2,
+   "events": 32,
+   "gap": 940,
+   "simGap": 700,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f3-initial_address-0249~Kavya~clean",
+   "commits": 2,
+   "events": 39,
+   "gap": 770,
+   "simGap": 1030,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f4-one_en-0263~Kavya~clean",
+   "commits": 1,
+   "events": 18,
+   "gap": 2750,
+   "simGap": 1230,
+   "missed": true,
+   "turnCutoff": false
+  },
+  {
+   "id": "f3-mid_b-0232~Kavya~clean",
+   "commits": 3,
+   "events": 44,
+   "gap": null,
+   "simGap": null,
+   "missed": true,
+   "turnCutoff": false
+  },
+  {
+   "id": "f4-one_en-0273~Kavya~noisy",
+   "commits": 1,
+   "events": 18,
+   "gap": 2910,
+   "simGap": 1270,
+   "missed": true,
+   "turnCutoff": false
+  },
+  {
+   "id": "f3-mid_b-0248~Kavya~clean",
+   "commits": 3,
+   "events": 58,
+   "gap": 3030,
+   "simGap": 3030,
+   "missed": true,
+   "turnCutoff": false
+  },
+  {
+   "id": "f4-one_en-0283~Rehaan~clean",
+   "commits": 1,
+   "events": 18,
+   "gap": 2750,
+   "simGap": 1190,
+   "missed": true,
+   "turnCutoff": false
+  },
+  {
+   "id": "f4-two_hi-0266~Rehaan~noisy",
+   "commits": 2,
+   "events": 21,
+   "gap": 860,
+   "simGap": 980,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f5-hold_think-0294~Rehaan~clean",
+   "commits": 2,
+   "events": 43,
+   "gap": 750,
+   "simGap": 1010,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f5-hold_think-0304~Kavya~noisy",
+   "commits": 2,
+   "events": 37,
+   "gap": 800,
+   "simGap": 780,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f5-hold_long-0305~Rehaan~noisy",
+   "commits": 2,
+   "events": 29,
+   "gap": 760,
+   "simGap": 940,
+   "missed": false,
+   "turnCutoff": true
+  },
+  {
+   "id": "f5-hold_long-0293~Kavya~clean",
+   "commits": 2,
+   "events": 31,
+   "gap": 850,
+   "simGap": 1010,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f5-hold_think-0319~Kavya~clean",
+   "commits": 2,
+   "events": 41,
+   "gap": 790,
+   "simGap": 1090,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f5-ws_long-0323~Rehaan~noisy",
+   "commits": 3,
+   "events": 25,
+   "gap": 1480,
+   "simGap": 1480,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f5-ws_long-0329~Rehaan~clean",
+   "commits": 3,
+   "events": 42,
+   "gap": 1520,
+   "simGap": 1520,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f5-ws_long-0335~Kavya~noisy",
+   "commits": 3,
+   "events": 26,
+   "gap": 1440,
+   "simGap": 1440,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f6-filler_idk-0342~Kavya~clean",
+   "commits": 2,
+   "events": 26,
+   "gap": 1170,
+   "simGap": 1110,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f6-filler_idk-0348~Kavya~noisy",
+   "commits": 2,
+   "events": 21,
+   "gap": 810,
+   "simGap": 1270,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f7-fold_in-0369~Kavya~clean",
+   "commits": 1,
+   "events": 20,
+   "gap": null,
+   "simGap": null,
+   "missed": null,
+   "turnCutoff": false
+  },
+  {
+   "id": "f6-filler_idk-0360~Rehaan~noisy",
+   "commits": 2,
+   "events": 14,
+   "gap": 650,
+   "simGap": 1590,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f6-filler_idk-0354~Rehaan~clean",
+   "commits": 2,
+   "events": 33,
+   "gap": 780,
+   "simGap": 700,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
+   "id": "f7-fold_in-0394~Kavya~clean",
+   "commits": 1,
+   "events": 20,
+   "gap": null,
+   "simGap": null,
+   "missed": null,
+   "turnCutoff": false
+  },
+  {
+   "id": "f7-stop-0366~Kavya~clean",
+   "commits": 1,
+   "events": 12,
+   "gap": null,
+   "simGap": null,
+   "missed": null,
+   "turnCutoff": false
+  },
+  {
+   "id": "f7-stop-0391~Kavya~clean",
+   "commits": 0,
+   "events": 16,
+   "gap": null,
+   "simGap": null,
+   "missed": null,
+   "turnCutoff": false
+  },
+  {
+   "id": "f10-after_pause-0492~Kavya~clean",
+   "commits": 2,
+   "events": 32,
+   "gap": null,
+   "simGap": null,
+   "missed": null,
+   "turnCutoff": false
+  },
+  {
+   "id": "f10-after_pause-0510~Kavya~clean",
+   "commits": 2,
+   "events": 30,
+   "gap": null,
+   "simGap": null,
+   "missed": null,
+   "turnCutoff": false
+  },
+  {
+   "id": "f10-after_value-0506~Kavya~clean",
+   "commits": 2,
+   "events": 27,
+   "gap": null,
+   "simGap": null,
+   "missed": null,
+   "turnCutoff": false
+  },
+  {
+   "id": "f10-during_her-0496~Kavya~clean",
+   "commits": 1,
+   "events": 15,
+   "gap": null,
+   "simGap": null,
+   "missed": null,
+   "turnCutoff": false
+  }
+ ]
+}

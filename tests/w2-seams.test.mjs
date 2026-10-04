@@ -27,6 +27,8 @@ test("server seams are no-ops until filled (studio, relational, expressive, purp
   assert.equal(studioSeam.onReveal({}), undefined);
 
   const { relationalSeam } = await import("../server/relational/seam.js");
+  // W2-I filled the relational seam (tests/relational-policy.test.mjs): a non-child id, a neutral turn and an end with no
+  // child mode still give the pre-seam values
   assert.equal(await relationalSeam.snapshot("c1", { classLevel: 5 }), null);
   assert.equal(relationalSeam.decide({ lessonId: "L", childId: "c", turn: 1, childText: "", cls: null, move: "probe", lane: "text", safety: false }), null);
   assert.deepEqual(relationalSeam.onLessonEnd({ id: "c" }, { lessonId: "L", childId: "c", endedBy: "client", turns: 3 }), []);
@@ -60,7 +62,8 @@ test("server/learner/writer.js re-exports the relational writers (one import poi
   const writer = await import("../server/learner/writer.js");
   const rel = await import("../server/relational/writers.js");
   assert.equal(writer.RELATIONAL_TABLES, rel.RELATIONAL_TABLES);
-  assert.deepEqual([...rel.RELATIONAL_TABLES], []);
+  // W2-I filled the writers with 018_relational.sql (tests/relational-writers.test.mjs pins their behaviour)
+  assert.deepEqual([...rel.RELATIONAL_TABLES], ["rel_bond", "rel_event", "relational_note", "rel_overlay_window"]);
 });
 
 test("lesson.js keeps every W2 call site, each guarded by seamSafe", () => {

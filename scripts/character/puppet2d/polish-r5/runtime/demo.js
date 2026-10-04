@@ -71,7 +71,10 @@ async function main() {
   const canvas = document.getElementById("c");
   const view = (Q.get("view") || "60,8,904").split(",").map(Number);
   if (Q.get("px")) canvas.style.width = Q.get("px") + "px";
-  const rig = await Puppet2DRig.load(canvas, BASE, { ext: EXT, dpr: CAPTURE ? 1 : Math.min(2, devicePixelRatio || 1), view, preserve: CAPTURE, clear: Q.get("bg") ? Q.get("bg").split(",").map((v) => +v / 255) : undefined });
+  const PLATES = Q.get("turn") === "plates";   // r5: the opt-in +-20 painted-plate turn (evaluation only)
+  const rig = await Puppet2DRig.load(canvas, BASE, { plates: PLATES, yawMax: Q.get("yawmax") ? +Q.get("yawmax") : undefined, ext: EXT, dpr: CAPTURE ? 1 : Math.min(2, devicePixelRatio || 1), view, preserve: CAPTURE, clear: Q.get("bg") ? Q.get("bg").split(",").map((v) => +v / 255) : undefined });
+  rig.warm();   // r5: first-use costs at load, not in the first talking frame
+  if (Q.has("prof")) rig.prof = {};
   if (Q.get("dbg") || Q.get("only")) rig.debug = { tint: Q.get("dbg") === "tint", only: Q.get("only") ? Q.get("only").split(",") : null };
   const align = await fetch("./audio/voice.align.json").then((r) => r.json());
   const segs = visemeTrack(align);

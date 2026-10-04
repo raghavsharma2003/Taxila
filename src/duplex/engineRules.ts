@@ -118,11 +118,15 @@ export function estimate(tick: EngineTick): Estimate {
     - 3.0 * (m.repairOpen ? 1 : 0) - 2.0 * (m.holdRequest ? 1 : 0) - 1.5 * (m.openTail ? 1 : 0) - 1.5 * (m.fillerTail ? 1 : 0)
     - 1.2 * (m.projection ? 1 : 0) - 1.0 * (m.wordSearch ? 1 : 0) - 0.8 * (m.codeSwitchAtEdge ? 1 : 0);
   if (!tr.text) zBase -= 2.0;
+  // a closed question with NO value of the asked form yet: a finished-sounding clause is not an answer (completeness is
+  // relative to the question). TaxilaFDB train, 2026-10-04: off-task drift chunks ("वहाँ एक बहुत बड़ा dog था") were
+  // taken as turn ends in 46/192 drift pauses on the fast lane. idk / a question / a yield tag still end the turn.
+  if (closed && f === "none" && !m.values.length && !m.idk && !m.questionComplete && !m.yieldTag && !m.repeatRequest) { zBase -= 1.5; reasons.push("x_closed_no_value"); }
   let zC = zBase - (unseen && !acousticVouches ? 4.0 : 0) - (c.voicing ? 2.0 : 0);
   // a finished SENTENCE is not a finished EXPLANATION (M-D7: "triangle के तीन sides होते हैं" + 1.6 s pause was cut 3/3).
   // Without a fresh semantic read, stage A is uncertain about explanation ends: cap below every open speakPc, so only the
   // semantic estimate, an idk / question / yield tag, or the governor's backstop ends a teach-back.
-  const sentenceOnly = exchange === "open_explanation" && semW === 0 && !m.idk && !m.questionComplete && !m.repeatRequest;
+  const sentenceOnly = exchange === "open_explanation" && semW === 0 && !m.idk && !m.questionComplete && !m.repeatRequest && !m.yieldTag;
   if (sentenceOnly) { const cap = logit(EXPLAIN_SENTENCE_CAP); if (zC > cap) { zC = cap; reasons.push("x_explain_cap"); } }
   const zH = row.bH + 4.0 * (m.holdRequest ? 1 : 0) + 2.0 * (m.repairOpen ? 1 : 0)
     + 1.5 * Math.max(m.fillerTail ? 1 : 0, m.openTail ? 1 : 0, m.projection ? 1 : 0, m.wordSearch ? 1 : 0)

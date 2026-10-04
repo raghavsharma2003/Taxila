@@ -18,8 +18,8 @@ Only numbers were kept: every wav was deleted after the product front-end reduce
 
 | corpus | licence | permitted use | why not used now |
 |---|---|---|---|
-| IndicVoices (AI4Bharat) | CC BY 4.0 [S] | train (Hindi filler / onset calibration) | Hugging Face copy is gated; needs the source-site terms read and a non-gated path |
-| Vaani (IISc / ARTPARK) | CC BY 4.0 [S] | train | gated on Hugging Face |
+| IndicVoices (AI4Bharat) | CC BY 4.0 (HF card) | train (Hindi filler / onset calibration) | `ai4bharat/IndicVoices` is gated (`gated: auto`, HF API 2026-10-04 [V]); the no-gated rule excludes it until a non-gated source with readable terms exists |
+| Vaani (IISc / ARTPARK) | CC BY 4.0 (HF card) | train | `ARTPARK-IISc/Vaani` is gated (`gated: auto`, HF API 2026-10-04 [V]) |
 | MyST (child science tutoring, US) | CC BY-NC-SA free tier [S] | **evaluation only** (labelled NC) | needs an LDC account; not obtainable in this session |
 | HiACC, ASER, ScAA (Indian child speech) | CC BY-NC(-SA) [S] | **evaluation only** (labelled NC) | not obtained |
 | MUCS 2021 Hinglish | CC BY-SA [S] | evaluation only (share-alike on weights unresolved) | not obtained |

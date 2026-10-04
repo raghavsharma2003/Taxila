@@ -455,21 +455,21 @@ var C = class {
 			x(this.nod.x * j + w[0] * S - 3 * this.leanV - O * .2 * p, -20, 20),
 			x(this.headYaw + w[1] * S, -20, 20),
 			x(this.tilt + w[2] * S * .6, -20, 20)
-		], N = this.brow, P = (e - N.t0) * 1e3, F = P < 0 ? 0 : P < 80 ? N.amp * P / 80 : P < 320 ? N.amp : P < 520 ? N.amp * (1 - (P - 320) / 200) : 0, ee = this.reduced ? .3 : 1, I = {}, te = (e, t) => {
-			I[e + "Left"] = (I[e + "Left"] ?? 0) + t * this.asym, I[e + "Right"] = (I[e + "Right"] ?? 0) + t / this.asym;
+		], N = this.brow, P = (e - N.t0) * 1e3, F = P < 0 ? 0 : P < 80 ? N.amp * P / 80 : P < 320 ? N.amp : P < 520 ? N.amp * (1 - (P - 320) / 200) : 0, I = this.reduced ? .3 : 1, L = {}, R = (e, t) => {
+			L[e + "Left"] = (L[e + "Left"] ?? 0) + t * this.asym, L[e + "Right"] = (L[e + "Right"] ?? 0) + t / this.asym;
 		};
 		if (T) for (let [e, t] of Object.entries(T.bs)) {
-			let n = t * _ * ee;
-			e === "mouthSmile" && (n *= this.smileGain / .7), this.gentle && h.has(e) && (n *= .5), e.startsWith("brow") && (n *= this.browGain), e === "browInnerUp" ? I.browInnerUp = (I.browInnerUp ?? 0) + n : te(e, n);
+			let n = t * _ * I;
+			e === "mouthSmile" && (n *= this.smileGain / .7), this.gentle && h.has(e) && (n *= .5), e.startsWith("brow") && (n *= this.browGain), e === "browInnerUp" ? L.browInnerUp = (L.browInnerUp ?? 0) + n : R(e, n);
 		}
-		te("mouthSmile", (this.state === "thinking" ? .03 : this.state === "speaking" ? .06 : .1) * this.smileGain * (this.gentle ? .5 : 1)), te("browOuterUp", F * this.browGain), I.browInnerUp = (I.browInnerUp ?? 0) + (F * .8 + (this.state === "listening" ? .08 : 0)) * this.browGain;
-		let ne = Math.max(I.eyeSquintLeft ?? 0, I.eyeSquintRight ?? 0) * .3, L = Math.max(f, ne);
-		I.eyeBlinkLeft = L, I.eyeBlinkRight = L;
-		for (let e in I) I[e] = b(I[e]);
+		R("mouthSmile", (this.state === "thinking" ? .03 : this.state === "speaking" ? .06 : .1) * this.smileGain * (this.gentle ? .5 : 1)), R("browOuterUp", F * this.browGain), L.browInnerUp = (L.browInnerUp ?? 0) + (F * .8 + (this.state === "listening" ? .08 : 0)) * this.browGain;
+		let ee = Math.max(L.eyeSquintLeft ?? 0, L.eyeSquintRight ?? 0) * .3, z = Math.max(f, ee);
+		L.eyeBlinkLeft = z, L.eyeBlinkRight = z;
+		for (let e in L) L[e] = b(L[e]);
 		return {
 			t: e,
 			state: this.state,
-			bs: I,
+			bs: L,
 			head: M,
 			gaze: [D, O],
 			lean: this.leanV,
@@ -527,8 +527,8 @@ var C = class {
 		}
 		return this.prev = r, r;
 	}
-}, k = "#version 300 es\nin vec2 aPos; in vec2 aUv;\nuniform vec2 uView; uniform vec4 uCam; // cam: x0, y0, scale, flipY\nout vec2 vUv; out vec2 vRest;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vUv = aUv;\n}", A = "#version 300 es\nprecision mediump float;\nin vec2 vUv;\nuniform sampler2D uTex; uniform float uAlpha; uniform vec4 uShade; // shade: dirX, x0, x1, amount\nuniform vec4 uRect; // texture rect in rest space (x0,y0,w,h) for shading position\nuniform vec4 uTint; // debug: rgb, amount\nout vec4 o;\nvoid main(){\n  vec4 c = texture(uTex, vUv);\n  float x = uRect.x + vUv.x * uRect.z;\n  float s = clamp((x - uShade.y) / (uShade.z - uShade.y), 0.0, 1.0);\n  s = uShade.x > 0.0 ? s : 1.0 - s;\n  c.rgb *= 1.0 - uShade.w * s * s;\n  c.rgb = mix(c.rgb, uTint.rgb * c.a, uTint.a);\n  o = c * uAlpha;\n}", j = "#version 300 es\nin vec2 aPos; in vec2 aRest; in float aEdge; in float aTop;\nuniform vec2 uView; uniform vec4 uCam;\nout vec2 vRest; out float vEdge; out float vTop; out vec2 vScr;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vRest = aRest; vEdge = aEdge; vTop = aTop; vScr = aPos;\n}", M = "#version 300 es\nprecision highp float;\nin vec2 vRest; in float vEdge; in float vTop; in vec2 vScr;\nuniform vec2 uIrisScr; uniform vec2 uCatchScr; uniform float uIrisK; uniform vec2 uCatchC;\nuniform sampler2D uSclera; uniform vec4 uScleraRect;\nuniform sampler2D uIris; uniform vec4 uIrisRect;\nuniform sampler2D uCatch; uniform vec4 uCatchRect;\nuniform vec2 uIrisOff; uniform vec2 uIrisC; uniform vec2 uIrisScale; uniform vec2 uCatchOff; uniform float uCatchA;\nuniform float uLidShade; uniform float uTopY;\nout vec4 o;\nvec4 tex(sampler2D t, vec4 r, vec2 p){\n  vec2 uv = (p - r.xy) / r.zw;\n  if (uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) return vec4(0.0);\n  return texture(t, uv);\n}\nvoid main(){\n  vec4 s = tex(uSclera, uScleraRect, vRest);\n  vec3 col = s.a > 0.0 ? s.rgb / s.a : vec3(0.95);\n  // r3: the iris and the catchlight are placed in SCREEN space and scaled uniformly: they translate with the gaze and\n  // the turn but never squash anisotropically (r2's far eye at yaw 20 became a vertical oval)\n  vec2 ip = uIrisC + (vScr - uIrisScr) / (uIrisK * uIrisScale);\n  vec4 ir = tex(uIris, uIrisRect, ip);\n  col = col * (1.0 - ir.a) + ir.rgb;\n  // lid shadow: the band right under the upper lid darkens a little (wraps the eye)\n  // r2: per-column lid line (vTop), a soft wrap shadow ~10 px deep under the whole lid, as in c-front\n  float dl = clamp((vRest.y - vTop - 2.0) / 9.0, 0.0, 1.0);\n  col *= 1.0 - uLidShade * (1.0 - dl) * (1.0 - dl);\n  vec4 cl = tex(uCatch, uCatchRect, uCatchC + (vScr - uCatchScr) / uIrisK);\n  col = mix(col, vec3(1.0), cl.a * uCatchA);\n  float a = clamp(vEdge, 0.0, 1.0);\n  o = vec4(col * a, a);\n}", N = "#version 300 es\nin vec2 aPos; in vec2 aUv; in float aA; in float aL;\nuniform vec2 uView; uniform vec4 uCam;\nout vec2 vUv; out float vA; out float vL;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vUv = aUv; vA = aA; vL = aL;\n}", P = "#version 300 es\nprecision mediump float;\nin vec2 vUv; in float vA; in float vL;\nuniform sampler2D uTex; uniform vec4 uShade; uniform vec4 uRect;\nout vec4 o;\nvoid main(){\n  vec4 c = texture(uTex, vUv);\n  float x = uRect.x + vUv.x * uRect.z;\n  float s = clamp((x - uShade.y) / (uShade.z - uShade.y), 0.0, 1.0);\n  s = uShade.x > 0.0 ? s : 1.0 - s;\n  c.rgb *= (1.0 - uShade.w * s * s) * vL;\n  o = c * vA;\n}", F = "#version 300 es\nin vec2 aPos; in float aS; in float aDT; in float aGap;\nuniform vec2 uView; uniform vec4 uCam;\nout float vS; out float vDT; out float vGap;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vS = aS; vDT = aDT; vGap = aGap;\n}", ee = "#version 300 es\nprecision highp float;\nin float vS; in float vDT; in float vGap;\nuniform sampler2D uTex;\nuniform vec4 uTeeth;   // upper shown 0..1, lower shown 0..1, teeth height px, -\nuniform vec4 uTongue;  // body height share, tip, curl, -\nuniform float uShadeK;\nout vec4 o;\nvec3 rowc(float row, float u){ vec4 c = texture(uTex, vec2(u, (row + 0.5) / 64.0)); return c.rgb / max(c.a, 0.001); }\n// r4 (judge r3 fix 2): the teeth's free edge is the PAINTED contour's smooth fit (rows 12.9 - 2.7u^2 - 0.3u^4 of the\n// 16-row strip, interior-r4.py), drawn with an analytic coverage ramp one screen pixel wide: no ragged alpha, no shimmer\nfloat contourRows(float u){ return 12.9 - 2.7 * u * u - 0.3 * u * u * u * u; }\nvoid main(){\n  float gap = max(vGap, 0.001);\n  float dt = vDT, db = gap - vDT;\n  float a = abs(vS);\n  float u = clamp(vS * 0.5 + 0.5, 0.0, 1.0);\n  float px = max(fwidth(vDT), 0.35);          // one screen pixel in rest px\n  // cavity: roof (dark) to floor\n  vec3 col = rowc(32.0 + clamp(dt / gap, 0.0, 1.0) * 15.0, u);\n  col = col * 1.22 + vec3(0.035, 0.012, 0.01);   // r4: the refs' cavity is a warm brown, not a black-maroon hole\n  col *= 1.0 - 0.35 * pow(a, 3.0);\n  // ---- tongue: body mound on the floor; tip = a rounded LOBE that rises to the upper teeth (t d n l); curl = the\n  // retroflex underside up at the palate\n  float th = uTeeth.z, rp = 12.0 / th;\n  float upVis = th * uTeeth.x * contourRows(0.0) / 12.0;          // upper teeth hanging at the centre (px)\n  float mound = min(gap * uTongue.x, 7.0 + 0.12 * gap) * pow(max(0.0, 1.0 - pow(vS / 0.85, 2.0)), 0.8);\n  float lw = 0.40;                                                // lobe half-width (s units)\n  float lob = max(0.0, 1.0 - pow(vS / lw, 2.0));\n  // r4b: a soft DOME (wider at the base), not a flat-sided tombstone\n  float tipH = max(0.0, gap - upVis * 0.35) * uTongue.y * pow(lob, 0.85);\n  float curl = gap * 0.78 * uTongue.z * exp(-pow(vS / 0.3, 2.0));\n  float h = max(mound, max(tipH, curl));\n  if (h > 0.4) {\n    float cov = clamp((h - db) / px + 0.5, 0.0, 1.0);\n    bool isTip = tipH >= max(mound, curl) - 0.01 && uTongue.y > 0.05;\n    // r4b: the lobe samples the strip near its centre (the strip's column texture showed as vertical stripes on it)\n    vec3 t = rowc(48.0 + clamp(1.0 - db / max(h, 0.5), 0.0, 1.0) * 15.0, isTip ? 0.5 + vS * 0.15 : u);\n    // r4b: a pink-red tongue, distinct from the orange lip (it read as a second lower lip)\n    t *= 0.86 * vec3(1.0, 0.80, 0.86) * (1.0 - 0.3 * pow(a / 0.8, 2.0));\n    t *= mix(0.86, 1.04, smoothstep(0.0, 0.7 * max(h, 0.5), h - db));\n    if (isTip) {\n      // the lobe: lit on top, a soft groove down its middle, shadowed where it meets the cavity at the sides\n      // r4b: rounded like the Memoji shading: cylindrical falloff to the sides, a soft lit crown, a faint groove\n      float top = clamp((h - db) / 4.0, 0.0, 1.0);\n      t *= mix(1.08, 1.0, top) * mix(0.84, 1.03, sqrt(lob)) * (1.0 - 0.04 * exp(-pow(vS / 0.06, 2.0)) * top);\n    }\n    if (curl > max(mound, tipH) - 0.01 && uTongue.z > 0.05) {\n      vec3 under = t * vec3(0.72, 0.62, 0.68);\n      t = mix(under, t * 1.08, 1.0 - smoothstep(0.0, 1.4, h - db));\n    }\n    // a contact shadow just outside the tongue's edge keeps it legible against the cavity at 1x\n    col *= 1.0 - 0.25 * clamp(1.0 - abs(h - db) / 2.0, 0.0, 1.0) * (1.0 - cov);\n    col = mix(col, t, cov);\n  }\n  // ---- lower teeth (bottom-anchored on the lower lip), then upper teeth (hang from the upper lip, slide up as they hide)\n  float lwT = 0.52, uwT = 0.76;\n  float gapT = smoothstep(1.5, 4.0, gap);   // no teeth through a 1-2 px slit (it showed as a dotted sliver)     // the rows are narrower than the lip span: the corners recede into shadow\n  if (a < lwT && uTeeth.y > 0.01) {\n    float ul = clamp((vS / lwT) * 0.5 + 0.5, 0.0, 1.0);\n    float hL = th * 0.8 * smoothstep(0.2, 0.5, uTeeth.y) * contourRows(vS / lwT) / 12.0;       // visible height above the lower lip\n    float cov = clamp((hL - db) / px + 0.5, 0.0, 1.0) * (1.0 - smoothstep(lwT - 0.12, lwT, a)) * gapT;\n    float row = 31.0 - clamp(db * rp, 0.0, contourRows(vS / lwT) - 2.5);\n    vec3 lt = rowc(row, ul) * (1.0 - 0.3 * pow(a / lwT, 2.0));\n    col = mix(col, lt, cov);\n  }\n  if (a < uwT && uTeeth.x > 0.01) {\n    float uu = clamp((vS / uwT) * 0.5 + 0.5, 0.0, 1.0);\n    float cr = contourRows(vS / uwT);\n    float hU = th * cr / 12.0 - (1.0 - uTeeth.x) * th;                 // visible height below the upper lip\n    float cov = clamp((hU - dt) / px + 0.5, 0.0, 1.0) * (1.0 - smoothstep(uwT - 0.14, uwT, a)) * gapT;\n    float row = clamp((dt + (1.0 - uTeeth.x) * th) * rp, 0.0, cr - 2.5);\n    vec3 ut = rowc(row, uu) * 1.08 * (1.0 - 0.3 * pow(a / uwT, 2.0));\n    // the free edge catches a whisper of shadow (painted teeth have it), inside the coverage ramp only\n    ut *= 1.0 - 0.08 * clamp(1.0 - (hU - dt) / 1.6, 0.0, 1.0);\n    col = mix(col, ut, cov);\n  }\n  // the upper lip's shadow on whatever sits right under it\n  col *= mix(0.78, 1.0, smoothstep(0.0, 2.5, dt));\n  // r4b: a near-closed seam is the lip LINE (dark warm brown), fully opaque from gap 0.8 px, so the face layer never\n  // leaks through between the lip sheet's fading inner row and the interior (it showed as orange dots per mesh column)\n  col = mix(vec3(0.36, 0.17, 0.13), col, smoothstep(1.2, 3.5, gap));\n  float al = clamp((gap - 0.25) / 0.55, 0.0, 1.0);        // zero-gap columns (past the corners) still draw nothing\n  o = vec4(col * uShadeK * al, al);\n}";
-function I(e, t, n) {
+}, k = "#version 300 es\nin vec2 aPos; in vec2 aUv;\nuniform vec2 uView; uniform vec4 uCam; // cam: x0, y0, scale, flipY\nout vec2 vUv; out vec2 vRest;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vUv = aUv;\n}", A = "#version 300 es\nprecision mediump float;\nin vec2 vUv;\nuniform sampler2D uTex; uniform float uAlpha; uniform vec4 uShade; // shade: dirX, x0, x1, amount\nuniform vec4 uRect; // texture rect in rest space (x0,y0,w,h) for shading position\nuniform vec4 uTint; // debug: rgb, amount\nout vec4 o;\nvoid main(){\n  vec4 c = texture(uTex, vUv);\n  float x = uRect.x + vUv.x * uRect.z;\n  float s = clamp((x - uShade.y) / (uShade.z - uShade.y), 0.0, 1.0);\n  s = uShade.x > 0.0 ? s : 1.0 - s;\n  c.rgb *= 1.0 - uShade.w * s * s;\n  c.rgb = mix(c.rgb, uTint.rgb * c.a, uTint.a);\n  o = c * uAlpha;\n}", j = "#version 300 es\nin vec2 aPos; in vec2 aRest; in float aEdge; in float aTop;\nuniform vec2 uView; uniform vec4 uCam;\nout vec2 vRest; out float vEdge; out float vTop; out vec2 vScr;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vRest = aRest; vEdge = aEdge; vTop = aTop; vScr = aPos;\n}", M = "#version 300 es\nprecision highp float;\nin vec2 vRest; in float vEdge; in float vTop; in vec2 vScr;\nuniform vec2 uIrisScr; uniform vec2 uCatchScr; uniform float uIrisK; uniform vec2 uCatchC;\nuniform sampler2D uSclera; uniform vec4 uScleraRect;\nuniform sampler2D uIris; uniform vec4 uIrisRect;\nuniform sampler2D uCatch; uniform vec4 uCatchRect;\nuniform vec2 uIrisOff; uniform vec2 uIrisC; uniform vec2 uIrisScale; uniform vec2 uCatchOff; uniform float uCatchA;\nuniform float uLidShade; uniform float uTopY;\nout vec4 o;\nvec4 tex(sampler2D t, vec4 r, vec2 p){\n  vec2 uv = (p - r.xy) / r.zw;\n  if (uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) return vec4(0.0);\n  return texture(t, uv);\n}\nvoid main(){\n  vec4 s = tex(uSclera, uScleraRect, vRest);\n  vec3 col = s.a > 0.0 ? s.rgb / s.a : vec3(0.95);\n  // r3: the iris and the catchlight are placed in SCREEN space and scaled uniformly: they translate with the gaze and\n  // the turn but never squash anisotropically (r2's far eye at yaw 20 became a vertical oval)\n  vec2 ip = uIrisC + (vScr - uIrisScr) / (uIrisK * uIrisScale);\n  vec4 ir = tex(uIris, uIrisRect, ip);\n  col = col * (1.0 - ir.a) + ir.rgb;\n  // lid shadow: the band right under the upper lid darkens a little (wraps the eye)\n  // r2: per-column lid line (vTop), a soft wrap shadow ~10 px deep under the whole lid, as in c-front\n  float dl = clamp((vRest.y - vTop - 2.0) / 9.0, 0.0, 1.0);\n  col *= 1.0 - uLidShade * (1.0 - dl) * (1.0 - dl);\n  vec4 cl = tex(uCatch, uCatchRect, uCatchC + (vScr - uCatchScr) / uIrisK);\n  col = mix(col, vec3(1.0), cl.a * uCatchA);\n  float a = clamp(vEdge, 0.0, 1.0);\n  o = vec4(col * a, a);\n}", N = "#version 300 es\nin vec2 aPos; in vec2 aUv; in float aA; in float aL;\nuniform vec2 uView; uniform vec4 uCam;\nout vec2 vUv; out float vA; out float vL;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vUv = aUv; vA = aA; vL = aL;\n}", P = "#version 300 es\nprecision mediump float;\nin vec2 vUv; in float vA; in float vL;\nuniform sampler2D uTex; uniform vec4 uShade; uniform vec4 uRect;\nout vec4 o;\nvoid main(){\n  vec4 c = texture(uTex, vUv);\n  float x = uRect.x + vUv.x * uRect.z;\n  float s = clamp((x - uShade.y) / (uShade.z - uShade.y), 0.0, 1.0);\n  s = uShade.x > 0.0 ? s : 1.0 - s;\n  c.rgb *= (1.0 - uShade.w * s * s) * vL;\n  o = c * vA;\n}", F = "#version 300 es\nin vec2 aPos; in float aS; in float aDT; in float aGap;\nuniform vec2 uView; uniform vec4 uCam;\nout float vS; out float vDT; out float vGap;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vS = aS; vDT = aDT; vGap = aGap;\n}", I = "#version 300 es\nprecision highp float;\nin float vS; in float vDT; in float vGap;\nuniform sampler2D uTex;\nuniform vec4 uTeeth;   // upper shown 0..1, lower shown 0..1, teeth height px, -\nuniform vec4 uTongue;  // body height share, tip, curl, -\nuniform float uShadeK;\nout vec4 o;\nvec3 rowc(float row, float u){ vec4 c = texture(uTex, vec2(u, (row + 0.5) / 64.0)); return c.rgb / max(c.a, 0.001); }\n// r4 (judge r3 fix 2): the teeth's free edge is the PAINTED contour's smooth fit (rows 12.9 - 2.7u^2 - 0.3u^4 of the\n// 16-row strip, interior-r4.py), drawn with an analytic coverage ramp one screen pixel wide: no ragged alpha, no shimmer\nfloat contourRows(float u){ return 12.9 - 2.7 * u * u - 0.3 * u * u * u * u; }\nvoid main(){\n  float gap = max(vGap, 0.001);\n  float dt = vDT, db = gap - vDT;\n  float a = abs(vS);\n  float u = clamp(vS * 0.5 + 0.5, 0.0, 1.0);\n  float px = max(fwidth(vDT), 0.35);          // one screen pixel in rest px\n  // cavity: roof (dark) to floor\n  vec3 col = rowc(32.0 + clamp(dt / gap, 0.0, 1.0) * 15.0, u);\n  col = col * 1.22 + vec3(0.035, 0.012, 0.01);   // r4: the refs' cavity is a warm brown, not a black-maroon hole\n  col *= 1.0 - 0.28 * uTongue.y;                  // r5: a deeper cavity behind a raised tip (contrast for the lobe)\n  col *= 1.0 - 0.35 * pow(a, 3.0);\n  // ---- tongue: body mound on the floor; tip = a rounded LOBE that rises to the upper teeth (t d n l); curl = the\n  // retroflex underside up at the palate\n  float th = uTeeth.z, rp = 12.0 / th;\n  float upVis = th * uTeeth.x * contourRows(0.0) / 12.0;          // upper teeth hanging at the centre (px)\n  // r5 (judge r4: 'the L tongue tip is barely visible'): while the tip is up the floor mound drops away, so the lobe\n  // stands alone against a dark cavity on both sides and reads as a tongue tip, not as a second lower lip\n  float mound = min(gap * uTongue.x, 7.0 + 0.12 * gap) * pow(max(0.0, 1.0 - pow(vS / 0.85, 2.0)), 0.8) * (1.0 - 0.85 * clamp(uTongue.y * 1.4, 0.0, 1.0));\n  float lw = 0.33;                                                // lobe half-width (s units)\n  float lob = max(0.0, 1.0 - pow(vS / lw, 2.0));\n  // r4b: a soft DOME (wider at the base), not a flat-sided tombstone\n  float tipH = max(0.0, gap - upVis * 0.35) * uTongue.y * pow(lob, 0.85);\n  float curl = gap * 0.78 * uTongue.z * exp(-pow(vS / 0.3, 2.0));\n  float h = max(mound, max(tipH, curl));\n  if (h > 0.4) {\n    float cov = clamp((h - db) / px + 0.5, 0.0, 1.0);\n    bool isTip = tipH >= max(mound, curl) - 0.01 && uTongue.y > 0.05;\n    // r4b: the lobe samples the strip near its centre (the strip's column texture showed as vertical stripes on it)\n    vec3 t = rowc(48.0 + clamp(1.0 - db / max(h, 0.5), 0.0, 1.0) * 15.0, isTip ? 0.5 + vS * 0.15 : u);\n    // r4b: a pink-red tongue, distinct from the orange lip (it read as a second lower lip)\n    t *= 0.86 * vec3(1.0, 0.80, 0.86) * (1.0 - 0.3 * pow(a / 0.8, 2.0));\n    t *= mix(0.86, 1.04, smoothstep(0.0, 0.7 * max(h, 0.5), h - db));\n    if (isTip) {\n      // r5: a saturated pink lobe, lighter than the cavity and redder than the orange lip\n      t = mix(t, vec3(0.80, 0.40, 0.44), 0.55);\n      // the lobe: lit on top, a soft groove down its middle, shadowed where it meets the cavity at the sides\n      // r4b: rounded like the Memoji shading: cylindrical falloff to the sides, a soft lit crown, a faint groove\n      float top = clamp((h - db) / 4.0, 0.0, 1.0);\n      t *= mix(1.08, 1.0, top) * mix(0.84, 1.03, sqrt(lob)) * (1.0 - 0.04 * exp(-pow(vS / 0.06, 2.0)) * top);\n    }\n    if (curl > max(mound, tipH) - 0.01 && uTongue.z > 0.05) {\n      vec3 under = t * vec3(0.72, 0.62, 0.68);\n      t = mix(under, t * 1.08, 1.0 - smoothstep(0.0, 1.4, h - db));\n    }\n    // a contact shadow just outside the tongue's edge keeps it legible against the cavity at 1x\n    col *= 1.0 - (0.25 + 0.3 * uTongue.y) * clamp(1.0 - abs(h - db) / 2.5, 0.0, 1.0) * (1.0 - cov);\n    col = mix(col, t, cov);\n  }\n  // ---- lower teeth (bottom-anchored on the lower lip), then upper teeth (hang from the upper lip, slide up as they hide)\n  float lwT = 0.52, uwT = 0.76;\n  float gapT = smoothstep(1.5, 4.0, gap);   // no teeth through a 1-2 px slit (it showed as a dotted sliver)     // the rows are narrower than the lip span: the corners recede into shadow\n  if (a < lwT && uTeeth.y > 0.01) {\n    float ul = clamp((vS / lwT) * 0.5 + 0.5, 0.0, 1.0);\n    float hL = th * 0.8 * smoothstep(0.2, 0.5, uTeeth.y) * contourRows(vS / lwT) / 12.0;       // visible height above the lower lip\n    float cov = clamp((hL - db) / px + 0.5, 0.0, 1.0) * (1.0 - smoothstep(lwT - 0.12, lwT, a)) * gapT;\n    float row = 31.0 - clamp(db * rp, 0.0, contourRows(vS / lwT) - 2.5);\n    vec3 lt = rowc(row, ul) * (1.0 - 0.3 * pow(a / lwT, 2.0)) * vec3(1.12, 1.09, 1.04);   // r5: the lower row read grey beside the upper one\n    col = mix(col, lt, cov);\n  }\n  if (a < uwT && uTeeth.x > 0.01) {\n    float uu = clamp((vS / uwT) * 0.5 + 0.5, 0.0, 1.0);\n    float cr = contourRows(vS / uwT);\n    float hU = th * cr / 12.0 - (1.0 - uTeeth.x) * th;                 // visible height below the upper lip\n    float cov = clamp((hU - dt) / px + 0.5, 0.0, 1.0) * (1.0 - smoothstep(uwT - 0.14, uwT, a)) * gapT;\n    float row = clamp((dt + (1.0 - uTeeth.x) * th) * rp, 0.0, cr - 2.5);\n    vec3 ut = rowc(row, uu) * 1.08 * (1.0 - 0.3 * pow(a / uwT, 2.0));\n    // the free edge catches a whisper of shadow (painted teeth have it), inside the coverage ramp only\n    ut *= 1.0 - 0.08 * clamp(1.0 - (hU - dt) / 1.6, 0.0, 1.0);\n    col = mix(col, ut, cov);\n  }\n  // the upper lip's shadow on whatever sits right under it\n  col *= mix(0.78, 1.0, smoothstep(0.0, 2.5, dt));\n  // r4b: a near-closed seam is the lip LINE (dark warm brown), fully opaque from gap 0.8 px, so the face layer never\n  // leaks through between the lip sheet's fading inner row and the interior (it showed as orange dots per mesh column)\n  col = mix(vec3(0.36, 0.17, 0.13), col, smoothstep(1.2, 3.5, gap));\n  float al = clamp((gap - 0.25) / 0.55, 0.0, 1.0);        // zero-gap columns (past the corners) still draw nothing\n  o = vec4(col * uShadeK * al, al);\n}";
+function L(e, t, n) {
 	let r = e.createProgram();
 	for (let [i, a] of [[e.VERTEX_SHADER, t], [e.FRAGMENT_SHADER, n]]) {
 		let t = e.createShader(i);
@@ -546,7 +546,7 @@ function I(e, t, n) {
 		u: i
 	};
 }
-var te = class {
+var R = class {
 	constructor(e, { clear: t = [
 		.98,
 		.9,
@@ -560,7 +560,7 @@ var te = class {
 			powerPreference: "high-performance"
 		});
 		if (!r) throw Error("WebGL2 unavailable");
-		this.gl = r, this.canvas = e, this.clear = t, this.paint = I(r, k, A), this.eye = I(r, j, M), this.lip = I(r, N, P), this.inner = I(r, F, ee), r.enable(r.BLEND), r.blendFunc(r.ONE, r.ONE_MINUS_SRC_ALPHA), r.disable(r.DEPTH_TEST), this.cam = [
+		this.gl = r, this.canvas = e, this.clear = t, this.paint = L(r, k, A), this.eye = L(r, j, M), this.lip = L(r, N, P), this.inner = L(r, F, I), r.enable(r.BLEND), r.blendFunc(r.ONE, r.ONE_MINUS_SRC_ALPHA), r.disable(r.DEPTH_TEST), this.cam = [
 			0,
 			0,
 			1,
@@ -638,10 +638,10 @@ var te = class {
 		};
 		i(0, "uSclera", t.sclera.tex, t.sclera.rect, "uScleraRect"), i(1, "uIris", t.iris.tex, t.iris.rect, "uIrisRect"), i(2, "uCatch", t.catch.tex, t.catch.rect, "uCatchRect"), n.uniform2fv(r.u.uIrisC, t.irisC), n.uniform2fv(r.u.uIrisScale, t.irisScale), n.uniform2fv(r.u.uIrisScr, t.irisScr), n.uniform2fv(r.u.uCatchScr, t.catchScr), n.uniform2fv(r.u.uCatchC, t.catchC), n.uniform1f(r.u.uIrisK, t.irisK), n.uniform1f(r.u.uCatchA, t.catchA), n.uniform1f(r.u.uLidShade, t.lidShade), n.uniform1f(r.u.uTopY, t.topY), n.bindVertexArray(e.vao), n.drawElements(n.TRIANGLES, e.count, n.UNSIGNED_SHORT, 0), this.draws++, this.tris += e.count / 3;
 	}
-}, ne = (e, t, n) => e < t ? t : e > n ? n : e, L = (e) => ne(e, 0, 1), R = (e, t, n) => {
-	let r = L((n - e) / (t - e));
+}, ee = (e, t, n) => e < t ? t : e > n ? n : e, z = (e) => ee(e, 0, 1), B = (e, t, n) => {
+	let r = z((n - e) / (t - e));
 	return r * r * (3 - 2 * r);
-}, re = 448, z = [
+}, te = 448, V = [
 	585,
 	584,
 	584,
@@ -684,7 +684,7 @@ var te = class {
 	576,
 	576,
 	575
-], B = {
+], H = {
 	cx: 530,
 	hwL: 69,
 	hwR: 71,
@@ -692,14 +692,14 @@ var te = class {
 	tL: 21,
 	cy: 606
 };
-function V(e) {
-	let t = (e - re) / 4;
-	if (t <= 0) return z[0];
-	if (t >= z.length - 1) return z[z.length - 1];
+function U(e) {
+	let t = (e - te) / 4;
+	if (t <= 0) return V[0];
+	if (t >= V.length - 1) return V[V.length - 1];
 	let n = Math.floor(t), r = t - n;
-	return z[n] * (1 - r) + z[n + 1] * r;
+	return V[n] * (1 - r) + V[n + 1] * r;
 }
-var ie = V(B.cx + 4), H = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), ae = (e) => e >= 1 ? 0 : B.tU * (1 - e * e) ** .55, oe = (e) => e >= 1 ? 0 : B.tL * Math.max(0, 1 - e ** 2.2) ** .75, U = {
+var ne = U(H.cx + 4), re = (e) => (e - H.cx) / (e < H.cx ? H.hwL : H.hwR), ie = (e) => e >= 1 ? 0 : H.tU * (1 - e * e) ** .55, ae = (e) => e >= 1 ? 0 : H.tL * Math.max(0, 1 - e ** 2.2) ** .75, W = {
 	g: 0,
 	up: .3,
 	W: 1,
@@ -711,82 +711,104 @@ var ie = V(B.cx + 4), H = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), ae = (
 	th: .25,
 	tip: 0,
 	curl: 0,
-	tuck: 0
-}, se = {
-	viseme_sil: { ...U },
+	tuck: 0,
+	sm: .55,
+	pout: 0,
+	sq: 0
+}, oe = {
+	viseme_sil: {
+		...W,
+		sm: 1
+	},
 	viseme_PP: {
-		...U,
+		...W,
 		W: .9,
 		flat: .5,
 		press: 1,
-		T: 0
+		T: 0,
+		sm: .6
 	},
 	viseme_FF: {
-		...U,
-		g: 9,
-		up: 0,
-		W: 1,
+		...W,
+		g: 12,
+		up: 1,
+		W: .95,
+		flat: .75,
 		T: 1,
 		TL: 0,
-		tuck: 1
+		tuck: 1,
+		th: 0,
+		sm: .08
 	},
 	viseme_TH: {
-		...U,
-		g: 13,
+		...W,
+		g: 14,
 		up: .35,
 		W: 1,
 		T: .8,
 		TL: .5,
 		tip: 1,
-		th: .5
+		th: .1,
+		sm: .45
 	},
 	viseme_DD: {
-		...U,
-		g: 17,
+		...W,
+		g: 22,
 		up: .3,
-		W: .98,
-		T: .55,
-		TL: .1,
-		tip: 1
+		W: .95,
+		flat: .25,
+		T: .5,
+		TL: 0,
+		tip: 1,
+		th: .05,
+		sm: .45
 	},
 	viseme_kk: {
-		...U,
+		...W,
 		g: 19,
 		up: .3,
 		W: .96,
 		T: .65,
 		TL: .15,
-		th: .72
+		th: .72,
+		sm: .5
 	},
 	viseme_CH: {
-		...U,
-		g: 10,
-		up: .45,
-		W: .8,
-		flat: .55,
-		round: .6,
-		T: 1,
-		TL: .95
+		...W,
+		g: 17,
+		up: .5,
+		W: .66,
+		flat: .95,
+		round: 0,
+		sq: 1,
+		pout: 1,
+		T: .6,
+		TL: .85,
+		sm: 0
 	},
 	viseme_SS: {
-		...U,
+		...W,
 		g: 6,
 		up: .45,
 		W: 1.06,
 		T: 1,
-		TL: 1
+		TL: 1,
+		sm: .5
 	},
 	viseme_nn: {
-		...U,
-		g: 15,
+		...W,
+		g: 22,
 		up: .3,
-		W: .98,
-		T: .55,
-		TL: .1,
-		tip: 1
+		W: .95,
+		flat: .25,
+		T: .5,
+		TL: 0,
+		tip: 1,
+		th: .05,
+		sm: .45
 	},
 	viseme_RR: {
-		...U,
+		...W,
 		g: 12,
 		up: .35,
 		W: .82,
@@ -794,47 +816,52 @@ var ie = V(B.cx + 4), H = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), ae = (
 		round: .55,
 		T: .5,
 		TL: .15,
-		tip: .5
+		tip: .5,
+		sm: .4
 	},
 	viseme_aa: {
-		...U,
-		g: 60,
+		...W,
+		g: 54,
 		up: .2,
-		W: .9,
-		flat: .62,
-		round: .45,
+		W: 1.02,
+		flat: .45,
+		round: .2,
 		T: .95,
 		TL: .15,
-		th: .35
+		th: .35,
+		sm: .6
 	},
 	viseme_E: {
-		...U,
+		...W,
 		g: 17,
 		up: .35,
 		W: 1.1,
 		T: 1,
-		TL: .55
+		TL: .55,
+		sm: .75
 	},
 	viseme_I: {
-		...U,
+		...W,
 		g: 9,
 		up: .4,
 		W: 1.08,
 		T: 1,
-		TL: .75
+		TL: .75,
+		sm: .7
 	},
 	viseme_O: {
-		...U,
+		...W,
 		g: 28,
 		up: .4,
 		W: .7,
 		flat: .85,
 		round: 1,
 		T: .35,
-		TL: .05
+		TL: .05,
+		sm: .4
 	},
 	viseme_U: {
-		...U,
+		...W,
 		g: 20,
 		up: .45,
 		W: .6,
@@ -842,9 +869,10 @@ var ie = V(B.cx + 4), H = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), ae = (
 		round: 1,
 		T: 0,
 		TL: 0,
-		th: .3
+		th: .3,
+		sm: .4
 	}
-}, W = Object.keys(U), ce = {
+}, G = Object.keys(W), se = {
 	g: .022,
 	up: .03,
 	W: .04,
@@ -856,10 +884,13 @@ var ie = V(B.cx + 4), H = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), ae = (
 	th: .03,
 	tip: .018,
 	curl: .03,
-	tuck: .02
-}, le = class {
+	tuck: .02,
+	sm: .06,
+	pout: .04,
+	sq: .04
+}, ce = class {
 	constructor() {
-		this.p = { ...U }, this.side = {
+		this.p = { ...W }, this.side = {
 			L: {
 				wid: 0,
 				dy: 0,
@@ -874,48 +905,49 @@ var ie = V(B.cx + 4), H = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), ae = (
 	}
 	solve(e, t) {
 		this.t += t;
-		let n = (t) => e[t] ?? 0, r = L(n("jawOpen") / .85), i = Math.max(n("mouthFunnel"), n("mouthPucker")), a = (n("mouthStretchLeft") + n("mouthStretchRight")) / 2, o = {
-			...U,
+		let n = (t) => e[t] ?? 0, r = z(n("jawOpen") / .85), i = Math.max(n("mouthFunnel"), n("mouthPucker")), a = (n("mouthStretchLeft") + n("mouthStretchRight")) / 2, o = {
+			...W,
 			g: 44 * r,
 			up: .24,
 			W: 1 - .36 * i + .08 * a,
 			flat: .85 * i,
-			round: L(i * 1.2 + .2 * r),
+			round: z(i * 1.2 + .2 * r),
 			T: .4 + .55 * r,
 			TL: .1 + .3 * a,
-			th: .25
+			th: .25,
+			sm: 1 - .45 * z(r / .25)
 		}, s = 0, c = {};
-		for (let e of W) c[e] = 0;
-		for (let e in se) {
+		for (let e of G) c[e] = 0;
+		for (let e in oe) {
 			let t = n(e);
 			if (!(t <= .01)) {
 				s += t;
-				for (let n of W) c[n] += t * se[e][n];
+				for (let n of G) c[n] += t * oe[e][n];
 			}
 		}
 		let l = {};
-		if (s > 0) for (let e of W) c[e] /= s;
+		if (s > 0) for (let e of G) c[e] /= s;
 		let u = Math.min(1, s);
-		for (let e of W) l[e] = s > 0 ? o[e] * (1 - u) + c[e] * u : o[e];
-		s > 0 && (l.g *= .8 + .4 * L(r / .45));
-		let d = n("viseme_PP"), f = n("viseme_FF"), p = R(.6, .92, d);
+		for (let e of G) l[e] = s > 0 ? o[e] * (1 - u) + c[e] * u : o[e];
+		s > 0 && (l.g *= .8 + .4 * z(r / .45));
+		let d = n("viseme_PP"), f = n("viseme_FF"), p = B(.6, .92, d);
 		p > 0 && (l.g *= 1 - p, l.press = Math.max(l.press, p), l.tuck *= 1 - p, l.W = l.W * (1 - p) + .9 * p, l.flat = l.flat * (1 - p) + .5 * p, l.round *= 1 - p);
-		let m = R(.25, .7, f) * (1 - p);
-		m > 0 && (l.g = l.g * (1 - m) + 9 * m, l.up *= 1 - m, l.tuck = Math.max(l.tuck, m), l.T = Math.max(l.T, m), l.TL *= 1 - m, l.round *= 1 - m, l.flat *= 1 - m), p > .85 && !this.inPP && (this.inPP = !0, this.holdPP = this.t + .067), p < .5 && (this.inPP = !1), this.t < this.holdPP && (l.g = 0, l.press = Math.max(l.press, .9));
+		let m = B(.25, .7, f) * (1 - p);
+		m > 0 && (l.g = l.g * (1 - m) + 12 * m, l.up = l.up * (1 - m) + m, l.tuck = Math.max(l.tuck, m), l.T = Math.max(l.T, m), l.TL *= 1 - m, l.round *= 1 - m, l.flat = l.flat * (1 - m) + .75 * m, l.sm = l.sm * (1 - m) + .08 * m, l.th *= 1 - m, l.tip *= 1 - m, l.W = l.W * (1 - m) + .95 * m), p > .85 && !this.inPP && (this.inPP = !0, this.holdPP = this.t + .067), p < .5 && (this.inPP = !1), this.t < this.holdPP && (l.g = 0, l.press = Math.max(l.press, .9));
 		let h = (n("eyeWideLeft") + n("eyeWideRight")) / 2;
-		if (this.surprised = s < .2 && h > .45 ? L((h - .45) / .3) : 0, this.surprised > 0) {
+		if (this.surprised = s < .2 && h > .45 ? z((h - .45) / .3) : 0, this.surprised > 0) {
 			let e = this.surprised;
-			l.round = Math.max(l.round, .7 * e), l.flat = Math.max(l.flat, .95 * e), l.W = l.W * (1 - e) + .8 * e, l.T = l.T * (1 - e) + .55 * e, l.TL = 0, l.up = .26, l.th = Math.max(l.th, .3), l.g = Math.max(l.g, 54 * e * L(r / .3));
+			l.round = Math.max(l.round, 1 * e), l.flat = Math.max(l.flat, 1 * e), l.W = l.W * (1 - e) + .6 * e, l.sq = 0, l.pout = 0, l.T = l.T * (1 - e) + .45 * e, l.TL = 0, l.up = .24, l.th = Math.max(l.th, .3), l.g = Math.max(l.g, 72 * e * z(r / .3)), l.sm = 0;
 		}
-		let g = L(((n("mouthSmileLeft") + n("mouthSmileRight")) / 2 - .35) / .4) * L(r / .18) * (1 - this.surprised);
-		g > 0 && (l.g += 36 * g * (1 - Math.min(1, s)), l.up *= 1 - .7 * g, l.T = Math.max(l.T, 1 * g), l.th = Math.max(l.th, .42 * g), l.W = Math.max(l.W, 1.08 * g + l.W * (1 - g))), l.tip = L(Math.max(l.tip, n("tongueTipUp"))), l.curl = L(Math.max(l.curl, n("tongueCurl"))), l.tip > .5 && !this.inTip && (this.inTip = !0, this.holdTip = this.t + .06), l.tip < .3 && (this.inTip = !1), this.t < this.holdTip && p < .5 && (l.tip = Math.max(l.tip, .85)), l.tip > .3 && (l.TL = Math.min(l.TL, .1), l.T = Math.min(l.T, .45), l.g = Math.max(l.g, 20 * l.tip * (1 - p))), l.curl > .3 && (l.T = Math.min(l.T, .5), l.TL = 0, l.g = Math.max(l.g, 15), l.up = .38), n("tongueWide") > .2 && (l.th = Math.max(l.th, .35)), l.press = L(Math.max(l.press, (n("mouthPressLeft") + n("mouthPressRight")) / 2 * 1.4));
+		let g = z(((n("mouthSmileLeft") + n("mouthSmileRight")) / 2 - .35) / .4) * z(r / .18) * (1 - this.surprised);
+		g > 0 && (l.g += 36 * g * (1 - Math.min(1, s)), l.up *= 1 - .7 * g, l.T = Math.max(l.T, 1 * g), l.th = Math.max(l.th, .42 * g), l.W = Math.max(l.W, 1.08 * g + l.W * (1 - g))), l.tip = z(Math.max(l.tip, n("tongueTipUp"))), l.curl = z(Math.max(l.curl, n("tongueCurl"))), l.tip > .5 && !this.inTip && (this.inTip = !0, this.holdTip = this.t + .075), l.tip < .3 && (this.inTip = !1), this.t < this.holdTip && p < .5 && (l.tip = Math.max(l.tip, .9)), l.tip > .3 && (l.TL = 0, l.T = Math.min(l.T, .5), l.g = Math.max(l.g, 22 * l.tip * (1 - p)), l.th = Math.min(l.th, .1)), l.curl > .3 && (l.T = Math.min(l.T, .5), l.TL = 0, l.g = Math.max(l.g, 15), l.up = .38), n("tongueWide") > .2 && (l.th = Math.max(l.th, .35)), l.press = z(Math.max(l.press, (n("mouthPressLeft") + n("mouthPressRight")) / 2 * 1.4));
 		let _ = this.p;
-		for (let e of W) {
+		for (let e of G) {
 			if (this.first) {
 				_[e] = l[e];
 				continue;
 			}
-			let n = ce[e];
+			let n = se[e];
 			e === "g" && (l.g < _.g || l.tip > .5) && (n = .014), _[e] += (1 - Math.exp(-t / n)) * (l[e] - _[e]);
 		}
 		this.t < this.holdPP && (_.g = Math.min(_.g, .4));
@@ -925,15 +957,15 @@ var ie = V(B.cx + 4), H = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), ae = (
 		}, y = {
 			L: n("mouthFrownRight"),
 			R: n("mouthFrownLeft")
-		}, b = L((n("mouthFrownLeft") + n("mouthFrownRight")) / 2 * 2 + Math.max(0, n("browInnerUp") - .5) * 1.2);
-		this.worry = b;
-		let x = (e) => .22 * (1 - b) + .23 * L(e / .045) + .6 * L((e - .045) / .8), S = n("mouthLeft") - n("mouthRight"), C = Math.max(_.round, _.flat);
+		}, b = z((n("mouthFrownLeft") + n("mouthFrownRight")) / 2 * 2 + Math.max(0, n("browInnerUp") - .5) * 1.2);
+		this.worry = b, this.unsmile = z(1 - _.sm);
+		let x = (e) => .22 * (1 - b) + .23 * z(e / .045) + .6 * z((e - .045) / .8), S = n("mouthLeft") - n("mouthRight"), C = Math.max(_.round, _.flat);
 		for (let e of ["L", "R"]) {
-			let n = x(v[e]) * (1 - .5 * C), r = (e === "L" ? B.hwL : B.hwR) * (_.W - 1) + (n - .45) * 13 * (1 - .6 * C), i = -(n - .45) * 19 * (1 - .6 * C) * (1 - .7 * this.surprised) + y[e] * 12.5 + _.press * 1.5, a = L((n - .16) / .29) * (1 - .7 * C), o = this.side[e], s = this.first ? 1 : 1 - Math.exp(-t / .045);
-			o.wid += s * (r - o.wid), o.dy += s * (i - o.dy), o.crease += s * (a - o.crease);
+			let n = x(v[e]) * (1 - .5 * C), r = .3 + (n - .3) * (n > .3 ? _.sm : 1), i = (e === "L" ? H.hwL : H.hwR) * (_.W - 1) + (r - .45) * 13 * (1 - .6 * C), a = -(r - .45) * 19 * (1 - .6 * C) * (1 - .7 * this.surprised) + y[e] * 12.5 + _.press * 1.5, o = z((r - .16) / .29) * (1 - .7 * C), s = this.side[e], c = this.first ? 1 : 1 - Math.exp(-t / .045);
+			s.wid += c * (i - s.wid), s.dy += c * (a - s.dy), s.crease += c * (o - s.crease);
 		}
-		let w = ne(S * 1.6, -1, 1) * 13;
-		return this.shift += (this.first ? 1 : 1 - Math.exp(-t / .08)) * (w - this.shift), this.first = !1, this.sideTilt = ne(S * 1.6, -1, 1), this;
+		let w = ee(S * 1.6, -1, 1) * 13;
+		return this.shift += (this.first ? 1 : 1 - Math.exp(-t / .08)) * (w - this.shift), this.first = !1, this.sideTilt = ee(S * 1.6, -1, 1), this;
 	}
 	lowerDrop() {
 		return this.p.g * (1 - this.p.up);
@@ -942,10 +974,10 @@ var ie = V(B.cx + 4), H = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), ae = (
 		return .86 * this.lowerDrop();
 	}
 };
-function ue(e, t) {
-	return R(606, 660, t) * Math.exp(-(((e - 530) / 128) ** 2));
+function le(e, t) {
+	return B(606, 660, t) * Math.exp(-(((e - 530) / 128) ** 2));
 }
-var de = class {
+var ue = class {
 	constructor(e) {
 		this.rect = e;
 		let [t, n, r, i] = e, a = [];
@@ -997,7 +1029,7 @@ var de = class {
 		]]) {
 			let o = a.length, s = c.length, d = new Float32Array(o * s * 2), f = new Float32Array(o * s * 2), p = new Float32Array(o * s);
 			for (let e = 0; e < o; e++) {
-				let o = a[e], m = V(o);
+				let o = a[e], m = U(o);
 				for (let a = 0; a < s; a++) {
 					let h = m + l * c[a];
 					a === s - 1 && (h = u), h = l < 0 ? Math.max(u, h) : Math.min(u, h);
@@ -1056,74 +1088,145 @@ var de = class {
 		}
 	}
 	edge(e, t, n) {
-		let r = e.p, i = H(t), a = Math.abs(i), o = i < 0 ? e.side.L : e.side.R, s = Math.min(1, a), c = (a <= 1 ? i : Math.sign(i)) * o.wid + e.shift, l = o.dy * s ** 1.8, u = Math.max(r.flat, .95 * (e.worry || 0));
-		l += u * .9 * (ie - V(t)) * (1 - R(1.05, 1.45, a)), l -= (e.sideTilt || 0) * i * 3 * s;
-		let d = a / (1 - .16 * Math.max(r.round, r.flat * .8)), f = 2 + 2.6 * (1 - r.round), p = .9 - .3 * r.round, m = d < 1 ? Math.max(0, 1 - d ** +f) ** +p : 0, h = r.g * m;
-		return n < 0 ? l -= h * r.up : l += h * (1 - r.up) - r.tuck * 2 * m, [
+		let r = e.p, i = re(t), a = Math.abs(i), o = i < 0 ? e.side.L : e.side.R, s = Math.min(1, a), c = (a <= 1 ? i : Math.sign(i)) * o.wid + e.shift, l = o.dy * s ** 1.8, u = Math.max(r.flat, .95 * (e.worry || 0), .55 * (e.unsmile || 0));
+		l += u * .9 * (ne - U(t)) * (1 - B(1.05, 1.45, a)), l -= (e.sideTilt || 0) * i * 3 * s;
+		let d = a / (1 - .16 * Math.max(r.round, r.flat * .8)), f = 2 + 2.6 * (1 - r.round) + 5 * r.sq, p = .9 - .3 * r.round - .45 * r.sq, m = d < 1 ? Math.max(0, 1 - d ** +f) ** +p : 0, h = r.g * m;
+		return n < 0 ? l -= h * r.up : l += h * (1 - r.up) - r.tuck * 3.5 * m, [
 			c,
 			l,
 			h
 		];
 	}
-	deform(e, t, n, r) {
-		let i = e.p, a = t.rest[n * 2], o = t.rest[n * 2 + 1], s = t.d[n], c = t.sign, l = Math.floor(n / t.R), u = c < 0 ? this.colU : this.colL, d = u[l * 3], f = u[l * 3 + 1], p = Math.abs(H(a)), m = c < 0 ? ae(p) : oe(p), h = 1 + .55 * i.round - .72 * i.press - .3 * Math.max(0, i.W - 1) - (c > 0 ? .32 * i.tuck : 0), g = c > 0 ? e.jaw() * ue(a, o) : 0, _, v;
-		if (s <= m + .001) {
-			let e = m > 0 ? s / m : 0;
-			_ = d, v = f + c * e * (h - 1) * m;
-		} else {
-			let e = 1 - R(m, m + (c < 0 ? 38 : 40), s), t = i.press * 2.2 * Math.exp(-(((s - m - 4) / 5) ** 2)) * (p < 1 ? 1 - p * p : 0);
-			_ = d * e, v = (f + c * (h - 1) * m) * e + g * (1 - e) + c * t;
+	_pre() {
+		for (let e of ["U", "L"]) {
+			let t = this.sheets[e], n = t.C * t.R, r = t.sign, i = {
+				A: new Float32Array(n),
+				T: new Float32Array(n),
+				JP: new Float32Array(n),
+				FALL: new Float32Array(n),
+				BUL: new Float32Array(n),
+				FADE: new Float32Array(n),
+				IN: new Uint8Array(n),
+				FR: new Float32Array(n),
+				CRW: new Float32Array(n),
+				LS: new Uint8Array(n),
+				LPR: new Float32Array(n),
+				LBU: new Float32Array(n),
+				LTK: new Float32Array(n),
+				LRD: new Float32Array(n),
+				J0: new Float32Array(n)
+			};
+			for (let e = 0; e < n; e++) {
+				let n = t.rest[e * 2], a = t.rest[e * 2 + 1], o = t.d[e], s = re(n), c = Math.abs(s), l = r < 0 ? ie(c) : ae(c), u = c < 1 ? 1 - c * c : 0;
+				i.A[e] = c, i.T[e] = l, i.JP[e] = r > 0 ? le(n, a) : 0, i.IN[e] = +(o <= l + .001), i.FR[e] = l > 0 ? o / l : 0;
+				let d = r < 0 ? 38 : 40;
+				i.FALL[e] = 1 - B(l, l + d, o);
+				let f = Math.exp(-(((o - l - 4) / 5) ** 2));
+				i.BUL[e] = 2.2 * f * u, i.FADE[e] = c > 1.1 ? 1 - B(1.1, 1.45, c) : 1, i.J0[e] = +(c > 1.1 && o > l), i.CRW[e] = c > .9 && o < 20 ? B(.9, 1.08, c) * (1 - B(8, 20, o)) : 0, i.LS[e] = s < 0 ? 0 : 1, i.LPR[e] = Math.exp(-((o / 2.2) ** 2)) * u, i.LBU[e] = f * u, i.LTK[e] = r > 0 ? Math.exp(-((o / 4) ** 2)) * u : 0, i.LRD[e] = (o < l ? Math.sin(Math.PI * o / Math.max(1, l)) : 0) * u;
+			}
+			t.K = i;
 		}
-		if (p > 1.1) {
-			let e = 1 - R(1.1, 1.45, p);
-			_ *= e, v = v * e + g * (1 - e) * (s > m);
-		}
-		r[0] = a + _, r[1] = o + v;
-	}
-	alphaOf(e, t, n, r) {
-		let i = n % t.R, a = t.rest[n * 2], o = 1;
-		i === 0 && (o = 1 - L((r - 1) / 1.2));
-		let s = H(a), c = s < 0 ? this.solCache.side.L : this.solCache.side.R;
-		if (Math.abs(s) > .9 && t.d[n] < 20) {
-			let e = R(.9, 1.08, Math.abs(s)) * (1 - R(8, 20, t.d[n]));
-			o *= 1 - e * (1 - c.crease);
-		}
-		return o;
-	}
-	lightOf(e, t, n) {
-		let r = e.p, i = t.d[n], a = t.rest[n * 2], o = Math.abs(H(a)), s = o < 1 ? 1 - o * o : 0, c = t.sign < 0 ? ae(o) : oe(o), l = 1;
-		return l -= r.press * .16 * Math.exp(-((i / 2.2) ** 2)) * s, l += r.press * .05 * Math.exp(-(((i - c - 4) / 5) ** 2)) * s, t.sign > 0 && (l -= r.tuck * .2 * Math.exp(-((i / 4) ** 2)) * s), l += .04 * r.round * (i < c ? Math.sin(Math.PI * i / Math.max(1, c)) : 0) * s, l;
 	}
 	update(e) {
-		this.solCache = e;
-		let t = [0, 0], n = this.cols.length;
+		this.solCache = e, this.sheets.U.K || this._pre();
+		let t = e.p, n = this.cols.length;
 		this.colU || (this.colU = new Float32Array(n * 3), this.colL = new Float32Array(n * 3));
 		for (let t = 0; t < n; t++) {
 			let n = this.edge(e, this.cols[t], -1), r = this.edge(e, this.cols[t], 1);
 			this.colU.set(n, t * 3), this.colL.set(r, t * 3);
 		}
-		for (let n of ["U", "L"]) {
-			let r = this.sheets[n];
-			for (let n = 0; n < r.C * r.R; n++) {
-				this.deform(e, r, n, t), r.pos[n * 2] = t[0], r.pos[n * 2 + 1] = t[1], r.alpha[n] = this.alphaOf(e, r, n, this.colL[Math.floor(n / r.R) * 3 + 2]), r.light[n] = this.lightOf(e, r, n);
-				let i = n % r.R;
-				if (i <= 2) {
-					let e = this.colL[Math.floor(n / r.R) * 3 + 2], t = L(e / 3) * (r.sign > 0 ? 4 : 1.6) * (i === 2 ? .4 : 1);
-					r.uv[n * 2 + 1] = r.uv0[n * 2 + 1] + r.sign * t / (this.rect[3] - this.rect[1]);
+		let r = e.jaw(), i = e.surprised || 0, a = [e.side.L.crease, e.side.R.crease], o = t.press * .16, s = t.press * .05, c = t.tuck * .2, l = .04 * t.round + .07 * t.pout;
+		for (let e of ["U", "L"]) {
+			let n = this.sheets[e], u = n.K, d = n.R, f = n.sign, p = f < 0 ? this.colU : this.colL, m = 1 + .55 * t.round + .5 * t.pout - .72 * t.press - .3 * Math.max(0, t.W - 1) - (f > 0 ? .45 * t.tuck + .5 * i : .15 * i), h = n.C * d;
+			for (let e = 0; e < h; e++) {
+				let i = e / d | 0, h = e - i * d, g = p[i * 3], _ = p[i * 3 + 1], v = u.T[e], y = r * u.JP[e], b, x;
+				if (u.IN[e]) b = g, x = _ + f * u.FR[e] * (m - 1) * v;
+				else {
+					let n = u.FALL[e];
+					b = g * n, x = (_ + f * (m - 1) * v) * n + y * (1 - n) + f * t.press * u.BUL[e];
 				}
-				i === 0 && r.sign < 0 && (r.pos[n * 2 + 1] += .8 * (1 - L(this.colL[Math.floor(n / r.R) * 3 + 2] / 1.5)) * (1 - R(.95, 1.15, Math.abs(H(r.rest[n * 2])))));
+				let S = u.FADE[e];
+				S < 1 && (b *= S, x = x * S + y * (1 - S) * u.J0[e]), n.pos[e * 2] = n.rest[e * 2] + b, n.pos[e * 2 + 1] = n.rest[e * 2 + 1] + x;
+				let C = this.colL[i * 3 + 2], w = h === 0 ? 1 - z((C - 1) / 1.2) : 1;
+				if (u.CRW[e] > 0 && (w *= 1 - u.CRW[e] * (1 - a[u.LS[e]])), n.alpha[e] = w, n.light[e] = 1 - o * u.LPR[e] + s * u.LBU[e] - c * u.LTK[e] + l * u.LRD[e], h <= 2) {
+					let t = z(C / 3) * (f > 0 ? 4 : 1.6) * (h === 2 ? .4 : 1);
+					n.uv[e * 2 + 1] = n.uv0[e * 2 + 1] + f * t / (this.rect[3] - this.rect[1]);
+				}
+				h === 0 && f < 0 && (n.pos[e * 2 + 1] += .8 * (1 - z(C / 1.5)) * (1 - B(.95, 1.15, u.A[e])));
 			}
 		}
-		let r = this.inner;
+		let u = this.inner;
 		for (let t = 0; t < this.IC; t++) {
-			let n = r.s[t * 2], i = B.cx + n * (n < 0 ? B.hwL : B.hwR), a = V(i), [o, s] = this.edge(e, i, -1), [c, l] = this.edge(e, i, 1), u = a + s, d = a + l, f = Math.max(0, d - u);
-			r.pos[t * 4] = i + o, r.pos[t * 4 + 1] = u - 2, r.pos[t * 4 + 2] = i + c, r.pos[t * 4 + 3] = d + 2, r.dt[t * 2] = -2, r.dt[t * 2 + 1] = f + 2, r.gap[t * 2] = r.gap[t * 2 + 1] = f;
+			let n = u.s[t * 2], r = H.cx + n * (n < 0 ? H.hwL : H.hwR), i = U(r), [a, o] = this.edge(e, r, -1), [s, c] = this.edge(e, r, 1), l = i + o, d = i + c, f = Math.max(0, d - l);
+			u.pos[t * 4] = r + a, u.pos[t * 4 + 1] = l - 2, u.pos[t * 4 + 2] = r + s, u.pos[t * 4 + 3] = d + 2, u.dt[t * 2] = -2, u.dt[t * 2 + 1] = f + 2, u.gap[t * 2] = u.gap[t * 2 + 1] = f;
 		}
 	}
-}, G = (e, t, n) => e < t ? t : e > n ? n : e, K = (e) => G(e, 0, 1), q = (e, t, n) => {
-	let r = K((n - e) / (t - e));
+}, de = (e) => e < 0 ? 0 : e > 1 ? 1 : e, fe = (e) => {
+	let t = de(e);
+	return t * t * (3 - 2 * t);
+};
+function pe(e) {
+	return () => {
+		e |= 0, e = e + 1831565813 | 0;
+		let t = Math.imul(e ^ e >>> 15, 1 | e);
+		return t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t, ((t ^ t >>> 14) >>> 0) / 4294967296;
+	};
+}
+var me = [
+	[-3, .5],
+	[3, .5],
+	[0, -2.2]
+], he = class {
+	constructor({ reduced: e = !1, seed: t = 11 } = {}) {
+		this.reduced = e, this.rng = pe(t), this.sacc = [0, 0], this.target = [0, 0], this.pt = -1, this.next = .6, this.prevGaze = null, this.gv = 0, this.flick = 0, this.f0 = -9, this.famp = 0, this.lastFlick = -9, this.jm = 0, this.prevJaw = 0, this.breathS = .5, this.glint = [0, 0], this.gv2 = [0, 0], this.prevHead = null, this.t = -1;
+	}
+	update(e, t, n, r, i, a, o = 0) {
+		this.t >= 0 && e < this.t - 1 && (this.next = e + .5, this.lastFlick = -9, this.f0 = -9), this.t = e;
+		let s = (e) => n[e] ?? 0;
+		if (this.prevGaze && t > 0) {
+			let e = Math.hypot(r[0] - this.prevGaze[0], r[1] - this.prevGaze[1]) / t;
+			this.gv += (1 - Math.exp(-t / .08)) * (e - this.gv);
+		}
+		this.prevGaze = [r[0], r[1]];
+		let c = Math.hypot(r[0], r[1]) < 9;
+		if (!(!this.reduced && this.gv < 18)) this.target = [0, 0], this.pt = -1, this.next = Math.max(this.next, e + .3);
+		else if (e >= this.next) {
+			let t = Math.floor(this.rng() * 3);
+			t === this.pt && (t = (t + 1 + Math.floor(this.rng() * 2)) % 3), t === 2 && this.rng() < .45 && (t = this.rng() < .5 ? 0 : 1), this.pt = t;
+			let n = c ? 1 : .45;
+			this.target = [me[t][0] * n, me[t][1] * n], this.next = e + .45 + this.rng() * .7;
+		}
+		let l = 1 - Math.exp(-t / .011);
+		this.sacc[0] += l * (this.target[0] - this.sacc[0]), this.sacc[1] += l * (this.target[1] - this.sacc[1]);
+		let u = s("jawOpen");
+		this.jm += (1 - Math.exp(-t / 1)) * (u - this.jm);
+		let d = Math.max(.3, this.jm * 1.5 + .06), f = !1;
+		for (let e in n) if (e.startsWith("viseme_") && n[e] > .3) {
+			f = !0;
+			break;
+		}
+		!this.reduced && f && u > d && this.prevJaw <= d && e - this.lastFlick > .9 && (this.lastFlick = e, this.rng() < .6 && (this.f0 = e, this.famp = .6 + .4 * de((u - this.jm) / .35))), this.prevJaw = u;
+		let p = e - this.f0;
+		this.flick = p < 0 ? 0 : p < .07 ? this.famp * fe(p / .07) : p < .15 ? this.famp : p < .43 ? this.famp * (1 - fe((p - .15) / .28)) : 0;
+		let m = (o + 1) / 2;
+		if (this.breathS += (1 - Math.exp(-t / .35)) * (m - this.breathS), this.prevHead && t > 0) {
+			let e = (i[1] - this.prevHead[1]) / t, n = (i[2] - this.prevHead[2]) / t, r = -e * .05 + n * .03, a = -(i[0] - this.prevHead[0]) / t * .04, o = Math.min(t, .1);
+			for (; o > 1e-6;) {
+				let e = Math.min(.004, o);
+				for (let t = 0; t < 2; t++) this.gv2[t] += ((t ? a : r) * 30 - 60 * this.glint[t] - .7 * Math.sqrt(60) * this.gv2[t]) * e, this.glint[t] += this.gv2[t] * e;
+				o -= e;
+			}
+		}
+		this.prevHead = [
+			i[0],
+			i[1],
+			i[2]
+		];
+	}
+}, K = (e, t, n) => e < t ? t : e > n ? n : e, q = (e) => K(e, 0, 1), J = (e, t, n) => {
+	let r = q((n - e) / (t - e));
 	return r * r * (3 - 2 * r);
-}, J = Math.PI / 180, fe = {
+}, Y = Math.PI / 180, ge = {
 	hairback: [
 		0,
 		0,
@@ -1190,7 +1293,7 @@ var de = class {
 		.6,
 		.7
 	]
-}, Y = {
+}, X = {
 	cx: 512,
 	cy: 420,
 	rx: 322,
@@ -1204,13 +1307,88 @@ var de = class {
 	gain: 1,
 	pivot: [530, 728]
 };
-function X(e, t) {
-	let n = (e - Y.cx) / Y.rx, r = (t - Y.cy) / Y.ry, i = Math.max(0, 1 - n * n - r * r), a = Y.A * i * i;
-	a += Y.B * Math.exp(-((e - Y.fcx) ** 2) / (2 * Y.fsx * Y.fsx) - (t - Y.fcy) ** 2 / (2 * Y.fsy * Y.fsy)), a += 26 * Math.exp(-((e - 530) ** 2 + (t - 532) ** 2) / 1152);
+function Z(e, t) {
+	let n = (e - X.cx) / X.rx, r = (t - X.cy) / X.ry, i = Math.max(0, 1 - n * n - r * r), a = X.A * i * i;
+	a += X.B * Math.exp(-((e - X.fcx) ** 2) / (2 * X.fsx * X.fsx) - (t - X.fcy) ** 2 / (2 * X.fsy * X.fsy)), a += 26 * Math.exp(-((e - 530) ** 2 + (t - 532) ** 2) / 1152);
 	for (let n of [452, 608]) a += 8 * Math.exp(-((e - n) ** 2 + (t - 585) ** 2) / 4050);
 	return a;
 }
-function pe(e, t) {
+function _e(e, t) {
+	let n = .7 * t, r = Math.abs(e);
+	return r <= n ? e : Math.sign(e) * (n + (t - n) * Math.tanh((r - n) / (t - n)));
+}
+function ve(e, t, n, r) {
+	let [i, a, o, s] = e, c = Math.ceil((o - i) / t), l = Math.ceil((s - a) / t), u = new Uint8Array(c * l), d = (e) => Math.min(o, i + e * t), f = (e) => Math.min(s, a + e * t);
+	for (let e = 0; e < l; e++) for (let t = 0; t < c; t++) u[e * c + t] = +!!r(d(t), f(e), d(t + 1), f(e + 1));
+	let p = [], m = /* @__PURE__ */ new Map(), h = (e, t) => {
+		let n = Math.round(e * 4) + "," + Math.round(t * 4), r = m.get(n);
+		return r === void 0 && (r = p.length / 2, p.push(e, t), m.set(n, r)), r;
+	}, g = (e, t) => m.has(Math.round(e * 4) + "," + Math.round(t * 4)), _ = [];
+	for (let e = 0; e < l; e++) for (let t = 0; t < c; t++) {
+		if (!u[e * c + t]) continue;
+		let n = d(t), r = f(e), i = d(t + 1), a = f(e + 1), o = (n + i) / 2, s = (r + a) / 2, l = [
+			n,
+			o,
+			i
+		], p = [
+			r,
+			s,
+			a
+		];
+		for (let e = 0; e < 2; e++) for (let t = 0; t < 2; t++) {
+			let n = h(l[t], p[e]), r = h(l[t + 1], p[e]), i = h(l[t], p[e + 1]), a = h(l[t + 1], p[e + 1]);
+			_.push(n, r, i, r, a, i);
+		}
+	}
+	for (let e = 0; e < l; e++) for (let t = 0; t < c; t++) {
+		if (u[e * c + t]) continue;
+		let n = d(t), r = f(e), i = d(t + 1), a = f(e + 1), o = (n + i) / 2, s = (r + a) / 2, l = [
+			g(o, r),
+			g(i, s),
+			g(o, a),
+			g(n, s)
+		];
+		if (!l.some(Boolean)) {
+			let e = h(n, r), t = h(i, r), o = h(n, a), s = h(i, a);
+			_.push(e, t, o, t, s, o);
+			continue;
+		}
+		let p = [[n, r]];
+		l[0] && p.push([o, r]), p.push([i, r]), l[1] && p.push([i, s]), p.push([i, a]), l[2] && p.push([o, a]), p.push([n, a]), l[3] && p.push([n, s]);
+		let m = h(o, s), v = p.map(([e, t]) => h(e, t));
+		for (let e = 0; e < v.length; e++) _.push(m, v[e], v[(e + 1) % v.length]);
+	}
+	let v = p.length / 2, y = new Float32Array(p), b = new Float32Array(v * 2);
+	for (let e = 0; e < v; e++) b[e * 2] = (y[e * 2] - i) / (o - i), b[e * 2 + 1] = (y[e * 2 + 1] - a) / (s - a);
+	return {
+		rest: y,
+		uv: b,
+		idx: new Uint16Array(_),
+		n: v
+	};
+}
+var ye = 8, Q = 129, be = /* @__PURE__ */ new Float32Array(16641);
+for (let e = 0; e < Q; e++) for (let t = 0; t < Q; t++) be[e * Q + t] = Z(t * ye, e * ye);
+function xe(e, t) {
+	let n = K(e / ye, 0, 127.999), r = K(t / ye, 0, 127.999), i = n | 0, a = r | 0, o = n - i, s = r - a, c = a * Q + i;
+	return (be[c] * (1 - o) + be[c + 1] * o) * (1 - s) + (be[c + Q] * (1 - o) + be[c + Q + 1] * o) * s;
+}
+function Se(e, t) {
+	return [
+		Math.exp(-((e - 455) ** 2 + (t - 585) ** 2) / 3528),
+		Math.exp(-((e - 605) ** 2 + (t - 585) ** 2) / 3528),
+		Math.exp(-((e - 430) ** 2 + (t - 545) ** 2) / 4608),
+		Math.exp(-((e - 632) ** 2 + (t - 545) ** 2) / 4608),
+		le(e, t),
+		Math.sign(e - 530)
+	];
+}
+function Ce(e, t) {
+	let n = new Float32Array(t * 6);
+	for (let r = 0; r < t; r++) n.set(Se(e[r * 2], e[r * 2 + 1]), r * 6);
+	return n;
+}
+function we(e, t) {
 	let [n, r, i, a] = e, o = Math.max(1, Math.ceil((i - n) / t)), s = Math.max(1, Math.ceil((a - r) / t)), c = (o + 1) * (s + 1), l = new Float32Array(c * 2), u = new Float32Array(c * 2), d = 0;
 	for (let e = 0; e <= s; e++) for (let t = 0; t <= o; t++) {
 		let c = t / o, f = e / s;
@@ -1236,7 +1414,7 @@ function pe(e, t) {
 		n: c
 	};
 }
-function me(e, t) {
+function Te(e, t) {
 	let n = new Uint16Array((e - 1) * (t - 1) * 6), r = 0;
 	for (let i = 0; i < e - 1; i++) for (let e = 0; e < t - 1; e++) {
 		let a = i * t + e, o = a + 1, s = a + t, c = s + 1;
@@ -1251,14 +1429,14 @@ function me(e, t) {
 	}
 	return n;
 }
-function he(e, t, n) {
+function Ee(e, t, n) {
 	let r = n - e;
 	if (r <= 0) return t[0];
 	if (r >= t.length - 1) return t[t.length - 1];
 	let i = Math.floor(r), a = r - i;
 	return t[i] * (1 - a) + t[i + 1] * a;
 }
-var ge = class {
+var De = class {
 	constructor(e, t) {
 		this.k = e, this.c = 2 * t * Math.sqrt(e), this.x = 0, this.v = 0;
 	}
@@ -1270,32 +1448,32 @@ var ge = class {
 		}
 		return this.x;
 	}
-}, _e = .6, ve = class e {
+}, Oe = .6, ke = class e {
 	static async load(t, n, r = {}) {
-		let i = await ((e) => fetch(n + e).then((e) => e.json()))("geom.json"), a = Object.keys(i.rects).filter((e) => e !== "bg").concat(["interior"], ["L", "R"].filter((e) => i.plates && i.plates[e]).map((e) => "plate" + e)), o = {};
+		let i = await ((e) => fetch(n + e).then((e) => e.json()))("geom.json"), a = Object.keys(i.rects).filter((e) => e !== "bg").concat(["interior"], r.plates ? ["L", "R"].filter((e) => i.plates && i.plates[e]).map((e) => "plate" + e) : []), o = {};
 		return await Promise.all(a.map(async (e) => {
 			let t = new Image();
 			t.src = `${n}${e}.${r.ext || "png"}`, await t.decode(), o[e] = t;
 		})), new e(t, i, null, o, r);
 	}
 	constructor(e, t, n, r, i) {
-		this.g = t, this.M = n, this.R = new te(e, {
+		this.g = t, this.M = n, this.R = new R(e, {
 			clear: i.clear || [
 				251.4 / 255,
 				229.4 / 255,
 				188.6 / 255
 			],
 			preserve: !!i.preserve
-		}), this.R.dpr = i.dpr || Math.min(2, window.devicePixelRatio || 1), this.reduced = !!i.reducedMotion, this.view = i.view || [
+		}), this.R.dpr = i.dpr || Math.min(2, window.devicePixelRatio || 1), this.reduced = !!i.reducedMotion, this.usePlates = !!i.plates, this.yawMax = i.yawMax ?? (this.usePlates ? 20 : 10), this.life = new he({ reduced: this.reduced }), this.view = i.view || [
 			140,
 			20,
 			744
 		], this.tex = {};
 		for (let [e, t] of Object.entries(r)) this.tex[e] = this.R.texture(t, e !== "interior");
-		this.solver = new le(), this.clock = null, this.lastT = -1, this.layers = {};
+		this.solver = new ce(), this.clock = null, this.lastT = -1, this.layers = {};
 		let a = this.R.paint, o = (e, n, r) => {
-			let i = t.rects[e], o = pe(i, n), s = new Float32Array(o.rest), c = new Float32Array(o.n);
-			for (let e = 0; e < o.n; e++) c[e] = X(o.rest[e * 2], o.rest[e * 2 + 1]);
+			let i = t.rects[e], o = we(i, n), s = new Float32Array(o.rest), c = new Float32Array(o.n);
+			for (let e = 0; e < o.n; e++) c[e] = Z(o.rest[e * 2], o.rest[e * 2 + 1]);
 			let l = this.R.mesh(a, {
 				aPos: {
 					data: s,
@@ -1307,7 +1485,7 @@ var ge = class {
 					size: 2
 				}
 			}, o.idx);
-			this.layers[e] = {
+			if (this.layers[e] = {
 				name: e,
 				rect: i,
 				rest: o.rest,
@@ -1315,25 +1493,32 @@ var ge = class {
 				pos: s,
 				mesh: l,
 				kind: r,
-				n: o.n
-			};
+				n: o.n,
+				FW: r === "face" ? Ce(o.rest, o.n) : null
+			}, r === "brow") {
+				let t = this.layers[e], n = [...new Set(Array.from({ length: o.n }, (e, t) => o.rest[t * 2]))];
+				t.colX = Float32Array.from(n), t.colOf = new Uint16Array(o.n);
+				let r = new Map(n.map((e, t) => [e, t]));
+				for (let e = 0; e < o.n; e++) t.colOf[e] = r.get(o.rest[e * 2]);
+				t.cdx = new Float32Array(n.length), t.cdy = new Float32Array(n.length), t.cs = new Float32Array(n.length), t.cc = new Float32Array(n.length), t.cyc = new Float32Array(n.length);
+			}
 		};
 		o("hairback", 24, "head"), o("bun", 16, "bun"), o("body", 24, "body"), o("ears", 12, "head"), o("face", 14, "face");
 		for (let e of ["L", "R"]) o("brow" + e, 6, "brow");
-		o("lockbed", 8, "head"), o("hair", 16, "head"), o("lockL", 6, "lock"), o("lockR", 6, "lock");
+		o("lockbed", 12, "head"), o("hair", 16, "head"), o("lockL", 6, "lock"), o("lockR", 6, "lock");
 		{
 			let e = this.layers.bun;
 			for (let t = 0; t < e.n; t++) e.z[t] = e.z[t] - 45;
 		}
 		{
 			let e = this.layers.lockR;
-			for (let t = 0; t < e.n; t++) e.z[t] -= 45 * q(585, 650, e.rest[t * 2 + 1]);
+			for (let t = 0; t < e.n; t++) e.z[t] -= 45 * J(585, 650, e.rest[t * 2 + 1]);
 		}
 		for (let e of ["L", "R"]) {
 			let t = this.layers["lock" + e];
-			t.y0 = t.rect[1] + 6, t.len = t.rect[3] - t.y0, t.spring = new ge(55, .22), t.springY = new ge(70, .3);
+			t.y0 = t.rect[1] + 6, t.len = t.rect[3] - t.y0, t.spring = new De(55, .22), t.springY = new De(70, .3);
 		}
-		this.bunSpring = [new ge(90, .5), new ge(90, .5)], this.eyes = {};
+		this.bunSpring = [new De(90, .5), new De(90, .5)], this.eyes = {};
 		for (let e of ["L", "R"]) {
 			let n = t.eyes[e], r = n.x[0], i = n.x[1], o = Math.floor((i - r) / 2) + 1, s = o * 4, c = new Float32Array(s * 2), l = new Float32Array(s * 2), u = new Float32Array(s), d = new Float32Array(s);
 			for (let e = 0; e < o; e++) for (let t = 0; t < 4; t++) u[e * 4 + t] = t === 0 || t === 3 ? 0 : Math.min(1, e / 2, (o - 1 - e) / 2);
@@ -1357,12 +1542,12 @@ var ge = class {
 					size: 1,
 					dynamic: !0
 				}
-			}, me(o, 4)), p = n.lashX[0], m = n.lashX[1], h = Math.floor((m - p) / 3) + 1, g = new Float32Array(h * 8 * 2), _ = new Float32Array(h * 8 * 2), v = new Float32Array(h * 8), y = t.rects["lid" + e];
+			}, Te(o, 4)), p = n.lashX[0], m = n.lashX[1], h = Math.floor((m - p) / 3) + 1, g = new Float32Array(h * 8 * 2), _ = new Float32Array(h * 8 * 2), v = new Float32Array(h * 8), y = t.rects["lid" + e];
 			for (let e = 0; e < h; e++) {
-				let t = Math.min(m, p + e * 3), r = he(p, n.lashTop, t) - n.fall, i = he(p, n.lashBot, t) + 8.5;
+				let t = Math.min(m, p + e * 3), r = Ee(p, n.lashTop, t) - n.fall, i = Ee(p, n.lashBot, t) + 8.5;
 				for (let n = 0; n < 8; n++) {
 					let a = n / 7, o = r + a * (i - r), s = e * 8 + n;
-					g[s * 2] = t, g[s * 2 + 1] = o, _[s * 2] = (t - y[0]) / (y[2] - y[0]), _[s * 2 + 1] = (o - y[1]) / (y[3] - y[1]), v[s] = q(.1, .55, a);
+					g[s * 2] = t, g[s * 2 + 1] = o, _[s * 2] = (t - y[0]) / (y[2] - y[0]), _[s * 2 + 1] = (o - y[1]) / (y[3] - y[1]), v[s] = J(.1, .55, a);
 				}
 			}
 			let b = new Float32Array(g), x = this.R.mesh(a, {
@@ -1375,9 +1560,9 @@ var ge = class {
 					data: _,
 					size: 2
 				}
-			}, me(h, 8)), S = Math.floor((i - r) / 3) + 1, C = new Float32Array(S * 5 * 2), w = new Float32Array(S * 5 * 2), T = new Float32Array(S * 5), E = t.rects["lower" + e];
+			}, Te(h, 8)), S = Math.floor((i - r) / 3) + 1, C = new Float32Array(S * 5 * 2), w = new Float32Array(S * 5 * 2), T = new Float32Array(S * 5), E = t.rects["lower" + e];
 			for (let e = 0; e < S; e++) {
-				let t = Math.min(i, r + e * 3), a = he(r, n.bot, t);
+				let t = Math.min(i, r + e * 3), a = Ee(r, n.bot, t);
 				for (let n = 0; n < 5; n++) {
 					let r = n / 4, i = Math.max(E[1], a - 3) + r * (Math.min(E[3], a + 19) - Math.max(E[1], a - 3)), o = e * 5 + n;
 					C[o * 2] = t, C[o * 2 + 1] = i, w[o * 2] = (t - E[0]) / (E[2] - E[0]), w[o * 2 + 1] = (i - E[1]) / (E[3] - E[1]), T[o] = r;
@@ -1393,7 +1578,7 @@ var ge = class {
 					data: w,
 					size: 2
 				}
-			}, me(S, 5));
+			}, Te(S, 5));
 			this.eyes[e] = {
 				e: n,
 				xa: r,
@@ -1421,12 +1606,12 @@ var ge = class {
 			};
 		}
 		if (this.lidKeyMesh = {}, t.lidKeys) for (let e of ["L", "R"]) for (let n of ["mid", "shut"]) {
-			let r = `lid${n}${e}`, i = t.rects[r], o = pe(i, n === "mid" ? 16 : 8), s = new Float32Array(o.rest), c = new Float32Array(o.n), l = new Float32Array(o.n);
-			for (let e = 0; e < o.n; e++) c[e] = X(o.rest[e * 2], o.rest[e * 2 + 1]);
+			let r = `lid${n}${e}`, i = t.rects[r], o = we(i, n === "mid" ? 16 : 8), s = new Float32Array(o.rest), c = new Float32Array(o.n), l = new Float32Array(o.n);
+			for (let e = 0; e < o.n; e++) c[e] = Z(o.rest[e * 2], o.rest[e * 2 + 1]);
 			if (n === "mid") {
 				let n = this.eyes[e], r = this.midLift(e, t), a = t.lidKeys[e].midLash;
 				for (let e = 0; e < o.n; e++) {
-					let t = o.rest[e * 2], s = o.rest[e * 2 + 1], c = G(Math.round(t - n.xa), 0, n.xb - n.xa), u = a.y[Math.min(a.y.length - 1, c)] + r[c] + 6, d = K((s - i[1]) / Math.max(1, u - i[1]));
+					let t = o.rest[e * 2], s = o.rest[e * 2 + 1], c = K(Math.round(t - n.xa), 0, n.xb - n.xa), u = a.y[Math.min(a.y.length - 1, c)] + r[c] + 6, d = q((s - i[1]) / Math.max(1, u - i[1]));
 					l[e] = r[c] * d * d * (3 - 2 * d);
 				}
 			}
@@ -1450,7 +1635,7 @@ var ge = class {
 				}, o.idx)
 			};
 		}
-		this.shell = new de(t.rects.mouth_rest), this.shellMesh = {};
+		this.shell = new ue(t.rects.mouth_rest), this.shellMesh = {};
 		for (let e of ["U", "L"]) {
 			let t = this.shell.sheets[e];
 			this.shellMesh[e] = this.R.mesh(this.R.lip, {
@@ -1475,7 +1660,7 @@ var ge = class {
 					dynamic: !0
 				}
 			}, t.idx), t.z = new Float32Array(t.C * t.R);
-			for (let e = 0; e < t.C * t.R; e++) t.z[e] = X(t.rest[e * 2], t.rest[e * 2 + 1]);
+			for (let e = 0; e < t.C * t.R; e++) t.z[e] = Z(t.rest[e * 2], t.rest[e * 2 + 1]);
 		}
 		let s = this.shell.inner;
 		if (s.proj = new Float32Array(s.pos.length), this.innerMesh = this.R.mesh(this.R.inner, {
@@ -1498,27 +1683,41 @@ var ge = class {
 				size: 1,
 				dynamic: !0
 			}
-		}, s.idx), this.plates = {}, t.plates && t.yawKeys && t.yawKeys.norm) {
-			let e = pe([
+		}, s.idx), this.plates = {}, this.usePlates && t.plates && t.yawKeys && t.yawKeys.norm) {
+			let e = [
 				290,
 				170,
 				780,
 				700
-			], 8), n = t.yawKeys, r = n.grid.step, i = n.grid.n, a = t.plates.holes || [], o = (e, t) => {
+			], n = t.yawKeys, r = n.grid.step, i = n.grid.n, a = t.plates.holes || [], o = (e, t) => {
 				let n = 1;
 				for (let r of a) {
 					let i = Math.abs(e - r.c[0]) - (r.h[0] - r.r), a = Math.abs(t - r.c[1]) - (r.h[1] - r.r), o = Math.hypot(Math.max(i, 0), Math.max(a, 0)) + Math.min(Math.max(i, a), 0) - r.r;
-					n *= q(-r.f, 0, o);
+					n *= J(-r.f, 0, o);
 				}
-				return n * (1 - q(675, 715, t));
-			};
-			for (let a of ["L", "R"]) {
-				let s = n[a], c = n.norm[a], l = t.plates[a].rect, u = new Float32Array(e.n * 2), d = new Float32Array(e.n), f = new Float32Array(e.n);
-				for (let t = 0; t < e.n; t++) {
-					let n = e.rest[t * 2], a = e.rest[t * 2 + 1], p = G(n / r, 0, i - 1.001), m = G(a / r, 0, i - 1.001), h = Math.floor(p), g = Math.floor(m), _ = p - h, v = m - g, y = s[g][h], b = s[g][h + 1], x = s[g + 1][h], S = s[g + 1][h + 1], C = n + (y[0] * (1 - _) + b[0] * _) * (1 - v) + (x[0] * (1 - _) + S[0] * _) * v, w = a + (y[1] * (1 - _) + b[1] * _) * (1 - v) + (x[1] * (1 - _) + S[1] * _) * v, T = (C - c.fcx) / c.s + c.kcx, E = (w - c.fe) / c.s + c.ke;
-					u[t * 2] = (T - l[0]) / (l[2] - l[0]), u[t * 2 + 1] = (E - l[1]) / (l[3] - l[1]), d[t] = o(n, a), f[t] = X(n, a);
+				return n * (1 - J(675, 715, t));
+			}, s = ve(e, 16, 8, (e, t, n, r) => {
+				if (n > 410 && e < 660 && r > 530 && t < 725) return !0;
+				let i = 1, a = 0;
+				for (let [s, c] of [
+					[e, t],
+					[n, t],
+					[e, r],
+					[n, r],
+					[(e + n) / 2, (t + r) / 2]
+				]) {
+					let e = o(s, c);
+					i = Math.min(i, e), a = Math.max(a, e);
 				}
-				let p = new Float32Array(e.rest), m = new Float32Array(e.n), h = new Float32Array(e.n).fill(1), g = this.R.mesh(this.R.lip, {
+				return a - i > .04;
+			});
+			for (let e of ["L", "R"]) {
+				let a = n[e], c = n.norm[e], l = t.plates[e].rect, u = new Float32Array(s.n * 2), d = new Float32Array(s.n), f = new Float32Array(s.n);
+				for (let e = 0; e < s.n; e++) {
+					let t = s.rest[e * 2], n = s.rest[e * 2 + 1], p = K(t / r, 0, i - 1.001), m = K(n / r, 0, i - 1.001), h = Math.floor(p), g = Math.floor(m), _ = p - h, v = m - g, y = a[g][h], b = a[g][h + 1], x = a[g + 1][h], S = a[g + 1][h + 1], C = t + (y[0] * (1 - _) + b[0] * _) * (1 - v) + (x[0] * (1 - _) + S[0] * _) * v, w = n + (y[1] * (1 - _) + b[1] * _) * (1 - v) + (x[1] * (1 - _) + S[1] * _) * v, T = (C - c.fcx) / c.s + c.kcx, E = (w - c.fe) / c.s + c.ke;
+					u[e * 2] = (T - l[0]) / (l[2] - l[0]), u[e * 2 + 1] = (E - l[1]) / (l[3] - l[1]), d[e] = o(t, n), f[e] = Z(t, n);
+				}
+				let p = new Float32Array(s.rest), m = new Float32Array(s.n), h = new Float32Array(s.n).fill(1), g = this.R.mesh(this.R.lip, {
 					aPos: {
 						data: p,
 						size: 2,
@@ -1537,11 +1736,11 @@ var ge = class {
 						data: h,
 						size: 1
 					}
-				}, e.idx);
-				this.plates[a] = {
+				}, s.idx);
+				this.plates[e] = {
 					rect: l,
-					rest: e.rest,
-					n: e.n,
+					rest: s.rest,
+					n: s.n,
 					pos: p,
 					alpha: m,
 					hole: d,
@@ -1560,15 +1759,19 @@ var ge = class {
 		return this.clock ?? performance.now() / 1e3;
 	}
 	apply(e, t, n, r, i) {
-		let a = this.now(), o = this.lastT < 0 ? 1 / 60 : G(a - this.lastT, 0, .1);
+		let a = this.prof ? performance.now() : 0;
+		this._applyBody(e, t, n, r, i), this.prof && (this.prof.apply = (this.prof.apply || 0) + performance.now() - a);
+	}
+	_applyBody(e, t, n, r, i) {
+		let a = this.now(), o = this.lastT < 0 ? 1 / 60 : K(a - this.lastT, 0, .1);
 		this.lastT = a, this.bs = e, this.gaze = n;
-		let s = (t) => e[t] ?? 0, c = G(t[1], -20, 20), l = G(t[0], -10, 12), u = G(t[2], -12, 12), d = {
-			sy: Math.sin(c * J) * Y.gain,
-			cy: Math.cos(c * J),
-			sp: Math.sin(l * J) * Y.gain,
-			cp: Math.cos(l * J),
-			sr: Math.sin(-u * J),
-			cr: Math.cos(-u * J),
+		let s = (t) => e[t] ?? 0, c = _e(K(t[1], -20, 20), this.yawMax), l = K(t[0], -10, 12), u = K(t[2], -12, 12), d = {
+			sy: Math.sin(c * Y) * X.gain,
+			cy: Math.cos(c * Y),
+			sp: Math.sin(l * Y) * X.gain,
+			cp: Math.cos(l * Y),
+			sr: Math.sin(-u * Y),
+			cr: Math.cos(-u * Y),
 			yaw: c,
 			pitch: l,
 			roll: u,
@@ -1577,16 +1780,33 @@ var ge = class {
 			leanY: 7 * r
 		};
 		if (this.g.yawKeys) {
-			let e = this.g.yawKeys, t = G(c / e.keyDeg, -1, 1);
+			let e = this.g.yawKeys, t = K(c / e.keyDeg, -1, 1);
 			d.yk = t >= 0 ? e.R : e.L, d.ykf = Math.abs(t), this.yawStep = e.grid.step, this.yawN = e.grid.n;
 		}
 		this.st = d;
-		let f = (s("mouthSmileLeft") + s("mouthSmileRight")) / 2, p = (s("cheekSquintLeft") + s("cheekSquintRight")) / 2, m = K(s("jawOpen") / .85);
+		let f = (s("mouthSmileLeft") + s("mouthSmileRight")) / 2, p = (s("cheekSquintLeft") + s("cheekSquintRight")) / 2, m = q(s("jawOpen") / .85);
 		this.expr = {
 			smile: f,
 			cheek: p,
 			open: m
-		}, this.browCh = {
+		};
+		{
+			let e = (e) => {
+				let t = s(e + "Right"), n = s(e + "Left");
+				return Math.abs(t - n) < .12 ? [(t + n) / 2, (t + n) / 2] : [t, n];
+			}, [t, n] = e("mouthSmile"), [r, i] = e("cheekSquint");
+			this.exprSide = {
+				L: {
+					smile: t,
+					cheek: r
+				},
+				R: {
+					smile: n,
+					cheek: i
+				}
+			};
+		}
+		this.browCh = {
 			L: this.browChannels("L"),
 			R: this.browChannels("R")
 		}, this.solver.solve(e, o);
@@ -1600,19 +1820,22 @@ var ge = class {
 		let g = {
 			L: "Right",
 			R: "Left"
-		}, _ = K(-n[1] / 25), v = K(n[1] / 20), y = this.blinkShape(a, o, s("eyeBlinkRight"));
+		}, _ = q(-n[1] / 25), v = q(n[1] / 20), y = this.blinkShape(a, o, s("eyeBlinkRight"));
 		this.lid = {
 			L: y,
 			R: this.blinkShape2(s("eyeBlinkLeft"))
-		};
+		}, this.wink = {
+			L: J(.55, .95, this.lid.L - this.lid.R) * J(.7, .95, this.lid.L),
+			R: J(.55, .95, this.lid.R - this.lid.L) * J(.7, .95, this.lid.R)
+		}, this.life.update(a, o, e, n, t, this.solver, i);
 		for (let e of ["L", "R"]) {
 			let t = this.eyes[e], n = t.e, r = g[e], i = (e) => {
 				let t = s(e + "Left"), n = s(e + "Right");
 				return Math.abs(t - n) < .12 ? (t + n) / 2 : s(e + r);
 			}, a = this.lid[e], o = i("eyeSquint"), c = s("eyeWide" + r), l = i("cheekSquint"), u = i("mouthSmile");
 			for (let r = 0; r <= t.xb - t.xa; r++) {
-				let i = n.top[r], s = n.bot[r], d = s - i, f = r / (t.xb - t.xa), p = Math.max(0, Math.sin(Math.PI * f)) ** .7, m = .18 * q(.55, .85, a) * (this.bsh && this.bsh.active ? 1 : .6), h = (o * .36 + l * .32 + u * .07 + m) * d * p ** 1.4, g = s - h + c * .09 * d * p, y = (_ * .14 - v * .02) * d * p, b = i + .72 * (s - i) - Math.min(h, .25 * d), x = i + y - c * .32 * d * p, S = this.g.lidKeys ? this.g.lidKeys[e].midLash : null, C = S ? S.y[Math.min(S.y.length - 1, r)] + this.liftCache[e][r] : b;
-				x += (Math.max(x, C - 3) - x) * K(a / .34), x > g && (x = g), t.top[r] = x, t.bot[r] = g;
+				let i = n.top[r], s = n.bot[r], d = s - i, f = r / (t.xb - t.xa), p = Math.max(0, Math.sin(Math.PI * f)) ** .7, m = .18 * J(.55, .85, a) * (this.bsh && this.bsh.active ? 1 : .6), h = (o * .36 + l * .32 + u * .07 + m) * d * p ** 1.4, g = s - h + c * .09 * d * p, y = (_ * .14 - v * .02) * d * p, b = i + .72 * (s - i) - Math.min(h, .25 * d), x = i + y - c * .32 * d * p, S = this.g.lidKeys ? this.g.lidKeys[e].midLash : null, C = S ? S.y[Math.min(S.y.length - 1, r)] + this.liftCache[e][r] : b;
+				x += (Math.max(x, C - 3) - x) * q(a / .34), x > g && (x = g), t.top[r] = x, t.bot[r] = g;
 			}
 			t.blink = a;
 		}
@@ -1623,9 +1846,9 @@ var ge = class {
 			let i = this.reduced ? .3 : 1;
 			for (let e of ["L", "R"]) {
 				let t = this.layers["lock" + e];
-				t.sx = t.spring.step(-G(n, -4e3, 4e3) * .02 * i + d.sr * 0, o), t.sy = t.springY.step(-G(r, -4e3, 4e3) * .01 * i, o);
+				t.sx = t.spring.step(-K(n, -4e3, 4e3) * .02 * i + d.sr * 0, o), t.sy = t.springY.step(-K(r, -4e3, 4e3) * .01 * i, o);
 			}
-			this.bunOff = [this.bunSpring[0].step(-G(n, -4e3, 4e3) * .012 * i, o), this.bunSpring[1].step(-G(r, -4e3, 4e3) * .012 * i, o)];
+			this.bunOff = [this.bunSpring[0].step(-K(n, -4e3, 4e3) * .012 * i, o), this.bunSpring[1].step(-K(r, -4e3, 4e3) * .012 * i, o)];
 		} else this.bunOff = [0, 0];
 		this.prevAnchor = b;
 	}
@@ -1633,9 +1856,9 @@ var ge = class {
 		if (this.liftCache = this.liftCache || {}, this.liftCache[e]) return this.liftCache[e];
 		let n = this.eyes[e], r = n.e, i = t.lidKeys[e].midLash, a = n.xb - n.xa + 1, o = 0;
 		for (let e = 0; e < a; e++) r.bot[e] - r.top[e] > r.bot[o] - r.top[o] && (o = e);
-		let s = r.bot[o] - r.top[o], c = Math.min(0, r.top[o] + _e * s - i.y[Math.min(i.y.length - 1, o)]), l = new Float32Array(a);
+		let s = r.bot[o] - r.top[o], c = Math.min(0, r.top[o] + Oe * s - i.y[Math.min(i.y.length - 1, o)]), l = new Float32Array(a);
 		for (let e = 0; e < a; e++) {
-			let t = K((r.bot[e] - r.top[e]) / s);
+			let t = q((r.bot[e] - r.top[e]) / s);
 			l[e] = c * t * t * (3 - 2 * t);
 		}
 		return this.liftCache[e] = l;
@@ -1664,7 +1887,7 @@ var ge = class {
 		return r.active || (this.blinkDip = 0, r.settle && (n <= r.base + .05 ? r.settle = !1 : o = Math.min(n, r.base))), this.lidShared = o, this.lidRaw = n, o;
 	}
 	blinkShape2(e) {
-		return K(this.lidShared + (e - this.lidRaw));
+		return q(this.lidShared + (e - this.lidRaw));
 	}
 	project(e, t, n) {
 		return this.projectTo(e, t, n, [0, 0]);
@@ -1672,74 +1895,107 @@ var ge = class {
 	projectTo(e, t, n, r) {
 		let i = this.st, a = e, o = t;
 		if (i.yk) {
-			let n = i.yk, r = this.yawStep, s = G(e / r, 0, this.yawN - 1.001), c = G(t / r, 0, this.yawN - 1.001), l = Math.floor(s), u = Math.floor(c), d = s - l, f = c - u, p = n[u][l], m = n[u][l + 1], h = n[u + 1][l], g = n[u + 1][l + 1], _ = i.ykf;
+			let n = i.yk, r = this.yawStep, s = K(e / r, 0, this.yawN - 1.001), c = K(t / r, 0, this.yawN - 1.001), l = Math.floor(s), u = Math.floor(c), d = s - l, f = c - u, p = n[u][l], m = n[u][l + 1], h = n[u + 1][l], g = n[u + 1][l + 1], _ = i.ykf;
 			a += _ * ((p[0] * (1 - d) + m[0] * d) * (1 - f) + (h[0] * (1 - d) + g[0] * d) * f), o += _ * ((p[1] * (1 - d) + m[1] * d) * (1 - f) + (h[1] * (1 - d) + g[1] * d) * f);
 		}
-		let s = o - Y.cy;
-		o = Y.cy + s * i.cp + n * i.sp;
-		let c = a - Y.pivot[0], l = o - Y.pivot[1];
-		return a = Y.pivot[0] + c * i.cr - l * i.sr, o = Y.pivot[1] + c * i.sr + l * i.cr, a = Y.pivot[0] + (a - Y.pivot[0]) * i.leanS, o = Y.pivot[1] + (o - Y.pivot[1]) * i.leanS + i.bob * .6 + i.leanY, r[0] = a, r[1] = o, r;
+		let s = o - X.cy;
+		o = X.cy + s * i.cp + n * i.sp;
+		let c = a - X.pivot[0], l = o - X.pivot[1];
+		return a = X.pivot[0] + c * i.cr - l * i.sr, o = X.pivot[1] + c * i.sr + l * i.cr, a = X.pivot[0] + (a - X.pivot[0]) * i.leanS, o = X.pivot[1] + (o - X.pivot[1]) * i.leanS + i.bob * .6 + i.leanY, r[0] = a, r[1] = o, r;
 	}
 	faceOffset(e, t, n = !1) {
-		let { smile: r, cheek: i } = this.expr, a = 0, o = 0;
-		for (let n of [455, 605]) {
-			let s = Math.exp(-((e - n) ** 2 + (t - 585) ** 2) / 3528);
-			o -= (r * 4.5 + i * 5.5) * s, a += Math.sign(e - 530) * r * 1.5 * s;
+		let { smile: r, cheek: i } = this.expr, a = 0, o = 0, s = this.exprSide;
+		for (let [n, c] of [[455, "L"], [605, "R"]]) {
+			let l = Math.exp(-((e - n) ** 2 + (t - 585) ** 2) / 3528), u = s ? s[c].smile : r, d = s ? s[c].cheek : i;
+			o -= (u * 4.5 + d * 5.5) * l, a += Math.sign(e - 530) * u * 1.5 * l;
+			let f = this.wink ? this.wink[c] : 0;
+			f > 0 && (o -= f * 9 * Math.exp(-((e - (c === "L" ? 430 : 632)) ** 2 + (t - 545) ** 2) / 4608));
 		}
-		return !n && this.solver && (o += this.solver.jaw() * ue(e, t)), [a, o];
+		return !n && this.solver && (o += this.solver.jaw() * le(e, t)), [a, o];
+	}
+	faceCoef() {
+		let e = this.exprSide, { smile: t, cheek: n } = this.expr, r = this.wink || {
+			L: 0,
+			R: 0
+		}, i = e ? e.L.smile : t, a = e ? e.R.smile : t, o = e ? e.L.cheek : n, s = e ? e.R.cheek : n;
+		return this._fc = [
+			i * 4.5 + o * 5.5,
+			a * 4.5 + s * 5.5,
+			i * 1.5,
+			a * 1.5,
+			r.L * 9,
+			r.R * 9,
+			this.solver ? this.solver.jaw() : 0
+		];
+	}
+	faceOffW(e, t, n, r) {
+		let i = this._fc, a = t * 6;
+		return r[0] = e[a + 5] * (i[2] * e[a] + i[3] * e[a + 1]), r[1] = -(i[0] * e[a] + i[1] * e[a + 1]) - i[4] * e[a + 2] - i[5] * e[a + 3] + (n ? 0 : i[6] * e[a + 4]), r;
 	}
 	deformLayer(e) {
 		let t = this.st, n = e.pos, r = e.rest, i = e.z, a = e.n;
 		if (e.kind === "static") return !1;
 		if (e.kind === "body") {
 			for (let e = 0; e < a; e++) {
-				let i = r[e * 2], a = r[e * 2 + 1], o = 1024 + (a - 1024) * (1 + .004 * t.bob / -1.4), s = i, c = q(772, 700, a) * (1 - q(110, 160, Math.abs(i - 527)));
-				if (c > 0) {
-					let [e, t] = this.project(i, a, X(i, a));
-					s += (e - i) * c, o += (t - a) * c;
+				let i = r[e * 2], a = r[e * 2 + 1], o = 1024 + (a - 1024) * (1 + .004 * t.bob / -1.4), s = i, c = J(95, 200, Math.abs(i - 527)) * (1 - J(860, 1010, a)) * J(700, 790, a);
+				c > 0 && (o -= 2.4 * this.life.breathS * c, s += Math.sign(i - 527) * .5 * this.life.breathS * c);
+				let l = J(772, 700, a) * (1 - J(110, 160, Math.abs(i - 527)));
+				if (l > 0) {
+					let [e, t] = this.project(i, a, xe(i, a));
+					s += (e - i) * l, o += (t - a) * l;
 				}
 				n[e * 2] = s, n[e * 2 + 1] = o;
 			}
 			return !0;
 		}
 		let o = e.kind === "face", s = e.kind === "lock", c = e.kind === "bun";
+		e.kind === "brow" && this.browColumns(e);
+		let l = this._fo ||= [0, 0];
 		for (let t = 0; t < a; t++) {
-			let a = r[t * 2], l = r[t * 2 + 1];
-			if (o) {
-				let [e, t] = this.faceOffset(a, l);
-				a += e, l += t;
-			} else if (e.kind === "brow") {
-				let [t, n] = this.browOffset(e.name.slice(4), a, l);
-				a += t, l += n;
+			let a = r[t * 2], u = r[t * 2 + 1];
+			if (o) this.faceOffW(e.FW, t, !1, l), a += l[0], u += l[1];
+			else if (e.kind === "brow") {
+				let n = e.colOf[t], r = u - e.cyc[n];
+				a += e.cdx[n] - r * e.cs[n], u += e.cdy[n] + r * (e.cc[n] - 1);
 			} else if (s) {
-				let t = K((l - e.y0) / e.len) ** 1.4;
-				a += (e.sx || 0) * t, l += (e.sy || 0) * t * .3;
-			} else c && (a += this.bunOff ? this.bunOff[0] : 0, l += this.bunOff ? this.bunOff[1] : 0);
-			let u = this.projectTo(a, l, i[t], this._tmp ||= [0, 0]);
-			n[t * 2] = u[0], n[t * 2 + 1] = u[1];
+				let t = q((u - e.y0) / e.len) ** 1.4;
+				a += (e.sx || 0) * t, u += (e.sy || 0) * t * .3;
+			} else c && (a += this.bunOff ? this.bunOff[0] : 0, u += this.bunOff ? this.bunOff[1] : 0);
+			let d = this.projectTo(a, u, i[t], this._tmp ||= [0, 0]);
+			n[t * 2] = d[0], n[t * 2 + 1] = d[1];
 		}
 		return !0;
 	}
 	browChannels(e) {
-		let t = this.bs, n = e === "L" ? "Right" : "Left", r = t.browInnerUp ?? 0, i = t["browOuterUp" + n] ?? 0, a = t["browDown" + n] ?? 0;
+		let t = this.bs, n = e === "L" ? "Right" : "Left", r = t.browInnerUp ?? 0, i = t["browOuterUp" + n] ?? 0, a = t["browDown" + n] ?? 0, o = t["eyeWide" + n] ?? 0, s = this.life ? this.life.flick : 0;
 		return {
-			lift: 14 * (t["eyeWide" + n] ?? 0) + 12 * i + 5 * r,
-			inner: 53 * r,
+			lift: 14 * o + 12 * i + 5 * r + 4.2 * s,
+			inner: 53 * r + 3 * s,
 			arch: 38 * i,
 			knit: 21 * a
 		};
 	}
 	browOffset(e, t, n) {
 		let r = this.g.brows[e], i = r.x[0], a = r.x[1], o = this.browCh[e], s = (t) => {
-			let n = K(e === "L" ? (a - t) / (a - i) : (t - i) / (a - i)), r = Math.exp(-(((n - .62) / .3) ** 2));
-			return 5 * Math.max(this.blinkDip || 0, q(.3, .6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : .8)) - o.lift - o.inner * (1 - n) ** 1.3 - o.arch * (.35 + .65 * r) * n ** .5 + o.knit * (1 - .6 * n);
-		}, c = s(t), l = Math.atan((s(t + 3) - s(t - 3)) / 6), u = r.cl, d = n - (u ? u.y[G(Math.round(t - u.x0), 0, u.y.length - 1)] : n);
+			let n = q(e === "L" ? (a - t) / (a - i) : (t - i) / (a - i)), r = Math.exp(-(((n - .62) / .3) ** 2));
+			return 5 * Math.max(this.blinkDip || 0, J(.3, .6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : .8)) - o.lift - o.inner * (1 - n) ** 1.3 - o.arch * (.35 + .65 * r) * n ** .5 + o.knit * (1 - .6 * n);
+		}, c = s(t), l = Math.atan((s(t + 3) - s(t - 3)) / 6), u = r.cl, d = n - (u ? u.y[K(Math.round(t - u.x0), 0, u.y.length - 1)] : n);
 		return [(e === "L" ? 1 : -1) * (o.knit * .3 + o.inner * .05) - d * Math.sin(l), c + d * (Math.cos(l) - 1)];
+	}
+	browColumns(e) {
+		let t = e.name.slice(4), n = this.g.brows[t], r = n.x[0], i = n.x[1], a = this.browCh[t], o = n.cl, s = 5 * Math.max(this.blinkDip || 0, J(.3, .6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : .8)), c = (e) => {
+			let n = q(t === "L" ? (i - e) / (i - r) : (e - r) / (i - r)), o = Math.exp(-(((n - .62) / .3) ** 2));
+			return s - a.lift - a.inner * (1 - n) ** 1.3 - a.arch * (.35 + .65 * o) * n ** .5 + a.knit * (1 - .6 * n);
+		}, l = (t === "L" ? 1 : -1) * (a.knit * .3 + a.inner * .05);
+		for (let t = 0; t < e.colX.length; t++) {
+			let n = e.colX[t], r = Math.atan((c(n + 3) - c(n - 3)) / 6);
+			e.cdy[t] = c(n), e.cs[t] = Math.sin(r), e.cc[t] = Math.cos(r), e.cdx[t] = l, e.cyc[t] = o ? o.y[K(Math.round(n - o.x0), 0, o.y.length - 1)] : 0;
+		}
 	}
 	render() {
 		let e = this.R, t = this.st;
 		if (!t) return;
-		e.begin(), e.setCam(this.view[0], this.view[1], this.view[2]);
+		this.faceCoef(), e.begin(), e.setCam(this.view[0], this.view[1], this.view[2]);
 		let n = [
 			t.yaw >= 0 ? 1 : -1,
 			t.yaw >= 0 ? 530 : 330,
@@ -1750,45 +2006,46 @@ var ge = class {
 			t.yaw >= 0 ? 400 : 200,
 			t.yaw >= 0 ? 820 : 660,
 			.1 * Math.abs(t.yaw) / 20
-		], i = this.debug, a = (t, n) => {
-			let r = this.layers[t];
-			this.deformLayer(r) && e.update(r.mesh, "aPos", r.pos), !(i && i.only && !i.only.includes(t)) && e.drawPaint(r.mesh, this.tex[t], r.rect, 1, n, i && i.tint ? fe[t] : null);
+		], i = this.debug, a = this.prof, o = () => performance.now(), s = (t, n) => {
+			let r = this.layers[t], s = a ? o() : 0;
+			this.deformLayer(r) && e.update(r.mesh, "aPos", r.pos), a && (a[t] = (a[t] || 0) + o() - s), !(i && i.only && !i.only.includes(t)) && e.drawPaint(r.mesh, this.tex[t], r.rect, 1, n, i && i.tint ? ge[t] : null);
 		};
-		a("hairback", r), a("bun", r), a("body"), a("ears", n), a("face", n);
+		s("hairback", r), s("bun", r), s("body"), s("ears", n), s("face", n);
+		let c = a ? o() : 0;
 		for (let e of ["L", "R"]) this.drawEye(e, n);
-		a("browL"), a("browR"), this.drawMouth(n), this.drawPlate(), a("lockbed", n), a("hair", r), a("lockL"), a("lockR");
+		a && (a.eyes = (a.eyes || 0) + o() - c), s("browL"), s("browR"), c = a ? o() : 0, this.drawMouth(n), a && (a.mouth = (a.mouth || 0) + o() - c, c = o()), this.drawPlate(), a && (a.plate = (a.plate || 0) + o() - c, a.frames = (a.frames || 0) + 1), s("lockbed", n), s("hair", r), s("lockL"), s("lockR");
 	}
 	drawEye(e, t) {
-		let n = this.eyes[e], r = n.e, i = this.R, a = this.st, o = (e, t) => X(e, t), s = (r.top[Math.floor(r.top.length / 2)] + r.bot[Math.floor(r.bot.length / 2)]) / 2, c = this.project(n.xa, s, o(n.xa, s)), l = this.project(n.xb, s, o(n.xb, s)), u = (l[0] - c[0]) / (n.xb - n.xa), d = (c[0] + l[0]) / 2, f = u < .6 ? .6 / u : 1, p = (e) => (f !== 1 && (e[0] = d + (e[0] - d) * f), e);
+		let n = this.eyes[e], r = n.e, i = this.R, a = this.st, o = xe, s = this._t2 ||= [0, 0], c = (r.top[Math.floor(r.top.length / 2)] + r.bot[Math.floor(r.bot.length / 2)]) / 2, l = this.project(n.xa, c, o(n.xa, c)), u = this.project(n.xb, c, o(n.xb, c)), d = (u[0] - l[0]) / (n.xb - n.xa), f = (l[0] + u[0]) / 2, p = d < .6 ? .6 / d : 1, m = (e) => (p !== 1 && (e[0] = f + (e[0] - f) * p), e);
 		this.eyeFix = {
-			ecx: d,
-			em: f
+			ecx: f,
+			em: p
 		};
-		let m = 0;
+		let h = 0;
 		for (let e = 0; e < n.C; e++) {
-			let t = Math.min(n.xb, n.xa + e * 2), r = t - n.xa, i = n.top[r], a = n.bot[r], s = Math.min(t - n.xa, n.xb - t);
-			if (s < 6) {
-				let e = Math.sqrt(Math.max(0, 1 - (1 - s / 6) ** 2)), t = (i + a) / 2;
+			let t = Math.min(n.xb, n.xa + e * 2), r = t - n.xa, i = n.top[r], a = n.bot[r], c = Math.min(t - n.xa, n.xb - t);
+			if (c < 6) {
+				let e = Math.sqrt(Math.max(0, 1 - (1 - c / 6) ** 2)), t = (i + a) / 2;
 				i = t + (i - t) * e, a = t + (a - t) * e;
 			}
-			let c = [
+			let l = [
 				i - 2.1,
 				i - .1,
 				Math.max(i - .1, a - .6),
 				Math.max(i - .1, a + 1.4)
 			];
 			for (let e = 0; e < 4; e++) {
-				let r = a <= i + .05 ? i : c[e];
-				n.restA[m * 2] = t, n.restA[m * 2 + 1] = r, n.topA[m] = i;
-				let s = p(this.project(t, r, o(t, r)));
-				n.pos[m * 2] = s[0], n.pos[m * 2 + 1] = s[1], m++;
+				let r = a <= i + .05 ? i : l[e];
+				n.restA[h * 2] = t, n.restA[h * 2 + 1] = r, n.topA[h] = i;
+				let c = m(this.projectTo(t, r, o(t, r), s));
+				n.pos[h * 2] = c[0], n.pos[h * 2 + 1] = c[1], h++;
 			}
 		}
 		i.update(n.mesh, "aPos", n.pos), i.update(n.mesh, "aRest", n.restA), i.update(n.mesh, "aTop", n.topA);
-		let h = this.bsh && this.bsh.active && this.blinkDip || 0, g = h > 0 ? [(this.gaze || [0, 0])[0], (this.gaze || [0, 0])[1] - 6 * h] : this.gaze || [0, 0], _ = g[0] / 25 * 18, v = -(g[1] / 20) * 12 + (g[1] < 0 ? -g[1] / 25 * 2 : 0);
-		Math.cos((g[0] + .2 * a.yaw) * J * 1.2);
-		let [y, b] = r.iris, [x, S, C] = r.catch, w = he(n.xa, n.top, x), T = Math.max(0, w + C + 1.5 - (S + v * .45)), E = v * .45 + Math.min(T, 14), D = K((.92 - n.blink) / .2) * (1 - (this.g.lidKeys ? K((n.blink - .6) / .1) : 0)), O = p(this.project(y + _, b + v, o(y + _, b + v))), k = this.project(y - 12, b, o(y - 12, b)), A = this.project(y + 12, b, o(y + 12, b)), j = G(.55 + .45 * (Math.hypot(A[0] - k[0], A[1] - k[1]) / 24), .9, 1.06), M = p(this.project(x + _ * .45, S + E, o(x, S)));
-		i.drawEye(n.mesh, {
+		let g = 1 - J(.3, .7, this.wink ? this.wink[e] : 0), _ = this.bsh && this.bsh.active && this.blinkDip || 0, v = this.gaze || [0, 0], y = this.life.sacc, b = [v[0] + y[0], v[1] + y[1] - (_ > 0 ? 6 * _ : 0)], x = b[0] / 25 * 18, S = -(b[1] / 20) * 12 + (b[1] < 0 ? -b[1] / 25 * 2 : 0);
+		Math.cos((b[0] + .2 * a.yaw) * Y * 1.2);
+		let [C, w] = r.iris, [T, E, D] = r.catch, O = Ee(n.xa, n.top, T), k = Math.max(0, O + D + 1.5 - (E + S * .45)), A = S * .45 + Math.min(k, 14), j = q((.92 - n.blink) / .2) * (1 - (this.g.lidKeys ? q((n.blink - .6) / .1) : 0)), M = m(this.project(C + x, w + S, o(C + x, w + S))), N = this.project(C - 12, w, o(C - 12, w)), P = this.project(C + 12, w, o(C + 12, w)), F = K(.55 + .45 * (Math.hypot(P[0] - N[0], P[1] - N[1]) / 24), .9, 1.06), I = m(this.project(T + x * .45, E + A, o(T, E)));
+		g > .02 && i.drawEye(n.mesh, {
 			sclera: {
 				tex: this.tex["sclera" + e],
 				rect: this.g.rects["sclera" + e]
@@ -1801,67 +2058,74 @@ var ge = class {
 				tex: this.tex["catch" + e],
 				rect: this.g.rects["catch" + e]
 			},
-			irisC: [y, b],
-			irisScr: O,
-			irisK: j,
+			irisC: [C, w],
+			irisScr: M,
+			irisK: F,
 			irisScale: [1, n.blink > .85 ? .95 : 1],
-			catchScr: M,
-			catchC: [x, S],
-			catchA: D,
+			catchScr: I,
+			catchC: [T, E],
+			catchA: j,
 			lidShade: .4,
-			topY: he(n.xa, n.top, y)
+			topY: Ee(n.xa, n.top, C)
 		});
 		for (let e = 0; e < n.BC; e++) for (let t = 0; t < n.BR; t++) {
-			let i = e * n.BR + t, a = n.brest[i * 2], s = n.brest[i * 2 + 1], c = Math.round(a - n.xa), l = s - (r.bot[G(c, 0, r.bot.length - 1)] - n.bot[G(c, 0, n.bot.length - 1)]) * (1 - .75 * n.bv[i]), u = p(this.project(a, l, o(a, l)));
-			n.bpos[i * 2] = u[0], n.bpos[i * 2 + 1] = u[1];
+			let i = e * n.BR + t, a = n.brest[i * 2], c = n.brest[i * 2 + 1], l = Math.round(a - n.xa), u = c - (r.bot[K(l, 0, r.bot.length - 1)] - n.bot[K(l, 0, n.bot.length - 1)]) * (1 - .75 * n.bv[i]), d = m(this.projectTo(a, u, o(a, u), s));
+			n.bpos[i * 2] = d[0], n.bpos[i * 2 + 1] = d[1];
 		}
-		i.update(n.bmesh, "aPos", n.bpos), i.drawPaint(n.bmesh, this.tex["lower" + e], this.g.rects["lower" + e], 1, t);
-		let N = n.LC * n.LR;
-		for (let e = 0; e < N; e++) {
-			let t = n.lrest[e * 2], i = n.lrest[e * 2 + 1], a = Math.round(t - n.xa), s = 1;
-			a < 0 && (s = Math.max(.45, 1 + a / 30), a = 0), a > n.xb - n.xa && (s = Math.max(.45, 1 - (a - (n.xb - n.xa)) / 30), a = n.xb - n.xa), s += (1 - s) * K(n.blink / .34);
-			let c = i + (n.top[a] - r.top[a]) * s * n.lv[e], l = p(this.project(t, c, o(t, c)));
-			n.lpos[e * 2] = l[0], n.lpos[e * 2 + 1] = l[1];
+		i.update(n.bmesh, "aPos", n.bpos), i.drawPaint(n.bmesh, this.tex["lower" + e], this.g.rects["lower" + e], g, t);
+		let L = n.LC * n.LR;
+		for (let e = 0; e < L; e++) {
+			let t = n.lrest[e * 2], i = n.lrest[e * 2 + 1], a = Math.round(t - n.xa), c = 1;
+			a < 0 && (c = Math.max(.45, 1 + a / 30), a = 0), a > n.xb - n.xa && (c = Math.max(.45, 1 - (a - (n.xb - n.xa)) / 30), a = n.xb - n.xa), c += (1 - c) * q(n.blink / .34);
+			let l = i + (n.top[a] - r.top[a]) * c * n.lv[e], u = m(this.projectTo(t, l, o(t, l), s));
+			n.lpos[e * 2] = u[0], n.lpos[e * 2 + 1] = u[1];
 		}
-		if (i.update(n.lmesh, "aPos", n.lpos), i.drawPaint(n.lmesh, this.tex["lid" + e], this.g.rects["lid" + e], 1, t), this.g.lidKeys) {
-			let r = n.blink, a = q(.3, .36, r), o = q(.72, .82, r);
-			for (let [n, r] of [["mid", a * (1 - (o >= 1))], ["shut", o]]) {
-				if (r <= .003 || this.debug && this.debug.noKey === n) continue;
-				let a = this.lidKeyMesh[`lid${n}${e}`];
+		if (i.update(n.lmesh, "aPos", n.lpos), i.drawPaint(n.lmesh, this.tex["lid" + e], this.g.rects["lid" + e], g, t), this.g.lidKeys) {
+			let r = n.blink, a = J(.3, .36, r), o = J(.72, .82, r);
+			for (let [r, s] of [["mid", a * (1 - (o >= 1))], ["shut", o]]) {
+				if (s <= .003 || this.debug && this.debug.noKey === r) continue;
+				let a = this.lidKeyMesh[`lid${r}${e}`], o = r === "shut" ? this.wink[e] : 0;
 				for (let e = 0; e < a.n; e++) {
-					let t = a.rest[e * 2], n = a.rest[e * 2 + 1] + a.off[e], r = p(this.projectTo(t, n, a.z[e], this._tmp ||= [0, 0]));
-					a.pos[e * 2] = r[0], a.pos[e * 2 + 1] = r[1];
+					let t = a.rest[e * 2], r = a.rest[e * 2 + 1] + a.off[e];
+					if (o > 0) {
+						let i = n.e.lashX[0], s = n.e.lashX[1], c = (i + s) / 2, l = (s - i) / 2, u = Math.min(1.25, ((t - c) / l) ** 2), d = .2 + .8 * J(a.rect[1], a.rect[1] + 70, a.rest[e * 2 + 1]);
+						r += o * (-15 + 36 * u) * d;
+					}
+					let i = m(this.projectTo(t, r, a.z[e], this._tmp ||= [0, 0]));
+					a.pos[e * 2] = i[0], a.pos[e * 2 + 1] = i[1];
 				}
-				i.update(a.mesh, "aPos", a.pos), i.drawPaint(a.mesh, this.tex[`lid${n}${e}`], a.rect, r, t);
+				i.update(a.mesh, "aPos", a.pos), i.drawPaint(a.mesh, this.tex[`lid${r}${e}`], a.rect, s, t);
 			}
 		}
 	}
 	drawMouth(e) {
 		let t = this.R, n = this.solver, r = this.shell;
 		r.update(n);
+		let i = this._fo ||= [0, 0];
 		for (let e of ["U", "L"]) {
 			let t = r.sheets[e];
+			t.FW ||= Ce(t.rest, t.C * t.R);
 			for (let e = 0; e < t.C * t.R; e++) {
-				let n = t.pos[e * 2], r = t.pos[e * 2 + 1], [i, a] = this.faceOffset(t.rest[e * 2], t.rest[e * 2 + 1], !0), o = this.projectTo(n + i, r + a, t.z[e], this._tmp ||= [0, 0]);
-				t.pos[e * 2] = o[0], t.pos[e * 2 + 1] = o[1];
+				let n = t.pos[e * 2], r = t.pos[e * 2 + 1], [a, o] = this.faceOffW(t.FW, e, !0, i), s = this.projectTo(n + a, r + o, t.z[e], this._tmp ||= [0, 0]);
+				t.pos[e * 2] = s[0], t.pos[e * 2 + 1] = s[1];
 			}
 		}
-		let i = r.inner;
-		for (let e = 0; e < i.pos.length / 2; e++) {
-			let t = i.pos[e * 2], n = i.pos[e * 2 + 1], [r, a] = this.faceOffset(t, n, !0), o = this.project(t + r, n + a, X(t, n));
-			i.proj[e * 2] = o[0], i.proj[e * 2 + 1] = o[1];
+		let a = r.inner;
+		for (let e = 0; e < a.pos.length / 2; e++) {
+			let t = a.pos[e * 2], n = a.pos[e * 2 + 1], [r, i] = this.faceOffset(t, n, !0), o = this.projectTo(t + r, n + i, xe(t, n), this._tmp ||= [0, 0]);
+			a.proj[e * 2] = o[0], a.proj[e * 2 + 1] = o[1];
 		}
-		t.update(this.innerMesh, "aPos", i.proj), t.update(this.innerMesh, "aDT", i.dt), t.update(this.innerMesh, "aGap", i.gap);
-		let a = n.p;
-		a.g > .05 && t.drawInner(this.innerMesh, this.tex.interior, [
-			a.T,
-			a.TL,
+		t.update(this.innerMesh, "aPos", a.proj), t.update(this.innerMesh, "aDT", a.dt), t.update(this.innerMesh, "aGap", a.gap);
+		let o = n.p;
+		o.g > .05 && t.drawInner(this.innerMesh, this.tex.interior, [
+			o.T,
+			o.TL,
 			10,
 			0
 		], [
-			a.th,
-			a.tip,
-			a.curl,
+			o.th,
+			o.tip,
+			o.curl,
 			0
 		], 1 - .5 * e[3]);
 		for (let n of ["L", "U"]) {
@@ -1872,18 +2136,20 @@ var ge = class {
 	drawPlate() {
 		let e = this.st;
 		if (!e || !e.yk || this.debug && this.debug.noPlate) return;
-		let t = e.yaw >= 0 ? "R" : "L", n = this.plates[t], r = q(.04, 1, e.ykf);
+		let t = e.yaw >= 0 ? "R" : "L", n = this.plates[t], r = J(.04, 1, e.ykf);
 		if (!n || r <= .004) return;
 		let i = this.solver, a = i.p, o = this._tmp ||= [0, 0], s = i.lowerDrop(), c = i.shift || 0, l = Math.max(69 * a.W + Math.max(0, i.side.L.wid), 78) + 14, u = Math.max(71 * a.W + Math.max(0, i.side.R.wid), 80) + 14;
+		n.FW ||= Ce(n.rest, n.n);
+		let d = this._fo ||= [0, 0];
 		for (let e = 0; e < n.n; e++) {
-			let t = n.rest[e * 2], i = n.rest[e * 2 + 1], [d, f] = this.faceOffset(t, i);
-			this.projectTo(t + d, i + f, n.z[e], o), n.pos[e * 2] = o[0], n.pos[e * 2 + 1] = o[1];
-			let p = r * n.hole[e];
-			if (p > 0 && t > 420 && t < 650 && i > 540 && i < 720) {
-				let e = t - 530 - c, n = e < 0 ? -e / l : e / u, r = V(t), o = r - 20 - .3 * a.g, d = r + 30 + s, f = Math.max((n - 1) * 60, o - i, i - d);
-				p *= q(-9, 0, f);
+			let t = n.rest[e * 2], i = n.rest[e * 2 + 1], [f, p] = this.faceOffW(n.FW, e, !1, d);
+			this.projectTo(t + f, i + p, n.z[e], o), n.pos[e * 2] = o[0], n.pos[e * 2 + 1] = o[1];
+			let m = r * n.hole[e];
+			if (m > 0 && t > 420 && t < 650 && i > 540 && i < 720) {
+				let e = t - 530 - c, n = e < 0 ? -e / l : e / u, r = U(t), o = r - 20 - .3 * a.g, d = r + 30 + s, f = Math.max((n - 1) * 60, o - i, i - d);
+				m *= J(-9, 0, f);
 			}
-			n.alpha[e] = p;
+			n.alpha[e] = m;
 		}
 		this.R.update(n.mesh, "aPos", n.pos), this.R.update(n.mesh, "aA", n.alpha), this.R.drawLip(n.mesh, this.tex["plate" + t], n.rect, [
 			1,
@@ -1891,6 +2157,64 @@ var ge = class {
 			1,
 			0
 		]);
+	}
+	warm(e = 24) {
+		let t = this.clock, n = this.lastT, r = [
+			{
+				viseme_aa: 1,
+				jawOpen: .6
+			},
+			{
+				viseme_nn: 1,
+				tongueTipUp: .9,
+				jawOpen: .3
+			},
+			{
+				viseme_CH: 1,
+				jawOpen: .25
+			},
+			{ viseme_FF: 1 },
+			{ viseme_PP: 1 },
+			{
+				viseme_O: 1,
+				jawOpen: .4
+			},
+			{
+				tongueCurl: .9,
+				viseme_DD: 1
+			},
+			{
+				eyeBlinkLeft: .5,
+				eyeBlinkRight: .5
+			},
+			{
+				eyeBlinkLeft: 1,
+				eyeBlinkRight: 1
+			},
+			{
+				eyeBlinkRight: 1,
+				cheekSquintRight: .8,
+				mouthSmileRight: .8
+			},
+			{
+				eyeWideLeft: .9,
+				eyeWideRight: .9,
+				jawOpen: .42
+			},
+			{
+				mouthSmileLeft: 1,
+				mouthSmileRight: 1,
+				jawOpen: .34,
+				cheekSquintLeft: .7,
+				cheekSquintRight: .7
+			}
+		];
+		for (let t = 0; t < e; t++) this.clock = 5e3 + t / 60, this.frame(r[t % r.length], [
+			3 * Math.sin(t),
+			8 * Math.sin(t * .7),
+			4 * Math.cos(t)
+		], [5 * Math.sin(t), 3 * Math.cos(t)], 0, Math.sin(t));
+		this.R.gl.finish(), this.clock = t, this.lastT = n, this.resetPhysics(), this.solver = new ce(), this.life = new he({ reduced: this.reduced }), this.prevAnchor = null;
 	}
 	resetPhysics() {
 		for (let e of ["L", "R"]) {
@@ -1912,7 +2236,7 @@ var ge = class {
 	dispose() {
 		this.R.gl.getExtension("WEBGL_lose_context")?.loseContext();
 	}
-}, ye = {
+}, Ae = {
 	thinking: {
 		bs: {
 			browOuterUpLeft: .72,
@@ -2068,29 +2392,28 @@ var ge = class {
 	},
 	playful: {
 		bs: {
-			mouthSmileLeft: .75,
-			mouthSmileRight: .05,
-			cheekSquintLeft: .5,
-			browOuterUpLeft: 1,
-			browDownRight: .45,
-			eyeSquintRight: .3,
-			eyeBlinkRight: .5,
-			cheekSquintRight: .25,
-			eyeSquintLeft: .05
+			mouthSmileRight: .8,
+			mouthSmileLeft: .12,
+			cheekSquintRight: .85,
+			browOuterUpLeft: .9,
+			browDownRight: .35,
+			eyeBlinkRight: 1,
+			eyeWideLeft: .1,
+			eyeSquintLeft: .04
 		},
 		head: [
 			-2,
-			7,
-			-9
+			-6,
+			8
 		],
-		gaze: [-6, 3],
+		gaze: [-5, 3],
 		env: [
-			.25,
+			.22,
 			0,
-			.45
+			.4
 		]
 	}
-}, be = (e) => e <= 0 ? 0 : e >= 1 ? 1 : e * e * (3 - 2 * e), xe = class {
+}, je = (e) => e <= 0 ? 0 : e >= 1 ? 1 : e * e * (3 - 2 * e), Me = class {
 	constructor() {
 		this.cur = null, this.bounce = {
 			x: 0,
@@ -2098,7 +2421,7 @@ var ge = class {
 		};
 	}
 	emote(e, t, { hold: n = 1.6, intensity: r = 1 } = {}) {
-		let i = ye[e];
+		let i = Ae[e];
 		i && (this.cur = {
 			name: e,
 			t0: t,
@@ -2113,7 +2436,7 @@ var ge = class {
 	level(e) {
 		let t = this.cur;
 		if (!t) return 0;
-		let [n, , r] = ye[t.name].env, i = be((e - t.t0) / n), a = t.rel >= 0 ? t.rel : t.t0 + n + t.hold, o = e < a ? 1 : 1 - be((e - a) / r);
+		let [n, , r] = Ae[t.name].env, i = je((e - t.t0) / n), a = t.rel >= 0 ? t.rel : t.t0 + n + t.hold, o = e < a ? 1 : 1 - je((e - a) / r);
 		return o <= 0 && e > a ? (this.cur = null, 0) : i * o * t.I;
 	}
 	apply(e, t, n, r, i, a) {
@@ -2125,7 +2448,7 @@ var ge = class {
 		r[0] += this.bounce.x;
 		let s = this.level(e);
 		if (!this.cur || s <= 0) return 0;
-		let c = ye[this.cur.name];
+		let c = Ae[this.cur.name];
 		for (let [e, t] of Object.entries(c.bs)) {
 			if (e === "jawOpen") {
 				a && (a.jawOpen = Math.max(a.jawOpen ?? 0, t * s));
@@ -2136,7 +2459,7 @@ var ge = class {
 		for (let e = 0; e < 3; e++) r[e] += c.head[e] * s;
 		return i[0] = i[0] * (1 - s) + c.gaze[0] * s, i[1] = i[1] * (1 - s) + c.gaze[1] * s, s;
 	}
-}, Se = class {
+}, Ne = class {
 	constructor(e = 3) {
 		this.s = {
 			x: 0,
@@ -2161,7 +2484,7 @@ var ge = class {
 			smile: this.smile
 		};
 	}
-}, Z = new URLSearchParams(location.search), Ce = Z.has("capture"), we = Z.get("base") || "./pack/", Te = Z.get("ext") || (we.includes("pack") ? "webp" : "png"), Ee = Z.has("facerig"), Q = 5, De = [
+}, $ = new URLSearchParams(location.search), Pe = $.has("capture"), Fe = $.get("base") || "./pack/", Ie = $.get("ext") || (Fe.includes("pack") ? "webp" : "png"), Le = $.has("facerig"), Re = 5, ze = [
 	{
 		id: "idle",
 		t0: 0,
@@ -2170,7 +2493,7 @@ var ge = class {
 	},
 	{
 		id: "talking",
-		t0: Q,
+		t0: Re,
 		t1: 17.9,
 		status: "speaking"
 	},
@@ -2231,13 +2554,13 @@ var ge = class {
 		status: null,
 		turn: !0
 	}
-], $ = 45.2;
-function Oe(e) {
-	for (let t of De) if (e >= t.t0 && e < t.t1) return t;
-	return De[De.length - 1];
+], Be = 45.2;
+function Ve(e) {
+	for (let t of ze) if (e >= t.t0 && e < t.t1) return t;
+	return ze[ze.length - 1];
 }
-var ke = { baanta: "t" };
-function Ae(e) {
+var He = { baanta: "t" };
+function Ue(e) {
 	let t = [];
 	for (let n of e.words) {
 		let r = e.visemes.filter((e) => e.word === n.word && e.t0 >= n.t0 - .35 && e.t0 <= n.t1 + .05);
@@ -2246,7 +2569,7 @@ function Ae(e) {
 			(e.viseme === "viseme_DD" || e.viseme === "viseme_nn") && (c.tongueTipUp = .8), e.letters === "l" && Object.assign(c, {
 				tongueTipUp: .8,
 				tongueWide: .6
-			}), ke[n.word] && e.letters === ke[n.word] && Object.assign(c, {
+			}), He[n.word] && e.letters === He[n.word] && Object.assign(c, {
 				tongueCurl: .9,
 				tongueTipUp: 0
 			}), t.push({
@@ -2261,7 +2584,7 @@ function Ae(e) {
 	}
 	return t;
 }
-function je(e, t) {
+function We(e, t) {
 	let n = {};
 	for (let r of e) {
 		if (t < r.t0 - .06 || t > r.t1 + .06) continue;
@@ -2271,95 +2594,97 @@ function je(e, t) {
 	}
 	return n;
 }
-async function Me() {
-	let e = document.getElementById("c"), t = (Z.get("view") || "60,8,904").split(",").map(Number);
-	Z.get("px") && (e.style.width = Z.get("px") + "px");
-	let n = await ve.load(e, we, {
-		ext: Te,
-		dpr: Ce ? 1 : Math.min(2, devicePixelRatio || 1),
+async function Ge() {
+	let e = document.getElementById("c"), t = ($.get("view") || "60,8,904").split(",").map(Number);
+	$.get("px") && (e.style.width = $.get("px") + "px");
+	let n = $.get("turn") === "plates", a = await ke.load(e, Fe, {
+		plates: n,
+		yawMax: $.get("yawmax") ? +$.get("yawmax") : void 0,
+		ext: Ie,
+		dpr: Pe ? 1 : Math.min(2, devicePixelRatio || 1),
 		view: t,
-		preserve: Ce,
-		clear: Z.get("bg") ? Z.get("bg").split(",").map((e) => e / 255) : void 0
+		preserve: Pe,
+		clear: $.get("bg") ? $.get("bg").split(",").map((e) => e / 255) : void 0
 	});
-	(Z.get("dbg") || Z.get("only")) && (n.debug = {
-		tint: Z.get("dbg") === "tint",
-		only: Z.get("only") ? Z.get("only").split(",") : null
+	a.warm(), $.has("prof") && (a.prof = {}), ($.get("dbg") || $.get("only")) && (a.debug = {
+		tint: $.get("dbg") === "tint",
+		only: $.get("only") ? $.get("only").split(",") : null
 	});
-	let a = Ae(await fetch("./audio/voice.align.json").then((e) => e.json())), o = await fetch("./audio/voice.mp3").then((e) => e.arrayBuffer()), s = await new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100).decodeAudioData(o.slice(0)), c = s.getChannelData(0), l = s.sampleRate, u = new r(l), d = new C({
+	let o = Ue(await fetch("./audio/voice.align.json").then((e) => e.json())), s = await fetch("./audio/voice.mp3").then((e) => e.arrayBuffer()), c = await new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100).decodeAudioData(s.slice(0)), l = c.getChannelData(0), u = c.sampleRate, d = new r(u), f = new C({
 		band: "b2",
 		seed: 7,
 		faceStyle: { smile: .7 }
-	}), f = new O(.85), p = /* @__PURE__ */ new Float32Array(1024), m = -1, h = 0, g = null, _ = !1, v = "idle", y = new xe(), b = new Se(), x = {
+	}), p = new O(.85), m = /* @__PURE__ */ new Float32Array(1024), h = -1, g = 0, _ = null, v = !1, y = "idle", b = new Me(), x = new Ne(), w = {
 		work: [],
 		rig: [],
 		intervals: [],
 		frames: 0,
 		rows: []
 	};
-	function w(e) {
-		let t = performance.now(), r = m < 0 ? 1 / 60 : Math.min(.25, e - m);
-		m = e;
-		let o = Oe(e);
-		o.status !== g && (g = o.status, h = e, _ = !1);
-		let s = e - Q, C = Math.floor(s * l);
+	function T(e) {
+		let t = performance.now(), n = h < 0 ? 1 / 60 : Math.min(.25, e - h);
+		h = e;
+		let r = Ve(e);
+		r.status !== _ && (_ = r.status, g = e, v = !1);
+		let s = e - Re, c = Math.floor(s * u);
 		for (let e = 0; e < 1024; e++) {
-			let t = C - 1024 + e;
-			p[e] = t >= 0 && t < c.length ? c[t] : 0;
+			let t = c - 1024 + e;
+			m[e] = t >= 0 && t < l.length ? l[t] : 0;
 		}
-		let w = u.step(p, e);
-		w.speaking && (_ ||= e - h > .3);
+		let C = d.step(m, e);
+		C.speaking && (v ||= e - g > .3);
 		let T = S({
-			status: o.status,
-			tapSpeaking: w.speaking,
-			silenceMs: w.silenceMs,
-			spokeSinceStatus: _
+			status: r.status,
+			tapSpeaking: C.speaking,
+			silenceMs: C.silenceMs,
+			spokeSinceStatus: v
 		});
-		v = T, d.setState(T);
-		let E = d.update(e, {
-			herRms: w.rms,
-			herVoiced: w.voiced,
-			childLevel: o.id === "listening" ? .4 : 0
+		y = T, f.setState(T);
+		let E = f.update(e, {
+			herRms: C.rms,
+			herVoiced: C.voiced,
+			childLevel: r.id === "listening" ? .4 : 0
 		}), D = { ...E.bs }, O = [...E.head];
-		o.preset && y.sceneId !== o.id && (y.sceneId = o.id, y.emote(o.preset, e, { hold: Math.max(.2, o.t1 - o.t0 - .9) })), o.preset || (y.sceneId = null);
+		r.preset && b.sceneId !== r.id && (b.sceneId = r.id, b.emote(r.preset, e, { hold: Math.max(.2, r.t1 - r.t0 - .9) })), r.preset || (b.sceneId = null);
 		let k = 0;
-		if (o.child) {
-			let t = o.child[0] + (e - o.t0), n = Math.floor(t * l), r = 0;
+		if (r.child) {
+			let t = r.child[0] + (e - r.t0), n = Math.floor(t * u), i = 0;
 			for (let e = 0; e < 1024; e++) {
-				let t = c[n - 1024 + e] || 0;
-				r += t * t;
+				let t = l[n - 1024 + e] || 0;
+				i += t * t;
 			}
-			k = Math.min(1, Math.sqrt(r / 1024) * 9);
+			k = Math.min(1, Math.sqrt(i / 1024) * 9);
 		}
-		let A = b.update(e, r, T === "listening", k);
-		if (O[0] += A.pitch, D.mouthSmileLeft = (D.mouthSmileLeft ?? 0) + A.smile, D.mouthSmileRight = (D.mouthSmileRight ?? 0) + A.smile, o.turn) {
-			let t = e - o.t0;
+		let A = x.update(e, n, T === "listening", k);
+		if (O[0] += A.pitch, D.mouthSmileLeft = (D.mouthSmileLeft ?? 0) + A.smile, D.mouthSmileRight = (D.mouthSmileRight ?? 0) + A.smile, r.turn) {
+			let t = e - r.t0;
 			O[1] = t < 1.5 ? -20 * Math.sin(t / 1.5 * Math.PI / 2) : t < 4 ? -20 + 40 * (.5 - .5 * Math.cos((t - 1.5) / 2.5 * Math.PI)) : 20 * Math.cos((t - 4) / 2 * Math.PI / 2), O[0] += t > 4.6 && t < 5.6 ? 8 * Math.sin((t - 4.6) / 1 * Math.PI) : 0;
 		}
-		let j = i(w), M = [...E.gaze];
-		y.apply(e, r, D, O, M, j);
-		let N = f.compose(D, j, r);
-		o.id === "talking" && Object.assign(N, je(a, s));
+		let j = i(C), M = [...E.gaze];
+		b.apply(e, n, D, O, M, j);
+		let N = p.compose(D, j, n);
+		r.id === "talking" && Object.assign(N, We(o, s));
 		let P = Math.sin(e * 2 * Math.PI * .25), F = performance.now();
-		Ce && (n.clock = e), n.frame(N, O, M, E.lean, P);
-		let ee = performance.now() - F;
-		x.rig.push(ee);
-		let I = performance.now() - t;
-		return x.work.push(I), x.frames++, o.id === "talking" && x.rows.push({
+		Pe && (a.clock = e), a.frame(N, O, M, E.lean, P);
+		let I = performance.now() - F;
+		w.rig.push(I);
+		let L = performance.now() - t;
+		return w.work.push(L), w.frames++, r.id === "talking" && w.rows.push({
 			t: +s.toFixed(3),
-			row: n.mouth.row,
-			name: n.mouth.name,
+			row: a.mouth.row,
+			name: a.mouth.name,
 			vis: Object.keys(N).filter((e) => e.startsWith("viseme_") && N[e] > .5)
 		}), {
 			t: e,
-			scene: o.id,
-			state: v,
+			scene: r.id,
+			state: y,
 			head: O,
 			gaze: M,
-			mouth: n.mouth.name,
-			work: I
+			mouth: a.mouth.name,
+			work: L
 		};
 	}
-	let T = [
+	let E = [
 		["chalo", [
 			[
 				"CH",
@@ -2444,7 +2769,7 @@ async function Me() {
 			]
 		]],
 		[null, .35]
-	], E = {
+	], D = {
 		CH: .25,
 		aa: .55,
 		nn: .28,
@@ -2452,10 +2777,10 @@ async function Me() {
 		PP: 0,
 		U: .2,
 		I: .25
-	}, D = [];
+	}, k = [];
 	{
 		let e = .25;
-		for (let [t, n] of T) {
+		for (let [t, n] of E) {
 			if (!t) {
 				e += n;
 				continue;
@@ -2465,68 +2790,68 @@ async function Me() {
 					tongueTipUp: .8,
 					tongueWide: .6
 				} : {};
-				D.push({
+				k.push({
 					t0: e,
 					t1: e + i,
 					v: "viseme_" + r,
 					tongue: n,
 					letters: a,
 					word: t,
-					jaw: E[r]
+					jaw: D[r]
 				}), e += i;
 			}
 		}
 	}
-	let k = D[D.length - 1].t1 + .4;
-	function A(e) {
+	let A = k[k.length - 1].t1 + .4;
+	function j(e) {
 		let t = {
 			mouthSmileLeft: .12,
 			mouthSmileRight: .12,
-			...je(D, e)
-		}, r = 0;
-		for (let t of D) {
-			let n = Math.max(0, Math.min(1, (e - (t.t0 - .05)) / .05, (t.t1 + .05 - e) / .05));
-			r = Math.max(r, t.jaw * n);
+			...We(k, e)
+		}, n = 0;
+		for (let t of k) {
+			let r = Math.max(0, Math.min(1, (e - (t.t0 - .05)) / .05, (t.t1 + .05 - e) / .05));
+			n = Math.max(n, t.jaw * r);
 		}
-		t.jawOpen = r, n.clock = 2e3 + e, n.frame(t, [
+		t.jawOpen = n, a.clock = 2e3 + e, a.frame(t, [
 			0,
 			0,
 			0
 		], [0, 0], 0, 0);
-		let i = D.find((t) => e >= t.t0 && e < t.t1);
-		return i ? `${i.word}:${i.letters}` : "";
+		let r = k.find((t) => e >= t.t0 && e < t.t1);
+		return r ? `${r.word}:${r.letters}` : "";
 	}
 	if (window.P2D = {
-		duration: $,
-		scenes: De,
-		stats: x,
-		rig: n,
-		listener: b,
-		EXPRESSIONS: ye,
-		gateAt: A,
-		gateDur: k,
-		gateSegs: D,
-		renderAt: (e) => w(e),
+		duration: Be,
+		scenes: ze,
+		stats: w,
+		rig: a,
+		listener: x,
+		EXPRESSIONS: Ae,
+		gateAt: j,
+		gateDur: A,
+		gateSegs: k,
+		renderAt: (e) => T(e),
 		pose: (e) => {
-			n.lastT = -1, n.solver.first = !0;
-			let t = { ...e.bs || {} }, r = [...e.head || [
+			a.lastT = -1, a.solver.first = !0;
+			let t = { ...e.bs || {} }, n = [...e.head || [
 				0,
 				0,
 				0
-			]], i = [...e.gaze || [0, 0]];
+			]], r = [...e.gaze || [0, 0]];
 			if (e.expr) {
-				let n = ye[e.expr];
+				let i = Ae[e.expr];
 				t = {
 					mouthSmileLeft: .06,
 					mouthSmileRight: .06,
 					...t
 				};
-				for (let [e, r] of Object.entries(n.bs)) t[e] = r < 0 ? 0 : Math.max(t[e] ?? 0, r);
-				r = r.map((e, t) => e + n.head[t]), i = [...n.gaze];
+				for (let [e, n] of Object.entries(i.bs)) t[e] = n < 0 ? 0 : Math.max(t[e] ?? 0, n);
+				n = n.map((e, t) => e + i.head[t]), r = [...i.gaze];
 			}
-			if (n.debug = e.debug || null, e.blinkAt != null) {
-				n.resetPhysics();
-				let a = {
+			if (a.debug = e.debug || null, e.blinkAt != null) {
+				a.resetPhysics();
+				let i = {
 					...t,
 					eyeBlinkLeft: 0,
 					eyeBlinkRight: 0
@@ -2535,44 +2860,44 @@ async function Me() {
 					eyeBlinkLeft: 1,
 					eyeBlinkRight: 1
 				}, s = 1e3;
-				for (let t = 0; t < 6; t++) n.clock = s, n.frame(a, r, i, e.lean || 0, 0), s += 1 / 60;
+				for (let t = 0; t < 6; t++) a.clock = s, a.frame(i, n, r, e.lean || 0, 0), s += 1 / 60;
 				let c = s;
-				for (let t = 0; t <= e.blinkAt / 30 + 1e-6; t += 1 / 60) n.clock = c + t, n.frame(o, r, i, e.lean || 0, 0);
-			} else for (let a = 0; a < 6; a++) n.clock = 1e3 + a / 60, n.resetPhysics(), n.frame(t, r, i, e.lean || 0, 0);
-			return n.debug = null, n.mouth.name;
+				for (let t = 0; t <= e.blinkAt / 30 + 1e-6; t += 1 / 60) a.clock = c + t, a.frame(o, n, r, e.lean || 0, 0);
+			} else for (let i = 0; i < 6; i++) a.clock = 1e3 + i / 60, a.resetPhysics(), a.frame(t, n, r, e.lean || 0, 0);
+			return a.debug = null, a.mouth.name;
 		}
-	}, Ce) {
+	}, Pe) {
 		window.P2D.ready = !0;
 		return;
 	}
-	let j = new Audio("./audio/voice.mp3"), M = !1, N = performance.now() - (Z.get("start") || 0) * 1e3, P = -1, F = document.getElementById("hud");
-	Ee && document.body.classList.add("facerig");
-	let ee = (() => {
+	let M = new Audio("./audio/voice.mp3"), N = !1, P = performance.now() - ($.get("start") || 0) * 1e3, F = -1, I = document.getElementById("hud");
+	Le && document.body.classList.add("facerig");
+	let L = (() => {
 		try {
 			let e = document.createElement("canvas").getContext("webgl2"), t = e.getExtension("WEBGL_debug_renderer_info");
 			return t ? e.getParameter(t.UNMASKED_RENDERER_WEBGL) : "renderer hidden";
 		} catch {
 			return "?";
 		}
-	})(), I = (t) => {
-		let r = (t - N) / 1e3 % $;
-		P > 0 && x.intervals.push(t - P), P = t, n.clock = r + Math.floor((t - N) / 1e3 / $) * $, r < m && (m = -1), !M && r >= Q && r < 17 && (M = !0, j.currentTime = Math.max(0, r - Q), j.play().catch(() => {})), r < Q && (M = !1);
-		let i = w(r);
-		if (F && x.frames % 15 == 0) {
-			let t = x.intervals.slice(-180), r = t.length ? 1e3 / (t.reduce((e, t) => e + t, 0) / t.length) : 0, a = (e, t) => {
+	})(), R = (t) => {
+		let n = (t - P) / 1e3 % Be;
+		F > 0 && w.intervals.push(t - F), F = t, a.clock = n + Math.floor((t - P) / 1e3 / Be) * Be, n < h && (h = -1), !N && n >= Re && n < 17 && (N = !0, M.currentTime = Math.max(0, n - Re), M.play().catch(() => {})), n < Re && (N = !1);
+		let r = T(n);
+		if (I && w.frames % 15 == 0) {
+			let t = w.intervals.slice(-180), n = t.length ? 1e3 / (t.reduce((e, t) => e + t, 0) / t.length) : 0, i = (e, t) => {
 				let n = e.slice(-180).sort((e, t) => e - t);
 				return n[Math.floor(n.length * t)] || 0;
 			}, o = t.filter((e) => e > 20).length;
-			Ee ? F.innerHTML = `<b>${r.toFixed(0)} fps</b> · work p95 <b>${a(x.work, .95).toFixed(2)} ms</b> (p50 ${a(x.work, .5).toFixed(2)}) · rig p95 ${a(x.rig, .95).toFixed(2)} ms<br>slow frames ${o}/${t.length} · canvas ${e.width}x${e.height} @dpr ${(n.R.dpr || 1).toFixed(2)} · ${n.stats().meshes} draws · ${n.stats().triangles} tris<br><small>${ee}</small>` : F.textContent = `${i.scene} · ${i.state} · ${r.toFixed(0)} fps · work p95 ${a(x.work, .95).toFixed(2)} ms · ${n.stats().meshes} draws`;
+			Le ? I.innerHTML = `<b>${n.toFixed(0)} fps</b> · work p95 <b>${i(w.work, .95).toFixed(2)} ms</b> (p50 ${i(w.work, .5).toFixed(2)}) · rig p95 ${i(w.rig, .95).toFixed(2)} ms<br>slow frames ${o}/${t.length} · canvas ${e.width}x${e.height} @dpr ${(a.R.dpr || 1).toFixed(2)} · ${a.stats().meshes} draws · ${a.stats().triangles} tris<br><small>${L}</small>` : I.textContent = `${r.scene} · ${r.state} · ${n.toFixed(0)} fps · work p95 ${i(w.work, .95).toFixed(2)} ms · ${a.stats().meshes} draws`;
 		}
-		requestAnimationFrame(I);
+		requestAnimationFrame(R);
 	};
 	document.getElementById("start")?.addEventListener("click", () => {
-		N = performance.now(), M = !1, m = -1;
-	}), requestAnimationFrame(I), window.P2D.ready = !0;
+		P = performance.now(), N = !1, h = -1;
+	}), requestAnimationFrame(R), window.P2D.ready = !0;
 }
-Me().catch((e) => {
+Ge().catch((e) => {
 	document.body.insertAdjacentHTML("beforeend", `<pre style="color:red">${e.stack}</pre>`), window.P2D = { error: String(e) };
 });
 //#endregion
-export { $ as DURATION };
+export { Be as DURATION };

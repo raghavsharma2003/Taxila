@@ -18,6 +18,7 @@ import { skeleton } from "../../src/lesson/cascadeLink.ts";
 const WORD = /[^\p{L}\p{M}\p{N}]+/u;
 const split = (t) => String(t ?? "").split(/\s+/).filter(Boolean);
 const sk = (w) => skeleton(String(w).replace(new RegExp(WORD.source, "gu"), ""));
+const surf = (w) => String(w).normalize("NFC").toLowerCase().replace(new RegExp(WORD.source, "gu"), "");
 
 export const ECHO = { windowMs: 2000, minRun: 2, echoShare: 0.7, echoMinTokens: 4, freshMs: 1000 };
 
@@ -94,7 +95,10 @@ export class EchoSubtractor {
         // a single matching token is kept (a child repeating one word of hers is a turn) UNLESS it is FRESH: her word ended
         // within freshMs of the text's own audio time (t - lag). While she is mid-sentence that is her echo arriving word by
         // word (word-timed streaming STT emits it one token at a time: TaxilaFDB F12, 2026-10-04, 26/40 self-yields).
-        const fresh = n === 1 && her[k].endMs >= t - lagMs - this.o.freshMs && her[k].endMs <= t + 100;
+        // the single-token case compares SURFACE forms, not consonant skeletons: one skeleton is too lossy for one word
+        // ("हाँ" and her "हैं" share the skeleton "h"; M-D7 i10: a child's yes over her yes/no question was deleted as echo
+        // and she resumed over the answer, 30/30 on the fast lane)
+        const fresh = n === 1 && surf(toks[i]) === surf(her[k].w) && her[k].endMs >= t - lagMs - this.o.freshMs && her[k].endMs <= t + 100;
         if (n >= this.o.minRun || fresh) for (let x = i; x < a; x++) drop[x] = true;
       }
     }
