@@ -1,0 +1,32 @@
+--- a/server/routes/lesson.js	2026-10-04 09:44:35.030515340 +0000
++++ b/server/routes/lesson.js	2026-10-04 09:44:35.044487218 +0000
+@@ -29,6 +29,7 @@
+ import { classify, classifyFast, targetFor, helpOf } from "../director/classify.js";
+ import { scanSafety, floorViolations, scrubPii } from "../director/safety.js";
+ import { initLessonState, step, evidenceFrom, upcomingItem, LIMITS, shortTitleOf } from "../director/state.js";
++import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
+ import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, whyKey, norm as normAnswer } from "../director/items.js";
+ import { TURN_WORDS, FLOOR_FIX } from "../compiler/compile.js";
+ import { HELPLINES } from "../compiler/floor.js";
+@@ -823,6 +824,9 @@
+   // contracts.ts TurnRequest: the child acted in an activity and said nothing. Never graded as a reply —
+   // it was once stored as "[no speech]", classified unclear, and walked the lesson plan.
+   const moduleOnly = !childText && !body.chipId && body.asrConfidence !== 0 && moduleEvents.length > 0;
++  // W1-B #4: a frame `error` on the mounted module clears it (no screen target, no module tray, never mounted again in
++  // this lesson), BEFORE anything below reads state.module.
++  noteModuleEvents(state, moduleEvents);
+   // A help request (the Hint sheet, the Young Help menu: classify.js HELP_REQUESTS) is a client action, never the child's
+   // words: stored as a system row (never in a transcript, the parent's quote or "In {child}'s words"), never graded.
+   // Same predicate as classifyFast: words that trip the safety scan are never a help request, so a disclosure that rides on a
+@@ -874,8 +878,9 @@
+   // Classify against the active item's key (never free grading). A module answer on the active item's own
+   // module is machine truth; a module-only turn has nothing else to classify.
+   const target = targetFor(state, kit, activeItem);
+-  const moduleAnswer = moduleEvents
+-    .filter((e) => e?.type === "answer" && state.module && e.moduleId === state.module.id && state.module.itemId === state.activeItemId).at(-1)?.data ?? null;
++  // W1-B #5/#6: a G1 fill is graded by its server-side binding (forge/grade.js gradeEvent), never by the frame's
++  // `correct`; a bound catalog engine carries the engine's verdict (director/modules.js moduleAnswerOf).
++  const moduleAnswer = moduleAnswerOf(state, moduleEvents);
+   const machineAnswer = typeof moduleAnswer?.correct === "boolean" && target.mode === "item";
+   const clsArgs = { target, childText, heard, lang: state.ctx?.lang, asrConfidence: body.asrConfidence, typed, chipId: body.chipId, moduleAnswer, classLevel: child.class_level, trace };
+   const classified = !(moduleOnly && !machineAnswer);

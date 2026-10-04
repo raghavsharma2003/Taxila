@@ -15,12 +15,12 @@ u = (x + 0.5) / N * 2 - 1           # -1..1 = -r..r
 v = 1 - (y + 0.5) / N * 2           # image row 0 = top (+z)
 r = np.hypot(u, v)
 th = np.arctan2(v, u)
-RI, RP = 0.53, 0.22
+RI, RP = 0.62, 0.29
 rng = np.random.default_rng(7)
 sclera = np.array([238, 230, 220], float)
-c_out = np.array([62, 32, 16], float)
-c_mid = np.array([118, 64, 30], float)
-c_glow = np.array([164, 96, 46], float)
+c_out = np.array([46, 24, 12], float)
+c_mid = np.array([92, 50, 24], float)
+c_glow = np.array([140, 80, 38], float)
 limbus = np.array([30, 16, 9], float)
 pupil = np.array([12, 7, 6], float)
 t = np.clip((r - RP) / (RI - RP), 0, 1)                    # 0 at pupil edge, 1 at limbus

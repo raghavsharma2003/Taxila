@@ -1,0 +1,86 @@
+{
+ "nodes": [
+  {
+   "id": "w1f-rig-runtime-behind-flag",
+   "kind": "decision",
+   "title": "The GLB rig runtime is ported into src/avatar/three/{rig,shaders,presets,contract}.ts behind HeadRig and the flag face.rig (default off; localStorage tx.flag.face.rig per device, VITE_FACE_RIG at build): opaque WebGL2 context, the look's own light rig, plate at t = 0, GLB after idle, 8 s timeout, reveal only in her silence >= 300 ms, every failure falls to the SAME look's plate",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1f-per-look-shading-is-data",
+   "kind": "decision",
+   "title": "Per-face art fixes (merged eye pass / mouth floors / bounce, candidate photo eyes, card rim, scalp-luma gate, hair KK) are runtime.json data (shading, eyePass, mouthInterior; EYE_TEX detected from the GLB) switching shader defines, never a code fork per look; with none declared the iteration-2 shading runs exactly as G9 solved it",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1f-versioned-look-urls",
+   "kind": "decision",
+   "title": "Looks publish via scripts/character/publish-look.mjs to /assets/teacher/<look>/<lookRev>/ with content-hashed file names (immutable under serve.mjs's existing HASHED rule) and a bundled src/avatar/looks.gen.json index; H.glb and every bake-off identity stay out of public/ (art/character/looks-out, art/character/bakeoff-assets)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1f-rig-swiftshader-correctness-2026-10-04",
+   "kind": "measurement",
+   "title": "Local serve.mjs, Chromium SwiftShader with the GPU-spoof arm, slate look: B+ GLB loads, revealed at data-tier=B and still B after 10 s; forced .glb failure -> D with the same look's plate; flag off -> no .glb (w1f-face 14/14, n = 1 run each arm). stage3d chunk 721,786 B raw / 176,882 B brotli-9 (bar 230 KB). public/assets/teacher 25 MB + teacher-bakeoff 52 MB -> 8.2 MB",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1f-rejected-spa-404",
+   "kind": "rejection",
+   "title": "'/assets/teacher-bakeoff/* returns 404' cannot be met from the asset side: server/serve.mjs answers every missing path (including /assets/*) with index.html 200, so moved assets read as 200 text/html. The identities are unreachable (no GLB served); a strict 404 needs serve.mjs to stop the SPA fallback under /assets/",
+   "at": "2026-10-04"
+  }
+ ],
+ "edges": [
+  {
+   "src": "w1f-rig-runtime-behind-flag",
+   "rel": "supersedes",
+   "dst": "avatar-m0-procedural-head"
+  },
+  {
+   "src": "w1f-rig-runtime-behind-flag",
+   "rel": "part_of",
+   "dst": "avatar-v1-stack"
+  },
+  {
+   "src": "w1f-rig-runtime-behind-flag",
+   "rel": "constrains",
+   "dst": "owner-rejects-generated-faces"
+  },
+  {
+   "src": "w1f-per-look-shading-is-data",
+   "rel": "part_of",
+   "dst": "w1f-rig-runtime-behind-flag"
+  },
+  {
+   "src": "w1f-per-look-shading-is-data",
+   "rel": "constrains",
+   "dst": "teacher-presets-per-face"
+  },
+  {
+   "src": "w1f-versioned-look-urls",
+   "rel": "part_of",
+   "dst": "w1f-rig-runtime-behind-flag"
+  },
+  {
+   "src": "w1f-rig-runtime-behind-flag",
+   "rel": "measured_by",
+   "dst": "w1f-rig-swiftshader-correctness-2026-10-04"
+  },
+  {
+   "src": "w1f-rejected-spa-404",
+   "rel": "constrains",
+   "dst": "w1f-versioned-look-urls"
+  },
+  {
+   "src": "w1f-rig-runtime-behind-flag",
+   "rel": "constrains",
+   "dst": "b4-rejected-rig-plates-on-landing"
+  }
+ ],
+ "md": {
+  "decisions": "## w1f-rig-runtime-behind-flag\n**The licensed/pipeline GLB rig runs in lessons behind `face.rig` (default off).** `src/avatar/three/rig.ts`, `shaders.ts`, `presets.ts` and `contract.ts` port `scripts/character/bakeoff/merged/viewer/*` behind the `HeadRig` contract. `Stage3D` gets a rig mode: a hand-made opaque WebGL2 context, Neutral tone mapping and the look's own light rig. `TutorFace` paints the look's plate (`PlatePerson`) at t = 0, loads the GLB after the page is idle, and cross-fades the canvas in only when her silence reaches 300 ms. After 8 s it stays on the plate. Every failure (load, timeout, context loss, probe or governor demotion) falls to D, which is the same look. When the flag is on, `Plate2D` renders the look plate on every surface (landing, picker, Hello, lesson). (2026-10-04)\n- Rationale: teacher-anim gap 1 (the rig was built but never loaded) blocks the owner testing a human-like face. The runtime does not depend on which face is chosen, because the contract is the seam.\n- Flag: localStorage `tx.flag.face.rig` (`\"1\"`/`\"0\"`) for one device, which is how the prod test and the owner turn it on. `VITE_FACE_RIG=1` turns it on for the whole deploy (W2-D, after O1). A remote per-account flag needs a server field that is not in W1-F's paths.\n- Reverse if: the device lab (E-T2/E-T7) shows B+ or B-lite missing the tier bars on the declared phones even after the governor runs, or the owner prefers the procedural head (teacher-anim §5.2). Either way the flag stays off.\n\n## w1f-per-look-shading-is-data\n**Each look declares its art fixes in its runtime.json, and they switch shader defines.** The fields are `shading.{profile,pupil,lidShadow,hairKK,cardRim,hairLumaGate}`, `eyePass` and `mouthInterior`; `EYE_TEX` is detected from the GLB. The merged bake-off, the candidate c1 and iteration 2 had each forked the viewer. Now one runtime loads all of them. With nothing declared, the iteration-2 shading runs exactly as G9 solved it. (2026-10-04)\n- Reverse if: a face needs a shading change that cannot be stated as one of these flags or uniforms. Add a flag; never fork per look.\n\n## w1f-versioned-look-urls\n**Looks are published to `/assets/teacher/<look>/<lookRev>/` with content-hashed names, using `node scripts/character/publish-look.mjs --src <contract dir>`.** The published files are B+, B-lite, the plate, the mouth strip, the blink overlay and runtime.json. Hashed names are immutable under `serve.mjs`'s existing rule. `src/avatar/looks.gen.json` is bundled, so the plate needs no lookup round trip. H.glb is not shipped. Bake-off identities moved to `art/character/bakeoff-assets/`, and the pipeline output moved to `art/character/looks-out/`. (2026-10-04)\n- Reverse if: looks must change without a client rebuild. In that case fetch the index at runtime and accept one extra round trip before the plate.\n",
+  "measurements": "## w1f-rig-swiftshader-correctness-2026-10-04\nMethod: local `node server/serve.mjs` against dist, with the Neon test branch as the database. Ran `tests/prod/w1f-face.mjs` with Playwright Chromium (SwiftShader, GPU-spoof arm: renderer reported as Adreno 650, failIfMajorPerformanceCaveat dropped) on a class-5 child (Arjun → slate), n = 1 run per arm.\n- Rig arm: `Bplus-5d1279c372.glb` loaded with status 200, `data-face=rig`, `data-tier=B`. In a separate screenshot run it was still B after 10 s, so the probe did not demote it.\n- Forced .glb failure: the face fell to D with the slate plate, which loaded.\n- Flag off: no .glb was requested, and the face was the procedural head.\n- 14/14 checks passed. These are correctness checks only, not performance.\n- Bundle: stage3d chunk 721,786 B raw, 176,882 B brotli q9 (bar ≤ 230 KB, plus the 527 KB basis wasm, self-hosted).\n- Image: `public/assets/teacher` went from 25 MB to 8.2 MB, and `public/assets/teacher-bakeoff` (52 MB) left `public/`. `public/assets/teacher-candidates` (22 MB, item 2's workflow) is still in `public/`.\n",
+  "rejected": "## w1f-rejected-spa-404\nWhat was tried: meeting \"`/assets/teacher-bakeoff/*` returns 404\" by moving the files out of `public/`.\nWhat broke: `server/serve.mjs` answers every missing path, including `/assets/*`, with `index.html` and status 200, so the old URLs return 200 text/html. The identities are unreachable, since no GLB bytes are served, but the status is not 404. A strict 404 needs `serve.mjs` to skip the SPA fallback for paths under `/assets/`. That file is not in W1-F's paths.\n"
+ }
+}

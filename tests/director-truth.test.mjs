@@ -145,8 +145,11 @@ test("help requests: every Hint-sheet and Help-menu id is known; none is graded;
   assert.ok(next.state.skipped.includes("i1"));
   assert.notEqual(next.move.itemId, "i1", "the next question is posed");
   // the child's own stop words still end the lesson (NEVER MANIPULATE)
-  const stop = classifyFast({ target, childText: "mujhe abhi band karna hai", typed: true }).flags;
-  if (stop.wantsToStop) assert.equal(turn(r, K, { ...NE, flags: stop }, { typed: true }).move.kind, "wrap");
+  // (asserted unconditionally: the fast predicate's phrase, and the model classifier's flag for a phrase it misses)
+  const stop = classifyFast({ target, childText: "ab band karo", typed: true }).flags;
+  assert.equal(stop.wantsToStop, true, "the fast predicate catches 'ab band karo'");
+  assert.equal(turn(r, K, { ...NE, flags: stop }, { typed: true }).move.kind, "wrap");
+  assert.equal(turn(r, K, { ...NE, flags: { ...NE.flags, wantsToStop: true } }, { typed: true }).move.kind, "wrap", "a model-flagged stop ends it too");
   // a hint request is a rung, not evidence; the safety predicate still runs on what came with a help id
   const hint = classifyFast({ target, childText: "Hint chahiye", chipId: "hint", typed: true }).result;
   const h = turn(r, K, hint, { typed: true });
@@ -187,10 +190,9 @@ test("hints: a diagnostic's card line is child-facing; rung labels and teacher s
   let r = toItem(K);
   for (let i = 0; i < 6 && !String(r.move.itemId).startsWith("diag:"); i++) r = turn(r, K, cls("correct"));
   const h = turn(r, K, cls("incorrect"));
-  if (h.move.kind === "hint") {
-    assert.ok(DIAG_CHILD_HINTS.includes(h.ui.hint?.text), JSON.stringify(h.ui.hint));
-    assert.doesNotMatch(h.move.shape, /Picture each choice/, "the teacher still gets her rung shape, not the card line");
-  }
+  assert.equal(h.move.kind, "hint", "a wrong diagnostic tap gets a hint rung on this fixture");
+  assert.ok(DIAG_CHILD_HINTS.includes(h.ui.hint?.text), JSON.stringify(h.ui.hint));
+  assert.doesNotMatch(h.move.shape, /Picture each choice/, "the teacher still gets her rung shape, not the card line");
   assert.equal(hintFor({ kind: "hint" }, { answer: "x", hints: ["pump: ask them to picture both choices as real things"] }, 1), null);
   assert.equal(hintFor({ kind: "hint" }, { answer: "x", hints: ["assertion: say which option is right"] }, 1), null);
   assert.deepEqual(hintFor({ kind: "hint" }, { answer: "x", hints: ["Prompt: the sweeper keeps our gali ___"] }, 1), { level: 1, text: "the sweeper keeps our gali ___" });
@@ -212,7 +214,8 @@ test("choice items: chips take the tray even with an activity mounted; tap_in_tr
   const s = structuredClone(r.state);
   s.module = { id: "m1", itemId: s.activeItemId, awaitingReveal: true };
   const again = step(s, { event: "turn", kit: K, cls: NE, now: 999_000 });
-  if (again.ui.chips?.length) assert.equal(again.ui.tray, "tiles");
+  assert.ok(again.ui.chips?.length, "the diagnostic re-sends its tiles with a module mounted");
+  assert.equal(again.ui.tray, "tiles");
   assert.notEqual(again.ui.answerForm, "tap_in_tray");
 });
 
@@ -252,7 +255,8 @@ test("start refusal: practice and Ask pass a done day; the 409 names the control
 test("help on a pending 'why?' ends the probe with no evidence and moves on (no re-teach loop)", () => {
   let r = toItem(SK, { lang: "hinglish", classLevel: 2, ageBand: "6-9" }, "c2-maths-ch01-t01-i01");
   r = turn(r, SK, cls("correct"), { typed: true });
-  if (r.state.pendingWhy !== "c2-maths-ch01-t01-i01") return; // no why sampled on this seed: nothing to check
+  // force the pending "why?" (whether one is sampled depends on the seed; the property is about what happens after)
+  r = { ...r, state: { ...structuredClone(r.state), activeItemId: "c2-maths-ch01-t01-i01", pendingWhy: "c2-maths-ch01-t01-i01" } };
   const help = { outcome: "no_evidence", confidence: 1, source: "help", help: "how", flags: {} };
   const next = turn(r, SK, help, { typed: true });
   assert.equal(next.state.pendingWhy, undefined);
@@ -300,6 +304,14 @@ test("G-PRAISE-2: after a right diagnostic tap (9), 'isliye 10' is caught and re
   assert.equal(correctsRight("Bilkul, 9. Ab 5-5 karke gino: 5, 10, 15, ___, 25. Beech mein kaunsa number gayab hai?", { key: "9", wrong, nextPrompt: next }), false);
   assert.equal(correctsRight("Haan, 9 hi, 10 nahi: ek hi chappal bachi thi.", { key: "9", wrong, nextPrompt: next }), false);
   assert.equal(correctsRight("Theek hai, 19 tak gino.", { key: "9", wrong, nextPrompt: next }), false, "19 is not 1 or 9's neighbour token");
+  // praise that explains with a wrong option's number is not a correction (fixer review, 2026-10-04): only a wrong
+  // option stated AS the result is; the key said in words is still the key
+  for (const ok of ["Bilkul sahi! 8 ke baad 1 aur chappal, toh count aage badha.", "Shabaash, tumne 1 chappal ko bhi gina.",
+    "Sahi! 10 se ek kam.", "Haan nau, 10 nahi.", "We count up to 10 later."])
+    assert.equal(correctsRight(ok, { key: "9", wrong, nextPrompt: next }), false, ok);
+  assert.equal(stripCorrection("Shabaash, tumne 1 chappal ko bhi gina. Ab agla?", { key: "9", wrong, nextPrompt: next }), "Shabaash, tumne 1 chappal ko bhi gina. Ab agla?");
+  for (const bad of ["Jawab 10 hai.", "Toh answer 10 hota hai.", "Sahi jawab das hai.", "10 is the answer.", "8 ke baad ek aur, toh 10."])
+    assert.equal(correctsRight(bad, { key: "9", wrong, nextPrompt: next }), true, bad);
   assert.equal(stripCorrection(said, { key: "9", wrong, nextPrompt: next }), "Ab 5-5 karke gino: 5, 10, 15, ___, 25. Beech mein kaunsa number gayab hai?");
   // through the reply guard: a draft and a rewrite that both correct the child end with the correction removed
   const r = toItem(SK, { lang: "hinglish", classLevel: 2, ageBand: "6-9" });

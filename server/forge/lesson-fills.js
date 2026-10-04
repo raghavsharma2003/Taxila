@@ -8,7 +8,8 @@
 //
 // This module imports nothing heavy (no db, no model): the Director imports it, and Director tests must stay pure.
 // Without a registered warmer (tests, evals) a miss is just a miss. Process memory only: a turn served by a replica
-// that did not run the prefetch misses once and warms itself (W1-D's session affinity keeps that rare).
+// that did not run the prefetch (scale-out, restart, deploy) misses once and warms itself, because the live server
+// registers the warmer at import (seam.js), not on a lesson start (W1-D's session affinity keeps that rare).
 
 const TTL_MS = 3 * 3600_000;
 const MAX_LESSONS = 2000;
@@ -19,6 +20,7 @@ const lessons = new Map();
 let warmer = null;
 
 export const setFillWarmer = (fn) => { warmer = typeof fn === "function" ? fn : null; };
+export const hasFillWarmer = () => warmer !== null;
 export const _lessonFillsClear = () => lessons.clear();
 
 function entry(lessonId, create) {

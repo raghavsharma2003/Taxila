@@ -59,8 +59,10 @@ class HeadSDF:
             d = smin(d, ellipsoid(p, c, P["cheek_r"]), P["k_cheek"])
         # forehead fill (keeps the brow plane round and soft)
         d = smin(d, ellipsoid(p, P["fore_c"], P["fore_r"]), P["k_fore"])
-        # neck
+        # neck and the top of the chest (fills the kurta's U neckline)
         d = smin(d, capsule(p, P["neck_a"], P["neck_b"], P["neck_r"]), P["k_neck"])
+        if "chest_c" in P:
+            d = smin(d, ellipsoid(p, P["chest_c"], P["chest_r"]), P["k_chest"])
         # eye sockets: a soft dish around each eye so the lids can wrap the ball
         for s in (1, -1):
             c = np.array(P["eye_c"]) * [s, 1, 1]

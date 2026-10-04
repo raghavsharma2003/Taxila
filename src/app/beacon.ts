@@ -2,7 +2,7 @@
 // invisible"). window.onerror and unhandledrejection post ONE small report to POST /api/client-error. The report
 // carries the error's name, its message and bundle frames only: no page text, no input values, no query string. The
 // server scrubs again (server/router.js scrubMessage), so a child's words never reach the logs even if a message
-// quoted them. At most 5 reports per page load, identical ones once; navigator.sendBeacon so a report survives
+// quoted them. At most 5 reports per page load, identical ones once; a keepalive fetch so a report survives
 // the page closing.
 
 const MAX_PER_LOAD = 5;
@@ -29,9 +29,13 @@ export function reportClientError(kind: "error" | "unhandledrejection" | "react"
       kind, name, message: message.slice(0, 300), stack: (e?.stack ?? "").slice(0, 2000),
       path: location.pathname, bundle: bundle(), mobile: matchMedia?.("(pointer: coarse)").matches === true,
     });
-    const blob = new Blob([body], { type: "application/json" });
-    if (!navigator.sendBeacon?.("/api/client-error", blob)) {
+    // fetch keepalive first (survives the page closing, like a beacon, and is an ordinary request every proxy and
+    // devtools sees); sendBeacon only where fetch is missing. Measured 2026-10-04: through an HTTP proxy Chromium
+    // aborted sendBeacon (net::ERR_ABORTED) while a keepalive fetch of the same body landed (204).
+    if (typeof fetch === "function") {
       void fetch("/api/client-error", { method: "POST", body, headers: { "content-type": "application/json" }, keepalive: true }).catch(() => {});
+    } else {
+      navigator.sendBeacon?.("/api/client-error", new Blob([body], { type: "application/json" }));
     }
   } catch {
     /* a reporter must never throw */

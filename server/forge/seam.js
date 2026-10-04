@@ -27,16 +27,25 @@ const TOPIC_MAP = JSON.parse(readFileSync(new URL("../../shared/engine-topic-map
 
 // The turn path's warm: requestFill at the turn budget with the lesson's own pinned context as the learner (no DB
 // read; interests are the consented lesson interests). Its result lands in the lesson table for the next posing.
-// Registered on the first lesson start this process serves (prefetchLessonFills), NOT at import: every test that
-// imports routes/lesson.js imports this file, and `npm test` runs all files in one process, so an import-time warmer
-// made pure Director tests fire real Forge fills (model calls, forge_gap writes) whenever step() posed an item.
+//
+// Registered when this file is imported by the LIVE server (serve.mjs -> index.js -> routes/lesson.js -> here), so a
+// replica that has served no lesson start (a scale-out, a restart or a deploy with lessons in progress) still warms a
+// turn-path miss: it misses once, and the item is warm the next time it is posed. Under the test runner
+// (NODE_TEST_CONTEXT, set by `node --test` for every test process, including `npm test`) it is NOT registered at
+// import: `npm test` imports every file into one process, and an import-time warmer made pure Director tests fire real
+// Forge fills (model calls, forge_gap writes) whenever step() posed an item. A test that drives the seam's own
+// prefetchLessonFills still registers it there (ensureWarmer), as before. FORGE_TURN_WARM=off disables it anywhere.
+// It warms only real lessons (a lesson row's uuid id): evals that import routes/lesson.js and step() lessons with a
+// made-up session id (evals/lesson-truth.mjs "eval") never fire real fills.
+const LESSON_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 let warmerSet = false;
-function ensureWarmer() {
-  if (warmerSet) return;
+export function ensureWarmer() {
+  if (warmerSet || process.env.FORGE_TURN_WARM === "off") return;
   warmerSet = true;
-  setFillWarmer(({ lessonId, childId, kit, item, move, learner }) =>
+  setFillWarmer(async ({ lessonId, childId, kit, item, move, learner }) => !LESSON_ID.test(String(lessonId)) ? null :
     requestFill({ lessonId, childId: childId ?? undefined, kit, item: findKitItem(kit, item.id) ?? item, move, learner, needByMs: TURN_NEED_BY_MS }));
 }
+if (!process.env.NODE_TEST_CONTEXT) ensureWarmer();
 
 /**
  * The engine hints of a kit that name no engine, when the kit as a whole has none (W1-B #2): what a lesson on it

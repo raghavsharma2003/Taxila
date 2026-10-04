@@ -8,11 +8,20 @@
 //
 // Callers (rules from §2.4): never mute or re-route the teacher audio; never pass sentence-shaped text; the face
 // never reads anything about the child beyond the band.
+//
+// face.rig ON (./flags.ts, default off; BUILD-PLAN W1-F): the tutor's look (shared/tutors.js lookId) replaces both
+// pre-rig faces on every tier — B / B-lite → the look's GLB (B+ / B-lite) over the look's own plate; D → that plate
+// alone (PlatePerson); E unchanged. The plate paints at t = 0; the GLB loads after mount when the page is idle
+// (off the cold path), times out at 8 s (stay on the plate this lesson, retry next lesson), and cross-fades in only
+// in her silence. Any rig failure falls to D, which is the SAME look: no fallback ever changes the face.
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { defaultTutorFor, tutorById, type TutorCharacter } from "../../shared/tutors.js";
 import { p as copy } from "./picker/copy.ts";
 import type { BandKey, Emotion, FloorStatus } from "./behaviour.ts";
 import { Plate2D } from "./Plate2D.tsx";
+import { PlatePerson } from "./PlatePerson.tsx";
+import { faceRigEnabled } from "./flags.ts";
+import { lookFor } from "./looks.ts";
 import type { TapSource } from "./tap.ts";
 import { detectStaticFacts, staticTier, tierOverride, type FaceTier, type TierDecision } from "./tier.ts";
 import type { Stage3D, StageEvent } from "./three/stage3d.ts";
@@ -84,6 +93,13 @@ export function decideTier(override?: FaceTier | null, opts: { voiceOnly?: boole
   return staticTier({ ...cachedFacts, contextLosses, battery, voiceOnly: !!opts.voiceOnly });
 }
 
+/** The rig look for a tutor when face.rig is on and the look ships everything the lesson path needs, else null. */
+export function rigLookFor(tutor: TutorCharacter, enabled = faceRigEnabled()) {
+  if (!enabled) return null;
+  const look = lookFor(tutor);
+  return look && look.plate?.files && look.tiers.Bplus && look.tiers.Blite ? look : null;
+}
+
 /** Stable identity for a list of meters, so a caller passing a fresh array literal each render does not rebuild the stage. */
 const meterIds = new WeakMap<object, number>();
 let nextMeterId = 1;
@@ -109,6 +125,8 @@ export function TutorFace(p: TutorFaceProps) {
   live.current = { status: p.status, reducedMotion: !!p.reducedMotion, gentle: !!p.gentle, mic: p.mic };
   const onEvent = useRef(p.onEvent);
   onEvent.current = p.onEvent;
+  const look = useMemo(() => rigLookFor(tutor), [tutor.id]);
+  const [face, setFace] = useState<"plate" | "rig">("plate");
 
   const srcKey = sourcesKey(p.teacher);
   const sources = useMemo(() => p.teacher, [srcKey]); // the key IS the dependency
@@ -118,12 +136,20 @@ export function TutorFace(p: TutorFaceProps) {
     let cancelled = false;
     let mic = 0;
     const el = host.current;
-    import("./three/stage3d.ts")
+    let idle = 0;
+    setFace("plate");
+    const fail = (reason: string) => {
+      if (cancelled) return;
+      onEvent.current?.({ type: "fallback", to: "D", reason: reason.slice(0, 160) });
+      setTier("D");
+    };
+    const boot = () => import("./three/stage3d.ts")
       .then(({ Stage3D }) => {
         if (cancelled) return;
         const s = new Stage3D(el, {
           tutor, band: bandKey(p.band), decision: { ...initial, tier }, sources, framing: p.framing ?? "medium", noProbe: p.noProbe,
           seed: [...tutor.id].reduce((a, c) => a + c.charCodeAt(0), 0),
+          look: look ? { entry: look } : undefined,
           onEvent: (e) => {
             onEvent.current?.(e);
             if (cancelled) return; // a stage already torn down by this effect never counts or re-tiers
@@ -131,6 +157,7 @@ export function TutorFace(p: TutorFaceProps) {
               contextLosses++;
               setTier("D");
             } else if (e.type === "tier" && (e.to === "D" || e.to === "E")) setTier(e.to);
+            else if (e.type === "reveal") setFace("rig");
           },
         });
         s.set({ status: live.current.status, reducedMotion: live.current.reducedMotion, gentle: live.current.gentle });
@@ -138,14 +165,18 @@ export function TutorFace(p: TutorFaceProps) {
         s.start();
         // child mic level → stage, a few times a second (no React render per frame)
         mic = window.setInterval(() => s.set({ childLevel: live.current.mic?.value ?? 0 }), 100);
+        if (look) s.init().catch((err: unknown) => fail(`rig load failed: ${String(err)}`));
       })
-      .catch((err: unknown) => {
-        if (cancelled) return;
-        onEvent.current?.({ type: "fallback", to: "D", reason: `3D chunk failed: ${String(err).slice(0, 120)}` });
-        setTier("D");
-      });
+      .catch((err: unknown) => fail(`3D chunk failed: ${String(err)}`));
+    if (look) {
+      // The plate is already the face: the GLB waits for an idle main thread (off the lesson's cold path).
+      const ric = (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+      idle = ric ? ric(() => void boot(), { timeout: 1500 }) : window.setTimeout(() => void boot(), 300);
+    } else void boot();
     return () => {
       cancelled = true;
+      const cic = (window as Window & { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback;
+      if (idle) (cic ?? window.clearTimeout)(idle);
       window.clearInterval(mic);
       stage.current?.dispose();
       stage.current = null;
@@ -168,6 +199,17 @@ export function TutorFace(p: TutorFaceProps) {
         <VoiceRing sources={sources} color={tutor.look.signatureColor} />
         <span className="tx-tutorface-name" aria-hidden="true">{tutor.displayName.roman}</span>
         <span className="tx-tutorface-ai" aria-hidden="true">{copy("aiTeacher", p.lang ?? "english")}</span>
+      </div>
+    );
+  }
+  if (look) {
+    // One host for every rig tier: the look's plate underneath (the face at t = 0 and the D tier), the GLB canvas
+    // appended over it by Stage3D and shown only once revealed. The AI disclosure is on the host, never the GPU.
+    const shown = threeD && face === "rig" ? "rig" : "plate";
+    return (
+      <div ref={host} className={cls} style={p.style} data-tier={tier} data-tutor={tutor.id} data-look={look.id} data-look-rev={look.rev} data-face={shown}
+        role="img" aria-label={label}>
+        <PlatePerson tutor={tutor} look={look} sources={sources} reducedMotion={p.reducedMotion} decorative lang={p.lang} />
       </div>
     );
   }

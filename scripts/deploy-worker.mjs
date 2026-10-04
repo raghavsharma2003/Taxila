@@ -18,6 +18,8 @@
 import { ROOT, acrBuild, arm, loadEnv, sleep } from "../infra/azure.mjs";
 import { REPO, branchName, gateEvidence, headSha } from "../infra/gate.mjs";
 import { directUrl } from "../server/conductor/pg.js";
+import { createRequire } from "module";
+const require_ = createRequire(import.meta.url);
 
 loadEnv();
 const argv = process.argv.slice(2);
@@ -47,12 +49,18 @@ if (PROD) {
   console.log(`gate: ${ev || "NONE (dry run continues)"}`);
 }
 
+/** The worker image's build context, and nothing else (the whole tree is >1 GB of art; Dockerfile.worker copies these). */
+function localContext() {
+  const { execFileSync } = require_("child_process");
+  const all = execFileSync("git", ["ls-files", "-co", "--exclude-standard", "-z"], { cwd: ROOT, maxBuffer: 64 << 20 }).toString().split("\0");
+  return all.filter((f) => /^(server|shared|data|db\/migrations)\//.test(f) || ["package.json", "package-lock.json", "Dockerfile.worker"].includes(f));
+}
 // ── 1. image ──
 const image = `${ACR}.azurecr.io/taxila-worker:${tag}`;
 if (!DRY) {
   console.log(`building taxila-worker:${tag} from ${LOCAL ? "the working tree" : branch}…`);
   await acrBuild({ images: [`taxila-worker:${tag}`, ...(LOCAL ? [] : ["taxila-worker:latest"])], dockerfile: "Dockerfile.worker",
-    ...(LOCAL ? { dir: ROOT } : { git: { repo: REPO, branch } }) });
+    ...(LOCAL ? { dir: ROOT, files: localContext() } : { git: { repo: REPO, branch } }) });
 }
 
 // ── 2. the bodies, derived from taxila-web (same environment, same registry access, same model/storage env) ──

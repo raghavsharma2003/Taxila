@@ -226,4 +226,18 @@ if (process.argv[1]?.endsWith("engines-coverage.mjs")) {
   const i = process.argv.indexOf("--out");
   if (i > 0) writeFileSync(process.argv[i + 1], JSON.stringify(r, null, 1) + "\n");
   for (const [k, x] of Object.entries(r)) console.log(k, JSON.stringify({ topics: x.topics.all, mse: x.topics.mathsScienceEvs, bySubject: x.topics.bySubject.hint, director: x.topics.bySubject.director, directorBound: x.topics.bySubject.directorBound, items: { ...x.items, disagree: x.items.disagree.slice(0, 5) }, unbound: x.unbound }, null, 1));
+  // The W1-B acceptance gate (BUILD-PLAN §3 W1-B), c4-c7. The gated metric is hint coverage (a topic whose kit hints
+  // resolve to a catalog engine), as the plan wrote it; what the live Director mounts is printed beside it and is NOT
+  // gated (decision w1b-coverage-gate-metric, with its reversal condition). Exits 1 below any threshold.
+  const GATE = { maths: 105, science: 21, evs: 6 };
+  const hint = r.c4to7.topics.bySubject.hint, dir = r.c4to7.topics.bySubject.director;
+  let failed = false;
+  for (const [s, min] of Object.entries(GATE)) {
+    const got = hint[s]?.covered ?? 0;
+    const pass = got >= min;
+    failed ||= !pass;
+    console.log(`${pass ? "PASS" : "FAIL"} c4-c7 ${s}: hint coverage ${got}/${hint[s]?.n ?? 0} (gate >= ${min}); Director mounts ${dir[s]?.covered ?? 0}/${dir[s]?.n ?? 0} (reported, not gated)`);
+  }
+  if (r.c4to7.items.disagreeCount > 0) { failed = true; console.log(`FAIL bound items disagreeing with the frame's own logic: ${r.c4to7.items.disagreeCount}`); }
+  if (failed) process.exitCode = 1;
 }

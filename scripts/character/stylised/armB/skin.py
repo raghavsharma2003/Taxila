@@ -36,7 +36,6 @@ class Wrap:
         self.cfg = cfg
         self.bvh = T["bvh"]
         self.K = T["K"]
-        lm = T["lm"]
         self.c = np.array([0.0, cfg["axis_y"], cfg["axis_z"]])
 
     # image px <-> world (x, z) on the front plane

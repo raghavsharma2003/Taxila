@@ -17,6 +17,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { HostToModule, ModuleCommand, ModuleEvent } from "../../shared/contracts.ts";
 import { parseModuleToHost, toModuleEvent } from "./frame/protocol.ts";
+import { W1B } from "../copy/en.ts";
 
 /** Anything that streams ModuleCommands and replays the live ones on subscribe (e.g. LessonRuntime.modules). */
 export interface ModuleCommandSource {
@@ -80,11 +81,7 @@ const NOTICE_STYLE: CSSProperties = {
 
 // System notices are chrome: English in every lesson language (PRODUCT-DESIGN-V2 §5.3, G-EN-1). The lesson's own
 // words (her speech, the ask, the activity's prompts) stay in the lesson language.
-const TEXT: Record<string, string> = {
-  slow: "This activity is taking a while to load…",
-  dead: "This activity could not load. Your teacher will carry on without it.",
-};
-const say = (key: string, _lang?: string) => TEXT[key];
+const say = (key: "slow" | "dead", _lang?: string) => W1B[`module.${key}`];
 
 /** Network Information API (Chromium, Android WebView); absent elsewhere. */
 function networkScaled(ms: number): number {

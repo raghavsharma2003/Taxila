@@ -31,7 +31,9 @@ const flag = (f) => argv.includes(f);
 const opt = (f, d) => { const i = argv.indexOf(f); return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : d; };
 const DRY = flag("--dry-run"), GATE = flag("--gate"), ROLLBACK = flag("--rollback");
 const APP = opt("--app", "taxila-web");
-const IMAGE_TAG = opt("--image-tag", null);
+const LOCAL = flag("--local");                         // build the WORKING TREE (uploaded): --scratch apps only
+const IMAGE_TAG = opt("--image-tag", null) || (LOCAL ? `local-${Date.now().toString(36)}` : null);
+if (LOCAL && (APP === "taxila-web" || !flag("--scratch"))) throw new Error("--local builds an unpushed, ungated tree: only with --scratch on a non-production app");
 const API = "api-version=2024-03-01";
 const APP_PATH = `/providers/Microsoft.App/containerApps/${APP}`;
 const LOG = ROOT + "node_modules/.cache/taxila-deploys.jsonl";
@@ -122,7 +124,9 @@ async function deploy() {
   const app = await getApp();
   const cfg = app.properties.configuration;
   const domain = cfg.ingress.fqdn.split(".").slice(1).join(".");
-  const prev = app.properties.latestReadyRevisionName;
+  // The revision SERVING now: after a --rollback that is not the latest-ready one (found on the scratch app, 2026-10-04:
+  // taking latestReady here pinned 100% back onto the rolled-back revision for the canary phase).
+  const prev = cfg.activeRevisionsMode === "Multiple" ? trafficRoles(app, await listRevs()).current : app.properties.latestReadyRevisionName;
   const tpl = JSON.parse(JSON.stringify(app.properties.template));
   tpl.revisionSuffix = `s${sha}-${Date.now().toString(36).slice(-4)}`;   // unique per revision
   const newRev = `${APP}--${tpl.revisionSuffix}`;
@@ -160,7 +164,13 @@ async function deploy() {
   console.log(`      smoke https://${APP}---canary.${domain}; then 100% → ${newRev}, ${prev} kept as \`previous\`${STICKY ? "; sticky sessions" : ""}`);
   if (DRY) { console.log(`dry run: all checks passed, nothing changed (${elapsed()})`); return; }
 
-  if (!IMAGE_TAG) {
+  if (LOCAL) {
+    const { execFileSync } = await import("child_process");
+    const files = execFileSync("git", ["ls-files", "-co", "--exclude-standard", "-z"], { cwd: ROOT, maxBuffer: 64 << 20 }).toString().split("\0")
+      .filter((f) => f && !/^(docs|art|context|evals)\//.test(f) && !f.startsWith("scripts/character/"));
+    console.log(`building taxila-web:${sha} from the working tree (${files.length} files)…`);
+    await acrBuild({ images: [`taxila-web:${sha}`], dockerfile: "Dockerfile", dir: ROOT, files });
+  } else if (!IMAGE_TAG) {
     console.log(`building taxila-web:${sha} from ${branch}…`);
     await acrBuild({ images: [`taxila-web:${sha}`, "taxila-web:latest"], dockerfile: "Dockerfile", git: { repo: REPO, branch } });
   }

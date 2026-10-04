@@ -214,10 +214,6 @@ export const stripWrap = (text) => sentencesOf(text).filter((x) => !wrapsUp(x)).
 // ── G-PRAISE-2: the words never correct a right answer (W1-A local battery, 2026-10-04: a class-2 diagnostic "2, 4, 6,
 // 8… and one more: how many?" key 9; the child tapped 9, graded correct, and she said "yahan 8 ke baad 2 jodna tha,
 // isliye 10" — no "wrong" word for G-PRAISE-1 to catch, only a wrong option stated as the result) ──
-const tokenRe = (a) => {
-  const s = String(a).trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
-  return new RegExp(`(?<![\\p{L}\\p{N}/.])${s}(?![\\p{L}\\p{N}/]|\\.\\d)`, "iu");
-};
 /**
  * The wrong answers a graded target put in front of the child: a diagnostic's other options and the offered
  * "Show me choices" tiles that are not the key. Short labels only (a long option is a sentence, not an answer token).
@@ -229,19 +225,50 @@ export function wrongAnswersOf(target) {
   const all = [...(target.options ?? []).map((o) => o?.text), ...(target.offered ?? [])];
   return [...new Set(all.filter((x) => typeof x === "string" && x.trim() && x.length <= 20 && !keys.has(normQ(x))))];
 }
+// Number words a reply may use for a small number: romanised Hindi, English and Devanagari (a key said as "nau" is
+// still the key; a wrong option said as "das" is still that option).
+const NUM_WORDS = {
+  0: ["zero", "shunya", "शून्य"], 1: ["ek", "one", "एक"], 2: ["do", "two", "दो"], 3: ["teen", "three", "तीन"],
+  4: ["chaar", "char", "four", "चार"], 5: ["paanch", "panch", "five", "पाँच", "पांच"], 6: ["chhe", "chhah", "che", "six", "छह", "छः"],
+  7: ["saat", "seven", "सात"], 8: ["aath", "eight", "आठ"], 9: ["nau", "nine", "नौ"], 10: ["das", "dus", "ten", "दस"],
+  11: ["gyarah", "gyaarah", "eleven"], 12: ["barah", "baarah", "twelve"], 13: ["terah", "thirteen"], 14: ["chaudah", "fourteen"],
+  15: ["pandrah", "fifteen"], 16: ["solah", "sixteen"], 17: ["satrah", "seventeen"], 18: ["atharah", "athaarah", "eighteen"],
+  19: ["unnees", "unees", "nineteen"], 20: ["bees", "twenty"],
+};
+const escRe = (a) => String(a).trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
+/** Regex source for an answer token: its own spelling, plus the number words when it is a small whole number. */
+const answerSrc = (a) => {
+  const t = String(a).trim();
+  const forms = [escRe(t), ...(/^\d+$/.test(t) && NUM_WORDS[Number(t)] ? NUM_WORDS[Number(t)].map(escRe) : [])];
+  return `(?<![\\p{L}\\p{N}/.])(?:${forms.join("|")})(?![\\p{L}\\p{N}/]|\\.\\d)`;
+};
+// A wrong option "as the result": after a result word and closing its clause ("isliye 10", "answer 10", "= 10",
+// "toh 10 hai"), or followed by a copula that states it ("10 hota hai", "10 tha", "10 is the answer"). A number that is
+// part of the explanation ("8 ke baad 1 aur chappal", "1 chappal ko bhi gina", "10 se ek kam") is not a result.
+const RESULT_LEAD = String.raw`(?:isliye|isliy|islie|toh|tou|so|therefore|answer(?:\s+(?:is|was|hai|tha))?|jawab|jawaab|javab|uttar|result|total|matlab|yaani|yani|=|equals|makes|is|was|banega|banta|hoga|hogi|hota\s+hai|aayega|aata\s+hai)`;
+const RESULT_CLOSE = String.raw`(?=\s*(?:$|[,.!;:।—–]|(?:hai|hain|tha|thi|hoga|hogi|hota|hoti|hi|banta|banega|aayega|aata)(?![\p{L}])))`;
+const RESULT_COPULA = String.raw`\s+(?:hai|tha|thi|hoga|hogi|hota\s+hai|hoti\s+hai|banta|bante|banega|aayega|aata\s+hai|is\s+the\s+answer|is\s+right|is\s+correct|sahi\s+(?:hai|tha))(?![\p{L}])`;
+const statesAsResult = (x, w) => {
+  const src = answerSrc(w);
+  return new RegExp(`(?<![\\p{L}])${RESULT_LEAD}\\s*:?\\s*${src}${RESULT_CLOSE}`, "iu").test(x)
+    || new RegExp(`${src}${RESULT_COPULA}`, "iu").test(x);
+};
 /**
  * Does a reply to a RIGHT answer state one of the wrong answers as the result, in its acknowledgement? The
  * acknowledgement is every non-question sentence that is not mostly the next question (`nextPrompt`, which may
- * itself hold the same numbers). A sentence that also says the key is a contrast ("9, not 10"), never a correction.
+ * itself hold the same numbers; a sentence under 4 words is never "mostly" it, since "Jawab 10 hai." shares 2 of 3
+ * words with any prompt holding 10 and "hai"). Only a wrong option presented AS the result counts: praise that uses a wrong option's
+ * number while explaining ("8 ke baad 1 aur chappal") is not a correction. A sentence that also says the key, in
+ * digits or words, is a contrast ("9, not 10"; "haan nau, 10 nahi"), never a correction.
  * @returns {boolean}
  */
 export function correctsRight(reply, { key, wrong = [], nextPrompt = "" } = {}) {
   if (!wrong.length || key == null || String(key).trim() === "") return false;
   const p = new Set(normQ(nextPrompt).split(" ").filter(Boolean));
-  const mostlyNext = (x) => { const w = normQ(x).split(" ").filter(Boolean); return p.size > 0 && w.length > 0 && w.filter((v) => p.has(v)).length / w.length >= 0.6; };
-  const keyRe = tokenRe(key);
+  const mostlyNext = (x) => { const w = normQ(x).split(" ").filter(Boolean); return p.size > 0 && w.length >= 4 && w.filter((v) => p.has(v)).length / w.length >= 0.6; };
+  const keyRe = new RegExp(answerSrc(key), "iu");
   return sentencesOf(reply).filter((x) => !isQuestion(x) && !mostlyNext(x))
-    .some((x) => !keyRe.test(x) && wrong.some((w) => tokenRe(w).test(x)));
+    .some((x) => !keyRe.test(x) && wrong.some((w) => statesAsResult(x, w)));
 }
 /** The reply without the acknowledgement sentences that state a wrong answer (what is left, possibly empty). */
 export function stripCorrection(reply, { key, wrong = [], nextPrompt = "" } = {}) {

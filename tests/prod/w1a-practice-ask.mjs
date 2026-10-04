@@ -76,8 +76,8 @@ await withTestAccount(async ({ api, child, password }) => {
   } finally { await b2.browser.close(); }
   // the parent's one tap (Controls → "Open now for 1 hour"), inside an unlocked Parent corner
   await setPin(api, password);
-  // On the real client first (Controls at 360×640, the parent's one tap); the API call is the fallback when the corner
-  // shows its gate in this browser (the check then says so).
+  // On the real client (Controls at 360×640, the parent's one tap). A missing button FAILS: this test set the PIN, so the
+  // corner is unlocked. The API fallback is only for an explicit W1A_API_OPEN=1 run (it then warns).
   let opened = null;
   const b3 = await launch({ viewport: { width: 360, height: 640 }, cookieFrom: api });
   try {
@@ -92,7 +92,8 @@ await withTestAccount(async ({ api, child, password }) => {
       ok(resp?.status() === 200, `Controls: one tap on "Open now for 1 hour" → ${resp?.status()}`);
       const status = await b3.page.locator('[data-testid="open-now"] [role="status"]').innerText({ timeout: 5000 }).catch(() => "");
       ok(/open until/i.test(status), `Controls says until when: "${status}"`);
-    } else warn("Controls showed no Open now button in this browser (corner gate); opening through the API instead");
+    } else if (process.env.W1A_API_OPEN === "1") warn("Controls showed no Open now button; W1A_API_OPEN=1, so opening through the API instead");
+    else ok(false, "Controls shows the parent's \"Open now\" button (the PIN was set by this test, so the corner is unlocked)");
   } finally { await b3.browser.close(); }
   opened ??= await api("POST", "/api/lesson/open-now", { childId: kid.id });
   ok(!!opened.openUntil && opened.plan?.state !== "resting", `open now → open until ${opened.openUntil}, home state ${opened.plan?.state}`);

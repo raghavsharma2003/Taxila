@@ -7,5 +7,7 @@ RUN echo '{"type":"module","private":true,"dependencies":{"playwright":"1.63.0",
 COPY infra/azure.mjs infra/azure.mjs
 COPY infra/probes infra/probes
 COPY tests/prod/lib.mjs tests/prod/lib.mjs
+# W1-D acceptance files that must run from Azure (no sandbox proxy): the eyes check runs ad hoc (deploy.mjs --adhoc)
+COPY tests/prod/w1d-eyes.mjs tests/prod/w1d-eyes.mjs
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright NODE_ENV=production
 CMD ["node", "infra/probes/probe.mjs"]

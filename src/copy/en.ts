@@ -52,3 +52,11 @@ export type W1AKey = keyof typeof W1A;
 export function tw(key: W1AKey, vars: Record<string, string | number> = {}): string {
   return W1A[key].replace(/\{(\w+)\}/g, (m, k: string) => (vars[k] === undefined ? m : String(vars[k])));
 }
+
+/** W1-B: live activities (src/modules/host.tsx system notices over the activity frame). */
+export const W1B = {
+  "module.slow": "This activity is taking a while to load…",
+  "module.dead": "This activity could not load. Your teacher will carry on without it.",
+} as const;
+
+export type W1BKey = keyof typeof W1B;

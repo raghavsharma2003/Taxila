@@ -30,12 +30,11 @@ try {
   const sent = await req;
   ok(!!sent, "an uncaught page error sends POST /api/client-error");
   if (sent) {
-    // sendBeacon posts a Blob; Playwright may not expose its bytes (then only the 204 is checked here, the row in LA)
     const raw = sent.postDataBuffer()?.toString() || sent.postData() || "";
     if (raw) {
       const body = JSON.parse(raw);
       ok(body.name === "TypeError" && body.kind === "error", `beacon body: ${body.kind} ${body.name} on ${body.path}`);
-    } else warn("beacon body not visible to Playwright (Blob); checked by its 204 and the Log Analytics row");
+    } else ok(false, "the beacon request carried a body");
     const res = await sent.response();
     ok(res?.status() === 204, `beacon answered ${res?.status()}`);
   }
@@ -49,9 +48,8 @@ else {
   const { laQuery, loadEnv } = await import("../../infra/azure.mjs");
   loadEnv();
   const since = (d) => d.toISOString();
-  const t0 = Date.now();
   const five = await waitFor(async () => (await laQuery(ws, `ContainerAppConsoleLogs_CL | where TimeGenerated > datetime(${since(boomAt)}) | where Log_s has '"kind":"access"' and Log_s has 'GET /api/test/boom' and Log_s has '"status":500' | take 1`, "PT30M")).length > 0, { everyMs: 15_000, maxMs: 300_000 });
-  ok(!!five, `the forced 500 is in Log Analytics (${Math.round((Date.now() - t0) / 1000)} s after the request)`);
+  ok(!!five, `the forced 500 is in Log Analytics (found ${Math.round((Date.now() - boomAt.getTime()) / 1000)} s after the request; polled every 15 s)`);
   const beacon = await waitFor(async () => (await laQuery(ws, `ContainerAppConsoleLogs_CL | where TimeGenerated > datetime(${since(beaconAt)}) | where Log_s has '"kind":"client_error"' | take 1`, "PT30M")).length > 0, { everyMs: 15_000, maxMs: 120_000 });
   ok(!!beacon, "the thrown client error is a beacon row in Log Analytics");
 }

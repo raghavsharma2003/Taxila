@@ -9,6 +9,9 @@ RUN npm ci --omit=dev --no-audit --no-fund
 COPY server ./server
 COPY shared ./shared
 COPY data ./data
+# The boot check (server/conductor/migrations.js) lists db/migrations/*.sql: without them the worker could never start
+# (found on its first deploy, 2026-10-04: ENOENT scandir /app/db/migrations).
+COPY db/migrations ./db/migrations
 # /healthz (liveness probe, container-local, no ingress) listens on 8081.
 EXPOSE 8081
 # SIGTERM reaches node directly (exec form), so the shutdown contract (stop claiming, unlock, ≤ 25 s) runs.

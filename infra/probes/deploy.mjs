@@ -61,7 +61,7 @@ async function deploy() {
     tag = `p${Date.now().toString(36)}`;
     console.log(`building taxila-probe:${tag}…`);
     await acrBuild({ images: [`taxila-probe:${tag}`, "taxila-probe:latest"], dockerfile: "infra/probes/Dockerfile", dir: ROOT,
-      files: ["infra/azure.mjs", "infra/probes/Dockerfile", "infra/probes/probe.mjs", "infra/probes/child-answer.wav", "infra/probes/make-wav.mjs", "tests/prod/lib.mjs"] });
+      files: ["infra/azure.mjs", "infra/probes/Dockerfile", "infra/probes/probe.mjs", "infra/probes/child-answer.wav", "infra/probes/make-wav.mjs", "tests/prod/lib.mjs", "tests/prod/w1d-eyes.mjs"] });
     mkdirSync(ROOT + "node_modules/.cache", { recursive: true });
     writeFileSync(CACHE, tag);
   }
@@ -94,6 +94,29 @@ async function deploy() {
   }
 }
 
-if (argv.includes("--run")) await run(opt("--run", "all"));
+/**
+ * --adhoc "node tests/prod/w1d-eyes.mjs" [--base URL]: run one command once from eastus2 in the probe image (a Manual
+ * job, taxila-probe-adhoc), print its console lines from Log Analytics. For acceptance checks the sandbox's HTTP proxy
+ * distorts (keepalive/beacon requests, UDP).
+ */
+async function adhoc(cmd) {
+  const tag = readFileSync(CACHE, "utf8").trim();
+  const web = await arm("GET", `/providers/Microsoft.App/containerApps/taxila-web?${API}`);
+  const webSecrets = (await arm("POST", `/providers/Microsoft.App/containerApps/taxila-web/listSecrets?${API}`)).value || [];
+  const registries = web.properties.configuration.registries;
+  const secrets = registries.filter((r) => r.passwordSecretRef).map((r) => ({ name: r.passwordSecretRef, value: webSecrets.find((s) => s.name === r.passwordSecretRef)?.value }));
+  await arm("PUT", `/providers/Microsoft.App/jobs/taxila-probe-adhoc?${API}`, { location: "eastus2", properties: { environmentId: web.properties.managedEnvironmentId,
+    configuration: { triggerType: "Manual", replicaTimeout: 900, replicaRetryLimit: 0, registries, secrets, manualTriggerConfig: { parallelism: 1, replicaCompletionCount: 1 } },
+    template: { containers: [{ name: "adhoc", image: `taxilacr.azurecr.io/taxila-probe:${tag}`, command: ["sh", "-c", cmd], resources: { cpu: 1, memory: "2Gi" },
+      env: [{ name: "TAXILA_BASE", value: BASE }] }] } } });
+  const ex = await arm("POST", `/providers/Microsoft.App/jobs/taxila-probe-adhoc/start?${API}`, {});
+  const name = ex.name || ex.id.split("/").pop();
+  const st = await until(async () => { const e = await arm("GET", `/providers/Microsoft.App/jobs/taxila-probe-adhoc/executions/${name}?${API}`, undefined, { allow404: true });
+    const s = e?.properties?.status; return ["Succeeded", "Failed", "Stopped", "Degraded"].includes(s) ? s : null; }, { everyMs: 10_000, maxMs: 900_000, what: name });
+  console.log(`taxila-probe-adhoc ${name}: ${st} (console lines: Log Analytics, ContainerAppConsoleLogs_CL where ContainerJobName_s == "taxila-probe-adhoc")`);
+}
+
+if (argv.includes("--adhoc")) await adhoc(opt("--adhoc"));
+else if (argv.includes("--run")) await run(opt("--run", "all"));
 else await deploy();
 void sleep;

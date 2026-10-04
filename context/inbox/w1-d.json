@@ -1,0 +1,161 @@
+{
+ "nodes": [
+  {
+   "id": "w1d-gated-canary-deploys",
+   "kind": "decision",
+   "title": "deploy-azure.mjs refuses a sha without gate evidence (clean-tree local stamp or a successful `gates` GitHub Actions run), runs taxila-web in Multiple revision mode, smokes the new revision at 0% on its `canary` label URL, keeps the previous revision active as `previous`; --rollback is one traffic PATCH",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1d-no-session-affinity-in-multiple-mode",
+   "kind": "decision",
+   "title": "Session affinity is NOT enabled on taxila-web: ACA refuses sticky sessions in Multiple revision mode (measured), and the 0% canary + one-PATCH rollback need Multiple mode; per-process state (prewarm, PENDING, limiters) stays a >1-replica risk",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1d-app-opened-at-lesson-start",
+   "kind": "decision",
+   "title": "onLessonStart ingests app.opened (key app.opened:lesson:d<learning day>) with lesson.started, because nothing in the product calls planToday(); without it no wakeups are armed, so no night fold, report.daily or letter",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1d-turn-commit-no-event",
+   "kind": "decision",
+   "title": "onTurnCommit ingests nothing: the event catalogue carries the Director's boundary facts only; lesson.ended (or the 3 h stale-lesson clock close) is what the Conductor folds",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1d-inline-step-by-timer",
+   "kind": "decision",
+   "title": "The inline step after a hooked commit is a 400 ms unref'd timer scheduled by the hook (production only, CONDUCTOR_INLINE overrides), because lesson.js is W1-A's hot file; a kick that beats the commit is a no-op and the worker folds within ~2 s",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1d-forge-nightly-paused",
+   "kind": "decision",
+   "title": "forge.g2.nightly stays enqueued by the night fold (decide.js and replay unchanged) but its handler completes at once as paused:w1-d unless FORGE_G2_NIGHTLY=on, until W3-D delivers next-day Forge",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1d-worker-on-test-clock",
+   "kind": "decision",
+   "title": "The worker claims a test child's job against now() + its guardian's test-clock offset and runs that child's step() and job handler inside runWithOffset (server/conductor/offsets.js); real children have no offset",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1d-probe-fleet-first-run-2026-10-04",
+   "kind": "measurement",
+   "title": "Probe fleet first run (ACA jobs, n=1 run per region): Central India → prod eastus2: /api/health RTT p50 196 ms; page FCP/LCP ~1.7-2.0 s; realtime WebRTC lesson ICE 1.47 s, first teacher audio 3.96 s, child answer transcribed, turn advanced; cascade composite p50 3.41 s (transcribe 1.74 s with a 1 MB WAV upload, turn 1.38 s, TTS first byte 203 ms). eastus2: RTT p50 4 ms, realtime ICE 0.33 s, first audio 1.14 s, cascade p50 1.78 s",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1d-rollback-timing-2026-10-04",
+   "kind": "measurement",
+   "title": "--rollback on the scratch app taxila-gatetest: 14.7 s and 14.0 s from the command to 3 consecutive /api/health answers from the previous revision (n=2); a full canary deploy of an existing image took 88.6 s, a working-tree build + deploy 153.7-180.4 s",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1d-restore-drill-2026-10-04",
+   "kind": "measurement",
+   "title": "Neon restore drill: branch restore-drill-2026-10-04 from main (create call → ready ~30 s), infra/restore-drill.mjs: identical row counts on 7 tables, a server on the branch answered readiness db=ok 1.3 s after the script started; 69 s wall from start to a serving app (n=1)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1d-la-ingest-latency-2026-10-04",
+   "kind": "measurement",
+   "title": "Log Analytics: the forced 500's access-log line was queryable ≤ 36 s after the request (n=2 runs, 15 s polling; TimeGenerated lag ~1 s)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1d-test-account-sweep-2026-10-04",
+   "kind": "measurement",
+   "title": "Test-account sweep: test branch 146 → 143 deleted, 3 deferred; prod 6 → 0 deleted, 6 deferred by unhandled test safeguarding incidents (the safety-first erasure guard)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1d-worker-image-never-bootable",
+   "kind": "rejection",
+   "title": "Dockerfile.worker shipped without db/migrations, so the worker's boot check (unappliedMigrations) threw ENOENT and the worker could never start; found on its first ACA deploy (2026-10-04) and fixed",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1d-worker-track-unhandled-rejection",
+   "kind": "rejection",
+   "title": "worker.mjs track() did p.finally(...) without a catch: any step() rejection (e.g. a child erased between the dirty scan and its step) became an unhandled rejection that killed the whole worker; fixed with .catch on the bookkeeping branch",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1d-deploy-pinned-latest-not-serving",
+   "kind": "rejection",
+   "title": "The first canary deploy took latestReadyRevisionName as the serving revision; after a --rollback that is the rolled-back revision, so the canary phase pinned 100% onto it (seen on the scratch app). Now the serving revision is read from the traffic table",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1d-beacon-sendbeacon-through-proxy",
+   "kind": "rejection",
+   "title": "navigator.sendBeacon was aborted (net::ERR_ABORTED) by Chromium through an HTTP proxy while a keepalive fetch of the same body landed 204; the client beacon uses keepalive fetch first",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "open-home-calls-plan-today",
+   "kind": "open",
+   "title": "Nothing calls conductor planToday(): the home screen (server/routes/child.js GET /api/child/plan) reads day_plan but never opens the actor. W1-D bridges with app.opened at lesson start; the owner of child.js (W2-A) should call planToday on home open. Owner: W2-A",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "open-prod-test-incidents-block-sweep",
+   "kind": "open",
+   "title": "The 6 leftover @taxila.test guardians on prod each hold 1-2 unhandled safeguarding incidents from test runs, so erasure (and the sweeper) correctly defers them; a human must mark those test incidents handled, then the nightly sweep removes them. Owner: owner / safeguarding queue",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "open-worker-liveness-rule-enable",
+   "kind": "open",
+   "title": "After the first production taxila-worker deploy: run `TAXILA_WORKER_LIVE=1 node infra/eyes.mjs` to enable the worker-liveness alert and add taxila-worker to the replica-restart alert. The worker refuses to boot on prod until 012/013/015 are applied. Owner: main loop",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "open-route-errors-not-beaconed",
+   "kind": "open",
+   "title": "React Router's errorElement (RouteError) swallows render errors before window.onerror, so a route crash is not beaconed; RouteError should call reportClientError('react', err). Owner: W2-A (src/app/Shell.tsx)",
+   "at": "2026-10-04"
+  }
+ ],
+ "edges": [
+  {
+   "src": "w1d-no-session-affinity-in-multiple-mode",
+   "rel": "part_of",
+   "dst": "w1d-gated-canary-deploys"
+  },
+  {
+   "src": "w1d-app-opened-at-lesson-start",
+   "rel": "part_of",
+   "dst": "conductor-hosting-lanes"
+  },
+  {
+   "src": "w1d-inline-step-by-timer",
+   "rel": "part_of",
+   "dst": "conductor-hosting-lanes"
+  },
+  {
+   "src": "w1d-worker-on-test-clock",
+   "rel": "part_of",
+   "dst": "conductor-hosting-lanes"
+  },
+  {
+   "src": "open-home-calls-plan-today",
+   "rel": "part_of",
+   "dst": "w1d-app-opened-at-lesson-start"
+  },
+  {
+   "src": "w1d-deploy-pinned-latest-not-serving",
+   "rel": "part_of",
+   "dst": "w1d-gated-canary-deploys"
+  }
+ ],
+ "md": {
+  "decisions": "## w1d-gated-canary-deploys (2026-10-04)\n`scripts/deploy-azure.mjs` (BUILD-PLAN W1-D item 1): `--gate` runs `npx tsc -b && npx vite build && npm test && node scripts/check-prompt-budget.mjs` on a CLEAN tree and stamps `node_modules/.cache/taxila-gate/<sha>.json` (infra/gate.mjs); a deploy without a passing stamp, or a successful `gates` check run on GitHub (.github/workflows/gates.yml), is refused, also in `--dry-run`. A dirty-tree gate run can block but never counts as evidence. The app moves to Multiple revision mode: the new revision (1 vCPU/2 GiB, liveness /api/health, readiness /api/health?ready=1) gets 0% and label `canary`, `tests/prod/w0-smoke.mjs` runs against `https://<app>---canary.<domain>`, then traffic moves 100%; the old revision keeps label `previous` and stays active; older ones are deactivated. A failed smoke deactivates the new revision. Verified on the scratch app taxila-gatetest (test DB): a deliberately failing test blocked `--gate --dry-run --allow-dirty` (\"gate FAILED: npm test exited 1. Refusing to deploy\"), canary deploys passed their smoke, rollback 14-15 s. **Reverse if** a managed progressive-delivery feature on ACA gives a 0% canary with session affinity, or two active revisions cost more than the rollback time they buy.\n\n## w1d-no-session-affinity-in-multiple-mode (2026-10-04)\nARM refused `stickySessions: {affinity: sticky}` on a Multiple-mode app: `ContainerAppInvalidIngressStickySessionRevisionMode: Sticky Session is not supported for Multiple revision mode` (taxila-gatetest, 2026-10-04). Canary + one-PATCH rollback won over affinity; at owner-testing scale taxila-web runs 1 replica. `TAXILA_STICKY=1` requests it (it will be refused until the mode changes). **Reverse if** taxila-web routinely runs >1 replica before prewarm / PENDING / limiters move to shared state: then either cap maxReplicas at 1 or go back to Single mode with affinity and accept a slower rollback (re-deploy of the previous image, ~90 s).\n\n## w1d-app-opened-at-lesson-start (2026-10-04)\n`server/conductor/hooks.js` onLessonStart returns two ingest statements, app.opened {device web, replicaId lesson, bootId d<learning day IST>} then lesson.started {kind from purpose: lesson→live, practice→practice, doubt→homework; lane from mode: voice→realtime, cascade→cascade, text→tap}. app.opened arms day_start/night wakeups and does the first-open replan (decide.js). Measured: the w1d-conductor e2e (Neon test branch, 2026-10-04) produced app.opened/lesson.started/lesson.ended, conductor_state cursor 6/6, a day_plan v1, and after +1 d report.daily + parent.letter listed and opened in the parent reports area. **Reverse if** the home screen calls planToday() (then this app.opened is a redundant extra key per day and can go).\n\n## w1d-turn-commit-no-event (2026-10-04)\nPer-turn events would add a child_seq lock and a fold to every turn for nothing the day plan reads. **Reverse if** the Conductor gains a per-turn input (e.g. a live budget governor reading turn counts).\n\n## w1d-inline-step-by-timer (2026-10-04)\nconductor-hosting-lanes asks for one inline step() after each ingest. lesson.js is W1-A's hot file, so the hooks schedule `kick(childId)` 400 ms later on an unref'd timer (it inherits AsyncLocalStorage, so a test account's shifted clock). Only when NODE_ENV=production or CONDUCTOR_INLINE=on, so unit tests that run routes on a fake DB never open a Conductor pool. **Reverse if** the next seam commit adds an explicit post-commit call (preferred), or the timer's misses (step before commit) show up as fold latency above the worker's 2 s grace.\n\n## w1d-forge-nightly-paused (2026-10-04)\n`server/conductor/handlers.js` re-registers forge.g2.nightly with a handler that returns `paused:w1-d` unless FORGE_G2_NIGHTLY=on. The fold still enqueues it, so replay and decide.js are unchanged. **Reverse when** W3-D delivers next-day Forge to children.\n\n## w1d-worker-on-test-clock (2026-10-04)\nWithout it a test child's report.daily (due 04:10 tomorrow in shifted time) waits a real day, and the worker would fold with a `now` behind events already folded. offsets.js reads every positive test_clock offset once per 5 s, claimJobs adds the offset to now() for that child's run_after (only when test_clock exists), and step()/handlers run in runWithOffset. **Reverse if** the test clock is removed or moves into the database (then use the DB's own shifted now).",
+  "measurements": "## w1d-probe-fleet-first-run-2026-10-04 (2026-10-04)\nMethod: infra/probes/probe.mjs in ACA jobs taxila-probe-ci (Central India, env taxila-probes-ci) and taxila-probe-eus2 (eastus2, taxila-env), Playwright Chromium 1.63, no route interception, against production taxila-web (eastus2), 08:10-08:11 UTC, n=1 run per region. Legs: rtt = 20× GET /api/health (p50 over the last 19); pages = 4 public pages × 3 cold loads at 360×740 DPR 2; realtime = lesson/start voice → /api/realtime/token → RTCPeerConnection + oai-events data channel, fake mic = infra/probes/child-answer.wav (gpt-4o-mini-tts child-like Hinglish \"Mujhe lagta hai... answer baarah hai. Twelve!\" framed by 8 s / 10 s silence), transcript sent to /api/lesson/turn; cascade = transcribe (the 1 MB WAV) → turn → tts-stream first byte, n=5.\n| leg | Central India | eastus2 |\n|---|---|---|\n| RTT p50 / p90 (first incl. TLS) | 196 / 212 ms (696) | 4 / 7 ms (103) |\n| page FCP / LCP (/, /start, /who, /promises) | 1780/1988, 1744/1744, 1944/1944, 1728/1728 ms; TTFB ~600 ms | 432/464, 492/492, 496/496, 464/464 ms |\n| realtime ICE connected / channel open / first teacher audio | 1466 / 2233 / 3964 ms | 332 / 339 / 1138 ms |\n| realtime media RTT (candidate pair) | 191 ms | 1 ms |\n| child answer transcribed | \"मुझे लगता है, आंसर बारा है।\" | \"मुझे लगता है आंसर बारा है.\" |\n| turn after the transcript | advanced (move hook, 1163 ms) | advanced (hook, 632 ms) |\n| cascade composite p50 / p90 | 3411 / 3916 ms | 1776 / 1950 ms |\n| transcribe / turn / TTS first byte p50 | 1738 / 1378 / 203 ms | 358 / 1228 / 155 ms |\nCaveats: one run per region; the cascade transcribe hop uploads a 1 MB WAV (a real client clip is a few-KB webm), so its India number is pessimistic; endpoint silence (~0.9 s) is not in the composite. This replaces smooth audit G5's [U] India estimate (220-280 ms RTT) with 196 ms measured. Results: blob container `probes` (private) `<region>/last-run.json`.\n\n## w1d-rollback-timing-2026-10-04 (2026-10-04)\nn=2 rollbacks on taxila-gatetest (a copy of taxila-web on the Neon test branch, Multiple mode): 14.7 s and 14.0 s from `node scripts/deploy-azure.mjs --rollback` to three consecutive /api/health answers from the previous revision through the app URL (the previous revision was active). Canary deploys: 88.6 s with an existing image, 153.7 s and 180.4 s including an ACR build of the working tree (102 MB context). Bar: < 2 min. PASS.\n\n## w1d-restore-drill-2026-10-04 (2026-10-04)\nn=1. Neon project taxila-us: branch `restore-drill-2026-10-04` created from main at 07:58:18 UTC (MCP create_branch; ready at 07:58:20 + compute start), then infra/restore-drill.mjs: row counts of guardian, child, lesson, turn, kt_evidence, consent, schema_migrations identical to prod (9/8/12/134/36/43/13); server/serve.mjs on the branch answered /api/health?ready=1 db=ok at +1.3 s and GET /api/me 401. Wall clock from drill start (07:57:49) to a serving app: 69 s. The branch expires 2026-10-05 08:00 UTC. A real fail-over additionally needs the database-url secret switched and a deploy (~90 s measured above).\n\n## w1d-la-ingest-latency-2026-10-04 (2026-10-04)\nLog Analytics workspace taxila-logs (eastus2, PerGB2018, 1 GB/day cap, 30-day retention) attached to taxila-env, taxila-forge-untrusted and taxila-probes-ci. The forced 500 (GET /api/test/boom as a @taxila.test account on taxila-gatetest) was found by a 15 s poll 36 s after the request; TimeGenerated lagged the line's own timestamp by ~1 s (n=2). Bar: within 5 min. PASS.\n\n## w1d-test-account-sweep-2026-10-04 (2026-10-04)\nscripts/sweep-test-accounts.mjs: Neon test branch 146 @taxila.test guardians older than 1 h → 143 deleted, 3 deferred (open safety matters); production 6 → 0 deleted, 6 deferred: each holds 1-2 unhandled safeguarding incidents (kind safeguarding, handled=false), so the safety-first erasure guard refuses, exactly as DELETE /api/account does.",
+  "rejected": "## w1d-worker-image-never-bootable\nDockerfile.worker copied server/, shared/, data/ but not db/migrations/; the worker's boot check lists db/migrations/*.sql and threw `ENOENT scandir /app/db/migrations/` on every start (first ACA deploy, 2026-10-04: revision Failed/Unhealthy, 6 ContainerTerminated). The worker had never been deployed, so the image was never booted. Fixed (COPY db/migrations). Lesson: an image is untested until it has booted once on its target.\n\n## w1d-worker-track-unhandled-rejection\n`const track = (p) => { inflight.add(p); p.finally(() => inflight.delete(p)); return p; }`: finally() returns a new promise that re-rejects; nothing handled it, so ANY step() failure (seen: ChildNotFound for a child erased between the dirty scan and its step) crashed the worker process. Fixed with `.catch(() => {})` on the bookkeeping branch; callers still handle `p`.\n\n## w1d-deploy-pinned-latest-not-serving\nThe first canary deploy pinned traffic to `latestReadyRevisionName` while creating the new revision. After a --rollback the latest-ready revision is the one rolled back FROM, so the canary phase silently moved 100% back onto it (scratch app, 2026-10-04: the deploy then deactivated the revision that had been serving). The serving revision is now read from the ingress traffic table.\n\n## w1d-beacon-sendbeacon-through-proxy\nsrc/app/beacon.ts first used navigator.sendBeacon(Blob). Through the sandbox's HTTP proxy Chromium aborted the beacon (net::ERR_ABORTED) while `fetch(..., {keepalive: true})` with the same body got 204 (2026-10-04). Some school and office networks proxy too; the beacon now uses keepalive fetch and falls back to sendBeacon only where fetch is missing."
+ }
+}

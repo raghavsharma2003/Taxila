@@ -1,11 +1,25 @@
 // W1-A acceptance (BUILD-PLAN §3 W1-A; flows G3, G5): a class-2 child with "Type instead" on (prefs.quiet, the Me row)
 // commits at least 3 answers in 12 turns or fewer, on the real client at 360×640, using only what a 7-year-old can:
 // the NumberPad, picture tiles and the Help menu. Checks: a NumberPad is visible on 100% of number items; "Show me
-// choices" renders tiles (with the current item's key, where the server's debug payload can show it: a local run);
+// choices" renders tiles with the current item's key (from the debug payload locally, from the repo's kit file on prod);
 // the parent transcript and lesson card hold 0 help phrases.
 //   NODE_USE_ENV_PROXY=1 node tests/prod/w1a-young-text.mjs        (TAXILA_BASE for a local server)
 import { withTestAccount, ok, warn, done, launch, BASE } from "./lib.mjs";
 import { setPin, HELP_PHRASES } from "./_w1a.mjs";
+import { readFileSync, existsSync } from "node:fs";
+
+/** The verified key of a kit item, read from the repo's kit file (data/kits/<class>-<subject>.json), so the "key in the
+ *  tiles" check runs against production too (where the server sends no debug payload). Null for a diagnostic or unknown id. */
+function kitKey(itemId) {
+  const m = /^(c\d+-[a-z]+)-/.exec(String(itemId ?? ""));
+  if (!m) return null;
+  const f = new URL(`../../data/kits/${m[1]}.json`, import.meta.url);
+  if (!existsSync(f)) return null;
+  try {
+    for (const t of JSON.parse(readFileSync(f, "utf8")).topics ?? []) for (const it of t.items ?? []) if (it.id === itemId) return String(it.answer);
+  } catch { /* unreadable kit: no key */ }
+  return null;
+}
 
 const MAX_TURNS = 12;
 
@@ -30,7 +44,9 @@ await withTestAccount(async ({ api, child, password }) => {
     const start = await sr.json().catch(() => ({}));
     lessonId = start.lessonId;
     ok(sr.status() === 201 && !!lessonId, `class-2 "Type instead" lesson starts (${sr.status()})`);
-    ok(start.ui && (await page.locator('[data-testid="dock"]').count()) >= 0, "the Desk is up");
+    await page.waitForSelector('[data-testid="dock"]', { timeout: 20_000 }).catch(() => {});
+    const docks = await page.locator('[data-testid="dock"]').count();
+    ok(!!start.ui && docks > 0, `the Desk is up (${docks} answer dock)`);
 
     let last = start;
     let commits = 0, turns = 0, numberItems = 0, padShown = 0, choicesAsked = 0, tilesShown = 0, keyInTiles = 0, keyKnown = 0;
@@ -48,14 +64,19 @@ await withTestAccount(async ({ api, child, password }) => {
       const ui = last?.ui ?? {};
       const before = turnCount();
       if (ui.ask?.itemId && !ui.chips?.length && choicesAsked === 0 && turns <= 7 && (await visible('[data-testid="help"]'))) {
-        // once per lesson, the Young Help menu's "Show me choices" on a question (flows G3): tiles for THIS item
+        // once per lesson, the Young Help menu's "Show me choices" on a question (flows G3): tiles for THIS item. A number
+        // item's NumberPad is checked first, before the menu covers it (else the first number item is never counted).
+        if (ui.answerForm === "number") {
+          numberItems += 1;
+          if (await page.waitForSelector('[data-testid="number-pad"]', { timeout: 8000 }).then(() => true, () => false)) padShown += 1;
+        }
         await page.click('[data-testid="help"]');
         await page.waitForSelector('[data-testid="help-menu"] [data-help="choices"]', { timeout: 5000 }).catch(() => {});
         await page.click('[data-testid="help-menu"] [data-help="choices"]');
         choicesAsked += 1;
       } else if (ui.chips?.length && (await visible('[data-testid="choices"] button'))) {
         // tap the key when the server's debug payload names it (a local run), else the first tile
-        const key = last?.debug?.item?.answer;
+        const key = last?.debug?.item?.answer ?? kitKey(ui.ask?.itemId);
         const tile = key != null ? page.locator('[data-testid="choices"] button', { hasText: new RegExp(`^\\s*${String(key).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*$`) }) : null;
         if (tile && (await tile.count())) await tile.first().click();
         else await page.locator('[data-testid="choices"] button').first().click();
@@ -64,7 +85,7 @@ await withTestAccount(async ({ api, child, password }) => {
         const pad = await page.waitForSelector('[data-testid="number-pad"]', { timeout: 8000 }).then(() => true, () => false);
         if (pad) padShown += 1;
         if (pad) {
-          for (const d of String(last?.debug?.item?.answer ?? "10").replace(/\D/g, "").slice(0, 6) || "10") await page.locator('[data-testid="number-pad"] .dk-key', { hasText: new RegExp(`^${d}$`) }).first().click();
+          for (const d of String(last?.debug?.item?.answer ?? kitKey(ui.ask?.itemId) ?? "10").replace(/\D/g, "").slice(0, 6) || "10") await page.locator('[data-testid="number-pad"] .dk-key', { hasText: new RegExp(`^${d}$`) }).first().click();
           await page.click('[data-testid="pad-send"]');
         } else break;
       } else if (await visible('[data-testid="choices"] button')) {
@@ -91,7 +112,7 @@ await withTestAccount(async ({ api, child, password }) => {
         await page.waitForTimeout(400);
         const labels = await page.locator('[data-testid="choices"] button').allInnerTexts().catch(() => []);
         ok(labels.length >= 2, `"Show me choices" renders ${labels.length} tiles on screen (${labels.join(" | ")})`);
-        const key = last?.debug?.item?.answer ?? r.debug?.item?.answer;
+        const key = last?.debug?.item?.answer ?? r.debug?.item?.answer ?? kitKey(ui.ask.itemId);
         if (key != null) { keyKnown += 1; if (r.ui.chips.some((c) => c.label === String(key))) keyInTiles += 1; }
         ok(r.ui.ask?.itemId === ui.ask.itemId, "the tiles are for the question on the card (same item)");
       }
@@ -102,8 +123,8 @@ await withTestAccount(async ({ api, child, password }) => {
     ok(numberItems === 0 || padShown === numberItems, `NumberPad visible on ${padShown}/${numberItems} number items`);
     if (numberItems === 0) warn("no number item came up in this lesson");
     ok(choicesAsked === 0 || tilesShown > 0, `"Show me choices" asked ${choicesAsked}×, tiles shown ${tilesShown}×`);
-    if (keyKnown) ok(keyInTiles === keyKnown, `the tiles include the current item's key (${keyInTiles}/${keyKnown}, from the debug payload)`);
-    else warn("the key check needs the server's debug payload (a local run); on production the tiles' key is checked by tests/director-truth.test.mjs");
+    if (keyKnown) ok(keyInTiles === keyKnown, `the tiles include the current item's key (${keyInTiles}/${keyKnown}, key from the debug payload or the repo's kit file)`);
+    else if (tilesShown) ok(false, "tiles were shown but no key could be found for the item (debug payload or kit file)");
   } finally { await browser.close(); }
 
   // ── the parent side: no help phrase is ever the child's words ──

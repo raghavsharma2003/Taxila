@@ -180,7 +180,7 @@ def area_light(name, loc, target, energy, size, color=(1, 1, 1), shape="DISK"):
     return ob
 
 
-def setup_render(res=1024, samples=48, bg=BG_SRGB, exposure=0.0):
+def setup_render(res=1024, samples=48, bg=BG_SRGB, exposure=0.0, ambient=0.35):
     sc = bpy.context.scene
     sc.render.engine = "CYCLES"
     sc.cycles.device = "CPU"
@@ -199,10 +199,19 @@ def setup_render(res=1024, samples=48, bg=BG_SRGB, exposure=0.0):
     w = bpy.data.worlds.get("World") or bpy.data.worlds.new("World")
     sc.world = w
     w.use_nodes = True
-    bgn = w.node_tree.nodes["Background"]
+    nt = w.node_tree
+    for n in list(nt.nodes):
+        nt.nodes.remove(n)
+    out = nt.nodes.new("ShaderNodeOutputWorld")
+    cam_bg = nt.nodes.new("ShaderNodeBackground"); amb = nt.nodes.new("ShaderNodeBackground")
+    lp = nt.nodes.new("ShaderNodeLightPath"); mix = nt.nodes.new("ShaderNodeMixShader")
     lin = srgb_to_lin(bg)
-    bgn.inputs["Color"].default_value = (*lin, 1)
-    bgn.inputs["Strength"].default_value = 1.0
+    cam_bg.inputs["Color"].default_value = (*lin, 1); cam_bg.inputs["Strength"].default_value = 2.0 ** (-exposure)
+    # what the camera sees = the concept's backdrop; what lights the character = a dim neutral environment
+    amb.inputs["Color"].default_value = (0.55, 0.55, 0.58, 1); amb.inputs["Strength"].default_value = ambient
+    nt.links.new(lp.outputs["Is Camera Ray"], mix.inputs[0])
+    nt.links.new(amb.outputs[0], mix.inputs[1]); nt.links.new(cam_bg.outputs[0], mix.inputs[2])
+    nt.links.new(mix.outputs[0], out.inputs["Surface"])
     return sc
 
 

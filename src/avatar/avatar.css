@@ -39,3 +39,14 @@
 .tx-picker-go { padding: 12px 28px; border-radius: 999px; border: 0; background: var(--sig, var(--art-teal)); color: var(--on-sig); font: inherit; font-weight: 700; min-height: 56px; cursor: pointer; }
 .tx-picker-note { font-size: 0.9rem; opacity: 0.8; margin: 0; }
 .tx-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ───────── rig plate (face.rig: tier D and portraits rendered from the look's own B+) ───────── */
+.tx-plateperson { position: relative; width: 100%; height: 100%; overflow: hidden; }
+.tx-plateperson-frame { position: absolute; }
+.tx-plateperson-frame > img:first-child { position: absolute; inset: 0; width: 100%; height: 100%; display: block; user-select: none; }
+.tx-plateperson-mouth { position: absolute; background-repeat: no-repeat; }
+.tx-plateperson-blink { position: absolute; display: block; user-select: none; }
+.tx-tutorface > .tx-plateperson, .tx-tutorface > canvas { position: absolute; inset: 0; }
+.tx-tutorface > canvas.tx-rig-canvas { opacity: 0; transition: opacity 200ms linear; }
+.tx-tutorface > canvas.tx-rig-canvas[data-shown="1"] { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .tx-tutorface > canvas.tx-rig-canvas { transition: none; } }

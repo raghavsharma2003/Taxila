@@ -35,7 +35,7 @@ export const RULES = {
     query: `ContainerAppConsoleLogs_CL | where ContainerAppName_s == "taxila-worker" and Log_s has "worker heartbeat" | summarize n = count()`, op: "LessThan", threshold: 1, metric: "n",
     enabled: () => process.env.TAXILA_WORKER_LIVE === "1" },
   "taxila-job-failures": { sev: 2, every: "PT5M", window: "PT10M", desc: "Taxila: an Azure Container Apps job execution failed (Forge G2 runner, Conductor canary/nightly, probe fleet)",
-    query: `ContainerAppSystemLogs_CL | where isnotempty(JobName_s) and (Reason_s in~ ("BackoffLimitExceeded", "DeadlineExceeded", "ProcessExited") or Log_s has_any ("execution failed", "Job failed", "exit code 1", "Error")) | where Reason_s !in~ ("Started", "Pulled", "Pulling", "Created", "SuccessfulCreate", "Completed") | summarize n = count() by JobName_s | where n > 0`, op: "GreaterThan", threshold: 0 },
+    query: `ContainerAppSystemLogs_CL | where isnotempty(JobName_s) and (Type_s =~ "Warning" or Reason_s has_any ("Failed", "BackoffLimitExceeded", "DeadlineExceeded")) | summarize n = count() by JobName_s, Reason_s`, op: "GreaterThan", threshold: 0 },
 };
 
 async function workspace() {

@@ -3,9 +3,13 @@
 //      control lies inside the frame (live-content audit 3: a 150 px frame in a 404 px tray, Check out of view);
 //   2. a forced unknown engine (one turn response rewritten in the browser to mount "nope@1" in the tray; route
 //      interception is for correctness only, never timing) leaves no visible empty tray after that turn, and the
-//      NEXT teacher line has no screen reference (server/director/say.js refersToScreen).
+//      server lets go of it (the mechanism, not a sampled reply): the next turn carries no module tray, and the lesson's
+//      stored state holds no module with that id and lists its engine as failed (TAXILA_DB_URL; WARN without it).
+//      The next 3 teacher lines have no screen reference (server/director/say.js refersToScreen): a sample, reported
+//      beside the mechanism because an unwired server passed it once simply by not mentioning the screen.
 // Run: NODE_USE_ENV_PROXY=1 node tests/prod/w1b-tray.mjs   (TAXILA_BASE for a local server)
 import { withTestAccount, launch, ok, warn, done, BASE } from "./lib.mjs";
+const db = process.env.TAXILA_DB_URL ? (await import("@neondatabase/serverless")).neon(process.env.TAXILA_DB_URL) : null;
 import { refersToScreen } from "../../server/director/say.js";
 
 const TOPIC = "c5-maths-ch02-t01";   // number-line@1 (explain show) and item-bound read plans
@@ -58,7 +62,7 @@ await withTestAccount(async ({ api, child }) => {
     // The mount reuses the moduleId the SERVER holds (the last mount not unmounted since), so the frame's `unknown
     // engine` error names the server's own module and the Director must clear it (modules.js noteModuleEvents). With
     // nothing mounted server-side the tray check still runs; the screen-reference check then proves less (WARN).
-    let forced = false, forcedId = null;
+    let forced = false, forcedId = null, heldEngine = null;
     await page.route("**/api/lesson/turn", async (route) => {
       const res = await route.fetch();
       if (forced) return route.fulfill({ response: res });
@@ -66,7 +70,7 @@ await withTestAccount(async ({ api, child }) => {
       const body = await res.json();
       let held = null;
       for (const c of [...turns.flatMap((t) => t.moduleCommands ?? []), ...(body.moduleCommands ?? [])]) {
-        if (c.op === "mount") held = c.moduleId; else if (c.op === "unmount" && c.moduleId === held) held = null;
+        if (c.op === "mount") { held = c.moduleId; heldEngine = c.engine; } else if (c.op === "unmount" && c.moduleId === held) { held = null; heldEngine = null; }
       }
       forcedId = held ?? "forced-x";
       body.moduleCommands = [...(body.moduleCommands ?? []), { op: "mount", moduleId: forcedId, engine: "nope@1", params: {} }];
@@ -86,16 +90,32 @@ await withTestAccount(async ({ api, child }) => {
     });
     ok(!empty, "a forced unknown engine leaves no visible empty tray after one turn");
     await page.unroute("**/api/lesson/turn");
-    const n0 = turns.length;
-    await send(page, "theek hai");
-    for (let i = 0; i < 40 && turns.length <= n0; i++) await page.waitForTimeout(500);
-    const next = turns.at(-1);
-    if (forcedId === "forced-x") warn("the server held no module when the unknown engine was forced: the screen check below proves less");
-    if (turns.length > n0 && typeof next?.teacherReply === "string") {
-      ok(!refersToScreen(next.teacherReply), `the next teacher line has no screen reference: "${next.teacherReply.slice(0, 90)}"`);
-      ok(next.ui?.tray !== "module" || (next.moduleCommands ?? []).some((c) => c.op === "mount" && c.engine !== "nope@1"),
-        `the next turn carries no module tray without a mount (tray ${next.ui?.tray ?? "none"})`);
-    } else warn("no next teacher line captured");
+    const lessonId = turns.find((t) => t.lessonId)?.lessonId ?? null;
+    const lines = [];
+    for (const [k, said] of ["theek hai", "ok", "aage chalo"].entries()) {
+      const n0 = turns.length;
+      await send(page, said);
+      for (let i = 0; i < 40 && turns.length <= n0; i++) await page.waitForTimeout(500);
+      if (turns.length <= n0) break;
+      const next = turns.at(-1);
+      if (k === 0) {
+        // the turn that carried the frame's `error` event: the mechanism
+        ok(next.ui?.tray !== "module" || (next.moduleCommands ?? []).some((c) => c.op === "mount" && c.engine !== "nope@1"),
+          `the next turn carries no module tray without a mount (tray ${next.ui?.tray ?? "none"})`);
+        if (forcedId === "forced-x") warn("the server held no module when the unknown engine was forced: the state check proves nothing");
+        else if (!db || !lessonId) warn(`TAXILA_DB_URL ${db ? "set" : "not set"}, lesson id ${lessonId ?? "unknown"}: the stored state not read`);
+        else {
+          const st = (await db.query("select state from lesson where id = $1", [lessonId]))[0]?.state ?? {};
+          ok(st.module?.id !== forcedId, `the server cleared the failed module ${forcedId} (state.module ${st.module ? `${st.module.id} ${st.module.engine}` : "null"})`);
+          ok((st.failedEngines ?? []).includes(heldEngine), `the failed engine ${heldEngine} is not mounted again in this lesson (failedEngines ${JSON.stringify(st.failedEngines ?? [])})`);
+        }
+      }
+      // only lines with nothing on screen to point at (no new mount, no module tray, no chips) are fair samples
+      const target = (next.moduleCommands ?? []).some((c) => c.op === "mount") || next.ui?.tray === "module" || next.ui?.chips?.length > 0;
+      if (typeof next?.teacherReply === "string" && !target) lines.push(next.teacherReply);
+    }
+    if (!lines.length) warn("no next teacher line captured");
+    for (const line of lines) ok(!refersToScreen(line), `a following teacher line has no screen reference: "${line.slice(0, 90)}"`);
   } finally { await browser.close(); }
 }, { tag: "w1b-tray", child: { classLevel: 5, firstName: "Riya" } });
 done();

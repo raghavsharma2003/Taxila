@@ -5,7 +5,14 @@
 // sandbox it checks correctness (audio streams for every reply, prewarm hits) and reports the numbers.
 //   NODE_USE_ENV_PROXY=1 node tests/prod/w1a-text-voice.mjs [--n 20]        (TAXILA_BASE for a local server)
 import { withTestAccount, ok, warn, done, BASE } from "./lib.mjs";
-import { turner } from "./_w1a.mjs";
+// Self-contained (only ./lib.mjs, no server code), so the probe image can run it: infra/probes/Dockerfile copies
+// tests/prod/lib.mjs and the files listed there, and `deploy.mjs --adhoc "node tests/prod/w1a-text-voice.mjs"` runs it.
+
+/** Typed turns for one lesson (the same body as _w1a.mjs turner, inlined to keep server imports out of the probe image). */
+function turner(api, lessonId) {
+  let seq = 0;
+  return { say: (childText) => api("POST", "/api/lesson/turn", { lessonId, typed: true, asrConfidence: 0.95, turnSeq: ++seq, childText }) };
+}
 
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
 const N = Number(arg("--n", "20"));

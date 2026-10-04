@@ -13,6 +13,7 @@ export const CATALOGUE_REV = 1;
 export const TUTORS = [
   {
     id: "asha",
+    lookId: "teal",
     status: "live",
     displayName: { roman: "Asha", deva: "आशा" },
     roleChips: ["didi"],
@@ -36,6 +37,7 @@ export const TUTORS = [
   },
   {
     id: "arjun",
+    lookId: "slate",
     status: "live",
     displayName: { roman: "Arjun", deva: "अर्जुन" },
     roleChips: ["bhaiya"],
@@ -57,6 +59,7 @@ export const TUTORS = [
   },
   {
     id: "uma",
+    lookId: "plum",
     // No persona sheet (server/compiler/characters/uma.js) and no voice probed yet (VOICE-TEACHER §6: "needs a
     // low-register arm"): shown only in dev previews until both exist. A character + voice + face are one unit.
     status: "draft",

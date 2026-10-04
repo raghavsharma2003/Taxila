@@ -162,14 +162,17 @@ if a.paint:
     iy = np.clip((UV[:, 1] * H_).astype(int), 0, H_ - 1)
     C = px[iy, ix]
     r, g, b = C[:, 0], C[:, 1], C[:, 2]
-    lum = 0.3 * r + 0.59 * g + 0.11 * b
     mx = C.max(1); mn = C.min(1); sat = (mx - mn) / np.maximum(mx, 1e-6)
+    d = np.maximum(mx - mn, 1e-6)
+    hue = np.where(mx == r, ((g - b) / d) % 6, np.where(mx == g, (b - r) / d + 2, (r - g) / d + 4)) / 6
     lab[:] = 0
-    lab[lum < 0.2] = 1                                            # hair (near-black)
-    lab[(b > r) & (lum >= 0.12)] = 2                              # teal kurta
+    lab[mx < 0.45] = 1                                            # hair (dark brown in the paint)
+    lab[(b > r) & (mx >= 0.2)] = 2                                # teal kurta
     chin_z = L3["chin"][2]
-    lab[(lab == 0) & (V[:, 2] < chin_z - 0.035) & (sat > 0.55) & (r > 0.55)] = 3     # orange piping (below the neck)
-    lab[(lab == 0) & (r > 0.6) & (g > 0.45) & (b < 0.3) & (g / np.maximum(r, 1e-6) > 0.72)] = 4   # gold
+    from scipy.spatial import cKDTree
+    cand = np.nonzero((lab == 0) & (V[:, 2] < chin_z - 0.018))[0]
+    dcl, _ = cKDTree(V[lab == 2]).query(V[cand])
+    lab[cand[dcl < 0.0045]] = 3                                   # orange piping: the skin-coloured band against the kurta
     print("[prep] labels", {k: int((lab == k).sum()) for k in range(6)})
 
 np.savez_compressed(a.out, V=V.astype(np.float32), F=F.astype(np.int32), C=C.astype(np.float32), label=lab.astype(np.int8),

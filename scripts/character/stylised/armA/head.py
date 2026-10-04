@@ -199,7 +199,7 @@ def make_ring_patch(bm, patch_faces, K, th):
 
 
 def build_head(P, N, warp, K_eye, K_mouth, eye_patch, mouth_patch):
-    sdf = HeadSDF(P)
+    sdf = HeadSDF(P, with_eyes=P.get('skin_with_eyes', True))
     S, F, grid = cube_sphere(N, warp)
     H = np.array(P["ray_centre"], float)
     V = march_out(sdf, H, S)
@@ -269,6 +269,16 @@ def build_head(P, N, warp, K_eye, K_mouth, eye_patch, mouth_patch):
     bmesh.ops.extrude_edge_only(bm, edges=edges)
     inner3 = next_ring(inner2, inner1)
     loops["mouth_in"] = [inner1, inner2, inner3]
+    # close the bag with a fan (the back of the mouth is never seen straight on)
+    cen = bm.verts.new(sum((v.co for v in inner3), Vector()) / len(inner3))
+    n3 = len(inner3)
+    for i in range(n3):
+        a, b = inner3[i], inner3[(i + 1) % n3]
+        try:
+            bm.faces.new([b, a, cen])
+        except ValueError:
+            pass
+    loops["mouth_bag_c"] = [[cen]]
     return bm, loops, sdf
 
 
@@ -323,6 +333,23 @@ def angle_param(ringK, cx, cz, sx, ax, az, curve, i0, i1):
     return out_t, out_u
 
 
+def monotone_halves(t, upper, i0, i1, t_uniform, mix):
+    """Blend angle-matched t with uniform t, then force it monotone along each half (no swapped spokes)."""
+    n = len(t)
+    t = t * mix + t_uniform * (1 - mix)
+    for want_upper in (True, False):
+        idx = [i for i in range(n) if i not in (i0, i1) and bool(upper[i]) == want_upper]
+        idx.sort(key=lambda i: t_uniform[i])
+        vals = np.sort(t[idx])
+        lo, hi = 0.0, 1.0
+        k = len(idx)
+        vals = np.clip(vals, lo + 0.3 / (k + 1), hi - 0.3 / (k + 1))
+        for i, v in zip(idx, vals):
+            t[i] = v
+    t[i0] = 0.0; t[i1] = 1.0
+    return t
+
+
 def place(bm, loops, sdf, P):
     """Put the named rings on their analytic curves, then relax the band around them onto the SDF."""
     pinned = {}
@@ -341,17 +368,22 @@ def place(bm, loops, sdf, P):
             a, e = lid_margin(P, ts, up)
             q = Fr[0] + eye_dir(Fr, a, e) * R0
             return q[:, 0], q[:, 2]
+        t_u, up_u = t.copy(), upper.copy()
         t, upper = angle_param(rings[-1], Fr[0][0], Fr[0][2], side, 1.0, 1.0, curve, i0, i1)
+        t = monotone_halves(t, up_u, i0, i1, t_u, P["eye_angle_mix"])
+        upper = up_u
         meta[key] = (t, upper)
         face = HeadSDF(P, with_eyes=False)
         for k in range(K):
             ring = rings[k]
             g = P["eye_ring_grow"][k]
-            rad = R0 + P["eye_ring_bulge"][k]
             for vi, v in enumerate(ring):
+                up_v = bool(upper[vi])
+                bul = P["eye_ring_bulge"] if up_v else P.get("eye_ring_bulge_lo", P["eye_ring_bulge"])
+                rad = R0 + bul[k]
                 a, e = lid_margin(P, np.array([t[vi]]), bool(upper[vi]) or vi == i0 or vi == i1)
                 if vi in (i0, i1):
-                    a = a * (1 + g * (1.0 if vi == i1 else P["eye_inner_grow"]))
+                    a = a * (1 + g * (P.get("eye_outer_grow", 1.0) if vi == i1 else P["eye_inner_grow"]))
                     e = e
                 else:
                     ec = math.radians(P["eye_e_inner"]) * (1 - t[vi]) + math.radians(P["eye_e_outer"]) * t[vi]
@@ -359,11 +391,17 @@ def place(bm, loops, sdf, P):
                     e = ec + (e - ec) * (1 + g)
                 d = eye_dir(Fr, a, e)[0]
                 ps = Fr[0] + d * rad
-                w = P["eye_ring_face_w"][k] if k < len(P["eye_ring_face_w"]) else 1.0
+                fw = P["eye_ring_face_w"] if up_v else P.get("eye_ring_face_w_lo", P["eye_ring_face_w"])
+                w = fw[k] if k < len(fw) else 1.0
+                if k > 1:
+                    edge = max(0.0, 1 - min(t[vi], 1 - t[vi]) / 0.2)  # 1 at the corners, 0 from 20% in
+                    w = max(w, P.get("eye_corner_face_w", 0.85) * edge * edge * (3 - 2 * edge))
                 if w > 0:
                     pf = march_out(face, Fr[0], d[None, :])[0]
-                    if np.linalg.norm(pf - Fr[0]) > rad:
-                        ps = ps * (1 - w) + pf * w
+                    ps = ps * (1 - w) + pf * w
+                    rmin = R0 + bul[k] * 0.5
+                    if np.linalg.norm(ps - Fr[0]) < rmin:
+                        ps = Fr[0] + (ps - Fr[0]) / np.linalg.norm(ps - Fr[0]) * rmin
                 pinned[v] = (ps, 1.0 if k < P["eye_pin_rings"] else 0.0)
         tuck = loops[key + "_tuck"][0]
         for vi, v in enumerate(tuck):
@@ -411,11 +449,7 @@ def place(bm, loops, sdf, P):
         Bs = B.copy()
         for _ in range(4):
             Bs = 0.5 * Bs + 0.25 * (np.roll(Bs, 1, 0) + np.roll(Bs, -1, 0))
-        if key == "mouth":
-            proj = lambda Q: np.stack([Q[:, 0], sdf.front_y(Q[:, [0, 2]]), Q[:, 2]], 1)
-        else:
-            Cc = eye_frame(P, 1 if key == "eye_L" else -1)[0]
-            proj = lambda Q, Cc=Cc: march_out(sdf, Cc, (Q - Cc) / np.linalg.norm(Q - Cc, axis=1, keepdims=True))
+        proj = lambda Q: np.stack([Q[:, 0], sdf.front_y(Q[:, [0, 2]]), Q[:, 2]], 1)
         Bs = proj(Bs)
         for j, k in enumerate(range(npin, K + 1)):
             s = (k - npin + 1) / (K - npin + 1)

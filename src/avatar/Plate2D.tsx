@@ -2,12 +2,18 @@
 // the jaw with hysteresis, plus a blink overlay; ≤ 20 Hz from the main-thread tap. Same palette, hair, glasses and
 // attire as the 3D head (shared/tutors.js look), so a B → D switch keeps the same person.
 // Also the picker portrait (`still`): blinks only, no mouth, nothing at all under reduced motion.
+//
+// face.rig ON: this code-drawn plate leaves every surface. The component renders the look's own plate instead
+// (PlatePerson), so the landing, the picker, Hello and the lesson all show the one face a child can pick (V-FACE).
 import { useEffect, useRef } from "react";
 import type { TutorCharacter } from "../../shared/tutors.js";
 import { LipDriver } from "./lip.ts";
 import { mouthCell } from "./plateMouth.ts";
 import { p as copy } from "./picker/copy.ts";
 import { TeacherTap, windowFromLevel, type TapSource } from "./tap.ts";
+import { PlatePerson } from "./PlatePerson.tsx";
+import { faceRigEnabled } from "./flags.ts";
+import { lookFor } from "./looks.ts";
 
 export interface Plate2DProps {
   tutor: TutorCharacter;
@@ -22,7 +28,16 @@ export interface Plate2DProps {
 
 const MOUTH_OPEN = [0, 3, 6.5, 10, 13];
 
-export function Plate2D({ tutor, sources = [], reducedMotion = false, still = false, className, lang = "english" }: Plate2DProps) {
+export function Plate2D(props: Plate2DProps) {
+  const look = faceRigEnabled() ? lookFor(props.tutor) : null;
+  if (look?.plate?.files) {
+    return <PlatePerson tutor={props.tutor} look={look} sources={props.sources} reducedMotion={props.reducedMotion} still={props.still} className={props.className} lang={props.lang} />;
+  }
+  return <DrawnPlate {...props} />;
+}
+
+/** The code-drawn plate (face.rig off). */
+function DrawnPlate({ tutor, sources = [], reducedMotion = false, still = false, className, lang = "english" }: Plate2DProps) {
   const L = tutor.look;
   const mouth = useRef<SVGPathElement>(null);
   const teeth = useRef<SVGRectElement>(null);

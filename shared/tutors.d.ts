@@ -36,6 +36,11 @@ export interface TutorCharacter {
   styleNote: Record<TutorLang, string>;
   fit: { offerClasses: [number, number]; wideOfferClasses: [number, number]; serveClasses: [number, number] };
   look: TutorLook;
+  /**
+   * The rig look this tutor wears (public/assets/teacher/<lookId>/<lookRev>/, src/avatar/looks.gen.json). Looks carry
+   * no name: a child-named teacher points at a look id, never the reverse. Swapping the face is an asset change.
+   */
+  lookId: string;
   faceStyle: { smile: number; headGain: number; browGain: number };
   voice: { cps: number; speakerMeanHz: number };
 }

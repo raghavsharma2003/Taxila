@@ -825,7 +825,9 @@ async function turn(req, res, body) {
   const moduleOnly = !childText && !body.chipId && body.asrConfidence !== 0 && moduleEvents.length > 0;
   // A help request (the Hint sheet, the Young Help menu: classify.js HELP_REQUESTS) is a client action, never the child's
   // words: stored as a system row (never in a transcript, the parent's quote or "In {child}'s words"), never graded.
-  const help = helpOf(body.chipId);
+  // Same predicate as classifyFast: words that trip the safety scan are never a help request, so a disclosure that rides on a
+  // help chip id is stored as the child's row (transcript, safeguarding record) and given to the reply model as said.
+  const help = helpOf(body.chipId) && !scanSafety(childText).distress ? helpOf(body.chipId) : null;
 
   // The teacher's last turn as heard (voice lane only: in the text lane the server wrote and stored every
   // teacher line, and an echo of it stored each one twice), then the child's turn.
