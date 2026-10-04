@@ -14,7 +14,7 @@ export const T_CLASSES = Object.freeze(new Set(["probe.transfer.near", "probe.tr
 export const facetsOfClass = (cls) => (U_CLASSES.has(cls) ? ["U"] : T_CLASSES.has(cls) ? ["T"] : []);
 
 /** Source weights w_src (§2.3). module = Forge host-graded answer until the 50-session agreement gate. */
-export const W_SRC = Object.freeze({ dialogue: 1, callback: 1, weave: 1, game: 0.5, module: 0.75 });
+export const W_SRC = Object.freeze({ dialogue: 1, callback: 1, weave: 1, late: 1, game: 0.5, module: 0.75 });
 
 /** State-ladder thresholds (§2.4). */
 export const TH = Object.freeze({

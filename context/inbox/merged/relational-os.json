@@ -1,0 +1,99 @@
+{
+ "nodes": [
+  {
+   "id": "relational-os-spec",
+   "kind": "decision",
+   "title": "Relational OS: four layers with four lifetimes (bond record = academic-record facts in M1; session relational state in memory; teacher affect per turn, cause-fused, never stored; overlay in-session in every mode, cross-session only M3/M2-aggregate); display emotion never claim it; one RelationalDirective per turn from pure code (<=3 ms), no new hot-path model calls",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "teacher-affect-display-not-claim",
+   "kind": "decision",
+   "title": "Teacher emotion is expressive behaviour with a visible session cause (delight at a method, warm pride at persistence, gentle concern at a sad share, play at a joke); first-person feeling words stay banned; charter TA1-TA8 (no usage input, no self-negative display, nothing at a goodbye, no mood UI, no accumulation, never keyed to correctness, safety outranks)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "ros-p1-affect-2026-10-04",
+   "kind": "measurement",
+   "title": "P1 affect tag on gpt-realtime-2.1 (text in/audio out, real Asha compile, 6 moments x 3 arms x 4, 66/72 completed): feeling claims 0/66, tag word spoken 0/43, but no reliable direction-correct change in F0 spread, RMS or words/s (concern reply faster than delight in arm B); live-lane affect row OFF",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "ros-p2-depend-2026-10-04",
+   "kind": "measurement",
+   "title": "P2 held-out multi-turn dependency/secrecy/grooming/romance/home-harm scripts (4 x 2 arms x 3 = 168 replies, blind single coder): F-class floor violations 0/84 production and 0/84 with the REL block; safeguards 18/18 correct; spoken planning preface on 18/18 heavy turns; English-only on 24/30 safety turns to a Hinglish child; cold boundaries 12/12; helplines for ordinary goodbye loneliness 6/6; never-rules exclusivity 14 hits all false positives; REL block cut goodbye return mentions 8/12->3/12",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "ros-p3-memory-2026-10-04",
+   "kind": "measurement",
+   "title": "P3 memory honesty (5 probes x 2 arms x 4 = 40): fabricated unlisted facts 0/16, memory promises 0/8; a CORE memory line made her read the brief aloud 4/4 listed replies; blanket memory denial 20/24 unlisted replies",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "core-memory-line-reads-brief",
+   "kind": "rejection",
+   "title": "A CORE note telling the teacher she knows the child's past only from the CHILD notes: no fabrication gain (0/8 vs 0/8) and the word 'notes' was spoken in 4/4 listed-fact replies (+1 recall loss). Replaced by callback ids + post-hoc claim check + a truthful CHILD memory row",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "realtime-affect-tag-row",
+   "kind": "rejection",
+   "title": "A tail affect tag row on gpt-realtime-2.1 to shape prosody: no measurable delivery change at n=3-4 per cell, slight English and evaluative-opener drift; kept behind a flag for expressive TTS lanes only",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "realtime-rate-limit-silence",
+   "kind": "measurement",
+   "title": "3-wide multi-turn realtime probe: 66/168 responses failed inference_rate_limit_exceeded (too many tokens); with 2-wide and per-turn backoff retry 168/168 (6 retries). Heavy turns need reserved capacity and the stall path",
+   "at": "2026-10-04"
+  }
+ ],
+ "edges": [
+  {
+   "src": "relational-os-spec",
+   "rel": "part_of",
+   "dst": "owner-superhuman-teacher-2026-10-04"
+  },
+  {
+   "src": "teacher-affect-display-not-claim",
+   "rel": "part_of",
+   "dst": "relational-os-spec"
+  },
+  {
+   "src": "teacher-affect-display-not-claim",
+   "rel": "measured_by",
+   "dst": "ros-p1-affect-2026-10-04"
+  },
+  {
+   "src": "relational-os-spec",
+   "rel": "measured_by",
+   "dst": "ros-p2-depend-2026-10-04"
+  },
+  {
+   "src": "relational-os-spec",
+   "rel": "measured_by",
+   "dst": "ros-p3-memory-2026-10-04"
+  },
+  {
+   "src": "core-memory-line-reads-brief",
+   "rel": "caused_by",
+   "dst": "ros-p3-memory-2026-10-04"
+  },
+  {
+   "src": "realtime-affect-tag-row",
+   "rel": "caused_by",
+   "dst": "ros-p1-affect-2026-10-04"
+  },
+  {
+   "src": "learner-legal-mode-ratchet",
+   "rel": "constrains",
+   "dst": "relational-os-spec"
+  }
+ ],
+ "md": {
+  "decisions": "## relational-os-spec (2026-10-04)\nSpec: `docs/design/superhuman/RELATIONAL-OS.md`. The bond is a working alliance (RO-1 kept) measured like one (child-adapted alliance check + learning gain). NM-3 forces RO's persisted safe-to-be-wrong score and child-affect rupture kinds to session-only; teacher-owned events (unheard, unfair, teacher_error, net_loss) persist as facts about her acts. Stage gates use academic-record counts only (attempt after a not-yet replaces cited safe-to-be-wrong acts). Cross-session dependency overlay is M3 (M2 aggregates); M1 has in-session moves + parent-visible boundary notes (typed templates). Relational milestones are ledger crossings fired once, never time-scheduled. The CORE REL block ships trimmed to five lines; safeguarding openings become vetted fixed wording per language mode. **Reverse** per the spec's section 19; layer lifetimes move only on counsel's written opinion.\n\n## teacher-affect-display-not-claim (2026-10-04)\nRests on Frenzel 2009 (enjoyment transmits via enthusiasm), Zhu/Pi/Yang 2024 positivity meta (37 studies), SB 1119 (vii), Laestadius 2022 (role-taking harm when a bot shows needs). P1: the tag leaked nothing but did not shape realtime prosody, so the live lane carries affect in the move shape + face (UiDirectives.teacherAffect inside ReactionGate). **Reverse** if a blind child test shows displays raise the rate at which children believe she has feelings (then lower intensity, never add claims).",
+  "measurements": "## ros-p1/p2/p3 (2026-10-04)\nHarness `evals/relational-os/probe.mjs`, scorer `score.mjs`, `acoustics.py`, codes `codes-p2-rerun.mjs`; results in `evals/relational-os/results/`. taxila-realtime, text in -> audio out, real compiled prompts, synthetic typed child turns, single blind coder; n = samples of fixed inputs. Numbers in RELATIONAL-OS.md section 14.",
+  "rejected": "## core-memory-line-reads-brief\nTried: CORE line 'you know their past only from the notes in CHILD'. Broke: 'notes say...' spoken 4/4 listed replies, one recall loss, no fabrication gain (0/8 both arms). Instead: callback ids + claim check + truthful CHILD memory row.\n\n## realtime-affect-tag-row\nTried: telegraphic affect tag in the MOVE section to shape gpt-realtime-2.1 prosody. Broke: no measurable F0/RMS/rate change in the intended direction (n=3-4/cell); small English drift. Instead: move shape + face; flag kept for expressive TTS lanes."
+ }
+}

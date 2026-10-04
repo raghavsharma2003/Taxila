@@ -150,3 +150,38 @@ export function armReward({ repairedNow = false, resolvedNext = false, resolvedD
 }
 /** Posterior update with a fractional reward (Beta pseudo-counts). */
 export const updatePosterior = (p = { a: 1, b: 1 }, reward) => (reward == null ? p : { a: p.a + reward, b: p.b + (1 - reward) });
+
+// ───────────── engineReteach's in-lesson inputs (W1-C #5; director/state.js, seam-patches/w1c-state-reteach.patch) ─────────────
+
+/** pL assumed for a prerequisite skill the child has never touched [U]: below 0.5, so it is a descent target. */
+export const UNSEEN_PREREQ_PL = 0.3;
+
+/**
+ * What selectReteach needs from THIS lesson for skill k: the arms that already failed on k (an engine re-teach fires
+ * again on k only after its cooldown re-check, with the trigger still holding: the arm tried last on k did not work),
+ * and k's prerequisites with their pL (the kit's own prereqSkillIds from the live beliefs, then the cross-topic ones
+ * pinned at start). Pure; pair with noteReteach.
+ * @param {any} s lesson state @param {string} k skill id @param {any} kit
+ * @returns {{ failedArmsThisSession: string[], prereqs: { skillId: string, pL: number }[] }}
+ */
+export function reteachSessionInputs(s, k, kit) {
+  const failed = s.failedArms?.[k] ?? [];
+  const last = s.lastArmBySkill?.[k];
+  const failedArmsThisSession = last && !failed.includes(last) ? [...failed, last] : failed;
+  const within = (kit?.skills?.find((x) => x.id === k)?.prereqSkillIds ?? []).map((p) => ({
+    skillId: p, pL: s.comp?.[p]?.belief?.pL ?? s.skills?.[p]?.pL ?? UNSEEN_PREREQ_PL }));
+  const cross = s.ctx?.reteach?.prereqs?.[k] ?? [];
+  const seen = new Set();
+  const prereqs = [...within, ...cross].filter((p) => p?.skillId && p.skillId !== k && !seen.has(p.skillId) && seen.add(p.skillId))
+    .map((p) => ({ skillId: p.skillId, pL: Number(p.pL) }));
+  return { failedArmsThisSession, prereqs };
+}
+
+/** Record the decision in the lesson state: the failed arms on k, and the arm now tried on k. Mutates s (as engineReteach does). */
+export function noteReteach(s, k, d, inputs) {
+  s.failedArms = { ...(s.failedArms ?? {}), [k]: inputs?.failedArmsThisSession ?? s.failedArms?.[k] ?? [] };
+  // what was tried on k now: an arm, or a prerequisite descent (if the trigger still holds after it, that counts as a
+  // third failure and the next decision parks the skill); park and none try nothing
+  const tried = d?.armId && (d.move === "reteach" || d.move === "recap") ? d.armId : d?.move === "prereq_descent" ? `descent:${d.prereqSkillId}` : null;
+  if (d && d.move !== "none") s.lastArmBySkill = { ...(s.lastArmBySkill ?? {}), [k]: tried };
+}

@@ -1,0 +1,105 @@
+{
+ "nodes": [
+  {
+   "id": "w1b-planner-one-resolver",
+   "kind": "decision",
+   "title": "W1-B: server/director/modules.js planModule plans every mount through shared/engine-catalog.js planEngine + moduleCommands (the pre-catalog slug picker is gone from the live path); ladder per item move: bound engine plan -> the lesson's Forge G1 fill -> unbound predict activity -> the board and her voice; show moves mount unbound; every id is in ENGINES and every mode one of the engine's own (validModes)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1b-g1-lesson-table",
+   "kind": "decision",
+   "title": "W1-B: Forge G1 reaches the lesson through a per-lesson, process-memory fill table (server/forge/lesson-fills.js) that the Director reads synchronously; forgeSeam.prefetchLessonFills fills it fire-and-forget after the start transaction; a turn-path miss warms the item in the background with requestFill({needByMs: 2000}) for its next posing; a G1 mount carries itemId null and is graded only by modules.js moduleAnswerOf -> forge/grade.js gradeEvent, never by the frame's correct",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1b-scene-default-on",
+   "kind": "decision",
+   "title": "W1-B: scene@1 is a live G1 renderer by default (planner.js liveRenderers); FORGE_SCENE_RENDERER=0 is the kill switch; render-check.mjs drives scene@1 fills (wrong commit + solution; frame verdict = gate key = server grader)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1b-module-failure-clears",
+   "kind": "decision",
+   "title": "W1-B: a frame error on the mounted module (unknown engine, crash, slow chunk) clears s.module before the turn is planned (modules.js noteModuleEvents): no screen target for her, no module tray or tap_in_tray in the next directives, and that engine is not mounted again in the lesson; the client drops the tray at once (WorkTray onModuleFailed)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1b-no-engine-is-demand",
+   "kind": "decision",
+   "title": "W1-B: a kit whose engine hints resolve to no engine writes a forge_gap demand row (reason no_engine_for_hints) per lesson that reaches it, instead of a mount; scripts/lint-kits.mjs fails on an engine-id hint outside ENGINES and ratchets kits-with-no-engine at 559",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1b-engines-coverage-2026-10-04",
+   "kind": "measurement",
+   "title": "evals/engines-coverage.mjs 2026-10-04 (offline, all kits): c4-c7 hint coverage maths 105/141, science 21/69, EVS 6/40 (the W1-B gate); what the live planModule mounts c4-c7 131/385 (maths 99, science 21, EVS 11), bound on an item 32/385; bound items c4-c7 70 (all agree in frame logic, 70/70 wrong on a perturbed key), all kits 110/110",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1b-lint-kits-2026-10-04",
+   "kind": "measurement",
+   "title": "scripts/lint-kits.mjs 2026-10-04: 830 kits, 3041 hints; engine by hint 182 (156 only through a catalog alias; the pre-catalog picker loaded 26), by topic map 89, none 559; 1192 distinct unresolved hints (top: read-along 208, role-play 190, picture-word-match 169, word-builder 136, story-sequencing 126)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1b-forge-g1-render-2026-10-04",
+   "kind": "measurement",
+   "title": "evals/forge-g1-render.mjs 2026-10-04: 106 scene@1 items picked over c4-c7, 94 built (12 gaps), 94/94 pass render-check in the production frame (wrong commit + solution, frame verdict = gate key = gradeEvent, controls in view at 360x640); frame boot p50 151 ms, max 264 ms (n=94)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1b-local-acceptance-2026-10-04",
+   "kind": "measurement",
+   "title": "W1-B acceptance, LOCAL server (serve.mjs + dist, Neon test branch, lesson.js with the W1-B wiring patch), 2026-10-04: w1b-mounts 8 topics x 10 turns, 3 runs: 0 unknown-engine mounts, 0 invalid modes, >=1 item-bound mount in all 4 maths lessons, a G1 mount in every science/English lesson that posed a fillable item (3/3), kt_evidence via 'module' rows for bound answers and for G1 answers sent with a false correct claim; only failure: the global @taxila.test guardian count rose 146->147 mid-run (another writer on the shared test branch); w1b-tray at 360x800, n=1: iframe 404 px = tray 404 px, 0 controls outside, forced unknown engine leaves no empty tray, next tray none, next line has no screen reference",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1b-rj-g1-itemid",
+   "kind": "rejection",
+   "title": "Rejected: binding a Forge G1 mount by setting s.module.itemId to the item (the obvious way to make lesson.js count it): lesson.js's inline grader read the frame's own correct for any module whose itemId is the active item, so a frame could grade itself; G1 mounts keep itemId null and are graded by moduleAnswerOf over the server-side binding",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1b-rj-fresh-forced-id",
+   "kind": "rejection",
+   "title": "Rejected: forcing the unknown-engine case in the Playwright tray test with a NEW moduleId: the frame's error names a module the Director never held, so the server keeps its own module and the 'next line has no screen reference' check proves nothing; the test reuses the moduleId the server holds",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1b-open-lesson-wiring",
+   "kind": "open",
+   "title": "W1-B's two lesson.js call sites are NOT in the tree (lesson.js is W1-A's hot file and W0 placed no seam for them): noteModuleEvents(state, moduleEvents) after moduleOnly, and moduleAnswer = moduleAnswerOf(state, moduleEvents) replacing the inline filter; until applied, G1 answers grade nothing and a failed module stays a screen target server-side",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "engines-v1-server-recheck",
+   "kind": "open",
+   "title": "A bound catalog engine's answer is still the frame's own verdict (computed by tested code from params whose answer equals the kit key); a server-side re-check of bound engine answers (as gradeEvent does for G1) is not built",
+   "at": "2026-10-04"
+  }
+ ],
+ "edges": [
+  { "src": "w1b-planner-one-resolver", "rel": "part_of", "dst": "engines-v1-catalog-binding" },
+  { "src": "w1b-planner-one-resolver", "rel": "supersedes", "dst": "rj-first-hint-engine-id" },
+  { "src": "w1b-planner-one-resolver", "rel": "measured_by", "dst": "w1b-engines-coverage-2026-10-04" },
+  { "src": "w1b-planner-one-resolver", "rel": "measured_by", "dst": "w1b-local-acceptance-2026-10-04" },
+  { "src": "w1b-g1-lesson-table", "rel": "part_of", "dst": "forge-live-is-g1-fill" },
+  { "src": "forge-g1-grade-event", "rel": "constrains", "dst": "w1b-g1-lesson-table" },
+  { "src": "forge-live-codegen-race", "rel": "constrains", "dst": "w1b-g1-lesson-table" },
+  { "src": "w1b-g1-lesson-table", "rel": "measured_by", "dst": "w1b-local-acceptance-2026-10-04" },
+  { "src": "w1b-scene-default-on", "rel": "measured_by", "dst": "w1b-forge-g1-render-2026-10-04" },
+  { "src": "w1b-scene-default-on", "rel": "part_of", "dst": "w1b-g1-lesson-table" },
+  { "src": "w1b-module-failure-clears", "rel": "measured_by", "dst": "w1b-local-acceptance-2026-10-04" },
+  { "src": "w1b-no-engine-is-demand", "rel": "measured_by", "dst": "w1b-lint-kits-2026-10-04" },
+  { "src": "w1b-rj-g1-itemid", "rel": "caused_by", "dst": "forge-g1-grade-event" },
+  { "src": "w1b-open-lesson-wiring", "rel": "blocks", "dst": "w1b-g1-lesson-table" },
+  { "src": "w1b-open-lesson-wiring", "rel": "blocks", "dst": "w1b-module-failure-clears" },
+  { "src": "engines-v1-server-recheck", "rel": "part_of", "dst": "engines-v1-catalog-binding" }
+ ],
+ "md": {
+  "decisions": "## w1b-planner-one-resolver\n**The Director plans every activity through one resolver: `planModule` calls `shared/engine-catalog.js` `planEngine` and `moduleCommands`.** The pre-catalog slug picker (`engineId`) survives only as the \"before\" baseline of `evals/engines-coverage.mjs`. On practice, probe and retrieval items the ladder is: (1) a BOUND engine plan, whose right answer equals the kit key; (2) the lesson's Forge G1 fill for the item; (3) an unbound predict activity on a predict, contrast or diagnostic item, revealed when the item is over; (4) nothing, so the board and her voice. Explain, re-teach, worked-example and show moves mount unbound. Teach-back, wrap, safeguard, break and celebrate close the module. `planEngine` now also tries the kit's OTHER engine hints for a binding plan. The Director's \"show\" or \"predict\" is never sent as an engine mode (`validModes`); predict travels as `predict: true`. New adapters: number-line read-a-mark, a data-graphs most/least bar read (the kit key is a label) and a data-graphs single-bar value read. **Reversal:** owner input O5a (a teacher's review of the bound adapters) finds a binding that grades the wrong thing; or the production M1 probe shows any unknown-engine mount.\n\n## w1b-g1-lesson-table\n**Forge G1 reaches the live lesson through a per-lesson fill table held in process memory (`server/forge/lesson-fills.js`). The Director reads it synchronously, because `step()` is pure and awaits nothing.** `forgeSeam.prefetchLessonFills` fills it after the start transaction, without being awaited. It personalises from the child's record, using interests only under memory consent, and writes a `forge_gap` row when the kit has no engine. A miss on the turn path warms the item in the background with `requestFill({needByMs: 2000})`, so the item is warm the next time it is posed. A G1 mount carries `itemId: null`, and its answer is graded only by `moduleAnswerOf` → `gradeEvent` over the server-side binding. **Reversal:** a turn served by a replica that did not run the prefetch misses once and then warms itself. If production shows more than about 20% of posed fillable items missing because of replica spread (even with W1-D session affinity), the table moves to the DB fill cache read at start.\n\n## w1b-scene-default-on\n**`scene@1` is live in G1 by default. `FORGE_SCENE_RENDERER=0` is the kill switch.** `render-check.mjs` drives scene fills: a wrong commit and the solution, checking that the frame verdict, the gate key and the server grader agree. **Reversal:** a render-check failure in the eval, or `scene@1` frame errors in production.\n\n## w1b-module-failure-clears\n**A frame `error` on the mounted module clears `s.module` before the turn is planned (`noteModuleEvents`).** The teacher then stops counting it as a screen target, the next directives carry no module tray, and a `tap_in_tray` item falls back to tiles or words. The failed engine is not mounted again in this lesson (up to 8 remembered). **Reversal:** transient failures, such as a slow chunk on a bad network, prove common and recoverable. The block would then become per-turn rather than per-lesson.\n\n## w1b-no-engine-is-demand\n**A kit whose hints name no engine writes demand rather than a mount.** It gets one `forge_gap` row (`no_engine_for_hints`) per lesson that reaches it. `scripts/lint-kits.mjs` errors on an `name@N` hint outside ENGINES and ratchets the no-engine kit count at 559. **Reversal:** none expected. The baseline only goes down as engines or aliases land.",
+  "measurements": "## w1b-engines-coverage-2026-10-04\nMethod: `node evals/engines-coverage.mjs --out evals/results/engines-coverage-w1b-2026-10-04.json`, offline, all 830 kits, no network or model, on 2026-10-04.\n\n- **Hint coverage, c4-c7 (the W1-B gate):** maths 105/141, science 21/69, EVS 6/40. The gate asks for at least 105, 21 and 6.\n- **What the live `planModule` mounts, c4-c7:** 131/385 topics (maths 99, science 21, EVS 11). Item-bound on at least one item: 32/385.\n- **Bound items:** c4-c7 70 (70/70 agree in frame logic; 70/70 replay wrong on a perturbed key); all kits 110/110.\n\n## w1b-lint-kits-2026-10-04\nMethod: `node scripts/lint-kits.mjs` on 2026-10-04.\n\n- **Totals:** 830 kits, 3041 hints.\n- **Engine by hint:** 182, of which 156 resolve only through a catalog alias. The pre-catalog picker loaded 26.\n- **Engine by topic map:** 89.\n- **No engine:** 559.\n- **Unresolved:** 1192 distinct hints.\n\n## w1b-forge-g1-render-2026-10-04\nMethod: `evals/forge-g1-render.mjs`, offline (code pick, gate), with `render-check.mjs` run in `dist/` on 2026-10-04.\n\n- 106 items picked, 94 built, 94/94 passed.\n- Boot p50 151 ms, max 264 ms (n = 94).\n\n## w1b-local-acceptance-2026-10-04\nMethod: `tests/prod/w1b-mounts.mjs` (3 runs) and `w1b-tray.mjs` (1 run), against a LOCAL `serve.mjs` on the Neon test branch, with `lesson.js` carrying the W1-B wiring patch. Date 2026-10-04. Production has not been measured yet.\n\n- **Mounts:** every engine check passed.\n- **Only failure:** the global count of leftover `@taxila.test` guardians rose from 146 to 147 mid-run. Another process writes to the shared test branch.",
+  "rejected": "## w1b-rj-g1-itemid\nTried: making a G1 fill count by setting `s.module.itemId` to the item. What broke: `lesson.js` graded any module whose `itemId` was the active item by the frame's OWN `correct`, so a frame could have graded itself, against `forge-g1-grade-event`. Instead, G1 mounts carry `g1: {itemId, grade}` and `moduleAnswerOf` grades them by `gradeEvent`.\n\n## w1b-rj-fresh-forced-id\nTried: forcing an unknown engine in the Playwright tray test by mounting `nope@1` under a new moduleId. What broke: the frame's error named a module the Director never held, so the server kept its own module. The \"no screen reference\" check then measured nothing. Now the test reuses the moduleId the server holds."
+ }
+}

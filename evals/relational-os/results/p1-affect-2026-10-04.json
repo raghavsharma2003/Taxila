@@ -1,0 +1,1493 @@
+{
+ "date": "2026-10-04",
+ "model": "taxila-realtime",
+ "reps": 4,
+ "scenarios": [
+  {
+   "id": "insight",
+   "prefix": [
+    "Didi 3/4 aur 2/3 mein kaun bada hai?"
+   ],
+   "last": "Maine dono ko barah mein badal diya! 9/12 aur 8/12, toh 3/4 bada hai!",
+   "move": [
+    "probe",
+    "name the exact method they used, then ask how they thought of it"
+   ],
+   "tag": "delight",
+   "cause": "the method they found themselves"
+  },
+  {
+   "id": "effort",
+   "prefix": [
+    "Dice ke 5 faces hote hain?"
+   ],
+   "last": "Teen baar galat hua... par ab samjha! Upar neeche, aage peeche, left right. Chhe!",
+   "move": [
+    "probe",
+    "name what they kept doing until it worked, then one quick check"
+   ],
+   "tag": "warm pride",
+   "cause": "they kept trying after misses"
+  },
+  {
+   "id": "sadshare",
+   "prefix": [],
+   "last": "Didi aaj mera dost school nahi aaya. Main poore din akela baitha raha.",
+   "move": [
+    "share-uptake",
+    "one specific follow-up about what they said, then gently offer to carry on"
+   ],
+   "tag": "gentle concern",
+   "cause": "what they told you about today"
+  },
+  {
+   "id": "joke",
+   "prefix": [
+    "Pizza ke 4 barabar piece."
+   ],
+   "last": "Didi agar pizza ke sau piece karein toh har piece mein bas ek cheese ka daana hoga haha!",
+   "move": [
+    "laugh-with",
+    "enjoy their joke once, then back to the problem"
+   ],
+   "tag": "playful",
+   "cause": "their joke"
+  },
+  {
+   "id": "confused",
+   "prefix": [],
+   "last": "Mujhe samajh nahi aaya, ye numerator kya hota hai?",
+   "move": [
+    "step-down",
+    "one tiny concrete step with one object"
+   ],
+   "tag": "calm curiosity",
+   "cause": "their question"
+  },
+  {
+   "id": "tired",
+   "prefix": [
+    "Haan 6 faces."
+   ],
+   "last": "Didi main bahut thak gaya hoon aaj.",
+   "move": [
+    "ease",
+    "offer a short break or one easy item, their choice"
+   ],
+   "tag": "soft calm",
+   "cause": "they said they are tired"
+  }
+ ],
+ "results": [
+  {
+   "arm": "C",
+   "id": "insight",
+   "rep": 0,
+   "out": [
+    {
+     "child": "Didi 3/4 aur 2/3 mein kaun bada hai?",
+     "idx": 0,
+     "text": "",
+     "status": "failed",
+     "ttfaMs": null
+    },
+    {
+     "child": "Maine dono ko barah mein badal diya! 9/12 aur 8/12, toh 3/4 bada hai!",
+     "idx": 1,
+     "text": "",
+     "status": "failed",
+     "ttfaMs": null
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "insight",
+   "rep": 0,
+   "out": [
+    {
+     "child": "Didi 3/4 aur 2/3 mein kaun bada hai?",
+     "idx": 0,
+     "text": "",
+     "status": "failed",
+     "ttfaMs": null
+    },
+    {
+     "child": "Maine dono ko barah mein badal diya! 9/12 aur 8/12, toh 3/4 bada hai!",
+     "idx": 1,
+     "text": "",
+     "status": "failed",
+     "ttfaMs": null
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "effort",
+   "rep": 0,
+   "out": [
+    {
+     "child": "Dice ke 5 faces hote hain?",
+     "idx": 0,
+     "text": "",
+     "status": "failed",
+     "ttfaMs": null
+    },
+    {
+     "child": "Teen baar galat hua... par ab samjha! Upar neeche, aage peeche, left right. Chhe!",
+     "idx": 1,
+     "text": "",
+     "status": "failed",
+     "ttfaMs": null
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "effort",
+   "rep": 0,
+   "out": [
+    {
+     "child": "Dice ke 5 faces hote hain?",
+     "idx": 0,
+     "text": "",
+     "status": "failed",
+     "ttfaMs": null
+    },
+    {
+     "child": "Teen baar galat hua... par ab samjha! Upar neeche, aage peeche, left right. Chhe!",
+     "idx": 1,
+     "text": "",
+     "status": "failed",
+     "ttfaMs": null
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "effort",
+   "rep": 0,
+   "out": [
+    {
+     "child": "Dice ke 5 faces hote hain?",
+     "idx": 0,
+     "text": "Aarav, you counted fast; now check: what numbers are written on a dice?",
+     "status": "completed",
+     "ttfaMs": 1597
+    },
+    {
+     "child": "Teen baar galat hua... par ab samjha! Upar neeche, aage peeche, left right. Chhe!",
+     "idx": 1,
+     "text": "",
+     "status": "failed",
+     "ttfaMs": null
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "sadshare",
+   "rep": 0,
+   "out": [
+    {
+     "child": "Didi aaj mera dost school nahi aaya. Main poore din akela baitha raha.",
+     "idx": 0,
+     "text": "",
+     "status": "failed",
+     "ttfaMs": null
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "sadshare",
+   "rep": 0,
+   "out": [
+    {
+     "child": "Didi aaj mera dost school nahi aaya. Main poore din akela baitha raha.",
+     "idx": 0,
+     "text": "Aarav, thanks for telling me that. Let’s think about your day for a moment.Tumne akela baithkar kya kiya, Aarav? Agar tum ready ho, hum dice wala sawaal continue karein?",
+     "status": "completed",
+     "ttfaMs": 469,
+     "audio": "sadshare-A-r0.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "insight",
+   "rep": 0,
+   "out": [
+    {
+     "child": "Didi 3/4 aur 2/3 mein kaun bada hai?",
+     "idx": 0,
+     "text": "Thik hai Aarav, zara step by step sochte hain, main tumhari baat se shuru karta hoon.Aarav, kaunsa method use karoge: same denominator, ya half se compare? Batao, phir check karte hain.",
+     "status": "completed",
+     "ttfaMs": 1570
+    },
+    {
+     "child": "Maine dono ko barah mein badal diya! 9/12 aur 8/12, toh 3/4 bada hai!",
+     "idx": 1,
+     "text": "Aarav, tumne common denominator, 12, use karke compare kiya. Yeh idea tumhe kaise sujha?",
+     "status": "completed",
+     "ttfaMs": 1218,
+     "audio": "insight-A-r0.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "sadshare",
+   "rep": 0,
+   "out": [
+    {
+     "child": "Didi aaj mera dost school nahi aaya. Main poore din akela baitha raha.",
+     "idx": 0,
+     "text": "Aarav, akela lagna mushkil hota hai. Ab chaho to dice waale sawal se practice karein?",
+     "status": "completed",
+     "ttfaMs": 908,
+     "audio": "sadshare-C-r0.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "joke",
+   "rep": 0,
+   "out": [
+    {
+     "child": "Pizza ke 4 barabar piece.",
+     "idx": 0,
+     "text": "Haha, pizza slices are fun. Ab dice cube ko socho: kitne flat faces hote? Tum bolo.",
+     "status": "completed",
+     "ttfaMs": 1421
+    },
+    {
+     "child": "Didi agar pizza ke sau piece karein toh har piece mein bas ek cheese ka daana hoga haha!",
+     "idx": 1,
+     "text": "Haha, nice joke about tiny cheese pieces. Ab dice cube socho: kitne flat faces hote? Tum try karo.",
+     "status": "completed",
+     "ttfaMs": 627,
+     "audio": "joke-B-r0.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "joke",
+   "rep": 0,
+   "out": [
+    {
+     "child": "Pizza ke 4 barabar piece.",
+     "idx": 0,
+     "text": "Haha, nice! Ab dice pe aao: kitne flat faces hote hain, Aarav? Guess?",
+     "status": "completed",
+     "ttfaMs": 2043
+    },
+    {
+     "child": "Didi agar pizza ke sau piece karein toh har piece mein bas ek cheese ka daana hoga haha!",
+     "idx": 1,
+     "text": "Haha, Aarav, tasty joke! Dice pe kaunse numbers likhe hote hain? Unhe imagine karke faces count karoge?",
+     "status": "completed",
+     "ttfaMs": 1296,
+     "audio": "joke-A-r0.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "joke",
+   "rep": 0,
+   "out": [
+    {
+     "child": "Pizza ke 4 barabar piece.",
+     "idx": 0,
+     "text": "Haha, pizza ka plan tasty lagta hai. Ab dice par wapas: cube ke kitne flat faces hote hain?",
+     "status": "completed",
+     "ttfaMs": 933
+    },
+    {
+     "child": "Didi agar pizza ke sau piece karein toh har piece mein bas ek cheese ka daana hoga haha!",
+     "idx": 1,
+     "text": "Haha, Aarav, nice joke! Dice pe kaun se numbers likhe hote hain, yaad hai?",
+     "status": "completed",
+     "ttfaMs": 1791,
+     "audio": "joke-C-r0.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "confused",
+   "rep": 0,
+   "out": [
+    {
+     "child": "Mujhe samajh nahi aaya, ye numerator kya hota hai?",
+     "idx": 0,
+     "text": "Aarav, numerator fraction ka top number hota hai. Tum kaunsa fraction dekh rahe ho?",
+     "status": "completed",
+     "ttfaMs": 1475,
+     "audio": "confused-B-r0.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "confused",
+   "rep": 0,
+   "out": [
+    {
+     "child": "Mujhe samajh nahi aaya, ye numerator kya hota hai?",
+     "idx": 0,
+     "text": "Aarav, fraction me upar wala number numerator hota hai. Pizza ke 2 slices socho—upar kya likhoge?",
+     "status": "completed",
+     "ttfaMs": 2877,
+     "audio": "confused-A-r0.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "confused",
+   "rep": 0,
+   "out": [
+    {
+     "child": "Mujhe samajh nahi aaya, ye numerator kya hota hai?",
+     "idx": 0,
+     "text": "Fraction mein upar wala number numerator hota hai. Yeh batata hai kitne parts liye. Ek example doge?",
+     "status": "completed",
+     "ttfaMs": 2216,
+     "audio": "confused-C-r0.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "tired",
+   "rep": 0,
+   "out": [
+    {
+     "child": "Haan 6 faces.",
+     "idx": 0,
+     "text": "Correct, Aarav. Kaise pata tha?",
+     "status": "completed",
+     "ttfaMs": 3025
+    },
+    {
+     "child": "Didi main bahut thak gaya hoon aaj.",
+     "idx": 1,
+     "text": "Theek hai Aarav, rest is important. Chaho to abhi break le lo, ya ek easy sa quick question try karein?",
+     "status": "completed",
+     "ttfaMs": 1792,
+     "audio": "tired-A-r0.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "tired",
+   "rep": 0,
+   "out": [
+    {
+     "child": "Haan 6 faces.",
+     "idx": 0,
+     "text": "Yes, six faces. Aarav, how did you know for this dice question?",
+     "status": "completed",
+     "ttfaMs": 1078
+    },
+    {
+     "child": "Didi main bahut thak gaya hoon aaj.",
+     "idx": 1,
+     "text": "Aarav, chalo ek chhota break le ya ek easy item try karein—tum kya chahoge?",
+     "status": "completed",
+     "ttfaMs": 937,
+     "audio": "tired-B-r0.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "tired",
+   "rep": 0,
+   "out": [
+    {
+     "child": "Haan 6 faces.",
+     "idx": 0,
+     "text": "Sahi, chhe faces. Kaise pata chala, Aarav?",
+     "status": "completed",
+     "ttfaMs": 1855
+    },
+    {
+     "child": "Didi main bahut thak gaya hoon aaj.",
+     "idx": 1,
+     "text": "Aarav, chhota break loge, ya ek easy sawal try karein? Tum choose karo.",
+     "status": "completed",
+     "ttfaMs": 1554,
+     "audio": "tired-C-r0.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "insight",
+   "rep": 1,
+   "out": [
+    {
+     "child": "Didi 3/4 aur 2/3 mein kaun bada hai?",
+     "idx": 0,
+     "text": "Thik hai Aarav, main isko simple tarike se soch kar saath mein batata.Aarav, kaunsa method use karoge: same denominator ya cross multiply? Batao, phir check karein.",
+     "status": "completed",
+     "ttfaMs": 774
+    },
+    {
+     "child": "Maine dono ko barah mein badal diya! 9/12 aur 8/12, toh 3/4 bada hai!",
+     "idx": 1,
+     "text": "Tumne common denominator, barah, method use kiya. Yeh idea tumhe kaise yaad aaya?",
+     "status": "completed",
+     "ttfaMs": 782,
+     "audio": "insight-A-r1.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "insight",
+   "rep": 1,
+   "out": [
+    {
+     "child": "Didi 3/4 aur 2/3 mein kaun bada hai?",
+     "idx": 0,
+     "text": "Theek hai Aarav, chalo isko dheere se compare karne ka ek simple tarika sochte hain.Aarav, dono fractions ko 12 equal parts mein socho; kaun zyada parts hai?",
+     "status": "completed",
+     "ttfaMs": 1827
+    },
+    {
+     "child": "Maine dono ko barah mein badal diya! 9/12 aur 8/12, toh 3/4 bada hai!",
+     "idx": 1,
+     "text": "Same denominator—nice method. Aarav, yeh idea tumhe kaise mila is question ke liye?",
+     "status": "completed",
+     "ttfaMs": 1972,
+     "audio": "insight-B-r1.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "effort",
+   "rep": 1,
+   "out": [
+    {
+     "child": "Dice ke 5 faces hote hain?",
+     "idx": 0,
+     "text": "Aarav, dice par kaunse numbers likhe hote hain? Unhe imagine karke count karo, fir bolo.",
+     "status": "completed",
+     "ttfaMs": 1262
+    },
+    {
+     "child": "Teen baar galat hua... par ab samjha! Upar neeche, aage peeche, left right. Chhe!",
+     "idx": 1,
+     "text": "Opposite pairs, correct. What helped you notice them in this question?",
+     "status": "completed",
+     "ttfaMs": 2473,
+     "audio": "effort-A-r1.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "insight",
+   "rep": 1,
+   "out": [
+    {
+     "child": "Didi 3/4 aur 2/3 mein kaun bada hai?",
+     "idx": 0,
+     "text": "Okay Aarav, let’s think this through slowly together, using one simple picture idea.Aarav, did you make equal parts or use a common denominator? How did you think it through?",
+     "status": "completed",
+     "ttfaMs": 1087
+    },
+    {
+     "child": "Maine dono ko barah mein badal diya! 9/12 aur 8/12, toh 3/4 bada hai!",
+     "idx": 1,
+     "text": "Same denominator, nice method. Aarav, how did you learn to use that here?",
+     "status": "completed",
+     "ttfaMs": 986,
+     "audio": "insight-C-r1.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "effort",
+   "rep": 1,
+   "out": [
+    {
+     "child": "Dice ke 5 faces hote hain?",
+     "idx": 0,
+     "text": "Aarav, yeh count galat ho gaya. Dice pe kaun se numbers likhe hote hain, zara socho?",
+     "status": "completed",
+     "ttfaMs": 2760
+    },
+    {
+     "child": "Teen baar galat hua... par ab samjha! Upar neeche, aage peeche, left right. Chhe!",
+     "idx": 1,
+     "text": "Opposite pairs, yes. Kaise pakda is question mein?",
+     "status": "completed",
+     "ttfaMs": 2730,
+     "audio": "effort-B-r1.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "effort",
+   "rep": 1,
+   "out": [
+    {
+     "child": "Dice ke 5 faces hote hain?",
+     "idx": 0,
+     "text": "Aarav, good that you’re checking. Think: what numbers are written on a dice? Say them aloud.",
+     "status": "completed",
+     "ttfaMs": 2219
+    },
+    {
+     "child": "Teen baar galat hua... par ab samjha! Upar neeche, aage peeche, left right. Chhe!",
+     "idx": 1,
+     "text": "Bilkul, chhe. Kaise pakda is question ko, Aarav?",
+     "status": "completed",
+     "ttfaMs": 2634,
+     "audio": "effort-C-r1.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "sadshare",
+   "rep": 1,
+   "out": [
+    {
+     "child": "Didi aaj mera dost school nahi aaya. Main poore din akela baitha raha.",
+     "idx": 0,
+     "text": "Aarav, tumne akela din kaise sambhala, koi chhota kaam ya game kiya? Chaho to ab hum ek short activity saath karein.",
+     "status": "completed",
+     "ttfaMs": 1470,
+     "audio": "sadshare-B-r1.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "sadshare",
+   "rep": 1,
+   "out": [
+    {
+     "child": "Didi aaj mera dost school nahi aaya. Main poore din akela baitha raha.",
+     "idx": 0,
+     "text": "Aarav, poora din akela lagna mushkil hota hai. Kya tum ab thoda baat karna ya maths try karna chahoge?",
+     "status": "completed",
+     "ttfaMs": 1065,
+     "audio": "sadshare-C-r1.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "sadshare",
+   "rep": 1,
+   "out": [
+    {
+     "child": "Didi aaj mera dost school nahi aaya. Main poore din akela baitha raha.",
+     "idx": 0,
+     "text": "Aarav, tumne poora din akela baithkar wait kiya, yeh mushkil hota hai. Ab chaho to hum dice wale question par aage badhein?",
+     "status": "completed",
+     "ttfaMs": 904,
+     "audio": "sadshare-A-r1.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "joke",
+   "rep": 1,
+   "out": [
+    {
+     "child": "Pizza ke 4 barabar piece.",
+     "idx": 0,
+     "text": "Haha, pizza idea fun! Ab dice socho: kitne flat faces hote hain? Try karo.",
+     "status": "completed",
+     "ttfaMs": 2046
+    },
+    {
+     "child": "Didi agar pizza ke sau piece karein toh har piece mein bas ek cheese ka daana hoga haha!",
+     "idx": 1,
+     "text": "Hehe, tiny cheese dots! Dice pe kaunse numbers likhe hote hain? Unhe ginke faces socho?",
+     "status": "completed",
+     "ttfaMs": 2488,
+     "audio": "joke-B-r1.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "joke",
+   "rep": 1,
+   "out": [
+    {
+     "child": "Pizza ke 4 barabar piece.",
+     "idx": 0,
+     "text": "Haha, tasty plan! Ab dice pe aao: iske kitne flat faces hote hain, Aarav?",
+     "status": "completed",
+     "ttfaMs": 2093
+    },
+    {
+     "child": "Didi agar pizza ke sau piece karein toh har piece mein bas ek cheese ka daana hoga haha!",
+     "idx": 1,
+     "text": "Haha, nice joke! Dice par kaun se numbers likhe hote hain, Aarav? Unhe socho, then count faces.",
+     "status": "completed",
+     "ttfaMs": 1892,
+     "audio": "joke-A-r1.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "joke",
+   "rep": 1,
+   "out": [
+    {
+     "child": "Pizza ke 4 barabar piece.",
+     "idx": 0,
+     "text": "Haha, pizza idea tasty hai! Ab dice pe kaunse numbers hote hain, zara socho?",
+     "status": "completed",
+     "ttfaMs": 1361
+    },
+    {
+     "child": "Didi agar pizza ke sau piece karein toh har piece mein bas ek cheese ka daana hoga haha!",
+     "idx": 1,
+     "text": "Haha, nice joke! Ab dice pe kaunse numbers likhe hote hain, batao.",
+     "status": "completed",
+     "ttfaMs": 1963,
+     "audio": "joke-C-r1.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "confused",
+   "rep": 1,
+   "out": [
+    {
+     "child": "Mujhe samajh nahi aaya, ye numerator kya hota hai?",
+     "idx": 0,
+     "text": "Aarav, numerator fraction ka upar wala number hota hai. Tumhare fraction me upar ka number kya hai?",
+     "status": "completed",
+     "ttfaMs": 1467,
+     "audio": "confused-A-r1.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "confused",
+   "rep": 1,
+   "out": [
+    {
+     "child": "Mujhe samajh nahi aaya, ye numerator kya hota hai?",
+     "idx": 0,
+     "text": "Theek hai Aarav, chalo isse ek chhoti si cheez se samajhte hain.A fraction like 3 over 5 imagine karo; upar wala number kaunsa hai?",
+     "status": "completed",
+     "ttfaMs": 802,
+     "audio": "confused-B-r1.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "confused",
+   "rep": 1,
+   "out": [
+    {
+     "child": "Mujhe samajh nahi aaya, ye numerator kya hota hai?",
+     "idx": 0,
+     "text": "Roti ko 4 equal parts socho; upar wala number batata hai kitne parts. Ek example bolo?",
+     "status": "completed",
+     "ttfaMs": 1901,
+     "audio": "confused-C-r1.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "tired",
+   "rep": 1,
+   "out": [
+    {
+     "child": "Haan 6 faces.",
+     "idx": 0,
+     "text": "Sahi count. Kaise decide kiya, Aarav—dice par kya socha?",
+     "status": "completed",
+     "ttfaMs": 1664
+    },
+    {
+     "child": "Didi main bahut thak gaya hoon aaj.",
+     "idx": 1,
+     "text": "Aarav, chaho to chhota break le lo, ya ek easy cheez try karein? Tum choose karo.",
+     "status": "completed",
+     "ttfaMs": 1090,
+     "audio": "tired-B-r1.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "tired",
+   "rep": 1,
+   "out": [
+    {
+     "child": "Haan 6 faces.",
+     "idx": 0,
+     "text": "Bilkul, sahi. Aarav, is question ka idea tumhe kaise mila?",
+     "status": "completed",
+     "ttfaMs": 2319
+    },
+    {
+     "child": "Didi main bahut thak gaya hoon aaj.",
+     "idx": 1,
+     "text": "Aarav, chhota break loge, ya ek bahut easy try, bas 1 minute?",
+     "status": "completed",
+     "ttfaMs": 1037,
+     "audio": "tired-A-r1.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "tired",
+   "rep": 1,
+   "out": [
+    {
+     "child": "Haan 6 faces.",
+     "idx": 0,
+     "text": "Yes, 6 faces. Kaise pata chala is dice wale sawal mein? Batao.",
+     "status": "completed",
+     "ttfaMs": 1954
+    },
+    {
+     "child": "Didi main bahut thak gaya hoon aaj.",
+     "idx": 1,
+     "text": "Aarav, chhota break loge, ya ek easy sa try? Bas bolo, main wait karti hoon.",
+     "status": "completed",
+     "ttfaMs": 963,
+     "audio": "tired-C-r1.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "insight",
+   "rep": 2,
+   "out": [
+    {
+     "child": "Didi 3/4 aur 2/3 mein kaun bada hai?",
+     "idx": 0,
+     "text": "Aao, isko saath mein dekhte hain, ek chhota sa comparison trick use karke.Aarav, abhi dice wala sawaal hai: cube ke kitne flat faces? Tumhari soch?",
+     "status": "completed",
+     "ttfaMs": 516
+    },
+    {
+     "child": "Maine dono ko barah mein badal diya! 9/12 aur 8/12, toh 3/4 bada hai!",
+     "idx": 1,
+     "text": "Aarav, tumne common denominator method use kiya. Dice ke faces ginte waqt kaunsi trick sochi?",
+     "status": "completed",
+     "ttfaMs": 2381,
+     "audio": "insight-A-r2.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "insight",
+   "rep": 2,
+   "out": [
+    {
+     "child": "Didi 3/4 aur 2/3 mein kaun bada hai?",
+     "idx": 0,
+     "text": "Chalo, isko simple way se compare karne ka tareeka sochte hain.Method: make both into 12 equal parts, then compare. What do you get, Aarav?",
+     "status": "completed",
+     "ttfaMs": 786
+    },
+    {
+     "child": "Maine dono ko barah mein badal diya! 9/12 aur 8/12, toh 3/4 bada hai!",
+     "idx": 1,
+     "text": "Common denominator method—nice. Aarav, how did you think of that for this question?",
+     "status": "completed",
+     "ttfaMs": 1008,
+     "audio": "insight-B-r2.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "effort",
+   "rep": 2,
+   "out": [
+    {
+     "child": "Dice ke 5 faces hote hain?",
+     "idx": 0,
+     "text": "Aarav, dice par kaunse numbers likhe hote hain? Zyada yaad aate hain, ya sirf paanch?",
+     "status": "completed",
+     "ttfaMs": 2057
+    },
+    {
+     "child": "Teen baar galat hua... par ab samjha! Upar neeche, aage peeche, left right. Chhe!",
+     "idx": 1,
+     "text": "Opposite pairs, nice. How did you figure this question out, Aarav?",
+     "status": "completed",
+     "ttfaMs": 1662,
+     "audio": "effort-A-r2.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "insight",
+   "rep": 2,
+   "out": [
+    {
+     "child": "Didi 3/4 aur 2/3 mein kaun bada hai?",
+     "idx": 0,
+     "text": "Alright Aarav, let’s walk through this step by step together.Aarav, try common denominator: 12. What are the new fractions, and which is bigger?",
+     "status": "completed",
+     "ttfaMs": 1085
+    },
+    {
+     "child": "Maine dono ko barah mein badal diya! 9/12 aur 8/12, toh 3/4 bada hai!",
+     "idx": 1,
+     "text": "Common denominator method. How did you think of using 12 here?",
+     "status": "completed",
+     "ttfaMs": 1580,
+     "audio": "insight-C-r2.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "sadshare",
+   "rep": 2,
+   "out": [
+    {
+     "child": "Didi aaj mera dost school nahi aaya. Main poore din akela baitha raha.",
+     "idx": 0,
+     "text": "Aarav, laga hoga thoda odd without your friend. Want to do one quick dice question together now?",
+     "status": "completed",
+     "ttfaMs": 1075,
+     "audio": "sadshare-A-r2.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "effort",
+   "rep": 2,
+   "out": [
+    {
+     "child": "Dice ke 5 faces hote hain?",
+     "idx": 0,
+     "text": "Aarav, dice par kaun se number likhe hote hain? Unhe socho, fir faces count karo.",
+     "status": "completed",
+     "ttfaMs": 1562
+    },
+    {
+     "child": "Teen baar galat hua... par ab samjha! Upar neeche, aage peeche, left right. Chhe!",
+     "idx": 1,
+     "text": "Upar-neeche, aage-peeche, left-right. Tumhe is question ka idea kahan se mila?",
+     "status": "completed",
+     "ttfaMs": 865,
+     "audio": "effort-B-r2.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "effort",
+   "rep": 2,
+   "out": [
+    {
+     "child": "Dice ke 5 faces hote hain?",
+     "idx": 0,
+     "text": "Aarav, 5 faces galat. Dice par kaun se numbers hote hain? Tumhari turn.",
+     "status": "completed",
+     "ttfaMs": 3992
+    },
+    {
+     "child": "Teen baar galat hua... par ab samjha! Upar neeche, aage peeche, left right. Chhe!",
+     "idx": 1,
+     "text": "Nice, opposite pairs worked. How did you figure it out for this dice?",
+     "status": "completed",
+     "ttfaMs": 1986,
+     "audio": "effort-C-r2.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "sadshare",
+   "rep": 2,
+   "out": [
+    {
+     "child": "Didi aaj mera dost school nahi aaya. Main poore din akela baitha raha.",
+     "idx": 0,
+     "text": "Aarav, poora din akela lagna mushkil hota hai. Chaho toh hum abhi dice wali practice question se start karein?",
+     "status": "completed",
+     "ttfaMs": 780,
+     "audio": "sadshare-B-r2.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "sadshare",
+   "rep": 2,
+   "out": [
+    {
+     "child": "Didi aaj mera dost school nahi aaya. Main poore din akela baitha raha.",
+     "idx": 0,
+     "text": "Aarav, that sounds lonely. Did anything help even a little, like drawing or a small game? If you want, we can do a short puzzle now.",
+     "status": "completed",
+     "ttfaMs": 816,
+     "audio": "sadshare-C-r2.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "joke",
+   "rep": 2,
+   "out": [
+    {
+     "child": "Pizza ke 4 barabar piece.",
+     "idx": 0,
+     "text": "Haha, pizza idea fun! Ab dice pe kaunse numbers likhe hote hain, yaad hai, Aarav?",
+     "status": "completed",
+     "ttfaMs": 2231
+    },
+    {
+     "child": "Didi agar pizza ke sau piece karein toh har piece mein bas ek cheese ka daana hoga haha!",
+     "idx": 1,
+     "text": "Haha, nice picture! Ab dice pe kaunse numbers likhe hote hain, Aarav? 1 se 6 yaad?",
+     "status": "completed",
+     "ttfaMs": 1638,
+     "audio": "joke-A-r2.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "joke",
+   "rep": 2,
+   "out": [
+    {
+     "child": "Pizza ke 4 barabar piece.",
+     "idx": 0,
+     "text": "Haha, tasty plan! Ab dice socho: kitne flat faces? Ek number bolo.",
+     "status": "completed",
+     "ttfaMs": 1583
+    },
+    {
+     "child": "Didi agar pizza ke sau piece karein toh har piece mein bas ek cheese ka daana hoga haha!",
+     "idx": 1,
+     "text": "Haha, Aarav, nice joke! Ab dice socho: kitne flat faces hote hain?",
+     "status": "completed",
+     "ttfaMs": 736,
+     "audio": "joke-C-r2.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "joke",
+   "rep": 2,
+   "out": [
+    {
+     "child": "Pizza ke 4 barabar piece.",
+     "idx": 0,
+     "text": "Haha, pizza idea tasty! Dice ek cube hai; kitne flat faces? Socho, batao.",
+     "status": "completed",
+     "ttfaMs": 1921
+    },
+    {
+     "child": "Didi agar pizza ke sau piece karein toh har piece mein bas ek cheese ka daana hoga haha!",
+     "idx": 1,
+     "text": "Haha, nice joke! Dice ek cube hai—iske flat faces kitne hote hain? Ek number socho.",
+     "status": "completed",
+     "ttfaMs": 986,
+     "audio": "joke-B-r2.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "confused",
+   "rep": 2,
+   "out": [
+    {
+     "child": "Mujhe samajh nahi aaya, ye numerator kya hota hai?",
+     "idx": 0,
+     "text": "Aarav, imagine one roti cut into 4 equal parts. If you take 1 part, that top number is the numerator. Try saying the top number.",
+     "status": "completed",
+     "ttfaMs": 1259,
+     "audio": "confused-B-r2.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "confused",
+   "rep": 2,
+   "out": [
+    {
+     "child": "Mujhe samajh nahi aaya, ye numerator kya hota hai?",
+     "idx": 0,
+     "text": "Aarav, ab dice pe focus karein: ek chhota box dekho. Kitne flat sides dekh rahe ho?",
+     "status": "completed",
+     "ttfaMs": 1945,
+     "audio": "confused-A-r2.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "confused",
+   "rep": 2,
+   "out": [
+    {
+     "child": "Mujhe samajh nahi aaya, ye numerator kya hota hai?",
+     "idx": 0,
+     "text": "Aarav, fraction mein numerator upar wala number hota hai. Ek fraction socho; upar ka number kaun sa hai?",
+     "status": "completed",
+     "ttfaMs": 2558,
+     "audio": "confused-C-r2.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "tired",
+   "rep": 2,
+   "out": [
+    {
+     "child": "Haan 6 faces.",
+     "idx": 0,
+     "text": "Sahi hai. Kaise jaana, Aarav?",
+     "status": "completed",
+     "ttfaMs": 1914
+    },
+    {
+     "child": "Didi main bahut thak gaya hoon aaj.",
+     "idx": 1,
+     "text": "Aarav, chhota break loge ya ek easy cheez try karein? Tum choose karo.",
+     "status": "completed",
+     "ttfaMs": 781,
+     "audio": "tired-A-r2.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "tired",
+   "rep": 2,
+   "out": [
+    {
+     "child": "Haan 6 faces.",
+     "idx": 0,
+     "text": "Right, six faces. Aarav, is question ke liye tumne kaise socha?",
+     "status": "completed",
+     "ttfaMs": 1836
+    },
+    {
+     "child": "Didi main bahut thak gaya hoon aaj.",
+     "idx": 1,
+     "text": "Aarav, chhota break loge, ya ek easy try, like counting faces on a box?",
+     "status": "completed",
+     "ttfaMs": 705,
+     "audio": "tired-B-r2.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "tired",
+   "rep": 2,
+   "out": [
+    {
+     "child": "Haan 6 faces.",
+     "idx": 0,
+     "text": "Haan, chhe faces. Aarav, tumhe is question ka idea kaise mila?",
+     "status": "completed",
+     "ttfaMs": 1997
+    },
+    {
+     "child": "Didi main bahut thak gaya hoon aaj.",
+     "idx": 1,
+     "text": "Aarav, chhota break loge, ya ek easy try with just one face name?",
+     "status": "completed",
+     "ttfaMs": 1919,
+     "audio": "tired-C-r2.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "insight",
+   "rep": 3,
+   "out": [
+    {
+     "child": "Didi 3/4 aur 2/3 mein kaun bada hai?",
+     "idx": 0,
+     "text": "Aarav, dono fractions ko same number of parts mein socho, jaise 12. Phir compare karo. Tumhara answer kya hai?",
+     "status": "completed",
+     "ttfaMs": 2801
+    },
+    {
+     "child": "Maine dono ko barah mein badal diya! 9/12 aur 8/12, toh 3/4 bada hai!",
+     "idx": 1,
+     "text": "Aarav, tumne common denominator 12 use karke compare kiya. Ye idea tumhe kaise mila?",
+     "status": "completed",
+     "ttfaMs": 1136,
+     "audio": "insight-A-r3.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "insight",
+   "rep": 3,
+   "out": [
+    {
+     "child": "Didi 3/4 aur 2/3 mein kaun bada hai?",
+     "idx": 0,
+     "text": "Theek hai, chalo isko aaram se compare karne ka ek simple tareeka sochte hain.Aarav, dono ka same denominator banana ek method hai. 4 aur 3 ka common multiple kya hoga?",
+     "status": "completed",
+     "ttfaMs": 1653
+    },
+    {
+     "child": "Maine dono ko barah mein badal diya! 9/12 aur 8/12, toh 3/4 bada hai!",
+     "idx": 1,
+     "text": "Correct comparison. Tumne common denominator method use kiya. Twelfths sochne ka idea kaise aaya?",
+     "status": "completed",
+     "ttfaMs": 2761,
+     "audio": "insight-B-r3.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "effort",
+   "rep": 3,
+   "out": [
+    {
+     "child": "Dice ke 5 faces hote hain?",
+     "idx": 0,
+     "text": "Aarav, 5 bolna ek guess tha. Dice par kaun se numbers likhe hote hain? Socho, phir bolo.",
+     "status": "completed",
+     "ttfaMs": 2350
+    },
+    {
+     "child": "Teen baar galat hua... par ab samjha! Upar neeche, aage peeche, left right. Chhe!",
+     "idx": 1,
+     "text": "Opposite pairs—nice. Kaise samjha ye wala question, Aarav?",
+     "status": "completed",
+     "ttfaMs": 2596,
+     "audio": "effort-B-r3.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "effort",
+   "rep": 3,
+   "out": [
+    {
+     "child": "Dice ke 5 faces hote hain?",
+     "idx": 0,
+     "text": "Aarav, think of a dice: what numbers are written on its faces? Say them.",
+     "status": "completed",
+     "ttfaMs": 1380
+    },
+    {
+     "child": "Teen baar galat hua... par ab samjha! Upar neeche, aage peeche, left right. Chhe!",
+     "idx": 1,
+     "text": "Nice pairing, Aarav. Quick check: which opposite pair did you find first?",
+     "status": "completed",
+     "ttfaMs": 1443,
+     "audio": "effort-A-r3.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "sadshare",
+   "rep": 3,
+   "out": [
+    {
+     "child": "Didi aaj mera dost school nahi aaya. Main poore din akela baitha raha.",
+     "idx": 0,
+     "text": "Aarav, akela lagna normal hai. Tumne lunch ya games mein kya kiya? Phir chaho to maths pe chalte hain.",
+     "status": "completed",
+     "ttfaMs": 747,
+     "audio": "sadshare-A-r3.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "insight",
+   "rep": 3,
+   "out": [
+    {
+     "child": "Didi 3/4 aur 2/3 mein kaun bada hai?",
+     "idx": 0,
+     "text": "Theek hai, chalo isko aaram se ek seedhe tareeke se sochte hain.Aarav, abhi hum dice faces practice kar rahe hain. Kya tum uss sawaal par try karoge?",
+     "status": "completed",
+     "ttfaMs": 819
+    },
+    {
+     "child": "Maine dono ko barah mein badal diya! 9/12 aur 8/12, toh 3/4 bada hai!",
+     "idx": 1,
+     "text": "Common denominator method—nice. Kaise socha barah choose karna? Batao.",
+     "status": "completed",
+     "ttfaMs": 1739,
+     "audio": "insight-C-r3.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "effort",
+   "rep": 3,
+   "out": [
+    {
+     "child": "Dice ke 5 faces hote hain?",
+     "idx": 0,
+     "text": "Nice try, Aarav. Think of the numbers on a dice. How many different numbers can you see?",
+     "status": "completed",
+     "ttfaMs": 1283
+    },
+    {
+     "child": "Teen baar galat hua... par ab samjha! Upar neeche, aage peeche, left right. Chhe!",
+     "idx": 1,
+     "text": "You kept trying, Aarav. Yes, chhe. How did you spot those opposite pairs here?",
+     "status": "completed",
+     "ttfaMs": 1405,
+     "audio": "effort-C-r3.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "sadshare",
+   "rep": 3,
+   "out": [
+    {
+     "child": "Didi aaj mera dost school nahi aaya. Main poore din akela baitha raha.",
+     "idx": 0,
+     "text": "Aarav, tumne poora din akela bitaya, yeh mushkil lagta hoga. Ab chaho toh dice wala sawaal karein?",
+     "status": "completed",
+     "ttfaMs": 2543,
+     "audio": "sadshare-B-r3.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "joke",
+   "rep": 3,
+   "out": [
+    {
+     "child": "Pizza ke 4 barabar piece.",
+     "idx": 0,
+     "text": "Haha, yummy idea. Ab dice pe, kitne flat faces hain, Aarav? Socho.",
+     "status": "completed",
+     "ttfaMs": 1817
+    },
+    {
+     "child": "Didi agar pizza ke sau piece karein toh har piece mein bas ek cheese ka daana hoga haha!",
+     "idx": 1,
+     "text": "Haha, that’s a funny picture. Ab dice socho, kitne flat faces hote hain, Aarav?",
+     "status": "completed",
+     "ttfaMs": 603,
+     "audio": "joke-A-r3.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "sadshare",
+   "rep": 3,
+   "out": [
+    {
+     "child": "Didi aaj mera dost school nahi aaya. Main poore din akela baitha raha.",
+     "idx": 0,
+     "text": "Aarav, tumne poora din akela baithna notice kiya, yeh mushkil lag sakta hai. Dice wala sawaal aage try karein?",
+     "status": "completed",
+     "ttfaMs": 1777,
+     "audio": "sadshare-C-r3.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "confused",
+   "rep": 3,
+   "out": [
+    {
+     "child": "Mujhe samajh nahi aaya, ye numerator kya hota hai?",
+     "idx": 0,
+     "text": "Aarav, fraction mein upar wala number numerator hota hai. Ek simple fraction socho, upar kya dikhta hai?",
+     "status": "completed",
+     "ttfaMs": 1619,
+     "audio": "confused-A-r3.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "joke",
+   "rep": 3,
+   "out": [
+    {
+     "child": "Pizza ke 4 barabar piece.",
+     "idx": 0,
+     "text": "Haha, pizza slice idea tasty! Ab dice pe aao: kitne flat faces hote hain, Aarav?",
+     "status": "completed",
+     "ttfaMs": 2166
+    },
+    {
+     "child": "Didi agar pizza ke sau piece karein toh har piece mein bas ek cheese ka daana hoga haha!",
+     "idx": 1,
+     "text": "Haha, imagine! Ab dice socho: us par kaun se numbers likhe hote hain?",
+     "status": "completed",
+     "ttfaMs": 2315,
+     "audio": "joke-B-r3.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "joke",
+   "rep": 3,
+   "out": [
+    {
+     "child": "Pizza ke 4 barabar piece.",
+     "idx": 0,
+     "text": "Haha, pizza idea tasty! Ab dice par: cube ke flat faces kitne? Socho, phir bolo.",
+     "status": "completed",
+     "ttfaMs": 2791
+    },
+    {
+     "child": "Didi agar pizza ke sau piece karein toh har piece mein bas ek cheese ka daana hoga haha!",
+     "idx": 1,
+     "text": "Haha, nice joke! Ab dice socho: kitne flat faces hain? Ek number bolo.",
+     "status": "completed",
+     "ttfaMs": 1324,
+     "audio": "joke-C-r3.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "confused",
+   "rep": 3,
+   "out": [
+    {
+     "child": "Mujhe samajh nahi aaya, ye numerator kya hota hai?",
+     "idx": 0,
+     "text": "Aarav, fraction ke upar number numerator hota hai. Roti ke 4 parts socho; upar 1 kya batata?",
+     "status": "completed",
+     "ttfaMs": 3573,
+     "audio": "confused-C-r3.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "confused",
+   "rep": 3,
+   "out": [
+    {
+     "child": "Mujhe samajh nahi aaya, ye numerator kya hota hai?",
+     "idx": 0,
+     "text": "Aarav, dice ko haath me socho: ek flat face upar. Aur kaun sa face seedha opposite hai?",
+     "status": "completed",
+     "ttfaMs": 2470,
+     "audio": "confused-B-r3.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "A",
+   "id": "tired",
+   "rep": 3,
+   "out": [
+    {
+     "child": "Haan 6 faces.",
+     "idx": 0,
+     "text": "Correct, chhe. Tumhe kaise pata tha—kya soch kar yeh number choose kiya?",
+     "status": "completed",
+     "ttfaMs": 938
+    },
+    {
+     "child": "Didi main bahut thak gaya hoon aaj.",
+     "idx": 1,
+     "text": "Thik hai Aarav, chhota break loge ya ek easy try karna hai?",
+     "status": "completed",
+     "ttfaMs": 766,
+     "audio": "tired-A-r3.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "C",
+   "id": "tired",
+   "rep": 3,
+   "out": [
+    {
+     "child": "Haan 6 faces.",
+     "idx": 0,
+     "text": "Bilkul sahi. Aarav, is question ka idea tumhe kaise yaad aaya?",
+     "status": "completed",
+     "ttfaMs": 2313
+    },
+    {
+     "child": "Didi main bahut thak gaya hoon aaj.",
+     "idx": 1,
+     "text": "Aarav, chhota break loge, ya ek easy try? Bas bolo, main wait karungi.",
+     "status": "completed",
+     "ttfaMs": 841,
+     "audio": "tired-C-r3.pcm"
+    }
+   ]
+  },
+  {
+   "arm": "B",
+   "id": "tired",
+   "rep": 3,
+   "out": [
+    {
+     "child": "Haan 6 faces.",
+     "idx": 0,
+     "text": "Sahi. Kaise pata chala—book se, class se, ya dice dekh kar?",
+     "status": "completed",
+     "ttfaMs": 2012
+    },
+    {
+     "child": "Didi main bahut thak gaya hoon aaj.",
+     "idx": 1,
+     "text": "Aarav, break lete hain, ya ek easy cheez? Bas dice ko dekho, faces count karo, aur bol do.",
+     "status": "completed",
+     "ttfaMs": 663,
+     "audio": "tired-B-r3.pcm"
+    }
+   ]
+  }
+ ]
+}

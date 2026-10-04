@@ -7,7 +7,7 @@
 // by another workstream; it imports the kt step functions read-only, so the K fold is byte-for-byte untouched.
 import { outcomeName } from "../learner/kt/outcomes.js";
 import { dropReason, gatedEmission, logit, sigmoid, temper } from "../learner/kt/bktr.js";
-import { FACET, W_SRC, facetsOfClass } from "./params.js";
+import { FACET, facetsOfClass } from "./params.js";
 
 /** Game and Forge-module evidence can take a concept to `fragile` at most (E4). */
 export const GAME_VIA = Object.freeze(new Set(["game", "module"]));
@@ -30,8 +30,9 @@ const isMissed = (cls, o) => outcomeName(cls, o) === "missed";
  * @param {any} ev
  */
 export function facetWeight(ev) {
-  const via = ev.via ?? "dialogue";
-  let x = temper(ev) * (W_SRC[via] ?? 1);
+  // temper() already carries the source weight (bktr.js SOURCE_WEIGHT = W_SRC: game ×0.5, module ×0.75); multiplying
+  // by W_SRC again here weighed a game round ×0.25 and a module ×0.56 on U/T (W1-C #6).
+  let x = temper(ev);
   const pos = isPositiveOutcome(ev.cls, ev.outcome);
   if (ev.coincident && pos) return 0;                                   // E3: a lucky-correct proves nothing
   if (isPartial(ev.cls, ev.outcome)) return 0;                          // E5: partial never scores on U/T

@@ -200,3 +200,91 @@ carry the verbatim MIT text and "Teacher character derived from the Microsoft Ro
 audio is the bake-off's existing Azure `gpt-4o-mini-tts` sentence (`docs/design/teacher/renders/audio/teal.mp3`),
 re-used unchanged. Build-time tools: pinned `bpy` 4.2 (Blender FBX importer, GPL; output is ours), gltf-transform
 (MIT), meshoptimizer (MIT), KTX-Software 4.4.0 (Apache-2.0).
+
+## Polished-face candidate `c3` (2026-10-04; outputs under `public/assets/teacher-candidates/c3/**` only)
+
+Slot 3 of `docs/design/teacher/polished/SCOUT.md` is **Avaturn** (a photo-to-avatar AI web service). It is not a
+purchase, but it was not used. The binding Azure-only directive (CLAUDE.md, 2026-10-02) says "no third-party AI APIs
+... builds may not call them", and the scout itself leaves the one-off authoring call to the owner. Using it would also
+need an Avaturn account accepted under its ToU, and commercial use "only after notifying us at hello@avaturn.me", which
+is an owner action. The ToU also keeps the IP with Avaturn. Nothing was uploaded to Avaturn and no account was made.
+Per the brief, c3 builds the best free alternative on the scout's list that no other slot uses. c1 and c2 both took
+Microsoft Rocketbox. Riya is $10 on Superhive, and its free Fab listing returns 403 here. Canino3d and the Sketchfab
+"saree" upload need a Sketchfab login to download, and the saree upload's rights chain is doubtful. CharacterZ has no
+published licence. So c3 uses the scout's **VRoid / VRM row (row 9)**, from the one VRoid-made adult woman whose
+licence is published with the file: the VRM consortium's sample **`VRM1_Constraint_Twist_Sample`, (c) 2022 pixiv Inc.**
+It is a stylised (anime-adjacent) character. The scout scored this row's register as weak for Indian parents, and that
+risk is carried into the verdict. Not shipped to `public/assets/teacher/**`.
+
+| input | used for | source | licence / terms | evidence |
+|---|---|---|---|---|
+| `VRM1_Constraint_Twist_Sample.vrm` (10,776,032 B, sha256 `12c2b97e95e700783a6a550dc0eee2d7880aeedccef9ae67bc4c5a2f0f2631a2`) | every vertex, UV and skin weight of the c3 face, eyes, hair and top. Its 57 `Fcl_*` morphs are the raw material of the synthesised ARKit 52 / 15 visemes / 3 tongue keys. Its 13 embedded PNG textures (face, body, mouth, eye white, iris, highlight, eyeline, brow, hair, scalp, top) are recoloured into four atlases | github.com/vrm-c/vrm-specification @ `94e82dd346fa6cf0337c4421728640e5252dd38e` (2026-10-02), `samples/VRM1_Constraint_Twist_Sample/vrm/` | **VRM Public License 1.0** (https://vrm.dev/en/licenses/1.0/). The file's own licence settings (`VRMC_vrm.meta`): `commercialUsage: "corporation"`, `modification: "allowModificationRedistribution"`, `allowRedistribution: true`, `avatarPermission: "everyone"`, `creditNotation: "unnecessary"`, `allowAntisocialOrHateUsage: false` (the three other `allow*` flags are true) | sample `README.md`: "License Information: [VRM Public License 1.0](https://vrm.dev/licenses/1.0/) (c) 2022 pixiv Inc."; meta copied verbatim to `art/character/candidates/c3/third_party/VRM-META.json`; licence text extracted to `third_party/VRM-PUBLIC-LICENSE-1.0.{en,ja}.txt` (page HTML sha256: en `22e38727184a5df1a362d158a989d4d9c732d2f600a998155ea0f52035776a0e`, ja `3b7172907033476ecf66ab42d2bca93a641bf578708c4ce1569a4b025c5a0502`, fetched 2026-10-04) |
+| our armature, the arm pose and aim-bone solve, the hidden-skin removal, the head and eye-region scale, the synthesised keys, the recolour, the lip tint, the kurta neckline band, the TaxilaToon shaders | | written by us (`scripts/character/candidates/c3/**`) | ours | — |
+| Monk Skin Tone scale MST 6 hex `#a07e56` | albedo anchor and G9 target | skintone.google | CC BY 4.0 (attribution as above) | — |
+
+The exact terms that matter for a paid children's web app (VRM PL 1.0, quoted from the English text):
+- **Grant, §2(a)(1):** "a worldwide, royalty-free, non-sublicensable, non-exclusive, irrevocable license to make Model
+  Use of the Licensed Work Data, and to perform any of the following acts that the Licensor specifies in the License
+  Settings": redistribute it, make **Avatar Use** (operating the avatar as a persona that speaks and acts, which is
+  what a talking teacher is), create Adapted Work Data, and redistribute Adapted Work Data. The settings above grant
+  all four.
+- **Commercial, §2(a)(2)-(3):** the non-commercial-only and personal-only limits apply only if the settings say so. This
+  file says `commercialUsage: "corporation"`, so a company may use it commercially.
+- **Prohibited expressions, §3(d):** only `allowAntisocialOrHateUsage: false` applies, which forbids anti-social or hate
+  expression in renders. The teacher product does neither.
+- **Credit, §3(a):** `creditNotation: "unnecessary"`. We still keep the copyright line in the notices.
+- **Adapted works, §3(b):** when we redistribute our modified model, our licence must not stop this licence applying to
+  the recipient, must be the same or more restrictive, and its terms go into the adapted data's licence settings. The
+  shipped GLBs carry the original licence settings, the copyright line and "adapted by Taxila" in
+  `asset.extras.taxila.vrmLicense` (finish_c3.mjs).
+- **No downstream restrictions, §2(a)(5)(C):** we may not apply "Effective Technological Measures" to the licensed data
+  if that restricts recipients' licensed rights. A plain GLB in the browser complies. Do not wrap this one in DRM.
+- **Format:** the licence defines Licensed and Adapted Work Data as VRM files. Our GLB is a glTF derived from a VRM
+  and is not itself VRM. §2(a)(7) allows "technical modifications necessary" in "all media and formats". [U] Counsel
+  should confirm that the format change keeps us inside the grant rather than outside it. Read literally, the grant
+  only gets broader for us. No warranty (§4).
+- No territory, revenue, platform, field-of-use or "protected format" clause, so web and Android WebView delivery is
+  fine.
+
+If c3 ships, the third-party notices carry: "Teacher character adapted from VRM1_Constraint_Twist_Sample, (c) 2022
+pixiv Inc., VRM Public License 1.0 (https://vrm.dev/en/licenses/1.0/); modified by Taxila (recoloured, cut to a bust,
+re-rigged, facial shapes synthesised)." Not used: VRoid Studio (Windows/macOS only, and its preset terms were not
+needed), VRoid Hub models (login), three-vrm (the runtime stays ours), the sample's spring bones and MToon parameters
+(our shaders replace them). The lip-sync clip's audio is the bake-off's existing Azure `gpt-4o-mini-tts` sentence
+(`docs/design/teacher/renders/audio/teal.mp3`, first 6.0 s), re-used unchanged. Build-time tools: pinned `bpy` 4.2
+(Blender glTF importer, GPL; output is ours), scipy, gltf-transform (MIT), meshoptimizer (MIT), KTX-Software 4.4.0
+(Apache-2.0).
+
+## Polished-face candidate `c4` (2026-10-04; outputs under `public/assets/teacher-candidates/c4/**` only)
+
+Slot 4 of `docs/design/teacher/polished/SCOUT.md` is **MetaPerson Creator** (Avatar SDK / itSeez3D). It was not built:
+exporting even the free first avatar needs a MetaPerson account sign-up (owner only; not created on the owner's behalf),
+an upload of the input portrait to Avatar SDK's cloud (the Azure-only call is the owner's), written confirmation that an
+exported avatar stays licensed after the EULA's revocable "Term" (https://avatarsdk.com/eula/), and every avatar after
+the first costs in-app credits at an unpublished price (https://avatarsdk.com/pricing-cloud/, checked 2026-10-04: "your
+first avatar is free, and each additional one costs in-app credits"). The trio (woman, man, older woman) is therefore a
+purchase. Per the brief, c4 builds the best free alternative on the scout's list that no other slot uses as a
+character. Checked and unreachable or unusable from here: Riya (Fab "free" listing needs a Fab login; Superhive $10),
+Canino3d (Sketchfab CC-BY, but the download API answers 401 without an account token), CharacterZ (no published
+licence), the "Indian Woman in Saree" upload (doubtful rights chain, no ARKit), VRoid (taken by slot c3, anime). So c4 is
+**Microsoft Rocketbox Female_Adult_07** (dark hair in a low bun, tailored jacket): the same MIT library as c1
+(Female_Adult_11) and c2 (Business_Female_01), a different character. Not shipped to `public/assets/teacher/**`.
+Not used: `three-ws/avatars` on Hugging Face (tagged MIT, but its `michelle.glb` looks like Adobe's Mixamo character, so
+the MIT tag cannot be trusted; not on the scout's list).
+
+| input | used for | source | licence / terms | evidence |
+|---|---|---|---|---|
+| `Female_Adult_07_facial.fbx` (2,136,864 B, sha256 `88b359300657ea0efdbb34de7ab804db8b43c58b2dc143c62ed2615e75936fbc`) | every vertex, UV and skin weight of the c4 face, eyes, lash cards, hair (shell + bun cards) and garment; the source's authored ARKit 52 (`AK_01..52`) and 15 visemes (`AA_VI_00..14`), copied as authored deltas (expression keys gain-scaled as in c1); `HB_12_TongueUp` / `HB_09_TongueIn` seed `tongueTipUp` / `tongueCurl` | github.com/microsoft/Microsoft-Rocketbox @ `0943055db6ec570bcef9f2c8b41c9e5467c808f9`, `Assets/Avatars/Adults/Female_Adult_07/Export/` | **MIT** ("Copyright (c) 2020 Microsoft") | repo `LICENSE.md` sha256 `17474e386e0b9e1a700cc3d06b2b0882a2c376d9c6b49c7f8274409b8f8d2352`, verbatim copy at `art/character/candidates/c4/third_party/ROCKETBOX-LICENSE.txt`; https://github.com/microsoft/Microsoft-Rocketbox/blob/master/LICENSE.md |
+| `f007_head_color.tga` (`65e399a091d27b2e66f202ba3628c270f513f80a1ea5776771f5e9239ddeed15`), `f007_head_normal.tga` (`0e9ca730fe44b83bf5024673d8973ef5c0a04cc6817af42a27b4471c5bc3d5e5`), `f007_head_specular.tga` (`d3f1ac4e0f26218e9a07eea3345c5b8b2d24b24a1daa06b9fcb45009ba0d9dd0`), `f007_body_color.tga` (`9a2e740bce46ff2e00c8a24074ee28a1d63198024d03718d5fde6cbfe7ef0fd3`), `f007_opacity_color.tga` (`c7c59dfb5f79160ac7cb88091b7c3e9148f9868008915f35ebfe29dc34e917c1`) | skin albedo (one linear gain to MST 6, G9-solved, a\* +2, freckle/blotch band softened to 45% in the face), painted hair and bun shell re-toned near-black brown in L\*a\*b\*, red ear studs to gold, lips trimmed to rose-brown, iris grey-green to brown; normal; packed (roughness from specular, cavity from normal slope); jacket re-toned to aubergine-brown and the crimson top to ivory; hair/lash alpha cards re-toned | same repo and commit, `.../Female_Adult_07/Textures/` | **MIT** | as above |
+| `Female_Adult_07.fbx` (`faaa677a…`), `Female_Adult_07.png` preview (`532a2cc8…`), `f007_body_normal.tga` (`21a439db…`), `f007_body_specular.tga` (`694409439…`) | not used (downloaded) | same | MIT | — |
+| our armature, eye UV remap, `_region` attribute (with the neighbour-majority teeth/gum fix), the bust cut, every re-tone, tongue extras | | written by us (`scripts/character/candidates/c4/**`, forked from `c1`) | ours | — |
+| Monk Skin Tone scale MST 6 hex `#a07e56` | G9 target | skintone.google | CC BY 4.0 | — |
+
+Terms that matter for a paid children's web app: identical to c1 and c2. MIT has no field-of-use, revenue, platform or
+protected-format clause, so a plain GLB in a browser or Android WebView is permitted, modification and sale included.
+The only obligation is to carry the copyright notice and permission text; if c4 ships, the app's third-party notices
+carry the verbatim MIT text and "Teacher character derived from the Microsoft Rocketbox Avatar Library
+(Female_Adult_07), MIT License; modified by Taxila." No warranty. The lip-sync clip's audio is the bake-off's existing
+Azure `gpt-4o-mini-tts` sentence (`docs/design/teacher/renders/audio/teal.mp3`, first 6.0 s, 0.25 s fade), re-used
+unchanged. Build-time tools: pinned `bpy` 4.2 (Blender FBX importer, GPL; output is ours), gltf-transform (MIT),
+meshoptimizer (MIT), KTX-Software 4.4.0 (Apache-2.0), numpy / pillow / scipy.

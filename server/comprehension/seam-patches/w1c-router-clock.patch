@@ -1,0 +1,33 @@
+diff -ru a/server/index.js b/server/index.js
+--- a/server/index.js	2026-10-04 06:52:02.685332854 +0000
++++ b/server/index.js	2026-10-04 06:52:02.705977627 +0000
+@@ -11,6 +11,7 @@
+ import { routes as tutor } from "./routes/tutor.js";
+ import { routes as forge } from "./routes/forge.js";
+ import { routes as child } from "./routes/child.js";
++import { routes as testClock } from "./comprehension/testclock.js";
+ 
+-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child });
++register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock });
+ export { handle, register };
+diff -ru a/server/router.js b/server/router.js
+--- a/server/router.js	2026-10-04 06:52:02.685276316 +0000
++++ b/server/router.js	2026-10-04 06:52:02.705871847 +0000
+@@ -1,6 +1,8 @@
+ // One function, one router: Vercel Hobby caps functions per deployment, and one cold start beats twelve.
+ import { HttpError, readJson, send } from "./http.js";
+ import * as account from "./routes/account.js";
++// W1-C seam: each request runs on its session's clock (a @taxila.test account may hold an offset; everyone else: real time).
++import { runRequestClock } from "./comprehension/testclock.js";
+ 
+ const ROUTES = {
+   "POST /api/auth/signup": account.signup,
+@@ -32,7 +34,7 @@
+   try {
+     if (!fn) return send(res, 404, { error: `no route ${key}` });
+     const body = ["POST", "PATCH", "PUT", "DELETE"].includes(req.method) ? await readJson(req) : {};
+-    await fn(req, res, body);
++    await runRequestClock(req, () => fn(req, res, body));
+   } catch (e) {
+     if (e instanceof HttpError) return send(res, e.status, { error: e.message, ...(e.extra || {}) });
+     console.error("route error", key, e);

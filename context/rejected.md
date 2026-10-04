@@ -808,3 +808,62 @@ Full evidence and sources: docs/research/world-best/ (merged from inbox/world-be
 
 ## rj-head-pose-for-brow-emotions
 **Tried:** per-look head overrides instead of face changes: slate concerned chin level (A 0/8) and chin down 12 deg (2/8); plum curious chin down 2 deg (1-3/8) and chin up 8 deg (1/8, read thinking). **Broke:** none beat the shared head pose; the failures are in the brows, not the head. (2026-10-04)
+
+
+<!-- merged from inbox/human-voice.json -->
+## hv-instructed-nonverbals (2026-10-04)
+**Tried:** asking gpt-4o-mini-tts (per-clause instructions 'begin with a short soft chuckle / small audible breath') and gpt-realtime-2.1 (response delivery note) for non-verbal sounds. **Broke:** 0 audible laughs or breaths in 18 judged clips (10 + 8); pairwise vs plain 0/5 on both. Instead: non-verbals only via same-voice clips (cascade) or not at all (lane A).
+
+## hv-paralinguistic-tags-en-IN-dragonhd (2026-10-04)
+**Tried:** DragonHD paralinguistic tags ([laughter], [breathing], [sighing]) on en-IN Diya/Arjun, which Learn documents as available on all voices and languages. **Broke:** spoken as words 12/12 ('Laughter', 'Breathing', 'लाफ्टर', 'ब्रीदिंग', 'साइन'). Instead: planned <break> gaps filled by the persona's own bank clips; tags are lint-forbidden for dhd:en-IN.
+
+## hv-llm-planner-serial (2026-10-04)
+**Tried:** an LLM delivery planner between the guarded reply and TTS. **Broke:** p50 904-2,391 ms in every form (n=10/arm) on a 2.97 s turn. Instead: code moment planner live; LLM annotator for cached lines.
+
+## hv-full-text-planner (2026-10-04)
+**Tried:** a planner that returns the line re-written as segments. **Broke:** grok-4-1-fast-nr dropped words 2/10 and added 'हा हा' 1/10 (caught by the validator); output ~300 tokens set the latency floor. Instead: the planner annotates code-split clause indices and never writes words.
+
+
+<!-- merged from inbox/live-studio.json -->
+## kimi-deepseek-pro-not-live
+Tried as live builders in the 2026-10-04 bench. Kimi: TTFT 119-187 s p50, 239 s p50 time-to-playable (max 631 s), one output hit the 16k cap. DeepSeek-V4-Pro: TTFT 239 s p50 on fractions with 300 s timeouts, 0/6 on photosynthesis and charts. Re-bench after a capacity change (owner action O-3).
+
+## codex-medium-for-live
+Same bench: codex medium 1/3 chart, 2/3 fraction, slower at every kind than codex low.
+
+
+<!-- merged from inbox/relational-os.json -->
+## core-memory-line-reads-brief
+Tried: CORE line 'you know their past only from the notes in CHILD'. Broke: 'notes say...' spoken 4/4 listed replies, one recall loss, no fabrication gain (0/8 both arms). Instead: callback ids + claim check + truthful CHILD memory row.
+
+## realtime-affect-tag-row
+Tried: telegraphic affect tag in the MOVE section to shape gpt-realtime-2.1 prosody. Broke: no measurable F0/RMS/rate change in the intended direction (n=3-4/cell); small English drift. Instead: move shape + face; flag kept for expressive TTS lanes.
+
+
+<!-- merged from inbox/stylised-teacher.json -->
+## rj-live2d-for-teacher
+Licence read 2026-10-04 at live2d.com/en/sdk/license and its running-royalty plan page [V]: no contract under JPY 10M annual sales; above it a Publication Licence at least one month before release; the listed plan is JPY 50k initial + 20k/month + 5% (middle scale, < JPY 100M) or JPY 300k + 100k/month + 5% (large); 'Expandable Applications such as avatar systems' need a separate contract regardless of size. Plus closed-source Core and two specialist artists per character. Inochi2D (BSD-2) is the clean alternative but its WASM path needs a patched toolchain and 0.9 is unreleased. **Reverse if** the owner chooses anime-2D and Live2D quotes a fixed fee that fits.
+
+## rj-agent-authored-stylised-face
+Evidence: `docs/design/teacher/bakeoff/VERDICT.md` (stylised-premium 1.5/5 wow, uncanny risk 2/5, 'a doll, not a cartoon'), owner rejections of GNM and Rocketbox (2026-10-04), face3d-nc-deps-rejected for TRELLIS GLB export. What the agent can do well: concept art, pipeline, keys transfer and validation gates, shaders, behaviour, device benches.
+
+
+<!-- merged from inbox/teacher-brain.json -->
+## llm-beat-proposer-live
+Tried (probe, 2026-10-04): three Foundry models proposing the next beat and Studio build from BrainState JSON with the rules as notes. Broke: no admissibility gain over the code policy; 0.4-1.4 s p50 per call; 4-12/12 scenarios reproducible across 3 reps; DeepSeek-V4-Flash built with zero live budget and during strain (4/72), grok once (1/72). Kept: code policy; models only as offline proposers in brain-sim.
+
+## alpha-style-surveillance-and-tracks
+Observed (literature/press, 2026-10-04): Alpha School's vision 'anti-pattern' model, 'waste meter', facial-expression tracking, offshore camera watchers, lockouts and Rocket Ship / Pirate Ship tracks, reported by former students as making them feel like 'a lab rat' (Cognitive Resonance, [S]); XP-driven motivation (alpha.school [V]). Breaks Microsoft Code of Conduct emotion inference (ct-no-voice-emotion-inference) and the no-gamification rules. Engagement for Taxila comes from task evidence and the child's words only.
+
+
+<!-- merged from inbox/w1-a.json -->
+## text-lane-tts-whole-mp3
+Tried: the text lane spoke each reply by POSTing /api/tts for the whole mp3 after the text arrived. Broke: first audio 1.6-2.1 s after the turn response (smooth G4), so the child read the reply before she started speaking. Kept only as the stream's fallback and for Hear.
+
+
+<!-- merged from inbox/w1-b.json -->
+## w1b-rj-g1-itemid
+Tried: making a G1 fill count by setting `s.module.itemId` to the item. What broke: `lesson.js` graded any module whose `itemId` was the active item by the frame's OWN `correct`, so a frame could have graded itself, against `forge-g1-grade-event`. Instead, G1 mounts carry `g1: {itemId, grade}` and `moduleAnswerOf` grades them by `gradeEvent`.
+
+## w1b-rj-fresh-forced-id
+Tried: forcing an unknown engine in the Playwright tray test by mounting `nope@1` under a new moduleId. What broke: the frame's error named a module the Director never held, so the server kept its own module. The "no screen reference" check then measured nothing. Now the test reuses the moduleId the server holds.

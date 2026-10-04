@@ -117,6 +117,9 @@ function applyOne(L, ev, ctx, own) {
   if (L.seen[ev.id] !== undefined) return;
   checkEvent(ev);
   if (ev.seq != null && ev.seq <= L.lastSeq) throw new Error(`evidence ${ev.id}: seq ${ev.seq} ≤ ledger seq ${L.lastSeq} (re-fold from the log)`);
+  // A late verdict's correction (comprehension/later.js, via 'late'): the K step already ran on the fallback event it
+  // corrects, so the ledger only records it as seen (no K, θ, session or budget change); the facets apply it (fuse.js).
+  if (ev.via === "late") { L.seen[ev.id] = ev.seq ?? null; if (ev.seq != null) L.lastSeq = ev.seq; return; }
   if (!L.session || L.session.sessionId !== ev.sessionId) L.session = newSession(ev);
   const sess = L.session;
   const markSeen = () => { L.seen[ev.id] = ev.seq ?? null; if (ev.seq != null) L.lastSeq = ev.seq; };

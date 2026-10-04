@@ -27,8 +27,16 @@ const TOPIC_MAP = JSON.parse(readFileSync(new URL("../../shared/engine-topic-map
 
 // The turn path's warm: requestFill at the turn budget with the lesson's own pinned context as the learner (no DB
 // read; interests are the consented lesson interests). Its result lands in the lesson table for the next posing.
-setFillWarmer(({ lessonId, childId, kit, item, move, learner }) =>
-  requestFill({ lessonId, childId: childId ?? undefined, kit, item: findKitItem(kit, item.id) ?? item, move, learner, needByMs: TURN_NEED_BY_MS }));
+// Registered on the first lesson start this process serves (prefetchLessonFills), NOT at import: every test that
+// imports routes/lesson.js imports this file, and `npm test` runs all files in one process, so an import-time warmer
+// made pure Director tests fire real Forge fills (model calls, forge_gap writes) whenever step() posed an item.
+let warmerSet = false;
+function ensureWarmer() {
+  if (warmerSet) return;
+  warmerSet = true;
+  setFillWarmer(({ lessonId, childId, kit, item, move, learner }) =>
+    requestFill({ lessonId, childId: childId ?? undefined, kit, item: findKitItem(kit, item.id) ?? item, move, learner, needByMs: TURN_NEED_BY_MS }));
+}
 
 /**
  * The engine hints of a kit that name no engine, when the kit as a whole has none (W1-B #2): what a lesson on it
@@ -60,6 +68,7 @@ export const forgeSeam = {
   prefetchLessonFills: async ({ child, lessonId, topicId, kit }) => {
     try {
       if (!child?.id || !lessonId || !kit) return;
+      ensureWarmer();
       noteLessonChild(lessonId, child.id);
       const hints = unservedHints(kit);
       if (hints.length) recordGap({ topicId: kit.topicId ?? topicId, itemId: "topic", reason: "no_engine_for_hints", engineHints: hints, childId: child.id });

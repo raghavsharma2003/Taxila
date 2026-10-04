@@ -1255,3 +1255,89 @@ The metric favours the CPU recon, which was built from the same photo detections
 <!-- merged from inbox/w1-w0.json -->
 ## w0-disk-full-during-gates (2026-10-04)
 n=1, method: df -h / during `npm test` on HEAD 345b33b. Root fs showed 7.1 MB free; npm test had passed 372/372 tests up to the Forge gate browser test when writes failed with ENOSPC. After stopping the run 8.3 GB was free (31G used). The session scratchpad holds 8.5 GB of research artifacts (cc 2.6G, avlip 826M, baseline-src 744M, mvenv 479M) and /tmp/claude-0/char 2.7G (bpyenv, bakeoff renders). W1 agents running gates in parallel can exhaust the disk again: the main loop should prune the scratchpad before fanning out.
+
+
+<!-- merged from inbox/human-voice.json -->
+## hv-cap-probe-2026-10-04
+Engine x markup (one Hinglish + one English line, ASR taxila-transcribe, eastus2): en-IN DragonHD Diya/Arjun speak [laughter]/[breathing]/[sighing] 12/12 (Devanagari words in Hindi text); style markers silent; <break> honoured. hi-IN Swara Omni: tags and markers silent, 0/8 leak, laughter/breath audible. MAI-2.1(-Flash) Priya/Dhruv: laughter spoken, bracket styles no audio (3/3), express-as outside StyleList fails. gpt-4o-mini-tts: bracket mangled, 'haha' read as a word. Judge calibration 11/16 (cannot hear hum or long silence). Files: docs/design/superhuman/voice-probe/cap-results.json, calib-results.json.
+
+## hv-ab-judge-2026-10-04
+5 Hinglish teacher lines x {DragonHD Diya, DragonHD Arjun (each +/- clips), Omni Diya, MAI Priya Flash, gpt-4o-mini-tts marin, gpt-realtime-2.1 marin} x plain/expressive = 70 clips; realtime audio judge x2 + position-swapped pairwise. Humanlike plain->expressive: Diya 3.88->4.70, Arjun 3.88->4.70, Omni 5.00->4.90, MAI 4.56->4.60, mini-tts 4.25->4.20, realtime 4.20->4.50; pairwise sum over 5 lines: Diya +3, Arjun -1, noclip -2/-1, others 0/-1. Audible laugh/breath only on spliced DragonHD and native Omni; 0 on instruction engines. Leaks 0/70. Pause SD DragonHD 0.06 -> 0.43-0.49 s, duration +29-31%. Weak instrument (gpt-audio-not-a-judge); owner blind page decides. Files: analysis.json, metrics.json, voice-clips/blind-test.html.
+
+## hv-dhd-prosody-2026-10-04
+en-IN DragonHD, 101-char Hinglish line, n=3 per cell, speech-only duration: Diya plain 6.34 s (15.9 chars/s), rate -20% 7.63 (13.2), +20% 5.29 (19.1), [slow] 6.67, [fast] 6.78, [calm] 6.47; Arjun plain 5.77 (17.5), -20% 7.30 (13.8), +20% 5.31 (19.0), markers ~unchanged. Pitch (Diya f0 median): plain 244.9 Hz, -10% 220.3, +15% 255.8; volume -30% = -2.1 dB. Files: pace-results.json, pitch-results.json.
+
+## hv-latency-2026-10-04
+Streaming raw PCM first byte, n=20, US sandbox -> eastus2: DragonHD Diya plain p50 228/p90 287, expressive 231/284; Omni Diya plain 291/319, expressive 258/341; MAI Priya Flash expressive 289/361; gpt-4o-mini-tts marin 688/931. Planner n=10/arm: luna low full-text p50 2,391; luna none 1,882; grok full-text 2,766 (7/10 valid); luna none annotate 1,398; grok annotate 904. taxila-fast rejects reasoning_effort 'minimal'. Files: latency.json, plan-latency.json, compact-plan.json.
+
+
+<!-- merged from inbox/live-studio.json -->
+## live-studio-bench-2026-10-04
+n=72 (v1) + 21 (photosynthesis brief v2), 2026-10-04, `evals/live-studio/run.mjs` streamed builds on Foundry eastus2, strict gate `qa.mjs` in local Playwright Chromium, <=2 repairs. Best arms: fraction terra-low 3/3 first try, 36.7 s p50, $0.042; photosynthesis v2 sol-low 2/3 first, 3/3 after repair, 38.8 s, $0.122; bar chart sol-low 3/3 after repair, 54.2 s, $0.119. Gate 4.8-11.6 s p50. Plan step taxila-fast none 3.25 s p50 8/8 valid. FLUX.2-pro 4.1-6.1 s; gpt-image-2 low 16.5-18.7 s, medium 43.6-43.8 s. Anchoring check (post-hoc) would fail 8/23 passed photosynthesis builds. Spend $8.59. Raw: `evals/live-studio/out-2026-10-04*/`.
+
+## live-studio-transfer-2026-10-04
+`transfer.mjs`, same date, local Chromium, no model calls; see title.
+
+
+<!-- merged from inbox/relational-os.json -->
+## ros-p1/p2/p3 (2026-10-04)
+Harness `evals/relational-os/probe.mjs`, scorer `score.mjs`, `acoustics.py`, codes `codes-p2-rerun.mjs`; results in `evals/relational-os/results/`. taxila-realtime, text in -> audio out, real compiled prompts, synthetic typed child turns, single blind coder; n = samples of fixed inputs. Numbers in RELATIONAL-OS.md section 14.
+
+
+<!-- merged from inbox/stylised-teacher.json -->
+## stylised-concepts-2026-10-04
+n = 4 directions x 5 images (1 text-to-image front + 4 edits of that front with input_fidelity high), 2026-10-04, Azure Foundry `taxila-image` (gpt-image-2), 1024x1024, quality high, via `scripts/character/stylised/gen-concepts.mjs` (prompts and per-image usage in `docs/design/teacher/stylised/concepts/concepts.json`). Direction c was re-generated with a stronger emoji-avatar prompt because v1 (kept in `concepts/c-v1/`) read as a second family-film render [by eye, one look]. Rate limit: > 4 concurrent edits on the deployment returned 429 and exhausted 3 retries for 8 edits; the `--serial` mode filled them. Sheet: `concepts/COMPARE.png` (`scripts/character/stylised/compose.py`). No preference data yet: these are concept images, not a measurement of appeal.
+
+
+<!-- merged from inbox/teacher-brain.json -->
+## teacher-brain-beat-policy-2026-10-04
+`NODE_USE_ENV_PROXY=1 node evals/teacher-brain/beat-policy.mjs 3`, 2026-10-04, US sandbox -> eastus2. 12 BrainState scenarios with admissible {move,kind} labels written before the run (single rater = spec author; the code prototype shares the author, so its 11/12 is an upper bound), 3 reps x 3 models x 2 runs. Hard violation = a build that is neither a library hit nor buildable (live budget > 0 and lead >= 90 s), or any build during strain. Run 2 raw: `evals/teacher-brain/results/beat-policy-2026-10-04-run2.json`; run 1 from console. Spend < $0.05.
+
+## teacher-brain-classify-piggyback-2026-10-04
+`node evals/teacher-brain/classify-piggyback.mjs 3`, same date/path. 10 Hinglish replies x 3 reps x {plain, signals} x {taxila-fast low, grok-4-20-non-reasoning}; fast 1065/1450 -> 1090/1274 ms, grok 507/687 -> 598/693 ms p50/p90; match 30/30 all arms. Humour not scored. Raw: `evals/teacher-brain/results/classify-piggyback-2026-10-04.json`.
+
+
+<!-- merged from inbox/w1-a.json -->
+## w1a-local-acceptance-2026-10-04
+Method: `node tests/prod/run.mjs --wave 1 --only w1a --base http://localhost:6143`, local serve.mjs on the W1-A tree, Neon test branch, Azure Foundry models; date 2026-10-04.
+- w1a-battery: 30 typed turns each at class 5 and class 8 (n=60): 0 final-question mismatches with ui.ask.text, 0 two-question turns, 0 repair moves on typed input, 0 shape words in ui.hint.text, 0 goodbye lines outside wrap; Skip posed the next item at both classes. 14/14.
+- w1a-practice-ask: Practice and Ask 201 after a done lesson in API and at 360x640; resting screen names the hours and the time; Controls "Open now for 1 hour" tap 200, then a lesson starts 201. 23/23.
+- w1a-young-text (class 2, Type instead, 360x640, n=1 lesson): 3 commits in 11 turns, NumberPad on 1/1 number items, "Show me choices" tiles for the current item with the key 1/1, 12 tts-stream and 0 whole-clip speech requests, 0 help phrases in the parent transcript. 14/14.
+- w1a-text-voice: tts-stream audio for 20/20 text-lane replies, prewarm hits 20/20, first audio byte after the turn response p50 213 ms, p90 250 ms, n=20. Sandbox to a local server: a correctness check, NOT the timing gate (that runs from the Azure probe, TAXILA_PROBE=1).
+
+
+<!-- merged from inbox/w1-b.json -->
+## w1b-engines-coverage-2026-10-04
+Method: `node evals/engines-coverage.mjs --out evals/results/engines-coverage-w1b-2026-10-04.json`, offline, all 830 kits, no network or model, on 2026-10-04.
+
+- **Hint coverage, c4-c7 (the W1-B gate):** maths 105/141, science 21/69, EVS 6/40. The gate asks for at least 105, 21 and 6.
+- **What the live `planModule` mounts, c4-c7:** 131/385 topics (maths 99, science 21, EVS 11). Item-bound on at least one item: 32/385.
+- **Bound items:** c4-c7 70 (70/70 agree in frame logic; 70/70 replay wrong on a perturbed key); all kits 110/110.
+
+## w1b-lint-kits-2026-10-04
+Method: `node scripts/lint-kits.mjs` on 2026-10-04.
+
+- **Totals:** 830 kits, 3041 hints.
+- **Engine by hint:** 182, of which 156 resolve only through a catalog alias. The pre-catalog picker loaded 26.
+- **Engine by topic map:** 89.
+- **No engine:** 559.
+- **Unresolved:** 1192 distinct hints.
+
+## w1b-forge-g1-render-2026-10-04
+Method: `evals/forge-g1-render.mjs`, offline (code pick, gate), with `render-check.mjs` run in `dist/` on 2026-10-04.
+
+- 106 items picked, 94 built, 94/94 passed.
+- Boot p50 151 ms, max 264 ms (n = 94).
+
+## w1b-local-acceptance-2026-10-04
+Method: `tests/prod/w1b-mounts.mjs` (3 runs) and `w1b-tray.mjs` (1 run), against a LOCAL `serve.mjs` on the Neon test branch, with `lesson.js` carrying the W1-B wiring patch. Date 2026-10-04. Production has not been measured yet.
+
+- **Mounts:** every engine check passed.
+- **Only failure:** the global count of leftover `@taxila.test` guardians rose from 146 to 147 mid-run. Another process writes to the shared test branch.
+
+## Relational OS probes (2026-10-04, from docs/design/superhuman/RELATIONAL-OS.md work)
+
+- `ros-p1-affect-2026-10-04`: P1 affect tag on gpt-realtime-2.1 (text in, audio out, real Asha compile, 6 moments x 3 arms x 4; 66/72 completed). Feeling claims 0/66, tag word spoken 0/43, but no reliable direction-correct change in F0 spread, RMS or words/s. Live-lane affect row stays OFF.
+- `ros-p2-depend-2026-10-04`: P2 held-out multi-turn dependency/secrecy/grooming/romance/home-harm scripts (168 replies, blind single coder). Floor violations 0/84 in both arms; safeguards 18/18; English-only on 24/30 safety turns to a Hinglish child (open issue); the REL block cut goodbye return mentions 8/12 -> 3/12.
+- `ros-p3-memory-2026-10-04`: P3 memory honesty (5 probes x 2 arms x 4 = 40). Fabricated facts 0/16, memory promises 0/8; a CORE memory line made her read the brief aloud 4/4; blanket memory denial 20/24 on unlisted facts.
+- `realtime-rate-limit-silence`: 3-wide multi-turn realtime probe, 66/168 failed inference_rate_limit_exceeded; 2-wide with per-turn backoff retry, 168/168 (6 retries). Heavy turns need reserved capacity and the stall path.

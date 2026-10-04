@@ -22,6 +22,8 @@ const HOST = KEY ? new URL(process.env.AZURE_OPENAI_ENDPOINT).host : null;
 const MODEL = process.env.RT_MODEL || "taxila-realtime";
 const WHICH = process.argv[2] || "p1";
 const REPS = +(process.argv[3] || 3);
+const WIDTH = +(process.env.WIDTH || 3);
+const TAG = process.env.TAG ? `-${process.env.TAG}` : "";
 const DATE = new Date().toISOString().slice(0, 10);
 const RES = new URL("./results/", import.meta.url);
 
@@ -136,17 +138,17 @@ function p3Arms() {
 }
 
 // ───────────── runner ─────────────
-function runOne(instr, turns, { audio = false, timeoutMs = 150_000 } = {}) {
+function runOne(instr, turns, { audio = false, timeoutMs = 400_000 } = {}) {
   return new Promise((resolve) => {
     const ws = new WebSocket(`wss://${HOST}/openai/v1/realtime?model=${MODEL}`, { headers: { "api-key": KEY } });
-    const out = []; let i = -1, text = "", pcm = [], t0 = 0, tFirst = 0, done = false;
+    const out = []; let i = -1, text = "", pcm = [], t0 = 0, tFirst = 0, done = false, retries = 0, fails = [];
     const finish = (err) => { if (done) return; done = true; try { ws.close(); } catch {} resolve({ out, err }); };
     const timer = setTimeout(() => finish("timeout"), timeoutMs);
     const next = () => {
       i++;
       if (i >= turns.length) { clearTimeout(timer); return finish(); }
       ws.send(JSON.stringify({ type: "conversation.item.create", item: { type: "message", role: "user", content: [{ type: "input_text", text: turns[i] }] } }));
-      text = ""; pcm = []; t0 = Date.now(); tFirst = 0;
+      text = ""; pcm = []; t0 = Date.now(); tFirst = 0; retries = 0; fails = [];
       ws.send(JSON.stringify({ type: "response.create" }));
     };
     ws.onopen = () => ws.send(JSON.stringify({ type: "session.update", session: { type: "realtime", instructions: instr, output_modalities: ["audio"], audio: { output: { voice: "marin" } } } }));
@@ -156,7 +158,12 @@ function runOne(instr, turns, { audio = false, timeoutMs = 150_000 } = {}) {
       else if (ev.type === "response.output_audio_transcript.delta") text += ev.delta;
       else if (ev.type === "response.output_audio.delta") { if (!tFirst) tFirst = Date.now(); if (audio) pcm.push(Buffer.from(ev.delta, "base64")); }
       else if (ev.type === "response.done") {
-        const row = { child: turns[i], idx: i, text: text.trim(), status: ev.response?.status, ttfaMs: tFirst ? tFirst - t0 : null };
+        if (ev.response?.status === "failed" && retries < 3) {
+          retries++; fails.push(JSON.stringify(ev.response?.status_details ?? null).slice(0, 300)); text = ""; pcm = []; tFirst = 0;
+          setTimeout(() => { t0 = Date.now(); ws.send(JSON.stringify({ type: "response.create" })); }, 9000 * retries);
+          return;
+        }
+        const row = { child: turns[i], idx: i, retries, fails: [...fails], text: text.trim(), status: ev.response?.status, details: ev.response?.status === "completed" ? undefined : JSON.stringify(ev.response?.status_details ?? null).slice(0, 300), ttfaMs: tFirst ? tFirst - t0 : null };
         if (audio) row.pcm = Buffer.concat(pcm);
         out.push(row); next();
       } else if (ev.type === "error") { clearTimeout(timer); finish(JSON.stringify(ev.error).slice(0, 200)); }
@@ -165,7 +172,7 @@ function runOne(instr, turns, { audio = false, timeoutMs = 150_000 } = {}) {
   });
 }
 
-async function pool(jobs, fn, width = 3) {
+async function pool(jobs, fn, width = WIDTH) {
   const starts = []; let k = 0; const results = [];
   const worker = async () => {
     while (k < jobs.length) {
@@ -198,12 +205,12 @@ async function main() {
   } else if (WHICH === "p2") {
     for (let r = 0; r < REPS; r++) for (const sc of P2) for (const arm of ["A", "B"]) jobs.push({ arm, id: sc.id, rep: r });
     const res = await pool(jobs, (j) => { const sc = P2.find((s) => s.id === j.id); return runOne(p2Arms(sc)[j.arm], sc.turns); });
-    fs.writeFileSync(new URL(`p2-depend-${DATE}.json`, RES), JSON.stringify({ date: DATE, model: MODEL, reps: REPS, relBlock: REL_BLOCK, scripts: P2, results: res }, null, 1));
+    fs.writeFileSync(new URL(`p2-depend-${DATE}${TAG}.json`, RES), JSON.stringify({ date: DATE, model: MODEL, reps: REPS, relBlock: REL_BLOCK, scripts: P2, results: res }, null, 1));
   } else if (WHICH === "p3") {
     const A = p3Arms();
     for (let r = 0; r < REPS; r++) for (const sc of P3) for (const arm of ["A", "B"]) jobs.push({ arm, id: sc.id, rep: r });
     const res = await pool(jobs, (j) => runOne(A[j.arm], [P3.find((s) => s.id === j.id).last]));
-    fs.writeFileSync(new URL(`p3-memory-${DATE}.json`, RES), JSON.stringify({ date: DATE, model: MODEL, reps: REPS, memRows: MEM_ROWS, probes: P3, results: res }, null, 1));
+    fs.writeFileSync(new URL(`p3-memory-${DATE}${TAG}.json`, RES), JSON.stringify({ date: DATE, model: MODEL, reps: REPS, memRows: MEM_ROWS, probes: P3, results: res }, null, 1));
   } else if (WHICH === "show") {
     console.log(p2Arms(P2[0]).B);
   } else throw new Error(`unknown probe ${WHICH}`);

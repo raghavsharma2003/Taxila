@@ -66,8 +66,10 @@ export function commitLive(child, prevMaxSeq, state, seqs, { cache = CACHE } = {
 // ───────────── the seam: Director evidence → EvidenceEvents ─────────────
 
 /** Classifier sources that are code decisions (a verified key, a tap, a module's own verdict); a model label is "llm". */
-const CODE_SOURCES = new Set(["exact", "chip", "module", "lexical", "empty", "predicate", "asr", "branch", "test"]);
+const CODE_SOURCES = new Set(["exact", "chip", "module", "forge_g1", "lexical", "empty", "predicate", "asr", "branch", "test"]);
 export const graderOf = (cls) => (cls && !CODE_SOURCES.has(cls.source) ? "llm" : "code");
+/** Classifier / evidence sources that mean "a module graded it" (source weight ×0.75 until the agreement gate). */
+const MODULE_SOURCES = new Set(["module", "forge_g1"]);
 /** Moves that teach (a transition only, no observation). */
 export const TEACH_MOVES = new Set(["explain", "worked_example", "reteach"]);
 
@@ -101,15 +103,18 @@ export function answerEvents(c) {
   const events = [], deferred = [];
   const ctr = { k: 0 };
   const base = baseOf(c, ctr, { grader, topicType, kitVerified });
-  const via = c.moduleOnly ? "module" : "dialogue";
-  const meta = (it) => ({ via, ...(it?.coincidentFor?.length ? { coincident: true } : {}) });
+  // The source weight (bktr.js temper, ×0.75 module / ×0.5 game) needs the source: a module-only turn, a classifier
+  // verdict that came from a module (W1-B bound mounts: source "module" / "forge_g1"), or one evidence row so tagged.
+  const turnVia = c.moduleOnly || MODULE_SOURCES.has(cls?.source) ? "module" : cls?.source === "game" ? "game" : "dialogue";
+  const viaOf = (ev) => (MODULE_SOURCES.has(ev?.source) ? "module" : ev?.source === "game" ? "game" : turnVia);
+  const meta = (it, ev) => ({ via: viaOf(ev), ...(it?.coincidentFor?.length ? { coincident: true } : {}) });
   for (const ev of evidence) {
     if (ev.probe === "P1") continue;                                          // one teach-back event, below
     const item = ev.itemId ? activeItem : null;
     const episodeId = `${lessonId}:${ev.itemId ?? `${ev.skillId}:${ev.probe}`}`;
     if (ev.probe === "P2") {
       const e = fromLegacyEvidence(ev, base({ episodeId }));
-      if (e) deferred.push({ ...e, target: ev.skillId, ...meta(item), ...(c.shapeId ? { shapeId: c.shapeId } : {}), ...(c.deferenceDiscount ? { deferenceDiscount: true } : {}) });
+      if (e) deferred.push({ ...e, target: ev.skillId, ...meta(item, ev), ...(c.shapeId ? { shapeId: c.shapeId } : {}), ...(c.deferenceDiscount ? { deferenceDiscount: true } : {}) });
       continue;
     }
     if (!ep || ep.itemId !== ev.itemId) ep = { itemId: ev.itemId, skillId: ev.skillId, wrong: 0, mis: null, closed: false, mcq: !!item?.options?.length };
@@ -119,14 +124,14 @@ export function answerEvents(c) {
     if (!correct && ev.misconceptionId) ep.mis = ev.misconceptionId;
     if (options >= 2 || ev.probe === "P7") {
       const e = fromLegacyEvidence(ev, base({ episodeId, options, triesBefore: ep.wrong, ...(c.chipId?.startsWith("opt:") ? { form: "recognise" } : {}) }));
-      if (e) events.push({ ...e, target: ev.skillId, ...meta(item) });
+      if (e) events.push({ ...e, target: ev.skillId, ...meta(item, ev) });
       if (correct) ep.closed = true; else ep.wrong += 1;
       continue;
     }
     if (correct) {
       const { misconceptionId: _own, ...rest } = ev;
       const e = fromLegacyEvidence({ ...rest, ...(ep.mis ? { misconceptionId: ep.mis } : {}) }, base({ episodeId, triesBefore: ep.wrong }));
-      if (e) events.push({ ...e, target: ev.skillId, ...meta(item) });
+      if (e) events.push({ ...e, target: ev.skillId, ...meta(item, ev) });
       ep.closed = true;
     } else {
       ep.wrong += 1;

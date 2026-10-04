@@ -1,0 +1,129 @@
+{
+ "nodes": [
+  {
+   "id": "teacher-stylised-3d-glb",
+   "kind": "decision",
+   "title": "PROPOSED: the stylised teacher is a 3D GLB (family-film / Memoji-adjacent look between concept directions b and c) carrying ARKit-52 + 15 visemes + 3 tongue keys on the existing HeadRig / tiers / behaviour.ts / lip.ts stack, with solid sculpted hair and toon-PBR ramp materials; 2D Rive (direction d) is the runner-up; VRM anime third; Live2D not recommended",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "teacher-stylised-face-commissioned",
+   "kind": "decision",
+   "title": "PROPOSED (owner decision needed): commission the stylised face (sculpt, topology, key shapes) from a senior character artist, USD 4-12k freelance / 15-40k studio, with IP assignment and AI-training rights; the agent owns everything scriptable around it. Conflicts with character-built-in-house; the in-rule fallback is a bought professional stylised base (Reallusion CC5 toon packs or a marketplace ARKit-52 character)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "teacher-stylised-behaviour-profile",
+   "kind": "decision",
+   "title": "PROPOSED: stylised behaviour = a cartoon-amplitude profile on behaviour.ts (x1.3-1.8 amplitudes, anticipation, 10-15% head-spring overshoot, lid squash), a Lily-style thinking repertoire as the latency mask, 8x8-style idle recombination, model-timed nods, spring bones on bun/earrings, an authored (never generated) gesture library keyed by Director tags",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "stylised-concepts-2026-10-04",
+   "kind": "measurement",
+   "title": "Stylised concept sheet: 4 directions (a anime-human, b family-film 3D, c Memoji/Bitmoji 3D, d flat 2D vector) x front + 4 expression edits on Foundry taxila-image (gpt-image-2, 1024x1024 high); c re-generated once after v1 read as a second family-film render; owner/panel preference not yet collected",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-live2d-for-teacher",
+   "kind": "rejection",
+   "title": "Live2D Cubism for the teacher: paid publication licence once annual sales pass JPY 10M (running-royalty plan lists JPY 50k-300k initial + 20k-100k/month + 5% of sales), separate contract for expandable/avatar-system apps at any size, closed-source Core, and an illustrator plus a Live2D rigger per character",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-agent-authored-stylised-face",
+   "kind": "rejection",
+   "title": "Expecting an AI agent (scripted Blender / procedural / image-to-3D) to author a polished stylised face: the stylised-premium bake-off scored 1.5/5 wow and read as a doll; every in-house face so far topped out at 2-3.5/5; image-to-3D gives blockouts with unusable topology and NC deps (TRELLIS)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "open-a2f-azure-gpu-directive",
+   "kind": "open",
+   "title": "Does self-hosting NVIDIA Audio2Face-3D open weights (NVIDIA Open Model License) on an Azure GPU satisfy the Azure-only directive? Use would be offline curve baking for authored lines and a distillation teacher; Hindi quality unmeasured",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "open-stylised-panel",
+   "kind": "open",
+   "title": "Blind child + parent panel on concepts/COMPARE.png (n >= 20 per band b1-b4) before any commission or base purchase; prior: b for b1-b2, a b/c (Bitmoji-register) blend as the single look",
+   "at": "2026-10-04"
+  }
+ ],
+ "edges": [
+  {
+   "src": "teacher-stylised-3d-glb",
+   "rel": "supersedes",
+   "dst": "gnm-adopted-identity-base"
+  },
+  {
+   "src": "teacher-stylised-3d-glb",
+   "rel": "constrains",
+   "dst": "teacher-runtime-contract"
+  },
+  {
+   "src": "teacher-stylised-3d-glb",
+   "rel": "inherits",
+   "dst": "avatar-v1-stack"
+  },
+  {
+   "src": "teacher-stylised-3d-glb",
+   "rel": "measured_by",
+   "dst": "stylised-concepts-2026-10-04"
+  },
+  {
+   "src": "open-stylised-panel",
+   "rel": "blocks",
+   "dst": "teacher-stylised-3d-glb"
+  },
+  {
+   "src": "teacher-stylised-face-commissioned",
+   "rel": "supersedes",
+   "dst": "character-built-in-house"
+  },
+  {
+   "src": "teacher-stylised-face-commissioned",
+   "rel": "part_of",
+   "dst": "teacher-stylised-3d-glb"
+  },
+  {
+   "src": "teacher-stylised-behaviour-profile",
+   "rel": "part_of",
+   "dst": "avatar-behaviour-controller"
+  },
+  {
+   "src": "teacher-stylised-behaviour-profile",
+   "rel": "part_of",
+   "dst": "teacher-stylised-3d-glb"
+  },
+  {
+   "src": "rj-agent-authored-stylised-face",
+   "rel": "measured_by",
+   "dst": "teacher-bakeoff-2026-10-03"
+  },
+  {
+   "src": "teacher-stylised-face-commissioned",
+   "rel": "caused_by",
+   "dst": "rj-agent-authored-stylised-face"
+  },
+  {
+   "src": "teacher-stylised-3d-glb",
+   "rel": "caused_by",
+   "dst": "rj-live2d-for-teacher"
+  },
+  {
+   "src": "open-a2f-azure-gpu-directive",
+   "rel": "part_of",
+   "dst": "teacher-stylised-3d-glb"
+  },
+  {
+   "src": "teacher-stylised-3d-glb",
+   "rel": "caused_by",
+   "dst": "owner-rejects-generated-faces"
+  }
+ ],
+ "md": {
+  "decisions": "## teacher-stylised-3d-glb\nProposed after the owner rejected realistic generated faces (GNM 'scary and cheap', Rocketbox '2010 game') and asked for a polished stylised teacher. Survey and ranking: `docs/design/teacher/stylised/RESEARCH.md`; concepts: `docs/design/teacher/stylised/concepts/COMPARE.png`. Why 3D GLB: it keeps every seam we own (HeadRig, tiers H/B+/B-lite, D plate rendered from the same mesh, behaviour.ts, lip.ts with the Hindi tongue keys), gives 3/4 turns for free, and a stylised mesh with solid hair and no SSS/wrinkle/pore maps is cheaper to render than the realistic one and avoids the alpha-card Mali Early-Z trap [U until E-T2]. Why not 2D first: Lily-level Rive needs a Rive animator and cannot turn; it is the right pick if the owner chooses the flat look or B-lite fails on Mali-G52. **Reverse if** (1) the blind panel (open-stylised-panel) prefers d or a by >= 15 points in two or more bands; (2) a device-lab run (E-T2) shows the stylised B-lite under 30 fps p50 on a Mali-G52-class phone after pixel and fps knobs; or (3) the owner picks a 2D direction from COMPARE.png.\n\n## teacher-stylised-face-commissioned\nThe agent cannot author a polished stylised face (rj-agent-authored-stylised-face); appeal is taste executed in a sculpting tool. Freelance evidence: an Apr 2026 Upwork job for a stylised web avatar with ARKit + visemes + GLB fixed at USD 600 (low end); rigged VTuber-grade 3D ~35 h ~ USD 2.1k at USD 60/h; film-polish ranges are my estimate [U]. Contract must assign IP and grant AI-training rights (our lip student trains on teacher renders) and contain no NC third-party assets. Run a paid test (bust + 5 shapes) first. **This needs the owner to lift character-built-in-house for the face only.** In-rule fallback: buy a pro stylised base (Reallusion CC5 toon pack or a marketplace ARKit-52 character), read its real-time-export and AI-training terms before purchase, and adapt in-house; expect 'the seller's character with Indian colouring'. **Reverse if** a bought base, re-dressed in-house, passes the owner's eye test and the held-out emotion judge (>= 70% per emotion, n >= 12) - then no commission is needed.\n\n## teacher-stylised-behaviour-profile\nLily (Rive blog): pondering tilts fill processing delays, lean-in when intrigued, nods for approval, 8 head x 8 body idles recombined. behaviour.ts already has the floor FSM, blinks, Andrist aversions, nods and lean-in; stylisation adds amplitude, anticipation/overshoot and secondary motion, not a rewrite. Presets are re-scored on the new face with a held-out judge (teacher-presets-per-face). Gesture-generation models (LiveGesture, rolling diffusion) stay out until a licence-clean training set exists (BEAT2 licence unchecked). No romance/companion register in any expression, idle or gesture. **Reverse if** a held-out judge or panel scores the amplified profile below the current profile on warmth or legibility (n >= 12 per emotion).",
+  "measurements": "## stylised-concepts-2026-10-04\nn = 4 directions x 5 images (1 text-to-image front + 4 edits of that front with input_fidelity high), 2026-10-04, Azure Foundry `taxila-image` (gpt-image-2), 1024x1024, quality high, via `scripts/character/stylised/gen-concepts.mjs` (prompts and per-image usage in `docs/design/teacher/stylised/concepts/concepts.json`). Direction c was re-generated with a stronger emoji-avatar prompt because v1 (kept in `concepts/c-v1/`) read as a second family-film render [by eye, one look]. Rate limit: > 4 concurrent edits on the deployment returned 429 and exhausted 3 retries for 8 edits; the `--serial` mode filled them. Sheet: `concepts/COMPARE.png` (`scripts/character/stylised/compose.py`). No preference data yet: these are concept images, not a measurement of appeal.",
+  "rejected": "## rj-live2d-for-teacher\nLicence read 2026-10-04 at live2d.com/en/sdk/license and its running-royalty plan page [V]: no contract under JPY 10M annual sales; above it a Publication Licence at least one month before release; the listed plan is JPY 50k initial + 20k/month + 5% (middle scale, < JPY 100M) or JPY 300k + 100k/month + 5% (large); 'Expandable Applications such as avatar systems' need a separate contract regardless of size. Plus closed-source Core and two specialist artists per character. Inochi2D (BSD-2) is the clean alternative but its WASM path needs a patched toolchain and 0.9 is unreleased. **Reverse if** the owner chooses anime-2D and Live2D quotes a fixed fee that fits.\n\n## rj-agent-authored-stylised-face\nEvidence: `docs/design/teacher/bakeoff/VERDICT.md` (stylised-premium 1.5/5 wow, uncanny risk 2/5, 'a doll, not a cartoon'), owner rejections of GNM and Rocketbox (2026-10-04), face3d-nc-deps-rejected for TRELLIS GLB export. What the agent can do well: concept art, pipeline, keys transfer and validation gates, shaders, behaviour, device benches."
+ }
+}

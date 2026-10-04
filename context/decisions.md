@@ -1962,3 +1962,124 @@ W0 seam commit (BUILD-PLAN §2). `server/conductor/hooks.js` onLessonStart/onTur
 
 ## w1-migration-allotment (2026-10-04)
 012 and 013 to W1-C (pending grade, re-teach resolution), 014 to W1-D (Conductor hooks, if needed), 015 to W1-A. 008_tutor_choice was found ALREADY applied on both the Neon test branch and production (schema_migrations and the column/table checked), so BUILD-PLAN §1.6's 'fails today' is stale. **Reverse if** a stream needs more than its numbers: the main loop allots 016+ rather than streams taking them.
+
+
+<!-- merged from inbox/human-voice.json -->
+## hv-expressive-layer (2026-10-04)
+**Expressive voice layer per docs/design/superhuman/HUMAN-VOICE.md: moment planner (code) + clause aligner -> per-engine compilers (DragonHD: style marker re-emitted per sentence, <break>, <prosody rate>/pitch-down; Omni: native tags; MAI: StyleList express-as + break; gpt-4o-mini-tts: band instructions; realtime: one delivery shape line) + same-persona non-verbal clip bank spliced into planned gaps of ONE stream (leading clip plays before TTS first byte) + governor (rates, recency) + safety-register bypass. The reply model never sees a tag, style or sound word.**
+- Why: DragonHD+clips humanlike 3.88->4.70 and emotion fit 3.75->4.60 (AI judge), Diya pairwise +3/5 lines, layer without clips worse (-2/-1); plain DragonHD pause SD 0.06 s vs 0.43-0.49 with the layer; markup costs +3 ms first byte (n=20). Meera tag-vocabulary failure (10/10 stage directions) forbids teaching delivery vocabulary to the reply model.
+- Reverse if: the owner blind page or the panel prefers plain DragonHD (expressive not preferred or tied on >= 4/5 lines, or splice/voice-changed ticks > 1 in 5), or a GA Azure voice renders non-verbals natively in Hindi (then drop the bank for that voice).
+
+## hv-live-planner-is-code (2026-10-04)
+**The live delivery planner is deterministic code over Director state; the LLM annotator (strict json_schema, clause tuples) runs only for cached/offline lines (kits, openings, Forge narration, read-aloud).**
+- Why: every LLM planner form measured p50 >= 904 ms (grok annotate) up to 2,391 ms (luna low full text), n=10 per arm; full-text planners also drop words.
+- Reverse if: an Azure model annotates clauses in <= 300 ms p90 at >= 95% validity, run in parallel with the reply.
+
+## hv-fillers-in-synthesis-clips-nonlexical (2026-10-04)
+**Every word, fillers included, is synthesised in context inside the one TTS request; clips are non-lexical only (breath, hum, chuckle, laugh, relief sigh) from the same persona.**
+- Why: isolated lexical acks come out in citation form (Meera, n=11 extraction no better); per-clause or per-language requests reset prosody (Maya: ECAPA 0.434 vs 0.825).
+- Reverse if: a recorded-human bank (Professional Voice talent) shows lexical acks in context pass the owner ear test.
+
+## supersede note: rj-prosody-rate-on-dragonhd (2026-10-04)
+`<prosody rate>` is honoured on en-IN DragonHD (hv-dhd-prosody-2026-10-04): -20% -> +20% speech duration on two voices, n=3 per cell. BUILD-PLAN W2-D #4 should set pace by a per-voice base `<prosody rate>` (about -25% Diya, -28% Arjun for 12-13 chars/s, confirm by ear), not by voice choice alone. Reverse if a re-probe from Central India shows rate ignored.
+
+
+<!-- merged from inbox/live-studio.json -->
+## live-studio-spec
+Spec: `docs/design/superhuman/LIVE-STUDIO.md`. Skeleton is code (no model can paint in 300 ms: streamed first paint 14-40 s). Truth (params, keys, words) never comes from the model; the host grades. Race terra+sol today (two families is the target once a non-OpenAI arm reaches >=0.8 after repair at n>=10). Live builds are the exception: a race costs $0.13-0.23, so the library (pre-warmed offline) must serve >=90% of intents to keep live spend near $0.60/child-month. **Reverse** per-decision conditions in the spec's section 16; the whole design is reversed if P(pass by lead time) with the race stays < 0.95 on n >= 30 for every archetype (then Studio becomes library-only).
+
+
+<!-- merged from inbox/relational-os.json -->
+## relational-os-spec (2026-10-04)
+Spec: `docs/design/superhuman/RELATIONAL-OS.md`. The bond is a working alliance (RO-1 kept) measured like one (child-adapted alliance check + learning gain). NM-3 forces RO's persisted safe-to-be-wrong score and child-affect rupture kinds to session-only; teacher-owned events (unheard, unfair, teacher_error, net_loss) persist as facts about her acts. Stage gates use academic-record counts only (attempt after a not-yet replaces cited safe-to-be-wrong acts). Cross-session dependency overlay is M3 (M2 aggregates); M1 has in-session moves + parent-visible boundary notes (typed templates). Relational milestones are ledger crossings fired once, never time-scheduled. The CORE REL block ships trimmed to five lines; safeguarding openings become vetted fixed wording per language mode. **Reverse** per the spec's section 19; layer lifetimes move only on counsel's written opinion.
+
+## teacher-affect-display-not-claim (2026-10-04)
+Rests on Frenzel 2009 (enjoyment transmits via enthusiasm), Zhu/Pi/Yang 2024 positivity meta (37 studies), SB 1119 (vii), Laestadius 2022 (role-taking harm when a bot shows needs). P1: the tag leaked nothing but did not shape realtime prosody, so the live lane carries affect in the move shape + face (UiDirectives.teacherAffect inside ReactionGate). **Reverse** if a blind child test shows displays raise the rate at which children believe she has feelings (then lower intensity, never add claims).
+
+
+<!-- merged from inbox/stylised-teacher.json -->
+## teacher-stylised-3d-glb
+Proposed after the owner rejected realistic generated faces (GNM 'scary and cheap', Rocketbox '2010 game') and asked for a polished stylised teacher. Survey and ranking: `docs/design/teacher/stylised/RESEARCH.md`; concepts: `docs/design/teacher/stylised/concepts/COMPARE.png`. Why 3D GLB: it keeps every seam we own (HeadRig, tiers H/B+/B-lite, D plate rendered from the same mesh, behaviour.ts, lip.ts with the Hindi tongue keys), gives 3/4 turns for free, and a stylised mesh with solid hair and no SSS/wrinkle/pore maps is cheaper to render than the realistic one and avoids the alpha-card Mali Early-Z trap [U until E-T2]. Why not 2D first: Lily-level Rive needs a Rive animator and cannot turn; it is the right pick if the owner chooses the flat look or B-lite fails on Mali-G52. **Reverse if** (1) the blind panel (open-stylised-panel) prefers d or a by >= 15 points in two or more bands; (2) a device-lab run (E-T2) shows the stylised B-lite under 30 fps p50 on a Mali-G52-class phone after pixel and fps knobs; or (3) the owner picks a 2D direction from COMPARE.png.
+
+## teacher-stylised-face-commissioned
+The agent cannot author a polished stylised face (rj-agent-authored-stylised-face); appeal is taste executed in a sculpting tool. Freelance evidence: an Apr 2026 Upwork job for a stylised web avatar with ARKit + visemes + GLB fixed at USD 600 (low end); rigged VTuber-grade 3D ~35 h ~ USD 2.1k at USD 60/h; film-polish ranges are my estimate [U]. Contract must assign IP and grant AI-training rights (our lip student trains on teacher renders) and contain no NC third-party assets. Run a paid test (bust + 5 shapes) first. **This needs the owner to lift character-built-in-house for the face only.** In-rule fallback: buy a pro stylised base (Reallusion CC5 toon pack or a marketplace ARKit-52 character), read its real-time-export and AI-training terms before purchase, and adapt in-house; expect 'the seller's character with Indian colouring'. **Reverse if** a bought base, re-dressed in-house, passes the owner's eye test and the held-out emotion judge (>= 70% per emotion, n >= 12) - then no commission is needed.
+
+## teacher-stylised-behaviour-profile
+Lily (Rive blog): pondering tilts fill processing delays, lean-in when intrigued, nods for approval, 8 head x 8 body idles recombined. behaviour.ts already has the floor FSM, blinks, Andrist aversions, nods and lean-in; stylisation adds amplitude, anticipation/overshoot and secondary motion, not a rewrite. Presets are re-scored on the new face with a held-out judge (teacher-presets-per-face). Gesture-generation models (LiveGesture, rolling diffusion) stay out until a licence-clean training set exists (BEAT2 licence unchecked). No romance/companion register in any expression, idle or gesture. **Reverse if** a held-out judge or panel scores the amplified profile below the current profile on warmth or legibility (n >= 12 per emotion).
+
+
+<!-- merged from inbox/teacher-brain.json -->
+## teacher-brain-code-kernel
+Spec: `docs/design/superhuman/TEACHER-BRAIN.md` (TB1/TB3/TB9). `server/brain/kernel.js` arbitrates proposals from safety, consent, conductor, governor, director, comprehension, relational, vibe and studio by authority order and shared budgets (latency, attention, test, novelty, money). **Reverse if** an offline LLM proposer beats the code policy on brain-sim by >= 10 pp admissible with 0 hard violations over 1,000 scenarios and a pre-registered micro-RCT shows better next-item-unaided outcomes.
+
+## teacher-brain-beat-layer
+TB2. **Reverse if** the prefetch hit rate stays < 40% after 500 lessons.
+
+## teacher-brain-signals-on-classify
+TB4. **Reverse if** label agreement with the plain arm < 99% on the full classify item set, or production p50 cost > +150 ms.
+
+## teacher-brain-moment
+TB6. **Reverse if** ear/eye panels prefer voice and face driven separately.
+
+## teacher-brain-experiments-registry
+TB7, RP-D7/RP-D12. **Reverse:** never for the never-randomise list.
+
+## teacher-brain-interest-two-day
+**Reverse if** single-mention interest tags are right >= 95% on real children (interest-corpus audit).
+
+## teacher-brain-no-surveillance
+TB11. **Reverse:** never for children.
+
+## student-flow-spec
+Spec: `docs/design/superhuman/STUDENT-FLOW.md`. Each new surface has a gate in its §15; the beat line is gated on V2-M-beatline (>= 80% recognition, no rise in clock-watching).
+
+
+<!-- merged from inbox/w1-a.json -->
+## help-requests-are-actions
+Audit flows G3/G6: "Choices dikhao" x13 was stored and quoted as "In Aarav's words", and "Skip for now" was read as "I want to stop". Help taps now carry fixed chip ids (classify.js HELP_REQUESTS, helpOf). /turn stores them as `system` rows (`[help: x]`), the classifier returns no_evidence with source "help" and no flags (the safety scan still runs first on any words sent with them), the step spends no test budget, and the reply model sees "(the child tapped a help button: ... - not an answer)". The client shows a chip state under the ask ("Hint asked") instead of "Your answer".
+**Reverse if:** children use these buttons as answers in practice (for example typing into the help path), measured on transcripts, or a help tap needs to count as evidence for the learner model.
+
+## skip-skips-the-item
+state.js helpMove "skip" calls leaveItem: the item goes to s.skipped with no verdict and the next item (or warm-up step) is posed. Stop words and Pause then End still close the lesson.
+**Reverse if:** skipped items are never revisited (they should come back another day) or children skip whole lessons item by item.
+
+## unclear-cap-three
+LIMITS.unclearTries 2 -> 3, now per item and honest: the third unclear reply offers choices (offerChoices: diagnostic options or choicesFor key + 2 distractors), past that leaveItem (no evidence). Typed unclear input gets a "hint" move with SH.typedNoAnswer, never "repair": they typed it, so "I didn't catch that" was wrong (flows G4). Measured before: 12 repair/hint turns on one diagnostic (comprehension G11).
+**Reverse if:** the cap leaves items before a child who was close could answer (moves-on with a correct answer on the following attempt in transcripts).
+
+## g-ask-parity
+say.js askParity / endOnAsk / lastQuestionOnly / wrapsUp / stripWrap. textReply flags "ask", "twoq" and "wrap"; when they are the only problems the turn is fixed in code with no model call; otherwise they join the rewrite and are fixed in code after it. The card ask and the spoken question can no longer disagree ("13 ka square" vs "10 ka square").
+**Reverse if:** the code fix produces awkward turns in a listening review (an acknowledgement that only made sense with the dropped question).
+
+## g-praise-2-no-correction-after-right
+Found on the W1-A local Young run: c2 diagnostic restart-ones, key 9, child tapped 9 (graded correct), the teacher said "yahan 8 ke baad 2 jodna tha, isliye 10". G-PRAISE-1 caught only "wrong" words. lesson.js stores state.lastRight {key, wrong} when a graded target showed wrong options; say.js correctsRight flags a non-question sentence that names a wrong option without the key (sentences mostly made of the next question are excluded). One rewrite; what survives is stripped (stripCorrection). Re-run after the fix: "9 tumne sahi bola tha."
+**Reverse if:** false positives (a legitimate contrast without the key) show up in guard.caught at a rate that costs latency; then require a correction marker word.
+
+## diag-two-ladders
+items.js diagnosticItem: `rungShapes` (pump/hint/prompt/assertion notes for SH.hint) and `hints` = DIAG_CHILD_HINTS (three plain English card lines). RUNG_LABEL / stripRungLabel strip "Prompt:" / "Assert:" style labels; state.js hintShapeWords lints ui.hint.text. Audit flows G5: "pump: ask them to picture both choices as real things" reached the child's card.
+**Reverse if:** kit hints gain their own child-facing field (then the card reads it and the generic lines go).
+
+## text-lane-streamed-voice
+textLink.ts plays tts-stream through PcmStreamPlayer on the same gain node and analyser as the clip element; a stream that fails before sounding falls back to /api/tts once; a context that is not running uses the clip path so the turn still completes. /turn prewarms text-mode replies (as cascade). In text mode the dock stays open while she speaks (openWhileSpeaking); typing is the barge-in.
+**Reverse if:** the probe fleet measures p50 first audio > 400 ms for the text lane, or stream failures on real devices exceed the clip path's.
+
+## open-now-one-hour
+POST /api/lesson/open-now {childId} -> {openUntil, plan}; child.js homeStateOf honours open_until for the hours only. The 409 LessonStartRefused body now carries `control` (hours / daily_limit / done) and `window`, and the child client renders designed done / capped / resting screens (Refused.tsx), never "We couldn't start the lesson". Migration 015 adds child_controls.open_until (applied to the Neon test branch; production at integration).
+**Reverse if:** parents ask for open-now to also lift the daily limit, or open-now gets used daily (then the saved hours are wrong and the Controls page should suggest changing them).
+
+
+<!-- merged from inbox/w1-b.json -->
+## w1b-planner-one-resolver
+**The Director plans every activity through one resolver: `planModule` calls `shared/engine-catalog.js` `planEngine` and `moduleCommands`.** The pre-catalog slug picker (`engineId`) survives only as the "before" baseline of `evals/engines-coverage.mjs`. On practice, probe and retrieval items the ladder is: (1) a BOUND engine plan, whose right answer equals the kit key; (2) the lesson's Forge G1 fill for the item; (3) an unbound predict activity on a predict, contrast or diagnostic item, revealed when the item is over; (4) nothing, so the board and her voice. Explain, re-teach, worked-example and show moves mount unbound. Teach-back, wrap, safeguard, break and celebrate close the module. `planEngine` now also tries the kit's OTHER engine hints for a binding plan. The Director's "show" or "predict" is never sent as an engine mode (`validModes`); predict travels as `predict: true`. New adapters: number-line read-a-mark, a data-graphs most/least bar read (the kit key is a label) and a data-graphs single-bar value read. **Reversal:** owner input O5a (a teacher's review of the bound adapters) finds a binding that grades the wrong thing; or the production M1 probe shows any unknown-engine mount.
+
+## w1b-g1-lesson-table
+**Forge G1 reaches the live lesson through a per-lesson fill table held in process memory (`server/forge/lesson-fills.js`). The Director reads it synchronously, because `step()` is pure and awaits nothing.** `forgeSeam.prefetchLessonFills` fills it after the start transaction, without being awaited. It personalises from the child's record, using interests only under memory consent, and writes a `forge_gap` row when the kit has no engine. A miss on the turn path warms the item in the background with `requestFill({needByMs: 2000})`, so the item is warm the next time it is posed. A G1 mount carries `itemId: null`, and its answer is graded only by `moduleAnswerOf` → `gradeEvent` over the server-side binding. **Reversal:** a turn served by a replica that did not run the prefetch misses once and then warms itself. If production shows more than about 20% of posed fillable items missing because of replica spread (even with W1-D session affinity), the table moves to the DB fill cache read at start.
+
+## w1b-scene-default-on
+**`scene@1` is live in G1 by default. `FORGE_SCENE_RENDERER=0` is the kill switch.** `render-check.mjs` drives scene fills: a wrong commit and the solution, checking that the frame verdict, the gate key and the server grader agree. **Reversal:** a render-check failure in the eval, or `scene@1` frame errors in production.
+
+## w1b-module-failure-clears
+**A frame `error` on the mounted module clears `s.module` before the turn is planned (`noteModuleEvents`).** The teacher then stops counting it as a screen target, the next directives carry no module tray, and a `tap_in_tray` item falls back to tiles or words. The failed engine is not mounted again in this lesson (up to 8 remembered). **Reversal:** transient failures, such as a slow chunk on a bad network, prove common and recoverable. The block would then become per-turn rather than per-lesson.
+
+## w1b-no-engine-is-demand
+**A kit whose hints name no engine writes demand rather than a mount.** It gets one `forge_gap` row (`no_engine_for_hints`) per lesson that reaches it. `scripts/lint-kits.mjs` errors on an `name@N` hint outside ENGINES and ratchets the no-engine kit count at 559. **Reversal:** none expected. The baseline only goes down as engines or aliases land.

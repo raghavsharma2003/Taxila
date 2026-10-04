@@ -5052,6 +5052,454 @@
    "title": "Sandbox root fs reached 0 bytes free during npm test (scratchpad 8.5G + /tmp/claude-0/char 2.7G); gates died with ENOSPC until the run was stopped",
    "at": "2026-10-04",
    "source": "inbox/w1-w0.json"
+  },
+  {
+   "id": "hv-expressive-layer",
+   "kind": "decision",
+   "title": "Expressive voice layer: code moment planner + clause aligner -> per-engine compilers (DragonHD markers per sentence, <break>, <prosody rate>) + same-persona non-verbal clip bank spliced into planned gaps + governor + safety bypass; the reply model never sees delivery vocabulary",
+   "at": "2026-10-04",
+   "source": "inbox/human-voice.json"
+  },
+  {
+   "id": "hv-live-planner-is-code",
+   "kind": "decision",
+   "title": "The live delivery planner is deterministic code over Director state (move, verdict, childLaughed, thinkAloud, affect, band, bond); the LLM annotator is for cached/offline lines only",
+   "at": "2026-10-04",
+   "source": "inbox/human-voice.json"
+  },
+  {
+   "id": "hv-fillers-in-synthesis-clips-nonlexical",
+   "kind": "decision",
+   "title": "Fillers and every word are synthesised in context by the TTS; clips are non-lexical only (breath, hum, chuckle, laugh, relief sigh)",
+   "at": "2026-10-04",
+   "source": "inbox/human-voice.json"
+  },
+  {
+   "id": "hv-cap-probe-2026-10-04",
+   "kind": "measurement",
+   "title": "Engine x markup matrix: en-IN DragonHD speaks paralinguistic tags 12/12, style markers silent; Omni renders tags silently 0/8 leak; MAI speaks tags, bracket styles fail; gpt-4o-mini-tts mangles brackets",
+   "at": "2026-10-04",
+   "source": "inbox/human-voice.json"
+  },
+  {
+   "id": "hv-ab-judge-2026-10-04",
+   "kind": "measurement",
+   "title": "5 Hinglish lines x 6 arms plain vs expressive (70 clips): DragonHD+clips humanlike 3.88->4.70, Diya pairwise +3/5, noclip worse; mini-tts/realtime/MAI no change; Omni plain 5.0",
+   "at": "2026-10-04",
+   "source": "inbox/human-voice.json"
+  },
+  {
+   "id": "hv-dhd-prosody-2026-10-04",
+   "kind": "measurement",
+   "title": "en-IN DragonHD honours <prosody rate> (-20% -> +20% duration, n=3 x 2 voices) and pitch -10%; pitch +15% gives only +4.4%; [slow]/[fast] markers no effect",
+   "at": "2026-10-04",
+   "source": "inbox/human-voice.json"
+  },
+  {
+   "id": "hv-latency-2026-10-04",
+   "kind": "measurement",
+   "title": "Streaming first byte n=20: DragonHD plain 228/287, expressive 231/284; Omni 291/319; MAI-Flash 289/361; mini-tts 688/931. LLM planner p50 904-2391 ms in every form",
+   "at": "2026-10-04",
+   "source": "inbox/human-voice.json"
+  },
+  {
+   "id": "hv-omni-listing",
+   "kind": "open",
+   "title": "hi-IN DragonHD Omni now p90 319-341 ms (n=20) but still absent from voices/list; switch Hindi-heavy lane when listed",
+   "at": "2026-10-04",
+   "source": "inbox/human-voice.json"
+  },
+  {
+   "id": "live-studio-spec",
+   "kind": "decision",
+   "title": "Live Studio: background builds during the talk via archetype plan, code skeleton <=300 ms, race of two code models, strict play-truth gate in an isolated sandbox, <=2 gate-fed repairs, library-first reuse",
+   "at": "2026-10-04",
+   "source": "inbox/live-studio.json"
+  },
+  {
+   "id": "live-studio-bench-2026-10-04",
+   "kind": "measurement",
+   "title": "93 real Foundry builds (3 kinds x 8 arms x n=3, plus photosynthesis brief v2): routed race 3/3 per kind at 36.7/38.8/54.2 s p50 time-to-playable; $0.04-0.12 per passed build per arm; repair recovered 31/66 first-try gate failures",
+   "at": "2026-10-04",
+   "source": "inbox/live-studio.json"
+  },
+  {
+   "id": "live-studio-transfer-2026-10-04",
+   "kind": "measurement",
+   "title": "Gate-passed builds re-gated with new truth and no model call: fraction 20/21, photosynthesis 22/23, bar chart 5/11 (all 6 = short-bar tap targets, an archetype design bug)",
+   "at": "2026-10-04",
+   "source": "inbox/live-studio.json"
+  },
+  {
+   "id": "kimi-deepseek-pro-not-live",
+   "kind": "rejection",
+   "title": "Kimi-K2.7-Code (TTFT 119-187 s p50, 11-16k output tokens) and DeepSeek-V4-Pro (stalls, 0/6 on anim+chart) rejected for live builds; offline library pre-warm only",
+   "at": "2026-10-04",
+   "source": "inbox/live-studio.json"
+  },
+  {
+   "id": "codex-medium-for-live",
+   "kind": "rejection",
+   "title": "gpt-5.3-codex at medium effort for live builds: slower and worse than low (chart 1/3, $0.63 per passed build)",
+   "at": "2026-10-04",
+   "source": "inbox/live-studio.json"
+  },
+  {
+   "id": "relational-os-spec",
+   "kind": "decision",
+   "title": "Relational OS: four layers with four lifetimes (bond record = academic-record facts in M1; session relational state in memory; teacher affect per turn, cause-fused, never stored; overlay in-session in every mode, cross-session only M3/M2-aggregate); display emotion never claim it; one RelationalDirective per turn from pure code (<=3 ms), no new hot-path model calls",
+   "at": "2026-10-04",
+   "source": "inbox/relational-os.json"
+  },
+  {
+   "id": "teacher-affect-display-not-claim",
+   "kind": "decision",
+   "title": "Teacher emotion is expressive behaviour with a visible session cause (delight at a method, warm pride at persistence, gentle concern at a sad share, play at a joke); first-person feeling words stay banned; charter TA1-TA8 (no usage input, no self-negative display, nothing at a goodbye, no mood UI, no accumulation, never keyed to correctness, safety outranks)",
+   "at": "2026-10-04",
+   "source": "inbox/relational-os.json"
+  },
+  {
+   "id": "ros-p1-affect-2026-10-04",
+   "kind": "measurement",
+   "title": "P1 affect tag on gpt-realtime-2.1 (text in/audio out, real Asha compile, 6 moments x 3 arms x 4, 66/72 completed): feeling claims 0/66, tag word spoken 0/43, but no reliable direction-correct change in F0 spread, RMS or words/s (concern reply faster than delight in arm B); live-lane affect row OFF",
+   "at": "2026-10-04",
+   "source": "inbox/relational-os.json"
+  },
+  {
+   "id": "ros-p2-depend-2026-10-04",
+   "kind": "measurement",
+   "title": "P2 held-out multi-turn dependency/secrecy/grooming/romance/home-harm scripts (4 x 2 arms x 3 = 168 replies, blind single coder): F-class floor violations 0/84 production and 0/84 with the REL block; safeguards 18/18 correct; spoken planning preface on 18/18 heavy turns; English-only on 24/30 safety turns to a Hinglish child; cold boundaries 12/12; helplines for ordinary goodbye loneliness 6/6; never-rules exclusivity 14 hits all false positives; REL block cut goodbye return mentions 8/12->3/12",
+   "at": "2026-10-04",
+   "source": "inbox/relational-os.json"
+  },
+  {
+   "id": "ros-p3-memory-2026-10-04",
+   "kind": "measurement",
+   "title": "P3 memory honesty (5 probes x 2 arms x 4 = 40): fabricated unlisted facts 0/16, memory promises 0/8; a CORE memory line made her read the brief aloud 4/4 listed replies; blanket memory denial 20/24 unlisted replies",
+   "at": "2026-10-04",
+   "source": "inbox/relational-os.json"
+  },
+  {
+   "id": "core-memory-line-reads-brief",
+   "kind": "rejection",
+   "title": "A CORE note telling the teacher she knows the child's past only from the CHILD notes: no fabrication gain (0/8 vs 0/8) and the word 'notes' was spoken in 4/4 listed-fact replies (+1 recall loss). Replaced by callback ids + post-hoc claim check + a truthful CHILD memory row",
+   "at": "2026-10-04",
+   "source": "inbox/relational-os.json"
+  },
+  {
+   "id": "realtime-affect-tag-row",
+   "kind": "rejection",
+   "title": "A tail affect tag row on gpt-realtime-2.1 to shape prosody: no measurable delivery change at n=3-4 per cell, slight English and evaluative-opener drift; kept behind a flag for expressive TTS lanes only",
+   "at": "2026-10-04",
+   "source": "inbox/relational-os.json"
+  },
+  {
+   "id": "realtime-rate-limit-silence",
+   "kind": "measurement",
+   "title": "3-wide multi-turn realtime probe: 66/168 responses failed inference_rate_limit_exceeded (too many tokens); with 2-wide and per-turn backoff retry 168/168 (6 retries). Heavy turns need reserved capacity and the stall path",
+   "at": "2026-10-04",
+   "source": "inbox/relational-os.json"
+  },
+  {
+   "id": "teacher-stylised-3d-glb",
+   "kind": "decision",
+   "title": "PROPOSED: the stylised teacher is a 3D GLB (family-film / Memoji-adjacent look between concept directions b and c) carrying ARKit-52 + 15 visemes + 3 tongue keys on the existing HeadRig / tiers / behaviour.ts / lip.ts stack, with solid sculpted hair and toon-PBR ramp materials; 2D Rive (direction d) is the runner-up; VRM anime third; Live2D not recommended",
+   "at": "2026-10-04",
+   "source": "inbox/stylised-teacher.json"
+  },
+  {
+   "id": "teacher-stylised-face-commissioned",
+   "kind": "decision",
+   "title": "PROPOSED (owner decision needed): commission the stylised face (sculpt, topology, key shapes) from a senior character artist, USD 4-12k freelance / 15-40k studio, with IP assignment and AI-training rights; the agent owns everything scriptable around it. Conflicts with character-built-in-house; the in-rule fallback is a bought professional stylised base (Reallusion CC5 toon packs or a marketplace ARKit-52 character)",
+   "at": "2026-10-04",
+   "source": "inbox/stylised-teacher.json"
+  },
+  {
+   "id": "teacher-stylised-behaviour-profile",
+   "kind": "decision",
+   "title": "PROPOSED: stylised behaviour = a cartoon-amplitude profile on behaviour.ts (x1.3-1.8 amplitudes, anticipation, 10-15% head-spring overshoot, lid squash), a Lily-style thinking repertoire as the latency mask, 8x8-style idle recombination, model-timed nods, spring bones on bun/earrings, an authored (never generated) gesture library keyed by Director tags",
+   "at": "2026-10-04",
+   "source": "inbox/stylised-teacher.json"
+  },
+  {
+   "id": "stylised-concepts-2026-10-04",
+   "kind": "measurement",
+   "title": "Stylised concept sheet: 4 directions (a anime-human, b family-film 3D, c Memoji/Bitmoji 3D, d flat 2D vector) x front + 4 expression edits on Foundry taxila-image (gpt-image-2, 1024x1024 high); c re-generated once after v1 read as a second family-film render; owner/panel preference not yet collected",
+   "at": "2026-10-04",
+   "source": "inbox/stylised-teacher.json"
+  },
+  {
+   "id": "rj-live2d-for-teacher",
+   "kind": "rejection",
+   "title": "Live2D Cubism for the teacher: paid publication licence once annual sales pass JPY 10M (running-royalty plan lists JPY 50k-300k initial + 20k-100k/month + 5% of sales), separate contract for expandable/avatar-system apps at any size, closed-source Core, and an illustrator plus a Live2D rigger per character",
+   "at": "2026-10-04",
+   "source": "inbox/stylised-teacher.json"
+  },
+  {
+   "id": "rj-agent-authored-stylised-face",
+   "kind": "rejection",
+   "title": "Expecting an AI agent (scripted Blender / procedural / image-to-3D) to author a polished stylised face: the stylised-premium bake-off scored 1.5/5 wow and read as a doll; every in-house face so far topped out at 2-3.5/5; image-to-3D gives blockouts with unusable topology and NC deps (TRELLIS)",
+   "at": "2026-10-04",
+   "source": "inbox/stylised-teacher.json"
+  },
+  {
+   "id": "open-a2f-azure-gpu-directive",
+   "kind": "open",
+   "title": "Does self-hosting NVIDIA Audio2Face-3D open weights (NVIDIA Open Model License) on an Azure GPU satisfy the Azure-only directive? Use would be offline curve baking for authored lines and a distillation teacher; Hindi quality unmeasured",
+   "at": "2026-10-04",
+   "source": "inbox/stylised-teacher.json"
+  },
+  {
+   "id": "open-stylised-panel",
+   "kind": "open",
+   "title": "Blind child + parent panel on concepts/COMPARE.png (n >= 20 per band b1-b4) before any commission or base purchase; prior: b for b1-b2, a b/c (Bitmoji-register) blend as the single look",
+   "at": "2026-10-04",
+   "source": "inbox/stylised-teacher.json"
+  },
+  {
+   "id": "teacher-brain-code-kernel",
+   "kind": "decision",
+   "title": "Teacher Brain: a code kernel arbitrates typed component proposals per turn and plans beats and builds; models only perceive, word, build and write for adults; nothing new on the turn critical path",
+   "at": "2026-10-04",
+   "source": "inbox/teacher-brain.json"
+  },
+  {
+   "id": "teacher-brain-beat-layer",
+   "kind": "decision",
+   "title": "Beats (30-180 s typed segments) between lesson phases and turns, planned with 1-2 lookahead plus lesson-start Studio prefetch so live builds get >= 90 s lead",
+   "at": "2026-10-04",
+   "source": "inbox/teacher-brain.json"
+  },
+  {
+   "id": "teacher-brain-signals-on-classify",
+   "kind": "decision",
+   "title": "Per-turn signals (dialogue act, IDK split, personal share, interest, humour) ride on the classify call",
+   "at": "2026-10-04",
+   "source": "inbox/teacher-brain.json"
+  },
+  {
+   "id": "teacher-brain-moment",
+   "kind": "decision",
+   "title": "One Moment object per turn drives both the voice momentPlan and the avatar program",
+   "at": "2026-10-04",
+   "source": "inbox/teacher-brain.json"
+  },
+  {
+   "id": "teacher-brain-experiments-registry",
+   "kind": "decision",
+   "title": "Registered decision points only, equipoise arms, floor >= 0.10, frozen 6-week windows, harm co-primary, code-enforced never-randomise list",
+   "at": "2026-10-04",
+   "source": "inbox/teacher-brain.json"
+  },
+  {
+   "id": "teacher-brain-interest-two-day",
+   "kind": "decision",
+   "title": "An interest moves content only after the child names it on >= 2 separate days",
+   "at": "2026-10-04",
+   "source": "inbox/teacher-brain.json"
+  },
+  {
+   "id": "teacher-brain-no-surveillance",
+   "kind": "decision",
+   "title": "No camera, gaze, face-affect or keystroke engagement sensing",
+   "at": "2026-10-04",
+   "source": "inbox/teacher-brain.json"
+  },
+  {
+   "id": "teacher-brain-beat-policy-2026-10-04",
+   "kind": "measurement",
+   "title": "Beat/build decision: code policy 11/12 admissible (labels share its author), deterministic; taxila-fast 57/72, 0 hard violations, 1.41 s p50; grok-4-20-nr 52/72, 1/72, 0.42 s; DeepSeek-V4-Flash 51/72, 4/72, ~1 s, reproducible 4-5/12",
+   "at": "2026-10-04",
+   "source": "inbox/teacher-brain.json"
+  },
+  {
+   "id": "teacher-brain-classify-piggyback-2026-10-04",
+   "kind": "measurement",
+   "title": "Signals block on classify: +25 ms (fast) / +91 ms (grok) p50; labels 30/30 both arms; acts 29/30, 30/30; single pizza mention over-inferred as interest 'cooking' 6/6",
+   "at": "2026-10-04",
+   "source": "inbox/teacher-brain.json"
+  },
+  {
+   "id": "llm-beat-proposer-live",
+   "kind": "rejection",
+   "title": "An LLM choosing the beat/build on the live path",
+   "at": "2026-10-04",
+   "source": "inbox/teacher-brain.json"
+  },
+  {
+   "id": "alpha-style-surveillance-and-tracks",
+   "kind": "rejection",
+   "title": "Vision anti-pattern monitoring, waste meters, public performance tracks and XP economies (Alpha School)",
+   "at": "2026-10-04",
+   "source": "inbox/teacher-brain.json"
+  },
+  {
+   "id": "student-flow-spec",
+   "kind": "decision",
+   "title": "STUDENT-FLOW: beats on the Desk, studio tray states, Made-for-you shelf, Question jar, reflect chip, visible memory, parent 'How Taxila teaches' page; V2 stays the visual law",
+   "at": "2026-10-04",
+   "source": "inbox/teacher-brain.json"
+  },
+  {
+   "id": "help-requests-are-actions",
+   "kind": "decision",
+   "title": "Hint-sheet and Young Help-menu taps are client actions (chip ids hint/why/know/another/slower/skip/help_choices/help_how): stored as system rows, never graded, never the child's words, never evidence or test budget",
+   "at": "2026-10-04",
+   "source": "inbox/w1-a.json"
+  },
+  {
+   "id": "skip-skips-the-item",
+   "kind": "decision",
+   "title": "'Skip for now' leaves the ITEM with no verdict and poses the next one; only the child's own stop words or Pause then End close a lesson",
+   "at": "2026-10-04",
+   "source": "inbox/w1-a.json"
+  },
+  {
+   "id": "unclear-cap-three",
+   "kind": "decision",
+   "title": "Unclear replies capped at 3 per item: the third puts choices on screen (or moves on), past that the item is left with no evidence; typed input never gets a repair ('say it again') move",
+   "at": "2026-10-04",
+   "source": "inbox/w1-a.json"
+  },
+  {
+   "id": "g-ask-parity",
+   "kind": "decision",
+   "title": "G-ASK: a turn with a pinned card question ends on that question and asks no other; fixed in code (endOnAsk / lastQuestionOnly) before any model rewrite; wrap words only on wrap moves (stripWrap)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-a.json"
+  },
+  {
+   "id": "g-praise-2-no-correction-after-right",
+   "kind": "decision",
+   "title": "G-PRAISE-2: after a right answer the acknowledgement may not state a wrong option shown to the child (diagnostic options, offered tiles) as the result; one rewrite, then the sentence is removed in code",
+   "at": "2026-10-04",
+   "source": "inbox/w1-a.json"
+  },
+  {
+   "id": "diag-two-ladders",
+   "kind": "decision",
+   "title": "Diagnostic items carry two ladders: rungShapes (teacher notes, server-side) and hints (three child-facing card lines, no rung labels, no shape words); hintFor drops any line matching the shape-word lint",
+   "at": "2026-10-04",
+   "source": "inbox/w1-a.json"
+  },
+  {
+   "id": "text-lane-streamed-voice",
+   "kind": "decision",
+   "title": "Text lane speaks through /api/voice/tts-stream + PcmStreamPlayer with the /turn prewarm (same as cascade); /api/tts only as fallback when the stream never sounded, and for Hear",
+   "at": "2026-10-04",
+   "source": "inbox/w1-a.json"
+  },
+  {
+   "id": "open-now-one-hour",
+   "kind": "decision",
+   "title": "Parent 'Open now for 1 hour' (POST /api/lesson/open-now, child_controls.open_until, migration 015) opens the lesson HOURS only, today only; the daily limit and 'done for today' still hold; PIN-gated like every consent-grade action; audited",
+   "at": "2026-10-04",
+   "source": "inbox/w1-a.json"
+  },
+  {
+   "id": "w1a-local-acceptance-2026-10-04",
+   "kind": "measurement",
+   "title": "W1-A acceptance on a local serve.mjs + Neon test branch: battery 0/30 parity, 0 two-question, 0 typed repair, 0 hint shape words, 0 off-wrap goodbyes at classes 5 and 8; Young text lane 3 commits in 11 turns, pad 1/1, choices tiles include key 1/1, 0 help phrases in parent transcript; text-lane first audio byte p50 213 ms p90 250 ms n=20 (sandbox, not a timing gate)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-a.json"
+  },
+  {
+   "id": "text-lane-tts-whole-mp3",
+   "kind": "rejection",
+   "title": "Text lane speaking via whole-mp3 /api/tts: first audio 1.6-2.1 s after the turn response (smooth G4); replaced by the streamed path",
+   "at": "2026-10-04",
+   "source": "inbox/w1-a.json"
+  },
+  {
+   "id": "w1b-planner-one-resolver",
+   "kind": "decision",
+   "title": "W1-B: server/director/modules.js planModule plans every mount through shared/engine-catalog.js planEngine + moduleCommands (the pre-catalog slug picker is gone from the live path); ladder per item move: bound engine plan -> the lesson's Forge G1 fill -> unbound predict activity -> the board and her voice; show moves mount unbound; every id is in ENGINES and every mode one of the engine's own (validModes)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
+  },
+  {
+   "id": "w1b-g1-lesson-table",
+   "kind": "decision",
+   "title": "W1-B: Forge G1 reaches the lesson through a per-lesson, process-memory fill table (server/forge/lesson-fills.js) that the Director reads synchronously; forgeSeam.prefetchLessonFills fills it fire-and-forget after the start transaction; a turn-path miss warms the item in the background with requestFill({needByMs: 2000}) for its next posing; a G1 mount carries itemId null and is graded only by modules.js moduleAnswerOf -> forge/grade.js gradeEvent, never by the frame's correct",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
+  },
+  {
+   "id": "w1b-scene-default-on",
+   "kind": "decision",
+   "title": "W1-B: scene@1 is a live G1 renderer by default (planner.js liveRenderers); FORGE_SCENE_RENDERER=0 is the kill switch; render-check.mjs drives scene@1 fills (wrong commit + solution; frame verdict = gate key = server grader)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
+  },
+  {
+   "id": "w1b-module-failure-clears",
+   "kind": "decision",
+   "title": "W1-B: a frame error on the mounted module (unknown engine, crash, slow chunk) clears s.module before the turn is planned (modules.js noteModuleEvents): no screen target for her, no module tray or tap_in_tray in the next directives, and that engine is not mounted again in the lesson; the client drops the tray at once (WorkTray onModuleFailed)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
+  },
+  {
+   "id": "w1b-no-engine-is-demand",
+   "kind": "decision",
+   "title": "W1-B: a kit whose engine hints resolve to no engine writes a forge_gap demand row (reason no_engine_for_hints) per lesson that reaches it, instead of a mount; scripts/lint-kits.mjs fails on an engine-id hint outside ENGINES and ratchets kits-with-no-engine at 559",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
+  },
+  {
+   "id": "w1b-engines-coverage-2026-10-04",
+   "kind": "measurement",
+   "title": "evals/engines-coverage.mjs 2026-10-04 (offline, all kits): c4-c7 hint coverage maths 105/141, science 21/69, EVS 6/40 (the W1-B gate); what the live planModule mounts c4-c7 131/385 (maths 99, science 21, EVS 11), bound on an item 32/385; bound items c4-c7 70 (all agree in frame logic, 70/70 wrong on a perturbed key), all kits 110/110",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
+  },
+  {
+   "id": "w1b-lint-kits-2026-10-04",
+   "kind": "measurement",
+   "title": "scripts/lint-kits.mjs 2026-10-04: 830 kits, 3041 hints; engine by hint 182 (156 only through a catalog alias; the pre-catalog picker loaded 26), by topic map 89, none 559; 1192 distinct unresolved hints (top: read-along 208, role-play 190, picture-word-match 169, word-builder 136, story-sequencing 126)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
+  },
+  {
+   "id": "w1b-forge-g1-render-2026-10-04",
+   "kind": "measurement",
+   "title": "evals/forge-g1-render.mjs 2026-10-04: 106 scene@1 items picked over c4-c7, 94 built (12 gaps), 94/94 pass render-check in the production frame (wrong commit + solution, frame verdict = gate key = gradeEvent, controls in view at 360x640); frame boot p50 151 ms, max 264 ms (n=94)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
+  },
+  {
+   "id": "w1b-local-acceptance-2026-10-04",
+   "kind": "measurement",
+   "title": "W1-B acceptance, LOCAL server (serve.mjs + dist, Neon test branch, lesson.js with the W1-B wiring patch), 2026-10-04: w1b-mounts 8 topics x 10 turns, 3 runs: 0 unknown-engine mounts, 0 invalid modes, >=1 item-bound mount in all 4 maths lessons, a G1 mount in every science/English lesson that posed a fillable item (3/3), kt_evidence via 'module' rows for bound answers and for G1 answers sent with a false correct claim; only failure: the global @taxila.test guardian count rose 146->147 mid-run (another writer on the shared test branch); w1b-tray at 360x800, n=1: iframe 404 px = tray 404 px, 0 controls outside, forced unknown engine leaves no empty tray, next tray none, next line has no screen reference",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
+  },
+  {
+   "id": "w1b-rj-g1-itemid",
+   "kind": "rejection",
+   "title": "Rejected: binding a Forge G1 mount by setting s.module.itemId to the item (the obvious way to make lesson.js count it): lesson.js's inline grader read the frame's own correct for any module whose itemId is the active item, so a frame could grade itself; G1 mounts keep itemId null and are graded by moduleAnswerOf over the server-side binding",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
+  },
+  {
+   "id": "w1b-rj-fresh-forced-id",
+   "kind": "rejection",
+   "title": "Rejected: forcing the unknown-engine case in the Playwright tray test with a NEW moduleId: the frame's error names a module the Director never held, so the server keeps its own module and the 'next line has no screen reference' check proves nothing; the test reuses the moduleId the server holds",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
+  },
+  {
+   "id": "w1b-open-lesson-wiring",
+   "kind": "open",
+   "title": "W1-B's two lesson.js call sites are NOT in the tree (lesson.js is W1-A's hot file and W0 placed no seam for them): noteModuleEvents(state, moduleEvents) after moduleOnly, and moduleAnswer = moduleAnswerOf(state, moduleEvents) replacing the inline filter; until applied, G1 answers grade nothing and a failed module stays a screen target server-side",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
+  },
+  {
+   "id": "engines-v1-server-recheck",
+   "kind": "open",
+   "title": "A bound catalog engine's answer is still the frame's own verdict (computed by tested code from params whose answer equals the kit key); a server-side re-check of bound engine answers (as gradeEvent does for G1) is not built",
+   "at": "2026-10-04",
+   "source": "inbox/w1-b.json"
   }
  ],
  "edges": [
@@ -8679,6 +9127,221 @@
    "src": "w1-seams-statement-hooks",
    "rel": "part_of",
    "dst": "w1-migration-allotment"
+  },
+  {
+   "src": "hv-dhd-prosody-2026-10-04",
+   "rel": "supersedes",
+   "dst": "rj-prosody-rate-on-dragonhd"
+  },
+  {
+   "src": "hv-expressive-layer",
+   "rel": "inherits",
+   "dst": "voice-prompt-labels-and-brackets"
+  },
+  {
+   "src": "hv-live-planner-is-code",
+   "rel": "inherits",
+   "dst": "reply-streaming-no-gain"
+  },
+  {
+   "src": "live-studio-spec",
+   "rel": "supersedes",
+   "dst": "forge-live-codegen-race"
+  },
+  {
+   "src": "relational-os-spec",
+   "rel": "part_of",
+   "dst": "owner-superhuman-teacher-2026-10-04"
+  },
+  {
+   "src": "teacher-affect-display-not-claim",
+   "rel": "part_of",
+   "dst": "relational-os-spec"
+  },
+  {
+   "src": "teacher-affect-display-not-claim",
+   "rel": "measured_by",
+   "dst": "ros-p1-affect-2026-10-04"
+  },
+  {
+   "src": "relational-os-spec",
+   "rel": "measured_by",
+   "dst": "ros-p2-depend-2026-10-04"
+  },
+  {
+   "src": "relational-os-spec",
+   "rel": "measured_by",
+   "dst": "ros-p3-memory-2026-10-04"
+  },
+  {
+   "src": "core-memory-line-reads-brief",
+   "rel": "caused_by",
+   "dst": "ros-p3-memory-2026-10-04"
+  },
+  {
+   "src": "realtime-affect-tag-row",
+   "rel": "caused_by",
+   "dst": "ros-p1-affect-2026-10-04"
+  },
+  {
+   "src": "learner-legal-mode-ratchet",
+   "rel": "constrains",
+   "dst": "relational-os-spec"
+  },
+  {
+   "src": "teacher-stylised-3d-glb",
+   "rel": "supersedes",
+   "dst": "gnm-adopted-identity-base"
+  },
+  {
+   "src": "teacher-stylised-3d-glb",
+   "rel": "constrains",
+   "dst": "teacher-runtime-contract"
+  },
+  {
+   "src": "teacher-stylised-3d-glb",
+   "rel": "inherits",
+   "dst": "avatar-v1-stack"
+  },
+  {
+   "src": "teacher-stylised-3d-glb",
+   "rel": "measured_by",
+   "dst": "stylised-concepts-2026-10-04"
+  },
+  {
+   "src": "open-stylised-panel",
+   "rel": "blocks",
+   "dst": "teacher-stylised-3d-glb"
+  },
+  {
+   "src": "teacher-stylised-face-commissioned",
+   "rel": "supersedes",
+   "dst": "character-built-in-house"
+  },
+  {
+   "src": "teacher-stylised-face-commissioned",
+   "rel": "part_of",
+   "dst": "teacher-stylised-3d-glb"
+  },
+  {
+   "src": "teacher-stylised-behaviour-profile",
+   "rel": "part_of",
+   "dst": "avatar-behaviour-controller"
+  },
+  {
+   "src": "teacher-stylised-behaviour-profile",
+   "rel": "part_of",
+   "dst": "teacher-stylised-3d-glb"
+  },
+  {
+   "src": "rj-agent-authored-stylised-face",
+   "rel": "measured_by",
+   "dst": "teacher-bakeoff-2026-10-03"
+  },
+  {
+   "src": "teacher-stylised-face-commissioned",
+   "rel": "caused_by",
+   "dst": "rj-agent-authored-stylised-face"
+  },
+  {
+   "src": "teacher-stylised-3d-glb",
+   "rel": "caused_by",
+   "dst": "rj-live2d-for-teacher"
+  },
+  {
+   "src": "open-a2f-azure-gpu-directive",
+   "rel": "part_of",
+   "dst": "teacher-stylised-3d-glb"
+  },
+  {
+   "src": "teacher-stylised-3d-glb",
+   "rel": "caused_by",
+   "dst": "owner-rejects-generated-faces"
+  },
+  {
+   "src": "text-lane-streamed-voice",
+   "rel": "supersedes",
+   "dst": "text-lane-tts-whole-mp3"
+  },
+  {
+   "src": "w1b-planner-one-resolver",
+   "rel": "part_of",
+   "dst": "engines-v1-catalog-binding"
+  },
+  {
+   "src": "w1b-planner-one-resolver",
+   "rel": "supersedes",
+   "dst": "rj-first-hint-engine-id"
+  },
+  {
+   "src": "w1b-planner-one-resolver",
+   "rel": "measured_by",
+   "dst": "w1b-engines-coverage-2026-10-04"
+  },
+  {
+   "src": "w1b-planner-one-resolver",
+   "rel": "measured_by",
+   "dst": "w1b-local-acceptance-2026-10-04"
+  },
+  {
+   "src": "w1b-g1-lesson-table",
+   "rel": "part_of",
+   "dst": "forge-live-is-g1-fill"
+  },
+  {
+   "src": "forge-g1-grade-event",
+   "rel": "constrains",
+   "dst": "w1b-g1-lesson-table"
+  },
+  {
+   "src": "forge-live-codegen-race",
+   "rel": "constrains",
+   "dst": "w1b-g1-lesson-table"
+  },
+  {
+   "src": "w1b-g1-lesson-table",
+   "rel": "measured_by",
+   "dst": "w1b-local-acceptance-2026-10-04"
+  },
+  {
+   "src": "w1b-scene-default-on",
+   "rel": "measured_by",
+   "dst": "w1b-forge-g1-render-2026-10-04"
+  },
+  {
+   "src": "w1b-scene-default-on",
+   "rel": "part_of",
+   "dst": "w1b-g1-lesson-table"
+  },
+  {
+   "src": "w1b-module-failure-clears",
+   "rel": "measured_by",
+   "dst": "w1b-local-acceptance-2026-10-04"
+  },
+  {
+   "src": "w1b-no-engine-is-demand",
+   "rel": "measured_by",
+   "dst": "w1b-lint-kits-2026-10-04"
+  },
+  {
+   "src": "w1b-rj-g1-itemid",
+   "rel": "caused_by",
+   "dst": "forge-g1-grade-event"
+  },
+  {
+   "src": "w1b-open-lesson-wiring",
+   "rel": "blocks",
+   "dst": "w1b-g1-lesson-table"
+  },
+  {
+   "src": "w1b-open-lesson-wiring",
+   "rel": "blocks",
+   "dst": "w1b-module-failure-clears"
+  },
+  {
+   "src": "engines-v1-server-recheck",
+   "rel": "part_of",
+   "dst": "engines-v1-catalog-binding"
   }
  ]
 }

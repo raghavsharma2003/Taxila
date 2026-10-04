@@ -1,0 +1,28 @@
+diff -ru a/server/director/state.js b/server/director/state.js
+--- a/server/director/state.js	2026-10-04 07:04:32.799367095 +0000
++++ b/server/director/state.js	2026-10-04 07:04:32.815417276 +0000
+@@ -28,6 +28,7 @@
+ import {
+   newProbeSession, openSession, recordTurn, nextProbe, markAsked, fits, bandOf, shapeById, testWeight,
+   reteachTrigger, reteachPlan, armsFromKit, newPersonaState, personaStep, personaKnobs, turnSignals,
++  reteachSessionInputs, noteReteach,
+ } from "../comprehension/index.js";
+ import { skillSess } from "../comprehension/budget.js";
+ 
+@@ -390,10 +391,14 @@
+   // ctx.reteach: the child's record (attempts, rep fluency, arm posteriors), pinned at start by the
+   // comprehension/session.js seam (W1-C); absent → selectReteach's empty defaults, as before.
+   const rec = s.ctx.reteach ?? {};
++  // W1-C: this lesson's failed arms on k (the trigger still holds after the last arm's re-check) and k's prerequisites,
++  // so prerequisite descent (2 failed arms) and park (3) can fire (comprehension/reteach.js reteachSessionInputs).
++  const sess = reteachSessionInputs(s, k, kit);
+   const d = reteachPlan({ trigger: trig, skillId: k, misId: mis?.id ?? null, kitArms, band: s.probeSess?.band, seed: String(s.seed), pL: sk.belief.pL,
+-    attempts: rec.attempts, repFluency: rec.repFluency, posteriors: rec.posteriors,
+-    lessonArmsUsed: s.armsUsed ?? [], failedArmsThisSession: [], hindiObserved: s.ctx.lang !== "english", safetyFired: !!s.safeguard,
++    attempts: rec.attempts, repFluency: rec.repFluency, posteriors: rec.posteriors, prereqs: sess.prereqs,
++    lessonArmsUsed: s.armsUsed ?? [], failedArmsThisSession: sess.failedArmsThisSession, hindiObserved: s.ctx.lang !== "english", safetyFired: !!s.safeguard,
+     voiceTie: !!(input.voice?.gentlerHint || input.voice?.slowerPace), now: new Date(input.now ?? 0).toISOString() });
++  noteReteach(s, k, d, sess);
+   if (!d || d.move === "none") return null;
+   s.reteachCool = { ...s.reteachCool, [k]: RETEACH_COOLDOWN };
+   s.lastReteach = { ...d, turn: s.turn };

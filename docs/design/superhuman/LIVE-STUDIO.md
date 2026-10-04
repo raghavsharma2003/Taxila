@@ -5,6 +5,11 @@
 `forge-live-codegen-race` as a product rule · **Owner of this spec:** main loop · **Code touched by this session:**
 none in product paths; probes only under `evals/live-studio/`.
 
+**Critic pass (2026-10-04):** transfer totals corrected (47/55); unreviewed library reuse capped at 20 mounts; the
+library key no longer includes the builder model; gate-down never mounts un-gated params; first-session and
+"ready-made only" children get promoted builds only; bands and beats use the Brain's types; Studio traffic moves to
+background quota pools (TEACHER-BRAIN §12 capacity isolation).
+
 **Tags.** **[V]** read in a primary source this session (vendor doc, paper, blog by the builder). **[S]** secondary
 (press, a reverse-engineering write-up, a search summary). **[U]** unverified or a design inference that must be
 measured. **[M]** measured by this session on Azure (method and n in §14). **[T]** read in Taxila's own code, docs or
@@ -38,15 +43,18 @@ them were measured away this session and one is replaced by design:
 2. *"Dollars per artefact against ~$3/month revenue."* Measured: **$0.04-0.12 per passed build** on the routed
    arms, **$0.13-0.23 per raced live build** [M §14], against G2's $0.20 offline harness. That is still too much to
    pay per child per lesson, so live builds are the exception and the library is the rule (§3.11, §7): a passed
-   build re-gated with new params passed **37/44** times with no model call [M §14.4], and the failures were one
-   archetype design bug that the chart primitive removes.
+   build re-gated with new params passed **47/55** times with no model call (fraction 20/21, photosynthesis 22/23,
+   chart 5/11) [M §14.4], and 6 of the 8 failures were one archetype design bug that the chart primitive removes;
+   the other two (a grading error, a flow direction under new strings) are why G-mount re-runs G5/G6 on every mount.
 3. *"Human review before generated code reaches a child."* This is the leg the DIRECTIVE changes. It is replaced by
    (a) an **automated gate that plays the artifact against code truth** (strict all-checks, measured recall on seeded
    bugs in G2 = 1.0 [T]), (b) **architecture that makes the dangerous failures impossible rather than detected**: the
    child-visible words come only from a strings table that passed the safety gate, quantities and keys come only from
    the verified kit through the runtime, the frame has no network and no identity, and the host, never the artifact,
-   grades; and (c) **human review moves to the library**: a build is promoted for cross-child reuse only after a
-   sampled human review (§3.11). A first-time live build is shown to one child, once, after the gate.
+   grades; and (c) **human review moves to the library**: a build is promoted for unlimited cross-child reuse only after a
+   sampled human review (§3.11). A first-time live build is shown to one child, once, after the gate; an unreviewed
+   build may serve at most 20 further mounts (each after G-transfer and G-mount) before it must be promoted or stop
+   being reused (critic fix: §3.2 previously allowed unbounded reuse of unreviewed builds).
 
 **Key decisions (each has a reversal condition in §16):**
 
@@ -221,10 +229,10 @@ export interface StudioIntent {
   kind: StudioKind; skillId: string; itemIds?: string[];   // kit items the piece must use (truth)
   need: "introduce" | "contrast_misconception" | "practice" | "probe" | "explore_question" | "celebrate_mastery";
   misconceptionId?: string;                        // from the kit's diagnostic catalogue, never free text
-  beat: "hook" | "explain" | "worked_example" | "practice" | "probe" | "recap";
+  beat: BeatType;                                  // TEACHER-BRAIN shared/brain.ts (incl. contrast, practice_set, explore_question)
   neededAtMs: number;                              // Brain's estimate of when it will reach for it (lesson clock)
   priority: "on_cue" | "opportunistic";
-  style: { band: "6-9" | "10-12" | "13-15"; lang: "hi" | "en" | "hinglish"; interest?: string /* from an allowlist */;
+  style: { band: Band4 /* shared/bands.ts: B1 cl1-2 … B4 cl8-9 */; lang: "hi" | "en" | "hinglish"; interest?: string /* from an allowlist */;
            representation?: "concrete" | "pictorial" | "symbolic"; motion: "calm" | "lively" };
   childQuestion?: { normalised: string };          // only via the brain's paraphrase, PII-scrubbed; see §5.4
 }
@@ -242,7 +250,9 @@ Deterministic code, no model:
    with one correct option, a science process with a verified flow list). If not: fallback ladder.
 2. **Library lookup** by identity (§3.11). Hit with status `promoted` → mount now. Hit with status `live_passed`
    (passed for another child, not yet reviewed) → mount for this child too only if the build has ≥ 3 passes across
-   distinct param sets and 0 incident reports (§3.11), else build live.
+   distinct param sets, 0 incident reports and < 20 mounts so far (§3.11), else build live. At bond stage
+   `meeting` (the child's first session) and under the parent control "Only ready-made ones", only `promoted`
+   builds, the skeleton and T1 engines are admissible (TEACHER-BRAIN §6.3, STUDENT-FLOW §3.3).
 3. **Budget check:** lesson live-build count < 3, per-child spend < $0.60/day and < $8/month, global breaker (G2's
    breaker code); numbers and reasoning in §7.
 4. **Live build** with the per-kind route: `routes.json` = `{kind: [{dep, effort, weight}], race: 2, deadlineMs}`
@@ -308,7 +318,7 @@ implements G0-G9 for 3 kinds in `evals/live-studio/qa.mjs`; production ports the
 | G1 | boot | `Studio.ready()` ≤ 5 s; 0 console errors, 0 page errors, 0 CSP violations; 0 network requests (route-recorded, dead proxy); a CSP probe fetch from inside must be refused | all |
 | G2 | seam | every required data attribute present and live (e.g. `data-shaded` changes on tap) | all |
 | G3 | words | every visible text node ⊆ strings table ∪ numerals (+ allowed punctuation); `Studio.t` called only with table keys | all |
-| G4 | layout | 360×640 and 412×915 and 768×1024: no horizontal scroll; every target ≥ 44 px (≥ 56 px for band 6-9); targets inside the viewport; labels do not overlap (> 15% of the smaller box); **labels anchored to their referent** (added after §14.3) | all |
+| G4 | layout | 360×640 and 412×915 and 768×1024: no horizontal scroll; every target ≥ 44 px (≥ 56 px for B1-B2, classes 1-4); targets inside the viewport; labels do not overlap (> 15% of the smaller box); **labels anchored to their referent** (added after §14.3) | all |
 | G5 | play-truth | scripted play with **real pointer clicks at element centres**: a wrong path (graded wrong by the host, no advance) then the right path (graded right, advance); all items to `done`; the host's grade is the truth | game, chart, explorable, minisite quiz |
 | G6 | semantics | kind-specific truth: bar heights ∝ values within 1.5 px on a common baseline and **ticks at the right heights** (≤ 6 px); particles of each flow move in the scientifically right direction (water up, CO₂ into the leaf, O₂ out); a fraction whole has exactly *d* equal parts (area equality ≤ 2% in production); geometry constraints by solver (S10) | per archetype |
 | G7 | state graph | the reachable interaction FSM (from the seam events) matches the archetype's ideal graph (EE-Eval) — required states reachable, no dead ends, reset works | game, simulation, explorable |
@@ -394,10 +404,12 @@ size-limited (≤ 1 KB).
 
 ### 3.11 Cache and library (the effect that makes it scale)
 
-- **Identity** = sha256(kind, archetype id, skill id, band, lang family {hi, en-hinglish}, kit hash, studio-kit
-  version, builder model id). Params and strings are *not* in the identity: they are injected per mount.
+- **Identity** (the lookup key) = sha256(kind, archetype id, skill id, Band4, lang family {hi, en-hinglish}, kit hash,
+  studio-kit version). The builder model id is a *variant* attribute under the identity, not part of the key
+  (critic fix: keying on the model would empty the library every time the router changes an arm). Params and strings
+  are *not* in the identity: they are injected per mount.
 - **States:** `live_passed` (passed the gate for one child) → `transfer_passed` (G-transfer with a held-out param
-  set) → `promoted` (≥ 3 passes on distinct param sets **and** a sampled human review: 100% of the first 50 per
+  set; reusable for ≤ 20 mounts, each after G-mount) → `promoted` (≥ 3 passes on distinct param sets **and** a sampled human review: 100% of the first 50 per
   archetype, then 10%) → `retired` (incident, review reject, kit change, studio-kit version change).
 - **Reuse:** a `promoted` build is mounted for any child whose intent maps to the same identity (G-mount runs in
   the background before reveal: ~10 s; the skeleton covers it). `transfer_passed` builds are reusable after G-mount.
@@ -479,7 +491,7 @@ each page is gated separately and pages reveal as they pass. Larger budget: ≤ 
   finished.
 - **revealed:** the veil lifts (300 ms), the pencil layer fades, a gentle scale 0.98 → 1.0, and the first target
   pulses once. The teacher's line starts within the same 300 ms.
-- **Reduced motion** (OS setting or band 6-9 calm mode): no pencil animation; a cross-fade only.
+- **Reduced motion** (OS setting or B1 calm mode): no pencil animation; a cross-fade only.
 
 ### 4.3 How the teacher refers to it
 - Only `revealed` pieces are referred to (`screenHasTargets` reads Studio state, closing live-content gap 5).
@@ -662,7 +674,7 @@ design therefore budgets **live builds as the exception**:
 | Both builders miss the deadline | build clock vs `neededAtMs` | Brain gets `studio.late`; skeleton-as-activity or ladder; the build continues and is revealed later if still relevant (opportunistic) or goes to the library |
 | Builder stream stalls (no tokens 20 s) | stream watchdog | cancel that arm; the race partner continues; measured: DeepSeek-V4-Pro hit the 300 s timeout on 2 of its first 3 fraction builds [M] |
 | Content filter fires on a builder | `content_filter` error | log, drop arm, do not retry same prompt; if both, fallback; the strings table is re-checked |
-| Gate infrastructure down | pool health | **no reveal of un-gated code, ever**; library `promoted` builds still mount (G-mount degraded to G1+G3 on device? no: G-mount is skipped only for builds with ≥ 20 prior mounts and 0 incidents) |
+| Gate infrastructure down | pool health | **no reveal of un-gated code, ever, including un-gated params**: a library build mounts only if this exact (build sha, params hash, strings hash) already passed G-mount (the gate-result cache); otherwise the skeleton-as-activity or a T1 engine. G-mount is never skipped on mount count alone, because the transfer probe found a flow-direction failure that appeared only under new strings (§14.4) |
 | Hard-coded values (passes for one child, wrong for the next) | G-transfer before library; G-mount per child | retire the build; negative memory |
 | Science drawn backwards / label at wrong referent | G6 / G4 anchoring | repair with the check detail |
 | Runtime error after reveal | frame `error` | §4.4 |
@@ -859,7 +871,11 @@ fallback; the vision judge; FLUX/gpt-image-2 per-image cost; library hit rate in
 - **O-3 Code-model capacity:** raise TPM on `gpt-5.6-terra` and `taxila-brain` so ≥ 20 concurrent races fit
   (each race ≈ 2 × 6 k output tokens in ~40 s), and give `taxila-kimi-code` and `DeepSeek-V4-Pro` a higher-capacity
   (Global Standard) deployment if Foundry sells one Direct; Studio re-benches them (their TTFT of 2-4 minutes looks
-  like queueing [U]). Default: race on terra + sol, codex as the 429 fallback, Kimi/DeepSeek offline only.
+  like queueing [U]). Default: race on terra + sol, codex as the 429 fallback, Kimi/DeepSeek offline only. **Quota isolation (critic):**
+  the race must not share a quota pool with live-lesson calls; `taxila-brain` also writes parent texts and runs the
+  Hindi Q8 check, so the sol arm moves to a Studio-only sol deployment (TEACHER-BRAIN O-B4), and the planner's
+  `taxila-fast` calls move to `taxila-fast-bg`. Until then a token bucket caps Studio at 30% of each shared
+  deployment's TPM.
 - **O-4 No new model is required to ship.** If Foundry adds a faster code-specialised model sold Direct, the router
   bench evaluates it within a week; nothing in the spec names a model outside `routes.json`.
 

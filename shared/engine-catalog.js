@@ -418,7 +418,7 @@ const ADAPT = {
     const ok = ans === v;
     return { params: { mode: "measure", shape: `rect:${w}x${h}`, ask, w: Math.max(w, 3), h: Math.max(h, 2) }, key: String(v), bindItem: ok, why: ok ? `measure: ${ask} = kit key` : `measure: key differs` };
   },
-  "data-graphs@1": (p, ans) => {
+  "data-graphs@1": (p, ans, _rep, _preset, actx) => {
     const ICON = "(?:pictures?|stars?|balls?|bats?|icons?|symbols?|clouds?|smileys?|trees?|apples?|cricket-ball pictures?|tree pictures?|bat pictures?)";
     const key = p.match(new RegExp(`(?:each|1|one)\\s+(?:[a-z-]+\\s+){0,2}?${ICON}\\s*(?:=|means|stands for|is)\\s*(\\d+)`, "i"));
     if (key) {
@@ -456,6 +456,34 @@ const ADAPT = {
       const readable = a.value % step === 0 && b.value % step === 0;
       const ok = ans === v && a !== b && readable && new Set(cats.map((c) => c.label)).size === cats.length;
       return { params: { mode: "read", view: "bar", data: cats, question: "difference", ask: a.label, askB: b.label }, key: String(v), bindItem: ok, why: ok ? "bar difference = kit key" : !readable ? "difference: a value falls between gridlines" : "difference: key differs" };
+    }
+    // Most / least (W1-B): "June 140, July 250, August 230. Which month had the most rain?" → a bar graph read; the
+    // child taps the tallest (or shortest) bar. The kit key is a LABEL ("July (250 mm)"), so it binds when that label
+    // is the unique top (or bottom) category; a tie is an engine error (dataGraphs.logic.ts normalize), never mounted.
+    const extreme = /\b(?:which|what)\b[^.?]*?\b(most|highest|greatest|largest|biggest|maximum|least|lowest|smallest|fewest|minimum)\b/i.exec(p);
+    if (cats.length >= 2 && extreme && new Set(cats.map((c) => c.label.toLowerCase())).size === cats.length) {
+      const question = /most|highest|greatest|largest|biggest|maximum/i.test(extreme[1]) ? "most" : "least";
+      const vals = cats.map((c) => c.value);
+      const target = question === "most" ? Math.max(...vals) : Math.min(...vals);
+      const tops = cats.filter((c) => c.value === target);
+      if (tops.length !== 1 || cats.some((c) => !Number.isInteger(c.value) || c.value < 0)) return null;
+      const keyLabel = String(actx?.rawAnswer ?? "").trim().match(/^[A-Za-z]+/)?.[0]?.toLowerCase() ?? "";
+      const ok = !!keyLabel && tops[0].label.toLowerCase() === keyLabel;
+      return { params: { mode: "read", view: "bar", data: cats, question }, key: tops[0].label, bindItem: ok,
+        why: ok ? `bar ${question} = kit key` : `bar ${question}: the kit key is not the ${question} category` };
+    }
+    // Read one bar (W1-B): "Asha's bar reaches the 12 line. How many votes?" / "Scale: 1 unit = 10 runs. A bar is 7 units
+    // tall. How many runs?" → a bar graph read, question value; the child types what the bar shows. Bound on the key.
+    const who = p.match(/\b([A-Z][a-z]+)(?:'s)?\s+bar\b/)?.[1] ?? "Bar";
+    const reach = p.match(/\bbar\b[^.?]*?\breaches\s+the\s+(\d+)\s+(?:line|mark)\b/i);
+    const units = p.match(/\b(?:1|one)\s+unit\s*=\s*(\d+)\b[^.?]*[.?]\s*[^.?]*?\bbar\b[^.?]*?\b(\d+)\s+units?\s+(?:tall|high|long)\b/i);
+    if ((reach || units) && /how many|what value|how much/i.test(p)) {
+      const scale = units ? Number(units[1]) : 1;
+      const v = units ? scale * Number(units[2]) : Number(reach[1]);
+      if (!Number.isInteger(v) || v < 0 || v > 1000 || (units && Number(units[2]) > 12)) return null;
+      const ok = ans === v;
+      return { params: { mode: "read", view: "bar", scale, data: [{ label: who.slice(0, 16), value: v }], question: "value", ask: 0 }, key: String(v), bindItem: ok,
+        why: ok ? "bar value = kit key" : "bar value: key differs" };
     }
     return null;
   },
@@ -529,7 +557,8 @@ export function planEngine({ kit, item, lang, mode = "show", representation, top
   const ctx = { topicId: kit?.topicId, skillId: item?.skillId ?? null, lang, ...(representation ? { representation } : {}) };
   const predict = mode === "predict";
   const cls = Number(String(kit?.topicId ?? "").match(/^c(\d+)/)?.[1] ?? 6);
-  const actx = { ageBand: ageBand ?? (cls <= 4 ? "6-9" : "10-15") };
+  // rawAnswer: the kit key as written ("July (250 mm)"), for adapters whose right answer is a label, not a number
+  const actx = { ageBand: ageBand ?? (cls <= 4 ? "6-9" : "10-15"), rawAnswer: item?.answer ?? null };
   let adapted = item && ADAPT[engine] ? ADAPT[engine](prompt, parseAnswer(item.answer), representation, preset, actx) : null;
   let used = engine;
   // A sibling engine of the same family may fit the item where the kit's engine has no mode for it (fraction

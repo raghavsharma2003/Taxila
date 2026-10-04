@@ -116,3 +116,43 @@ export function clockPhase(r, l, now, cal) {
 export function dayKindLookup(overrides = {}, calendar = {}) {
   return { kind: (day) => overrides[day] || calendar[day] || (weekday(day) === 0 ? "off" : "school_day") };
 }
+
+// ───────────── The test clock (BUILD-PLAN W1-C #3; comprehension audit G8) ─────────────
+// "Understood" needs a delayed success ≥ 20 h after learning, and a parent letter needs a Sunday, so nobody can test
+// either in one sitting. A guardian whose email is @taxila.test may set a server-side clock OFFSET; every request of
+// that session then runs with the clock shifted (server/comprehension/testclock.js runRequestClock), and the Conductor
+// reads a test child's "now" as shiftNow(real, offset). Pure helpers only here (this file never reads Date.now); the
+// offset itself lives in the test_clock table (012_pending_grade.sql), and every real account is refused with 403.
+
+/** The test-account domain: prod-smoke, tests/prod and every probe sign up as `…@taxila.test` (D's sweeper deletes them). */
+export const TEST_ACCOUNT_RE = /@taxila\.test$/i;
+/** Is this guardian email a test account (the only accounts that may hold a clock offset)? */
+export const isTestAccount = (email) => TEST_ACCOUNT_RE.test(String(email ?? "").trim());
+/** The furthest a test clock may run ahead: 60 days (= the test_clock.offset_ms check constraint). */
+export const TEST_CLOCK_MAX_MS = 60 * 86400_000;
+
+/**
+ * The new offset a POST /api/test/clock body asks for, against the current one. Forward only: the learner ledger
+ * orders sessions by their start times, and a clock that ran backwards would put a later lesson before an earlier one.
+ * Accepts { offsetMs } or { offsetDays } (absolute) or { advanceDays } / { advanceMs } (relative). Throws a plain Error
+ * (the route maps it to 400) for anything else.
+ * @param {any} body @param {number} currentMs
+ * @returns {number}
+ */
+export function nextTestOffset(body, currentMs = 0) {
+  const b = body ?? {};
+  const num = (v) => (typeof v === "number" && Number.isFinite(v) ? v : null);
+  let next = null;
+  if (num(b.offsetMs) != null) next = num(b.offsetMs);
+  else if (num(b.offsetDays) != null) next = num(b.offsetDays) * 86400_000;
+  else if (num(b.advanceMs) != null) next = currentMs + num(b.advanceMs);
+  else if (num(b.advanceDays) != null) next = currentMs + num(b.advanceDays) * 86400_000;
+  if (next == null) throw new Error("give offsetDays, offsetMs, advanceDays or advanceMs (a number)");
+  next = Math.round(next);
+  if (next < currentMs) throw new Error(`the test clock only runs forward (now +${currentMs} ms)`);
+  if (next > TEST_CLOCK_MAX_MS) throw new Error(`the test clock runs at most ${TEST_CLOCK_MAX_MS / 86400_000} days ahead`);
+  return next;
+}
+
+/** A test child's "now": the real instant plus its guardian's offset (0 for every real account). */
+export const shiftNow = (realMs, offsetMs = 0) => realMs + (offsetMs || 0);

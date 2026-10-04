@@ -1,0 +1,76 @@
+{
+ "nodes": [
+  {
+   "id": "help-requests-are-actions",
+   "kind": "decision",
+   "title": "Hint-sheet and Young Help-menu taps are client actions (chip ids hint/why/know/another/slower/skip/help_choices/help_how): stored as system rows, never graded, never the child's words, never evidence or test budget",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "skip-skips-the-item",
+   "kind": "decision",
+   "title": "'Skip for now' leaves the ITEM with no verdict and poses the next one; only the child's own stop words or Pause then End close a lesson",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "unclear-cap-three",
+   "kind": "decision",
+   "title": "Unclear replies capped at 3 per item: the third puts choices on screen (or moves on), past that the item is left with no evidence; typed input never gets a repair ('say it again') move",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "g-ask-parity",
+   "kind": "decision",
+   "title": "G-ASK: a turn with a pinned card question ends on that question and asks no other; fixed in code (endOnAsk / lastQuestionOnly) before any model rewrite; wrap words only on wrap moves (stripWrap)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "g-praise-2-no-correction-after-right",
+   "kind": "decision",
+   "title": "G-PRAISE-2: after a right answer the acknowledgement may not state a wrong option shown to the child (diagnostic options, offered tiles) as the result; one rewrite, then the sentence is removed in code",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "diag-two-ladders",
+   "kind": "decision",
+   "title": "Diagnostic items carry two ladders: rungShapes (teacher notes, server-side) and hints (three child-facing card lines, no rung labels, no shape words); hintFor drops any line matching the shape-word lint",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "text-lane-streamed-voice",
+   "kind": "decision",
+   "title": "Text lane speaks through /api/voice/tts-stream + PcmStreamPlayer with the /turn prewarm (same as cascade); /api/tts only as fallback when the stream never sounded, and for Hear",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "open-now-one-hour",
+   "kind": "decision",
+   "title": "Parent 'Open now for 1 hour' (POST /api/lesson/open-now, child_controls.open_until, migration 015) opens the lesson HOURS only, today only; the daily limit and 'done for today' still hold; PIN-gated like every consent-grade action; audited",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1a-local-acceptance-2026-10-04",
+   "kind": "measurement",
+   "title": "W1-A acceptance on a local serve.mjs + Neon test branch: battery 0/30 parity, 0 two-question, 0 typed repair, 0 hint shape words, 0 off-wrap goodbyes at classes 5 and 8; Young text lane 3 commits in 11 turns, pad 1/1, choices tiles include key 1/1, 0 help phrases in parent transcript; text-lane first audio byte p50 213 ms p90 250 ms n=20 (sandbox, not a timing gate)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "text-lane-tts-whole-mp3",
+   "kind": "rejection",
+   "title": "Text lane speaking via whole-mp3 /api/tts: first audio 1.6-2.1 s after the turn response (smooth G4); replaced by the streamed path",
+   "at": "2026-10-04"
+  }
+ ],
+ "edges": [
+  {
+   "src": "text-lane-streamed-voice",
+   "rel": "supersedes",
+   "dst": "text-lane-tts-whole-mp3"
+  }
+ ],
+ "md": {
+  "decisions": "## help-requests-are-actions\nAudit flows G3/G6: \"Choices dikhao\" x13 was stored and quoted as \"In Aarav's words\", and \"Skip for now\" was read as \"I want to stop\". Help taps now carry fixed chip ids (classify.js HELP_REQUESTS, helpOf). /turn stores them as `system` rows (`[help: x]`), the classifier returns no_evidence with source \"help\" and no flags (the safety scan still runs first on any words sent with them), the step spends no test budget, and the reply model sees \"(the child tapped a help button: ... - not an answer)\". The client shows a chip state under the ask (\"Hint asked\") instead of \"Your answer\".\n**Reverse if:** children use these buttons as answers in practice (for example typing into the help path), measured on transcripts, or a help tap needs to count as evidence for the learner model.\n\n## skip-skips-the-item\nstate.js helpMove \"skip\" calls leaveItem: the item goes to s.skipped with no verdict and the next item (or warm-up step) is posed. Stop words and Pause then End still close the lesson.\n**Reverse if:** skipped items are never revisited (they should come back another day) or children skip whole lessons item by item.\n\n## unclear-cap-three\nLIMITS.unclearTries 2 -> 3, now per item and honest: the third unclear reply offers choices (offerChoices: diagnostic options or choicesFor key + 2 distractors), past that leaveItem (no evidence). Typed unclear input gets a \"hint\" move with SH.typedNoAnswer, never \"repair\": they typed it, so \"I didn't catch that\" was wrong (flows G4). Measured before: 12 repair/hint turns on one diagnostic (comprehension G11).\n**Reverse if:** the cap leaves items before a child who was close could answer (moves-on with a correct answer on the following attempt in transcripts).\n\n## g-ask-parity\nsay.js askParity / endOnAsk / lastQuestionOnly / wrapsUp / stripWrap. textReply flags \"ask\", \"twoq\" and \"wrap\"; when they are the only problems the turn is fixed in code with no model call; otherwise they join the rewrite and are fixed in code after it. The card ask and the spoken question can no longer disagree (\"13 ka square\" vs \"10 ka square\").\n**Reverse if:** the code fix produces awkward turns in a listening review (an acknowledgement that only made sense with the dropped question).\n\n## g-praise-2-no-correction-after-right\nFound on the W1-A local Young run: c2 diagnostic restart-ones, key 9, child tapped 9 (graded correct), the teacher said \"yahan 8 ke baad 2 jodna tha, isliye 10\". G-PRAISE-1 caught only \"wrong\" words. lesson.js stores state.lastRight {key, wrong} when a graded target showed wrong options; say.js correctsRight flags a non-question sentence that names a wrong option without the key (sentences mostly made of the next question are excluded). One rewrite; what survives is stripped (stripCorrection). Re-run after the fix: \"9 tumne sahi bola tha.\"\n**Reverse if:** false positives (a legitimate contrast without the key) show up in guard.caught at a rate that costs latency; then require a correction marker word.\n\n## diag-two-ladders\nitems.js diagnosticItem: `rungShapes` (pump/hint/prompt/assertion notes for SH.hint) and `hints` = DIAG_CHILD_HINTS (three plain English card lines). RUNG_LABEL / stripRungLabel strip \"Prompt:\" / \"Assert:\" style labels; state.js hintShapeWords lints ui.hint.text. Audit flows G5: \"pump: ask them to picture both choices as real things\" reached the child's card.\n**Reverse if:** kit hints gain their own child-facing field (then the card reads it and the generic lines go).\n\n## text-lane-streamed-voice\ntextLink.ts plays tts-stream through PcmStreamPlayer on the same gain node and analyser as the clip element; a stream that fails before sounding falls back to /api/tts once; a context that is not running uses the clip path so the turn still completes. /turn prewarms text-mode replies (as cascade). In text mode the dock stays open while she speaks (openWhileSpeaking); typing is the barge-in.\n**Reverse if:** the probe fleet measures p50 first audio > 400 ms for the text lane, or stream failures on real devices exceed the clip path's.\n\n## open-now-one-hour\nPOST /api/lesson/open-now {childId} -> {openUntil, plan}; child.js homeStateOf honours open_until for the hours only. The 409 LessonStartRefused body now carries `control` (hours / daily_limit / done) and `window`, and the child client renders designed done / capped / resting screens (Refused.tsx), never \"We couldn't start the lesson\". Migration 015 adds child_controls.open_until (applied to the Neon test branch; production at integration).\n**Reverse if:** parents ask for open-now to also lift the daily limit, or open-now gets used daily (then the saved hours are wrong and the Controls page should suggest changing them).\n",
+  "measurements": "## w1a-local-acceptance-2026-10-04\nMethod: `node tests/prod/run.mjs --wave 1 --only w1a --base http://localhost:6143`, local serve.mjs on the W1-A tree, Neon test branch, Azure Foundry models; date 2026-10-04.\n- w1a-battery: 30 typed turns each at class 5 and class 8 (n=60): 0 final-question mismatches with ui.ask.text, 0 two-question turns, 0 repair moves on typed input, 0 shape words in ui.hint.text, 0 goodbye lines outside wrap; Skip posed the next item at both classes. 14/14.\n- w1a-practice-ask: Practice and Ask 201 after a done lesson in API and at 360x640; resting screen names the hours and the time; Controls \"Open now for 1 hour\" tap 200, then a lesson starts 201. 23/23.\n- w1a-young-text (class 2, Type instead, 360x640, n=1 lesson): 3 commits in 11 turns, NumberPad on 1/1 number items, \"Show me choices\" tiles for the current item with the key 1/1, 12 tts-stream and 0 whole-clip speech requests, 0 help phrases in the parent transcript. 14/14.\n- w1a-text-voice: tts-stream audio for 20/20 text-lane replies, prewarm hits 20/20, first audio byte after the turn response p50 213 ms, p90 250 ms, n=20. Sandbox to a local server: a correctness check, NOT the timing gate (that runs from the Azure probe, TAXILA_PROBE=1).\n",
+  "rejected": "## text-lane-tts-whole-mp3\nTried: the text lane spoke each reply by POSTing /api/tts for the whole mp3 after the text arrived. Broke: first audio 1.6-2.1 s after the turn response (smooth G4), so the child read the reply before she started speaking. Kept only as the stream's fallback and for Hear.\n"
+ }
+}

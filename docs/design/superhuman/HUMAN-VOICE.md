@@ -20,6 +20,10 @@ Evidence tags:
 - **[U]** unverified;
 - **[H]** inherited measurement from html-portfolio.
 
+**Critic pass (2026-10-04):** the planner's input is now the Teacher Brain's `Moment` only (§5.1); emotion rows are
+keyed to RELATIONAL-OS affect causes, never to a correct verdict; bands use `shared/bands.ts` Band4; a grounded
+uptake prelude joins the latency levers (§5.11, TEACHER-BRAIN §5.4). Changes are marked "critic".
+
 Everything measured lives in `docs/design/superhuman/voice-probe/` (scripts and JSON).
 The listening clips are in `docs/design/superhuman/voice-clips/`.
 
@@ -298,7 +302,7 @@ Conclusions:
 ## 5. The expressive layer: design
 
 ```
-Director (move, verdict, childLaughed, thinkAloud, affect, band, bond)
+Brain Moment (move, verdict*, teacherAffect, engagement, childLaughed, thinkAloud, band, bondStage)   *licences only
      │                                   reply text (guarded, final)
      ▼                                         │
  MomentPlan (code, 0 ms) ──────────────►  ClauseAligner (code)  ◄── Governor (per-session rates, recency)
@@ -319,19 +323,20 @@ Director (move, verdict, childLaughed, thinkAloud, affect, band, bond)
 ### 5.1 MomentPlan: the live planner (code)
 
 `server/voice/expressive/moment.js`, a pure function:
-`momentPlan(ctx) → { arc, licence, pace, intensityCap, register }`.
+`momentPlan(moment, governorState) → { arc, licence, pace, intensityCap, register }`.
 
-Inputs, all already on the server at turn time:
+**Input contract (critic fix): the Teacher Brain's `Moment` (TEACHER-BRAIN §4.1, TB6) is the only context.** The
+planner never computes its own affect. Fields used:
 - `move` (Director move id);
-- `verdict` (`say.js verdictFor`);
-- `childLaughed` (§5.6);
-- `thinkAloud` (the move is worked-example or think-aloud);
-- `affect` (attunement band, from `voice-features` and the comprehension engine; frustration ↑, confidence ↓);
-- `band` (class band 1-2 / 3-5 / 6-9);
-- `bond` (relationship stage from the relational OS);
-- `lang` (mode: hi / hinglish / en);
-- `safety` (distress or helpline or safeguarding);
-- `turnIndex`, `secondsSinceLastNonverbal` (from the governor).
+- `verdict`: **for licences only** (no laugh, sigh or filler after not_yet/partial), never to pick an emotion arc;
+- `teacherAffect` (RELATIONAL-OS `appraise()`: `display` + `intensity` + `cause`): picks the emotion row;
+- `engagement` (the learner affect machine: task evidence and the child's words only; never acoustic emotion,
+  `ct-no-voice-emotion-inference`): `strained` selects the comfort row;
+- `childLaughed` (§5.6), `thinkAloud` (the move is worked-example or think-aloud);
+- `band`: `Band4` from `shared/bands.ts` (B1 cl 1-2, B2 cl 3-4, B3 cl 5-7, B4 cl 8-9);
+- `bondStage` (RELATIONAL-OS `Stage`);
+- `lang` (hi / hinglish / en); `safety`; `uptakePrelude` (§5.11);
+- from the governor: `turnIndex`, `secondsSinceLastNonverbal`.
 
 Rules (a table in code, one row per move family; values are bands, not prose):
 
@@ -342,17 +347,28 @@ Rules (a table in code, one row per move family; values are bands, not prose):
 | explain | calm → warm, emphasis on the new term | breath before a ≥ 12-word sentence | slow on the term clause | 250-450 ms before the term |
 | think-aloud / worked | thinking throughout; proud on the result clause | hum before the first step; breath mid | slow steps, brisk result | **varied** 150-500 ms between steps |
 | pose question | curious | none | normal | 300 ms before the ask |
-| praise (verdict = correct) | surprised (if hard or first try) → delighted → warm | sigh_relief only after a long struggle (≥ 2 wrong tries) | brisk → normal | short |
+| affirm (verdict = correct, `teacherAffect` neutral_warm) | warm, even (no surprise, no delight arc) | none | brisk → normal | short |
+| notice insight (`teacherAffect.display` = delight: a method or a why the child found) | curious → delighted on the clause naming the method → warm | breath before the naming clause if ≥ 12 words | normal | 250-400 ms before the method's name |
+| notice effort (`display` = warm_pride: unaided success after ≥ 2 misses, self-correction) | warm → proud (steady, slightly slower) | sigh_relief only here (the struggle is the cause) | normal → slow on what they kept doing | short |
 | correct (verdict = not_yet / partial) | calm → reassuring → curious | **none** (never laugh, never sigh) | **slow** | 400-650 ms before the look-again clause |
-| shared laughter (childLaughed) | amused → playful → warm (fact returns calm) | chuckle or laugh on clause 0 only | brisk → normal | 0 before the laugh; 300-550 ms before the fact |
-| comfort (affect frustrated) | calm, intensity ≤ 0.4 | breath (slow) | slow | longer |
+| shared laughter (childLaughed; `display` = playful) | amused → playful → warm (fact returns calm) | chuckle or laugh on clause 0 only | brisk → normal | 0 before the laugh; 300-550 ms before the fact |
+| comfort (`engagement` = strained or `display` = gentle_concern) | calm, intensity ≤ 0.4, pitch −6% | breath (slow) | slow | longer |
+| own slip (`display` = sheepish_own) | plain, warm 1 | none | normal | short |
 | wrap / goodbye | warm → proud | none | normal | normal |
 | **safety** | calm, neutral intensity 0.3 | **none** | slow | fixed 300 ms between sentences |
 
+**Why there is no "praise on correct" row any more (critic fix).** The first draft keyed `surprised → delighted` to a
+correct verdict ("if hard or first try"). That contradicts three standing rules: RELATIONAL-OS TA7 (affect never keyed
+to correctness), `design-v2-face-verdict-neutral` (the face would stay neutral while the voice celebrated, which is
+exactly the voice/face disagreement TB6 exists to prevent), and LEARNER-MODEL X3 (symmetric neutral feedback in
+B1-B2 while scoring). Surprise at a correct answer also signals that the teacher expected failure. Delight and pride
+now fire only on RELATIONAL-OS causes (insight, effort, christened, milestone), with the same caps (≤ 1 per 5 turns).
+The measured clip L3 ("surprised praise") remains a valid *delivery* measurement; only its licence changed.
+
 Caps:
-- `intensityCap`: band 1-2 = 0.8, band 3-5 = 0.7, band 6-9 = 0.5. Above ~9 the uncanny-valley risk rises
+- `intensityCap` by `Band4` [I]: B1 0.8, B2 0.7, B3 0.6, B4 0.5. Above ~9 years the uncanny-valley risk rises
   (human-likeness §0.6), so older children get less animation.
-- `bond` raises warmth by at most +0.1 after the relationship OS reports a stage ≥ "familiar".
+- `bondStage` raises warmth by at most +0.1 from stage `regular` (S2) onward.
 - Never "whispering", "affectionate", "secretive" or "sad" styles: intimacy and attachment risk for minors
   (`human-likeness` §6).
 
@@ -468,7 +484,7 @@ Each rule has a unit test and a log counter (`voice.expr.*`) for the telemetry g
   - the verdict is not_yet or partial;
   - the affect is frustrated;
   - it is a safety turn;
-  - the class band is 6-9 and the child did not laugh first.
+  - the child is in B3-B4 (classes 5-9) and did not laugh first.
 - The **hum** is non-lexical "mm-hmm-thinking", pre-rendered, and only as the first sound of a think-aloud turn or
   a wonder hook.
 - The **breath** is an inhalation ~400-650 ms before a long clause (Elmers: 600 ms helps [S]).
@@ -582,6 +598,14 @@ When `register = "safety"`:
   hold splits the turn and +171 ms of uplink harm was measured [H].
 - **Post-turn uptake:** "achha" or "हाँ" as the first word of the reply comes from the aligner's filler slot, inside
   the synthesis, governed.
+- **Grounded uptake prelude (critic addition; TEACHER-BRAIN §5.4 L3, world-best S3).** When the Brain sets
+  `moment.uptakePrelude` (the child's own key token, e.g. the number they said), the server synthesizes it in the
+  same DragonHD voice *while the reply is being generated* (one short SSML request, `[calm]` marker, neutral pitch,
+  no filler, no non-verbal) and plays it only if the reply's first audio would land later than 1.2 s after commit;
+  the aligner then strips a leading echo of that token from the reply. It is lexical, but it is the child's content
+  in context, not a stock filler, so law 4 (words spoken in context by the TTS) holds. Its delivery must not leak the
+  verdict: the gate is a blind listening check where listeners guess right/wrong from the prelude alone at ≤ 55%
+  (HV-16). Never on safety turns, never on lane A.
 
 ### 5.12 Languages
 
@@ -725,7 +749,7 @@ Cost:
 | A clip timbre does not match (vendor voice drift) | "a different person sighed" | f0 drift alarm; owner tick rate | the bank is disabled for that voice (breaks only); rebuild |
 | Splicer misses a gap | a pause with no breath (harmless) | gap_miss counter | fail-silent |
 | Splicer fills a natural pause | a breath in a slightly odd place | synthetic tests; owner ticks | the threshold is tied to the planned gap length |
-| Laugh licensed wrongly (sarcastic "haha") | laughs at a frustrated child | affect check; barge-after-clip metric | the frustrated-affect veto; band 6-9 needs a child laugh first |
+| Laugh licensed wrongly (sarcastic "haha") | laughs at a frustrated child | affect check; barge-after-clip metric | the strained-engagement veto; B3-B4 need a child laugh first |
 | Filler tic | "achha" every turn | governor; telemetry | recency and rate caps |
 | The aligner alters words | wrong content | the preservation assert | speak plain; log |
 | DragonHD down or 5xx | — | upstream error | fall back to gpt-4o-mini-tts with instructions (identity change logged); no clips unless a marin bank exists |
@@ -746,14 +770,16 @@ Cost:
    avatar smiles and bobs its shoulders), then plays along briskly: "Cold drink? फिर तो सारे पौधे गमले में burp
    करते!" A 550 ms pause and a breath, then calm and warm: "नहीं, पौधे सिर्फ़ पानी पीते हैं, अपनी जड़ों से।" If the
    child had *not* laughed, the same words come amused but with no laugh.
-3. **Surprised praise (L3).** "अरे!" (the surprised marker, quick). A 250 ms pause. "पहली बार में ही?" (delighted). A
-   small breath before the specific praise, then warm. No sigh: there was no struggle.
+3. **Noticing a method (L3, re-licensed by the critic pass).** The child added 27 + 35 by making 30 + 32 first. Curious
+   first, then delighted on the clause that names *their* method, then warm. A small breath before the naming
+   clause. No sigh: there was no struggle. A plain correct answer with no method gets the affirm row: warm and even,
+   with no surprise and no delight, and the same face as after a wrong answer.
 4. **Gentle correction (L4).** No filler opening, no laugh, no sigh. Slower (-10% rate on top of the base), pitch
    slightly lower. "अच्छा, यहाँ थोड़ा रुकते हैं।" A 500 ms pause and a breath. The pizza clause is slow. A 650 ms
    pause before the look-again clause, which is curious.
 5. **Wonder (L5, Arjun, class 6).** A breath, then "पता है," low and slow (intrigued). A long pause before the fact,
    which is delivered intrigued. A 420 ms pause and a breath, then a rise to excited on "सोचो, अभी इसी वक़्त भी!"
-   Intensity is capped at 0.5 for band 6-9: wonder, not theatre.
+   Intensity is capped at 0.6 for B3 (class 6), 0.5 for B4: wonder, not theatre.
 6. **Distress or helpline.** A plain, calm, slow, even voice. No sounds or fillers. Digits are said clearly.
 
 ---
@@ -777,6 +803,8 @@ Cost:
 | HV-13 | lane A | delivery line present; 0 sound words; never-deny-AI battery unchanged |
 | HV-14 | bank QA | every approved take: no ASR word, in duration band, f0 within ±8% |
 | HV-15 | pace table | per-voice base rate gives 11-13 chars/s (n=10 lines) and passes an owner ear check |
+| HV-16 | uptake prelude verdict leak | 20 matched pairs (same token after a right and a wrong answer), ≥ 10 blind listeners: right/wrong guessed ≤ 55%; else the prelude is off |
+| HV-17 | Moment-only input | property test: `momentPlan` with `verdict` flipped and `teacherAffect` fixed yields the same emotion arc; no row reachable from `verdict = correct` alone except affirm |
 
 ---
 
@@ -848,7 +876,7 @@ Cost:
 
 ---
 
-## 14. Build order (the full version, sequenced; ≈ 14 days)
+## 14. Build order (the full version, sequenced; ≈ 14.5 days)
 
 | step | work | files | gate | est. |
 |---|---|---|---|---|
@@ -857,7 +885,7 @@ Cost:
 | B2 | Moment planner, clause aligner, governor, compilers (dhd, omni, mai, oai-tts, realtime) + unit and property tests | `server/voice/expressive/{moment,align,governor}.js`, `compile/*.js`, `server/voice/expressive/*.test.js` | HV-1..4 | 2.5 d |
 | B3 | Bank pipeline: render 12 takes × 5 kinds × 3 personas, shape (shapeAck port), auto-QA, curation page, Blob upload, `bank.js` loader | `scripts/voice-bank/{build,shape}.mjs`, `docs/design/superhuman/voice-bank/`, `server/voice/expressive/bank.js` | HV-14, O-1, O-4 | 2 d |
 | B4 | Streaming splicer + leading-clip-first, framed TTS v2, client parser, avatar events | `server/voice/expressive/splice.js`, `server/routes/voice.js`, `src/lesson/ttsStream.ts`, `src/avatar/lip.ts` | HV-5, HV-8, HV-11 | 2.5 d |
-| B5 | Wire into `/turn` (after the guard, before prewarm) and the text lane's "Hear"; telemetry counters | `server/routes/lesson.js` (seam), `server/voice/prewarm.js` | HV-2 on production replies; §8.4 | 1 d |
+| B5 | Wire into `/turn` (after the guard, before prewarm) and the text lane's "Hear", reading the Brain's `Moment` (TEACHER-BRAIN BR2); uptake prelude synthesis + echo strip; telemetry counters | `server/brain/turn.js` (seam), `server/voice/prewarm.js` | HV-2 on production replies; HV-16, HV-17; §8.4 | 1.5 d |
 | B6 | Realtime: lane-A delivery line in `response.create`; `marin`/`cedar` hum bank + client pre-reply hum (flagged); P-VL probe → `voicelive.js` | `src/lesson/realtime.ts`, `server/voice/expressive/compile/{realtime,voicelive}.js`, `evals/voice-live-probe.mjs` | HV-12, HV-13 | 2 d |
 | B7 | LLM annotator (strict schema) for kits, openings, Forge narration, read-aloud; cache | `server/voice/expressive/annotate.js` | validity ≥ 95%, preservation 100% | 1 d |
 | B8 | Nightly audio gates on the probe fleet (ASR leak, marker re-probe, first byte, bank drift) | `evals/voice-expressive-nightly.mjs`, `scripts/prosody-baseline.mjs` | HV-6, HV-7 | 0.5 d |

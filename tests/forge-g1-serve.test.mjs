@@ -96,7 +96,8 @@ describe("turn path (needByMs 2000): code pick now, model pick upgrades the cach
     modelReply = { skin: "cricket", hook: HOOKS.cricket[1].id, decor: DECOR.cricket[1] };
     const r = await requestFill({ kit, itemId: "c6-maths-ch07-t05-i01", move: "practice", learner: learnerOf("Asha"), needByMs: TURN_NEED_BY_MS });
     assert.equal(r.status, "ready");
-    assert.equal(r.flavour.by, "code"); assert.equal(r.flavour.error, "no_time");
+    assert.equal(r.flavour.by, "code");
+    assert.equal(r.flavour.error, "no_time", `FORGE_FLAVOUR=${process.env.FORGE_FLAVOUR} pid=${process.pid} argv=${process.argv.slice(1).join(" ").slice(0, 200)}`);
     assert.equal(modelCalls, 0, "no model call on the request path");
     await flushUpgrades();
     assert.equal(modelCalls, 1, "one background upgrade");

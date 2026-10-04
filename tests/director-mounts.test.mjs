@@ -18,9 +18,17 @@ import { requestFill } from "../server/forge/index.js";
 import { lintKits } from "../scripts/lint-kits.mjs";
 import { initLessonState, step } from "../server/director/state.js";
 
-process.env.FORGE_FLAVOUR = "off";
-process.env.FORGE_DB_CACHE = "off";
-process.env.FORGE_BLOB = "off";
+// Offline Forge (code pick, no model, no Neon, no Blob) ONLY inside the tests that build fills, restored after:
+// `npm test` (node --test tests/) runs every file in ONE process, and a file-level env write here once turned the
+// model off for tests/forge-g1-serve.test.mjs's turn-path test (it read flavour_off instead of no_time).
+const OFFLINE = { FORGE_FLAVOUR: "off", FORGE_DB_CACHE: "off", FORGE_BLOB: "off" };
+async function offline(fn) {
+  const saved = Object.fromEntries(Object.keys(OFFLINE).map((k) => [k, process.env[k]]));
+  Object.assign(process.env, OFFLINE);
+  try { return await fn(); } finally {
+    for (const [k, v] of Object.entries(saved)) { if (v === undefined) delete process.env[k]; else process.env[k] = v; }
+  }
+}
 
 const ROOT = new URL("..", import.meta.url);
 const topicIds = readdirSync(new URL("data/kits/", ROOT)).filter((f) => /^c\d-[a-z]+\.json$/.test(f)).sort()
@@ -92,8 +100,9 @@ test("a frame error clears the module and the tray; the failed engine is not mou
   assert.ok(!again.some((c) => c.op === "mount" && c.engine === mount.engine), "not remounted in this lesson");
 });
 
-test("G1: a ready lesson fill mounts on a practice item with no bound plan; graded only on the server", async () => {
+test("G1: a ready lesson fill mounts on a practice item with no bound plan; graded only on the server", () => offline(async () => {
   _lessonFillsClear();
+  setFillWarmer(null);   // a miss without a warmer is just a miss (another file in this process may have imported seam.js)
   // an English order item: no engine binds it, G1 builds a sequence-steps@1 scene
   const kit = await getKit("c5-english-ch02-t01", { generate: false });
   const learner = { child: { firstName: "Asha", classLevel: 5, languagePref: "hinglish", interests: [] }, recentWrong: [], activeMisconceptions: [], pKnown: {} };
@@ -131,9 +140,9 @@ test("G1: a ready lesson fill mounts on a practice item with no bound plan; grad
   // the same item posed again keeps the fill on screen (no remount)
   s.turn++;
   assert.deepEqual(planModule(s, { kit, item, move: { kind: "practice" }, lang: "hinglish", band: "B3" }), []);
-});
+}));
 
-test("G1: a turn-path miss warms the item once, in the background; the next posing mounts it", async () => {
+test("G1: a turn-path miss warms the item once, in the background; the next posing mounts it", () => offline(async () => {
   _lessonFillsClear();
   const kit = await getKit("c5-english-ch02-t01", { generate: false });
   const calls = [];
@@ -156,7 +165,7 @@ test("G1: a turn-path miss warms the item once, in the background; the next posi
     const cmds = planModule(s, { kit, item, move: { kind: "practice" }, lang: "hinglish", band: "B3" });
     assert.ok(cmds.some((c) => c.op === "mount" && c.goal === `g1:${item.id}`), JSON.stringify(cmds).slice(0, 200));
   } finally { setFillWarmer(null); }
-});
+}));
 
 test("a bound engine answer is the item's answer; an unbound module's answer grades nothing", async () => {
   const kit = await getKit("c5-maths-ch02-t01", { generate: false });

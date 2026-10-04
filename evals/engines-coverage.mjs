@@ -103,6 +103,12 @@ export function frameVerdict(engine, params, value) {
     }
     case "data-graphs@1": {
       const c = DG.normalize(params);
+      // most / least: the child taps a bar (its index); the kit key is that bar's label ("July (250 mm)")
+      if (c.question === "most" || c.question === "least") {
+        const lead = String(v).trim().match(/^[A-Za-z]+/)?.[0]?.toLowerCase();
+        const idx = c.cats.findIndex((x) => x.label.toLowerCase() === lead);
+        return idx >= 0 && DG.readCorrect(c, String(idx));
+      }
       return DG.readCorrect(c, v);
     }
     case "geoboard@1": {
@@ -121,6 +127,7 @@ export function frameVerdict(engine, params, value) {
 /** A wrong value near the key, for the negative replay. */
 function perturb(key) {
   const k = String(key);
+  if (/^[A-Za-z]/.test(k)) return `not ${k}`;   // a label key (a bar graph's most / least): another word leads
   const f = k.match(/^(\d+)\/(\d+)$/);
   if (f) return `${Number(f[1]) + 1}/${f[2]}`;
   const n = Number(k.split(",")[0]);

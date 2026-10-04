@@ -1,0 +1,19 @@
+{
+  "source": "superhuman spec critic pass, 2026-10-04",
+  "entries": [
+    {"type": "decision", "id": "superhuman-one-owner-per-seam",
+     "text": "The five superhuman specs share one owner per seam: bands = shared/bands.ts (Band4 by class); per-turn authority order = TEACHER-BRAIN §10.1 (safety+relational floor > child goodbye/RELEASE > consent > parent controls > caps > cost > plan > teacher-owned repair > pedagogy > probes > rapport > vibe > Studio novelty); teacher affect = RELATIONAL-OS appraise() into Moment.teacherAffect, read by HUMAN-VOICE momentPlan and the face (no other affect source, no voice row keyed to a correct verdict); memory = RELATIONAL-OS consolidate/claims/callbacks (no server/brain/memory.js); stages = RELATIONAL-OS §5.2 (never regress, no usage keys); turn timing = TEACHER-BRAIN §5.4.",
+     "reverse_if": "a seam's owner cannot meet a consumer's measured need without a second producer (then split the seam explicitly and add a property test that the two agree)."},
+    {"type": "decision", "id": "superhuman-quota-isolation",
+     "text": "Hot-path calls (reply, classify, distress, realtime) never share a quota pool with background calls (Studio build/plan, consolidation, annotator, parent texts, router bench). router.js tags lane hot|background; background goes to twin deployments (owner ask O-B4: taxila-fast-bg, a Studio-only sol) and is capped at 30% of a shared deployment's TPM until then.",
+     "reverse_if": "a load test at pilot concurrency shows 0 hot-path 429s with shared pools and no bucket."},
+    {"type": "measurement", "id": "teacher-brain-classify-piggyback-prodclassifier-2026-10-04",
+     "text": "grok-4-1-fast-non-reasoning (production classifier) with the TB4 signals block: labels 30/30 both arms, acts 29/30, p50 660 -> 808 ms (+148), p90 980 -> 927; IDK split 6/6; single-mention interest over-inference 0/3 (M2 models: 6/6). n = 10 replies x 3 reps x 2 arms, one item, synthetic Hinglish text, single rater; US sandbox -> eastus2. evals/teacher-brain/classify-piggyback-prod.mjs, results/classify-piggyback-prodclassifier-2026-10-04.json."},
+    {"type": "rejection", "id": "rj-voice-delight-on-correct-verdict",
+     "text": "HUMAN-VOICE draft row 'praise (verdict = correct): surprised -> delighted'. Broke RELATIONAL-OS TA7 (affect never keyed to correctness), the verdict-neutral face (voice and face would disagree, the failure TB6 exists to stop) and LEARNER-MODEL X3 (symmetric neutral feedback in B1-B2 while scoring). Replaced by an affirm row (warm, even) plus notice-insight / notice-effort rows keyed to RELATIONAL-OS causes."},
+    {"type": "rejection", "id": "rj-relationship-lapse-regression",
+     "text": "STUDENT-FLOW draft 'lapse: 7 days or 3 cool sessions -> warmth steps back one stage' and a 'warm closes' stage gate. Keys the relationship to usage and to an affect estimate (RELATIONAL-OS F10, NM-3) and makes the home differ after a gap (STUDENT-FLOW F7). Stages never regress."},
+    {"type": "open", "id": "lm9-vs-nm3-format-posteriors",
+     "text": "LEARNER-MODEL LM9 allows per-child format deviation in M3 after the HTE gate and E-PROFILE; dpdp-deep NM-3 and LEARNER-MODEL's own NM-3 list say format-preference posteriors are never persisted. TEACHER-BRAIN now keeps the child deviation session-only until all LM9 gates pass AND counsel confirms. Needs a main-loop resolution."}
+  ]
+}
