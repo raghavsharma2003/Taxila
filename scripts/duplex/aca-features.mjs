@@ -14,7 +14,14 @@ import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { arm, loadEnv, until, sleep } from "../../infra/azure.mjs";
+import { arm as armRaw, loadEnv, until, sleep } from "../../infra/azure.mjs";
+
+/** ARM with retries on transport errors (a dropped poll must never delete a running job). */
+async function arm(...a) {
+  for (let k = 0; ; k++) {
+    try { return await armRaw(...a); } catch (e) { if (e.status || k >= 6) throw e; await sleep(3000 * (k + 1)); }
+  }
+}
 
 loadEnv();
 const argv = process.argv.slice(2);
@@ -28,7 +35,8 @@ const HERE = path.dirname(new URL(import.meta.url).pathname);
 const ACCOUNT = process.env.AZURE_STORAGE_ACCOUNT, KEY = process.env.AZURE_STORAGE_KEY;
 const CONTAINER = "duplex-fdb";
 const VERSION = "2021-08-06";
-const RUN = `fdb-${new Date().toISOString().slice(0, 10)}-${crypto.randomBytes(3).toString("hex")}`;
+const RUN = opt("--run", null) || `fdb-${new Date().toISOString().slice(0, 10)}-${crypto.randomBytes(3).toString("hex")}`;
+const REUSE = !!opt("--run", null);
 const JOB_NAME = "taxila-duplex-feat";
 const API = "api-version=2024-03-01";
 
@@ -107,30 +115,33 @@ async function main() {
     .filter((id) => !fs.existsSync(path.join(FEAT, `${id}.f32`)));
   console.log(`run ${RUN}: ${ids.length} streams to featurise in ${SHARDS} shards`);
   if (!ids.length) return;
-  const code = path.join(WORK, "code");
-  fs.mkdirSync(code, { recursive: true });
-  for (const f of ["stmel.py", "st_features.py"]) fs.copyFileSync(path.join(HERE, f), path.join(code, f));
-  for (const f of ["st32-emb.onnx", "mel80x201.npy"]) fs.copyFileSync(path.join(MODELS, f), path.join(code, f));
-  execFileSync("tar", ["-cf", path.join(WORK, "code.tar"), "-C", code, "."]);
-  await putFile("code.tar", path.join(WORK, "code.tar"));
   const n = Math.min(SHARDS, ids.length);
   let bytes = 0;
-  for (let s = 0; s < n; s++) {
-    const mine = ids.filter((_, i) => i % n === s);
-    const list = path.join(WORK, `shard-${s}.list`);
-    // slim gold json (the window needs herSpan / childOnset / where / childWords only; frames are not shipped)
-    const dir = path.join(WORK, `shard-${s}`);
-    fs.rmSync(dir, { recursive: true, force: true }); fs.mkdirSync(dir, { recursive: true });
-    for (const id of mine) {
-      const d = JSON.parse(fs.readFileSync(path.join(STREAMS, `${id}.json`), "utf8"));
-      const g = d.gold;
-      fs.writeFileSync(path.join(dir, `${id}.json`), JSON.stringify({ id, meta: { endMs: d.meta.endMs }, gold: { where: g.where, herSpan: g.herSpan, childOnset: g.childOnset, childWords: g.childWords, overlays: [] } }));
-      fs.symlinkSync(path.join(STREAMS, `${id}.s16`), path.join(dir, `${id}.s16`));
+  if (!REUSE) {
+    const code = path.join(WORK, "code");
+    fs.mkdirSync(code, { recursive: true });
+    for (const f of ["stmel.py", "st_features.py"]) fs.copyFileSync(path.join(HERE, f), path.join(code, f));
+    for (const f of ["st32-emb.onnx", "mel80x201.npy"]) fs.copyFileSync(path.join(MODELS, f), path.join(code, f));
+    execFileSync("tar", ["-cf", path.join(WORK, "code.tar"), "-C", code, "."]);
+    await putFile("code.tar", path.join(WORK, "code.tar"));
+    for (let s = 0; s < n; s++) {
+      const mine = ids.filter((_, i) => i % n === s);
+      const list = path.join(WORK, `shard-${s}.list`);
+      // slim gold json (the window needs herSpan / childOnset / where / childWords only; frames are not shipped)
+      const dir = path.join(WORK, `shard-${s}`);
+      fs.rmSync(dir, { recursive: true, force: true }); fs.mkdirSync(dir, { recursive: true });
+      for (const id of mine) {
+        const d = JSON.parse(fs.readFileSync(path.join(STREAMS, `${id}.json`), "utf8"));
+        const g = d.gold;
+        fs.writeFileSync(path.join(dir, `${id}.json`), JSON.stringify({ id, meta: { endMs: d.meta.endMs }, gold: { where: g.where, herSpan: g.herSpan, childOnset: g.childOnset, childWords: g.childWords, overlays: [] } }));
+        fs.symlinkSync(path.join(STREAMS, `${id}.s16`), path.join(dir, `${id}.s16`));
+      }
+      fs.writeFileSync(list, mine.join("\n"));
+      execFileSync("tar", ["-chf", path.join(WORK, `shard-${s}.tar`), "-C", dir, "."]);
+      bytes += await putFile(`shard-${s}.tar`, path.join(WORK, `shard-${s}.tar`));
+      process.stdout.write(`uploaded shard ${s} (${mine.length} streams)\n`);
     }
-    fs.writeFileSync(list, mine.join("\n"));
-    execFileSync("tar", ["-chf", path.join(WORK, `shard-${s}.tar`), "-C", dir, "."]);
-    bytes += await putFile(`shard-${s}.tar`, path.join(WORK, `shard-${s}.tar`));
-    process.stdout.write(`uploaded shard ${s} (${mine.length} streams)\n`);
+
   }
   console.log(`uploaded ${(bytes / 1e6).toFixed(0)} MB`);
 
@@ -152,6 +163,7 @@ async function main() {
       template: { containers: [container(0)] } } });
     await until(async () => (await arm("GET", `${JOB}?${API}`)).properties.provisioningState === "Succeeded", { everyMs: 4000, maxMs: 300_000, what: "job provisioned" });
     for (let s = 0; s < n; s++) {
+      if (REUSE && (await blob("HEAD", `${CONTAINER}/${RUN}/out-${s}.tar`)).status === 200) { execs.push({ s, name: null, status: "Succeeded" }); continue; }
       const ex = await arm("POST", `${JOB}/start?${API}`, { containers: [container(s)] });
       execs.push({ s, name: ex.name || ex.id.split("/").pop(), status: "Running" });
     }

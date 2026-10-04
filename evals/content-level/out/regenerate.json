@@ -1,5 +1,5 @@
 {
- "judged": 3895,
+ "judged": 5076,
  "criterion": "judge-gpt5 grade <= class-2",
  "table": [
   {
@@ -188,58 +188,86 @@
   },
   {
    "kit": "c7-english",
-   "n": 42,
-   "regenPct": 92.9,
-   "regen": 39,
-   "liftPct": 0,
+   "n": 187,
+   "regenPct": 68.4,
+   "regen": 128,
+   "liftPct": 3.7,
    "hard": 0,
-   "meanGrade": 3.6,
-   "topicsHalfRegen": []
+   "meanGrade": 4.76,
+   "topicsHalfRegen": [
+    "c7-english-ch01-t01 (10/12)",
+    "c7-english-ch02-t01 (6/12)",
+    "c7-english-ch04-t01 (11/12)",
+    "c7-english-ch05-t01 (9/13)",
+    "c7-english-ch06-t01 (12/13)",
+    "c7-english-ch07-t01 (8/13)",
+    "c7-english-ch08-t01 (10/13)",
+    "c7-english-ch09-t01 (12/13)",
+    "c7-english-ch10-t01 (10/12)",
+    "c7-english-ch12-t01 (8/12)",
+    "c7-english-ch13-t01 (7/12)",
+    "c7-english-ch14-t01 (9/13)"
+   ]
   },
   {
    "kit": "c7-hindi",
-   "n": 30,
-   "regenPct": 63.3,
-   "regen": 19,
-   "liftPct": 0,
+   "n": 124,
+   "regenPct": 61.3,
+   "regen": 76,
+   "liftPct": 0.8,
    "hard": 0,
-   "meanGrade": 4.47,
-   "topicsHalfRegen": []
+   "meanGrade": 5.06,
+   "topicsHalfRegen": [
+    "c7-hindi-ch01-t01 (12/13)",
+    "c7-hindi-ch02-t01 (9/13)",
+    "c7-hindi-ch03-t01 (7/12)",
+    "c7-hindi-ch05-t01 (9/13)",
+    "c7-hindi-ch07-t01 (9/13)",
+    "c7-hindi-ch09-t01 (12/12)"
+   ]
   },
   {
    "kit": "c7-maths",
-   "n": 239,
-   "regenPct": 39.3,
-   "regen": 94,
-   "liftPct": 33.9,
+   "n": 583,
+   "regenPct": 28.5,
+   "regen": 166,
+   "liftPct": 22.8,
    "hard": 0,
-   "meanGrade": 5.75,
+   "meanGrade": 6.06,
    "topicsHalfRegen": [
     "c7-maths-ch01-t03 (11/13)",
     "c7-maths-ch02-t01 (13/13)",
     "c7-maths-ch03-t01 (13/13)",
     "c7-maths-ch03-t03 (9/14)",
-    "c7-maths-ch03-t04 (8/14)"
+    "c7-maths-ch03-t04 (8/14)",
+    "c7-maths-ch06-t01 (13/14)",
+    "c7-maths-ch06-t02 (12/13)",
+    "c7-maths-ch06-t03 (9/14)",
+    "c7-maths-ch06-t04 (12/13)",
+    "c7-maths-ch08-t03 (7/14)",
+    "c7-maths-ch13-t01 (8/13)"
    ]
   },
   {
    "kit": "c7-science",
-   "n": 84,
-   "regenPct": 13.1,
-   "regen": 11,
-   "liftPct": 19,
-   "hard": 0,
-   "meanGrade": 6.45,
-   "topicsHalfRegen": []
+   "n": 457,
+   "regenPct": 7.9,
+   "regen": 36,
+   "liftPct": 10.1,
+   "hard": 4,
+   "meanGrade": 6.7,
+   "topicsHalfRegen": [
+    "c7-science-ch06-t02 (8/13)"
+   ]
   },
   {
    "kit": "c7-sst",
-   "n": 51,
-   "regenPct": 15.7,
-   "regen": 8,
-   "liftPct": 11.8,
+   "n": 276,
+   "regenPct": 11.2,
+   "regen": 31,
+   "liftPct": 4,
    "hard": 0,
-   "meanGrade": 6.29,
+   "meanGrade": 6.58,
    "topicsHalfRegen": []
   }
  ],
@@ -6810,6 +6838,13 @@
     "why": "Identifying a constant increase in a tiny number pattern."
    },
    {
+    "id": "c7-maths-ch04-t03-i14",
+    "grade": 3,
+    "kitDifficulty": 3,
+    "q": "Check the calendar box whose top-left number is 12: is 12 + 20 = 13 + 19?",
+    "why": "Only checks two small addition sums; no algebraic generalisation is required."
+   },
+   {
     "id": "c7-maths-ch05-t02-i03",
     "grade": 5,
     "kitDifficulty": 2,
@@ -6831,6 +6866,83 @@
     "why": "Basic odd-even reasoning with a simple subtraction."
    },
    {
+    "id": "c7-maths-ch06-t01-i03",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Is 15 × 23 odd or even?",
+    "why": "Basic odd-times-odd parity with small two-digit factors."
+   },
+   {
+    "id": "c7-maths-ch06-t01-i04",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Is 13 + 25 + 7 + 41 + 9 odd or even?",
+    "why": "Counting five odd addends determines parity without substantial calculation."
+   },
+   {
+    "id": "c7-maths-ch06-t01-i05",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Predict: can you pick 5 odd numbers that add up to 50? Try a few, then explain.",
+    "why": "Simple impossibility reasoning using the parity of five odd addends."
+   },
+   {
+    "id": "c7-maths-ch06-t01-i06",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Compare odd + odd with odd × odd. Why does one give even and the other odd?",
+    "why": "Compares familiar parity rules using an elementary pairing explanation."
+   },
+   {
+    "id": "c7-maths-ch06-t01-i07",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Why is odd + odd always even? Use pairs.",
+    "why": "Elementary pairing model directly explains odd plus odd."
+   },
+   {
+    "id": "c7-maths-ch06-t01-i08",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Zoya says 3 + 5 + 7 = 14. Without adding, how can you tell she made a mistake?",
+    "why": "Three odd addends must total odd, exposing the error immediately."
+   },
+   {
+    "id": "c7-maths-ch06-t01-i09",
+    "grade": 3,
+    "kitDifficulty": 3,
+    "q": "A class of 31 students must work in pairs for a project. Can everyone be in a pair with nobody left ",
+    "why": "Everyday pairing of an odd number leaves one student."
+   },
+   {
+    "id": "c7-maths-ch06-t01-i11",
+    "grade": 3,
+    "kitDifficulty": 3,
+    "q": "Show 7 + 9 with dots in pairs (draw or describe) to explain whether the sum is odd or even.",
+    "why": "Small-number dot pairing is an early primary parity task."
+   },
+   {
+    "id": "c7-maths-ch06-t01-i12",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Teach a friend how parity proves that 4 odd numbers can never add up to 25.",
+    "why": "Pairs four odd addends to prove their sum must be even."
+   },
+   {
+    "id": "c7-maths-ch06-t01-i13",
+    "grade": 3,
+    "kitDifficulty": 2,
+    "q": "From memory: odd + even is odd or even?",
+    "why": "Single recall of a basic odd-even addition rule."
+   },
+   {
+    "id": "c7-maths-ch06-t01-i14",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Is 2 × 3 × 5 × 7 odd or even?",
+    "why": "Recognising one even factor immediately determines the product's parity."
+   },
+   {
     "id": "c7-maths-ch06-t02-i01",
     "grade": 4,
     "kitDifficulty": 1,
@@ -6845,11 +6957,74 @@
     "why": "Uses familiar addition and division with very small numbers."
    },
    {
+    "id": "c7-maths-ch06-t02-i03",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Complete the magic square with sum 15. Top row: 8 _ 6; middle row: _ 5 _; bottom row: _ 9 _.",
+    "why": "Small-number subtraction and row-column constraints complete a familiar magic square."
+   },
+   {
+    "id": "c7-maths-ch06-t02-i04",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Predict: if you add 10 to every number in the 1-9 magic square, will it still be magic? What will th",
+    "why": "Adding ten to three entries raises every line sum by thirty."
+   },
+   {
+    "id": "c7-maths-ch06-t02-i05",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Grid A: all rows add to 15, but its columns add to 12, 15 and 18. Grid B: all rows, columns and diag",
+    "why": "Only recalls and applies the basic definition of a magic square."
+   },
+   {
+    "id": "c7-maths-ch06-t02-i07",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Rohan says 1 5 9 / 6 7 2 / 8 3 4 is a magic square because every row and every column adds to 15. Is",
+    "why": "Checking two small diagonal sums disproves the stated claim."
+   },
+   {
+    "id": "c7-maths-ch06-t02-i08",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Make a magic square from 2, 4, 6, ..., 18 (the first nine even numbers). What is its magic sum, and ",
+    "why": "Doubling the standard square gives the sum and centre directly."
+   },
+   {
+    "id": "c7-maths-ch06-t02-i09",
+    "grade": 5,
+    "kitDifficulty": 4,
+    "q": "A 4 × 4 magic square carved at the Parshvanath temple in Khajuraho uses the numbers 1 to 16. What mu",
+    "why": "Uses basic summation and division after recognizing equal row sums."
+   },
+   {
+    "id": "c7-maths-ch06-t02-i10",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Describe the 1-9 magic square in words: where are the odd numbers and where are the even numbers?",
+    "why": "Only recalls or observes parity positions in a familiar grid."
+   },
+   {
+    "id": "c7-maths-ch06-t02-i11",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Teach a friend how to check whether a 3 × 3 grid is a magic square, step by step.",
+    "why": "Requires listing rows, columns, diagonals and comparing their sums."
+   },
+   {
     "id": "c7-maths-ch06-t02-i12",
     "grade": 4,
     "kitDifficulty": 2,
     "q": "From memory: how many lines must you check in a 3 × 3 magic square?",
     "why": "Only counts three rows, three columns, and two diagonals."
+   },
+   {
+    "id": "c7-maths-ch06-t02-i13",
+    "grade": 2,
+    "kitDifficulty": 2,
+    "q": "In a magic square with sum 15, one line has 9 and 5 in it. What is the third number?",
+    "why": "A single subtraction within 20 gives the missing number."
    },
    {
     "id": "c7-maths-ch06-t03-i01",
@@ -6866,6 +7041,55 @@
     "why": "Small-case systematic listing suits upper-primary puzzle work."
    },
    {
+    "id": "c7-maths-ch06-t03-i03",
+    "grade": 3,
+    "kitDifficulty": 2,
+    "q": "Continue the sequence: 1, 2, 3, 5, 8, __, __.",
+    "why": "The add-the-previous-two pattern is readily identified with small numbers."
+   },
+   {
+    "id": "c7-maths-ch06-t03-i04",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Predict how many rhythms have 5 beats before listing them. Then check by listing.",
+    "why": "Systematic listing of short one-and-two-beat combinations is elementary."
+   },
+   {
+    "id": "c7-maths-ch06-t03-i07",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Aditya wrote the counts as 1, 2, 3, 4, 5, 6 'because it goes up by one'. Where does his pattern brea",
+    "why": "Checking a short list quickly disproves the proposed counting pattern."
+   },
+   {
+    "id": "c7-maths-ch06-t03-i08",
+    "grade": 3,
+    "kitDifficulty": 3,
+    "q": "Simran says there are only 2 rhythms of 3 beats, SSS and SL, 'because LS is the same as SL'. Is she ",
+    "why": "Recognizing that order changes a rhythm needs only simple reasoning."
+   },
+   {
+    "id": "c7-maths-ch06-t03-i11",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Clap the 4-beat rhythms: a quick clap for S, a clap held for 2 beats for L. Write each one with lett",
+    "why": "Lists five small combinations and translates symbols into ones and twos."
+   },
+   {
+    "id": "c7-maths-ch06-t03-i13",
+    "grade": 3,
+    "kitDifficulty": 2,
+    "q": "From memory: what are the first six Virahanka numbers, starting 1, 2?",
+    "why": "It asks only rote recall of six small sequence terms."
+   },
+   {
+    "id": "c7-maths-ch06-t03-i14",
+    "grade": 5,
+    "kitDifficulty": 1,
+    "q": "These numbers are often called 'Fibonacci numbers'. Who described them earlier, and while studying w",
+    "why": "A single memorized historical fact involves no mathematical reasoning."
+   },
+   {
     "id": "c7-maths-ch06-t04-i01",
     "grade": 4,
     "kitDifficulty": 1,
@@ -6880,11 +7104,172 @@
     "why": "Two-column addition and carry determine both digits directly."
    },
    {
+    "id": "c7-maths-ch06-t04-i03",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "If A + A = 1B and B = 4, what is A?",
+    "why": "Interpreting 1B as 14 reduces to a basic doubles fact."
+   },
+   {
+    "id": "c7-maths-ch06-t04-i04",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "In AB + CD = EFG, two 2-digit numbers make a 3-digit number. Predict what E must be before trying an",
+    "why": "Bounding two two-digit addends immediately fixes the hundreds digit."
+   },
+   {
+    "id": "c7-maths-ch06-t04-i05",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Compare 'A + B = C' (one column) with 'A + B = 1C'. What does the 1 tell you about A + B?",
+    "why": "It tests elementary place value and the meaning of carrying."
+   },
+   {
+    "id": "c7-maths-ch06-t04-i06",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Why can the carry from adding two digits never be 2?",
+    "why": "A simple maximum-sum argument shows the carry cannot exceed one."
+   },
+   {
+    "id": "c7-maths-ch06-t04-i07",
+    "grade": 2,
+    "kitDifficulty": 3,
+    "q": "Nikhil says AB + AB = BA has the answer A = 2, B = 4, because 24 + 24 = 42. Check him.",
+    "why": "Only checks a basic two-digit addition error."
+   },
+   {
+    "id": "c7-maths-ch06-t04-i08",
+    "grade": 3,
+    "kitDifficulty": 3,
+    "q": "In 6□ + □8 = 121, Gauri found the first blank is 3, then said the second blank is 6 because 6 + 6 = ",
+    "why": "Uses routine column addition with a single carry."
+   },
+   {
+    "id": "c7-maths-ch06-t04-i09",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Find one pair of digits A and B so that the 2-digit numbers AB and BA add up to 121. What do all suc",
+    "why": "Testing reversed numbers reveals the simple digit-sum pattern."
+   },
+   {
+    "id": "c7-maths-ch06-t04-i10",
+    "grade": 4,
+    "kitDifficulty": 4,
+    "q": "A shop bill got smudged: ₹3□5 + ₹□47 = ₹1,032. Find the smudged digits.",
+    "why": "Missing digits follow directly from standard column addition."
+   },
+   {
+    "id": "c7-maths-ch06-t04-i11",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Write the puzzle '□□ + □□ = 198' (two 2-digit numbers) as a column addition and say what the digits ",
+    "why": "Uses the familiar greatest two-digit number and addition."
+   },
+   {
+    "id": "c7-maths-ch06-t04-i13",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "From memory: two 3-digit numbers add to a 4-digit number. What must its first digit be?",
+    "why": "Maximum three-digit sums make the leading digit immediate."
+   },
+   {
+    "id": "c7-maths-ch07-t01-i04",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Predict: with straws of 3 cm, 4 cm and 9 cm, will the two short straws reach each other when fixed t",
+    "why": "Simple addition and physical reach determine the result."
+   },
+   {
     "id": "c7-maths-ch08-t01-i01",
     "grade": 4,
     "kitDifficulty": 1,
     "q": "Find 1/4 of 20.",
     "why": "Finding one-fourth of 20 is elementary division."
+   },
+   {
+    "id": "c7-maths-ch08-t02-i11",
+    "grade": 5,
+    "kitDifficulty": 4,
+    "q": "A water tank is 2/3 full. Each bucket holds 1/9 of the tank. How many buckets can be filled from it?",
+    "why": "Equivalent fractions directly show six ninths in two-thirds."
+   },
+   {
+    "id": "c7-maths-ch08-t02-i12",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Use a number line from 0 to 2 marked in thirds to show 2 ÷ 1/3. How many jumps do you make?",
+    "why": "Counting thirds to two requires only basic fraction representation."
+   },
+   {
+    "id": "c7-maths-ch08-t03-i02",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Meena walks 3/4 km to school and 3/4 km back each day. How far does she walk in 5 school days?",
+    "why": "Simple repeated addition of three-fourths over ten trips."
+   },
+   {
+    "id": "c7-maths-ch08-t03-i03",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Ali had ₹200. He spent 1/2 on a book and then 1/4 of the remaining money on snacks. How much is left",
+    "why": "Uses familiar halves, quarters, money, and two simple steps."
+   },
+   {
+    "id": "c7-maths-ch08-t03-i06",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Why must the answer to 'What is 2/3 of 3/5 of a field?' be smaller than 3/5 of the field?",
+    "why": "Only requires recognizing that a proper fraction is a smaller part."
+   },
+   {
+    "id": "c7-maths-ch08-t03-i08",
+    "grade": 5,
+    "kitDifficulty": 4,
+    "q": "Problem: 'In a class of 40, 1/2 like cricket and 1/4 of the rest like kabaddi.' Tara says 10 like ka",
+    "why": "Halving forty then quartering twenty uses elementary fraction quantities."
+   },
+   {
+    "id": "c7-maths-ch08-t03-i09",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "12 acres of land are shared in a will: the elder child gets 1/3, the younger gets 1/4, and the rest ",
+    "why": "Simple fractions of twelve yield whole-number shares and remainder."
+   },
+   {
+    "id": "c7-maths-ch08-t03-i11",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Draw a bar model for 'Sonu saves 2/5 of his ₹500 pocket money.' What does each part show, and how mu",
+    "why": "Basic bar model and two-fifths of five hundred."
+   },
+   {
+    "id": "c7-maths-ch08-t03-i13",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Quick: what is 3/4 of 40 kg?",
+    "why": "Three-fourths of forty is a basic fraction-of-quantity calculation."
+   },
+   {
+    "id": "c7-maths-ch09-t01-i05",
+    "grade": 3,
+    "kitDifficulty": 3,
+    "q": "Two rotis cut with the same katori are compared with one big and one small roti, all perfect circles",
+    "why": "Same cutter means same size and shape; visually immediate."
+   },
+   {
+    "id": "c7-maths-ch11-t02-i07",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Ravi counts in 3s and Sita counts in 5s, both starting from 0. Predict the first number both say aft",
+    "why": "Skip-counting reveals the first common multiple directly."
+   },
+   {
+    "id": "c7-maths-ch11-t02-i11",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "On a number line, a frog jumps 4 at a time and a rabbit 6 at a time, both from 0. Where do they firs",
+    "why": "Simple skip-counting or number-line common-multiple task."
    },
    {
     "id": "c7-maths-ch11-t03-i01",
@@ -6908,11 +7293,102 @@
     "why": "Multiplication by hundred uses basic decimal place value."
    },
    {
+    "id": "c7-maths-ch12-t01-i06",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Predict before working it out: is 60 × 0.5 bigger or smaller than 60? Then find it.",
+    "why": "Recognising multiplication by 0.5 as halving is elementary."
+   },
+   {
+    "id": "c7-maths-ch12-t02-i04",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "How many 0.25-litre glasses can be filled from 3 litres of juice?",
+    "why": "Quarter-litre grouping can be solved using familiar fractions."
+   },
+   {
+    "id": "c7-maths-ch12-t02-i06",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Predict, then check: what is 9 ÷ 0.5?",
+    "why": "Counting halves in nine wholes uses elementary fraction understanding."
+   },
+   {
+    "id": "c7-maths-ch12-t02-i09",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Five friends share a bill of ₹157.50 equally. How much does each pay?",
+    "why": "Straightforward equal sharing of familiar money amounts among five."
+   },
+   {
+    "id": "c7-maths-ch12-t02-i11",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Draw a 1.5 m strip and mark lengths of 0.5 m along it. What division does this show and what is the ",
+    "why": "Visual grouping into half-metres uses simple halves and measurement."
+   },
+   {
+    "id": "c7-maths-ch12-t02-i14",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Asha wrote 45 ÷ 10 = 0.45. Check.",
+    "why": "Checking division by ten uses basic decimal place value."
+   },
+   {
+    "id": "c7-maths-ch13-t01-i01",
+    "grade": 2,
+    "kitDifficulty": 1,
+    "q": "Rain (mm) in a city: June 140, July 250, August 230, September 120. Which month had the most rain?",
+    "why": "Only requires locating the greatest number in a small table."
+   },
+   {
+    "id": "c7-maths-ch13-t01-i02",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Rain (mm) in a city: June 140, July 250, August 230, September 120. True or false: August had more t",
+    "why": "Requires doubling 120 and making one numerical comparison."
+   },
+   {
+    "id": "c7-maths-ch13-t01-i03",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Rain (mm) in a city: June 140, July 250, August 230, September 120. What was the total rain from Jun",
+    "why": "Only requires adding four three-digit values from a table."
+   },
+   {
     "id": "c7-maths-ch13-t01-i05",
     "grade": 4,
     "kitDifficulty": 2,
     "q": "Rain (mm) in a city: June 140, July 250, August 230, September 120. Which question can the table ans",
     "why": "Reading a tiny table and distinguishing amounts from reasons is elementary."
+   },
+   {
+    "id": "c7-maths-ch13-t01-i08",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Runs in three matches: Aarav 45, 12, 78; Kabir 30, 55, 60. Aarav says: 'I scored more runs in total,",
+    "why": "Adds three scores each and rejects reasoning from one maximum."
+   },
+   {
+    "id": "c7-maths-ch13-t01-i11",
+    "grade": 5,
+    "kitDifficulty": 4,
+    "q": "The school canteen wants to know whether to make more idli or more poha. What question would you ask",
+    "why": "Simple everyday data-collection planning requires little mathematical abstraction."
+   },
+   {
+    "id": "c7-maths-ch13-t01-i12",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Teach a friend how to check a statement using a table of data.",
+    "why": "Basic table lookup and comparison can be explained by Class 5."
+   },
+   {
+    "id": "c7-maths-ch13-t01-i13",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "From memory: what three answers can a statement get when you check it against data?",
+    "why": "Only recalls three simple response categories without analysing any data."
    },
    {
     "id": "c7-maths-ch13-t03-i01",
@@ -6927,6 +7403,62 @@
     "kitDifficulty": 2,
     "q": "A double bar graph of favourite games in class 7 (blue = boys, orange = girls): cricket 12 and 7, kh",
     "why": "Values are stated directly and require only one small addition."
+   },
+   {
+    "id": "c7-maths-ch13-t03-i03",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "A double bar graph of favourite games in class 7 (blue = boys, orange = girls): cricket 12 and 7, kh",
+    "why": "Values are stated explicitly; only small-number subtraction and comparison remain."
+   },
+   {
+    "id": "c7-maths-ch13-t03-i06",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Your largest value is 240 and your graph has 12 squares of height. What is a good scale, one square ",
+    "why": "Only divides 240 equally across twelve graph squares."
+   },
+   {
+    "id": "c7-maths-ch13-t03-i13",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "From memory: in a double bar graph, what tells you which bar belongs to which group?",
+    "why": "Single recall of a basic graph legend."
+   },
+   {
+    "id": "c7-maths-ch14-t01-i14",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "From memory: which two tools are allowed in a construction?",
+    "why": "Only recalls the names of two familiar geometry tools."
+   },
+   {
+    "id": "c7-maths-ch14-t02-i02",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "In a floor of square tiles, how many squares meet at each corner?",
+    "why": "Four squares meeting at a corner is elementary visual reasoning."
+   },
+   {
+    "id": "c7-maths-ch14-t02-i03",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "How many regular hexagons meet at a corner in a honeycomb tiling?",
+    "why": "Honeycomb corners visually show three regular hexagons meeting."
+   },
+   {
+    "id": "c7-maths-ch14-t02-i10",
+    "grade": 5,
+    "kitDifficulty": 4,
+    "q": "Bees build their honeycomb with hexagon cells. Why are hexagons better than circles for this?",
+    "why": "Everyday comparison of gaps needs little formal geometry."
+   },
+   {
+    "id": "c7-maths-ch14-t02-i13",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "From memory: which three regular polygons tile a floor on their own?",
+    "why": "Only recalls three familiar tessellating regular shapes."
    }
   ],
   "c7-science": [
@@ -6936,6 +7468,20 @@
     "kitDifficulty": 1,
     "q": "What is evidence in science? Give one example of evidence you could collect yourself at home.",
     "why": "Basic observation-and-measurement idea with an everyday example."
+   },
+   {
+    "id": "c7-science-ch01-t01-i02",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Name one idea that people believed long ago but changed because of new evidence.",
+    "why": "Only asks for one familiar example of changing beliefs."
+   },
+   {
+    "id": "c7-science-ch01-t01-i05",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "When a ship sails away from the beach, its bottom disappears first and the top of its mast is seen l",
+    "why": "Ship disappearance as evidence of curvature is elementary geography."
    },
    {
     "id": "c7-science-ch01-t02-i01",
@@ -6952,11 +7498,95 @@
     "why": "Prediction follows directly from familiar observation of drinking water."
    },
    {
+    "id": "c7-science-ch05-t01-i04",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Weigh a glass of water on a kitchen scale, then stir in two spoons of sugar until you cannot see it.",
+    "why": "Adding sugar plainly increases total weight despite dissolving."
+   },
+   {
+    "id": "c7-science-ch05-t03-i04",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Outdoors, make two small slopes of soil in trays: one bare, one covered with grass or a layer of lea",
+    "why": "Elementary prediction that plant cover reduces soil loss."
+   },
+   {
+    "id": "c7-science-ch06-t02-i02",
+    "grade": 4,
+    "kitDifficulty": 1,
+    "q": "Name three trusted people a student could talk to about worries while growing up.",
+    "why": "Naming trusted adults is elementary safety and wellbeing knowledge."
+   },
+   {
+    "id": "c7-science-ch06-t02-i03",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "A class puts up an anonymous question box about growing up. Predict: will most questions be very dif",
+    "why": "Requires only a simple inference about shared growing-up worries."
+   },
+   {
+    "id": "c7-science-ch06-t02-i04",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Predict: if someone keeps a worry completely to themselves for weeks, will it usually feel bigger or",
+    "why": "Uses familiar emotional-health advice without specialised adolescent knowledge."
+   },
+   {
+    "id": "c7-science-ch06-t02-i06",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Why is it better to check information about growing up with a trusted adult, a doctor or a textbook ",
+    "why": "Distinguishing reliable sources from rumours is basic digital literacy."
+   },
+   {
+    "id": "c7-science-ch06-t02-i07",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Compare two ways Kabir handles stress before exams: (A) staying up all night on his phone and skippi",
+    "why": "Healthy sleep, meals, exercise and sharing are readily identifiable."
+   },
+   {
+    "id": "c7-science-ch06-t02-i08",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Some friends dare Ishaan to try tobacco 'just once'. What is a healthy way for him to respond?",
+    "why": "Firm refusal and seeking adult help are basic safety responses."
+   },
+   {
+    "id": "c7-science-ch06-t02-i11",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Draw a 'circle of trust' with yourself in the centre and at least four trusted people or places arou",
+    "why": "Simple personal-support mapping suits upper-primary life-skills work."
+   },
+   {
+    "id": "c7-science-ch06-t02-i13",
+    "grade": 4,
+    "kitDifficulty": 1,
+    "q": "From last time: what number can a child in India call for free if they are in trouble or unsafe?",
+    "why": "Only recalls a single safety helpline number."
+   },
+   {
     "id": "c7-science-ch06-t03-i05",
     "grade": 5,
     "kitDifficulty": 2,
     "q": "Predict which breakfast will keep you full and active longer until lunch: a packet of chips with a c",
     "why": "Comparing a balanced breakfast with junk food needs basic nutrition awareness."
+   },
+   {
+    "id": "c7-science-ch06-t03-i07",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Compare two routines: Raju bathes daily and changes his socks every day; Manu bathes every three day",
+    "why": "Everyday hygiene reasoning makes the answer immediately obvious."
+   },
+   {
+    "id": "c7-science-ch06-t03-i08",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Simran says, 'I'll skip lunch and dinner so I become fit fast.' What is the problem with her plan?",
+    "why": "Recognising harms of skipping meals needs only basic health knowledge."
    },
    {
     "id": "c7-science-ch07-t04-i01",
@@ -6980,11 +7610,32 @@
     "why": "Simply recalls that a sundial tells time using shadows."
    },
    {
+    "id": "c7-science-ch08-t02-i11",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Draw a number line from 0 to 200 km and mark where a car moving at a steady 50 km/h will be after 1,",
+    "why": "Uses simple multiples of 50 and equal spacing."
+   },
+   {
+    "id": "c7-science-ch08-t03-i03",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "A marble is rolled along a long, smooth floor and slowly comes to a stop. Before measuring, predict:",
+    "why": "Everyday observation directly shows decreasing distances while slowing."
+   },
+   {
     "id": "c7-science-ch09-t01-i02",
     "grade": 5,
     "kitDifficulty": 1,
     "q": "Put these in the order food travels: stomach, mouth, large intestine, food pipe, small intestine.",
     "why": "Basic digestive-organ sequencing is familiar from primary EVS."
+   },
+   {
+    "id": "c7-science-ch09-t01-i04",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Why do elders tell us to chew food well before swallowing?",
+    "why": "Chewing food thoroughly is familiar everyday health knowledge."
    },
    {
     "id": "c7-science-ch09-t02-i01",
@@ -7001,11 +7652,67 @@
     "why": "Uses readily observable human and snake feeding differences."
    },
    {
+    "id": "c7-science-ch09-t02-i10",
+    "grade": 4,
+    "kitDifficulty": 4,
+    "q": "A hummingbird's beak is long and thin, a parrot's is short and strongly hooked. Without being told, ",
+    "why": "Inferring food from familiar beak shapes is primary-level adaptation reasoning."
+   },
+   {
+    "id": "c7-science-ch09-t03-i01",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Count your breaths for one minute while sitting quietly. Then predict: after running on the spot for",
+    "why": "Predicting faster breathing after exercise needs only everyday observation."
+   },
+   {
+    "id": "c7-science-ch10-t03-i05",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Why do we water the soil around a plant rather than just spraying its leaves?",
+    "why": "Basic root absorption is commonly understood before class seven."
+   },
+   {
     "id": "c7-science-ch11-t01-i11",
     "grade": 4,
     "kitDifficulty": 1,
     "q": "From memory: give two examples of luminous objects.",
     "why": "Asks only two familiar examples after learning one simple term."
+   },
+   {
+    "id": "c7-science-ch11-t02-i02",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "A green leaf and a black stone of similar size are held in front of a torch. Predict the colour of e",
+    "why": "Recognising that shadows do not show object colour is elementary."
+   },
+   {
+    "id": "c7-science-ch11-t04-i12",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "From memory: what kind of image (upright or inverted) does a periscope give, and how many mirrors do",
+    "why": "Only recalls two simple facts about a familiar device."
+   },
+   {
+    "id": "c7-science-ch12-t01-i07",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Ishaan says: 'At night the Sun goes under the Earth and comes back up in the morning.' What is wrong",
+    "why": "Basic day-night explanation commonly learned before class seven."
+   },
+   {
+    "id": "c7-science-ch12-t01-i12",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "From memory: how long does the Earth take to go once around the Sun?",
+    "why": "Single recall of the widely known length of a year."
+   },
+   {
+    "id": "c7-science-ch12-t03-i13",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "From memory: is it safe to watch a lunar eclipse with your naked eyes?",
+    "why": "Asks only a widely taught, single eclipse-safety fact."
    }
   ],
   "c7-english": [
@@ -7017,6 +7724,13 @@
     "why": "Answer is an explicitly stated place in a short passage."
    },
    {
+    "id": "c7-english-ch01-t01-i02",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Read: 'Every evening, Meenu sat by the river while her brothers did homework. \"Why can't I go to sch",
+    "why": "Short passage supports a straightforward inference about feeling unheard."
+   },
+   {
     "id": "c7-english-ch01-t01-i03",
     "grade": 3,
     "kitDifficulty": 2,
@@ -7024,11 +7738,95 @@
     "why": "Obvious prediction follows directly from the short passage."
    },
    {
+    "id": "c7-english-ch01-t01-i04",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Make a question beginning with 'Why' from this sentence: 'The river flows to the sea.'",
+    "why": "Basic why-question formation using does is primary-level grammar."
+   },
+   {
+    "id": "c7-english-ch01-t01-i05",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Find the mistake and say it correctly: 'Why you are sad, Meenu?'",
+    "why": "Correcting subject-verb inversion is elementary question formation."
+   },
+   {
+    "id": "c7-english-ch01-t01-i06",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Listen to two sentences: 'Where does the river go?' and 'Where the river goes is a mystery.' Which o",
+    "why": "Basic recognition of question form and subject-auxiliary order."
+   },
+   {
+    "id": "c7-english-ch01-t01-i07",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Ask a question about time from this sentence, starting with 'When': 'The school bell rings at nine.'",
+    "why": "Simple transformation using a familiar question word and auxiliary."
+   },
+   {
+    "id": "c7-english-ch01-t01-i08",
+    "grade": 2,
+    "kitDifficulty": 2,
+    "q": "'The river seemed to whisper, Keep asking.' What does 'whisper' mean here: shout loudly, speak very ",
+    "why": "Common vocabulary meaning selected from three obvious choices."
+   },
+   {
+    "id": "c7-english-ch01-t01-i09",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Say this in English using the word 'eager': 'Meenu ko padhne ki bahut ichchha thi.'",
+    "why": "Short guided translation using one supplied vocabulary word."
+   },
+   {
+    "id": "c7-english-ch01-t01-i11",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "In the story, the river says, 'Every question is a small step.' What does the writer want us to unde",
+    "why": "The simple metaphor conveys an obvious everyday learning message."
+   },
+   {
     "id": "c7-english-ch02-t01-i01",
     "grade": 4,
     "kitDifficulty": 1,
     "q": "Read these lines aloud and clap on the strong beats: 'The rope was high, my arms were sore, / I fell",
     "why": "Identifying rhyming line-end words requires only basic oral reading."
+   },
+   {
+    "id": "c7-english-ch02-t01-i02",
+    "grade": 3,
+    "kitDifficulty": 1,
+    "q": "In 'The rope was high, my arms were sore, / I fell, I rose, I tried once more,' which two words rhym",
+    "why": "Identifying rhyming end words is an elementary poetry skill."
+   },
+   {
+    "id": "c7-english-ch02-t01-i03",
+    "grade": 3,
+    "kitDifficulty": 2,
+    "q": "Listen only to the sounds. Which pair rhymes: 'won - one' or 'won - win'?",
+    "why": "Simple auditory rhyme recognition between two supplied pairs."
+   },
+   {
+    "id": "c7-english-ch02-t01-i06",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "A poem tells of a boy whose kite falls again and again until, at last, it flies high. What is the po",
+    "why": "The brief plot directly signals the familiar perseverance theme."
+   },
+   {
+    "id": "c7-english-ch02-t01-i10",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "A girl misses the first three baskets at basketball practice. Her friend laughs. If she follows the ",
+    "why": "Applies an obvious perseverance lesson to a familiar situation."
+   },
+   {
+    "id": "c7-english-ch02-t01-i12",
+    "grade": 5,
+    "kitDifficulty": 4,
+    "q": "Your younger brother failed his cycling test and wants to quit. Explain the idea of the poem 'Try Ag",
+    "why": "Explains a straightforward moral and adds one familiar example."
    },
    {
     "id": "c7-english-ch03-t01-i01",
@@ -7045,6 +7843,27 @@
     "why": "Main idea is explicitly expressed in the concluding sentence."
    },
    {
+    "id": "c7-english-ch03-t01-i09",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Choose the right verb: 'I ___ (saw / watched) the sun slowly set behind the hills for half an hour.'",
+    "why": "Tests a familiar distinction between seeing briefly and watching continuously."
+   },
+   {
+    "id": "c7-english-ch03-t01-i10",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Find the mistake: 'Look the stars! They are shining.'",
+    "why": "Correcting the common phrase 'look at' is elementary usage."
+   },
+   {
+    "id": "c7-english-ch03-t01-i11",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Say in English: 'Main dhyaan se pakshiyon ki awaaz sun rahi thi.' Use 'listen'.",
+    "why": "Uses familiar past continuous tense and the phrase 'listen to'."
+   },
+   {
     "id": "c7-english-ch04-t01-i01",
     "grade": 2,
     "kitDifficulty": 1,
@@ -7052,11 +7871,60 @@
     "why": "A named character directly supplies the answer."
    },
    {
+    "id": "c7-english-ch04-t01-i02",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Read: 'Doctor Ramu liked animals more than people. One day his parrot Mitthu said, \"Animals talk too",
+    "why": "Requires one straightforward causal inference from a short passage."
+   },
+   {
     "id": "c7-english-ch04-t01-i03",
     "grade": 4,
     "kitDifficulty": 2,
     "q": "A cow comes to the clinic holding one ear down and swishing her tail slowly. Using the parrot's idea",
     "why": "Simple inference follows from the immediately supplied animal cues."
+   },
+   {
+    "id": "c7-english-ch04-t01-i04",
+    "grade": 4,
+    "kitDifficulty": 1,
+    "q": "Fill in the blank: 'A ___ of birds flew over the clinic.'",
+    "why": "Recalls the common collective noun for birds."
+   },
+   {
+    "id": "c7-english-ch04-t01-i05",
+    "grade": 3,
+    "kitDifficulty": 2,
+    "q": "Which is correct: 'a herd of cows' or 'a flock of cows'?",
+    "why": "Chooses a familiar collective noun from only two options."
+   },
+   {
+    "id": "c7-english-ch04-t01-i06",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Fill in the blank: 'A ___ of bees buzzed around the hive.'",
+    "why": "Recalls the common collective noun for bees."
+   },
+   {
+    "id": "c7-english-ch04-t01-i07",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Fill in 'said' or 'told': 'The parrot ___ the doctor a secret.'",
+    "why": "Applies the basic object-taking distinction between 'said' and 'told'."
+   },
+   {
+    "id": "c7-english-ch04-t01-i08",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Find the mistake: 'The parrot said me that dogs talk with their tails.'",
+    "why": "Corrects a common said-told usage error in one sentence."
+   },
+   {
+    "id": "c7-english-ch04-t01-i10",
+    "grade": 2,
+    "kitDifficulty": 1,
+    "q": "In Hindi we say 'kutta bhaunkta hai'. In English, what does a dog do?",
+    "why": "Recalls the everyday English word for a dog's sound."
    },
    {
     "id": "c7-english-ch04-t01-i11",
@@ -7080,6 +7948,34 @@
     "why": "Direct retrieval of an explicitly stated body part."
    },
    {
+    "id": "c7-english-ch05-t01-i02",
+    "grade": 3,
+    "kitDifficulty": 2,
+    "q": "Read: 'There lived a man in Ludhiana / Who wore his shoes upon his ears; / He ate his soup with a ba",
+    "why": "Explains obvious humour arising from an impossible everyday action."
+   },
+   {
+    "id": "c7-english-ch05-t01-i03",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Read: 'There lived a man in Ludhiana / Who wore his shoes upon his ears; / He ate his soup with a ba",
+    "why": "Identifies a simple alternating rhyme pattern from four lines."
+   },
+   {
+    "id": "c7-english-ch05-t01-i04",
+    "grade": 2,
+    "kitDifficulty": 1,
+    "q": "Which word rhymes with 'ears': 'years' or 'eyes'?",
+    "why": "Selects an obvious rhyming word from two choices."
+   },
+   {
+    "id": "c7-english-ch05-t01-i05",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Here is the first line of a funny poem: 'A funny man once had a cat.' Make up a silly second line th",
+    "why": "Creates one simple line ending with a familiar rhyming word."
+   },
+   {
     "id": "c7-english-ch05-t01-i06",
     "grade": 3,
     "kitDifficulty": 2,
@@ -7092,6 +7988,20 @@
     "kitDifficulty": 1,
     "q": "Choose the right word: 'He laughed ___ (loud / loudly) at his own joke.'",
     "why": "Basic adjective-adverb choice taught well before Class 7."
+   },
+   {
+    "id": "c7-english-ch05-t01-i08",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Find the mistake: 'The funny man danced very good at the wedding.'",
+    "why": "Replaces an adjective with the familiar adverb 'well'."
+   },
+   {
+    "id": "c7-english-ch05-t01-i10",
+    "grade": 2,
+    "kitDifficulty": 2,
+    "q": "The funny man does everything 'ulta'. Give the English opposites of: up, wet, front.",
+    "why": "Basic everyday opposites are mastered in early primary classes."
    },
    {
     "id": "c7-english-ch06-t01-i01",
@@ -7108,11 +8018,74 @@
     "why": "Straightforward inference from Raju publicly repeating an insulting remark."
    },
    {
+    "id": "c7-english-ch06-t01-i03",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Read: 'MOTHER: Raju, Mrs Sharma is coming. Be polite and say the right thing. (The bell rings.) RAJU",
+    "why": "Predicting embarrassment from clear dialogue requires straightforward inference."
+   },
+   {
+    "id": "c7-english-ch06-t01-i04",
+    "grade": 3,
+    "kitDifficulty": 2,
+    "q": "Make this request polite: 'Give me the salt.'",
+    "why": "Adding please and a polite modal is primary-level usage."
+   },
+   {
+    "id": "c7-english-ch06-t01-i05",
+    "grade": 3,
+    "kitDifficulty": 2,
+    "q": "Which is more polite to say to a guest: 'Do you want tea?' or 'Would you like some tea?'",
+    "why": "Recognising the more polite everyday expression is elementary."
+   },
+   {
+    "id": "c7-english-ch06-t01-i06",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Say this politely in English to a guest: 'Aap baithiye na, aunty.'",
+    "why": "Translates a familiar, short request into basic polite English."
+   },
+   {
+    "id": "c7-english-ch06-t01-i07",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Find the mistake: 'Could you passing the water, please?'",
+    "why": "Basic modal construction requires the verb's base form."
+   },
+   {
+    "id": "c7-english-ch06-t01-i08",
+    "grade": 5,
+    "kitDifficulty": 1,
+    "q": "Your friend says, 'The maths test was a piece of cake.' What does she mean?",
+    "why": "Identifies the meaning of a very common idiom."
+   },
+   {
     "id": "c7-english-ch06-t01-i09",
     "grade": 5,
     "kitDifficulty": 3,
     "q": "Uncle says to Raju, 'Keep an eye on the baby,' and Raju puts his eye right next to the baby's face. ",
     "why": "Explains simple humour caused by literal interpretation of an idiom."
+   },
+   {
+    "id": "c7-english-ch06-t01-i10",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "'Break the ice' means to make people feel relaxed when they first meet. Use it in a sentence about a",
+    "why": "The idiom's meaning is supplied; only sentence formation remains."
+   },
+   {
+    "id": "c7-english-ch06-t01-i12",
+    "grade": 3,
+    "kitDifficulty": 3,
+    "q": "A guest arrives hot and tired after a long walk. Offer him water politely.",
+    "why": "Forming a routine polite offer uses elementary spoken English."
+   },
+   {
+    "id": "c7-english-ch06-t01-i13",
+    "grade": 5,
+    "kitDifficulty": 4,
+    "q": "Explain to your younger brother what 'saying the right thing' means when guests visit, and why Raju'",
+    "why": "Explains obvious rudeness and embarrassment in a familiar situation."
    },
    {
     "id": "c7-english-ch07-t01-i01",
@@ -7122,11 +8095,53 @@
     "why": "Direct retrieval of what Kabir was building."
    },
    {
+    "id": "c7-english-ch07-t01-i02",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Read: 'My brother Kabir was always inventing something. Last Sunday he was building a machine to fol",
+    "why": "The final quotation directly signals learning from failure."
+   },
+   {
+    "id": "c7-english-ch07-t01-i03",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Read: 'My brother Kabir was always inventing something. Last Sunday he was building a machine to fol",
+    "why": "Predicting another attempt follows directly from Kabir's statement."
+   },
+   {
     "id": "c7-english-ch07-t01-i04",
     "grade": 3,
     "kitDifficulty": 2,
     "q": "Put these events in order: (a) Everyone laughed. (b) Mummy walked in. (c) Kabir started building the",
     "why": "Sequences four clearly narrated events without deeper interpretation."
+   },
+   {
+    "id": "c7-english-ch07-t01-i06",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Find the mistake: 'Yesterday he was build a robot in the garage.'",
+    "why": "Correcting auxiliary plus participle is a routine grammar task."
+   },
+   {
+    "id": "c7-english-ch07-t01-i08",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Find the mistake: 'Kabir did not went to school on Sunday.'",
+    "why": "The base verb after did not is elementary grammar."
+   },
+   {
+    "id": "c7-english-ch07-t01-i09",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Fill both blanks using forms of 'invent': 'Kabir is a young ___. His latest ___ is a roti folder.'",
+    "why": "Common word-family forms with strong sentence clues."
+   },
+   {
+    "id": "c7-english-ch07-t01-i10",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "'Kabir discovered a new way to fix the fan.' What is the noun form of 'discover'?",
+    "why": "Requires recalling one familiar noun form."
    },
    {
     "id": "c7-english-ch08-t01-i01",
@@ -7136,6 +8151,13 @@
     "why": "Direct retrieval of two explicitly named details."
    },
    {
+    "id": "c7-english-ch08-t01-i02",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Read: 'Each day I float a paper boat / Upon the stream that runs so wide; / I write my name and vill",
+    "why": "The stated details directly suggest his wish for connection."
+   },
+   {
     "id": "c7-english-ch08-t01-i03",
     "grade": 4,
     "kitDifficulty": 2,
@@ -7143,11 +8165,53 @@
     "why": "Open imaginative prediction based on a simple situation."
    },
    {
+    "id": "c7-english-ch08-t01-i04",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "'At night, the stars are sailors bright / Who steer my boats through dark and light.' What is being ",
+    "why": "Simply identifies the noun receiving human actions."
+   },
+   {
+    "id": "c7-english-ch08-t01-i07",
+    "grade": 3,
+    "kitDifficulty": 1,
+    "q": "Complete: 'Every morning, the boy ___ (float) a paper boat.'",
+    "why": "Basic singular subject-verb agreement in simple present."
+   },
+   {
     "id": "c7-english-ch08-t01-i08",
     "grade": 4,
     "kitDifficulty": 2,
     "q": "Find the mistake: 'He make a new boat every day.'",
     "why": "Basic subject-verb agreement with a singular third-person subject."
+   },
+   {
+    "id": "c7-english-ch08-t01-i09",
+    "grade": 3,
+    "kitDifficulty": 2,
+    "q": "Find the mistake: 'The paper boats floats down the stream.'",
+    "why": "Corrects elementary plural subject-verb agreement."
+   },
+   {
+    "id": "c7-english-ch08-t01-i10",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Change this to talk about your sister: 'I float my boats every day.'",
+    "why": "Simple pronoun replacement and familiar verb agreement."
+   },
+   {
+    "id": "c7-english-ch08-t01-i11",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Say in English: 'Mujhe ummeed hai ki koi meri naav dhoondh lega.'",
+    "why": "Translates a short everyday sentence with familiar future construction."
+   },
+   {
+    "id": "c7-english-ch08-t01-i12",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Write a one-line message you would put on your own paper boat for a stranger to find. Use 'I hope'.",
+    "why": "Highly scaffolded one-line personal message using a supplied phrase."
    },
    {
     "id": "c7-english-ch09-t01-i01",
@@ -7164,6 +8228,13 @@
     "why": "Identifies the obvious purpose of a short friendly letter."
    },
    {
+    "id": "c7-english-ch09-t01-i04",
+    "grade": 3,
+    "kitDifficulty": 1,
+    "q": "Which closing fits a letter to your best friend: 'Yours faithfully' or 'With love'?",
+    "why": "Everyday distinction between formal and affectionate closings."
+   },
+   {
     "id": "c7-english-ch09-t01-i05",
     "grade": 5,
     "kitDifficulty": 2,
@@ -7171,11 +8242,60 @@
     "why": "Distinguishes familiar formal and informal letter conventions."
    },
    {
+    "id": "c7-english-ch09-t01-i06",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Fill in the blanks: 'We arrived ___ the station ___ 6 a.m.'",
+    "why": "Uses basic prepositions for a place point and exact time."
+   },
+   {
+    "id": "c7-english-ch09-t01-i07",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Fill in the blanks: 'We go to Kaziranga ___ Monday, and we come home ___ June.'",
+    "why": "Basic time prepositions for days and months."
+   },
+   {
+    "id": "c7-english-ch09-t01-i08",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Find the two mistakes: 'We reached at Guwahati on May.'",
+    "why": "Corrects two common preposition errors in a short sentence."
+   },
+   {
+    "id": "c7-english-ch09-t01-i09",
+    "grade": 3,
+    "kitDifficulty": 2,
+    "q": "Read: 'Guwahati, 12 May. Dear Tara, Greetings from the East! We reached here by train yesterday. The",
+    "why": "Answer follows directly from the stated next-day plan."
+   },
+   {
     "id": "c7-english-ch09-t01-i10",
     "grade": 5,
     "kitDifficulty": 2,
     "q": "Look at a map of India and find Delhi. In which direction from Delhi is Kerala? In which direction f",
     "why": "Uses basic map reading and cardinal direction words."
+   },
+   {
+    "id": "c7-english-ch09-t01-i11",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "You are Tara. Say the first two lines of your reply to Anu's letter.",
+    "why": "Requires only a basic greeting and friendly acknowledgement."
+   },
+   {
+    "id": "c7-english-ch09-t01-i12",
+    "grade": 4,
+    "kitDifficulty": 1,
+    "q": "In an informal letter, what comes first: the greeting ('Dear Tara') or the place and date?",
+    "why": "Simple recall of elementary informal-letter format."
+   },
+   {
+    "id": "c7-english-ch09-t01-i13",
+    "grade": 5,
+    "kitDifficulty": 4,
+    "q": "Your cousin is writing her first letter to a pen friend in Chennai. Explain what parts she must incl",
+    "why": "Basic letter parts and friendly tone are taught earlier."
    },
    {
     "id": "c7-english-ch10-t01-i01",
@@ -7192,11 +8312,60 @@
     "why": "Simple inference from glowing eyes and a hillside setting."
    },
    {
+    "id": "c7-english-ch10-t01-i04",
+    "grade": 3,
+    "kitDifficulty": 2,
+    "q": "Read: 'Ravi sat near the dark mouth of the tunnel, waiting for the evening train. Far away, a whistl",
+    "why": "Students simply locate two obvious sound-related verbs."
+   },
+   {
+    "id": "c7-english-ch10-t01-i05",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Which sentence paints a stronger picture: 'The train came out' or 'The engine roared out of the tunn",
+    "why": "Straightforward comparison of a plain and vivid sentence."
+   },
+   {
     "id": "c7-english-ch10-t01-i06",
     "grade": 5,
     "kitDifficulty": 2,
     "q": "Fill in a/an/the: 'I saw ___ leopard near ___ tunnel. ___ leopard had yellow eyes.'",
     "why": "Applies basic articles using first and subsequent mention."
+   },
+   {
+    "id": "c7-english-ch10-t01-i07",
+    "grade": 3,
+    "kitDifficulty": 2,
+    "q": "Find the mistakes: 'Ravi saw leopard near tunnel.'",
+    "why": "Correcting omitted articles in a simple sentence is elementary."
+   },
+   {
+    "id": "c7-english-ch10-t01-i08",
+    "grade": 2,
+    "kitDifficulty": 2,
+    "q": "Which is correct: 'a hour' or 'an hour'?",
+    "why": "A single familiar article choice based on vowel sound."
+   },
+   {
+    "id": "c7-english-ch10-t01-i09",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Fill in a or an: '___ umbrella, ___ uniform, ___ honest guard.'",
+    "why": "Tests familiar article rules with vowel and consonant sounds."
+   },
+   {
+    "id": "c7-english-ch10-t01-i10",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Read: 'Ravi sat near the dark mouth of the tunnel, waiting for the evening train. Far away, a whistl",
+    "why": "The approaching noisy train makes the inference immediate."
+   },
+   {
+    "id": "c7-english-ch10-t01-i12",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "The next evening, Ravi goes back to the tunnel. What do you think he hopes to see, and why?",
+    "why": "Requires a simple prediction supported by the character's fascination."
    },
    {
     "id": "c7-english-ch11-t01-i01",
@@ -7206,11 +8375,39 @@
     "why": "Direct retrieval from the poem's first two lines."
    },
    {
+    "id": "c7-english-ch11-t01-i07",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Read: 'Each night I hear the far train call, / Its whistle drifting through the dark; / Though frien",
+    "why": "The repeated word 'long' makes the mood answer obvious."
+   },
+   {
+    "id": "c7-english-ch11-t01-i09",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Join these into one sentence with 'although': 'I love my home. I want to see the world.'",
+    "why": "Supplied conjunction and two simple clauses require only basic sentence joining."
+   },
+   {
+    "id": "c7-english-ch11-t01-i10",
+    "grade": 5,
+    "kitDifficulty": 1,
+    "q": "What does 'long to' mean in 'I long to travel'?",
+    "why": "A common phrase requires only a brief vocabulary recall."
+   },
+   {
     "id": "c7-english-ch11-t01-i11",
     "grade": 4,
     "kitDifficulty": 2,
     "q": "One day, the speaker is offered a ticket on that train. What do you think she will do?",
     "why": "Simple prediction follows directly from the speaker’s stated longing."
+   },
+   {
+    "id": "c7-english-ch11-t01-i12",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Make your own wish about a place you long to visit. Start with 'I wish I could...'",
+    "why": "The scaffold requires only one simple personal-wish sentence."
    },
    {
     "id": "c7-english-ch12-t01-i01",
@@ -7225,6 +8422,41 @@
     "kitDifficulty": 2,
     "q": "Put these events in order: (a) She reached the top of Everest. (b) Robbers pushed her off a train. (",
     "why": "Orders four plainly stated events using basic chronology."
+   },
+   {
+    "id": "c7-english-ch12-t01-i05",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Complete: 'She ___ (lose) a leg, but she ___ (not lose) hope.'",
+    "why": "Tests basic simple-past forms in a heavily scaffolded sentence."
+   },
+   {
+    "id": "c7-english-ch12-t01-i06",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Find the mistake: 'She fighted back and climbed the mountain.'",
+    "why": "Correcting one common irregular past-tense error is elementary."
+   },
+   {
+    "id": "c7-english-ch12-t01-i07",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Give the past tense of: fall, become, begin.",
+    "why": "Direct recall of three common irregular past-tense forms."
+   },
+   {
+    "id": "c7-english-ch12-t01-i08",
+    "grade": 4,
+    "kitDifficulty": 1,
+    "q": "Which is a real word: 'unpossible' or 'impossible'?",
+    "why": "Choosing the familiar correct word needs minimal prefix knowledge."
+   },
+   {
+    "id": "c7-english-ch12-t01-i09",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Make opposites with un-, im- or dis-: able, patient, agree.",
+    "why": "Forming familiar opposites with given prefixes is routine vocabulary work."
    },
    {
     "id": "c7-english-ch12-t01-i10",
@@ -7248,6 +8480,41 @@
     "why": "Combines two explicit details into one simple sentence."
    },
    {
+    "id": "c7-english-ch13-t01-i09",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Give the English words for 'balidaan' and 'veerta'.",
+    "why": "Direct translation of two familiar value words is simple recall."
+   },
+   {
+    "id": "c7-english-ch13-t01-i10",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Use the word 'sacrifice' in a sentence of your own.",
+    "why": "Writing one sentence with a supplied word is elementary production."
+   },
+   {
+    "id": "c7-english-ch13-t01-i11",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Read: 'PRIYA: Grandpa, why do we stand silent at the war memorial? GRANDPA: To pay homage to the sol",
+    "why": "Simple conversational prediction using explicit details from a short dialogue."
+   },
+   {
+    "id": "c7-english-ch13-t01-i12",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Make this a polite interview question for a retired soldier: 'Tell me about the mountains.'",
+    "why": "Basic polite request formation is expected before Class 7."
+   },
+   {
+    "id": "c7-english-ch13-t01-i13",
+    "grade": 5,
+    "kitDifficulty": 4,
+    "q": "Explain to your younger sibling why we honour soldiers at a war memorial.",
+    "why": "Requires a straightforward explanation of an everyday patriotic idea."
+   },
+   {
     "id": "c7-english-ch14-t01-i01",
     "grade": 2,
     "kitDifficulty": 1,
@@ -7260,6 +8527,55 @@
     "kitDifficulty": 2,
     "q": "Read: 'While we lie warm in our beds at night, / You stand on snow in the cold moonlight; / Our fest",
     "why": "Infers a clear central idea from a short accessible stanza."
+   },
+   {
+    "id": "c7-english-ch14-t01-i04",
+    "grade": 2,
+    "kitDifficulty": 1,
+    "q": "Which word in the stanza rhymes with 'night'?",
+    "why": "Identifying an obvious rhyming word is an early-primary skill."
+   },
+   {
+    "id": "c7-english-ch14-t01-i05",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Add an apostrophe where needed: 'The soldiers boots were covered in snow.' (There is one soldier.)",
+    "why": "Applying a singular possessive apostrophe is standard upper-primary grammar."
+   },
+   {
+    "id": "c7-english-ch14-t01-i07",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Find the mistake: 'The soldier's marched proudly in the parade.'",
+    "why": "Removing an incorrect apostrophe from a plural noun is elementary."
+   },
+   {
+    "id": "c7-english-ch14-t01-i08",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Fill in the blanks: 'We are grateful ___ our soldiers ___ their courage.'",
+    "why": "Common adjective-preposition combinations require only routine language familiarity."
+   },
+   {
+    "id": "c7-english-ch14-t01-i10",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Say in English: 'Hum aapke aabhaari hain.'",
+    "why": "Translation uses a short sentence and very common vocabulary."
+   },
+   {
+    "id": "c7-english-ch14-t01-i11",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Write a one-line thank-you message to a soldier, using 'Thank you for' and an -ing verb.",
+    "why": "The supplied phrase and verb form make composition highly guided."
+   },
+   {
+    "id": "c7-english-ch14-t01-i12",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "If the poet wrote one more line to the soldiers, would it most likely sound angry, grateful or funny",
+    "why": "The stanza's grateful tone is explicit and easily justified."
    },
    {
     "id": "c7-english-ch15-t01-i01",
@@ -7281,6 +8597,20 @@
     "kitDifficulty": 2,
     "q": "Find the mistake: 'Rani Abbakka was a brave ruler. He refused to pay the tax.'",
     "why": "Corrects an obvious gender-pronoun mismatch."
+   },
+   {
+    "id": "c7-english-ch15-t01-i11",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "The Portuguese return with more ships and demand tax again. Knowing Rani Abbakka's character, what w",
+    "why": "Simple character-based prediction using an already established repeated response."
+   },
+   {
+    "id": "c7-english-ch15-t01-i12",
+    "grade": 5,
+    "kitDifficulty": 4,
+    "q": "Explain to your younger cousin why Rani Abbakka is remembered as a brave queen.",
+    "why": "Requires a straightforward retelling of explicitly stated achievements and bravery."
    }
   ],
   "c7-hindi": [
@@ -7292,11 +8622,81 @@
     "why": "Asks only who speaks and whom they address."
    },
    {
+    "id": "c7-hindi-ch01-t01-i02",
+    "grade": 3,
+    "kitDifficulty": 2,
+    "q": "Which bird comes in the mother's story, and what happened to it?",
+    "why": "Direct recall of one character and one simple event."
+   },
+   {
+    "id": "c7-hindi-ch01-t01-i03",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "What do रक्षक and भक्षक mean?",
+    "why": "Basic meanings of two familiar, context-supported opposite roles."
+   },
+   {
+    "id": "c7-hindi-ch01-t01-i04",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Fill both blanks with हंस or हँस: 'झील में एक सफ़ेद ___ तैर रहा था।' and 'चुटकुला सुनकर दीदी ___ पड़",
+    "why": "Elementary homophone and nasal-mark distinction using clear sentence contexts."
+   },
+   {
+    "id": "c7-hindi-ch01-t01-i05",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Why does the poem say the swan should go to the one who saved it?",
+    "why": "Simple moral explanation contrasting harming an animal with saving it."
+   },
+   {
+    "id": "c7-hindi-ch01-t01-i06",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Before we hear the end: when the mother asks her son to judge, what do you think he will decide, and",
+    "why": "Predicts an obvious moral judgment and supplies one reason."
+   },
+   {
+    "id": "c7-hindi-ch01-t01-i07",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "I say: 'The swan is the hunter's, because his arrow hit it first.' What is wrong with my thinking, b",
+    "why": "Identifies faulty reasoning through the poem’s plainly stated moral."
+   },
+   {
     "id": "c7-hindi-ch01-t01-i08",
     "grade": 2,
     "kitDifficulty": 3,
     "q": "A kitten fell into a drain. Ravi threw a stone at it for fun; Meena pulled it out and fed it milk. W",
     "why": "Simple everyday moral judgement with an obvious reason."
+   },
+   {
+    "id": "c7-hindi-ch01-t01-i09",
+    "grade": 5,
+    "kitDifficulty": 4,
+    "q": "Listen: 'टूटा पंख, थकी-सी आँखें, नन्ही गौरैया हारी; दाना-पानी देकर उसको, मुनिया ने जान उबारी।' What ",
+    "why": "Identifies compassion and connects two closely similar rescue situations."
+   },
+   {
+    "id": "c7-hindi-ch01-t01-i11",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Give the opposite (विलोम) of दया and of न्याय.",
+    "why": "Recalls common antonyms formed directly through familiar negative words."
+   },
+   {
+    "id": "c7-hindi-ch01-t01-i12",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Say in Hindi: 'The protector has more right than the destroyer.'",
+    "why": "Translates one short sentence using vocabulary supplied by the poem."
+   },
+   {
+    "id": "c7-hindi-ch01-t01-i13",
+    "grade": 5,
+    "kitDifficulty": 4,
+    "q": "Explain to your younger brother or sister, in 3-4 sentences, what this poem teaches.",
+    "why": "Summarises a simple narrative and states its explicit moral."
    },
    {
     "id": "c7-hindi-ch02-t01-i01",
@@ -7306,11 +8706,60 @@
     "why": "Recalls a standard definition of a familiar literary form."
    },
    {
+    "id": "c7-hindi-ch02-t01-i02",
+    "grade": 4,
+    "kitDifficulty": 1,
+    "q": "What does बुद्धिमान mean? Use it in a sentence.",
+    "why": "Defines a common adjective and uses it in a sentence."
+   },
+   {
+    "id": "c7-hindi-ch02-t01-i03",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Three friends on a forest path see small hoof-marks in wet mud, white hair caught on a bush, and gra",
+    "why": "Concrete clues support a familiar animal inference with little abstraction."
+   },
+   {
+    "id": "c7-hindi-ch02-t01-i04",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Who is wiser: Raju, who knows the names of 100 cities, or Sona, who saw muddy shoes at the door and ",
+    "why": "Compares memorisation and inference in a simple everyday example."
+   },
+   {
+    "id": "c7-hindi-ch02-t01-i06",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "I wrote on the board: 'वह बहुत बुधिमान है।' Find my mistake.",
+    "why": "Corrects one common spelling error involving a familiar conjunct consonant."
+   },
+   {
     "id": "c7-hindi-ch02-t01-i07",
     "grade": 3,
     "kitDifficulty": 2,
     "q": "This is a short tale of my own, like the one in the book. Put its events in order: (क) तीनों ने राजा",
     "why": "Sequences four events using obvious cause and chronology."
+   },
+   {
+    "id": "c7-hindi-ch02-t01-i08",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "In a tale, a merchant says his bag was stolen. A wise girl notices the bag is dry though it rained a",
+    "why": "Draws a direct logical inference from rain and a dry object."
+   },
+   {
+    "id": "c7-hindi-ch02-t01-i10",
+    "grade": 5,
+    "kitDifficulty": 4,
+    "q": "In your class, a tiffin box went missing. There is a trail of biscuit crumbs from the bench to the w",
+    "why": "Uses visible clues to infer movement and propose a check."
+   },
+   {
+    "id": "c7-hindi-ch02-t01-i11",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Say in Hindi: 'A wise person looks carefully before deciding.'",
+    "why": "सरल दैनिक वाक्य का सीधा हिंदी अनुवाद है।"
    },
    {
     "id": "c7-hindi-ch03-t01-i01",
@@ -7327,11 +8776,32 @@
     "why": "Names obvious qualities of familiar objects using simple vocabulary."
    },
    {
+    "id": "c7-hindi-ch03-t01-i04",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Spot my mistake: 'काँटा उँगली में चुभती है और फूल खिली है।'",
+    "why": "सामान्य पुल्लिंग शब्दों का सरल लिंग-सामंजस्य सुधारना है।"
+   },
+   {
     "id": "c7-hindi-ch03-t01-i05",
     "grade": 3,
     "kitDifficulty": 2,
     "q": "Give the opposites: सुगंध, कोमल.",
     "why": "Recalls common antonyms from primary-level Hindi vocabulary."
+   },
+   {
+    "id": "c7-hindi-ch03-t01-i06",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Complete the sentence using ‘जबकि’: 'फूल सबको सुगंध देता है, जबकि काँटा…'",
+    "why": "दिए संदर्भ में सरल विरोधसूचक वाक्य पूरा करना है।"
+   },
+   {
+    "id": "c7-hindi-ch03-t01-i10",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Say in Hindi: 'A person becomes great by good deeds, not by birth.'",
+    "why": "परिचित नैतिक विचार का सीधा हिंदी अनुवाद है।"
    },
    {
     "id": "c7-hindi-ch03-t01-i11",
@@ -7348,11 +8818,67 @@
     "why": "वर्षाजल सँजोने का सीधा मुख्य-विचार पुनर्स्मरण है।"
    },
    {
+    "id": "c7-hindi-ch04-t01-i05",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "बाढ़ and बाड़ — tell the meaning of each and use both in one sentence.",
+    "why": "दो परिचित समोच्चारित शब्दों के अर्थ और प्रयोग पूछे हैं।"
+   },
+   {
+    "id": "c7-hindi-ch04-t01-i06",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Spot the mistake: 'इस साल गाँव में भयानक बाड़ आई।'",
+    "why": "संदर्भ से बाढ़ और बाड़ का सरल शब्द-सुधार है।"
+   },
+   {
+    "id": "c7-hindi-ch04-t01-i10",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Say in Hindi: 'If we save rainwater, our wells will not dry up.'",
+    "why": "सरल शर्तसूचक वाक्य का सीधा हिंदी अनुवाद है।"
+   },
+   {
+    "id": "c7-hindi-ch04-t01-i11",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Give two ways your family can save water every day.",
+    "why": "जल बचाने के दो सामान्य दैनिक उपाय बताने हैं।"
+   },
+   {
     "id": "c7-hindi-ch05-t01-i01",
     "grade": 4,
     "kitDifficulty": 1,
     "q": "At first, why did the narrator want to fall ill?",
     "why": "कहानी से पात्र की आरंभिक इच्छा का सीधा पुनर्स्मरण है।"
+   },
+   {
+    "id": "c7-hindi-ch05-t01-i03",
+    "grade": 3,
+    "kitDifficulty": 2,
+    "q": "Spot the mistake: 'कल मेरा भाई बिमार था।'",
+    "why": "सामान्य शब्द की मूल मात्रा और वर्तनी पहचाननी है।"
+   },
+   {
+    "id": "c7-hindi-ch05-t01-i04",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Make nouns by adding -ई: बीमार, ईमानदार, गरम. Use one in a sentence.",
+    "why": "सरल प्रत्यय लगाकर भाववाचक संज्ञाएँ और एक वाक्य बनाना है।"
+   },
+   {
+    "id": "c7-hindi-ch05-t01-i05",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Fill with बीमार or बीमारी: 'राजू को ___ हो गई, इसलिए वह ___ है।'",
+    "why": "संदर्भ से संज्ञा और विशेषण का सरल चुनाव है।"
+   },
+   {
+    "id": "c7-hindi-ch05-t01-i06",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Why did the narrator's wish change into 'नहीं होना बीमार'?",
+    "why": "कहानी की घटनाओं से बदलाव का सीधा कारण बताना है।"
    },
    {
     "id": "c7-hindi-ch05-t01-i08",
@@ -7362,11 +8888,60 @@
     "why": "चार स्पष्ट घटनाओं को साधारण कालक्रम में लगाना है।"
    },
    {
+    "id": "c7-hindi-ch05-t01-i09",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "What does परहेज़ mean? Use it in a sentence.",
+    "why": "एक सामान्य शब्द का अर्थ और प्रयोग बताना है।"
+   },
+   {
+    "id": "c7-hindi-ch05-t01-i12",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Say in Hindi: 'Being ill is not fun at all.'",
+    "why": "बहुत सरल दैनिक अंग्रेज़ी वाक्य का हिंदी अनुवाद है।"
+   },
+   {
+    "id": "c7-hindi-ch05-t01-i13",
+    "grade": 5,
+    "kitDifficulty": 4,
+    "q": "Tell this story to a younger child in 4-5 sentences, ending with what the narrator learnt.",
+    "why": "घटनाक्रम और सीख सहित संक्षिप्त कहानी पुनर्कथन करना है।"
+   },
+   {
     "id": "c7-hindi-ch06-t01-i02",
     "grade": 3,
     "kitDifficulty": 2,
     "q": "Listen to this original kundaliya: 'पानी राखो जतन से, बूँद-बूँद अनमोल। बिन पानी सूनो जगत, समझो इसका ",
     "why": "दिए पद्य का केवल पहला और अंतिम शब्द पहचानना है।"
+   },
+   {
+    "id": "c7-hindi-ch06-t01-i03",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "In the same kundaliya, which phrase is repeated where line 2 ends and line 3 begins?",
+    "why": "दो निकट पंक्तियों में दोहराया वाक्यांश केवल पहचानना है।"
+   },
+   {
+    "id": "c7-hindi-ch06-t01-i07",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Who was Giridhar Kavirai, and what kind of poems is he known for?",
+    "why": "कवि और उनकी प्रसिद्ध काव्यविधा का सीधा तथ्य-स्मरण है।"
+   },
+   {
+    "id": "c7-hindi-ch06-t01-i09",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "A kundaliya teaches 'think before you act, or you will regret it later.' Riya bought a costly toy wi",
+    "why": "स्पष्ट नीति को सीधे दिए गए दैनिक उदाहरण से जोड़ना है।"
+   },
+   {
+    "id": "c7-hindi-ch06-t01-i10",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "A kundaliya says a simple stick (लाठी) has many uses on a journey. Predict two uses a traveller long",
+    "why": "लाठी के दो व्यावहारिक उपयोगों का सहज अनुमान लगाना है।"
    },
    {
     "id": "c7-hindi-ch07-t01-i01",
@@ -7376,6 +8951,55 @@
     "why": "वर्षा के तीन परिचित दृश्य गिनाने का सरल कार्य है।"
    },
    {
+    "id": "c7-hindi-ch07-t01-i02",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Give one पर्यायवाची each for बादल, बिजली and मोर.",
+    "why": "तीन परिचित शब्दों के सामान्य पर्यायवाची केवल याद करने हैं।"
+   },
+   {
+    "id": "c7-hindi-ch07-t01-i03",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Read both and tell the meaning: बहार, बाहर.",
+    "why": "सरल समोच्चरित शब्दों के अर्थ का प्राथमिक स्तर का भेद है।"
+   },
+   {
+    "id": "c7-hindi-ch07-t01-i06",
+    "grade": 3,
+    "kitDifficulty": 2,
+    "q": "Spot the spelling mistake: 'आज ज़ोर की वर्शा हुई।'",
+    "why": "एक परिचित शब्द की सामान्य वर्तनी सुधारनी है।"
+   },
+   {
+    "id": "c7-hindi-ch07-t01-i07",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Why are the peacock and the farmer so happy in the rains?",
+    "why": "वर्षा से मोर और किसान की खुशी सामान्य ज्ञान है।"
+   },
+   {
+    "id": "c7-hindi-ch07-t01-i09",
+    "grade": 2,
+    "kitDifficulty": 2,
+    "q": "The poem is about the rainy season. Before reading, predict two sounds you will 'hear' in it.",
+    "why": "वर्षा की दो परिचित ध्वनियाँ केवल कल्पित करनी हैं।"
+   },
+   {
+    "id": "c7-hindi-ch07-t01-i10",
+    "grade": 5,
+    "kitDifficulty": 4,
+    "q": "Describe a rainy day in your town in 4 sentences: one each for what you see, hear, smell and feel.",
+    "why": "चार इंद्रिय-आधारित सरल वाक्यों का परिचित वर्णन है।"
+   },
+   {
+    "id": "c7-hindi-ch07-t01-i11",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Say in Hindi: 'Peacocks dance when dark clouds come.'",
+    "why": "अत्यंत सरल अंग्रेज़ी वाक्य का सीधा हिंदी अनुवाद है।"
+   },
+   {
     "id": "c7-hindi-ch07-t01-i13",
     "grade": 4,
     "kitDifficulty": 2,
@@ -7383,11 +9007,39 @@
     "why": "Basic expressive reading using repetition and punctuation cues."
    },
    {
+    "id": "c7-hindi-ch08-t01-i01",
+    "grade": 4,
+    "kitDifficulty": 1,
+    "q": "Birju Maharaj is famous for which dance form?",
+    "why": "प्रसिद्ध कलाकार की नृत्यशैली का एक-शब्दीय तथ्य स्मरण है।"
+   },
+   {
     "id": "c7-hindi-ch08-t01-i02",
     "grade": 5,
     "kitDifficulty": 1,
     "q": "What is a साक्षात्कार? Who are the two people in it?",
     "why": "साक्षात्कार की सामान्य परिभाषा और दो भूमिकाएँ पहचाननी हैं।"
+   },
+   {
+    "id": "c7-hindi-ch08-t01-i06",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Fill with राज or राज़: 'उसकी सफलता का ___ रोज़ का रियाज़ है।' and 'पुराने समय में यहाँ राजा का ___ थ",
+    "why": "संदर्भ से दो सरल समानध्वनि शब्दों का चयन है।"
+   },
+   {
+    "id": "c7-hindi-ch08-t01-i07",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "What do these words mean: रियाज़, घुँघरू, ताल?",
+    "why": "तीन सामान्य नृत्य-संगीत शब्दों के सीधे अर्थ पूछे गए हैं।"
+   },
+   {
+    "id": "c7-hindi-ch08-t01-i08",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Before reading, guess: how many hours a day will a great dancer say they practised as a child, and w",
+    "why": "अभ्यास और सफलता का सामान्य संबंध अनुमानित करना है।"
    },
    {
     "id": "c7-hindi-ch09-t01-i01",
@@ -7404,6 +9056,62 @@
     "why": "Elementary recognition of ड़ in familiar words."
    },
    {
+    "id": "c7-hindi-ch09-t01-i03",
+    "grade": 3,
+    "kitDifficulty": 2,
+    "q": "Spot the mistakes: 'चिडिया पेड पर बैठी है।'",
+    "why": "परिचित शब्दों में ड़ की वर्तनी सुधारनी है।"
+   },
+   {
+    "id": "c7-hindi-ch09-t01-i04",
+    "grade": 3,
+    "kitDifficulty": 2,
+    "q": "Make plurals: चिड़िया, गुड़िया, डिबिया.",
+    "why": "प्रचलित इया-बहुवचन का प्राथमिक स्तर का सीधा अभ्यास है।"
+   },
+   {
+    "id": "c7-hindi-ch09-t01-i05",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Fill with चिड़ियाँ or चिड़ियों: 'आँगन में ___ फुदक रही हैं।' and 'मैंने ___ को दाना डाला।'",
+    "why": "कारक-चिह्न ‘को’ के साथ सामान्य बहुवचन रूप चुनना है।"
+   },
+   {
+    "id": "c7-hindi-ch09-t01-i06",
+    "grade": 2,
+    "kitDifficulty": 2,
+    "q": "Listen: 'फुर्र-फुर्र उड़ी चिड़िया रानी, चोंच में लाई बूँद-भर पानी; तिनका-तिनका चुन-चुन लाई, छोटी-सी ",
+    "why": "सुनी चार पंक्तियों से दो स्पष्ट क्रियाएँ बतानी हैं।"
+   },
+   {
+    "id": "c7-hindi-ch09-t01-i07",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Why do poets love to write about small birds?",
+    "why": "परिचित विषय पर सरल व्यक्तिगत कारण व्यक्त करना है।"
+   },
+   {
+    "id": "c7-hindi-ch09-t01-i08",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "If a bird from such a poem were kept in a beautiful cage with plenty of food, how would it feel? Pre",
+    "why": "पिंजरे और स्वतंत्रता से जुड़ी सहज भावना समझानी है।"
+   },
+   {
+    "id": "c7-hindi-ch09-t01-i09",
+    "grade": 4,
+    "kitDifficulty": 4,
+    "q": "A child says, 'Birds don't come to our building any more.' Suggest two things the colony could do so",
+    "why": "पक्षियों हेतु दो सामान्य पर्यावरणीय उपाय सुझाने हैं।"
+   },
+   {
+    "id": "c7-hindi-ch09-t01-i10",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Say in Hindi: 'The little bird flew to the tree and sang a song.'",
+    "why": "एक सरल दैनिक अंग्रेज़ी वाक्य का हिंदी अनुवाद है।"
+   },
+   {
     "id": "c7-hindi-ch09-t01-i11",
     "grade": 4,
     "kitDifficulty": 2,
@@ -7411,20 +9119,90 @@
     "why": "पंक्ति-अंत पर विराम और सरल लय पहचाननी है।"
    },
    {
+    "id": "c7-hindi-ch09-t01-i12",
+    "grade": 4,
+    "kitDifficulty": 4,
+    "q": "Tell your friend, in 4 sentences, about a bird you watched — what it did and how you felt.",
+    "why": "परिचित अनुभव पर केवल चार सरल मौखिक वाक्य बोलने हैं।"
+   },
+   {
     "id": "c7-hindi-ch10-t01-i01",
     "grade": 4,
     "kitDifficulty": 1,
     "q": "Who is Meera devoted to, in her pads?",
     "why": "Single familiar fact about Meera’s devotion to Krishna."
+   },
+   {
+    "id": "c7-hindi-ch10-t01-i02",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Why is Krishna called 'गिरधर'?",
+    "why": "कृष्ण की प्रसिद्ध गोवर्धन कथा का एक तथ्य याद करना है।"
+   },
+   {
+    "id": "c7-hindi-ch10-t01-i09",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Meera was a princess. Predict: what would she choose if asked to pick between palace pride and singi",
+    "why": "मीरा के प्रसिद्ध भक्ति-चरित्र से सहज चुनाव अनुमानित है।"
    }
   ],
   "c7-sst": [
+   {
+    "id": "c7-sst-ch01-t01-i06",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Many traditional houses in the Thar have thick mud walls and small windows. Why?",
+    "why": "मरुस्थलीय घरों के सामान्य ताप-अनुकूलन का सरल कारण पूछता है।"
+   },
+   {
+    "id": "c7-sst-ch02-t01-i13",
+    "grade": 3,
+    "kitDifficulty": 2,
+    "q": "A bottle rain gauge collected 12 mm of rain on Monday and 30 mm on Tuesday. How much rain fell in th",
+    "why": "Uses simple addition; the prompt already names the instrument."
+   },
+   {
+    "id": "c7-sst-ch03-t01-i09",
+    "grade": 4,
+    "kitDifficulty": 2,
+    "q": "Why do farmers in much of India wait for the monsoon before sowing rice?",
+    "why": "Uses the elementary fact that rice cultivation needs abundant water."
+   },
+   {
+    "id": "c7-sst-ch03-t01-i10",
+    "grade": 4,
+    "kitDifficulty": 4,
+    "q": "Describe your own town's climate across the year: the hottest months, the rainiest months, and one f",
+    "why": "Asks familiar seasonal observations and a simple culture-season connection."
+   },
+   {
+    "id": "c7-sst-ch05-t01-i11",
+    "grade": 5,
+    "kitDifficulty": 4,
+    "q": "Predict: if Ashoka's messages had been written on wood or cloth instead of stone, what would we know",
+    "why": "Basic material-decay inference needs little chapter-specific understanding."
+   },
    {
     "id": "c7-sst-ch08-t01-i01",
     "grade": 4,
     "kitDifficulty": 1,
     "q": "Name three kinds of natural features that people in India treat as sacred.",
     "why": "Common sacred natural features require only simple listing."
+   },
+   {
+    "id": "c7-sst-ch08-t01-i02",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Why might a sangam — a place where rivers meet — be seen as especially sacred?",
+    "why": "Simple inference from rivers’ life-giving role and their meeting."
+   },
+   {
+    "id": "c7-sst-ch08-t01-i08",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "How do sacred groves help nature?",
+    "why": "Basic environmental reasoning about community protection conserving plants and animals."
    },
    {
     "id": "c7-sst-ch08-t01-i09",
@@ -7434,6 +9212,13 @@
     "why": "Everyday observation and a simple cleanliness suggestion suffice."
    },
    {
+    "id": "c7-sst-ch08-t01-i12",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Many sacred rivers today are polluted. Give two causes and two solutions.",
+    "why": "Common pollution causes and remedies are taught in primary EVS."
+   },
+   {
     "id": "c7-sst-ch11-t01-i01",
     "grade": 4,
     "kitDifficulty": 1,
@@ -7441,11 +9226,53 @@
     "why": "A basic definition of direct exchange without money."
    },
    {
+    "id": "c7-sst-ch11-t01-i03",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Why would it be hard to buy a single egg if all you had to trade was a goat?",
+    "why": "Concrete size and divisibility problem needs only everyday reasoning."
+   },
+   {
+    "id": "c7-sst-ch11-t01-i11",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Find the mistake: \"When I pay by UPI, my phone creates the money, so I can keep paying even if my ba",
+    "why": "Basic digital-payment fact familiar from everyday banking experience."
+   },
+   {
+    "id": "c7-sst-ch11-t01-i12",
+    "grade": 5,
+    "kitDifficulty": 4,
+    "q": "At your local vegetable seller, in how many different ways do people pay? Give two safety rules for ",
+    "why": "Simple observation and widely taught digital-safety rules."
+   },
+   {
     "id": "c7-sst-ch12-t01-i01",
     "grade": 5,
     "kitDifficulty": 1,
     "q": "Name four different kinds of markets.",
     "why": "Only lists familiar physical and online market types."
+   },
+   {
+    "id": "c7-sst-ch12-t01-i04",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Put the tomato's journey in order: you buy it from the sabziwala; a farmer grows it; a wholesaler bu",
+    "why": "Orders an intuitive four-step farm-to-consumer supply chain."
+   },
+   {
+    "id": "c7-sst-ch12-t01-i11",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "A flow diagram shows: farmer sells wheat at ₹20/kg → wholesaler sells at ₹26/kg → shop sells at ₹34/",
+    "why": "Only reads a linear diagram and performs simple subtraction."
+   },
+   {
+    "id": "c7-sst-ch12-t01-i12",
+    "grade": 5,
+    "kitDifficulty": 4,
+    "q": "Map the markets your family uses: where do you buy vegetables, clothes and a phone or electronics? W",
+    "why": "Personal shopping choices require only familiar examples and simple reasons."
    },
    {
     "id": "c7-sst-ch14-t01-i01",
@@ -7462,6 +9289,55 @@
     "why": "Basic map directions and neighbouring countries suit upper-primary map work."
    },
    {
+    "id": "c7-sst-ch14-t01-i06",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "Very heavy rain falls in Tibet and Arunachal Pradesh for a week. Predict what might happen downstrea",
+    "why": "Heavy upstream rain causing downstream floods is a straightforward prediction."
+   },
+   {
+    "id": "c7-sst-ch14-t01-i11",
+    "grade": 4,
+    "kitDifficulty": 3,
+    "q": "Find the mistakes: \"Sri Lanka is north of India, and Bangladesh is on India's west.\"",
+    "why": "Correcting basic north-south and east-west positions is primary-level map work."
+   },
+   {
+    "id": "c7-sst-ch14-t01-i12",
+    "grade": 5,
+    "kitDifficulty": 4,
+    "q": "Find one thing in your own life connected to a neighbouring country — a food, a festival, a song, a ",
+    "why": "An everyday personal example and brief link suit upper-primary project work."
+   },
+   {
+    "id": "c7-sst-ch15-t01-i07",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "The Kailasa temple at Ellora was carved from a single rock, working from the top down. What does thi",
+    "why": "The prompt directly supports a simple inference about skill and planning."
+   },
+   {
+    "id": "c7-sst-ch17-t01-i11",
+    "grade": 5,
+    "kitDifficulty": 4,
+    "q": "In your town or school, list festivals, foods or buildings that belong to different communities. Nam",
+    "why": "Everyday listing and personal reflection need little chapter knowledge."
+   },
+   {
+    "id": "c7-sst-ch17-t01-i13",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Name four faiths that began in India.",
+    "why": "Only asks one commonly known list of four faiths."
+   },
+   {
+    "id": "c7-sst-ch19-t01-i06",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "When and between which places did India's first passenger train run?",
+    "why": "Only recalls one date and one route from the text."
+   },
+   {
     "id": "c7-sst-ch19-t01-i10",
     "grade": 4,
     "kitDifficulty": 3,
@@ -7474,6 +9350,20 @@
     "kitDifficulty": 1,
     "q": "What are the two main jobs of a bank?",
     "why": "Deposits and loans are widely known basic functions of banks."
+   },
+   {
+    "id": "c7-sst-ch20-t01-i10",
+    "grade": 5,
+    "kitDifficulty": 3,
+    "q": "A passbook shows: 1 Jan – deposit ₹500; 1 Feb – deposit ₹300; 15 Feb – withdrawal ₹200; 31 Mar – int",
+    "why": "Uses only small-number addition, subtraction, and simple transaction vocabulary."
+   },
+   {
+    "id": "c7-sst-ch20-t01-i14",
+    "grade": 5,
+    "kitDifficulty": 2,
+    "q": "Give three rules for banking safely.",
+    "why": "Common PIN, OTP, and password precautions are basic digital-safety knowledge."
    }
   ]
  },
@@ -7645,6 +9535,30 @@
    "grade": 8,
    "q": "Golu says: 'Heat and temperature are the same. A big bucket of warm water has a higher temperature t",
    "why": "Requires separating temperature from mass-dependent thermal energy."
+  },
+  {
+   "id": "c7-science-ch03-t03-i11",
+   "grade": 8,
+   "q": "Sameer tested tap water with a torch-bulb tester, saw no glow, and wrote: 'Water is an insulator, so",
+   "why": "Requires tester sensitivity, weak conduction, and voltage-dependent danger."
+  },
+  {
+   "id": "c7-science-ch11-t03-i07",
+   "grade": 8,
+   "q": "A ray of light strikes a mirror at 30° to the normal (the line perpendicular to the mirror). Draw (o",
+   "why": "Quantitative laws of reflection are normally formalised in Class 8."
+  },
+  {
+   "id": "c7-science-ch11-t03-i09",
+   "grade": 8,
+   "q": "A barber's shop has two mirrors on opposite walls, facing each other. Customers see many images goin",
+   "why": "Explaining infinitely repeated images requires the multiple-reflection concept."
+  },
+  {
+   "id": "c7-science-ch12-t03-i10",
+   "grade": 9,
+   "q": "During a total lunar eclipse the Moon often looks a dull coppery red rather than completely black. I",
+   "why": "Atmospheric refraction and selective red-light transmission exceed Class 7."
   }
  ]
 }

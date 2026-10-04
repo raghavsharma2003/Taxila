@@ -1,0 +1,54 @@
+diff -ruN a/server/director/modules.js b/server/director/modules.js
+--- a/server/director/modules.js	2026-10-04 21:17:48.814116452 +0000
++++ b/server/director/modules.js	2026-10-04 21:17:48.817120857 +0000
+@@ -315,9 +315,9 @@
+  *   - a G1 fill is graded by forge/grade.js gradeEvent over the server-side binding; the frame's `correct` and `misc`
+  *     are claims and are never read (decision forge-g1-grade-event);
+  *   - a bound T1 engine (catalog plan, bindItem) carries the engine's own verdict, computed by tested code from
+- *     params whose right answer equals the kit key (engines-v1-catalog-binding; server re-check is the open item
+- *     engines-v1-server-recheck).
+- * @returns {{ correct: boolean, value?: unknown, misconceptionId?: string | null, source: "forge_g1" | "engine", via?: string } | null}
++ *     params whose right answer equals the kit key (engines-v1-catalog-binding); the server re-checks a numeric commit
++ *     against that key (recheckValue: engines-v1-server-recheck).
++ * @returns {{ correct: boolean, value?: unknown, misconceptionId?: string | null, source: "forge_g1" | "engine" | "engine_rechecked", via?: string, claimMismatch?: boolean } | null}
+  */
+ export function moduleAnswerOf(state, events) {
+   const m = state?.module;
+@@ -334,5 +334,36 @@
+   if (!m.itemId || m.itemId !== state.activeItemId) return null;
+   const a = mine.filter((e) => e.type === "answer").at(-1);
+   const d = a?.data && typeof a.data === "object" ? a.data : null;
+-  return d && typeof d.correct === "boolean" ? { correct: d.correct, value: d.value, source: "engine" } : null;
++  if (!d || typeof d.correct !== "boolean") return null;
++  // engines-v1-server-recheck (OWNER TEST 2026-10-04 item 1, evals/owner-truth F1): the frame's `correct` is a CLAIM. When
++  // the committed value and the plan's verified key are both a number or a fraction, the SERVER decides from the value;
++  // a claim that disagrees is marked (claimMismatch) and never graded. Other commits keep the engine's verdict.
++  const recheck = recheckValue(d, m.key);
++  if (recheck == null) return { correct: d.correct, value: d.value, source: "engine" };
++  return { correct: recheck, value: d.value, source: "engine_rechecked", ...(recheck !== d.correct ? { claimMismatch: true } : {}) };
++}
++
++const FRAC_RE = /^\s*(-?\d+)\s*\/\s*(\d+)\s*$/;
++/** A plain number or fraction (string or number) → its value; anything else → null. Exported for tests. */
++export function numericOf(v) {
++  if (typeof v === "number") return Number.isFinite(v) ? v : null;
++  const t = String(v ?? "").trim().replace(/(\d),(?=\d{3}\b)/g, "$1");
++  const f = t.match(FRAC_RE);
++  if (f) return Number(f[2]) ? Number(f[1]) / Number(f[2]) : null;
++  return /^-?\d+(?:\.\d+)?$/.test(t) ? Number(t) : null;
++}
++/**
++ * PURE. Is the committed engine answer equal to the verified key? null when either side is not a plain number or
++ * fraction (then the engine's own verdict stands). Reads the value the engines commit (value / written / built / claimed
++ * / made / given), or the picked fraction of a compare (chosen / choice indexing `fractions`). Exported for tests.
++ */
++export function recheckValue(data, key) {
++  const k = numericOf(key);
++  if (k == null || !data || typeof data !== "object") return null;
++  let v = null;
++  for (const f of ["value", "written", "built", "claimed", "made", "given"]) if (v == null && data[f] != null && typeof data[f] !== "object") v = data[f];
++  const pick = data.chosen ?? data.choice;
++  if (v == null && pick != null && Array.isArray(data.fractions)) v = /^\d+$/.test(String(pick)) ? data.fractions[Number(pick)] : pick;
++  const n = numericOf(v);
++  return n == null ? null : Math.abs(n - k) < 1e-9;
+ }

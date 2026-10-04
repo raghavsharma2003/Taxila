@@ -132,6 +132,21 @@
     resize();
     if ("ResizeObserver" in window) new ResizeObserver(resize).observe(el); else window.addEventListener("resize", resize);
 
+    // Static layers: paint once per backing-store size, blit 1:1 every frame. Full-screen gradients, star fields and
+    // floor grids re-rasterised per frame were the dominant cost on the throttled profile (STUDIO-V2 §14 M3).
+    const layers = new Map();
+    st.layer = function (key, paint) {
+      const k = `${key}@${canvas.width}x${canvas.height}`;
+      let c = layers.get(k);
+      if (!c) {
+        for (const kk of [...layers.keys()]) if (kk.startsWith(key + "@")) layers.delete(kk);
+        c = document.createElement("canvas"); c.width = canvas.width; c.height = canvas.height;
+        const g = c.getContext("2d"); g.setTransform(canvas.width / W, 0, 0, canvas.height / H, 0, 0);
+        paint(g);
+        layers.set(k, c);
+      }
+      return c;
+    };
     st.begin = function () {               // world transform for this frame
       ctx.setTransform(st.scale, 0, 0, st.scale, 0, 0);
     };

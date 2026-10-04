@@ -49,10 +49,10 @@ export const HL = {
   goodbye: [
     "(?:mummy|mumma|papa|maa|didi|bhaiya|dadi|nani) bula (?:rahi|rahe|raha) (?:hai|hain|h)", "mujhe ja(?:a)?na (?:hai|padega|h)(?: abhi)?$", "(?:main|mai) ja (?:raha|rahi) (?:hoon|hu|hun)",
     "tuition (?:jaana|ka time|jana)", "khana khane (?:jaana|ja raha|ja rahi|jana)", "chalta (?:hoon|hu)", "chalti (?:hoon|hu)", "alvida", "phir milte(?: hain)?",
-    "bye bye", "tata", "good night", "kal milte(?: hain)?", "abhi jaana (?:hai|padega)",
+    "bye bye", "tata", "good night", "kal milte(?: hain)?", "abhi jaana (?:hai|padega)", "(?:jaana|jana) padega", "khana lag gaya",
   ],
   end_request: [
-    "(?:ab |abhi )?bas(?: karo| kijiye| karte hain| kar do| ho gaya)?$", "ab (?:band|bas) karo", "band karo", "aaj ke liye (?:bas|itna hi|itna kaafi)", "lesson khatam(?: karo| karte hain)?",
+    "^(?:ab |abhi )?bas(?: karo| kijiye| karte hain| kar do| ho gaya| ab| yaar)?$", "ab (?:band|bas) karo", "khatam karo(?: yaar| na)?", "(?:lesson|class|padhai) band karo", "band karo", "aaj ke liye (?:bas|itna hi|itna kaafi)", "lesson khatam(?: karo| karte hain)?",
     "class khatam(?: karo| karte hain)?", "(?:mujhe )?(?:ab )?(?:nahi|nhi) padhna(?: hai)?", "padhna nahi hai", "aur nahi(?: padhna)?", "baad mein karenge", "kal karenge",
     "bas ab", "ho gaya bas", "khatam karte hain", "(?:ab )?rehne do", "aur nahi karna",
   ],
@@ -66,8 +66,8 @@ export const HL = {
   ],
   joke: ["(?:ha){2,}h?", "(?:he){2,}h?", "(?:hi){2,}", "lol+", "mazak", "mazaak", "majak"],
   share: [
-    "(?:mera|meri|mere) (?:kutta|kutte|billi|bhai|behen|didi|dost|dadi|nani|dada|nana|cousin|team|birthday|janamdin|tota|pet)",
-    "(?:aaj|kal) (?:maine|humne|hum|main|mai) ", "(?:maine|humne) (?:dekha|khela|jeeta|banaya|kiya)",
+    "(?:mera|meri|mere) (?:kutta|kutte|billi|bhai|behen|didi|dost|dadi|nani|dada|nana|cousin|team|birthday|janamdin|tota|pet)(?: \\S+){0,3} (?:hai|tha|thi|ne|aaya|aayi|gaya|gayi|hua|hui|mila|mili|jeeta|jeeti)",
+    "(?:aaj|kal) (?:maine|humne)", "(?:maine|humne) (?:dekha|khela|jeeta|banaya)", "(?:aaj|kal) mera (?:birthday|janamdin|match)",
   ],
   share_sad: ["mar (?:gaya|gayi|gaye)", "(?:beemar|bimar|hospital)", "(?:ladai|jhagda|jhagada) (?:hua|hui|ho gaya)", "(?:main|mai) (?:roya|royi|ro raha|ro rahi)", "(?:dukhi|udaas|udas|sad) (?:hoon|hu|hun|lag)"],
   identity_q: [
@@ -82,7 +82,7 @@ export const HL = {
   tired: ["thak (?:gaya|gayi|gaye|gya|gyi)", "neend (?:aa rahi|aayi|aa gayi)", "sar dard"],
   self_label: [
     "(?:main|mai) (?:bahut |kitna |kitni |sach mein )?(?:buddhu|budhu|bewakoof|bevakoof|stupid|dumb|kamzor|weak|slow|ghatiya|bekaar|bekar|pagal) (?:hoon|hu|hun)",
-    "mujhse (?:kuch |ye |yeh )?(?:nahi|nhi) (?:hota|hoga|aata|banta)", "mujhe (?:kuch )?(?:nahi|nhi) aata", "(?:main|mai) kabhi (?:nahi|nhi) samjh(?:unga|ungi|ega)",
+    "mujhse (?:kuch|kuch bhi|kabhi) (?:nahi|nhi) (?:hota|hoga|aata|banta)", "mujhe kuch (?:bhi )?(?:nahi|nhi) aata", "(?:main|mai) kabhi (?:nahi|nhi) samjh(?:unga|ungi|ega)",
   ],
   contest: [
     "(?:maine|mai ne|main ne|maine toh) (?:toh |to )?(?:sahi|right) (?:bola|kaha|likha|answer diya) (?:tha|hai)", "(?:mera|meraa) (?:answer|jawab|jawaab) sahi (?:tha|hai)",

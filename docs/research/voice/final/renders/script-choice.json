@@ -1,0 +1,208 @@
+{
+ "rule": "gpt-4o-mini-tts P1 probe, one render each of Devanagari and Roman: pick the variant with fewer failed gates; tie -> fewer checklist items missed by both STTs; tie -> lower mean full-text WER over the two STTs; tie -> Devanagari (the writing-rule default)",
+ "chosen": "deva",
+ "keys": {
+  "deva": [
+   0,
+   0,
+   0.0785,
+   0
+  ],
+  "roman": [
+   0,
+   0,
+   0.10450000000000001,
+   1
+  ]
+ },
+ "screens": {
+  "deva": {
+   "id": "probe__oai__P1-maths__deva",
+   "dur_s": 86.25,
+   "speech_span_s": 85.66,
+   "words_per_s": 2.45,
+   "max_pause_s": 0.7,
+   "lead_s": 0.0,
+   "trail_s": 0.58,
+   "input_lufs": -20.4,
+   "input_tp": -2.7,
+   "miss_both": [],
+   "ins_num_both": [],
+   "punct_read": [],
+   "tail_hit": true,
+   "beat_cov": [
+    [
+     "greet",
+     1.0
+    ],
+    [
+     "think-aloud",
+     0.97
+    ],
+    [
+     "joke-laugh",
+     0.91
+    ],
+    [
+     "back-to-point",
+     0.9
+    ],
+    [
+     "surprise",
+     0.94
+    ]
+   ],
+   "trunc": [],
+   "len_ratio": {
+    "gptx": 0.99,
+    "az": 0.99
+   },
+   "wer": {
+    "gptx": 0.062,
+    "az": 0.095
+   },
+   "level_drift_db": 0.2,
+   "per_stt": {
+    "gptx": {
+     "shortcut": 1,
+     "samosa": 6,
+     "ढाई सौ": 2,
+     "तीन सौ": 2,
+     "पच्चीस": 3,
+     "double": 2,
+     "छह सौ": 1,
+     "चौबीस": 2,
+     "बारह": 7,
+     "पचास": 2,
+     "दस": 2,
+     "दो": 2
+    },
+    "az": {
+     "shortcut": 1,
+     "samosa": 6,
+     "ढाई सौ": 2,
+     "तीन सौ": 2,
+     "पच्चीस": 3,
+     "double": 2,
+     "छह सौ": 1,
+     "चौबीस": 2,
+     "बारह": 7,
+     "पचास": 1,
+     "दस": 2,
+     "दो": 2
+    }
+   },
+   "expected": {
+    "shortcut": 1,
+    "samosa": 6,
+    "ढाई सौ": 2,
+    "तीन सौ": 2,
+    "पच्चीस": 3,
+    "double": 2,
+    "छह सौ": 1,
+    "चौबीस": 2,
+    "बारह": 7,
+    "पचास": 2,
+    "दस": 2,
+    "दो": 2
+   },
+   "stt_err": {},
+   "fails": [],
+   "flags": []
+  },
+  "roman": {
+   "id": "probe__oai__P1-maths__roman",
+   "dur_s": 82.85,
+   "speech_span_s": 82.12,
+   "words_per_s": 2.56,
+   "max_pause_s": 1.26,
+   "lead_s": 0.42,
+   "trail_s": 0.3,
+   "input_lufs": -21.3,
+   "input_tp": -5.1,
+   "miss_both": [],
+   "ins_num_both": [],
+   "punct_read": [],
+   "tail_hit": true,
+   "beat_cov": [
+    [
+     "greet",
+     1.0
+    ],
+    [
+     "think-aloud",
+     0.93
+    ],
+    [
+     "joke-laugh",
+     0.91
+    ],
+    [
+     "back-to-point",
+     0.9
+    ],
+    [
+     "surprise",
+     0.86
+    ]
+   ],
+   "trunc": [],
+   "len_ratio": {
+    "gptx": 0.97,
+    "az": 0.97
+   },
+   "wer": {
+    "gptx": 0.095,
+    "az": 0.114
+   },
+   "level_drift_db": 0.6,
+   "per_stt": {
+    "gptx": {
+     "shortcut": 1,
+     "samosa": 6,
+     "ढाई सौ": 2,
+     "तीन सौ": 2,
+     "पच्चीस": 3,
+     "double": 2,
+     "छह सौ": 1,
+     "चौबीस": 2,
+     "बारह": 7,
+     "पचास": 2,
+     "दस": 2,
+     "दो": 2
+    },
+    "az": {
+     "shortcut": 1,
+     "samosa": 6,
+     "ढाई सौ": 2,
+     "तीन सौ": 2,
+     "पच्चीस": 3,
+     "double": 2,
+     "छह सौ": 1,
+     "चौबीस": 2,
+     "बारह": 7,
+     "पचास": 0,
+     "दस": 2,
+     "दो": 2
+    }
+   },
+   "expected": {
+    "shortcut": 1,
+    "samosa": 6,
+    "ढाई सौ": 2,
+    "तीन सौ": 2,
+    "पच्चीस": 3,
+    "double": 2,
+    "छह सौ": 1,
+    "चौबीस": 2,
+    "बारह": 7,
+    "पचास": 2,
+    "दस": 2,
+    "दो": 2
+   },
+   "stt_err": {},
+   "fails": [],
+   "flags": []
+  }
+ }
+}

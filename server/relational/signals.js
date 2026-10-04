@@ -13,8 +13,10 @@
 import { normForMatch, scanSafety } from "../director/safety.js";
 import { LEXICON } from "./lexicon/index.js";
 
+const LEX = Object.entries(LEXICON);
+
 /** Kinds a negator right before the hit switches off. */
-const NEGATABLE = new Set(["warmth_offer", "romance", "permanence_ask", "feelings_q", "loneliness", "self_label", "tired", "joke", "share", "share_sad", "night_ask"]);
+const NEGATABLE = new Set(["warmth_offer", "romance", "permanence_ask", "feelings_q", "loneliness", "self_label", "tired", "share", "share_sad", "night_ask"]);
 /** Kinds a reported-speech frame switches off (the child is quoting someone, not offering it). */
 const REPORTABLE = new Set(["warmth_offer", "romance", "permanence_ask", "feelings_q", "self_label", "goodbye", "end_request", "identity_q", "joke"]);
 /** Kinds where a third party's ask is the danger itself (F4 → F6). */
@@ -46,7 +48,8 @@ function clausesOf(text) {
 /**
  * The relational signals in one child turn.
  * @param {string} text the child's words (typed, a chip label, or the final transcript)
- * @param {{ turn?: number, lane?: "L"|"G"|"typed"|"chip" }} [ctx]
+ * @param {{ turn?: number, lane?: "L"|"G"|"typed"|"chip", harm?: boolean }} [ctx] harm: false skips the safety predicate when the
+ *   caller already ran it (the turn's safety gate: its verdict arrives as the seam input's `safety`)
  * @returns {import("../../shared/relational").RelSignal[]}
  */
 export function signalsOf(text, ctx = {}) {
@@ -65,9 +68,12 @@ export function signalsOf(text, ctx = {}) {
   for (const clause of clausesOf(raw)) {
     const norm = normForMatch(clause.text.replace(/\?/g, " "));
     if (!norm) continue;
-    for (const [kind, re] of Object.entries(LEXICON)) {
+    for (const [kind, re] of LEX) {
       re.lastIndex = 0;
-      for (const m of norm.matchAll(re)) {
+      if (!re.test(norm)) continue;                 // most kinds miss: no allocation for them
+      re.lastIndex = 0;
+      for (let m = re.exec(norm); m; m = re.exec(norm)) {
+        if (m[0] === "") { re.lastIndex++; continue; }
         const before = norm.slice(0, m.index).trim();
         const reported = clause.quoted || REPORT.test(` ${before} `) || HYPO.test(`${before} `);
         if (NEGATABLE.has(kind) && NEG.test(before)) continue;
@@ -93,9 +99,11 @@ export function signalsOf(text, ctx = {}) {
   if (found.has("goodbye")) found.delete("end_request");
   // Harm words are the safety gate's (F6): the same predicate the turn already runs, mirrored as a signal for the policy's
   // precedence (a goodbye after harm words gets the check-in, I-7).
-  if (scanSafety(raw).distress) add("harm");
+  if (ctx.harm !== false && scanSafety(raw).distress) add("harm");
   // A share that is sad is a sad share (gentle concern, never a helpline on its own).
   if (found.has("share_sad")) found.delete("share");
+  // "you are my best friend" is a warmth offer, not a share about their life
+  if (found.has("warmth_offer")) found.delete("share");
   return [...found.values()];
 }
 
@@ -104,3 +112,15 @@ export const wordCount = (text) => (normForMatch(text).match(/[\p{L}\p{N}][\p{L}
 
 /** True when the signals include any of the kinds. */
 export const has = (signals, ...kinds) => (signals ?? []).some((s) => kinds.includes(s.kind));
+
+/**
+ * The stop protocol's reading of a child turn (OWNER RESET #7; CONVERSATION-V2 §3.5): "leaving" (a true goodbye: released
+ * at once), "end_request" (a stop phrase: one warm check-in with choices first; a second stop releases), or null. A short
+ * break ("toilet", "paani") is neither. Consumed by W2-C's state.js stop check (server/relational/seam-patches).
+ * @param {string} text
+ * @returns {"leaving" | "end_request" | null}
+ */
+export function stopKind(text) {
+  const k = new Set(signalsOf(text).map((s) => s.kind));
+  return k.has("goodbye") ? "leaving" : k.has("end_request") ? "end_request" : null;
+}

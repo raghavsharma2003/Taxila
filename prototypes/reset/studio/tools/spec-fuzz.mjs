@@ -114,7 +114,7 @@ for (const ex of EX) {
   console.log("terminator", JSON.stringify(results.terminator));
   await page.close();
 }
-// Runtime-fault probe (frame guard): make canvas arc() throw, first for 2 frames' worth of time (transient), then
+// Runtime-fault probe (frame guard): make canvas save() throw (every engine calls it each frame; the guard does not), first for 2 frames' worth of time (transient), then
 // permanently. Transient: no page error, the stage stays painted, frame_error is logged. Permanent: engine_failed is
 // raised within ~1 s (the host's cue to cross-fade to the board) and the last good image is still on screen.
 results.faults = {};
@@ -126,10 +126,10 @@ for (const ex of EX) {
   await page.waitForFunction(() => document.documentElement.dataset.ready === "1");
   await page.waitForTimeout(1200);
   const luma = () => page.evaluate(() => { const c = document.querySelector("#stage canvas"); const t = document.createElement("canvas"); t.width = 64; t.height = 40; const g = t.getContext("2d"); g.drawImage(c, 0, 0, 64, 40); const d = g.getImageData(0, 0, 64, 40).data; let s = 0, s2 = 0, n = 0; for (let k = 0; k < d.length; k += 4) { const y = 0.2126 * d[k] + 0.7152 * d[k + 1] + 0.0722 * d[k + 2]; s += y; s2 += y * y; n++; } const m = s / n; return Math.sqrt(Math.max(0, s2 / n - m * m)); });
-  await page.evaluate(() => { const P = CanvasRenderingContext2D.prototype, o = P.arc; window.__restoreArc = () => { P.arc = o; }; P.arc = function () { throw new Error("injected fault"); }; setTimeout(() => window.__restoreArc(), 30); });
+  await page.evaluate(() => { const P = CanvasRenderingContext2D.prototype, o = P.save; window.__restoreArc = () => { P.save = o; }; P.save = function () { throw new Error("injected fault"); }; setTimeout(() => window.__restoreArc(), 30); });
   await page.waitForTimeout(800);
   const t = { stdev: +(await luma()).toFixed(1), events: await page.evaluate(() => window.__studioLog.filter((m) => m.k === "event" && /frame_error|engine_failed/.test(m.name)).map((m) => m.name)) };
-  await page.evaluate(() => { CanvasRenderingContext2D.prototype.arc = function () { throw new Error("injected fault"); }; });
+  await page.evaluate(() => { CanvasRenderingContext2D.prototype.save = function () { throw new Error("injected fault"); }; });
   await page.waitForTimeout(1500);
   const p = { stdev: +(await luma()).toFixed(1), events: await page.evaluate(() => window.__studioLog.filter((m) => m.k === "event" && /frame_error|engine_failed/.test(m.name)).map((m) => m.name)) };
   results.faults[ex.key] = { pageErrors: errs.length, transient: t, permanent: p, ok: errs.length === 0 && t.stdev > 6 && !t.events.includes("engine_failed") && p.events.includes("engine_failed") && p.stdev > 6 };

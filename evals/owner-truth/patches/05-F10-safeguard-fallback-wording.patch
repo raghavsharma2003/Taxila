@@ -1,0 +1,46 @@
+diff -ruN a/server/brain/say.js b/server/brain/say.js
+--- a/server/brain/say.js	2026-10-04 21:17:49.242662770 +0000
++++ b/server/brain/say.js	2026-10-04 21:17:49.274830026 +0000
+@@ -78,10 +78,19 @@
+ const HELPLINE_LINE_HI = HELPLINES.map((h) => `${h.name} ${h.number}`).join(" ya ");
+ export const FALLBACK = {
+   english: { wrap: "That's all for today. See you next time!", safeguard: `What you said matters. Please tell a grown-up you trust, or call ${HELPLINE_LINE}. Are you okay right now?`,
++    safeguardCheck: `Are you okay right now? If anything is worrying you, tell a grown-up you trust, or call ${HELPLINE_LINE}.`,
+     other: "Sorry, I lost my words for a second. Can you say that again?" },
+   hinglish: { wrap: "Aaj ke liye itna hi. Phir milte hain!", safeguard: `Tumne jo bataya, woh zaroori hai. Kisi bade ko batao jis par bharosa ho, ya ${HELPLINE_LINE_HI} pe call karo. Kya tum abhi theek ho?`,
++    safeguardCheck: `Kya tum abhi theek ho? Agar koi baat pareshan kar rahi hai, toh kisi bade ko batao jis par bharosa ho, ya ${HELPLINE_LINE_HI} pe call karo.`,
+     other: "Ek second, meri baat atak gayi. Kya tum phir se bata sakte ho?" },
+ };
++/**
++ * The safeguard triggers that ARE a disclosure (the safety predicate's families): only these get the "what you said
++ * matters" line. Any other trigger (the classifier model's read, the content filter, the relational floor) gets the
++ * neutral check-in line with the same two helplines (F10, evals/owner-truth: "I'm done" got "Tumne jo bataya, woh zaroori
++ * hai"). Wording only: the predicate, the hold and the helplines are unchanged.
++ */
++const DISCLOSURE_KINDS = new Set(["self_harm", "abuse", "fear"]);
+ /** The fixed safeguarding line (both helplines) in the child's language and address form. */
+ export function safeguardLine(ctx = {}) {
+   const line = FALLBACK[ctx.lang === "english" ? "english" : "hinglish"].safeguard;
+@@ -92,7 +101,7 @@
+   const kind = state.lastMove?.kind;
+   if (item && !CLOSING_MOVES.has(kind)) return promptFor(item, lang);
+   const lines = FALLBACK[lang === "english" ? "english" : "hinglish"];
+-  const line = lines[kind] ?? lines.other;
++  const line = kind === "safeguard" && !DISCLOSURE_KINDS.has(state.safeguard?.kind) ? lines.safeguardCheck : lines[kind] ?? lines.other;
+   // The fixed lines are written in tum forms; an "aap" child hears them in aap forms (G-REG-1).
+   return state.ctx.address === "aap" && lang !== "english" ? toAap(line) : line;
+ }
+diff -ruN a/server/director/state.js b/server/director/state.js
+--- a/server/director/state.js	2026-10-04 21:17:49.242357111 +0000
++++ b/server/director/state.js	2026-10-04 21:17:49.267298081 +0000
+@@ -655,7 +655,9 @@
+   const flags = cls?.flags ?? {};
+   const labels = chipLabels();
+   // 1. Safety before anything else — the predicate or the classifier, either one.
+-  if (flags.distress) { s.safeguard = { calm: 0, asked: false }; return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES }); }
++  // `kind`: what raised it (the predicate's family, or model / content_filter / relational_floor) — only the wording of a
++  // fallback line reads it (brain/say.js fallbackReply, F10); the hold itself is the same for every trigger.
++  if (flags.distress) { s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null }; return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES }); }
+   if (s.safeguard) {
+     if (flags.wantsToStop || chipId === "safe:stop") { s.safeguard = null; return toWrap(s, { stopping: true }); }
+     if (s.safeguard.asked || chipId === "safe:continue") {

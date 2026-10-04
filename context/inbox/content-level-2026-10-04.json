@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {"id": "content-level-audit-2026-10-04", "kind": "measurement", "at": "2026-10-04",
+   "title": "Content-level audit classes 4-7 (evals/content-level/, docs/design/reset/CONTENT-LEVEL.md). Bank n=60/class stratified by subject, 2 raters (taxila-brain gpt-5 blind judge + Claude), kappa 0.32: too easy floor/strict(GE<=C-2)/ceiling c4 20/25/43%, c5 13/33/60%, c6 7/30/35%, c7 18/38/48%; too hard 1/240. First item actually served (real buildPracticeQueue, all 385 topics) GE<=C-2: c4 35%, c5 59%, c6 45%, c7 40%. Full bank n=5076 judged GE<=C-2 25.5% (judge precision 23/40 vs 2025-26 NCERT books). Class-4 maths first items: 19/30 below class-4 demand (Claude), 18/30 (judge). Models only, no human teacher, no child data."},
+  {"id": "content-level-queue-structure-2026-10-04", "kind": "measurement", "at": "2026-10-04",
+   "title": "Practice queue structure over all class 4-7 kits (deterministic): first item is kit difficulty 1 in 318/385 topics; only 221/420 difficulty>=4 items can ever be posed (QUEUE_MAX=12 after easiest-first sort); in 83/385 topics the hardest skill never enters the queue."},
+  {"id": "rj-topic-relative-difficulty-easiest-first", "kind": "rejection", "at": "2026-10-04",
+   "title": "Tried: kit difficulty 1-5 relative to the topic (SCHEMA.md) + practice queue sorted easiest-first with the diagnostic second (items.js:154-162) + topic placement at chapter 1 maths-first with no placement test. Broke: every new class-4 child's first two questions were dice questions (c4-maths-ch01-t01-i01 and the m-visible-only diagnostic); the owner rated the product 0/100 partly for 'first-year content'. Served openers are easier than the bank in every class."},
+  {"id": "rj-llm-grade-judge-alone", "kind": "rejection", "at": "2026-10-04",
+   "title": "Tried: a single gpt-5 judge to grade-level kit items. Broke: chapter anchoring (dice item judged 'right, grade 4') and legacy-CBSE syllabus bias (Ganita Prakash 7 decimals/expressions judged grade 5); precision of its GE<=C-2 flags 23/40. Use two model families + rubric given the 2025-26 NCERT chapter scope + human adjudication of flags."},
+  {"id": "content-level-fix-plan-2026-10-04", "kind": "decision", "at": "2026-10-04",
+   "title": "PROPOSED (needs main-loop acceptance): (F0) queue by target P(correct) vs theta, never an item GE<=C-2 as item 1-2 for an on-track child, skill-round-robin cap, diagnostic at position 3+, start at the school's current chapter, fast-forward + 'harder' chip + topic test-out; (F1) per-item ge + demand fields, two-family calibration + human pass, lint gate (<=10% ge<=C-2 per kit, >=2 items ge>=C-0.5 per skill), language-kit learning outcomes before regeneration; (F2) build onboarding-diagnostic OD1-OD12 for B3-B4, revisit OD4 q30 under the reset; (F3) theta-driven selection every lesson. Reverse if: a human-teacher rating of the bank sample, or real children's first-item P(correct) <= 0.85 on class-C openers, shows the openers are already on level."}
+ ],
+ "edges": [
+  {"src": "content-level-audit-2026-10-04", "rel": "measured_by", "dst": "owner-test-0-of-100-2026-10-04"},
+  {"src": "content-level-fix-plan-2026-10-04", "rel": "part_of", "dst": "owner-reset-2026-10-04"},
+  {"src": "rj-topic-relative-difficulty-easiest-first", "rel": "measured_by", "dst": "content-level-queue-structure-2026-10-04"},
+  {"src": "content-level-fix-plan-2026-10-04", "rel": "measured_by", "dst": "content-level-audit-2026-10-04"}
+ ]
+}

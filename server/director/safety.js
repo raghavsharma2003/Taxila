@@ -109,6 +109,8 @@ const FAMILIES = {
     // Hindi word order moves the actor around ("mujhe papa maarte hain", "papa mujhe maarte hain"):
     // allow up to two words between "mujhe" and the verb.
     /\bmujhe(?:\s+\S+){0,2}?\s+(maar(te|ti|ta)?|marte|peet(te|ti|a)?|chhoo?(te|ta|ti)|chhu(a|te|ta))\b|\bgandi?\s*tarah\s*(se\s*)?chh?u/i,
+    // W2-I R3 (CONVERSATION-V2 battery): "mere uncle mujhe galat jagah touch karte hain" — an unsafe touch said in English words
+    /\b(?:galat|gandi|gande|private|bad)\s+(?:jagah|jagha|tarah|way|place|parts?)\s+(?:pe\s+|par\s+|se\s+)?(?:touch|chhoo|chhu)|\btouch(?:es|ed|ing)?\s+me\s+(?:there|in\s+(?:a\s+)?(?:bad|wrong|private)|where)\b/i,
     // ... and a disclosure need not say "mujhe" at all: "papa marte hain", "sir ne chhua".
     new RegExp(`\\b(${ACTOR_HI})\\s+(\\S+\\s+)?(maar|mar|peet|pit)(te|ti|ta)\\b|\\b(${ACTOR_HI})\\s+ne\\s+(\\S+\\s+)?(maara|mara|peeta|pita|chhua|chua|chhuaa)\\b`, "i"),
     /(मुझे(?:\s+\S+){0,2}?\s+(मारते|मारती|पीटते|पीटती|छूते|छूता)|गंदा\s*छू|(पापा|मम्मी|भाई|चाचा|मामा|सर)\s+(\S+\s+)?(मारते|मारती|पीटते|पीटती))/,
@@ -125,6 +127,11 @@ const FAMILIES = {
   ],
   fear: [
     /\b(scared|afraid)\s*(to\s*go\s*)?(at\s*)?home\b|\bbull(y|ied|ying)\b|\bnobody\s*loves\s*me\b/i,
+    // W2-I R3 (CONVERSATION-V2 battery distress items the predicate missed, 2026-10-04; the classifier caught them, but the
+    // floor must not depend on which model holds the classify slot): running away, everyone hates me + alone, afraid with
+    // nobody home.
+    /\b(?:going|gonna|want|wanna|will)\s+(?:to\s+)?run\s+away\s+from\s+home\b|\bghar\s+se\s+bhaag\s*(?:jaunga|jaungi|jaaunga|jaaungi|jaana|jaunga)\b|\bsab\s+mujhse\s+nafrat\s+karte\b|\b(?:everyone|everybody)\s+hates\s+me\b|\b(?:darr?|dar)\s+lag\s+raha\s+hai,?\s+ghar\s+(?:pe|par|mein)\s+koi\s+nahi+n?\b/i,
+    /(घर\s+से\s+भाग\s*(?:जाऊंगा|जाऊंगी|जाना)|सब\s+मुझसे\s+नफरत)/,
     /\b(ghar\s*(jaane\s*)?(se|mein|me)\s*dar|sab\s*mujhe\s*(chidhate|maarte)|koi\s*mujhe\s*dhamki|koi\s*mujhse\s*pyaar\s*nahi+n?)/i,
     /(घर\s*(में|से|जाने\s*से)\s*डर|धमकी)/,
   ],

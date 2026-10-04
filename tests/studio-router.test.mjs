@@ -277,6 +277,14 @@ test("azure chatStream: SSE deltas, usage and cost; a cancel and a stall abort t
   const saved = { e: process.env.AZURE_OPENAI_ENDPOINT, k: process.env.AZURE_OPENAI_API_KEY, p: process.env.NODE_USE_ENV_PROXY };
   process.env.AZURE_OPENAI_ENDPOINT = `http://127.0.0.1:${srv.address().port}/openai/v1`;
   process.env.AZURE_OPENAI_API_KEY = "test";
+  // Hermetic: this file's fetches go straight to the loopback server, never through the sandbox's proxy (also on
+  // 127.0.0.1). In the full `npm test` run (load ≈ 4) one first call came back 200 with no events in 4.5 ms and the server
+  // saw no request at all (hits []), i.e. something other than this server answered; a dispatcher with noProxy "*" (same
+  // class as the global one: EnvHttpProxyAgent under NODE_USE_ENV_PROXY, else Agent) takes the proxy out of the path.
+  const DISPATCHER = Symbol.for("undici.globalDispatcher.1");
+  await fetch("data:,").then((r) => r.arrayBuffer()).catch(() => {});
+  const prevDispatcher = globalThis[DISPATCHER];
+  if (prevDispatcher?.constructor) globalThis[DISPATCHER] = new prevDispatcher.constructor({ noProxy: "*" });
   try {
     const deltas = [];
     const { endpoint } = await import("../server/azure.js");
@@ -298,6 +306,7 @@ test("azure chatStream: SSE deltas, usage and cost; a cancel and a stall abort t
     assert.deepEqual(evs, [{ a: 1 }]);
   } finally {
     for (const [k, v] of [["AZURE_OPENAI_ENDPOINT", saved.e], ["AZURE_OPENAI_API_KEY", saved.k]]) { if (v === undefined) delete process.env[k]; else process.env[k] = v; }
+    if (prevDispatcher && globalThis[DISPATCHER] !== prevDispatcher) { const mine = globalThis[DISPATCHER]; globalThis[DISPATCHER] = prevDispatcher; mine?.close?.().catch?.(() => {}); }
     await new Promise((r) => srv.close(r));
     srv.closeAllConnections?.();
   }

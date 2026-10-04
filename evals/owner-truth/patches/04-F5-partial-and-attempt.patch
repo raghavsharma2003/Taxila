@@ -1,0 +1,74 @@
+diff -ruN a/server/director/classify.js b/server/director/classify.js
+--- a/server/director/classify.js	2026-10-04 21:17:49.156543676 +0000
++++ b/server/director/classify.js	2026-10-04 21:17:49.162300446 +0000
+@@ -68,6 +68,15 @@
+ export const TEACHBACK_PASS = 0.6;
+ 
+ const OPEN_KINDS = new Set(["why", "teachback"]);
++/**
++ * A key with two or more parts ("the ones decide: 47 is bigger", "solid, liquid and gas", "it melts because heat…"): a
++ * reply with only one part is `partial`, never the key (F5, evals/owner-truth: 2 of 3 parts was labelled key, since the
++ * rubric offered only key / other_wrong and said "even with extra words"). Pure; exported for tests.
++ */
++export function multiPartKey(answer) {
++  const parts = String(answer ?? "").split(/\s*(?:[,;:]|\band\b|\bbecause\b|\bso\b|\bkyunki\b|\baur\b|\bisliye\b)\s*/i).map((x) => x.trim()).filter((x) => x.split(/\s+/).length >= 1 && /[\p{L}\p{N}]/u.test(x));
++  return parts.length >= 2 && String(answer).trim().split(/\s+/).length >= 3;
++}
+ 
+ /**
+  * What the next utterance is classified against. `ideas` are the kit's key ideas: the key for a "why?"
+@@ -91,7 +100,7 @@
+   if (s.pendingWhy === item.id) return { mode: "why", item, ideas, misconceptions: mis };
+   // "Show me choices" tiles offered for THIS item (state.js offerChoices): a tap on one is graded in code.
+   const offered = s.offered?.itemId === item.id && Array.isArray(s.offered.options) ? s.offered.options : undefined;
+-  return { mode: "item", item, key: item.answer, also: item.acceptable || [], ideas, misconceptions: mis, options: item.options, open: OPEN_KINDS.has(item.kind),
++  return { mode: "item", item, key: item.answer, also: item.acceptable || [], ideas, misconceptions: mis, options: item.options, open: OPEN_KINDS.has(item.kind) || multiPartKey(item.answer),
+     ...(offered ? { offered } : {}) };
+ }
+ 
+@@ -147,9 +156,11 @@
+       "match rules:",
+       target.mode === "why"
+         ? "- key: the reply gives a REASON that matches ANY of the KEY IDEAS, in any words or language (a child's simple version counts). A bare answer, a fraction's name or a repeat of the question is not a reason: other_wrong."
+-        : "- key: the reply gives the KEY (any wording, language or equivalent form), even with extra words. If they give two answers, label the final one.",
++        : target.open
++          ? "- key: the reply gives ALL of the KEY (any wording, language or equivalent form), even with extra words. If they give two answers, label the final one."
++          : "- key: the reply gives the KEY (any wording, language or equivalent form), even with extra words. If they give two answers, label the final one.",
+       "- mN: the reply's answer or reason is what misconception mN predicts.",
+-      target.open ? "- partial: part of the key idea is there but not all of it." : "",
++      target.open ? "- partial: part of the key is there but not all of it (one part of a key with several parts)." : "",
+       "- other_wrong: any other attempted answer.",
+       "- dont_know: says they don't know or are unsure, with no answer.",
+       "- no_attempt: not an answer to this question (greeting, chit-chat, a question back, unrelated talk).",
+diff -ruN a/server/director/say.js b/server/director/say.js
+--- a/server/director/say.js	2026-10-04 21:17:49.156752951 +0000
++++ b/server/director/say.js	2026-10-04 21:17:49.162564418 +0000
+@@ -29,6 +29,8 @@
+   `(?:aapka|tumhara|tera|your|yeh|ye|that|this|it)\\s+(?:answer|jawab|uttar)?\\s*(?:bilkul\\s+|ekdam\\s+)?(?:sahi|correct|right|theek)(?:\\s+(?:hai|tha|is|was))?(?![\\p{L}]|\\s+(?:nahi|nahin|not|hai\\s+kya|kya))`,
+   `(?:aapne|tumne|you)\\s+(?:bilkul\\s+|ekdam\\s+)?(?:sahi|correct(?:ly)?|right)\\s+(?:kaha|bataya|socha|pakda|nikala|got|said|found)`,
+   `you\\s+got\\s+it`, `that(?:'?s|\\s+is)\\s+(?:right|correct)`, `sahi\\s+jawab(?!\\s+(?:kya|kaun|kaunsa|hoga))`,
++  // F5 (evals/owner-truth s17 t17: "sahi likhi" on a pasted, irrelevant reply): the written / picked / joined forms
++  `(?:aapne|tumne|you)\\s+(?:\\p{L}+\\s+){0,3}?(?:bilkul\\s+|ekdam\\s+)?(?:sahi|correct(?:ly)?|right)\\s+(?:likha|likhi|likhe|chuna|chuni|joda|jodi|pehchana|pehchaana|wrote|picked|chose|matched)`,
+ ].join("|"), "iu");
+ /**
+  * A "you made a mistake" statement anywhere in a turn after a RIGHT answer (F2, evals/owner-truth: "yahan galti hui",
+@@ -46,7 +48,9 @@
+  * @param {{ outcome?: string } | null | undefined} cls  @param {{ mode: string }} target
+  */
+ export function verdictFor(cls, target, { moduleOnly = false, childText = "" } = {}) {
+-  if (!cls || !target || target.mode === "none" || moduleOnly) return "ungraded";
++  if (!cls || !target || moduleOnly) return "ungraded";
++  // no keyed item, but the child wrote an answer-shaped reply (F5): "attempt" — no "you got it right" for it
++  if (target.mode === "none") return childText && !childAsks(childText) && !cls.request && String(childText).trim().split(/\s+/).length >= 3 ? "attempt" : "ungraded";
+   if (cls.outcome === "correct") return "correct";
+   if (cls.outcome === "partial") return "partial";
+   if (cls.outcome === "incorrect" || cls.outcome === "misconception") return "not_yet";
+@@ -83,6 +87,8 @@
+   const t = withoutEffortPraise(text).trim();
+   if (!t || verdict === "ungraded") return null;
+   if (verdict === "correct") return DENY_OPEN.test(t) || DENY_ANY.test(t) ? "contradicts" : null;
++  // F5: a turn with nothing graded may still not tell an attempt it is right ("aapne sahi likha" on an ungraded reply)
++  if (verdict === "attempt") return PRAISE_ANY.test(t) ? "praise" : null;
+   // partial: "nearly" is honest; "bilkul / sahi" is not.
+   if (PRAISE_OPEN.test(t) || PRAISE_ANY.test(t) || PRAISE_EMOJI.test(t)) return "praise";
+   if (verdict === "not_yet" && AGREE_OPEN.test(t)) return "praise";

@@ -1,0 +1,71 @@
+diff -ruN a/server/brain/turn.js b/server/brain/turn.js
+--- a/server/brain/turn.js	2026-10-04 21:17:48.982319372 +0000
++++ b/server/brain/turn.js	2026-10-04 21:17:48.987477248 +0000
+@@ -75,10 +75,20 @@
+ 
+ // ───────────────────────────── POST /api/lesson/turn ─────────────────────────────
+ 
+-/** What a module-only turn carried, in a few words: its milestones, and how many plain events. */
++/**
++ * What a module-only turn carried, in a few words: its milestones, and how many plain events. An answer is named with
++ * the value the child committed and NEVER with the frame's own `correct` claim (F2/F3, evals/owner-truth): the reply
++ * model followed "answer (right)" over the server's verdict note when the two disagreed. The verdict the words must
++ * agree with is the server's (planTurn lastVerdict → the move's VERDICT_NOTE and the G-PRAISE guards).
++ */
++const valueOf = (d) => {
++  if (!d || typeof d !== "object") return "";
++  const v = d.value ?? d.written ?? d.built ?? d.chosen ?? d.choice ?? d.picked;
++  return v == null || typeof v === "object" ? "" : ` ${String(v).replace(/[^\p{L}\p{N} /.,-]/gu, "").slice(0, 24)}`.trimEnd();
++};
+ export function activitySummary(events, dropped) {
+   const milestones = events.filter((e) => ["goal_met", "stuck", "answer"].includes(e?.type)).map((e) =>
+-    e.type === "answer" ? `answer${typeof e.data?.correct === "boolean" ? (e.data.correct ? " (right)" : " (wrong)") : ""}` : `${e.type} ${String(e.name ?? "").slice(0, 40)}`.trim());
++    e.type === "answer" ? `answer${valueOf(e.data)}` : `${e.type} ${String(e.name ?? "").slice(0, 40)}`.trim());
+   const other = events.length - milestones.length + dropped;
+   return [...milestones, ...(other ? [`${other} other event${other === 1 ? "" : "s"}`] : [])].join("; ");
+ }
+diff -ruN a/server/director/say.js b/server/director/say.js
+--- a/server/director/say.js	2026-10-04 21:17:48.982154678 +0000
++++ b/server/director/say.js	2026-10-04 21:17:48.987284817 +0000
+@@ -21,6 +21,8 @@
+   "zabardast", "awesome", "excellent", "brilliant", "super", "ekdam\\s+(?:sahi|theek)", "theek\\s+(?:kaha|bataya)", "haan\\s+ji,?\\s+(?:sahi|bilkul)",
+   "सही", "बिल्कुल", "शाबाश", "बहुत\\s+(?:अच्छा|बढ़िया)",
+ ].join("|"));
++/** A tick or praise emoji anywhere in the turn reads as "right" (F3, evals/owner-truth: "✅ …" on a not_yet answer). */
++const PRAISE_EMOJI = /[\u2705\u2714\u2611\u{1F44D}\u{1F44F}\u{1F389}\u{1F31F}\u2B50\u{1F4AF}\u{1F3C6}\u{1F947}]/u;
+ const AGREE_OPEN = lead(["haan(?:\\s+ji)?", "ha+n", "yes", "yep", "hmm\\s+haan", "हाँ", "हां"].join("|"));
+ /** Praise of the answer anywhere in the turn. */
+ const PRAISE_ANY = new RegExp([
+@@ -28,6 +30,11 @@
+   `(?:aapne|tumne|you)\\s+(?:bilkul\\s+|ekdam\\s+)?(?:sahi|correct(?:ly)?|right)\\s+(?:kaha|bataya|socha|pakda|nikala|got|said|found)`,
+   `you\\s+got\\s+it`, `that(?:'?s|\\s+is)\\s+(?:right|correct)`, `sahi\\s+jawab(?!\\s+(?:kya|kaun|kaunsa|hoga))`,
+ ].join("|"), "iu");
++/**
++ * A "you made a mistake" statement anywhere in a turn after a RIGHT answer (F2, evals/owner-truth: "yahan galti hui",
++ * "step toot gaya" after a correct pick). Negations ("galti nahi", "no mistake") are not denials.
++ */
++const DENY_ANY = /\b(?:(?:yahan|yaha|isme|ismein|is\s+mein|thodi|chhoti|ek)\s+galti\s+(?:hui|ho\s+gayi|ho\s+gai|hai|kar\s+di)|galti\s+(?:ho\s+gayi|ho\s+gai|kar\s+di|kar\s+di\s+hai)|step\s+(?:toot|tut|chhoot|chhut|reh)\s+gaya|you\s+made\s+a\s+mistake|that'?s\s+(?:wrong|not\s+right|incorrect)|(?:aapka|tumhara|your)\s+(?:answer|jawab)\s+(?:galat|wrong|sahi\s+nahi))\b(?!\s+(?:nahi|nahin|not))/iu;
+ /** A "not right" opening, after an answer the classifier marked correct. */
+ const DENY_OPEN = lead(["galat", "wrong", "not\\s+quite", "not\\s+right", "incorrect", "nope", "oops", "almost", "lagbhag", "thoda\\s+(?:sa\\s+)?galat",
+   "nahi,?\\s+(?:ye|yeh)\\s+(?:sahi|theek)", "गलत"].join("|"));
+@@ -75,9 +82,9 @@
+ export function praiseProblem(text, verdict) {
+   const t = withoutEffortPraise(text).trim();
+   if (!t || verdict === "ungraded") return null;
+-  if (verdict === "correct") return DENY_OPEN.test(t) ? "contradicts" : null;
++  if (verdict === "correct") return DENY_OPEN.test(t) || DENY_ANY.test(t) ? "contradicts" : null;
+   // partial: "nearly" is honest; "bilkul / sahi" is not.
+-  if (PRAISE_OPEN.test(t) || PRAISE_ANY.test(t)) return "praise";
++  if (PRAISE_OPEN.test(t) || PRAISE_ANY.test(t) || PRAISE_EMOJI.test(t)) return "praise";
+   if (verdict === "not_yet" && AGREE_OPEN.test(t)) return "praise";
+   return null;
+ }
+@@ -88,7 +95,7 @@
+ export function stripPraise(text) {
+   const sentences = String(text ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
+   const praising = (x) => { const y = withoutEffortPraise(x).trim(); return PRAISE_ANY.test(y) || PRAISE_OPEN.test(y) || AGREE_OPEN.test(y); };
+-  let out = sentences.filter((x) => /[?？]/.test(x) || !praising(x)).join("").trim();
++  let out = sentences.filter((x) => /[?？]/.test(x) || !praising(x)).join("").replace(new RegExp(PRAISE_EMOJI.source, "gu"), "").trim();
+   for (let i = 0; i < 3 && OPENER.test(out); i++) out = out.replace(OPENER, "");
+   return out ? out[0].toUpperCase() + out.slice(1) : "";
+ }

@@ -56,7 +56,8 @@ export function persisted(session, outcome) {
  * @param {{ turn: number, outcome?: string|null, words?: number, safety?: boolean }} t
  */
 export function nextRelSession(prev, signals, t) {
-  const s = structuredClone(prev);
+  // a shallow copy of every field this fold changes (cheaper than structuredClone; the policy never mutates prev)
+  const s = { ...prev, climate: { ...prev.climate }, overlayMoves: { ...prev.overlayMoves } };
   const k = new Set((signals ?? []).map((x) => x.kind));
   s.turn = t.turn;
   const c = s.climate;

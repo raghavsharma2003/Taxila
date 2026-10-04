@@ -1,0 +1,15 @@
+diff -ruN a/src/modules/frame/params.ts b/src/modules/frame/params.ts
+--- a/src/modules/frame/params.ts	2026-10-04 21:17:49.058775433 +0000
++++ b/src/modules/frame/params.ts	2026-10-04 21:17:49.067367296 +0000
+@@ -14,6 +14,11 @@
+   for (const [name, spec] of Object.entries(def.params)) {
+     const v = raw[name];
+     if (v === undefined || v === null) {
++      // An absent `mode` on an engine that has the generic modes IS the generic path (show / predict): every engine's
++      // normalize reads an absent mode that way. Filling the def default instead ("place" for number-line@1) turned an
++      // unbound fraction show into an integer 0-10 line with no target and Check disabled (OWNER TEST 2026-10-04 item 1,
++      // evals/owner-truth F4; shared/engine-catalog.js sends no mode on an unbound plan by design).
++      if (name === "mode" && spec.type === "string" && spec.enum?.includes("show")) continue;
+       if (spec.default !== undefined) params[name] = spec.default;
+       continue;
+     }

@@ -5,13 +5,12 @@
 //         fetched from centralindia voices/list at run time (maiSsml throws without it)
 //   oai   gpt-4o-mini-tts deployment `gpt-4o-mini-tts` (model version 2025-12-15, GlobalStandard) on the eastus2 Foundry
 //         resource. No India region offers gpt-4o-mini-tts (ARM model catalogue: centralindia none, southindia none,
-//         2026-10-04). voice marin, text unchanged + the passage's instructions string. stream_format "sse" so the
-//         final event carries the billed token usage.
+//         2026-10-04). voice marin, text unchanged + the passage's instructions string, non-streamed WAV (see oai()).
 // Script probe (oai only, BEFORE the 3x3 oai renders): P1 once in Devanagari (as written) and once in Roman Hindi
 // (ROMAN_P1 below, a hand transliteration of the same words; English words unchanged). The better one is chosen by
 // screen.py's pre-registered rule (RULES.script_rule) and then used for all oai takes.
 // Run: cd /home/user/Taxila; set -a; . ./.env.local; set +a; NODE_USE_ENV_PROXY=1 node docs/research/voice/final/render.mjs <stage>
-//   stage = probe | main [engineRegex]
+//   stage = probe | calib | main [engineRegex]
 // Never prints a key. Re-runs skip files already on disk. Writes renders/renders.json (one row per request).
 import fs from "node:fs";
 import path from "node:path";
@@ -42,7 +41,11 @@ export const ROMAN_P1 = [
 
 const MF = path.join(OUT, "renders.json");
 const man = fs.existsSync(MF) ? JSON.parse(fs.readFileSync(MF, "utf8")) : { v: "taxila-voice-final-renders/1", date: "2026-10-04", rules: RULES, renders: [] };
-const put = (e) => { man.renders = man.renders.filter((r) => r.id !== e.id); man.renders.push(e); fs.writeFileSync(MF, JSON.stringify(man, null, 1)); };
+// re-read before every write so two stages running at once cannot drop each other's rows
+const put = (e) => {
+  const cur = fs.existsSync(MF) ? JSON.parse(fs.readFileSync(MF, "utf8")) : man;
+  man.renders = cur.renders.filter((r) => r.id !== e.id); man.renders.push(e); fs.writeFileSync(MF, JSON.stringify(man, null, 1));
+};
 const sleep = (ms) => new Promise((s) => setTimeout(s, ms));
 
 const CI = { key: process.env.AZURE_AI_CENTRALINDIA_KEY, host: "https://centralindia.tts.speech.microsoft.com" };
@@ -76,33 +79,37 @@ function wavFromPcm(pcm, rate = 24000) {
   return Buffer.concat([h, pcm]);
 }
 
-async function oai(body) {
+// Non-streamed WAV. MEASURED 2026-10-04: with stream_format "sse" the full P1 stalled after 33.85 s of audio (86 deltas,
+// no speech.audio.done, connection closed by the server after ~5 min); the same body non-streamed returned 83.8 s in
+// 12.4 s. The non-streamed response carries no usage, so billed tokens come from the SSE calibration stage (`calib`):
+// short single-beat SSE calls that do finish and report usage -> audio tokens per second of output audio.
+async function oai(body, { sse = false } = {}) {
   const url = process.env.AZURE_OPENAI_ENDPOINT.replace(/\/$/, "") + "/audio/speech";
+  const req = { ...body, model: process.env.DEPLOY_TTS || "gpt-4o-mini-tts", ...(sse ? { response_format: "pcm", stream_format: "sse" } : { response_format: "wav" }) };
   for (let a = 0; a < 4; a++) {
     const t0 = performance.now();
-    let r;
     try {
-      r = await fetch(url, { method: "POST", signal: AbortSignal.timeout(240_000), headers: { "api-key": process.env.AZURE_OPENAI_API_KEY, "content-type": "application/json" },
-        body: JSON.stringify({ ...body, model: process.env.DEPLOY_TTS || "gpt-4o-mini-tts", response_format: "pcm", stream_format: "sse" }) });
-    } catch (e) { await sleep(3000 * (a + 1)); continue; }
-    if (!r.ok) {
-      const msg = `HTTP ${r.status} ${(await r.text()).slice(0, 200)}`;
-      if (r.status === 429 || r.status >= 500) { await sleep(3000 * (a + 1)); continue; }
-      return { err: msg };
-    }
-    const txt = await r.text();
-    const parts = [], types = {};
-    let usage = null;
-    for (const line of txt.split(/\r?\n/)) {
-      if (!line.startsWith("data:")) continue;
-      const d = line.slice(5).trim(); if (!d || d === "[DONE]") continue;
-      let j; try { j = JSON.parse(d); } catch { continue; }
-      types[j.type] = (types[j.type] || 0) + 1;
-      if (j.type === "speech.audio.delta" && j.audio) parts.push(Buffer.from(j.audio, "base64"));
-      if (j.usage) usage = j.usage;
-    }
-    if (!parts.length) return { err: `no audio in SSE (${JSON.stringify(types)})` };
-    return { buf: wavFromPcm(Buffer.concat(parts)), ttfb_ms: Math.round(performance.now() - t0), usage, sse_events: types, status: 200 };
+      const r = await fetch(url, { method: "POST", signal: AbortSignal.timeout(sse ? 90_000 : 240_000), headers: { "api-key": process.env.AZURE_OPENAI_API_KEY, "content-type": "application/json" }, body: JSON.stringify(req) });
+      if (!r.ok) {
+        const msg = `HTTP ${r.status} ${(await r.text()).slice(0, 200)}`;
+        if (r.status === 429 || r.status >= 500) { await sleep(3000 * (a + 1)); continue; }
+        return { err: msg };
+      }
+      if (!sse) return { buf: Buffer.from(await r.arrayBuffer()), ttfb_ms: Math.round(performance.now() - t0), served_model: r.headers.get("x-ms-served-model"), region: r.headers.get("x-ms-region") };
+      const txt = await r.text();
+      const parts = [], types = {};
+      let usage = null;
+      for (const line of txt.split(/\r?\n/)) {
+        if (!line.startsWith("data:")) continue;
+        const d = line.slice(5).trim(); if (!d || d === "[DONE]") continue;
+        let j; try { j = JSON.parse(d); } catch { continue; }
+        types[j.type] = (types[j.type] || 0) + 1;
+        if (j.type === "speech.audio.delta" && j.audio) parts.push(Buffer.from(j.audio, "base64"));
+        if (j.usage) usage = j.usage;
+      }
+      if (!parts.length || !usage) return { err: `incomplete SSE (${JSON.stringify(types)})` };
+      return { buf: wavFromPcm(Buffer.concat(parts)), ttfb_ms: Math.round(performance.now() - t0), usage, sse_events: types };
+    } catch (e) { await sleep(3000 * (a + 1)); }
   }
   return { err: "retries exhausted" };
 }
@@ -115,7 +122,12 @@ async function liveStyles() {
   return { styles: v.StyleList || [], status: v.Status, voiceType: v.VoiceType };
 }
 
-const dur = (buf) => +((buf.length - 44) / 48000).toFixed(2);
+/** duration from the RIFF header (data chunk size / byte rate), not from the file length */
+function wavDur(buf) {
+  const rate = buf.readUInt32LE(28); let o = 12;
+  while (o < buf.length - 8) { const id = buf.toString("ascii", o, o + 4), n = buf.readUInt32LE(o + 4); if (id === "data") return +(Math.min(n, buf.length - o - 8) / rate).toFixed(2); o += 8 + n; }
+  return null;
+}
 
 async function job(id, meta, run) {
   const f = path.join(WAV, `${id}.wav`);
@@ -123,8 +135,8 @@ async function job(id, meta, run) {
   const r = await run();
   if (!r.buf) { console.log(id, "ERR", r.err); put({ id, ...meta, error: r.err }); return; }
   fs.writeFileSync(f, r.buf);
-  put({ id, ...meta, file: path.relative(OUT, f), audio_s: dur(r.buf), ttfb_ms: r.ttfb_ms, usage: r.usage, sse_events: r.sse_events, rendered_at: new Date().toISOString() });
-  console.log(id, dur(r.buf), "s", r.usage ? JSON.stringify(r.usage) : "");
+  put({ id, ...meta, file: path.relative(OUT, f), audio_s: wavDur(r.buf), ttfb_ms: r.ttfb_ms, usage: r.usage, sse_events: r.sse_events, served_model: r.served_model, served_region: r.region, rendered_at: new Date().toISOString() });
+  console.log(id, wavDur(r.buf), "s", r.usage ? JSON.stringify(r.usage) : "");
 }
 
 const stage = process.argv[2];
@@ -137,6 +149,12 @@ if (stage === "probe") {
     job("probe__oai__P1-maths__deva", { stage: "probe", engine: "oai", passage: P1.id, script: "deva", input: base.input, instructions: base.instructions, voice: "gpt-4o-mini-tts 2025-12-15 / marin (eastus2)" }, () => oai(base)),
     job("probe__oai__P1-maths__roman", { stage: "probe", engine: "oai", passage: P1.id, script: "roman", input: ROMAN_P1, instructions: base.instructions, voice: "gpt-4o-mini-tts 2025-12-15 / marin (eastus2)" }, () => oai({ ...base, input: ROMAN_P1 })),
   ]);
+} else if (stage === "calib") {
+  // token-rate calibration for cost only (not stimuli): each P1 beat once over SSE with P1's instructions
+  const base = oaiBody(P1);
+  for (const [i, b] of P1.beats.entries()) {
+    await job(`calib__oai__P1-maths__b${i + 1}-${b.beat}`, { stage: "calib", engine: "oai", passage: P1.id, beat: b.beat, input: b.text, instructions: base.instructions, text_chars: b.text.length }, () => oai({ ...base, input: b.text }, { sse: true }));
+  }
 } else if (stage === "main") {
   const script = JSON.parse(fs.readFileSync(path.join(OUT, "script-choice.json"), "utf8")).chosen; // written by screen.py probe
   const live = await liveStyles();

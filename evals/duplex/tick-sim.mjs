@@ -319,7 +319,9 @@ export function score(recs) {
       case "repeat": ok = !!y && (y.reason === "repair_request" || y.reason === "barge_in"); break;
       case "stop": ok = !!y && (y.reason === "stop_request" || y.reason === "barge_in"); break;
       case "yield": ok = !!y && !resumed; break;
-      case "foldin": ok = !!y && !resumed && r.speaks.some((c) => c.t >= r.trueEnd - 20); break;
+      // the answer over her question is taken as the child's turn and answered: by a fold-in yield, or carried into the
+      // turn when her line ends first (the words land after her hand-over); she never resumes the old line over it
+      case "foldin": ok = !resumed && r.speaks.some((c) => c.t >= r.trueEnd - 20 && lastValue(c.text) !== null); break;
     }
     if (ok) ovOk++;
     if (y && r.expect === "resume") continuerYields++;
@@ -336,7 +338,8 @@ export function score(recs) {
   const childSpeech = open.reduce((a, r) => a + r.words.reduce((s, [x, y]) => s + (y - x), 0), 0) / 1000;
   const spec = recs.filter((r) => r.spec);
   const prep = spec.reduce((a, r) => { const p = r.spec.prepare; a.draftStarts += p.draftStarts; a.warmStarts += p.warmStarts; a.warmPromoted += p.warmPromoted; a.speaks += p.speaks; return a; }, { draftStarts: 0, warmStarts: 0, warmPromoted: 0, speaks: 0 });
-  const wasted = spec.reduce((a, r) => a + (r.spec.wastedTokens ?? 0), 0);
+  const wasted = spec.reduce((a, r) => a + (r.spec.tokens?.wasted ? r.spec.tokens.wasted.in + r.spec.tokens.wasted.out : 0), 0);
+  const used = spec.reduce((a, r) => a + (r.spec.tokens?.used ? r.spec.tokens.used.in + r.spec.tokens.used.out : 0), 0);
   const ticks = recs.reduce((a, r) => a + r.ticks, 0);
   return {
     turns: recs.length,
@@ -348,7 +351,8 @@ export function score(recs) {
     safety: { turns: dist.length, detectedTurns: detect.length, detectAfterDistressSegEndMs: stat(detect), unsafeLines: unsafe, safeguardSpoken, safeguardOverChildVoice: overChild, safeguardOnsetRaceUnder100ms: onsetRace },
     overlap: { turns: ov.length, accuracy: rate(ovOk, ov.length), continuerYieldedThenResumed: continuerYields, yieldFromOnsetMs: stat(yieldLat), byExpect: ovByExpect },
     listening: { openTurns: open.length, nods: nods.length, nodMidWord, nodsInClosedAnswers: closedNods, secondsOfChildSpeechPerNod: nods.length ? +(childSpeech / nods.length).toFixed(1) : null },
-    prepare: { ...prep, warmPromotedPerSpeak: prep.speaks ? +(prep.warmPromoted / prep.speaks).toFixed(3) : null, wastedTokens: wasted },
+    prepare: { ...prep, warmPromotedPerSpeak: prep.speaks ? +(prep.warmPromoted / prep.speaks).toFixed(3) : null, wastedTokensPerTurn: spec.length ? Math.round(wasted / spec.length) : null,
+      wastedShare: wasted + used ? +(wasted / (wasted + used)).toFixed(3) : null },
     ticksPerTurn: +(ticks / Math.max(1, recs.length)).toFixed(1),
   };
 }

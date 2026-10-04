@@ -24,7 +24,7 @@ h1 { font: 800 clamp(34px, 6vw, 60px)/1.02 "Bricolage Grotesque", system-ui, san
 a.card { display: flex; flex-direction: column; text-decoration: none; color: inherit; background: var(--bg-1); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; transition: border-color .18s, transform .18s; }
 a.card:hover, a.card:focus-visible { border-color: var(--line-2); transform: translateY(-2px); outline: none; }
 .thumb { aspect-ratio: 16 / 10; background: #0D1017; position: relative; overflow: hidden; }
-.thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .body { padding: 18px 18px 20px; display: flex; flex-direction: column; gap: 8px; }
 .kind { font: 600 11px/1 "Geist Mono", monospace; letter-spacing: .1em; text-transform: uppercase; display: inline-flex; gap: 8px; align-items: center; }
 .kind i { width: 7px; height: 7px; border-radius: 50%; background: var(--c); display: inline-block; }
@@ -43,7 +43,7 @@ footer code { font-family: "Geist Mono", monospace; font-size: 13px; color: var(
   <p class="lede">Three pieces built as archetype engines driven by a small generated spec. Each fits the 16:10 stage, holds the teacher's safe zones, and plays without a network. Open one, then try <code>?motion=reduce</code> or press <b>S</b> to see the safe zones.</p>
   <div class="grid">
     <a class="card" href="01-landfall/">
-      <div class="thumb"><video src="recordings/landfall.webm#t=20" muted playsinline preload="metadata"></video></div>
+      <div class="thumb"><img src="recordings/poster-landfall.jpg" alt="" loading="lazy" width="640" height="400"></div>
       <div class="body">
         <span class="kind" style="--c:#8B98FF"><i></i>Game · maths · class 5-6</span>
         <h2>Landfall</h2>
@@ -52,7 +52,7 @@ footer code { font-family: "Geist Mono", monospace; font-size: 13px; color: var(
       </div>
     </a>
     <a class="card" href="02-circuit-lab/">
-      <div class="thumb"><video src="recordings/circuit.webm#t=30" muted playsinline preload="metadata"></video></div>
+      <div class="thumb"><img src="recordings/poster-circuit.jpg" alt="" loading="lazy" width="640" height="400"></div>
       <div class="body">
         <span class="kind" style="--c:#3DDC97"><i></i>Simulation · science · class 7</span>
         <h2>Circuit Lab</h2>
@@ -61,7 +61,7 @@ footer code { font-family: "Geist Mono", monospace; font-size: 13px; color: var(
       </div>
     </a>
     <a class="card" href="03-moon-phases/?autoplay=1">
-      <div class="thumb"><video src="recordings/moon.webm#t=60" muted playsinline preload="metadata"></video></div>
+      <div class="thumb"><img src="recordings/poster-moon.jpg" alt="" loading="lazy" width="640" height="400"></div>
       <div class="body">
         <span class="kind" style="--c:#FFB547"><i></i>Animation · science · class 4 and 7</span>
         <h2>Why the Moon has phases</h2>

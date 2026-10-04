@@ -79,10 +79,23 @@ export class ChildAudioTracker {
   /** Her playback level at the device output while she speaks (null when silent or unknown). */
   setHerLevel(db: number | null): void { this.herDb = db; }
 
+  /**
+   * Minimum-statistics noise floor (Martin 2001, simplified): the 5th percentile of the last 5 s of frame levels. The shipped
+   * EnergyVad adapts its floor only while it believes nobody speaks, so a mic that OPENS in a noisy room (fan, TV bed at
+   * -40 dBFS) latches "speaking" on frame 1 and never learns the floor: no silence is ever seen and no turn ever ends
+   * (TaxilaFDB noisy streams, 2026-10-04: 0 offsets in 8.4 s). This floor needs no speech/non-speech decision.
+   */
+  private lvl: number[] = [];
+  private minStatFloor(): number {
+    if (this.lvl.length < 10) return -90;
+    const s = [...this.lvl].sort((a, b) => a - b);
+    return s[Math.floor(0.05 * (s.length - 1))];
+  }
+
   /** Loud by the shipped EnergyVad's floor (floor + offsetDb + 2, absolute minimum), and above her echo while she speaks. */
   private isLoud(db: number): boolean {
     const o = this.vad.opts;
-    const base = Math.max(o.minDb, this.vad.floorDb + o.offsetDb + 2);
+    const base = Math.max(o.minDb, Math.max(this.vad.floorDb, this.minStatFloor()) + o.offsetDb + 2);
     return db >= base && (this.herDb === null || db >= this.herDb + this.herMarginDb);
   }
 
@@ -90,6 +103,8 @@ export class ChildAudioTracker {
     this.t = t;
     const db = rms > 0 ? 20 * Math.log10(rms) : -100;
     this.lastDb = db;
+    this.lvl.push(db);
+    if (this.lvl.length > 5000 / this.frameMs) this.lvl.shift();
     this.vad.push(rms, this.frameMs);
     const loud = this.isLoud(db);
     let edge: AudioEdge = null;

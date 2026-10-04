@@ -1,0 +1,404 @@
+diff -ruN a/server/brain/turn.js b/server/brain/turn.js
+--- a/server/brain/turn.js	2026-10-04 21:17:49.379536541 +0000
++++ b/server/brain/turn.js	2026-10-04 21:17:49.387858244 +0000
+@@ -349,7 +349,7 @@
+   if (needRelease || needSafety || relFx.overlay || relFx.callbackId || relFx.noticeId) {
+     const relCls = needSafety ? { ...(cls ?? { outcome: "no_evidence", confidence: 1 }), source: cls?.source ?? "relational",
+       flags: { ...(cls?.flags ?? fast?.flags ?? {}), distress: true, distressKind: cls?.flags?.distressKind ?? "relational_floor" } }
+-      : needRelease ? { ...(cls ?? { outcome: "no_evidence", confidence: 1, source: "relational" }), flags: { ...(cls?.flags ?? fast?.flags ?? {}), wantsToStop: true } }
++      : needRelease ? { ...(cls ?? { outcome: "no_evidence", confidence: 1, source: "relational" }), relRelease: true, flags: { ...(cls?.flags ?? fast?.flags ?? {}), wantsToStop: true } }
+         : cls;
+     const rel = { turn: next.turn, ...(relFx.overlay ? { overlay: relFx.overlay } : {}), ...(relFx.callbackId ? { callbackId: relFx.callbackId } : {}),
+       ...(relFx.noticeId ? { noticeId: relFx.noticeId } : {}) };
+diff -ruN a/server/director/classify.js b/server/director/classify.js
+--- a/server/director/classify.js	2026-10-04 21:17:49.379137982 +0000
++++ b/server/director/classify.js	2026-10-04 21:17:49.387340669 +0000
+@@ -8,6 +8,7 @@
+ import { scanSafety, wantsToStop, scrubPii } from "./safety.js";
+ import { whyKey, norm as normAnswer, posesItem, revealsAnswer } from "./items.js";
+ import { INTEREST_IDS } from "../../shared/interests.js";
++import { requestOf, FLOW_REQUESTS } from "./requests.js";
+ 
+ // ───────────── the signals block (W2-E BR2; TEACHER-BRAIN TB4, §14.2-14.3; owner of this block: W2-E) ─────────────
+ // Per-turn perception rides on the SAME classify call (no new model call on the turn): the dialogue act (with the IDK
+@@ -144,7 +145,7 @@
+     "The child may speak Hindi, English or Hinglish, in Roman or Devanagari script. Number words count (aadha = 1/2, ek tihai = 1/3, teen = 3, 'teen wala' = the one with 3). Transcripts come from speech recognition and can have small errors.",
+     "If what the teacher last said asked a DIFFERENT question from the one listed, and the reply answers that other question, label it no_attempt: it is not evidence about the listed question.",
+     "distress: true ONLY for signs the child is unsafe, hurt, abused, frightened, very sad, or may harm themself — never for ordinary frustration with a question.",
+-    "asks_for_answer: they ask to be told the answer. wants_to_stop: they say they want to stop or leave now. off_topic: the reply is about something unrelated to the lesson.",
++    "asks_for_answer: they ask to be told the answer. wants_to_stop: they say they want to stop or leave now (NOT a wish to change the topic, hear it another way, go slower, see a picture or take a break). off_topic: the reply is about something unrelated to the lesson.",
+   ];
+   if (target.mode === "none" && target.misconceptions.length) {
+     base.push("belief: if the reply expresses one of the listed wrong beliefs (in any words or language), its tag; otherwise none.");
+@@ -365,7 +366,17 @@
+   }
+   if (!text) return done("no_evidence", "empty");
+   if (safety.distress) return done("no_evidence", "predicate");
+-  if (!typed && typeof asrConfidence === "number" && asrConfidence < ASR_MIN) return { result: null, flags, text, lowAsr: true };
++  // The child's own request in words (director/requests.js; OWNER TEST 2026-10-04 items 3-5): never evidence. A steering
++  // request that is the whole turn is decided here (no model call); a stop or goodbye still goes to the model for its
++  // distress read (the floor's backup is never skipped), and classify() then applies the request over the model's flags.
++  const request = !chipId && !moduleAnswer ? requestOf(text) : null;
++  if (request?.whole && !FLOW_REQUESTS.has(request.type)) {
++    flags.wantsToStop = false;
++    return done("no_evidence", "request", { request });
++  }
++  if (request?.whole) flags.wantsToStop = true;
++  if (!typed && typeof asrConfidence === "number" && asrConfidence < ASR_MIN) return { result: null, flags, text, lowAsr: true, ...(request?.whole ? { request } : {}) };
++  if (request?.whole) return { result: null, flags, text, request };
+   const other = target.mode === "item" && askedOther(heard, target.item, lang);
+   // An echo: the reply is only a number the teacher's OTHER question itself stated ("25" to "what comes after 25?").
+   // It answers neither question, so it is no evidence — never the item's key matched by accident (audit #13).
+@@ -399,16 +410,28 @@
+  *   flags: { dontKnow: boolean, asksForAnswer: boolean, minimal: boolean, offTopic: boolean, distress: boolean, distressKind: string|null, wantsToStop: boolean } }>}
+  */
+ export async function classify(args) {
+-  const { target, heard, classLevel, trace } = args;
++  const { target, classLevel, trace } = args;
+   const fast = classifyFast(args);
+   if (fast.result) return fast.result;
+-  const { flags, text } = fast;
+-  const done = (outcome, source, extra = {}) => ({ outcome, confidence: 1, source, flags, ...extra });
++  const { flags, text, request } = fast;
++  const done = (outcome, source, extra = {}) => ({ outcome, confidence: 1, source, flags, ...extra, ...(request ? { request } : {}) });
+   if (fast.lowAsr) {
+     flags.distress = flags.distress || await distressCheck(text, classLevel, trace);
+     if (flags.distress) flags.distressKind ??= "model";
+     return done("no_evidence", "asr");
+   }
++  // A stop / goodbye in words: the model reads it for distress only (the floor's backup); the request decides the stop,
++  // and the words are never graded (a "bas" labelled other_wrong was a wrong answer on the record).
++  if (request) {
++    const r = await classifyModel(args, target, text, flags, trace, done);
++    return { ...r, outcome: "no_evidence", confidence: 1, flags: { ...r.flags, wantsToStop: true }, request };
++  }
++  return classifyModel(args, target, text, flags, trace, done);
++}
++
++/** The model call of classify() (with its content-filter fail-closed path and its fallback deployment). */
++async function classifyModel(args, target, text, flags, trace, done) {
++  const { heard, classLevel } = args;
+ 
+   const messages = [
+     { role: "system", content: systemPrompt(target, classLevel) },
+diff -ruN a/server/director/requests.js b/server/director/requests.js
+--- a/server/director/requests.js	1970-01-01 00:00:00.000000000 +0000
++++ b/server/director/requests.js	2026-10-04 21:17:49.387542204 +0000
+@@ -0,0 +1,114 @@
++// The child's own requests, read from their WORDS (OWNER TEST 2026-10-04 items 3, 4 and 5; evals/owner-truth/ROOT-CAUSES.md
++// F6, F8, F9, F11-F16). Before this a child's words became either an answer label or one of five flags, so "explain it
++// differently", "Hindi mein samjhao", "example do", "slowly please", "show me a diagram" and "can we talk about something
++// else" were all `unclear` (a re-ask of the same question), and "lesson khatam" / "I'm done" were whatever the classifier
++// model's one-line `wants_to_stop` rule made of them (an immediate end, or nothing at all).
++//
++// A closed taxonomy, detected lexically FIRST (deterministic, replayable, no model call), with the classifier as the
++// backstop for what the lexicon misses. Pure. Never evidence: a request is not an answer, so a turn carrying one is
++// graded only when the words also hold an attempt (digits, or more than a request's worth of words) — then the answer
++// path runs as before and the request is ignored.
++//
++//   goodbye        a real goodbye ("bye", "mujhe jaana hai", "I have to go now"): the lesson ends THAT turn, no question
++//                  (NEVER MANIPULATE; RELATIONAL-OS RELEASE). Never held by a check-in.
++//   stop           "lesson khatam", "I'm done", "end the lesson", "bas", "I want to stop": ONE warm check-in (keep going
++//                  / short break / stop for today); stop words again on the next turn, or the stop chip, end it.
++//   continue       "keep going", "chalo continue karte hain" (an answer to the check-in)
++//   break          "thoda break chahiye", "can I take a short break" (and a toilet / water break)
++//   change_topic   "can we talk about something else", "kuch aur baat karte hain" — never a stop (F8)
++//   topic          "cricket ke baare mein baat karo", "tell me about dinosaurs": { subject }
++//   language       "Hindi mein samjhao", "English mein batao": { lang: "hindi" | "english" | "hinglish" }
++//   another        "explain it differently", "dusre tareeke se samjhao", "samajh nahi aaya, aur aasan karo"
++//   example        "example do", "give me an example"
++//   story          "story ki tarah batao", "kahani se samjhao"
++//   slower         "slowly please", "dheere bolo", "thoda slow" — about HER pace, never "say it again slowly" (F14)
++//   visual         "show me a diagram", "picture dikhao", "draw it", "whiteboard pe bana ke samjhao", "game khelna hai",
++//                  "animation dikhao": { kind: "diagram" | "game" | "animation" }
++//
++// Each pattern is anchored to a request's own shape, so a phrase inside an answer ("the bar is bigger, so stop") is
++// not a request. The words a child uses for these come from the owner's session (evals/owner-truth/results/
++// 2026-10-04T18-30-08) and the owner tests (tests/prod/owner-3/4/5-*.mjs); the unit test is tests/requests.test.mjs.
++
++const T = (s) => String(s ?? "").toLowerCase().normalize("NFKC").replace(/[’`]/g, "'").replace(/\s+/g, " ").trim();
++/** Strip the leading politeness and fillers a child wraps a request in ("ok", "please", "didi", "ma'am"). */
++const core = (t) => t.replace(/^(?:(?:ok(?:ay)?|achha|accha|acha|hmm+|haan|ha|ji|please|plz|pls|arre|arey|yaar|didi|bhaiya|ma'?am|sir|teacher|miss|umm+|uh+|so|and|aur|but|par|lekin|nahi|no|wait|ruko)[\s,!.]+)+/i, "")
++  .replace(/[\s,!.]*(?:please|plz|pls|na|naa|yaar|ji|didi|bhaiya|ma'?am|sir)?[\s.!?]*$/i, "").trim();
++
++/** A real goodbye: the child is leaving now. Mirrors safety.js wantsToStop's leave-now forms (kept in step by the test). */
++const GOODBYE = /\b(?:bye|bye[\s-]*bye|good\s*night|tata|alvida|see\s+you|mujhe\s+ja(?:a)?na\s+(?:hai|padega|h)|main\s+ja\s+(?:raha|rahi)\s+(?:hoon|hu)|i\s+(?:have|need|gotta|got)\s+to\s+(?:go|leave)|i\s+(?:want|wanna)\s+to\s+leave|i'?m\s+leaving|i\s+am\s+leaving|mummy\s+bula\s+rahi\s+(?:hai|h)\s*,?\s*(?:bye|jaana))\b|अलविदा|मुझे\s*जाना\s*है|बाय/i;
++/** A short break (toilet, water): never a goodbye and never a stop (safety.js SHORT_BREAK). */
++const SHORT_BREAK = /\b(?:toilet|bathroom|washroom|loo|pee|potty|susu|paani|pani|water|drink)\b/i;
++const STOP = new RegExp([
++  String.raw`\b(?:lesson|class|padhai|session)\s+(?:khatam|khatm|khtm|band|over|done|finish(?:ed)?|end)\b`,
++  String.raw`\b(?:khatam|khatm|band|end|finish|stop)\s+(?:karo|kar\s+do|karte\s+hain|kijiye|karna\s+hai|the\s+(?:lesson|class)|this\s+(?:lesson|class)|it|now|here|for\s+(?:today|now))\b`,
++  String.raw`\b(?:lesson|class)\s+is\s+(?:over|done|finished)\b`,
++  String.raw`\bi'?m\s+done\b|\bi\s+am\s+done\b|\bi'?m\s+finished\b|\bdone\s+for\s+today\b|\benough\s+for\s+today\b|\bno\s+more\b`,
++  String.raw`\bi\s+(?:want|wanna|would\s+like)\s+to\s+stop\b|\bcan\s+we\s+stop\b|\blet'?s\s+stop\b|\bstop\s+for\s+today\b`,
++  String.raw`\b(?:aur|ab)\s+nahi\s+padh(?:na|ni|unga|ungi|enge)\b|\bpadhna\s+nahi\s+hai\b|\bab\s+(?:band|bas)\s+karo\b|\baaj\s+ke\s+liye\s+bas\b|\bbaad\s+mein\s+karenge\b`,
++  String.raw`\bmujhe\s+(?:lesson|class|padhai)?\s*(?:khatam|band|stop)\s+karna\s+hai\b`,
++  String.raw`^(?:(?:yes|haan|ha|ok|okay|theek\s+hai)[\s,]+)?(?:stop|bas|band\s+karo|bas\s+karo|khatam|enough|done|bas\s+ho\s+gaya)$`,
++  "बस\\s*करो|बंद\\s*करो|ख़?त्म\\s*करो",
++].join("|"), "i");
++const CONTINUE = /^(?:(?:no|nahi|nahin)[\s,]+)*(?:(?:let'?s|lets|chalo|ok(?:ay)?)\s+)?(?:keep\s+going|continue(?:\s+karte\s+hain|\s+karo|\s+please)?|carry\s+on|go\s+on|aage\s+(?:chalo|badho|karo|bado)|chalo\s+(?:padhte|aage|continue|shuru)\b.*|padhte\s+hain|nahi\s+rukna|don'?t\s+stop|continue\s+karte\s+hain|wapas\s+lesson|back\s+to\s+(?:the\s+)?lesson)\b/i;
++const BREAK = /\b(?:(?:short|small|quick|chhota|thoda|ek)\s+break|break\s+(?:chahiye|lena|le\s+sakte|le\s+lu|le\s+loon|please|lete\s+hain)|take\s+a\s+(?:short\s+)?break|need\s+a\s+break|can\s+i\s+(?:take\s+a\s+)?(?:short\s+)?break|i'?m\s+tired|thak\s+(?:gaya|gayi|gyi|gya)|thoda\s+aaram|rest\s+(?:karna|chahiye|please))\b/i;
++const CHANGE_TOPIC = /\b(?:something\s+else|kuch\s+aur\s+(?:baat|padh|karte|batao|karo|sikha)|kuch\s+(?:alag|dusra|doosra)|dusri\s+baat|doosri\s+baat|(?:change|badlo|badal\s+do)\s+(?:the\s+)?topic|topic\s+(?:change|badlo|badal\s+do)|(?:dusra|doosra|another|different|new)\s+topic|talk\s+about\s+(?:something|anything)|is\s+(?:ke|ki)\s+(?:alawa|alava|siva))\b/i;
++const TOPIC = /\b(?:([\p{L}\p{N} ]{2,30}?)\s+(?:ke|ki)\s+(?:baare|bare)\s+(?:mein|me|main)\s+(?:baat\s+(?:karo|karte\s+hain|karein|kare)|batao|bataiye|sikhao)|(?:let'?s\s+)?(?:talk|tell\s+me)\s+about\s+([\p{L}\p{N} ]{2,30}))/iu;
++const LANG = { hindi: /\b(?:hindi|हिंदी|हिन्दी)\b/i, english: /\b(?:english|angrezi|अंग्रेज़ी|इंग्लिश)\b/i, hinglish: /\bhinglish\b/i };
++const LANG_REQ = /\b(?:hindi|english|angrezi|hinglish)\s+(?:me|mein|main|mai|में)\b|\b(?:in|speak|talk|explain\s+in|say\s+it\s+in)\s+(?:hindi|english|hinglish)\b|\b(?:hindi|english|hinglish)\s+(?:please|plz)\b|^(?:hindi|english|hinglish)$|(?:हिंदी|हिन्दी|अंग्रेज़ी|इंग्लिश)\s*में/i;
++const ANOTHER = /\b(?:explain|samjhao|samjhaiye|batao|bataiye|sikhao)\s+(?:it\s+|this\s+|isko\s+|ise\s+|ye\s+|yeh\s+)?(?:differently|another\s+way|in\s+a\s+different\s+way|in\s+another\s+way|again\s+differently|simply|more\s+simply|easily)\b|\b(?:dusre|doosre|alag|aur|kisi\s+aur)\s+(?:tareeke|tarike|tarah|way)\s+(?:se)?\b|\b(?:aasan|asaan|simple|easy)\s+(?:karo|kar\s+do|bhasha|shabdon|words|mein\s+samjhao)\b|\bdifferent(?:ly)?\s+(?:way|explanation)\b|\bexplain\s+(?:it\s+)?again\b|\bphir\s+se\s+samjhao\b|\bek\s+baar\s+aur\s+samjhao\b/i;
++const EXAMPLE = /\b(?:example|udaharan|udahran|misal)\s*(?:do|dijiye|de\s+do|dikhao|batao|bataiye|please|chahiye|give|with)?\b|\bgive\s+(?:me\s+)?an?\s+example\b|\bfor\s+example\??$|\bjaise\s+kya\b/i;
++const STORY = /\b(?:story|kahani|kahaani)\s*(?:ki\s+tarah|jaisa|jaise|se|mein|me|sunao|batao|bana\s*ke|banake|form|wala|wali|please)?\b|\btell\s+(?:it\s+)?(?:as|like)\s+a\s+story\b/i;
++const SLOWER = /\b(?:slow(?:ly)?(?:\s+please)?|slower|dheere(?:\s+(?:bolo|boliye|se|please|batao|bataiye))?|dhire(?:\s+(?:bolo|boliye|se))?|aaram\s+se\s+(?:bolo|batao|samjhao)|too\s+fast|bahut\s+(?:tez|fast|jaldi)|itna\s+(?:tez|fast|jaldi)|jaldi\s+mat|ruk\s+ruk\s+ke|step\s+by\s+step)\b/i;
++const VISUAL = /\b(?:(?:show|draw|make)\s+(?:me\s+)?(?:a\s+|the\s+|it\s+|this\s+)?(?:diagram|picture|drawing|image|figure|graph|chart|model|it|this)|(?:diagram|picture|photo|image|drawing|chitra|tasveer|figure)\s+(?:dikhao|dikhaiye|banao|banaiye|bana\s+do|draw|show|please|chahiye|se\s+samjhao)|(?:draw|bana(?:\s+ke|kar)?)\s+(?:karke\s+)?(?:samjhao|dikhao|batao)|draw\s+(?:it|this|karo|kijiye)|whiteboard\s+(?:pe|par|per|mein|me|on)|(?:on|use)\s+the\s+(?:whiteboard|board)|board\s+(?:pe|par)\s+(?:bana|likh|dikha)|can\s+you\s+(?:show|draw)|dikha\s+(?:ke|kar)\s+samjhao|dikhao\s+na)\b/i;
++const GAME = /\b(?:game|khel|activity)\s*(?:khelna|khelte|khelo|khel\s+sakte|chahiye|dikhao|karo|karna|please)?\b|\blet'?s\s+play\b|\bplay\s+a\s+game\b/i;
++const ANIMATION = /\b(?:animation|animate|video|cartoon)\s*(?:dikhao|dikhaiye|chahiye|please|banao|show)?\b|\bshow\s+(?:me\s+)?(?:an\s+)?(?:animation|video)\b/i;
++
++/** Words of an attempt: a number, or more words than a request carries. An attempt is graded; its request is ignored. */
++const attemptLike = (t) => /\d/.test(t) || /\b\d+\s*\/\s*\d+\b/.test(t);
++const wordCount = (t) => t.split(/\s+/).filter(Boolean).length;
++
++/**
++ * PURE. The request a child's turn makes, or null.
++ * @param {string} text  the child's words (typed, or an ASR transcript)
++ * @returns {null | { type: "goodbye"|"stop"|"continue"|"break"|"change_topic"|"topic"|"language"|"another"|"example"|"story"|"slower"|"visual",
++ *   subject?: string, lang?: "hindi"|"english"|"hinglish", kind?: "diagram"|"game"|"animation", whole: boolean }}
++ *   whole: the turn is ONLY the request (no attempt alongside it), so it may be acted on with no classifier call.
++ */
++export function requestOf(text) {
++  const raw = T(text);
++  if (!raw) return null;
++  const t = core(raw) || raw;
++  const n = wordCount(t);
++  const whole = !attemptLike(t) && n <= 12;
++  // a turn of mostly answer words with a request tacked on is an answer (the request is ignored, the answer graded)
++  if (!whole && n > 16) return null;
++  // Leaving now beats everything (NEVER MANIPULATE): never read as a stop to check in on, nor a break.
++  if (GOODBYE.test(t) && !SHORT_BREAK.test(t)) return { type: "goodbye", whole };
++  if (SHORT_BREAK.test(t) && /\b(?:jaana|jana|jau|jaun|go|break|peena|pina|drink|chahiye)\b/.test(t) && !attemptLike(t)) return { type: "break", whole };
++  if (BREAK.test(t)) return { type: "break", whole };
++  if (CHANGE_TOPIC.test(t)) return { type: "change_topic", whole };
++  if (STOP.test(t)) return { type: "stop", whole };
++  if (CONTINUE.test(t)) return { type: "continue", whole };
++  if (LANG_REQ.test(t)) {
++    const lang = LANG.hinglish.test(t) ? "hinglish" : LANG.english.test(t) ? "english" : LANG.hindi.test(t) ? "hindi" : null;
++    if (lang) return { type: "language", lang, whole };
++  }
++  if (VISUAL.test(t) || (whole && /^(?:diagram|picture|drawing|draw)\b/.test(t))) return { type: "visual", kind: "diagram", whole };
++  if (whole && ANIMATION.test(t)) return { type: "visual", kind: "animation", whole };
++  if (whole && GAME.test(t) && !/\b(?:game\s+(?:mein|me)\s+\d)/.test(t)) return { type: "visual", kind: "game", whole };
++  if (whole && STORY.test(t)) return { type: "story", whole };
++  if (whole && EXAMPLE.test(t)) return { type: "example", whole };
++  if (whole && SLOWER.test(t)) return { type: "slower", whole };
++  if (whole && ANOTHER.test(t)) return { type: "another", whole };
++  if (whole) {
++    const m = t.match(TOPIC);
++    const subject = (m?.[1] ?? m?.[2] ?? "").replace(/^(?:the|a|an|is|us|mujhe|humein|hume)\s+/i, "").trim();
++    if (subject && !/^(?:this|it|that|yeh|ye|is|isko|lesson|question|sawal|sawaal)$/.test(subject)) return { type: "topic", subject: subject.slice(0, 30), whole };
++  }
++  return null;
++}
++
++/** The request types that are about the lesson's flow (never acted on without the classifier's distress read too). */
++export const FLOW_REQUESTS = new Set(["goodbye", "stop"]);
++/** The request types that map onto the Director's existing help moves (state.js helpMove; until now reachable only by a chip). */
++export const HELP_OF_REQUEST = Object.freeze({ another: "another", example: "example", story: "story", slower: "slower" });
+diff -ruN a/server/director/say.js b/server/director/say.js
+--- a/server/director/say.js	2026-10-04 21:17:49.379390772 +0000
++++ b/server/director/say.js	2026-10-04 21:17:49.387678518 +0000
+@@ -242,7 +242,7 @@
+ }
+ 
+ // ── wrap language only on a wrap move (personalisation 13: "Aaj ke liye bas itna." in a probe turn, mid-lesson) ──
+-const WRAP_WORDS = /\b(?:aaj\s+ke\s+liye\s+(?:bas\s+)?(?:itna|itni|yahin|ye(?:h)?\s+hi)|aaj\s+(?:ka\s+)?(?:lesson|class|session)\s+(?:khatam|khatm|poora|pura|yahin)|that'?s\s+(?:all|it)\s+for\s+today|see\s+you\s+(?:next\s+time|tomorrow|soon|later)|(?:phir|kal|jaldi)\s+milte\s+hain|good\s*bye|bye[\s-]*bye|alvida|we(?:'re|\s+are)\s+done\s+for\s+today|let'?s\s+stop\s+(?:here|for\s+today))\b|आज\s+के\s+लिए\s+(?:बस\s+)?इतना|फिर\s+मिलते\s+हैं/iu;
++const WRAP_WORDS = /\b(?:yahin\s+(?:rok|ruk|stop|khatam|band)\s*(?:te|dete|kar\s*te|karte|lete|jaate)?\s*(?:hain|hai)|(?:we'?ll|we\s+will|let'?s)\s+stop\s+(?:here|now)|lesson\s+(?:yahin\s+)?(?:khatam|khatm)\s+(?:karte|kar\s+dete)\s+hain|aaj\s+ke\s+liye\s+(?:bas\s+)?(?:itna|itni|yahin|ye(?:h)?\s+hi)|aaj\s+(?:ka\s+)?(?:lesson|class|session)\s+(?:khatam|khatm|poora|pura|yahin)|that'?s\s+(?:all|it)\s+for\s+today|see\s+you\s+(?:next\s+time|tomorrow|soon|later)|(?:phir|kal|jaldi)\s+milte\s+hain|good\s*bye|bye[\s-]*bye|alvida|we(?:'re|\s+are)\s+done\s+for\s+today|let'?s\s+stop\s+(?:here|for\s+today))\b|आज\s+के\s+लिए\s+(?:बस\s+)?इतना|फिर\s+मिलते\s+हैं/iu;
+ /** Does a line close the lesson (a goodbye, "that's all for today")? Only a wrap move may say that. */
+ export const wrapsUp = (text) => WRAP_WORDS.test(String(text ?? ""));
+ /** The line without its closing sentences. */
+diff -ruN a/server/director/shapes.js b/server/director/shapes.js
+--- a/server/director/shapes.js	2026-10-04 21:17:49.379229598 +0000
++++ b/server/director/shapes.js	2026-10-04 21:17:49.387480500 +0000
+@@ -187,6 +187,22 @@
+   "the key stays unsaid",
+   "then the same question again, as written",
+ );
++/** "Lesson khatam" / "I'm done" (state.js decide): ONE check-in. Notes, never a line she could recite. */
++export const stopCheck = () => join(
++  "they said they want to stop: take it seriously and warmly, in one short line — no guilt, no pressure, no 'are you sure'",
++  "offer the three choices now on the chips (keep going, a short break, stop for today); either answer is fine; wait",
++  "no goodbye words yet; no new lesson content",
++);
++export const changeTopic = () => join(
++  "they want to talk about something else: say yes warmly — the lesson can wait a moment",
++  "ask what they would like to talk about, in a few words; the chips can bring them back to the lesson",
++  "no lesson question this turn",
++);
++/** The one side-chat turn after change_topic: their topic, for real. */
++export const sideChat = () => join(
++  "talk with them about what they just brought up, for real: two or three warm lines, a question back about it",
++  "then offer to go back to the lesson whenever they like (the chips); no lesson question this turn",
++);
+ 
+ 
+ /** Module-only turns: the child acted in the activity and said nothing; the lesson stays where it was. */
+diff -ruN a/server/director/state.js b/server/director/state.js
+--- a/server/director/state.js	2026-10-04 21:17:49.379331449 +0000
++++ b/server/director/state.js	2026-10-04 21:17:49.387600556 +0000
+@@ -195,7 +195,7 @@
+ 
+ /** Chip labels are UI chrome: English in every lesson language (owner directive; PRODUCT-DESIGN-V2 §0.10, §5.3). */
+ function chipLabels() {
+-  return { easier: "An easier one", rest: "Short break", go: "Keep going", cont: "Carry on", stop: "Stop for today" };
++  return { easier: "An easier one", rest: "Short break", go: "Keep going", cont: "Carry on", stop: "Stop for today", back: "Back to the lesson" };
+ }
+ const optionChips = (item) => (item?.diagnostic && item.options.length <= 4
+   ? item.options.map((o, i) => ({ id: `opt:${i}`, label: o.text.slice(0, 40) })) : undefined);
+@@ -368,7 +368,8 @@
+ function practice(s, input, item) {
+   const { kit, cls } = input;
+   if (!item) return poseNext(s, input);
+-  if (s.lastMove?.kind === "break") return plan(moveKindFor(item), SH.pose({ item, prefix: "back to the question, fresh" }), { item, probe: probeFor(item), chips: optionChips(item) });
++  // after a break (or a stop check-in) the question comes back fresh — unless the child simply answered it, which is graded
++  if (s.lastMove?.kind === "break" && !["right", "wrong"].includes(verdict(cls))) return plan(moveKindFor(item), SH.pose({ item, prefix: "back to the question, fresh" }), { item, probe: probeFor(item), chips: optionChips(item) });
+   // After an assertion nothing they say about THIS item is evidence; an isomorphic item proves it (rule 15).
+   if (s.hintLevel >= 4) {
+     s.itemsDone.push(item.id);
+@@ -609,6 +610,35 @@
+   }
+ }
+ 
++/**
++ * Back to where the lesson was, after a check-in, a break or a side chat: the question on the table again, else the next
++ * teaching step or question. Never evidence, never a hint rung.
++ */
++function resume(s, input, item, prefix) {
++  if (item) return plan(moveKindFor(item), SH.pose({ item, prefix }), { item, probe: probeFor(item), chips: optionChips(item) });
++  if (s.phase === "warmup") { s.phase = "teach"; return teach(s, input, prefix); }
++  if (s.phase === "teach") return teach(s, input, prefix);
++  if (s.phase === "practice") return poseNext(s, input, prefix);
++  if (s.phase === "teachback") return plan("teachback", join(prefix, SH.teachback({ protege: s.ctx.protege })), { probe: "P1", format: "F7" });
++  return toWrap(s, {});
++}
++
++/**
++ * The child's request in words → this turn's move (OWNER TEST items 4-5; requests.js). null = no move of its own (the
++ * phase decides). Each maps onto a move the Director already had and only a chip could reach (helpMove), or onto the
++ * one new state it needs (the language, a side chat, a picture on the stage).
++ */
++function requestMove(s, input, item, req, labels) {
++  const kit = input.kit;
++  switch (req.type) {
++    case "break": return plan("break", SH.stretch(), { request: "break" });
++    case "change_topic":
++      s.sidebar = { asked: s.turn };
++      return plan("break", SH.changeTopic(), { chips: [{ id: "stop:continue", label: labels.back }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }], request: "change_topic" });
++    default: return null;
++  }
++}
++
+ /** Run the phase's own path as if the child had said they were stuck (a hint request): a rung, never evidence. */
+ function decideAs(s, input, item, _v) {
+   const cls = { outcome: "no_evidence", confidence: 1, source: "help", flags: { dontKnow: true, asksForAnswer: false, minimal: false, offTopic: false, distress: false, distressKind: null, wantsToStop: false } };
+@@ -644,6 +674,9 @@
+ }
+ 
+ function toWrap(s, { prefix, stopping = false }) {
++  // a lesson the child stopped before the plan's own wrap (OWNER TEST item 3, F7): routes/child.js countsAsDone reads it
++  if (stopping && !["wrap", "done"].includes(s.phase)) s.stoppedEarly = true;
++  s.stopAsked = undefined; s.sidebar = undefined;
+   s.phase = "done"; s.activeItemId = undefined; s.pendingWhy = undefined; s.hintLevel = 0;
+   return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), stopping ? { stopping: true } : {});
+ }
+@@ -676,9 +709,35 @@
+     s.flagged[cls.voiced] = (s.flagged[cls.voiced] ?? 0) + 1;
+     if (!s.itemsDone.includes(`diag:${cls.voiced}`)) s.verify = cls.voiced;
+   }
+-  // 2. The child wants to stop: whatever was mid-way is over (NEVER MANIPULATE — no holding at goodbye). Only their own
+-  // stop words (or Pause → End, which never reaches here) end the lesson: "Skip for now" is a help request below.
+-  if (flags.wantsToStop) return toWrap(s, { stopping: true });
++  // 2. The child wants to stop (OWNER TEST 2026-10-04 item 3; evals/owner-truth F6/F8/F9). A real goodbye ("bye", "mujhe
++  // jaana hai", "I have to go now"), a relational RELEASE (brain/turn.js, BR5) or stop words again on the very next turn
++  // end the lesson THAT turn: NEVER MANIPULATE, no holding at goodbye, no second check-in. Any other stop ("lesson
++  // khatam", "I'm done", "bas", "end the lesson", or the classifier's wants_to_stop with no lexical match) gets ONE warm
++  // check-in: keep going / a short break / stop for today, on chips; the stop chip ends it at once. Pause → End and the
++  // parent's controls never reach here and still end it directly. A topic change is not a stop (F8: requests below).
++  const req = cls?.request ?? null;
++  if (chipId === "stop:end") return toWrap(s, { stopping: true });
++  if (flags.wantsToStop) {
++    const again = s.stopAsked != null && s.turn - s.stopAsked <= 1;
++    if (req?.type === "goodbye" || cls?.relRelease || again) return toWrap(s, { stopping: true });
++    s.stopAsked = s.turn;
++    return plan("break", SH.stopCheck(), { chips: [{ id: "stop:continue", label: labels.go }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }], request: "stop" });
++  }
++  // 2a. The child's own request in words (director/requests.js; items 4 and 5): acted on THIS turn, never evidence.
++  if (chipId === "stop:continue" || req?.type === "continue") {
++    s.stopAsked = undefined; s.sidebar = undefined;
++    return resume(s, input, item, "they chose to keep going: straight back in, warmly, no fuss");
++  }
++  if (req && ["warmup", "teach", "practice", "teachback"].includes(s.phase)) {
++    const p = requestMove(s, input, item, req, labels);
++    if (p) return p;
++  }
++  // a side chat the child asked for (change_topic → what they want to talk about): one real turn on it, then the lesson
++  if (s.sidebar && s.turn - s.sidebar.asked === 1 && !cls?.help && !(cls && ["correct", "incorrect", "partial", "misconception"].includes(cls.outcome))) {
++    s.sidebar = undefined;
++    return plan("break", SH.sideChat(), { chips: [{ id: "stop:continue", label: labels.back }, { id: "stop:end", label: labels.stop }], request: "side_chat" });
++  }
++  s.sidebar = undefined;
+   // 2b. A help request (a client action): acts on the question on the table; never evidence, never a stop.
+   if (cls?.help && ["warmup", "teach", "practice", "teachback"].includes(s.phase)) return helpMove(s, input, item, cls.help);
+   // 3. Choices offered by a break.
+diff -ruN a/server/routes/child.js b/server/routes/child.js
+--- a/server/routes/child.js	2026-10-04 21:17:49.384425063 +0000
++++ b/server/routes/child.js	2026-10-04 21:17:49.388037923 +0000
+@@ -44,7 +44,10 @@
+  * PURE. Does an ended lesson count as today's lesson? Only when the child did something the classifier graded
+  * (state.did) or it ran DONE_MIN_MINUTES; an abandoned zero-turn lesson (closed by lesson start) never does.
+  */
+-export const countsAsDone = (state) => !state?.abandoned
++// OWNER TEST 2026-10-04 item 3 (evals/owner-truth F7): a lesson the CHILD stopped before the plan's own wrap
++// (director/state.js toWrap stoppedEarly) never shuts the day — one "bas" used to cost a child every lesson until
++// tomorrow ("today's lesson is done", 409). The parent's controls (hours, daily minutes) still decide every start.
++export const countsAsDone = (state) => !state?.abandoned && !state?.stoppedEarly
+   && ((Array.isArray(state?.did) && state.did.length > 0) || Number(state?.minutes) >= DONE_MIN_MINUTES);
+ 
+ /** Lesson length shown on the card (V2 §3.4: Young 10-20 min, Older 20-30), never more than what is left today. */
+diff -ruN a/tests/director-truth.test.mjs b/tests/director-truth.test.mjs
+--- a/tests/director-truth.test.mjs	2026-10-04 21:17:49.378856365 +0000
++++ b/tests/director-truth.test.mjs	2026-10-04 21:17:49.386959283 +0000
+@@ -145,12 +145,16 @@
+   assert.notEqual(next.state.phase, "done");
+   assert.ok(next.state.skipped.includes("i1"));
+   assert.notEqual(next.move.itemId, "i1", "the next question is posed");
+-  // the child's own stop words still end the lesson (NEVER MANIPULATE)
+-  // (asserted unconditionally: the fast predicate's phrase, and the model classifier's flag for a phrase it misses)
++  // the child's own stop words: ONE warm check-in, then the second stop (or the stop chip) ends it (OWNER TEST 2026-10-04
++  // item 3); a real goodbye ends it that turn (NEVER MANIPULATE). Asserted for the fast predicate's phrase and the model's flag.
+   const stop = classifyFast({ target, childText: "ab band karo", typed: true }).flags;
+   assert.equal(stop.wantsToStop, true, "the fast predicate catches 'ab band karo'");
+-  assert.equal(turn(r, K, { ...NE, flags: stop }, { typed: true }).move.kind, "wrap");
+-  assert.equal(turn(r, K, { ...NE, flags: { ...NE.flags, wantsToStop: true } }, { typed: true }).move.kind, "wrap", "a model-flagged stop ends it too");
++  const check = turn(r, K, { ...NE, flags: stop }, { typed: true });
++  assert.equal(check.move.kind, "break");
++  assert.equal(turn(check, K, { ...NE, flags: stop }, { typed: true }).move.kind, "wrap", "stop words again end it");
++  assert.equal(turn(check, K, NE, { typed: true, chipId: "stop:end" }).move.kind, "wrap", "the stop chip ends it");
++  assert.equal(turn(r, K, { ...NE, flags: { ...NE.flags, wantsToStop: true } }, { typed: true }).move.kind, "break", "a model-flagged stop gets the check-in too");
++  assert.equal(turn(r, K, { ...NE, flags: { ...NE.flags, wantsToStop: true }, request: { type: "goodbye", whole: true } }, { typed: true }).move.kind, "wrap", "a goodbye ends it at once");
+   // a hint request is a rung, not evidence; the safety predicate still runs on what came with a help id
+   const hint = classifyFast({ target, childText: "Hint chahiye", chipId: "hint", typed: true }).result;
+   const h = turn(r, K, hint, { typed: true });
+diff -ruN a/tests/state.test.mjs b/tests/state.test.mjs
+--- a/tests/state.test.mjs	2026-10-04 21:17:49.378918121 +0000
++++ b/tests/state.test.mjs	2026-10-04 21:17:49.387037976 +0000
+@@ -164,9 +164,13 @@
+   assert.ok(r.ui.chips?.some((c) => c.id === "safe:stop"));
+ });
+ 
+-test("'I want to stop' ends the lesson now; a pata-nahi loop gets a break with choices", () => {
++test("'I want to stop' gets ONE check-in and ends on the second stop (OWNER TEST item 3); a pata-nahi loop gets a break with choices", () => {
+   let r = toPractice();
+-  const stop = turn(r, cls("no_evidence", { flags: { wantsToStop: true } }));
++  const check = turn(r, cls("no_evidence", { flags: { wantsToStop: true } }));
++  assert.equal(check.move.kind, "break");
++  assert.equal(check.end, false);
++  assert.deepEqual(check.ui.chips.map((c) => c.id), ["stop:continue", "break:rest", "stop:end"]);
++  const stop = turn(check, cls("no_evidence", { flags: { wantsToStop: true } }));
+   assert.equal(stop.move.kind, "wrap");
+   assert.equal(stop.end, true);
+   const dk = cls("no_evidence", { flags: { dontKnow: true } });

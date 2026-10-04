@@ -1,0 +1,157 @@
+diff -ruN a/server/compiler/compile.js b/server/compiler/compile.js
+--- a/server/compiler/compile.js	2026-10-04 21:17:49.429844051 +0000
++++ b/server/compiler/compile.js	2026-10-04 21:17:49.432777089 +0000
+@@ -172,9 +172,12 @@
+   hindi: "mirror the child. Default simple spoken Hindi (Roman script when written), common English words allowed. If they switch to English or Hinglish, follow them.",
+   english: "mirror the child. Default simple Indian English. If they speak Hindi or Hinglish, reply in natural Hinglish.",
+ };
+-function languageRule(language, ageBand) {
++/** The child ASKED for this language (director/requests.js, OWNER TEST item 4, F12): it holds whatever they reply in. */
++const PINNED = { hinglish: "Hinglish", hindi: "simple Hindi", english: "simple English" };
++function languageRule(language, ageBand, pinned = false) {
+   const words = ageBand === "6-9" ? " Short everyday words a 7-year-old knows." : "";
+-  return `LANGUAGE: ${LANGUAGE[language] ?? LANGUAGE.hinglish} Maths and science words in English, with the Hindi word beside a new one.${words} Plain speech only: no markdown, no emoji, no symbols like ÷ or =.`;
++  const rule = pinned && PINNED[language] ? `they asked for ${PINNED[language]}: every turn in ${PINNED[language]} (Roman script when written), even when they reply in another language.` : LANGUAGE[language] ?? LANGUAGE.hinglish;
++  return `LANGUAGE: ${rule} Maths and science words in English, with the Hindi word beside a new one.${words} Plain speech only: no markdown, no emoji, no symbols like ÷ or =.`;
+ }
+ 
+ const SAME_ITEM_MOVES = new Set(["hint", "reteach", "repair"]);
+@@ -271,7 +274,7 @@
+     // the move; it sheds before anything but the brief's callbacks/wins/interests (drop 4). Pace knobs never go here.
+     { id: "vibe", parts: (input.vibe ?? input.lessonState?.vibe) ? [{ text: vibeRow(input.vibe ?? input.lessonState.vibe), drop: 4 }] : [] },
+     { id: "move", parts: moveParts(input.move, voiced) },
+-    { id: "language", parts: [{ text: languageRule(input.language, ageBand), drop: null }] },
++    { id: "language", parts: [{ text: languageRule(input.language, ageBand, !!input.lessonState?.ctx?.langPinned), drop: null }] },
+     { id: "last", parts: lastParts({ ...input, lane, ageBand, protegeName: input.character.protege.name }) },
+   ];
+   // The voice branch's next question is posed in spoken notation when it fits the `last` cap; when the reading is
+diff -ruN a/server/director/shapes.js b/server/director/shapes.js
+--- a/server/director/shapes.js	2026-10-04 21:17:49.430040740 +0000
++++ b/server/director/shapes.js	2026-10-04 21:17:49.433032207 +0000
+@@ -150,10 +150,12 @@
+ );
+ 
+ /** `chips`: choices are on screen THIS turn (UiDirectives.chips). Without them the shape never mentions tapping (G-SAY-1). */
++// F14 (evals/owner-truth): "say it once more, slowly" was said to a child who had asked HER to go slowly; the pace is hers
+ export const repairUnclear = ({ chips = false } = {}) => (chips
+   ? "you did not catch it clearly: ask them to say it once more, or to tap one of the choices on screen"
+-  : "you did not catch it clearly: ask them to say it once more, slowly");
+-export const repairOffTopic = () => "one warm line about what they said; then back to the question";
++  : "you did not catch it clearly: ask them to say it once more");
++// F11: "one warm line…; then back to the question" produced "baad mein baat karenge" — the child's words get a real answer
++export const repairOffTopic = () => "they said or asked something else: answer it for real first, in one or two warm lines — no deferring it to later; then a light bridge to the question";
+ 
+ // ── typed turns and the unclear-try cap (BUILD-PLAN W1-A items 5 and 8; audit flows G4, comprehension G11) ──
+ /** A typed reply that answers nothing (no attempt): never "say it again" — they typed it; a small nudge, then the same question. */
+@@ -179,11 +181,17 @@
+ );
+ export const SKIP_ITEM = "they asked to skip this one for now: no verdict, it comes back another day; the next question";
+ export const KNOWS_IT = "they say they know this: no teaching; let them show it";
+-export const SLOWER = "say it again more slowly, in short simple words";
+-/** "Show me why" / "Explain it differently" / "Show me how" on the question on the table. */
+-export const helpExplain = ({ how }) => join(
++export const SLOWER = "they asked you to slow down: you go slower — short simple words, one small step at a time, a pause between steps; never ask them to speak slowly";
++// ── the child's requests in words (director/requests.js; OWNER TEST 2026-10-04 items 3-5) ──
++export const STORY_ASKED = "they asked for it as a story: the same idea told as a tiny everyday story with a character, in a few lines";
++export const EXAMPLE_ASKED = "they asked for an example: one concrete example from everyday life, with your own numbers";
++export const ANOTHER_ASKED = "they asked for it another way: a new, simpler way in — not the words you used before";
++/** "Show me why" / "Explain it differently" / "Show me how" / an example / a story, on the question on the table. */
++export const helpExplain = ({ how, example = false, story = false }) => join(
+   how ? "they asked how to do it: show the first step only, with a smaller example of your own (different numbers)"
+-    : "they asked for it another way: one new, simpler picture of the same idea, with a different example",
++    : example ? "they asked for an example: one concrete everyday example of the same idea, with your own different numbers"
++      : story ? "they asked for a story: the same idea as a tiny everyday story with a character, a few lines, your own numbers"
++        : "they asked for it another way: one new, simpler picture of the same idea, with a different example",
+   "the key stays unsaid",
+   "then the same question again, as written",
+ );
+@@ -203,6 +211,17 @@
+   "talk with them about what they just brought up, for real: two or three warm lines, a question back about it",
+   "then offer to go back to the lesson whenever they like (the chips); no lesson question this turn",
+ );
++/** "Cricket ke baare mein baat karo": their interest, now, as the way into the same idea. `subject`: letters only, ≤ 30. */
++export const topicAsked = ({ subject, teaching = false }) => join(
++  `they asked to talk about ${subject}: say something real about ${subject} first (one or two lines, never 'later')`,
++  teaching ? `then explain the same idea with a ${subject} example; end with one small question about it` : `then use ${subject} as the setting for the same question`,
++);
++const LANG_NAME = { hindi: "simple Hindi (Roman script when written)", english: "simple English", hinglish: "Hinglish" };
++/** "Hindi mein samjhao" / "English mein batao": the language changes now and stays (compile.js langPinned). */
++export const languageAsked = ({ lang, teaching = false }) => join(
++  `they asked for ${LANG_NAME[lang] ?? lang}: from now on every turn in ${LANG_NAME[lang] ?? lang}, even if they reply in another language`,
++  teaching ? "say the last idea again in it, simply, and end with one small question" : "say the question in it",
++);
+ 
+ 
+ /** Module-only turns: the child acted in the activity and said nothing; the lesson stays where it was. */
+diff -ruN a/server/director/state.js b/server/director/state.js
+--- a/server/director/state.js	2026-10-04 21:17:49.430136855 +0000
++++ b/server/director/state.js	2026-10-04 21:17:49.433150689 +0000
+@@ -582,7 +582,8 @@
+     }
+     // Any other help on a teaching turn moves the teaching on, more simply: a Young child in the text lane can answer a
+     // teaching turn only through the Help menu, and a help that re-said the same step would hold them there for good.
+-    const prefix = help === "slower" ? SH.SLOWER : "they asked for help: simpler words, one concrete example";
++    const prefix = help === "slower" ? SH.SLOWER : help === "story" ? SH.STORY_ASKED : help === "example" ? SH.EXAMPLE_ASKED
++      : help === "another" ? SH.ANOTHER_ASKED : "they asked for help: simpler words, one concrete example";
+     if (s.phase === "warmup") { s.phase = "teach"; return teach(s, input, prefix); }
+     if (s.phase === "teach") return teach(s, input, prefix);
+     return poseNext(s, input, prefix);
+@@ -601,10 +602,10 @@
+       if (chips) return plan(moveKindFor(item), SH.showChoices(), { item, probe: probeFor(item), chips });
+       return decideAs(s, input, item, "stuck"); // nothing to offer: a hint rung instead
+     }
+-    case "why": case "another": case "how": {
++    case "why": case "another": case "how": case "example": case "story": {
+       s.hintLevel = Math.min(3, s.hintLevel + 1); // help spends a rung (the answer then counts "with help"), never the assertion
+       const we = help === "how" ? kit.workedExample : null;
+-      return plan("reteach", SH.helpExplain({ how: help === "how" }), { item, content: we ? workedContent(we, 1, 1) : [] });
++      return plan("reteach", SH.helpExplain({ how: help === "how", example: help === "example", story: help === "story" }), { item, content: we ? workedContent(we, 1, 1) : [] });
+     }
+     default: return decideAs(s, input, item, "stuck"); // "hint"
+   }
+@@ -623,6 +624,9 @@
+   return toWrap(s, {});
+ }
+ 
++/** The skill the lesson is on now (for a teaching move with no item on the table). */
++const currentSkillId = (s, kit, item) => item?.skillId ?? s.lastMove?.skillId ?? s.introduced?.at(-1) ?? kit.skills[0]?.id;
++
+ /**
+  * The child's request in words → this turn's move (OWNER TEST items 4-5; requests.js). null = no move of its own (the
+  * phase decides). Each maps onto a move the Director already had and only a chip could reach (helpMove), or onto the
+@@ -635,6 +639,22 @@
+     case "change_topic":
+       s.sidebar = { asked: s.turn };
+       return plan("break", SH.changeTopic(), { chips: [{ id: "stop:continue", label: labels.back }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }], request: "change_topic" });
++    case "topic": {
++      const subject = String(req.subject ?? "").replace(/[^\p{L}\p{N} ]/gu, "").trim().slice(0, 30);
++      if (!subject) return null;
++      if (item) return plan(moveKindFor(item), SH.pose({ item, prefix: SH.topicAsked({ subject }) }), { item, probe: probeFor(item), chips: optionChips(item), request: "topic" });
++      return plan("reteach", SH.topicAsked({ subject, teaching: true }), { skillId: currentSkillId(s, kit, item), request: "topic" });
++    }
++    case "language": {
++      // the lesson's language from now on (compile.js reads ctx.lang every turn; langPinned keeps it when they reply in another)
++      s.ctx = { ...s.ctx, lang: req.lang, langPinned: true };
++      if (item) return plan(moveKindFor(item), SH.pose({ item, prefix: SH.languageAsked({ lang: req.lang }) }), { item, probe: probeFor(item), chips: optionChips(item), request: "language" });
++      return plan("reteach", SH.languageAsked({ lang: req.lang, teaching: true }), { skillId: currentSkillId(s, kit, item), request: "language" });
++    }
++    case "another": case "example": case "story": case "slower": {
++      const p = helpMove(s, input, item, req.type);
++      return p && { ...p, request: req.type };
++    }
+     default: return null;
+   }
+ }
+@@ -728,6 +748,12 @@
+     s.stopAsked = undefined; s.sidebar = undefined;
+     return resume(s, input, item, "they chose to keep going: straight back in, warmly, no fuss");
+   }
++  if (req && s.phase === "teachback" && req.type !== "break") {
++    // teaching the protégé: a language switch holds from now on; any other request re-asks the teach-back more simply
++    if (req.type === "language") s.ctx = { ...s.ctx, lang: req.lang, langPinned: true };
++    const p = helpMove(s, input, item, req.type === "language" ? "slower" : "another");
++    return { ...p, request: req.type };
++  }
+   if (req && ["warmup", "teach", "practice", "teachback"].includes(s.phase)) {
+     const p = requestMove(s, input, item, req, labels);
+     if (p) return p;

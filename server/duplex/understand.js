@@ -83,12 +83,20 @@ const OPEN_TAIL_EXTRA = /(?:^|\s)(?:को|ने|तक|लिए|साथ|ब
 const PROJECTOR = /(?:^|\s)(?:जब|अगर|यदि|jab|agar|if|when)(?=\s)/u;
 const PROJ_CLOSE = /(?:^|\s)(?:तो|तब|to|toh|tab|then)(?=\s|$)/u;
 
+/** Address / politeness tokens that may trail a request without adding content (TaxilaFDB F5: "एक मिनट दीदी"). */
+export const VOCATIVE = /^(?:दीदी|दी|didi|di|मैम|मैडम|ma'?am|mam|madam|miss|teacher|टीचर|sir|सर|please|plz|प्लीज़|प्लीज|जी|ji|भैया|bhaiya)$/u;
+
 /** The text after the last explicit hold request: the part the end-of-turn scorer should read (finding F-HOLD, §2 of the write-up). */
 export function afterHold(text) {
   const toks = normText(text).split(" ").filter(Boolean);
   for (let k = toks.length; k >= 1; k--) {
     for (let j = Math.max(0, k - 4); j < k; j++) {
-      if (HOLD_TAIL.test(toks.slice(j, k).join(" "))) return { held: true, rest: toks.slice(k).join(" "), restTokens: toks.length - k };
+      if (HOLD_TAIL.test(toks.slice(j, k).join(" "))) {
+        // an address or politeness word after the request does not end the hold ("एक मिनट दीदी", "one second ma'am")
+        const rest = toks.slice(k);
+        const live = rest.every((w) => VOCATIVE.test(w)) ? 0 : rest.length;
+        return { held: true, rest: rest.join(" "), restTokens: live };
+      }
     }
   }
   return { held: false, rest: toks.join(" "), restTokens: toks.length };

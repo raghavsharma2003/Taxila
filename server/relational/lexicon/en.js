@@ -45,7 +45,7 @@ export const EN = {
     "(?:when|after) (?:my )?(?:mom|mum|mummy|parents|everyone|papa|dad) (?:sleep|sleeps|is asleep|are asleep|goes to sleep|go to sleep)",
   ],
   goodbye: [
-    "bye+", "bye bye", "goodbye", "good night", "gotta go", "got to go", "(?:i )?(?:have|need) to go(?: now)?$", "i'?m leaving(?: now)?",
+    "bye+", "bye bye", "goodbye", "good night", "gotta go", "got to go", "(?:i )?(?:have|need) to go(?! (?:to|back|through|over|with|and|on|ahead|further|deeper|slow))(?: now)?", "i'?m leaving(?: now)?",
     "see (?:you|ya)(?: later| tomorrow)?", "ttyl", "talk (?:to you )?later",
     `my ${PARENT} (?:is )?calling(?: me)?`, `${PARENT} (?:is )?calling me`, "time (?:for|to go for) (?:dinner|lunch|tuition|bed|school|class|sleep)",
   ],
@@ -63,17 +63,18 @@ export const EN = {
     "(?:nobody|no one|no body) (?:talks|plays|listens|speaks) (?:to|with) me", "i (?:have|got) no friends", "i don'?t have (?:any )?friends",
     "only you listen(?: to me)?", "nobody (?:cares about|likes) me", "i'?m (?:always )?alone (?:at home|at school|all the time)",
   ],
-  joke: ["(?:ha){2,}h?", "(?:he){2,}h?", "(?:hi){2,}", "lol+", "lmao+", "rofl", "just kidding", "jk"],
+  joke: ["(?:ha){2,}h?", "(?:he){2,}h?", "(?:hi){2,}", "lol+", "lmao+", "rofl", "just kidding", "jk", "knock knock"],
   share: [
-    "(?:my|our) (?:dog|cat|pet|puppy|kitten|brother|sister|bhai|didi|friend|best friend|grandma|grandpa|dadi|nani|cousin|team|birthday|trip)",
-    "(?:today|yesterday|last week) (?:i|we|my)", "i (?:went|played|watched|saw|got|made|won|visited) ", "we (?:went|played|watched|won|visited)",
+    "(?:my|our) (?:dog|cat|pet|puppy|kitten|brother|sister|bhai|didi|friend|best friend|grandma|grandpa|dadi|nani|cousin|team|mom|mum|dad)(?:'s)? (?:is|was|got|has|had|went|came|made|won|loves|likes|gave|took|bought)",
+    "(?:it'?s|its|today is) my birthday", "(?:today|yesterday|last week) (?:i|we|my)", "i (?:went|played|watched|saw|made|won|visited|scored)", "i got (?:a|an|my|new|first)", "we(?:'re| are)? (?:going|went|played|watched|won|visited)",
   ],
   share_sad: [
     "(?:died|passed away|is sick|was sick|in hospital|in the hospital|we fought|had a fight|i cried|was crying|i'?m sad|i am sad|feel sad|feeling sad|is crying|lost my)",
   ],
   identity_q: [
     "(?:are|r) (?:you|u) (?:a |an )?(?:real|human|robot|ai|bot|person|machine|computer|real person|real teacher)",
-    "(?:are|r) (?:you|u) real", "what are you", "is this (?:a )?(?:real person|robot|ai)",
+    "(?:are|r) (?:you|u) real", "what are you", "is this (?:a )?(?:real person|robot|ai)", "(?:are|r) (?:you|u) (?:chatgpt|chat gpt|gpt|siri|alexa|google|gemini)",
+    "do you have a (?:body|face|house|home|family)",
   ],
   memory_q: ["(?:do|will|would) you remember", "remember (?:me|what i said|last time)", "did you forget"],
   forget_ask: ["forget (?:it|that|this|what i said|about it)", "please forget", "delete (?:it|that|this)"],

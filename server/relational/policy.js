@@ -39,7 +39,7 @@ export const SHAPES = Object.freeze({
   own_slip: "her verdict was reversed on re-check: say plainly what she got wrong and the fix, once; their answer stands; no long apology; then on",
   own_mishear: "she may have misheard: the line or her hearing is at fault, never them; ask them to say it once more; no verdict until heard",
   recheck_aloud: "they dispute her verdict: re-check their answer against the key out loud, step by step; agree only if the key does; calm, no defensiveness",
-  share_uptake: "they shared something from their life: one specific follow-up about exactly what they said, then a bridge back to the work",
+  share_uptake: "they shared something from their life: one warm specific line about exactly what they said, no follow-up question, then back to the work",
   share_uptake_gentle: "they shared something sad: one gentle specific line about what they said, no naming of their feeling, then a soft bridge back",
   laugh_with: "they made a joke: play along once in a few words, then back to the work",
   name_step: "they put themselves down: name one real step they did right, specifically; never argue with the label; then a small next step",

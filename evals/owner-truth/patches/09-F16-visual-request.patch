@@ -1,0 +1,139 @@
+diff -ruN a/server/brain/propose.js b/server/brain/propose.js
+--- a/server/brain/propose.js	2026-10-04 21:17:49.473163254 +0000
++++ b/server/brain/propose.js	2026-10-04 21:17:49.478800394 +0000
+@@ -52,14 +52,17 @@
+  * realtime model's words are not known before it speaks) or for a late answer. Returns [proposal] or [] with the reason
+  * it was not proposed (for the trace).
+  */
+-export function whiteboardAskOf({ beat, lane, late, strained }) {
+-  if (!beat || !EXPLAIN_BEATS.has(beat.type)) return { proposals: [], declined: null };
++export function whiteboardAskOf({ beat, lane, late, strained, requested = false }) {
++  // `requested`: the CHILD asked to see it (director/requests.js visual → move.visual; OWNER TEST 2026-10-04 item 5, F16).
++  // Their ask is honoured on any beat and on the voice lane too (the drawing is planned from the move's kit content
++  // there, brain/turn.js), and a struggling child who asks for a picture gets one (it is their smaller step).
++  if (!requested && (!beat || !EXPLAIN_BEATS.has(beat.type))) return { proposals: [], declined: null };
+   if (late) return { proposals: [], declined: "studio_rejected.late" };
+-  if (lane === "voice") return { proposals: [], declined: "studio_rejected.voice_lane" };
+-  if (strained) return { proposals: [], declined: "studio_rejected.strained" };
++  if (!requested && lane === "voice") return { proposals: [], declined: "studio_rejected.voice_lane" };
++  if (!requested && strained) return { proposals: [], declined: "studio_rejected.strained" };
+   return {
+-    proposals: [proposal("studio", "ask_whiteboard", AUTHORITY.studio, { payload: { beat: beat.type, beatId: beat.id }, urgency: 2,
+-      costs: { attention: 1 }, reason: ["studio.whiteboard_asked", `beat.${beat.type}`] })],
++    proposals: [proposal("studio", "ask_whiteboard", AUTHORITY.studio, { payload: { beat: beat?.type ?? "explain", beatId: beat?.id ?? null, ...(requested ? { requested: true } : {}) },
++      urgency: requested ? 3 : 2, costs: { attention: 1 }, reason: ["studio.whiteboard_asked", requested ? "child.asked_visual" : `beat.${beat.type}`] })],
+     declined: null,
+   };
+ }
+diff -ruN a/server/brain/turn.js b/server/brain/turn.js
+--- a/server/brain/turn.js	2026-10-04 21:17:49.473208366 +0000
++++ b/server/brain/turn.js	2026-10-04 21:17:49.478858046 +0000
+@@ -332,7 +332,7 @@
+   const lane = laneOf(state.mode);
+   const kernelRun = () => {
+     const beat = nextBeat(prev.beat, r.move, next);
+-    const wb = whiteboardAskOf({ beat, lane, late, strained: frustrationLoop(next.affect ?? initialAffect()) });
++    const wb = whiteboardAskOf({ beat, lane, late, strained: frustrationLoop(next.affect ?? initialAffect()), requested: !!r.move?.visual });
+     const t1 = performance.now();
+     const proposals = proposalsOf({ r, relational, studioView: late ? null : studioView, whiteboard: wb.proposals, vibe: next.vibe });
+     const arb = arbitrate(proposals);
+@@ -439,14 +439,15 @@
+     // line it must draw beside (drawn tokens ⊆ the line's tokens ∪ kit values) and the kit truth on the table. Studio
+     // answers at once with the slot it will stream the drawing script into, or null (nothing changes on screen).
+     const ask = kernel.arb.accepted.find((p) => p.kind === "ask_whiteboard");
+-    if (ask && teacherReply && !guard?.replaced) {
++    // a picture the child asked for is drawn even when the guard replaced her words (F16: the request is theirs)
++    if (ask && teacherReply && (!guard?.replaced || r.move?.visual)) {
+       const ack = seamSafe("studio.requestIntent", () => (typeof studioSeam.requestIntent === "function"
+         ? studioSeam.requestIntent(whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat, next, kit,
+           item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: teacherReply, teacherReplySeq } }))
+         : null), null);
+       if (ack?.slotId && ack?.intentId) {
+         studioSlot = { slotId: String(ack.slotId), intentId: String(ack.intentId), state: ack.state ?? "planning" };
+-        next.wbBeat = kernel.beat.id;
++        next.wbBeat = kernel.beat?.id;
+         moment = momentNow();
+       }
+     }
+@@ -457,6 +458,19 @@
+   } else if (specs.length) {
+     speculation = { tried: specs.length, hit: false };
+   }
++  // Voice lane, the child asked to SEE it (F16): her words are not known before she speaks, so Studio draws from the
++  // move's kit content (the same lines her turn is written from); the slot rides on this response as on the text lanes.
++  if (!textLane && !late && !r.hold && r.move?.visual && !studioSlot) {
++    const ask = kernel.arb.accepted.find((p) => p.kind === "ask_whiteboard");
++    const line = (next.lastContent ?? []).map((x) => String(typeof x === "string" ? x : "")).join(" ").trim() || String(kit?.skills?.find((k) => k.id === next.lastMove?.skillId)?.title ?? "");
++    if (ask && line) {
++      const ack = seamSafe("studio.requestIntent", () => (typeof studioSeam.requestIntent === "function"
++        ? studioSeam.requestIntent(whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
++          item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: line } }))
++        : null), null);
++      if (ack?.slotId && ack?.intentId) { studioSlot = { slotId: String(ack.slotId), intentId: String(ack.intentId), state: ack.state ?? "planning" }; moment = null; }
++    }
++  }
+   // A late answer (the page-hide beacon already closed the lesson) that was a disclosure still gets the fixed
+   // safeguarding line with both helplines, stored as her turn: the client raises the Help sheet from it even though
+   // the lesson stays closed (runtime.ts flushOthers → lateSafeguard). Safety by predicate, never left unsaid.
+diff -ruN a/server/director/shapes.js b/server/director/shapes.js
+--- a/server/director/shapes.js	2026-10-04 21:17:49.472933532 +0000
++++ b/server/director/shapes.js	2026-10-04 21:17:49.478489761 +0000
+@@ -37,7 +37,9 @@
+   prefix,
+   `one idea only: ${skillTitle}`,
+   interest && `an example from their interest (${interest}) if it fits naturally`,
+-  "objects first, then a picture, then the symbol; point at the whiteboard anchor",
++  // F16 (evals/owner-truth): "then a picture … point at the whiteboard anchor" with nothing drawn made her draw with
++  // characters, deny she can draw, or recite "Whiteboard anchor:"; the screen is named only by the on-screen facts row
++  "objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters",
+   "end with one small question that makes them USE the idea — never 'samjha?'",
+ );
+ 
+@@ -222,6 +224,14 @@
+   `they asked for ${LANG_NAME[lang] ?? lang}: from now on every turn in ${LANG_NAME[lang] ?? lang}, even if they reply in another language`,
+   teaching ? "say the last idea again in it, simply, and end with one small question" : "say the question in it",
+ );
++/** "Show me a diagram" (item 5): a picture on the stage this turn; state.js step adds whether one is mounted. */
++export const showVisual = ({ kind = "diagram" } = {}) => join(
++  kind === "game" ? "they want to play: the activity is the way in now" : kind === "animation" ? "they asked to see it moving" : "they asked to see it: a picture of the same idea",
++  "one idea; let the picture do the work; a few words about what to look at",
++  "the key stays unsaid; then one small question about what they see",
++);
++export const VISUAL_ON_STAGE = "it is on the screen now: point them at it in your first words and say what to look at";
++export const VISUAL_NOT_YET = "nothing is on the screen this turn: show it in words with everyday things they can picture; never a drawing made of characters, never that you cannot draw, never ask them to draw it";
+ 
+ 
+ /** Module-only turns: the child acted in the activity and said nothing; the lesson stays where it was. */
+diff -ruN a/server/director/state.js b/server/director/state.js
+--- a/server/director/state.js	2026-10-04 21:17:49.473020402 +0000
++++ b/server/director/state.js	2026-10-04 21:17:49.478606249 +0000
+@@ -655,6 +655,13 @@
+       const p = helpMove(s, input, item, req.type);
+       return p && { ...p, request: req.type };
+     }
++    case "visual": {
++      // A picture on the stage (item 5): a re-teach move with the diagram representation, so planModule mounts the item's
++      // engine as a show or the explainer@1 board (SHOW_MOVES), and the brain asks Studio for the whiteboard on any lane
++      // (brain/propose.js whiteboardAskOf `requested`). A picture of the question on the table is help: it spends a rung.
++      if (item && s.pendingWhy !== item.id) s.hintLevel = Math.min(3, s.hintLevel + 1);
++      return plan("reteach", SH.showVisual({ kind: req.kind }), { ...(item ? { item } : { skillId: currentSkillId(s, kit, item) }), representation: "diagram", visual: req.kind ?? "diagram", request: "visual" });
++    }
+     default: return null;
+   }
+ }
+@@ -897,6 +904,15 @@
+   // activity on screen.
+   if (!reacting || p.content) s.lastContent = p.content ?? [];
+   const moduleCommands = reacting ? [] : planModule(s, { kit: input.kit, item, move, lang: s.ctx.lang, band: s.probeSess?.band ?? bandOf(s.ctx.classLevel), representation: p.representation });
++  // The child's request this move answers (requests.js): the brain reads it (a visual request asks Studio on any lane).
++  if (p.request) move.request = p.request;
++  if (p.visual) {
++    move.visual = p.visual;
++    // what is on the stage decides the words: point at it, or (nothing mounted) show it with things they know — never a
++    // text drawing, never "I can't draw", never "you draw it" (F16, the owner's session)
++    move.shape = join(move.shape, s.module?.id ? SH.VISUAL_ON_STAGE : SH.VISUAL_NOT_YET);
++    s.lastMove = move;
++  }
+   const ui = uiFor(s, p, move, item, input.kit);
+   s.lastUi = ui; // what a hold re-sends (chips are momentary on the client: absent would clear them)
+   // The move as a kernel proposal (proposal.js, W2-C #8): returned beside the move, never stored in the state.

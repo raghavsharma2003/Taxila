@@ -303,7 +303,7 @@
   /* ------------------------------------------------------------------ render */
   function render(ctx, now) {
     // background: deep ink, horizon glow, parallax stars, perspective floor
-    ctx.drawImage(skyArt(), 0, 0, W, H);
+    ctx.drawImage(st.layer("bg", paintBackdrop), 0, 0, W, H);   // sky, horizon glow, floor and its fixed rails
     ctx.save();
     ctx.translate(fx.ox, fx.oy);
     const par = (dock.x - 500) / 500;
@@ -315,14 +315,8 @@
       ctx.fillRect(x - r / 2, s.y - r / 2, r, r);
     }
     ctx.globalAlpha = 1;
-    // floor
-    ctx.fillStyle = "#0B0D15"; ctx.fillRect(-20, LINE_Y, W + 40, H - LINE_Y + 20);
+    // floor: the scrolling cross-rails stay live (the fixed rails are in the backdrop layer)
     ctx.strokeStyle = "rgba(139,152,255,.10)"; ctx.lineWidth = 1.5;
-    const vpX = 500, vpY = LINE_Y - 150;
-    for (let i = -10; i <= 10; i++) {
-      const xb = 500 + i * 70;
-      ctx.beginPath(); ctx.moveTo(lerp(vpX, xb, (LINE_Y - vpY) / (H + 40 - vpY)), LINE_Y); ctx.lineTo(xb, H + 40); ctx.stroke();
-    }
     const scroll = S.reducedMotion ? 0 : (now * 0.35) % 1;
     for (let j = 0; j < 7; j++) {
       const z = (j + scroll) / 7, y = LINE_Y + Math.pow(z, 2.1) * (H - LINE_Y + 30);
@@ -348,6 +342,16 @@
     fx.drawScreen(ctx);
   }
 
+  function paintBackdrop(g) {
+    g.drawImage(skyArt(), 0, 0, W, H);
+    g.fillStyle = "#0B0D15"; g.fillRect(-20, LINE_Y, W + 40, H - LINE_Y + 20);
+    g.strokeStyle = "rgba(139,152,255,.10)"; g.lineWidth = 1.5;
+    const vpX = 500, vpY = LINE_Y - 150;
+    for (let i = -10; i <= 10; i++) {
+      const xb = 500 + i * 70;
+      g.beginPath(); g.moveTo(lerp(vpX, xb, (LINE_Y - vpY) / (H + 40 - vpY)), LINE_Y); g.lineTo(xb, H + 40); g.stroke();
+    }
+  }
   let _sky = null;
   function skyArt() {                     // static sky + horizon glow, painted once at half resolution (it is all gradient)
     if (_sky) return _sky;

@@ -237,25 +237,13 @@
      Full-screen gradients, 150 stars and the Sun's 1120 px additive glow were re-composited every frame; on a
      software-raster or low-end GPU canvas that fill rate was most of the frame (§14 M3, before/after). They are
      painted once per backing-store size into a layer and blitted; only the twinkling bright stars stay live. */
-  const _layers = new Map();
   const TWINKLE = stars.filter((x) => x.z > 0.78);
   const LIVE_LAYERS = S.qs.get("layers") === "0";             // A/B knob for the perf measurement only
   function blit(ctx, key, paint) {
     if (!LIVE_LAYERS) { ctx.drawImage(layer(key, paint), 0, 0, W, H); return; }
     const ga = ctx.globalAlpha; ctx.save(); paint(ctx); ctx.restore(); ctx.globalAlpha = ga;
   }
-  function layer(key, paint) {
-    const c0 = st.canvas, k = `${key}@${c0.width}x${c0.height}`;
-    let c = _layers.get(k);
-    if (!c) {
-      for (const kk of [..._layers.keys()]) if (kk.startsWith(key + "@")) _layers.delete(kk);
-      c = document.createElement("canvas"); c.width = c0.width; c.height = c0.height;
-      const g = c.getContext("2d"); g.setTransform(c0.width / W, 0, 0, c0.height / H, 0, 0);
-      paint(g);
-      _layers.set(k, c);
-    }
-    return c;
-  }
+  const layer = (key, paint) => st.layer(key, paint);
   function paintSpaceBase(g) {
     g.drawImage(spaceBg(), 0, 0, W, H);
     for (const s of stars) { if (s.z > 0.78) continue; g.globalAlpha = 0.15 + 0.45 * s.z; g.fillStyle = "#C9D2F2"; const r = 0.6 + s.z * 1.3; g.fillRect(s.x, s.y, r, r); }
