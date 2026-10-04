@@ -36,22 +36,6 @@
   "at": "2026-10-04T10:55:28.427Z"
  },
  {
-  "name": "taxila-gpt61-sol",
-  "ms": 933,
-  "ok": false,
-  "http": 400,
-  "err": "{\"error\":{\"message\":\"Unsupported value: 'reasoning_effort' does not support 'none' with this model. Supported values are: 'low', 'medium', 'high', and 'xhigh'.\",\"type\":\"invalid_request_error\",\"param\":\"reasoning_effort\",\"code\":\"unsupported_value\"}}",
-  "at": "2026-10-04T10:55:28.427Z"
- },
- {
-  "name": "taxila-gpt6-astra",
-  "ms": 148,
-  "ok": false,
-  "http": 400,
-  "err": "{\"error\":{\"message\":\"Unsupported value: 'reasoning_effort' does not support 'none' with this model. Supported values are: 'low', 'medium', 'high', and 'xhigh'.\",\"type\":\"invalid_request_error\",\"param\":\"reasoning_effort\",\"code\":\"unsupported_value\"}}",
-  "at": "2026-10-04T10:55:28.427Z"
- },
- {
   "name": "taxila-gpt6",
   "ms": 1401,
   "ok": true,
@@ -116,38 +100,6 @@
   },
   "finish": "stop",
   "out": "3/4 bada hai, kyunki 3/4 = 9/12 aur 2/3 = 8/12.",
-  "at": "2026-10-04T10:55:28.427Z"
- },
- {
-  "name": "taxila-kimi26",
-  "ms": 1837,
-  "ok": true,
-  "http": 200,
-  "served": "Kimi-K2.6",
-  "usage": {
-   "prompt_tokens": 51,
-   "completion_tokens": 400,
-   "total_tokens": 451,
-   "audio_prompt_tokens": 0
-  },
-  "finish": "length",
-  "out": "",
-  "at": "2026-10-04T10:55:28.427Z"
- },
- {
-  "name": "taxila-kimi-code",
-  "ms": 2668,
-  "ok": true,
-  "http": 200,
-  "served": "Kimi-K2.7-Code",
-  "usage": {
-   "prompt_tokens": 51,
-   "completion_tokens": 400,
-   "total_tokens": 451,
-   "audio_prompt_tokens": 0
-  },
-  "finish": "length",
-  "out": "",
   "at": "2026-10-04T10:55:28.427Z"
  },
  {
@@ -222,14 +174,6 @@
    "total_tokens": 7
   },
   "out": "dim=1536 cos=0.386",
-  "at": "2026-10-04T10:55:28.428Z"
- },
- {
-  "name": "measure-cohere-embed5-pro",
-  "ms": 62,
-  "ok": false,
-  "http": 404,
-  "err": "{\"error\":{\"code\":\"api_not_supported\",\"message\":\"Requested API is currently not supported\",\"details\":\"Requested API is currently not supported\"}}",
   "at": "2026-10-04T10:55:28.428Z"
  },
  {
@@ -411,5 +355,117 @@
   "ttfbMs": 2243,
   "out": "ttfb 2243 ms",
   "at": "2026-10-04T10:55:28.428Z"
+ },
+ {
+  "name": "taxila-gpt61-sol",
+  "ms": 2776,
+  "ok": true,
+  "http": 200,
+  "served": "gpt-6.1-sol-2026-09-29",
+  "usage": {
+   "completion_tokens": 129,
+   "completion_tokens_details": {
+    "accepted_prediction_tokens": 0,
+    "audio_tokens": 0,
+    "reasoning_tokens": 90,
+    "rejected_prediction_tokens": 0
+   },
+   "latency_checkpoint": {
+    "engine_tbt_ms": 9,
+    "engine_ttft_ms": 277,
+    "engine_ttlt_ms": 1425,
+    "pre_inference_ms": 94,
+    "service_tbt_ms": 9,
+    "service_ttft_ms": 503,
+    "service_ttlt_ms": 1645,
+    "user_visible_ttft_ms": 409
+   },
+   "prompt_tokens": 47,
+   "prompt_tokens_details": {
+    "audio_tokens": 0,
+    "cache_write_tokens": 0,
+    "cached_tokens": 0
+   },
+   "total_tokens": 176
+  },
+  "finish": "stop",
+  "out": "3/4 bada hai, beta! Kyunki 3/4 = 9/12 aur 2/3 = 8/12.",
+  "at": "2026-10-04T10:56:14.881Z"
+ },
+ {
+  "name": "taxila-gpt6-astra",
+  "ms": 2334,
+  "ok": true,
+  "http": 200,
+  "served": "gpt-6-astra-2026-09-03",
+  "usage": {
+   "completion_tokens": 53,
+   "completion_tokens_details": {
+    "accepted_prediction_tokens": 0,
+    "audio_tokens": 0,
+    "reasoning_tokens": 13,
+    "rejected_prediction_tokens": 0
+   },
+   "latency_checkpoint": {
+    "engine_tbt_ms": 15,
+    "engine_ttft_ms": 364,
+    "engine_ttlt_ms": 1156,
+    "pre_inference_ms": 94,
+    "service_tbt_ms": 15,
+    "service_ttft_ms": 645,
+    "service_ttlt_ms": 1431,
+    "user_visible_ttft_ms": 551
+   },
+   "prompt_tokens": 47,
+   "prompt_tokens_details": {
+    "audio_tokens": 0,
+    "cache_write_tokens": 0,
+    "cached_tokens": 0
+   },
+   "total_tokens": 100
+  },
+  "finish": "stop",
+  "out": "3/4 bada hai, beta! Kyunki 3/4 = 9/12 aur 2/3 = 8/12. 😊",
+  "at": "2026-10-04T10:56:14.881Z"
+ },
+ {
+  "name": "taxila-kimi26",
+  "ms": 8222,
+  "ok": true,
+  "http": 200,
+  "served": "Kimi-K2.6",
+  "usage": {
+   "prompt_tokens": 51,
+   "completion_tokens": 2071,
+   "total_tokens": 2122,
+   "audio_prompt_tokens": 0
+  },
+  "finish": "stop",
+  "out": "3/4 bada hai beta! Cross karke dekho, 9 > 8.",
+  "at": "2026-10-04T10:56:14.881Z"
+ },
+ {
+  "name": "taxila-kimi-code",
+  "ms": 3794,
+  "ok": true,
+  "http": 200,
+  "served": "Kimi-K2.7-Code",
+  "usage": {
+   "prompt_tokens": 51,
+   "completion_tokens": 638,
+   "total_tokens": 689,
+   "audio_prompt_tokens": 0
+  },
+  "finish": "stop",
+  "out": "3/4 bada hai beta, kyunki 0.75, 0.66 se zyada hota hai.",
+  "at": "2026-10-04T10:56:14.881Z"
+ },
+ {
+  "name": "measure-cohere-embed5-pro",
+  "ms": 747,
+  "ok": false,
+  "http": 404,
+  "err": "v1: {\"error\":{\"code\":\"api_not_supported\",\"message\":\"Requested API is currently not supported\",\"details\":\"Requested API is cu | models: {\"error\":{\"code\":\"api_not_supported\",\"message\":\"Requested API is currently not supported\",\"details\":\"Requested API is currently not supported\"}}",
+  "at": "2026-10-04T10:56:14.881Z"
  }
 ]
