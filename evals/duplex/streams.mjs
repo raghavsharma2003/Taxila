@@ -93,6 +93,12 @@ export function frames(tl, r, { until, noiseDb = -58, f0Base = 280 } = {}) {
 export const STT = {
   D4: { name: "D4 live-transcribe", firstPartialMs: [1400, 2100], lagMs: [450, 900], finalAfterCommit: [450, 700], finalAfterVad: [450, 650], vadOverhead: [130, 250] },
   MAI: { name: "MAI-Tx-2-Streaming (Chennai)", firstPartialMs: [2580, 3200], lagMs: [900, 1600], finalAfterCommit: [68, 75], finalAfterVad: [68, 75], vadOverhead: [130, 250] },
+  // duplex runtime (2026-10-04): MAI from a HOME in India: the in-DC 68 / 75 ms commit→final [T, STT-v3] plus a home-ISP
+  // round trip of 40-100 ms [E]; partials as MAI. The micro-commit probe is what makes coverage exact on this lane.
+  MAI_HOME: { name: "MAI-Tx-2-Streaming, home India [E]", firstPartialMs: [2580, 3200], lagMs: [900, 1600], finalAfterCommit: [110, 180], finalAfterVad: [110, 180], vadOverhead: [130, 250] },
+  // Nemotron-3.5 hosted in India [E]: a partial every 320 ms, text complete 254 / 452 ms after speech (GPU host [T, STT-v3])
+  // plus 40 ms RTT [E]; token timestamps, so partials carry word timings (exact coverage); no client commit needed.
+  FAST: { name: "Nemotron-3.5 India, word timings [E]", firstPartialMs: [320, 640], lagMs: [294, 492], finalAfterCommit: [294, 492], finalAfterVad: [294, 492], vadOverhead: [130, 250], words: true },
 };
 
 /**
@@ -148,7 +154,10 @@ export class SttSim {
       if (nVis > (it.shown || 0)) {
         it.shown = nVis;
         const txt = it.words.slice(0, nVis).map((i) => this.tl.words[i].w).join(" ");
-        out.push({ type: "partial", t, itemId: it.id, text: txt });
+        const ev = { type: "partial", t, itemId: it.id, text: txt, audioStartMs: it.startAt };
+        // a source with token timestamps (Nemotron) gives the words' audio times: exact coverage for the lexical horizon
+        if (this.p.words) ev.words = it.words.slice(0, nVis).map((i) => ({ w: this.tl.words[i].w, startMs: this.tl.words[i].start, endMs: this.tl.words[i].end }));
+        out.push(ev);
       }
       // server VAD backstop: silence since the last spoken word of this item
       const lastW = this.tl.words[it.words[it.words.length - 1]];
@@ -176,7 +185,9 @@ export class SttSim {
     const lastIdx = this.tl.words.length - 1;
     const text = spoken.map((i) => this.wordText(this.tl.words[i], i === lastIdx)).join(" ");
     const at = t + this.r.ln(...lat);
-    this.queue.push({ t: at, ev: { type: "final", itemId: it.id, text } });
+    const ev = { type: "final", itemId: it.id, text, audioStartMs: it.startAt, audioEndMs: Math.min(t, this.tl.words[spoken[spoken.length - 1]].end + 40) };
+    if (this.p.words) ev.words = spoken.map((i) => ({ w: this.tl.words[i].w, startMs: this.tl.words[i].start, endMs: this.tl.words[i].end }));
+    this.queue.push({ t: at, ev });
     this.item = null;
     // words still being spoken roll into a new item
     if (rest.length) {

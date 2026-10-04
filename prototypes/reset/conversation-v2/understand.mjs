@@ -90,9 +90,20 @@ export function userPrompt(ctx) {
   ].filter(Boolean).join("\n");
 }
 
+/** Code fills the language slot when the model names the switch but not the target (gpt-6-sol left lang_to empty on
+ * 10/10 switches in the 2026-10-04 bake-off while labelling every one language_switch). Request-shaped words only. */
+export function inferLang(said) {
+  const t = String(said ?? "").toLowerCase();
+  if (/hindi|हिंदी|हिन्दी/.test(t)) return "hindi";
+  if (/english|angrezi|अंग्रेज़ी|अंग्रेजी/.test(t)) return "english";
+  return "";
+}
+const LANG = { hindi: "hindi", hi: "hindi", "hi-in": "hindi", english: "english", en: "english", "en-in": "english", "हिंदी": "hindi" };
+
 /** Validate a model's note; null when unusable (the caller then falls back to the code-only reading). */
-export function parseNote(j) {
+export function parseNote(j, said = "") {
   if (!j || typeof j !== "object" || !INTENTS.includes(j.intent)) return null;
+  const lang = LANG[String(j.lang_to ?? "").trim().toLowerCase()] ?? "";
   return {
     intent: j.intent,
     also: (Array.isArray(j.also) ? j.also : []).filter((x) => INTENTS.includes(x) && x !== j.intent).slice(0, 2),
@@ -100,7 +111,7 @@ export function parseNote(j) {
     topic: String(j.topic ?? "").slice(0, 60),
     learning: j.learning === true,
     inBounds: j.in_bounds !== false,
-    langTo: ["hindi", "english"].includes(j.lang_to) ? j.lang_to : "",
+    langTo: lang || ([j.intent, ...(Array.isArray(j.also) ? j.also : [])].includes("language_switch") ? inferLang(said) : ""),
     method: String(j.method ?? "").slice(0, 80),
     distress: j.distress === true || j.intent === "distress",
     confidence: Math.max(0, Math.min(1, Number(j.confidence ?? 0.5))),

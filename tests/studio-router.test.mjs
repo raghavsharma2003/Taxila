@@ -253,7 +253,9 @@ test("azure chatStream: SSE deltas, usage and cost; a cancel and a stall abort t
   const http = await import("node:http");
   const { chatStream, sseEvents, usdOf } = await import("../server/azure.js");
   const sse = (o) => `data: ${JSON.stringify(o)}\n\n`;
+  const hits = [];
   const srv = http.createServer((req, res) => {
+    hits.push(req.url);
     if (req.url.endsWith("/responses")) {
       res.writeHead(200, { "content-type": "text/event-stream" });
       res.write(sse({ type: "response.output_text.delta", delta: "<div>" }));
@@ -277,7 +279,9 @@ test("azure chatStream: SSE deltas, usage and cost; a cancel and a stall abort t
   process.env.AZURE_OPENAI_API_KEY = "test";
   try {
     const deltas = [];
-    const ok = await chatStream("gpt-5.6-terra", [{ role: "system", content: "s" }, { role: "user", content: "ok" }], { onDelta: (d) => deltas.push(d), quotaLane: "background" });
+    const { endpoint } = await import("../server/azure.js");
+    const ok = await chatStream("gpt-5.6-terra", [{ role: "system", content: "s" }, { role: "user", content: "ok" }], { onDelta: (d) => deltas.push(d), quotaLane: "background" })
+      .catch((e) => { throw new Error(`${e.code}: endpoint ${endpoint("CHAT")} hits ${JSON.stringify(hits)}`); });
     assert.equal(ok.text, "<style></style>");
     assert.deepEqual(deltas, ["<style>", "</style>"]);
     assert.equal(ok.usage.in, 100);

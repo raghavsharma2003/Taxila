@@ -23,17 +23,23 @@ export const TEST_TFAMS = new Set([
 ]);
 export const DEV_TFAMS = new Set(["F1.fluent_word", "F1.rep_bare", "F2.cue_maths_filler", "F2.nocue_sci_filler"]);
 
-/** Child voices (Azure Speech standard neural, hi-IN; no Hindi child voice exists in the catalogue, read 2026-10-04: child-likeness by SSML pitch/rate). */
+/**
+ * Child voices (Azure Speech standard neural, hi-IN; no Hindi child voice exists in the catalogue, read 2026-10-04:
+ * child-likeness by SSML pitch/rate). Azure caps relative pitch at +50% (probe 2026-10-04: Aarav f0 116 → 176 Hz at
+ * +50/+70/+90%), so the male voices also get a duration-preserving post-hoc shift (`postShift`, ffmpeg asetrate +
+ * atempo: the repo's x1.2 child recipe, larger) to a median f0 of ~240-260 Hz (a 10-year-old's range).
+ */
+export const VOICE_BY_NAME = () => Object.fromEntries([...VOICES.train, ...VOICES.test].map((v) => [v.name, v]));
 export const VOICES = {
   train: [
     { name: "hi-IN-AnanyaNeural", sex: "f", pitch: "+16%", rate: "-6%" },
-    { name: "hi-IN-AaravNeural", sex: "m", pitch: "+38%", rate: "-8%" },
+    { name: "hi-IN-AaravNeural", sex: "m", pitch: "+38%", rate: "-8%", postShift: 1.5 },
     { name: "hi-IN-SwaraNeural", sex: "f", pitch: "+14%", rate: "-6%" },
-    { name: "hi-IN-KunalNeural", sex: "m", pitch: "+36%", rate: "-8%" },
+    { name: "hi-IN-KunalNeural", sex: "m", pitch: "+36%", rate: "-8%", postShift: 1.6 },
   ],
   test: [
     { name: "hi-IN-KavyaNeural", sex: "f", pitch: "+15%", rate: "-6%" },
-    { name: "hi-IN-RehaanNeural", sex: "m", pitch: "+36%", rate: "-8%" },
+    { name: "hi-IN-RehaanNeural", sex: "m", pitch: "+36%", rate: "-8%", postShift: 1.28 },
   ],
 };
 /** Her voice (the product candidate, MODEL-STACK §2: en-IN-Diya DragonHD; no prosody tags on DragonHD). */

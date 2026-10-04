@@ -37,7 +37,7 @@ export function draftModel() {
 }
 
 /** Virtual-time launcher for the DraftManager. A W draft = one reply call; a C generation = classify + 2 replies (specFanout) [E]. */
-function simLauncher(r, dm, stage) {
+export function simLauncher(r, dm, stage) {
   return (job, now) => {
     const ttft = r.ln(...dm.ttft), out = Math.round(r.ln(...dm.outTok)), genMs = ttft + (out / dm.tokPerS) * 1000;
     const calls = job.key.phase === "candidate" ? 2 : 1;
@@ -75,10 +75,10 @@ export function gradeOf(sc, text) {
 }
 
 /** The W outcome set prepared at hand-over: correct, the kit's main misconception, other incorrect (ARCHITECTURE.md §2.3). */
-const waitOutcomes = (sc) => [{ outcome: "correct", value: sc.ctx.key }, ...(sc.ctx.misconceptionValues?.length ? [{ outcome: "misconception", value: sc.ctx.misconceptionValues[0] }] : []), { outcome: "incorrect" }];
+export const waitOutcomes = (sc) => [{ outcome: "correct", value: sc.ctx.key }, ...(sc.ctx.misconceptionValues?.length ? [{ outcome: "misconception", value: sc.ctx.misconceptionValues[0] }] : []), { outcome: "incorrect" }];
 
 /** Teacher-line timing when she speaks over / before the child. [E] 70 ms per character (DragonHD Hindi ~14 chars/s). */
-const MS_PER_CHAR = 70;
+export const MS_PER_CHAR = 70;
 
 export function runScenario(sc, seed, arm, env = {}) {
   const r = rng(seed * 7919 + sc.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0));

@@ -1,0 +1,102 @@
+{
+  "source": "docs/design/voice-signals/RESEARCH-PLACEMENT.md (voice-signals Research B: models, placement, policy; 2026-10-04); harness evals/voicesig/placement/; raw results evals/voicesig/placement/results/2026-10-04/; cloud probes scripts/voicesig/{aws-check.py,azure-gpu-quota.py}",
+  "nodes": [
+    {
+      "id": "m-voicesig-encoder-latency-2026-10-04",
+      "kind": "measurement",
+      "at": "2026-10-04",
+      "title": "On-device encoder candidates, onnxruntime-web WASM 1 thread vs native ORT 1 thread on a 4-vCPU Xeon 2.1 GHz (Node 22.22, ORT 1.30.0; container shared with other jobs, load avg 6-13, so min reported with p50; multi-thread cells invalid). WASM min / p50 ms: Smart Turn v3.2 int8 (8 s) 209.0/242.2 (native 40.3); Smart Turn with frames+pooled outputs exposed 209.1/215.9, logits identical (max diff 0.0); Whisper-tiny enc int8 8 s 211.9/227.5, 3 s window 67.2/98.3; Whisper-base enc 8 s 478.0/487.5; DistilHuBERT 3 s 895/917; wav2vec2-base / HuBERT-base / WavLM-base-plus 3 s 1363/1361/1388 min (8 s about 3.9 s), 122 MB int8, +650-793 MB RSS; prosody CNN+BiGRU (38,184 params) 1.87/2.06; logistic 0.02. int8 fidelity (pooled cos vs torch): wav2vec2-base 0.84, HuBERT 0.98, WavLM 0.99, DistilHuBERT 0.994, Whisper-tiny 0.997. Front-end: dsp.ts FrameAnalyzer 0.172 ms p50 per 20 ms hop (9.6 ms/audio-s); naive JS 80-bin log-mel 74 ms per 8 s (about 9 ms/audio-s incremental). Delivery: ort-wasm 3.7 MB gz, Smart Turn 7.5 MB gz. Phone figures are estimates (2-4x) until VSP-M1."
+    },
+    {
+      "id": "m-voicesig-cloud-quota-2026-10-04",
+      "kind": "measurement",
+      "at": "2026-10-04",
+      "title": "Read-only cloud probe for voice-signal training. Azure: every NC/ND/NV/NG family limit 0 in 10 regions (southindia, centralindia, westindia, eastus2, eastus, westus3, swedencentral, uaenorth, polandcentral, southeastasia); lowPriorityCores 3; ACA dedicated A100 0; 7 Compute quota requests dated 2026-10-03 all Failed; southindia D-family CPU limits 65-350 vCPU; ACA consumption $0.000024/vCPU-s. AWS account 780899467240: ap-south-1 G/VT quota 0 on-demand and 0 spot; us-east-1 8/8 vCPU; P 0 both. Spot minima over 6 h (us-east-1 / ap-south-1): g4dn.xlarge 0.252/0.216, g5.xlarge 0.412/0.656, g6.xlarge 0.564/0.529, c7i.2xlarge 0.156/0.153 USD/h; on-demand us-east-1 g5 1.006, g6 0.805. No instances running, 0 GB unattached volumes; budget taxila-build-gpu USD 100/month, actual 0.00. Neon: 11 regions, none in India (nearest aws-ap-southeast-1)."
+    },
+    {
+      "id": "m-voicesig-train-cost-2026-10-04",
+      "kind": "measurement",
+      "at": "2026-10-04",
+      "title": "CPU training cost (4 vCPU, torch 2.14.1 cpu, shared container, upper bounds): 38k-param prosody GRU one epoch over 3,200 answers (E1 size) 20.4 s; frozen Whisper-tiny embedding 8.5 clips/s (batch 8 x 8 s); full Whisper-tiny encoder fine-tune 2.5 clip-passes/s (3.15 s per batch of 8 x 8 s), i.e. about 7 h for E1 x 20 epochs and about 167 h at 50k clips x 30 epochs. Conclusion: E1-scale heads need no GPU; GPU only for an encoder fine-tune."
+    },
+    {
+      "id": "voicesig-shared-encoder-smart-turn",
+      "kind": "decision",
+      "status": "proposed",
+      "at": "2026-10-04",
+      "title": "One shared audio front-end for duplex and voice signals: the existing 16 kHz tap, dsp.ts contours, one incremental log-mel ring, and ONE ORT-web session running the Smart Turn v3.2 backbone (BSD-2, data CC-BY-4.0, 8.7 MB int8) with its frame sequence (layer_norm_8) and pooled embedding (sum_1) exposed as extra outputs. One pass per committed turn end feeds pTurnEnd (duplex) and the knowledge head (voicesig); the backbone stays frozen through K2; a later fine-tune is multi-task and ships only if end-of-turn metrics do not regress. Devices too slow for the pass degrade to prosody + scalars. Reverse if VSP-M2 shows the embedding adds no knowledge signal over handcrafted features (voicesig drops the encoder; duplex keeps it), or VSP-M1 fails the mid device class (3 s window or prosody-only)."
+    },
+    {
+      "id": "voicesig-outcome-defined-labels",
+      "kind": "decision",
+      "status": "proposed",
+      "at": "2026-10-04",
+      "title": "Label test for every voice-derived output: (1) its training target is a task outcome (correct now, delayed/transfer success, recognition-probe success after 'yaad nahi', a wrong answer persisting after feedback, replication on an isomorphic item), never a human rating of how the child seemed to feel or sound (E1 coder labels may evaluate, never train); (2) names from a closed knowledge vocabulary (Research A's state names fluentRecall, fragileCorrect, heldBelief, searching, absent, effortfulGuess, rapidGuess, workingAloud, answerReliability, plus q and ABSTAIN; each defined by the outcome it predicts), never unsure/confident/doubt/confused; (3) enters decisions only as evidence weights or move licences, never as a description in a prompt, never shown or stored as a state; (4) lint-enforced. Rationale: restriction 12 lists Ekman-type emotions; the EU guidelines Microsoft aligns with treat attitude and emotion as equivalent, so renaming alone does not move a model; an outcome target does. Reverse if Microsoft answers in writing that restriction 12 or 4 reaches outcome-trained knowledge evidence from speech timing or prosody (voice then reduces to Tier T plus timing-free features)."
+    },
+    {
+      "id": "voicesig-training-cpu-first",
+      "kind": "decision",
+      "status": "proposed",
+      "at": "2026-10-04",
+      "title": "Voice knowledge-model training runs on CPU in India first (K1 on E1 and K2 monthly refits: an ACA job in southindia, under USD 2 [E]); GPU only for a K3 encoder fine-tune, on AWS g5/g6 spot through the existing scripts/gpu harness (self-shutdown, EventBridge backstop, reaper, terminate on exit), estimated USD 22-36 spot (at most 64 on-demand) against the USD 80 cap, behind a taxila-voicesig budget with a deny-RunInstances action. K3 waits for a Mumbai G-spot quota so P4 child audio stays in India, unless the P4 notice names US processing. Production uploads head outputs only; embeddings and audio for training come only from the P4 cohort. Reverse if Azure grants GPU quota in India (move K3 there), or K1/K2 show the encoder adds nothing (no K3)."
+    },
+    {
+      "id": "voicesig-baselines-main-db",
+      "kind": "decision",
+      "status": "proposed",
+      "at": "2026-10-04",
+      "title": "Per-child voice baselines and head calibration stay in the main database (Azure PG Flexible, South India), under an opt-in parental grant (V2), keyed by an HMAC pseudonym, loaded at lesson start and written once at lesson end; the voicesig.* schema is Neon-portable. Storing numbers in a database is not use of a Microsoft AI service; Neon has no India region and would need a second deletion path. Reverse if the owner or counsel prefers separating voice-signal data from Microsoft (move to Neon, accepting Singapore residency and an outbox/reconciliation deletion path)."
+    },
+    {
+      "id": "rj-voicesig-ssl-cnn-frontends-on-device",
+      "kind": "rejection",
+      "at": "2026-10-04",
+      "title": "Tried (measured 2026-10-04): wav2vec2-base, HuBERT-base, WavLM-base-plus and DistilHuBERT as the on-device knowledge encoder, int8 in onnxruntime-web WASM. Broke: 1,361-1,388 ms (base) and 895 ms (Distil) per 3 s of audio on one Xeon thread, against 209 ms for the whole Whisper-tiny/Smart Turn encoder over 8 s; 50-122 MB; +390-793 MB RSS; wav2vec2-base int8 pooled cos 0.84. The raw-waveform CNN front-end dominates, so distilling the transformer does not help. Revisit if a <= 20 MB SSL student without the raw-waveform CNN reaches <= 250 ms per 3 s in WASM."
+    },
+    {
+      "id": "rj-voicesig-licence-blocked",
+      "kind": "rejection",
+      "at": "2026-10-04",
+      "title": "Licence-blocked for shipped voice-signal weights (checked 2026-10-04): facebook/mms-300m and mms-1b (CC-BY-NC-4.0: eval/research only); ai4bharat/indicwav2vec-hindi and indic-conformer-600m (gated repos, no-gated rule; IndicWav2Vec also 1.26 GB); microsoft/wavlm-base(-plus) as shipped weights (UniSpeech licence CC BY-SA 3.0: share-alike on distributed derivatives; offline teacher only); openSMILE/eGeMAPS (non-commercial; dsp.ts reimplements the features); MyST corpus (non-commercial unless licensed: evaluation only). Revisit on a licence change or a purchased commercial licence."
+    },
+    {
+      "id": "rj-voicesig-placement-as-cure",
+      "kind": "rejection",
+      "at": "2026-10-04",
+      "title": "Tried (analysis 2026-10-04): moving an emotion-from-voice model off Azure (device or AWS) to escape Microsoft CoC restriction 12. Broke: restriction 4 forbids applications built with Microsoft AI Services from using the services to 'interact with content, decisions, or actions prohibited in this Code', so an off-Azure emotion inference that steers the Azure-served teacher, Director or TTS is still covered. Placement only separates a shadow research arm whose output reaches no Microsoft service. What keeps voice signals compliant is the outcome-defined knowledge target (voicesig-outcome-defined-labels), not where the model runs."
+    },
+    {
+      "id": "open-voicesig-dpdp-9-3",
+      "kind": "open",
+      "at": "2026-10-04",
+      "title": "Counsel, before DPDP s.9 commences on 13 May 2027: (a) is Taxila an 'educational institution' ('an institution of learning that imparts education') under the Fourth Schedule exemption from s.9(1)/(3); (b) is a persistent per-child record of answer timing and fluency kept to adapt teaching 'behavioural monitoring' under s.9(3), which consent cannot cure? If not exempt and yes, V2 (persistent voice baselines) stays off for everyone and voice signals run session-only (M0). The same question applies to the persistent learner model."
+    },
+    {
+      "id": "open-voicesig-mumbai-g-quota",
+      "kind": "open",
+      "at": "2026-10-04",
+      "title": "Owner action: file AWS Service Quotas requests in ap-south-1 for L-3819A6DF (All G and VT Spot Instance Requests) and L-DB2E81BA (On-Demand G and VT), 0 -> 8 vCPU, so a K3 voice-encoder fine-tune on P4 child audio can run in Mumbai (g6.xlarge spot USD 0.529/h) instead of us-east-1. Also create the taxila-voicesig USD 80 budget with a deny-RunInstances action."
+    },
+    {
+      "id": "open-voicesig-smart-turn-phone-budget",
+      "kind": "open",
+      "at": "2026-10-04",
+      "title": "For the duplex workflow: the duplex architecture budgets Smart Turn v3.2 at the vendor's 10-100 ms CPU per candidate endpoint, but measured WASM 1 thread on a Xeon is 209 ms min (native 40 ms), about 420-840 ms estimated on a mid-range Android big core. Decide on VSP-M1: 3 s window (67 ms min here), WASM threads (needs COOP/COEP; Taxila sets neither), WebGPU, or encoder on own ACA CPU in India."
+    }
+  ],
+  "edges": [
+    {"src": "voicesig-shared-encoder-smart-turn", "rel": "measured_by", "dst": "m-voicesig-encoder-latency-2026-10-04"},
+    {"src": "rj-voicesig-ssl-cnn-frontends-on-device", "rel": "measured_by", "dst": "m-voicesig-encoder-latency-2026-10-04"},
+    {"src": "voicesig-training-cpu-first", "rel": "measured_by", "dst": "m-voicesig-train-cost-2026-10-04"},
+    {"src": "voicesig-training-cpu-first", "rel": "measured_by", "dst": "m-voicesig-cloud-quota-2026-10-04"},
+    {"src": "voicesig-training-cpu-first", "rel": "inherits", "dst": "aws-build-gpu"},
+    {"src": "voicesig-baselines-main-db", "rel": "caused_by", "dst": "rj-neon-india-region"},
+    {"src": "voicesig-baselines-main-db", "rel": "inherits", "dst": "india-move-southindia-azure-pg-2026-10-04"},
+    {"src": "ct-no-voice-emotion-inference", "rel": "constrains", "dst": "voicesig-outcome-defined-labels"},
+    {"src": "voicesig-outcome-defined-labels", "rel": "caused_by", "dst": "wb-coc-epistemic-vs-emotional"},
+    {"src": "rj-voicesig-placement-as-cure", "rel": "caused_by", "dst": "ct-no-voice-emotion-inference"},
+    {"src": "voicesig-outcome-defined-labels", "rel": "inherits", "dst": "voice-features-longitudinal"},
+    {"src": "open-voicesig-dpdp-9-3", "rel": "blocks", "dst": "voicesig-baselines-main-db"},
+    {"src": "open-voicesig-mumbai-g-quota", "rel": "blocks", "dst": "voicesig-training-cpu-first"}
+  ]
+}

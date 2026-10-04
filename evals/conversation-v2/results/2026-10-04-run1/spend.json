@@ -8,6 +8,28 @@
    "taxila-mistral-m35": 0.3452190000000002,
    "taxila-gpt6": 0.5436060000000001
   },
-  "at": "2026-10-04T20:17:58.668Z"
- }
+  "at": "2026-10-04T20:17:58.668Z",
+  "firstPartialRun": {
+   "usd": 0.15,
+   "note": "the first judge pass died at 50/345 (lanes.js background queue on unref timers); its 50 judged rows were kept"
+  }
+ },
+ "bakeoff": {
+  "usd": 2.73,
+  "calls": 1993,
+  "note": "2142 calls, 6 arms; list prices (evals/model-refresh-2026-10-04 tables; grok-4-1-fast list price assumed)"
+ },
+ "prescreen": {
+  "usd": 0.15,
+  "calls": "~380 grok-4-1-fast-nr classify calls (+~6 timeouts retried)",
+  "note": "estimate from ~1.3k tokens/call at 0.2/0.5 per 1M"
+ },
+ "production": {
+  "usd_estimate": 1.4,
+  "turns": 916,
+  "lessonStarts": 58,
+  "note": "NOT metered here: production-side calls (taxila-fast reply ~2.5k in/120 out, grok classify ~1.2k in) ~= $0.0015/turn"
+ },
+ "totalUsdEstimate": 5.35,
+ "cap": "USD 25 (task)"
 }

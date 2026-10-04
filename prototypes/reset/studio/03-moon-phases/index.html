@@ -29,7 +29,7 @@
   "lang": "en",
   "strings": {
     "fromEarth": "FROM EARTH", "sun": "SUN", "earth": "EARTH", "moon": "MOON", "light": "SUNLIGHT",
-    "scale": "NOT TO SCALE", "eclipse": "LUNAR ECLIPSE", "title": "Why the Moon has phases",
+    "scale": "NOT TO SCALE", "eclipse": "LUNAR ECLIPSE", "shadow": "EARTH'S SHADOW", "title": "Why the Moon has phases",
     "phases": ["NEW · AMAVASYA", "WAXING CRESCENT", "FIRST QUARTER", "WAXING GIBBOUS", "FULL · PURNIMA", "WANING GIBBOUS", "THIRD QUARTER", "WANING CRESCENT"]
   },
   "beats": [
@@ -56,10 +56,11 @@
       { "at": "s2", "do": "ghosts", "n": 8, "dur": 2.6 } ] },
     { "line": "L07", "gap": 0.6, "cues": [
       { "at": 0, "do": "orbit", "to": 900, "dur": 5.0, "ease": "inOutSine" },
+      { "at": 0, "do": "hide", "target": "lbl.moon", "dur": 0.4 },
       { "at": 0, "do": "set", "prop": "ghosts.a", "to": 0.45, "dur": 1.0 },
       { "at": "end", "do": "hide", "target": "lbl.light", "dur": 0.5 } ] },
     { "line": "L08", "gap": 0.5, "cues": [
-      { "at": 0, "do": "camera", "x": 640, "dur": 1.6 },
+      { "at": 0, "do": "camera", "x": 640, "y": 320, "dur": 1.6 },
       { "at": 0, "do": "hide", "target": ["ghosts", "lbl.sun"], "dur": 0.8 },
       { "at": 0.3, "do": "show", "target": ["inset", "sight"], "dur": 0.9 },
       { "at": 1.3, "do": "show", "target": "arcNear", "dur": 0.6 } ] },

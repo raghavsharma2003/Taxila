@@ -10,6 +10,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { spawnSync } from "node:child_process";
 import { chromium } from "../../../../node_modules/playwright/index.mjs";
 import { serve } from "./serve.mjs";
 
@@ -62,15 +63,15 @@ export async function playLandfall(page, { maxMs = 120000 } = {}) {
       if (!plan.has(p.id)) {
         const key = `${s.wave}:${p.label}`;
         const err = misread[key] != null ? misread[key] : gauss(r) * 8;
-        plan.set(p.id, { x: p.trueX + err, at: Date.now() + 380 + r() * 260 });
+        plan.set(p.id, { x: p.trueX + err, at: Date.now() + 240 + r() * 160 });
       }
       const pl = plan.get(p.id);
       if (Date.now() >= pl.at) {
         const to = px(pl.x, 560);
-        if (Math.abs(to[0] - cur[0]) > 2) cur = await glide(page, cur, to, 160 + Math.min(260, Math.abs(to[0] - cur[0]) * 0.6));
+        if (Math.abs(to[0] - cur[0]) > 2) cur = await glide(page, cur, to, 120 + Math.min(200, Math.abs(to[0] - cur[0]) * 0.4));
       }
     }
-    await sleep(40);
+    await sleep(25);
   }
   await page.mouse.up();
 }
@@ -136,9 +137,9 @@ export async function playMoon(page, { maxMs = 120000 } = {}) {
 }
 
 const SCENES = [
-  { key: "landfall", rel: "01-landfall/", play: playLandfall, recMs: 120000 },
-  { key: "circuit", rel: "02-circuit-lab/", play: playCircuit, recMs: 110000 },
-  { key: "moon", rel: "03-moon-phases/", play: playMoon, recMs: 130000 },
+  { key: "landfall", rel: "01-landfall/", q: "", play: playLandfall, recMs: 120000 },
+  { key: "circuit", rel: "02-circuit-lab/", q: "", play: playCircuit, recMs: 110000 },
+  { key: "moon", rel: "03-moon-phases/", q: "&autoplay=1", perfQ: "&autoplay=1&t=40", play: playMoon, recMs: 150000 },
 ];
 
 async function record(browser, base, sc) {
@@ -146,11 +147,12 @@ async function record(browser, base, sc) {
   fs.rmSync(tmp, { recursive: true, force: true });
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, recordVideo: { dir: tmp, size: { width: 1280, height: 800 } } });
   const page = await ctx.newPage();
+  const videoT0 = Date.now();                       // Playwright starts the screencast when the page is created
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
   const t0 = Date.now();
-  await page.goto(`${base}/studio/${sc.rel}?seed=7`);
+  await page.goto(`${base}/studio/${sc.rel}?seed=7${sc.q || ""}`);
   await page.waitForFunction(() => document.documentElement.dataset.ready === "1", null, { timeout: 15000 });
   const readyAt = Date.now() - t0;
   await sc.play(page, { maxMs: sc.recMs });
@@ -163,8 +165,23 @@ async function record(browser, base, sc) {
   const dst = path.join(outDir, `${sc.key}.webm`);
   fs.renameSync(src, dst);
   fs.rmSync(tmp, { recursive: true, force: true });
-  return { key: sc.key, video: path.relative(path.resolve(here, ".."), dst), readyAtMs: readyAt, errors, undersizedLabels: small, perfDesktopUnthrottled: perf,
+  let narrated = null;
+  const says = log.filter((m) => m.k === "event" && m.name === "say");
+  if (says.length) narrated = muxNarration(dst, says.map((m) => ({ id: m.data.id, offMs: m.data.epochMs - videoT0 })));
+  return { key: sc.key, narrated, video: path.relative(path.resolve(here, ".."), dst), readyAtMs: readyAt, errors, undersizedLabels: small, perfDesktopUnthrottled: perf,
     events: summarize(log) };
+}
+
+// Playwright video has no audio track: lay the narration clips at the exact moments the page started them.
+function muxNarration(webm, says) {
+  const dir = path.resolve(here, "../03-moon-phases");
+  const out = webm.replace(/\.webm$/, "-narrated.mp4");
+  const inputs = ["-i", webm];
+  const filters = [];
+  says.forEach((s, i) => { inputs.push("-i", path.join(dir, "audio", `${s.id}.mp3`)); filters.push(`[${i + 1}:a]adelay=${Math.max(0, Math.round(s.offMs))}|${Math.max(0, Math.round(s.offMs))}[a${i}]`); });
+  const mix = `${filters.join(";")};${says.map((_, i) => `[a${i}]`).join("")}amix=inputs=${says.length}:normalize=0[aout]`;
+  const r = spawnSync("ffmpeg", ["-y", "-v", "error", ...inputs, "-filter_complex", mix, "-map", "0:v", "-map", "[aout]", "-c:v", "libx264", "-preset", "veryfast", "-crf", "24", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "128k", "-shortest", out], { encoding: "utf8" });
+  return r.status === 0 ? { file: path.relative(path.resolve(here, ".."), out), clips: says.length, offsetsMs: says.map((s) => [s.id, Math.round(s.offMs)]) } : { error: (r.stderr || "").slice(0, 400) };
 }
 
 function summarize(log) {
@@ -180,7 +197,7 @@ async function perfRun(browser, base, sc, rate) {
   const page = await ctx.newPage();
   const cdp = await ctx.newCDPSession(page);
   await cdp.send("Emulation.setCPUThrottlingRate", { rate });
-  await page.goto(`${base}/studio/${sc.rel}?seed=7&sound=off`);
+  await page.goto(`${base}/studio/${sc.rel}?seed=7&sound=off${sc.perfQ || sc.q || ""}`);
   await page.waitForFunction(() => document.documentElement.dataset.ready === "1", null, { timeout: 30000 });
   const playP = sc.play(page, { maxMs: 26000 }).catch(() => {});
   await sleep(4000);

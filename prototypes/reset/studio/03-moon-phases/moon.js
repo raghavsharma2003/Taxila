@@ -122,7 +122,7 @@
   const fx = S.fx(st);
   const raw = S.studio.params();
   const TL = compile(raw);
-  const T = Object.assign({ fromEarth: "FROM EARTH", sun: "SUN", earth: "EARTH", moon: "MOON", light: "SUNLIGHT", scale: "NOT TO SCALE", eclipse: "LUNAR ECLIPSE", title: "Why the Moon has phases",
+  const T = Object.assign({ fromEarth: "FROM EARTH", sun: "SUN", earth: "EARTH", moon: "MOON", light: "SUNLIGHT", scale: "NOT TO SCALE", eclipse: "LUNAR ECLIPSE", shadow: "EARTH'S SHADOW", title: "Why the Moon has phases",
     phases: ["NEW · AMAVASYA", "WAXING CRESCENT", "FIRST QUARTER", "WAXING GIBBOUS", "FULL · PURNIMA", "WANING GIBBOUS", "THIRD QUARTER", "WANING CRESCENT"] }, (raw && raw.strings) || {});
   if (TL.repairs.length) S.studio.event("spec_repaired", { repairs: TL.repairs });
 
@@ -152,8 +152,8 @@
 
   /* ------------------------------------------------------------------ geometry */
   const EARTH = { x: 500, y: 300 }, R_ORB = 180, RE = 44, RM = 22;
-  const INSET = { x: 820, y: 372, r: 120 };
-  const SUN = { x: -250, y: 300, r: 300 };
+  const INSET = { x: 812, y: 336, r: 114 };
+  const SUN = { x: -190, y: 300, r: 300 };
   const norm = (a) => ((a % 360) + 360) % 360;
   const elong = (theta) => norm(theta - 180);                 // Sun-Earth-Moon angle as seen from Earth
   const moonWorld = (theta) => ({ x: EARTH.x + R_ORB * Math.cos(theta * DEG), y: EARTH.y - R_ORB * Math.sin(theta * DEG) });
@@ -174,26 +174,45 @@
     const g = skyline.getContext("2d");
     g.setTransform(st.scale, 0, 0, st.scale, 0, 0);
     const r2 = (() => { let s = 7; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; })();
-    const base = 560;
+    const base = 588;
     g.fillStyle = "#06070D";
     let x = -10;
     const wins = [];
     while (x < W + 10) {
-      const w = 34 + r2() * 70, h = 50 + r2() * 120;
+      const w = 34 + r2() * 70, h = 36 + r2() * 96;
       g.fillRect(x, base - h, w, h + 80);
       if (r2() < 0.45) { g.fillRect(x + w * 0.2, base - h - 14, w * 0.28, 14); g.beginPath(); g.ellipse(x + w * 0.34, base - h - 14, w * 0.14, 5, 0, 0, Math.PI * 2); g.fill(); }  // rooftop water tank
       for (let yy = base - h + 14; yy < base - 10; yy += 18) for (let xx = x + 8; xx < x + w - 10; xx += 14) if (r2() < 0.18) wins.push([xx, yy]);
       x += w + 2 + r2() * 6;
     }
     // temple shikhara and a banyan canopy on the skyline
-    g.beginPath(); g.moveTo(630, base - 80); g.quadraticCurveTo(652, base - 190, 668, base - 214); g.quadraticCurveTo(684, base - 190, 706, base - 80); g.closePath(); g.fill();
-    g.fillRect(664, base - 236, 8, 26);
-    g.beginPath(); for (let i = 0; i < 9; i++) { const cx = 860 + Math.cos(i) * 60 + i * 6, cy = base - 150 + Math.sin(i * 1.7) * 26; g.moveTo(cx + 46, cy); g.arc(cx, cy, 46, 0, Math.PI * 2); } g.fill();
-    g.fillRect(852, base - 120, 22, 140);
+    g.beginPath(); g.moveTo(630, base - 70); g.quadraticCurveTo(650, base - 160, 668, base - 182); g.quadraticCurveTo(686, base - 160, 706, base - 70); g.closePath(); g.fill();
+    g.fillRect(665, base - 202, 6, 24);
+    g.beginPath(); for (let i = 0; i < 11; i++) { const cx = 800 + i * 18, cy = base - 112 - Math.sin(i / 10 * Math.PI) * 30 + (i % 3) * 6; g.moveTo(cx + 34, cy); g.arc(cx, cy, 34 + (i % 2) * 8, 0, Math.PI * 2); } g.fill();
+    g.fillRect(884, base - 96, 16, 100); g.fillRect(846, base - 70, 6, 74); g.fillRect(926, base - 74, 6, 78);
     g.fillStyle = "rgba(255,206,130,.55)";
     for (const [wx, wy] of wins) g.fillRect(wx, wy, 6, 8);
     g.fillStyle = "#06070D"; g.fillRect(0, base, W, H - base);
     return skyline;
+  }
+
+  let _spaceBg = null, _ray = null;
+  function spaceBg() {
+    if (_spaceBg) return _spaceBg;
+    _spaceBg = document.createElement("canvas"); _spaceBg.width = 500; _spaceBg.height = 313;
+    const g = _spaceBg.getContext("2d"); g.scale(0.5, 0.5);
+    const bg = g.createRadialGradient(500, 300, 50, 500, 300, 700);
+    bg.addColorStop(0, "#0D1120"); bg.addColorStop(1, "#05060B");
+    g.fillStyle = bg; g.fillRect(0, 0, W, H);
+    return _spaceBg;
+  }
+  function raySprite() {
+    if (_ray) return _ray;
+    _ray = document.createElement("canvas"); _ray.width = 220; _ray.height = 8;
+    const g = _ray.getContext("2d");
+    const gr = g.createLinearGradient(0, 0, 220, 0); gr.addColorStop(0, "rgba(255,210,122,0)"); gr.addColorStop(1, "rgba(255,210,122,.95)");
+    g.fillStyle = gr; g.fillRect(0, 1, 220, 6);
+    return _ray;
   }
 
   /* ------------------------------------------------------------------ drawing primitives */
@@ -318,10 +337,8 @@
     const toS = (x, y) => ({ x: (x - cx) * zoom + 500, y: (y - cy) * zoom + 300 });
     ctx.save();
     ctx.globalAlpha = a;
-    // deep space
-    const bg = ctx.createRadialGradient(500, 300, 50, 500, 300, 700);
-    bg.addColorStop(0, "#0D1120"); bg.addColorStop(1, "#05060B");
-    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    // deep space (cached gradient)
+    ctx.drawImage(spaceBg(), 0, 0, W, H);
     for (const s of stars) { ctx.globalAlpha = a * (0.15 + 0.45 * s.z) * (0.75 + 0.25 * Math.sin(now + s.tw)); ctx.fillStyle = "#C9D2F2"; const r = 0.6 + s.z * 1.3; ctx.fillRect(s.x, s.y, r, r); }
     ctx.globalAlpha = a;
     // the Sun (far left, screen-fixed) and its light
@@ -343,8 +360,8 @@
       for (let row = 0; row < 11; row++) {
         const y = 40 + row * 54 + (row % 2) * 10;
         for (let x = 60 - 260 + off + (row % 3) * 70; x < W; x += 260) {
-          const g = ctx.createLinearGradient(x, 0, x + 110, 0); g.addColorStop(0, "rgba(255,210,122,0)"); g.addColorStop(1, "rgba(255,210,122,.9)");
-          ctx.strokeStyle = g; ctx.beginPath(); ctx.moveTo(Math.max(60, x), y); ctx.lineTo(x + 110, y); ctx.stroke();
+          const x0 = Math.max(60, x);
+          if (x + 110 > x0) ctx.drawImage(raySprite(), (x0 - x) / 110 * 220, 0, (x + 110 - x0) / 110 * 220, 8, x0, y - 2, x + 110 - x0, 4);
         }
       }
       ctx.restore();
@@ -358,10 +375,10 @@
     if (shA > 0.01) {
       ctx.save(); ctx.globalAlpha = a * shA;
       const g = ctx.createLinearGradient(EARTH.x, 0, EARTH.x + 620, 0);
-      g.addColorStop(0, "rgba(0,0,0,.78)"); g.addColorStop(1, "rgba(0,0,0,0)");
+      g.addColorStop(0, "rgba(5,6,11,.97)"); g.addColorStop(0.75, "rgba(5,6,11,.9)"); g.addColorStop(1, "rgba(5,6,11,.35)");
       ctx.fillStyle = g;
       ctx.beginPath(); ctx.moveTo(EARTH.x, EARTH.y - RE); ctx.lineTo(EARTH.x + 620, EARTH.y - RE * 0.42); ctx.lineTo(EARTH.x + 620, EARTH.y + RE * 0.42); ctx.lineTo(EARTH.x, EARTH.y + RE); ctx.closePath(); ctx.fill();
-      ctx.strokeStyle = "rgba(170,180,210,.35)"; ctx.lineWidth = lw(3); ctx.setLineDash([lw(10), lw(10)]);
+      ctx.strokeStyle = "rgba(170,180,210,.6)"; ctx.lineWidth = lw(4); ctx.setLineDash([lw(10), lw(10)]);
       ctx.beginPath(); ctx.moveTo(EARTH.x, EARTH.y - RE); ctx.lineTo(EARTH.x + 620, EARTH.y - RE * 0.42); ctx.moveTo(EARTH.x, EARTH.y + RE); ctx.lineTo(EARTH.x + 620, EARTH.y + RE * 0.42); ctx.stroke();
       ctx.setLineDash([]);
       ctx.restore();
@@ -423,11 +440,11 @@
     // screen-space labels (never scaled below the minimum size)
     const ep = toS(EARTH.x, EARTH.y), ms = toS(mp.x, mp.y);
     const L = (k) => V("lbl." + k);
-    if (L("sun") > 0.01) S.text(ctx, T.sun, 70, 470, { font: "mono", size: 40, weight: 600, color: "#1A1206", alpha: a * L("sun") });
+    if (L("sun") > 0.01) S.text(ctx, T.sun, 22, 470, { font: "mono", size: 40, weight: 700, color: "#3A2208", alpha: a * L("sun") });
     if (L("light") > 0.01) {
       ctx.save(); ctx.globalAlpha = a * L("light");
-      S.text(ctx, T.light, 236, 128, { font: "mono", size: 38, weight: 600, color: "#FFD27A" });
-      ctx.strokeStyle = "#FFD27A"; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(440, 116); ctx.lineTo(520, 116); ctx.lineTo(506, 104); ctx.moveTo(520, 116); ctx.lineTo(506, 128); ctx.stroke();
+      S.text(ctx, T.light, 150, 196, { font: "mono", size: 38, weight: 600, color: "#FFD27A" });
+      ctx.strokeStyle = "#FFD27A"; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(346, 183); ctx.lineTo(392, 183); ctx.lineTo(380, 172); ctx.moveTo(392, 183); ctx.lineTo(380, 194); ctx.stroke();
       ctx.restore();
     }
     if (L("earth") > 0.01) S.text(ctx, T.earth, ep.x, ep.y + RE * zoom + 46, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", alpha: a * L("earth") });
@@ -435,7 +452,8 @@
       const dx = ms.x - ep.x, dy = ms.y - ep.y, d = Math.hypot(dx, dy) || 1;
       S.text(ctx, T.moon, ms.x + dx / d * 70, ms.y + dy / d * 62 + 12, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", alpha: a * L("moon") });
     }
-    if (L("scale") > 0.01) S.text(ctx, T.scale, 500, 62, { font: "mono", size: 38, weight: 500, color: C.ink3, align: "center", alpha: a * 0.75 * L("scale") });
+    if (L("scale") > 0.01) S.text(ctx, T.scale, 200, 60, { font: "mono", size: 38, weight: 500, color: C.ink3, alpha: a * 0.75 * L("scale") });
+    if (shA > 0.01) { const sp = toS(EARTH.x + 160, EARTH.y - RE - 34); S.text(ctx, T.shadow, sp.x, sp.y, { font: "mono", size: 38, weight: 600, color: "#9AA6C8", align: "center", alpha: a * shA }); }
     if (L("eclipse") > 0.01 && inShadow) S.text(ctx, T.eclipse, ms.x, ms.y - 52, { font: "mono", size: 38, weight: 600, color: "#E8956A", align: "center", alpha: a * L("eclipse") });
     ctx.restore();
   }
@@ -473,13 +491,13 @@
     ctx.strokeStyle = live.verdict === "good" && live.verdictT < 1.2 ? C.mint : C.ion; ctx.lineWidth = 4;
     ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.stroke();
     const pa = V("phase.a");
-    if (pa > 0.01) S.text(ctx, T.phases[phaseIndex(E)], x, y + r + 50, { font: "mono", size: 38, weight: 600, color: C.ink, align: "center", alpha: pa });
+    if (pa > 0.01) S.text(ctx, T.phases[phaseIndex(E)], x, y + r + 48, { font: "mono", size: 38, weight: 600, color: C.ink, align: "center", alpha: pa });
     ctx.restore();
   }
 
   function drawStrip(ctx, V, theta, a) {
     const n = V("strip.n"), cur = phaseIndex(elong(theta));
-    const x0 = 72, y = 532, gap = 58, r = 20;
+    const x0 = 72, y = 512, gap = 58, r = 20;
     ctx.save(); ctx.globalAlpha = a;
     for (let i = 0; i < 8; i++) {
       const k = clamp(n - i, 0, 1);
@@ -632,6 +650,26 @@
         return [{ path: path(theta, t1), hold: 4800 }, { path: path(t1, t2), hold: 5400 }, { path: path(t2, t3), hold: 4200 }];
       })() : null,
     };
+  };
+
+  // G6 hook for the animation archetype (test builds only): measure the rendered terminator against (1 - cos E) / 2
+  window.__moonTest = {
+    _probe(E) {
+      const c = document.createElement("canvas"); c.width = c.height = 220;
+      const g = c.getContext("2d"); g.fillStyle = "#000"; g.fillRect(0, 0, 220, 220);
+      moonPhaseDisc(g, 110, 110, 100, E);
+      const d = g.getImageData(0, 0, 220, 220).data;
+      let disc = 0, lit = 0, litL = 0, litR = 0;
+      for (let y = 0; y < 220; y++) for (let x = 0; x < 220; x++) {
+        if ((x - 110) ** 2 + (y - 110) ** 2 > 97 * 97) continue;            // inside the disc, away from the anti-aliased rim
+        disc++;
+        const k = (y * 220 + x) * 4, l = 0.2126 * d[k] + 0.7152 * d[k + 1] + 0.0722 * d[k + 2];
+        if (l > 128) { lit++; if (x < 110) litL++; else litR++; }
+      }
+      return { f: lit / disc, side: litR > litL * 1.05 ? "right" : litL > litR * 1.05 ? "left" : "even" };
+    },
+    litFraction(E) { return +this._probe(E).f.toFixed(4); },
+    litSide(E) { return this._probe(E).side; },
   };
 
   S.fontsReady().then(() => {

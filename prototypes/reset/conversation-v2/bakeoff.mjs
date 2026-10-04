@@ -16,7 +16,7 @@
 import fs from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
-import { SYSTEM, userPrompt, parseNote, INTENTS } from "./understand.mjs";
+import { SYSTEM, userPrompt, parseNote, inferLang, INTENTS } from "./understand.mjs";
 import { decide, initState } from "./policy.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -82,13 +82,34 @@ function stateFor(item) {
   return s;
 }
 const moveOf = (note, item) => decide(stateFor(item), { ...note, langTo: note.langTo ? "hindi" : "", method: note.method ? note.method : "" }).move;
+/** Same action? A language switch is a MODIFIER: re-saying, re-explaining or rephrasing in the asked language are the
+ * same act for the child, so for a gold language_switch the note must carry lang_to and land on one of those moves. */
+const RESAY = new Set(["repeat", "reteach", "rephrase", "adopt"]);
+function sameAction(note, item) {
+  if (!note) return false;
+  const mp = moveOf(note, item), mg = moveOf(goldNote(item.gold), item);
+  if (mp === mg) return true;
+  return item.gold.includes("language_switch") && !!note.langTo && RESAY.has(mp) && RESAY.has(mg);
+}
 
 // ── run ──
+const RESCORE = argv.includes("--rescore");
+const prev = RESCORE ? JSON.parse(fs.readFileSync(join(OUT, "results.json"), "utf8")) : null;
 const results = {};
-const spend = { usd: 0, calls: 0 };
+const spend = prev?.spend ?? { usd: 0, calls: 0 };
 for (const a of arms) results[a] = [];
+if (RESCORE) {
+  const byId = new Map(ctxs.map((x) => [x.id, x]));
+  for (const a of arms) for (const r of prev.results[a] ?? []) {
+    const item = byId.get(r.id);
+    if (!item) continue;
+    // notes parsed before inferLang existed: fill the language slot the same way parseNote now does
+    const note = r.note && !r.note.langTo && [r.note.intent, ...r.note.also].includes("language_switch") ? { ...r.note, langTo: inferLang(item.ctx.said) } : r.note;
+    results[a].push({ ...r, note, primary: !!note && r.gold.includes(note.intent), covers: !!note && r.gold.every((x) => [note.intent, ...note.also].includes(x)), action: sameAction(note, item) });
+  }
+}
 const jobs = [];
-for (let rep = 0; rep < REPS; rep++) for (const a of arms) for (const item of ctxs) jobs.push({ a, item, rep });
+if (!RESCORE) for (let rep = 0; rep < REPS; rep++) for (const a of arms) for (const item of ctxs) jobs.push({ a, item, rep });
 let done = 0;
 await Promise.all(Array.from({ length: CONC }, async () => {
   while (jobs.length) {
@@ -99,7 +120,7 @@ await Promise.all(Array.from({ length: CONC }, async () => {
     try {
       const r = await chat(arm.dep, [{ role: "system", content: SYSTEM }, { role: "user", content: userPrompt(item.ctx) }],
         { json: true, maxTokens: arm.effort === "low" ? 1500 : 300, effort: arm.effort, timeoutMs: 20000, retries: 0 });
-      note = parseNote(r.json); usage = r.usage;
+      note = parseNote(r.json, item.ctx.said); usage = r.usage;
       if (!note) err = "unusable note";
     } catch (e) { err = String(e.message).slice(0, 120); }
     const ms = Date.now() - t0;
@@ -108,7 +129,7 @@ await Promise.all(Array.from({ length: CONC }, async () => {
     results[a].push({ id: item.id, rep, gold: g, ms, err, note,
       primary: !!note && g.includes(note.intent),
       covers: !!note && g.every((x) => [note.intent, ...note.also].includes(x)),
-      action: !!note && moveOf(note, item) === moveOf(goldNote(g), item),
+      action: sameAction(note, item),
       distress: !!note?.distress, goldDistress: g.includes("distress") });
     if (++done % 100 === 0) console.log(`${done} calls ($${spend.usd.toFixed(2)})`);
   }

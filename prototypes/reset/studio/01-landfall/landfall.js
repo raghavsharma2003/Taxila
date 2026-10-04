@@ -295,10 +295,7 @@
   /* ------------------------------------------------------------------ render */
   function render(ctx, now) {
     // background: deep ink, horizon glow, parallax stars, perspective floor
-    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
-    const sky = ctx.createLinearGradient(0, 0, 0, LINE_Y);
-    sky.addColorStop(0, "#090B11"); sky.addColorStop(0.7, "#0E1220"); sky.addColorStop(1, "#151A33");
-    ctx.fillStyle = sky; ctx.fillRect(0, 0, W, LINE_Y);
+    ctx.drawImage(skyArt(), 0, 0, W, H);
     ctx.save();
     ctx.translate(fx.ox, fx.oy);
     const par = (dock.x - 500) / 500;
@@ -310,10 +307,6 @@
       ctx.fillRect(x - r / 2, s.y - r / 2, r, r);
     }
     ctx.globalAlpha = 1;
-    // horizon glow along the line
-    const hg = ctx.createRadialGradient(500, LINE_Y, 10, 500, LINE_Y, 520);
-    hg.addColorStop(0, "rgba(139,152,255,.22)"); hg.addColorStop(1, "rgba(139,152,255,0)");
-    ctx.fillStyle = hg; ctx.fillRect(-20, -20, W + 40, LINE_Y + 20);
     // floor
     ctx.fillStyle = "#0B0D15"; ctx.fillRect(-20, LINE_Y, W + 40, H - LINE_Y + 20);
     ctx.strokeStyle = "rgba(139,152,255,.10)"; ctx.lineWidth = 1.5;
@@ -347,6 +340,20 @@
     fx.drawScreen(ctx);
   }
 
+  let _sky = null;
+  function skyArt() {                     // static sky + horizon glow, painted once at half resolution (it is all gradient)
+    if (_sky) return _sky;
+    _sky = document.createElement("canvas"); _sky.width = 500; _sky.height = 313;
+    const g = _sky.getContext("2d"); g.scale(0.5, 0.5);
+    g.fillStyle = C.bg; g.fillRect(0, 0, W, H);
+    const sky = g.createLinearGradient(0, 0, 0, LINE_Y);
+    sky.addColorStop(0, "#090B11"); sky.addColorStop(0.7, "#0E1220"); sky.addColorStop(1, "#151A33");
+    g.fillStyle = sky; g.fillRect(0, 0, W, LINE_Y);
+    const hg = g.createRadialGradient(500, LINE_Y, 10, 500, LINE_Y, 520);
+    hg.addColorStop(0, "rgba(139,152,255,.22)"); hg.addColorStop(1, "rgba(139,152,255,0)");
+    g.fillStyle = hg; g.fillRect(-20, -20, W + 40, LINE_Y + 20);
+    return _sky;
+  }
   function drawLine(ctx, now) {
     const w = game.wave, gl = game.lineGlow;
     const xEnd = lerp(X0, X1, gl);
