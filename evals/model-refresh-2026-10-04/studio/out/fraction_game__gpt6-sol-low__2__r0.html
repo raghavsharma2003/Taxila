@@ -1,0 +1,217 @@
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  #fraction-game {
+    min-height: 100dvh;
+    padding: 18px 18px 20px;
+    background: #fff8ed;
+    color: #394653;
+    font-family: system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+  }
+  .card {
+    width: min(100%, 390px);
+    min-height: min(604px, calc(100dvh - 38px));
+    padding: 18px;
+    border-radius: 28px;
+    background: #ffffff;
+    box-shadow: 0 10px 35px #80624418;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .top { width: 100%; display: flex; align-items: center; gap: 12px; }
+  .badge { width: 54px; height: 54px; flex: none; }
+  h1 { margin: 0; font-size: 22px; line-height: 1.2; }
+  .instruction { align-self: stretch; margin: 15px 0 8px; font-size: 15px; line-height: 1.4; }
+  .fraction {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    margin-bottom: 8px;
+    color: #a54d3f;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: .03em;
+  }
+  #item { width: 100%; display: flex; flex: 1; flex-direction: column; align-items: center; }
+  #parts {
+    width: min(100%, 270px);
+    height: min(390px, max(240px, calc(100dvh - 242px)));
+    padding: 7px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    border: 3px solid #d59b63;
+    border-radius: 22px;
+    background: #f4d4a4;
+    box-shadow: 0 6px 0 #e7bc87;
+    overflow: hidden;
+  }
+  .part {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    flex: 1 1 0;
+    border: 0;
+    border-radius: 11px;
+    background: #fff0d6;
+    box-shadow: inset 0 0 0 2px #e9caa4;
+    cursor: pointer;
+    transition: background .22s, transform .18s, box-shadow .22s;
+    touch-action: manipulation;
+  }
+  .part[data-shaded="true"] {
+    background: #ed8668;
+    box-shadow: inset 0 0 0 2px #ce654f;
+  }
+  .part:active, #check:active { transform: scale(.96); }
+  .part:focus-visible, #check:focus-visible { outline: 3px solid #386f76; outline-offset: 2px; }
+  #feedback { min-height: 26px; margin: 10px 0 4px; text-align: center; font-weight: 700; color: #8a6351; }
+  #feedback.good { color: #39836f; }
+  #check {
+    width: 100%;
+    min-height: 52px;
+    margin-top: auto;
+    border: 0;
+    border-radius: 17px;
+    background: #397e79;
+    color: white;
+    font: 700 18px system-ui, sans-serif;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #275b58;
+    transition: transform .18s, background .18s;
+  }
+  #check:disabled { opacity: .65; cursor: default; }
+  #item.celebrate #parts { animation: happy .65s ease-in-out; }
+  @keyframes happy { 50% { transform: translateY(-7px) rotate(1deg); } }
+  #finish {
+    display: none;
+    flex: 1;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #397e79;
+    font-size: 27px;
+    font-weight: 800;
+  }
+  @media (max-height: 590px) {
+    .card { min-height: calc(100dvh - 38px); padding: 13px; }
+    .instruction { margin: 8px 0 3px; }
+    .fraction { min-height: 39px; margin-bottom: 4px; }
+    #feedback { margin: 5px 0 2px; }
+  }
+</style>
+
+<main id="fraction-game">
+  <section class="card">
+    <div class="top">
+      <svg class="badge" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="29" fill="#f4d4a4"/>
+        <circle cx="32" cy="32" r="23" fill="#fff0d6" stroke="#d59b63" stroke-width="2"/>
+        <path d="M32 32V9A23 23 0 0 1 55 32Z" fill="#ed8668"/>
+        <path d="M32 32H55A23 23 0 0 1 32 55Z" fill="#ed8668"/>
+        <circle cx="32" cy="32" r="3" fill="#a54d3f"/>
+      </svg>
+      <h1 id="title"></h1>
+    </div>
+    <div id="item" data-item="">
+      <p class="instruction" id="instruction"></p>
+      <div class="fraction" id="fraction"></div>
+      <div id="parts"></div>
+      <div id="feedback" aria-live="polite"></div>
+      <button id="check" data-action="check" type="button"></button>
+    </div>
+    <div id="finish" aria-live="polite"></div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const items = Studio.params.items;
+  const itemBox = document.getElementById('item');
+  const partsBox = document.getElementById('parts');
+  const fraction = document.getElementById('fraction');
+  const feedback = document.getElementById('feedback');
+  const check = document.getElementById('check');
+  const finish = document.getElementById('finish');
+  let index = 0;
+  let waiting = false;
+
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('instruction').textContent = Studio.t('instr');
+  check.textContent = Studio.t('check');
+
+  function showItem() {
+    const item = items[index];
+    itemBox.dataset.item = item.id;
+    itemBox.classList.remove('celebrate');
+    fraction.textContent = item.n + '/' + item.d;
+    feedback.textContent = '';
+    feedback.classList.remove('good');
+    partsBox.replaceChildren();
+    check.disabled = false;
+    waiting = false;
+
+    for (let i = 0; i < item.d; i++) {
+      const part = document.createElement('button');
+      part.type = 'button';
+      part.className = 'part';
+      part.dataset.part = String(i);
+      part.dataset.shaded = 'false';
+      part.setAttribute('aria-pressed', 'false');
+      part.addEventListener('click', () => {
+        if (waiting) return;
+        const shaded = part.dataset.shaded !== 'true';
+        part.dataset.shaded = String(shaded);
+        part.setAttribute('aria-pressed', String(shaded));
+        feedback.textContent = '';
+        Studio.event('part_toggle', { item: item.id, part: i, shaded });
+      });
+      partsBox.appendChild(part);
+    }
+  }
+
+  check.addEventListener('click', () => {
+    if (waiting) return;
+    waiting = true;
+    check.disabled = true;
+    const n = partsBox.querySelectorAll('[data-shaded="true"]').length;
+    Studio.event('check', { item: items[index].id, n });
+    Studio.answer({ n, d: items[index].d });
+  });
+
+  Studio.onVerdict(({ correct }) => {
+    if (!waiting) return;
+    if (correct) {
+      feedback.textContent = Studio.t('right');
+      feedback.classList.add('good');
+      itemBox.classList.add('celebrate');
+      setTimeout(() => {
+        index++;
+        if (index < items.length) {
+          showItem();
+        } else {
+          itemBox.style.display = 'none';
+          finish.style.display = 'flex';
+          finish.textContent = Studio.t('done');
+          Studio.done();
+        }
+      }, 850);
+    } else {
+      feedback.textContent = Studio.t('wrong') + ' ' + Studio.t('hint');
+      feedback.classList.remove('good');
+      waiting = false;
+      check.disabled = false;
+    }
+  });
+
+  showItem();
+  Studio.ready();
+})();
+</script>

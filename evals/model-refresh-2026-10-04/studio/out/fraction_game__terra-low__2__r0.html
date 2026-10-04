@@ -1,0 +1,380 @@
+<style>
+  :root{
+    --ink:#3f3156;
+    --cream:#fff8e8;
+    --card:#ffffff;
+    --tomato:#f36c5f;
+    --cheese:#ffd45f;
+    --basil:#62a86f;
+    --shadow:0 12px 28px rgba(73,48,92,.16);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-width:320px;
+    background:linear-gradient(160deg,#fff3d6 0%,#f8e9ff 100%);
+    color:var(--ink);
+    font-family:ui-rounded,"Arial Rounded MT Bold",system-ui,sans-serif;
+  }
+  #app{
+    min-height:640px;
+    width:100%;
+    max-width:520px;
+    margin:auto;
+    padding:18px 16px 24px;
+    overflow:hidden;
+    position:relative;
+  }
+  .blob{
+    position:absolute;
+    border-radius:50%;
+    opacity:.34;
+    pointer-events:none;
+  }
+  .blob.one{width:142px;height:142px;background:#ffd765;right:-56px;top:80px}
+  .blob.two{width:120px;height:120px;background:#cbb5f4;left:-67px;bottom:35px}
+  .top{
+    position:relative;
+    z-index:1;
+    text-align:center;
+  }
+  h1{
+    margin:5px 0 8px;
+    font-size:clamp(24px,7vw,32px);
+    line-height:1.15;
+    letter-spacing:.1px;
+  }
+  .instruction{
+    margin:0 auto;
+    max-width:380px;
+    font-size:16px;
+    line-height:1.35;
+    color:#6d5b7c;
+  }
+  #game{
+    position:relative;
+    z-index:1;
+    margin-top:16px;
+    background:rgba(255,255,255,.91);
+    border:3px solid rgba(255,255,255,.9);
+    border-radius:28px;
+    padding:16px 12px 17px;
+    box-shadow:var(--shadow);
+  }
+  .fraction{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:7px;
+    margin:0 0 6px;
+    font-weight:800;
+    color:#4b3864;
+  }
+  .frac{
+    width:44px;
+    text-align:center;
+    line-height:1;
+    font-size:27px;
+    display:grid;
+    grid-template-rows:auto 3px auto;
+    gap:3px;
+  }
+  .frac i{
+    display:block;
+    background:currentColor;
+    border-radius:5px;
+  }
+  .equals{
+    font-size:25px;
+    color:#9677b8;
+  }
+  .pizza-wrap{
+    width:min(78vw,290px);
+    height:min(78vw,290px);
+    max-height:290px;
+    margin:4px auto 9px;
+    position:relative;
+    filter:drop-shadow(0 8px 7px rgba(84,52,64,.17));
+  }
+  #pizza{
+    display:block;
+    width:100%;
+    height:100%;
+    overflow:visible;
+  }
+  .crust{
+    fill:#e89448;
+    stroke:#c97939;
+    stroke-width:3;
+  }
+  .part{
+    fill:#ffe3a0;
+    stroke:#fff8df;
+    stroke-width:4;
+    stroke-linejoin:round;
+    cursor:pointer;
+    touch-action:manipulation;
+    transform-origin:150px 150px;
+    transition:fill .2s ease,transform .16s ease,filter .2s ease;
+  }
+  .part[data-shaded="true"]{
+    fill:var(--tomato);
+    filter:saturate(1.15);
+  }
+  .part:active{transform:scale(.96)}
+  .part.pop{animation:pop .28s ease}
+  .pepperoni{fill:#f17862;opacity:.93;pointer-events:none}
+  .basil{fill:#59a86e;pointer-events:none}
+  .hint{
+    min-height:24px;
+    margin:0 8px 10px;
+    text-align:center;
+    font-size:15px;
+    font-weight:700;
+    color:#766084;
+    transition:transform .22s ease,opacity .22s ease;
+  }
+  .hint.good{color:#32905b;animation:lift .45s ease}
+  .hint.bad{color:#c65b65;animation:shake .42s ease}
+  .check{
+    width:100%;
+    min-height:52px;
+    border:0;
+    border-radius:17px;
+    background:var(--basil);
+    color:#fff;
+    font:800 18px ui-rounded,"Arial Rounded MT Bold",system-ui,sans-serif;
+    box-shadow:0 5px 0 #3f8050,0 9px 15px rgba(65,133,81,.24);
+    cursor:pointer;
+    touch-action:manipulation;
+    transition:transform .15s ease,filter .15s ease,opacity .15s ease;
+  }
+  .check:active{transform:translateY(4px);box-shadow:0 1px 0 #3f8050}
+  .check:disabled{opacity:.7;cursor:default}
+  #celebration{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    border-radius:28px;
+  }
+  .spark{
+    position:absolute;
+    width:12px;
+    height:12px;
+    border-radius:4px;
+    animation:spark .75s ease-out forwards;
+  }
+  #complete{
+    display:none;
+    position:relative;
+    z-index:2;
+    min-height:420px;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+  }
+  #complete.show{display:flex}
+  .done-card{
+    background:rgba(255,255,255,.92);
+    border-radius:30px;
+    padding:34px 24px;
+    width:100%;
+    box-shadow:var(--shadow);
+    animation:enter .5s cubic-bezier(.2,.9,.3,1.2);
+  }
+  .sun{
+    width:112px;
+    height:112px;
+    margin:0 auto 18px;
+    border-radius:50%;
+    background:var(--cheese);
+    position:relative;
+    box-shadow:0 0 0 12px rgba(255,212,95,.25);
+  }
+  .sun:before,.sun:after{
+    content:"";
+    position:absolute;
+    top:40px;
+    width:13px;
+    height:13px;
+    border-radius:50%;
+    background:#704e4c;
+  }
+  .sun:before{left:28px}.sun:after{right:28px}
+  .smile{
+    position:absolute;
+    width:37px;
+    height:20px;
+    left:38px;
+    top:59px;
+    border:5px solid #704e4c;
+    border-top:0;
+    border-left-color:transparent;
+    border-right-color:transparent;
+    border-radius:0 0 30px 30px;
+  }
+  .done-text{
+    font-size:26px;
+    font-weight:800;
+    line-height:1.25;
+  }
+  @keyframes pop{50%{transform:scale(1.05)}}
+  @keyframes lift{50%{transform:translateY(-4px)}}
+  @keyframes shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+  @keyframes spark{0%{transform:translate(0,0) scale(.3) rotate(0);opacity:1}100%{transform:translate(var(--x),var(--y)) scale(1) rotate(220deg);opacity:0}}
+  @keyframes enter{from{opacity:0;transform:scale(.83) translateY(15px)}to{opacity:1;transform:scale(1) translateY(0)}}
+</style>
+
+<div id="app">
+  <div class="blob one"></div>
+  <div class="blob two"></div>
+  <section id="play" aria-live="polite">
+    <header class="top">
+      <h1 id="title"></h1>
+      <p class="instruction" id="instruction"></p>
+    </header>
+    <main id="game" data-item="">
+      <div class="fraction" aria-label="">
+        <span class="frac"><b id="numerator"></b><i></i><b id="denominator"></b></span>
+        <span class="equals">?</span>
+      </div>
+      <div class="pizza-wrap">
+        <svg id="pizza" viewBox="0 0 300 300" role="img"></svg>
+      </div>
+      <div id="message" class="hint"></div>
+      <button id="check" class="check" type="button" data-action="check"></button>
+      <div id="celebration"></div>
+    </main>
+  </section>
+  <section id="complete" aria-live="polite">
+    <div class="done-card">
+      <div class="sun"><div class="smile"></div></div>
+      <div id="doneText" class="done-text"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var items=Studio.params.items;
+  var index=0, locked=false;
+  var game=document.getElementById("game");
+  var pizza=document.getElementById("pizza");
+  var message=document.getElementById("message");
+  var check=document.getElementById("check");
+  var ns="http://www.w3.org/2000/svg";
+
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("instruction").textContent=Studio.t("instr");
+  check.textContent=Studio.t("check");
+
+  function point(a,r){
+    return [150+Math.cos(a)*r,150+Math.sin(a)*r];
+  }
+  function wedge(i,total){
+    var start=-Math.PI/2+(Math.PI*2*i/total);
+    var end=-Math.PI/2+(Math.PI*2*(i+1)/total);
+    var a=point(start,128), b=point(end,128);
+    return "M 150 150 L "+a[0]+" "+a[1]+" A 128 128 0 0 1 "+b[0]+" "+b[1]+" Z";
+  }
+  function garnish(){
+    var dots=[[116,103],[187,107],[155,185],[99,177],[205,171]];
+    dots.forEach(function(p,k){
+      var c=document.createElementNS(ns,"circle");
+      c.setAttribute("cx",p[0]);c.setAttribute("cy",p[1]);c.setAttribute("r",k===2?11:9);
+      c.setAttribute("class","pepperoni");
+      pizza.appendChild(c);
+    });
+    [[145,77],[211,140],[95,143]].forEach(function(p){
+      var e=document.createElementNS(ns,"ellipse");
+      e.setAttribute("cx",p[0]);e.setAttribute("cy",p[1]);e.setAttribute("rx","5");e.setAttribute("ry","9");
+      e.setAttribute("class","basil");
+      pizza.appendChild(e);
+    });
+  }
+  function showItem(){
+    var item=items[index];
+    locked=false;
+    check.disabled=false;
+    game.setAttribute("data-item",item.id);
+    document.getElementById("numerator").textContent=item.n;
+    document.getElementById("denominator").textContent=item.d;
+    message.textContent="";
+    message.className="hint";
+    pizza.innerHTML="";
+    var crust=document.createElementNS(ns,"circle");
+    crust.setAttribute("cx","150");crust.setAttribute("cy","150");crust.setAttribute("r","137");
+    crust.setAttribute("class","crust");
+    pizza.appendChild(crust);
+    for(var i=0;i<item.d;i++){
+      var p=document.createElementNS(ns,"path");
+      p.setAttribute("d",wedge(i,item.d));
+      p.setAttribute("class","part");
+      p.setAttribute("data-part",i);
+      p.setAttribute("data-shaded","false");
+      p.addEventListener("click",toggle);
+      pizza.appendChild(p);
+    }
+    garnish();
+  }
+  function toggle(e){
+    if(locked)return;
+    var p=e.currentTarget;
+    var shaded=p.getAttribute("data-shaded")==="true";
+    p.setAttribute("data-shaded",shaded?"false":"true");
+    p.classList.remove("pop");
+    void p.getBoundingClientRect();
+    p.classList.add("pop");
+    Studio.event("part_toggle",{item:items[index].id,part:Number(p.getAttribute("data-part")),shaded:!shaded});
+  }
+  function burst(){
+    var box=document.getElementById("celebration");
+    box.innerHTML="";
+    var colors=["#ffd45f","#f36c5f","#62a86f","#b78be3"];
+    for(var i=0;i<16;i++){
+      var s=document.createElement("span");
+      s.className="spark";
+      s.style.left="50%";s.style.top="48%";
+      s.style.background=colors[i%colors.length];
+      s.style.setProperty("--x",((i%4)-1.5)*54+"px");
+      s.style.setProperty("--y",(-55-Math.floor(i/4)*30)+"px");
+      box.appendChild(s);
+    }
+  }
+  check.addEventListener("click",function(){
+    if(locked)return;
+    locked=true;
+    check.disabled=true;
+    var selected=pizza.querySelectorAll('.part[data-shaded="true"]').length;
+    Studio.event("check",{item:items[index].id,n:selected,d:items[index].d});
+    Studio.answer({n:selected,d:items[index].d});
+  });
+  Studio.onVerdict(function(result){
+    if(result.correct){
+      message.textContent=Studio.t("right");
+      message.className="hint good";
+      burst();
+      Studio.event("verdict",{item:items[index].id,correct:true});
+      setTimeout(function(){
+        index++;
+        if(index<items.length){showItem();}
+        else{
+          document.getElementById("play").style.display="none";
+          document.getElementById("doneText").textContent=Studio.t("done");
+          document.getElementById("complete").classList.add("show");
+          Studio.done();
+        }
+      },850);
+    }else{
+      locked=false;
+      check.disabled=false;
+      message.textContent=Studio.t("wrong")+" "+Studio.t("hint");
+      message.className="hint bad";
+      Studio.event("verdict",{item:items[index].id,correct:false});
+    }
+  });
+  showItem();
+  Studio.ready();
+}());
+</script>

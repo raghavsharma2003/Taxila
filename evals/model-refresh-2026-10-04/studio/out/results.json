@@ -7183,5 +7183,312 @@
   "roundsUsed": 3,
   "timeToPlayableMs": null,
   "usd": 0.103347
+ },
+ {
+  "id": "bar_chart_viz__gpt6-luna-low__1",
+  "kind": "bar_chart_viz",
+  "arm": "gpt6-luna-low",
+  "s": 1,
+  "dep": "taxila-gpt6-luna",
+  "effort": "low",
+  "startedAt": "2026-10-04T11:13:36.495Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 11781,
+    "ttftMs": 5071,
+    "firstAnyMs": 5071,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 824,
+     "cached": 0,
+     "out": 2003,
+     "reasoning": 408
+    },
+    "usd": 0.0010839,
+    "error": null,
+    "chars": 5064,
+    "streamPaintMs": 8071,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4835,
+     "readyMs": 24,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         31,
+         70,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\"}"
+        ],
+        [
+         31,
+         41,
+         "{\"data-bar\":\"banana\",\"data-value\":\"7\"}"
+        ],
+        [
+         31,
+         53,
+         "{\"data-bar\":\"apple\",\"data-value\":\"9\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 16616
+   },
+   {
+    "round": 1,
+    "genMs": 7572,
+    "ttftMs": 2305,
+    "firstAnyMs": 2305,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 2508,
+     "cached": 0,
+     "out": 1749,
+     "reasoning": 154
+    },
+    "usd": 0.0011252999999999999,
+    "error": null,
+    "chars": 5064,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4885,
+     "readyMs": 29,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         43,
+         27,
+         "{\"data-bar\":\"guava\",\"data-value\":\"4\"}"
+        ],
+        [
+         43,
+         40,
+         "{\"data-bar\":\"orange\",\"data-value\":\"6\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 29073
+   },
+   {
+    "round": 2,
+    "genMs": 9614,
+    "ttftMs": 4714,
+    "firstAnyMs": 4714,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 2490,
+     "cached": 0,
+     "out": 2051,
+     "reasoning": 512
+    },
+    "usd": 0.0012745,
+    "error": null,
+    "chars": 4895,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4807,
+     "readyMs": 38,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "no_answer_hint_before_tap",
+       "detail": [
+        "rgb(242, 166, 74)|rgba(0, 0, 0, 0)|1",
+        "rgb(120, 183, 165)|rgba(0, 0, 0, 0)|1",
+        "rgb(233, 130, 105)|rgba(0, 0, 0, 0)|1"
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 43494
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": false,
+  "roundsUsed": 3,
+  "timeToPlayableMs": null,
+  "usd": 0.0034836999999999997
+ },
+ {
+  "id": "bar_chart_viz__gpt6-luna-none__1",
+  "kind": "bar_chart_viz",
+  "arm": "gpt6-luna-none",
+  "s": 1,
+  "dep": "taxila-gpt6-luna",
+  "effort": "none",
+  "startedAt": "2026-10-04T11:13:48.065Z",
+  "rounds": [
+   {
+    "round": 0,
+    "genMs": 9210,
+    "ttftMs": 1305,
+    "firstAnyMs": 1305,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 824,
+     "cached": 0,
+     "out": 2273,
+     "reasoning": 0
+    },
+    "usd": 0.0012189000000000002,
+    "error": null,
+    "chars": 7417,
+    "streamPaintMs": 6305,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4799,
+     "readyMs": 24,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         32,
+         48,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\"}"
+        ]
+       ]
+      },
+      {
+       "id": "axis_ticks_tell_truth",
+       "detail": "4 ticks, worst 11.0 px"
+      },
+      {
+       "id": "no_answer_hint_before_tap",
+       "detail": [
+        "rgb(0, 0, 0)|rgb(44, 155, 137)|1",
+        "rgb(0, 0, 0)|rgb(239, 139, 114)|1",
+        "rgb(0, 0, 0)|rgb(239, 189, 85)|1"
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 14009
+   },
+   {
+    "round": 1,
+    "genMs": 7496,
+    "ttftMs": 1093,
+    "firstAnyMs": 1093,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 3249,
+     "cached": 0,
+     "out": 2154,
+     "reasoning": 0
+    },
+    "usd": 0.0014019000000000002,
+    "error": null,
+    "chars": 7105,
+    "qa": {
+     "pass": false,
+     "passNoAnchor": false,
+     "ms": 4926,
+     "readyMs": 81,
+     "perf": {
+      "p95": 17,
+      "frames": 91,
+      "longTasks": 0
+     },
+     "failed": [
+      {
+       "id": "targets_ge_40px",
+       "detail": [
+        [
+         37,
+         119,
+         "{\"data-bar\":\"mango\",\"data-value\":\"12\"}"
+        ],
+        [
+         37,
+         38,
+         "{\"data-bar\":\"banana\",\"data-value\":\"7\"}"
+        ]
+       ]
+      }
+     ],
+     "nChecks": 19
+    },
+    "cumWallMs": 26431
+   },
+   {
+    "round": 2,
+    "genMs": 7515,
+    "ttftMs": 1185,
+    "firstAnyMs": 1185,
+    "reasoningChars": 0,
+    "served": "gpt-6-luna-2026-09-22",
+    "usage": {
+     "in": 3055,
+     "cached": 0,
+     "out": 2160,
+     "reasoning": 0
+    },
+    "usd": 0.0013855,
+    "error": null,
+    "chars": 7119,
+    "qa": {
+     "pass": true,
+     "passNoAnchor": true,
+     "ms": 4818,
+     "readyMs": 25,
+     "perf": {
+      "p95": 17,
+      "frames": 90,
+      "longTasks": 0
+     },
+     "failed": [],
+     "nChecks": 19
+    },
+    "cumWallMs": 38764
+   }
+  ],
+  "passFirst": false,
+  "passFirstNoAnchor": false,
+  "passFinal": true,
+  "roundsUsed": 3,
+  "timeToPlayableMs": 38764,
+  "usd": 0.004006300000000001
  }
 ]
