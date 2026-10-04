@@ -1640,3 +1640,5 @@ is now one warm specific line with no question, then back to the work.
 **Tried:** a separate `grooming` kind in `scanSafety`. **What breaks:** the kind union `self_harm | abuse | fear` is typed in
 `server/duplex/*.d.ts`, `src/duplex/*` and read by the governor; a fourth value silently falls outside those switches. The
 grooming shape is part of `abuse`.
+
+- `rj-worktree-isolation-on-this-repo` (2026-10-04): tried running the Wave 2.5 pre-work streams with `isolation: worktree`. Each worktree is a 2.4 GB checkout (docs and art are large and tracked), and two of them took the disk from 6.6 GB to 1.9 GB inside minutes. The workflow was stopped and the worktrees removed. While freeing space, deleting ignored-looking `puppet2d/{P,V}/work` dirs removed 413 tracked frames; they were restored with `git checkout`, and nothing was lost. Rule: on this repo, run parallel streams in the main tree restricted to new paths, and check `git ls-files` before deleting any directory. **Reverse if:** the repo's tracked binary weight drops below ~500 MB, or disk headroom exceeds 20 GB.
