@@ -2259,3 +2259,7 @@ container to eastus2.
 |---|---|---|---|---|---|
 | grok-4-1-fast-nr | 118/140 | 49/56 | 0.068 | 490 / 957 ms | $0.152 |
 | taxila-fast | 127/140 | 63/71 | 0.062 | 963 / 1,202 ms | $0.0087 |
+
+
+## Merged inbox entries (write-up from the entry text)
+- `m-voice-blind-r3-2026-10-04` (2026-10-04): Voice blind round 3, n = 2 raters x 20 clips, equal weight: Diya anchor 2.40, Diya new spoken line plain 2.40, Diya + SSML delivery plan 2.10, Nova kiara 1.60; joke card 1.0-1.5 on every arm (docs/research/voice/v4/blind/RESULTS-R3.md)

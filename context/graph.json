@@ -8910,6 +8910,27 @@
    "at": "2026-10-04",
    "title": "Owner: voice is a MAJOR signal of whether the child understood. Built as knowledge/metacognitive states (uncertain-correct, confident-wrong, searching vs not-known, guessing, fluent recall), not emotions. Features + model run on the device or self-hosted (training on AWS GPU credits); per-child baselines in Neon; no Microsoft AI service infers anything from voice. This supersedes the signals spec's 'voice stays minor until Microsoft answers' stance for knowledge states. Emotion-from-voice is at most a shadow research arm. Workstream wf_085e782c-74c.",
    "source": "inbox/owner-voice-signals.json"
+  },
+  {
+   "id": "m-voice-blind-r3-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Voice blind round 3, n = 2 raters x 20 clips, equal weight: Diya anchor 2.40, Diya new spoken line plain 2.40, Diya + SSML delivery plan 2.10, Nova kiara 1.60; joke card 1.0-1.5 on every arm (docs/research/voice/v4/blind/RESULTS-R3.md)",
+   "source": "inbox/voice-r3-results.json"
+  },
+  {
+   "id": "rj-ssml-delivery-plan-2026-10-04",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Per-clause SSML delivery plan on DragonHD Diya (breaks, slow-only rate, pitch -8%): planned pauses landed 21/21, yet listeners scored it lower than the plain line (2.10 vs 2.40) and ticked choppy/slow; exact pause placement does not create feeling on a stock voice",
+   "source": "inbox/voice-r3-results.json"
+  },
+  {
+   "id": "voice-r3-next-expressive-engine-2026-10-04",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "After three rounds at a 2.4-2.6 ceiling on stock Diya, stop iterating markup: keep spoken-register writing (minus fragmenting), drop the SSML delivery plan, test emotion-capable engines next (round 4), and pursue a custom voice from a consented Indian teacher's emotional child-directed recordings. Reverse if a round-4 engine fails to beat Diya B on the joke and surprise cards.",
+   "source": "inbox/voice-r3-results.json"
   }
  ],
  "edges": [
@@ -14562,6 +14583,16 @@
    "src": "sig-review-nonanswer-graded",
    "rel": "measured_by",
    "dst": "m-sig-review-rerun-2026-10-04"
+  },
+  {
+   "src": "rj-ssml-delivery-plan-2026-10-04",
+   "rel": "measured_by",
+   "dst": "m-voice-blind-r3-2026-10-04"
+  },
+  {
+   "src": "voice-r3-next-expressive-engine-2026-10-04",
+   "rel": "measured_by",
+   "dst": "m-voice-blind-r3-2026-10-04"
   }
  ]
 }

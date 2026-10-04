@@ -1416,3 +1416,7 @@ before the verb ("na karo").
 manager is frozen as TaxilaFDB baseline B3.
 
 **Revisit** only under that decision's reversal (DX-12 on real children), and then only as a per-context floor.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-ssml-delivery-plan-2026-10-04` (2026-10-04): Per-clause SSML delivery plan on DragonHD Diya (breaks, slow-only rate, pitch -8%): planned pauses landed 21/21, yet listeners scored it lower than the plain line (2.10 vs 2.40) and ticked choppy/slow; exact pause placement does not create feeling on a stock voice

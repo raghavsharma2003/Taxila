@@ -3609,3 +3609,7 @@ in the code.
 - **Harness levels:** L1 simulation (the prototype harness, kept), L2 real STT, L3 at the ear in India.
 
 **Reverse if** real-child E1 results rank the arms differently. The scenario priors are then refit from E1.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `voice-r3-next-expressive-engine-2026-10-04` (2026-10-04): After three rounds at a 2.4-2.6 ceiling on stock Diya, stop iterating markup: keep spoken-register writing (minus fragmenting), drop the SSML delivery plan, test emotion-capable engines next (round 4), and pursue a custom voice from a consented Indian teacher's emotional child-directed recordings. Reverse if a round-4 engine fails to beat Diya B on the joke and surprise cards.
