@@ -59,6 +59,19 @@ await withTestAccount(async ({ api, child: first }) => {
     for (const spoken of laneList) runs.push({ phrase, spoken, after: AFTER[i % AFTER.length], persona: [PERSONAS.aarav, PERSONAS.meher, PERSONAS.zoya, PERSONAS.kabir][i % 4] });
   });
   let restartChecked = false;
+  /** F7: a stop the child made does not close the day: the same child can start a new lesson (parent limits still decide). Once per run. */
+  const restartCheck = async (L, child, persona, spoken, how) => {
+    if (restartChecked) return;
+    restartChecked = true;
+    await L.end();
+    try {
+      const again = await openLesson(api, child, { topicId: persona.topics[1] ?? persona.topics[0], spoken, persona });
+      ok(!!again.lessonId, `after ${how}, the same child can start a lesson again the same day (no 409)`);
+      await again.end();
+    } catch (e) {
+      ok(false, `after ${how}, the same child can start a lesson again the same day — got ${e.status} ${e.body?.error ?? e.message} (F7: one stop closes the whole day)`);
+    }
+  };
   for (const run of runs) {
     const { phrase, spoken, after, persona } = run;
     const child = await childFor(persona);
@@ -82,18 +95,7 @@ await withTestAccount(async ({ api, child: first }) => {
         ok(!/[?？]\s*$/.test(String(r2.r.teacherReply ?? "").trim()), `${tag}: the goodbye after the confirmation asks no question (NEVER MANIPULATE) — "${String(r2.r.teacherReply ?? "").slice(0, 80)}"`);
         const fl = floorViolations(String(r2.r.teacherReply ?? ""), { goodbye: true });
         ok(fl.length === 0, `${tag}: the goodbye passes the floor (no hook, no guilt)${fl.length ? `: ${fl.join(", ")}` : ""}`);
-        // F7: a stop the child confirmed does not close the day: a new lesson can start (the parent's limits still decide)
-        if (!restartChecked && ended(r2.r)) {
-          restartChecked = true;
-          await L.end();
-          try {
-            const again = await openLesson(api, child, { topicId: persona.topics[1] ?? persona.topics[0], spoken, persona });
-            ok(!!again.lessonId, `after a child-confirmed stop, the same child can start a lesson again the same day (no 409)`);
-            await again.end();
-          } catch (e) {
-            ok(false, `after a child-confirmed stop, the same child can start a lesson again the same day — got ${e.status} ${e.body?.error ?? e.message} (F7: "today's lesson is done")`);
-          }
-        }
+        if (ended(r2.r)) await restartCheck(L, child, persona, spoken, "a child-confirmed stop");
       } else {
         const chip = chips.find((c) => (after === "continue" ? GO_CHIP : BREAK_CHIP).test(c.label));
         const words = after === "continue" ? (persona.lang === "english" ? "no wait, let's keep going" : "nahi nahi, chalo continue karte hain") : (persona.lang === "english" ? "can I take a short break?" : "thoda break chahiye");
@@ -106,8 +108,8 @@ await withTestAccount(async ({ api, child: first }) => {
         rec.after = { via: chip ? `chip ${chip.id}` : "words", ended: ended(r2.r) || ended(r3.r), back };
       }
     } else if (stop.r.end) {
-      // what the child saw: the day closed by one phrase? (recorded; F7)
-      await L.end();
+      // the lesson ended on the phrase itself (the A check above already failed): can the child even come back today? (F7)
+      await restartCheck(L, child, persona, spoken, "a child's stop phrase");
     }
     await L.end();
     results.push(rec);

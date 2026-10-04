@@ -2172,3 +2172,90 @@ PASS; target p99 ≤ 5 ms PASS in all three runs. Production timing is SG-M18.
 
 ## Merged inbox entries (write-up from the entry text)
 - `voice-blind-r3-page-check-2026-10-04` (2026-10-04): Round-3 page functional check (headless Chromium 1194, Playwright, 29 assertions, all passed, 2026-10-04). Covered: 5 cards x 4 voices, words shown on every clip, scores locked until listened, 11 failure boxes; with storage blocked and no runtime, status text plus a ratings-text export that carries v, who, score and ticks; with a mock db, the db score, local score and card note merge, names are indexed, switching person keeps both docs separate with no reload, and a runtime that resolves late after start does not overwrite an earlier device's scores and adopts its seed; with a null runtime, the on-device status shows; no horizontal scroll at 360 px. Not exercised: the real claude.ai db/user runtime, which is checked after publish with an ArtifactData list of ratings.
+
+## Duplex v2 (2026-10-04): pending merge from `inbox/duplex-v2.json`
+
+The duplex prototype (workstream wf_3622f8d6-318) measured M-D2 to M-D5 before it was stopped, and never logged them.
+They are written up here from their result files. M-D6 is new, from Architect v2.
+
+### `m-d6-lexical-horizon-2026-10-04`
+
+**What it is.** `node evals/duplex/lexical-horizon.mjs`: a deterministic replay costing $0.
+- **Input:** the 28 BASE runs of M-D2. Synthetic child TTS was streamed in real time to `taxila-live-transcribe` (D4),
+  from a US container to eastus2, with server VAD at 900 ms.
+- **Method:** words-only completeness rules (`understand.js` + `turnPolicy.ts`) evaluated every 20 ms on 25 commit/hold
+  scenarios, with 3 distress scenarios reported separately.
+- **Result file:** `evals/duplex/results/lexical-horizon-2026-10-04.json`.
+
+**D4 as measured:**
+
+| rule | premature [80% CI] | wrong value at decision | gap p50 / p90 | notes |
+|---|---|---|---|---|
+| words + child silent | 4/25 [0.09, 0.27] | 5/13 | 907 / 1,436 ms | the wrong values were stale prefixes |
+| + the lexical-horizon guard | 0/25 [0, 0.06] | 0/11 | 1,103 / 1,533 ms | 6 never decided by words |
+| silence-640 | 15/25 [0.47, 0.72] | — | 655 ms | — |
+| silence-900 | 11/25 | — | — | — |
+
+**Fast-ear re-timing [E, a model].**
+- Partials were re-timed to arrive at coverage + 294 ms (Nemotron p50).
+- The horizon rule was premature in 3/25 scenarios, all of them self-corrections, at a decision gap of about 306 ms.
+- It decided before the disclosure ended in 2/3 distress runs.
+
+**Limits:**
+- n = 25, written by one author.
+- Each TTS segment was synthesised separately, so the prosody is unrealistic.
+- One STT pass.
+- Coverage is estimated by mapping characters onto the voiced segments.
+- The form-grammar rule (W1HF) is in-sample.
+
+### `m-d2-duplex-live-stt-2026-10-04`
+
+**What it is.** `evals/duplex/live-validate.mjs`: 28 scenarios of child TTS streamed in real time to D4, from a US
+container to eastus2.
+
+| quantity | p50 | p90 | n |
+|---|---|---|---|
+| first delta after the child's onset | 1,743 ms | 2,048 ms | 28 |
+| delta lag (arrival − audio covered) | 713 ms | 1,477 ms | 266 |
+| final after server VAD | 514 ms | 888 ms | 43 |
+| final after a client commit | 915 ms | 1,311 ms | 58 |
+| final tokens visible at true end + 500 ms | 67% | — | 28 |
+| BASE arm, true end → last final | 1,834 ms | 2,490 ms | 28 |
+| v1 floor manager, true end → commit (live) | 1,458 ms | 1,736 ms | 25 |
+
+- **The client commit works:** 0 socket errors, so D4 honours a client commit while server VAD runs at 1,500 ms as a
+  backstop. But its final comes back slower than the VAD final.
+- **Files:** `live-validate`, `live-calibration` and `live-analysis`, all dated 2026-10-04.
+
+### `m-d3-duplex-sim-smoke-2026-10-04`
+
+**What it is.** `evals/duplex/sim.mjs`: 308 simulated turns per arm (4 seeds).
+- STT timing is calibrated from M-D2 for D4, and from the STT-v3 figures for MAI.
+- Post-commit stages are bootstrapped from the 48 measured cascade turns.
+
+| arm | gap p50 / p90 | false take-overs | hold violations | missed turn ends | overlap resolved | other |
+|---|---|---|---|---|---|---|
+| cascade-900 | 1,962 / 2,397 ms | 63/280 | 24/24 | 108/280 | 48/76 at 2.4 s | — |
+| v1 floor manager on D4 | 1,480 / 1,805 ms | 1/280 | 0/24 | 5/280 | 72/76 at 1.70 s | wait-draft hits 147/164; candidate-draft hits 64/243; 77% of draft tokens wasted |
+| v1 floor manager on MAI | 577 / 1,488 ms | 10/280 | — | — | 76/76 at 720 ms | silent false commits 38/280 |
+
+This ranks the arms on a chosen corpus; it does not predict a classroom.
+
+### `m-d4-duplex-draft-live-2026-10-04`
+
+**What it is.** `evals/duplex/draft-live.mjs`: taxila-fast drafts with a ~1.25k-token brief, from a US container to
+eastus2, n = 24, 0 errors.
+- TTFT: p50 901 ms, p90 1,468 ms.
+- Total time: p50 1,015 ms, p90 1,566 ms.
+- An abort at about 302 ms cancelled 4 of 4.
+- Cost: $0.0077.
+
+### `m-d5-duplex-model-arm-2026-10-04`
+
+**What it is.** `evals/duplex/model-arm.mjs`: typed `{done: p}` judgments on 140 hold-time prefixes, from a US
+container to eastus2.
+
+| deployment | accuracy at 0.5 | precision at 0.9 | ECE | latency p50 / p90 | cost |
+|---|---|---|---|---|---|
+| grok-4-1-fast-nr | 118/140 | 49/56 | 0.068 | 490 / 957 ms | $0.152 |
+| taxila-fast | 127/140 | 63/71 | 0.062 | 963 / 1,202 ms | $0.0087 |

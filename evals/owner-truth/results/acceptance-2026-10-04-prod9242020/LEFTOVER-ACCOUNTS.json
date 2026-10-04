@@ -1,0 +1,12 @@
+[
+ {
+  "at": "2026-10-04T20:09:00Z",
+  "base": "https://taxila.dev",
+  "email": "prod-owner3+1791143713628akvxra@taxila.test",
+  "test": "tests/prod/owner-3-ending.mjs --lanes spoken --seed 3102",
+  "reason": "409 erase_review: the spoken stop phrase \"i'm done\" was routed to safeguarding by production (an unhandled safeguarding incident on one test child; routes/account.js safetyFirst holds the erasure). This is F10 reproduced, not a harness fault.",
+  "childrenLeft": 1,
+  "childrenErased": 11,
+  "resolve": "a human (main loop) reviews and marks that test child's incident handled, then DELETE /api/account with the derived password; the test never bypasses the guard"
+ }
+]

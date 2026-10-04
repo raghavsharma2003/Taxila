@@ -1,0 +1,2275 @@
+{
+ "base": "https://taxila.dev",
+ "seed": 4101,
+ "outcomes": [
+  {
+   "id": "talk_else",
+   "spoken": false,
+   "persona": "Meher",
+   "ok": false,
+   "problems": [
+    {
+     "code": "R8.unasked_end",
+     "why": "the lesson ended on a turn that was not a goodbye or a confirmed stop (F6)"
+    }
+   ],
+   "reply": "Of course, Meher. We can stop here. Take care, and goodbye for now!",
+   "kind": "wrap",
+   "end": true
+  },
+  {
+   "id": "talk_else",
+   "spoken": true,
+   "persona": "Meher",
+   "ok": false,
+   "problems": [
+    {
+     "code": "R8.unasked_end",
+     "why": "the lesson ended on a turn that was not a goodbye or a confirmed stop (F6)"
+    }
+   ],
+   "reply": "Of course, Meher. We can stop here. Take care, and goodbye!",
+   "kind": "wrap",
+   "end": true
+  },
+  {
+   "id": "topic_interest",
+   "spoken": false,
+   "persona": "Aarav",
+   "ok": false,
+   "problems": [
+    {
+     "code": "S.topic_interest",
+     "why": "cricket never came up: the request was ignored"
+    },
+    {
+     "code": "R6.gutted",
+     "why": "a worked_example turn with almost no content: \"Aapka favourite shot kaunsa hai?\" (F18)"
+    },
+    {
+     "code": "R7.ignored",
+     "why": "nothing new besides the question: the reply re-states the previous turn, the child's words were ignored"
+    }
+   ],
+   "reply": "Aapka favourite shot kaunsa hai?",
+   "kind": "worked_example",
+   "end": false
+  },
+  {
+   "id": "topic_interest",
+   "spoken": true,
+   "persona": "Aarav",
+   "ok": true,
+   "problems": [],
+   "reply": "Bilkul Aarav—cricket mein aapko batting, bowling ya fielding mein se kya zyada pasand hai? Bas ek choose kijiye.",
+   "kind": "worked_example",
+   "end": false
+  },
+  {
+   "id": "differently",
+   "spoken": false,
+   "persona": "Zoya",
+   "ok": true,
+   "problems": [],
+   "reply": "Zoya, raat ko uniform geeli aur bhaari thi; subah halki-sookhi hai. Pehla clue: paani kapde se gayab dikhta hai. Agla step aap batayenge?",
+   "kind": "worked_example",
+   "end": false
+  },
+  {
+   "id": "differently",
+   "spoken": true,
+   "persona": "Zoya",
+   "ok": true,
+   "problems": [],
+   "reply": "Zoya, 2/5 aur 2/3 mein dono ke 2 pieces hain. Ab dekhiye: whole ko 5 equal parts mein kaatne par har piece kaisa hoga?",
+   "kind": "worked_example",
+   "end": false
+  },
+  {
+   "id": "slowly",
+   "spoken": false,
+   "persona": "Golu",
+   "ok": true,
+   "problems": [],
+   "reply": "Bilkul, Golu. Dheere chalenge. 1/3 ka matlab hai 3 equal groups mein se 1 group. 15 pencils ko kitne groups mein baantna hai?",
+   "kind": "worked_example",
+   "end": false
+  },
+  {
+   "id": "slowly",
+   "spoken": true,
+   "persona": "Golu",
+   "ok": true,
+   "problems": [],
+   "reply": "Bilkul Golu, hum dheere-dheere karenge. Pehla kaam: park ko sweep karna. Agla kaam kya ho sakta hai?",
+   "kind": "worked_example",
+   "end": false
+  },
+  {
+   "id": "example",
+   "spoken": false,
+   "persona": "Kabir",
+   "ok": true,
+   "problems": [],
+   "reply": "Kabir, example: 2/7 of 3/4 likhenge 2/7 multiplied by 3/4. Ab sirf numerators multiply karke bataiye—2 times 3 kitna hoga?",
+   "kind": "worked_example",
+   "end": false
+  },
+  {
+   "id": "example",
+   "spoken": true,
+   "persona": "Kabir",
+   "ok": false,
+   "problems": [
+    {
+     "code": "S.example",
+     "why": "no example given"
+    }
+   ],
+   "reply": "Kabir, pehla step: idea likhiye—“Seeds ko sprout hone ke liye light chahiye.” Ab agla step aap kya rakhenge?",
+   "kind": "worked_example",
+   "end": false
+  },
+  {
+   "id": "hindi",
+   "spoken": false,
+   "persona": "Meher",
+   "ok": true,
+   "problems": [],
+   "reply": "Meher, ek laddoo ko 3 barabar hisson mein kaato; har hissa one-third, yaani ek-tihai, hoga. Ab 5 laddoo mein kitne one-thirds honge?",
+   "kind": "worked_example",
+   "end": false
+  },
+  {
+   "id": "hindi",
+   "spoken": true,
+   "persona": "Meher",
+   "ok": false,
+   "problems": [
+    {
+     "code": "S.hindi",
+     "why": "the reply is not in Hindi"
+    }
+   ],
+   "reply": "Meher, naram hara tana aasani se mudta hai; kathor lakdi-jaisa tana seedha rehta hai. Gudhal ka tana kaisa hoga?",
+   "kind": "worked_example",
+   "end": false
+  },
+  {
+   "id": "english",
+   "spoken": false,
+   "persona": "Ishaan",
+   "ok": false,
+   "problems": [
+    {
+     "code": "S.english",
+     "why": "switched for one turn only: the following turn is back in Hindi"
+    }
+   ],
+   "reply": "Ishaan, observation becomes a testable question: “Does more water make a plant grow faster?” Now make a similar question about football practice.",
+   "kind": "worked_example",
+   "end": false
+  },
+  {
+   "id": "english",
+   "spoken": true,
+   "persona": "Ishaan",
+   "ok": false,
+   "problems": [
+    {
+     "code": "S.english",
+     "why": "the reply is not in English"
+    }
+   ],
+   "reply": "Sure, Ishaan. A ray has one endpoint and extends endlessly in one direction. In our example, which point is the endpoint of ray OA?",
+   "kind": "worked_example",
+   "end": false
+  },
+  {
+   "id": "story",
+   "spoken": false,
+   "persona": "Golu",
+   "ok": true,
+   "problems": [],
+   "reply": "Golu, 15 pencils ki story: teacher ne pencils ko 3 equal groups mein baantne ko kaha. Pehla step kya hoga?",
+   "kind": "worked_example",
+   "end": false
+  },
+  {
+   "id": "story",
+   "spoken": true,
+   "persona": "Golu",
+   "ok": false,
+   "problems": [
+    {
+     "code": "S.story",
+     "why": "no story"
+    }
+   ],
+   "reply": "Golu, colony ne Republic Day ke liye clean park socha. Pehle jobs likhenge—safai, kachra, flags, paani. Agla step kya hoga?",
+   "kind": "worked_example",
+   "end": false
+  }
+ ],
+ "transcripts": [
+  {
+   "tag": "talk_else \"can we talk about something else\" (typed, Meher)",
+   "lessonId": "cc7c7d7c-7c02-45a5-8ff1-886f80c317dd",
+   "mode": "text",
+   "topicId": "c6-maths-ch07-t01",
+   "opening": {
+    "reply": "Hi Meher, I’m Arjun, your AI teacher. Today we’ll explore equal shares and fractional units, like dividing a painting equally. What would you like to paint?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Fractional units",
+     "ask": {
+      "text": "What would you like to paint?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "hi! yes I'm ready",
+     "kind": "greet",
+     "ms": 1437,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Meher, imagine sharing one painted chocolate bar equally among four children. What fraction would each child get? At the end, you’ll teach Bittu too.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units",
+       "ask": {
+        "text": "What fraction would each child get?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "got it",
+     "kind": "filler",
+     "ms": 1909,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Meher, divide one painted square into three equal parts. Each part is one-third: one of three equal parts. If divided into five, what is one part called?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units",
+       "ask": {
+        "text": "If divided into five, what is one part called?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "can we talk about something else",
+     "kind": "steer",
+     "ms": 1669,
+     "r": {
+      "move": {
+       "kind": "wrap"
+      },
+      "teacherReply": "Of course, Meher. We can stop here. Take care, and goodbye for now!",
+      "end": true,
+      "ui": {
+       "status": "your_turn",
+       "phase": "wrap",
+       "handover": "finish",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units"
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "talk_else \"can we talk about something else\" (spoken, Meher)",
+   "lessonId": "de946fbc-d8fc-4d0b-ba31-3cc5a2ea4aeb",
+   "mode": "cascade",
+   "topicId": "c6-science-ch02-t01",
+   "opening": {
+    "reply": "Hi Meher, I’m Arjun, your AI teacher. Today we’ll group plants like painting by their size and stems. Which plant do you enjoy painting?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Grouping plants",
+     "ask": {
+      "text": "Which plant do you enjoy painting?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "hi yes i'm ready",
+     "kind": "greet",
+     "ms": 974,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Great, Meher. Why?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Grouping plants",
+       "ask": {
+        "text": "Why?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "hmm okay",
+     "kind": "filler",
+     "ms": 1166,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Meher, look at a soft green stem versus a hard woody stem. Which would bend more easily: a herb’s stem or a tree’s?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Grouping plants",
+       "ask": {
+        "text": "Which would bend more easily: a herb’s stem or a tree’s?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "can we talk about something else",
+     "kind": "steer",
+     "ms": 2312,
+     "r": {
+      "move": {
+       "kind": "wrap"
+      },
+      "teacherReply": "Of course, Meher. We can stop here. Take care, and goodbye!",
+      "end": true,
+      "ui": {
+       "status": "your_turn",
+       "phase": "wrap",
+       "handover": "finish",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Grouping plants"
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "topic_interest \"cricket ke baare mein baat karo\" (typed, Aarav)",
+   "lessonId": "f5a1c2cf-71d6-4eb4-8cc8-13aae0a2cbc4",
+   "mode": "text",
+   "topicId": "c5-maths-ch02-t01",
+   "opening": {
+    "reply": "Namaste Aarav! Main Arjun, aapka AI teacher hoon. Aaj fractions ko number line par cricket pitch ki tarah dekhenge. Aapko cricket mein kya pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Fractions on a line",
+     "ask": {
+      "text": "Aapko cricket mein kya pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan ready hoon",
+     "kind": "greet",
+     "ms": 2662,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Cricket pitch ko 4 barabar hisson mein baantiye; ball halfway pahuche toh number line par kaunsi fraction hogi? Bittu ko baad mein aap samjhayenge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractions on a line",
+       "ask": {
+        "text": "Cricket pitch ko 4 barabar hisson mein baantiye; ball halfway pahuche toh number line par kaunsi fraction hogi?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "achha",
+     "kind": "filler",
+     "ms": 7651,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Aarav, 0 se 1 tak 4 equal gaps banaiye; har gap 1/4 hoga. Do gaps par pahunchkar fraction kya milegi?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Fractions on a line",
+       "ask": {
+        "text": "Do gaps par pahunchkar fraction kya milegi?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "mount",
+        "moduleId": "m2",
+        "engine": "number-line@1",
+        "params": {
+         "topicId": "c5-maths-ch02-t01",
+         "skillId": null,
+         "lang": "hinglish",
+         "fractions": [
+          [
+           2,
+           5
+          ]
+         ],
+         "numbers": [
+          0,
+          1
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "n": 3,
+     "child": "cricket ke baare mein baat karo",
+     "kind": "steer",
+     "ms": 5006,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Aapka favourite shot kaunsa hai?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Mark 2/5 on a number line from 0 to 1."
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Fractions on a line",
+       "ask": {
+        "text": "Aapka favourite shot kaunsa hai?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "haan bolo",
+     "kind": "answer",
+     "ms": 1735,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Cricket mein pitch ko equal parts mein baantna fractions jaisa hai. Aap bataiye, 0 se 1 tak 5 gaps mein 2 gaps ka mark kya hoga?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Mark 2/5 on a number line from 0 to 1."
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Fractions on a line",
+       "ask": {
+        "text": "Aap bataiye, 0 se 1 tak 5 gaps mein 2 gaps ka mark kya hoga?"
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "topic_interest \"cricket ke baare mein baat karo\" (spoken, Aarav)",
+   "lessonId": "d1f40ff3-a8d5-4d83-914d-1229612f8eee",
+   "mode": "cascade",
+   "topicId": "c5-maths-ch01-t01",
+   "opening": {
+    "reply": "Namaste Aarav, main Arjun, aapka AI teacher hoon. Aaj cricket-score jaise thousands se bade numbers dekhenge. Aapko cricket mein kya pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Big numbers",
+     "ask": {
+      "text": "Aapko cricket mein kya pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan ready hoon",
+     "kind": "greet",
+     "ms": 1131,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Aarav, stadium mein 45,000 fans aur doosre mein 75,000 fans hain— aap kis crowd ko bada chunenge, aur kyun? Bittu ko baad mein sikhayenge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Big numbers",
+       "ask": {
+        "text": "Aarav, stadium mein 45,000 fans aur doosre mein 75,000 fans hain— aap kis crowd ko bada chunenge, aur kyun?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "hmm",
+     "kind": "filler",
+     "ms": 1528,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Aarav, whiteboard par 45,000 likhiye: 4 ten-thousands, 5 thousands, phir 3 zeros. Isse words mein kaise bolenge?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Big numbers",
+       "ask": {
+        "text": "Isse words mein kaise bolenge?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "cricket ke baare mein baat karo",
+     "kind": "steer",
+     "ms": 1117,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Bilkul Aarav—cricket mein aapko batting, bowling ya fielding mein se kya zyada pasand hai? Bas ek choose kijiye.",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Write 'one lakh seven thousand forty' in numerals with commas."
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Big numbers",
+       "ask": {
+        "text": "Bilkul Aarav—cricket mein aapko batting, bowling ya fielding mein se kya zyada pasand hai?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "ok samajh gaya",
+     "kind": "answer",
+     "ms": 1327,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Aarav, example mein pehle digits order mein likhenge: 1 0 7 0 4 0. Ab Indian commas lagaakar aap number likhiye.",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Write 'one lakh seven thousand forty' in numerals with commas."
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Big numbers",
+       "ask": {
+        "text": "Ab Indian commas lagaakar aap number likhiye."
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "differently \"explain it differently\" (typed, Zoya)",
+   "lessonId": "bb274f46-293c-47ec-9c43-7d261fc9e20e",
+   "mode": "text",
+   "topicId": "c5-evs-ch01-t01",
+   "opening": {
+    "reply": "Namaste Zoya! Main Arjun, aapka AI teacher. Aaj paani ke forms aur places ko dance steps jaise observe karenge. Aapko dance mein kya pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Forms of water",
+     "ask": {
+      "text": "Aapko dance mein kya pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan ready hoon",
+     "kind": "greet",
+     "ms": 2180,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Zoya, monsoon mein dance practice ke baad aapki school uniform sukh rahi hai—dhoop mein kya badlega, aap kya predict karenge? Baad mein Bittu ko samjhaiyega.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Forms of water",
+       "ask": {
+        "text": "Zoya, monsoon mein dance practice ke baad aapki school uniform sukh rahi hai—dhoop mein kya badlega, aap kya predict…"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "mummy bula rahi thi, haan",
+     "kind": "filler",
+     "ms": 2322,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Zoya, pehle mummy ko jawab dijiye. Phir whiteboard par teen forms dekhenge: liquid water, solid ice, aur invisible water vapour. Aap lautkar bataiyega.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Forms of water",
+       "ask": {
+        "text": "Aap lautkar bataiyega."
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "mount",
+        "moduleId": "m2",
+        "engine": "water-cycle@1",
+        "params": {
+         "topicId": "c5-evs-ch01-t01",
+         "skillId": null,
+         "lang": "hinglish",
+         "scene": "states"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "n": 3,
+     "child": "explain it differently",
+     "kind": "steer",
+     "ms": 1101,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Zoya, raat ko uniform geeli aur bhaari thi; subah halki-sookhi hai. Pehla clue: paani kapde se gayab dikhta hai. Agla step aap batayenge?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "A school uniform washed at night is dry by morning. Explain, step by step, where"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Forms of water",
+       "ask": {
+        "text": "Agla step aap batayenge?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "ek min... haan bolo",
+     "kind": "answer",
+     "ms": 1295,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Ab paani vapour bankar hawa mein mix ho gaya—gas form, par water hi. Agla step: upar thanda hokar drops aur clouds; aap bataiye.",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "A school uniform washed at night is dry by morning. Explain, step by step, where"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Forms of water",
+       "ask": {
+        "text": "Agla step: upar thanda hokar drops aur clouds; aap bataiye."
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "differently \"explain it differently\" (spoken, Zoya)",
+   "lessonId": "3a874bf1-5193-4fc9-bcfb-3cab638274c1",
+   "mode": "cascade",
+   "topicId": "c5-maths-ch02-t02",
+   "opening": {
+    "reply": "Namaste Zoya, main Arjun, aapka AI teacher. Aapko dance mein kya pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Comparing fractions",
+     "ask": {
+      "text": "Aapko dance mein kya pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan ready hoon",
+     "kind": "greet",
+     "ms": 6466,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Zoya, dance practice mein ek group ne 2 songs aur doosre ne 3 songs kiye— aap kis group ne zyada dance kiya, aur kyun? End mein aap Bittu ko sikhaayengi.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Comparing fractions",
+       "ask": {
+        "text": "Zoya, dance practice mein ek group ne 2 songs aur doosre ne 3 songs kiye— aap kis group ne zyada dance kiya, aur kyun?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "haan",
+     "kind": "filler",
+     "ms": 8484,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Zoya, ab ek-ek whole chocolate sochiye: 1/4 aur 1/8. Chaar pieces mein ek piece bada hoga; aap kaunsa fraction bada bolenge?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Comparing fractions",
+       "ask": {
+        "text": "Chaar pieces mein ek piece bada hoga; aap kaunsa fraction bada bolenge?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "mount",
+        "moduleId": "m2",
+        "engine": "fractions@1",
+        "params": {
+         "topicId": "c5-maths-ch02-t02",
+         "skillId": null,
+         "lang": "hinglish",
+         "fractions": [
+          [
+           2,
+           5
+          ],
+          [
+           2,
+           3
+          ]
+         ],
+         "numbers": []
+        }
+       }
+      ]
+     }
+    },
+    {
+     "n": 3,
+     "child": "explain it differently",
+     "kind": "steer",
+     "ms": 1579,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Zoya, 2/5 aur 2/3 mein dono ke 2 pieces hain. Ab dekhiye: whole ko 5 equal parts mein kaatne par har piece kaisa hoga?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Which is bigger: 2/5 or 2/3?"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Comparing fractions",
+       "ask": {
+        "text": "Ab dekhiye: whole ko 5 equal parts mein kaatne par har piece kaisa hoga?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "ek min haan bolo",
+     "kind": "answer",
+     "ms": 1201,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Haan Zoya, bilkul. Whole ko 5 parts mein kaatne par har piece 3 parts wale piece se chhota hoga—ab 2/3 ya 2/5 bada?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Which is bigger: 2/5 or 2/3?"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Comparing fractions",
+       "ask": {
+        "text": "Whole ko 5 parts mein kaatne par har piece 3 parts wale piece se chhota hoga—ab 2/3 ya 2/5 bada?"
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "slowly \"slowly please\" (typed, Golu)",
+   "lessonId": "1f78ed21-1fe7-4b86-ae20-eb964da910ea",
+   "mode": "text",
+   "topicId": "c4-maths-ch05-t01",
+   "opening": {
+    "reply": "Namaste Golu, main Asha, tumhari AI teacher hoon. Aaj fractions, yani barabar hisse, cartoons se seekhenge. Tumhara favourite cartoon kaunsa hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Equal shares",
+     "ask": {
+      "text": "Tumhara favourite cartoon kaunsa hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan",
+     "kind": "greet",
+     "ms": 1183,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Kyun?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Equal shares",
+       "ask": {
+        "text": "Kyun?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "ok",
+     "kind": "filler",
+     "ms": 1032,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Golu, ek roti ko do barabar parts mein baanto: har part half, yani one-half. Board par kitne halves honge?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Equal shares",
+       "ask": {
+        "text": "Board par kitne halves honge?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "mount",
+        "moduleId": "m2",
+        "engine": "fractions@1",
+        "params": {
+         "topicId": "c4-maths-ch05-t01",
+         "skillId": null,
+         "lang": "hinglish",
+         "fractions": [
+          [
+           1,
+           3
+          ]
+         ],
+         "numbers": [
+          15
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "n": 3,
+     "child": "slowly please",
+     "kind": "steer",
+     "ms": 1135,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Bilkul, Golu. Dheere chalenge. 1/3 ka matlab hai 3 equal groups mein se 1 group. 15 pencils ko kitne groups mein baantna hai?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "What is 1/3 of 15 pencils?"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Equal shares",
+       "ask": {
+        "text": "15 pencils ko kitne groups mein baantna hai?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "hmm",
+     "kind": "answer",
+     "ms": 2141,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Pehla step: 15 pencils ko 3 equal groups mein baanto. Har group mein kitni pencils hongi, Golu?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "What is 1/3 of 15 pencils?"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Equal shares",
+       "ask": {
+        "text": "Har group mein kitni pencils hongi, Golu?"
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "slowly \"slowly please\" (spoken, Golu)",
+   "lessonId": "62595657-b71c-49a7-b8f2-a11e67111ac0",
+   "mode": "cascade",
+   "topicId": "c4-evs-ch01-t01",
+   "opening": {
+    "reply": "Namaste Golu! Main Asha, tumhari AI teacher hoon. Aaj community (samuday) seekhenge—cartoon team ki tarah milkar. Tumhe kaunsa cartoon pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Living as a community",
+     "ask": {
+      "text": "Tumhe kaunsa cartoon pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan",
+     "kind": "greet",
+     "ms": 2066,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Kyun? Baad mein tum Golu baby elephant ko sikhaoge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Living as a community",
+       "ask": {
+        "text": "Kyun?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "ok",
+     "kind": "filler",
+     "ms": 1211,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Golu, community matlab ek jagah rehne wale log, jo ek-doosre ki madad karte hain. Tum apni community mein kisko madad doge?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Living as a community",
+       "ask": {
+        "text": "Tum apni community mein kisko madad doge?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "slowly please",
+     "kind": "steer",
+     "ms": 2276,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Bilkul Golu, hum dheere-dheere karenge. Pehla kaam: park ko sweep karna. Agla kaam kya ho sakta hai?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Your colony wants a clean park for Republic Day. How can the community plan it t"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Living as a community",
+       "ask": {
+        "text": "Agla kaam kya ho sakta hai?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "ok",
+     "kind": "answer",
+     "ms": 988,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Golu, log milkar kaam karein aur har helper ko thank you bolen. Isse kaam jaldi kaise hoga?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Your colony wants a clean park for Republic Day. How can the community plan it t"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Living as a community",
+       "ask": {
+        "text": "Isse kaam jaldi kaise hoga?"
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "example \"example do\" (typed, Kabir)",
+   "lessonId": "5b99972e-6142-4c21-9fdb-fb9c1ffde8cf",
+   "mode": "text",
+   "topicId": "c7-maths-ch08-t01",
+   "opening": {
+    "reply": "Namaste Kabir! Main Arjun, aapka AI teacher hoon. Aaj fractions multiply karenge—cricket ke runs ko parts mein sochiye. Aapko cricket ya video games zyada pasand hain?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Multiplying fractions",
+     "ask": {
+      "text": "Aapko cricket ya video games zyada pasand hain?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan bhai ready, chalo shuru karo haha",
+     "kind": "greet",
+     "ms": 1899,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Kabir, match mein aapne over ka teen-chauthai khela, phir uska do-tihai scoring kiya—actual game ka kitna hissa hua? Guess kijiye; ant mein Bittu ko sikhayenge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Multiplying fractions",
+       "ask": {
+        "text": "Kabir, match mein aapne over ka teen-chauthai khela, phir uska do-tihai scoring kiya—actual game ka kitna hissa hua?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "haan haan, samajh gaya boss",
+     "kind": "filler",
+     "ms": 2542,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Kabir, 12 coins ke one-third mein 4 coins. Ab 2/3 of 12 ke liye 3 equal groups banaakar bataiye kitne coins honge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Multiplying fractions",
+       "ask": {
+        "text": "Ab 2/3 of 12 ke liye 3 equal groups banaakar bataiye kitne coins honge."
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "example do",
+     "kind": "steer",
+     "ms": 2392,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Kabir, example: 2/7 of 3/4 likhenge 2/7 multiplied by 3/4. Ab sirf numerators multiply karke bataiye—2 times 3 kitna hoga?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Find 3/5 of 2/3 of a cake."
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Multiplying fractions",
+       "ask": {
+        "text": "Ab sirf numerators multiply karke bataiye—2 times 3 kitna hoga?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "haan haan, samajh gaya boss",
+     "kind": "answer",
+     "ms": 1972,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Kabir, example mein 2/7 multiplied by 3/4 ka numerator 2 times 3 hota hai. Ab aap numerator ka product batayiye.",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Find 3/5 of 2/3 of a cake."
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Multiplying fractions",
+       "ask": {
+        "text": "Ab aap numerator ka product batayiye."
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "example \"example do\" (spoken, Kabir)",
+   "lessonId": "09852479-4c97-46f0-9eee-dc49b04d5132",
+   "mode": "cascade",
+   "topicId": "c7-science-ch01-t01",
+   "opening": {
+    "reply": "Namaste Kabir! Main Arjun, aapka AI teacher hoon. Aaj dekhenge evidence se Science ideas kaise badalte hain—cricket ke rules jaise. Science mein aapko kya pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Science and evidence",
+     "ask": {
+      "text": "Science mein aapko kya pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan bhai ready chalo shuru karo haha",
+     "kind": "greet",
+     "ms": 2204,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Kabir, maan lijiye cricket ball swing kar rahi hai; do explanations hain—hawa ya ball ki seam. Aap pehle kis evidence ko dekhenge? Baad mein Bittu ko sikhaiyega.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Science and evidence",
+       "ask": {
+        "text": "Aap pehle kis evidence ko dekhenge?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "haan haan samajh gaya boss",
+     "kind": "filler",
+     "ms": 2456,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Game mein lag kaise test karenge?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Science and evidence",
+       "ask": {
+        "text": "Game mein lag kaise test karenge?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "example do",
+     "kind": "steer",
+     "ms": 1165,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Kabir, pehla step: idea likhiye—“Seeds ko sprout hone ke liye light chahiye.” Ab agla step aap kya rakhenge?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Meena thinks seeds need light to sprout. Show step by step how she can test this"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Science and evidence",
+       "ask": {
+        "text": "” Ab agla step aap kya rakhenge?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "lol theek hai",
+     "kind": "answer",
+     "ms": 1073,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Kabir, do same cups mein moong seeds rakhiye—ek light mein, ek dark mein; baaki conditions same. Ab agla step kya hoga?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Meena thinks seeds need light to sprout. Show step by step how she can test this"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Science and evidence",
+       "ask": {
+        "text": "Ab agla step kya hoga?"
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "hindi \"Hindi mein samjhao\" (typed, Meher)",
+   "lessonId": "e695a62d-f790-4170-99ea-09ad049a057d",
+   "mode": "text",
+   "topicId": "c6-maths-ch07-t01",
+   "opening": {
+    "reply": "Hi Meher, I’m Arjun, your AI teacher. Today we’ll explore equal shares in fractions, like dividing a painted shape fairly. What would you like to paint?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Fractional units",
+     "ask": {
+      "text": "What would you like to paint?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "hi! yes I'm ready",
+     "kind": "greet",
+     "ms": 1752,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Great, Meher. Imagine painting one cake design, then sharing its equal coloured parts with siblings. Which part would you choose, and why? Later, you’ll teach Bittu.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units",
+       "ask": {
+        "text": "Which part would you choose, and why?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "okay",
+     "kind": "filler",
+     "ms": 2359,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Meher, split one whole painted rectangle into 5 equal parts; one part is the fractional unit one-fifth. How would you shade it?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units",
+       "ask": {
+        "text": "How would you shade it?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "Hindi mein samjhao",
+     "kind": "steer",
+     "ms": 3550,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Meher, ek laddoo ko 3 barabar hisson mein kaato; har hissa one-third, yaani ek-tihai, hoga. Ab 5 laddoo mein kitne one-thirds honge?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "5 laddoos are shared equally by 3 children. How much does each child get?"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units",
+       "ask": {
+        "text": "Ab 5 laddoo mein kitne one-thirds honge?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "sure, go on",
+     "kind": "answer",
+     "ms": 2330,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Meher, 5 laddoo ko thirds mein baantne par 15 thirds milte hain. Ab 15 thirds ko 3 bachchon mein barabar baanto—har ek ko kitne thirds?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "5 laddoos are shared equally by 3 children. How much does each child get?"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units",
+       "ask": {
+        "text": "Ab 15 thirds ko 3 bachchon mein barabar baanto—har ek ko kitne thirds?"
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "hindi \"Hindi mein samjhao\" (spoken, Meher)",
+   "lessonId": "0548a5f4-44bf-4042-987e-4638242f6eda",
+   "mode": "cascade",
+   "topicId": "c6-science-ch02-t01",
+   "opening": {
+    "reply": "Hi Meher, I’m Arjun, your AI teacher. Today we’ll group plants like painting by their size and stem. Which plant do you notice often?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Grouping plants",
+     "ask": {
+      "text": "Which plant do you notice often?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "hi yes i'm ready",
+     "kind": "greet",
+     "ms": 9716,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Great, Meher. Why? At the end, teach Bittu.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Grouping plants",
+       "ask": {
+        "text": "Why?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "hmm okay",
+     "kind": "filler",
+     "ms": 2800,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Meher, notice this: a soft green stem bends easily, while a hard woody stem stays firm. Is a rose plant soft or woody?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Grouping plants",
+       "ask": {
+        "text": "Is a rose plant soft or woody?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "hindi mein samjhao",
+     "kind": "steer",
+     "ms": 1508,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Meher, naram hara tana aasani se mudta hai; kathor lakdi-jaisa tana seedha rehta hai. Gudhal ka tana kaisa hoga?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Is a hibiscus (gudhal) plant a herb, a shrub or a tree?"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Grouping plants",
+       "ask": {
+        "text": "Gudhal ka tana kaisa hoga?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "yes",
+     "kind": "answer",
+     "ms": 1530,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Meher, gudhal ka stem woody hai aur neeche se branches nikalti hain, isliye yeh shrub hai. Tree nahi—kyunki single thick trunk nahi. Tumhara next step?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Is a hibiscus (gudhal) plant a herb, a shrub or a tree?"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Grouping plants",
+       "ask": {
+        "text": "Tumhara next step?"
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "english \"English mein batao please\" (typed, Ishaan)",
+   "lessonId": "3d4d2d37-a989-466b-819e-115af82f0852",
+   "mode": "text",
+   "topicId": "c6-science-ch01-t01",
+   "opening": {
+    "reply": "Namaste Ishaan, main Arjun, aapka AI teacher hoon. Aaj dekhenge scientists kaise pata lagate hain. Science mein aapko kya interesting lagta hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "How scientists find out",
+     "ask": {
+      "text": "Science mein aapko kya interesting lagta hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "नमस्ते, हाँ तैयार हूँ",
+     "kind": "greet",
+     "ms": 1336,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Ishaan, football ko balcony plants se jodiye: ek plant ko roz paani, doosre ko kam—ek hafte baad kya hoga? Apni prediction batayiye; ant mein Bittu ko samjhayenge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "How scientists find out",
+       "ask": {
+        "text": "Ishaan, football ko balcony plants se jodiye: ek plant ko roz paani, doosre ko kam—ek hafte baad kya hoga?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "अच्छा",
+     "kind": "filler",
+     "ms": 1024,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Ishaan, observation se testable question banta hai: “Kya zyada paani se plant zyada badhega?” Aap football ka aisa question banaiye.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "How scientists find out",
+       "ask": {
+        "text": "Ishaan, observation se testable question banta hai: “Kya zyada paani se plant zyada badhega?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "English mein batao please",
+     "kind": "steer",
+     "ms": 1002,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Ishaan, observation becomes a testable question: “Does more water make a plant grow faster?” Now make a similar question about football practice.",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Does curd set faster in a warm place?"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "How scientists find out",
+       "ask": {
+        "text": "Ishaan, observation becomes a testable question: “Does more water make a plant grow faster?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "अच्छा",
+     "kind": "answer",
+     "ms": 2291,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Ishaan, prediction matlab pehle se andaaza: “Warm place mein curd jaldi set hoga.” Aap is prediction ka reason ek line mein likhenge?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Does curd set faster in a warm place?"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "How scientists find out",
+       "ask": {
+        "text": "” Aap is prediction ka reason ek line mein likhenge?"
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "english \"English mein batao please\" (spoken, Ishaan)",
+   "lessonId": "1f7481f7-59de-4f16-8fe7-8cdb1daaa667",
+   "mode": "cascade",
+   "topicId": "c6-maths-ch02-t01",
+   "opening": {
+    "reply": "Namaste Ishaan, main Arjun, aapka AI teacher hoon. Aaj football ke through point, line segment, line aur ray dekhenge. Aap football khelna pasand karte hain?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Points, lines and rays",
+     "ask": {
+      "text": "Aap football khelna pasand karte hain?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "नमस्ते हाँ तैयार हूँ",
+     "kind": "greet",
+     "ms": 1238,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Football ground par goalpost se ball tak torch ki roshni daali जाए—क्या रोशनी का रास्ता दोनों ओर बढ़ता है या सिर्फ एक ओर? Bittu ko ant mein sikhaiyega.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Points, lines and rays",
+       "ask": {
+        "text": "Football ground par goalpost se ball tak torch ki roshni daali जाए—क्या रोशनी का रास्ता दोनों ओर बढ़ता है या सिर्फ एक…"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "हाँ आगे बताइए",
+     "kind": "filler",
+     "ms": 1252,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Whiteboard par dekhiye: point ka zero endpoint, segment ke do, ray ka ek, line ke zero endpoints—football field ki boundary line jaisi. Aap ray ka example dijiye.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Points, lines and rays",
+       "ask": {
+        "text": "Aap ray ka example dijiye."
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "english mein batao please",
+     "kind": "steer",
+     "ms": 1114,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Sure, Ishaan. A ray has one endpoint and extends endlessly in one direction. In our example, which point is the endpoint of ray OA?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Name all the rays starting at O that pass through the points A and B, where A, O"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Points, lines and rays",
+       "ask": {
+        "text": "In our example, which point is the endpoint of ray OA?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "अच्छा",
+     "kind": "answer",
+     "ms": 1164,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Ishaan, ray OB starts at O and passes through B. Now, which other ray starts at O and passes through A?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Name all the rays starting at O that pass through the points A and B, where A, O"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Points, lines and rays",
+       "ask": {
+        "text": "Now, which other ray starts at O and passes through A?"
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "story \"story ki tarah batao\" (typed, Golu)",
+   "lessonId": "c001f613-40f9-4765-bc95-1f9fd511d2d9",
+   "mode": "text",
+   "topicId": "c4-maths-ch05-t01",
+   "opening": {
+    "reply": "Namaste Golu, main Asha, tumhari AI teacher hoon. Aaj cartoons ki tarah fractions ko equal shares mein dekhenge. Tumhe kaunsa cartoon pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Equal shares",
+     "ask": {
+      "text": "Tumhe kaunsa cartoon pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan",
+     "kind": "greet",
+     "ms": 1205,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Golu, cartoon party mein ek cake chaar friends mein barabar baantna ho, tum kya karoge? Socho aur batao.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Equal shares",
+       "ask": {
+        "text": "Golu, cartoon party mein ek cake chaar friends mein barabar baantna ho, tum kya karoge?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "haan",
+     "kind": "filler",
+     "ms": 2095,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Golu, ek cartoon pizza ko 3 barabar slices mein baantoge; har slice one-third hoga. Ab 3 equal parts ka circle socho.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Equal shares",
+       "ask": {
+        "text": "Ab 3 equal parts ka circle socho."
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "mount",
+        "moduleId": "m2",
+        "engine": "fractions@1",
+        "params": {
+         "topicId": "c4-maths-ch05-t01",
+         "skillId": null,
+         "lang": "hinglish",
+         "fractions": [
+          [
+           1,
+           3
+          ]
+         ],
+         "numbers": [
+          15
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "n": 3,
+     "child": "story ki tarah batao",
+     "kind": "steer",
+     "ms": 2215,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Golu, 15 pencils ki story: teacher ne pencils ko 3 equal groups mein baantne ko kaha. Pehla step kya hoga?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "What is 1/3 of 15 pencils?"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Equal shares",
+       "ask": {
+        "text": "Pehla step kya hoga?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "ok",
+     "kind": "answer",
+     "ms": 2543,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Golu, 15 pencils ko 3 equal groups mein baantna hai; tum har group mein kitni pencils rakhoge?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "What is 1/3 of 15 pencils?"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Equal shares",
+       "ask": {
+        "text": "Golu, 15 pencils ko 3 equal groups mein baantna hai; tum har group mein kitni pencils rakhoge?"
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "story \"story ki tarah batao\" (spoken, Golu)",
+   "lessonId": "c1b8518e-14f0-4513-b168-4eece9fa708e",
+   "mode": "cascade",
+   "topicId": "c4-evs-ch01-t01",
+   "opening": {
+    "reply": "Namaste Golu, main Asha, tumhari AI teacher hoon. Aaj community (samuday) seekhenge—cartoon team jaise! Tumhe kaunsa cartoon pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Living as a community",
+     "ask": {
+      "text": "Tumhe kaunsa cartoon pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan",
+     "kind": "greet",
+     "ms": 5806,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Golu, cartoon colony mein festival hai: sab milkar safai karein ya ped lagayen—tum kya chunoge, aur phir kya hoga? Golu ko ant mein tum sikhaoge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Living as a community",
+       "ask": {
+        "text": "Golu, cartoon colony mein festival hai: sab milkar safai karein ya ped lagayen—tum kya chunoge, aur phir kya hoga?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "haan",
+     "kind": "filler",
+     "ms": 2838,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Whiteboard par: community matlab ek jagah ke log, jo milkar help karte hain aur ek-doosre par depend karte hain. Tum ek example doge?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Living as a community",
+       "ask": {
+        "text": "Tum ek example doge?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "story ki tarah batao",
+     "kind": "steer",
+     "ms": 1246,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Golu, colony ne Republic Day ke liye clean park socha. Pehle jobs likhenge—safai, kachra, flags, paani. Agla step kya hoga?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Your colony wants a clean park for Republic Day. How can the community plan it t"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Living as a community",
+       "ask": {
+        "text": "Agla step kya hoga?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "haan",
+     "kind": "answer",
+     "ms": 2587,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Sab log apna-apna kaam milkar karte hain aur har helper ko thank you bolte hain. Isse kaam jaldi hota hai—kyon?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Your colony wants a clean park for Republic Day. How can the community plan it t"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Living as a community",
+       "ask": {
+        "text": "Isse kaam jaldi hota hai—kyon?"
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  }
+ ]
+}

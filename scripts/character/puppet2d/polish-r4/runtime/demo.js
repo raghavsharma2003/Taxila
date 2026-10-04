@@ -195,7 +195,15 @@ async function main() {
         gz = [...P.gaze];
       }
       rig.debug = spec.debug || null;
-      for (let i = 0; i < 6; i++) { rig.clock = 1000 + i / 60; rig.resetPhysics(); rig.frame(bs, head, gz, spec.lean || 0, 0); }
+      if (spec.blinkAt != null) {
+        // r4: a still captured FROM a real autonomic blink (the 2-1-3 shaper: squeeze + brow dip), frame k of the curve
+        rig.resetPhysics();
+        const b0 = { ...bs, eyeBlinkLeft: 0, eyeBlinkRight: 0 }, b1 = { ...bs, eyeBlinkLeft: 1, eyeBlinkRight: 1 };
+        let c = 1000;
+        for (let i = 0; i < 6; i++) { rig.clock = c; rig.frame(b0, head, gz, spec.lean || 0, 0); c += 1 / 60; }
+        const t0 = c;
+        for (let x = 0; x <= spec.blinkAt / 30 + 1e-6; x += 1 / 60) { rig.clock = t0 + x; rig.frame(b1, head, gz, spec.lean || 0, 0); }
+      } else for (let i = 0; i < 6; i++) { rig.clock = 1000 + i / 60; rig.resetPhysics(); rig.frame(bs, head, gz, spec.lean || 0, 0); }
       rig.debug = null;
       return rig.mouth.name;
     },

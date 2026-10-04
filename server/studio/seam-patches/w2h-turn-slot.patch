@@ -1,5 +1,5 @@
 --- a/server/brain/turn.js	2026-10-04 19:36:48.826801497 +0000
-+++ b/server/brain/turn.js	2026-10-04 19:37:27.506727394 +0000
++++ b/server/brain/turn.js	2026-10-04 19:58:38.327608263 +0000
 @@ -31,7 +31,7 @@
  import { onTurnCommit } from "../conductor/hooks.js";
  import { awaitSettled } from "../comprehension/session.js";
@@ -9,6 +9,15 @@
  import { relationalSeam } from "../relational/seam.js";
  import { expressiveSeam } from "../voice/expressive/seam.js";
  import { fallbackReply, floorContentOf, safeguardLine, scrubbed, textReply } from "./say.js";
+@@ -276,7 +276,7 @@
+   let carried = carriedFrom(state);
+   // Seam (W2-H, server/studio/seam.js): what Studio has on screen / in flight for this lesson, as values (in memory, no
+   // network). null = nothing, and the plan context is exactly the pre-seam one.
+-  const studioView = seamSafe("studio.statusFacts", () => studioSeam.statusFacts(lesson.id), null);
++  const studioView = seamSafe("studio.statusFacts", () => studioSeam.statusFacts(lesson.id, { beat: prev.beat?.type ?? null }), null);
+   const planCtx = { kit, child, lesson, activeItem, moduleOnly, moduleEvents, chipId: body.chipId, answer: help ? "" : answer, leaked, live: liveP, carried,
+     childText, typed, asrConfidence: body.asrConfidence, bargeIn: !!body.teacherInterrupted, ...(studioView ? { studio: studioView } : {}) };
+   // A module-only turn or a help request stored no child row, so the whole recent transcript is history.
 @@ -374,7 +374,12 @@
      childLaughed: !!cls?.flags?.humour || (!moduleOnly && !help && turnSignals({ text: childText }).laughter),
      studio: turnStudioOf(kernel.arb)?.reveal || studioSlot ? "revealing" : undefined, lane, childText: moduleOnly || help ? "" : childText, typed });
@@ -19,7 +28,7 @@
 +  // guard counts it as a screen target (director/say.js screenHasTargets reads ui.studioSlot). A whiteboard ack below
 +  // replaces it. null = nothing from Studio (the pre-seam turn).
 +  let studioSlot = late || r.move.kind === "safeguard" ? null
-+    : seamSafe("studio.slotFor", () => (typeof studioSeam.slotFor === "function" ? studioSeam.slotFor(lesson.id, turnStudioOf(kernel.arb)) : null), null);
++    : seamSafe("studio.slotFor", () => (typeof studioSeam.slotFor === "function" ? studioSeam.slotFor(lesson.id, turnStudioOf(kernel.arb), { beat: kernel.beat?.type ?? null, tray: r.ui?.tray ?? null }) : null), null);
    // The verdict the teacher's words must agree with (G-PRAISE-1; planTurn: only a kit item graded against its key has one).
    const verdict = next.lastVerdict ?? "ungraded";
    if (textLane && !r.hold && !late) {

@@ -1374,3 +1374,45 @@ is slow" fired paceDown (6 of 6 probes). **Instead:** request-shaped phrases onl
 **Tried:** treating "na" / "न" within 2 tokens after a hit as negation. **Broke:** in Hinglish "na" after a verb is the tag
 particle, so "thoda dheere bolo na" was read as negated and the request was dropped. **Instead:** "na" negates only
 before the verb ("na karo").
+
+## Duplex v2 (2026-10-04): pending merge from `inbox/duplex-v2.json`
+
+### `rj-silence-gated-turn-taking`
+
+**Tried (designed and prototyped, 2026-10-04): silence-gated turn-taking for the duplex teacher.** This is v1 of
+`docs/research/duplex/ARCHITECTURE.md` (now its Appendix Z) and the prototype `server/duplex/floorManager.js` +
+`eot.js`.
+- A 500 ms candidate silence opened every take-over decision.
+- A lexical combiner then committed or held.
+- Law 4 forbade any model decision inside the child's turn; a model could only *shorten* a hold.
+- Barge-in waited for the transcript to decide.
+
+**Broke:**
+1. **The premise is false for our children.** "Silence is the most reliable end signal" fails:
+   - at age 9, 85% of ≥ 250 ms silences are holds, and silence separates hold from shift at AUC 0.62 (Brahimi 2026, via
+     Study C);
+   - on M-D6's 25 scripted scenarios (real D4 partials), tuned silence-640 cut the child off in 15/25 and 900 ms in
+     11/25;
+   - words plus the lexical horizon cut off 0/25 on the same partials.
+2. **A finished answer still waited** at least 500 ms plus the STT final, even when the words already said it was
+   complete. In simulation the v1 floor manager's gap after the true end was p50 1,480 ms on D4 and 577 ms on MAI
+   (M-D3).
+3. **Transcript-bound barge-in was slow:** resolution took p50 1.70 s on D4 and 0.72 s on MAI in simulation (M-D3),
+   against a 200 ms target.
+4. **A model barred from the child's turn cannot be** the Griffin-style continuous engine the owner asked for (owner
+   correction 2026-10-04).
+
+**Kept from v1:**
+- fast mouth, late verdict;
+- sticky partial safety;
+- the device floor;
+- separate speech and work tracks;
+- content-blind nods;
+- wait-time drafts;
+- `heardUpTo`;
+- result triage.
+
+**Instead:** `duplex-continuous-engine-2026-10-04`. Silence is one feature and an uncertainty backstop. The v1 floor
+manager is frozen as TaxilaFDB baseline B3.
+
+**Revisit** only under that decision's reversal (DX-12 on real children), and then only as a per-context floor.

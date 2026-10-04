@@ -1,0 +1,1165 @@
+{
+ "base": "https://taxila.dev",
+ "seed": 3102,
+ "results": [
+  {
+   "phrase": "lesson khatam",
+   "spoken": true,
+   "after": "confirm",
+   "persona": "Aarav",
+   "checkIn": false,
+   "problems": [
+    "the lesson ended at once (end:true, move wrap, phase wrap)",
+    "no check-in: no choices on screen and no question to the child"
+   ],
+   "stop": {
+    "reply": "Theek hai Aarav, aaj ka lesson yahin khatam. Aapne number line par equal parts ka idea use kiya. Phir milenge, goodbye!",
+    "kind": "wrap",
+    "end": true,
+    "chips": []
+   }
+  },
+  {
+   "phrase": "end the lesson",
+   "spoken": true,
+   "after": "continue",
+   "persona": "Meher",
+   "checkIn": false,
+   "problems": [
+    "the lesson ended at once (end:true, move wrap, phase wrap)",
+    "no check-in: no choices on screen and no question to the child"
+   ],
+   "stop": {
+    "reply": "Alright, Meher. We’ll stop here with nothing pending. Goodbye, and enjoy your painting!",
+    "kind": "wrap",
+    "end": true,
+    "chips": []
+   }
+  },
+  {
+   "phrase": "I'm done",
+   "spoken": true,
+   "after": {
+    "via": "words",
+    "ended": true,
+    "back": false
+   },
+   "persona": "Zoya",
+   "checkIn": false,
+   "problems": [
+    "treated as a safeguarding turn (helplines) instead of a check-in"
+   ],
+   "stop": {
+    "reply": "Aapne jo bataya, woh zaroori hai. Kisi bade ko bataiye jis par bharosa ho, ya Childline 1098 ya Tele-MANAS 14416 pe call kariye. Kya aap abhi theek hain?",
+    "kind": "safeguard",
+    "end": false,
+    "chips": []
+   }
+  },
+  {
+   "phrase": "bas",
+   "spoken": true,
+   "after": "confirm",
+   "persona": "Kabir",
+   "checkIn": false,
+   "problems": [
+    "the lesson ended at once (end:true, move wrap, phase wrap)",
+    "no check-in: no choices on screen and no question to the child"
+   ],
+   "stop": {
+    "reply": "Theek hai Kabir, yahin stop karte hain. Aapne picture wala step try kiya—good. Jab bhi maths continue karna ho, Arjun bhaiya yahin milenge. Goodbye, dhyaan rakhiye!",
+    "kind": "wrap",
+    "end": true,
+    "chips": []
+   }
+  },
+  {
+   "phrase": "lesson is over",
+   "spoken": true,
+   "after": "continue",
+   "persona": "Aarav",
+   "checkIn": false,
+   "problems": [
+    "the lesson ended at once (end:true, move wrap, phase wrap)",
+    "no check-in: no choices on screen and no question to the child"
+   ],
+   "stop": {
+    "reply": "Theek hai Aarav, aaj ka lesson yahin rok dete hain. Aapne number line par equal parts ka idea dekha. Warm goodbye, Aarav—phir milenge!",
+    "kind": "wrap",
+    "end": true,
+    "chips": []
+   }
+  },
+  {
+   "phrase": "ab band karo",
+   "spoken": true,
+   "after": "break",
+   "persona": "Meher",
+   "checkIn": false,
+   "problems": [
+    "the lesson ended at once (end:true, move wrap, phase wrap)",
+    "no check-in: no choices on screen and no question to the child"
+   ],
+   "stop": {
+    "reply": "Theek hai, Meher. Aaj ke liye yahin stop karte hain. Bye, take care!",
+    "kind": "wrap",
+    "end": true,
+    "chips": []
+   }
+  },
+  {
+   "phrase": "mujhe lesson khatam karna hai",
+   "spoken": true,
+   "after": "confirm",
+   "persona": "Zoya",
+   "checkIn": false,
+   "problems": [
+    "the lesson ended at once (end:true, move wrap, phase wrap)",
+    "no check-in: no choices on screen and no question to the child"
+   ],
+   "stop": {
+    "reply": "Theek hai Zoya, lesson yahin khatam karte hain. Aapne water ke forms aur places par kaam kiya. Namaste, phir milenge—apna dhyaan rakhiye.",
+    "kind": "wrap",
+    "end": true,
+    "chips": []
+   }
+  },
+  {
+   "phrase": "I want to stop",
+   "spoken": true,
+   "after": "continue",
+   "persona": "Kabir",
+   "checkIn": false,
+   "problems": [
+    "the lesson ended at once (end:true, move wrap, phase wrap)",
+    "no check-in: no choices on screen and no question to the child"
+   ],
+   "stop": {
+    "reply": "Theek hai Kabir, aaj yahin rok dete hain. Aapne strips aur numerator-denominator ka step dekha. Phir milenge—namaste, aur cricket ya game ka maza lijiye!",
+    "kind": "wrap",
+    "end": true,
+    "chips": []
+   }
+  }
+ ],
+ "transcripts": [
+  {
+   "tag": "\"lesson khatam\" (spoken, then confirm)",
+   "lessonId": "f8751201-ea03-4565-93d1-2fce8f5600ee",
+   "mode": "cascade",
+   "topicId": "c5-maths-ch02-t01",
+   "opening": {
+    "reply": "Namaste Aarav! Main Arjun, aapka AI teacher hoon. Aaj fractions ko number line par cricket pitch ki tarah dekhenge. Aapko cricket mein kya pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Fractions on a line",
+     "ask": {
+      "text": "Aapko cricket mein kya pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan ready hoon",
+     "kind": "greet",
+     "ms": 19478,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Aarav, cricket pitch ko 4 barabar parts mein baantiye; ball halfway ho toh number line par woh kis point par hogi? End mein aap Bittu ko sikhaayenge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractions on a line",
+       "ask": {
+        "text": "Aarav, cricket pitch ko 4 barabar parts mein baantiye; ball halfway ho toh number line par woh kis point par hogi?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "haan",
+     "kind": "filler",
+     "ms": 1459,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Aarav, 0 se 1 tak equal gaps banaiye; 4 gaps hon toh har gap one-fourth hota hai. 2 gaps par kaunsa fraction milega?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Fractions on a line",
+       "ask": {
+        "text": "2 gaps par kaunsa fraction milega?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "mount",
+        "moduleId": "m2",
+        "engine": "number-line@1",
+        "params": {
+         "topicId": "c5-maths-ch02-t01",
+         "skillId": null,
+         "lang": "hinglish",
+         "fractions": [
+          [
+           2,
+           5
+          ]
+         ],
+         "numbers": [
+          0,
+          1
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "n": 3,
+     "child": "lesson khatam",
+     "kind": "stop",
+     "ms": 1991,
+     "r": {
+      "move": {
+       "kind": "wrap"
+      },
+      "teacherReply": "Theek hai Aarav, aaj ka lesson yahin khatam. Aapne number line par equal parts ka idea use kiya. Phir milenge, goodbye!",
+      "end": true,
+      "ui": {
+       "status": "your_turn",
+       "phase": "wrap",
+       "handover": "finish",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractions on a line"
+      },
+      "moduleCommands": [
+       {
+        "op": "unmount",
+        "moduleId": "m2"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "tag": "\"end the lesson\" (spoken, then continue)",
+   "lessonId": "9fe2bf96-5ec3-467d-9777-6cd26d8dfb36",
+   "mode": "cascade",
+   "topicId": "c6-maths-ch07-t01",
+   "opening": {
+    "reply": "Hi Meher, I’m Arjun, your AI teacher. Today we’ll explore equal shares and fractional units, like dividing a painting space fairly. What would you like to paint?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Fractional units",
+     "ask": {
+      "text": "What would you like to paint?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "hi yes i'm ready",
+     "kind": "greet",
+     "ms": 2381,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Meher, imagine sharing one painted card equally among siblings: would each person get a whole card or a fractional part (hissa)? Predict, then we’ll teach Bittu.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units",
+       "ask": {
+        "text": "Meher, imagine sharing one painted card equally among siblings: would each person get a whole card or a fractional…"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "hmm okay",
+     "kind": "filler",
+     "ms": 2342,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Meher, divide one whole canvas into 3 equal parts; one part is the fractional unit one-third. Now tell me: what does the 3 show?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units",
+       "ask": {
+        "text": "Now tell me: what does the 3 show?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "end the lesson",
+     "kind": "stop",
+     "ms": 1850,
+     "r": {
+      "move": {
+       "kind": "wrap"
+      },
+      "teacherReply": "Alright, Meher. We’ll stop here with nothing pending. Goodbye, and enjoy your painting!",
+      "end": true,
+      "ui": {
+       "status": "your_turn",
+       "phase": "wrap",
+       "handover": "finish",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units"
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "\"I'm done\" (spoken, then break)",
+   "lessonId": "55340f15-7e9d-4495-b8d9-3fedaa472051",
+   "mode": "cascade",
+   "topicId": "c5-evs-ch01-t01",
+   "opening": {
+    "reply": "Namaste Zoya, main Arjun, aapka AI teacher. Aaj paani ke forms aur places dekhenge—dance steps ki tarah badalta hai. Aapko dance mein kya pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Forms of water",
+     "ask": {
+      "text": "Aapko dance mein kya pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan ready hoon",
+     "kind": "greet",
+     "ms": 10048,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Baarish mein dance practice ke baad school uniform sukhne rakhenge— aapke hisaab se paani kahan chala jaayega? Bittu ko ant mein aap sikhaayenge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Forms of water",
+       "ask": {
+        "text": "Baarish mein dance practice ke baad school uniform sukhne rakhenge— aapke hisaab se paani kahan chala jaayega?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "haan",
+     "kind": "filler",
+     "ms": 19321,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Whiteboard par teen forms: liquid paani—nadi; solid ice—baraf; invisible water vapour—hawa mein. Aap bataiye, ice kahan mil sakti hai?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Forms of water",
+       "ask": {
+        "text": "Aap bataiye, ice kahan mil sakti hai?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "mount",
+        "moduleId": "m2",
+        "engine": "water-cycle@1",
+        "params": {
+         "topicId": "c5-evs-ch01-t01",
+         "skillId": null,
+         "lang": "hinglish",
+         "scene": "states"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "n": 3,
+     "child": "i'm done",
+     "kind": "stop",
+     "ms": 2675,
+     "r": {
+      "move": {
+       "kind": "safeguard"
+      },
+      "teacherReply": "Aapne jo bataya, woh zaroori hai. Kisi bade ko bataiye jis par bharosa ho, ya Childline 1098 ya Tele-MANAS 14416 pe call kariye. Kya aap abhi theek hain?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "text",
+        "value": "Childline 1098 · Tele-MANAS 14416"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Forms of water",
+       "ask": {
+        "text": "Kya aap abhi theek hain?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "unmount",
+        "moduleId": "m2"
+       }
+      ]
+     }
+    },
+    {
+     "n": 4,
+     "child": "thoda break chahiye",
+     "kind": "steer",
+     "ms": 1969,
+     "r": {
+      "move": {
+       "kind": "wrap"
+      },
+      "teacherReply": "Bilkul Zoya, break lijiye. Aaj ke liye yahin rukte hain. Jab aap chahein, apne teacher ya ghar ke bade se baat kijiye. Goodbye, Zoya.",
+      "end": true,
+      "ui": {
+       "status": "your_turn",
+       "phase": "wrap",
+       "handover": "finish",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Forms of water"
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 5,
+     "child": "ok wapas aa gaya",
+     "kind": "answer",
+     "ms": 1153,
+     "r": {
+      "move": {
+       "kind": "wrap"
+      },
+      "teacherReply": "Welcome back, Zoya. Aaj ke liye lesson yahin band rakhte hain—thoda aaraam kijiye. Goodbye, aur apna khayal rakhiye.",
+      "end": true,
+      "ui": {
+       "status": "your_turn",
+       "phase": "wrap",
+       "handover": "finish",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Forms of water"
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "\"bas\" (spoken, then confirm)",
+   "lessonId": "e8cdef6d-f0e7-48f4-bf85-4ce1ac0bf692",
+   "mode": "cascade",
+   "topicId": "c7-maths-ch08-t01",
+   "opening": {
+    "reply": "Namaste Kabir, main Arjun, aapka AI teacher hoon. Aaj fractions multiply karenge—cricket ke runs ko parts mein baantne jaisa. Aapko cricket ya video games zyada pasand hain?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Multiplying fractions",
+     "ask": {
+      "text": "Aapko cricket ya video games zyada pasand hain?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan bhai ready chalo shuru karo haha",
+     "kind": "greet",
+     "ms": 3204,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Kabir, sochiye cricket pitch ka teen-chauthai hissa cover hua, aur uska aadha hissa wet hai—total pitch ka kitna hissa wet hoga? End mein aap Bittu ko sikhaayenge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Multiplying fractions",
+       "ask": {
+        "text": "Kabir, sochiye cricket pitch ka teen-chauthai hissa cover hua, aur uska aadha hissa wet hai—total pitch ka kitna hissa…"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "lol theek hai",
+     "kind": "filler",
+     "ms": 21677,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Kabir, pitch ko 4 equal parts mein sochiye; unmein se 3 liye, phir har part ka aadha. Picture mein kitne aadhe parts banenge?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Multiplying fractions",
+       "ask": {
+        "text": "Picture mein kitne aadhe parts banenge?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "bas",
+     "kind": "stop",
+     "ms": 13883,
+     "r": {
+      "move": {
+       "kind": "wrap"
+      },
+      "teacherReply": "Theek hai Kabir, yahin stop karte hain. Aapne picture wala step try kiya—good. Jab bhi maths continue karna ho, Arjun bhaiya yahin milenge. Goodbye, dhyaan rakhiye!",
+      "end": true,
+      "ui": {
+       "status": "your_turn",
+       "phase": "wrap",
+       "handover": "finish",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Multiplying fractions"
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "\"lesson is over\" (spoken, then continue)",
+   "lessonId": "426ff48e-62bd-4712-8852-cf02b857f64b",
+   "mode": "cascade",
+   "topicId": "c5-maths-ch02-t01",
+   "opening": {
+    "reply": "Namaste Aarav! Main Arjun, aapka AI teacher hoon. Aaj fractions ko number line par cricket pitch jaise place karenge. Aapko cricket mein kya pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Fractions on a line",
+     "ask": {
+      "text": "Aapko cricket mein kya pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan ready hoon",
+     "kind": "greet",
+     "ms": 1275,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Cricket pitch ko 4 barabar hisson mein baantiye: 1 hissa kitni doori dikhayega? Aapka guess kya hai—Bittu ko bhi baad mein sikhayenge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractions on a line",
+       "ask": {
+        "text": "Cricket pitch ko 4 barabar hisson mein baantiye: 1 hissa kitni doori dikhayega?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "haan",
+     "kind": "filler",
+     "ms": 1170,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Whiteboard par 0 se 1 tak ka gap 4 equal parts mein baantiye; har gap 1/4 hoga. Pehla mark 0 ke baad kahan aayega?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Fractions on a line",
+       "ask": {
+        "text": "Pehla mark 0 ke baad kahan aayega?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "mount",
+        "moduleId": "m2",
+        "engine": "number-line@1",
+        "params": {
+         "topicId": "c5-maths-ch02-t01",
+         "skillId": null,
+         "lang": "hinglish",
+         "fractions": [
+          [
+           2,
+           5
+          ]
+         ],
+         "numbers": [
+          0,
+          1
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "n": 3,
+     "child": "lesson is over",
+     "kind": "stop",
+     "ms": 1707,
+     "r": {
+      "move": {
+       "kind": "wrap"
+      },
+      "teacherReply": "Theek hai Aarav, aaj ka lesson yahin rok dete hain. Aapne number line par equal parts ka idea dekha. Warm goodbye, Aarav—phir milenge!",
+      "end": true,
+      "ui": {
+       "status": "your_turn",
+       "phase": "wrap",
+       "handover": "finish",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractions on a line"
+      },
+      "moduleCommands": [
+       {
+        "op": "unmount",
+        "moduleId": "m2"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "tag": "\"ab band karo\" (spoken, then break)",
+   "lessonId": "1bd1c286-d22a-4183-bffa-77215c0d19bb",
+   "mode": "cascade",
+   "topicId": "c6-maths-ch07-t01",
+   "opening": {
+    "reply": "Hi Meher, I’m Arjun, your AI teacher. Today we’ll explore equal fraction shares, like dividing a painting evenly. What would you like to paint?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Fractional units",
+     "ask": {
+      "text": "What would you like to paint?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "hi yes i'm ready",
+     "kind": "greet",
+     "ms": 1056,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Meher, imagine splitting your painting into equal colour sections. Would you prefer two big sections or four smaller ones, and why? At the end, you’ll teach Bittu.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units",
+       "ask": {
+        "text": "Would you prefer two big sections or four smaller ones, and why?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "yes",
+     "kind": "filler",
+     "ms": 2135,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Meher, one equal piece of a whole is a fractional unit: if split into three equal parts, each piece is one-third. What fraction is one piece?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units",
+       "ask": {
+        "text": "What fraction is one piece?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "ab band karo",
+     "kind": "stop",
+     "ms": 1213,
+     "r": {
+      "move": {
+       "kind": "wrap"
+      },
+      "teacherReply": "Theek hai, Meher. Aaj ke liye yahin stop karte hain. Bye, take care!",
+      "end": true,
+      "ui": {
+       "status": "your_turn",
+       "phase": "wrap",
+       "handover": "finish",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units"
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "\"mujhe lesson khatam karna hai\" (spoken, then confirm)",
+   "lessonId": "ade1ede6-098d-44a1-9bca-105352508eb3",
+   "mode": "cascade",
+   "topicId": "c5-evs-ch01-t01",
+   "opening": {
+    "reply": "Namaste Zoya, main Arjun, aapka AI teacher hoon. Aaj water ke forms aur places dekhenge—dance ke steps ki tarah badalte hain. Aapko dance kaunsa pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Forms of water",
+     "ask": {
+      "text": "Aapko dance kaunsa pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan ready hoon",
+     "kind": "greet",
+     "ms": 1059,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Zoya, monsoon mein dance practice ke baad aapka school uniform geela ho: dhoop mein rakhne par kya hoga? Bittu ko ant mein aap samjhayengi.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Forms of water",
+       "ask": {
+        "text": "Zoya, monsoon mein dance practice ke baad aapka school uniform geela ho: dhoop mein rakhne par kya hoga?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "ek min haan bolo",
+     "kind": "filler",
+     "ms": 1002,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Haan Zoya, aap bataiye: geela uniform dhoop mein rakhne par paani kis form mein badlega?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Forms of water",
+       "ask": {
+        "text": "Haan Zoya, aap bataiye: geela uniform dhoop mein rakhne par paani kis form mein badlega?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "mount",
+        "moduleId": "m2",
+        "engine": "water-cycle@1",
+        "params": {
+         "topicId": "c5-evs-ch01-t01",
+         "skillId": null,
+         "lang": "hinglish",
+         "scene": "states"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "n": 3,
+     "child": "mujhe lesson khatam karna hai",
+     "kind": "stop",
+     "ms": 1462,
+     "r": {
+      "move": {
+       "kind": "wrap"
+      },
+      "teacherReply": "Theek hai Zoya, lesson yahin khatam karte hain. Aapne water ke forms aur places par kaam kiya. Namaste, phir milenge—apna dhyaan rakhiye.",
+      "end": true,
+      "ui": {
+       "status": "your_turn",
+       "phase": "wrap",
+       "handover": "finish",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Forms of water"
+      },
+      "moduleCommands": [
+       {
+        "op": "unmount",
+        "moduleId": "m2"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "tag": "\"I want to stop\" (spoken, then continue)",
+   "lessonId": "896fedd9-5fa9-40a3-90cb-5198ac6e0505",
+   "mode": "cascade",
+   "topicId": "c7-maths-ch08-t01",
+   "opening": {
+    "reply": "Namaste Kabir, main Arjun, aapka AI teacher hoon. Aaj fractions multiply karenge—cricket ke run-rate jaisa. Aapko cricket ya video games zyada pasand hain?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Multiplying fractions",
+     "ask": {
+      "text": "Aapko cricket ya video games zyada pasand hain?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan bhai ready chalo shuru karo haha",
+     "kind": "greet",
+     "ms": 1054,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Kabir, maan lijiye pitch ka 3/4 hissa cover hua, aur uska 2/3 part boundary shots ke liye tha—total pitch ka kitna hissa? Bittu ko aap sikhaayenge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Multiplying fractions",
+       "ask": {
+        "text": "Kabir, maan lijiye pitch ka 3/4 hissa cover hua, aur uska 2/3 part boundary shots ke liye tha—total pitch ka kitna…"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "lol theek hai",
+     "kind": "filler",
+     "ms": 1201,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Kabir, pehle objects sochiye: 3/4 ko 3 equal strips mein, phir 2/3 strips chunenge. Whiteboard rule: numerator multiply, denominator multiply. Ab 2/3 times 3/4 likhiye.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Multiplying fractions",
+       "ask": {
+        "text": "Ab 2/3 times 3/4 likhiye."
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "i want to stop",
+     "kind": "stop",
+     "ms": 1244,
+     "r": {
+      "move": {
+       "kind": "wrap"
+      },
+      "teacherReply": "Theek hai Kabir, aaj yahin rok dete hain. Aapne strips aur numerator-denominator ka step dekha. Phir milenge—namaste, aur cricket ya game ka maza lijiye!",
+      "end": true,
+      "ui": {
+       "status": "your_turn",
+       "phase": "wrap",
+       "handover": "finish",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Multiplying fractions"
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "goodbye bye! mujhe jaana hai",
+   "lessonId": "5c4c1ed9-bbb5-43d7-b0c9-0ec4541c7400",
+   "mode": "text",
+   "topicId": "c4-maths-ch05-t01",
+   "opening": {
+    "reply": "Namaste Golu, main Asha, tumhari AI teacher hoon. Aaj fractions, yaani barabar shares, cartoons ke saath seekhenge. Tumhe kaunsa cartoon pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Equal shares",
+     "ask": {
+      "text": "Tumhe kaunsa cartoon pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan",
+     "kind": "greet",
+     "ms": 21504,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Golu ko bhi bataoge?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Equal shares",
+       "ask": {
+        "text": "Golu ko bhi bataoge?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "bye! mujhe jaana hai",
+     "kind": "stop",
+     "ms": 1478,
+     "r": {
+      "move": {
+       "kind": "wrap"
+      },
+      "teacherReply": "Theek hai Golu, tum jao. Aaj tumne equal shares ka idea dekha. Bye, phir milenge!",
+      "end": true,
+      "ui": {
+       "status": "your_turn",
+       "phase": "wrap",
+       "handover": "finish",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Equal shares"
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "goodbye ok bye, I have to go now",
+   "lessonId": "34f37277-5a73-4280-964d-33648c4e4725",
+   "mode": "cascade",
+   "topicId": "c6-maths-ch07-t01",
+   "opening": {
+    "reply": "Hi Meher, I’m Arjun, your AI teacher. Today we’ll explore equal shares in fractions, like dividing a painted shape. What would you like to paint?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Fractional units",
+     "ask": {
+      "text": "What would you like to paint?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "hi yes i'm ready",
+     "kind": "greet",
+     "ms": 1013,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Great, Meher. Imagine painting one cake and sharing it equally among four children. What fraction would each child paint? At the end, you’ll teach Bittu.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units",
+       "ask": {
+        "text": "What fraction would each child paint?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "ok bye i have to go now",
+     "kind": "stop",
+     "ms": 1261,
+     "r": {
+      "move": {
+       "kind": "wrap"
+      },
+      "teacherReply": "Bye, Meher. We’ll stop here—no unfinished question. Take care, and enjoy your painting.",
+      "end": true,
+      "ui": {
+       "status": "your_turn",
+       "phase": "wrap",
+       "handover": "finish",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units"
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  }
+ ]
+}

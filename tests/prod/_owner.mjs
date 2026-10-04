@@ -28,7 +28,7 @@ export const arg = (k, d) => { const i = argv.indexOf(`--${k}`); return i >= 0 &
 export const flag = (k) => argv.includes(`--${k}`);
 process.env.TAXILA_BASE = arg("base", process.env.TAXILA_BASE || "https://taxila.dev");
 const lib = await import("./lib.mjs");
-export const { withTestAccount, apiClient, ok, warn, done, BASE, isLocal } = lib;
+export const { apiClient, ok, warn, done, BASE, isLocal } = lib;
 const { floorViolations } = await import("../../server/director/safety.js");
 export { floorViolations };
 
@@ -308,9 +308,60 @@ export function answersFor(item, kit, persona) {
   return { correct, noisy: `${fill} ${correct}`, wrong, partial };
 }
 
+/**
+ * lib.mjs withTestAccount, plus what an owner test needs at cleanup: the account deletion is REFUSED (409 erase_review)
+ * while a safeguarding incident on one of its children is unhandled — the product's own guard (routes/account.js
+ * safetyFirst), which a test must never get around. An owner phrase can trip it ("I'm done" read as distress, F10). Then
+ * every child that CAN be erased is erased (DELETE /api/children), the account is reported as left over — email, why,
+ * what is left — in <OUT>/LEFTOVER-ACCOUNTS.json and as a FAIL, and nothing marks the incident handled: that is a human's
+ * safeguarding step (the main loop resolves it, then deletes the account).
+ */
+export async function withTestAccount(fn, opts = {}) {
+  const api = apiClient();
+  api.children = [];
+  const st = Date.now(), rnd6 = Math.random().toString(36).slice(2, 8);
+  const email = `prod-${opts.tag ?? "owner"}+${st}${rnd6}@taxila.test`, password = `prod-pw-${st}-${rnd6}`;
+  let signedUp = false;
+  try {
+    await api("POST", "/api/auth/signup", { email, password, name: "Prod Test", isGuardianAdult: true });
+    signedUp = true;
+    const { child } = await api("POST", "/api/children", { firstName: "Riya", classLevel: 5, languagePref: "hinglish", interests: ["cricket"], ...(opts.child ?? {}) });
+    api.children.push(child.id);
+    await api("POST", "/api/consent", { childId: child.id, grants: { core_tutoring: true, learning_profile: true, memory: true } });
+    await api("POST", "/api/parent/controls", { childId: child.id, hoursStart: "00:00", hoursEnd: "23:59", dailyMinutes: 120 });
+    await fn({ api, child, email, password });
+  } catch (e) {
+    ok(false, `test threw: ${e?.message ?? e}`);
+  } finally {
+    if (signedUp) {
+      const del = await api("DELETE", "/api/account", { password, confirm: true }).then(() => null, (e) => e);
+      if (!del) console.log("cleanup: account deleted");
+      else if (del.body?.code === "erase_review") {
+        const left = [];
+        for (const id of api.children) {
+          const r = await api("DELETE", "/api/children", { childId: id, password }).then(() => null, (e) => e);
+          if (r) left.push(id);
+        }
+        const again = left.length ? await api("DELETE", "/api/account", { password, confirm: true }).then(() => null, (e) => e) : await api("DELETE", "/api/account", { password, confirm: true }).then(() => null, (e) => e);
+        if (!again) console.log("cleanup: account deleted (after erasing its children one by one)");
+        else {
+          const row = { at: new Date().toISOString(), base: BASE, email, reason: "409 erase_review: a safeguarding incident on a test child is unhandled (routes/account.js safetyFirst)",
+            childrenLeft: left.length, childrenErased: api.children.length - left.length, resolve: "a human marks the test child's incident handled after review, then DELETE /api/account" };
+          mkdirSync(OUT, { recursive: true });
+          const f = join(OUT, "LEFTOVER-ACCOUNTS.json");
+          const prior = existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : [];
+          writeFileSync(f, JSON.stringify([...prior, row], null, 1));
+          ok(false, `cleanup: the test account ${email} could not be deleted: the product's safeguarding guard holds it (${left.length} child left, ${row.childrenErased} erased) — recorded in ${f}; never bypassed by the test`);
+        }
+      } else ok(false, `cleanup: could not delete the test account ${email}: ${del.message}`);
+    }
+  }
+}
+
 /** A fresh child on the test account (consented, the day's hours open): one per lesson, deleted with the account. */
 export async function freshChild(api, persona, controls = {}) {
   const { child } = await api("POST", "/api/children", { firstName: persona.name, classLevel: persona.classLevel, languagePref: persona.lang, interests: persona.interests });
+  api.children?.push(child.id);
   await api("POST", "/api/consent", { childId: child.id, grants: { core_tutoring: true, learning_profile: true, memory: true } });
   await api("POST", "/api/parent/controls", { childId: child.id, hoursStart: "00:00", hoursEnd: "23:59", dailyMinutes: 120, ...controls });
   return child;

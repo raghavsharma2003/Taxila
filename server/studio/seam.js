@@ -48,6 +48,17 @@ const KINDS_FOR = {
   explain: ["animation", "diagram", "game", "chart"],
   practice: ["game", "chart", "explorable", "simulation"],
 };
+/**
+ * The beats a prefetched piece may be revealed in (TEACHER-BRAIN beats; STUDENT-FLOW §5.2 tray kinds): a piece the child
+ * answers (game, chart, explorable, simulation) belongs to worked example, contrast and practice; a picture to watch
+ * (animation, diagram) to explain, worked example and contrast.
+ */
+const PLAY_BEATS = ["worked_example", "contrast", "practice_set"];
+const WATCH_BEATS = ["explain", "worked_example", "contrast"];
+const BEAT_NEED = { contrast: ["contrast_misconception"], practice_set: ["practice"], explain: ["explain", "introduce"], worked_example: ["explain", "introduce"] };
+const beatsFor = (p) => (p.kind === "animation" || p.kind === "diagram" ? WATCH_BEATS : PLAY_BEATS);
+/** Trays the Director's own move needs this turn: Studio never takes them (the child's item stays answerable). */
+const DIRECTOR_TRAYS = new Set(["module", "board", "tiles", "pad"]);
 const B4 = { 1: "B1", 2: "B1", 3: "B2", 4: "B2", 5: "B3", 6: "B3", 7: "B3", 8: "B4", 9: "B4" };
 const LANG = { hinglish: "hinglish", english: "en", en: "en", hindi: "hi", hi: "hi" };
 
@@ -197,7 +208,7 @@ export function candidateIntents(ctx, { exclude = [] } = {}) {
       const pick = chooseArchetype(intent, { kit, exclude: [...exclude, ...off] });
       if (!pick.archetype) continue;
       const key = `${pick.archetype}:${hashOf(pick.params)}`;
-      if (seen.has(key)) break;
+      if (seen.has(key)) continue;
       seen.add(key);
       out.push({ intent, archetype: pick.archetype, params: pick.params });
       break;
@@ -346,7 +357,7 @@ export const studioSeam = {
    * The Studio state of this lesson for the turn's facts row, read from memory (called once per turn, before the plan).
    * @returns {import("../../shared/studio").StudioTurnView | null}
    */
-  statusFacts(lessonId) {
+  statusFacts(lessonId, hint = null) {
     const L = lessons.get(lessonId);
     if (!L) return null;
     L.turn++;
@@ -365,7 +376,13 @@ export const studioSeam = {
       return view;
     }
     if (L.safety || L.turn < STUDIO_LIMITS.firstRevealTurn || L.turn - L.lastRevealTurn < STUDIO_LIMITS.turnsBetweenReveals) return view;
-    const next = pieces.filter((p) => isRevealable(p) && p.neededAtMs <= clock).sort((x, y) => x.neededAtMs - y.neededAtMs)[0];
+    // with the lesson's current beat (the call site's hint), a piece is offered only in the beat it was made for; without
+    // it (the seam commit's call site), on the lesson clock
+    const beat = typeof hint?.beat === "string" ? hint.beat : null;
+    const fits = (p) => (beat ? beatsFor(p).includes(beat) : p.neededAtMs <= clock);
+    // the piece made for this beat first (a contrast piece in the contrast beat), then by when it was wanted
+    const own = (p) => (beat && (BEAT_NEED[beat] ?? []).includes(p.need) ? 0 : 1);
+    const next = pieces.filter((p) => isRevealable(p) && fits(p)).sort((x, y) => own(x) - own(y) || x.neededAtMs - y.neededAtMs)[0];
     if (next) { view.propose = { reveal: next.intentId }; if (next.facts) view.revealing = next.facts; }
     return view;
   },
@@ -376,16 +393,22 @@ export const studioSeam = {
    * @param {string} lessonId @param {import("../../shared/brain").TurnStudio | null} turnStudio
    * @returns {import("../../shared/studio").StudioSlot | null}
    */
-  slotFor(lessonId, turnStudio) {
+  slotFor(lessonId, turnStudio, hint = null) {
     const L = lessons.get(lessonId);
     if (!L) return null;
     if (turnStudio?.retire && turnStudio.retire === L.onScreen) return null;
+    // the Director's move needs the tray this turn (an item's tiles or pad, its module, the board): Studio yields it
+    const trayTaken = typeof hint?.tray === "string" && DIRECTOR_TRAYS.has(hint.tray);
     if (turnStudio?.reveal) {
       const p = L.pieces.get(turnStudio.reveal);
-      if (p && (isRevealable(p) || VISIBLE.has(p.state))) return slotOf(p, p.source === "skeleton" ? "fallback_ready" : "revealed");
+      // the turn moved into a beat the piece was not made for, or the tray is the Director's: it waits for its moment;
+      // onReveal skips it on this turn
+      const beat = typeof hint?.beat === "string" ? hint.beat : null;
+      if (p && !VISIBLE.has(p.state) && (trayTaken || (beat && !beatsFor(p).includes(beat)))) p.heldTurn = L.turn;
+      else if (p && (isRevealable(p) || VISIBLE.has(p.state))) return slotOf(p, p.source === "skeleton" ? "fallback_ready" : "revealed");
     }
     const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
-    if (on && VISIBLE.has(on.state) && on.kind !== "whiteboard") return slotOf(on, on.source === "skeleton" ? "fallback_ready" : on.state);
+    if (on && !trayTaken && VISIBLE.has(on.state) && on.kind !== "whiteboard") return slotOf(on, on.source === "skeleton" ? "fallback_ready" : on.state);
     return null;
   },
 
@@ -399,7 +422,7 @@ export const studioSeam = {
     if (ev.studio.retire) retirePiece(L, ev.studio.retire, "beat_exit");
     if (ev.studio.reveal) {
       const p = L.pieces.get(ev.studio.reveal);
-      if (!p || !(isRevealable(p) || VISIBLE.has(p.state))) return;
+      if (!p || !(isRevealable(p) || VISIBLE.has(p.state)) || p.heldTurn === L.turn) return;
       if (L.onScreen && L.onScreen !== p.intentId) retirePiece(L, L.onScreen, "replaced");
       p.state = "revealed"; p.revealedTurn = L.turn; p.revealedAt = Date.now();
       L.onScreen = p.intentId; L.lastRevealTurn = L.turn;
@@ -444,6 +467,9 @@ export const studioSeam = {
           if (L.childId) writeMount(L, p, L.childId);
         } else {
           p.state = "failed"; p.fallback = "voice";
+          // telemetry: check ids only (never her line, never the child): why the board stayed calm
+          const failing = (r?.gate?.checks ?? []).filter((c) => !c.pass).map((c) => c.id).slice(0, 6);
+          console.info(`[studio] whiteboard not drawn ${r?.empty ? "nothing_to_draw" : failing.join(",") || String(r?.why ?? "").slice(0, 40)} ${r?.ms ?? 0}ms`);
           push(L, { t: "status", status: { state: "failed", intentId, fallback: "voice" } });
         }
       })

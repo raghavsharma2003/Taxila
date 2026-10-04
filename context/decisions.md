@@ -3487,3 +3487,125 @@ Nothing on a live path warms it yet (kit narration and Forge narration call site
 - `voice-blind-r3-page` (2026-10-04): Blind round 3 page (docs/research/voice/v4/blind/index.html, 20 MP3s, key blind-key.json not published, version taxila-voice-blind-r3/v1, localStorage prefix taxila-voice-blind-r3:): the round-2 scenes as 5 cards x 4 arms from v4/renders/manifest.json (A = the round-2 Diya clip as anchor, B = Diya with the v4 spoken-register line in plain SSML, C = the same line plus the per-clause delivery plan, D = Nova 2 Sonic kiara with the line and the situation prompt; the L3 A-reserve renders are left out). Takes come from the manifest's rule, written before screening; every arm-line is take 1. Each clip is encoded from its raw source with round 2's own encode(), imported rather than copied: outputs -26.4 to -26.5 LUFS, true peak <= -4.2 dBFS (n=20). The format is the same as round 2: name gate, per-name db docs, a 1-5 score on 'real teacher talking to me' unlocked after 80% heard, notes per voice and per card. Changes: each voice shows its own words, because arm A says the round-2 line; the text separates A exactly as the audio already does and says nothing about B vs C vs D. Three failure boxes are appended after round 2's eight (mood: 'feeling does not fit this moment', fades: 'feeling fades after the start', choppy: 'too many pauses'), taken from the round-2 rater notes. A name's db doc is read and merged before the first write, so a second device or a late runtime cannot overwrite earlier scores. Publish with the same capabilities as round 2: db rules ratings owner/owner and ratings/{self} interact/interact, plus user. Reverse if raters cannot finish 20 clips, or if the per-voice words prove to bias scores (then hide the text and keep only scene + child).
 
 - `owner-voice-signals-major-2026-10-04` (2026-10-04): owner: "voice signal will be a major part in checking that the student has understood; if Microsoft has a problem use AWS or Neon." Built as knowledge and metacognitive states from voice, not emotions: uncertain-correct, confident-wrong, searching (can't recall) vs not known, guessing, fluent recall. Restriction 12 of Microsoft's Code of Conduct names emotional states, and these are knowledge states. Placement also keeps Microsoft AI services out of the path: features and the model run on the device or self-hosted, training runs on AWS GPU credits, and per-child baselines live in Neon. One shared audio front-end serves both this and the duplex engine. Emotion-from-voice is at most a shadow research arm, judged on added predictive value for learning. Its output never reaches a prompt, a child, a parent or a stored profile. Workstream wf_085e782c-74c. **Reverse if:** the real-child pilot shows voice adds no predictive value for delayed transfer over the text-and-task signals. Then voice drops back to timing and turn-taking only.
+
+## Duplex v2 (2026-10-04): pending merge from `inbox/duplex-v2.json`
+
+Source: `docs/research/duplex/ARCHITECTURE.md` v2; contract `src/duplex/engine.ts`; measurement M-D6.
+
+### `duplex-continuous-engine-2026-10-04`
+
+**Decision (proposed): the duplex teacher's turn-taking is a Continuous Conversational Engine (Griffin's principle)
+running on the cascade's streams.**
+- **When it decides.** On every 100 ms timer tick **and** on every stream event: voice onset/offset, STT partial/final,
+  her playback, screen, model estimate. Each time it re-assesses the exchange and picks one action:
+  - SPEAK;
+  - HOLD;
+  - BACKCHANNEL: nod or "mm"; lexical "haan/acchha" in chit-chat only, behind a flag;
+  - REACT: face floor behaviours, never affect;
+  - YIELD;
+  - KEEP_TALKING;
+  - CUT_IN.
+- **Perception never stops**, even while she speaks. The overlap is decided acoustically in 150-250 ms, so she yields in
+  ≤ 200 ms p50 and keeps talking through "haan haan".
+- **Where pComplete and pHoldWanted come from.** Semantics, given the context:
+  - the Director's expected answer **form** (never the key; see `duplex-verdict-blind-timing`). "62" after "27 + 35?" is
+    complete with zero silence once the words cover the audio (`duplex-lexical-horizon-guard`);
+  - Hinglish markers;
+  - prosody, used for timing only;
+  - the child's own pause profile;
+  - screen events.
+- **Silence is one feature**, plus a context-keyed backstop that acts only while the engine stays uncertain. It is never
+  the gate.
+- **Two engines, one governor.** Two interchangeable engines implement `src/duplex/engine.ts`:
+  - stage A: rules plus a fast Azure LLM;
+  - stage B: a trained small multimodal model (Smart Turn v3.2 backbone + text prefix + context tokens; ONNX on the
+    device or ACA CPU in India; ≤ 20 MB).
+
+  Both sit behind **one code governor**:
+  - safety, sticky, with a pre-speech barrier;
+  - hold requests;
+  - the lexical horizon;
+  - verdict stability ("fast mouth, late verdict" kept);
+  - the closed CUT_IN list: safety, word-search cue, off-task drift, a question to her, the 15 s hold offer;
+  - rate limits and WT1 protection;
+  - fail-patient fallbacks: stage A, then today's 900 ms.
+
+**Rationale.**
+- The owner's correction: silence is not the turn-end signal.
+- Brahimi (via Study C): at age 9, 85% of ≥ 250 ms silences are holds; silence alone separates hold from shift at AUC
+  0.62.
+- M-D6: on the same real D4 partials, words plus the horizon cut off 0/25 scripted turns, while tuned 640 ms silence cut
+  off 15/25.
+- The bars to beat, not reasons to fall back:
+  - Smart Turn off the shelf: 13.5% cut-offs vs 2.7% for tuned silence (Voice-Light);
+  - SHANKS: 24.9% false interruptions;
+  - 21/21 hesitant first values wrong, 43% of self-repair breaks still sent (M-B1, M-C1).
+
+  So the engine acts early on reversible acts (react, nod, a verdict-free uptake) and late on a verdict.
+- Generation stays a cascade: the Azure router brain, DragonHD, the safety predicate. Native speech-to-speech for Hindi
+  measured poor (`rj-native-duplex-teacher-2026-10-04`). The engine's logs are the data path to a native model later; it
+  is not built now.
+- Code still decides in the sense of `code-keeps-decisions-2026-10-04`: models estimate, the governor disposes, the
+  action set is closed and typed, and lesson policy stays in the kernel.
+
+**Acceptance (TaxilaFDB, `duplex-taxilafdb`):**
+- gap after a respond-labelled true end: p50 ≤ 350 ms and p90 ≤ 700 ms, STT final included. This needs a fast lexical
+  ear in India (the MAI micro-commit probe or Nemotron) and a primed first sound; D4 cannot meet it;
+- thinking-pause cut-offs ≤ tuned silence-640 on the same set, and ≤ 3%, and ≤ Smart Turn off the shelf;
+- yield ≤ 200 ms p50;
+- 0 hold violations, 0 wrong verdicts on repaired values, 0 non-safety speech after a distress partial.
+
+**Supersedes and constrains.**
+- It supersedes `duplex-no-model-in-child-turn` (v1 law 4) and the silence-candidate design of
+  `duplex-cascade-listening-teacher-2026-10-04`.
+- It constrains `duplex-arch-six-loops-device-floor`: the floor manager becomes the engine plus the governor, and the
+  device floor stays. It also constrains `wb-predictive-endpoint`, `open-predictive-turn-model` and
+  `w2e-predictive-turn-lite`: candidate silence is no longer the gate.
+
+**Reverse if:** DX-12 on real consented children shows the best engine cutting off thinking pauses more often than tuned
+640 ms silence on the same audio, after a real data round.
+- Then silence returns as the *floor* for that context class only.
+- The continuous architecture stays: perception while speaking, the overlap classifier, backchannel and react.
+
+### `duplex-verdict-blind-timing`
+
+**Decision (proposed):** completeness means "a complete answer of the asked form", never "the right answer".
+- The engine context carries `{form, slots, units, options}`, and never the key or the misconception values.
+- So right and wrong answers get the same reply timing: latency would otherwise leak the verdict, exactly like
+  correctness-keyed nods (`design-v2-rejected-correctness-face`).
+- No key material reaches the device (v1 §6.7).
+- The owner brief's "expected answer form/key" is honoured for the form only, deliberately.
+
+**Reverse only if** a blind test shows children cannot detect a right/wrong latency difference of ≥ 300 ms. The key
+stays off the device regardless.
+
+### `duplex-lexical-horizon-guard`
+
+**Decision (proposed): words count only once they cover the audio.**
+- `TranscriptView` carries `coverageEndMs` and `unseenVoicedMs`: the child's voiced audio after the last covered word.
+- Lexical completeness is discounted, and SPEAK / CUT_IN are vetoed (governor G5), while `unseenVoicedMs > 120 ms`,
+  unless a fresh acoustic estimate vouches for the tail.
+- **Where coverage comes from:**
+  - at scale: Nemotron token times;
+  - on the pilot: the MAI micro-commit probe. The device commits at each acoustic micro-pause of ≥ 150 ms; the final
+    then covers all the audio, and it arrives 68 ms after the commit from Chennai.
+- D4 has no timings and its deltas lag 713 ms p50 (M-D2), so it cannot meet the 350 ms gap.
+
+**Evidence (M-D6):** on real D4 partials, words plus a silent child decided on stale prefixes and picked the wrong value
+in 5/13 decided closed items. With the guard it was 0/11.
+
+**Reverse if** the India-lane STT gives word coverage within 100 ms at p90. The guard then becomes a no-op, but it stays
+in the code.
+
+### `duplex-taxilafdb`
+
+**Decision (proposed):** TaxilaFDB is the duplex benchmark (ARCHITECTURE.md v2 §6).
+- **Scenarios:** about 1,110 scripted child Hinglish scenarios in 12 families × 3 voices × 3 acoustic conditions. Labels
+  come by construction, and the test split is frozen before tuning.
+- **Metrics:** M1-M16, computed from the action log and from VAD on the output channel, never from an LLM judge for
+  timing.
+- **Baselines:** cascade-900, silence-640, silence tuned to the engine's recall, Smart Turn v3.2 off the shelf, and the
+  v1 floor manager.
+- **Harness levels:** L1 simulation (the prototype harness, kept), L2 real STT, L3 at the ear in India.
+
+**Reverse if** real-child E1 results rank the arms differently. The scenario priors are then refit from E1.

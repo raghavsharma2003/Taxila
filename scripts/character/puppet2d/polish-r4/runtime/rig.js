@@ -345,7 +345,7 @@ export class Puppet2DRig {
         const hump = Math.pow(Math.max(0, Math.sin(Math.PI * u)), 0.7);
         // r3: in a blink the lower lid comes up a little too (both lids move: a squeeze, not a heavy upper lid), so a
         // mid-blink frame reads as motion, never as a sleepy hold
-        const blinkSq = 0.24 * smooth(0.25, 0.55, b) * (this.bsh && this.bsh.active ? 1 : 0.6);   // r4: a stronger squeeze in a real blink
+        const blinkSq = 0.18 * smooth(0.25, 0.55, b) * (this.bsh && this.bsh.active ? 1 : 0.6);   // r4: a stronger squeeze in a real blink
         // r4: delight's eyes SMILE: the cheek pushes the lower lid up harder (judge r3: 'delight without an eye squint')
         const rise = (q * 0.36 + c * 0.32 + sm * 0.07 + blinkSq) * H * Math.pow(hump, 1.4);
         let bot = B - rise + w * 0.09 * H * hump;

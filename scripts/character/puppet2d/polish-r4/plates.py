@@ -4,7 +4,7 @@ compression, jaw). Hair and locks stay the warped frontal layers (a whole-head p
 live, sprung ones, and the hair outline doubled mid-dissolve: tposes0).
 Per plate (keys/yawL-0, keys/yawR-2):
   1. matte = c-front's face-layer alpha mapped FORWARD through the key field into plate px (q -> denorm(q + D(q)),
-     splatted on a 0.5 px grid), eroded 9 px + feathered (sigma 4.5) so the outer silhouette stays the frontal-warped one
+     splatted on a 0.5 px grid), eroded 16 px + feathered (sigma 6) so the outer silhouette stays the frontal-warped one
   2. the plate's own dark locks inside that matte are inpainted (OpenCV Telea) so they cannot ghost the live locks
   3. the skin colour is matched to c-front (per-channel mean/std over the face skin of both): the live eyes / brows /
      mouth (and their skin margins) sit in holes over it, so a tone step would show as patches
@@ -87,8 +87,8 @@ for side, f in (("L", "yawL-0"), ("R", "yawR-2")):
     np.maximum.at(M, (iy, ix), a)
     M = ndi.grey_closing(M, size=3)
     hard = M > 0.5
-    hard = ndi.binary_erosion(hard, iterations=9)
-    m = ndi.gaussian_filter(hard.astype(np.float32), 4.5)   # the outer ~18 px stay the frontal-warped silhouette
+    hard = ndi.binary_erosion(hard, iterations=16)
+    m = ndi.gaussian_filter(hard.astype(np.float32), 6.0)   # the outer ~28 px stay the frontal-warped silhouette (the plate's inpainted locks / earring smudged there)
     # 2. locks: dark strands in the outer band of the face region (the eyes / brows / nostrils / bindi are interior)
     dist = ndi.distance_transform_edt(M > 0.5)
     dark = (lum(im) < 95) & (M > 0.5) & (dist < 70)

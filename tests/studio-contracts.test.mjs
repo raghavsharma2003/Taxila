@@ -444,3 +444,32 @@ test("a live build (router allows it, a gate lane exists): the race winner is st
   seamMod._setDeps({ buildRace: null, gateAvailable: () => false });
   loadRoutes(true);
 });
+
+test("with the lesson's beat (the call site's hint), a piece is offered only in a beat it fits, its own beat's piece first", async () => {
+  const { seam } = await seamWith();
+  await startLesson(seam);
+  for (let i = 0; i < 3; i++) seam.statusFacts(LESSON, { beat: "hook" });
+  assert.equal(seam.statusFacts(LESSON, { beat: "hook" }).propose, undefined, "nothing in the hook");
+  assert.equal(seam.statusFacts(LESSON, { beat: "explain" }).propose, undefined, "a game is not offered while she explains");
+  const L = seamMod._lesson(LESSON);
+  const v = seam.statusFacts(LESSON, { beat: "contrast" });
+  assert.equal(L.pieces.get(v.propose?.reveal)?.need, "contrast_misconception", "the contrast piece in the contrast beat, whatever the clock says");
+});
+
+test("a reveal accepted as the turn moves into another beat, or into a tray the Director needs, waits: no slot, onReveal skips it", async () => {
+  const { seam } = await seamWith();
+  await startLesson(seam, { activeMisconceptionIds: [] });
+  for (let i = 0; i < 3; i++) seam.statusFacts(LESSON, { beat: "practice_set" });
+  const v = seam.statusFacts(LESSON, { beat: "practice_set" });
+  const id = v.propose?.reveal;
+  assert.ok(id);
+  assert.equal(seam.slotFor(LESSON, { reveal: id }, { beat: "explain" }), null);
+  assert.equal(seam.slotFor(LESSON, { reveal: id }, { beat: "practice_set", tray: "tiles" }), null, "the item's tiles keep the tray");
+  await seam.onReveal({ lessonId: LESSON, childId: CHILD.id, turn: 5, studio: { reveal: id } });
+  assert.equal(seamMod._lesson(LESSON).onScreen, null, "not revealed on that turn");
+  seam.statusFacts(LESSON, { beat: "practice_set" });
+  assert.equal(seam.slotFor(LESSON, { reveal: id }, { beat: "practice_set", tray: "none" })?.intentId, id, "revealed when its moment comes");
+  await seam.onReveal({ lessonId: LESSON, childId: CHILD.id, turn: 6, studio: { reveal: id } });
+  assert.equal(seam.slotFor(LESSON, null, { beat: "practice_set", tray: "pad" }), null, "an on-screen piece yields the tray to the Director's pad");
+  assert.equal(seam.slotFor(LESSON, null, { beat: "practice_set", tray: "none" })?.intentId, id, "and comes back after");
+});

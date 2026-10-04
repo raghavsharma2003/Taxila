@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Landfall · Studio exemplar</title>
+<meta name="description" content="Real-time fractions-on-the-number-line game (class 5-6 NCERT). Engine + generated spec. Prototype for docs/design/reset/STUDIO-V2.md.">
+<link rel="stylesheet" href="../lib/host.css">
+</head>
+<body>
+<div class="stage" id="stage" aria-label="Game: Landfall. Move the dock along the number line to where each fraction lives before it lands.">
+  <canvas></canvas>
+  <div class="type-label" style="--c:#8B98FF"><i></i>Game · Landfall</div>
+  <div class="pip"><img src="../../design-v3/img/teacher-ira.webp" alt=""><span>Watching</span></div>
+  <div class="safe-overlay"><div class="z-label"></div><div class="z-pip"></div></div>
+</div>
+<div class="hint-keys">S safe zones · M sound · ← → move · ?seed= ?motion=reduce ?pip=0</div>
+
+<!-- GENERATED PART. In production the planner writes this (strings + items + pacing) from the verified kit;
+     the engine (landfall.js) validates every field, recomputes every position from exact rationals and repairs or
+     replaces anything invalid. Items target kit misconceptions: c6-maths-ch07-t03 m-bigger-numbers-bigger (pairs),
+     c6-maths-ch07-t02 m-less-than-one and m-mixed-wrong (wave 4), m-count-marks (eighths with only the half marked). -->
+<script type="application/json" id="spec">
+{
+  "archetype": "catch-on-line@1",
+  "skills": ["c5-maths-ch02-t01", "c6-maths-ch07-t02", "c6-maths-ch07-t03"],
+  "lang": "en",
+  "strings": {
+    "coach": "Drag to move the dock",
+    "wave": "Wave", "of": "of", "clear": "clear",
+    "landed": "landed", "precision": "precision", "chain": "chain", "bestChain": "best chain",
+    "exact": "EXACT", "close": "CLOSE", "inside": "IN", "offBy": "off by",
+    "same": "SAME SPOT", "runDone": "Run complete", "toughest": "Toughest"
+  },
+  "waves": [
+    { "title": "Quarters", "sub": "0 to 1 · quarter marks on", "line": [0, 1], "ticks": 4, "speed": 88, "gap": 2.5,
+      "items": ["1/2", "1/4", "3/4", "2/4"] },
+    { "title": "Eighths", "sub": "only the half is marked", "line": [0, 1], "ticks": 2, "scaffoldTicks": 8, "speed": 96, "gap": 1.9,
+      "items": ["3/8", "7/8", "5/8", "1/8", "6/8"] },
+    { "title": "Same spot?", "sub": "two pods · one place, or two?", "line": [0, 1], "ticks": 0, "scaffoldTicks": 4, "speed": 92, "gap": 3.1,
+      "items": [["1/2", "4/8"], ["3/4", "6/8"], ["2/3", "4/6"]] },
+    { "title": "Past one", "sub": "the line runs to 2 now", "line": [0, 2], "ticks": 0, "scaffoldTicks": 4, "speed": 100, "gap": 2.6,
+      "items": ["5/4", ["3/2", "1 1/2"], "7/4", ["9/8", "1 1/8"]] }
+  ],
+  "adapt": { "slowAfterMisses": 2, "slowFactor": 0.86, "fastAfterChain": 4, "fastFactor": 1.07, "minScale": 0.7, "maxScale": 1.3, "scaffoldPods": 3 }
+}
+</script>
+<script src="../lib/stage.js"></script>
+<script src="landfall.js"></script>
+</body>
+</html>

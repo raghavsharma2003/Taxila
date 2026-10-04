@@ -50,7 +50,8 @@ const V = {
   viseme_SS: { ...Z, g: 6, up: 0.45, W: 1.06, T: 1, TL: 1 },
   viseme_nn: { ...Z, g: 15, up: 0.3, W: 0.98, T: 0.55, TL: 0.1, tip: 1 },
   viseme_RR: { ...Z, g: 12, up: 0.35, W: 0.82, flat: 0.5, round: 0.55, T: 0.5, TL: 0.15, tip: 0.5 },
-  viseme_aa: { ...Z, g: 56, up: 0.2, W: 1.0, flat: 0.25, round: 0.3, T: 0.95, TL: 0.15, th: 0.35 },
+  viseme_aa: { ...Z, g: 60, up: 0.2, W: 0.9, flat: 0.4, round: 0.45,   // r4b: a controlled tall aa, not a laughing grin (blind r4a 3/3)
+    T: 0.95, TL: 0.15, th: 0.35 },
   viseme_E: { ...Z, g: 17, up: 0.35, W: 1.1, T: 1, TL: 0.55 },
   viseme_I: { ...Z, g: 9, up: 0.4, W: 1.08, T: 1, TL: 0.75 },
   viseme_O: { ...Z, g: 28, up: 0.4, W: 0.7, flat: 0.85, round: 1, T: 0.35, TL: 0.05 },
@@ -148,6 +149,7 @@ export class LipSolver {
     const smile = { L: k("mouthSmileRight"), R: k("mouthSmileLeft") };
     const frown = { L: k("mouthFrownRight"), R: k("mouthFrownLeft") };
     const worry = clamp01(((k("mouthFrownLeft") + k("mouthFrownRight")) / 2) * 4 + Math.max(0, k("browInnerUp") - 0.5) * 1.2);
+    this.worry = worry;
     const lift = (sm) => 0.22 * (1 - worry) + 0.23 * clamp01(sm / 0.045) + 0.6 * clamp01((sm - 0.045) / 0.8);
     const side = k("mouthLeft") - k("mouthRight");   // + = her left = screen right
     // the smile is a bias, not a replacement: rounding caps it to half (judge r3: "cap mouthSmile ~0.5 while rounded")
@@ -245,7 +247,10 @@ export class LipShell {
     // vertical: the corner lift is carried by the outer part of the line
     let dy = S.dy * Math.pow(am, 1.8);
     // curvature: rounded shapes flatten c-front's smile curve toward the centre height (an "o", not a V)
-    dy += p.flat * 0.9 * (LC - lineY(x)) * (a <= 1.25 ? 1 : 1 - sstep(1.25, 1.6, a));
+    // r4b: concern / a frown flattens c-front's smile CURVE too (its lip line rises 25 px at the corners, so pulling the
+    // corners down alone still left a smile: blind r4a 3/3 "a closed smile contradicts the concern")
+    const flatE = Math.max(p.flat, 0.95 * (sol.worry || 0));
+    dy += flatE * 0.9 * (LC - lineY(x)) * (1 - sstep(1.05, 1.45, a));   // r4: zero inside the shell's opaque skin
     // the side the mouth slid to tucks up (c-thinking)
     dy -= (sol.sideTilt || 0) * s * 3 * am;
     // opening profile: an ellipse when rounded, squarer when spread; zero at the corners
@@ -280,7 +285,9 @@ export class LipShell {
       dy = ey + sign * f * (thick - 1) * t;
     } else {
       // skin beyond the lip: carries the edge motion, blending into the jaw's motion at the sheet's outer rows
-      const reach = sign < 0 ? 26 : 40;
+      // r4: 26 -> 38 above: a rounded O lifts the upper lip's top edge ~18 px, and over 26 px the skin rows crossed (a fold
+      // that showed as light dots under the nose); 38 keeps the falloff slope < 0.75
+      const reach = sign < 0 ? 38 : 40;
       const fall = 1 - sstep(t, t + reach, d);
       // m/b/p press bulge: the skin right beside the pressed lips is pushed out ~2 px
       const bulge = p.press * 2.2 * Math.exp(-(((d - t - 4) / 5) ** 2)) * (a < 1 ? 1 - a * a : 0);
@@ -288,7 +295,7 @@ export class LipShell {
       dy = (ey + sign * (thick - 1) * t) * fall + J * (1 - fall) + sign * bulge;
     }
     // corners beyond the crease end fade out sideways too (the ellipse edge stays put)
-    if (a > 1.2) { const f = 1 - sstep(1.2, 1.6, a); dx *= f; dy = dy * f + J * (1 - f) * (d > t ? 1 : 0); }
+    if (a > 1.1) { const f = 1 - sstep(1.1, 1.45, a); dx *= f; dy = dy * f + J * (1 - f) * (d > t ? 1 : 0); }   // r4: zero by |s| 1.45 (opaque to ~1.5)
     out[0] = x + dx;
     out[1] = y + dy;
   }

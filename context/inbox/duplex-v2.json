@@ -1,0 +1,224 @@
+{
+ "source": "docs/research/duplex/ARCHITECTURE.md v2 (Architect v2, workstream wf_3622f8d6-318, 2026-10-04); interface src/duplex/engine.ts; measurement evals/duplex/lexical-horizon.mjs",
+ "nodes": [
+  {
+   "id": "duplex-continuous-engine-2026-10-04",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Duplex turn-taking = a Continuous Conversational Engine (Griffin's principle) on the cascade streams: every 100 ms timer tick AND every stream event (voice onset/offset, STT partial/final, her playback, screen, model estimate) the engine re-assesses and picks one of SPEAK / HOLD / BACKCHANNEL (nod, 'mm'; 'haan/acchha' chit-chat only, flagged) / REACT (face floor behaviours) / YIELD / KEEP_TALKING / CUT_IN, with perception continuous while she speaks. pComplete and pHoldWanted come from semantics given the context (the Director's expected answer FORM, never the key: '62' after '27+35?' is complete with zero silence once the words cover the audio), Hinglish markers, prosody (timing only), the child's own pause profile and screen events; silence is one feature plus a context-keyed backstop when the engine is uncertain, never the gate. Two interchangeable engines implement src/duplex/engine.ts (stage A rules + fast Azure LLM; stage B trained small multimodal model, Smart Turn v3.2 backbone + text prefix + context tokens, ONNX on device or ACA CPU India), both behind ONE code governor (safety sticky + pre-speech barrier, hold requests, lexical horizon, verdict stability = fast mouth late verdict, closed CUT_IN list, rate limits, WT1, fail-patient fallbacks). Overlap is decided acoustically in 150-250 ms (yield <= 200 ms p50). Acceptance on TaxilaFDB: gap after a respond-labelled true end p50 <= 350 / p90 <= 700 ms incl. STT final; thinking-pause cut-offs <= tuned silence-640 on the same set (and <= 3%, <= Smart Turn off-the-shelf). Generation stays cascade (Azure brain, DragonHD, safety predicate); native S2S is not built (logs become its training data later). Reverse if: DX-12 on real consented children shows the best engine cutting off thinking pauses more often than tuned 640 ms silence on the same audio after a real data round; then silence returns as the floor for that context class only, and the continuous architecture (perception while speaking, overlap classifier, backchannel/react) stays."
+  },
+  {
+   "id": "rj-silence-gated-turn-taking",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Rejected (owner correction + evidence): silence-gated turn-taking for the duplex teacher, i.e. v1 of docs/research/duplex/ARCHITECTURE.md (now Appendix Z) and the prototype server/duplex/floorManager.js + eot.js: a 500 ms candidate silence opened every take-over decision, a lexical combiner then committed or held, law 4 forbade any model decision inside the child's turn and a model could only SHORTEN a hold; barge-in waited for the transcript. What breaks: (1) the premise 'silence is the most reliable end signal' is false for our children: at age 9, 85% of >= 250 ms silences are holds and silence separates hold/shift at AUC 0.62 (Brahimi 2026 via Study C); on M-D6's 25 scripted scenarios tuned silence-640 cut off 15/25 and 900 ms 11/25, while words + lexical horizon on the SAME real D4 partials cut off 0/25; (2) a finished answer still waited >= 500 ms + STT final (v1 prototype sim gap p50 1,480 ms on D4, 577 on MAI; M-D3) when the words already said it was complete; (3) transcript-bound barge-in resolution took p50 1.70 s (D4) / 0.72 s (MAI) in simulation (M-D3) vs a 200 ms target; (4) a model barred from the child's turn cannot be the Griffin-style engine the owner asked for. Kept from v1: fast mouth late verdict, sticky partial safety, device floor, speech/work tracks, content-blind nods, wait-time drafts, heardUpTo, triage. Revisit only under duplex-continuous-engine-2026-10-04's reversal (DX-12), and then only as a per-context floor."
+  },
+  {
+   "id": "m-d6-lexical-horizon-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "M-D6 (evals/duplex/lexical-horizon.mjs, deterministic replay, USD 0): the 28 BASE runs of M-D2 (synthetic child TTS streamed in real time to taxila-live-transcribe D4, US container -> eastus2, server VAD 900 ms) through words-only completeness rules (understand.js + turnPolicy.ts) every 20 ms; 25 commit/hold scenarios + 3 distress. D4 measured: words+child-silent (W1) premature 4/25 [80% 0.09-0.27], wrong value at decision 5/13 (stale prefixes: 'Um, तीन' for 'तीन बटा चार', 'आठ' before 'नहीं नहीं', 'एक' before 'मिनट'), gap p50/p90 907/1436 ms; + lexical-horizon guard (W1H) premature 0/25 [0-0.06], wrong 0/11, gap 1103/1533, 6 never decided by words; silence-640 premature 15/25 [0.47-0.72] (gap 655), silence-900 11/25. Fast-ear re-timing [E] (partials at coverage + 294 ms, Nemotron p50 254 + 40 RTT): W1H premature 3/25 (all self-corrections c01/c03/c08: no word rule sees a repair not yet said) at decision gap ~306 ms; decided before the disclosure in 2/3 distress runs. STT dropped the projecting 'कि' in d02. Limits: n=25, one author, per-segment TTS (prosody unrealistic), one STT pass, coverage estimated by character mapping, W1HF (form grammar) in-sample, fast-ear rows are a model. Result evals/duplex/results/lexical-horizon-2026-10-04.json."
+  },
+  {
+   "id": "m-d2-duplex-live-stt-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "M-D2 (duplex prototype, evals/duplex/live-validate.mjs; logged by Architect v2 because the stopped prototype agent never logged it): 28 scripted scenarios, gpt-4o-mini-tts child clips (x1.2 pitch), real-time 20 ms streaming to taxila-live-transcribe (D4), US container -> eastus2. First delta after onset p50/p90 1,743/2,048 ms; delta lag (arrival - audio covered) 713/1,477 ms (n=266); final after server VAD 514/888 (n=43); final after a CLIENT input_audio_buffer.commit 915/1,311 ms (n=58, 0 socket errors: D4 honours the client commit with server VAD 1500 ms as backstop, but slower than its VAD final); only 67% (p50) of final tokens visible at true end + 500 ms; BASE arm end -> last final p50/p90 1,834/2,490 ms (n=28); the v1 floor manager live end -> commit 1,458/1,736 ms (n=25). Result evals/duplex/results/live-validate-2026-10-04.json, live-calibration, live-analysis."
+  },
+  {
+   "id": "m-d3-duplex-sim-smoke-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "M-D3 (duplex prototype, evals/duplex/sim.mjs; logged by Architect v2): 308 simulated turns per arm (scripted scenarios x 4 seeds, synthetic audio frames; STT timing calibrated on M-D2 for D4 and STT-v3 figures for MAI; post-commit stages bootstrapped from 48 measured cascade turns). Today's 900 ms cascade: gap after true end p50/p90 1,962/2,397 ms, false take-overs 63/280, hold-request violations 24/24, missed turn ends 108/280, overlap resolution accuracy 48/76 at p50 2.4 s. v1 floor manager on D4: gap 1,480/1,805, false take-overs 1/280, hold violations 0/24, missed 5/280, overlap 72/76 resolved at p50 1.70 s, nods 1 per 5.4 s with 0/56 mid-word, wait-draft hits 147/164, candidate-draft hits 64/243, 77% of draft tokens wasted (3,621/turn). v1 on MAI: gap 577/1,488, false take-overs 10/280, silent false commits 38/280, overlap 76/76 at p50 720 ms. Ranks arms on a chosen corpus; not a classroom prediction. Result evals/duplex/results/sim-smoke-2026-10-04.json."
+  },
+  {
+   "id": "m-d4-duplex-draft-live-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "M-D4 (duplex prototype, evals/duplex/draft-live.mjs; logged by Architect v2): taxila-fast chatStream drafts with a synthetic ~1.25k-token teacher brief, max 200 tokens, effort none, sequential, US -> eastus2, n=24 (0 errors): TTFT p50/p90 901/1,468 ms, total 1,015/1,566 ms, output 58/81 tokens; abort at ~302 ms cancelled 4/4 with 0 characters billed as text; USD 0.0077. Result evals/duplex/results/draft-live-2026-10-04.json."
+  },
+  {
+   "id": "m-d5-duplex-model-arm-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "M-D5 (duplex prototype, evals/duplex/model-arm.mjs; logged by Architect v2): typed {done: p} end-of-turn judgments on 140 hold-time text prefixes from the simulator (labels from the scripts), json mode, US -> eastus2. grok-4-1-fast-non-reasoning: accuracy@0.5 118/140, precision@0.9 49/56, recall@0.9 49/71, false shortenings 7/69, ECE 0.068, latency p50/p90 490/957 ms, USD 0.152 (~0.0011/call). taxila-fast: 127/140, 63/71, 63/71, 8/69, ECE 0.062, 963/1,202 ms, USD 0.0087. Too slow for a zero-silence path; usable as the stage-A semantic estimate on open contexts during pauses >= 600 ms (DX-4 decides the deployment from India). Result evals/duplex/results/model-arm-2026-10-04.json."
+  },
+  {
+   "id": "duplex-verdict-blind-timing",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "The engine's completeness is 'a complete answer of the asked form', never 'the right answer': the expected-answer context carries {form, slots, units, options}, never the key or misconception values, so right and wrong answers get the same reply timing (latency would otherwise leak the verdict, like correctness-keyed nods; design-v2-rejected-correctness-face) and no key material reaches the device (v1 §6.7). The owner brief's 'expected answer form/key' is honoured for form only, deliberately. Reverse only if a blind test shows children cannot detect a >= 300 ms right/wrong latency difference; the key stays off the device regardless."
+  },
+  {
+   "id": "duplex-lexical-horizon-guard",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Words count only once they cover the audio: TranscriptView carries coverageEndMs and unseenVoicedMs (child voiced audio after the last covered word); lexical completeness is discounted and SPEAK/CUT_IN vetoed (governor G5) when unseenVoicedMs > 120 ms unless a fresh acoustic estimate vouches for the tail. Coverage comes from Nemotron token times (scale) or the MAI micro-commit probe (commit at a >= 150 ms acoustic micro-pause; the final covers all audio, 68 ms from Chennai) (pilot); D4 has no timings (713 ms lag) and cannot meet the 350 ms gap. Evidence M-D6: wrong values on stale prefixes 5/13 -> 0/11 with the guard. Reverse if the India-lane STT gives word coverage within 100 ms p90 (the guard becomes a no-op but stays)."
+  },
+  {
+   "id": "duplex-taxilafdb",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "TaxilaFDB is the duplex benchmark (ARCHITECTURE.md v2 §6): ~1,110 scripted child Hinglish scenarios in 12 families (closed answers incl. self-repair, explanations with pauses, questions to her, chit-chat, holds/word searches, IDK, barge-ins, continuers while she speaks, TV/sibling/side-talk rejection, safety, off-task drift, echo) x 3 voices x 3 acoustic conditions, labels by construction, test split frozen before tuning; metrics M1-M16 on the action log and output-channel VAD (pause takeover, thinking-pause cut-offs, gap after respond-labelled ends, missed respond, backchannel rate/JSD/legality, yield latency, continuer keep-talking, rejection, cut-in correctness, wrong verdicts on repaired values, hold violations, safety, echo, jitter, ECE); baselines B0 cascade-900, B1 silence-640, B1* tuned silence, B2 Smart Turn v3.2 off the shelf, B3 the v1 floor manager; harness L1 sim (prototype harness kept) / L2 real STT / L3 at the ear in India. Reverse if E1 real-child results disagree with TaxilaFDB rankings of the arms (then the scenario priors are refit from E1)."
+  },
+  {
+   "id": "open-duplex-mai-micro-probe",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "DX-1: does MAI-Transcribe-2-Streaming keep accuracy (answers >= 77/78, CER delta <= +0.005, 0/12 non-speech output) when the device commits the STT item at every >= 150 ms acoustic micro-pause, and is the final <= 100 ms p50 from India homes? It gives the engine exact lexical coverage on the pilot lane; probes are free only if streaming bills per audio hour (unverified, MODEL-STACK A8)."
+  },
+  {
+   "id": "open-duplex-gap-at-ear",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "DX-2: at the ear on India phones, does a fluent closed answer get her first sound (a primed verdict-free uptake) within p50 350 / p90 700 ms? The v2 composition is ~290-390 ms (MAI probe) / ~330-430 ms (Nemotron India) [E]; it needs a pre-decoded clip and an output lead < ~60 ms (today's measured lead 110 ms)."
+  },
+  {
+   "id": "open-duplex-seams-v2",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "Duplex v2 seam requests (ARCHITECTURE.md v2 §11.2): S6 becomes UiDirectives.engine {exchange, expected{form,slots,units,options}, questionType, beat, wt1, cutIn, allowLexicalBackchannel, allowAudioBackchannel, weakerLanguage} (replaces ui.expect + ui.waitNudge); S2 adds TurnRequest.duplex.cutInReason + engineSummary; S7 adds stillWithYou/checkinLook/calmAttend; S10 becomes the engine host adapter beside cascadeLink.ts (frames + STT events, client commit probe, obey governed actions behind duplex.engine=shadow|on); new S12 Director moves offer_cue / redirect_with_uptake; S13 Studio prefetch keys; S14 ttsStream word-boundary events + playback clock; S15 consent-gated engine logs."
+  }
+ ],
+ "edges": [
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "caused_by",
+   "dst": "owner-duplex-no-silence-gate-2026-10-04"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "caused_by",
+   "dst": "rj-silence-gated-turn-taking"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "supersedes",
+   "dst": "duplex-no-model-in-child-turn"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "supersedes",
+   "dst": "duplex-cascade-listening-teacher-2026-10-04"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "constrains",
+   "dst": "duplex-arch-six-loops-device-floor"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "constrains",
+   "dst": "wb-predictive-endpoint"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "constrains",
+   "dst": "open-predictive-turn-model"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "constrains",
+   "dst": "w2e-predictive-turn-lite"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "inherits",
+   "dst": "duplex-fast-mouth-late-verdict"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "inherits",
+   "dst": "duplex-safety-sticky-partials"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "inherits",
+   "dst": "code-keeps-decisions-2026-10-04"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "inherits",
+   "dst": "rj-native-duplex-teacher-2026-10-04"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "measured_by",
+   "dst": "m-d6-lexical-horizon-2026-10-04"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "measured_by",
+   "dst": "m-d2-duplex-live-stt-2026-10-04"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "measured_by",
+   "dst": "smart-turn-unproven-vs-silence-2026-10-04"
+  },
+  {
+   "src": "rj-silence-gated-turn-taking",
+   "rel": "measured_by",
+   "dst": "m-d6-lexical-horizon-2026-10-04"
+  },
+  {
+   "src": "rj-silence-gated-turn-taking",
+   "rel": "measured_by",
+   "dst": "m-d3-duplex-sim-smoke-2026-10-04"
+  },
+  {
+   "src": "duplex-verdict-blind-timing",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-verdict-blind-timing",
+   "rel": "inherits",
+   "dst": "design-v2-rejected-correctness-face"
+  },
+  {
+   "src": "duplex-lexical-horizon-guard",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-lexical-horizon-guard",
+   "rel": "measured_by",
+   "dst": "m-d6-lexical-horizon-2026-10-04"
+  },
+  {
+   "src": "duplex-lexical-horizon-guard",
+   "rel": "measured_by",
+   "dst": "m-d2-duplex-live-stt-2026-10-04"
+  },
+  {
+   "src": "duplex-taxilafdb",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-taxilafdb",
+   "rel": "measured_by",
+   "dst": "m-d3-duplex-sim-smoke-2026-10-04"
+  },
+  {
+   "src": "open-duplex-mai-micro-probe",
+   "rel": "blocks",
+   "dst": "duplex-lexical-horizon-guard"
+  },
+  {
+   "src": "open-duplex-gap-at-ear",
+   "rel": "blocks",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "open-duplex-seams-v2",
+   "rel": "supersedes",
+   "dst": "open-duplex-seams-w2"
+  }
+ ]
+}
