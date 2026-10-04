@@ -1685,3 +1685,15 @@ Owner-reported failures, verbatim intent. Each becomes an acceptance test under 
 
 ## OWNER RESET 2026-10-04 — supersedes conflicting parts of this plan
 Read docs/design/OWNER-RESET-2026-10-04.md. Its 15 requirements are exit criteria for Wave 2 and every later wave. Where PRODUCT-DESIGN-V2, the image pack or any spec targets younger children, the reset wins (ages 9-15).
+
+## Child signals — integrate after Wave 2 merges (workstream wf_fee0f6e9-4a4 done 2026-10-04)
+Code is in the tree and tested in isolation (`server/signals/**`, `src/signals/**`, `shared/signals.ts`, 42 tests, evals in `evals/signals/`).
+Nothing reads it yet. The order is SIGNALS-SPEC §8.2 steps 1-14, plus the verify deltas in `docs/design/signals/WORKFLOW-RESULT-2026-10-04.json`:
+- `step()` applies the backstop itself; still pass the real safety flag in.
+- Clearing `state.sig` at lesson end also clears `safetyHold`. Confirm `state.affect` is cleared too.
+- Step 13 must ship server first: widen `FEATURE_RANGES` before the client sends `signalExtras`, or `validateUtterance` returns 400 and the utterance's voice features are lost. Add `teacherAudibleAtOnset`.
+- Make one copy of the session median answer length canonical (W2-I's or the signal layer's).
+- W2-E: fill transcriber confidence on the live lane (`asrConfidence` is never set today).
+- Take `f0EndSlopeStPerS` out of `signalsFrom` until SG-M1 passes: every non-final Hindi phrase rises by grammar.
+- Rollout: shadow first (`TAXILA_SIGNALS=shadow`). Text states go live after shadow. Audio-derived states wait for the real-child study and Microsoft's written answer on Code of Conduct restriction 12.
+- The safety floor's four missing shapes are fixed in `scanSafety` (3e68277). After the Wave 2 merge, re-run `node --test tests/safety.test.mjs` in case a stream rewrote that file.
