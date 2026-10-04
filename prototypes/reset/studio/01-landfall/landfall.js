@@ -35,7 +35,7 @@
       const err = Math.abs(x - n / d);
       if (!best || err < best.err - 1e-9) { const g = gcd(n, d); best = { n: n / g, d: d / g, err }; }
     }
-    return best && best.err <= 0.015 ? `${best.n}/${best.d}` : null;
+    return best && best.err <= 0.015 ? (best.d === 1 ? `${best.n}` : `${best.n}/${best.d}`) : null;
   }
 
   /* ------------------------------------------------------------------ spec: validate, repair, or fall back (zero visible failure) */

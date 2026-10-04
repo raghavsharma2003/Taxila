@@ -149,6 +149,18 @@
    "kind": "rejection",
    "at": "2026-10-04",
    "title": "Counting P(pass by lead) against the archetype's own route leadMs: --write sets that to 1.1 x p90, so a re-run of the same rows re-counted against ~35 s instead of 90 s and would have flipped live archetypes to library-only with no new data; replaced by the fixed bench lead"
+  },
+  {
+   "id": "w2f-acceptance-local-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "tests/prod/w2f-studio-gate.mjs part B locally (Neon test branch, 4 lessons, accounts deleted): 0 whiteboard slots opened; brain_trace shows ask_whiteboard rejected over_budget.attention on 2/2 explanation beats (the Director move costs 1 attention when it shows chips; budget 1). Open item for W2-E"
+  },
+  {
+   "id": "w2f-whiteboard-seam-inprocess-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "In-process requestIntent (W2-H) + whiteboardIntentOf (W2-E) for 3 class-5 explain lines: 2/3 drawn and revealed 2.0-2.5 s after the ask, 1/3 (pizza in 8 parts) refused by W8 after one repair and never drawn; n = 3 smoke"
   }
  ],
  "edges": [
@@ -261,6 +273,16 @@
    "src": "w2f-race-orchestrator",
    "rel": "supersedes",
    "dst": "rj-w2f-www-rule-ate-svg-namespace"
+  },
+  {
+   "src": "w2f-whiteboard-archetype",
+   "rel": "measured_by",
+   "dst": "w2f-whiteboard-seam-inprocess-2026-10-04"
+  },
+  {
+   "src": "w2f-whiteboard-archetype",
+   "rel": "measured_by",
+   "dst": "w2f-acceptance-local-2026-10-04"
   }
  ]
 }

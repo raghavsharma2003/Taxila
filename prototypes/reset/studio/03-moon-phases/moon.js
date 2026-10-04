@@ -440,7 +440,7 @@
     // screen-space labels (never scaled below the minimum size)
     const ep = toS(EARTH.x, EARTH.y), ms = toS(mp.x, mp.y);
     const L = (k) => V("lbl." + k);
-    if (L("sun") > 0.01) S.text(ctx, T.sun, 22, 470, { font: "mono", size: 40, weight: 700, color: "#3A2208", alpha: a * L("sun") });
+    if (L("sun") > 0.01) S.text(ctx, T.sun, 18, 316, { font: "mono", size: 40, weight: 700, color: "#3A2208", alpha: a * L("sun") });
     if (L("light") > 0.01) {
       ctx.save(); ctx.globalAlpha = a * L("light");
       S.text(ctx, T.light, 150, 196, { font: "mono", size: 38, weight: 600, color: "#FFD27A" });
@@ -453,7 +453,12 @@
       S.text(ctx, T.moon, ms.x + dx / d * 70, ms.y + dy / d * 62 + 12, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", alpha: a * L("moon") });
     }
     if (L("scale") > 0.01) S.text(ctx, T.scale, 200, 60, { font: "mono", size: 38, weight: 500, color: C.ink3, alpha: a * 0.75 * L("scale") });
-    if (shA > 0.01) { const sp = toS(EARTH.x + 160, EARTH.y - RE - 34); S.text(ctx, T.shadow, sp.x, sp.y, { font: "mono", size: 38, weight: 600, color: "#9AA6C8", align: "center", alpha: a * shA }); }
+    if (shA > 0.01) {
+      // below the cone, stacked, left of the "from Earth" window: never collides with EARTH, FROM EARTH or LUNAR ECLIPSE
+      const words = String(T.shadow).split(/\s+/), sx = ep.x + RE * zoom + 34, sy = ep.y + RE * zoom + 46;
+      const lines = words.length > 1 ? [words.slice(0, Math.ceil(words.length / 2)).join(" "), words.slice(Math.ceil(words.length / 2)).join(" ")] : words;
+      lines.forEach((ln, i) => S.text(ctx, ln, sx, sy + i * 42, { font: "mono", size: 38, weight: 600, color: "#9AA6C8", alpha: a * shA }));
+    }
     if (L("eclipse") > 0.01 && inShadow) S.text(ctx, T.eclipse, ms.x, ms.y - 52, { font: "mono", size: 38, weight: 600, color: "#E8956A", align: "center", alpha: a * L("eclipse") });
     ctx.restore();
   }
@@ -655,19 +660,31 @@
   // G6 hook for the animation archetype (test builds only): measure the rendered terminator against (1 - cos E) / 2
   window.__moonTest = {
     _probe(E) {
-      const c = document.createElement("canvas"); c.width = c.height = 220;
+      // Renders the phase disc offscreen and compares every pixel with the exact terminator geometry
+      // (lit = sun-facing hemisphere projected: right half minus/plus a half-ellipse of x-radius r*|cos e|).
+      const R = 100, C = 110, c = document.createElement("canvas"); c.width = c.height = 220;
       const g = c.getContext("2d"); g.fillStyle = "#000"; g.fillRect(0, 0, 220, 220);
-      moonPhaseDisc(g, 110, 110, 100, E);
+      moonPhaseDisc(g, C, C, R, E);
       const d = g.getImageData(0, 0, 220, 220).data;
-      let disc = 0, lit = 0, litL = 0, litR = 0;
+      const En = ((E % 360) + 360) % 360, waxing = En < 180, e = waxing ? En : 360 - En, k = Math.cos(e * Math.PI / 180);
+      let disc = 0, lit = 0, litL = 0, litR = 0, expLit = 0, disagree = 0;
       for (let y = 0; y < 220; y++) for (let x = 0; x < 220; x++) {
-        if ((x - 110) ** 2 + (y - 110) ** 2 > 97 * 97) continue;            // inside the disc, away from the anti-aliased rim
+        const dx0 = x + 0.5 - C, dy = y + 0.5 - C;
+        if (dx0 * dx0 + dy * dy > 97 * 97) continue;                       // away from the anti-aliased rim
+        const dx = waxing ? dx0 : -dx0;                                     // waning = mirror image
+        const inEll = (dx * dx) / Math.max(1e-6, (R * k) ** 2) + (dy * dy) / (R * R) < 1;
+        const want = k >= 0 ? dx > 0 && !inEll : dx > 0 || inEll;
+        const nearEdge = Math.abs(Math.abs(dx) - R * Math.abs(k) * Math.sqrt(Math.max(0, 1 - (dy * dy) / (R * R)))) < 1.5 || Math.abs(dx) < 1.5;
         disc++;
-        const k = (y * 220 + x) * 4, l = 0.2126 * d[k] + 0.7152 * d[k + 1] + 0.0722 * d[k + 2];
-        if (l > 128) { lit++; if (x < 110) litL++; else litR++; }
+        const q = (y * 220 + x) * 4, l = 0.2126 * d[q] + 0.7152 * d[q + 1] + 0.0722 * d[q + 2];
+        const isLit = l > 128;
+        if (isLit) { lit++; if (dx0 < 0) litL++; else litR++; }
+        if (want) expLit++;
+        if (isLit !== want && !nearEdge) disagree++;
       }
-      return { f: lit / disc, side: litR > litL * 1.05 ? "right" : litL > litR * 1.05 ? "left" : "even" };
+      return { f: lit / disc, fExpected: expLit / disc, disagree: disagree / disc, side: litR > litL * 1.05 ? "right" : litL > litR * 1.05 ? "left" : "even" };
     },
+    pixelCheck(E) { const p = this._probe(E); return { f: +p.f.toFixed(4), fExpected: +p.fExpected.toFixed(4), disagree: +p.disagree.toFixed(5), side: p.side }; },
     litFraction(E) { return +this._probe(E).f.toFixed(4); },
     litSide(E) { return this._probe(E).side; },
   };

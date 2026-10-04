@@ -11,7 +11,7 @@ cells = [("c-front (reference)", "art/character/puppet2d/polish-r4/c-front.png")
          ("talk m / b / p (closure)", "talk_PP"), ("talk f / v (tuck)", "talk_FF"), ("talk l / t / d (tongue tip)", "talk_L"),
          ("talk ch", "talk_CH"), ("listening", "listening"), ("thinking", "thinking"),
          ("warm", "warm"), ("delight", "delight"), ("concern", "concern"), ("surprise", "surprise"), ("playful", "playful"),
-         ("blink: a frame of the real blink (painted 0.75 key)", "blink_mid"), ("turn yaw -20 (painted plate)", "yaw_m20"), ("turn yaw -10 (blend)", "yaw_m10"),
+         ("blink: frame 1 of the real blink (mid key, lids 0.6)", "blink_mid"), ("turn yaw -20 (painted plate)", "yaw_m20"), ("turn yaw -10 (blend)", "yaw_m10"),
          ("turn yaw +10 (blend)", "yaw_p10"), ("turn yaw +20 (painted plate)", "yaw_p20"), ("roll +8, thinking", "thinking_r8"),
          ("yaw +20, delight", "delight_yp20")]
 S, cols = 400, 6

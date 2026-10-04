@@ -2025,6 +2025,22 @@ hint moves, classes 4-7, maths + science + EVS → `plan.js planWhiteboard` → 
 deleted (leftover @taxila.test guardians 4 → 4), **no whiteboard artifact reached the client** (WARN): W2-E asks
 `studioSeam.requestIntent`, which W2-H has not added yet, so the planner is never called in a lesson.
 
+**Re-run 20:50-21:05 (same method, W2-H's `requestIntent` now present; the test also polls `GET /api/studio/slot`
+because the script arrives after the turn):** 4 lessons, 0 whiteboard slots opened, so still no artifact. Cause, from
+`brain_trace` of a 3-turn probe lesson (c5 fractions, text lane): the explain and worked-example turns both recorded
+`rejected: [{kind: "ask_whiteboard", why: "over_budget.attention"}]` (2/2 explanation beats). `director/proposal.js` charges
+the Director's move 1 attention unit whenever the turn shows chips, and the per-turn budget is 1, so the whiteboard can
+never be granted on a text-lane explanation with answer chips. Owner: W2-E (kernel budget / move cost). One leftover-guardian
+check read 4 → 5 in an earlier run while other streams were creating accounts on the shared test branch; each of this
+file's accounts was deleted.
+
+### w2f-whiteboard-seam-inprocess-2026-10-04
+2026-10-04, method: in-process call of W2-H's `requestIntent` with W2-E's `whiteboardIntentOf` (class 5, explain beat) for
+3 teacher lines, polling `slotSnapshot` (n = 3, US sandbox → eastus2). 2/3 drawn and revealed 2.0-2.5 s after the ask (a
+number line 0 to 1 in quarters; 12 mangoes shared among 3), 1/3 refused by `W8.counts_match_line` after one repair (a pizza
+in 8 equal parts, 6.9 s) and so never drawn. Shows the planner → gate → slot path works end to end once the kernel grants
+the ask; n = 3 is a smoke check, not a rate (the rate is `w2f-whiteboard-bench-2026-10-04`).
+
 ## W2-G: human voice (2026-10-04)
 - `w2g-tts-pace-2026-10-04`: `evals/tts-pace.mjs`, Azure Speech centralindia called from the US sandbox, 10 Roman-script
   Hinglish teacher lines per cell, rendered with the production `plainSsml` + `azureTts.js`, speech-only seconds (edges at

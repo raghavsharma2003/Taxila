@@ -58,6 +58,7 @@ else {
 const TOPICS = ["c5-maths-ch02-t01", "c4-maths-ch05-t01", "c6-maths-ch07-t01", "c7-science-ch01-t01"];
 const LINES = ["haan, main ready hoon", "samjhao na", "mujhe nahi pata", "ek example dikhao", "ok", "haan", "theek hai", "samajh nahi aaya"];
 const boards = [];
+let wbSlots = 0;
 for (const topicId of PARTS.includes("B") ? TOPICS : []) {
   const classLevel = Number(topicId.match(/^c(\d)/)[1]);
   await withTestAccount(async ({ api, child }) => {
@@ -71,12 +72,23 @@ for (const topicId of PARTS.includes("B") ? TOPICS : []) {
     for (const childText of LINES) {
       const r = await api("POST", "/api/lesson/turn", { lessonId: start.lessonId, childText, asrConfidence: 0.95, typed: true, turnSeq: ++seq });
       seen(r.ui, r.teacherReply);
+      // The turn answers with the slot in state "planning"; the script follows on the Studio channel (StudioWire
+      // {t:"script"}) a few seconds later. Converge on it the way a late-mounting stage does (GET /api/studio/slot).
+      const slot = r.ui?.studioSlot;
+      if (slot?.intentId && /:wb:/.test(slot.intentId) && !slot.artifact) {
+        wbSlots++;
+        for (let k = 0; k < 24; k++) {
+          await new Promise((res) => setTimeout(res, 500));
+          const s = await api("GET", `/api/studio/slot?lessonId=${start.lessonId}&intentId=${encodeURIComponent(slot.intentId)}`, undefined, [200, 404]).catch(() => null);
+          if (s?.artifact || (s?.state && s.state !== "planning")) { seen({ studioSlot: s }, r.teacherReply); break; }
+        }
+      }
       if (r.end) break;
     }
     await api("POST", "/api/lesson/end", { lessonId: start.lessonId }).catch(() => {});
   }, { child: { classLevel }, tag: "w2f" });
 }
-if (PARTS.includes("B") && !boards.length) warn(`B: no whiteboard artifact reached the client in ${TOPICS.length} lessons (the slot is wired by W2-E/W2-H; the script arrives on the SSE channel once they land)`);
+if (PARTS.includes("B") && !boards.length) warn(`B: no whiteboard artifact reached the client in ${TOPICS.length} lessons (${wbSlots} whiteboard slots opened). With 0 slots the kernel refused every ask: on the text lane an explain move that shows chips costs the one attention unit (director/proposal.js), so ask_whiteboard is rejected over_budget.attention (W2-E)`);
 for (const b of boards) {
   const n = normalizeScript(b.script, { strict: true });
   const lint = n.script ? lintScript(n.script) : [{ check: "invalid" }];

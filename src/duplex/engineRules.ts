@@ -22,7 +22,7 @@ import type {
 } from "./engine.ts";
 import {
   ACOUSTIC_FRESH_MS, BAND_PACE, BOP, CONTEXT, CUT_IN, HESITANT_VALUE_SILENCE_MS, HOLD, HORIZON_MS, PHRASE_SILENCE_MS, PREPARE,
-  RATE, SAFETY, SEMANTIC_DECAY_MS, VERDICT_DELAY_MS, WEAKER_LANGUAGE_STRETCH, WT1_DEFAULT,
+  RATE, SAFETY, SEMANTIC_DECAY_MS, VERDICT, WEAKER_LANGUAGE_STRETCH, WT1_DEFAULT,
 } from "./config.ts";
 import { classifyOverlap } from "./overlap.ts";
 
@@ -30,6 +30,8 @@ export const STAGE_A: EngineId = { id: "rules-a", stage: "A", version: "2026-10-
 const CONTRACT: EngineContractVersion = "cce/2026-10-04";
 
 const sig = (z: number): number => 1 / (1 + Math.exp(-z));
+/** pComplete ceiling for open explanations from lexical/prosodic evidence alone (below CONTEXT.open_explanation.speakPc). [E] */
+export const EXPLAIN_SENTENCE_CAP = 0.8;
 const logit = (p: number): number => { const q = Math.min(0.995, Math.max(0.005, p)); return Math.log(q / (1 - q)); };
 
 export interface Estimate {
@@ -104,7 +106,7 @@ export function estimate(tick: EngineTick): Estimate {
   if (f === "pending") reasons.push("form_pending");
   if (f === "overfull") reasons.push("form_overfull");
   let zBase = row.bC
-    + (f === "complete" ? 2.5 : 0) - (f === "prefix_ambiguous" ? 1.5 : 0) - (f === "pending" ? 3.0 : 0) - (f === "overfull" ? 1.5 : 0)
+    + (f === "complete" ? 2.5 : 0) - (f === "prefix_ambiguous" ? 1.5 : 0) - (f === "pending" ? 3.0 : 0) - (f === "overfull" ? 3.0 : 0)
     - (firstValueAfterHesitation ? 1.0 : 0)
     + 1.2 * logit(tr.text ? m.lexP : 0.05)
     + 1.0 * semW * (sem ? logit(sem.pComplete) : 0)
@@ -115,7 +117,12 @@ export function estimate(tick: EngineTick): Estimate {
     - 3.0 * (m.repairOpen ? 1 : 0) - 2.0 * (m.holdRequest ? 1 : 0) - 1.5 * (m.openTail ? 1 : 0) - 1.5 * (m.fillerTail ? 1 : 0)
     - 1.2 * (m.projection ? 1 : 0) - 1.0 * (m.wordSearch ? 1 : 0) - 0.8 * (m.codeSwitchAtEdge ? 1 : 0);
   if (!tr.text) zBase -= 2.0;
-  const zC = zBase - (unseen && !acousticVouches ? 4.0 : 0) - (c.voicing ? 2.0 : 0);
+  let zC = zBase - (unseen && !acousticVouches ? 4.0 : 0) - (c.voicing ? 2.0 : 0);
+  // a finished SENTENCE is not a finished EXPLANATION (M-D7: "triangle के तीन sides होते हैं" + 1.6 s pause was cut 3/3).
+  // Without a fresh semantic read, stage A is uncertain about explanation ends: cap below every open speakPc, so only the
+  // semantic estimate, an idk / question / yield tag, or the governor's backstop ends a teach-back.
+  const sentenceOnly = exchange === "open_explanation" && semW === 0 && !m.idk && !m.questionComplete && !m.repeatRequest;
+  if (sentenceOnly) { const cap = logit(EXPLAIN_SENTENCE_CAP); if (zC > cap) { zC = cap; reasons.push("x_explain_cap"); } }
   const zH = row.bH + 4.0 * (m.holdRequest ? 1 : 0) + 2.0 * (m.repairOpen ? 1 : 0)
     + 1.5 * Math.max(m.fillerTail ? 1 : 0, m.openTail ? 1 : 0, m.projection ? 1 : 0, m.wordSearch ? 1 : 0)
     + 1.0 * (tick.screen.busy ? 1 : 0) + 1.0 * (c.voicing ? 1 : 0)
@@ -203,7 +210,9 @@ export function prepare(tick: EngineTick, est: Estimate, mem: RulesMemory, suppo
   const eFalling = c.prosody.energySlopeDbPerS === null || c.prosody.energySlopeDbPerS <= 0;
   const runKey = c.lastOffsetAt;
   let sttProbe = false;
-  if (supportsProbe && childFloor && !c.voicing && sil >= PREPARE.probeSilenceMs && eFalling && runKey !== null && mem.probedRunAt !== runKey && tr.unseenVoicedMs > 0) {
+  // energy need not fall on a rising question (M-D7 f01: the probe waited ~1.8 s for a falling slope and server VAD won)
+  const pauseOk = sil >= PREPARE.probeSilenceMs && (eFalling || sil >= PREPARE.probeSilenceMs + 100);
+  if (supportsProbe && childFloor && !c.voicing && pauseOk && runKey !== null && mem.probedRunAt !== runKey && tr.unseenVoicedMs > 0) {
     sttProbe = true;
     mem.probedRunAt = runKey;
   }
@@ -260,7 +269,7 @@ export function decide(tick: EngineTick, est: Estimate, mem: RulesMemory, id: En
   }
 
   // ── wait time I after her question: nothing said yet → the P4 ladder (code timer), never a repeat of the question ──
-  if (ph === "handover" && c.firstOnsetAt === null) {
+  if (ph === "handover" && c.firstOnsetAt === null && !tick.transcript.text) {
     const since = tick.t - (tick.her.handedOverAt ?? tick.phaseSince);
     const wt1 = ctx.wt1 ?? WT1_DEFAULT;
     if (since >= wt1.voiceMs) return decision("SPEAK", est, ["wt1_ladder"], { action: "SPEAK", reason: "wt1_nudge", firstSound: "prompt", verdictNotBefore: null }, id, extra);
@@ -323,12 +332,12 @@ export function extraWait(tick: EngineTick, est: Estimate): number {
 /** G7: the earliest time a verdict word may play on a closed answer (the last value's end + 1.2 s). */
 export function verdictNotBefore(tick: EngineTick): number | null {
   if (tick.context.exchange !== "closed_answer" || !tick.markers.values.length || tick.markers.lastValueAgeMs === null) return null;
-  return tick.t - tick.markers.lastValueAgeMs + VERDICT_DELAY_MS;
+  return tick.t - tick.markers.lastValueAgeMs + VERDICT.delayMs;
 }
 
 export function verdictReady(tick: EngineTick, est: Estimate): boolean {
   const m = tick.markers;
-  return m.lastValueAgeMs !== null && m.lastValueAgeMs >= VERDICT_DELAY_MS && !m.repairOpen && !est.horizonBlocked && !tick.child.voicing;
+  return m.lastValueAgeMs !== null && m.lastValueAgeMs >= VERDICT.delayMs && !m.repairOpen && !est.horizonBlocked && !tick.child.voicing;
 }
 
 export class RulesEngine implements DuplexEngine {

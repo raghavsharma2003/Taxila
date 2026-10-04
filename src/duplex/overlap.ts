@@ -67,7 +67,7 @@ export function classifyOverlap(f: OverlapFeatures, s: { voicing: boolean; f0Slo
   const ended = !s.voicing;
   let z = -0.5;
   if (s.voicing && f.durMs >= OVERLAP.sustainedMs) { z += 2.5; codes.push("sustained_voice"); }
-  else if (s.voicing && f.durMs >= 250) z += 1.0;
+  else if (s.voicing && f.durMs >= 250) z += OVERLAP.earlyVoicedZ;
   if (f.atHerBoundary) { z -= 0.8; codes.push("onset_at_her_boundary"); } else { z += 0.6; codes.push("onset_mid_clause"); }
   if (raised) { z += 1.2; codes.push("onset_pitch_raised"); }
   if (rising && ended && f.durMs <= 600) { z += 2.2; codes.push("x_rising_burst"); }

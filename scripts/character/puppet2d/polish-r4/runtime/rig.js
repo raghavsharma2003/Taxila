@@ -104,6 +104,9 @@ class Spring {
   }
 }
 
+/** r4b: the painted mid-blink key's lash depth as a fraction of the open eye (judge r3: ~0.6, pupil partly covered). */
+const MID_DEPTH = 0.6;
+
 export class Puppet2DRig {
   static async load(canvas, base, opts = {}) {
     const j = (p) => fetch(base + p).then((r) => r.json());
@@ -227,10 +230,23 @@ export class Puppet2DRig {
     // r3 painted lid keys (mid, shut) per eye: grid meshes projected with the head like every face layer
     this.lidKeyMesh = {};
     if (geom.lidKeys) for (const s of ["L", "R"]) for (const kk of ["mid", "shut"]) {
-      const name = `lid${kk}${s}`, rect = geom.rects[name], gr = grid(rect, 8);
-      const pos = new Float32Array(gr.rest), z = new Float32Array(gr.n);
+      const name = `lid${kk}${s}`, rect = geom.rects[name], gr = grid(rect, kk === "mid" ? 16 : 8);
+      const pos = new Float32Array(gr.rest), z = new Float32Array(gr.n), off = new Float32Array(gr.n);
       for (let i = 0; i < gr.n; i++) z[i] = zHead(gr.rest[i * 2], gr.rest[i * 2 + 1]);
-      this.lidKeyMesh[name] = { rect, rest: gr.rest, z, pos, n: gr.n, mesh: this.R.mesh(P, { aPos: { data: pos, size: 2, dynamic: true }, aUv: { data: gr.uv, size: 2 } }, gr.idx) };
+      // r4b (judge r3 fix 5): the painted mid key's lash sat at ~0.84 of the opening, so a still from the blink read as
+      // closed / sleepy. Lift its lash to MID_DEPTH of the opening (per column, zero at the corners where the lids meet);
+      // the lid skin above compresses toward the key's top edge (weight 0 there), so nothing moves into the brow.
+      if (kk === "mid") {
+        const E = this.eyes[s], lift = this.midLift(s, geom), ml = geom.lidKeys[s].midLash;
+        for (let i = 0; i < gr.n; i++) {
+          const x = gr.rest[i * 2], y = gr.rest[i * 2 + 1];
+          const c = clamp(Math.round(x - E.xa), 0, E.xb - E.xa);
+          const lash = ml.y[Math.min(ml.y.length - 1, c)] + lift[c] + 6;
+          const w = clamp01((y - rect[1]) / Math.max(1, lash - rect[1]));
+          off[i] = lift[c] * w * w * (3 - 2 * w);
+        }
+      }
+      this.lidKeyMesh[name] = { rect, rest: gr.rest, z, pos, off, n: gr.n, mesh: this.R.mesh(P, { aPos: { data: pos, size: 2, dynamic: true }, aUv: { data: gr.uv, size: 2 } }, gr.idx) };
     }
     // r3 mouth: the lip shell (two sheets of c-front's own mouth region) + the interior strip
     this.shell = new LipShell(geom.rects.mouth_rest);
@@ -345,7 +361,7 @@ export class Puppet2DRig {
         const hump = Math.pow(Math.max(0, Math.sin(Math.PI * u)), 0.7);
         // r3: in a blink the lower lid comes up a little too (both lids move: a squeeze, not a heavy upper lid), so a
         // mid-blink frame reads as motion, never as a sleepy hold
-        const blinkSq = 0.18 * smooth(0.25, 0.55, b) * (this.bsh && this.bsh.active ? 1 : 0.6);   // r4: a stronger squeeze in a real blink
+        const blinkSq = 0.18 * smooth(0.55, 0.85, b) * (this.bsh && this.bsh.active ? 1 : 0.6);   // r4b: the lower lid stays down at the 0.6 mid key (lid + squeeze + smile read smug 3/3)   // r4: a stronger squeeze in a real blink
         // r4: delight's eyes SMILE: the cheek pushes the lower lid up harder (judge r3: 'delight without an eye squint')
         const rise = (q * 0.36 + c * 0.32 + sm * 0.07 + blinkSq) * H * Math.pow(hump, 1.4);
         let bot = B - rise + w * 0.09 * H * hump;
@@ -356,8 +372,8 @@ export class Puppet2DRig {
         // r3: the live lid only travels to the PAINTED mid lid's lash line (l = 0.5); beyond it the painted keys take
         // over (drawEye: lidmid / lidshut), so the lid skin is never stretched into a smear
         const ml = this.g.lidKeys ? this.g.lidKeys[s].midLash : null;
-        const midY = ml ? ml.y[Math.min(ml.y.length - 1, i)] : closed;
-        top = top + (Math.max(top, midY - 1) - top) * clamp01(b / 0.34);   // r4: lands on the painted lash BEFORE the cross-fade (no ghost)
+        const midY = ml ? ml.y[Math.min(ml.y.length - 1, i)] + this.liftCache[s][i] : closed;
+        top = top + (Math.max(top, midY - 3) - top) * clamp01(b / 0.34);   // r4b: -3 so the live lash's light lower edge hides under the painted lash   // r4: lands on the painted lash BEFORE the cross-fade (no ghost)
         if (top > bot) top = bot;
         E.top[i] = top;
         E.bot[i] = bot;
@@ -379,6 +395,20 @@ export class Puppet2DRig {
       this.bunOff = [this.bunSpring[0].step(-clamp(ax, -4000, 4000) * 0.012 * red, dt), this.bunSpring[1].step(-clamp(ay, -4000, 4000) * 0.012 * red, dt)];
     } else this.bunOff = [0, 0];
     this.prevAnchor = anchor;
+  }
+
+  /** r4b: per-column lift (px, <= 0) of the painted mid key's lash toward MID_DEPTH of the opening, proportional to
+   *  the opening height so it is 0 at the corners (where the lids meet and the painted wing lives). */
+  midLift(s, geom) {
+    this.liftCache = this.liftCache || {};
+    if (this.liftCache[s]) return this.liftCache[s];
+    const E = this.eyes[s], e = E.e, ml = geom.lidKeys[s].midLash, n = E.xb - E.xa + 1;
+    let cm = 0;
+    for (let c = 0; c < n; c++) if (e.bot[c] - e.top[c] > e.bot[cm] - e.top[cm]) cm = c;
+    const Hm = e.bot[cm] - e.top[cm], liftC = Math.min(0, e.top[cm] + MID_DEPTH * Hm - ml.y[Math.min(ml.y.length - 1, cm)]);
+    const out = new Float32Array(n);
+    for (let c = 0; c < n; c++) { const h = clamp01((e.bot[c] - e.top[c]) / Hm); out[c] = liftC * h * h * (3 - 2 * h); }
+    return (this.liftCache[s] = out);
   }
 
   /** r3 blink shaper (judge r2 fix 4): an autonomic blink (a fast rise of eyeBlink) plays a 2-1-3 frame curve on
@@ -610,7 +640,10 @@ export class Puppet2DRig {
     R.update(E.mesh, "aRest", E.restA);
     R.update(E.mesh, "aTop", E.topA);
     // iris: gaze in rest-space px, foreshortened by gaze + head yaw; squashed a little at full blink
-    const gz = this.gaze || [0, 0];
+    // r4b: Bell's phenomenon: in a real blink the eyes dip down; a still caught mid-blink then reads as a blink in
+    // motion (looking down through closing lids), not a sleepy / smug half-lid stare (blind r4f 3/3)
+    const bd = this.bsh && this.bsh.active ? (this.blinkDip || 0) : 0;
+    const gz = bd > 0 ? [(this.gaze || [0, 0])[0], (this.gaze || [0, 0])[1] - 6 * bd] : this.gaze || [0, 0];
     // r2: the upward range was too timid to read as "looking up" (c-thinking parks the iris under the upper lid)
     const ox = (gz[0] / 25) * 18, oy = -(gz[1] / 20) * 12 + (gz[1] < 0 ? -gz[1] / 25 * 2 : 0);
     const fx = Math.cos((gz[0] + 0.2 * s.yaw) * D2R * 1.2);
@@ -671,7 +704,7 @@ export class Puppet2DRig {
         const M = this.lidKeyMesh[`lid${kk}${sd}`];
         // the lid keys ride the brow a little when it lifts (the lid skin is attached under the brow)
         for (let q = 0; q < M.n; q++) {
-          const x = M.rest[q * 2], y = M.rest[q * 2 + 1];
+          const x = M.rest[q * 2], y = M.rest[q * 2 + 1] + M.off[q];
           const p = fixX(this.projectTo(x, y, M.z[q], this._tmp || (this._tmp = [0, 0])));
           M.pos[q * 2] = p[0];
           M.pos[q * 2 + 1] = p[1];

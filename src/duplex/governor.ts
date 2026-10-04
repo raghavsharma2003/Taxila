@@ -32,7 +32,7 @@ import type {
 } from "./engine.ts";
 import {
   BACKSTOP_HOLD_PH, BACKSTOP_HOLD_STRETCH, CONTEXT, CUT_IN, FALLBACK, HOLD, HORIZON_ACOUSTIC_P, HORIZON_MS, OVERLAP, RATE,
-  REVOCABLE_MS, SAFETY, VERDICT_DELAY_MS, ACOUSTIC_FRESH_MS,
+  REVOCABLE_MS, SAFETY, VERDICT, ACOUSTIC_FRESH_MS, FIRST_TEXT_P90,
 } from "./config.ts";
 import { exchangeOf, holdProfile } from "./engineRules.ts";
 import { overlapKind } from "./turnPolicy.ts";
@@ -104,12 +104,16 @@ export class Governor {
   private flags: EngineFlags;
   private fallback: DuplexEngine | null;
   private spoke: Spoke | null = null;
-  private yielded: { at: Ms; resumable: boolean } | null = null;
+  private yielded: { at: Ms; resumable: boolean; onsetAt: Ms } | null = null;
   private overlapOnsetAt: Ms | null = null;
   private pendingRevoke = false;
   private pose: string | null = null;
   private quarantined = false;
   private childSpoke = false;
+  /** The transcript a hold was granted on (G3 grants once per text). */
+  private holdGrantedHash: string | null = null;
+  /** The onset of an overlap that was judged a continuer: its words fold into the turn if a later read yields (fold-in). */
+  private carryOnsetAt: Ms | null = null;
   private events: GovernorEvent[] = [];
   /** baseline arms (silence-640, cascade-900) keep only G1/G2/G4: they are measured as they are, safety floor included. */
   private readonly mode: "full" | "baseline";
@@ -131,6 +135,7 @@ export class Governor {
     this.turnSeq++;
     this.childSpoke = carryFrom !== null;
     this.quarantined = false;
+    this.holdGrantedHash = null;
     this.events.push({ kind: "turn_begin", at, carryFrom, turnSeq: this.turnSeq });
   }
 
@@ -139,6 +144,7 @@ export class Governor {
     this.events = [];
     switch (o.kind) {
       case "her_start":
+        this.carryOnsetAt = null;
         if (this.phase === "committed" && this.spoke) this.spoke.herStartAt = o.t;
         if (this.phase !== "her_turn" && this.phase !== "overlap") this.go("her_turn", o.t);
         break;
@@ -149,10 +155,17 @@ export class Governor {
         const wasSafeguard = !!this.spoke?.safeguard;
         this.spoke = null;
         this.yielded = null;
+        const carry = this.carryOnsetAt;
+        this.carryOnsetAt = null;
         if (!HER_FLOOR.has(this.phase)) break;
         if (this.phase === "overlap" || o.childVoicing) {
           // she finished while the child was already talking: the overlap words are the child's next turn (fold-in)
           this.beginTurn(o.t, this.overlapOnsetAt ?? o.t);
+          this.go("child_turn", o.t);
+        } else if (carry !== null && (o.handsOver || wasSafeguard)) {
+          // M-D7 i17: a short "छप्पन" over her question read as a continuer and she finished; its words land after her
+          // hand-over. They are the child's answer: carry them into the new turn instead of starting WT1 on an answered question
+          this.beginTurn(o.t, carry);
           this.go("child_turn", o.t);
         } else {
           this.beginTurn(o.t, null);
@@ -265,7 +278,15 @@ export class Governor {
     }
 
     // ── G3 HOLD REQUEST ──
-    if (this.mode === "full" && m.holdRequest && (ph === "child_turn" || ph === "idle") && !c.voicing && !tick.safety.distress) this.go("hold_requested", t);
+    // granted only on words that describe the child's LATEST audio (M-D7 h01: a stale "एक मिनट" re-granted the hold after the
+    // child had already resumed with the answer, and the turn never ended), and never twice for the same words
+    const holdFresh = tick.transcript.unseenVoicedMs <= HORIZON_MS && tick.transcript.textHash !== this.holdGrantedHash;
+    if (this.mode === "full" && m.holdRequest && holdFresh && (ph === "child_turn" || ph === "idle") && !c.voicing && !tick.safety.distress) {
+      this.holdGrantedHash = tick.transcript.textHash;
+      this.go("hold_requested", t);
+    }
+    // the child resumed and the words no longer end on a hold request: the floor is theirs again (no voice onset needed)
+    if (this.phase === "hold_requested" && !m.holdRequest && tick.transcript.textHash !== this.holdGrantedHash && tick.transcript.unseenVoicedMs <= HORIZON_MS) this.go("child_turn", t);
     if (this.phase === "hold_requested") {
       const quiet = sil ?? t - this.phaseSince;
       if (d.action === "SPEAK" || (d.action === "CUT_IN" && !(d.detail?.action === "CUT_IN" && d.detail.reason === "hold_offer" && quiet >= HOLD.offerMs)) || d.action === "BACKCHANNEL") {
@@ -347,7 +368,11 @@ export class Governor {
       if (this.yielded && this.phase === "child_turn" && !c.voicing) {
         const text = tick.transcript.text;
         const kind = text ? overlapKind(text, { askedYesNo: tick.her.lastAct === "asked_yes_no" }) : null;
-        if ((kind === "continuer" && (sil ?? 0) >= 200) || (!text && (sil ?? 0) >= NO_TEXT_RESUME_MS && c.turnVoicedMs < 600)) {
+        // no words yet: wait until the source's first text would have landed for that onset (M-D7 i08: a 1.6 s rule resumed
+        // over a "रुको" whose words arrive ~1.7-2.0 s after onset on D4), then resume
+        const firstText = FIRST_TEXT_P90[tick.transcript.source] ?? FIRST_TEXT_P90.other;
+        const noTextLong = !text && (sil ?? 0) >= 300 && t - this.yielded.onsetAt >= Math.max(NO_TEXT_RESUME_MS, firstText + 300) && c.turnVoicedMs < 600;
+        if ((kind === "continuer" && (sil ?? 0) >= 200) || noTextLong) {
           this.events.push({ kind: "resume", at: t });
           this.yielded = null;
           this.go("her_turn", t);
@@ -360,7 +385,7 @@ export class Governor {
 
     // ── G7 (stamp half): a closed-answer SPEAK carries its verdict gate ──
     if (d.action === "SPEAK" && d.detail?.action === "SPEAK" && d.detail.reason !== "safeguard" && tick.context.exchange === "closed_answer" && m.lastValueAgeMs !== null && m.values.length) {
-      const vnb = t - m.lastValueAgeMs + VERDICT_DELAY_MS;
+      const vnb = t - m.lastValueAgeMs + VERDICT.delayMs;
       if (d.detail.verdictNotBefore === null || d.detail.verdictNotBefore < vnb) d = { ...d, detail: { ...d.detail, verdictNotBefore: vnb } };
     }
     return this.finish(tick, d);
@@ -415,12 +440,16 @@ export class Governor {
       if (det.reason === "revoke" || det.reason === "safety") { /* phase already set */ }
       else {
         this.spoke = null;
-        this.yielded = det.resumable ? { at: t, resumable: true } : null;
-        this.beginTurn(t, this.overlapOnsetAt ?? t);
+        const onset = this.overlapOnsetAt ?? this.carryOnsetAt ?? t;
+        this.yielded = det.resumable ? { at: t, resumable: true, onsetAt: onset } : null;
+        this.beginTurn(t, onset);
         this.overlapOnsetAt = null;
+        this.carryOnsetAt = null;
         this.go(det.reason === "stop_request" ? "hold_requested" : "child_turn", t);
       }
     } else if (d.action === "KEEP_TALKING" && this.phase === "overlap" && det?.action === "KEEP_TALKING" && det.reason !== "too_short" && !tick.child.voicing) {
+      // M-D7 i16: a short "बारह" over her read as a continuer, then its words said fold-in; keep the onset for that yield
+      this.carryOnsetAt = this.overlapOnsetAt;
       this.overlapOnsetAt = null;
       this.go("her_turn", t);
     } else if (d.action === "BACKCHANNEL" && det?.action === "BACKCHANNEL") {

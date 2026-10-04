@@ -5,9 +5,12 @@
 
 export const LEGAL_MODES = Object.freeze(["M0", "M1", "M2", "M3"]);
 export const DEFAULT_MODE = "M1";
-const L1 = ["kt", "mis", "ability", "need_fact", "fade", "vibe_explicit", "mem_A", "lang_tile"];
+// rel_bond (RELATIONAL-OS §5.1, W2-I R0): the bond record — academic-record facts about what happened (stage from
+// academic counts, the address the child conferred, teacher-owned events, fired milestone ids, the ritual ledger), M1+.
+// rel_overlay (§9.1 L5): cross-session dependency counters — NM-3-adjacent behavioural monitoring, M3 only (counsel).
+const L1 = ["kt", "mis", "ability", "need_fact", "fade", "vibe_explicit", "mem_A", "lang_tile", "rel_bond"];
 const L2 = [...L1, "eta", "need_belief", "cri_agg", "mem_B", "lang_est"];
-const L3 = [...L2, "vibe_slow", "interest", "value_arms", "pz_child", "cri"];
+const L3 = [...L2, "vibe_slow", "interest", "value_arms", "pz_child", "cri", "rel_overlay"];
 export const LAYERS = Object.freeze([...new Set(["session", ...L3, "research"])]);
 export const WRITES = Object.freeze({
   M0: new Set(["session"]), M1: new Set(["session", ...L1]), M2: new Set(["session", ...L2]), M3: new Set(["session", ...L3]),
@@ -25,6 +28,10 @@ export const LAYER_TABLES = Object.freeze({
   eta: ["kt_child"],
   mem_A: ["memory"],
   pz_child: ["format_trial"],
+  // 018_relational.sql (W2-I): rel_bond is the per-(child, agent) bond record, rel_event its event log (moved here from
+  // the M0 history list: its rows are now the bond record's events); rel_overlay_window exists only in M3.
+  rel_bond: ["rel_bond", "rel_event"],
+  rel_overlay: ["rel_overlay_window"],
 });
 
 /**
@@ -34,7 +41,7 @@ export const LAYER_TABLES = Object.freeze({
  * (transcript), module_run and voice_feature rows.
  */
 export const M0_HISTORY_TABLES = Object.freeze([
-  "lesson", "rel_event", "voice_feature", "voice_baseline",
+  "lesson", "voice_feature", "voice_baseline",
   "student_event", "conductor_state", "decision_log", "brief_snapshot", "day_plan",
   // comprehension engine (007_comprehension.sql): academic record derived from answers
   "comp_facet_state", "reteach_attempts", "rep_fluency", "weave_queue", "probe_log", "grade_audit",
@@ -44,6 +51,8 @@ export const M0_HISTORY_TABLES = Object.freeze([
   "parent_report",
   // 011_teacher_name.sql: the names the child gave the teacher (accepted names and resets) — history, not a layer
   "teacher_name_history",
+  // 018_relational.sql (W2-I): parent-visible relational facts (typed templates over closed slots) — history, deleted on M0
+  "relational_note",
 ]);
 
 /**

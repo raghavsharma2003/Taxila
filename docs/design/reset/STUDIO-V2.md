@@ -90,14 +90,14 @@ kind) and rule 6 (stopwatch-only time pressure) are amended in narrow, reversibl
 |---|---|---|---|
 | QB-A1 | **One idea per piece, built against a named misconception.** | spec names a kit misconception id | `c4-evs-ch10-t02-m2` / `c7-science-ch12-t03-m2`: "phases are Earth's shadow" |
 | QB-A2 | **Narration-locked.** Clause-level cues with a 400 ms pre-roll, anchored to *measured* audio durations. Captions are phrase-level and never word-lit. | compile log: cue time = line start + clause offset − 0.4 s | 21 lines synthesized once; durations and pauses measured with ffprobe + silencedetect (§14 M6) |
-| QB-A3 | **Every picture is computed.** Positions, lit halves, terminators, flows and shadows come from engine geometry. A cue can be late; the picture cannot be wrong. | G6-style probes (terminator lit fraction vs (1 − cos E)/2) | §14 M7: max abs error ≤ 0.01 over 49 phase angles |
+| QB-A3 | **Every picture is computed.** Positions, lit halves, terminators, flows and shadows come from engine geometry. A cue can be late; the picture cannot be wrong. | G6-style probes: every disc pixel vs the exact projected-hemisphere mask; waxing lit on the right (northern sky) | §14 M7: 0 disagreeing pixels over 49 phase angles |
 | QB-A4 | **Cinematic grammar.** Establishing shot → focus → reveal → payoff, with camera moves eased in and out, at most 3 moving things at once, and stable colour coding. | storyboard lint (beats per shot, concurrent motions) | sky cold open → camera pull-out to space → split view → misconception kill → hands-on |
 | QB-A5 | **Two linked representations.** The cause view and the effect view are driven by one variable. | both views read the same angle | top view ↔ "from Earth" window, both from `moon.theta` |
 | QB-A6 | **The wrong idea is shown failing**, not just denied. | spec has a contrast beat | Earth's shadow cuts the sunlight and points away; the first-quarter Moon is far from it and still half dark |
 | QB-A7 | **It ends interactive where that helps, with a question graded by code.** | `answer` rows | drag the Moon: a morning half moon gets a "look again"; the evening half and the full moon get a tick |
 | QB-A8 | **Deterministic and scrubbable**: state = f(t), so "show again", "slower" and seek are exact. | seek to any t gives the same frame | `?t=` and ←/→ seeking; the screenshot sheets were taken by seeking |
 | QB-A9 | **Stage contract.** Labels ≥ 38 units, safe zones clear, nothing overflows at any size. | engine records every label under the minimum (`TaxStudio.tooSmall`) | 0 undersized labels across all three runs [M] |
-| QB-A10 | **Pace.** 45-120 s, with pauses after reveals and a narration rate a 10-year-old can follow. | timeline length; words per minute | 94 s timeline, about 150 wpm measured (§14 M6) |
+| QB-A10 | **Pace.** 45-120 s, with pauses after reveals and a narration rate a 10-year-old can follow. | timeline length; words per minute of speech (≤ 150 for class 4) | 94 s timeline; narration measured at **166 wpm, over the bar** (§14 M6): the fix is a slower pace instruction on the TTS call, not yet re-synthesized |
 
 ---
 

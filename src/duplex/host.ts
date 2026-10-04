@@ -465,6 +465,20 @@ export class EngineHost {
     }
     if (!live) return;
     const tr = tick.transcript;
+    // think track first: a warm-up / draft keyed on this tick's text must exist before the SPEAK that would promote it
+    const p = d.prepare;
+    if (p) {
+      const changed = !this.lastPrepare || this.lastPrepare.draft !== p.draft || this.lastPrepare.warm !== p.warmTts || this.lastPrepare.hash !== p.textHash;
+      if (changed && (p.draft !== "none" || p.warmTts !== "none")) {
+        this.o.emit({ to: "think", op: "prepare", t, hint: p, text: tr.text, uptake: tick.context.exchange === "closed_answer" ? uptakeOf(tr.text) : null });
+      }
+      this.lastPrepare = { draft: p.draft, warm: p.warmTts, hash: p.textHash };
+      if (p.sttProbe && this.o.supportsCommit) {
+        this.fanin.commitSent(t);
+        this.o.emit({ to: "stt", op: "commit", t });
+      }
+      if (p.buildIntent) this.o.emit({ to: "build", t, intent: p.buildIntent });
+    }
     if (d.action === "SPEAK" && det?.action === "SPEAK") {
       this.o.emit({ to: "voice", op: "speak", t, reason: det.reason, firstSound: det.firstSound, verdictNotBefore: det.verdictNotBefore, text: tr.text, textHash: tr.textHash,
         uptake: det.firstSound === "uptake" ? uptakeOf(tr.text) : null, turnSeq: this.governor.turnSeq });
@@ -484,19 +498,6 @@ export class EngineHost {
           this.o.emit({ to: "face", t, cue });
         }
       }
-    }
-    const p = d.prepare;
-    if (p) {
-      const changed = !this.lastPrepare || this.lastPrepare.draft !== p.draft || this.lastPrepare.warm !== p.warmTts || this.lastPrepare.hash !== p.textHash;
-      if (changed && (p.draft !== "none" || p.warmTts !== "none")) {
-        this.o.emit({ to: "think", op: "prepare", t, hint: p, text: tr.text, uptake: tick.context.exchange === "closed_answer" ? uptakeOf(tr.text) : null });
-      }
-      this.lastPrepare = { draft: p.draft, warm: p.warmTts, hash: p.textHash };
-      if (p.sttProbe && this.o.supportsCommit) {
-        this.fanin.commitSent(t);
-        this.o.emit({ to: "stt", op: "commit", t });
-      }
-      if (p.buildIntent) this.o.emit({ to: "build", t, intent: p.buildIntent });
     }
   }
 }

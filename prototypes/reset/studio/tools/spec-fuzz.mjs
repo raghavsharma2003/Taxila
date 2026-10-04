@@ -64,8 +64,9 @@ for (const ex of EX) {
     const errs = [];
     page.on("pageerror", (e) => errs.push(e.message));
     page.on("console", (c) => { if (c.type() === "error") errs.push(c.text()); });
-    await page.route(`${base}/studio/${ex.rel}`, (route) => route.fulfill({ contentType: "text/html", body: html.replace(m[1], mut.text) }));
-    await page.route(/\?/, (route) => route.continue());
+    // match the page URL by pathname (the query string carries ?seed=); every other request passes through
+    let served = false;
+    await page.route((u) => u.pathname === `/studio/${ex.rel}`, (route) => { served = true; return route.fulfill({ contentType: "text/html", body: html.replace(m[1], () => mut.text) }); });
     await page.goto(`${base}/studio/${ex.rel}?seed=${i}${ex.q}`);
     let ready = false;
     try { await page.waitForFunction(() => document.documentElement.dataset.ready === "1", null, { timeout: 3000 }); ready = true; } catch (e) { /* recorded below */ }
@@ -79,14 +80,16 @@ for (const ex of EX) {
       const mean = s / n;
       const seam = window.__studio && window.__studio.seam ? window.__studio.seam() : null;
       const rep = (window.__studioLog || []).find((x) => x.k === "event" && x.name === "spec_repaired");
-      return { stdev: Math.sqrt(Math.max(0, s2 / n - mean * mean)), repairs: rep ? rep.data.repairs.length : 0, fallback: rep ? rep.data.repairs.includes("fallback-default") : false, state: seam && (seam.state || seam.step) };
+      const unp = (window.__studioLog || []).some((x) => x.k === "event" && x.name === "spec_unparseable");
+      return { stdev: Math.sqrt(Math.max(0, s2 / n - mean * mean)), repairs: rep ? rep.data.repairs.length : 0, fallback: rep ? rep.data.repairs.includes("fallback-default") : false, unparseable: unp, state: seam && (seam.state || seam.step) };
     });
+    if (!served) throw new Error("mutated page was not served: the fuzz would test the control page");
     const visibleFailure = errs.length > 0 || !ready || probe.stdev <= 6;
-    rows.push({ i, ops: mut.ops, ready, errs: errs.slice(0, 2), stdev: +probe.stdev.toFixed(1), repairs: probe.repairs, fallback: probe.fallback, state: probe.state, visibleFailure });
+    rows.push({ i, ops: mut.ops, ready, errs: errs.slice(0, 2), stdev: +probe.stdev.toFixed(1), repairs: probe.repairs, fallback: probe.fallback, unparseable: probe.unparseable, state: probe.state, visibleFailure });
     await page.close();
   }
   const vf = rows.filter((r) => r.visibleFailure).length;
-  results.exemplars[ex.key] = { n: rows.length, visibleFailures: vf, repaired: rows.filter((r) => r.repairs > 0).length, defaultFallbacks: rows.filter((r) => r.fallback).length, rows };
+  results.exemplars[ex.key] = { n: rows.length, visibleFailures: vf, repaired: rows.filter((r) => r.repairs > 0).length, defaultFallbacks: rows.filter((r) => r.fallback).length, unparseable: rows.filter((r) => r.unparseable).length, rows };
   console.log(ex.key, `visible failures ${vf}/${rows.length}`, `repaired ${results.exemplars[ex.key].repaired}`, `default-fallback ${results.exemplars[ex.key].defaultFallbacks}`);
 }
 
@@ -97,12 +100,16 @@ for (const ex of EX) {
   await page.waitForFunction(() => document.documentElement.dataset.ready === "1");
   const tf = await page.evaluate(() => {
     const out = [];
-    for (let E = 0; E <= 360; E += 7.5) out.push({ E, lit: window.__moonTest.litFraction(E), side: window.__moonTest.litSide(E) });
+    for (let E = 0; E <= 360; E += 7.5) out.push({ E, ...window.__moonTest.pixelCheck(E) });
     return out;
   });
-  const errs = tf.map((r) => Math.abs(r.lit - (1 - Math.cos(r.E * Math.PI / 180)) / 2));
-  const sideOk = tf.filter((r) => r.E > 5 && r.E < 355 && Math.abs(r.E - 180) > 5).every((r) => (r.E < 180 ? r.side === "right" : r.side === "left"));
-  results.terminator = { n: tf.length, maxAbsErr: +Math.max(...errs).toFixed(4), meanAbsErr: +(errs.reduce((a, b) => a + b, 0) / errs.length).toFixed(4), waxingLitOnRight: sideOk, method: "offscreen 200 px disc, lit = luma > 128 inside the disc mask" };
+  // (a) pixel agreement with the exact terminator; (b) lit fraction vs the analytic (1 - cos E)/2 of the full disc
+  // (the probe region is the r=97 core, so (b) carries a small geometric bias; (a) is the exact test);
+  // (c) side: waxing (0 < E < 180) lit on the right, as seen from the northern hemisphere (India)
+  const fracErr = tf.map((r) => Math.abs(r.f - (1 - Math.cos(r.E * Math.PI / 180)) / 2));
+  const sideRows = tf.filter((r) => (r.E >= 15 && r.E <= 135) || (r.E >= 225 && r.E <= 345));   // near-full gibbous discs are nearly symmetric by design
+  const sideOk = sideRows.every((r) => (r.E < 180 ? r.side === "right" : r.side === "left"));
+  results.terminator = { n: tf.length, maxPixelDisagree: Math.max(...tf.map((r) => r.disagree)), maxAbsFracErrVsAnalytic: +Math.max(...fracErr).toFixed(4), meanAbsFracErrVsAnalytic: +(fracErr.reduce((x, y) => x + y, 0) / fracErr.length).toFixed(4), maxAbsFracErrVsExactMask: +Math.max(...tf.map((r) => Math.abs(r.f - r.fExpected))).toFixed(4), sideRows: sideRows.length, waxingLitOnRight: sideOk, sideFailures: sideRows.filter((r) => (r.E < 180 ? r.side !== "right" : r.side !== "left")).map((r) => [r.E, r.side]), method: "offscreen 220 px canvas, R=100 disc, pixels inside r=97 classified lit if luma > 128, compared to the exact projected-hemisphere mask (pixels within 1.5 px of the terminator or centre line excluded); E = 0..360 step 7.5" };
   console.log("terminator", JSON.stringify(results.terminator));
   await page.close();
 }

@@ -392,8 +392,18 @@
   window.__studioLog = log;
   const studio = {
     params() {
+      // A generated spec can arrive malformed (truncated, not an object). Never throw: hand the engine an empty
+      // object so its validator falls back to the archetype default, and record why for the router's quality score.
       const el = document.getElementById("spec");
-      return el ? JSON.parse(el.textContent) : {};
+      if (!el) return {};
+      try {
+        const v = JSON.parse(el.textContent);
+        if (v && typeof v === "object" && !Array.isArray(v)) return v;
+        log.push({ k: "event", name: "spec_unparseable", data: { reason: "not-an-object" }, at: Math.round(performance.now()) });
+      } catch (e) {
+        log.push({ k: "event", name: "spec_unparseable", data: { reason: "json" }, at: Math.round(performance.now()) });
+      }
+      return {};
     },
     t(strings, key) { return strings && Object.prototype.hasOwnProperty.call(strings, key) ? strings[key] : ""; },
     answer(itemId, value, extra) { const m = { k: "answer", itemId, value, extra, at: Math.round(performance.now()) }; log.push(m); post(m); },

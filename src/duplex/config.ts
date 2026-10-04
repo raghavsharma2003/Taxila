@@ -63,7 +63,13 @@ export const ACOUSTIC_FRESH_MS: Ms = 300;
 /** Semantic estimates: weight 0 once the text hash differs; decays to 0 over this after arrival (§2.5.2). */
 export const SEMANTIC_DECAY_MS: Ms = 1500;
 
-/** Fast mouth, late verdict (G7, law 3): a verdict word plays no earlier than the last value's end + this. DX-6 sweeps 0.8-1.6 s. */
+/**
+ * Fast mouth, late verdict (G7, law 3): a verdict word plays no earlier than the last value's end + `delayMs`. One mutable
+ * row so the simulator can sweep it (M-D7 swept 1.2 / 1.6 / 2.0 s; DX-6 refits it on TaxilaFDB). The first sound (the
+ * uptake) is not delayed by it: only the verdict-bearing words are.
+ */
+export const VERDICT = { delayMs: 2000 as Ms };
+/** @deprecated read VERDICT.delayMs (kept for older imports; the v2-draft value). */
 export const VERDICT_DELAY_MS: Ms = 1200;
 /** A hesitant first value (pausesThisTurn >= 1 or a filler before it) waits for this much silence too (§2.5.1; M-B1 21/21). */
 export const HESITANT_VALUE_SILENCE_MS: Ms = 300;
@@ -107,7 +113,21 @@ export const OVERLAP = {
   duckReleaseMs: 700 as Ms,
   yieldP: 0.6,
   continuerP: 0.6,
+  /**
+   * Evidence added for a burst still voicing at 250-449 ms. 0 = stay ducked and undecided until the 450 ms sustain or the
+   * burst ends (a continuer "हम्म" lasts ~300-400 ms); 1.0 = the eager v2-draft value that yielded on continuers and
+   * resumed 0.8 s later (M-D7 ablation "eager"). The duck at onset already backs her voice off within ~40 ms.
+   */
+  earlyVoicedZ: 0,
 };
+
+/**
+ * When the FIRST words of a fresh voiced burst arrive after its onset, per source (p90). A resumable yield with no words yet
+ * resumes only after this (+ 300 ms): before it, "no text" means "not transcribed yet", not "nothing said".
+ * live_transcribe [T] M-D2 first delta after onset p90 2,048 ms (n=28); mai_stream [T] STT-v3 first partial 2.58-3.2 s;
+ * nemotron [E] one 320 ms chunk + 452 ms text-complete p90 rounded.
+ */
+export const FIRST_TEXT_P90: Record<string, Ms> = { live_transcribe: 2048, mai_stream: 3200, nemotron: 800, sim: 2000, other: 2500 };
 
 /** Fail patient (G10): no engine decision for this long → stage A rules; a stage A fault → today's silence policy. */
 export const FALLBACK = { staleMs: 500 as Ms, silenceMs: 900 as Ms };

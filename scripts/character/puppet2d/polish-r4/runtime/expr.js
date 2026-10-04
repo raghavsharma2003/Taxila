@@ -13,7 +13,8 @@ export const EXPRESSIONS = {
     // r4: rig brow gains rose ~35% (surprise / concern range), so thinking's arch / knit / frown come down to keep the r3
     // read (blind r4c 3/3: "skeptical" with the old weights through the new gains)
     bs: { browOuterUpLeft: 0.72, browInnerUp: 0.08, browDownRight: 0.38, eyeSquintRight: 0.2, eyeWideLeft: 0.04,
-      mouthLeft: 0.6, mouthPressLeft: 0.25, mouthPressRight: 0.25, mouthPucker: 0.15, mouthFrownRight: 0.22, mouthFrownLeft: 0.08, mouthSmileLeft: -1, mouthSmileRight: -1 },
+      // r4b: c-thinking's mouth is SMALL and pursed (not a long upturned curve slid aside, which read as a smirk 9/15)
+      mouthLeft: 0.5, mouthPressLeft: 0.35, mouthPressRight: 0.35, mouthPucker: 0.5, mouthFrownRight: 0.25, mouthFrownLeft: 0.4, mouthSmileLeft: -1, mouthSmileRight: -1 },
     head: [-4, -7, 8], gaze: [21, 20], env: [0.35, 0, 0.45],
   },
   // c-listening: soft closed smile, brows gently up, head tilted toward the child
@@ -42,12 +43,14 @@ export const EXPRESSIONS = {
     // r3: the lowered lids read as sleepy / sceptical to the blind judge (3 of 3 runs): concern is carried by the brows
     // (inner ends up, knit), soft open eyes and a small pressed, down-turned mouth
     bs: { browInnerUp: 1.0, browDownLeft: 0.45, browDownRight: 0.45, eyeWideLeft: 0.15, eyeWideRight: 0.15,
-      mouthPressLeft: 0.35, mouthPressRight: 0.35, mouthFrownLeft: 0.7, mouthFrownRight: 0.7, mouthSmileLeft: -1, mouthSmileRight: -1 },
+      // r4b: the strong frown + press made a wavy pasted-on pout (blind r4 6/15): softer corners, lips just parted
+      mouthPressLeft: 0.12, mouthPressRight: 0.12, mouthFrownLeft: 0.3, mouthFrownRight: 0.3, mouthPucker: 0.2, mouthSmileLeft: -1, mouthSmileRight: -1 },
     head: [4, 2, 7], gaze: [0, 3], env: [0.45, 0, 0.6],
   },
   surprise: {
+    // r4b: blind r4g 'happy surprise / excited ah': the corners come in and down a touch so the open jaw rounds to an O
     bs: { eyeWideLeft: 0.9, eyeWideRight: 0.9, browInnerUp: 0.6, browOuterUpLeft: 0.85, browOuterUpRight: 0.85, jawOpen: 0.42,
-      mouthSmileLeft: -1, mouthSmileRight: -1 },
+      mouthSmileLeft: -1, mouthSmileRight: -1, mouthFrownLeft: 0.15, mouthFrownRight: 0.15, mouthFunnel: 0.3 },
     head: [-5, 0, 0], gaze: [0, 2], env: [0.12, 0, 0.5],
   },
   // playful: lopsided smirk, one brow up, the other eye squinting, head cocked

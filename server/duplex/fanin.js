@@ -48,7 +48,7 @@ export class TurnTranscript {
     this.order = [];
     this.turnStart = 0;
     this.carryFrom = null;
-    this.commitAt = null;          // last client commit not yet answered by a final
+    this.commits = [];             // client commits not yet answered by a final, oldest first (FIFO: M-D7 b04)
     this.revisions = { n: 0, revised: 0 };
     this.lagSamples = [];
     this.updatedAt = null;
@@ -70,8 +70,18 @@ export class TurnTranscript {
     return start >= this.turnStart - 40;
   }
 
-  /** The host sent `input_audio_buffer.commit` at t: the next final of the open item covers audio up to t. */
-  commitSent(t) { this.commitAt = t; }
+  /**
+   * The host sent `input_audio_buffer.commit` at t: the final that answers it covers audio up to t. Commits are answered in
+   * order, so they queue: a second probe sent before the first final lands must never lend ITS later time to the first
+   * final (M-D7 b04: "हम्म सात आठ" was read as covering "छप्पन" too and a verdict played on 8 instead of 56).
+   */
+  commitSent(t) { this.commits.push(t); if (this.commits.length > 16) this.commits.shift(); }
+
+  /** The pending commit that answers a final of an item whose audio started at `start` (stale ones are dropped). */
+  takeCommit(start) {
+    while (this.commits.length && this.commits[0] < start - 40) this.commits.shift();
+    return this.commits.length ? this.commits.shift() : null;
+  }
 
   /**
    * One STT event. Partials may be cumulative (default) or deltas (`delta: true`, D4/OpenAI style); a final replaces its
@@ -117,11 +127,14 @@ export class TurnTranscript {
     if (ev.type === "final") {
       it.final = true;
       if (!it.words) {
-        if (this.commitAt !== null && this.commitAt >= (it.audioStartMs ?? it.firstAt) - 40) { it.coverEndMs = this.commitAt; this.sample(ev.t - this.commitAt); }
+        const c = this.takeCommit(it.audioStartMs ?? it.firstAt);
+        // the conservative (earlier) of the commit time and the source's own audio end, when both exist
+        if (c !== null && ev.audioEndMs !== undefined) it.coverEndMs = Math.min(c, ev.audioEndMs);
+        else if (c !== null) it.coverEndMs = c;
         else if (ev.audioEndMs !== undefined) it.coverEndMs = ev.audioEndMs;
         else it.coverEndMs = ev.t - this.lag.p50;
-      }
-      this.commitAt = null;
+        if (c !== null) this.sample(ev.t - c);
+      } else if (it.words) this.takeCommit(it.audioStartMs ?? it.firstAt);
     } else if (!it.words) {
       it.coverEndMs = ev.t - this.lag.p90;
     }
@@ -168,7 +181,8 @@ export class TurnTranscript {
     for (const it of items) if (it.coverEndMs !== null) coverageEndMs = coverageEndMs === null ? it.coverEndMs : Math.max(coverageEndMs, it.coverEndMs);
     const lastWords = items.length ? items[items.length - 1].words : null;
     const words = items.some((it) => it.words) ? items.flatMap((it) => it.words || []) : null;
-    const from = coverageEndMs ?? this.turnStart;
+    // no words yet: every voiced ms since the turn's first audio is unseen (a carried overlap starts before turnStart)
+    const from = coverageEndMs ?? (this.carryFrom !== null ? Math.min(this.carryFrom, this.turnStart) : this.turnStart);
     return {
       text,
       stablePrefix: stableParts.join(" ").trim(),
