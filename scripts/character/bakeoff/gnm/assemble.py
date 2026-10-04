@@ -309,6 +309,29 @@ def build_tier(tier):
     Ph[front] -= n_[front] * (sd_[front] - tgt_sd[front])[:, None]
     rep.setdefault("hairline", {})[tier] = {"cardVertsPulledIn": int(front.sum()), "hairlineY": round(float(hl_y), 4)}
     hair = {"POSITION": Ph, **{k: Hh[k] for k in ("TEXCOORD_0", "JOINTS_0", "WEIGHTS_0", "_STRAND")}, "idx": Hh["idx"]}
+    LOOKJ = json.load(open(PTH["LOOK"]))
+    if LOOKJ.get("hairStyle") == "curls":
+        # round 3: slate's short curls, generated as strands -> clumped cards + two scalp shells (curls.py); the hairline
+        # is the portraits' own (hair-dark texels of the projected albedo from the previous texture pass)
+        import curls
+        from PIL import Image as _Im
+        alb_p = os.path.join(BD, "tex", "skin_albedo.png")
+        A_ = np.asarray(_Im.open(alb_p).convert("RGB")).astype(np.float64) / 255
+        uvA = np.zeros((m.V, 2)); uvA[src[::-1]] = uv_g[::-1]
+        px = np.clip((uvA * [A_.shape[1], A_.shape[0]]).astype(int), 0, [A_.shape[1] - 1, A_.shape[0] - 1])
+        lumv = A_[px[:, 1], px[:, 0]] @ np.array([0.2126, 0.7152, 0.0722])
+        Vall = W(V0)
+        sk = m.group("skin_exterior")
+        Fsk = m.tri[sk[m.tri].all(1)]
+        Nall = curls._vnormals(Vall, Fsk)
+        ec_ = 0.5 * (np.array(rep["eyes"]["L"]["centreWorld"]) + np.array(rep["eyes"]["R"]["centreWorld"]))
+        cheek = sk & (Vall[:, 2] > ec_[2] - 0.02) & (Vall[:, 1] < ec_[1] - 0.01) & (Vall[:, 1] > ec_[1] - 0.05)
+        thr = 0.55 * float(np.median(lumv[cheek]))
+        mask = ((lumv < thr) & sk).astype(float)
+        hair, hinfo = curls.build(Vall, Fsk, Nall, uvA, mask, ec_, tier, simplify, compact)
+        hcol = np.median(A_[px[:, 1], px[:, 0]][mask > 0.5], 0)
+        curls.atlas(os.path.join(BD, "hair_curls_atlas.png"), hcol)
+        rep["tiers"][tier]["curls"] = {**hinfo, "lumThreshold": round(thr, 3), "hairSRGB": np.round(hcol, 3).tolist()}
     Cc = T3["cards"]; Pc = field(Cc["POSITION"].astype(np.float64))
     cidx = Cc["idx"]
     # plum and slate keep their iteration-2 brow cards on H (slate's thin brows also vanish behind his rims): plum's portraits' brows are thin and grey, and the projected albedo alone
@@ -373,7 +396,8 @@ def build_tier(tier):
         # rims 10 % smaller and 2.5 mm lower than the iteration-2 frame: even on the eyes, its 40 mm round rims put the top
         # bar ON his brows, which vanished behind it whenever the chin came down (concerned: judge A 0-2/8 at every gain)
         sg *= 0.90
-        glasses_sim = lambda X: sg * (X - sm_) + dm_ + np.array([0.0, -0.0025, 0.0])
+        # round 3: 1.5 mm higher than round 2 (-1.0 mm) so his brows clear the top bars in every preset
+        glasses_sim = lambda X: sg * (X - sm_) + dm_ + np.array([0.0, -0.0010, 0.0])
         Pg[frame], nf = push_out(glasses_sim(Pg0[frame]), 0.002, 0.012)
         rep["tiers"][tier]["glassesFrame"] = {"verts": int(frame.sum()), "scale": round(float(sg), 4),
                                               "fitRmsMM": round(float(np.sqrt(((glasses_sim(Xf) - Yf) ** 2).sum(1).mean()) * 1000), 2),
@@ -394,7 +418,46 @@ def build_tier(tier):
         Pc_ = V0w[lat].mean(0)
         nrm_ = np.array([sgn * 0.8, 0, 0.6])
         Pg[cl] += (Pc_ + nrm_ * 0.0012) - Pg[cl].mean(0)
-    garment = {"POSITION": Pg, **{k: Gm[k] for k in ("TEXCOORD_0", "JOINTS_0", "WEIGHTS_0")}, "idx": Gm["idx"]}
+    gidx = Gm["idx"]
+    if glasses_sim is not None:
+        # round 3: the temples' ear hooks showed in front of / below the ears. A real temple tucks behind the ear root:
+        # frame triangles behind the front of the ear's upper half (per side) are dropped, so each arm ends where it
+        # meets the ear and reads as passing behind it
+        earv = m.group("ears")
+        fr_v = np.where(frame)[0]
+        drop = np.zeros(len(Pg), bool)
+        ez_ = 0.5 * (rep["eyes"]["L"]["centreWorld"][2] + rep["eyes"]["R"]["centreWorld"][2])
+        zh = ez_ - 0.02                                          # behind the hinge: the temple arm
+        for sgn in (1, -1):
+            ev = np.where(earv & (np.sign(V0w[:, 0]) == sgn))[0]
+            ev = ev[V0w[ev, 1] > np.percentile(V0w[ev, 1], 50)]
+            zf = np.percentile(V0w[ev, 2], 90)
+            side = fr_v[np.sign(Pg[fr_v, 0]) == sgn]
+            tv = side[Pg[side, 2] < zh]
+            if not len(tv):
+                continue
+            straight = tv[Pg[tv, 2] > zf + 0.015]
+            y_arm = np.median(Pg[straight, 1]) if len(straight) else np.median(Pg[tv, 1])
+            hook = tv[Pg[tv, 1] < y_arm - 0.004]
+            drop[hook] = True
+            # the 0.9x frame ends ~4 mm short of the ear: the remaining arm is stretched straight back into the ear root
+            arm = np.setdiff1d(tv, hook)
+            z0 = Pg[arm, 2].min()
+            zo = Pg[arm, 2].copy()
+            Pg[arm, 2] = (zf - 0.006) + (zo - z0) * (zh - (zf - 0.006)) / max(zh - z0, 1e-6)
+            # ... and re-aimed: the iteration-2 arm ran DOWN 4 cm from the hinge to below the ear (its end read as a hook
+            # in front of the lobe). The arm's centreline (a line fitted over its vertices) is replaced by one from its
+            # hinge height to 4 mm under the top of the ear, where a temple rests
+            bb = np.polyfit(zo, Pg[arm, 1], 1)
+            ytop = float(V0w[ev, 1].max()) - 0.004
+            yh = np.polyval(bb, zh)
+            tq = (zh - Pg[arm, 2]) / max(zh - (zf - 0.006), 1e-6)
+            Pg[arm, 1] = Pg[arm, 1] - np.polyval(bb, zo) + (yh + (ytop - yh) * tq)
+            rep["tiers"][tier].setdefault("templeArm", {})["LR"[sgn < 0]] = {"earFrontZ": round(float(zf), 4), "armEndZ": round(float(zf - 0.006), 4), "hookVerts": int(len(hook))}
+        keep_t = ~drop[gidx].any(1)
+        rep["tiers"][tier]["templeHookTrisDropped"] = int((~keep_t).sum())
+        gidx = gidx[keep_t]
+    garment = {"POSITION": Pg, **{k: Gm[k] for k in ("TEXCOORD_0", "JOINTS_0", "WEIGHTS_0")}, "idx": gidx}
     out_parts = {}
     if "lens" in T3:
         # slate's glasses (the iteration-2 lens + rim mesh) ride the head field onto GNM's nose and ears, then clear the

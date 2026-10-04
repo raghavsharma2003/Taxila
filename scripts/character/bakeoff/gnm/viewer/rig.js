@@ -105,7 +105,7 @@ export async function loadTeacher(renderer, url, opts = {}) {
     if (!o) continue;
     // brows and lashes take no Kajiya-Kay highlight: it lit the brow cards tan and patchy (review item 11)
     o.material = mk(o, SHADERS.HAIR_VERT, SHADERS.HAIR_FRAG, { tAlbedo: { value: src(o).map }, uShift: { value: nm === "hair" ? 0.1 : 0 },
-      uSpecTint: { value: new THREE.Vector3(1.0, 0.85, 0.7) }, uKK: { value: nm === "hair" ? 0.32 : 0.0 } },
+      uSpecTint: { value: new THREE.Vector3(1.0, 0.85, 0.7) }, uKK: { value: nm === "hair" ? (o.userData?.taxilaHair?.kk ?? 0.32) : 0.0 } },   // gnm round 3: a hair mesh may carry its own KK strength (slate's coils are matte)
     o.geometry.attributes._strand ? { HAS_STRAND: "" } : {},
     { side: THREE.DoubleSide, alphaToCoverage: true, transparent: false });
   }

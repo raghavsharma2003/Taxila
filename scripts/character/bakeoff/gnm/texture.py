@@ -428,6 +428,8 @@ det = dilate(np.stack([fuzz, sss, wet, micro], 2), cov)
 Image.fromarray((np.clip(det, 0, 1) * 255 + 0.5).astype(np.uint8), "RGBA").save(os.path.join(TX, "skin_detail.png"))
 for f in ("hair_atlas.png", "cards_atlas.png", "garment_albedo.png", "skin_micro.png"):
     sf = os.path.join(PTH["SRCTEX"], f)
+    if f == "hair_atlas.png" and os.path.exists(os.path.join(BD, "hair_curls_atlas.png")) and LOOK.get("hairStyle") == "curls":
+        sf = os.path.join(BD, "hair_curls_atlas.png")           # round 3: slate's generated curl atlas (curls.py)
     if not os.path.exists(sf) and f == "skin_micro.png":   # iteration-2 builds have no micro map: the tileable teal one is look-free
         sf = os.path.join(G.CH, "bakeoff-pv3", "teal", "tex", f)
     shutil.copy(sf, os.path.join(TX, f))

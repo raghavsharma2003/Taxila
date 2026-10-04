@@ -1,156 +1,157 @@
 {
-  "id": "slate",
-  "design": "TEACHER-VISUAL 4.3 row 2 (M, apparent age 26, MST 7). The look carries no name; the child names the teacher.",
-  "seed": 23,
-  "macros": {
-    "gender": 1,
-    "age": 0.508,
-    "muscle": 0.5,
-    "weight": 0.5,
-    "proportions": 0.6,
-    "race": {
-      "caucasian": 0.55,
-      "african": 0.25,
-      "asian": 0.2
-    }
+ "id": "slate",
+ "design": "TEACHER-VISUAL 4.3 row 2 (M, apparent age 26, MST 7). The look carries no name; the child names the teacher.",
+ "seed": 23,
+ "macros": {
+  "gender": 1,
+  "age": 0.508,
+  "muscle": 0.5,
+  "weight": 0.5,
+  "proportions": 0.6,
+  "race": {
+   "caucasian": 0.55,
+   "african": 0.25,
+   "asian": 0.2
+  }
+ },
+ "targets": {
+  "head-scale-horiz-incr": 0.05,
+  "head-square": 0.15,
+  "chin-width-incr": 0.1,
+  "chin-prominent-incr": 0.08,
+  "l-cheek-bones-incr": 0.15,
+  "r-cheek-bones-incr": 0.18,
+  "nose-nostrils-width-incr": 0.3,
+  "nose-point-width-incr": 0.25,
+  "nose-scale-horiz-incr": 0.12,
+  "nose-hump-incr": 0.1,
+  "mouth-lowerlip-volume-incr": 0.05,
+  "mouth-scale-horiz-incr": 0.05,
+  "l-eye-scale-incr": 0.12,
+  "r-eye-scale-incr": 0.12,
+  "l-eye-epicanthus-out": 0.2,
+  "r-eye-epicanthus-out": 0.2,
+  "l-eye-bag-incr": 0.1,
+  "r-eye-bag-incr": 0.12,
+  "eyebrows-trans-down": 0.1,
+  "r-eye-trans-up": 0.04,
+  "l-cheek-volume-incr": 0.05
+ },
+ "headScale": 1.03,
+ "skin": {
+  "base": "#A9744A",
+  "shade": "#93633D",
+  "lip": "#7E4636",
+  "mst": 7,
+  "flush": 0,
+  "stubble": 0.55,
+  "albedoGain": [
+   0.7868,
+   0.852,
+   0.9056
+  ],
+  "lipCoverage": 0.35,
+  "lipDesat": 0.25,
+  "refHue": 56.5,
+  "_note": "gnm: albedo = the projected portrait colour x albedoGain (g9.mjs --solve against the MST band and refHue, the front reference's cheek hue)"
+ },
+ "eyes": {
+  "iris": "#3A2416",
+  "sclera": [
+   0.3405,
+   0.2904,
+   0.2763
+  ]
+ },
+ "brows": "eyebrow010",
+ "browColor": "#1A120D",
+ "lashes": "eyelashes02",
+ "hair": {
+  "asset": "short02",
+  "color": "#1F1712",
+  "style": "curls",
+  "curl": 1,
+  "crownVolume": 0.04,
+  "clipFringe": 0.055
+ },
+ "garment": {
+  "kind": "shirt-tee",
+  "base": "#44607F",
+  "shade": "#384F69",
+  "tee": "#E9E4D8",
+  "check": "#2E4257"
+ },
+ "accessory": {
+  "glasses": {
+   "rim": "#2B2B2E",
+   "radius": 0.0175
+  }
+ },
+ "faceStyle": {
+  "smile": 0.7,
+  "headGain": 1.2,
+  "browGain": 1,
+  "asym": {
+   "smile": 0.04,
+   "brow": 0.06,
+   "squint": 0.04
   },
-  "targets": {
-    "head-scale-horiz-incr": 0.05,
-    "head-square": 0.15,
-    "chin-width-incr": 0.1,
-    "chin-prominent-incr": 0.08,
-    "l-cheek-bones-incr": 0.15,
-    "r-cheek-bones-incr": 0.18,
-    "nose-nostrils-width-incr": 0.3,
-    "nose-point-width-incr": 0.25,
-    "nose-scale-horiz-incr": 0.12,
-    "nose-hump-incr": 0.1,
-    "mouth-lowerlip-volume-incr": 0.05,
-    "mouth-scale-horiz-incr": 0.05,
-    "l-eye-scale-incr": 0.12,
-    "r-eye-scale-incr": 0.12,
-    "l-eye-epicanthus-out": 0.2,
-    "r-eye-epicanthus-out": 0.2,
-    "l-eye-bag-incr": 0.1,
-    "r-eye-bag-incr": 0.12,
-    "eyebrows-trans-down": 0.1,
-    "r-eye-trans-up": 0.04,
-    "l-cheek-volume-incr": 0.05
-  },
-  "headScale": 1.03,
-  "skin": {
-    "base": "#A9744A",
-    "shade": "#93633D",
-    "lip": "#7E4636",
-    "mst": 7,
-    "flush": 0,
-    "stubble": 0.55,
-    "albedoGain": [
-      0.7868,
-      0.852,
-      0.9056
-    ],
-    "lipCoverage": 0.35,
-    "lipDesat": 0.25,
-    "refHue": 56.5,
-    "_note": "gnm: albedo = the projected portrait colour x albedoGain (g9.mjs --solve against the MST band and refHue, the front reference's cheek hue)"
-  },
-  "eyes": {
-    "iris": "#3A2416",
-    "sclera": [
-      0.3405,
-      0.2904,
-      0.2763
-    ]
-  },
-  "brows": "eyebrow010",
-  "browColor": "#1A120D",
-  "lashes": "eyelashes02",
-  "hair": {
-    "asset": "short02",
-    "color": "#1F1712",
-    "style": "curls",
-    "curl": 1,
-    "crownVolume": 0.04,
-    "clipFringe": 0.055
-  },
-  "garment": {
-    "kind": "shirt-tee",
-    "base": "#44607F",
-    "shade": "#384F69",
-    "tee": "#E9E4D8",
-    "check": "#2E4257"
-  },
-  "accessory": {
-    "glasses": {
-      "rim": "#2B2B2E",
-      "radius": 0.0175
-    }
-  },
-  "faceStyle": {
-    "smile": 0.7,
-    "headGain": 1.2,
-    "browGain": 1,
-    "asym": {
-      "smile": 0.04,
-      "brow": 0.06,
-      "squint": 0.04
-    },
-    "restBlink": 0.471
-  },
-  "ageYears": 38,
-  "jawCeiling": 0.55,
-  "sculpt": {
-    "_note": "mm, character axes (dx outward, dy forward, dz up); identity_sculpt.py",
-    "browRidge": [
-      0,
-      1.2,
-      -0.3
-    ],
-    "noseBridge": [
-      0,
-      1,
-      0
-    ],
-    "alar": [
-      1,
-      0,
-      0
-    ],
-    "philtrum": [
-      0,
-      0.4,
-      0
-    ],
-    "upperLip": [
-      0,
-      -0.4,
-      0
-    ],
-    "cheekPad": [
-      0,
-      -0.4,
-      0
-    ],
-    "jawAngle": [
-      2,
-      0,
-      -0.5
-    ],
-    "chin": {
-      "d": [
-        0,
-        1,
-        -0.8
-      ],
-      "r": 15
-    }
-  },
-  "_gnm": "gnm round 2: the main pipeline's slate look spec with the gnm fields (skin.albedoGain/refHue, eyes.sclera, faceStyle.restBlink, jawCeiling, ageYears per the coordinator's brief); references art/character/bakeoff/gnm/refs/slate",
-  "presetGain": {
-    "curious": 2,
-    "concerned": 2,
-    "playful": 2.56
-  },
-  "presetGainNote": "gnm round 2 per-face re-score (2026-10-04): the shared designs at these amplitudes (replace GNM_GAIN per emotion; eyeSquint/cheekSquint caps still apply), chosen on judge A only, n = 8 per variant; judge C held out to the n = 24 acceptance run"
+  "restBlink": 0.471
+ },
+ "ageYears": 38,
+ "jawCeiling": 0.55,
+ "sculpt": {
+  "_note": "mm, character axes (dx outward, dy forward, dz up); identity_sculpt.py",
+  "browRidge": [
+   0,
+   1.2,
+   -0.3
+  ],
+  "noseBridge": [
+   0,
+   1,
+   0
+  ],
+  "alar": [
+   1,
+   0,
+   0
+  ],
+  "philtrum": [
+   0,
+   0.4,
+   0
+  ],
+  "upperLip": [
+   0,
+   -0.4,
+   0
+  ],
+  "cheekPad": [
+   0,
+   -0.4,
+   0
+  ],
+  "jawAngle": [
+   2,
+   0,
+   -0.5
+  ],
+  "chin": {
+   "d": [
+    0,
+    1,
+    -0.8
+   ],
+   "r": 15
+  }
+ },
+ "_gnm": "gnm round 2: the main pipeline's slate look spec with the gnm fields (skin.albedoGain/refHue, eyes.sclera, faceStyle.restBlink, jawCeiling, ageYears per the coordinator's brief); references art/character/bakeoff/gnm/refs/slate",
+ "presetGain": {
+  "curious": 2,
+  "concerned": 2,
+  "playful": 2.56
+ },
+ "presetGainNote": "gnm round 2 per-face re-score (2026-10-04): the shared designs at these amplitudes (replace GNM_GAIN per emotion; eyeSquint/cheekSquint caps still apply), chosen on judge A only, n = 8 per variant; judge C held out to the n = 24 acceptance run",
+ "hairStyle": "curls"
 }
