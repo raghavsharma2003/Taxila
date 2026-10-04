@@ -1740,7 +1740,7 @@ var ge = class {
 		a("browL"), a("browR"), this.drawMouth(n), this.drawPlate(), a("lockbed", n), a("hair", r), a("lockL"), a("lockR");
 	}
 	drawEye(e, t) {
-		let n = this.eyes[e], r = n.e, i = this.R, a = this.st, o = (e, t) => Y(e, t), s = (r.top[Math.floor(r.top.length / 2)] + r.bot[Math.floor(r.bot.length / 2)]) / 2, c = this.project(n.xa, s, o(n.xa, s)), l = this.project(n.xb, s, o(n.xb, s)), u = (l[0] - c[0]) / (n.xb - n.xa), d = (c[0] + l[0]) / 2, f = u < .85 ? .85 / u : 1, p = (e) => (f !== 1 && (e[0] = d + (e[0] - d) * f), e);
+		let n = this.eyes[e], r = n.e, i = this.R, a = this.st, o = (e, t) => Y(e, t), s = (r.top[Math.floor(r.top.length / 2)] + r.bot[Math.floor(r.bot.length / 2)]) / 2, c = this.project(n.xa, s, o(n.xa, s)), l = this.project(n.xb, s, o(n.xb, s)), u = (l[0] - c[0]) / (n.xb - n.xa), d = (c[0] + l[0]) / 2, f = u < .72 ? .72 / u : 1, p = (e) => (f !== 1 && (e[0] = d + (e[0] - d) * f), e);
 		this.eyeFix = {
 			ecx: d,
 			em: f
@@ -1855,7 +1855,7 @@ var ge = class {
 		if (!e || !e.yk || this.debug && this.debug.noPlate) return;
 		let t = e.yaw >= 0 ? "R" : "L", n = this.plates[t], r = K(.04, 1, e.ykf);
 		if (!n || r <= .004) return;
-		let i = this.solver, a = i.p, o = this._tmp ||= [0, 0], s = i.lowerDrop(), c = i.shift || 0, l = 69 * a.W + Math.max(0, i.side.L.wid) + 14, u = 71 * a.W + Math.max(0, i.side.R.wid) + 14;
+		let i = this.solver, a = i.p, o = this._tmp ||= [0, 0], s = i.lowerDrop(), c = i.shift || 0, l = Math.max(69 * a.W + Math.max(0, i.side.L.wid), 78) + 14, u = Math.max(71 * a.W + Math.max(0, i.side.R.wid), 80) + 14;
 		for (let e = 0; e < n.n; e++) {
 			let t = n.rest[e * 2], i = n.rest[e * 2 + 1], [d, f] = this.faceOffset(t, i);
 			this.projectTo(t + d, i + f, n.z[e], o), n.pos[e * 2] = o[0], n.pos[e * 2 + 1] = o[1];

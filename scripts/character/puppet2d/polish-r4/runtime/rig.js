@@ -583,7 +583,7 @@ export class Puppet2DRig {
     const ym = (e.top[Math.floor(e.top.length / 2)] + e.bot[Math.floor(e.bot.length / 2)]) / 2;
     const pA = this.project(E.xa, ym, zEye(E.xa, ym)), pB = this.project(E.xb, ym, zEye(E.xb, ym));
     const ratio = (pB[0] - pA[0]) / (E.xb - E.xa), ecx = (pA[0] + pB[0]) / 2;
-    const em = ratio < 0.85 ? 0.85 / ratio : 1;
+    const em = ratio < 0.72 ? 0.72 / ratio : 1;   // r4b: 0.85 -> 0.72: the painted three-quarter key narrows the far eye to ~0.57
     const fixX = (p) => { if (em !== 1) p[0] = ecx + (p[0] - ecx) * em; return p; };
     this.eyeFix = { ecx, em };
     // opening strip
@@ -729,7 +729,9 @@ export class Puppet2DRig {
     const sol = this.solver, sp = sol.p, o = this._tmp || (this._tmp = [0, 0]);
     // the live mouth's hole: the lip band (both lips + the opening + the jaw-carried lower lip), its width and side shift
     const drop = sol.lowerDrop(), shift = sol.shift || 0;
-    const hwL = 69 * sp.W + Math.max(0, sol.side.L.wid) + 14, hwR = 71 * sp.W + Math.max(0, sol.side.R.wid) + 14;
+    // the hole covers the wider of the live mouth and the PLATE'S OWN painted lips (rest-space ends ~76 px out): when the live
+    // mouth rounds to an O, the plate's lip corners peeked out beside it
+    const hwL = Math.max(69 * sp.W + Math.max(0, sol.side.L.wid), 78) + 14, hwR = Math.max(71 * sp.W + Math.max(0, sol.side.R.wid), 80) + 14;
     for (let i = 0; i < P.n; i++) {
       const x = P.rest[i * 2], y = P.rest[i * 2 + 1];
       const [dx, dy] = this.faceOffset(x, y);

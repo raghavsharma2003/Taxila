@@ -51,7 +51,7 @@ async function judgeLesson(L, persona, sessionId) {
   if (L.opening.ui?.ask?.text) askHistory.push(L.opening.ui.ask.text);
   for (const row of L.rows) {
     const r = row.r;
-    const ctx = { kind: row.kind, truth: row.truth, prevReply: row.prev?.teacherReply ?? row.prev?.teacherOpening ?? "", prevAsk: row.prev?.ui?.ask?.text ?? null, earlier: [...earlier], askHistory: [...askHistory],
+    const ctx = { kind: row.kind, truth: row.truth, prevReply: row.prev?.teacherReply ?? row.prev?.teacherOpening ?? "", prevAsk: row.prev?.ui?.ask?.itemId ? row.prev.ui.ask.text : null, earlier: [...earlier], askHistory: [...askHistory],
       lane: L.mode, lang: persona.lang, floorContent: floorContentOf(L.item(r)), expectEnd: false };
     const ds = [...rubric(r, ctx), ...(await modelJudge({ previous: ctx.prevReply, child: row.child, reply: r?.teacherReply, verdict: r?.ui?.verdict }))];
     for (const dft of ds) defects.push({ session: sessionId, turn: row.n, child: row.child, teacher: r?.teacherReply ?? JSON.stringify(r?.error ?? {}).slice(0, 200), kind: r?.move?.kind, ...dft });
@@ -78,7 +78,7 @@ if (replayDir) {
       turnsN++;
       const kind = SLOT_KIND[t.slot] ?? (t.childText ? "answer" : "module");
       const r = t.error ? { error: t.error } : { teacherReply: t.teacherReply, ui: t.ui, move: { kind: t.kind }, end: t.end, moduleCommands: t.moduleCommands };
-      const ctx = { kind, truth: t.expect?.truth, prevReply: prev?.teacherReply ?? "", prevAsk: prev?.ui?.ask?.text ?? null, earlier: [...earlier], askHistory: [...askHistory], lane: sess.lane?.startsWith("cascade") ? "cascade" : "text",
+      const ctx = { kind, truth: t.expect?.truth, prevReply: prev?.teacherReply ?? "", prevAsk: prev?.ui?.ask?.itemId ? prev.ui.ask.text : null, earlier: [...earlier], askHistory: [...askHistory], lane: sess.lane?.startsWith("cascade") ? "cascade" : "text",
         lang: persona.lang, floorContent: floorContentOf(kit ? itemOf(kit, t.ui?.ask?.itemId) : null), expectEnd: kind === "stop" };
       for (const dft of rubric(r, ctx)) all.push({ session: sess.id, turn: t.n, child: t.childText, teacher: t.teacherReply, ...dft });
       if (t.teacherReply) earlier.push(t.teacherReply);

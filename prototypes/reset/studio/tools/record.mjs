@@ -40,7 +40,7 @@ async function glide(page, from, to, ms) {            // human-ish pointer path 
 }
 
 /* ---------------------------------------------------------------- scenario: Landfall (maths action game) */
-async function playLandfall(page, { maxMs = 120000 } = {}) {
+export async function playLandfall(page, { maxMs = 120000 } = {}) {
   const { px } = await stageMapper(page);
   const r = rng(11);
   // scripted human errors (the rest is a skilled player with ~9 world-unit noise): two misreads in a row in wave 2
@@ -76,7 +76,7 @@ async function playLandfall(page, { maxMs = 120000 } = {}) {
 }
 
 /* ---------------------------------------------------------------- scenario: Circuit Lab (science simulation) */
-async function playCircuit(page, { maxMs = 100000 } = {}) {
+export async function playCircuit(page, { maxMs = 100000 } = {}) {
   const { px } = await stageMapper(page);
   const seam = () => page.evaluate(() => window.__studio.seam && window.__studio.seam());
   const waitFor = async (pred, ms = 15000) => { const t = Date.now(); while (Date.now() - t < ms) { const s = await seam(); if (s && pred(s)) return s; await sleep(120); } return seam(); };
@@ -105,7 +105,7 @@ async function playCircuit(page, { maxMs = 100000 } = {}) {
 }
 
 /* ---------------------------------------------------------------- scenario: Moon phases (cinematic animation) */
-async function playMoon(page, { maxMs = 120000 } = {}) {
+export async function playMoon(page, { maxMs = 120000 } = {}) {
   const { px } = await stageMapper(page);
   const seam = () => page.evaluate(() => window.__studio.seam && window.__studio.seam());
   let cur = px(960, 600);
@@ -193,17 +193,19 @@ async function perfRun(browser, base, sc, rate) {
   return { key: sc.key, rate, viewport: "915x412@2.625", ...summary, errors };
 }
 
-const { server, port } = await serve(0);
-const base = `http://127.0.0.1:${port}`;
-const browser = await chromium.launch({ args: ["--autoplay-policy=no-user-gesture-required"] });
-const results = { date: new Date().toISOString(), host: { cpus: (await import("node:os")).cpus().length, chromium: browser.version() }, recordings: [], perf: [] };
-for (const sc of SCENES) {
-  if (only && sc.key !== only) continue;
-  if (!perfOnly) { console.log("recording", sc.key); results.recordings.push(await record(browser, base, sc)); console.log(JSON.stringify(results.recordings.at(-1).events)); }
-  if (!noPerf) for (const rate of [4, 6]) { console.log("perf", sc.key, rate + "x"); results.perf.push(await perfRun(browser, base, sc, rate)); console.log(JSON.stringify(results.perf.at(-1))); }
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const { server, port } = await serve(0);
+  const base = `http://127.0.0.1:${port}`;
+  const browser = await chromium.launch({ args: ["--autoplay-policy=no-user-gesture-required"] });
+  const results = { date: new Date().toISOString(), host: { cpus: (await import("node:os")).cpus().length, chromium: browser.version() }, recordings: [], perf: [] };
+  for (const sc of SCENES) {
+    if (only && sc.key !== only) continue;
+    if (!perfOnly) { console.log("recording", sc.key); results.recordings.push(await record(browser, base, sc)); console.log(JSON.stringify(results.recordings.at(-1).events)); }
+    if (!noPerf) for (const rate of [4, 6]) { console.log("perf", sc.key, rate + "x"); results.perf.push(await perfRun(browser, base, sc, rate)); console.log(JSON.stringify(results.perf.at(-1))); }
+  }
+  await browser.close();
+  server.close();
+  const outFile = path.join(outDir, `run-${only || "all"}${perfOnly ? "-perf" : ""}.json`);
+  fs.writeFileSync(outFile, JSON.stringify(results, null, 2));
+  console.log("wrote", outFile);
 }
-await browser.close();
-server.close();
-const outFile = path.join(outDir, `run-${only || "all"}${perfOnly ? "-perf" : ""}.json`);
-fs.writeFileSync(outFile, JSON.stringify(results, null, 2));
-console.log("wrote", outFile);

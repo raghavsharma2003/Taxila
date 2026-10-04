@@ -64,6 +64,21 @@ body.no-pip .pip { display: none; }
 .hud .meter { width: clamp(28px, 6cqw, 70px); height: 4px; border-radius: 4px; background: rgba(255,255,255,.12); align-self: center; overflow: hidden; }
 .hud .meter i { display: block; height: 100%; width: 0%; background: var(--mint); border-radius: 4px; transition: width .35s cubic-bezier(.2,.8,.2,1); }
 
+/* Engine-owned "your move" task pill (sims, explorables): the step and the goal, then a tick when it is met. */
+.task { position: absolute; z-index: 2; top: 2.2cqh; left: 50%; transform: translateX(-50%); max-width: calc(100% - 19cqw - 26cqh - 3cqw); margin-left: calc((19cqw - 26cqh - 1cqw) / 2);
+  display: flex; align-items: center; gap: .8em; padding: .7em 1.1em .7em .8em; border-radius: 14px; background: var(--glass); border: 1px solid rgba(203,255,77,.42);
+  backdrop-filter: blur(10px); pointer-events: none; transition: border-color .3s, opacity .3s, transform .35s cubic-bezier(.2,.8,.2,1); }
+.task .step { font: 600 clamp(10px, 1.15cqw, 13px)/1 var(--f-mono); letter-spacing: .08em; color: var(--ink-3); white-space: nowrap; }
+.task .goal { font: 600 clamp(12px, 1.85cqw, 20px)/1.25 var(--f-ui); color: var(--ink); }
+.task .ico { width: 1.4em; height: 1.4em; flex: none; display: grid; place-items: center; border-radius: 50%; border: 2px solid var(--volt); }
+.task .ico svg { width: .9em; height: .9em; opacity: 0; transition: opacity .2s; }
+.task.done { border-color: rgba(61,220,151,.55); }
+.task.done .ico { border-color: var(--mint); background: rgba(61,220,151,.14); }
+.task.done .ico svg { opacity: 1; }
+.task.warn { border-color: rgba(255,181,71,.6); }
+.task.warn .ico { border-color: var(--amber); }
+.task.swap { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+
 /* Safe-zone overlay for review (press S or add ?safe=1). */
 .safe-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 4; display: none; }
 body.show-safe .safe-overlay { display: block; }

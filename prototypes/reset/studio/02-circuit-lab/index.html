@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Circuit Lab · Studio exemplar</title>
+<meta name="description" content="Class 7 NCERT Curiosity ch.3 circuit simulation with a real nodal-analysis solver. Engine + generated challenge spec. Prototype for docs/design/reset/STUDIO-V2.md.">
+<link rel="stylesheet" href="../lib/host.css">
+</head>
+<body>
+<div class="stage" id="stage" aria-label="Simulation: Circuit Lab. Drag parts from the tray onto the board; tap a switch to turn it on or off, tap a cell to flip it.">
+  <canvas></canvas>
+  <div class="type-label" style="--c:#2FD3C7"><i></i>Simulation · Circuits</div>
+  <div class="pip"><img src="../../design-v3/img/teacher-ira.webp" alt=""><span>Watching</span></div>
+  <div class="safe-overlay"><div class="z-label"></div><div class="z-pip"></div></div>
+</div>
+<div class="hint-keys">S safe zones · M sound · drag from tray · tap switch/cell · draw wires node to node</div>
+
+<!-- GENERATED PART. The planner sequences challenges from the kit (c7-science-ch03 t01-t03) and picks, per step,
+     which tools exist (affordances), a preset, a cue edge and ONE predicate from the engine's closed list
+     (bulbLit | meters | switchCycle | tested | brightness). Physics constants, currents and verdicts are engine code.
+     Steps target kit misconceptions: t01-m1 (one wire is enough), t01-m2 (the bulb uses current up),
+     t02-m2 (a switch only works before the bulb), t03-m3 (only metals conduct), t02 expectation (cells + to -). -->
+<script type="application/json" id="spec">
+{
+  "archetype": "circuit-bench@1",
+  "skills": ["c7-science-ch03-t01", "c7-science-ch03-t02", "c7-science-ch03-t03"],
+  "lang": "en",
+  "strings": {
+    "stepOf": "of",
+    "short": "Short circuit: the cell is heating up",
+    "fight": "Cells pushing against each other? Tap the new cell to flip it",
+    "conducts": "Let current through", "blocks": "Blocked it",
+    "labDone": "Lab complete",
+    "free": "Free build: drag parts in, tap to flip or switch"
+  },
+  "steps": [
+    { "id": "close", "goal": "Make the bulb glow",
+      "done": "Closed loop. Current flows all the way round.",
+      "tray": ["wire"],
+      "preset": [
+        { "at": "0,0-0,1", "put": "cell", "plus": "0,0", "locked": true },
+        { "at": "0,0-1,0", "put": "wire" }, { "at": "1,0-2,0", "put": "bulb" }, { "at": "2,0-3,0", "put": "wire" },
+        { "at": "3,0-3,1", "put": "wire" }, { "at": "2,1-3,1", "put": "wire" }, { "at": "0,1-1,1", "put": "wire" }
+      ],
+      "cue": "1,1-2,1", "check": { "bulbLit": true } },
+    { "id": "same", "goal": "Put a meter before the bulb and one after it",
+      "done": "Same reading on both sides. The bulb doesn't use current up.",
+      "tray": ["meter"], "check": { "meters": 2 } },
+    { "id": "switch", "goal": "Add a switch anywhere in the loop",
+      "then": ["Now tap the switch to turn it off", "Tap it again to turn it on"],
+      "done": "Off anywhere means off everywhere.",
+      "tray": ["switch"], "check": { "switchCycle": true } },
+    { "id": "test", "goal": "Drop things in the gap. Which let current through?",
+      "done": "Metals let current through. So does pencil lead, a little.",
+      "tray": ["coin", "nail", "pencil", "ruler", "eraser", "glass"],
+      "preset": [{ "at": "1,1-2,1", "put": "tester" }],
+      "cue": "1,1-2,1", "check": { "tested": { "n": 4, "must": ["pencil"] } } },
+    { "id": "bright", "goal": "Make the bulb brighter",
+      "hint": "Cells pushing against each other? Tap the new cell to flip it",
+      "done": "Two cells, + to −: a bigger push, a brighter bulb.",
+      "tray": ["cell"],
+      "preset": [{ "at": "1,1-2,1", "put": "wire" }],
+      "check": { "brightness": 2 } }
+  ]
+}
+</script>
+<script src="../lib/stage.js"></script>
+<script src="circuit.js"></script>
+</body>
+</html>

@@ -24,7 +24,7 @@ const CONC = Number(arg("concurrency", 6));
 const REPORT_ONLY = argv.includes("--report-only");
 const J1 = arg("j1", "taxila-gpt6"), J2 = arg("j2", "taxila-mistral-m35");
 // list prices per 1M tokens (USD), MODEL-ROUTER §0 / model-refresh spend tables; used for spend.json only
-const PRICE = { "taxila-gpt6": [2, 10], "taxila-mistral-m35": [0.4, 2], "grok-4-1-fast-non-reasoning": [0.2, 0.5] };
+const PRICE = { "taxila-gpt6": [2, 10], "taxila-mistral-m35": [1.5, 7.5], "grok-4-1-fast-non-reasoning": [0.2, 0.5] }; // Azure retail, as recorded in evals/model-refresh-2026-10-04 (grok-4-1-fast: list price, assumed)
 
 for (const line of fs.readFileSync(join(ROOT, ".env.local"), "utf8").split("\n")) {
   const m = line.match(/^([A-Z0-9_]+)=(.*)$/);

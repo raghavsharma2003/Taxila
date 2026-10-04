@@ -69,8 +69,13 @@ if _os.path.exists(f"{K}/lmR-r4.json"):
     _m = json.load(open(f"{K}/lmR-r4.json"))
     for _k in LMk:
         LMk[_k][2] = tuple(_m[_k])
+if _os.environ.get("P2D_KEY30", "1") == "1":
+    _l, _r = json.load(open(f"{K}/lm30-L.json")), json.load(open(f"{K}/lm30-R.json"))
+    for _k in LMk:
+        LMk[_k][1] = tuple(_l[_k]); LMk[_k][2] = tuple(_r[_k])
 MOUTH = {"c": [530, 615], "h": [96, 52], "r": 40, "f": 12}   # static stand-in for the colour band only (runtime hole is live)
-for side, f in (("L", "yawL-0"), ("R", "yawR-2")):
+KEYS = (("L", "yawL30-0"), ("R", "yawR30-0")) if __import__("os").environ.get("P2D_KEY30", "1") == "1" else (("L", "yawL-0"), ("R", "yawR-2"))
+for side, f in KEYS:
     im = np.asarray(Image.open(f"{K}/{f}.png").convert("RGB")).astype(np.float32)
     H, W = im.shape[:2]
     D = np.array(g["yawKeys"][side], np.float32)        # 33 x 33 x 2, step 32
@@ -130,6 +135,10 @@ for side, f in (("L", "yawL-0"), ("R", "yawR-2")):
     bw = 1 - sstep(0, 40, dmin)
     BW = np.zeros((H, W), np.float32); np.maximum.at(BW, (iy, ix), bw)
     BW = ndi.gaussian_filter(BW, 4)
+    # r4b: and along the matte's own border (the outer 34 px): there the plate fades into the frontal-warped skin, which
+    # on the near side is stretched and lit differently - a soft seam from the ear to the jaw at the strong key
+    dm = ndi.distance_transform_edt(m > 0.02)
+    BW = np.maximum(BW, 1 - np.clip((dm - 6) / 34.0, 0, 1))
     # 3b. global skin colour match (skin = bright, inside, away from the features)
     sk_p = (m > 0.95) & (lum(im) > 110) & ~lockm
     sk_f = np.zeros(cf.shape[:2], bool)

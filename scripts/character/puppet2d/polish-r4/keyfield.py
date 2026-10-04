@@ -41,6 +41,12 @@ LM = {
     "chin": [(527, 710), (515, 655), (575, 649)],
 }
 FILES = ["art/character/puppet2d/polish-r4/c-front.png", f"{K}/yawL-0.png", f"{K}/yawR-2.png"]
+# r4b: P2D_KEY30=1 -> the stronger three-quarter keys (keys/yawL30-0, keys/yawR30-0; landmarks = lm30.py, flow-carried
+# from the 20-degree keys and checked on an overlay, 3 corrected by hand)
+import os as _os2
+USE30 = _os2.environ.get("P2D_KEY30", "1") == "1"
+if USE30:
+    FILES = ["art/character/puppet2d/polish-r4/c-front.png", f"{K}/yawL30-0.png", f"{K}/yawR30-0.png"]
 # r4 (judge r3 fix 3): yawR-2 = the bun-corrected repaint (gen-keys.mjs yawRbun). Its landmarks are the hand-read yawR-0
 # ones carried through a dense optical-flow registration (regplate.py, face residual 32 -> 9 grey levels); the two
 # points beside the removed left bun (faceL, earringL) sit where the flow is unreliable and take the local -11 px shift.
@@ -51,6 +57,10 @@ if _os.path.exists(f"{K}/lmR-r4.json"):
     _m["earringL"] = [LM["earringL"][2][0] + 1.0, LM["earringL"][2][1] - 11.0]
     for _k in LM:
         LM[_k][2] = tuple(_m[_k])
+if USE30:
+    _l, _r = json.load(open(f"{K}/lm30-L.json")), json.load(open(f"{K}/lm30-R.json"))
+    for _k in LM:
+        LM[_k][1] = tuple(_l[_k]); LM[_k][2] = tuple(_r[_k])
 
 
 def bgmask(p):

@@ -3,8 +3,8 @@
 // (library, live build or whiteboard) within the lesson, with the teacher referring to it.
 //
 // Each request is made in a fresh lesson, mid-lesson, on the typed and the spoken (cascade) lane. Pass needs ALL of:
-//   1. an artifact on the stage, in the reply to the request or the turn after: a module mount, a NEW non-text board for
-//      the same question, a Studio slot (ui.studioSlot) that becomes real (GET /api/studio/slot reports an artifact /
+//   1. an artifact on the stage, in the reply to the request or the turn after: a module mount, a NEW image board
+//      (UiDirectives.whiteboard kind "image"; a text / math board is the written problem, not a picture), a Studio slot (ui.studioSlot) that becomes real (GET /api/studio/slot reports an artifact /
 //      revealed within 25 s), or a Studio reveal. For "game", an interactive activity already in the tray counts only
 //      when she sends the child to it;
 //   2. her words refer to what is on the stage (look / the board / the diagram / here …) on that turn;
@@ -66,8 +66,8 @@ await withTestAccount(async ({ api }) => {
       const r2 = r2row?.r ?? null;
       const problems = [];
       // 1. the artifact
-      let art = newStageOf(r1, before), at = 1;
-      if (!art.length && r2) { art = newStageOf(r2, r1); at = 2; }
+      let art = newStageOf(r1, before, { visualOnly: true }), at = 1;
+      if (!art.length && r2) { art = newStageOf(r2, r1, { visualOnly: true }); at = 2; }
       const slot = (at === 1 ? r1 : r2)?.ui?.studioSlot ?? r1?.ui?.studioSlot ?? null;
       if (art.some((a) => a.startsWith("studioSlot")) && art.every((a) => a.startsWith("studioSlot"))) {
         const real = await studioSlotReal(api, L.lessonId, slot);
@@ -88,7 +88,7 @@ await withTestAccount(async ({ api }) => {
         if (!art.length && RX.imagine.test(t)) problems.push({ code: "V3.imagine", why: `the ${which} asks the child to imagine it instead of showing it` });
       }
       // 4. the common bar on the request's reply
-      problems.push(...rubric(r1, { kind: "visual", prevReply: before?.teacherReply ?? before?.teacherOpening ?? "", prevAsk: before?.ui?.ask?.text ?? null, earlier: L.replies().slice(0, -2),
+      problems.push(...rubric(r1, { kind: "visual", prevReply: before?.teacherReply ?? before?.teacherOpening ?? "", prevAsk: before?.ui?.ask?.itemId ? before.ui.ask.text : null, earlier: L.replies().slice(0, -2),
         askHistory: [], lane: L.mode, lang: persona.lang, floorContent: floorContentOf(L.item(r1)), expectEnd: false }).filter((d) => !["R6.ascii"].includes(d.code)));
       problems.push(...(await modelJudge({ previous: before?.teacherReply, child: q.text, reply: r1?.teacherReply, verdict: r1?.ui?.verdict })));
       ok(problems.length === 0, `${tag}: produced on the stage and referred to — ${problems.length ? problems.map((p) => `${p.code}: ${p.why}`).join("; ") : `yes (${[...art, ...existingGame].join(", ")})`} | teacher: "${String(r1?.teacherReply ?? "").slice(0, 110)}"`);

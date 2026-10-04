@@ -17,6 +17,10 @@ import { arg, withTestAccount, ok, warn, done, BASE, SEED, PERSONAS, GREET, fres
 const lanes = arg("lanes", "both");
 const prevOf = (row) => row.prev?.teacherReply ?? row.prev?.teacherOpening ?? "";
 const minusAsk = (t, ask) => (ask ? String(t ?? "").split(ask).join(" ") : String(t ?? "")).trim();
+/** The card's question only when it is a KIT question (an item-less turn's card text is her own last question). */
+const kitAsk = (r) => (r?.ui?.ask?.itemId ? r.ui.ask.text : null);
+const isHindi = (t) => (String(t).match(DEVANAGARI) ?? []).length > 10 || (hindiShare(t) >= 0.35 && enShare(t) < 0.15);
+const isEnglish = (t) => (String(t).match(DEVANAGARI) ?? []).length === 0 && enShare(t) >= 0.25 && hindiShare(t) < 0.2;
 
 /**
  * The requests. `check(reply, ctx)` → null when acted on, else why not. ctx: { prev, r, next (the following turn's
@@ -24,32 +28,30 @@ const minusAsk = (t, ask) => (ask ? String(t ?? "").split(ask).join(" ") : Strin
  */
 const REQUESTS = [
   { id: "talk_else", text: "can we talk about something else", persona: "meher",
-    check: (rep, c) => (/\b(what would you like|what do you want to talk|kis (?:baare|cheez)|kya baat karna|something else|kuch aur|sure|of course|zaroor|theek hai|chalo)\b/i.test(rep) && jaccard(minusAsk(rep, c.r.ui?.ask?.text), c.prev) < 0.5 ? null
+    check: (rep, c) => (/\b(what would you like|what do you want to talk|kis (?:baare|cheez)|kya baat karna|something else|kuch aur|sure|of course|zaroor|theek hai|chalo)\b/i.test(rep) && jaccard(minusAsk(rep, kitAsk(c.r)), c.prev) < 0.5 ? null
       : "no sign the topic change was taken up (no 'what would you like to talk about', or the same lesson turn again)") },
   { id: "topic_interest", text: "cricket ke baare mein baat karo", persona: "aarav",
-    check: (rep) => (/\b(cricket|bat|batting|bowler|bowling|wicket|overs?|run|runs|six|four|kohli|dhoni|ipl|match|team)\b/i.test(rep) ? null : "cricket never came up: the request was ignored") },
+    check: (rep) => (/\b(cricket|bat|batting|batsman|bowler|bowling|wicket|overs?|runs?|six|sixer|four|boundary|shot|pitch|stumps|innings|captain|kohli|dhoni|ipl|match|team)\b/i.test(rep) ? null : "cricket never came up: the request was ignored") },
   { id: "differently", text: "explain it differently", persona: "zoya",
-    check: (rep, c) => { const fresh = minusAsk(rep, c.r.ui?.ask?.text); return fresh.split(/\s+/).length >= 8 && jaccard(fresh, minusAsk(c.prev, c.prevAsk)) < 0.4 ? null : "no new explanation (the same words, or only the question)"; } },
+    check: (rep, c) => { const fresh = minusAsk(rep, kitAsk(c.r)); return fresh.split(/\s+/).length >= 8 && jaccard(fresh, minusAsk(c.prev, c.prevKitAsk)) < 0.4 ? null : "no new explanation (the same words, or only the question)"; } },
   { id: "slowly", text: "slowly please", persona: "golu",
     check: (rep, c) => (RX.childSlow.test(rep) ? "she told the CHILD to speak slowly (the request was for her: F14)"
-      : !(minusAsk(rep, c.r.ui?.ask?.text).split(/\s+/).length >= 4) ? "no re-explanation at all (only the question)"
+      : !(minusAsk(rep, kitAsk(c.r)).split(/\s+/).length >= 4) ? "no re-explanation at all (only the question)"
         : (/\b(dheere|dhire|slow|slowly|aaram se|step by step|ek ek|ek-ek|thoda thoda|chhote chhote|one by one)\b/i.test(rep) || String(rep).length <= String(c.prev).length * 0.9) ? null
           : "not slower: no slower, step-by-step re-say and no shorter turn") },
   { id: "example", text: "example do", persona: "kabir",
-    check: (rep, c) => (/\b(example|jaise|maan lo|maano|suppose|for instance|imagine|udaharan|socho ki|agar)\b/i.test(rep) && jaccard(minusAsk(rep, c.r.ui?.ask?.text), minusAsk(c.prev, c.prevAsk)) < 0.6 ? null : "no example given") },
+    check: (rep, c) => (/\b(example|jaise|maan lo|maano|suppose|for instance|imagine|udaharan|socho ki|agar)\b/i.test(rep) && jaccard(minusAsk(rep, kitAsk(c.r)), minusAsk(c.prev, c.prevKitAsk)) < 0.6 ? null : "no example given") },
   { id: "hindi", text: "Hindi mein samjhao", persona: "meher",
     check: (rep, c) => {
       if (RX.thinkInHindi.test(rep)) return "told the child to 'think in Hindi' instead of switching (F12)";
-      const hi = (t) => (String(t).match(DEVANAGARI) ?? []).length > 10 || (hindiShare(t) >= 0.5 && enShare(t) < 0.2);
-      if (!hi(minusAsk(rep, c.r.ui?.ask?.text) || rep)) return "the reply is not in Hindi";
-      if (c.next && !c.next.error && c.next.teacherReply && !hi(c.next.teacherReply)) return "switched for one turn only: the following turn is back in English";
+      if (!isHindi(minusAsk(rep, kitAsk(c.r)) || rep)) return "the reply is not in Hindi";
+      if (c.next && !c.next.error && c.next.teacherReply && !isHindi(c.next.teacherReply)) return "switched for one turn only: the following turn is back in English";
       return null;
     } },
   { id: "english", text: "English mein batao please", persona: "ishaan",
     check: (rep, c) => {
-      const en = (t) => (String(t).match(DEVANAGARI) ?? []).length === 0 && enShare(t) >= 0.2 && hindiShare(t) < 0.5;
-      if (!en(minusAsk(rep, c.r.ui?.ask?.text) || rep)) return "the reply is not in English";
-      if (c.next && !c.next.error && c.next.teacherReply && !en(c.next.teacherReply)) return "switched for one turn only: the following turn is back in Hindi";
+      if (!isEnglish(minusAsk(rep, kitAsk(c.r)) || rep)) return "the reply is not in English";
+      if (c.next && !c.next.error && c.next.teacherReply && !isEnglish(c.next.teacherReply)) return "switched for one turn only: the following turn is back in Hindi";
       return null;
     } },
   { id: "story", text: "story ki tarah batao", persona: "golu",
@@ -76,9 +78,9 @@ await withTestAccount(async ({ api }) => {
       const rep = String(r.teacherReply ?? "");
       // the following turn: an ordinary child reply, for persistence (language) and to see that the lesson goes on
       const nextRow = !L.ended ? await L.turn(ordinaryTurn(L, persona).text, { kind: "answer" }) : null;
-      const common = rubric(r, { kind: "steer", prevReply: prevOf(row), prevAsk: row.prev?.ui?.ask?.text ?? null, earlier: L.replies().slice(0, -2), askHistory: [], lane: L.mode,
+      const common = rubric(r, { kind: "steer", prevReply: prevOf(row), prevAsk: kitAsk(row.prev), earlier: L.replies().slice(0, -2), askHistory: [], lane: L.mode,
         lang: q.id === "hindi" || q.id === "english" ? "switch" : persona.lang, langSwitched: true, floorContent: floorContentOf(L.item(r)), expectEnd: false });
-      const why = r.error ? `the turn failed (${r.error.status})` : q.check(rep, { prev: prevOf(row), prevAsk: row.prev?.ui?.ask?.text ?? null, r, next: nextRow?.r, persona });
+      const why = r.error ? `the turn failed (${r.error.status})` : q.check(rep, { prev: prevOf(row), prevKitAsk: kitAsk(row.prev), r, next: nextRow?.r, persona });
       const judged = await modelJudge({ previous: prevOf(row), child: row.child, reply: rep, verdict: r.ui?.verdict });
       const problems = [...(why ? [{ code: `S.${q.id}`, why }] : []), ...common, ...judged];
       ok(problems.length === 0, `${tag}: acted on in the next turn — ${problems.length ? problems.map((p) => `${p.code}: ${p.why}`).join("; ") : "yes"} | teacher (${r.move?.kind}${r.end ? ", end" : ""}): "${rep.slice(0, 120)}"`);

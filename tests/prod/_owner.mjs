@@ -98,8 +98,8 @@ export function jaccard(a, b) {
 }
 export const sentencesOf = (t) => (String(t ?? "").match(/[^.!?।]+[.!?।]*/g) ?? []).map((x) => x.trim()).filter(Boolean);
 export const DEVANAGARI = /[ऀ-ॿ]/g;
-const HI_WORDS = /\b(hai|hain|kya|ko|ke|ki|mein|aur|nahi|hota|hoti|karo|karte|chalo|dekho|samjho|jaise|matlab|yaani|toh|bhi|ek|do|teen|tum|aap|yeh|woh|kaise|kyun|batao|bataiye|sochiye|socho)\b/gi;
-const EN_WORDS = /\b(the|is|are|of|and|to|in|what|which|how|number|line|fraction|part|parts|equal|first|mark|now|your|you|this|that|with|from|between|bigger|smaller|answer|question|example|step|next|say|tell|find|can|will|let|think)\b/gi;
+const HI_WORDS = /\b(hai|hain|tha|thi|hoga|hogi|honge|kya|ko|ka|ke|ki|se|mein|par|pe|aur|nahi|nahin|hota|hoti|hote|karo|karte|kijiye|kariye|chalo|dekho|dekhiye|samjho|samjhiye|jaise|jaisa|matlab|yaani|toh|bhi|ek|teen|char|paanch|tum|aap|aapka|tumhara|yeh|ye|woh|wo|kaise|kaisa|kyun|kyon|batao|bataiye|batayiye|sochiye|socho|ab|phir|agar|lekin|sirf|bahut|thoda|sab|kuch|koi|apna|apne|hum|main|mujhe|liye|saath|baad|pehle|wala|wali|wale|raha|rahi|rahe|rehta|rehti|jata|jaata|jaati|milta|milega|banta|banega|hua|hui|kitna|kitne|kitni|kaun|kahan|kab|haan|achha|theek)\b/gi;
+const EN_WORDS = /\b(the|a|an|is|are|was|were|be|of|and|or|to|in|on|at|for|with|from|by|as|it|its|this|that|these|those|what|which|who|how|why|when|where|number|line|fraction|part|parts|equal|first|mark|now|your|you|we|our|they|their|he|she|has|have|had|do|does|did|can|could|will|would|should|let|think|answer|question|example|step|next|say|tell|find|make|more|one|two|three|each|every|other|starts|start|passes|through|similar|about|if|then|so|not|no|yes|here|there|look|shows|show)\b/gi;
 export function hindiShare(s) {
   const t = String(s ?? "");
   if ((t.match(DEVANAGARI) ?? []).length > 10) return 1;
@@ -120,10 +120,10 @@ export const RX = {
   stage: /(?:^|[\s(—-])(?:whiteboard(?:\s+anchor)?|board|shape|move|note|key|ladder|rung|lesson now|turn shape|your move)\s*:|\bTURN SHAPE\b|\bLESSON NOW\b|\[[^\]]+\]/i,
   strayScript: /[ঀ-෿઀-૿؀-ۿ฀-๿]/,
   danglingOpen: /^[\s]*[”"'’)\]]/,
-  asciiArt: /[─│┌┐└┘├┤┬┴┼═║╔╗╚╝]{2,}|(?:[|_\-=+*#]{3,}.*\n){2,}|(?:\|\s*){3,}|-{4,}>|={4,}|\+-{3,}\+/,
+  asciiArt: /[\u2500-\u257F]{2,}|[\u2500-\u257F|]\s*[—–-]{2,}|(?:[—–-]{2,}\s*[|\u2500-\u257F]){2,}|(?:[|_\-=+*#]{3,}.*\n){2,}|(?:\|\s*[—–-]*\s*){3,}|-{4,}>|={4,}|\+-{3,}\+|●[─—-]{3,}|[─—-]{3,}→/,
   defer: /\b(baad mein (?:baat|bataunga|batati|batata|karenge|dekhenge)|later|pehle .{0,40}(?:khatam|finish|poora)|after this (?:question|lesson)|abhi .{0,30}(?:par|pe) (?:lautte|wapas|focus)|let'?s get back|wapas (?:aate|chalte) hain)\b/i,
-  cantDraw: /\b(i can'?t|i cannot|i am not able to|i'm not able to|main nahi|mai nahi|mein nahi)\s+(?:\w+\s+){0,3}(draw|show|bana|dikha)|\b(drawing|picture|diagram)\s+(?:nahi|not)\s+(?:bana|dikha|show|draw)|text[- ]only|no (?:pictures|images|drawing)/i,
-  childDraws: /\b(aap|tum)\s+(?:\w+\s+){0,4}(?:banao|banaiye|bana lo|bana lijiye|draw karo|draw kijiye|draw|sketch)\b|\b(?:draw|sketch)\s+(?:it|this|a)\s+(?:yourself|on (?:your|a) (?:copy|notebook|paper))|copy (?:mein|par|pe) bana/i,
+  cantDraw: /\b(i can'?t|i cannot|i am not able to|i'm not able to|main nahi|mai nahi|mein nahi)\s+(?:\w+\s+){0,3}(draw|show|bana|dikha)|\b(drawing|picture|diagram)\s+(?:nahi|not)\s+(?:bana|dikha|show|draw)|\b(?:dikha|bana|chala|draw\s+kar|show\s+kar)\s+nahi\s+(?:sakta|sakti|sakte|paunga|paungi|payenge|paati|paata)\b|text[- ]only|no (?:pictures|images|drawing)/i,
+  childDraws: /\b(aap|tum)\s+(?:\w+\s+){0,4}(?:banao|banaiye|bana lo|bana lijiye|draw karo|draw kijiye|draw|sketch)\b|\b(?:draw|sketch)\s+(?:it|this|a)\s+(?:yourself|on (?:your|a) (?:copy|notebook|paper))|copy (?:mein|par|pe) bana|\b(?:board|whiteboard|copy|paper|notebook|kaagaz)\s+(?:par|pe|mein)\b[^.?!]{0,60}?\b(?:banaiye|banao|bana\s+(?:lijiye|lo|dijiye)|draw\s+(?:kijiye|karo|kariye)|likhiye|likho)\b|\b(?:aise|ab|pehle)\s+draw\s+(?:kijiye|karo|kariye)\b|\bdraw\s+(?:kijiye|karo|kariye)\b/i,
   imagine: /\b(imagine|socho ki|sochiye ki|man mein|mann mein|picture (?:sochiye|socho)|kalpana)\b/i,
   // refers to something on the stage
   refers: /\b(dekho|dekhiye|dekhte|dekhna|screen|board|diagram|picture|tasveer|chitra|drawing|banaya|bana (?:rahi|raha|diya)|game|khel|activity|niche|neeche|yahan|here|look|see|shown|on the right|left mein|tray|line par|bars?|model)\b/i,
@@ -146,10 +146,12 @@ export function stageOf(r) {
   return out;
 }
 /** Something NEW on the stage in `r` versus `prev`: a mount, a changed non-text board for the same question, a new studio slot or op. */
-export function newStageOf(r, prev) {
+export function newStageOf(r, prev, { visualOnly = false } = {}) {
   const out = [];
   for (const c of r?.moduleCommands ?? []) if (c.op === "mount") out.push(`mount ${c.engine}`);
-  if (r?.ui?.whiteboard && r.ui.whiteboard.kind !== "text" && JSON.stringify(r.ui.whiteboard) !== JSON.stringify(prev?.ui?.whiteboard ?? null)
+  // visualOnly: a board counts only as an IMAGE (UiDirectives.whiteboard.kind "image"): "text" and "math" boards carry the
+  // written problem (a worked example's line), which changes on its own as teaching moves on and is not a picture
+  if (r?.ui?.whiteboard && (visualOnly ? r.ui.whiteboard.kind === "image" : r.ui.whiteboard.kind !== "text") && JSON.stringify(r.ui.whiteboard) !== JSON.stringify(prev?.ui?.whiteboard ?? null)
     && (r.ui?.ask?.itemId ?? null) === (prev?.ui?.ask?.itemId ?? null)) out.push(`whiteboard ${r.ui.whiteboard.kind} (new)`);
   if (r?.ui?.studioSlot && JSON.stringify(r.ui.studioSlot) !== JSON.stringify(prev?.ui?.studioSlot ?? null)) out.push(`studioSlot ${r.ui.studioSlot.slotId ?? ""}`);
   if (r?.studio?.reveal) out.push(`studio reveal ${r.studio.reveal}`);
@@ -178,8 +180,10 @@ export function rubric(r, ctx) {
     add("R3.bare_question", "the reply is only the pinned question: what the child said got no answer (F17/F19)");
   // what she said BESIDES the pinned question (a re-posed question is not new content)
   const own = (t, a) => (a ? String(t ?? "").split(a).join(" ") : String(t ?? "")).trim();
+  // only a KIT question is subtracted (an item-less turn's card text is her own last question)
+  const kitAsk = r.ui?.ask?.itemId ? ask : null;
   const prevAsk = ctx.prevAsk ?? null;
-  const fresh = own(rep, ask), before = own(ctx.prevReply, prevAsk ?? ask);
+  const fresh = own(rep, kitAsk), before = own(ctx.prevReply, prevAsk);
   const sameAsBefore = !fresh || fresh.split(/\s+/).length < 4 || (before && jaccard(fresh, before) >= 0.6);
   const dup = (ctx.earlier ?? []).find((p) => p && rep && (norm(p) === norm(rep) || jaccard(p, rep) >= 0.8));
   if (dup) add("R4.repeat", `repeats an earlier teacher line (similarity ${jaccard(dup, rep).toFixed(2)})`);
@@ -192,7 +196,7 @@ export function rubric(r, ctx) {
   if (RX.danglingOpen.test(rep)) add("R6.dangling", "the reply opens on a dangling quote: a gutted turn (F18)");
   if (RX.stage.test(rep)) add("R6.stage", "a field name, prompt label or markup was read out (\"Whiteboard anchor:\") (F18)");
   if (RX.asciiArt.test(rep)) add("R6.ascii", "a text 'diagram' in the reply (F16)");
-  if (["hook", "explain", "worked_example", "reteach"].includes(kind) && rep.trim() && rep.trim().split(/\s+/).length < 9) add("R6.gutted", `a ${kind} turn with almost no content: "${rep}" (F18)`);
+  if (["hook", "explain", "worked_example", "reteach"].includes(kind) && !["steer", "visual", "offtopic"].includes(ctx.kind) && rep.trim() && rep.trim().split(/\s+/).length < 9) add("R6.gutted", `a ${kind} turn with almost no content: "${rep}" (F18)`);
   if (ctx.kind === "offtopic" || ctx.kind === "steer" || ctx.kind === "visual") {
     if (RX.defer.test(rep)) add("R7.defer", "deferred what the child said ('baad mein', 'later') instead of answering it (F11)");
     if (ctx.prevReply && sameAsBefore) add("R7.ignored", "nothing new besides the question: the reply re-states the previous turn, the child's words were ignored");
