@@ -5024,6 +5024,34 @@
    "title": "Owner: the GNM/generated teacher faces look scary, cheap and unpolished; source a clean, polished, human-like head from existing professional avatar projects or assets instead; AWS spend up to $400",
    "at": "2026-10-04",
    "source": "inbox/owner-face-verdict.json"
+  },
+  {
+   "id": "owner-superhuman-teacher-2026-10-04",
+   "kind": "decision",
+   "title": "Owner: full product now, no MVP. Live background building (Claude Code/Codex-like) of games, sims, animations, images and visualisations while the teacher talks, deployed seamlessly and playable; multi-model (Foundry); exact human voice with non-verbal elements (Maya/Meera-like); relational OS and emotions; whole app driven by an AI teacher brain",
+   "at": "2026-10-04",
+   "source": "inbox/owner-superhuman-teacher.json"
+  },
+  {
+   "id": "w1-seams-statement-hooks",
+   "kind": "decision",
+   "title": "W1 seams: Conductor hooks are pure synchronous functions returning statements appended to the caller's existing transaction; Forge/comprehension seams are no-op modules called from lesson.js",
+   "at": "2026-10-04",
+   "source": "inbox/w1-w0.json"
+  },
+  {
+   "id": "w1-migration-allotment",
+   "kind": "decision",
+   "title": "W1 migration numbers: 012-013 W1-C, 014 W1-D, 015 W1-A (db/migrations/README.md)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-w0.json"
+  },
+  {
+   "id": "w0-disk-full-during-gates",
+   "kind": "measurement",
+   "title": "Sandbox root fs reached 0 bytes free during npm test (scratchpad 8.5G + /tmp/claude-0/char 2.7G); gates died with ENOSPC until the run was stopped",
+   "at": "2026-10-04",
+   "source": "inbox/w1-w0.json"
   }
  ],
  "edges": [
@@ -8641,6 +8669,16 @@
    "src": "owner-rejects-generated-faces",
    "rel": "supersedes",
    "dst": "gnm-adopted-identity-base"
+  },
+  {
+   "src": "owner-superhuman-teacher-2026-10-04",
+   "rel": "supersedes",
+   "dst": "forge-live-codegen-race"
+  },
+  {
+   "src": "w1-seams-statement-hooks",
+   "rel": "part_of",
+   "dst": "w1-migration-allotment"
   }
  ]
 }

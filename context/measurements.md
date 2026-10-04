@@ -1250,3 +1250,8 @@ The metric favours the CPU recon, which was built from the same photo detections
 
 ## teacher-judge-variance-n24
 **Three n = 24 runs of near-identical teal assets, 2026-10-04:** the largest single-emotion swings were C concerned 23 -> 18, C listening 23 -> 19, C playful 18 -> 14, A listening 11 -> 14. At the 17/24 bar, curious and playful flip between runs. Supersedes the n = 12 note (teacher-judge-variance): the noise shrank, but not below the margin designs are being separated by.
+
+
+<!-- merged from inbox/w1-w0.json -->
+## w0-disk-full-during-gates (2026-10-04)
+n=1, method: df -h / during `npm test` on HEAD 345b33b. Root fs showed 7.1 MB free; npm test had passed 372/372 tests up to the Forge gate browser test when writes failed with ENOSPC. After stopping the run 8.3 GB was free (31G used). The session scratchpad holds 8.5 GB of research artifacts (cc 2.6G, avlip 826M, baseline-src 744M, mvenv 479M) and /tmp/claude-0/char 2.7G (bpyenv, bakeoff renders). W1 agents running gates in parallel can exhaust the disk again: the main loop should prune the scratchpad before fanning out.

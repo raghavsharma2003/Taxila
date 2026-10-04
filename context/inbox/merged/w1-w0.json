@@ -1,0 +1,33 @@
+{
+"nodes": [
+{
+"id": "w1-seams-statement-hooks",
+"kind": "decision",
+"title": "W1 seams: Conductor hooks are pure synchronous functions returning statements appended to the caller's existing transaction; Forge/comprehension seams are no-op modules called from lesson.js",
+"at": "2026-10-04"
+},
+{
+"id": "w1-migration-allotment",
+"kind": "decision",
+"title": "W1 migration numbers: 012-013 W1-C, 014 W1-D, 015 W1-A (db/migrations/README.md)",
+"at": "2026-10-04"
+},
+{
+"id": "w0-disk-full-during-gates",
+"kind": "measurement",
+"title": "Sandbox root fs reached 0 bytes free during npm test (scratchpad 8.5G + /tmp/claude-0/char 2.7G); gates died with ENOSPC until the run was stopped",
+"at": "2026-10-04"
+}
+],
+"edges": [
+{
+"src": "w1-seams-statement-hooks",
+"rel": "part_of",
+"dst": "w1-migration-allotment"
+}
+],
+"md": {
+"decisions": "## w1-seams-statement-hooks (2026-10-04)\nW0 seam commit (BUILD-PLAN \u00a72). `server/conductor/hooks.js` onLessonStart/onTurnCommit/onLessonEnd/onConsentChange each return `Stmt[]` that the caller appends AFTER its own statements in its existing transaction (start: lesson insert tx; turn: runTurnTx; end: summary/memory tx, whose row-count check reads only its own writes; consent: account.js setConsent runs them in one tx after the consent rows, because setConsent has no transaction today). A Conductor event therefore lands with the row that caused it or not at all, and a no-op adds nothing. `server/forge/seam.js` forgeSeam.{wovenSubStep, prefetchLessonFills} (prefetch fire-and-forget after commit). `server/comprehension/session.js` loadSessionContext(childId,{skillIds,now}) \u2192 {reteach} pinned as state.ctx.reteach (only when non-null) and passed to selectReteach as attempts/repFluency/posteriors; awaitSettled(eventIds,600) awaited before carriedFrom only when events are held. planModule(s,{kit,item,move,lang,band,representation}) keeps `s` first (it mutates s.module). Desk passes WorkTray onModuleFailed \u2192 DeskActions.moduleFailed (no-op in useDesk). **Reverse if** a stream needs a hook to do I/O inside the transaction (then hooks become async and the call sites change in the next seam commit), or if the appended-statement order breaks a caller's result indexing.\n\n## w1-migration-allotment (2026-10-04)\n012 and 013 to W1-C (pending grade, re-teach resolution), 014 to W1-D (Conductor hooks, if needed), 015 to W1-A. 008_tutor_choice was found ALREADY applied on both the Neon test branch and production (schema_migrations and the column/table checked), so BUILD-PLAN \u00a71.6's 'fails today' is stale. **Reverse if** a stream needs more than its numbers: the main loop allots 016+ rather than streams taking them.",
+"measurements": "## w0-disk-full-during-gates (2026-10-04)\nn=1, method: df -h / during `npm test` on HEAD 345b33b. Root fs showed 7.1 MB free; npm test had passed 372/372 tests up to the Forge gate browser test when writes failed with ENOSPC. After stopping the run 8.3 GB was free (31G used). The session scratchpad holds 8.5 GB of research artifacts (cc 2.6G, avlip 826M, baseline-src 744M, mvenv 479M) and /tmp/claude-0/char 2.7G (bpyenv, bakeoff renders). W1 agents running gates in parallel can exhaust the disk again: the main loop should prune the scratchpad before fanning out."
+}
+}

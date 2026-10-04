@@ -1941,3 +1941,24 @@ Main-loop decision after LOOKING at docs/design/teacher/bakeoff/gnm/renders/teal
 <!-- merged from inbox/owner-face-verdict.json -->
 ## owner-rejects-generated-faces (2026-10-04)
 The owner, on the GNM contact sheets: 'extremely bad and not polished and it's scary and cheap... research already existing face model projects and take the best from them. We need a clean human-like model which doesn't look weird.' The AWS budget is raised to an upper limit of $400. Lesson: passing numeric gates (likeness error, emotion judges, G-gates) does NOT mean appeal. A photo-projected, scan-fitted face with CG shading reads as uncanny. The owner's eye is the gate for the look. New direction: start from professionally made, commercially licensed avatar heads (e.g. Microsoft Rocketbox + HeadBox, MIT; other open or purchasable heads with ARKit blendshapes), keep our rig contract, runtime, lip-sync and behaviour, and present a side-by-side for the owner to choose. **Reverse if** no licensed asset clears the owner's eye; then go stylised (feature-animation look) built from a professional stylised base.
+
+
+<!-- merged from inbox/owner-superhuman-teacher.json -->
+## owner-superhuman-teacher-2026-10-04
+Owner (verbatim gist): 'full product right now, not a basic MVP; everything real good quality and working'.
+- **Live building:** real games, sites, generated animations, generated images and visualisations are built in the background while the human-like teacher is talking, deployed seamlessly and shown to the student, who can interact and play: 'like Claude Code and Codex, things are being built and shown to the user'. Different models (mostly Foundry) for different kinds of building. The output must be high quality and well thought out, never basic or cheap.
+- **Adaptation:** built on how this student learns best, which changes over time and is continuously experimented on, and on detecting whether the student understood, then re-teaching accordingly.
+- **Voice:** an exact human voice in Hindi, English and Hinglish, with human voice elements (humming, pausing, tone and pitch change, audible thinking: Maya/Meera-like, not a plain voice).
+- **Relationship:** the tutor has a relational OS and emotions and forms a bond over time.
+- **Brain:** the whole app, from the start, is controlled by an AI teacher brain with components. The goal is a superhuman personalised teacher.
+- **Ownership:** the main loop owns the UI/UX, product design, student flow and tech. Benchmark top projects, papers and products per aspect. No half-baked work.
+
+This SUPERSEDES `forge-live-codegen-race` as a product rule. Live generation of new interactive code during a lesson is now required. The safety constraints remain (sandboxed frame, no network, automated QA before the child sees it, answer-key truth from code and verified kits, the child-safety floor). The race problem is to be solved by design (a skeleton first, progressive reveal, the teacher narrating the build, fallbacks), not avoided.
+
+
+<!-- merged from inbox/w1-w0.json -->
+## w1-seams-statement-hooks (2026-10-04)
+W0 seam commit (BUILD-PLAN §2). `server/conductor/hooks.js` onLessonStart/onTurnCommit/onLessonEnd/onConsentChange each return `Stmt[]` that the caller appends AFTER its own statements in its existing transaction (start: lesson insert tx; turn: runTurnTx; end: summary/memory tx, whose row-count check reads only its own writes; consent: account.js setConsent runs them in one tx after the consent rows, because setConsent has no transaction today). A Conductor event therefore lands with the row that caused it or not at all, and a no-op adds nothing. `server/forge/seam.js` forgeSeam.{wovenSubStep, prefetchLessonFills} (prefetch fire-and-forget after commit). `server/comprehension/session.js` loadSessionContext(childId,{skillIds,now}) → {reteach} pinned as state.ctx.reteach (only when non-null) and passed to selectReteach as attempts/repFluency/posteriors; awaitSettled(eventIds,600) awaited before carriedFrom only when events are held. planModule(s,{kit,item,move,lang,band,representation}) keeps `s` first (it mutates s.module). Desk passes WorkTray onModuleFailed → DeskActions.moduleFailed (no-op in useDesk). **Reverse if** a stream needs a hook to do I/O inside the transaction (then hooks become async and the call sites change in the next seam commit), or if the appended-statement order breaks a caller's result indexing.
+
+## w1-migration-allotment (2026-10-04)
+012 and 013 to W1-C (pending grade, re-teach resolution), 014 to W1-D (Conductor hooks, if needed), 015 to W1-A. 008_tutor_choice was found ALREADY applied on both the Neon test branch and production (schema_migrations and the column/table checked), so BUILD-PLAN §1.6's 'fails today' is stale. **Reverse if** a stream needs more than its numbers: the main loop allots 016+ rather than streams taking them.
