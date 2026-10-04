@@ -82,6 +82,7 @@ void main() {
   // underside fill: lifts the chin/neck band so it never reads as a dark collar
   amb += uGround * 0.35 * smoothstep(0.0, -0.8, N.y) * (uKind < 0.5 ? 1.0 : 0.0);
   vec3 col = albedo * (diff * mix(0.85, 1.0, ao) + amb);
+  if (uKind < 1.5) col *= 1.0 - 0.16 * pow(1.0 - clamp(dot(N, V), 0.0, 1.0), 1.6);   // form: faces turn away softly (roundness)
   // rim on the lit side of the silhouette
   float fr = pow(1.0 - clamp(dot(N, V), 0.0, 1.0), 3.0);
   col += uRimCol * fr * smoothstep(-0.2, 0.5, dot(N, normalize(uRimDir))) * uRim;
@@ -195,7 +196,7 @@ function make(frag, kind, o = {}) {
 // material name (from the GLB) -> TaxilaToon material
 export function toonFor(name, src, tier = "H") {
   const C = {
-    skin: [240, 160, 100], hair: [66, 62, 62], brow: [52, 42, 38], lash: [18, 12, 10], bindi: [110, 30, 34],
+    skin: [240, 158, 86], hair: [66, 62, 62], brow: [52, 42, 38], lash: [18, 12, 10], bindi: [110, 30, 34],
     gold: [236, 184, 96], kurta: [18, 108, 118], piping: [200, 102, 48], teeth: [246, 240, 230], tongue: [190, 80, 72],
   };
   switch (name) {

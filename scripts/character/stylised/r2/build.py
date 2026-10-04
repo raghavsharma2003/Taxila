@@ -128,6 +128,12 @@ def build():
     d2 = (X[:, 0] / 0.008) ** 2 + ((X[:, 2] - PH['nose_c'][2]) / 0.007) ** 2
     w = 0.25 * np.exp(-d2) * (X[:, 1] < -0.03)
     col = col * (1 - w[:, None]) + lin(COL['blush']) * w[:, None]
+    # nostril / under-tip shade (r2): the button reads at thumbnail by its underside, as in c-front
+    for s in (1, -1, 0):
+        cx = s * PH['wing_c'][0] * 0.95
+        d2 = ((X[:, 0] - cx) / (0.004 if s else 0.006)) ** 2 + ((X[:, 2] - (PH['nose_c'][2] - PH['nose_r'][2] * 0.85)) / 0.0028) ** 2
+        w = (0.30 if s else 0.18) * np.exp(-d2) * (X[:, 1] < -0.03)
+        col = col * (1 - w[:, None]) + lin(COL['lidline']) * w[:, None]
     # lips
     up_m = M['mouth']['upper']
     for k, w in ((0, 1.0), (1, 1.0), (2, 0.55), (3, 0.06)):

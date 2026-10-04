@@ -1,0 +1,114 @@
+{
+ "nodes": [
+  {
+   "id": "scout-images-2026-10-04",
+   "kind": "measurement",
+   "title": "Image bench n=100 requests (10 prompts x 2 x 5 arms), eye-checked: gpt-image-2 medium 10/10 diagrams 44/44 labels, 10/10 illustrations, 0 filter blocks, 42.6 s p50, $0.053; MAI-2.6-Flash 6/8 diagrams 30/34, 8/8 illus, 4/20 blocked, 16.6 s, $0.020; MAI-2.6 6/8 34/34, 7/8, 30.6 s, $0.040; MAI-2.5-Pro 5/8, 8/8, 40.9 s, $0.109; FLUX.2-pro 0/10 14/44, 5/6, 4/20 blocked, 7.0 s, $0.03",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "scout-images-filter-blocks-2026-10-04",
+   "kind": "measurement",
+   "title": "Azure content filters refused 16/100 image requests, 0 on gpt-image-2: FLUX blocks 'Indian home courtyard' (prompt blocklist; passes without 'Indian') and the children-with-age-and-skin-tone prompt; all MAI block the full courtyard prompt on output (7/7) and named digestive organs on input",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "scout-images-judge-calibration-2026-10-04",
+   "kind": "measurement",
+   "title": "Vision judges vs eye on 84 images: diagrams (n=44, 17 eye-fails) brain 0 false passes / 7 false fails, grok-4-20-reasoning 8 false passes; illustrations (n=40) brain 1 false pass, grok 0",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "scout-bedrock-images-2026-10-04",
+   "kind": "measurement",
+   "title": "Bedrock image models: none in ap-south-1; Nova Canvas/Reel/Titan Image listed in no region (7 checked); Stability SD3.5 Large / Image Core / Ultra only in us-west-2, agreement NOT_AVAILABLE, quota 0 RPM not adjustable, invoke throttled",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "image-lane-gpt-image-2-holds-2026-10-04",
+   "kind": "decision",
+   "title": "gpt-image-2 medium stays the image default (owner directive holds); MAI-Image-2.6-Flash is the measured fallback for text-free art when gpt-image-2 latency/quota bites, with gpt-image-2 retry on a filter block; never for labels",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-mai-image-25-pro",
+   "kind": "rejection",
+   "title": "MAI-Image-2.5-Pro: label/science errors on 3/8 diagrams, 40.9 s p50, $0.109/image (2.8x MAI-2.6), deprecates 2026-10-31",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-flux2-pro-labels-and-indian-prompts",
+   "kind": "rejection",
+   "title": "FLUX.2-pro for labelled diagrams or Indian-scene prompts: 0/10 diagrams right (14/44 labels, misspellings, leaders on the wrong part) and the prompt blocklist refuses 'Indian home courtyard' and the children prompt",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-grok-label-judge",
+   "kind": "rejection",
+   "title": "grok-4-20-reasoning as a diagram-label judge: 8/44 false passes (all four FLUX circuit leaders on the switch scored 4/4)",
+   "at": "2026-10-04"
+  }
+ ],
+ "edges": [
+  {
+   "src": "scout-images-2026-10-04",
+   "rel": "supersedes",
+   "dst": "scout-2026-10-04-mai-image26-flash"
+  },
+  {
+   "src": "image-lane-gpt-image-2-holds-2026-10-04",
+   "rel": "measured_by",
+   "dst": "scout-images-2026-10-04"
+  },
+  {
+   "src": "image-lane-gpt-image-2-holds-2026-10-04",
+   "rel": "measured_by",
+   "dst": "scout-images-filter-blocks-2026-10-04"
+  },
+  {
+   "src": "image-lane-gpt-image-2-holds-2026-10-04",
+   "rel": "inherits",
+   "dst": "owner-gpt-image-2-default-2026-10-04"
+  },
+  {
+   "src": "image-lane-gpt-image-2-holds-2026-10-04",
+   "rel": "constrains",
+   "dst": "model-router-v2"
+  },
+  {
+   "src": "rj-mai-image-25-pro",
+   "rel": "measured_by",
+   "dst": "scout-images-2026-10-04"
+  },
+  {
+   "src": "rj-flux2-pro-labels-and-indian-prompts",
+   "rel": "measured_by",
+   "dst": "scout-images-2026-10-04"
+  },
+  {
+   "src": "rj-grok-label-judge",
+   "rel": "measured_by",
+   "dst": "scout-images-judge-calibration-2026-10-04"
+  },
+  {
+   "src": "scout-images-judge-calibration-2026-10-04",
+   "rel": "constrains",
+   "dst": "rj-holistic-model-judge-gate"
+  },
+  {
+   "src": "scout-bedrock-images-2026-10-04",
+   "rel": "caused_by",
+   "dst": "scout-2026-10-04-bedrock-blocked"
+  },
+  {
+   "src": "scout-images-2026-10-04",
+   "rel": "constrains",
+   "dst": "diagram-router-no-baked-labels"
+  }
+ ],
+ "md": {
+  "measurements": "## scout-images-2026-10-04\n2026-10-04, US container -> southindia (MAI) / eastus2 (FLUX.2-pro `taxila-flux2`, gpt-image-2 `taxila-image` medium), `evals/model-scout-2026-10-04/images/run.mjs` + `analyze.py`. 10 prompts (5 text-free in the docs/design/assets GLOBAL WORLD STYLE: courtyard, rooftop, mangoes, science still life, two children; 5 English-label diagrams: plant (verbatim image-bench.mjs), water cycle, closed circuit, digestive system, flower section) x 2 samples x 5 arms = 100 requests, 84 images, 1024^2. Every image checked by eye (authoritative, `results/eyeball-2026-10-04.json`) plus two judges. Eye results: gpt-image-2 medium 20/20 delivered, diagrams 10/10, labels 44/44, illustrations 10/10, p50 42.6 s / p90 47.4 s, $0.053. MAI-Image-2.6-Flash 16/20 delivered, diagrams 6/8 (plant Fruit/Leaf swap; circuit Switch/Wire swap), labels 30/34, illustrations 8/8 (but lit the 'unlit' bulbs, dropped uniforms), 16.6 / 18.4 s, $0.0197. MAI-Image-2.6 16/20, diagrams 6/8 (both circuits wire to bulb glass, one letterboxed 16:9), labels 34/34, illustrations 7/8 (signature scribble), 30.6 / 32.8 s, $0.0396. MAI-Image-2.5-Pro 16/20, diagrams 5/8, labels 31/34, illustrations 8/8, 40.9 / 44.1 s, $0.109. FLUX.2-pro 16/20, diagrams 0/10, labels 14/44 (misspellings Precipation / Food pohe / Separ / Shasting), illustrations 5/6 (signature), 7.0 / 8.4 s, $0.03. MAI has no seed parameter (2 independent draws). Lamp-hue lint failed most opaque images on every arm except FLUX (1/6); it measures warm paper/skin, direction only. Price from retail meters read 2026-10-04; latency includes the US round trip. n=2 per cell, one human rater: direction, not verdict.\n\n## scout-images-filter-blocks-2026-10-04\n2026-10-04, `evals/model-scout-2026-10-04/images/filter-probe.mjs` (15 one-call variants) on top of the bench. 16/100 bench requests refused, 0/20 on gpt-image-2. FLUX.2-pro `DallECandidateBlockList_Prompt`: 'A sunlit Indian home courtyard ... limewash walls and a neem tree' blocked; the same without 'Indian' passed; 'Indian rooftop' passed; children prompt passed once either 'about 8 years old' or the skin-tone sentence was removed. MAI (2.6, 2.6-Flash, 2.5-Pro): full courtyard prompt blocked on output 'DallECandidateBlockList' 7/7, four shortened variants passed (trigger not isolated); digestive system blocked on input ('mainline safety policies') with a child's or a person's torso and with the bare named organ list; 'human stomach and intestines' passed. Custom content-filter policy untested.\n\n## scout-images-judge-calibration-2026-10-04\n2026-10-04, same 84 images, judges taxila-brain (gpt-5.6-sol, effort medium) and grok-4-20-reasoning given the identical image-bench rubric plus atomic per-label items, verdict in code, compared with my eye verdict. Diagrams n=44 (17 eye-fails): brain 0 false pass / 7 false fail; grok 8 false pass; AND of both 0 false pass / 7 false fail. Illustrations n=40 (2 eye-fails): brain 1 false pass (missed a signature), grok 0 false pass but over-fails style; AND 0 / 14. brain judging gpt-image-2 (same family) 9/10 vs eye 10/10: no inflation visible at this n.\n\n## scout-bedrock-images-2026-10-04\n2026-10-04, `bedrock:ListFoundationModels(byOutputModality=IMAGE)` in ap-south-1, us-east-1, us-west-2, eu-west-1, eu-central-1, ap-northeast-1, ap-southeast-1: ap-south-1 0 models; us-east-1 13 Stability edit tools; us-west-2 the same plus stability.sd3-5-large-v1:0, stable-image-core-v1:1, stable-image-ultra-v1:1; others 0. Amazon Nova Canvas, Nova Reel, Titan Image: absent everywhere. Stability text-to-image: agreementAvailability NOT_AVAILABLE (Marketplace agreement not accepted, deliberately: it accepts Stability terms for the owner), Service Quotas 0 RPM Adjustable=false, one InvokeModel (Core) ThrottlingException after 4 retries. AWS spend $0.\n",
+  "decisions": "## image-lane-gpt-image-2-holds-2026-10-04\n**gpt-image-2 medium stays the image default (owner-gpt-image-2-default-2026-10-04 holds). MAI-Image-2.6-Flash (southindia) is the measured fallback for TEXT-FREE art when gpt-image-2 latency or its 4/4 quota blocks a lane, with an automatic gpt-image-2 retry on a content-filter refusal. No generated image carries labels a child learns (diagram-router-no-baked-labels unchanged).** (2026-10-04)\n- Rationale: gpt-image-2 was the only arm right on every image by eye (10/10 diagrams, 44/44 labels, 10/10 illustrations) and never filter-blocked (0/20); Flash ties it on delivered illustrations (8/8) at 2.6x the speed (16.6 vs 42.6 s p50) and 37% of the price, in India, but swapped labels on 2/8 diagrams, followed fine instructions worse (lit the unlit bulbs, no uniforms) and was refused 4/20 (Indian courtyard, digestive system). Performance first: Flash does not win on quality, so the directive's reversal condition (latency/quota blocks AND an alternative wins on quality) is not met.\n- Reverse if: Flash (or a newer model) wins a blind human preference on >= 20 house-style prompts with <= 1 filter refusal; or reaches 20/20 by eye on a >= 20-diagram set; or the MAI models prove to be Early Access Preview (then drop Flash as fallback too: no production, no Copyright Commitment); or a custom content-filter policy removes the refusals and Flash still ties on quality.\n- Source: evals/model-scout-2026-10-04/images/ (run.mjs, analyze.py, filter-probe.mjs, results/).\n",
+  "rejected": "## rj-mai-image-25-pro\n**Tried (2026-10-04, model-scout images, n=16 images of 20 requested): MAI-Image-2.5-Pro as an image arm.** What broke: circuit #0 Switch and Bulb leaders on wires with the lever open, circuit #1 open switch with a glowing bulb, flower #1 Stamen leader on the stigma (diagrams 5/8 by eye vs MAI-2.6 6/8 and gpt-image-2 10/10); 40.9 s p50 and $0.109/image (2.8x MAI-2.6, 5.5x Flash); filter-refused 4/20 like the other MAI models; deprecates 2026-10-31.\n\n## rj-flux2-pro-labels-and-indian-prompts\n**Tried (2026-10-04, model-scout images, n=16 images of 20 requested): FLUX.2-pro for labelled diagrams and Indian scenes.** What broke: 0/10 diagrams right by eye, 14/44 labels: all four circuit leaders end on the switch, Root -> flower, misspellings Precipation / Food pohe / Separ / gibberish Shasting intestine, duplicated labels; signature scrawl on a rooftop; the Azure prompt blocklist refused 'A sunlit Indian home courtyard' (passes without 'Indian') and the two-children prompt with age and skin-tone wording (4/20 refused). Still the fastest arm (7.0 s p50) for generic text-free art with neutral wording.\n\n## rj-grok-label-judge\n**Tried (2026-10-04): grok-4-20-reasoning as the second vision judge of diagram labels (same atomic per-label rubric as taxila-brain).** What broke: 8/44 false passes against the eye, e.g. FLUX circuit #0 with Cell/Bulb/Wire leaders all ending on the switch and an unconnected cell scored 4/4 'unbroken loop'. taxila-brain had 0/44 false passes but 7 false fails. Neither replaces the human label check (rj-holistic-model-judge-gate).\n"
+ }
+}

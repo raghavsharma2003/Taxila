@@ -1,0 +1,535 @@
+<style>
+  :root {
+    --bg: #FFF9F2;
+    --primary: #FF9C5B;
+    --primary-dark: #F28A40;
+    --accent: #7ED957;
+    --wrong: #FF7C7C;
+    --text: #333333;
+    --shadow: rgba(0, 0, 0, 0.12);
+    --part-unshaded: #F2E6DA;
+    --part-shaded: #7ED957;
+  }
+
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 360px;
+    height: 640px;
+    max-width: 360px;
+    max-height: 640px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    background: var(--bg);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text);
+  }
+
+  #app {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 16px 16px 20px 16px;
+    gap: 12px;
+  }
+
+  #header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  #title {
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  #instr, #hint {
+    font-size: 16px;
+    text-align: center;
+    margin: 0;
+    line-height: 1.25;
+  }
+
+  #item-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-grow: 1;
+    width: 100%;
+    min-height: 0;
+  }
+
+  #fraction {
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    margin: 0;
+    line-height: 1.1;
+    transition: transform 220ms ease-in-out, opacity 220ms ease-in-out;
+  }
+
+  #svg-wrap {
+    width: 100%;
+    max-width: 320px;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #picture-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .part {
+    cursor: pointer;
+    transition: fill 180ms ease-in-out, stroke 180ms ease-in-out, transform 140ms ease-in-out, filter 140ms ease-in-out;
+    transform-origin: center;
+    touch-action: manipulation;
+  }
+
+  .part[data-shaded="false"] {
+    fill: var(--part-unshaded);
+    stroke: rgba(0, 0, 0, 0.08);
+  }
+
+  .part[data-shaded="true"] {
+    fill: var(--part-shaded);
+    stroke: rgba(0, 0, 0, 0.12);
+  }
+
+  .part:active {
+    transform: scale(0.96);
+    filter: brightness(0.98);
+  }
+
+  .part:focus-visible {
+    outline: none;
+  }
+
+  #controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+
+  #feedback {
+    font-size: 17px;
+    font-weight: 600;
+    text-align: center;
+    margin: 0;
+    min-height: 24px;
+    line-height: 1.2;
+    transition: opacity 200ms ease-in-out, transform 200ms ease-in-out, color 200ms ease-in-out;
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  #feedback.show {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+
+  #feedback.correct {
+    color: var(--accent);
+  }
+
+  #feedback.wrong {
+    color: var(--wrong);
+  }
+
+  #check-btn {
+    width: 100%;
+    max-width: 320px;
+    height: 52px;
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #FFFFFF;
+    background: var(--primary);
+    border: none;
+    border-radius: 14px;
+    box-shadow: 0 4px 10px var(--shadow);
+    transition: background 160ms ease-in-out, transform 140ms ease-in-out, box-shadow 160ms ease-in-out, opacity 160ms ease-in-out;
+    touch-action: manipulation;
+    cursor: pointer;
+  }
+
+  #check-btn:active {
+    background: var(--primary-dark);
+    transform: scale(0.98);
+    box-shadow: 0 2px 6px var(--shadow);
+  }
+
+  #check-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  #done-screen {
+    position: absolute;
+    inset: 0;
+    width: 360px;
+    height: 640px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    background: var(--bg);
+    padding: 20px;
+    z-index: 10;
+  }
+
+  #done-screen.show {
+    display: flex;
+    animation: fade-in 280ms ease-in-out forwards;
+  }
+
+  #done-text {
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+    margin: 0;
+    line-height: 1.25;
+  }
+
+  .celebrate {
+    animation: pop 360ms ease-in-out;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes pop {
+    0% {
+      transform: scale(1);
+    }
+    40% {
+      transform: scale(1.08);
+    }
+    70% {
+      transform: scale(0.98);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @media (max-width: 360px) {
+    html, body, #app, #done-screen {
+      width: 100vw;
+    }
+  }
+</style>
+
+<div id="app">
+  <header id="header">
+    <h1 id="title"></h1>
+    <p id="instr"></p>
+    <p id="hint"></p>
+  </header>
+  <main id="item-container" data-item="">
+    <p id="fraction"></p>
+    <div id="svg-wrap">
+      <svg id="picture-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 280" preserveAspectRatio="xMidYMid meet">
+      </svg>
+    </div>
+  </main>
+  <div id="controls">
+    <p id="feedback"></p>
+    <button id="check-btn" data-action="check"></button>
+  </div>
+  <div id="done-screen">
+    <p id="done-text"></p>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const app = document.getElementById('app');
+    const titleEl = document.getElementById('title');
+    const instrEl = document.getElementById('instr');
+    const hintEl = document.getElementById('hint');
+    const itemContainer = document.getElementById('item-container');
+    const fractionEl = document.getElementById('fraction');
+    const svg = document.getElementById('picture-svg');
+    const feedbackEl = document.getElementById('feedback');
+    const checkBtn = document.getElementById('check-btn');
+    const doneScreen = document.getElementById('done-screen');
+    const doneTextEl = document.getElementById('done-text');
+
+    const params = Studio.params || {};
+    const items = Array.isArray(params.items) ? params.items : [];
+    const pictureMode = (params.picture === 'bar') ? 'bar' : 'pizza';
+
+    let currentIndex = 0;
+    let shadedCount = 0;
+    let isAnswering = false;
+    let verdictPending = false;
+
+    function t(key) {
+      try {
+        return Studio.t(key);
+      } catch (e) {
+        return '';
+      }
+    }
+
+    function setTexts() {
+      titleEl.textContent = t('title');
+      instrEl.textContent = t('instr');
+      hintEl.textContent = t('hint');
+      checkBtn.textContent = t('check');
+      doneTextEl.textContent = t('done');
+    }
+
+    function clearFeedback() {
+      feedbackEl.classList.remove('show', 'correct', 'wrong');
+      feedbackEl.textContent = '';
+    }
+
+    function showFeedback(type) {
+      clearFeedback();
+      if (type === 'right') {
+        feedbackEl.textContent = t('right');
+        feedbackEl.classList.add('correct', 'show');
+      } else if (type === 'wrong') {
+        feedbackEl.textContent = t('wrong');
+        feedbackEl.classList.add('wrong', 'show');
+      }
+    }
+
+    function celebrate() {
+      fractionEl.classList.remove('celebrate');
+      void fractionEl.offsetWidth;
+      fractionEl.classList.add('celebrate');
+      if (svg) {
+        svg.classList.remove('celebrate');
+        void svg.offsetWidth;
+        svg.classList.add('celebrate');
+      }
+    }
+
+    function renderPizza(d) {
+      svg.innerHTML = '';
+      if (d <= 0) return;
+      const size = 280;
+      const cx = size / 2;
+      const cy = size / 2;
+      const rOuter = 120;
+      const rInner = 0;
+      const total = Math.max(1, d);
+      const startAngle = -Math.PI / 2;
+      const sliceAngle = (2 * Math.PI) / total;
+      const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      for (let i = 0; i < total; i++) {
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const a0 = startAngle + i * sliceAngle;
+        const a1 = a0 + sliceAngle;
+        const x0 = cx + rOuter * Math.cos(a0);
+        const y0 = cy + rOuter * Math.sin(a0);
+        const x1 = cx + rOuter * Math.cos(a1);
+        const y1 = cy + rOuter * Math.sin(a1);
+        let dPath;
+        if (total === 1) {
+          dPath = 'M ' + cx + ',' + cy + ' m -' + rOuter + ',0 a ' + rOuter + ',' + rOuter + ' 0 1,0 ' + (rOuter * 2) + ',0 a ' + rOuter + ',' + rOuter + ' 0 1,0 -' + (rOuter * 2) + ',0';
+        } else {
+          const largeArc = sliceAngle > Math.PI ? 1 : 0;
+          dPath = [
+            'M', cx, cy,
+            'L', x0, y0,
+            'A', rOuter, rOuter, 0, largeArc, 1, x1, y1,
+            'Z'
+          ].join(' ');
+        }
+        path.setAttribute('d', dPath);
+        path.setAttribute('class', 'part');
+        path.setAttribute('data-part', String(i));
+        path.setAttribute('data-shaded', 'false');
+        path.setAttribute('tabindex', '0');
+        path.setAttribute('role', 'button');
+        path.setAttribute('aria-pressed', 'false');
+        path.addEventListener('click', () => togglePart(i));
+        group.appendChild(path);
+      }
+      svg.appendChild(group);
+    }
+
+    function renderBar(d) {
+      svg.innerHTML = '';
+      if (d <= 0) return;
+      const size = 280;
+      const total = Math.max(1, d);
+      const pad = 20;
+      const barW = size - pad * 2;
+      const barH = 70;
+      const y = (size - barH) / 2;
+      const segW = barW / total;
+      const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      for (let i = 0; i < total; i++) {
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        const x = pad + i * segW;
+        rect.setAttribute('x', String(x));
+        rect.setAttribute('y', String(y));
+        rect.setAttribute('width', String(Math.max(1, segW)));
+        rect.setAttribute('height', String(barH));
+        rect.setAttribute('rx', '10');
+        rect.setAttribute('ry', '10');
+        rect.setAttribute('class', 'part');
+        rect.setAttribute('data-part', String(i));
+        rect.setAttribute('data-shaded', 'false');
+        rect.setAttribute('tabindex', '0');
+        rect.setAttribute('role', 'button');
+        rect.setAttribute('aria-pressed', 'false');
+        rect.addEventListener('click', () => togglePart(i));
+        group.appendChild(rect);
+      }
+      const outline = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      outline.setAttribute('x', String(pad));
+      outline.setAttribute('y', String(y));
+      outline.setAttribute('width', String(barW));
+      outline.setAttribute('height', String(barH));
+      outline.setAttribute('rx', '10');
+      outline.setAttribute('ry', '10');
+      outline.setAttribute('fill', 'none');
+      outline.setAttribute('stroke', 'rgba(0,0,0,0.12)');
+      outline.setAttribute('stroke-width', '2');
+      group.appendChild(outline);
+      svg.appendChild(group);
+    }
+
+    function togglePart(index) {
+      if (verdictPending) return;
+      const part = svg.querySelector('.part[data-part="' + String(index) + '"]');
+      if (!part) return;
+      const shadedNow = part.getAttribute('data-shaded') === 'true';
+      if (shadedNow) {
+        part.setAttribute('data-shaded', 'false');
+        part.setAttribute('aria-pressed', 'false');
+        shadedCount = Math.max(0, shadedCount - 1);
+        Studio.event('part_unshade', { index: index });
+      } else {
+        part.setAttribute('data-shaded', 'true');
+        part.setAttribute('aria-pressed', 'true');
+        shadedCount = shadedCount + 1;
+        Studio.event('part_shade', { index: index });
+      }
+      clearFeedback();
+    }
+
+    function renderItem() {
+      if (currentIndex < 0 || currentIndex >= items.length) {
+        showDone();
+        return;
+      }
+      const item = items[currentIndex];
+      itemContainer.setAttribute('data-item', item.id || ('i' + (currentIndex + 1)));
+      fractionEl.textContent = (item.n || 0) + '/' + (item.d || 0);
+      shadedCount = 0;
+      clearFeedback();
+      verdictPending = false;
+      checkBtn.disabled = false;
+      if (pictureMode === 'bar') {
+        renderBar(item.d || 0);
+      } else {
+        renderPizza(item.d || 0);
+      }
+      Studio.event('item_show', { id: item.id, n: item.n, d: item.d });
+    }
+
+    function goNext() {
+      currentIndex = currentIndex + 1;
+      if (currentIndex >= items.length) {
+        showDone();
+      } else {
+        window.setTimeout(() => {
+          renderItem();
+        }, 420);
+      }
+    }
+
+    function showDone() {
+      doneScreen.classList.add('show');
+      Studio.event('done_show', {});
+      try {
+        Studio.done();
+      } catch (e) {}
+    }
+
+    checkBtn.addEventListener('click', function () {
+      if (isAnswering || verdictPending) return;
+      const item = items[currentIndex];
+      if (!item) return;
+      isAnswering = true;
+      checkBtn.disabled = true;
+      verdictPending = true;
+      Studio.event('check', { id: item.id, n_answer: shadedCount, d: item.d });
+      try {
+        Studio.answer({ n: shadedCount, d: item.d });
+      } catch (e) {
+        isAnswering = false;
+        verdictPending = false;
+        checkBtn.disabled = false;
+      }
+    });
+
+    try {
+      Studio.onVerdict(function (res) {
+        const correct = !!(res && res.correct);
+        if (correct) {
+          showFeedback('right');
+          celebrate();
+          isAnswering = false;
+          window.setTimeout(() => {
+            verdictPending = false;
+            goNext();
+          }, 620);
+        } else {
+          showFeedback('wrong');
+          isAnswering = false;
+          verdictPending = false;
+          checkBtn.disabled = false;
+        }
+      });
+    } catch (e) {}
+
+    function init() {
+      setTexts();
+      renderItem();
+      try {
+        Studio.ready();
+      } catch (e) {}
+    }
+
+    init();
+  })();
+</script>

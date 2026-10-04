@@ -14,7 +14,7 @@ for l in open(R + '.env.local'):
     l = l.strip()
     if '=' in l and not l.startswith('#'):
         k, v = l.split('=', 1); env[k] = v.strip().strip('"')
-FAMILIES = {'gpt': env['DEPLOY_BRAIN'], 'grok': 'grok-4-20-non-reasoning', 'mistral': 'Mistral-Large-3'}
+FAMILIES = {'gpt': env['DEPLOY_BRAIN'], 'grok': 'grok-4-20-non-reasoning', 'grokfast': 'grok-4-1-fast-non-reasoning', 'mistral': 'Mistral-Large-3'}
 PROMPT = open(os.path.join(HERE, 'prompt.txt')).read()
 C = R + 'docs/design/teacher/stylised/concepts/'
 REF = R + 'docs/design/teacher/stylised/build/refs/'
@@ -111,8 +111,11 @@ if __name__ == '__main__':
         stim = [('j_neutral', C + 'c-front.webp', 'neutral, warm resting smile'), ('j_smile', C + 'c-happy.webp', 'happy smile'),
                 ('j_aa', C + 'c-talking.webp', 'talking (mouth open on "aa")'), ('j_listen', C + 'c-listening.webp', 'listening attentively'),
                 ('j_think', C + 'c-thinking.webp', 'thinking'), ('j_q3', REF + 'q3-left.webp', 'neutral, three-quarter view')]
+        # sanity battery (2026-10-04): grok-4.20 passes at 1024 (16/16 neg, 8/8 pos) but accepts only 6/8 ref-vs-ref
+        # pairs at 128, so it is used at 1024 only; GPT passes 16/16 + 16/16 at both sizes
+        SIZES = {'gpt': (1024, 128), 'grok': (1024,), 'mistral': (1024,)}
         jobs = [{'family': f, 'size': s, 'stim': n, 'state': st, 'ref': ref, 'cand': f'{sd}/pose_{n}.png'}
-                for f in fams for s in (1024, 128) for n, ref, st in stim]
+                for f in fams for s in SIZES[f] for n, ref, st in stim]
         res = run_jobs(jobs, out)
         rows = {}
         for r in res:

@@ -1,0 +1,568 @@
+<style>
+  :root {
+    --bg: #FFF7EC;
+    --text: #4A3C31;
+    --accent: #F28C52;
+    --shade: #7FC97F;
+    --correct: #4C9A5D;
+    --wrong: #C85C5C;
+    --btn-bg: #F2A65A;
+    --btn-text: #4A3C31;
+    --outline: #E6D8C5;
+  }
+
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  .app {
+    width: 360px;
+    min-height: 640px;
+    max-width: 360px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 12px 16px 12px;
+    position: relative;
+  }
+
+  .header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+  }
+
+  .title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  .instr, .hint {
+    font-size: 14px;
+    line-height: 1.35;
+    margin: 0;
+    opacity: 0.95;
+  }
+
+  .item-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    flex: 1 1 auto;
+    justify-content: flex-start;
+  }
+
+  .fraction {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 4px 0 0 0;
+    color: var(--text);
+    text-align: center;
+    letter-spacing: 0.2px;
+  }
+
+  .svg-wrap {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 0;
+  }
+
+  svg {
+    width: 240px;
+    height: 240px;
+    max-width: 240px;
+    max-height: 240px;
+    overflow: visible;
+  }
+
+  .part {
+    cursor: pointer;
+    transition: fill 160ms ease-in-out, transform 120ms ease-out, filter 160ms ease-in-out;
+    transform-origin: center;
+    outline: none;
+  }
+
+  .part:active {
+    transform: scale(0.96);
+    filter: brightness(1.05);
+  }
+
+  .part.shaded {
+    fill: var(--shade);
+  }
+
+  .part.unshaded {
+    fill: #FFFFFF;
+  }
+
+  .part.outline {
+    stroke: var(--text);
+    stroke-width: 2.5;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .bar-part {
+    cursor: pointer;
+    transition: fill 160ms ease-in-out, transform 120ms ease-out, filter 160ms ease-in-out;
+    transform-origin: center;
+    outline: none;
+  }
+
+  .bar-part:active {
+    transform: scale(0.985);
+    filter: brightness(1.05);
+  }
+
+  .bar-part.shaded {
+    fill: var(--shade);
+  }
+
+  .bar-part.unshaded {
+    fill: #FFFFFF;
+  }
+
+  .bar-part.outline {
+    stroke: var(--text);
+    stroke-width: 2.5;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .bar-frame {
+    fill: none;
+    stroke: var(--text);
+    stroke-width: 2.5;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .check-wrap {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 0 4px 0;
+  }
+
+  .check-btn {
+    min-width: 168px;
+    min-height: 48px;
+    height: 48px;
+    padding: 0 16px;
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    border: 2.5px solid rgba(74, 60, 49, 0.16);
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 120ms ease-out, filter 140ms ease-in-out, box-shadow 140ms ease-in-out, background 140ms ease-in-out;
+    box-shadow: 0 4px 10px rgba(242, 140, 82, 0.16);
+    will-change: transform;
+  }
+
+  .check-btn:active {
+    transform: scale(0.96);
+    filter: brightness(1.04);
+    box-shadow: 0 2px 6px rgba(242, 140, 82, 0.22);
+  }
+
+  .check-btn[disabled] {
+    opacity: 0.55;
+    cursor: not-allowed;
+    filter: none;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .feedback {
+    width: 100%;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.25;
+    padding: 6px 8px;
+    border-radius: 12px;
+    transition: opacity 180ms ease-in-out, transform 180ms ease-in-out, background 180ms ease-in-out, color 180ms ease-in-out;
+    opacity: 0;
+    transform: translateY(4px);
+    pointer-events: none;
+  }
+
+  .feedback.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .feedback.correct {
+    background: rgba(76, 154, 93, 0.12);
+    color: var(--correct);
+  }
+
+  .feedback.wrong {
+    background: rgba(200, 92, 92, 0.12);
+    color: var(--wrong);
+  }
+
+  .feedback.neutral {
+    background: rgba(74, 60, 49, 0.08);
+    color: var(--text);
+  }
+
+  .done-screen {
+    position: absolute;
+    inset: 0;
+    width: 360px;
+    min-height: 640px;
+    max-width: 360px;
+    margin: 0 auto;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 24px 16px;
+    background: var(--bg);
+    z-index: 5;
+    text-align: center;
+  }
+
+  .done-screen.show {
+    display: flex;
+    animation: fade-in 220ms ease-in-out both;
+  }
+
+  .done-title {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text);
+  }
+
+  .done-sub {
+    font-size: 14px;
+    margin: 0;
+    opacity: 0.95;
+    line-height: 1.4;
+  }
+
+  .celebrate {
+    animation: pop 260ms ease-out both;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes pop {
+    0%   { transform: scale(0.94); }
+    60%  { transform: scale(1.04); }
+    100% { transform: scale(1.0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .part, .bar-part, .check-btn, .feedback, .done-screen, .celebrate {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+</style>
+
+<div class="app" id="app">
+  <header class="header">
+    <h1 class="title" id="title"></h1>
+    <p class="instr" id="instr"></p>
+    <p class="hint" id="hint"></p>
+  </header>
+
+  <main class="item-container" id="item-container" data-item="">
+    <p class="fraction" id="fraction"></p>
+    <div class="svg-wrap" id="svg-wrap">
+      <svg id="visual" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" preserveAspectRatio="xMidYMid meet" aria-hidden="true" role="img"></svg>
+    </div>
+  </main>
+
+  <div class="check-wrap">
+    <button class="check-btn" id="check-btn" data-action="check" type="button"></button>
+  </div>
+
+  <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+
+  <section class="done-screen" id="done-screen">
+    <h2 class="done-title" id="done-title"></h2>
+    <p class="done-sub" id="done-sub"></p>
+  </section>
+</div>
+
+<script>
+  (function () {
+    const params = window.Studio && window.Studio.params ? window.Studio.params : { items: [], picture: "pizza-or-bar" };
+    const t = window.Studio && typeof window.Studio.t === "function" ? window.Studio.t.bind(window.Studio) : function (k) { return k; };
+    const answer = window.Studio && typeof window.Studio.answer === "function" ? window.Studio.answer.bind(window.Studio) : function () {};
+    const onVerdict = window.Studio && typeof window.Studio.onVerdict === "function" ? window.Studio.onVerdict.bind(window.Studio) : function () {};
+    const event = window.Studio && typeof window.Studio.event === "function" ? window.Studio.event.bind(window.Studio) : function () {};
+    const ready = window.Studio && typeof window.Studio.ready === "function" ? window.Studio.ready.bind(window.Studio) : function () {};
+    const done = window.Studio && typeof window.Studio.done === "function" ? window.Studio.done.bind(window.Studio) : function () {};
+
+    const items = Array.isArray(params.items) ? params.items.slice() : [];
+    const pictureMode = params.picture || "pizza-or-bar";
+
+    const titleEl = document.getElementById("title");
+    const instrEl = document.getElementById("instr");
+    const hintEl  = document.getElementById("hint");
+    const itemContainer = document.getElementById("item-container");
+    const fractionEl = document.getElementById("fraction");
+    const svg = document.getElementById("visual");
+    const checkBtn = document.getElementById("check-btn");
+    const feedbackEl = document.getElementById("feedback");
+    const doneScreen = document.getElementById("done-screen");
+    const doneTitleEl = document.getElementById("done-title");
+    const doneSubEl   = document.getElementById("done-sub");
+
+    let currentIndex = 0;
+    let isChecking = false;
+    let verdictHandledForAnswer = false;
+
+    function setText() {
+      titleEl.textContent = t("title");
+      instrEl.textContent = t("instr");
+      hintEl.textContent  = t("hint");
+      checkBtn.textContent = t("check");
+      doneTitleEl.textContent = t("done");
+      doneSubEl.textContent   = t("done");
+    }
+
+    function renderFeedback(type, key) {
+      feedbackEl.classList.remove("show", "correct", "wrong", "neutral");
+      if (!key) {
+        feedbackEl.textContent = "";
+        return;
+      }
+      feedbackEl.textContent = t(key);
+      if (type === "correct") feedbackEl.classList.add("correct");
+      else if (type === "wrong")  feedbackEl.classList.add("wrong");
+      else feedbackEl.classList.add("neutral");
+      requestAnimationFrame(function () {
+        feedbackEl.classList.add("show");
+      });
+    }
+
+    function hideFeedback() {
+      feedbackEl.classList.remove("show");
+    }
+
+    function countShaded() {
+      const parts = svg.querySelectorAll(".part, .bar-part");
+      let n = 0;
+      for (let i = 0; i < parts.length; i++) {
+        if (parts[i].getAttribute("data-shaded") === "true") n++;
+      }
+      return n;
+    }
+
+    function setShaded(el, shaded) {
+      if (!el) return;
+      el.setAttribute("data-shaded", shaded ? "true" : "false");
+      if (el.classList.contains("part")) {
+        el.classList.toggle("shaded", !!shaded);
+        el.classList.toggle("unshaded", !shaded);
+      } else if (el.classList.contains("bar-part")) {
+        el.classList.toggle("shaded", !!shaded);
+        el.classList.toggle("unshaded", !shaded);
+      }
+    }
+
+    function clearParts() {
+      while (svg.firstChild) svg.removeChild(svg.firstChild);
+    }
+
+    function renderPizza(d) {
+      clearParts();
+      const cx = 120, cy = 120, r = 96;
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      for (let i = 0; i < d; i++) {
+        const startAngle = (i * 2 * Math.PI) / d;
+        const endAngle   = ((i + 1) * 2 * Math.PI) / d;
+        const largeArc = (endAngle - startAngle) > Math.PI ? 1 : 0;
+        const x1 = cx + r * Math.cos(startAngle);
+        const y1 = cy + r * Math.sin(startAngle);
+        const x2 = cx + r * Math.cos(endAngle);
+        const y2 = cy + r * Math.sin(endAngle);
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const dPath = [
+          "M", cx, cy,
+          "L", x1, y1,
+          "A", r, r, 0, largeArc, 1, x2, y2,
+          "Z"
+        ].join(" ");
+        path.setAttribute("d", dPath);
+        path.setAttribute("class", "part unshaded outline");
+        path.setAttribute("data-part", String(i));
+        path.setAttribute("data-shaded", "false");
+        g.appendChild(path);
+      }
+      svg.appendChild(g);
+    }
+
+    function renderBar(d) {
+      clearParts();
+      const frame = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      frame.setAttribute("x", 20);
+      frame.setAttribute("y", 90);
+      frame.setAttribute("width", 200);
+      frame.setAttribute("height", 60);
+      frame.setAttribute("rx", 10);
+      frame.setAttribute("ry", 10);
+      frame.setAttribute("class", "bar-frame");
+      svg.appendChild(frame);
+      const segW = 200 / Math.max(1, d);
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      for (let i = 0; i < d; i++) {
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", 20 + i * segW);
+        rect.setAttribute("y", 90);
+        rect.setAttribute("width", Math.max(1, segW));
+        rect.setAttribute("height", 60);
+        rect.setAttribute("rx", 0);
+        rect.setAttribute("ry", 0);
+        rect.setAttribute("class", "bar-part unshaded outline");
+        rect.setAttribute("data-part", String(i));
+        rect.setAttribute("data-shaded", "false");
+        g.appendChild(rect);
+      }
+      svg.appendChild(g);
+    }
+
+    function renderCurrent() {
+      if (currentIndex < 0 || currentIndex >= items.length) return;
+      const item = items[currentIndex];
+      itemContainer.setAttribute("data-item", item.id || ("i" + (currentIndex + 1)));
+      const n = (typeof item.n === "number" ? item.n : 0);
+      const dCount = (typeof item.d === "number" ? item.d : 1);
+      fractionEl.textContent = n + "/" + dCount;
+      if (pictureMode === "bar") {
+        renderBar(dCount);
+      } else {
+        renderPizza(dCount);
+      }
+      hideFeedback();
+      isChecking = false;
+      verdictHandledForAnswer = false;
+      checkBtn.removeAttribute("disabled");
+      event("item_shown", { id: item.id || ("i" + (currentIndex + 1)), index: currentIndex, n: n, d: dCount, picture: pictureMode });
+    }
+
+    function goNextOrDone() {
+      if (currentIndex + 1 < items.length) {
+        currentIndex++;
+        setTimeout(function () {
+          renderCurrent();
+        }, 280);
+      } else {
+        showDone();
+      }
+    }
+
+    function showDone() {
+      doneScreen.classList.add("show");
+      event("activity_done", { itemsCount: items.length });
+      setTimeout(function () {
+        try { done(); } catch (e) {}
+      }, 240);
+    }
+
+    svg.addEventListener("click", function (e) {
+      if (isChecking) return;
+      let target = e.target;
+      if (!target) return;
+      if (!(target.classList.contains("part") || target.classList.contains("bar-part"))) return;
+      const shadedNow = (target.getAttribute("data-shaded") === "true");
+      setShaded(target, !shadedNow);
+      hideFeedback();
+      event("part_toggled", { part: target.getAttribute("data-part"), shaded: (!shadedNow).toString() });
+    });
+
+    checkBtn.addEventListener("click", function () {
+      if (isChecking) return;
+      const item = items[currentIndex];
+      if (!item) return;
+      const dCount = (typeof item.d === "number" ? item.d : 1);
+      const nCount = countShaded();
+      isChecking = true;
+      checkBtn.setAttribute("disabled", "disabled");
+      verdictHandledForAnswer = false;
+      event("check_pressed", { id: item.id || ("i" + (currentIndex + 1)), n_answer: nCount, d: dCount });
+      try {
+        answer({ n: nCount, d: dCount });
+      } catch (e) {
+        isChecking = false;
+        checkBtn.removeAttribute("disabled");
+      }
+    });
+
+    onVerdict(function (verdict) {
+      if (verdictHandledForAnswer) return;
+      verdictHandledForAnswer = true;
+      const correct = !!verdict.correct;
+      if (correct) {
+        renderFeedback("correct", "right");
+        itemContainer.classList.add("celebrate");
+        event("verdict_correct", {});
+        setTimeout(function () {
+          itemContainer.classList.remove("celebrate");
+          goNextOrDone();
+        }, 620);
+      } else {
+        renderFeedback("wrong", "wrong");
+        event("verdict_wrong", {});
+        setTimeout(function () {
+          isChecking = false;
+          checkBtn.removeAttribute("disabled");
+        }, 520);
+      }
+    });
+
+    function init() {
+      setText();
+      if (items.length === 0) {
+        showDone();
+        return;
+      }
+      currentIndex = 0;
+      renderCurrent();
+      try { ready(); } catch (e) {}
+    }
+
+    init();
+  })();
+</script>

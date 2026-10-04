@@ -300,6 +300,9 @@ Script: `scripts/region/provision.mjs` (safe to re-run; `--dry` checks only the 
 | 2026-10-04 | `taxila-fast-bg` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
 | 2026-10-04 | `taxila-studio-sol` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
 
+| 2026-10-04 | `taxila-sin-dbcopy` (created and DELETED by each `db-copy.mjs` run; 3 runs: 1 drill copy (auth failed), 2 migrations checks (1 TLS-check false negative, fixed; 1 OK)) | ACA job (Manual) in taxila-sin-env | southindia | Port |
+| 2026-10-04 | `dbcopy_rehearsal` (empty database on Neon branch `restore-drill-2026-10-04`; it goes away when the branch expires 2026-10-05 08:00 UTC; not deleted by hand: Neon deletes need owner approval) | Neon database | aws-us-east-1 | Port |
+
 ## §5 Spend estimates (Azure retail, South India, read 2026-10-04 from prices.azure.com; monthly = 730 h)
 
 | item | price | est. / month |
@@ -315,6 +318,7 @@ Script: `scripts/region/provision.mjs` (safe to re-run; `--dry` checks only the 
 | ACR Basic in SI (optional) | $0.1666/day | ~$5 |
 | Foundry twins (GlobalStandard), 17 created 2026-10-04 | per token, same prices as eastus2. No fixed cost. Verification run cost < $1 (≈100 tiny chat/embed/STT calls + 2 images: FLUX.2-pro 512² ≈ $0.03, Kontext 1024² ≈ $0.04) | $0 fixed |
 | DragonHD TTS (centralindia) | ~$22 / 1M chars (MODEL-ROUTER) | usage-based |
+| `taxila-sin-dbcopy` job runs (1 vCPU / 2 GiB, ~1-3 min each; a full 101 MB copy estimated ~5-10 min) | ACA Consumption per second | < $0.05 per run (unmeasured bill; 3 runs so far) |
 | **Fixed new spend** | | **~$290/mo** (~$495 with HA) |
 | Rehearsal overlap | eastus2 stack keeps running until cutover | existing spend continues |
 
@@ -388,3 +392,159 @@ After a raise lands, re-run `node scripts/region/foundry-si.mjs --deploy --verif
 missing twins under the same names. Realtime voice verification is not wired in the script yet (the live-transcribe
 twin is verified through the transcription socket).
 
+
+## §7 Port: code that makes the move env-only (2026-10-04)
+
+Nothing here touched `taxila-web` or wrote to Neon prod. Nothing was committed or pushed.
+
+### 7.1 Server: one endpoint config module
+
+`server/endpoints.js` is now the only place the server picks an Azure account for a model lane. Every reader of
+`AZURE_OPENAI_ENDPOINT` goes through it: `server/azure.js` (chat, realtime client secret, batch TTS),
+`server/voice/speech.js` (streamed TTS, batch transcription), `server/routes/lesson.js` and `server/routes/voice.js`
+(the `base` returned to the browser), `server/forge/g2/model.js` (Responses) and `server/forge/g2/safety.js` (Content
+Safety host).
+
+| lane | used by | India setting |
+|---|---|---|
+| CHAT | reply, classify, grade, reports, content (`chat()`) | primary (southindia) |
+| REALTIME | `mintRealtimeSecret` for a voice session + its browser `base` | **eastus2** until the realtime quota raise (§6.2); then southindia |
+| TRANSCRIBE | the cascade transcription session (mint + `base`) and push-to-talk batch transcription | primary (`taxila-transcribe` twin exists) |
+| TTS | gpt-4o-mini-tts batch and streamed | **eastus2** (not sold in southindia) |
+| IMAGE | gpt-image-2 / sora (no server caller today) | **eastus2** |
+| RESPONSES | Forge builder (`taxila-codex`) | primary |
+| SAFETY | Azure AI Content Safety | primary. Checked: `contentsafety/text:analyze` returned 200 on `taxila-ai-southindia` (n=1, 2026-10-04) |
+
+Env: `AZURE_OPENAI_ENDPOINT_<LANE>` + `AZURE_OPENAI_API_KEY_<LANE>`. **With none set, every lane resolves to exactly
+`AZURE_OPENAI_ENDPOINT` + `AZURE_OPENAI_API_KEY`, so behaviour is unchanged.** A lane override on another host
+without its own key throws a config error instead of sending one account's key to another. The realtime `base` always
+comes from the same lane that minted the ephemeral key (`realtimeLane(session)`): a key minted on one account does not
+open calls on the other. Speech (DragonHD) env is `AZURE_SPEECH_REGION` + `AZURE_SPEECH_KEY` (`speechConfig()`). No
+server lane calls Speech yet.
+The test is `tests/endpoints.test.mjs` (8 cases).
+
+### 7.2 Database driver
+
+- `DB_DRIVER=pg` works with Azure Database for PostgreSQL and `sslmode=require`. pg 8.23 treats `require` as
+  verify-full: it checks the certificate chain and the hostname against Node's CA store, which holds the DigiCert G2
+  and Microsoft 2017 roots Azure PG presents.
+- `server/db.js` now imports `@neondatabase/serverless` only on the non-pg path, and exports `pgPoolConfig()`. That
+  function refuses `sslmode=disable/allow/prefer`.
+- `server/conductor/sweep.js` (the nightly ops job's test-account sweep) used Neon HTTP unconditionally. Under
+  `DB_DRIVER=pg` it now runs the same statements in one pg BEGIN/COMMIT.
+- Measured locally against a TLS-only PostgreSQL 16 with a private CA, with a module hook that throws if
+  `@neondatabase/serverless` is resolved:
+  - `server/db.js` queries succeeded, and `pg_stat_ssl` reported TLSv1.3.
+  - The sweep deleted 1 of 1 eligible test guardians and kept the young one.
+  - With the CA not trusted, the connection was refused ("unable to verify the first certificate").
+- **Not measured: no Azure PG server exists yet (§2.5).**
+- Still Neon-HTTP-only, in files outside this workflow: `scripts/migrate.mjs`, `infra/gate.mjs` `migrationsGate`
+  and `infra/restore-drill.mjs`. They cannot reach a private server anyway. `deploy-azure.mjs` takes migrations
+  evidence from inside the VNet instead (7.4). Running `migrate.mjs` against Azure PG needs it ported to pg AND run
+  from inside the VNet. The restored `schema_migrations` already carries the applied set.
+
+### 7.3 `scripts/region/db-copy.mjs` (+ `db-copy.sh`, the in-job half)
+
+This is a one-off ACA job `taxila-sin-dbcopy` in `taxila-sin-env` (VNet), running image
+`docker.io/library/postgres:17`. The script creates the job, starts it, reads the `DBCOPY_*` lines back from
+`taxila-sin-logs`, and deletes the job and its secrets afterwards (`--keep-job` keeps them).
+
+Modes:
+- **copy** (the default) checks that the target has no public tables (`--replace` drops and recreates `public`).
+  It then installs the source's extensions, runs `pg_dump -Fc -n public` with `--snapshot`, and runs `pg_restore`
+  with `--single-transaction --exit-on-error`, then verifies.
+- `--verify-only` compares only.
+- `--check-migrations` reads the target only. Its report is what `deploy-azure.mjs --migrations-evidence` accepts.
+
+Guarantees:
+- **The source is read-only.** Every source session sets `default_transaction_read_only=on`. The dump and the source
+  checksums share ONE exported snapshot, so they describe the same instant while prod keeps writing.
+- **Target writes happen only in copy mode.** The verify and migrations sessions are read-only, and copy mode refuses
+  the Neon prod host.
+- **Verification** covers, per table, the row count plus an order-independent md5 of every row's text form (UTC, ISO
+  DateStyle). It also compares sequence `last_value`s, checks that target `schema_migrations` covers db/migrations of
+  `--sha`, and checks that the source and target migration sets are equal.
+- **TLS** is verify-full against the roots embedded from Node's store (ISRG X1/X2, DigiCert Global Root CA/G2/G3,
+  Microsoft RSA/ECC 2017), confirmed client-side with `\conninfo`. `pg_stat_ssl` reads `f` behind Neon's
+  TLS-terminating proxy, so it is reported and not required.
+
+Measured:
+- **Local, PG16 with TLS (verify-full against a private CA), 57 tables from all 16 migrations, 500 guardians and 500
+  children:**
+  - copy OK: 57 of 57 tables matched, sequences matched, dump 0.17 MB, 3 s total.
+  - A second copy without `--replace` was refused (`target_not_empty`).
+  - After one row of the target was tampered with, verify flagged exactly `child`.
+  - `--replace` copy was OK.
+  - With the wrong CA: `connect_target` "certificate verify failed".
+  - With 015 deliberately unrecorded, copy reported `missingMigrations: 015_open_now.sql` and `ok:false`.
+- **In the VNet (taxila-sin-env, 2026-10-04):**
+  - The image pulled, egress to Neon worked, and the result lines came back through Log Analytics. The job was
+    deleted after every run.
+  - **`--check-migrations --target DATABASE_URL` (Neon prod, read-only)** read client TLSv1.3 (verify-full) and
+    server 17.11, with 13 migrations applied. Missing against HEAD 12219a9: `012_pending_grade.sql`,
+    `013_reteach_resolution.sql`, `015_open_now.sql`. That agrees with `deploy-azure.mjs`'s own migrations gate from
+    the sandbox (the default dry-run refused on the same three files). **Prod must have these applied (Wave 1)
+    before the final copy, or the copy carries the same gap.**
+  - **A copy rehearsal from branch `restore-drill-2026-10-04` into `dbcopy_rehearsal` failed at authentication.**
+    The branch's `taxila_owner` password is not the one in `DATABASE_URL`. I did not pull a branch credential into
+    the session. Plumbing up to and including TLS is proven, but **a real dump/restore of the 101 MB database inside
+    Azure has NOT run yet.** It needs either the PG server (§2.5) or a branch URL in `.env.local`, for example
+    `NEON_DRILL_URL`, then:
+    `node scripts/region/db-copy.mjs --source NEON_DRILL_URL --target <throwaway> --allow-neon-target`.
+
+Commands:
+```
+NODE_USE_ENV_PROXY=1 node scripts/region/db-copy.mjs --dry-run                       # plan only
+NODE_USE_ENV_PROXY=1 node scripts/region/db-copy.mjs                                 # Neon prod → $AZURE_PG_SIN_URL, verify
+NODE_USE_ENV_PROXY=1 node scripts/region/db-copy.mjs --replace                       # cutover: re-copy after the write freeze
+NODE_USE_ENV_PROXY=1 node scripts/region/db-copy.mjs --check-migrations [--sha REV]  # deploy evidence
+```
+Reports go to `node_modules/.cache/india-move/db-copy-<mode>-<ts>.json`. They hold hosts, counts and checksums,
+never a URL or password.
+
+### 7.4 `scripts/deploy-azure.mjs`
+
+With no new flag, the deploy is unchanged. Re-checked with `--dry-run`: it reached the same gate as before, which
+refused because prod lacks 012/013/015.
+
+New flags:
+- `--rg`, `--region` and `--env` are asserted against the app. `--registry` defaults to `taxilacr`.
+- `--create [--create-from taxila-web]` creates a rehearsal app. It only READS taxila-web's env and secrets, and it
+  refuses `taxila-web` as a target.
+- `--set NAME=VALUE` and `--secret NAME=LOCALVAR` set env and secrets one by one.
+- `--profile india` applies the 7.1 table: the primary goes to `_SIN`, and TTS/IMAGE (plus REALTIME unless
+  `--realtime-account southindia`) are pinned to eastus2. It also sets Speech from the `_SIN` vars and
+  `TAXILA_REGION`.
+- `--db azure` sets DATABASE_URL from `$AZURE_PG_SIN_URL`.
+- `--migrations-evidence FILE` is required when the target DB is a private `*.postgres.database.azure.com`. The file
+  must be a db-copy report for the same host, at most 6 h old, covering every migration of the sha.
+- **Rollback-safe secrets:** the India values go into NEW secret names (`azure-openai-key-sin`,
+  `azure-speech-key-sin`, `database-url-sin`). An app-scoped secret change therefore never alters what the previous
+  revision reads, and `--rollback` stays one traffic PATCH back to eastus2 and Neon.
+- **Lane check before any write:** every DEPLOY_* name (and every code default) must exist on the account its lane
+  resolves to. Checked with dry-runs:
+  - `--profile india` passed (11 names).
+  - `--realtime-account southindia` was refused (`taxila-realtime`, `gpt-realtime-2.1-mini` not deployed on
+    taxila-ai-southindia). This is the quota gap in §6.2.
+- The post-deploy `/api/health` serving check and the canary smoke are unchanged.
+
+Rehearsal app (not created yet: it needs the PG server for `--db azure`. Without `--db azure` it would run against
+Neon prod from India, which is a valid latency rehearsal but writes prod through the smoke):
+```
+NODE_USE_ENV_PROXY=1 node scripts/region/db-copy.mjs --check-migrations > /dev/null   # → report path
+NODE_USE_ENV_PROXY=1 node scripts/deploy-azure.mjs --app taxila-web-si --rg taxila-sin --env taxila-sin-env \
+  --region southindia --create --profile india --db azure --migrations-evidence <report> [--gate | --image-tag SHA]
+```
+Planned dry-run (verified 2026-10-04): lane check OK, then "create taxila-web-si in taxila-sin/taxila-sin-env".
+The app pulls from `taxilacr` with the copied `acr-password` (the AcrPull grant for `taxila-sin-pull` is still
+pending, §4).
+
+### 7.5 Cutover outline (main loop)
+
+1. Wave 1 deployed, and prod has every migration applied.
+2. PG server exists. A rehearsal `db-copy.mjs` run is OK, and `taxila-web-si` passes the smoke and the
+   `taxila-probe-ci` latency comparison.
+3. Freeze writes, then run `db-copy.mjs --replace` (OK required), then `--check-migrations`.
+4. Run `deploy-azure.mjs --profile india --db azure --migrations-evidence …` on the India app, then move DNS.
+5. Rollback is DNS back to taxila-web (eastus2, Neon). Neon prod has not been written since the freeze, so any India
+   writes after the cutover are lost on rollback unless they are copied back. Decide the window before cutting over.

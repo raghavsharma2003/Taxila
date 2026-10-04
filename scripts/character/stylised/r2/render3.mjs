@@ -37,7 +37,11 @@ if (process.env.HIDE) await page.evaluate((h) => TX.hide(h.split(",")), process.
 if (process.env.WIRE) await page.evaluate(() => TX.wire(true));
 for (const it of items.length ? items : ["front"]) {
   let file;
-  if (it.startsWith("pose:")) {
+  if (it.startsWith("yaw:")) {
+    const a = +it.slice(4);
+    await page.evaluate((y) => { TX.pose({}); TX.view("front", y); TX.render(); }, a);
+    file = path.join(out, `tt_${String(a).padStart(3, "0")}.png`);
+  } else if (it.startsWith("pose:")) {
     const name = it.slice(5), pz = POSES[name];
     await page.evaluate((p) => { TX.pose({ bs: p.bs || {}, gaze: p.gaze || [0, 0], head: p.head || [0, 0, 0] }); TX.view(p.view || p.frame || "face", p.yaw); TX.render(); }, pz);
     file = path.join(out, `pose_${name}.png`);
