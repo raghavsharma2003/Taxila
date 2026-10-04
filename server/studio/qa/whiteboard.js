@@ -181,7 +181,7 @@ function numberAllowed(t, allowed, derived) {
 
 /**
  * @param {unknown} raw the model's script (already expanded to WhiteboardScript shape)
- * @param {{ reply: string, kit?: any, band?: string, speechMs?: number, extraNumbers?: string[], extraWords?: string[] }} ctx
+ * @param {{ reply: string, kit?: any, band?: string, speechMs?: number, extraNumbers?: string[], extraWords?: string[], banned?: string[] }} ctx
  * @returns {{ pass: boolean, checks: {id:string, pass:boolean, detail?:unknown}[], script: any | null, facts: any | null }}
  */
 export function gateWhiteboard(raw, ctx) {
@@ -252,7 +252,12 @@ export function gateWhiteboard(raw, ctx) {
   add("W6.timing", first <= 1500 && lastEnd <= speechMs + 2000 && spread && badDur.length === 0,
     { first, lastStart, lastEnd, speechMs, spread, badDur: badDur.slice(0, 3) });
   // W7 register: labels and short terms, never sentences; the local safety predicates
-  const long = texts.filter((t) => t.trim().split(/\s+/).length > 4);
+  // words with letters only: "1/2 × 1/3 = 1/6" is number work, not a sentence
+  const long = texts.filter((t) => t.trim().split(/\s+/).filter((w) => /\p{L}/u.test(w)).length > 4);
+  // never a person's name on the board (the child's name, a teacher's: the caller lists them)
+  const banned = (ctx.banned ?? []).filter((w) => w && String(w).length > 1).map((w) => String(w).toLowerCase());
+  const named = texts.filter((t) => banned.some((w) => new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i").test(t)));
+  if (named.length) long.push(...named.map((t) => `name: ${t}`));
   const unsafe = texts.filter((t) => SEVERE.some((re) => re.test(t)) || MILD.some((re) => re.test(t)) || PII.some((re) => re.test(t)));
   add("W7.register", long.length === 0 && unsafe.length === 0, { long: long.slice(0, 2), unsafe: unsafe.slice(0, 2) });
   const pass = checks.every((c) => c.pass);

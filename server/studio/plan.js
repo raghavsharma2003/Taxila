@@ -17,6 +17,7 @@
 import { chat, DEPLOY } from "../azure.js";
 import { archetype, validateParams, stringKeys, buildParams } from "./archetypes/index.js";
 import { gateWhiteboard, numbersIn, CHARS_PER_SEC } from "./qa/whiteboard.js";
+import { opGeometry } from "../../shared/whiteboard.js";
 import { localStringFindings } from "../forge/g2/safety.js";
 
 export const PLAN_VERSION = "studio-plan@1";
@@ -217,8 +218,12 @@ const WB_SYSTEM = [
   "  numwork {at, layout, rows, range?} (code lays out the cells: column_add / column_sub / column_mul rows = digit cells, the sign cell first on the last operand, last row = the result;",
   "    fraction rows = [[numerators and operators], [denominators, \"\" under an operator]]; equation rows = [[tokens]]; number_line rows = [[tick labels]] with range [min, max])",
   "  highlight {target (an earlier id), style: circle|underline|pulse} | erase {target}",
-  "  every op: id (short, unique), op, t; optional ink: chalk | accent | mark | good | soft (chalk = default).",
+  "  every op: id (short, unique), op, t; optional ink: chalk | accent | mark | good | soft (chalk = default); fill takes the same ink names.",
+  "sizes code gives number work (plan room for it): column ops 22 units per digit column + 22, 35 per row; fraction 35 wide per token, 75 tall;",
+  "  number_line 48 wide per tick label (at least 160), 50 tall; a text of n characters is about 0.6 x size x n wide.",
   "rules: draw only what her line says (its numbers, its words) or the kit facts given; text is a label, a number or a short term (at most 24 characters, at most 4 words), never a sentence;",
+  "  draw the situation she says is true NOW (\"here\" / \"yahan\"); a wrong or what-if case only when she contrasts it, smaller and marked;",
+  "  never write a person's name; the first op starts by t = 800;",
   "  every label has `to`; no two texts overlap; equal parts are exactly equal (sectors of 360/d degrees); arithmetic written on the board is correct;",
   "  6-24 ops; the drawing follows her words in order and is spread across the whole line; nothing is drawn after her line ends;",
   "  nothing to draw (pure talk, a feeling, a question with no picture): return {\"ops\": []}.",
@@ -229,6 +234,41 @@ export function clausesOf(text) {
   const parts = String(text ?? "").split(/(?<=[,.;:?!—–])\s+/).map((s) => s.trim()).filter(Boolean);
   let chars = 0;
   return parts.map((t) => { const at = Math.round((chars / CHARS_PER_SEC) * 1000); chars += t.length + 1; return { atMs: at, text: t }; });
+}
+
+/** A leading vocative ("Riya, ...") and any redacted word (the child's name, a teacher name) out of the line. */
+export function redactLine(text, redact = []) {
+  let t = String(text ?? "").replace(/^\s*[A-Z][a-z]{1,15},\s+/, "");
+  for (const w of redact) if (w && String(w).length > 1) t = t.replace(new RegExp(`\\b${String(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b,?\\s*`, "gi"), "");
+  return t.replace(/\s*,\s*([.!?])/g, "$1").replace(/^[\s,.;:]+/, "").trim();
+}
+
+/**
+ * The deterministic layout fixer (fixes SHAPE, never truth): an op that sticks out of the board but fits inside it is
+ * moved in by the smallest shift (a label moves its text, never its leader's point). → { ops, fixes }
+ */
+export function fitOps(ops, board, margin = 6) {
+  const fixes = [];
+  const byId = new Map(ops.map((o) => [o.id, o]));
+  const sh = (p, dx, dy) => (Array.isArray(p) && p.length === 2 ? [p[0] + dx, p[1] + dy] : p);
+  const out = ops.map((o) => {
+    if (!o || o.op === "highlight" || o.op === "erase") return o;
+    let b;
+    try { b = opGeometry(o, byId).box; } catch { return o; }
+    if (!b || !Number.isFinite(b.x)) return o;
+    const lab = o.op === "label" ? opGeometry({ ...o, to: undefined, target: undefined }, byId).box : b;
+    const box = o.op === "label" ? lab : b;
+    if (box.w > board.w - 2 * margin || box.h > board.h - 2 * margin) return o;
+    const dx = box.x < margin ? margin - box.x : box.x + box.w > board.w - margin ? board.w - margin - (box.x + box.w) : 0;
+    const dy = box.y < margin ? margin - box.y : box.y + box.h > board.h - margin ? board.h - margin - (box.y + box.h) : 0;
+    if (!dx && !dy) return o;
+    fixes.push(`fit:${o.id}`);
+    const n = { ...o };
+    for (const k of ["at", "c", "from", "to"]) if (n[k] && !(o.op === "label" && k === "to")) n[k] = sh(n[k], dx, dy);
+    if (Array.isArray(n.points)) n.points = n.points.map((p) => sh(p, dx, dy));
+    return n;
+  });
+  return { ops: out, fixes };
 }
 
 /** Compact model ops → WbOp (t → startMs / endMs). Unknown keys dropped; the strict normaliser judges the rest. */
@@ -250,12 +290,14 @@ export function expandOps(ops) {
  * @param {{ kit?: any, prev?: any, deployment?: string, effort?: string, budgetMs?: number, repairs?: number, trace?: object[] }} [ctx]
  * @returns {Promise<{ ok: boolean, script: any | null, gate: any, ms: number, attempts: number, usage: any[], why?: string, empty?: boolean }>}
  */
-export async function planWhiteboard(ask, { kit, prev, deployment = process.env.STUDIO_WB_DEPLOY || DEPLOY.fast, effort = "none", budgetMs = 7000, repairs = 1, trace } = {}) {
+export async function planWhiteboard(ask, { kit, prev, redact = [], deployment = process.env.STUDIO_WB_DEPLOY || DEPLOY.fast, effort = "none", budgetMs = 7000, repairs = 1, trace } = {}) {
   const t0 = performance.now();
   const ms = () => Math.round(performance.now() - t0);
-  const text = String(ask?.line?.text ?? "").trim();
+  // child-free (LIVE-STUDIO §5.4): the child's name (her vocative, and any name the caller lists) never reaches the model
+  const spoken = String(ask?.line?.text ?? "").trim();
+  const text = redactLine(spoken, redact);
   if (!text) return { ok: false, script: null, gate: null, ms: ms(), attempts: 0, usage: [], why: "no_line" };
-  const speechMs = Math.round((text.length / CHARS_PER_SEC) * 1000);
+  const speechMs = Math.round((spoken.length / CHARS_PER_SEC) * 1000);
   const content = (ask.kit?.content ?? []).map(String).slice(0, 8);
   const itemText = ask.kit?.item ? [ask.kit.item.prompt_en, ask.kit.item.prompt_hi].filter(Boolean) : [];
   const facts = { numbers: [...new Set([...numbersIn(text), ...numbersIn(content.join(" ")), ...numbersIn(itemText.join(" "))])].slice(0, 24), content: content.slice(0, 6) };
@@ -276,12 +318,14 @@ export async function planWhiteboard(ask, { kit, prev, deployment = process.env.
       if (feedback) msgs.push({ role: "user", content: `previous script failed the board check: ${feedback}. Return the corrected script.` });
       const r = await chatFn(deployment, msgs, { json: true, effort, maxTokens: 2200, timeoutMs: Math.min(left, 9000), retries: 0, trace, quotaLane: "background" });
       usage.push(r.usage);
-      const ops = expandOps(r.json?.ops);
+      const fit = fitOps(expandOps(r.json?.ops), WB_BOARD);
+      const ops = fit.ops;
       if (!ops.length) return { ok: false, empty: true, script: null, gate: null, ms: ms(), attempts, usage, why: "nothing_to_draw" };
       const raw = { v: 1, scriptId: ask.intent?.intentId ?? "wb", line: { lessonId: ask.line?.lessonId ?? "", ...(ask.line?.teacherReplySeq != null ? { teacherReplySeq: ask.line.teacherReplySeq } : {}) },
         anchor: "line_audio_start", board: { ...WB_BOARD, ground: "chalk" }, mode: ask.mode === "continue" ? "continue" : "fresh",
         durationMs: Math.max(...ops.map((o) => Number(o.endMs) || 0)), ops };
-      gate = gateWhiteboard(raw, { reply: text, kit: kitForGate, band, speechMs });
+      gate = gateWhiteboard(raw, { reply: text, kit: kitForGate, band, speechMs, banned: redact });
+      gate.fixes = fit.fixes;
       if (gate.pass) return { ok: true, script: { ...gate.script, facts: gate.facts }, gate, ms: ms(), attempts, usage };
       feedback = gate.checks.filter((c) => !c.pass).map((c) => `${c.id} ${JSON.stringify(c.detail).slice(0, 160)}`).join("; ");
     } catch (e) {
