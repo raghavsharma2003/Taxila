@@ -338,23 +338,36 @@ export class PuppetV {
       });
       B.begin(0);
       const half = (s) => br.thAt(s) / 2;
-      // rounded head cap
-      const N = normals(pl), h0 = half(0);
-      const cap = [];
-      const back = [pl[0][0] - (pl[1][0] - pl[0][0]), pl[0][1] - (pl[1][1] - pl[0][1])];
-      const bl = Math.hypot(back[0] - pl[0][0], back[1] - pl[0][1]) || 1;
-      const bx = (back[0] - pl[0][0]) / bl, by = (back[1] - pl[0][1]) / bl;
-      for (let k = 0; k <= 10; k++) {
-        const a = (k / 10) * Math.PI;
-        // from +normal side round through the back to -normal side
-        const ca = Math.cos(a), sa = Math.sin(a);
-        cap.push([pl[0][0] + (N[0][0] * ca + bx * sa) * h0, pl[0][1] + (N[0][1] * ca + by * sa) * h0]);
+      const N = normals(pl), nn = pl.length;
+      const upS = side === "SL" ? 1 : -1; // +normal points up for SL (the curve runs right-to-left), down for SR
+      const topE = [], botE = [], midE = [];
+      for (let i = 0; i < nn; i++) {
+        const h = half(i / (nn - 1));
+        topE.push([pl[i][0] + N[i][0] * h * upS, pl[i][1] + N[i][1] * h * upS]);
+        botE.push([pl[i][0] - N[i][0] * h * upS, pl[i][1] - N[i][1] * h * upS]);
+        midE.push([pl[i][0] + N[i][0] * h * upS * 0.25, pl[i][1] + N[i][1] * h * upS * 0.25]);
       }
-      const capF = cap.map((p) => [pl[0][0] + (p[0] - pl[0][0]) * (1 + 1.1 / h0), pl[0][1] + (p[1] - pl[0][1]) * (1 + 1.1 / h0)]);
-      B.rows([capF, cap], [alpha(C.brow, 0), C.brow], 0.5);
-      B.fan(pl[0], cap, C.brow, C.brow, 0.5);
-      const top = side === "SL" ? 1 : -1; // which normal points up (towards the forehead)
-      B.ribbon(pl, half, top > 0 ? C.browTop : C.brow, 1.1, 0.5, top > 0 ? C.brow : C.browTop);
+      // the brow's soft cast shadow on the skin below it (moves with the brow)
+      const sh1 = botE.map((p) => [p[0], p[1] + 2.5]), sh2 = botE.map((p) => [p[0], p[1] + 9]);
+      const fadeEnds = (c) => (i, n2) => alpha(c, Math.pow(Math.sin((Math.PI * (i + 0.5)) / n2), 0.5));
+      B.rows([botE, sh1, sh2], [fadeEnds(alpha(C.lid.browShadow, 0.42)), fadeEnds(alpha(C.lid.browShadow, 0.26)), alpha(C.lid.browShadow, 0)], 0.3);
+      const topF = topE.map((p, i) => [p[0] + N[i][0] * upS * 1.1, p[1] + N[i][1] * upS * 1.1]);
+      const botF = botE.map((p, i) => [p[0] - N[i][0] * upS * 1.0, p[1] - N[i][1] * upS * 1.0]);
+      const ct = C.browTop, cb = C.brow, cm = mix(ct, cb, 0.45);
+      B.rows([topF, topE, midE, botE, botF], [alpha(ct, 0), ct, cm, cb, alpha(cb, 0)], 0.5);
+      // rounded head cap, shaded by height so it matches the ribbon
+      const h0 = half(0), c0 = pl[0];
+      const bx = c0[0] - pl[1][0], by = c0[1] - pl[1][1], bl = Math.hypot(bx, by) || 1;
+      const cap = [], capF = [];
+      for (let k = 0; k <= 12; k++) {
+        const an = (k / 12) * Math.PI, ca = Math.cos(an), sa = Math.sin(an);
+        const dx = N[0][0] * upS * ca + (bx / bl) * sa, dy = N[0][1] * upS * ca + (by / bl) * sa;
+        cap.push([c0[0] + dx * h0, c0[1] + dy * h0]);
+        capF.push([c0[0] + dx * (h0 + 1.1), c0[1] + dy * (h0 + 1.1)]);
+      }
+      const capCol = (i, n2) => { const p = cap[i]; const t = c01((p[1] - (c0[1] - h0)) / (2 * h0)); return mix(ct, cb, t); };
+      B.rows([cap, capF], [capCol, (i, n2) => alpha(capCol(i, n2), 0)], 0.5);
+      B.fan(c0, cap, cm, capCol, 0.5);
       B.end();
     }
 
@@ -383,9 +396,11 @@ export class PuppetV {
       // sclera (writes the stencil)
       if (open > 0.02) {
         B.begin(1, ref);
-        const rows = [U, U.map((p, i) => [lerp(p[0], L[i][0], 0.2), lerp(p[1], L[i][1], 0.2)]), U.map((p, i) => [lerp(p[0], L[i][0], 0.55), lerp(p[1], L[i][1], 0.55)]), L];
+        const at = (k) => U.map((p, i) => [lerp(p[0], L[i][0], k), lerp(p[1], L[i][1], k)]);
+        const rows = [U, at(0.2), at(0.55), at(0.86), L];
         const corner = (i, nn) => 0.86 + 0.14 * Math.pow(Math.sin((Math.PI * i) / (nn - 1)), 0.5);
-        B.rows(rows, C.sclera.map((c) => (i, nn) => scale(c, corner(i, nn))), -2);
+        const pink = (i, nn) => Math.max(0, 1 - i / (nn * 0.18));
+        B.rows(rows, C.sclera.map((c) => (i, nn) => mix(scale(c, corner(i, nn)), [214, 150, 130], 0.45 * pink(i, nn))), -2);
         B.end();
         // iris, pupil, catchlight, lid shadow (stencil test)
         B.begin(2, ref);
@@ -394,10 +409,11 @@ export class PuppetV {
         const fs = Math.cos(clamp(gaze[0] + headYaw * 0.6, -60, 60) * DEG * 0.8);
         const cx = icx + gx, cy = icy + gy + lookDown * 2;
         const ic = C.iris, pr = e.pupil[2] / ir;
-        const shadeA = (a) => { const sn = Math.sin(a); return 1 + 0.45 * Math.max(0, sn) - 0.28 * Math.max(0, -sn); };
-        const sh = (c) => (a) => scale(c, shadeA(a));
-        B.disc(cx + e.pupil[0], cy + e.pupil[1], ir * fs, ir, [0, pr - 0.04, pr + 0.035, 0.6, 0.82, 0.93, 1.0, 1.045],
-          [ic.pupil, ic.pupil, sh(ic.inner), sh(ic.mid), sh(ic.mid), sh(ic.outer), ic.limbus, alpha(ic.limbus, 0)], 40, -1);
+        // warm lower crescent, dark under the lid (c-front: ~(146,74,36) low, ~(76,41,19) at the sides)
+        const lowK = (a, k) => Math.pow(Math.max(0, Math.sin(a)), 1.4) * k;
+        const sh = (c, k) => (a) => mix(scale(c, 1 - 0.3 * Math.max(0, -Math.sin(a))), ic.low, lowK(a, k));
+        B.disc(cx + e.pupil[0], cy + e.pupil[1], ir * fs, ir, [0, pr - 0.03, pr + 0.03, 0.66, 0.84, 0.94, 1.0, 1.05],
+          [ic.pupil, ic.pupil, sh(ic.inner, 0.35), sh(ic.mid, 0.95), sh(ic.mid, 0.75), sh(ic.outer, 0.25), ic.limbus, alpha(ic.limbus, 0)], 44, -1);
         // lid shadow on the eyeball
         const S1 = U.map((p, i) => [p[0], p[1] + 9]);
         B.rows([U, S1], [[20, 10, 8, 0.42 * open], [20, 10, 8, 0]], -0.5);
@@ -419,20 +435,28 @@ export class PuppetV {
       const Tf = T.map((p, i) => [p[0] + (T[i][0] - U[i][0]) * 0.08, p[1] - 1.1]);
       const lc = C.lash;
       B.rows([Tf, T, Ub], [alpha(lc, 0), lc, lc], 1);
-      // flick: from the outer end of the lash to the tip and back to the lid corner
+      // upper-lid highlight band and crease above the lash (they ride the lid, the crease lags: skin folds)
+      const Tr = E.U0.map((p, i) => [p[0] + E.off[i][0], p[1] + E.off[i][1]]);
+      const ends = (i) => Math.pow(Math.sin((Math.PI * i) / (n - 1)), 0.6);
+      const H0 = T.map((p) => [p[0], p[1] - 0.6]);
+      const H1 = T.map((p, i) => [lerp(p[0], Tr[i][0], 0.6), lerp(p[1], Tr[i][1], 0.6) - 4.2 - 2 * wide]);
+      const H2 = T.map((p, i) => [lerp(p[0], Tr[i][0], 0.65), lerp(p[1], Tr[i][1], 0.65) - 7.0 - 2.5 * wide]);
+      const hl = C.lid.hilite;
+      B.rows([H0, H1, H2], [(i) => alpha(hl, 0.55 * ends(i)), (i) => alpha(hl, 0.5 * ends(i)), alpha(hl, 0)], 0.8);
+      const cr = T.map((p, i) => [lerp(p[0], Tr[i][0], 0.7), lerp(p[1], Tr[i][1], 0.7) - 9.6 - 3 * wide + 1.5 * squint]);
+      const crA = (i) => 0.62 * Math.pow(Math.sin((Math.PI * i) / (n - 1)), 0.9);
+      const cr0 = cr.map((p) => [p[0], p[1] + 1.6]), cr1 = cr.map((p) => [p[0], p[1] - 1.0]), cr2 = cr.map((p) => [p[0], p[1] - 6.5]);
+      B.rows([cr0, cr, cr1, cr2], [alpha(C.lid.crease, 0), (i) => alpha(C.lid.crease, crA(i)), (i) => alpha(C.lid.crease, crA(i) * 0.55), alpha(C.lid.crease, 0)], 0.8);
+      // flick: a tapered strip from the lash's outer end to the tip (upper edge) and from the lid corner (lower edge)
       const o = U[n - 1], ot = T[n - 1];
       const fl = E.fl.map((d) => [o[0] + d[0], o[1] + d[1] - blink * 1.5]);
-      const fan = [ot, ...fl, [o[0], o[1] + 1.2]];
-      const fc = [o[0] + (fl[1][0] - o[0]) * 0.35, (o[1] + ot[1]) / 2];
-      for (let i = 0; i < fan.length - 1; i++) B.tri(fc, fan[i], fan[i + 1], lc, lc, lc, 1);
-      // soft edge around the flick tip
-      const tip = fl[1], up = fl[0], lo = fl[2];
-      const fe = (p, q) => { const dx = q[0] - p[0], dy = q[1] - p[1], l = Math.hypot(dx, dy) || 1; return [-dy / l, dx / l]; };
-      for (const [p, q] of [[ot, up], [up, tip], [tip, lo], [lo, fl[3] || o]]) {
-        const nn = fe(p, q), s = E.dir < 0 ? 1 : -1;
-        const p2 = [p[0] + nn[0] * s * 1.1, p[1] + nn[1] * s * 1.1], q2 = [q[0] + nn[0] * s * 1.1, q[1] + nn[1] * s * 1.1];
-        B.tri(p, q, q2, lc, lc, alpha(lc, 0), 1); B.tri(p, q2, p2, lc, alpha(lc, 0), alpha(lc, 0), 1);
-      }
+      const upE = resample(catmull([ot, fl[0], fl[1]]), 9);
+      const loE = resample(catmull([[o[0], o[1] + 0.8], fl[3], fl[2], fl[1]]), 9);
+      const nU = normals(upE), nL = normals(loE);
+      const sd = E.dir < 0 ? 1 : -1;
+      const upF = upE.map((p, i) => [p[0] + nU[i][0] * sd * 1.2, p[1] + nU[i][1] * sd * 1.2]);
+      const loF = loE.map((p, i) => [p[0] - nL[i][0] * sd * 1.2, p[1] - nL[i][1] * sd * 1.2]);
+      B.rows([upF, upE, loE, loF], [alpha(lc, 0), lc, lc, alpha(lc, 0)], 1);
       B.end();
     };
     eyeDraw("SL", 1);
@@ -446,6 +470,17 @@ export class PuppetV {
     const [bx, by, brr] = F.bindi;
     B.disc(bx, by, brr, brr, [0, 0.55, 0.92, 1.0, 1.12], [[118, 60, 58], C.bindi, scale(C.bindi, 0.88), scale(C.bindi, 0.85), alpha(scale(C.bindi, 0.85), 0)], 32, 0.5);
     B.end();
+    // nose: crisp nostril shadows and a soft tip highlight on top of the fitted field
+    if (F.nose) {
+      B.begin(0);
+      for (const [nx, ny, rx, ry, rot] of F.nose.nostrils) {
+        const flare = 1 + 0.12 * c01(g("noseSneerLeft") + g("noseSneerRight"));
+        B.disc(nx, ny - 0.8 * (flare - 1) * 10, rx * flare, ry, [0, 0.5, 1.0, 1.7], [[96, 40, 8, 0.75], [104, 44, 10, 0.6], [120, 52, 14, 0.18], [120, 52, 14, 0]], 20, 3, rot);
+      }
+      const [tx, ty, trx, try_] = F.nose.tip;
+      B.disc(tx, ty, trx, try_, [0, 0.5, 1], [[255, 196, 130, 0.38], [255, 190, 125, 0.2], [255, 190, 125, 0]], 24, 4);
+      B.end();
+    }
     return ms;
   }
 
@@ -463,108 +498,121 @@ export class PuppetV {
   _mouth(ms) {
     const B = this.batch, M = this.F.mouth, C = this.F.colors;
     const s0 = M.restSmile;
-    const N = 25;
+    const N = 41;
     const open = ms.open, round = ms.round, wide = ms.wide, press = ms.press;
     const smile = (ms.smileL + ms.smileR) / 2;
-    const halfW = M.halfW * (1 + 0.13 * wide - 0.33 * round + 0.07 * Math.max(0, smile - s0) - 0.04 * press - 0.1 * ms.frown);
-    const sagSide = (sm) => M.sag + 17 * (sm - s0) - 15 * ms.frown - 7 * round + 3 * wide;
+    const halfW = M.halfW * (1 + 0.13 * wide - 0.33 * round + 0.07 * Math.max(0, smile - s0) - 0.04 * press - 0.1 * ms.frown - 0.16 * open * (1 - wide));
+    // the smile curve flattens as the jaw opens (the corners stay, the centre of the seam rises toward them)
+    const sagSide = (sm) => (M.sag + 17 * (sm - s0) - 15 * ms.frown - 7 * round + 3 * wide) * (1 - 0.45 * open);
     const sagL = sagSide(ms.smileL), sagR = sagSide(ms.smileR);
-    const drop = 46 * open + 6 * ms.lowerDown;
-    const raise = 5 * open + 6 * ms.upperUp;
-    const e = 1 - 0.55 * round + 0.2 * wide;
-    const tu = M.tu * (1 + 0.55 * round - 0.5 * press - 0.65 * ms.rollIn + 0.15 * open);
-    const tl = M.tl * (1 + 0.22 * round - 0.3 * press - 0.55 * ms.rollIn - 0.25 * open - 0.12 * wide);
+    const drop = 50 * open + 6 * ms.lowerDown;
+    const raise = 4 * open + 6 * ms.upperUp;
+    const eL = 0.75 - 0.35 * round + 0.25 * wide, eU = 1.2 - 0.5 * round;
+    const tu = M.tu * (1 + 0.45 * round - 0.5 * press - 0.65 * ms.rollIn - 0.2 * open);
+    const tl = M.tl * (1 + 0.22 * round - 0.3 * press - 0.55 * ms.rollIn - 0.28 * open - 0.12 * wide);
     const ct = Math.cos(M.tilt), st = Math.sin(M.tilt);
-    const cx = M.cx + ms.skew * 9, cy = M.cy + 1.5 * open;
+    const cx = M.cx + ms.skew * 9, cy = M.cy + 1.0 * open;
     const P = (lx, ly) => [cx + lx * ct - ly * st, cy + lx * st + ly * ct];
-    const Uin = [], Lin = [], Uout = [], Lout = [], seam = [], prof = [];
+    const Uin = [], Lin = [], Uout = [], Lout = [], seam = [], prL = [], prU = [], lU = [], lL = [], xs = [];
     for (let i = 0; i < N; i++) {
       const t = -1 + (2 * i) / (N - 1), at = Math.abs(t);
       const sag = t < 0 ? sagL : sagR;
-      const pr = Math.pow(Math.max(0, 1 - t * t), e);
-      prof.push(pr);
-      const x = t * halfW * (1 - 0.06 * round * (1 - at));
-      const sy = -sag * Math.pow(at, 2.3) + ms.skew * 2 * t;
-      const bow = 1 - 0.22 * Math.exp(-((t / 0.13) ** 2)) + 0.06 * Math.exp(-(((at - 0.28) / 0.12) ** 2));
-      const uin = sy - raise * pr;
-      const lin = sy + drop * pr;
-      const uo = uin - tu * Math.pow(Math.max(0, 1 - t * t), 0.45) * bow - 0.6;
-      const lo = lin + tl * Math.pow(Math.max(0, 1 - t * t), 0.62) + 0.5;
+      const q = Math.max(0, 1 - t * t);
+      const pl = Math.pow(q, eL), pu = Math.pow(q, eU);
+      prL.push(pl); prU.push(pu);
+      const x = t * halfW;
+      const sy = -sag * Math.pow(at, M.pseam || 2.3) + ms.skew * 2 * t;
+      const uin = sy - raise * pu;
+      const lin = sy + drop * pl;
+      const tU = t / (M.extU || 1), tL = t / ((M.extL || 1) * (1 + 0.15 * open));
+      const uo = uin - tu * Math.pow(Math.max(0, 1 - tU * tU), M.pu || 0.45) - 0.6 * Math.max(0, 1 - tU * tU);
+      const lo = lin + tl * Math.pow(Math.max(0, 1 - tL * tL), M.pl || 0.62) + 0.5 * Math.max(0, 1 - tL * tL);
+      xs.push(x); lU.push(uin); lL.push(lin);
       seam.push(P(x, sy)); Uin.push(P(x, uin)); Lin.push(P(x, lin)); Uout.push(P(x, uo)); Lout.push(P(x, lo));
     }
     const gap = drop + raise;
     const zl = 2;
-    // interior + teeth + tongue
+    const at = (arr, t) => { const k = ((t + 1) / 2) * (N - 1), i = clamp(k | 0, 0, N - 2), f = k - i; return lerp(arr[i], arr[i + 1], f); };
     if (gap > 0.8) {
       B.begin(1, 3);
       const mid = Uin.map((p, i) => [lerp(p[0], Lin[i][0], 0.5), lerp(p[1], Lin[i][1], 0.5)]);
       B.rows([Uin, mid, Lin], C.interior, zl - 3);
       B.end();
       B.begin(2, 3);
-      // tongue (behind the lower teeth unless it is out)
-      const tw = halfW * (0.56 + 0.22 * ms.tongueWide), th = Math.max(4, gap * 0.36 + 3);
-      const tipH = ms.tipUp * 0.85 + ms.curl * 0.65;
-      const NT = 17, top = [], bot = [], hi = [];
-      const upTeeth = (u) => { const k = (u + 1) / 2 * (N - 1), i = Math.min(N - 2, k | 0), f = k - i; return [lerp(Uin[i][0], Uin[i + 1][0], f), lerp(Uin[i][1], Uin[i + 1][1], f)]; };
+      // tongue: a soft blob resting on the floor of the mouth; Hindi keys lift (dental/alveolar), curl (retroflex),
+      // widen (lateral) or push it to the teeth (TH)
+      const teethH = Math.min(9, gap * 0.3 + 1.5) + 3 * ms.teeth * Math.min(1, gap / 6) + 4 * ms.upperUp;
+      const NT = 21, top = [], hi = [], bot = [];
+      const tw = 0.62 + 0.2 * ms.tongueWide - 0.1 * round;
+      const th = Math.max(3, gap * 0.34 + 2) * (1 - 0.2 * ms.tongueWide);
+      const lift = Math.max(ms.tipUp, 0.8 * ms.curl, ms.tongueOut);
       for (let k = 0; k < NT; k++) {
-        const u = -1 + (2 * k) / (NT - 1);
-        const x = u * tw * (1 - 0.15 * ms.curl);
-        const lin = Lin[Math.round(((x / halfW + 1) / 2) * (N - 1))] || Lin[N >> 1];
-        const base = lin[1] - cy; // local-ish y of the lower inner lip at this x
-        let ty = base - th * Math.pow(Math.max(0, 1 - u * u), 0.55) + 2;
-        const tipW = Math.exp(-((u / 0.42) ** 2));
-        const ut = upTeeth(u * tw / halfW)[1] - cy + Math.min(9, gap * 0.3) + 1;
-        ty = lerp(ty, Math.min(ty, ut), tipH * tipW);
-        if (ms.tongueOut > 0) ty = lerp(ty, Math.min(ty, ut - 2), ms.tongueOut * tipW);
-        top.push(P(x, ty)); bot.push(P(x * 1.1, base + 14)); hi.push(P(x * 0.55, lerp(ty, base, 0.35)));
+        const u = -1 + (2 * k) / (NT - 1), t = u * tw;
+        const floor = at(lL, t);
+        const roof = at(lU, t) + teethH * Math.pow(at(prU, t), 0.9) * (ms.tongueOut > 0.2 ? 0.45 : 1) + 1;
+        const dome = Math.pow(Math.max(0, 1 - u * u), 0.5);
+        let y = floor + 3 - th * dome;
+        const tipW = Math.exp(-((u / 0.45) ** 2));
+        y = lerp(y, Math.min(y, roof), lift * tipW);
+        const x = at(xs, t) * (1 - 0.18 * ms.curl * tipW);
+        top.push(P(x, y)); hi.push(P(x * 0.7, lerp(y, floor, 0.4))); bot.push(P(x * 1.05, floor + 10));
       }
       const tc = C.tongue;
       B.rows([top, hi, bot], [tc[1], tc[2], tc[0]], zl - 2);
       if (ms.curl > 0.05) {
-        // the curled tip shows its darker underside under the tip
-        const und = top.map((p, k) => { const u = -1 + (2 * k) / (NT - 1), w = Math.exp(-((u / 0.38) ** 2)); return [p[0], p[1] + 7 * ms.curl * w]; });
-        B.rows([top, und], [alpha(C.tongueUnder, 0.9 * Math.min(1, ms.curl * 1.5)), alpha(C.tongueUnder, 0)], zl - 1.5);
+        const und = top.map((p, k) => { const u = -1 + (2 * k) / (NT - 1), w = Math.exp(-((u / 0.38) ** 2)); return [p[0], p[1] + 8 * ms.curl * w]; });
+        B.rows([top, und], [alpha(C.tongueUnder, Math.min(1, ms.curl * 1.4)), alpha(C.tongueUnder, 0)], zl - 1.5);
       }
-      // upper teeth: one curved band under the upper lip (never a slab: clipped by the interior, soft top shadow)
-      const teethH = Math.min(10.5, gap * 0.36 + 2) + 4 * ms.teeth * Math.min(1, gap / 6) + 5 * ms.upperUp;
-      const T0 = Uin.map((p) => [p[0], p[1] - 3]);
-      const T1 = Uin.map((p, i) => [p[0], p[1] + teethH * Math.pow(prof[i], 0.25) * 0.55]);
-      const T2 = Uin.map((p, i) => [p[0], p[1] + teethH * Math.pow(prof[i], 0.25)]);
-      const T3 = Uin.map((p, i) => [p[0], p[1] + teethH * Math.pow(prof[i], 0.25) + 1.3]);
+      if (ms.tipUp > 0.05 || ms.tongueOut > 0.05) {
+        // a lighter tip where it touches the teeth ridge
+        const k = NT >> 1;
+        B.disc(top[k][0], top[k][1] + 2.5, 9 * tw, 3.5, [0, 1], [[232, 140, 132, 0.6 * lift], [232, 140, 132, 0]], 16, zl - 1.4);
+      }
+      // upper teeth: one curved band hugging the upper lip, tapering into the corners (clipped by the interior)
       const tcol = C.teeth;
-      const edge = (c) => (i, n) => scale(c, 0.9 + 0.1 * Math.pow(Math.sin((Math.PI * i) / (n - 1)), 0.4));
-      B.rows([T0, T1, T2, T3], [edge(tcol[0]), edge(tcol[1]), edge(tcol[2]), alpha(tcol[2], 0)], zl - 1);
-      // lower teeth: only with a real opening or on teeth-forward shapes
-      const lowH = Math.min(7, Math.max(0, gap - 14) * 0.22) + 3.5 * ms.teeth * Math.min(1, gap / 5);
-      if (lowH > 0.4) {
+      const tTop = Uin.map((p) => [p[0], p[1] - 3]);
+      const tRow = (k) => Uin.map((p, i) => [p[0], p[1] + teethH * Math.pow(prU[i], 0.9) * k]);
+      const edge = (c) => (i, n) => scale(c, 0.92 + 0.08 * Math.pow(Math.sin((Math.PI * i) / (n - 1)), 0.5));
+      B.rows([tTop, tRow(0.25), tRow(1), tRow(1.12)], [edge(tcol[0]), edge(tcol[1]), edge(tcol[2]), alpha(tcol[2], 0)], zl - 1);
+      // lower teeth: only a hint in the centre on teeth-forward shapes (SS, E, I) or a wide-open laugh
+      const lowH = 2.5 * ms.teeth * Math.min(1, gap / 5) + Math.max(0, gap - 30) * 0.12;
+      if (lowH > 0.5) {
         const a = 1 - 0.85 * ms.tongueOut;
+        const cprof = Lin.map((p, i) => Math.pow(Math.max(0, 1 - ((-1 + (2 * i) / (N - 1)) / 0.6) ** 2), 0.6));
         const L0 = Lin.map((p) => [p[0], p[1] + 3]);
-        const L1 = Lin.map((p, i) => [p[0], p[1] - lowH * Math.pow(prof[i], 0.3)]);
-        const L2 = Lin.map((p, i) => [p[0], p[1] - lowH * Math.pow(prof[i], 0.3) - 1.2]);
-        B.rows([L0, L1, L2], [alpha(tcol[0], a), alpha(tcol[2], a), alpha(tcol[2], 0)], zl - 1);
+        const L1 = Lin.map((p, i) => [p[0], p[1] - lowH * cprof[i]]);
+        const L2 = Lin.map((p, i) => [p[0], p[1] - lowH * cprof[i] - 1.2]);
+        B.rows([L0, L1, L2], [(i) => alpha(tcol[2], a * Math.min(1, cprof[i] * 3)), (i) => alpha(tcol[1], a * Math.min(1, cprof[i] * 3)), alpha(tcol[1], 0)], zl - 1);
       }
       B.end();
     }
     // lips
     B.begin(0);
     const ul = C.upLip, ll = C.loLip;
-    const Uf = Uout.map((p, i) => [p[0], p[1] - 1.3]);
+    const Uf = Uout.map((p) => [p[0], p[1] - 2.6]);
     const Um = Uout.map((p, i) => [lerp(p[0], Uin[i][0], 0.45), lerp(p[1], Uin[i][1], 0.45)]);
     const openK = c01(gap / 6);
     B.rows([Uf, Uout, Um, Uin], [alpha(ul[0], 0), ul[0], ul[1], mix(ul[2], [150, 64, 44], openK)], zl);
     const Lr = [0.22, 0.5, 0.82].map((k) => Lin.map((p, i) => [lerp(p[0], Lout[i][0], k), lerp(p[1], Lout[i][1], k)]));
-    const Lf = Lout.map((p) => [p[0], p[1] + 2.2]);
+    const Lf = Lout.map((p) => [p[0], p[1] + 4.5]);
     const hl = (c) => (i, n) => { const t = -1 + (2 * i) / (n - 1); return mix(ll[1], c, Math.exp(-((t / 0.55) ** 2))); };
     B.rows([Lin, Lr[0], Lr[1], Lr[2], Lout, Lf], [mix(ll[0], [150, 64, 44], openK * 0.6), ll[1], hl(ll[2]), hl(ll[3]), ll[4], alpha(ll[4], 0)], zl);
-    // seam line when (nearly) closed + inner rim when open
+    // inner-lip rim when open (wet edge), seam line when (nearly) closed
+    if (openK > 0.05) {
+      const r1 = Uin.map((p) => [p[0], p[1] - 1.6]);
+      B.rows([r1, Uin], [[120, 48, 32, 0], [120, 48, 32, 0.5 * openK]], zl + 0.2);
+      const r2 = Lin.map((p) => [p[0], p[1] + 1.8]);
+      B.rows([Lin, r2], [[150, 62, 48, 0.45 * openK], [150, 62, 48, 0]], zl + 0.2);
+    }
     const sa = 1 - c01(gap / 3.5);
-    if (sa > 0.01) B.ribbon(seam.map((p, i) => [lerp(Uin[i][0], Lin[i][0], 0.5), lerp(Uin[i][1], Lin[i][1], 0.5)]), (s) => 1.25 * Math.pow(Math.sin(Math.PI * s), 0.35) + 0.25, alpha(C.seam, sa), 0.9, zl + 0.5);
+    if (sa > 0.01) B.ribbon(seam.map((p, i) => [lerp(Uin[i][0], Lin[i][0], 0.5), lerp(Uin[i][1], Lin[i][1], 0.5)]), (s) => { const u = Math.abs(2 * s - 1); return (0.55 + 0.75 * u * u) * Math.pow(Math.max(0, 1 - u), 0.15); }, alpha(C.seam, sa), 0.9, zl + 0.5);
     // corner tucks (curl up with the smile)
     for (const [i, sgn, sm] of [[0, -1, ms.smileL], [N - 1, 1, ms.smileR]]) {
       const c = seam[i];
-      const k = 0.6 + 0.8 * c01(sm);
-      const pl = [[c[0] - sgn * 2, c[1] + 0.5], [c[0] + sgn * 2.5 * k, c[1] - 2.2 * k], [c[0] + sgn * 4 * k, c[1] - 5 * k]];
-      B.ribbon(resample(catmull(pl), 6), (s) => 1.3 * (1 - s) + 0.2, [128, 62, 40, 0.55], 1.1, zl + 0.5);
+      const k = 0.7 + 0.9 * c01(sm);
+      const pl = [[c[0] - sgn * 5, c[1] + 2], [c[0], c[1]], [c[0] + sgn * 3.5 * k, c[1] - 3 * k], [c[0] + sgn * 5 * k, c[1] - 6.5 * k]];
+      B.ribbon(resample(catmull(pl), 12), (s) => 1.25 * Math.pow(Math.sin(Math.PI * Math.min(1, 0.15 + s * 0.85)), 0.8) + 0.15, [100, 42, 22, 0.55 * (1 - 0.6 * c01(gap / 10))], 1.6, zl + 0.5);
+      B.disc(c[0] + sgn * 2.5, c[1] - 2, 7, 5, [0, 1], [[130, 58, 30, 0.16], [130, 58, 30, 0]], 16, zl + 0.4);
     }
     B.end();
   }

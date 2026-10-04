@@ -212,7 +212,7 @@ async function checkLaneDeployments(env) {
   // the code defaults (server/azure.js DEPLOY, comprehension/grade/closed.js, forge/g2/harness.js) count too: a name the
   // image falls back to must exist as much as one set in env. Keep in step with those files.
   const names = { DEPLOY_REALTIME: "taxila-realtime", DEPLOY_BRAIN: "taxila-brain", DEPLOY_FAST: "taxila-fast", DEPLOY_TRANSCRIBE: "taxila-transcribe",
-    DEPLOY_TTS: "gpt-4o-mini-tts", DEPLOY_GRADE: "DeepSeek-V4-Pro", DEPLOY_CODEX: "taxila-codex" };
+    DEPLOY_TTS: "gpt-4o-mini-tts", DEPLOY_GRADE: "DeepSeek-V4-Pro", DEPLOY_CODEX: "taxila-codex", DEPLOY_IMAGE: "taxila-image25-flare" };
   for (const [k, v] of Object.entries(env)) if (/^DEPLOY_|^TAXILA_STT_MODEL$/.test(k) && v) names[k] = v;
   const accounts = [];
   for (let page = `${SUB_PATH()}/providers/Microsoft.CognitiveServices/accounts?api-version=2024-10-01`; page;) {
@@ -382,7 +382,12 @@ async function deploy() {
   c0.image = image;
   // host-level env the image expects on Azure (idempotent)
   for (const [name, value] of Object.entries({ DB_DRIVER: "pg", NODE_ENV: "production", TAXILA_HOST: "azure", DEPLOY_CLASSIFY: "grok-4-1-fast-non-reasoning",
-    TAXILA_CLASSIFY_HEDGE_MS: "1500", GIT_SHA: sha, ACCESS_LOG: "on" })) {
+    TAXILA_CLASSIFY_HEDGE_MS: "1500", GIT_SHA: sha, ACCESS_LOG: "on",
+    // Live cascade STT on the eastus2 account (ROUTER-CHANGES A3, 2026-10-04): gpt-live-transcribe, not gpt-4o-transcribe.
+    // DEPLOY_TRANSCRIBE stays (push-to-talk batch + realtime-lane transcription were not measured on live-transcribe).
+    // Not under --profile india: its TRANSCRIBE lane is the southindia account, which has no live-transcribe twin
+    // (INDIA-MOVE §2.1, quota pooled 10/10), and the India STT choice (C4, MAI) is not signed off.
+    ...(PROFILE === "india" ? {} : { TAXILA_STT_MODEL: "taxila-live-transcribe" }) })) {
     const e = c0.env.find((x) => x.name === name); if (e) { e.value = value; delete e.secretRef; } else c0.env.push({ name, value });
   }
   // --profile / --set / --secret / --db / --region (none given: nothing here runs, today's deploy unchanged)

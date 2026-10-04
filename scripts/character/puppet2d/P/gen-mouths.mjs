@@ -6,11 +6,14 @@ import fs from "node:fs";
 import { edit } from "./imgapi.mjs";
 const argv = process.argv.slice(2);
 const opt = (f, d) => (argv.includes(f) ? argv[argv.indexOf(f) + 1] : d);
-const OUT = "art/character/puppet2d/P/work/mouths";
+const OUT = opt("--out", "art/character/puppet2d/P/work/mouths");
+const BASE = opt("--base", "art/character/puppet2d/P/work/mouth-base.png");
+const MASK = opt("--mask", "art/character/puppet2d/P/work/mouth-mask.png");
 fs.mkdirSync(OUT, { recursive: true });
-const PRE = "Close-up of the same 3D emoji-avatar character's lower face: identical style, matte soft Memoji shading, lighting and warm skin colour; "
-  + "lips the same soft dusty-rose colour and thickness as the input (a thin upper lip, a fuller soft lower lip). "
-  + "Only the mouth inside the editable area changes; the nose, cheeks, chin and jaw outline stay exactly where they are, the mouth stays the same width or narrower. "
+const PRE = "Close-up of the same 3D emoji-avatar character's lower face: identical style, matte soft Memoji shading, lighting and warm skin colour. "
+  + "Paint her mouth in the editable area (it is blank skin now), centred under the nose: soft muted dusty-rose lips, a thin upper lip and a slightly fuller soft lower lip, "
+  + "a small cute mouth whose relaxed width is about the width of the nose plus a third on each side; include the mouth corners and their soft creases appropriate to the shape. "
+  + "The nose, cheeks, chin and jaw outline stay exactly where they are. "
   + "If teeth show they are one smooth soft white row inside the lips, never poking out; the mouth interior is a soft dark warm red. The mouth: ";
 export const SHAPES = {
   // warm (speaking) column: c-front's gentle pleasant register
@@ -42,6 +45,7 @@ export const SHAPES = {
   concern_O: "concerned rounded 'o': lips rounded into a small oval, the corners slightly down.",
   // specials
   neutral: "relaxed neutral closed lips, no smile, corners level.",
+  warm_closed: "a gentle warm closed-lip smile, corners softly upturned, relaxed and friendly.",
   aside: "thinking: lips closed and pushed toward the viewer's left side, slightly pursed, asymmetric, the viewer's-right corner pulled in.",
   surprise: "surprised: mouth open in a rounded tall 'O', the jaw dropped a little.",
   playful: "a playful lopsided closed smile: the corner on the viewer's right lifted higher than the other, a small smirk, no teeth.",
@@ -54,7 +58,7 @@ const worker = async () => {
   while (queue.length) {
     const n = queue.shift();
     try {
-      const buf = await edit({ tag: `mouth-${n}${suffix}`, quality, prompt: PRE + SHAPES[n] + " No text.", images: [{ file: "art/character/puppet2d/P/work/mouth-base.png" }], mask: "art/character/puppet2d/P/work/mouth-mask.png" });
+      const buf = await edit({ tag: `mouth-${n}${suffix}`, quality, prompt: PRE + SHAPES[n] + " No text.", images: [{ file: BASE }], mask: MASK });
       fs.writeFileSync(`${OUT}/${n}${suffix}.png`, buf);
     } catch (e) { console.log(`[mouths] FAIL ${n}: ${e.message}`); }
   }

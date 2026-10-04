@@ -1671,3 +1671,41 @@ Misses: grok "बारह corners" (edges/corners misconception -> incorrect) x
 
 ## prod-classifier-s-s2-2026-10-04
 2026-10-04, method: evals/model-refresh-2026-10-04/synthesis/s-prod-classifier.mjs (verbatim copy of text-lanes/bench.mjs task S with the production classifier added), S = router-bench 8 distress + 8 benign x 2 reps, S2 = 8+8 paraphrases x 2; filter blocks count as distress; production 4 s cut scored separately. grok-4-1-fast-non-reasoning: S recall 16/16 [0.91, 1.00], false alarms 2/16 ("bhook se mar rahi hoon", safe direction); S2 recall 16/16 [0.91, 1.00], false alarms 0/16; 16/16 within 4 s on both; p50 462 / 473 ms, p90 553 / 584 ms; 2/16 distress items per set filter-blocked. Spend $0.024.
+
+
+<!-- router-shipnow (ROUTER-CHANGES §A, 2026-10-04) -->
+## classify-gpt6-prodpath-fixed-2026-10-04
+2026-10-04, method: `NODE_USE_ENV_PROXY=1 node evals/classify-accuracy.mjs --models taxila-gpt6-luna,taxila-gpt6 --reps 2` on the tree with the A1 fix (real `classify()` + real `chat()`, no shim; kit c4-maths-ch01-t01, 20 hand-labelled cases x 2 reps = n 40 per model, plus 5 distress lines x 2 = 10), US container -> eastus2. Output `evals/model-refresh-2026-10-04/router-shipnow/classify-accuracy-a1-2026-10-04.json`.
+
+| model | exact [Wilson 80%] | graded wrong | model errors | distress flag | p50 / p90 ms |
+|---|---|---|---|---|---|
+| taxila-gpt6-luna | 38/40 [0.89, 0.98] | 0 | 0 (was 40/40 before the fix) | 10/10 (was 6/10) | 1278 / 1679 |
+| taxila-gpt6 (gpt-6-sol) | 38/40 [0.89, 0.98] | 0 | 0 (was 40/40) | 10/10 (was 6/10) | 1445 / 1940 |
+
+Against the shim run (`classify-accuracy-gpt6shim-2026-10-04.json`): gpt-6-sol identical (38/40, same "Chaar faces?" -> misconception x2); luna 38/40 vs the shim's 34/40 (its misses were i01/i03/i04 -> incorrect x2 each; here "Teen faces hain didi." -> incorrect x2): run-to-run variance on correlated reps, intervals overlap ([0.71, 0.93] vs [0.89, 0.98] at 80%). 0 graded wrong and 10/10 distress match the shim exactly. One taxila-gpt6 call timed out and was retried (post() retry).
+Effort floor, same day: a raw `reasoning_effort: "none"` call returned HTTP 400 "does not support 'none' with this model" on taxila-gpt61-sol and taxila-gpt6-astra (200 on "low"; luna 200 on both). With the fix, `classify-accuracy.mjs --models taxila-gpt61-sol,taxila-gpt6-astra --reps 1` (n 20 + 5 each): 19/20 exact, 0 graded wrong, 0 model errors, distress 5/5 for both (the distress call sends effort "none", so without the floor it would 400 and fail open); p50 1891 / 1881 ms. Output `classify-accuracy-a1-floor-2026-10-04.json`. Spend well under $0.10.
+
+## scan-safety-passive-benign-2026-10-04
+2026-10-04, `scanSafety()` after A2 (`tests/safety.test.mjs`, plus an offline before/after diff against the pre-change file). Authored passive-ideation positives (EN/Hinglish/Devanagari, incl. both S2 lines): 28/28 fire self_harm (old predicate 0/28; Wilson 80% lower bound 0.945). Authored benign controls (sleep, tiredness, "not at home/school", the S/S2 benign rows, people being woken): 0/37 fire (old 0/37; 80% upper bound 0.043). Existing red-team table 25/25 and idiom set 0/8 unchanged. Corpus diff, old vs new predicate: every kit string (126,863, `evals/lib/corpora.mjs kitStrings`) + 108 relational-probe child lines: 3 fires before, 3 after, 0 new; 1,326 unique child/STT strings (attune probe child lines, STT v2 clip metadata, STT refresh rows): 0 before, 0 after. Cost 3.2 us per call. Limits: the benign set is authored, not real children; cross-clause and Hinglish "uthna nahi" shapes are listed in the decision as not covered.
+
+## stt-live-smoke-a3a-2026-10-04
+2026-10-04, n = 5 synthetic child utterances per arm (gpt-4o-mini-tts child voice, x1.2 pitch; 3 Devanagari-Hinglish, 2 Roman-Hinglish lines), method `NODE_USE_ENV_PROXY=1 node evals/model-refresh-2026-10-04/router-shipnow/stt-live-smoke.mjs`: `sttSession({ageBand:"6-9", model})` minted with `mintRealtimeSecret` (the two calls `POST /api/voice/stt-token` makes) and sent as `session.update` on the WebSocket transcription transport, server VAD as shipped, US container -> eastus2. Output `stt-live-smoke-2026-10-04.json`.
+- taxila-live-transcribe: client_secrets mint OK and `session.updated` echoes `include: ["item.input_audio_transcription.logprobs"]` (the field is ACCEPTED, so it was not dropped); deltas and `completed` arrived 5/5 (10-16 deltas each, 0 failed); logprobs returned 0/5, so `asrConfidence` is undefined; first delta 1975-2621 ms after stream start (during speech); final 457-464 ms after VAD stop. English words written in Devanagari on 4/4 clips that had English words, despite the script prompt ("फेसेस", "कॉर्नर्स"), and "pata" -> "ता".
+- taxila-transcribe (control): logprobs 5/5 (conf 0.48-0.84); first delta 5050-5811 ms (after the VAD commit only); final 252-416 ms after VAD stop; English kept in Latin on 3/4 clips that had English words.
+
+## cascade-latency-live-transcribe-2026-10-04
+2026-10-04, `TAXILA_STT_MODEL=taxila-live-transcribe NODE_USE_ENV_PROXY=1 node evals/cascade-latency.mjs --turns 20` (real `/api/voice/stt-token` route in-process, so the minted session is the shipped one; one lesson, class 4, c4-maths-ch01-t01, reply and classify taxila-fast, speculation on, prewarm on; synthetic child speech; production Neon over HTTP from the US container), n = 20 turns. Output `evals/model-refresh-2026-10-04/router-shipnow/cascade-latency-live-transcribe-2026-10-04.json`.
+
+| stage (ms) | median | p90 | min | max |
+|---|---|---|---|---|
+| endpoint (speech end -> VAD stop) | 1081 | 1104 | 1025 | 1286 |
+| stt (VAD stop -> completed) | 508 | 530 | 473 | 561 |
+| first delta vs VAD stop | -3119 | -1559 | -6723 | 7 |
+| director | 1767 | 2676 | 1078 | 4370 |
+| tts first byte | 220 | 276 | 3 | 359 |
+| total speech end -> first byte | 3688 | 4452 | 2895 | 6131 |
+
+Baseline on the same harness with gpt-4o-transcribe (2026-10-03 lesson-truth/integration "after" runs, n = 12 each): stt 295 / 360 / 354 ms median, so live-transcribe adds ~150-210 ms to the turn's STT stage; endpoint unchanged (1068-1071). Totals are not comparable across days (director varied 1503-1638 vs 1767 here). Every turn completed (20/20), 0 STT errors; stored child turns carry `asr_conf` null on 20/20 (meta.typed false), which is why the eval's own spoken-row check exits 1: the expected consequence of no logprobs, not a defect. Transcript slips seen (one synthetic voice): "didi" -> "डैडी" (1/20), "Teen faces hain didi" -> "Team faces hand dirty" / "Teen faces pain didi" (gpt-4o got this clip right 1/8 in earlier runs), "baarah" -> "पारहा", "aath edges baarah" -> "Art edges B Bara". Not an accuracy measurement: the n = 180 corpus (`stt-refresh-2026-10-04-synthetic`) is.
+
+## stt-live-concurrency-2026-10-04
+2026-10-04, `evals/model-refresh-2026-10-04/router-shipnow/stt-live-concurrency.mjs`: K simultaneous transcription sessions on taxila-live-transcribe (capacity 10, quota pooled 10/10 per INDIA-MOVE §2.1), sttSession config, one ~3 s synthetic clip each at real time, US container -> eastus2, runs 5 s apart. K = 4, 8, 12, 24: every session updated and completed (48/48). K = 40: 39/40; one WebSocket failed at the upgrade ("non-101 status", cause, proxy or rate limit, not determinable from the client). So the capacity-10 deployment held at least 24 concurrent child sessions; the ceiling and its 429 shape were not found. Outputs `stt-live-concurrency-2026-10-04.json`, `stt-live-concurrency-hi-2026-10-04.json`.

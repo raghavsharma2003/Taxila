@@ -1,0 +1,80 @@
+{
+ "note": "ROUTER-CHANGES section A applied in the tree on 2026-10-04 (A1 regex + effort floor, A2 passive-ideation predicate, A3 TAXILA_STT_MODEL in deploy-azure host env, A4 image-lane default in code). Not committed, pushed or deployed. Prose write-ups are already in context/decisions.md and context/measurements.md under each id (block '<!-- router-shipnow ... -->'), so a merge needs only these nodes and edges. A5 (infra/eval hygiene) was not applied by this workflow.",
+ "nodes": [
+  {
+   "id": "reasoning-family-gpt6-effort-floor-2026-10-04",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "server/azure.js: REASONING_FAMILY also matches taxila-gpt6*/taxila-gpt61*/gpt-6* (max_completion_tokens + reasoning_effort, never max_tokens); effortFor() sends 'low' for a requested 'none' on gpt-6.1-sol and gpt-6-astra (which 400 on 'none'). gpt-6 classify: 0 model errors (was 40/40), distress 10/10 (was 6/10). Reverse if Foundry flips the parameter shape or sol/astra accept 'none'"
+  },
+  {
+   "id": "scan-safety-passive-ideation-2026-10-04",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "scanSafety() self_harm gains passive ideation: EN 'don't want to wake up', 'wish I wasn't here', 'better if I wasn't around / off without me', 'nobody would notice if I was gone'; Hinglish 'main na rahun', 'na rahun toh'; Devanagari 'मैं न रहूँ', 'न रहूं तो' — with context exclusions (schedule word or a person after 'wake up'; a place/state word before 'na rahun'; ever/again/anymore always fire). 28/28 positives, 0/37 benign, 0 new fires on 128k corpus strings. Reverse/revise on real-child false alarms >= 1% of sleep turns or a classifier-caught miss"
+  },
+  {
+   "id": "stt-live-transcribe-cascade-eastus2",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Live cascade STT for the eastus2 app -> taxila-live-transcribe via TAXILA_STT_MODEL in scripts/deploy-azure.mjs host env (not --profile india; DEPLOY_TRANSCRIBE unchanged; effective on next deploy). Session accepts the logprobs include but returns none, so the low-ASR gate and one-word low-confidence backchannel rule go inactive on that lane: accepted trade-off (0/12 vs 4-12/12 non-speech fabrication), owner to hear it. Costs ~150-210 ms on VAD-stop -> final. Reverse on real-child fabrication/mis-hearing the gate would catch (>= 2% graded turns), production 429s on the capacity-10 deployment, or logprobs appearing"
+  },
+  {
+   "id": "image-lane-default-flare-low-code-2026-10-04",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "server/azure.js DEPLOY.image defaults to taxila-image25-flare; IMAGE config fixes quality 'low' (never medium), fallback taxila-image low on 429/filter refusal, then sunburst low for diagrams. No server caller yet. .env.local DEPLOY_IMAGE left at taxila-image because running character workflows read it for portrait edits flare was not benched on (4 RPM subscription quota). Reverse per image-lanes-flare-low-both-2026-10-04"
+  },
+  {
+   "id": "classify-gpt6-prodpath-fixed-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Real classify() on the A1-fixed tree (evals/classify-accuracy.mjs, n 40 + 10 distress per model): taxila-gpt6-luna 38/40 exact [W80 0.89-0.98], taxila-gpt6 38/40, 0 graded wrong, 0 model errors, distress 10/10, p50 1278 / 1445 ms (shim run: 34/40 and 38/40; luna difference within noise). Floor: raw effort 'none' -> HTTP 400 on gpt61-sol and gpt6-astra; with the fix 19/20, 0 errors, distress 5/5 each (n 20 + 5)"
+  },
+  {
+   "id": "scan-safety-passive-benign-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "scanSafety() A2 shapes: authored positives 28/28 (old 0/28), authored benign controls 0/37 fire, red-team table 25/25 and idioms 0/8 unchanged; old-vs-new diff over 126,863 kit strings + 108 relational child lines (3 -> 3 fires, 0 new) and 1,326 child/STT strings (0 -> 0); 3.2 us/call"
+  },
+  {
+   "id": "stt-live-smoke-a3a-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "A3a smoke (n 5 synthetic child clips per arm, sttSession + mintRealtimeSecret as the stt-token route, WebSocket transport): taxila-live-transcribe mint OK, session.updated echoes include logprobs (accepted), deltas + completed 5/5, logprobs 0/5 (asrConfidence undefined), first delta during speech, final ~460 ms after VAD; English written in Devanagari 4/4. gpt-4o-transcribe control: logprobs 5/5, first delta only after commit, final 252-416 ms"
+  },
+  {
+   "id": "cascade-latency-live-transcribe-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "evals/cascade-latency.mjs --turns 20 with TAXILA_STT_MODEL=taxila-live-transcribe (real stt-token route, taxila-fast reply+classify): stt stage 508 / 530 ms median/p90 vs 295-360 median for gpt-4o-transcribe (2026-10-03, n 12 x 3); endpoint 1081 unchanged; total 3688 / 4452; 20/20 turns completed, asr_conf null on 20/20 (expected)"
+  },
+  {
+   "id": "stt-live-concurrency-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "taxila-live-transcribe (capacity 10) under K simultaneous transcription sessions with one ~3 s clip each: K 4/8/12/24 all completed (48/48); K 40 39/40 (one WebSocket upgrade failed, non-101, cause unknown). Ceiling and 429 shape not found"
+  },
+  {
+   "id": "open-live-transcribe-english-in-devanagari",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "taxila-live-transcribe writes English lesson words in Devanagari ('फेसेस', 'कॉर्नर्स', 'एज') despite sttPrompt's Latin-script instruction (A3a 4/4 clips with English words; most cascade-latency turns). classify graded these right in the 20-turn run, but kit-key exact matching (classifyFast) and any downstream that compares Latin terms see a different string. Unmeasured: exact-match rate change on the n=180 corpus; per-lesson keywords (not wired) may change it"
+  }
+ ],
+ "edges": [
+  { "src": "reasoning-family-gpt6-effort-floor-2026-10-04", "rel": "caused_by", "dst": "gpt6-reasoning-family-regex-400" },
+  { "src": "reasoning-family-gpt6-effort-floor-2026-10-04", "rel": "measured_by", "dst": "classify-gpt6-prodpath-fixed-2026-10-04" },
+  { "src": "scan-safety-passive-ideation-2026-10-04", "rel": "supersedes", "dst": "predicate-passive-ideation-gap-2026-10-04" },
+  { "src": "scan-safety-passive-ideation-2026-10-04", "rel": "measured_by", "dst": "scan-safety-passive-benign-2026-10-04" },
+  { "src": "stt-live-transcribe-cascade-eastus2", "rel": "caused_by", "dst": "prod-live-stt-gpt4o-transcribe" },
+  { "src": "stt-live-transcribe-cascade-eastus2", "rel": "measured_by", "dst": "stt-refresh-2026-10-04-synthetic" },
+  { "src": "stt-live-transcribe-cascade-eastus2", "rel": "measured_by", "dst": "stt-live-smoke-a3a-2026-10-04" },
+  { "src": "stt-live-transcribe-cascade-eastus2", "rel": "measured_by", "dst": "cascade-latency-live-transcribe-2026-10-04" },
+  { "src": "stt-live-transcribe-cascade-eastus2", "rel": "measured_by", "dst": "stt-live-concurrency-2026-10-04" },
+  { "src": "image-lane-default-flare-low-code-2026-10-04", "rel": "caused_by", "dst": "image-lanes-flare-low-both-2026-10-04" },
+  { "src": "image-lane-default-flare-low-code-2026-10-04", "rel": "measured_by", "dst": "refresh-images-2026-10-04" },
+  { "src": "image-lane-default-flare-low-code-2026-10-04", "rel": "constrains", "dst": "rj-image-medium-quality" },
+  { "src": "open-live-transcribe-english-in-devanagari", "rel": "caused_by", "dst": "stt-live-smoke-a3a-2026-10-04" }
+ ]
+}

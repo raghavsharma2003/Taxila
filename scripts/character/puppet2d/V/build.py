@@ -104,7 +104,10 @@ for box in S["eye_boxes"]:
     x0, y0, x1, y1 = box
     sub = np.zeros((H, W), bool); sub[y0:y1, x0:x1] = True
     nonskin = sub & ((luma < 110) | (sat < 70))
-    feat |= fill_holes(dil(nonskin, 2))
+    em = fill_holes(dil(nonskin, 2)).astype(np.uint8)
+    # the lid crease and lid highlight are drawn parametrically: keep them out of the skin fit (14 px above the lash)
+    up = cv2.dilate(em, np.ones((17, 1), np.uint8), anchor=(0, 0))
+    feat |= up.astype(bool) | dil(em, 3)
 for box in S["brow_boxes"]:
     x0, y0, x1, y1 = box
     sub = np.zeros((H, W), bool); sub[y0:y1, x0:x1] = True
@@ -124,15 +127,15 @@ for b in FEAT["brows"].values():
     for i in range(len(pts) - 1):
         cv2.line(BROWS, tuple(np.round(pts[i]).astype(int)), tuple(np.round(pts[i + 1]).astype(int)), 1, max(1, int(round(th[i] + 3))))
     cv2.circle(BROWS, tuple(np.round(pts[0]).astype(int)), int(th[0] / 2 + 2), 1, -1)
-BROWS = BROWS.astype(bool) & ~(DARK & ~dil(BROWS.astype(bool), 0) )| (BROWS.astype(bool))
-feat |= dil(BROWS & DARK, 3) | dil(BROWS, 2)
+BROWS = BROWS.astype(bool)
+feat |= dil(BROWS & DARK, 4) | dil(BROWS, 3) | (cv2.dilate(BROWS.astype(np.uint8), np.ones((12, 1), np.uint8), anchor=(0, 11)).astype(bool))
 
 # hair
 featbox = np.zeros((H, W), bool)
 for box in S["eye_boxes"] + S["brow_boxes"]:
     x0, y0, x1, y1 = box; featbox[y0:y1, x0:x1] = True
 featbox |= disk(S["bindi"][:2], 14)
-featbox |= dil(BROWS, 2) & ~(FRONT_HAIRLINE := np.zeros((H, W), bool))
+featbox |= dil(BROWS, 2)
 HAIR = DARK & ~featbox
 HAIR = dil(ero(HAIR, 1), 1) | (DARK & ~featbox)
 

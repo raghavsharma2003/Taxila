@@ -19,7 +19,11 @@ export const PREFIX_MS = 300;
  * partials DURING speech (measured here: first delta ~1.6 s into a 5 s utterance vs only after commit for
  * 4o) and was the best E0 arm (docs/research/voice/asr-kids-hinglish.md §0), but returned no logprobs in a
  * transcription session (probe 2026-10-02, n=1), so it would leave every spoken turn ungated.
- * Override with TAXILA_STT_MODEL.
+ * Override with TAXILA_STT_MODEL. Production eastus2 sets it to taxila-live-transcribe (scripts/deploy-azure.mjs,
+ * ROUTER-CHANGES A3): on the child Hinglish set it was CER 0.028 vs 0.236-0.294 and wrote text on 0/12 non-speech
+ * clips vs 4-12/12, and the A3a smoke (2026-10-04, 5/5 utterances) showed the session ACCEPTS the logprobs
+ * `include` but returns no logprobs, so asrConfidence is undefined and classify's low-ASR gate does not fire on
+ * that lane: the accepted trade-off (decisions.md stt-live-transcribe-cascade-eastus2).
  */
 export const sttModel = () => process.env.TAXILA_STT_MODEL || DEPLOY.transcribe;
 

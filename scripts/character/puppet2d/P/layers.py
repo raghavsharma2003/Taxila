@@ -150,7 +150,7 @@ def matte(mask, overscan=None, band=2, erode=2):
     alpha = np.where(inner, 1.0, np.where(bandm, a, 0.0)).astype(np.float32)
     rgb = np.where(inner[..., None], im, F)
     if overscan is not None:
-        alpha = np.maximum(alpha, overscan.astype(np.float32))
+        alpha = np.maximum(alpha, (ndi.binary_dilation(overscan, iterations=band + 1) & ndi.binary_dilation(mask, iterations=band) | overscan).astype(np.float32))
     return rgb, alpha
 
 
@@ -310,7 +310,7 @@ for side in ("L", "R"):
     low_rgb = im
     geom_out["rects"][f"lower{side}"] = save_layer(f"lower{side}", low_rgb, low)
 
-    eye_fill |= ndi.binary_dilation(opening | (lidmask & (lum < 110)), iterations=3)
+    eye_fill |= ndi.binary_dilation(opening | lidmask, iterations=3)
     geom_out["eyes"][side] = {
         "x": [int(xa), int(xb_)], "top": [round(float(v), 2) for v in T], "bot": [round(float(v), 2) for v in Bt],
         "lashX": [int(LX[0]), int(LX[-1])], "lashTop": [round(float(v), 2) for v in LT], "lashBot": [round(float(v), 2) for v in LB],
@@ -341,12 +341,12 @@ for side, bm in (("L", browLm), ("R", browR)):
     brow_fill |= ndi.binary_dilation(bm, iterations=4)
 
 # ------------------------------------------------------------------ mouth rest patch (c-front's own mouth)
-mcx, mcy, mrx, mry = GEOM["mouth_patch"]
-ed = np.sqrt(((xx - mcx) / mrx) ** 2 + ((yy - mcy) / mry) ** 2)
-mouth_alpha = np.clip((1 - ed) / 0.22, 0, 1)
-mouth_alpha = mouth_alpha * mouth_alpha * (3 - 2 * mouth_alpha)
+import sys as _sys
+_sys.path.insert(0, "scripts/character/puppet2d/P")
+import mouthshape
+mouth_alpha = mouthshape.alpha(H, W)
 geom_out["rects"]["mouth_rest"] = save_layer("mouth_rest", im, mouth_alpha)
-lips = (ed < 1.02)
+lips = ndi.binary_dilation(mouthshape.region(H, W), iterations=2)
 
 # ------------------------------------------------------------------ face base: skin, features removed, overscan
 over_face = hair | lockL | lockR                  # layers drawn above the face edge (ears are below it)
@@ -374,7 +374,8 @@ for name, m, sig in (("hair", hair, 0.7), ("bun", bun, 0.7), ("lockL", lockL, 0.
     if name == "hair":   # opaque under the locks' roots so a lock edge never shows what is behind the hair
         over = ndi.binary_dilation(hair, iterations=8) & (lockL | lockR) & (yy < 560)
     if name == "bun":    # the bun is behind the neck, the jaw and the lock: continue it under them
-        over = ndi.binary_dilation(bun, iterations=14) & (body | face | lockR | hair) & ~ndi.binary_dilation(bgc & ~bun, iterations=0)
+        over = ndi.binary_dilation(bun, iterations=34) & (body | face | lockR | hair | ears)
+        over = ndi.binary_fill_holes(ndi.binary_closing(over | bun, iterations=8)) & ~bun & ~(bgc & ~ndi.binary_dilation(bun, iterations=2))
     rgb, a = matte(m, over)
     if over is not None:
         rgb = np.where((over & ~m)[..., None], pullpush(im, ndi.binary_erosion(m, iterations=2)), rgb)
@@ -382,16 +383,28 @@ for name, m, sig in (("hair", hair, 0.7), ("bun", bun, 0.7), ("lockL", lockL, 0.
 
 # ------------------------------------------------------------------ hair back plate (behind the face and ears)
 hb_area = ndi.binary_fill_holes(hair_all | face_poly | ears) & ~(yy > 600)
-hb_area = ndi.binary_erosion(hb_area, iterations=4) & ~ndi.binary_dilation(bgc, iterations=3)
+hb_area = ndi.binary_erosion(hb_area, iterations=12) & ~ndi.binary_dilation(bgc, iterations=12)
 hb_rgb = pullpush(im, hair & ~ndi.binary_dilation(face_poly, iterations=4), smooth_iters=200, region=hb_area)
 geom_out["rects"]["hairback"] = save_layer("hairback", hb_rgb, soft(hb_area, 1.0))
 
 # ------------------------------------------------------------------ body: kurta + neck, neck continued up behind the chin
-neck_up = face_poly & (yy > 600) & (xx > 440) & (xx < 625)
+# the neck continued straight up behind the chin between its visible edges (measured at y 712-735)
+_ne = [np.where(body[y, 400:660])[0] for y in range(712, 736)]
+nl = int(np.median([r.min() for r in _ne if len(r)])) + 400
+nr = int(np.median([r.max() for r in _ne if len(r)])) + 400
+neck_up = (yy > 560) & (yy < 740) & (xx >= nl) & (xx <= nr) & ~body & ~ndi.binary_dilation(bgc, iterations=2)
+print("neck edges", nl, nr)
 body_area = body | neck_up | (ndi.binary_dilation(body, iterations=8) & (lockL | lockR | hair))
-body_rgb = pullpush(im, ndi.binary_erosion(body, iterations=2), smooth_iters=300, region=body_area)
+neck_skin = ndi.binary_erosion(body, iterations=2) & ((R - B) > 60) & (yy < 760)
+known_b = ndi.binary_erosion(body, iterations=2) & ~((yy < 760) & ((R - B) <= 60))
+body_rgb = pullpush(im, known_b, smooth_iters=300, region=body_area & ~known_b)
+neck_fill = pullpush(im, neck_skin, smooth_iters=300, region=neck_up)
+body_rgb = np.where(neck_up[..., None], neck_fill, body_rgb)
+# behind the chin the neck is in the jaw's shadow: darken toward the chin line
+shade = 1 - 0.22 * np.clip((yy - 600) / 90.0, 0, 1) * neck_up
+body_rgb = body_rgb * shade[..., None]
 body_rgb[ndi.binary_erosion(body, iterations=1)] = im[ndi.binary_erosion(body, iterations=1)]
-_, ba = matte(body, body_area & ~body)
+_, ba = matte(body, ndi.binary_dilation(neck_up, iterations=4) & body_area | (body_area & ~body))
 geom_out["rects"]["body"] = save_layer("body", body_rgb, ba)
 
 # ------------------------------------------------------------------ background plate

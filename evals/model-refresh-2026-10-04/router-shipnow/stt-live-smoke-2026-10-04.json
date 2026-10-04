@@ -1,0 +1,163 @@
+{
+ "date": "2026-10-04",
+ "method": "sttSession(ageBand 6-9) as routes/voice.js mints it; client_secrets mint + session.update over the WebSocket transcription transport; 5 synthetic child clips (gpt-4o-mini-tts, x1.2 pitch) streamed at real time, server VAD as shipped",
+ "arms": {
+  "taxila-live-transcribe": {
+   "model": "taxila-live-transcribe",
+   "sessionInclude": [
+    "item.input_audio_transcription.logprobs"
+   ],
+   "mint": {
+    "ok": true,
+    "echoedInclude": [
+     "item.input_audio_transcription.logprobs"
+    ]
+   },
+   "sessionUpdate": {
+    "ok": true,
+    "include": [
+     "item.input_audio_transcription.logprobs"
+    ],
+    "model": "taxila-live-transcribe"
+   },
+   "utterances": [
+    {
+     "said": "मुझे लगता है छह faces हैं",
+     "deltas": 10,
+     "completed": 1,
+     "failed": 0,
+     "text": "मुझे लगता है छह फेसेस हैं।",
+     "logprobs": 0,
+     "errors": [],
+     "firstDeltaMs": 1975,
+     "finalAfterVadMs": 457
+    },
+    {
+     "said": "Didi, aath corners hote hain na?",
+     "deltas": 11,
+     "completed": 1,
+     "failed": 0,
+     "text": "दीदी, आठ कॉर्नर्स होते हैं ना?",
+     "logprobs": 0,
+     "errors": [],
+     "firstDeltaMs": 2190,
+     "finalAfterVadMs": 459
+    },
+    {
+     "said": "बारह edges और आठ corners",
+     "deltas": 10,
+     "completed": 1,
+     "failed": 0,
+     "text": "बारह एजेस और आठ कॉर्नर्स।",
+     "logprobs": 0,
+     "errors": [],
+     "firstDeltaMs": 2062,
+     "finalAfterVadMs": 464
+    },
+    {
+     "said": "pata nahi didi, ek baar phir batao",
+     "deltas": 12,
+     "completed": 1,
+     "failed": 0,
+     "text": "ता नहीं दीदी, एक बार फिर बताओ।",
+     "logprobs": 0,
+     "errors": [],
+     "firstDeltaMs": 2621,
+     "finalAfterVadMs": 462
+    },
+    {
+     "said": "Cube के सारे faces square होते हैं",
+     "deltas": 16,
+     "completed": 1,
+     "failed": 0,
+     "text": "क्यूब के सारे फेसेस स्क्वेयर होते हैं।",
+     "logprobs": 0,
+     "errors": [],
+     "firstDeltaMs": 2495,
+     "finalAfterVadMs": 463
+    }
+   ]
+  },
+  "taxila-transcribe": {
+   "model": "taxila-transcribe",
+   "sessionInclude": [
+    "item.input_audio_transcription.logprobs"
+   ],
+   "mint": {
+    "ok": true,
+    "echoedInclude": [
+     "item.input_audio_transcription.logprobs"
+    ]
+   },
+   "sessionUpdate": {
+    "ok": true,
+    "include": [
+     "item.input_audio_transcription.logprobs"
+    ],
+    "model": "taxila-transcribe"
+   },
+   "utterances": [
+    {
+     "said": "मुझे लगता है छह faces हैं",
+     "deltas": 9,
+     "completed": 1,
+     "failed": 0,
+     "text": "मुझे लगता है छः faces हैं.",
+     "logprobs": 9,
+     "conf": 0.782,
+     "errors": [],
+     "firstDeltaMs": 5050,
+     "finalAfterVadMs": 416
+    },
+    {
+     "said": "Didi, aath corners hote hain na?",
+     "deltas": 9,
+     "completed": 1,
+     "failed": 0,
+     "text": "दीदी, आठ corners होते हैं ना?",
+     "logprobs": 9,
+     "conf": 0.814,
+     "errors": [],
+     "firstDeltaMs": 5415,
+     "finalAfterVadMs": 299
+    },
+    {
+     "said": "बारह edges और आठ corners",
+     "deltas": 7,
+     "completed": 1,
+     "failed": 0,
+     "text": "बारा edges और आठ corners.",
+     "logprobs": 7,
+     "conf": 0.84,
+     "errors": [],
+     "firstDeltaMs": 5384,
+     "finalAfterVadMs": 252
+    },
+    {
+     "said": "pata nahi didi, ek baar phir batao",
+     "deltas": 12,
+     "completed": 1,
+     "failed": 0,
+     "text": "तथा नहीं दीदी, एक बार फिर बताओ?",
+     "logprobs": 12,
+     "conf": 0.481,
+     "errors": [],
+     "firstDeltaMs": 5528,
+     "finalAfterVadMs": 309
+    },
+    {
+     "said": "Cube के सारे faces square होते हैं",
+     "deltas": 14,
+     "completed": 1,
+     "failed": 0,
+     "text": "क्यूट के सारे फेसिस स्क्वेयर होते हैं।",
+     "logprobs": 14,
+     "conf": 0.764,
+     "errors": [],
+     "firstDeltaMs": 5811,
+     "finalAfterVadMs": 297
+    }
+   ]
+  }
+ }
+}

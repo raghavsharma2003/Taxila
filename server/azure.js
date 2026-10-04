@@ -18,7 +18,23 @@ export const DEPLOY = {
   get classify() { return process.env.DEPLOY_CLASSIFY || this.fast; },  // answer vs verified key (JSON)
   get transcribe() { return process.env.DEPLOY_TRANSCRIBE || "taxila-transcribe"; },
   get tts() { return process.env.DEPLOY_TTS || "gpt-4o-mini-tts"; },
+  // Image lane (ROUTER-CHANGES A4, 2026-10-04): gpt-image-2.5-flare. No server route calls it yet (offline scripts and
+  // the future Studio image lane); IMAGE below carries the quality and the fallback order every caller must use.
+  get image() { return process.env.DEPLOY_IMAGE || "taxila-image25-flare"; },
 };
+
+/**
+ * How the image lane is called (model-refresh images, 2026-10-04: flare-low 10/10 diagrams by eye, medium no
+ * correctness gain at 2.1-8x the cost, rejected rj-image-medium-quality). quality is ALWAYS "low", never "medium".
+ * Fallback: on a 429 (flare is 4 RPM for the whole subscription, image-capacity-pool-2026-10-04) or a filter refusal,
+ * gpt-image-2 low; for diagrams where correctness outweighs ~28 s, sunburst low. Labels stay kit-term overlays and
+ * keep the human label check (diagram-router-no-baked-labels): no generated pixel carries a curriculum fact.
+ */
+export const IMAGE = Object.freeze({
+  quality: "low",
+  fallback: Object.freeze(["taxila-image"]),
+  diagramFallback: Object.freeze(["taxila-image", "taxila-image25-sunburst"]),
+});
 
 export class AzureError extends Error {
   constructor(message, status = 0, code = "") { super(message); this.status = status; this.code = code; }
