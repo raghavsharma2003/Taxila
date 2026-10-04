@@ -2168,3 +2168,7 @@ PASS; target p99 ≤ 5 ms PASS in all three runs. Production timing is SG-M18.
     the new 1,200-character cap and 1.2 ms after it.
   - **Naming:** the column the summary calls "AUC" is balanced accuracy ((TPR + TNR) / 2) on boolean rules. It is not a
     ranking AUC.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `voice-blind-r3-page-check-2026-10-04` (2026-10-04): Round-3 page functional check (headless Chromium 1194, Playwright, 29 assertions, all passed, 2026-10-04). Covered: 5 cards x 4 voices, words shown on every clip, scores locked until listened, 11 failure boxes; with storage blocked and no runtime, status text plus a ratings-text export that carries v, who, score and ticks; with a mock db, the db score, local score and card note merge, names are indexed, switching person keeps both docs separate with no reload, and a runtime that resolves late after start does not overwrite an earlier device's scores and adopts its seed; with a null runtime, the on-device status shows; no horizontal scroll at 360 px. Not exercised: the real claude.ai db/user runtime, which is checked after publish with an ArtifactData list of ratings.
