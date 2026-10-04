@@ -52,6 +52,9 @@ def feat_rows(sid):
 def load(split):
     p = os.path.join(TICKS, split + ".jsonl")
     rows = [json.loads(l) for l in open(p) if l.strip()]
+    # decisions are only ever taken while the child is silent: train and score on silent ticks (voicing ticks are a
+    # trivially "not complete" mass that otherwise dominates the loss)
+    rows = [r for r in rows if r["f"][NAMES.index("child.voicing")] < 0.5]
     X = np.array([r["f"] for r in rows], np.float32)
     E = np.zeros((len(rows), 384), np.float32); S = np.zeros((len(rows), 1), np.float32); M = np.ones((len(rows), 1), np.float32)
     for i, r in enumerate(rows):

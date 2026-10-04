@@ -6,18 +6,18 @@
  "streams": 48,
  "ok": 48,
  "errors": [],
- "seconds": 154,
+ "seconds": 151,
  "sttTiming": {
   "live": {
    "firstPartialAfterOnsetMs": {
     "n": 48,
-    "p50": 1086,
-    "p90": 1561
+    "p50": 1094,
+    "p90": 1493
    },
    "partialLagMs": {
     "n": 316,
-    "p50": 525,
-    "p90": 1229
+    "p50": 503,
+    "p90": 1210
    }
   },
   "simModelD4_M2": {
@@ -39,113 +39,6 @@
  },
  "live": {
   "M2_thinkingCutoff": {
-   "k": 1,
-   "n": 38,
-   "rate": 0.026,
-   "ci95": [
-    0,
-    0.083
-   ]
-  },
-  "M2_turnCutoff": {
-   "k": 1,
-   "n": 29,
-   "rate": 0.034,
-   "ci95": [
-    0,
-    0.103
-   ]
-  },
-  "M3_gapDecision": {
-   "n": 28,
-   "p50": 825,
-   "p90": 1489,
-   "ci95p50": [
-    790,
-    945
-   ],
-   "ci95p90": [
-    1163,
-    1520
-   ],
-   "mean": 958
-  },
-  "M3_gapAudible": {
-   "n": 28,
-   "p50": 2430,
-   "p90": 3878,
-   "ci95p50": [
-    1898,
-    2874
-   ],
-   "ci95p90": [
-    3035,
-    4685
-   ],
-   "mean": 2436
-  },
-  "M4_missedRespond": {
-   "k": 8,
-   "n": 36,
-   "rate": 0.222,
-   "ci95": [
-    0.111,
-    0.361
-   ]
-  },
-  "M7_yieldLatency": {
-   "n": 4,
-   "p50": 296,
-   "p90": 599,
-   "ci95p50": [
-    71,
-    710
-   ],
-   "ci95p90": [
-    196,
-    710
-   ],
-   "mean": 343
-  },
-  "M11_verdictOnRepaired": {
-   "k": 0,
-   "n": 2,
-   "rate": 0,
-   "ci95": [
-    0,
-    0
-   ]
-  },
-  "M12_holdViolation": {
-   "k": 1,
-   "n": 5,
-   "rate": 0.2,
-   "ci95": [
-    0,
-    0.6
-   ]
-  },
-  "M13_nonSafetySpeechAfterDistress": {
-   "k": 1,
-   "n": 4,
-   "rate": 0.25,
-   "ci95": [
-    0,
-    0.75
-   ]
-  },
-  "M13_detected": {
-   "k": 3,
-   "n": 4,
-   "rate": 0.75,
-   "ci95": [
-    0.25,
-    1
-   ]
-  }
- },
- "sim": {
-  "M2_thinkingCutoff": {
    "k": 0,
    "n": 38,
    "rate": 0,
@@ -164,55 +57,55 @@
    ]
   },
   "M3_gapDecision": {
-   "n": 33,
-   "p50": 1090,
-   "p90": 1472,
+   "n": 34,
+   "p50": 855,
+   "p90": 1517,
    "ci95p50": [
-    979,
-    1210
+    810,
+    980
    ],
    "ci95p90": [
-    1270,
-    1590
+    1067,
+    1550
    ],
-   "mean": 1098
+   "mean": 987
   },
   "M3_gapAudible": {
-   "n": 33,
-   "p50": 2739,
-   "p90": 3289,
+   "n": 34,
+   "p50": 2510,
+   "p90": 3983,
    "ci95p50": [
-    1704,
-    3003
+    2262,
+    2752
    ],
    "ci95p90": [
-    3127,
-    3804
+    3063,
+    4623
    ],
-   "mean": 2486
+   "mean": 2462
   },
   "M4_missedRespond": {
-   "k": 3,
+   "k": 2,
    "n": 36,
-   "rate": 0.083,
+   "rate": 0.056,
    "ci95": [
-    0.027,
-    0.194
+    0,
+    0.139
    ]
   },
   "M7_yieldLatency": {
    "n": 5,
    "p50": 701,
-   "p90": 1300,
+   "p90": 1216,
    "ci95p50": [
-    250,
-    1693
+    71,
+    1553
    ],
    "ci95p90": [
-    689,
-    1693
+    521,
+    1553
    ],
-   "mean": 805
+   "mean": 657
   },
   "M11_verdictOnRepaired": {
    "k": 0,
@@ -251,20 +144,127 @@
    ]
   }
  },
+ "sim": {
+  "M2_thinkingCutoff": {
+   "k": 0,
+   "n": 38,
+   "rate": 0,
+   "ci95": [
+    0,
+    0
+   ]
+  },
+  "M2_turnCutoff": {
+   "k": 0,
+   "n": 29,
+   "rate": 0,
+   "ci95": [
+    0,
+    0
+   ]
+  },
+  "M3_gapDecision": {
+   "n": 34,
+   "p50": 1165,
+   "p90": 1517,
+   "ci95p50": [
+    1090,
+    1290
+   ],
+   "ci95p90": [
+    1390,
+    1680
+   ],
+   "mean": 1177
+  },
+  "M3_gapAudible": {
+   "n": 34,
+   "p50": 2902,
+   "p90": 3841,
+   "ci95p50": [
+    2227,
+    3265
+   ],
+   "ci95p90": [
+    3391,
+    5229
+   ],
+   "mean": 2773
+  },
+  "M4_missedRespond": {
+   "k": 2,
+   "n": 36,
+   "rate": 0.056,
+   "ci95": [
+    0,
+    0.139
+   ]
+  },
+  "M7_yieldLatency": {
+   "n": 4,
+   "p50": 691,
+   "p90": 866,
+   "ci95p50": [
+    250,
+    933
+   ],
+   "ci95p90": [
+    572,
+    933
+   ],
+   "mean": 641
+  },
+  "M11_verdictOnRepaired": {
+   "k": 0,
+   "n": 2,
+   "rate": 0,
+   "ci95": [
+    0,
+    0
+   ]
+  },
+  "M12_holdViolation": {
+   "k": 0,
+   "n": 5,
+   "rate": 0,
+   "ci95": [
+    0,
+    0
+   ]
+  },
+  "M13_nonSafetySpeechAfterDistress": {
+   "k": 1,
+   "n": 4,
+   "rate": 0.25,
+   "ci95": [
+    0,
+    0.75
+   ]
+  },
+  "M13_detected": {
+   "k": 3,
+   "n": 4,
+   "rate": 0.75,
+   "ci95": [
+    0.25,
+    1
+   ]
+  }
+ },
  "agreement": {
   "turnCutoff": [
-   28,
+   29,
    29
   ],
   "missedRespond": [
-   31,
+   36,
    36
   ],
   "gapLiveMinusSimMs": {
-   "n": 28,
-   "p50": -140,
-   "p10": -526,
-   "p90": 198
+   "n": 34,
+   "p50": -260,
+   "p10": -596,
+   "p90": 224
   }
  },
  "perStream": [
@@ -272,8 +272,8 @@
    "id": "f1-fluent_choice_yn-0033~Kavya~noisy",
    "commits": 1,
    "events": 9,
-   "gap": 950,
-   "simGap": 890,
+   "gap": 870,
+   "simGap": 970,
    "missed": false,
    "turnCutoff": false
   },
@@ -282,7 +282,7 @@
    "commits": 1,
    "events": 10,
    "gap": 630,
-   "simGap": 1130,
+   "simGap": 590,
    "missed": false,
    "turnCutoff": false
   },
@@ -290,17 +290,17 @@
    "id": "f1-fluent_choice_yn-0029~Kavya~clean",
    "commits": 1,
    "events": 25,
-   "gap": null,
-   "simGap": null,
-   "missed": true,
+   "gap": 1540,
+   "simGap": 1460,
+   "missed": false,
    "turnCutoff": false
   },
   {
    "id": "f1-fluent_dec_unit-0023~Rehaan~clean",
    "commits": 1,
    "events": 35,
-   "gap": 1520,
-   "simGap": 740,
+   "gap": 860,
+   "simGap": 720,
    "missed": false,
    "turnCutoff": false
   },
@@ -308,17 +308,17 @@
    "id": "f1-hes_preface-0086~Kavya~clean",
    "commits": 2,
    "events": 28,
-   "gap": 2330,
-   "simGap": 810,
-   "missed": true,
+   "gap": 850,
+   "simGap": 1390,
+   "missed": false,
    "turnCutoff": false
   },
   {
    "id": "f1-hes_preface-0110~Rehaan~clean",
    "commits": 2,
-   "events": 31,
+   "events": 32,
    "gap": 1510,
-   "simGap": 850,
+   "simGap": 970,
    "missed": false,
    "turnCutoff": false
   },
@@ -326,8 +326,8 @@
    "id": "f1-hes_preface-0098~Kavya~noisy",
    "commits": 2,
    "events": 19,
-   "gap": 1160,
-   "simGap": 980,
+   "gap": 680,
+   "simGap": 860,
    "missed": false,
    "turnCutoff": false
   },
@@ -335,8 +335,8 @@
    "id": "f1-rep_marker-0121~Rehaan~noisy",
    "commits": 3,
    "events": 35,
-   "gap": 840,
-   "simGap": 1360,
+   "gap": 1000,
+   "simGap": 1120,
    "missed": false,
    "turnCutoff": false
   },
@@ -344,7 +344,7 @@
    "id": "f1-tail-0053~Kavya~noisy",
    "commits": 1,
    "events": 10,
-   "gap": 1180,
+   "gap": 1060,
    "simGap": 1680,
    "missed": false,
    "turnCutoff": false
@@ -353,35 +353,35 @@
    "id": "f1-tail-0057~Rehaan~clean",
    "commits": 1,
    "events": 21,
-   "gap": null,
-   "simGap": 1120,
-   "missed": true,
+   "gap": 760,
+   "simGap": 1300,
+   "missed": false,
    "turnCutoff": false
   },
   {
    "id": "f1-tail-0061~Rehaan~noisy",
    "commits": 1,
    "events": 11,
-   "gap": 630,
-   "simGap": 850,
+   "gap": 650,
+   "simGap": 1070,
    "missed": false,
    "turnCutoff": false
   },
   {
    "id": "f1-rep_marker-0136~Kavya~clean",
    "commits": 3,
-   "events": 56,
-   "gap": 750,
-   "simGap": 1350,
+   "events": 58,
+   "gap": 870,
+   "simGap": 1250,
    "missed": false,
    "turnCutoff": false
   },
   {
    "id": "f2-cue_maths-0168~Kavya~noisy",
    "commits": 3,
-   "events": 45,
-   "gap": 810,
-   "simGap": 1210,
+   "events": 44,
+   "gap": 870,
+   "simGap": 1290,
    "missed": false,
    "turnCutoff": false
   },
@@ -389,8 +389,8 @@
    "id": "f2-cue_maths-0141~Kavya~clean",
    "commits": 3,
    "events": 63,
-   "gap": 760,
-   "simGap": 720,
+   "gap": 820,
+   "simGap": 1180,
    "missed": false,
    "turnCutoff": false
   },
@@ -398,8 +398,8 @@
    "id": "f2-cue_maths-0183~Rehaan~clean",
    "commits": 4,
    "events": 60,
-   "gap": 890,
-   "simGap": 1430,
+   "gap": 850,
+   "simGap": 1130,
    "missed": false,
    "turnCutoff": false
   },
@@ -407,15 +407,15 @@
    "id": "f2-cue_maths-0216~Rehaan~noisy",
    "commits": 3,
    "events": 35,
-   "gap": 810,
-   "simGap": 790,
+   "gap": 1550,
+   "simGap": 1290,
    "missed": false,
    "turnCutoff": false
   },
   {
    "id": "f2-nocue_sci-0164~Kavya~clean",
    "commits": 3,
-   "events": 50,
+   "events": 49,
    "gap": 2990,
    "simGap": 2990,
    "missed": true,
@@ -424,7 +424,7 @@
   {
    "id": "f2-nocue_sci-0172~Kavya~noisy",
    "commits": 3,
-   "events": 47,
+   "events": 50,
    "gap": 2520,
    "simGap": 2520,
    "missed": true,
@@ -452,8 +452,8 @@
    "id": "f3-initial_address-0225~Kavya~clean",
    "commits": 2,
    "events": 32,
-   "gap": 940,
-   "simGap": 700,
+   "gap": 800,
+   "simGap": 1740,
    "missed": false,
    "turnCutoff": false
   },
@@ -461,8 +461,8 @@
    "id": "f3-initial_address-0249~Kavya~clean",
    "commits": 2,
    "events": 39,
-   "gap": 770,
-   "simGap": 1030,
+   "gap": 990,
+   "simGap": 950,
    "missed": false,
    "turnCutoff": false
   },
@@ -470,9 +470,9 @@
    "id": "f4-one_en-0263~Kavya~clean",
    "commits": 1,
    "events": 18,
-   "gap": 2750,
-   "simGap": 1230,
-   "missed": true,
+   "gap": 810,
+   "simGap": 1150,
+   "missed": false,
    "turnCutoff": false
   },
   {
@@ -488,15 +488,15 @@
    "id": "f4-one_en-0273~Kavya~noisy",
    "commits": 1,
    "events": 18,
-   "gap": 2910,
-   "simGap": 1270,
-   "missed": true,
+   "gap": 1010,
+   "simGap": 1090,
+   "missed": false,
    "turnCutoff": false
   },
   {
    "id": "f3-mid_b-0248~Kavya~clean",
    "commits": 3,
-   "events": 58,
+   "events": 57,
    "gap": 3030,
    "simGap": 3030,
    "missed": true,
@@ -506,26 +506,26 @@
    "id": "f4-one_en-0283~Rehaan~clean",
    "commits": 1,
    "events": 18,
-   "gap": 2750,
-   "simGap": 1190,
-   "missed": true,
+   "gap": 810,
+   "simGap": 1050,
+   "missed": false,
    "turnCutoff": false
   },
   {
    "id": "f4-two_hi-0266~Rehaan~noisy",
    "commits": 2,
    "events": 21,
-   "gap": 860,
-   "simGap": 980,
+   "gap": 1100,
+   "simGap": 680,
    "missed": false,
    "turnCutoff": false
   },
   {
    "id": "f5-hold_think-0294~Rehaan~clean",
    "commits": 2,
-   "events": 43,
-   "gap": 750,
-   "simGap": 1010,
+   "events": 42,
+   "gap": 830,
+   "simGap": 1530,
    "missed": false,
    "turnCutoff": false
   },
@@ -533,35 +533,35 @@
    "id": "f5-hold_think-0304~Kavya~noisy",
    "commits": 2,
    "events": 37,
-   "gap": 800,
-   "simGap": 780,
+   "gap": 840,
+   "simGap": 1380,
    "missed": false,
    "turnCutoff": false
   },
   {
    "id": "f5-hold_long-0305~Rehaan~noisy",
    "commits": 2,
-   "events": 29,
-   "gap": 760,
-   "simGap": 940,
+   "events": 31,
+   "gap": 700,
+   "simGap": 1180,
    "missed": false,
-   "turnCutoff": true
+   "turnCutoff": false
   },
   {
    "id": "f5-hold_long-0293~Kavya~clean",
    "commits": 2,
    "events": 31,
-   "gap": 850,
-   "simGap": 1010,
+   "gap": 810,
+   "simGap": 1110,
    "missed": false,
    "turnCutoff": false
   },
   {
    "id": "f5-hold_think-0319~Kavya~clean",
    "commits": 2,
-   "events": 41,
-   "gap": 790,
-   "simGap": 1090,
+   "events": 40,
+   "gap": 770,
+   "simGap": 1510,
    "missed": false,
    "turnCutoff": false
   },
@@ -595,9 +595,9 @@
   {
    "id": "f6-filler_idk-0342~Kavya~clean",
    "commits": 2,
-   "events": 26,
-   "gap": 1170,
-   "simGap": 1110,
+   "events": 25,
+   "gap": 970,
+   "simGap": 870,
    "missed": false,
    "turnCutoff": false
   },
@@ -605,8 +605,8 @@
    "id": "f6-filler_idk-0348~Kavya~noisy",
    "commits": 2,
    "events": 21,
-   "gap": 810,
-   "simGap": 1270,
+   "gap": 1850,
+   "simGap": 750,
    "missed": false,
    "turnCutoff": false
   },
@@ -624,23 +624,23 @@
    "commits": 2,
    "events": 14,
    "gap": 650,
-   "simGap": 1590,
+   "simGap": 1130,
    "missed": false,
    "turnCutoff": false
   },
   {
    "id": "f6-filler_idk-0354~Rehaan~clean",
    "commits": 2,
-   "events": 33,
-   "gap": 780,
-   "simGap": 700,
+   "events": 32,
+   "gap": 800,
+   "simGap": 1180,
    "missed": false,
    "turnCutoff": false
   },
   {
    "id": "f7-fold_in-0394~Kavya~clean",
    "commits": 1,
-   "events": 20,
+   "events": 17,
    "gap": null,
    "simGap": null,
    "missed": null,
@@ -685,7 +685,7 @@
   {
    "id": "f10-after_value-0506~Kavya~clean",
    "commits": 2,
-   "events": 27,
+   "events": 26,
    "gap": null,
    "simGap": null,
    "missed": null,

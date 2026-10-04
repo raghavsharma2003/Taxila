@@ -88,6 +88,10 @@ test("G-VS-DXEQ (duplex): ChildAudioTracker fed by the shared front-end equals t
 test("G-VS-DXEQ (worklet): taxila-tap2 P chunks equal taxila-feature-tap chunks sample for sample; R joins aligned", async () => {
   const procs = {};
   const posted = { "taxila-feature-tap": [], "taxila-tap2": [] };
+  // npm test runs every file in ONE process (tests/index.js): stash and restore the worklet globals.
+  const KEYS = ["sampleRate", "currentTime", "AudioWorkletProcessor", "registerProcessor"];
+  const saved = KEYS.map((k) => [k, Object.getOwnPropertyDescriptor(globalThis, k)]);
+  try {
   globalThis.sampleRate = 48_000;
   globalThis.currentTime = 0;
   globalThis.AudioWorkletProcessor = class { constructor() { this.port = { onmessage: null, postMessage: (m) => posted[this.constructor.__name].push(m) }; } };
@@ -115,6 +119,9 @@ test("G-VS-DXEQ (worklet): taxila-tap2 P chunks equal taxila-feature-tap chunks 
     let sp = 0, sr = 0;
     for (let i = 0; i < 320; i++) { sp += m.p[i] ** 2; sr += m.r[i] ** 2; }
     assert.ok(Math.abs(10 * Math.log10(sr / sp) + 6.02) < 0.3, `R/P level ${10 * Math.log10(sr / sp)}`);
+  }
+  } finally {
+    for (const [k, d] of saved) { if (d) Object.defineProperty(globalThis, k, d); else delete globalThis[k]; }
   }
 });
 

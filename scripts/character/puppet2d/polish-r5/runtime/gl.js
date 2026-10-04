@@ -113,6 +113,7 @@ uniform sampler2D uTex;
 uniform vec4 uTeeth;   // upper shown 0..1, lower shown 0..1, teeth height px, -
 uniform vec4 uTongue;  // body height share, tip, curl, -
 uniform float uShadeK;
+uniform float uOver;   // r5: 1 = the f/v overlay pass: only the upper teeth tips, drawn OVER the tucked lower lip
 out vec4 o;
 vec3 rowc(float row, float u){ vec4 c = texture(uTex, vec2(u, (row + 0.5) / 64.0)); return c.rgb / max(c.a, 0.001); }
 // r4 (judge r3 fix 2): the teeth's free edge is the PAINTED contour's smooth fit (rows 12.9 - 2.7u^2 - 0.3u^4 of the
@@ -121,6 +122,19 @@ float contourRows(float u){ return 12.9 - 2.7 * u * u - 0.3 * u * u * u * u; }
 void main(){
   float gap = max(vGap, 0.001);
   float dt = vDT, db = gap - vDT;
+  if (uOver > 0.5) {
+    // r5 (judge r4: f/v): the upper incisors rest ON the rolled-in lower lip; below the lower inner edge only the teeth
+    float aO = abs(vS), uwO = 0.76;
+    if (dt < gap - 0.5 || aO > uwO) discard;
+    float crO = contourRows(vS / uwO);
+    float hO = uTeeth.z * crO / 12.0 - (1.0 - uTeeth.x) * uTeeth.z;
+    float pxO = max(fwidth(vDT), 0.35);
+    float covO = clamp((hO - dt) / pxO + 0.5, 0.0, 1.0) * (1.0 - smoothstep(uwO - 0.14, uwO, aO)) * smoothstep(gap - 0.5, gap + 0.8, dt);
+    vec3 tO = rowc(clamp((dt + (1.0 - uTeeth.x) * uTeeth.z) * 12.0 / uTeeth.z, 0.0, crO - 2.5), clamp((vS / uwO) * 0.5 + 0.5, 0.0, 1.0)) * 1.08 * (1.0 - 0.3 * pow(aO / uwO, 2.0));
+    tO *= 1.0 - 0.1 * clamp(1.0 - (hO - dt) / 1.6, 0.0, 1.0);
+    o = vec4(tO * uShadeK * covO, covO);
+    return;
+  }
   float a = abs(vS);
   float u = clamp(vS * 0.5 + 0.5, 0.0, 1.0);
   float px = max(fwidth(vDT), 0.35);          // one screen pixel in rest px
@@ -136,7 +150,7 @@ void main(){
   // r5 (judge r4: 'the L tongue tip is barely visible'): while the tip is up the floor mound drops away, so the lobe
   // stands alone against a dark cavity on both sides and reads as a tongue tip, not as a second lower lip
   float mound = min(gap * uTongue.x, 7.0 + 0.12 * gap) * pow(max(0.0, 1.0 - pow(vS / 0.85, 2.0)), 0.8) * (1.0 - 0.85 * clamp(uTongue.y * 1.4, 0.0, 1.0));
-  float lw = 0.33;                                                // lobe half-width (s units)
+  float lw = 0.38;                                                // lobe half-width (s units)
   float lob = max(0.0, 1.0 - pow(vS / lw, 2.0));
   // r4b: a soft DOME (wider at the base), not a flat-sided tombstone
   float tipH = max(0.0, gap - upVis * 0.35) * uTongue.y * pow(lob, 0.85);
@@ -335,9 +349,10 @@ export class Renderer {
     this.tris += mesh.count / 3;
   }
 
-  drawInner(mesh, tex, teeth, tongue, shadeK = 1) {
+  drawInner(mesh, tex, teeth, tongue, shadeK = 1, over = 0) {
     const gl = this.gl, P = this.inner;
     gl.useProgram(P.p);
+    gl.uniform1f(P.u.uOver, over);
     gl.uniform2f(P.u.uView, this.canvas.width, this.canvas.height);
     gl.uniform4fv(P.u.uCam, this.cam);
     gl.uniform4fv(P.u.uTeeth, teeth);

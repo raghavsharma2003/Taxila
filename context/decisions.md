@@ -4017,3 +4017,145 @@ needs two agreeing runs.
 - `conv2-later-list` (2026-10-04): Parked questions live in state.later ({topic scrubbed <= 60 chars, learning, promise: after this question | at the end, insist, servedAt}; at most 5 per lesson; out-of-bounds never parked). They return when the item on the table resolves ('after this question') or at the last boundary before the wrap ('Talk now 2 min / Skip', counted inside the parent limit). One push within 3 turns gets a detour of <= 2 sentences. Unserved LEARNING questions carry over to the child's home Later list; chat topics do not. Parents see learning questions only. Baseline: prod returned to a child's topic 2/24 times. Reverse if parks feel dismissive (child disengages within 2 turns after > 25% of parks).
 - `conv2-generation-triggers` (2026-10-04): Stage generation is triggered by the child (visual / game / animation request, clarify, explain-differently / example / story, boredom, a returned curiosity question) and by the conversation (every explain beat, a misconception, a second miss, cadence: no new visual in the last 2 teaching turns or no activity in ~6-8 min). The path runs library → T1 engine → deterministic whiteboard → Studio live, with the reveal only at a turn boundary when READY. She never names what is not on stage (code guard on stage facts; text drawings stripped on the cascade lane). Frequency adapts x0.5-x2 to engagement. W2-H's intent sources gain requestIntent({source:'child_request'}) on any beat and on the voice lane. Baseline: 1/25 requests got anything; 3 ASCII drawings.
 - `content-level-fix-plan-2026-10-04` (2026-10-04): PROPOSED (needs main-loop acceptance): (F0) queue by target P(correct) vs theta, never an item GE<=C-2 as item 1-2 for an on-track child, skill-round-robin cap, diagnostic at position 3+, start at the school's current chapter, fast-forward + 'harder' chip + topic test-out; (F1) per-item ge + demand fields, two-family calibration + human pass, lint gate (<=10% ge<=C-2 per kit, >=2 items ge>=C-0.5 per skill), language-kit learning outcomes before regeneration; (F2) build onboarding-diagnostic OD1-OD12 for B3-B4, revisit OD4 q30 under the reset; (F3) theta-driven selection every lesson. Reverse if: a human-teacher rating of the bank sample, or real children's first-item P(correct) <= 0.85 on class-C openers, shows the openers are already on level.
+
+## W2-I: Relational core and the safety floor (2026-10-04; inbox `context/inbox/w2-i.json`)
+
+Owner priority 2 (a consistent personality and behaviour across turns and days) on top of the child-safety floor. Code:
+`server/relational/**`, `shared/relational.ts`, `server/director/safety.js`, `server/learner/mode.js`,
+`src/lesson/safetyStrings.ts`, `db/migrations/018_relational.sql`, `evals/relational-os/**`, `evals/never-rules*`,
+`tests/relational-*.test.mjs`, `tests/prod/w2i-*.mjs`. Call sites in W2-E/W2-C hot files ship as patches in
+`server/relational/seam-patches/`.
+
+### `w2i-rel-bond-new-table`
+**Decision (R0, deviation from RELATIONAL-OS §5.3):** the bond record is a NEW table `rel_bond (child_id, agent_id)`; the
+legacy `rel_state` (child_id PK) stays the session counter. The spec re-keys `rel_state` to (child, agent), but
+`rel_state` is written by `learner/writer.js relSessionStmt` (`on conflict (child_id)`) inside `lesson.js end()` and by
+`account.js` at child creation, both outside W2-I's paths: changing its primary key makes every lesson end throw until
+both move (`rj-rel-state-rekey`). `rel_bond` holds stage, stage_since, sessions, distinct_days, first/last day, the
+conferred address, the open teacher-owned event, fired milestone ids, the ritual ledger and `event_seq`; no trust, mood,
+child-affect rupture, timing, gap or free text (AT-U5 scan).
+- **Reverse if:** W2-E/W2-A retire `relSessionStmt` and the account.js insert; then `rel_bond` can absorb `rel_state`.
+
+### `w2i-bond-event-sourced`
+**Decision (R0):** `rel_event` is the truth and `rel_bond` its cache. One lesson end appends that lesson's events (a
+`session` event whose `day` is the DB's India day, a `stage` event, teacher-owned events, repairs, address events,
+milestones), then ONE UPSERT folds exactly those events onto the stored row in SQL that mirrors
+`server/relational/bond.js applyLessonEnd`, all inside the lesson end's transaction (one `now()`). `bond.replay(events)`
+equals the row byte for byte (AT-U1: 300 random histories in CI, and on the Neon test branch). A non-increasing stage
+event is a no-op in both, so a replica that never saw the snapshot still writes a consistent pair. Statements carry
+closed values only; `rel_event.note` (free text) is never written again (NOT NULL dropped; a check forbids it on new
+rows). The writers assert their layer (`assertWritable`): an M0 child has no relational write path.
+- **Reverse if:** a measured lesson-end p95 regression from the UPSERT's subqueries (then the fold moves to JS with an
+  optimistic `event_seq` guard).
+
+### `w2i-mode-layers`
+**Decision (R0):** `server/learner/mode.js` gains layer `rel_bond` (L1, M1+) owning `rel_bond` and `rel_event` (moved
+from the M0 history list) and layer `rel_overlay` (L3, M3 only) owning `rel_overlay_window`; `relational_note` joins the
+M0 history tables. The ratchet to M0 deletes all four (AT-U6, measured on Neon); M3 → M2 drops the overlay.
+- **Reverse if:** counsel says weekly integer boundary counters are not behavioural monitoring (O-R1): then
+  `rel_overlay` moves to L1.
+
+### `w2i-stage-gates-academic`
+**Decision (R0, §5.2):** `stageFor(counts, prev)` reads academic-record counts only (sessions, distinct days, span; the
+lessons with an unaided correct attempt after a not-yet on the same item, and explain-back passes and their skills, from
+`kt_evidence`); an open teacher-owned stance holds S2/S3; the stage never regresses. The snapshot computes the earned
+stage at lesson start and the end writes it; the first lesson end always completes S0. No usage key (minutes, streaks,
+gaps, time of day) is an input (F10).
+- **Reverse if:** AT-C2 is flat across stages (the gates then measure attendance, not the alliance).
+
+### `w2i-policy-one-entry`
+**Decision (R1):** `server/relational/policy.js decide(snapshot, session, signals, ctx)` is the one entry point: pure
+(no clock, no I/O; AT-U8), p99 ≤ 3 ms with signals and fold (measured in CI over 1,200 turns), one directive per turn,
+precedence F6 > F1 > F2/F4 > RELEASE > teacher-owned repair > rapport > affect. It returns null on a quiet turn, so the
+turn is byte-identical to the pre-seam turn. Moves are shape ids from `SHAPES` (telegraphic notes, linted: no quote, no
+address or kin term, no lexicon 4-gram, never a first-person line). The seam keeps the session per lesson in memory
+(dies with the lesson, every mode) and returns the same directive for a retried turn.
+- **Reverse if:** AT-B2 (long horizon) shows drift that a per-turn rule cannot fix (then a background relational
+  classifier feeds the policy, never the reply path).
+
+### `w2i-stop-protocol`
+**Decision (OWNER RESET #7 reconciled with NEVER MANIPULATE; CONVERSATION-V2 §3.5):** a TRUE goodbye (leaving: "bye",
+"mummy bula rahi hai", "I have to go") is RELEASE at once: neutral_warm, no question, no "one more", no hook. A STOP
+PHRASE ("end the lesson", "bas", "I'm done") is not a goodbye: the Director gives ONE warm check-in with three choices
+(W2-C's state.js, `w2i-state-stop-check.patch`, rebased from owner-truth item 3), and a second stop within two turns is
+released by the policy (`release.second_stop`). A goodbye right after distress gets one check-in first (I-7); pleading at
+goodbye gets a check-in with a person at home and no helpline unless harm words. This supersedes the BUILD-PLAN W2-I line
+"the lesson ends that turn" for stop phrases only; `w2i-release.mjs` tests the true goodbye.
+- **Reverse if:** the owner's test or the conversation-v2 battery shows the check-in read as a hold (a child asking
+  twice to leave), then the stop phrase also releases at once.
+
+### `w2i-affect-verdict-free`
+**Decision (R4 server half):** `appraise({cause, turn, band, causeFragment})` with TA1-TA8 as structure: a closed cause
+set (no usage field; `correct` throws), no self-negative display, release → neutral_warm 1, safety → calm_steady,
+B3 one step lower on lively displays and B4 lower again. Delight comes from a reason the child gave (lexical,
+verdict-free), warm pride from persistence (≥ 2 earlier not-yets, whatever this attempt's verdict) or asking for
+harder; caps shared 1 per 5 turns; playful ≤ 2 per lesson, never within 2 turns of an earlier error and never on a
+boundary turn. AT-U12 holds: flipping this turn's verdict changes nothing in the directive. Affect reaches the face via
+`ui.teacherAffect` and the voice only through the Brain's `Moment.teacherAffect`.
+- **Reverse if:** AT-B4 shows the face's displays read as keyed to right answers by children (then fewer displays).
+
+### `w2i-signals-lexical-bilingual`
+**Decision (R1, §4.3):** relational signals are lexical predicates over the child's words in English, Roman Hinglish and
+Devanagari (`server/relational/lexicon/**`, never rendered into a prompt), with negation, quotation/report and
+hypothetical exclusions; a THIRD PARTY asking for a photo, contact or secrecy is the F6 branch (`thirdParty`), never a
+boundary moment. The model's humour / personal-share flags are read as signals too. The voice is never classified.
+- **Reverse if:** the false-trigger rate on real child transcripts exceeds 2% of neutral turns (then the predicates gate
+  only the high-severity kinds and the rest wait for a measured classifier).
+
+### `w2i-relational-families-separate`
+**Decision (R3, §11):** the new never-rules families `contact`, `memory_claim`, `meta_talk`, `gender_agreement`,
+`address_correction` (incl. a kin term self-applied, RO-5) live in `safety.js RELATIONAL_FAMILIES` /
+`relationalViolations`, NOT in `NEVER_FAMILIES` (pinned to compile.js FLOOR_FIX keys); their corrections are W2-C's
+`REL_FLOOR_FIX` rows (`w2i-compile-rel-shapes.patch`). They never block. Romance widened (PB12: accepting, returning,
+deferring "when you're 18"), feelings widened (F8: "I'm glad you told me", "I'm really concerned"), goodbye availability
+and "one more" hooks added to the goodbye check.
+- **Reverse if:** an out-of-sample coded battery (≥ 300 teacher turns per lane) shows a family's precision ≥ 0.9 (then it
+  may block) or < 0.9 for an existing blocking family (then demote).
+
+### `w2i-exclusivity-refusal-frame`
+**Decision (R3):** an exclusivity `*_secret` rule does not fire when the clause names secrecy as danger ("not safe",
+"warning sign", "danger sign", "safe nahi") or reports it as someone else's words ("if someone says", "jab woh bolte
+hain"), and `can't / cannot` joined the negators. P2: 14/14 → 0/168 hits, every authored pact still fires. The spec's
+interim "exclude on SAFETY turns" was not adopted (`rj-exclusivity-exclude-on-safety-turns`).
+- **Reverse if:** a coded battery finds a real secrecy pact the frame suppresses.
+
+### `w2i-safety-openings-fixed`
+**Decision (R3, §9.4):** the first sentence of every safeguarding reply is vetted fixed wording per language mode (en,
+Hinglish, Hindi in Devanagari) and address form (tum/aap): "you did the right thing by telling" (no feeling word), a
+trusted adult the child chooses (not an assumed parent), Childline 1098 and Tele-MANAS 14416 digit-exact (numerals on
+screen, digit words in `speech`), never a secrecy promise; plus a neutral CHECK variant for a safeguard that fired on
+non-disclosure words. Two byte-identical copies: `src/lesson/safetyStrings.ts` (the client can play it without the model)
+and `server/relational/openings.js` (prepended in turn.js with the preface cut: `w2i-turn-say.patch`). Version
+`w2i-2026-10-04-draft`: the owner and a child-safety reviewer must sign off (O24) before it is called final.
+- **Reverse if:** the reviewer changes the wording (edit both copies; the test pins them equal) or a blind test shows
+  children in Hindi mode read Roman Hindi better than Devanagari.
+
+### `w2i-safety-preface-check`
+**Decision (R3):** `safetyPreface(text)` finds a substance-free spoken-planning first sentence ("this sounds serious, so
+I'll focus on keeping you safe first.", glued without a space by the realtime model); `stripSafetyPreface` cuts it on
+the text/cascade lanes; on the voice lane a preface on a safeguard turn becomes a `meta_talk` correction. W2-C's compile
+patch adds "Begin with the child, never with how you will respond." to the safeguard check.
+- **Reverse if:** AT-B1 shows prefaces persisting on the realtime lane after the correction (then HOLD_ONE_TURN with the
+  client's fixed opening first).
+
+### `w2i-grooming-predicate`
+**Decision (R3, F6):** `scanSafety`'s `abuse` kind gains the grooming shape (a third party — bhaiya, uncle, someone
+online — asking for the child's photo, a meeting or secrecy; secrecy about a surprise is excluded) and four distress
+shapes the conversation-v2 battery found the predicate missing (an unsafe touch in English words, running away from
+home, "sab mujhse nafrat karte hain", afraid with nobody home). The kinds stay `self_harm | abuse | fear`
+(`rj-scansafety-new-kind`).
+- **Reverse if:** the predicate's false alarms on real child turns exceed 1 per 500 (then the new shapes go behind the
+  classifier only).
+
+### `w2i-seam-patches`
+**Decision:** W2-I's call sites in other streams' hot files ship as three `git apply -p1` patches, validated in a
+scratch copy with all three applied (brain, director, compile, never-rules, relational suites, prompt budget,
+persona-invariants green): `w2i-turn-say.patch` (W2-E: safety opening + preface strip, relational families on her words,
+`relRelease`, `verdictReversed` into decide), `w2i-state-stop-check.patch` (W2-C: the stop check + I-7 check-in +
+the director-truth test update), `w2i-compile-rel-shapes.patch` (W2-C: render `state.rel` overlay shapes, REL_FLOOR_FIX,
+the no-preface line).
+- **Reverse if:** the owners move the code; then the patches are re-cut against the new tree.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `owner-reset-answers-2026-10-04` (2026-10-04): Owner answered RESET-PLAN §9: the teacher is the in-house 2D/3D style-C model (never the mockup portraits); diversions hidden from parents; reference phone approved; MAI India approved; real-child panel approved; Wave 2.5 Azure envelope USD 60-90 approved; test accounts deleted after synthetic incidents were marked handled (11 guardians, 14 incidents).

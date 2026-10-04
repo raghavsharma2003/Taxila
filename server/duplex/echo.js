@@ -120,7 +120,12 @@ export class EchoSubtractor {
     // the whole text is echo-shaped: the shipped isEcho rule (>= 4 tokens, >= 70 % hers)
     const content = ts.filter(Boolean);
     if (content.length >= this.o.echoMinTokens && content.filter((s) => set.has(s)).length / content.length >= this.o.echoShare) {
-      ts.forEach((s, i) => { if (!s || set.has(s)) drop[i] = true; });
+      // ...but never past the last matched run: words AFTER her echo in the same item are the child's (a straddling item:
+      // "<her question> एक मिनट" must keep "एक" even though "एक" is also one of her words)
+      let lastRun = -1;
+      for (let i = 0; i < drop.length; i++) if (drop[i]) lastRun = i;
+      const upto = lastRun >= 0 ? lastRun : ts.length - 1;
+      ts.forEach((s, i) => { if (i <= upto && (!s || set.has(s))) drop[i] = true; });
     }
     const removed = drop.filter(Boolean).length;
     if (!removed) return { text: toks.join(" "), removed: 0 };

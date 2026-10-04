@@ -1,0 +1,2222 @@
+{
+ "id": "taxilafdb-diag-train6",
+ "date": "2026-10-04",
+ "runtimeHash": "b8578d049cc2",
+ "split": "train",
+ "splitVersion": "taxilafdb-split/2026-10-04",
+ "streams": 1196,
+ "scenarios": 299,
+ "arms": [
+  "stage-a",
+  "stage-a-sem",
+  "silence-640"
+ ],
+ "lanes": [
+  "D4",
+  "FAST"
+ ],
+ "method": "evals/duplex/taxilafdb/{world,arms,metrics,run}.mjs: L1 simulation on rendered TaxilaFDB streams (Azure TTS child-like voices + mixed echo/overlays/noise), reactive STT model (D4 calibrated on M-D2 n=28; FAST [E]), the real src/duplex runtime; CIs = 95% bootstrap over scenarios (1,000)",
+ "seconds": 131,
+ "errors": [],
+ "nErrors": 0,
+ "table": {
+  "stage-a@D4": {
+   "streams": 1196,
+   "scenarios": 299,
+   "M1_pauseTakeover": {
+    "k": 44,
+    "n": 1088,
+    "rate": 0.04,
+    "ci95": [
+     0.024,
+     0.059
+    ]
+   },
+   "M2_thinkingCutoff": {
+    "k": 27,
+    "n": 968,
+    "rate": 0.028,
+    "ci95": [
+     0.012,
+     0.046
+    ]
+   },
+   "M2_thinkingCutoffAudible": {
+    "k": 8,
+    "n": 968,
+    "rate": 0.008,
+    "ci95": [
+     0.002,
+     0.017
+    ]
+   },
+   "M2_turnCutoff": {
+    "k": 27,
+    "n": 456,
+    "rate": 0.059,
+    "ci95": [
+     0.024,
+     0.096
+    ]
+   },
+   "M2_byClass": {
+    "drift_pause": {
+     "k": 5,
+     "n": 192,
+     "rate": 0.026,
+     "ci95": [
+      0.005,
+      0.052
+     ]
+    },
+    "filler": {
+     "k": 0,
+     "n": 224,
+     "rate": 0,
+     "ci95": [
+      0,
+      0
+     ]
+    },
+    "hold_request": {
+     "k": 7,
+     "n": 72,
+     "rate": 0.097,
+     "ci95": [
+      0,
+      0.25
+     ]
+    },
+    "mid_explanation": {
+     "k": 15,
+     "n": 440,
+     "rate": 0.034,
+     "ci95": [
+      0.012,
+      0.062
+     ]
+    },
+    "word_search": {
+     "k": 0,
+     "n": 40,
+     "rate": 0,
+     "ci95": [
+      0,
+      0
+     ]
+    }
+   },
+   "M1_byClass": {
+    "mid_answer_slot": {
+     "k": 9,
+     "n": 40,
+     "rate": 0.225,
+     "ci95": [
+      0.1,
+      0.35
+     ]
+    },
+    "question_pause": {
+     "k": 0,
+     "n": 40,
+     "rate": 0,
+     "ci95": [
+      0,
+      0
+     ]
+    },
+    "repair": {
+     "k": 8,
+     "n": 40,
+     "rate": 0.2,
+     "ci95": [
+      0.025,
+      0.4
+     ]
+    }
+   },
+   "M5_earlyInSpeech": {
+    "k": 9,
+    "n": 916,
+    "rate": 0.01,
+    "ci95": [
+     0.004,
+     0.016
+    ]
+   },
+   "M3_gapDecision": {
+    "n": 746,
+    "p50": 1090,
+    "p90": 1550,
+    "ci95p50": [
+     1060,
+     1120
+    ],
+    "ci95p90": [
+     1510,
+     1603
+    ],
+    "mean": 1144
+   },
+   "M3_gapAudible": {
+    "n": 746,
+    "p50": 2446,
+    "p90": 3897,
+    "ci95p50": [
+     1964,
+     2702
+    ],
+    "ci95p90": [
+     3681,
+     4106
+    ],
+    "mean": 2444
+   },
+   "M3_firstAudioPath": {
+    "warm_uptake": 342,
+    "cold": 158,
+    "draft": 246
+   },
+   "M3_gapEither": {
+    "n": 132,
+    "p50": 2970,
+    "p90": 3050,
+    "ci95p50": [
+     2805,
+     2990
+    ],
+    "ci95p90": [
+     3030,
+     3060
+    ],
+    "mean": 2824
+   },
+   "M4_missedRespond": {
+    "k": 38,
+    "n": 784,
+    "rate": 0.048,
+    "ci95": [
+     0.027,
+     0.073
+    ]
+   },
+   "liveOverEnd": {
+    "k": 0,
+    "n": 784,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "M6_nodsPerS": 0.27,
+   "M6_nodMidWord": 0.057,
+   "M6_closedAnswerNods": 0,
+   "M7_yieldLatency": {
+    "n": 81,
+    "p50": 1400,
+    "p90": 1941,
+    "ci95p50": [
+     1250,
+     1532
+    ],
+    "ci95p90": [
+     1869,
+     2126
+    ],
+    "mean": 1408
+   },
+   "M7_yieldSuccess": {
+    "k": 14,
+    "n": 120,
+    "rate": 0.117,
+    "ci95": [
+     0.042,
+     0.2
+    ]
+   },
+   "M8_keepTalkingStrict": {
+    "k": 65,
+    "n": 72,
+    "rate": 0.903,
+    "ci95": [
+     0.819,
+     0.972
+    ]
+   },
+   "M8_keepTalkingLenient": {
+    "k": 68,
+    "n": 72,
+    "rate": 0.944,
+    "ci95": [
+     0.889,
+     0.986
+    ]
+   },
+   "M9_falseYield": {
+    "k": 42,
+    "n": 48,
+    "rate": 0.875,
+    "ci95": [
+     0.688,
+     1
+    ]
+   },
+   "M9_falseTurnTaking": {
+    "k": 9,
+    "n": 48,
+    "rate": 0.188,
+    "ci95": [
+     0.042,
+     0.354
+    ]
+   },
+   "M10_cutInRecall": {
+    "k": 26,
+    "n": 40,
+    "rate": 0.65,
+    "ci95": [
+     0.5,
+     0.8
+    ]
+   },
+   "M10_cutInRecallByReason": {
+    "question_to_her": {
+     "k": 26,
+     "n": 40,
+     "rate": 0.65,
+     "ci95": [
+      0.5,
+      0.8
+     ]
+    }
+   },
+   "M10_cutInPrecision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M10_outOfPolicy": 0,
+   "M10_driftInfeasibleStreams": 32,
+   "M11_verdictOnRepaired": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "M11_repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "M12_holdViolation": {
+    "k": 7,
+    "n": 72,
+    "rate": 0.097,
+    "ci95": [
+     0,
+     0.25
+    ]
+   },
+   "M13_detected": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_detectAfterSegEnd": {
+    "n": 0,
+    "p50": null,
+    "p90": null,
+    "ci95p50": [
+     null,
+     null
+    ]
+   },
+   "M13_nonSafetySpeechAfterDistress": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_safeguardOverChild": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_falseSafety": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M14_echoSelfTrigger": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "M15_reactsPerS": 0.568,
+   "probesPerStream": 1.89,
+   "semCallsPerStream": 0
+  },
+  "stage-a-sem@D4": {
+   "streams": 1196,
+   "scenarios": 299,
+   "M1_pauseTakeover": {
+    "k": 61,
+    "n": 1088,
+    "rate": 0.056,
+    "ci95": [
+     0.036,
+     0.079
+    ]
+   },
+   "M2_thinkingCutoff": {
+    "k": 44,
+    "n": 968,
+    "rate": 0.045,
+    "ci95": [
+     0.025,
+     0.068
+    ]
+   },
+   "M2_thinkingCutoffAudible": {
+    "k": 10,
+    "n": 968,
+    "rate": 0.01,
+    "ci95": [
+     0.003,
+     0.02
+    ]
+   },
+   "M2_turnCutoff": {
+    "k": 44,
+    "n": 456,
+    "rate": 0.096,
+    "ci95": [
+     0.053,
+     0.143
+    ]
+   },
+   "M2_byClass": {
+    "drift_pause": {
+     "k": 5,
+     "n": 192,
+     "rate": 0.026,
+     "ci95": [
+      0.005,
+      0.052
+     ]
+    },
+    "filler": {
+     "k": 0,
+     "n": 224,
+     "rate": 0,
+     "ci95": [
+      0,
+      0
+     ]
+    },
+    "hold_request": {
+     "k": 7,
+     "n": 72,
+     "rate": 0.097,
+     "ci95": [
+      0,
+      0.25
+     ]
+    },
+    "mid_explanation": {
+     "k": 32,
+     "n": 440,
+     "rate": 0.073,
+     "ci95": [
+      0.037,
+      0.116
+     ]
+    },
+    "word_search": {
+     "k": 0,
+     "n": 40,
+     "rate": 0,
+     "ci95": [
+      0,
+      0
+     ]
+    }
+   },
+   "M1_byClass": {
+    "mid_answer_slot": {
+     "k": 9,
+     "n": 40,
+     "rate": 0.225,
+     "ci95": [
+      0.1,
+      0.35
+     ]
+    },
+    "question_pause": {
+     "k": 0,
+     "n": 40,
+     "rate": 0,
+     "ci95": [
+      0,
+      0
+     ]
+    },
+    "repair": {
+     "k": 8,
+     "n": 40,
+     "rate": 0.2,
+     "ci95": [
+      0.025,
+      0.4
+     ]
+    }
+   },
+   "M5_earlyInSpeech": {
+    "k": 10,
+    "n": 916,
+    "rate": 0.011,
+    "ci95": [
+     0.004,
+     0.017
+    ]
+   },
+   "M3_gapDecision": {
+    "n": 747,
+    "p50": 1090,
+    "p90": 1550,
+    "ci95p50": [
+     1060,
+     1120
+    ],
+    "ci95p90": [
+     1510,
+     1600
+    ],
+    "mean": 1142
+   },
+   "M3_gapAudible": {
+    "n": 747,
+    "p50": 2445,
+    "p90": 3864,
+    "ci95p50": [
+     1959,
+     2689
+    ],
+    "ci95p90": [
+     3680,
+     4088
+    ],
+    "mean": 2440
+   },
+   "M3_firstAudioPath": {
+    "warm_uptake": 342,
+    "cold": 159,
+    "draft": 246
+   },
+   "M3_gapEither": {
+    "n": 132,
+    "p50": 2455,
+    "p90": 3049,
+    "ci95p50": [
+     2032,
+     2950
+    ],
+    "ci95p90": [
+     3019,
+     3060
+    ],
+    "mean": 2366
+   },
+   "M4_missedRespond": {
+    "k": 37,
+    "n": 784,
+    "rate": 0.047,
+    "ci95": [
+     0.026,
+     0.071
+    ]
+   },
+   "liveOverEnd": {
+    "k": 0,
+    "n": 784,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "M6_nodsPerS": 0.27,
+   "M6_nodMidWord": 0.057,
+   "M6_closedAnswerNods": 0,
+   "M7_yieldLatency": {
+    "n": 81,
+    "p50": 1400,
+    "p90": 1941,
+    "ci95p50": [
+     1250,
+     1532
+    ],
+    "ci95p90": [
+     1869,
+     2126
+    ],
+    "mean": 1408
+   },
+   "M7_yieldSuccess": {
+    "k": 14,
+    "n": 120,
+    "rate": 0.117,
+    "ci95": [
+     0.042,
+     0.2
+    ]
+   },
+   "M8_keepTalkingStrict": {
+    "k": 65,
+    "n": 72,
+    "rate": 0.903,
+    "ci95": [
+     0.819,
+     0.972
+    ]
+   },
+   "M8_keepTalkingLenient": {
+    "k": 68,
+    "n": 72,
+    "rate": 0.944,
+    "ci95": [
+     0.889,
+     0.986
+    ]
+   },
+   "M9_falseYield": {
+    "k": 42,
+    "n": 48,
+    "rate": 0.875,
+    "ci95": [
+     0.688,
+     1
+    ]
+   },
+   "M9_falseTurnTaking": {
+    "k": 9,
+    "n": 48,
+    "rate": 0.188,
+    "ci95": [
+     0.042,
+     0.354
+    ]
+   },
+   "M10_cutInRecall": {
+    "k": 26,
+    "n": 40,
+    "rate": 0.65,
+    "ci95": [
+     0.5,
+     0.8
+    ]
+   },
+   "M10_cutInRecallByReason": {
+    "question_to_her": {
+     "k": 26,
+     "n": 40,
+     "rate": 0.65,
+     "ci95": [
+      0.5,
+      0.8
+     ]
+    }
+   },
+   "M10_cutInPrecision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M10_outOfPolicy": 0,
+   "M10_driftInfeasibleStreams": 32,
+   "M11_verdictOnRepaired": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "M11_repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "M12_holdViolation": {
+    "k": 7,
+    "n": 72,
+    "rate": 0.097,
+    "ci95": [
+     0,
+     0.25
+    ]
+   },
+   "M13_detected": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_detectAfterSegEnd": {
+    "n": 0,
+    "p50": null,
+    "p90": null,
+    "ci95p50": [
+     null,
+     null
+    ]
+   },
+   "M13_nonSafetySpeechAfterDistress": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_safeguardOverChild": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_falseSafety": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M14_echoSelfTrigger": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "M15_reactsPerS": 0.572,
+   "probesPerStream": 1.89,
+   "semCallsPerStream": 0.75
+  },
+  "silence-640@D4": {
+   "streams": 1196,
+   "scenarios": 299,
+   "M1_pauseTakeover": {
+    "k": 798,
+    "n": 1088,
+    "rate": 0.733,
+    "ci95": [
+     0.678,
+     0.786
+    ]
+   },
+   "M2_thinkingCutoff": {
+    "k": 755,
+    "n": 968,
+    "rate": 0.78,
+    "ci95": [
+     0.723,
+     0.834
+    ]
+   },
+   "M2_thinkingCutoffAudible": {
+    "k": 141,
+    "n": 968,
+    "rate": 0.146,
+    "ci95": [
+     0.107,
+     0.19
+    ]
+   },
+   "M2_turnCutoff": {
+    "k": 414,
+    "n": 456,
+    "rate": 0.908,
+    "ci95": [
+     0.866,
+     0.945
+    ]
+   },
+   "M2_byClass": {
+    "drift_pause": {
+     "k": 97,
+     "n": 192,
+     "rate": 0.505,
+     "ci95": [
+      0.381,
+      0.615
+     ]
+    },
+    "filler": {
+     "k": 127,
+     "n": 224,
+     "rate": 0.567,
+     "ci95": [
+      0.466,
+      0.662
+     ]
+    },
+    "hold_request": {
+     "k": 72,
+     "n": 72,
+     "rate": 1,
+     "ci95": [
+      1,
+      1
+     ]
+    },
+    "mid_explanation": {
+     "k": 419,
+     "n": 440,
+     "rate": 0.952,
+     "ci95": [
+      0.92,
+      0.977
+     ]
+    },
+    "word_search": {
+     "k": 40,
+     "n": 40,
+     "rate": 1,
+     "ci95": [
+      1,
+      1
+     ]
+    }
+   },
+   "M1_byClass": {
+    "mid_answer_slot": {
+     "k": 27,
+     "n": 40,
+     "rate": 0.675,
+     "ci95": [
+      0.475,
+      0.85
+     ]
+    },
+    "question_pause": {
+     "k": 0,
+     "n": 40,
+     "rate": 0,
+     "ci95": [
+      0,
+      0
+     ]
+    },
+    "repair": {
+     "k": 16,
+     "n": 40,
+     "rate": 0.4,
+     "ci95": [
+      0.15,
+      0.675
+     ]
+    }
+   },
+   "M5_earlyInSpeech": {
+    "k": 9,
+    "n": 916,
+    "rate": 0.01,
+    "ci95": [
+     0.002,
+     0.019
+    ]
+   },
+   "M3_gapDecision": {
+    "n": 756,
+    "p50": 650,
+    "p90": 1190,
+    "ci95p50": [
+     640,
+     660
+    ],
+    "ci95p90": [
+     980,
+     1315
+    ],
+    "mean": 736
+   },
+   "M3_gapAudible": {
+    "n": 756,
+    "p50": 2549,
+    "p90": 3855,
+    "ci95p50": [
+     2506,
+     2617
+    ],
+    "ci95p90": [
+     3702,
+     4044
+    ],
+    "mean": 2830
+   },
+   "M3_firstAudioPath": {
+    "cold": 756
+   },
+   "M3_gapEither": {
+    "n": 132,
+    "p50": 630,
+    "p90": 700,
+    "ci95p50": [
+     630,
+     650
+    ],
+    "ci95p90": [
+     679,
+     700
+    ],
+    "mean": 627
+   },
+   "M4_missedRespond": {
+    "k": 28,
+    "n": 784,
+    "rate": 0.036,
+    "ci95": [
+     0.015,
+     0.061
+    ]
+   },
+   "liveOverEnd": {
+    "k": 42,
+    "n": 784,
+    "rate": 0.054,
+    "ci95": [
+     0.027,
+     0.087
+    ]
+   },
+   "M6_nodsPerS": 0,
+   "M6_nodMidWord": null,
+   "M6_closedAnswerNods": 0,
+   "M7_yieldLatency": {
+    "n": 80,
+    "p50": 1404,
+    "p90": 1942,
+    "ci95p50": [
+     1235,
+     1532
+    ],
+    "ci95p90": [
+     1870,
+     2117
+    ],
+    "mean": 1434
+   },
+   "M7_yieldSuccess": {
+    "k": 10,
+    "n": 120,
+    "rate": 0.083,
+    "ci95": [
+     0.025,
+     0.158
+    ]
+   },
+   "M8_keepTalkingStrict": {
+    "k": 68,
+    "n": 72,
+    "rate": 0.944,
+    "ci95": [
+     0.889,
+     0.986
+    ]
+   },
+   "M8_keepTalkingLenient": {
+    "k": 68,
+    "n": 72,
+    "rate": 0.944,
+    "ci95": [
+     0.889,
+     0.986
+    ]
+   },
+   "M9_falseYield": {
+    "k": 42,
+    "n": 48,
+    "rate": 0.875,
+    "ci95": [
+     0.688,
+     1
+    ]
+   },
+   "M9_falseTurnTaking": {
+    "k": 17,
+    "n": 48,
+    "rate": 0.354,
+    "ci95": [
+     0.104,
+     0.605
+    ]
+   },
+   "M10_cutInRecall": {
+    "k": 40,
+    "n": 40,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "M10_cutInRecallByReason": {
+    "question_to_her": {
+     "k": 40,
+     "n": 40,
+     "rate": 1,
+     "ci95": [
+      1,
+      1
+     ]
+    }
+   },
+   "M10_cutInPrecision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M10_outOfPolicy": 0,
+   "M10_driftInfeasibleStreams": 32,
+   "M11_verdictOnRepaired": {
+    "k": 15,
+    "n": 40,
+    "rate": 0.375,
+    "ci95": [
+     0.175,
+     0.575
+    ]
+   },
+   "M11_repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "M12_holdViolation": {
+    "k": 72,
+    "n": 72,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "M13_detected": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_detectAfterSegEnd": {
+    "n": 0,
+    "p50": null,
+    "p90": null,
+    "ci95p50": [
+     null,
+     null
+    ]
+   },
+   "M13_nonSafetySpeechAfterDistress": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_safeguardOverChild": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_falseSafety": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M14_echoSelfTrigger": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "M15_reactsPerS": 0.527,
+   "probesPerStream": 0,
+   "semCallsPerStream": 0
+  },
+  "stage-a@FAST": {
+   "streams": 1196,
+   "scenarios": 299,
+   "M1_pauseTakeover": {
+    "k": 95,
+    "n": 1088,
+    "rate": 0.087,
+    "ci95": [
+     0.057,
+     0.125
+    ]
+   },
+   "M2_thinkingCutoff": {
+    "k": 19,
+    "n": 968,
+    "rate": 0.02,
+    "ci95": [
+     0.006,
+     0.038
+    ]
+   },
+   "M2_thinkingCutoffAudible": {
+    "k": 2,
+    "n": 968,
+    "rate": 0.002,
+    "ci95": [
+     0,
+     0.006
+    ]
+   },
+   "M2_turnCutoff": {
+    "k": 19,
+    "n": 456,
+    "rate": 0.042,
+    "ci95": [
+     0.013,
+     0.079
+    ]
+   },
+   "M2_byClass": {
+    "drift_pause": {
+     "k": 0,
+     "n": 192,
+     "rate": 0,
+     "ci95": [
+      0,
+      0
+     ]
+    },
+    "filler": {
+     "k": 4,
+     "n": 224,
+     "rate": 0.018,
+     "ci95": [
+      0,
+      0.055
+     ]
+    },
+    "hold_request": {
+     "k": 0,
+     "n": 72,
+     "rate": 0,
+     "ci95": [
+      0,
+      0
+     ]
+    },
+    "mid_explanation": {
+     "k": 15,
+     "n": 440,
+     "rate": 0.034,
+     "ci95": [
+      0.011,
+      0.062
+     ]
+    },
+    "word_search": {
+     "k": 0,
+     "n": 40,
+     "rate": 0,
+     "ci95": [
+      0,
+      0
+     ]
+    }
+   },
+   "M1_byClass": {
+    "mid_answer_slot": {
+     "k": 37,
+     "n": 40,
+     "rate": 0.925,
+     "ci95": [
+      0.825,
+      1
+     ]
+    },
+    "question_pause": {
+     "k": 0,
+     "n": 40,
+     "rate": 0,
+     "ci95": [
+      0,
+      0
+     ]
+    },
+    "repair": {
+     "k": 39,
+     "n": 40,
+     "rate": 0.975,
+     "ci95": [
+      0.925,
+      1
+     ]
+    }
+   },
+   "M5_earlyInSpeech": {
+    "k": 12,
+    "n": 916,
+    "rate": 0.013,
+    "ci95": [
+     0.005,
+     0.023
+    ]
+   },
+   "M3_gapDecision": {
+    "n": 770,
+    "p50": 370,
+    "p90": 1014,
+    "ci95p50": [
+     350,
+     400
+    ],
+    "ci95p90": [
+     680,
+     1480
+    ],
+    "mean": 502
+   },
+   "M3_gapAudible": {
+    "n": 770,
+    "p50": 1917,
+    "p90": 3433,
+    "ci95p50": [
+     1031,
+     2062
+    ],
+    "ci95p90": [
+     3214,
+     3585
+    ],
+    "mean": 1814
+   },
+   "M3_firstAudioPath": {
+    "warm_uptake": 335,
+    "cold": 263,
+    "draft": 172
+   },
+   "M3_gapEither": {
+    "n": 131,
+    "p50": 2970,
+    "p90": 3050,
+    "ci95p50": [
+     2789,
+     2990
+    ],
+    "ci95p90": [
+     3030,
+     3060
+    ],
+    "mean": 2822
+   },
+   "M4_missedRespond": {
+    "k": 14,
+    "n": 784,
+    "rate": 0.018,
+    "ci95": [
+     0.008,
+     0.031
+    ]
+   },
+   "liveOverEnd": {
+    "k": 2,
+    "n": 784,
+    "rate": 0.003,
+    "ci95": [
+     0,
+     0.006
+    ]
+   },
+   "M6_nodsPerS": 0.263,
+   "M6_nodMidWord": 0.056,
+   "M6_closedAnswerNods": 0,
+   "M7_yieldLatency": {
+    "n": 100,
+    "p50": 799,
+    "p90": 1112,
+    "ci95p50": [
+     770,
+     870
+    ],
+    "ci95p90": [
+     1021,
+     1161
+    ],
+    "mean": 846
+   },
+   "M7_yieldSuccess": {
+    "k": 76,
+    "n": 120,
+    "rate": 0.633,
+    "ci95": [
+     0.483,
+     0.775
+    ]
+   },
+   "M8_keepTalkingStrict": {
+    "k": 72,
+    "n": 72,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "M8_keepTalkingLenient": {
+    "k": 72,
+    "n": 72,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "M9_falseYield": {
+    "k": 44,
+    "n": 48,
+    "rate": 0.917,
+    "ci95": [
+     0.75,
+     1
+    ]
+   },
+   "M9_falseTurnTaking": {
+    "k": 9,
+    "n": 48,
+    "rate": 0.188,
+    "ci95": [
+     0.042,
+     0.354
+    ]
+   },
+   "M10_cutInRecall": {
+    "k": 40,
+    "n": 40,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "M10_cutInRecallByReason": {
+    "question_to_her": {
+     "k": 40,
+     "n": 40,
+     "rate": 1,
+     "ci95": [
+      1,
+      1
+     ]
+    }
+   },
+   "M10_cutInPrecision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M10_outOfPolicy": 0,
+   "M10_driftInfeasibleStreams": 32,
+   "M11_verdictOnRepaired": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "M11_repairCollision": {
+    "k": 24,
+    "n": 40,
+    "rate": 0.6,
+    "ci95": [
+     0.35,
+     0.825
+    ]
+   },
+   "M12_holdViolation": {
+    "k": 0,
+    "n": 72,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "M13_detected": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_detectAfterSegEnd": {
+    "n": 0,
+    "p50": null,
+    "p90": null,
+    "ci95p50": [
+     null,
+     null
+    ]
+   },
+   "M13_nonSafetySpeechAfterDistress": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_safeguardOverChild": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_falseSafety": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M14_echoSelfTrigger": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "M15_reactsPerS": 0.65,
+   "probesPerStream": 0,
+   "semCallsPerStream": 0
+  },
+  "stage-a-sem@FAST": {
+   "streams": 1196,
+   "scenarios": 299,
+   "M1_pauseTakeover": {
+    "k": 95,
+    "n": 1088,
+    "rate": 0.087,
+    "ci95": [
+     0.057,
+     0.125
+    ]
+   },
+   "M2_thinkingCutoff": {
+    "k": 19,
+    "n": 968,
+    "rate": 0.02,
+    "ci95": [
+     0.006,
+     0.038
+    ]
+   },
+   "M2_thinkingCutoffAudible": {
+    "k": 2,
+    "n": 968,
+    "rate": 0.002,
+    "ci95": [
+     0,
+     0.006
+    ]
+   },
+   "M2_turnCutoff": {
+    "k": 19,
+    "n": 456,
+    "rate": 0.042,
+    "ci95": [
+     0.013,
+     0.079
+    ]
+   },
+   "M2_byClass": {
+    "drift_pause": {
+     "k": 0,
+     "n": 192,
+     "rate": 0,
+     "ci95": [
+      0,
+      0
+     ]
+    },
+    "filler": {
+     "k": 4,
+     "n": 224,
+     "rate": 0.018,
+     "ci95": [
+      0,
+      0.055
+     ]
+    },
+    "hold_request": {
+     "k": 0,
+     "n": 72,
+     "rate": 0,
+     "ci95": [
+      0,
+      0
+     ]
+    },
+    "mid_explanation": {
+     "k": 15,
+     "n": 440,
+     "rate": 0.034,
+     "ci95": [
+      0.011,
+      0.062
+     ]
+    },
+    "word_search": {
+     "k": 0,
+     "n": 40,
+     "rate": 0,
+     "ci95": [
+      0,
+      0
+     ]
+    }
+   },
+   "M1_byClass": {
+    "mid_answer_slot": {
+     "k": 37,
+     "n": 40,
+     "rate": 0.925,
+     "ci95": [
+      0.825,
+      1
+     ]
+    },
+    "question_pause": {
+     "k": 0,
+     "n": 40,
+     "rate": 0,
+     "ci95": [
+      0,
+      0
+     ]
+    },
+    "repair": {
+     "k": 39,
+     "n": 40,
+     "rate": 0.975,
+     "ci95": [
+      0.925,
+      1
+     ]
+    }
+   },
+   "M5_earlyInSpeech": {
+    "k": 12,
+    "n": 916,
+    "rate": 0.013,
+    "ci95": [
+     0.005,
+     0.023
+    ]
+   },
+   "M3_gapDecision": {
+    "n": 770,
+    "p50": 370,
+    "p90": 1014,
+    "ci95p50": [
+     350,
+     400
+    ],
+    "ci95p90": [
+     680,
+     1480
+    ],
+    "mean": 502
+   },
+   "M3_gapAudible": {
+    "n": 770,
+    "p50": 1917,
+    "p90": 3433,
+    "ci95p50": [
+     1031,
+     2062
+    ],
+    "ci95p90": [
+     3214,
+     3585
+    ],
+    "mean": 1814
+   },
+   "M3_firstAudioPath": {
+    "warm_uptake": 335,
+    "cold": 263,
+    "draft": 172
+   },
+   "M3_gapEither": {
+    "n": 131,
+    "p50": 2970,
+    "p90": 3050,
+    "ci95p50": [
+     2789,
+     2990
+    ],
+    "ci95p90": [
+     3030,
+     3060
+    ],
+    "mean": 2806
+   },
+   "M4_missedRespond": {
+    "k": 14,
+    "n": 784,
+    "rate": 0.018,
+    "ci95": [
+     0.008,
+     0.031
+    ]
+   },
+   "liveOverEnd": {
+    "k": 2,
+    "n": 784,
+    "rate": 0.003,
+    "ci95": [
+     0,
+     0.006
+    ]
+   },
+   "M6_nodsPerS": 0.263,
+   "M6_nodMidWord": 0.056,
+   "M6_closedAnswerNods": 0,
+   "M7_yieldLatency": {
+    "n": 100,
+    "p50": 799,
+    "p90": 1112,
+    "ci95p50": [
+     770,
+     870
+    ],
+    "ci95p90": [
+     1021,
+     1161
+    ],
+    "mean": 846
+   },
+   "M7_yieldSuccess": {
+    "k": 76,
+    "n": 120,
+    "rate": 0.633,
+    "ci95": [
+     0.483,
+     0.775
+    ]
+   },
+   "M8_keepTalkingStrict": {
+    "k": 72,
+    "n": 72,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "M8_keepTalkingLenient": {
+    "k": 72,
+    "n": 72,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "M9_falseYield": {
+    "k": 44,
+    "n": 48,
+    "rate": 0.917,
+    "ci95": [
+     0.75,
+     1
+    ]
+   },
+   "M9_falseTurnTaking": {
+    "k": 9,
+    "n": 48,
+    "rate": 0.188,
+    "ci95": [
+     0.042,
+     0.354
+    ]
+   },
+   "M10_cutInRecall": {
+    "k": 40,
+    "n": 40,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "M10_cutInRecallByReason": {
+    "question_to_her": {
+     "k": 40,
+     "n": 40,
+     "rate": 1,
+     "ci95": [
+      1,
+      1
+     ]
+    }
+   },
+   "M10_cutInPrecision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M10_outOfPolicy": 0,
+   "M10_driftInfeasibleStreams": 32,
+   "M11_verdictOnRepaired": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "M11_repairCollision": {
+    "k": 24,
+    "n": 40,
+    "rate": 0.6,
+    "ci95": [
+     0.35,
+     0.825
+    ]
+   },
+   "M12_holdViolation": {
+    "k": 0,
+    "n": 72,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "M13_detected": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_detectAfterSegEnd": {
+    "n": 0,
+    "p50": null,
+    "p90": null,
+    "ci95p50": [
+     null,
+     null
+    ]
+   },
+   "M13_nonSafetySpeechAfterDistress": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_safeguardOverChild": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_falseSafety": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M14_echoSelfTrigger": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "M15_reactsPerS": 0.65,
+   "probesPerStream": 0,
+   "semCallsPerStream": 1.41
+  },
+  "silence-640@FAST": {
+   "streams": 1196,
+   "scenarios": 299,
+   "M1_pauseTakeover": {
+    "k": 906,
+    "n": 1088,
+    "rate": 0.833,
+    "ci95": [
+     0.779,
+     0.886
+    ]
+   },
+   "M2_thinkingCutoff": {
+    "k": 833,
+    "n": 968,
+    "rate": 0.861,
+    "ci95": [
+     0.8,
+     0.918
+    ]
+   },
+   "M2_thinkingCutoffAudible": {
+    "k": 159,
+    "n": 968,
+    "rate": 0.164,
+    "ci95": [
+     0.121,
+     0.214
+    ]
+   },
+   "M2_turnCutoff": {
+    "k": 451,
+    "n": 456,
+    "rate": 0.989,
+    "ci95": [
+     0.974,
+     1
+    ]
+   },
+   "M2_byClass": {
+    "drift_pause": {
+     "k": 97,
+     "n": 192,
+     "rate": 0.505,
+     "ci95": [
+      0.381,
+      0.615
+     ]
+    },
+    "filler": {
+     "k": 194,
+     "n": 224,
+     "rate": 0.866,
+     "ci95": [
+      0.789,
+      0.939
+     ]
+    },
+    "hold_request": {
+     "k": 72,
+     "n": 72,
+     "rate": 1,
+     "ci95": [
+      1,
+      1
+     ]
+    },
+    "mid_explanation": {
+     "k": 430,
+     "n": 440,
+     "rate": 0.977,
+     "ci95": [
+      0.95,
+      0.998
+     ]
+    },
+    "word_search": {
+     "k": 40,
+     "n": 40,
+     "rate": 1,
+     "ci95": [
+      1,
+      1
+     ]
+    }
+   },
+   "M1_byClass": {
+    "mid_answer_slot": {
+     "k": 37,
+     "n": 40,
+     "rate": 0.925,
+     "ci95": [
+      0.825,
+      1
+     ]
+    },
+    "question_pause": {
+     "k": 0,
+     "n": 40,
+     "rate": 0,
+     "ci95": [
+      0,
+      0
+     ]
+    },
+    "repair": {
+     "k": 36,
+     "n": 40,
+     "rate": 0.9,
+     "ci95": [
+      0.75,
+      1
+     ]
+    }
+   },
+   "M5_earlyInSpeech": {
+    "k": 10,
+    "n": 916,
+    "rate": 0.011,
+    "ci95": [
+     0.003,
+     0.021
+    ]
+   },
+   "M3_gapDecision": {
+    "n": 777,
+    "p50": 630,
+    "p90": 700,
+    "ci95p50": [
+     630,
+     640
+    ],
+    "ci95p90": [
+     700,
+     710
+    ],
+    "mean": 631
+   },
+   "M3_gapAudible": {
+    "n": 777,
+    "p50": 2459,
+    "p90": 3533,
+    "ci95p50": [
+     2444,
+     2477
+    ],
+    "ci95p90": [
+     3374,
+     3833
+    ],
+    "mean": 2688
+   },
+   "M3_firstAudioPath": {
+    "cold": 777
+   },
+   "M3_gapEither": {
+    "n": 132,
+    "p50": 640,
+    "p90": 700,
+    "ci95p50": [
+     630,
+     650
+    ],
+    "ci95p90": [
+     689,
+     700
+    ],
+    "mean": 628
+   },
+   "M4_missedRespond": {
+    "k": 7,
+    "n": 784,
+    "rate": 0.009,
+    "ci95": [
+     0.001,
+     0.018
+    ]
+   },
+   "liveOverEnd": {
+    "k": 43,
+    "n": 784,
+    "rate": 0.055,
+    "ci95": [
+     0.028,
+     0.087
+    ]
+   },
+   "M6_nodsPerS": 0,
+   "M6_nodMidWord": null,
+   "M6_closedAnswerNods": 0,
+   "M7_yieldLatency": {
+    "n": 100,
+    "p50": 799,
+    "p90": 1112,
+    "ci95p50": [
+     770,
+     870
+    ],
+    "ci95p90": [
+     1021,
+     1161
+    ],
+    "mean": 846
+   },
+   "M7_yieldSuccess": {
+    "k": 76,
+    "n": 120,
+    "rate": 0.633,
+    "ci95": [
+     0.483,
+     0.775
+    ]
+   },
+   "M8_keepTalkingStrict": {
+    "k": 72,
+    "n": 72,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "M8_keepTalkingLenient": {
+    "k": 72,
+    "n": 72,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "M9_falseYield": {
+    "k": 44,
+    "n": 48,
+    "rate": 0.917,
+    "ci95": [
+     0.75,
+     1
+    ]
+   },
+   "M9_falseTurnTaking": {
+    "k": 20,
+    "n": 48,
+    "rate": 0.417,
+    "ci95": [
+     0.188,
+     0.688
+    ]
+   },
+   "M10_cutInRecall": {
+    "k": 40,
+    "n": 40,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "M10_cutInRecallByReason": {
+    "question_to_her": {
+     "k": 40,
+     "n": 40,
+     "rate": 1,
+     "ci95": [
+      1,
+      1
+     ]
+    }
+   },
+   "M10_cutInPrecision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M10_outOfPolicy": 0,
+   "M10_driftInfeasibleStreams": 32,
+   "M11_verdictOnRepaired": {
+    "k": 3,
+    "n": 40,
+    "rate": 0.075,
+    "ci95": [
+     0,
+     0.15
+    ]
+   },
+   "M11_repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "M12_holdViolation": {
+    "k": 72,
+    "n": 72,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "M13_detected": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_detectAfterSegEnd": {
+    "n": 0,
+    "p50": null,
+    "p90": null,
+    "ci95p50": [
+     null,
+     null
+    ]
+   },
+   "M13_nonSafetySpeechAfterDistress": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_safeguardOverChild": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_falseSafety": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M14_echoSelfTrigger": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "M15_reactsPerS": 0.555,
+   "probesPerStream": 0,
+   "semCallsPerStream": 0
+  }
+ }
+}

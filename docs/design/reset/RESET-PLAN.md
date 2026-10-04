@@ -1127,3 +1127,12 @@ Proposed in `context/inbox/reset-plan.json`, and written up in `context/decision
   - `rj-reset-wave2-exit-as-owner-ready`
 - open:
   - `open-reset-owner-decisions`
+
+### Owner answers to §9 (2026-10-04, owner's words: "Teacher look should be 3d or 2d model, yes to the rest, delete the test accounts. Spending I'm okay with")
+- **O-R1:** the teacher is the in-house character model, 2D puppet or 3D, style C, human-like. The V3 painted portraits are mockup stand-ins only and never ship. RS-7 ships the puppet when it is at ≥ 4.5/5.
+- **O-R3:** confirmed. Diversions stay hidden from parents; safety events always show.
+- **O-R4:** approved. The reference phone is an INR 10k-class Android; the main loop names the exact model and the owner buys it (the main loop never buys).
+- **O-R5:** approved. Use MAI-Transcribe in India (owner approved preview use earlier); otherwise Nemotron India hosting under the Azure grant.
+- **O-R6:** approved. A consented real-child panel; the owner recruits, and the protocol is shared with the voice-signals pilot.
+- **O-R7:** done 2026-10-04. The 14 synthetic safeguarding incidents on @taxila.test children were marked handled with a note. `sweep-test-accounts --db prod --apply` deleted 11 test guardians (0 deferred, 0 failed), and 0 remain.
+- **O-R9:** approved: USD 60-90 Azure for Wave 2.5.

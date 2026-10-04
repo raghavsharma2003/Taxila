@@ -165,7 +165,8 @@ export function decide(snapshot, session, signals, ctx) {
   if (k.has("share_sad")) { overlay("SHARE_UPTAKE", "share_uptake_gentle"); display("share_sad"); reasons.push("rapport.share_sad"); }
   else if (k.has("share") && !k.has("warmth_offer")) { overlay("SHARE_UPTAKE", "share_uptake"); reasons.push("rapport.share"); }
   if (k.has("self_label")) { overlay("NOTICE", "name_step"); display("self_label"); reasons.push("rapport.self_label"); }
-  if (k.has("joke") && classLevel >= 3 && session.playfulCount < PLAYFUL_MAX && !(session.lastErrorAt != null && turn - session.lastErrorAt <= PLAYFUL_AFTER_ERROR)) {
+  const boundaryTurn = d.moveOverlay && ["WARM_BOUNDARY", "POINT_OUT", "OWN_SLIP", "AFFIRM_RECHECK"].includes(d.moveOverlay.kind);
+  if (k.has("joke") && !boundaryTurn && classLevel >= 3 && session.playfulCount < PLAYFUL_MAX && !(session.lastErrorAt != null && turn - session.lastErrorAt <= PLAYFUL_AFTER_ERROR)) {
     overlay("LAUGH_WITH", "laugh_with");
     if (!affect) { affect = appraise({ cause: "child_joke", turn, band }); next.playfulCount = session.playfulCount + 1; }
     reasons.push("rapport.joke");

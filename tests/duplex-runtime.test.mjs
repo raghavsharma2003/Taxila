@@ -191,6 +191,23 @@ test("her own words in the child's transcript are subtracted before markers, saf
   assert.ok(tk.transcript.echoRemovedTokens >= 4);
 });
 
+test("her uptake re-voices the child's words: never subtracted from the child's correction (M-D7 c01)", () => {
+  const r = rig({ source: "mai_stream" });
+  r.voice(500);
+  r.host.stt({ type: "final", itemId: "i1", text: "तीन बटा आठ", t: r.t, audioStartMs: r.t - 500, audioEndMs: r.t });
+  r.quiet(500);
+  const s = r.speaks();
+  assert.equal(s.length, 1);
+  assert.equal(s[0].uptake, "तीन बटा आठ");
+  r.host.herEvent({ kind: "start", t: r.t, utteranceId: "reply", text: "तीन बटा आठ, अच्छा तो देखते हैं", act: "asked_open", handsOver: true, msPerChar: 70 });
+  r.quiet(300);
+  r.voice(900); // "नहीं नहीं, तीन बटा चार" over her uptake: a revoke, the fragments merge
+  r.host.stt({ type: "partial", itemId: "i2", text: "नहीं नहीं तीन बटा चार", t: r.t + 200, audioStartMs: r.t - 900 });
+  const tk = r.host.buildTick("timer", r.t + 200);
+  assert.match(tk.transcript.text, /तीन बटा चार/, "the correction keeps its 'तीन बटा'");
+  assert.ok(r.of("voice", "yield").some((c) => c.reason === "revoke"));
+});
+
 test("shadow mode computes every tick but emits only log rows", () => {
   const r = rig({ flags: { shadow: true } });
   r.voice(400);

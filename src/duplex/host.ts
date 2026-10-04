@@ -158,6 +158,8 @@ export class EngineHost {
   private lastPrepare: { draft: string; warm: string; hash: string } | null = null;
   private lastPose: string | null = null;
   private safeguardSpoken = false;
+  /** The uptake of the last SPEAK, until her reply starts (echo subtraction skips it). */
+  private pendingUptake: string | null = null;
   private stepping = false;
   private t: Ms = 0;
   /** Counters for the harness: ticks by cause, compute time. */
@@ -219,7 +221,13 @@ export class EngineHost {
         const words = ev.words?.length ? ev.words : estimateWords(ev.text, ev.t, ev.msPerChar ?? 70);
         this.her = { ...this.her, speaking: true, utteranceId: ev.utteranceId, text: ev.text, startedAt: ev.t, words, boundaries: clauseEnds(ev.text, words),
           act: ev.act, handsOver: ev.handsOver, stoppedAt: null, outputDb: ev.outputDb ?? null };
-        this.echo.heard(ev.utteranceId, words);
+        // her UPTAKE re-voices the child's own words: never subtract those from the child's transcript. A leaked echo of it
+        // only repeats the child's value; subtracting it deletes the child's correction (M-D7 c01 on MAI: "तीन बटा आठ… नहीं
+        // नहीं, तीन बटा चार" lost "तीन बटा" to her uptake "तीन बटा आठ" and a verdict played on 4)
+        const up = this.pendingUptake;
+        this.pendingUptake = null;
+        const skip = up && normalizeLead(ev.text).startsWith(normalizeLead(up)) ? up.split(/\s+/).filter(Boolean).length : 0;
+        this.echo.heard(ev.utteranceId, words.slice(skip));
         this.audio.setHerLevel(ev.outputDb ?? null);
         // her words open an overlap epoch: what the child says over her is read on its own (a revoke restores the turn)
         this.prevTurnStart = this.fanin.turnStart;
@@ -492,8 +500,10 @@ export class EngineHost {
       if (p.buildIntent) this.o.emit({ to: "build", t, intent: p.buildIntent });
     }
     if (d.action === "SPEAK" && det?.action === "SPEAK") {
+      const uptake = det.firstSound === "uptake" ? uptakeOf(tr.text) : null;
+      this.pendingUptake = uptake;
       this.o.emit({ to: "voice", op: "speak", t, reason: det.reason, firstSound: det.firstSound, verdictNotBefore: det.verdictNotBefore, text: tr.text, textHash: tr.textHash,
-        uptake: det.firstSound === "uptake" ? uptakeOf(tr.text) : null, turnSeq: this.governor.turnSeq });
+        uptake, turnSeq: this.governor.turnSeq });
     } else if (d.action === "CUT_IN" && det?.action === "CUT_IN") {
       this.o.emit({ to: "voice", op: "cut_in", t, reason: det.reason, text: tr.text, textHash: tr.textHash, turnSeq: this.governor.turnSeq });
     } else if (d.action === "YIELD" && det?.action === "YIELD") {
@@ -554,3 +564,4 @@ function detailCode(det: NonNullable<EngineTick["last"]>["detail"]): string | nu
 }
 
 const round3 = (x: number): number => Math.round(x * 1000) / 1000;
+const normalizeLead = (s: string): string => String(s).normalize("NFC").replace(/[^\p{L}\p{M}\p{N}\s]+/gu, "").replace(/\s+/g, " ").trim();

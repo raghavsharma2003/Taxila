@@ -64,7 +64,8 @@ export const HL = {
     "koi (?:mujhse|mere saath|mere sath) (?:baat )?(?:nahi|nhi) (?:karta|karti|karte|khelta|khelti|bolta|bolti)", "(?:mera|mere) koi (?:dost|friend|friends) (?:nahi|nhi)",
     "koi (?:nahi|nhi) sunta", "(?:bas|sirf) (?:aap|tum) hi sun(?:te|ti)", "sab mujhe (?:ignore|akela)", "(?:main|mai) hamesha akel[ai]",
   ],
-  joke: ["(?:ha){2,}h?", "(?:he){2,}h?", "(?:hi){2,}", "lol+", "mazak", "mazaak", "majak"],
+  // "mazaak nahi kar rahi" is NOT joking: the negation follows the word, so it is excluded here, not by the NEG frame
+  joke: ["(?:ha){2,}h?", "(?:he){2,}h?", "(?:hi){2,}", "lol+", "(?:mazak|mazaak|majak)(?! (?:nahi|nahin|nhi|na)(?![\\p{L}]))(?! (?:\\S+ )(?:nahi|nahin|nhi)(?![\\p{L}]))"],
   share: [
     "(?:mera|meri|mere) (?:kutta|kutte|billi|bhai|behen|didi|dost|dadi|nani|dada|nana|cousin|team|birthday|janamdin|tota|pet)(?: \\S+){0,3} (?:hai|tha|thi|ne|aaya|aayi|gaya|gayi|hua|hui|mila|mili|jeeta|jeeti)",
     "(?:aaj|kal) (?:maine|humne)", "(?:maine|humne) (?:dekha|khela|jeeta|banaya)", "(?:aaj|kal) mera (?:birthday|janamdin|match)",

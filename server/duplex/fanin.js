@@ -61,7 +61,7 @@ export class TurnTranscript {
     this.carryFrom = carryFrom;
     this.updatedAt = null;
     this.echoRemoved = 0;
-    for (const it of this.items.values()) it.inTurn = this.belongs(it);
+    for (const it of this.items.values()) { it.straddle = false; it.inTurn = this.belongs(it); }
   }
 
   belongs(it) {
@@ -110,6 +110,18 @@ export class TurnTranscript {
     const raw = ev.delta ? it.raw + String(ev.text ?? "") : String(ev.text ?? "");
     it.raw = raw;
     let text = raw.trim();
+    // a STRADDLING item: its audio opened before this turn (her echo, a TV line) and it is still being written well after
+    // the turn began — the server VAD never split it, so the child's words are appended to it. It joins the turn (her echo
+    // in it is removed by the filter below); with token times, tokens that ended before the turn are dropped outright.
+    // (TaxilaFDB 2026-10-04: with her -30 dB echo transcribed, as the real transcriber does in L2, items opened by the echo
+    // swallowed the child's answer and 32-48% of respond ends got no reply.)
+    const startMs = it.audioStartMs ?? it.firstAt;
+    if (!it.inTurn && startMs < this.turnStart - 40 && ev.t >= this.turnStart + this.lag.p50) { it.straddle = true; it.inTurn = true; }
+    if (it.straddle && ev.words && ev.words.length === (text ? text.split(/\s+/).length : 0)) {
+      const keep = ev.words.map((w) => w.endMs >= this.turnStart - 40);
+      text = text.split(/\s+/).filter((_, i) => keep[i]).join(" ");
+      ev = { ...ev, words: ev.words.filter((_, i) => keep[i]) };
+    }
     if (this.filter) {
       // the audio this version describes: only her words audible INSIDE it can be echo in it (M-D7 c01 / i18: a late final
       // of the child's "तीन बटा चार", spoken BEFORE her uptake re-voiced it, was emptied as an echo of that uptake; on a

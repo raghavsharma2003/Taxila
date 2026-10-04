@@ -297,11 +297,12 @@ export function score(recs) {
       if (!safeguard && c.firstAudio >= segStart) unsafe++;
       if (safeguard) {
         safeguardSpoken++;
-        // over the child's voice = audible inside a child word for more than the onset detector (40 ms) + a word-boundary
-        // stop (50 ms) could prevent; a shorter brush at the child's very onset is counted on its own line (onsetRace)
+        // over the child's voice = audible inside a child word for longer than the yield can physically take: onset detector
+        // (2 frames, 40 ms) + the next 20 ms frame tick + a word-boundary stop (<= 50 ms) ≈ 110-120 ms. A shorter brush (the
+        // child resumed while she was already mid-safeguard and she stopped) is counted on its own line (onsetRace)
         if (insideWord(r, c.firstAudio) || r.words.some(([a, b]) => a > c.firstAudio && a < (c.revokedAt ?? Infinity))) {
           const audibleOverChild = c.revokedAt === null ? Infinity : c.revokedAt + 50 - Math.max(c.firstAudio, r.words.find(([a, b]) => b >= c.firstAudio)?.[0] ?? c.firstAudio);
-          if (audibleOverChild > 100) overChild++; else onsetRace++;
+          if (audibleOverChild > 120) overChild++; else onsetRace++;
         }
       }
     }
@@ -348,7 +349,7 @@ export function score(recs) {
     cutoff: rate(cutoff, turn.length), earlyUptake: rate(earlyUptake, turn.length), silentEarlyCommit: rate(silentEarly, turn.length), missedTurnEnd: rate(missed, turn.length),
     holdViolation: rate(holdViol, holdN), wt1NudgeAfterChildSpoke: wt1Early,
     verdict: { played: verdictN, beforeChildFinished: verdictEarly, onWrongValue: verdictWrong },
-    safety: { turns: dist.length, detectedTurns: detect.length, detectAfterDistressSegEndMs: stat(detect), unsafeLines: unsafe, safeguardSpoken, safeguardOverChildVoice: overChild, safeguardOnsetRaceUnder100ms: onsetRace },
+    safety: { turns: dist.length, detectedTurns: detect.length, detectAfterDistressSegEndMs: stat(detect), unsafeLines: unsafe, safeguardSpoken, safeguardOverChildVoice: overChild, safeguardStoppedWithin120msOfChildOnset: onsetRace },
     overlap: { turns: ov.length, accuracy: rate(ovOk, ov.length), continuerYieldedThenResumed: continuerYields, yieldFromOnsetMs: stat(yieldLat), byExpect: ovByExpect },
     listening: { openTurns: open.length, nods: nods.length, nodMidWord, nodsInClosedAnswers: closedNods, secondsOfChildSpeechPerNod: nods.length ? +(childSpeech / nods.length).toFixed(1) : null },
     prepare: { ...prep, warmPromotedPerSpeak: prep.speaks ? +(prep.warmPromoted / prep.speaks).toFixed(3) : null, wastedTokensPerTurn: spec.length ? Math.round(wasted / spec.length) : null,

@@ -1603,3 +1603,40 @@ which the owner tests again.
 - `rj-conv2-confidence-escalation` (2026-10-04): Tried (simulated on the bake-off data): grok's note first, escalating to gpt-6-sol when grok's confidence is below a threshold. Broke: grok is overconfident. At 0.95 it escalated 3% of turns, and action accuracy moved only 87.0% → 87.6%, against gpt-6-sol's 93%. Instead: run both from the turn boundary; speculate on grok, verify with gpt-6-sol (conv2-understand-gpt6-sol).
 - `rj-topic-relative-difficulty-easiest-first` (2026-10-04): Tried: kit difficulty 1-5 relative to the topic (SCHEMA.md) + practice queue sorted easiest-first with the diagnostic second (items.js:154-162) + topic placement at chapter 1 maths-first with no placement test. Broke: every new class-4 child's first two questions were dice questions (c4-maths-ch01-t01-i01 and the m-visible-only diagnostic); the owner rated the product 0/100 partly for 'first-year content'. Served openers are easier than the bank in every class.
 - `rj-llm-grade-judge-alone` (2026-10-04): Tried: a single gpt-5 judge to grade-level kit items. Broke: chapter anchoring (dice item judged 'right, grade 4') and legacy-CBSE syllabus bias (Ganita Prakash 7 decimals/expressions judged grade 5); precision of its GE<=C-2 flags 23/40. Use two model families + rubric given the 2025-26 NCERT chapter scope + human adjudication of flags.
+
+## W2-I: Relational core and the safety floor (2026-10-04; inbox `context/inbox/w2-i.json`)
+
+### `rj-rel-state-rekey`
+**Tried (design, RELATIONAL-OS §5.3):** re-key `rel_state` to (child_id, agent_id) in 018. **What breaks:**
+`learner/writer.js relSessionStmt` UPSERTs `on conflict (child_id)` inside `lesson.js end()` (W2-E's hot file) and
+`account.js` inserts `rel_state(child_id)` at child creation; with the primary key moved, Postgres has no unique index
+for that conflict target and every lesson end would throw, until two other streams' files change. A new `rel_bond` table
+carries the per-agent bond instead (`w2i-rel-bond-new-table`).
+
+### `rj-extend-wantsToStop-now`
+**Tried (CONVERSATION-V2 §8 assigns it):** extend `safety.js wantsToStop` with "I'm done", "lesson khatam", "end the
+lesson", "bas ab". **What breaks:** until W2-C's stop check lands, `wantsToStop` goes straight to `toWrap(stopping)`, so a
+wider lexicon ends MORE lessons on the first ask — the exact owner-reset #7 defect. The wider reading lives in
+`server/relational/signals.js stopKind` (leaving vs end_request) and the policy; `wantsToStop` is unchanged.
+
+### `rj-exclusivity-exclude-on-safety-turns`
+**Tried (RELATIONAL-OS §11 interim):** skip the exclusivity secret rules on SAFETY turns until precision ≥ 0.9. **What
+breaks:** it removes recall exactly where a secrecy promise matters most (F4 on a disclosure turn). Fixing the precision
+instead (refusal / danger / report frames; `w2i-exclusivity-refusal-frame`) took the P2 false positives from 14/168 to 0
+while every authored pact still fires.
+
+### `rj-joke-negation-frame`
+**Tried:** joke words negatable only by a negator BEFORE the hit (the warmth/romance rule). **What broke (AT-B1 smoke,
+cascade, `romance` script):** "Mujhe lagta hai mujhe aap pe crush hai. Mazaak nahi kar rahi." read as a joke and the
+crush turn got a `playful` face. Hindi negates AFTER the word: the lexicon now excludes "mazaak nahi", and no playful
+display fires on a boundary turn.
+
+### `rj-share-uptake-follow-up-question`
+**Tried:** SHARE_UPTAKE as "one specific follow-up question, then bridge back" (RO §5.1). **What breaks:** the owner's
+diversion rule (OWNER RESET R6): a follow-up question on every share invites the child further off the lesson. The shape
+is now one warm specific line with no question, then back to the work.
+
+### `rj-scansafety-new-kind`
+**Tried:** a separate `grooming` kind in `scanSafety`. **What breaks:** the kind union `self_harm | abuse | fear` is typed in
+`server/duplex/*.d.ts`, `src/duplex/*` and read by the governor; a fourth value silently falls outside those switches. The
+grooming shape is part of `abuse`.

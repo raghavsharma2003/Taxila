@@ -912,9 +912,11 @@ export class Puppet2DRig {
     R.update(this.innerMesh, "aDT", I.dt);
     R.update(this.innerMesh, "aGap", I.gap);
     const p = sol.p;
-    if (p.g > 0.05) R.drawInner(this.innerMesh, this.tex.interior, [p.T, p.TL, 10, 0], [p.th, p.tip, p.curl, 0], 1 - 0.5 * shade[3]);
+    const teethH = 10 + 5 * p.tuck;   // r5: f/v shows the incisors' full length, their tips on the lower lip
+    if (p.g > 0.05) R.drawInner(this.innerMesh, this.tex.interior, [p.T, p.TL, teethH, 0], [p.th, p.tip, p.curl, 0], 1 - 0.5 * shade[3]);
     for (const n of ["L", "U"]) {
       const sh = shell.sheets[n];
+      if (n === "U" && p.tuck > 0.05 && p.g > 0.05) R.drawInner(this.innerMesh, this.tex.interior, [p.T, p.TL, teethH, 0], [p.th, p.tip, p.curl, 0], 1 - 0.5 * shade[3], 1);
       R.update(this.shellMesh[n], "aPos", sh.pos);
       R.update(this.shellMesh[n], "aA", sh.alpha);
       R.update(this.shellMesh[n], "aL", sh.light);
