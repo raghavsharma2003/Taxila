@@ -1,0 +1,110 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e9;font-family:system-ui,sans-serif;color:#684333}
+  #activity{width:360px;height:320px;overflow:hidden;display:flex;flex-direction:column;align-items:center;background:radial-gradient(circle at 50% 35%,#fffdf5,#fff7e9 78%)}
+  h1{margin:11px 12px 2px;font-size:22px;line-height:28px;text-align:center;color:#793f39}
+  #message{height:27px;margin:0 12px;text-align:center;font-size:14px;line-height:25px;color:#806250}
+  #target{height:35px;min-width:76px;padding:1px 16px;border-radius:18px;background:#ffe3a9;text-align:center;font-size:23px;font-weight:800;line-height:33px;color:#733f30}
+  #picture{display:block;width:320px;height:164px;flex:none}
+  [data-part]{cursor:pointer;transition:fill .2s ease,filter .2s ease}
+  [data-shaded="false"]{fill:#f4c98d}
+  [data-shaded="true"]{fill:#e77c64}
+  [data-part]:active{filter:brightness(1.1)}
+  .pop{animation:pop .3s ease-out}
+  @keyframes pop{50%{filter:brightness(1.16)}}
+  #check{width:178px;height:54px;margin:2px 0 0;border:0;border-radius:18px;background:#579985;color:white;font:700 18px system-ui,sans-serif;box-shadow:0 5px 0 #357667;cursor:pointer;transition:transform .15s,box-shadow .15s}
+  #check:active{transform:translateY(4px) scale(.97);box-shadow:0 1px 0 #357667}
+  #check:disabled{opacity:.7}
+  #activity.finished{justify-content:center}
+  #activity.finished h1{margin-bottom:18px}
+  #activity.finished #message{height:auto;font-size:24px;line-height:34px;color:#579985;font-weight:700}
+  #activity.finished #target,#activity.finished #picture,#activity.finished #check{display:none}
+</style>
+<div id="activity" data-item="">
+  <h1 id="title"></h1>
+  <p id="message"></p>
+  <div id="target" data-target></div>
+  <svg id="picture" viewBox="0 0 320 164" aria-hidden="true"></svg>
+  <button id="check" type="button" data-action="check"></button>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params,items=p.items;
+  const box=document.getElementById('activity');
+  const svg=document.getElementById('picture');
+  const message=document.getElementById('message');
+  const target=document.getElementById('target');
+  const check=document.getElementById('check');
+  const ns='http://www.w3.org/2000/svg';
+  document.getElementById('title').textContent=Studio.t('title');
+  check.textContent=Studio.t('check');
+  let index=0,waiting=false;
+  function show(){
+    const item=items[index];
+    box.setAttribute('data-item',item.id);
+    target.textContent=item.n+'/'+item.d;
+    message.textContent=Studio.t('instr');
+    svg.replaceChildren();
+    for(let i=0;i<item.d;i++){
+      const part=document.createElementNS(ns,p.picture==='pizza'?'path':'rect');
+      if(p.picture==='pizza'){
+        const gap=0.012;
+        const a=-Math.PI/2+2*Math.PI*i/item.d+gap;
+        const b=-Math.PI/2+2*Math.PI*(i+1)/item.d-gap;
+        const x=160,y=82,r=75;
+        part.setAttribute('d',`M ${x} ${y} L ${x+r*Math.cos(a)} ${y+r*Math.sin(a)} A ${r} ${r} 0 ${b-a>Math.PI?1:0} 1 ${x+r*Math.cos(b)} ${y+r*Math.sin(b)} Z`);
+      }else{
+        const w=280/item.d;
+        part.setAttribute('x',20+i*w+1);
+        part.setAttribute('y',35);
+        part.setAttribute('width',w-2);
+        part.setAttribute('height',94);
+      }
+      part.setAttribute('data-part',i);
+      part.setAttribute('data-shaded','false');
+      part.addEventListener('click',()=>{
+        if(waiting)return;
+        part.setAttribute('data-shaded',part.getAttribute('data-shaded')==='true'?'false':'true');
+        part.classList.remove('pop');
+        void part.getBoundingClientRect();
+        part.classList.add('pop');
+        message.textContent=Studio.t('instr');
+      });
+      svg.appendChild(part);
+    }
+    waiting=false;
+    check.disabled=false;
+  }
+  check.addEventListener('click',()=>{
+    if(waiting)return;
+    waiting=true;
+    check.disabled=true;
+    const item=items[index];
+    Studio.answer({n:svg.querySelectorAll('[data-shaded="true"]').length,d:item.d});
+  });
+  Studio.onVerdict(({correct})=>{
+    message.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      box.classList.add('pop');
+      setTimeout(()=>{
+        box.classList.remove('pop');
+        index++;
+        if(index<items.length)show();
+        else{
+          box.classList.add('finished');
+          box.removeAttribute('data-item');
+          message.textContent=Studio.t('done');
+          Studio.done();
+        }
+      },700);
+    }else{
+      waiting=false;
+      check.disabled=false;
+    }
+  });
+  show();
+  Studio.ready();
+})();
+
+</script>

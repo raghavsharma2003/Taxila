@@ -1,0 +1,73 @@
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:360px;height:320px;overflow:hidden}body{font-family:system-ui,sans-serif;background:#fff7e8;color:#354c3b}.app{width:360px;height:320px;padding:8px 10px;display:flex;flex-direction:column;gap:4px}.title{height:24px;margin:0;text-align:center;font-size:17px;line-height:24px;color:#365d43}.scene{width:340px;height:126px;display:block;background:#f2f8e8;border-radius:18px}.caption{height:24px;text-align:center;font-size:14px;line-height:24px;color:#426a4b;font-weight:700}.controls{height:54px;display:flex;justify-content:center;align-items:center;gap:10px}.btn,.option{border:0;border-radius:16px;background:#e2efcf;color:#365d43;font:700 14px system-ui;cursor:pointer;min-width:76px;height:52px;padding:0 12px;transition:transform .15s,background .2s,box-shadow .2s}.btn:active,.option:active{transform:scale(.94)}.btn.next{background:#ffd993}.question{height:22px;text-align:center;font-size:14px;line-height:22px;font-weight:700;color:#53664d;white-space:nowrap;overflow:hidden}.options{height:54px;display:flex;justify-content:center;align-items:center;gap:8px}.option{min-width:88px;height:52px;background:#fff;border:2px solid #d7e7c4}.option.selected{background:#d9ecc0;box-shadow:0 0 0 3px #b5d68b}.feedback{position:absolute;width:1px;height:1px;overflow:hidden}.entity-label,.flow-label{font:700 11px system-ui;fill:#405a3d}.flow-label{font-size:10px;fill:#58744b}.particle{stroke:#fff7e8;stroke-width:1.5}.hub-shape{transition:filter .25s,transform .25s;transform-origin:170px 66px}.highlight{filter:drop-shadow(0 0 6px #f5ad39);transform:scale(1.04)}.flow-line{fill:none;stroke:#9ebd7a;stroke-width:2;stroke-dasharray:4 4;opacity:.65}
+</style>
+<div class="app">
+  <h1 class="title" id="title"></h1>
+  <svg class="scene" id="scene" viewBox="0 0 340 126" aria-label="">
+    <path class="flow-line" d="M170 116 L170 78"/>
+    <path class="flow-line" d="M66 59 L133 59"/>
+    <path class="flow-line" d="M207 59 L278 59"/>
+    <g data-entity="sun">
+      <circle cx="43" cy="35" r="17" fill="#ffc85f"/>
+      <path d="M43 8v-5M43 67v-5M16 35h-5M75 35h-5M24 16l-4-4M66 58l-4-4M62 16l4-4M20 58l4-4" stroke="#eaaa3c" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <text class="entity-label" data-label="sun" x="29" y="75"></text>
+    <g data-entity="roots">
+      <path d="M159 81q-8 15-8 31m19-31q7 13 7 31m-20-17-11 10m27-9 11 9m-25-2-7 10m15-10 8 10" fill="none" stroke="#9a7049" stroke-width="4" stroke-linecap="round"/>
+    </g>
+    <text class="entity-label" data-label="roots" x="136" y="123"></text>
+    <path class="hub-shape" data-entity="leaf" d="M170 76C139 69 129 43 145 27c10-10 23-10 25-7 18-10 36 0 39 17 4 22-16 38-39 39Z" fill="#82bd68" stroke="#4d8c50" stroke-width="3"/>
+    <path d="M145 42q25 8 45 22m-20-23q-3 14 0 29" fill="none" stroke="#d8f0b5" stroke-width="2.5" stroke-linecap="round"/>
+    <text class="entity-label" data-label="leaf" x="158" y="17"></text>
+    <text class="flow-label" data-label="water" x="180" y="108"></text>
+    <text class="flow-label" data-label="co2" x="84" y="51"></text>
+    <text class="flow-label" data-label="o2" x="238" y="51"></text>
+    <g id="particles"></g>
+  </svg>
+  <div class="caption" data-caption></div>
+  <div class="controls"><button class="btn" data-action="play" type="button"></button><button class="btn next" data-action="next" type="button"></button></div>
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+const p=Studio.params, t=Studio.t;
+const title=document.getElementById("title"), caption=document.querySelector("[data-caption]"), play=document.querySelector('[data-action="play"]'), next=document.querySelector('[data-action="next"]'), question=document.getElementById("question"), options=document.getElementById("options"), feedback=document.getElementById("feedback"), particles=document.getElementById("particles");
+title.textContent=t("title");question.textContent=t("ask");
+document.querySelectorAll("[data-label]").forEach(el=>el.textContent=t(el.dataset.label));
+document.querySelector('[data-entity="leaf"]').setAttribute("data-entity",p.hub);
+let step=0,running=true,done=false,phase=0;
+const flows=p.flows;
+function stepKey(){return "step"+(step+1)}
+function updateCaption(){caption.textContent=t(stepKey());document.querySelectorAll(".flow-line").forEach((el,i)=>el.style.opacity=i===step?"1":".45");document.querySelector(".hub-shape").classList.toggle("highlight",true)}
+function setPlay(){play.textContent=t(running?"pause":"play")}
+function makeParticles(){
+ particles.replaceChildren();
+ flows.forEach(f=>{
+  for(let i=0;i<3;i++){const c=document.createElementNS("http://www.w3.org/2000/svg","circle");c.setAttribute("r","4");c.setAttribute("class","particle");c.setAttribute("data-flow",f.key);c.dataset.dir=f.dir;c.dataset.phase=String(i/3);c.setAttribute("fill",f.key==="water"?"#4ca8d5":f.key==="co2"?"#a78bd2":"#f18c69");particles.appendChild(c)}
+ });
+}
+function move(){
+ if(running){phase=(phase+.006)%1;particles.querySelectorAll(".particle").forEach(c=>{
+  const q=(phase+Number(c.dataset.phase))%1,d=c.dataset.dir;let x,y;
+  if(d==="up_in"){x=170;y=116-q*40}
+  else if(d==="in"){x=66+q*67;y=59}
+  else{x=207+q*71;y=59}
+  c.setAttribute("cx",x);c.setAttribute("cy",y);
+ })}
+ requestAnimationFrame(move)
+}
+p.entities.forEach(k=>{const e=document.querySelector('[data-entity="'+k+'"]');if(e)e.dataset.entity=k});
+flows.forEach(f=>{});
+makeParticles();updateCaption();setPlay();
+play.addEventListener("click",()=>{running=!running;setPlay();Studio.event("play",{running:running?1:0})});
+next.textContent=t("next");
+next.addEventListener("click",()=>{step=(step+1)%p.steps;updateCaption();Studio.event("step",{step:step+1})});
+p.options.forEach(key=>{const b=document.createElement("button");b.type="button";b.className="option";b.dataset.option=key;b.textContent=t(key);b.addEventListener("click",()=>{document.querySelectorAll(".option").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");feedback.textContent="";Studio.answer(key)});options.appendChild(b)});
+Studio.onVerdict(v=>{feedback.textContent=t(v.correct?"right":"wrong");if(v.correct&&!done){done=true;Studio.done()}});
+requestAnimationFrame(move);Studio.ready();
+})();
+
+</script>

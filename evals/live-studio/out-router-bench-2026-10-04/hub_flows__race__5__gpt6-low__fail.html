@@ -1,0 +1,68 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff9ed;color:#365344;font-family:system-ui,sans-serif}
+  .card{width:360px;height:320px;overflow:hidden;background:linear-gradient(#fff9ed,#f1f8e9)}
+  .title{height:25px;text-align:center;font-size:16px;font-weight:800;color:#365344;line-height:25px}
+  svg{display:block;width:360px;height:165px}
+  svg text{font:700 12px system-ui,sans-serif;fill:#365344;paint-order:stroke;stroke:#fff9ed;stroke-width:3px}
+  .controls{height:55px;display:flex;align-items:center;justify-content:space-between;padding:2px 8px;gap:7px}
+  button{border:0;border-radius:17px;min-width:52px;min-height:52px;background:#e1efd5;color:#31543b;font:700 13px system-ui,sans-serif;cursor:pointer;transition:transform .15s,background .2s}
+  button:active{transform:scale(.91)}
+  .control{width:63px;background:#cae6bc}
+  [data-caption]{flex:1;text-align:center;font-size:12px;font-weight:700;line-height:1.2;color:#466549}
+  .question{height:21px;padding:0 10px;text-align:center;font-size:12px;font-weight:700;line-height:21px;color:#365344;white-space:nowrap;overflow:hidden}
+  .options{height:54px;display:flex;gap:7px;padding:1px 8px}
+  .options button{flex:1;min-width:0;background:#d9e9f3}
+  .options button:nth-child(2){background:#e7e2f5}
+  .options button:nth-child(3){background:#f6dfce}
+  .glow{filter:drop-shadow(0 0 5px #ffc764)}
+</style>
+<div class="card">
+  <div class="title" id="title"></div>
+  <svg id="scene" viewBox="0 0 360 190" aria-hidden="true">
+    <path d="M55 55 Q115 44 153 75 M179 151 L179 110 M220 80 Q255 61 301 64 M223 107 Q265 117 310 117" fill="none" stroke="#d9dfca" stroke-width="5" stroke-linecap="round" stroke-dasharray="5 9"/>
+    <circle id="sunShape" cx="50" cy="57" r="25" fill="#ffd475"/>
+    <path id="rootShape" d="M178 126 L178 156 M178 142 Q160 141 151 158 M178 145 Q193 140 205 157 M178 151 Q167 159 164 170 M178 151 Q189 160 192 170" fill="none" stroke="#997152" stroke-width="7" stroke-linecap="round"/>
+    <path id="hubShape" d="M180 110 C139 105 139 62 191 54 C233 47 239 88 180 110Z" fill="#78bd78" stroke="#438c65" stroke-width="3"/>
+    <path d="M162 115 Q180 89 210 71" fill="none" stroke="#e4f4cb" stroke-width="3" stroke-linecap="round"/>
+    <g id="particles"></g>
+    <g id="labels"></g>
+  </svg>
+  <div class="controls"><button class="control" data-action="play"></button><div data-caption></div><button class="control" data-action="next"></button></div>
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, svg=document.getElementById('scene'), ns='http://www.w3.org/2000/svg';
+  const tr=k=>Studio.t(k), set=(el,k)=>el.textContent=tr(k);
+  set(document.getElementById('title'),'title');
+  const question=document.getElementById('question');set(question,'ask');
+  const play=document.querySelector('[data-action="play"]'),next=document.querySelector('[data-action="next"]'),caption=document.querySelector('[data-caption]');
+  let playing=true,step=0,finished=false;
+  const steps=Array.from({length:p.steps},(_,i)=>'step'+(i+1));
+  function refresh(){set(play,playing?'pause':'play');set(caption,steps[step]);document.querySelectorAll('[data-flow]').forEach(el=>{el.style.opacity=(p.flows.findIndex(f=>f.key===el.dataset.flow)===step%p.flows.length)?'1':'.42'})}
+  set(next,'next');refresh();
+  const shapes=[document.getElementById('hubShape'),document.getElementById('sunShape'),document.getElementById('rootShape')];
+  shapes[0].setAttribute('data-entity',p.hub);
+  p.entities.forEach((key,i)=>{if(shapes[i+1])shapes[i+1].setAttribute('data-entity',key)});
+  const labelPositions=[[187,45],[17,24],[214,170],[103,137],[275,47],[279,143]];
+  const keys=[p.hub,...p.entities,...p.flows.map(f=>f.key)];
+  keys.forEach((key,i)=>{const el=document.createElementNS(ns,'text'),pos=labelPositions[i]||[12,180];el.setAttribute('x',pos[0]);el.setAttribute('y',pos[1]);el.setAttribute('data-label',key);el.textContent=tr(key);document.getElementById('labels').append(el)});
+  const paths={up_in:[178,150,178,112],in:[298,68,226,78],out:[225,109,308,117]};
+  const colors=['#64b9dc','#a9a0da','#f5a875'];
+  const dots=[];
+  p.flows.forEach((f,i)=>{const route=paths[f.dir]||paths.in;for(let j=0;j<4;j++){const dot=document.createElementNS(ns,'circle');dot.setAttribute('r',j%2?4:5);dot.setAttribute('fill',colors[i%colors.length]);dot.setAttribute('data-flow',f.key);document.getElementById('particles').append(dot);dots.push({dot,route,phase:j/4,speed:.00016+i*.000025})}});
+  let last=0;
+  function animate(now){const dt=Math.min(now-last||0,50);last=now;dots.forEach(d=>{if(playing)d.phase=(d.phase+dt*d.speed)%1;const [x1,y1,x2,y2]=d.route;d.dot.setAttribute('cx',x1+(x2-x1)*d.phase);d.dot.setAttribute('cy',y1+(y2-y1)*d.phase)});requestAnimationFrame(animate)}
+  requestAnimationFrame(animate);
+  play.addEventListener('click',()=>{playing=!playing;refresh();Studio.event('play',{playing:playing?1:0})});
+  next.addEventListener('click',()=>{step=(step+1)%steps.length;refresh();Studio.event('step',{step:step+1})});
+  const options=document.getElementById('options');
+  p.options.forEach(key=>{const b=document.createElement('button');b.dataset.option=key;b.textContent=tr(key);b.addEventListener('click',()=>{if(!finished)Studio.answer(key)});options.append(b)});
+  Studio.onVerdict(({correct})=>{set(question,correct?'right':'wrong');if(correct&&!finished){finished=true;Studio.done()}});
+  Studio.ready();
+})();
+
+</script>

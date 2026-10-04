@@ -1,0 +1,84 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8ed;color:#44362f}
+#app{width:360px;height:320px;padding:8px 12px;display:flex;flex-direction:column;align-items:center;gap:5px}
+#title{margin:0;height:25px;line-height:25px;font-size:19px;color:#7a4938}
+#readout{height:27px;display:flex;align-items:center;gap:12px;font-weight:700;font-size:16px}
+#visualArea{width:100%;height:38px;display:flex;align-items:center;justify-content:center;position:relative}
+#visual{height:22px;max-width:none;min-width:0;border-radius:6px;background:#ee9b58;box-shadow:inset 0 -4px 0 #d77c3b,0 2px 5px #7a493833;transition:width .28s cubic-bezier(.2,.8,.2,1),transform .15s}
+#visual:after{content:"";display:block;width:100%;height:5px;margin-top:8px;border-radius:5px;background:#f6c77f}
+#controls{display:flex;gap:10px;width:100%;height:54px}
+button{font:700 17px system-ui,sans-serif;border:0;border-radius:16px;background:#f2d5b5;color:#684534;min-height:52px;cursor:pointer;transition:transform .12s,background .2s;box-shadow:0 3px 0 #d5ae88}
+button:active{transform:scale(.94)}
+#controls button{flex:1}
+#controls button:last-child{background:#b7d9c1;color:#315943;box-shadow:0 3px 0 #8db99a}
+#prompt{height:24px;line-height:24px;font-weight:700;font-size:15px;color:#7a4938}
+#options{width:100%;height:54px;display:flex;gap:8px}
+#options button{flex:1;background:#fff;border:2px solid #efd9c2;box-shadow:0 3px 0 #e5c7a8;font-size:18px}
+#feedback{height:20px;line-height:20px;font-weight:700;color:#43805a;font-size:14px}
+#feedback.bad{color:#a85b48}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <div id="readout"><span id="xread"></span><span id="output" data-output data-value=""></span></div>
+  <div id="visualArea"><div id="visual" data-visual data-dim="w"></div></div>
+  <div id="controls">
+    <button id="dec" data-action="dec" type="button"></button>
+    <button id="inc" data-action="inc" type="button"></button>
+  </div>
+  <div id="prompt"></div>
+  <div id="options"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, t=key=>Studio.t(key);
+  const app=document.getElementById("app");
+  const title=document.getElementById("title");
+  const xread=document.getElementById("xread");
+  const output=document.getElementById("output");
+  const visual=document.getElementById("visual");
+  const feedback=document.getElementById("feedback");
+  const dec=document.getElementById("dec"), inc=document.getElementById("inc");
+  let x=p.x.start, completed=false;
+  title.textContent=t("title");
+  dec.textContent=t("less"); inc.textContent=t("more");
+  const fmt=n=>Number.isInteger(n)?String(n):String(Number(n.toFixed(6)));
+  const render=()=>{
+    const y=p.law.k*x+p.law.b;
+    xread.textContent=t("xname")+" = "+fmt(x);
+    output.textContent=t("yname")+" = "+fmt(y);
+    output.dataset.value=fmt(y);
+    app.dataset.x=fmt(x);
+    visual.style.width=(y*p.y.unitsPer)+"px";
+    dec.disabled=x-p.x.step<p.x.min;
+    inc.disabled=x+p.x.step>p.x.max;
+  };
+  dec.addEventListener("click",()=>{
+    if(x-p.x.step>=p.x.min){x-=p.x.step;render();Studio.event("change",{direction:"less"});}
+  });
+  inc.addEventListener("click",()=>{
+    if(x+p.x.step<=p.x.max){x+=p.x.step;render();Studio.event("change",{direction:"more"});}
+  });
+  document.getElementById("prompt").textContent=t("ask")+" "+t("xname")+" = "+fmt(p.ask.x);
+  const options=document.getElementById("options");
+  p.ask.options.forEach(value=>{
+    const button=document.createElement("button");
+    button.type="button"; button.textContent=String(value); button.dataset.option=String(value);
+    button.addEventListener("click",()=>{
+      if(!completed){feedback.textContent="";feedback.classList.remove("bad");Studio.answer({value});}
+    });
+    options.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=correct?t("right"):t("wrong");
+    feedback.classList.toggle("bad",!correct);
+    if(correct&&!completed){completed=true;feedback.textContent=t("done");Studio.done();}
+  });
+  render();
+  Studio.ready();
+})();
+
+</script>

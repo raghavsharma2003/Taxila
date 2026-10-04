@@ -1,0 +1,97 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#423b35;background:#fff8ee}
+#app{width:360px;height:320px;padding:8px 10px;display:flex;flex-direction:column;gap:5px}
+h1{margin:0;text-align:center;font-size:18px;line-height:22px;color:#754d3b}
+#instr,#feedback{margin:0;text-align:center;font-size:12px;line-height:16px;min-height:16px}
+#feedback{font-weight:700;color:#558057}
+#cards{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,52px);gap:5px;justify-items:center}
+.card{width:100%;height:52px;border:2px solid #e8c998;border-radius:15px;background:#fff;box-shadow:0 3px 0 #ecd9bd;color:#51483e;font:700 13px system-ui,sans-serif;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s}
+.card:active{transform:scale(.95)}
+.card[data-selected="true"]{transform:translateY(-4px) scale(1.03);border-color:#e9a94f;box-shadow:0 5px 14px #d9a95888;z-index:1}
+#bins{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;min-height:0}
+.bin{min-width:0;border:2px dashed #b7c6aa;border-radius:17px;background:#f0f5e9;display:flex;flex-direction:column;align-items:center;overflow:hidden;cursor:pointer;transition:transform .16s,background .16s}
+.bin:active{transform:scale(.98);background:#e7f0dc}
+.bin-name{font-size:14px;font-weight:750;line-height:20px;padding:4px 2px 2px}
+.bin-items{width:100%;padding:2px 5px 5px;display:flex;flex-wrap:wrap;align-content:flex-start;justify-content:center;gap:3px}
+.placed{border:1px solid #c5d3b8;border-radius:9px;background:#fffdf8;padding:3px 5px;font:600 10px system-ui,sans-serif;max-width:100%;overflow-wrap:anywhere;animation:arrive .28s ease-out}
+.shake{animation:shake .3s ease-in-out}
+#finish{display:none;position:absolute;inset:0;background:#fff8eeef;align-items:center;justify-content:center;text-align:center;padding:24px;font-size:22px;font-weight:800;color:#558057;border-radius:18px}
+@keyframes arrive{from{transform:scale(.7);opacity:.3}to{transform:scale(1);opacity:1}}
+@keyframes shake{25%{transform:translateX(-5px)}60%{transform:translateX(5px)}}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <p id="instr"></p>
+  <p id="feedback" aria-live="polite"></p>
+  <div id="cards"></div>
+  <div id="bins"></div>
+  <div id="finish"></div>
+</div>
+<script>
+
+(()=> {
+  const p=Studio.params, cardsEl=document.getElementById("cards"), binsEl=document.getElementById("bins");
+  const feedback=document.getElementById("feedback"), finish=document.getElementById("finish");
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("instr").textContent=Studio.t("instr");
+  const cardNodes=new Map(), binNodes=new Map();
+  let selected=null, pending=false, sorted=0, finished=false;
+  p.bins.forEach(key=>{
+    const area=document.createElement("div");
+    area.className="bin"; area.dataset.bin=key;
+    const name=document.createElement("div"); name.className="bin-name"; name.textContent=Studio.t(key);
+    const items=document.createElement("div"); items.className="bin-items";
+    area.append(name,items); binsEl.append(area);
+    binNodes.set(key,{area,items});
+    area.addEventListener("click",()=>{
+      if(pending||!selected)return;
+      const cardKey=selected;
+      pending=true;
+      Studio.answer({card:cardKey,bin:key});
+      Studio.onVerdict(({correct})=>{
+        pending=false;
+        const node=cardNodes.get(cardKey);
+        if(correct){
+          feedback.textContent=Studio.t("right");
+          node.removeAttribute("data-card");
+          node.dataset.selected="false";
+          node.classList.remove("card");
+          node.classList.add("placed");
+          binNodes.get(key).items.append(node);
+          sorted++;
+          selected=null;
+          if(sorted===p.cards.length&&!finished){
+            finished=true;
+            finish.textContent=Studio.t("done");
+            finish.style.display="flex";
+            Studio.done();
+          }
+        }else{
+          feedback.textContent=Studio.t("wrong");
+          node.classList.add("shake");
+          selected=null;
+          node.dataset.selected="false";
+          setTimeout(()=>node.classList.remove("shake"),320);
+        }
+      });
+    });
+  });
+  p.cards.forEach(key=>{
+    const node=document.createElement("button");
+    node.type="button"; node.className="card"; node.dataset.card=key; node.dataset.selected="false";
+    node.textContent=Studio.t(key); cardNodes.set(key,node); cardsEl.append(node);
+    node.addEventListener("click",e=>{
+      e.stopPropagation();
+      if(pending||!node.dataset.card)return;
+      if(selected===key){selected=null;node.dataset.selected="false";return}
+      if(selected)cardNodes.get(selected).dataset.selected="false";
+      selected=key; node.dataset.selected="true";
+      feedback.textContent="";
+    });
+  });
+  Studio.ready();
+})();
+
+</script>

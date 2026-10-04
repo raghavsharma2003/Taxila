@@ -567,7 +567,7 @@ async function browserPhase(mounts) {
       const rec = { session: m.session, engine: m.engine, mode: m.params?.mode ?? null, goal: m.goal ?? null, itemId, key: item?.answer ?? null, paramsTarget: m.params?.target ?? m.params?.value ?? m.params?.n ?? null, commits: [], errors: [], issues: [] };
       consoleErrors.length = 0;
       try {
-        await page.evaluate(([e, p, o]) => window.mount(e, p, o), [m.engine, m.params, { lang: m.lang === "english" ? "english" : "hindi", ageBand: m.classLevel <= 4 ? "6-9" : "10-15", goal: m.goal, moduleId: m.moduleId }]);
+        await page.evaluate(([e, p, o]) => window.mount(e, p, o), [m.engine, m.params, { lang: m.lang, ageBand: m.classLevel <= 4 ? "6-9" : "10-15", goal: m.goal, moduleId: m.moduleId }]);
         const fh = await page.waitForSelector("iframe", { timeout: 15_000 });
         const frame = await fh.contentFrame();
         const okMount = await frame.waitForSelector(".ek[data-engine], .sc, [data-scene], button", { timeout: 20_000 }).then(() => true, () => false);
@@ -575,50 +575,103 @@ async function browserPhase(mounts) {
         rec.text = okMount ? (await frame.locator("body").innerText().catch(() => "")).slice(0, 300) : null;
         if (!okMount) { rec.issues.push("the frame showed no engine UI within 20 s"); out.mounts.push(rec); continue; }
         await page.screenshot({ path: join(OUT, "browser", `${out.mounts.length + 1}-${m.engine.replace(/[@/]/g, "_")}.png`) }).catch(() => {});
-        // randomized child play: up to 7 commits, each after 0-5 random taps on the engine's own controls
-        for (let k = 0; k < 7; k++) {
-          const before = (await page.evaluate(() => window.events)).filter((e) => e.type === "answer").length;
+        // Child play, deliberate first, random after: every commit's `correct` claim is compared with its value.
+        const truthKey = item?.answer ?? null;
+        const answersN = async () => (await page.evaluate(() => window.events)).filter((e) => e.type === "answer").length;
+        const visible = async (sel) => { const out = []; for (const c of await frame.$$(sel)) if (await c.isVisible().catch(() => false)) out.push(c); return out; };
+        const clickCheck = async () => {
+          const check = frame.locator('[data-target="check"]').first();
+          if (await check.isVisible().catch(() => false)) { await check.click({ timeout: 2000 }).catch(() => {}); return true; }
+          return false;
+        };
+        const record = async (label, before, intended) => {
+          await page.waitForTimeout(400);
+          const answers = (await page.evaluate(() => window.events)).filter((e) => e.type === "answer");
+          if (answers.length <= before) { rec.commits.push({ label, intended, committed: null, note: "no answer event" }); return null; }
+          const a = answers.at(-1);
+          const val = committedOf(a.value);
+          const vsKit = val != null && truthKey != null && numOf(truthKey) != null ? sameValue(val, truthKey) : null;
+          const vsParams = val != null && rec.paramsTarget != null ? sameValue(val, rec.paramsTarget) : null;
+          let vsScene = null;
+          if (m.engine === "scene@1" && a.value?.kind === "sc.commit") {
+            const pr = m.params?.scene?.probe;
+            const keyId = pr?.correct?.match(/^pick == '([a-z0-9_]+)'$/)?.[1];
+            const ord = pr?.correct?.match(/^order\((\w+)\) == '([^']+)'$/);
+            if (keyId) vsScene = Object.values(a.value.vars ?? {}).includes(keyId);
+            else if (ord) vsScene = (a.value.order?.[ord[1]] ?? []).join(",") === ord[2];
+          }
+          const truth = vsScene ?? vsKit ?? vsParams;
+          const c = { label, intended, claim: a.correct ?? null, value: a.value, committed: val, vsKit, vsParams, vsScene, mismatch: truth != null && typeof a.correct === "boolean" && truth !== a.correct };
+          rec.commits.push(c);
+          if (c.mismatch) rec.issues.push(`${label}: frame said correct:${a.correct} for ${JSON.stringify(a.value).slice(0, 140)} (vs kit key "${truthKey}": ${vsKit}; vs engine target ${rec.paramsTarget}: ${vsParams}; vs scene key: ${vsScene})`);
+          if (vsKit != null && vsParams != null && vsKit !== vsParams && !rec.issues.some((x) => x.startsWith("binding"))) rec.issues.push(`binding: engine target ${rec.paramsTarget} differs from the kit key "${truthKey}"`);
+          if (a.correct) { await page.evaluate(() => window.send({ type: "reset" })); await page.waitForTimeout(300); }
+          return c;
+        };
+        const pad = await visible(".ek-pad-key");
+        const arrows = await visible('[data-target="right"]');
+        const sceneOpts = m.engine === "scene@1" ? await visible("button:not([data-target=check])") : [];
+        if (pad.length) {
+          // keypad: the key, a wrong value, an equivalent form (fractions), then the key again
+          const keyStr = String(rec.paramsTarget ?? numOf(truthKey) ?? "");
+          const typeIn = async (str) => {
+            for (let i = 0; i < 10; i++) await frame.locator('.ek-pad-key[data-key="⌫"]').first().click({ timeout: 1500 }).catch(() => {});
+            for (const ch of str) await frame.locator(`.ek-pad-key[data-key="${ch === "-" ? "−" : ch}"]`).first().click({ timeout: 1500 }).catch(() => {});
+          };
+          const f = keyStr.match(FRAC);
+          const wrong = f ? `${f[1]}/${Number(f[2]) + 1}` : String((numOf(keyStr) ?? 0) + 1);
+          const equiv = f ? `${Number(f[1]) * 2}/${Number(f[2]) * 2}` : null;
+          for (const [label, str] of [["keypad: the key", keyStr], ["keypad: a wrong value", wrong], ...(equiv ? [["keypad: an equivalent fraction", equiv]] : []), ["keypad: the key again", keyStr]]) {
+            if (!str) continue;
+            const before = await answersN();
+            await typeIn(str);
+            const display = (await frame.locator('[data-target="entry"]').first().innerText().catch(() => "")).trim();
+            await clickCheck();
+            const c = await record(`${label} "${str}"`, before, str);
+            if (c) c.display = display;
+          }
+        } else if (arrows.length) {
+          // a stepper / marker: walk it from the far left, committing at each of up to 9 positions
+          for (let i = 0; i < 14; i++) await frame.locator('[data-target="left"]').first().click({ timeout: 1000 }).catch(() => {});
+          for (let k = 0; k < 9; k++) {
+            const before = await answersN();
+            await clickCheck();
+            const c = await record(`stepper: position ${k}`, before, null);
+            if (c?.claim) { for (let j = 0; j <= k; j++) await frame.locator('[data-target="right"]').first().click({ timeout: 1000 }).catch(() => {}); }
+            else await frame.locator('[data-target="right"]').first().click({ timeout: 1000 }).catch(() => {});
+          }
+        } else if (sceneOpts.length) {
+          // a scene choice card: every option once (taps commit, or a Check commits)
+          const labels = [];
+          for (const o of sceneOpts) labels.push((await o.innerText().catch(() => "")).trim().slice(0, 60));
+          for (const [i, lab] of labels.entries()) {
+            const before = await answersN();
+            const opts = await visible("button:not([data-target=check])");
+            if (!opts[i]) break;
+            await opts[i].click({ timeout: 2000 }).catch(() => {});
+            await clickCheck();
+            await record(`scene option "${lab}"`, before, lab);
+          }
+        }
+        // then random child taps (up to 5 commits) on whatever the engine shows
+        for (let k = 0; k < 5; k++) {
+          const before = await answersN();
           const taps = Math.floor(rnd() * 6);
           for (let t = 0; t < taps; t++) {
-            const cands = await frame.$$('[data-target]:not([data-target="check"]), [data-step], [data-big], .ek-pad-key, .sc-opt, [data-option], [role="radio"], .sc button:not([data-target="check"])');
-            const vis = [];
-            for (const c of cands) if (await c.isVisible().catch(() => false)) vis.push(c);
+            const vis = await visible('[data-target]:not([data-target="check"]), [data-step], [data-big], .ek-pad-key, .ek button, .sc button');
             if (!vis.length) break;
             await pick(vis).click({ timeout: 2000 }).catch(() => {});
           }
-          const check = frame.locator('[data-target="check"], button:has-text("Check"), button:has-text("जाँचो"), button:has-text("Done")').first();
-          if (await check.isVisible().catch(() => false)) await check.click({ timeout: 2000 }).catch(() => {});
-          await page.waitForTimeout(350);
-          const evs = await page.evaluate(() => window.events);
-          const answers = evs.filter((e) => e.type === "answer");
-          if (answers.length > before) {
-            const a = answers.at(-1);
-            const val = committedOf(a.value);
-            const truthKey = item?.answer ?? null;
-            const vsKit = val != null && truthKey != null && numOf(truthKey) != null ? sameValue(val, truthKey) : null;
-            const vsParams = val != null && rec.paramsTarget != null ? sameValue(val, rec.paramsTarget) : null;
-            let vsScene = null;
-            if (m.engine === "scene@1" && a.value?.kind === "sc.commit") {
-              const pr = m.params?.scene?.probe;
-              const keyId = pr?.correct?.match(/^pick == '([a-z0-9_]+)'$/)?.[1];
-              const ord = pr?.correct?.match(/^order\((\w+)\) == '([^']+)'$/);
-              if (keyId) vsScene = Object.values(a.value.vars ?? {}).includes(keyId);
-              else if (ord) vsScene = (a.value.order?.[ord[1]] ?? []).join(",") === ord[2];
-            }
-            const truth = vsScene ?? vsKit ?? vsParams;
-            const c = { k, taps, claim: a.correct ?? null, value: a.value, committed: val, vsKit, vsParams, vsScene, mismatch: truth != null && typeof a.correct === "boolean" && truth !== a.correct };
-            rec.commits.push(c);
-            if (c.mismatch) rec.issues.push(`commit ${k}: frame said correct:${a.correct} for ${JSON.stringify(a.value).slice(0, 140)} (vs kit ${vsKit}, vs params ${vsParams}, vs scene ${vsScene})`);
-            if (vsKit != null && vsParams != null && vsKit !== vsParams) rec.issues.push(`binding: engine target ${rec.paramsTarget} differs from the kit key "${truthKey}"`);
-            if (a.correct) { await page.evaluate(() => window.send({ type: "reset" })); await page.waitForTimeout(250); }
-          }
+          await clickCheck();
+          await record(`random: ${taps} taps`, before, null);
         }
+        rec.commits = rec.commits.filter((c) => c.committed !== null || !/^random/.test(c.label));
         const evs = await page.evaluate(() => window.events);
         rec.errors = evs.filter((e) => e.type === "error").map((e) => e.message ?? JSON.stringify(e).slice(0, 160));
         rec.consoleErrors = [...consoleErrors];
         rec.eventTypes = [...new Set(evs.map((e) => e.type + (e.name ? `:${e.name}` : "")))];
         if (rec.errors.length) rec.issues.push(`frame error events: ${rec.errors.join(" | ").slice(0, 200)}`);
-        if (!rec.commits.length) rec.issues.push("no answer could be committed by tapping (no reachable Check or no commit)");
+        if (!rec.commits.some((c) => c.claim != null)) rec.issues.push("no answer could be committed by tapping (no reachable Check or no commit)");
       } catch (e) { rec.issues.push(`harness: ${String(e.message).slice(0, 200)}`); }
       out.mounts.push(rec);
       console.log(`browser ${m.engine} ${rec.mode ?? ""} item ${itemId ?? "-"}: ${rec.commits.length} commits, ${rec.issues.length} issues`);

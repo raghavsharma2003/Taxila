@@ -1,0 +1,90 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#493526;background:#fff8e9}
+#scene{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(155deg,#fffaf0,#ffefd4)}
+h1{position:absolute;top:9px;left:16px;right:16px;margin:0;text-align:center;font-size:19px;line-height:24px;font-weight:800;color:#754727}
+#prompt{position:absolute;top:34px;left:18px;right:18px;text-align:center;font-size:13px;line-height:17px;color:#765b46}
+svg#axis{position:absolute;inset:0;width:360px;height:320px;overflow:visible}
+#axis line{stroke:#c78148;stroke-width:4;stroke-linecap:round}
+.card{position:absolute;width:82px;height:64px;padding:5px 4px;border:2px solid #e0a365;border-radius:15px;background:#fffdf7;color:#62432e;box-shadow:0 4px 0 #e9d5b9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-align:center;font:inherit;cursor:pointer;transition:transform .16s,box-shadow .16s,background .16s;z-index:2}
+.card .name{font-size:12px;line-height:15px;font-weight:750;max-width:100%;overflow-wrap:anywhere}
+.card .year{font-size:12px;line-height:14px;color:#9a6138;font-weight:700}
+.card:active{transform:scale(.94);box-shadow:0 1px 0 #e9d5b9}
+.card:focus-visible{outline:3px solid #7b9b72;outline-offset:2px}
+.marker{position:absolute;width:14px;height:14px;border:3px solid #fff8e9;border-radius:50%;background:#ce7444;box-shadow:0 0 0 2px #ce7444;transform:translate(-50%,-50%);z-index:1;transition:transform .2s}
+.connector{position:absolute;width:2px;background:#d9a16b;transform:translateX(-50%);z-index:0}
+#feedback{position:absolute;left:16px;right:16px;bottom:5px;min-height:24px;text-align:center;font-size:14px;line-height:18px;font-weight:750;color:#785034}
+#scene.success .card{pointer-events:none}
+#scene.success .marker{background:#78936c;box-shadow:0 0 0 2px #78936c;transform:translate(-50%,-50%) scale(1.2)}
+</style>
+<div id="scene">
+  <h1 id="title"></h1>
+  <div id="prompt"></div>
+  <svg id="axis" viewBox="0 0 360 320" aria-hidden="true"><line data-axis x1="28" y1="160" x2="332" y2="160"></line></svg>
+  <div id="events"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(function(){
+  const scene=document.getElementById('scene');
+  const events=Studio.params.events;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('prompt').textContent=Studio.t('ask');
+  const feedback=document.getElementById('feedback');
+  const minYear=Math.min(...events.map(e=>e.year));
+  const maxYear=Math.max(...events.map(e=>e.year));
+  const left=28,right=332,axisY=160;
+  const sorted=events.slice().sort((a,b)=>a.year-b.year);
+  sorted.forEach((e,i)=>{
+    const x=maxYear===minYear?(left+right)/2:left+(e.year-minYear)/(maxYear-minYear)*(right-left);
+    const above=i%2===0;
+    const top=above?72:202;
+    const cardX=4+i*(352/events.length);
+    const center=cardX+41;
+    const conn=document.createElement('div');
+    conn.className='connector';
+    conn.style.left=center+'px';
+    conn.style.top=(above?top+64:axisY)+'px';
+    conn.style.height=(above?axisY-(top+64):top-axisY)+'px';
+    scene.appendChild(conn);
+    const marker=document.createElement('span');
+    marker.className='marker';
+    marker.setAttribute('data-event',e.key);
+    marker.setAttribute('data-year',e.year);
+    marker.style.left=x+'px';
+    marker.style.top=axisY+'px';
+    scene.appendChild(marker);
+    const card=document.createElement('button');
+    card.type='button';
+    card.className='card';
+    card.setAttribute('data-card',e.key);
+    card.style.left=cardX+'px';
+    card.style.top=top+'px';
+    const name=document.createElement('span');
+    name.className='name';
+    name.textContent=Studio.t(e.key);
+    const year=document.createElement('span');
+    year.className='year';
+    year.textContent=e.year;
+    card.append(name,year);
+    card.addEventListener('click',()=>{
+      Studio.event('tap',{key:e.key});
+      Studio.answer(e.key);
+    });
+    scene.appendChild(card);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      feedback.textContent=Studio.t('right')+' '+Studio.t('done');
+      scene.classList.add('success');
+      Studio.done();
+    }else{
+      feedback.textContent=Studio.t('wrong');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

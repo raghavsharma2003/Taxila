@@ -1,0 +1,126 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#493b35}
+  .board{width:360px;height:320px;padding:12px;overflow:hidden;background:radial-gradient(circle at 92% 8%,#ffe6bd 0 38px,transparent 39px),#fff8ed}
+  h1{margin:0;font-size:21px;line-height:25px;font-weight:800}
+  .instruction{margin:3px 0 0;font-size:13px;line-height:17px;color:#76665d}
+  .cards{height:128px;margin-top:11px;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:54px;gap:9px;align-content:start}
+  .card{min-width:0;min-height:52px;border:2px solid #e3c8a6;border-radius:16px;background:#fffdf8;color:#493b35;font:700 16px system-ui,sans-serif;box-shadow:0 4px 0 #e9d8c0;cursor:pointer;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+  .card:active,.bin:active{transform:scale(.96)}
+  .card[data-selected="true"]{transform:translateY(-5px) scale(1.04);border-color:#e89657;box-shadow:0 8px 18px #d9916260}
+  .card.shake{animation:shake .38s ease}
+  @keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+  .bins{display:flex;gap:12px;margin-top:2px}
+  .bin{width:calc((100% - 12px)/2);height:96px;padding:8px;border:2px solid #d9ad85;border-radius:20px;background:#f8e6cd;cursor:pointer;transition:transform .2s ease,background .2s ease}
+  .bin:nth-child(2){background:#e5eddf;border-color:#a9bea0}
+  .bin.pulse{animation:pulse .4s ease}
+  @keyframes pulse{50%{transform:scale(1.04)}}
+  .bin-name{display:block;text-align:center;font-size:15px;font-weight:800;line-height:19px}
+  .placed-list{display:flex;flex-wrap:wrap;justify-content:center;align-content:center;gap:4px;height:54px}
+  .placed{padding:3px 7px;border-radius:9px;background:#fffdf8;font-size:12px;font-weight:700;box-shadow:0 2px 3px #76553a20;animation:arrive .3s ease both}
+  @keyframes arrive{from{opacity:0;transform:translateY(-8px) scale(.8)}to{opacity:1;transform:none}}
+  .feedback{height:20px;margin-top:5px;text-align:center;font-size:13px;font-weight:700;color:#8c5d42}
+  .flying{position:fixed;z-index:5;pointer-events:none;margin:0;transition:transform .42s ease,opacity .42s ease}
+</style>
+<div class="board">
+  <h1 id="title"></h1>
+  <p class="instruction" id="instr"></p>
+  <div class="cards" id="cards"></div>
+  <div class="bins" id="bins"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params;
+  const cards=document.getElementById('cards');
+  const bins=document.getElementById('bins');
+  const feedback=document.getElementById('feedback');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  let selected=null, pending=null, completed=0, busy=false;
+  const binElements={};
+  p.bins.forEach(key=>{
+    const bin=document.createElement('div');
+    bin.className='bin';
+    bin.dataset.bin=key;
+    const name=document.createElement('span');
+    name.className='bin-name';
+    name.textContent=Studio.t(key);
+    const list=document.createElement('div');
+    list.className='placed-list';
+    bin.append(name,list);
+    bins.append(bin);
+    binElements[key]={bin,list};
+    bin.addEventListener('click',()=>{
+      if(!selected||busy)return;
+      busy=true;
+      pending={card:selected.dataset.card,bin:key,element:selected};
+      Studio.answer({card:pending.card,bin:pending.bin});
+    });
+  });
+  p.cards.forEach(key=>{
+    const card=document.createElement('button');
+    card.type='button';
+    card.className='card';
+    card.dataset.card=key;
+    card.dataset.selected='false';
+    card.textContent=Studio.t(key);
+    cards.append(card);
+    card.addEventListener('click',()=>{
+      if(busy)return;
+      if(selected)selected.dataset.selected='false';
+      selected=card;
+      card.dataset.selected='true';
+      feedback.textContent='';
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    const {card,bin,element}=pending;
+    pending=null;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      const target=binElements[bin];
+      const start=element.getBoundingClientRect();
+      const end=target.list.getBoundingClientRect();
+      const ghost=element.cloneNode(true);
+      ghost.className='card flying';
+      ghost.style.left=start.left+'px';
+      ghost.style.top=start.top+'px';
+      ghost.style.width=start.width+'px';
+      ghost.style.height=start.height+'px';
+      document.body.append(ghost);
+      element.remove();
+      selected=null;
+      target.bin.classList.add('pulse');
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        ghost.style.transform=`translate(${end.left+end.width/2-start.left-start.width/2}px,${end.top+end.height/2-start.top-start.height/2}px) scale(.55)`;
+        ghost.style.opacity='0';
+      }));
+      setTimeout(()=>{
+        ghost.remove();
+        target.bin.classList.remove('pulse');
+        const placed=document.createElement('span');
+        placed.className='placed';
+        placed.dataset.placed=bin;
+        placed.textContent=Studio.t(card);
+        target.list.append(placed);
+        completed++;
+        busy=false;
+        if(completed===p.cards.length){
+          feedback.textContent=Studio.t('done');
+          Studio.done();
+        }
+      },440);
+    }else{
+      element.dataset.selected='false';
+      element.classList.add('shake');
+      selected=null;
+      setTimeout(()=>{element.classList.remove('shake');busy=false},390);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>
