@@ -234,7 +234,7 @@ for side in ("L", "R"):
 
     # ---- sclera: the opening's white with the iris painted out (membrane fill from the white), with overscan
     sc_area = ndi.binary_dilation(opening, iterations=14) & eb
-    known = ndi.binary_dilation(opening, iterations=2) & ~ndi.binary_dilation(disk, iterations=2)
+    known = ndi.binary_dilation(opening, iterations=2) & ~ndi.binary_dilation(disk, iterations=2) & (lum > 150)
     sclera_rgb = pullpush(im, known, smooth_iters=200, region=sc_area & ~known)
     rects = save_layer(f"sclera{side}", sclera_rgb, sc_area.astype(np.float32))
     geom_out["rects"][f"sclera{side}"] = rects
@@ -251,7 +251,7 @@ for side in ("L", "R"):
     # lid-covered top of the iris: mirror the visible bottom half (same radius), darkened like the lid shadow
     iris_src = im.copy()
     my = np.clip((2 * icy - yy).round().astype(int), 0, H - 1)
-    mir = iris_area & ~known_i & (yy < icy) & known_i[my, xx]
+    mir = iris_area & covered & (yy < icy) & known_i[my, xx]
     iris_src[mir] = im[my[mir], xx[mir]] * 0.82
     known_i = known_i | mir
     iris_rgb = pullpush(iris_src, known_i, smooth_iters=60, region=iris_area)

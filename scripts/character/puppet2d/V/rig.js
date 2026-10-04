@@ -203,7 +203,7 @@ export class PuppetV {
       for (let i = 0; i < nv; i++) {
         const o = i * STRIDE;
         f[o] = r.p[2 * i]; f[o + 1] = r.p[2 * i + 1]; f[o + 2] = r.z[i];
-        f[o + 3] = r.c[3 * i] / 255; f[o + 4] = r.c[3 * i + 1] / 255; f[o + 5] = r.c[3 * i + 2] / 255; f[o + 6] = 1;
+        f[o + 3] = r.c[4 * i] / 255; f[o + 4] = r.c[4 * i + 1] / 255; f[o + 5] = r.c[4 * i + 2] / 255; f[o + 6] = r.c[4 * i + 3] / 255;
         f[o + 7] = r.w[4 * i]; f[o + 8] = r.w[4 * i + 1]; f[o + 9] = r.w[4 * i + 2]; f[o + 10] = r.w[4 * i + 3];
       }
       const idx = nv > 65535 ? new Uint32Array(r.t) : new Uint16Array(r.t);
@@ -656,6 +656,7 @@ export class PuppetV {
     };
     // bun sway on hair_back via the w3 weight
     drawRegion("hair_back", () => gl.uniform3f(this.U.uSway, P.bun.x, P.bun.y, 1));
+    drawRegion("hair_back_strokes", () => gl.uniform3f(this.U.uSway, P.bun.x, P.bun.y, 1));
     drawRegion("neck");
     drawRegion("kurta");
     drawRegion("piping");
@@ -673,6 +674,7 @@ export class PuppetV {
     });
     drawItems(featItems);
     drawRegion("hair_front");
+    drawRegion("hair_front_strokes");
     drawRegion("lock_L");
     drawRegion("lock_R");
     gl.bindVertexArray(null);

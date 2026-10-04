@@ -121,13 +121,24 @@ async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_
  */
 // OpenAI reasoning-family deployments take max_completion_tokens + reasoning_effort; the Direct-from-Azure open
 // models (DeepSeek, Mistral, Grok, Kimi, gpt-oss, Llama) take max_tokens and reject reasoning_effort.
-const REASONING_FAMILY = /^(taxila-(fast|brain|codex)|gpt-5|o\d)/i;
+// gpt-6 deployments are reasoning-family too: before 2026-10-04 they fell through to max_tokens and every call
+// returned HTTP 400 "max_tokens is not supported" (classify 40/40 model errors, distress backup failed open 4/10,
+// rejected gpt6-reasoning-family-regex-400). `taxila-gpt6` prefix-matches taxila-gpt6-luna and taxila-gpt6-astra.
+const REASONING_FAMILY = /^(taxila-(fast|brain|codex|gpt6|gpt61)|gpt-5|gpt-6|o\d)/i;
 export const isReasoningFamily = (deployment) => REASONING_FAMILY.test(deployment);
+// gpt-6.1-sol and gpt-6-astra have no "none" effort: a "none" request is sent as "low" (ROUTER-CHANGES A1).
+const EFFORT_FLOOR = /^(taxila-gpt61-sol|taxila-gpt6-astra|gpt-6\.1|gpt-6-astra)/i;
+/** The reasoning_effort actually sent for a deployment (undefined: none sent). Exported for tests. */
+export function effortFor(deployment, effort) {
+  if (!effort || !isReasoningFamily(deployment)) return undefined;
+  return effort === "none" && EFFORT_FLOOR.test(deployment) ? "low" : effort;
+}
 
 export async function chat(deployment, messages, opts = {}) {
   const reasoning = isReasoningFamily(deployment);
   const body = { model: deployment, messages, [reasoning ? "max_completion_tokens" : "max_tokens"]: opts.maxTokens ?? 400 };
-  if (opts.effort && reasoning) body.reasoning_effort = opts.effort;
+  const effort = effortFor(deployment, opts.effort);
+  if (effort) body.reasoning_effort = effort;
   if (opts.schema) {
     body.response_format = { type: "json_schema", json_schema: { name: opts.schemaName || "result", strict: true, schema: opts.schema } };
   }

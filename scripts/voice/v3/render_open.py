@@ -453,7 +453,13 @@ def arm_vibevoice(a, W, refs_dir, size):
     for p in src.iterdir():
         if p.is_file() and p.name != "preprocessor_config.json" and not (wd / p.name).exists():
             os.symlink(p, wd / p.name)
-    pc = json.load(open(src / "preprocessor_config.json"))
+    if (src / "preprocessor_config.json").exists():
+        pc = json.load(open(src / "preprocessor_config.json"))
+    else:   # the 1.5B repo ships none: use the 7B card's (identical audio settings), naming the 1.5B's base tokenizer
+        pc = {"processor_class": "VibeVoiceProcessor", "speech_tok_compress_ratio": 3200, "db_normalize": True,
+              "audio_processor": {"feature_extractor_type": "VibeVoiceTokenizerProcessor", "sampling_rate": 24000,
+                                  "normalize_audio": True, "target_dB_FS": -25, "eps": 1e-06},
+              "language_model_pretrained_name": "Qwen/Qwen2.5-1.5B", "_note": "taken from tarun7r/vibevoice-hindi-7b (repo has none)"}
     a.meta["tokenizerOriginal"] = pc.get("language_model_pretrained_name")
     pc["language_model_pretrained_name"] = str(W / "qwen2.5-7b-tok")
     json.dump(pc, open(wd / "preprocessor_config.json", "w"), indent=1)

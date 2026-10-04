@@ -12,8 +12,87 @@ import { HELPLINES as HELPLINE_DATA } from "../compiler/floor.js";
 const ACTOR_EN = "he|she|they|papa|mummy|mumma|mum|mom|dad|daddy|father|mother|brother|sister|step\\s*(?:father|mother|dad|mom)|uncle|aunty|auntie|teacher|sir|ma'?am|madam|bhai|bhaiya|didi|chacha|chachi|mama|mami|someone|somebody";
 const ACTOR_HI = "papa|mummy|mumma|mammi|maa|pitaji|mata\\s*ji|bhai|bhaiya|didi|chacha|chachi|mama|mami|uncle|aunty|sir|madam|teacher|dada|dadi|nana|nani|sautela|sauteli";
 
+// ── passive ideation (ROUTER-CHANGES A2, 2026-10-04) ──
+// "I don't want to wake up tomorrow" and "kabhi kabhi lagta hai main na rahun toh" returned distress:false here;
+// the production classifier caught both (S2 16/16) but mistral-m35 missed the first 2/2 and ds41 timed out on
+// both, so the floor must not depend on which model holds the classify slot. The shapes ARE also everyday talk
+// ("I don't want to wake up early", "school mein na rahun toh"), so each predicate below reads the words right
+// around the hit: a schedule or a person after "wake up", a place or a state before "na rahun", turns it off.
+// Anything ambiguous still fires (a false alarm costs one gentle check-in).
+
+const wordsBefore = (t, at) => t.slice(0, at).toLowerCase().split(/[^\p{L}\p{M}']+/u).filter(Boolean);
+
+/** After "wake up": a schedule word in the same clause makes it about sleep, not about living. */
+const WAKE_SCHEDULE = /(?<![\p{L}\p{M}])(?:early|earlier|jaldi|late|yet|alarm|nap|naps|o'?clock|baje|school|class|classes|tuition|coaching|exam|exams|test|tests|practice|assembly|prayer|bus|van|weekends?|holidays?|sundays?|mondays?|tuesdays?|wednesdays?|thursdays?|fridays?|saturdays?|right\s+now|(?:at|by|before)\s+(?:four|five|six|seven|eight|nine|ten)|\d+)(?![\p{L}\p{M}])/iu;
+/** ... but "ever / again / anymore / forever / never" in that clause always fire ("don't want to wake up ever again"). */
+const WAKE_FOREVER = /(?<![\p{L}\p{M}])(?:ever|again|anymore|any\s*more|forever|never)(?![\p{L}\p{M}])/iu;
+/** "wake up my brother", "wake up the baby": someone else is being woken. */
+const WAKE_OBJECT = /^\s*(?:my|your|his|her|him|them|you|everyone|everybody|anyone|anybody|baby|mummy|mumma|mom|mum|papa|dad|daddy|bhai|bhaiya|didi|dadi|nani|dada|nana|grandma|grandpa|the\s+(?:baby|others|house|family|neighbou?rs?|dog|cat|whole))(?![\p{L}\p{M}])/iu;
+const WAKE = /\b(?:(?:don'?t|dont|do\s*not|never)\s+(?:ever\s+)?(?:want\s*to|wanna)|(?:want\s*to|wanna)\s+never|(?:wish|hope)\s+i\s+(?:could\s+|would\s+|will\s+)?(?:never|don'?t|dont|do\s*not|won'?t|wouldn'?t))\s+wake\s*up\b/gi;
+const wakeIdeation = {
+  test(t) {
+    for (const m of String(t).matchAll(WAKE)) {
+      const rest = t.slice(m.index + m[0].length);
+      const clause = rest.split(/[.,!?;:।\n]|\s(?:but|because|coz|kyunki|par)\s/i)[0].split(/\s+/).slice(0, 7).join(" ");
+      if (WAKE_FOREVER.test(clause)) return true;
+      if (WAKE_OBJECT.test(rest) || WAKE_SCHEDULE.test(clause)) continue;
+      return true;
+    }
+    return false;
+  },
+};
+
+/**
+ * Romanised "na rahun" ("if I were not here"). Fires after "main/mai" ("main na rahun"), and in "na rahun toh"
+ * unless the word before it is a place or a state ("school mein na rahun toh", "chup na rahun toh"). "mein/me"
+ * is both "I" and "in": it counts as "I" only at the start or after a lead-in ("lagta hai mein na rahun").
+ */
+const NA_RAHUN = /(?<![\p{L}\p{M}])naa?\s+rah(?:u|uu|oo)n?(?![\p{L}\p{M}])(\s+(?:toh|to|tho)(?![\p{L}\p{M}]))?/giu;
+const I_ROMAN = new Set(["main", "mai", "mei", "mein", "me"]);
+const I_AMBIGUOUS = new Set(["mein", "me", "mei"]);
+const LEAD_IN = new Set(["hai", "ki", "ke", "agar", "kabhi", "toh", "to", "bas", "shayad", "lagta", "ab", "aur", "ya", "kaash", "kash", "didi", "sir", "maam", "ma'am", "mam"]);
+const PLACE_OR_STATE = new Set(["mein", "me", "mei", "pe", "par", "ghar", "yahan", "yaha", "wahan", "waha", "idhar", "udhar", "saath", "sath", "paas", "pass",
+  "class", "school", "room", "kamre", "tuition", "andar", "bahar", "upar", "neeche", "aage", "peeche", "door", "chup", "akela", "akeli", "ready",
+  "tayyar", "taiyaar", "khada", "khadi", "baitha", "baithi", "bhooka", "bhookha", "bhooki", "bhookhi", "late", "time", "theek", "thik"]);
+const naRahunIdeation = {
+  test(t) {
+    for (const m of String(t).matchAll(NA_RAHUN)) {
+      const [prev, prev2] = wordsBefore(t, m.index).reverse();
+      if (prev && I_ROMAN.has(prev) && (!I_AMBIGUOUS.has(prev) || !prev2 || LEAD_IN.has(prev2))) return true;
+      if (prev && I_AMBIGUOUS.has(prev)) continue;                       // "class mein na rahun": a place
+      if (m[1] && !(prev && PLACE_OR_STATE.has(prev))) return true;     // "... na rahun toh"
+      if (!m[1] && prev && ["hai", "ki", "kaash", "kash"].includes(prev)) return true;
+    }
+    return false;
+  },
+};
+
+/** Devanagari "मैं न रहूँ" / "न रहूं तो": the same rule. Text is NFC + nukta dropped + chandrabindu → anusvara first. */
+const NA_RAHUN_HI = /(?<![ऀ-ॿ])(?:न|ना)\s+रह[ुू]ं?(?![ऀ-ॿ])(\s+तो(?![ऀ-ॿ]))?/gu;
+const PLACE_OR_STATE_HI = new Set(["में", "पर", "पे", "घर", "यहां", "वहां", "इधर", "उधर", "साथ", "पास", "स्कूल", "क्लास", "अंदर", "बाहर", "दूर", "चुप",
+  "अकेला", "अकेली", "तैयार", "खडा", "खडी", "बैठा", "बैठी", "भूखा", "भूखी", "ठीक"]);
+const naRahunIdeationHi = {
+  test(t) {
+    const f = String(t).normalize("NFC").replace(/़/g, "").replace(/ँ/g, "ं");
+    for (const m of f.matchAll(NA_RAHUN_HI)) {
+      const [prev] = f.slice(0, m.index).split(/[^ऀ-ॿ]+/).filter(Boolean).reverse();
+      if (prev === "मैं" || prev === "मै") return true;
+      if (m[1] && !(prev && PLACE_OR_STATE_HI.has(prev))) return true;
+      if (!m[1] && (prev === "है" || prev === "कि" || prev === "काश")) return true;
+    }
+    return false;
+  },
+};
+
 const FAMILIES = {
   self_harm: [
+    wakeIdeation,
+    naRahunIdeation,
+    naRahunIdeationHi,
+    // "wish I wasn't here", "better if I wasn't around", "nobody would notice if I was gone" (S2's other passive line)
+    /\bwish\s+i\s+(?:wasn'?t|weren'?t|was\s+not|were\s+not)\s+(?:here|around|alive)\b(?!\s+(?:in|at)\s+(?:this\s+|the\s+|my\s+)?(?:class|lesson|school|tuition|coaching|exam|test)\b)|\bwish\s+i\s+(?:was|were)\s+(?:dead|never\s+born)\b|\bwish\s+i\s+(?:had\s+)?never\s+(?:been\s+)?born\b|\bwish\s+i\s+didn'?t\s+exist\b/i,
+    /\bbetter\s+(?:off\s+)?(?:if\s+i\s+(?:(?:wasn'?t|weren'?t|was\s+not|were\s+not|am\s+not|'?m\s+not)\s+(?:around|here|alive)|(?:was|were)\s+(?:gone|dead)|didn'?t\s+exist)|without\s+me)\b/i,
+    /\b(?:nobody|no\s*one)\s+(?:would|will|'d)\s+(?:even\s+)?(?:notice|care|miss\s+me)\s+if\s+i\s+(?:was|were|am|'m)?\s*(?:gone|dead|not\s+(?:here|around)|died|disappeared)\b/i,
     /\b(kill|hurt|cut|harm)\s*(myself|me)\b|\b(want(?:\s*to|na)?|wanna)\s*(die|disappear)\b|\b(don'?t|dont|do\s*not)\s*want\s*to\s*(live|be\s*alive)\b|\bend\s*my\s*life\b|\bsuicid/i,
     /\b(mar\s*ja(a)?na|marna\s*chaht[ai]|marne\s*ka\s*(mann|man)|mar\s*jaa?(?:u|o|oo)n?g[aie]|khud\s*ko\s*(maar|hurt|chot|kaat)|jee?na\s*nahi+n?\s*(chaht|hai)|zinda\s*nahi+n?\s*rehna|gaa?yab\s*ho\s*jaa?n[ae]\s*(chaht|hai)|hamesha\s*ke\s*liye\s*(chala|chali|chale)\s*jaa?n[ae]\s*(chaht|hai))/i,
     /(मर\s*जाना|मरना\s*चाहत|मर\s*जाऊं?ग[ीा]|खुद\s*को\s*(मार|चोट|काट)|आत्महत्या|जीना\s*नहीं|गायब\s*हो\s*जाना\s*चाहत|हमेशा\s*के\s*लिए\s*चल[ाी]\s*जाना\s*चाहत)/,

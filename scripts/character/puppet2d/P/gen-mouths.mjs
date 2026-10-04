@@ -24,7 +24,7 @@ export const SHAPES = {
   CH: "the 'ch / sh / j' sound: lips pushed slightly forward and squared, teeth close together and visible between the lips.",
   SS: "the 's' sound: upper and lower teeth together and visible, lips parted and slightly spread.",
   RR: "the 'r' sound: mouth slightly open, lips a little rounded, the tongue tip lifted behind the upper teeth.",
-  aa: "the open 'aa' vowel: mouth open in a soft rounded shape, a thin row of upper teeth and the tongue resting low visible.",
+  aa: "a wide-open vowel sound as when singing a long note: the lips form a soft rounded opening, the edge of the upper teeth showing, a soft dark mouth inside.",
   E: "the 'e' vowel as in 'ek': lips spread and half open, the upper and lower teeth visible slightly apart.",
   I: "the 'ee' vowel: lips spread wide in a slight smile, nearly closed, both teeth rows visible close together.",
   O: "the 'o' vowel: lips rounded into an open oval, pushed slightly forward.",

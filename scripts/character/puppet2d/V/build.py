@@ -115,11 +115,24 @@ STUDS = np.zeros((H, W), bool)
 for c in S["studs"]:
     STUDS |= disk(c[:2], c[2] + 3)
 
+# brows: rasterise the parametric ribbons from features.json (no rectangular boxes: they notch the hair)
+FEAT = json.load(open(os.path.join(os.path.dirname(__file__), "features.json")))
+BROWS = np.zeros((H, W), np.uint8)
+for b in FEAT["brows"].values():
+    pts = catmull(b["c"], 10, closed=False)
+    th = np.interp(np.linspace(0, 1, len(pts)), np.linspace(0, 1, len(b["th"])), b["th"])
+    for i in range(len(pts) - 1):
+        cv2.line(BROWS, tuple(np.round(pts[i]).astype(int)), tuple(np.round(pts[i + 1]).astype(int)), 1, max(1, int(round(th[i] + 3))))
+    cv2.circle(BROWS, tuple(np.round(pts[0]).astype(int)), int(th[0] / 2 + 2), 1, -1)
+BROWS = BROWS.astype(bool) & ~(DARK & ~dil(BROWS.astype(bool), 0) )| (BROWS.astype(bool))
+feat |= dil(BROWS & DARK, 3) | dil(BROWS, 2)
+
 # hair
 featbox = np.zeros((H, W), bool)
 for box in S["eye_boxes"] + S["brow_boxes"]:
     x0, y0, x1, y1 = box; featbox[y0:y1, x0:x1] = True
 featbox |= disk(S["bindi"][:2], 14)
+featbox |= dil(BROWS, 2) & ~(FRONT_HAIRLINE := np.zeros((H, W), bool))
 HAIR = DARK & ~featbox
 HAIR = dil(ero(HAIR, 1), 1) | (DARK & ~featbox)
 
@@ -162,7 +175,7 @@ k, lb, st, _ = cv2.connectedComponentsWithStats(NECK_VIS.astype(np.uint8))
 NECK_VIS = lb == (1 + np.argmax(st[1:, 4]))
 KURTA = fill_holes(TEAL | PIPE)
 KURTA = ero(dil(KURTA, 2), 2)
-NECK = NECK_VIS | poly_mask(S["neck_hidden"]) | (dil(NECK_VIS, 10) & KURTA & ~TEAL) | (dil(NECK_VIS, 8) & KURTA)
+NECK = NECK_VIS | (poly_mask(S["neck_hidden"]) & FACE) | (dil(NECK_VIS, 10) & KURTA & ~TEAL) | (dil(NECK_VIS, 8) & KURTA)
 NECK = fill_holes(NECK)
 PIPING = PIPE
 
@@ -301,6 +314,110 @@ def eval_field(F, P):
     return np.clip(out * 255, 0, 255)
 
 
+# ---------------------------------------------------------------- hair grooves: residual strokes, vectorised
+def thin(m):
+    """Zhang-Suen thinning (vectorised)."""
+    img_ = m.astype(np.uint8).copy()
+    while True:
+        changed = False
+        for step in (0, 1):
+            P = np.pad(img_, 1)
+            p2, p3, p4, p5 = P[:-2, 1:-1], P[:-2, 2:], P[1:-1, 2:], P[2:, 2:]
+            p6, p7, p8, p9 = P[2:, 1:-1], P[2:, :-2], P[1:-1, :-2], P[:-2, :-2]
+            nb = [p2, p3, p4, p5, p6, p7, p8, p9]
+            Bn = sum(x.astype(int) for x in nb)
+            seq = nb + [p2]
+            A = sum(((seq[i] == 0) & (seq[i + 1] == 1)).astype(int) for i in range(8))
+            if step == 0:
+                c = (p2 * p4 * p6 == 0) & (p4 * p6 * p8 == 0)
+            else:
+                c = (p2 * p4 * p8 == 0) & (p2 * p6 * p8 == 0)
+            rm = (img_ == 1) & (Bn >= 2) & (Bn <= 6) & (A == 1) & c
+            if rm.any():
+                img_[rm] = 0; changed = True
+        if not changed:
+            return img_.astype(bool)
+
+
+def trace(sk, minlen=16):
+    sk = sk.copy()
+    ys, xs = np.nonzero(sk)
+    nbr = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+
+    def deg(y, x):
+        return sum(1 for dy, dx in nbr if 0 <= y + dy < H and 0 <= x + dx < W and sk[y + dy, x + dx])
+    lines = []
+    pts = set(zip(ys.tolist(), xs.tolist()))
+    ends = [p for p in pts if deg(*p) == 1]
+    for st in ends + list(pts):
+        if not sk[st]:
+            continue
+        line = [st]; sk[st] = False
+        cur = st
+        while True:
+            nxt = None
+            for dy, dx in nbr:
+                q = (cur[0] + dy, cur[1] + dx)
+                if 0 <= q[0] < H and 0 <= q[1] < W and sk[q]:
+                    nxt = q; break
+            if nxt is None:
+                break
+            sk[nxt] = False; line.append(nxt); cur = nxt
+        if len(line) >= minlen:
+            lines.append(np.array([(x, y) for y, x in line], float))
+    return lines
+
+
+def strokes_for(region, field_img, sign, thr, colr, max_a, minlen=16, edge_keep=3):
+    res = (luma - field_img) * region
+    res_s = gaussian_filter(res, 0.8)
+    m = ((res_s * sign) > thr) & ero(region, edge_keep)
+    m = ero(dil(m, 1), 1)
+    k, lb, st, _ = cv2.connectedComponentsWithStats(m.astype(np.uint8))
+    for i in range(1, k):
+        if st[i, 4] < 12:
+            m[lb == i] = False
+    sk = thin(m)
+    lines = trace(sk, minlen)
+    dist = distance_transform_edt(m)
+    P_all, C_all, T_all = [], [], []
+    for ln in lines:
+        q = np.c_[gaussian_filter(ln[:, 0], 2.0, mode="nearest"), gaussian_filter(ln[:, 1], 2.0, mode="nearest")]
+        seg = np.sqrt((np.diff(q, axis=0) ** 2).sum(1)); sc = np.r_[0, np.cumsum(seg)]; L = sc[-1]
+        if L < minlen:
+            continue
+        n = max(4, int(L / 3))
+        t = np.linspace(0, L, n)
+        q = np.c_[np.interp(t, sc, q[:, 0]), np.interp(t, sc, q[:, 1])]
+        amp = np.abs(map_coordinates(gaussian_filter(res, 1.2), [q[:, 1], q[:, 0]], order=1)) * 1.25
+        base = map_coordinates(field_img, [q[:, 1], q[:, 0]], order=1)
+        wid = np.clip(map_coordinates(dist, [q[:, 1], q[:, 0]], order=1) * 1.6, 1.2, 5.0)
+        wid = gaussian_filter(wid, 1.5, mode="nearest")
+        lum_c = 0.299 * colr[0] + 0.587 * colr[1] + 0.114 * colr[2]
+        a = np.clip(amp / np.maximum(np.abs(lum_c - base), 8), 0, max_a)
+        taper = np.clip(np.minimum(t, L - t) / 7.0, 0, 1)
+        a = gaussian_filter(a, 1.0, mode="nearest") * taper
+        d = np.gradient(q, axis=0); d /= np.maximum(np.linalg.norm(d, axis=1, keepdims=True), 1e-6)
+        nrm = np.c_[-d[:, 1], d[:, 0]]
+        rows = [-1.6, -0.5, 0, 0.5, 1.6]
+        ra = [0, 0.75, 1, 0.75, 0]
+        base_i = sum(len(p) for p in P_all)
+        Pl = []; Cl = []
+        for i in range(n):
+            for r_, k_ in zip(rows, ra):
+                Pl.append(q[i] + nrm[i] * r_ * wid[i] * 0.5)
+                Cl.append([colr[0], colr[1], colr[2], 255 * a[i] * k_])
+        Tl = []
+        for i in range(n - 1):
+            for j in range(4):
+                a0 = base_i + i * 5 + j; b0 = a0 + 5
+                Tl += [[a0, a0 + 1, b0], [a0 + 1, b0 + 1, b0]]
+        P_all.append(np.array(Pl)); C_all.append(np.array(Cl)); T_all += Tl
+    if not P_all:
+        return np.zeros((0, 2)), np.zeros((0, 4)), np.zeros((0, 3), int)
+    return np.vstack(P_all), np.vstack(C_all), np.array(T_all, int)
+
+
 # ---------------------------------------------------------------- depth
 head_sil = HAIR_NL | FACE | EAR_L | EAR_R
 dt = distance_transform_edt(head_sil)
@@ -376,6 +493,7 @@ def add_region(rid, mask, vis, spacing, fit_sp, fine=(), group="head", z="face",
         w[:, 2] = cheek_w(P, S["cheek"]["R"]["c"], S["cheek"]["R"]["s"])
     if extra:
         extra(P, w)
+    col = np.c_[col, np.full(len(col), 255.0)]
     regions.append(dict(id=rid, group=group, P=P, T=tri, col=col, Z=Z, w=w, contours=cs, alpha=alpha))
     # debug composite of the fitted field over the region
     print(f"{rid:12s} verts {len(P):6d} tris {len(tri):6d} rbf {len(F['C']):5d}", file=sys.stderr)
@@ -400,14 +518,40 @@ def bunw(P, w):
     w[:, 3] = samp(WB, P)
 
 
-add_region("hair_back", HAIR_BACK, HAIR_NL, 6, 12, [(tuple(b), sp) for b, sp in S["fine"]["hair"]], z="hair", extra=bunw)
+def field_image(F, region):
+    ys_, xs_ = np.nonzero(region)
+    Pp = np.c_[xs_, ys_].astype(np.float64)
+    v = eval_field(F, Pp)
+    out_ = np.zeros((H, W))
+    out_[ys_, xs_] = 0.299 * v[:, 0] + 0.587 * v[:, 1] + 0.114 * v[:, 2]
+    return out_
+
+
+def add_strokes(rid, region, F, group="head", zoff=0.6):
+    fimg = field_image(F, region)
+    Pd, Cd, Td = strokes_for(region, fimg, -1, 3.0, (8, 6, 6), 0.8)
+    Pr, Cr, Tr = strokes_for(region, fimg, +1, 3.5, (150, 144, 138), 0.55)
+    P = np.vstack([Pd, Pr]); Cc = np.vstack([Cd, Cr]); T = np.vstack([Td, Tr + len(Pd)]) if len(Tr) else Td
+    if len(P) == 0:
+        return
+    Z = samp(HAIR_Z, P) + S["depth"]["hair_off"] + zoff
+    w = np.zeros((len(P), 4))
+    if rid == "hair_back_strokes":
+        w[:, 3] = samp(WB, P)
+    regions.append(dict(id=rid, group=group, P=P, T=T, col=Cc, Z=Z, w=w, contours=[], alpha=255))
+    print(f"{rid:12s} verts {len(P):6d} tris {len(T):6d}", file=sys.stderr)
+
+
+FHB = add_region("hair_back", HAIR_BACK, HAIR_NL, 6, 12, [(tuple(b), sp) for b, sp in S["fine"]["hair"]], z="hair", extra=bunw)
 add_region("neck", NECK, NECK_VIS, 7, 12, [((430, 690, 640, 760), 7)], group="neck", z=lambda P: 20 + 0 * P[:, 0])
 add_region("kurta", KURTA, TEAL, 9, 22, [((380, 720, 680, 1024), 11)], group="body", z=0)
 add_region("piping", PIPING, PIPING, 3, 8, group="body", z=1)
 add_region("ear_L", EAR_L, EARS_VIS["ear_L"], 4, 7, z="ear")
 add_region("ear_R", EAR_R, EARS_VIS["ear_R"], 4, 7, z="ear")
 add_region("face", FACE, SKIN & FACE & ~feat & ~STUDS, 6, 16, fine_face, z="face")
-add_region("hair_front", HAIR_FRONT, HAIR_FRONT, 5, 10, [(tuple(b), sp) for b, sp in S["fine"]["hair"]], z="hair_front")
+add_strokes("hair_back_strokes", HAIR_BACK & HAIR_NL & ~HAIR_FRONT, FHB)
+FHF = add_region("hair_front", HAIR_FRONT, HAIR_FRONT, 5, 10, [(tuple(b), sp) for b, sp in S["fine"]["hair"]], z="hair_front")
+add_strokes("hair_front_strokes", HAIR_FRONT, FHF, zoff=S["depth"]["hair_front_off"] + 0.6)
 add_region("lock_L", LOCK_L, LOCK_L, 3, 6, group="lock_L", z="hair_front", extra=sway("lock_L"))
 add_region("lock_R", LOCK_R, LOCK_R, 3, 6, group="lock_R", z="hair_front", extra=sway("lock_R"))
 
@@ -418,13 +562,15 @@ ZG = cv2.resize(FACE_Z.astype(np.float32), (128, 128), interpolation=cv2.INTER_A
 out = dict(W=W, H=H, bg=[int(v) for v in bgc], spec=dict(jaw=S["jaw"], cheek=S["cheek"], pivots=S["pivots"]),
            zgrid=dict(n=128, data=[round(float(v), 1) for v in ZG.ravel()]), regions=[])
 total_v = total_t = 0
+ORDER = ["hair_back", "hair_back_strokes", "neck", "kurta", "piping", "ear_L", "ear_R", "face", "hair_front", "hair_front_strokes", "lock_L", "lock_R"]
+regions.sort(key=lambda r: ORDER.index(r["id"]))
 for r in regions:
     P = r["P"]
     out["regions"].append(dict(
         id=r["id"], group=r["group"],
         p=[round(float(v), 2) for v in P.ravel()],
         z=[round(float(v), 1) for v in r["Z"]],
-        c=[int(round(v)) for v in r["col"].ravel()],
+        c=[int(round(min(255, max(0, v)))) for v in r["col"].ravel()],
         w=[round(float(v), 3) for v in r["w"].ravel()],
         t=[int(v) for v in r["T"].ravel()],
     ))
