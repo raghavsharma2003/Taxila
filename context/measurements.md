@@ -1632,3 +1632,42 @@ US container, so the India rows include ~265-330 ms of round trip.
 
 ## live-tx-d4-ablation
 2026-10-04, same corpus and method as stt-refresh-2026-10-04-synthetic, n=180 speech + 12 non-speech per arm. taxila-live-transcribe: keywords+prompt (D4) cerNorm 0.028, 0 wrong-script; keywords only 0.036 (item dCER +0.008, 80% CI [0.004, 0.013]), 6 wrong-script, 1 decoy; prompt only 0.044 (+0.016 [0.009, 0.022]); neither 0.065 (+0.037), 19 wrong-script, 3 decoys. All four 0/12 on non-speech. Run-to-run: D4 today vs 2026-10-02 on the identical PCM = 168/180 transcripts byte-identical, cerNorm 0.028 vs 0.026, numbers 92 = 92, answers 76 = 76.
+
+
+<!-- merged from inbox/model-refresh-orchestration.json -->
+## orchestration-probe-2026-10-04
+2026-10-04. Method: evals/model-refresh-2026-10-04/orchestration/run.mjs + analyze.mjs. 24 scenarios (scenarios.mjs; labels frozen sha256 35c557a8... at 2026-10-04T12:49:51Z before any arm ran; rater had seen the original harness, so not fully blind). Arms: code kernel (TEACHER-BRAIN §10.1 gates + §6.3 admissibility around the unedited original beat policy); full model orchestrator (full state + rules as notes, strict json_schema, effort low on OpenAI reasoning deployments); hybrid (code allowed-set, model picks; no call when one action allowed). n=3 reps per scenario per model arm (72), code 24. eastus2 from a US container, 810 calls, 0 errors. Wilson 80%.
+
+| arm | acceptable | hard breaks | same x3 | p50/p90 ms | $/1k |
+|---|---|---|---|---|---|
+| code kernel | 23/24 [87-99] | 0/24 | 24/24 | ~0 | 0 |
+| full gpt-6-sol | 69/72 [92-98] | 0/72 [0-2] | 21/24 | 1436/1833 | 2.42 |
+| hybrid gpt-6-sol | 69/72 | 0/72 | 23/24 | 1416/1777 | 2.48 |
+| full gpt-6.1-sol | 66/72 [87-95] | 0/72 | 23/24 | 1535/2120 | 2.19 |
+| hybrid gpt-6.1-sol | 70/72 [93-99] | 0/72 | 23/24 | 1407/1846 | 2.22 |
+| full gpt-6-luna | 67/72 [88-96] | 0/72 | 20/24 | 1726/2437 | 0.15 |
+| hybrid gpt-6-luna | 62/72 [80-91] | 0/72 | 21/24 | 1651/2035 | 0.15 |
+| full gpt-5.6-luna | 66/72 [87-95] | 0/72 | 18/24 | 1518/2125 | 0.30 |
+| hybrid gpt-5.6-luna | 59/72 [75-87] | 0/72 | 19/24 | 1540/2020 | 0.30 |
+| full grok-4-20-nr | 48/72 [59-73] | 15/72 [15-28] | 20/24 | 494/583 | 1.19 |
+| hybrid grok-4-20-nr | 60/72 [77-88] | 0/72 | 19/24 | 442/512 | 1.27 |
+| full ds41 | 48/72 [59-73] | 15/72 [15-28] | 11/24 | 762/1018 | 0.35 |
+| hybrid ds41 | 61/72 [79-89] | 0/72 | 16/24 | 768/1240 | 0.36 |
+
+Splits: new 12 conflicts code 12/12, gpt-6 family full 36/36, grok 24/36 (12 breaks), ds41 20/36 (12 breaks). Move-only sensitivity (kind ignored if no hard break): code 23/24, 6.1-sol/6-luna 72/72, 6-sol 71/72. Against ORIGINAL labels on the 12: code 11/12, gpt-6-sol 31/36. Spend $1.15 (list price from usage; 6.1-sol at assumed 2/10; ds41 at Fireworks list upper bound). Caveats: synthetic states, one rater, safety/goodbye arrive as flags, no learning outcomes, no Central India timing.
+
+
+<!-- merged from inbox/model-refresh-synthesis.json -->
+## classify-h2h-2026-10-04
+2026-10-04, n=40 per model (20 hand-labelled cases x 2 reps), method: `node evals/classify-accuracy.mjs --models grok-4-1-fast-non-reasoning,taxila-mistral-m35,taxila-fast --reps 2` (real classify(), production prompt, strict schema, kit c4-maths-ch01-t01), US container -> eastus2, shared deployments. Output: evals/model-refresh-2026-10-04/synthesis/results/classify-h2h-2026-10-04.json.
+
+| model | exact [Wilson 80%] | graded wrong | distress flag | p50 / p90 ms |
+|---|---|---|---|---|
+| grok-4-1-fast-non-reasoning (production) | 38/40 [0.89, 0.98] | 0 | 10/10 | 726 / 914 |
+| taxila-mistral-m35 | 40/40 [0.96, 1.00] | 0 | 10/10 | 693 / 1023 |
+| taxila-fast | 37/40 [0.85, 0.96] | 0 | 10/10 | 1063 / 1445 |
+
+Misses: grok "बारह corners" (edges/corners misconception -> incorrect) x2; fast that and "Teen faces hain didi." x2. Reps are correlated (effective n nearer 20). Intervals overlap: a tie.
+
+## prod-classifier-s-s2-2026-10-04
+2026-10-04, method: evals/model-refresh-2026-10-04/synthesis/s-prod-classifier.mjs (verbatim copy of text-lanes/bench.mjs task S with the production classifier added), S = router-bench 8 distress + 8 benign x 2 reps, S2 = 8+8 paraphrases x 2; filter blocks count as distress; production 4 s cut scored separately. grok-4-1-fast-non-reasoning: S recall 16/16 [0.91, 1.00], false alarms 2/16 ("bhook se mar rahi hoon", safe direction); S2 recall 16/16 [0.91, 1.00], false alarms 0/16; 16/16 within 4 s on both; p50 462 / 473 ms, p90 553 / 584 ms; 2/16 distress items per set filter-blocked. Spend $0.024.

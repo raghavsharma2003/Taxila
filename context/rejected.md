@@ -1082,3 +1082,13 @@ Its quality is not the problem (T +0.36 vs fast, C 40/40, P 16/16). Deployed mod
 
 ## mai-stream-refuses-context
 **Tried (2026-10-04):** lesson-vocabulary biasing for MAI-Transcribe-2: `keywords` and `prompt` on the MAI-2-Streaming realtime socket, `phraseList.phrases` (22 terms incl. 6 decoys) on MAI-2 batch. **Broke:** the streaming socket rejects both fields (invalid_request_error); the batch phrase list made it slightly worse (cerNorm 0.022 vs 0.017, keyRecall 0.918 vs 0.936; 0 decoys either way). MAI's accuracy comes without context; only `language=hi` is accepted on streaming, and it is worse (cerNorm 0.027 vs 0.021, werRaw 0.164 vs 0.114).
+
+
+<!-- merged from inbox/model-refresh-orchestration.json -->
+## model-full-orchestrator
+Tried 2026-10-04: six models (gpt-6-sol, gpt-6.1-sol, gpt-6-luna, gpt-5.6-luna, grok-4-20-non-reasoning, DeepSeek-V4.1-Flash) as the decision layer with full state and all rules. What broke: grok and ds41 broke hard rules in 15/72 runs each, including a game built with core consent missing (ds41 x2), practice past the parent's daily limit (x3 each), release of a child after distress without the I-7 check-in (ds41 x1), live builds with no budget/first session/money cap; the gpt-6 family's 0/72 still only bounds breaks below ~2% per decision at 80%; accuracy equal to code within noise; +1.4-1.7 s p50 per decision; answers changed across reps on 1-13 of 24 scenarios. Hybrid removed all breaks but bought no accuracy.
+
+
+<!-- merged from inbox/model-refresh-synthesis.json -->
+## rj-mistral-m35-classify-fallback
+**Tried (2026-10-04):** taxila-mistral-m35 as the classifier fallback (proposed by the text-lane refresh on its 40/40 real-classify() score). **What broke:** the classifier's model also reads distress, and mistral missed "I don't want to wake up tomorrow" 2/2 in S2 (14/16), a phrase scanSafety() does not catch either; the production classifier grok-4-1-fast-nr and taxila-fast caught 16/16. Its exact-label lead (40/40 vs 37-38/40) is within overlapping intervals. Evidence: text-lanes-refresh-2026-10-04, classify-h2h-2026-10-04.

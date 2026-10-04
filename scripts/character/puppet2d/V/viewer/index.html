@@ -1,0 +1,19 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Puppet V viewer</title>
+<style>html,body{margin:0;background:#fce6bc}canvas{display:block}</style></head>
+<body><canvas id="c"></canvas>
+<script src="/art/character/puppet2d/V/puppet-v.js"></script>
+<script type="module">
+import { PuppetV } from "../rig.js";
+import FEAT from "../features.json";
+const q = new URLSearchParams(location.search);
+const size = +(q.get("s") || 1024);
+const c = document.getElementById("c");
+c.width = size; c.height = size; c.style.width = size + "px"; c.style.height = size + "px";
+const rig = new PuppetV(c, window.PUPPET_V, FEAT, { preserve: true });
+window.PV = {
+  rig,
+  pose(p) { rig.apply(p.bs || {}, p.head || [0, 0, 0], p.gaze || [0, 0], p.lean || 0, p.breath || 0); for (let i = 0; i < (p.settle || 1); i++) rig.render(1 / 60); return rig.stats(); },
+};
+window.PV_READY = true;
+</script></body></html>

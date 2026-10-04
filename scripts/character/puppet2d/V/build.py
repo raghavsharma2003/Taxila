@@ -387,7 +387,11 @@ def sway(lock):
 
 
 fine_face = [(tuple(b), sp) for b, sp in S["fine"]["face"]]
-add_region("hair_back", HAIR_BACK, HAIR_NL, 6, 12, [(tuple(b), sp) for b, sp in S["fine"]["hair"]], z="hair")
+def bunw(P, w):
+    w[:, 3] = samp(WB, P)
+
+
+add_region("hair_back", HAIR_BACK, HAIR_NL, 6, 12, [(tuple(b), sp) for b, sp in S["fine"]["hair"]], z="hair", extra=bunw)
 add_region("neck", NECK, NECK_VIS, 7, 12, [((430, 690, 640, 760), 7)], group="neck", z=lambda P: 20 + 0 * P[:, 0])
 add_region("kurta", KURTA, TEAL, 9, 22, [((380, 720, 680, 1024), 11)], group="body", z=0)
 add_region("piping", PIPING, PIPING, 3, 8, group="body", z=1)

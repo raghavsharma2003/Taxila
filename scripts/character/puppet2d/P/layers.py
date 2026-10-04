@@ -30,7 +30,7 @@ GEOM = {
     "jaw": [(322, 470), (326, 520), (338, 565), (356, 605), (380, 640), (410, 668), (450, 691), (490, 705), (530, 711),
             (570, 705), (603, 691), (640, 662), (675, 628), (705, 590), (726, 545), (736, 500), (738, 460)],
     "face_top": [(738, 420), (700, 300), (600, 215), (530, 200), (450, 215), (360, 300), (322, 420)],
-    "earL": [(250, 430), (305, 430), (318, 560), (285, 575), (250, 540)],
+    "earL": [(250, 430), (305, 430), (318, 545), (332, 556), (332, 582), (305, 586), (285, 575), (250, 540)],
     "earR": [(745, 420), (808, 420), (808, 545), (775, 572), (740, 560)],
     "lockL": [(278, 440), (318, 440), (330, 560), (320, 640), (338, 700), (322, 730), (296, 730), (300, 690), (282, 600), (284, 520)],
     "lockR": [(728, 395), (760, 395), (788, 520), (792, 620), (790, 705), (770, 705), (762, 640), (742, 560), (732, 480)],
@@ -132,14 +132,39 @@ def dehalo(rgb, mask, area, erode=2, smooth=0):
     return pullpush(rgb, inner, smooth_iters=smooth, region=area)
 
 
+def matte(mask, overscan=None, band=2, erode=2):
+    """Two-colour edge matting: in a band around the mask edge, alpha = the projection of the observed pixel onto
+    the segment (background colour -> foreground colour), each colour extended from its own side by pull-push.
+    Returns (rgb, alpha): rgb is the de-haloed foreground colour (exact c-front inside), alpha is c-front's own AA."""
+    inner = ndi.binary_erosion(mask, iterations=erode)
+    outer = ~ndi.binary_dilation(mask, iterations=band)
+    F = pullpush(im, inner)
+    Bk = pullpush(im, outer)
+    d = F - Bk
+    n2 = (d * d).sum(2)
+    a = ((im - Bk) * d).sum(2) / np.maximum(n2, 1e-3)
+    a = np.clip(a, 0, 1)
+    weak = n2 < 30 ** 2          # similar colours either side: fall back to a soft binary edge
+    a = np.where(weak, soft(mask, 0.7), a)
+    bandm = ndi.binary_dilation(mask, iterations=band) & ~inner
+    alpha = np.where(inner, 1.0, np.where(bandm, a, 0.0)).astype(np.float32)
+    rgb = np.where(inner[..., None], im, F)
+    if overscan is not None:
+        alpha = np.maximum(alpha, overscan.astype(np.float32))
+    return rgb, alpha
+
+
 # ------------------------------------------------------------------ classes
 dark = (lum < 118) & ((R - B) < 45) & (B < R + 12) & (G < R + 12)
+_earpolys = poly(GEOM["earL"]) | poly(GEOM["earR"])
+dark &= ~(_earpolys & ((R - B) >= 25))   # the ears' inner shadow is brown, not hair
 bgc = (lum > 205) & (B > 150) & (R > 235) & ((R - B) < 80)
 face_poly = poly(GEOM["jaw"] + GEOM["face_top"])
-browL = poly(GEOM["browLpoly"])
+strand_x = 372.5 + (387 - yy) * 25.0 / 36.0   # the hair strand's right edge over the brow tail (by eye)
+browL = poly(GEOM["browLpoly"]) & (xx > strand_x + 0.5)
 browR_box = box(GEOM["browRbox"])
 
-lab, n = ndi.label(dark & ~ndi.binary_dilation(browL, iterations=1))
+lab, n = ndi.label(dark & ~browL)
 feature_boxes = [GEOM["browRbox"], GEOM["eyeL"], GEOM["eyeR"], (440, 560, 620, 690)]
 hair_all = np.zeros((H, W), bool)
 for i, sl in enumerate(ndi.find_objects(lab), 1):
@@ -154,17 +179,28 @@ for i, sl in enumerate(ndi.find_objects(lab), 1):
         hair_all[sl] |= comp
 # the hair edge: include the anti-aliased rim (darkish pixels next to hair)
 rim = ndi.binary_dilation(hair_all, iterations=2) & (lum < 170) & ~face_poly
-hair_all = ndi.binary_closing(hair_all | rim, iterations=2) & ~ndi.binary_dilation(browL, iterations=1)
+hair_all = ndi.binary_closing(hair_all | rim, iterations=2) & ~browL
 lockLp, lockRp, bunP = poly(GEOM["lockL"]), poly(GEOM["lockR"]), poly(GEOM["bun"])
 earLp, earRp = poly(GEOM["earL"]), poly(GEOM["earR"])
 lockL = hair_all & lockLp & (yy > 455)
 lockR = hair_all & lockRp & (yy > 470)
 bun = hair_all & bunP & ~lockRp
 hair = hair_all & ~lockL & ~lockR & ~bun
-face = face_poly & ~hair_all
-ears = (earLp | earRp) & ~hair_all & ~face_poly & ~bgc
-body = (yy > 640) & ~face_poly & ~hair_all & ~bgc & ~ears
-body &= ~((yy < 700) & ~((xx > 420) & (xx < 640)))
+# jaw curve: below it (between the jaw corners) is neck
+jx = [p[0] for p in GEOM["jaw"]]
+jy = [p[1] for p in GEOM["jaw"]]
+jaw_y = np.interp(np.arange(W), jx, jy, left=-1, right=-1)
+below_jaw = (yy > jaw_y[None, :]) & (jaw_y[None, :] > 600)
+nonhair = ~hair_all & ~bgc
+ears = nonhair & (earLp | earRp) & (yy < 600)
+cand = nonhair & ~below_jaw & ~ears & (yy < 730)
+lbl, k = ndi.label(cand)
+face = lbl == lbl[450, 530]
+face = ndi.binary_fill_holes(face | (browL & ~hair_all))
+body = nonhair & ~face & ~ears & (yy > 600)
+lb2, k2 = ndi.label(body)
+sz = ndi.sum(body, lb2, range(1, k2 + 1))
+body = np.isin(lb2, 1 + np.where(sz > 5000)[0])
 fg = face | hair_all | ears | body
 geom_out = {"size": [W, H], "rects": {}, "eyes": {}, "brows": {}, "src": "docs/design/teacher/stylised/concepts/c-front.webp"}
 
@@ -198,9 +234,8 @@ for side in ("L", "R"):
 
     # ---- sclera: the opening's white with the iris painted out (membrane fill from the white), with overscan
     sc_area = ndi.binary_dilation(opening, iterations=14) & eb
-    known = white & ~ndi.binary_dilation(disk, iterations=1)
-    known = ndi.binary_erosion(known, iterations=1)
-    sclera_rgb = pullpush(im, known, smooth_iters=200, region=sc_area)
+    known = ndi.binary_dilation(opening, iterations=2) & ~ndi.binary_dilation(disk, iterations=2)
+    sclera_rgb = pullpush(im, known, smooth_iters=200, region=sc_area & ~known)
     rects = save_layer(f"sclera{side}", sclera_rgb, sc_area.astype(np.float32))
     geom_out["rects"][f"sclera{side}"] = rects
 
@@ -232,6 +267,13 @@ for side in ("L", "R"):
     LX = np.arange(int(min(p[0] for p in E["lashTop"])) - 2, int(max(p[0] for p in E["lashTop"])) + 3)
     LT = curve(E["lashTop"], LX)
     LB = curve(E["openTop"] + E["flickBot"], LX)   # lash bottom: the opening's top, continued along the flick
+    # outside the opening the lash bottom is measured: the last lash-dark pixel of the column below the lash top
+    for i, x in enumerate(LX):
+        if xa + 1 < x < xb_ - 1:
+            continue
+        col = np.where(lum[int(LT[i]) - 2:int(LT[i]) + 26, x] < 120)[0]
+        if len(col):
+            LB[i] = max(LB[i] if (xa <= x <= xb_) else 0, int(LT[i]) - 2 + col.max() + 1)
     fall = 24
     lidmask = np.zeros((H, W), bool)
     lid_top = np.zeros((H, W), np.float32)
@@ -260,13 +302,12 @@ for side in ("L", "R"):
     low = np.zeros((H, W), np.float32)
     for i, x in enumerate(X):
         yb = Bt[i]
-        for y in range(int(yb) - 1, int(yb) + 16):
-            low[y, x] = np.clip((yb + 15 - y) / 10.0, 0, 1)
-    low *= soft(ndi.binary_dilation(opening, iterations=3) | (low > 0), 0.6)
+        for y in range(int(yb) - 2, int(yb) + 18):
+            low[y, x] = np.clip(y + 0.5 - (yb - 0.5), 0, 1) * np.clip((yb + 17 - y) / 8.0, 0, 1)
     # taper at the corners
-    taper = np.clip(np.minimum(xx - xa, xb_ - xx) / 12.0, 0, 1)
+    taper = np.clip(np.minimum(xx - xa, xb_ - xx) / 10.0, 0, 1)
     low *= taper
-    low_rgb = np.where((opening & ~white)[..., None] | white[..., None], pullpush(im, ~ndi.binary_dilation(opening, iterations=1) & eb, 0), im)
+    low_rgb = im
     geom_out["rects"][f"lower{side}"] = save_layer(f"lower{side}", low_rgb, low)
 
     eye_fill |= ndi.binary_dilation(opening | (lidmask & (lum < 110)), iterations=3)
@@ -281,17 +322,19 @@ browR = browR_box & dark
 lbl, k = ndi.label(browR)
 sizes = ndi.sum(browR, lbl, range(1, k + 1))
 browR = lbl == (1 + int(np.argmax(sizes)))
-browLm = browL & (lum < 150)
+browLm = box((346, 330, 482, 396)) & (lum < 112) & (xx > strand_x + 0.5) & ~hair_all
+lbl, k = ndi.label(browLm)
+sizes = ndi.sum(browLm, lbl, range(1, k + 1))
+browLm = lbl == (1 + int(np.argmax(sizes)))
 brow_fill = np.zeros((H, W), bool)
 for side, bm in (("L", browLm), ("R", browR)):
     bm = ndi.binary_closing(bm, iterations=2)
     # AA rim: include the darker transition pixels around the stroke, colour de-haloed to the stroke colour
-    rim = ndi.binary_dilation(bm, iterations=2)
-    a = np.clip((205 - lum) / (205 - 70), 0, 1) * rim
-    a = np.maximum(a, bm.astype(np.float32))
-    if side == "L":   # the tail meets the hair: fade the first 10 px so a raised brow tapers instead of being cut
-        a *= np.clip((xx - 371) / 10.0, 0, 1)
-    rgb = pullpush(im, ndi.binary_erosion(bm, iterations=1), 0)
+    rgb, a = matte(bm, erode=1)
+    if side == "L":   # the tail runs under the hair strand: continue it 14 px (hidden at rest, shows when raised)
+        for k in range(1, 15):
+            src_x = 374
+            a[:, 373 - k] = np.maximum(a[:, 373 - k], np.roll(a[:, src_x], int(round(k * 0.35))) * np.clip(1 - k / 16, 0, 1))
     geom_out["rects"][f"brow{side}"] = save_layer(f"brow{side}", rgb, a)
     ys_b, xs_b = np.where(bm)
     geom_out["brows"][side] = {"x": [int(xs_b.min()), int(xs_b.max())], "y": [int(ys_b.min()), int(ys_b.max())]}
@@ -303,58 +346,52 @@ ed = np.sqrt(((xx - mcx) / mrx) ** 2 + ((yy - mcy) / mry) ** 2)
 mouth_alpha = np.clip((1 - ed) / 0.22, 0, 1)
 mouth_alpha = mouth_alpha * mouth_alpha * (3 - 2 * mouth_alpha)
 geom_out["rects"]["mouth_rest"] = save_layer("mouth_rest", im, mouth_alpha)
-lips = (ed < 0.75)
+lips = (ed < 1.02)
 
 # ------------------------------------------------------------------ face base: skin, features removed, overscan
-face_area = (ndi.binary_dilation(face, iterations=26) & (face_poly | hair_all | ears)) | face
-face_area |= ndi.binary_dilation(face, iterations=14) & (yy > 640) & (xx > 430) & (xx < 640)  # chin overscan into neck
+over_face = hair | lockL | lockR                  # layers drawn above the face edge (ears are below it)
+face_area = face | (ndi.binary_dilation(face, iterations=26) & over_face)
 holes = eye_fill | brow_fill | lips
-known = face & ~holes & ~ndi.binary_dilation(hair_all, iterations=1)
-known = ndi.binary_erosion(known, iterations=1)
-face_rgb = pullpush(im, known, smooth_iters=400, region=face_area)
-# visible face pixels stay exactly c-front (except the filled features)
-vis = face & ~holes
+known = ndi.binary_erosion(face, iterations=3) & ~holes
+face_rgb = pullpush(im, known, smooth_iters=400, region=face_area & ~known)
+vis = ndi.binary_erosion(face, iterations=1) & ~holes
 face_rgb[vis] = im[vis]
-# alpha: soft at the silhouette where the face meets bg/neck/bun; overscan region opaque (hair covers it)
-fa = soft(face_area, 0.8)
-# the visible jaw edge against bg/neck: use the c-front face mask edge
-jaw_edge = face_area & ~face & ~(hair_all | ears)
-fa[jaw_edge & ~((yy > 640) & (xx > 430) & (xx < 640))] = 0
-fa = np.maximum(fa * (~jaw_edge), soft(face, 0.7)) if False else fa
-geom_out["rects"]["face"] = save_layer("face", face_rgb, np.clip(fa, 0, 1))
+_, fa = matte(face, face_area & ~face)
+geom_out["rects"]["face"] = save_layer("face", face_rgb, fa)
 
-# ------------------------------------------------------------------ ears (+ studs), overscan under hair/face
-ear_area = ndi.binary_dilation(ears, iterations=10) & (ears | hair_all | face_poly)
+# ------------------------------------------------------------------ ears (+ studs), overscan under face/hair/locks
+ear_area = ears | (ndi.binary_dilation(ears, iterations=10) & (face | hair | lockL | lockR))
 ear_rgb = dehalo(im, ears, ear_area, erode=1, smooth=40)
-ear_rgb[ears] = im[ears]
-ea = soft(ear_area, 0.7)
-edge_bg = ear_area & ~ears & ~(hair_all | face_poly)
-ea[edge_bg] = 0
+inner = ndi.binary_erosion(ears, iterations=1)
+ear_rgb[inner] = im[inner]
+_, ea = matte(ears, ear_area & ~ears)
 geom_out["rects"]["ears"] = save_layer("ears", ear_rgb, ea)
 
 # ------------------------------------------------------------------ hair front, bun, locks (de-haloed edges)
 print({k:int(v.sum()) for k,v in dict(hair=hair,bun=bun,lockL=lockL,lockR=lockR,hair_all=hair_all).items()})
 for name, m, sig in (("hair", hair, 0.7), ("bun", bun, 0.7), ("lockL", lockL, 0.6), ("lockR", lockR, 0.6)):
-    area = ndi.binary_dilation(m, iterations=3)
-    rgb = dehalo(im, m, area, erode=1)
-    inner = ndi.binary_erosion(m, iterations=1)
-    rgb[inner] = im[inner]
-    a = soft(m, sig)
+    over = None
+    if name == "hair":   # opaque under the locks' roots so a lock edge never shows what is behind the hair
+        over = ndi.binary_dilation(hair, iterations=8) & (lockL | lockR) & (yy < 560)
+    if name == "bun":    # the bun is behind the neck, the jaw and the lock: continue it under them
+        over = ndi.binary_dilation(bun, iterations=14) & (body | face | lockR | hair) & ~ndi.binary_dilation(bgc & ~bun, iterations=0)
+    rgb, a = matte(m, over)
+    if over is not None:
+        rgb = np.where((over & ~m)[..., None], pullpush(im, ndi.binary_erosion(m, iterations=2)), rgb)
     geom_out["rects"][name] = save_layer(name, rgb, a)
 
 # ------------------------------------------------------------------ hair back plate (behind the face and ears)
 hb_area = ndi.binary_fill_holes(hair_all | face_poly | ears) & ~(yy > 600)
-hb_area = ndi.binary_erosion(hb_area, iterations=4)
+hb_area = ndi.binary_erosion(hb_area, iterations=4) & ~ndi.binary_dilation(bgc, iterations=3)
 hb_rgb = pullpush(im, hair & ~ndi.binary_dilation(face_poly, iterations=4), smooth_iters=200, region=hb_area)
 geom_out["rects"]["hairback"] = save_layer("hairback", hb_rgb, soft(hb_area, 1.0))
 
 # ------------------------------------------------------------------ body: kurta + neck, neck continued up behind the chin
 neck_up = face_poly & (yy > 600) & (xx > 440) & (xx < 625)
-body_area = body | neck_up
-body_area &= ~(bun & ~ndi.binary_dilation(body, iterations=2))
+body_area = body | neck_up | (ndi.binary_dilation(body, iterations=8) & (lockL | lockR | hair))
 body_rgb = pullpush(im, ndi.binary_erosion(body, iterations=2), smooth_iters=300, region=body_area)
 body_rgb[ndi.binary_erosion(body, iterations=1)] = im[ndi.binary_erosion(body, iterations=1)]
-ba = soft(body_area, 0.7)
+_, ba = matte(body, body_area & ~body)
 geom_out["rects"]["body"] = save_layer("body", body_rgb, ba)
 
 # ------------------------------------------------------------------ background plate

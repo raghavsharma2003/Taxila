@@ -1,0 +1,11 @@
+{
+ "date": "2026-10-04",
+ "area": "synthesis",
+ "method": "returned token usage x Azure retail list price (the S run's own spend file); classify head-to-head estimated from 145 calls of ~900 input / ~45 output tokens",
+ "runs": [
+  { "what": "evals/classify-accuracy.mjs --models grok-4-1-fast-non-reasoning,taxila-mistral-m35,taxila-fast --reps 2 (145 calls)", "usd_est": 0.04 },
+  { "what": "s-prod-classifier.mjs S (S+S2, 64 calls, grok-4-1-fast-non-reasoning)", "usd": 0.024 }
+ ],
+ "total_usd_est": 0.07,
+ "workflow_total_usd_est": { "text-lanes": 9.3, "studio": 12.39, "stt": 3.3, "images": 6.9, "orchestration": 1.15, "synthesis": 0.07, "sum": 33.11, "cap": 80 }
+}
