@@ -8,12 +8,17 @@ import { useEffect, useState } from "react";
 import type { ModuleEvent } from "../../../shared/contracts.ts";
 import type { Floor } from "../../lesson/floor.ts";
 import { ModuleHost, type ModuleCommandSource } from "../../modules/host.tsx";
+import { prewarmWhenIdle } from "../../modules/prewarm.ts";
 import { Art } from "../../ui/Art.tsx";
 import { t } from "../../ui/copy.ts";
 import { Glyph } from "../../ui/icons/state.tsx";
 import { Board } from "./Board.tsx";
 import { StudioStage } from "../../studio/StudioStage.tsx";
 import type { DeskActions, TrayModel } from "./model.ts";
+
+// W2-B #4: the lesson screen's chunk carries this file, so loading the lesson warms the module frame (runtime + the
+// explain rungs' engine chunks) while the start request and her first line run; the explain beat's mount is then warm.
+prewarmWhenIdle();
 
 export function WorkTray({ tray, floor, young, modules, lang, ageBand, actions, onModuleFailed }:
   { tray: TrayModel; floor: Floor; young: boolean; modules?: ModuleCommandSource; lang: string; ageBand: string; actions: DeskActions; onModuleFailed?: () => void }) {

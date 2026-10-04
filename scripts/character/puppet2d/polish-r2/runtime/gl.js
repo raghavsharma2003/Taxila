@@ -59,7 +59,7 @@ void main(){
   col = col * (1.0 - ir.a) + ir.rgb;
   // lid shadow: the band right under the upper lid darkens a little (wraps the eye)
   // r2: per-column lid line (vTop), a soft wrap shadow ~10 px deep under the whole lid, as in c-front
-  float dl = clamp((vRest.y - vTop) / 10.0, 0.0, 1.0);
+  float dl = clamp((vRest.y - vTop - 2.0) / 9.0, 0.0, 1.0);
   col *= 1.0 - uLidShade * (1.0 - dl) * (1.0 - dl);
   vec4 cl = tex(uCatch, uCatchRect, vRest - uCatchOff);
   col = mix(col, vec3(1.0), cl.a * uCatchA);

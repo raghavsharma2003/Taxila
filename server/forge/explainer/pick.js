@@ -23,12 +23,12 @@ export function codePick({ kit, item = null, text }) {
   const fr = v.fractions.find(([a, d]) => d >= 2 && d <= 12 && a >= 0 && a <= d);
   if (fr) return { template: "fraction-parts@1", whole: /roti|chapati|pizza|cake|pie/.test(lower) ? "roti" : fr[1] <= 8 ? "circle" : "bar", parts: fr[1], shade: fr[0] };
   const two = n.length >= 2 ? [n[0], n[1]] : null;
-  if (two && /\b(add|sum|total|plus|altogether|in all|more)\b|\+/.test(lower)) {
+  if (two && /\b(add|sum|total|plus|altogether|in all)\b|\d\s*\+\s*\d/.test(lower)) {
     const [a, b] = two;
     if (a <= 10 && b <= 10) return { template: "combine-count@1", a, b, op: "add" };
     if (a <= 99999 && b <= 99999) return { template: "column-op@1", a, b, op: "add" };
   }
-  if (two && /\b(subtract|minus|difference|left|take away|fewer|less)\b|[−-]\s*\d/.test(lower)) {
+  if (two && /\b(subtract|minus|difference|take away|left over|are left|is left|remain(?:s|ing)?)\b|\d\s*[−-]\s*\d/.test(lower)) {
     const a = Math.max(...two), b = Math.min(...two);
     if (a <= 10) return { template: "combine-count@1", a, b, op: "take_away" };
     if (a <= 99999) return { template: "column-op@1", a, b, op: "sub" };

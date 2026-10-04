@@ -468,7 +468,10 @@ export class Puppet2DRig {
     let k = 0;
     for (let i = 0; i < E.C; i++) {
       const x = Math.min(E.xb, E.xa + i * 2), ii = x - E.xa;
-      const top = E.top[ii], bot = E.bot[ii];
+      let top = E.top[ii], bot = E.bot[ii];
+      // r2: round the opening's ends (the hand-read corners were blunt: a vertical white edge at 2x and on turns)
+      const dEnd = Math.min(x - E.xa, E.xb - x);
+      if (dEnd < 6) { const f = Math.sqrt(Math.max(0, 1 - (1 - dEnd / 6) ** 2)), mid = (top + bot) / 2; top = mid + (top - mid) * f; bot = mid + (bot - mid) * f; }
       const ys = [top - 2.1, top - 0.1, Math.max(top - 0.1, bot - 0.6), Math.max(top - 0.1, bot + 1.4)];
       for (let j = 0; j < 4; j++) {
         const y = bot <= top + 0.05 ? top : ys[j];
@@ -486,7 +489,8 @@ export class Puppet2DRig {
     R.update(E.mesh, "aTop", E.topA);
     // iris: gaze in rest-space px, foreshortened by gaze + head yaw; squashed a little at full blink
     const gz = this.gaze || [0, 0];
-    const ox = (gz[0] / 25) * 17, oy = -(gz[1] / 20) * 8 + (gz[1] < 0 ? -gz[1] / 25 * 2 : 0);
+    // r2: the upward range was too timid to read as "looking up" (c-thinking parks the iris under the upper lid)
+    const ox = (gz[0] / 25) * 18, oy = -(gz[1] / 20) * 12 + (gz[1] < 0 ? -gz[1] / 25 * 2 : 0);
     const fx = Math.cos((gz[0] + 0.2 * s.yaw) * D2R * 1.2);
     const [icx, icy] = e.iris;
     R.drawEye(E.mesh, {
@@ -494,7 +498,7 @@ export class Puppet2DRig {
       iris: { tex: this.tex["iris" + sd], rect: this.g.rects["iris" + sd] },
       catch: { tex: this.tex["catch" + sd], rect: this.g.rects["catch" + sd] },
       irisOff: [ox, oy], irisC: [icx + ox, icy + oy], irisScale: [Math.max(0.82, fx), E.blink > 0.85 ? 0.95 : 1],
-      catchOff: [ox * 0.45, oy * 0.45], catchA: 1, lidShade: 0.16, topY: interp(E.xa, E.top, icx),
+      catchOff: [ox * 0.45, oy * 0.45], catchA: 1, lidShade: 0.4, topY: interp(E.xa, E.top, icx),
     });
     // lower lid band
     for (let i = 0; i < E.BC; i++)

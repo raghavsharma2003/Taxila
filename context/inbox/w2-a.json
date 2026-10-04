@@ -1,0 +1,168 @@
+{
+ "nodes": [
+  {
+   "id": "w2a-one-claim-source",
+   "kind": "decision",
+   "title": "One claim source per child (server/reports/truth.js): every child and parent surface (plan, map, parent home, Progress, lesson card, evidence sheet, Notes) reads skill state from the kt_evidence engine rows + the skill_state projection through skillTruth; no scored engine row = Not started; the Director's legacy evidence rows feed no parent or child claim",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2a-one-lesson-minutes-rule",
+   "kind": "decision",
+   "title": "One lessons-and-minutes definition (truth.js countsAsLesson / COUNTED_LESSON_SQL / lessonTally): a lesson counts when something was graded or it ran >= 5 min and was not an abandoned start; minutes = round(sum(end - start)), an open lesson ends at its last engine row; parent home 'This week' = the ISO week in the child's tz, the weekly letter's window; reports facts and the independent checker apply the same rule",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2a-late-correction-supersedes",
+   "kind": "decision",
+   "title": "A late correction row (<id>:late) replaces the row it corrects in reports facts, the checker's completeness reads and every truth.js surface (fixes w1c-late-double-count-reports)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2a-summary-from-facts-checked",
+   "kind": "decision",
+   "title": "The parent lesson card's summary is built only from the lesson's engine rows (lessonFactsSummary: tried, right first time with no help, right after a hint or second try, explained) and passes an independent claim check (summaryClaimsHold re-reads the raw kt rows); a failing summary is withheld, never shown",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2a-evidence-sheet-engine-rows",
+   "kind": "decision",
+   "title": "The evidence sheet shows engine-graded rows only, each with the real question (kit item prompt, else her line before), the child's own words and the grader in plain words ('exact answer' / 'checked against the book's key idea')",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2a-home-states-sf1",
+   "kind": "decision",
+   "title": "SF1 home states: ChildHomeState gains homework (parent's Homework help today, until the learning day ends), test_window (one parent-entered school test, <= 21 days, lesson revises that subject) and safety_hold (Conductor mode, first in precedence, Help sheet only); done has no primary action; plan carries madeFor[] (W2-H studio_mount feed, [] hides the shelf), jar, testWindow, homework, textOnly",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2a-migration-019",
+   "kind": "decision",
+   "title": "Migration 019_home_states.sql: child_controls.homework_until, text_only, test_window (jsonb, a column so the M0 ratchet keeps it as a parent-entered control, not a new child_id table), and password_reset (sha256 token hashes, single use, 30 min); applied to the Neon test branch only",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2a-ask-routing-lexical",
+   "kind": "decision",
+   "title": "Ask routing (server/lesson/purpose.js routeAsk) is a reviewed lexical index over the curriculum (titles x3, chapters x2, outcomes/mix-ups/hooks x1, a Hinglish synonym list, number shapes), child's class then up to 2 below; no model call; null (plan topic) under score 3 or a cross-subject tie; the client sends firstText with the start and titles the Desk by the question",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2a-practice-set",
+   "kind": "decision",
+   "title": "Practice set (purposeSeam.practiceSet): <= 5 verified kit items, due/refresh skills first, then recently missed, round-robin across skills, never a skill the child has not met, never a teach-back; the client counter reads ui.practice (W2-C producer) else counts posed/graded items; the practice Summary is titled 'That's the set'",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2a-forgot-password-acs",
+   "kind": "decision",
+   "title": "Forgot password by email on Azure Communication Services Email (taxila-acs + taxila-email, Azure-managed domain, data in India, sender DoNotReply@0ff70a32-...azurecomm.net): /api/auth/forgot always 200, mail not awaited (no timing tell), token only returned to @taxila.test with the operator key; /api/auth/reset spends the token atomically and ends every session",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2a-boot-one-hop",
+   "kind": "decision",
+   "title": "Speed: index.html starts GET /api/child/boot (me + plan, one hop) on /c/:cid or GET /api/me elsewhere before the bundle parses, only when the readable tx_in session marker exists (so the landing never 401s); inline skeleton; serve.mjs injects the hero image preload for '/' from the art manifest and pre-encodes every build file with brotli q11 at boot",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2a-text-only-per-child",
+   "kind": "decision",
+   "title": "Tap and type only is per child on the server (child_controls.text_only, returned in the plan), closing tap-and-type-device-local; the onboarding mic check sets this device's quiet pref when no mic works",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2a-local-acceptance-2026-10-04",
+   "kind": "measurement",
+   "title": "W2-A acceptance, LOCAL serve.mjs on the Neon test branch: w2a-home-states 31/31 (5 states one primary each, done none, safety_hold no start/practice/Ask + both helplines, F7 1-day vs 30-day same layout); w2a-parent-truth see measurements.md; unit tests 17/17 incl. 40 random lesson summaries all passing the independent claim checker and every inflated count caught",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2a-acs-send-latency",
+   "kind": "measurement",
+   "title": "ACS Email send accepted (202) in 1955 ms from the sandbox (n=1, eastus2 sandbox -> India ACS); hence the reset mail is not awaited",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-w2a-test-window-table",
+   "kind": "rejection",
+   "title": "A child_test_window table (child_id) failed tests/learner-db 'every child_id table is classified' (server/learner/mode.js is W2-I's) and the M0 ratchet test; replaced by child_controls.test_window jsonb (kept with the parent-entered controls)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-w2a-await-reset-mail",
+   "kind": "rejection",
+   "title": "Awaiting the ACS send inside POST /api/auth/forgot: ~2 s longer only when the account exists, which tells an attacker which emails have accounts",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-w2a-acs-conn-unquoted",
+   "kind": "rejection",
+   "title": "An unquoted ACS connection string in .env.local: `set -a; . ./.env.local` splits it at ';' and drops the access key (sendAcsEmail threw ERR_INVALID_ARG_TYPE); the value is quoted",
+   "at": "2026-10-04"
+  }
+ ],
+ "edges": [
+  {
+   "src": "w2a-one-lesson-minutes-rule",
+   "rel": "part_of",
+   "dst": "w2a-one-claim-source"
+  },
+  {
+   "src": "w2a-late-correction-supersedes",
+   "rel": "part_of",
+   "dst": "w2a-one-claim-source"
+  },
+  {
+   "src": "w2a-summary-from-facts-checked",
+   "rel": "part_of",
+   "dst": "w2a-one-claim-source"
+  },
+  {
+   "src": "w2a-evidence-sheet-engine-rows",
+   "rel": "part_of",
+   "dst": "w2a-one-claim-source"
+  },
+  {
+   "src": "w2a-late-correction-supersedes",
+   "rel": "supersedes",
+   "dst": "w1c-late-double-count-reports"
+  },
+  {
+   "src": "w2a-text-only-per-child",
+   "rel": "supersedes",
+   "dst": "tap-and-type-device-local"
+  },
+  {
+   "src": "w2a-migration-019",
+   "rel": "part_of",
+   "dst": "w2a-home-states-sf1"
+  },
+  {
+   "src": "rj-w2a-test-window-table",
+   "rel": "informs",
+   "dst": "w2a-migration-019"
+  },
+  {
+   "src": "rj-w2a-await-reset-mail",
+   "rel": "informs",
+   "dst": "w2a-forgot-password-acs"
+  },
+  {
+   "src": "rj-w2a-acs-conn-unquoted",
+   "rel": "informs",
+   "dst": "w2a-forgot-password-acs"
+  },
+  {
+   "src": "w2a-home-states-sf1",
+   "rel": "measured_by",
+   "dst": "w2a-local-acceptance-2026-10-04"
+  },
+  {
+   "src": "w2a-forgot-password-acs",
+   "rel": "measured_by",
+   "dst": "w2a-acs-send-latency"
+  }
+ ]
+}

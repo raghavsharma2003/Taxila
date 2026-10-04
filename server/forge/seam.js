@@ -18,6 +18,9 @@ import { prefetchLessonFills, requestFill, learnerFor, findKitItem, TURN_NEED_BY
 import { recordGap } from "./cache.js";
 import { setFillWarmer, rememberLessonFill, noteLessonChild } from "./lesson-fills.js";
 import { hasConsent } from "../auth.js";
+import { setExplainerWarmer, wantExplainer } from "./explainer/lesson.js";
+import { modelFill } from "./explainer/fill.js";
+import { getTopic } from "../content/curriculum.js";
 
 const TOPIC_MAP = JSON.parse(readFileSync(new URL("../../shared/engine-topic-map.json", import.meta.url), "utf8"));
 
@@ -44,6 +47,10 @@ export function ensureWarmer() {
   warmerSet = true;
   setFillWarmer(async ({ lessonId, childId, kit, item, move, learner }) => !LESSON_ID.test(String(lessonId)) ? null :
     requestFill({ lessonId, childId: childId ?? undefined, kit, item: findKitItem(kit, item.id) ?? item, move, learner, needByMs: TURN_NEED_BY_MS }));
+  // W2-B: the explain rung's live model fill, for a topic with no code pick and no library entry (background lane;
+  // the kit only goes to the model: never the child's name or words)
+  setExplainerWarmer(async ({ lessonId, kit, band }) => !LESSON_ID.test(String(lessonId)) ? null :
+    modelFill({ kit, topicTitle: getTopic(kit.topicId)?.title, band }));
 }
 if (!process.env.NODE_TEST_CONTEXT) ensureWarmer();
 
@@ -74,11 +81,13 @@ export const forgeSeam = {
    * @param {{ child: SeamChild, lessonId: string, topicId: string, kit: object, lang: string, band: string, mode: string }} args
    * @returns {Promise<void>}
    */
-  prefetchLessonFills: async ({ child, lessonId, topicId, kit }) => {
+  prefetchLessonFills: async ({ child, lessonId, topicId, kit, band: _band }) => {
     try {
       if (!child?.id || !lessonId || !kit) return;
       ensureWarmer();
       noteLessonChild(lessonId, child.id);
+      // W2-B #2: the explain rung for this topic, ready before the explain move (a no-op when it has a static one)
+      wantExplainer({ lessonId, kit, band: /^B[1-4]$/.test(String(_band)) ? _band : "B3" });
       const hints = unservedHints(kit);
       if (hints.length) recordGap({ topicId: kit.topicId ?? topicId, itemId: "topic", reason: "no_engine_for_hints", engineHints: hints, childId: child.id });
       const [view, memory] = await Promise.all([

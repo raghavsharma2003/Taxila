@@ -143,7 +143,7 @@ function TestWindow({ childId, name, classLevel, onRelock }: { childId: string; 
           <div className="pa-test-row">
             <label className="pa-field"><span>{tw2("controls.test.subject")}</span>
               <select className="input" value={draft.subject} onChange={(e) => setDraft({ ...draft, subject: e.target.value })}>
-                {subjects.map((x) => <option key={x} value={x}>{subjectWords(x)}</option>)}
+                {subjects.map((x) => <option key={x} value={x}>{subjectWords(x).replace(/^./, (c) => c.toUpperCase())}</option>)}
               </select>
             </label>
             <label className="pa-field"><span>{tw2("controls.test.from")}</span>

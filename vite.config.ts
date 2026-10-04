@@ -43,7 +43,7 @@ function moduleFrameCsp(): Plugin {
  * module graph. Allowing origin "null" on every response let any website read this dev server's source
  * through a sandboxed iframe of its own (the cross-site read Vite closed by default after CVE-2025-24010).
  */
-const FRAME_GRAPH = /^\/(?:src\/modules\/|@vite\/|@react-refresh|@id\/|node_modules\/\.vite\/|node_modules\/vite\/dist\/client\/)/;
+const FRAME_GRAPH = /^\/(?:src\/modules\/|shared\/whiteboard\.js|@vite\/|@react-refresh|@id\/|node_modules\/\.vite\/|node_modules\/vite\/dist\/client\/)/;
 function devFrameCors(): Plugin {
   return {
     name: "taxila:dev-frame-cors",

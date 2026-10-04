@@ -65,8 +65,9 @@ function sizeFor(text, maxW) {
  * Write a label centred at (x, y) within `maxW`: one line at m or s, else split at the space nearest the middle into two
  * lines at s. Returns the op ids, or null when it cannot fit (the template then fails rather than overflow).
  */
-function writeFit(tl, text, x, y, maxW, opts = {}, { id, ms = 500, gap = 40, ink } = {}) {
-  const one = sizeFor(text, maxW);
+function writeFit(tl, text, x, y, maxW, opts = {}, { id, ms = 500, gap = 40, ink, size } = {}) {
+  // `size: "s"` keeps a group of labels at one size (a column of a table never mixes sizes)
+  const one = size === "s" ? (textBox(text, "s").w <= maxW ? "s" : null) : sizeFor(text, maxW);
   if (one) return [tl.add({ ...(id ? { id } : {}), op: "text", at: [x, y], text, size: one, ...(ink ? { ink } : {}) }, ms, { gap, ...opts })];
   const words = text.split(/\s+/);
   if (words.length < 2) return null;
@@ -313,9 +314,12 @@ function compare(c, tl) {
   const ok = (side) => side && fitsLabel(side.title) && Array.isArray(side.items) && side.items.length >= 1 && side.items.length <= 4 && side.items.every(fitsLabel);
   if (!ok(left) || !ok(right)) return { error: "sides" };
   const colW = 175;
+  // one size for both titles and one for all the items: the table reads as a table
+  const titleSize = [left, right].every((d) => sizeFor(d.title, colW - 8) === "m") ? "m" : "s";
+  const itemSize = [...left.items, ...right.items].every((t) => sizeFor(t, colW - 8) === "m") ? "m" : "s";
   for (const [i, side] of [left, right].entries()) {
     const x = 20 + i * 190 + colW / 2;
-    if (!writeFit(tl, side.title, x, 36, colW - 8, {}, { id: `h${i}`, ink: "accent", gap: 150 })) return { error: "title_too_wide" };
+    if (!writeFit(tl, side.title, x, 36, colW - 8, {}, { id: `h${i}`, ink: "accent", gap: 150, size: titleSize })) return { error: "title_too_wide" };
     tl.add({ op: "line", from: [x - colW / 2 + 8, 62], to: [x + colW / 2 - 8, 62], ink: "accent", weight: 1 }, 300, { gap: 40 });
   }
   tl.add({ op: "line", from: [200, 30], to: [200, 280], weight: 1, ink: "soft" }, 500);
@@ -324,7 +328,7 @@ function compare(c, tl) {
     for (const [i, side] of [left, right].entries()) {
       const t = side.items[r];
       if (!t) continue;
-      if (!writeFit(tl, t, 20 + i * 190 + colW / 2, 100 + r * 52, colW - 8, {}, { id: `c${i}${r}`, ms: 480, gap: i ? 60 : 220 })) return { error: `item_too_wide:${i}.${r}` };
+      if (!writeFit(tl, t, 20 + i * 190 + colW / 2, 100 + r * 52, colW - 8, {}, { id: `c${i}${r}`, ms: 480, gap: i ? 60 : 220, size: itemSize })) return { error: `item_too_wide:${i}.${r}` };
     }
   }
   return { facts: { left: left.title, right: right.title, rows, ...Object.fromEntries(left.items.map((t, r) => [`left${r + 1}`, t])), ...Object.fromEntries(right.items.map((t, r) => [`right${r + 1}`, t])) } };

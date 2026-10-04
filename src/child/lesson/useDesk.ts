@@ -86,44 +86,8 @@ const REQUESTS: Record<string, [string, string, string]> = {
   how: ["Kaise karte hain dikhao", "कैसे करते हैं, दिखाइए", "Show me how"],
 };
 
-const QUESTION = /[^.!?।…]*[?？][\s"”']*$/;
-
-/** Legacy ask: the last question sentence of her hand-over turn (the Director does not send ui.ask yet). */
-export function inferAsk(text: string): string | null {
-  const flat = text.replace(/\s+/g, " ").trim();
-  if (!flat) return null;
-  const sentences = flat.split(/(?<=[.!?।…?])\s+/).filter(Boolean);
-  for (let i = sentences.length - 1; i >= 0; i--) {
-    if (!QUESTION.test(sentences[i])) continue;
-    const q = sentences[i].trim();
-    // The question card keeps its context sentence (flows G15: "Kitne players honge?" lost "4 rows, 4 in each"): a
-    // question with no number of its own, after a sentence that carries the numbers, keeps that sentence above it.
-    const prev = i > 0 ? sentences[i - 1].trim() : "";
-    if (prev && /\d/.test(prev) && !/\d/.test(q) && !QUESTION.test(prev) && prev.length + q.length + 1 <= 160) return `${prev} ${q}`;
-    return q.slice(0, 160);
-  }
-  return null;
-}
-
-/** PURE. The lesson title for an Ask: the child's question, ≤ 24 chars on a word boundary (flows G11). */
-export function questionShortTitle(text: string | undefined): string {
-  const s = String(text ?? "").replace(/\s+/g, " ").trim();
-  if (!s) return "";
-  if (s.length <= 24) return s;
-  const cut = s.slice(0, 23).replace(/\s+\S*$/, "");
-  return `${cut || s.slice(0, 23)}…`;
-}
-
-/** Quick practice is a short set (V2 §3.6): the count never exceeds this. */
-export const PRACTICE_OF = 5;
-/**
- * PURE. The practice counter: the server's ui.practice when sent (W2-C), else counted from the items the child has
- * been asked (n = items posed, capped at 5) and the items that got a verdict (done at 5).
- */
-export function practiceCount(server: { n: number; of: number; done?: boolean } | undefined, posed: number, graded: number): { n: number; of: number; done: boolean } {
-  if (server && server.n > 0) return { n: Math.min(server.n, server.of), of: Math.min(server.of, PRACTICE_OF), done: !!server.done };
-  return { n: Math.max(1, Math.min(posed, PRACTICE_OF)), of: PRACTICE_OF, done: graded >= PRACTICE_OF };
-}
+export { inferAsk, questionShortTitle, practiceCount, PRACTICE_OF } from "./deskPure.ts";
+import { inferAsk, questionShortTitle, practiceCount } from "./deskPure.ts";
 
 const LEGACY_TITLE_MAX = 28;
 function shortTitleOf(ui: { shortTitle?: string }, topic: { title: string; chapter: string } | null): string {
@@ -682,7 +646,8 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     thinkingLabel: !!beats?.thinkingLabel || (floor === "thinking" && commitAt === null),
     mic: { available: spoken, talking: ptt.talking, drain: ptt.drain, tapToTalk },
     showHelp: young && (yt.tapOptions || tokens.tapOptionsS === null || voiceDown),
-    typing: typing || (!spoken && !young),
+    // one Send on screen (flows G15): while the NumberPad (its own Send) is open in the tray, the type row is closed
+    typing: (typing || (!spoken && !young)) && !(tray && geometryOut === "work" && tray.kind === "pad"),
     captionsOn,
     offlineBadge: false,
     gate: state.phase === "starting" || gate === "starting" ? "starting" : gate === "locked" && state.phase === "idle" ? "locked" : null,

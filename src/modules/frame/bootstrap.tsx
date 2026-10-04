@@ -20,6 +20,12 @@ const MODULE_ID = decodeURIComponent(location.hash.slice(1));
 // The frame document's origin is opaque ("null"), but its URL's origin is the app's, which is where the
 // host lives; messages are only accepted from, and only sent to, that origin.
 const PARENT_ORIGIN = location.origin;
+/**
+ * A WARM frame (W2-B #4): `#warm:<engine>,<engine>` loads the frame's runtime and those engines' chunks into the
+ * browser's caches and then idles. It never announces "ready" (the host has no slot for it) and never renders an engine;
+ * the host removes it once it has loaded. src/modules/prewarm.ts creates it at lesson start.
+ */
+const WARM: string[] | null = MODULE_ID.startsWith("warm:") ? MODULE_ID.slice(5).split(",").filter((id) => hasEngine(id)).slice(0, 24) : null;
 
 /** The host's end of this session, handed over with init. */
 let port: MessagePort | null = null;
@@ -48,7 +54,28 @@ function makeApi(moduleId: string): EngineApi {
 
 type Loaded = { status: "waiting" } | { status: "loading" } | { status: "ready"; engine: EngineModule } | { status: "missing"; engine: string };
 
+/** Warm mode: import each listed engine chunk, one after another (idle work; failures are ignored). */
+function WarmFrame({ engines }: { engines: string[] }) {
+  useEffect(() => {
+    let live = true;
+    (async () => {
+      for (const id of engines) {
+        if (!live) return;
+        await loadEngine(id).catch(() => undefined);
+      }
+      document.documentElement.dataset.warm = "done";
+    })();
+    return () => { live = false; };
+  }, [engines]);
+  return null;
+}
+
 export function FrameApp() {
+  if (WARM) return <WarmFrame engines={WARM} />;
+  return <LiveFrame />;
+}
+
+function LiveFrame() {
   const [init, setInit] = useState<Init | null>(null);
   const [raw, setRaw] = useState<Record<string, unknown>>({});
   const [highlight, setHighlight] = useState<{ target: string; seq: number } | null>(null);

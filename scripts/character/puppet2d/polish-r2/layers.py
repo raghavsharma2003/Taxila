@@ -341,13 +341,29 @@ for side in ("L", "R"):
     Lc = 0.299 * lash_col[..., 0] + 0.587 * lash_col[..., 1] + 0.114 * lash_col[..., 2]
     # inside the opening the lash's lower edge IS the opening's top curve (read by hand, smooth): draw it as an
     # analytic edge with exact pixel coverage (the per-column binary cut was a staircase at 2x+ and under turns)
-    Tfull = np.interp(xx, X, T)
+    # measured: c-front's lash runs ~2-3 px below the hand-read T; per column, the last lash-dark row below T-4
+    # (stopping at the iris disk, where the default T+2.5 holds), median + gaussian smoothed into one clean curve
+    lbm = np.array(T, np.float64) + 2.5
+    for i, x in enumerate(X):
+        y = int(np.floor(T[i])) - 4
+        last = None
+        while y < T[i] + 8:
+            if (x - icx) ** 2 + (y - icy) ** 2 <= (ir + 1) ** 2:
+                last = None; break
+            if lum[y, x] < 70: last = y
+            elif last is not None: break
+            y += 1
+        if last is not None: lbm[i] = last + (lum[last + 1, x] < 140) * 0.5 + 0.5
+    lbm = ndi.gaussian_filter1d(ndi.median_filter(lbm, 7), 2.0)
+    Tfull = np.interp(xx, X, lbm)
     inside = (xx >= xa + 2) & (xx <= xb_ - 2)
-    band = inside & (yy >= Tfull - 4) & (yy <= Tfull + 2) & (lid_top >= 1)
+    band = inside & (yy >= Tfull - 5) & (yy <= Tfull + 3) & (yy < LB.max() + 12)
     cov = np.clip(Tfull + 0.5 - yy, 0, 1)
     endw = np.clip(np.minimum(xx - xa - 2, xb_ - 2 - xx) / 6.0, 0, 1)    # blend into the measured edge at the ends
     lid_alpha = np.where(band, cov * endw + lid_alpha * (1 - endw), lid_alpha)
     lid_rgb = np.where((band & (yy >= Tfull - 3))[..., None], lash_col, lid_rgb)
+    lidmask |= band
+    geom_out.setdefault("lashBotFine", {})[side] = [round(float(v), 2) for v in lbm]
     geom_out["rects"][f"lid{side}"] = save_layer(f"lid{side}", lid_rgb, lid_alpha)
 
     # ---- lower lid band: skin under the opening, rises on squint / smile
@@ -406,7 +422,7 @@ over_face = hair | lockL | lockR                  # layers drawn above the face 
 # lock that swings away uncovers jaw, never a lock-shaped skin flap
 _disk = lambda r: (np.add.outer(np.arange(-r, r + 1) ** 2, np.arange(-r, r + 1) ** 2) <= r * r)
 face_sil = ndi.binary_closing(face, structure=_disk(16)) & ~ndi.binary_dilation(bgc & ~(lockL | lockR), iterations=0)
-face_area = face | (ndi.binary_dilation(face, iterations=26) & hair) | (face_sil & (lockL | lockR | ndi.binary_dilation(lockL | lockR, iterations=3)) & ~bgc)
+face_area = face | (ndi.binary_dilation(face, iterations=26) & hair & ~ndi.binary_dilation(bgc, iterations=6)) | (face_sil & (lockL | lockR | ndi.binary_dilation(lockL | lockR, iterations=3)) & ~bgc)
 holes = eye_fill | brow_fill | lips
 known = ndi.binary_erosion(face, iterations=3) & ~holes
 face_rgb = pullpush(im, known, smooth_iters=400, region=face_area & ~known)
@@ -523,6 +539,14 @@ for name, m, sig in (("hair", hair, 0.7), ("bun", bun, 0.7), ("lockL", lockL, 0.
         rgb = np.where((_nl & ~ndi.binary_erosion(m, iterations=2))[..., None], fillc, rgb)
     elif over is not None:
         rgb = np.where((over & ~m)[..., None], pullpush(im, ndi.binary_erosion(m, iterations=2)), rgb)
+    # r2 rev: cream trapped INSIDE the mask (the gap between two strands of a lock, closed by the mask's closing) is
+    # matted out by colour: warm light pixels get alpha = their position between hair and backdrop. Over cream at
+    # rest nothing changes; over skin, teal or white it was a light line running inside the lock (the r1 "halo").
+    if True:
+        warm = np.clip(((R - B) - 12) / 20.0, 0, 1)
+        cream_t = np.clip((lum - 70.0) / (238.0 - 70.0), 0, 1) * warm * (lum > 95)
+        inner_m = ndi.binary_dilation(m, iterations=2)
+        a = np.where(inner_m & ~(over if over is not None else np.zeros_like(m)), a * (1 - cream_t), a)
     rgb, a = hairfinish(rgb, a)
     geom_out["rects"][name] = save_layer(name, rgb, a)
 

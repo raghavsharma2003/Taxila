@@ -11,14 +11,15 @@ export const EXPRESSIONS = {
   // c-thinking: head rolled, one brow arched high, the other low; eyes up and away; small pressed mouth slid aside
   thinking: {
     bs: { browOuterUpLeft: 0.95, browInnerUp: 0.05, browDownRight: 0.55, eyeSquintRight: 0.25, eyeWideLeft: 0.04,
-      mouthLeft: 0.6, mouthPressLeft: 0.3, mouthPressRight: 0.3, mouthSmileLeft: 0.1, mouthSmileRight: -1 },
-    head: [-3, -6, 7], gaze: [15, 17], env: [0.35, 0, 0.45],
+      mouthLeft: 0.7, mouthPressLeft: 0.35, mouthPressRight: 0.35, mouthPucker: 0.15, mouthFrownRight: 0.4, mouthFrownLeft: 0.15, mouthSmileLeft: -1, mouthSmileRight: -1 },
+    head: [-4, -7, 8], gaze: [21, 20], env: [0.35, 0, 0.45],
   },
   // c-listening: soft closed smile, brows gently up, head tilted toward the child
   listening: {
-    bs: { mouthSmileLeft: 0.3, mouthSmileRight: 0.3, cheekSquintLeft: 0.12, cheekSquintRight: 0.12, eyeSquintLeft: 0.1, eyeSquintRight: 0.1,
-      browInnerUp: 0.28, browOuterUpLeft: 0.18, browOuterUpRight: 0.18 },
-    head: [2.5, 3, -6], gaze: [0, 0], env: [0.5, 0, 0.5],
+    // attentive, not merely pleased: brows up, eyes open and on the child, lips softly closed, head cocked and leaning in
+    bs: { mouthSmileLeft: -1, mouthSmileRight: -1, browInnerUp: 0.45, browOuterUpLeft: 0.32, browOuterUpRight: 0.32,
+      eyeWideLeft: 0.2, eyeWideRight: 0.2, jawOpen: 0.13 },
+    head: [5, 4, -11], gaze: [-3, 1], env: [0.5, 0, 0.5],
   },
   warm: {
     bs: { mouthSmileLeft: 0.4, mouthSmileRight: 0.4, cheekSquintLeft: 0.2, cheekSquintRight: 0.2, eyeSquintLeft: 0.12, eyeSquintRight: 0.12,
@@ -27,8 +28,8 @@ export const EXPRESSIONS = {
   },
   // c-happy: open smile, cheeks up, eyes smiling but open, brows lifted
   delight: {
-    bs: { mouthSmileLeft: 0.8, mouthSmileRight: 0.8, cheekSquintLeft: 0.35, cheekSquintRight: 0.35, eyeSquintLeft: 0.22, eyeSquintRight: 0.22,
-      browOuterUpLeft: 0.35, browOuterUpRight: 0.35, browInnerUp: 0.15, jawOpen: 0.34 },
+    bs: { mouthSmileLeft: 0.85, mouthSmileRight: 0.85, cheekSquintLeft: 0.55, cheekSquintRight: 0.55, eyeSquintLeft: 0.4, eyeSquintRight: 0.4,
+      browOuterUpLeft: 0.45, browOuterUpRight: 0.45, browInnerUp: 0.2, jawOpen: 0.36 },
     head: [-2, 0, 4], gaze: [0, 2], env: [0.25, 0, 0.45], bounce: 4,
   },
   // gentle concern: inner brows up and knit, lids lowered, lips pressed, corners slightly down, head tilted in
@@ -44,9 +45,9 @@ export const EXPRESSIONS = {
   },
   // playful: lopsided smirk, one brow up, the other eye squinting, head cocked
   playful: {
-    bs: { mouthSmileLeft: 0.7, mouthSmileRight: 0.08, cheekSquintLeft: 0.45, browOuterUpLeft: 0.95, browDownRight: 0.35,
-      eyeSquintRight: 0.55, cheekSquintRight: 0.25, eyeSquintLeft: 0.05 },
-    head: [-1, 6, -8], gaze: [-5, 2], env: [0.25, 0, 0.45],
+    bs: { mouthSmileLeft: 0.75, mouthSmileRight: 0.05, cheekSquintLeft: 0.5, browOuterUpLeft: 1.0, browDownRight: 0.45,
+      eyeSquintRight: 0.7, eyeBlinkRight: 0.62, cheekSquintRight: 0.4, eyeSquintLeft: 0.05 },
+    head: [-2, 7, -9], gaze: [-6, 3], env: [0.25, 0, 0.45],
   },
 };
 /** behaviour.ts's Emotion names -> the preset that renders them on this rig (so arm()/emote() map 1:1). */

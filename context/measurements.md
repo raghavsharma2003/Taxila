@@ -1733,3 +1733,30 @@ Limits: geometry only (nothing drawn inside yet); no real device; reduced motion
 ## Merged inbox entries (write-up from the entry text)
 - `voice-v3-render-ttfb-2026-10-04` (2026-10-04): VOICE v3 render latency, 2026-10-04, renders/manifest*.json. Hosted, from the US sandbox (not India), n=1 per take, warm, request -> first audio byte: Polly neural Kajal 298 ms median (n=5, ap-south-1); Polly generative Kajal 364 ms (n=5, ap-southeast-1); Dragon hi-IN Diya 651 ms (n=5, eastus2); Nova 2 Sonic kiara 725 ms / arjun 658 ms (n=10 each, us-east-1, session open); OmniIndic Hazelmori 796 ms, OmniIndic Diya 821 ms, Omni Arjun 802 ms, Voice Live + OmniIndic Diya 860 ms (n=10 each, centralindia); DragonHD Arjun 1082 ms (n=5); realtime marin 1220 ms (n=10, eastus2); MAI-Voice-2.1 2661-2795 ms (n=10 each). Open weights on one L4 (g6.2xlarge spot, us-east-1, HF reference code, single stream, bf16): Veena 873-884 ms TTFB with RTF ~2.6 (slower than real time on L4); Svara 941 ms, RTF 2.58; VoxCPM2 119-148 ms first chunk, RTF 1.40; VibeVoice 7B 247-268 ms, RTF 1.62; VibeVoice 1.5B 107-127 ms, RTF 0.78; Chatterbox-hi 4378-5341 ms (no streaming, whole clip), RTF 0.56. None of these is an India latency.
 - `voice-v3-render-nova-fidelity` (2026-10-04): Nova 2 Sonic driven by a text user turn with a 'say it verbatim' system prompt, 2026-10-04, 20 renders (2 voices x 5 lines x plain/expressive), us-east-1: kiara said every line as written (no word missed by both STTs on 10/10, apart from 'burp', which both STTs mis-spell on every arm); arjun paraphrased L5 into a different sentence and missed 14-19% of words. Its own transcript cannot be trusted as a fidelity check (it reported the line as said on arjun L5). Output speech tokens ~25/s (n=20, usageEvent / clip duration), so ~$1.08/h of teacher speech at $12/M [price secondary source]. Re-measure if Nova adds a TTS-only mode.
+
+## w2a-local-acceptance-2026-10-04
+W2-A acceptance, run locally against `node server/serve.mjs` on the Neon test branch (2026-10-04).
+
+- **`w2a-home-states`: 31/31 passed.**
+  - first, start, homework, test_window and safety_hold each show exactly one primary action at 360×640; done shows none.
+  - No horizontal scroll at 360.
+  - safety_hold shows no start, practice or Ask, and both helplines.
+  - F7: the 1-day and 30-day homes have the same layout (test clock).
+  - No leftover test guardians.
+- **Unit tests (`tests/w2a-experience.test.mjs`): 17/17 passed.** The independent checker accepted all 40 seeded random
+  lessons' summaries. It caught an inflated count in every case.
+- **`w2a-parent-truth`: 45/45 passed.** Three children: no answers, mixed, strong.
+  - The next topic is identical on the child home, parent home, Progress and the child's "Next time".
+  - The state of every tried skill is identical on the map, parent home, Progress, the evidence sheet and the lesson card.
+  - Parent home's week matches the Notes header: "1 lesson · 1 day · 0 min" on both.
+  - The no-answer child shows every skill Not started, an empty map and no claims.
+  - The evidence sheet shows the real item ("What is the smallest 6-digit number? Say its name too."), the child's words
+    ("1,00,000, one lakh") and the grader ("exact answer").
+  - 20/20 practice-lesson summaries were built from facts and passed the claim checker.
+  - Ask "Why is 1/2 bigger than 1/3?" was filed under Comparing fractions.
+  - The client showed "Practice · 1 of 5", and the Ask title was "Why is 1/2 bigger than…".
+  - Forgot password worked end to end with the test token: single use, the old password refused, the new one signs in.
+  - No leftover test guardians.
+
+## w2a-acs-send-latency
+The ACS Email send was accepted (202) in 1955 ms, from the US sandbox to the India ACS resource (n=1, 2026-10-04).

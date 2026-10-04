@@ -213,7 +213,10 @@ export function moduleFacts(m) {
     if (ch?.options?.length) onScreen.choices = ch.options.length;
     return { kind: "game", archetype: "scene@1", onScreen, ...(m.g1?.itemId ? { itemId: m.g1.itemId } : {}) };
   }
-  for (const name of VISIBLE[m.engine] ?? []) {
+  // an unbound show builds its activity from the item's values (`numbers`, `fractions`: engine-catalog fallbackShape),
+  // so those ARE what is drawn
+  for (const name of [...(VISIBLE[m.engine] ?? []), "fractions", "numbers"]) {
+    if (name in onScreen) continue;
     const x = factValue(m.params?.[name]);
     if (x === null || (key !== null && String(x) === key)) continue;
     onScreen[name] = x;
@@ -222,7 +225,7 @@ export function moduleFacts(m) {
   return { kind: KIND[m.engine] ?? "simulation", archetype: m.engine, onScreen, ...(m.itemId ? { itemId: m.itemId } : {}) };
 }
 
-export const FACTS_ROW_PREFIX = "on screen now (values; point only at these, never at what is hidden): ";
+export const FACTS_ROW_PREFIX = "on screen now (values; the numbers and words to use when you point at the screen; never what is hidden): ";
 /** StudioFacts → one telegraphic row ("engine · name value · …"): values, never a sentence she could recite. */
 export function factsRow(f) {
   if (!f) return null;
@@ -236,6 +239,49 @@ function writeFactsRow(s) {
   const row = factsRow(moduleFacts(s.module));
   if (row) content.push(row);
   if (row || content.length !== (s.lastContent ?? []).length) s.lastContent = content;
+}
+
+// ───────────────────────────── the reply guard (a predicate for the reply path's rewrite) ─────────────────────────────
+
+const PART_WORDS = { half: 2, halves: 2, aadha: 2, aadhe: 2, third: 3, thirds: 3, tihai: 3, quarter: 4, quarters: 4, chauthai: 4, fourth: 4, fourths: 4,
+  fifth: 5, fifths: 5, sixth: 6, sixths: 6, seventh: 7, sevenths: 7, eighth: 8, eighths: 8, aathve: 8, ninth: 9, ninths: 9, tenth: 10, tenths: 10, twelfth: 12, twelfths: 12 };
+const COUNT_WORDS = { two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, twelve: 12, do: 2, teen: 3, char: 4, chaar: 4, paanch: 5, chhe: 6, saat: 7, aath: 8, nau: 9, das: 10 };
+/**
+ * The PART COUNTS a line states (live-content audit 6: "quarters" said over a line cut in fifths): every fraction's
+ * denominator, every part word (half, thirds, chauthai …) and every "N equal parts / N barabar hisse".
+ * @returns {Set<string>}
+ */
+export function partsSaid(text) {
+  const t = String(text ?? "").toLowerCase();
+  const out = new Set();
+  for (const m of t.matchAll(/(\d+)\s*\/\s*(\d+)/g)) out.add(m[2]);
+  for (const w of t.match(/[a-z]+/g) ?? []) if (PART_WORDS[w]) out.add(String(PART_WORDS[w]));
+  for (const m of t.matchAll(/(\d+|[a-z]+)\s+(?:equal\s+(?:parts|pieces|shares)|barabar\s+(?:hisse|hisson|bhaag|tukde|tukdon|parts))/g)) {
+    const v = /^\d+$/.test(m[1]) ? m[1] : COUNT_WORDS[m[1]];
+    if (v !== undefined) out.add(String(v));
+  }
+  return out;
+}
+/** The part counts a mounted module shows: its fractions' denominators and its partition / parts / denominators. */
+export function partsOnScreen(m) {
+  const out = new Set();
+  if (!m?.params) return out;
+  const j = JSON.stringify(m.params).replace(/\[(\d+),(\d+)\]/g, "$1/$2");
+  for (const x of j.matchAll(/(\d+)\/(\d+)/g)) out.add(x[2]);
+  for (const k of ["partition", "parts", "denominators"]) for (const v of [m.params[k] ?? m.params.script?.facts?.onScreen?.[k]].flat()) if (Number.isInteger(v)) out.add(String(v));
+  return out;
+}
+/**
+ * A reply that states part counts the screen does not show, while a fraction-bearing module is mounted (the teacher
+ * contradicting the screen), or null. Pure: the reply path's rewrite loop calls it beside screenProblem (say.js) and
+ * re-asks with the facts row; wiring is the reply path owner's (open item w2b-screen-guard-wiring).
+ * @returns {{ stray: string[], onScreen: string } | null}
+ */
+export function screenContradiction(text, module) {
+  const screen = partsOnScreen(module);
+  if (!screen.size) return null;           // nothing on screen has part counts: nothing to contradict
+  const stray = [...partsSaid(text)].filter((p) => !screen.has(p));
+  return stray.length ? { stray, onScreen: factsRow(moduleFacts(module)) ?? "" } : null;
 }
 
 /**

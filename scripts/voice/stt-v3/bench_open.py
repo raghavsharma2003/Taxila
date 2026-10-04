@@ -65,7 +65,11 @@ ARMS = {
     "N6hi": dict(fam="nemo", model="nemotron", lang="hi-IN", la=6, label="nemotron-3.5 stream hi-IN 560 ms"),
     "N13hi": dict(fam="nemo", model="nemotron", lang="hi-IN", la=13, label="nemotron-3.5 stream hi-IN 1120 ms"),
     "N6auto": dict(fam="nemo", model="nemotron", lang="auto", la=6, skip=["paced", "load", "soak"], label="nemotron-3.5 stream auto-LID 560 ms"),
-    "NOhi": dict(fam="nemo_off", model="nemotron", lang="hi-IN", label="nemotron-3.5 offline (full context) hi-IN"),
+    # added after the first full run: hi-IN forcing drops English sentences, auto-LID does not
+    "N3auto": dict(fam="nemo", model="nemotron", lang="auto", la=3, skip=["load", "soak"], label="nemotron-3.5 stream auto-LID 320 ms"),
+    "N13auto": dict(fam="nemo", model="nemotron", lang="auto", la=13, skip=["load", "soak"], label="nemotron-3.5 stream auto-LID 1120 ms"),
+    "N6autoS": dict(fam="nemo", model="nemotron", lang="auto", la=6, skip=["load"], label="nemotron-3.5 stream auto-LID 560 ms (paced + soak run)"),
+    "NOhi": dict(fam="nemo_off", model="nemotron", lang="hi-IN", label="nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead)"),
     # Voxtral Mini 4B Realtime (causal encoder + LM decoder); delay = transcription_delay_ms (80 ms multiples)
     "V480": dict(fam="vox", model="voxtral", delay=480, label="voxtral-realtime stream 480 ms"),
     "V960": dict(fam="vox", model="voxtral", delay=960, skip=["load", "soak"], label="voxtral-realtime stream 960 ms"),

@@ -2529,3 +2529,111 @@ client shows a studio tray only when the turn carries `ui.studioSlot` (never an 
 
 - `taxila-dev-live-2026-10-04` (2026-10-04): taxila.dev and www.taxila.dev serve the Azure app with ACA managed certificates; DNS on Vercel (A to the ACA static IP, asuid TXT, www CNAME, CAA digicert). Verified 200. Repoint on the India cutover.
 - `owner-mai-preview-children-ok-2026-10-04` (2026-10-04): owner approved MAI-Transcribe-2 (Preview) for children's audio in the India app; price to be confirmed from the meter on 6 Oct.
+
+## W2-A: child and parent experience, one parent truth, home states (2026-10-04)
+
+### w2a-one-claim-source
+**Decision:** `server/reports/truth.js` is the one claim source per child. Every surface reads skill state through
+`skillTruth(skill_state row, engine rows)`. The engine rows are kt_evidence with closed labels and a named grader. The
+surfaces are the child plan, the Garden/Sky map, parent home, Progress, the lesson card, the evidence sheet and Notes.
+A skill with no scored engine row is "Not started", whatever the projection says, so a taught-only skill is never a
+sprout. A topic's word comes from its skills through `topicTruth`. The Director's legacy `evidence` rows no longer feed
+any child or parent claim; they were the "8/8 unaided" source (comprehension G4). Next topic everywhere comes from
+`nextTopicFor`, including the child's "Next time" on the summary.
+- **Reverse if:** the engine's closed labels are shown (W3-A verbal-fair evidence) to misgrade more often than the
+  Director classifier on a blind-graded set; then the source changes, still as one function.
+
+### w2a-one-lesson-minutes-rule
+**Decision:** a lesson counts when something was graded, or it ran 5 min or more and was not an abandoned start.
+Minutes are round(Σ(end − start)); an open lesson ends at its last engine row. Parent home "This week" uses the ISO
+week in the child's time zone, the same window as the weekly letter. Reports facts and the independent checker apply
+the same rule; the checker's copy is written separately.
+- **Reverse if:** parents read "this week" as the last 7 days in a usability test. Then both the home and the letter
+  switch together.
+
+### w2a-late-correction-supersedes
+**Decision:** a `<id>:late` correction replaces the row it corrects in reports facts, in the checker's completeness reads
+and on every truth surface. Closes `w1c-late-double-count-reports`.
+- **Reverse if:** the ledger starts emitting corrections as deltas instead of replacements.
+
+### w2a-summary-from-facts-checked
+**Decision:** the lesson card summary is built only from the lesson's engine rows. Counts are per episode: tried, right
+first time with no help, right after a hint or a second try, explained in own words. It passes `summaryClaimsHold`,
+which re-reads the raw rows with its own label table. A failing summary is withheld and logged, never shown. The
+model-written `lesson.summary` / `parent_note` stay off the card.
+- **Reverse if:** never, for the gate itself. The line set may grow, but only through the same check.
+
+### w2a-evidence-sheet-engine-rows
+**Decision:** each evidence-sheet row shows the following, all from the turn the event id names (`<lesson>:<seq>:<k>`):
+- the real question: the kit item's prompt, else her line just before;
+- the child's own words (25 words at most);
+- the result in six words;
+- the grader: "exact answer" or "checked against the book's key idea".
+- **Reverse if:** parents misread the grader line in a usability test.
+
+### w2a-home-states-sf1
+**Decision:** `ChildHomeState` gains three states. Precedence: safety_hold > resume > capped > done > resting > homework >
+test_window > first/start.
+- `homework`: the parent's "Homework help today" is on, until the end of the learning day. Start opens Ask in homework
+  mode, open to every class. Today's lesson stays as a link.
+- `test_window`: one parent-entered school test of 21 days at most. The topic comes from `nextTopicFor` for that subject.
+  Copy is calm, with no countdown.
+- `safety_hold`: the Conductor's mode, first in precedence. The home shows the Help sheet only; Practice, Ask and the
+  sky peek are hidden. A held plan stays held through a plan outage on that device.
+
+The `done` state has no primary action (F1 allows none). The plan carries `madeFor[]`, `jar`, `testWindow`, `homework`
+and `textOnly`. `madeFor[]` is read from W2-H's `studio_mount` feed, and `[]` hides the shelf.
+- **Reverse if:** the owner's test finds parents expect homework help to persist across days. Then it becomes a
+  standing toggle.
+
+### w2a-migration-019
+**Decision:** migration 019 adds:
+- `child_controls.homework_until`, `text_only` and `test_window` (jsonb);
+- `password_reset`.
+
+`test_window` is a column, not a new child table, so the M0 ratchet keeps it with the parent-entered controls.
+- **Reverse if:** families need more than one test window at a time. Then add a table, classified in `mode.js` by W2-I.
+
+### w2a-ask-routing-lexical
+**Decision:** Ask routes by a reviewed lexical index, with no model call:
+- weights: titles ×3, chapters ×2, outcomes, mix-ups and hooks ×1;
+- inputs: Hinglish synonyms and number shapes;
+- scope: the child's class, then up to two classes below.
+
+Below a score of 3, or on a tie between subjects, it returns null. The client sends `firstText` with the start and
+titles the Desk with the question. lesson.js does not use the returned title yet; that is open for W2-E.
+- **Reverse if:** a 50-question bench routes fewer than 85% to the right chapter. Then use a small Azure classifier with
+  no child id.
+
+### w2a-practice-set
+**Decision:** the practice set holds at most 5 verified kit items: due or refresh skills first, then recently missed
+ones, round-robin across skills. It never includes a skill the child has not met, and never a teach-back. The client's
+"Practice · n of 5" reads `ui.practice` (W2-C produces it), else counts the items posed and graded. The Summary reads
+"That's the set".
+- **Reverse if:** W2-C's practice purpose shows the set needs isomorphs rather than kit items.
+
+### w2a-forgot-password-acs
+**Decision:** forgot password works by email through Azure Communication Services:
+- **Resources:** `taxila-acs` and `taxila-email` in the owner's resource group, on an Azure-managed domain, with data in
+  India. The sender is `DoNotReply@0ff70a32-3b67-42ae-8983-eea9cc7363f8.azurecomm.net`.
+- **Request:** `/api/auth/forgot` always answers 200 and does not await the mail.
+- **Test token:** only an @taxila.test account presenting the operator key gets the token back.
+- **Reset:** the token is single use and lasts 30 min. A reset ends every session.
+- **Field errors:** server field errors carry `{field, code}` and the client words them.
+- **Reverse if:** OTP sign-in (phone) lands; then this becomes the fallback path.
+
+### w2a-boot-one-hop
+**Decision:** before the bundle parses, index.html starts one read:
+- `/api/child/boot` (me and plan together) on `/c/:cid`;
+- `/api/me` elsewhere.
+
+It runs only when the readable `tx_in` marker is present, so the landing never 401s. The marker never holds the token.
+Also added: an inline skeleton, and a hero preload injected by serve.mjs from the art manifest. serve.mjs also
+pre-encodes every build file with brotli q11 at boot.
+- **Reverse if:** the Central India probe shows no gain in child-home first paint, or the marker causes a stale-session
+  loop.
+
+### w2a-text-only-per-child
+**Decision:** "Tap and type only" is stored per child on the server and returned with the plan. Closes
+`tap-and-type-device-local`.
+- **Reverse if:** never; device-local stays only as the child's own "Type instead".

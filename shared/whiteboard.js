@@ -317,9 +317,14 @@ function loopPath(cx, cy, rx, ry, rnd, amp, from = 0, to = 360) {
     const w = 1 + (rnd() - 0.5) * (amp / Math.max(rx, ry, 1)) * 0.6;
     pts.push([cx + rx * w * Math.cos(a), cy + ry * w * Math.sin(a)]);
   }
+  // a smooth hand loop: quadratic segments through the midpoints (no visible corners at any size)
   let d = `M${f1(pts[0][0])},${f1(pts[0][1])}`;
-  for (let i = 1; i < pts.length; i++) d += ` L${f1(pts[i][0])},${f1(pts[i][1])}`;
-  return d;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const mx = (pts[i][0] + pts[i + 1][0]) / 2, my = (pts[i][1] + pts[i + 1][1]) / 2;
+    d += ` Q${f1(pts[i][0])},${f1(pts[i][1])} ${f1(mx)},${f1(my)}`;
+  }
+  const last = pts[pts.length - 1];
+  return `${d} L${f1(last[0])},${f1(last[1])}`;
 }
 const arrowHead = (from, to, size) => {
   const a = Math.atan2(to[1] - from[1], to[0] - from[0]);

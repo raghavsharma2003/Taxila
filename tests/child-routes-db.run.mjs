@@ -176,6 +176,10 @@ describe("child routes (test branch)", { skip: SKIP, concurrency: false, timeout
     const sk = kitFromFile(getTopic(topic.id)).skills[0];
     await q(`insert into skill_state (child_id, skill_id, p_known, status, attempts, correct_unaided) values ($1, $2, 0.8, 'learned_today', 3, 2)
       on conflict (child_id, skill_id) do update set status = 'learned_today'`, [kid, sk.id]);
+    // W2-A one claim source: a state shows only over a scored engine row (kt_evidence), as a real lesson writes both
+    await q(`insert into kt_evidence (id, child_id, session_id, session_start_at, episode_id, occurred_at, skill_ids, cls, outcome, grader, grader_version,
+        item_key, params_version, legal_mode_at_write) values ($1, $2, 'w2a-fixture', now(), 'w2a-fixture:i1', now(), $3, 'item.open', 0, 'code', 'test', 'i1', 'v1', 'M1')
+      on conflict (id) do nothing`, [`w2a-fixture:${kid}:${sk.id}`, kid, [sk.id]]);
     const r = await call(`/api/child/map?childId=${kid}`);
     assert.equal(r.status, 200);
     assert.equal(r.body.mode, "sky");

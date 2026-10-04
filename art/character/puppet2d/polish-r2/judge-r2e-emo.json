@@ -1,0 +1,157 @@
+{
+ "round": "r2e-emo",
+ "date": "2026-10-04T16:01:05.216Z",
+ "models": [
+  "taxila-brain",
+  "grok-4-20-reasoning"
+ ],
+ "pairs": [],
+ "emotions": [
+  {
+   "pose": "warm",
+   "truth": "warm smile",
+   "model": "taxila-brain",
+   "got": "warm smile",
+   "ok": true,
+   "why": "She has a relaxed, friendly smile with soft eyes and calm brows.",
+   "conf": 0.98
+  },
+  {
+   "pose": "delight",
+   "truth": "delight",
+   "model": "taxila-brain",
+   "got": "delight",
+   "ok": true,
+   "why": "She has a broad open-mouth smile, bright wide eyes, and raised cheeks, conveying joyful excitement.",
+   "conf": 0.96
+  },
+  {
+   "pose": "warm",
+   "truth": "warm smile",
+   "model": "grok-4-20-reasoning",
+   "got": "warm smile",
+   "ok": true,
+   "why": "The character displays a soft, closed-mouth smile with gently upturned corners and warm, friendly eyes. This matches 'warm smile' far better than delight (too mild), concern, surprise, or the other options.",
+   "conf": 0.88
+  },
+  {
+   "pose": "delight",
+   "truth": "delight",
+   "model": "grok-4-20-reasoning",
+   "got": "warm smile",
+   "ok": false,
+   "why": "Broad open-mouthed smile with bright, engaged eyes and friendly facial features clearly convey warmth and approachability typical of a teacher addressing students.",
+   "conf": 0.82
+  },
+  {
+   "pose": "surprise",
+   "truth": "surprise",
+   "model": "taxila-brain",
+   "got": "surprise",
+   "ok": true,
+   "why": "Her eyes are wide, eyebrows raised, and mouth forms an open 'O,' strongly indicating surprise.",
+   "conf": 0.99
+  },
+  {
+   "pose": "concern",
+   "truth": "gentle concern",
+   "model": "taxila-brain",
+   "got": "gentle concern",
+   "ok": true,
+   "why": "Her slightly raised, inward-angled brows and subtly downturned closed mouth suggest mild concern.",
+   "conf": 0.76
+  },
+  {
+   "pose": "concern",
+   "truth": "gentle concern",
+   "model": "grok-4-20-reasoning",
+   "got": "gentle concern",
+   "ok": true,
+   "why": "Wide attentive eyes combined with a closed, slightly downturned mouth convey mild worry or caring seriousness rather than smile, surprise, or neutral speech.",
+   "conf": 0.7
+  },
+  {
+   "pose": "playful",
+   "truth": "playful",
+   "model": "taxila-brain",
+   "got": "playful",
+   "ok": true,
+   "why": "She is winking with a slight, mischievous smile.",
+   "conf": 0.98
+  },
+  {
+   "pose": "surprise",
+   "truth": "surprise",
+   "model": "grok-4-20-reasoning",
+   "got": "surprise",
+   "ok": true,
+   "why": "Wide-open circular mouth, fully widened eyes with raised eyebrows, and overall startled look match the classic surprise expression.",
+   "conf": 0.92
+  },
+  {
+   "pose": "listening",
+   "truth": "listening",
+   "model": "taxila-brain",
+   "got": "warm smile",
+   "ok": false,
+   "why": "She has a soft closed-mouth smile, relaxed eyes, and a friendly, welcoming expression.",
+   "conf": 0.93
+  },
+  {
+   "pose": "thinking",
+   "truth": "thinking",
+   "model": "taxila-brain",
+   "got": "thinking",
+   "ok": true,
+   "why": "Her eyes glance upward and to the side with a subtle, contemplative smile.",
+   "conf": 0.9
+  },
+  {
+   "pose": "listening",
+   "truth": "listening",
+   "model": "grok-4-20-reasoning",
+   "got": "warm smile",
+   "ok": false,
+   "why": "Closed mouth with gently upturned corners, soft friendly eyes, and relaxed brows convey a kind, approachable expression typical of a teacher.",
+   "conf": 0.82
+  },
+  {
+   "pose": "playful",
+   "truth": "playful",
+   "model": "grok-4-20-reasoning",
+   "got": "playful",
+   "ok": true,
+   "why": "Winking with one eye while giving a gentle closed-mouth smile is a classic playful expression.",
+   "conf": 0.75
+  },
+  {
+   "pose": "talk_E",
+   "truth": "neutral talking",
+   "model": "taxila-brain",
+   "got": "warm smile",
+   "ok": false,
+   "why": "She has a relaxed, friendly smile with soft eyes and an inviting expression.",
+   "conf": 0.92
+  },
+  {
+   "pose": "talk_E",
+   "truth": "neutral talking",
+   "model": "grok-4-20-reasoning",
+   "got": "warm smile",
+   "ok": false,
+   "why": "The character displays upturned mouth corners with a gentle smile, friendly wide eyes, and an overall approachable, positive expression that best matches warm smile over neutral talking or other options.",
+   "conf": 0.75
+  },
+  {
+   "pose": "thinking",
+   "truth": "thinking",
+   "model": "grok-4-20-reasoning",
+   "got": "warm smile",
+   "ok": false,
+   "why": "Slightly upturned mouth corners with soft, friendly eyes and relaxed brows create a gentle, approachable smile suitable for a teacher character.",
+   "conf": 0.75
+  }
+ ],
+ "tally": {},
+ "emotionAcc": "10/16"
+}

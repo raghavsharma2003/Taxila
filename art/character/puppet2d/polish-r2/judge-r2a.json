@@ -1,0 +1,5327 @@
+{
+ "round": "r2a",
+ "date": "2026-10-04T15:51:44.433Z",
+ "models": [
+  "taxila-brain",
+  "grok-4-20-reasoning"
+ ],
+ "pairs": [
+  {
+   "id": "sanity-bad-3d",
+   "size": 1024,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      false,
+      "Recognisable traits remain, but the crude low-poly construction and altered proportions do not match REF's soft 3D style."
+     ],
+     "I2": [
+      false,
+      "Looks like a cheap, unfinished game model with faceted hair, rigid clothing and rough facial modelling."
+     ],
+     "I3": [
+      false,
+      "The elongated neck, swollen cheeks, uneven eyes and pinched mouth create an uncanny result."
+     ],
+     "S1": [
+      false,
+      "Visible clipping and hard cut edges appear around the hair, ears, neckline and shoulder silhouette."
+     ],
+     "S2": [
+      true,
+      "The main palette broadly matches: warm skin, near-black hair, teal clothing, orange trim, gold studs and bindi."
+     ],
+     "S3": [
+      false,
+      "Shading is flattened and coarse, especially on the hair, face, neck and clothing."
+     ],
+     "E1": [
+      true,
+      "A bright catchlight is visible in each open eye."
+     ],
+     "E2": [
+      false,
+      "The eyelids and lash lines are uneven, heavy and poorly integrated around the eyes."
+     ],
+     "M1": [
+      false,
+      "The lips are pinched and smeared rather than softly rounded with clean volume."
+     ],
+     "M2": [
+      true,
+      "No teeth are visible."
+     ]
+    },
+    "score": 2,
+    "defects": [
+     "Crude low-poly, cheap-game rendering replaces the premium soft Memoji finish.",
+     "Uncanny facial and anatomical deformation, especially the elongated neck, swollen cheeks and pinched mouth."
+    ]
+   },
+   "usage": {
+    "completion_tokens": 458,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 164,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 497,
+     "engine_ttlt_ms": 5236,
+     "pre_inference_ms": 140,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 1021,
+     "service_ttlt_ms": 5739,
+     "user_visible_ttft_ms": 881
+    },
+    "prompt_tokens": 1423,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1881
+   }
+  },
+  {
+   "id": "sanity-bad-3d",
+   "size": 256,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      false,
+      "Recognisable as the character, but the elongated neck, narrower face, angular hair and simplified features drift from REF's model and finish."
+     ],
+     "I2": [
+      false,
+      "The stiff silhouette, crude neck/body transition and flattened detailing look like a rough game asset rather than a premium app character."
+     ],
+     "I3": [
+      false,
+      "The tiny blurred lips and overly long neck create an uncanny, pinched appearance."
+     ],
+     "S1": [
+      false,
+      "Visible pale edging around the hair silhouette and harsh cut-like boundaries around the side locks and shoulders."
+     ],
+     "S2": [
+      true,
+      "The near-black hair, warm skin, teal kurta, orange piping, gold studs and bindi broadly match REF."
+     ],
+     "S3": [
+      false,
+      "Some shading remains, but the face, clothing and details are noticeably flatter and less softly modelled than REF."
+     ],
+     "E1": [
+      true,
+      "A catchlight is visible in each open eye."
+     ],
+     "E2": [
+      false,
+      "The eyelids and lash lines are thick, blunt and uneven rather than smoothly wrapped and tapered."
+     ],
+     "M1": [
+      false,
+      "The lips are compressed and blurry, with little soft 3D volume."
+     ],
+     "M2": [
+      true,
+      "No teeth are visible."
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "Uncanny elongated neck and distorted character proportions",
+     "Blurred, flattened mouth and generally downgraded soft-3D finish"
+    ]
+   },
+   "usage": {
+    "completion_tokens": 479,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 188,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 319,
+     "engine_ttlt_ms": 5816,
+     "pre_inference_ms": 88,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 763,
+     "service_ttlt_ms": 6261,
+     "user_visible_ttft_ms": 675
+    },
+    "prompt_tokens": 537,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1016
+   }
+  },
+  {
+   "id": "sanity-ref-ref",
+   "size": 1024,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same character, with matching facial proportions, hair design, costume and soft 3D style."
+     ],
+     "I2": [
+      true,
+      "Clean, polished rendering reads as a premium app character rather than a cut-out or cheap game asset."
+     ],
+     "I3": [
+      true,
+      "Eyes remain lively and coherent; the mouth and facial textures are not stretched, smeared or warped."
+     ],
+     "S1": [
+      true,
+      "No visible seams, halos, holes or cut edges."
+     ],
+     "S2": [
+      true,
+      "Skin, near-black hair, teal kurta, orange piping, gold studs and bindi closely match REF."
+     ],
+     "S3": [
+      true,
+      "Soft dimensional shading and rounded material treatment are preserved."
+     ],
+     "E1": [
+      true,
+      "A clear white catchlight is visible in each open eye."
+     ],
+     "E2": [
+      true,
+      "The eyelids conform to the eye shapes, with smooth, tapered lash lines."
+     ],
+     "M1": [
+      true,
+      "The lips retain soft 3D volume and controlled shading."
+     ],
+     "M2": [
+      true,
+      "No teeth are visible."
+     ],
+     "score": 4,
+     "defects": [
+      "The neutral expression is noticeably less warm and engaging than the approved character.",
+      "The closed mouth has a slightly rigid central line and feels less naturally sculpted than REF."
+     ]
+    }
+   },
+   "usage": {
+    "completion_tokens": 434,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 167,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 9,
+     "engine_ttft_ms": 490,
+     "engine_ttlt_ms": 4329,
+     "pre_inference_ms": 475,
+     "service_tbt_ms": 9,
+     "service_ttft_ms": 1371,
+     "service_ttlt_ms": 5211,
+     "user_visible_ttft_ms": 896
+    },
+    "prompt_tokens": 1885,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 2319
+   }
+  },
+  {
+   "id": "sanity-bad-3d",
+   "size": 256,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "same character in Memoji-style 3D cartoon"
+     ],
+     "I2": [
+      false,
+      "lacks premium softness and refinement, reads as mid-tier 3D asset"
+     ],
+     "I3": [
+      true,
+      "eyes and mouth are natural, no dead-eye or smear issues"
+     ],
+     "S1": [
+      true,
+      "clean render, no visible seams, halos or cut edges"
+     ],
+     "S2": [
+      false,
+      "clothing wrong: vertical gold lines instead of REF orange neck piping"
+     ],
+     "S3": [
+      false,
+      "shading noticeably flatter, especially hair and cheeks"
+     ],
+     "E1": [
+      true,
+      "catchlights clearly visible in both eyes"
+     ],
+     "E2": [
+      false,
+      "lash line and eyelids feel stiff, lack smooth wrap"
+     ],
+     "M1": [
+      false,
+      "lips completely flat, zero soft volume"
+     ],
+     "M2": [
+      true,
+      "no teeth showing"
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "incorrect kurta piping/details",
+     "flat lips and overly hard shading"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 508,
+    "completion_tokens": 185,
+    "total_tokens": 3042,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 458,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 128
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 2349,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "sanity-bad-3d",
+   "size": 1024,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Same core character with Memoji-style 3D cartoon approach"
+     ],
+     "I2": [
+      false,
+      "Flatter modeling and simplified shading read as mid-tier game asset, not premium app quality"
+     ],
+     "I3": [
+      true,
+      "No dead eyes, smeared mouth, or warped textures"
+     ],
+     "S1": [
+      true,
+      "Clean render with no visible seams, halos, or cut edges"
+     ],
+     "S2": [
+      true,
+      "Colors match REF across skin, hair, teal, orange trim, gold, and bindi"
+     ],
+     "S3": [
+      false,
+      "Soft volumetric Memoji shading flattened into basic gradients"
+     ],
+     "E1": [
+      true,
+      "Catchlights clearly visible in both eyes"
+     ],
+     "E2": [
+      false,
+      "Eyelids sit flatly; lash line is blunt and lacks smooth taper"
+     ],
+     "M1": [
+      false,
+      "Lips are thin and lack any soft 3D volume"
+     ],
+     "M2": [
+      true,
+      "Mouth closed, no teeth visible"
+     ]
+    },
+    "score": 2,
+    "defects": [
+     "Flattened non-Memoji shading",
+     "Lips completely lack volume and sculpt"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 1245,
+    "completion_tokens": 208,
+    "total_tokens": 3924,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 1226,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 865
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 2471,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "sanity-ref-ref",
+   "size": 256,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same character, proportions, hairstyle, features, and soft 3D style as REF."
+     ],
+     "I2": [
+      true,
+      "Clean, cohesive rendering reads as a polished premium app character rather than a cut-out or flat asset."
+     ],
+     "I3": [
+      true,
+      "Eyes remain lively and facial textures are clean, with no smearing or obvious warping."
+     ],
+     "S1": [
+      true,
+      "No visible seams, halos, holes, or cut edges."
+     ],
+     "S2": [
+      true,
+      "Skin, near-black hair, teal kurta, orange piping, gold studs, and bindi match REF."
+     ],
+     "S3": [
+      true,
+      "Soft dimensional shading and rounded facial modeling are retained."
+     ],
+     "E1": [
+      true,
+      "Both open eyes have clear catchlights."
+     ],
+     "E2": [
+      true,
+      "Eyelids wrap the eyes convincingly and the lash lines are smooth and tapered."
+     ],
+     "M1": [
+      true,
+      "The lips retain subtle soft volume, though less appealing than in REF."
+     ],
+     "M2": [
+      true,
+      "No teeth are visible."
+     ],
+     "score": 4,
+     "defects": [
+      "The neutral mouth is flatter and more rigid than REF, reducing the soft, expressive appeal.",
+      "The subdued expression feels less warm and engaging than the approved character."
+     ]
+    }
+   },
+   "usage": {
+    "completion_tokens": 375,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 112,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 9,
+     "engine_ttft_ms": 313,
+     "engine_ttlt_ms": 3870,
+     "pre_inference_ms": 100,
+     "service_tbt_ms": 9,
+     "service_ttft_ms": 782,
+     "service_ttlt_ms": 4322,
+     "user_visible_ttft_ms": 682
+    },
+    "prompt_tokens": 537,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 912
+   }
+  },
+  {
+   "id": "rest",
+   "size": 1024,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same character with matching facial design, hair, jewellery and soft 3D style."
+     ],
+     "I2": [
+      true,
+      "Polished dimensional rendering; it does not resemble flat clip-art or a cut-out puppet."
+     ],
+     "I3": [
+      true,
+      "Eyes are lively and the mouth and facial textures are clean and undistorted."
+     ],
+     "S1": [
+      true,
+      "No obvious seams, halos, holes or cut edges are visible."
+     ],
+     "S2": [
+      true,
+      "Visible skin, near-black hair, gold studs and bindi match; the cropped frame does not show the kurta or piping."
+     ],
+     "S3": [
+      true,
+      "Soft volumetric shading remains consistent across the face and hair."
+     ],
+     "E1": [
+      true,
+      "A clear white catchlight is visible in each eye."
+     ],
+     "E2": [
+      true,
+      "Eyelids follow the eye forms and the black lash lines are smooth and tapered."
+     ],
+     "M1": [
+      true,
+      "The lips retain soft rounded volume and clean shading."
+     ],
+     "M2": [
+      true,
+      "No teeth are shown."
+     ],
+     "score": 4,
+     "defects": [
+      "Over-tight crop removes the neck and teal/orange costume identity cues.",
+      "The right hair tendril and earring overlap feels slightly cramped and less clean than the reference."
+     ]
+    }
+   },
+   "usage": {
+    "completion_tokens": 453,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 187,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 533,
+     "engine_ttlt_ms": 5198,
+     "pre_inference_ms": 427,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 1536,
+     "service_ttlt_ms": 6195,
+     "user_visible_ttft_ms": 1109
+    },
+    "prompt_tokens": 1885,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 2338
+   }
+  },
+  {
+   "id": "sanity-ref-ref",
+   "size": 1024,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Same character, consistent soft 3D Memoji style"
+     ],
+     "I2": [
+      true,
+      "Polished volumetric render, clearly premium app quality"
+     ],
+     "I3": [
+      true,
+      "Eyes alive with catchlights, mouth natural and unsmeared"
+     ],
+     "S1": [
+      true,
+      "Perfectly clean render, no seams, halos or cut edges"
+     ],
+     "S2": [
+      true,
+      "All colors match reference exactly"
+     ],
+     "S3": [
+      true,
+      "Soft Memoji shading fully preserved on skin and hair"
+     ],
+     "E1": [
+      true,
+      "Clear catchlights visible in both eyes"
+     ],
+     "E2": [
+      true,
+      "Eyelids wrap correctly, lash line smooth and tapered"
+     ],
+     "M1": [
+      false,
+      "Lips noticeably flatter, reduced soft volume vs REF"
+     ],
+     "M2": [
+      true,
+      "No teeth showing"
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "Flatter lips lacking the reference's soft volume",
+     "Mouth curvature too neutral, loses REF's warm smile character"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 1630,
+    "completion_tokens": 187,
+    "total_tokens": 4118,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 970,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 1250
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 2301,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "rest",
+   "size": 256,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same character with matching facial features, hair, bindi, earrings, and soft 3D style."
+     ],
+     "I2": [
+      true,
+      "Polished, cohesive 3D rendering with no flat-vector or cut-out appearance."
+     ],
+     "I3": [
+      true,
+      "Eyes are lively, the mouth is cleanly formed, and no textures appear warped or smeared."
+     ],
+     "S1": [
+      true,
+      "No visible seams, halos, holes, or cut edges."
+     ],
+     "S2": [
+      false,
+      "Visible skin, hair, studs, and bindi match, but the crop removes the teal kurta and orange piping, so the full palette is not preserved on-screen."
+     ],
+     "S3": [
+      true,
+      "Soft facial gradients, rounded hair, and dimensional features retain the Memoji-style shading."
+     ],
+     "E1": [
+      true,
+      "A clear catchlight is visible in each open eye."
+     ],
+     "E2": [
+      true,
+      "The eyelids wrap the eyes properly and the lash lines are smooth and tapered."
+     ],
+     "M1": [
+      true,
+      "The lips have soft, rounded volume and clean shading."
+     ],
+     "M2": [
+      true,
+      "No teeth are shown."
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "The framing is too tight and crops out the character's teal-and-orange costume, weakening identity continuity.",
+     "The enlarged face and eyes shift the proportions slightly toward a more generic Memoji look than the reference."
+    ]
+   },
+   "usage": {
+    "completion_tokens": 592,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 301,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 363,
+     "engine_ttlt_ms": 6165,
+     "pre_inference_ms": 118,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 943,
+     "service_ttlt_ms": 6719,
+     "user_visible_ttft_ms": 826
+    },
+    "prompt_tokens": 537,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1129
+   }
+  },
+  {
+   "id": "sanity-ref-ref",
+   "size": 256,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "same character and soft 3D Memoji style"
+     ],
+     "I2": [
+      true,
+      "polished 3D render, clearly app-quality"
+     ],
+     "I3": [
+      true,
+      "eyes alive with catchlights, mouth clean"
+     ],
+     "S1": [
+      true,
+      "clean render, no seams/halos/cut edges"
+     ],
+     "S2": [
+      true,
+      "all colors and details match REF"
+     ],
+     "S3": [
+      true,
+      "soft rounded Memoji shading preserved"
+     ],
+     "E1": [
+      true,
+      "catchlights visible in both eyes"
+     ],
+     "E2": [
+      true,
+      "eyelids wrap correctly, lash line smooth"
+     ],
+     "M1": [
+      false,
+      "lips are flat and lack soft pillowy volume"
+     ],
+     "M2": [
+      true,
+      "no teeth showing"
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "lips lack soft Memoji volume",
+     "mouth shape too flat/neutral, loses character warmth"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 508,
+    "completion_tokens": 169,
+    "total_tokens": 3651,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 458,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 128
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 2974,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "rest",
+   "size": 1024,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "exact same character and soft 3D Memoji style"
+     ],
+     "I2": [
+      true,
+      "polished volumetric render, clearly premium app quality"
+     ],
+     "I3": [
+      true,
+      "lively catchlit eyes, natural smile, no warping"
+     ],
+     "S1": [
+      true,
+      "clean render, no seams, halos or cut edges"
+     ],
+     "S2": [
+      true,
+      "skin, hair, teal, orange piping, gold, bindi all match"
+     ],
+     "S3": [
+      true,
+      "soft Memoji shading fully preserved"
+     ],
+     "E1": [
+      true,
+      "clear catchlights in both eyes"
+     ],
+     "E2": [
+      true,
+      "eyelids wrap cleanly, lash line smooth and tapered"
+     ],
+     "M1": [
+      true,
+      "lips retain soft rounded volume"
+     ],
+     "M2": [
+      true,
+      "no teeth shown"
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "cheek shading slightly flatter than REF",
+     "lower lip highlight marginally too crisp"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 1630,
+    "completion_tokens": 226,
+    "total_tokens": 5161,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 970,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 1250
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 3305,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "talk_aa",
+   "size": 1024,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same teacher character with matching facial design, hair, bindi, earrings, and soft 3D style."
+     ],
+     "I2": [
+      true,
+      "The rendering is polished and dimensional, with no paper-cutout or cheap vector appearance."
+     ],
+     "I3": [
+      true,
+      "Eyes remain lively and facial textures are clean; the open-mouth expression is slightly stiff but not smeared or warped."
+     ],
+     "S1": [
+      true,
+      "No obvious halos, holes, cut edges, or compositing seams are visible."
+     ],
+     "S2": [
+      true,
+      "The visible skin, near-black hair, bindi, and gold studs match REF; the kurta and piping are outside the crop."
+     ],
+     "S3": [
+      true,
+      "Soft gradients, rounded forms, and Memoji-style shading are retained."
+     ],
+     "E1": [
+      true,
+      "A clear white catchlight is visible in each open eye."
+     ],
+     "E2": [
+      true,
+      "The eyelids follow the eyeballs cleanly and the lash lines taper smoothly."
+     ],
+     "M1": [
+      true,
+      "The lips have rounded volume and soft shading."
+     ],
+     "M2": [
+      false,
+      "The visible teeth form a slightly lumpy, segmented strip rather than one clean, smooth curved row."
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "The tooth row is uneven and segmented, weakening the premium finish.",
+     "The surprised mouth shape is slightly stiff and less elegantly sculpted than the reference smile."
+    ]
+   },
+   "usage": {
+    "completion_tokens": 687,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 394,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 506,
+     "engine_ttlt_ms": 7632,
+     "pre_inference_ms": 356,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 1393,
+     "service_ttlt_ms": 8466,
+     "user_visible_ttft_ms": 1036
+    },
+    "prompt_tokens": 1885,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 2572
+   }
+  },
+  {
+   "id": "rest",
+   "size": 256,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "same character and Memoji soft 3D style"
+     ],
+     "I2": [
+      true,
+      "polished 3D look suitable for premium app"
+     ],
+     "I3": [
+      true,
+      "no dead eyes, smeared mouth or warping"
+     ],
+     "S1": [
+      true,
+      "clean with no visible seams or cut edges"
+     ],
+     "S2": [
+      true,
+      "colors match REF closely"
+     ],
+     "S3": [
+      false,
+      "shading is less soft and more flattened"
+     ],
+     "E1": [
+      true,
+      "catchlights present in both eyes"
+     ],
+     "E2": [
+      true,
+      "eyelids wrap eyes with smooth tapered lashes"
+     ],
+     "M1": [
+      false,
+      "lips appear flat without soft volume"
+     ],
+     "M2": [
+      true,
+      "no teeth showing"
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "flattened Memoji shading",
+     "lips lack soft volume"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 508,
+    "completion_tokens": 206,
+    "total_tokens": 3968,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 394,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 128
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 3254,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "talk_aa",
+   "size": 256,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same character, with matching hair, face, bindi, earrings and soft 3D styling."
+     ],
+     "I2": [
+      true,
+      "Polished, dimensional and app-ready; it does not resemble flat clip-art or a cut-out puppet."
+     ],
+     "I3": [
+      true,
+      "Eyes are lively and the open mouth remains clean, stable and natural."
+     ],
+     "S1": [
+      true,
+      "No visible seams, halos, holes or cut edges."
+     ],
+     "S2": [
+      true,
+      "Visible skin, near-black hair, gold studs and bindi match; the clothing is outside the crop."
+     ],
+     "S3": [
+      true,
+      "Soft gradients, rounded forms and Memoji-style shading are preserved."
+     ],
+     "E1": [
+      true,
+      "A clear catchlight is visible in each open eye."
+     ],
+     "E2": [
+      true,
+      "Eyelids wrap the eyeballs convincingly and the lash lines are smooth and tapered."
+     ],
+     "M1": [
+      true,
+      "The lips have rounded edges and soft volume."
+     ],
+     "M2": [
+      true,
+      "No teeth are visible."
+     ],
+     "score": 4,
+     "defects": [
+      "The eyebrows are noticeably thicker and more block-like than REF, slightly weakening character consistency.",
+      "The open mouth is a little generic and less delicately modelled than the approved smile."
+     ]
+    }
+   },
+   "usage": {
+    "completion_tokens": 646,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 372,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 309,
+     "engine_ttlt_ms": 7461,
+     "pre_inference_ms": 97,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 888,
+     "service_ttlt_ms": 8044,
+     "user_visible_ttft_ms": 790
+    },
+    "prompt_tokens": 537,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1183
+   }
+  },
+  {
+   "id": "talk_aa",
+   "size": 1024,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Same character, consistent Memoji soft 3D style"
+     ],
+     "I2": [
+      true,
+      "Polished render, clearly premium app quality"
+     ],
+     "I3": [
+      true,
+      "Eyes alive with catchlights, mouth not smeared"
+     ],
+     "S1": [
+      true,
+      "Clean render with no seams, halos or cut edges"
+     ],
+     "S2": [
+      true,
+      "Skin, hair, bindi, gold studs and teal/orange clothing match"
+     ],
+     "S3": [
+      true,
+      "Soft rounded Memoji shading fully preserved"
+     ],
+     "E1": [
+      true,
+      "Catchlights clearly visible in both eyes"
+     ],
+     "E2": [
+      true,
+      "Eyelids wrap eyeball, lash line smooth and tapered"
+     ],
+     "M1": [
+      false,
+      "Lips look flattened and lack plush volume"
+     ],
+     "M2": [
+      false,
+      "Upper teeth read as flat white cut-out, not smooth curved row"
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "lips lack soft volume",
+     "teeth appear as flat white slab"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 1630,
+    "completion_tokens": 187,
+    "total_tokens": 5129,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 970,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 1250
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 3312,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "delight",
+   "size": 1024,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly recognisable as the same teacher character in the same soft 3D cartoon style."
+     ],
+     "I2": [
+      false,
+      "The jagged left brow/lash artifacts and crude mouth detailing fall below premium app polish."
+     ],
+     "I3": [
+      true,
+      "Eyes remain lively and the face and mouth are not visibly stretched, smeared, or texture-warped."
+     ],
+     "S1": [
+      false,
+      "Visible jagged cut-like fragments appear around the left eyebrow and outer lash, with rough edging near the earrings."
+     ],
+     "S2": [
+      true,
+      "Visible skin, near-black hair, bindi, and gold studs match REF; the cropped-out kurta and piping cannot be assessed."
+     ],
+     "S3": [
+      true,
+      "The face and hair retain soft dimensional shading rather than appearing flat."
+     ],
+     "E1": [
+      true,
+      "A clear white catchlight is visible in each open eye."
+     ],
+     "E2": [
+      false,
+      "The left outer lash line is ragged and fragmented instead of smoothly tapered."
+     ],
+     "M1": [
+      true,
+      "The lips retain rounded volume and soft shading."
+     ],
+     "M2": [
+      false,
+      "The teeth form a lumpy, individually scalloped edge rather than one clean, smooth curved row."
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "Jagged cut-like artifacts around the left eyebrow and lash line",
+     "Uneven scalloped teeth that look crude rather than like a smooth curved row"
+    ]
+   },
+   "usage": {
+    "completion_tokens": 559,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 270,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 508,
+     "engine_ttlt_ms": 6076,
+     "pre_inference_ms": 129,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 1066,
+     "service_ttlt_ms": 6609,
+     "user_visible_ttft_ms": 937
+    },
+    "prompt_tokens": 1885,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 2444
+   }
+  },
+  {
+   "id": "talk_aa",
+   "size": 256,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Same character and soft 3D Memoji aesthetic"
+     ],
+     "I2": [
+      true,
+      "Polished volumetric render, clearly premium app quality"
+     ],
+     "I3": [
+      true,
+      "Eyes lively, mouth deformation clean, no uncanny artifacts"
+     ],
+     "S1": [
+      true,
+      "Clean 3D render with zero visible seams, halos or cut edges"
+     ],
+     "S2": [
+      true,
+      "Skin, hair, bindi, gold earrings and teal/orange clothing match"
+     ],
+     "S3": [
+      true,
+      "Soft Memoji-style shading fully preserved"
+     ],
+     "E1": [
+      true,
+      "Strong catchlights visible in both eyes"
+     ],
+     "E2": [
+      true,
+      "Eyelids wrap correctly, lash line smooth and tapered"
+     ],
+     "M1": [
+      true,
+      "Lips retain soft rounded volume"
+     ],
+     "M2": [
+      true,
+      "No teeth visible"
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "Mouth interior too flat and graphic, lacks soft 3D gradient of REF",
+     "Slightly harsher edge definition on lower lip and hair strands vs REF's softer falloff"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 508,
+    "completion_tokens": 204,
+    "total_tokens": 2956,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 330,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 128
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 2244,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "thinking",
+   "size": 1024,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly recognisable as the same character with matching facial design, hair, jewellery and soft 3D style."
+     ],
+     "I2": [
+      false,
+      "The render is broadly polished, but conspicuous cut-edge and line artifacts make it unfit for a premium app."
+     ],
+     "I3": [
+      true,
+      "The eyes remain lively and the mouth and facial textures are not visibly stretched or smeared."
+     ],
+     "S1": [
+      false,
+      "A dark jagged seam runs along the right cheek, hair strand and bun, with additional rough artifacts near the left eyebrow and eye."
+     ],
+     "S2": [
+      false,
+      "Skin, hair, bindi and studs are close, but the teal kurta and orange piping are cropped out and therefore not preserved in this frame."
+     ],
+     "S3": [
+      true,
+      "The face and hair retain rounded forms, soft gradients and Memoji-style dimensional shading."
+     ],
+     "E1": [
+      true,
+      "Both open eyes have clear white catchlights."
+     ],
+     "E2": [
+      false,
+      "The eyelids wrap the eyes, but the left lash line and outer corner are jagged and untapered."
+     ],
+     "M1": [
+      true,
+      "The lips have soft modelling, rounded volume and appropriate shading."
+     ],
+     "M2": [
+      true,
+      "No teeth are visible."
+     ],
+     "score": 3,
+     "defects": [
+      "Prominent jagged cut seam along the right cheek, hair strand and bun",
+      "Broken, scratchy lash and eyebrow edges around the left eye"
+     ]
+    }
+   },
+   "usage": {
+    "completion_tokens": 534,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 234,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 310,
+     "engine_ttlt_ms": 6105,
+     "pre_inference_ms": 117,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 655,
+     "service_ttlt_ms": 6445,
+     "user_visible_ttft_ms": 538
+    },
+    "prompt_tokens": 1885,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 2419
+   }
+  },
+  {
+   "id": "delight",
+   "size": 256,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "same character and soft 3D Memoji style"
+     ],
+     "I2": [
+      true,
+      "polished volumetric render, app-ready quality"
+     ],
+     "I3": [
+      true,
+      "lively eyes, natural mouth shape, no warping"
+     ],
+     "S1": [
+      true,
+      "clean render, no seams, halos or cut edges"
+     ],
+     "S2": [
+      true,
+      "colors match REF across skin, hair, teal, orange piping, gold, bindi"
+     ],
+     "S3": [
+      true,
+      "soft rounded Memoji shading fully preserved"
+     ],
+     "E1": [
+      true,
+      "distinct catchlights visible in both eyes"
+     ],
+     "E2": [
+      true,
+      "eyelids wrap correctly, lash line smooth and tapered"
+     ],
+     "M1": [
+      true,
+      "lips retain soft volume"
+     ],
+     "M2": [
+      true,
+      "teeth form one clean curved row"
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "cheek shading slightly flatter/harder than REF",
+     "lower lip volume marginally reduced, less plush"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 508,
+    "completion_tokens": 185,
+    "total_tokens": 3298,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 330,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 128
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 2605,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "delight",
+   "size": 1024,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "same character, consistent Memoji soft 3D style"
+     ],
+     "I2": [
+      true,
+      "polished 3D volume and finish, clearly premium app level"
+     ],
+     "I3": [
+      true,
+      "eyes alive with expression, mouth natural, no warping"
+     ],
+     "S1": [
+      true,
+      "clean render, no seams, halos or cut edges"
+     ],
+     "S2": [
+      true,
+      "skin, hair, bindi, gold studs and clothing colors match"
+     ],
+     "S3": [
+      true,
+      "soft volumetric Memoji shading fully preserved"
+     ],
+     "E1": [
+      true,
+      "strong catchlights visible in both open eyes"
+     ],
+     "E2": [
+      true,
+      "eyelids wrap correctly, lash lines smooth and tapered"
+     ],
+     "M1": [
+      true,
+      "lips retain soft rounded volume"
+     ],
+     "M2": [
+      true,
+      "teeth form one clean curved row inside lips"
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "Mouth corners slightly stretched vs REF smile",
+     "Cheek shading marginally flatter, loses some Memoji softness"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 1630,
+    "completion_tokens": 242,
+    "total_tokens": 5481,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 330,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 1250
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 3609,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "thinking",
+   "size": 256,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Recognisably the same character with matching hair, face, bindi, earrings, and soft 3D styling."
+     ],
+     "I2": [
+      true,
+      "Polished, dimensional app-quality rendering with no paper-cut-out or cheap vector appearance."
+     ],
+     "I3": [
+      true,
+      "Eyes and mouth look coherent; no obvious smearing, stretching, or warped texture."
+     ],
+     "S1": [
+      true,
+      "No visible compositing seams, halos, holes, or cut edges."
+     ],
+     "S2": [
+      false,
+      "Skin, hair, bindi, and studs are consistent, but the crop omits the teal kurta and orange piping, so the full palette match is not demonstrated."
+     ],
+     "S3": [
+      true,
+      "Soft gradients and rounded Memoji-style facial shading are retained."
+     ],
+     "E1": [
+      true,
+      "A clear catchlight is visible in each open eye."
+     ],
+     "E2": [
+      true,
+      "The eyelids wrap the eyes cleanly and the lash lines are smooth and tapered."
+     ],
+     "M1": [
+      true,
+      "The lips have subtle rounded volume and soft shading."
+     ],
+     "M2": [
+      true,
+      "No teeth are shown."
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "Facial proportions drift from REF: the face is longer and narrower, with noticeably larger, rounder eyes.",
+     "The tight crop removes the teal kurta and orange piping, weakening costume continuity and preventing full colour verification."
+    ]
+   },
+   "usage": {
+    "completion_tokens": 615,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 326,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 382,
+     "engine_ttlt_ms": 6537,
+     "pre_inference_ms": 110,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 866,
+     "service_ttlt_ms": 7015,
+     "user_visible_ttft_ms": 756
+    },
+    "prompt_tokens": 537,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1152
+   }
+  },
+  {
+   "id": "thinking",
+   "size": 1024,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "same character and consistent Memoji-style 3D aesthetic"
+     ],
+     "I2": [
+      true,
+      "polished render, clearly premium app quality"
+     ],
+     "I3": [
+      true,
+      "lively eyes with catchlights, no smearing or warping"
+     ],
+     "S1": [
+      true,
+      "clean render with no visible seams, halos or cut edges"
+     ],
+     "S2": [
+      true,
+      "skin, hair, bindi, gold studs and clothing colors match REF"
+     ],
+     "S3": [
+      true,
+      "soft volumetric Memoji shading is preserved"
+     ],
+     "E1": [
+      true,
+      "clear catchlights visible in both open eyes"
+     ],
+     "E2": [
+      false,
+      "lash line on right eye is blunt, not smoothly tapered"
+     ],
+     "M1": [
+      false,
+      "lips are flattened and lack the soft volume of REF"
+     ],
+     "M2": [
+      true,
+      "no teeth visible"
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "lips lack soft rounded volume",
+     "lash lines insufficiently smooth and tapered"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 1630,
+    "completion_tokens": 233,
+    "total_tokens": 4944,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 330,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 1250
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 3081,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "listening",
+   "size": 1024,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly recognisable as the same teacher, with matching face, hair, bindi, earrings and soft 3D styling."
+     ],
+     "I2": [
+      true,
+      "The rendering has polished dimensional form and does not read as flat vector art or a cut-out puppet."
+     ],
+     "I3": [
+      true,
+      "The eyes remain lively, the mouth is stable and volumetric, and the facial textures are not warped."
+     ],
+     "S1": [
+      false,
+      "Small jagged dark overlaps around the viewer-left eyebrow and minor rough artifacts at the eye corners resemble compositing edges."
+     ],
+     "S2": [
+      false,
+      "Visible skin, hair, bindi and studs match, but the teal kurta and orange piping are cropped out and cannot be verified."
+     ],
+     "S3": [
+      true,
+      "Soft gradients, rounded forms and dimensional lighting are retained across the face and hair."
+     ],
+     "E1": [
+      true,
+      "Both open eyes have clear white catchlights."
+     ],
+     "E2": [
+      true,
+      "The eyelids follow the eyeballs and the lash lines are generally smooth and tapered, despite minor corner artifacts."
+     ],
+     "M1": [
+      true,
+      "The lips have soft rounded volume and natural shading."
+     ],
+     "M2": [
+      true,
+      "No teeth are visible."
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "Jagged eyebrow overlap and small eye-corner edge artifacts",
+     "Slight identity drift toward a broader, more symmetrical face than REF"
+    ]
+   },
+   "usage": {
+    "completion_tokens": 638,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 350,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 12,
+     "engine_ttft_ms": 295,
+     "engine_ttlt_ms": 7649,
+     "pre_inference_ms": 129,
+     "service_tbt_ms": 12,
+     "service_ttft_ms": 553,
+     "service_ttlt_ms": 7902,
+     "user_visible_ttft_ms": 424
+    },
+    "prompt_tokens": 1885,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 2523
+   }
+  },
+  {
+   "id": "thinking",
+   "size": 256,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "same character and soft 3D Memoji style"
+     ],
+     "I2": [
+      true,
+      "polished volumetric 3D, no paper/flat/cheap look"
+     ],
+     "I3": [
+      true,
+      "lively eyes with catchlights, natural mouth"
+     ],
+     "S1": [
+      true,
+      "clean render, no seams, halos or cut edges"
+     ],
+     "S2": [
+      true,
+      "skin, near-black hair, teal, gold studs and bindi match"
+     ],
+     "S3": [
+      true,
+      "soft rounded Memoji shading preserved"
+     ],
+     "E1": [
+      true,
+      "clear catchlights visible in both eyes"
+     ],
+     "E2": [
+      true,
+      "eyelids wrap cleanly, lash line smooth and tapered"
+     ],
+     "M1": [
+      true,
+      "lips retain soft volume"
+     ],
+     "M2": [
+      true,
+      "no teeth showing"
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "Slightly flatter cheek shading and reduced hair volume",
+     "Mouth smile less sculptural than REF's characteristic pout"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 508,
+    "completion_tokens": 186,
+    "total_tokens": 3464,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 330,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 128
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 2770,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "listening",
+   "size": 1024,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "same character with consistent Memoji-style soft 3D look"
+     ],
+     "I2": [
+      true,
+      "polished 3D render that reads as premium app quality"
+     ],
+     "I3": [
+      true,
+      "eyes are alive, mouth is natural, no warping or deadness"
+     ],
+     "S1": [
+      true,
+      "clean render with no visible seams, halos or cut edges"
+     ],
+     "S2": [
+      true,
+      "skin, near-black hair, bindi, gold studs and clothing accents match"
+     ],
+     "S3": [
+      false,
+      "shading is slightly compressed and less volumetric than REF"
+     ],
+     "E1": [
+      true,
+      "catchlights present in both eyes"
+     ],
+     "E2": [
+      true,
+      "eyelids wrap correctly, lash line is smooth"
+     ],
+     "M1": [
+      false,
+      "lips are flatter and lack the plush volume of REF"
+     ],
+     "M2": [
+      true,
+      "no teeth showing"
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "flattened Memoji shading",
+     "lips lacking soft volume"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 1630,
+    "completion_tokens": 188,
+    "total_tokens": 6356,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 330,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 1250
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 4538,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "yaw_p20",
+   "size": 1024,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same character, with matching facial design, hair, accessories and soft 3D style."
+     ],
+     "I2": [
+      true,
+      "Polished dimensional rendering; it does not resemble flat clip-art or a cut-out puppet."
+     ],
+     "I3": [
+      true,
+      "Eyes remain lively and the mouth and facial textures are clean and undistorted."
+     ],
+     "S1": [
+      false,
+      "A small jagged light seam/artifact is visible beneath the chin at the neck edge."
+     ],
+     "S2": [
+      false,
+      "Visible skin, hair, bindi and studs match, but the teal kurta and orange piping are cropped out and cannot be matched."
+     ],
+     "S3": [
+      true,
+      "Soft rounded shading and material depth are retained across the face and hair."
+     ],
+     "E1": [
+      true,
+      "Both open eyes have clear white catchlights."
+     ],
+     "E2": [
+      true,
+      "The eyelids follow the eye forms and the black lash lines are smooth and tapered."
+     ],
+     "M1": [
+      true,
+      "The lips have soft, rounded volume and natural shading."
+     ],
+     "M2": [
+      true,
+      "No teeth are shown."
+     ],
+     "score": 4,
+     "defects": [
+      "Jagged seam/artifact beneath the chin at the neck edge",
+      "Crop removes the teal kurta and orange piping, weakening full-character continuity"
+     ]
+    }
+   },
+   "usage": {
+    "completion_tokens": 498,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 230,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 493,
+     "engine_ttlt_ms": 5978,
+     "pre_inference_ms": 98,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 940,
+     "service_ttlt_ms": 6420,
+     "user_visible_ttft_ms": 842
+    },
+    "prompt_tokens": 1885,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 2383
+   }
+  },
+  {
+   "id": "listening",
+   "size": 256,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "same character and Memoji soft 3D style"
+     ],
+     "I2": [
+      true,
+      "polished premium 3D render, no puppet/clip-art look"
+     ],
+     "I3": [
+      true,
+      "lively eyes and natural mouth, no warping or deadness"
+     ],
+     "S1": [
+      true,
+      "clean render with no seams, halos or cut edges"
+     ],
+     "S2": [
+      true,
+      "skin, hair, teal, bindi and gold match REF"
+     ],
+     "S3": [
+      false,
+      "shading slightly firmer and less softly blended than REF"
+     ],
+     "E1": [
+      true,
+      "clear catchlights in both eyes"
+     ],
+     "E2": [
+      true,
+      "eyelids wrap cleanly, lashes smooth and tapered"
+     ],
+     "M1": [
+      false,
+      "lips lack the soft pillowy volume of REF"
+     ],
+     "M2": [
+      true,
+      "mouth closed, no teeth"
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "lips lack soft volume",
+     "shading not soft enough for Memoji style"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 508,
+    "completion_tokens": 238,
+    "total_tokens": 5423,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 330,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 128
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 4677,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "yaw_p20",
+   "size": 256,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same character, with matching face, hair, bindi, earrings and soft 3D style."
+     ],
+     "I2": [
+      true,
+      "Polished, dimensional rendering with no flat cut-out or cheap-game appearance."
+     ],
+     "I3": [
+      true,
+      "Eyes and mouth remain coherent and appealing without smearing or texture warping."
+     ],
+     "S1": [
+      true,
+      "No visible seams, halos, holes or cut edges."
+     ],
+     "S2": [
+      false,
+      "Visible skin, hair, bindi and studs match, but the teal kurta and orange piping are cropped out and cannot be matched."
+     ],
+     "S3": [
+      true,
+      "Soft gradients and rounded Memoji-style shading are preserved."
+     ],
+     "E1": [
+      true,
+      "A clear catchlight is present in each open eye."
+     ],
+     "E2": [
+      true,
+      "Eyelids wrap the eyeballs convincingly and the lash lines are smooth and tapered."
+     ],
+     "M1": [
+      true,
+      "The lips have soft, rounded volume."
+     ],
+     "M2": [
+      true,
+      "No teeth are visible."
+     ],
+     "score": 4,
+     "defects": [
+      "The crop removes the teal kurta and orange piping, weakening full-character continuity.",
+      "The far-side eye feels slightly oversized and frontal for the turned head, reducing perspective fidelity."
+     ]
+    }
+   },
+   "usage": {
+    "completion_tokens": 471,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 207,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 336,
+     "engine_ttlt_ms": 5270,
+     "pre_inference_ms": 87,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 898,
+     "service_ttlt_ms": 5826,
+     "user_visible_ttft_ms": 811
+    },
+    "prompt_tokens": 537,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1008
+   }
+  },
+  {
+   "id": "delight",
+   "size": 256,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same character with matching soft 3D Memoji-style modelling, hair, facial features and accessories."
+     ],
+     "I2": [
+      true,
+      "Polished dimensional rendering with no paper-cutout, flat-vector or cheap-game appearance."
+     ],
+     "I3": [
+      true,
+      "Eyes remain lively and the open smile is clean, coherent and free of smearing or warping."
+     ],
+     "S1": [
+      true,
+      "No visible compositing seams, halos, holes or cut edges."
+     ],
+     "S2": [
+      false,
+      "Visible skin, hair, bindi and gold studs match, but the crop completely hides the teal kurta and orange piping."
+     ],
+     "S3": [
+      true,
+      "Soft gradients, rounded forms and dimensional facial shading are preserved."
+     ],
+     "E1": [
+      true,
+      "A clear catchlight is present in each open eye."
+     ],
+     "E2": [
+      true,
+      "The eyelids wrap the eyeballs convincingly and the lash lines are smooth and tapered."
+     ],
+     "M1": [
+      true,
+      "The lips retain rounded, softly shaded volume."
+     ],
+     "M2": [
+      true,
+      "The visible teeth form one clean, smooth curved upper row within the lips."
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "The framing removes the entire kurta and orange piping, weakening the character's full visual identity.",
+     "The broader, more generic open smile causes slight facial-identity drift from the reference."
+    ]
+   },
+   "usage": {
+    "completion_tokens": 722,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 439,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 189,
+     "engine_ttlt_ms": 8481,
+     "pre_inference_ms": 85,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 512,
+     "service_ttlt_ms": 8800,
+     "user_visible_ttft_ms": 427
+    },
+    "prompt_tokens": 537,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1259
+   }
+  },
+  {
+   "id": "yaw_p20",
+   "size": 1024,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "same character with consistent Memoji 3D cartoon style"
+     ],
+     "I2": [
+      true,
+      "polished soft 3D render, no paper puppet or cheap game feel"
+     ],
+     "I3": [
+      false,
+      "mouth looks slightly stretched and less natural than REF"
+     ],
+     "S1": [
+      true,
+      "clean render with no visible seams, halos or cut edges"
+     ],
+     "S2": [
+      true,
+      "skin, hair, bindi, gold studs and clothing colors match"
+     ],
+     "S3": [
+      true,
+      "soft rounded Memoji shading is preserved"
+     ],
+     "E1": [
+      true,
+      "catchlights clearly visible in both open eyes"
+     ],
+     "E2": [
+      true,
+      "eyelids wrap eyes with smooth tapered lash line"
+     ],
+     "M1": [
+      false,
+      "lips appear flatter and lack soft volume"
+     ],
+     "M2": [
+      true,
+      "no teeth showing"
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "lips lack soft volume",
+     "slightly stretched/unnatural mouth"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 1630,
+    "completion_tokens": 230,
+    "total_tokens": 4819,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 970,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 1250
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 2959,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "blink_mid",
+   "size": 1024,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same character, with matching facial proportions, hairstyle, bindi, earrings and soft 3D style."
+     ],
+     "I2": [
+      true,
+      "The rendering is polished and dimensional, without a flat-vector or paper-puppet appearance."
+     ],
+     "I3": [
+      true,
+      "The half-lidded expression reads intentionally and the face, mouth and textures are not warped or smeared."
+     ],
+     "S1": [
+      true,
+      "No obvious seams, halos, holes or cut edges are visible."
+     ],
+     "S2": [
+      true,
+      "Visible skin, near-black hair, gold studs and bindi match REF; the outfit is outside the crop."
+     ],
+     "S3": [
+      true,
+      "Soft gradients, rounded forms and Memoji-like shading are retained."
+     ],
+     "E1": [
+      false,
+      "Neither open eye has a visible catchlight, making the gaze less lively."
+     ],
+     "E2": [
+      false,
+      "The upper lash lines are excessively thick and somewhat blunt, weakening the smooth wrapped-lid construction."
+     ],
+     "M1": [
+      true,
+      "The lips retain soft rounded volume and clean shading."
+     ],
+     "M2": [
+      true,
+      "No teeth are shown."
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "Missing catchlights make both eyes look dull.",
+     "Upper lashes are too heavy and blocky compared with REF."
+    ]
+   },
+   "usage": {
+    "completion_tokens": 734,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 469,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 607,
+     "engine_ttlt_ms": 8791,
+     "pre_inference_ms": 102,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 1213,
+     "service_ttlt_ms": 9391,
+     "user_visible_ttft_ms": 1110
+    },
+    "prompt_tokens": 1885,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 2619
+   }
+  },
+  {
+   "id": "yaw_p20",
+   "size": 256,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Exact same Memoji-style teacher character"
+     ],
+     "I2": [
+      true,
+      "Polished volumetric 3D, clearly premium app quality"
+     ],
+     "I3": [
+      true,
+      "Lively eyes and natural smile, no uncanny artifacts"
+     ],
+     "S1": [
+      true,
+      "Perfectly clean render, no seams/haloes/cut edges"
+     ],
+     "S2": [
+      true,
+      "Skin, near-black hair, teal kurta, gold studs and bindi all match"
+     ],
+     "S3": [
+      true,
+      "Soft Memoji-style shading fully preserved"
+     ],
+     "E1": [
+      true,
+      "Strong catchlights visible in both eyes"
+     ],
+     "E2": [
+      true,
+      "Eyelids wrap correctly, lash lines smooth and tapered"
+     ],
+     "M1": [
+      true,
+      "Lips retain soft rounded volume"
+     ],
+     "M2": [
+      true,
+      "No teeth visible"
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "Slightly heavier black eyeliner than REF",
+     "Left cheek shading a touch flatter/harder than REF's soft falloff"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 508,
+    "completion_tokens": 189,
+    "total_tokens": 3172,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 394,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 128
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 2475,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "blink_mid",
+   "size": 256,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same character, with matching facial proportions, hair, bindi and soft 3D style."
+     ],
+     "I2": [
+      true,
+      "Polished dimensional rendering; it does not look like flat clip-art or a cut-out puppet."
+     ],
+     "I3": [
+      true,
+      "The half-lidded expression remains natural, with clean eyes, mouth and facial textures."
+     ],
+     "S1": [
+      true,
+      "No visible compositing seams, halos, holes or cut edges."
+     ],
+     "S2": [
+      true,
+      "Visible skin, near-black hair, gold studs and bindi match; the outfit is outside the crop."
+     ],
+     "S3": [
+      true,
+      "Soft gradients and rounded Memoji-style shading are retained."
+     ],
+     "E1": [
+      true,
+      "A small catchlight is visible in each open eye."
+     ],
+     "E2": [
+      true,
+      "The lids wrap convincingly around the eyes and the lash lines are smooth and tapered."
+     ],
+     "M1": [
+      true,
+      "The lips have soft, rounded volume and clean shading."
+     ],
+     "M2": [
+      true,
+      "No teeth are visible."
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "The heavy black lash treatment is slightly harsher and more graphic than REF.",
+     "The tight crop removes the teal kurta and orange piping, weakening full-character continuity."
+    ]
+   },
+   "usage": {
+    "completion_tokens": 612,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 348,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 339,
+     "engine_ttlt_ms": 6528,
+     "pre_inference_ms": 78,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 791,
+     "service_ttlt_ms": 6963,
+     "user_visible_ttft_ms": 713
+    },
+    "prompt_tokens": 537,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1149
+   }
+  },
+  {
+   "id": "tongue_RETRO",
+   "size": 1024,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly recognisable as the same teacher, with matching Memoji-style modelling, hair design, facial features and accessories."
+     ],
+     "I2": [
+      true,
+      "The rendering is dimensional and polished, with no paper-cutout or flat-vector appearance."
+     ],
+     "I3": [
+      false,
+      "The segmented teeth and oddly folded tongue make the open mouth look slightly uncanny."
+     ],
+     "S1": [
+      true,
+      "No visible compositing seams, halos, holes or cut edges."
+     ],
+     "S2": [
+      false,
+      "Visible skin, hair, bindi and studs match, but the teal kurta and orange piping are cropped out and cannot be matched."
+     ],
+     "S3": [
+      true,
+      "Soft 3D shading and rounded material volume are retained."
+     ],
+     "E1": [
+      true,
+      "A clear catchlight is visible in each open eye."
+     ],
+     "E2": [
+      true,
+      "The eyelids wrap the eyeballs convincingly and the lash lines are smooth and tapered."
+     ],
+     "M1": [
+      true,
+      "The lips have soft rounded volume and coherent shading."
+     ],
+     "M2": [
+      false,
+      "The teeth are visibly divided into individual bumps rather than forming one smooth curved row."
+     ],
+     "score": 3,
+     "defects": [
+      "Uncanny mouth interior with segmented teeth and an awkward folded tongue",
+      "Costume is completely cropped out, preventing confirmation of the teal kurta and orange piping"
+     ]
+    }
+   },
+   "usage": {
+    "completion_tokens": 738,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 459,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 656,
+     "engine_ttlt_ms": 8665,
+     "pre_inference_ms": 97,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 1357,
+     "service_ttlt_ms": 9360,
+     "user_visible_ttft_ms": 1260
+    },
+    "prompt_tokens": 1885,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 2623
+   }
+  },
+  {
+   "id": "blink_mid",
+   "size": 1024,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "same character and Memoji-style soft 3D cartoon"
+     ],
+     "I2": [
+      true,
+      "polished 3D rendering, clearly premium app quality"
+     ],
+     "I3": [
+      false,
+      "half-closed eyes read as slightly flat and uncanny"
+     ],
+     "S1": [
+      true,
+      "clean render with no seams, halos or cut edges"
+     ],
+     "S2": [
+      true,
+      "all colors match REF exactly"
+     ],
+     "S3": [
+      true,
+      "soft rounded Memoji shading is preserved"
+     ],
+     "E1": [
+      true,
+      "catchlights visible in both partially-closed eyes"
+     ],
+     "E2": [
+      false,
+      "upper eyelids do not wrap the eyeball convincingly, lash line is blunt"
+     ],
+     "M1": [
+      true,
+      "lips retain soft volume"
+     ],
+     "M2": [
+      true,
+      "no teeth shown"
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "uncanny flatness in half-closed eyes",
+     "eyelids and lash line fail to wrap properly"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 1630,
+    "completion_tokens": 176,
+    "total_tokens": 5264,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 970,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 1250
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 3458,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "listening",
+   "size": 256,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same character, with matching facial design, hairstyle and soft 3D cartoon style."
+     ],
+     "I2": [
+      true,
+      "Polished, dimensional and app-quality; it does not read as a cut-out, flat vector or cheap game asset."
+     ],
+     "I3": [
+      true,
+      "Eyes remain lively and the face, mouth and textures are cleanly formed without smearing or warping."
+     ],
+     "S1": [
+      true,
+      "No visible seams, halos, holes or cut edges."
+     ],
+     "S2": [
+      true,
+      "Visible skin, near-black hair, gold studs and bindi match; the cropped frame does not show the kurta or piping."
+     ],
+     "S3": [
+      true,
+      "Soft gradients and rounded Memoji-style volume are preserved."
+     ],
+     "E1": [
+      true,
+      "A clear catchlight is visible in each open eye."
+     ],
+     "E2": [
+      true,
+      "The eyelids wrap convincingly around the eyes and the lash lines are smooth and tapered."
+     ],
+     "M1": [
+      true,
+      "The lips have soft, rounded volume and clean shading."
+     ],
+     "M2": [
+      true,
+      "No teeth are shown."
+     ],
+     "score": 4,
+     "defects": [
+      "Facial proportions drift slightly from REF: the face is rounder and the eyes are more widely spaced.",
+      "The hair cap is noticeably larger and more dominant than in REF, weakening exact character consistency."
+     ]
+    }
+   },
+   "usage": {
+    "completion_tokens": 639,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 358,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 12,
+     "engine_ttft_ms": 60234,
+     "engine_ttlt_ms": 67634,
+     "pre_inference_ms": 80,
+     "service_tbt_ms": 12,
+     "service_ttft_ms": 60437,
+     "service_ttlt_ms": 67833,
+     "user_visible_ttft_ms": 60357
+    },
+    "prompt_tokens": 537,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1176
+   }
+  },
+  {
+   "id": "blink_mid",
+   "size": 256,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Core character features, face shape, hair and soft 3D Memoji style match"
+     ],
+     "I2": [
+      true,
+      "Polished 3D render with volume and lighting suitable for premium app"
+     ],
+     "I3": [
+      true,
+      "Eyes are expressive with life, mouth is natural, no warping or smearing"
+     ],
+     "S1": [
+      true,
+      "Clean render with no seams, halos, holes or cut edges"
+     ],
+     "S2": [
+      false,
+      "Skin tone noticeably more orange/saturated than REF"
+     ],
+     "S3": [
+      true,
+      "Soft graduated Memoji shading and highlights are preserved"
+     ],
+     "E1": [
+      true,
+      "Clear catchlights visible in both open eyes"
+     ],
+     "E2": [
+      false,
+      "Lash line is thick, heavy and winged instead of smooth/tapered wrap"
+     ],
+     "M1": [
+      true,
+      "Lips retain soft rounded volume"
+     ],
+     "M2": [
+      true,
+      "No teeth visible"
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "thick winged eyeliner changes soft character design",
+     "skin tone mismatch"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 508,
+    "completion_tokens": 246,
+    "total_tokens": 4568,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 330,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 128
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 3814,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "tongue_RETRO",
+   "size": 256,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same character with matching soft 3D styling, hair, features and accessories."
+     ],
+     "I2": [
+      true,
+      "Polished dimensional rendering; it does not look like flat clip-art or a cut-out puppet."
+     ],
+     "I3": [
+      true,
+      "Eyes remain lively and facial textures are clean, with no obvious smearing or warping."
+     ],
+     "S1": [
+      true,
+      "No visible seams, halos, holes or cut edges."
+     ],
+     "S2": [
+      true,
+      "Visible skin, near-black hair, bindi and gold studs match; the kurta and piping are outside the crop."
+     ],
+     "S3": [
+      true,
+      "Soft gradients and rounded Memoji-style shading are retained."
+     ],
+     "E1": [
+      true,
+      "Both open eyes have clear catchlights."
+     ],
+     "E2": [
+      true,
+      "The eyelids wrap convincingly around the eyes and the lash lines are smooth."
+     ],
+     "M1": [
+      true,
+      "The lips have rounded form and soft shading."
+     ],
+     "M2": [
+      false,
+      "The exposed teeth read as slightly jagged and individually divided rather than one clean curved row."
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "The teeth are uneven and overly detailed, weakening the premium Memoji finish.",
+     "The face and eyes are slightly wider and more exaggerated than REF, causing minor identity drift."
+    ]
+   },
+   "usage": {
+    "completion_tokens": 618,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 348,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 12,
+     "engine_ttft_ms": 294,
+     "engine_ttlt_ms": 7902,
+     "pre_inference_ms": 98,
+     "service_tbt_ms": 12,
+     "service_ttft_ms": 759,
+     "service_ttlt_ms": 8363,
+     "user_visible_ttft_ms": 661
+    },
+    "prompt_tokens": 537,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1155
+   }
+  },
+  {
+   "id": "tongue_RETRO",
+   "size": 1024,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Same character, consistent Memoji soft 3D style"
+     ],
+     "I2": [
+      true,
+      "Polished 3D render, not paper puppet or cheap game"
+     ],
+     "I3": [
+      true,
+      "Eyes lively with catchlights, mouth not smeared"
+     ],
+     "S1": [
+      true,
+      "Clean render, no seams, halos or cut edges"
+     ],
+     "S2": [
+      true,
+      "Skin, hair, bindi, gold studs and teal match REF"
+     ],
+     "S3": [
+      true,
+      "Soft volumetric Memoji shading preserved"
+     ],
+     "E1": [
+      true,
+      "Clear catchlights visible in both open eyes"
+     ],
+     "E2": [
+      true,
+      "Eyelids wrap correctly, lash line smooth"
+     ],
+     "M1": [
+      false,
+      "Lips lack soft rounded volume of REF"
+     ],
+     "M2": [
+      false,
+      "Teeth not one smooth curved row"
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "lips lack soft volume",
+     "teeth not smooth/curved"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 1630,
+    "completion_tokens": 231,
+    "total_tokens": 4887,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 330,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 1250
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 3026,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "concern",
+   "size": 1024,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same character with matching facial design, hair, bindi, earrings and soft 3D style."
+     ],
+     "I2": [
+      false,
+      "The base render is strong, but visible clipping and rough eye-area edges keep it below polished premium-app quality."
+     ],
+     "I3": [
+      true,
+      "The eyes remain lively and the mouth and facial textures are not stretched, smeared or warped."
+     ],
+     "S1": [
+      false,
+      "There is a conspicuous skin-coloured gouge under the left eyebrow and rough clipping around the left inner eyelid; the right earring area also looks pinched."
+     ],
+     "S2": [
+      true,
+      "The visible skin, near-black hair, bindi and gold studs match REF; the kurta and piping are outside the crop."
+     ],
+     "S3": [
+      true,
+      "Soft dimensional shading remains across the face, hair, eyes and lips."
+     ],
+     "E1": [
+      true,
+      "A clear white catchlight is present in each open eye."
+     ],
+     "E2": [
+      false,
+      "The left upper eyelid and lash line have jagged, clipped edges rather than a consistently smooth taper."
+     ],
+     "M1": [
+      true,
+      "The closed lips retain soft shading and modest rounded volume."
+     ],
+     "M2": [
+      true,
+      "No teeth are visible."
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "Obvious clipping/gouge beneath the left eyebrow and along the left eyelid.",
+     "Uneven eyelid and lash geometry makes the eye treatment look rough and slightly uncanny."
+    ]
+   },
+   "usage": {
+    "completion_tokens": 1053,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 743,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 12,
+     "engine_ttft_ms": 302,
+     "engine_ttlt_ms": 12498,
+     "pre_inference_ms": 94,
+     "service_tbt_ms": 12,
+     "service_ttft_ms": 608,
+     "service_ttlt_ms": 12798,
+     "user_visible_ttft_ms": 514
+    },
+    "prompt_tokens": 1885,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 2938
+   }
+  },
+  {
+   "id": "tongue_RETRO",
+   "size": 256,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "same character and soft 3D Memoji style"
+     ],
+     "I2": [
+      true,
+      "polished premium 3D render, no puppet/clip-art look"
+     ],
+     "I3": [
+      true,
+      "eyes alive with catchlights, mouth natural"
+     ],
+     "S1": [
+      true,
+      "clean render, no seams/haloes/cut edges"
+     ],
+     "S2": [
+      true,
+      "skin, hair, bindi, gold studs, teal + orange match REF"
+     ],
+     "S3": [
+      true,
+      "soft rounded Memoji shading preserved"
+     ],
+     "E1": [
+      true,
+      "catchlights clearly visible in both eyes"
+     ],
+     "E2": [
+      true,
+      "eyelids wrap cleanly, lash line smooth and tapered"
+     ],
+     "M1": [
+      true,
+      "lips retain soft volume"
+     ],
+     "M2": [
+      true,
+      "teeth form one clean curved row"
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "Mouth opening and tooth exposure slightly flatter and less organic than REF",
+     "Left-side hair volume and silhouette subtly simplified vs REF"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 508,
+    "completion_tokens": 191,
+    "total_tokens": 3250,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 394,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 128
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 2551,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "concern",
+   "size": 256,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same character, with matching facial proportions, hairstyle, bindi, earrings, and soft 3D style."
+     ],
+     "I2": [
+      true,
+      "Polished dimensional rendering; it does not resemble flat vector art or a cut-out puppet."
+     ],
+     "I3": [
+      true,
+      "Eyes remain lively and the closed mouth is clean, with no visible smearing or texture warping."
+     ],
+     "S1": [
+      true,
+      "No obvious seams, halos, holes, or cut edges are visible."
+     ],
+     "S2": [
+      false,
+      "Skin, hair, bindi, and gold studs match, but the teal kurta and orange piping are cropped out and cannot be verified."
+     ],
+     "S3": [
+      true,
+      "Soft gradients and rounded Memoji-style volume are preserved across the face and hair."
+     ],
+     "E1": [
+      true,
+      "A clear catchlight is visible in each open eye."
+     ],
+     "E2": [
+      true,
+      "The eyelids wrap the eyeballs convincingly, with smooth, tapered lash lines."
+     ],
+     "M1": [
+      true,
+      "The lips retain soft volume despite the subdued expression."
+     ],
+     "M2": [
+      true,
+      "No teeth are shown."
+     ],
+     "score": 4,
+     "defects": [
+      "The crop removes the teal kurta and orange piping, weakening key character-identification cues.",
+      "The loose side hair strands and earring area have slightly awkward tangencies and less-refined separation."
+     ]
+    }
+   },
+   "usage": {
+    "completion_tokens": 513,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 226,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 659,
+     "engine_ttlt_ms": 5799,
+     "pre_inference_ms": 80,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 895,
+     "service_ttlt_ms": 6030,
+     "user_visible_ttft_ms": 815
+    },
+    "prompt_tokens": 537,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1050
+   }
+  },
+  {
+   "id": "playful",
+   "size": 1024,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly recognisable as the same character with the same soft 3D cartoon treatment."
+     ],
+     "I2": [
+      false,
+      "The broken eyebrow and rough eye construction make the frame look composited rather than premium and polished."
+     ],
+     "I3": [
+      false,
+      "The left eye and lash are visibly distorted and asymmetrical, creating an uncanny expression."
+     ],
+     "S1": [
+      false,
+      "A conspicuous diagonal cut/seam crosses the left eyebrow, with additional rough edging around the left eye."
+     ],
+     "S2": [
+      true,
+      "Visible skin, near-black hair, bindi and gold studs match REF; the outfit is mostly outside the crop."
+     ],
+     "S3": [
+      true,
+      "The face and hair retain soft dimensional Memoji-style shading."
+     ],
+     "E1": [
+      true,
+      "A clear catchlight is present in each open eye."
+     ],
+     "E2": [
+      false,
+      "The left lash line is thick, jagged and abruptly cut rather than smooth and tapered."
+     ],
+     "M1": [
+      true,
+      "The lips retain soft rounded volume and shading."
+     ],
+     "M2": [
+      true,
+      "No teeth are visible."
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "Obvious diagonal cut/seam through the left eyebrow",
+     "Malformed, mismatched eyes with a jagged heavy left lash line"
+    ]
+   },
+   "usage": {
+    "completion_tokens": 525,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 264,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 426,
+     "engine_ttlt_ms": 5881,
+     "pre_inference_ms": 161,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 1022,
+     "service_ttlt_ms": 6404,
+     "user_visible_ttft_ms": 861
+    },
+    "prompt_tokens": 1885,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 2410
+   }
+  },
+  {
+   "id": "playful",
+   "size": 256,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same character, with matching face, hair, features and soft 3D style."
+     ],
+     "I2": [
+      true,
+      "Polished dimensional rendering; it does not look like flat clip-art or a cut-out puppet."
+     ],
+     "I3": [
+      true,
+      "Expression remains natural with clean eyes, mouth and skin textures."
+     ],
+     "S1": [
+      true,
+      "No visible compositing seams, halos, holes or hard cut edges."
+     ],
+     "S2": [
+      false,
+      "Skin, hair, bindi and gold studs match, but the teal kurta and orange piping are cropped out and cannot be verified."
+     ],
+     "S3": [
+      true,
+      "Soft Memoji-style modelling and shading are retained."
+     ],
+     "E1": [
+      true,
+      "A catchlight is visible in each open eye."
+     ],
+     "E2": [
+      true,
+      "The eyelids wrap the eyes convincingly and the dark lash lines are smooth and tapered."
+     ],
+     "M1": [
+      true,
+      "The lips have soft, rounded volume and clean shading."
+     ],
+     "M2": [
+      true,
+      "No teeth are shown."
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "The crop removes the teal kurta and orange piping, weakening costume continuity with the reference.",
+     "The heavily lowered left eyelid makes the two eyes feel slightly uneven and less polished."
+    ]
+   },
+   "usage": {
+    "completion_tokens": 553,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 288,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 285,
+     "engine_ttlt_ms": 5879,
+     "pre_inference_ms": 123,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 822,
+     "service_ttlt_ms": 6386,
+     "user_visible_ttft_ms": 700
+    },
+    "prompt_tokens": 537,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1090
+   }
+  },
+  {
+   "id": "concern",
+   "size": 1024,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "same character and soft 3D Memoji style"
+     ],
+     "I2": [
+      true,
+      "polished volumetric render, clearly premium app quality"
+     ],
+     "I3": [
+      true,
+      "lively catchlit eyes, no smearing or warping"
+     ],
+     "S1": [
+      true,
+      "clean render, no seams/halos/cut edges"
+     ],
+     "S2": [
+      true,
+      "skin, near-black hair, teal, orange trim, gold studs and bindi all match"
+     ],
+     "S3": [
+      true,
+      "soft Memoji shading fully preserved"
+     ],
+     "E1": [
+      true,
+      "catchlights clearly visible in both eyes"
+     ],
+     "E2": [
+      true,
+      "eyelids wrap correctly, lash lines smooth and tapered"
+     ],
+     "M1": [
+      false,
+      "lips are flat and lack soft rounded volume"
+     ],
+     "M2": [
+      true,
+      "no teeth showing"
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "lips lack soft volume and appear pasted-on",
+     "eyebrows too angular/straight, breaks gentle character consistency"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 1630,
+    "completion_tokens": 189,
+    "total_tokens": 5147,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 970,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 1250
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 3328,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "concern",
+   "size": 256,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "same character, consistent Memoji 3D style"
+     ],
+     "I2": [
+      true,
+      "polished 3D render, app-quality"
+     ],
+     "I3": [
+      false,
+      "mouth pinched and flat, slightly uncanny"
+     ],
+     "S1": [
+      true,
+      "clean render, no seams or cut edges"
+     ],
+     "S2": [
+      false,
+      "skin tone more orange/saturated than REF"
+     ],
+     "S3": [
+      true,
+      "soft Memoji shading preserved"
+     ],
+     "E1": [
+      true,
+      "catchlights visible in both eyes"
+     ],
+     "E2": [
+      true,
+      "eyelids wrap well, lash line smooth"
+     ],
+     "M1": [
+      false,
+      "lips lack soft rounded volume"
+     ],
+     "M2": [
+      true,
+      "no teeth showing"
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "skin tone mismatch",
+     "lips lack soft volume"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 508,
+    "completion_tokens": 202,
+    "total_tokens": 3732,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 394,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 128
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 3022,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "playful",
+   "size": 1024,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "same character and soft 3D Memoji style"
+     ],
+     "I2": [
+      true,
+      "polished volumetric render suitable for premium app"
+     ],
+     "I3": [
+      true,
+      "eyes alive, no warping or smeared features"
+     ],
+     "S1": [
+      false,
+      "thin dark artifact/seam across left eyebrow"
+     ],
+     "S2": [
+      true,
+      "skin, hair, bindi, gold studs and teal/orange clothing match"
+     ],
+     "S3": [
+      true,
+      "soft rounded Memoji shading preserved"
+     ],
+     "E1": [
+      true,
+      "catchlights clearly visible in both eyes"
+     ],
+     "E2": [
+      false,
+      "lash line on character’s right eye is blunt, eyelid wrap inconsistent"
+     ],
+     "M1": [
+      true,
+      "lips retain soft volume"
+     ],
+     "M2": [
+      true,
+      "no teeth shown"
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "thin artifact above left eyebrow",
+     "blunt lash line / broken eyelid wrap on right eye"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 1630,
+    "completion_tokens": 174,
+    "total_tokens": 4524,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 970,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 1250
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 2720,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "surprise",
+   "size": 1024,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly recognisable as the same teacher character in the same soft 3D cartoon style."
+     ],
+     "I2": [
+      false,
+      "The jagged temple artifact and outlined jaw/hair seam make it look composited rather than premium."
+     ],
+     "I3": [
+      true,
+      "The surprised expression remains appealing; eyes and mouth are not dead, stretched, or smeared."
+     ],
+     "S1": [
+      false,
+      "A visible cut edge runs along the right jaw beside the hair, with a sharp black artifact at the left temple."
+     ],
+     "S2": [
+      false,
+      "Visible facial, hair, bindi, and stud colours match, but the teal kurta and orange piping are cropped out and cannot be matched."
+     ],
+     "S3": [
+      true,
+      "The face and hair retain rounded forms, gradients, and soft Memoji-style shading."
+     ],
+     "E1": [
+      true,
+      "Both open eyes have clear white catchlights."
+     ],
+     "E2": [
+      false,
+      "The eyelids wrap the eyes, but the outer lash edges are chunky and jagged rather than smoothly tapered."
+     ],
+     "M1": [
+      true,
+      "The lips have rounded, softly shaded volume."
+     ],
+     "M2": [
+      true,
+      "The small visible upper tooth area reads as one smooth curved row inside the lips."
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "Obvious cut/compositing seam along the right jaw and hair boundary.",
+     "Jagged black temple and lash artifacts destroy the polished premium finish."
+    ]
+   },
+   "usage": {
+    "completion_tokens": 582,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 287,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 521,
+     "engine_ttlt_ms": 6795,
+     "pre_inference_ms": 119,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 1028,
+     "service_ttlt_ms": 7299,
+     "user_visible_ttft_ms": 910
+    },
+    "prompt_tokens": 1885,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 2467
+   }
+  },
+  {
+   "id": "surprise",
+   "size": 256,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same character, with matching facial structure, hair, features, and soft 3D style."
+     ],
+     "I2": [
+      true,
+      "Polished dimensional rendering; it does not look like a cut-out, flat vector, or cheap game asset."
+     ],
+     "I3": [
+      true,
+      "Eyes are lively and the surprised mouth is cleanly formed without smearing or texture warping."
+     ],
+     "S1": [
+      true,
+      "No visible seams, halos, holes, or cut edges."
+     ],
+     "S2": [
+      true,
+      "Visible skin, near-black hair, gold studs, and bindi match REF; the clothing is mostly outside the crop."
+     ],
+     "S3": [
+      true,
+      "Soft gradients and rounded Memoji-style shading are retained."
+     ],
+     "E1": [
+      true,
+      "A clear catchlight is visible in each open eye."
+     ],
+     "E2": [
+      true,
+      "Eyelids wrap naturally around the eyes and the lash lines are smooth and tapered."
+     ],
+     "M1": [
+      true,
+      "The lips have rounded, softly shaded volume."
+     ],
+     "M2": [
+      true,
+      "No teeth are visible."
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "The mouth is overly circular and dark, making the surprised expression slightly generic and less nuanced than REF.",
+     "The tight crop largely removes the teal kurta and orange piping, weakening full-character continuity."
+    ]
+   },
+   "usage": {
+    "completion_tokens": 745,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 471,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 12,
+     "engine_ttft_ms": 299,
+     "engine_ttlt_ms": 8882,
+     "pre_inference_ms": 106,
+     "service_tbt_ms": 12,
+     "service_ttft_ms": 715,
+     "service_ttlt_ms": 9294,
+     "user_visible_ttft_ms": 609
+    },
+    "prompt_tokens": 537,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1282
+   }
+  },
+  {
+   "id": "playful",
+   "size": 256,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "same character, proportions, and soft 3D Memoji style"
+     ],
+     "I2": [
+      true,
+      "polished volumetric rendering, clearly app-quality"
+     ],
+     "I3": [
+      true,
+      "eyes are alive, mouth is natural, no warping"
+     ],
+     "S1": [
+      true,
+      "clean render, no seams, halos or cut edges"
+     ],
+     "S2": [
+      false,
+      "skin is noticeably more saturated/orange than REF"
+     ],
+     "S3": [
+      true,
+      "soft Memoji shading preserved with rounded highlights"
+     ],
+     "E1": [
+      true,
+      "clear catchlights visible in both eyes"
+     ],
+     "E2": [
+      true,
+      "eyelids wrap correctly, lash line smooth and tapered"
+     ],
+     "M1": [
+      true,
+      "lips have soft rounded volume"
+     ],
+     "M2": [
+      true,
+      "no teeth visible"
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "skin tone too warm/orange vs REF",
+     "mouth smile slightly tighter and less plush than reference"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 508,
+    "completion_tokens": 227,
+    "total_tokens": 3488,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 394,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 128
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 2753,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "surprise",
+   "size": 1024,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Same character, consistent soft 3D Memoji style"
+     ],
+     "I2": [
+      true,
+      "Polished volumetric render, clearly premium app quality"
+     ],
+     "I3": [
+      true,
+      "Eyes alive with catchlights, natural mouth deformation"
+     ],
+     "S1": [
+      true,
+      "Clean render, no seams, halos or cut edges"
+     ],
+     "S2": [
+      true,
+      "Skin, hair, bindi, gold studs and clothing colors match"
+     ],
+     "S3": [
+      true,
+      "Soft Memoji shading and gradients fully preserved"
+     ],
+     "E1": [
+      true,
+      "Strong catchlights visible in both eyes"
+     ],
+     "E2": [
+      true,
+      "Eyelids wrap cleanly, lash lines smooth and tapered"
+     ],
+     "M1": [
+      true,
+      "Lips retain soft rounded volume"
+     ],
+     "M2": [
+      true,
+      "No teeth visible"
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "Mouth opening too perfectly circular, lacks organic lip softening",
+     "Slightly uniform eyebrow raise reduces natural micro-expression quality"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 1630,
+    "completion_tokens": 186,
+    "total_tokens": 4871,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 970,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 1250
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 3055,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "sweep_m20",
+   "size": 256,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same character, with matching face, hair, bindi, earrings and soft 3D style."
+     ],
+     "I2": [
+      true,
+      "Polished, dimensional rendering suitable for a premium app; it does not look like flat clip-art or a puppet."
+     ],
+     "I3": [
+      true,
+      "Eyes and mouth remain coherent and lively, with no obvious smearing, stretching or warped textures."
+     ],
+     "S1": [
+      true,
+      "No visible compositing seams, halos, holes or cut edges."
+     ],
+     "S2": [
+      false,
+      "Skin is slightly more saturated and orange than REF, and the teal kurta and orange piping are cropped out and cannot be matched."
+     ],
+     "S3": [
+      true,
+      "Soft volumetric shading is retained across the face, hair and lips."
+     ],
+     "E1": [
+      true,
+      "A clear catchlight is visible in each open eye."
+     ],
+     "E2": [
+      true,
+      "Eyelids follow the eyeballs convincingly, and the dark lash lines are smooth and tapered."
+     ],
+     "M1": [
+      true,
+      "The lips have soft, rounded volume rather than a flat drawn shape."
+     ],
+     "M2": [
+      true,
+      "No teeth are visible."
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "The tighter crop removes the teal-and-orange costume cues, weakening character continuity.",
+     "The skin is a little too saturated and orange compared with REF."
+    ]
+   },
+   "usage": {
+    "completion_tokens": 761,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 481,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 282,
+     "engine_ttlt_ms": 8987,
+     "pre_inference_ms": 78,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 741,
+     "service_ttlt_ms": 9442,
+     "user_visible_ttft_ms": 663
+    },
+    "prompt_tokens": 537,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1298
+   }
+  },
+  {
+   "id": "surprise",
+   "size": 256,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same Memoji-style teacher character"
+     ],
+     "I2": [
+      true,
+      "Polished 3D render suitable for premium app, not flat or cheap"
+     ],
+     "I3": [
+      true,
+      "Eyes are alive with catchlights, mouth is clean"
+     ],
+     "S1": [
+      true,
+      "Clean render with no visible seams, halos or cut edges"
+     ],
+     "S2": [
+      true,
+      "Skin, hair, bindi, gold studs and clothing colors match REF"
+     ],
+     "S3": [
+      true,
+      "Soft rounded Memoji shading is preserved"
+     ],
+     "E1": [
+      true,
+      "Catchlights clearly visible in both eyes"
+     ],
+     "E2": [
+      false,
+      "Eyelids sit on top of the eyeball rather than wrapping it; lash line is blunt"
+     ],
+     "M1": [
+      false,
+      "Lips form a hard tubular O instead of soft volumetric shape"
+     ],
+     "M2": [
+      true,
+      "No teeth visible"
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "lips lack soft volume (hard O-ring)",
+     "eyelids fail to wrap the eyeball with tapered lashes"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 508,
+    "completion_tokens": 201,
+    "total_tokens": 4227,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 330,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 128
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 3518,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "sweep_m20",
+   "size": 1024,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "same character with consistent Memoji-style soft 3D look"
+     ],
+     "I2": [
+      true,
+      "polished volumetric render that reads as premium app quality"
+     ],
+     "I3": [
+      true,
+      "eyes are alive with expression, no smearing or warping"
+     ],
+     "S1": [
+      true,
+      "clean render with no visible seams, halos, or cut edges"
+     ],
+     "S2": [
+      true,
+      "skin tone, near-black hair, teal, orange piping, gold studs, and bindi all match"
+     ],
+     "S3": [
+      false,
+      "shading is noticeably flatter and less soft than REF's rounded Memoji gradients"
+     ],
+     "E1": [
+      true,
+      "catchlights clearly visible in both open eyes"
+     ],
+     "E2": [
+      true,
+      "eyelids wrap the eyeballs with smooth tapered lash lines"
+     ],
+     "M1": [
+      false,
+      "lips are flattened and lack the soft pillowy volume of REF"
+     ],
+     "M2": [
+      true,
+      "no teeth showing"
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "flattened Memoji shading",
+     "lips lack soft volume"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 1630,
+    "completion_tokens": 201,
+    "total_tokens": 5254,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 970,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 1250
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 3423,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "sweep_mid",
+   "size": 1024,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same character with matching facial design, hair, bindi and soft 3D style."
+     ],
+     "I2": [
+      false,
+      "The underlying render is polished, but the obvious compositing edge around the lower-right face makes it look like a cut-out."
+     ],
+     "I3": [
+      true,
+      "Eyes and mouth remain coherent, lively and free of smearing or warped textures."
+     ],
+     "S1": [
+      false,
+      "A conspicuous pale halo/cut edge runs from the right earring along the cheek and jaw."
+     ],
+     "S2": [
+      true,
+      "Visible skin, near-black hair, gold studs and bindi match; the kurta and piping are cropped out."
+     ],
+     "S3": [
+      true,
+      "Soft dimensional shading remains on the face, hair, eyes and lips."
+     ],
+     "E1": [
+      true,
+      "Both open eyes have clear white catchlights."
+     ],
+     "E2": [
+      true,
+      "The eyelids wrap the eyeballs convincingly and the lash lines taper smoothly."
+     ],
+     "M1": [
+      true,
+      "The lips retain soft rounded volume and gentle shading."
+     ],
+     "M2": [
+      true,
+      "No teeth are visible."
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "Obvious pale cut-out halo/seam along the right cheek and jaw",
+     "Over-tight crop removes the teal kurta and orange piping, weakening continuity with the approved character"
+    ]
+   },
+   "usage": {
+    "completion_tokens": 569,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 293,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 521,
+     "engine_ttlt_ms": 6382,
+     "pre_inference_ms": 127,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 1033,
+     "service_ttlt_ms": 6871,
+     "user_visible_ttft_ms": 905
+    },
+    "prompt_tokens": 1885,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 2454
+   }
+  },
+  {
+   "id": "sweep_mid",
+   "size": 256,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same character, with matching facial features, hairstyle, bindi, earrings, and soft 3D style."
+     ],
+     "I2": [
+      true,
+      "Polished, dimensional rendering with no paper-cut-out or cheap vector appearance."
+     ],
+     "I3": [
+      true,
+      "Eyes and mouth remain coherent and appealing, with no smearing or warped textures."
+     ],
+     "S1": [
+      true,
+      "No visible seams, halos, holes, or cut edges."
+     ],
+     "S2": [
+      true,
+      "Visible skin, near-black hair, gold studs, and bindi match; the kurta and orange piping are cropped out."
+     ],
+     "S3": [
+      true,
+      "Soft facial and hair shading is retained."
+     ],
+     "E1": [
+      true,
+      "A clear catchlight is visible in each open eye."
+     ],
+     "E2": [
+      true,
+      "The eyelids wrap the eyes cleanly, and the lash lines are smooth and tapered."
+     ],
+     "M1": [
+      true,
+      "The lips have soft, rounded volume."
+     ],
+     "M2": [
+      true,
+      "No teeth are shown."
+     ],
+     "score": 4,
+     "defects": [
+      "The crop is too tight, removing the neck and signature teal-and-orange kurta.",
+      "The enlarged, rounder face and eyes create a slight proportion drift from the reference."
+     ]
+    }
+   },
+   "usage": {
+    "completion_tokens": 528,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 266,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 12,
+     "engine_ttft_ms": 436,
+     "engine_ttlt_ms": 6822,
+     "pre_inference_ms": 123,
+     "service_tbt_ms": 12,
+     "service_ttft_ms": 1126,
+     "service_ttlt_ms": 7485,
+     "user_visible_ttft_ms": 1004
+    },
+    "prompt_tokens": 537,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1065
+   }
+  },
+  {
+   "id": "sweep_m20",
+   "size": 256,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Consistent character design, features, and soft 3D Memoji style"
+     ],
+     "I2": [
+      true,
+      "Polished 3D render, not flat or cheap-looking"
+     ],
+     "I3": [
+      true,
+      "Eyes have life and catchlights, mouth is natural with no smear"
+     ],
+     "S1": [
+      true,
+      "Clean render with no visible seams, halos, or cut edges"
+     ],
+     "S2": [
+      false,
+      "Skin is too orange/saturated vs REF's neutral brown"
+     ],
+     "S3": [
+      false,
+      "Shading is harder and less softly rounded than REF's signature Memoji softness"
+     ],
+     "E1": [
+      true,
+      "Clear catchlights visible in both eyes"
+     ],
+     "E2": [
+      true,
+      "Eyelids wrap correctly, lash line is smooth"
+     ],
+     "M1": [
+      true,
+      "Lips retain soft volume"
+     ],
+     "M2": [
+      true,
+      "No teeth showing"
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "skin tone too orange",
+     "harder, less soft Memoji shading"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 508,
+    "completion_tokens": 191,
+    "total_tokens": 3933,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 394,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 128
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 3234,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "sweep_mid",
+   "size": 1024,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Matches REF character and soft 3D Memoji style"
+     ],
+     "I2": [
+      true,
+      "Polished volumetric render suitable for premium app"
+     ],
+     "I3": [
+      true,
+      "Lively eyes and natural smile, no uncanny artifacts"
+     ],
+     "S1": [
+      true,
+      "Clean render with no visible seams, halos or cut edges"
+     ],
+     "S2": [
+      true,
+      "Colors exactly match REF across all elements"
+     ],
+     "S3": [
+      true,
+      "Soft rounded Memoji shading fully preserved"
+     ],
+     "E1": [
+      true,
+      "Clear catchlights visible in both eyes"
+     ],
+     "E2": [
+      true,
+      "Eyelids wrap correctly, lash lines smooth and tapered"
+     ],
+     "M1": [
+      true,
+      "Lips retain soft rounded volume"
+     ],
+     "M2": [
+      true,
+      "No teeth visible"
+     ]
+    },
+    "score": 4,
+    "defects": [
+     "cheek shading slightly flatter than REF",
+     "mouth corners lack the exact REF softness"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 1630,
+    "completion_tokens": 221,
+    "total_tokens": 4788,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 970,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 1250
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 2937,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "sweep_p20",
+   "size": 1024,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly recognisable as the same character with matching facial design, hair, accessories, and soft 3D style."
+     ],
+     "I2": [
+      false,
+      "The render is close, but rough compositing around the lower face and hair prevents premium app quality."
+     ],
+     "I3": [
+      true,
+      "The expression remains appealing; the eyes and mouth are not dead, stretched, smeared, or materially warped."
+     ],
+     "S1": [
+      false,
+      "Jagged cut-edge artifacts are visible beneath the chin and around the lower hair/ear area."
+     ],
+     "S2": [
+      true,
+      "The visible skin, near-black hair, bindi, and gold studs match REF; the clothing is mostly cropped out."
+     ],
+     "S3": [
+      true,
+      "The face and hair retain rounded forms, soft highlights, and dimensional Memoji-style shading."
+     ],
+     "E1": [
+      true,
+      "A clear white catchlight is visible in each open eye."
+     ],
+     "E2": [
+      false,
+      "The near eye has a rough inner corner and a heavy, abruptly pointed lash edge rather than a fully smooth tapered contour."
+     ],
+     "M1": [
+      true,
+      "The lips have soft rounded volume and blended shading."
+     ],
+     "M2": [
+      true,
+      "No teeth are shown."
+     ],
+     "score": 3,
+     "defects": [
+      "Jagged compositing/cut edges beneath the chin and around the lower hair",
+      "Rough eyelid and eye-corner contours, especially on the near eye"
+     ]
+    }
+   },
+   "usage": {
+    "completion_tokens": 709,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 415,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 12,
+     "engine_ttft_ms": 508,
+     "engine_ttlt_ms": 8696,
+     "pre_inference_ms": 141,
+     "service_tbt_ms": 12,
+     "service_ttft_ms": 1033,
+     "service_ttlt_ms": 9215,
+     "user_visible_ttft_ms": 892
+    },
+    "prompt_tokens": 1885,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 2594
+   }
+  },
+  {
+   "id": "sweep_mid",
+   "size": 256,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "consistent character design and soft 3D Memoji style"
+     ],
+     "I2": [
+      true,
+      "polished volumetric render, no paper-cut or cheap game feel"
+     ],
+     "I3": [
+      true,
+      "eyes have life, mouth is natural, no warping or smear"
+     ],
+     "S1": [
+      true,
+      "clean render with no seams, halos or cut edges"
+     ],
+     "S2": [
+      true,
+      "skin, hair, teal kurta, orange piping, gold earrings and bindi all match"
+     ],
+     "S3": [
+      false,
+      "shading is slightly harder and less pillowy than REF's signature soft Memoji gradients"
+     ],
+     "E1": [
+      true,
+      "clear catchlights in both eyes"
+     ],
+     "E2": [
+      true,
+      "eyelids wrap correctly, lash line smooth and tapered"
+     ],
+     "M1": [
+      false,
+      "lips are flatter and lack the plush volume seen in REF"
+     ],
+     "M2": [
+      true,
+      "no teeth showing"
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "soft Memoji shading flattened/harder than reference",
+     "lips lack characteristic soft volume"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 508,
+    "completion_tokens": 202,
+    "total_tokens": 3584,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 394,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 128
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 2874,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "sweep_p20",
+   "size": 256,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly the same teacher character, with matching facial structure, hair design, bindi, earrings, and soft 3D style."
+     ],
+     "I2": [
+      true,
+      "Polished, dimensional, and app-ready; it does not resemble flat clip-art or a cut-out puppet."
+     ],
+     "I3": [
+      true,
+      "The expression is natural, with coherent eyes, mouth, and facial textures."
+     ],
+     "S1": [
+      true,
+      "No visible seams, halos, holes, or cut edges."
+     ],
+     "S2": [
+      false,
+      "Skin, hair, bindi, and gold studs match, but the crop omits the teal kurta and orange piping, so the full palette is not preserved on-screen."
+     ],
+     "S3": [
+      true,
+      "Soft Memoji-style modelling and shading are retained across the face and hair."
+     ],
+     "E1": [
+      true,
+      "A clear catchlight is present in each open eye."
+     ],
+     "E2": [
+      true,
+      "The eyelids wrap convincingly around the eyes, with smooth, tapered lash lines."
+     ],
+     "M1": [
+      true,
+      "The lips have soft, rounded volume and integrate naturally with the face."
+     ],
+     "M2": [
+      true,
+      "No teeth are visible."
+     ],
+     "score": 4,
+     "defects": [
+      "The overly tight crop removes the teal kurta and orange piping, weakening the character's complete visual identity.",
+      "The near-side eye is slightly oversized and more intense than the reference, creating mild perspective imbalance."
+     ]
+    }
+   },
+   "usage": {
+    "completion_tokens": 610,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 313,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 390,
+     "engine_ttlt_ms": 7124,
+     "pre_inference_ms": 109,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 879,
+     "service_ttlt_ms": 7608,
+     "user_visible_ttft_ms": 771
+    },
+    "prompt_tokens": 537,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1147
+   }
+  },
+  {
+   "id": "sweep_p20",
+   "size": 1024,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "same character and soft 3D Memoji style"
+     ],
+     "I2": [
+      true,
+      "polished 3D render, clearly premium app quality"
+     ],
+     "I3": [
+      true,
+      "eyes alive, mouth natural, no warping or smear"
+     ],
+     "S1": [
+      true,
+      "clean render with no seams, halos, or cut edges"
+     ],
+     "S2": [
+      true,
+      "skin, hair, teal, orange piping, gold, bindi all match"
+     ],
+     "S3": [
+      false,
+      "cheek and forehead shading noticeably flatter than REF"
+     ],
+     "E1": [
+      true,
+      "catchlights present in both eyes"
+     ],
+     "E2": [
+      true,
+      "eyelids wrap correctly, lashes smooth and tapered"
+     ],
+     "M1": [
+      false,
+      "lips visibly flatter, reduced soft volume vs REF"
+     ],
+     "M2": [
+      true,
+      "no teeth visible"
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "flattened Memoji shading on face",
+     "lips lack soft volume"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 1630,
+    "completion_tokens": 231,
+    "total_tokens": 5389,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 970,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 1250
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 3528,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  },
+  {
+   "id": "sweep_m20",
+   "size": 1024,
+   "model": "taxila-brain",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Clearly recognisable as the same character with matching facial features, hair, jewellery and soft 3D styling."
+     ],
+     "I2": [
+      false,
+      "The awkward facial perspective and obvious cut/compositing artifacts around the jaw, neck and bun make it look unfinished rather than premium."
+     ],
+     "I3": [
+      false,
+      "The far eye is compressed and misaligned while the near eye is disproportionately large, creating an uncanny, warped gaze."
+     ],
+     "S1": [
+      false,
+      "Visible jagged cut edges and seams appear beneath the jaw and around the neck, earring and bun."
+     ],
+     "S2": [
+      false,
+      "Visible skin, hair, bindi and studs are close, but the teal kurta and orange piping are missing from the frame and the gold stud area has compositing artifacts."
+     ],
+     "S3": [
+      true,
+      "The face and hair retain soft gradients, rounded volume and Memoji-style shading."
+     ],
+     "E1": [
+      true,
+      "A clear white catchlight is visible in each open eye."
+     ],
+     "E2": [
+      false,
+      "The far eyelid and lash line are pinched and uneven rather than wrapping the eye cleanly."
+     ],
+     "M1": [
+      true,
+      "The lips retain soft rounded volume and gentle shading."
+     ],
+     "M2": [
+      true,
+      "No teeth are shown."
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "Warped, mismatched eye perspective creates an uncanny gaze.",
+     "Obvious cut edges and seams around the jaw, neck, earring and bun."
+    ]
+   },
+   "usage": {
+    "completion_tokens": 511,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 207,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 491,
+     "engine_ttlt_ms": 6037,
+     "pre_inference_ms": 106,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 982,
+     "service_ttlt_ms": 6521,
+     "user_visible_ttft_ms": 876
+    },
+    "prompt_tokens": 1885,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 1280
+    },
+    "total_tokens": 2396
+   }
+  },
+  {
+   "id": "sweep_p20",
+   "size": 256,
+   "model": "grok-4-20-reasoning",
+   "v": {
+    "items": {
+     "I1": [
+      true,
+      "Same character in matching Memoji soft 3D style"
+     ],
+     "I2": [
+      true,
+      "Polished 3D render, no paper-cutout or cheap game feel"
+     ],
+     "I3": [
+      true,
+      "Eyes lively, mouth natural, no warping or uncanny traits"
+     ],
+     "S1": [
+      true,
+      "Clean render with no seams, halos, holes or cut edges"
+     ],
+     "S2": [
+      true,
+      "Skin, hair, teal kurta, bindi and gold studs all match"
+     ],
+     "S3": [
+      false,
+      "Soft Memoji shading is partially flattened on cheeks and lips"
+     ],
+     "E1": [
+      true,
+      "Catchlights clearly visible in both eyes"
+     ],
+     "E2": [
+      true,
+      "Eyelids wrap eyes with smooth tapered lash line"
+     ],
+     "M1": [
+      false,
+      "Lips lack soft rounded volume, appear flatter than REF"
+     ],
+     "M2": [
+      true,
+      "No teeth showing"
+     ]
+    },
+    "score": 3,
+    "defects": [
+     "lips lack soft volume",
+     "soft Memoji shading flattened"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 508,
+    "completion_tokens": 241,
+    "total_tokens": 4107,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 394,
+     "audio_tokens": 0,
+     "text_tokens": 380,
+     "image_tokens": 128
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 3358,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    },
+    "num_sources_used": 0
+   }
+  }
+ ],
+ "emotions": [
+  {
+   "pose": "warm",
+   "truth": "warm smile",
+   "model": "taxila-brain",
+   "got": "warm smile",
+   "ok": true
+  },
+  {
+   "pose": "delight",
+   "truth": "delight",
+   "model": "taxila-brain",
+   "got": "delight",
+   "ok": true
+  },
+  {
+   "pose": "warm",
+   "truth": "warm smile",
+   "model": "grok-4-20-reasoning",
+   "got": "warm smile",
+   "ok": true
+  },
+  {
+   "pose": "concern",
+   "truth": "gentle concern",
+   "model": "taxila-brain",
+   "got": "gentle concern",
+   "ok": true
+  },
+  {
+   "pose": "delight",
+   "truth": "delight",
+   "model": "grok-4-20-reasoning",
+   "got": "warm smile",
+   "ok": false
+  },
+  {
+   "pose": "surprise",
+   "truth": "surprise",
+   "model": "taxila-brain",
+   "got": "surprise",
+   "ok": true
+  },
+  {
+   "pose": "concern",
+   "truth": "gentle concern",
+   "model": "grok-4-20-reasoning",
+   "got": "gentle concern",
+   "ok": true
+  },
+  {
+   "pose": "surprise",
+   "truth": "surprise",
+   "model": "grok-4-20-reasoning",
+   "got": "surprise",
+   "ok": true
+  },
+  {
+   "pose": "playful",
+   "truth": "playful",
+   "model": "taxila-brain",
+   "got": "warm smile",
+   "ok": false
+  },
+  {
+   "pose": "listening",
+   "truth": "listening",
+   "model": "taxila-brain",
+   "got": "warm smile",
+   "ok": false
+  },
+  {
+   "pose": "playful",
+   "truth": "playful",
+   "model": "grok-4-20-reasoning",
+   "got": "warm smile",
+   "ok": false
+  },
+  {
+   "pose": "thinking",
+   "truth": "thinking",
+   "model": "taxila-brain",
+   "got": "warm smile",
+   "ok": false
+  },
+  {
+   "pose": "listening",
+   "truth": "listening",
+   "model": "grok-4-20-reasoning",
+   "got": "warm smile",
+   "ok": false
+  },
+  {
+   "pose": "talk_E",
+   "truth": "neutral talking",
+   "model": "taxila-brain",
+   "got": "warm smile",
+   "ok": false
+  },
+  {
+   "pose": "thinking",
+   "truth": "thinking",
+   "model": "grok-4-20-reasoning",
+   "got": "warm smile",
+   "ok": false
+  },
+  {
+   "pose": "talk_E",
+   "truth": "neutral talking",
+   "model": "grok-4-20-reasoning",
+   "got": "warm smile",
+   "ok": false
+  }
+ ],
+ "tally": {
+  "sanity-bad-3d": {
+   "n": 4,
+   "score": [
+    2,
+    3,
+    3,
+    2
+   ],
+   "items": {
+    "I1": 2,
+    "I2": 0,
+    "I3": 2,
+    "S1": 2,
+    "S2": 3,
+    "S3": 0,
+    "E1": 4,
+    "E2": 0,
+    "M1": 0,
+    "M2": 4
+   }
+  },
+  "sanity-ref-ref": {
+   "n": 4,
+   "score": [
+    null,
+    null,
+    4,
+    3
+   ],
+   "items": {
+    "I1": 4,
+    "I2": 4,
+    "I3": 4,
+    "S1": 4,
+    "S2": 4,
+    "S3": 4,
+    "E1": 4,
+    "E2": 4,
+    "M1": 2,
+    "M2": 4
+   }
+  },
+  "rest": {
+   "n": 4,
+   "score": [
+    null,
+    4,
+    4,
+    3
+   ],
+   "items": {
+    "I1": 4,
+    "I2": 4,
+    "I3": 4,
+    "S1": 4,
+    "S2": 3,
+    "S3": 3,
+    "E1": 4,
+    "E2": 4,
+    "M1": 3,
+    "M2": 4
+   }
+  },
+  "talk_aa": {
+   "n": 4,
+   "score": [
+    4,
+    null,
+    3,
+    4
+   ],
+   "items": {
+    "I1": 4,
+    "I2": 4,
+    "I3": 4,
+    "S1": 4,
+    "S2": 4,
+    "S3": 4,
+    "E1": 4,
+    "E2": 4,
+    "M1": 3,
+    "M2": 2
+   }
+  },
+  "delight": {
+   "n": 4,
+   "score": [
+    3,
+    4,
+    4,
+    4
+   ],
+   "items": {
+    "I1": 4,
+    "I2": 3,
+    "I3": 4,
+    "S1": 3,
+    "S2": 3,
+    "S3": 4,
+    "E1": 4,
+    "E2": 3,
+    "M1": 4,
+    "M2": 3
+   }
+  },
+  "thinking": {
+   "n": 4,
+   "score": [
+    null,
+    4,
+    3,
+    4
+   ],
+   "items": {
+    "I1": 4,
+    "I2": 3,
+    "I3": 4,
+    "S1": 3,
+    "S2": 2,
+    "S3": 4,
+    "E1": 4,
+    "E2": 2,
+    "M1": 3,
+    "M2": 4
+   }
+  },
+  "listening": {
+   "n": 4,
+   "score": [
+    4,
+    3,
+    3,
+    null
+   ],
+   "items": {
+    "I1": 4,
+    "I2": 4,
+    "I3": 4,
+    "S1": 3,
+    "S2": 3,
+    "S3": 2,
+    "E1": 4,
+    "E2": 4,
+    "M1": 2,
+    "M2": 4
+   }
+  },
+  "yaw_p20": {
+   "n": 4,
+   "score": [
+    null,
+    null,
+    3,
+    4
+   ],
+   "items": {
+    "I1": 4,
+    "I2": 4,
+    "I3": 3,
+    "S1": 3,
+    "S2": 2,
+    "S3": 4,
+    "E1": 4,
+    "E2": 4,
+    "M1": 3,
+    "M2": 4
+   }
+  },
+  "blink_mid": {
+   "n": 4,
+   "score": [
+    4,
+    4,
+    3,
+    3
+   ],
+   "items": {
+    "I1": 4,
+    "I2": 4,
+    "I3": 3,
+    "S1": 4,
+    "S2": 3,
+    "S3": 4,
+    "E1": 3,
+    "E2": 1,
+    "M1": 4,
+    "M2": 4
+   }
+  },
+  "tongue_RETRO": {
+   "n": 4,
+   "score": [
+    null,
+    4,
+    3,
+    4
+   ],
+   "items": {
+    "I1": 4,
+    "I2": 4,
+    "I3": 3,
+    "S1": 4,
+    "S2": 3,
+    "S3": 4,
+    "E1": 4,
+    "E2": 4,
+    "M1": 3,
+    "M2": 1
+   }
+  },
+  "concern": {
+   "n": 4,
+   "score": [
+    3,
+    null,
+    3,
+    3
+   ],
+   "items": {
+    "I1": 4,
+    "I2": 3,
+    "I3": 3,
+    "S1": 3,
+    "S2": 2,
+    "S3": 4,
+    "E1": 4,
+    "E2": 3,
+    "M1": 2,
+    "M2": 4
+   }
+  },
+  "playful": {
+   "n": 4,
+   "score": [
+    3,
+    4,
+    3,
+    4
+   ],
+   "items": {
+    "I1": 4,
+    "I2": 3,
+    "I3": 3,
+    "S1": 2,
+    "S2": 2,
+    "S3": 4,
+    "E1": 4,
+    "E2": 2,
+    "M1": 4,
+    "M2": 4
+   }
+  },
+  "surprise": {
+   "n": 4,
+   "score": [
+    3,
+    4,
+    4,
+    3
+   ],
+   "items": {
+    "I1": 4,
+    "I2": 3,
+    "I3": 4,
+    "S1": 3,
+    "S2": 3,
+    "S3": 4,
+    "E1": 4,
+    "E2": 2,
+    "M1": 3,
+    "M2": 4
+   }
+  },
+  "sweep_m20": {
+   "n": 4,
+   "score": [
+    4,
+    3,
+    3,
+    3
+   ],
+   "items": {
+    "I1": 4,
+    "I2": 3,
+    "I3": 3,
+    "S1": 3,
+    "S2": 1,
+    "S3": 2,
+    "E1": 4,
+    "E2": 3,
+    "M1": 3,
+    "M2": 4
+   }
+  },
+  "sweep_mid": {
+   "n": 4,
+   "score": [
+    3,
+    null,
+    4,
+    3
+   ],
+   "items": {
+    "I1": 4,
+    "I2": 3,
+    "I3": 4,
+    "S1": 3,
+    "S2": 4,
+    "S3": 3,
+    "E1": 4,
+    "E2": 4,
+    "M1": 3,
+    "M2": 4
+   }
+  },
+  "sweep_p20": {
+   "n": 4,
+   "score": [
+    null,
+    null,
+    3,
+    3
+   ],
+   "items": {
+    "I1": 4,
+    "I2": 3,
+    "I3": 4,
+    "S1": 3,
+    "S2": 3,
+    "S3": 2,
+    "E1": 4,
+    "E2": 3,
+    "M1": 2,
+    "M2": 4
+   }
+  }
+ },
+ "emotionAcc": "7/16"
+}

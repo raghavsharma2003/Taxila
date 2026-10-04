@@ -116,12 +116,10 @@ export async function forgotPassword(req, res, body) {
       await q("insert into password_reset(token_hash, guardian_id, expires_at) values ($1, $2, now() + ($3 || ' minutes')::interval)", [sha256(token), g.id, String(RESET_MIN)]);
       await q("insert into audit(guardian_id, action) values ($1, 'password_reset_requested')", [g.id]);
       const link = `${appBase()}/start/reset?token=${encodeURIComponent(token)}`;
-      try {
-        await sendAcsEmail({ to: g.email, subject: "Reset your Taxila password",
-          text: `Hello${g.name ? ` ${g.name}` : ""},\n\nSomeone asked to reset the password of your Taxila parent account. To set a new password, open this link within ${RESET_MIN} minutes:\n\n${link}\n\nIf you did not ask for this, you can ignore this email. Your password stays the same.\n\nTaxila` });
-      } catch (e) {
-        console.warn(`[account] reset email not sent: ${e.code ?? e.message}`);
-      }
+      // not awaited: the answer must not take ~2 s longer when the account exists (it would tell which emails have one)
+      sendAcsEmail({ to: g.email, subject: "Reset your Taxila password",
+        text: `Hello${g.name ? ` ${g.name}` : ""},\n\nSomeone asked to reset the password of your Taxila parent account. To set a new password, open this link within ${RESET_MIN} minutes:\n\n${link}\n\nIf you did not ask for this, you can ignore this email. Your password stays the same.\n\nTaxila` })
+        .catch((e) => console.warn(`[account] reset email not sent: ${e.code ?? e.message}`));
       const ops = process.env.TAXILA_OPS_KEY;
       if (/@taxila\.test$/i.test(g.email) && ops && req.headers?.["x-taxila-ops"] === ops) out.testToken = token;
     }

@@ -30,6 +30,15 @@ const RUN = randomUUID().slice(0, 8);
 const PW = `del-pw-${RUN}-ok`;
 const SKILL = "c5-maths-ch01-t01-s1", TOPIC = "c5-maths-ch01-t01";
 
+// W2-A one claim source: parent surfaces read the ENGINE rows (kt_evidence), as a real turn writes them next to the
+// legacy verdict log; every fixture check therefore lands in both (closed label from outcome + hints).
+let ktN = 0, ktQ = null;
+const ktLabel = (o, h) => (o === "correct" ? (h > 0 ? 2 : 0) : o === "partial" ? 3 : 4);
+const ktRow = (child, lesson, skill, o, h, atSql, turnSeq = 9) => ktQ(`insert into kt_evidence (id, child_id, session_id, session_start_at, episode_id,
+    occurred_at, skill_ids, cls, outcome, grader, grader_version, item_key, params_version, legal_mode_at_write)
+  values ($1, $2, $3, now(), $3, ${atSql}, $4, 'item.open', $5, 'code', 'test', 'i1', 'v1', 'M1')`,
+  [`${lesson}:${turnSeq}:${ktN++}`, child, String(lesson), [skill], ktLabel(o, h)]);
+
 describe("B3 parent payloads and account deletion (test branch)", { skip: SKIP, concurrency: false, timeout: 240_000 }, () => {
   let server, base, q, one, cookie = "", guardian, kids = [], lessonLong, lessonShort;
   const call = async (method, path, body, ck = cookie) => {
@@ -42,6 +51,7 @@ describe("B3 parent payloads and account deletion (test branch)", { skip: SKIP, 
   before(async () => {
     process.env.DATABASE_URL = TEST;
     ({ q, one } = await import("../server/db.js"));
+    ktQ = q;
     const { handle } = await import("../server/index.js");
     server = http.createServer(handle);
     await new Promise((r) => server.listen(0, "127.0.0.1", r));
@@ -64,6 +74,7 @@ describe("B3 parent payloads and account deletion (test branch)", { skip: SKIP, 
     for (const [i, o, h] of [[0, "correct", 0], [1, "incorrect", 0], [2, "partial", 1]]) {
       await q("insert into evidence (child_id, lesson_id, skill_id, probe, outcome, hints_used, turn_id, at) values ($1,$2,$3,'P15',$4,$5,$6, now() - interval '2 days' + ($7 || ' minutes')::interval)",
         [kids[0], lessonLong, SKILL, o, h, i === 0 ? t1 : null, String(i)]);
+      await ktRow(kids[0], lessonLong, SKILL, o, h, `now() - interval '2 days' + interval '${i} minutes'`, i === 0 ? 1 : 9);
     }
     await q("insert into skill_state (child_id, skill_id, p_known, status, attempts, correct_unaided, last_seen) values ($1, $2, 0.4, 'practising', 3, 1, now() - interval '2 days')", [kids[0], SKILL]);
     // PIN set on the fresh onboarding session leaves the corner LOCKED; unlock it like the parent would
@@ -91,14 +102,16 @@ describe("B3 parent payloads and account deletion (test branch)", { skip: SKIP, 
     assert.equal(d.headline.kind, "first");
     assert.equal(d.headline.practising, null);
     assert.equal(d.headline.firstTopic.id, TOPIC);
-    assert.equal(d.week.lessons, 1, "the 1-minute visit is not counted");
-    assert.ok(d.week.minutes >= 20 && d.week.minutes <= 21);
+    // "This week" is the ISO week (the weekly letter's window, W2-A): the 2-days-ago lesson is in it unless a Monday split them
+    assert.ok(d.week.lessons <= 1, "the 1-minute visit is not counted");
+    if (d.week.lessons === 1) assert.ok(d.week.minutes >= 20 && d.week.minutes <= 21);
     assert.ok(d.next === null || typeof d.next.state === "string");
     assert.ok(Array.isArray(d.recent) && d.recent.length === 1);
     assert.equal(d.headline.profileKept, true);
     // a second counted lesson with two more misses → the skill now has ≥ 2 non-unaided attempts in 14 days: practising may be said
     const l2 = (await one(`insert into lesson (child_id, topic_id, started_at, ended_at) values ($1, $2, now() - interval '3 hours', now() - interval '2 hours') returning id`, [kids[0], TOPIC])).id;
     await q("insert into evidence (child_id, lesson_id, skill_id, probe, outcome, hints_used) values ($1,$2,$3,'P15','incorrect',0)", [kids[0], l2, SKILL]);
+    await ktRow(kids[0], l2, SKILL, "incorrect", 0, "now()");
     await q("update skill_state set last_seen = now() where child_id = $1", [kids[0]]);
     const r2 = (await call("GET", `/api/parent/overview?childId=${kids[0]}`)).body;
     assert.equal(r2.headline.kind, "claims");
@@ -135,6 +148,7 @@ describe("B3 parent payloads and account deletion (test branch)", { skip: SKIP, 
     const lb = (await one(`insert into lesson (child_id, topic_id, started_at, ended_at) values ($1, 'c8-maths-ch01-t01', now() - interval '1 day', now() - interval '1 day' + interval '15 minutes') returning id`, [kids[1]])).id;
     for (const [l, o, h, ago] of [[la, "incorrect", 0, "3 days"], [la, "correct", 1, "3 days"], [lb, "correct", 0, "1 day"]]) {
       await q("insert into evidence (child_id, lesson_id, skill_id, probe, outcome, hints_used, at) values ($1,$2,$3,'P15',$4,$5, now() - ($6)::interval + interval '5 minutes')", [kids[1], l, K, o, h, ago]);
+      await ktRow(kids[1], l, K, o, h, `now() - interval '${ago}' + interval '5 minutes'`);
     }
     await q("insert into skill_state (child_id, skill_id, p_known, status, attempts, correct_unaided, last_seen) values ($1, $2, 0.9, 'learned_today', 3, 1, now() - interval '1 day')", [kids[1], K]);
     const d = (await call("GET", `/api/parent/overview?childId=${kids[1]}`)).body;
@@ -151,6 +165,7 @@ describe("B3 parent payloads and account deletion (test branch)", { skip: SKIP, 
     }
     // a newer miss: the sheet's newest row is "Not yet", so "can now" may not stand over it
     await q("insert into evidence (child_id, lesson_id, skill_id, probe, outcome, hints_used, at) values ($1,$2,$3,'P15','incorrect',0, now() - interval '1 day' + interval '10 minutes')", [kids[1], lb, K]);
+    await ktRow(kids[1], lb, K, "incorrect", 0, "now() - interval '1 day' + interval '10 minutes'");
     const d2 = (await call("GET", `/api/parent/overview?childId=${kids[1]}`)).body;
     assert.equal(d2.headline.canNow, null, "can_now over a newest 'Not yet' row");
     // Progress groups the checked skills itself now (no overview call), with the sheet's state

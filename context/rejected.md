@@ -1115,3 +1115,19 @@ quota tag is `quotaLane` instead (`w2-quota-lane-option-quotaLane`).
 ## Merged inbox entries (write-up from the entry text)
 - `rj-open-tts-licence-barred-2026-10` (2026-10-04): Open TTS checked in the v3 scan and barred for the product by licence: Voxtral-4B-TTS (CC BY-NC 4.0), Higgs Audio v3 (non-commercial), OmniVoice (CC BY-NC weights, Apache code), Fish S2 Pro (research licence); Maya 2 is API-only. Barred for no Hindi: CosyVoice 3, IndexTTS-2, Qwen3-TTS, Sesame CSM, Kyutai, Spark-TTS, Dia2, Maya1, Chatterbox Turbo/Flash, Kokoro. Reference only. Revisit when a licence changes (record licence + revision hash).
 - `rj-loudnorm-dynamic-for-stimuli` (2026-10-04): Tried ffmpeg loudnorm (two-pass, linear=true with measured values) to bring blind-test clips to -26 LUFS. Broke: outputs measured -27.5 to -25.8 LUFS by ebur128 (1.7 LU spread, n=40), because loudnorm's internal meter and ebur128 disagree and loudnorm can fall back to dynamic mode, which compresses the delivery the raters are judging. Use one static volume gain per clip computed from the same ebur128 meter that checks the output: -26.4 to -26.5 LUFS (n=40, 2026-10-04).
+
+## rj-w2a-test-window-table
+**Tried:** a `child_test_window` table with a `child_id` column.
+**Broke:** `tests/learner-db` failed "every child_id table is classified", and so did the M0 ratchet test. The
+classifier is in `server/learner/mode.js`, which belongs to W2-I.
+**Replaced by:** a `child_controls.test_window` jsonb column (2026-10-04).
+
+## rj-w2a-await-reset-mail
+**Tried:** awaiting the ACS send inside `POST /api/auth/forgot`.
+**Broke:** the answer took about 2 s longer only when the account existed. That timing tells an attacker which emails
+have accounts. The send is now fire-and-forget (2026-10-04).
+
+## rj-w2a-acs-conn-unquoted
+**Tried:** an unquoted ACS connection string in `.env.local`.
+**Broke:** `set -a; . ./.env.local` split the value at `;` and lost the access key, so `sendAcsEmail` threw. The value is
+now quoted (2026-10-04).

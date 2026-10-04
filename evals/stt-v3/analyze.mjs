@@ -31,7 +31,10 @@ const refRows = JSON.parse(fs.readFileSync(path.join(HERE, "../model-refresh-202
 // ---- open arms ----
 const arms = fs.readdirSync(RES).filter((d) => fs.existsSync(path.join(RES, d, "rows.jsonl"))).sort();
 const ns12 = (c) => /^n(0[1-9]|1[0-2])-/.test(c);
-function scoreRow(r) {
+// labels corrected after a run (the transformers "offline" Nemotron path still uses the processor's default 3-frame lookahead)
+const RENAME = { "O-NOhi nemotron-3.5 offline (full context) hi-IN": "O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead)" };
+function scoreRow(r0) {
+  const r = { ...r0, cfg: RENAME[r0.cfg] || r0.cfg };
   const [id, src, arm] = r.clip.split("-"); const base = { clip: r.clip, cfg: r.cfg, text: r.text || "", err: r.err, id, src, arm, source: "stt-v3" };
   if (id.startsWith("n") || id.startsWith("b")) return { ...base, cat: id.startsWith("b") ? "babble" : "nonspeech", ns12: ns12(r.clip), halluc: hasText(r.text) };
   const sc = scoreOne(S[id], r.text || ""); const { script, ...rest } = sc;
@@ -43,7 +46,7 @@ for (const a of arms) {
   const rows = jl(path.join(RES, a, "rows.jsonl")); const paced = jl(path.join(RES, a, "paced.jsonl"));
   const env = js(path.join(RES, a, "env.json")), load = js(path.join(RES, a, "load.json")), soak = js(path.join(RES, a, "soak.json"));
   for (const r of rows) openRows.push(scoreRow(r));
-  meta[a] = { cfg: rows[0]?.cfg, env, load, soak, paced };
+  meta[a] = { cfg: RENAME[rows[0]?.cfg] || rows[0]?.cfg, env, load, soak, paced };
 }
 const allRows = [...refRows, ...openRows];
 fs.writeFileSync(path.join(OUTD, "rows-stt-v3.json"), JSON.stringify(openRows));

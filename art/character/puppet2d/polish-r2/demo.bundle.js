@@ -498,7 +498,7 @@ var C = class {
 		}
 		return this.prev = r, r;
 	}
-}, k = "#version 300 es\nin vec2 aPos; in vec2 aUv;\nuniform vec2 uView; uniform vec4 uCam; // cam: x0, y0, scale, flipY\nout vec2 vUv; out vec2 vRest;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vUv = aUv;\n}", A = "#version 300 es\nprecision mediump float;\nin vec2 vUv;\nuniform sampler2D uTex; uniform float uAlpha; uniform vec4 uShade; // shade: dirX, x0, x1, amount\nuniform vec4 uRect; // texture rect in rest space (x0,y0,w,h) for shading position\nuniform vec4 uTint; // debug: rgb, amount\nout vec4 o;\nvoid main(){\n  vec4 c = texture(uTex, vUv);\n  float x = uRect.x + vUv.x * uRect.z;\n  float s = clamp((x - uShade.y) / (uShade.z - uShade.y), 0.0, 1.0);\n  s = uShade.x > 0.0 ? s : 1.0 - s;\n  c.rgb *= 1.0 - uShade.w * s * s;\n  c.rgb = mix(c.rgb, uTint.rgb * c.a, uTint.a);\n  o = c * uAlpha;\n}", j = "#version 300 es\nin vec2 aPos; in vec2 aRest; in float aEdge; in float aTop;\nuniform vec2 uView; uniform vec4 uCam;\nout vec2 vRest; out float vEdge; out float vTop;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vRest = aRest; vEdge = aEdge; vTop = aTop;\n}", M = "#version 300 es\nprecision highp float;\nin vec2 vRest; in float vEdge; in float vTop;\nuniform sampler2D uSclera; uniform vec4 uScleraRect;\nuniform sampler2D uIris; uniform vec4 uIrisRect;\nuniform sampler2D uCatch; uniform vec4 uCatchRect;\nuniform vec2 uIrisOff; uniform vec2 uIrisC; uniform vec2 uIrisScale; uniform vec2 uCatchOff; uniform float uCatchA;\nuniform float uLidShade; uniform float uTopY;\nout vec4 o;\nvec4 tex(sampler2D t, vec4 r, vec2 p){\n  vec2 uv = (p - r.xy) / r.zw;\n  if (uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) return vec4(0.0);\n  return texture(t, uv);\n}\nvoid main(){\n  vec4 s = tex(uSclera, uScleraRect, vRest);\n  vec3 col = s.a > 0.0 ? s.rgb / s.a : vec3(0.95);\n  vec2 ip = uIrisC + (vRest - uIrisC - uIrisOff) / uIrisScale;\n  vec4 ir = tex(uIris, uIrisRect, ip);\n  col = col * (1.0 - ir.a) + ir.rgb;\n  // lid shadow: the band right under the upper lid darkens a little (wraps the eye)\n  // r2: per-column lid line (vTop), a soft wrap shadow ~10 px deep under the whole lid, as in c-front\n  float dl = clamp((vRest.y - vTop) / 10.0, 0.0, 1.0);\n  col *= 1.0 - uLidShade * (1.0 - dl) * (1.0 - dl);\n  vec4 cl = tex(uCatch, uCatchRect, vRest - uCatchOff);\n  col = mix(col, vec3(1.0), cl.a * uCatchA);\n  float a = clamp(vEdge, 0.0, 1.0);\n  o = vec4(col * a, a);\n}";
+}, k = "#version 300 es\nin vec2 aPos; in vec2 aUv;\nuniform vec2 uView; uniform vec4 uCam; // cam: x0, y0, scale, flipY\nout vec2 vUv; out vec2 vRest;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vUv = aUv;\n}", A = "#version 300 es\nprecision mediump float;\nin vec2 vUv;\nuniform sampler2D uTex; uniform float uAlpha; uniform vec4 uShade; // shade: dirX, x0, x1, amount\nuniform vec4 uRect; // texture rect in rest space (x0,y0,w,h) for shading position\nuniform vec4 uTint; // debug: rgb, amount\nout vec4 o;\nvoid main(){\n  vec4 c = texture(uTex, vUv);\n  float x = uRect.x + vUv.x * uRect.z;\n  float s = clamp((x - uShade.y) / (uShade.z - uShade.y), 0.0, 1.0);\n  s = uShade.x > 0.0 ? s : 1.0 - s;\n  c.rgb *= 1.0 - uShade.w * s * s;\n  c.rgb = mix(c.rgb, uTint.rgb * c.a, uTint.a);\n  o = c * uAlpha;\n}", j = "#version 300 es\nin vec2 aPos; in vec2 aRest; in float aEdge; in float aTop;\nuniform vec2 uView; uniform vec4 uCam;\nout vec2 vRest; out float vEdge; out float vTop;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vRest = aRest; vEdge = aEdge; vTop = aTop;\n}", M = "#version 300 es\nprecision highp float;\nin vec2 vRest; in float vEdge; in float vTop;\nuniform sampler2D uSclera; uniform vec4 uScleraRect;\nuniform sampler2D uIris; uniform vec4 uIrisRect;\nuniform sampler2D uCatch; uniform vec4 uCatchRect;\nuniform vec2 uIrisOff; uniform vec2 uIrisC; uniform vec2 uIrisScale; uniform vec2 uCatchOff; uniform float uCatchA;\nuniform float uLidShade; uniform float uTopY;\nout vec4 o;\nvec4 tex(sampler2D t, vec4 r, vec2 p){\n  vec2 uv = (p - r.xy) / r.zw;\n  if (uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) return vec4(0.0);\n  return texture(t, uv);\n}\nvoid main(){\n  vec4 s = tex(uSclera, uScleraRect, vRest);\n  vec3 col = s.a > 0.0 ? s.rgb / s.a : vec3(0.95);\n  vec2 ip = uIrisC + (vRest - uIrisC - uIrisOff) / uIrisScale;\n  vec4 ir = tex(uIris, uIrisRect, ip);\n  col = col * (1.0 - ir.a) + ir.rgb;\n  // lid shadow: the band right under the upper lid darkens a little (wraps the eye)\n  // r2: per-column lid line (vTop), a soft wrap shadow ~10 px deep under the whole lid, as in c-front\n  float dl = clamp((vRest.y - vTop - 2.0) / 9.0, 0.0, 1.0);\n  col *= 1.0 - uLidShade * (1.0 - dl) * (1.0 - dl);\n  vec4 cl = tex(uCatch, uCatchRect, vRest - uCatchOff);\n  col = mix(col, vec3(1.0), cl.a * uCatchA);\n  float a = clamp(vEdge, 0.0, 1.0);\n  o = vec4(col * a, a);\n}";
 function N(e, t, n) {
 	let r = e.createProgram();
 	for (let [i, a] of [[e.VERTEX_SHADER, t], [e.FRAGMENT_SHADER, n]]) {
@@ -679,7 +679,7 @@ var P = class {
 		let n = (t) => e[t] ?? 0, r = n("mouthSmileLeft"), i = n("mouthSmileRight"), a = (r + i) / 2 - (n("mouthFrownLeft") + n("mouthFrownRight")) / 2, o = (n("mouthPressLeft") + n("mouthPressRight")) / 2, s = a < .12 ? Math.max(n("browInnerUp") > .18 && o > .04 ? .5 + o : 0, -a * 2) : 0, c = Math.min(1, n("jawOpen") / .85), l = this.pickRow(e);
 		this.row = l;
 		let u, d = n("mouthLeft") - n("mouthRight");
-		u = l === "closed" && Math.abs(d) > .18 && a < .3 ? "aside" : n("eyeWideLeft") + n("eyeWideRight") > .5 && c > .2 && a < .3 && (l === "aa" || l === "O" || l === "kk") ? "surprise" : l === "closed" && Math.abs(r - i) > .14 && a > .18 ? "playful" : I[a > .33 ? "delight" : s > .3 ? "concern" : "warm"][l] ?? l, this.have.has(u) || (u = I.warm[l] ?? l), this.have.has(u) || (u = "rest"), u !== this.to && (this.from = this.t > .5 ? this.to : this.from, this.to = u, this.t = 0), this.t = Math.min(1, this.t + t / L);
+		u = l === "closed" && Math.abs(d) > .18 && a < .3 ? "aside" : n("eyeWideLeft") + n("eyeWideRight") > .5 && c > .2 && a < .3 && (l === "aa" || l === "O" || l === "kk") ? "surprise" : l === "closed" && Math.abs(r - i) > .14 && a > .18 ? "playful" : I[a > .33 ? "delight" : s > .3 ? "concern" : a < .04 && l === "closed" ? "neutral" : "warm"][l] ?? l, this.have.has(u) || (u = I.warm[l] ?? l), this.have.has(u) || (u = "rest"), u !== this.to && (this.from = this.t > .5 ? this.to : this.from, this.to = u, this.t = 0), this.t = Math.min(1, this.t + t / L);
 		let f = this.t >= 1 || this.from === this.to ? [[this.to, 1]] : [[this.from, 1], [this.to, this.t]], p = Math.max(n("mouthFunnel"), n("mouthPucker")), m = (n("mouthStretchLeft") + n("mouthStretchRight")) / 2, h = ee[l] ?? .2;
 		return {
 			draw: f,
@@ -689,8 +689,8 @@ var P = class {
 			round: Math.min(1, p),
 			skew: d * .8 + (r - i) * .6,
 			shift: Math.max(-1, Math.min(1, d * 1.6)) * 16 * (a < .3 ? 1 : .4),
-			liftR: Math.max(0, r - i) * 7,
-			liftL: Math.max(0, i - r) * 7,
+			liftR: Math.max(0, r - i) * 7 - (a < .08 && (l === "E" || l === "I" || l === "SS" || l === "CH") ? 6 * (1 - a / .08) : 0) - n("mouthFrownLeft") * 6,
+			liftL: Math.max(0, i - r) * 7 - (a < .08 && (l === "E" || l === "I" || l === "SS" || l === "CH") ? 6 * (1 - a / .08) : 0) - n("mouthFrownRight") * 6,
 			scale: u === "laugh" || u === "grin_E" ? .9 : 1,
 			tilt: u === "aside" ? Math.max(-1, Math.min(1, d * 1.6)) * 9 : 0,
 			narrow: u === "aside" ? .16 * Math.min(1, Math.abs(d) * 1.6) : 0,
@@ -1172,21 +1172,26 @@ var q = class {
 	drawEye(e, t) {
 		let n = this.eyes[e], r = n.e, i = this.R, a = this.st, o = (e, t) => U(e, t), s = 0;
 		for (let e = 0; e < n.C; e++) {
-			let t = Math.min(n.xb, n.xa + e * 2), r = t - n.xa, i = n.top[r], a = n.bot[r], c = [
+			let t = Math.min(n.xb, n.xa + e * 2), r = t - n.xa, i = n.top[r], a = n.bot[r], c = Math.min(t - n.xa, n.xb - t);
+			if (c < 6) {
+				let e = Math.sqrt(Math.max(0, 1 - (1 - c / 6) ** 2)), t = (i + a) / 2;
+				i = t + (i - t) * e, a = t + (a - t) * e;
+			}
+			let l = [
 				i - 2.1,
 				i - .1,
 				Math.max(i - .1, a - .6),
 				Math.max(i - .1, a + 1.4)
 			];
 			for (let e = 0; e < 4; e++) {
-				let r = a <= i + .05 ? i : c[e];
+				let r = a <= i + .05 ? i : l[e];
 				n.restA[s * 2] = t, n.restA[s * 2 + 1] = r, n.topA[s] = i;
-				let l = this.project(t, r, o(t, r));
-				n.pos[s * 2] = l[0], n.pos[s * 2 + 1] = l[1], s++;
+				let c = this.project(t, r, o(t, r));
+				n.pos[s * 2] = c[0], n.pos[s * 2 + 1] = c[1], s++;
 			}
 		}
 		i.update(n.mesh, "aPos", n.pos), i.update(n.mesh, "aRest", n.restA), i.update(n.mesh, "aTop", n.topA);
-		let c = this.gaze || [0, 0], l = c[0] / 25 * 17, u = -(c[1] / 20) * 8 + (c[1] < 0 ? -c[1] / 25 * 2 : 0), d = Math.cos((c[0] + .2 * a.yaw) * V * 1.2), [f, p] = r.iris;
+		let c = this.gaze || [0, 0], l = c[0] / 25 * 18, u = -(c[1] / 20) * 12 + (c[1] < 0 ? -c[1] / 25 * 2 : 0), d = Math.cos((c[0] + .2 * a.yaw) * V * 1.2), [f, p] = r.iris;
 		i.drawEye(n.mesh, {
 			sclera: {
 				tex: this.tex["sclera" + e],
@@ -1205,7 +1210,7 @@ var q = class {
 			irisScale: [Math.max(.82, d), n.blink > .85 ? .95 : 1],
 			catchOff: [l * .45, u * .45],
 			catchA: 1,
-			lidShade: .16,
+			lidShade: .4,
 			topY: K(n.xa, n.top, f)
 		});
 		for (let e = 0; e < n.BC; e++) for (let t = 0; t < n.BR; t++) {
@@ -1266,18 +1271,21 @@ var q = class {
 			browDownRight: .55,
 			eyeSquintRight: .25,
 			eyeWideLeft: .04,
-			mouthLeft: .6,
-			mouthPressLeft: .3,
-			mouthPressRight: .3,
-			mouthSmileLeft: .1,
+			mouthLeft: .7,
+			mouthPressLeft: .35,
+			mouthPressRight: .35,
+			mouthPucker: .15,
+			mouthFrownRight: .4,
+			mouthFrownLeft: .15,
+			mouthSmileLeft: -1,
 			mouthSmileRight: -1
 		},
 		head: [
-			-3,
-			-6,
-			7
+			-4,
+			-7,
+			8
 		],
-		gaze: [15, 17],
+		gaze: [21, 20],
 		env: [
 			.35,
 			0,
@@ -1286,22 +1294,21 @@ var q = class {
 	},
 	listening: {
 		bs: {
-			mouthSmileLeft: .3,
-			mouthSmileRight: .3,
-			cheekSquintLeft: .12,
-			cheekSquintRight: .12,
-			eyeSquintLeft: .1,
-			eyeSquintRight: .1,
-			browInnerUp: .28,
-			browOuterUpLeft: .18,
-			browOuterUpRight: .18
+			mouthSmileLeft: -1,
+			mouthSmileRight: -1,
+			browInnerUp: .45,
+			browOuterUpLeft: .32,
+			browOuterUpRight: .32,
+			eyeWideLeft: .2,
+			eyeWideRight: .2,
+			jawOpen: .13
 		},
 		head: [
-			2.5,
-			3,
-			-6
+			5,
+			4,
+			-11
 		],
-		gaze: [0, 0],
+		gaze: [-3, 1],
 		env: [
 			.5,
 			0,
@@ -1333,16 +1340,16 @@ var q = class {
 	},
 	delight: {
 		bs: {
-			mouthSmileLeft: .8,
-			mouthSmileRight: .8,
-			cheekSquintLeft: .35,
-			cheekSquintRight: .35,
-			eyeSquintLeft: .22,
-			eyeSquintRight: .22,
-			browOuterUpLeft: .35,
-			browOuterUpRight: .35,
-			browInnerUp: .15,
-			jawOpen: .34
+			mouthSmileLeft: .85,
+			mouthSmileRight: .85,
+			cheekSquintLeft: .55,
+			cheekSquintRight: .55,
+			eyeSquintLeft: .4,
+			eyeSquintRight: .4,
+			browOuterUpLeft: .45,
+			browOuterUpRight: .45,
+			browInnerUp: .2,
+			jawOpen: .36
 		},
 		head: [
 			-2,
@@ -1408,21 +1415,22 @@ var q = class {
 	},
 	playful: {
 		bs: {
-			mouthSmileLeft: .7,
-			mouthSmileRight: .08,
-			cheekSquintLeft: .45,
-			browOuterUpLeft: .95,
-			browDownRight: .35,
-			eyeSquintRight: .55,
-			cheekSquintRight: .25,
+			mouthSmileLeft: .75,
+			mouthSmileRight: .05,
+			cheekSquintLeft: .5,
+			browOuterUpLeft: 1,
+			browDownRight: .45,
+			eyeSquintRight: .7,
+			eyeBlinkRight: .62,
+			cheekSquintRight: .4,
 			eyeSquintLeft: .05
 		},
 		head: [
-			-1,
-			6,
-			-8
+			-2,
+			7,
+			-9
 		],
-		gaze: [-5, 2],
+		gaze: [-6, 3],
 		env: [
 			.25,
 			0,
@@ -1616,7 +1624,8 @@ async function fe() {
 	let n = await re.load(e, se, {
 		dpr: X ? 1 : Math.min(2, devicePixelRatio || 1),
 		view: t,
-		preserve: X
+		preserve: X,
+		clear: Y.get("bg") ? Y.get("bg").split(",").map((e) => e / 255) : void 0
 	});
 	(Y.get("dbg") || Y.get("only")) && (n.debug = {
 		tint: Y.get("dbg") === "tint",
