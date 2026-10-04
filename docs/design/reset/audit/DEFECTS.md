@@ -39,6 +39,9 @@ which is 00:00 to 02:30 IST on 5 Oct. No product code was changed and nothing wa
   - **Latencies are from a US container to eastus2.** Treat them as relative numbers, not the Indian child's experience.
   - **`net::ERR_FAILED` on four d6 turns** (`l-d6-d-answer-19..29`, "Your answer didn't send") lines up with
     route-fetch aborts in the harness. It is listed only as a UX defect of the failure state.
+- **Cleanup.** The three audit accounts were deleted through the product path at 19:44 UTC: `POST /api/auth/login`, then
+  `POST /api/parent/unlock`, then `DELETE /api/account` with the password. The receipts were TX-D0CA3830, TX-9499CBCE
+  and TX-010E7780, and re-login returned 400 for all three. Nothing leaked.
 - **Not exercised:**
   - The safety path ("I feel sad…"). I did not want to page the real safeguarding reviewers from a test account.
   - Forge Studio artifacts. None were ever produced in any lesson (see S-1), so there was no artifact screen to audit.
@@ -224,7 +227,7 @@ second lesson of 3 turns (`v-m4-m-end.json`). The typed lessons are in `l-*.json
 | T-4 | class 4 | **blocker** | conversation, content level | "This is way too easy, I'm not a baby" → "You're right" → an easier matchbox question | Treat it as a level signal: skip ahead and raise difficulty immediately |
 | T-5 | class 4 | major | conversation | "Explain it a different way" → "imagine a dice: count top, bottom, front…" then the **same** question | A genuinely different representation (net unfolding animation, rotate a 3D cube) |
 | T-6 | class 4 end lesson | **blocker** | conversation, flow | "I want to end the lesson now" → "Theek hai… Goodbye" → lesson over after 3 turns (owner #7) | Check in ("tired or bored?"), offer a 2-minute finish or a break, respect parent limits, then close |
-| T-7 | class 4 "game" | **blocker** | conversation | "Can we play a game instead?" → move "they want to stop: stop now" → lesson **ended** | Game request = engagement signal → launch a real game on the concept |
+| T-7 | class 4 "game" | **blocker** | conversation | "Can we play a game instead?" → move "they want to stop: stop now" → "we can play a quick shape game another time. Bye for now" → lesson **ended** (see also T-18) | Game request = engagement signal → launch a real game on the concept |
 | T-8 | class 4 "diagram" | **blocker** | conversation | "Show me a diagram" → move "you did not catch it clearly" → "I can describe it: draw a cube like a box" | Show it — whiteboard or Studio visual within 2 s |
 | T-9 | class 7 "too easy" | major | conversation | "Fair point" then the comma rule for crores — a skim, not a level change | Same as T-4 |
 | T-10 | turn latency | major | performance | Voice: Done → `/turn` reply 2.1-9.3 s (n=11, median 3.9 s). Typed: send → reply 1.7-9.5 s (n=25, median 2.6 s). Audio starts later still; the face is frozen throughout | Stream; backchannel; start speaking within 700 ms |
@@ -261,7 +264,7 @@ second lesson of 3 turns (`v-m4-m-end.json`). The typed lessons are in `l-*.json
 |---|---|---|---|---|---|
 | G-1 | class 7 "make a game" | **blocker** | age-wrong design | "Lakhs-Crores Scoreboard khelo: main number bolunga, tum commas lagao" → number pad (owner #3) | Real-time games: e.g. a stadium-crowd counter where numbers fly in and you place commas against a timer |
 | G-2 | class 6 `l-d6-d-answer-12` | **blocker** | broken control, content level | Engine `geoboard@1` "Aisi shape rango jiska kshetrafal = 7" mounted for an odd-number-sequence question, and it stayed for the next questions | Engine-to-skill contract check before mount |
-| G-3 | all lessons | major | flow | 1 module mount in ~25 typed turns; 0 in 11 voice turns | Activities driven by the conversation, frequently |
+| G-3 | all lessons | major | flow | No activity was offered unprompted in the class 4 voice lessons (0 of 11 turns), even after "can we play a game" | Activities driven by the conversation, frequently |
 | G-4 | geoboard | major | visual quality | Dotted 6x6 grid, Clear/Check — a worksheet | Game-grade interaction, feedback, juice |
 | G-5 | geoboard | minor | copy/tone | "kshetrafal" in Devanagari-transliterated Hindi for an English-medium child | Match school medium for terms |
 | G-7 | class 7 place-value `k-t7-t-probe4-26` | **blocker** | content level, broken control | "Yeh number banao: 99,99,999" with columns Das lakh…Ikai, while the question is "value of 6 in 5,06,08,020" — and there is no crore column at all | Generate the module from the item; schema-check columns ≥ the number |

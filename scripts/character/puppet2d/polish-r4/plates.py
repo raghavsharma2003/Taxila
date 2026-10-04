@@ -59,7 +59,7 @@ def sstep(a, b, x):
 
 
 # the bindi: a tiny hole (the plate's hand-read bindi is a few px off; it ghosted at small yaw)
-holes.append({"c": [525.0, 354.0], "h": [13.0, 13.0], "r": 12.0, "f": 7})
+holes.append({"c": [525.0, 354.0], "h": [22.0, 22.0], "r": 21.0, "f": 10})
 src_kf = open("scripts/character/puppet2d/polish-r4/keyfield.py").read()
 _ns = {}
 exec(src_kf[src_kf.index("LM = {"):src_kf.index("FILES =")], _ns)
@@ -108,6 +108,10 @@ for side, f in (("L", "yawL-0"), ("R", "yawR-2")):
         by0, by1 = int(min(ya_, yb_) - 24), int(max(ya_, yb_) + 16)
         sub = np.zeros_like(lockm); sub[by0:by1, bx0:bx1] = True
         lockm |= ndi.binary_dilation(sub & (lum(im) < 120), iterations=3)
+    # and the plate's bindi (its hand-read position is a few px off: a crescent ghost at small yaw); the live one shows
+    bx_, by_ = LMk["bindi"][ki]
+    sub = np.zeros_like(lockm); sub[int(by_ - 18):int(by_ + 18), int(bx_ - 18):int(bx_ + 18)] = True
+    lockm |= ndi.binary_dilation(sub & (lum(im) < 140), iterations=3)
     im8 = im.clip(0, 255).astype(np.uint8)
     inp = cv2.inpaint(im8[..., ::-1].copy(), (lockm * 255).astype(np.uint8), 7, cv2.INPAINT_TELEA)[..., ::-1].astype(np.float32)
     im = np.where(lockm[..., None], inp, im)

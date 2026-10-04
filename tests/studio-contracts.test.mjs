@@ -417,3 +417,30 @@ test("seam entry points never throw into the lesson", () => {
   assert.equal(s.prefetch(null), undefined);
   assert.equal(seamMod.factsRowOfView(null), null);
 });
+
+test("a live build (router allows it, a gate lane exists): the race winner is stored by sha and revealed as the frame; a failed race leaves the skeleton", async () => {
+  const winnerHtml = FIXTURE;
+  const puts = [];
+  const { seam } = await seamWith();
+  store._setQuery(async (text, params) => { if (/^insert into studio_build/.test(text)) { puts.push(params); return [{ build_sha: params[0] }]; } return []; });
+  seamMod._setDeps({ gateAvailable: () => true,
+    buildRace: async (plan, o) => { o.onPartial?.("a", "<p>part</p>"); return { ok: true, usd: 0.05, winner: { html: winnerHtml, sha256: sha(winnerHtml), gate: { pass: true, checks: [] }, record: { buildSha: sha(winnerHtml) } } }; } });
+  _setRoutes({ ...loadRoutes(), archetypes: { shade_fraction: { live: true, leadMs: 1000, arms: loadRoutes().defaults.arms, race: 2 } } });
+  const wire = [];
+  seamMod.subscribe(LESSON, { send: (m) => wire.push(m) });
+  await startLesson(seam, { activeMisconceptionIds: [] });
+  const p = [...seamMod._lesson(LESSON).pieces.values()][0];
+  assert.equal(p.source, "live", JSON.stringify(p.reasons));
+  assert.equal(p.buildSha, sha(winnerHtml));
+  assert.equal(puts[0][0], sha(winnerHtml), "stored under the sha of exactly the passed bytes");
+  assert.equal(p.usd, 0.05);
+  assert.ok(wire.some((m) => m.t === "partial"), "the streamed paint reached the wire for the veil");
+  // the race fails → the skeleton is the activity; nothing says it failed
+  seamMod._setDeps({ buildRace: async () => ({ ok: false, usd: 0.02, winner: null }) });
+  await startLesson(seam, { activeMisconceptionIds: [] });
+  const q = [...seamMod._lesson(LESSON).pieces.values()].find((x) => x.reasons?.includes("studio.live_failed"));
+  assert.ok(q, "a failed race falls back");
+  assert.equal(q.source, "skeleton");
+  seamMod._setDeps({ buildRace: null, gateAvailable: () => false });
+  loadRoutes(true);
+});

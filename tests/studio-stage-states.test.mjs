@@ -157,8 +157,10 @@ test("the tray states keep the tray the same size and never show a spinner, a pe
 test("a gate-passed build mounts from re-hashed bytes in an opaque-origin frame, plays with real taps, and the host grades it (AT-10/AT-11 locally)", { skip: SKIP, timeout: 300_000 }, async () => {
   const calls = [];
   const page = await lessonWith({ width: 360, height: 800 }, { slotId: "s1", intentId: `${LESSON}:st:1`, state: "revealed", artifact: frameArt() }, { calls });
+  // Chromium reports a CSP-blocked load as a request that FAILED with "csp"; anything that finished reached the network
   const external = [];
-  page.on("request", (r) => { if (/example\.com|evil/.test(r.url())) external.push(r.url()); });
+  page.on("requestfinished", (r) => { if (/example\.com|evil/.test(r.url())) external.push(r.url()); });
+  page.on("requestfailed", (r) => { if (/example\.com|evil/.test(r.url()) && r.failure()?.errorText !== "csp") external.push(`${r.url()} ${r.failure()?.errorText}`); });
   try {
     await page.waitForSelector('[data-testid="studio-frame"] iframe', { timeout: 15_000 });
     const sandbox = await page.getAttribute('[data-testid="studio-frame"] iframe', "sandbox");

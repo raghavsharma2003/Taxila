@@ -33,9 +33,12 @@ test("router: library first, live only for a live-buildable archetype inside eve
   // caps
   assert.deepEqual(go({ lesson: { liveBuilds: CAPS.liveBuildsPerLesson } }).reasons.at(-1), "studio.cap_lesson");
   assert.equal(go({ lesson: { liveBuilds: 2 } }).action, "live");
-  assert.equal(go({ child: { spendTodayUsd: 0.4 } }).reasons.at(-1), "studio.cap_day");
-  assert.equal(go({ child: { spendTodayUsd: 0.3 } }).action, "live");
-  assert.equal(go({ child: { spendMonthUsd: 7.9 } }).reasons.at(-1), "studio.cap_month");
+  // the cap is checked with the route's measured cost per passed build (routes.json estUsd, written by the router bench)
+  const est = go().estUsd;
+  assert.ok(est > 0 && est < CAPS.usdPerChildDay);
+  assert.equal(go({ child: { spendTodayUsd: CAPS.usdPerChildDay - est + 0.01 } }).reasons.at(-1), "studio.cap_day");
+  assert.equal(go({ child: { spendTodayUsd: CAPS.usdPerChildDay - est - 0.01 } }).action, "live");
+  assert.equal(go({ child: { spendMonthUsd: CAPS.usdPerChildMonth - est + 0.01 } }).reasons.at(-1), "studio.cap_month");
   assert.equal(go({ breakerOpen: true }).reasons.at(-1), "studio.breaker_open");
   // a library hit never counts against the caps
   assert.equal(go({ lesson: { liveBuilds: 9 }, child: { spendTodayUsd: 5 }, library: { status: "promoted" } }).action, "library");

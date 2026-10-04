@@ -24,7 +24,7 @@ import { decide as routerDecide, revealable } from "./router.js";
 import { archetype, buildParams, validateParams } from "./archetypes/index.js";
 import { chooseArchetype, planBuild, q8Strings, planWhiteboard, BY_KIND } from "./plan.js";
 import { gateClient } from "./qa/pool.js";
-import { identityOf, kitHashOf, lookup, recordGatePass, gatePassed, noteMount, retire as retireBuild, excludedArchetypes, spendOf, ensureIdentity, hashOf } from "./library.js";
+import { identityOf, kitHashOf, lookup, recordGatePass, gatePassed, noteMount, retire as retireBuild, excludedArchetypes, spendOf, ensureIdentity, hashOf, cachedStrings, rememberStrings } from "./library.js";
 import { getBuild, putBuild } from "./store.js";
 import { createGradeSession, studioEvidenceEvent, writeStudioEvidence } from "./grade.js";
 
@@ -159,6 +159,20 @@ export function slotOf(p, state = p.state) {
 
 // ───────────────────────────── prefetch (lesson start) ─────────────────────────────
 
+/**
+ * Is an archetype ABOUT this topic? plan.js paramsFromKit admits a fraction archetype whenever the kit merely mentions a
+ * fraction; measured 2026-10-04 over the class 4-7 maths kits, 6 of 23 such admissions were off-topic (capacity, km
+ * conversion, rotation, magic squares, equations): a pizza game in a lesson on litres is a wrong thing on screen. A
+ * fraction archetype therefore needs the topic's own skills to be about parts of a whole.
+ */
+const TOPIC_OF = { shade_fraction: /fraction|equal parts?|halves|tenths?|hundredths?|भिन्न|bhinn/i, number_line_jump: /fraction|number line|tenths?|decimal|भिन्न|bhinn/i };
+export function aboutTopic(archetypeId, kit) {
+  const re = TOPIC_OF[archetypeId];
+  if (!re) return true;
+  const text = [kit?.title, kit?.topicTitle, ...(kit?.skills ?? []).map((s) => s.title)].filter(Boolean).join(" / ");
+  return re.test(text);
+}
+
 /** The candidate intents for a lesson (code; no model): misconceptions first (the contrast moment matters most). */
 export function candidateIntents(ctx, { exclude = [] } = {}) {
   const kit = ctx.kit ?? {};
@@ -179,7 +193,8 @@ export function candidateIntents(ctx, { exclude = [] } = {}) {
         ...(n.misconceptionId ? { misconceptionId: n.misconceptionId } : {}), beat: n.need === "contrast_misconception" ? "contrast" : n.need === "practice" ? "practice_set" : "explain",
         neededAtMs: NEEDED_AT[n.need] ?? 300_000, priority: "opportunistic",
         style: { band, lang, motion: band === "B1" ? "calm" : "lively" } };
-      const pick = chooseArchetype(intent, { kit, exclude });
+      const off = Object.keys(TOPIC_OF).filter((id) => !aboutTopic(id, kit));
+      const pick = chooseArchetype(intent, { kit, exclude: [...exclude, ...off] });
       if (!pick.archetype) continue;
       const key = `${pick.archetype}:${hashOf(pick.params)}`;
       if (seen.has(key)) break;
@@ -234,7 +249,9 @@ async function runPiece(L, piece) {
     child: { bondStage: L.bondStage ?? undefined, studioControl: L.studioControl ?? "on", safetyMode: !!L.safety, spendTodayUsd: spend.day, spendMonthUsd: spend.month },
     lesson: { liveBuilds: L.liveBuilds, clockMs: Date.now() - L.startedAt }, library: lib });
   piece.reasons = decision.reasons;
-  const { plan, strings } = await stringsFor(L, piece).catch(() => ({ plan: null, strings: {} }));
+  // a library build reuses the strings that already passed with these params (the gate-result cache can then hit)
+  const reuse = decision.action === "library" ? await cachedStrings(piece.identity, piece.params).catch(() => null) : null;
+  const { plan, strings } = reuse ? { plan: null, strings: reuse } : await stringsFor(L, piece).catch(() => ({ plan: null, strings: {} }));
   piece.strings = strings;
   piece.teacherCue = plan?.teacherCue ?? null;
   if (decision.action === "library" && lib && Object.keys(strings).length) {
@@ -259,6 +276,7 @@ async function runPiece(L, piece) {
       if (put) {
         await ensureIdentity(piece.identity, idx).catch(() => {});
         await recordGatePass(put.buildSha, piece.params, strings, "live").catch(() => {});
+        await rememberStrings(piece.identity, piece.params, strings).catch(() => {});
         piece.source = "live"; piece.buildSha = put.buildSha; piece.state = "ready"; piece.readyAt = Date.now();
         return;
       }
@@ -277,7 +295,10 @@ async function mountLibrary(L, piece, lib, a) {
   let ok = revealable({ gate: g });
   if (!ok && g?.unavailable) ok = revealable({ gate: g, gateCacheHit: await gatePassed(b.buildSha, piece.params, piece.strings).catch(() => false) });
   if (!ok) return false;
-  if (g?.pass) await recordGatePass(b.buildSha, piece.params, piece.strings, "mount").catch(() => {});
+  if (g?.pass) {
+    await recordGatePass(b.buildSha, piece.params, piece.strings, "mount").catch(() => {});
+    await rememberStrings(piece.identity, piece.params, piece.strings).catch(() => {});
+  }
   piece.source = "library"; piece.buildSha = b.buildSha; piece.state = "ready"; piece.readyAt = Date.now();
   return true;
 }

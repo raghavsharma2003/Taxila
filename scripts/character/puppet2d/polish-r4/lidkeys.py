@@ -111,8 +111,11 @@ for s, b in ELL.items():
                 src_y[:, x] = sy
             im2 = np.stack([ndi.map_coordinates(S[..., c], [src_y, xx.astype(np.float32)], order=1, mode="nearest") for c in range(3)], -1)
             cov = np.clip(tg[None, :] + 0.5 - yy, 0, 1)
-            endf = np.clip(np.minimum(xx - sx0, sx1 - xx) / 5.0, 0, 1)
-            a_mid = border * cov * endf * ((xx >= sx0) & (xx <= sx1))
+            # the key's lid skin reaches 16 px past each lash end (above the end line): the live lid's wing points up and
+            # out from a corner that barely moves, and its tip peeked out beside the key as a speck
+            EXT = 16
+            endf = np.clip(np.minimum(xx - (sx0 - EXT), (sx1 + EXT) - xx) / 6.0, 0, 1)
+            a_mid = border * cov * endf * ((xx >= sx0 - EXT) & (xx <= sx1 + EXT))
             out["mid"] = save(f"lidmid{s}", im2, a_mid)
             out["midLash"] = {"x0": int(xa), "y": [round(float(tg[x]), 2) for x in range(xa, xb + 1)]}
             print(s, "mid-from-shut: lash", round(lt, 1), "px; bottom at iris", round(float(tg[int(e["iris"][0])]), 1), "open", e["top"][int(e["iris"][0]) - xa], e["bot"][int(e["iris"][0]) - xa])

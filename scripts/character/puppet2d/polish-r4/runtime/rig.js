@@ -667,7 +667,7 @@ export class Puppet2DRig {
     if (this.g.lidKeys) {
       const l = E.blink, midA = smooth(0.3, 0.36, l), shutA = smooth(0.72, 0.82, l);
       for (const [kk, a] of [["mid", midA * (1 - (shutA >= 1 ? 1 : 0))], ["shut", shutA]]) {
-        if (a <= 0.003) continue;
+        if (a <= 0.003 || (this.debug && this.debug.noKey === kk)) continue;
         const M = this.lidKeyMesh[`lid${kk}${sd}`];
         // the lid keys ride the brow a little when it lifts (the lid skin is attached under the brow)
         for (let q = 0; q < M.n; q++) {
@@ -708,7 +708,7 @@ export class Puppet2DRig {
     R.update(this.innerMesh, "aDT", I.dt);
     R.update(this.innerMesh, "aGap", I.gap);
     const p = sol.p;
-    if (p.g > 0.05) R.drawInner(this.innerMesh, this.tex.interior, [p.T, p.TL, 8, 0], [p.th, p.tip, p.curl, 0], 1 - 0.5 * shade[3]);
+    if (p.g > 0.05) R.drawInner(this.innerMesh, this.tex.interior, [p.T, p.TL, 10, 0], [p.th, p.tip, p.curl, 0], 1 - 0.5 * shade[3]);
     for (const n of ["L", "U"]) {
       const sh = shell.sheets[n];
       R.update(this.shellMesh[n], "aPos", sh.pos);
@@ -729,7 +729,7 @@ export class Puppet2DRig {
     const sol = this.solver, sp = sol.p, o = this._tmp || (this._tmp = [0, 0]);
     // the live mouth's hole: the lip band (both lips + the opening + the jaw-carried lower lip), its width and side shift
     const drop = sol.lowerDrop(), shift = sol.shift || 0;
-    const hwL = 64 * sp.W + Math.max(0, sol.side.L.wid) + 14, hwR = 66 * sp.W + Math.max(0, sol.side.R.wid) + 14;
+    const hwL = 69 * sp.W + Math.max(0, sol.side.L.wid) + 14, hwR = 71 * sp.W + Math.max(0, sol.side.R.wid) + 14;
     for (let i = 0; i < P.n; i++) {
       const x = P.rest[i * 2], y = P.rest[i * 2 + 1];
       const [dx, dy] = this.faceOffset(x, y);

@@ -143,6 +143,23 @@ export async function promote(buildSha, reviewer) {
   return { ok: true };
 }
 
+/**
+ * The strings table that passed a gate for this identity and params (child-free, Q8-checked model words). A library mount
+ * reuses it, so the gate-result cache can hit when the gate is down (the same build, params and strings already passed).
+ */
+export async function cachedStrings(identity, params) {
+  const [r] = await q("select stats -> 'strings' -> $2 as strings from studio_library where identity = $1", [identity, hashOf(params)]);
+  const s = r?.strings;
+  return s && typeof s === "object" && !Array.isArray(s) ? s : null;
+}
+/** Remember a strings table that passed with these params (at most 12 param sets per identity). */
+export async function rememberStrings(identity, params, strings) {
+  await q(`update studio_library set stats = jsonb_set(coalesce(stats, '{}'::jsonb), '{strings}',
+             (case when jsonb_typeof(stats -> 'strings') = 'object' and (select count(*) from jsonb_object_keys(stats -> 'strings')) >= 12
+                   then '{}'::jsonb else coalesce(stats -> 'strings', '{}'::jsonb) end) || jsonb_build_object($2::text, $3::jsonb)),
+             updated_at = now() where identity = $1`, [identity, hashOf(params), JSON.stringify(strings)]);
+}
+
 /** Archetypes this child said "Not this one" to within the last week (STUDENT-FLOW §5.3). */
 export async function excludedArchetypes(childId) {
   const rows = await q(`select distinct m.archetype from studio_mount m join lesson l on l.id = m.lesson_id

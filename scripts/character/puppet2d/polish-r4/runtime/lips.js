@@ -22,7 +22,9 @@ const sstep = (a, b, x) => { const t = clamp01((x - a) / (b - a)); return t * t 
 // traced lip line, x 448..612 step 4 (darkest pixel per column, c-front)
 const LINE_X0 = 448;
 const LINE = [585, 584, 584, 587, 589, 592, 594, 596, 597, 599, 600, 601, 602, 603, 604, 604, 605, 605, 606, 606, 606, 606, 606, 605, 605, 604, 603, 602, 601, 600, 598, 597, 596, 594, 592, 589, 587, 584, 580, 576, 576, 575];
-export const MOUTH = { cx: 530, hwL: 64, hwR: 66, tU: 13.5, tL: 21, cy: 606 };
+// r4: half-widths 64/66 -> 69/71: the opening now runs nearly to the commissures (454 / 606 in c-front), as a real
+// mouth does; at 64/66 every open shape stopped 12 px short and the talking mouth read small (blind r3 c2)
+export const MOUTH = { cx: 530, hwL: 69, hwR: 71, tU: 13.5, tL: 21, cy: 606 };
 export function lineY(x) {
   const f = (x - LINE_X0) / 4;
   if (f <= 0) return LINE[0];
@@ -48,7 +50,7 @@ const V = {
   viseme_SS: { ...Z, g: 6, up: 0.45, W: 1.06, T: 1, TL: 1 },
   viseme_nn: { ...Z, g: 15, up: 0.3, W: 0.98, T: 0.55, TL: 0.1, tip: 1 },
   viseme_RR: { ...Z, g: 12, up: 0.35, W: 0.82, flat: 0.5, round: 0.55, T: 0.5, TL: 0.15, tip: 0.5 },
-  viseme_aa: { ...Z, g: 56, up: 0.2, W: 0.97, flat: 0.25, round: 0.3, T: 0.95, TL: 0.15, th: 0.35 },
+  viseme_aa: { ...Z, g: 56, up: 0.2, W: 1.0, flat: 0.25, round: 0.3, T: 0.95, TL: 0.15, th: 0.35 },
   viseme_E: { ...Z, g: 17, up: 0.35, W: 1.1, T: 1, TL: 0.55 },
   viseme_I: { ...Z, g: 9, up: 0.4, W: 1.08, T: 1, TL: 0.75 },
   viseme_O: { ...Z, g: 28, up: 0.4, W: 0.7, flat: 0.85, round: 1, T: 0.35, TL: 0.05 },

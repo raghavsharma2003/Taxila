@@ -59,8 +59,10 @@ function Feedback({ fb, s, done, y = 304 }: { fb: "right" | "wrong" | null; s: S
   return <text className={`sk-fb${fb ? ` is-${fb}` : ""}`} x={18} y={y} aria-live="polite">{t}</text>;
 }
 
+/** The piece's one line of words, left-aligned and short of the top-right corner (the stage's 44 px control sits there). */
 function Title({ text, y = 30 }: { text: string; y?: number }) {
-  return <text className="sk-title" x={180} y={y} textAnchor="middle">{text.slice(0, 44)}</text>;
+  const t = text.length > 36 ? `${text.slice(0, 35).trimEnd()}…` : text;
+  return <text className="sk-title" x={14} y={y}>{t}</text>;
 }
 
 const T = (young: boolean) => (young ? 66 : 54);
@@ -214,8 +216,8 @@ function Pictograph({ p, s }: SkProps) {
 
 // ───────────────────────────── choice grids (timeline, parts, chain / hub options) ─────────────────────────────
 
-function Choices({ keys, s, y, onTap, pick, young, disabled, label }: { keys: string[]; s: S; y: number; onTap: (k: string) => void; pick: string | null; young: boolean; disabled: boolean; label?: (k: string) => string }) {
-  const cols = keys.length <= 3 ? keys.length : 2;
+function Choices({ keys, s, y, onTap, pick, young, disabled, label, cols: colsIn }: { keys: string[]; s: S; y: number; onTap: (k: string) => void; pick: string | null; young: boolean; disabled: boolean; label?: (k: string) => string; cols?: number }) {
+  const cols = colsIn ?? (keys.length <= 3 ? keys.length : 2);
   const gap = 8, w = (344 - gap * (cols - 1)) / cols, h = T(young);
   return (
     <g>
@@ -290,27 +292,30 @@ function FlowHub({ p, s, young }: SkProps) {
   useEffect(() => setPick(null), [run.epoch]);
   const flows: { key: string; dir: string }[] = p.flows ?? [];
   const tap = async (k: string) => { setPick(k); await run.submit(k); };
-  const cx = 180, cy = 112;
-  const arrow = (f: { key: string; dir: string }, i: number) => {
-    const out = f.dir === "out";
-    const up = f.dir === "up_in";
-    const side = i % 2 ? 1 : -1;
-    const [ax, ay, bx, by] = up ? [cx, cy + 92, cx, cy + 34] : out ? [cx + 44 * side, cy - 8 + i * 6, cx + 132 * side, cy - 30 + i * 12] : [cx + 132 * side, cy + 24 - i * 10, cx + 44 * side, cy + 6];
+  const cx = 180, cy = 128, R = 36;
+  // fixed lanes: flows IN come from the left, OUT leave to the right, UP_IN rise from below; labels sit at the far end
+  let nIn = 0, nOut = 0;
+  const arrow = (f: { key: string; dir: string }) => {
+    let ax: number, ay: number, bx: number, by: number, lx: number, ly: number, anchor: "start" | "end" | "middle";
+    if (f.dir === "up_in") { ax = cx; ay = cy + 82; bx = cx; by = cy + R + 4; lx = cx + 8; ly = cy + 78; anchor = "start"; }
+    else if (f.dir === "out") { const k = nOut++; ay = by = cy - 14 + k * 28; ax = cx + R + 4; bx = 346; lx = 346; ly = ay - 7; anchor = "end"; }
+    else { const k = nIn++; ay = by = cy - 14 + k * 28; ax = 14; bx = cx - R - 4; lx = 14; ly = ay - 7; anchor = "start"; }
     const ang = Math.atan2(by - ay, bx - ax);
     const h1 = [bx - 9 * Math.cos(ang - 0.5), by - 9 * Math.sin(ang - 0.5)], h2 = [bx - 9 * Math.cos(ang + 0.5), by - 9 * Math.sin(ang + 0.5)];
     return (
       <g key={f.key} className="sk-flow" data-flow={f.key} data-dir={f.dir}>
         <line x1={ax} y1={ay} x2={bx} y2={by} /><path d={`M${h1[0]},${h1[1]} L${bx},${by} L${h2[0]},${h2[1]}`} />
-        <text className="sk-small" x={(ax + bx) / 2} y={(ay + by) / 2 - 8} textAnchor="middle">{nameOf(s, f.key).slice(0, 14)}</text>
+        <text className="sk-small" x={lx} y={ly} textAnchor={anchor}>{nameOf(s, f.key).slice(0, 16)}</text>
       </g>
     );
   };
+  const ents: string[] = (p.entities ?? []).slice(0, 2);
   return (
     <g>
-      <Title text={word(s, "ask", "ask")} y={22} />
-      <circle className="sk-hub" cx={cx} cy={cy} r={40} />
+      <Title text={word(s, "ask", "ask")} y={24} />
+      {ents.map((e, i) => <text key={e} className="sk-small" x={i ? 346 : 14} y={i ? 214 : 60} textAnchor={i ? "end" : "start"}>{nameOf(s, e).slice(0, 12)}</text>)}
+      <circle className="sk-hub" cx={cx} cy={cy} r={R} />
       <text className="sk-label" x={cx} y={cy} textAnchor="middle" dominantBaseline="central">{nameOf(s, p.hub).slice(0, 10)}</text>
-      {(p.entities ?? []).slice(0, 2).map((e: string, i: number) => <text key={e} className="sk-small" x={i ? 320 : 40} y={i ? 210 : 52} textAnchor="middle">{nameOf(s, e).slice(0, 10)}</text>)}
       {flows.map(arrow)}
       <Choices keys={p.options ?? []} s={s} y={226} young={young} pick={pick} disabled={!run.live || run.done || run.busy} onTap={tap} />
       <Feedback fb={run.fb} s={s} done={run.done} y={316} />
@@ -352,13 +357,13 @@ function Bins({ p, s, young }: SkProps) {
   return (
     <g>
       <Title text={word(s, "instr", "sort")} y={22} />
-      <Choices keys={left} s={s} y={36} young={young} pick={card} disabled={!run.live || run.done || run.busy} onTap={(k) => { run.setFb(null); setCard(k); }} />
+      <Choices keys={left} s={s} y={40} cols={3} young={young} pick={card} disabled={!run.live || run.done || run.busy} onTap={(k) => { run.setFb(null); setCard(k); }} />
       {bins.map((b, i) => (
         <g key={b} className={`sk-bin${card ? " is-armed" : ""}`} role="button" tabIndex={0} data-bin={b} onClick={() => put(b)}
           onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); void put(b); } }}>
-          <rect x={8 + i * (bw + 8)} y={204} width={bw} height={88} rx={14} />
-          <text className="sk-label" x={8 + i * (bw + 8) + bw / 2} y={224} textAnchor="middle">{nameOf(s, b).slice(0, 14)}</text>
-          <text className="sk-small" x={8 + i * (bw + 8) + bw / 2} y={248} textAnchor="middle">{Object.entries(sorted).filter(([, v]) => v === b).map(([c]) => nameOf(s, c)).join(", ").slice(0, 24)}</text>
+          <rect x={8 + i * (bw + 8)} y={214} width={bw} height={80} rx={14} />
+          <text className="sk-label" x={8 + i * (bw + 8) + bw / 2} y={236} textAnchor="middle">{nameOf(s, b).slice(0, 14)}</text>
+          <text className="sk-small" x={8 + i * (bw + 8) + bw / 2} y={258} textAnchor="middle">{Object.entries(sorted).filter(([, v]) => v === b).map(([c]) => nameOf(s, c)).join(", ").slice(0, 24)}</text>
         </g>
       ))}
       <Feedback fb={run.fb} s={s} done={run.done} y={312} />

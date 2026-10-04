@@ -686,8 +686,8 @@ var te = class {
 	575
 ], B = {
 	cx: 530,
-	hwL: 64,
-	hwR: 66,
+	hwL: 69,
+	hwR: 71,
 	tU: 13.5,
 	tL: 21,
 	cy: 606
@@ -800,7 +800,7 @@ var ae = ie(B.cx + 4), V = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), oe = 
 		...H,
 		g: 56,
 		up: .2,
-		W: .97,
+		W: 1,
 		flat: .25,
 		round: .3,
 		T: .95,
@@ -1805,7 +1805,7 @@ var ge = class {
 		if (i.update(n.lmesh, "aPos", n.lpos), i.drawPaint(n.lmesh, this.tex["lid" + e], this.g.rects["lid" + e], 1, t), this.g.lidKeys) {
 			let r = n.blink, a = K(.3, .36, r), o = K(.72, .82, r);
 			for (let [n, r] of [["mid", a * (1 - (o >= 1))], ["shut", o]]) {
-				if (r <= .003) continue;
+				if (r <= .003 || this.debug && this.debug.noKey === n) continue;
 				let a = this.lidKeyMesh[`lid${n}${e}`];
 				for (let e = 0; e < a.n; e++) {
 					let t = a.rest[e * 2], n = a.rest[e * 2 + 1], r = p(this.projectTo(t, n, a.z[e], this._tmp ||= [0, 0]));
@@ -1835,7 +1835,7 @@ var ge = class {
 		a.g > .05 && t.drawInner(this.innerMesh, this.tex.interior, [
 			a.T,
 			a.TL,
-			8,
+			10,
 			0
 		], [
 			a.th,
@@ -1853,7 +1853,7 @@ var ge = class {
 		if (!e || !e.yk || this.debug && this.debug.noPlate) return;
 		let t = e.yaw >= 0 ? "R" : "L", n = this.plates[t], r = K(.04, 1, e.ykf);
 		if (!n || r <= .004) return;
-		let i = this.solver, a = i.p, o = this._tmp ||= [0, 0], s = i.lowerDrop(), c = i.shift || 0, l = 64 * a.W + Math.max(0, i.side.L.wid) + 14, u = 66 * a.W + Math.max(0, i.side.R.wid) + 14;
+		let i = this.solver, a = i.p, o = this._tmp ||= [0, 0], s = i.lowerDrop(), c = i.shift || 0, l = 69 * a.W + Math.max(0, i.side.L.wid) + 14, u = 71 * a.W + Math.max(0, i.side.R.wid) + 14;
 		for (let e = 0; e < n.n; e++) {
 			let t = n.rest[e * 2], i = n.rest[e * 2 + 1], [d, f] = this.faceOffset(t, i);
 			this.projectTo(t + d, i + f, n.z[e], o), n.pos[e * 2] = o[0], n.pos[e * 2 + 1] = o[1];
