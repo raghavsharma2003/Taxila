@@ -8,15 +8,17 @@
 // Rules (§3.4, §4.8, §8): no "one more" offer, no "come back tomorrow", no countdown, no streak, no counts; the home
 // looks the same after 1 day away or 30 (only her greeting may differ); she never "rests", "waits" or "misses" anyone.
 // No lamp anywhere on home: the Start button is the nib primary (the lamp is the lesson dock's alone, G-LAMP-1).
+import { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import type { DidCard } from "../../../shared/contracts.ts";
+import type { DidCard, MadeForItem } from "../../../shared/contracts.ts";
+import { HelpSheet } from "../lesson/sheets/HelpSheet.tsx";
 import { Teacher } from "../../ui/teacher/Teacher.tsx";
 import { useTeacher } from "../../ui/teacher/useTeacher.ts";
 import { artTierD, Spot, useTopicArt } from "../art.tsx";
 import { ChildScreen } from "../chrome.tsx";
 import { useChild } from "../ChildShell.tsx";
 import { clock, t } from "../copy.ts";
-import { tw } from "../../copy/en.ts";
+import { subjectWords, tw, tw2 } from "../../copy/en.ts";
 import { Icon, Picto } from "../pictos.tsx";
 import { practiceOffered, usePlan, type HomePlan } from "../plan.ts";
 import { SkyStar } from "../progress/StateShape.tsx";
@@ -43,7 +45,7 @@ export function Home() {
     <Teacher teacherId={child.teacher_id} band={band} form={face.form} tier={face.tier} floor="idle" label="below" lights="up"
       reducedMotion={reducedMotion} aiPicto={young} className="home-teacher" />
   );
-  const resting = plan.state === "resting";
+  const resting = plan.state === "resting" || plan.state === "safety_hold";
 
   return (
     <ChildScreen testid="home" ground={young ? "courtyard" : "rooftop"} rest={resting} home surfaces={plan.surfaces}
@@ -53,9 +55,10 @@ export function Home() {
         {/* Young 1280: card + tiles share ONE surface panel in the right third (§6.3.3); elsewhere display: contents */}
         <div className="home-panel">
           <PrimaryCard plan={plan} reload={reload} />
+          {(plan.state === "done" || plan.state === "capped") && <MadeForShelf items={plan.madeFor} />}
           {young ? <YoungTiles plan={plan} /> : <OlderTiles plan={plan} />}
         </div>
-        {!young && plan.surfaces.map && sky.map && !sky.map.empty && <SkyPeek skills={sky.map.skills} />}
+        {!young && plan.state !== "safety_hold" && plan.surfaces.map && sky.map && !sky.map.empty && <SkyPeek skills={sky.map.skills} />}
       </div>
     </ChildScreen>
   );
@@ -143,6 +146,36 @@ export function PrimaryCard({ plan, reload }: { plan: HomePlan; reload: () => vo
       );
       break;
     }
+    case "homework":
+      body = (
+        <>
+          <Spot id="states/homework" size={young ? 96 : 72} fallback={<span className="spot-tile"><Icon name="notebook" size={40} /></span>} />
+          <div className="hpc-text">
+            <h2 className="hpc-head" id={headId}>{tw2("home.homework.head")}</h2>
+            <p className="hpc-sub">{tw2("home.homework.sub")}</p>
+            {/* today's lesson stays reachable as the second card (STUDENT-FLOW §4.2), never a second primary */}
+            {plan.topic && <Link to={startTo} className="cs-link" data-testid="homework-lesson">{tw2("home.homework.lesson")}{title && !young ? `: ${title}` : ""}</Link>}
+          </div>
+          <StartLink to={`/c/${cid}/ask?homework=1`} label={tw2("home.homework.start")} testid="start-homework" />
+        </>
+      );
+      break;
+    case "test_window":
+      body = (
+        <>
+          {picture}
+          <div className="hpc-text">
+            <h2 className="hpc-head" id={headId}>{tw2("home.test.head", { subject: subjectWords(plan.testWindow?.subject ?? plan.topic?.subject) })}</h2>
+            {title && !young && <p className="hpc-title">{title}</p>}
+            {!young && plan.topic && <p className="hpc-meta">{t("aboutMin", { n: plan.topic.minutes })}</p>}
+          </div>
+          <StartLink to={startTo} label={t("start")} />
+        </>
+      );
+      break;
+    case "safety_hold":
+      body = <SafetyHoldCard headId={headId} />;
+      break;
     case "resume":
       body = (
         <>
@@ -205,6 +238,54 @@ export function PrimaryCard({ plan, reload }: { plan: HomePlan; reload: () => vo
   );
 }
 
+/**
+ * safety_hold (STUDENT-FLOW §4.2): the Conductor holds lessons after a safeguarding incident. Calm, cached copy; ONE
+ * primary action (Help, the same sheet the lesson raises, numbers printed); never a lesson, practice or Ask.
+ */
+function SafetyHoldCard({ headId }: { headId: string }) {
+  const { child, band, prefs } = useChild();
+  const [open, setOpen] = useState(false);
+  const [grownUp, setGrownUp] = useState(false);
+  const face = faceFormOf(prefs.face).form;
+  return (
+    <>
+      <div className="hpc-text">
+        <h2 className="hpc-head hpc-head--line" id={headId}>{tw2("home.hold.head")}</h2>
+        <p className="hpc-sub">{tw2("home.hold.sub")}</p>
+      </div>
+      <button type="button" className="cs-btn cs-btn--primary" onClick={() => setOpen(true)} data-testid="hold-help">
+        <Icon name="help" size={22} /><span>{tw2("home.hold.help")}</span>
+      </button>
+      {open && (
+        <HelpSheet teacherId={child.teacher_id ?? ""} band={band} childName={child.first_name} backVisible grownUp={grownUp} faceForm={face}
+          onGrownUp={() => setGrownUp(true)} onGrownUpBack={() => setGrownUp(false)} onGrownUpHere={() => { setGrownUp(false); setOpen(false); }}
+          onBack={() => setOpen(false)} />
+      )}
+    </>
+  );
+}
+
+/** The Made for you mini-shelf (STUDENT-FLOW §9.3): today's pieces, newest first, no counts; absent while empty (V2 P6). */
+export function MadeForShelf({ items }: { items: MadeForItem[] }) {
+  const { cid } = useChild();
+  if (!items.length) return null;
+  return (
+    <section className="cs-card madefor" aria-label={tw2("home.madefor.title")} data-testid="madefor-shelf">
+      <h3 className="madefor-title">{tw2("home.madefor.title")}</h3>
+      <ul className="madefor-list">
+        {items.map((it) => (
+          <li key={it.id} className="madefor-item" data-kind={it.kind}>
+            <Link to={`/c/${cid}/notebook?made=${encodeURIComponent(it.id)}`} className="madefor-link" aria-label={`${tw2("home.madefor.play")}: ${it.title}`}>
+              {it.still ? <img src={it.still} alt="" className="madefor-still" width={96} height={72} loading="lazy" /> : <span className="madefor-still madefor-still--blank" aria-hidden="true"><Icon name="practice" size={28} /></span>}
+              <span className="madefor-name">{it.title}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 function YoungTiles({ plan }: { plan: HomePlan }) {
   const { cid } = useChild();
   const practice = practiceOffered(plan);
@@ -233,7 +314,7 @@ function OlderTiles({ plan }: { plan: HomePlan }) {
   const { cid } = useChild();
   const practice = practiceOffered(plan);
   // Ask needs the network (no offline answers); offline it is not offered rather than offered and broken
-  const ask = plan.state !== "offline";
+  const ask = plan.state !== "offline" && plan.state !== "safety_hold";
   if (!practice && !ask) return null;
   return (
     <nav className="home-tiles home-tiles--older" aria-label={t("home")}>

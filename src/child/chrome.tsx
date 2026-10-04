@@ -137,7 +137,8 @@ export function ChildScreen({ testid, ground, rest, title, actions, home, childr
       {older && <OlderNav surfaces={surfaces} />}
       <main className="cs-main" id="main">
         <header className="cs-top">
-          {older ? <MeButton /> : home ? <span className="cs-top-gap" /> : <HomeButton />}
+          {/* Young reaches Me from the hub too (flows G14): the child's own picture, top-left on home */}
+          {older || home ? <MeButton /> : <HomeButton />}
           {title ? <h1 className="cs-title" tabIndex={-1}>{title}</h1> : <span className="cs-top-fill" />}
           <span className="cs-top-actions">
             {actions}

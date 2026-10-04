@@ -1,0 +1,52 @@
+{
+ "nodes": [
+  {
+   "id": "voice-v3-scan-render-list",
+   "kind": "decision",
+   "title": "VOICE v3 scan (docs/research/voice/v3/SCAN.md, 2026-10-04) decided what round 2 renders: Azure OmniIndic Diya + Hazelmori (Preview, centralindia only), Omni Arjun (unlisted), MAI-Voice-2.1 Kavya/Arjun/Dhruv, Dragon hi-IN Diya, Voice Live + OmniIndic Diya; AWS Nova 2 Sonic kiara/arjun (GA, us-east-1) and Polly Kajal generative/neural; open weights with commercial licences only: Veena (Apache-2.0 @ 8b770f9e), Svara v1, VibeVoice-Hindi 1.5B/7B, VoxCPM2, Chatterbox-Multilingual-hi (cloning only synthetic VoxCPM2 designs, no real person); controls DragonHD Arjun, Omni Diya V4, realtime marin. Same 5 round-1 lines, numbers as Hindi words, English in Latin script, one synthesis per line, no splices. Rationale: Omni expressive was the only Azure arm to beat its own plain arm (7-0) in round 1, and every open model with Hindi and a commercial licence gets one hearing. Reverse if the round-2 blind page finds no arm beating the round-1 anchor; then go straight to voice-escalation-ladder step 2 (Professional Voice from a consented teacher recording).",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-open-tts-licence-barred-2026-10",
+   "kind": "rejection",
+   "title": "Open TTS checked in the v3 scan and barred for the product by licence: Voxtral-4B-TTS (CC BY-NC 4.0), Higgs Audio v3 (non-commercial), OmniVoice (CC BY-NC weights, Apache code), Fish S2 Pro (research licence); Maya 2 is API-only. Barred for no Hindi: CosyVoice 3, IndexTTS-2, Qwen3-TTS, Sesame CSM, Kyutai, Spark-TTS, Dia2, Maya1, Chatterbox Turbo/Flash, Kokoro. Reference only. Revisit when a licence changes (record licence + revision hash).",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "voice-v3-render-ttfb-2026-10-04",
+   "kind": "measurement",
+   "title": "VOICE v3 render latency, 2026-10-04, renders/manifest*.json. Hosted, from the US sandbox (not India), n=1 per take, warm, request -> first audio byte: Polly neural Kajal 298 ms median (n=5, ap-south-1); Polly generative Kajal 364 ms (n=5, ap-southeast-1); Dragon hi-IN Diya 651 ms (n=5, eastus2); Nova 2 Sonic kiara 725 ms / arjun 658 ms (n=10 each, us-east-1, session open); OmniIndic Hazelmori 796 ms, OmniIndic Diya 821 ms, Omni Arjun 802 ms, Voice Live + OmniIndic Diya 860 ms (n=10 each, centralindia); DragonHD Arjun 1082 ms (n=5); realtime marin 1220 ms (n=10, eastus2); MAI-Voice-2.1 2661-2795 ms (n=10 each). Open weights on one L4 (g6.2xlarge spot, us-east-1, HF reference code, single stream, bf16): Veena 873-884 ms TTFB with RTF ~2.6 (slower than real time on L4); Svara 941 ms, RTF 2.58; VoxCPM2 119-148 ms first chunk, RTF 1.40; VibeVoice 7B 247-268 ms, RTF 1.62; VibeVoice 1.5B 107-127 ms, RTF 0.78; Chatterbox-hi 4378-5341 ms (no streaming, whole clip), RTF 0.56. None of these is an India latency.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "voice-v3-render-nova-fidelity",
+   "kind": "measurement",
+   "title": "Nova 2 Sonic driven by a text user turn with a 'say it verbatim' system prompt, 2026-10-04, 20 renders (2 voices x 5 lines x plain/expressive), us-east-1: kiara said every line as written (no word missed by both STTs on 10/10, apart from 'burp', which both STTs mis-spell on every arm); arjun paraphrased L5 into a different sentence and missed 14-19% of words. Its own transcript cannot be trusted as a fidelity check (it reported the line as said on arjun L5). Output speech tokens ~25/s (n=20, usageEvent / clip duration), so ~$1.08/h of teacher speech at $12/M [price secondary source]. Re-measure if Nova adds a TTS-only mode.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "voice-blind-r2-page",
+   "kind": "decision",
+   "title": "Blind round 2 page (docs/research/voice/v3/blind/index.html, 40 MP3s, key blind-key.json not published): a ranking test, 5 cards (one line + scene each), 8 clips per card from the 6 SCREEN.md arms (r1 DragonHD Diya plain anchor, Veena kavya, Chatterbox-hi design-M, OmniIndic Hazelmori plain + expressive, Nova 2 Sonic kiara plain + expressive, Omni Arjun plain); card and clip order shuffled per listener; each clip scored 1-5 on 'sounds like a real teacher talking to me' after >= 80% heard, 8 failure boxes (reading not talking, English-accented Hindi, accent changes on English words, voice changed, wrong word/number/punctuation, weird pause, weird breath/noise, too slow/fast), a note per clip and per card; name gate, ratings at ratings/<uid>/people/<name> + index ratings/<uid>. Take 1 of every open-weight cell passed the pre-registered clip gate (no take swapped). Loudness: ebur128-measured, one static gain per clip, outputs -26.4 to -26.5 LUFS, true peak <= -6.2 dBFS (n=40). Raters: owner and Gaurav, equal weight. Reverse the format if raters cannot finish 40 clips in one sitting (then split by card).",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-loudnorm-dynamic-for-stimuli",
+   "kind": "rejection",
+   "title": "Tried ffmpeg loudnorm (two-pass, linear=true with measured values) to bring blind-test clips to -26 LUFS. Broke: outputs measured -27.5 to -25.8 LUFS by ebur128 (1.7 LU spread, n=40), because loudnorm's internal meter and ebur128 disagree and loudnorm can fall back to dynamic mode, which compresses the delivery the raters are judging. Use one static volume gain per clip computed from the same ebur128 meter that checks the output: -26.4 to -26.5 LUFS (n=40, 2026-10-04).",
+   "at": "2026-10-04"
+  }
+ ],
+ "edges": [
+  {"src": "voice-v3-scan-render-list", "rel": "informs", "dst": "voice-v3-screen-2026-10-04"},
+  {"src": "voice-v3-scan-render-list", "rel": "constrained_by", "dst": "voice-ga-only-for-minors"},
+  {"src": "voice-v3-scan-render-list", "rel": "informs", "dst": "voice-escalation-ladder"},
+  {"src": "rj-open-tts-licence-barred-2026-10", "rel": "informs", "dst": "voice-v3-scan-render-list"},
+  {"src": "voice-v3-render-ttfb-2026-10-04", "rel": "informs", "dst": "voice-v3-screen-2026-10-04"},
+  {"src": "voice-v3-render-ttfb-2026-10-04", "rel": "informs", "dst": "t4-cannot-serve-3b-codec-tts"},
+  {"src": "voice-v3-render-nova-fidelity", "rel": "informs", "dst": "voice-v3-screen-2026-10-04"},
+  {"src": "voice-v3-screen-2026-10-04", "rel": "informs", "dst": "voice-blind-r2-page"},
+  {"src": "voice-blind-none-human-2026-10-04", "rel": "informs", "dst": "voice-blind-r2-page"},
+  {"src": "rj-loudnorm-dynamic-for-stimuli", "rel": "informs", "dst": "voice-blind-r2-page"}
+ ]
+}

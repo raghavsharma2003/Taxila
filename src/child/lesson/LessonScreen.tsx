@@ -20,6 +20,7 @@ import { readArtefacts, saveArtefact } from "../prefs.ts";
 import { Desk, sameSize, type DeskSize } from "./Desk.tsx";
 import { openMicAllowed, useHeadset } from "./headset.ts";
 import { useDesk } from "./useDesk.ts";
+import { cachedTextOnly } from "../plan.ts";
 import { useSyncExternalStore } from "react";
 
 export type LessonVariant = "lesson" | "practice" | "doubt";
@@ -27,7 +28,7 @@ export type LessonVariant = "lesson" | "practice" | "doubt";
 export interface LessonScreenProps {
   variant: LessonVariant;
   topicId?: string;
-  /** Doubt: the child's own problem, sent as the first typed turn once the lesson is live. */
+  /** Doubt: the child's own problem, sent with the start (routing) and as the first typed turn once the lesson is live. */
   firstText?: string;
 }
 
@@ -46,7 +47,7 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
   // LessonStartRefused becomes the designed done / capped / resting screen (Refused.tsx), never the generic error.
   const [refusal, setRefusal] = useState<StartRefusal | null>(null);
   const onRefused = useRef(setRefusal);
-  const [deps] = useState<RuntimeDeps>(() => withPurpose(bridge.deps, purposeOf(variant), (r) => onRefused.current(r)));
+  const [deps] = useState<RuntimeDeps>(() => withPurpose(bridge.deps, purposeOf(variant), (r) => onRefused.current(r), variant === "doubt" ? firstText : undefined));
   const { runtime } = useLesson(deps);
   const bs = useSyncExternalStore(bridge.store.subscribe, bridge.store.get, bridge.store.get);
   const headset = useHeadset();
@@ -71,7 +72,8 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
     variant,
     topicId: topicId || search.get("topic") || undefined,
     firstText,
-    textOnly: variant === "practice" || search.get("mode") === "text" || prefs.quiet,
+    // the parent's per-child "Tap and type only" (Controls, server truth on every phone) or this device's "Type instead"
+    textOnly: variant === "practice" || search.get("mode") === "text" || prefs.quiet || cachedTextOnly(cid),
     pttNoteSeen: prefs.pttNoteSeen,
     markPttNoteSeen: () => setPrefs({ pttNoteSeen: true }),
     openMic: openMicAllowed({ older: family === "older", wanted: prefs.talk === "open", headset, echoDemoted: bs.echoFlags >= ECHO_DEMOTE_FLAGS }),
@@ -139,14 +141,15 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
  * The runtime's deps with every start carrying `purpose`, and a 409 refusal body handed to `onRefused` (the runtime
  * still records the failure; the screen shows the refusal instead of the trouble screen). Pure wrapper (tested).
  */
-export function withPurpose(deps: RuntimeDeps, purpose: NonNullable<LessonStartRequest["purpose"]>, onRefused: (r: StartRefusal) => void): RuntimeDeps {
+export function withPurpose(deps: RuntimeDeps, purpose: NonNullable<LessonStartRequest["purpose"]>, onRefused: (r: StartRefusal) => void, firstText?: string): RuntimeDeps {
   const api = deps.api;
   if (!api) return deps;
   return {
     ...deps,
     api: {
       ...api,
-      start: (req: LessonStartRequest) => api.start({ ...req, purpose }).catch((e: unknown) => {
+      // Ask sends the child's question WITH the start (flows G11): the server routes the lesson to its topic
+      start: (req: LessonStartRequest) => api.start({ ...req, purpose, ...(firstText ? { firstText: firstText.slice(0, 500) } : {}) }).catch((e: unknown) => {
         const r = e instanceof ApiError && e.status === 409 ? refusalOf(e.body) : null;
         if (r) onRefused(r);
         throw e;

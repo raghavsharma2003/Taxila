@@ -284,3 +284,16 @@ python3 docs/research/voice/v3/screen/score.py && python3 docs/research/voice/v3
 ```
 `screen/gpu-job/` holds the `run.sh` and `job.json` used. Copy `screen/collect.py`, `screen/align.py` and the five round-1
 anchor WAVs (as `r1/`) beside them before launching. The package versions the run resolved are in `screen/align-freeze.txt`.
+
+## 8. Blind round 2 page and context nodes
+
+The page is `blind/index.html` with 40 MP3s (5 cards × 8 clips: the 6 arms in section 0, with Hazelmori and kiara each
+playing plain and expressive). `blind/build.py` builds it; `blind/blind-key.json` un-blinds it and is **never published**.
+Every open-weight cell passed the clip gate on take 1, so no take was swapped. Loudness is one static gain per clip from
+the ebur128 meter: -26.4 to -26.5 LUFS out, true peak ≤ -6.2 dBFS (n = 40).
+
+Context nodes (`context/inbox/merged/voice-v3-screen.json`, already merged; `context/inbox/voice-v3.json`, proposed):
+`voice-v3-screen-2026-10-04`, `gop-english-accent-switch-proxy`, `rj-realtime-judge-hinglish-delivery`,
+`rj-phi4mm-hindi-judge`, `rj-azure-short-audio-as-number-check`, `voice-v3-scan-render-list`,
+`rj-open-tts-licence-barred-2026-10`, `voice-v3-render-ttfb-2026-10-04`, `voice-v3-render-nova-fidelity`,
+`voice-blind-r2-page`, `rj-loudnorm-dynamic-for-stimuli`.

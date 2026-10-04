@@ -1,5 +1,5 @@
 // Guardian signup/login, consent, child profiles.
-import { randomBytes } from "crypto";
+import { randomBytes, createHash, createHmac } from "crypto";
 import { q, one, tx, GUARD_FAILED } from "../db.js";
 import { need, bad, send, HttpError } from "../http.js";
 import { createSession, destroySession, requireGuardian, requireChild } from "../auth.js";
@@ -13,13 +13,20 @@ export const PURPOSES = ["core_tutoring", "learning_profile", "memory", "transcr
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/** A 400 that names the field and a stable code, so the client words it on the field (flows G12: never a raw API string). */
+const fieldError = (field, code, message) => new HttpError(400, message, { field, code });
+
 export async function signup(req, res, body) {
-  const { email, password, name } = need(body, "email", "password", "name");
-  if (!EMAIL.test(email)) throw bad("invalid email");
-  if (password.length < 8) throw bad("password must be at least 8 characters");
+  const b = body ?? {};
+  if (!String(b.name ?? "").trim()) throw fieldError("name", "name.missing", "missing field: name");
+  if (!String(b.email ?? "").trim()) throw fieldError("email", "email.missing", "missing field: email");
+  if (!String(b.password ?? "")) throw fieldError("password", "password.missing", "missing field: password");
+  const { email, password, name } = need(b, "email", "password", "name");
+  if (!EMAIL.test(email)) throw fieldError("email", "email.bad", "invalid email");
+  if (password.length < 8) throw fieldError("password", "password.short", "password must be at least 8 characters");
   if (!body.isGuardianAdult) throw bad("a parent or guardian aged 18+ must create the account");
   const exists = await one("select 1 from guardian where lower(email) = lower($1)", [email]);
-  if (exists) throw bad("an account with this email already exists");
+  if (exists) throw fieldError("email", "email.taken", "an account with this email already exists");
   const g = await one("insert into guardian(email, pw_hash, name, phone) values (lower($1), $2, $3, $4) returning id, email, name",
     [email, await hashSecret(password), name, body.phone || null]);
   await q("insert into audit(guardian_id, action, detail) values ($1, 'signup', $2)", [g.id, { adultAttested: true }]);
@@ -62,6 +69,84 @@ export async function login(req, res, body) {
   await q("insert into audit(guardian_id, action) values ($1, 'login_ok')", [g.id]);
   await createSession(res, g.id, req.headers["user-agent"]);
   send(res, 200, { guardian: { id: g.id, email: g.email, name: g.name } });
+}
+
+// ───────────────────────────── forgot password (W2-A #4; flows G12) ─────────────────────────────
+//
+// POST /api/auth/forgot { email } → always 200 { ok: true } (never says whether the email has an account). When it
+// does, a one-time token (32 random bytes; only its sha256 is stored) good for RESET_MIN minutes is mailed through
+// Azure Communication Services Email (ACS_CONNECTION_STRING + ACS_SENDER, an Azure-managed domain). A test account
+// (@taxila.test) presenting the operator key (x-taxila-ops = TAXILA_OPS_KEY) also gets the token back as `testToken`,
+// so the production acceptance test can finish the reset without a real mailbox; no other account ever does.
+// POST /api/auth/reset { token, password } → the password is changed, every session of the account is ended, the
+// token is spent, and this browser is signed in. A used, expired or unknown token is one 400 { code: "reset.bad" }.
+export const RESET_MIN = 30;
+const sha256 = (s) => createHash("sha256").update(String(s)).digest("hex");
+const appBase = () => (process.env.TAXILA_URL || process.env.PUBLIC_BASE_URL || "https://taxila.app").replace(/\/+$/, "");
+
+/** Azure Communication Services Email, REST with HMAC-SHA256 (no SDK). Returns the operation id, or throws. */
+export async function sendAcsEmail({ to, subject, text, html }, env = process.env, fetchImpl = fetch) {
+  const cs = env.ACS_CONNECTION_STRING, sender = env.ACS_SENDER;
+  if (!cs || !sender) throw Object.assign(new Error("ACS email is not configured"), { code: "ACS_UNCONFIGURED" });
+  const parts = Object.fromEntries(cs.split(";").filter(Boolean).map((kv) => { const i = kv.indexOf("="); return [kv.slice(0, i).toLowerCase(), kv.slice(i + 1)]; }));
+  const url = new URL(`${parts.endpoint.replace(/\/+$/, "")}/emails:send?api-version=2023-03-31`);
+  const payload = JSON.stringify({ senderAddress: sender, recipients: { to: [{ address: to }] }, content: { subject, plainText: text, ...(html ? { html } : {}) } });
+  const date = new Date().toUTCString();
+  const hash = createHash("sha256").update(payload).digest("base64");
+  const toSign = `POST\n${url.pathname}${url.search}\n${date};${url.host};${hash}`;
+  const sig = createHmac("sha256", Buffer.from(parts.accesskey, "base64")).update(toSign).digest("base64");
+  const r = await fetchImpl(url, { method: "POST", body: payload, headers: { "content-type": "application/json", "x-ms-date": date, "x-ms-content-sha256": hash,
+    authorization: `HMAC-SHA256 SignedHeaders=x-ms-date;host;x-ms-content-sha256&Signature=${sig}` } });
+  if (r.status !== 202 && !r.ok) throw Object.assign(new Error(`ACS email ${r.status}`), { code: `ACS_${r.status}` });
+  return r.headers.get("operation-location") ?? r.headers.get("x-ms-request-id") ?? "sent";
+}
+
+export async function forgotPassword(req, res, body) {
+  rateLimit(req, "forgot");
+  const email = String(body?.email ?? "").trim();
+  if (!email) throw fieldError("email", "email.missing", "missing field: email");
+  if (!EMAIL.test(email)) throw fieldError("email", "email.bad", "invalid email");
+  const g = await one("select id, email, name from guardian where lower(email) = lower($1)", [email]);
+  const out = { ok: true };
+  if (g) {
+    // at most 5 links an hour per account (a mailbox is not a spam target)
+    const n = await one("select count(*)::int as n from password_reset where guardian_id = $1 and created_at > now() - interval '1 hour'", [g.id]);
+    if ((n?.n ?? 0) < 5) {
+      const token = randomBytes(32).toString("base64url");
+      await q("insert into password_reset(token_hash, guardian_id, expires_at) values ($1, $2, now() + ($3 || ' minutes')::interval)", [sha256(token), g.id, String(RESET_MIN)]);
+      await q("insert into audit(guardian_id, action) values ($1, 'password_reset_requested')", [g.id]);
+      const link = `${appBase()}/start/reset?token=${encodeURIComponent(token)}`;
+      try {
+        await sendAcsEmail({ to: g.email, subject: "Reset your Taxila password",
+          text: `Hello${g.name ? ` ${g.name}` : ""},\n\nSomeone asked to reset the password of your Taxila parent account. To set a new password, open this link within ${RESET_MIN} minutes:\n\n${link}\n\nIf you did not ask for this, you can ignore this email. Your password stays the same.\n\nTaxila` });
+      } catch (e) {
+        console.warn(`[account] reset email not sent: ${e.code ?? e.message}`);
+      }
+      const ops = process.env.TAXILA_OPS_KEY;
+      if (/@taxila\.test$/i.test(g.email) && ops && req.headers?.["x-taxila-ops"] === ops) out.testToken = token;
+    }
+  }
+  send(res, 200, out);
+}
+
+export async function resetPassword(req, res, body) {
+  rateLimit(req, "reset");
+  const token = String(body?.token ?? "");
+  const password = String(body?.password ?? "");
+  if (!password) throw fieldError("password", "password.missing", "missing field: password");
+  if (password.length < 8) throw fieldError("password", "password.short", "password must be at least 8 characters");
+  if (!/^[A-Za-z0-9_-]{20,100}$/.test(token)) throw new HttpError(400, "reset link is not valid", { code: "reset.bad" });
+  // spend the token atomically: only one request can win it
+  const r = await one(`update password_reset set used_at = now() where token_hash = $1 and used_at is null and expires_at > now() returning guardian_id`, [sha256(token)]);
+  if (!r) throw new HttpError(400, "reset link is not valid", { code: "reset.bad" });
+  await tx([
+    { text: "update guardian set pw_hash = $2 where id = $1 returning id", params: [r.guardian_id, await hashSecret(password)] },
+    { text: "delete from auth_session where guardian_id = $1", params: [r.guardian_id] },
+    { text: "insert into audit(guardian_id, action) values ($1, 'password_reset') returning id", params: [r.guardian_id] },
+  ]);
+  await createSession(res, r.guardian_id, req.headers["user-agent"]);
+  const g = await one("select id, email, name from guardian where id = $1", [r.guardian_id]);
+  send(res, 200, { guardian: g });
 }
 
 export async function logout(req, res) {

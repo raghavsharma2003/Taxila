@@ -1335,6 +1335,8 @@ export const routes = {
   "POST /api/parent/test-window": setTestWindow,
   "DELETE /api/parent/test-window": deleteTestWindow,
   "GET /api/parent/made-for": madeForList,
+  "POST /api/auth/forgot": async (req, res, body) => (await import("./account.js")).forgotPassword(req, res, body),
+  "POST /api/auth/reset": async (req, res, body) => (await import("./account.js")).resetPassword(req, res, body),
   "GET /api/parent/reports": reports,
   "GET /api/parent/report": report,
   "GET /api/parent/report/evidence": reportEvidence,

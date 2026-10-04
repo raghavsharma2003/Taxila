@@ -5,7 +5,7 @@
 // photo upload route that keeps the image on the device and in this lesson only) are NOT shown until they exist: a
 // button that does nothing is a placeholder (P6). Empty field: Ask disabled with the reason beside it.
 import { useRef, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
 import { useTeacher } from "../../ui/teacher/useTeacher.ts";
 import { ChildScreen } from "../chrome.tsx";
 import { useChild } from "../ChildShell.tsx";
@@ -21,7 +21,10 @@ export function Ask() {
   const [text, setText] = useState("");
   const [asked, setAsked] = useState<string | null>(null);
   const field = useRef<HTMLTextAreaElement>(null);
-  if (family === "young") return <Navigate to={`/c/${cid}`} replace />;
+  const [search] = useSearchParams();
+  // Homework help (STUDENT-FLOW §4.2 `homework`, parent-switched) is open to every class; plain Ask is Older only
+  const homework = search.get("homework") === "1";
+  if (family === "young" && !homework) return <Navigate to={`/c/${cid}`} replace />;
   if (asked) return <LessonScreen variant="doubt" firstText={asked} />;
   const ready = text.trim().length > 0;
   return (

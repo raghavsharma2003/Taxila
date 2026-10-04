@@ -10,6 +10,7 @@ import { t } from "../../ui/copy.ts";
 import { Glyph } from "../../ui/icons/state.tsx";
 import { Teacher } from "../../ui/teacher/Teacher.tsx";
 import type { DeskModel } from "./model.ts";
+import { tw2 } from "../../copy/en.ts";
 
 export function Summary({ m, meters, onFinish }: { m: DeskModel; meters: TapSource[]; onFinish: () => void }) {
   const s = m.summary!;
@@ -35,7 +36,8 @@ export function Summary({ m, meters, onFinish }: { m: DeskModel; meters: TapSour
       <div className="dk-summary-face">
         <Teacher teacherId={m.teacher.id} band={m.band} floor="idle" form={m.faceForm} meters={meters} label="below" lights={s.ending ? "down" : "up"} />
       </div>
-      <h1 className="dk-summary-title">{t("summary.title")}</h1>
+      {/* quick practice ends on "That's the set" (V2 §3.6; flows G10), never a score */}
+      <h1 className="dk-summary-title">{m.variant === "practice" ? tw2("practice.done") : t("summary.title")}</h1>
       {s.ending ? (
         <p className="dk-summary-note" role="status">{t("summary.ending")}</p>
       ) : cards.length === 0 ? (

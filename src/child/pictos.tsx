@@ -46,6 +46,7 @@ export const ICON = {
   more: <path {...S} d="M12 5v14 M5 12h14" />,
   type: <path {...S} d="M3.5 7h17v10h-17z M7 10h.01 M10 10h.01 M13 10h.01 M16 10h.01 M8 14h8" />,
   lock: <path {...S} d="M6 11h12v9H6z M8.5 11V8a3.5 3.5 0 0 1 7 0v3" />,
+  help: <g {...S}><circle cx="12" cy="12" r="8.5" /><path d="M9.8 9.6a2.3 2.3 0 1 1 3 2.2c-.6.2-.8.6-.8 1.2 M12 16h.01" /></g>,
   wifiOff: <path {...S} d="M4 4l16 16 M8.5 16a5 5 0 0 1 7 0 M5 12.5a10 10 0 0 1 4-2.3 M19 12.5a10 10 0 0 0-3.4-2.1 M12 19.5h.01" />,
 } as const;
 

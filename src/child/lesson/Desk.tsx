@@ -14,6 +14,7 @@ import { AnswerDock } from "./AnswerDock.tsx";
 import { Caption } from "./Caption.tsx";
 import type { DeskActions, DeskModel } from "./model.ts";
 import { PhaseLine } from "./PhaseLine.tsx";
+import { tw2 } from "../../copy/en.ts";
 import { QuestionCard } from "./QuestionCard.tsx";
 import { EndConfirm } from "./sheets/EndConfirm.tsx";
 import { HelpSheet } from "./sheets/HelpSheet.tsx";
@@ -212,13 +213,14 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
     body = (
       <div className="dk-wide" style={style}>
         <div className="dk-topwrap" style={{ gridColumn: "1 / -1" }}>{topBar}</div>
-        <div className="dk-col dk-col--left" style={{ gridColumn: 2, gridTemplateRows: `${left.padTop}px ${left.window}px ${left.gapA}px ${left.caption}px ${left.gapB}px ${left.label}px ${left.pad}px` }}>
+        {/* the "{T} · AI teacher" label sits right under her face (flows G15), then the caption; same row heights */}
+        <div className="dk-col dk-col--left" style={{ gridColumn: 2, gridTemplateRows: `${left.padTop}px ${left.window}px ${left.label}px ${left.gapA}px ${left.caption}px ${left.gapB}px ${left.pad}px` }}>
           <span />
           <div className="dk-zone dk-zone--window"><TeacherWindow m={m} media={faceMedia} floor={floor} labelBelow={false} /></div>
+          <p className="dk-ailabel" data-ai-label="">{t("teacher.label", { T: m.teacher.name })}</p>
           <span />
           <div className="dk-zone dk-zone--caption">{m.captionsOn && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor)} lang={m.caption.lang} />}</div>
           <span />
-          <p className="dk-ailabel" data-ai-label="">{t("teacher.label", { T: m.teacher.name })}</p>
         </div>
         <div className="dk-col dk-col--right" style={{ gridColumn: 4, gridTemplateRows: `${right.padTop}px ${right.card}px ${right.gapA}px ${right.tray}px ${right.gapB}px ${right.strip}px ${right.dock}px ${right.pad}px` }}>
           <span />
@@ -285,6 +287,10 @@ function TopBar({ m, a, notMeWindow, phaseLine, wide }: { m: DeskModel; a: DeskP
       </button>
       <div className="dk-title">
         {!young && m.shortTitle && <span className="dk-short">{m.shortTitle}</span>}
+        {/* Quick practice (V2 §3.6; flows G10): Older see the count, Young never a number */}
+        {!young && m.practice && (
+          <span className="dk-practice" data-testid="practice-count">{m.practice.done ? tw2("practice.done") : tw2("practice.count", { n: m.practice.n, of: m.practice.of })}</span>
+        )}
         {!young && <PhaseLine phase={m.phase} full={wide} enabled={phaseLine} />}
         {m.offlineBadge && <span className="dk-badge"><Glyph name="cloud_slash" size={18} />{t("bar.offline")}</span>}
       </div>

@@ -19,6 +19,7 @@ import type { Emotion } from "../../avatar/behaviour.ts";
 import type { UiBridge } from "../../lesson/uiBridge.ts";
 import { t } from "../../ui/copy.ts";
 import { tw } from "../../copy/en.ts";
+import { getJson } from "../../lesson/api.ts";
 import { fractionQuestion, helpAskedKey } from "./answers.ts";
 import { prepareEarcons, setEarcons } from "../../ui/sound/earcons.ts";
 import { setHapticsEnabled } from "../../ui/haptics.ts";
@@ -93,9 +94,35 @@ export function inferAsk(text: string): string | null {
   if (!flat) return null;
   const sentences = flat.split(/(?<=[.!?।…?])\s+/).filter(Boolean);
   for (let i = sentences.length - 1; i >= 0; i--) {
-    if (QUESTION.test(sentences[i])) return sentences[i].trim().slice(0, 160);
+    if (!QUESTION.test(sentences[i])) continue;
+    const q = sentences[i].trim();
+    // The question card keeps its context sentence (flows G15: "Kitne players honge?" lost "4 rows, 4 in each"): a
+    // question with no number of its own, after a sentence that carries the numbers, keeps that sentence above it.
+    const prev = i > 0 ? sentences[i - 1].trim() : "";
+    if (prev && /\d/.test(prev) && !/\d/.test(q) && !QUESTION.test(prev) && prev.length + q.length + 1 <= 160) return `${prev} ${q}`;
+    return q.slice(0, 160);
   }
   return null;
+}
+
+/** PURE. The lesson title for an Ask: the child's question, ≤ 24 chars on a word boundary (flows G11). */
+export function questionShortTitle(text: string | undefined): string {
+  const s = String(text ?? "").replace(/\s+/g, " ").trim();
+  if (!s) return "";
+  if (s.length <= 24) return s;
+  const cut = s.slice(0, 23).replace(/\s+\S*$/, "");
+  return `${cut || s.slice(0, 23)}…`;
+}
+
+/** Quick practice is a short set (V2 §3.6): the count never exceeds this. */
+export const PRACTICE_OF = 5;
+/**
+ * PURE. The practice counter: the server's ui.practice when sent (W2-C), else counted from the items the child has
+ * been asked (n = items posed, capped at 5) and the items that got a verdict (done at 5).
+ */
+export function practiceCount(server: { n: number; of: number; done?: boolean } | undefined, posed: number, graded: number): { n: number; of: number; done: boolean } {
+  if (server && server.n > 0) return { n: Math.min(server.n, server.of), of: Math.min(server.of, PRACTICE_OF), done: !!server.done };
+  return { n: Math.max(1, Math.min(posed, PRACTICE_OF)), of: PRACTICE_OF, done: graded >= PRACTICE_OF };
 }
 
 const LEGACY_TITLE_MAX = 28;
@@ -535,6 +562,33 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     }
   }, [state.phase, ctx.firstText, runtime]);
 
+  // ───────── quick practice: "Practice · n of 5", "That's the set" (flows G10) ─────────
+  const posedAsks = useRef<Set<string>>(new Set());
+  const gradedAsks = useRef<Set<string>>(new Set());
+  const [practiceTick, setPracticeTick] = useState(0);
+  useEffect(() => {
+    if (ctx.variant !== "practice" || !item.ask?.text) return;
+    let changed = false;
+    if (!posedAsks.current.has(item.ask.text)) { posedAsks.current.add(item.ask.text); changed = true; }
+    if (item.answer?.verdict && !gradedAsks.current.has(item.ask.text)) { gradedAsks.current.add(item.ask.text); changed = true; }
+    if (changed) setPracticeTick((n) => n + 1);
+  }, [ctx.variant, item.ask?.text, item.answer?.verdict]);
+  const serverPractice = (state.ui as { practice?: { n: number; of: number; done?: boolean } } | null)?.practice;
+  const practice = ctx.variant === "practice" && (serverPractice || posedAsks.current.size > 0)
+    ? practiceCount(serverPractice, posedAsks.current.size, gradedAsks.current.size) : null;
+  void practiceTick;
+
+  // ───────── "Next time": the plan's own next topic (the ONE next-topic function), read once the lesson ends ─────────
+  const [planNext, setPlanNext] = useState<string | null>(null);
+  const endedNow = state.phase === "ended";
+  useEffect(() => {
+    if (!endedNow || ctx.variant !== "lesson") return;
+    const ac = new AbortController();
+    getJson<{ topic?: { title?: string } | null }>(`/api/child/plan?childId=${encodeURIComponent(ctx.cid)}`, ac.signal)
+      .then((p) => { if (!ac.signal.aborted && p?.topic?.title) setPlanNext(p.topic.title); }, () => {});
+    return () => ac.abort();
+  }, [endedNow, ctx.variant, ctx.cid]);
+
   // ───────── the lesson log the Summary is built from (what the child did, nothing else) ─────────
   const log = useRef<DidCard[]>([]);
   useEffect(() => {
@@ -550,7 +604,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   const summary = ended ? (() => {
     if (did) {
       const cards: DidCard[] = did.cards.map((c) => ({ ask: c.ask, answer: c.answer, verified: c.tick, withHelp: c.withHelp }));
-      return { cards, tried: did.tried ?? cards.length, nextTopic: did.nextTitle, ending: state.phase === "ending" };
+      return { cards, tried: did.tried ?? cards.length, nextTopic: ctx.variant === "lesson" ? planNext ?? did.nextTitle : null, ending: state.phase === "ending" };
     }
     const verified = log.current.filter((c) => c.verified);
     const cards = (verified.length ? verified : log.current).slice(-3);
@@ -618,7 +672,10 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     tray: tray && geometryOut === "work" ? { ...tray } : null,
     answerForm,
     phase,
-    shortTitle: shortTitle || shortTitleOf(ui, state.topic),
+    // Ask is titled by the child's question, not the topic it was filed under (flows G11)
+    shortTitle: ctx.variant === "doubt" && ctx.firstText ? questionShortTitle(ctx.firstText) : shortTitle || shortTitleOf(ui, state.topic),
+    practice,
+    variant: ctx.variant,
     lastOne: young && phase === "wrap",
     thinkingSeconds: null,
     thinkingSince: !young && commitAt !== null && (floor === "thinking" || floor === "heard") ? commitAt : null,

@@ -35,9 +35,16 @@ function Explainer({ params, highlight, api }: EngineProps) {
   const [startAt, setStartAt] = useState<number | null>(() => performance.now() + delay);
   const [done, setDone] = useState(false);
   const reported = useRef(false);
+  // a new script (set_param from the next teaching move) starts its drawing afresh
+  const first = useRef(true);
   useEffect(() => {
-    if (!script) api.error(`explainer script rejected: ${norm.errors.slice(0, 3).join(",")}`);
-  }, [script, norm.errors, api]);
+    if (!script) { api.error(`explainer script rejected: ${norm.errors.slice(0, 3).join(",")}`); return; }
+    if (first.current) { first.current = false; return; }
+    setDone(false);
+    reported.current = false;
+    setStartAt(performance.now() + delay);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [script?.scriptId]);
   if (!script) return null;
   const pal = paletteFor(script.board.ground);
   return (

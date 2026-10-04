@@ -395,3 +395,13 @@
 .tc-tile .tc-face > * { width: 100% !important; height: 100% !important; }
 .hello-card .tc { width: 100%; align-items: center; }
 .hello-card .tc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* W2-A SF1: the Made for you mini-shelf (STUDENT-FLOW §9.3): a row of small pieces, no counts; scrolls inside itself */
+.madefor { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+.madefor-title { font-size: var(--t-label); font-weight: 700; }
+.madefor-list { display: flex; gap: var(--space-3); list-style: none; margin: 0; padding: 0; overflow-x: auto; overscroll-behavior-x: contain; }
+.madefor-item { flex: 0 0 auto; }
+.madefor-link { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-height: var(--hit-min); color: var(--ink); text-decoration: none; max-width: 112px; }
+.madefor-still { width: 96px; height: 72px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--tray); }
+.madefor-still--blank { display: grid; place-items: center; color: var(--ink-2); }
+.madefor-name { font-size: var(--t-meta); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }

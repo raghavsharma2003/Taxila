@@ -404,9 +404,16 @@ dj = (yy - jaw_y[None, :])
 chin_band = (xx > 440) & (xx < 615) & (np.abs(dj) < 12)
 _cb = np.clip(1.0 - dj / 9.0, 0, 1) * (jaw_y[None, :] > 600) * (1 - soft(ndi.binary_dilation(bgc, iterations=3), 1.5))
 _cb = _cb * np.where(dj > 0, 1 - soft(ndi.binary_dilation(hair_all, iterations=1), 1.5), 1.0)   # never the knot below the jaw
-_cw = np.clip((xx - 440) / 36.0, 0, 1) * np.clip((615 - xx) / 30.0, 0, 1)   # blend into the matte at the band ends
+_cw = np.clip((xx - 458) / 30.0, 0, 1) * np.clip((598 - xx) / 26.0, 0, 1)   # inside the visible neck span (452-601)   # blend into the matte at the band ends
 fa = np.where(chin_band, _cb * _cw + fa * (1 - _cw), fa)
 face_rgb = np.where((chin_band & (dj >= -2))[..., None], im, face_rgb)   # c-front's own pixels across the chin band
+# r2: outside the chin feather, the face never owns rest-visible neck below the jaw (it slid with the face on a turn as
+# a light chip at the jaw/neck corners); at rest the same neck pixels lie underneath in the body layer
+_nk = ndi.binary_dilation(body, iterations=1) & (dj > 1)
+fa = np.where(_nk, fa * _cw * chin_band, fa)
+# r2: islands (a skin chip at the left jaw that slid on turns): keep only the main component of the alpha
+_fl_, _ = ndi.label(fa > 0.02)
+fa = np.where(_fl_ == _fl_[450, 530], fa, 0)
 geom_out["rects"]["face"] = save_layer("face", face_rgb, fa)
 
 # ------------------------------------------------------------------ ears (+ studs), overscan under face/hair/locks

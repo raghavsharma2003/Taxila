@@ -1,0 +1,1119 @@
+{
+ "v": "taxila-voice-blind-r2/v1",
+ "date": "2026-10-04",
+ "built_by": "docs/research/voice/v3/blind/build.py",
+ "DO_NOT_PUBLISH": "this file un-blinds the page; publish index.html and the .mp3 files only",
+ "arms": [
+  {
+   "arm": "r1-dhd-diya-plain",
+   "gender": "F",
+   "cond": "plain"
+  },
+  {
+   "arm": "oss-veena-kavya",
+   "gender": "F",
+   "cond": "plain"
+  },
+  {
+   "arm": "oss-chatterbox-hi-vox-design-m",
+   "gender": "M",
+   "cond": "plain"
+  },
+  {
+   "arm": "az-omniindic-hazelmori",
+   "gender": "F",
+   "cond": "plain"
+  },
+  {
+   "arm": "az-omniindic-hazelmori",
+   "gender": "F",
+   "cond": "expressive"
+  },
+  {
+   "arm": "aws-nova2sonic-kiara",
+   "gender": "F",
+   "cond": "plain"
+  },
+  {
+   "arm": "aws-nova2sonic-kiara",
+   "gender": "F",
+   "cond": "expressive"
+  },
+  {
+   "arm": "az-omni-arjun-m",
+   "gender": "M",
+   "cond": "plain"
+  }
+ ],
+ "take_rule": "take 1 unless it fails a clip gate (words missed by both STTs other than 'burp', any number missed or inserted by both, an internal silence > 1.5 s); then the first take that passes; if none pass, take 1. Hosted arms have one take. Pre-registered in SCREEN.md section 1.",
+ "loudness": "ffmpeg ebur128 measurement, then one static volume gain per clip to I=-26.0 LUFS (true peak must stay <= -2.0 dBFS, no compression), then 44.1 kHz mono MP3 96 kbps; output measured with ebur128",
+ "clips": {
+  "7A9PL": {
+   "arm": "r1-dhd-diya-plain",
+   "cond": "plain",
+   "gender": "F",
+   "line": "L1-think",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/design/superhuman/voice-probe/wav/dhd-diya__L1-think__plain.wav",
+   "screen_clip_id": "r1-dhd-diya-plain__L1-think__plain__t1",
+   "input_lufs": -23.1,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -7.9,
+   "loudnorm_mode": "static gain -2.90 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.58,
+    "rate_syl_s": 3.44,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "TXFMD": {
+   "arm": "r1-dhd-diya-plain",
+   "cond": "plain",
+   "gender": "F",
+   "line": "L2-laugh",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/design/superhuman/voice-probe/wav/dhd-diya__L2-laugh__plain.wav",
+   "screen_clip_id": "r1-dhd-diya-plain__L2-laugh__plain__t1",
+   "input_lufs": -22.8,
+   "output_lufs": -26.4,
+   "output_true_peak_dbfs": -10.4,
+   "loudnorm_mode": "static gain -3.20 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.4,
+    "rate_syl_s": 5.3,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "PVLRJ": {
+   "arm": "r1-dhd-diya-plain",
+   "cond": "plain",
+   "gender": "F",
+   "line": "L3-surprise",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/design/superhuman/voice-probe/wav/dhd-diya__L3-surprise__plain.wav",
+   "screen_clip_id": "r1-dhd-diya-plain__L3-surprise__plain__t1",
+   "input_lufs": -22.5,
+   "output_lufs": -26.4,
+   "output_true_peak_dbfs": -7.6,
+   "loudnorm_mode": "static gain -3.50 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.24,
+    "rate_syl_s": 5.57,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "J94AD": {
+   "arm": "r1-dhd-diya-plain",
+   "cond": "plain",
+   "gender": "F",
+   "line": "L4-correct",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/design/superhuman/voice-probe/wav/dhd-diya__L4-correct__plain.wav",
+   "screen_clip_id": "r1-dhd-diya-plain__L4-correct__plain__t1",
+   "input_lufs": -24.2,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -7.4,
+   "loudnorm_mode": "static gain -1.80 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.36,
+    "rate_syl_s": 4.87,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "V3EFL": {
+   "arm": "r1-dhd-diya-plain",
+   "cond": "plain",
+   "gender": "F",
+   "line": "L5-wonder",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/design/superhuman/voice-probe/wav/dhd-diya__L5-wonder__plain.wav",
+   "screen_clip_id": "r1-dhd-diya-plain__L5-wonder__plain__t1",
+   "input_lufs": -25.1,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -8.4,
+   "loudnorm_mode": "static gain -0.90 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0,
+    "rate_syl_s": 5.63,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "JM9DJ": {
+   "arm": "oss-veena-kavya",
+   "cond": "plain",
+   "gender": "F",
+   "line": "L1-think",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/veena/veena__kavya__L1-think__plain__t1.wav",
+   "screen_clip_id": "oss-veena-kavya__L1-think__plain__t1",
+   "input_lufs": -20.9,
+   "output_lufs": -26.4,
+   "output_true_peak_dbfs": -7.9,
+   "loudnorm_mode": "static gain -5.10 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.44,
+    "rate_syl_s": 3.31,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "RNLYL": {
+   "arm": "oss-veena-kavya",
+   "cond": "plain",
+   "gender": "F",
+   "line": "L2-laugh",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/veena/veena__kavya__L2-laugh__plain__t1.wav",
+   "screen_clip_id": "oss-veena-kavya__L2-laugh__plain__t1",
+   "input_lufs": -21.7,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -7.8,
+   "loudnorm_mode": "static gain -4.30 dB",
+   "screen_flags": {
+    "miss_both": [
+     "burp"
+    ],
+    "num_miss_both": [],
+    "max_pause_s": 0.52,
+    "rate_syl_s": 5.39,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "VFDUL": {
+   "arm": "oss-veena-kavya",
+   "cond": "plain",
+   "gender": "F",
+   "line": "L3-surprise",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/veena/veena__kavya__L3-surprise__plain__t1.wav",
+   "screen_clip_id": "oss-veena-kavya__L3-surprise__plain__t1",
+   "input_lufs": -21.7,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -7.7,
+   "loudnorm_mode": "static gain -4.30 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.52,
+    "rate_syl_s": 5.25,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "AP43P": {
+   "arm": "oss-veena-kavya",
+   "cond": "plain",
+   "gender": "F",
+   "line": "L4-correct",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/veena/veena__kavya__L4-correct__plain__t1.wav",
+   "screen_clip_id": "oss-veena-kavya__L4-correct__plain__t1",
+   "input_lufs": -22.3,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -6.2,
+   "loudnorm_mode": "static gain -3.70 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.42,
+    "rate_syl_s": 5.2,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "ETLDN": {
+   "arm": "oss-veena-kavya",
+   "cond": "plain",
+   "gender": "F",
+   "line": "L5-wonder",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/veena/veena__kavya__L5-wonder__plain__t1.wav",
+   "screen_clip_id": "oss-veena-kavya__L5-wonder__plain__t1",
+   "input_lufs": -23.7,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -10.2,
+   "loudnorm_mode": "static gain -2.30 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.38,
+    "rate_syl_s": 5.22,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "TTRTK": {
+   "arm": "oss-chatterbox-hi-vox-design-m",
+   "cond": "plain",
+   "gender": "M",
+   "line": "L1-think",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/chatterbox-hi/chatterbox-hi__vox-design-M__L1-think__plain__t1.wav",
+   "screen_clip_id": "oss-chatterbox-hi-vox-design-m__L1-think__plain__t1",
+   "input_lufs": -25.1,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -10.1,
+   "loudnorm_mode": "static gain -0.90 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0,
+    "rate_syl_s": 4.8,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "TWXNU": {
+   "arm": "oss-chatterbox-hi-vox-design-m",
+   "cond": "plain",
+   "gender": "M",
+   "line": "L2-laugh",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/chatterbox-hi/chatterbox-hi__vox-design-M__L2-laugh__plain__t1.wav",
+   "screen_clip_id": "oss-chatterbox-hi-vox-design-m__L2-laugh__plain__t1",
+   "input_lufs": -24.0,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -9.3,
+   "loudnorm_mode": "static gain -2.00 dB",
+   "screen_flags": {
+    "miss_both": [
+     "burp"
+    ],
+    "num_miss_both": [],
+    "max_pause_s": 0.6,
+    "rate_syl_s": 4.97,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "AHKMP": {
+   "arm": "oss-chatterbox-hi-vox-design-m",
+   "cond": "plain",
+   "gender": "M",
+   "line": "L3-surprise",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/chatterbox-hi/chatterbox-hi__vox-design-M__L3-surprise__plain__t1.wav",
+   "screen_clip_id": "oss-chatterbox-hi-vox-design-m__L3-surprise__plain__t1",
+   "input_lufs": -23.6,
+   "output_lufs": -26.4,
+   "output_true_peak_dbfs": -10.2,
+   "loudnorm_mode": "static gain -2.40 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.44,
+    "rate_syl_s": 5.26,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "NKK9H": {
+   "arm": "oss-chatterbox-hi-vox-design-m",
+   "cond": "plain",
+   "gender": "M",
+   "line": "L4-correct",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/chatterbox-hi/chatterbox-hi__vox-design-M__L4-correct__plain__t1.wav",
+   "screen_clip_id": "oss-chatterbox-hi-vox-design-m__L4-correct__plain__t1",
+   "input_lufs": -23.9,
+   "output_lufs": -26.4,
+   "output_true_peak_dbfs": -9.6,
+   "loudnorm_mode": "static gain -2.10 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.32,
+    "rate_syl_s": 5.59,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "ERLFF": {
+   "arm": "oss-chatterbox-hi-vox-design-m",
+   "cond": "plain",
+   "gender": "M",
+   "line": "L5-wonder",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/chatterbox-hi/chatterbox-hi__vox-design-M__L5-wonder__plain__t1.wav",
+   "screen_clip_id": "oss-chatterbox-hi-vox-design-m__L5-wonder__plain__t1",
+   "input_lufs": -24.8,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -10.5,
+   "loudnorm_mode": "static gain -1.20 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0,
+    "rate_syl_s": 6.71,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "FRHLE": {
+   "arm": "az-omniindic-hazelmori",
+   "cond": "plain",
+   "gender": "F",
+   "line": "L1-think",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/az-omniindic-hazelmori/L1-think__plain.wav",
+   "screen_clip_id": "az-omniindic-hazelmori__L1-think__plain__t1",
+   "input_lufs": -23.0,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -8.8,
+   "loudnorm_mode": "static gain -3.00 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.4,
+    "rate_syl_s": 3.59,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "HDXLT": {
+   "arm": "az-omniindic-hazelmori",
+   "cond": "plain",
+   "gender": "F",
+   "line": "L2-laugh",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/az-omniindic-hazelmori/L2-laugh__plain.wav",
+   "screen_clip_id": "az-omniindic-hazelmori__L2-laugh__plain__t1",
+   "input_lufs": -19.8,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -9.1,
+   "loudnorm_mode": "static gain -6.20 dB",
+   "screen_flags": {
+    "miss_both": [
+     "burp"
+    ],
+    "num_miss_both": [],
+    "max_pause_s": 0.42,
+    "rate_syl_s": 5.48,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "TJRCV": {
+   "arm": "az-omniindic-hazelmori",
+   "cond": "plain",
+   "gender": "F",
+   "line": "L3-surprise",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/az-omniindic-hazelmori/L3-surprise__plain.wav",
+   "screen_clip_id": "az-omniindic-hazelmori__L3-surprise__plain__t1",
+   "input_lufs": -20.2,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -11.1,
+   "loudnorm_mode": "static gain -5.80 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.4,
+    "rate_syl_s": 5.56,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "3DJE3": {
+   "arm": "az-omniindic-hazelmori",
+   "cond": "plain",
+   "gender": "F",
+   "line": "L4-correct",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/az-omniindic-hazelmori/L4-correct__plain.wav",
+   "screen_clip_id": "az-omniindic-hazelmori__L4-correct__plain__t1",
+   "input_lufs": -24.2,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -8.3,
+   "loudnorm_mode": "static gain -1.80 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.72,
+    "rate_syl_s": 4.82,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "DNTYC": {
+   "arm": "az-omniindic-hazelmori",
+   "cond": "plain",
+   "gender": "F",
+   "line": "L5-wonder",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/az-omniindic-hazelmori/L5-wonder__plain.wav",
+   "screen_clip_id": "az-omniindic-hazelmori__L5-wonder__plain__t1",
+   "input_lufs": -23.9,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -7.4,
+   "loudnorm_mode": "static gain -2.10 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.42,
+    "rate_syl_s": 6.08,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "TRYWE": {
+   "arm": "az-omniindic-hazelmori",
+   "cond": "expressive",
+   "gender": "F",
+   "line": "L1-think",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": [
+      "words"
+     ]
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/az-omniindic-hazelmori/L1-think__expressive.wav",
+   "screen_clip_id": "az-omniindic-hazelmori__L1-think__expressive__t1",
+   "input_lufs": -24.2,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -8.1,
+   "loudnorm_mode": "static gain -1.80 dB",
+   "screen_flags": {
+    "miss_both": [
+     "tens"
+    ],
+    "num_miss_both": [],
+    "max_pause_s": 0.86,
+    "rate_syl_s": 3.61,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "VX9DT": {
+   "arm": "az-omniindic-hazelmori",
+   "cond": "expressive",
+   "gender": "F",
+   "line": "L2-laugh",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/az-omniindic-hazelmori/L2-laugh__expressive.wav",
+   "screen_clip_id": "az-omniindic-hazelmori__L2-laugh__expressive__t1",
+   "input_lufs": -20.6,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -10.0,
+   "loudnorm_mode": "static gain -5.40 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.5,
+    "rate_syl_s": 5.14,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "XYVCU": {
+   "arm": "az-omniindic-hazelmori",
+   "cond": "expressive",
+   "gender": "F",
+   "line": "L3-surprise",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/az-omniindic-hazelmori/L3-surprise__expressive.wav",
+   "screen_clip_id": "az-omniindic-hazelmori__L3-surprise__expressive__t1",
+   "input_lufs": -22.7,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -10.7,
+   "loudnorm_mode": "static gain -3.30 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 1.02,
+    "rate_syl_s": 4.14,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "LMNPR": {
+   "arm": "az-omniindic-hazelmori",
+   "cond": "expressive",
+   "gender": "F",
+   "line": "L4-correct",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/az-omniindic-hazelmori/L4-correct__expressive.wav",
+   "screen_clip_id": "az-omniindic-hazelmori__L4-correct__expressive__t1",
+   "input_lufs": -21.8,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -7.9,
+   "loudnorm_mode": "static gain -4.20 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 1.02,
+    "rate_syl_s": 4.06,
+    "mid_pauses_ge_0.3s": [
+     {
+      "after": "बटा",
+      "s": 0.4
+     }
+    ]
+   }
+  },
+  "EEDTA": {
+   "arm": "az-omniindic-hazelmori",
+   "cond": "expressive",
+   "gender": "F",
+   "line": "L5-wonder",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/az-omniindic-hazelmori/L5-wonder__expressive.wav",
+   "screen_clip_id": "az-omniindic-hazelmori__L5-wonder__expressive__t1",
+   "input_lufs": -26.1,
+   "output_lufs": -26.4,
+   "output_true_peak_dbfs": -7.3,
+   "loudnorm_mode": "static gain +0.10 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.7,
+    "rate_syl_s": 4.66,
+    "mid_pauses_ge_0.3s": [
+     {
+      "after": "में",
+      "s": 0.36
+     }
+    ]
+   }
+  },
+  "XJMYV": {
+   "arm": "aws-nova2sonic-kiara",
+   "cond": "plain",
+   "gender": "F",
+   "line": "L1-think",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/aws-nova2sonic-kiara/L1-think__plain.wav",
+   "screen_clip_id": "aws-nova2sonic-kiara__L1-think__plain__t1",
+   "input_lufs": -21.8,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -10.5,
+   "loudnorm_mode": "static gain -4.20 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.4,
+    "rate_syl_s": 3.71,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "XVMMX": {
+   "arm": "aws-nova2sonic-kiara",
+   "cond": "plain",
+   "gender": "F",
+   "line": "L2-laugh",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/aws-nova2sonic-kiara/L2-laugh__plain.wav",
+   "screen_clip_id": "aws-nova2sonic-kiara__L2-laugh__plain__t1",
+   "input_lufs": -23.4,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -9.8,
+   "loudnorm_mode": "static gain -2.60 dB",
+   "screen_flags": {
+    "miss_both": [
+     "burp"
+    ],
+    "num_miss_both": [],
+    "max_pause_s": 1.14,
+    "rate_syl_s": 4.17,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "LAUDU": {
+   "arm": "aws-nova2sonic-kiara",
+   "cond": "plain",
+   "gender": "F",
+   "line": "L3-surprise",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/aws-nova2sonic-kiara/L3-surprise__plain.wav",
+   "screen_clip_id": "aws-nova2sonic-kiara__L3-surprise__plain__t1",
+   "input_lufs": -21.3,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -11.3,
+   "loudnorm_mode": "static gain -4.70 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.56,
+    "rate_syl_s": 5.19,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "PV4WL": {
+   "arm": "aws-nova2sonic-kiara",
+   "cond": "plain",
+   "gender": "F",
+   "line": "L4-correct",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/aws-nova2sonic-kiara/L4-correct__plain.wav",
+   "screen_clip_id": "aws-nova2sonic-kiara__L4-correct__plain__t1",
+   "input_lufs": -22.3,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -10.6,
+   "loudnorm_mode": "static gain -3.70 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.62,
+    "rate_syl_s": 4.72,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "NCEKR": {
+   "arm": "aws-nova2sonic-kiara",
+   "cond": "plain",
+   "gender": "F",
+   "line": "L5-wonder",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/aws-nova2sonic-kiara/L5-wonder__plain.wav",
+   "screen_clip_id": "aws-nova2sonic-kiara__L5-wonder__plain__t1",
+   "input_lufs": -22.8,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -10.2,
+   "loudnorm_mode": "static gain -3.20 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.66,
+    "rate_syl_s": 4.51,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "JTWFY": {
+   "arm": "aws-nova2sonic-kiara",
+   "cond": "expressive",
+   "gender": "F",
+   "line": "L1-think",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/aws-nova2sonic-kiara/L1-think__expressive.wav",
+   "screen_clip_id": "aws-nova2sonic-kiara__L1-think__expressive__t1",
+   "input_lufs": -20.7,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -11.2,
+   "loudnorm_mode": "static gain -5.30 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.38,
+    "rate_syl_s": 3.69,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "4JWUN": {
+   "arm": "aws-nova2sonic-kiara",
+   "cond": "expressive",
+   "gender": "F",
+   "line": "L2-laugh",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/aws-nova2sonic-kiara/L2-laugh__expressive.wav",
+   "screen_clip_id": "aws-nova2sonic-kiara__L2-laugh__expressive__t1",
+   "input_lufs": -21.1,
+   "output_lufs": -26.4,
+   "output_true_peak_dbfs": -11.6,
+   "loudnorm_mode": "static gain -4.90 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.96,
+    "rate_syl_s": 4.24,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "RXCPP": {
+   "arm": "aws-nova2sonic-kiara",
+   "cond": "expressive",
+   "gender": "F",
+   "line": "L3-surprise",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/aws-nova2sonic-kiara/L3-surprise__expressive.wav",
+   "screen_clip_id": "aws-nova2sonic-kiara__L3-surprise__expressive__t1",
+   "input_lufs": -21.2,
+   "output_lufs": -26.4,
+   "output_true_peak_dbfs": -11.2,
+   "loudnorm_mode": "static gain -4.80 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.72,
+    "rate_syl_s": 5.11,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "N9A7J": {
+   "arm": "aws-nova2sonic-kiara",
+   "cond": "expressive",
+   "gender": "F",
+   "line": "L4-correct",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/aws-nova2sonic-kiara/L4-correct__expressive.wav",
+   "screen_clip_id": "aws-nova2sonic-kiara__L4-correct__expressive__t1",
+   "input_lufs": -22.5,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -9.7,
+   "loudnorm_mode": "static gain -3.50 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.56,
+    "rate_syl_s": 4.7,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "C7HWF": {
+   "arm": "aws-nova2sonic-kiara",
+   "cond": "expressive",
+   "gender": "F",
+   "line": "L5-wonder",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/aws-nova2sonic-kiara/L5-wonder__expressive.wav",
+   "screen_clip_id": "aws-nova2sonic-kiara__L5-wonder__expressive__t1",
+   "input_lufs": -23.0,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -9.6,
+   "loudnorm_mode": "static gain -3.00 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.32,
+    "rate_syl_s": 4.62,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "L4EAY": {
+   "arm": "az-omni-arjun-m",
+   "cond": "plain",
+   "gender": "M",
+   "line": "L1-think",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/az-omni-arjun-m/L1-think__plain.wav",
+   "screen_clip_id": "az-omni-arjun-m__L1-think__plain__t1",
+   "input_lufs": -17.0,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -9.3,
+   "loudnorm_mode": "static gain -9.00 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.64,
+    "rate_syl_s": 3.53,
+    "mid_pauses_ge_0.3s": [
+     {
+      "after": "हुआ",
+      "s": 0.42
+     }
+    ]
+   }
+  },
+  "RVXMM": {
+   "arm": "az-omni-arjun-m",
+   "cond": "plain",
+   "gender": "M",
+   "line": "L2-laugh",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/az-omni-arjun-m/L2-laugh__plain.wav",
+   "screen_clip_id": "az-omni-arjun-m__L2-laugh__plain__t1",
+   "input_lufs": -17.4,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -9.0,
+   "loudnorm_mode": "static gain -8.60 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.6,
+    "rate_syl_s": 4.29,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "PPD4Y": {
+   "arm": "az-omni-arjun-m",
+   "cond": "plain",
+   "gender": "M",
+   "line": "L3-surprise",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/az-omni-arjun-m/L3-surprise__plain.wav",
+   "screen_clip_id": "az-omni-arjun-m__L3-surprise__plain__t1",
+   "input_lufs": -16.0,
+   "output_lufs": -26.4,
+   "output_true_peak_dbfs": -10.3,
+   "loudnorm_mode": "static gain -10.00 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.66,
+    "rate_syl_s": 4.96,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "CPCJX": {
+   "arm": "az-omni-arjun-m",
+   "cond": "plain",
+   "gender": "M",
+   "line": "L4-correct",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/az-omni-arjun-m/L4-correct__plain.wav",
+   "screen_clip_id": "az-omni-arjun-m__L4-correct__plain__t1",
+   "input_lufs": -18.7,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -9.2,
+   "loudnorm_mode": "static gain -7.30 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.52,
+    "rate_syl_s": 4.68,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "UREUJ": {
+   "arm": "az-omni-arjun-m",
+   "cond": "plain",
+   "gender": "M",
+   "line": "L5-wonder",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v3/renders/az-omni-arjun-m/L5-wonder__plain.wav",
+   "screen_clip_id": "az-omni-arjun-m__L5-wonder__plain__t1",
+   "input_lufs": -18.0,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -8.4,
+   "loudnorm_mode": "static gain -8.00 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "max_pause_s": 0.62,
+    "rate_syl_s": 4.43,
+    "mid_pauses_ge_0.3s": []
+   }
+  }
+ }
+}

@@ -10,12 +10,18 @@
 //     item in the background for the next time it is posed.
 //   explain / reteach / worked_example / show_module: an UNBOUND engine show (never graded).
 //   teach-back / wrap / safeguard / break / celebrate: the module closes.
+// W2-B (Studio ladder rungs 4-5): a teaching move with no engine to show gets the explainer@1 board (an animated
+// explanation or a diagram: server/forge/explainer/**); the move BEFORE explain (the hook) asks for the topic's model
+// fill when it has no static one, so her preamble covers the fill. W2-B #1 "the teacher sees the screen": whatever is
+// mounted after the move is written into the move's content as ONE telegraphic facts row (moduleFacts → factsRow), so
+// her line can only point at values that are on screen.
 // Every mounted engine id is a member of ENGINES and every mode one of the engine's own (tests/director-mounts.test.mjs
 // over every kit); an engine the client reported failing in this lesson is never mounted again (noteModuleEvents).
 import { readFileSync } from "node:fs";
 import { ENGINES, planEngine, moduleCommands, validModes } from "../../shared/engine-catalog.js";
 import { peekLessonFill, wantLessonFill } from "../forge/lesson-fills.js";
 import { gradeEvent } from "../forge/grade.js";
+import { explainerFor, wantExplainer } from "../forge/explainer/lesson.js";
 
 const TOPIC_MAP = JSON.parse(readFileSync(new URL("../../shared/engine-topic-map.json", import.meta.url), "utf8"));
 
@@ -35,6 +41,8 @@ export function engineId(hint) {
   return `${base}@${ver}`;
 }
 
+/** The Director's band ("B1".."B4") for the explainer's pace; anything else is B3. */
+const bandOf4 = (band) => (/^B[1-4]$/.test(String(band)) ? band : "B3");
 /** "B1".."B4" (director/state.js bandOf) or the ctx age band → the engines' age band. */
 const ageBandOf = (band, s) => s?.ctx?.ageBand ?? (band === "B1" || band === "B2" ? "6-9" : "10-15");
 
@@ -57,7 +65,13 @@ function unbind(plan) {
  * @param {{ kit: any, item: any, move: any, lang: string, band?: string, representation?: string }} args
  * @returns {import("../../shared/contracts").ModuleCommand[]}
  */
-export function planModule(s, { kit, item, move, lang, band, representation }) {
+export function planModule(s, args) {
+  const cmds = planModuleInner(s, args);
+  writeFactsRow(s);
+  return cmds;
+}
+
+function planModuleInner(s, { kit, item, move, lang, band, representation }) {
   const cmds = [];
   const close = () => {
     if (s.module) cmds.push({ op: "unmount", moduleId: s.module.id });
@@ -70,16 +84,28 @@ export function planModule(s, { kit, item, move, lang, band, representation }) {
     const r = moduleCommands(cur, plan, `m${s.turn}`);
     cmds.push(...r.cmds);
     s.module = r.module;
+    // the verified key a bound plan's params carry: never written into the facts row (the teacher has it as the key line)
+    if (plan.key != null) s.module.key = String(plan.key);
     return cmds;
   };
 
   if (SHOW_MOVES.has(move.kind)) {
-    const plan = mountable(s, unbind(planEngine({ kit, item: item ?? null, lang, mode: "show", representation, topicMap: TOPIC_MAP, ageBand })));
+    // The values on screen come from the SAME text her content lines carry (live-content audit 6: she said quarters while
+    // the line showed fifths): a move whose content is the worked example shows the worked example, else the item.
+    const fromWorked = (s.lastContent ?? []).some((l) => typeof l === "string" && l.startsWith("worked example:"));
+    const source = fromWorked ? null : item ?? null;
+    const plan = mountable(s, unbind(planEngine({ kit, item: source, lang, mode: "show", representation, topicMap: TOPIC_MAP, ageBand })));
     if (plan) return apply(plan);
+    // rungs 4-5: the board explanation / diagram (code pick from the same text, the topic library, the lesson's fill)
+    const ex = ENGINES["explainer@1"] && !(s.failedEngines ?? []).includes("explainer@1")
+      ? explainerFor({ lessonId: s.ctx?.sessionId, kit, item: source, band: bandOf4(band) }) : null;
+    if (ex) return apply({ engine: "explainer@1", params: ex.params, goal: undefined, bindItem: false, itemId: null, predict: false });
     // nothing to show: a module that belongs to another item goes; an unbound show stays up through the teach steps
     if (cur?.itemId && item && cur.itemId !== item.id) close();
     return cmds;
   }
+  // The move before explain: warm the topic's board fill (a no-op when the topic has a code pick or a library entry).
+  if (move.kind === "hook" || move.kind === "greet") wantExplainer({ lessonId: s.ctx?.sessionId, kit, band: bandOf4(band) });
 
   if (ITEM_MOVES.has(move.kind) && item) {
     const predict = PREDICT_KINDS.has(item.kind) || !!item.diagnostic;
@@ -127,6 +153,89 @@ function learnerOf(s) {
   const c = s.ctx ?? {};
   return { child: { firstName: c.firstName ?? null, classLevel: c.classLevel ?? 6, languagePref: c.lang ?? "hinglish", interests: c.interests ?? [] },
     recentWrong: [], activeMisconceptions: [], pKnown: {} };
+}
+
+// ───────────────────────────── the teacher sees the screen (W2-B #1) ─────────────────────────────
+
+/**
+ * What each engine shows, as the param names the child can SEE (the views hide targets, answers and questions behind
+ * their own widgets: those names are never listed here). Values come from the mount params, i.e. the same values the
+ * frame draws from.
+ */
+const VISIBLE = {
+  "fraction-bars@1": ["mode", "denominators", "numerators", "locked"],
+  "number-line@1": ["mode", "numberKind", "min", "max", "partition", "step", "start", "jumps", "labels", "point"],
+  "collections@1": ["mode", "n", "left", "right", "layout", "item"],
+  "place-value@1": ["mode", "places", "grouping", "a", "b"],
+  "fractions@1": ["mode", "model", "parts", "fractions", "operands"],
+  "multiply-divide@1": ["mode", "a", "b", "n", "k"],
+  "geoboard@1": ["mode", "w", "h", "shape", "unit"],
+  "data-graphs@1": ["mode", "view", "labels", "values", "scale", "icon"],
+  "patterns@1": ["mode", "core", "shown", "gridStart", "gridCount"],
+  "measure@1": ["tool", "mode", "unit", "min", "max", "start"],
+  "sky@1": ["scene", "mode", "observer"],
+  "motion-lab@1": ["scene", "mode", "distance", "time", "surfaces"],
+  "water-cycle@1": ["scene", "mode", "landcover"],
+};
+/** The StudioFacts kind (shared/studio.ts) of an engine: what sort of thing is on screen. */
+const KIND = { "sky@1": "simulation", "motion-lab@1": "simulation", "water-cycle@1": "simulation", "scene@1": "game", "explainer@1": "animation" };
+
+const factValue = (v) => {
+  if (typeof v === "number" && Number.isFinite(v)) return v;
+  if (typeof v === "string" && v.length <= 24 && !/[<>{}\n]/.test(v)) return v;
+  if (typeof v === "boolean") return v ? "yes" : "no";
+  if (Array.isArray(v) && v.length && v.length <= 8) {
+    const flat = v.map((x) => (Array.isArray(x) ? x.join("/") : typeof x === "number" || typeof x === "string" ? String(x) : null));
+    if (flat.every((x) => x !== null && x.length <= 12)) return flat.join(" ").slice(0, 40);
+  }
+  return null;
+};
+
+/**
+ * What is on screen, as values (LIVE-STUDIO §10 StudioFacts: the one facts shape the Brain reads whatever is on screen,
+ * shared with Studio). null when nothing is mounted. A bound plan's verified key never appears (it is the item's answer).
+ * @param {any} m  s.module
+ * @returns {{ kind: string, archetype: string, onScreen: Record<string, string|number>, itemId?: string } | null}
+ */
+export function moduleFacts(m) {
+  if (!m?.id || !m.engine) return null;
+  const onScreen = {};
+  const key = m.key != null ? String(m.key) : null;
+  if (m.engine === "explainer@1") {
+    const f = m.params?.script?.facts;
+    for (const [k, v] of Object.entries(f?.onScreen ?? {})) { const x = factValue(v); if (x !== null) onScreen[k] = x; }
+    return { kind: f?.kind ?? "animation", archetype: f?.archetype ?? m.params?.template ?? "explainer@1", onScreen };
+  }
+  if (m.engine === "scene@1") {
+    const sc = m.params?.scene ?? m.params;
+    if (sc?.meta?.template) onScreen.template = String(sc.meta.template);
+    const ch = (sc?.nodes ?? []).find((n) => n?.kind === "choice");
+    if (ch?.options?.length) onScreen.choices = ch.options.length;
+    return { kind: "game", archetype: "scene@1", onScreen, ...(m.g1?.itemId ? { itemId: m.g1.itemId } : {}) };
+  }
+  for (const name of VISIBLE[m.engine] ?? []) {
+    const x = factValue(m.params?.[name]);
+    if (x === null || (key !== null && String(x) === key)) continue;
+    onScreen[name] = x;
+  }
+  if (m.awaitingReveal) onScreen.state = "child predicts first";
+  return { kind: KIND[m.engine] ?? "simulation", archetype: m.engine, onScreen, ...(m.itemId ? { itemId: m.itemId } : {}) };
+}
+
+export const FACTS_ROW_PREFIX = "on screen now (values; point only at these, never at what is hidden): ";
+/** StudioFacts → one telegraphic row ("engine · name value · …"): values, never a sentence she could recite. */
+export function factsRow(f) {
+  if (!f) return null;
+  const vals = Object.entries(f.onScreen).map(([k, v]) => `${k.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase()} ${v}`);
+  return `${FACTS_ROW_PREFIX}${[f.archetype.replace(/@\d+$/, ""), ...vals].join(" · ")}`.slice(0, 240);
+}
+
+/** Replace the move's facts row with the one for what is mounted now (none when nothing is). Mutates s.lastContent. */
+function writeFactsRow(s) {
+  const content = (s.lastContent ?? []).filter((l) => !(typeof l === "string" && l.startsWith(FACTS_ROW_PREFIX)));
+  const row = factsRow(moduleFacts(s.module));
+  if (row) content.push(row);
+  if (row || content.length !== (s.lastContent ?? []).length) s.lastContent = content;
 }
 
 /**

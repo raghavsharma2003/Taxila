@@ -13,7 +13,7 @@
 // "resume" is shown as "start" until the lesson route can resume a lesson by id (RESUME_BY_ID): a "Continue" card whose
 // tap starts a new lesson would be a signal that lies (§3.4). The server's own state stays in `serverState`.
 import { useCallback, useEffect, useState } from "react";
-import type { ChildHomeState, ChildPlanResponse, DidCard } from "../../shared/contracts.ts";
+import type { ChildHomeState, ChildPlanResponse, DidCard, MadeForItem } from "../../shared/contracts.ts";
 import { ApiError, getJson } from "../lesson/api.ts";
 import { planDay, readMarker } from "./day.ts";
 
@@ -36,12 +36,18 @@ export interface HomePlan {
   /** "server": the plan read answered; "fallback": it failed and this is the designed fallback; "loading": first paint. */
   source: "server" | "fallback" | "loading";
   signedOut?: boolean;
+  /** W2-A SF1: today's made-for pieces (the mini-shelf, hidden while empty). */
+  madeFor: MadeForItem[];
+  /** test_window: the school test's subject (calm copy, never a countdown). */
+  testWindow: { subject: string; from: string; to: string } | null;
+  /** The parent's per-child "Tap and type only" (server truth, any device). */
+  textOnly: boolean;
 }
 
-const STATES = new Set<ChildHomeState>(["start", "first", "resume", "done", "capped", "resting"]);
+const STATES = new Set<ChildHomeState>(["start", "first", "resume", "done", "capped", "resting", "homework", "test_window", "safety_hold"]);
 const cacheKey = (cid: string) => `taxila.child.${cid}.plan`;
 
-interface Cached { topic: HomePlan["topic"]; surfaces: HomePlan["surfaces"]; day: string }
+interface Cached { topic: HomePlan["topic"]; surfaces: HomePlan["surfaces"]; day: string; hold?: boolean; textOnly?: boolean }
 
 function readCache(cid: string): Cached | null {
   try {
@@ -79,6 +85,9 @@ export function fromServer(r: ChildPlanResponse): HomePlan {
     surfaces: { ...ALL_SURFACES, ...(r.surfaces ?? {}) },
     packReady: !!r.packReady,
     source: "server",
+    madeFor: Array.isArray(r.madeFor) ? r.madeFor.slice(0, 3) : [],
+    testWindow: r.testWindow ?? null,
+    textOnly: !!r.textOnly,
   };
 }
 
@@ -87,7 +96,10 @@ export function fallbackPlan(opts: { online: boolean; cached: Cached | null; don
   const base = {
     topic: opts.cached?.topic ?? null, resume: null, did: [], tried: null, opensAt: null,
     surfaces: opts.cached?.surfaces ?? ALL_SURFACES, packReady: false, serverState: null, source: "fallback" as const,
+    madeFor: [], testWindow: null, textOnly: !!opts.cached?.textOnly,
   };
+  // a safety hold seen on this device holds through a plan outage: the fallback never offers a lesson over it
+  if (opts.cached?.hold) return { ...base, state: "safety_hold" };
   if (!opts.online) return { ...base, state: "offline" };
   if (opts.doneToday) return { ...base, state: "done" };
   return { ...base, state: "start" };
@@ -97,7 +109,7 @@ export function fallbackPlan(opts: { online: boolean; cached: Cached | null; don
 export function practiceOffered(plan: Pick<HomePlan, "source" | "state" | "packReady">): boolean {
   if (plan.source === "loading") return false;
   if (plan.state === "offline") return plan.packReady;
-  return plan.state !== "capped" && plan.state !== "resting";
+  return plan.state !== "capped" && plan.state !== "resting" && plan.state !== "safety_hold";
 }
 
 export function isPlanResponse(r: unknown): r is ChildPlanResponse {
@@ -118,7 +130,7 @@ export async function readPlan(cid: string, signal?: AbortSignal): Promise<HomeP
     const r = await getJson<unknown>(`/api/child/plan?childId=${encodeURIComponent(cid)}`, ac.signal).finally(() => clearTimeout(timer));
     if (isPlanResponse(r)) {
       const p = fromServer(r);
-      writeCache(cid, { topic: p.topic, surfaces: p.surfaces, day: r.day });
+      writeCache(cid, { topic: p.topic, surfaces: p.surfaces, day: r.day, hold: r.state === "safety_hold", textOnly: p.textOnly });
       return p;
     }
   } catch (e) {
@@ -130,7 +142,12 @@ export async function readPlan(cid: string, signal?: AbortSignal): Promise<HomeP
 
 /** First paint, before the read answers: `state` is a placeholder the home never acts on (source "loading"). */
 const LOADING: HomePlan = { state: "start", topic: null, resume: null, did: [], tried: null, opensAt: null, surfaces: ALL_SURFACES, packReady: false,
-  serverState: null, source: "loading" };
+  serverState: null, source: "loading", madeFor: [], testWindow: null, textOnly: false };
+
+/** The per-child "Tap and type only" the last plan read carried (the lesson reads it before its start request). */
+export function cachedTextOnly(cid: string): boolean {
+  return !!readCache(cid)?.textOnly;
+}
 
 /** The home's plan, re-read on `online` / `offline` and when `reload()` is called (Try again). */
 export function usePlan(cid: string): { plan: HomePlan; reload: () => void } {

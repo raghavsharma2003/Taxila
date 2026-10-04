@@ -117,6 +117,10 @@ export interface DeskModel {
   openWhileSpeaking?: boolean;
   /** The Older pad shows a "/" key (a fraction question; live-content 10). */
   padSlash?: boolean;
+  /** Quick practice: item n of `of` (≤ 5); `done` = "That's the set" (W2-A; ui.practice from W2-C, else counted here). */
+  practice?: { n: number; of: number; done: boolean } | null;
+  /** The lesson variant (practice: the Summary reads "That's the set"). */
+  variant?: "lesson" | "practice" | "doubt";
 }
 
 export interface DeskActions {
