@@ -22,13 +22,18 @@ import gnm_model as G
 import v3data
 
 CH = G.CH
-BD = os.path.join(CH, "bakeoff-gnm", "teal")
-V3 = os.path.join(CH, "bakeoff-gnm", "v3dump", "H")
-PICK = os.path.join(CH, "bakeoff-gnm", "v3shots", "procedural-v3_pick.json")
+LOOK_ = G.look_from_argv(); PTH = G.paths(LOOK_)
+BD = PTH["BD"]
+# --parts (slate / plum): the correspondence for the PARTS field and the placement is built from THIS look's own source
+# face (the main pipeline's iteration-2 MPFB bust that carries its hair, glasses and garment), not v3 teal's
+import sys as _sys
+PARTS = "--parts" in _sys.argv
+V3 = os.path.join(PTH["SRC"], "H") if PARTS else os.path.join(CH, "bakeoff-gnm", "v3dump", "H")
+PICK = os.path.join(CH, "bakeoff-gnm", f"srcshots-{LOOK_}", "___teacher_pick.json") if PARTS else os.path.join(CH, "bakeoff-gnm", "v3shots", "procedural-v3_pick.json")
 t0 = time.time()
 m = G.GNM()
 C = G.mp_correspondence()
-fit = json.load(open(os.path.join(G.ART, "fit", "teal.json")))
+fit = json.load(open(PTH["FIT"]))
 cid = np.array(fit["identity"])
 Vg = m.bind(cid)
 M3, B3 = v3data.load(V3)
@@ -40,7 +45,7 @@ T3 = F3["targets"].astype(np.float64)
 
 # ---------------------------------------------------------------- a+b: landmarks and the similarity
 pk = json.load(open(PICK))
-views = ["procedural-v3_yaw0", "procedural-v3_yaw25", "procedural-v3_yaw-25"]
+views = ["___teacher_yaw0", "___teacher_yaw25", "___teacher_yaw-25"] if PARTS else ["procedural-v3_yaw0", "procedural-v3_yaw25", "procedural-v3_yaw-25"]
 L3 = np.full((len(C["landmarks"]), 3), np.nan)
 for vname in views:          # front first; the 3/4 views fill the landmarks the front pick missed (cheek contour)
     if vname not in pk:
@@ -50,6 +55,15 @@ for vname in views:          # front first; the 3/4 views fill the landmarks the
         if np.isnan(L3[i, 0]) and arr[li] is not None:
             L3[i] = arr[li]
 okl = ~np.isnan(L3[:, 0])
+if PARTS:
+    # slate's source render wears its glasses: TX.pick returns the FIRST surface under a landmark pixel, so eye and brow
+    # landmarks behind the rims/lens land on the frame, 1-2 cm proud of the skin (the free similarity then read scale 0.89
+    # and ICP p95 43 mm). Keep only picks within 2 mm of a source skin vertex (4 mm kept 448 picks but left ICP p95 at 44 mm; 2 mm keeps 321, p95 6 mm).
+    from scipy.spatial import cKDTree as _KD
+    _d, _ = _KD(P3[reg == 0]).query(np.nan_to_num(L3))
+    off = okl & (_d > 0.002)
+    print(f"[corr] parts: {int(off.sum())} of {int(okl.sum())} picks off the face surface dropped")
+    okl &= ~off
 Lg = Vg[C["vertices"]]
 
 
@@ -65,6 +79,17 @@ def umeyama(A, B):
 
 rig = okl & (C["rigid"] > 0)
 s, R, t = umeyama(L3[rig], Lg[rig])           # v3 world -> GNM model frame
+if PARTS:
+    # both faces are mirror-symmetric about their own x = 0 plane, so the true relative rotation has no yaw or roll; the
+    # free similarity read 4.1 deg yaw / -1.9 deg roll off slate's render (glasses rims over the eye landmarks) and baked a
+    # turned head into the rest pose. Keep pitch only, then re-solve scale and translation in closed form.
+    ax = np.arctan2(R[2, 1], R[2, 2])
+    R = np.array([[1, 0, 0], [0, np.cos(ax), -np.sin(ax)], [0, np.sin(ax), np.cos(ax)]])
+    A_, B_ = L3[rig], Lg[rig]
+    RA = (A_ - A_.mean(0)) @ R.T
+    s = float((RA * (B_ - B_.mean(0))).sum() / (RA ** 2).sum())
+    t = B_.mean(0) - s * R @ A_.mean(0)
+    t[0] = 0.0 if abs(t[0]) < 0.01 else t[0]
 to_g = lambda X: s * X @ R.T + t
 P3g = to_g(P3)
 L3g = to_g(L3)
@@ -177,7 +202,7 @@ for L in range(5):
 out = {"s": s, "R": R, "t": t, "Wp": Wp, "tri3": tri3, "gtri_idx": res_tri, "gbw": res_bw, "gdist": res_d,
        "labg": labg, "lab3": lab3, "head3": head3, "Vg": Vg}
 os.makedirs(BD, exist_ok=True)
-np.savez(os.path.join(BD, "corr.npz"), **out)
+np.savez(os.path.join(BD, "corr_parts.npz" if PARTS else "corr.npz"), **out)
 face = m.group("hockey_mask") & m.group("skin_exterior")
 rep = {"method": __doc__.split("\n")[0], "date": time.strftime("%Y-%m-%d"),
        "landmarksUsed": int(okl.sum()), "similarity": {"scale_v3_to_gnm": round(float(s), 4), "rigidLandmarkRmsMM": round(sim_rms, 2)},
@@ -187,5 +212,5 @@ rep = {"method": __doc__.split("\n")[0], "date": time.strftime("%Y-%m-%d"),
        "labels": {"gnm": np.bincount(labg[gv], minlength=5).tolist(), "v3": np.bincount(lab3[skin3], minlength=5).tolist()},
        "seconds": round(time.time() - t0)}
 os.makedirs(os.path.join(G.ART, "reports"), exist_ok=True)
-json.dump(rep, open(os.path.join(G.ART, "reports", "corr.json"), "w"), indent=1)
+json.dump(rep, open(os.path.join(G.ART, "reports", ("corr.json" if LOOK_ == "teal" else f"corr-{LOOK_}.json").replace(".json", "-parts.json" if PARTS else ".json")), "w"), indent=1)
 print(json.dumps(rep, indent=1))

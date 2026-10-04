@@ -8,7 +8,7 @@ from scipy.spatial.transform import Rotation as Rot
 f = json.load(open(sys.argv[1])); m = G.GNM()
 V = m.bind(np.array(f["identity"]), np.array(f["nuisanceExpression"]))
 C = G.mp_correspondence()
-REFD = "/home/user/Taxila/art/character/bakeoff/merged/refs/teal"
+REFD = G.paths(__import__("os").path.basename(sys.argv[1]).split(".")[0])["REFD"]
 LM = json.load(open(REFD + "/landmarks.json"))
 sk = m.group("skin_exterior")
 tiles = []
@@ -26,7 +26,7 @@ for v, cam in f["cameras"].items():
     for dy in (-1, 0, 1):
         arr[np.clip(ys + dy, 0, arr.shape[0] - 1), xs] = (0, 255, 0)
     im = Image.fromarray(arr); d = ImageDraw.Draw(im)
-    for (x, y) in np.array(LM[v]["lm"])[C["landmarks"], :2]: d.ellipse((x - 2, y - 2, x + 2, y + 2), outline=(255, 0, 0))
+    for (x, y) in (np.array(LM[v]["lm"])[C["landmarks"], :2] if LM.get(v) else []): d.ellipse((x - 2, y - 2, x + 2, y + 2), outline=(255, 0, 0))
     X = V[C["vertices"]] + C["reference"] - m.T[C["vertices"]]; Yl = X @ R.T
     for (x, y) in np.stack([cam[3] * Yl[:, 0] + cam[4], -cam[3] * Yl[:, 1] + cam[5]], 1): d.ellipse((x - 1.5, y - 1.5, x + 1.5, y + 1.5), fill=(0, 0, 255))
     tiles.append(im.crop((150, 200, 900, 1200)).resize((375, 500)))

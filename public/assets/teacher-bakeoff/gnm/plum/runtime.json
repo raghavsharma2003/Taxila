@@ -1,0 +1,961 @@
+{
+ "schema": 1,
+ "look": "plum",
+ "lookRev": 1,
+ "note": "Look assets carry no name: the child names the teacher; the name lives on the child record.",
+ "tiers": {
+  "H": {
+   "file": "H.glb",
+   "bytes": 4215552,
+   "triangles": 34850,
+   "draws": 5,
+   "morphTargets": 82,
+   "morphTextureMB": 19.48,
+   "maps": {
+    "TaxilaSkin": {
+     "baseColor": "skin_albedo_H",
+     "normal": "skin_normal",
+     "occlusion": "skin_packed",
+     "emissive": "skin_wrinkle",
+     "metallicRoughness": "skin_maskA",
+     "sheenColor": "skin_maskB",
+     "clearcoatNormal": "skin_wrinkle_stretch",
+     "specular": "skin_detail"
+    },
+    "TaxilaCloth": {
+     "baseColor": "garment_albedo"
+    },
+    "TaxilaHair": {
+     "baseColor": "hair_atlas"
+    },
+    "TaxilaCards": {
+     "baseColor": "cards_atlas"
+    }
+   }
+  },
+  "Bplus": {
+   "file": "Bplus.glb",
+   "bytes": 1460276,
+   "triangles": 12506,
+   "draws": 5,
+   "morphTargets": 58,
+   "morphTextureMB": 4.26,
+   "maps": {
+    "TaxilaSkin": {
+     "baseColor": "skin_albedo",
+     "normal": "skin_normal",
+     "occlusion": "skin_packed",
+     "emissive": "skin_wrinkle",
+     "metallicRoughness": "skin_maskA",
+     "sheenColor": "skin_maskB",
+     "specular": "skin_detail"
+    },
+    "TaxilaCloth": {
+     "baseColor": "garment_albedo"
+    },
+    "TaxilaHair": {
+     "baseColor": "hair_atlas"
+    },
+    "TaxilaCards": {
+     "baseColor": "cards_atlas"
+    }
+   }
+  },
+  "Blite": {
+   "file": "Blite.glb",
+   "bytes": 669424,
+   "triangles": 12506,
+   "draws": 5,
+   "morphTargets": 58,
+   "morphTextureMB": 4.26,
+   "maps": {
+    "TaxilaSkin": {
+     "baseColor": "skin_albedo",
+     "occlusion": "skin_packed"
+    },
+    "TaxilaCloth": {
+     "baseColor": "garment_albedo"
+    },
+    "TaxilaHair": {
+     "baseColor": "hair_atlas"
+    },
+    "TaxilaCards": {
+     "baseColor": "cards_atlas"
+    }
+   }
+  }
+ },
+ "meshes": {
+  "face": "TaxilaSkin (+ mouth interior by _region: 0 skin, 1 teeth, 2 tongue, 3 mouth bag)",
+  "eyes": "TaxilaEye (skinned to LeftEye/RightEye)",
+  "cards": "TaxilaCards (H: brows + lashes; B+: lashes)",
+  "hair": "TaxilaHair",
+  "garment": "TaxilaCloth",
+  "lens": "TaxilaLens (H, glasses look only)"
+ },
+ "bones": [
+  "Spine2",
+  "Neck",
+  "Head",
+  "LeftEye",
+  "RightEye",
+  "LeftShoulder",
+  "RightShoulder"
+ ],
+ "headSplit": {
+  "Neck": 0.35,
+  "Head": 0.65
+ },
+ "morphTargets": {
+  "H": [
+   "viseme_aa",
+   "viseme_CH",
+   "viseme_DD",
+   "viseme_E",
+   "viseme_FF",
+   "viseme_I",
+   "viseme_kk",
+   "viseme_nn",
+   "viseme_O",
+   "viseme_PP",
+   "viseme_RR",
+   "viseme_sil",
+   "viseme_SS",
+   "viseme_TH",
+   "viseme_U",
+   "browDownLeft",
+   "browDownRight",
+   "browInnerUp",
+   "browOuterUpLeft",
+   "browOuterUpRight",
+   "cheekPuff",
+   "cheekSquintLeft",
+   "cheekSquintRight",
+   "eyeBlinkLeft",
+   "eyeBlinkRight",
+   "eyeLookDownLeft",
+   "eyeLookDownRight",
+   "eyeLookInLeft",
+   "eyeLookInRight",
+   "eyeLookOutLeft",
+   "eyeLookOutRight",
+   "eyeLookUpLeft",
+   "eyeLookUpRight",
+   "eyeSquintLeft",
+   "eyeSquintRight",
+   "eyeWideLeft",
+   "eyeWideRight",
+   "jawForward",
+   "jawLeft",
+   "jawOpen",
+   "jawRight",
+   "mouthClose",
+   "mouthDimpleLeft",
+   "mouthDimpleRight",
+   "mouthFrownLeft",
+   "mouthFrownRight",
+   "mouthFunnel",
+   "mouthLeft",
+   "mouthLowerDownLeft",
+   "mouthLowerDownRight",
+   "mouthPressLeft",
+   "mouthPressRight",
+   "mouthPucker",
+   "mouthRight",
+   "mouthRollLower",
+   "mouthRollUpper",
+   "mouthShrugLower",
+   "mouthShrugUpper",
+   "mouthSmileLeft",
+   "mouthSmileRight",
+   "mouthStretchLeft",
+   "mouthStretchRight",
+   "mouthUpperUpLeft",
+   "mouthUpperUpRight",
+   "noseSneerLeft",
+   "noseSneerRight",
+   "tongueOut",
+   "tongueTipUp",
+   "tongueCurl",
+   "tongueWide",
+   "jawOpen_mouthClose",
+   "jawOpen_mouthSmileLeft",
+   "eyeBlink_eyeLookDownLeft",
+   "eyeBlink_eyeSquintLeft",
+   "browInnerUp_browDownLeft",
+   "cheekSquint_eyeBlinkLeft",
+   "jawOpen_mouthSmileRight",
+   "eyeBlink_eyeLookDownRight",
+   "eyeBlink_eyeSquintRight",
+   "browInnerUp_browDownRight",
+   "cheekSquint_eyeBlinkRight",
+   "mouthFunnel_jawOpen"
+  ],
+  "Bplus": [
+   "browDownLeft",
+   "browDownRight",
+   "browInnerUp",
+   "browOuterUpLeft",
+   "browOuterUpRight",
+   "cheekPuff",
+   "cheekSquintLeft",
+   "cheekSquintRight",
+   "eyeBlinkLeft",
+   "eyeBlinkRight",
+   "eyeLookDownLeft",
+   "eyeLookDownRight",
+   "eyeLookInLeft",
+   "eyeLookInRight",
+   "eyeLookOutLeft",
+   "eyeLookOutRight",
+   "eyeLookUpLeft",
+   "eyeLookUpRight",
+   "eyeSquintLeft",
+   "eyeSquintRight",
+   "eyeWideLeft",
+   "eyeWideRight",
+   "jawForward",
+   "jawLeft",
+   "jawOpen",
+   "jawRight",
+   "mouthClose",
+   "mouthDimpleLeft",
+   "mouthDimpleRight",
+   "mouthFrownLeft",
+   "mouthFrownRight",
+   "mouthFunnel",
+   "mouthLeft",
+   "mouthLowerDownLeft",
+   "mouthLowerDownRight",
+   "mouthPressLeft",
+   "mouthPressRight",
+   "mouthPucker",
+   "mouthRight",
+   "mouthRollLower",
+   "mouthRollUpper",
+   "mouthShrugLower",
+   "mouthShrugUpper",
+   "mouthSmileLeft",
+   "mouthSmileRight",
+   "mouthStretchLeft",
+   "mouthStretchRight",
+   "mouthUpperUpLeft",
+   "mouthUpperUpRight",
+   "noseSneerLeft",
+   "noseSneerRight",
+   "tongueOut",
+   "tongueTipUp",
+   "jawOpen_mouthClose",
+   "jawOpen_mouthSmileLeft",
+   "eyeBlink_eyeLookDownLeft",
+   "jawOpen_mouthSmileRight",
+   "eyeBlink_eyeLookDownRight"
+  ]
+ },
+ "correctives": {
+  "jawOpen_mouthClose": [
+   "jawOpen",
+   "mouthClose"
+  ],
+  "jawOpen_mouthSmileLeft": [
+   "jawOpen",
+   "mouthSmileLeft"
+  ],
+  "eyeBlink_eyeLookDownLeft": [
+   "eyeBlinkLeft",
+   "eyeLookDownLeft"
+  ],
+  "eyeBlink_eyeSquintLeft": [
+   "eyeBlinkLeft",
+   "eyeSquintLeft"
+  ],
+  "browInnerUp_browDownLeft": [
+   "browInnerUp",
+   "browDownLeft"
+  ],
+  "cheekSquint_eyeBlinkLeft": [
+   "cheekSquintLeft",
+   "eyeBlinkLeft"
+  ],
+  "jawOpen_mouthSmileRight": [
+   "jawOpen",
+   "mouthSmileRight"
+  ],
+  "eyeBlink_eyeLookDownRight": [
+   "eyeBlinkRight",
+   "eyeLookDownRight"
+  ],
+  "eyeBlink_eyeSquintRight": [
+   "eyeBlinkRight",
+   "eyeSquintRight"
+  ],
+  "browInnerUp_browDownRight": [
+   "browInnerUp",
+   "browDownRight"
+  ],
+  "cheekSquint_eyeBlinkRight": [
+   "cheekSquintRight",
+   "eyeBlinkRight"
+  ],
+  "mouthFunnel_jawOpen": [
+   "mouthFunnel",
+   "jawOpen"
+  ]
+ },
+ "correctiveRule": "weight = product of the two parents' FINAL weights (after calibration and clamping)",
+ "calibration": {},
+ "calibrationNote": "empty since iteration 2: the scripted expression deltas are baked into the units (keys.py expression_correctives)",
+ "lighting": {
+  "toneMapping": "Neutral",
+  "exposure": 1,
+  "keyDir": [
+   -0.62,
+   0.55,
+   0.62
+  ],
+  "keyColor": [
+   1.27,
+   1.24,
+   1.19
+  ],
+  "rimDir": [
+   0.7,
+   0.4,
+   -0.6
+  ],
+  "rimColor": [
+   0.34,
+   0.37,
+   0.43
+  ],
+  "sh": [
+   [
+    0.167,
+    0.167,
+    0.177
+   ],
+   [
+    0.056,
+    0.056,
+    0.062
+   ],
+   [
+    0.025,
+    0.025,
+    0.022
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ "lightingRule": "src/avatar must render with exactly this rig (Neutral tone mapping, exposure 1): the skin albedo is solved against it (G9); a different rig re-opens G9",
+ "jawCeiling": 0.55,
+ "lipDriverRequirements": "before H ships: (1) closure expander in src/avatar/lip.ts: energy below the gate -> jaw 0 within one frame, opening on a power curve > 1 (jaw falls faster than loudness); (2) HeadAudio viseme classes driving viseme_* on H and visemeFold on B+; (3) jaw clamped at jawCeiling. See CHARACTER-PIPELINE.md 4.2",
+ "lidFollow": {
+  "upper": 0.5,
+  "lower": 0.25,
+  "via": "eyeLookUp*/eyeLookDown* at gaze pitch / 25 deg"
+ },
+ "visemeFold": {
+  "when": "the tier has no viseme_* morphs (B+, B-lite)",
+  "map": {
+   "viseme_sil": {},
+   "viseme_PP": {
+    "mouthPressLeft": 0.6,
+    "mouthPressRight": 0.6,
+    "mouthRollLower": 0.2,
+    "mouthRollUpper": 0.12
+   },
+   "viseme_FF": {
+    "jawOpen": 0.12,
+    "mouthRollLower": 0.55,
+    "mouthUpperUpLeft": 0.25,
+    "mouthUpperUpRight": 0.25,
+    "mouthPressLeft": 0.1,
+    "mouthPressRight": 0.1
+   },
+   "viseme_TH": {
+    "jawOpen": 0.18,
+    "tongueOut": 0.35,
+    "mouthUpperUpLeft": 0.1,
+    "mouthUpperUpRight": 0.1
+   },
+   "viseme_DD": {
+    "jawOpen": 0.22,
+    "mouthStretchLeft": 0.15,
+    "mouthStretchRight": 0.15,
+    "mouthUpperUpLeft": 0.1,
+    "mouthUpperUpRight": 0.1,
+    "tongueTipUp": 0.6
+   },
+   "viseme_kk": {
+    "jawOpen": 0.26,
+    "mouthStretchLeft": 0.2,
+    "mouthStretchRight": 0.2
+   },
+   "viseme_CH": {
+    "jawOpen": 0.15,
+    "mouthFunnel": 0.45,
+    "mouthPucker": 0.2,
+    "mouthUpperUpLeft": 0.2,
+    "mouthUpperUpRight": 0.2
+   },
+   "viseme_SS": {
+    "jawOpen": 0.08,
+    "mouthStretchLeft": 0.35,
+    "mouthStretchRight": 0.35,
+    "mouthSmileLeft": 0.15,
+    "mouthSmileRight": 0.15
+   },
+   "viseme_nn": {
+    "jawOpen": 0.16,
+    "mouthStretchLeft": 0.1,
+    "mouthStretchRight": 0.1,
+    "tongueTipUp": 0.4
+   },
+   "viseme_RR": {
+    "jawOpen": 0.18,
+    "mouthFunnel": 0.3,
+    "mouthPucker": 0.25
+   },
+   "viseme_aa": {
+    "jawOpen": 0.6,
+    "mouthLowerDownLeft": 0.2,
+    "mouthLowerDownRight": 0.2
+   },
+   "viseme_E": {
+    "jawOpen": 0.35,
+    "mouthStretchLeft": 0.35,
+    "mouthStretchRight": 0.35,
+    "mouthUpperUpLeft": 0.15,
+    "mouthUpperUpRight": 0.15
+   },
+   "viseme_I": {
+    "jawOpen": 0.2,
+    "mouthStretchLeft": 0.45,
+    "mouthStretchRight": 0.45,
+    "mouthSmileLeft": 0.15,
+    "mouthSmileRight": 0.15
+   },
+   "viseme_O": {
+    "jawOpen": 0.38,
+    "mouthFunnel": 0.55,
+    "mouthPucker": 0.2
+   },
+   "viseme_U": {
+    "jawOpen": 0.15,
+    "mouthPucker": 0.75,
+    "mouthFunnel": 0.25
+   }
+  }
+ },
+ "faceStyle": {
+  "smile": 0.55,
+  "headGain": 0.8,
+  "browGain": 1.2,
+  "asym": {
+   "smile": 0.06,
+   "brow": 0.03,
+   "squint": 0.05
+  },
+  "restSmile": 0.05,
+  "restBlink": 0.471
+ },
+ "iris": "#2E1C10",
+ "eyePass": {
+  "sclera": [
+   0.3405,
+   0.2904,
+   0.2763
+  ],
+  "restLid": 0.471,
+  "uniforms": "TaxilaEye uSclera (linear albedo), uLidClose (vec2 per eye: restLid + (1 - restLid) * blink - 0.35 wide + 0.25 squint + 0.3 lookDown - 0.3 lookUp)"
+ },
+ "mouthInterior": {
+  "teeth": [
+   0.64,
+   0.58,
+   0.47
+  ],
+  "gum": [
+   0.3,
+   0.1,
+   0.09
+  ],
+  "tongue": [
+   0.46,
+   0.16,
+   0.14
+  ],
+  "bag": [
+   0.16,
+   0.045,
+   0.04
+  ],
+  "note": "merged: tongue and bag keep a floor of warm light when the jaw is open (shaders.js SKIN_FRAG)"
+ },
+ "emotions": {
+  "warm": {
+   "bs": {
+    "mouthSmileLeft": 0.5,
+    "mouthSmileRight": 0.5,
+    "cheekSquintLeft": 0.38,
+    "cheekSquintRight": 0.38,
+    "eyeSquintLeft": 0.16,
+    "eyeSquintRight": 0.16,
+    "mouthDimpleLeft": 0.08,
+    "mouthDimpleRight": 0.08,
+    "browInnerUp": 0.06
+   },
+   "head": [
+    1,
+    0,
+    0
+   ],
+   "env": [
+    600,
+    1500,
+    900
+   ]
+  },
+  "encouraging": {
+   "bs": {
+    "mouthSmileLeft": 0.35,
+    "mouthSmileRight": 0.35,
+    "mouthPressLeft": 0.3,
+    "mouthPressRight": 0.3,
+    "browInnerUp": 0.5,
+    "browOuterUpLeft": 0.5,
+    "browOuterUpRight": 0.5,
+    "eyeWideLeft": 0.15,
+    "eyeWideRight": 0.15
+   },
+   "head": [
+    5,
+    0,
+    0
+   ],
+   "lean": 0.3,
+   "env": [
+    400,
+    1200,
+    800
+   ]
+  },
+  "curious": {
+   "bs": {
+    "browOuterUpLeft": 1,
+    "browInnerUp": 0.5,
+    "browDownRight": 0.25,
+    "eyeWideLeft": 0.4,
+    "eyeSquintRight": 0.15,
+    "mouthPucker": 0.15,
+    "jawOpen": 0.05,
+    "mouthSmileLeft": 0.1
+   },
+   "head": [
+    -4,
+    6,
+    11
+   ],
+   "gaze": [
+    0,
+    0
+   ],
+   "lean": 0.6,
+   "env": [
+    350,
+    1800,
+    700
+   ]
+  },
+  "thinking": {
+   "bs": {
+    "browDownLeft": 0.2,
+    "browDownRight": 0.2,
+    "browInnerUp": 0.35,
+    "mouthPressLeft": 0.35,
+    "mouthPressRight": 0.35,
+    "mouthShrugLower": 0.2,
+    "eyeSquintLeft": 0.12,
+    "eyeSquintRight": 0.12
+   },
+   "head": [
+    -6,
+    -5,
+    0
+   ],
+   "gaze": [
+    -16,
+    18
+   ],
+   "env": [
+    300,
+    3500,
+    300
+   ]
+  },
+  "listening": {
+   "bs": {
+    "browInnerUp": 0.15,
+    "browOuterUpLeft": 0.3,
+    "browOuterUpRight": 0.3,
+    "eyeWideLeft": 0.15,
+    "eyeWideRight": 0.15
+   },
+   "head": [
+    5,
+    0,
+    12
+   ],
+   "gaze": [
+    0,
+    4
+   ],
+   "lean": 1,
+   "env": [
+    120,
+    0,
+    280
+   ]
+  },
+  "concerned": {
+   "bs": {
+    "browInnerUp": 1,
+    "browDownLeft": 0.65,
+    "browDownRight": 0.65,
+    "mouthPressLeft": 0.55,
+    "mouthPressRight": 0.55,
+    "mouthFrownLeft": 0.25,
+    "mouthFrownRight": 0.25,
+    "mouthShrugLower": 0.25,
+    "eyeSquintLeft": 0.12,
+    "eyeSquintRight": 0.12
+   },
+   "head": [
+    7,
+    0,
+    8
+   ],
+   "gaze": [
+    0,
+    -2
+   ],
+   "lean": 0.6,
+   "env": [
+    700,
+    2500,
+    1200
+   ]
+  },
+  "delighted": {
+   "bs": {
+    "mouthSmileLeft": 0.85,
+    "mouthSmileRight": 0.85,
+    "jawOpen": 0.2,
+    "mouthUpperUpLeft": 0.55,
+    "mouthUpperUpRight": 0.55,
+    "mouthLowerDownLeft": 0.08,
+    "mouthLowerDownRight": 0.08,
+    "cheekSquintLeft": 0.65,
+    "cheekSquintRight": 0.65,
+    "eyeSquintLeft": 0.32,
+    "eyeSquintRight": 0.32,
+    "browOuterUpLeft": 0.3,
+    "browOuterUpRight": 0.3,
+    "browInnerUp": 0.15
+   },
+   "head": [
+    -6,
+    0,
+    3
+   ],
+   "flush": 0.04,
+   "env": [
+    350,
+    1200,
+    900
+   ]
+  },
+  "playful": {
+   "bs": {
+    "mouthSmileLeft": 0.6,
+    "mouthSmileRight": 0.12,
+    "mouthLeft": 0.15,
+    "cheekSquintLeft": 0.55,
+    "eyeSquintLeft": 0.5,
+    "browOuterUpRight": 0.6,
+    "browInnerUp": 0.1,
+    "browDownLeft": 0.15,
+    "mouthDimpleLeft": 0.2
+   },
+   "head": [
+    1,
+    5,
+    9
+   ],
+   "gaze": [
+    8,
+    2
+   ],
+   "env": [
+    300,
+    1000,
+    600
+   ]
+  },
+  "surprised": {
+   "bs": {
+    "browInnerUp": 0.75,
+    "browOuterUpLeft": 0.75,
+    "browOuterUpRight": 0.75,
+    "eyeWideLeft": 0.6,
+    "eyeWideRight": 0.6,
+    "jawOpen": 0.3,
+    "mouthFunnel": 0.18,
+    "mouthSmileLeft": 0.1,
+    "mouthSmileRight": 0.1
+   },
+   "head": [
+    -5,
+    0,
+    0
+   ],
+   "env": [
+    120,
+    400,
+    500
+   ]
+  }
+ },
+ "states": {
+  "idle": {
+   "affect": [
+    "warm",
+    0.4
+   ],
+   "head": [
+    1,
+    2,
+    1
+   ],
+   "gaze": [
+    4,
+    -2
+   ],
+   "breath": 0.4
+  },
+  "speaking": {
+   "affect": [
+    "warm",
+    0.7
+   ],
+   "viseme": [
+    "viseme_aa",
+    0.55
+   ],
+   "extra": {
+    "browInnerUp": 0.12,
+    "browOuterUpLeft": 0.1,
+    "browOuterUpRight": 0.1
+   },
+   "head": [
+    -1,
+    0,
+    0
+   ],
+   "breath": 0.7
+  },
+  "your_turn": {
+   "affect": [
+    "warm",
+    0.5
+   ],
+   "extra": {
+    "browInnerUp": 0.08,
+    "browOuterUpLeft": 0.14,
+    "browOuterUpRight": 0.14
+   },
+   "head": [
+    -3,
+    0,
+    2
+   ],
+   "lean": 1,
+   "gaze": [
+    0,
+    0
+   ]
+  },
+  "listening": {
+   "affect": [
+    "listening",
+    1
+   ],
+   "head": [
+    1,
+    0,
+    6
+   ],
+   "lean": 0.25,
+   "gaze": [
+    0,
+    0
+   ]
+  },
+  "thinking": {
+   "affect": [
+    "thinking",
+    1
+   ],
+   "head": [
+    -2,
+    -4,
+    0
+   ],
+   "gaze": [
+    -14,
+    13
+   ]
+  },
+  "celebrating": {
+   "affect": [
+    "delighted",
+    1
+   ],
+   "head": [
+    -3,
+    0,
+    0
+   ]
+  },
+  "concerned": {
+   "affect": [
+    "concerned",
+    1
+   ],
+   "head": [
+    1,
+    0,
+    5
+   ],
+   "gaze": [
+    0,
+    -2
+   ]
+  }
+ },
+ "clips": {
+  "encouraging": {
+   "durationS": 2,
+   "keys": [
+    {
+     "t": 0,
+     "head": [
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 0.3,
+     "head": [
+      9,
+      0,
+      2
+     ],
+     "bs": {
+      "jawOpen": 0.12,
+      "mouthSmileLeft": 0.15,
+      "mouthSmileRight": 0.15,
+      "browOuterUpLeft": 0.15,
+      "browOuterUpRight": 0.15
+     }
+    },
+    {
+     "t": 0.6,
+     "head": [
+      -2,
+      0,
+      1
+     ],
+     "bs": {
+      "mouthSmileLeft": 0.1,
+      "mouthSmileRight": 0.1
+     }
+    },
+    {
+     "t": 0.95,
+     "head": [
+      10,
+      0,
+      3
+     ],
+     "bs": {
+      "jawOpen": 0.12,
+      "mouthSmileLeft": 0.2,
+      "mouthSmileRight": 0.2,
+      "browOuterUpLeft": 0.2,
+      "browOuterUpRight": 0.2
+     }
+    },
+    {
+     "t": 1.3,
+     "head": [
+      -1,
+      0,
+      2
+     ],
+     "bs": {
+      "mouthSmileLeft": 0.15,
+      "mouthSmileRight": 0.15,
+      "browInnerUp": 0.1
+     }
+    },
+    {
+     "t": 2,
+     "head": [
+      3,
+      0,
+      2
+     ],
+     "bs": {
+      "mouthSmileLeft": 0.15,
+      "mouthSmileRight": 0.15
+     }
+    }
+   ]
+  }
+ },
+ "plates": {
+  "plate": [
+   360,
+   450
+  ],
+  "mouthRect": [
+   90,
+   135,
+   276,
+   299
+  ],
+  "mouthCells": 5,
+  "mouthJaw": [
+   0,
+   0.15,
+   0.3,
+   0.45,
+   0.6
+  ],
+  "blinkRect": [
+   121,
+   49,
+   248,
+   244
+  ],
+  "bytes": 24866,
+  "source": "rendered from the B+ runtime (scripts/character/render.mjs)"
+ }
+}

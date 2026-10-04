@@ -101,3 +101,19 @@ def mp_correspondence():
                          "generated from github.com/edualvarado/gnm-webcam-puppet (Apache-2.0) against GNM 3.0"},
               open(f, "w"))
     return out
+
+
+# ---------------------------------------------------------------- per-look paths (round 2: teal, slate, plum)
+def look_from_argv(default="teal"):
+    import sys
+    return sys.argv[sys.argv.index("--look") + 1] if "--look" in sys.argv else default
+
+
+def paths(look):
+    """build dir, reference dir, fit file, and the parts source (procedural-v3 for teal; the main pipeline's
+    iteration-2 build for slate / plum: v3 has no curls, bun, glasses or saree generators, VERDICT)."""
+    refd = os.path.join(ROOT, "art/character/bakeoff/merged/refs/teal") if look == "teal" else os.path.join(ART, "refs", look)
+    src = os.path.join(CH, "bakeoff-gnm", "v3dump") if look == "teal" else os.path.join(CH, "bakeoff-gnm", f"{look}-src")
+    srctex = os.path.join(CH, "bakeoff-pv3", "teal", "tex") if look == "teal" else os.path.join(CH, "build", look, "tex")
+    return {"BD": os.path.join(CH, "bakeoff-gnm", look), "REFD": refd, "FIT": os.path.join(ART, "fit", f"{look}.json"),
+            "SRC": src, "SRCTEX": srctex, "LOOK": os.path.join(ART, "looks", f"{look}.json")}

@@ -1,4 +1,209 @@
-# Bake-off gnm: the teal teacher on Google GNM Head v3.0 (E-GNM1, 2026-10-03)
+# Bake-off gnm: the teacher on Google GNM Head v3.0 (E-GNM1, round 1 2026-10-03, round 2 2026-10-04)
+
+## Round 2 (2026-10-04): fix round on teal, then slate and plum on GNM
+
+GNM was adopted as the identity base after round 1 (context decision `gnm-adopted-identity-base`). This round ran the
+coordinator's fix list on teal, then built the other two designs on the same pipeline. Everything is still CPU only:
+**$0 GPU, 0 AWS instances** (`scripts/gpu/status.py`: "live taxila=gpu-build instances (0)"). Nothing is committed.
+`merged/**` and `src/avatar/**` are untouched.
+
+Contact sheets:
+- `docs/design/teacher/bakeoff/gnm/renders/{teal,slate,plum}/contact.png`
+- `docs/design/teacher/bakeoff/COMPARE.png`, which now has rows **gnm**, **gnm slate (Arjun)** and **gnm plum (Uma)**.
+
+### Teal fixes (in the order asked)
+
+1. **De-light.** `texture.py` now de-lights in four steps:
+   - each TRAIN view is de-lit before blending: second-order SH light fitted to the skin luminance with Huber IRLS,
+     then divided out;
+   - a symmetric low-frequency correction through GNM's `mirror_indices` (a log-space blur, averaged with its mirror);
+   - division by AO^0.6, plus an under-eye band lift that only brightens, capped at 1.45;
+   - a log-space frequency split that keeps 45% of the high band.
+
+   The pore-like normal detail is down to 0.25 at blur 1.2. Moisture sits on the vermilion only, and roughness is
+   0.60 - 0.10·T-zone (it read shiny at 0.50). G9 passes on every build. The skin is visibly cleaner; the under-eye
+   circles are mostly gone.
+2. **Hairline.**
+   - Scalp texels the portraits saw only at grazing angles (weight < 0.08) above MediaPipe landmark 10 now get the
+     hair's own colour. Before, they diffused forehead skin.
+   - Within 3 cm of the hairline, the front hair cards are pulled down to 1.2 mm over the scalp.
+   - Hair sheen above the hairline (low saturation, or a hue outside 0-55°) also becomes hair colour. This is new for
+     plum's slicked-back hair.
+
+   **Not fully fixed on teal:** a lighter beige zone at the top of the forehead still shows when the brows lift
+   (curious, concerned, encouraging). It is skin-coloured, so the sheen rule does not catch it.
+3. **PP V-notch.** Fixed by a lower-lip-only seal toward the corners (`keys.py --pp-corner 0.6`).
+   - The two-way seal made the notch.
+   - A full-width lower seal curled the inner lip over.
+   - With no seal, 2.5% of light got through.
+
+   The B+ viseme fold is now press 0.6 + roll 0.2/0.12. Light between the lips is 0% on H and B+.
+4. **Brows.** The brow keys were re-solved with brow targets ×1.5, and both presets were redesigned:
+   - curious: one brow raised, the other a little lowered, that eye a little wide, a soft pucker, an 11° tilt toward
+     the child;
+   - concerned: inner brows up and knit, lips pressed with a slight downturn.
+
+   Variants were screened on judge A (n = 8 per variant). **Judge C saw only the n = 24 acceptance runs.**
+5. **Eyes.** The eyes are now **GNM's own `eye_exteriors` geometry**. The cornea centre and radius, the iris plane and
+   radius, and the limbus are measured from the mesh and passed through mesh extras to the eye shader
+   (`uCornea`, `uLimbZ`). The pupil is 0.38: GNM's own dilated mean read as black discs.
+   - `gates.py` now uses the measured centre and radius, with 0.3 mm tolerance.
+   - Lids inside the eye: 0 in every preset. A lid-push constraint in `keys.py` handles the ×1.6 squint.
+6. **Chest-fill U.** Fixed by normalised-convolution fill in log space, which replaces the nearest-texel dilation.
+   Cloth exclusion is now hue 55-345° or saturation > 0.78. The saturation test also needs brightness > 0.3: without
+   it, near-black brow hair counted as cloth and was erased (see slate).
+7. **Gates and judges, n = 24 per emotion per judge.** Three acceptance runs were made on near-identical assets
+   (build6 → build7: roughness + neck rule; build7 → build8: sheen rule).
+
+| teal, correct/24 | A b6 | A b7 | A b8 | C b6 | C b7 | C b8 | A pooled /72 | C pooled /72 |
+|---|---|---|---|---|---|---|---|---|
+| warm | 24 | 24 | 24 | 24 | 24 | 24 | 100% | 100% |
+| encouraging (clip) | 21 | 22 | 22 | 24 | 24 | 24 | 90% | 100% |
+| curious | 17 | 19 | 16 | 9 | 7 | 11 | 72% | **38%** → listening/thinking |
+| thinking | 24 | 24 | 24 | 24 | 24 | 24 | 100% | 100% |
+| listening | 11 | 11 | 14 | 23 | 19 | 19 | **50%** → curious | 85% |
+| concerned | 24 | 24 | 24 | 23 | 23 | 18 | 100% | 89% |
+| delighted | 18 | 21 | 19 | 24 | 24 | 24 | 81% | 100% |
+| playful | 24 | 24 | 24 | 18 | 14 | 17 | 100% | **68%** |
+| surprised | 24 | 24 | 24 | 24 | 24 | 24 | 100% | 100% |
+| **≥ 70% (17/24)** | **8/9** | **8/9** | 7/9 | **8/9** | 7/9 | **8/9** | **8/9** | 7/9 |
+
+**Reading:**
+- The bar (≥ 8/9 on BOTH judges) was met in build6 and missed by one emotion in build7 (C) and build8 (A).
+- Pooled over n = 72, A is 8/9 and C is 7/9: curious 38%, and playful 68%, one judgement under.
+- Concerned is fixed (C 54% in round 1 → 89%). Curious under C improved from 0% to 38% but is still the weak emotion.
+- At n = 24, near-identical assets still move one emotion by up to 5/24 between runs (C concerned 23 → 18,
+  C listening 23 → 19). The bar sits inside that noise for curious and playful.
+
+Teal build8 gates:
+- G3 0; G4 0%; G6 pass (0 → 0); lids inside the eye 0; garment penetration 0.
+- G5 light between the lips 0% everywhere on H and B+.
+- G5-mm still fails by construction: rest 2.15 mm (see round 1).
+- G9 L\* 55.8 / C\* 28.6 against 55.1 / 27.9: pass.
+- H 4.42 MB / 39.5k tris; B+ 1.52 MB / 13.8k tris; B-lite 0.72 MB.
+- SwiftShader fps: 4.1 / 12 / 42.
+- Likeness: front 1.36%, held-out q3 1.31 / 1.58%, yaw-24 1.58× front.
+
+### slate (the Arjun design) and plum (the Uma design) on GNM
+
+**References** were generated with `taxila-image` (`gen-refs.mjs`) because `art/gen/teacher` had none usable. They are
+in `art/character/bakeoff/gnm/refs/{slate,plum}/`, with no names in prompts or files.
+- slate: man, late 30s, MST 7, short curls, stubble, slate check shirt over an off-white tee. The portraits are
+  **without glasses** (frames throw the landmarks); the lens and frame meshes go on after the fit.
+- plum: woman, mid 50s, MST 8, low bun, plum saree, mustard blouse, studs.
+
+**Identity fit** (2D reprojection, % IOD), overlays at `art/character/bakeoff/gnm/fit/{slate,plum}_overlay.jpg`:
+
+| look | front | held-out q3 L / R |
+|---|---|---|
+| slate | 0.81 | 1.29 / 1.04 |
+| plum | 0.81 | 1.00 / 0.91 |
+
+MediaPipe found no face on either slate profile or on plum's left profile. Those views fall back to front-estimated
+rows plus silhouette edges.
+
+**Parts** (hair, brow/lash cards, garment, slate's glasses) are each look's iteration-2 build. They are carried by a
+new per-look correspondence (`corr.py --parts`), shot through `public/assets/teacher/<look>/H.glb` (read-only).
+Four failures surfaced and were fixed:
+1. **Landmark picks landed on slate's glasses frame.** The first similarity read scale 0.89 and ICP p95 43 mm. Picks
+   more than 2 mm off the source skin are now dropped (152 of 473); ICP p95 is 6 mm.
+2. **The parts residual was one-sided.** It reached 134 mm behind the left ear, tore the hair sheet and stretched a
+   temple into a spike.
+   - The similarity is now pitch-only, since both heads are symmetric.
+   - The residual is mirror-symmetrised: where the two sides disagree by more than 8 mm, the smaller side wins.
+   - Residuals are capped at 20 mm.
+3. **The glasses frame rode the per-vertex field**, which dragged each temple down the cheek. It now moves as one
+   rigid frame: eye centres onto GNM's measured eyeball centres, scale = IOD ratio × 0.90, 2.5 mm lower. At
+   iteration-2 size, the round rims' top bars hid his brows (concerned A 0-2/8 at every gain).
+4. **Layered garments.** The tee pushed out through the shirt, leaving white patches on the back. Each push is now
+   carried to garment vertices within 2 cm.
+
+Two texture fixes were also needed:
+- dark below-chin samples (the collar's shadow) get no weight;
+- dark brow hair is no longer classed as cloth.
+
+**H brow cards** are kept for slate and plum; teal has painted brows. **Per-face preset gains** are data in the look
+JSON (`presetGain`) and replace `GNM_GAIN` per emotion:
+- slate: curious 2.0, concerned 2.0, playful 2.56;
+- plum: curious 1.3, concerned 1.3.
+
+They were chosen on judge A, n = 8.
+
+| look (n = 24 / judge) | A | C | failing (A / C) |
+|---|---|---|---|
+| slate | 81%, **7/9** | 72%, **6/9** | concerned 4, playful 14 / curious 1, concerned 10, playful 4 |
+| plum | 81%, **6/9** | 75%, **6/9** | encouraging 11, curious 12, listening 11 / curious 7, listening 9, playful 15 |
+
+| look | G3 | G4 | G5 light H / B+ | G5 mm | G6 | lids in eye | garment pen. H / B+ | G9 (L\*/C\* vs target) | H MB / tris | B+ MB / tris | fps H/B+ |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| slate (MST 7) | 0 | 0% | 0 / **5% PP** | fail (2.1) | pass | 0 | 0 / **22** | 42.6/24.0 vs 42.5/23.9 pass | 4.12 / 37.5k | 1.43 / 13.9k | 4.1 / 10.6 |
+| plum (MST 8) | 0 | 0% | 0 / 0 | fail (2.0) | pass | 0 | 0 / **5** | 30.8/18.3 vs 30.7/17.7 pass | 4.22 / 34.9k | 1.46 / 12.5k | 5.1 / 13.3 |
+
+**Likeness** (MediaPipe on renders, interior NME % IOD):
+
+| look | front | held-out q3 L / R | note |
+|---|---|---|---|
+| slate | 2.81 FAIL | 3.16 / 2.20 | measured **with his glasses on** against glasses-free references, so the rims move the eye landmarks; not comparable to teal |
+| plum | 2.22 FAIL | 1.64 / 2.30 | |
+
+The 2D fit residuals (0.81%) say the geometry matches. The render-side gap is texture, hair and frames, and is not
+yet explained.
+
+### My honest look (round 2)
+
+- **teal** is the best face in COMPARE: clean skin, real eyes, a real mouth. Remaining defects:
+  - a lighter zone at the top of the forehead when the brows lift;
+  - a wet glint on the philtrum in the pucker (curious);
+  - hair-card edges are visible at the temples.
+- **plum** reads as a believable older Indian woman from the front and in 3/4, with the right skin depth and the
+  saree. Remaining defects:
+  - her iteration-2 brow cards are heavier and darker than her reference (thin, grey);
+  - smudgy patches on the back of the neck;
+  - mustard patches on the saree back (inherited from the iteration-2 garment texture);
+  - no studs (only teal's garment carries stud clusters).
+- **slate** is the weakest:
+  - the iteration-2 hair is a glossy straight helmet with jagged card edges on the forehead, where his reference has
+    short curls (the curls are in his scalp albedo but under the helmet);
+  - the temples' ear hooks show in front of the ears;
+  - curious and concerned do not read through the glasses (C 1/24, 10/24);
+  - the tee keeps the iteration-2 two-tone split.
+
+  His face itself (skin, eyes, mouth, glasses position) is right.
+
+### Status against the round-2 bar (≥ 8/9 on both judges, n = 24)
+
+| look | status |
+|---|---|
+| teal | met in one of three runs (build6); pooled A 8/9, C 7/9 |
+| slate | not met (7/9, 6/9) |
+| plum | not met (6/9, 6/9) |
+
+The slate and plum gaps are expression design per face (curious on both; concerned and playful on slate; listening
+on plum), not geometry or gates.
+
+**What would close it:**
+1. per-face brow designs solved for each identity, with slate's brows judged through the frames, instead of
+   amplitude-only gains;
+2. screening with the squint caps applied, because `rescore.mjs` scales after the caps;
+3. new hair for slate (curl cards) and fresh grooming cards for plum's brows;
+4. pooled n ≥ 48 per judge before accepting a design.
+
+### Round-2 rejections (logged to context)
+
+- **Two-way PP seal:** makes the V-notch. **Full-width lower seal:** curls the lip.
+- **Free similarity on a render where the character wears glasses:** the picks land on the rims (scale 0.89, ICP p95
+  43 mm).
+- **Per-vertex field for a rigid frame:** the temples follow the cheek skin.
+- **Cloth "saturation > 0.78" without a brightness floor:** erased the brows.
+- **Screening gains with `rescore.mjs`:** it bypasses the per-face squint caps. slate playful screened 8/8 on A at 2.0
+  and scored A 14/24, C 4/24 once capped.
+- **Changing the head pose instead of the face:**
+  - slate concerned with the chin level: A 0/8;
+  - slate concerned with the chin down 12°: A 2/8;
+  - plum curious with the chin down: A 1-3/8;
+  - plum curious with the chin up 8°: A 1/8, read as thinking.
+
+## Round 1 (2026-10-03)
 
 **Verdict (candid):** GNM is the best *base* any row has had. It is the first teal that reads, from the front and in
 3/4, as one specific, believable Indian woman in her thirties rather than a MakeHuman face with a finish. Its likeness

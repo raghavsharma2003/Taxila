@@ -114,6 +114,13 @@ Build-time only, nothing shipped or committed (the lookalike check, `identity/re
 Evidence-only: Azure `taxila-brain` and `taxila-fast` for the three-judge emotion check and variant scoring, and the
 existing Azure TTS clip and its alignment, re-used unchanged.
 
+Iteration 3 (2026-10-04): one input swapped, no new third party. The lash cards are now MakeHuman **`eyelashes02`**
+(same CC0 MakeHuman asset family and card topology as `eyelashes01`; its `.mhclo` states the CC0 release, September 2020),
+with the lower lashes kept. Everything else added in iteration 3 is ours and procedural: the proportion pass
+(`identity/proportion.py`), the upper-lip visibility floor, the lip, lid-margin, perioral, under-eye and hairline paint
+passes, the eye, teeth, bounce-light and hair-coverage shader terms, and the arm-cap UV patch. MediaPipe (Apache-2.0) and
+the OpenCV Zoo models above were re-used at build time for the likeness and lookalike measurements.
+
 ## Bake-off `gnm` (E-GNM1, 2026-10-03; outputs under `public/assets/teacher-bakeoff/gnm/**` only)
 
 Not shipped to `public/assets/teacher/**`. The face geometry (skin, teeth, gums, tongue, mouth lining) and every key

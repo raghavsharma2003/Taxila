@@ -43,9 +43,13 @@
 //   warm       Duchenne: a SMALLER smile (0.5 -> 0.28) with the cheeks and lower lids carrying it (cheekSquint 0.65,
 //              eyeSquint 0.33), a little upper lip (0.12) and stretch (0.1) so the mouth widens instead of curling into a
 //              U; 8/8 (a 0.42 smile with no tilt read playful 0/8)
-//   encouraging the same Duchenne base with raised brows, judged on its nod clip
-//   curious    no pout and no smile (every smile read warm/playful): both brows up, the left higher, eyes wide, lips just
-//              parted, a 12 deg tilt, a small turn, gaze a touch up, full lean; 8/10 (iteration 2's pout 0/8 here)
+//   encouraging iteration 2's pressed-smile "you can do it" base (raised brows, eyes a little wide) with a light cheek
+//              raise (0.25) and iteration 2's nod clip: 8/10 under the selection judge D (a full Duchenne base with a
+//              bigger nod read warm: 3/10 under D, 1/12 under A)
+//   curious    no smile (every smile read warm/playful): both brows high (outer, the left higher; NO inner raise, which
+//              read concerned), eyes wide, the lips parted in a small round "oh" (jaw 0.1, funnel 0.12, not the iteration-2
+//              pucker), chin up 6, a 12 deg turn with a 14 deg tilt, gaze up and to the side, full lean: 12/12 under the
+//              selection judge D (the first iteration-3 design read listening under judge C, 5/12)
 //   thinking   iteration 2's averted gaze with a light pucker and pressed lips ("hmm"), chin up only 4 deg (was 7: the
 //              under-chin), no lid squint (with the upward gaze it read sleepy), 8/8 with the squint
 //   listening  no smile (a smile read warm), the inner brows up, the left brow a little higher, eyes slightly wide, lips
@@ -55,8 +59,8 @@
 //              jaw 0.26: 7/8, no U-shaped grimace
 export const EMOTIONS = {
   warm: { bs: { mouthSmileLeft: 0.28, mouthSmileRight: 0.28, cheekSquintLeft: 0.65, cheekSquintRight: 0.65, eyeSquintLeft: 0.33, eyeSquintRight: 0.33, mouthUpperUpLeft: 0.12, mouthUpperUpRight: 0.12, mouthStretchLeft: 0.1, mouthStretchRight: 0.1, browInnerUp: 0.08 }, head: [1, 0, 0], env: [600, 1500, 900] },
-  encouraging: { bs: { mouthSmileLeft: 0.22, mouthSmileRight: 0.22, cheekSquintLeft: 0.5, cheekSquintRight: 0.5, eyeSquintLeft: 0.15, eyeSquintRight: 0.15, mouthUpperUpLeft: 0.1, mouthUpperUpRight: 0.1, mouthStretchLeft: 0.12, mouthStretchRight: 0.12, browInnerUp: 0.55, browOuterUpLeft: 0.55, browOuterUpRight: 0.55, eyeWideLeft: 0.12, eyeWideRight: 0.12 }, head: [3, 0, 0], lean: 0.5, env: [400, 1200, 800] },
-  curious: { bs: { browOuterUpLeft: 0.85, browOuterUpRight: 0.65, browInnerUp: 0.2, eyeWideLeft: 0.45, eyeWideRight: 0.45, jawOpen: 0.05, mouthUpperUpLeft: 0.06, mouthUpperUpRight: 0.06 }, head: [-4, 8, 12], gaze: [-4, 5], lean: 1.0, env: [350, 1800, 700] },
+  encouraging: { bs: { mouthSmileLeft: 0.28, mouthSmileRight: 0.28, cheekSquintLeft: 0.25, cheekSquintRight: 0.25, mouthPressLeft: 0.3, mouthPressRight: 0.3, browInnerUp: 0.5, browOuterUpLeft: 0.5, browOuterUpRight: 0.5, eyeWideLeft: 0.15, eyeWideRight: 0.15 }, head: [5, 0, 0], lean: 0.3, env: [400, 1200, 800] },
+  curious: { bs: { browOuterUpLeft: 0.9, browOuterUpRight: 0.75, eyeWideLeft: 0.55, eyeWideRight: 0.55, jawOpen: 0.1, mouthFunnel: 0.12 }, head: [-6, 12, 14], gaze: [-6, 6], lean: 1.0, env: [350, 1800, 700] },
   thinking: { bs: { browDownLeft: 0.22, browDownRight: 0.22, browInnerUp: 0.3, mouthShrugLower: 0.2, mouthPucker: 0.25, mouthPressLeft: 0.3, mouthPressRight: 0.3 }, head: [-4, -6, 0], gaze: [-16, 22], env: [300, 3500, 300] },
   listening: { bs: { browOuterUpLeft: 0.4, browOuterUpRight: 0.1, browInnerUp: 0.25, eyeWideLeft: 0.15, eyeWideRight: 0.1, mouthPressLeft: 0.12, mouthPressRight: 0.12 }, head: [0, 2, 11], gaze: [-1, 1], lean: 1.0, env: [120, 0, 280] },
   concerned: { bs: { browInnerUp: 0.9, browDownLeft: 0.25, browDownRight: 0.25, mouthPressLeft: 0.2, mouthPressRight: 0.2, mouthFrownLeft: 0.25, mouthFrownRight: 0.25, mouthPucker: 0.1, eyeWideLeft: 0.08, eyeWideRight: 0.08 }, head: [7, 0, 9], gaze: [0, -2], lean: 0.6, env: [700, 2500, 1200] },
@@ -71,14 +75,15 @@ export const EMOTIONS = {
 export const CLIPS = {
   // merged iteration 3: bigger, quicker "haan, haan!" nods (11-12 deg) with the mouth opening on each (a spoken "yes"),
   // the brows lifting and the lean growing: 5/8 with iteration 2's softer clip under judge A (read as warm)
+  // merged iteration 3: iteration 2's clip kept (two nods, a "haan" mouth and lifting brows). A bigger, faster clip on a
+  // full Duchenne base scored 3/10 under the selection judge D (read as warm) and 1/12 under judge A
   encouraging: { durationS: 2.0, keys: [
     { t: 0.0, head: [0, 0, 0] },
-    { t: 0.28, head: [11, 0, 2], bs: { jawOpen: 0.16, mouthUpperUpLeft: 0.1, mouthUpperUpRight: 0.1, browOuterUpLeft: 0.2, browOuterUpRight: 0.2, browInnerUp: 0.15 } },
-    { t: 0.55, head: [-3, 0, 1], bs: { browOuterUpLeft: 0.1, browOuterUpRight: 0.1 } },
-    { t: 0.85, head: [12, 0, 3], bs: { jawOpen: 0.18, mouthUpperUpLeft: 0.12, mouthUpperUpRight: 0.12, browOuterUpLeft: 0.25, browOuterUpRight: 0.25, browInnerUp: 0.2, mouthSmileLeft: 0.08, mouthSmileRight: 0.08 } },
-    { t: 1.15, head: [-3, 0, 2], bs: { browOuterUpLeft: 0.15, browOuterUpRight: 0.15 } },
-    { t: 1.5, head: [9, 0, 2], bs: { jawOpen: 0.12, browOuterUpLeft: 0.2, browOuterUpRight: 0.2, mouthSmileLeft: 0.12, mouthSmileRight: 0.12 } },
-    { t: 2.0, head: [1, 0, 2], bs: { mouthSmileLeft: 0.12, mouthSmileRight: 0.12, browOuterUpLeft: 0.15, browOuterUpRight: 0.15 } }] },
+    { t: 0.3, head: [9, 0, 2], bs: { jawOpen: 0.12, mouthSmileLeft: 0.15, mouthSmileRight: 0.15, browOuterUpLeft: 0.15, browOuterUpRight: 0.15 } },
+    { t: 0.6, head: [-2, 0, 1], bs: { mouthSmileLeft: 0.1, mouthSmileRight: 0.1 } },
+    { t: 0.95, head: [10, 0, 3], bs: { jawOpen: 0.12, mouthSmileLeft: 0.2, mouthSmileRight: 0.2, browOuterUpLeft: 0.2, browOuterUpRight: 0.2 } },
+    { t: 1.3, head: [-1, 0, 2], bs: { mouthSmileLeft: 0.15, mouthSmileRight: 0.15, browInnerUp: 0.1 } },
+    { t: 2.0, head: [3, 0, 2], bs: { mouthSmileLeft: 0.15, mouthSmileRight: 0.15 } }] },
 };
 // merged iteration 3: listening's "mm-hm": two slow, small nods (4-5 deg) while the face holds the listening pose, the
 // brows lifting a touch on each nod and the lips pressing as if to say "mm". Proposed decision (context inbox):

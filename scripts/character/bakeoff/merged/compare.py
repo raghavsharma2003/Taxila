@@ -12,7 +12,8 @@ rows = [('baseline (it. 2)', f'{R}/renders/teal', f'{R}/bakeoff/ai-portrait-wrap
         ('procedural-v3', f'{R}/bakeoff/procedural-v3/renders/teal', f'{R}/bakeoff/procedural-v3/renders/emotion-check.json', None),
         ('ai-portrait-wrap', f'{R}/bakeoff/ai-portrait-wrap/renders/teal', f'{R}/bakeoff/ai-portrait-wrap/renders/emotion-check.json', None),
         ('stylised-premium', f'{R}/bakeoff/stylised-premium/renders/teal', f'{R}/bakeoff/stylised-premium/renders/emotion-check-main.json', None),
-        ('MERGED', f'{R}/bakeoff/merged/renders/teal', f'{R}/bakeoff/merged/renders/emotion-check.json', 'merged')]
+        ('merged it. 2', f'{R}/bakeoff/merged/renders/it2/teal', f'{R}/bakeoff/merged/renders/it2/emotion-check.json', 'merged'),
+        ('MERGED it. 3', f'{R}/bakeoff/merged/renders/teal', f'{R}/bakeoff/merged/renders/emotion-check.json', 'merged')]
 W, H = 240, 300; LW = 210; TOP = 56; HDR = 26
 extra = [('3/4 turn (yaw090)', 'turntable/yaw090.png'), ('B+ tier', 'tier_Bplus.png')]
 cols = len(E) + len(extra)
@@ -23,7 +24,7 @@ try:
 except Exception:
     f = fb = ImageFont.load_default()
 d.text((10, 8), 'Teacher bake-off, look teal, H tier, same renderer + stage light. Rows 1-4: blind 9-way vision judge, correct/6 (bar 70%).', fill=(230, 230, 230), font=f)
-d.text((10, 30), 'MERGED row: A = taxila-brain + bake-off prompt | C = taxila-brain + held-out prompt | B = taxila-fast + held-out prompt; correct/12 each; red if A or C < 70%; encouraging on its 2 s nod clip.', fill=(160, 160, 170), font=f)
+d.text((10, 30), 'merged rows: A = taxila-brain + bake-off prompt | C = taxila-brain + held-out prompt | B = taxila-fast + held-out prompt; correct/12 each; red if A or C < 70%; "clip" = judged on a 2 s clip (it.3: encouraging + listening).', fill=(160, 160, 170), font=f)
 for i, n in enumerate(E + [x[0] for x in extra]):
     d.text((LW + i * W + 6, TOP), n, fill=(200, 200, 120), font=fb)
 for r, (name, dirp, ck, kind) in enumerate(rows):
@@ -38,7 +39,8 @@ for r, (name, dirp, ck, kind) in enumerate(rows):
         d.text((10, y + 36), f"overall {J['overallPct']}%", fill=(200, 200, 200), font=f)
     for i, e in enumerate(E):
         p = f'{dirp}/emotions/{e}.png'
-        if kind == 'merged' and e == 'encouraging':
+        isclip = kind == 'merged' and any(x.get('clip') and x['truth'] == e for x in J.get('rows', []))
+        if isclip:
             strip = Image.open(f'{dirp}/emotions/{e}_clip.png').convert('RGB')
             fw = strip.size[0] // 6
             im = strip.crop((3 * fw, 0, 4 * fw, strip.size[1])).resize((W, H))
@@ -48,7 +50,7 @@ for r, (name, dirp, ck, kind) in enumerate(rows):
         if kind == 'merged':
             a_, b_, c_ = J['per']['A'][e], J['per']['B'][e], J['per']['C'][e]
             ok = a_['pct'] >= 70 and c_['pct'] >= 70
-            lab = f"{a_['correct']}|{c_['correct']}|{b_['correct']} /12" + (' clip' if e == 'encouraging' else '') + ('' if ok else ' FAIL')
+            lab = f"{a_['correct']}|{c_['correct']}|{b_['correct']} /12" + (' clip' if isclip else '') + ('' if ok else ' FAIL')
         else:
             c, nn = J['per'][e]['correct'], J['per'][e]['n']; ok = c / nn >= 0.7
             lab = f'{c}/{nn}' + ('' if ok else '  FAIL')

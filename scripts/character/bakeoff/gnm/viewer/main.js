@@ -78,12 +78,12 @@ window.TX = {
   clip(name, t) { return clipPose(name, t, look.faceStyle.asym); },
   clips: () => Object.keys(CLIPS),
   emotion(name, i = 1) {
-    const e = emotionPose(name, i, look.faceStyle.asym);
+    const e = emotionPose(name, i, look.faceStyle.asym, look);
     return e;
   },
   state(name) {
     const s = STATES[name];
-    const e = emotionPose(s.affect[0], s.affect[1], look.faceStyle.asym);
+    const e = emotionPose(s.affect[0], s.affect[1], look.faceStyle.asym, look);
     const bs = { ...e.bs, ...(s.extra || {}) };
     if (s.viseme) bs[s.viseme[0]] = s.viseme[1];
     return { bs, head: s.head || e.head, gaze: s.gaze || e.gaze, lean: s.lean ?? e.lean, breath: s.breath || 0, flush: e.flush };

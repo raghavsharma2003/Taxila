@@ -57,7 +57,8 @@ for (const m of sc.meshes) {
   });
   prim.setMaterial(doc.createMaterial(m.material).setDoubleSided(m.material === "TaxilaCloth"));
   const mesh = doc.createMesh(m.name).addPrimitive(prim);
-  if (m.targetNames.length) { mesh.setExtras({ targetNames: m.targetNames }); mesh.setWeights(new Array(m.targetNames.length).fill(0)); }
+  if (m.targetNames.length) mesh.setWeights(new Array(m.targetNames.length).fill(0));
+  mesh.setExtras({ ...(m.extras || {}), ...(m.targetNames.length ? { targetNames: m.targetNames } : {}) });
   scene.addChild(doc.createNode(m.name).setMesh(mesh).setSkin(skin));
 }
 doc.getRoot().setDefaultScene(scene);

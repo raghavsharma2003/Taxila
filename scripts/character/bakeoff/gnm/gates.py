@@ -21,9 +21,12 @@ import geom
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--tier", default="H")
+ap.add_argument("--look", default="teal")
 a = ap.parse_args()
 t0 = time.time()
-BD = os.path.join(G.CH, "bakeoff-gnm", "teal")
+ap2 = a
+LOOK_ = a.look; PTH = G.paths(LOOK_)
+BD = PTH["BD"]
 sc = json.load(open(os.path.join(BD, a.tier, "scene.json")))
 rd = lambda f, dt=np.float32: np.fromfile(os.path.join(BD, a.tier, f), dt)
 
@@ -118,9 +121,11 @@ g4 = {}
 cent = {}
 for side, sgn in (("L", 1), ("R", -1)):
     s_ = (E[:, 0] * sgn) > 0
-    c = E[s_].mean(0)
-    r = np.linalg.norm(E[s_] - c, axis=1)
-    cent[side] = (c, r.max())
+    if "centreWorld" in asm["eyes"][side]:                  # round 2: GNM's eyeball, centre and radius as measured
+        c = np.array(asm["eyes"][side]["centreWorld"]); rr = asm["eyes"][side].get("radiusMM", 14.5) / 1000 * asm["eyes"][side].get("apex", 1.07)
+    else:
+        c = E[s_].mean(0); rr = np.linalg.norm(E[s_] - c, axis=1).max()
+    cent[side] = (c, rr)
 eyeF_near = lambda V, c: lidF[np.linalg.norm(V[lidF].mean(1) - c, axis=1) < 0.03]
 states = {"open": {}, "blink": {"eyeBlinkLeft": 1, "eyeBlinkRight": 1},
           "blink+lookDown": {"eyeBlinkLeft": 1, "eyeBlinkRight": 1, "eyeLookDownLeft": 0.6, "eyeLookDownRight": 0.6},
@@ -130,7 +135,8 @@ for st, bs in states.items():
     row = {}
     for side, sgn in (("L", 1), ("R", -1)):
         c, rmax = cent[side]
-        s_ = ((E[:, 0] * sgn) > 0) & ((E[:, 2] - c[2]) > 0.85 * rmax)
+        lz = asm["eyes"][side].get("limbusZ", 0.872) * asm["eyes"][side].get("radiusMM", rmax * 1000 / 1.07) / 1000
+        s_ = ((E[:, 0] * sgn) > 0) & ((E[:, 2] - c[2]) > lz)          # the cornea's vertices (in front of the limbus)
         O = np.repeat(c[None], s_.sum(), 0)
         Dd = E[s_] - c; Dd /= np.linalg.norm(Dd, axis=1, keepdims=True)
         hits = geom.seg_hits(O, O + Dd * 0.03, V, eyeF_near(V, c), chunk=64)
@@ -214,15 +220,18 @@ lidv = np.where((face["R"] == 0) & ~g("eye_sockets") & (np.minimum(np.linalg.nor
 
 
 def inside_eye(V):
+    """Lid skin inside the eye's real surface: the ball (back radius) or the cornea sphere (measured, assemble.json)."""
     n = 0
     for side in ("L", "R"):
         c, rmax = cent[side]
-        rb = rmax / 1.07                                 # ball radius (cornea apex at 1.07 r)
+        eg = asm["eyes"][side]
+        rb = eg.get("radiusMM", rmax * 1000 / 1.07) / 1000
         d = np.linalg.norm(V[lidv] - c, axis=1)
         p = (V[lidv] - c) / rb
-        cc = np.array([0, 0, 1.07 - 0.693])
-        in_ball = d < rb
-        in_cornea = (np.linalg.norm(p - cc, axis=1) < 0.693) & (p[:, 2] > 0.6)
+        cc = np.array([0, 0, eg.get("corneaZ", 1.07 - 0.693)]); RC = eg.get("corneaR", 0.693)
+        tol = 0.0003 / rb                                   # 0.3 mm: GNM's lids rest ON its eyeball (0.07 mm inside the shell)
+        in_ball = d < rb - 0.0003
+        in_cornea = (np.linalg.norm(p - cc, axis=1) < RC - tol) & (p[:, 2] > 0.6)
         n += int((in_ball | in_cornea).sum())
     return n
 
@@ -239,13 +248,16 @@ fn = np.cross(V[face["F"][:, 1]] - V[face["F"][:, 0]], V[face["F"][:, 2]] - V[fa
 for c in range(3):
     np.add.at(n, face["F"][:, c], fn)
 n /= np.maximum(np.linalg.norm(n, axis=1, keepdims=True), 1e-12)
-lowv = np.where((face["R"] == 0) & (V[:, 1] < 1.36))[0]
+# heights relative to the eye line (teal's eyes sit at y 1.487; the iteration-2 slate / plum frames put them ~14 cm higher,
+# where the old absolute 1.36 / 1.45 cuts selected no skin at all and the check read "0 of 0")
+ey = float(np.mean([asm["eyes"][s_]["centreWorld"][1] for s_ in ("L", "R")])) if "centreWorld" in asm["eyes"]["L"] else 1.487
+lowv = np.where((face["R"] == 0) & (V[:, 1] < ey - 0.127))[0]
 gF = gar["F"]
-near = gF[gar["P"][gF].mean(1)[:, 1] < 1.45]
+near = gF[gar["P"][gF].mean(1)[:, 1] < ey - 0.037]
 hit = geom.seg_hits(V[lowv] - n[lowv] * 0.0002, V[lowv] - n[lowv] * 0.02, gar["P"], near, chunk=32)
 rep["garmentPenetration"] = {"skinVertsThroughGarment": int(hit.sum()), "checked": int(len(lowv))}
 rep["seconds"] = round(time.time() - t0)
 os.makedirs(os.path.join(G.ART, "reports"), exist_ok=True)
-json.dump(rep, open(os.path.join(G.ART, "reports", f"gates-{a.tier}.json"), "w"), indent=1)
+json.dump(rep, open(os.path.join(G.ART, "reports", f"gates-{a.tier}.json" if LOOK_ == "teal" else f"gates-{LOOK_}-{a.tier}.json"), "w"), indent=1)
 print(json.dumps({k: v for k, v in rep.items() if k not in ("G6_inner_vertices_outside_lips",)}, indent=1))
 print("G6", json.dumps(g6))

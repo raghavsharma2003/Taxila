@@ -11,24 +11,25 @@ import json, os, subprocess, time
 import numpy as np
 import sys
 import gnm_model as G
-ROW = sys.argv[sys.argv.index("--row") + 1] if "--row" in sys.argv else "gnm"     # --row merged: the same protocol on merged's GLB
+ROW = sys.argv[sys.argv.index("--row") + 1] if "--row" in sys.argv else "gnm"
+LOOK_ = G.look_from_argv(); PTH = G.paths(LOOK_)     # --row merged: the same protocol on merged's GLB
 
 MP = os.environ.get("MP_PY", "/tmp/claude-0/apw/venv/bin/python")
 MODEL = os.environ.get("MP_MODEL", "/tmp/claude-0/apw/face_landmarker.task")
-SH = os.path.join(G.CH, "bakeoff-gnm", "likeness" + ("" if ROW == "gnm" else "-" + ROW))
+SH = os.path.join(G.CH, "bakeoff-gnm", "likeness" + ("" if ROW == "gnm" else "-" + ROW) + ("" if LOOK_ == "teal" else "-" + LOOK_))
 os.makedirs(SH, exist_ok=True)
-REFD = os.path.join(G.ROOT, "art/character/bakeoff/merged/refs/teal")
+REFD = PTH["REFD"]
 REF = json.load(open(os.path.join(REFD, "landmarks.json")))
 RG = json.load(open(os.path.join(G.ROOT, "art/character/bakeoff/merged/mp_regions.json")))
 oval = np.isin(np.arange(468), RG["oval"])
 PAIRS = {"front": 0, "q45_left": 21, "q45_right": 26, "q3_left": 18, "q3_right": 21, "q45_left@24": 24, "q45_right@24": 24}
 # gnm, additionally: each 3/4 reference at the yaw the GNM fit's own camera solved for it (fit/teal.json reprojection
 # yawDeg: MediaPipe under-reads these generated turns by 4-6 deg, so the MediaPipe-yaw renders carry a pose mismatch)
-FIT = json.load(open(os.path.join(G.ART, "fit", "teal.json")))["reprojection"]
+FIT = json.load(open(PTH["FIT"]))["reprojection"]
 for k, kk in (("q45_left", "q45_left"), ("q45_right", "q45_right"), ("q3_left", "q3_left (held out)"), ("q3_right", "q3_right (held out)")):
     PAIRS[f"{k}@fit{round(abs(FIT[kk]['yawDeg']))}"] = round(abs(FIT[kk]["yawDeg"]))
 yaws = sorted(set(PAIRS.values()))
-subprocess.run(["node", os.path.join(G.HERE, "shoot.mjs"), "--row", ROW, "--yaws", ",".join(map(str, yaws)), "--out", SH, "--frame", "facec"], cwd=G.ROOT, check=True)
+subprocess.run(["node", os.path.join(G.HERE, "shoot.mjs"), "--row", ROW, "--yaws", ",".join(map(str, yaws)), "--out", SH, "--frame", "facec", "--look", LOOK_], cwd=G.ROOT, check=True)
 lmf = os.path.join(SH, "lm.json")
 if os.path.exists(lmf):
     os.remove(lmf)
@@ -68,6 +69,6 @@ out = {"method": __doc__.split("\n")[0], "date": time.strftime("%Y-%m-%d"), "pai
        "merged_for_comparison": "art/character/bakeoff/merged/refs/teal/fitloop.json (merged's own loop, same metric)"}
 out["yaw24Pass"] = out["yaw24_over_front"] <= 1.5
 out["row"] = ROW
-json.dump(out, open(os.path.join(G.ART, "reports", "likeness.json" if ROW == "gnm" else f"likeness-{ROW}.json"), "w"), indent=1)
+json.dump(out, open(os.path.join(G.ART, "reports", ("likeness" if ROW == "gnm" else f"likeness-{ROW}") + ("" if LOOK_ == "teal" else f"-{LOOK_}") + ".json"), "w"), indent=1)
 print(json.dumps({k: v for k, v in out.items() if k != "pairs"}, indent=1))
 print({k: (v["interiorNME"] if v else None) for k, v in res.items()})

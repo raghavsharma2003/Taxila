@@ -1,5 +1,5 @@
 {
- "date": "2026-10-03T21:26:55.752Z",
+ "date": "2026-10-04T01:00:40.668Z",
  "judges": {
   "A": {
    "model": "taxila-brain",
@@ -14,18 +14,18 @@
    "prompt": "student-facing framing, 9 bare labels (held-out prompt, never used to choose a pose); strong model"
   }
  },
- "method": "blind forced choice of 1 of 9 labels, shuffled per call; 1 look x 12 reps per emotion per judge; encouraging judged on a 6-frame strip of a 2 s clip; bar >= 70% per emotion on 8 of 9 (proxy for E-T4)",
+ "method": "blind forced choice of 1 of 9 labels, shuffled per call; 1 look x 12 reps per emotion per judge; encouraging, listening judged on a 6-frame strip of a 2 s clip; bar >= 70% per emotion on 8 of 9 (proxy for E-T4)",
  "overallPct": {
-  "A": 87,
-  "B": 45,
-  "C": 86,
-  "pooled": 73
+  "A": 94,
+  "B": 54,
+  "C": 90,
+  "pooled": 79
  },
  "passing": {
-  "A": 6,
+  "A": 8,
   "B": 4,
   "C": 7,
-  "pooled": 4
+  "pooled": 5
  },
  "per": {
   "A": {
@@ -44,21 +44,17 @@
     "correct": 7,
     "pct": 58,
     "confusions": {
-     "encouraging": 7,
-     "playful": 3,
-     "warm": 2
+     "warm": 5,
+     "encouraging": 7
     }
    },
    "curious": {
     "n": 12,
     "errors": 0,
-    "correct": 8,
-    "pct": 67,
+    "correct": 12,
+    "pct": 100,
     "confusions": {
-     "thinking": 2,
-     "curious": 8,
-     "listening": 1,
-     "concerned": 1
+     "curious": 12
     }
    },
    "thinking": {
@@ -73,12 +69,11 @@
    "listening": {
     "n": 12,
     "errors": 0,
-    "correct": 7,
-    "pct": 58,
+    "correct": 10,
+    "pct": 83,
     "confusions": {
-     "listening": 7,
-     "concerned": 4,
-     "warm": 1
+     "listening": 10,
+     "concerned": 2
     }
    },
    "concerned": {
@@ -143,37 +138,39 @@
     "correct": 0,
     "pct": 0,
     "confusions": {
-     "listening": 12
+     "concerned": 7,
+     "surprised": 5
     }
    },
    "thinking": {
     "n": 12,
     "errors": 0,
-    "correct": 0,
-    "pct": 0,
+    "correct": 4,
+    "pct": 33,
     "confusions": {
-     "listening": 7,
-     "warm": 5
+     "listening": 5,
+     "thinking": 4,
+     "warm": 3
     }
    },
    "listening": {
     "n": 12,
     "errors": 0,
-    "correct": 0,
-    "pct": 0,
+    "correct": 6,
+    "pct": 50,
     "confusions": {
-     "concerned": 12
+     "listening": 6,
+     "thinking": 5,
+     "warm": 1
     }
    },
    "concerned": {
     "n": 12,
     "errors": 0,
-    "correct": 10,
-    "pct": 83,
+    "correct": 12,
+    "pct": 100,
     "confusions": {
-     "concerned": 10,
-     "thinking": 1,
-     "listening": 1
+     "concerned": 12
     }
    },
    "delighted": {
@@ -188,21 +185,19 @@
    "playful": {
     "n": 12,
     "errors": 0,
-    "correct": 4,
-    "pct": 33,
+    "correct": 0,
+    "pct": 0,
     "confusions": {
-     "warm": 8,
-     "playful": 4
+     "warm": 12
     }
    },
    "surprised": {
     "n": 12,
     "errors": 0,
-    "correct": 11,
-    "pct": 92,
+    "correct": 12,
+    "pct": 100,
     "confusions": {
-     "surprised": 11,
-     "delighted": 1
+     "surprised": 12
     }
    }
   },
@@ -219,21 +214,20 @@
    "encouraging": {
     "n": 12,
     "errors": 0,
-    "correct": 12,
-    "pct": 100,
+    "correct": 8,
+    "pct": 67,
     "confusions": {
-     "encouraging": 12
+     "encouraging": 8,
+     "warm": 4
     }
    },
    "curious": {
     "n": 12,
     "errors": 0,
-    "correct": 5,
-    "pct": 42,
+    "correct": 9,
+    "pct": 75,
     "confusions": {
-     "thinking": 1,
-     "curious": 5,
-     "concerned": 3,
+     "curious": 9,
      "listening": 3
     }
    },
@@ -249,11 +243,12 @@
    "listening": {
     "n": 12,
     "errors": 0,
-    "correct": 7,
-    "pct": 58,
+    "correct": 8,
+    "pct": 67,
     "confusions": {
-     "listening": 7,
-     "warm": 5
+     "listening": 8,
+     "concerned": 2,
+     "curious": 2
     }
    },
    "concerned": {
@@ -277,11 +272,10 @@
    "playful": {
     "n": 12,
     "errors": 0,
-    "correct": 9,
-    "pct": 75,
+    "correct": 12,
+    "pct": 100,
     "confusions": {
-     "playful": 9,
-     "warm": 3
+     "playful": 12
     }
    },
    "surprised": {
@@ -307,57 +301,56 @@
    "encouraging": {
     "n": 36,
     "errors": 0,
-    "correct": 19,
-    "pct": 53,
+    "correct": 15,
+    "pct": 42,
     "confusions": {
-     "encouraging": 19,
-     "playful": 3,
-     "warm": 14
+     "warm": 21,
+     "encouraging": 15
     }
    },
    "curious": {
     "n": 36,
     "errors": 0,
-    "correct": 13,
-    "pct": 36,
+    "correct": 21,
+    "pct": 58,
     "confusions": {
-     "thinking": 3,
-     "curious": 13,
-     "listening": 16,
-     "concerned": 4
+     "curious": 21,
+     "concerned": 7,
+     "surprised": 5,
+     "listening": 3
     }
    },
    "thinking": {
     "n": 36,
     "errors": 0,
-    "correct": 24,
-    "pct": 67,
+    "correct": 28,
+    "pct": 78,
     "confusions": {
-     "thinking": 24,
-     "listening": 7,
-     "warm": 5
+     "thinking": 28,
+     "listening": 5,
+     "warm": 3
     }
    },
    "listening": {
     "n": 36,
     "errors": 0,
-    "correct": 14,
-    "pct": 39,
+    "correct": 24,
+    "pct": 67,
     "confusions": {
-     "listening": 14,
-     "concerned": 16,
-     "warm": 6
+     "listening": 24,
+     "concerned": 4,
+     "thinking": 5,
+     "warm": 1,
+     "curious": 2
     }
    },
    "concerned": {
     "n": 36,
     "errors": 0,
-    "correct": 34,
-    "pct": 94,
+    "correct": 36,
+    "pct": 100,
     "confusions": {
-     "concerned": 34,
-     "thinking": 1,
-     "listening": 1
+     "concerned": 36
     }
    },
    "delighted": {
@@ -372,21 +365,20 @@
    "playful": {
     "n": 36,
     "errors": 0,
-    "correct": 25,
-    "pct": 69,
+    "correct": 24,
+    "pct": 67,
     "confusions": {
-     "playful": 25,
-     "warm": 11
+     "playful": 24,
+     "warm": 12
     }
    },
    "surprised": {
     "n": 36,
     "errors": 0,
-    "correct": 35,
-    "pct": 97,
+    "correct": 36,
+    "pct": 100,
     "confusions": {
-     "surprised": 35,
-     "delighted": 1
+     "surprised": 36
     }
    }
   }
@@ -396,27 +388,7 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 2,
-   "truth": "warm",
-   "clip": false,
-   "said": "warm",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
    "rep": 4,
-   "truth": "warm",
-   "clip": false,
-   "said": "warm",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 3,
    "truth": "warm",
    "clip": false,
    "said": "warm",
@@ -436,7 +408,7 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 1,
+   "rep": 3,
    "truth": "warm",
    "clip": false,
    "said": "warm",
@@ -456,7 +428,7 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 8,
+   "rep": 1,
    "truth": "warm",
    "clip": false,
    "said": "warm",
@@ -466,17 +438,7 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 10,
-   "truth": "warm",
-   "clip": false,
-   "said": "warm",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 7,
+   "rep": 2,
    "truth": "warm",
    "clip": false,
    "said": "warm",
@@ -496,7 +458,37 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
+   "rep": 8,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
    "rep": 11,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 7,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 10,
    "truth": "warm",
    "clip": false,
    "said": "warm",
@@ -516,20 +508,20 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 1,
+   "rep": 0,
    "truth": "encouraging",
    "clip": true,
-   "said": "encouraging",
+   "said": "warm",
    "err": null
   },
   {
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 0,
+   "rep": 1,
    "truth": "encouraging",
    "clip": true,
-   "said": "encouraging",
+   "said": "warm",
    "err": null
   },
   {
@@ -537,6 +529,16 @@
    "model": "taxila-brain",
    "look": "teal",
    "rep": 3,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 4,
    "truth": "encouraging",
    "clip": true,
    "said": "encouraging",
@@ -549,7 +551,7 @@
    "rep": 2,
    "truth": "encouraging",
    "clip": true,
-   "said": "playful",
+   "said": "encouraging",
    "err": null
   },
   {
@@ -566,10 +568,60 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 4,
+   "rep": 6,
    "truth": "encouraging",
    "clip": true,
-   "said": "playful",
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 11,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 7,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 10,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 8,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 0,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
    "err": null
   },
   {
@@ -586,50 +638,20 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 6,
-   "truth": "encouraging",
-   "clip": true,
-   "said": "encouraging",
+   "rep": 1,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
    "err": null
   },
   {
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 7,
-   "truth": "encouraging",
-   "clip": true,
-   "said": "encouraging",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 11,
-   "truth": "encouraging",
-   "clip": true,
-   "said": "encouraging",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 8,
-   "truth": "encouraging",
-   "clip": true,
-   "said": "warm",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 10,
-   "truth": "encouraging",
-   "clip": true,
-   "said": "playful",
+   "rep": 2,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
    "err": null
   },
   {
@@ -637,16 +659,6 @@
    "model": "taxila-brain",
    "look": "teal",
    "rep": 3,
-   "truth": "curious",
-   "clip": false,
-   "said": "thinking",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 1,
    "truth": "curious",
    "clip": false,
    "said": "curious",
@@ -666,37 +678,7 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 0,
-   "truth": "curious",
-   "clip": false,
-   "said": "curious",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
    "rep": 5,
-   "truth": "curious",
-   "clip": false,
-   "said": "thinking",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 2,
-   "truth": "curious",
-   "clip": false,
-   "said": "listening",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 7,
    "truth": "curious",
    "clip": false,
    "said": "curious",
@@ -719,14 +701,14 @@
    "rep": 8,
    "truth": "curious",
    "clip": false,
-   "said": "concerned",
+   "said": "curious",
    "err": null
   },
   {
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 10,
+   "rep": 7,
    "truth": "curious",
    "clip": false,
    "said": "curious",
@@ -746,6 +728,16 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
+   "rep": 10,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
    "rep": 11,
    "truth": "curious",
    "clip": false,
@@ -756,7 +748,7 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 0,
+   "rep": 2,
    "truth": "thinking",
    "clip": false,
    "said": "thinking",
@@ -766,7 +758,7 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 2,
+   "rep": 0,
    "truth": "thinking",
    "clip": false,
    "said": "thinking",
@@ -836,7 +828,7 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 8,
+   "rep": 9,
    "truth": "thinking",
    "clip": false,
    "said": "thinking",
@@ -846,7 +838,7 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 9,
+   "rep": 8,
    "truth": "thinking",
    "clip": false,
    "said": "thinking",
@@ -878,7 +870,7 @@
    "look": "teal",
    "rep": 0,
    "truth": "listening",
-   "clip": false,
+   "clip": true,
    "said": "listening",
    "err": null
   },
@@ -888,8 +880,8 @@
    "look": "teal",
    "rep": 1,
    "truth": "listening",
-   "clip": false,
-   "said": "listening",
+   "clip": true,
+   "said": "concerned",
    "err": null
   },
   {
@@ -898,8 +890,8 @@
    "look": "teal",
    "rep": 3,
    "truth": "listening",
-   "clip": false,
-   "said": "concerned",
+   "clip": true,
+   "said": "listening",
    "err": null
   },
   {
@@ -908,8 +900,8 @@
    "look": "teal",
    "rep": 4,
    "truth": "listening",
-   "clip": false,
-   "said": "concerned",
+   "clip": true,
+   "said": "listening",
    "err": null
   },
   {
@@ -918,18 +910,8 @@
    "look": "teal",
    "rep": 2,
    "truth": "listening",
-   "clip": false,
+   "clip": true,
    "said": "listening",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 6,
-   "truth": "listening",
-   "clip": false,
-   "said": "warm",
    "err": null
   },
   {
@@ -938,7 +920,7 @@
    "look": "teal",
    "rep": 5,
    "truth": "listening",
-   "clip": false,
+   "clip": true,
    "said": "listening",
    "err": null
   },
@@ -948,7 +930,47 @@
    "look": "teal",
    "rep": 7,
    "truth": "listening",
-   "clip": false,
+   "clip": true,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 6,
+   "truth": "listening",
+   "clip": true,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 9,
+   "truth": "listening",
+   "clip": true,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 11,
+   "truth": "listening",
+   "clip": true,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 10,
+   "truth": "listening",
+   "clip": true,
    "said": "listening",
    "err": null
   },
@@ -958,8 +980,8 @@
    "look": "teal",
    "rep": 8,
    "truth": "listening",
-   "clip": false,
-   "said": "concerned",
+   "clip": true,
+   "said": "listening",
    "err": null
   },
   {
@@ -976,57 +998,7 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 9,
-   "truth": "listening",
-   "clip": false,
-   "said": "listening",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 10,
-   "truth": "listening",
-   "clip": false,
-   "said": "listening",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 11,
-   "truth": "listening",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
    "rep": 2,
-   "truth": "concerned",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 3,
-   "truth": "concerned",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 4,
    "truth": "concerned",
    "clip": false,
    "said": "concerned",
@@ -1056,6 +1028,26 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
+   "rep": 3,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 4,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
    "rep": 6,
    "truth": "concerned",
    "clip": false,
@@ -1076,7 +1068,7 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 10,
+   "rep": 9,
    "truth": "concerned",
    "clip": false,
    "said": "concerned",
@@ -1096,7 +1088,7 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 9,
+   "rep": 10,
    "truth": "concerned",
    "clip": false,
    "said": "concerned",
@@ -1126,26 +1118,6 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 1,
-   "truth": "delighted",
-   "clip": false,
-   "said": "delighted",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 2,
-   "truth": "delighted",
-   "clip": false,
-   "said": "delighted",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
    "rep": 3,
    "truth": "delighted",
    "clip": false,
@@ -1156,7 +1128,27 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
+   "rep": 1,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
    "rep": 4,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 6,
    "truth": "delighted",
    "clip": false,
    "said": "delighted",
@@ -1186,26 +1178,6 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 6,
-   "truth": "delighted",
-   "clip": false,
-   "said": "delighted",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 10,
-   "truth": "delighted",
-   "clip": false,
-   "said": "delighted",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
    "rep": 8,
    "truth": "delighted",
    "clip": false,
@@ -1217,6 +1189,16 @@
    "model": "taxila-brain",
    "look": "teal",
    "rep": 9,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 10,
    "truth": "delighted",
    "clip": false,
    "said": "delighted",
@@ -1256,27 +1238,17 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 2,
-   "truth": "playful",
-   "clip": false,
-   "said": "playful",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 3,
-   "truth": "playful",
-   "clip": false,
-   "said": "playful",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
    "rep": 4,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 2,
    "truth": "playful",
    "clip": false,
    "said": "playful",
@@ -1296,27 +1268,17 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
+   "rep": 3,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
    "rep": 6,
-   "truth": "playful",
-   "clip": false,
-   "said": "playful",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 7,
-   "truth": "playful",
-   "clip": false,
-   "said": "playful",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 9,
    "truth": "playful",
    "clip": false,
    "said": "playful",
@@ -1336,7 +1298,27 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
+   "rep": 7,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
    "rep": 10,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 9,
    "truth": "playful",
    "clip": false,
    "said": "playful",
@@ -1366,16 +1348,6 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 0,
-   "truth": "surprised",
-   "clip": false,
-   "said": "surprised",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
    "rep": 3,
    "truth": "surprised",
    "clip": false,
@@ -1386,7 +1358,7 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 2,
+   "rep": 0,
    "truth": "surprised",
    "clip": false,
    "said": "surprised",
@@ -1406,6 +1378,16 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
+   "rep": 2,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
    "rep": 5,
    "truth": "surprised",
    "clip": false,
@@ -1416,7 +1398,7 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 6,
+   "rep": 7,
    "truth": "surprised",
    "clip": false,
    "said": "surprised",
@@ -1426,7 +1408,7 @@
    "judge": "A",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 7,
+   "rep": 6,
    "truth": "surprised",
    "clip": false,
    "said": "surprised",
@@ -1447,6 +1429,26 @@
    "model": "taxila-brain",
    "look": "teal",
    "rep": 9,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 10,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 11,
    "truth": "surprised",
    "clip": false,
    "said": "surprised",
@@ -1463,16 +1465,6 @@
    "err": null
   },
   {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 10,
-   "truth": "surprised",
-   "clip": false,
-   "said": "surprised",
-   "err": null
-  },
-  {
    "judge": "B",
    "model": "taxila-fast",
    "look": "teal",
@@ -1480,16 +1472,6 @@
    "truth": "warm",
    "clip": false,
    "said": "warm",
-   "err": null
-  },
-  {
-   "judge": "A",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 11,
-   "truth": "surprised",
-   "clip": false,
-   "said": "surprised",
    "err": null
   },
   {
@@ -1516,7 +1498,7 @@
    "judge": "B",
    "model": "taxila-fast",
    "look": "teal",
-   "rep": 4,
+   "rep": 5,
    "truth": "warm",
    "clip": false,
    "said": "warm",
@@ -1526,7 +1508,7 @@
    "judge": "B",
    "model": "taxila-fast",
    "look": "teal",
-   "rep": 5,
+   "rep": 4,
    "truth": "warm",
    "clip": false,
    "said": "warm",
@@ -1616,7 +1598,7 @@
    "judge": "B",
    "model": "taxila-fast",
    "look": "teal",
-   "rep": 2,
+   "rep": 3,
    "truth": "encouraging",
    "clip": true,
    "said": "warm",
@@ -1626,7 +1608,7 @@
    "judge": "B",
    "model": "taxila-fast",
    "look": "teal",
-   "rep": 3,
+   "rep": 2,
    "truth": "encouraging",
    "clip": true,
    "said": "warm",
@@ -1667,16 +1649,6 @@
    "model": "taxila-fast",
    "look": "teal",
    "rep": 7,
-   "truth": "encouraging",
-   "clip": true,
-   "said": "warm",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 8,
    "truth": "encouraging",
    "clip": true,
    "said": "warm",
@@ -1696,6 +1668,16 @@
    "judge": "B",
    "model": "taxila-fast",
    "look": "teal",
+   "rep": 8,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
    "rep": 10,
    "truth": "encouraging",
    "clip": true,
@@ -1706,6 +1688,16 @@
    "judge": "B",
    "model": "taxila-fast",
    "look": "teal",
+   "rep": 0,
+   "truth": "curious",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
    "rep": 11,
    "truth": "encouraging",
    "clip": true,
@@ -1716,20 +1708,10 @@
    "judge": "B",
    "model": "taxila-fast",
    "look": "teal",
-   "rep": 0,
-   "truth": "curious",
-   "clip": false,
-   "said": "listening",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
    "rep": 1,
    "truth": "curious",
    "clip": false,
-   "said": "listening",
+   "said": "concerned",
    "err": null
   },
   {
@@ -1739,17 +1721,7 @@
    "rep": 2,
    "truth": "curious",
    "clip": false,
-   "said": "listening",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 4,
-   "truth": "curious",
-   "clip": false,
-   "said": "listening",
+   "said": "concerned",
    "err": null
   },
   {
@@ -1759,7 +1731,7 @@
    "rep": 5,
    "truth": "curious",
    "clip": false,
-   "said": "listening",
+   "said": "concerned",
    "err": null
   },
   {
@@ -1769,7 +1741,17 @@
    "rep": 3,
    "truth": "curious",
    "clip": false,
-   "said": "listening",
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 4,
+   "truth": "curious",
+   "clip": false,
+   "said": "concerned",
    "err": null
   },
   {
@@ -1779,7 +1761,7 @@
    "rep": 6,
    "truth": "curious",
    "clip": false,
-   "said": "listening",
+   "said": "surprised",
    "err": null
   },
   {
@@ -1789,7 +1771,7 @@
    "rep": 7,
    "truth": "curious",
    "clip": false,
-   "said": "listening",
+   "said": "surprised",
    "err": null
   },
   {
@@ -1799,7 +1781,7 @@
    "rep": 8,
    "truth": "curious",
    "clip": false,
-   "said": "listening",
+   "said": "concerned",
    "err": null
   },
   {
@@ -1809,7 +1791,7 @@
    "rep": 9,
    "truth": "curious",
    "clip": false,
-   "said": "listening",
+   "said": "surprised",
    "err": null
   },
   {
@@ -1819,7 +1801,7 @@
    "rep": 10,
    "truth": "curious",
    "clip": false,
-   "said": "listening",
+   "said": "concerned",
    "err": null
   },
   {
@@ -1829,17 +1811,7 @@
    "rep": 11,
    "truth": "curious",
    "clip": false,
-   "said": "listening",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 0,
-   "truth": "thinking",
-   "clip": false,
-   "said": "listening",
+   "said": "surprised",
    "err": null
   },
   {
@@ -1856,298 +1828,8 @@
    "judge": "B",
    "model": "taxila-fast",
    "look": "teal",
-   "rep": 2,
-   "truth": "thinking",
-   "clip": false,
-   "said": "listening",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 3,
-   "truth": "thinking",
-   "clip": false,
-   "said": "warm",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 4,
-   "truth": "thinking",
-   "clip": false,
-   "said": "warm",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 6,
-   "truth": "thinking",
-   "clip": false,
-   "said": "warm",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 5,
-   "truth": "thinking",
-   "clip": false,
-   "said": "listening",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 7,
-   "truth": "thinking",
-   "clip": false,
-   "said": "listening",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 8,
-   "truth": "thinking",
-   "clip": false,
-   "said": "warm",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 9,
-   "truth": "thinking",
-   "clip": false,
-   "said": "listening",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 10,
-   "truth": "thinking",
-   "clip": false,
-   "said": "listening",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 11,
-   "truth": "thinking",
-   "clip": false,
-   "said": "warm",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
    "rep": 0,
-   "truth": "listening",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 2,
-   "truth": "listening",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 1,
-   "truth": "listening",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 3,
-   "truth": "listening",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 5,
-   "truth": "listening",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 6,
-   "truth": "listening",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 4,
-   "truth": "listening",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 8,
-   "truth": "listening",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 7,
-   "truth": "listening",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 9,
-   "truth": "listening",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 11,
-   "truth": "listening",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 10,
-   "truth": "listening",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 0,
-   "truth": "concerned",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 1,
-   "truth": "concerned",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 3,
-   "truth": "concerned",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 4,
-   "truth": "concerned",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 2,
-   "truth": "concerned",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 5,
-   "truth": "concerned",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 6,
-   "truth": "concerned",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 7,
-   "truth": "concerned",
+   "truth": "thinking",
    "clip": false,
    "said": "thinking",
    "err": null
@@ -2156,18 +1838,8 @@
    "judge": "B",
    "model": "taxila-fast",
    "look": "teal",
-   "rep": 8,
-   "truth": "concerned",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 10,
-   "truth": "concerned",
+   "rep": 2,
+   "truth": "thinking",
    "clip": false,
    "said": "listening",
    "err": null
@@ -2176,6 +1848,316 @@
    "judge": "B",
    "model": "taxila-fast",
    "look": "teal",
+   "rep": 3,
+   "truth": "thinking",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 4,
+   "truth": "thinking",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 5,
+   "truth": "thinking",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 6,
+   "truth": "thinking",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 8,
+   "truth": "thinking",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 7,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 9,
+   "truth": "thinking",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 10,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 11,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 0,
+   "truth": "listening",
+   "clip": true,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 1,
+   "truth": "listening",
+   "clip": true,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 2,
+   "truth": "listening",
+   "clip": true,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 3,
+   "truth": "listening",
+   "clip": true,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 4,
+   "truth": "listening",
+   "clip": true,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 5,
+   "truth": "listening",
+   "clip": true,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 8,
+   "truth": "listening",
+   "clip": true,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 7,
+   "truth": "listening",
+   "clip": true,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 6,
+   "truth": "listening",
+   "clip": true,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 0,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 9,
+   "truth": "listening",
+   "clip": true,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 1,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 10,
+   "truth": "listening",
+   "clip": true,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 11,
+   "truth": "listening",
+   "clip": true,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 2,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 3,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 4,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 5,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 6,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 7,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 8,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 10,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
    "rep": 9,
    "truth": "concerned",
    "clip": false,
@@ -2196,7 +2178,7 @@
    "judge": "B",
    "model": "taxila-fast",
    "look": "teal",
-   "rep": 0,
+   "rep": 1,
    "truth": "delighted",
    "clip": false,
    "said": "delighted",
@@ -2206,7 +2188,7 @@
    "judge": "B",
    "model": "taxila-fast",
    "look": "teal",
-   "rep": 1,
+   "rep": 0,
    "truth": "delighted",
    "clip": false,
    "said": "delighted",
@@ -2226,7 +2208,7 @@
    "judge": "B",
    "model": "taxila-fast",
    "look": "teal",
-   "rep": 5,
+   "rep": 3,
    "truth": "delighted",
    "clip": false,
    "said": "delighted",
@@ -2246,7 +2228,7 @@
    "judge": "B",
    "model": "taxila-fast",
    "look": "teal",
-   "rep": 6,
+   "rep": 5,
    "truth": "delighted",
    "clip": false,
    "said": "delighted",
@@ -2256,7 +2238,7 @@
    "judge": "B",
    "model": "taxila-fast",
    "look": "teal",
-   "rep": 3,
+   "rep": 6,
    "truth": "delighted",
    "clip": false,
    "said": "delighted",
@@ -2306,16 +2288,6 @@
    "judge": "B",
    "model": "taxila-fast",
    "look": "teal",
-   "rep": 0,
-   "truth": "playful",
-   "clip": false,
-   "said": "warm",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
    "rep": 11,
    "truth": "delighted",
    "clip": false,
@@ -2326,6 +2298,16 @@
    "judge": "B",
    "model": "taxila-fast",
    "look": "teal",
+   "rep": 0,
+   "truth": "playful",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
    "rep": 1,
    "truth": "playful",
    "clip": false,
@@ -2359,7 +2341,7 @@
    "rep": 4,
    "truth": "playful",
    "clip": false,
-   "said": "playful",
+   "said": "warm",
    "err": null
   },
   {
@@ -2369,7 +2351,7 @@
    "rep": 5,
    "truth": "playful",
    "clip": false,
-   "said": "playful",
+   "said": "warm",
    "err": null
   },
   {
@@ -2379,7 +2361,7 @@
    "rep": 6,
    "truth": "playful",
    "clip": false,
-   "said": "playful",
+   "said": "warm",
    "err": null
   },
   {
@@ -2407,6 +2389,26 @@
    "model": "taxila-fast",
    "look": "teal",
    "rep": 9,
+   "truth": "playful",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 10,
+   "truth": "playful",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 11,
    "truth": "playful",
    "clip": false,
    "said": "warm",
@@ -2426,20 +2428,10 @@
    "judge": "B",
    "model": "taxila-fast",
    "look": "teal",
-   "rep": 10,
-   "truth": "playful",
+   "rep": 2,
+   "truth": "surprised",
    "clip": false,
-   "said": "playful",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 11,
-   "truth": "playful",
-   "clip": false,
-   "said": "warm",
+   "said": "surprised",
    "err": null
   },
   {
@@ -2456,27 +2448,17 @@
    "judge": "B",
    "model": "taxila-fast",
    "look": "teal",
-   "rep": 3,
-   "truth": "surprised",
-   "clip": false,
-   "said": "surprised",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 2,
-   "truth": "surprised",
-   "clip": false,
-   "said": "surprised",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
    "rep": 4,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 3,
    "truth": "surprised",
    "clip": false,
    "said": "surprised",
@@ -2513,50 +2495,70 @@
    "err": null
   },
   {
-   "judge": "B",
-   "model": "taxila-fast",
+   "judge": "A",
+   "model": "taxila-brain",
    "look": "teal",
-   "rep": 10,
-   "truth": "surprised",
-   "clip": false,
-   "said": "surprised",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 8,
-   "truth": "surprised",
-   "clip": false,
-   "said": "surprised",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 9,
-   "truth": "surprised",
-   "clip": false,
-   "said": "surprised",
-   "err": null
-  },
-  {
-   "judge": "B",
-   "model": "taxila-fast",
-   "look": "teal",
-   "rep": 11,
-   "truth": "surprised",
+   "rep": 2,
+   "truth": "delighted",
    "clip": false,
    "said": "delighted",
    "err": null
   },
   {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 8,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 10,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
    "rep": 0,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 9,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "B",
+   "model": "taxila-fast",
+   "look": "teal",
+   "rep": 11,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 2,
    "truth": "warm",
    "clip": false,
    "said": "warm",
@@ -2576,17 +2578,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 2,
-   "truth": "warm",
-   "clip": false,
-   "said": "warm",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 3,
+   "rep": 4,
    "truth": "warm",
    "clip": false,
    "said": "warm",
@@ -2606,17 +2598,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 4,
-   "truth": "warm",
-   "clip": false,
-   "said": "warm",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 7,
+   "rep": 3,
    "truth": "warm",
    "clip": false,
    "said": "warm",
@@ -2636,17 +2618,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 9,
-   "truth": "warm",
-   "clip": false,
-   "said": "warm",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 11,
+   "rep": 7,
    "truth": "warm",
    "clip": false,
    "said": "warm",
@@ -2666,6 +2638,16 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
+   "rep": 9,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
    "rep": 10,
    "truth": "warm",
    "clip": false,
@@ -2676,7 +2658,17 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 3,
+   "rep": 11,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 0,
    "truth": "encouraging",
    "clip": true,
    "said": "encouraging",
@@ -2696,7 +2688,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 4,
+   "rep": 5,
    "truth": "encouraging",
    "clip": true,
    "said": "encouraging",
@@ -2709,24 +2701,34 @@
    "rep": 1,
    "truth": "encouraging",
    "clip": true,
-   "said": "encouraging",
+   "said": "warm",
    "err": null
   },
   {
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 0,
+   "rep": 4,
    "truth": "encouraging",
    "clip": true,
-   "said": "encouraging",
+   "said": "warm",
    "err": null
   },
   {
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 5,
+   "rep": 3,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 6,
    "truth": "encouraging",
    "clip": true,
    "said": "encouraging",
@@ -2746,7 +2748,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 6,
+   "rep": 10,
    "truth": "encouraging",
    "clip": true,
    "said": "encouraging",
@@ -2759,27 +2761,7 @@
    "rep": 7,
    "truth": "encouraging",
    "clip": true,
-   "said": "encouraging",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 10,
-   "truth": "encouraging",
-   "clip": true,
-   "said": "encouraging",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 11,
-   "truth": "encouraging",
-   "clip": true,
-   "said": "encouraging",
+   "said": "warm",
    "err": null
   },
   {
@@ -2797,16 +2779,6 @@
    "model": "taxila-brain",
    "look": "teal",
    "rep": 0,
-   "truth": "curious",
-   "clip": false,
-   "said": "thinking",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 1,
    "truth": "curious",
    "clip": false,
    "said": "curious",
@@ -2816,20 +2788,20 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 5,
-   "truth": "curious",
-   "clip": false,
-   "said": "concerned",
+   "rep": 11,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
    "err": null
   },
   {
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 4,
+   "rep": 2,
    "truth": "curious",
    "clip": false,
-   "said": "curious",
+   "said": "listening",
    "err": null
   },
   {
@@ -2846,10 +2818,30 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 2,
+   "rep": 1,
    "truth": "curious",
    "clip": false,
    "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 4,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 5,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
    "err": null
   },
   {
@@ -2857,36 +2849,6 @@
    "model": "taxila-brain",
    "look": "teal",
    "rep": 6,
-   "truth": "curious",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 7,
-   "truth": "curious",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 8,
-   "truth": "curious",
-   "clip": false,
-   "said": "listening",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 9,
    "truth": "curious",
    "clip": false,
    "said": "curious",
@@ -2906,6 +2868,46 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
+   "rep": 8,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 7,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 9,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 0,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
    "rep": 11,
    "truth": "curious",
    "clip": false,
@@ -2916,17 +2918,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 0,
-   "truth": "thinking",
-   "clip": false,
-   "said": "thinking",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 1,
+   "rep": 3,
    "truth": "thinking",
    "clip": false,
    "said": "thinking",
@@ -2946,7 +2938,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 3,
+   "rep": 2,
    "truth": "thinking",
    "clip": false,
    "said": "thinking",
@@ -2956,7 +2948,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 2,
+   "rep": 1,
    "truth": "thinking",
    "clip": false,
    "said": "thinking",
@@ -2976,16 +2968,6 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 6,
-   "truth": "thinking",
-   "clip": false,
-   "said": "thinking",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
    "rep": 7,
    "truth": "thinking",
    "clip": false,
@@ -2996,7 +2978,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 9,
+   "rep": 6,
    "truth": "thinking",
    "clip": false,
    "said": "thinking",
@@ -3007,6 +2989,16 @@
    "model": "taxila-brain",
    "look": "teal",
    "rep": 8,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 9,
    "truth": "thinking",
    "clip": false,
    "said": "thinking",
@@ -3038,7 +3030,7 @@
    "look": "teal",
    "rep": 0,
    "truth": "listening",
-   "clip": false,
+   "clip": true,
    "said": "listening",
    "err": null
   },
@@ -3048,7 +3040,27 @@
    "look": "teal",
    "rep": 2,
    "truth": "listening",
-   "clip": false,
+   "clip": true,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 3,
+   "truth": "listening",
+   "clip": true,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 4,
+   "truth": "listening",
+   "clip": true,
    "said": "listening",
    "err": null
   },
@@ -3058,28 +3070,8 @@
    "look": "teal",
    "rep": 1,
    "truth": "listening",
-   "clip": false,
-   "said": "warm",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 3,
-   "truth": "listening",
-   "clip": false,
-   "said": "warm",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 4,
-   "truth": "listening",
-   "clip": false,
-   "said": "warm",
+   "clip": true,
+   "said": "listening",
    "err": null
   },
   {
@@ -3088,8 +3080,8 @@
    "look": "teal",
    "rep": 5,
    "truth": "listening",
-   "clip": false,
-   "said": "warm",
+   "clip": true,
+   "said": "curious",
    "err": null
   },
   {
@@ -3098,7 +3090,7 @@
    "look": "teal",
    "rep": 6,
    "truth": "listening",
-   "clip": false,
+   "clip": true,
    "said": "listening",
    "err": null
   },
@@ -3106,9 +3098,19 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 7,
+   "rep": 9,
    "truth": "listening",
-   "clip": false,
+   "clip": true,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 11,
+   "truth": "listening",
+   "clip": true,
    "said": "listening",
    "err": null
   },
@@ -3118,27 +3120,17 @@
    "look": "teal",
    "rep": 8,
    "truth": "listening",
-   "clip": false,
-   "said": "warm",
+   "clip": true,
+   "said": "curious",
    "err": null
   },
   {
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 9,
+   "rep": 7,
    "truth": "listening",
-   "clip": false,
-   "said": "listening",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 0,
-   "truth": "concerned",
-   "clip": false,
+   "clip": true,
    "said": "concerned",
    "err": null
   },
@@ -3148,7 +3140,7 @@
    "look": "teal",
    "rep": 10,
    "truth": "listening",
-   "clip": false,
+   "clip": true,
    "said": "listening",
    "err": null
   },
@@ -3156,7 +3148,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 1,
+   "rep": 0,
    "truth": "concerned",
    "clip": false,
    "said": "concerned",
@@ -3166,7 +3158,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 3,
+   "rep": 1,
    "truth": "concerned",
    "clip": false,
    "said": "concerned",
@@ -3186,17 +3178,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 11,
-   "truth": "listening",
-   "clip": false,
-   "said": "listening",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 4,
+   "rep": 3,
    "truth": "concerned",
    "clip": false,
    "said": "concerned",
@@ -3216,7 +3198,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 6,
+   "rep": 4,
    "truth": "concerned",
    "clip": false,
    "said": "concerned",
@@ -3226,7 +3208,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 8,
+   "rep": 6,
    "truth": "concerned",
    "clip": false,
    "said": "concerned",
@@ -3247,26 +3229,6 @@
    "model": "taxila-brain",
    "look": "teal",
    "rep": 9,
-   "truth": "concerned",
-   "clip": false,
-   "said": "concerned",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 0,
-   "truth": "delighted",
-   "clip": false,
-   "said": "delighted",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 11,
    "truth": "concerned",
    "clip": false,
    "said": "concerned",
@@ -3286,7 +3248,27 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 2,
+   "rep": 11,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 8,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 0,
    "truth": "delighted",
    "clip": false,
    "said": "delighted",
@@ -3296,7 +3278,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 1,
+   "rep": 2,
    "truth": "delighted",
    "clip": false,
    "said": "delighted",
@@ -3316,6 +3298,16 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
+   "rep": 5,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
    "rep": 4,
    "truth": "delighted",
    "clip": false,
@@ -3326,7 +3318,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 5,
+   "rep": 1,
    "truth": "delighted",
    "clip": false,
    "said": "delighted",
@@ -3356,7 +3348,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 8,
+   "rep": 9,
    "truth": "delighted",
    "clip": false,
    "said": "delighted",
@@ -3366,7 +3358,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 9,
+   "rep": 8,
    "truth": "delighted",
    "clip": false,
    "said": "delighted",
@@ -3406,10 +3398,20 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
+   "rep": 3,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
    "rep": 0,
    "truth": "playful",
    "clip": false,
-   "said": "warm",
+   "said": "playful",
    "err": null
   },
   {
@@ -3426,27 +3428,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 3,
-   "truth": "playful",
-   "clip": false,
-   "said": "playful",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
    "rep": 4,
-   "truth": "playful",
-   "clip": false,
-   "said": "warm",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 6,
    "truth": "playful",
    "clip": false,
    "said": "playful",
@@ -3466,6 +3448,16 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
+   "rep": 8,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
    "rep": 7,
    "truth": "playful",
    "clip": false,
@@ -3476,10 +3468,10 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 8,
+   "rep": 6,
    "truth": "playful",
    "clip": false,
-   "said": "warm",
+   "said": "playful",
    "err": null
   },
   {
@@ -3496,7 +3488,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 10,
+   "rep": 11,
    "truth": "playful",
    "clip": false,
    "said": "playful",
@@ -3506,7 +3498,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 11,
+   "rep": 10,
    "truth": "playful",
    "clip": false,
    "said": "playful",
@@ -3527,16 +3519,6 @@
    "model": "taxila-brain",
    "look": "teal",
    "rep": 2,
-   "truth": "surprised",
-   "clip": false,
-   "said": "surprised",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 3,
    "truth": "surprised",
    "clip": false,
    "said": "surprised",
@@ -3556,7 +3538,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 4,
+   "rep": 3,
    "truth": "surprised",
    "clip": false,
    "said": "surprised",
@@ -3576,6 +3558,16 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
+   "rep": 9,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
    "rep": 6,
    "truth": "surprised",
    "clip": false,
@@ -3586,17 +3578,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 7,
-   "truth": "surprised",
-   "clip": false,
-   "said": "surprised",
-   "err": null
-  },
-  {
-   "judge": "C",
-   "model": "taxila-brain",
-   "look": "teal",
-   "rep": 9,
+   "rep": 4,
    "truth": "surprised",
    "clip": false,
    "said": "surprised",
@@ -3616,7 +3598,7 @@
    "judge": "C",
    "model": "taxila-brain",
    "look": "teal",
-   "rep": 11,
+   "rep": 7,
    "truth": "surprised",
    "clip": false,
    "said": "surprised",
@@ -3627,6 +3609,16 @@
    "model": "taxila-brain",
    "look": "teal",
    "rep": 10,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "teal",
+   "rep": 11,
    "truth": "surprised",
    "clip": false,
    "said": "surprised",

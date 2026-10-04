@@ -106,6 +106,9 @@ export const VISEME_TO_ARKIT = {
   viseme_O: { jawOpen: 0.38, mouthFunnel: 0.55, mouthPucker: 0.2 },
   viseme_U: { jawOpen: 0.15, mouthPucker: 0.75, mouthFunnel: 0.25 },
 };
+// gnm round 2: B+'s bilabial fold without jawOpen / mouthClose (on GNM's keys that pair left 5 % of the lip line open
+// at the corners, gates.py B+ aperture); the press and the rolls alone close it
+VISEME_TO_ARKIT.viseme_PP = { mouthPressLeft: 0.6, mouthPressRight: 0.6, mouthRollLower: 0.2, mouthRollUpper: 0.12 };
 export const VISEME_ORDER = Object.keys(VISEME_TO_ARKIT);
 
 /** Correctives: weight = product of the parents (glTF has no drivers; §5.2). */
@@ -143,14 +146,27 @@ export function wrinkleWeights(w) {
  *  designs, scaled amplitude, because GNM's in-space keys carry less of the MakeHuman units' exaggeration. Chosen on
  *  judge A only, n = 6 per variant, gains 1 / 1.3 / 1.6 (scripts/character/bakeoff/gnm/rescore.mjs, reports/rescore.json);
  *  judge C never saw a candidate. Weights are clamped at 1 after the gain. */
-export const GNM_GAIN = { concerned: 1.3, delighted: 1.6, playful: 1.6 };
+export const GNM_GAIN = { delighted: 1.6, playful: 1.6 };
+// gnm round 2: eyeSquint never takes the gain past 0.35 and cheekSquint past 0.8 (at 1.6x the delighted / playful squint pushed 2-5 lid
+// vertices inside GNM's eyeball, measured by gates.py)
+const GNM_SQUINT_CAP = 0.35;
+// gnm round 2: curious and concerned re-designed on GNM's widened brow keys (keys.py --browgain 1.5) and chosen on judge
+// A (n = 8 per variant, reports/rescore2.json): curious = ONE brow raised (her left), the other a touch lowered, that
+// eye a little wide, lips softly rounded, the head tilted 11 deg toward the child; concerned = inner brows up AND knit,
+// lips pressed with a slight downturn and the chin raised a little, head tilted, chin down
+EMOTIONS.curious = { bs: { browOuterUpLeft: 1.0, browInnerUp: 0.5, browDownRight: 0.25, eyeWideLeft: 0.4, eyeSquintRight: 0.15, mouthPucker: 0.15, jawOpen: 0.05, mouthSmileLeft: 0.1 }, head: [-4, 6, 11], gaze: [0, 0], lean: 0.6, env: EMOTIONS.curious.env };
+EMOTIONS.concerned = { ...EMOTIONS.concerned, bs: { browInnerUp: 1.0, browDownLeft: 0.65, browDownRight: 0.65, mouthPressLeft: 0.55, mouthPressRight: 0.55, mouthFrownLeft: 0.25, mouthFrownRight: 0.25, mouthShrugLower: 0.25, eyeSquintLeft: 0.12, eyeSquintRight: 0.12 }, head: [7, 0, 8], gaze: [0, -2] };
 /** Compose an emotion at intensity i (with the look's seeded asymmetry) into ARKit weights. */
-export function emotionPose(name, i = 1, asym = { smile: 0, brow: 0, squint: 0 }) {
-  const e = EMOTIONS[name];
+// gnm round 2 (slate / plum): a look may carry its own per-face re-score as DATA in its look JSON, never new designs:
+// presetGain {emotion: gain} replaces GNM_GAIN for that emotion, presetHead {emotion: [pitch, yaw, roll]} its head
+export function emotionPose(name, i = 1, asym = { smile: 0, brow: 0, squint: 0 }, perFace = {}) {
+  const e0 = EMOTIONS[name];
+  const e = perFace.presetHead?.[name] ? { ...e0, head: perFace.presetHead[name] } : e0;
   const bs = {};
-  const gg = GNM_GAIN[name] ?? 1;
+  const gg = perFace.presetGain?.[name] ?? GNM_GAIN[name] ?? 1;
   for (const [k, v0] of Object.entries(e.bs)) {
-    const v = Math.min(1, v0 * gg);
+    const v = gg > 1 && /^eyeSquint/.test(k) ? Math.max(Math.min(v0, 1), Math.min(GNM_SQUINT_CAP, v0 * gg))
+      : gg > 1 && /^cheekSquint/.test(k) ? Math.max(Math.min(v0, 1), Math.min(0.8, v0 * gg)) : Math.min(1, v0 * gg);
     let a = 1;
     if (/Left$/.test(k)) a = 1 + (k.startsWith("mouthSmile") ? asym.smile : k.startsWith("brow") ? asym.brow : asym.squint || 0);
     if (/Right$/.test(k)) a = 1 - (k.startsWith("mouthSmile") ? asym.smile : k.startsWith("brow") ? asym.brow : asym.squint || 0);

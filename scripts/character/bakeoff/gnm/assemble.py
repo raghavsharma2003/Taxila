@@ -23,23 +23,25 @@ import v3data, geom
 ap = argparse.ArgumentParser()
 ap.add_argument("--tier", default="H,Bplus")
 ap.add_argument("--brows", action="store_true", help="keep v3's brow cards at H (default off: the projected brows carry them)")
+ap.add_argument("--look", default="teal")
 a = ap.parse_args()
 t0 = time.time()
-BD = os.path.join(G.CH, "bakeoff-gnm", "teal")
+LOOK_ = G.look_from_argv(); PTH = G.paths(LOOK_)
+BD = PTH["BD"]
 m = G.GNM()
-fit = json.load(open(os.path.join(G.ART, "fit", "teal.json")))
+fit = json.load(open(PTH["FIT"]))
 cid = np.array(fit["identity"])
 K = np.load(os.path.join(BD, "keys.npz"))
 KN = [str(x) for x in K["names"]]
 V0 = K["V0"].astype(np.float64)
 KD = K["deltas"].astype(np.float64)
-C = np.load(os.path.join(BD, "corr.npz"))
+C = np.load(os.path.join(BD, "corr_parts.npz" if os.path.exists(os.path.join(BD, "corr_parts.npz")) else "corr.npz"))   # placement + parts field
 J = m.joints(cid)
 JOINTS = ["Spine2", "Neck", "Head", "LeftEye", "RightEye", "LeftShoulder", "RightShoulder"]
 rep = {"method": __doc__.split("\n")[0], "date": time.strftime("%Y-%m-%d")}
 
 # ---------------------------------------------------------------- placement GNM -> world (v3 armature frame)
-M3H, B3 = v3data.load(os.path.join(G.CH, "bakeoff-gnm", "v3dump", "H"))
+M3H, B3 = v3data.load(os.path.join(PTH["SRC"], "H"))   # this look's source face (the parts field, corr_parts) + armature
 R_pl = C["R"].T
 eye_w3 = 0.5 * (B3["LeftEye"]["world"][:3, 3] + B3["RightEye"]["world"][:3, 3])
 t_w = eye_w3 - R_pl @ (0.5 * (J[2] + J[3]))
@@ -124,6 +126,7 @@ nb_th, nb_y, nb_r = th(NB)[o], NB[o, 1], rad(NB)[o]
 per = lambda q, xs, ys: np.interp(q, np.r_[xs - 2 * np.pi, xs, xs + 2 * np.pi], np.r_[ys, ys, ys])
 rep["neckLoop"] = {"verts": int(len(neck)), "yRange": [round(float(NB[:, 1].min()), 4), round(float(NB[:, 1].max()), 4)]}
 
+_CA = G.mp_correspondence(); MP_A = {int(k): int(v) for k, v in zip(_CA["landmarks"], _CA["vertices"])}
 # ---------------------------------------------------------------- v3 head field (for hair, cards)
 F3 = M3H["face"]
 reg3 = np.round(F3["_REGION"]).astype(int)
@@ -131,6 +134,25 @@ P3 = F3["POSITION"].astype(np.float64)
 head3 = C["head3"]
 Wp = C["Wp"]
 D_head = W(Wp[head3]) - P3[head3]
+if LOOK_ != "teal":
+    # the parts field for the iteration-2 sources: split into the exact similarity (smooth by construction) and the
+    # non-rigid residual, then make the residual mirror-symmetric (both faces are symmetric about x = 0; one-sided ICP
+    # failures behind slate's left ear gave 134 mm deltas that tore the hair sheet and stretched a glasses temple into a
+    # spike); where the two sides disagree by > 8 mm the smaller one is kept, and every residual is capped at 20 mm
+    Ph3 = P3[head3]
+    sim = W(float(C["s"]) * Ph3 @ C["R"].T + C["t"]) - Ph3
+    res = D_head - sim
+    mir = cKDTree(Ph3).query(Ph3 * [-1, 1, 1])[1]
+    rm = res[mir] * [-1, 1, 1]
+    na, nb = np.linalg.norm(res, axis=1), np.linalg.norm(rm, axis=1)
+    agree = np.linalg.norm(res - rm, axis=1) < 0.008
+    rs = np.where(agree[:, None], 0.5 * (res + rm), np.where((na < nb)[:, None], res, rm))
+    nr = np.linalg.norm(rs, axis=1, keepdims=True)
+    rs *= np.minimum(1, 0.020 / np.maximum(nr, 1e-9))
+    rep["partsField"] = {"residualP95mm_before": round(float(np.percentile(na, 95) * 1000), 1),
+                         "residualP95mm_after": round(float(np.percentile(np.linalg.norm(rs, axis=1), 95) * 1000), 1),
+                         "sidesDisagreePct": round(float((~agree).mean() * 100), 1)}
+    D_head = sim + rs
 head_tree = cKDTree(P3[head3])
 
 
@@ -212,7 +234,7 @@ def zipper(A, ta, Bv, tb):
 
 
 def build_tier(tier):
-    T3, _ = v3data.load(os.path.join(G.CH, "bakeoff-gnm", "v3dump", tier))
+    T3, _ = v3data.load(os.path.join(PTH["SRC"], tier))
     keys_t = T3["face"]["targetNames"]
     kidx = [KN.index(k) for k in keys_t]
     # ---- GNM part
@@ -226,21 +248,39 @@ def build_tier(tier):
     face = {"POSITION": V0w[src], "TEXCOORD_0": uv_g, "JOINTS_0": gj, "WEIGHTS_0": gw, "_REGION": region, "idx": Fg.copy(),
             "targets": KDw[kidx][:, src, :], "targetNames": keys_t, "weld": src.copy()}
     rep.setdefault("tiers", {})[tier] = {"gnmVerts": int(n0), "bustVerts": 0}
-    # ---- eyes: the contract eye mesh scaled to GNM's eyeball and centred on its joints
-    E = T3["eyes"]; Pe = E["POSITION"].astype(np.float64).copy()
-    for side, jn, sgn in (("L", 2, 1), ("R", 3, -1)):
-        s_ = (Pe[:, 0] * sgn) > 0
-        c3 = Pe[s_].mean(0)
-        back = s_ & (Pe[:, 2] < c3[2])
-        r3 = np.linalg.norm(Pe[back] - c3, axis=1).max()
-        scl = m.group("scleras") & ((V0[:, 0] * sgn) > 0)
-        X = V0[scl]
-        A_ = np.c_[2 * X, np.ones(len(X))]; sol = np.linalg.lstsq(A_, (X ** 2).sum(1), rcond=None)[0]
-        cg = sol[:3]; rg_ = np.sqrt(sol[3] + cg @ cg)
-        Pe[s_] = W(cg[None]) + (Pe[s_] - c3) * (rg_ / r3)
-        rep.setdefault("eyes", {})[side] = {"gnmRadiusMM": round(float(rg_ * 1000), 2), "v3RadiusMM": round(float(r3 * 1000), 2),
-                                            "centreFromJointMM": round(float(np.linalg.norm(cg - J[jn]) * 1000), 2), "centreWorld": W(cg[None])[0].round(5).tolist()}
-    eyes = {"POSITION": Pe, "TEXCOORD_0": E["TEXCOORD_0"], "JOINTS_0": E["JOINTS_0"], "WEIGHTS_0": E["WEIGHTS_0"], "idx": E["idx"]}
+    # ---- eyes (round 2): GNM's OWN eyeball (its eye_exteriors shell: sclera + cornea bulge, 768 tris per eye), skinned
+    # to LeftEye / RightEye at GNM's eye joints; the TaxilaEye shader reads its measured cornea / iris geometry from the
+    # mesh extras (it had assumed the contract mesh's constants). B+ decimates the shells to 250 tris per eye.
+    egeo = {}
+    PE, FE, JE = [], [], []
+    for side, jn, sgn, bone in (("L", 2, 1, 3), ("R", 3, -1, 4)):
+        grp_ = m.group("eye_exteriors") & m.group("left_eye" if side == "L" else "right_eye")
+        vi = np.where(grp_)[0]
+        remap_ = -np.ones(m.V, int); remap_[vi] = np.arange(len(vi)) + sum(len(x) for x in PE)
+        ft = m.tri[grp_[m.tri].all(1)]
+        c = J[jn]
+        rb = np.linalg.norm(V0[vi] - c, axis=1)
+        rback = rb[(V0[vi] - c)[:, 2] < 0].max()                    # the shader's uEyeRad (max back-hemisphere distance)
+        q = (V0[vi] - c) / rback
+        cor = q[np.linalg.norm(q, axis=1) > 1.006]
+        A_ = np.c_[2 * cor, np.ones(len(cor))]; sol = np.linalg.lstsq(A_, (cor ** 2).sum(1), rcond=None)[0]
+        ccz, RC = sol[2], float(np.sqrt(sol[3] + sol[:3] @ sol[:3]))
+        iq = (V0[m.group("irises") & m.group("left_eye" if side == "L" else "right_eye")] - c) / rback
+        pq = (V0[m.group("pupils") & m.group("left_eye" if side == "L" else "right_eye")] - c) / rback
+        irisR = float(np.hypot(iq[:, 0], iq[:, 1]).max())
+        egeo[side] = {"corneaZ": round(float(ccz), 4), "corneaR": round(RC, 4), "irisZ": round(float(iq[:, 2].mean()), 4), "irisR": round(irisR, 4),
+                      "limbusZ": round(float(cor[:, 2].min()), 4), "pupil": round(float(np.hypot(pq[:, 0], pq[:, 1]).max()) / irisR, 4),
+                      "radiusMM": round(float(rback * 1000), 2), "apex": round(float(np.linalg.norm(q, axis=1).max()), 4)}
+        PE.append(W(V0[vi])); FE.append(remap_[ft]); JE.append(np.full(len(vi), bone))
+        rep.setdefault("eyes", {})[side] = {**egeo[side], "centreWorld": W(c[None])[0].round(5).tolist(), "source": "GNM eye_exteriors"}
+    Pe = np.concatenate(PE); Fe = np.concatenate(FE)
+    je = np.zeros((len(Pe), 4), np.uint8); je[:, 0] = np.concatenate(JE)
+    we = np.zeros((len(Pe), 4)); we[:, 0] = 1
+    eavg = {k: round(0.5 * (egeo["L"][k] + egeo["R"][k]), 4) for k in egeo["L"]}
+    # GNM's mean pupil is dilated (0.51 of the iris radius: the eyes read as black discs under the contract light,
+    # rendered); GNM drives it with its own iris component, so the runtime pupil is set to an indoor 0.38
+    eavg["pupilGNMmean"] = eavg["pupil"]; eavg["pupil"] = 0.38
+    eyes = {"POSITION": Pe, "TEXCOORD_0": np.zeros((len(Pe), 2)), "JOINTS_0": je, "WEIGHTS_0": we, "idx": Fe, "extras": {"taxilaEye": eavg}}
     # ---- hair, cards, garment through the field (+ push-out of the GNM skin)
     gskin_tri = Fg[(region[Fg] == 0).all(1)]
 
@@ -255,10 +295,25 @@ def build_tier(tier):
         return X, int(fix.sum())
     Hh = T3["hair"]; Ph = field(Hh["POSITION"].astype(np.float64))
     Ph, nh = push_out(Ph, 0.0015)
+    # round 2: the front hairline. v3's cards stood up to 1 cm off GNM's (taller) forehead-scalp and their front edge read
+    # as a straight cap line over the painted hairline: within 3 cm of the front hairline the cards are pulled down to
+    # 1.2 mm over the scalp (+30 % of any excess), so they lie on the painted hair instead of overhanging it
+    hl_y = V0w[[MP_A[i] for i in (10, 109, 338, 67, 297)], 1].min() - 0.004
+    d_, ti_, bw_ = geom.surf_closest(Ph, V0w[src], gskin_tri, k=8)
+    A_, B_, C_ = (V0w[src][gskin_tri[ti_, q]] for q in range(3))
+    n_ = np.cross(B_ - A_, C_ - A_); n_ /= np.linalg.norm(n_, axis=1, keepdims=True)
+    Q_ = bw_[:, :1] * A_ + bw_[:, 1:2] * B_ + bw_[:, 2:] * C_
+    sd_ = ((Ph - Q_) * n_).sum(1)
+    front = (Ph[:, 1] > hl_y - 0.005) & (Ph[:, 1] < hl_y + 0.03) & (Ph[:, 2] > eye_w3[2] - 0.06) & (sd_ < 0.012)
+    tgt_sd = 0.0012 + 0.3 * np.maximum(sd_ - 0.0012, 0)
+    Ph[front] -= n_[front] * (sd_[front] - tgt_sd[front])[:, None]
+    rep.setdefault("hairline", {})[tier] = {"cardVertsPulledIn": int(front.sum()), "hairlineY": round(float(hl_y), 4)}
     hair = {"POSITION": Ph, **{k: Hh[k] for k in ("TEXCOORD_0", "JOINTS_0", "WEIGHTS_0", "_STRAND")}, "idx": Hh["idx"]}
     Cc = T3["cards"]; Pc = field(Cc["POSITION"].astype(np.float64))
     cidx = Cc["idx"]
-    if tier == "H" and not a.brows:
+    # plum and slate keep their iteration-2 brow cards on H (slate's thin brows also vanish behind his rims): plum's portraits' brows are thin and grey, and the projected albedo alone
+    # left curious / concerned with almost nothing to move (judge C curious 2/24, concerned 12/24, n = 24)
+    if tier == "H" and not a.brows and LOOK_ == "teal":
         # brow cards: the vertices above the lash line (the brow card sits >= 6 mm above the eye centre)
         browv = Pc[:, 1] > eye_w3[1] + 0.006
         cidx = cidx[~browv[cidx].any(1)]
@@ -273,10 +328,59 @@ def build_tier(tier):
     Gm = T3["garment"]; Pg = Gm["POSITION"].astype(np.float64)
     # the kurti is v3's, fitted to the MakeHuman neck: wherever GNM's neck or shoulder skin would show through it, the
     # cloth is pushed out to 2.5 mm above the skin (the penetration count is re-measured by gates.py)
-    Pg, ng = push_out(field_body(Pg), 0.0025, 0.03)
+    Pg0 = Pg.copy()
+    Pf_ = field_body(Pg)
+    Pg, ng = push_out(Pf_, 0.0025, 0.03)
+    if LOOK_ != "teal":
+        # slate / plum wear LAYERS (tee under shirt, blouse under saree): pushing only the vertices near the skin lifted the
+        # inner layer through the outer one (white tee patches on the shirt's back). Carry each push to every garment
+        # vertex within 2 cm (Gaussian, sigma 8 mm; a vertex keeps the larger of its own and its neighbourhood's push)
+        dlt = Pg - Pf_
+        gt = cKDTree(Pf_)
+        nbr = gt.query_ball_point(Pf_, 0.02)
+        sm = np.zeros_like(dlt)
+        for i_, js in enumerate(nbr):
+            js = np.asarray(js)
+            dd = np.linalg.norm(Pf_[js] - Pf_[i_], axis=1)
+            w_ = np.exp(-dd ** 2 / (2 * 0.008 ** 2))
+            mag = np.linalg.norm(dlt[js], axis=1)
+            k_ = int(np.argmax(mag * w_))
+            sm[i_] = dlt[js[k_]] * w_[k_]
+        own = np.linalg.norm(dlt, axis=1) >= np.linalg.norm(sm, axis=1)
+        Pg = Pf_ + np.where(own[:, None], dlt, sm)
+        rep["tiers"][tier]["garmentLayerCarry"] = int((~own).sum())
+    # slate's glasses frame (rims, bridge, temples) is part of the iteration-2 garment mesh: every garment vertex above the
+    # nose base. A frame is rigid, so it does NOT ride the per-vertex head field (that dragged each temple down the cheek
+    # along the skin it happened to sit over): one similarity, fitted to where the field sends the FRONT of the frame and
+    # the lens, moves the whole frame + lens; then only real skin contacts are cleared (2 mm)
+    frame = Pg0[:, 1] > eye_w3[1] - 0.05
+    glasses_sim = None
+    if frame.any() and "lens" in T3:
+        Xf = np.vstack([Pg0[frame & (Pg0[:, 2] > eye_w3[2] + 0.012)], T3["lens"]["POSITION"].astype(np.float64)])
+        Yf = field(Xf)
+        ma, mb = Xf.mean(0), Yf.mean(0)
+        U_, S_, Vt_ = np.linalg.svd((Xf - ma).T @ (Yf - mb))
+        D_ = np.eye(3); D_[2, 2] = np.sign(np.linalg.det(Vt_.T @ U_.T))
+        Rg = Vt_.T @ D_ @ U_.T; sg = (S_ * np.diag(D_)).sum() / ((Xf - ma) ** 2).sum()
+        glasses_sim = lambda X: sg * (X - ma) @ Rg.T + mb
+        # ... but the field-fitted frame rode 4-6 mm high on GNM's face (the rims' top bars covered the brows, so curious
+        # and concerned had no brows to read: judge C 0/24 both, n = 24). A frame sits on the EYES: the final transform
+        # maps the source eye centres onto GNM's measured eyeball centres (scale = IOD ratio, no rotation: both symmetric)
+        se = np.array([B3["LeftEye"]["world"][:3, 3], B3["RightEye"]["world"][:3, 3]])
+        de = np.array([rep["eyes"]["L"]["centreWorld"], rep["eyes"]["R"]["centreWorld"]])
+        sg = float(np.linalg.norm(de[0] - de[1]) / np.linalg.norm(se[0] - se[1]))
+        sm_, dm_ = se.mean(0), de.mean(0)
+        # rims 10 % smaller and 2.5 mm lower than the iteration-2 frame: even on the eyes, its 40 mm round rims put the top
+        # bar ON his brows, which vanished behind it whenever the chin came down (concerned: judge A 0-2/8 at every gain)
+        sg *= 0.90
+        glasses_sim = lambda X: sg * (X - sm_) + dm_ + np.array([0.0, -0.0025, 0.0])
+        Pg[frame], nf = push_out(glasses_sim(Pg0[frame]), 0.002, 0.012)
+        rep["tiers"][tier]["glassesFrame"] = {"verts": int(frame.sum()), "scale": round(float(sg), 4),
+                                              "fitRmsMM": round(float(np.sqrt(((glasses_sim(Xf) - Yf) ** 2).sum(1).mean()) * 1000), 2),
+                                              "pushedOut": nf}
     # the studs (24 garment vertices above y 1.40, one cluster per ear) sit on GNM's earlobes: the lowest 15 % of each
     # ear's vertices, 1.2 mm out along their mean normal (they had followed the head field to the cheek, rendered)
-    stud = Pg[:, 1] > 1.40
+    stud = (Pg[:, 1] > 1.40) & (LOOK_ == "teal")              # only v3's teal garment carries the stud clusters
     earv = m.group("ears")
     for sgn in (1, -1):
         cl = stud & (np.sign(Pg[:, 0]) == sgn)
@@ -291,8 +395,16 @@ def build_tier(tier):
         nrm_ = np.array([sgn * 0.8, 0, 0.6])
         Pg[cl] += (Pc_ + nrm_ * 0.0012) - Pg[cl].mean(0)
     garment = {"POSITION": Pg, **{k: Gm[k] for k in ("TEXCOORD_0", "JOINTS_0", "WEIGHTS_0")}, "idx": Gm["idx"]}
+    out_parts = {}
+    if "lens" in T3:
+        # slate's glasses (the iteration-2 lens + rim mesh) ride the head field onto GNM's nose and ears, then clear the
+        # skin by 2 mm (lenses never touch the lids or the brow)
+        Ln = T3["lens"]; Pl = (glasses_sim or field)(Ln["POSITION"].astype(np.float64))
+        Pl, nl = push_out(Pl, 0.002, 0.015)
+        out_parts["lens"] = {"POSITION": Pl, **{k: Ln[k] for k in ("TEXCOORD_0", "JOINTS_0", "WEIGHTS_0") if k in Ln}, "idx": Ln["idx"]}
+        rep["tiers"][tier]["lensPushedOut"] = nl
     rep["tiers"][tier].update({"garmentPushedOut": ng, "hairPushedOut": nh, "cardsPushedOut": ncard, "cardTris": int(len(cidx))})
-    return {"face": face, "eyes": eyes, "hair": hair, "cards": cards, "garment": garment}
+    return {"face": face, "eyes": eyes, "hair": hair, "cards": cards, "garment": garment, **out_parts}
 
 
 # ---------------------------------------------------------------- simplification (B+ face, H teeth)
@@ -343,8 +455,12 @@ def write_scene(tier, parts):
     os.makedirs(out, exist_ok=True)
     meshes = []
     stats = {"tier": tier, "meshes": {}}
-    for nm, mat in (("face", "TaxilaSkin"), ("eyes", "TaxilaEye"), ("cards", "TaxilaCards"), ("hair", "TaxilaHair"), ("garment", "TaxilaCloth")):
+    for nm, mat in (("face", "TaxilaSkin"), ("eyes", "TaxilaEye"), ("cards", "TaxilaCards"), ("hair", "TaxilaHair"), ("garment", "TaxilaCloth"), ("lens", "TaxilaLens")):
+        if nm not in parts:
+            continue
         p = parts[nm]
+        if "TEXCOORD_0" not in p:
+            p["TEXCOORD_0"] = np.zeros((len(p["POSITION"]), 2))
         P = p["POSITION"].astype(np.float64)
         Nn = normals(P, p["idx"], p.get("weld"))
         attrs = {}
@@ -361,7 +477,8 @@ def write_scene(tier, parts):
         tg = []
         for i, tn in enumerate(p.get("targetNames", [])):
             f = f"{nm}_t{i}.bin"; p["targets"][i].astype(np.float32).tofile(os.path.join(out, f)); tg.append(f)
-        meshes.append({"name": nm, "material": mat, "attrs": attrs, "indices": fi, "targets": tg, "targetNames": list(p.get("targetNames", []))})
+        meshes.append({"name": nm, "material": mat, "attrs": attrs, "indices": fi, "targets": tg, "targetNames": list(p.get("targetNames", [])),
+                       "extras": p.get("extras", {})})
         stats["meshes"][nm] = {"verts": int(len(P)), "tris": int(len(p["idx"])), "keys": len(tg)}
     bones = []
     for nm in ["Armature", "Spine2", "Neck", "Head", "LeftShoulder", "RightShoulder", "LeftEye", "RightEye"]:
@@ -403,15 +520,19 @@ for tier in a.tier.split(","):
         mot = np.linalg.norm(face["targets"], axis=2).max(0)[:, None]
         rep["tiers"][tier]["skinSimplify"] = simplify(face, sk, 7200, lipl | lidl, err=0.03, attr_w=(mot * 50.0, [1.0]))
     compact(face)
+    if tier != "H":
+        ey = parts["eyes"]
+        rep["tiers"][tier]["eyeSimplify"] = simplify(ey, np.ones(len(ey["idx"]), bool), 500, np.zeros(len(ey["POSITION"]), bool), err=0.01)
+        compact(ey)
     rep["tiers"][tier]["stats"] = write_scene(tier, parts)
     print(f"[assemble] {tier}: {rep['tiers'][tier]['stats']['meshes']} total tris {rep['tiers'][tier]['stats']['tris']}", flush=True)
 # the upper lid's rest height in eye radii (MediaPipe 386 / 159 mid upper lid on GNM), for the eye shader's lid shadow
 C_ = G.mp_correspondence(); MP_ = {int(k): int(v) for k, v in zip(C_["landmarks"], C_["vertices"])}
-r_eye = rep["eyes"]["L"]["gnmRadiusMM"] / 1000
+r_eye = rep["eyes"]["L"]["radiusMM"] / 1000
 hL = (V0[MP_[386], 1] - J[2][1]) / r_eye; hR = (V0[MP_[159], 1] - J[3][1]) / r_eye
 rep["restLid"] = {"upperLidHeightEyeRadii": [round(float(hL), 3), round(float(hR), 3)],
                   "shaderRestLid": round(float(np.clip((0.62 - 0.5 * (hL + hR)) / 0.82, 0, 1)), 3)}
 rep["seconds"] = round(time.time() - t0)
 json.dump(rep, open(os.path.join(BD, "assemble.json"), "w"), indent=1)
-json.dump(rep, open(os.path.join(G.ART, "reports", "assemble.json"), "w"), indent=1)
+json.dump(rep, open(os.path.join(G.ART, "reports", "assemble.json" if LOOK_ == "teal" else f"assemble-{LOOK_}.json"), "w"), indent=1)
 print(json.dumps({k: rep[k] for k in ("placement", "neckLoop", "eyes")}, indent=1))

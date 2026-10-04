@@ -222,6 +222,7 @@ const EYE_FRAG = /* glsl */ `
 precision highp float;
 ${LIGHT_PARS}
 uniform vec3 uIris; uniform float uPupil; uniform float uLidShadow; uniform float uIrisDetail;
+uniform vec4 uCornea; uniform float uLimbZ;   // gnm: (cornea centre z, cornea radius, iris plane z, iris radius), limbus z
 uniform vec3 uSclera;      // merged: linear sclera albedo, tuned so the rendered sclera / cheek luminance matches the
                            // reference portraits' (identity/refsclera.py: 0.83, warm tint); was a fixed 0.78 grey
 uniform vec2 uLidClose;    // merged: per eye (L, R) how far the upper lid is down (0 open .. 1 closed), from the rig
@@ -234,13 +235,16 @@ void main() {
   vec3 p = vLocal;
   vec3 V = normalize(vViewL);
   vec3 L = normalize(uKeyDir);
-  const float RC = 0.693;                      // cornea radius (eye radii), apex at z = 1.07 (build_look.py make_eyes)
-  vec3 cc = vec3(0.0, 0.0, 1.07 - RC);
-  const float ZI = 0.86;                       // iris plane depth (just behind the limbus at z = 0.878)
-  const float IR = 0.47;                       // iris radius (limbus radius 0.48)
+  // gnm: the cornea / iris geometry is a uniform measured from the eye mesh (GNM's own eyeball: cornea sphere centre
+  // z 0.533 r, radius 0.577 r, apex 1.109 r, limbus at z 0.907, iris plane 0.902, iris radius 0.362 r); the defaults are
+  // the contract mesh's constants (cornea 0.693 r, apex 1.07, iris plane 0.86, iris 0.47, limbus 0.872)
+  float RC = uCornea.y;
+  vec3 cc = vec3(0.0, 0.0, uCornea.x);
+  float ZI = uCornea.z;
+  float IR = uCornea.w;
   vec3 Nw = normalize(vNormalW);
   vec3 albedo;
-  bool cornea = p.z > 0.872;
+  bool cornea = p.z > uLimbZ;
   vec3 q = p;
   if (cornea) {
     vec3 nc = normalize(p - cc);

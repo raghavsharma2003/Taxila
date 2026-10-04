@@ -1,0 +1,4627 @@
+{
+ "date": "2026-10-04T03:17:56.692Z",
+ "judges": {
+  "A": {
+   "model": "taxila-brain",
+   "prompt": "QA-sheet framing, 9 labels with short glosses (the bake-off prompt)"
+  },
+  "C": {
+   "model": "taxila-brain",
+   "prompt": "student-facing framing, 9 bare labels (held-out prompt, never used to choose a pose); strong model"
+  }
+ },
+ "method": "blind forced choice of 1 of 9 labels, shuffled per call; 1 look x 24 reps per emotion per judge; encouraging judged on a 6-frame strip of a 2 s clip; bar >= 70% per emotion on 8 of 9 (proxy for E-T4)",
+ "overallPct": {
+  "A": 81,
+  "C": 75,
+  "pooled": 78
+ },
+ "passing": {
+  "A": 6,
+  "C": 6,
+  "pooled": 6
+ },
+ "per": {
+  "A": {
+   "warm": {
+    "n": 24,
+    "errors": 0,
+    "correct": 24,
+    "pct": 100,
+    "confusions": {
+     "warm": 24
+    }
+   },
+   "encouraging": {
+    "n": 24,
+    "errors": 0,
+    "correct": 11,
+    "pct": 46,
+    "confusions": {
+     "warm": 5,
+     "encouraging": 11,
+     "playful": 8
+    }
+   },
+   "curious": {
+    "n": 24,
+    "errors": 0,
+    "correct": 12,
+    "pct": 50,
+    "confusions": {
+     "curious": 12,
+     "listening": 1,
+     "thinking": 11
+    }
+   },
+   "thinking": {
+    "n": 24,
+    "errors": 0,
+    "correct": 24,
+    "pct": 100,
+    "confusions": {
+     "thinking": 24
+    }
+   },
+   "listening": {
+    "n": 24,
+    "errors": 0,
+    "correct": 11,
+    "pct": 46,
+    "confusions": {
+     "listening": 11,
+     "warm": 4,
+     "curious": 9
+    }
+   },
+   "concerned": {
+    "n": 24,
+    "errors": 0,
+    "correct": 22,
+    "pct": 92,
+    "confusions": {
+     "concerned": 22,
+     "listening": 1,
+     "curious": 1
+    }
+   },
+   "delighted": {
+    "n": 24,
+    "errors": 0,
+    "correct": 24,
+    "pct": 100,
+    "confusions": {
+     "delighted": 24
+    }
+   },
+   "playful": {
+    "n": 24,
+    "errors": 0,
+    "correct": 24,
+    "pct": 100,
+    "confusions": {
+     "playful": 24
+    }
+   },
+   "surprised": {
+    "n": 24,
+    "errors": 0,
+    "correct": 24,
+    "pct": 100,
+    "confusions": {
+     "surprised": 24
+    }
+   }
+  },
+  "C": {
+   "warm": {
+    "n": 24,
+    "errors": 0,
+    "correct": 24,
+    "pct": 100,
+    "confusions": {
+     "warm": 24
+    }
+   },
+   "encouraging": {
+    "n": 24,
+    "errors": 0,
+    "correct": 18,
+    "pct": 75,
+    "confusions": {
+     "encouraging": 18,
+     "warm": 4,
+     "playful": 2
+    }
+   },
+   "curious": {
+    "n": 24,
+    "errors": 0,
+    "correct": 7,
+    "pct": 29,
+    "confusions": {
+     "curious": 7,
+     "thinking": 14,
+     "listening": 3
+    }
+   },
+   "thinking": {
+    "n": 24,
+    "errors": 0,
+    "correct": 24,
+    "pct": 100,
+    "confusions": {
+     "thinking": 24
+    }
+   },
+   "listening": {
+    "n": 24,
+    "errors": 0,
+    "correct": 9,
+    "pct": 38,
+    "confusions": {
+     "warm": 12,
+     "listening": 9,
+     "curious": 3
+    }
+   },
+   "concerned": {
+    "n": 24,
+    "errors": 0,
+    "correct": 18,
+    "pct": 75,
+    "confusions": {
+     "concerned": 18,
+     "warm": 2,
+     "listening": 1,
+     "encouraging": 2,
+     "curious": 1
+    }
+   },
+   "delighted": {
+    "n": 24,
+    "errors": 0,
+    "correct": 24,
+    "pct": 100,
+    "confusions": {
+     "delighted": 24
+    }
+   },
+   "playful": {
+    "n": 24,
+    "errors": 0,
+    "correct": 15,
+    "pct": 63,
+    "confusions": {
+     "playful": 15,
+     "warm": 9
+    }
+   },
+   "surprised": {
+    "n": 24,
+    "errors": 0,
+    "correct": 24,
+    "pct": 100,
+    "confusions": {
+     "surprised": 24
+    }
+   }
+  },
+  "pooled": {
+   "warm": {
+    "n": 48,
+    "errors": 0,
+    "correct": 48,
+    "pct": 100,
+    "confusions": {
+     "warm": 48
+    }
+   },
+   "encouraging": {
+    "n": 48,
+    "errors": 0,
+    "correct": 29,
+    "pct": 60,
+    "confusions": {
+     "warm": 9,
+     "encouraging": 29,
+     "playful": 10
+    }
+   },
+   "curious": {
+    "n": 48,
+    "errors": 0,
+    "correct": 19,
+    "pct": 40,
+    "confusions": {
+     "curious": 19,
+     "listening": 4,
+     "thinking": 25
+    }
+   },
+   "thinking": {
+    "n": 48,
+    "errors": 0,
+    "correct": 48,
+    "pct": 100,
+    "confusions": {
+     "thinking": 48
+    }
+   },
+   "listening": {
+    "n": 48,
+    "errors": 0,
+    "correct": 20,
+    "pct": 42,
+    "confusions": {
+     "listening": 20,
+     "warm": 16,
+     "curious": 12
+    }
+   },
+   "concerned": {
+    "n": 48,
+    "errors": 0,
+    "correct": 40,
+    "pct": 83,
+    "confusions": {
+     "concerned": 40,
+     "listening": 2,
+     "curious": 2,
+     "warm": 2,
+     "encouraging": 2
+    }
+   },
+   "delighted": {
+    "n": 48,
+    "errors": 0,
+    "correct": 48,
+    "pct": 100,
+    "confusions": {
+     "delighted": 48
+    }
+   },
+   "playful": {
+    "n": 48,
+    "errors": 0,
+    "correct": 39,
+    "pct": 81,
+    "confusions": {
+     "playful": 39,
+     "warm": 9
+    }
+   },
+   "surprised": {
+    "n": 48,
+    "errors": 0,
+    "correct": 48,
+    "pct": 100,
+    "confusions": {
+     "surprised": 48
+    }
+   }
+  }
+ },
+ "rows": [
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 3,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 5,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 1,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 0,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 2,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 4,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 7,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 6,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 8,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 9,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 10,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 13,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 11,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 12,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 14,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 15,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 18,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 16,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 17,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 19,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 21,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 20,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 22,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 23,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 2,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 0,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 1,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 3,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 4,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 7,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 6,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 5,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 9,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 8,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 10,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 12,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 11,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 13,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 15,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 14,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 16,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 17,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 18,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 19,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 20,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 21,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 1,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 0,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 22,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 3,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 2,
+   "truth": "curious",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 23,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 5,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 4,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 6,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 8,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 7,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 9,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 10,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 11,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 13,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 14,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 12,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 15,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 16,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 17,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 18,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 19,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 20,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 21,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 22,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 0,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 23,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 1,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 2,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 6,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 5,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 7,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 8,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 3,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 4,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 10,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 9,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 14,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 12,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 13,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 11,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 16,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 15,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 17,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 19,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 18,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 20,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 22,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 1,
+   "truth": "listening",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 23,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 21,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 2,
+   "truth": "listening",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 0,
+   "truth": "listening",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 3,
+   "truth": "listening",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 5,
+   "truth": "listening",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 4,
+   "truth": "listening",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 6,
+   "truth": "listening",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 7,
+   "truth": "listening",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 9,
+   "truth": "listening",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 8,
+   "truth": "listening",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 11,
+   "truth": "listening",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 10,
+   "truth": "listening",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 12,
+   "truth": "listening",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 13,
+   "truth": "listening",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 14,
+   "truth": "listening",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 15,
+   "truth": "listening",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 17,
+   "truth": "listening",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 18,
+   "truth": "listening",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 16,
+   "truth": "listening",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 19,
+   "truth": "listening",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 21,
+   "truth": "listening",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 20,
+   "truth": "listening",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 0,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 23,
+   "truth": "listening",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 22,
+   "truth": "listening",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 2,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 1,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 3,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 4,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 6,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 5,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 9,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 7,
+   "truth": "concerned",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 8,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 10,
+   "truth": "concerned",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 11,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 13,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 15,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 14,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 12,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 16,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 17,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 19,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 20,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 21,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 18,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 22,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 23,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 1,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 0,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 2,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 3,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 5,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 4,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 7,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 10,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 8,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 6,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 9,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 11,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 12,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 13,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 14,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 16,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 17,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 15,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 18,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 19,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 23,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 22,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 20,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 0,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 21,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 1,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 4,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 2,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 3,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 5,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 6,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 7,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 10,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 9,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 8,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 11,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 12,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 13,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 16,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 14,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 19,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 18,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 17,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 15,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 22,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 21,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 0,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 20,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 23,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 3,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 1,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 2,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 4,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 5,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 9,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 10,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 7,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 8,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 6,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 11,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 13,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 12,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 16,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 14,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 17,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 15,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 18,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 19,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 20,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 22,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 23,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "A",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 21,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 0,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 1,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 2,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 5,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 3,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 7,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 4,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 6,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 8,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 10,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 9,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 11,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 12,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 13,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 14,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 15,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 16,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 17,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 18,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 20,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 19,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 21,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 22,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 23,
+   "truth": "warm",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 0,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 1,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 3,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 4,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 2,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 5,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 6,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 7,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 9,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 10,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 8,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 11,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 12,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 13,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 15,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 14,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 16,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 17,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 19,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 18,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 22,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 20,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 21,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 0,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 23,
+   "truth": "encouraging",
+   "clip": true,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 1,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 2,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 5,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 4,
+   "truth": "curious",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 3,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 6,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 8,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 7,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 9,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 10,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 11,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 12,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 13,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 14,
+   "truth": "curious",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 16,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 15,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 17,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 19,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 20,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 18,
+   "truth": "curious",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 21,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 22,
+   "truth": "curious",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 23,
+   "truth": "curious",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 1,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 0,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 3,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 2,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 4,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 5,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 7,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 8,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 6,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 9,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 10,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 12,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 13,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 11,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 15,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 14,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 16,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 19,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 18,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 17,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 20,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 22,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 23,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 21,
+   "truth": "thinking",
+   "clip": false,
+   "said": "thinking",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 0,
+   "truth": "listening",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 1,
+   "truth": "listening",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 2,
+   "truth": "listening",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 3,
+   "truth": "listening",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 4,
+   "truth": "listening",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 6,
+   "truth": "listening",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 7,
+   "truth": "listening",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 5,
+   "truth": "listening",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 10,
+   "truth": "listening",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 8,
+   "truth": "listening",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 9,
+   "truth": "listening",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 13,
+   "truth": "listening",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 12,
+   "truth": "listening",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 14,
+   "truth": "listening",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 15,
+   "truth": "listening",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 16,
+   "truth": "listening",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 17,
+   "truth": "listening",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 11,
+   "truth": "listening",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 18,
+   "truth": "listening",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 19,
+   "truth": "listening",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 21,
+   "truth": "listening",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 22,
+   "truth": "listening",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 20,
+   "truth": "listening",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 23,
+   "truth": "listening",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 0,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 1,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 2,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 3,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 4,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 5,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 6,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 8,
+   "truth": "concerned",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 7,
+   "truth": "concerned",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 10,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 9,
+   "truth": "concerned",
+   "clip": false,
+   "said": "listening",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 11,
+   "truth": "concerned",
+   "clip": false,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 12,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 13,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 14,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 15,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 16,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 17,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 18,
+   "truth": "concerned",
+   "clip": false,
+   "said": "curious",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 19,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 20,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 22,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 23,
+   "truth": "concerned",
+   "clip": false,
+   "said": "encouraging",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 21,
+   "truth": "concerned",
+   "clip": false,
+   "said": "concerned",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 0,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 1,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 3,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 5,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 6,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 2,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 4,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 7,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 8,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 9,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 11,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 10,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 13,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 12,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 14,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 16,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 15,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 17,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 18,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 19,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 20,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 21,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 23,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 22,
+   "truth": "delighted",
+   "clip": false,
+   "said": "delighted",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 0,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 2,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 3,
+   "truth": "playful",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 1,
+   "truth": "playful",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 5,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 6,
+   "truth": "playful",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 4,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 7,
+   "truth": "playful",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 8,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 9,
+   "truth": "playful",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 10,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 12,
+   "truth": "playful",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 11,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 13,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 14,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 15,
+   "truth": "playful",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 16,
+   "truth": "playful",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 17,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 18,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 19,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 21,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 22,
+   "truth": "playful",
+   "clip": false,
+   "said": "warm",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 20,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 23,
+   "truth": "playful",
+   "clip": false,
+   "said": "playful",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 0,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 1,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 2,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 3,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 4,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 7,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 6,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 5,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 9,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 10,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 8,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 11,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 12,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 13,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 16,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 14,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 15,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 18,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 17,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 19,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 20,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 21,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 23,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  },
+  {
+   "judge": "C",
+   "model": "taxila-brain",
+   "look": "plum",
+   "rep": 22,
+   "truth": "surprised",
+   "clip": false,
+   "said": "surprised",
+   "err": null
+  }
+ ]
+}

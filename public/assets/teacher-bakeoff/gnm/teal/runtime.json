@@ -6,8 +6,8 @@
  "tiers": {
   "H": {
    "file": "H.glb",
-   "bytes": 5069740,
-   "triangles": 41882,
+   "bytes": 4423184,
+   "triangles": 39530,
    "draws": 5,
    "morphTargets": 82,
    "morphTextureMB": 19.41,
@@ -35,8 +35,8 @@
   },
   "Bplus": {
    "file": "Bplus.glb",
-   "bytes": 1812712,
-   "triangles": 13762,
+   "bytes": 1523504,
+   "triangles": 13758,
    "draws": 5,
    "morphTargets": 58,
    "morphTextureMB": 4.26,
@@ -63,8 +63,8 @@
   },
   "Blite": {
    "file": "Blite.glb",
-   "bytes": 761836,
-   "triangles": 13762,
+   "bytes": 718160,
+   "triangles": 13758,
    "draws": 5,
    "morphTargets": 58,
    "morphTextureMB": 4.26,
@@ -364,12 +364,10 @@
   "map": {
    "viseme_sil": {},
    "viseme_PP": {
-    "mouthClose": 0.35,
-    "jawOpen": 0.1,
-    "mouthPressLeft": 0.5,
-    "mouthPressRight": 0.5,
+    "mouthPressLeft": 0.6,
+    "mouthPressRight": 0.6,
     "mouthRollLower": 0.2,
-    "mouthRollUpper": 0.15
+    "mouthRollUpper": 0.12
    },
    "viseme_FF": {
     "jawOpen": 0.12,
@@ -624,18 +622,23 @@
   },
   "curious": {
    "bs": {
-    "browInnerUp": 0.3,
-    "browOuterUpLeft": 0.75,
-    "browOuterUpRight": 0.5,
-    "eyeWideLeft": 0.3,
-    "eyeWideRight": 0.3,
-    "jawOpen": 0.1,
-    "mouthFunnel": 0.15
+    "browOuterUpLeft": 1,
+    "browInnerUp": 0.5,
+    "browDownRight": 0.25,
+    "eyeWideLeft": 0.4,
+    "eyeSquintRight": 0.15,
+    "mouthPucker": 0.15,
+    "jawOpen": 0.05,
+    "mouthSmileLeft": 0.1
    },
    "head": [
     -4,
     6,
-    6
+    11
+   ],
+   "gaze": [
+    0,
+    0
    ],
    "lean": 0.6,
    "env": [
@@ -696,21 +699,21 @@
   },
   "concerned": {
    "bs": {
-    "browInnerUp": 0.9,
-    "browDownLeft": 0.25,
-    "browDownRight": 0.25,
-    "mouthPressLeft": 0.2,
-    "mouthPressRight": 0.2,
+    "browInnerUp": 1,
+    "browDownLeft": 0.65,
+    "browDownRight": 0.65,
+    "mouthPressLeft": 0.55,
+    "mouthPressRight": 0.55,
     "mouthFrownLeft": 0.25,
     "mouthFrownRight": 0.25,
-    "mouthPucker": 0.1,
-    "eyeWideLeft": 0.08,
-    "eyeWideRight": 0.08
+    "mouthShrugLower": 0.25,
+    "eyeSquintLeft": 0.12,
+    "eyeSquintRight": 0.12
    },
    "head": [
     7,
     0,
-    9
+    8
    ],
    "gaze": [
     0,
@@ -1008,9 +1011,9 @@
    450
   ],
   "mouthRect": [
-   103,
-   137,
-   266,
+   92,
+   139,
+   267,
    303
   ],
   "mouthCells": 5,
@@ -1022,12 +1025,12 @@
    0.6
   ],
   "blinkRect": [
-   117,
+   101,
    40,
-   270,
+   269,
    207
   ],
-  "bytes": 29524,
+  "bytes": 28666,
   "source": "rendered from the B+ runtime (scripts/character/render.mjs)"
  }
 }

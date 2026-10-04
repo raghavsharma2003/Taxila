@@ -34,12 +34,16 @@ ap.add_argument("--seal", type=float, default=30.0)
 ap.add_argument("--seal-close", type=float, default=3.0, help="seal weight for mouthClose at jaw 0.3 + close 0.3")
 ap.add_argument("--lipw", type=float, default=4.0)
 ap.add_argument("--gainmax", type=float, default=1.6)
+ap.add_argument("--browgain", type=float, default=1.5)
+ap.add_argument("--pp-corner", type=float, default=0.6, help="PP seal only outside this fraction of the lip half-width")
 ap.add_argument("--blink", type=float, default=8.0)
 ap.add_argument("--rest-seal", action="store_true", help="bake a rest lip seal (OFF: it flattened the scanned lips into a slab, 12 mm shifts; measured)")
 ap.add_argument("--hold", type=float, default=1.0, help="rest seal: weight holding every vertex in place")
+ap.add_argument("--look", default="teal")
 a = ap.parse_args()
 t0 = time.time()
-BD = os.path.join(G.CH, "bakeoff-gnm", "teal")
+LOOK_ = G.look_from_argv(); PTH = G.paths(LOOK_)
+BD = PTH["BD"]
 m = G.GNM()
 c = np.load(os.path.join(BD, "corr.npz"))
 M3, _ = v3data.load(os.path.join(G.CH, "bakeoff-gnm", "v3dump", "H"))
@@ -85,13 +89,18 @@ F_up = m.tri[(ul_g | m.group("upper_lip_region"))[m.tri].all(1) & skin_ext[m.tri
 up_l, lo_l = np.where(ul_g)[0], np.where(ll_g)[0]
 
 
-def contacts(V, reach=0.0024):
+def contacts(V, reach=0.0024, which="both"):
     """G5's contact set (CHARACTER-PIPELINE 5): every upper-lip vertex within reach of the lower lip's SURFACE, and
     vice versa. Returns rows (vertex, tri vertex ids (3), bary (3), gap)."""
     out = []
-    for verts, F in ((up_l, F_lo), (lo_l, F_up)):
+    for side, verts, F in (("up", up_l, F_lo), ("lo", lo_l, F_up)):
+        if which != "both" and which != side:
+            continue
         d, t, b = geom.surf_closest(V[verts], V, F)
         k = d < reach
+        if which == "lo" and a.pp_corner > 0:              # only toward the corners (|x| > pp_corner of the half-width)
+            hw_ = np.abs(V[lo_l, 0]).max()
+            k &= np.abs(V[verts, 0]) > a.pp_corner * hw_
         out.append((verts[k], F[t[k]], b[k], d[k]))
     return tuple(np.concatenate([o[i] for o in out]) for i in range(4))
 
@@ -219,6 +228,34 @@ def tongue_target(kind):
     return D
 
 
+# ---------------------------------------------------------------- GNM's eyeball surface (for the lid push)
+_Jc = m.joints(np.array(json.load(open(PTH["FIT"]))["identity"]))
+EYES_ = []
+for _jn, _side in ((2, "left_eye"), (3, "right_eye")):
+    _c = _Jc[_jn]; _vi = np.where(m.group("eye_exteriors") & m.group(_side))[0]
+    _q = V0[_vi] - _c; _rb = np.linalg.norm(_q, axis=1)[_q[:, 2] < 0].max()
+    _cor = _q[np.linalg.norm(_q, axis=1) > 1.006 * _rb]
+    _A = np.c_[2 * _cor, np.ones(len(_cor))]; _sol = np.linalg.lstsq(_A, (_cor ** 2).sum(1), rcond=None)[0]
+    EYES_.append((_c, _rb, _c + _sol[:3], float(np.sqrt(_sol[3] + _sol[:3] @ _sol[:3]))))
+_lidv = np.where(skin_ext & ~m.group("eye_sockets") & (np.minimum(*[np.linalg.norm(V0 - e_[0], axis=1) for e_ in EYES_]) < 0.022))[0]
+
+
+def eye_surface_push(V, margin=0.0003):
+    """Lid vertices inside an eyeball (ball or cornea sphere) and their target point on that surface + margin."""
+    pts, ids = [], []
+    for c, rb, cc, rc in EYES_:
+        P = V[_lidv]
+        d_b = np.linalg.norm(P - c, axis=1); d_c = np.linalg.norm(P - cc, axis=1)
+        inb = d_b < rb + margin; inc = (d_c < rc + margin) & ((P - c)[:, 2] > 0.6 * rb)
+        for mask, cen, rad in ((inb & ~inc, c, rb), (inc, cc, rc)):
+            if mask.any():
+                dv = P[mask] - cen; dv /= np.linalg.norm(dv, axis=1, keepdims=True)
+                pts.append(cen + dv * (rad + margin)); ids.append(_lidv[mask])
+    if not ids:
+        return np.zeros((0, 3)), np.zeros(0, int)
+    return np.concatenate(pts), np.concatenate(ids)
+
+
 # ---------------------------------------------------------------- the key list (H contract order = v3's)
 ARK = [n for n in names3]
 deltas = {}
@@ -228,6 +265,10 @@ sided = lambda k: k.endswith("Left") or k.endswith("Right")
 
 def solve_key(k):
     tgt = transfer(k)
+    if k.startswith("brow") and "_" not in k:
+        # round 2: the brow keys get 1.5x v3's range as their target (the solve then finds GNM's nearest scanned brow
+        # motion): at 1x the curious / concerned designs read as "listening" on this calm face (judge C 0/12, 2-4/12)
+        tgt = tgt * a.browgain
     w = conf.copy()
     extra = []
     if k in ("tongueTipUp", "tongueCurl", "tongueWide", "tongueOut"):
@@ -247,7 +288,11 @@ def solve_key(k):
         e = solve(tgt, w)
         for it in range(3):
             base = (seal_pose[0] if seal_pose[0] is not None else 0) + seal_pose[1] * np.tensordot(e, B, 1)
-            P = contacts(V0 + base)
+            # round 2: on PP only the LOWER lip, and only toward the corners (outside 60 % of the half-width), is pulled
+            # onto the upper lip's surface: the full two-way seal put a V-notch at the upper-lip centre and a lower-only
+            # full-width seal curled the lower lip's wet inner surface over it (both rendered); unsealed, PP looks right
+            # but leaked light at one corner (2.5 %)
+            P = contacts(V0 + base, which="lo" if k == "viseme_PP" else "both")
             # rows linearised about the current e: seal (V0 + base0 + scale B e')
             extra = seal_rows(seal_pose[0], P, a.seal if k == "viseme_PP" else a.seal_close, seal_pose[1])
             e = solve(tgt, w, extra)
@@ -264,6 +309,20 @@ def solve_key(k):
         seal_pose = "blink"
     if seal_pose is None:
         e = solve(tgt, w, extra)
+        if (k.startswith("cheekSquint") or k.startswith("eyeSquint")) and "_" not in k:
+            # round 2: lids stay OUTSIDE GNM's eyeball (ball + cornea, + 0.3 mm) at full weight AND at weight 1.6 (the
+            # delighted / playful presets): penetrating lid vertices get rows pinning them to the surface point
+            for it in range(3):
+                rows_A, rows_b = [], []
+                for wk in (1.0, 1.6):
+                    Vk = V0 + wk * np.tensordot(e, B, 1)
+                    tgt_pts, vids = eye_surface_push(Vk)
+                    if len(vids):
+                        rows_A.append(B[:, vids, :].transpose(1, 2, 0).reshape(-1, NEX) * 30 * wk)
+                        rows_b.append(((tgt_pts - V0[vids]) / wk).ravel() * 30 * wk)
+                if not rows_A:
+                    break
+                e = solve(tgt, w, extra + [(np.vstack(rows_A), np.concatenate(rows_b))])
     d = np.tensordot(e, B, 1)
     sel = w > 0
     # amplitude: the ridge prior shrinks every solution toward the mean face (smile reached 81 % of its target's peak,
@@ -314,4 +373,4 @@ names = ARK
 np.savez(os.path.join(BD, "keys.npz"), names=np.array(names), deltas=np.stack([deltas[k] for k in names]).astype(np.float32),
          e_rest=e_rest, V0=V0)
 rep["seconds"] = round(time.time() - t0)
-json.dump(rep, open(os.path.join(G.ART, "reports", "keys.json"), "w"), indent=1)
+json.dump(rep, open(os.path.join(G.ART, "reports", "keys.json" if LOOK_ == "teal" else f"keys-{LOOK_}.json"), "w"), indent=1)

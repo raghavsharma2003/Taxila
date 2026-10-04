@@ -788,3 +788,23 @@ Full evidence and sources: docs/research/world-best/ (merged from inbox/world-be
 
 ## rj-mediapipe-profile-cameras
 **Tried:** anchoring the profile cameras of the identity fit to MediaPipe landmarks (near-side points, then a yaw prior). **Broke:** MediaPipe reads 58-60 deg on near-90-degree portraits; the fit's profile yaw wandered between 63 and 97 deg and the silhouette error stayed at 8-28% IOD; a 2D landmark IOD also collapses at profile, overweighting those terms 5-10x. **Works:** silhouette-only cameras (yaw/pitch/roll grid + scale/offset ICP on the leading edge), every term normalised by camera scale x the 3D eye-corner distance: 2.5-2.7%. (2026-10-03)
+
+
+<!-- merged from inbox/teacher-gnm.json -->
+## rj-gnm-pp-two-way-seal
+**Tried:** sealing viseme_PP with lip-to-surface contact on both lips (seal 30), then a full-width lower-lip-only seal. **Broke:** the two-way seal pulled the upper-lip centre into a V-notch (visible on the viseme strip); the full lower seal curled the inner lip over the teeth; no seal leaked 2.5% light at a corner. **Works:** lower-lip seal weighted toward the corners (keys.py --pp-corner 0.6): 0% light, no notch. (2026-10-04)
+
+## rj-picks-through-glasses
+**Tried:** the v3-style landmark similarity (MediaPipe on a render + TX.pick) for slate's iteration-2 source face, which wears its glasses. **Broke:** pick returns the first surface, so eye and brow picks sat on the rims 1-2 cm proud of the skin: scale 0.89, ICP p95 43 mm, 4.1 deg yaw / -1.9 deg roll baked into the rest pose, hair torn on one side. **Fix:** drop picks > 2 mm from source skin (152/473; 4 mm kept 448 and left p95 at 44 mm), pitch-only similarity, mirror-symmetrised residual. (2026-10-04)
+
+## rj-rigid-parts-on-vertex-field
+**Tried:** carrying slate's glasses frame (part of the iteration-2 garment mesh) with the per-vertex head displacement field, as the hair is. **Broke:** each temple followed the cheek skin under it and ended on the jaw; then, placed by a field-fitted similarity, the 40 mm rims sat on the brows and hid them (concerned A 0-2/8). **Fix:** one rigid transform on the eyeball centres (IOD ratio), rims x0.90 and 2.5 mm lower. (2026-10-04)
+
+## rj-cloth-saturation-no-floor
+**Tried:** excluding cloth from albedo projection by hue band OR sRGB saturation > 0.78. **Broke:** near-black brow hair reads saturation > 0.78, so slate's brows were erased and he rendered browless (curious C 0/24, concerned C 0/24, n = 24). **Fix:** saturation test only where the max channel > 0.3. (2026-10-04)
+
+## rj-gain-screen-bypasses-caps
+**Tried:** screening per-face gains with rescore.mjs, which multiplies the composed weights. **Broke:** the shipped emotionPose caps eyeSquint at 0.35 and cheekSquint at 0.8 under gain; the screen did not, so slate playful screened A 8/8 at x2 and scored A 14/24, C 4/24 in the capped acceptance run. Screens must use the runtime composer (look JSON presetGain). (2026-10-04)
+
+## rj-head-pose-for-brow-emotions
+**Tried:** per-look head overrides instead of face changes: slate concerned chin level (A 0/8) and chin down 12 deg (2/8); plum curious chin down 2 deg (1-3/8) and chin up 8 deg (1/8, read thinking). **Broke:** none beat the shared head pose; the failures are in the brows, not the head. (2026-10-04)

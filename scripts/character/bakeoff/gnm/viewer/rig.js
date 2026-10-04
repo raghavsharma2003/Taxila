@@ -90,9 +90,12 @@ export async function loadTeacher(renderer, url, opts = {}) {
     L.divideScalar(nl); R.divideScalar(nr);
     for (let i = 0; i < p.count; i++) { const x = p.getX(i); if (x > 0 && p.getZ(i) < L.z) rad = Math.max(rad, Math.hypot(x - L.x, p.getY(i) - L.y, p.getZ(i) - L.z)); }
     const iris = new THREE.Color(look.iris || "#3A2416").convertSRGBToLinear();
+    const eg = { corneaZ: 1.07 - 0.693, corneaR: 0.693, irisZ: 0.86, irisR: 0.47, limbusZ: 0.872, pupil: 0.42, ...(eyes.userData?.taxilaEye || {}) };
     eyes.material = mk(eyes, SHADERS.EYE_VERT, SHADERS.EYE_FRAG, {
       uEyeL: { value: L }, uEyeR: { value: R }, uEyeRad: { value: rad }, uIris: { value: new THREE.Vector3(iris.r, iris.g, iris.b) },
-      uPupil: { value: 0.42 }, uLidShadow: { value: 0.8 }, uIrisDetail: { value: tier === "H" ? 1 : 0.6 },
+      uPupil: { value: eg.pupil }, uLidShadow: { value: 0.8 }, uIrisDetail: { value: tier === "H" ? 1 : 0.6 },
+      // gnm: the eye mesh's measured cornea / iris geometry (mesh extras.taxilaEye, written by assemble.py from GNM)
+      uCornea: { value: new THREE.Vector4(eg.corneaZ, eg.corneaR, eg.irisZ, eg.irisR) }, uLimbZ: { value: eg.limbusZ },
       // merged eye pass: sclera albedo from the look (tuned to the reference's sclera / skin ratio), lid-following shadow
       uSclera: { value: new THREE.Vector3(...(look.sclera || [0.78, 0.74, 0.70])) }, uLidClose: { value: new THREE.Vector2(look.restLid ?? 0.35, look.restLid ?? 0.35) } }, {});
   }

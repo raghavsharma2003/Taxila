@@ -9,12 +9,12 @@ import { openHarness } from "./harness.mjs";
 const argv = process.argv.slice(2);
 const opt = (f, d) => (argv.includes(f) ? argv[argv.indexOf(f) + 1] : d);
 const EM = opt("--emotions", "curious,concerned,delighted,playful").split(","), GAINS = opt("--gains", "1,1.3,1.6").split(",").map(Number);
-const out = opt("--out");
+const out = opt("--out"), LK = opt("--look", "teal");
 const hx = await openHarness({ w: 600, h: 750 });
 try {
-  await hx.page.evaluate(() => TX.load("teal", "H"));
+  await hx.page.evaluate((l) => TX.load(l, "H"), LK);
   for (const g of GAINS) {
-    const d = path.join(out, `g${g}`, "teal", "emotions");
+    const d = path.join(out, `g${g}`, LK, "emotions");
     fs.mkdirSync(d, { recursive: true });
     for (const e of EM) {
       await hx.page.evaluate(([n, gg]) => { TX.frame("face", 0); const p = TX.emotion(n, 1); for (const k in p.bs) p.bs[k] = Math.min(1, p.bs[k] * gg); TX.pose(p); TX.render(); }, [e, g]);

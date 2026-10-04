@@ -1226,3 +1226,27 @@ The metric favours the CPU recon, which was built from the same photo detections
 
 ## teacher-judge-variance
 **Two emotion-check runs on the same geometry and presets (texture-only change between them), n = 12 per judge per emotion: per-emotion swings of up to 67 points (playful/C 10 -> 2, concerned/A 12 -> 8, encouraging/A 11 -> 8).** (2026-10-03) A single n = 12 run cannot rank designs that differ by less than this; pool runs or raise n before a reversal call.
+
+
+<!-- merged from inbox/teacher-gnm.json -->
+## teacher-gnm-round2
+**E-GNM1 round 2, teal, 2026-10-04, 4 vCPU CPU only ($0 GPU, 0 instances). Same renderer, light and judges as round 1; n = 24 per emotion per judge, three acceptance runs (build6, build7 = + roughness 0.60 and dark-neck rule, build8 = + hair-sheen rule).**
+- Judge A correct/24 (warm, encouraging clip, curious, thinking, listening, concerned, delighted, playful, surprised): b6 24 21 17 24 11 24 18 24 24 (8/9); b7 24 22 19 24 11 24 21 24 24 (8/9); b8 24 22 16 24 14 24 19 24 24 (7/9). Pooled /72: 8/9 (listening 50%).
+- Judge C: b6 24 24 9 24 23 23 24 18 24 (8/9); b7 24 24 7 24 19 23 24 14 24 (7/9); b8 24 24 11 24 19 18 24 17 24 (8/9). Pooled /72: 7/9 (curious 38%, playful 68%).
+- Gates b8: G3 0; G4 0%; G6 0 -> 0; lids inside eye 0 (GNM eyeball, measured cornea, 0.3 mm tol); garment 0; light through lips 0% H and B+; G5-mm rest 2.15 (fails by construction); G9 L* 55.8 / C* 28.6 vs 55.1 / 27.9.
+- Budget: H 4.42 MB / 39.5k tris / 5 draws; B+ 1.52 MB / 13.8k; B-lite 0.72 MB. SwiftShader fps 4.1 / 12 / 42.
+- Likeness (renders, % IOD): front 1.36, held-out q3 1.31 / 1.58, yaw24 1.58x front.
+- Files: docs/design/teacher/bakeoff/gnm.md (Round 2), docs/design/teacher/bakeoff/gnm/renders/teal/, art/character/bakeoff/gnm/reports/.
+
+## teacher-gnm-slate-plum
+**slate (Arjun design: man late 30s, MST 7, glasses) and plum (Uma design: woman mid 50s, MST 8, saree) on GNM, 2026-10-04, CPU only.**
+- References generated with taxila-image (art/character/bakeoff/gnm/refs/{slate,plum}; slate photographed without glasses). Fit (2D % IOD): slate front 0.81, held-out q3 1.29 / 1.04; plum front 0.81, held-out 1.00 / 0.91. MediaPipe found no face on both slate profiles and plum's left profile.
+- Parts = each look's iteration-2 build via corr.py --parts (picks > 2 mm off skin dropped, pitch-only similarity, mirror-symmetrised residual capped at 20 mm); slate glasses as a rigid frame on the eyeball centres (x0.90, -2.5 mm).
+- Per-face gains (look JSON presetGain, judge A n = 8): slate curious 2.0, concerned 2.0, playful 2.56; plum curious 1.3, concerned 1.3.
+- Emotion n = 24/judge: slate A 81% 7/9 (concerned 4, playful 14), C 72% 6/9 (curious 1, concerned 10, playful 4); plum A 81% 6/9 (encouraging 11, curious 12, listening 11), C 75% 6/9 (curious 7, listening 9, playful 15). Earlier plum run without brow cards / gains: A 7/9, C 6/9.
+- Gates: G3 0, G4 0%, G6 pass, lids 0 (both). Light through lips H 0 / B+ slate PP 5%, plum 0. Garment penetration H 0, B+ slate 22, plum 5. G9 slate L* 42.6 / C* 24.0 vs 42.5 / 23.9; plum 30.8 / 18.3 vs 30.7 / 17.7 (pass).
+- Budget: slate H 4.12 MB / 37.5k / 6 draws, B+ 1.43 MB / 13.9k; plum H 4.22 MB / 34.9k, B+ 1.46 MB / 12.5k. fps H/B+ 4.1/10.6 and 5.1/13.3.
+- Render likeness: slate front 2.81 (with glasses vs glasses-free refs), held-out 3.16 / 2.20; plum front 2.22, held-out 1.64 / 2.30.
+
+## teacher-judge-variance-n24
+**Three n = 24 runs of near-identical teal assets, 2026-10-04:** the largest single-emotion swings were C concerned 23 -> 18, C listening 23 -> 19, C playful 18 -> 14, A listening 11 -> 14. At the 17/24 bar, curious and playful flip between runs. Supersedes the n = 12 note (teacher-judge-variance): the noise shrank, but not below the margin designs are being separated by.

@@ -606,7 +606,9 @@ log(f"wedge check: {WEDGE['skinAlbedoTexels']} skin-albedo texels of {WEDGE['mas
 LIPREG = None
 _pja3 = globals().get("PJ_ALPHA")
 if _pja3 is not None:
-    _roi = (np.linalg.norm(Pt - lipC, axis=1) < 0.03) & (Nt[:, 1] < -0.3) & (_pja3 > 0.5)
+    # the ROI is a band round the mouth: a 3 cm ball also took the nostril base, whose pink-brown skin was then counted as
+    # "painted lip" outside the geometric lip (measured: the whole excess sat 15-18 mm above the lip centre)
+    _roi = (np.linalg.norm(Pt - lipC, axis=1) < 0.03) & (Nt[:, 1] < -0.3) & (_pja3 > 0.5) & (np.abs(Pt[:, 2] - lipC[2]) < 0.012)
     _f = lambda X: np.c_[X[:, :2] / np.maximum(X.sum(1, keepdims=True), 1e-6) * 10, np.log(np.maximum(X @ np.array([0.2126, 0.7152, 0.0722]), 1e-4))]
     _geo = _roi & (lipT > 0.5)
     _skn = _roi & (lipT < 0.05) & (np.linalg.norm(Pt - lipC, axis=1) > 0.012)

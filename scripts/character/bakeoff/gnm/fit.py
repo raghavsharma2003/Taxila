@@ -35,10 +35,12 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--lam", type=float, default=2.0, help="prior weight multiplier on the identity coefficients")
 ap.add_argument("--sil", type=float, default=1.0, help="silhouette term gain (0 = off)")
 ap.add_argument("--nid", type=int, default=170, help="leading head identity components fitted")
-ap.add_argument("--out", default=os.path.join(G.ART, "fit", "teal.json"))
+ap.add_argument("--look", default="teal")
+ap.add_argument("--out", default=None)
 a = ap.parse_args()
-
-REFD = os.path.join(G.ROOT, "art/character/bakeoff/merged/refs/teal")
+PTH = G.paths(a.look)
+a.out = a.out or PTH["FIT"]
+REFD = PTH["REFD"]
 LM = json.load(open(os.path.join(REFD, "landmarks.json")))
 RG = json.load(open(os.path.join(G.ROOT, "art/character/bakeoff/merged/mp_regions.json")))
 m = G.GNM()
@@ -67,7 +69,9 @@ IODV = {}     # per-view IOD in px = camera scale x the 3D outer-eye-corner dist
 
 
 def obs(view):
-    L = LM[view]
+    L = LM.get(view)
+    if not L:                                                # a profile with no MediaPipe face: silhouette only
+        return None, IODV.get(view, 100.0)
     P = np.array(L["lm"])[:, :2]
     iod = IODV.get(view) or np.linalg.norm(P[33] - P[263])
     return P[mpi], iod
@@ -120,11 +124,21 @@ def edges(view):
     front / 3/4 views: both sides, eye row to chin (ears, cheeks, jaw; above the ears the hair covers the temples);
     profiles: the leading (face-side) edge, forehead to throat."""
     mask = skin_mask(os.path.join(REFD, f"{view}.png"))
-    L = np.array(LM[view]["lm"])
-    eye_y = L[[159, 386]][:, 1].mean(); brow_y = L[[105, 334, 9]][:, 1].min(); chin_y = L[152][1]
+    if LM.get(view):
+        L = np.array(LM[view]["lm"])
+        eye_y = L[[159, 386]][:, 1].mean(); brow_y = L[[105, 334, 9]][:, 1].min(); chin_y = L[152][1]
+    else:
+        # round 2: MediaPipe finds NO face on some generated profiles (slate both, plum left): the brow / chin rows come
+        # from the front view's landmarks scaled into this view's skin-mask extent (same framing for the whole set)
+        Lf = np.array(LM["front"]["lm"]); mf = skin_mask(os.path.join(REFD, "front.png"))
+        rf = np.where(mf.any(1))[0]; rv_ = np.where(mask.any(1))[0]
+        sc_ = (rv_[-1] - rv_[0]) / max(1, rf[-1] - rf[0])
+        tr_ = lambda y: rv_[0] + (y - rf[0]) * sc_
+        brow_y = tr_(Lf[[105, 334, 9]][:, 1].min()); chin_y = tr_(Lf[152][1]); eye_y = tr_(Lf[[159, 386]][:, 1].mean())
+        L = None
     out = []
     if view in PROF:
-        side = 1 if L[1][0] > L[:, 0].mean() else -1
+        side = (1 if L[1][0] > L[:, 0].mean() else -1) if L is not None else (1 if view.endswith("left") else -1)
         sides, rows = [side], np.arange(int(brow_y - 0.45 * (chin_y - brow_y)), int(chin_y + 0.55 * (chin_y - brow_y)), 4)
     else:
         sides, rows = [1, -1], np.arange(int(eye_y), int(chin_y), 4)
@@ -137,7 +151,7 @@ def edges(view):
     return out
 
 
-SIL = {v: edges(v) for v in TRAIN + PROF if LM.get(v)}
+SIL = {v: edges(v) for v in TRAIN + PROF if LM.get(v) or (v in PROF and os.path.exists(os.path.join(REFD, f"{v}.png")))}
 # ---------------------------------------------------------------- parameter vector
 K, E = len(IDX), len(NUI)
 views = list(TRAIN)                                       # cameras solved inside the least squares
