@@ -1,0 +1,309 @@
+{
+ "sanity-bad-3d": {
+  "taxila-brain": {
+   "meanScore": 2.0,
+   "n": 2,
+   "fails": [
+    "E2",
+    "I1",
+    "I2",
+    "I3",
+    "M1",
+    "S1",
+    "S2",
+    "S3"
+   ],
+   "defects": [
+    "Cheap low-poly, flattened rendering that loses the premium Memoji finish",
+    "Uncanny facial construction, especially the puckered mouth and rigid eye area",
+    "Uncanny facial and neck proportions, especially the stretched neck, uneven eyes, and pinched mouth.",
+    "Flat, faceted, cut-out-like rendering that loses the REF's premium soft 3D finish."
+   ]
+  },
+  "grok-4-20-reasoning": {
+   "meanScore": 3.0,
+   "n": 2,
+   "fails": [
+    "E2",
+    "I2",
+    "M1",
+    "S3"
+   ],
+   "defects": [
+    "Flattened Memoji shading",
+    "Zero lip volume and crude eye integration",
+    "flattened Memoji shading",
+    "lips without soft volume"
+   ]
+  }
+ },
+ "sanity-ref-ref": {
+  "taxila-brain": {
+   "meanScore": 4.0,
+   "n": 2,
+   "fails": [],
+   "defects": [
+    "The neutral expression feels noticeably less warm and engaging than the approved character.",
+    "The mouth is slightly rigid and generic, with less nuanced corner shaping and cheek interaction than REF.",
+    "The neutral mouth is slightly under-sculpted and less expressive than the reference.",
+    "The flatter expression reduces the character's warmth and delight."
+   ]
+  },
+  "grok-4-20-reasoning": {
+   "meanScore": 3.0,
+   "n": 2,
+   "fails": [
+    "M1"
+   ],
+   "defects": [
+    "lips lack soft volume",
+    "mouth shape less warm/appealing than REF",
+    "lips lack soft volume",
+    "neutral mouth feels stiff and less characterful than REF smile"
+   ]
+  }
+ },
+ "rest": {
+  "taxila-brain": {
+   "meanScore": 3.0,
+   "n": 2,
+   "fails": [
+    "I2",
+    "S1"
+   ],
+   "defects": [
+    "Obvious horizontal cut/compositing seam beneath the chin.",
+    "Jagged holes and clipped edges around the right cheek, ponytail, and neck.",
+    "Large jagged cut-out artifact on the viewer-right cheek and jaw",
+    "Broken ear, hair, and face contour on the viewer-right side"
+   ]
+  },
+  "grok-4-20-reasoning": {
+   "meanScore": 4.5,
+   "n": 2,
+   "fails": [],
+   "defects": [
+    "none",
+    "none",
+    "hair parting slightly less crisp than REF",
+    "neck shading marginally flatter"
+   ]
+  }
+ },
+ "talk_aa": {
+  "taxila-brain": {
+   "meanScore": 3.5,
+   "n": 2,
+   "fails": [
+    "I2",
+    "S1"
+   ],
+   "defects": [
+    "The jaw and chin are slightly narrower and more pointed than the reference, causing minor identity drift.",
+    "The mouth interior is somewhat plain and uniformly dark, reducing the premium dimensional finish.",
+    "Obvious jagged compositing seams and dark cut edges around the jaw, neck and hair bun.",
+    "Likeness drifts through the smaller eyes, longer face and altered mouth proportions, making the frame less appealing than the reference."
+   ]
+  },
+  "grok-4-20-reasoning": {
+   "meanScore": 3.0,
+   "n": 2,
+   "fails": [
+    "E2",
+    "I3",
+    "M1"
+   ],
+   "defects": [
+    "Lips lack soft volume (tubular O-shape)",
+    "Slightly flattened shading on lower lip and chin",
+    "stretched/uncanny mouth deformation",
+    "lips lack soft volume"
+   ]
+  }
+ },
+ "delight": {
+  "taxila-brain": {
+   "meanScore": 3.5,
+   "n": 2,
+   "fails": [
+    "E2",
+    "I2",
+    "M2",
+    "S1"
+   ],
+   "defects": [
+    "Obvious cut edges and dark compositing seams around the face, ears, hair and bun",
+    "Jagged left-eye edge and scalloped individual teeth reduce facial polish",
+    "The oversized open smile slightly stretches the lower face and weakens the exact likeness.",
+    "The eye and lash treatment is a little sharper and more graphic than the softer REF rendering."
+   ]
+  },
+  "grok-4-20-reasoning": {
+   "meanScore": 4.0,
+   "n": 2,
+   "fails": [
+    "E2"
+   ],
+   "defects": [
+    "Mouth is wider and less sculpted than REF",
+    "Left eye (viewer's right) eyelid wrap is slightly flatter and less spherical",
+    "Lash line not perfectly tapered on right eye",
+    "Mouth opened too wide, losing the precise charming lip shape of REF"
+   ]
+  }
+ },
+ "thinking": {
+  "taxila-brain": {
+   "meanScore": 3.5,
+   "n": 2,
+   "fails": [
+    "I2",
+    "S1"
+   ],
+   "defects": [
+    "Severe jagged cut-out edges and compositing seams around the jaw, neck, ears, hair, and bun.",
+    "Facial proportions drift from REF, especially the enlarged round eyes and altered mouth, weakening character consistency.",
+    "Eyes are noticeably larger and rounder than REF, making the character slightly more doll-like and less specific.",
+    "The mouth is more generic and symmetrically posed than REF, weakening the character likeness and expression nuance."
+   ]
+  },
+  "grok-4-20-reasoning": {
+   "meanScore": 3.5,
+   "n": 2,
+   "fails": [
+    "E2",
+    "M1"
+   ],
+   "defects": [
+    "lips lack REF's soft rounded volume",
+    "smile is more generic, less character-specific than REF",
+    "flat lips without soft volume",
+    "lash line thick and untapered"
+   ]
+  }
+ },
+ "listening": {
+  "taxila-brain": {
+   "meanScore": 3.5,
+   "n": 2,
+   "fails": [
+    "I2",
+    "S1"
+   ],
+   "defects": [
+    "Jagged cut-out artifacts and gaps around the lower-right bun and neck",
+    "Slight loss of reference fidelity in the eye proportions and facial sculpt",
+    "The loose side hair strands are slightly wiry and less softly integrated than the approved reference.",
+    "The face and eyes are marginally broader and more doll-like than REF, causing slight character-model drift."
+   ]
+  },
+  "grok-4-20-reasoning": {
+   "meanScore": 4.0,
+   "n": 2,
+   "fails": [],
+   "defects": [
+    "Mouth smile slightly wider and less nuanced than REF",
+    "Left-side hair volume and strand definition marginally softer than REF",
+    "hair silhouette and volume slightly inconsistent with REF",
+    "cheek shading transitions less delicate than approved concept"
+   ]
+  }
+ },
+ "yaw_p20": {
+  "taxila-brain": {
+   "meanScore": 2.5,
+   "n": 2,
+   "fails": [
+    "E2",
+    "I2",
+    "I3",
+    "S1"
+   ],
+   "defects": [
+    "Extensive jagged cut edges, halos, holes and stray fragments around the silhouette",
+    "Broken jaw-to-neck transition makes the head look detached and puppet-like",
+    "Severe jagged, cut-out-looking hair and ear edges on both sides of the face.",
+    "Warped dark hair/neck shapes and visible holes make the compositing look unfinished."
+   ]
+  },
+  "grok-4-20-reasoning": {
+   "meanScore": 3.5,
+   "n": 2,
+   "fails": [
+    "I2",
+    "S1"
+   ],
+   "defects": [
+    "visible hard cut/seam under jaw/neck",
+    "jagged composite edges on hair",
+    "lower lip lost a fraction of the REF\u2019s plush volume",
+    "cheek shading slightly flatter than REF\u2019s signature softness"
+   ]
+  }
+ },
+ "blink_mid": {
+  "taxila-brain": {
+   "meanScore": 3.5,
+   "n": 2,
+   "fails": [
+    "E1",
+    "E2",
+    "I2",
+    "I3",
+    "S1"
+   ],
+   "defects": [
+    "Severe visible cut edges and compositing seams around the face, neck and hair",
+    "Dead eyes with missing catchlights and malformed, heavy lash lines",
+    "The half-lidded gaze reads slightly sleepy and less engaging than a premium teacher character should.",
+    "The eye catchlights are very small, reducing sparkle and liveliness."
+   ]
+  },
+  "grok-4-20-reasoning": {
+   "meanScore": 3.5,
+   "n": 2,
+   "fails": [
+    "E2"
+   ],
+   "defects": [
+    "right eye lash line blunt/not smoothly tapered",
+    "subtle hardening of cheek shading vs REF's softer falloff",
+    "Heavy blunt lash line breaks soft Memoji aesthetic",
+    "Eyes less rounded/volumetric than REF, slightly uncanny"
+   ]
+  }
+ },
+ "tongue_RETRO": {
+  "taxila-brain": {
+   "meanScore": 3.5,
+   "n": 2,
+   "fails": [
+    "I2",
+    "I3",
+    "M2",
+    "S1"
+   ],
+   "defects": [
+    "Jagged cut edges and seams around the face, neck, hair and bun",
+    "Uncanny mouth interior with fragmented teeth and a malformed tongue-like shape",
+    "The mouth is slightly pinched and less elegantly shaped than REF, making the smile a touch less premium.",
+    "The lower face and chin look subtly narrower and longer than REF, weakening exact character consistency."
+   ]
+  },
+  "grok-4-20-reasoning": {
+   "meanScore": 3.0,
+   "n": 2,
+   "fails": [
+    "E2",
+    "M1",
+    "M2"
+   ],
+   "defects": [
+    "Mouth lacks soft volume and clean tooth shelf",
+    "Expression feels slightly cheap/uncanny vs REF polish",
+    "lips lack soft volume",
+    "lash line not tapered/smooth"
+   ]
+  }
+ }
+}

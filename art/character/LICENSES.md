@@ -366,3 +366,19 @@ No GPU was used in this round.
 | voice clip `docs/design/teacher/renders/audio/teal.mp3` (gpt-4o-mini-tts on Azure, voice marin) + its CTC alignment (wav2vec2-base-960h, Apache-2.0) | demo audio + viseme timing | our output / Apache-2.0 model | evidence only |
 
 Not used: Live2D (licence blocked), PixiJS (fallback not needed), Real-ESRGAN (no upscale was needed: the puppet renders at c-front's native 1024 px).
+
+## 2D puppet, arm V (parametric vector), 2026-10-04 (`art/character/puppet2d/V/`, `scripts/character/puppet2d/V/`)
+
+No image model was called and no image pixel ships: every region is a vector contour with a fitted shading field
+(constant + Gaussian RBFs + edge-distance terms, ridge least squares against c-front), evaluated at mesh vertices; the
+features are parametric shapes rebuilt per frame. Image spend for this arm: USD 0.
+
+| input / tool | role | licence | note |
+|---|---|---|---|
+| `docs/design/teacher/stylised/concepts/c-front.webp` (our concept) | fitting target only (contours traced, colours fitted) | our output under the Azure OpenAI terms | not shipped as pixels |
+| Own WebGL2 renderer, rig, mouth solver, springs (`scripts/character/puppet2d/V/{rig,mouth}.js`) | runtime | ours | zero runtime dependencies; Live2D / Inochi2D / Cartoon Animator are technique references only |
+| `src/avatar/{behaviour,compositor,lip}.ts` + `shared/tutors.js` | the demo drives the puppet through them, unchanged | ours | bundled from the real source by `build-demo.mjs` |
+| numpy, scipy (Delaunay, EDT, ndimage), pillow, opencv-python-headless 5.0 | build-time segmentation, meshing, fitting | BSD-3 / BSD-3 / MIT-CMU / Apache-2.0 | nothing ships |
+| vite 8 | demo bundle | MIT | build-time |
+| Playwright 1.63, Chromium (SwiftShader), ffmpeg | evidence stills, clips, fps proxy | Apache-2.0 / BSD / LGPL | evidence only |
+| Foundry `DEPLOY_BRAIN` (gpt-5.6-sol) | advisory blind vision judge (`judge_v.py`), text tokens only | Azure terms | raw replies in `art/character/puppet2d/V/evidence/judge-v-blind.json` |

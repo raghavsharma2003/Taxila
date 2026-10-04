@@ -74,11 +74,12 @@ def vad(x):
 
 
 def post(url, data, headers, timeout=90):
-    for a in range(5):
+    for a in range(10):
         try:
             return json.load(urllib.request.urlopen(urllib.request.Request(url, data=data, headers=headers), timeout=timeout))
         except urllib.error.HTTPError as e:
-            if e.code in (429, 500, 502, 503): time.sleep(3 * (a + 1)); continue
+            if e.code in (429, 500, 502, 503):  # gpt-transcribe S0 call-rate limit: honour Retry-After
+                time.sleep(min(60, float(e.headers.get("Retry-After") or 3 * (a + 1))) + 1); continue
             raise
         except Exception:
             time.sleep(3 * (a + 1))
@@ -130,8 +131,20 @@ def one(c):
     return "ok"
 
 
+def fill(c):
+    # second pass: redo only the gpt-transcribe call where the first pass hit the call-rate limit
+    p = os.path.join(RAW, c["id"] + ".json"); r = json.load(open(p))
+    if r.get("gptx") is not None: return "skip"
+    try: r["gptx"] = gptx(pcm16k(c["file"])); r.pop("gptx_err", None)
+    except Exception as e: r["gptx_err"] = str(e)[:200]
+    json.dump(r, open(p, "w"), ensure_ascii=False, indent=1)
+    return "ok" if r.get("gptx") is not None else "err"
+
+
 if __name__ == "__main__":
     C = clips()
+    if len(sys.argv) > 1 and sys.argv[1] == "fill":
+        with ThreadPoolExecutor(2) as ex: print(__import__("collections").Counter(ex.map(fill, C))); sys.exit()
     if len(sys.argv) > 1 and sys.argv[1] == "list": print(len(C)); sys.exit()
     missing = [c for c in C if not os.path.exists(c["file"])]
     assert not missing, missing[:3]

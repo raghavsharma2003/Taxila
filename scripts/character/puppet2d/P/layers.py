@@ -34,7 +34,7 @@ GEOM = {
     "earR": [(745, 420), (808, 420), (808, 548), (788, 588), (748, 592), (738, 560)],
     "lockL": [(278, 440), (318, 440), (330, 560), (320, 640), (338, 700), (322, 730), (296, 730), (300, 690), (282, 600), (284, 520)],
     "lockR": [(728, 395), (760, 395), (788, 520), (792, 620), (790, 705), (770, 705), (762, 640), (742, 560), (732, 480)],
-    "bun": [(600, 575), (700, 560), (760, 600), (765, 700), (720, 745), (640, 745), (600, 700)],
+    "bun": [(600, 575), (700, 560), (760, 600), (765, 700), (720, 745), (640, 750), (598, 752), (588, 700)],
     "browLpoly": [(371, 361), (400, 348), (430, 344), (452, 342), (467, 345), (476, 354), (478, 368), (470, 375), (450, 375),
                   (430, 377), (405, 380), (388, 384), (371, 390)],
     "browRbox": (566, 325, 712, 392),
@@ -45,14 +45,14 @@ GEOM = {
         "openBot": [(375.8, 456.7), (378, 470), (388, 487), (400, 492.5), (420, 494), (438, 492.5), (455, 487), (466.7, 475), (470, 463), (469.5, 451)],
         "lashTop": [(352.5, 444), (370, 431.7), (386.7, 418), (411.7, 412.5), (428, 411.7), (448, 416), (461.7, 425), (470, 440), (471.7, 450)],
         "flickBot": [(352.5, 446), (361.7, 450), (370, 455)],
-        "iris": (428.7, 457.4, 32.0), "pupil": (429.6, 456.5, 17.9, 18.5), "catch": (421.7, 440.8, 8.3),
+        "iris": (428.7, 457.4, 31.2), "pupil": (429.6, 456.5, 17.9, 18.5), "catch": (421.7, 440.8, 8.3),
     },
     "eyeR_pts": {
         "openTop": [(583.3, 451.7), (586.7, 440), (595, 426.7), (608, 416.7), (625, 411.7), (645, 411.7), (661.7, 415.8), (675, 423.3), (681.7, 433.3), (683.5, 442)],
         "openBot": [(583.3, 451.7), (586.7, 466.7), (595, 475), (608.3, 480.8), (628.3, 482.5), (646.7, 480), (663.3, 475), (675, 466.7), (680, 456.7), (683.5, 442.5)],
         "lashTop": [(581.7, 440), (591.7, 416.7), (608.3, 405), (630, 399), (650, 398.3), (668.3, 403.3), (681.7, 411.7), (690, 423.3), (705, 425)],
         "flickBot": [(685, 443.3), (691.7, 436.7), (705, 427)],
-        "iris": (628.6, 447.2, 32.5), "pupil": (627.8, 445.8, 18.8, 20.0), "catch": (619.2, 430.8, 9.0),
+        "iris": (628.6, 447.2, 31.8), "pupil": (627.8, 445.8, 18.8, 20.0), "catch": (619.2, 430.8, 9.0),
     },
     "mouth_ellipse": (530, 628, 108, 64),   # cx, cy, rx, ry: the edit mask of gen-mouths.mjs
     "mouth_patch": (530, 626, 98, 56),     # the cut actually used (inside the edit mask), feathered
@@ -190,7 +190,7 @@ hair = hair_all & ~lockL & ~lockR & ~bun
 jx = [p[0] for p in GEOM["jaw"]]
 jy = [p[1] for p in GEOM["jaw"]]
 jaw_y = np.interp(np.arange(W), jx, jy, left=-1, right=-1)
-below_jaw = (yy > jaw_y[None, :]) & (jaw_y[None, :] > 600)
+below_jaw = (yy > jaw_y[None, :]) & (jaw_y[None, :] > 600) & (xx > 425) & (xx < 640)
 nonhair = ~hair_all & ~bgc
 ears = nonhair & (earLp | earRp) & (yy < 600)
 cand = nonhair & ~below_jaw & ~ears & (yy < 730)
@@ -255,7 +255,7 @@ for side in ("L", "R"):
     iris_src[mir] = im[my[mir], xx[mir]] * 0.82
     known_i = known_i | mir
     iris_rgb = pullpush(iris_src, known_i, smooth_iters=60, region=iris_area)
-    ia = np.clip((ir + 0.6) - np.sqrt((xx - icx) ** 2 + (yy - icy) ** 2), 0, 1)
+    ia = np.clip((ir + 0.3) - np.sqrt((xx - icx) ** 2 + (yy - icy) ** 2), 0, 1)
     geom_out["rects"][f"iris{side}"] = save_layer(f"iris{side}", iris_rgb, ia)
 
     # ---- catchlight: white disc with soft edge (alpha from luminance over the iris colour)
@@ -282,16 +282,17 @@ for side in ("L", "R"):
         for y in range(int(ytop), int(np.ceil(LB[i])) + 2):
             lidmask[y, x] = True
             lid_top[y, x] = np.clip((y - ytop) / 16.0, 0, 1)
-    # bottom edge: exact AA from c-front where the lash meets white (alpha = darkness), hard elsewhere
+    # bottom edge: c-front's own AA. Near the lash bottom the alpha is the pixel's lash-ness (dark AND neutral, so
+    # the brown iris under the lid is never baked into the lid); above it the lid is opaque, below it transparent
+    lashness = np.clip((200 - lum) / 150.0, 0, 1) * np.clip((40 - (R - B)) / 15.0, 0, 1)
     lid_alpha = lid_top.copy()
     for i, x in enumerate(LX):
         yb = LB[i]
-        for y in range(int(np.floor(yb)) - 1, int(np.ceil(yb)) + 2):
+        for y in range(int(np.floor(yb)) - 3, int(np.ceil(yb)) + 5):
             if 0 <= y < H:
-                inside_open = opening[y, x] or (x in range(xa, xb_ + 1) and y >= yb)
-                if y >= yb:
-                    # below the lash bottom: keep only lash-dark AA pixels
-                    lid_alpha[y, x] = np.clip((200 - lum[y, x]) / 150.0, 0, 1) if y < yb + 1.5 else 0
+                if y >= yb - 2.5:
+                    lid_alpha[y, x] = lashness[y, x] if y < yb + 4 else 0
+                lidmask[y, x] = True
     # sides: the flick tip and the inner corner fade over 2 px (c-front's own AA)
     side_fade = np.clip(np.minimum(xx - LX[0], LX[-1] - xx) / 2.0, 0, 1)
     lid_alpha *= side_fade
@@ -361,6 +362,11 @@ face_rgb = pullpush(im, known, smooth_iters=400, region=face_area & ~known)
 vis = ndi.binary_erosion(face, iterations=1) & ~holes
 face_rgb[vis] = im[vis]
 _, fa = matte(face, face_area & ~face)
+# the chin has no contour in c-front, only shading into the neck: feather the face over the neck across ~9 px
+dj = (yy - jaw_y[None, :])
+chin_band = (xx > 440) & (xx < 615) & (np.abs(dj) < 12)
+fa = np.where(chin_band, np.clip(1.0 - dj / 9.0, 0, 1) * (jaw_y[None, :] > 600), fa)
+face_rgb = np.where((chin_band & (dj >= -2))[..., None], im, face_rgb)   # c-front's own pixels across the chin band
 geom_out["rects"]["face"] = save_layer("face", face_rgb, fa)
 
 # ------------------------------------------------------------------ ears (+ studs), overscan under face/hair/locks
@@ -439,7 +445,7 @@ geom_out["rects"]["hairback"] = save_layer("hairback", hb_rgb, soft(hb_area, 1.0
 _ne = [np.where(body[y, 400:660])[0] for y in range(712, 736)]
 nl = int(np.median([r.min() for r in _ne if len(r)])) + 400
 nr = int(np.median([r.max() for r in _ne if len(r)])) + 400
-neck_up = (yy > 560) & (yy < 740) & (xx >= nl) & (xx <= nr) & ~body & ~ndi.binary_dilation(bgc, iterations=2)
+neck_up = (yy > 560) & (yy < 740) & (xx >= nl) & (xx <= nr) & ~body & ~ndi.binary_dilation(bgc, iterations=2) & ~hair_all
 print("neck edges", nl, nr)
 body_area = body | neck_up | (ndi.binary_dilation(body, iterations=8) & (lockL | lockR | hair))
 neck_skin = ndi.binary_erosion(body, iterations=2) & ((R - B) > 60) & (yy < 760)

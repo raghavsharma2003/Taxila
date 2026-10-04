@@ -12,20 +12,22 @@
 # Output: align/<clip id>.json.  Run: python3 docs/research/voice/v3/screen/align.py
 import json, os, re, sys, unicodedata, time
 import numpy as np, torch
-SP = "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad"
+SP = os.environ.get("ALIGN_SP", "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad")
 sys.path.insert(0, SP + "/py")
+DEV = "cuda" if torch.cuda.is_available() else "cpu"
 import parselmouth
 from transformers import Wav2Vec2ForCTC, Wav2Vec2FeatureExtractor, WavLMForXVector
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 from collect import clips, pcm16k
 OUT = os.path.join(HERE, "align"); os.makedirs(OUT, exist_ok=True)
-HF = SP + "/hf"
-CTC = f"{HF}/models--Harveenchadha--vakyansh-wav2vec2-hindi-him-4200/snapshots/e2568c3f7868d8aa3aaabcf28fa100d10d54c170"
-SV = f"{HF}/models--microsoft--wavlm-base-plus-sv/snapshots/feb593a6c23c1cc3d9510425c29b0a14d2b07b1e"
+HF = os.environ.get("ALIGN_HF", SP + "/hf")
+from huggingface_hub import snapshot_download
+CTC = snapshot_download("Harveenchadha/vakyansh-wav2vec2-hindi-him-4200", revision="e2568c3f7868d8aa3aaabcf28fa100d10d54c170", cache_dir=HF, allow_patterns=["*.json", "pytorch_model.bin"])
+SV = snapshot_download("microsoft/wavlm-base-plus-sv", revision="feb593a6c23c1cc3d9510425c29b0a14d2b07b1e", cache_dir=HF, allow_patterns=["*.json", "pytorch_model.bin"])
 torch.set_num_threads(4)
-ctc = Wav2Vec2ForCTC.from_pretrained(CTC).eval(); fe = Wav2Vec2FeatureExtractor.from_pretrained(CTC)
+ctc = Wav2Vec2ForCTC.from_pretrained(CTC).eval().to(DEV); fe = Wav2Vec2FeatureExtractor.from_pretrained(CTC)
 VOC = json.load(open(CTC + "/vocab.json")); INV = {v: k for k, v in VOC.items()}; BLANK = VOC["<s>"]; SEP = VOC["|"]  # this fairseq-exported model emits <s> (id 0) as the CTC blank, not its config's pad id
-sv = WavLMForXVector.from_pretrained(SV).eval(); sfe = Wav2Vec2FeatureExtractor.from_pretrained(SV)
+sv = WavLMForXVector.from_pretrained(SV).eval().to(DEV); sfe = Wav2Vec2FeatureExtractor.from_pretrained(SV)
 EN = {"tens": "टेंस", "total": "टोटल", "cold": "कोल्ड", "drink": "ड्रिंक", "burp": "बर्प", "divide": "डिवाइड", "pizza": "पिज़्ज़ा"}
 PUNCT = "।,!?.;:"
 
@@ -69,7 +71,7 @@ def emb(x):
     if len(x) < 16000 * 0.25: return None
     with torch.no_grad():
         i = sfe(x.astype(np.float32) / 32768, sampling_rate=16000, return_tensors="pt")
-        e = sv(**i).embeddings[0]
+        e = sv(**{k: v.to(DEV) for k, v in i.items()}).embeddings[0].cpu()
     return torch.nn.functional.normalize(e, dim=-1).numpy()
 
 
@@ -82,7 +84,7 @@ def one(c):
     x = pcm16k(c["file"]); xf = x.astype(np.float32) / 32768
     with torch.no_grad():
         iv = fe(xf, sampling_rate=16000, return_tensors="pt").input_values
-        lp = torch.log_softmax(ctc(iv).logits[0], -1).numpy()
+        lp = torch.log_softmax(ctc(iv.to(DEV)).logits[0].float(), -1).cpu().numpy()
     T = lp.shape[0]; fps = T / (len(x) / 16000)
     g = lp.argmax(-1); dec = []; last = -1
     for k in g:
@@ -134,6 +136,10 @@ def one(c):
 
 if __name__ == "__main__":
     C = clips(); t = time.time()
+    if os.environ.get("CLIP_ROOT"):  # GPU job: same clip list, files re-rooted under the unpacked job (scripts in screen/gpu-job/)
+        RR = os.environ["CLIP_ROOT"]
+        for c in C:
+            c["file"] = os.path.join(RR, "r1", os.path.basename(c["file"])) if c["src"] == "round1" else os.path.join(RR, "renders", c["file"].split("/renders/", 1)[1])
     if len(sys.argv) > 1: C = [c for c in C if sys.argv[1] in c["id"]]
     for i, c in enumerate(C):
         one(c)

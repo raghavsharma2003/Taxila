@@ -299,7 +299,7 @@ class NemoStreamer(Streamer):
         return [clean_text(t) for t in self.proc.batch_decode(seq, skip_special_tokens=True)]
 
     def decode_ids(self, ids):
-        return clean_text(self.proc.tokenizer.decode(ids, skip_special_tokens=True))
+        return clean_text(self.proc.decode(ids, skip_special_tokens=True))        # processor.decode: no RNN-T token grouping
 
 
 class VoxStreamer(Streamer):
