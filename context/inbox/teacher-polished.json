@@ -1,0 +1,60 @@
+{
+ "nodes": [
+  {
+   "id": "teacher-polished-verdict",
+   "kind": "decision",
+   "title": "Polished-teacher round: no free licence-clean base (Rocketbox c1/c2/c4, VRoid c3) clears the owner's 'polished' bar; ranking c1 > c4 > c3 > c2 (all beat GNM teal on 'not scary'); recommend ThreeDee stylised purchase (owner, Phase 1 $116) as primary with MetaHuman as the gated realistic arm; c1 is the licence-clean floor",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "teacher-polished-2026-10-04",
+   "kind": "measurement",
+   "title": "Four free candidates built into the runtime contract at $0: all pass budgets (H 1.2-5.1 MB / 22.9-25.3k tris / 4-5 draws / 70 morphs; B+ 0.6-1.8 MB / 4.2-15.6k tris), MST-6 skin and teeth gates; lips close 9/9 (5/5) /p b m/ on aligned visemes vs 1/9 (1/5) on the shipped loudness driver; FPS SwiftShader-only",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rocketbox-as-premium-face",
+   "kind": "rejection",
+   "title": "Microsoft Rocketbox (MIT) as the shipped teacher face: clean and licence-perfect but reads as 2010-era game art (low-poly jaw, painted cap hair, weak expressions, olive cast); kept only as the floor",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "vroid-sample-as-teacher",
+   "kind": "rejection",
+   "title": "pixiv VRoid sample (VRM PL 1.0) as the teacher: cleanest render, never uncanny, but reads as an anime teenager; head/eye shrink did not fix the register",
+   "at": "2026-10-04"
+  }
+ ],
+ "edges": [
+  {
+   "src": "teacher-polished-verdict",
+   "rel": "measured_by",
+   "dst": "teacher-polished-2026-10-04"
+  },
+  {
+   "src": "teacher-polished-verdict",
+   "rel": "caused_by",
+   "dst": "owner-rejects-generated-faces"
+  },
+  {
+   "src": "teacher-polished-verdict",
+   "rel": "constrains",
+   "dst": "teacher-runtime-contract"
+  },
+  {
+   "src": "rocketbox-as-premium-face",
+   "rel": "informs",
+   "dst": "teacher-polished-verdict"
+  },
+  {
+   "src": "vroid-sample-as-teacher",
+   "rel": "informs",
+   "dst": "teacher-polished-verdict"
+  }
+ ],
+ "md": {
+  "decisions": "## teacher-polished-verdict (2026-10-04)\nEvery scout pick (MetaHuman, ThreeDee, Avaturn, MetaPerson) was blocked on an owner action (Epic login + counsel, a purchase, third-party sign-ups under the Azure-only directive), so four free stand-ins were built: c1 Rocketbox Female_Adult_11 (+Female_Adult_10 face texture), c2 Rocketbox Business_Female_01, c4 Rocketbox Female_Adult_07 (all MIT, https://github.com/microsoft/Microsoft-Rocketbox/blob/master/LICENSE.md), c3 pixiv VRoid sample (VRM Public License 1.0, https://vrm.dev/en/licenses/1.0/). Side-by-side `docs/design/teacher/polished/COMPARE.png` (6 columns, GNM teal reference row), read as an art director: c1 (warm, coherent, but 2010 NPC) > c4 (stern, high forehead, olive) > c3 (clean but an anime teenager) > c2 (green-olive skin, black-void mouth); all beat GNM teal on 'not scary', none is 'polished'. Recommendation: the high-end stylised route via a ThreeDee purchase is primary (no extraction clause, no service call, stylised shading hides our realistic-skin weakness): Business Office Cartoon Woman $68 + Doctor Cartoon Male $48 = $116 Phase 1 (prices re-checked live 2026-10-04); older woman needs a ThreeDee custom quote or a CharacterZ elder pack $59-79 (ThreeDee's footer lists Characterz as its own line; confirm licence). ThreeDee licence verbatim: royalty-free commercial use, modify, unlimited projects; no redistribute/resell of the original files, no sub-license; ask for written confirmation covering a paid children's web/WebView app. MetaHuman runs in parallel as the realistic arm once the owner gives an Epic login and counsel reads the EULA (GPU ~$12-20, cap $60). c1 is the licence-clean floor and may replace GNM teal on screen only with the owner's sign-off. All looks must come from one source family. Integration steps (runtime.json/plate generation for c2/c3, lookId in shared/tutors.js, port the candidate's forked rig into src/avatar/three, opaque context in stage3d.ts, lip expander + HeadAudio visemes) are in `docs/design/teacher/polished/VERDICT.md` §5. **Reverse if** the owner's blind side-by-side prefers c1 (or another free base) over the purchased ThreeDee build, or ThreeDee's actual GLBs turn out not to carry the ARKit 52 set / fail the tier budgets after decimation.",
+  "measurements": "## teacher-polished-2026-10-04 (2026-10-04)\nn = 4 candidates, one build each, our viewer + rig + stage light, headless Chromium on SwiftShader (4 vCPU, load ~7; FPS relative only, no phone). Budgets: H c1 5.13 MB/22,874 tris/5 draws, c2 3.96/22,853/4, c3 1.24/25,318/4, c4 4.65/22,972/5, all 70 morphs (correctives unauthored); B+ c1 1.83/4,254/5, c2 1.13/4,999/4, c3 0.59/15,614/4, c4 1.78/4,202/5, 53 morphs; all within caps. MST-6 skin gate passes on all (c1 chroma margin 3.9 of 4; c2 lightness -2.5 of 3 with a hand-set trim because the solver oscillated on a shadowed sample). Teeth L* 15.9-56.6 (cap 80). Lip closure on aligned /p b m/: 9/9 (c1, c4), 5/5 (c2, c3) on the aligned-viseme arm vs 1/9 and 1/5 on the shipped loudness driver. Spend $0. Per-candidate JSON: `art/character/candidates/c1/reports/measure-2026-10-04.json`, `docs/design/teacher/polished/c2|c3/measure-2026-10-04.json`, `art/character/candidates/c4/reports/measure-2026-10-04.json`.",
+  "rejected": "## rocketbox-as-premium-face (2026-10-04)\nTried: three Rocketbox women (Female_Adult_11, Business_Female_01, Female_Adult_07) re-toned to MST 6, lips/hair/eyes/garments recoloured, expression gains boosted, mouth interior relit. Broke: the art ceiling, not the pipeline. Low-poly jaw/cheek silhouettes facet in 3/4, hair is a painted skull cap or helmet shell, source smiles move the mouth corner ~4.6 mm so emotions look alike, skin reads olive/waxy under our tone mapping, and the faces read only broadly South Asian or mixed. Kept as the licence-perfect floor (c1 best).\n\n## vroid-sample-as-teacher (2026-10-04)\nTried: pixiv's VRM1 sample, arms solved down from T-pose, head 0.88x and eye area 0.9x, MST 6, kurta top, 52 ARKit built from its own morphs, toon shader fork. Broke: register. Big anime eyes, near-absent nose, tiny mouth and waist-length fringe hair read as a young anime girl, not a mid-30s Indian teacher; proportion shrinks helped only a little. What it did prove: a stylised base is never uncanny and drops into the contract cleanly, which supports buying a professional adult stylised design (ThreeDee)."
+ }
+}
