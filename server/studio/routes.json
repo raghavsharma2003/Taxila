@@ -1,0 +1,324 @@
+{
+ "version": 1,
+ "source": "MODEL-ROUTER \u00a70 (2026-10-04): race taxila-gpt6 low + gpt-5.6-terra low, taxila-gpt6-luna low as a third opportunistic arm, taxila-codex on 429 only. No archetype is live-buildable until the router bench publishes P(pass by lead) >= 0.95 at n >= 30 (evals/live-studio/router-bench.mjs rewrites this file).",
+ "fallback429": {
+  "name": "codex-low",
+  "dep": "taxila-codex",
+  "effort": "low",
+  "api": "responses"
+ },
+ "defaults": {
+  "arms": [
+   {
+    "name": "gpt6-low",
+    "dep": "taxila-gpt6",
+    "effort": "low"
+   },
+   {
+    "name": "terra-low",
+    "dep": "gpt-5.6-terra",
+    "effort": "low"
+   },
+   {
+    "name": "luna6-low",
+    "dep": "taxila-gpt6-luna",
+    "effort": "low",
+    "opportunistic": true
+   }
+  ],
+  "race": 2,
+  "leadMs": 90000,
+  "deadlineMs": 120000,
+  "live": false
+ },
+ "archetypes": {
+  "shade_fraction": {
+   "arms": [
+    {
+     "name": "gpt6-low",
+     "dep": "taxila-gpt6",
+     "effort": "low"
+    },
+    {
+     "name": "terra-low",
+     "dep": "gpt-5.6-terra",
+     "effort": "low"
+    },
+    {
+     "name": "luna6-low",
+     "dep": "taxila-gpt6-luna",
+     "effort": "low",
+     "opportunistic": true
+    }
+   ],
+   "race": 2,
+   "leadMs": 90000,
+   "live": false,
+   "bench": null
+  },
+  "bar_chart_read": {
+   "arms": [
+    {
+     "name": "gpt6-low",
+     "dep": "taxila-gpt6",
+     "effort": "low"
+    },
+    {
+     "name": "terra-low",
+     "dep": "gpt-5.6-terra",
+     "effort": "low"
+    },
+    {
+     "name": "luna6-low",
+     "dep": "taxila-gpt6-luna",
+     "effort": "low",
+     "opportunistic": true
+    }
+   ],
+   "race": 2,
+   "leadMs": 90000,
+   "live": false,
+   "bench": null
+  },
+  "hub_flows": {
+   "arms": [
+    {
+     "name": "gpt6-low",
+     "dep": "taxila-gpt6",
+     "effort": "low"
+    },
+    {
+     "name": "terra-low",
+     "dep": "gpt-5.6-terra",
+     "effort": "low"
+    },
+    {
+     "name": "luna6-low",
+     "dep": "taxila-gpt6-luna",
+     "effort": "low",
+     "opportunistic": true
+    }
+   ],
+   "race": 2,
+   "leadMs": 90000,
+   "live": false,
+   "bench": null
+  },
+  "number_line_jump": {
+   "arms": [
+    {
+     "name": "gpt6-low",
+     "dep": "taxila-gpt6",
+     "effort": "low"
+    },
+    {
+     "name": "terra-low",
+     "dep": "gpt-5.6-terra",
+     "effort": "low"
+    },
+    {
+     "name": "luna6-low",
+     "dep": "taxila-gpt6-luna",
+     "effort": "low",
+     "opportunistic": true
+    }
+   ],
+   "race": 2,
+   "leadMs": 90000,
+   "live": false,
+   "bench": null
+  },
+  "balance_scale": {
+   "arms": [
+    {
+     "name": "gpt6-low",
+     "dep": "taxila-gpt6",
+     "effort": "low"
+    },
+    {
+     "name": "terra-low",
+     "dep": "gpt-5.6-terra",
+     "effort": "low"
+    },
+    {
+     "name": "luna6-low",
+     "dep": "taxila-gpt6-luna",
+     "effort": "low",
+     "opportunistic": true
+    }
+   ],
+   "race": 2,
+   "leadMs": 90000,
+   "live": false,
+   "bench": null
+  },
+  "sort_bins": {
+   "arms": [
+    {
+     "name": "gpt6-low",
+     "dep": "taxila-gpt6",
+     "effort": "low"
+    },
+    {
+     "name": "terra-low",
+     "dep": "gpt-5.6-terra",
+     "effort": "low"
+    },
+    {
+     "name": "luna6-low",
+     "dep": "taxila-gpt6-luna",
+     "effort": "low",
+     "opportunistic": true
+    }
+   ],
+   "race": 2,
+   "leadMs": 90000,
+   "live": false,
+   "bench": null
+  },
+  "sequence_steps": {
+   "arms": [
+    {
+     "name": "gpt6-low",
+     "dep": "taxila-gpt6",
+     "effort": "low"
+    },
+    {
+     "name": "terra-low",
+     "dep": "gpt-5.6-terra",
+     "effort": "low"
+    },
+    {
+     "name": "luna6-low",
+     "dep": "taxila-gpt6-luna",
+     "effort": "low",
+     "opportunistic": true
+    }
+   ],
+   "race": 2,
+   "leadMs": 90000,
+   "live": false,
+   "bench": null
+  },
+  "slider_law": {
+   "arms": [
+    {
+     "name": "gpt6-low",
+     "dep": "taxila-gpt6",
+     "effort": "low"
+    },
+    {
+     "name": "terra-low",
+     "dep": "gpt-5.6-terra",
+     "effort": "low"
+    },
+    {
+     "name": "luna6-low",
+     "dep": "taxila-gpt6-luna",
+     "effort": "low",
+     "opportunistic": true
+    }
+   ],
+   "race": 2,
+   "leadMs": 90000,
+   "live": false,
+   "bench": null
+  },
+  "process_chain": {
+   "arms": [
+    {
+     "name": "gpt6-low",
+     "dep": "taxila-gpt6",
+     "effort": "low"
+    },
+    {
+     "name": "terra-low",
+     "dep": "gpt-5.6-terra",
+     "effort": "low"
+    },
+    {
+     "name": "luna6-low",
+     "dep": "taxila-gpt6-luna",
+     "effort": "low",
+     "opportunistic": true
+    }
+   ],
+   "race": 2,
+   "leadMs": 90000,
+   "live": false,
+   "bench": null
+  },
+  "labelled_parts": {
+   "arms": [
+    {
+     "name": "gpt6-low",
+     "dep": "taxila-gpt6",
+     "effort": "low"
+    },
+    {
+     "name": "terra-low",
+     "dep": "gpt-5.6-terra",
+     "effort": "low"
+    },
+    {
+     "name": "luna6-low",
+     "dep": "taxila-gpt6-luna",
+     "effort": "low",
+     "opportunistic": true
+    }
+   ],
+   "race": 2,
+   "leadMs": 90000,
+   "live": false,
+   "bench": null
+  },
+  "pictograph": {
+   "arms": [
+    {
+     "name": "gpt6-low",
+     "dep": "taxila-gpt6",
+     "effort": "low"
+    },
+    {
+     "name": "terra-low",
+     "dep": "gpt-5.6-terra",
+     "effort": "low"
+    },
+    {
+     "name": "luna6-low",
+     "dep": "taxila-gpt6-luna",
+     "effort": "low",
+     "opportunistic": true
+    }
+   ],
+   "race": 2,
+   "leadMs": 90000,
+   "live": false,
+   "bench": null
+  },
+  "timeline": {
+   "arms": [
+    {
+     "name": "gpt6-low",
+     "dep": "taxila-gpt6",
+     "effort": "low"
+    },
+    {
+     "name": "terra-low",
+     "dep": "gpt-5.6-terra",
+     "effort": "low"
+    },
+    {
+     "name": "luna6-low",
+     "dep": "taxila-gpt6-luna",
+     "effort": "low",
+     "opportunistic": true
+    }
+   ],
+   "race": 2,
+   "leadMs": 90000,
+   "live": false,
+   "bench": null
+  }
+ }
+}
