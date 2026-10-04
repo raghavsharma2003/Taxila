@@ -25,7 +25,7 @@ VISEMES = {  # TECH-PLAN §5.3 recipes, in ARKit + tongue channels
     "viseme_sil": {},
     "viseme_PP": {"jawOpen": 0.06, "mouthClose": 0.06, "mouthPressLeft": 0.5, "mouthPressRight": 0.5, "mouthRollLower": 0.15, "mouthRollUpper": 0.1},
     "viseme_FF": {"mouthRollLower": 0.6, "jawOpen": 0.08, "mouthUpperUpLeft": 0.2, "mouthUpperUpRight": 0.2},
-    "viseme_TH": {"jawOpen": 0.15, "tongueOut": 0.3, "tongueTipUp": 0.2},
+    "viseme_TH": {"jawOpen": 0.15, "tongueOut": 0.14, "tongueTipUp": 0.35},
     "viseme_DD": {"jawOpen": 0.15, "tongueTipUp": 1.0, "mouthStretchLeft": 0.1, "mouthStretchRight": 0.1},
     "viseme_kk": {"jawOpen": 0.2, "mouthStretchLeft": 0.15, "mouthStretchRight": 0.15, "tongueBack": 1.0},
     "viseme_CH": {"mouthFunnel": 0.5, "jawOpen": 0.12, "mouthUpperUpLeft": 0.15, "mouthUpperUpRight": 0.15},
@@ -49,6 +49,10 @@ CORRECTIVES = {
     "cheekSquint_eyeBlinkLeft": ("cheekSquintLeft", "eyeBlinkLeft"), "cheekSquint_eyeBlinkRight": ("cheekSquintRight", "eyeBlinkRight"),
 }
 ALL_KEYS = ARKIT + list(VISEMES) + TONGUE + list(CORRECTIVES)  # 52 + 15 + 3 + 12 = 82
+# B+ / B-lite (CHARACTER-PIPELINE §4.3 table): 58 = ARKit 52 + tongueTipUp + 5 corrective keys (3 logical); visemes are
+# folded at runtime through VISEMES (they ARE ARKit channel mixes), with DD / nn also raising tongueTipUp
+BPLUS_KEYS = ARKIT + ["tongueTipUp", "jawOpen_mouthClose", "jawOpen_mouthSmileLeft", "jawOpen_mouthSmileRight",
+                      "eyeBlink_eyeLookDownLeft", "eyeBlink_eyeLookDownRight"]
 
 
 def smooth(e0, e1, x):
@@ -180,7 +184,7 @@ class Rig:
         A['jaw'] = wj
         a0 = PH['mouth_a'][0]
         front = (X[:, 1] < 0.02).astype(float)
-        A['mouth'] = gauss(X[:, [0, 2]], [0, mz], [0.026, 0.017]) * front
+        A['mouth'] = gauss(X[:, [0, 2]], [0, mz], [self.R.get('mouth_field_x', 0.026), 0.017]) * front
         A['cornerL'] = gauss(X[:, [0, 2]], [a0, mz + PH['mouth_rest_smile']], [0.011, 0.0095]) * front
         A['cornerR'] = gauss(X[:, [0, 2]], [-a0, mz + PH['mouth_rest_smile']], [0.011, 0.0095]) * front
         A['sideL'] = smooth(-0.004, 0.004, X[:, 0]); A['sideR'] = 1 - A['sideL']
@@ -215,9 +219,11 @@ class Rig:
               + g('eyeLookUp') * math.radians(R.get('lookup_lo_deg', 3.5)) - g('eyeLookDown') * math.radians(R.get('lookdown_lo_deg', 4.5))
               - g('eyeWide') * math.radians(R.get('wide_lo_deg', 2)) + w.get('mouthSmile' + tag, 0.0) * 0.12 * (ec - el))
         if clamp:
-            # the margins never cross the closing line (upper stays above, lower stays below)
-            du = np.maximum(du, (ec - ov - eu))
-            dl = np.minimum(dl, (ec - el) + 0.0)
+            # the margins never cross the closing line (upper stays above, lower stays below); the line itself follows
+            # the gaze, so blink + lookDown seals lower down instead of leaving a gap (r2: G4 0.43% leak)
+            sh = (-g('eyeLookDown') * math.radians(R.get('lookdown_lo_deg', 4.5)) + g('eyeLookUp') * math.radians(R.get('lookup_lo_deg', 3.5)))
+            du = np.maximum(du, (ec + sh - ov - eu))
+            dl = np.minimum(dl, (ec + sh - el) + 0.0)
         da = (g('eyeLookIn') * -1 + g('eyeLookOut')) * math.radians(R.get('lookside_deg', 3))
         wuM = wu[mask]; wlM = wl[mask]
         e2 = e + du * wuM + dl * wlM
@@ -237,7 +243,7 @@ class Rig:
             cw = A['corner' + ('L' if s > 0 else 'R')]; ch = A['cheek' + ('L' if s > 0 else 'R')]
             side = A['side' + ('L' if s > 0 else 'R')]
             sm = g('mouthSmile' + tag)
-            D += sm * (cw[:, None] * np.array([s * 0.0040, 0.0026, 0.0062]) + ch[:, None] * np.array([s * 0.0008, -0.0016, 0.0034]))
+            D += sm * (cw[:, None] * np.array(R.get('smile_corner', [0.0040, 0.0026, 0.0062])) * [s, 1, 1] + ch[:, None] * np.array(R.get('smile_cheek', [0.0008, -0.0016, 0.0034])) * [s, 1, 1])
             D += g('mouthFrown' + tag) * cw[:, None] * np.array([s * 0.0005, -0.0004, -0.0042])
             D += g('mouthDimple' + tag) * cw[:, None] * np.array([s * 0.001, 0.0022, 0.0002])
             D += g('mouthStretch' + tag) * (cw[:, None] * np.array([s * 0.0042, 0.0012, -0.0012]) + (A['lipU'] + A['lipL'])[:, None] * side[:, None] * np.array([s * 0.0012, 0.0004, 0]))
@@ -260,9 +266,9 @@ class Rig:
         fu = g('mouthFunnel')
         D += fu * (lipsum[:, None] * np.array([0, -0.0032, 0]) + (A['lipU'] * A['seam'])[:, None] * np.array([0, 0, 0.0022])
                    - (A['lipL'] * A['seam'])[:, None] * np.array([0, 0, 0.0024]))
-        D[:, 0] += fu * (-xs * 0.22) * A['mouth']
+        D[:, 0] += fu * (-xs * R.get('funnel_in', 0.22)) * A['mouth']
         pk = g('mouthPucker')
-        D[:, 0] += pk * (-xs * 0.42) * A['mouth']
+        D[:, 0] += pk * (-xs * R.get('pucker_in', 0.42)) * A['mouth']
         D += pk * lipsum[:, None] * np.array([0, -0.0042, 0]) + pk * A['mouth'][:, None] * np.array([0, -0.0012, 0])
         D[:, 0] += (g('mouthLeft') - g('mouthRight')) * 0.0052 * A['mouth']
         D += g('cheekPuff') * (A['cheekL'][:, None] * np.array([0.004, -0.0012, 0]) + A['cheekR'][:, None] * np.array([-0.004, -0.0012, 0]))
@@ -278,17 +284,19 @@ class Rig:
             c, s_ = np.cos(ang), np.sin(ang)
             return np.stack([Xa[:, 0], q[:, 1] * c - q[:, 2] * s_ + piv[1], q[:, 1] * s_ + q[:, 2] * c + piv[2]], 1)
         cl = g('mouthClose')
-        if cl:
-            lipw = np.clip(A['lipL'], 0, 1) * (1 - 0.5 * (A['lipU'] > 0))
-            Dfull = rot(X, thf * wj) - X
-            X = X - cl * Dfull * lipw[:, None] * R.get('close_gain', 1.0)
-            # the upper lip comes down a touch to meet it
-            X[:, 2] -= cl * 0.0006 * A['lipU'] * (A['lipL'] == 0)
+        Xpre = X.copy()
         th = thf * g('jawOpen')
         if th != 0 or g('jawForward') or g('jawLeft') or g('jawRight'):
             X = rot(X, th * wj)
             X[:, 1] += -g('jawForward') * 0.004 * wj
             X[:, 0] += (g('jawLeft') - g('jawRight')) * 0.004 * wj
+        if cl:
+            # r2: the close term is the full-jaw delta of the PRE-jaw positions, so jaw 1 + close 1 is exactly sealed and
+            # the jawOpen_mouthClose corrective is ~0 (r1: the corrective was 11 mm and opened a 1.5% leak at 0.3/0.3)
+            lipw = np.clip(np.maximum(A['lipL'], A['lipU']), 0, 1)
+            Dfull = rot(Xpre, thf * wj) - Xpre
+            X = X - cl * Dfull * lipw[:, None] * R.get('close_gain', 1.0)
+            X[:, 2] -= cl * 0.0006 * A['lipU'] * (A['lipL'] == 0)
         # ---- lids
         for s in (1, -1):
             X = self.lids(X, w, s, A[('lidU', s)], A[('lidL', s)], A[('lidT', s)])
@@ -386,12 +394,37 @@ def pose_meshes(rig, rests, w):
     return out
 
 
+def chord_fix(rig, X0, X1):
+    """G-partial (ported from Arm B): a linear morph moves a lid vertex along the CHORD, so at half weight a vertex that
+    slides over the ball would cut into it (the iris showed through the lid at half blink). Push the target out just
+    enough that the half-way point of every visible lid vertex stays outside the eyeball."""
+    X1 = X1.copy()
+    PH = rig.PH
+    for s in (1, -1):
+        c = np.array(PH['eye_c']) * [s, 1, 1]
+        q0 = X0 - c; q1 = X1 - c
+        r0 = np.linalg.norm(q0, axis=1); r1 = np.linalg.norm(q1, axis=1)
+        moved = np.linalg.norm(X1 - X0, axis=1) > 1e-7
+        vis = (r0 > PH['eye_r'] * 1.02) & (r0 < PH['eye_r'] * 1.6) & moved & (q0[:, 1] < 0)
+        if not vis.any():
+            continue
+        rt = PH['eye_r'] + rig.R.get('chord_margin', 0.0005)
+        ca = np.clip((q0 * q1).sum(1) / np.maximum(r0 * r1, 1e-12), -1, 1)
+        need = -r0 * ca + np.sqrt(np.maximum(r0 ** 2 * ca ** 2 - r0 ** 2 + 4 * rt ** 2, 0))
+        fix = vis & (need > r1)
+        X1[fix] = c + q1[fix] / r1[fix, None] * need[fix, None]
+    return X1
+
+
 def key_targets(rig, rests):
     """name -> {mesh: absolute positions} for all 82 keys."""
     zero = {k: v for k, v in rests.items()}
     T = {}
     for k in ARKIT + TONGUE:
         T[k] = pose_meshes(rig, rests, {k: 1.0})
+        if k.startswith('eye') or k.startswith('cheekSquint'):
+            for m in ('head', 'lash_L', 'lash_R'):
+                T[k][m] = chord_fix(rig, rests[m], T[k][m])
     for k, rec in VISEMES.items():
         T[k] = pose_meshes(rig, rests, rec)
     for k, (a, b) in CORRECTIVES.items():
@@ -401,7 +434,7 @@ def key_targets(rig, rests):
     return T
 
 
-def author(objs, L, M, P):
+def author(objs, L, M, P, tier='H'):
     import bpy
     names = ['head', 'lash_L', 'lash_R', 'brow_L', 'brow_R', 'teeth_L', 'tongue', 'bindi']
     rests = {}
@@ -416,7 +449,7 @@ def author(objs, L, M, P):
     for n in names:
         ob = objs[n]
         ob.shape_key_add(name='Basis', from_mix=False)
-        for k in ALL_KEYS:
+        for k in (ALL_KEYS if tier == 'H' else BPLUS_KEYS):
             kb = ob.shape_key_add(name=k, from_mix=False)
             kb.data.foreach_set('co', T[k][n].astype(np.float32).ravel())
             kb.slider_min = 0.0; kb.slider_max = 1.0

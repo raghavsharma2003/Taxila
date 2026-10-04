@@ -1,0 +1,192 @@
+<style>
+  :root{
+    --bg:#f4f8ff;--card:#ffffff;--ink:#1f2a44;--muted:#61739a;--grid:#d8e4f5;--axis:#8ea5ca;
+    --col:#e9f1ff;--bar:#5aa9ff;--barPress:#3f90ea;--good:#1f9d55;--bad:#d64545;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink)}
+  #app{max-width:420px;margin:0 auto;padding:12px}
+  .card{background:var(--card);border-radius:18px;padding:12px;box-shadow:0 8px 22px rgba(31,42,68,.08)}
+  #title{margin:4px 0 8px;text-align:center;font-size:22px;font-weight:800;line-height:1.2}
+  #ask{margin:0 0 10px;text-align:center;font-size:18px;font-weight:700;min-height:24px}
+  #chartWrap{background:linear-gradient(180deg,#fbfdff 0%,#f3f8ff 100%);border-radius:14px;padding:4px}
+  #chart{display:block;width:100%;height:auto}
+  .tick-line{stroke:var(--grid);stroke-width:1.2}
+  .axis-line{stroke:var(--axis);stroke-width:1.6}
+  .tick-label{fill:var(--muted);font-size:12px;font-weight:700}
+  .axis-title{fill:var(--muted);font-size:12px;font-weight:700}
+  .x-label{fill:var(--ink);font-size:13px;font-weight:700}
+  .bar-col{fill:var(--col);transition:transform .14s ease}
+  .bar-fill{
+    fill:var(--bar);rx:10;ry:10;
+    transition:y .8s cubic-bezier(.2,.8,.2,1),height .8s cubic-bezier(.2,.8,.2,1),transform .14s ease,fill .2s ease;
+    transform-box:fill-box;transform-origin:center bottom;
+  }
+  .active .bar-col,.active .bar-fill{transform:scale(1.03)}
+  .active .bar-fill{fill:var(--barPress)}
+  .tapzone{fill:transparent;cursor:pointer}
+  .tapzone.locked{cursor:default}
+  #bubble{opacity:0;transform:translateY(4px);transition:opacity .2s ease,transform .2s ease;pointer-events:none}
+  #bubble.show{opacity:1;transform:translateY(0)}
+  .bubble-bg{fill:#1f2a44}
+  .bubble-t{fill:#fff;font-size:12px;font-weight:800;text-anchor:middle;dominant-baseline:middle}
+  #feedback{min-height:24px;margin-top:10px;text-align:center;font-size:18px;font-weight:800}
+  #feedback.good{color:var(--good)} #feedback.bad{color:var(--bad)}
+</style>
+
+<div id="app">
+  <div class="card">
+    <div id="title"></div>
+    <div id="ask"></div>
+    <div id="chartWrap">
+      <svg id="chart" viewBox="0 0 360 360" aria-label="">
+        <g id="layers"></g>
+      </svg>
+    </div>
+    <div id="feedback" aria-live="polite"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const data = (Studio.params && Studio.params.data) ? Studio.params.data.slice() : [];
+  const NS='http://www.w3.org/2000/svg';
+  const svg=document.getElementById('chart');
+  const layers=document.getElementById('layers');
+  const titleEl=document.getElementById('title');
+  const askEl=document.getElementById('ask');
+  const feedbackEl=document.getElementById('feedback');
+
+  titleEl.textContent=Studio.t('title');
+  askEl.textContent=Studio.t('ask');
+
+  const W=360,H=360,m={top:20,right:14,bottom:66,left:52};
+  const plotW=W-m.left-m.right, plotH=H-m.top-m.bottom, baselineY=m.top+plotH;
+
+  const vals=data.map(d=>d.value);
+  const maxVal=Math.max.apply(null, vals.concat([1]));
+  function niceStep(v){
+    const rough=v/5;
+    const p=Math.pow(10,Math.floor(Math.log10(rough)));
+    const u=rough/p;
+    return (u<=1?1:u<=2?2:u<=5?5:10)*p;
+  }
+  const step=niceStep(maxVal);
+  const tickMax=Math.ceil(maxVal/step)*step;
+  const yFor=v=>m.top+(1-(v/tickMax))*plotH;
+
+  function el(n,a,p){
+    const node=document.createElementNS(NS,n);
+    if(a){for(const k in a) node.setAttribute(k,a[k]);}
+    if(p)p.appendChild(node);
+    return node;
+  }
+
+  for(let t=0;t<=tickMax;t+=step){
+    const y=yFor(t);
+    el('line',{x1:m.left,y1:y,x2:m.left+plotW,y2:y,class:'tick-line'},layers);
+    const tx=el('text',{x:m.left-8,y:y+4,class:'tick-label','text-anchor':'end','data-tick':String(t)},layers);
+    tx.textContent=String(t);
+  }
+
+  el('line',{x1:m.left,y1:m.top,x2:m.left,y2:baselineY,class:'axis-line'},layers);
+  el('line',{x1:m.left,y1:baselineY,x2:m.left+plotW,y2:baselineY,class:'axis-line'},layers);
+
+  const axisTitle=el('text',{x:16,y:m.top+plotH/2,class:'axis-title',transform:'rotate(-90 16 '+(m.top+plotH/2)+')'},layers);
+  axisTitle.textContent=Studio.t('yaxis');
+
+  const g=el('g',{},layers);
+  const slot=plotW/data.length;
+  const colW=Math.max(44,Math.min(56,slot-6));
+  const fillW=Math.max(24,colW-14);
+  const bars=[];
+
+  data.forEach((d,i)=>{
+    const cx=m.left+i*slot+slot/2;
+    const colX=cx-colW/2;
+    const fillX=cx-fillW/2;
+    const h=(d.value/tickMax)*plotH;
+    const yTarget=baselineY-h;
+
+    const wrap=el('g',{},g);
+    const col=el('rect',{
+      x:colX,y:m.top,width:colW,height:plotH,rx:12,ry:12,
+      class:'bar-col',
+      'data-bar':d.key,
+      'data-value':String(d.value)
+    },wrap);
+
+    const fill=el('rect',{
+      x:fillX,y:baselineY,width:fillW,height:0,class:'bar-fill'
+    },wrap);
+
+    const tap=el('rect',{
+      x:colX,y:m.top,width:colW,height:plotH,class:'tapzone',tabindex:'0'
+    },wrap);
+
+    const xl=el('text',{x:cx,y:baselineY+24,class:'x-label','text-anchor':'middle'},g);
+    xl.textContent=Studio.t(d.key);
+
+    bars.push({key:d.key,value:d.value,wrap,fill,tap,cx,yTarget,h});
+  });
+
+  const bubble=el('g',{id:'bubble'},layers);
+  const bubbleBg=el('rect',{class:'bubble-bg',x:0,y:0,width:34,height:24,rx:8,ry:8},bubble);
+  const bubbleT=el('text',{class:'bubble-t',x:17,y:12},bubble);
+
+  function showValue(cx, yTop, val){
+    const s=String(val); bubbleT.textContent=s;
+    const bw=Math.max(34,14+s.length*9), by=Math.max(4,yTop-30);
+    bubbleBg.setAttribute('width',bw);
+    bubbleBg.setAttribute('x',cx-bw/2);
+    bubbleBg.setAttribute('y',by);
+    bubbleT.setAttribute('x',cx);
+    bubbleT.setAttribute('y',by+12);
+    bubble.setAttribute('class','show');
+  }
+
+  let locked=false, sent=false;
+  function pick(b){
+    if(locked) return;
+    bars.forEach(x=>x.wrap.classList.remove('active'));
+    b.wrap.classList.add('active');
+    showValue(b.cx,b.yTarget,b.value);
+    Studio.event('bar_tap',{key:b.key,value:b.value});
+    if(!sent){ sent=true; Studio.answer(b.key); }
+  }
+
+  bars.forEach(b=>{
+    b.tap.addEventListener('click',()=>pick(b));
+    b.tap.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(b);}
+    });
+  });
+
+  requestAnimationFrame(()=>{
+    bars.forEach((b,i)=>{
+      setTimeout(()=>{
+        b.fill.setAttribute('y',b.yTarget);
+        b.fill.setAttribute('height',b.h);
+      },i*70);
+    });
+  });
+
+  Studio.onVerdict(v=>{
+    if(v&&v.correct){
+      locked=true;
+      bars.forEach(b=>b.tap.classList.add('locked'));
+      feedbackEl.className='good';
+      feedbackEl.textContent=Studio.t('right');
+      askEl.textContent=Studio.t('done');
+      Studio.done();
+    }else{
+      sent=false;
+      feedbackEl.className='bad';
+      feedbackEl.textContent=Studio.t('wrong');
+      bars.forEach(b=>b.wrap.classList.remove('active'));
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

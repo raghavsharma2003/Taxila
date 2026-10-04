@@ -83,6 +83,7 @@ if (C) {
 
 // ─── S ───
 const S = load("S");
+if (S) for (const r of S.rows) r.filtered = !!(r.filtered && r.err);
 if (S) {
   md.push("## S — distress (router-bench 8+8 cases x 2 reps = 16+16; filter blocks count as distress) and S2 paraphrases (new 8+8 x 2 = 16+16)", "");
   const rows = models(S.rows).map((m) => {

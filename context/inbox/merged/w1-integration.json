@@ -1,0 +1,30 @@
+{
+ "nodes": [
+  {
+   "id": "w1-integration-local-2026-10-04",
+   "kind": "measurement",
+   "title": "Wave 1 integration, combined tree with all four seam patches applied (w1b-lesson-wiring, w1c-lesson-early-grade, w1c-state-reteach, w1f-serve-assets-404), local serve.mjs + worker on the Neon test branch: tests/prod/run.mjs --wave 1 run file by file, 13/13 files PASS (w0-smoke 5/5, w1a-battery 16/16, w1a-practice-ask 23/23, w1a-text-voice 3/3 p50 210 ms sandbox, w1a-young-text 14/14, w1b-mounts 52/52, w1b-tray 10/10, w1c-reteach 13/13, w1c-three-day 22/22 + 1 warn, w1c-settle 8/8 at default size n=13 held 13 settled, w1d-conductor 11/11, w1d-eyes 12/12, w1f-face 32/32); leftover test guardians 4 -> 4 in all 25 checks. npm test 1198/1202 pass, only failure migrations-applied (prod lacks 012, 013, 015)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1-integration-probe-image-text-voice",
+   "kind": "decision",
+   "title": "Integration added tests/prod/w1a-text-voice.mjs to the probe image (infra/probes/Dockerfile COPY and deploy.mjs files list, W1-D files) so W1-A's text-lane p50 bar can run from Azure with TAXILA_PROBE=1. Reverse if the probe image moves to copying all of tests/prod",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1-open-settle-late-correction-vacuous",
+   "kind": "open",
+   "title": "w1c-settle's 'unsettled verdict is applied as a late correction' check passes 0/0 when every verdict settles in time, so the late-correction path is not exercised by the prod battery; needs a forced-slow-grader arm",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1-open-worker-deleted-child-steps",
+   "kind": "open",
+   "title": "The worker logs 'step failed' (no child / conductor_state FK violation) for test children deleted by DELETE /api/account mid-step, then retries; harmless locally but noise in prod logs and a retry loop on a gone child",
+   "at": "2026-10-04"
+  }
+ ],
+ "edges": [],
+ "md": ""
+}

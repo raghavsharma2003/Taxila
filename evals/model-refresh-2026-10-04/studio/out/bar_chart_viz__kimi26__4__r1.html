@@ -1,0 +1,151 @@
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { margin: 0; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif; background: #FFF8F0; color: #3E2723; overflow-x: hidden; }
+.app { width: 100%; max-width: 360px; margin: 0 auto; padding: 16px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+.title { font-size: 22px; font-weight: 800; text-align: center; margin: 8px 0 12px; line-height: 1.2; color: #4E342E; }
+.ask { font-size: 16px; font-weight: 600; text-align: center; margin: 0 0 20px; color: #5D4037; min-height: 24px; }
+.chart-stage { position: relative; width: 100%; height: 340px; margin-bottom: 20px; }
+.y-col { position: absolute; left: 0; top: 0; bottom: 0; width: 36px; }
+.y-title { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-90deg); transform-origin: center center; white-space: nowrap; font-size: 11px; font-weight: 700; color: #8D6E63; letter-spacing: 0.5px; }
+.ticks { position: absolute; top: 0; left: 0; right: 0; bottom: 36px; }
+.tick-label { position: absolute; right: 6px; transform: translateY(50%); font-size: 11px; color: #8D6E63; font-weight: 600; line-height: 1; }
+.plot-col { position: absolute; left: 36px; top: 0; right: 0; bottom: 0; }
+.plot { position: absolute; top: 0; left: 0; right: 0; bottom: 36px; border-left: 2px solid #8D6E63; border-bottom: 2px solid #8D6E63; background: #FFFFFF; border-radius: 0 8px 0 0; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04); }
+.gridlines { position: absolute; inset: 0; pointer-events: none; }
+.gridline { position: absolute; left: 0; right: 0; border-top: 1px dashed #E0E0E0; }
+.bars-layer { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: space-around; padding: 0 4px; }
+.bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; position: relative; }
+.bar { width: 48px; height: 0; background: #FFB74D; border-radius: 8px 8px 0 0; cursor: pointer; transition: height 1s cubic-bezier(0.22, 1, 0.36, 1), filter 0.2s, transform 0.15s; position: relative; }
+.bar.grown { height: var(--h); }
+.bar:active { transform: scale(0.96); filter: brightness(1.1); }
+.bar-tip { margin-bottom: 6px; font-size: 14px; font-weight: 800; color: #3E2723; opacity: 0; transform: translateY(8px); transition: opacity 0.3s ease, transform 0.3s ease; pointer-events: none; }
+.bar-wrapper.revealed .bar-tip { opacity: 1; transform: translateY(0); }
+.x-labels { position: absolute; left: 0; right: 0; bottom: 0; height: 36px; display: flex; align-items: center; justify-content: space-around; padding: 0 4px; }
+.x-label { font-size: 13px; font-weight: 700; color: #5D4037; text-align: center; flex: 1; line-height: 1.2; user-select: none; }
+.feedback { margin-top: 4px; font-size: 18px; font-weight: 800; text-align: center; min-height: 28px; opacity: 0; transition: opacity 0.4s ease; width: 100%; }
+.feedback.show { opacity: 1; }
+.feedback.right { color: #2E7D32; }
+.feedback.wrong { color: #C62828; }
+.done { margin-top: 8px; font-size: 18px; font-weight: 800; text-align: center; color: #1565C0; opacity: 0; transition: opacity 0.5s ease; min-height: 28px; width: 100%; }
+.done.show { opacity: 1; }
+</style>
+
+<div class="app">
+  <div class="title" id="title"></div>
+  <div class="ask" id="ask"></div>
+  <div class="chart-stage" id="chart-stage">
+    <div class="y-col">
+      <div class="y-title" id="yaxis-title"></div>
+      <div class="ticks" id="ticks"></div>
+    </div>
+    <div class="plot-col">
+      <div class="plot" id="plot">
+        <div class="gridlines" id="gridlines"></div>
+        <div class="bars-layer" id="bars-layer"></div>
+      </div>
+      <div class="x-labels" id="x-labels"></div>
+    </div>
+  </div>
+  <div class="feedback" id="feedback"></div>
+  <div class="done" id="done"></div>
+</div>
+
+<script>
+(function() {
+  var data = Studio.params.data;
+  var maxValue = Math.max.apply(null, data.map(function(d) { return d.value; }));
+  var tickStep = Math.max(1, Math.ceil(maxValue / 5));
+  var maxTick = Math.max(1, Math.ceil(maxValue / tickStep) * tickStep);
+
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('ask').textContent = Studio.t('ask');
+  document.getElementById('yaxis-title').textContent = Studio.t('yaxis');
+
+  var ticksContainer = document.getElementById('ticks');
+  var gridlinesContainer = document.getElementById('gridlines');
+  for (var v = 0; v <= maxTick; v += tickStep) {
+    var tick = document.createElement('div');
+    tick.className = 'tick-label';
+    tick.dataset.tick = v;
+    tick.textContent = v;
+    tick.style.bottom = (v / maxTick * 100) + '%';
+    if (v === 0) {
+      tick.style.transform = 'translateY(0)';
+    }
+    ticksContainer.appendChild(tick);
+    if (v > 0) {
+      var line = document.createElement('div');
+      line.className = 'gridline';
+      line.style.bottom = (v / maxTick * 100) + '%';
+      gridlinesContainer.appendChild(line);
+    }
+  }
+
+  var barsLayer = document.getElementById('bars-layer');
+  var xLabels = document.getElementById('x-labels');
+  var isLocked = false;
+
+  Studio.onVerdict(function(result) {
+    var fb = document.getElementById('feedback');
+    if (result.correct) {
+      fb.textContent = Studio.t('right');
+      fb.className = 'feedback show right';
+      setTimeout(function() {
+        fb.classList.remove('show');
+        var doneEl = document.getElementById('done');
+        doneEl.textContent = Studio.t('done');
+        doneEl.classList.add('show');
+        Studio.done();
+      }, 800);
+    } else {
+      fb.textContent = Studio.t('wrong');
+      fb.className = 'feedback show wrong';
+      setTimeout(function() {
+        fb.classList.remove('show');
+        isLocked = false;
+      }, 1000);
+    }
+  });
+
+  data.forEach(function(d) {
+    var wrap = document.createElement('div');
+    wrap.className = 'bar-wrapper';
+    var tip = document.createElement('div');
+    tip.className = 'bar-tip';
+    tip.textContent = d.value;
+    var bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.dataset.bar = d.key;
+    bar.dataset.value = d.value;
+    bar.style.setProperty('--h', (d.value / maxTick * 100) + '%');
+    bar.addEventListener('click', function() {
+      if (isLocked) return;
+      wrap.classList.add('revealed');
+      isLocked = true;
+      Studio.event('bar_tap', { key: d.key });
+      Studio.answer(d.key);
+    });
+    wrap.appendChild(tip);
+    wrap.appendChild(bar);
+    barsLayer.appendChild(wrap);
+
+    var lbl = document.createElement('div');
+    lbl.className = 'x-label';
+    lbl.textContent = Studio.t(d.key);
+    xLabels.appendChild(lbl);
+  });
+
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      var bars = barsLayer.querySelectorAll('.bar');
+      bars.forEach(function(bar, i) {
+        setTimeout(function() {
+          bar.classList.add('grown');
+        }, i * 80);
+      });
+    });
+  });
+
+  Studio.ready();
+})();
+</script>

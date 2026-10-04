@@ -28,11 +28,12 @@ page.on("console", (m) => { if (m.type() === "error" || m.type() === "warning") 
 page.on("pageerror", (e) => errors.push(String(e)));
 if (process.env.AOLIFT) await page.addInitScript((v) => { globalThis.AOLIFT = +v; }, process.env.AOLIFT);
 await page.goto(`${url}/scripts/character/stylised/r2/viewer/index.html?w=${size}&h=${size}`);
-await page.waitForFunction(() => window.TX_READY === true, null, { timeout: 120000 });
+await page.waitForFunction(() => window.TX_READY === true, null, { timeout: 30000 });
 const glbUrl = "/@fs" + path.resolve(glb);
 const info = await page.evaluate(([u, t]) => TX.load(u, t), [glbUrl, tier]);
 console.log(JSON.stringify(info));
 const canvas = await page.$("canvas");
+if (process.env.HIDE) await page.evaluate((h) => TX.hide(h.split(",")), process.env.HIDE);
 if (process.env.WIRE) await page.evaluate(() => TX.wire(true));
 for (const it of items.length ? items : ["front"]) {
   let file;

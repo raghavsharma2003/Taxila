@@ -953,3 +953,40 @@ infra/gate.mjs wrote a failed --allow-dirty run as `<sha>.json {pass:false}`, an
 
 ## `voice-blind-spliced-breaths-rejected` (2026-10-04)
 Tried: splicing breath, hum and exhale clips (rendered offline from the Omni twin) into DragonHD and gpt-4o-mini-tts audio at planned pauses. Broke: both blind raters heard "random exhale" or "moaning", a timbre that did not match the voice, and broken flow; the clipped renders lost to the same voice without clips. Only an in-context laugh on a joke line was liked, and its hand-off into the next sentence was awkward.
+
+
+<!-- merged from inbox/model-refresh-studio.json -->
+## kimi-capacity-for-live
+**Tried (2026-10-04):** Kimi-K2.7-Code (once more, per O-3) and Kimi-K2.6 as live Studio arms, 24k token cap. **Broke:** first reasoning token at ~1 s but first code token at 60-163 s p50, so the latency is reasoning, which no capacity raise removes; K2.7-Code was dropped after two 300 s generation timeouts (fraction 3/3 after repair but 287 s p50); K2.6 hit the 24k length cap in 13 rounds and passed 8/15 at 180 s p50. **Revisit if** Foundry offers a reasoning-off or reasoning-budget control for Kimi, or a Kimi with first code token under 15 s.
+
+## mistral-m35-ds4f0731-for-live-builds
+**Tried (2026-10-04, n=5 per archetype):** mistral-medium-3-5 and DeepSeek-V4-Flash-0731 as Studio build arms. **Broke:** mistral 0/15 first try, 3/15 after repair (fraction only; fails play_all_items_truth/done_called); ds4f-0731 3/15 (fraction only), 0/5 photosynthesis, 0/5 chart (axis_ticks_tell_truth, targets_ge_40px). Fastest TTFT (0.7-1.4 s) did not help. **Revisit** at the next monthly router bench.
+
+## live-studio-repair-prompt-crash
+**Found (2026-10-04):** `repairPrompt` in evals/live-studio/run.mjs calls `JSON.stringify(c.detail).slice`; when a check's detail is undefined (bar chart `tap_answer_truth` with no answer posted) it throws, the job is never recorded, and failing builds silently vanish from the pass rates. 4/189 jobs hit it here; the studio refresh harness guards it (`String(JSON.stringify(c.detail ?? "") ?? "")`), rebuilt 1 job from the log and re-ran 3 (all failed again, so conservative and resampled counts agree). Fix the same line in evals/live-studio/run.mjs before the router bench (S10) reuses it.
+
+
+<!-- merged from inbox/model-scout-speech.json -->
+## rj-aws-transcribe-all-modes
+Tried: Amazon Transcribe streaming from ap-south-1 as live child STT, in five configurations on the stt-hinglish v2 corpus (n=180 each): hi-IN, en-IN, identify_multiple_languages hi+en, identify_language (one per stream), and hi-IN + a custom vocabulary of D4's 22 keyword terms.
+
+What broke:
+- Best mode (multi-LID) gets 64/78 answers vs 74/78 (Azure RT LID) and 76/78 (D4), and 3/12 English numbers. English answers are often written in Devanagari.
+- Final text 2.28 s after speech end vs 0.88 s (R4) and 1.32 s (D4). A concurrency-1 control (2.25 s) shows this is service-side.
+- Single LID returns nothing on 41/180 clips: every clip under ~2.6 s, i.e. a short child answer becomes a silent child.
+- The custom vocabulary moves hi-IN CER 0.086 -> 0.077 and numbers 67 -> 66: no real gain.
+
+The earlier scout T3 failure (183/183 errors) was a client bug, now fixed: language_options was passed as a string and language_code=None was missing. Supersedes rj-aws-transcribe-live-stt.
+
+## rj-polly-teacher-voice
+Tried: Amazon Polly Kajal (neural from Mumbai, generative from us-east-1) as the cascade teacher voice, on the 5 HUMAN-VOICE Hinglish lines against DragonHD Diya.
+
+What broke:
+- Only one Hindi-capable voice (female). There is nothing for Arjun or Uma under `voice-one-identity-across-lanes`.
+- The generative engine is not offered in Mumbai.
+- It cannot render laughs or breaths.
+- The AI judge gave Polly 0 wins in 40 position-swapped votes against Diya (33 ties).
+- Neural pauses are as uniform as plain DragonHD (SD 0.054 s), the known robotic tell.
+- ASR of generative renders shows 6 possible word changes in 5 lines, including बटा heard as बता twice in a fractions line (not yet verified by ear).
+
+Its one win, first byte (~35 ms server time from Mumbai), does not matter: Diya is already at ~110-190 ms.

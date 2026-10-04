@@ -50,7 +50,10 @@ const filterBody = (j, txt) => {
   const e = j?.error ?? {};
   return e.code === "content_filter" || e.innererror?.code === "ResponsibleAIPolicyViolation" || e.code === "ResponsibleAIPolicyViolation"
     || e.code === "content_safety_violation" || !!j?.choices?.some?.((c) => c?.finish_reason === "content_filter")
-    || /content management policy|content_filter|content_safety/i.test(String(e.message ?? txt ?? ""));
+    || /content management policy|content_safety|"code":\s*"content_filter"/i.test(String(e.message ?? "") + (j?.error ? String(txt ?? "") : ""));
+  // NOTE (fixed mid-run 2026-10-04): the first version tested the whole body for /content_filter/, which matches the
+  // content_filter_results key on EVERY Azure OpenAI 200. Scores were unaffected (a parsed answer wins); analyze.mjs
+  // recounts blocks as filtered && err.
 };
 
 async function call(model, messages, { maxTokens = 400, effort, schema, json = false, stream = false, timeoutMs = 90000 } = {}) {

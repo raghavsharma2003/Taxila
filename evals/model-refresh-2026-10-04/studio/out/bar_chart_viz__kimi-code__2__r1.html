@@ -1,0 +1,350 @@
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  .app {
+    min-height: 100vh;
+    background: #FDF6E3;
+    color: #4A3B2A;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  }
+  h1 {
+    margin: 0 0 8px 0;
+    font-size: 1.25rem;
+    line-height: 1.3;
+  }
+  .question {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.4;
+    color: #5D4037;
+  }
+  .chart-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 320px;
+  }
+  .chart-wrap {
+    width: 100%;
+    flex: 1;
+    min-height: 260px;
+    position: relative;
+  }
+  #chart {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .gridline {
+    stroke: #E0D4C5;
+    stroke-width: 1;
+  }
+  .gridline.baseline {
+    stroke: #8D6E63;
+    stroke-width: 2;
+  }
+  .tick-label {
+    fill: #8D6E63;
+    font-size: 12px;
+    font-weight: 600;
+    text-anchor: end;
+    dominant-baseline: middle;
+  }
+  .y-axis-title {
+    fill: #8D6E63;
+    font-size: 12px;
+    font-weight: 700;
+    text-anchor: middle;
+  }
+  .bar-rect {
+    fill: url(#barGradient);
+    rx: 8;
+    cursor: pointer;
+    y: var(--y);
+    height: var(--h);
+    transition: y 0.8s cubic-bezier(0.34, 1.56, 0.64, 1),
+                height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1),
+                filter 0.15s ease;
+  }
+  .bar-rect.intro {
+    y: var(--base-y);
+    height: 0;
+  }
+  .bar-rect:hover {
+    filter: brightness(1.08);
+  }
+  .bar-group.selected .bar-rect {
+    filter: brightness(1.12);
+    stroke: rgba(255,255,255,0.9);
+    stroke-width: 3;
+  }
+  .bar-label {
+    fill: #5D4037;
+    font-size: 13px;
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: hanging;
+  }
+  .bar-value {
+    fill: #4A3B2A;
+    font-size: 14px;
+    font-weight: 800;
+    text-anchor: middle;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+  }
+  .bar-group.selected .bar-value {
+    opacity: 1;
+  }
+  .feedback {
+    min-height: 52px;
+    border-radius: 18px;
+    padding: 14px 18px;
+    font-weight: 800;
+    font-size: 1rem;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: all 0.3s ease;
+  }
+  .feedback.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .feedback.success {
+    background: #D4EDDA;
+    color: #155724;
+  }
+  .feedback.error {
+    background: #F8D7DA;
+    color: #721C24;
+  }
+</style>
+
+<div class="app">
+  <div class="card">
+    <h1 id="title"></h1>
+    <p id="ask" class="question"></p>
+  </div>
+  <div class="chart-card">
+    <div class="chart-wrap" id="chartWrap">
+      <svg id="chart" role="img"></svg>
+    </div>
+  </div>
+  <div id="feedback" class="feedback" aria-live="polite"></div>
+</div>
+
+<script>
+(function(){
+  var params = Studio.params;
+  var data = params.data;
+  var svg = document.getElementById('chart');
+  var wrap = document.getElementById('chartWrap');
+  var feedbackEl = document.getElementById('feedback');
+  var titleEl = document.getElementById('title');
+  var askEl = document.getElementById('ask');
+
+  titleEl.textContent = Studio.t('title');
+  askEl.textContent = Studio.t('ask');
+
+  var values = data.map(function(d){ return d.value; });
+  var maxVal = Math.max.apply(null, values);
+
+  function niceStep(max){
+    var steps = [1,2,5,10,20,50,100,200,500,1000];
+    var step = 1;
+    for (var i = 0; i < steps.length; i++){
+      if (max / steps[i] <= 8){
+        step = steps[i];
+        break;
+      }
+      step = steps[i];
+    }
+    return step;
+  }
+
+  var step = niceStep(maxVal);
+  var scaleMax = Math.ceil(maxVal / step) * step || step;
+
+  var rect = wrap.getBoundingClientRect();
+  var W = rect.width || 320;
+  var H = rect.height || 300;
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+  var NS = 'http://www.w3.org/2000/svg';
+  var margin = { top: 34, right: 16, bottom: 50, left: 54 };
+  var plotLeft = margin.left;
+  var plotRight = W - margin.right;
+  var plotTop = margin.top;
+  var plotBottom = H - margin.bottom;
+  var plotWidth = Math.max(0, plotRight - plotLeft);
+  var plotHeight = Math.max(0, plotBottom - plotTop);
+
+  var defs = document.createElementNS(NS, 'defs');
+  var grad = document.createElementNS(NS, 'linearGradient');
+  grad.setAttribute('id', 'barGradient');
+  grad.setAttribute('x1', '0');
+  grad.setAttribute('y1', '0');
+  grad.setAttribute('x2', '0');
+  grad.setAttribute('y2', '1');
+  var stop1 = document.createElementNS(NS, 'stop');
+  stop1.setAttribute('offset', '0%');
+  stop1.setAttribute('stop-color', '#FFB347');
+  var stop2 = document.createElementNS(NS, 'stop');
+  stop2.setAttribute('offset', '100%');
+  stop2.setAttribute('stop-color', '#FF8C42');
+  grad.appendChild(stop1);
+  grad.appendChild(stop2);
+  defs.appendChild(grad);
+  svg.appendChild(defs);
+
+  var v;
+  for (v = 0; v <= scaleMax; v += step){
+    var y = plotBottom - (v / scaleMax) * plotHeight;
+    var line = document.createElementNS(NS, 'line');
+    line.setAttribute('x1', plotLeft);
+    line.setAttribute('x2', plotRight);
+    line.setAttribute('y1', y);
+    line.setAttribute('y2', y);
+    line.setAttribute('class', v === 0 ? 'gridline baseline' : 'gridline');
+    svg.appendChild(line);
+    if (v > 0){
+      var tick = document.createElementNS(NS, 'text');
+      tick.setAttribute('class', 'tick-label');
+      tick.setAttribute('data-tick', v);
+      tick.setAttribute('x', plotLeft - 8);
+      tick.setAttribute('y', y);
+      tick.setAttribute('dominant-baseline', 'middle');
+      tick.textContent = v;
+      svg.appendChild(tick);
+    }
+  }
+
+  var yTitle = document.createElementNS(NS, 'text');
+  yTitle.setAttribute('class', 'y-axis-title');
+  var yTitleY = plotTop + plotHeight / 2;
+  yTitle.setAttribute('x', 18);
+  yTitle.setAttribute('y', yTitleY);
+  yTitle.setAttribute('transform', 'rotate(-90, 18, ' + yTitleY + ')');
+  yTitle.textContent = Studio.t('yaxis');
+  svg.appendChild(yTitle);
+
+  var n = data.length;
+  var minBar = 44;
+  var maxBar = 56;
+  var gap = Math.max(10, plotWidth * 0.08 / (n - 1 || 1));
+  var barWidth = Math.max(minBar, Math.min(maxBar, (plotWidth - gap * (n - 1)) / n));
+  var totalBars = n * barWidth + (n - 1) * gap;
+  var startX = plotLeft + (plotWidth - totalBars) / 2;
+
+  var selectedGroup = null;
+  var finished = false;
+
+  function makeBar(item, i){
+    var h = (item.value / scaleMax) * plotHeight;
+    var x = startX + i * (barWidth + gap);
+    var y = plotBottom - h;
+    var cx = x + barWidth / 2;
+
+    var g = document.createElementNS(NS, 'g');
+    g.setAttribute('class', 'bar-group');
+
+    var valueText = document.createElementNS(NS, 'text');
+    valueText.setAttribute('class', 'bar-value');
+    valueText.setAttribute('x', cx);
+    valueText.setAttribute('y', y - 10);
+    valueText.textContent = item.value;
+
+    var bar = document.createElementNS(NS, 'rect');
+    bar.setAttribute('class', 'bar-rect intro');
+    bar.setAttribute('data-bar', item.key);
+    bar.setAttribute('data-value', item.value);
+    bar.setAttribute('x', x);
+    bar.setAttribute('y', y);
+    bar.setAttribute('width', barWidth);
+    bar.setAttribute('height', h);
+    bar.style.setProperty('--h', h + 'px');
+    bar.style.setProperty('--y', y + 'px');
+    bar.style.setProperty('--base-y', plotBottom + 'px');
+    bar.setAttribute('role', 'button');
+    bar.setAttribute('tabindex', '0');
+    bar.setAttribute('aria-label', Studio.t(item.key));
+
+    var label = document.createElementNS(NS, 'text');
+    label.setAttribute('class', 'bar-label');
+    label.setAttribute('x', cx);
+    label.setAttribute('y', plotBottom + 22);
+    label.setAttribute('dominant-baseline', 'hanging');
+    label.textContent = Studio.t(item.key);
+
+    g.appendChild(valueText);
+    g.appendChild(bar);
+    g.appendChild(label);
+    svg.appendChild(g);
+
+    function select(){
+      if (finished) return;
+      feedbackEl.className = 'feedback';
+      if (selectedGroup && selectedGroup !== g){
+        selectedGroup.classList.remove('selected');
+      }
+      selectedGroup = g;
+      g.classList.add('selected');
+      Studio.event('bar_tap', { key: item.key, value: item.value });
+      Studio.answer(item.key);
+    }
+
+    bar.addEventListener('click', select);
+    bar.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        select();
+      }
+    });
+  }
+
+  data.forEach(makeBar);
+
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      var intros = svg.querySelectorAll('.bar-rect.intro');
+      for (var k = 0; k < intros.length; k++){
+        intros[k].classList.remove('intro');
+      }
+    });
+  });
+
+  Studio.onVerdict(function(result){
+    if (finished) return;
+    if (result && result.correct){
+      finished = true;
+      feedbackEl.textContent = '\u2713 ' + Studio.t('right') + ' ' + Studio.t('done');
+      feedbackEl.className = 'feedback success show';
+      Studio.event('verdict', { correct: true });
+      Studio.done();
+    } else {
+      feedbackEl.textContent = Studio.t('wrong');
+      feedbackEl.className = 'feedback error show';
+      Studio.event('verdict', { correct: false });
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

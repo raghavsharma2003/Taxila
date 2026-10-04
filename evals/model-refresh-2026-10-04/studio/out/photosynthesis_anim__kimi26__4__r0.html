@@ -1,0 +1,59 @@
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { margin: 0; width: 360px; height: 640px; overflow: hidden; background: linear-gradient(180deg,#E1F5FE 0%,#E8F5E9 100%); font-family: sans-serif; color: #333; user-select: none; }
+#app { width: 100%; height: 100%; display: flex; flex-direction: column; }
+#title { text-align: center; font-size: 18px; font-weight: 700; color: #1B5E20; padding: 8px 6px 4px; line-height: 1.2; flex-shrink: 0; }
+svg { width: 100%; height: 340px; flex-shrink: 0; display: block; }
+text { font-family: sans-serif; pointer-events: none; }
+#controls { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; gap: 8px; flex-shrink: 0; }
+#playBtn { min-width: 64px; height: 44px; border-radius: 12px; border: none; background: #43A047; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: transform .1s, background .2s; }
+#playBtn:active { transform: scale(0.95); }
+#steps { display: flex; gap: 6px; flex: 1; justify-content: center; }
+#steps button { width: 44px; height: 44px; border-radius: 12px; border: 2px solid #81C784; background: #fff; color: #2E7D32; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: transform .1s, background .2s, border-color .2s; }
+#steps button:active { transform: scale(0.92); }
+#steps button.active { background: #2E7D32; color: #fff; border-color: #2E7D32; }
+#caption { text-align: center; font-size: 15px; font-weight: 600; color: #1B5E20; padding: 6px 16px; min-height: 44px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; word-break: break-word; }
+#question-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 8px 16px 12px; overflow: hidden; }
+#askText { text-align: center; font-size: 15px; font-weight: 600; color: #263238; margin: 0 0 12px; line-height: 1.3; word-break: break-word; }
+#options { display: flex; gap: 10px; width: 100%; justify-content: center; }
+#options button { flex: 1; max-width: 100px; height: 56px; border-radius: 14px; border: 2px solid #66BB6A; background: #fff; color: #1B5E20; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform .1s, background .2s, border-color .2s; }
+#options button:active { transform: scale(0.95); }
+#options button[disabled] { opacity: .6; cursor: default; }
+#feedback { margin-top: 10px; min-height: 28px; display: flex; align-items: center; justify-content: center; }
+#feedback svg { display: block; }
+.particle { transition: r .3s, opacity .3s; }
+.particle.emphasize { r: 6; opacity: 1; filter: drop-shadow(0 0 2px rgba(255,255,255,0.9)); }
+.particle.dim { opacity: .35; }
+#rays { transition: opacity .3s; }
+#rays.emphasize line { stroke: #FFEB3B; stroke-width: 3; opacity: 1; }
+#glucose-glow { pointer-events: none; transition: filter .3s; }
+#glucose-glow.emphasize { filter: drop-shadow(0 0 10px #FFD700); }
+</style>
+<div id="app">
+  <div id="title"></div>
+  <svg viewBox="0 0 360 340" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#FFF59D"/>
+        <stop offset="100%" stop-color="#FBC02D"/>
+      </linearGradient>
+      <linearGradient id="lg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#81C784"/>
+        <stop offset="100%" stop-color="#388E3C"/>
+      </linearGradient>
+    </defs>
+    <circle cx="270" cy="42" r="26" fill="url(#sg)"/>
+    <text data-label="sun" x="270" y="16" text-anchor="middle" font-size="12" fill="#37474F"></text>
+    <g id="rays" stroke="#FDD835" stroke-width="2" opacity="0.7" stroke-linecap="round">
+      <line x1="252" y1="55" x2="205" y2="120"/>
+      <line x1="270" y1="68" x2="195" y2="130"/>
+      <line x1="288" y1="55" x2="215" y2="120"/>
+    </g>
+    <g data-entity="leaf">
+      <path d="M180,150 C165,145 150,135 150,120 C150,105 165,95 180,95 C195,95 210,105 210,120 C210,135 195,145 180,150 Z" fill="url(#lg)" stroke="#2E7D32" stroke-width="2"/>
+      <line x1="180" y1="150" x2="180" y2="110" stroke="#1B5E20" stroke-width="1.5"/>
+    </g>
+    <text data-label="leaf" x="230" y="105" text-anchor="middle" font-size="12" fill="#37474F"></text>
+    <line x1="180" y1="260" x2="180" y2="150" stroke="#388E3C" stroke-width="7" stroke-linecap="round"/>
+    <circle id="glucose-glow" cx="180" cy="118" r="0" fill="#FFEA00" opacity="0"/>
+    <rect x="0" y="260" width="360" height="80" fill="#795

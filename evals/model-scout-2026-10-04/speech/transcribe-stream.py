@@ -6,6 +6,7 @@
 # Run: python3 transcribe-stream.py <cfg> [concurrency] [limit]
 #   T3 identify_multiple_languages over hi-IN,en-IN (preferred hi-IN)  - code-switch mode
 #   T4 identify_language (one language per stream) over hi-IN,en-IN    - single LID
+#   L1 / L3 latency controls: T1 / T3 settings at concurrency 1 on the first N clips (client contention check)
 #   T5 hi-IN + custom vocabulary taxila-scout-hi (D4's 16 keywords + 6 decoys, see vocab.py)
 import awsenv, os, sys, json, time, asyncio, subprocess
 from amazon_transcribe.client import TranscribeStreamingClient
@@ -13,7 +14,7 @@ from amazon_transcribe.handlers import TranscriptResultStreamHandler
 ROOT = awsenv.ROOT
 STT = os.path.join(ROOT, 'docs/research/voice/v2/stt'); META = json.load(open(os.path.join(STT, 'clips-meta.json')))
 CFG = sys.argv[1]; CONC = int(sys.argv[2]) if len(sys.argv) > 2 else 6
-NAMES = {'T3': 'T3 aws-transcribe-stream multiLID hi-IN+en-IN', 'T4': 'T4 aws-transcribe-stream LID(single) hi-IN|en-IN', 'T5': 'T5 aws-transcribe-stream hi-IN + custom vocab'}
+NAMES = {'T3': 'T3 aws-transcribe-stream multiLID hi-IN+en-IN', 'T4': 'T4 aws-transcribe-stream LID(single) hi-IN|en-IN', 'T5': 'T5 aws-transcribe-stream hi-IN + custom vocab', 'L1': 'L1 latency-control hi-IN conc1', 'L3': 'L3 latency-control multiLID conc1'}
 OUT = os.path.join(os.path.dirname(__file__), 'results', 'transcribe-rows.jsonl')
 SR = 16000
 
@@ -38,6 +39,8 @@ async def one(clip, sem):
         kw = dict(media_sample_rate_hz=SR, media_encoding='pcm')
         if CFG == 'T3': kw.update(language_code=None, identify_multiple_languages=True, language_options=['hi-IN', 'en-IN'], preferred_language='hi-IN')
         elif CFG == 'T4': kw.update(language_code=None, identify_language=True, language_options=['hi-IN', 'en-IN'], preferred_language='hi-IN')
+        elif CFG == 'L1': kw['language_code'] = 'hi-IN'
+        elif CFG == 'L3': kw.update(language_code=None, identify_multiple_languages=True, language_options=['hi-IN', 'en-IN'], preferred_language='hi-IN')
         elif CFG == 'T5': kw.update(language_code='hi-IN', vocabulary_name='taxila-scout-hi')
         t0 = time.perf_counter()
         try:

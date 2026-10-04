@@ -461,6 +461,11 @@ def place(bm, loops, sdf, P):
             off = P["mouth_in_off"][j]
             q = np.array([p0[0] * off[0], p0[1] + off[1], p0[2] + sgn * off[2] + off[3]])
             pinned[v] = (q, 1.0)
+    # the bag fan centre was created before placement: put it behind the deepest interior ring (r1 notch: the stale
+    # centre sat 6 mm behind the lips and its fan read as a dark spike between the teeth)
+    inner3 = loops["mouth_in"][-1]
+    cq = np.mean([pinned[v][0] for v in inner3], axis=0) + np.array([0.0, P.get("bag_back", 0.006), 0.0])
+    pinned[loops["mouth_bag_c"][0][0]] = (cq, 1.0)
     for v, (q, w) in pinned.items():
         if w >= 1.0:
             v.co = Vector(q)

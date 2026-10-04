@@ -20,9 +20,8 @@
  */
 export async function sweepTestAccounts({ url, olderThanMin = 60, limit = 500, apply = false, log = console.log }) {
   if (!url) throw new Error("sweepTestAccounts: no database url");
-  const { neon } = await import("@neondatabase/serverless");
   const { SAFETY_OPEN_SQL } = await import("../routes/account.js");
-  const sql = neon(url);
+  const sql = await sqlFor(url);
   const age = Math.max(60, Math.floor(olderThanMin * 60));            // never younger than 1 min: a running test owns it
   const rows = await sql.query(`select id, email, created_at from guardian where email like '%@taxila.test'
       and created_at < now() - make_interval(secs => $1) order by created_at limit $2`, [age, limit]);
@@ -50,5 +49,32 @@ export async function sweepTestAccounts({ url, olderThanMin = 60, limit = 500, a
     }
   }
   log(`deleted ${out.deleted}, deferred ${out.deferred}, failed ${out.failed}`);
+  if (sql.end) await sql.end();
   return out;
+}
+
+/**
+ * Neon's { query, transaction } shape over either driver. DB_DRIVER=pg (Azure Database for PostgreSQL, India move;
+ * not reachable over Neon's HTTP API) runs the same statements on one pg connection in BEGIN/COMMIT, so the nightly
+ * ops job never needs the Neon driver there. TLS as server/db.js (pgPoolConfig).
+ */
+async function sqlFor(url) {
+  if (process.env.DB_DRIVER !== "pg") { const { neon } = await import("@neondatabase/serverless"); return neon(url); }
+  const [{ default: pg }, { pgPoolConfig }] = await Promise.all([import("pg"), import("../db.js")]);
+  const pool = new pg.Pool({ ...pgPoolConfig(url), max: 1 });
+  return {
+    query: async (text, params) => (await pool.query(text, params)).rows,
+    transaction: async (build) => {
+      const stmts = build({ query: (text, params) => ({ text, params }) });
+      const c = await pool.connect();
+      try {
+        await c.query("begin");
+        const out = [];
+        for (const st of stmts) out.push((await c.query(st.text, st.params)).rows);
+        await c.query("commit");
+        return out;
+      } catch (e) { await c.query("rollback").catch(() => {}); throw e; } finally { c.release(); }
+    },
+    end: () => pool.end(),
+  };
 }

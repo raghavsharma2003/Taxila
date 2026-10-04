@@ -194,7 +194,7 @@ def brow(P, sdf, side, n=22, M=10):
     th = np.array(P["brow_thick"], float)  # inner, mid, outer full thickness
     w = np.interp(ts, [0, 0.35, 1.0], th) * 0.5
     # rounded blunt inner end, tapered outer tip
-    ti = np.clip(ts / 0.10, 0, 1)
+    ti = np.clip(ts / 0.16, 0, 1)
     w = w * np.sqrt(1 - (1 - ti) ** 2) * (1 - 0.8 * np.clip((ts - 0.62) / 0.38, 0, 1) ** 1.6)  # round head, soft tapered tail
     w = np.maximum(w, 0.0003)
     h = np.full(n, P["brow_h"]) * (0.6 + 0.4 * w / w.max())

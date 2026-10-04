@@ -75,6 +75,9 @@ bone('Neck', (0, 0.05, -0.13), (0, 0.048, -0.06), 'Spine2')
 bone('Head', (0, 0.048, -0.06), (0, 0.048, 0.06), 'Neck')
 bone('LeftEye', (ec[0], ec[1], ec[2]), (ec[0], ec[1] - 0.02, ec[2]), 'Head')
 bone('RightEye', (-ec[0], ec[1], ec[2]), (-ec[0], ec[1] - 0.02, ec[2]), 'Head')
+# shoulder bones (ported from Arm B): shrug / breathing on the bust without moving the head
+bone('LeftShoulder', (0.02, 0.05, -0.115), (0.10, 0.05, -0.125), 'Spine2')
+bone('RightShoulder', (-0.02, 0.05, -0.115), (-0.10, 0.05, -0.125), 'Spine2')
 bpy.ops.object.mode_set(mode='OBJECT')
 
 
@@ -102,7 +105,9 @@ w_neck = np.clip(1 - w_sp - w_head, 0, 1)
 skin(head, {'Spine2': w_sp, 'Neck': w_neck, 'Head': w_head})
 for ob in (browlash, mouth, hair):
     skin(ob, {'Head': np.ones(len(ob.data.vertices))})
-skin(bust, {'Spine2': np.ones(len(bust.data.vertices))})
+Xb = wpos(bust)
+w_sh = np.clip((np.abs(Xb[:, 0]) - 0.04) / 0.04, 0, 1) * np.clip((-0.095 - Xb[:, 2]) / 0.02, 0, 1) * np.clip((Xb[:, 2] + 0.24) / 0.06, 0, 1)
+skin(bust, {'Spine2': 1 - w_sh, 'LeftShoulder': w_sh * (Xb[:, 0] > 0), 'RightShoulder': w_sh * (Xb[:, 0] <= 0)})
 # eyes: rigid on their bones (keep the object at the ball centre, bind fully)
 for ob, bn in ((eyeL, 'LeftEye'), (eyeR, 'RightEye')):
     skin(ob, {bn: np.ones(len(ob.data.vertices))})

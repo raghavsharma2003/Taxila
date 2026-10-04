@@ -1471,3 +1471,69 @@ The nightly ops job run from the worker image on Azure: `scripts/deploy-worker.m
 ## Voice blind A/B, 2026-10-04 (docs/design/superhuman/voice-clips/results/BLIND-RESULTS-2026-10-04.md)
 - `voice-blind-ab-2026-10-04`: 2 raters (owner + 1) x 40 pairs. Plain beat spliced-clip expressive on DragonHD Diya 7-2, Arjun 7-3, gpt-4o-mini-tts 8-1; no-clip beat clip 5-2 / 4-3; prose-directed expressive beat plain on gpt-realtime-2.1 8-1 and DragonHD Omni 7-0.
 - `voice-blind-none-human-2026-10-04`: from the written remarks, no tested Azure voice passed as a human teacher: reading not talking, English-accented Hindi and accent switching, timbre changes, wrong numbers/words, fake-emphasis pauses, punctuation read aloud (MAI).
+
+- `image-flare-low-vs-image2-2026-10-04`: quality low, 1024x1024, eastus2 from a US container: gpt-image-2.5-flare 14.6 / 15.4 s (n=2) vs gpt-image-2 27.7 / 17.1 / 19.3 s (n=3); both 196 output tokens; same retail price ($30 per 1M image output tokens, about $0.006 per low image). The claimed 50% speed-up was not reproduced: about 20% at this n. 429s appeared at 4 requests per minute.
+
+
+<!-- merged from inbox/model-refresh-studio.json -->
+## studio-refresh-bench-2026-10-04
+n=189 builds (13 arms x 3 archetypes x n=5; Kimi-K2.7-Code n=3 after drop), 2026-10-04 10:45-11:50 UTC. Method: `evals/model-refresh-2026-10-04/studio/run.mjs` = the live-studio brief (kinds.mjs, photosynthesis brief v2) + strict gate qa.mjs in local Playwright Chromium + label anchoring as a HARD check + <=2 gate-fed repairs; streamed from a US container to Foundry eastus2; gates under a 2-slot semaphore (wait excluded from time-to-playable); seed-aligned races. Wilson 80% intervals. Pooled after repair (n=15): gpt-6-sol low 15/15 [0.90-1.00] ttp p50 34.1 s $0.048/passed; gpt-6.1-sol low 15/15 42.6 s ($0.038 [U: no meter]); terra low 15/15 43.6 s $0.075; gpt-5.6-sol low 15/15 59.7 s $0.138; gpt-6-luna low 12/15 [0.64-0.90] 26.0 s $0.003 (fraction 5/5 22.7 s, photosynthesis 5/5 44.8 s, chart 2/5); codex low 11/15 (chart 1/5); gpt-6-luna none 9/15; DeepSeek-V4.1-Flash 9/15 (fraction 4/5, photosynthesis 4/5, chart 1/5; 2 timeouts); Kimi-K2.6 8/15 at 180 s p50; Kimi-K2.7-Code 7/9 at 318 s p50; DeepSeek-V4-Flash 5/15 (fraction 4/5); DeepSeek-V4-Flash-0731 3/15; mistral-medium-3-5 3/15. Races pooled n=15: today's terra+sol P(pass by 60 s) 10/15 [0.50-0.80], p50/p90 42.0/70.8 s, $0.213/race; gpt-6-sol+terra 14/15 [0.80-0.98], 29.6/49.1 s, $0.122; gpt-6-luna+gpt-6-sol+terra 15/15 [0.90-1.00], 26.7/48.7 s, $0.125. At 75 s every listed set is 15/15. Spend $12.39 (11.72 main + 0.15 crash-lost rounds + 0.52 pilot, list price x usage). Not run: Kimi K3 (Fireworks-only, not deployable), MAI-Code-1.1-Flash (quota tier). Raw: `evals/model-refresh-2026-10-04/studio/out/`.
+
+## kimi-ttft-is-thinking
+Same run, 2026-10-04, `firstAnyMs` (first content-or-reasoning delta) vs `ttftMs` (first content delta) per round-0 generation. Kimi-K2.7-Code: first reasoning 0.8-1.9 s p50, first code token 152.7 s (fraction, n=3), 66.5 s (photosynthesis), 163.3 s (chart). Kimi-K2.6: reasoning 0.8-0.9 s, code 59.5-94.1 s p50 (n=5 per archetype). Pilot (n=1 each) same pattern: 1.3-1.5 s vs 167-183 s.
+
+## studio-anchor-hard-check-2026-10-04
+Same run, photosynthesis v2, all arms: 55 gate rounds passed every pre-anchor check, 13 of them failed only `labels_anchored_to_referent` (70 px entity / 90 px flow, logic of evals/live-studio/anchor.mjs). Final pass with vs without anchor identical for all six OpenAI arms (5/5 each, luna-none 3/5); lower for Kimi-K2.6 (2/5 vs 3/5) and DeepSeek-V4-Flash-0731 (0/5 vs 1/5).
+
+
+<!-- merged from inbox/model-scout-speech.json -->
+## speech-scout-transcribe-lid-2026-10-04
+2026-10-04, US cloud container (agent proxy) -> Transcribe streaming ap-south-1. 16 kHz PCM sent in 100 ms chunks at real time, 600 ms trailing pad included (comparable to the D arms). Corpus and scorer as stt-hinglish v2 (docs/research/voice/v2/stt/: 30 utterances x 2 synthetic TTS families x clean/white/pink 10 dB = 180 speech clips + 3 non-speech; deterministic skeleton scorer). One pass per arm, 0 API errors. T1/T2 reused from the scout run the same day.
+
+cerNorm / numbers (of 96) / answers (of 78) / final-after-end p50:
+- hi-IN: 0.086 / 67 / 51 / 2,099 ms
+- en-IN: 0.277 / 23 / 26 / 2,135 ms
+- multi-LID hi+en: 0.064 / 73 / 64 / 2,282 ms
+- single LID: 0.269 / 57 / 54 / 2,047 ms (empty on 41/180 clips, all <= ~2.6 s)
+- hi-IN + custom vocabulary (D4's 22 terms): 0.077 / 66 / 52 / 1,966 ms
+
+All arms: 0 wrong script, 0-1 decoy, 0/3 output on non-speech.
+Multi-LID English items: numbers 3/12, answers 6/12; 34/180 clips tagged en-IN.
+Paired CER, multi-LID vs R4: lower on 48 clips, higher on 46.
+Concurrency-1 control (n=30): final 2,055 ms (hi-IN) and 2,251 ms (multi-LID), so the latency is service-side.
+US->Mumbai round trip ~265 ms.
+Reference arms (2026-10-02, eastus2): D4 0.026 / 92 / 76 / 1,318 ms; R4 0.071 / 73 / 74 / 876 ms.
+Price [V]: $0.60/h streaming in ap-south-1.
+SYNTHETIC speech: instrument only.
+
+## speech-scout-polly-2026-10-04
+2026-10-04. Polly DescribeVoices: the only Hindi-capable voices are Kajal (neural in ap-south-1 + us-east-1; generative us-east-1 only) and Aditi (standard). LanguageCode hi-IN vs en-IN gives byte-identical neural audio on 5/5 lines.
+
+AI-judge proxy (voice-probe/rtjudge.mjs, gpt-realtime-2.1, calibrated 11/16), 5 HUMAN-VOICE lines x 2 judgments, Diya re-judged the same day. Humanlike / emotion fit:
+- Kajal neural (aps1): 4.10 / 3.90
+- Kajal generative (use1): 4.50 / 4.30
+- Diya plain: 4.11 / 4.33
+- Diya full layer: 4.50 / 4.50
+
+Pairwise, position-swapped, 40 votes per Polly arm: 0 Polly wins, 1-3 Diya wins per comparison, 33/40 ties overall.
+Prosody (splice.py metrics): pause SD 0.054 s neural, 0.180 generative, 0.062 Diya plain; f0 SD 2.9-3.0 st vs Diya 3.6.
+ASR check on generative: 6 possible word changes in 5 lines (बटा heard as बता x2). Not verified by ear.
+Price [V]: neural $16/M chars, generative $30/M, DragonHD $22/M.
+
+Streamed TTFB, n=20 per arm, same sentence as voice-probe/latency.mjs, same session. p50 / p90:
+- Kajal neural aps1: 298 / 308 ms (DescribeVoices floor p50 264)
+- Kajal generative use1: 155 / 161 ms (floor 49)
+- Diya eastus2: 252 / 307 ms (issueToken floor 59)
+- Diya centralindia: 441 / 558 ms (floor 332)
+
+US container, so the India rows include ~265-330 ms of round trip.
+
+## speech-scout-nova-sonic-blocked-2026-10-04
+2026-10-04, account 780899467240.
+- ListFoundationModels(byOutputModality=SPEECH): amazon.nova-2-sonic-v1:0 in us-east-1 only; ap-south-1 none.
+- Service Quotas us-east-1: Nova 2 Sonic on-demand concurrent requests 0 (Adjustable=false); Nova Sonic v1 20, but that model is not listed.
+- Model-invocation tokens per day: 0 for every Nova text model in both regions.
+- Converse calls: ThrottlingException (too many tokens per day).
+- Vendor docs [V]: hi-IN voices kiara/arjun, en-IN kiara/arjun, polyglot tiffany/matthew, code-switching within a sentence.
+- AWS Pricing API [V], Nova Sonic 2.0 us-east-1, per 1K tokens: speech in $0.003, speech out $0.012, text in $0.00033, text out $0.00275.
+- Cost per minute: not computed; it needs speech tokens per audio second, measurable only by a call.

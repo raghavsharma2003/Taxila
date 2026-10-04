@@ -1,0 +1,180 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  .wrap { width: 360px; height: 640px; margin: 0 auto; background: linear-gradient(180deg, #e1f5fe 0%, #f1f8e9 55%, #fff 100%); display: flex; flex-direction: column; overflow: hidden; position: relative; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+  .hdr { padding: 8px 6px; text-align: center; font-size: 18px; font-weight: 800; color: #1b5e20; min-height: 36px; overflow-wrap: break-word; }
+  .scene { flex: 1 1 0; min-height: 0; position: relative; }
+  svg { width: 100%; height: 100%; display: block; }
+  .lbl { font-family: inherit; font-size: 12px; font-weight: 700; fill: #263238; text-anchor: middle; }
+  .ui { padding: 10px; background: #fff; border-top: 2px solid #c8e6c9; }
+  .ctrl { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; justify-content: center; flex-wrap: wrap; }
+  .btn { border: none; border-radius: 10px; padding: 0 12px; font-size: 14px; font-weight: 700; cursor: pointer; min-width: 44px; min-height: 44px; touch-action: manipulation; transition: transform .1s ease, background .2s ease, box-shadow .2s ease; display: inline-flex; align-items: center; justify-content: center; }
+  .btn:active { transform: scale(0.92); }
+  .play-btn { background: #43a047; color: #fff; padding: 0 16px; }
+  .step-btn { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+  .step-btn.on { background: #2e7d32; color: #fff; box-shadow: 0 2px 6px rgba(46,125,50,.35); }
+  .cap { text-align: center; font-size: 15px; font-weight: 700; min-height: 44px; padding: 6px 8px; background: #fffde7; border-radius: 10px; color: #333; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; overflow-wrap: break-word; }
+  .quiz { padding: 8px; background: #e3f2fd; border-radius: 12px; }
+  .qtxt { text-align: center; font-size: 15px; font-weight: 700; color: #0d47a1; margin-bottom: 10px; min-height: 22px; overflow-wrap: break-word; }
+  .opts { display: flex; gap: 8px; justify-content: center; }
+  .opt { background: #90caf9; color: #0d47a1; flex: 1 1 0; font-weight: 700; }
+  .opt.ok { background: #66bb6a; color: #fff; }
+  .opt.bad { background: #ef5350; color: #fff; animation: shake .4s ease-in-out; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 50%{transform:translateX(5px)} 75%{transform:translateX(-5px)} }
+  .glucose-shape { animation: glucosePulse 2.2s ease-in-out infinite; transform-origin: 180px 110px; }
+  @keyframes glucosePulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+</style>
+<div class="wrap">
+  <div class="hdr" data-label="title" id="title"></div>
+  <div class="scene">
+    <svg viewBox="0 0 360 280" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <radialGradient id="sg" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#FFF176"/>
+          <stop offset="100%" stop-color="#FBC02D"/>
+        </radialGradient>
+      </defs>
+      <g id="sunGroup">
+        <circle cx="180" cy="38" r="24" fill="url(#sg)"/>
+        <line x1="180" y1="10" x2="180" y2="66" stroke="#F9A825" stroke-width="2" stroke-linecap="round"/>
+        <line x1="152" y1="38" x2="208" y2="38" stroke="#F9A825" stroke-width="2" stroke-linecap="round"/>
+        <line x1="162" y1="18" x2="198" y2="58" stroke="#F9A825" stroke-width="2" stroke-linecap="round"/>
+        <line x1="198" y1="18" x2="162" y2="58" stroke="#F9A825" stroke-width="2" stroke-linecap="round"/>
+        <text x="180" y="78" class="lbl" data-label="sun"></text>
+      </g>
+      <g id="rays">
+        <line x1="180" y1="62" x2="180" y2="108" stroke="#FFD54F" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+        <line x1="166" y1="58" x2="152" y2="112" stroke="#FFD54F" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+        <line x1="194" y1="58" x2="208" y2="112" stroke="#FFD54F" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+      </g>
+      <text x="320" y="70" class="lbl" data-label="o2"></text>
+      <text x="320" y="130" class="lbl" data-label="co2"></text>
+      <path d="M0,240 Q90,235 180,240 T360,240 L360,280 L0,280 Z" fill="#8D6E63"/>
+      <g data-entity="roots" stroke="#5D4037" stroke-width="3" fill="none" stroke-linecap="round">
+        <path d="M180,240 Q170,255 150,270"/>
+        <path d="M180,240 L180,275"/>
+        <path d="M180,240 Q190,255 210,270"/>
+      </g>
+      <text x="50" y="268" class="lbl" data-label="roots"></text>
+      <path d="M180,240 L180,150" stroke="#66BB6A" stroke-width="6" stroke-linecap="round"/>
+      <g data-entity="leaf">
+        <path d="M180,150 Q130,130 120,100 Q130,60 180,70 Q230,60 240,100 Q230,130 180,150 Z" fill="#66BB6A" stroke="#388E3C" stroke-width="2"/>
+        <path d="M180,150 Q165,120 155,95" stroke="#388E3C" stroke-width="1.5" fill="none"/>
+        <path d="M180,150 Q195,120 205,95" stroke="#388E3C" stroke-width="1.5" fill="none"/>
+      </g>
+      <text x="260" y="100" class="lbl" data-label="leaf"></text>
+      <g id="glucoseGroup" class="glucose-shape">
+        <polygon points="180,105 188,110 188,120 180,125 172,120 172,110" fill="#FFEE58" stroke="#FBC02D" stroke-width="1.5"/>
+      </g>
+      <text x="210" y="118" class="lbl" data-label="glucose"></text>
+      <text x="40" y="210" class="lbl" data-label="water"></text>
+      <circle r="4" fill="#42A5F5" data-flow="water" cx="160" cy="270"/>
+      <circle r="4" fill="#42A5F5" data-flow="water" cx="180" cy="275"/>
+      <circle r="4" fill="#42A5F5" data-flow="water" cx="200" cy="270"/>
+      <circle r="4" fill="#546E7A" data-flow="co2" cx="30" cy="140"/>
+      <circle r="4" fill="#546E7A" data-flow="co2" cx="330" cy="90"/>
+      <circle r="4" fill="#546E7A" data-flow="co2" cx="20" cy="190"/>
+      <circle r="4" fill="#546E7A" data-flow="co2" cx="340" cy="160"/>
+      <circle r="4" fill="#B3E5FC" data-flow="o2" cx="180" cy="110"/>
+      <circle r="3.5" fill="#B3E5FC" data-flow="o2" cx="180" cy="110"/>
+      <circle r="3.5" fill="#B3E5FC" data-flow="o2" cx="180" cy="110"/>
+      <circle r="3.5" fill="#B3E5FC" data-flow="o2" cx="180" cy="110"/>
+    </svg>
+  </div>
+  <div class="ui">
+    <div class="ctrl">
+      <button class="btn play-btn" data-action="play" id="playBtn"></button>
+      <div id="stepContainer" style="display:flex;gap:6px;"></div>
+    </div>
+    <div class="cap" data-caption id="caption"></div>
+    <div class="quiz">
+      <div class="qtxt" data-label="ask" id="askText"></div>
+      <div class="opts">
+        <button class="btn opt" data-option="co2" id="opt-co2"></button>
+        <button class="btn opt" data-option="o2" id="opt-o2"></button>
+        <button class="btn opt" data-option="water" id="opt-water"></button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  const playBtn = document.getElementById('playBtn');
+  const stepContainer = document.getElementById('stepContainer');
+  const caption = document.getElementById('caption');
+  const askText = document.getElementById('askText');
+  const opts = {
+    co2: document.getElementById('opt-co2'),
+    o2: document.getElementById('opt-o2'),
+    water: document.getElementById('opt-water')
+  };
+
+  document.getElementById('title').textContent = Studio.t('title');
+  playBtn.textContent = Studio.t('pause');
+  caption.textContent = Studio.t('step1');
+  askText.textContent = Studio.t('ask');
+  opts.co2.textContent = Studio.t('co2');
+  opts.o2.textContent = Studio.t('o2');
+  opts.water.textContent = Studio.t('water');
+
+  document.querySelectorAll('[data-label]').forEach(el => {
+    const k = el.getAttribute('data-label');
+    if(k) el.textContent = Studio.t(k);
+  });
+
+  const steps = Studio.params.steps || 5;
+  const stepBtns = [];
+  for(let i=1;i<=steps;i++){
+    const b = document.createElement('button');
+    b.className = 'btn step-btn';
+    b.dataset.action = 'step-'+i;
+    b.textContent = String(i);
+    stepContainer.appendChild(b);
+    stepBtns.push(b);
+  }
+
+  let playing = true;
+  let currentStep = 1;
+  let lastChosen = null;
+  let answeredCorrect = false;
+
+  const particles = [];
+  function makeP(el, waypoints, speed){
+    particles.push({ el, waypoints, speed: speed || (0.18 + Math.random()*0.12), t: Math.random() });
+  }
+  const wEls = Array.from(document.querySelectorAll('[data-flow="water"]'));
+  const wStarts = [[160,270],[180,275],[200,270]];
+  wEls.forEach((el,i)=> makeP(el, [wStarts[i]||[180,275], [180,240], [180,150], [180,110]], 0.14 + Math.random()*0.1));
+  const cEls = Array.from(document.querySelectorAll('[data-flow="co2"]'));
+  const cStarts = [[30,140],[330,90],[20,190],[340,160]];
+  cEls.forEach((el,i)=> makeP(el, [cStarts[i]||[30,140], [180,110]], 0.18 + Math.random()*0.1));
+  const oEls = Array.from(document.querySelectorAll('[data-flow="o2"]'));
+  const oEnds = [[320,70],[40,80],[300,170],[50,190]];
+  oEls.forEach((el,i)=> makeP(el, [[180,110], oEnds[i]||[320,70]], 0.18 + Math.random()*0.1));
+
+  function lerp(a,b,t){ return a+(b-a)*t; }
+  function pos(p){
+    const n = p.waypoints.length-1;
+    let u = p.t*n;
+    let idx = Math.floor(u);
+    if(idx>=n) idx=n-1;
+    let f = u-idx;
+    const a = p.waypoints[idx], b = p.waypoints[idx+1];
+    return [lerp(a[0],b[0],f), lerp(a[1],b[1],f)];
+  }
+
+  let lastTime = performance.now();
+  function tick(now){
+    const dt = Math.min(now-lastTime, 50);
+    lastTime = now;
+    if(playing){
+      const s = dt/1000;
+      particles.forEach(p=>{
+        p.t += p.speed*s;
+        if(p.t>1) p.t-=1;
+        const [x,y] = pos(p);
+        p.el.setAttribute('cx', x);
+        p.el.setAttribute('cy', y);
+      });
+      const rays = document.querySelectorAll('#rays line');
+      const ph = (now/900)%1;
+      rays.forEach

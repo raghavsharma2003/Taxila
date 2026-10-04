@@ -1655,3 +1655,8 @@ taxila-studio-sol (gpt-5.6-sol, 500), raised gpt-5.6-terra to 1000, created taxi
 taxila-gpt6 (gpt-6-sol 2026-09-22, 500), raised taxila-flux2 to 4, and created the private `voice-bank` container on taxilaforge. That
 closes O13a/b/c, the O14 twin, the FLUX half of O15, the container in O17, and O26. Quota increases beyond current limits (realtime,
 gpt-image-2, sandbox cores) still need Microsoft quota requests.
+
+### Image lane capacity requirement (added 2026-10-04, for W2 Studio S9)
+Route `image-default-flare-low-2026-10-04` then the gpt-image-2 pool per `image-capacity-pool-2026-10-04`: endpoints AZURE_IMAGE_* in .env.local
+(uaenorth, polandcentral, swedencentral, westus3) plus the eastus2 account; nearest-first, 429 => next pool member, per-child and global rate caps,
+library/prefetch hits before any live generation. Owner action: flare quota increase.

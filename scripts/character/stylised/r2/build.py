@@ -102,6 +102,7 @@ def build():
     M = {k: {"t": [float(x) for x in t], "upper": [bool(u) for u in up]} for k, (t, up) in meta.items()}
 
     # ---------------- head mesh, materials, vertex colours
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)   # the mouth bag must face the viewer (three culls back faces)
     me = bpy.data.meshes.new('head')
     bm.to_mesh(me)
     for p in me.polygons:
@@ -164,9 +165,9 @@ def build():
     _nt.links.new(_ti.outputs['Color'], _b.inputs['Emission Color']); _nt.links.new(_mul.outputs[0], _b.inputs['Emission Strength'])
     m_cornea = cornea_mat()
     for s, tag in ((1, 'L'), (-1, 'R')):
-        V, F, ex = PT.eyeball(PH | PP, s)
+        V, F, ex = PT.eyeball(PH | PP, s, **G.get('eyeball', {}))
         objs['eye_' + tag] = obj_from('eye_' + tag, V, F, m_eye, uv=ex['uv'], origin=ex['centre'])
-        V, F, _ = PT.cornea(PH | PP, s)
+        V, F, _ = PT.cornea(PH | PP, s, **G.get('cornea', {}))
         objs['cornea_' + tag] = obj_from('cornea_' + tag, V, F, m_cornea, origin=np.array(PH['eye_c']) * [s, 1, 1])
     # ---------------- lashes, brows
     m_lash = mat('lash', rgb=COL['lash'], rough=0.45, spec=0.4)
@@ -194,22 +195,22 @@ def build():
             nrm = -nrm
         return np.array(loc[:]), np.array(nrm[:])
     for s, tag in ((1, 'L'), (-1, 'R')):
-        V, F, _ = PT.lash_line(PH | PP, s, snap=snap)
+        V, F, _ = PT.lash_line(PH | PP, s, snap=snap, **G.get('lash', {}))
         objs['lash_' + tag] = obj_from('lash_' + tag, V, F if s > 0 else [f[::-1] for f in F], m_lash)
-        V, F, _ = PT.brow(PH | PP, sdf, s)
+        V, F, _ = PT.brow(PH | PP, sdf, s, **G.get('brow', {}))
         objs['brow_' + tag] = obj_from('brow_' + tag, V, F, m_brow)
     # ---------------- mouth interior
     m_teeth = mat('teeth', rgb=COL['teeth'], rough=0.3, spec=0.5)
     m_tongue = mat('tongue', rgb=COL['tongue'], rough=0.45, spec=0.4, ss=0.1)
-    V, F, _ = PT.teeth(PH | PP, sdf, True); objs['teeth_U'] = obj_from('teeth_U', V, F, m_teeth)
-    V, F, _ = PT.teeth(PH | PP, sdf, False); objs['teeth_L'] = obj_from('teeth_L', V, F, m_teeth)
-    V, F, _ = PT.tongue(PH | PP, sdf); objs['tongue'] = obj_from('tongue', V, F, m_tongue)
+    V, F, _ = PT.teeth(PH | PP, sdf, True, **G.get('teeth', {})); objs['teeth_U'] = obj_from('teeth_U', V, F, m_teeth)
+    V, F, _ = PT.teeth(PH | PP, sdf, False, **G.get('teeth', {})); objs['teeth_L'] = obj_from('teeth_L', V, F, m_teeth)
+    V, F, _ = PT.tongue(PH | PP, sdf, **G.get('tongue', {})); objs['tongue'] = obj_from('tongue', V, F, m_tongue)
     # ---------------- ears, jewellery, bindi
     for s, tag in ((1, 'L'), (-1, 'R')):
-        V, F, _ = PT.ear(PH | PP, sdf, s); objs['ear_' + tag] = obj_from('ear_' + tag, V, F, m_skin_plain())
+        V, F, _ = PT.ear(PH | PP, sdf, s, **G.get('ear', {})); objs['ear_' + tag] = obj_from('ear_' + tag, V, F, m_skin_plain())
     m_gold = mat('gold', rgb=COL['gold'], rough=0.28, metal=0.0, spec=0.8, coat=0.6)
     for s, tag in ((1, 'L'), (-1, 'R')):
-        V, F, _ = PT.ico(np.array(PP['earring_c']) * [s, 1, 1], PP['earring_r'])
+        V, F, _ = PT.ico(np.array(PP['earring_c']) * [s, 1, 1], PP['earring_r'], **G.get('ico', {}))
         objs['earring_' + tag] = obj_from('earring_' + tag, V, F, m_gold)
     bz = PP['bindi_z']
     by = float(sdf.front_y(np.array([[0.0, bz]]))[0])
@@ -220,15 +221,15 @@ def build():
     m_hair = mat('hair', rgb=COL['hair'], rough=0.58, spec=0.28, sheen=0.12, vcol=True)
     hs = HeadSDF(PH, with_eyes=False)
     for s, tag in ((1, 'L'), (-1, 'R')):
-        V, F, ex = PT.hair_shell(PH | PP, hs, s)
+        V, F, ex = PT.hair_shell(PH | PP, hs, s, **G.get('hair', {}))
         objs['hair_' + tag] = obj_from('hair_' + tag, V, F, m_hair, uv=ex['uv'])
-    V, F, ex = PT.bun(PP); objs['bun'] = obj_from('bun', V, F, m_hair, uv=ex['uv'])
-    V, F, ex = PT.lock(PP, PP['lock_L'], PP['lock_thick']); objs['lock_L'] = obj_from('lock_L', V, F, m_hair, uv=ex['uv'])
-    V, F, ex = PT.lock(PP, PP['lock_R'], PP['lock_thick']); objs['lock_R'] = obj_from('lock_R', V, F, m_hair, uv=ex['uv'])
+    V, F, ex = PT.bun(PP, **G.get('bun', {})); objs['bun'] = obj_from('bun', V, F, m_hair, uv=ex['uv'])
+    V, F, ex = PT.lock(PP, PP['lock_L'], PP['lock_thick'], **G.get('lock', {})); objs['lock_L'] = obj_from('lock_L', V, F, m_hair, uv=ex['uv'])
+    V, F, ex = PT.lock(PP, PP['lock_R'], PP['lock_thick'], **G.get('lock', {})); objs['lock_R'] = obj_from('lock_R', V, F, m_hair, uv=ex['uv'])
     # ---------------- kurta
     m_kurta = mat('kurta', rgb=COL['kurta'], rough=0.85, spec=0.2, sheen=0.1, vcol=True)
     m_pipe = mat('piping', rgb=COL['piping'], rough=0.7, spec=0.25, sheen=0.2)
-    V, F, ex = PT.kurta(PP)
+    V, F, ex = PT.kurta(PP, **G.get('kurta', {}))
     V = np.array(V, float)
     for _ in range(3):
         dk = sdf(V); nk = sdf.normal(V); gap = PP.get('kurta_gap', 0.0012)
@@ -239,7 +240,7 @@ def build():
     C = np.vstack([ring, ring[:1]])
     Nn = np.tile([0, 0, 1.0], (len(C), 1))
     Nv, Bv = PT.frames_from_normals(C, Nn)
-    Vp, Fp = PT.tube(C, Nv, Bv, np.full(len(C), PP['piping_r']), np.full(len(C), PP['piping_r']), M=6, cap=False)
+    Vp, Fp = PT.tube(C, Nv, Bv, np.full(len(C), PP['piping_r']), np.full(len(C), PP['piping_r']), M=G.get('piping_M', 6), cap=False)
     objs['piping'] = obj_from('piping', Vp, Fp, m_pipe)
     # placket lines
     for s, tag in ((1, 'L'), (-1, 'R')):
@@ -322,7 +323,7 @@ if __name__ == '__main__':
     bake_ao(objs)
     try:
         import keys as KY
-        KY.author(objs, L, M, P)
+        KY.author(objs, L, M, P, tier=TIER)
     except ImportError:
         pass
     json.dump({'loops': L, 'meta': M}, open(OUT.replace('.blend', '_loops.json'), 'w'))

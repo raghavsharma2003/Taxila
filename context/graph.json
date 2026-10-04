@@ -6312,6 +6312,153 @@
    "title": "Non-verbal clips off for every voice; laughs only when the engine renders them natively in context; numbers/terms normalised to spoken Hindi words plus a lexicon before TTS; voice search continues (VOICE-V3). Reverse if a future blind round prefers clipped renders",
    "at": "2026-10-04",
    "source": "inbox/voice-blind-results.json"
+  },
+  {
+   "id": "image-flare-low-vs-image2-2026-10-04",
+   "kind": "measurement",
+   "title": "gpt-image-2.5-flare vs gpt-image-2, quality low, 1024x1024, eastus2 from a US container: flare 14.6/15.4 s (n=2), image-2 27.7/17.1/19.3 s (n=3, p50 19.3 s); both 196 output tokens per image; same retail price ($30/1M image output tokens => ~$0.006 per low image). Claimed 50% faster not reproduced: ~20% at n=2-3. Several 429s at 4 RPM",
+   "at": "2026-10-04",
+   "source": "inbox/image-capacity.json"
+  },
+  {
+   "id": "image-default-flare-low-2026-10-04",
+   "kind": "decision",
+   "title": "Default image model is gpt-image-2.5-flare at quality low (owner pick; same price as gpt-image-2, measured faster), overflow to a gpt-image-2 pool. Supersedes the gpt-image-2-only default. Reverse if blind quality checks put flare below image-2 or flare quota cannot be raised",
+   "at": "2026-10-04",
+   "source": "inbox/image-capacity.json"
+  },
+  {
+   "id": "image-capacity-pool-2026-10-04",
+   "kind": "decision",
+   "title": "Image capacity: flare quota is subscription-wide (4 RPM total: eastus2 2 + uaenorth 2); gpt-image-2 quota is per region, so gpt-image-2 is deployed at 4 RPM in uaenorth, polandcentral, swedencentral, westus3 and eastus2 (20 RPM). The image lane must route flare first, then gpt-image-2 nearest-first (UAE, Poland, Sweden, US) with 429 failover, serve library/prefetched images first (>=90% hit target), and file a quota increase for flare before launch. Reverse when one deployment's quota covers peak demand",
+   "at": "2026-10-04",
+   "source": "inbox/image-capacity.json"
+  },
+  {
+   "id": "studio-refresh-bench-2026-10-04",
+   "kind": "measurement",
+   "title": "Studio model refresh: 189 real builds (13 arms x 3 archetypes x n=5; kimi-code n=3): gpt-6-sol, gpt-6.1-sol, gpt-5.6-terra, gpt-5.6-sol all 15/15 after repair; gpt-6-sol fastest of those (34.1 s p50, $0.048/passed); gpt-6-luna low 12/15 (charts 2/5) at $0.003; no non-OpenAI arm above 9/15",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-studio.json"
+  },
+  {
+   "id": "studio-race-gpt6sol-terra-luna",
+   "kind": "decision",
+   "title": "PROPOSED router v2 for Studio live builds: race taxila-gpt6 (gpt-6-sol) low + gpt-5.6-terra low, with taxila-gpt6-luna low as opportunistic third arm; taxila-brain leaves the race; codex = 429 fallback only",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-studio.json"
+  },
+  {
+   "id": "kimi-ttft-is-thinking",
+   "kind": "measurement",
+   "title": "Kimi-K2.7-Code and Kimi-K2.6 first REASONING token at 0.8-1.9 s p50; first code token 60-163 s p50: the 2-4 min TTFT is think time, not queueing",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-studio.json"
+  },
+  {
+   "id": "studio-anchor-hard-check-2026-10-04",
+   "kind": "measurement",
+   "title": "Label anchoring as a hard gate check on photosynthesis v2: 13/55 rounds that passed every old check failed only on anchoring; with gate-fed repair the OpenAI arms still reached 5/5 (costs rounds, not passes)",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-studio.json"
+  },
+  {
+   "id": "kimi-capacity-for-live",
+   "kind": "rejection",
+   "title": "Raising Kimi capacity to make it a live Studio arm (O-3): rejected, latency is reasoning time not queueing; Kimi-K2.7-Code dropped after 2x 300 s timeouts, K2.6 hit 24k length cap in 13 rounds",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-studio.json"
+  },
+  {
+   "id": "mistral-m35-ds4f0731-for-live-builds",
+   "kind": "rejection",
+   "title": "mistral-medium-3-5 (3/15, 0/10 on anim+chart) and DeepSeek-V4-Flash-0731 (3/15, 0/10 on anim+chart) as Studio build arms",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-studio.json"
+  },
+  {
+   "id": "live-studio-repair-prompt-crash",
+   "kind": "rejection",
+   "title": "evals/live-studio/run.mjs repairPrompt crashes on undefined check detail (JSON.stringify(undefined).slice) and silently drops failing builds: harness bug, biases pass rates upward",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-studio.json"
+  },
+  {
+   "id": "speech-scout-transcribe-lid-2026-10-04",
+   "kind": "measurement",
+   "title": "Amazon Transcribe streaming ap-south-1, all modes, stt-hinglish v2 (n=180 speech + 3 non-speech per arm): multi-LID hi+en CER 0.064, numbers 73/96, answers 64/78, final 2.28 s after end; single-LID empty on 41/180 short clips; hi-IN+custom vocab CER 0.077, 66/96; vs D4 0.026, 92/96, 76/78, 1.32 s and R4 0.071, 73/96, 74/78, 0.88 s",
+   "at": "2026-10-04",
+   "source": "inbox/model-scout-speech.json"
+  },
+  {
+   "id": "speech-scout-polly-2026-10-04",
+   "kind": "measurement",
+   "title": "Amazon Polly Kajal (only Hindi-capable voice; neural aps1+use1, generative use1 only) on 5 HUMAN-VOICE lines vs re-judged DragonHD Diya: AI judge humanlike neural 4.10 / generative 4.50 / Diya plain 4.11 / Diya full layer 4.50; pairwise 0 Polly wins in 40 votes (33 ties); neural pause SD 0.054 s (as flat as Diya plain 0.062); TTFB p50 neural aps1 298 ms (floor 264), generative use1 155 (floor 49), Diya eastus2 252 (floor 59), Diya centralindia 441 (floor 332), n=20",
+   "at": "2026-10-04",
+   "source": "inbox/model-scout-speech.json"
+  },
+  {
+   "id": "speech-scout-nova-sonic-blocked-2026-10-04",
+   "kind": "measurement",
+   "title": "Nova 2 Sonic: listed in us-east-1 only (none in ap-south-1); on-demand concurrency quota 0, not adjustable via API; Bedrock tokens/day 0 for all Nova text models; vendor docs list hi-IN voices kiara/arjun and code-switching; list price speech in $0.003 / out $0.012, text in $0.00033 / out $0.00275 per 1K tokens. No call possible: latency, Hinglish quality and safety floor unmeasured",
+   "at": "2026-10-04",
+   "source": "inbox/model-scout-speech.json"
+  },
+  {
+   "id": "rj-aws-transcribe-all-modes",
+   "kind": "rejection",
+   "title": "Amazon Transcribe streaming rejected for live child STT in every mode (hi-IN, en-IN, multi-language ID, single LID, hi-IN + custom vocabulary): best mode answers 64/78 vs R4 74/78 and D4 76/78, English numbers 3/12, final text ~1.4 s slower than R4; single LID returns nothing on clips under ~2.6 s",
+   "at": "2026-10-04",
+   "source": "inbox/model-scout-speech.json"
+  },
+  {
+   "id": "rj-polly-teacher-voice",
+   "kind": "rejection",
+   "title": "Amazon Polly rejected as teacher voice: one Hindi voice only (Kajal, no male for Arjun), generative engine not in Mumbai, no non-verbals, 0/40 pairwise wins vs DragonHD Diya, flat pauses on neural, possible word changes on generative (बटा heard as बता x2)",
+   "at": "2026-10-04",
+   "source": "inbox/model-scout-speech.json"
+  },
+  {
+   "id": "speech-aws-none-adopted-2026-10-04",
+   "kind": "decision",
+   "title": "No AWS speech service enters a lane: STT stays taxila-live-transcribe D4 with Azure RT LID fallback, cascade TTS stays DragonHD Diya, premium speech-to-speech stays on Azure; Nova 2 Sonic not recommended until its child-safety battery runs",
+   "at": "2026-10-04",
+   "source": "inbox/model-scout-speech.json"
+  },
+  {
+   "id": "open-nova-2-sonic-bench",
+   "kind": "open",
+   "title": "Bench Nova 2 Sonic (hi-IN kiara/arjun) once Bedrock access opens: first audio from India (n=20), cost per minute from usage events, Hinglish quality on the HUMAN-VOICE scenes vs Diya plain, and the child-safety battery (never-deny-AI, 1098/14416 spoken, no romance) scored with floorViolations on ASR of its output",
+   "at": "2026-10-04",
+   "source": "inbox/model-scout-speech.json"
+  },
+  {
+   "id": "w1-integration-local-2026-10-04",
+   "kind": "measurement",
+   "title": "Wave 1 integration, combined tree with all four seam patches applied (w1b-lesson-wiring, w1c-lesson-early-grade, w1c-state-reteach, w1f-serve-assets-404), local serve.mjs + worker on the Neon test branch: tests/prod/run.mjs --wave 1 run file by file, 13/13 files PASS (w0-smoke 5/5, w1a-battery 16/16, w1a-practice-ask 23/23, w1a-text-voice 3/3 p50 210 ms sandbox, w1a-young-text 14/14, w1b-mounts 52/52, w1b-tray 10/10, w1c-reteach 13/13, w1c-three-day 22/22 + 1 warn, w1c-settle 8/8 at default size n=13 held 13 settled, w1d-conductor 11/11, w1d-eyes 12/12, w1f-face 32/32); leftover test guardians 4 -> 4 in all 25 checks. npm test 1198/1202 pass, only failure migrations-applied (prod lacks 012, 013, 015)",
+   "at": "2026-10-04",
+   "source": "inbox/w1-integration.json"
+  },
+  {
+   "id": "w1-integration-probe-image-text-voice",
+   "kind": "decision",
+   "title": "Integration added tests/prod/w1a-text-voice.mjs to the probe image (infra/probes/Dockerfile COPY and deploy.mjs files list, W1-D files) so W1-A's text-lane p50 bar can run from Azure with TAXILA_PROBE=1. Reverse if the probe image moves to copying all of tests/prod",
+   "at": "2026-10-04",
+   "source": "inbox/w1-integration.json"
+  },
+  {
+   "id": "w1-open-settle-late-correction-vacuous",
+   "kind": "open",
+   "title": "w1c-settle's 'unsettled verdict is applied as a late correction' check passes 0/0 when every verdict settles in time, so the late-correction path is not exercised by the prod battery; needs a forced-slow-grader arm",
+   "at": "2026-10-04",
+   "source": "inbox/w1-integration.json"
+  },
+  {
+   "id": "w1-open-worker-deleted-child-steps",
+   "kind": "open",
+   "title": "The worker logs 'step failed' (no child / conductor_state FK violation) for test children deleted by DELETE /api/account mid-step, then retries; harmless locally but noise in prod logs and a retry loop on a gone child",
+   "at": "2026-10-04",
+   "source": "inbox/w1-integration.json"
   }
  ],
  "edges": [
@@ -10539,6 +10686,111 @@
    "src": "open-sweep-shares-erasure",
    "rel": "part_of",
    "dst": "w1d-nightly-sweep-not-in-image"
+  },
+  {
+   "src": "studio-race-gpt6sol-terra-luna",
+   "rel": "measured_by",
+   "dst": "studio-refresh-bench-2026-10-04"
+  },
+  {
+   "src": "studio-race-gpt6sol-terra-luna",
+   "rel": "part_of",
+   "dst": "live-studio-spec"
+  },
+  {
+   "src": "studio-race-gpt6sol-terra-luna",
+   "rel": "constrains",
+   "dst": "azure-billed-open-models"
+  },
+  {
+   "src": "kimi-capacity-for-live",
+   "rel": "caused_by",
+   "dst": "kimi-ttft-is-thinking"
+  },
+  {
+   "src": "kimi-capacity-for-live",
+   "rel": "caused_by",
+   "dst": "kimi-deepseek-pro-not-live"
+  },
+  {
+   "src": "live-studio-spec",
+   "rel": "measured_by",
+   "dst": "studio-anchor-hard-check-2026-10-04"
+  },
+  {
+   "src": "mistral-m35-ds4f0731-for-live-builds",
+   "rel": "caused_by",
+   "dst": "studio-refresh-bench-2026-10-04"
+  },
+  {
+   "src": "live-studio-repair-prompt-crash",
+   "rel": "caused_by",
+   "dst": "studio-refresh-bench-2026-10-04"
+  },
+  {
+   "src": "speech-aws-none-adopted-2026-10-04",
+   "rel": "measured_by",
+   "dst": "speech-scout-transcribe-lid-2026-10-04"
+  },
+  {
+   "src": "speech-aws-none-adopted-2026-10-04",
+   "rel": "measured_by",
+   "dst": "speech-scout-polly-2026-10-04"
+  },
+  {
+   "src": "speech-aws-none-adopted-2026-10-04",
+   "rel": "measured_by",
+   "dst": "speech-scout-nova-sonic-blocked-2026-10-04"
+  },
+  {
+   "src": "speech-aws-none-adopted-2026-10-04",
+   "rel": "measured_by",
+   "dst": "stt-hinglish-v2-synthetic"
+  },
+  {
+   "src": "speech-aws-none-adopted-2026-10-04",
+   "rel": "constrains",
+   "dst": "owner-azure-first-aws-second-2026-10-04"
+  },
+  {
+   "src": "speech-aws-none-adopted-2026-10-04",
+   "rel": "constrains",
+   "dst": "voice-ga-only-for-minors"
+  },
+  {
+   "src": "rj-aws-transcribe-all-modes",
+   "rel": "supersedes",
+   "dst": "rj-aws-transcribe-live-stt"
+  },
+  {
+   "src": "rj-aws-transcribe-all-modes",
+   "rel": "caused_by",
+   "dst": "speech-scout-transcribe-lid-2026-10-04"
+  },
+  {
+   "src": "speech-scout-transcribe-lid-2026-10-04",
+   "rel": "supersedes",
+   "dst": "scout-2026-10-04-transcribe-hi"
+  },
+  {
+   "src": "rj-polly-teacher-voice",
+   "rel": "caused_by",
+   "dst": "speech-scout-polly-2026-10-04"
+  },
+  {
+   "src": "rj-polly-teacher-voice",
+   "rel": "constrains",
+   "dst": "voice-one-identity-across-lanes"
+  },
+  {
+   "src": "open-nova-2-sonic-bench",
+   "rel": "blocks",
+   "dst": "scout-2026-10-04-bedrock-blocked"
+  },
+  {
+   "src": "open-nova-2-sonic-bench",
+   "rel": "caused_by",
+   "dst": "speech-scout-nova-sonic-blocked-2026-10-04"
   }
  ]
 }

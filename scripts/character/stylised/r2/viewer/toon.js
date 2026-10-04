@@ -65,7 +65,7 @@ void main() {
   if (!gl_FrontFacing) N = -N;
   vec3 V = normalize(cameraPosition - vW);
   vec3 L = normalize(uKeyDir);
-  vec3 albedo = uBase * vColor2;
+  vec3 albedo = uBase * (uKind > 2.5 && uKind < 3.5 ? mix(vec3(1.0), vColor2, 0.55) : vColor2);
   if (uHasMap > 0.5) albedo = texture2D(tMap, vUv).rgb;
   float ndl = dot(N, L);
   float w = wrapL(ndl, uWrap);
@@ -117,8 +117,9 @@ void main() {
   float ndl = dot(N, L);
   float w = smoothstep(0.0, 1.0, wrapL(ndl, uWrap));
   vec3 col = albedo * (vec3(1.0, 0.97, 0.94) * w * ao + vec3(0.62, 0.62, 0.64) * ao);
-  mat3 tbn = cotangentFrame(N, vW, vUv);
-  vec3 T = normalize(tbn[0]);
+  // flow: every strand sweeps toward the bun (smooth analytic field; derivative frames shimmer on SwiftShader/Mali)
+  vec3 toB = uEyeC - vW;
+  vec3 T = normalize(toB - dot(toB, N) * N + vec3(0.0, -1e-4, 0.0));
   vec3 H = normalize(L + V);
   float s1 = kk(normalize(T + N * 0.12), H, 28.0);
   float s2 = kk(normalize(T - N * 0.08), H, 8.0);
@@ -166,7 +167,7 @@ export const RIG = {
   keyCol: new THREE.Color(1.0, 0.94, 0.86).multiplyScalar(1.05),
   rimDir: new THREE.Vector3(0.75, 0.35, -0.6),
   rimCol: new THREE.Color(1.0, 0.86, 0.70),
-  sky: new THREE.Color(0.58, 0.55, 0.53),
+  sky: new THREE.Color(0.66, 0.63, 0.61),
   ground: new THREE.Color(0.36, 0.28, 0.22),
 };
 
@@ -194,15 +195,15 @@ function make(frag, kind, o = {}) {
 // material name (from the GLB) -> TaxilaToon material
 export function toonFor(name, src, tier = "H") {
   const C = {
-    skin: [240, 160, 100], hair: [62, 56, 54], brow: [52, 42, 38], lash: [18, 12, 10], bindi: [110, 30, 34],
+    skin: [240, 160, 100], hair: [66, 62, 62], brow: [52, 42, 38], lash: [18, 12, 10], bindi: [110, 30, 34],
     gold: [236, 184, 96], kurta: [18, 108, 118], piping: [200, 102, 48], teeth: [246, 240, 230], tongue: [190, 80, 72],
   };
   switch (name) {
-    case "skin": return make(FRAG_SURF, 0, { vcol: true, uv: true, sss: 0.38, rim: 0.22, spec: 0.35, rough: 0.6, wrap: 0.35 });
+    case "skin": return make(FRAG_SURF, 0, { vcol: true, uv: true, sss: 0.38, rim: 0.22, spec: 0.35, rough: 0.6, wrap: 0.45, aoLift: 0.75 });
     case "skin_ear": return make(FRAG_SURF, 1, { base: lin(C.skin), sss: 0.38, rim: 0.22, spec: 0.3, wrap: 0.5 });
     case "eye": return make(FRAG_EYE, 4, { map: src.map, uv: true });
     case "cornea": return make(FRAG_CORNEA, 5, { transparent: true });
-    case "hair": return make(tier === "H" ? FRAG_HAIR : FRAG_SURF, 2, { base: lin(C.hair), vcol: true, uv: tier === "H", spec: 1.0, rim: 0.35, wrap: 0.35 });
+    case "hair": return make(tier === "H" ? FRAG_HAIR : FRAG_SURF, 2, { base: lin(C.hair), vcol: true, uv: tier === "H", spec: 0.4, rim: 0.3, wrap: 0.5 });
     case "kurta": return make(FRAG_SURF, 3, { base: lin(C.kurta), vcol: true, sheen: 0.10, spec: 0.1, rim: 0.2, wrap: 0.45 });
     case "piping": return make(FRAG_SURF, 3, { base: lin(C.piping), sheen: 0.1, spec: 0.1, rim: 0.15 });
     case "gold": return make(FRAG_SURF, 1, { base: lin(C.gold), spec: 2.5, rough: 0.3, rim: 0.3, wrap: 0.2 });

@@ -1,0 +1,227 @@
+<style>
+  :root{
+    --bg:#f3f8ff;
+    --card:#ffffff;
+    --ink:#1f2a44;
+    --muted:#6d7da1;
+    --axis:#8da0c8;
+    --grid:#dbe6fb;
+    --bar:#5f8ff5;
+    --barTop:#89afff;
+    --good:#1e9f6e;
+    --bad:#d94a4a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink)}
+  #app{max-width:420px;margin:0 auto;padding:12px}
+  #title{margin:4px 4px 10px;text-align:center;font-size:24px;line-height:1.2}
+  #card{
+    background:var(--card);
+    border-radius:20px;
+    padding:10px 10px 14px;
+    box-shadow:0 8px 22px rgba(34,71,145,.14);
+  }
+  #chartBox{
+    background:linear-gradient(180deg,#f9fcff 0%,#f1f6ff 100%);
+    border-radius:16px;
+    padding:6px;
+  }
+  #chartSvg{width:100%;height:auto;display:block}
+  .grid{stroke:var(--grid);stroke-width:1}
+  .axis{stroke:var(--axis);stroke-width:1.5}
+  .tick{
+    fill:var(--muted);
+    font-size:11px;
+    text-anchor:end;
+    dominant-baseline:middle;
+  }
+  .ylabel{
+    fill:var(--muted);
+    font-size:12px;
+    text-anchor:middle;
+  }
+  .xlabel{
+    fill:var(--ink);
+    font-size:12px;
+    text-anchor:middle;
+  }
+  .bar{
+    fill:url(#barGrad);
+    rx:8;
+    ry:8;
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    transform:scaleY(0);
+    transition:transform 700ms cubic-bezier(.2,.9,.2,1);
+  }
+  .bar.in{transform:scaleY(1)}
+  .hit{
+    fill:transparent;
+    cursor:pointer;
+    touch-action:manipulation;
+  }
+  .hit:active{opacity:.12;fill:#2d62d1}
+  #ask{margin:12px 4px 2px;text-align:center;font-size:18px}
+  #feedback{min-height:26px;margin:6px 4px 0;text-align:center;font-size:18px;font-weight:700}
+  .good{color:var(--good)}
+  .bad{color:var(--bad)}
+</style>
+
+<div id="app">
+  <h1 id="title"></h1>
+  <div id="card">
+    <div id="chartBox">
+      <svg id="chartSvg" viewBox="0 0 340 300" aria-label="">
+        <defs>
+          <linearGradient id="barGrad" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#89afff"></stop>
+            <stop offset="100%" stop-color="#5f8ff5"></stop>
+          </linearGradient>
+        </defs>
+        <g id="gridG"></g>
+        <g id="axisG"></g>
+        <g id="barsG"></g>
+        <g id="labelsG"></g>
+        <g id="hitsG"></g>
+      </svg>
+    </div>
+    <p id="ask"></p>
+    <p id="feedback" aria-live="polite"></p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const data = (Studio.params && Studio.params.data) ? Studio.params.data.slice() : [];
+  const titleEl = document.getElementById('title');
+  const askEl = document.getElementById('ask');
+  const feedbackEl = document.getElementById('feedback');
+  const svg = document.getElementById('chartSvg');
+  const gridG = document.getElementById('gridG');
+  const axisG = document.getElementById('axisG');
+  const barsG = document.getElementById('barsG');
+  const labelsG = document.getElementById('labelsG');
+  const hitsG = document.getElementById('hitsG');
+
+  titleEl.textContent = Studio.t('title');
+  askEl.textContent = Studio.t('ask');
+
+  const W = 340, H = 300;
+  const m = {left:44, right:10, top:16, bottom:56};
+  const plotW = W - m.left - m.right;
+  const plotH = H - m.top - m.bottom;
+  const yBase = m.top + plotH;
+
+  const maxVal = Math.max.apply(null, data.map(d=>d.value));
+  function niceStep(max){
+    const raw = Math.max(1, max / 5);
+    const p = Math.pow(10, Math.floor(Math.log10(raw)));
+    const n = raw / p;
+    if (n <= 1) return 1 * p;
+    if (n <= 2) return 2 * p;
+    if (n <= 5) return 5 * p;
+    return 10 * p;
+  }
+  const step = niceStep(maxVal);
+  const top = Math.ceil(maxVal / step) * step;
+
+  function yOf(v){ return yBase - (v / top) * plotH; }
+
+  function el(name, attrs){
+    const n = document.createElementNS('http://www.w3.org/2000/svg', name);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    return n;
+  }
+
+  for(let t=0; t<=top; t+=step){
+    const y = yOf(t);
+    const line = el('line', {x1:m.left, y1:y, x2:W-m.right, y2:y, class:'grid'});
+    gridG.appendChild(line);
+
+    const tick = el('text', {x:m.left-6, y:y, class:'tick', 'data-tick':String(t)});
+    tick.textContent = String(t);
+    labelsG.appendChild(tick);
+  }
+
+  axisG.appendChild(el('line', {x1:m.left, y1:m.top, x2:m.left, y2:yBase, class:'axis'}));
+  axisG.appendChild(el('line', {x1:m.left, y1:yBase, x2:W-m.right, y2:yBase, class:'axis'}));
+
+  const yTitle = el('text', {
+    x:12, y:m.top + plotH/2, class:'ylabel',
+    transform:'rotate(-90 12 ' + (m.top + plotH/2) + ')'
+  });
+  yTitle.textContent = Studio.t('yaxis');
+  labelsG.appendChild(yTitle);
+
+  const n = data.length;
+  const slotW = plotW / n;
+  const barW = Math.min(slotW * 0.58, slotW - 10);
+  const hitW = Math.max(44, slotW * 0.88);
+
+  let locked = false;
+  let finished = false;
+
+  data.forEach((d,i)=>{
+    const cx = m.left + slotW * (i + 0.5);
+    const h = (d.value / top) * plotH;
+    const y = yBase - h;
+
+    const bar = el('rect', {
+      x: cx - barW/2,
+      y: y,
+      width: barW,
+      height: h,
+      class:'bar',
+      'data-bar': d.key,
+      'data-value': String(d.value)
+    });
+    bar.style.transitionDelay = String(80 + i * 90) + 'ms';
+    barsG.appendChild(bar);
+
+    const xl = el('text', {x:cx, y:yBase + 22, class:'xlabel'});
+    xl.textContent = Studio.t(d.key);
+    labelsG.appendChild(xl);
+
+    const hit = el('rect', {
+      x: cx - hitW/2,
+      y: m.top,
+      width: hitW,
+      height: plotH,
+      class:'hit'
+    });
+
+    hit.addEventListener('click', function(){
+      if (locked || finished) return;
+      locked = true;
+      feedbackEl.className = '';
+      feedbackEl.textContent = String(d.value);
+      Studio.event('bar_tap', {key:d.key, value:d.value});
+      Studio.answer(String(d.key));
+    });
+
+    hitsG.appendChild(hit);
+  });
+
+  requestAnimationFrame(function(){
+    const bars = barsG.querySelectorAll('.bar');
+    for(let i=0;i<bars.length;i++) bars[i].classList.add('in');
+  });
+
+  Studio.onVerdict(function(v){
+    if (finished) return;
+    if (v && v.correct){
+      feedbackEl.className = 'good';
+      feedbackEl.textContent = Studio.t('right');
+      askEl.textContent = Studio.t('done');
+      finished = true;
+      Studio.done();
+    }else{
+      feedbackEl.className = 'bad';
+      feedbackEl.textContent = Studio.t('wrong');
+      locked = false;
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

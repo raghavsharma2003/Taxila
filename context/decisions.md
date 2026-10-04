@@ -2287,3 +2287,30 @@ Without it a test child's report.daily (due 04:10 tomorrow in shifted time) wait
 
 ## `voice-clips-off-and-numbers-normalised` (2026-10-04)
 Non-verbal clips are off for every voice; laughs only where the engine renders them natively and in context; numbers and terms are normalised to spoken Hindi words plus a lexicon before TTS (no digits, no "..." sent). The voice search continues because nothing met the bar. Reverse if a future blind round prefers clipped renders.
+
+## Image model and capacity (2026-10-04)
+- `image-default-flare-low-2026-10-04`: default is gpt-image-2.5-flare at quality low (owner pick; same price as gpt-image-2, measured somewhat faster), overflow to gpt-image-2. Supersedes owner-gpt-image-2-default-2026-10-04. Reverse if blind quality checks put flare below image-2 or its quota cannot be raised.
+- `image-capacity-pool-2026-10-04`: flare quota is subscription-wide (4 RPM in total), gpt-image-2 quota is per region, so gpt-image-2 runs at 4 RPM in each of uaenorth, polandcentral, swedencentral, westus3 and eastus2 (20 RPM). The image lane routes flare first, then gpt-image-2 nearest-first with 429 failover, serves library/prefetched images first, and needs a flare quota increase before launch. Reverse when one deployment's quota covers peak demand.
+
+
+<!-- merged from inbox/model-refresh-studio.json -->
+## studio-race-gpt6sol-terra-luna
+PROPOSED (main loop applies after gates). Live Studio race: `taxila-gpt6` (gpt-6-sol, Direct meter 6-sol $2/$10) low + `gpt-5.6-terra` low, plus `taxila-gpt6-luna` (Direct, $0.10/$0.50) low as an opportunistic third arm on every archetype; `taxila-brain` leaves the race (also frees its shared quota, O-3); codex stays the 429 fallback only. Why: both race arms are 15/15 alone (the race must survive one arm's 429), the 3-arm set beats today's pair on P(pass by 60 s) with non-overlapping 80% Wilson intervals ([0.90-1.00] vs [0.50-0.80], n=15 pooled), p50 26.7 vs 42.0 s, and costs $0.125 vs $0.213 per race. gpt-6-luna is not a race arm on its own because it is 2/5 on charts. gpt-6.1-sol is excluded until it has a retail meter (MODEL-ROUTER R5). n=5 per archetype is below the §8 ship bar: confirm at n=10 per archetype in the weekly router bench before switching. **Reverse** if, at n>=10 per archetype, gpt-6-sol's after-repair pass rate falls below terra's or gpt-5.6-sol's with non-overlapping 80% Wilson intervals, if the 3-arm set's P(pass by 60 s) is not above today's pair, or if `taxila-gpt6` turns out to share a quota pool with live-lesson calls and 429s under Studio load.
+
+
+<!-- merged from inbox/model-scout-speech.json -->
+## speech-aws-none-adopted-2026-10-04
+2026-10-04. No AWS speech service enters a lane. STT stays `taxila-live-transcribe` + keywords (D4), with Azure Speech real-time continuous LID hi-IN/en-IN (R4) as the streaming fallback. Cascade TTS stays DragonHD Diya (per `voice-choice-v2`). Premium speech-to-speech stays on Azure (gpt-realtime-2.1; gpt-live-1 when its southindia quota exists). Nova 2 Sonic is not recommended for any child-facing lane.
+
+Rationale (evals/model-scout-2026-10-04/speech/):
+- Transcribe's best mode (multi-LID) loses to D4 on every accuracy metric and on latency, and to R4 on answers (64/78 vs 74/78) and latency (2.28 vs 0.88 s after speech end).
+- Polly has one Hindi voice, no non-verbals and 0/40 pairwise wins against Diya.
+- Nova 2 Sonic cannot be called (concurrency quota 0), so its safety floor is unmeasured, and it is us-east-1 only.
+- The owner rule `owner-azure-first-aws-second-2026-10-04` requires AWS to be clearly better, and none is.
+
+Possible later role, not proposed: Transcribe multi-LID as a third, different-cloud STT fallback for a full-Azure outage ($0.60/h).
+
+Reverse if any of these happens:
+- **Transcribe:** an India-hosted rerun shows multi-LID final text under ~1.0 s after speech end AND answers >= R4 (74/78), or the real-children set E1 favours it.
+- **Polly:** AWS ships a male Hindi voice and a Mumbai generative engine, and the owner's blind panel prefers it to Diya.
+- **Nova 2 Sonic:** access opens AND it passes all of: the child-safety battery 100%; first audio from India <= gpt-realtime-2.1's 776 ms median; Hinglish quality at or above the premium lane on the same judge plus the owner's blind panel.

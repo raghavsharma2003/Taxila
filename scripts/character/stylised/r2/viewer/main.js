@@ -22,7 +22,7 @@ scene.background = new THREE.Color(252 / 255, 229 / 255, 189 / 255).convertSRGBT
 const camera = new THREE.PerspectiveCamera(14, W / H, 0.05, 20);
 const pivot = new THREE.Group();
 scene.add(pivot);
-let root = null, morphMeshes = [], bones = {}, eyeMats = [], tier = "H";
+let root = null, morphMeshes = [], bones = {}, eyeMats = [], hairMats = [], tier = "H";
 const ktx2 = new KTX2Loader().setTranscoderPath("/node_modules/three/examples/jsm/libs/basis/").detectSupport(renderer);
 const loader = new GLTFLoader().setKTX2Loader(ktx2).setMeshoptDecoder(MeshoptDecoder);
 
@@ -54,7 +54,7 @@ window.TX = {
     tier = t;
     if (root) pivot.remove(root);
     const g = await loader.loadAsync(url + "?v=" + Date.now());
-    root = g.scene; morphMeshes = []; bones = {}; eyeMats = [];
+    root = g.scene; morphMeshes = []; bones = {}; eyeMats = []; hairMats = [];
     const missing = new Set();
     root.traverse((o) => {
       if (o.isBone) bones[o.name] = o;
@@ -62,10 +62,11 @@ window.TX = {
         const src = o.material;
         const m = toonFor(src.name, src, tier);
         if (!m) { missing.add(src.name); return; }
-        o.material = m;
+        o.material = m; o.userData.srcMat = src.name;
         o.frustumCulled = false;
         if (src.name === "eye" || src.name === "cornea") eyeMats.push({ m, mesh: o });
         if (src.name === "cornea") o.renderOrder = 2;
+        if (src.name === "hair") hairMats.push(m);
         if (o.morphTargetDictionary) morphMeshes.push(o);
       }
     });
@@ -102,6 +103,7 @@ window.TX = {
       b.quaternion.copy(b.userData.q0).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler((hp * Math.PI) / 180, (hy * Math.PI) / 180, (hr * Math.PI) / 180)));
     }
     root.updateMatrixWorld(true);
+    for (const hm of hairMats) { const hw = new THREE.Vector3(); if (bones.Head) { bones.Head.getWorldPosition(hw); } hm.uniforms.uEyeC.value.set(hw.x + 0.015, hw.y + 0.02, hw.z - 0.047); }  // bun attach (Blender 0.015, 0.095, -0.04)
     for (const n of ["LeftEye", "RightEye"]) {
       const b = bones[n]; if (!b) continue;
       const c = new THREE.Vector3(); b.getWorldPosition(c);
@@ -123,6 +125,7 @@ window.TX = {
       }
     });
   },
+  hide(names) { root.traverse((o) => { if (o.isMesh && o.userData.srcMat && names.includes(o.userData.srcMat)) o.visible = false; }); },
   view,
   render() { renderer.render(scene, camera); return renderer.info.render.triangles; },
   bones() { return Object.fromEntries(Object.entries(bones).map(([k, b]) => { const v = new THREE.Vector3(); b.getWorldPosition(v); return [k, v.toArray()]; })); },

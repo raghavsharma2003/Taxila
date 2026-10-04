@@ -130,6 +130,24 @@ def inside(w):
     return n
 res['lid_inside_ball'] = {'rest': inside({}), 'blink': inside({'eyeBlinkLeft': 1, 'eyeBlinkRight': 1}),
                           'happy_squint': inside({'eyeSquintLeft': 1, 'eyeSquintRight': 1, 'cheekSquintLeft': 1, 'cheekSquintRight': 1})}
+# G-partial (r2, TECH-PLAN §5.5): lid vertices inside the ball and mouth-seam leaks at partial weights and pairwise
+# combos (a linear morph travels the chord, so a pose that passes at 1.0 can still fail at 0.5)
+gp = {}
+for a in (0.25, 0.5, 0.75):
+    gp[f'blink{a}'] = inside({'eyeBlinkLeft': a, 'eyeBlinkRight': a})
+    gp[f'blink{a}+lookDown{a}'] = inside({'eyeBlinkLeft': a, 'eyeBlinkRight': a, 'eyeLookDownLeft': a, 'eyeLookDownRight': a, 'eyeBlink_eyeLookDownLeft': a * a, 'eyeBlink_eyeLookDownRight': a * a})
+    gp[f'blink{a}+squint{a}'] = inside({'eyeBlinkLeft': a, 'eyeBlinkRight': a, 'eyeSquintLeft': a, 'eyeSquintRight': a, 'eyeBlink_eyeSquintLeft': a * a, 'eyeBlink_eyeSquintRight': a * a})
+gm = {}
+for a in (0.25, 0.5, 0.75):
+    f, teeth = mouth_leak({'jawOpen': a, 'mouthClose': a, 'jawOpen_mouthClose': a * a})
+    gm[f'jaw{a}+close{a}'] = round(f * 100, 2)
+    f, teeth = mouth_leak({'viseme_PP': a})
+    gm[f'PP{a}_teeth_rays'] = teeth
+for a in (0.25, 0.5, 0.75):
+    g4p = eye_leak({'eyeBlinkLeft': 1, 'eyeBlinkRight': 1, 'eyeLookDownLeft': a, 'eyeLookDownRight': a, 'eyeBlink_eyeLookDownLeft': a, 'eyeBlink_eyeLookDownRight': a})
+    gm[f'blink1+lookDown{a}_ball_pct'] = round(g4p * 100, 2)
+res['G_partial'] = {'lid_verts_inside_ball': gp, 'mouth_and_seal': gm,
+                    'pass': all(v == 0 for v in gp.values()) and all(v == 0 for k, v in gm.items())}
 json.dump(res, open(out, 'w'), indent=1)
 print(json.dumps(res, indent=1))
 os._exit(0)
