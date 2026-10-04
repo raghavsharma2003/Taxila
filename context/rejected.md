@@ -1453,3 +1453,5 @@ and the migration scan fails.
 **What broke:** Chromium emits a `request` event even for a CSP-blocked load (it then fails with `csp`).
 
 **Replaced by:** assertions on `requestfinished`, and on `requestfailed` other than `csp`.
+
+- `rj-support-api-tickets-developer-plan` (2026-10-04): tried filing the South India PostgreSQL and Azure OpenAI quota tickets through the ARM Support API with the Contributor service principal. The PUT returns 202, but the async operation fails with `InvalidSupportPlan`: the subscription is on the Developer support plan, and the API needs Professional Direct or higher. Quota tickets must be filed by the owner in the portal (free). **Reverse if:** the support plan is upgraded.
