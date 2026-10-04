@@ -1,0 +1,373 @@
+<style>
+  :root {
+    --bg: #FFF5EB;
+    --ink: #3E2723;
+    --accent: #FF7043;
+    --accent2: #FF8A65;
+    --selected: #FFD54F;
+    --unselected: #FFFFFF;
+    --outline: #8D6E63;
+    --success: #66BB6A;
+    --error: #EF5350;
+    --hint: #8D6E63;
+    --shadow: rgba(255,112,67,0.25);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+  }
+  #app {
+    width: 100%;
+    max-width: 360px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    position: relative;
+  }
+  #game {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    gap: 10px;
+  }
+  .header { text-align: center; margin-top: 4px; }
+  .title { font-size: 24px; font-weight: 800; color: var(--accent); line-height: 1.2; }
+  .instr { font-size: 15px; color: var(--hint); margin-top: 4px; line-height: 1.35; }
+  .progress {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 2px;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: #D7CCC8; transition: 0.3s; }
+  .dot.active { background: var(--accent); transform: scale(1.25); }
+  .dot.done { background: var(--success); }
+  .fraction {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--accent);
+    margin: 2px 0;
+  }
+  .fraction .vbar { width: 3px; height: 48px; background: var(--accent); border-radius: 2px; }
+  .shape-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 220px;
+  }
+  .part { cursor: pointer; transition: fill 0.2s ease; }
+  .part[data-shaded="false"] { fill: var(--unselected); }
+  .part[data-shaded="true"] { fill: var(--selected); }
+  .part:active { filter: brightness(0.88); }
+  .hint { font-size: 15px; color: var(--hint); text-align: center; min-height: 22px; font-weight: 600; margin-top: 4px; }
+  .btn-check {
+    width: 100%;
+    max-width: 280px;
+    min-height: 56px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: #fff;
+    font-size: 18px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 8px 20px var(--shadow);
+    transition: transform 0.1s;
+    margin-top: 4px;
+  }
+  .btn-check:active { transform: scale(0.97); }
+  .feedback {
+    min-height: 24px;
+    font-size: 16px;
+    font-weight: 700;
+    text-align: center;
+    transition: color 0.3s;
+  }
+  .feedback.right { color: var(--success); }
+  .feedback.wrong { color: var(--error); }
+  #done {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 24px;
+    text-align: center;
+  }
+  .done-title { font-size: 28px; font-weight: 800; color: var(--accent); }
+  .btn-done {
+    min-height: 56px;
+    padding: 0 48px;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: #fff;
+    font-size: 20px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 8px 24px var(--shadow);
+    transition: transform 0.1s;
+  }
+  .btn-done:active { transform: scale(0.96); }
+  @keyframes popIn {
+    0% { transform: scale(0.92); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .pop-in { animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+</style>
+
+<div id="app">
+  <div id="game">
+    <div class="header">
+      <div class="title" id="el-title"></div>
+      <div class="instr" id="el-instr"></div>
+    </div>
+    <div class="progress" id="el-progress"></div>
+    <div class="fraction">
+      <span id="el-n">0</span>
+      <div class="vbar"></div>
+      <span id="el-d">0</span>
+    </div>
+    <div class="shape-wrap" id="el-wrap" data-item="">
+      <div id="el-shape"></div>
+    </div>
+    <div class="hint" id="el-hint"></div>
+    <button class="btn-check" id="el-check" data-action="check"></button>
+    <div class="feedback" id="el-feedback"></div>
+  </div>
+  <div id="done">
+    <div class="done-title" id="el-done"></div>
+    <button class="btn-done" id="el-finish"></button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var items = Studio.params.items || [];
+  var picture = Studio.params.picture || 'pizza-or-bar';
+
+  var elGame = document.getElementById('game');
+  var elDone = document.getElementById('done');
+  var elWrap = document.getElementById('el-wrap');
+  var elShape = document.getElementById('el-shape');
+  var elN = document.getElementById('el-n');
+  var elD = document.getElementById('el-d');
+  var elTitle = document.getElementById('el-title');
+  var elInstr = document.getElementById('el-instr');
+  var elHint = document.getElementById('el-hint');
+  var elCheck = document.getElementById('el-check');
+  var elFeedback = document.getElementById('el-feedback');
+  var elProgress = document.getElementById('el-progress');
+  var elDoneTitle = document.getElementById('el-done');
+  var elFinish = document.getElementById('el-finish');
+
+  var idx = 0;
+  var selected = new Set();
+  var locked = false;
+
+  function t(el, key){ el.textContent = Studio.t(key); }
+
+  function buildDots(){
+    elProgress.innerHTML = '';
+    items.forEach(function(_, i){
+      var d = document.createElement('div');
+      d.className = 'dot' + (i === 0 ? ' active' : '');
+      elProgress.appendChild(d);
+    });
+  }
+
+  function updateDots(){
+    var ds = elProgress.children;
+    for(var i = 0; i < ds.length; i++){
+      ds[i].className = 'dot' + (i < idx ? ' done' : i === idx ? ' active' : '');
+    }
+  }
+
+  function makePizza(denom){
+    var ns = 'http://www.w3.org/2000/svg';
+    var size = 260;
+    var cx = 130, cy = 130, r = 110;
+    var svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('width', '280');
+    svg.setAttribute('height', '280');
+    svg.setAttribute('viewBox', '0 0 ' + size + ' ' + size);
+
+    var crust = document.createElementNS(ns, 'circle');
+    crust.setAttribute('cx', cx);
+    crust.setAttribute('cy', cy);
+    crust.setAttribute('r', r);
+    crust.setAttribute('fill', 'var(--unselected)');
+    crust.setAttribute('stroke', 'var(--outline)');
+    crust.setAttribute('stroke-width', '4');
+    svg.appendChild(crust);
+
+    for(var i = 0; i < denom; i++){
+      var a0 = -90 + (360/denom)*i;
+      var a1 = a0 + (360/denom);
+      var rad0 = Math.PI/180*a0;
+      var rad1 = Math.PI/180*a1;
+      var x0 = cx + r*Math.cos(rad0);
+      var y0 = cy + r*Math.sin(rad0);
+      var x1 = cx + r*Math.cos(rad1);
+      var y1 = cy + r*Math.sin(rad1);
+      var large = (360/denom) > 180 ? 1 : 0;
+
+      var path = document.createElementNS(ns, 'path');
+      var da = 'M ' + cx + ' ' + cy + ' L ' + x0 + ' ' + y0 + ' A ' + r + ' ' + r + ' 0 ' + large + ' 1 ' + x1 + ' ' + y1 + ' Z';
+      path.setAttribute('d', da);
+      path.setAttribute('data-part', String(i));
+      path.setAttribute('data-shaded', 'false');
+      path.setAttribute('class', 'part');
+      path.setAttribute('stroke', 'var(--outline)');
+      path.setAttribute('stroke-width', '2');
+      path.setAttribute('stroke-linejoin', 'round');
+      svg.appendChild(path);
+    }
+    return svg;
+  }
+
+  function makeBar(denom){
+    var ns = 'http://www.w3.org/2000/svg';
+    var W = 320, H = 120, pad = 8;
+    var gap = 6;
+    var sw = (W - pad*2 - gap*(denom-1))/denom;
+    var svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('width', '328');
+    svg.setAttribute('height', '140');
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+    var bg = document.createElementNS(ns, 'rect');
+    bg.setAttribute('x', '0');
+    bg.setAttribute('y', '0');
+    bg.setAttribute('width', W);
+    bg.setAttribute('height', H);
+    bg.setAttribute('rx', '12');
+    bg.setAttribute('fill', '#F5EBE0');
+    bg.setAttribute('stroke', 'var(--outline)');
+    bg.setAttribute('stroke-width', '3');
+    svg.appendChild(bg);
+
+    for(var i = 0; i < denom; i++){
+      var rect = document.createElementNS(ns, 'rect');
+      rect.setAttribute('x', pad + i*(sw+gap));
+      rect.setAttribute('y', '10');
+      rect.setAttribute('width', sw);
+      rect.setAttribute('height', H-20);
+      rect.setAttribute('rx', '8');
+      rect.setAttribute('data-part', String(i));
+      rect.setAttribute('data-shaded', 'false');
+      rect.setAttribute('class', 'part');
+      rect.setAttribute('stroke', 'var(--outline)');
+      rect.setAttribute('stroke-width', '2');
+      svg.appendChild(rect);
+    }
+    return svg;
+  }
+
+  function clearFeedback(){
+    elFeedback.textContent = '';
+    elFeedback.className = 'feedback';
+  }
+
+  function showFeedback(ok){
+    if(ok){
+      elFeedback.textContent = Studio.t('right');
+      elFeedback.className = 'feedback right';
+    }else{
+      elFeedback.textContent = Studio.t('wrong');
+      elFeedback.className = 'feedback wrong';
+    }
+  }
+
+  function render(i){
+    if(i >= items.length){
+      showDone();
+      return;
+    }
+    idx = i;
+    selected = new Set();
+    locked = false;
+    clearFeedback();
+    updateDots();
+
+    var it = items[i];
+    elWrap.setAttribute('data-item', it.id);
+    elN.textContent = String(it.n);
+    elD.textContent = String(it.d);
+
+    elShape.innerHTML = '';
+    var isPizza = (picture === 'pizza-or-bar' && it.d <= 8) || picture === 'pizza';
+    var svg = isPizza ? makePizza(it.d) : makeBar(it.d);
+    svg.classList.add('pop-in');
+    elShape.appendChild(svg);
+
+    var parts = svg.querySelectorAll('.part');
+    parts.forEach(function(p){
+      p.addEventListener('click', function(e){
+        if(locked) return;
+        e.stopPropagation();
+        var pid = this.getAttribute('data-part');
+        var on = this.getAttribute('data-shaded') === 'true';
+        if(on){
+          this.setAttribute('data-shaded', 'false');
+          selected.delete(pid);
+        }else{
+          this.setAttribute('data-shaded', 'true');
+          selected.add(pid);
+        }
+        Studio.event('toggle', {part: pid, shaded: !on});
+        clearFeedback();
+      });
+    });
+  }
+
+  elCheck.addEventListener('click', function(){
+    if(locked) return;
+    var it = items[idx];
+    Studio.answer({n: selected.size, d: it.d});
+  });
+
+  Studio.onVerdict(function(v){
+    var ok = !!v.correct;
+    showFeedback(ok);
+    if(ok){
+      locked = true;
+      setTimeout(function(){
+        render(idx+1);
+      }, 900);
+    }
+  });
+
+  function showDone(){
+    elGame.style.display = 'none';
+    elDone.style.display = 'flex';
+    t(elDoneTitle, 'done');
+    t(elFinish, 'done');
+    elFinish.addEventListener('click', function(){
+      Studio.done();
+    });
+  }
+
+  t(elTitle, 'title');
+  t(elInstr, 'instr');
+  t(elHint, 'hint');
+  t(elCheck, 'check');
+  buildDots();
+  render(0);
+  Studio.ready();
+})();
+</script>
