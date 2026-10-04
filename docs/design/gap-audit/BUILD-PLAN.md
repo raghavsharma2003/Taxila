@@ -1661,7 +1661,7 @@ Route `image-default-flare-low-2026-10-04` then the gpt-image-2 pool per `image-
 (uaenorth, polandcentral, swedencentral, westus3) plus the eastus2 account; nearest-first, 429 => next pool member, per-child and global rate caps,
 library/prefetch hits before any live generation. Owner action: flare quota increase.
 
-### Speech-gated streaming STT (owner-approved 2026-10-04, W2 Human Voice stream)
+### Speech-gated streaming STT — ON HOLD (owner 2026-10-04: avoid for now; `owner-no-speech-gating-2026-10-04`; full-session streaming stays)
 Per `owner-stt-cost-plan-2026-10-04`: the mic and an on-device speech detector (the existing client VAD/worklet) run for the whole session; the
 STT stream carries audio only while speech is present plus ~300 ms pre-roll and a short hangover, so barge-in and mid-turn questions behave exactly as
 with full streaming. Acceptance: on the synthetic child corpus and recorded barge-in scripts, 0 clipped onsets and 0 missed barge-ins vs full

@@ -2448,3 +2448,5 @@ Code keeps hard rules, authority order, budgets and the final decision; models p
 
 ## Merged inbox entries (write-up from the entry text)
 - `stt-always-on-session-hour-basis` (2026-10-04): Owner directive 2026-10-04: the child is heard for the whole session (always-on, full-duplex), so STT is costed per session-hour, not per speech-minute; MODEL-STACK §275 lever 1 (stream only child-turn windows) is off the table. Reverse if: the owner withdraws the directive, or E1 shows barge-in and mid-turn questions work equally well with device-VAD-gated windows.
+
+- `owner-no-speech-gating-2026-10-04` (2026-10-04): owner: no speech-gated STT streaming for now; the full session is streamed. MAI-Transcribe-2 stays preferred. gpt-transcribe is not eligible for live STT without gating because it produced text on 7 of 12 non-speech clips. Supersedes the gating part of owner-stt-cost-plan-2026-10-04. Reverse when the owner reopens STT cost.

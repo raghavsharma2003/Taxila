@@ -827,8 +827,12 @@ var K = class {
 			browR: 4
 		})) {
 			let n = this.layers[e];
-			for (let r = 0; r < n.n; r++) n.z[r] = e === "bun" ? -80 : n.z[r] + t;
+			for (let r = 0; r < n.n; r++) n.z[r] = e === "bun" ? -30 : n.z[r] + t;
 		}
+		let s = (e, t) => {
+			for (let n = 0; n < e.n; n++) e.z[n] = t(e.rest[n * 2], e.rest[n * 2 + 1]);
+		};
+		s(this.layers.lockL, () => U(300, 470) + 10), s(this.layers.lockR, () => U(745, 480) + 10), s(this.layers.ears, (e) => (e < 530 ? U(290, 500) : U(770, 490)) - 10);
 		for (let e of ["L", "R"]) {
 			let t = this.layers["lock" + e];
 			t.y0 = t.rect[1] + 6, t.len = t.rect[3] - t.y0, t.spring = new K(55, .22), t.springY = new K(70, .3);
@@ -914,21 +918,21 @@ var K = class {
 				bot: new Float32Array(i - r + 1)
 			};
 		}
-		let [s, c] = n.cell, [l, u] = n.origin;
+		let [c, l] = n.cell, [u, d] = n.origin;
 		this.mouthRect = [
-			l,
 			u,
-			l + s,
-			u + c
+			d,
+			u + c,
+			d + l
 		];
-		let d = ne(this.mouthRect, 14);
-		this.mouthRest = d.rest, this.mouthPos = new Float32Array(d.rest), this.mouthZ = new Float32Array(d.n);
-		for (let e = 0; e < d.n; e++) this.mouthZ[e] = U(d.rest[e * 2], d.rest[e * 2 + 1]) + 4;
-		let f = r.mouths.width, p = r.mouths.height;
+		let f = ne(this.mouthRect, 14);
+		this.mouthRest = f.rest, this.mouthPos = new Float32Array(f.rest), this.mouthZ = new Float32Array(f.n);
+		for (let e = 0; e < f.n; e++) this.mouthZ[e] = U(f.rest[e * 2], f.rest[e * 2 + 1]) + 4;
+		let p = r.mouths.width, m = r.mouths.height;
 		this.mouthMesh = {};
 		for (let [e, t] of Object.entries(n.patches)) {
-			let n = new Float32Array(d.n * 2);
-			for (let e = 0; e < d.n; e++) n[e * 2] = (t.cell[0] + d.uv[e * 2] * s) / f, n[e * 2 + 1] = (t.cell[1] + d.uv[e * 2 + 1] * c) / p;
+			let n = new Float32Array(f.n * 2);
+			for (let e = 0; e < f.n; e++) n[e * 2] = (t.cell[0] + f.uv[e * 2] * c) / p, n[e * 2 + 1] = (t.cell[1] + f.uv[e * 2 + 1] * l) / m;
 			this.mouthMesh[e] = this.R.mesh(a, {
 				aPos: {
 					data: this.mouthPos,
@@ -939,9 +943,9 @@ var K = class {
 					data: n,
 					size: 2
 				}
-			}, d.idx);
+			}, f.idx);
 		}
-		this.mouthN = d.n, this.prevAnchor = null, this.prevVel = {
+		this.mouthN = f.n, this.prevAnchor = null, this.prevVel = {
 			L: [0, 0],
 			R: [0, 0],
 			bun: [0, 0]

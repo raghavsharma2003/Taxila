@@ -428,6 +428,12 @@ def load_model(arm, wroot):
             model = WhisperForConditionalGeneration.from_pretrained(path, dtype=dt)
     else:
         raise ValueError(fam)
+    if tiny:
+        from transformers import GenerationConfig
+        try:
+            model.generation_config = GenerationConfig.from_pretrained(path)
+        except Exception:      # noqa: BLE001
+            pass
     model = model.to(dev, dtype=dt).eval()
     sync()
     info.update(loadS=round(time.time() - t, 1), device=dev, dtype=str(dt), paramsM=round(sum(p.numel() for p in model.parameters()) / 1e6, 1),

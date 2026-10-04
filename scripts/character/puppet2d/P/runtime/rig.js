@@ -150,8 +150,16 @@ export class Puppet2DRig {
     const off = { hairback: -20, bun: 0, ears: -25, hair: 6, lockL: 10, lockR: 10, browL: 4, browR: 4 };
     for (const [n, o] of Object.entries(off)) {
       const L = this.layers[n];
-      for (let i = 0; i < L.n; i++) L.z[i] = n === "bun" ? -80 : L.z[i] + o;
+      for (let i = 0; i < L.n; i++) L.z[i] = n === "bun" ? -30 : L.z[i] + o;
     }
+    // near the silhouette the ellipsoid depth is steep: rigid parts there (locks, ears) take ONE depth each so a
+    // turn moves them as a piece instead of shearing them (a lock torn into slices was the r3 defect)
+    const rigidZ = (L, pick) => {
+      for (let i = 0; i < L.n; i++) L.z[i] = pick(L.rest[i * 2], L.rest[i * 2 + 1]);
+    };
+    rigidZ(this.layers.lockL, () => zHead(300, 470) + 10);
+    rigidZ(this.layers.lockR, () => zHead(745, 480) + 10);
+    rigidZ(this.layers.ears, (x) => (x < 530 ? zHead(290, 500) : zHead(770, 490)) - 10);
     // locks: anchor (top) and length for the pendulum weight
     for (const s of ["L", "R"]) {
       const L = this.layers["lock" + s];

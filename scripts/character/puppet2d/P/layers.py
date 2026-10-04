@@ -364,7 +364,7 @@ _, fa = matte(face, face_area & ~face)
 geom_out["rects"]["face"] = save_layer("face", face_rgb, fa)
 
 # ------------------------------------------------------------------ ears (+ studs), overscan under face/hair/locks
-ear_area = ears | (ndi.binary_dilation(ears, iterations=10) & face) | (ndi.binary_dilation(ears, iterations=6) & hair & (lum < 80))
+ear_area = ears | (ndi.binary_dilation(ears, iterations=10) & face)
 ear_rgb = dehalo(im, ears, ear_area, erode=1, smooth=40)
 inner = ndi.binary_erosion(ears, iterations=1)
 ear_rgb[inner] = im[inner]
@@ -395,7 +395,36 @@ for name, m, sig in (("hair", hair, 0.7), ("bun", bun, 0.7), ("lockL", lockL, 0.
         a = a * np.clip((yy - y0 - 6) / 24.0, 0, 1)
     else:
         rgb, a = matte(m, over)
-    if over is not None:
+    if over is not None and name == "bun":
+        # continue the knot's own radial shading into its hidden part: sample the visible bun at the same
+        # normalised radius, at the nearest visible angle (polar extrapolation about the fitted ellipse)
+        cx0, cy0, ax, ay = 683, 658, 80.0, 86.0
+        vis = ndi.binary_erosion(bun, iterations=3)
+        ang = np.arctan2((yy - cy0) / ay, (xx - cx0) / ax)
+        rad = np.sqrt(((xx - cx0) / ax) ** 2 + ((yy - cy0) / ay) ** 2)
+        NA, NR = 360, 60
+        ai = ((ang + np.pi) / (2 * np.pi) * NA).astype(int) % NA
+        ri = np.clip((rad * NR).astype(int), 0, NR - 1)
+        tab = np.zeros((NR, NA, 3), np.float32); cnt = np.zeros((NR, NA), np.float32)
+        np.add.at(tab, (ri[vis], ai[vis]), im[vis]); np.add.at(cnt, (ri[vis], ai[vis]), 1)
+        known_t = cnt > 0
+        tab[known_t] /= cnt[known_t][:, None]
+        for r in range(NR):   # fill missing angles from the nearest known angle (circular)
+            ks = np.where(known_t[r])[0]
+            if len(ks) == 0:
+                continue
+            for a_ in np.where(~known_t[r])[0]:
+                d = np.minimum(np.abs(ks - a_), NA - np.abs(ks - a_))
+                tab[r, a_] = tab[r, ks[np.argmin(d)]]
+        for r in range(NR):
+            if not known_t[r].any():
+                tab[r] = tab[r - 1] if r > 0 else tab[r]
+        fillc = tab[ri, ai]
+        fillc = cv2.GaussianBlur(fillc, (0, 0), 2.0)
+        seam = m & ~ndi.binary_erosion(m, iterations=3) & ndi.binary_dilation(over, iterations=4)
+        rgb = np.where((over & ~m)[..., None] | seam[..., None], fillc, rgb)
+        a = np.where(seam, 1.0, a)
+    elif over is not None:
         rgb = np.where((over & ~m)[..., None], pullpush(im, ndi.binary_erosion(m, iterations=2)), rgb)
     geom_out["rects"][name] = save_layer(name, rgb, a)
 
