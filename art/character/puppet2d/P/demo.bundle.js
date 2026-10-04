@@ -1439,9 +1439,9 @@ async function le() {
 		window.P2D.ready = !0;
 		return;
 	}
-	let T = new Audio("./audio/voice.mp3"), E = !1, D = performance.now(), k = -1, A = document.getElementById("hud"), j = (e) => {
+	let T = new Audio("./audio/voice.mp3"), E = !1, D = performance.now() - (q.get("start") || 0) * 1e3, k = -1, A = document.getElementById("hud"), j = (e) => {
 		let t = (e - D) / 1e3 % Z;
-		k > 0 && x.intervals.push(e - k), k = e, n.clock = t + Math.floor((e - D) / 1e3 / Z) * Z, t < m && (m = -1), !E && t >= Y && (E = !0, T.currentTime = 0, T.play().catch(() => {})), t < Y && (E = !1);
+		k > 0 && x.intervals.push(e - k), k = e, n.clock = t + Math.floor((e - D) / 1e3 / Z) * Z, t < m && (m = -1), !E && t >= Y && t < 17 && (E = !0, T.currentTime = Math.max(0, t - Y), T.play().catch(() => {})), t < Y && (E = !1);
 		let r = w(t);
 		if (A && x.frames % 15 == 0) {
 			let e = x.intervals.slice(-120), t = e.length ? 1e3 / (e.reduce((e, t) => e + t, 0) / e.length) : 0, i = x.work.slice(-120).sort((e, t) => e - t);

@@ -169,7 +169,7 @@ async function main() {
   }
   // realtime
   const player = new Audio("./audio/voice.mp3");
-  let started = false, t0 = performance.now(), lastNow = -1;
+  let started = false, t0 = performance.now() - (+(Q.get("start") || 0)) * 1000, lastNow = -1;
   const hud = document.getElementById("hud");
   const loop = (now) => {
     const t = ((now - t0) / 1000) % DURATION;
@@ -177,7 +177,7 @@ async function main() {
     lastNow = now;
     rig.clock = t + Math.floor((now - t0) / 1000 / DURATION) * DURATION;
     if (t < lastT) { lastT = -1; }
-    if (!started && t >= TALK_AT) { started = true; player.currentTime = 0; player.play().catch(() => {}); }
+    if (!started && t >= TALK_AT && t < TALK_AT + 12) { started = true; player.currentTime = Math.max(0, t - TALK_AT); player.play().catch(() => {}); }
     if (t < TALK_AT) started = false;
     const r = step(t);
     if (hud && stats.frames % 15 === 0) {
