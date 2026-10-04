@@ -1,0 +1,98 @@
+<style>
+  *{box-sizing:border-box}
+  :root{color-scheme:light}
+  body{margin:0;background:#fff8ed;color:#263d46;font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif}
+  .card{width:min(100%,520px);min-height:100svh;margin:auto;padding:20px 14px 22px;display:flex;flex-direction:column;align-items:center;gap:12px}
+  h1{margin:0;color:#315d59;font-size:clamp(22px,6vw,29px);line-height:1.2;text-align:center}
+  .chart-wrap{width:100%;border-radius:24px;background:#fff;box-shadow:0 5px 20px #64451d14;padding:8px 4px 2px}
+  svg{display:block;width:100%;height:auto;overflow:visible}
+  .grid{stroke:#e9eee8;stroke-width:1}
+  .axis{stroke:#849993;stroke-width:1.5}
+  .tick-label{fill:#60756f;font-size:12px}
+  .axis-title{fill:#49645e;font-size:13px;font-weight:700}
+  .fruit-label{fill:#455e58;font-size:12px;font-weight:650}
+  .bar{fill:#f2a64a;animation:appear .65s ease both}
+  .bar-group:nth-of-type(2) .bar{fill:#78b7a5}
+  .bar-group:nth-of-type(3) .bar{fill:#e98269}
+  .bar-group:nth-of-type(4) .bar{fill:#9e9bd0}
+  .bar-group:nth-of-type(5) .bar{fill:#e7c75d}
+  .bar-hit{fill:transparent;cursor:pointer}
+  .bar-group{outline:none}
+  .bar-group:focus .bar,.bar-group:active .bar{filter:brightness(.9)}
+  .prompt{min-height:48px;padding:12px 16px;width:100%;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:18px;background:#eaf4ed;color:#315d59;font-size:17px;font-weight:700}
+  .feedback{min-height:28px;text-align:center;font-size:17px;font-weight:700;color:#315d59}
+  .feedback.wrong{color:#a65a45}
+  @keyframes appear{from{opacity:.25}to{opacity:1}}
+  @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+<main class="card">
+  <h1 id="title"></h1>
+  <div class="chart-wrap">
+    <svg id="chart" viewBox="0 0 360 330" role="img" aria-labelledby="title"></svg>
+  </div>
+  <div class="prompt" id="ask"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+<script>
+(()=>{
+  const data=Studio.params.data;
+  const t=Studio.t;
+  const svg=document.getElementById("chart");
+  const NS="http://www.w3.org/2000/svg";
+  const make=(name,attrs={},text)=>{
+    const el=document.createElementNS(NS,name);
+    for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);
+    if(text!==undefined)el.textContent=text;
+    return el;
+  };
+  document.getElementById("title").textContent=t("title");
+  document.getElementById("ask").textContent=t("ask");
+  const maxValue=Math.max(...data.map(d=>d.value));
+  const raw=maxValue/4;
+  const magnitude=Math.pow(10,Math.floor(Math.log10(raw)));
+  const scaled=raw/magnitude;
+  const step=(scaled<=1?1:scaled<=2?2:scaled<=5?5:10)*magnitude;
+  const top=Math.ceil(maxValue/step)*step;
+  const left=58,right=350,plotTop=32,base=258;
+  const plotH=base-plotTop;
+  const y=value=>base-(value/top)*plotH;
+  for(let v=0;v<=top;v+=step){
+    const yy=y(v);
+    svg.append(make("line",{x1:left,y1:yy,x2:right,y2:yy,class:"grid"}));
+    svg.append(make("text",{x:left-9,y:yy+4,"text-anchor":"end",class:"tick-label","data-tick":v},String(v)));
+  }
+  svg.append(make("line",{x1:left,y1:plotTop,x2:left,y2:base,class:"axis"}));
+  svg.append(make("line",{x1:left,y1:base,x2:right,y2:base,class:"axis"}));
+  const axis=make("text",{x:17,y:(plotTop+base)/2,"text-anchor":"middle",class:"axis-title",transform:`rotate(-90 17 ${(plotTop+base)/2})`},t("yaxis"));
+  svg.append(axis);
+  const slot=(right-left)/data.length;
+  data.forEach((d,i)=>{
+    const cx=left+slot*(i+.5), yy=y(d.value), width=56;
+    const group=make("g",{class:"bar-group",tabindex:"0",role:"button","aria-label":`${t(d.key)} ${d.value}`});
+    group.append(make("rect",{x:cx-width/2,y:yy,width,height:base-yy,rx:6,class:"bar","data-bar":d.key,"data-value":d.value}));
+    group.append(make("rect",{x:cx-slot/2+2,y:plotTop,width:slot-4,height:base-plotTop+38,class:"bar-hit"}));
+    group.append(make("text",{x:cx,y:base+23,"text-anchor":"middle",class:"fruit-label"},t(d.key)));
+    const choose=()=>{
+      if(group.dataset.locked==="true")return;
+      data.forEach((_,j)=>{const g=svg.querySelectorAll(".bar-group")[j];g.dataset.locked="true";});
+      Studio.event("bar_tap",{key:d.key});
+      Studio.answer(d.key);
+    };
+    group.addEventListener("click",choose);
+    group.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();choose();}});
+    svg.append(group);
+  });
+  Studio.onVerdict(({correct})=>{
+    const feedback=document.getElementById("feedback");
+    feedback.textContent=correct?t("right"):t("wrong");
+    feedback.className="feedback"+(correct?"":" wrong");
+    if(correct){
+      document.getElementById("ask").textContent=t("done");
+      Studio.done();
+    }else{
+      svg.querySelectorAll(".bar-group").forEach(g=>{g.dataset.locked="false";});
+    }
+  });
+  Studio.ready();
+})();
+</script>
