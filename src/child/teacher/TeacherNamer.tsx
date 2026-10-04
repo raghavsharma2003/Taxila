@@ -12,8 +12,7 @@ import { Teacher } from "../../ui/teacher/Teacher.tsx";
 import { teacherRecord } from "../../ui/teacher/useTeacher.ts";
 import { Spot } from "../art.tsx";
 import { ApiError } from "../../lesson/api.ts";
-import { TUTORS, tutorById } from "../../../shared/tutors.js";
-import { fill, NAME_COPY as C, normalizeTeacherName, saveTeacherName, teacherNameShape, TEACHER_NAME, type NameReason } from "./naming.ts";
+import { fill, fitNames, NAME_COPY as C, normalizeTeacherName, saveTeacherName, teacherNameShape, TEACHER_NAME, type NameReason } from "./naming.ts";
 import "./teacher-name.css";
 
 export interface TeacherNamerProps {
@@ -40,20 +39,6 @@ export interface TeacherNamerProps {
   onGateError?: () => void;
   /** Overrides the child-facing title (the parent corner: "Choose a name for the teacher"). */
   title?: string;
-}
-
-/**
- * PURE. Names that fit the teacher being named (flows G9): another character's own name is offered only when that
- * character presents the same way as this one ("Arjun" is never offered for a woman teacher, "Asha" never for a man).
- * Names that are no character's own are kept (neutral suggestions).
- */
-export function fitNames(names: string[], characterId: string): string[] {
-  const me = tutorById(characterId)?.look?.presentedGender ?? null;
-  if (!me) return names;
-  return names.filter((n) => {
-    const other = TUTORS.find((x) => x.displayName.roman.toLowerCase() === n.toLowerCase());
-    return !other || other.id === characterId || other.look?.presentedGender === me;
-  });
 }
 
 export function TeacherNamer(p: TeacherNamerProps) {

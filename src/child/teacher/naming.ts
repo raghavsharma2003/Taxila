@@ -3,6 +3,7 @@
 // is the only authority. The shape rule is shared (shared/tutors.js) so the step can answer instantly; the denylists
 // (slurs, profanity, romance and companion terms, public figures) and the own-name rule live on the server only.
 // Chrome is ENGLISH ONLY. Every line here is rendered copy and never prompt text.
+import { TUTORS, tutorById } from "../../../shared/tutors.js";
 import type { TeacherNameRefused, TeacherNameResponse } from "../../../shared/contracts.ts";
 import { normalizeTeacherName, teacherNameShape, TEACHER_NAME } from "../../../shared/tutors.js";
 import { ApiError, getJson, postJson } from "../../lesson/api.ts";
@@ -69,3 +70,18 @@ export const NAME_COPY = {
 } as const;
 
 export const fill = (s: string, v: Record<string, string>) => s.replace(/\{(\w+)\}/g, (_, k: string) => v[k] ?? "");
+
+/**
+ * PURE. Names that fit the teacher being named (flows G9): another character's own name is offered only when that
+ * character presents the same way as this one ("Arjun" is never offered for a woman teacher, "Asha" never for a man).
+ * Names that are no character's own are kept (neutral suggestions).
+ */
+export function fitNames(names: string[], characterId: string): string[] {
+  const me = tutorById(characterId)?.look?.presentedGender ?? null;
+  if (!me) return names;
+  return names.filter((n) => {
+    const other = TUTORS.find((x) => x.displayName.roman.toLowerCase() === n.toLowerCase());
+    return !other || other.id === characterId || other.look?.presentedGender === me;
+  });
+}
+

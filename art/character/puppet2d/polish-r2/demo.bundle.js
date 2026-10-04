@@ -498,7 +498,7 @@ var C = class {
 		}
 		return this.prev = r, r;
 	}
-}, k = "#version 300 es\nin vec2 aPos; in vec2 aUv;\nuniform vec2 uView; uniform vec4 uCam; // cam: x0, y0, scale, flipY\nout vec2 vUv; out vec2 vRest;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vUv = aUv;\n}", A = "#version 300 es\nprecision mediump float;\nin vec2 vUv;\nuniform sampler2D uTex; uniform float uAlpha; uniform vec4 uShade; // shade: dirX, x0, x1, amount\nuniform vec4 uRect; // texture rect in rest space (x0,y0,w,h) for shading position\nuniform vec4 uTint; // debug: rgb, amount\nout vec4 o;\nvoid main(){\n  vec4 c = texture(uTex, vUv);\n  float x = uRect.x + vUv.x * uRect.z;\n  float s = clamp((x - uShade.y) / (uShade.z - uShade.y), 0.0, 1.0);\n  s = uShade.x > 0.0 ? s : 1.0 - s;\n  c.rgb *= 1.0 - uShade.w * s * s;\n  c.rgb = mix(c.rgb, uTint.rgb * c.a, uTint.a);\n  o = c * uAlpha;\n}", j = "#version 300 es\nin vec2 aPos; in vec2 aRest; in float aEdge;\nuniform vec2 uView; uniform vec4 uCam;\nout vec2 vRest; out float vEdge;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vRest = aRest; vEdge = aEdge;\n}", M = "#version 300 es\nprecision highp float;\nin vec2 vRest; in float vEdge;\nuniform sampler2D uSclera; uniform vec4 uScleraRect;\nuniform sampler2D uIris; uniform vec4 uIrisRect;\nuniform sampler2D uCatch; uniform vec4 uCatchRect;\nuniform vec2 uIrisOff; uniform vec2 uIrisC; uniform vec2 uIrisScale; uniform vec2 uCatchOff; uniform float uCatchA;\nuniform float uLidShade; uniform float uTopY;\nout vec4 o;\nvec4 tex(sampler2D t, vec4 r, vec2 p){\n  vec2 uv = (p - r.xy) / r.zw;\n  if (uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) return vec4(0.0);\n  return texture(t, uv);\n}\nvoid main(){\n  vec4 s = tex(uSclera, uScleraRect, vRest);\n  vec3 col = s.a > 0.0 ? s.rgb / s.a : vec3(0.95);\n  vec2 ip = uIrisC + (vRest - uIrisC - uIrisOff) / uIrisScale;\n  vec4 ir = tex(uIris, uIrisRect, ip);\n  col = col * (1.0 - ir.a) + ir.rgb;\n  // lid shadow: the band right under the upper lid darkens a little (wraps the eye)\n  col *= 1.0 - uLidShade * clamp(1.0 - (vRest.y - uTopY) / 9.0, 0.0, 1.0);\n  vec4 cl = tex(uCatch, uCatchRect, vRest - uCatchOff);\n  col = mix(col, vec3(1.0), cl.a * uCatchA);\n  float a = clamp(vEdge, 0.0, 1.0);\n  o = vec4(col * a, a);\n}";
+}, k = "#version 300 es\nin vec2 aPos; in vec2 aUv;\nuniform vec2 uView; uniform vec4 uCam; // cam: x0, y0, scale, flipY\nout vec2 vUv; out vec2 vRest;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vUv = aUv;\n}", A = "#version 300 es\nprecision mediump float;\nin vec2 vUv;\nuniform sampler2D uTex; uniform float uAlpha; uniform vec4 uShade; // shade: dirX, x0, x1, amount\nuniform vec4 uRect; // texture rect in rest space (x0,y0,w,h) for shading position\nuniform vec4 uTint; // debug: rgb, amount\nout vec4 o;\nvoid main(){\n  vec4 c = texture(uTex, vUv);\n  float x = uRect.x + vUv.x * uRect.z;\n  float s = clamp((x - uShade.y) / (uShade.z - uShade.y), 0.0, 1.0);\n  s = uShade.x > 0.0 ? s : 1.0 - s;\n  c.rgb *= 1.0 - uShade.w * s * s;\n  c.rgb = mix(c.rgb, uTint.rgb * c.a, uTint.a);\n  o = c * uAlpha;\n}", j = "#version 300 es\nin vec2 aPos; in vec2 aRest; in float aEdge; in float aTop;\nuniform vec2 uView; uniform vec4 uCam;\nout vec2 vRest; out float vEdge; out float vTop;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vRest = aRest; vEdge = aEdge; vTop = aTop;\n}", M = "#version 300 es\nprecision highp float;\nin vec2 vRest; in float vEdge; in float vTop;\nuniform sampler2D uSclera; uniform vec4 uScleraRect;\nuniform sampler2D uIris; uniform vec4 uIrisRect;\nuniform sampler2D uCatch; uniform vec4 uCatchRect;\nuniform vec2 uIrisOff; uniform vec2 uIrisC; uniform vec2 uIrisScale; uniform vec2 uCatchOff; uniform float uCatchA;\nuniform float uLidShade; uniform float uTopY;\nout vec4 o;\nvec4 tex(sampler2D t, vec4 r, vec2 p){\n  vec2 uv = (p - r.xy) / r.zw;\n  if (uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) return vec4(0.0);\n  return texture(t, uv);\n}\nvoid main(){\n  vec4 s = tex(uSclera, uScleraRect, vRest);\n  vec3 col = s.a > 0.0 ? s.rgb / s.a : vec3(0.95);\n  vec2 ip = uIrisC + (vRest - uIrisC - uIrisOff) / uIrisScale;\n  vec4 ir = tex(uIris, uIrisRect, ip);\n  col = col * (1.0 - ir.a) + ir.rgb;\n  // lid shadow: the band right under the upper lid darkens a little (wraps the eye)\n  // r2: per-column lid line (vTop), a soft wrap shadow ~10 px deep under the whole lid, as in c-front\n  float dl = clamp((vRest.y - vTop) / 10.0, 0.0, 1.0);\n  col *= 1.0 - uLidShade * (1.0 - dl) * (1.0 - dl);\n  vec4 cl = tex(uCatch, uCatchRect, vRest - uCatchOff);\n  col = mix(col, vec3(1.0), cl.a * uCatchA);\n  float a = clamp(vEdge, 0.0, 1.0);\n  o = vec4(col * a, a);\n}";
 function N(e, t, n) {
 	let r = e.createProgram();
 	for (let [i, a] of [[e.VERTEX_SHADER, t], [e.FRAGMENT_SHADER, n]]) {
@@ -913,9 +913,9 @@ var q = class {
 		}
 		this.bunSpring = [new q(90, .5), new q(90, .5)], this.eyes = {};
 		for (let e of ["L", "R"]) {
-			let n = t.eyes[e], r = n.x[0], i = n.x[1], o = Math.floor((i - r) / 2) + 1, s = o * 4, c = new Float32Array(s * 2), l = new Float32Array(s * 2), u = new Float32Array(s);
+			let n = t.eyes[e], r = n.x[0], i = n.x[1], o = Math.floor((i - r) / 2) + 1, s = o * 4, c = new Float32Array(s * 2), l = new Float32Array(s * 2), u = new Float32Array(s), d = new Float32Array(s);
 			for (let e = 0; e < o; e++) for (let t = 0; t < 4; t++) u[e * 4 + t] = t === 0 || t === 3 ? 0 : Math.min(1, e / 2, (o - 1 - e) / 2);
-			let d = this.R.mesh(this.R.eye, {
+			let f = this.R.mesh(this.R.eye, {
 				aPos: {
 					data: c,
 					size: 2,
@@ -929,44 +929,49 @@ var q = class {
 				aEdge: {
 					data: u,
 					size: 1
+				},
+				aTop: {
+					data: d,
+					size: 1,
+					dynamic: !0
 				}
-			}, G(o, 4)), f = n.lashX[0], p = n.lashX[1], m = Math.floor((p - f) / 3) + 1, h = new Float32Array(m * 8 * 2), g = new Float32Array(m * 8 * 2), _ = new Float32Array(m * 8), v = t.rects["lid" + e];
-			for (let e = 0; e < m; e++) {
-				let t = Math.min(p, f + e * 3), r = K(f, n.lashTop, t) - n.fall, i = K(f, n.lashBot, t) + 8.5;
+			}, G(o, 4)), p = n.lashX[0], m = n.lashX[1], h = Math.floor((m - p) / 3) + 1, g = new Float32Array(h * 8 * 2), _ = new Float32Array(h * 8 * 2), v = new Float32Array(h * 8), y = t.rects["lid" + e];
+			for (let e = 0; e < h; e++) {
+				let t = Math.min(m, p + e * 3), r = K(p, n.lashTop, t) - n.fall, i = K(p, n.lashBot, t) + 8.5;
 				for (let n = 0; n < 8; n++) {
 					let a = n / 7, o = r + a * (i - r), s = e * 8 + n;
-					h[s * 2] = t, h[s * 2 + 1] = o, g[s * 2] = (t - v[0]) / (v[2] - v[0]), g[s * 2 + 1] = (o - v[1]) / (v[3] - v[1]), _[s] = B(.1, .55, a);
+					g[s * 2] = t, g[s * 2 + 1] = o, _[s * 2] = (t - y[0]) / (y[2] - y[0]), _[s * 2 + 1] = (o - y[1]) / (y[3] - y[1]), v[s] = B(.1, .55, a);
 				}
 			}
-			let y = new Float32Array(h), b = this.R.mesh(a, {
+			let b = new Float32Array(g), x = this.R.mesh(a, {
 				aPos: {
-					data: y,
+					data: b,
 					size: 2,
 					dynamic: !0
 				},
 				aUv: {
-					data: g,
+					data: _,
 					size: 2
 				}
-			}, G(m, 8)), x = Math.floor((i - r) / 3) + 1, S = new Float32Array(x * 5 * 2), C = new Float32Array(x * 5 * 2), w = new Float32Array(x * 5), T = t.rects["lower" + e];
-			for (let e = 0; e < x; e++) {
+			}, G(h, 8)), S = Math.floor((i - r) / 3) + 1, C = new Float32Array(S * 5 * 2), w = new Float32Array(S * 5 * 2), T = new Float32Array(S * 5), E = t.rects["lower" + e];
+			for (let e = 0; e < S; e++) {
 				let t = Math.min(i, r + e * 3), a = K(r, n.bot, t);
 				for (let n = 0; n < 5; n++) {
-					let r = n / 4, i = Math.max(T[1], a - 3) + r * (Math.min(T[3], a + 19) - Math.max(T[1], a - 3)), o = e * 5 + n;
-					S[o * 2] = t, S[o * 2 + 1] = i, C[o * 2] = (t - T[0]) / (T[2] - T[0]), C[o * 2 + 1] = (i - T[1]) / (T[3] - T[1]), w[o] = r;
+					let r = n / 4, i = Math.max(E[1], a - 3) + r * (Math.min(E[3], a + 19) - Math.max(E[1], a - 3)), o = e * 5 + n;
+					C[o * 2] = t, C[o * 2 + 1] = i, w[o * 2] = (t - E[0]) / (E[2] - E[0]), w[o * 2 + 1] = (i - E[1]) / (E[3] - E[1]), T[o] = r;
 				}
 			}
-			let E = new Float32Array(S), D = this.R.mesh(a, {
+			let D = new Float32Array(C), O = this.R.mesh(a, {
 				aPos: {
-					data: E,
+					data: D,
 					size: 2,
 					dynamic: !0
 				},
 				aUv: {
-					data: C,
+					data: w,
 					size: 2
 				}
-			}, G(x, 5));
+			}, G(S, 5));
 			this.eyes[e] = {
 				e: n,
 				xa: r,
@@ -975,19 +980,20 @@ var q = class {
 				R: 4,
 				pos: c,
 				restA: l,
-				mesh: d,
-				LC: m,
+				topA: d,
+				mesh: f,
+				LC: h,
 				LR: 8,
-				lrest: h,
-				lpos: y,
-				lv: _,
-				lmesh: b,
-				BC: x,
+				lrest: g,
+				lpos: b,
+				lv: v,
+				lmesh: x,
+				BC: S,
 				BR: 5,
-				brest: S,
-				bpos: E,
-				bv: w,
-				bmesh: D,
+				brest: C,
+				bpos: D,
+				bv: T,
+				bmesh: O,
 				top: new Float32Array(i - r + 1),
 				bot: new Float32Array(i - r + 1)
 			};
@@ -1174,12 +1180,12 @@ var q = class {
 			];
 			for (let e = 0; e < 4; e++) {
 				let r = a <= i + .05 ? i : c[e];
-				n.restA[s * 2] = t, n.restA[s * 2 + 1] = r;
+				n.restA[s * 2] = t, n.restA[s * 2 + 1] = r, n.topA[s] = i;
 				let l = this.project(t, r, o(t, r));
 				n.pos[s * 2] = l[0], n.pos[s * 2 + 1] = l[1], s++;
 			}
 		}
-		i.update(n.mesh, "aPos", n.pos), i.update(n.mesh, "aRest", n.restA);
+		i.update(n.mesh, "aPos", n.pos), i.update(n.mesh, "aRest", n.restA), i.update(n.mesh, "aTop", n.topA);
 		let c = this.gaze || [0, 0], l = c[0] / 25 * 17, u = -(c[1] / 20) * 8 + (c[1] < 0 ? -c[1] / 25 * 2 : 0), d = Math.cos((c[0] + .2 * a.yaw) * V * 1.2), [f, p] = r.iris;
 		i.drawEye(n.mesh, {
 			sclera: {
@@ -1199,7 +1205,7 @@ var q = class {
 			irisScale: [Math.max(.82, d), n.blink > .85 ? .95 : 1],
 			catchOff: [l * .45, u * .45],
 			catchA: 1,
-			lidShade: .06,
+			lidShade: .16,
 			topY: K(n.xa, n.top, f)
 		});
 		for (let e = 0; e < n.BC; e++) for (let t = 0; t < n.BR; t++) {
