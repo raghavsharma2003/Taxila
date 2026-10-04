@@ -9,7 +9,7 @@
 // The worker gets taxila-web's model / storage env (report.daily's writer and Forge read them) and its secrets by
 // value, never printed. forge.g2.nightly stays paused (server/conductor/handlers.js) unless FORGE_G2_NIGHTLY=on.
 //
-//   node scripts/deploy-worker.mjs [--dry-run] [--force] [--jobs] [--jobs-only]
+//   node scripts/deploy-worker.mjs [--dry-run] [--force] [--jobs] [--jobs-only] [--from-tree [--branch B]]
 //   test targets:  --app NAME (default taxila-worker; jobs are prefixed by it) --db test (the Neon TEST branch,
 //                  CONDUCTOR_TEST_DATABASE_URL) --local (build the WORKING TREE, uploaded; only with --db test)
 //                  --manual (jobs are MANUAL-trigger, never scheduled: a proof run starts them by hand, so a scratch
@@ -32,6 +32,10 @@ const DRY = flag("--dry-run"), FORCE = flag("--force"), JOBS = flag("--jobs") ||
 const APP = opt("--app", "taxila-worker"), WEB = "taxila-web", ACR = "taxilacr", API = "api-version=2024-03-01";
 const TEST_DB = opt("--db", "prod") === "test", LOCAL = flag("--local");
 if (LOCAL && !TEST_DB) throw new Error("--local builds an unpushed, ungated tree: only with --db test (never against production data)");
+// --from-tree: build the image from this checkout's files instead of the branch tip, for pinning the worker to the exact
+// gated commit the web runs (e.g. a clean worktree at that sha). Allowed for production only when the tree is clean, the
+// commit is already on origin (an ancestor of the remote branch), and it has a passing gate (checked below).
+const FROM_TREE = flag("--from-tree");
 const PROD = !TEST_DB;
 const MANUAL = flag("--manual");
 if (MANUAL && PROD) throw new Error("--manual (unscheduled jobs) is for --db test proof runs only");
@@ -43,7 +47,14 @@ if (PROD && istMin >= 18 * 60 && istMin < 21 * 60 + 30 && !FORCE && !DRY) throw 
 const branch = branchName();
 const full = headSha(), sha = full.slice(0, 7);
 const tag = LOCAL ? `${sha}-local-${Date.now().toString(36).slice(-5)}` : sha;
-if (!LOCAL && !DRY) {
+if (FROM_TREE && !DRY) {
+  const { execSync } = await import("child_process");
+  if (execSync("git status --porcelain -- server shared data db/migrations package.json package-lock.json Dockerfile.worker", { cwd: ROOT }).toString().trim()) throw new Error("--from-tree needs the worker context (server, shared, data, db/migrations, package files, Dockerfile.worker) clean");
+  const onto = opt("--branch", "claude/blissful-mayer-icwe2j");
+  execSync(`git fetch -q origin ${onto}`, { cwd: ROOT });
+  try { execSync(`git merge-base --is-ancestor ${full} FETCH_HEAD`, { cwd: ROOT }); }
+  catch { throw new Error(`--from-tree: ${sha} is not on origin/${onto}; push it first`); }
+} else if (!LOCAL && !DRY) {
   const { execSync } = await import("child_process");
   const remote = execSync(`git ls-remote origin refs/heads/${branch}`, { cwd: ROOT }).toString().slice(0, 40);
   if (remote !== full) throw new Error(`HEAD ${sha} is not pushed (origin has ${remote.slice(0, 7)}): push first`);
@@ -63,9 +74,10 @@ function localContext() {
 // ── 1. image ──
 const image = `${ACR}.azurecr.io/taxila-worker:${tag}`;
 if (!DRY) {
-  console.log(`building taxila-worker:${tag} from ${LOCAL ? "the working tree" : branch}…`);
+  const TREE = LOCAL || FROM_TREE;
+  console.log(`building taxila-worker:${tag} from ${TREE ? `the checked-out tree (${sha})` : branch}…`);
   await acrBuild({ images: [`taxila-worker:${tag}`, ...(LOCAL ? [] : ["taxila-worker:latest"])], dockerfile: "Dockerfile.worker",
-    ...(LOCAL ? { dir: ROOT, files: localContext() } : { git: { repo: REPO, branch } }) });
+    ...(TREE ? { dir: ROOT, files: localContext() } : { git: { repo: REPO, branch } }) });
 }
 
 // ── 2. the bodies, derived from taxila-web (same environment, same registry access, same model/storage env) ──

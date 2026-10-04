@@ -5,13 +5,13 @@ image `taxila-web:9242020` (Wave 1 + router ship-now fixes). Production DB = `.e
 identical to taxila-web's `DATABASE_URL` secret by string compare; never printed). `TAXILA_OPS_KEY` from `.env.local`
 (verified equal to the Container App's value). No product code was changed. Nothing committed or pushed.
 
-Run from the US sandbox container under `NODE_USE_ENV_PROXY=1`, 2026-10-04 13:52–16:xx UTC.
+Run from the US sandbox container under `NODE_USE_ENV_PROXY=1`, 2026-10-04 13:52–16:13 UTC.
 
 ## Summary
 
 | step | check | result |
 |---|---|---|
-| 1 | `deploy-worker.mjs --jobs` (clean worktree) | __WORKER__ |
+| 1 | `deploy-worker.mjs --jobs` (clean worktree) | **BLOCKED** — migrations gate refused (prod lacks `019_home_states.sql`); no worker, no jobs. See F6 |
 | 2 | probe image rebuild (`infra/probes/deploy.mjs`) | PASS — `taxila-probe:pmutvrmyw`, jobs ci + eus2 updated |
 | 2 | probe adhoc `w1a-text-voice` (eastus2) | PASS 3/3 — p50 182 ms, p90 224 ms, n = 20 (bar ≤ 400 ms, enforced) — see note T3 |
 | 3 | w0-smoke | PASS 5/5 |
@@ -25,12 +25,14 @@ Run from the US sandbox container under `NODE_USE_ENV_PROXY=1`, 2026-10-04 13:52
 | 3 | w1c-three-day | PASS 22/22 (1 WARN: delayed check cannot lift shallow, known) |
 | 3 | w1c-settle (4 chunks, 28 lessons) | PASS — 63/63 held verdicts settled = 100 % (bar ≥ 95 %), 0 late |
 | 3 | w1d-eyes | PASS 18/18 (routed; 5xx alert FIRED 14:48:33Z) |
-| 3 | w1d-conductor | __CONDUCTOR__ |
+| 3 | w1d-conductor | FAIL 8/10 — the 2 report/letter checks need the worker (not deployed). See F7 |
 | 3 | w1f-face | PASS 32/32 (routed) |
 | 3 | `verify-release --live --only live-probes,prod-smoke` | PASS 2/2 gates (live-probes 10/10, prod-smoke 9/9) |
-| 4 | leftover @taxila.test guardians | __GUARDIANS__ |
+| 4 | leftover @taxila.test guardians | PASS — 7 before, 7 after (2 leaked by F1 deleted via the API) |
 
-**Real product bugs found: none.** Every failure traced to the sandbox network path or the test harness (below).
+**Real product bugs found: none.** Every failure traced to the sandbox network path, the test harness, or the
+worker not being deployed (an ops/deploy-process blocker, F6). **Wave 1 is not fully accepted in production until
+the worker runs and w1d-conductor passes.**
 
 "routed" = Chromium's same-origin requests served through Node `fetch` by a scratch preload
 (`--import pwroute.mjs`, not in the repo), the method already used in `docs/design/gap-audit/live-content.md`
@@ -70,6 +72,38 @@ Analytics. **Env/harness**, not product.
 At 13:52 UTC (19:22 IST) `deploy-worker.mjs` refuses production deploys (X37 freeze 18:00–21:30 IST). `--force` was
 not used; the worker deploy ran after 16:00 UTC (21:30 IST) and w1d-conductor after it.
 
+### F6 — step 1 worker deploy refused by the migrations gate (deploy process, BLOCKER)
+Run after the freeze from a clean worktree (`git worktree add --force /home/user/taxila-deploy2
+claude/blissful-mayer-icwe2j`, `cp -al node_modules`, `cp .env.local`; worktree removed afterwards):
+```
+gate: GitHub Actions gates: success
+building taxila-worker:08e10d0 from claude/blissful-mayer-icwe2j…
+  acr chv: Succeeded
+Error: migrations gate: the target database lacks 019_home_states.sql (node scripts/migrate.mjs against it first). Refusing to deploy 08e10d0.
+```
+Diagnosis: `deploy-worker.mjs` always builds the branch TIP, and background sessions kept pushing WIP checkpoints to
+`claude/blissful-mayer-icwe2j` during this run (be526f3 → c24e967 → 08e10d0 → 99f00b8 locally). At 13:52 the tip
+differed from 9242020 in no worker path; by 16:01 the tip carried a new migration (019) and ~8.7k changed lines in
+`server/ shared/ db/` that production's web (9242020) does not run. The gate did its job. Applying 019 to production
+would not make this right either: the worker would run newer code than the web. **Not a product bug; a deploy-process
+gap**: the worker cannot be deployed at the web's sha (no `--image-tag`/`--sha` option; ACR builds the branch tip).
+Needs a main-loop decision: (a) build the worker from 9242020 (a pinned branch/tag or a deploy-worker `--sha`), or
+(b) redeploy the web and the worker together at a newer gated sha with 019 applied.
+Side effect: the ACR build ran and pushed `taxila-worker:08e10d0` and moved `taxila-worker:latest` to 08e10d0
+(nothing runs `:latest`; no Container App or job was created or changed).
+Ops consequence: production web enqueues Conductor jobs that nothing runs: every real child's `report.daily`,
+`parent.letter`, `memory.consolidate` stays `queued` until the worker exists (seen in F7).
+
+### F7 — w1d-conductor: 8/10 (follows from F6)
+```
+FAIL report.daily for 2026-10-04 is listed in the parent reports area (none)
+FAIL parent.letter for 2026-W40 (a Sunday) is listed
+jobs: memory.consolidate=queued, forge.g2.nightly=queued, parent.letter=queued, report.daily=queued, memory.consolidate=queued
+```
+Everything the web does itself passed (test clock wired, student_event rows, conductor_state fold, day_plan, Monday
+lesson, forge.g2.nightly paused). The two failures are the worker's work and are expected with no worker.
+**Not a product bug; re-run after F6 is resolved.**
+
 ### T5 — the guardian-count check is global (harness noise)
 `leftover @taxila.test guardians` is a count over the whole DB; during this run it read 10 → 9 inside one file
 (another session's account went away mid-run). It can false-fail or false-pass when other sessions test concurrently.
@@ -77,7 +111,9 @@ not used; the worker deploy ran after 16:00 UTC (21:30 IST) and w1d-conductor af
 ## Step detail
 
 ### Step 1 — worker
-__WORKER_DETAIL__
+Dry run at 14:46 UTC (tip c24e967) was clean: `gate: GitHub Actions gates: success`, `migrations: every
+db/migrations file of c24e967 is applied on the target database`, both jobs listed. Real run at 16:01 UTC (tip 08e10d0)
+refused, F6. State after: `taxila-worker` none, `taxila-conductor-canary` none, `taxila-conductor-nightly` none.
 
 ### Step 3 — w1c-settle split
 | delay | lessons | held | settled | late-corrected | file time |
@@ -96,4 +132,7 @@ c5-maths-ch02-t01 and c6-science-ch02-t01: one G1 fill posed, only the wrong com
 c7-maths-ch08-t01: item-bound only through G1 fills (no catalog-bound engine), only the right commit sent.
 
 ### Step 4 — test accounts
-__GUARDIANS_DETAIL__
+Baseline 7 (6 × `it+…` from 2026-10-03 16:06–16:10 UTC, 1 × `lat+…` from 2026-10-04 13:20 UTC, all left by
+earlier sessions, untouched; the nightly sweep job removes them once the worker jobs exist). My runs leaked 2
+(`prod-w1a-pa+…`, F1 crashes); deleted through the product path (`POST /api/auth/login` then `DELETE /api/account`,
+the password being derivable from the test email) → 7. Final count after w1d-conductor: 7. Did not grow.

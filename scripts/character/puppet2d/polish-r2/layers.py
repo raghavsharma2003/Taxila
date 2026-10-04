@@ -399,10 +399,24 @@ for side, bm in (("L", browLm), ("R", browR)):
     bm = ndi.binary_closing(bm, iterations=2)
     # AA rim: include the darker transition pixels around the stroke, colour de-haloed to the stroke colour
     rgb, a = matte(bm, erode=1)
-    if side == "L":   # the tail runs under the hair strand: continue it 14 px (hidden at rest, shows when raised)
-        for k in range(1, 15):
-            src_x = 374
-            a[:, 373 - k] = np.maximum(a[:, 373 - k], np.roll(a[:, src_x], int(round(k * 0.35))) * np.clip(1 - k / 16, 0, 1))
+    if side == "L":
+        # r2: the tail runs under the hair strand. r1 copied one column (a diagonal colour seam + a blunt end once the
+        # brow lifted out from under the strand). Now: quadratic fits of the stroke's top and bottom edges over its
+        # fully visible span, extrapolated to the tip with a taper, AA by exact coverage; colour = the stroke's own
+        # interior extended (pull-push). At rest the strand covers all of it.
+        fx = [x for x in range(392, 456) if bm[:, x].any()]
+        tops = [np.where(bm[:, x])[0].min() for x in fx]; bots = [np.where(bm[:, x])[0].max() + 1 for x in fx]
+        pt, pb = np.polyfit(fx, tops, 2), np.polyfit(fx, bots, 2)
+        X0 = 352.0
+        xs = xx.astype(np.float64)
+        tt, tb = np.polyval(pt, xs), np.polyval(pb, xs)
+        cmid, half = (tt + tb) / 2, (tb - tt) / 2
+        taper = np.clip(0.3 + 0.7 * (xs - X0) / (405 - X0), 0.3, 1.0)
+        h2 = half * taper
+        cov = np.clip(np.minimum(yy + 0.5 - (cmid - h2), (cmid + h2) - yy + 0.5), 0, 1) * np.clip((xs - X0) / 4.0, 0, 1)
+        tail = (xx < 410) & (xx >= int(X0)) & (np.abs(yy - cmid) < 14)
+        a = np.where(tail, np.maximum(np.where(xx < 400, 0, a), cov), a)
+        rgb = np.where((tail & ~ndi.binary_erosion(bm, iterations=1))[..., None], pullpush(im, ndi.binary_erosion(bm, iterations=2)), rgb)
     geom_out["rects"][f"brow{side}"] = save_layer(f"brow{side}", rgb, a)
     ys_b, xs_b = np.where(bm)
     geom_out["brows"][side] = {"x": [int(xs_b.min()), int(xs_b.max())], "y": [int(ys_b.min()), int(ys_b.max())]}

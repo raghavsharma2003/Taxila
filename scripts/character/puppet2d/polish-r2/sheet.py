@@ -13,7 +13,7 @@ tw, th = T, int(T * (crop[3] - crop[1]) / (crop[2] - crop[0]))
 top = Image.new("RGB", (2048 + 24, 1024 + 40), "white")
 d = ImageDraw.Draw(top)
 top.paste(Image.open(f"{C}/c-front.webp").convert("RGB"), (0, 40)); d.text((8, 12), "c-front (concept)", fill="black")
-top.paste(Image.open(f"{P}/rest.png").convert("RGB"), (1024 + 24, 40)); d.text((1032, 12), "arm P rest render (WebGL, all weights 0)", fill="black")
+top.paste(Image.open(f"{P}/rest.png").convert("RGB"), (1024 + 24, 40)); d.text((1032, 12), "polish r2 rest render (WebGL, idle smile 0.05)", fill="black")
 cols = 6
 rows = []
 items = []
@@ -21,6 +21,9 @@ for p in poses:
     items.append((p, f"{P}/{p}.png"))
     if p in REF and p != "rest":
         items.append((f"ref: {os.path.basename(REF[p])}", REF[p]))
+for f, lab in (("f00045", "sweep yaw -20 (clip)"), ("f00082", "sweep mid (clip)"), ("f00120", "sweep yaw +20 (clip)"), ("f00153", "sweep +pitch nod (clip)")):
+    if os.path.exists(f"art/character/puppet2d/polish-r2/work/turnframes/{f}.png"):
+        items.append((lab, f"art/character/puppet2d/polish-r2/work/turnframes/{f}.png"))
 R = (len(items) + cols - 1) // cols
 grid = Image.new("RGB", (cols * tw, R * (th + 18)), "white")
 g = ImageDraw.Draw(grid)

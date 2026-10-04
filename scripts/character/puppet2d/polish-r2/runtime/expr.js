@@ -28,8 +28,9 @@ export const EXPRESSIONS = {
   },
   // c-happy: open smile, cheeks up, eyes smiling but open, brows lifted
   delight: {
-    bs: { mouthSmileLeft: 0.85, mouthSmileRight: 0.85, cheekSquintLeft: 0.55, cheekSquintRight: 0.55, eyeSquintLeft: 0.4, eyeSquintRight: 0.4,
-      browOuterUpLeft: 0.45, browOuterUpRight: 0.45, browInnerUp: 0.2, jawOpen: 0.36 },
+    // c-happy keeps the eyes OPEN (no lower-lid squint across the iris): the joy is in the brows, cheeks and mouth
+    bs: { mouthSmileLeft: 0.85, mouthSmileRight: 0.85, cheekSquintLeft: 0.4, cheekSquintRight: 0.4, eyeSquintLeft: 0.12, eyeSquintRight: 0.12,
+      browOuterUpLeft: 0.6, browOuterUpRight: 0.6, browInnerUp: 0.3, eyeWideLeft: 0.08, eyeWideRight: 0.08, jawOpen: 0.26 },
     head: [-2, 0, 4], gaze: [0, 2], env: [0.25, 0, 0.45], bounce: 4,
   },
   // gentle concern: inner brows up and knit, lids lowered, lips pressed, corners slightly down, head tilted in
@@ -46,7 +47,7 @@ export const EXPRESSIONS = {
   // playful: lopsided smirk, one brow up, the other eye squinting, head cocked
   playful: {
     bs: { mouthSmileLeft: 0.75, mouthSmileRight: 0.05, cheekSquintLeft: 0.5, browOuterUpLeft: 1.0, browDownRight: 0.45,
-      eyeSquintRight: 0.7, eyeBlinkRight: 0.62, cheekSquintRight: 0.4, eyeSquintLeft: 0.05 },
+      eyeSquintRight: 0.75, eyeBlinkRight: 0.38, cheekSquintRight: 0.45, eyeSquintLeft: 0.05 },
     head: [-2, 7, -9], gaze: [-6, 3], env: [0.25, 0, 0.45],
   },
 };

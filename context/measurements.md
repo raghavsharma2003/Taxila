@@ -1760,3 +1760,79 @@ W2-A acceptance, run locally against `node server/serve.mjs` on the Neon test br
 
 ## w2a-acs-send-latency
 The ACS Email send was accepted (202) in 1955 ms, from the US sandbox to the India ACS resource (n=1, 2026-10-04).
+
+## W2-B (2026-10-04)
+
+## w2b-template-render-check-2026-10-04
+Strict render-check, `evals/forge-explainer.mjs` (offline, code only). A script passes only if ALL checks pass: strict
+normalise, every op inside the board, no two texts overlapping at the same moment, facts present, duration within the band
+cap, every drawn token traceable to the call, and (library entries) kit truth. Per template, never as a mean:
+- parameter sweep: fraction-parts 264/264, combine-count 187/187, number-line-hop 48/48, column-op 400/400,
+  place-value 8/8, equal-groups 40/40, flow 5/5, cycle 4/4, compare 4/4, parts 5/5, label 4/4;
+- every c4-c7 code pick and library entry: fraction-parts 138/138, combine-count 174/174, number-line-hop 13/13,
+  column-op 190/190, place-value 38/38, equal-groups 34/34, flow 209/209, cycle 11/11, compare 99/99, parts 12/12.
+- Browser: `tests/w2b-whiteboard-browser.test.mjs` draws cycle, compare and column-op scripts in the real Desk's Studio box
+  (360×800, 1280×800) and a fraction board in the real module tray: every drawn word and stroke inside the box/frame, no
+  tray scroll (3/3 pass).
+
+## w2b-explain-coverage-2026-10-04
+Through the real Director (`step()`, no-evidence child, up to 8 turns), c4-c7: explain moves with something on the tray
+383/394 (engine 97, board 286, none 11). Maths 140/142, science 69/69, EVS 39/40, SST 33/34, English 48/53, Hindi 54/56.
+Before W2-B the same walk showed 97/394 (engines only). Studio is not live, so this is also the Studio-off figure.
+
+## w2b-explainer-library-build-2026-10-04
+`--build` over the 345 c4-c7 topics with no maths code pick: 331 accepted (taxila-fast, effort none, strict schema, up to
+two retries told the rejection code). Per call p50 1.2-2.0 s, p95 1.4-2.0 s across three passes (US sandbox → eastus2,
+n = 345 + 91 + 54 + 26 calls). The first pass accepted 260/345; the rejects were labels cut to fit (fixed by
+`rj-w2b-label-maxlength-24-in-schema`), arrows / colons inside labels, kit-absent words, and Hindi inflections the kit
+vocabulary does not contain (14 topics still have no entry, mostly Hindi and English).
+
+## w2b-teacher-screen-parts-2026-10-04
+`evals/forge-teacher-screen.mjs`, n = 40 explain / worked-example turns on c4-c7 maths topics (fraction topics first),
+real `compile()` instructions (text lane), taxila-fast reply, one call per arm on the same turns. Part counts she says
+(denominators, part words, "N equal parts") that the screen shows:
+- without the facts row (pre-W2-B prompt): 30/40 (75%);
+- with the facts row: 35/40 (87.5%);
+- with the facts row and the `screenContradiction` rewrite: 39/40 (97.5%). The one miss names 5/4 while the board is a
+  flow diagram with no part counts.
+Stricter diagnostic (EVERY number she says is on screen or in the move's content): 26/40 → 30/40 → 33/40.
+BUILD-PLAN's bar is 100%: not met; the guard is not wired yet (W2-E's hot file).
+
+## w2b-frame-prewarm-2026-10-04
+`evals/engines-prewarm.mjs`: `dist/` served by `server/serve.mjs` on localhost (no network RTT, so this isolates boot,
+parse and compile), Chromium, iframe inserted → explainer board painted, n = 10 per arm.
+- 1x CPU: cold p50 119 / p90 144 ms; warm p50 100 / p90 115 ms.
+- 4x CPU: cold p50 684 / p90 813 ms; warm p50 344 / p90 427 ms; a second mount in the same page p50 387 ms.
+India-network numbers need the Azure probe fleet.
+
+## w2b-skins-content-safety-2026-10-04
+`evals/forge-g1.mjs --safety-only` (Azure Content Safety, FourSeverityLevels) over every strings-table row after the five
+new skins: 122 unique rows, max severity 0, 0 flagged, 0 errors.
+
+## w1-prod-acceptance-2026-10-04
+2026-10-04 13:52–16:13 UTC, production `taxila-web--s9242020-kj16` (image 9242020), `tests/prod/run.mjs --wave 1` file by file from the US sandbox (NODE_USE_ENV_PROXY=1, TAXILA_DB_URL = production, TAXILA_OPS_KEY set), n = 1 run per file unless noted. Full write-up `docs/ops/W1-PROD-RESULTS-2026-10-04.md`. API-only files unrouted; browser files (w1a-practice-ask, w1a-young-text, w1b-tray, w1d-eyes, w1f-face) with same-origin requests served through Node fetch (scratch `page.route` preload; see `w1-prod-sandbox-chromium-proxy`). Results: w0-smoke 5/5, w1a-battery 16/16, w1a-practice-ask 23/23 (routed; unrouted crashed 2/2), w1a-text-voice 3/3, w1a-young-text 14/14 (routed; unrouted 1/2 timeout), w1b-mounts 54/54 (6 coverage WARNs), w1b-tray 10/10, w1c-reteach 13/13, w1c-three-day 22/22 (+1 known WARN), w1c-settle 20/20 over 4 chunks (`w1-prod-settle-2026-10-04`), w1d-eyes 18/18 (forced 500 in Log Analytics 130 s after the request; 5xx alert Fired 14:48:33Z), w1f-face 32/32, w1d-conductor 8/10 (report.daily and parent.letter not listed; jobs stayed `queued`: no worker, `w1-open-worker-not-deployable-at-web-sha`). `verify-release --live --only live-probes,prod-smoke`: live-probes 10/10, prod-smoke 9/9. Leftover @taxila.test guardians 7 → 7 (2 leaked by the unrouted practice-ask crashes, deleted via the API). Product bugs found: 0. Not covered: anything the worker does in production.
+
+## w1-prod-settle-2026-10-04
+2026-10-04, production 9242020, `W1C_SETTLE_DELAYS=<d> W1C_SETTLE_LESSONS=<n> node tests/prod/run.mjs --wave 1 --only w1c-settle`, one account per chunk, pending_grade rows read from the production DB. Delay 0 s: 8 lessons, 17/17 held verdicts settled; 1 s: 8, 20/20; 2 s: 7, 15/15; 4 s: 5, 11/11. Total 28 lessons, 63/63 settled = 100 % (bar ≥ 95 %), 0 late-corrected; Wilson 95 % lower bound 94.3 %. File time 386 / 464 / 524 / 528 s (≈ 48 s/lesson at 0 s, 75 s at 2 s, ~105 s at 4 s): a 600 s chunk holds ≤ 5 lessons at 4 s. Compare local `w1c-settle-local-2`.
+
+## w1-prod-text-voice-probe-2026-10-04
+2026-10-04 14:00 UTC, `node infra/probes/deploy.mjs --adhoc "TAXILA_PROBE=1 node tests/prod/w1a-text-voice.mjs"` from the eastus2 probe job (image `taxila-probe:pmutvrmyw`, no sandbox proxy), production 9242020, one lesson, n = 20 text-lane replies: audio streamed 20/20, prewarm hit 20/20, first audio byte after the turn response p50 182 ms, p90 224 ms → bar p50 ≤ 400 ms PASS (enforced). An earlier execution (13:57) with TAXILA_PROBE set only on the sandbox side measured p50 176 / p90 197 ms, n = 20, but did not enforce the bar (`w1-open-adhoc-drops-taxila-probe`). Sandbox run of the same file: p50 175 ms, n = 20 (not a timing measurement through the proxy).
+
+Related W1 production entries, logged with the run above:
+- `w1-prod-sandbox-chromium-proxy` (rejection): running Playwright prod tests from the sandbox with Chromium on the agent proxy. Chromium gets `net::ERR_TOO_MANY_RETRIES` on random same-origin assets (`/assets/*.css|js`, `/fonts/*.woff2`) while curl fetches the same URLs 200 in 0.4 s; pages hang or `goto` throws (w1a-practice-ask, w1a-young-text failed 3/3 runs unrouted, passed routed). Serve same-origin requests through Node fetch with `context.route` (as `docs/design/gap-audit/live-content.md` did) or run the file from the probe image. Reverse if an unrouted sandbox run passes these files.
+- `w1-open-worker-not-deployable-at-web-sha` (open): `deploy-worker.mjs` builds the branch TIP; with background sessions pushing WIP checkpoints the tip moved from be526f3 to 08e10d0 during the run and gained migration 019_home_states.sql plus ~8.7k lines in server/shared/db that the web (9242020) does not run; the migrations gate refused (correctly). Production has no `taxila-worker` and no Conductor jobs, so real children's report.daily / parent.letter / memory.consolidate jobs stay queued. Needs a way to build the worker at the web's sha, or a joint web+worker deploy at a newer gated sha with 019 applied. The ACR build pushed `taxila-worker:08e10d0` and moved `:latest`.
+- `w1-open-adhoc-drops-taxila-probe` (open): `infra/probes/deploy.mjs --adhoc` gives the job only TAXILA_BASE, so `TAXILA_PROBE=1 node infra/probes/deploy.mjs --adhoc …` does not enforce w1a-text-voice's timing bar; put the variable inside the command or forward it. Its poller also dies on one transient ARM connect timeout (`arm()`/`until()` do not retry).
+- `w1-open-dangling-waitforresponse-leaks-account` (open): in w1a-practice-ask a `page.waitForResponse` promise created before `page.goto` rejects unhandled when `goto` throws and the `finally` closes the browser; node exits before `withTestAccount`'s cleanup, leaking the test guardian (2 leaked here). The global leftover-guardian count also moved 10 → 9 inside one file from another session's activity, so it is noisy under concurrent sessions.
+
+## w2b-local-acceptance-2026-10-04
+W2-B acceptance run locally against `node server/serve.mjs` (dist built) on the Neon test branch, 2026-10-04:
+- `tests/prod/w2b-explain-rungs.mjs`: 34/34. On the explain move 11/12 topics show a rung (board 8, engine 3; the miss is
+  c4-maths-ch01-t02, whose library fill was refused for a kit-absent word); every explainer script passes strict normalise +
+  lint with facts; 0 unknown-engine mounts; no leftover test guardians.
+- `tests/prod/w2b-first-paint.mjs` (real child client, 360×800, text lesson, 4 topics): the rung is in the Work tray and
+  fills it (404 vs 404 px) on every explain move; explain response → rung painted p50 443 / p90 466 ms (sandbox, localhost,
+  includes Playwright's event overhead). The ≤ 300 ms p90 gate is the probe fleet's; from here it is not shown met.
+- Regression: `w2seam-contracts` 11/11; `w1b-mounts` 51/52, the one FAIL a leftover-guardian count 4 → 5 caused by another
+  stream's test on the shared test branch at the same time (4 → 4 when re-checked; no w2b account left).
+
+- `w1-prod-accepted-2026-10-04` (2026-10-04): Wave 1 fully accepted in production; the conductor check passed 11/11 once the worker was deployed pinned to the web's gated commit with the new deploy-worker --from-tree mode (built from a clean worktree at 9242020, ancestor-of-origin and gate-evidence checked). Details: docs/ops/W1-PROD-RESULTS-2026-10-04.md.

@@ -1,0 +1,71 @@
+{
+ "arm": "Q06",
+ "mode": "batched-utterances",
+ "levels": [
+  {
+   "B": 1,
+   "latP50Ms": 902,
+   "latMaxMs": 1523,
+   "meanUttS": 2.1,
+   "throughputAudioSPerS": 2.3,
+   "peakGB": 1.6
+  },
+  {
+   "B": 2,
+   "latP50Ms": 657,
+   "latMaxMs": 1510,
+   "meanUttS": 4.26,
+   "throughputAudioSPerS": 13.0,
+   "peakGB": 1.67
+  },
+  {
+   "B": 4,
+   "latP50Ms": 1268,
+   "latMaxMs": 1514,
+   "meanUttS": 3.77,
+   "throughputAudioSPerS": 11.9,
+   "peakGB": 1.74
+  },
+  {
+   "B": 8,
+   "latP50Ms": 1391,
+   "latMaxMs": 1747,
+   "meanUttS": 4.45,
+   "throughputAudioSPerS": 25.6,
+   "peakGB": 1.95
+  },
+  {
+   "B": 16,
+   "latP50Ms": 1606,
+   "latMaxMs": 1808,
+   "meanUttS": 4.1,
+   "throughputAudioSPerS": 40.8,
+   "peakGB": 2.45
+  },
+  {
+   "B": 32,
+   "latP50Ms": 1865,
+   "latMaxMs": 1973,
+   "meanUttS": 4.29,
+   "throughputAudioSPerS": 73.5,
+   "peakGB": 3.32
+  },
+  {
+   "B": 64,
+   "latP50Ms": 2923,
+   "latMaxMs": 3032,
+   "meanUttS": 4.48,
+   "throughputAudioSPerS": 98.0,
+   "peakGB": 5.06
+  },
+  {
+   "B": 128,
+   "latP50Ms": 5757,
+   "latMaxMs": 5775,
+   "meanUttS": 4.36,
+   "throughputAudioSPerS": 96.9,
+   "peakGB": 9.53
+  }
+ ],
+ "method": "B different ~5 s corpus utterances in one generate() call; 3 reps; latency = wall time of the call; throughput = B x mean utterance seconds / latency"
+}

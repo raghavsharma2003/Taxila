@@ -1,0 +1,64 @@
+{
+ "source": "W1 production acceptance after deploy of taxila-web 9242020 (subagent), 2026-10-04; write-ups are already in context/measurements.md (no md block here, so merging does not duplicate them)",
+ "nodes": [
+  {
+   "id": "w1-prod-acceptance-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "W1 prod acceptance on taxila-web 9242020 (n=1 run per file, sandbox, browser files routed through Node fetch): 12/13 files PASS: w0 5/5, w1a-battery 16/16, practice-ask 23/23, text-voice 3/3, young-text 14/14, w1b-mounts 54/54, tray 10/10, reteach 13/13, three-day 22/22, settle 20/20 (4 chunks), w1d-eyes 18/18, w1f-face 32/32; w1d-conductor 8/10 (no worker deployed). verify-release live-probes 10/10, prod-smoke 9/9. Leftover test guardians 7 -> 7. Product bugs: 0"
+  },
+  {
+   "id": "w1-prod-settle-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Prod why-probe settle rate, 28 lessons at delays 0/1/2/4 s (8/8/7/5): 63/63 held verdicts settled = 100% (bar >= 95%, Wilson 95% LB 94.3%), 0 late-corrected; 600 s chunk fits <= 5 lessons at 4 s"
+  },
+  {
+   "id": "w1-prod-text-voice-probe-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Prod text-lane first audio byte from the eastus2 probe (TAXILA_PROBE=1 inside the job), n=20: p50 182 ms, p90 224 ms, bar p50 <= 400 ms PASS; streamed 20/20, prewarm hit 20/20"
+  },
+  {
+   "id": "w1-prod-sandbox-chromium-proxy",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Running Playwright prod tests from the sandbox with Chromium on the agent proxy: net::ERR_TOO_MANY_RETRIES on random same-origin assets (curl gets 200), so browser tests hang or crash (3/3 failures unrouted, all pass routed). Route same-origin through Node fetch or run from the probe image"
+  },
+  {
+   "id": "w1-open-worker-not-deployable-at-web-sha",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "Prod has no taxila-worker/Conductor jobs: deploy-worker builds the moving branch tip (08e10d0: migration 019 + ~8.7k lines of server/shared/db the web 9242020 lacks); the migrations gate refused. Conductor jobs for real children stay queued until a worker is deployed at the web's sha or web+worker go together"
+  },
+  {
+   "id": "w1-open-adhoc-drops-taxila-probe",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "infra/probes/deploy.mjs --adhoc forwards only TAXILA_BASE, so TAXILA_PROBE=1 on the caller side leaves the timing bar unenforced; its poller also dies on one transient ARM connect timeout"
+  },
+  {
+   "id": "w1-open-dangling-waitforresponse-leaks-account",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "w1a-practice-ask: a waitForResponse promise created before page.goto rejects unhandled when goto throws, crashing node before withTestAccount's cleanup (leaked 2 test guardians); the global leftover-guardian count is also noisy under concurrent sessions"
+  }
+ ],
+ "edges": [
+  {
+   "src": "w1c-settle-db-by-event-id",
+   "rel": "measured_by",
+   "dst": "w1-prod-settle-2026-10-04"
+  },
+  {
+   "src": "w1-integration-probe-image-text-voice",
+   "rel": "measured_by",
+   "dst": "w1-prod-text-voice-probe-2026-10-04"
+  },
+  {
+   "src": "w1-open-worker-not-deployable-at-web-sha",
+   "rel": "blocks",
+   "dst": "conductor-hosting-lanes"
+  }
+ ]
+}

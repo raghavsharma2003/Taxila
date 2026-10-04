@@ -382,3 +382,15 @@ features are parametric shapes rebuilt per frame. Image spend for this arm: USD 
 | vite 8 | demo bundle | MIT | build-time |
 | Playwright 1.63, Chromium (SwiftShader), ffmpeg | evidence stills, clips, fps proxy | Apache-2.0 / BSD / LGPL | evidence only |
 | Foundry `DEPLOY_BRAIN` (gpt-5.6-sol) | advisory blind vision judge (`judge_v.py`), text tokens only | Azure terms | raw replies in `art/character/puppet2d/V/evidence/judge-v-blind.json` |
+
+## 2D puppet, polish r2 of arm P, 2026-10-04 (`art/character/puppet2d/polish-r2/`, `scripts/character/puppet2d/polish-r2/`)
+
+| What | Used for | Source | Licence | Notes |
+|---|---|---|---|---|
+| c-front + the arm-P mouth atlas (gpt-image-2 masked edits) | every layer and mouth patch | carried over from arm P, unchanged | ours / Azure OpenAI terms | **no new image generation in r2: USD 0 added to `art/character/puppet2d/ledger.json`** |
+| Own WebGL2 renderer, rig, mouth solver, expression emitters, listener (`scripts/character/puppet2d/polish-r2/runtime/{gl,rig,mouth,expr,demo}.js`) | runtime | ours | ours | the brow-ribbon channels and the shared head dome are IDEAS from arm V, re-implemented; no V code copied |
+| numpy, scipy, OpenCV, Pillow | layer cutting / matting (`layers.py`) | pip | BSD-3 / BSD-3 / Apache-2.0 / HPND | build-time only |
+| vite 8, Playwright 1.63 + Chromium (SwiftShader), ffmpeg | demo bundle, evidence stills/clips, fps proxy | npm / system | MIT / Apache-2.0 / BSD / LGPL | build/evidence only; nothing ships |
+| Foundry `taxila-brain` (gpt-5.6-sol) + `grok-4-20-reasoning` | advisory blind panel + forced-choice recognition (`judge-r2.mjs`, `emo-ceiling.mjs`) | Azure AI Foundry (sold direct) | Azure terms | text/vision tokens only; raw replies in `art/character/puppet2d/polish-r2/judge-*.json` |
+
+Not used: Live2D (licence blocked), Rive (GUI authoring), PixiJS (plain WebGL2 suffices).

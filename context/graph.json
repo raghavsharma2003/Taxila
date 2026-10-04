@@ -7341,6 +7341,300 @@
    "title": "Owner approved MAI-Transcribe-2 (Microsoft Preview) processing children's audio in the India app; billing still to be confirmed from the Azure meter on 2026-10-06. Reverse if Microsoft changes Preview data terms or the billed price exceeds gpt-live-transcribe.",
    "at": "2026-10-04",
    "source": "inbox/domain-mai.json"
+  },
+  {
+   "id": "w1-prod-accepted-2026-10-04",
+   "kind": "measurement",
+   "title": "Wave 1 production acceptance complete 2026-10-04: every Wave 1 prod file passes on taxila-web--s9242020-kj16 (w0 5/5, w1a 16/16+23/23+3/3+14/14, w1b 54/54+10/10, w1c 13/13+22/22, settle 63/63 held verdicts = 100% over 28 lessons, w1d-eyes 18/18, w1d-conductor 11/11 after the worker was deployed pinned to 9242020 via deploy-worker --from-tree, w1f 32/32, live-probes 10/10, prod-smoke 9/9); probe text lane p50 182 ms / p90 224 ms (n=20, eastus2). No product bugs; browser files need the routed preload in the sandbox. Real product gap found and closed: production had no Conductor worker.",
+   "at": "2026-10-04",
+   "source": "inbox/w1-accepted.json"
+  },
+  {
+   "id": "w1-prod-acceptance-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "W1 prod acceptance on taxila-web 9242020 (n=1 run per file, sandbox, browser files routed through Node fetch): 12/13 files PASS: w0 5/5, w1a-battery 16/16, practice-ask 23/23, text-voice 3/3, young-text 14/14, w1b-mounts 54/54, tray 10/10, reteach 13/13, three-day 22/22, settle 20/20 (4 chunks), w1d-eyes 18/18, w1f-face 32/32; w1d-conductor 8/10 (no worker deployed). verify-release live-probes 10/10, prod-smoke 9/9. Leftover test guardians 7 -> 7. Product bugs: 0",
+   "source": "inbox/w1-prod.json"
+  },
+  {
+   "id": "w1-prod-settle-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Prod why-probe settle rate, 28 lessons at delays 0/1/2/4 s (8/8/7/5): 63/63 held verdicts settled = 100% (bar >= 95%, Wilson 95% LB 94.3%), 0 late-corrected; 600 s chunk fits <= 5 lessons at 4 s",
+   "source": "inbox/w1-prod.json"
+  },
+  {
+   "id": "w1-prod-text-voice-probe-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Prod text-lane first audio byte from the eastus2 probe (TAXILA_PROBE=1 inside the job), n=20: p50 182 ms, p90 224 ms, bar p50 <= 400 ms PASS; streamed 20/20, prewarm hit 20/20",
+   "source": "inbox/w1-prod.json"
+  },
+  {
+   "id": "w1-prod-sandbox-chromium-proxy",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Running Playwright prod tests from the sandbox with Chromium on the agent proxy: net::ERR_TOO_MANY_RETRIES on random same-origin assets (curl gets 200), so browser tests hang or crash (3/3 failures unrouted, all pass routed). Route same-origin through Node fetch or run from the probe image",
+   "source": "inbox/w1-prod.json"
+  },
+  {
+   "id": "w1-open-worker-not-deployable-at-web-sha",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "Prod has no taxila-worker/Conductor jobs: deploy-worker builds the moving branch tip (08e10d0: migration 019 + ~8.7k lines of server/shared/db the web 9242020 lacks); the migrations gate refused. Conductor jobs for real children stay queued until a worker is deployed at the web's sha or web+worker go together",
+   "source": "inbox/w1-prod.json"
+  },
+  {
+   "id": "w1-open-adhoc-drops-taxila-probe",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "infra/probes/deploy.mjs --adhoc forwards only TAXILA_BASE, so TAXILA_PROBE=1 on the caller side leaves the timing bar unenforced; its poller also dies on one transient ARM connect timeout",
+   "source": "inbox/w1-prod.json"
+  },
+  {
+   "id": "w1-open-dangling-waitforresponse-leaks-account",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "w1a-practice-ask: a waitForResponse promise created before page.goto rejects unhandled when goto throws, crashing node before withTestAccount's cleanup (leaked 2 test guardians); the global leftover-guardian count is also noisy under concurrent sessions",
+   "source": "inbox/w1-prod.json"
+  },
+  {
+   "id": "w2a-one-claim-source",
+   "kind": "decision",
+   "title": "One claim source per child (server/reports/truth.js): every child and parent surface (plan, map, parent home, Progress, lesson card, evidence sheet, Notes) reads skill state from the kt_evidence engine rows + the skill_state projection through skillTruth; no scored engine row = Not started; the Director's legacy evidence rows feed no parent or child claim",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a.json"
+  },
+  {
+   "id": "w2a-one-lesson-minutes-rule",
+   "kind": "decision",
+   "title": "One lessons-and-minutes definition (truth.js countsAsLesson / COUNTED_LESSON_SQL / lessonTally): a lesson counts when something was graded or it ran >= 5 min and was not an abandoned start; minutes = round(sum(end - start)), an open lesson ends at its last engine row; parent home 'This week' = the ISO week in the child's tz, the weekly letter's window; reports facts and the independent checker apply the same rule",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a.json"
+  },
+  {
+   "id": "w2a-late-correction-supersedes",
+   "kind": "decision",
+   "title": "A late correction row (<id>:late) replaces the row it corrects in reports facts, the checker's completeness reads and every truth.js surface (fixes w1c-late-double-count-reports)",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a.json"
+  },
+  {
+   "id": "w2a-summary-from-facts-checked",
+   "kind": "decision",
+   "title": "The parent lesson card's summary is built only from the lesson's engine rows (lessonFactsSummary: tried, right first time with no help, right after a hint or second try, explained) and passes an independent claim check (summaryClaimsHold re-reads the raw kt rows); a failing summary is withheld, never shown",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a.json"
+  },
+  {
+   "id": "w2a-evidence-sheet-engine-rows",
+   "kind": "decision",
+   "title": "The evidence sheet shows engine-graded rows only, each with the real question (kit item prompt, else her line before), the child's own words and the grader in plain words ('exact answer' / 'checked against the book's key idea')",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a.json"
+  },
+  {
+   "id": "w2a-home-states-sf1",
+   "kind": "decision",
+   "title": "SF1 home states: ChildHomeState gains homework (parent's Homework help today, until the learning day ends), test_window (one parent-entered school test, <= 21 days, lesson revises that subject) and safety_hold (Conductor mode, first in precedence, Help sheet only); done has no primary action; plan carries madeFor[] (W2-H studio_mount feed, [] hides the shelf), jar, testWindow, homework, textOnly",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a.json"
+  },
+  {
+   "id": "w2a-migration-019",
+   "kind": "decision",
+   "title": "Migration 019_home_states.sql: child_controls.homework_until, text_only, test_window (jsonb, a column so the M0 ratchet keeps it as a parent-entered control, not a new child_id table), and password_reset (sha256 token hashes, single use, 30 min); applied to the Neon test branch only",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a.json"
+  },
+  {
+   "id": "w2a-ask-routing-lexical",
+   "kind": "decision",
+   "title": "Ask routing (server/lesson/purpose.js routeAsk) is a reviewed lexical index over the curriculum (titles x3, chapters x2, outcomes/mix-ups/hooks x1, a Hinglish synonym list, number shapes), child's class then up to 2 below; no model call; null (plan topic) under score 3 or a cross-subject tie; the client sends firstText with the start and titles the Desk by the question",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a.json"
+  },
+  {
+   "id": "w2a-practice-set",
+   "kind": "decision",
+   "title": "Practice set (purposeSeam.practiceSet): <= 5 verified kit items, due/refresh skills first, then recently missed, round-robin across skills, never a skill the child has not met, never a teach-back; the client counter reads ui.practice (W2-C producer) else counts posed/graded items; the practice Summary is titled 'That's the set'",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a.json"
+  },
+  {
+   "id": "w2a-forgot-password-acs",
+   "kind": "decision",
+   "title": "Forgot password by email on Azure Communication Services Email (taxila-acs + taxila-email, Azure-managed domain, data in India, sender DoNotReply@0ff70a32-...azurecomm.net): /api/auth/forgot always 200, mail not awaited (no timing tell), token only returned to @taxila.test with the operator key; /api/auth/reset spends the token atomically and ends every session",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a.json"
+  },
+  {
+   "id": "w2a-boot-one-hop",
+   "kind": "decision",
+   "title": "Speed: index.html starts GET /api/child/boot (me + plan, one hop) on /c/:cid or GET /api/me elsewhere before the bundle parses, only when the readable tx_in session marker exists (so the landing never 401s); inline skeleton; serve.mjs injects the hero image preload for '/' from the art manifest and pre-encodes every build file with brotli q11 at boot",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a.json"
+  },
+  {
+   "id": "w2a-text-only-per-child",
+   "kind": "decision",
+   "title": "Tap and type only is per child on the server (child_controls.text_only, returned in the plan), closing tap-and-type-device-local; the onboarding mic check sets this device's quiet pref when no mic works",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a.json"
+  },
+  {
+   "id": "w2a-local-acceptance-2026-10-04",
+   "kind": "measurement",
+   "title": "W2-A acceptance, LOCAL serve.mjs on the Neon test branch: w2a-home-states 31/31 (5 states one primary each, done none, safety_hold no start/practice/Ask + both helplines, F7 1-day vs 30-day same layout); w2a-parent-truth see measurements.md; unit tests 17/17 incl. 40 random lesson summaries all passing the independent claim checker and every inflated count caught",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a.json"
+  },
+  {
+   "id": "w2a-acs-send-latency",
+   "kind": "measurement",
+   "title": "ACS Email send accepted (202) in 1955 ms from the sandbox (n=1, eastus2 sandbox -> India ACS); hence the reset mail is not awaited",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a.json"
+  },
+  {
+   "id": "rj-w2a-test-window-table",
+   "kind": "rejection",
+   "title": "A child_test_window table (child_id) failed tests/learner-db 'every child_id table is classified' (server/learner/mode.js is W2-I's) and the M0 ratchet test; replaced by child_controls.test_window jsonb (kept with the parent-entered controls)",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a.json"
+  },
+  {
+   "id": "rj-w2a-await-reset-mail",
+   "kind": "rejection",
+   "title": "Awaiting the ACS send inside POST /api/auth/forgot: ~2 s longer only when the account exists, which tells an attacker which emails have accounts",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a.json"
+  },
+  {
+   "id": "rj-w2a-acs-conn-unquoted",
+   "kind": "rejection",
+   "title": "An unquoted ACS connection string in .env.local: `set -a; . ./.env.local` splits it at ';' and drops the access key (sendAcsEmail threw ERR_INVALID_ARG_TYPE); the value is quoted",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a.json"
+  },
+  {
+   "id": "w2b-whiteboard-renderer",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "The whiteboard is drawn by ONE implementation: shared/whiteboard.js (normalise/lint/tokens/facts/hand-drawn geometry) + src/modules/whiteboard/Player.tsx (draw-on strokes, letter-by-letter labels, fills after outlines, erase, highlight), registered as the Studio stage's `whiteboard` renderer; timed from the spoken line's first audio sample (clock.ts markLineAudioStart / taxila:line-audio-start), starting on its own after a 1.2 s grace when no anchor comes; reduced motion shows each op complete at its startMs",
+   "source": "inbox/w2-b.json"
+  },
+  {
+   "id": "w2b-explain-rung-board",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Studio ladder rungs 4-5: an explain / worked-example / re-teach move with no T1 engine to show mounts the frame engine explainer@1, which draws a WhiteboardScript built by server templates (6 maths: fraction-parts, combine-count, number-line-hop, column-op, place-value, equal-groups; 5 diagrams: flow, cycle, compare, parts, label on a vetted sketch). Order: maths code pick from the move's own text -> the topic library -> the lesson's live model fill -> nothing. Diagrams are drawn on the whiteboard player, NOT on scene@1 as BUILD-PLAN W2-B #3 words it",
+   "source": "inbox/w2-b.json"
+  },
+  {
+   "id": "w2b-explainer-library",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "server/forge/explainer/library.json: one diagram template call per c4-c7 topic with no maths code pick, filled offline by taxila-fast (strict schema) and accepted only if every label word and number is the kit's own (truth.js) and it expands, lays out and lints; re-checked against the current kit at load (a kit edit retires a stale entry); a topic with no entry gets a live fill at lesson start / the hook move (background quota lane)",
+   "source": "inbox/w2-b.json"
+  },
+  {
+   "id": "w2b-teacher-sees-screen",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "The teacher sees the screen: modules.js moduleFacts(s.module) -> StudioFacts {kind, archetype, onScreen} (the shape Studio's facts share), written as ONE telegraphic content row ('on screen now (values; ...): engine · name value · ...') into the move's content after planModule, for both lanes; a bound plan's key never appears; the row goes when the module goes. The show-move module's values come from the same text as her content (worked example when her content is the worked example, else the item)",
+   "source": "inbox/w2-b.json"
+  },
+  {
+   "id": "w2b-screen-guard-predicate",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "modules.js screenContradiction(text, module): the reply names part counts (fraction denominators, part words incl. Hinglish, 'N equal parts / N barabar hisse') the mounted module does not show -> a rewrite reason with the facts row. Wiring into routes/lesson.js textReply's problems list is W2-E's hot file: patch at server/forge/seam-patches/w2b-screen-guard.patch",
+   "source": "inbox/w2-b.json"
+  },
+  {
+   "id": "w2b-interest-skins-five",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Forge skins gain football, drawing, stories, building, nature (HOOKS rows en/hi/hi_latn, decor sprites from the scene@1 library, keyword rules), so all 12 onboarding tiles map to a skin; shared/forge.ts InterestId widened. The shared interest registry stays W2-C's",
+   "source": "inbox/w2-b.json"
+  },
+  {
+   "id": "w2b-frame-prewarm",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Loading the lesson screen (WorkTray's chunk) schedules, on idle, a hidden sandboxed modules.html#warm:<engines> frame that loads the frame runtime and the explain rungs' engine chunks (explainer, scene and 6 maths engines) and is removed; bootstrap.tsx's warm mode never announces ready",
+   "source": "inbox/w2-b.json"
+  },
+  {
+   "id": "w2b-template-render-check-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Strict render-check (evals/forge-explainer.mjs; all checks per script: strict normalise, inside the board, no overlapping text, facts present, band duration cap, drawn tokens trace to the call, kit truth for library entries): 100% per template on the parameter sweep (fraction-parts n=264, combine-count 187, number-line-hop 48, column-op 400, place-value 8, equal-groups 40, flow 5, cycle 4, compare 4, parts 5, label 4) and on every c4-c7 real code pick / library entry (fraction-parts 138, combine-count 174, number-line-hop 13, column-op 190, place-value 38, equal-groups 34, flow 209, cycle 11, compare 99, parts 12); offline, code-only, 2026-10-04",
+   "source": "inbox/w2-b.json"
+  },
+  {
+   "id": "w2b-explain-coverage-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Through the real Director (step(), no_evidence child, 8 turns), c4-c7 explain moves with something on the tray: 383/394 (engine 97, board 286, none 11); by subject maths 140/142, science 69/69, evs 39/40, sst 33/34, english 48/53, hindi 54/56. Before W2-B: 97/394 (engines only). Studio is not live yet, so this IS the Studio-off case. Offline, 2026-10-04",
+   "source": "inbox/w2-b.json"
+  },
+  {
+   "id": "w2b-explainer-library-build-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Library build: 331 of 345 c4-c7 topics without a maths code pick got an accepted fill (taxila-fast, effort none, strict schema; up to 2 feedback retries); per call p50 1.24-1.95 s, p95 1.45-1.96 s across passes (US sandbox -> eastus2); first pass 260/345 before the label rules were tuned; rejects were Hindi inflections not in the kit vocabulary, labels over 32 chars, kit-absent words",
+   "source": "inbox/w2-b.json"
+  },
+  {
+   "id": "w2b-teacher-screen-parts-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "evals/forge-teacher-screen.mjs, n=40 explain/worked-example turns on c4-c7 maths topics (fraction topics first), real compile() + taxila-fast reply, text lane: part counts she says match the screen in 30/40 (75%) WITHOUT the facts row, 35/40 (87.5%) with it, 39/40 (97.5%) with the facts row + the screenContradiction rewrite; the one guard-arm miss names 5/4 over a flow board that shows no part counts. Strict all-numbers diagnostic: 26/40 -> 30/40 -> 33/40",
+   "source": "inbox/w2-b.json"
+  },
+  {
+   "id": "w2b-frame-prewarm-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "evals/engines-prewarm.mjs, dist served by serve.mjs on localhost (no network RTT), Chromium, first explainer@1 mount (iframe inserted -> board painted), n=10 per arm: 1x CPU cold p50 119 / p90 144 ms, warm p50 100 / p90 115 ms; 4x CPU cold p50 684 / p90 813 ms, warm p50 344 / p90 427 ms, second mount in the same page p50 387 ms. The warm first mount is <= 150 ms at 1x only",
+   "source": "inbox/w2-b.json"
+  },
+  {
+   "id": "w2b-skins-content-safety-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Azure Content Safety over every strings-table row after the five new skins (evals/forge-g1.mjs --safety-only): 122 unique rows, max severity 0, 0 flagged, 0 errors",
+   "source": "inbox/w2-b.json"
+  },
+  {
+   "id": "rj-w2b-label-maxlength-24-in-schema",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: the fill schema capped labels at maxLength 24 (the board's text cap). Broke: the model cut words to fit ('Fewer flowers get polli', 'Less mustard oil and'): 23 truncated + 30 punctuation rejects of 345 on the first build. Now: schema 40, the code check enforces <= 32 (two lines of <= 24) and refuses dangling function words",
+   "source": "inbox/w2-b.json"
+  },
+  {
+   "id": "rj-w2b-cache-only-prewarm-for-150ms",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: warming the browser caches (a hidden warm frame) to reach a <= 150 ms first mount. Broke at 4x CPU: warm p50 344 ms and even a second mount in the same page p50 387 ms, because a new sandboxed document re-boots React each time; caches only halve the cold 684 ms. <= 150 ms at 4x needs a pre-booted frame kept in place (no reparenting), open item w2b-preboot-frame",
+   "source": "inbox/w2-b.json"
+  },
+  {
+   "id": "rj-w2b-facts-row-alone",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: the facts row alone to keep her part counts on the screen's. Broke: 35/40, not 100%: on explain moves she still teaches with her own example fractions (1/4 vs 1/8 over a 2/5 2/3 board) and once announced 'Whiteboard: 1/8 < 1/4'. The rewrite predicate (screenContradiction) takes it to 39/40",
+   "source": "inbox/w2-b.json"
+  },
+  {
+   "id": "w2b-local-acceptance-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "W2-B local acceptance (serve.mjs + dist, Neon test branch): w2b-explain-rungs 34/34 (rung on the explain move 11/12: board 8, engine 3); w2b-first-paint 17/17, rung fills the tray on every explain move, explain response -> painted p50 443 / p90 466 ms from the sandbox (the 300 ms gate is the probe fleet's); w2seam-contracts 11/11",
+   "source": "inbox/w2-b.json"
   }
  ],
  "edges": [
@@ -12248,6 +12542,136 @@
    "src": "owner-priorities-2026-10-04",
    "rel": "constrains",
    "dst": "studio-stage-fitted-box"
+  },
+  {
+   "src": "w1c-settle-db-by-event-id",
+   "rel": "measured_by",
+   "dst": "w1-prod-settle-2026-10-04"
+  },
+  {
+   "src": "w1-integration-probe-image-text-voice",
+   "rel": "measured_by",
+   "dst": "w1-prod-text-voice-probe-2026-10-04"
+  },
+  {
+   "src": "w1-open-worker-not-deployable-at-web-sha",
+   "rel": "blocks",
+   "dst": "conductor-hosting-lanes"
+  },
+  {
+   "src": "w2a-one-lesson-minutes-rule",
+   "rel": "part_of",
+   "dst": "w2a-one-claim-source"
+  },
+  {
+   "src": "w2a-late-correction-supersedes",
+   "rel": "part_of",
+   "dst": "w2a-one-claim-source"
+  },
+  {
+   "src": "w2a-summary-from-facts-checked",
+   "rel": "part_of",
+   "dst": "w2a-one-claim-source"
+  },
+  {
+   "src": "w2a-evidence-sheet-engine-rows",
+   "rel": "part_of",
+   "dst": "w2a-one-claim-source"
+  },
+  {
+   "src": "w2a-late-correction-supersedes",
+   "rel": "supersedes",
+   "dst": "w1c-late-double-count-reports"
+  },
+  {
+   "src": "w2a-text-only-per-child",
+   "rel": "supersedes",
+   "dst": "tap-and-type-device-local"
+  },
+  {
+   "src": "w2a-migration-019",
+   "rel": "part_of",
+   "dst": "w2a-home-states-sf1"
+  },
+  {
+   "src": "w2a-home-states-sf1",
+   "rel": "measured_by",
+   "dst": "w2a-local-acceptance-2026-10-04"
+  },
+  {
+   "src": "w2a-forgot-password-acs",
+   "rel": "measured_by",
+   "dst": "w2a-acs-send-latency"
+  },
+  {
+   "src": "w2b-explain-rung-board",
+   "rel": "part_of",
+   "dst": "w2b-whiteboard-renderer"
+  },
+  {
+   "src": "w2b-explainer-library",
+   "rel": "part_of",
+   "dst": "w2b-explain-rung-board"
+  },
+  {
+   "src": "w2b-screen-guard-predicate",
+   "rel": "part_of",
+   "dst": "w2b-teacher-sees-screen"
+  },
+  {
+   "src": "w2b-explain-rung-board",
+   "rel": "measured_by",
+   "dst": "w2b-template-render-check-2026-10-04"
+  },
+  {
+   "src": "w2b-explain-rung-board",
+   "rel": "measured_by",
+   "dst": "w2b-explain-coverage-2026-10-04"
+  },
+  {
+   "src": "w2b-explainer-library",
+   "rel": "measured_by",
+   "dst": "w2b-explainer-library-build-2026-10-04"
+  },
+  {
+   "src": "w2b-teacher-sees-screen",
+   "rel": "measured_by",
+   "dst": "w2b-teacher-screen-parts-2026-10-04"
+  },
+  {
+   "src": "w2b-frame-prewarm",
+   "rel": "measured_by",
+   "dst": "w2b-frame-prewarm-2026-10-04"
+  },
+  {
+   "src": "w2b-interest-skins-five",
+   "rel": "measured_by",
+   "dst": "w2b-skins-content-safety-2026-10-04"
+  },
+  {
+   "src": "w2b-explainer-library",
+   "rel": "caused_by",
+   "dst": "rj-w2b-label-maxlength-24-in-schema"
+  },
+  {
+   "src": "w2b-frame-prewarm",
+   "rel": "caused_by",
+   "dst": "rj-w2b-cache-only-prewarm-for-150ms"
+  },
+  {
+   "src": "w2b-teacher-sees-screen",
+   "rel": "caused_by",
+   "dst": "rj-w2b-facts-row-alone"
+  },
+  {
+   "src": "w2b-whiteboard-renderer",
+   "rel": "part_of",
+   "dst": "whiteboard-by-drawing-script-2026-10-04"
+  },
+  {
+   "src": "w2b-explain-rung-board",
+   "rel": "measured_by",
+   "dst": "w2b-local-acceptance-2026-10-04"
   }
  ]
 }

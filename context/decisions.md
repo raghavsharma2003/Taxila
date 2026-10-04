@@ -2637,3 +2637,76 @@ pre-encodes every build file with brotli q11 at boot.
 **Decision:** "Tap and type only" is stored per child on the server and returned with the plan. Closes
 `tap-and-type-device-local`.
 - **Reverse if:** never; device-local stays only as the child's own "Type instead".
+
+## W2-B (2026-10-04): template renderers, the Studio fallback rungs, a teacher who sees the screen, the whiteboard renderer
+
+## w2b-whiteboard-renderer
+**Decision (2026-10-04, owner priority 6, `whiteboard-by-drawing-script-2026-10-04`):** one implementation draws every
+whiteboard script: `shared/whiteboard.js` (plain JS, shared by server, frame, app and tests: lenient/strict normalise
+against `WHITEBOARD_LIMITS`, layout lint, drawn tokens for the gate, `scriptFacts`, seeded hand-drawn geometry, numwork
+layout) and `src/modules/whiteboard/Player.tsx` (strokes drawn on along their length with `pathLength=1`, labels written
+letter by letter, fills washed in after their outline, erase fades, highlight rings; ~30 fps only while drawing). The
+Studio stage registers it for the `whiteboard` kind (`src/studio/renderers.ts`, one line); `continue` scripts draw on the
+lesson's previous board. Times are ms from her line's first audio sample: `src/modules/whiteboard/clock.ts`
+`markLineAudioStart` (a `taxila:line-audio-start` window event); with no anchor the drawing starts on its own 1.2 s after
+it is shown, so a missing call degrades to "draws as it appears", never to "never draws".
+- **Reverse if:** the cascade/realtime players cannot give a first-sample time within ~100 ms (then anchor on the turn
+  response and accept the lane's latency), or a child-facing test shows the hand-drawn style hurts legibility at 360 dp.
+
+## w2b-explain-rung-board
+**Decision (2026-10-04, BUILD-PLAN W2-B #2/#3, LIVE-STUDIO §3.12 rungs 4-5):** a teaching move (explain, worked example,
+re-teach, show) with no T1 engine to show mounts the frame engine `explainer@1`, which draws a `WhiteboardScript` built by
+`server/forge/explainer/templates.js`. Every number, carry, position and label box is computed by code; the model (when
+used) only picks a template and short labels. 11 templates: maths `fraction-parts`, `combine-count`, `number-line-hop`,
+`column-op`, `place-value`, `equal-groups`; diagrams `flow`, `cycle`, `compare`, `parts`, `label` (plant, flower, leaf,
+insect sketches). Order: the maths CODE pick from the move's own text → the topic LIBRARY → this lesson's live MODEL fill →
+nothing (the board, her voice). A template that cannot lay its labels out fails before the child sees it. **Deviation:**
+BUILD-PLAN words #3 as "diagram templates on `scene@1`"; they are on the whiteboard player instead, because `scene@1` is
+an interactive probe DSL (a probe, vars and a solver per scene) while an explain diagram is drawn, not answered, and one
+renderer then serves the Studio whiteboard, the explainer and the diagrams alike. #2's "port `explainer-dsl.mjs` as a frame
+engine" is done the same way: its template expanders are re-expressed as drawing scripts rather than its GSAP render plan.
+- **Reverse if:** a diagram needs interaction (tap a part to label it): that is a `scene@1` template or a Studio archetype,
+  not this rung.
+
+## w2b-explainer-library
+**Decision (2026-10-04):** `server/forge/explainer/library.json` holds one diagram call per c4-c7 topic that has no maths
+code pick (331/345), filled offline by `evals/forge-explainer.mjs --build` on taxila-fast and accepted only if every label
+word and number occurs in the kit (`truth.js`; how-to words such as find, add, check are exempt) and it expands, lays out
+and lints. Each entry is re-checked against the CURRENT kit when first used, so a kit edit silently retires it. Topics with
+no entry get a live fill at lesson start (`forgeSeam.prefetchLessonFills`) and again on the hook (the move before explain),
+on the background quota lane; only kit text goes to the model, never the child's name or words.
+- **Reverse if:** teacher review of a sample of entries finds a label that misteaches (then the review gate is mandatory
+  per entry, like G2), or per-child live fills measurably beat the library on next-item correctness.
+
+## w2b-teacher-sees-screen
+**Decision (2026-10-04, BUILD-PLAN W2-B #1, live-content audit 6):** `server/director/modules.js` `moduleFacts(s.module)`
+returns the LIVE-STUDIO §10 `StudioFacts` shape (kind, archetype, onScreen values) for whatever engine, G1 scene or
+explainer board is mounted, and `planModule` writes it into the move's content as ONE telegraphic row (`on screen now
+(values; …): number-line · min 0 · max 1 · partition 5`). Both lanes compile it (`describe()` content). A bound plan's key
+is never in the row; the row goes when the module goes. The show-move module now takes its values from the same text as her
+content (the worked example when her content is the worked example, else the item). Studio's facts (W2-H) use the same
+shape, so the Brain reads one row whatever is on screen.
+- **Reverse if:** the row costs prompt budget that a safety section needs (it is drop priority 8, after the floor), or the
+  Brain's facts block (W2-E) supersedes content rows.
+
+## w2b-screen-guard-predicate
+**Decision (2026-10-04):** `screenContradiction(text, module)` (modules.js) flags a reply that names part counts the
+mounted module does not show (fraction denominators, half/third/quarter… and aadha/tihai/chauthai, "N equal parts / N
+barabar hisse"), returning the facts row for the rewrite reason. It belongs in `textReply`'s problems list in
+`server/routes/lesson.js` (W2-E's hot file): `server/forge/seam-patches/w2b-screen-guard.patch`.
+- **Reverse if:** it rewrites more than ~5% of explain turns in production without a measured contradiction, or the
+  Brain's turn gate (W2-E) owns screen grounding.
+
+## w2b-interest-skins-five
+**Decision (2026-10-04, personalisation gap 5):** Forge skins gain `football`, `drawing`, `stories`, `building`,
+`nature` (three HOOKS title rows each in en / hi / hi_latn, decor from the scene@1 sprite library, keyword rules with word
+boundaries so "bread" is not reading), so all 12 onboarding tiles map to a skin. Cleared by Content Safety (severity 0).
+The one shared interest registry stays W2-C's (`shared/interests.js`); this is Forge's skin table only.
+- **Reverse if:** W2-C's registry replaces the keyword map (then strings.js reads it).
+
+## w2b-frame-prewarm
+**Decision (2026-10-04, BUILD-PLAN W2-B #4):** loading the lesson screen schedules (on idle) a hidden sandboxed
+`modules.html#warm:<engines>` frame that loads the frame runtime plus the explain rungs' chunks (explainer, scene and six
+maths engines) and is removed; `bootstrap.tsx`'s warm mode never says ready. Measured: halves the 4x-CPU first mount
+(684 → 344 ms p50) and gives 100 ms p50 at 1x; it does NOT reach ≤ 150 ms at 4x (`rj-w2b-cache-only-prewarm-for-150ms`).
+- **Reverse if:** a pre-booted in-place frame (open item `w2b-preboot-frame`) lands, which supersedes this.

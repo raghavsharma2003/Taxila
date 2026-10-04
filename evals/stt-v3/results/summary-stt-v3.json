@@ -1,7 +1,7 @@
 {
  "date": "2026-10-04",
  "base": "D4 live-tx kw+prompt (CURRENT)",
- "resultsDir": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/partial",
+ "resultsDir": "evals/stt-v3/results/raw",
  "overall": {
   "G3 gpt-transcribe hi+prompt": {
    "n": 180,
@@ -243,7 +243,7 @@
    "wrongScript": 0,
    "decoys": 0
   },
-  "O-NOhi nemotron-3.5 offline (full context) hi-IN": {
+  "O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead)": {
    "n": 180,
    "errs": 0,
    "cerNorm": 0.148,
@@ -329,6 +329,126 @@
    "answers80": [
     0.717,
     0.836
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17 qwen3-asr-1.7b auto": {
+   "n": 180,
+   "errs": 0,
+   "cerNorm": 0.031,
+   "werNorm": 0.075,
+   "werRaw": 0.177,
+   "keyRecall": 0.882,
+   "numSeq": {
+    "k": 84,
+    "n": 96
+   },
+   "numSeq80": [
+    0.825,
+    0.912
+   ],
+   "numSeq2": {
+    "k": 84,
+    "n": 96
+   },
+   "answers": {
+    "k": 70,
+    "n": 78
+   },
+   "answers80": [
+    0.845,
+    0.934
+   ],
+   "wrongScript": 2,
+   "decoys": 2
+  },
+  "O-Q17hi qwen3-asr-1.7b language=hi": {
+   "n": 180,
+   "errs": 0,
+   "cerNorm": 0.058,
+   "werNorm": 0.128,
+   "werRaw": 0.349,
+   "keyRecall": 0.828,
+   "numSeq": {
+    "k": 76,
+    "n": 96
+   },
+   "numSeq80": [
+    0.734,
+    0.84
+   ],
+   "numSeq2": {
+    "k": 72,
+    "n": 96
+   },
+   "answers": {
+    "k": 63,
+    "n": 78
+   },
+   "answers80": [
+    0.744,
+    0.858
+   ],
+   "wrongScript": 1,
+   "decoys": 0
+  },
+  "O-Q17p qwen3-asr-1.7b auto + script prompt": {
+   "n": 180,
+   "errs": 0,
+   "cerNorm": 0.047,
+   "werNorm": 0.088,
+   "werRaw": 0.172,
+   "keyRecall": 0.866,
+   "numSeq": {
+    "k": 82,
+    "n": 96
+   },
+   "numSeq80": [
+    0.802,
+    0.894
+   ],
+   "numSeq2": {
+    "k": 82,
+    "n": 96
+   },
+   "answers": {
+    "k": 69,
+    "n": 78
+   },
+   "answers80": [
+    0.83,
+    0.923
+   ],
+   "wrongScript": 0,
+   "decoys": 1
+  },
+  "O-Q17pk qwen3-asr-1.7b auto + script prompt + vocabulary": {
+   "n": 180,
+   "errs": 0,
+   "cerNorm": 0.042,
+   "werNorm": 0.077,
+   "werRaw": 0.165,
+   "keyRecall": 0.877,
+   "numSeq": {
+    "k": 83,
+    "n": 96
+   },
+   "numSeq80": [
+    0.814,
+    0.903
+   ],
+   "numSeq2": {
+    "k": 83,
+    "n": 96
+   },
+   "answers": {
+    "k": 70,
+    "n": 78
+   },
+   "answers80": [
+    0.845,
+    0.934
    ],
    "wrongScript": 0,
    "decoys": 0
@@ -1175,7 +1295,7 @@
    "wrongScript": 0,
    "decoys": 0
   },
-  "O-NOhi nemotron-3.5 offline (full context) hi-IN | clean": {
+  "O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead) | clean": {
    "n": 60,
    "errs": 0,
    "cerNorm": 0.119,
@@ -1205,7 +1325,7 @@
    "wrongScript": 0,
    "decoys": 0
   },
-  "O-NOhi nemotron-3.5 offline (full context) hi-IN | white": {
+  "O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead) | white": {
    "n": 60,
    "errs": 0,
    "cerNorm": 0.166,
@@ -1235,7 +1355,7 @@
    "wrongScript": 0,
    "decoys": 0
   },
-  "O-NOhi nemotron-3.5 offline (full context) hi-IN | pink": {
+  "O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead) | pink": {
    "n": 60,
    "errs": 0,
    "cerNorm": 0.158,
@@ -1441,6 +1561,366 @@
    "answers80": [
     0.608,
     0.826
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17 qwen3-asr-1.7b auto | clean": {
+   "n": 60,
+   "errs": 0,
+   "cerNorm": 0.019,
+   "werNorm": 0.062,
+   "werRaw": 0.154,
+   "keyRecall": 0.911,
+   "numSeq": {
+    "k": 29,
+    "n": 32
+   },
+   "numSeq80": [
+    0.819,
+    0.954
+   ],
+   "numSeq2": {
+    "k": 29,
+    "n": 32
+   },
+   "answers": {
+    "k": 24,
+    "n": 26
+   },
+   "answers80": [
+    0.828,
+    0.968
+   ],
+   "wrongScript": 0,
+   "decoys": 1
+  },
+  "O-Q17 qwen3-asr-1.7b auto | white": {
+   "n": 60,
+   "errs": 0,
+   "cerNorm": 0.035,
+   "werNorm": 0.071,
+   "werRaw": 0.189,
+   "keyRecall": 0.876,
+   "numSeq": {
+    "k": 27,
+    "n": 32
+   },
+   "numSeq80": [
+    0.745,
+    0.909
+   ],
+   "numSeq2": {
+    "k": 27,
+    "n": 32
+   },
+   "answers": {
+    "k": 22,
+    "n": 26
+   },
+   "answers80": [
+    0.735,
+    0.916
+   ],
+   "wrongScript": 1,
+   "decoys": 0
+  },
+  "O-Q17 qwen3-asr-1.7b auto | pink": {
+   "n": 60,
+   "errs": 0,
+   "cerNorm": 0.04,
+   "werNorm": 0.093,
+   "werRaw": 0.188,
+   "keyRecall": 0.86,
+   "numSeq": {
+    "k": 28,
+    "n": 32
+   },
+   "numSeq80": [
+    0.781,
+    0.932
+   ],
+   "numSeq2": {
+    "k": 28,
+    "n": 32
+   },
+   "answers": {
+    "k": 24,
+    "n": 26
+   },
+   "answers80": [
+    0.828,
+    0.968
+   ],
+   "wrongScript": 1,
+   "decoys": 1
+  },
+  "O-Q17hi qwen3-asr-1.7b language=hi | clean": {
+   "n": 60,
+   "errs": 0,
+   "cerNorm": 0.037,
+   "werNorm": 0.1,
+   "werRaw": 0.308,
+   "keyRecall": 0.868,
+   "numSeq": {
+    "k": 27,
+    "n": 32
+   },
+   "numSeq80": [
+    0.745,
+    0.909
+   ],
+   "numSeq2": {
+    "k": 26,
+    "n": 32
+   },
+   "answers": {
+    "k": 22,
+    "n": 26
+   },
+   "answers80": [
+    0.735,
+    0.916
+   ],
+   "wrongScript": 1,
+   "decoys": 0
+  },
+  "O-Q17hi qwen3-asr-1.7b language=hi | white": {
+   "n": 60,
+   "errs": 0,
+   "cerNorm": 0.067,
+   "werNorm": 0.142,
+   "werRaw": 0.373,
+   "keyRecall": 0.818,
+   "numSeq": {
+    "k": 24,
+    "n": 32
+   },
+   "numSeq80": [
+    0.641,
+    0.834
+   ],
+   "numSeq2": {
+    "k": 22,
+    "n": 32
+   },
+   "answers": {
+    "k": 20,
+    "n": 26
+   },
+   "answers80": [
+    0.649,
+    0.857
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17hi qwen3-asr-1.7b language=hi | pink": {
+   "n": 60,
+   "errs": 0,
+   "cerNorm": 0.069,
+   "werNorm": 0.143,
+   "werRaw": 0.366,
+   "keyRecall": 0.799,
+   "numSeq": {
+    "k": 25,
+    "n": 32
+   },
+   "numSeq80": [
+    0.675,
+    0.86
+   ],
+   "numSeq2": {
+    "k": 24,
+    "n": 32
+   },
+   "answers": {
+    "k": 21,
+    "n": 26
+   },
+   "answers80": [
+    0.692,
+    0.887
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17p qwen3-asr-1.7b auto + script prompt | clean": {
+   "n": 60,
+   "errs": 0,
+   "cerNorm": 0.025,
+   "werNorm": 0.064,
+   "werRaw": 0.146,
+   "keyRecall": 0.907,
+   "numSeq": {
+    "k": 29,
+    "n": 32
+   },
+   "numSeq80": [
+    0.819,
+    0.954
+   ],
+   "numSeq2": {
+    "k": 29,
+    "n": 32
+   },
+   "answers": {
+    "k": 24,
+    "n": 26
+   },
+   "answers80": [
+    0.828,
+    0.968
+   ],
+   "wrongScript": 0,
+   "decoys": 1
+  },
+  "O-Q17p qwen3-asr-1.7b auto + script prompt | white": {
+   "n": 60,
+   "errs": 0,
+   "cerNorm": 0.071,
+   "werNorm": 0.108,
+   "werRaw": 0.2,
+   "keyRecall": 0.835,
+   "numSeq": {
+    "k": 25,
+    "n": 32
+   },
+   "numSeq80": [
+    0.675,
+    0.86
+   ],
+   "numSeq2": {
+    "k": 25,
+    "n": 32
+   },
+   "answers": {
+    "k": 21,
+    "n": 26
+   },
+   "answers80": [
+    0.692,
+    0.887
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17p qwen3-asr-1.7b auto + script prompt | pink": {
+   "n": 60,
+   "errs": 0,
+   "cerNorm": 0.044,
+   "werNorm": 0.092,
+   "werRaw": 0.168,
+   "keyRecall": 0.856,
+   "numSeq": {
+    "k": 28,
+    "n": 32
+   },
+   "numSeq80": [
+    0.781,
+    0.932
+   ],
+   "numSeq2": {
+    "k": 28,
+    "n": 32
+   },
+   "answers": {
+    "k": 24,
+    "n": 26
+   },
+   "answers80": [
+    0.828,
+    0.968
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17pk qwen3-asr-1.7b auto + script prompt + vocabulary | clean": {
+   "n": 60,
+   "errs": 0,
+   "cerNorm": 0.028,
+   "werNorm": 0.06,
+   "werRaw": 0.14,
+   "keyRecall": 0.903,
+   "numSeq": {
+    "k": 30,
+    "n": 32
+   },
+   "numSeq80": [
+    0.859,
+    0.974
+   ],
+   "numSeq2": {
+    "k": 30,
+    "n": 32
+   },
+   "answers": {
+    "k": 25,
+    "n": 26
+   },
+   "answers80": [
+    0.88,
+    0.988
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17pk qwen3-asr-1.7b auto + script prompt + vocabulary | white": {
+   "n": 60,
+   "errs": 0,
+   "cerNorm": 0.059,
+   "werNorm": 0.092,
+   "werRaw": 0.19,
+   "keyRecall": 0.856,
+   "numSeq": {
+    "k": 25,
+    "n": 32
+   },
+   "numSeq80": [
+    0.675,
+    0.86
+   ],
+   "numSeq2": {
+    "k": 25,
+    "n": 32
+   },
+   "answers": {
+    "k": 21,
+    "n": 26
+   },
+   "answers80": [
+    0.692,
+    0.887
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17pk qwen3-asr-1.7b auto + script prompt + vocabulary | pink": {
+   "n": 60,
+   "errs": 0,
+   "cerNorm": 0.04,
+   "werNorm": 0.08,
+   "werRaw": 0.165,
+   "keyRecall": 0.872,
+   "numSeq": {
+    "k": 28,
+    "n": 32
+   },
+   "numSeq80": [
+    0.781,
+    0.932
+   ],
+   "numSeq2": {
+    "k": 28,
+    "n": 32
+   },
+   "answers": {
+    "k": 24,
+    "n": 26
+   },
+   "answers80": [
+    0.828,
+    0.968
    ],
    "wrongScript": 0,
    "decoys": 0
@@ -2767,7 +3247,7 @@
    "wrongScript": 0,
    "decoys": 0
   },
-  "O-NOhi nemotron-3.5 offline (full context) hi-IN | hinglish": {
+  "O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead) | hinglish": {
    "n": 60,
    "errs": 0,
    "cerNorm": 0.112,
@@ -2797,7 +3277,7 @@
    "wrongScript": 0,
    "decoys": 0
   },
-  "O-NOhi nemotron-3.5 offline (full context) hi-IN | hindi": {
+  "O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead) | hindi": {
    "n": 48,
    "errs": 0,
    "cerNorm": 0.045,
@@ -2827,7 +3307,7 @@
    "wrongScript": 0,
    "decoys": 0
   },
-  "O-NOhi nemotron-3.5 offline (full context) hi-IN | english": {
+  "O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead) | english": {
    "n": 42,
    "errs": 0,
    "cerNorm": 0.376,
@@ -2857,7 +3337,7 @@
    "wrongScript": 0,
    "decoys": 0
   },
-  "O-NOhi nemotron-3.5 offline (full context) hi-IN | hesitant": {
+  "O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead) | hesitant": {
    "n": 30,
    "errs": 0,
    "cerNorm": 0.062,
@@ -3123,6 +3603,486 @@
    "answers80": [
     0.257,
     0.539
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17 qwen3-asr-1.7b auto | hinglish": {
+   "n": 60,
+   "errs": 0,
+   "cerNorm": 0.048,
+   "werNorm": 0.146,
+   "werRaw": 0.327,
+   "keyRecall": 0.75,
+   "numSeq": {
+    "k": 40,
+    "n": 42
+   },
+   "numSeq80": [
+    0.891,
+    0.98
+   ],
+   "numSeq2": {
+    "k": 40,
+    "n": 42
+   },
+   "answers": {
+    "k": 24,
+    "n": 24
+   },
+   "answers80": [
+    0.936,
+    1
+   ],
+   "wrongScript": 2,
+   "decoys": 2
+  },
+  "O-Q17 qwen3-asr-1.7b auto | hindi": {
+   "n": 48,
+   "errs": 0,
+   "cerNorm": 0.022,
+   "werNorm": 0.034,
+   "werRaw": 0.073,
+   "keyRecall": 0.945,
+   "numSeq": {
+    "k": 21,
+    "n": 24
+   },
+   "numSeq80": [
+    0.764,
+    0.938
+   ],
+   "numSeq2": {
+    "k": 21,
+    "n": 24
+   },
+   "answers": {
+    "k": 23,
+    "n": 24
+   },
+   "answers80": [
+    0.87,
+    0.987
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17 qwen3-asr-1.7b auto | english": {
+   "n": 42,
+   "errs": 0,
+   "cerNorm": 0,
+   "werNorm": 0,
+   "werRaw": 0.029,
+   "keyRecall": 1,
+   "numSeq": {
+    "k": 12,
+    "n": 12
+   },
+   "numSeq80": [
+    0.88,
+    1
+   ],
+   "numSeq2": {
+    "k": 12,
+    "n": 12
+   },
+   "answers": {
+    "k": 12,
+    "n": 12
+   },
+   "answers80": [
+    0.88,
+    1
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17 qwen3-asr-1.7b auto | hesitant": {
+   "n": 30,
+   "errs": 0,
+   "cerNorm": 0.056,
+   "werNorm": 0.106,
+   "werRaw": 0.25,
+   "keyRecall": 0.883,
+   "numSeq": {
+    "k": 11,
+    "n": 18
+   },
+   "numSeq80": [
+    0.461,
+    0.743
+   ],
+   "numSeq2": {
+    "k": 11,
+    "n": 18
+   },
+   "answers": {
+    "k": 11,
+    "n": 18
+   },
+   "answers80": [
+    0.461,
+    0.743
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17hi qwen3-asr-1.7b language=hi | hinglish": {
+   "n": 60,
+   "errs": 0,
+   "cerNorm": 0.044,
+   "werNorm": 0.128,
+   "werRaw": 0.303,
+   "keyRecall": 0.746,
+   "numSeq": {
+    "k": 39,
+    "n": 42
+   },
+   "numSeq80": [
+    0.86,
+    0.965
+   ],
+   "numSeq2": {
+    "k": 39,
+    "n": 42
+   },
+   "answers": {
+    "k": 24,
+    "n": 24
+   },
+   "answers80": [
+    0.936,
+    1
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17hi qwen3-asr-1.7b language=hi | hindi": {
+   "n": 48,
+   "errs": 0,
+   "cerNorm": 0.022,
+   "werNorm": 0.034,
+   "werRaw": 0.073,
+   "keyRecall": 0.945,
+   "numSeq": {
+    "k": 21,
+    "n": 24
+   },
+   "numSeq80": [
+    0.764,
+    0.938
+   ],
+   "numSeq2": {
+    "k": 21,
+    "n": 24
+   },
+   "answers": {
+    "k": 23,
+    "n": 24
+   },
+   "answers80": [
+    0.87,
+    0.987
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17hi qwen3-asr-1.7b language=hi | english": {
+   "n": 42,
+   "errs": 0,
+   "cerNorm": 0.123,
+   "werNorm": 0.25,
+   "werRaw": 0.72,
+   "keyRecall": 0.762,
+   "numSeq": {
+    "k": 5,
+    "n": 12
+   },
+   "numSeq80": [
+    0.255,
+    0.598
+   ],
+   "numSeq2": {
+    "k": 1,
+    "n": 12
+   },
+   "answers": {
+    "k": 5,
+    "n": 12
+   },
+   "answers80": [
+    0.255,
+    0.598
+   ],
+   "wrongScript": 1,
+   "decoys": 0
+  },
+  "O-Q17hi qwen3-asr-1.7b language=hi | hesitant": {
+   "n": 30,
+   "errs": 0,
+   "cerNorm": 0.052,
+   "werNorm": 0.109,
+   "werRaw": 0.362,
+   "keyRecall": 0.9,
+   "numSeq": {
+    "k": 11,
+    "n": 18
+   },
+   "numSeq80": [
+    0.461,
+    0.743
+   ],
+   "numSeq2": {
+    "k": 11,
+    "n": 18
+   },
+   "answers": {
+    "k": 11,
+    "n": 18
+   },
+   "answers80": [
+    0.461,
+    0.743
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17p qwen3-asr-1.7b auto + script prompt | hinglish": {
+   "n": 60,
+   "errs": 0,
+   "cerNorm": 0.055,
+   "werNorm": 0.141,
+   "werRaw": 0.275,
+   "keyRecall": 0.742,
+   "numSeq": {
+    "k": 39,
+    "n": 42
+   },
+   "numSeq80": [
+    0.86,
+    0.965
+   ],
+   "numSeq2": {
+    "k": 39,
+    "n": 42
+   },
+   "answers": {
+    "k": 24,
+    "n": 24
+   },
+   "answers80": [
+    0.936,
+    1
+   ],
+   "wrongScript": 0,
+   "decoys": 1
+  },
+  "O-Q17p qwen3-asr-1.7b auto + script prompt | hindi": {
+   "n": 48,
+   "errs": 0,
+   "cerNorm": 0.025,
+   "werNorm": 0.033,
+   "werRaw": 0.082,
+   "keyRecall": 0.924,
+   "numSeq": {
+    "k": 21,
+    "n": 24
+   },
+   "numSeq80": [
+    0.764,
+    0.938
+   ],
+   "numSeq2": {
+    "k": 21,
+    "n": 24
+   },
+   "answers": {
+    "k": 23,
+    "n": 24
+   },
+   "answers80": [
+    0.87,
+    0.987
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17p qwen3-asr-1.7b auto + script prompt | english": {
+   "n": 42,
+   "errs": 0,
+   "cerNorm": 0.048,
+   "werNorm": 0.048,
+   "werRaw": 0.062,
+   "keyRecall": 0.952,
+   "numSeq": {
+    "k": 11,
+    "n": 12
+   },
+   "numSeq80": [
+    0.758,
+    0.975
+   ],
+   "numSeq2": {
+    "k": 11,
+    "n": 12
+   },
+   "answers": {
+    "k": 11,
+    "n": 12
+   },
+   "answers80": [
+    0.758,
+    0.975
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17p qwen3-asr-1.7b auto + script prompt | hesitant": {
+   "n": 30,
+   "errs": 0,
+   "cerNorm": 0.062,
+   "werNorm": 0.126,
+   "werRaw": 0.262,
+   "keyRecall": 0.9,
+   "numSeq": {
+    "k": 11,
+    "n": 18
+   },
+   "numSeq80": [
+    0.461,
+    0.743
+   ],
+   "numSeq2": {
+    "k": 11,
+    "n": 18
+   },
+   "answers": {
+    "k": 11,
+    "n": 18
+   },
+   "answers80": [
+    0.461,
+    0.743
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17pk qwen3-asr-1.7b auto + script prompt + vocabulary | hinglish": {
+   "n": 60,
+   "errs": 0,
+   "cerNorm": 0.072,
+   "werNorm": 0.147,
+   "werRaw": 0.29,
+   "keyRecall": 0.725,
+   "numSeq": {
+    "k": 39,
+    "n": 42
+   },
+   "numSeq80": [
+    0.86,
+    0.965
+   ],
+   "numSeq2": {
+    "k": 39,
+    "n": 42
+   },
+   "answers": {
+    "k": 24,
+    "n": 24
+   },
+   "answers80": [
+    0.936,
+    1
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17pk qwen3-asr-1.7b auto + script prompt + vocabulary | hindi": {
+   "n": 48,
+   "errs": 0,
+   "cerNorm": 0.021,
+   "werNorm": 0.025,
+   "werRaw": 0.063,
+   "keyRecall": 0.945,
+   "numSeq": {
+    "k": 21,
+    "n": 24
+   },
+   "numSeq80": [
+    0.764,
+    0.938
+   ],
+   "numSeq2": {
+    "k": 21,
+    "n": 24
+   },
+   "answers": {
+    "k": 23,
+    "n": 24
+   },
+   "answers80": [
+    0.87,
+    0.987
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17pk qwen3-asr-1.7b auto + script prompt + vocabulary | english": {
+   "n": 42,
+   "errs": 0,
+   "cerNorm": 0.024,
+   "werNorm": 0.024,
+   "werRaw": 0.048,
+   "keyRecall": 0.976,
+   "numSeq": {
+    "k": 11,
+    "n": 12
+   },
+   "numSeq80": [
+    0.758,
+    0.975
+   ],
+   "numSeq2": {
+    "k": 11,
+    "n": 12
+   },
+   "answers": {
+    "k": 11,
+    "n": 12
+   },
+   "answers80": [
+    0.758,
+    0.975
+   ],
+   "wrongScript": 0,
+   "decoys": 0
+  },
+  "O-Q17pk qwen3-asr-1.7b auto + script prompt + vocabulary | hesitant": {
+   "n": 30,
+   "errs": 0,
+   "cerNorm": 0.043,
+   "werNorm": 0.094,
+   "werRaw": 0.243,
+   "keyRecall": 0.933,
+   "numSeq": {
+    "k": 12,
+    "n": 18
+   },
+   "numSeq80": [
+    0.516,
+    0.79
+   ],
+   "numSeq2": {
+    "k": 12,
+    "n": 18
+   },
+   "answers": {
+    "k": 12,
+    "n": 18
+   },
+   "answers80": [
+    0.516,
+    0.79
    ],
    "wrongScript": 0,
    "decoys": 0
@@ -3689,7 +4649,7 @@
    ],
    "texts": []
   },
-  "O-NOhi nemotron-3.5 offline (full context) hi-IN": {
+  "O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead)": {
    "n": 12,
    "halluc": 0,
    "wilson80": [
@@ -3728,6 +4688,55 @@
     "n11-N-hum: हाँ",
     "n12-N-modpink: हाँ"
    ]
+  },
+  "O-Q17 qwen3-asr-1.7b auto": {
+   "n": 12,
+   "halluc": 0,
+   "wilson80": [
+    0,
+    0.12
+   ],
+   "texts": []
+  },
+  "O-Q17hi qwen3-asr-1.7b language=hi": {
+   "n": 12,
+   "halluc": 12,
+   "wilson80": [
+    0.88,
+    1
+   ],
+   "texts": [
+    "n01-N-silence: हम्म",
+    "n02-N-white: मैं",
+    "n03-N-pink: मैं",
+    "n04-N-zeros: हम्म",
+    "n05-N-silence5s: हम्म",
+    "n06-N-whitelow: हम्म",
+    "n07-N-whitehigh: मैं",
+    "n08-N-pinklow: मैं",
+    "n09-N-pinkhigh: मैं तो बस",
+    "n10-N-brown: हम्म",
+    "n11-N-hum: हम्म",
+    "n12-N-modpink: हम्म"
+   ]
+  },
+  "O-Q17p qwen3-asr-1.7b auto + script prompt": {
+   "n": 12,
+   "halluc": 0,
+   "wilson80": [
+    0,
+    0.12
+   ],
+   "texts": []
+  },
+  "O-Q17pk qwen3-asr-1.7b auto + script prompt + vocabulary": {
+   "n": 12,
+   "halluc": 0,
+   "wilson80": [
+    0,
+    0.12
+   ],
+   "texts": []
   },
   "O-V480 voxtral-realtime stream 480 ms": {
    "n": 12,
@@ -3829,7 +4838,7 @@
    ],
    "texts": []
   },
-  "O-NOhi nemotron-3.5 offline (full context) hi-IN": {
+  "O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead)": {
    "n": 30,
    "halluc": 0,
    "wilson80": [
@@ -3885,6 +4894,73 @@
     "n28-N-hum60: हाँ",
     "n30-N-tones: हाँ"
    ]
+  },
+  "O-Q17 qwen3-asr-1.7b auto": {
+   "n": 30,
+   "halluc": 0,
+   "wilson80": [
+    0,
+    0.052
+   ],
+   "texts": []
+  },
+  "O-Q17hi qwen3-asr-1.7b language=hi": {
+   "n": 30,
+   "halluc": 30,
+   "wilson80": [
+    0.948,
+    1
+   ],
+   "texts": [
+    "n01-N-silence: हम्म",
+    "n02-N-white: मैं",
+    "n03-N-pink: मैं",
+    "n04-N-zeros: हम्म",
+    "n05-N-silence5s: हम्म",
+    "n06-N-whitelow: हम्म",
+    "n07-N-whitehigh: मैं",
+    "n08-N-pinklow: मैं",
+    "n09-N-pinkhigh: मैं तो बस",
+    "n10-N-brown: हम्म",
+    "n11-N-hum: हम्म",
+    "n12-N-modpink: हम्म",
+    "n13-N-zeros5s: हम्म",
+    "n14-N-zeros1s: हम",
+    "n15-N-dither10s: हम्म",
+    "n16-N-white100: हम्म",
+    "n17-N-white6000: मैं",
+    "n18-N-pink600: हम्म",
+    "n19-N-pinkloud: मैं तो बस",
+    "n20-N-brownlow: हम्म",
+    "n21-N-brownhigh: हम्म",
+    "n22-N-fanlow: हम्म",
+    "n23-N-fanhigh: मैं तो बस",
+    "n24-N-whistle: मैं तो बस",
+    "n25-N-whistleburst: अच्छा।",
+    "n26-N-clicksslow: हम्म",
+    "n27-N-clicksfast: हम्म",
+    "n28-N-hum60: मैं तो बस",
+    "n29-N-impulses: हम्म",
+    "n30-N-tones: क्यों"
+   ]
+  },
+  "O-Q17p qwen3-asr-1.7b auto + script prompt": {
+   "n": 30,
+   "halluc": 0,
+   "wilson80": [
+    0,
+    0.052
+   ],
+   "texts": []
+  },
+  "O-Q17pk qwen3-asr-1.7b auto + script prompt + vocabulary": {
+   "n": 30,
+   "halluc": 0,
+   "wilson80": [
+    0,
+    0.052
+   ],
+   "texts": []
   },
   "O-V480 voxtral-realtime stream 480 ms": {
    "n": 30,
@@ -4032,7 +5108,7 @@
     "b03-N-babblerev4: हाँ, नहीं, रखा नहीं और आज धाबू स्यास्त्र"
    ]
   },
-  "O-NOhi nemotron-3.5 offline (full context) hi-IN": {
+  "O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead)": {
    "n": 4,
    "halluc": 3,
    "wilson80": [
@@ -4071,6 +5147,62 @@
     "b02-N-babblerev2: हाँ है तुम इस, बुद्ध रोगी रोग राज दारोड़ बुद्ध",
     "b03-N-babblerev4: हाँ नहीं हम इस पर नमस्ते था नहीं राज नहीं राज दारोब्ध सियासर राज नहीं हम इस",
     "b04-N-babblerev6: अमेरिका में से मुजरिम है जो इराक और राष्ट्रपति है और तेरे राज्य में अमेरिका."
+   ]
+  },
+  "O-Q17 qwen3-asr-1.7b auto": {
+   "n": 4,
+   "halluc": 4,
+   "wilson80": [
+    0.709,
+    1
+   ],
+   "texts": [
+    "b01-N-babblerev1: Aneh itu miss. Kuda dompet roh rajah dompet.",
+    "b02-N-babblerev2: आने है तुम इस राष्ट्र डबुद",
+    "b03-N-babblerev4: आने हेडोमिस",
+    "b04-N-babblerev6: आधुनिक दुनिया में मूवी मचते हैं, दोहराए लोगों पर आज धर्मों के आधुनिक रूप में मूवी में तो"
+   ]
+  },
+  "O-Q17hi qwen3-asr-1.7b language=hi": {
+   "n": 4,
+   "halluc": 4,
+   "wilson80": [
+    0.709,
+    1
+   ],
+   "texts": [
+    "b01-N-babblerev1: आने हेतु मिस, उदार इरो राष्ट्र दबुद।",
+    "b02-N-babblerev2: आने है तुम इस राष्ट्र डबुद",
+    "b03-N-babblerev4: आने हेडोमिस",
+    "b04-N-babblerev6: आधुनिक रहने से मूवी में भी तो ही रहा लोगों पर आज डर बोल तो आधुनिक रहने से मूवी में तो"
+   ]
+  },
+  "O-Q17p qwen3-asr-1.7b auto + script prompt": {
+   "n": 4,
+   "halluc": 4,
+   "wilson80": [
+    0.709,
+    1
+   ],
+   "texts": [
+    "b01-N-babblerev1: आने हेतु मिस। उदार गिरो राष्ट्र रबुद।",
+    "b02-N-babblerev2: आने है दो मिस। उधर डब्बे रो राष्ट्र डब्बू।",
+    "b03-N-babblerev4: राज्य प्रधानमंत्री",
+    "b04-N-babblerev6: आधे दिन रस्ते में मूवी मचाएंगे तो इधर लोगों पर आज धर्मों दो दिन रस्ते में मूवी मचाएंगे तो"
+   ]
+  },
+  "O-Q17pk qwen3-asr-1.7b auto + script prompt + vocabulary": {
+   "n": 4,
+   "halluc": 4,
+   "wilson80": [
+    0.709,
+    1
+   ],
+   "texts": [
+    "b01-N-babblerev1: आने हेतु मिस। उदार गीतो राष्ट्र रबुद।",
+    "b02-N-babblerev2: आने है दो मिस। उधर डब्बे रो राष्ट्र डब्बू।",
+    "b03-N-babblerev4: अनेहिंदू राज्य पर नमाज़ पढ़ा है राज्य राज्य राज्य राज्य",
+    "b04-N-babblerev6: आधुनिक दुनिया में मूवी मचते हैं। दो ही राय लोगों पर आज डर बोलते हैं। आधुनिक दुनिया में मूवी में तो"
    ]
   },
   "O-V480 voxtral-realtime stream 480 ms": {
@@ -4190,7 +5322,7 @@
    "algoLastTextP50": 299,
    "algoFirstPartialP50": 739
   },
-  "O-NOhi nemotron-3.5 offline (full context) hi-IN": {
+  "O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead)": {
    "source": "stt-v3 batch: final = 600 ms endpoint hangover + request time (refresh convention for batch engines); GPU host, batch 1, no network",
    "reqP50": 103,
    "reqP90": 126,
@@ -4213,6 +5345,38 @@
    "finalAfterEndP50": 1476,
    "finalAfterEndP90": 1950,
    "rtfP50": 0.196
+  },
+  "O-Q17 qwen3-asr-1.7b auto": {
+   "source": "stt-v3 batch: final = 600 ms endpoint hangover + request time (refresh convention for batch engines); GPU host, batch 1, no network",
+   "reqP50": 982,
+   "reqP90": 1469,
+   "finalAfterEndP50": 1582,
+   "finalAfterEndP90": 2069,
+   "rtfP50": 0.2137
+  },
+  "O-Q17hi qwen3-asr-1.7b language=hi": {
+   "source": "stt-v3 batch: final = 600 ms endpoint hangover + request time (refresh convention for batch engines); GPU host, batch 1, no network",
+   "reqP50": 1095,
+   "reqP90": 1536,
+   "finalAfterEndP50": 1695,
+   "finalAfterEndP90": 2136,
+   "rtfP50": 0.2514
+  },
+  "O-Q17p qwen3-asr-1.7b auto + script prompt": {
+   "source": "stt-v3 batch: final = 600 ms endpoint hangover + request time (refresh convention for batch engines); GPU host, batch 1, no network",
+   "reqP50": 972,
+   "reqP90": 1475,
+   "finalAfterEndP50": 1572,
+   "finalAfterEndP90": 2075,
+   "rtfP50": 0.2121
+  },
+  "O-Q17pk qwen3-asr-1.7b auto + script prompt + vocabulary": {
+   "source": "stt-v3 batch: final = 600 ms endpoint hangover + request time (refresh convention for batch engines); GPU host, batch 1, no network",
+   "reqP50": 999,
+   "reqP90": 1482,
+   "finalAfterEndP50": 1599,
+   "finalAfterEndP90": 2082,
+   "rtfP50": 0.2165
   },
   "O-V480 voxtral-realtime stream 480 ms": {
    "source": "stt-v3 paced (60 clean clips, audio fed at real time on the GPU host; no network)",
@@ -4356,7 +5520,7 @@
     0.186
    ]
   },
-  "O-NOhi nemotron-3.5 offline (full context) hi-IN": {
+  "O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead)": {
    "items": 30,
    "armBetter": 6,
    "armWorse": 21,
@@ -4396,6 +5560,62 @@
    "ci80": [
     0.034,
     0.065
+   ]
+  },
+  "O-Q17 qwen3-asr-1.7b auto": {
+   "items": 30,
+   "armBetter": 7,
+   "armWorse": 12,
+   "meanDeltaCER": 0.003,
+   "ci95": [
+    -0.01,
+    0.016
+   ],
+   "ci80": [
+    -0.005,
+    0.012
+   ]
+  },
+  "O-Q17hi qwen3-asr-1.7b language=hi": {
+   "items": 30,
+   "armBetter": 7,
+   "armWorse": 18,
+   "meanDeltaCER": 0.03,
+   "ci95": [
+    0.007,
+    0.052
+   ],
+   "ci80": [
+    0.014,
+    0.044
+   ]
+  },
+  "O-Q17p qwen3-asr-1.7b auto + script prompt": {
+   "items": 30,
+   "armBetter": 6,
+   "armWorse": 14,
+   "meanDeltaCER": 0.018,
+   "ci95": [
+    0,
+    0.041
+   ],
+   "ci80": [
+    0.006,
+    0.032
+   ]
+  },
+  "O-Q17pk qwen3-asr-1.7b auto + script prompt + vocabulary": {
+   "items": 30,
+   "armBetter": 8,
+   "armWorse": 9,
+   "meanDeltaCER": 0.014,
+   "ci95": [
+    -0.005,
+    0.036
+   ],
+   "ci80": [
+    0.001,
+    0.028
    ]
   },
   "O-V480 voxtral-realtime stream 480 ms": {
@@ -5016,7 +6236,7 @@
     "finishAfterAudioEndMs": 1657
    }
   },
-  "O-NOhi nemotron-3.5 offline (full context) hi-IN": {
+  "O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead)": {
    "arm": "NOhi",
    "mode": "batched-utterances",
    "levels": [
@@ -5225,6 +6445,274 @@
      "meanUttS": 4.36,
      "throughputAudioSPerS": 74.5,
      "peakGB": 9.53
+    }
+   ],
+   "method": "B different ~5 s corpus utterances in one generate() call; 3 reps; latency = wall time of the call; throughput = B x mean utterance seconds / latency"
+  },
+  "O-Q17 qwen3-asr-1.7b auto": {
+   "arm": "Q17",
+   "mode": "batched-utterances",
+   "levels": [
+    {
+     "B": 1,
+     "latP50Ms": 933,
+     "latMaxMs": 1596,
+     "meanUttS": 2.1,
+     "throughputAudioSPerS": 2.3,
+     "peakGB": 4.11
+    },
+    {
+     "B": 2,
+     "latP50Ms": 707,
+     "latMaxMs": 1639,
+     "meanUttS": 4.26,
+     "throughputAudioSPerS": 12.1,
+     "peakGB": 4.18
+    },
+    {
+     "B": 4,
+     "latP50Ms": 1798,
+     "latMaxMs": 1799,
+     "meanUttS": 3.77,
+     "throughputAudioSPerS": 8.4,
+     "peakGB": 4.25
+    },
+    {
+     "B": 8,
+     "latP50Ms": 1628,
+     "latMaxMs": 1844,
+     "meanUttS": 4.45,
+     "throughputAudioSPerS": 21.8,
+     "peakGB": 4.46
+    },
+    {
+     "B": 16,
+     "latP50Ms": 1825,
+     "latMaxMs": 1945,
+     "meanUttS": 4.1,
+     "throughputAudioSPerS": 35.9,
+     "peakGB": 4.96
+    },
+    {
+     "B": 32,
+     "latP50Ms": 2255,
+     "latMaxMs": 3196,
+     "meanUttS": 4.29,
+     "throughputAudioSPerS": 60.8,
+     "peakGB": 5.83
+    },
+    {
+     "B": 64,
+     "latP50Ms": 3983,
+     "latMaxMs": 4003,
+     "meanUttS": 4.48,
+     "throughputAudioSPerS": 71.9,
+     "peakGB": 7.58
+    },
+    {
+     "B": 128,
+     "latP50Ms": 9983,
+     "latMaxMs": 10207,
+     "meanUttS": 4.36,
+     "throughputAudioSPerS": 55.9,
+     "peakGB": 12.07
+    }
+   ],
+   "method": "B different ~5 s corpus utterances in one generate() call; 3 reps; latency = wall time of the call; throughput = B x mean utterance seconds / latency"
+  },
+  "O-Q17hi qwen3-asr-1.7b language=hi": {
+   "arm": "Q17hi",
+   "mode": "batched-utterances",
+   "levels": [
+    {
+     "B": 1,
+     "latP50Ms": 869,
+     "latMaxMs": 1555,
+     "meanUttS": 2.1,
+     "throughputAudioSPerS": 2.4,
+     "peakGB": 4.11
+    },
+    {
+     "B": 2,
+     "latP50Ms": 1591,
+     "latMaxMs": 1781,
+     "meanUttS": 4.26,
+     "throughputAudioSPerS": 5.4,
+     "peakGB": 4.18
+    },
+    {
+     "B": 4,
+     "latP50Ms": 1752,
+     "latMaxMs": 1755,
+     "meanUttS": 3.77,
+     "throughputAudioSPerS": 8.6,
+     "peakGB": 4.25
+    },
+    {
+     "B": 8,
+     "latP50Ms": 1929,
+     "latMaxMs": 1954,
+     "meanUttS": 4.45,
+     "throughputAudioSPerS": 18.4,
+     "peakGB": 4.46
+    },
+    {
+     "B": 16,
+     "latP50Ms": 1940,
+     "latMaxMs": 2114,
+     "meanUttS": 4.1,
+     "throughputAudioSPerS": 33.8,
+     "peakGB": 4.96
+    },
+    {
+     "B": 32,
+     "latP50Ms": 2225,
+     "latMaxMs": 3172,
+     "meanUttS": 4.29,
+     "throughputAudioSPerS": 61.6,
+     "peakGB": 5.83
+    },
+    {
+     "B": 64,
+     "latP50Ms": 3958,
+     "latMaxMs": 4117,
+     "meanUttS": 4.48,
+     "throughputAudioSPerS": 72.4,
+     "peakGB": 7.58
+    },
+    {
+     "B": 128,
+     "latP50Ms": 9926,
+     "latMaxMs": 10132,
+     "meanUttS": 4.36,
+     "throughputAudioSPerS": 56.2,
+     "peakGB": 12.07
+    }
+   ],
+   "method": "B different ~5 s corpus utterances in one generate() call; 3 reps; latency = wall time of the call; throughput = B x mean utterance seconds / latency"
+  },
+  "O-Q17p qwen3-asr-1.7b auto + script prompt": {
+   "arm": "Q17p",
+   "mode": "batched-utterances",
+   "levels": [
+    {
+     "B": 1,
+     "latP50Ms": 940,
+     "latMaxMs": 1620,
+     "meanUttS": 2.1,
+     "throughputAudioSPerS": 2.2,
+     "peakGB": 4.11
+    },
+    {
+     "B": 2,
+     "latP50Ms": 710,
+     "latMaxMs": 1658,
+     "meanUttS": 4.26,
+     "throughputAudioSPerS": 12,
+     "peakGB": 4.18
+    },
+    {
+     "B": 4,
+     "latP50Ms": 1786,
+     "latMaxMs": 1819,
+     "meanUttS": 3.77,
+     "throughputAudioSPerS": 8.4,
+     "peakGB": 4.25
+    },
+    {
+     "B": 8,
+     "latP50Ms": 1555,
+     "latMaxMs": 1884,
+     "meanUttS": 4.45,
+     "throughputAudioSPerS": 22.9,
+     "peakGB": 4.47
+    },
+    {
+     "B": 16,
+     "latP50Ms": 2046,
+     "latMaxMs": 2081,
+     "meanUttS": 4.1,
+     "throughputAudioSPerS": 32,
+     "peakGB": 4.97
+    },
+    {
+     "B": 32,
+     "latP50Ms": 2709,
+     "latMaxMs": 3976,
+     "meanUttS": 4.29,
+     "throughputAudioSPerS": 50.6,
+     "peakGB": 5.84
+    },
+    {
+     "B": 64,
+     "latP50Ms": 4994,
+     "latMaxMs": 5003,
+     "meanUttS": 4.48,
+     "throughputAudioSPerS": 57.4,
+     "peakGB": 7.59
+    }
+   ],
+   "method": "B different ~5 s corpus utterances in one generate() call; 3 reps; latency = wall time of the call; throughput = B x mean utterance seconds / latency"
+  },
+  "O-Q17pk qwen3-asr-1.7b auto + script prompt + vocabulary": {
+   "arm": "Q17pk",
+   "mode": "batched-utterances",
+   "levels": [
+    {
+     "B": 1,
+     "latP50Ms": 945,
+     "latMaxMs": 1617,
+     "meanUttS": 2.1,
+     "throughputAudioSPerS": 2.2,
+     "peakGB": 4.11
+    },
+    {
+     "B": 2,
+     "latP50Ms": 1289,
+     "latMaxMs": 1620,
+     "meanUttS": 4.26,
+     "throughputAudioSPerS": 6.6,
+     "peakGB": 4.18
+    },
+    {
+     "B": 4,
+     "latP50Ms": 1829,
+     "latMaxMs": 1832,
+     "meanUttS": 3.77,
+     "throughputAudioSPerS": 8.2,
+     "peakGB": 4.25
+    },
+    {
+     "B": 8,
+     "latP50Ms": 1587,
+     "latMaxMs": 1902,
+     "meanUttS": 4.45,
+     "throughputAudioSPerS": 22.4,
+     "peakGB": 4.47
+    },
+    {
+     "B": 16,
+     "latP50Ms": 2138,
+     "latMaxMs": 2606,
+     "meanUttS": 4.1,
+     "throughputAudioSPerS": 30.7,
+     "peakGB": 4.97
+    },
+    {
+     "B": 32,
+     "latP50Ms": 3307,
+     "latMaxMs": 5242,
+     "meanUttS": 4.29,
+     "throughputAudioSPerS": 41.5,
+     "peakGB": 5.85
+    },
+    {
+     "B": 64,
+     "latP50Ms": 6131,
+     "latMaxMs": 7237,
+     "meanUttS": 4.48,
+     "throughputAudioSPerS": 46.7,
+     "peakGB": 7.61
     }
    ],
    "method": "B different ~5 s corpus utterances in one generate() call; 3 reps; latency = wall time of the call; throughput = B x mean utterance seconds / latency"
@@ -5493,9 +6981,13 @@
    "textChars": 1251,
    "textHead": "वाटरसाइकिल में पहले इवेपोरेशन फिर कंडेंसेशन होता है जो ऊपर वाला नंबर है वो न्यूमरेटर मेरी माँ ने मुझे साथ आम दिए थिंक इट इज़ ट्वेंटी वन नाइट ट्वेंटी फोर आई थिंक इट इस ट्वेंटी वन नो वेट ट्वेंटी फोर मतलब जो ऊपर वाला नंबर है वो न्यूमरेटर इक्विवैलेंट फ्रैक्शन्स मतलब वैल्यू सेम रहती है उम तीन बटा आठ नहीं नहीं तीन बटा चार द न्यूमेरेटर इस द टॉप नंबर एंड द डेनोमिनेटर इस द बॉटम नंबर हमारी क्लास में बत्तीस "
   },
-  "O-NOhi nemotron-3.5 offline (full context) hi-IN": null,
+  "O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead)": null,
   "O-Q06 qwen3-asr-0.6b auto": null,
   "O-Q06hi qwen3-asr-0.6b language=hi": null,
+  "O-Q17 qwen3-asr-1.7b auto": null,
+  "O-Q17hi qwen3-asr-1.7b language=hi": null,
+  "O-Q17p qwen3-asr-1.7b auto + script prompt": null,
+  "O-Q17pk qwen3-asr-1.7b auto + script prompt + vocabulary": null,
   "O-V480 voxtral-realtime stream 480 ms": {
    "arm": "V480",
    "minutes": 10.08,
@@ -5729,7 +7221,7 @@
    "peakGB": 12.45,
    "totalS": 755.8
   },
-  "O-NOhi nemotron-3.5 offline (full context) hi-IN": {
+  "O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead)": {
    "model": {
     "repo": "nvidia/nemotron-3.5-asr-streaming-0.6b",
     "revision": "ea30d66debe3740a08b573244286791d423d6b3e",
@@ -5889,6 +7381,226 @@
    "accuracy": {},
    "peakGB": 9.53,
    "totalS": 235.3
+  },
+  "O-Q17 qwen3-asr-1.7b auto": {
+   "model": {
+    "repo": "Qwen/Qwen3-ASR-1.7B-hf",
+    "revision": "bcd2b5b7f32b480ab5790554cfa8347f246a14f3",
+    "files": {
+     "chat_template.jinja": {
+      "bytes": 1434,
+      "sha256": "f50e6b694fbf4a683206e37869990d68333fe95d285730f084c838a34b0d98c2"
+     },
+     "config.json": {
+      "bytes": 2399,
+      "sha256": "117ac8e63e2af7cae3665e5a632d6eb03f5f384915519ceb6403c15ec6533f63"
+     },
+     "generation_config.json": {
+      "bytes": 165,
+      "sha256": "9939fc9388b79bd70757f938b87381e817173d6a6158f5af6506c0b73e775c3c"
+     },
+     "model.safetensors": {
+      "bytes": 4076193080,
+      "sha256": "2db53c7d81bd9b8cbc6a074e89be2c968a0d373fb4ee68bb1b1e14f7042dfee1"
+     },
+     "processor_config.json": {
+      "bytes": 487,
+      "sha256": "bc0b230081b44e629dd5b9045b78495615c1831b4b9f4cffe97bd37e82a6156a"
+     },
+     "tokenizer.json": {
+      "bytes": 11429653,
+      "sha256": "fe1fad59be22a41ee293363fcf95fdedbc7c93f3b49270b1d2e18bd1399a7a05"
+     },
+     "tokenizer_config.json": {
+      "bytes": 998,
+      "sha256": "945e980986de2ca7768f3326bfdbb4fbea3406f972b8ae0be233089f2b253c11"
+     }
+    },
+    "loadS": 4.5,
+    "device": "cuda",
+    "dtype": "torch.bfloat16",
+    "paramsM": 2038.1,
+    "weightsGB": 4.08
+   },
+   "env": {
+    "torch": "2.8.0+cu128",
+    "transformers": "5.18.0",
+    "cuda": "12.8",
+    "python": "3.11.13",
+    "gpu": "NVIDIA L4",
+    "gpuMemGB": 23.7,
+    "INSTANCE_TYPE": "g6.xlarge",
+    "INSTANCE_LIFECYCLE": "on-demand",
+    "INSTANCE_AZ": "us-east-1c"
+   },
+   "accuracy": {},
+   "peakGB": 12.07,
+   "totalS": 254.5
+  },
+  "O-Q17hi qwen3-asr-1.7b language=hi": {
+   "model": {
+    "repo": "Qwen/Qwen3-ASR-1.7B-hf",
+    "revision": "bcd2b5b7f32b480ab5790554cfa8347f246a14f3",
+    "files": {
+     "chat_template.jinja": {
+      "bytes": 1434,
+      "sha256": "f50e6b694fbf4a683206e37869990d68333fe95d285730f084c838a34b0d98c2"
+     },
+     "config.json": {
+      "bytes": 2399,
+      "sha256": "117ac8e63e2af7cae3665e5a632d6eb03f5f384915519ceb6403c15ec6533f63"
+     },
+     "generation_config.json": {
+      "bytes": 165,
+      "sha256": "9939fc9388b79bd70757f938b87381e817173d6a6158f5af6506c0b73e775c3c"
+     },
+     "model.safetensors": {
+      "bytes": 4076193080,
+      "sha256": "2db53c7d81bd9b8cbc6a074e89be2c968a0d373fb4ee68bb1b1e14f7042dfee1"
+     },
+     "processor_config.json": {
+      "bytes": 487,
+      "sha256": "bc0b230081b44e629dd5b9045b78495615c1831b4b9f4cffe97bd37e82a6156a"
+     },
+     "tokenizer.json": {
+      "bytes": 11429653,
+      "sha256": "fe1fad59be22a41ee293363fcf95fdedbc7c93f3b49270b1d2e18bd1399a7a05"
+     },
+     "tokenizer_config.json": {
+      "bytes": 998,
+      "sha256": "945e980986de2ca7768f3326bfdbb4fbea3406f972b8ae0be233089f2b253c11"
+     }
+    },
+    "loadS": 4.5,
+    "device": "cuda",
+    "dtype": "torch.bfloat16",
+    "paramsM": 2038.1,
+    "weightsGB": 4.08
+   },
+   "env": {
+    "torch": "2.8.0+cu128",
+    "transformers": "5.18.0",
+    "cuda": "12.8",
+    "python": "3.11.13",
+    "gpu": "NVIDIA L4",
+    "gpuMemGB": 23.7,
+    "INSTANCE_TYPE": "g6.xlarge",
+    "INSTANCE_LIFECYCLE": "on-demand",
+    "INSTANCE_AZ": "us-east-1c"
+   },
+   "accuracy": {},
+   "peakGB": 12.07,
+   "totalS": 282.1
+  },
+  "O-Q17p qwen3-asr-1.7b auto + script prompt": {
+   "model": {
+    "repo": "Qwen/Qwen3-ASR-1.7B-hf",
+    "revision": "bcd2b5b7f32b480ab5790554cfa8347f246a14f3",
+    "files": {
+     "chat_template.jinja": {
+      "bytes": 1434,
+      "sha256": "f50e6b694fbf4a683206e37869990d68333fe95d285730f084c838a34b0d98c2"
+     },
+     "config.json": {
+      "bytes": 2399,
+      "sha256": "117ac8e63e2af7cae3665e5a632d6eb03f5f384915519ceb6403c15ec6533f63"
+     },
+     "generation_config.json": {
+      "bytes": 165,
+      "sha256": "9939fc9388b79bd70757f938b87381e817173d6a6158f5af6506c0b73e775c3c"
+     },
+     "model.safetensors": {
+      "bytes": 4076193080,
+      "sha256": "2db53c7d81bd9b8cbc6a074e89be2c968a0d373fb4ee68bb1b1e14f7042dfee1"
+     },
+     "processor_config.json": {
+      "bytes": 487,
+      "sha256": "bc0b230081b44e629dd5b9045b78495615c1831b4b9f4cffe97bd37e82a6156a"
+     },
+     "tokenizer.json": {
+      "bytes": 11429653,
+      "sha256": "fe1fad59be22a41ee293363fcf95fdedbc7c93f3b49270b1d2e18bd1399a7a05"
+     },
+     "tokenizer_config.json": {
+      "bytes": 998,
+      "sha256": "945e980986de2ca7768f3326bfdbb4fbea3406f972b8ae0be233089f2b253c11"
+     }
+    },
+    "loadS": 4.5,
+    "device": "cuda",
+    "dtype": "torch.bfloat16",
+    "paramsM": 2038.1,
+    "weightsGB": 4.08
+   },
+   "env": {
+    "torch": "2.8.0+cu128",
+    "transformers": "5.18.0",
+    "cuda": "12.8",
+    "python": "3.11.13",
+    "gpu": "NVIDIA L4",
+    "gpuMemGB": 23.7,
+    "INSTANCE_TYPE": "g6.xlarge",
+    "INSTANCE_LIFECYCLE": "on-demand",
+    "INSTANCE_AZ": "us-east-1c"
+   },
+   "accuracy": {},
+   "peakGB": 7.59,
+   "totalS": 235.1
+  },
+  "O-Q17pk qwen3-asr-1.7b auto + script prompt + vocabulary": {
+   "model": {
+    "repo": "Qwen/Qwen3-ASR-1.7B-hf",
+    "revision": "bcd2b5b7f32b480ab5790554cfa8347f246a14f3",
+    "files": {
+     "chat_template.jinja": {
+      "bytes": 1434,
+      "sha256": "f50e6b694fbf4a683206e37869990d68333fe95d285730f084c838a34b0d98c2"
+     },
+     "config.json": {
+      "bytes": 2399,
+      "sha256": "117ac8e63e2af7cae3665e5a632d6eb03f5f384915519ceb6403c15ec6533f63"
+     },
+     "generation_config.json": {
+      "bytes": 165,
+      "sha256": "9939fc9388b79bd70757f938b87381e817173d6a6158f5af6506c0b73e775c3c"
+     },
+     "model.safetensors": {
+      "bytes": 4076193080,
+      "sha256": "2db53c7d81bd9b8cbc6a074e89be2c968a0d373fb4ee68bb1b1e14f7042dfee1"
+     },
+     "processor_config.json": {
+      "bytes": 487,
+      "sha256": "bc0b230081b44e629dd5b9045b78495615c1831b4b9f4cffe97bd37e82a6156a"
+     },
+     "tokenizer.json": {
+      "bytes": 11429653,
+      "sha256": "fe1fad59be22a41ee293363fcf95fdedbc7c93f3b49270b1d2e18bd1399a7a05"
+     },
+     "tokenizer_config.json": {
+      "bytes": 998,
+      "sha256": "945e980986de2ca7768f3326bfdbb4fbea3406f972b8ae0be233089f2b253c11"
+     }
+    },
+    "loadS": 4.5,
+    "device": "cuda",
+    "dtype": "torch.bfloat16",
+    "paramsM": 2038.1,
+    "weightsGB": 4.08
+   },
+   "env": {
+    "torch": "2.8.0+cu128",
+    "transformers": "5.18.0",
+    "cuda": "12.8",
+    "python": "3.11.13",
+    "gpu": "NVIDIA L4",
+    "gpuMemGB": 23.7,
+    "INSTANCE_TYPE": "g6.xlarge",
+    "INSTANCE_LIFECYCLE": "on-demand",
+    "INSTANCE_AZ": "us-east-1c"
+   },
+   "accuracy": {},
+   "peakGB": 7.61,
+   "totalS": 247.5
   },
   "O-V480 voxtral-realtime stream 480 ms": {
    "model": {

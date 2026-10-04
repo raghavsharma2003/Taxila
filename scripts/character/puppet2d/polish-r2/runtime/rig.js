@@ -493,12 +493,17 @@ export class Puppet2DRig {
     const ox = (gz[0] / 25) * 18, oy = -(gz[1] / 20) * 12 + (gz[1] < 0 ? -gz[1] / 25 * 2 : 0);
     const fx = Math.cos((gz[0] + 0.2 * s.yaw) * D2R * 1.2);
     const [icx, icy] = e.iris;
+    // r2: a lowering lid pushes the catchlight down with it (it stays visible on the iris until the eye is nearly
+    // shut): a half-lidded eye with no catchlight read as a dead gaze to both blind judges
+    const [ccx, ccy, cr] = e.catch;
+    const lidAt = interp(E.xa, E.top, ccx), push = Math.max(0, lidAt + cr + 1.5 - (ccy + oy * 0.45));
+    const catchY = oy * 0.45 + Math.min(push, 14), catchA = clamp01((0.92 - E.blink) / 0.2);
     R.drawEye(E.mesh, {
       sclera: { tex: this.tex["sclera" + sd], rect: this.g.rects["sclera" + sd] },
       iris: { tex: this.tex["iris" + sd], rect: this.g.rects["iris" + sd] },
       catch: { tex: this.tex["catch" + sd], rect: this.g.rects["catch" + sd] },
       irisOff: [ox, oy], irisC: [icx + ox, icy + oy], irisScale: [Math.max(0.82, fx), E.blink > 0.85 ? 0.95 : 1],
-      catchOff: [ox * 0.45, oy * 0.45], catchA: 1, lidShade: 0.4, topY: interp(E.xa, E.top, icx),
+      catchOff: [ox * 0.45, catchY], catchA, lidShade: 0.4, topY: interp(E.xa, E.top, icx),
     });
     // lower lid band
     for (let i = 0; i < E.BC; i++)

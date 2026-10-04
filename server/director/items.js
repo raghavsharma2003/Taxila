@@ -141,6 +141,8 @@ export function findItem(s, kit, id) {
   if (!id) return null;
   const address = s?.ctx?.address;
   if (id.startsWith(DIAG_PREFIX)) return addressed(diagnosticItem(kit, kit.misconceptions.find((m) => m.id === id.slice(DIAG_PREFIX.length)), s.seed), address);
+  // The faded worked-example step (director/fading.js fadeItem), pinned in the state when it is posed.
+  if (id.startsWith("fade:")) return addressed(s?.fadeItem?.id === id ? s.fadeItem : null, address);
   return addressed(kit.items.find((i) => i.id === id) ?? s.warmup?.find((w) => w.id === id) ?? null, address);
 }
 

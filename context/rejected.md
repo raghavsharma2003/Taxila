@@ -1131,3 +1131,24 @@ have accounts. The send is now fire-and-forget (2026-10-04).
 **Tried:** an unquoted ACS connection string in `.env.local`.
 **Broke:** `set -a; . ./.env.local` split the value at `;` and lost the access key, so `sendAcsEmail` threw. The value is
 now quoted (2026-10-04).
+
+## W2-B (2026-10-04)
+
+## rj-w2b-label-maxlength-24-in-schema
+**Tried:** the explainer fill's strict schema capped every label at `maxLength: 24` (the board's per-text cap).
+**Broke:** the model filled to the cap and cut words mid-way ("Fewer flowers get polli", "Less mustard oil and",
+"Help make friends' wishes come"): 23 truncated and 30 punctuation rejects in the first 345-topic build.
+**Now:** the schema allows 40; the code check enforces ≤ 32 characters (written as two lines of ≤ 24) and refuses labels
+ending on a dangling function word; a rejected fill is retried with the rejection code.
+
+## rj-w2b-cache-only-prewarm-for-150ms
+**Tried:** reaching a ≤ 150 ms first mount by warming the browser's caches with a hidden warm frame.
+**Broke:** at 4x CPU the warm first mount is 344 ms p50, and even a SECOND mount in the same page is 387 ms p50: each new
+sandboxed document boots React again, which caches cannot remove. Only at 1x CPU is it ≤ 150 ms (100 ms p50).
+**Next:** a pre-booted frame kept in place and handed the next mount (no reparenting, which reloads an iframe): open item
+`w2b-preboot-frame`.
+
+## rj-w2b-facts-row-alone
+**Tried:** the facts row alone to keep the teacher's part counts on the screen's.
+**Broke:** 35/40, not 100%. On explain moves she still teaches with her own example fractions (1/4 vs 1/8 over a board
+showing 2/5 and 2/3), and once said "Whiteboard: 1/8 < 1/4". The `screenContradiction` rewrite takes it to 39/40.

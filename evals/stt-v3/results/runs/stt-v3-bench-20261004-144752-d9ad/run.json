@@ -1,0 +1,146 @@
+{
+ "jobId": "stt-v3-bench-20261004-144752-d9ad",
+ "jobDir": "scripts/voice/stt-v3",
+ "ami": "ami-012ba162b9cd2729c",
+ "amiName": "Deep Learning OSS Nvidia Driver AMI GPU PyTorch 2.7 (Ubuntu 22.04) 20260427",
+ "amiSsm": "/aws/service/deeplearning/ami/x86_64/oss-nvidia-driver-gpu-pytorch-2.7-ubuntu-22.04/latest/ami-id",
+ "types": [
+  "g6.xlarge",
+  "g5.xlarge"
+ ],
+ "maxMinutes": 150,
+ "diskGb": 120,
+ "packedBytes": 22840414,
+ "s3": "s3://taxila-build-780899467240/jobs/stt-v3-bench-20261004-144752-d9ad/",
+ "t": {
+  "launchCallS": 471.1,
+  "toRunningS": 15.9,
+  "bootToStartS": 1,
+  "jobS": 3362,
+  "uploadS": 1,
+  "launchToBootS": 40.0,
+  "downloadS": 0.1,
+  "terminateWaitS": 385.5,
+  "instanceLifeS": 3797.1,
+  "wallS": 4270.2
+ },
+ "env": {
+  "ARMS": "V480 V960"
+ },
+ "launchAttempts": [
+  {
+   "lifecycle": "spot",
+   "type": "g6.xlarge",
+   "az": "us-east-1a",
+   "error": "InsufficientInstanceCapacity",
+   "message": "There is no Spot capacity available that matches your request."
+  },
+  {
+   "lifecycle": "spot",
+   "type": "g6.xlarge",
+   "az": "us-east-1b",
+   "error": "InsufficientInstanceCapacity",
+   "message": "There is no Spot capacity available that matches your request."
+  },
+  {
+   "lifecycle": "spot",
+   "type": "g6.xlarge",
+   "az": "us-east-1c",
+   "error": "InsufficientInstanceCapacity",
+   "message": "We currently do not have sufficient g6.xlarge capacity in the Availability Zone you requested (us-east-1c). Our system will be working on provisioning additiona"
+  },
+  {
+   "lifecycle": "spot",
+   "type": "g6.xlarge",
+   "az": "us-east-1d",
+   "error": "InsufficientInstanceCapacity",
+   "message": "There is no Spot capacity available that matches your request."
+  },
+  {
+   "lifecycle": "spot",
+   "type": "g6.xlarge",
+   "az": "us-east-1e",
+   "error": "Unsupported",
+   "message": "Your requested instance type (g6.xlarge) is not supported in your requested Availability Zone (us-east-1e). Please retry your request by not specifying an Avail"
+  },
+  {
+   "lifecycle": "spot",
+   "type": "g6.xlarge",
+   "az": "us-east-1f",
+   "error": "InsufficientInstanceCapacity",
+   "message": "We currently do not have sufficient g6.xlarge capacity in the Availability Zone you requested (us-east-1f). Our system will be working on provisioning additiona"
+  },
+  {
+   "lifecycle": "spot",
+   "type": "g5.xlarge",
+   "az": "us-east-1a",
+   "error": "MaxSpotInstanceCountExceeded",
+   "message": "Max spot instance count exceeded"
+  },
+  {
+   "lifecycle": "on-demand",
+   "type": "g6.xlarge",
+   "az": "us-east-1a",
+   "error": "InsufficientInstanceCapacity",
+   "message": "We currently do not have sufficient g6.xlarge capacity in the Availability Zone you requested (us-east-1a). Our system will be working on provisioning additiona"
+  },
+  {
+   "lifecycle": "on-demand",
+   "type": "g6.xlarge",
+   "az": "us-east-1b",
+   "error": "InsufficientInstanceCapacity",
+   "message": "We currently do not have sufficient g6.xlarge capacity in the Availability Zone you requested (us-east-1b). Our system will be working on provisioning additiona"
+  },
+  {
+   "lifecycle": "on-demand",
+   "type": "g6.xlarge",
+   "az": "us-east-1c",
+   "ok": true
+  }
+ ],
+ "instanceId": "i-02540b02d0c051b4f",
+ "lifecycle": "on-demand",
+ "instanceType": "g6.xlarge",
+ "az": "us-east-1c",
+ "backstop": "taxila-reap-i-02540b02d0c051b4f",
+ "status": {
+  "phase": "done",
+  "rc": 0,
+  "bootEpoch": 1791125788,
+  "startEpoch": 1791125789,
+  "endEpoch": 1791129151,
+  "uploadedEpoch": 1791129152,
+  "outBytes": 68332
+ },
+ "outputsBytes": 68332,
+ "outputs": [
+  "arms.txt",
+  "logs/V480.log",
+  "logs/V960.log",
+  "logs/prefetch.log",
+  "logs/venv.log",
+  "pins/freeze.txt",
+  "pins/gpu.csv",
+  "pins/instance.txt",
+  "pins/torch.txt",
+  "results/V480/env.json",
+  "results/V480/load.json",
+  "results/V480/paced.jsonl",
+  "results/V480/rows.jsonl",
+  "results/V480/soak.json",
+  "results/V960/env.json",
+  "results/V960/paced.jsonl",
+  "results/V960/rows.jsonl"
+ ],
+ "result": "ok",
+ "finalState": "terminated",
+ "stateReason": "Client.UserInitiatedShutdown: User initiated shutdown",
+ "cost": {
+  "usdPerHour": 0.8048,
+  "billedSeconds": 3797.1,
+  "ec2Usd": 0.84886,
+  "ebsUsd": 0.01406,
+  "totalUsd": 0.86292,
+  "priceSource": "AWS Pricing API"
+ }
+}

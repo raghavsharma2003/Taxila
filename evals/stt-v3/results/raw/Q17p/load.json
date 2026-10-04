@@ -1,0 +1,63 @@
+{
+ "arm": "Q17p",
+ "mode": "batched-utterances",
+ "levels": [
+  {
+   "B": 1,
+   "latP50Ms": 940,
+   "latMaxMs": 1620,
+   "meanUttS": 2.1,
+   "throughputAudioSPerS": 2.2,
+   "peakGB": 4.11
+  },
+  {
+   "B": 2,
+   "latP50Ms": 710,
+   "latMaxMs": 1658,
+   "meanUttS": 4.26,
+   "throughputAudioSPerS": 12.0,
+   "peakGB": 4.18
+  },
+  {
+   "B": 4,
+   "latP50Ms": 1786,
+   "latMaxMs": 1819,
+   "meanUttS": 3.77,
+   "throughputAudioSPerS": 8.4,
+   "peakGB": 4.25
+  },
+  {
+   "B": 8,
+   "latP50Ms": 1555,
+   "latMaxMs": 1884,
+   "meanUttS": 4.45,
+   "throughputAudioSPerS": 22.9,
+   "peakGB": 4.47
+  },
+  {
+   "B": 16,
+   "latP50Ms": 2046,
+   "latMaxMs": 2081,
+   "meanUttS": 4.1,
+   "throughputAudioSPerS": 32.0,
+   "peakGB": 4.97
+  },
+  {
+   "B": 32,
+   "latP50Ms": 2709,
+   "latMaxMs": 3976,
+   "meanUttS": 4.29,
+   "throughputAudioSPerS": 50.6,
+   "peakGB": 5.84
+  },
+  {
+   "B": 64,
+   "latP50Ms": 4994,
+   "latMaxMs": 5003,
+   "meanUttS": 4.48,
+   "throughputAudioSPerS": 57.4,
+   "peakGB": 7.59
+  }
+ ],
+ "method": "B different ~5 s corpus utterances in one generate() call; 3 reps; latency = wall time of the call; throughput = B x mean utterance seconds / latency"
+}

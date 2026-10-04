@@ -1,0 +1,55 @@
+{
+ "arm": "Z0",
+ "mode": "batched-utterances",
+ "levels": [
+  {
+   "B": 1,
+   "latP50Ms": 577,
+   "latMaxMs": 581,
+   "meanUttS": 2.1,
+   "throughputAudioSPerS": 3.6,
+   "peakGB": 1.7
+  },
+  {
+   "B": 2,
+   "latP50Ms": 844,
+   "latMaxMs": 886,
+   "meanUttS": 4.26,
+   "throughputAudioSPerS": 10.1,
+   "peakGB": 1.85
+  },
+  {
+   "B": 4,
+   "latP50Ms": 833,
+   "latMaxMs": 856,
+   "meanUttS": 3.77,
+   "throughputAudioSPerS": 18.1,
+   "peakGB": 2.17
+  },
+  {
+   "B": 8,
+   "latP50Ms": 1231,
+   "latMaxMs": 1276,
+   "meanUttS": 4.45,
+   "throughputAudioSPerS": 28.9,
+   "peakGB": 2.82
+  },
+  {
+   "B": 16,
+   "latP50Ms": 3297,
+   "latMaxMs": 5341,
+   "meanUttS": 4.1,
+   "throughputAudioSPerS": 19.9,
+   "peakGB": 4.07
+  },
+  {
+   "B": 32,
+   "latP50Ms": 6234,
+   "latMaxMs": 9239,
+   "meanUttS": 4.29,
+   "throughputAudioSPerS": 22.0,
+   "peakGB": 6.61
+  }
+ ],
+ "method": "B different ~5 s corpus utterances in one generate() call; 3 reps; latency = wall time of the call; throughput = B x mean utterance seconds / latency"
+}
