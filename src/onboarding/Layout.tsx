@@ -11,7 +11,7 @@ import { useSurface } from "../app/band.ts";
 import { Scene } from "../child/art.tsx";
 
 /** The parent's first run, in order (§3.2): class first, so the parent meets the ACTUAL teacher (audit #4). */
-export const STEPS = ["class", "meet", "promises", "phone", "consent", "child", "controls", "handover"] as const;
+export const STEPS = ["class", "meet", "promises", "phone", "consent", "child", "controls", "check", "handover"] as const;
 /** Adding a second child: class → meet → about → controls → hand over (§3.2 "recounts"). */
 export const ADD_STEPS = ["class", "meet", "child", "controls", "handover"] as const;
 export type Step = (typeof STEPS)[number];

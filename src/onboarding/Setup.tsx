@@ -91,7 +91,8 @@ export function ControlsStep() {
       stage = "controls";
       await postJson("/api/parent/controls", { childId: child.id, ...c, ...p6 });
       if (!pinSaved && pin1) { stage = "pin"; await postJson("/api/parent/pin", { pin: pin1 }); pinSaved = true; setHasPin(true); }
-      nav(`/start/handover${sp.get("add") ? "?add=1" : ""}`);
+      // step 8: the sound and mic check (first run); adding a child on the same phone goes straight to the hand-over
+      nav(sp.get("add") ? "/start/handover?add=1" : "/start/check");
     } catch (e) {
       if (pinSaved && isGateError(e)) { setErr("The Parent corner locked. Enter the PIN to continue."); relock(); return; }
       if (e instanceof ApiError && (e.body as { gate?: string } | null)?.gate === "password") setNeedPw(true);
