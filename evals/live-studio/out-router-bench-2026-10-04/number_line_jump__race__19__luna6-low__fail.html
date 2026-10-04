@@ -1,0 +1,167 @@
+<style>
+*{box-sizing:border-box}
+.stage{width:360px;height:320px;overflow:hidden;position:relative;background:#fff8eb;color:#294653;font-family:system-ui,sans-serif;padding:12px 16px}
+h1{font-size:18px;line-height:22px;margin:0 0 4px;font-weight:800;color:#315a63}
+.instr{font-size:13px;line-height:16px;margin:0 0 9px;color:#537078}
+.item{height:35px;display:flex;align-items:center;gap:7px;font-size:14px;font-weight:700}
+.target{font-size:19px;color:#bd6251;background:#ffe6d8;border-radius:12px;padding:3px 10px;min-width:42px;text-align:center}
+.linebox{height:91px;position:relative;margin:0 4px}
+.rail{position:absolute;left:8px;right:8px;top:42px;height:5px;background:#7db4a3;border-radius:4px}
+.ticks{position:absolute;inset:0 8px}
+.tick{position:absolute;top:35px;width:2px;height:18px;background:#527e79;transform:translateX(-1px)}
+.tick-label{position:absolute;top:56px;transform:translateX(-50%);font-size:11px;line-height:14px;color:#527078;white-space:nowrap}
+.marker{position:absolute;top:21px;width:24px;height:24px;border-radius:50%;background:#ee946d;border:3px solid #fff;box-shadow:0 2px 7px #a75b4d66;transform:translateX(-50%);z-index:2;transition:left .22s cubic-bezier(.2,.8,.2,1),transform .18s}
+.marker:after{content:"";position:absolute;left:5px;top:16px;border-left:4px solid transparent;border-right:4px solid transparent;border-top:9px solid #ee946d}
+.marker.hop{animation:hop .42s ease}
+@keyframes hop{50%{transform:translate(-50%,-15px) scale(1.12)}}
+.controls{display:flex;gap:8px;margin-top:3px}
+button{font:700 15px system-ui,sans-serif;border:0;border-radius:15px;min-height:56px;cursor:pointer;box-shadow:0 4px 0 #4d8d7e;transition:transform .12s,filter .15s;background:#70b29e;color:white}
+button:active{transform:translateY(3px) scale(.97);box-shadow:0 1px 0 #4d8d7e}
+button.move{flex:1}
+button.check{width:98px;background:#f0a06e;box-shadow:0 4px 0 #c87952}
+button.check:active{box-shadow:0 1px 0 #c87952}
+button:disabled{opacity:.65}
+.feedback{height:25px;text-align:center;padding-top:5px;font-size:14px;font-weight:700;color:#578477}
+.feedback.wrong{color:#bd7560}
+.done-screen{position:absolute;inset:0;background:#fff8eb;display:flex;align-items:center;justify-content:center;padding:22px;text-align:center;font-size:23px;line-height:1.3;font-weight:800;color:#315a63;animation:appear .35s ease}
+@keyframes appear{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+</style>
+<main class="stage">
+  <h1 id="title"></h1>
+  <p class="instr" id="instr"></p>
+  <section class="item" id="item">
+    <span id="target"></span>
+  </section>
+  <div class="linebox" aria-hidden="true">
+    <div class="rail"></div>
+    <div class="ticks" id="ticks"></div>
+    <div class="marker" id="marker" data-marker data-value="0"></div>
+  </div>
+  <div class="controls">
+    <button class="move" id="left" data-action="left" type="button"></button>
+    <button class="move" id="right" data-action="right" type="button"></button>
+    <button class="check" id="check" data-action="check" type="button"></button>
+  </div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(()=>{
+const p=Studio.params;
+const t=key=>Studio.t(key);
+const title=document.getElementById("title");
+const instr=document.getElementById("instr");
+const itemBox=document.getElementById("item");
+const targetEl=document.getElementById("target");
+const ticksEl=document.getElementById("ticks");
+const marker=document.getElementById("marker");
+const feedback=document.getElementById("feedback");
+const leftBtn=document.getElementById("left");
+const rightBtn=document.getElementById("right");
+const checkBtn=document.getElementById("check");
+title.textContent=t("title");
+instr.textContent=t("instr");
+leftBtn.textContent=t("left");
+rightBtn.textContent=t("right_btn");
+checkBtn.textContent=t("check");
+const places=n=>{
+ const s=String(n);
+ return s.includes(".")?s.split(".")[1].length:0;
+};
+const precision=Math.min(6,Math.max(places(p.min),places(p.step)));
+const scale=10**precision;
+const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a);
+const rawDen=scale;
+const common=gcd(Math.round(p.min*scale),Math.round(p.step*scale));
+const den=rawDen/(common||1);
+const formatValue=value=>{
+ const v=Math.round(value*1e6)/1e6;
+ if(p.format==="integer") return String(Math.round(v));
+ if(String(p.format).startsWith("fraction")){
+  const n=Math.round(v*den);
+  const d=gcd(n,den)||1;
+  return (n/d)+"/"+(den/d);
+ }
+ return String(Number(v.toFixed(6)));
+};
+const count=Math.round((p.max-p.min)/p.step);
+for(let k=0;k<=count;k++){
+ const value=Math.round((p.min+k*p.step)*1e6)/1e6;
+ const tick=document.createElement("div");
+ tick.className="tick";
+ tick.dataset.tick=String(value);
+ tick.style.left=(k/count*100)+"%";
+ ticksEl.appendChild(tick);
+ if(k%p.labelEvery===0){
+  const label=document.createElement("span");
+  label.className="tick-label";
+  label.textContent=formatValue(value);
+  label.style.left=(k/count*100)+"%";
+  ticksEl.appendChild(label);
+ }
+}
+let index=0;
+let currentIndex=Math.max(0,Math.min(count,Math.round((p.start-p.min)/p.step)));
+let pending=false;
+let finished=false;
+const currentValue=()=>Math.round((p.min+currentIndex*p.step)*1e6)/1e6;
+function render(){
+ const it=p.items[index];
+ itemBox.dataset.item=String(it.id);
+ targetEl.dataset.target="";
+ targetEl.textContent=formatValue(it.target);
+ const value=currentValue();
+ marker.dataset.value=String(value);
+ marker.style.left=(currentIndex/count*100)+"%";
+}
+function finish(){
+ if(finished)return;
+ finished=true;
+ const screen=document.createElement("div");
+ screen.className="done-screen";
+ screen.textContent=t("done");
+ document.querySelector(".stage").appendChild(screen);
+ Studio.done();
+}
+function next(){
+ index++;
+ if(index>=p.items.length){finish();return;}
+ currentIndex=Math.max(0,Math.min(count,Math.round((p.start-p.min)/p.step)));
+ feedback.textContent="";
+ feedback.className="feedback";
+ render();
+}
+leftBtn.addEventListener("click",()=>{
+ if(pending||finished)return;
+ currentIndex=Math.max(0,currentIndex-1);
+ render();
+});
+rightBtn.addEventListener("click",()=>{
+ if(pending||finished)return;
+ currentIndex=Math.min(count,currentIndex+1);
+ render();
+});
+checkBtn.addEventListener("click",()=>{
+ if(pending||finished)return;
+ pending=true;
+ checkBtn.disabled=true;
+ Studio.answer({value:currentValue()});
+});
+Studio.onVerdict(({correct})=>{
+ if(finished)return;
+ pending=false;
+ checkBtn.disabled=false;
+ feedback.textContent=t(correct?"right":"wrong");
+ feedback.className=correct?"feedback":"feedback wrong";
+ if(correct){
+  marker.classList.remove("hop");
+  void marker.offsetWidth;
+  marker.classList.add("hop");
+  setTimeout(next,430);
+ }
+});
+render();
+Studio.ready();
+})();
+
+</script>

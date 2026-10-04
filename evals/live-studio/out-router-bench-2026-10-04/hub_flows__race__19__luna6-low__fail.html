@@ -1,0 +1,142 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#28443d;background:#fff8e9}
+#app{width:360px;height:320px;padding:7px;display:flex;flex-direction:column;gap:3px}
+h1{font-size:17px;line-height:22px;margin:0;text-align:center;color:#315d4e}
+#scene{width:346px;height:128px;flex:none;background:#f4f5d9;border-radius:20px}
+#scene text{font-family:system-ui,sans-serif;font-size:12px;font-weight:700;fill:#31564b}
+.entity-label,#scene [data-label]{paint-order:stroke;stroke:#f4f5d9;stroke-width:4px;stroke-linejoin:round}
+#caption{height:22px;line-height:22px;text-align:center;font-weight:700;color:#52745e}
+.row{display:flex;justify-content:center;gap:8px;height:52px}
+button{font:700 14px system-ui,sans-serif;color:#31564b;background:#fff;border:2px solid #d9e2ad;border-radius:16px;min-height:52px;cursor:pointer;touch-action:manipulation;transition:transform .15s,background .2s,border-color .2s}
+button:active{transform:scale(.94)}
+#play{width:112px;background:#e5efbd}
+#next{width:112px;background:#f7d99d}
+#ask{font-size:13px;line-height:18px;text-align:center;height:18px;color:#315d4e}
+#options{height:52px;display:flex;gap:6px}
+#options button{flex:1;min-width:0;padding:0 2px}
+#feedback{height:18px;line-height:18px;text-align:center;font-size:13px;font-weight:700;color:#4c7955}
+.particle{fill:#57a6aa;filter:drop-shadow(0 1px 1px #fff)}
+.flow-line{fill:none;stroke:#a8c9a0;stroke-width:2;stroke-dasharray:4 5;opacity:.8}
+button.emph{border-color:#e5a949;box-shadow:0 0 0 3px #f9e8bd}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <svg id="scene" viewBox="0 0 346 128" role="img">
+    <defs>
+      <radialGradient id="leafFill"><stop stop-color="#b5d96d"/><stop offset="1" stop-color="#77ad59"/></radialGradient>
+      <linearGradient id="sunFill"><stop stop-color="#ffe98a"/><stop offset="1" stop-color="#f5b84e"/></linearGradient>
+    </defs>
+    <g id="drawing"></g>
+  </svg>
+  <div id="caption" data-caption></div>
+  <div class="row">
+    <button id="play" data-action="play" type="button"></button>
+    <button id="next" data-action="next" type="button"></button>
+  </div>
+  <div id="ask"></div>
+  <div id="options"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+const p=Studio.params, t=Studio.t, ns="http://www.w3.org/2000/svg";
+const el=id=>document.getElementById(id);
+el("title").textContent=t("title");
+el("play").textContent=t("pause");
+el("next").textContent=t("next");
+el("ask").textContent=t("ask");
+const drawing=el("drawing");
+const positions={
+ sun:{x:52,y:42},roots:{x:173,y:106},leaf:{x:173,y:63}
+};
+function svg(tag,attrs,parent=drawing){
+ const n=document.createElementNS(ns,tag);
+ for(const k in attrs)n.setAttribute(k,attrs[k]);
+ parent.appendChild(n);return n;
+}
+function label(key,x,y,anchor="middle"){
+ const n=svg("text",{x,y,"text-anchor":anchor,"data-label":key});
+ n.textContent=t(key);return n;
+}
+for(const key of p.entities){
+ const q=positions[key]||{x:55,y:55};
+ if(key==="sun"){
+   svg("circle",{cx:q.x,cy:q.y,r:19,fill:"url(#sunFill)",stroke:"#e8a943","stroke-width":2,"data-entity":key});
+   label(key,q.x,q.y-26);
+ }else if(key==="roots"){
+   svg("path",{d:`M${q.x} ${q.y-11} Q${q.x-5} ${q.y} ${q.x-12} ${q.y+12} M${q.x} ${q.y-8} Q${q.x+5} ${q.y+1} ${q.x+12} ${q.y+12} M${q.x} ${q.y-3} L${q.x} ${q.y+14}`,fill:"none",stroke:"#98724b","stroke-width":4,"stroke-linecap":"round","data-entity":key});
+   label(key,q.x,q.y+23);
+ }else{
+   svg("circle",{cx:q.x,cy:q.y,r:16,fill:"#e9c58a","data-entity":key});
+   label(key,q.x,q.y-24);
+ }
+}
+const hub=p.hub, h=positions[hub]||{x:173,y:63};
+svg("path",{d:`M${h.x} ${h.y+20} C${h.x-36} ${h.y-2} ${h.x-28} ${h.y-28} ${h.x} ${h.y-24} C${h.x+28} ${h.y-28} ${h.x+36} ${h.y-2} ${h.x} ${h.y+20}Z`,fill:"url(#leafFill)",stroke:"#56884f","stroke-width":2,"data-entity":hub});
+svg("path",{d:`M${h.x} ${h.y+15} Q${h.x+1} ${h.y-2} ${h.x+15} ${h.y-15}`,fill:"none",stroke:"#eaf1c2","stroke-width":2});
+label(hub,h.x,h.y-31);
+let step=1, playing=true, done=false, last=0, progress=0;
+const flowParts=[];
+const routes={
+ water:{start:[173,115],end:[173,83],label:[205,111,"start"]},
+ co2:{start:[290,63],end:[205,63],label:[278,50,"middle"]},
+ o2:{start:[140,82],end:[54,82],label:[69,101,"middle"]}
+};
+for(const f of p.flows){
+ const r=routes[f.key]||{start:[290,65],end:[205,65],label:[278,50,"middle"]};
+ svg("path",{d:`M${r.start[0]} ${r.start[1]} Q${(r.start[0]+r.end[0])/2} ${r.start[1]} ${r.end[0]} ${r.end[1]}`,class:"flow-line"});
+ label(f.key,r.label[0],r.label[1],r.label[2]);
+ const dots=[];
+ for(let i=0;i<3;i++)dots.push(svg("circle",{cx:r.start[0],cy:r.start[1],r:3.2,class:"particle","data-flow":f.key}));
+ flowParts.push({f,r,dots});
+}
+function setStep(){
+ const key="step"+step;
+ el("caption").textContent=t(key);
+ el("caption").dataset.caption="";
+ el("caption").setAttribute("data-caption","");
+ el("scene").style.filter="hue-rotate("+((step-1)*8)+"deg)";
+}
+setStep();
+for(const key of p.options){
+ const b=document.createElement("button");b.type="button";b.dataset.option=key;b.textContent=t(key);
+ b.addEventListener("click",()=>{Studio.answer(key);Studio.event("answer",{option:key});});
+ el("options").appendChild(b);
+}
+el("play").addEventListener("click",()=>{
+ playing=!playing;
+ el("play").textContent=t(playing?"pause":"play");
+ Studio.event("play",{playing:playing?1:0});
+});
+el("next").addEventListener("click",()=>{
+ step=step%p.steps+1;setStep();Studio.event("step",{step:step});
+});
+Studio.onVerdict(v=>{
+ el("feedback").textContent=t(v.correct?"right":"wrong");
+ if(v.correct&&!done){done=true;Studio.done();}
+});
+function frame(now){
+ if(!last)last=now;
+ if(playing)progress+=Math.min(now-last,40)*.00055;
+ last=now;
+ for(const item of flowParts){
+   const {f,r,dots}=item;
+   let forward=progress%1;
+   for(let i=0;i<dots.length;i++){
+     let u=(forward+i/dots.length)%1;
+     if(f.dir==="out")u=1-u;
+     const x=r.start[0]+(r.end[0]-r.start[0])*u;
+     const y=r.start[1]+(r.end[1]-r.start[1])*u;
+     dots[i].setAttribute("cx",x);dots[i].setAttribute("cy",y);
+   }
+ }
+ requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+Studio.ready();
+})();
+
+</script>

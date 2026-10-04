@@ -1,0 +1,166 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff6e8;font-family:Arial,sans-serif;color:#5b3427}
+[hidden]{display:none!important}
+#app{width:360px;height:320px;position:relative;overflow:hidden;background:radial-gradient(circle at 18% 10%,#fffdf8 0 12%,transparent 13%),linear-gradient(145deg,#ffe7bd,#fff7e9 58%,#f9dfba)}
+.screen{width:360px;height:320px;display:flex;flex-direction:column;align-items:center;overflow:hidden}
+.top{width:100%;height:42px;padding:10px 18px 0;text-align:center}
+h1{margin:0;font-size:20px;line-height:24px;color:#a84c32;letter-spacing:.2px}
+.prompt{width:324px;height:46px;background:#fffdf8;border:2px solid #f4c981;border-radius:18px;display:flex;align-items:center;justify-content:center;gap:14px;padding:5px 12px;box-shadow:0 3px 0 #f3d09d}
+#instruction{font-size:13px;line-height:16px;text-align:left;max-width:218px;color:#704331}
+#target{min-width:48px;text-align:center;font-size:20px;font-weight:bold;color:#b44e34}
+.board{width:260px;height:173px;margin-top:3px;position:relative;display:flex;align-items:center;justify-content:center}
+#whole{width:244px;height:173px;overflow:visible}
+.part{stroke:#fff8e8;stroke-width:3;stroke-linejoin:round;fill:#f8d487;cursor:pointer;transition:fill .18s ease,transform .18s ease,filter .18s ease;transform-origin:center}
+.part[data-shaded="true"]{fill:#e65b3d;filter:drop-shadow(0 2px 1px rgba(118,49,28,.25))}
+.part:active{transform:scale(.96)}
+.barpart{stroke:#fff8e8;stroke-width:4;fill:#f8d487;cursor:pointer;transition:fill .18s ease,transform .18s ease,filter .18s ease;transform-origin:center}
+.barpart[data-shaded="true"]{fill:#e65b3d;filter:drop-shadow(0 2px 1px rgba(118,49,28,.25))}
+.barpart:active{transform:scale(.96)}
+.footer{height:53px;width:100%;display:flex;align-items:center;justify-content:center;gap:12px}
+#message{height:22px;min-width:104px;text-align:center;font-size:13px;font-weight:bold;line-height:22px;color:#a64b35;opacity:0;transform:translateY(4px);transition:opacity .2s,transform .2s}
+#message.show{opacity:1;transform:translateY(0)}
+#message.good{color:#4d8b4b}
+button{width:132px;height:52px;border:0;border-radius:18px;background:#d75a3e;color:#fffdf7;font-size:17px;font-weight:bold;box-shadow:0 4px 0 #a93e2d;cursor:pointer;transition:transform .15s,box-shadow .15s,background .15s}
+button:active{transform:translateY(3px) scale(.97);box-shadow:0 1px 0 #a93e2d}
+button:disabled{background:#d9a28e;box-shadow:0 4px 0 #b77c6c}
+.celebrate #whole{animation:happy .62s ease-in-out}
+.celebrate .part[data-shaded="true"],.celebrate .barpart[data-shaded="true"]{animation:pop .52s ease both}
+@keyframes happy{0%,100%{transform:rotate(0) scale(1)}35%{transform:rotate(-3deg) scale(1.06)}68%{transform:rotate(3deg) scale(1.04)}}
+@keyframes pop{0%{filter:brightness(1)}45%{filter:brightness(1.34) drop-shadow(0 0 7px #ffd95d)}100%{filter:brightness(1)}}
+#doneScreen{justify-content:center;gap:16px}
+.donebubble{width:166px;height:166px;border-radius:50%;background:#f7c96f;border:8px solid #fff8e9;box-shadow:0 5px 0 #e9a94f,0 0 0 5px #f4d394;display:flex;align-items:center;justify-content:center;position:relative}
+.donebubble:before,.donebubble:after{content:"";position:absolute;width:18px;height:18px;border-radius:50%;background:#e55b3c;top:39px}
+.donebubble:before{left:39px}.donebubble:after{right:39px}
+.smile{width:62px;height:31px;border:6px solid #a84c32;border-top:0;border-left-color:transparent;border-right-color:transparent;border-radius:0 0 60px 60px;margin-top:34px}
+#doneText{font-size:22px;font-weight:bold;color:#a84c32;text-align:center;max-width:320px}
+</style>
+<div id="app">
+  <main id="playScreen" class="screen" data-item="">
+    <div class="top"><h1 id="title"></h1></div>
+    <div class="prompt">
+      <div id="instruction"></div>
+      <div id="target" data-target></div>
+    </div>
+    <div class="board">
+      <svg id="whole" viewBox="0 0 244 173" aria-hidden="true"></svg>
+    </div>
+    <div class="footer">
+      <div id="message"></div>
+      <button id="check" data-action="check" type="button"></button>
+    </div>
+  </main>
+  <main id="doneScreen" class="screen" hidden>
+    <div class="donebubble"><div class="smile"></div></div>
+    <div id="doneText"></div>
+  </main>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params,items=p.items,index=0,pending=false,completed=false;
+  var play=document.getElementById('playScreen');
+  var done=document.getElementById('doneScreen');
+  var whole=document.getElementById('whole');
+  var target=document.getElementById('target');
+  var message=document.getElementById('message');
+  var check=document.getElementById('check');
+
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+  document.getElementById('doneText').textContent=Studio.t('done');
+
+  function point(cx,cy,r,a){
+    return [cx+r*Math.cos(a),cy+r*Math.sin(a)];
+  }
+  function pizzaPart(i,d){
+    var cx=122,cy=86,r=75;
+    var a1=-Math.PI/2+i*2*Math.PI/d;
+    var a2=-Math.PI/2+(i+1)*2*Math.PI/d;
+    var q1=point(cx,cy,r,a1),q2=point(cx,cy,r,a2);
+    var path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d','M '+cx+' '+cy+' L '+q1[0]+' '+q1[1]+' A '+r+' '+r+' 0 '+(2*Math.PI/d>Math.PI?1:0)+' 1 '+q2[0]+' '+q2[1]+' Z');
+    path.setAttribute('class','part');
+    return path;
+  }
+  function barPart(i,d){
+    var x=22,w=200/d;
+    var rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('x',x+i*w);
+    rect.setAttribute('y',47);
+    rect.setAttribute('width',w);
+    rect.setAttribute('height',78);
+    rect.setAttribute('rx',8);
+    rect.setAttribute('ry',8);
+    rect.setAttribute('class','barpart');
+    return rect;
+  }
+  function render(){
+    var item=items[index],d=item.d;
+    play.setAttribute('data-item',item.id);
+    target.textContent=item.n+'/'+item.d;
+    whole.replaceChildren();
+    for(var i=0;i<d;i++){
+      var part=p.picture==='pizza'?pizzaPart(i,d):barPart(i,d);
+      part.setAttribute('data-part',i);
+      part.setAttribute('data-shaded','false');
+      part.addEventListener('click',toggle);
+      whole.appendChild(part);
+    }
+    message.className='';
+    message.textContent='';
+    pending=false;
+    check.disabled=false;
+  }
+  function toggle(e){
+    if(pending||completed)return;
+    var part=e.currentTarget;
+    part.setAttribute('data-shaded',part.getAttribute('data-shaded')==='true'?'false':'true');
+    Studio.event('part',{n:Number(part.getAttribute('data-part'))});
+  }
+  function shadedCount(){
+    return whole.querySelectorAll('[data-shaded="true"]').length;
+  }
+  function say(key,good){
+    message.textContent=Studio.t(key);
+    message.className=good?'show good':'show';
+  }
+  check.addEventListener('click',function(){
+    if(pending||completed)return;
+    pending=true;
+    check.disabled=true;
+    var n=shadedCount();
+    Studio.event('check',{n:n});
+    Studio.answer({n:n,d:items[index].d});
+  });
+  Studio.onVerdict(function(verdict){
+    if(completed)return;
+    if(verdict.correct){
+      say('right',true);
+      play.classList.add('celebrate');
+      Studio.event('verdict',{correct:1});
+      setTimeout(function(){
+        play.classList.remove('celebrate');
+        index++;
+        if(index>=items.length){
+          completed=true;
+          play.hidden=true;
+          done.hidden=false;
+          Studio.done();
+        }else{
+          render();
+        }
+      },720);
+    }else{
+      pending=false;
+      check.disabled=false;
+      say('wrong',false);
+      Studio.event('verdict',{correct:0});
+    }
+  });
+  render();
+  Studio.ready();
+}());
+
+</script>

@@ -110,3 +110,9 @@
 
 ## Merged inbox entries (write-up from the entry text)
 - `w2e-open-2026-10-04` (2026-10-04): W2-E open items: W2-H requestIntent seam; compile rendering state.rel overlays; W2-C state.js passing cls.signals to turnSignals and reading affect.idk; Smart Turn assets + ONNX runtime; G-SIG two-rater act set; Central India turn timing; G-LAT on the ACA image; scanSafety misses 'mujhe ghar pe bahut maar padti hai'
+
+
+## Merged inbox entries (write-up from the entry text)
+- `open-mai-client-commit` (2026-10-04): D7: does MAI-Transcribe-2-Streaming (and D4) honour a client input_audio_buffer.commit with server VAD at 1.5 s as backstop (final <= 100 ms after commit from Chennai, no lost audio)? Needed for the device-owned endpoint (-~120-170 ms).
+- `open-duplex-seams-w2` (2026-10-04): Duplex seam requests to W2 owners (ARCHITECTURE.md §7.2 S1-S11): duplex route table; TurnRequest.duplex {transcriptHash, genId, safetyPending, superseded, heardUpTo, holdCue}; history trim to heardUpTo; repeat_from move; closed-item replyKey without 'said'; ui.waitNudge + ui.expect; avatar listenerNod/holdPose public API; Moment.uptakePrelude clip id; store after first audio; cascadeLink shadow hook + client commit; floor.ts state mapping.
+- `open-sig-ms-tier-e-letter` (2026-10-04): O-5: written question to Microsoft listing the exact Tier E outputs (verifyDue from timing, paceDown, waitLonger/nudgeAtSec, LR ∈ [0.9, 1.1]); E-tier states stay shadow until answered

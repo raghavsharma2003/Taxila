@@ -1,0 +1,103 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;font-family:system-ui,sans-serif;color:#493b38}
+  .card{width:360px;height:320px;padding:14px 18px;background:radial-gradient(circle at 94% 4%,#ffe2bc 0 52px,transparent 53px),#fff8ed}
+  h1{margin:0;font-size:21px;line-height:27px;color:#794b43}
+  .prompt{height:49px;display:flex;align-items:center;gap:9px;font-size:15px}
+  .target{min-width:52px;padding:5px 12px;border-radius:16px;background:#fbd58c;text-align:center;font-size:24px;font-weight:800;color:#674038}
+  .line{display:block;width:324px;height:119px;overflow:visible}
+  .track{stroke:#b99077;stroke-width:5;stroke-linecap:round}
+  .tick{stroke:#8f766c;stroke-width:2.5;stroke-linecap:round}
+  .tick-label{fill:#594740;font-size:13px;font-weight:650;text-anchor:middle}
+  .marker{fill:#e77968;stroke:#fff8ed;stroke-width:4;filter:drop-shadow(0 3px 2px #9d6d6466);transition:cx .24s ease}
+  .marker.hop{animation:hop .45s ease}
+  @keyframes hop{50%{transform:translateY(-14px)}}
+  .controls{display:flex;gap:9px;margin-top:2px}
+  button{height:58px;border:0;border-radius:17px;font:700 16px system-ui,sans-serif;cursor:pointer;transition:transform .12s,background .2s}
+  button:active{transform:scale(.94)}
+  .move{width:72px;background:#e8efe2;color:#476756}
+  .check{flex:1;background:#dc7965;color:white}
+  .feedback{height:24px;margin-top:7px;text-align:center;font-size:15px;font-weight:700;color:#a95850}
+  .feedback.good{color:#4d8866}
+</style>
+<div class="card" data-item="">
+  <h1 id="title"></h1>
+  <div class="prompt"><span id="instr"></span><span class="target" data-target></span></div>
+  <svg class="line" viewBox="0 0 324 119" aria-hidden="true">
+    <line class="track" x1="12" y1="51" x2="312" y2="51"></line>
+    <g id="ticks"></g>
+    <circle class="marker" data-marker data-value="" cx="12" cy="51" r="12"></circle>
+  </svg>
+  <div class="controls">
+    <button class="move" data-action="left"></button>
+    <button class="move" data-action="right"></button>
+    <button class="check" data-action="check"></button>
+  </div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, card=document.querySelector('.card');
+  const marker=document.querySelector('[data-marker]'), ticks=document.querySelector('#ticks');
+  const feedback=document.querySelector('#feedback'), target=document.querySelector('[data-target]');
+  const round=n=>Math.round(n*1e6)/1e6;
+  const count=Math.round((p.max-p.min)/p.step);
+  const value=k=>round(p.min+k*p.step);
+  const x=k=>12+300*k/count;
+  const format=n=>{
+    if(p.format==='integer')return String(Math.round(n));
+    if(p.format==='fraction'){
+      const s=String(p.step), den=s.includes('.')?10**s.split('.')[1].length:1;
+      const numerator=Math.round(n*den);
+      const gcd=(a,b)=>b?gcd(b,a%b):a||1;
+      const g=gcd(Math.abs(numerator),den);
+      return den/g===1?String(numerator/g):`${numerator/g}/${den/g}`;
+    }
+    const places=String(p.step).split('.')[1]?.length||0;
+    return n.toFixed(places);
+  };
+  const svg=(tag,attrs)=>{const el=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [a,v] of Object.entries(attrs))el.setAttribute(a,v);return el};
+  for(let i=0;i<=count;i++){
+    const g=svg('g',{'data-tick':String(value(i)),transform:`translate(${x(i)} 51)`});
+    g.append(svg('line',{class:'tick',x1:0,y1:-9,x2:0,y2:9}));
+    if(i%p.labelEvery===0){
+      const label=svg('text',{class:'tick-label',x:0,y:31});
+      label.textContent=format(value(i));g.append(label);
+    }
+    ticks.append(g);
+  }
+  document.querySelector('#title').textContent=Studio.t('title');
+  document.querySelector('#instr').textContent=Studio.t('instr');
+  for(const action of ['left','right','check'])
+    document.querySelector(`[data-action="${action}"]`).textContent=Studio.t(action==='right'?'right_btn':action);
+  let item=0,k=Math.max(0,Math.min(count,Math.round((p.start-p.min)/p.step))),busy=false,finished=false;
+  function draw(){marker.setAttribute('cx',x(k));marker.setAttribute('data-value',String(value(k)))}
+  function showItem(){card.dataset.item=String(p.items[item].id);target.textContent=format(p.items[item].target);feedback.textContent='';feedback.classList.remove('good');k=Math.max(0,Math.min(count,Math.round((p.start-p.min)/p.step)));draw()}
+  showItem();
+  for(const direction of ['left','right'])document.querySelector(`[data-action="${direction}"]`).addEventListener('click',()=>{
+    if(busy||finished)return;
+    k=Math.max(0,Math.min(count,k+(direction==='left'?-1:1)));draw();
+    feedback.textContent='';
+    Studio.event('move',{direction,value:value(k)});
+  });
+  document.querySelector('[data-action="check"]').addEventListener('click',()=>{
+    if(busy||finished)return;
+    busy=true;Studio.answer({value:value(k)});
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.classList.toggle('good',correct);
+    if(!correct){busy=false;return}
+    marker.classList.remove('hop');void marker.getBoundingClientRect();marker.classList.add('hop');
+    setTimeout(()=>{
+      marker.classList.remove('hop');
+      item++;
+      if(item<p.items.length){showItem();busy=false}
+      else{finished=true;feedback.textContent=Studio.t('done');target.textContent='';card.removeAttribute('data-item');Studio.done()}
+    },500);
+  });
+  Studio.ready();
+})();
+
+</script>

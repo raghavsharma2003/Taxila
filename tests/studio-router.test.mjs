@@ -229,3 +229,50 @@ test("full Q8 beside the build: Content Safety per string + the Hindi classifier
   assert.deepEqual((await q8Strings({ strings: { a: "x" } }, { contentSafety: async () => 0 })).findings, [{ key: "-", code: "brain_content_filter" }]);
   _setChat(null);
 });
+
+test("azure chatStream: SSE deltas, usage and cost; a cancel and a stall abort the socket and still estimate the bill", async () => {
+  const http = await import("node:http");
+  const { chatStream, sseEvents, usdOf } = await import("../server/azure.js");
+  const sse = (o) => `data: ${JSON.stringify(o)}\n\n`;
+  const srv = http.createServer((req, res) => {
+    res.writeHead(200, { "content-type": "text/event-stream" });
+    if (req.url.endsWith("/responses")) {
+      res.write(sse({ type: "response.output_text.delta", delta: "<div>" }));
+      res.end(sse({ type: "response.completed", response: { usage: { input_tokens: 10, output_tokens: 5, input_tokens_details: { cached_tokens: 4 } } } }));
+      return;
+    }
+    let body = ""; req.on("data", (c) => (body += c)); req.on("end", () => {
+      const mode = JSON.parse(body).messages.at(-1).content;
+      res.write(sse({ choices: [{ delta: { content: "<style>" } }] }));
+      if (mode === "stall") return;                                   // never ends: the watchdog must cut it
+      if (mode === "slow") { setTimeout(() => res.write(sse({ choices: [{ delta: { content: "x" } }] })), 400); return; }
+      res.write(sse({ choices: [{ delta: { content: "</style>" }, finish_reason: "stop" }] }));
+      res.end(sse({ usage: { prompt_tokens: 100, completion_tokens: 20, prompt_tokens_details: { cached_tokens: 0 } } }) + "data: [DONE]\n\n");
+    });
+  });
+  await new Promise((r) => srv.listen(0, "127.0.0.1", r));
+  const saved = { e: process.env.AZURE_OPENAI_ENDPOINT, k: process.env.AZURE_OPENAI_API_KEY, p: process.env.NODE_USE_ENV_PROXY };
+  process.env.AZURE_OPENAI_ENDPOINT = `http://127.0.0.1:${srv.address().port}/openai/v1`;
+  process.env.AZURE_OPENAI_API_KEY = "test";
+  try {
+    const deltas = [];
+    const ok = await chatStream("gpt-5.6-terra", [{ role: "system", content: "s" }, { role: "user", content: "ok" }], { onDelta: (d) => deltas.push(d), quotaLane: "background" });
+    assert.equal(ok.text, "<style></style>");
+    assert.deepEqual(deltas, ["<style>", "</style>"]);
+    assert.equal(ok.usage.in, 100);
+    assert.equal(ok.usd, usdOf("gpt-5.6-terra", ok.usage));
+    const rsp = await chatStream("taxila-codex", [{ role: "system", content: "s" }, { role: "user", content: "x" }], { api: "responses", effort: "low" });
+    assert.equal(rsp.text, "<div>");
+    assert.deepEqual([rsp.usage.in, rsp.usage.cached, rsp.usage.out], [10, 4, 5]);
+    const ctl = new AbortController();
+    setTimeout(() => ctl.abort(), 150);
+    await assert.rejects(chatStream("gpt-5.6-terra", [{ role: "user", content: "slow" }], { signal: ctl.signal }), (e) => e.code === "cancelled" && e.partial.usage?.estimated === true && e.partial.usd > 0);
+    await assert.rejects(chatStream("gpt-5.6-terra", [{ role: "user", content: "stall" }], { stallMs: 200 }), (e) => e.code === "stalled" && e.partial.text === "<style>");
+    const evs = []; for await (const ev of sseEvents(["data: {\"a\":1}\r\n\r\ndata: [DONE]\n\n", ": keep-alive\n\n"])) evs.push(ev);
+    assert.deepEqual(evs, [{ a: 1 }]);
+  } finally {
+    for (const [k, v] of [["AZURE_OPENAI_ENDPOINT", saved.e], ["AZURE_OPENAI_API_KEY", saved.k]]) { if (v === undefined) delete process.env[k]; else process.env[k] = v; }
+    await new Promise((r) => srv.close(r));
+    srv.closeAllConnections?.();
+  }
+});

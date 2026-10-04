@@ -46,12 +46,13 @@ export function decideEnd(note, ctx = {}, pros = {}, opts = {}) {
     p = Math.min(p, 0.25); hold = Math.max(hold, 700); why = "closed: no value yet";
   }
   if (useRepair && note.repairOpen) { p = Math.min(p, 0.1); hold = row.cap; why = "self-repair in progress"; }
-  if (useRepair && note.repaired && hold < 300 && !EXPLAINING.has(ctx.beat)) { hold = 300; why += " +repaired"; } // a second value just landed: a breath more
   if (useProsody) {
     if (pros.falling && pros.lowPitch) p += 0.05;
     else if (pros.rising && !note.asks) p -= 0.05;
   }
   p = Math.max(0, Math.min(1, p));
   const commit = p >= thr && !(useRepair && note.repairOpen) && !note.wordSearch;
+  // a corrected value just landed ("…nahi nahi, teen bata chaar"): one more breath before committing [E: 300 ms]
+  if (commit && useRepair && note.repaired && !EXPLAINING.has(ctx.beat)) return { commit: false, holdMs: 300, p, thr, cue: note.lex.cue, why: `${why} +repaired` };
   return { commit, holdMs: commit ? 0 : hold, p, thr, cue: note.lex.cue, why };
 }
