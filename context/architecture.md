@@ -99,3 +99,10 @@
 
 ## Merged inbox entries (write-up from the entry text)
 - `open-live-transcribe-english-in-devanagari` (2026-10-04): taxila-live-transcribe writes English lesson words in Devanagari ('फेसेस', 'कॉर्नर्स', 'एज') despite sttPrompt's Latin-script instruction (A3a 4/4 clips with English words; most cascade-latency turns). classify graded these right in the 20-turn run, but kit-key exact matching (classifyFast) and any downstream that compares Latin terms see a different string. Unmeasured: exact-match rate change on the n=180 corpus; per-lesson keywords (not wired) may change it
+
+
+## Merged inbox entries (write-up from the entry text)
+- `open-w2c-practice-counts-as-lesson` (2026-10-04): W2-A: child.js countsAsDone counts a Practice (or Ask) lesson with a graded answer as today's lesson, so a later lesson start is refused 409 done (w2seam-contracts now trips it because practice poses items first); key it on state.purpose === 'lesson' (the Director now stores purpose)
+- `open-w2c-lesson-purpose-talk-patch` (2026-10-04): W2-E: apply server/director/seam-patches/w2c-lesson-purpose-talk.patch in lesson.js (ctx.purpose + ctx.askText for the Ask opening; the [talk] telemetry line at lesson end)
+- `open-w2c-budget-gate-v2` (2026-10-04): scripts/check-prompt-budget.mjs still compiles the legacy brief; add a full-size briefView case so the gate measures the brief production ships (tests/w2c-director.test.mjs measures it today: 1348/2600)
+- `open-w2c-history-b-on-prod` (2026-10-04): Personalisation acceptance (b) (the arm that repaired the child's mix-up first on day 2; not after two failures) is proven offline over selectReteach only; a production two-day scripted mix-up run is not built

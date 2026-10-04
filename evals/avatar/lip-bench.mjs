@@ -55,6 +55,8 @@ function score(gtDisc, gtOpen, track, k) {
 const ARMS = {
   rmsS: (x, fps) => runRmsS(x, fps),
   m0: (x, fps) => runDriver(x, fps, {}),
+  // The pre-W2-D driver (closure expander off), for the before/after.
+  m0_noexpand: (x, fps) => runDriver(x, fps, { expandRatio: 0 }),
   // Level robustness: the received level after Opus/AGC is unknown (GR-9). Same audio at -10.5 dB.
   rmsS_gain03: (x, fps) => runRmsS(x.map((v) => v * 0.3), fps),
   m0_gain03: (x, fps) => runDriver(x.map((v) => v * 0.3), fps, {}),

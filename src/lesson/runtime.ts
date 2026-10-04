@@ -16,7 +16,7 @@
 // Director says it must be voiced now (TurnResponse.speakNow, and the goodbye after `end`).
 import type { LessonStartResponse, ModuleEvent, Move, TurnRequest, TurnResponse, UiDirectives, VoiceUtterance } from "../../shared/contracts.ts";
 import type { VoiceFeaturesLike } from "../voice/features.ts";
-import { ApiError, httpLessonApi, type LessonApi } from "./api.ts";
+import { ApiError, httpLessonApi, type LaneSwitchReason, type LessonApi } from "./api.ts";
 import { CascadeLink, primeCascadeAudio } from "./cascadeLink.ts";
 import { LevelMeter } from "./level.ts";
 import type { LessonMode, LinkConnection, LinkEvent, LinkLevels, TeacherLink, TeacherReply, TeacherStatus } from "./link.ts";
@@ -30,6 +30,10 @@ import { TeacherTurns } from "./teacherTurns.ts";
 import { TextLink } from "./textLink.ts";
 import { realTimers, type Timers } from "./timers.ts";
 import { VoiceLink } from "./voiceLink.ts";
+import { RATE_LIMITED } from "./realtime.ts";
+import { laneADeliveryEnabled, laneSwitchEnabled } from "./voiceFlags.ts";
+import { FaceProducer, faceCues, faceUiOf } from "../avatar/faceCues.ts";
+import { realtimeDeliveryLine } from "../../server/voice/expressive/compile/realtime.js";
 
 export type LessonPhase = "idle" | "starting" | "live" | "ending" | "ended" | "error";
 
@@ -75,6 +79,13 @@ export interface LessonState {
   /** When a held answer for an EARLIER, page-hide-closed lesson came back as a disclosure (TurnResponse.late with a
    *  safeguard move): the Desk raises the Help sheet with the helplines, though that lesson stays closed. */
   lateSafeguard: number | null;
+  /**
+   * The Director's pace knobs (TurnResponse.pace; W2-C emits them, W2-D carries them): the YOUR TURN nudge timer reads
+   * waitNudgeSec, the realtime lane's server VAD reads endpointSilenceMs (clamped 600-1200 ms). null until a turn sends them.
+   */
+  pace: { waitNudgeSec: number; endpointSilenceMs: number } | null;
+  /** The lesson left the realtime lane mid-sitting (W2-D #1): why and when. The lesson itself carries on, on cascade. */
+  laneSwitch: { reason: LaneSwitchReason; at: number } | null;
   debug: Record<string, unknown> | null;
 }
 
@@ -161,6 +172,8 @@ const initialState = (mode: LessonMode = "voice"): LessonState => ({
   replySeq: null,
   replyText: null,
   lateSafeguard: null,
+  pace: null,
+  laneSwitch: null,
 });
 
 interface ChildInput {
@@ -217,6 +230,14 @@ export class LessonRuntime {
   /** The last Director-written teacher line (text lanes): "Play again" after her audio failed (T5). */
   private lastReply: TeacherReply | null = null;
   private outboxReady: Promise<void> = Promise.resolve();
+  /** The face's producer (W2-D #4): teacherAffect → affect cue through ReactionGate; reveals and cues → gaze. */
+  private face = new FaceProducer();
+  /** Child turns applied so far this lesson (ReactionGate counts in child turns). */
+  private faceTurn = 0;
+  /** A realtime → cascade switch is in progress or done for this lesson (it happens once per lesson). */
+  private laneSwitching = false;
+  /** The last applied turn was a safeguarding hand-off the realtime lane was asked to voice (speakNow interrupt). */
+  private safeguardPending = false;
 
   constructor(deps: RuntimeDeps = {}) {
     this.api = deps.api ?? httpLessonApi;
@@ -249,7 +270,8 @@ export class LessonRuntime {
     const mode: LessonMode = cascade ? "text" : startMode;
     // Still inside the child's tap (nothing awaited yet): an AudioContext made after the network round trip
     // stays suspended on iOS Safari and some WebViews, and her opening line would be silent.
-    if (cascade) primeCascadeAudio();
+    // A realtime lesson can fall to the cascade lane (W2-D #1), so it primes the cascade's audio too: a switch has no tap.
+    if (cascade || mode === "voice") primeCascadeAudio();
     this.reset(mode);
     const gen = this.generation;
     this.store.set({ phase: "starting", connection: "connecting" });
@@ -288,6 +310,14 @@ export class LessonRuntime {
       this.teardown();
       // The server opened a lesson that never ran (e.g. the voice call could not connect): close it.
       if (lessonId) this.closeQuietly(lessonId);
+      // W2-D #1: the realtime lane refused the call for quota (503 {fallback: "cascade"}, server/voice/realtimeSession.js).
+      // Nothing was said yet, so the child simply gets the same lesson on the cascade lane, which greets them itself.
+      if (mode === "voice" && isLaneFallback(err) && laneSwitchEnabled()) {
+        this.store.set({ phase: "idle" });
+        await this.start(childId, "cascade", topicId);
+        this.store.set({ laneSwitch: { reason: "mint_refused", at: Date.now() } });
+        return;
+      }
       const status = err instanceof ApiError ? err.status : undefined;
       const kind = status === 401 || status === 403 ? "auth" : "start";
       this.store.set({ phase: "error", connection: "failed", error: messageOf(err), failure: { kind, status, at: Date.now() } });
@@ -511,6 +541,9 @@ export class LessonRuntime {
       case "response_start":
         this.teacherTurns.begin(e.responseId, e.at);
         break;
+      case "teacher_audio_start":
+        this.safeguardPending = false; // the hand-off reached the child's ears on this lane
+        break;
       case "teacher_delta":
         this.teacherTurns.delta(e.responseId, e.delta);
         this.appendCaption(`teacher:${e.responseId}`, e.delta);
@@ -553,6 +586,10 @@ export class LessonRuntime {
         return;
       }
       case "error":
+        if (e.code === RATE_LIMITED && this.link?.mode === "voice" && laneSwitchEnabled()) {
+          void this.switchToCascade("rate_limit");
+          return;
+        }
         this.store.set({ error: e.message });
         if (e.fatal) this.fail();
         return;
@@ -686,10 +723,18 @@ export class LessonRuntime {
   private applyTurn(r: TurnResponse, moduleOnly: boolean): void {
     const link = this.link;
     if (!link) return;
+    // W2-D #2: the pace knobs, for the nudge timer (store) and the realtime lane's end-of-turn silence (link).
+    if (r.pace && typeof r.pace.waitNudgeSec === "number" && typeof r.pace.endpointSilenceMs === "number") {
+      this.store.set({ pace: { waitNudgeSec: r.pace.waitNudgeSec, endpointSilenceMs: r.pace.endpointSilenceMs } });
+      link.setPace?.(r.pace);
+    }
+    // W2-D #3 (lane A, flagged): the Moment's delivery note rides as the LAST instructions line of her next reply.
+    if (link.setDelivery && laneADeliveryEnabled()) link.setDelivery(realtimeDeliveryLine(r.moment), !r.instructions);
     if (r.instructions) link.applyInstructions(r.instructions); // voice lane only
     const dropped = this.modules.push(r.moduleCommands ?? []);
     if (dropped) console.warn(`lesson: dropped ${dropped} malformed module command(s)`);
     if (r.teacherReplySeq !== undefined || r.teacherReply) this.store.set({ replySeq: r.teacherReplySeq ?? null, replyText: r.teacherReply ?? null });
+    if (!moduleOnly) this.faceTurn++;
     this.applyUi(r.ui ?? {});
     this.store.set((s) => ({ move: r.move ?? null, debug: r.debug ?? null, error: null, failure: s.failure?.kind === "send" ? null : s.failure }));
     this.deferred = null; // a newer Director answer supersedes a reaction still waiting for the floor
@@ -706,6 +751,7 @@ export class LessonRuntime {
     } else if (r.speakNow === "interrupt") {
       // Safety by predicate: the safeguarding hand-off is voiced now, not left to instructions she may
       // already have answered from (or to the child speaking again).
+      this.safeguardPending = r.move?.kind === "safeguard";
       link.interrupt();
       link.promptTeacher();
     } else if (r.speakNow === "when_free" && !r.end) {
@@ -727,6 +773,63 @@ export class LessonRuntime {
     else if (this.flags.handover !== null) this.dispatch({ type: "handover", open: false });
     this.events.emit({ type: "ui", ui: ui as Record<string, unknown> });
     this.setReadAloudTarget(ui.readAloud ?? null);
+    // The face reads only teacherAffect / studioSlot / cues / whiteboard (faceUiOf): never the verdict (AT-U12).
+    for (const cue of this.face.program(faceUiOf(ui), this.faceTurn)) faceCues.emit(cue);
+  }
+
+  // ───────────── lane switch (W2-D #1) ─────────────
+
+  /**
+   * The realtime model refused a response for quota: move THIS lesson to the cascade lane mid-sitting, once. In order on
+   * the turn chain (so no Director call of this lesson is between the server's read and write of its mode):
+   *   1. POST /api/lesson/lane (voice → cascade; the server's turns are then Director-written and spoken by TTS);
+   *   2. swap the link: the realtime call closes, a CascadeLink (through the same factory, so the UI bridge sees it)
+   *      connects on the cascade audio primed at start;
+   *   3. she speaks again: a "the line dropped" repair turn (an empty spoken turn with ASR confidence 0, which the
+   *      Director answers by re-asking the current question; no evidence either way).
+   * Safety by predicate: if the last thing the realtime lane was asked to voice was a safeguarding hand-off that never
+   * started playing, the Help sheet (helplines) opens now (lateSafeguard), whatever the switch does.
+   * A failed switch leaves the lesson as it was (the realtime link and today's non-fatal error).
+   */
+  private switchToCascade(reason: LaneSwitchReason): Promise<void> {
+    const lessonId = this.state.lessonId;
+    if (this.laneSwitching || !lessonId || this.state.phase !== "live" || !this.api.switchLane) return Promise.resolve();
+    this.laneSwitching = true;
+    if (this.safeguardPending) this.store.set({ lateSafeguard: Date.now() });
+    const gen = this.generation;
+    const run = async () => {
+      if (gen !== this.generation) return;
+      await this.api.switchLane!(lessonId, reason);
+      if (gen !== this.generation || this.state.phase !== "live") return;
+      const old = this.link;
+      this.unlisten?.();
+      this.unlisten = null;
+      this.vf?.detach();
+      this.vf = null;
+      old?.close();
+      this.teacherTurns.clear();
+      this.wakeSettled(true);
+      this.deferred = null;
+      const link = this.createLink("text", { lessonId, voice: this.state.teacher?.voice ?? "", levels: this.levels, api: this.api, cascade: true });
+      this.link = link;
+      this.unlisten = link.on((e) => this.onLinkEvent(e));
+      this.store.set({ mode: "text", pushToTalk: false, laneSwitch: { reason, at: Date.now() }, error: null });
+      this.dispatch({ type: "reset", awaiting: false });
+      await link.connect();
+      if (gen !== this.generation) return;
+      void this.startVoiceFeatures(link, gen);
+    };
+    const p = this.chain.then(run);
+    this.chain = p.then(
+      () => {
+        if (gen === this.generation && this.link?.mode === "text") this.queueTurn({ childText: "", asrConfidence: 0 });
+      },
+      (err) => {
+        console.warn("lesson: could not move to the cascade lane", err);
+        if (gen === this.generation) this.store.set({ error: messageOf(err) });
+      },
+    );
+    return p.catch(() => {});
   }
 
   // ───────────── ending ─────────────
@@ -843,6 +946,10 @@ export class LessonRuntime {
 
   private reset(mode: LessonMode): void {
     this.teardown();
+    this.laneSwitching = false;
+    this.safeguardPending = false;
+    this.face = new FaceProducer();
+    this.faceTurn = 0;
     this.modules.clear(); // a lesson left by page-hide or an auth error must not replay its modules into this one
     this.flags = INITIAL_FLAGS;
     this.teacherTurns.clear();
@@ -889,6 +996,11 @@ export class LessonRuntime {
   private markInterrupted(id: string): void {
     this.store.set((s) => ({ captions: s.captions.map((c) => (c.id === id ? { ...c, interrupted: true } : c)) }));
   }
+}
+
+/** A start refused by the realtime lane for quota: the token route answered 503 { fallback: "cascade" }. */
+function isLaneFallback(err: unknown): boolean {
+  return err instanceof ApiError && err.status === 503 && (err.body as { fallback?: unknown } | null)?.fallback === "cascade";
 }
 
 function messageOf(err: unknown): string {

@@ -311,6 +311,16 @@ export class Stage3D {
     this.behaviour.arm(emotion, intensity);
   }
 
+  /** A look at the work (W2-D #4: the tray on a Studio reveal, the board on a cue), in eye degrees from faceCues.gazeAngles. */
+  lookAt(yaw: number, pitch: number, holdS: number, reason?: string): void {
+    this.behaviour.lookAt(yaw, pitch, holdS, reason);
+  }
+
+  /** A voiced non-verbal from the framed TTS (AvatarVoiceEvent, HV-11). */
+  voiceEvent(kind: "laugh" | "breath" | "hum"): void {
+    this.behaviour.voiceEvent(kind);
+  }
+
   start(): void {
     if (this.raf || this.disposed || this.offscreen || (typeof document !== "undefined" && document.hidden)) return;
     this.nextAt = 0;

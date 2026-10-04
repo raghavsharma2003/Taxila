@@ -9,6 +9,8 @@ export const REP_CLASSES = Object.freeze(["concrete", "pictorial", "abstract", "
 const CPA_OF = { concrete: "C", game: "C", pictorial: "P", story: "P", analogy: "P", abstract: "A", worked_example: "A", counterexample: "A", language_switch: "A" };
 export const EXPLORATION_FLOOR = 0.2;
 const DAY = 86_400_000;
+/** Attempt outcomes that mean the arm repaired the error (resolve.js). */
+const RESOLVED = new Set(["resolved_now", "resolved_next", "resolved_delayed"]);
 
 /** Generic arms every skill can fall back to (one per CPA rung plus a worked example). */
 export const GENERIC_ARMS = Object.freeze([
@@ -105,6 +107,16 @@ export function selectReteach(c) {
   const logged = E.length === 0 ? "exclusions_emptied_set" : null;
   if (!E.length) E = before.filter((a) => !used.has(a.id));
   if (!E.length) return { ...base, move: "park", excludedClasses: twice30, tellConductor: true, logged };
+  // 4b THIS child's repair history (W2-C, PTM `repairs`; personalisation acceptance (b)): the arm that resolved this skill
+  // for this child before goes first — on any trigger, not only a delayed fail (RT9) — provided it survived the
+  // exclusions above (a class that failed twice in 30 days, or failed in the last two attempts, is already out). Most
+  // recent resolution first; never an arm already used this lesson.
+  const repaired = [...attempts].reverse().find((a) => RESOLVED.has(a.outcome) && E.some((x) => x.id === a.armId));
+  if (repaired && !logged) {
+    const arm = E.find((x) => x.id === repaired.armId);
+    return { ...base, move: "reteach", armId: arm.id, representation: arm.representationId, repClass: arm.repClass, chosenBy: "child_history", offerPick: null,
+      secondContextProbe: c.trigger === "transfer_fail", logged };
+  }
   // 5 CPA: after an abstract failure prefer P/C; a transfer fail after a concrete success → fade up.
   const lastFail = [...attempts].reverse().find((a) => a.outcome === "failed");
   if (lastFail && CPA_OF[lastFail.repClass] === "A") { const pc = E.filter((a) => CPA_OF[a.repClass] !== "A"); if (pc.length) E = pc; }

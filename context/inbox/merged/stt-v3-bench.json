@@ -1,0 +1,58 @@
+{
+ "nodes": [
+  {
+   "id": "stt-v3-bench-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "stt-v3 open-weight bench (evals/stt-v3; synthetic refresh corpus 180 speech + 30 non-speech + 4 reversed-babble; same scorer as the refresh; AWS L4, transformers 5.18). cerNorm / numbers / answers / non-speech n30: D4 0.028 92/96 76/78; X2 MAI-Tx-2 0.017 91/96 78/78; Qwen3-ASR-1.7B auto 0.031 84/96 70/78 0/30 (dCER +0.003, 95% CI [-0.010,0.016]); Nemotron-3.5-streaming auto-LID 320/560/1120 ms 0.046/0.048/0.045, 84-85/96, 71-74/78, 0/30, wrong-script 3-5/180; Nemotron hi-IN forced 0.15-0.17 (English answers 0/12: English comes back empty); Voxtral-Realtime 480/960 0.140/0.118, 50-51/96; Zero-STT-Hinglish 0.125-0.134, non-speech 27-30/30; Qwen3-ASR-0.6B 0.078. Nemotron paced text-complete after speech end p50 254-290 ms (320/560 ms), soak 0 chars outside speech over 4x10 min. Concurrency on one L4 at p95 RTF<=1: Nemotron 128 streams (added lag 277-380 ms, flat over 30 s), Voxtral 8. Cost: Nemotron $0.0063/session-h at 128 streams (g6.xlarge OD $0.805/h) vs $1.02 D4. Spend $2.48."
+  },
+  {
+   "id": "stt-v3-nemotron-shadow",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Proposed: Nemotron-3.5-ASR-streaming-0.6B (OpenMDW-1.1) with auto-LID (never hi-IN) gets a SHADOW slot as the always-on streaming ear (barge-in / mid-turn question detection, partials); D4/MAI stays the turn-final transcript. Reverse if: E1 real-child audio shows Nemotron (or a Hinglish fine-tune) within a pre-registered margin of D4/MAI on numbers and graded answers with a script guard, at which point it can take the turn-final role; or if E1 shows it emits text during child silence/background speech that D4 does not."
+  },
+  {
+   "id": "rj-nemotron-hi-in-locale",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: Nemotron-3.5 streaming with target_lang hi-IN for Hindi-English children. Broke: pure English utterances return empty text (English answers 0/12, cerNorm 0.47 on English vs 0.02 with auto-LID); overall cerNorm 0.15-0.17 vs 0.045-0.048 auto. Use auto-LID plus a Devanagari/Latin script guard."
+  },
+  {
+   "id": "rj-transformers-batched-rnnt-streaming",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: transformers 5.18 Nemotron streaming generate() with batch>1 for the concurrency test. Broke: the encoder-exhausted stopping criterion finishes a stream permanently when it runs out of frames before the batch pulls the next chunk; B=2 stopped after ~2 chunks with truncated text. Fixed in the bench with an own batched loop over the same modules (matches generate() exactly at B=1, stream text identical to B=512)."
+  },
+  {
+   "id": "rj-voxtral-realtime-hinglish",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: Voxtral-Mini-4B-Realtime-2602 (480 and 960 ms) on the child-Hinglish corpus. Broke: romanises Hindi, numbers 50-51/96 vs 92 (D4), graded answers 46/78; only 8 streams per L4 in transformers. Revisit only via vLLM and only if a Hindi fine-tune appears."
+  },
+  {
+   "id": "rj-zero-stt-hinglish-nonspeech",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: shunyalabs/zero-stt-hinglish (Whisper-medium post-train) for always-on listening. Broke: invents text on 27-30/30 non-speech clips ('आप आप आप...', 'Volver a la taula', Welsh/Chinese strings); cerNorm 0.125-0.134; repo has no licence text beyond 'openrail'."
+  },
+  {
+   "id": "rj-forced-hindi-llm-asr",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: Qwen3-ASR (1.7B, 0.6B) with language=hi. Broke: answers 'हम्म'/'मैं'/'हाँ' on every non-speech clip (29-30/30) and English accuracy drops; auto language with no prompt is the best Qwen setting (the D4-style script prompt also made it worse, cer 0.047 vs 0.031)."
+  }
+ ],
+ "edges": [
+  {
+   "src": "stt-v3-nemotron-shadow",
+   "rel": "measured_by",
+   "dst": "stt-v3-bench-2026-10-04"
+  },
+  {
+   "src": "stt-always-on-session-hour-basis",
+   "rel": "measured_by",
+   "dst": "stt-v3-bench-2026-10-04"
+  }
+ ]
+}

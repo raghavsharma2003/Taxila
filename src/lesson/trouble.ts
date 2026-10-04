@@ -39,7 +39,12 @@ export interface TroubleFacts {
 }
 
 export const T1_MS = 8_000;
-export const T2_LINK_MS = 20_000;
+/**
+ * W2-D #1 (RELATIONAL-OS NR: network loss must not read as being ignored): the app-voice notice is up ≤ 4.5 s after the
+ * link reports itself down (was 20 s). The realtime link now reports down at ICE "disconnected" (src/lesson/voiceLink.ts),
+ * not after its 4 s rebuild grace; a link that heals inside the grace shows RC "Back online." instead.
+ */
+export const T2_LINK_MS = 4_500;
 export const RC_MS = 2_000;
 
 /** Full-screen states replace the Desk; strips sit above the dock. */

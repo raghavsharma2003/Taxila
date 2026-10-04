@@ -162,8 +162,9 @@ export interface BriefView {
   review?: string[];
   need?: { chapter?: string; window?: { kind: string; bucket: "this_week" | "next_week" | "2_3_weeks" | "later" }; scope?: string };
   goal?: string;
-  /** Tier B: absent in M1 unless P3. */
+  /** Tier B: absent in M1 unless P3 — except the parent's onboarding picks read under the memory consent (`interestSource: "parent"`). */
   interests?: string[];
+  interestSource?: "parent" | "child";
   support?: { fade: 0 | 1 | 2 | 3 | 4 | 5; soloRounds?: number; nudgeSec?: number };
   notebook?: { opener?: string; items?: string[] };
   session?: { capMin?: number; schoolMode?: boolean };

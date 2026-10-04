@@ -24,6 +24,14 @@ var n = (e) => e < 0 ? 0 : e > 1 ? 1 : e, r = class {
 	gateFrac;
 	refScale;
 	curve;
+	expandRatio;
+	expandPow;
+	slowTau;
+	closeTau;
+	nasalDark;
+	expandDark;
+	hardRatio;
+	slow = 0;
 	refRing = [];
 	refDirty = 0;
 	jaw = 0;
@@ -34,13 +42,13 @@ var n = (e) => e < 0 ? 0 : e > 1 ? 1 : e, r = class {
 	lastVoicedT = -Infinity;
 	speaking = !1;
 	constructor(e, t = {}) {
-		this.sampleRate = e, this.tau = (t.tauMs ?? 50) / 1e3, this.ceiling = t.jawCeiling ?? .85, this.shapeGain = t.shapeGain ?? .35, this.ref = t.initialRef ?? .06, this.gateFrac = t.gateFrac ?? .06, this.refScale = t.refScale ?? .7, this.curve = t.curve ?? 1;
+		this.sampleRate = e, this.tau = (t.tauMs ?? 50) / 1e3, this.ceiling = t.jawCeiling ?? .85, this.shapeGain = t.shapeGain ?? .35, this.ref = t.initialRef ?? .06, this.gateFrac = t.gateFrac ?? .06, this.refScale = t.refScale ?? .7, this.curve = t.curve ?? 1, this.expandRatio = t.expandRatio ?? .9, this.expandPow = t.expandPow ?? 4, this.slowTau = (t.slowMs ?? 120) / 1e3, this.closeTau = (t.closeTauMs ?? t.tauMs ?? 50) / 1e3, this.nasalDark = t.nasalDark ?? 0, this.expandDark = t.expandDark ?? .1, this.hardRatio = t.hardRatio ?? .35;
 	}
 	get reference() {
 		return this.ref;
 	}
 	reset() {
-		this.jaw = this.wide = this.round = 0, this.voicedRun = 0, this.speaking = !1, this.lastT = -1, this.lastVoicedT = -Infinity;
+		this.jaw = this.wide = this.round = this.slow = 0, this.voicedRun = 0, this.speaking = !1, this.lastT = -1, this.lastVoicedT = -Infinity;
 	}
 	gate() {
 		return Math.max(.004, this.ref * this.gateFrac);
@@ -57,10 +65,17 @@ var n = (e) => e < 0 ? 0 : e > 1 ? 1 : e, r = class {
 		this.voicedRun = c ? this.voicedRun + 1 : 0, c && (this.lastVoicedT = i);
 		let l = c ? 0 : Math.max(0, (i - this.lastVoicedT) * 1e3);
 		!this.speaking && this.voicedRun >= 2 ? this.speaking = !0 : this.speaking && !c && l >= 250 && (this.speaking = !1);
-		let u = n((o - s) / Math.max(1e-4, this.ref * this.refScale - s)), d = this.ceiling * u ** +this.curve, f = 1 - Math.exp(-a / this.tau);
-		this.jaw += f * (d - this.jaw), this.jaw < .005 && (this.jaw = 0);
-		let p = n((this.jaw - .05) / .25), m = c ? t(r, this.sampleRate) : 0, h = c ? n((m - .3) / .3) * p : 0, g = c ? n((.12 - m) / .1) * p : 0, _ = 1 - Math.exp(-a / .06);
-		return this.wide += _ * (h - this.wide), this.round += _ * (g - this.round), {
+		let u = n((o - s) / Math.max(1e-4, this.ref * this.refScale - s)), d = this.ceiling * u ** +this.curve, f = 1 - Math.exp(-a / this.slowTau);
+		this.speaking || c ? this.slow += f * (o - this.slow) : this.slow += f * (0 - this.slow);
+		let p = c || this.nasalDark > 0 || this.expandDark > 0 ? t(r, this.sampleRate) : 0;
+		if (this.expandRatio > 0 && this.slow > s) {
+			let e = o / this.slow;
+			(e < this.hardRatio || e < this.expandRatio && (this.expandDark <= 0 || p < this.expandDark)) && (d *= (e / this.expandRatio) ** +this.expandPow), this.nasalDark > 0 && c && p < this.nasalDark && e < .85 && (d *= .15);
+		}
+		let m = 1 - Math.exp(-a / (d < this.jaw ? this.closeTau : this.tau));
+		this.jaw += m * (d - this.jaw), this.jaw < .005 && (this.jaw = 0);
+		let h = n((this.jaw - .05) / .25), g = c ? n((p - .3) / .3) * h : 0, _ = c ? n((.12 - p) / .1) * h : 0, v = 1 - Math.exp(-a / .06);
+		return this.wide += v * (g - this.wide), this.round += v * (_ - this.round), {
 			t: i,
 			rms: o,
 			jaw: this.jaw,
@@ -658,7 +673,7 @@ var P = class {
 	},
 	neutral: {
 		closed: "neutral",
-		small: "open_sm"
+		small: "attentive"
 	}
 }, L = .045, R = class {
 	constructor(e) {
@@ -679,7 +694,7 @@ var P = class {
 		let n = (t) => e[t] ?? 0, r = n("mouthSmileLeft"), i = n("mouthSmileRight"), a = (r + i) / 2 - (n("mouthFrownLeft") + n("mouthFrownRight")) / 2, o = (n("mouthPressLeft") + n("mouthPressRight")) / 2, s = a < .12 ? Math.max(n("browInnerUp") > .18 && o > .04 ? .5 + o : 0, -a * 2) : 0, c = Math.min(1, n("jawOpen") / .85), l = this.pickRow(e);
 		this.row = l;
 		let u, d = n("mouthLeft") - n("mouthRight");
-		u = l === "closed" && Math.abs(d) > .18 && a < .3 ? "aside" : n("eyeWideLeft") + n("eyeWideRight") > .5 && c > .2 && a < .3 && (l === "aa" || l === "O" || l === "kk") ? "surprise" : l === "closed" && Math.abs(r - i) > .14 && a > .18 ? "playful" : I[a > .33 ? "delight" : s > .3 ? "concern" : a < .04 && l === "closed" ? "neutral" : "warm"][l] ?? l, this.have.has(u) || (u = I.warm[l] ?? l), this.have.has(u) || (u = "rest"), u !== this.to && (this.from = this.t > .5 ? this.to : this.from, this.to = u, this.t = 0), this.t = Math.min(1, this.t + t / L);
+		u = l === "closed" && Math.abs(d) > .18 && a < .3 ? this.have.has("hmm") ? "hmm" : "aside" : n("eyeWideLeft") + n("eyeWideRight") > .5 && c > .2 && a < .3 && (l === "aa" || l === "O" || l === "kk") ? "surprise" : l === "closed" && Math.abs(r - i) > .14 && a > .18 ? "playful" : I[a > .33 ? "delight" : s > .3 ? "concern" : a < .04 && (l === "closed" || l === "small") ? "neutral" : "warm"][l] ?? l, this.have.has(u) || (u = I.warm[l] ?? l), this.have.has(u) || (u = "rest"), u !== this.to && (this.from = this.t > .5 ? this.to : this.from, this.to = u, this.t = 0), this.t = Math.min(1, this.t + t / L);
 		let f = this.t >= 1 || this.from === this.to ? [[this.to, 1]] : [[this.from, 1], [this.to, this.t]], p = Math.max(n("mouthFunnel"), n("mouthPucker")), m = (n("mouthStretchLeft") + n("mouthStretchRight")) / 2, h = ee[l] ?? .2;
 		return {
 			draw: f,
@@ -688,12 +703,12 @@ var P = class {
 			wide: Math.min(1, m * 1.5),
 			round: Math.min(1, p),
 			skew: d * .8 + (r - i) * .6,
-			shift: Math.max(-1, Math.min(1, d * 1.6)) * 16 * (a < .3 ? 1 : .4),
+			shift: Math.max(-1, Math.min(1, d * 1.6)) * (u === "hmm" ? 7 : 16) * (a < .3 ? 1 : .4),
 			liftR: Math.max(0, r - i) * 7 - (a < .08 && (l === "E" || l === "I" || l === "SS" || l === "CH") ? 6 * (1 - a / .08) : 0) - n("mouthFrownLeft") * 6,
 			liftL: Math.max(0, i - r) * 7 - (a < .08 && (l === "E" || l === "I" || l === "SS" || l === "CH") ? 6 * (1 - a / .08) : 0) - n("mouthFrownRight") * 6,
 			scale: u === "laugh" || u === "grin_E" ? .9 : 1,
-			tilt: u === "aside" ? Math.max(-1, Math.min(1, d * 1.6)) * 9 : 0,
-			narrow: u === "aside" ? .16 * Math.min(1, Math.abs(d) * 1.6) : 0,
+			tilt: u === "aside" ? Math.max(-1, Math.min(1, d * 1.6)) * 9 : u === "hmm" ? Math.max(-1, Math.min(1, d * 1.6)) * 3 : 0,
+			narrow: u === "aside" ? .16 * Math.min(1, Math.abs(d) * 1.6) : u === "hmm" ? .06 : 0,
 			lowerDrop: Math.max(-2, Math.min(3, (c - h) * 6)),
 			jawGain: l === "closed" || l === "PP" ? .2 : 1
 		};
@@ -1494,18 +1509,18 @@ var q = class {
 	}
 	update(e, t, n, r) {
 		let i = n && r > .12;
-		if (i ? (this.voicedFor += t, this.quietFor = 0) : this.quietFor += t, n && !i && this.voicedFor >= .6 && this.quietFor > .18 && this.quietFor < .45 && e - this.lastNod > 1.6) {
-			let t = this.n % 3 == 1;
-			this.s.v += (t ? 5.5 : 3.5) / .0468, this.lastNod = e, this.n++, this.voicedFor = 0, this.nods.push(+e.toFixed(2));
+		i ? (this.voicedFor += t, this.quietFor = 0) : this.quietFor += t;
+		let a = (t, n) => {
+			this.s.v += t / .0468, this.lastNod = e, this.n++, this.voicedFor = 0, this.nods.push([+e.toFixed(2), n]);
+		};
+		n && !i && this.voicedFor >= .3 && this.quietFor > .12 && this.quietFor < .45 && e - this.lastNod > 1 ? a(this.n % 3 == 1 ? 5.5 : 3.5, "pause") : n && i && this.voicedFor > 1.8 && e - this.lastNod > 1.8 && a(2, "continuer"), n || (this.voicedFor = 0);
+		let o = t;
+		for (; o > 1e-6;) {
+			let e = Math.min(.004, o);
+			this.s.v += (-110 * this.s.x - 1.24 * Math.sqrt(110) * this.s.v) * e, this.s.x += this.s.v * e, o -= e;
 		}
-		n || (this.voicedFor = 0);
-		let a = t;
-		for (; a > 1e-6;) {
-			let e = Math.min(.004, a);
-			this.s.v += (-110 * this.s.x - 1.24 * Math.sqrt(110) * this.s.v) * e, this.s.x += this.s.v * e, a -= e;
-		}
-		let o = n ? i ? .12 : .06 : 0;
-		return this.smile += (1 - Math.exp(-t / .5)) * (o - this.smile), {
+		let s = n ? i ? .12 : .06 : 0;
+		return this.smile += (1 - Math.exp(-t / .5)) * (s - this.smile), {
 			pitch: this.s.x,
 			smile: this.smile
 		};

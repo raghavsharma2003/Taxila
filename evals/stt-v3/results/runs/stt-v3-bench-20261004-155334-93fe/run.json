@@ -1,0 +1,142 @@
+{
+ "jobId": "stt-v3-bench-20261004-155334-93fe",
+ "jobDir": "scripts/voice/stt-v3",
+ "ami": "ami-012ba162b9cd2729c",
+ "amiName": "Deep Learning OSS Nvidia Driver AMI GPU PyTorch 2.7 (Ubuntu 22.04) 20260427",
+ "amiSsm": "/aws/service/deeplearning/ami/x86_64/oss-nvidia-driver-gpu-pytorch-2.7-ubuntu-22.04/latest/ami-id",
+ "types": [
+  "g6.xlarge",
+  "g5.xlarge"
+ ],
+ "maxMinutes": 90,
+ "diskGb": 120,
+ "packedBytes": 22840494,
+ "s3": "s3://taxila-build-780899467240/jobs/stt-v3-bench-20261004-155334-93fe/",
+ "t": {
+  "launchCallS": 436.0,
+  "toRunningS": 16.2,
+  "bootToStartS": 0,
+  "jobS": 1719,
+  "uploadS": 1,
+  "launchToBootS": 42.0,
+  "downloadS": 0.1,
+  "terminateWaitS": 314.1,
+  "instanceLifeS": 2083.8,
+  "wallS": 2522.4
+ },
+ "env": {
+  "ARMS": "N6autoS N3auto N13auto"
+ },
+ "launchAttempts": [
+  {
+   "lifecycle": "spot",
+   "type": "g6.xlarge",
+   "az": "us-east-1a",
+   "error": "InsufficientInstanceCapacity",
+   "message": "There is no Spot capacity available that matches your request."
+  },
+  {
+   "lifecycle": "spot",
+   "type": "g6.xlarge",
+   "az": "us-east-1b",
+   "error": "InsufficientInstanceCapacity",
+   "message": "There is no Spot capacity available that matches your request."
+  },
+  {
+   "lifecycle": "spot",
+   "type": "g6.xlarge",
+   "az": "us-east-1c",
+   "error": "InsufficientInstanceCapacity",
+   "message": "We currently do not have sufficient g6.xlarge capacity in the Availability Zone you requested (us-east-1c). Our system will be working on provisioning additiona"
+  },
+  {
+   "lifecycle": "spot",
+   "type": "g6.xlarge",
+   "az": "us-east-1d",
+   "error": "InsufficientInstanceCapacity",
+   "message": "There is no Spot capacity available that matches your request."
+  },
+  {
+   "lifecycle": "spot",
+   "type": "g6.xlarge",
+   "az": "us-east-1e",
+   "error": "Unsupported",
+   "message": "Your requested instance type (g6.xlarge) is not supported in your requested Availability Zone (us-east-1e). Please retry your request by not specifying an Avail"
+  },
+  {
+   "lifecycle": "spot",
+   "type": "g6.xlarge",
+   "az": "us-east-1f",
+   "error": "InsufficientInstanceCapacity",
+   "message": "We currently do not have sufficient g6.xlarge capacity in the Availability Zone you requested (us-east-1f). Our system will be working on provisioning additiona"
+  },
+  {
+   "lifecycle": "spot",
+   "type": "g5.xlarge",
+   "az": "us-east-1a",
+   "error": "InsufficientInstanceCapacity",
+   "message": "There is no Spot capacity available that matches your request."
+  },
+  {
+   "lifecycle": "spot",
+   "type": "g5.xlarge",
+   "az": "us-east-1b",
+   "error": "InsufficientInstanceCapacity",
+   "message": "We currently do not have sufficient g5.xlarge capacity in the Availability Zone you requested (us-east-1b). Our system will be working on provisioning additiona"
+  },
+  {
+   "lifecycle": "spot",
+   "type": "g5.xlarge",
+   "az": "us-east-1c",
+   "ok": true
+  }
+ ],
+ "instanceId": "i-03f68c4375bc9eff3",
+ "lifecycle": "spot",
+ "instanceType": "g5.xlarge",
+ "az": "us-east-1c",
+ "backstop": "taxila-reap-i-03f68c4375bc9eff3",
+ "status": {
+  "phase": "done",
+  "rc": 0,
+  "bootEpoch": 1791129697,
+  "startEpoch": 1791129697,
+  "endEpoch": 1791131416,
+  "uploadedEpoch": 1791131417,
+  "outBytes": 106381
+ },
+ "outputsBytes": 106381,
+ "outputs": [
+  "arms.txt",
+  "logs/N13auto.log",
+  "logs/N3auto.log",
+  "logs/N6autoS.log",
+  "logs/prefetch.log",
+  "logs/venv.log",
+  "pins/freeze.txt",
+  "pins/gpu.csv",
+  "pins/instance.txt",
+  "pins/torch.txt",
+  "results/N13auto/env.json",
+  "results/N13auto/paced.jsonl",
+  "results/N13auto/rows.jsonl",
+  "results/N3auto/env.json",
+  "results/N3auto/paced.jsonl",
+  "results/N3auto/rows.jsonl",
+  "results/N6autoS/env.json",
+  "results/N6autoS/paced.jsonl",
+  "results/N6autoS/rows.jsonl",
+  "results/N6autoS/soak.json"
+ ],
+ "result": "ok",
+ "finalState": "terminated",
+ "stateReason": "Client.UserInitiatedShutdown: User initiated shutdown",
+ "cost": {
+  "usdPerHour": 0.4792,
+  "billedSeconds": 2083.8,
+  "ec2Usd": 0.27738,
+  "ebsUsd": 0.00772,
+  "totalUsd": 0.2851,
+  "priceSource": "spot price history"
+ }
+}

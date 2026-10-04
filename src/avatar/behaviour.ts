@@ -246,6 +246,32 @@ export class Behaviour {
     else this.armed = { emotion, intensity };
   }
 
+  /**
+   * A look at the work (W2-D #4): her eyes go to the tray or the board for `holdS`, then back to the child through the
+   * scheduler's normal return. Not in THINKING (her cognitive aversion owns the eyes then) and never while the child is
+   * talking (she listens with her eyes on them).
+   */
+  lookAt(yaw: number, pitch: number, holdS: number, reason = "work"): void {
+    if (this.state === "listening" || this.state === "thinking") return;
+    const t = this.t < 0 ? 0 : this.t;
+    this.gaze = { mode: "avert", yaw: clamp(yaw, -EYE_YAW_MAX - 15, EYE_YAW_MAX + 15), pitch: clamp(pitch, EYE_PITCH_DOWN, EYE_PITCH_UP), until: t + Math.max(0.3, Math.min(3, holdS)), reason: `look:${reason}` };
+    this.ev("gaze", `look:${reason}`);
+    this.nextAvert = Math.max(this.nextAvert, t + holdS + 1);
+  }
+
+  /**
+   * A voiced non-verbal from the framed TTS (AvatarVoiceEvent, HV-11): the body follows the sound she makes. breath →
+   * a small chin lift before the clause; laugh → a warm smile with one light nod; hum → a thinking glance. Never invents
+   * a sound: it only follows one the voice actually made (none ship while clips are off).
+   */
+  voiceEvent(kind: "laugh" | "breath" | "hum"): void {
+    if (kind === "breath") this.impulse(-1.2);
+    else if (kind === "laugh") {
+      this.emote("warm", 2);
+      this.impulse(2);
+    } else if (kind === "hum" && this.state !== "listening") this.avert("cognitive", 0.9);
+  }
+
   private emote(kind: Emotion, intensity: number): void {
     // Big-expression budget lives in the caller's gate (useDelight / ReactionGate); here: band scale + cap.
     this.emo = { kind, I: (Math.min(intensity, 3) / 3) * this.scale, t0: this.t, env: EMOTIONS[kind].env };

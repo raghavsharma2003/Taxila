@@ -53,7 +53,15 @@ export interface LessonApi {
   /** End that survives page unload; rejects if the browser refused to send it. */
   endBeacon?(lessonId: string): Promise<unknown>;
   realtimeToken(lessonId: string): Promise<RealtimeTokenResponse>;
+  /**
+   * W2-D #1: move a live realtime lesson to the cascade lane (POST /api/lesson/lane). Optional so test doubles and
+   * older wrappers stay valid; without it the runtime cannot switch and keeps today's behaviour.
+   */
+  switchLane?(lessonId: string, reason: LaneSwitchReason): Promise<{ mode: "cascade"; switched: boolean }>;
 }
+
+/** Why a lesson left the realtime lane (server/voice/realtimeSession.js SWITCH_REASONS). */
+export type LaneSwitchReason = "rate_limit" | "mint_refused" | "unavailable";
 
 export const httpLessonApi: LessonApi = {
   start: (req) => postJson("/api/lesson/start", req),
@@ -70,6 +78,7 @@ export const httpLessonApi: LessonApi = {
     });
   },
   realtimeToken: (lessonId) => postJson("/api/realtime/token", { lessonId }),
+  switchLane: (lessonId, reason) => postJson("/api/lesson/lane", { lessonId, to: "cascade", reason }),
 };
 
 /** Text-mode teacher voice: POST /api/tts → audio/mpeg of a stored teacher turn (the server picks the voice). */

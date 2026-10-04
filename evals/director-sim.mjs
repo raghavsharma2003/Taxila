@@ -16,8 +16,60 @@
 //       teacher's words since the previous item, checked against each newly posed item's key)
 // and exits non-zero if any check fails. The throwaway child is deleted whether the run passes, fails or
 // aborts (unless --keep). Costs real Azure tokens (≈30 small calls).
+//
+// W2-C additions:
+//   - every run reports childTalkShare and the conversation mix (director/talk.js; steal 10), and teaching turns per skill;
+//   - `--teach-turns` (offline, no network, no model): the guidance ladder's teaching turns per skill over every class 4-7
+//     kit for each guidance level vs the legacy novice boolean (BUILD-PLAN W2-C acceptance: + at most 1 at the median);
+//   - `--talk-baseline <file.json>`: compare this run's childTalkShare with a saved list (talk.js talkGate; a > 10% drop
+//     of the median fails the run). With n < 3 lessons the gate is "not decided", never a pass.
 import http from "http";
-import { readFileSync } from "fs";
+import { readFileSync, readdirSync } from "fs";
+
+if (process.argv.includes("--teach-turns")) {
+  const { normalizeKit } = await import("../server/content/kits.js");
+  const { initLessonState, step } = await import("../server/director/state.js");
+  const TEACH = new Set(["hook", "explain", "worked_example"]);
+  const kitsDir = new URL("../data/kits/", import.meta.url);
+  const levels = { fresh: { skills: {}, history: {} }, struggling: "s", strong: "g" };
+  const out = {};
+  const med = (xs) => { const v = [...xs].sort((a, b) => a - b); return v.length ? (v.length % 2 ? v[(v.length - 1) / 2] : (v[v.length / 2 - 1] + v[v.length / 2]) / 2) : null; };
+  for (const f of readdirSync(kitsDir).filter((n) => /^c[4-7]-[a-z]+\.json$/.test(n))) {
+    const d = JSON.parse(readFileSync(new URL(f, kitsDir), "utf8"));
+    for (const t of d.topics ?? []) {
+      const kit = normalizeKit(t, { topicId: t.topicId, verified: true });
+      if (!kit) continue;
+      const s1 = kit.skills[0].id;
+      for (const [label, spec] of Object.entries(levels)) {
+        const skills = spec === "s" ? { [s1]: { pKnown: 0.66, status: "practising", attempts: 4, correctUnaided: 0, generativePass: false } }
+          : spec === "g" ? { [s1]: { pKnown: 0.9, status: "mastered", attempts: 5, correctUnaided: 4, generativePass: true } } : {};
+        const history = spec === "s" ? { [s1]: ["incorrect", "incorrect", "incorrect"] } : spec === "g" ? { [s1]: ["correct", "correct", "correct"] } : {};
+        const ctx = { firstName: "Riya", teacherName: "Asha", protege: { name: "Bittu", what: "a puppy" }, ageBand: d.class <= 4 ? "6-9" : "10-15", lang: "hinglish",
+          interests: [], firstMeeting: false, hasCallback: false, topicTitle: "T", classLevel: d.class };
+        let r = step(initLessonState({ topicId: kit.topicId, kit, skills, history, ctx, seed: 1, now: 0 }), { event: "start", kit, now: 0 });
+        let teach = 0;
+        for (let i = 0; i < 10 && !r.move.itemId; i++) {
+          r = step(r.state, { event: "turn", kit, cls: { outcome: "no_evidence", confidence: 1, source: "sim", flags: {} }, text: "achha", now: (i + 1) * 20_000 });
+          if (TEACH.has(r.move.kind)) teach++;
+        }
+        if (r.move.itemId?.startsWith("fade:")) teach++;   // the faded step is still a supported (teaching) turn
+        // legacy: the novice boolean (any learned or pKnown ≥ 0.5 → attempt-first): hook + explain + min(2, steps) worked parts
+        const legacyNovice = !(spec === "g" || spec === "s");   // the struggling child's prior 0.66 read as knowledge: attempt-first
+        const legacy = legacyNovice ? 2 + Math.min(2, kit.workedExample?.steps.length ?? 0) : 1;
+        (out[label] ??= { now: [], legacy: [] }).now.push(teach);
+        out[label].legacy.push(legacy);
+      }
+    }
+  }
+  let ok = true;
+  for (const [label, v] of Object.entries(out)) {
+    const delta = med(v.now) - med(v.legacy);
+    console.log(`${label.padEnd(10)} n=${v.now.length} teaching turns per skill: median ${med(v.now)} (legacy ${med(v.legacy)}; Δ ${delta >= 0 ? "+" : ""}${delta})`);
+    if (label !== "struggling" && delta > 1) ok = false;   // the struggling child is MEANT to get more support than legacy's attempt-first
+  }
+  console.log(ok ? "PASS: teaching turns per skill rise by at most 1 at the median (struggling: support added on purpose)" : "FAIL: teaching turns rose by more than 1");
+  process.exit(ok ? 0 : 1);
+}
 
 const ROOT = new URL("..", import.meta.url).pathname;
 for (const line of readFileSync(ROOT + ".env.local", "utf8").split("\n")) {
@@ -177,6 +229,19 @@ try {
 
   const endR = await api("POST", "/api/lesson/end", { lessonId: start.lessonId });
   console.log(`summary: ${endR.summary}\nparent note: ${endR.parentNote}\nmemories saved: ${endR.memoriesSaved} · sessions: ${endR.sessions}`);
+  // W2-C #5: child talk share and teaching turns per skill (talk.js; a monitor)
+  const { talkReport, talkGate } = await import("../server/director/talk.js");
+  const talk = talkReport(history.map((h) => ({ speaker: h.who, text: h.text })));
+  const taught = new Set(moves.filter((mv) => mv.skillId).map((mv) => mv.skillId)).size || 1;
+  const teachTurns = moves.filter((mv) => ["hook", "explain", "worked_example", "reteach"].includes(mv.kind)).length;
+  console.log(`talk: childTalkShare ${talk.childTalkShare} (child ${talk.childWords} words / teacher ${talk.teacherWords}; ${talk.wordsPerTeacherTurn} words per teacher turn) · teaching turns per skill ${(teachTurns / taught).toFixed(1)}`);
+  const baseFile = arg("talk-baseline");
+  if (baseFile) {
+    const base = JSON.parse(readFileSync(baseFile, "utf8"));
+    const g = talkGate(base.childTalkShare ?? base, [talk.childTalkShare]);
+    console.log(`talk gate vs ${baseFile}: ${g.pass === null ? "not decided (too few lessons)" : g.pass ? "pass" : `FAIL (drop ${g.drop})`}`);
+    if (g.pass === false) fail(`childTalkShare fell ${g.drop} against the baseline (> 10%)`);
+  }
   const kinds = moves.reduce((acc, mv) => ({ ...acc, [mv.kind]: (acc[mv.kind] ?? 0) + 1 }), {});
   console.log(`moves: ${JSON.stringify(kinds)} · probes other than practice: ${probes} · misconception flagged: ${flagged}`);
 } catch (e) {

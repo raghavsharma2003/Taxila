@@ -46,9 +46,14 @@ test("server seams are no-ops until filled (studio, relational, expressive, purp
   assert.equal(lanes.settle({ quotaLane: "hot", deployment: "taxila-fast", kind: "chat", status: 200 }), undefined);
 
   const { realtimeSeam } = await import("../server/voice/realtimeSession.js");
+  // W2-D filled the realtime seam: the STT session is minted unchanged; the live-call session keeps its logprobs and gains
+  // truncation; only a quota refusal moves the lesson to cascade (tests/w2d-voice-lanes.test.mjs has the full contract)
   const session = { type: "realtime", model: "m", include: ["item.input_audio_transcription.logprobs"] };
-  assert.equal(realtimeSeam.shapeSession(session, { kind: "lesson" }), session, "the session is minted unchanged");
-  assert.equal(realtimeSeam.onMintError(new Error("429"), { kind: "lesson" }), null);
+  const stt = { type: "transcription", include: ["item.input_audio_transcription.logprobs"] };
+  assert.equal(realtimeSeam.shapeSession(stt, { kind: "stt" }), stt, "the STT session is minted unchanged");
+  assert.deepEqual(realtimeSeam.shapeSession(session, { kind: "lesson" }).include, session.include);
+  assert.equal(realtimeSeam.onMintError(new Error("bad request"), { kind: "lesson" }), null);
+  assert.deepEqual(realtimeSeam.onMintError(Object.assign(new Error("HTTP 429"), { status: 429 }), { kind: "lesson" }), { fallback: "cascade" });
 });
 
 test("server/learner/writer.js re-exports the relational writers (one import point)", async () => {

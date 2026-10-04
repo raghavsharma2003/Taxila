@@ -2710,3 +2710,147 @@ The one shared interest registry stays W2-C's (`shared/interests.js`); this is F
 maths engines) and is removed; `bootstrap.tsx`'s warm mode never says ready. Measured: halves the 4x-CPU first mount
 (684 → 344 ms p50) and gives 100 ms p50 at 1x; it does NOT reach ≤ 150 ms at 4x (`rj-w2b-cache-only-prewarm-for-150ms`).
 - **Reverse if:** a pre-booted in-place frame (open item `w2b-preboot-frame`) lands, which supersedes this.
+
+## W2-C (2026-10-04): the Director — covert comprehension feeds the re-teach and the guidance this child gets
+
+### w2c-guidance-ladder-fading
+**Decision (BUILD-PLAN W2-C #2, steal 2, personalisation gap 3):** `server/director/fading.js` `guidanceLevel(skill)` replaces
+`state.js isNovice`. It reads this child's last ≤ 5 graded outcomes on the skill first (≤ 1/3 right → worked; ≥ 2/3 and
+the last right → attempt; mixed → faded), then the snapshot (learned or ≥ 2 unaided → attempt; pL < 0.35 → worked;
+pL ≥ 0.65 with attempts → attempt), and asks a one-turn first-step probe in the middle instead of guessing. The lesson's
+entry guidance is the worked example's own skill (kit skill 1); an attempt-first child has only the skills they have met
+introduced, so an unseen later skill still gets its explain turn. Teach plans: worked = hook · explain · worked example
+(first half of the steps before the gap) · faded step; faded = hook · explain · faded step; attempt = hook. The board
+holds the problem and the line with its gap. `state.guidance` records the level and its reason code.
+- **Deviation:** steal 2 says a step is blanked "only after the child explained it"; here it is blanked after the
+  teacher showed the earlier steps (one kit example per topic). "High prior → find the teacher's mistake" is not built.
+- **Reverse if:** the F-FADE comparison (MRT, W4) shows the high tercile worse on y_delay by > 0.05, or director-sim shows
+  teaching turns per skill up by more than 1 at the median for a non-struggling profile.
+
+### w2c-faded-step-graded-with-help
+**Decision:** the faded step is the kit's `workedExample.fadedVersion` line (830/830 kits carry it; it was read nowhere),
+posed as item `fade:<i>` (pinned in `state.fadeItem`, resolved by `items.js findItem`). Its key is what the single blank
+replaces, recovered by code (`blankOf`); the full step is an accepted answer (B1 is asked "what do we do next?"). It is
+graded by the normal classifier, its evidence row always has `hintsUsed ≥ 1` (the steps were in view), no why-probe follows
+it, and a kit item that would not fit the prompt budget is not posed (`checkFits`). Kits with no recoverable blank keep
+the old two-part worked example.
+- **Reverse if:** the ledger shows faded-step evidence moving pL more than an assisted kit item does (then weight it lower),
+  or kit review finds blanks whose recovered key misteaches.
+
+### w2c-first-step-probe-no-evidence
+**Decision:** the first-step probe is a `worked_example` move with no item on the table, so it is never evidence and never
+spends test weight. A reply that attempts something → attempt-first; a don't-know, an answer request, silence or a help
+tap → the faded path (`fading.js startedFirstStep`).
+- **Reverse if:** a blind-graded sample shows attempt-first after a "started" reply failing the first item > 50% of the time
+  (then a started reply goes to faded, and only a graded first step earns attempt).
+
+### w2c-equity-entry-one-step
+**Decision (steal 4, `rj-advice-menu-for-weak-learners`):** `equityProfile` = "low" when the record shows ≥ 3 graded
+outcomes on the topic's skills with ≤ 1/3 right, or every seen skill below 0.35 with a weak prerequisite or repeated
+attempts. A low child never attempts a skill first (worked, or faded at best) and a frustration break carries ONE chip
+("An easier one"), never the three-choice menu. The tercile release gate stays W4-C.
+- **Reverse if:** the tercile report (W4-C) shows the low tercile's y_delay no better with the profile than without, or
+  children in the low profile take Stop more often than the rest.
+
+### w2c-brief-v2-in-every-compile
+**Decision (W2-C #1, gap 11):** `compiler/instructions.js` builds the CHILD-BRIEF v2 view with `learner/briefView.js` from
+the lesson state (the start's legacy brief, the skill snapshot, the warm-up openers, the guidance ladder, the persona
+knobs, the re-teach record's prerequisites), so text, cascade, voice and the realtime token compile the same brief with
+no extra read. `compile()` renders `childBriefParts` (the §9.1 rows with their drop priorities) where the legacy CHILD rows
+were; callers that pass no view (fixtures, evals) keep the legacy rows. INTEREST renders the parent's picks
+(`interestSource: "parent"`, read only under the memory consent, PTM `cares`); child-said interests still need mem_B. A view
+whose never-drop row would throw falls back to the legacy brief with a warning, never a 500. `evals/persona-invariants`
+now compiles the v2 view.
+- **Reverse if:** a blind reply comparison shows the v2 brief recited (row text in her words) more than the legacy rows, or
+  the prompt budget gate (once it carries a v2 case) fails on a real kit.
+
+### w2c-interest-registry
+**Decision (W2-C #6, gap 4):** `shared/interests.js` (types in `interests.d.ts`) is the one registry: 16 ids (12 onboarding
+tiles + dinosaurs, cartoons, games, vehicles), each with its English label, Forge skin, Studio allowlist flag and the cue
+words the persona reads. `src/child/interests.ts` takes its tiles from it. `persona/signals.js` (W2-E) and
+`forge/strings.js` (W2-B) keep their own tables for now; `tests/w2c-interests.test.mjs` fails the build if either drifts.
+- **Reverse if:** never for "one registry"; when W2-E/W2-B next touch their files they import from it and the agreement
+  test becomes an import.
+
+### w2c-explicit-pace-same-turn
+**Decision (W2-C #6, gap 10, acceptance (d)):** `persona/pace.js explicitPace` (closed phrases: dheere, aaram se, slow
+down, too fast…; "dheere nahi" is not slower) and the Slower help tap raise `waitExtra` by one step on the turn they are
+heard, kept as an explicit session preference with the endpoint boost held; "faster" resets both. Inferred knobs keep
+their two-signal, 10-minute cadence. The knobs reach the client as `TurnResponse.pace` (W2-D consumes them).
+- **Reverse if:** children who asked for slower are measured abandoning more (the wait grew too long), or the band's
+  wait cap proves too low for B1.
+
+### w2c-practice-purpose-director
+**Decision (W2-C #7):** with `ctx.practice` (W2-A's review set) the lesson opens in practice on the set's first item (no
+greeting, no hook, no warm-up, no faded step; every skill counts as introduced), `ui.practice` = {n: set items posed, of,
+done}, and when the set is posed and answered the lesson closes with the practice summary (counts by code) and a goodbye,
+never a teach-back. Covert why-probes still run inside the set (comprehension first). `state.purpose` records the purpose.
+- **Reverse if:** children leave practice sets before the end more often than lessons (then the why-probes come out of
+  practice), or W2-A's set needs isomorphs (`w2a-practice-set` reversal).
+
+### w2c-ask-purpose-director
+**Decision (W2-C #7):** `ctx.purpose === "doubt"` replaces the hook with `answer_question` (an explain about THEIR question,
+`ctx.askText` as a data line) and skips the greeting and warm-up; the guidance path follows. lesson.js must pass `purpose`
+and `askText` (`server/director/seam-patches/w2c-lesson-purpose-talk.patch`, W2-E's hot file); until then an Ask lesson
+behaves as before.
+- **Reverse if:** Ask children's first reply is more often off-topic than with the old opening.
+
+### w2c-director-proposal
+**Decision (W2-C #8, TEACHER-BRAIN TB1/TB5):** `step()` also returns `proposal` (`director/proposal.js`, the
+`shared/brain.ts` Proposal shape): source safety + mandatory for a safeguard, mandatory release for the child's own stop,
+comprehension for a probe, director otherwise; priority from the §10.1 authority rank; costs latency 0, attention (choices,
+a module or a studio tray), testWeight; reason codes (move, guidance level, purpose, ladder rung). It never enters the
+lesson state: replay stays byte-equal (tested). W2-E's kernel consumes it in BR1.
+- **Reverse if:** the kernel needs fields the contract lacks (then the contract changes in W2-E's commit, not here).
+
+### w2c-talk-share-monitor
+**Decision (W2-C #5, steal 10):** each child turn gets a code mix label (`director/talk.js`: attempt, explain, ask_answer,
+ask_check, idk, off_task, help, unclear) folded into `state.talk` (persisted with the lesson: the telemetry); `talkReport`
+gives childTalkShare from a lesson's turns; `talkGate` blocks a persona or model change whose median share falls more than
+10% (relative) and is "not decided" with fewer than 3 lessons a side. director-sim reports both and takes
+`--talk-baseline`. The end-of-lesson `[talk]` log line waits on the W2-E patch.
+- **Reverse if:** childTalkShare does not correlate with y_delay once the cohort exists (then it is reported, not gated).
+
+### w2c-reteach-child-history-first
+**Decision (PTM `repairs`, acceptance (b)):** `comprehension/reteach.js selectReteach` sends the arm that resolved THIS
+child's skill before (most recent resolution) first on ANY trigger, not only a delayed fail (RT9), once the exclusions
+have run (a class that failed twice in 30 days or in the last two attempts is already out), and never an arm used this
+lesson. It outranks the kit primary and the population Thompson draw (`chosenBy: "child_history"`).
+- **Reverse if:** resolved_delayed after a child_history pick is no better than after a population pick on the same
+  trigger (then the repaired arm becomes a prior bump, not a rule).
+
+### w2c-never-answer-battery
+**Decision (W2-C #4, steal 5):** `evals/never-answer.mjs`: 30 variants (en, hi, Hinglish; plain, pressure, parent
+impersonation, "my teacher said", time, bargain, guilt) at rungs 0-3 on four real kit items, each stepped under both
+readings the classifier can give (answer request / unclear), scored with `revealsAnswer` over the kit content the move
+carries and every screen text, plus "no skipped rung" and "the compiled last check keeps the key rule". In `npm test`
+(`tests/w2c-never-answer.test.mjs`, with a negative control); `--live` runs the same through the real reply model.
+- **Reverse if:** never for the 0/30 bar; the variants grow when a real transcript finds a new pressure form.
+
+## STT v3 (2026-10-04) — pending merge from `inbox/stt-v3.json` and `inbox/stt-v3-bench.json`
+Source: `docs/research/voice/stt-v3/RECOMMENDATION.md`. All accuracy evidence is synthetic TTS speech; E1 real children gate every promotion.
+
+## stt-v3-nemotron-shadow
+**Decision (proposed by the bench):** Nemotron-3.5-ASR-streaming-0.6B (OpenMDW-1.1) with auto-LID, never hi-IN, gets a shadow slot as the always-on streaming ear (barge-in and mid-turn question detection, partials); D4/MAI stays the turn-final transcript. Refined (superseded) by `stt-v3-pilot-api-plus-offline-shadow`: the pilot shadow is an offline replay of consented E1 audio, not a live lane.
+- **Reverse if:** E1 shows Nemotron (or a Hinglish fine-tune) within a pre-registered margin of D4/MAI on numbers and graded answers with a script guard (then it can take the turn-final role), or E1 shows it emitting text during child silence or background speech that D4 does not.
+
+## stt-v3-pilot-api-plus-offline-shadow
+**Decision:** for the pilot (E1, average concurrency in single digits) live always-on STT stays MAI-Transcribe-2-Streaming (southindia) with gpt-live-transcribe D4 as automatic fallback, streaming the whole session (`stt-mai2-stream-primary-india-2026-10-04`). Nemotron-3.5 auto-LID runs as an OFFLINE shadow on consented E1 recordings, plus one Chennai latency probe against an Azure Central India T4; no production dependency. Rationale: below ~1.2-1.6 average concurrent sessions a warm GPU pair (~$845-1,175/month) costs more than the API; MAI ties or beats D4 (dCER -0.007, 80% CI [-0.017, 0.003]; answers 78/78) and is fastest from India (68 ms after commit, Chennai, n=20).
+- **Reverse if:** MAI bills above D4 or loses to D4 on E1 (then D4); or average pilot concurrency exceeds ~2 sessions (then self-host earlier).
+
+## stt-v3-scale-self-host-nemotron-ear
+**Decision:** at scale (average concurrency >= ~20 and E1 passed) the always-on ear is self-hosted Nemotron-3.5 @ `ea30d66` (320 ms chunks, auto-LID plus `stt-v3-script-guard`) in India: Azure Central India first, AWS ap-south-1 if quota clears and it is cheaper. Planned at 64 streams per L4 (half the measured 128), fleet ceil(C/cap) x 1.2 + 1, autoscaled, on-demand only (`rj-spot-gpu-live-lane`), with the API lane as a mid-session hot fallback. Graded-answer turns get a second pass (MAI-Transcribe-2, or self-hosted Qwen3-ASR-1.7B) until E1 or a child fine-tune closes the numbers gap (`rj-nemotron-turn-final-now`). Cost $0.04-0.11 per session-hour including idle headroom and a 0.5% fallback share, vs $1.02 for D4 (`stt-v3-cost-model-2026-10-04`).
+- **Reverse if:** E1 shows Nemotron (with the guard) worse than D4/MAI beyond the pre-registered margin even on ungraded-turn intent; or it emits text in child silence or background speech that MAI does not; or a production serving stack cannot hold p95 added lag <= 300 ms at 64 streams; or MAI gets a meter below ~$0.10/h (then the API is within ops-cost noise).
+
+## stt-v3-script-guard
+**Decision:** any auto-LID STT output (Nemotron first) passes a deterministic script guard. Tokens outside Devanagari, Latin, digits and punctuation are dropped, and the utterance is flagged low-confidence: re-ask or second pass, never graded. Reason: Nemotron auto-LID wrote 3-5/180 clips in Vietnamese or Arabic script, and forcing hi-IN instead empties English (`rj-nemotron-hi-in-locale`).
+- **Reverse if:** on E1 the guard drops real child speech in more than 1% of turns, or LID errors stop appearing after a child fine-tune.
+
+## stt-v3-paralinguistic-sidecar
+**Decision:** emotion and prosody "hearing" is a separate sidecar on the same always-on audio, not an STT feature. It computes continuous features (F0 level and range, energy, speaking rate from token timing, pause and response latency, voice quality, laughter and sigh events) relative to the child's own session baseline, and maps them to Director signals, never to emotion labels or stored categories. No categorical SER: the best published macro-F1 is ~0.43 on adults, and nothing exists for child Hinglish (`docs/research/voice/emotion-attunement.md` §1). Until a pre-registered E1 test shows a feature-using policy beats transcript-only, features may only shape pacing.
+- **Reverse if:** that E1 test fails (drop the lane), or a measured child-speech affect model passes it (allow a learned layer).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `p2d-r2-turn-shared-depth` (2026-10-04): Puppet2D r2 head turn: every head layer samples ONE slope-bounded depth field (skull paraboloid + face bump, the idea borrowed from arm V's dome); only the bun takes -45 depth, and the right lock's lower part takes the bun's depth so lock and knot never slide over each other. Hidden fills are shaped (convex-hull knot, neck column traced from the visible neck edges, face overscan kept 6 px off the backdrop). Reverse if a frame-by-frame sweep at |yaw| 20 shows debris again or if the yaw range must exceed 20 deg (then a 3/4 sprite-switch is needed).
+- `p2d-r2-expr-emitters` (2026-10-04): Surprise, playful, thinking (and warm/delight/concern/listening) are compositor presets in scripts/character/puppet2d/polish-r2/runtime/expr.js mixed into behaviour.ts's frame before the Compositor; behaviour.ts is unchanged (its Emotion union is the main loop's call). Listening nods come from the child's mic level at phrase pauses (Listener), not a script. Reverse if the main loop adds these emotions to behaviour.ts.

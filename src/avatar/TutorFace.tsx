@@ -23,6 +23,7 @@ import type { BandKey, Emotion, FloorStatus } from "./behaviour.ts";
 import { Plate2D } from "./Plate2D.tsx";
 import { PlatePerson } from "./PlatePerson.tsx";
 import { faceRigEnabled } from "./flags.ts";
+import { faceAffectOf, faceCues, gazeAngles, GAZE_SELECTOR, type FaceCue } from "./faceCues.ts";
 import { lookFor } from "./looks.ts";
 import type { TapSource } from "./tap.ts";
 import { detectStaticFacts, staticTier, tierOverride, type FaceTier, type TierDecision } from "./tier.ts";
@@ -137,6 +138,37 @@ export function TutorFace(p: TutorFaceProps) {
   const onEvent = useRef(p.onEvent);
   onEvent.current = p.onEvent;
   const [face, setFace] = useState<"plate" | "rig">("plate");
+  // W2-D #4: an affect or a look that arrives before the 3D stage exists (chunk loading, GLB waiting for idle) is queued
+  // (the newest of each) and played the moment the stage is up, instead of being dropped.
+  const pending = useRef<{ affect: { emotion: Emotion; intensity: 1 | 2 } | null; gaze: Extract<FaceCue, { kind: "gaze" }> | null }>({ affect: null, gaze: null });
+  const playCue = useRef<(cue: FaceCue) => void>(() => {});
+  const arm = (a: { emotion: Emotion; intensity: 1 | 2 }) => {
+    if (stage.current) stage.current.arm(a.emotion, a.intensity);
+    else pending.current.affect = a;
+  };
+  playCue.current = (cue: FaceCue) => {
+    const s = stage.current;
+    if (cue.kind === "affect") {
+      const a = faceAffectOf(cue.display, String(p.band)); // RELATIONAL-OS §7.2, stepped down by THIS face's band
+      if (a) arm(a);
+    } else if (cue.kind === "gaze") {
+      if (!s) {
+        pending.current.gaze = cue;
+        return;
+      }
+      if (cue.target === "child" || !host.current || typeof document === "undefined") return;
+      const el = document.querySelector(GAZE_SELECTOR[cue.target]);
+      if (!el) return;
+      const a = host.current.getBoundingClientRect(), b = el.getBoundingClientRect();
+      if (!a.width || !b.width) return;
+      const [yaw, pitch] = gazeAngles({ x: a.left, y: a.top, w: a.width, h: a.height }, { x: b.left, y: b.top, w: b.width, h: b.height });
+      s.lookAt(yaw, pitch, cue.holdMs / 1000, cue.reason);
+    } else if (cue.kind === "voice" && s) {
+      const kind = cue.event.kind;
+      window.setTimeout(() => stage.current?.voiceEvent(kind), Math.max(0, Math.min(10_000, cue.event.atMs)));
+    }
+  };
+  useEffect(() => faceCues.on((cue) => playCue.current(cue)), []);
 
   const srcKey = sourcesKey(p.teacher);
   const sources = useMemo(() => p.teacher, [srcKey]); // the key IS the dependency
@@ -177,6 +209,11 @@ export function TutorFace(p: TutorFaceProps) {
         s.set({ status: live.current.status, reducedMotion: live.current.reducedMotion, gentle: live.current.gentle });
         stage.current = s;
         s.start();
+        // Queued before the stage loaded: the affect arms for her next onset; a look still pending plays now.
+        const q = pending.current;
+        pending.current = { affect: null, gaze: null };
+        if (q.affect) s.arm(q.affect.emotion, q.affect.intensity);
+        if (q.gaze) playCue.current(q.gaze);
         // child mic level → stage, a few times a second (no React render per frame)
         mic = window.setInterval(() => s.set({ childLevel: live.current.mic?.value ?? 0 }), 100);
         if (look) s.init().catch((err: unknown) => fail(`rig load failed: ${String(err)}`));
@@ -203,7 +240,7 @@ export function TutorFace(p: TutorFaceProps) {
   }, [p.status, p.reducedMotion, p.gentle]);
 
   useEffect(() => {
-    if (p.affect) stage.current?.arm(p.affect, 1);
+    if (p.affect) arm({ emotion: p.affect, intensity: 1 });
   }, [p.affect]);
 
   const cls = `tx-tutorface ${p.className ?? ""}`;

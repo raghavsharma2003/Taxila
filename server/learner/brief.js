@@ -167,7 +167,9 @@ const FADE_WORDS = { 5: "model", 4: "share", 3: "guide", 2: "on-call", 1: "solo"
  * permits the mem_B layer. A view without a mode is the launch default (M1, no P3): no interests.
  * @param {import("../../shared/learner").BriefView} v
  */
-const interestsAllowed = (v) => canWrite({ legal_mode: v.mode?.legalMode ?? DEFAULT_MODE, consent: v.mode?.consent ?? {} }, "mem_B");
+const interestsAllowed = (v) => v.interestSource === "parent"
+  // the parent's onboarding picks, read at lesson start only under the memory consent (PTM `cares`: parent tiles are M1)
+  || canWrite({ legal_mode: v.mode?.legalMode ?? DEFAULT_MODE, consent: v.mode?.consent ?? {} }, "mem_B");
 
 /**
  * The rows, in §9.1 order, from a BriefView (shared/learner.ts). Pure.
@@ -213,6 +215,15 @@ export function fitByDropOrder(rows, cap = BRIEF_TOKEN_CAP, header = "CHILD-BRIE
     kept = kept.filter((r) => r !== victim);
   }
   return kept;
+}
+
+/**
+ * The v2 rows as compile() parts (W2-C #1): the header, then each row with its drop priority, so the compiler's own
+ * section cap and budget shed them in the §9.1 order. Rows are pre-fitted to `cap` (never-drop rows over it throw).
+ * @returns {{ text: string, drop: number | null, id?: string }[]}
+ */
+export function childBriefParts(v, cap = BRIEF_TOKEN_CAP) {
+  return [{ text: "CHILD-BRIEF", drop: null }, ...fitByDropOrder(childBriefRows(v), cap).map((r) => ({ id: r.key, text: r.text, drop: r.drop }))];
 }
 
 /** The rendered CHILD-BRIEF block (≤ BRIEF_TOKEN_CAP by construction). */

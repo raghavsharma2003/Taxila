@@ -120,12 +120,15 @@ export class Listener {
   update(t, dt, listening, level) {
     const on = listening && level > 0.12;
     if (on) { this.voicedFor += dt; this.quietFor = 0; } else { this.quietFor += dt; }
-    if (listening && !on && this.voicedFor >= 0.6 && this.quietFor > 0.18 && this.quietFor < 0.45 && t - this.lastNod > 1.6) {
-      const deep = this.n % 3 === 1;
-      this.s.v += (deep ? 5.5 : 3.5) / 0.0468;    // impulse sized for a 3.5-5.5 deg peak (analytic peak/v of this spring)
+    const nod = (deg, kind) => {
+      this.s.v += deg / 0.0468;    // impulse sized for the asked-for peak (analytic peak per unit v of this spring)
       this.lastNod = t; this.n++; this.voicedFor = 0;
-      this.nods.push(+t.toFixed(2));
-    }
+      this.nods.push([+t.toFixed(2), kind]);
+    };
+    // phrase-final pause after >= 0.35 s of speech: a full backchannel nod (alternating small / deeper)
+    if (listening && !on && this.voicedFor >= 0.3 && this.quietFor > 0.12 && this.quietFor < 0.45 && t - this.lastNod > 1.0) nod(this.n % 3 === 1 ? 5.5 : 3.5, "pause");
+    // a long unbroken turn still gets small "continuer" nods (~every 1.8 s), as listeners do
+    else if (listening && on && this.voicedFor > 1.8 && t - this.lastNod > 1.8) nod(2, "continuer");
     if (!listening) this.voicedFor = 0;
     let left = dt;
     while (left > 1e-6) { const h = Math.min(0.004, left); this.s.v += (-110 * this.s.x - 2 * 0.62 * Math.sqrt(110) * this.s.v) * h; this.s.x += this.s.v * h; left -= h; }

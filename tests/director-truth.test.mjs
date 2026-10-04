@@ -27,7 +27,8 @@ function toItem(k, ctx = {}, first) {
   const s0 = initLessonState({ topicId: k.topicId, kit: k, ctx: { ...CTX, ...ctx }, seed: 7, now: 0 });
   if (first) s0.queue = [first, ...s0.queue.filter((x) => x !== first)];
   let r = step(s0, { event: "start", kit: k, now: 0 });
-  for (let i = 0; i < 20 && !(r.state.phase === "practice" && r.move.itemId); i++) r = turn(r, k, NE);
+  // past the guidance ladder's faded worked-example step (W2-C, director/fading.js): these cases are about kit items
+  for (let i = 0; i < 20 && !(r.state.phase === "practice" && r.move.itemId && !r.move.itemId.startsWith("fade:")); i++) r = turn(r, k, NE);
   return r;
 }
 const turn = (r, k, c, extra = {}) => step(r.state, { event: "turn", kit: k, cls: c, now: (r.state.turn + 1) * 20_000, ...extra });

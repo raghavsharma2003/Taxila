@@ -31,6 +31,10 @@ import {
   reteachSessionInputs, noteReteach,
 } from "../comprehension/index.js";
 import { skillSess } from "../comprehension/budget.js";
+import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, workedLeadContent, fadeBoard, startedFirstStep, FADE_PREFIX } from "./fading.js";
+import { newTalk, noteChildTurn } from "./talk.js";
+import { explicitPace } from "../persona/pace.js";
+import { directorProposal } from "./proposal.js";
 
 /**
  * Probe shapes the live lane can pose AND grade today: the why-class shapes (probe.why, R-EXP against the kit's key
@@ -76,10 +80,12 @@ export const snapshotSkill = (st) => ({
   pKnown: st.pKnown, status: st.status, attempts: st.attempts, correctUnaided: st.correctUnaided, generativePass: st.generativePass,
 });
 
-/** Expertise reversal (rule 16): novices get a worked example; anyone with a learned skill attempts first. */
-function isNovice(kit, skills) {
-  return !kit.skills.map((sk) => skills[sk.id]).filter(Boolean).some((st) => LEARNED.has(st.status) || st.pKnown >= 0.5);
-}
+/**
+ * Expertise reversal (rule 16) is now the guidance ladder (director/fading.js, W2-C #2): the entry level of the first
+ * skill this child has not made solid, read from their outcomes first and the knowledge estimate second. The old
+ * boolean (`!some(learned || pKnown >= 0.5)`) read a class-level prior as knowledge and sent a child with no right
+ * answers attempt-first in lesson 2 (personalisation audit §2.4).
+ */
 
 /**
  * @param {{ topicId: string, kit: any, skills?: Record<string, any>, history?: Record<string, string[]>,
@@ -88,24 +94,47 @@ function isNovice(kit, skills) {
  *   firstMeeting: boolean, hasCallback: boolean, topicTitle: string, nextTitle?: string }, seed: number, now?: number }} a
  */
 export function initLessonState({ topicId, kit, skills = {}, history = {}, warmupItems = [], activeMisconceptionIds = [], ctx, seed, now = Date.now(), openers = [], comp }) {
-  const novice = isNovice(kit, skills);
   const classLevel = ctx.classLevel ?? (ctx.ageBand === "6-9" ? 3 : 6);
   const band = bandOf(classLevel);
+  const snaps = Object.fromEntries(Object.entries(skills).map(([id, st]) => [id, snapshotSkill(st)]));
+  // W2-C #3 (steal 4): a low-baseline child gets the worked example first and one next step, never a menu.
+  const equity = equityProfile({ kit, skills: snaps, history, reteach: ctx.reteach });
+  // W2-C #2: the guidance ladder (worked · faded · attempt, or a first-step probe when the record cannot tell).
+  const guide = lessonGuidance({ kit, skills: snaps, history, lowBaseline: equity === "low" });
+  const fade = fadeItem(kit, { band });
+  // W2-C #7: the practice purpose (a review set, ctx.practice from server/lesson/purpose.js) and the Ask purpose
+  // (ctx.purpose "doubt"): no greeting and no hook.
+  const practiceIds = (ctx.practice?.itemIds ?? []).filter((id) => kit.items.some((i) => i.id === id && i.kind !== "teachback"));
+  const practiceSet = practiceIds.length ? practiceIds : null;
+  const asking = ctx.purpose === "doubt";
+  let teachPlan = teachPlanFor(guide.level).filter((x) => x !== "fade" || !!fade);
+  // A faded entry whose kit has no recoverable blank keeps a worked example (never an explain with nothing to try).
+  if (guide.level === "faded" && !fade) teachPlan = ["hook", "explain", "worked_example"];
+  if (asking) teachPlan = ["answer_question", ...teachPlan.filter((x) => x !== "hook")];
+  const novice = guide.level !== "attempt";
   // The probe session (COMPREHENSION-ENGINE.md §3.4): test-load budget, spacing, novelty and the mandatory triggers;
   // openers (delayed checks due at session open) are its first pending triggers.
   const probeSess = openSession(newProbeSession({ sessionId: ctx.sessionId ?? String(seed >>> 0), band, lessonSeed: seed >>> 0,
     targets: kit.skills.map((sk) => sk.id), surface: { visual: true } }), openers);
   return {
-    v: 1, phase: "warmup", topicId, turn: 0, minutes: 0, startedAt: now, seed: seed >>> 0, ctx,
+    v: 1, phase: practiceSet ? "practice" : asking ? "teach" : "warmup", topicId, turn: 0, minutes: 0, startedAt: now, seed: seed >>> 0, ctx,
     hintLevel: 0, itemsDone: [], skipped: [], activeItemId: undefined, pendingWhy: undefined, lastMove: undefined, lastContent: [],
-    warmup: warmupItems.slice(0, LIMITS.warmupMax), warmupIdx: 0,
-    novice, teachPlan: novice ? ["hook", "explain", "worked_example"] : ["hook"], teachIdx: 0, workedPart: 0,
-    queue: buildPracticeQueue(kit, { activeMisconceptionIds }),
+    warmup: practiceSet || asking ? [] : warmupItems.slice(0, LIMITS.warmupMax), warmupIdx: 0,
+    novice, teachPlan: practiceSet ? [] : teachPlan, teachIdx: 0, workedPart: 0,
+    // The guidance ladder's state (fading.js): the entry level and why, the planned faded step (an item, resolved by
+    // items.js findItem as `fade:<i>`), and the first-step probe's outcome once asked.
+    guidance: { level: guide.level, reason: guide.reason, skillId: guide.skillId }, equity, fadeItem: fade ?? undefined, firstStep: undefined,
+    purpose: practiceSet ? "practice" : asking ? "doubt" : "lesson",
+    practiceSet: practiceSet ? { ids: practiceSet, of: Math.min(practiceSet.length, ctx.practice?.count ?? practiceSet.length), posed: [], firstTry: 0 } : undefined,
+    talk: newTalk(),
+    queue: practiceSet ?? buildPracticeQueue(kit, { activeMisconceptionIds }),
     // Experienced learners attempt before any explanation, so their skills count as introduced.
-    introduced: novice ? [] : kit.skills.map((sk) => sk.id),
+    // Attempt-first learners have the skills they have met introduced; a skill they have never met still gets one short
+    // explain turn before its first item (poseNext). A practice set is retrieval: every skill counts as introduced.
+    introduced: practiceSet ? kit.skills.map((sk) => sk.id) : novice ? [] : kit.skills.map((sk) => sk.id).filter((id) => snaps[id]),
     retaught: [], changedApproach: [], flagged: {}, misCorrect: {},
     nextItemId: undefined, verify: undefined, tries: 0, unclear: 0, practiced: 0, easier: false,
-    skills: Object.fromEntries(Object.entries(skills).map(([id, st]) => [id, snapshotSkill(st)])), history,
+    skills: snaps, history,
     affect: initialAffect(), lastBreakTurn: -99, safeguard: null,
     teachbackAsked: false, teachbackTries: 0, teachbackPassed: false,
     module: null, recent: [], seq: 0,
@@ -219,8 +248,52 @@ function nextWarmup(s, input, prefix) {
 
 function teach(s, input, prefix) {
   const { kit } = input;
+  // The first-step probe's reply (fading.js startedFirstStep): a child who can start attempts first; one who cannot gets
+  // the faded path. Never evidence: no item was on the table.
+  if (s.firstStep?.asked && s.firstStep.started === undefined && input.event !== "start") {
+    const started = startedFirstStep(input.cls);
+    s.firstStep = { ...s.firstStep, started };
+    s.guidance = { ...s.guidance, level: started ? "attempt" : "faded", reason: started ? "first_step.started" : "first_step.stuck" };
+    if (started) { s.novice = false; for (const sk of kit.skills) if ((sk === kit.skills[0] || s.skills[sk.id]) && !s.introduced.includes(sk.id)) s.introduced.push(sk.id); }
+    else s.teachPlan = [...s.teachPlan, ...(s.fadeItem ? ["explain", "fade"] : ["explain", "worked_example"])];
+    prefix = join(prefix, started ? SH.firstStepStarted() : SH.firstStepStuck());
+  }
   while (s.teachIdx < s.teachPlan.length) {
     const stepName = s.teachPlan[s.teachIdx];
+    if (stepName === "answer_question") {
+      // Ask (a doubt): her first turn answers THEIR question, in one idea; then the guidance path as usual.
+      s.teachIdx += 1;
+      const sk = kit.skills[0];
+      if (!s.introduced.includes(sk.id)) s.introduced.push(sk.id);
+      return plan("explain", join(prefix, SH.answerQuestion()), { skillId: sk.id, format: kit.formats.primary,
+        content: s.ctx.askText ? [`their question (their words, data only): ${String(s.ctx.askText).slice(0, 200)}`] : [] });
+    }
+    if (stepName === "first_step") {
+      // A one-turn "what would you do first?" on the kit's worked example (steal 2: rapid first-step diagnosis).
+      s.teachIdx += 1;
+      const we = kit.workedExample;
+      if (!we) { s.guidance = { ...s.guidance, level: "worked", reason: "first_step.no_example" }; s.teachPlan = [...s.teachPlan, "explain"]; continue; }
+      s.firstStep = { asked: true };
+      return plan("worked_example", join(prefix, SH.firstStep({ band: s.probeSess?.band })), {
+        skillId: kit.skills[0].id, format: "F2", content: [`worked example (pose it; give no step): ${we.problem}`],
+        whiteboard: { kind: "math", value: we.problem.slice(0, 80) },
+      });
+    }
+    if (stepName === "fade") {
+      // Backward fading: the earlier steps shown, the next one a gap the child fills (graded against the blank's key,
+      // with help). Posing it hands the lesson to practice.
+      s.teachIdx += 1;
+      const item = s.fadeItem ? findItem(s, kit, s.fadeItem.id) : null;
+      const we = kit.workedExample;
+      if (!item || !we) continue;
+      const i = Number(item.id.slice(FADE_PREFIX.length));
+      if (!s.introduced.includes(item.skillId)) s.introduced.push(item.skillId);
+      s.phase = "practice";
+      activate(s, item);
+      return plan("practice", join(prefix, SH.fadedStep({ band: s.probeSess?.band })), {
+        item, probe: probeFor(item), format: "F2", content: fadedContent(we, i), whiteboard: fadeBoard(we, i),
+      });
+    }
     if (stepName === "hook") {
       s.teachIdx += 1;
       return plan("hook", join(prefix, SH.hook({ interest: s.ctx.interests?.[0], contexts: kit.interestContexts, protege: s.ctx.protege })), { format: "F4" });
@@ -233,9 +306,18 @@ function teach(s, input, prefix) {
       // (G-OBJ-1; audit #6, the "Read and write 5- and 6-digit numbers…" ledge chip).
       return plan("explain", SH.explain({ skillTitle: sk.title, prefix, interest: s.ctx.interests?.[1] ?? s.ctx.interests?.[0] }), { skillId: sk.id, format: kit.formats.primary });
     }
-    // worked_example — spread over at most LIMITS.workedParts turns, one step handed to the child each time
+    // worked_example — spread over at most LIMITS.workedParts turns, one step handed to the child each time. With a
+    // faded step planned next, ONE part: the first steps before the gap (the faded step is the second part), so the gap's
+    // key is never said before it is posed.
     const we = kit.workedExample;
     if (!we) { s.teachIdx += 1; continue; }
+    if (s.teachPlan[s.teachIdx + 1] === "fade" && s.fadeItem) {
+      s.teachIdx += 1;
+      const i = Number(s.fadeItem.id.slice(FADE_PREFIX.length));
+      return plan("worked_example", join(prefix, SH.worked({ part: 1, parts: 2 })), {
+        skillId: kit.skills[0].id, format: "F2", content: workedLeadContent(we, i), whiteboard: { kind: "math", value: we.problem.slice(0, 80) },
+      });
+    }
     const parts = Math.min(LIMITS.workedParts, we.steps.length);
     s.workedPart += 1;
     if (s.workedPart >= parts) s.teachIdx += 1;
@@ -248,6 +330,8 @@ function teach(s, input, prefix) {
 }
 
 function leavePractice(s, kit) {
+  // A practice set (W2-C #7) ends when its items have all been posed (or nothing is left to pose).
+  if (s.practiceSet) return s.practiceSet.posed.length >= s.practiceSet.of;
   const allUnaided = kit.skills.every((sk) => (s.skills[sk.id]?.correctUnaided ?? 0) >= 1);
   return s.practiced >= LIMITS.practiceMax || (s.practiced >= LIMITS.practiceMin && allUnaided) || s.minutes >= LIMITS.minutes[s.ctx.ageBand];
 }
@@ -255,14 +339,14 @@ function leavePractice(s, kit) {
 function poseNext(s, input, prefix, preferred) {
   const { kit } = input;
   s.activeItemId = undefined; s.hintLevel = 0; s.pendingWhy = undefined;
-  if (leavePractice(s, kit)) return enterTeachback(s, prefix);
+  if (leavePractice(s, kit)) return s.practiceSet ? practiceDone(s, prefix) : enterTeachback(s, prefix);
   const skipped = new Set(s.skipped);
   const queued = s.nextItemId && !skipped.has(s.nextItemId) ? findItem(s, kit, s.nextItemId) : null;
   const verifying = s.verify && !skipped.has(`diag:${s.verify}`) ? findItem(s, kit, `diag:${s.verify}`) : null;
   const item = preferred ?? verifying ?? queued ?? selectNext(s, kit, { easier: s.easier });
   if (verifying && queued) s.queue = [queued.id, ...s.queue.filter((id) => id !== queued.id)];
   s.nextItemId = undefined; s.easier = false; s.verify = undefined;
-  if (!item) return enterTeachback(s, prefix);
+  if (!item) return s.practiceSet ? practiceDone(s, prefix) : enterTeachback(s, prefix);
   // A skill nobody has explained yet gets one short explain turn first (novices; experienced attempt first).
   if (!s.introduced.includes(item.skillId)) {
     s.introduced.push(item.skillId); s.nextItemId = item.id;
@@ -271,6 +355,11 @@ function poseNext(s, input, prefix, preferred) {
   }
   activate(s, item);
   const attemptFirst = !s.novice && s.practiced === 0;
+  if (s.practiceSet && !s.practiceSet.posed.includes(item.id) && s.practiceSet.posed.length < s.practiceSet.of) {
+    s.practiceSet = { ...s.practiceSet, posed: [...s.practiceSet.posed, item.id] };
+    // the first item of a practice set opens the lesson: no greeting, no hook (W2-C #7)
+    if (input.event === "start") prefix = join(prefix, SH.practiceOpen({ of: s.practiceSet.of }));
+  }
   return plan(moveKindFor(item), SH.pose({ item, prefix, verify: !preferred && item === verifying }), {
     item, probe: probeFor(item), format: attemptFirst ? "F8" : undefined, chips: optionChips(item),
   });
@@ -307,6 +396,9 @@ function afterCorrect(s, input, item) {
   const { kit, cls } = input;
   const unaided = s.hintLevel === 0;
   s.itemsDone.push(item.id); s.practiced += 1;
+  if (s.practiceSet && unaided && s.practiceSet.posed.includes(item.id)) s.practiceSet = { ...s.practiceSet, firstTry: s.practiceSet.firstTry + 1 };
+  // A faded step was completed WITH the worked steps in view: no why on it; practice proper starts.
+  if (item.fade) return poseNext(s, input, SH.CONFIRM.correct);
   // A reason volunteered with the answer already is the "why" — asking again would be robotic.
   if (unaided && cls?.reason === "misconception") {
     const p = trap(s, kit, item, cls.reasonMisconceptionId);
@@ -524,6 +616,15 @@ function decideAs(s, input, item, _v) {
   return s.phase === "warmup" ? warmup(s, next, item) : practice(s, next, item);
 }
 
+/** The end of a practice set: no teach-back; the practice summary (code counts) and goodbye (W2-C #7, "That's the set"). */
+function practiceDone(s, prefix) {
+  const ps = s.practiceSet;
+  s.phase = "done"; s.activeItemId = undefined; s.pendingWhy = undefined; s.hintLevel = 0;
+  return plan("wrap", join(prefix, SH.practiceSummary()), {
+    content: [`practice set: ${ps.posed.length} questions; right first time: ${ps.firstTry}`], practiceDone: true,
+  });
+}
+
 function enterTeachback(s, prefix) {
   s.phase = "teachback"; s.teachbackAsked = true; s.activeItemId = undefined; s.hintLevel = 0;
   // The lesson's teach-back IS shape C01 (announced protégé teach-back): its answer is a probe turn in the budget.
@@ -544,7 +645,7 @@ function teachback(s, input) {
 
 function toWrap(s, { prefix, stopping = false }) {
   s.phase = "done"; s.activeItemId = undefined; s.pendingWhy = undefined; s.hintLevel = 0;
-  return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }));
+  return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), stopping ? { stopping: true } : {});
 }
 
 // ───────────────────────────── step ─────────────────────────────
@@ -589,6 +690,8 @@ function decide(s, input, item) {
   if (frustrationLoop(s.affect) && ["warmup", "practice"].includes(s.phase) && s.turn - s.lastBreakTurn >= LIMITS.breakGapTurns) {
     s.lastBreakTurn = s.turn;
     s.affect = { ...s.affect, dontKnowStreak: 0, minimalStreak: 0 };
+    // Equity profile (steal 4, rj-advice-menu-for-weak-learners): a low-baseline child gets ONE next step, never a menu.
+    if (s.equity === "low" && s.phase === "practice") return plan("break", SH.takeBreakOneStep(), { chips: [{ id: "break:easier", label: labels.easier }] });
     return plan("break", SH.takeBreak(), { chips: [{ id: "break:easier", label: labels.easier }, { id: "break:rest", label: labels.rest }, { id: "break:continue", label: labels.go }] });
   }
   switch (s.phase) {
@@ -654,14 +757,23 @@ export function step(prev, input) {
     s.probeSess = { ...s.probeSess, engagement: frustrationLoop(s.affect) ? "strained" : "ok", safetyFired: !!(s.safeguard || input.cls?.flags?.distress) };
     s.pendingProbe = undefined;
   }
+  if (input.event === "turn" && !input.branch) {
+    // Conversation mix and child talk share (talk.js, W2-C #5): a monitor on the child's turn, never evidence.
+    s.talk = noteChildTurn(s.talk, { cls: input.cls, text: input.text ?? input.answer ?? "",
+      explaining: !!(active && s.pendingWhy === active.id) || (s.phase === "teachback" && s.teachbackAsked) });
+  }
   if (input.event === "turn" && s.persona) {
     const v = verdict(input.cls);
     s.turnsSinceError = v === "wrong" ? 0 : (s.turnsSinceError ?? 99) + 1;
     // Vibe signals (persona/signals.js): what the child said and did, plus the voice PACE signals only (slowerPace,
-    // onset z on a think question). Pace knobs, never a belief (CE8).
-    s.persona = personaStep(s.persona, turnSignals({ text: input.text ?? input.answer ?? "", bargeIn: !!input.bargeIn,
+    // onset z on a think question). Pace knobs, never a belief (CE8). An explicit pace request ("dheere", the Slower
+    // help) applies the same turn (persona/pace.js, W2-C #6).
+    const childWords = input.text ?? input.answer ?? "";
+    const pace = explicitPace(childWords);
+    if (input.cls?.help === "slower") pace.explicitSlower = true;
+    s.persona = personaStep(s.persona, { ...turnSignals({ text: childWords, bargeIn: !!input.bargeIn,
       afterError: s.lastMove?.kind === "hint", retried: v !== "unclear", onsetZ: input.voiceZ?.onsetMs ?? null,
-      slowerPace: !!input.voice?.slowerPace, thinkQuestion: !!s.pendingWhy }), { minute: s.minutes });
+      slowerPace: !!input.voice?.slowerPace, thinkQuestion: !!s.pendingWhy }), ...pace }, { minute: s.minutes });
   }
   // A scheduler trigger to verify a misconception (noteOutcome) uses the kit's spoken diagnostic for it, through
   // the same verify path a voiced belief takes (poseNext / upcomingItem read s.verify).
@@ -700,7 +812,9 @@ export function step(prev, input) {
   const moduleCommands = reacting ? [] : planModule(s, { kit: input.kit, item, move, lang: s.ctx.lang, band: s.probeSess?.band ?? bandOf(s.ctx.classLevel), representation: p.representation });
   const ui = uiFor(s, p, move, item, input.kit);
   s.lastUi = ui; // what a hold re-sends (chips are momentary on the client: absent would clear them)
-  return { state: s, move, moduleCommands, ui, end: s.phase === "done", ...describe(s, input.kit) };
+  // The move as a kernel proposal (proposal.js, W2-C #8): returned beside the move, never stored in the state.
+  const proposal = directorProposal(move, { stopping: p.stopping, ui, guidance: s.guidance, purpose: s.purpose });
+  return { state: s, move, moduleCommands, ui, end: s.phase === "done", proposal, ...describe(s, input.kit) };
 }
 
 /** Moves that carry no verdict note: care, goodbye and a break are never about the answer. */
@@ -776,6 +890,11 @@ function uiFor(s, p, move, item, kit) {
   if (hint) ui.hint = hint;
   const short = shortTitleOf(s.ctx.topicTitle);
   if (short && !isObjective(short, kit, topic)) ui.shortTitle = short;
+  // Quick practice's counter (W2-C #7 → W2-A's "Practice · n of 5" / "That's the set"): n = the set items posed so far.
+  if (s.practiceSet) {
+    const n = Math.max(1, s.practiceSet.posed.length);
+    ui.practice = { n: Math.min(n, s.practiceSet.of), of: s.practiceSet.of, ...(p.practiceDone || s.phase === "done" ? { done: true } : {}) };
+  }
   return ui;
 }
 
@@ -816,6 +935,8 @@ export function describe(s, kit) {
  * states THIS item's key spoils it: the child then repeats what they just heard (evals/director-sim.mjs).
  */
 export function upcomingItem(s, kit) {
+  // A worked example's first part is followed by its faded step: that gap's key must not be said before it is posed.
+  if (s.phase === "teach" && s.teachPlan?.[s.teachIdx] === "fade" && s.fadeItem) return findItem(s, kit, s.fadeItem.id);
   const skipped = new Set(s.skipped);
   const verifying = s.verify && !skipped.has(`diag:${s.verify}`) ? findItem(s, kit, `diag:${s.verify}`) : null;
   const queued = s.nextItemId && !skipped.has(s.nextItemId) ? findItem(s, kit, s.nextItemId) : null;
@@ -875,6 +996,18 @@ export function branchesFor(s, kit) {
       content: [...r.content, ...(asks && r.item.diagnostic ? [`choices for that question: ${optionsSpoken(r.item, lang)}`] : [])],
     };
   };
+  // The first-step probe (fading.js): no item is on the table; the branch is whether they can say how to start.
+  if (s.firstStep?.asked && s.firstStep.started === undefined && s.phase === "teach") {
+    const step1 = (flags) => {
+      const pre = structuredClone(s);
+      return step(pre, { event: "turn", kit, cls: { outcome: "no_evidence", confidence: 1, source: "branch", flags: { ...NO_FLAGS, ...flags } }, now, branch: true });
+    };
+    // compact branch notes: the appended-last section has no room for two full move shapes (measured: 9 kit × language
+    // cells 2-14 tokens over the `last` cap with them)
+    const can = render(step1({})), cannot = render(step1({ dontKnow: true }));
+    return { cond: "they say how they would start it", right: { ...can, text: SH.firstStepStarted() },
+      wrong: { ...cannot, text: SH.firstStepStuck(), ask: null } };
+  }
   const right = render(sim("correct"));
   const wrong = render(sim("incorrect"));
   const cond = teachingBack ? "their explanation covers most of the key ideas"
@@ -928,7 +1061,8 @@ export function evidenceFrom(s, cls, kit, { leaked = false, discount = 1 } = {})
   // Young children often cannot verbalise what they do understand: a missed "why" is weak evidence.
   if (why && cls.outcome !== "correct" && cls.outcome !== "misconception") w *= 0.5;
   // A key heard before the child answered (this turn, or before the item was posed) makes the answer worth nothing.
-  const hintsUsed = leaked || s.spoiled?.includes(item.id) ? 4 : s.hintLevel;
+  // A faded worked-example step is answered with the earlier steps in view: never unaided (fading.js).
+  const hintsUsed = leaked || s.spoiled?.includes(item.id) ? 4 : item.fade ? Math.max(1, s.hintLevel) : s.hintLevel;
   const rows = [{ skillId: item.skillId, itemId: item.id, probe, outcome: cls.outcome, ...mis, hintsUsed, weight: round2(w) }];
   // A reason volunteered with an unaided correct answer is a why-probe (P2) the child ran on themself.
   if (probe !== "P2" && cls.outcome === "correct" && hintsUsed === 0 && cls.reason) {

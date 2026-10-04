@@ -114,6 +114,8 @@ export class UiBridge {
         return res;
       },
       endBeacon: base.endBeacon,
+      // W2-D: the mid-sitting realtime → cascade switch passes straight through.
+      ...(base.switchLane ? { switchLane: base.switchLane.bind(base) } : {}),
     };
     const createLink: LinkFactory = (mode, ctx) => {
       this.detachLink();

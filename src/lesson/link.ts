@@ -83,4 +83,15 @@ export interface TeacherLink {
   close(): void;
   /** Voice links once connected: the mic for on-device voice features (null before connect / after close). */
   micTap?(): MicTap | null;
+  /**
+   * Realtime lane (W2-D #2): the Director's pace knob (TurnResponse.pace) → server VAD end-of-turn silence, clamped to
+   * 600-1200 ms. Absent on text lanes (the cascade's endpointing is the client VAD's).
+   */
+  setPace?(pace: { waitNudgeSec: number; endpointSilenceMs: number }): void;
+  /**
+   * Realtime lane A (W2-D #3, HUMAN-VOICE B6): the delivery note for the next reply, appended LAST to the instructions
+   * the link applies (null clears it). `apply` re-sends the current instructions with it now; false waits for the next
+   * applyInstructions (so a turn that also carries instructions sends one session.update, not two).
+   */
+  setDelivery?(line: string | null, apply: boolean): void;
 }

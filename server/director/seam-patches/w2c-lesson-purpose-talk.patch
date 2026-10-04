@@ -1,0 +1,28 @@
+# W2-C → W2-E (hot file server/routes/lesson.js; BUILD-PLAN §1.5). Two additive call-site changes the Director's W2-C work
+# needs; both are no-ops for a lesson that does not use them. Apply in BR1's move of start()/end() as written.
+#
+# 1. The Ask purpose's Director half (W2-C #7): ctx carries the purpose and the child's own first words, so the Director
+#    opens with THEIR question (no greeting, no hook: director/state.js teachPlan "answer_question"). The practice half
+#    needs nothing: ctx.practice is already pinned by the W2 seam commit.
+# 2. Talk-share telemetry (W2-C #5, steal 10): one log line per ended lesson with the code-built report
+#    (director/talk.js talkReport over the turns end() already reads) and the state's mix counters (state.talk).
+#    No new read, no model call. A persona or model change is gated on the median share (talk.js talkGate).
+--- a/server/routes/lesson.js
++++ b/server/routes/lesson.js
+@@ start(): ctx in initLessonState
+       // the practice set from the purpose seam (W2-A); absent until it is filled
+       ...(practice ? { practice } : {}),
++      // the purpose and, for an Ask, the child's own question (W2-C #7: the Director answers it first, no greeting)
++      purpose,
++      ...(purpose === "doubt" && typeof body.firstText === "string" && body.firstText.trim() ? { askText: body.firstText.trim().slice(0, 200) } : {}),
+     },
+   });
+@@ end(): after `const childTurns = …`
+   const childTurns = turns.filter((t) => t.speaker === "child" && !t.text.startsWith("["));
++  // W2-C #5: child talk share and the conversation mix (a monitor; never evidence, never shown to anyone as a score)
++  try {
++    const talk = talkReport(turns.filter((t) => !(t.speaker === "child" && t.text.startsWith("["))));
++    console.info(`[talk] lesson=${lesson.id} childTalkShare=${talk.childTalkShare} child=${talk.childWords}w/${talk.childTurns}t teacher=${talk.teacherWords}w/${talk.teacherTurns}t mix=${JSON.stringify(state.talk?.mix ?? {})}`);
++  } catch { /* telemetry never fails an end */ }
+@@ imports
++import { talkReport } from "../director/talk.js";

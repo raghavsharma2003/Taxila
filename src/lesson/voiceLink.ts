@@ -6,7 +6,7 @@
 import type { RealtimeTokenResponse } from "../../shared/contracts.ts";
 import type { LinkEvent, LinkLevels, MicTap, TeacherLink } from "./link.ts";
 import { createLevelAnalyser } from "./level.ts";
-import { audioInputFrom, RealtimeProtocol, turnDetectionFrom } from "./realtime.ts";
+import { audioInputFrom, endpointSilenceOf, RealtimeProtocol, turnDetectionFrom, withEndpointSilence, type RateLimit } from "./realtime.ts";
 import { Emitter } from "./store.ts";
 
 export interface VoiceLinkOptions {
@@ -44,6 +44,10 @@ export class VoiceLink implements TeacherLink {
   private remoteSource: MediaStreamAudioSourceNode | null = null;
   private outbox: Record<string, unknown>[] = [];
   private instructions: string | null = null;
+  /** Lane-A delivery note (HUMAN-VOICE B6), appended last to the instructions; null = none. */
+  private delivery: string | null = null;
+  /** The pace knob's server VAD silence (ms), re-applied on reconnect; null = as minted. */
+  private silenceMs: number | null = null;
   private turnDetection: Record<string, unknown> = {};
   /** audio.input as minted (transcription, noise reduction); re-sent whole on a push-to-talk toggle. */
   private audioInput: Record<string, unknown> = {};
@@ -51,6 +55,8 @@ export class VoiceLink implements TeacherLink {
   private talking = false;
   private closed = false;
   private reconnecting = false;
+  /** ICE went "disconnected" and the link said so; cleared when it heals or is rebuilt. */
+  private stalled = false;
   private reconnects = 0;
   private disconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private pttTailTimer: ReturnType<typeof setTimeout> | null = null;
@@ -106,7 +112,33 @@ export class VoiceLink implements TeacherLink {
 
   applyInstructions(instructions: string): void {
     this.instructions = instructions;
-    this.protocol.applyInstructions(instructions);
+    this.protocol.applyInstructions(this.composed());
+  }
+
+  /** The instructions as applied: the Director's, verbatim, plus the delivery note as the LAST line. */
+  private composed(): string {
+    const base = this.instructions ?? "";
+    return this.delivery ? `${base}\n${this.delivery}` : base;
+  }
+
+  setDelivery(line: string | null, apply: boolean): void {
+    if (line === this.delivery) return;
+    this.delivery = line;
+    if (apply && this.instructions !== null) this.protocol.applyInstructions(this.composed());
+  }
+
+  setPace(pace: { waitNudgeSec: number; endpointSilenceMs: number }): void {
+    const ms = endpointSilenceOf(pace);
+    if (ms === null || ms === this.silenceMs) return;
+    this.silenceMs = ms;
+    this.turnDetection = withEndpointSilence(this.turnDetection, ms);
+    // Push-to-talk keeps server VAD off; the knob lands when hands-free turn detection is restored.
+    if (!this.pushToTalk) this.protocol.setTurnDetection(this.turnDetection, this.audioInput);
+  }
+
+  /** The newest `rate_limits.updated` of this session (the soak and the console read it). */
+  get rateLimits(): RateLimit[] {
+    return this.protocol.rateLimits;
   }
 
   sendChild(text: string, opts: { chipId?: string } = {}): void {
@@ -177,7 +209,7 @@ export class VoiceLink implements TeacherLink {
   private async open(): Promise<void> {
     const tok = await this.fetchToken(this.lessonId);
     if (this.closed) return;
-    this.turnDetection = turnDetectionFrom(tok.session);
+    this.turnDetection = withEndpointSilence(turnDetectionFrom(tok.session), this.silenceMs);
     this.audioInput = audioInputFrom(tok.session);
 
     const pc = new RTCPeerConnection();
@@ -229,13 +261,15 @@ export class VoiceLink implements TeacherLink {
 
   private onChannelOpen(): void {
     this.reconnects = 0;
+    this.stalled = false;
     this.events.emit({ type: "connection", state: "connected" });
     // The fresh token was minted with the server's current instructions; re-send ours anyway in case the
     // Director moved on while we were reconnecting, and restore push-to-talk.
     const queued = this.outbox;
     this.outbox = [];
-    if (this.instructions !== null) this.protocol.applyInstructions(this.instructions);
+    if (this.instructions !== null) this.protocol.applyInstructions(this.composed());
     if (this.pushToTalk) this.protocol.setTurnDetection(null, this.audioInput);
+    else if (this.silenceMs !== null) this.protocol.setTurnDetection(this.turnDetection, this.audioInput);
     for (const e of queued) this.send(e);
   }
 
@@ -268,9 +302,18 @@ export class VoiceLink implements TeacherLink {
     this.disconnectTimer = null;
     if (s === "failed") this.lost(pc);
     else if (s === "disconnected") {
+      // Reported at once (the app-voice notice runs from here: T2 ≤ 4.5 s, src/lesson/trouble.ts); rebuilt only after
+      // the grace, because "disconnected" often heals by itself.
+      if (!this.stalled && !this.reconnecting) {
+        this.stalled = true;
+        this.events.emit({ type: "connection", state: "reconnecting" });
+      }
       this.disconnectTimer = setTimeout(() => {
         if (pc.iceConnectionState === "disconnected") this.lost(pc);
       }, DISCONNECT_GRACE_MS);
+    } else if ((s === "connected" || s === "completed") && this.stalled && !this.reconnecting) {
+      this.stalled = false;
+      this.events.emit({ type: "connection", state: "connected" });
     }
   }
 

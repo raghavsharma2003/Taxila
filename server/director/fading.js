@@ -72,17 +72,14 @@ export function equityProfile({ kit, skills = {}, history = {}, reteach = null }
 }
 
 /**
- * The lesson's entry guidance: the guidance of the first kit skill this child has not made solid (the one taught first
- * today). Every skill solid → attempt.
+ * The lesson's entry guidance: the guidance of the skill the kit's worked example teaches (its first skill, the one
+ * taught first today). A later skill the child has never met still gets its own short explain turn before its first
+ * item (state.js poseNext), so an experienced child is never handed an unseen skill cold.
  */
 export function lessonGuidance({ kit, skills = {}, history = {}, lowBaseline = false }) {
-  for (const sk of kit?.skills ?? []) {
-    const snap = skills[sk.id];
-    const solid = snap && LEARNED.has(snap.status) && (snap.pKnown ?? 0) >= 0.8 && !(history[sk.id] ?? []).slice(-2).includes("incorrect");
-    if (solid) continue;
-    return { skillId: sk.id, ...guidanceLevel(snap, history[sk.id], { lowBaseline }) };
-  }
-  return { skillId: kit?.skills?.[0]?.id ?? null, level: lowBaseline ? "faded" : "attempt", reason: "all_solid" };
+  const sk = kit?.skills?.[0];
+  if (!sk) return { skillId: null, level: "attempt", reason: "no_skills" };
+  return { skillId: sk.id, ...guidanceLevel(skills[sk.id], history[sk.id], { lowBaseline }) };
 }
 
 /** The teach plan for a guidance level (state.js teach() walks it). */

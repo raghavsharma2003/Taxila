@@ -23,7 +23,7 @@ import { floorText, FLOOR_HEADING } from "./floor.js";
 import { gatesFor, assertMinorGates } from "./gates.js";
 import { spokenSafetyNumbers, toSpoken } from "../voice/spoken.js";
 import { vibeRow } from "../persona/adapter.js";
-import { briefRows, estimateTokens, BRIEF_TOKEN_CAP } from "../learner/brief.js";
+import { briefRows, childBriefParts, estimateTokens, BRIEF_TOKEN_CAP } from "../learner/brief.js";
 import { promptFor, optionsSpoken } from "../director/items.js";
 import * as SH from "../director/shapes.js";
 
@@ -263,7 +263,9 @@ export function compileWithReport(input, { budget = TOKEN_BUDGET, caps = {} } = 
   const sections = [
     { id: "character", parts: characterParts(input.character) },
     { id: "floor", parts: [{ text: floorText(), drop: null }] },
-    { id: "brief", parts: [{ text: "CHILD", drop: null }, ...briefRows(input.brief)] },
+    // CHILD-BRIEF v2 (W2-C #1, LEARNER-MODEL §9.1) when the caller built the view (compiler/instructions.js does for
+    // every lesson); the legacy CHILD rows otherwise (evals and fixtures that pass a bare ChildBrief).
+    { id: "brief", parts: input.briefView ? childBriefParts(input.briefView, cap.brief) : [{ text: "CHILD", drop: null }, ...briefRows(input.brief)] },
     { id: "lesson", parts: lessonParts({ ...input, lane, ageBand }) },
     // VIBE (COMPREHENSION-ENGINE.md §6.4): ONE key=value row of closed-vocabulary shapes, after LESSON NOW and before
     // the move; it sheds before anything but the brief's callbacks/wins/interests (drop 4). Pace knobs never go here.

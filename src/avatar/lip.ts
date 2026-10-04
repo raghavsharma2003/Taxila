@@ -3,6 +3,8 @@
 // AnalyserNode hung off the existing teacher meter (src/avatar/tap.ts), which never reaches a destination.
 //
 //   jaw   = RMS over the last 512 samples → level-normalised gate/gain → one-pole τ (the benched 50 ms) → × jawCeiling
+//   close = a closure expander (W2-D #5): a dip of the fast RMS under its slow envelope inside speech (dark spectrum,
+//           or near silence) is a p/b/m closure: the jaw target is pushed down by (dip ratio)^4
 //   VAD   = voiced ≥ 2 frames → her onset; unvoiced ≥ 250 ms → her offset (the canonical speaking signal, §3.5)
 //   shape = a cheap spectral tilt (one-pole low/high split): bright → "wide", dark → "round", at reduced weight,
 //           gated by jaw energy. M0 only; M1 replaces it with Hindi-retrained HeadAudio classes + lipMatrix.
@@ -41,6 +43,24 @@ export interface LipOptions {
   refScale?: number;
   /** Exponent on the normalised openness (1 = linear). */
   curve?: number;
+  /**
+   * Closure expander (W2-D #5). A bilabial closure (p/b/m) is a 50-120 ms dip of the fast RMS under the syllable's
+   * envelope; the 50 ms symmetric one-pole smoothed most of them away (23/84 Hindi closures reached the mouth). When
+   * the fast RMS falls under `expandRatio` × the slow envelope, the jaw target is pushed down by (ratio)^expandPow,
+   * and a falling jaw follows `closeTauMs` instead of `tauMs`. 0 / undefined turns a part off.
+   */
+  expandRatio?: number;
+  expandPow?: number;
+  /** Slow envelope time constant (ms) the dip is measured against. */
+  slowMs?: number;
+  /** Time constant (ms) while the jaw falls (asymmetric smoothing); defaults to tauMs. */
+  closeTauMs?: number;
+  /** A nasal murmur (/m/): dark spectrum (brightness under this) at reduced level counts as a closure. 0 = off. */
+  nasalDark?: number;
+  /** Soft dips (ratio under expandRatio) count only under this brightness; 0 = any spectrum. */
+  expandDark?: number;
+  /** Dips under this ratio count whatever the spectrum (near silence inside speech). */
+  hardRatio?: number;
 }
 
 const RMS_N = 512;
@@ -84,6 +104,14 @@ export class LipDriver {
   private gateFrac: number;
   private refScale: number;
   private curve: number;
+  private expandRatio: number;
+  private expandPow: number;
+  private slowTau: number;
+  private closeTau: number;
+  private nasalDark: number;
+  private expandDark: number;
+  private hardRatio: number;
+  private slow = 0;
   private refRing: number[] = [];
   private refDirty = 0;
   private jaw = 0;
@@ -105,6 +133,15 @@ export class LipDriver {
     this.gateFrac = o.gateFrac ?? 0.06;
     this.refScale = o.refScale ?? 0.7;
     this.curve = o.curve ?? 1;
+    // Expander defaults chosen on evals/avatar/lip-bench.mjs (2026-10-04, W2-D #5): the best Hindi closure recall whose
+    // vowel false-close stays ≤ 0.20 at 60 and 30 fps (hi 24 → 43/84 at 60 fps, vowel false-close 0.148 → 0.187).
+    this.expandRatio = o.expandRatio ?? 0.9;
+    this.expandPow = o.expandPow ?? 4;
+    this.slowTau = (o.slowMs ?? 120) / 1000;
+    this.closeTau = (o.closeTauMs ?? o.tauMs ?? 50) / 1000;
+    this.nasalDark = o.nasalDark ?? 0;
+    this.expandDark = o.expandDark ?? 0.1;
+    this.hardRatio = o.hardRatio ?? 0.35;
   }
 
   /** The current voiced-level reference (for tests and telemetry). */
@@ -114,7 +151,7 @@ export class LipDriver {
 
   /** Flush on reconnect (a new stream): the face holds rest pose, the level reference is kept. */
   reset(): void {
-    this.jaw = this.wide = this.round = 0;
+    this.jaw = this.wide = this.round = this.slow = 0;
     this.voicedRun = 0;
     this.speaking = false;
     this.lastT = -1;
@@ -153,14 +190,27 @@ export class LipDriver {
 
     // Jaw: normalised openness, gentle compressive curve, one-pole.
     const open = clamp01((rms - gate) / Math.max(1e-4, this.ref * this.refScale - gate));
-    const target = this.ceiling * Math.pow(open, this.curve);
-    const a = 1 - Math.exp(-dt / this.tau);
+    let target = this.ceiling * Math.pow(open, this.curve);
+    // Closure expander: a dip under the slow envelope (inside speech) is a closure, not a quieter vowel.
+    const as0 = 1 - Math.exp(-dt / this.slowTau);
+    if (this.speaking || voiced) this.slow += as0 * (rms - this.slow);
+    else this.slow += as0 * (0 - this.slow);
+    const b = voiced || this.nasalDark > 0 || this.expandDark > 0 ? brightness(buf, this.sampleRate) : 0;
+    if (this.expandRatio > 0 && this.slow > gate) {
+      const ratio = rms / this.slow;
+      // A soft dip counts only when the spectrum is dark (a voice bar or a nasal murmur, not a quieter vowel); a
+      // hard dip (near silence inside speech: a voiceless stop) counts whatever the spectrum.
+      const dip = ratio < this.hardRatio || (ratio < this.expandRatio && (this.expandDark <= 0 || b < this.expandDark));
+      if (dip) target *= Math.pow(ratio / this.expandRatio, this.expandPow);
+      // /m/: a voiced, dark (nasal) murmur under the envelope keeps the lips shut.
+      if (this.nasalDark > 0 && voiced && b < this.nasalDark && ratio < 0.85) target *= 0.15;
+    }
+    const a = 1 - Math.exp(-dt / (target < this.jaw ? this.closeTau : this.tau));
     this.jaw += a * (target - this.jaw);
     if (this.jaw < 0.005) this.jaw = 0;
 
     // Shape hint, gated by the jaw so silence and closures never carry a shape.
     const g = clamp01((this.jaw - 0.05) / 0.25);
-    const b = voiced ? brightness(buf, this.sampleRate) : 0;
     const wideT = voiced ? clamp01((b - 0.3) / 0.3) * g : 0;
     const roundT = voiced ? clamp01((0.12 - b) / 0.1) * g : 0;
     const as = 1 - Math.exp(-dt / 0.06);

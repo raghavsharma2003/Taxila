@@ -144,7 +144,9 @@ test("voice: a move the client reported as voiced is framed as already said; a n
 });
 
 test("an item whose pinned text cannot compile is skipped once, and the next question is compiled", () => {
-  const s = lessonAfter(toFirstItem(), "text");
+  // walked past the guidance ladder's faded step (W2-C) to the first KIT item, whose text is doctored below
+  let s = lessonAfter(toFirstItem(), "text");
+  for (let i = 0; i < 8 && String(s.lastMove.itemId ?? "").startsWith("fade:"); i++) s = lessonAfter([...toFirstItem(), ...Array(i + 1).fill(cls("no_evidence"))], "text");
   const bad = s.lastMove.itemId;
   const huge = { ...K, items: K.items.map((i) => (i.id === bad ? { ...i, prompt_hi: "bahut lamba sawaal ".repeat(400) } : i)) };
   const out = instructionsAfter({ state: s, move: s.lastMove }, huge, 300_000);

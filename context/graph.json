@@ -7635,6 +7635,349 @@
    "at": "2026-10-04",
    "title": "W2-B local acceptance (serve.mjs + dist, Neon test branch): w2b-explain-rungs 34/34 (rung on the explain move 11/12: board 8, engine 3); w2b-first-paint 17/17, rung fills the tray on every explain move, explain response -> painted p50 443 / p90 466 ms from the sandbox (the 300 ms gate is the probe fleet's); w2seam-contracts 11/11",
    "source": "inbox/w2-b.json"
+  },
+  {
+   "id": "p2d-r2-turn-shared-depth",
+   "kind": "decision",
+   "title": "Puppet2D r2 head turn: every head layer samples ONE slope-bounded depth field (skull paraboloid + face bump, the idea borrowed from arm V's dome); only the bun takes -45 depth, and the right lock's lower part takes the bun's depth so lock and knot never slide over each other. Hidden fills are shaped (convex-hull knot, neck column traced from the visible neck edges, face overscan kept 6 px off the backdrop). Reverse if a frame-by-frame sweep at |yaw| 20 shows debris again or if the yaw range must exceed 20 deg (then a 3/4 sprite-switch is needed).",
+   "at": "2026-10-04",
+   "source": "inbox/puppet2d-polish-r2.json"
+  },
+  {
+   "id": "p2d-r2-expr-emitters",
+   "kind": "decision",
+   "title": "Surprise, playful, thinking (and warm/delight/concern/listening) are compositor presets in scripts/character/puppet2d/polish-r2/runtime/expr.js mixed into behaviour.ts's frame before the Compositor; behaviour.ts is unchanged (its Emotion union is the main loop's call). Listening nods come from the child's mic level at phrase pauses (Listener), not a script. Reverse if the main loop adds these emotions to behaviour.ts.",
+   "at": "2026-10-04",
+   "source": "inbox/puppet2d-polish-r2.json"
+  },
+  {
+   "id": "p2d-r2-measures",
+   "kind": "measurement",
+   "title": "Puppet2D r2: rest SSIM vs c-front 0.9852 head crop (CPU composite, n=1); hair/lock/bun light-fringe gate 0 px on cream/black/magenta/white/teal grounds; blind two-family panel (gpt-5.6-sol + grok-4-20) mean ~3.5 over 14 stills x 2 sizes x 2 models (r2final 3.46; c-front vs its own sheet scores 3.5-4.0 on the same panel); forced-choice emotion recognition 7-10/16 over 6 runs (final 9/16; r1 7/16); the same classifier on the concepts themselves 5/10 (c-listening and c-talking read 'warm smile'); fps proxy headless SwiftShader: work p50/p95 1.2/2.1 ms unthrottled, 5.5/8.8 ms at 4x CPU throttle, 18-19 draws, ~19k tris (rAF capped at 30 in headless; NOT a device number). Image spend this round USD 0.18 (2 mouth patches), ledger total 7.48.",
+   "at": "2026-10-04",
+   "source": "inbox/puppet2d-polish-r2.json"
+  },
+  {
+   "id": "rj-p2d-column-copy-brow-tail",
+   "kind": "rejection",
+   "title": "Continuing a hidden brow tail by copying one column (r1) leaves a diagonal colour seam and a blunt end as soon as the brow lifts out from under the hair strand; fixed by quadratic edge fits extrapolated with a taper + pull-push colour.",
+   "at": "2026-10-04",
+   "source": "inbox/puppet2d-polish-r2.json"
+  },
+  {
+   "id": "rj-p2d-rect-hidden-fill",
+   "kind": "rejection",
+   "title": "A rectangular hidden fill behind the jaw (r1 bun `ext`) is uncovered by any turn as dark cut debris; hidden fills must be the hidden object's own plausible shape (convex hull / traced neck column).",
+   "at": "2026-10-04",
+   "source": "inbox/puppet2d-polish-r2.json"
+  },
+  {
+   "id": "rj-p2d-lid-mixed-colour-alpha",
+   "kind": "rejection",
+   "title": "Lid layer bottom edge with c-front's mixed lash-over-sclera colour at partial alpha double-counts the white (light streak + stairs = the r1 'lid seam'); the lash bottom must be an analytic coverage edge in decontaminated lash colour, ~2-3 px below the hand-read opening line, with a lid shadow on the sclera.",
+   "at": "2026-10-04",
+   "source": "inbox/puppet2d-polish-r2.json"
+  },
+  {
+   "id": "rj-p2d-trapped-cream-in-locks",
+   "kind": "rejection",
+   "title": "Mask closing traps the cream gap between two strands of a lock inside the lock layer; invisible over cream, a light line over skin/teal (the r1 lock 'halo'). Warm-light interior pixels must be matted out by colour.",
+   "at": "2026-10-04",
+   "source": "inbox/puppet2d-polish-r2.json"
+  },
+  {
+   "id": "stt-v3-bench-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "stt-v3 open-weight bench (evals/stt-v3; synthetic refresh corpus 180 speech + 30 non-speech + 4 reversed-babble; same scorer as the refresh; AWS L4, transformers 5.18). cerNorm / numbers / answers / non-speech n30: D4 0.028 92/96 76/78; X2 MAI-Tx-2 0.017 91/96 78/78; Qwen3-ASR-1.7B auto 0.031 84/96 70/78 0/30 (dCER +0.003, 95% CI [-0.010,0.016]); Nemotron-3.5-streaming auto-LID 320/560/1120 ms 0.046/0.048/0.045, 84-85/96, 71-74/78, 0/30, wrong-script 3-5/180; Nemotron hi-IN forced 0.15-0.17 (English answers 0/12: English comes back empty); Voxtral-Realtime 480/960 0.140/0.118, 50-51/96; Zero-STT-Hinglish 0.125-0.134, non-speech 27-30/30; Qwen3-ASR-0.6B 0.078. Nemotron paced text-complete after speech end p50 254-290 ms (320/560 ms), soak 0 chars outside speech over 4x10 min. Concurrency on one L4 at p95 RTF<=1: Nemotron 128 streams (added lag 277-380 ms, flat over 30 s), Voxtral 8. Cost: Nemotron $0.0063/session-h at 128 streams (g6.xlarge OD $0.805/h) vs $1.02 D4. Spend $2.48.",
+   "source": "inbox/stt-v3-bench.json"
+  },
+  {
+   "id": "stt-v3-nemotron-shadow",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Proposed: Nemotron-3.5-ASR-streaming-0.6B (OpenMDW-1.1) with auto-LID (never hi-IN) gets a SHADOW slot as the always-on streaming ear (barge-in / mid-turn question detection, partials); D4/MAI stays the turn-final transcript. Reverse if: E1 real-child audio shows Nemotron (or a Hinglish fine-tune) within a pre-registered margin of D4/MAI on numbers and graded answers with a script guard, at which point it can take the turn-final role; or if E1 shows it emits text during child silence/background speech that D4 does not.",
+   "source": "inbox/stt-v3-bench.json"
+  },
+  {
+   "id": "rj-nemotron-hi-in-locale",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: Nemotron-3.5 streaming with target_lang hi-IN for Hindi-English children. Broke: pure English utterances return empty text (English answers 0/12, cerNorm 0.47 on English vs 0.02 with auto-LID); overall cerNorm 0.15-0.17 vs 0.045-0.048 auto. Use auto-LID plus a Devanagari/Latin script guard.",
+   "source": "inbox/stt-v3-bench.json"
+  },
+  {
+   "id": "rj-transformers-batched-rnnt-streaming",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: transformers 5.18 Nemotron streaming generate() with batch>1 for the concurrency test. Broke: the encoder-exhausted stopping criterion finishes a stream permanently when it runs out of frames before the batch pulls the next chunk; B=2 stopped after ~2 chunks with truncated text. Fixed in the bench with an own batched loop over the same modules (matches generate() exactly at B=1, stream text identical to B=512).",
+   "source": "inbox/stt-v3-bench.json"
+  },
+  {
+   "id": "rj-voxtral-realtime-hinglish",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: Voxtral-Mini-4B-Realtime-2602 (480 and 960 ms) on the child-Hinglish corpus. Broke: romanises Hindi, numbers 50-51/96 vs 92 (D4), graded answers 46/78; only 8 streams per L4 in transformers. Revisit only via vLLM and only if a Hindi fine-tune appears.",
+   "source": "inbox/stt-v3-bench.json"
+  },
+  {
+   "id": "rj-zero-stt-hinglish-nonspeech",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: shunyalabs/zero-stt-hinglish (Whisper-medium post-train) for always-on listening. Broke: invents text on 27-30/30 non-speech clips ('आप आप आप...', 'Volver a la taula', Welsh/Chinese strings); cerNorm 0.125-0.134; repo has no licence text beyond 'openrail'.",
+   "source": "inbox/stt-v3-bench.json"
+  },
+  {
+   "id": "rj-forced-hindi-llm-asr",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: Qwen3-ASR (1.7B, 0.6B) with language=hi. Broke: answers 'हम्म'/'मैं'/'हाँ' on every non-speech clip (29-30/30) and English accuracy drops; auto language with no prompt is the best Qwen setting (the D4-style script prompt also made it worse, cer 0.047 vs 0.031).",
+   "source": "inbox/stt-v3-bench.json"
+  },
+  {
+   "id": "stt-v3-pilot-api-plus-offline-shadow",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Pilot (E1, average concurrency in single digits): live always-on STT stays MAI-Transcribe-2-Streaming (southindia) with gpt-live-transcribe D4 as automatic fallback, streaming the whole session; Nemotron-3.5-ASR-streaming-0.6B (auto-LID, never hi-IN) runs as an OFFLINE shadow on consented E1 recordings plus one Chennai latency probe against an Azure Central India T4, with no production dependency. Rationale: below ~1.2-1.6 average concurrent sessions a warm GPU pair (~$845-1,175/month) costs more than the API; MAI ties or beats D4 (dCER -0.007, 80% CI [-0.017, 0.003]; answers 78/78) and is fastest from India (68 ms after commit). Reverse if: MAI bills above D4 or loses to D4 on E1 (then D4), or average concurrency during the pilot exceeds ~2 sessions (then self-host earlier).",
+   "source": "inbox/stt-v3.json"
+  },
+  {
+   "id": "stt-v3-scale-self-host-nemotron-ear",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "At scale (average concurrency >= ~20 and E1 passed): the always-on ear (partials, barge-in confirmation, endpoint text) is self-hosted Nemotron-3.5-ASR-streaming-0.6B @ ea30d66 at 320 ms chunks, auto-LID plus script guard, in India (Azure Central India first; AWS ap-south-1 if quota clears and it is cheaper), planned at 64 streams per L4 (half the measured 128), fleet ceil(C/cap)x1.2+1, autoscaled, on-demand only, with the API lane as a mid-session hot fallback. Graded-answer turns get a second pass (MAI-Transcribe-2, or self-hosted Qwen3-ASR-1.7B) until E1 or a child fine-tune shows Nemotron within a pre-registered margin on numbers and graded answers. Cost $0.04-0.11 per session-hour incl. idle headroom and 0.5% fallback vs $1.02 D4. Reverse if: E1 shows Nemotron (with guard) worse than D4/MAI beyond the margin on ungraded-turn intent too, or it emits text in child silence/background speech that MAI does not, or a production serving stack cannot hold p95 added lag <= 300 ms at 64 streams, or MAI is metered below ~$0.10/h (then the API is within ops-cost noise).",
+   "source": "inbox/stt-v3.json"
+  },
+  {
+   "id": "stt-v3-script-guard",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Any auto-LID STT output (Nemotron first) passes a deterministic script guard: tokens outside Devanagari, Latin, digits and punctuation are dropped and the utterance is flagged low-confidence (re-ask or second pass, never graded). Reason: Nemotron auto-LID wrote 3-5/180 synthetic clips in Vietnamese/Arabic script, and forcing hi-IN instead empties English (0/12). Reverse if: on E1 the guard drops real child speech in more than 1% of turns, or LID errors stop appearing after a child fine-tune.",
+   "source": "inbox/stt-v3.json"
+  },
+  {
+   "id": "stt-v3-paralinguistic-sidecar",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Emotion/prosody 'hearing' is a separate sidecar on the same always-on audio, not an STT feature: continuous features (F0 level/range, energy, speaking rate from token timing, pause and response latency, voice quality, laughter/sigh events) relative to the child's own session baseline, mapped to Director signals, never to emotion labels or stored categories; no categorical SER (best published macro-F1 ~0.43 on adults, nothing for child Hinglish). Features may only shape pacing until a pre-registered E1 test shows a feature-using policy beats transcript-only. Reverse if: that E1 test fails (drop the lane), or a measured child-speech affect model passes it (allow a learned layer).",
+   "source": "inbox/stt-v3.json"
+  },
+  {
+   "id": "stt-v3-accuracy-80ci-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "STT v3 accuracy vs D4/MAI with 80% intervals (synthetic TTS child-Hinglish corpus, n=180 speech; non-speech n=12 for API arms, n=30 for open arms; same score.mjs/score2.mjs; item-level paired bootstrap dCER over 30 items; Wilson 80% for counts; evals/stt-v3/results/tables-stt-v3.md). D4 cer 0.028, numbers 92/96 [0.924,0.978], answers 76/78 [0.940,0.989]; MAI-Tx-2 batch 0.017, dCER -0.011 [-0.022,0.001], 91/96, 78/78 [0.979,1]; MAI-Tx-2-Streaming 0.021, dCER -0.007 [-0.017,0.003], 90/96, 78/78; Qwen3-ASR-1.7B auto 0.031, dCER +0.003 [-0.005,0.012], 84/96 [0.825,0.912], 70/78 [0.845,0.934]; Nemotron auto 320 ms 0.046, dCER +0.018 [0.008,0.029], 84/96 [0.825,0.912], 74/78 [0.906,0.972], non-speech 0/30 [0,0.052]. Nemotron's numbers interval does not overlap D4's; answers overlap. Real-child accuracy unmeasured (E1).",
+   "source": "inbox/stt-v3.json"
+  },
+  {
+   "id": "stt-v3-cost-model-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "STT always-on cost model (arithmetic, not a billing measurement; prices from Azure Retail API and AWS Pricing API 2026-10-04; capacity from the stt-v3 L4 load test, T4 capacity estimated). Assumptions: session-h/month = 180 x peak concurrency C (6 peak-equivalent h/day); Nemotron 64 streams/L4 (measured limit 128 halved), 32/T4 [estimate]; fleet ceil(C/cap)x1.2+1; autoscaled = full fleet 8 h, max(2, 25%) warm 16 h; 0.5% of session-hours fail over to D4. $/session-hour at C=100/1,000/10,000: Nemotron Azure CI T4 autoscaled 0.082/0.051/0.049 (flat 24 h 0.144/0.098/0.092); AWS ap-south-1 L4 autoscaled 0.108/0.048/0.042; gpt-live-transcribe 1.02; Azure Speech RT+LID 1.30 PAYG, 0.845/0.52/0.52 best commitment tier; MAI-Tx-2 placeholder 0.36 (no meter). C=10,000 needs ~190 L4 or ~377 T4 in India; ap-south-1 G/VT quota 0.",
+   "source": "inbox/stt-v3.json"
+  },
+  {
+   "id": "rj-nemotron-turn-final-now",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried (bench): Nemotron-3.5 streaming auto-LID as the turn-final transcript the Director grades, replacing D4/MAI. Broke: numbers 84/96 [80% 0.825,0.912] vs D4 92/96 [0.924,0.978] (non-overlapping), English answers 9-11/12, dCER +0.018 [0.008,0.029], noisy cer about 2x D4 at 10 dB SNR. Keep it as the always-on ear; grade from a second pass until E1 or a child fine-tune closes the gap.",
+   "source": "inbox/stt-v3.json"
+  },
+  {
+   "id": "rj-sarvam-self-host-package",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried (desk): running Sarvam Saaras in our own cloud to satisfy the self-host-only rule. Broke: Saaras v4 is API-only (no weights); Saaras v3 exists only as an encrypted AWS SageMaker Marketplace package at a $5,000/month contract plus instance cost, the weights are not ours and cannot be fine-tuned on child audio, and its published Hindi WER (~22 on IndicVoices) gives no reason to pay. The API (~$0.35/h) stays reference-only.",
+   "source": "inbox/stt-v3.json"
+  },
+  {
+   "id": "rj-api-per-hour-always-on-at-scale",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried (costed): paying a per-session-hour STT API for the always-on ear at scale. Broke: gpt-live-transcribe $1.02/session-h = $184k/month at 1,000 peak concurrent children and $1.84M at 10,000 (Azure Speech RT+LID at best commitment tier $0.52), vs $0.04-0.05 self-hosted Nemotron incl. idle headroom ($8-9k/month at 1,000). Fine for the pilot below ~1.2-1.6 average concurrent sessions; not past ~20.",
+   "source": "inbox/stt-v3.json"
+  },
+  {
+   "id": "rj-spot-gpu-live-lane",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried (design): spot GPUs for the live STT lane (spot L4 ~30-45% cheaper). Broke: a reclaim ends every child's stream on that GPU at once (up to 64-128 children) with a 161 s cold start to replace it; only usable for the offline shadow and the bench, or as a surplus replica if client failover to the API lane is proven.",
+   "source": "inbox/stt-v3.json"
+  },
+  {
+   "id": "w2c-guidance-ladder-fading",
+   "kind": "decision",
+   "title": "W2-C #2: state.js isNovice is replaced by director/fading.js guidanceLevel (worked / faded / attempt, or a first-step probe when the record cannot tell), read from this child's recent outcomes first and pL second; worked = hook, explain, worked example (first half of the steps), faded step; faded = hook, explain, faded step; attempt = hook, practice",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "w2c-faded-step-graded-with-help",
+   "kind": "decision",
+   "title": "The faded step is the kit's own workedExample.fadedVersion line, posed as an item `fade:<i>` pinned in the lesson state; its key is the text the blank replaces, recovered by code (blankOf), graded by the normal classifier, and its evidence is always WITH HELP (hintsUsed >= 1); no why-probe on it",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "w2c-first-step-probe-no-evidence",
+   "kind": "decision",
+   "title": "The first-step probe ('what would you do first?' on the kit worked example; B1 asked about the process) is a worked_example move with no item on the table: never evidence; a reply that attempts something -> attempt-first, a don't-know / answer request / silence -> the faded path",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "w2c-equity-entry-one-step",
+   "kind": "decision",
+   "title": "W2-C #3 equity profile (fading.js equityProfile): a low-baseline child (>= 3 outcomes with <= 1/3 right, or every seen skill below 0.35) never attempts a skill first (worked, or faded at best) and a frustration break offers ONE chip (an easier one), never the three-choice menu",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "w2c-brief-v2-in-every-compile",
+   "kind": "decision",
+   "title": "W2-C #1: compiler/instructions.js builds the CHILD-BRIEF v2 view (learner/briefView.js) from the lesson state for every lane and the realtime token; compile renders childBriefParts in place of the legacy CHILD rows; SUPPORT fade follows the guidance ladder, nudge seconds the persona knobs; a view whose never-drop row would throw falls back to the legacy brief (never a 500)",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "w2c-interest-registry",
+   "kind": "decision",
+   "title": "W2-C #6: shared/interests.js is the ONE interest registry (16 ids: the 12 onboarding tiles + 4 session-only); src/child/interests.ts reads its tiles; persona signals, Forge skins and Studio's allowlist are tested to agree with it (tests/w2c-interests.test.mjs)",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "w2c-explicit-pace-same-turn",
+   "kind": "decision",
+   "title": "W2-C #6: an explicit pace request ('dheere', 'aaram se', 'slow down', the Slower help) applies on the turn it is heard (persona/pace.js -> adapter.js explicit waitExtra + endpoint boost), outside the two-signal / 10-minute cadence that inferred knobs obey; bounded by the band's wait cap; 'faster' resets it",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "w2c-practice-purpose-director",
+   "kind": "decision",
+   "title": "W2-C #7 practice: a start with ctx.practice (W2-A's review set) opens in practice on the set's first item (no greeting, no hook, no faded step), ui.practice {n, of, done} counts the set items posed, and the set closes with a practice summary (code counts) and goodbye, no teach-back",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "w2c-ask-purpose-director",
+   "kind": "decision",
+   "title": "W2-C #7 Ask: ctx.purpose 'doubt' (+ ctx.askText) makes the first move an explain on THEIR question (teach plan 'answer_question', no greeting, no hook), then the guidance path; lesson.js must pass purpose and askText (seam-patches/w2c-lesson-purpose-talk.patch, W2-E's hot file)",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "w2c-director-proposal",
+   "kind": "decision",
+   "title": "W2-C #8: step() returns its move as a shared/brain.ts Proposal beside the move (director/proposal.js: safeguard = source safety, mandatory; a child's stop = release, mandatory; probes = comprehension; costs latency 0, attention, testWeight); never stored in the state, so replay stays byte-equal",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "w2c-talk-share-monitor",
+   "kind": "decision",
+   "title": "W2-C #5 (steal 10): each child turn gets a code mix label (attempt, explain, ask_answer, ask_check, idk, off_task, help, unclear) folded into state.talk; talkReport gives childTalkShare from the turns; talkGate blocks a persona/model change whose median share drops > 10% and never passes with n < 3",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "w2c-reteach-child-history-first",
+   "kind": "decision",
+   "title": "comprehension/reteach.js selectReteach: on any trigger, the arm that resolved THIS child's skill before (and survived the exclusions: failed twice in 30 days, or in the last two attempts) goes first (chosenBy child_history), ahead of the kit primary and the population Thompson draw",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "w2c-never-answer-battery",
+   "kind": "decision",
+   "title": "W2-C #4 (steal 5): evals/never-answer.mjs, 30 'just tell me' variants (en / hi / Hinglish; plain, pressure, parent impersonation, 'my teacher said', time, bargain, guilt) at rungs 0-3, both classifier readings, scored with revealsAnswer over kit content and screen text; in npm test via tests/w2c-never-answer.test.mjs with a negative control; --live runs the real reply model",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "w2c-teach-turns-2026-10-04",
+   "kind": "measurement",
+   "title": "Teaching turns per skill before the first practice item (director-sim --teach-turns, offline, 385 class 4-7 kits x 3 profiles, n=1155): fresh median 4 (legacy 4), right-first-time 1 (legacy 1), struggling-with-misses 4 (legacy 1: the old boolean read pL 0.66 as knowledge and sent them attempt-first)",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "w2c-faded-step-coverage-2026-10-04",
+   "kind": "measurement",
+   "title": "Kits whose worked example has a code-recoverable single blank (blankOf over fadedVersion, latest step first, blank <= 40 chars): 341/385 class 4-7 topics (204 at the last step); 830/830 kits carry fadedVersion",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "w2c-never-answer-offline-2026-10-04",
+   "kind": "measurement",
+   "title": "never-answer offline battery: 30 variants, 51 classifier readings stepped through the real Director and compiler on 4 real kit items: 0 reveals before rung 4, 0 skipped rungs; negative control (a hint stating the key) caught",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "w2c-personalisation-diff-local-2026-10-04",
+   "kind": "measurement",
+   "title": "personalisation-diff against node server/serve.mjs on the Neon test branch (real classifier + reply model, test clock, n=3 per arm): (c) all-'pata nahi' children got a worked/faded example on day 2 3/3; right-first-time children attempted first 3/3; (d) 'dheere' raised waitNudgeSec 4 -> 5 s and endpoint 700 -> 840 ms within 1 turn",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "w2c-brief-v2-budget-2026-10-04",
+   "kind": "measurement",
+   "title": "CHILD-BRIEF v2 in compile: a full-size view on 4 kits x 6 items x 3 languages x 2 lanes at rung 3 with the longest floor correction peaks at 1348 of 2600 tokens; the TODAY row renders for 830/830 curriculum topic titles",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "rj-w2c-score-shape-boilerplate",
+   "kind": "rejection",
+   "title": "Scoring the Director's whole move shape with revealsAnswer in the never-answer battery: the code-written bookkeeping ('rung 1 of 4', 'one small nudge') read as the key of an item whose key is 1 / one (14 then 4 false reveals of 51); only kit content (the rung's hint, content lines) and screen text are scored",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "rj-w2c-fade-after-full-example",
+   "kind": "rejection",
+   "title": "Fading the last step of the SAME worked example right after the teacher's content listed every step: the gap's key was in her content one turn earlier (recall, not completion); the worked part before a faded step now carries only the first half of the steps before the gap, and upcomingItem names the faded step so a key said early spoils it",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "rj-w2c-guidance-from-first-unsolid-skill",
+   "kind": "rejection",
+   "title": "Taking the lesson's guidance from the first kit skill the child has not made solid: a child solid on skill 1 got a worked example (which teaches skill 1) because skill 2 was unseen; guidance now reads the worked example's own skill, and an unseen later skill gets its own explain turn",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "open-w2c-practice-counts-as-lesson",
+   "kind": "open",
+   "title": "W2-A: child.js countsAsDone counts a Practice (or Ask) lesson with a graded answer as today's lesson, so a later lesson start is refused 409 done (w2seam-contracts now trips it because practice poses items first); key it on state.purpose === 'lesson' (the Director now stores purpose)",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "open-w2c-lesson-purpose-talk-patch",
+   "kind": "open",
+   "title": "W2-E: apply server/director/seam-patches/w2c-lesson-purpose-talk.patch in lesson.js (ctx.purpose + ctx.askText for the Ask opening; the [talk] telemetry line at lesson end)",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "open-w2c-budget-gate-v2",
+   "kind": "open",
+   "title": "scripts/check-prompt-budget.mjs still compiles the legacy brief; add a full-size briefView case so the gate measures the brief production ships (tests/w2c-director.test.mjs measures it today: 1348/2600)",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
+  },
+  {
+   "id": "open-w2c-history-b-on-prod",
+   "kind": "open",
+   "title": "Personalisation acceptance (b) (the arm that repaired the child's mix-up first on day 2; not after two failures) is proven offline over selectReteach only; a production two-day scripted mix-up run is not built",
+   "at": "2026-10-04",
+   "source": "inbox/w2-c.json"
   }
  ],
  "edges": [
@@ -12672,6 +13015,176 @@
    "src": "w2b-explain-rung-board",
    "rel": "measured_by",
    "dst": "w2b-local-acceptance-2026-10-04"
+  },
+  {
+   "src": "stt-v3-nemotron-shadow",
+   "rel": "measured_by",
+   "dst": "stt-v3-bench-2026-10-04"
+  },
+  {
+   "src": "stt-always-on-session-hour-basis",
+   "rel": "measured_by",
+   "dst": "stt-v3-bench-2026-10-04"
+  },
+  {
+   "src": "stt-v3-pilot-api-plus-offline-shadow",
+   "rel": "measured_by",
+   "dst": "stt-v3-accuracy-80ci-2026-10-04"
+  },
+  {
+   "src": "stt-v3-pilot-api-plus-offline-shadow",
+   "rel": "measured_by",
+   "dst": "stt-v3-cost-model-2026-10-04"
+  },
+  {
+   "src": "stt-v3-pilot-api-plus-offline-shadow",
+   "rel": "constrains",
+   "dst": "stt-mai2-stream-primary-india-2026-10-04"
+  },
+  {
+   "src": "stt-v3-pilot-api-plus-offline-shadow",
+   "rel": "supersedes",
+   "dst": "stt-v3-nemotron-shadow"
+  },
+  {
+   "src": "stt-v3-scale-self-host-nemotron-ear",
+   "rel": "measured_by",
+   "dst": "stt-v3-cost-model-2026-10-04"
+  },
+  {
+   "src": "stt-v3-scale-self-host-nemotron-ear",
+   "rel": "measured_by",
+   "dst": "stt-v3-bench-2026-10-04"
+  },
+  {
+   "src": "stt-v3-scale-self-host-nemotron-ear",
+   "rel": "caused_by",
+   "dst": "stt-always-on-session-hour-basis"
+  },
+  {
+   "src": "stt-v3-scale-self-host-nemotron-ear",
+   "rel": "caused_by",
+   "dst": "rj-api-per-hour-always-on-at-scale"
+  },
+  {
+   "src": "stt-v3-scale-self-host-nemotron-ear",
+   "rel": "constrains",
+   "dst": "rj-nemotron-turn-final-now"
+  },
+  {
+   "src": "stt-v3-script-guard",
+   "rel": "caused_by",
+   "dst": "rj-nemotron-hi-in-locale"
+  },
+  {
+   "src": "stt-v3-script-guard",
+   "rel": "measured_by",
+   "dst": "stt-v3-bench-2026-10-04"
+  },
+  {
+   "src": "stt-v3-paralinguistic-sidecar",
+   "rel": "caused_by",
+   "dst": "owner-always-listen-full-session-2026-10-04"
+  },
+  {
+   "src": "rj-nemotron-turn-final-now",
+   "rel": "measured_by",
+   "dst": "stt-v3-accuracy-80ci-2026-10-04"
+  },
+  {
+   "src": "rj-api-per-hour-always-on-at-scale",
+   "rel": "measured_by",
+   "dst": "stt-v3-cost-model-2026-10-04"
+  },
+  {
+   "src": "stt-v3-cost-model-2026-10-04",
+   "rel": "caused_by",
+   "dst": "stt-v3-scan-2026-10-04"
+  },
+  {
+   "src": "w2c-guidance-ladder-fading",
+   "rel": "part_of",
+   "dst": "wb-guidance-ladder"
+  },
+  {
+   "src": "w2c-faded-step-graded-with-help",
+   "rel": "part_of",
+   "dst": "w2c-guidance-ladder-fading"
+  },
+  {
+   "src": "w2c-first-step-probe-no-evidence",
+   "rel": "part_of",
+   "dst": "w2c-guidance-ladder-fading"
+  },
+  {
+   "src": "w2c-equity-entry-one-step",
+   "rel": "caused_by",
+   "dst": "rj-advice-menu-for-weak-learners"
+  },
+  {
+   "src": "w2c-never-answer-battery",
+   "rel": "caused_by",
+   "dst": "rj-default-answer-mode"
+  },
+  {
+   "src": "w2c-guidance-ladder-fading",
+   "rel": "measured_by",
+   "dst": "w2c-teach-turns-2026-10-04"
+  },
+  {
+   "src": "w2c-faded-step-graded-with-help",
+   "rel": "measured_by",
+   "dst": "w2c-faded-step-coverage-2026-10-04"
+  },
+  {
+   "src": "w2c-never-answer-battery",
+   "rel": "measured_by",
+   "dst": "w2c-never-answer-offline-2026-10-04"
+  },
+  {
+   "src": "w2c-brief-v2-in-every-compile",
+   "rel": "measured_by",
+   "dst": "w2c-brief-v2-budget-2026-10-04"
+  },
+  {
+   "src": "w2c-guidance-ladder-fading",
+   "rel": "measured_by",
+   "dst": "w2c-personalisation-diff-local-2026-10-04"
+  },
+  {
+   "src": "w2c-explicit-pace-same-turn",
+   "rel": "measured_by",
+   "dst": "w2c-personalisation-diff-local-2026-10-04"
+  },
+  {
+   "src": "w2c-reteach-child-history-first",
+   "rel": "constrains",
+   "dst": "reteach-randomise-from-second"
+  },
+  {
+   "src": "w2c-faded-step-graded-with-help",
+   "rel": "caused_by",
+   "dst": "rj-w2c-fade-after-full-example"
+  },
+  {
+   "src": "w2c-guidance-ladder-fading",
+   "rel": "caused_by",
+   "dst": "rj-w2c-guidance-from-first-unsolid-skill"
+  },
+  {
+   "src": "w2c-never-answer-battery",
+   "rel": "caused_by",
+   "dst": "rj-w2c-score-shape-boilerplate"
+  },
+  {
+   "src": "open-w2c-practice-counts-as-lesson",
+   "rel": "caused_by",
+   "dst": "w2c-practice-purpose-director"
+  },
+  {
+   "src": "open-w2c-lesson-purpose-talk-patch",
+   "rel": "blocks",
+   "dst": "w2c-ask-purpose-director"
   }
  ]
 }

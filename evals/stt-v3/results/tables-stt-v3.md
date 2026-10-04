@@ -4,9 +4,12 @@
 | S0 MAI-Tx-2-Streaming nohint | 0.021 | 0.049 | 0.114 | 0.936 | 90/96 [0.898, 0.962] | 93/96 | 78/78 [0.979, 1] | 3 | 0 | 0/12 | - | - |
 | X2 MAI-Transcribe-2 | 0.017 | 0.046 | 0.103 | 0.936 | 91/96 [0.911, 0.97] | 93/96 | 78/78 [0.979, 1] | 0 | 0 | 0/12 | - | - |
 | G3 gpt-transcribe hi+prompt | 0.022 | 0.04 | 0.083 | 0.953 | 94/96 [0.951, 0.991] | 94/96 | 77/78 [0.958, 0.996] | 0 | 0 | 7/12 | - | - |
+| O-N13auto nemotron-3.5 stream auto-LID 1120 ms | 0.045 | 0.094 | 0.171 | 0.862 | 85/96 [0.837, 0.921] | 85/96 | 71/78 [0.86, 0.944] | 3 | 0 | 0/12 | 0/30 [0, 0.052] | 1/4 |
 | O-N13hi nemotron-3.5 stream hi-IN 1120 ms | 0.165 | 0.245 | 0.429 | 0.717 | 70/96 [0.668, 0.783] | 79/96 | 56/78 [0.649, 0.778] | 0 | 0 | 0/12 | 0/30 [0, 0.052] | 2/4 |
+| O-N3auto nemotron-3.5 stream auto-LID 320 ms | 0.046 | 0.102 | 0.168 | 0.865 | 84/96 [0.825, 0.912] | 83/96 | 74/78 [0.906, 0.972] | 5 | 3 | 0/12 | 0/30 [0, 0.052] | 1/4 |
 | O-N3hi nemotron-3.5 stream hi-IN 320 ms | 0.148 | 0.241 | 0.43 | 0.726 | 72/96 [0.689, 0.802] | 79/96 | 59/78 [0.689, 0.813] | 0 | 0 | 0/12 | 0/30 [0, 0.052] | 3/4 |
 | O-N6auto nemotron-3.5 stream auto-LID 560 ms | 0.048 | 0.104 | 0.169 | 0.863 | 84/96 [0.825, 0.912] | 84/96 | 74/78 [0.906, 0.972] | 4 | 2 | 0/12 | 0/30 [0, 0.052] | 1/4 |
+| O-N6autoS nemotron-3.5 stream auto-LID 560 ms (paced + soak run) | 0.048 | 0.104 | 0.169 | 0.863 | 84/96 [0.825, 0.912] | 84/96 | 74/78 [0.906, 0.972] | 4 | 2 | 0/12 | 0/30 [0, 0.052] | 1/4 |
 | O-N6hi nemotron-3.5 stream hi-IN 560 ms | 0.167 | 0.252 | 0.434 | 0.71 | 71/96 [0.678, 0.793] | 80/96 | 59/78 [0.689, 0.813] | 0 | 0 | 0/12 | 0/30 [0, 0.052] | 3/4 |
 | O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead) | 0.148 | 0.241 | 0.43 | 0.726 | 72/96 [0.689, 0.802] | 79/96 | 59/78 [0.689, 0.813] | 0 | 0 | 0/12 | 0/30 [0, 0.052] | 3/4 |
 | O-Q06 qwen3-asr-0.6b auto | 0.078 | 0.144 | 0.211 | 0.828 | 70/96 [0.668, 0.783] | 70/96 | 64/78 [0.758, 0.869] | 1 | 1 | 0/12 | 0/30 [0, 0.052] | 4/4 |
@@ -25,9 +28,12 @@
 | S0 MAI-Tx-2-Streaming nohint | 9 / 10 | -0.007 | [-0.017, 0.003] | [-0.022, 0.007] |
 | X2 MAI-Transcribe-2 | 11 / 8 | -0.011 | [-0.022, 0.001] | [-0.029, 0.007] |
 | G3 gpt-transcribe hi+prompt | 11 / 6 | -0.006 | [-0.013, 0.001] | [-0.017, 0.005] |
+| O-N13auto nemotron-3.5 stream auto-LID 1120 ms | 6 / 16 | 0.017 | [0.006, 0.027] | [0, 0.034] |
 | O-N13hi nemotron-3.5 stream hi-IN 1120 ms | 6 / 19 | 0.137 | [0.082, 0.188] | [0.059, 0.215] |
+| O-N3auto nemotron-3.5 stream auto-LID 320 ms | 6 / 17 | 0.018 | [0.008, 0.029] | [0.004, 0.035] |
 | O-N3hi nemotron-3.5 stream hi-IN 320 ms | 6 / 21 | 0.119 | [0.07, 0.162] | [0.051, 0.185] |
 | O-N6auto nemotron-3.5 stream auto-LID 560 ms | 4 / 17 | 0.02 | [0.011, 0.03] | [0.006, 0.036] |
+| O-N6autoS nemotron-3.5 stream auto-LID 560 ms (paced + soak run) | 4 / 17 | 0.02 | [0.011, 0.03] | [0.006, 0.036] |
 | O-N6hi nemotron-3.5 stream hi-IN 560 ms | 6 / 20 | 0.138 | [0.083, 0.186] | [0.062, 0.215] |
 | O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead) | 6 / 21 | 0.119 | [0.07, 0.162] | [0.051, 0.185] |
 | O-Q06 qwen3-asr-0.6b auto | 4 / 18 | 0.05 | [0.031, 0.071] | [0.021, 0.083] |
@@ -47,9 +53,12 @@
 | S0 MAI-Tx-2-Streaming nohint | 0.017 / 30/32 | 0.027 / 30/32 | 0.019 / 30/32 |
 | X2 MAI-Transcribe-2 | 0.011 / 31/32 | 0.02 / 31/32 | 0.021 / 29/32 |
 | G3 gpt-transcribe hi+prompt | 0.013 / 31/32 | 0.034 / 32/32 | 0.02 / 31/32 |
+| O-N13auto nemotron-3.5 stream auto-LID 1120 ms | 0.028 / 30/32 | 0.052 / 29/32 | 0.054 / 26/32 |
 | O-N13hi nemotron-3.5 stream hi-IN 1120 ms | 0.138 / 25/32 | 0.201 / 24/32 | 0.156 / 21/32 |
+| O-N3auto nemotron-3.5 stream auto-LID 320 ms | 0.025 / 29/32 | 0.056 / 28/32 | 0.057 / 27/32 |
 | O-N3hi nemotron-3.5 stream hi-IN 320 ms | 0.119 / 25/32 | 0.166 / 22/32 | 0.158 / 25/32 |
 | O-N6auto nemotron-3.5 stream auto-LID 560 ms | 0.024 / 30/32 | 0.062 / 25/32 | 0.059 / 29/32 |
+| O-N6autoS nemotron-3.5 stream auto-LID 560 ms (paced + soak run) | 0.024 / 30/32 | 0.062 / 25/32 | 0.059 / 29/32 |
 | O-N6hi nemotron-3.5 stream hi-IN 560 ms | 0.125 / 25/32 | 0.2 / 21/32 | 0.174 / 25/32 |
 | O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead) | 0.119 / 25/32 | 0.166 / 22/32 | 0.158 / 25/32 |
 | O-Q06 qwen3-asr-0.6b auto | 0.041 / 25/32 | 0.087 / 23/32 | 0.107 / 22/32 |
@@ -69,9 +78,12 @@
 | S0 MAI-Tx-2-Streaming nohint | 0.029; ans 24/24; script 0 | 0.004; ans 24/24; script 0 | 0.002; ans 12/12; script 0 | 0.06; ans 18/18; script 3 |
 | X2 MAI-Transcribe-2 | 0.032; ans 24/24; script 0 | 0.004; ans 24/24; script 0 | 0.014; ans 12/12; script 0 | 0.016; ans 18/18; script 0 |
 | G3 gpt-transcribe hi+prompt | 0.015; ans 24/24; script 0 | 0.018; ans 24/24; script 0 | 0.014; ans 11/12; script 0 | 0.056; ans 18/18; script 0 |
+| O-N13auto nemotron-3.5 stream auto-LID 1120 ms | 0.063; ans 24/24; script 1 | 0.037; ans 20/24; script 0 | 0.021; ans 9/12; script 0 | 0.053; ans 18/18; script 2 |
 | O-N13hi nemotron-3.5 stream hi-IN 1120 ms | 0.085; ans 24/24; script 0 | 0.036; ans 20/24; script 0 | 0.456; ans 0/12; script 0 | 0.126; ans 12/18; script 0 |
+| O-N3auto nemotron-3.5 stream auto-LID 320 ms | 0.064; ans 24/24; script 2 | 0.043; ans 21/24; script 0 | 0.016; ans 11/12; script 0 | 0.058; ans 18/18; script 3 |
 | O-N3hi nemotron-3.5 stream hi-IN 320 ms | 0.112; ans 24/24; script 0 | 0.045; ans 23/24; script 0 | 0.376; ans 0/12; script 0 | 0.062; ans 12/18; script 0 |
 | O-N6auto nemotron-3.5 stream auto-LID 560 ms | 0.061; ans 24/24; script 1 | 0.045; ans 23/24; script 0 | 0.023; ans 9/12; script 0 | 0.063; ans 18/18; script 3 |
+| O-N6autoS nemotron-3.5 stream auto-LID 560 ms (paced + soak run) | 0.061; ans 24/24; script 1 | 0.045; ans 23/24; script 0 | 0.023; ans 9/12; script 0 | 0.063; ans 18/18; script 3 |
 | O-N6hi nemotron-3.5 stream hi-IN 560 ms | 0.085; ans 24/24; script 0 | 0.044; ans 23/24; script 0 | 0.474; ans 0/12; script 0 | 0.097; ans 12/18; script 0 |
 | O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead) | 0.112; ans 24/24; script 0 | 0.045; ans 23/24; script 0 | 0.376; ans 0/12; script 0 | 0.062; ans 12/18; script 0 |
 | O-Q06 qwen3-asr-0.6b auto | 0.075; ans 24/24; script 0 | 0.08; ans 20/24; script 0 | 0.002; ans 12/12; script 0 | 0.191; ans 8/18; script 1 |
@@ -93,8 +105,11 @@
 | S0 MAI-Tx-2-Streaming nohint | refresh 2026-10-04 | 2581 | - | - | - | - | 1055 / 1113 |
 | X2 MAI-Transcribe-2 | refresh 2026-10-04 | - | - | - | - | - | 1192 / 1298 |
 | G3 gpt-transcribe hi+prompt | refresh 2026-10-04 | - | - | - | - | - | 1054 / 1498 |
+| O-N13auto nemotron-3.5 stream auto-LID 1120 ms | stt-v3 paced | 763 | 590 / 998 | 3504 | 1118 | 559 | - |
 | O-N13hi nemotron-3.5 stream hi-IN 1120 ms | stt-v3 paced | 761 | 602 / 995 | 3502 | 1118 | 579 | - |
+| O-N3auto nemotron-3.5 stream auto-LID 320 ms | stt-v3 paced | 913 | 254 / 452 | 1515 | 320 | 259 | - |
 | O-N3hi nemotron-3.5 stream hi-IN 320 ms | stt-v3 paced | 913 | 294 / 490 | 1514 | 320 | 299 | - |
+| O-N6autoS nemotron-3.5 stream auto-LID 560 ms (paced + soak run) | stt-v3 paced | 759 | 279 / 574 | 2080 | 560 | 279 | - |
 | O-N6hi nemotron-3.5 stream hi-IN 560 ms | stt-v3 paced | 758 | 287 / 594 | 2077 | 560 | 299 | - |
 | O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead) | stt-v3 batch: final = 600 ms endpoint hangover + request time | - | - | - | - | - | 703 / 726 |
 | O-Q06 qwen3-asr-0.6b auto | stt-v3 batch: final = 600 ms endpoint hangover + request time | - | - | - | - | - | 1428 / 1886 |
@@ -132,15 +147,19 @@
 |---|---|---|---|---|---|
 | O-N13hi nemotron-3.5 stream hi-IN 1120 ms | 10.08 | 36 | 0 | 978 |  |
 | O-N3hi nemotron-3.5 stream hi-IN 320 ms | 10.08 | 36 | 0 | 989 |  |
+| O-N6autoS nemotron-3.5 stream auto-LID 560 ms (paced + soak run) | 10.08 | 36 | 0 | 933 |  |
 | O-N6hi nemotron-3.5 stream hi-IN 560 ms | 10.08 | 36 | 0 | 1005 |  |
 | O-V480 voxtral-realtime stream 480 ms | 10.08 | 36 | 0 | 1040 |  |
 
 **Non-speech outputs (any text = hallucination)**
 
 - G3 gpt-transcribe hi+prompt [n12]: "n01-N-silence: मैम, मैं addition में carry समझ गया हूँ।"; "n04-N-zeros: मैम, पानी चक्र में evaporate, condense और rain होता है।"; "n05-N-silence5s: मेरा favorite खेल क्रिकेट है।"; "n06-N-whitelow: मुझे यह सवाल समझ नहीं आया।"; "n08-N-pinklow: मैम, अगर हम wooden stick को तेज आवाज में तोड़ें तो क्या वो sound energy का example है?"; "n10-N-brown: पानी गरम हो रहा है।"; "n11-N-hum: मुझे यह सवाल समझ नहीं आया, क्या आप इसे दोबारा समझा सकते हैं?"
+- O-N13auto nemotron-3.5 stream auto-LID 1120 ms [babble]: "b01-N-babblerev1: Anh nên hết thuốc mis của ta đút"
 - O-N13hi nemotron-3.5 stream hi-IN 1120 ms [babble]: "b01-N-babblerev1: आने रह दूर मेस को तक गेट और राजधार बुद्ध"; "b03-N-babblerev4: हाँ, नहीरा हमें आज समझा है।"
+- O-N3auto nemotron-3.5 stream auto-LID 320 ms [babble]: "b01-N-babblerev1: हुआ डॉक्टर और राजधाबू"
 - O-N3hi nemotron-3.5 stream hi-IN 320 ms [babble]: "b01-N-babblerev1: हाँ नहर है दूरमेस शुड की रोजदार रबू"; "b02-N-babblerev2: हाँ, ने तो हम इस डाटू"; "b03-N-babblerev4: हाँ, नए रूम में नौ राजधार रबू स्यास्त्र"
 - O-N6auto nemotron-3.5 stream auto-LID 560 ms [babble]: "b01-N-babblerev1: गुता दौंगर और राष्ट्रपूर्ण"
+- O-N6autoS nemotron-3.5 stream auto-LID 560 ms (paced + soak run) [babble]: "b01-N-babblerev1: गुता दौंगर और राष्ट्रपूर्ण"
 - O-N6hi nemotron-3.5 stream hi-IN 560 ms [babble]: "b01-N-babblerev1: हाँ ने रिमेसिंग और राष्ट्रबूद"; "b02-N-babblerev2: हाँ ने हेतु हमेशा रबू"; "b03-N-babblerev4: हाँ, नहीं, रखा नहीं और आज धाबू स्यास्त्र"
 - O-NOhi nemotron-3.5 whole-utterance batch hi-IN (default 320 ms lookahead) [babble]: "b01-N-babblerev1: हाँ नहर है दूरमेस शुड की रोजदार रबी"; "b02-N-babblerev2: हाँ, ने तो हम इस डाटू"; "b03-N-babblerev4: हाँ, नए रूम में नौ राजधार रबू स्यास्त्र"
 - O-Q06 qwen3-asr-0.6b auto [babble]: "b01-N-babblerev1: aneh tu Miss, gurah ribu raja ribut"; "b02-N-babblerev2: Aneh itu mis, udah jadi raja debu."; "b03-N-babblerev4: А не хитмись, пас сама зипа, а не хитмись, но раз да работ, а не хитмись"; "b04-N-babblerev6: あれはまさに夢みたいな。どうやらよくお探しの人物だ。"

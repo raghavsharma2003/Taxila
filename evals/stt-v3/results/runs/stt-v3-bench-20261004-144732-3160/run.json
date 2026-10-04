@@ -1,0 +1,193 @@
+{
+ "jobId": "stt-v3-bench-20261004-144732-3160",
+ "jobDir": "scripts/voice/stt-v3",
+ "ami": "ami-012ba162b9cd2729c",
+ "amiName": "Deep Learning OSS Nvidia Driver AMI GPU PyTorch 2.7 (Ubuntu 22.04) 20260427",
+ "amiSsm": "/aws/service/deeplearning/ami/x86_64/oss-nvidia-driver-gpu-pytorch-2.7-ubuntu-22.04/latest/ami-id",
+ "types": [
+  "g6.xlarge",
+  "g5.xlarge"
+ ],
+ "maxMinutes": 200,
+ "diskGb": 120,
+ "packedBytes": 22840414,
+ "s3": "s3://taxila-build-780899467240/jobs/stt-v3-bench-20261004-144732-3160/",
+ "t": {
+  "launchCallS": 489.1,
+  "toRunningS": 15.9,
+  "bootToStartS": 0,
+  "jobS": 4286,
+  "uploadS": 1,
+  "launchToBootS": 42.0,
+  "downloadS": 0.1,
+  "terminateWaitS": 401.7,
+  "instanceLifeS": 4733.0,
+  "wallS": 5224.5
+ },
+ "env": {
+  "ARMS": "N6hi N3hi N13hi N6auto NOhi Z0 Z0hi Q06 Q06hi Q17 Q17hi Q17p Q17pk"
+ },
+ "launchAttempts": [
+  {
+   "lifecycle": "spot",
+   "type": "g6.xlarge",
+   "az": "us-east-1a",
+   "error": "InsufficientInstanceCapacity",
+   "message": "There is no Spot capacity available that matches your request."
+  },
+  {
+   "lifecycle": "spot",
+   "type": "g6.xlarge",
+   "az": "us-east-1b",
+   "error": "InsufficientInstanceCapacity",
+   "message": "There is no Spot capacity available that matches your request."
+  },
+  {
+   "lifecycle": "spot",
+   "type": "g6.xlarge",
+   "az": "us-east-1c",
+   "error": "InsufficientInstanceCapacity",
+   "message": "We currently do not have sufficient g6.xlarge capacity in the Availability Zone you requested (us-east-1c). Our system will be working on provisioning additiona"
+  },
+  {
+   "lifecycle": "spot",
+   "type": "g6.xlarge",
+   "az": "us-east-1d",
+   "error": "InsufficientInstanceCapacity",
+   "message": "There is no Spot capacity available that matches your request."
+  },
+  {
+   "lifecycle": "spot",
+   "type": "g6.xlarge",
+   "az": "us-east-1e",
+   "error": "Unsupported",
+   "message": "Your requested instance type (g6.xlarge) is not supported in your requested Availability Zone (us-east-1e). Please retry your request by not specifying an Avail"
+  },
+  {
+   "lifecycle": "spot",
+   "type": "g6.xlarge",
+   "az": "us-east-1f",
+   "error": "InsufficientInstanceCapacity",
+   "message": "We currently do not have sufficient g6.xlarge capacity in the Availability Zone you requested (us-east-1f). Our system will be working on provisioning additiona"
+  },
+  {
+   "lifecycle": "spot",
+   "type": "g5.xlarge",
+   "az": "us-east-1a",
+   "error": "MaxSpotInstanceCountExceeded",
+   "message": "Max spot instance count exceeded"
+  },
+  {
+   "lifecycle": "on-demand",
+   "type": "g6.xlarge",
+   "az": "us-east-1a",
+   "error": "InsufficientInstanceCapacity",
+   "message": "We currently do not have sufficient g6.xlarge capacity in the Availability Zone you requested (us-east-1a). Our system will be working on provisioning additiona"
+  },
+  {
+   "lifecycle": "on-demand",
+   "type": "g6.xlarge",
+   "az": "us-east-1b",
+   "error": "InsufficientInstanceCapacity",
+   "message": "We currently do not have sufficient g6.xlarge capacity in the Availability Zone you requested (us-east-1b). Our system will be working on provisioning additiona"
+  },
+  {
+   "lifecycle": "on-demand",
+   "type": "g6.xlarge",
+   "az": "us-east-1c",
+   "ok": true
+  }
+ ],
+ "instanceId": "i-027e740117146c3e7",
+ "lifecycle": "on-demand",
+ "instanceType": "g6.xlarge",
+ "az": "us-east-1c",
+ "backstop": "taxila-reap-i-027e740117146c3e7",
+ "status": {
+  "phase": "done",
+  "rc": 0,
+  "bootEpoch": 1791125788,
+  "startEpoch": 1791125788,
+  "endEpoch": 1791130074,
+  "uploadedEpoch": 1791130075,
+  "outBytes": 203634
+ },
+ "outputsBytes": 203634,
+ "outputs": [
+  "arms.txt",
+  "logs/N13hi.log",
+  "logs/N3hi.log",
+  "logs/N6auto.log",
+  "logs/N6hi.log",
+  "logs/NOhi.log",
+  "logs/Q06.log",
+  "logs/Q06hi.log",
+  "logs/Q17.log",
+  "logs/Q17hi.log",
+  "logs/Q17p.log",
+  "logs/Q17pk.log",
+  "logs/Z0.log",
+  "logs/Z0hi.log",
+  "logs/prefetch.log",
+  "logs/venv.log",
+  "pins/freeze.txt",
+  "pins/gpu.csv",
+  "pins/instance.txt",
+  "pins/torch.txt",
+  "results/N13hi/env.json",
+  "results/N13hi/load.json",
+  "results/N13hi/paced.jsonl",
+  "results/N13hi/rows.jsonl",
+  "results/N13hi/soak.json",
+  "results/N3hi/env.json",
+  "results/N3hi/load.json",
+  "results/N3hi/paced.jsonl",
+  "results/N3hi/rows.jsonl",
+  "results/N3hi/soak.json",
+  "results/N6auto/env.json",
+  "results/N6auto/rows.jsonl",
+  "results/N6hi/env.json",
+  "results/N6hi/load.json",
+  "results/N6hi/paced.jsonl",
+  "results/N6hi/rows.jsonl",
+  "results/N6hi/soak.json",
+  "results/NOhi/env.json",
+  "results/NOhi/load.json",
+  "results/NOhi/rows.jsonl",
+  "results/Q06/env.json",
+  "results/Q06/load.json",
+  "results/Q06/rows.jsonl",
+  "results/Q06hi/env.json",
+  "results/Q06hi/load.json",
+  "results/Q06hi/rows.jsonl",
+  "results/Q17/env.json",
+  "results/Q17/load.json",
+  "results/Q17/rows.jsonl",
+  "results/Q17hi/env.json",
+  "results/Q17hi/load.json",
+  "results/Q17hi/rows.jsonl",
+  "results/Q17p/env.json",
+  "results/Q17p/load.json",
+  "results/Q17p/rows.jsonl",
+  "results/Q17pk/env.json",
+  "results/Q17pk/load.json",
+  "results/Q17pk/rows.jsonl",
+  "results/Z0/env.json",
+  "results/Z0/load.json",
+  "results/Z0/rows.jsonl",
+  "results/Z0hi/env.json",
+  "results/Z0hi/load.json",
+  "results/Z0hi/rows.jsonl"
+ ],
+ "result": "ok",
+ "finalState": "terminated",
+ "stateReason": "Client.UserInitiatedShutdown: User initiated shutdown",
+ "cost": {
+  "usdPerHour": 0.8048,
+  "billedSeconds": 4733.0,
+  "ec2Usd": 1.0581,
+  "ebsUsd": 0.01753,
+  "totalUsd": 1.07563,
+  "priceSource": "AWS Pricing API"
+ }
+}

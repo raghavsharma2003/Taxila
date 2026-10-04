@@ -387,7 +387,8 @@ features are parametric shapes rebuilt per frame. Image spend for this arm: USD 
 
 | What | Used for | Source | Licence | Notes |
 |---|---|---|---|---|
-| c-front + the arm-P mouth atlas (gpt-image-2 masked edits) | every layer and mouth patch | carried over from arm P, unchanged | ours / Azure OpenAI terms | **no new image generation in r2: USD 0 added to `art/character/puppet2d/ledger.json`** |
+| c-front + the arm-P mouth atlas (gpt-image-2 masked edits) | every layer and the 30 r1 mouth patches | carried over from arm P, unchanged | ours / Azure OpenAI terms | |
+| 2 new mouth patches (`hmm`, `attentive`): masked edits on `taxila-image` (gpt-image-2), c-front's own mouth as the reference image (`gen-mouths-r2.mjs`, `cut-mouths-r2.py`) | thinking and listening mouths | Azure AI Foundry `taxila-image` (sold direct) | our output under the Azure OpenAI terms | USD 0.18 in `art/character/puppet2d/ledger.json` (total 7.48 of the 30 cap) |
 | Own WebGL2 renderer, rig, mouth solver, expression emitters, listener (`scripts/character/puppet2d/polish-r2/runtime/{gl,rig,mouth,expr,demo}.js`) | runtime | ours | ours | the brow-ribbon channels and the shared head dome are IDEAS from arm V, re-implemented; no V code copied |
 | numpy, scipy, OpenCV, Pillow | layer cutting / matting (`layers.py`) | pip | BSD-3 / BSD-3 / Apache-2.0 / HPND | build-time only |
 | vite 8, Playwright 1.63 + Chromium (SwiftShader), ffmpeg | demo bundle, evidence stills/clips, fps proxy | npm / system | MIT / Apache-2.0 / BSD / LGPL | build/evidence only; nothing ships |

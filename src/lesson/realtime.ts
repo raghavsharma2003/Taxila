@@ -35,6 +35,41 @@ const BENIGN_ERRORS = new Set([
   "input_audio_buffer_commit_empty",
 ]);
 
+/**
+ * A realtime refusal for quota (BUILD-PLAN W2-D #1): the lesson moves to the cascade lane instead of leaving the child
+ * with a teacher who stops answering. Azure answers a rate-limited response as response.done status "failed" with
+ * status_details.error.code "inference_rate_limit_exceeded" (RELATIONAL-OS P2: 66/168 at 3-wide), or as an `error`
+ * event with a rate_limit code. Twin of server/voice/realtimeSession.js isQuotaError.
+ */
+export function isRateLimit(err: unknown): boolean {
+  const e = err && typeof err === "object" ? (err as Record<string, unknown>) : {};
+  const text = `${typeof e.code === "string" ? e.code : ""} ${typeof e.type === "string" ? e.type : ""} ${typeof e.message === "string" ? e.message : ""}`;
+  return /rate[_ ]?limit|too many (requests|tokens)|quota/i.test(text);
+}
+
+/** The link error code the runtime reads as "move this lesson to the cascade lane". */
+export const RATE_LIMITED = "rate_limited";
+
+/** Server VAD end-of-turn silence bounds for the pace knob (twin of server/voice/realtimeSession.js). */
+export const ENDPOINT_MIN_MS = 600;
+export const ENDPOINT_MAX_MS = 1200;
+
+/** TurnResponse.pace → server VAD silence (ms), clamped to 600-1200; null when the knob is missing. */
+export function endpointSilenceOf(pace: { endpointSilenceMs?: number } | null | undefined): number | null {
+  const ms = Number(pace?.endpointSilenceMs);
+  if (!Number.isFinite(ms) || ms <= 0) return null;
+  return Math.round(Math.min(ENDPOINT_MAX_MS, Math.max(ENDPOINT_MIN_MS, ms)));
+}
+
+/** The minted turn detection with the pace knob's silence (server VAD only; anything else is returned as is). */
+export function withEndpointSilence(td: Record<string, unknown>, silenceMs: number | null): Record<string, unknown> {
+  if (silenceMs === null || td.type !== "server_vad") return td;
+  return { ...td, silence_duration_ms: silenceMs };
+}
+
+/** One `rate_limits.updated` entry (logged; the soak and the console read them). */
+export interface RateLimit { name: string; limit?: number; remaining?: number; resetSeconds?: number }
+
 type Json = Record<string, unknown>;
 const obj = (v: unknown): Json => (v && typeof v === "object" ? (v as Json) : {});
 const str = (v: unknown): string => (typeof v === "string" ? v : "");
@@ -92,6 +127,10 @@ export interface RealtimeProtocolOptions {
 export class RealtimeProtocol {
   /** Teacher audio is playing on the client (output_audio_buffer.started → stopped/cleared). */
   teacherAudio = false;
+  /** The newest `rate_limits.updated` (requests / tokens remaining), for the console and the soak. */
+  rateLimits: RateLimit[] = [];
+  /** Responses the server refused for quota in this session. */
+  rateLimited = 0;
   private ledger = new ConversationLedger();
   private speechStarts = new Map<string, number>(); // input item id → onset time
   private childText = new Map<string, string>(); // input item id → streaming transcript
@@ -319,11 +358,27 @@ export class RealtimeProtocol {
           return;
         }
         if (code && BENIGN_ERRORS.has(code)) return;
+        if (isRateLimit(err)) {
+          this.rateLimited++;
+          this.emit({ type: "error", message: "the realtime lane is full", code: RATE_LIMITED, fatal: false });
+          return;
+        }
         this.emit({ type: "error", message: str(err.message) || "realtime error", code, fatal: false });
         return;
       }
+      case "rate_limits.updated": {
+        const list = Array.isArray(e.rate_limits) ? (e.rate_limits as unknown[]) : [];
+        this.rateLimits = list.map((r) => {
+          const o = obj(r);
+          const num = (v: unknown) => (typeof v === "number" ? v : undefined);
+          return { name: str(o.name), limit: num(o.limit), remaining: num(o.remaining), resetSeconds: num(o.reset_seconds) };
+        });
+        const low = this.rateLimits.find((r) => r.limit && r.remaining !== undefined && r.remaining / r.limit < 0.1);
+        if (low) console.info(`realtime: ${low.name} ${low.remaining}/${low.limit} left (resets in ${low.resetSeconds ?? "?"} s)`);
+        return;
+      }
       default:
-        return; // session.*, rate_limits.updated, response.output_item.*, *.delta for audio bytes, ...
+        return; // session.*, response.output_item.*, *.delta for audio bytes, ...
     }
   }
 
@@ -343,8 +398,13 @@ export class RealtimeProtocol {
       ? str(response.status)
       : "completed") as ResponseStatus;
     if (status === "failed") {
-      const why = str(obj(obj(response.status_details).error).message);
-      this.emit({ type: "error", message: why || "the teacher could not answer", fatal: false });
+      const err = obj(obj(response.status_details).error);
+      if (isRateLimit(err)) {
+        this.rateLimited++;
+        this.emit({ type: "error", message: "the realtime lane is full", code: RATE_LIMITED, fatal: false });
+      } else {
+        this.emit({ type: "error", message: str(err.message) || "the teacher could not answer", fatal: false });
+      }
     }
     this.responses.delete(id);
     this.interrupted.delete(id);

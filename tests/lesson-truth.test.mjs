@@ -23,7 +23,8 @@ const turn = (r, c, extra = {}) => step(r.state, { event: "turn", kit: K, cls: c
 const NE = cls("no_evidence");
 function toPractice(ctx) {
   let r = step(fresh(ctx), { event: "start", kit: K, now: 0 });
-  while (r.state.phase !== "practice" || !r.move.itemId) r = turn(r, NE);
+  // past the guidance ladder's faded worked-example step (W2-C, director/fading.js): these cases are about kit items
+  while (r.state.phase !== "practice" || !r.move.itemId || r.move.itemId.startsWith("fade:")) r = turn(r, NE);
   return r;
 }
 /** A real kit: class 8 squares (the audit's Kabir lesson). */

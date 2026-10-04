@@ -46,6 +46,40 @@ export const worked = ({ part, parts }) => join(
   "their thinking, your pace; no new idea",
 );
 
+// ── the guidance ladder (director/fading.js, W2-C #2) ──
+/** The one-turn first-step probe (steal 2): only what they would do FIRST; B1 (classes 1-2) is asked about the process. */
+export const firstStep = ({ band } = {}) => join(
+  "pose the worked example in LESSON NOW; give no step of it",
+  band === "B1" ? "ask how they would start it — the doing, not the answer" : "ask only what they would do first; one short question; wait",
+  "no verdict on what they say; this is to know where to begin",
+);
+export const firstStepStarted = () => "they could start it: no teaching of the steps; a question for them to try";
+export const firstStepStuck = () => "they could not start yet: no verdict; show the way in, one step at a time";
+/** The faded step: the earlier steps are said briefly; the gap is theirs (its key stays unsaid, like any question). */
+export const fadedStep = ({ band } = {}) => join(
+  "the earlier steps in LESSON NOW, said briefly as done",
+  band === "B1" ? "then ask what we do next — the step with the gap" : "then the step with the gap is theirs: pose it as written; wait",
+  "never fill the gap for them",
+);
+/** Ask (a doubt): her first turn is about THEIR question, never a greeting or a hook. */
+export const answerQuestion = () => join(
+  "their question first (LESSON NOW): one idea that answers it, simply, from today's topic",
+  "no greeting speech beyond their name; no hook",
+  "end with one small question that makes them use the idea",
+);
+// ── the practice purpose (W2-C #7) ──
+export const practiceOpen = ({ of }) => `practice set of ${of}: no greeting speech beyond their name, no hook; straight to the first question`;
+export const practiceSummary = () => join(
+  "the practice set is done: name one thing that went right in it — the method, never ability",
+  "one question that needs another go next time, if any; no new teaching",
+  "warm goodbye; nothing left hanging",
+);
+/** Equity profile (steal 4): ONE next step, never a menu of choices. */
+export const takeBreakOneStep = () => join(
+  "pause the work; struggling is a normal part of learning (about the work, never about them)",
+  "one next step only: an easier one; no list of options",
+);
+
 const KIND_NOTE = {
   predict: "ask for their prediction before anything is shown or explained",
   contrast: "two cases side by side; ask which one fits and what is different",

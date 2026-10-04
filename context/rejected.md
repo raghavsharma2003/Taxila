@@ -1152,3 +1152,57 @@ sandboxed document boots React again, which caches cannot remove. Only at 1x CPU
 **Tried:** the facts row alone to keep the teacher's part counts on the screen's.
 **Broke:** 35/40, not 100%. On explain moves she still teaches with her own example fractions (1/4 vs 1/8 over a board
 showing 2/5 and 2/3), and once said "Whiteboard: 1/8 < 1/4". The `screenContradiction` rewrite takes it to 39/40.
+
+## rj-w2c-score-shape-boilerplate
+**Tried (2026-10-04, W2-C never-answer battery):** scoring the Director's whole move shape with `revealsAnswer`. **Broke:**
+the code-written bookkeeping ("rung 1 of 4", "one small nudge") read as the key of an item whose key is "1" / "one": 14,
+then 4 false reveals of 51 readings. **Instead:** score only what carries kit content (the rung's hint text, the content
+lines) and every screen text (hint line, ask, chips, board).
+
+## rj-w2c-fade-after-full-example
+**Tried (2026-10-04, W2-C fading):** a faded step on the last line of the SAME worked example right after the worked-example
+turns whose content listed every step. **Broke:** the gap's key was in her content a turn earlier, so the "completion" was
+recall. **Instead:** the worked part before a faded step carries only the first half of the steps before the gap, and
+`upcomingItem` names the faded step during it, so a key said early spoils the answer.
+
+## rj-w2c-guidance-from-first-unsolid-skill
+**Tried (2026-10-04, W2-C):** the lesson's entry guidance from the first kit skill the child had not made solid. **Broke:** a
+child solid on skill 1 with skill 2 unseen got the full worked example, which teaches skill 1 (expertise reversal the wrong
+way). **Instead:** guidance reads the worked example's own skill; an unseen later skill gets its own explain turn before
+its first item.
+
+## STT v3 (2026-10-04) — pending merge from `inbox/stt-v3.json` and `inbox/stt-v3-bench.json`
+
+## rj-nemotron-hi-in-locale
+**Tried:** Nemotron-3.5 streaming with `target_lang=hi-IN` for Hindi-English children. **Broke:** pure English utterances come back empty (English answers 0/12, English cerNorm 0.38-0.47 vs ~0.02 with auto-LID); overall cerNorm 0.15-0.17 vs 0.045-0.048 with auto. **Instead:** auto-LID plus `stt-v3-script-guard`.
+
+## rj-transformers-batched-rnnt-streaming
+**Tried:** transformers 5.18 Nemotron streaming `generate()` with batch > 1 for the concurrency test. **Broke:** the encoder-exhausted stopping criterion ends a stream permanently when it runs out of frames before the batch pulls the next chunk; at B=2 it stopped after ~2 chunks with truncated text. **Instead:** our own batched loop over the same modules (identical to `generate()` at B=1; stream 0 text identical up to B=512). Production serving is still unbuilt.
+
+## rj-voxtral-realtime-hinglish
+**Tried:** Voxtral-Mini-4B-Realtime-2602 at 480 and 960 ms on the child-Hinglish corpus. **Broke:** it romanises Hindi; numbers 50-51/96 vs 92 (D4); graded answers 46/78; only 8 streams per L4 in transformers. Revisit only via vLLM, and only if a Hindi fine-tune appears.
+
+## rj-zero-stt-hinglish-nonspeech
+**Tried:** `shunyalabs/zero-stt-hinglish` (Whisper-medium post-train; the owner asked about Shunya) for always-on listening. **Broke:** it invents text on 27-30/30 non-speech clips ("आप आप आप…", "Volver a la taula", Welsh and Japanese strings); cerNorm 0.125-0.134; the repo has no licence text beyond "openrail".
+
+## rj-forced-hindi-llm-asr
+**Tried:** Qwen3-ASR (1.7B, 0.6B) with `language=hi`. **Broke:** it answers "हम्म", "मैं" or "हाँ" on 29-30/30 non-speech clips, and English accuracy drops. Auto language with no prompt is the best Qwen setting; the D4-style script prompt also made it worse (cer 0.047 vs 0.031).
+
+## rj-nemotron-turn-final-now
+**Tried (bench):** Nemotron-3.5 streaming auto-LID as the turn-final transcript the Director grades, replacing D4/MAI. **Broke:** numbers 84/96 [80% 0.825, 0.912] vs D4 92/96 [0.924, 0.978] (non-overlapping); English answers 9-11/12; dCER +0.018 [0.008, 0.029]; noisy cer about 2x D4 at 10 dB SNR. **Instead:** keep it as the always-on ear, and grade from a second pass until E1 or a child fine-tune closes the gap.
+
+## rj-sarvam-self-host-package
+**Tried (desk):** running Sarvam Saaras in our own cloud to meet the self-host-only rule for third-party AI. **Broke:** Saaras v4 is API-only (no weights). Saaras v3 exists only as an encrypted AWS SageMaker Marketplace package at a $5,000/month contract plus instance cost; the weights are not ours and cannot be fine-tuned on child audio; its published Hindi WER (~22 on IndicVoices) gives no reason to pay. The API (~$0.35/h) stays reference-only.
+
+## rj-api-per-hour-always-on-at-scale
+**Tried (costed):** paying a per-session-hour STT API for the always-on ear at scale. **Broke:** gpt-live-transcribe at $1.02/session-h is $184k/month at 1,000 peak concurrent children and $1.84M at 10,000 (Azure Speech RT+LID at its best commitment tier is $0.52/h), vs $0.04-0.05 self-hosted Nemotron including idle headroom ($8-9k/month at 1,000; `stt-v3-cost-model-2026-10-04`). Fine for the pilot below ~1.2-1.6 average concurrent sessions; not past ~20.
+
+## rj-spot-gpu-live-lane
+**Tried (design):** spot GPUs for the live STT lane (spot L4 is ~30-45% cheaper). **Broke:** a reclaim ends every child's stream on that GPU at once (64-128 children) and a replacement takes a 161 s cold start. Usable only for the offline shadow and the bench, or as a surplus replica once client failover to the API lane is proven.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-p2d-column-copy-brow-tail` (2026-10-04): Continuing a hidden brow tail by copying one column (r1) leaves a diagonal colour seam and a blunt end as soon as the brow lifts out from under the hair strand; fixed by quadratic edge fits extrapolated with a taper + pull-push colour.
+- `rj-p2d-rect-hidden-fill` (2026-10-04): A rectangular hidden fill behind the jaw (r1 bun `ext`) is uncovered by any turn as dark cut debris; hidden fills must be the hidden object's own plausible shape (convex hull / traced neck column).
+- `rj-p2d-lid-mixed-colour-alpha` (2026-10-04): Lid layer bottom edge with c-front's mixed lash-over-sclera colour at partial alpha double-counts the white (light streak + stairs = the r1 'lid seam'); the lash bottom must be an analytic coverage edge in decontaminated lash colour, ~2-3 px below the hand-read opening line, with a lid shadow on the sclera.
+- `rj-p2d-trapped-cream-in-locks` (2026-10-04): Mask closing traps the cream gap between two strands of a lock inside the lock layer; invisible over cream, a light line over skin/teal (the r1 lock 'halo'). Warm-light interior pixels must be matted out by colour.

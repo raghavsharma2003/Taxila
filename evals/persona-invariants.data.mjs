@@ -3,6 +3,7 @@
 // compile() for one character on every lane × language × age band × move shape; floorChecks() states what must
 // hold in every one of them. Each check is a pure function of the compiled text, so the runner can also feed it
 // a deliberately broken prompt (negative controls) and require that the check FAILS.
+import { briefViewFor } from "../server/learner/briefView.js";
 import { readFileSync, readdirSync } from "node:fs";
 import { compileWithReport, TURN_SHAPE_PREFIX, FLOOR_FIX } from "../server/compiler/compile.js";
 import { HELPLINES, FLOOR_HEADING, floorText } from "../server/compiler/floor.js";
@@ -74,8 +75,10 @@ export function buildLanes(character, { kit, classLevel, subject } = sampleKit()
   for (const lane of LANES) for (const lang of LANGS) for (const ageBand of BANDS) for (const move of MOVES) {
     const s = stateFor(kit, item, character, { lang, ageBand, move });
     const withItem = !["safeguard", "wrap", "teachback"].includes(move);
+    // the CHILD-BRIEF v2 view production compiles (W2-C #1, compiler/instructions.js), so the invariants gate what ships
+    const briefView = briefViewFor({ ...s, brief: brief(ageBand, lang), ctx: { ...s.ctx, topicTitle: s.ctx?.topicTitle ?? "Fractions as equal shares" } }, kit) ?? undefined;
     const input = {
-      character, brief: brief(ageBand, lang), lessonState: s, move: s.lastMove, item: withItem ? item : undefined, content: [], topic, language: lang, lane,
+      character, brief: brief(ageBand, lang), briefView, lessonState: s, move: s.lastMove, item: withItem ? item : undefined, content: [], topic, language: lang, lane,
       ...(lane === "voice" && withItem ? { branches: branchesFor(s, kit) } : {}),
     };
     const r = compileWithReport(input);

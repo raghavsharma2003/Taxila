@@ -13,7 +13,7 @@ const COLS = {
   warm: { closed: "rest", small: "open_sm" },
   delight: { closed: "grin", small: "grin_sm", aa: "laugh", E: "grin_E", I: "grin_E", kk: "laugh", SS: "grin_E", DD: "grin_sm", open_sm: "grin_sm" },
   concern: { closed: "concern", small: "concern_sm", aa: "concern_aa", O: "concern_O", U: "concern_O", kk: "concern_sm", E: "concern_sm", I: "concern_sm" },
-  neutral: { closed: "neutral", small: "open_sm" },
+  neutral: { closed: "neutral", small: "attentive" },
 };
 const FADE_S = 0.045;
 
@@ -60,13 +60,14 @@ export class MouthSolver {
     this.row = row;
     let name;
     const side = k("mouthLeft") - k("mouthRight");
-    if (row === "closed" && Math.abs(side) > 0.18 && smile < 0.3) name = "aside";
+    // r2: the painted "hmm" (pursed, slid aside, one corner tucked) when the atlas has it; else r1's "aside"
+    if (row === "closed" && Math.abs(side) > 0.18 && smile < 0.3) name = this.have.has("hmm") ? "hmm" : "aside";
     else if (k("eyeWideLeft") + k("eyeWideRight") > 0.5 && open > 0.2 && smile < 0.3 && (row === "aa" || row === "O" || row === "kk")) name = "surprise";
     else if (row === "closed" && Math.abs(smileL - smileR) > 0.14 && smile > 0.18) name = "playful";
     else {
       // r2: with no smile at all (thinking, attentive listening, neutral talk) the closed mouth is the atlas's flat
       // "neutral" shape; c-front's own resting mouth is a smile, and kept for every smile >= 0.04 (idle, warm)
-      const col = smile > 0.33 ? "delight" : concern > 0.3 ? "concern" : smile < 0.04 && row === "closed" ? "neutral" : "warm";
+      const col = smile > 0.33 ? "delight" : concern > 0.3 ? "concern" : smile < 0.04 && (row === "closed" || row === "small") ? "neutral" : "warm";
       name = COLS[col][row] ?? row;
     }
     if (!this.have.has(name)) name = COLS.warm[row] ?? row;
@@ -88,14 +89,14 @@ export class MouthSolver {
       skew: side * 0.8 + (smileL - smileR) * 0.6,
       // r2: the aside slides the mouth up to ~16 px toward the side (c-thinking), smirk corners lift up to 5 px,
       // and the delight laugh is drawn ~10% smaller (c-happy's open smile is narrower than the atlas laugh)
-      shift: Math.max(-1, Math.min(1, side * 1.6)) * 16 * (smile < 0.3 ? 1 : 0.4),
+      shift: Math.max(-1, Math.min(1, side * 1.6)) * (name === "hmm" ? 7 : 16) * (smile < 0.3 ? 1 : 0.4),
       // corners: smirk lift, and when she is NOT smiling the spread talk shapes (E/I/SS/CH) relax their corners
       // down ~3 px so a neutral sentence never reads as a grin (the atlas cut those shapes from smiling frames)
       liftR: Math.max(0, smileL - smileR) * 7 - (smile < 0.08 && (row === "E" || row === "I" || row === "SS" || row === "CH") ? 6 * (1 - smile / 0.08) : 0) - k("mouthFrownLeft") * 6,
       liftL: Math.max(0, smileR - smileL) * 7 - (smile < 0.08 && (row === "E" || row === "I" || row === "SS" || row === "CH") ? 6 * (1 - smile / 0.08) : 0) - k("mouthFrownRight") * 6,
       scale: name === "laugh" || name === "grin_E" ? 0.9 : 1,
-      tilt: name === "aside" ? Math.max(-1, Math.min(1, side * 1.6)) * 9 : 0,
-      narrow: name === "aside" ? 0.16 * Math.min(1, Math.abs(side) * 1.6) : 0,
+      tilt: name === "aside" ? Math.max(-1, Math.min(1, side * 1.6)) * 9 : name === "hmm" ? Math.max(-1, Math.min(1, side * 1.6)) * 3 : 0,
+      narrow: name === "aside" ? 0.16 * Math.min(1, Math.abs(side) * 1.6) : name === "hmm" ? 0.06 : 0,
       lowerDrop: Math.max(-2, Math.min(3, (open - rowOpen) * 6)),
       jawGain: row === "closed" || row === "PP" ? 0.2 : 1,
     };

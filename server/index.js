@@ -13,6 +13,8 @@ import { routes as forge } from "./routes/forge.js";
 import { routes as child } from "./routes/child.js";
 // W1-C: the test clock (GET/POST /api/test/clock; @taxila.test accounts only). Seam applied by W1-D, owner of this file.
 import { routes as testClock } from "./comprehension/testclock.js";
+// W2-D: the mid-sitting realtime → cascade lane switch (POST /api/lesson/lane). One-line seam; the route lives in W2-D's module.
+import { routes as lane } from "./voice/realtimeSession.js";
 
-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock });
+register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...lane });
 export { handle, register };

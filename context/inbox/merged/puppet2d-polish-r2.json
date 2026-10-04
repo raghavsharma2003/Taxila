@@ -1,0 +1,47 @@
+{
+ "source": "workflow puppet2d polish r2 (arm P), 2026-10-04",
+ "nodes": [
+  {
+   "id": "p2d-r2-turn-shared-depth",
+   "kind": "decision",
+   "title": "Puppet2D r2 head turn: every head layer samples ONE slope-bounded depth field (skull paraboloid + face bump, the idea borrowed from arm V's dome); only the bun takes -45 depth, and the right lock's lower part takes the bun's depth so lock and knot never slide over each other. Hidden fills are shaped (convex-hull knot, neck column traced from the visible neck edges, face overscan kept 6 px off the backdrop). Reverse if a frame-by-frame sweep at |yaw| 20 shows debris again or if the yaw range must exceed 20 deg (then a 3/4 sprite-switch is needed).",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "p2d-r2-expr-emitters",
+   "kind": "decision",
+   "title": "Surprise, playful, thinking (and warm/delight/concern/listening) are compositor presets in scripts/character/puppet2d/polish-r2/runtime/expr.js mixed into behaviour.ts's frame before the Compositor; behaviour.ts is unchanged (its Emotion union is the main loop's call). Listening nods come from the child's mic level at phrase pauses (Listener), not a script. Reverse if the main loop adds these emotions to behaviour.ts.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "p2d-r2-measures",
+   "kind": "measurement",
+   "title": "Puppet2D r2: rest SSIM vs c-front 0.9852 head crop (CPU composite, n=1); hair/lock/bun light-fringe gate 0 px on cream/black/magenta/white/teal grounds; blind two-family panel (gpt-5.6-sol + grok-4-20) mean ~3.5 over 14 stills x 2 sizes x 2 models (r2final 3.46; c-front vs its own sheet scores 3.5-4.0 on the same panel); forced-choice emotion recognition 7-10/16 over 6 runs (final 9/16; r1 7/16); the same classifier on the concepts themselves 5/10 (c-listening and c-talking read 'warm smile'); fps proxy headless SwiftShader: work p50/p95 1.2/2.1 ms unthrottled, 5.5/8.8 ms at 4x CPU throttle, 18-19 draws, ~19k tris (rAF capped at 30 in headless; NOT a device number). Image spend this round USD 0.18 (2 mouth patches), ledger total 7.48.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-p2d-column-copy-brow-tail",
+   "kind": "rejection",
+   "title": "Continuing a hidden brow tail by copying one column (r1) leaves a diagonal colour seam and a blunt end as soon as the brow lifts out from under the hair strand; fixed by quadratic edge fits extrapolated with a taper + pull-push colour.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-p2d-rect-hidden-fill",
+   "kind": "rejection",
+   "title": "A rectangular hidden fill behind the jaw (r1 bun `ext`) is uncovered by any turn as dark cut debris; hidden fills must be the hidden object's own plausible shape (convex hull / traced neck column).",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-p2d-lid-mixed-colour-alpha",
+   "kind": "rejection",
+   "title": "Lid layer bottom edge with c-front's mixed lash-over-sclera colour at partial alpha double-counts the white (light streak + stairs = the r1 'lid seam'); the lash bottom must be an analytic coverage edge in decontaminated lash colour, ~2-3 px below the hand-read opening line, with a lid shadow on the sclera.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-p2d-trapped-cream-in-locks",
+   "kind": "rejection",
+   "title": "Mask closing traps the cream gap between two strands of a lock inside the lock layer; invisible over cream, a light line over skin/teal (the r1 lock 'halo'). Warm-light interior pixels must be matted out by colour.",
+   "at": "2026-10-04"
+  }
+ ]
+}

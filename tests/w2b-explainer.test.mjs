@@ -203,8 +203,11 @@ describe("the Director's explain rung and the facts row", () => {
 });
 
 describe("interest skins (personalisation gap 5)", () => {
-  test("every onboarding tile maps to a skin, none to generic", () => {
-    const tiles = readFileSync(new URL("src/child/interests.ts", ROOT), "utf8").match(/INTERESTS = \[([^\]]+)\]/)[1].match(/"([a-z]+)"/g).map((s) => s.slice(1, -1));
+  test("every onboarding tile maps to a skin, none to generic", async () => {
+    // the onboarding tiles: W2-C's one registry when it exists (shared/interests.js), else the tile list in src/child/interests.ts
+    const reg = await import("../shared/interests.js").catch(() => null);
+    const tiles = reg?.INTEREST_REGISTRY ? reg.INTEREST_REGISTRY.filter((i) => i.tile).map((i) => i.id)
+      : readFileSync(new URL("src/child/interests.ts", ROOT), "utf8").match(/INTERESTS = \[([^\]]+)\]/)[1].match(/"([a-z]+)"/g).map((s) => s.slice(1, -1));
     assert.equal(tiles.length, 12);
     for (const t of tiles) assert.notEqual(interestIdOf(t), null, t);
     assert.deepEqual(interestSet(["football", "drawing", "stories", "building", "nature"]), ["building", "drawing", "football", "nature", "stories"]);

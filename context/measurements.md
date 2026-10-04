@@ -1836,3 +1836,35 @@ W2-B acceptance run locally against `node server/serve.mjs` (dist built) on the 
   stream's test on the shared test branch at the same time (4 → 4 when re-checked; no w2b account left).
 
 - `w1-prod-accepted-2026-10-04` (2026-10-04): Wave 1 fully accepted in production; the conductor check passed 11/11 once the worker was deployed pinned to the web's gated commit with the new deploy-worker --from-tree mode (built from a clean worktree at 9242020, ancestor-of-origin and gate-evidence checked). Details: docs/ops/W1-PROD-RESULTS-2026-10-04.md.
+
+## W2-C (2026-10-04)
+
+- `w2c-teach-turns-2026-10-04`: teaching turns per skill before the first practice item, `node evals/director-sim.mjs
+  --teach-turns` (offline, real Director, 385 class 4-7 kits × 3 profiles, n = 1155): fresh child median 4 (legacy 4);
+  right-first-time median 1 (legacy 1); struggling child with misses on the record median 4 (legacy 1: the old boolean
+  read a 0.66 prior as knowledge and sent them attempt-first, the audit's §2.4 inversion). Acceptance "+≤ 1 at the
+  median" holds for every non-struggling profile; the struggling profile's +3 is the fix.
+- `w2c-faded-step-coverage-2026-10-04`: code-recoverable single blanks (`blankOf`, latest step first, blank ≤ 40 chars):
+  341/385 class 4-7 topics (204 on the last step); 830/830 kits carry `fadedVersion`. Method: node over data/kits.
+- `w2c-never-answer-offline-2026-10-04`: `node evals/never-answer.mjs`: 30 variants, 51 classifier readings stepped on 4
+  real kit items: 0 reveals before rung 4, 0 skipped rungs; the negative control (a hint stating the key) is caught.
+  The `--live` run (real reply model) was NOT run in this stream.
+- `w2c-personalisation-diff-local-2026-10-04`: `tests/prod/w2c-personalisation.mjs` against `node server/serve.mjs` on
+  the Neon test branch (real classifier and reply model, test clock +1 day, n = 3 per arm): (c) all-"pata nahi" children
+  got a worked or faded example on day 2 3/3 (first-step probe → explain → faded step); right-first-time children
+  attempted first 3/3 (warm-up → hook → kit item); (d) "didi thoda dheere bolo" raised waitNudgeSec 4 → 5 s and the
+  endpoint 700 → 840 ms on the same turn. Local, not Central India; no timing claim.
+- `w2c-practice-local-2026-10-04`: `tests/prod/w2c-practice-ask.mjs` locally: practice opens on a question ("1 of 5"),
+  never counts past the set, closes with done; 7/7.
+- `w2c-brief-v2-budget-2026-10-04`: a full-size CHILD-BRIEF v2 view compiled on 4 kits × 6 items × 3 languages × 2 lanes at
+  rung 3 with the longest floor correction: worst 1348 of 2600 tokens (tests/w2c-director.test.mjs). The TODAY row renders
+  for 830/830 curriculum topic titles. `scripts/check-prompt-budget.mjs` (legacy brief) still reports worst 1612/2600.
+
+## STT v3 (2026-10-04) — pending merge from `inbox/stt-v3.json` and `inbox/stt-v3-bench.json`
+- `stt-v3-bench-2026-10-04` (2026-10-04): open-weight STT bench on AWS L4 (transformers 5.18; `evals/stt-v3/`), synthetic refresh corpus n=180 speech + 30 non-speech + 4 reversed-babble, same scorer as the refresh. cerNorm / numbers / answers: D4 0.028 92/96 76/78; MAI-Tx-2 0.017 91/96 78/78; Qwen3-ASR-1.7B auto 0.031 84/96 70/78, 0/30 non-speech; Nemotron-3.5 auto-LID 320/560/1120 ms 0.046/0.048/0.045, 84-85/96, 71-74/78, 0/30, wrong script 3-5/180; Nemotron forced hi-IN 0.15-0.17 (English answers 0/12); Voxtral-Realtime 0.118-0.140, 50-51/96; Zero-STT-Hinglish 0.125-0.134, non-speech 27-30/30; Qwen3-ASR-0.6B 0.078. Nemotron text complete after speech end p50 254-290 ms (320/560 ms, GPU host, no network); soak 0 chars outside speech over 4 x 10 min; one L4 carries 128 Nemotron streams at RTF p95 <= 1 (Voxtral 8). Spend $2.48.
+- `stt-v3-accuracy-80ci-2026-10-04` (2026-10-04): accuracy vs D4/MAI with 80% intervals. n=180 synthetic speech; non-speech n=12 for API arms and n=30 for open arms; item-level paired bootstrap dCER over 30 items; Wilson 80% for counts; `evals/stt-v3/results/tables-stt-v3.md`. D4 0.028, numbers 92/96 [0.924, 0.978], answers 76/78 [0.940, 0.989]. MAI-Tx-2 batch 0.017, dCER -0.011 [-0.022, 0.001], 91/96, 78/78 [0.979, 1]. MAI-Tx-2-Streaming 0.021, dCER -0.007 [-0.017, 0.003], 90/96, 78/78. Qwen3-ASR-1.7B 0.031, dCER +0.003 [-0.005, 0.012], 84/96 [0.825, 0.912], 70/78 [0.845, 0.934]. Nemotron auto 320 ms 0.046, dCER +0.018 [0.008, 0.029], 84/96 [0.825, 0.912], 74/78 [0.906, 0.972], non-speech 0/30 [0, 0.052]. Nemotron's numbers interval does not overlap D4's; the answers intervals overlap. Real-child accuracy unmeasured (E1).
+- `stt-v3-cost-model-2026-10-04` (2026-10-04): always-on STT cost model. This is arithmetic, not a billing measurement: prices from the Azure Retail API and AWS Pricing API (2026-10-04), L4 capacity from the stt-v3 load test, T4 capacity estimated. Assumptions: session-h/month = 180 x peak concurrency C; Nemotron 64 streams/L4 (measured 128 halved), 32/T4 [estimate]; fleet ceil(C/cap) x 1.2 + 1; autoscaled = full fleet 8 h/day, max(2, 25%) warm 16 h; 0.5% of session-hours fail over to D4 at $1.02. $/session-hour at C = 100 / 1,000 / 10,000: Nemotron Azure CI T4 autoscaled 0.082 / 0.051 / 0.049 (flat 0.144 / 0.098 / 0.092); AWS ap-south-1 L4 autoscaled 0.108 / 0.048 / 0.042; gpt-live-transcribe 1.02; Azure Speech RT+LID 1.30 PAYG and 0.845 / 0.52 / 0.52 at the best commitment tier; MAI-Tx-2 placeholder 0.36 (no meter). C = 10,000 needs ~190 L4 or ~377 T4 in India; ap-south-1 G/VT quota is 0. On-call people are not priced: each $1,000/month adds $0.056 / 0.0056 / 0.00056 per session-hour. Script: RECOMMENDATION.md §3.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `p2d-r2-measures` (2026-10-04): Puppet2D r2: rest SSIM vs c-front 0.9852 head crop (CPU composite, n=1); hair/lock/bun light-fringe gate 0 px on cream/black/magenta/white/teal grounds; blind two-family panel (gpt-5.6-sol + grok-4-20) mean ~3.5 over 14 stills x 2 sizes x 2 models (r2final 3.46; c-front vs its own sheet scores 3.5-4.0 on the same panel); forced-choice emotion recognition 7-10/16 over 6 runs (final 9/16; r1 7/16); the same classifier on the concepts themselves 5/10 (c-listening and c-talking read 'warm smile'); fps proxy headless SwiftShader: work p50/p95 1.2/2.1 ms unthrottled, 5.5/8.8 ms at 4x CPU throttle, 18-19 draws, ~19k tris (rAF capped at 30 in headless; NOT a device number). Image spend this round USD 0.18 (2 mouth patches), ledger total 7.48.
