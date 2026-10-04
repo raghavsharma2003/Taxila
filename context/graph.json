@@ -7117,6 +7117,13 @@
    "at": "2026-10-04",
    "title": "taxila-live-transcribe writes English lesson words in Devanagari ('फेसेस', 'कॉर्नर्स', 'एज') despite sttPrompt's Latin-script instruction (A3a 4/4 clips with English words; most cascade-latency turns). classify graded these right in the 20-turn run, but kit-key exact matching (classifyFast) and any downstream that compares Latin terms see a different string. Unmeasured: exact-match rate change on the n=180 corpus; per-lesson keywords (not wired) may change it",
    "source": "inbox/router-shipnow.json"
+  },
+  {
+   "id": "owner-always-listen-full-session-2026-10-04",
+   "kind": "decision",
+   "title": "Owner: the app listens to the child for the whole session (full duplex, interrupt or ask any time, as on live voice models and the companion projects), so live STT streams the full lesson hour; the 'send only speech' cost lever is rejected. Cost savings must come from STT choice (MAI price, self-hosted open models on AWS GPU), voice and library reuse instead. Reverse only if the owner asks.",
+   "at": "2026-10-04",
+   "source": "inbox/owner-always-listen.json"
   }
  ],
  "edges": [
