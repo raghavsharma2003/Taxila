@@ -162,7 +162,11 @@ export function clientChild(c) {
 }
 
 export async function me(req, res) {
-  const g = await requireGuardian(req);
+  send(res, 200, await meData(await requireGuardian(req)));
+}
+
+/** GET /api/me's body for a signed-in guardian (also folded into GET /api/child/boot: one hop on child home). */
+export async function meData(g) {
   const cols = "id, first_name, class_level, board, school_medium, language_pref, teacher_id, teacher_name, avatar, interests";
   // Tolerant of a database without 011_teacher_name (deploy order): /api/me gates sign-in and the whole parent corner,
   // so an undefined column (42703) reads as "no custom name" instead of failing every request.
@@ -175,7 +179,7 @@ export async function me(req, res) {
   const children = rows.map(clientChild);
   const consents = await q(
     "select distinct on (child_id, purpose) child_id, purpose, granted, version, created_at from consent where guardian_id = $1 order by child_id, purpose, created_at desc", [g.id]);
-  send(res, 200, { guardian: g, children, consents });
+  return { guardian: g, children, consents };
 }
 
 /** body: { childId?: uuid|null, grants: { [purpose]: boolean } } */

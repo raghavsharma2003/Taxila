@@ -350,6 +350,8 @@ export interface ChildPlanResponse {
 export type MapState = "not_started" | "practising" | "got_it" | "secure";
 export interface ChildMapSkill {
   skillId: string; title: string; topicId: string; chapter: string; subject: string;
+  /** W2-A (flows G16): the skill in a child's words (the kit title's first clause, ≤ 6 words), for Young labels. */
+  label?: string;
   /** Legacy status for src/child/api.ts normaliseSkills. */
   status: SkillStatus;
   state: MapState;

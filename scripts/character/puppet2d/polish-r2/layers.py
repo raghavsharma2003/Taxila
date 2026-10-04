@@ -332,6 +332,22 @@ for side in ("L", "R"):
     side_fade = np.clip(np.minimum(xx - LX[0], LX[-1] - xx) / 2.0, 0, 1)
     lid_alpha *= side_fade
     lid_rgb = im.copy()
+    # r2 (judge item 5, the lid seam): along the lash bottom c-front's pixel is lash MIXED with the sclera under it.
+    # Drawing that mixed colour at partial alpha over the sclera counted the white twice (a light streak + stairs
+    # under the lash). Two-colour matte instead: alpha = where the pixel sits between the lash colour and the white,
+    # colour = the solid lash colour extended outward (decontaminated), so lid-over-sclera reproduces c-front.
+    solid_lash = (lashness > 0.97) & lidmask
+    lash_col = pullpush(im, ndi.binary_erosion(solid_lash, iterations=1) | (solid_lash & (lum < 60)))
+    Lc = 0.299 * lash_col[..., 0] + 0.587 * lash_col[..., 1] + 0.114 * lash_col[..., 2]
+    # inside the opening the lash's lower edge IS the opening's top curve (read by hand, smooth): draw it as an
+    # analytic edge with exact pixel coverage (the per-column binary cut was a staircase at 2x+ and under turns)
+    Tfull = np.interp(xx, X, T)
+    inside = (xx >= xa + 2) & (xx <= xb_ - 2)
+    band = inside & (yy >= Tfull - 4) & (yy <= Tfull + 2) & (lid_top >= 1)
+    cov = np.clip(Tfull + 0.5 - yy, 0, 1)
+    endw = np.clip(np.minimum(xx - xa - 2, xb_ - 2 - xx) / 6.0, 0, 1)    # blend into the measured edge at the ends
+    lid_alpha = np.where(band, cov * endw + lid_alpha * (1 - endw), lid_alpha)
+    lid_rgb = np.where((band & (yy >= Tfull - 3))[..., None], lash_col, lid_rgb)
     geom_out["rects"][f"lid{side}"] = save_layer(f"lid{side}", lid_rgb, lid_alpha)
 
     # ---- lower lid band: skin under the opening, rises on squint / smile

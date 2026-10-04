@@ -23,7 +23,10 @@ export const SKETCHES = ["plant", "flower", "leaf", "insect"];
 const PACE = { B1: 1.4, B2: 1.3, B3: 1.0, B4: 0.9 };
 
 const isInt = (n, lo, hi) => Number.isInteger(n) && n >= lo && n <= hi;
-const fitsLabel = (t) => typeof t === "string" && !textProblem(t);
+/** A template label: ≤ 32 chars (it may be written as two lines of ≤ 24: writeFit), and no markup / sentence shape. */
+export const LABEL_MAX = 32;
+const fitsLabel = (t) => typeof t === "string" && [...t.trim()].length <= LABEL_MAX
+  && (!textProblem(t) || (textProblem(t) === "too_long" && t.trim().split(/\s+/).length >= 2 && !textProblem(t.slice(0, 24).trim())));
 
 /** A timeline builder: ops appended in order, each starting after the previous (or `with` it). */
 function timeline(pace) {
@@ -228,18 +231,40 @@ function equalGroups(c, tl) {
 
 // ───────────────────────────── diagrams ─────────────────────────────
 
+/** Does this label fit `maxW` on one line (m or s) or split over two lines at s? (writeFit's rule, without drawing.) */
+function canFit(text, maxW) {
+  if (sizeFor(text, maxW)) return true;
+  const words = text.split(/\s+/);
+  for (let k = 1; k < words.length; k++) if (Math.max(textBox(words.slice(0, k).join(" "), "s").w, textBox(words.slice(k).join(" "), "s").w) <= maxW) return true;
+  return false;
+}
+
+/** The drawn width of a label as writeFit would lay it out in `maxW` (one line, or the wider of two), or null. */
+function fitWidth(text, maxW) {
+  const one = sizeFor(text, maxW);
+  if (one) return textBox(text, one).w;
+  const words = text.split(/\s+/);
+  let best = null;
+  for (let k = 1; k < words.length; k++) {
+    const w = Math.max(textBox(words.slice(0, k).join(" "), "s").w, textBox(words.slice(k).join(" "), "s").w);
+    if (w <= maxW && (best === null || w < best)) best = w;
+  }
+  return best;
+}
+
 function flow(c, tl) {
   const steps = c.steps;
   if (!Array.isArray(steps) || steps.length < 2 || steps.length > 6 || !steps.every(fitsLabel)) return { error: "steps" };
   const n = steps.length;
-  // up to 3 steps: one row, left to right; 4-6: two columns read top to bottom, then the next column (boxes wide enough
-  // for a label on a 400-unit board)
-  const twoCol = n > 3;
-  const perCol = Math.ceil(n / 2);
-  const bw = twoCol ? 150 : 340 / n - 18, bh = twoCol ? Math.min(56, 250 / perCol - 18) : 64;
-  const pos = steps.map((_, i) => twoCol
-    ? [i < perCol ? 110 : 290, 30 + bh / 2 + (i % perCol) * ((270 - bh) / Math.max(1, perCol - 1))]
-    : [30 + i * (bw + 18) + bw / 2, 150]);
+  // Layout, first that fits every label: one row left to right (≤ 3 steps); one column top to bottom (≤ 3); two columns
+  // read top to bottom, then the next column (4-6). Boxes are sized to the board, never to the text.
+  const rowW = 340 / n - 18;
+  const layout = n <= 3 && steps.every((t) => canFit(t, rowW - 10)) ? "row" : n <= 3 ? "col" : "two";
+  const perCol = layout === "two" ? Math.ceil(n / 2) : n;
+  const bw = layout === "row" ? rowW : layout === "col" ? 240 : 160;
+  const bh = layout === "row" ? 64 : Math.min(58, 250 / perCol - 18);
+  const pos = steps.map((_, i) => layout === "row" ? [30 + i * (bw + 18) + bw / 2, 150]
+    : [layout === "col" ? 200 : i < perCol ? 105 : 295, 30 + bh / 2 + (i % perCol) * ((270 - bh) / Math.max(1, perCol - 1))]);
   for (let i = 0; i < n; i++) {
     const [x, y] = pos[i];
     if (i > 0) {
@@ -258,14 +283,19 @@ function flow(c, tl) {
 function cycle(c, tl) {
   const stages = c.stages;
   if (!Array.isArray(stages) || stages.length < 3 || stages.length > 6 || !stages.every(fitsLabel)) return { error: "stages" };
-  const n = stages.length, cx = 200, cy = 152, rx = 130, ry = 98;
+  const n = stages.length, cx = 200, cy = 152, rx = n <= 4 ? 130 : 128, ry = 100;
   const at = (i) => { const a = -Math.PI / 2 + (2 * Math.PI * i) / n; return [cx + rx * Math.cos(a), cy + ry * Math.sin(a)]; };
   for (let i = 0; i < n; i++) {
-    const size = sizeFor(stages[i], n <= 4 ? 150 : 118);
-    if (!size) return { error: `label_too_wide:${i}` };
-    const [x, y] = at(i);
-    tl.add({ id: `t${i}`, op: "text", at: [x, y], text: stages[i], size, ink: i === 0 ? "accent" : "chalk" }, 550, { gap: 120 });
-    const [nx, ny] = at((i + 1) % n);
+    const maxW = n <= 4 ? 160 : 140;
+    const fw = fitWidth(stages[i], maxW);
+    if (fw === null) return { error: `label_too_wide:${i}` };
+    const [x0, y] = at(i);
+    // keep the word on the board: its centre moves in from the edge by half its width
+    const x = Math.min(400 - fw / 2 - 4, Math.max(fw / 2 + 4, x0));
+    writeFit(tl, stages[i], x, y, maxW, {}, { id: `t${i}`, ms: 550, gap: 120, ink: i === 0 ? "accent" : undefined });
+    const [nx0, ny] = at((i + 1) % n);
+    const nxt = stages[(i + 1) % n], nh = (fitWidth(nxt, n <= 4 ? 160 : 140) ?? 0) / 2 + 4;
+    const nx = Math.min(400 - nh, Math.max(nh, nx0));
     // the arrow runs between the two labels along the loop, shortened so it never touches either word
     const sx = x + (nx - x) * 0.32, sy = y + (ny - y) * 0.32, ex = x + (nx - x) * 0.68, ey = y + (ny - y) * 0.68;
     tl.add({ op: "arrow", from: [sx, sy], to: [ex, ey], bend: -0.25, ink: "accent" }, 450, { gap: 140 });
@@ -312,10 +342,11 @@ function parts(c, tl) {
   for (let i = 0; i < n; i++) {
     const a = -Math.PI / 2 + (2 * Math.PI * (i + 0.5)) / n;
     const lx = cx + 150 * Math.cos(a), ly = cy + 112 * Math.sin(a);
-    const s = sizeFor(ps[i], 112);
-    if (!s) return { error: `part_too_wide:${i}` };
+    const fw = fitWidth(ps[i], 140);
+    if (fw === null) return { error: `part_too_wide:${i}` };
+    const half = fw / 2 + 4;
     tl.add({ op: "line", from: [cx + 78 * Math.cos(a), cy + 36 * Math.sin(a)], to: [cx + 118 * Math.cos(a), cy + 88 * Math.sin(a)], weight: 1 }, 320, { gap: 140 });
-    tl.add({ id: `p${i}`, op: "text", at: [Math.min(345, Math.max(55, lx)), Math.min(282, Math.max(18, ly))], text: ps[i], size: s }, 450, { gap: 40 });
+    writeFit(tl, ps[i], Math.min(400 - half, Math.max(half, lx)), Math.min(270, Math.max(30, ly)), 140, {}, { id: `p${i}`, ms: 450 });
   }
   return { facts: { whole, parts: n, ...Object.fromEntries(ps.map((p, i) => [`part${i + 1}`, p])) } };
 }

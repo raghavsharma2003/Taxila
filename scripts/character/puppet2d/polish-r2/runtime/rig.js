@@ -176,10 +176,10 @@ export class Puppet2DRig {
       const C = Math.floor((xb - xa) / 2) + 1;
       const R = 4;
       const n = C * R;
-      const pos = new Float32Array(n * 2), restA = new Float32Array(n * 2), edge = new Float32Array(n);
+      const pos = new Float32Array(n * 2), restA = new Float32Array(n * 2), edge = new Float32Array(n), topA = new Float32Array(n);
       // AA on all four sides: the end columns too (r1 showed a hard stair at the corners once a turn widened the eye)
-      for (let i = 0; i < C; i++) for (let j = 0; j < R; j++) edge[i * R + j] = j === 0 || j === R - 1 || i === 0 || i === C - 1 ? 0 : 1;
-      const mesh = this.R.mesh(this.R.eye, { aPos: { data: pos, size: 2, dynamic: true }, aRest: { data: restA, size: 2, dynamic: true }, aEdge: { data: edge, size: 1 } }, strip(C, R));
+      for (let i = 0; i < C; i++) for (let j = 0; j < R; j++) edge[i * R + j] = j === 0 || j === R - 1 ? 0 : Math.min(1, i / 2, (C - 1 - i) / 2);
+      const mesh = this.R.mesh(this.R.eye, { aPos: { data: pos, size: 2, dynamic: true }, aRest: { data: restA, size: 2, dynamic: true }, aEdge: { data: edge, size: 1 }, aTop: { data: topA, size: 1, dynamic: true } }, strip(C, R));
       // lid mesh: columns along the lash, rows from (lash top - fall) to (lash bottom + 2)
       const lx0 = e.lashX[0], lx1 = e.lashX[1];
       const LC = Math.floor((lx1 - lx0) / 3) + 1, LR = 8;
@@ -221,7 +221,7 @@ export class Puppet2DRig {
       }
       const bpos = new Float32Array(brest);
       const bmesh = this.R.mesh(P, { aPos: { data: bpos, size: 2, dynamic: true }, aUv: { data: buv, size: 2 } }, strip(BC, BR));
-      this.eyes[s] = { e, xa, xb, C, R, pos, restA, mesh, LC, LR, lrest, lpos, lv, lmesh, BC, BR, brest, bpos, bv, bmesh, top: new Float32Array(xb - xa + 1), bot: new Float32Array(xb - xa + 1) };
+      this.eyes[s] = { e, xa, xb, C, R, pos, restA, topA, mesh, LC, LR, lrest, lpos, lv, lmesh, BC, BR, brest, bpos, bv, bmesh, top: new Float32Array(xb - xa + 1), bot: new Float32Array(xb - xa + 1) };
     }
     // mouth patches: one mesh per patch (same rest geometry, own atlas uvs)
     const [cw, ch] = mouths.cell, [ox, oy] = mouths.origin;
@@ -273,21 +273,25 @@ export class Puppet2DRig {
     const cheek = (k("cheekSquintLeft") + k("cheekSquintRight")) / 2;
     const open = clamp01(k("jawOpen") / 0.85);
     this.expr = { smile, cheek, open };
+    this.browCh = { L: this.browChannels("L"), R: this.browChannels("R") };
     this.mouth = this.solver.solve(bs, dt);
     // ---- lids: screen-left eye (L) is her right eye (ARKit *Right)
     const side = { L: "Right", R: "Left" };
     const lookDown = clamp01(-gaze[1] / 25), lookUp = clamp01(gaze[1] / 20);
     for (const s of ["L", "R"]) {
       const E = this.eyes[s], e = E.e, sfx = side[s];
-      const b = k("eyeBlink" + sfx), q = k("eyeSquint" + sfx), w = k("eyeWide" + sfx), c = k("cheekSquint" + sfx);
-      const sm = k("mouthSmile" + sfx);
+      // r2: small left/right differences in squint/cheek/smile (behaviour's +-6% asymmetry, presets) are averaged so
+      // a delight squint closes both eyes alike; a deliberate asymmetry (a wink-ish playful squint, > 0.12) is kept
+      const sym = (n) => { const a = k(n + "Left"), bb = k(n + "Right"); return Math.abs(a - bb) < 0.12 ? (a + bb) / 2 : k(n + sfx); };
+      const b = k("eyeBlink" + sfx), q = sym("eyeSquint"), w = k("eyeWide" + sfx), c = sym("cheekSquint");
+      const sm = sym("mouthSmile");
       for (let i = 0; i <= E.xb - E.xa; i++) {
         const T = e.top[i], B = e.bot[i], H = B - T;
         const u = i / (E.xb - E.xa);
         const hump = Math.pow(Math.max(0, Math.sin(Math.PI * u)), 0.7);
-        const rise = (q * 0.34 + c * 0.26 + sm * 0.08) * H * hump;
+        const rise = (q * 0.3 + c * 0.2 + sm * 0.06) * H * Math.pow(hump, 1.4);
         let bot = B - rise;
-        const follow = (lookDown * 0.14 - lookUp * 0.06) * H * hump;
+        const follow = (lookDown * 0.14 - lookUp * 0.02) * H * hump;
         const closed = T + 0.72 * (B - T) - Math.min(rise, 0.25 * H);   // the lids meet ~70% down (Memoji)
         let top = T + follow - w * 0.13 * H * hump;
         // blink: the upper lid travels to the meeting line, the lower lid rises the last part (eased: fast close)
@@ -401,16 +405,29 @@ export class Puppet2DRig {
     return true;
   }
 
+  /** r2 brow ribbon (the parametric-ribbon idea borrowed from arm V, applied to P's painted brow): each brow is a
+   *  curve u = 0 (inner, at the nose) .. 1 (outer) with continuous channels derived from the ARKit keys:
+   *    lift   whole-brow raise (eyeWide, browOuterUp, browInnerUp share)
+   *    inner  inner-end raise: the worried "/ \" (browInnerUp)
+   *    arch   a peaked raise around u 0.6: the sceptical / thinking brow (browOuterUp)
+   *    knit   inner end down and toward the nose (browDown)
+   *  Ranges are ~1.6x r1's: c-thinking's raised brow travels ~28 px at 1024, c-front's brow is 14 px thick. */
+  browChannels(s) {
+    const bs = this.bs, sfx = s === "L" ? "Right" : "Left";
+    const inner = bs.browInnerUp ?? 0, outer = bs["browOuterUp" + sfx] ?? 0, down = bs["browDown" + sfx] ?? 0, wide = bs["eyeWide" + sfx] ?? 0;
+    return { lift: 10 * wide + 9 * outer + 4 * inner, inner: 28 * inner, arch: 30 * outer, knit: 16 * down };
+  }
+
   browOffset(s, x, y) {
-    const bs = this.bs;
-    const sfx = s === "L" ? "Right" : "Left";
     const b = this.g.brows[s];
     const x0 = b.x[0], x1 = b.x[1];
     // inner end is toward the nose: L brow's inner end is its right end
     const ui = s === "L" ? clamp01((x1 - x) / (x1 - x0)) : clamp01((x - x0) / (x1 - x0));
-    const inner = bs.browInnerUp ?? 0, outer = bs["browOuterUp" + sfx] ?? 0, down = bs["browDown" + sfx] ?? 0, wide = bs["eyeWide" + sfx] ?? 0;
-    let dy = -(inner * 22 * Math.pow(1 - ui, 1.4) + inner * 5 * Math.sin(Math.PI * ui) + outer * 17 * Math.pow(ui, 0.9) + wide * 6) + down * 9 * (1 - 0.5 * ui);
-    const dx = (s === "L" ? 1 : -1) * down * 4 * (1 - ui);
+    const c = this.browCh[s];
+    const peak = Math.exp(-(((ui - 0.62) / 0.3) ** 2));
+    let dy = -c.lift - c.inner * Math.pow(1 - ui, 1.3) - c.arch * (0.35 + 0.65 * peak) * Math.pow(ui, 0.5) + c.knit * (1 - 0.6 * ui);
+    // knit pulls the inner end toward the nose; a worried inner raise pulls it a touch too
+    const dx = (s === "L" ? 1 : -1) * (c.knit * 0.45 + c.inner * 0.08) * Math.pow(1 - ui, 1.5);
     return [dx, dy];
   }
 
@@ -452,11 +469,12 @@ export class Puppet2DRig {
     for (let i = 0; i < E.C; i++) {
       const x = Math.min(E.xb, E.xa + i * 2), ii = x - E.xa;
       const top = E.top[ii], bot = E.bot[ii];
-      const ys = [top - 0.6, top + 1.4, Math.max(top + 1.4, bot - 0.6), Math.max(top + 1.4, bot + 1.4)];
+      const ys = [top - 2.1, top - 0.1, Math.max(top - 0.1, bot - 0.6), Math.max(top - 0.1, bot + 1.4)];
       for (let j = 0; j < 4; j++) {
         const y = bot <= top + 0.05 ? top : ys[j];
         E.restA[k * 2] = x;
         E.restA[k * 2 + 1] = y;
+        E.topA[k] = top;
         const p = this.project(x, y, zEye(x, y));
         E.pos[k * 2] = p[0];
         E.pos[k * 2 + 1] = p[1];
@@ -465,6 +483,7 @@ export class Puppet2DRig {
     }
     R.update(E.mesh, "aPos", E.pos);
     R.update(E.mesh, "aRest", E.restA);
+    R.update(E.mesh, "aTop", E.topA);
     // iris: gaze in rest-space px, foreshortened by gaze + head yaw; squashed a little at full blink
     const gz = this.gaze || [0, 0];
     const ox = (gz[0] / 25) * 17, oy = -(gz[1] / 20) * 8 + (gz[1] < 0 ? -gz[1] / 25 * 2 : 0);
@@ -475,7 +494,7 @@ export class Puppet2DRig {
       iris: { tex: this.tex["iris" + sd], rect: this.g.rects["iris" + sd] },
       catch: { tex: this.tex["catch" + sd], rect: this.g.rects["catch" + sd] },
       irisOff: [ox, oy], irisC: [icx + ox, icy + oy], irisScale: [Math.max(0.82, fx), E.blink > 0.85 ? 0.95 : 1],
-      catchOff: [ox * 0.45, oy * 0.45], catchA: 1, lidShade: 0.06, topY: interp(E.xa, E.top, icx),
+      catchOff: [ox * 0.45, oy * 0.45], catchA: 1, lidShade: 0.16, topY: interp(E.xa, E.top, icx),
     });
     // lower lid band
     for (let i = 0; i < E.BC; i++)
@@ -524,6 +543,16 @@ export class Puppet2DRig {
       x = cx + (x - cx) * sc;
       y = cy + (y - cy) * sc;
       x += (x - cx) * (m.wide * 0.05 - m.round * 0.04) * bell + m.skew * 6 * bell * Math.exp(-(((x - cx) / 90) ** 2));
+      // r2: aside (thinking "hmm") slides the whole mouth toward one cheek; corner lift for smirks
+      x += (m.shift || 0) * Math.exp(-(((y - cy) / 70) ** 2));
+      const cr = clamp01((Math.abs(x - cx) - 30) / 60);
+      y -= (x > cx ? m.liftR || 0 : m.liftL || 0) * cr * cr * bell;
+      // the "hmm" mouth: narrower, and the line tilts up toward the side it slid to
+      y -= (m.tilt || 0) * ((x - cx) / 90) * bell;
+      x = cx + (x - cx) * (1 - (m.narrow || 0) * bell);
+      const ds = m.scale ?? 1;
+      x = cx + (x - cx) * ds;
+      y = cy + (y - cy) * ds;
       y += m.lowerDrop * smooth(cy - 5, cy + 40, y) * Math.exp(-(((x - cx) / 90) ** 2));
       const p = this.project(x, y, this.mouthZ[i]);
       pos[i * 2] = p[0];

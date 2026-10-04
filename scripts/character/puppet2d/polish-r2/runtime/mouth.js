@@ -84,6 +84,13 @@ export class MouthSolver {
       draw, name, row,
       wide: Math.min(1, wide * 1.5), round: Math.min(1, round),
       skew: side * 0.8 + (smileL - smileR) * 0.6,
+      // r2: the aside slides the mouth up to ~16 px toward the side (c-thinking), smirk corners lift up to 5 px,
+      // and the delight laugh is drawn ~10% smaller (c-happy's open smile is narrower than the atlas laugh)
+      shift: Math.max(-1, Math.min(1, side * 1.6)) * 16 * (smile < 0.3 ? 1 : 0.4),
+      liftR: Math.max(0, smileL - smileR) * 7, liftL: Math.max(0, smileR - smileL) * 7,
+      scale: name === "laugh" || name === "grin_E" ? 0.9 : 1,
+      tilt: name === "aside" ? Math.max(-1, Math.min(1, side * 1.6)) * 9 : 0,
+      narrow: name === "aside" ? 0.16 * Math.min(1, Math.abs(side) * 1.6) : 0,
       lowerDrop: Math.max(-2, Math.min(3, (open - rowOpen) * 6)),
       jawGain: row === "closed" || row === "PP" ? 0.2 : 1,
     };

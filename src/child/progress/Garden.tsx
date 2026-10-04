@@ -137,7 +137,7 @@ export function Garden({ chapters, onSelect }: { chapters: MapChapter[]; onSelec
                   <div className="bed-plants">
                     {skills.map((s) => (
                       <button key={s.skillId} type="button" className="plant-btn" onClick={() => onSelect(s, bi)}
-                        aria-label={s.title} data-state={s.state}>
+                        aria-label={s.label ?? s.title} data-state={s.state}>
                         <Plant state={s.state} kind={kind} size={88} recheck={s.recheckScheduled} />
                       </button>
                     ))}

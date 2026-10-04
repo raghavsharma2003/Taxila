@@ -7,18 +7,19 @@ import { LipDriver, lipKeys } from "../../../../../src/avatar/lip.ts";
 import { Behaviour, floorState } from "../../../../../src/avatar/behaviour.ts";
 import { Compositor } from "../../../../../src/avatar/compositor.ts";
 import { Puppet2DRig } from "./rig.js";
+import { Expressions, EXPRESSIONS, Listener } from "./expr.js";
 
 const Q = new URLSearchParams(location.search);
 const CAPTURE = Q.has("capture");
 const BASE = Q.get("base") || "./layers/";
 
-// ---- timeline (seconds). Emotions the behaviour layer does not emit today (surprise, playful) and the scripted
-// expression beats are demo-only ARKit mixes (PLAN §6.4); the main loop decides whether behaviour.ts gains them.
+// ---- timeline (seconds). The Director's expression beats go through the r2 expression emitters (expr.js: compositor
+// presets for thinking, warm, delight, concern, surprise, playful, listening); behaviour.ts is unchanged.
 const TALK_AT = 5.0;
 const SCENES = [
   { id: "idle", t0: 0, t1: 5, status: null },
   { id: "talking", t0: TALK_AT, t1: 17.9, status: "speaking" },
-  { id: "listening", t0: 17.9, t1: 23.4, status: "listening", nods: [18.9, 20.4, 21.9] },
+  { id: "listening", t0: 17.9, t1: 23.4, status: "listening", preset: "listening", child: [9.2, 14.7] },
   { id: "thinking", t0: 23.4, t1: 27.4, status: "thinking", preset: "thinking" },
   { id: "warm", t0: 27.4, t1: 29.6, status: "your_turn", preset: "warm" },
   { id: "delight", t0: 29.6, t1: 32.0, status: "your_turn", preset: "delight" },
@@ -28,14 +29,6 @@ const SCENES = [
   { id: "turns", t0: 39.2, t1: 45.2, status: null, turn: true },
 ];
 export const DURATION = 45.2;
-const PRESETS = {
-  thinking: { mouthLeft: 0.32, mouthPressLeft: 0.12, mouthPressRight: 0.12, browDownRight: 0.25, browInnerUp: 0.12, browOuterUpLeft: 0.45, tilt: 4 },
-  warm: { mouthSmileLeft: 0.3, mouthSmileRight: 0.3, cheekSquintLeft: 0.15, cheekSquintRight: 0.15, eyeSquintLeft: 0.12, eyeSquintRight: 0.12, browOuterUpLeft: 0.05, browOuterUpRight: 0.05, tilt: 2 },
-  delight: { mouthSmileLeft: 0.75, mouthSmileRight: 0.75, cheekSquintLeft: 0.45, cheekSquintRight: 0.45, eyeSquintLeft: 0.35, eyeSquintRight: 0.35, browOuterUpLeft: 0.28, browOuterUpRight: 0.28, jawOpen: 0.42, tilt: 3, bounce: true },
-  concern: { browInnerUp: 0.7, browDownLeft: 0.06, browDownRight: 0.06, mouthPressLeft: 0.15, mouthPressRight: 0.15, eyeSquintLeft: 0.06, eyeSquintRight: 0.06, mouthSmileLeft: -1, tilt: 5, pitch: 3 },
-  surprise: { eyeWideLeft: 0.55, eyeWideRight: 0.55, browOuterUpLeft: 0.55, browOuterUpRight: 0.55, browInnerUp: 0.45, jawOpen: 0.38, mouthSmileLeft: -1, pitch: -3 },
-  playful: { mouthSmileLeft: 0.18, mouthSmileRight: 0.48, browOuterUpLeft: 0.35, eyeSquintLeft: 0.16, eyeSquintRight: 0.16, cheekSquintRight: 0.2, tilt: 6 },
-};
 
 function sceneAt(t) {
   for (const s of SCENES) if (t >= s.t0 && t < s.t1) return s;
@@ -90,8 +83,8 @@ async function main() {
   const comp = new Compositor(0.85);
   const win = new Float32Array(1024);
   let lastT = -1, statusSince = 0, lastStatus = null, spoke = false, faceState = "idle";
-  const nod = { x: 0, v: 0 };
-  let lastNodT = -1;
+  const exprs = new Expressions();
+  const listener = new Listener();
   const stats = { work: [], intervals: [], frames: 0, rows: [] };
 
   function step(t) {
@@ -117,23 +110,25 @@ async function main() {
     const restSmile = 0.0;
     // scripted expression beat (demo Director)
     const head = [...b.head];
-    if (sc.preset) {
-      const P = PRESETS[sc.preset], e = env(t, sc.t0, sc.t1, 0.3, 0.4);
-      for (const [k, v] of Object.entries(P)) {
-        if (k === "tilt") head[2] += v * e;
-        else if (k === "pitch") head[0] += v * e;
-        else if (k === "bounce") {}
-        else if (k === "jawOpen") {}
-        else if (v < 0) beh[k] = (beh[k] ?? 0) * (1 - e);   // -1: suppress the resting smile
-        else beh[k] = Math.max(beh[k] ?? 0, v * e);
-      }
-      if (sc.preset === "concern" || sc.preset === "surprise") beh.mouthSmileRight = (beh.mouthSmileRight ?? 0) * (1 - e);
-      if (P.bounce && t - sc.t0 < 0.05 && lastNodT < sc.t0) { nod.v -= 60; lastNodT = t; }
+    // Director beats -> the expression emitters (compositor presets, expr.js)
+    if (sc.preset && exprs.sceneId !== sc.id) { exprs.sceneId = sc.id; exprs.emote(sc.preset, t, { hold: Math.max(0.2, sc.t1 - sc.t0 - 0.9) }); }
+    if (!sc.preset) exprs.sceneId = null;
+    {
     }
-    // listening backchannel nods (demo Director; behaviour.ts nods only on her own prosody today)
-    if (sc.nods) for (const tn of sc.nods) if (t >= tn && lastNodT < tn) { nod.v += 110; lastNodT = t; }
-    { let left = dt; while (left > 1e-6) { const h = Math.min(0.004, left); nod.v += (-120 * nod.x - 2 * 0.55 * Math.sqrt(120) * nod.v) * h; nod.x += nod.v * h; left -= h; } }
-    head[0] += nod.x;
+    // listening backchannel from the REAL listening state: the child's mic level (here: a level track read from a
+    // recorded voice segment standing in for the child, so the nods land on real phrase pauses, not a script)
+    let childLevel = 0;
+    if (sc.child) {
+      const ct = sc.child[0] + (t - sc.t0);
+      const j0 = Math.floor(ct * sr);
+      let acc = 0;
+      for (let i = 0; i < 1024; i++) { const v = pcm[j0 - 1024 + i] || 0; acc += v * v; }
+      childLevel = Math.min(1, Math.sqrt(acc / 1024) * 9);
+    }
+    const ls = listener.update(t, dt, st === "listening", childLevel);
+    head[0] += ls.pitch;
+    beh.mouthSmileLeft = (beh.mouthSmileLeft ?? 0) + ls.smile;
+    beh.mouthSmileRight = (beh.mouthSmileRight ?? 0) + ls.smile;
     if (sc.turn) {
       const u = t - sc.t0;
       const yaw = u < 1.5 ? -20 * Math.sin((u / 1.5) * Math.PI / 2) : u < 4.0 ? -20 + 40 * (0.5 - 0.5 * Math.cos(((u - 1.5) / 2.5) * Math.PI)) : 20 * Math.cos(((u - 4.0) / 2.0) * Math.PI / 2);
@@ -141,26 +136,35 @@ async function main() {
       head[0] += u > 4.6 && u < 5.6 ? 8 * Math.sin(((u - 4.6) / 1.0) * Math.PI) : 0;
     }
     const lipL = lipKeys(lf);
-    // the Director's expression beats that open the jaw belong to the lip layer (the compositor gives it jawOpen)
-    if (sc.preset && PRESETS[sc.preset].jawOpen) lipL.jawOpen = Math.max(lipL.jawOpen, PRESETS[sc.preset].jawOpen * env(t, sc.t0, sc.t1, 0.3, 0.4));
+    // the expression layer mixes into behaviour's frame; an expression's jawOpen belongs to the lip layer
+    const gaze = [...b.gaze];
+    exprs.apply(t, dt, beh, head, gaze, lipL);
     const bs = comp.compose(beh, lipL, dt);
     // visemes and tongue keys bypass the compositor's 0.06/frame anti-snap (they are lip keys; see notes)
     if (sc.id === "talking") Object.assign(bs, visemesAt(segs, ta));
     const breath = Math.sin(t * 2 * Math.PI * 0.25);
-    rig.frame(bs, head, b.gaze, b.lean, breath);
+    rig.frame(bs, head, gaze, b.lean, breath);
     const work = performance.now() - w0;
     stats.work.push(work);
     stats.frames++;
     if (sc.id === "talking") stats.rows.push({ t: +ta.toFixed(3), row: rig.mouth.row, name: rig.mouth.name, vis: Object.keys(bs).filter((k) => k.startsWith("viseme_") && bs[k] > 0.5) });
-    return { t, scene: sc.id, state: faceState, head, gaze: b.gaze, mouth: rig.mouth.name, work };
+    return { t, scene: sc.id, state: faceState, head, gaze, mouth: rig.mouth.name, work };
   }
 
   window.P2D = {
-    duration: DURATION, scenes: SCENES, stats, rig,
+    duration: DURATION, scenes: SCENES, stats, rig, listener, EXPRESSIONS,
     renderAt: (t) => step(t),
-    pose: (spec) => {  // a fixed pose for the frames sheet: {bs, head, gaze}
+    pose: (spec) => {  // a fixed pose for the frames sheet: {bs, head, gaze} or {expr: name} (full-level preset)
       rig.lastT = -1;
-      for (let i = 0; i < 6; i++) { rig.clock = 1000 + i / 60; rig.resetPhysics(); rig.frame(spec.bs || {}, spec.head || [0, 0, 0], spec.gaze || [0, 0], spec.lean || 0, 0); }
+      let bs = { ...(spec.bs || {}) }, head = [...(spec.head || [0, 0, 0])], gz = [...(spec.gaze || [0, 0])];
+      if (spec.expr) {
+        const P = EXPRESSIONS[spec.expr];
+        bs = { mouthSmileLeft: 0.06, mouthSmileRight: 0.06, ...bs };
+        for (const [k, v] of Object.entries(P.bs)) bs[k] = v < 0 ? 0 : Math.max(bs[k] ?? 0, v);
+        head = head.map((h, i) => h + P.head[i]);
+        gz = [...P.gaze];
+      }
+      for (let i = 0; i < 6; i++) { rig.clock = 1000 + i / 60; rig.resetPhysics(); rig.frame(bs, head, gz, spec.lean || 0, 0); }
       return rig.mouth.name;
     },
   };

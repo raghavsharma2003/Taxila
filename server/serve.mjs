@@ -1,8 +1,8 @@
 // Production entry for Azure Container Apps: serves the built SPA from dist/ and the API router on one port.
 // Long-lived process (no serverless time limit), so lessons, Forge status streams and WebSockets can live here.
 import http from "http";
-import { createReadStream, existsSync, readFileSync, statSync } from "fs";
-import { brotliCompressSync, gzipSync, constants as Z } from "zlib";
+import { createReadStream, existsSync, readFileSync, readdirSync, statSync } from "fs";
+import { brotliCompress, brotliCompressSync, gzipSync, constants as Z } from "zlib";
 import { extname, join, normalize, resolve } from "path";
 import { handle } from "./index.js";
 
@@ -46,6 +46,63 @@ function encoded(file, enc, mtime) {
   return buf;
 }
 
+/**
+ * Pre-compressed brotli (BUILD-PLAN W2-A #8): at boot every compressible build file is brotli-encoded at quality 11 in
+ * the background (async, one at a time), so no visitor pays a request-time compression and the bytes are the smallest
+ * brotli makes. A request that arrives before its file is done still gets the q9 on-demand encode (then cached).
+ */
+async function prewarmBrotli(root = ROOT) {
+  const files = [];
+  const walk = (d) => { for (const n of readdirSync(d, { withFileTypes: true })) { const f = join(d, n.name); if (n.isDirectory()) walk(f); else if (COMPRESSIBLE.has(extname(f))) files.push(f); } };
+  try { walk(root); } catch { return 0; }
+  let n = 0;
+  for (const file of files) {
+    try {
+      const st = statSync(file);
+      if (st.size <= 1024 || packed.get(`br:${file}`)?.mtime === st.mtimeMs) continue;
+      const raw = readFileSync(file);
+      const buf = await new Promise((ok, no) => brotliCompress(raw, { params: { [Z.BROTLI_PARAM_QUALITY]: 11, [Z.BROTLI_PARAM_SIZE_HINT]: raw.length } }, (e, b) => (e ? no(e) : ok(b))));
+      packed.set(`br:${file}`, { mtime: st.mtimeMs, buf });
+      n++;
+    } catch { /* a file that vanished mid-walk: the request path encodes it on demand */ }
+  }
+  return n;
+}
+
+/**
+ * index.html for "/" with the landing hero preloaded straight from the art manifest (W2-A #8; smooth G6): the LCP image
+ * no longer waits for the bundle and the manifest fetch. The phone crop under 600 px, the wide scene above, 1x/2x —
+ * the same choice src/app/landing/Site.tsx HeroArt makes. Cached per index.html + manifest mtime.
+ */
+let landingHtml = null;
+export function heroPreloadTags(manifest) {
+  const rows = Array.isArray(manifest?.entries) ? manifest.entries : Array.isArray(manifest?.assets) ? manifest.assets : Object.values(manifest ?? {}).find(Array.isArray) ?? [];
+  const e = rows.find((x) => x?.id === "bg/landing-hero" && x.url);
+  if (!e) return "";
+  const set = (a, b) => [a && `${a} 1x`, b && `${b} 2x`].filter(Boolean).join(", ");
+  const tag = (u, u2, media) => `<link rel="preload" as="image" href="${u}" imagesrcset="${set(u, u2)}" media="${media}" fetchpriority="high" />`;
+  return e.phone?.url ? tag(e.phone.url, e.phone.url2x, "(max-width: 600px)") + tag(e.url, e.url2x, "(min-width: 601px)") : tag(e.url, e.url2x, "all");
+}
+function landingIndex() {
+  const index = join(ROOT, "index.html"), man = join(ROOT, "assets/gen/manifest.json");
+  try {
+    const key = `${statSync(index).mtimeMs}:${existsSync(man) ? statSync(man).mtimeMs : 0}`;
+    if (landingHtml?.key === key) return landingHtml.buf;
+    const tags = existsSync(man) ? heroPreloadTags(JSON.parse(readFileSync(man, "utf8"))) : "";
+    const html = readFileSync(index, "utf8").replace("</head>", `${tags}</head>`);
+    landingHtml = { key, buf: Buffer.from(html), br: brotliCompressSync(Buffer.from(html)), gz: gzipSync(Buffer.from(html)) };
+    return landingHtml.buf;
+  } catch { return null; }
+}
+function sendLanding(res, req) {
+  if (!landingIndex()) return sendFile(res, join(ROOT, "index.html"), {}, req);
+  const ae = String(req?.headers["accept-encoding"] || "");
+  const enc = /\bbr\b/.test(ae) ? "br" : /\bgzip\b/.test(ae) ? "gzip" : null;
+  const buf = enc === "br" ? landingHtml.br : enc === "gzip" ? landingHtml.gz : landingHtml.buf;
+  res.writeHead(200, { "content-type": TYPES[".html"], "cache-control": "no-cache", vary: "Accept-Encoding", ...(enc ? { "content-encoding": enc } : {}), "content-length": buf.length });
+  res.end(req.method === "HEAD" ? undefined : buf);
+}
+
 function sendFile(res, file, headers, req) {
   const type = TYPES[extname(file)] || "application/octet-stream";
   const base = { "content-type": type, "cache-control": "no-cache", ...headers };
@@ -67,6 +124,7 @@ function sendFile(res, file, headers, req) {
 http.createServer((req, res) => {
   const path = decodeURIComponent((req.url || "/").split("?")[0]);
   if (path.startsWith("/api/")) return handle(req, res);
+  if (path === "/" || path === "/index.html") return sendLanding(res, req);
   const file = normalize(join(ROOT, path));
   const frame = join(ROOT, "modules.html");
   if (file.startsWith(ROOT) && existsSync(file) && statSync(file).isFile()) {
@@ -81,4 +139,7 @@ http.createServer((req, res) => {
     return res.end("not found");
   }
   sendFile(res, join(ROOT, "index.html"), {}, req); // SPA fallback
-}).listen(PORT, () => console.log(`taxila on :${PORT}`));
+}).listen(PORT, () => {
+  console.log(`taxila on :${PORT}`);
+  if (process.env.TAXILA_PREWARM_BR !== "0") setTimeout(() => void prewarmBrotli().then((n) => n && console.log(`[serve] brotli q11 ready for ${n} files`)), 50);
+});

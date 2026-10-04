@@ -28,9 +28,16 @@
     <!-- The landing's hero art comes through the art ledger (src/ui/Art.tsx reads /assets/gen/manifest.json). On "/"
          only, start that fetch with the document so the hero image is not three round trips deep (LCP). -->
     <script>if(location.pathname==="/"){var l=document.createElement("link");l.rel="preload";l.as="fetch";l.href="/assets/gen/manifest.json";l.crossOrigin="anonymous";document.head.appendChild(l)}</script>
+    <!-- W2-A #8 (smooth G5/G6): start the first API read with the document, before the bundle parses. Only when the
+         readable session marker (tx_in, set at sign-in; never the token) says someone signed in on this browser, so
+         the public landing never fires GET /api/me into a 401. Child home: ONE read (me + plan, /api/child/boot). The
+         app takes the promise (src/app/boot.ts) or reads normally if it is absent or failed. -->
+    <script>(function(){try{if(!/(?:^|; )tx_in=1/.test(document.cookie))return;var j=function(u){var p=fetch(u,{credentials:"same-origin"}).then(function(r){if(!r.ok)throw r.status;return r.json()});p.catch(function(){});return p};var m=location.pathname.match(/^\/c\/([0-9a-f-]{36})\/?$/i);if(m){window.__txBoot={cid:m[1],p:j("/api/child/boot?childId="+m[1])}}else if(location.pathname!=="/"){window.__txMe=j("/api/me")}}catch(e){}})();</script>
+    <!-- inline first paint (smooth G6): a calm page and one card shape until the app renders over it -->
+    <style>.tx-skel{position:fixed;inset:0;display:grid;place-items:center;background:#F6F3EC}.tx-skel i{display:block;width:min(88vw,420px);height:132px;border-radius:16px;background:#ECE6D8}@media (prefers-color-scheme:dark){.tx-skel{background:#121418}.tx-skel i{background:#1E2228}}</style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><div class="tx-skel" aria-hidden="true"><i></i></div></div>
     <noscript>Taxila needs JavaScript to run.</noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>

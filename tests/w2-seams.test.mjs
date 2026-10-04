@@ -35,7 +35,9 @@ test("server seams are no-ops until filled (studio, relational, expressive, purp
   assert.equal(expressiveSeam.planDelivery(null, "Dekho, 3 aur 4."), null);
 
   const { purposeSeam } = await import("../server/lesson/purpose.js");
-  assert.equal(await purposeSeam.routeAsk({ child: { id: "c", class_level: 5 }, purpose: "doubt", firstText: "1/2 bada ya 1/4?" }), null);
+  // W2-A filled the purpose seam: an Ask question routes to its topic and is titled by the question; anything else is null
+  assert.deepEqual(await purposeSeam.routeAsk({ child: { id: "c", class_level: 5 }, purpose: "doubt", firstText: "1/2 bada ya 1/4?" }), { topicId: "c5-maths-ch02-t02", title: "1/2 bada ya 1/4?" });
+  assert.equal(await purposeSeam.routeAsk({ child: { id: "c", class_level: 5 }, purpose: "lesson", firstText: "1/2 bada ya 1/4?" }), null);
   assert.equal(purposeSeam.practiceSet({ child: { id: "c", class_level: 5 }, purpose: "practice", kit: {}, ledger: {}, now: 0 }), null);
 
   const lanes = await import("../server/lanes.js");

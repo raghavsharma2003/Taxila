@@ -19,6 +19,8 @@ export interface Claim extends SkillLine { kind: "can_now" | "practising"; rows:
 export interface ControlsT {
   dailyMinutes: number; hoursStart: string; hoursEnd: string; captionsAlways: boolean; comfortMode: boolean;
   address: "tum" | "aap" | null; reportChannel: "whatsapp" | "app"; saved?: boolean;
+  /** W2-A: per-child "Tap and type only" (server truth) and "Homework help today". */
+  textOnly?: boolean; homeworkToday?: boolean;
 }
 export interface ChildOut { id: string; firstName: string; classLevel: number; board: string; schoolMedium: string; languagePref: string; avatar: string | null }
 export interface TopicRef { id: string; title: string; shortTitle?: string | null; chapter?: string; subject?: string }
@@ -40,6 +42,9 @@ export interface Overview {
 export interface EvidenceRow {
   id: string; at: string; kind: string; probe: string; outcome: "correct" | "incorrect" | "partial" | "misconception" | "no_evidence";
   hintsUsed: number; lessonId: string | null; words: string | null; misconception: string | null;
+  /** W2-A: the engine's result word, the question as posed, and who graded it. */
+  result?: "right" | "right_hint" | "with_help" | "partly" | "not_yet" | "not_sure" | "mixup";
+  prompt?: string | null; grader?: "code" | "llm" | "human"; graderWords?: string;
 }
 export interface EvidenceOut {
   skill: { id: string; title: string; label?: string; outcomes: string[]; topic: { id: string; title: string; chapter: string } | null };
@@ -59,6 +64,8 @@ export interface LessonCardOut {
   quote: string | null;
   transcript: { seq: number; speaker: "child" | "teacher"; text: string }[] | null;
   transcriptPolicy: "visible" | "on_request";
+  /** W2-A: the lesson's summary, built from the engine's rows and claim-checked (null when withheld). */
+  summary?: { lines: string[]; counts: { tried: number; firstTry: number; withHint: number; explained: number } } | null;
 }
 export interface SyllabusOut {
   classLevel: number; board: string; profileKept: boolean;
@@ -110,6 +117,7 @@ export const parentApi = {
   syllabus: (childId: string) => getJson<SyllabusOut>(`/api/parent/syllabus?${qs({ childId })}`),
   controls: (childId: string) => getJson<{ controls: ControlsT }>(`/api/parent/controls?${qs({ childId })}`),
   setControls: (childId: string, c: Partial<ControlsT>) => postJson<{ controls: ControlsT }>("/api/parent/controls", { childId, ...c }),
+  madeFor: (childId: string) => getJson<{ items: import("../../shared/contracts.ts").MadeForItem[] }>(`/api/parent/made-for?${qs({ childId })}`),
   homeTask: (childId: string, at: { period: string } | { lessonId: string }, done: boolean) => postJson("/api/parent/hometask", { childId, ...at, done }),
   reports: (childId: string) => getJson<ReportList>(`/api/parent/reports?${qs({ childId })}`),
   report: (childId: string, id: string) => getJson<{ report: ReportOut }>(`/api/parent/report?${qs({ childId, id })}`),

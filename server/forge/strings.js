@@ -6,11 +6,13 @@
 // Adding a row = a reviewed code change, never a model output.
 
 /** Closed skin registry (FACTORY.md §13 InterestId). */
-export const INTEREST_IDS = ["cricket", "food", "animals", "vehicles", "films_music", "festivals", "space", "trains", "generic"];
+export const INTEREST_IDS = ["cricket", "football", "food", "animals", "vehicles", "films_music", "festivals", "space", "trains", "drawing", "stories", "building", "nature", "generic"];
 
 /** Parent-typed interests and kit interestContexts → InterestId, by keyword (first match wins). */
 const INTEREST_WORDS = [
   ["cricket", /cricket|bat\b|ipl|wicket|kohli|dhoni/i],
+  // W2-B #5 (personalisation gap 5): five of the twelve onboarding tiles (src/child/interests.ts) mapped to generic
+  ["football", /football|soccer|messi|ronaldo|fifa|\bisl\b|goalkeeper/i],
   ["trains", /train|railway|rail\b|metro|station/i],
   ["space", /space|rocket|isro|planet|star|moon|chandrayaan|astronaut|sky/i],
   ["vehicles", /car\b|cars|bike|cycle|bicycle|scooter|bus\b|truck|vehicle|auto\b|tractor/i],
@@ -18,6 +20,10 @@ const INTEREST_WORDS = [
   ["food", /food|cook|mango|sweet|jalebi|roti|pizza|ladoo|chai|fruit|kitchen|thali|eat/i],
   ["festivals", /festival|diwali|holi|eid|mela|fair|rangoli|kite|sankranti|pongal|onam|puja|wedding/i],
   ["films_music", /film|movie|music|song|dance|sing|cartoon|tv\b|guitar|drum/i],
+  ["drawing", /draw|paint|colou?r|sketch|crayon|\bart\b|craft/i],
+  ["stories", /stor(y|ies)|\bbooks?\b|kahani|comic|fairy ?tale|\bread(ing)?\b/i],
+  ["building", /build|lego|block|construct|brick|robot|making things/i],
+  ["nature", /nature|garden|\btrees?\b|plants?\b|flower|\bparks?\b|forest|river|mountain|outdoor|\bleaf/i],
 ];
 export function interestIdOf(text) {
   for (const [id, re] of INTEREST_WORDS) if (re.test(String(text || ""))) return id;
@@ -71,6 +77,31 @@ export const HOOKS = {
     { id: "trains.signal", en: "Signal box check", hi: "सिग्नल बॉक्स जाँच", hi_latn: "Signal box check" },
     { id: "trains.journey", en: "Train journey task", hi: "रेल यात्रा का काम", hi_latn: "Rail yatra ka kaam" },
   ],
+  football: [
+    { id: "football.match", en: "Match day puzzle", hi: "मैच के दिन की पहेली", hi_latn: "Match ke din ki paheli" },
+    { id: "football.penalty", en: "Penalty spot challenge", hi: "पेनल्टी स्पॉट चुनौती", hi_latn: "Penalty spot challenge" },
+    { id: "football.coach", en: "Coach's practice drill", hi: "कोच की प्रैक्टिस", hi_latn: "Coach ki practice" },
+  ],
+  drawing: [
+    { id: "drawing.sketchbook", en: "Sketchbook corner", hi: "स्केचबुक कोना", hi_latn: "Sketchbook kona" },
+    { id: "drawing.colours", en: "Colour box puzzle", hi: "रंगों के डिब्बे की पहेली", hi_latn: "Rangon ke dibbe ki paheli" },
+    { id: "drawing.artroom", en: "Art room task", hi: "आर्ट रूम का काम", hi_latn: "Art room ka kaam" },
+  ],
+  stories: [
+    { id: "stories.chapter", en: "Next chapter puzzle", hi: "अगले अध्याय की पहेली", hi_latn: "Agle adhyay ki paheli" },
+    { id: "stories.library", en: "Library corner", hi: "पुस्तकालय कोना", hi_latn: "Library kona" },
+    { id: "stories.teller", en: "Storyteller's task", hi: "कहानीकार का काम", hi_latn: "Kahanikar ka kaam" },
+  ],
+  building: [
+    { id: "building.blocks", en: "Building blocks puzzle", hi: "ब्लॉक्स की पहेली", hi_latn: "Blocks ki paheli" },
+    { id: "building.site", en: "Site engineer's check", hi: "साइट इंजीनियर की जाँच", hi_latn: "Site engineer ki jaanch" },
+    { id: "building.workshop", en: "Workshop task", hi: "वर्कशॉप का काम", hi_latn: "Workshop ka kaam" },
+  ],
+  nature: [
+    { id: "nature.garden", en: "Garden walk puzzle", hi: "बगीचे की सैर की पहेली", hi_latn: "Bageeche ki sair ki paheli" },
+    { id: "nature.park", en: "Park explorer task", hi: "पार्क खोजी का काम", hi_latn: "Park khoji ka kaam" },
+    { id: "nature.river", en: "Riverside check", hi: "नदी किनारे जाँच", hi_latn: "Nadi kinare jaanch" },
+  ],
   generic: [
     { id: "generic.try", en: "Your turn to try", hi: "अब तुम्हारी बारी", hi_latn: "Ab tumhari baari" },
     { id: "generic.puzzle", en: "Quick puzzle", hi: "छोटी पहेली", hi_latn: "Chhoti paheli" },
@@ -84,7 +115,10 @@ export const DECOR = {
   cricket: ["obj.ball", "obj.bat"], food: ["obj.mango", "obj.roti", "obj.plate", "obj.cup"],
   animals: ["animal.cow", "animal.elephant", "animal.parrot", "animal.dog", "animal.cat"], vehicles: ["obj.bus"],
   films_music: ["sky.star"], festivals: ["plant.lotus", "plant.flower"], space: ["sky.moon", "sky.star", "sky.sun"],
-  trains: ["place.school"], generic: ["obj.book", "obj.pencil"],
+  trains: ["place.school"],
+  football: ["obj.ball"], drawing: ["obj.pencil", "obj.ruler"], stories: ["obj.book"], building: ["obj.box", "place.house", "shape.square"],
+  nature: ["plant.tree", "plant.flower", "sky.cloud", "place.hill"],
+  generic: ["obj.book", "obj.pencil"],
 };
 
 /** Fixed template strings (the only non-kit, non-hook strings a scene carries). */

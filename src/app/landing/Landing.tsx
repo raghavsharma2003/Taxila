@@ -165,13 +165,13 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ── picks the teacher ── */}
+        {/* ── names the teacher (flows G9: "chooses a face" returns only when there is more than one look per band) ── */}
         <section className="sect" aria-labelledby="pick-h">
           <div className="site-wrap pick">
             <div className="pick-cast" aria-hidden="true">{SITE_TUTORS.map((t) => <figure key={t.id} className="pick-face"><TeacherPortrait tutor={t} size={120} /><figcaption>AI teacher</figcaption></figure>)}</div>
             <div className="pick-text">
-              <h2 id="pick-h" className="sect-h">Your child picks the teacher, and names them</h2>
-              <p className="sect-lead">Your child chooses a face and a voice, and gives the teacher a name. The same teacher then appears in every lesson, so there is one person to get to know.</p>
+              <h2 id="pick-h" className="sect-h">Your child names the teacher</h2>
+              <p className="sect-lead">Your child meets the teacher for their class and gives the teacher a name. The same teacher then appears in every lesson, so there is one person to get to know.</p>
               <p className="site-note">Whatever the name, the teacher is an AI and says so. Names are checked against lists of public figures, unkind words and romance words.</p>
             </div>
           </div>

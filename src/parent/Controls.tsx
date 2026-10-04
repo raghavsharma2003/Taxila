@@ -3,7 +3,7 @@
 // tab bar took about 120 px of a 640 px screen). Only controls the server stores are shown (P6: only what works).
 import { useEffect, useState, type ReactNode } from "react";
 import { Button, Icon, TileGroup } from "../ui/index.ts";
-import { postJson, refreshMe, request, type ChildRow } from "../app/api.ts";
+import { getJson, postJson, refreshMe, request, type ChildRow } from "../app/api.ts";
 import { HoursFields } from "../onboarding/Setup.tsx";
 import { teacherRecord } from "../ui/teacher/useTeacher.ts";
 import { bandForClass } from "../app/band.ts";
@@ -13,7 +13,7 @@ import { useGate } from "./Gate.tsx";
 import { PageState, ParentShell, useChildren, useParentData } from "./Shell.tsx";
 import { ParentTeacherName } from "../child/teacher/ParentTeacherName.tsx";
 import { readPrefs, setChildPref } from "../child/prefs.ts";
-import { tw } from "../copy/en.ts";
+import { subjectWords, tw, tw2 } from "../copy/en.ts";
 
 /**
  * "Open now for 1 hour" (W1-A item 2; smooth G8): one tap opens the child's lesson hours for the next hour, today only,
@@ -44,20 +44,120 @@ function OpenNow({ childId, name, onRelock }: { childId: string; name: string; o
   );
 }
 
-/** "Tap and type only" (W1-A item 9; flows G8): the child's prefs.quiet on this phone (lessons start in the text lane). */
-function TapAndType({ childId, name, T }: { childId: string; name: string; T: string }) {
-  const [on, setOn] = useState(() => readPrefs(childId).quiet);
-  useEffect(() => setOn(readPrefs(childId).quiet), [childId]);
+/**
+ * "Tap and type only" (flows G8; W2-A): a per-CHILD setting the server keeps (child_controls.text_only, returned with the
+ * child's plan), so the parent's phone and the child's phone agree. This device's prefs.quiet is kept in step too.
+ */
+function TapAndType({ childId, name, T, on0, onRelock }: { childId: string; name: string; T: string; on0: boolean; onRelock: () => void }) {
+  const [on, setOn] = useState(on0 || readPrefs(childId).quiet);
+  const [err, setErr] = useState<string | null>(null);
+  useEffect(() => setOn(on0 || readPrefs(childId).quiet), [childId, on0]);
+  const set = async (next: boolean) => {
+    setErr(null);
+    const was = on;
+    setOn(next);
+    setChildPref(childId, { quiet: next });
+    try { await parentApi.setControls(childId, { textOnly: next }); } catch (e) {
+      if (isRelock(e)) { onRelock(); return; }
+      setOn(was); setChildPref(childId, { quiet: was }); setErr(parentError(e));
+    }
+  };
   return (
     <section className="pa-card pa-group" aria-labelledby="pa-g-type" data-group="type">
       <h2 id="pa-g-type" className="pa-h2">{tw("controls.type.title")}</h2>
       <div className="pa-control">
-        <TileGroup label={tw("controls.type.title")} columns={2} value={on ? "on" : "off"}
-          onChange={(v) => { const next = v === "on"; setChildPref(childId, { quiet: next }); setOn(next); }}
+        <TileGroup label={tw("controls.type.title")} columns={2} value={on ? "on" : "off"} onChange={(v) => void set(v === "on")}
           options={[{ value: "on", label: "On" }, { value: "off", label: "Off" }]} />
-        <p className="pa-effect">{on ? tw("controls.type.on", { name, T }) : tw("controls.type.off", { name, T })} {tw("controls.type.device")}</p>
+        <p className="pa-effect">{on ? tw("controls.type.on", { name, T }).replace(/^On this phone, /, "") : tw("controls.type.off", { name, T })} {tw2("controls.type.child", { name })}</p>
+        {err && <p className="pa-form-err" role="alert">{err}</p>}
       </div>
     </section>
+  );
+}
+
+/** "Homework help today" (STUDENT-FLOW §4.2 `homework`): the child's home leads with Homework help until the day ends. */
+function HomeworkToday({ childId, name, on0, onRelock }: { childId: string; name: string; on0: boolean; onRelock: () => void }) {
+  const [on, setOn] = useState(on0);
+  const [err, setErr] = useState<string | null>(null);
+  useEffect(() => setOn(on0), [childId, on0]);
+  const set = async (next: boolean) => {
+    setErr(null);
+    const was = on;
+    setOn(next);
+    try { await parentApi.setControls(childId, { homeworkToday: next }); } catch (e) {
+      if (isRelock(e)) { onRelock(); return; }
+      setOn(was); setErr(parentError(e));
+    }
+  };
+  return (
+    <div className="pa-control" data-testid="homework-today">
+      <h3 className="pa-h3">{tw2("controls.homework.title")}</h3>
+      <TileGroup label={tw2("controls.homework.title")} columns={2} value={on ? "on" : "off"} onChange={(v) => void set(v === "on")}
+        options={[{ value: "on", label: "On" }, { value: "off", label: "Off" }]} />
+      <p className="pa-effect">{on ? tw2("controls.homework.on", { name }) : tw2("controls.homework.off", { name })}</p>
+      {err && <p className="pa-form-err" role="alert">{err}</p>}
+    </div>
+  );
+}
+
+const TEST_SUBJECTS = ["maths", "science", "evs", "english", "hindi", "sst"];
+const today = () => new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+const fmtDayShort = (d: string) => new Date(`${d}T12:00:00`).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+
+/** "School test coming up" (STUDENT-FLOW §4.2 `test_window`): one window per child; the home shows calm revision. */
+function TestWindow({ childId, name, classLevel, onRelock }: { childId: string; name: string; classLevel: number; onRelock: () => void }) {
+  const [w, setW] = useState<{ subject: string; from: string; to: string } | null>(null);
+  const [draft, setDraft] = useState({ subject: "maths", from: today(), to: today() });
+  const [err, setErr] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    getJson<{ window: { subject: string; from: string; to: string } | null }>(`/api/parent/test-window?childId=${encodeURIComponent(childId)}`)
+      .then((r) => setW(r.window), (e) => { if (isRelock(e)) onRelock(); });
+  }, [childId, onRelock]);
+  const subjects = TEST_SUBJECTS.filter((x) => (classLevel <= 5 ? x !== "science" && x !== "sst" : x !== "evs"));
+  const save = async () => {
+    setBusy(true); setErr(null);
+    try { setW((await postJson<{ window: typeof w }>("/api/parent/test-window", { childId, ...draft })).window); } catch (e) {
+      if (isRelock(e)) { onRelock(); return; }
+      setErr(parentError(e));
+    } finally { setBusy(false); }
+  };
+  const clear = async () => {
+    setBusy(true); setErr(null);
+    try { await request("DELETE", "/api/parent/test-window", { childId }); setW(null); } catch (e) {
+      if (isRelock(e)) { onRelock(); return; }
+      setErr(parentError(e));
+    } finally { setBusy(false); }
+  };
+  return (
+    <div className="pa-control" data-testid="test-window">
+      <h3 className="pa-h3">{tw2("controls.test.title")}</h3>
+      {w ? (
+        <>
+          <p className="pa-effect" role="status">{tw2("controls.test.set", { subject: subjectWords(w.subject), from: fmtDayShort(w.from), to: fmtDayShort(w.to) })}</p>
+          <Button variant="secondary" onClick={() => void clear()} disabled={busy}>{tw2("controls.test.clear")}</Button>
+        </>
+      ) : (
+        <>
+          <p className="pa-effect">{tw2("controls.test.none")}</p>
+          <div className="pa-test-row">
+            <label className="pa-field"><span>{tw2("controls.test.subject")}</span>
+              <select className="input" value={draft.subject} onChange={(e) => setDraft({ ...draft, subject: e.target.value })}>
+                {subjects.map((x) => <option key={x} value={x}>{subjectWords(x)}</option>)}
+              </select>
+            </label>
+            <label className="pa-field"><span>{tw2("controls.test.from")}</span>
+              <input className="input" type="date" value={draft.from} min={today()} onChange={(e) => setDraft({ ...draft, from: e.target.value, to: e.target.value > draft.to ? e.target.value : draft.to })} />
+            </label>
+            <label className="pa-field"><span>{tw2("controls.test.to")}</span>
+              <input className="input" type="date" value={draft.to} min={draft.from} onChange={(e) => setDraft({ ...draft, to: e.target.value })} />
+            </label>
+          </div>
+          <Button onClick={() => void save()} disabled={busy} aria-label={`${tw2("controls.test.save")} for ${name}`}>{tw2("controls.test.save")}</Button>
+        </>
+      )}
+      {err && <p className="pa-form-err" role="alert">{err}</p>}
+    </div>
   );
 }
 
@@ -164,7 +264,12 @@ export default function Controls() {
           </GroupCard>
           {/* the name the child gave the teacher: view and reset (child-names-teacher; lesson-safety-naming workstream) */}
           <ParentTeacherName childId={current.id} childName={name} className="pa-card" onGateError={relock} />
-          <TapAndType childId={current.id} name={name} T={T} />
+          <TapAndType childId={current.id} name={name} T={T} on0={!!c.textOnly} onRelock={relock} />
+          <section className="pa-card pa-group" aria-labelledby="pa-g-school" data-group="school">
+            <h2 id="pa-g-school" className="pa-h2">School</h2>
+            <HomeworkToday childId={current.id} name={name} on0={!!c.homeworkToday} onRelock={relock} />
+            <TestWindow childId={current.id} name={name} classLevel={current.class_level} onRelock={relock} />
+          </section>
           <GroupCard id="screen" title="Words and screen" {...props("screen")}>
             <div className="pa-control">
               <h3 className="pa-h3">Words on screen</h3>

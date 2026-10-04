@@ -1,6 +1,6 @@
 // The explainer's truth check (W2-B): a template call's labels must be the kit's own words, and the call must expand,
 // lay out and lint. Pure (no model import), so the Director's synchronous path (lesson.js) and the tests can use it.
-import { expand } from "./templates.js";
+import { expand, LABEL_MAX } from "./templates.js";
 
 const STOP = new Set(("a an the of to in on at by for from with and or but is are was were be been it its this that these those as into onto " +
   "their his her our your my we you they he she them us not no than then so very more most less least each every one two three " +
@@ -27,8 +27,15 @@ export function kitVocabulary(kit) {
 export const stem = (w) => w.replace(/(ies)$/, "y").replace(/(ing|ed|es|s)$/, "").replace(/'s$/, "");
 /** The words of a label that the kit never says (empty = the label is the kit's own words). */
 export function unknownWords(label, vocab) {
-  return (String(label).toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? []).filter((w) => !STOP.has(w) && w.length > 2 && !vocab.has(stem(w)) && !/^\d+$/.test(w));
+  // numbers are checked too (a board number the kit never says is an invented fact); words of how-to-do-it (find, add,
+  // check, count…) are the board's own and carry no claim
+  return (String(label).toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [])
+    .filter((w) => !STOP.has(w) && !HOW.has(w) && (w.length > 2 || /^\d+$/.test(w)) && !vocab.has(stem(w)) && !vocab.has(w));
 }
+/** Procedural words a board may use whatever the kit's wording (verbs of doing the work, never facts). */
+const HOW = new Set(("find add check count read write draw make get use put take turn split join mark list choose compare match sort " +
+  "start end first next then last step steps answer total remaining left result calculate estimate round multiply divide subtract " +
+  "look see ask say meet test tests example examples kind kinds type types part parts rule rules sum difference product").split(" "));
 
 /** Every label a call writes on the board. */
 export function labelsOf(call) {
@@ -49,6 +56,10 @@ export function labelsOf(call) {
 export function checkCall(call, kit, { band = "B3", vocab = kitVocabulary(kit) } = {}) {
   if (!call) return { ok: false, why: "no_call" };
   for (const l of labelsOf(call)) {
+    if (/[→←;[\]{}]|->|:\s*$|[\u0000-\u001f]/.test(String(l))) return { ok: false, why: "label_punctuation" };
+    // a label cut off mid-phrase to fit ("Less mustard oil and") is not a label
+    if (/\b(and|of|the|to|with|for|a|an|need|needs|from|by|at|into|than)$/.test(String(l).trim())) return { ok: false, why: "label_truncated" };
+    if ([...String(l)].length > LABEL_MAX) return { ok: false, why: `label_too_long:${String(l).slice(0, 30)}` };
     const unk = unknownWords(l, vocab);
     if (unk.length) return { ok: false, why: `not_in_kit:${unk.slice(0, 3).join(",")}` };
   }

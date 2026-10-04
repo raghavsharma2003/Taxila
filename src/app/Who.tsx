@@ -8,11 +8,14 @@ import { ErrorNote } from "../ui/index.ts";
 import { errText, getJson, loadMe, lockBeacon, type ChildRow } from "./api.ts";
 import { bandForClass, useSurface } from "./band.ts";
 import { Loading } from "./Shell.tsx";
+import { Avatar as ChildAvatar } from "../child/pictos.tsx";
 import { readStore, writeStore } from "./storage.ts";
 
 export const LAST_CHILD_KEY = "tx.lastChild";
 
+/** The picture the child picked at Hello (flows G14: the same picture home shows), else their initial. */
 function Avatar({ c }: { c: ChildRow }) {
+  if (c.avatar) return <span className="avatar avatar--pic" style={{ overflow: "hidden", background: "transparent" }} aria-hidden="true"><ChildAvatar id={c.avatar} size={64} /></span>;
   return <span className="avatar" aria-hidden="true">{(c.first_name.trim()[0] || "?").toUpperCase()}</span>;
 }
 

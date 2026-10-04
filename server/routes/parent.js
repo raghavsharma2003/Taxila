@@ -1280,9 +1280,11 @@ async function speakCard(req, res) {
     if (!lid || !/^[0-9a-f-]{36}$/i.test(lid)) throw bad("invalid lessonId");
     const l = await one("select topic_id, ended_at from lesson where id = $1 and child_id = $2", [lid, child.id]);
     if (!l) throw new HttpError(404, "lesson not found");
-    const ev = await one(`select count(*)::int as n, coalesce(sum(case when outcome = 'correct' and hints_used = 0 then 1 else 0 end), 0)::int as unaided
-        from evidence where lesson_id = $1 and outcome <> 'no_evidence'`, [lid]);
-    text = lessonSpeech(child.first_name, { topic: getTopic(l.topic_id)?.title ?? "Lesson", ended: !!l.ended_at, checked: ev?.n ?? 0, unaided: ev?.unaided ?? 0 });
+    // the same engine rows and the same count rule as the lesson card's summary (one truth, reports/truth.js)
+    const raw = await q(`select id, seq, session_id, occurred_at, skill_ids, cls, outcome, grader, item_key, teach, pre_attempt_help, entry_rung,
+        misconception_id, via, contaminated, assisted from kt_evidence where child_id = $1 and session_id = $2 order by seq`, [child.id, lid]).catch(() => []);
+    const f = lessonFactsSummary({ topicTitle: null, rows: supersede(raw).map(engineRow).filter((r) => r.scored) });
+    text = lessonSpeech(child.first_name, { topic: getTopic(l.topic_id)?.title ?? "Lesson", ended: !!l.ended_at, checked: f.counts.tried, unaided: f.counts.firstTry });
   } else if (what === "report") {
     // the stored, gate-passed spoken script of one report, in one language (server-held text only)
     const { guardian, child } = await requireParentChild(req, sp.get("childId"));

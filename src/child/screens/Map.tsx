@@ -1,10 +1,12 @@
 // /c/:cid/map: the Garden (ages 6-9) or the Sky map (10-15) over the child's ledger (PRODUCT-DESIGN-V2 §3.8, §6.3.7;
 // audit #9: "Mera map opens an empty navy rectangle"). Both have a List toggle (the source of truth). Tapping a plant
 // or star opens a sheet with her rendered pose still (watering can / telescope) under the visible "{T} · AI teacher"
-// label, the shape and, for Older, the state word with "This shows what you've shown so far". Not yet (open items):
-// her one line (needs server-written text + her voice), the thing the child made, Hear {T}, How I know. Empty: the painted empty state + Start today's lesson. If the parent
+// label, the shape and, for Older, the state word with "This shows what you've shown so far", and her one line about
+// it (server-composed, GET /api/child/skill-line) with "Hear {T}" in her voice (W2-A, flows G16). Not yet: the thing the
+// child made (W2-H's Made for you), How I know. Empty: the painted empty state + Start today's lesson. If the parent
 // chose "Only this session" the map is not shown at all (§3.13): the route goes home.
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { getJson } from "../../lesson/api.ts";
 import { Link, Navigate } from "react-router-dom";
 import type { ChildMapSkill } from "../../../shared/contracts.ts";
 import { Sheet } from "../../ui/Sheet.tsx";
@@ -118,6 +120,7 @@ export function MapScreen() {
           ? <Plant state={picked.skill.state} kind={PLANT_KINDS[picked.kind % PLANT_KINDS.length]} size={96} recheck={picked.skill.recheckScheduled} />
           : <StateShape state={picked.skill.state} mode="sky" size={72} />}
       </div>
+      <HerLine cid={cid} skillId={picked.skill.skillId} name={rec.name} />
       {!young && (
         <>
           <p className="skill-sheet-word"><strong>{STATE_WORD[picked.skill.state]}</strong></p>
@@ -147,11 +150,42 @@ export function MapScreen() {
         )}
       </div>
       {!(wide && !young) && (
-        <Sheet open={!!picked} onClose={() => setPicked(null)} title={picked?.skill.title ?? ""} closeLabel={t("close")}>
+        <Sheet open={!!picked} onClose={() => setPicked(null)} title={(young ? picked?.skill.label : null) ?? picked?.skill.title ?? ""} closeLabel={t("close")}>
           {detail}
         </Sheet>
       )}
     </ChildScreen>
+  );
+}
+
+/** Her one line about this skill (server-composed in the family's language) and "Hear {T}" in her voice. */
+function HerLine({ cid, skillId, name }: { cid: string; skillId: string; name: string }) {
+  const [line, setLine] = useState<string | null>(null);
+  const [playing, setPlaying] = useState(false);
+  const audio = useRef<HTMLAudioElement | null>(null);
+  const qs = `childId=${encodeURIComponent(cid)}&skillId=${encodeURIComponent(skillId)}`;
+  useEffect(() => {
+    const ac = new AbortController();
+    setLine(null);
+    getJson<{ text: string }>(`/api/child/skill-line?${qs}`, ac.signal).then((r) => !ac.signal.aborted && setLine(r.text), () => {});
+    return () => { ac.abort(); audio.current?.pause(); };
+  }, [qs]);
+  if (!line) return null;
+  const hear = () => {
+    audio.current?.pause();
+    const a = new Audio(`/api/child/skill-line/audio?${qs}`);
+    audio.current = a;
+    a.onplay = () => setPlaying(true);
+    a.onended = a.onerror = a.onpause = () => setPlaying(false);
+    void a.play().catch(() => setPlaying(false));
+  };
+  return (
+    <div className="skill-sheet-line">
+      <p className="skill-sheet-say" data-speech="" data-testid="her-line">{line}</p>
+      <button type="button" className="cs-btn cs-btn--secondary" onClick={hear} disabled={playing} data-testid="hear-her">
+        <Icon name="speaker" size={22} /><span>{t("tapToHear", { T: name })}</span>
+      </button>
+    </div>
   );
 }
 

@@ -3,7 +3,8 @@
 import type { ModuleCommand, MoveKind } from "./contracts";
 
 export type Band = "B1" | "B2" | "B3" | "B4";
-export type InterestId = "cricket" | "food" | "animals" | "vehicles" | "films_music" | "festivals" | "space" | "trains" | "generic";
+export type InterestId = "cricket" | "football" | "food" | "animals" | "vehicles" | "films_music" | "festivals" | "space" | "trains"
+  | "drawing" | "stories" | "building" | "nature" | "generic";
 export type ForgeTier = "L0" | "G1" | "G2" | "G3";
 /** What a G1 fill renders on: a T1 engine (params) or a T2a scene@1 template. */
 export type G1Renderer = "fraction-bars@1" | "scene@1";

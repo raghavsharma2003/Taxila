@@ -64,5 +64,7 @@ test("no_evidence rows are skipped; non-learned states never get the tag", () =>
   assert.deepEqual(foldDelayedChecks([...learned, passB, ne, miss]), { passed: true, misses: 0 });
   assert.deepEqual(parentState({ status: "practising" }, { passed: true, misses: 1 }), { level: 1, key: "practising", recheck: false });
   assert.deepEqual(parentState(null), { level: 0, key: "unseen", recheck: false });
-  assert.deepEqual(parentState({ status: "introduced" }), { level: 1, key: "practising", recheck: false });
+  // W2-A (flows G7): taught but never tried is Not started, never a sprout; tried once it is Practising
+  assert.deepEqual(parentState({ status: "introduced" }), { level: 0, key: "unseen", recheck: false });
+  assert.deepEqual(parentState({ status: "introduced", attempts: 1 }), { level: 1, key: "practising", recheck: false });
 });

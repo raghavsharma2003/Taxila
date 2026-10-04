@@ -40,6 +40,8 @@ export function useVisitor(): "new" | "signed-in" | "app" {
   const [state, setState] = useState<"new" | "signed-in" | "app">(app ? "app" : "new");
   useEffect(() => {
     if (app) return;
+    // no session marker on this browser: nobody is signed in, so no GET /api/me (and no 401 on the public landing)
+    if (!/(?:^|; )tx_in=1/.test(document.cookie)) return;
     let live = true;
     const run = () => {
       void import("../api.ts").then((m) => m.loadMe()).then((me) => { if (live && me) setState("signed-in"); }, () => {});

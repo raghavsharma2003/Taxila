@@ -8,6 +8,8 @@
 // everything with a trouble left rule), "Only this session" consent. 1280: a right column with Recent lessons and
 // Progress. "Listen to this page" reads the page's own sentences (server/routes/parent.js homeSpeech).
 import { useEffect, useState } from "react";
+import { tw2 } from "../copy/en.ts";
+import type { MadeForItem } from "../../shared/contracts.ts";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Art, Button, Icon, Speaker, StateChip } from "../ui/index.ts";
 import { teacherRecord } from "../ui/teacher/useTeacher.ts";
@@ -209,6 +211,7 @@ export default function ParentHome() {
           <ThisWeek d={data} name={name} cid={cid} teacherName={teacherName} />
           {data.tryAtHome && <TryAtHome d={data.tryAtHome} cid={cid} onHow={setHow} />}
           {data.next && <NextLesson d={data.next} name={name} cid={cid} />}
+          <MadeFor cid={cid} name={name} T={teacherName} />
           <p className="pa-facts">Lessons this week: {data.week.lessons} · {data.week.minutes} minutes</p>
           <ul className="pa-list pa-home-links">
             <li><RowLink to={`/parent/notes?c=${cid}`} sub="Written after each lesson day and each week">Today's note and this week's letter</RowLink></li>
@@ -221,5 +224,36 @@ export default function ParentHome() {
         <ReportEvidenceSheet childId={cid} claimId={how} at={{ cadence: "weekly", period: data.tryAtHome.period }} onClose={() => setHow(null)} />
       )}
     </ParentShell>
+  );
+}
+
+/**
+ * "Made for {child}" (STUDENT-FLOW §12.1; W2-A #9): the latest pieces the teacher made for this child, with the plain
+ * "because" from the build record and the child's result; read from W2-H's studio_mount feed. The full daily card is
+ * W4-F. While nothing was made: one quiet line (`none_yet`).
+ */
+function MadeFor({ cid, name, T }: { cid: string; name: string; T: string }) {
+  const [items, setItems] = useState<MadeForItem[] | null>(null);
+  useEffect(() => {
+    let live = true;
+    parentApi.madeFor(cid).then((r) => live && setItems(r.items), () => live && setItems([]));
+    return () => { live = false; };
+  }, [cid]);
+  if (!items) return null;
+  return (
+    <section className="pa-card" aria-labelledby="pa-made-h" data-testid="parent-madefor">
+      <h2 id="pa-made-h" className="pa-card-title">{tw2("parent.madefor.title", { name })}</h2>
+      {items.length === 0 ? <p className="pa-muted">{tw2("parent.madefor.none", { T })}</p> : (
+        <ul className="pa-list">
+          {items.slice(0, 3).map((it) => (
+            <li key={it.id} className="pa-row">
+              <span><strong>{it.title}</strong>{it.topicTitle ? <span className="pa-muted"> · {it.topicTitle}</span> : null}</span>
+              {it.because && <span className="pa-meta"> · {it.because.replace(/^You thought/, `${name} thought`)}</span>}
+              {it.result && <span className="pa-meta"> · {it.result === "on_own" ? "On their own" : "With a hint"}</span>}
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }

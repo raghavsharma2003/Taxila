@@ -29,17 +29,17 @@ void main(){
   o = c * uAlpha;
 }`;
 const VS_EYE = `#version 300 es
-in vec2 aPos; in vec2 aRest; in float aEdge;
+in vec2 aPos; in vec2 aRest; in float aEdge; in float aTop;
 uniform vec2 uView; uniform vec4 uCam;
-out vec2 vRest; out float vEdge;
+out vec2 vRest; out float vEdge; out float vTop;
 void main(){
   vec2 p = (aPos - uCam.xy) * uCam.z;
   gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);
-  vRest = aRest; vEdge = aEdge;
+  vRest = aRest; vEdge = aEdge; vTop = aTop;
 }`;
 const FS_EYE = `#version 300 es
 precision highp float;
-in vec2 vRest; in float vEdge;
+in vec2 vRest; in float vEdge; in float vTop;
 uniform sampler2D uSclera; uniform vec4 uScleraRect;
 uniform sampler2D uIris; uniform vec4 uIrisRect;
 uniform sampler2D uCatch; uniform vec4 uCatchRect;
@@ -58,7 +58,9 @@ void main(){
   vec4 ir = tex(uIris, uIrisRect, ip);
   col = col * (1.0 - ir.a) + ir.rgb;
   // lid shadow: the band right under the upper lid darkens a little (wraps the eye)
-  col *= 1.0 - uLidShade * clamp(1.0 - (vRest.y - uTopY) / 9.0, 0.0, 1.0);
+  // r2: per-column lid line (vTop), a soft wrap shadow ~10 px deep under the whole lid, as in c-front
+  float dl = clamp((vRest.y - vTop) / 10.0, 0.0, 1.0);
+  col *= 1.0 - uLidShade * (1.0 - dl) * (1.0 - dl);
   vec4 cl = tex(uCatch, uCatchRect, vRest - uCatchOff);
   col = mix(col, vec3(1.0), cl.a * uCatchA);
   float a = clamp(vEdge, 0.0, 1.0);

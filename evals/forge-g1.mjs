@@ -21,6 +21,16 @@ const { renderCheck } = await import("../server/forge/render-check.mjs");
 const { HOOK_BY_ID, TEMPLATE_STRINGS } = await import("../server/forge/strings.js");
 const { rng } = await import("../server/forge/kitmath.js");
 
+// W2-B #5: `--safety-only` runs only §5 (Content Safety over every strings-table row), for a reviewed strings change
+// (e.g. new interest skins) without the full fill pipeline.
+if (process.argv.includes("--safety-only")) {
+  const rows = [...Object.values(HOOK_BY_ID), ...TEMPLATE_STRINGS].flatMap((h) => [h.en, h.hi, h.hi_latn]);
+  const cs = { rows: rows.length, unique: new Set(rows).size, maxSeverity: 0, flagged: [], errors: 0 };
+  for (const s of [...new Set(rows)]) { const v = await contentSafety(s); if (typeof v !== "number") cs.errors++; else { cs.maxSeverity = Math.max(cs.maxSeverity, v); if (v >= 2) cs.flagged.push(s); } }
+  console.log(JSON.stringify({ at: new Date().toISOString(), contentSafety: cs }, null, 1));
+  process.exit(cs.flagged.length || cs.errors ? 1 : 0);
+}
+
 const R_ALL = new Set(["fraction-bars@1", "scene@1"]);
 const pct = (xs, p) => { const s = [...xs].sort((a, b) => a - b); return s.length ? s[Math.min(s.length - 1, Math.ceil((p / 100) * s.length) - 1)] : null; };
 const rand = rng(SEED);

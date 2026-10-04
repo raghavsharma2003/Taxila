@@ -1,6 +1,7 @@
 // Child-surface reads. The child id routes the view; the server checks it against the signed-in guardian
 // (requireChild), so a cross-family id is a 404, never data. A failed read gives the screen's designed empty or
 // fallback state, never an error string aimed at the child (§4.7 "raw API strings are never shown").
+import { takeEarlyMe } from "../app/boot.ts";
 import type { ChildMapResponse, ChildMapSkill, DidCard, LessonSummary, MapState } from "../../shared/contracts.ts";
 import { tutorById } from "../../shared/tutors.js";
 import { ApiError, getJson, postJson } from "../lesson/api.ts";
@@ -25,7 +26,11 @@ export interface MeResponse {
   children: ChildRow[];
 }
 
-export const getMe = () => getJson<MeResponse>("/api/me");
+/** /api/me for the child shell: the boot read index.html started (one hop with the plan), else a normal read. */
+export const getMe = () => {
+  const early = takeEarlyMe<MeResponse>();
+  return early ? early.catch(() => getJson<MeResponse>("/api/me")) : getJson<MeResponse>("/api/me");
+};
 
 export type { ChildMapResponse, ChildMapSkill, MapState };
 export type MapChapter = ChildMapResponse["subjects"][number]["chapters"][number];

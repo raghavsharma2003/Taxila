@@ -23,6 +23,9 @@ import { eligibleTutors } from "../../shared/tutors.js";
 import { defaultControls, parentState } from "./parent.js";
 import { loadTruth, MAP_SHAPE, nextTopicOf } from "../reports/truth.js";
 import { madeForOf } from "../reports/madeFor.js";
+import { tts, AzureError } from "../azure.js";
+import { allowSpeech, MAX_TTS_CHARS } from "./tts.js";
+import { HttpError } from "../http.js";
 import { lessonSummary } from "./lesson.js";
 import { shortTitleOf } from "../director/state.js";
 
@@ -90,6 +93,17 @@ async function controlsOf(child) {
     from: HHMM.test(row?.hours_start ?? "") ? row.hours_start : d.hoursStart,
     to: HHMM.test(row?.hours_end ?? "") ? row.hours_end : d.hoursEnd,
   };
+}
+
+/**
+ * GET /api/child/boot?childId= → { me, plan }: child home's two reads in ONE hop (smooth G5/G6: me → plan was serial,
+ * about 0.25 s per hop from India). index.html starts it before the bundle parses on /c/:cid. Same checks as both.
+ */
+async function boot(req, res) {
+  const { guardian, child } = await requireChild(req, childIdOf(query(req).get("childId")));
+  const { meData } = await import("./account.js");
+  const [me, p] = await Promise.all([meData(guardian), planFor(child, guardian)]);
+  send(res, 200, { me, plan: p });
 }
 
 /** GET /api/child/plan */
@@ -164,6 +178,20 @@ export async function planFor(child, guardian, now = new Date()) {
 
 // ───────────────────────────── map ─────────────────────────────
 
+/**
+ * PURE. A skill's label in a child's words (flows G16: a 7-year-old was read "Make a sensible estimate of a collection
+ * using a known group"): the first clause of the kit title (cut before "using", "including", "with", "and explain", a
+ * comma or a bracket), at most 6 words, the first letter kept. A kit `childLabel` wins when one is authored (W3-B).
+ */
+export function childLabelOf(title, authored = null) {
+  if (typeof authored === "string" && authored.trim()) return authored.trim();
+  let s = String(title ?? "").replace(/\s*\([^)]*\)/g, "").trim();
+  s = s.split(/\s*(?:;|:|\s+using\s|\s+including\s|\s+with\s|\s+and explain\s|\s+by\s|\s+(?:in|on)\s+(?:a|an|the)\s)/i)[0];
+  const words = s.split(/\s+/).filter(Boolean).slice(0, 6);
+  while (words.length > 2 && /^(of|a|an|the|to|and|for|on|in|at|from|or|its|their)$/i.test(words.at(-1).replace(/[,.]$/, ""))) words.pop();
+  return words.join(" ").replace(/[,;]$/, "") || String(title ?? "");
+}
+
 /** The one state key (reports/truth.js skillTruth, the parent's words too) → the four map shapes (§4.8). */
 const MAP_STATE = MAP_SHAPE;
 export const mapStateOf = (row, dc) => MAP_STATE[parentState(row, dc).key];
@@ -193,7 +221,7 @@ export function buildMap({ classLevel, rows, delayed, rechecks, hereTopicId = nu
         const dc = delayed.get(sk.id) ?? null;
         // stateOf: the one claim source (truth.state); the row/dc fold stays for the pure tests
         const ps = stateOf ? stateOf(sk.id) : parentState(row, dc);
-        const out = { skillId: sk.id, title: sk.title, topicId: t.id, chapter: t.chapter.title, subject,
+        const out = { skillId: sk.id, title: sk.title, label: childLabelOf(sk.title), topicId: t.id, chapter: t.chapter.title, subject,
           status: row?.status ?? "unseen", state: MAP_STATE[ps.key], recheckScheduled: !!ps.recheck || (rechecks.has(sk.id) && ps.level >= 2) };
         flat.push(out);
         return out;
@@ -231,6 +259,61 @@ async function map(req, res) {
   send(res, 200, { ...out, hidden: false });
 }
 
+// ───────────────────────────── her line on a plant / star (flows G16) ─────────────────────────────
+
+/**
+ * Her one line about a skill on the Garden / Sky sheet, in the family's language, composed on the server from fixed
+ * shapes per map state (never model text, never client text), so "Hear {T}" speaks server-held words only.
+ */
+const SKILL_LINE = {
+  hinglish: { not_started: (l) => `${l}, yeh hum jald saath mein karenge.`, practising: (l) => `${l} par hum kaam kar rahe hain. Tum achha try kar rahe ho.`,
+    got_it: (l) => `${l} tumne kar ke dikhaya!`, secure: (l) => `${l} ab pakka ho gaya. Kuch din baad bhi tumne sahi kiya.` },
+  hindi: { not_started: (l) => `${l}, यह हम जल्द साथ में करेंगे।`, practising: (l) => `${l} पर हम काम कर रहे हैं। तुम अच्छी कोशिश कर रहे हो।`,
+    got_it: (l) => `${l} तुमने करके दिखाया!`, secure: (l) => `${l} अब पक्का हो गया। कुछ दिन बाद भी तुमने सही किया।` },
+  english: { not_started: (l) => `${l}: we will do this together soon.`, practising: (l) => `We are working on ${l.charAt(0).toLowerCase() + l.slice(1)}. You are trying well.`,
+    got_it: (l) => `You showed me ${l.charAt(0).toLowerCase() + l.slice(1)}!`, secure: (l) => `${l} is secure now. You got it right days later too.` },
+};
+export function skillLineOf(lang, state, label) {
+  const L = SKILL_LINE[lang] ?? SKILL_LINE.hinglish;
+  return (L[state] ?? L.practising)(label);
+}
+
+async function skillLineFor(req) {
+  const sp = query(req);
+  const { guardian, child } = await requireChild(req, childIdOf(sp.get("childId")));
+  const skillId = String(sp.get("skillId") ?? "");
+  if (!skillId || skillId.length > 120) throw bad("invalid skillId");
+  if (!(await hasConsent(guardian.id, child.id, "learning_profile"))) throw new HttpError(404, "no map for this child");
+  const truth = await loadTruth(child, { skillIds: [skillId] });
+  let title = null;
+  try { title = (await import("../content/index.js").then((m) => m.skillById(skillId)))?.title ?? null; } catch { title = null; }
+  if (!title) throw new HttpError(404, "unknown skill");
+  const state = MAP_STATE[truth.state(skillId).key];
+  return { child, guardian, text: skillLineOf(child.language_pref, state, childLabelOf(title)), state };
+}
+
+/** GET /api/child/skill-line?childId=&skillId= → { text, state } */
+async function skillLine(req, res) {
+  const { text, state } = await skillLineFor(req);
+  send(res, 200, { text, state });
+}
+
+/** GET /api/child/skill-line/audio?childId=&skillId= → audio/mpeg in her voice ("Hear {T}"). */
+async function skillLineAudio(req, res) {
+  const { guardian, child, text } = await skillLineFor(req);
+  if (!allowSpeech(guardian.id)) throw new HttpError(429, "too many speech requests");
+  let audio;
+  try { audio = await tts(text.slice(0, MAX_TTS_CHARS), teacherFor(child).voice); } catch (e) {
+    if (e instanceof AzureError) throw new HttpError(502, "speech service unavailable");
+    throw e;
+  }
+  res.statusCode = 200;
+  res.setHeader("content-type", "audio/mpeg");
+  res.setHeader("content-length", String(audio.length));
+  res.setHeader("cache-control", "private, max-age=3600");
+  res.end(audio);
+}
+
 // ───────────────────────────── teacher ─────────────────────────────
 
 /** GET /api/child/teacher?childId= | ?classLevel= */
@@ -261,7 +344,10 @@ async function request(req, res, body) {
 
 export const routes = {
   "GET /api/child/plan": plan,
+  "GET /api/child/boot": boot,
   "GET /api/child/map": map,
   "GET /api/child/teacher": teacher,
   "POST /api/lesson/request": request,
+  "GET /api/child/skill-line": skillLine,
+  "GET /api/child/skill-line/audio": skillLineAudio,
 };

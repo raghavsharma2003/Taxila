@@ -91,7 +91,7 @@ export function SkyStar({ state, r = 10, recheck }: { state: MapState; r?: numbe
   const four = (k: number) => `M0 ${-k} L${k * 0.28} ${-k * 0.28} L${k} 0 L${k * 0.28} ${k * 0.28} L0 ${k} L${-k * 0.28} ${k * 0.28} L${-k} 0 L${-k * 0.28} ${-k * 0.28} Z`;
   return (
     <g data-state={state}>
-      {state === "not_started" && <circle r={r * 0.32} fill="var(--sky-star-0)" />}
+      {state === "not_started" && <circle r={r * 0.45} fill="var(--sky-star-0)" />}
       {state === "practising" && <circle r={r * 0.6} fill="none" stroke="var(--sky-star-1)" strokeWidth={r * 0.22} />}
       {state === "got_it" && <path d={four(r)} fill="var(--sky-star-2)" />}
       {state === "secure" && (

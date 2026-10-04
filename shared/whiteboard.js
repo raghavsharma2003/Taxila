@@ -36,7 +36,7 @@ export function textProblem(t) {
   const s = t.trim();
   if (!s) return "empty";
   if ([...s].length > LIMITS.maxTextChars) return "too_long";
-  if (/[<>{}\n\r\t`]/.test(s)) return "markup";
+  if (/[<>{}`]|[\u0000-\u001f\u007f]/.test(s)) return "markup";
   if (/https?:|www\.|@[a-z]/i.test(s)) return "link";
   // sentence-shaped: ends like a sentence and has a verb-sized span of words (labels may end with "?" only as a probe mark)
   if (s.split(/\s+/).length >= 5 && /[.!]$/.test(s)) return "sentence";

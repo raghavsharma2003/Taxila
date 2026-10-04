@@ -67,6 +67,18 @@ export function Hello() {
     };
   }, [cid]);
   const twoTeachers = !!tutors && tutors.mode === "picker" && offerOf(tutors).length >= 2 && !tutors.chosen;
+  // The hand-over tap is the audio unlock (flows G14; V2 §3.3): when this page was reached by a tap (the SPA carries
+  // user activation), her greeting plays at once, with no second "Tap to hear {T}" gate. A cold load keeps the button.
+  const [autoTried, setAutoTried] = useState(false);
+  useEffect(() => {
+    if (autoTried || card !== "greet" || !helloClip(rec.id, lang)) return;
+    setAutoTried(true);
+    const active = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation?.hasBeenActive ?? false;
+    if (active) clip.play();
+  }, [autoTried, card, rec.id, lang, clip]);
+  useEffect(() => {
+    document.title = `${t("aiTeacher") ? `${rec.name} · ` : ""}Hello · Taxila`;
+  }, [rec.name]);
   // the greeting card moves on by itself once her clip has played
   useEffect(() => {
     if (card === "greet" && clip.played) setCard("ai");

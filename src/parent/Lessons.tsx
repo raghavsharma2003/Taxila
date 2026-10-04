@@ -4,6 +4,7 @@
 // Lesson card: "What {child} did" (the same DidCards as the child's Summary: their own answers, a tick only where the
 // answer key verified it), "In {child}'s words", the skills with their evidence, "Next check: {day}", and the full
 // conversation: Classes 1-4 after the parent PIN is entered again; Classes 5-9 stay private to the child (§6.11).
+import { tw2 } from "../copy/en.ts";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Button, Glyph, PinPad, Speaker, StateChip } from "../ui/index.ts";
@@ -128,6 +129,13 @@ export function LessonCard() {
             ) : <p className="pa-muted">{data.lesson.endedAt ? "No answers were checked in this lesson." : "This lesson didn't finish."}</p>}
             {data.did?.tried ? <p className="pa-meta">{name} tried {data.did.tried} questions.</p> : null}
           </section>
+          {/* the summary built from the engine's checks, claim-checked on the server (W2-A; never model prose) */}
+          {data.summary && data.summary.lines.length > 0 && (
+            <section className="pa-card" aria-labelledby="pa-sum-h" data-testid="lesson-summary">
+              <h2 id="pa-sum-h" className="pa-card-title">{tw2("lesson.summary.title")}</h2>
+              <ul className="pa-list">{data.summary.lines.map((l, i) => <li key={i} className="pa-row">{l}</li>)}</ul>
+            </section>
+          )}
           {data.quote && (
             <section className="pa-card" aria-labelledby="pa-quote-h">
               <h2 id="pa-quote-h" className="pa-card-title">In {name}'s words</h2>

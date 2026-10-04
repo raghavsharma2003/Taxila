@@ -16,6 +16,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { ChildHomeState, ChildPlanResponse, DidCard, MadeForItem } from "../../shared/contracts.ts";
 import { ApiError, getJson } from "../lesson/api.ts";
 import { planDay, readMarker } from "./day.ts";
+import { takeEarlyPlan } from "../app/boot.ts";
 
 export type HomeState = ChildHomeState | "offline";
 
@@ -127,7 +128,10 @@ export async function readPlan(cid: string, signal?: AbortSignal): Promise<HomeP
   const timer = setTimeout(() => ac.abort(), PLAN_TIMEOUT_MS);
   signal?.addEventListener("abort", () => ac.abort(), { once: true });
   try {
-    const r = await getJson<unknown>(`/api/child/plan?childId=${encodeURIComponent(cid)}`, ac.signal).finally(() => clearTimeout(timer));
+    // the boot read index.html started with the document (me + plan in one hop), else the plan read
+    const early = takeEarlyPlan(cid);
+    const read = () => getJson<unknown>(`/api/child/plan?childId=${encodeURIComponent(cid)}`, ac.signal);
+    const r = await (early ? early.catch(read) : read()).finally(() => clearTimeout(timer));
     if (isPlanResponse(r)) {
       const p = fromServer(r);
       writeCache(cid, { topic: p.topic, surfaces: p.surfaces, day: r.day, hold: r.state === "safety_hold", textOnly: p.textOnly });

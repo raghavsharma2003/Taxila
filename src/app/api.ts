@@ -1,6 +1,7 @@
 // Account-level API used by the shell, onboarding, the picker and the Parent corner. Same-origin fetch with
 // the httpOnly guardian cookie (src/lesson/api.ts request helper); the client never holds a token.
 import { ApiError, getJson, postJson } from "../lesson/api.ts";
+import { takeEarlyMe } from "./boot.ts";
 
 export { ApiError, getJson, postJson };
 
@@ -18,7 +19,9 @@ let cached: Promise<Me | null> | null = null;
 /** GET /api/me → Me, or null when signed out (401). Cached for the page; call refreshMe() after a change. */
 export function loadMe(): Promise<Me | null> {
   if (!cached) {
-    cached = getJson<Me>("/api/me").catch((e) => {
+    const early = takeEarlyMe<Me>();
+    const read = () => getJson<Me>("/api/me");
+    cached = (early ? early.catch(read) : read()).catch((e) => {
       cached = null;
       if (e instanceof ApiError && e.status === 401) return null;
       throw e;

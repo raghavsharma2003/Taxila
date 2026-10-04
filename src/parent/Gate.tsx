@@ -36,6 +36,9 @@ const fmtWhen = (iso: string) => {
  * gated too). Anything else (the picker, a child screen, the landing page) locks the corner on the way out.
  */
 const GATED_PATH = /^\/(parent(\/|$)|start\/(child|controls|consent|handover|about|pin)(\/|$|\?))/;
+/** "Add a child" from the corner is one grown-up visit end to end (flows G13): its class and meet steps keep the unlock. */
+const ADD_PATH = /^\/start\/(class|meet)(\/|$)/;
+export const staysUnlocked = (pathname: string, search: string) => GATED_PATH.test(pathname) || (ADD_PATH.test(pathname) && /[?&]add=1(&|$)/.test(search));
 let pendingLock: number | null = null;
 
 /**
@@ -54,7 +57,7 @@ function useLockOnExit(open: boolean, relock: () => void) {
     return () => {
       window.removeEventListener("pagehide", away);
       document.removeEventListener("visibilitychange", onVis);
-      pendingLock = window.setTimeout(() => { pendingLock = null; if (!GATED_PATH.test(window.location.pathname)) lockBeacon(); }, 0);
+      pendingLock = window.setTimeout(() => { pendingLock = null; if (!staysUnlocked(window.location.pathname, window.location.search)) lockBeacon(); }, 0);
     };
   }, [open, relock]);
 }

@@ -18,7 +18,8 @@ let chatFn = chat;
 /** Test seam (tests swap the model; never set by production code). */
 export const _setChat = (fn) => { chatFn = fn ?? chat; };
 
-const LABEL = { type: "string", maxLength: 24 };
+// 40, not 24: a hard 24 made the model cut words mid-way ("Fewer flowers get polli"); the check enforces 24
+const LABEL = { type: "string", maxLength: 40 };
 const nullable = (s) => ({ anyOf: [s, { type: "null" }] });
 const SCHEMA = {
   type: "object", additionalProperties: false,
@@ -56,16 +57,18 @@ function callOf(j) {
  * @param {{ kit: any, topicTitle?: string, band?: string, timeoutMs?: number, trace?: any[] }} a
  * @returns {Promise<{ ok: boolean, call?: any, why?: string, ms: number, usage?: any }>}
  */
-export async function modelFill({ kit, topicTitle, band = "B3", timeoutMs = FILL_TIMEOUT_MS, trace }) {
+export async function modelFill({ kit, topicTitle, band = "B3", timeoutMs = FILL_TIMEOUT_MS, trace, feedback }) {
   const t0 = performance.now();
   const done = (r) => ({ ...r, ms: Math.round(performance.now() - t0) });
   if (process.env.FORGE_EXPLAINER_MODEL === "off") return done({ ok: false, why: "model_off" });
   // Fields, not sentences: what the model reads; nothing here is text a child or a voice will see.
   const sys = [
     "task: choose ONE board diagram that best shows the topic's core idea to a child, and fill it. JSON only.",
-    "templates: flow = an ordered chain of 2-6 steps or causes; cycle = 3-6 stages that loop back; compare = two things side by side, 1-4 short points each;",
-    "parts = a whole and its 2-6 parts or kinds; label = a sketch (plant, flower, leaf, insect) with 2-6 of its parts named; none = no diagram fits.",
-    "labels: 1-3 words each, at most 20 characters, taken from the kit's own words (shorten, never add facts); English terms as the book uses them.",
+    "templates: flow = an ordered chain (steps of a process, or cause then effect), 2-6 boxes;",
+    "cycle = 3-6 stages where the last leads back to the first; compare = TWO kinds or things side by side, 1-4 short points each (use this when the idea is two kinds, e.g. two types of roots);",
+    "parts = a whole and its 2-6 parts, kinds or examples; label = a sketch (plant, flower, leaf, insect) with 2-6 of its parts named;",
+    "none = no diagram fits (a reading or grammar skill with nothing to draw).",
+    "labels: a noun or short phrase of 1-4 words, at most 24 characters; no arrows, colons, brackets or sentences; taken from the kit's own words (shorten, never add facts); English terms as the book uses them.",
     "fill only the chosen template's fields; every other field null.",
   ].join("\n");
   const user = JSON.stringify({
@@ -73,6 +76,8 @@ export async function modelFill({ kit, topicTitle, band = "B3", timeoutMs = FILL
     key_ideas: (kit?.expectations ?? []).slice(0, 6),
     pictures_the_book_suggests: (kit?.misconceptions ?? []).map((m) => m.remediation?.representation).filter(Boolean).slice(0, 4),
     worked_example: kit?.workedExample ? { problem: kit.workedExample.problem, steps: (kit.workedExample.steps ?? []).slice(0, 6) } : null,
+    // a retry is told what the code check rejected last time (a reason code, never the child's data)
+    ...(feedback ? { previous_attempt_rejected: String(feedback).slice(0, 160) } : {}),
   });
   try {
     const r = await chatFn(DEPLOY.fast, [{ role: "system", content: sys }, { role: "user", content: user }],

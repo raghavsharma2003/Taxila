@@ -2,11 +2,14 @@
 // parent words, its state shape and word (the SAME ledger state the home headline used: G-PARENT-1), then one row per
 // check: the date, the kind of check in plain words, the child's own words (≤ 25, server-capped) and the verdict as a
 // shape (tick, half tick, magnifier) with its words. Never red. "Next check: {day}" when one is scheduled ahead.
-// Deep-linkable at /parent/evidence/:id?c=… . Reads GET /api/parent/evidence (evidence + skill_state rows).
+// W2-A (flows G7, comprehension G4): every row is an ENGINE-graded check (kt_evidence), with the real question, the
+// child's own words and who checked it ("exact answer" / "checked against the book's key idea").
+// Deep-linkable at /parent/evidence/:id?c=… . Reads GET /api/parent/evidence.
 import { Glyph, Sheet, StateChip, STATE_MEANING } from "../ui/index.ts";
 import { parentApi } from "./api.ts";
 import { fmtDay, fmtDayLong, helpWords, KIND_WORDS, labelTitle, OUTCOME_WORDS, outcomeGlyph } from "./copy.ts";
 import { PageState, useParentData } from "./Shell.tsx";
+import { tw2, type W2AKey } from "../copy/en.ts";
 
 export function EvidenceSheet({ childId, skill, childName, onClose }: { childId: string; skill: string | null; childName: string; onClose: () => void }) {
   return (
@@ -42,10 +45,12 @@ function EvidenceBody({ childId, skill, childName }: { childId: string; skill: s
                 <span className="pa-ev-what">{KIND_WORDS[r.kind] ?? KIND_WORDS.practice}</span>
                 <span className="pa-ev-verdict">
                   {g && <Glyph name={g} size={20} className="pa-ev-glyph" />}
-                  <span>{OUTCOME_WORDS[r.outcome]}</span>
-                  {r.outcome !== "no_evidence" && <span className="pa-muted"> · {helpWords(r.hintsUsed)}</span>}
+                  <span>{r.result ? tw2(`evidence.result.${r.result}` as W2AKey) : OUTCOME_WORDS[r.outcome]}</span>
+                  {!r.result && r.outcome !== "no_evidence" && <span className="pa-muted"> · {helpWords(r.hintsUsed)}</span>}
                 </span>
-                {r.words && <q className="pa-quote">{r.words}</q>}
+                {r.prompt && <span className="pa-ev-prompt"><span className="pa-muted">{tw2("evidence.prompt")}: </span>{r.prompt}</span>}
+                {r.words && <span className="pa-ev-said"><span className="pa-muted">{tw2("evidence.said", { name: childName })}: </span><q className="pa-quote">{r.words}</q></span>}
+                {r.grader && <span className="pa-meta" data-grader={r.grader}>{tw2(`evidence.grader.${r.grader}` as W2AKey)}</span>}
                 {r.misconception && <span className="pa-meta">The mix-up: {r.misconception}. It's a common, sensible idea to have on the way.</span>}
               </li>
             );

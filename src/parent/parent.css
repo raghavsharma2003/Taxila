@@ -247,3 +247,7 @@ html:has(.pa[data-tabs="off"]) { scroll-padding-top: 64px; }
 /* the PinPad's OK key carries .btn-primary, but .pin-key (src/ui) repaints its ground as surface and its text stays
    on-nib: white on white. Restored here for every parent-corner pad (the PinPad is reused, not forked). */
 .pa .pin-key.btn-primary, .pa-gate .pin-key.btn-primary { background: var(--nib); color: var(--on-nib); border-color: var(--nib); }
+/* W2-A: the school test window row */
+.pa-test-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.pa-field { display: flex; flex-direction: column; gap: 4px; font-size: var(--t-meta); color: var(--ink-2); min-width: 0; }
+.pa-field .input { min-height: 48px; }

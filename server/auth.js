@@ -28,12 +28,17 @@ export async function createSession(res, guardianId, userAgent) {
   await q("insert into auth_session(token_hash, guardian_id, expires_at, user_agent) values ($1,$2, now() + ($3 || ' days')::interval, $4)",
     [sha(token), guardianId, String(TTL_DAYS), (userAgent || "").slice(0, 200)]);
   const secure = process.env.VERCEL || process.env.NODE_ENV === "production" ? "; Secure" : "";
-  res.setHeader("set-cookie", `${COOKIE}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${TTL_DAYS * 86400}${secure}`);
+  // HINT: a readable marker that a session MAY exist (never the token), so a public page skips GET /api/me (and its
+  // 401) when nobody signed in on this browser, and child home can start its one boot read before the bundle parses.
+  res.setHeader("set-cookie", [`${COOKIE}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${TTL_DAYS * 86400}${secure}`,
+    `${HINT}=1; Path=/; SameSite=Lax; Max-Age=${TTL_DAYS * 86400}${secure}`]);
 }
+/** The readable session marker cookie (value "1"; carries nothing). */
+export const HINT = "tx_in";
 export async function destroySession(req, res) {
   const t = parseCookies(req)[COOKIE];
   if (t) await q("delete from auth_session where token_hash = $1", [sha(t)]);
-  res.setHeader("set-cookie", `${COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`);
+  res.setHeader("set-cookie", [`${COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`, `${HINT}=; Path=/; SameSite=Lax; Max-Age=0`]);
 }
 /** → guardian row or throws 401. */
 export async function requireGuardian(req) {

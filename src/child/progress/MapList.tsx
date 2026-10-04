@@ -25,7 +25,7 @@ export function MapList({ chapters, mode, words, onSelect }:
                 <li key={s.skillId}>
                   <button type="button" className="maplist-row" onClick={() => onSelect?.(s)} data-state={s.state}>
                     <StateShape state={s.state} mode={mode} />
-                    <span className="maplist-title">{s.title}</span>
+                    <span className="maplist-title">{words ? s.title : s.label ?? s.title}</span>
                     {words && <span className="maplist-word">{STATE_WORD[s.state]}</span>}
                   </button>
                 </li>

@@ -12,6 +12,7 @@ import { Teacher } from "../../ui/teacher/Teacher.tsx";
 import { teacherRecord } from "../../ui/teacher/useTeacher.ts";
 import { Spot } from "../art.tsx";
 import { ApiError } from "../../lesson/api.ts";
+import { TUTORS, tutorById } from "../../../shared/tutors.js";
 import { fill, NAME_COPY as C, normalizeTeacherName, saveTeacherName, teacherNameShape, TEACHER_NAME, type NameReason } from "./naming.ts";
 import "./teacher-name.css";
 
@@ -41,13 +42,27 @@ export interface TeacherNamerProps {
   title?: string;
 }
 
+/**
+ * PURE. Names that fit the teacher being named (flows G9): another character's own name is offered only when that
+ * character presents the same way as this one ("Arjun" is never offered for a woman teacher, "Asha" never for a man).
+ * Names that are no character's own are kept (neutral suggestions).
+ */
+export function fitNames(names: string[], characterId: string): string[] {
+  const me = tutorById(characterId)?.look?.presentedGender ?? null;
+  if (!me) return names;
+  return names.filter((n) => {
+    const other = TUTORS.find((x) => x.displayName.roman.toLowerCase() === n.toLowerCase());
+    return !other || other.id === characterId || other.look?.presentedGender === me;
+  });
+}
+
 export function TeacherNamer(p: TeacherNamerProps) {
   const rec = teacherRecord(p.characterId, p.band);
   const own = rec.characterName;
   const suggestions = useMemo(() => {
     const list = p.suggestions?.length ? p.suggestions : [own];
-    return [...new Set([own, ...list])].slice(0, 4);
-  }, [p.suggestions, own]);
+    return fitNames([...new Set([own, ...list])], p.characterId).slice(0, 4);
+  }, [p.suggestions, own, p.characterId]);
   const [text, setText] = useState(p.current && p.current !== own ? p.current : "");
   const [picked, setPicked] = useState<string | null>(null);
   const [refused, setRefused] = useState<{ reason: NameReason; suggestions: string[] } | null>(null);
@@ -57,7 +72,7 @@ export function TeacherNamer(p: TeacherNamerProps) {
   const typed = normalizeTeacherName(text);
   const shape = text.trim() ? teacherNameShape(text) : null;
   const choice = typed || picked;
-  const offered = refused?.suggestions.length ? [...new Set([...refused.suggestions, ...suggestions])].slice(0, 4) : suggestions;
+  const offered = refused?.suggestions.length ? fitNames([...new Set([...refused.suggestions, ...suggestions])], p.characterId).slice(0, 4) : suggestions;
 
   // A custom name is in use: the secondary button resets it ("Go back to {own}"); else it keeps the look's own name.
   const custom = !!p.current && p.current !== own;

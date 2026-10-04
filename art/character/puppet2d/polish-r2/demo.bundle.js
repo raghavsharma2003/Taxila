@@ -688,6 +688,12 @@ var P = class {
 			wide: Math.min(1, m * 1.5),
 			round: Math.min(1, p),
 			skew: d * .8 + (r - i) * .6,
+			shift: Math.max(-1, Math.min(1, d * 1.6)) * 16 * (a < .3 ? 1 : .4),
+			liftR: Math.max(0, r - i) * 7,
+			liftL: Math.max(0, i - r) * 7,
+			scale: u === "laugh" || u === "grin_E" ? .9 : 1,
+			tilt: u === "aside" ? Math.max(-1, Math.min(1, d * 1.6)) * 9 : 0,
+			narrow: u === "aside" ? .16 * Math.min(1, Math.abs(d) * 1.6) : 0,
 			lowerDrop: Math.max(-2, Math.min(3, (c - h) * 6)),
 			jawGain: l === "closed" || l === "PP" ? .2 : 1
 		};
@@ -782,7 +788,7 @@ function U(e, t) {
 	for (let n of [452, 608]) a += 8 * Math.exp(-((e - n) ** 2 + (t - 585) ** 2) / 4050);
 	return a;
 }
-function re(e, t) {
+function W(e, t) {
 	let [n, r, i, a] = e, o = Math.max(1, Math.ceil((i - n) / t)), s = Math.max(1, Math.ceil((a - r) / t)), c = (o + 1) * (s + 1), l = new Float32Array(c * 2), u = new Float32Array(c * 2), d = 0;
 	for (let e = 0; e <= s; e++) for (let t = 0; t <= o; t++) {
 		let c = t / o, f = e / s;
@@ -808,7 +814,7 @@ function re(e, t) {
 		n: c
 	};
 }
-function W(e, t) {
+function G(e, t) {
 	let n = new Uint16Array((e - 1) * (t - 1) * 6), r = 0;
 	for (let i = 0; i < e - 1; i++) for (let e = 0; e < t - 1; e++) {
 		let a = i * t + e, o = a + 1, s = a + t, c = s + 1;
@@ -823,14 +829,14 @@ function W(e, t) {
 	}
 	return n;
 }
-function G(e, t, n) {
+function K(e, t, n) {
 	let r = n - e;
 	if (r <= 0) return t[0];
 	if (r >= t.length - 1) return t[t.length - 1];
 	let i = Math.floor(r), a = r - i;
 	return t[i] * (1 - a) + t[i + 1] * a;
 }
-var K = class {
+var q = class {
 	constructor(e, t) {
 		this.k = e, this.c = 2 * t * Math.sqrt(e), this.x = 0, this.v = 0;
 	}
@@ -842,7 +848,7 @@ var K = class {
 		}
 		return this.x;
 	}
-}, ie = class e {
+}, re = class e {
 	static async load(t, n, r = {}) {
 		let i = (e) => fetch(n + e).then((e) => e.json()), [a, o] = await Promise.all([i("geom.json"), i("mouths.json")]), s = Object.keys(a.rects).concat(["mouths"]), c = {};
 		return await Promise.all(s.map(async (e) => {
@@ -866,7 +872,7 @@ var K = class {
 		for (let [e, t] of Object.entries(r)) this.tex[e] = this.R.texture(t);
 		this.solver = new te(Object.keys(n.patches)), this.clock = null, this.lastT = -1, this.layers = {};
 		let a = this.R.paint, o = (e, n, r) => {
-			let i = t.rects[e], o = re(i, n), s = new Float32Array(o.rest), c = new Float32Array(o.n);
+			let i = t.rects[e], o = W(i, n), s = new Float32Array(o.rest), c = new Float32Array(o.n);
 			for (let e = 0; e < o.n; e++) c[e] = U(o.rest[e * 2], o.rest[e * 2 + 1]);
 			let l = this.R.mesh(a, {
 				aPos: {
@@ -903,12 +909,12 @@ var K = class {
 		}
 		for (let e of ["L", "R"]) {
 			let t = this.layers["lock" + e];
-			t.y0 = t.rect[1] + 6, t.len = t.rect[3] - t.y0, t.spring = new K(55, .22), t.springY = new K(70, .3);
+			t.y0 = t.rect[1] + 6, t.len = t.rect[3] - t.y0, t.spring = new q(55, .22), t.springY = new q(70, .3);
 		}
-		this.bunSpring = [new K(90, .5), new K(90, .5)], this.eyes = {};
+		this.bunSpring = [new q(90, .5), new q(90, .5)], this.eyes = {};
 		for (let e of ["L", "R"]) {
 			let n = t.eyes[e], r = n.x[0], i = n.x[1], o = Math.floor((i - r) / 2) + 1, s = o * 4, c = new Float32Array(s * 2), l = new Float32Array(s * 2), u = new Float32Array(s);
-			for (let e = 0; e < o; e++) for (let t = 0; t < 4; t++) u[e * 4 + t] = t === 0 || t === 3 || e === 0 || e === o - 1 ? 0 : 1;
+			for (let e = 0; e < o; e++) for (let t = 0; t < 4; t++) u[e * 4 + t] = t === 0 || t === 3 ? 0 : Math.min(1, e / 2, (o - 1 - e) / 2);
 			let d = this.R.mesh(this.R.eye, {
 				aPos: {
 					data: c,
@@ -924,9 +930,9 @@ var K = class {
 					data: u,
 					size: 1
 				}
-			}, W(o, 4)), f = n.lashX[0], p = n.lashX[1], m = Math.floor((p - f) / 3) + 1, h = new Float32Array(m * 8 * 2), g = new Float32Array(m * 8 * 2), _ = new Float32Array(m * 8), v = t.rects["lid" + e];
+			}, G(o, 4)), f = n.lashX[0], p = n.lashX[1], m = Math.floor((p - f) / 3) + 1, h = new Float32Array(m * 8 * 2), g = new Float32Array(m * 8 * 2), _ = new Float32Array(m * 8), v = t.rects["lid" + e];
 			for (let e = 0; e < m; e++) {
-				let t = Math.min(p, f + e * 3), r = G(f, n.lashTop, t) - n.fall, i = G(f, n.lashBot, t) + 8.5;
+				let t = Math.min(p, f + e * 3), r = K(f, n.lashTop, t) - n.fall, i = K(f, n.lashBot, t) + 8.5;
 				for (let n = 0; n < 8; n++) {
 					let a = n / 7, o = r + a * (i - r), s = e * 8 + n;
 					h[s * 2] = t, h[s * 2 + 1] = o, g[s * 2] = (t - v[0]) / (v[2] - v[0]), g[s * 2 + 1] = (o - v[1]) / (v[3] - v[1]), _[s] = B(.1, .55, a);
@@ -942,9 +948,9 @@ var K = class {
 					data: g,
 					size: 2
 				}
-			}, W(m, 8)), x = Math.floor((i - r) / 3) + 1, S = new Float32Array(x * 5 * 2), C = new Float32Array(x * 5 * 2), w = new Float32Array(x * 5), T = t.rects["lower" + e];
+			}, G(m, 8)), x = Math.floor((i - r) / 3) + 1, S = new Float32Array(x * 5 * 2), C = new Float32Array(x * 5 * 2), w = new Float32Array(x * 5), T = t.rects["lower" + e];
 			for (let e = 0; e < x; e++) {
-				let t = Math.min(i, r + e * 3), a = G(r, n.bot, t);
+				let t = Math.min(i, r + e * 3), a = K(r, n.bot, t);
 				for (let n = 0; n < 5; n++) {
 					let r = n / 4, i = Math.max(T[1], a - 3) + r * (Math.min(T[3], a + 19) - Math.max(T[1], a - 3)), o = e * 5 + n;
 					S[o * 2] = t, S[o * 2 + 1] = i, C[o * 2] = (t - T[0]) / (T[2] - T[0]), C[o * 2 + 1] = (i - T[1]) / (T[3] - T[1]), w[o] = r;
@@ -960,7 +966,7 @@ var K = class {
 					data: C,
 					size: 2
 				}
-			}, W(x, 5));
+			}, G(x, 5));
 			this.eyes[e] = {
 				e: n,
 				xa: r,
@@ -993,7 +999,7 @@ var K = class {
 			l + s,
 			u + c
 		];
-		let d = re(this.mouthRect, 14);
+		let d = W(this.mouthRect, 14);
 		this.mouthRest = d.rest, this.mouthPos = new Float32Array(d.rest), this.mouthZ = new Float32Array(d.n);
 		for (let e = 0; e < d.n; e++) this.mouthZ[e] = U(d.rest[e * 2], d.rest[e * 2 + 1]);
 		let f = r.mouths.width, p = r.mouths.height;
@@ -1045,18 +1051,24 @@ var K = class {
 			smile: f,
 			cheek: p,
 			open: m
+		}, this.browCh = {
+			L: this.browChannels("L"),
+			R: this.browChannels("R")
 		}, this.mouth = this.solver.solve(e, o);
 		let h = {
 			L: "Right",
 			R: "Left"
 		}, g = z(-n[1] / 25), _ = z(n[1] / 20);
 		for (let e of ["L", "R"]) {
-			let t = this.eyes[e], n = t.e, r = h[e], i = s("eyeBlink" + r), a = s("eyeSquint" + r), o = s("eyeWide" + r), c = s("cheekSquint" + r), l = s("mouthSmile" + r);
+			let t = this.eyes[e], n = t.e, r = h[e], i = (e) => {
+				let t = s(e + "Left"), n = s(e + "Right");
+				return Math.abs(t - n) < .12 ? (t + n) / 2 : s(e + r);
+			}, a = s("eyeBlink" + r), o = i("eyeSquint"), c = s("eyeWide" + r), l = i("cheekSquint"), u = i("mouthSmile");
 			for (let e = 0; e <= t.xb - t.xa; e++) {
-				let r = n.top[e], s = n.bot[e], u = s - r, d = e / (t.xb - t.xa), f = Math.max(0, Math.sin(Math.PI * d)) ** .7, p = (a * .34 + c * .26 + l * .08) * u * f, m = s - p, h = (g * .14 - _ * .06) * u * f, v = r + .72 * (s - r) - Math.min(p, .25 * u), y = r + h - o * .13 * u * f, b = i * i * (3 - 2 * i);
+				let r = n.top[e], i = n.bot[e], s = i - r, d = e / (t.xb - t.xa), f = Math.max(0, Math.sin(Math.PI * d)) ** .7, p = (o * .3 + l * .2 + u * .06) * s * f ** 1.4, m = i - p, h = (g * .14 - _ * .02) * s * f, v = r + .72 * (i - r) - Math.min(p, .25 * s), y = r + h - c * .13 * s * f, b = a * a * (3 - 2 * a);
 				y += (v - y) * b, m += (v - m) * Math.max(0, (b - .35) / .65), y > m && (y = m), t.top[e] = y, t.bot[e] = m;
 			}
-			t.blink = i;
+			t.blink = a;
 		}
 		let v = this.project(530, 300, 120);
 		if (this.prevAnchor) {
@@ -1116,9 +1128,18 @@ var K = class {
 		}
 		return !0;
 	}
+	browChannels(e) {
+		let t = this.bs, n = e === "L" ? "Right" : "Left", r = t.browInnerUp ?? 0, i = t["browOuterUp" + n] ?? 0, a = t["browDown" + n] ?? 0;
+		return {
+			lift: 10 * (t["eyeWide" + n] ?? 0) + 9 * i + 4 * r,
+			inner: 28 * r,
+			arch: 30 * i,
+			knit: 16 * a
+		};
+	}
 	browOffset(e, t, n) {
-		let r = this.bs, i = e === "L" ? "Right" : "Left", a = this.g.brows[e], o = a.x[0], s = a.x[1], c = z(e === "L" ? (s - t) / (s - o) : (t - o) / (s - o)), l = r.browInnerUp ?? 0, u = r["browOuterUp" + i] ?? 0, d = r["browDown" + i] ?? 0, f = r["eyeWide" + i] ?? 0, p = -(l * 22 * (1 - c) ** 1.4 + l * 5 * Math.sin(Math.PI * c) + u * 17 * c ** .9 + f * 6) + d * 9 * (1 - .5 * c);
-		return [(e === "L" ? 1 : -1) * d * 4 * (1 - c), p];
+		let r = this.g.brows[e], i = r.x[0], a = r.x[1], o = z(e === "L" ? (a - t) / (a - i) : (t - i) / (a - i)), s = this.browCh[e], c = Math.exp(-(((o - .62) / .3) ** 2)), l = -s.lift - s.inner * (1 - o) ** 1.3 - s.arch * (.35 + .65 * c) * o ** .5 + s.knit * (1 - .6 * o);
+		return [(e === "L" ? 1 : -1) * (s.knit * .45 + s.inner * .08) * (1 - o) ** 1.5, l];
 	}
 	render() {
 		let e = this.R, t = this.st;
@@ -1146,10 +1167,10 @@ var K = class {
 		let n = this.eyes[e], r = n.e, i = this.R, a = this.st, o = (e, t) => U(e, t), s = 0;
 		for (let e = 0; e < n.C; e++) {
 			let t = Math.min(n.xb, n.xa + e * 2), r = t - n.xa, i = n.top[r], a = n.bot[r], c = [
-				i - .6,
-				i + 1.4,
-				Math.max(i + 1.4, a - .6),
-				Math.max(i + 1.4, a + 1.4)
+				i - 2.1,
+				i - .1,
+				Math.max(i - .1, a - .6),
+				Math.max(i - .1, a + 1.4)
 			];
 			for (let e = 0; e < 4; e++) {
 				let r = a <= i + .05 ? i : c[e];
@@ -1179,7 +1200,7 @@ var K = class {
 			catchOff: [l * .45, u * .45],
 			catchA: 1,
 			lidShade: .06,
-			topY: G(n.xa, n.top, f)
+			topY: K(n.xa, n.top, f)
 		});
 		for (let e = 0; e < n.BC; e++) for (let t = 0; t < n.BR; t++) {
 			let i = e * n.BR + t, a = n.brest[i * 2], s = n.brest[i * 2 + 1], c = Math.round(a - n.xa), l = s - (r.bot[R(c, 0, r.bot.length - 1)] - n.bot[R(c, 0, n.bot.length - 1)]) * (1 - .75 * n.bv[i]), u = this.project(a, l, o(a, l));
@@ -1201,9 +1222,13 @@ var K = class {
 			let n = r[e * 2], a = r[e * 2 + 1], [o, s] = this.faceOffset(n, a);
 			n += o, a += s;
 			let c = Math.exp(-(((a - 628) / 50) ** 2)), l = 1 + .1 * this.expr.open;
-			n = 530 + (n - 530) * l, a = 628 + (a - 628) * l, n += (n - 530) * (t.wide * .05 - t.round * .04) * c + t.skew * 6 * c * Math.exp(-(((n - 530) / 90) ** 2)), a += t.lowerDrop * B(623, 668, a) * Math.exp(-(((n - 530) / 90) ** 2));
-			let u = this.project(n, a, this.mouthZ[e]);
-			i[e * 2] = u[0], i[e * 2 + 1] = u[1];
+			n = 530 + (n - 530) * l, a = 628 + (a - 628) * l, n += (n - 530) * (t.wide * .05 - t.round * .04) * c + t.skew * 6 * c * Math.exp(-(((n - 530) / 90) ** 2)), n += (t.shift || 0) * Math.exp(-(((a - 628) / 70) ** 2));
+			let u = z((Math.abs(n - 530) - 30) / 60);
+			a -= (n > 530 ? t.liftR || 0 : t.liftL || 0) * u * u * c, a -= (t.tilt || 0) * ((n - 530) / 90) * c, n = 530 + (n - 530) * (1 - (t.narrow || 0) * c);
+			let d = t.scale ?? 1;
+			n = 530 + (n - 530) * d, a = 628 + (a - 628) * d, a += t.lowerDrop * B(623, 668, a) * Math.exp(-(((n - 530) / 90) ** 2));
+			let f = this.project(n, a, this.mouthZ[e]);
+			i[e * 2] = f[0], i[e * 2 + 1] = f[1];
 		}
 		for (let [r, a] of t.draw) n.update(this.mouthMesh[r], "aPos", i), n.drawPaint(this.mouthMesh[r], this.tex.mouths, this.mouthRect, a, e);
 	}
@@ -1227,7 +1252,249 @@ var K = class {
 	dispose() {
 		this.R.gl.getExtension("WEBGL_lose_context")?.loseContext();
 	}
-}, q = new URLSearchParams(location.search), J = q.has("capture"), ae = q.get("base") || "./layers/", Y = 5, X = [
+}, J = {
+	thinking: {
+		bs: {
+			browOuterUpLeft: .95,
+			browInnerUp: .05,
+			browDownRight: .55,
+			eyeSquintRight: .25,
+			eyeWideLeft: .04,
+			mouthLeft: .6,
+			mouthPressLeft: .3,
+			mouthPressRight: .3,
+			mouthSmileLeft: .1,
+			mouthSmileRight: -1
+		},
+		head: [
+			-3,
+			-6,
+			7
+		],
+		gaze: [15, 17],
+		env: [
+			.35,
+			0,
+			.45
+		]
+	},
+	listening: {
+		bs: {
+			mouthSmileLeft: .3,
+			mouthSmileRight: .3,
+			cheekSquintLeft: .12,
+			cheekSquintRight: .12,
+			eyeSquintLeft: .1,
+			eyeSquintRight: .1,
+			browInnerUp: .28,
+			browOuterUpLeft: .18,
+			browOuterUpRight: .18
+		},
+		head: [
+			2.5,
+			3,
+			-6
+		],
+		gaze: [0, 0],
+		env: [
+			.5,
+			0,
+			.5
+		]
+	},
+	warm: {
+		bs: {
+			mouthSmileLeft: .4,
+			mouthSmileRight: .4,
+			cheekSquintLeft: .2,
+			cheekSquintRight: .2,
+			eyeSquintLeft: .12,
+			eyeSquintRight: .12,
+			browOuterUpLeft: .12,
+			browOuterUpRight: .12
+		},
+		head: [
+			0,
+			0,
+			3
+		],
+		gaze: [0, 0],
+		env: [
+			.4,
+			0,
+			.5
+		]
+	},
+	delight: {
+		bs: {
+			mouthSmileLeft: .8,
+			mouthSmileRight: .8,
+			cheekSquintLeft: .35,
+			cheekSquintRight: .35,
+			eyeSquintLeft: .22,
+			eyeSquintRight: .22,
+			browOuterUpLeft: .35,
+			browOuterUpRight: .35,
+			browInnerUp: .15,
+			jawOpen: .34
+		},
+		head: [
+			-2,
+			0,
+			4
+		],
+		gaze: [0, 2],
+		env: [
+			.25,
+			0,
+			.45
+		],
+		bounce: 4
+	},
+	concern: {
+		bs: {
+			browInnerUp: 1,
+			browDownLeft: .3,
+			browDownRight: .3,
+			eyeBlinkLeft: .22,
+			eyeBlinkRight: .22,
+			mouthPressLeft: .25,
+			mouthPressRight: .25,
+			mouthFrownLeft: .2,
+			mouthFrownRight: .2,
+			mouthSmileLeft: -1,
+			mouthSmileRight: -1
+		},
+		head: [
+			4,
+			2,
+			7
+		],
+		gaze: [0, -4],
+		env: [
+			.45,
+			0,
+			.6
+		]
+	},
+	surprise: {
+		bs: {
+			eyeWideLeft: .9,
+			eyeWideRight: .9,
+			browInnerUp: .6,
+			browOuterUpLeft: .85,
+			browOuterUpRight: .85,
+			jawOpen: .42,
+			mouthSmileLeft: -1,
+			mouthSmileRight: -1
+		},
+		head: [
+			-5,
+			0,
+			0
+		],
+		gaze: [0, 2],
+		env: [
+			.12,
+			0,
+			.5
+		]
+	},
+	playful: {
+		bs: {
+			mouthSmileLeft: .7,
+			mouthSmileRight: .08,
+			cheekSquintLeft: .45,
+			browOuterUpLeft: .95,
+			browDownRight: .35,
+			eyeSquintRight: .55,
+			cheekSquintRight: .25,
+			eyeSquintLeft: .05
+		},
+		head: [
+			-1,
+			6,
+			-8
+		],
+		gaze: [-5, 2],
+		env: [
+			.25,
+			0,
+			.45
+		]
+	}
+}, ie = (e) => e <= 0 ? 0 : e >= 1 ? 1 : e * e * (3 - 2 * e), ae = class {
+	constructor() {
+		this.cur = null, this.bounce = {
+			x: 0,
+			v: 0
+		};
+	}
+	emote(e, t, { hold: n = 1.6, intensity: r = 1 } = {}) {
+		let i = J[e];
+		i && (this.cur = {
+			name: e,
+			t0: t,
+			hold: n,
+			I: r,
+			rel: -1
+		}, i.bounce && (this.bounce.v -= i.bounce * 14));
+	}
+	release(e) {
+		this.cur && this.cur.rel < 0 && (this.cur.rel = e);
+	}
+	level(e) {
+		let t = this.cur;
+		if (!t) return 0;
+		let [n, , r] = J[t.name].env, i = ie((e - t.t0) / n), a = t.rel >= 0 ? t.rel : t.t0 + n + t.hold, o = e < a ? 1 : 1 - ie((e - a) / r);
+		return o <= 0 && e > a ? (this.cur = null, 0) : i * o * t.I;
+	}
+	apply(e, t, n, r, i, a) {
+		let o = t;
+		for (; o > 1e-6;) {
+			let e = Math.min(.004, o);
+			this.bounce.v += (-160 * this.bounce.x - 1 * Math.sqrt(160) * this.bounce.v) * e, this.bounce.x += this.bounce.v * e, o -= e;
+		}
+		r[0] += this.bounce.x;
+		let s = this.level(e);
+		if (!this.cur || s <= 0) return 0;
+		let c = J[this.cur.name];
+		for (let [e, t] of Object.entries(c.bs)) {
+			if (e === "jawOpen") {
+				a && (a.jawOpen = Math.max(a.jawOpen ?? 0, t * s));
+				continue;
+			}
+			n[e] = t < 0 ? (n[e] ?? 0) * (1 - s) : Math.max(n[e] ?? 0, t * s);
+		}
+		for (let e = 0; e < 3; e++) r[e] += c.head[e] * s;
+		return i[0] = i[0] * (1 - s) + c.gaze[0] * s, i[1] = i[1] * (1 - s) + c.gaze[1] * s, s;
+	}
+}, oe = class {
+	constructor(e = 3) {
+		this.s = {
+			x: 0,
+			v: 0
+		}, this.voicedFor = 0, this.quietFor = 0, this.lastNod = -9, this.n = 0, this.smile = 0, this.seed = e, this.nods = [];
+	}
+	update(e, t, n, r) {
+		let i = n && r > .12;
+		if (i ? (this.voicedFor += t, this.quietFor = 0) : this.quietFor += t, n && !i && this.voicedFor >= .6 && this.quietFor > .18 && this.quietFor < .45 && e - this.lastNod > 1.6) {
+			let t = this.n % 3 == 1;
+			this.s.v += (t ? 5.5 : 3.5) / .0468, this.lastNod = e, this.n++, this.voicedFor = 0, this.nods.push(+e.toFixed(2));
+		}
+		n || (this.voicedFor = 0);
+		let a = t;
+		for (; a > 1e-6;) {
+			let e = Math.min(.004, a);
+			this.s.v += (-110 * this.s.x - 1.24 * Math.sqrt(110) * this.s.v) * e, this.s.x += this.s.v * e, a -= e;
+		}
+		let o = n ? i ? .12 : .06 : 0;
+		return this.smile += (1 - Math.exp(-t / .5)) * (o - this.smile), {
+			pitch: this.s.x,
+			smile: this.smile
+		};
+	}
+}, Y = new URLSearchParams(location.search), X = Y.has("capture"), se = Y.get("base") || "./layers/", Z = 5, Q = [
 	{
 		id: "idle",
 		t0: 0,
@@ -1236,7 +1503,7 @@ var K = class {
 	},
 	{
 		id: "talking",
-		t0: Y,
+		t0: Z,
 		t1: 17.9,
 		status: "speaking"
 	},
@@ -1245,11 +1512,8 @@ var K = class {
 		t0: 17.9,
 		t1: 23.4,
 		status: "listening",
-		nods: [
-			18.9,
-			20.4,
-			21.9
-		]
+		preset: "listening",
+		child: [9.2, 14.7]
 	},
 	{
 		id: "thinking",
@@ -1300,78 +1564,13 @@ var K = class {
 		status: null,
 		turn: !0
 	}
-], Z = 45.2, Q = {
-	thinking: {
-		mouthLeft: .32,
-		mouthPressLeft: .12,
-		mouthPressRight: .12,
-		browDownRight: .25,
-		browInnerUp: .12,
-		browOuterUpLeft: .45,
-		tilt: 4
-	},
-	warm: {
-		mouthSmileLeft: .3,
-		mouthSmileRight: .3,
-		cheekSquintLeft: .15,
-		cheekSquintRight: .15,
-		eyeSquintLeft: .12,
-		eyeSquintRight: .12,
-		browOuterUpLeft: .05,
-		browOuterUpRight: .05,
-		tilt: 2
-	},
-	delight: {
-		mouthSmileLeft: .75,
-		mouthSmileRight: .75,
-		cheekSquintLeft: .45,
-		cheekSquintRight: .45,
-		eyeSquintLeft: .35,
-		eyeSquintRight: .35,
-		browOuterUpLeft: .28,
-		browOuterUpRight: .28,
-		jawOpen: .42,
-		tilt: 3,
-		bounce: !0
-	},
-	concern: {
-		browInnerUp: .7,
-		browDownLeft: .06,
-		browDownRight: .06,
-		mouthPressLeft: .15,
-		mouthPressRight: .15,
-		eyeSquintLeft: .06,
-		eyeSquintRight: .06,
-		mouthSmileLeft: -1,
-		tilt: 5,
-		pitch: 3
-	},
-	surprise: {
-		eyeWideLeft: .55,
-		eyeWideRight: .55,
-		browOuterUpLeft: .55,
-		browOuterUpRight: .55,
-		browInnerUp: .45,
-		jawOpen: .38,
-		mouthSmileLeft: -1,
-		pitch: -3
-	},
-	playful: {
-		mouthSmileLeft: .18,
-		mouthSmileRight: .48,
-		browOuterUpLeft: .35,
-		eyeSquintLeft: .16,
-		eyeSquintRight: .16,
-		cheekSquintRight: .2,
-		tilt: 6
-	}
-};
-function oe(e) {
-	for (let t of X) if (e >= t.t0 && e < t.t1) return t;
-	return X[X.length - 1];
-}
-var $ = (e, t, n, r = .35, i = .35) => Math.max(0, Math.min(1, (e - t) / r, (n - e) / i)), se = { baanta: "t" };
+], $ = 45.2;
 function ce(e) {
+	for (let t of Q) if (e >= t.t0 && e < t.t1) return t;
+	return Q[Q.length - 1];
+}
+var le = { baanta: "t" };
+function ue(e) {
 	let t = [];
 	for (let n of e.words) {
 		let r = e.visemes.filter((e) => e.word === n.word && e.t0 >= n.t0 - .35 && e.t0 <= n.t1 + .05);
@@ -1380,7 +1579,7 @@ function ce(e) {
 			(e.viseme === "viseme_DD" || e.viseme === "viseme_nn") && (c.tongueTipUp = .8), e.letters === "l" && Object.assign(c, {
 				tongueTipUp: .8,
 				tongueWide: .6
-			}), se[n.word] && e.letters === se[n.word] && Object.assign(c, {
+			}), le[n.word] && e.letters === le[n.word] && Object.assign(c, {
 				tongueCurl: .9,
 				tongueTipUp: 0
 			}), t.push({
@@ -1395,7 +1594,7 @@ function ce(e) {
 	}
 	return t;
 }
-function le(e, t) {
+function de(e, t) {
 	let n = {};
 	for (let r of e) {
 		if (t < r.t0 - .06 || t > r.t1 + .06) continue;
@@ -1405,26 +1604,23 @@ function le(e, t) {
 	}
 	return n;
 }
-async function ue() {
-	let e = document.getElementById("c"), t = (q.get("view") || "60,8,904").split(",").map(Number);
-	q.get("px") && (e.style.width = q.get("px") + "px");
-	let n = await ie.load(e, ae, {
-		dpr: J ? 1 : Math.min(2, devicePixelRatio || 1),
+async function fe() {
+	let e = document.getElementById("c"), t = (Y.get("view") || "60,8,904").split(",").map(Number);
+	Y.get("px") && (e.style.width = Y.get("px") + "px");
+	let n = await re.load(e, se, {
+		dpr: X ? 1 : Math.min(2, devicePixelRatio || 1),
 		view: t,
-		preserve: J
+		preserve: X
 	});
-	(q.get("dbg") || q.get("only")) && (n.debug = {
-		tint: q.get("dbg") === "tint",
-		only: q.get("only") ? q.get("only").split(",") : null
+	(Y.get("dbg") || Y.get("only")) && (n.debug = {
+		tint: Y.get("dbg") === "tint",
+		only: Y.get("only") ? Y.get("only").split(",") : null
 	});
-	let a = ce(await fetch("./audio/voice.align.json").then((e) => e.json())), o = await fetch("./audio/voice.mp3").then((e) => e.arrayBuffer()), s = await new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100).decodeAudioData(o.slice(0)), c = s.getChannelData(0), l = s.sampleRate, u = new r(l), d = new C({
+	let a = ue(await fetch("./audio/voice.align.json").then((e) => e.json())), o = await fetch("./audio/voice.mp3").then((e) => e.arrayBuffer()), s = await new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100).decodeAudioData(o.slice(0)), c = s.getChannelData(0), l = s.sampleRate, u = new r(l), d = new C({
 		band: "b2",
 		seed: 7,
 		faceStyle: { smile: .7 }
-	}), f = new O(.85), p = /* @__PURE__ */ new Float32Array(1024), m = -1, h = 0, g = null, _ = !1, v = "idle", y = {
-		x: 0,
-		v: 0
-	}, b = -1, x = {
+	}), f = new O(.85), p = /* @__PURE__ */ new Float32Array(1024), m = -1, h = 0, g = null, _ = !1, v = "idle", y = new ae(), b = new oe(), x = {
 		work: [],
 		intervals: [],
 		frames: 0,
@@ -1433,9 +1629,9 @@ async function ue() {
 	function w(e) {
 		let t = performance.now(), r = m < 0 ? 1 / 60 : Math.min(.25, e - m);
 		m = e;
-		let o = oe(e);
+		let o = ce(e);
 		o.status !== g && (g = o.status, h = e, _ = !1);
-		let s = e - Y, C = Math.floor(s * l);
+		let s = e - Z, C = Math.floor(s * l);
 		for (let e = 0; e < 1024; e++) {
 			let t = C - 1024 + e;
 			p[e] = t >= 0 && t < c.length ? c[t] : 0;
@@ -1454,67 +1650,78 @@ async function ue() {
 			herVoiced: w.voiced,
 			childLevel: o.id === "listening" ? .4 : 0
 		}), D = { ...E.bs }, O = [...E.head];
-		if (o.preset) {
-			let t = Q[o.preset], n = $(e, o.t0, o.t1, .3, .4);
-			for (let [e, r] of Object.entries(t)) e === "tilt" ? O[2] += r * n : e === "pitch" ? O[0] += r * n : e === "bounce" || e === "jawOpen" || (D[e] = r < 0 ? (D[e] ?? 0) * (1 - n) : Math.max(D[e] ?? 0, r * n));
-			(o.preset === "concern" || o.preset === "surprise") && (D.mouthSmileRight = (D.mouthSmileRight ?? 0) * (1 - n)), t.bounce && e - o.t0 < .05 && b < o.t0 && (y.v -= 60, b = e);
-		}
-		if (o.nods) for (let t of o.nods) e >= t && b < t && (y.v += 110, b = e);
-		{
-			let e = r;
-			for (; e > 1e-6;) {
-				let t = Math.min(.004, e);
-				y.v += (-120 * y.x - 1.1 * Math.sqrt(120) * y.v) * t, y.x += y.v * t, e -= t;
+		o.preset && y.sceneId !== o.id && (y.sceneId = o.id, y.emote(o.preset, e, { hold: Math.max(.2, o.t1 - o.t0 - .9) })), o.preset || (y.sceneId = null);
+		let k = 0;
+		if (o.child) {
+			let t = o.child[0] + (e - o.t0), n = Math.floor(t * l), r = 0;
+			for (let e = 0; e < 1024; e++) {
+				let t = c[n - 1024 + e] || 0;
+				r += t * t;
 			}
+			k = Math.min(1, Math.sqrt(r / 1024) * 9);
 		}
-		if (O[0] += y.x, o.turn) {
+		let A = b.update(e, r, T === "listening", k);
+		if (O[0] += A.pitch, D.mouthSmileLeft = (D.mouthSmileLeft ?? 0) + A.smile, D.mouthSmileRight = (D.mouthSmileRight ?? 0) + A.smile, o.turn) {
 			let t = e - o.t0;
 			O[1] = t < 1.5 ? -20 * Math.sin(t / 1.5 * Math.PI / 2) : t < 4 ? -20 + 40 * (.5 - .5 * Math.cos((t - 1.5) / 2.5 * Math.PI)) : 20 * Math.cos((t - 4) / 2 * Math.PI / 2), O[0] += t > 4.6 && t < 5.6 ? 8 * Math.sin((t - 4.6) / 1 * Math.PI) : 0;
 		}
-		let k = i(w);
-		o.preset && Q[o.preset].jawOpen && (k.jawOpen = Math.max(k.jawOpen, Q[o.preset].jawOpen * $(e, o.t0, o.t1, .3, .4)));
-		let A = f.compose(D, k, r);
-		o.id === "talking" && Object.assign(A, le(a, s));
-		let j = Math.sin(e * 2 * Math.PI * .25);
-		n.frame(A, O, E.gaze, E.lean, j);
-		let M = performance.now() - t;
-		return x.work.push(M), x.frames++, o.id === "talking" && x.rows.push({
+		let j = i(w), M = [...E.gaze];
+		y.apply(e, r, D, O, M, j);
+		let N = f.compose(D, j, r);
+		o.id === "talking" && Object.assign(N, de(a, s));
+		let P = Math.sin(e * 2 * Math.PI * .25);
+		n.frame(N, O, M, E.lean, P);
+		let F = performance.now() - t;
+		return x.work.push(F), x.frames++, o.id === "talking" && x.rows.push({
 			t: +s.toFixed(3),
 			row: n.mouth.row,
 			name: n.mouth.name,
-			vis: Object.keys(A).filter((e) => e.startsWith("viseme_") && A[e] > .5)
+			vis: Object.keys(N).filter((e) => e.startsWith("viseme_") && N[e] > .5)
 		}), {
 			t: e,
 			scene: o.id,
 			state: v,
 			head: O,
-			gaze: E.gaze,
+			gaze: M,
 			mouth: n.mouth.name,
-			work: M
+			work: F
 		};
 	}
 	if (window.P2D = {
-		duration: Z,
-		scenes: X,
+		duration: $,
+		scenes: Q,
 		stats: x,
 		rig: n,
+		listener: b,
+		EXPRESSIONS: J,
 		renderAt: (e) => w(e),
 		pose: (e) => {
 			n.lastT = -1;
-			for (let t = 0; t < 6; t++) n.clock = 1e3 + t / 60, n.resetPhysics(), n.frame(e.bs || {}, e.head || [
+			let t = { ...e.bs || {} }, r = [...e.head || [
 				0,
 				0,
 				0
-			], e.gaze || [0, 0], e.lean || 0, 0);
+			]], i = [...e.gaze || [0, 0]];
+			if (e.expr) {
+				let n = J[e.expr];
+				t = {
+					mouthSmileLeft: .06,
+					mouthSmileRight: .06,
+					...t
+				};
+				for (let [e, r] of Object.entries(n.bs)) t[e] = r < 0 ? 0 : Math.max(t[e] ?? 0, r);
+				r = r.map((e, t) => e + n.head[t]), i = [...n.gaze];
+			}
+			for (let a = 0; a < 6; a++) n.clock = 1e3 + a / 60, n.resetPhysics(), n.frame(t, r, i, e.lean || 0, 0);
 			return n.mouth.name;
 		}
-	}, J) {
+	}, X) {
 		window.P2D.ready = !0;
 		return;
 	}
-	let T = new Audio("./audio/voice.mp3"), E = !1, D = performance.now() - (q.get("start") || 0) * 1e3, k = -1, A = document.getElementById("hud"), j = (e) => {
-		let t = (e - D) / 1e3 % Z;
-		k > 0 && x.intervals.push(e - k), k = e, n.clock = t + Math.floor((e - D) / 1e3 / Z) * Z, t < m && (m = -1), !E && t >= Y && t < 17 && (E = !0, T.currentTime = Math.max(0, t - Y), T.play().catch(() => {})), t < Y && (E = !1);
+	let T = new Audio("./audio/voice.mp3"), E = !1, D = performance.now() - (Y.get("start") || 0) * 1e3, k = -1, A = document.getElementById("hud"), j = (e) => {
+		let t = (e - D) / 1e3 % $;
+		k > 0 && x.intervals.push(e - k), k = e, n.clock = t + Math.floor((e - D) / 1e3 / $) * $, t < m && (m = -1), !E && t >= Z && t < 17 && (E = !0, T.currentTime = Math.max(0, t - Z), T.play().catch(() => {})), t < Z && (E = !1);
 		let r = w(t);
 		if (A && x.frames % 15 == 0) {
 			let e = x.intervals.slice(-120), t = e.length ? 1e3 / (e.reduce((e, t) => e + t, 0) / e.length) : 0, i = x.work.slice(-120).sort((e, t) => e - t);
@@ -1526,8 +1733,8 @@ async function ue() {
 		D = performance.now(), E = !1, m = -1;
 	}), requestAnimationFrame(j), window.P2D.ready = !0;
 }
-ue().catch((e) => {
+fe().catch((e) => {
 	document.body.insertAdjacentHTML("beforeend", `<pre style="color:red">${e.stack}</pre>`), window.P2D = { error: String(e) };
 });
 //#endregion
-export { Z as DURATION };
+export { $ as DURATION };

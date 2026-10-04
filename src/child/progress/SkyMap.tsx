@@ -61,8 +61,10 @@ export function SkyMap({ subject, classLevel, onSelect, selected, cols = 2 }:
           ))}
           {L.stars.map((p) => (
             <g key={p.skill.skillId} transform={`translate(${p.x} ${p.y})`}>
+              {/* the 48 px target is visible (flows G16: 8 px dots read as nothing): a soft disc behind every star */}
+              <circle r="24" fill="var(--sky-star-0)" opacity="0.14" />
               {selected === p.skill.skillId && <circle r="20" fill="none" stroke="var(--sky-label)" strokeWidth="2" strokeDasharray="4 4" />}
-              <SkyStar state={p.skill.state} r={11} recheck={p.skill.recheckScheduled} />
+              <SkyStar state={p.skill.state} r={14} recheck={p.skill.recheckScheduled} />
             </g>
           ))}
         </svg>
