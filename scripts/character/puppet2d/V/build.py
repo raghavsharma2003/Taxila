@@ -196,7 +196,7 @@ def contour_of(mask, smooth=1.2):
     for c in cnts:
         if cv2.contourArea(c) < 16 * 30:
             continue
-        p = c[:, 0, :].astype(np.float64) / 4.0
+        p = (c[:, 0, :].astype(np.float64) + 0.5) / 4.0 - 0.5
         # resample by arc length every ~2.2 px, then smooth
         seg = np.sqrt((np.diff(np.vstack([p, p[:1]]), axis=0) ** 2).sum(1))
         L = seg.sum(); s = np.r_[0, np.cumsum(seg)][:-1]
@@ -212,22 +212,31 @@ def contour_of(mask, smooth=1.2):
 def mesh_of(mask, spacing):
     cs = contour_of(mask)
     bpts = np.vstack(cs)
-    inner = ero(mask, max(2, int(spacing * 0.6)))
+    # exact raster of the contour polygons at 4x: every inside test is against the vector outline, not the mask
+    pm = np.zeros((H * 4, W * 4), np.uint8)
+    cv2.fillPoly(pm, [np.round((c + 0.5) * 4 * 8 - 0.5 * 8).astype(np.int32) for c in cs], 1, lineType=cv2.LINE_8, shift=3)
+
+    def inside(Q):
+        xi = np.clip(np.round(Q[:, 0] * 4 + 1.5).astype(int), 0, W * 4 - 1)
+        yi = np.clip(np.round(Q[:, 1] * 4 + 1.5).astype(int), 0, H * 4 - 1)
+        return pm[yi, xi] > 0
+    pm1 = cv2.resize(pm, (W, H), interpolation=cv2.INTER_AREA)
+    dpoly = distance_transform_edt(pm1 > 0)
     gy, gx = np.mgrid[0:H:spacing, 0:W:spacing].astype(np.float64)
     gx += (np.arange(gx.shape[0])[:, None] % 2) * spacing * 0.5  # hex-ish lattice
     gx = gx.ravel(); gy = gy.ravel()
-    ok = (gx < W) & inner[np.clip(gy.astype(int), 0, H - 1), np.clip(gx.astype(int), 0, W - 1)]
+    ok = gx < W
+    gx, gy = gx[ok], gy[ok]
+    ok = dpoly[np.clip(gy.astype(int), 0, H - 1), np.clip(gx.astype(int), 0, W - 1)] > spacing * 0.55
     pts = np.vstack([bpts, np.c_[gx[ok], gy[ok]]])
     tri = Delaunay(pts)
     T = tri.simplices
     cen = pts[T].mean(1)
-    sm = gaussian_filter(mask.astype(np.float32), 0.7)
-    inside = map_coordinates(sm, [cen[:, 1], cen[:, 0]], order=1) > 0.5
-    # also drop slivers that bridge concavities: check edge midpoints
+    keep = inside(cen)
     for a, b in ((0, 1), (1, 2), (2, 0)):
         mid = (pts[T[:, a]] + pts[T[:, b]]) / 2
-        inside &= map_coordinates(sm, [mid[:, 1], mid[:, 0]], order=1) > 0.35
-    T = T[inside]
+        keep &= inside(mid * 0.85 + cen * 0.15)
+    T = T[keep]
     used = np.unique(T)
     remap = -np.ones(len(pts), int); remap[used] = np.arange(len(used))
     return pts[used], remap[T], cs
