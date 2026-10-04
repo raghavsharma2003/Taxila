@@ -1,0 +1,447 @@
+<style>
+  :root {
+    --bg: #FFF9F0;
+    --ink: #3B2E2A;
+    --muted: #9B8A82;
+    --panel: #FFFFFF;
+    --axis: #D9CCC4;
+    --grid: #EFE6DE;
+    --bar: #F2A03D;
+    --bar-top: #FFC169;
+    --bar-shadow: #D9822B;
+    --good: #4CAF7D;
+    --bad: #E2725B;
+    --tap: #FFF3E2;
+    --radius: 18px;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  .wrap {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+    padding: 14px 14px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-x: hidden;
+  }
+
+  .title {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: .2px;
+    line-height: 1.2;
+    text-align: center;
+    margin: 2px 0 0;
+  }
+
+  .card {
+    background: var(--panel);
+    border-radius: var(--radius);
+    box-shadow: 0 6px 18px rgba(120, 90, 60, .10), 0 1px 0 rgba(120,90,60,.06) inset;
+    padding: 10px 8px 6px;
+  }
+
+  .chart {
+    width: 100%;
+    display: block;
+    overflow: visible;
+    touch-action: manipulation;
+  }
+
+  .bar {
+    cursor: pointer;
+    transition: transform .18s cubic-bezier(.2,.8,.3,1), filter .18s ease;
+    transform-box: fill-box;
+    transform-origin: center bottom;
+  }
+
+  .bar-grow {
+    animation: grow .9s cubic-bezier(.22,1,.36,1) both;
+  }
+  @keyframes grow {
+    from { transform: scaleY(0); }
+    to   { transform: scaleY(1); }
+  }
+
+  .hit { cursor: pointer; }
+
+  .axis-line { stroke: var(--axis); stroke-width: 2; }
+
+  .grid-line {
+    stroke: var(--grid);
+    stroke-width: 1.4;
+    stroke-dasharray: 4 5;
+  }
+
+  .tick-text {
+    fill: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .cat-text {
+    fill: var(--ink);
+    font-size: 12.5px;
+    font-weight: 700;
+  }
+
+  .ylabel {
+    fill: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .6px;
+  }
+
+  .bubble rect {
+    fill: var(--ink);
+    opacity: 0;
+    transition: opacity .18s ease;
+  }
+  .bubble text {
+    fill: #FFF9F0;
+    font-size: 13px;
+    font-weight: 800;
+    text-anchor: middle;
+    opacity: 0;
+    transition: opacity .18s ease;
+  }
+  .bubble.show rect,
+  .bubble.show text { opacity: 1; }
+
+  .ask {
+    background: var(--tap);
+    border: 2px solid #F4E2CB;
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    font-size: 15.5px;
+    font-weight: 700;
+    line-height: 1.35;
+    text-align: center;
+    color: var(--ink);
+    transition: background .2s ease, border-color .2s ease, transform .2s ease;
+  }
+  .ask.pulse { animation: pulse .5s ease; }
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+  }
+
+  .feedback {
+    min-height: 0;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 800;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity .25s ease, transform .25s ease;
+  }
+  .feedback.show { opacity: 1; transform: translateY(0); }
+  .feedback.good { color: var(--good); }
+  .feedback.bad { color: var(--bad); }
+</style>
+
+<div class="wrap">
+  <div class="title" id="title">…</div>
+
+  <div class="card">
+    <svg class="chart" id="chart" viewBox="0 0 320 300" preserveAspectRatio="xMidYMid meet" role="img" aria-label="bar chart"></svg>
+  </div>
+
+  <div class="ask" id="ask">…</div>
+  <div class="feedback" id="feedback"></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var params = (Studio && Studio.params) ? Studio.params : {};
+  var data = Array.isArray(params.data) ? data_safe(params.data) : [];
+
+  function data_safe(arr) {
+    var out = [];
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i] && arr[i].key != null) out.push(arr[i]);
+    }
+    return out;
+  }
+
+  var SVG_NS = "http://www.w3.org/2000/svg";
+  var chart = document.getElementById("chart");
+  var askEl = document.getElementById("ask");
+  var feedbackEl = document.getElementById("feedback");
+  var titleEl = document.getElementById("title");
+
+  function svgEl(name, attrs) {
+    var el = document.createElementNS(SVG_NS, name);
+    if (attrs) {
+      for (var k in attrs) {
+        if (Object.prototype.hasOwnProperty.call(attrs, k)) {
+          el.setAttribute(k, attrs[k]);
+        }
+      }
+    }
+    return el;
+  }
+
+  function t(key) {
+    try { return Studio.t(key); } catch (e) { return ""; }
+  }
+
+  function niceStep(maxValue) {
+    if (maxValue <= 5) return 1;
+    if (maxValue <= 12) return 2;
+    if (maxValue <= 25) return 5;
+    if (maxValue <= 60) return 10;
+    if (maxValue <= 120) return 20;
+    return 25;
+  }
+
+  var VB_W = 320;
+  var VB_H = 300;
+  var padLeft = 34;
+  var padRight = 10;
+  var padTop = 40;
+  var padBottom = 46;
+  var plotW = VB_W - padLeft - padRight;
+  var plotH = VB_H - padTop - padBottom;
+  var baseY = padTop + plotH;
+
+  var maxVal = 0;
+  for (var i = 0; i < data.length; i++) {
+    var v = Number(data[i].value) || 0;
+    if (v > maxVal) maxVal = v;
+  }
+  if (maxVal <= 0) maxVal = 1;
+
+  var step = niceStep(maxVal);
+  var axisMax = Math.ceil(maxVal / step) * step;
+  if (axisMax < step) axisMax = step;
+
+  function yFor(val) {
+    var ratio = Math.max(0, Math.min(1, val / axisMax));
+    return baseY - ratio * plotH;
+  }
+
+  var n = data.length || 1;
+  var slotW = plotW / n;
+  var slotGap = 8;
+  var barW = Math.max(20, Math.min(40, slotW - slotGap));
+  var barRadius = 6;
+  var HIT_W = 44;
+
+  titleEl.textContent = t("title");
+
+  var defs = svgEl("defs");
+  var grad = svgEl("linearGradient", {
+    id: "barGrad", x1: "0", y1: "0", x2: "0", y2: "1"
+  });
+  grad.appendChild(svgEl("stop", { offset: "0%", "stop-color": "var(--bar-top)" }));
+  grad.appendChild(svgEl("stop", { offset: "100%", "stop-color": "var(--bar)" }));
+  defs.appendChild(grad);
+  chart.appendChild(defs);
+
+  var gGrid = svgEl("g");
+  var gBars = svgEl("g");
+  var gCats = svgEl("g");
+
+  for (var val = 0; val <= axisMax + 1e-9; val += step) {
+    var y = yFor(val);
+    if (val > 0) {
+      gGrid.appendChild(svgEl("line", {
+        x1: padLeft, y1: y, x2: VB_W - padRight, y2: y,
+        "class": "grid-line"
+      }));
+    }
+    var tick = svgEl("text", {
+      x: padLeft - 6, y: y + 4,
+      "text-anchor": "end",
+      "class": "tick-text",
+      "data-tick": String(Math.round(val))
+    });
+    tick.textContent = String(Math.round(val));
+    gGrid.appendChild(tick);
+  }
+
+  gGrid.appendChild(svgEl("line", {
+    x1: padLeft, y1: padTop - 18, x2: padLeft, y2: baseY + 1,
+    "class": "axis-line"
+  }));
+  gGrid.appendChild(svgEl("line", {
+    x1: padLeft, y1: baseY, x2: VB_W - padRight, y2: baseY,
+    "class": "axis-line"
+  }));
+
+  var yTitle = svgEl("text", {
+    x: 10, y: padTop + plotH / 2,
+    "text-anchor": "middle",
+    "class": "ylabel",
+    transform: "rotate(-90 10 " + (padTop + plotH / 2) + ")"
+  });
+  yTitle.textContent = t("yaxis");
+  gGrid.appendChild(yTitle);
+
+  var entries = [];
+
+  for (var j = 0; j < data.length; j++) {
+    (function (item, index) {
+      var key = item.key;
+      var value = Number(item.value) || 0;
+      var cx = padLeft + slotW * (index + 0.5);
+      var x = cx - barW / 2;
+      var yTop = yFor(value);
+      var fullH = baseY - yTop;
+
+      var rect = svgEl("rect", {
+        x: x,
+        y: yTop,
+        width: barW,
+        height: Math.max(0, fullH),
+        rx: barRadius,
+        ry: barRadius,
+        fill: "url(#barGrad)",
+        stroke: "var(--bar-shadow)",
+        "stroke-width": 1,
+        "class": "bar bar-grow",
+        "data-bar": key,
+        "data-value": String(value),
+        role: "button",
+        tabindex: "0",
+        "aria-label": t(key)
+      });
+      rect.style.animationDelay = (index * 0.09) + "s";
+
+      var bubbleW = Math.max(34, String(value).length * 10 + 18);
+      var bubbleY = Math.max(2, yTop - 28);
+      var bubble = svgEl("g", { "class": "bubble", "data-bubble": key });
+      bubble.appendChild(svgEl("rect", {
+        x: cx - bubbleW / 2,
+        y: bubbleY,
+        width: bubbleW,
+        height: 24,
+        rx: 12,
+        ry: 12
+      }));
+      var bTxt = svgEl("text", { x: cx, y: bubbleY + 16 });
+      bTxt.textContent = String(value);
+      bubble.appendChild(bTxt);
+
+      var hitH = Math.max(44, fullH);
+      var hitY = baseY - hitH;
+      var hitW = Math.max(HIT_W, slotW);
+      var hit = svgEl("rect", {
+        x: cx - hitW / 2,
+        y: hitY,
+        width: hitW,
+        height: hitH,
+        fill: "transparent",
+        "class": "hit",
+        "data-hit": key
+      });
+
+      gBars.appendChild(hit);
+      gBars.appendChild(rect);
+      gBars.appendChild(bubble);
+
+      var cat = svgEl("text", {
+        x: cx, y: baseY + 20,
+        "text-anchor": "middle",
+        "class": "cat-text"
+      });
+      cat.textContent = t(key);
+      gCats.appendChild(cat);
+
+      entries.push({ key: key, rect: rect, hit: hit, bubble: bubble });
+    })(data[j], j);
+  }
+
+  chart.appendChild(gGrid);
+  chart.appendChild(gBars);
+  chart.appendChild(gCats);
+
+  askEl.textContent = t("ask");
+  askEl.classList.add("pulse");
+
+  var answered = false;
+  var settled = false;
+
+  function clearSelection() {
+    for (var k = 0; k < entries.length; k++) {
+      entries[k].rect.style.transform = "";
+      entries[k].bubble.classList.remove("show");
+    }
+  }
+
+  function selectBar(key) {
+    clearSelection();
+    for (var k = 0; k < entries.length; k++) {
+      if (entries[k].key === key) {
+        entries[k].rect.style.transform = "translateY(-5px)";
+        entries[k].bubble.classList.add("show");
+      }
+    }
+  }
+
+  function handleTap(key) {
+    if (settled) return;
+    selectBar(key);
+    askEl.classList.remove("pulse");
+    void askEl.offsetWidth;
+    try { Studio.event("bar_tap", { key: key }); } catch (e) {}
+    if (answered) return;
+    answered = true;
+    try { Studio.answer(key); } catch (e) {}
+  }
+
+  function bindEntry(entry) {
+    entry.rect.addEventListener("click", function (ev) {
+      ev.stopPropagation();
+      handleTap(entry.key);
+    });
+    entry.hit.addEventListener("click", function (ev) {
+      ev.stopPropagation();
+      handleTap(entry.key);
+    });
+    entry.rect.addEventListener("keydown", function (ev) {
+      if (ev.key === "Enter" || ev.key === " " || ev.key === "Spacebar") {
+        ev.preventDefault();
+        handleTap(entry.key);
+      }
+    });
+  }
+
+  for (var e2 = 0; e2 < entries.length; e2++) bindEntry(entries[e2]);
+
+  if (Studio.onVerdict) {
+    Studio.onVerdict(function (res) {
+      var correct = res && res.correct;
+      settled = true;
+      feedbackEl.textContent = correct ? t("right") : t("wrong");
+      feedbackEl.classList.remove("good", "bad");
+      feedbackEl.classList.add("show");
+      feedbackEl.classList.add(correct ? "good" : "bad");
+
+      if (correct) {
+        askEl.textContent = t("done");
+        try { Studio.done(); } catch (e) {}
+      } else {
+        answered = false;
+        settled = false;
+        askEl.classList.remove("pulse");
+        void askEl.offsetWidth;
+        askEl.classList.add("pulse");
+      }
+      try { Studio.event("verdict", { correct: !!correct }); } catch (e) {}
+    });
+  }
+
+  try { Studio.ready(); } catch (e) {}
+})();
+</script>

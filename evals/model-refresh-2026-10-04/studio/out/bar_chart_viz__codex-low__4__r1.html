@@ -1,0 +1,260 @@
+<style>
+  :root{
+    --bg:#f7fbff;
+    --card:#ffffff;
+    --ink:#1f2a44;
+    --muted:#5d6b8a;
+    --grid:#dbe6f5;
+    --axis:#8aa0c4;
+    --bar:#5aa9ff;
+    --bar-press:#3e8fe8;
+    --good:#1f9d55;
+    --bad:#d64545;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans", sans-serif;
+    color:var(--ink);
+  }
+  #app{
+    width:100%;
+    max-width:420px;
+    margin:0 auto;
+    padding:12px;
+  }
+  .card{
+    background:var(--card);
+    border-radius:18px;
+    padding:12px;
+    box-shadow:0 6px 18px rgba(31,42,68,.08);
+  }
+  #title{
+    margin:4px 4px 8px;
+    font-size:22px;
+    line-height:1.2;
+    font-weight:800;
+    text-align:center;
+  }
+  #ask{
+    margin:2px 6px 10px;
+    font-size:18px;
+    line-height:1.3;
+    font-weight:700;
+    text-align:center;
+    min-height:24px;
+  }
+  #chartWrap{
+    width:100%;
+    border-radius:14px;
+    background:linear-gradient(180deg,#fafdff 0%,#f4f9ff 100%);
+    padding:4px;
+  }
+  #chart{width:100%;height:auto;display:block}
+  .tick-line{stroke:var(--grid);stroke-width:1.2}
+  .axis-line{stroke:var(--axis);stroke-width:1.6}
+  .tick-label{fill:var(--muted);font-size:12px;font-weight:600}
+  .axis-title{fill:var(--muted);font-size:12px;font-weight:700}
+  .x-label{fill:var(--ink);font-size:13px;font-weight:700}
+  .bar{
+    fill:var(--bar);
+    transition:y .8s cubic-bezier(.2,.8,.2,1),height .8s cubic-bezier(.2,.8,.2,1),transform .18s ease,fill .2s ease;
+    transform-box:fill-box;
+    transform-origin:center bottom;
+  }
+  .bar.tap{transform:scale(1.05);fill:var(--bar-press)}
+  .hitbox{fill:transparent;cursor:pointer}
+  .hitbox.locked{cursor:default}
+  #valueBubble{
+    opacity:0;
+    transition:opacity .2s ease,transform .2s ease;
+    transform:translateY(4px);
+    pointer-events:none;
+  }
+  #valueBubble.show{opacity:1;transform:translateY(0)}
+  .bubble-bg{fill:#1f2a44}
+  .bubble-text{fill:#fff;font-size:12px;font-weight:800;text-anchor:middle;dominant-baseline:middle}
+  #feedback{
+    margin-top:10px;
+    min-height:24px;
+    text-align:center;
+    font-size:18px;
+    font-weight:800;
+  }
+  #feedback.good{color:var(--good)}
+  #feedback.bad{color:var(--bad)}
+</style>
+
+<div id="app">
+  <div class="card">
+    <div id="title"></div>
+    <div id="ask"></div>
+    <div id="chartWrap">
+      <svg id="chart" viewBox="0 0 360 360">
+        <g id="layers"></g>
+      </svg>
+    </div>
+    <div id="feedback" aria-live="polite"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const data = (Studio.params && Studio.params.data) ? Studio.params.data.slice() : [];
+  const svg = document.getElementById('chart');
+  const layers = document.getElementById('layers');
+  const titleEl = document.getElementById('title');
+  const askEl = document.getElementById('ask');
+  const feedbackEl = document.getElementById('feedback');
+  titleEl.textContent = Studio.t('title');
+  askEl.textContent = Studio.t('ask');
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const W = 360, H = 360;
+  const m = {top:20,right:14,bottom:66,left:52};
+  const plotW = W - m.left - m.right;
+  const plotH = H - m.top - m.bottom;
+  const baselineY = m.top + plotH;
+
+  const values = data.map(d => d.value);
+  const maxVal = Math.max.apply(null, values.concat([1]));
+  function niceStep(maxV){
+    const rough = maxV / 5;
+    const p = Math.pow(10, Math.floor(Math.log10(rough)));
+    const unit = rough / p;
+    let n = 1;
+    if (unit <= 1) n = 1;
+    else if (unit <= 2) n = 2;
+    else if (unit <= 5) n = 5;
+    else n = 10;
+    return n * p;
+  }
+  const step = niceStep(maxVal);
+  const tickMax = Math.ceil(maxVal / step) * step;
+  function yFor(v){ return m.top + (1 - (v / tickMax)) * plotH; }
+
+  function el(name, attrs, parent){
+    const node = document.createElementNS(NS, name);
+    if (attrs) for (const k in attrs) node.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(node);
+    return node;
+  }
+
+  for (let t = 0; t <= tickMax; t += step){
+    const y = yFor(t);
+    el('line',{x1:m.left,y1:y,x2:m.left+plotW,y2:y,class:'tick-line'},layers);
+    const lbl = el('text',{x:m.left-8,y:y+4,class:'tick-label','text-anchor':'end','data-tick':String(t)},layers);
+    lbl.textContent = String(t);
+  }
+
+  el('line',{x1:m.left,y1:m.top,x2:m.left,y2:baselineY,class:'axis-line'},layers);
+  el('line',{x1:m.left,y1:baselineY,x2:m.left+plotW,y2:baselineY,class:'axis-line'},layers);
+
+  const axisTitle = el('text',{x:16,y:m.top+plotH/2,class:'axis-title',transform:'rotate(-90 16 '+(m.top+plotH/2)+')'},layers);
+  axisTitle.textContent = Studio.t('yaxis');
+
+  const barGroup = el('g',{},layers);
+  const hitGroup = el('g',{},layers);
+  const labelGroup = el('g',{},layers);
+
+  const slot = plotW / data.length;
+  const barW = Math.max(26, Math.min(40, slot - 16));
+  const hitW = Math.max(44, slot - 4);
+  const bars = [];
+
+  data.forEach((d,i)=>{
+    const cx = m.left + i * slot + slot/2;
+    const x = cx - barW/2;
+    const h = (d.value / tickMax) * plotH;
+    const yTarget = baselineY - h;
+
+    const r = el('rect',{
+      x:x,y:baselineY,width:barW,height:0,rx:10,ry:10,
+      class:'bar',
+      'data-bar':d.key,
+      'data-value':String(d.value)
+    },barGroup);
+
+    const hit = el('rect',{
+      x:cx-hitW/2,y:m.top,width:hitW,height:plotH,
+      class:'hitbox',
+      tabindex:'0'
+    },hitGroup);
+
+    const xLabel = el('text',{x:cx,y:baselineY+24,class:'x-label','text-anchor':'middle'},labelGroup);
+    xLabel.textContent = Studio.t(d.key);
+
+    bars.push({node:r,hit:hit,key:d.key,value:d.value,cx:cx,yTarget:yTarget,h:h});
+  });
+
+  const bubble = el('g',{id:'valueBubble'},layers);
+  const bubbleBg = el('rect',{class:'bubble-bg',x:0,y:0,width:34,height:24,rx:8,ry:8},bubble);
+  const bubbleText = el('text',{class:'bubble-text',x:17,y:12},bubble);
+
+  function showValue(cx, topY, value){
+    const txt = String(value);
+    bubbleText.textContent = txt;
+    const w = Math.max(34, txt.length * 9 + 14);
+    const by = Math.max(4, topY - 30);
+    bubbleBg.setAttribute('width', w);
+    bubbleBg.setAttribute('x', cx - w/2);
+    bubbleBg.setAttribute('y', by);
+    bubbleText.setAttribute('x', cx);
+    bubbleText.setAttribute('y', by + 12);
+    bubble.setAttribute('class','show');
+  }
+
+  let locked = false;
+  let sent = false;
+
+  function onBarTap(b){
+    if (locked) return;
+    bars.forEach(x => x.node.classList.remove('tap'));
+    b.node.classList.add('tap');
+    showValue(b.cx, b.yTarget, b.value);
+    Studio.event('bar_tap',{key:b.key,value:b.value});
+    if (!sent){
+      sent = true;
+      Studio.answer(b.key);
+    }
+  }
+
+  bars.forEach((b)=>{
+    b.hit.addEventListener('click', ()=>onBarTap(b));
+    b.hit.addEventListener('keydown', (e)=>{
+      if (e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        onBarTap(b);
+      }
+    });
+  });
+
+  requestAnimationFrame(()=>{
+    bars.forEach((b,i)=>{
+      setTimeout(()=>{
+        b.node.setAttribute('y', b.yTarget);
+        b.node.setAttribute('height', b.h);
+      }, i*70);
+    });
+  });
+
+  Studio.onVerdict(function(v){
+    if (v && v.correct){
+      locked = true;
+      bars.forEach(b => b.hit.classList.add('locked'));
+      feedbackEl.className = 'good';
+      feedbackEl.textContent = Studio.t('right');
+      askEl.textContent = Studio.t('done');
+      Studio.done();
+    }else{
+      sent = false;
+      feedbackEl.className = 'bad';
+      feedbackEl.textContent = Studio.t('wrong');
+      bars.forEach(b => b.node.classList.remove('tap'));
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

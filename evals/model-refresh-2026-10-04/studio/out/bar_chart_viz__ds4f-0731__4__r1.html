@@ -1,0 +1,181 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #FFF8F0; 
+         display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+         padding: 16px 12px 24px; }
+  .wrap { width: 100%; max-width: 420px; display: flex; flex-direction: column; flex: 1; }
+  .title-box { text-align: center; font-size: 20px; font-weight: 700; color: #B4530A;
+               background: #FEF3C7; border-radius: 20px; padding: 10px 14px; margin-bottom: 8px;
+               border: 2px solid #FDBA74; }
+  .ask-box { text-align: center; font-size: 16px; color: #7C2D12; background: #FFEDD5;
+             border-radius: 16px; padding: 8px 12px; margin-bottom: 10px; border: 1.5px solid #FED7AA; }
+  .chart-box { background: white; border-radius: 24px; padding: 14px 8px 10px; 
+               box-shadow: 0 4px 14px rgba(180, 83, 9, 0.12); border: 2px solid #FED7AA;
+               margin-bottom: 12px; }
+  .chart-row { display: flex; gap: 4px; }
+  .yaxis-col { display: flex; flex-direction: column; width: 36px; }
+  .yaxis-title { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 12px;
+                 font-weight: 700; color: #92400E; text-align: center; height: 30px; }
+  .yaxis { position: relative; flex: 1; width: 100%; }
+  .tick { position: absolute; right: 4px; font-size: 11px; color: #92400E; font-weight: 600;
+          transform: translateY(50%); line-height: 0; }
+  .plot { position: relative; flex: 1; height: 220px; }
+  .grid { position: absolute; inset: 0; }
+  .grid-line { position: absolute; left: 0; right: 0; height: 0; border-top: 1.5px dashed #FBCFE8; }
+  .bars-row { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: space-around;
+              gap: 2px; padding: 0 2px; }
+  .bar-col { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%;
+             justify-content: flex-end; cursor: pointer; }
+  .bar-wrap { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; 
+              height: 100%; width: 100%; }
+  .bar { width: 70%; max-width: 46px; background: linear-gradient(180deg, #FB923C, #EA580C);
+         border-radius: 8px 8px 2px 2px; min-height: 0px; position: relative;
+         box-shadow: 0 -2px 6px rgba(251, 146, 60, 0.2);
+         transition: transform 0.15s ease, filter 0.15s ease, height 0.9s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .bar.tapped { filter: brightness(1.15); }
+  .bar.pressed { transform: scaleX(1.05) scaleY(1.03); }
+  .fruit-label { font-size: 12px; font-weight: 600; color: #7C2D12; margin-top: 6px;
+                 text-align: center; letter-spacing: 0.2px; }
+  .legend-note { text-align: center; font-size: 12px; color: #B4530A; margin-top: 2px; }
+  .feedback { text-align: center; font-size: 16px; font-weight: 700; padding: 10px;
+              border-radius: 16px; margin-top: 4px; min-height: 44px; display: flex;
+              align-items: center; justify-content: center; }
+  .feedback.right { background: #DCFCE7; color: #166534; border: 2px solid #86EFAC; }
+  .feedback.wrong { background: #FEE2E2; color: #991B1B; border: 2px solid #FCA5A5; }
+  .feedback.done { background: #FEF9C3; color: #854D0E; border: 2px solid #FDE047; }
+</style>
+
+<div class="wrap">
+  <div class="title-box" id="title-el"></div>
+  <div class="ask-box" id="ask-el"></div>
+  <div class="chart-box">
+    <div class="chart-row">
+      <div class="yaxis-col">
+        <div class="yaxis-title" id="yaxis-el"></div>
+        <div class="yaxis" id="yaxis"></div>
+      </div>
+      <div class="plot" id="plot">
+        <div class="grid" id="grid"></div>
+        <div class="bars-row" id="bars-row"></div>
+      </div>
+    </div>
+  </div>
+  <div class="legend-note" id="legend-note"></div>
+  <div class="feedback" id="feedback" style="display:none;"></div>
+</div>
+
+<script>
+  (function() {
+    const data = Studio.params.data;
+    const maxVal = Math.max(...data.map(d => d.value));
+    const niceStep = (() => { 
+      const raw = maxVal / 5; 
+      const pow = Math.pow(10, Math.floor(Math.log10(raw))); 
+      const norm = raw / pow; 
+      let step; 
+      if (norm <= 1) step = 1; else if (norm <= 2) step = 2; 
+      else if (norm <= 5) step = 5; else step = 10; 
+      return step * pow; 
+    })();
+    const maxTick = Math.ceil(maxVal / niceStep) * niceStep;
+    const ticks = [];
+    for (let v = 0; v <= maxTick; v += niceStep) ticks.push(v);
+
+    const plotH = 220;
+
+    document.getElementById('title-el').textContent = Studio.t('title');
+    document.getElementById('ask-el').textContent = Studio.t('ask');
+    document.getElementById('yaxis-el').textContent = Studio.t('yaxis');
+
+    const yaxis = document.getElementById('yaxis');
+    const grid = document.getElementById('grid');
+    ticks.forEach(v => {
+      const pos = plotH - (v / maxTick) * plotH;
+      const tickEl = document.createElement('div');
+      tickEl.className = 'tick';
+      tickEl.setAttribute('data-tick', v);
+      tickEl.textContent = v;
+      tickEl.style.top = pos + 'px';
+      yaxis.appendChild(tickEl);
+
+      const line = document.createElement('div');
+      line.className = 'grid-line';
+      line.style.top = pos + 'px';
+      grid.appendChild(line);
+    });
+
+    const barsRow = document.getElementById('bars-row');
+    const barEls = {};
+    data.forEach(d => {
+      const hPix = (d.value / maxTick) * plotH;
+      const col = document.createElement('div');
+      col.className = 'bar-col';
+
+      const bw = document.createElement('div');
+      bw.className = 'bar-wrap';
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      bar.style.height = '0px';
+      bar.setAttribute('data-bar', d.key);
+      bar.setAttribute('data-value', d.value);
+      bw.appendChild(bar);
+
+      const label = document.createElement('div');
+      label.className = 'fruit-label';
+      label.textContent = Studio.t(d.key);
+      bw.appendChild(label);
+
+      col.appendChild(bw);
+      barsRow.appendChild(col);
+      barEls[d.key] = bar;
+    });
+
+    setTimeout(() => {
+      data.forEach(d => {
+        const bar = barEls[d.key];
+        const hPix = (d.value / maxTick) * plotH;
+        bar.style.height = hPix + 'px';
+      });
+    }, 100);
+
+    let answered = false;
+    const feedbackEl = document.getElementById('feedback');
+
+    document.querySelectorAll('.bar-col').forEach((col, idx) => {
+      col.addEventListener('click', () => {
+        if (answered) return;
+        const key = data[idx].key;
+        const bar = barEls[key];
+        bar.classList.add('tapped', 'pressed');
+        setTimeout(() => bar.classList.remove('pressed'), 150);
+        Studio.event('bar_tap', { key, value: data[idx].value });
+        Studio.answer(key);
+      });
+    });
+
+    Studio.onVerdict(({ correct }) => {
+      if (answered) return;
+      answered = true;
+      feedbackEl.style.display = 'flex';
+      if (correct) {
+        feedbackEl.className = 'feedback right';
+        feedbackEl.textContent = Studio.t('right');
+        setTimeout(() => {
+          feedbackEl.className = 'feedback done';
+          feedbackEl.textContent = Studio.t('done');
+          Studio.done();
+        }, 1200);
+      } else {
+        feedbackEl.className = 'feedback wrong';
+        feedbackEl.textContent = Studio.t('wrong');
+        setTimeout(() => {
+          answered = false;
+          feedbackEl.style.display = 'none';
+          document.querySelectorAll('.bar').forEach(b => b.classList.remove('tapped'));
+        }, 1000);
+      }
+    });
+
+    Studio.ready();
+  })();
+</script>
