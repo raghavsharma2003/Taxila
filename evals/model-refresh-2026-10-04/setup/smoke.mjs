@@ -20,8 +20,10 @@ async function chat(dep, extra = {}) {
   const j = await r.json(); if (!r.ok) return { ok: false, http: r.status, err: JSON.stringify(j).slice(0, 300) };
   return { ok: true, http: r.status, served: j.model, usage: j.usage, finish: j.choices?.[0]?.finish_reason, out: j.choices?.[0]?.message?.content };
 }
-for (const d of ["taxila-gpt6-luna", "taxila-gpt61-sol", "taxila-gpt6-astra", "taxila-gpt6"]) await rec(d, () => chat(d, { reasoning_effort: "none" }));
-for (const d of ["taxila-ds41", "taxila-ds4f-0731", "taxila-kimi26", "taxila-kimi-code", "taxila-mistral-m35", "taxila-grok46"]) await rec(d, () => chat(d));
+for (const d of ["taxila-gpt6-luna", "taxila-gpt6"]) await rec(d, () => chat(d, { reasoning_effort: "none" }));
+for (const d of ["taxila-gpt61-sol", "taxila-gpt6-astra"]) await rec(d, () => chat(d, { reasoning_effort: "low" }));
+for (const d of ["taxila-ds41", "taxila-ds4f-0731", "taxila-mistral-m35", "taxila-grok46"]) await rec(d, () => chat(d));
+for (const d of ["taxila-kimi26", "taxila-kimi-code"]) await rec(d, () => chat(d, { max_completion_tokens: 3000 }));
 async function emb(dep, extra = {}) {
   const r = await fetch(`${BASE}/openai/v1/embeddings`, { method: "POST", headers: { "api-key": KEY, "content-type": "application/json" }, body: JSON.stringify({ model: dep, input: ["teen bata chaar", "three quarters"], ...extra }) });
   const j = await r.json(); if (!r.ok) return { ok: false, http: r.status, err: JSON.stringify(j).slice(0, 300) };
@@ -30,7 +32,10 @@ async function emb(dep, extra = {}) {
 }
 await rec("taxila-embed-3l", () => emb("taxila-embed-3l"));
 await rec("taxila-cohere-embed4", () => emb("taxila-cohere-embed4"));
-await rec("measure-cohere-embed5-pro", () => emb("measure-cohere-embed5-pro"));
+await rec("measure-cohere-embed5-pro", async () => { const a = await emb("measure-cohere-embed5-pro"); if (a.ok) return a;
+  const r = await fetch(`${BASE.replace(".openai.azure.com", ".services.ai.azure.com")}/models/embeddings?api-version=2024-05-01-preview`, { method: "POST", headers: { "api-key": KEY, "content-type": "application/json" }, body: JSON.stringify({ model: "measure-cohere-embed5-pro", input: ["teen bata chaar", "three quarters"] }) });
+  const j = await r.json().catch(() => ({})); if (!r.ok) return { ok: false, http: r.status, err: "v1: " + a.err.slice(0, 120) + " | models: " + JSON.stringify(j).slice(0, 200) };
+  const [x, y] = j.data.map((d) => d.embedding); const cos = x.reduce((s, v, i) => s + v * y[i], 0) / Math.hypot(...x) / Math.hypot(...y); return { ok: true, http: r.status, usage: j.usage, out: `models route dim=${x.length} cos=${cos.toFixed(3)}` }; });
 async function img(base, key, dep, extra = {}) {
   const r = await fetch(`${base}/openai/v1/images/generations`, { method: "POST", headers: { "api-key": key, "content-type": "application/json" },
     body: JSON.stringify({ model: dep, prompt: "A simple flat illustration of a pizza cut into 4 equal slices, 3 slices shaded orange, white background, no text", n: 1, size: "1024x1024", ...extra }) });

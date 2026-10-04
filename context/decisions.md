@@ -2226,3 +2226,8 @@ Without it a test child's report.daily (due 04:10 tomorrow in shifted time) wait
 ## w1f-versioned-look-urls
 **Looks are published to `/assets/teacher/<look>/<lookRev>/` with content-hashed names, using `node scripts/character/publish-look.mjs --src <contract dir>`.** The published files are B+, B-lite, the plate, the mouth strip, the blink overlay and runtime.json. Hashed names are immutable under `serve.mjs`'s existing rule. `src/avatar/looks.gen.json` is bundled, so the plate needs no lookup round trip. H.glb is not shipped. Bake-off identities moved to `art/character/bakeoff-assets/`, and the pipeline output moved to `art/character/looks-out/`. (2026-10-04)
 - Reverse if: looks must change without a client rebuild. In that case fetch the index at runtime and accept one extra round trip before the plate.
+
+## Wave 1 stream F (face track) decisions, 2026-10-04
+- `w1f-assets-404`: a missing /assets/* path returns 404, never the SPA shell, so removed looks and stale chunks fail visibly. Ships as a serve.mjs patch applied at integration. Reverse if a client legitimately depends on the shell for an /assets path.
+- `w1f-rig-failure-remembered-per-page`: after a rig failure the same page starts later mounts at tier D on the look's plate instead of re-downloading the GLB during her speech; a new page load retries. Reverse if field data shows same-page retries usually succeed.
+- `w1f-publish-requires-plate`: publish-look.mjs refuses a look without its 2D plate (unless --no-plate), since a plate-less look silently fell back to the procedural head. Reverse if the plate stops being the rig's fallback.

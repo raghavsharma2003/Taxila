@@ -1441,3 +1441,5 @@ Method: local `node server/serve.mjs` against dist, with the Neon test branch as
 - 14/14 checks passed. These are correctness checks only, not performance.
 - Bundle: stage3d chunk 721,786 B raw, 176,882 B brotli q9 (bar ≤ 230 KB, plus the 527 KB basis wasm, self-hosted).
 - Image: `public/assets/teacher` went from 25 MB to 8.2 MB, and `public/assets/teacher-bakeoff` (52 MB) left `public/`. `public/assets/teacher-candidates` (22 MB, item 2's workflow) is still in `public/`.
+
+- `w1f-fixer-acceptance-2026-10-04`: fixer pass, local serve.mjs with the 404 patch + Neon test branch, Chromium SwiftShader GPU-spoof, n = 1 run: w1f-face 30/30 (strict 404s; slate and teal looks load B+ and reveal at tier B; forced GLB failure -> D with no re-download across two relayouts; GLB held 11 s -> D).
