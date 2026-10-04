@@ -1,0 +1,108 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;font-family:system-ui,sans-serif;color:#493c37}
+  .card{width:360px;height:320px;overflow:hidden;padding:10px 16px;background:radial-gradient(circle at 96% 2%,#ffe8c8 0 38px,transparent 39px),#fff8ed}
+  h1{margin:0;color:#9b5149;font-size:20px;line-height:24px}
+  .ask{margin:2px 0 6px;font-size:14px;line-height:18px;font-weight:650}
+  .chart{display:grid;gap:3px}
+  .row{width:100%;height:52px;padding:3px 9px;border:2px solid #e8cdb5;border-radius:16px;background:#fffdf8;display:flex;align-items:center;text-align:left;color:inherit;cursor:pointer;transition:transform .18s,background .18s,border-color .18s}
+  .row:active{transform:scale(.96)}
+  .row:focus-visible{outline:3px solid #9b5149;outline-offset:1px}
+  .name{width:69px;flex:none;font-size:15px;font-weight:750}
+  .symbols{display:flex;align-items:center;gap:4px}
+  [data-symbol]{display:block;flex:none;width:30px;height:30px}
+  [data-symbol] svg,.key-icon svg{display:block;width:100%;height:100%}
+  .key{height:32px;margin-top:5px;display:flex;align-items:center;gap:7px;font-size:13px;font-weight:650}
+  .key-icon{width:24px;height:24px;flex:none}
+  .feedback{min-height:20px;font-size:14px;font-weight:750;color:#9b5149}
+  .row.celebrate{background:#e9f5e8;border-color:#79ad86;animation:bloom .42s ease}
+  .row.try-again{animation:wiggle .3s ease}
+  @keyframes bloom{50%{transform:scale(1.025)}}
+  @keyframes wiggle{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+</style>
+<main class="card">
+  <h1 id="title"></h1>
+  <div class="ask" id="ask"></div>
+  <div class="chart" id="chart"></div>
+  <div class="key" id="key" data-key></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const chart=document.getElementById('chart');
+  const feedback=document.getElementById('feedback');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+
+  function icon(){
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('viewBox','0 0 32 32');
+    svg.setAttribute('aria-hidden','true');
+    const flower=document.createElementNS('http://www.w3.org/2000/svg','path');
+    flower.setAttribute('d','M16 7C20 1 25 6 22 11c7-1 9 6 3 9 3 6-3 10-8 6-5 5-11 1-9-5-6-2-5-9 2-10C8 5 13 2 16 7Z');
+    flower.setAttribute('fill','#edaa72');
+    const centre=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    centre.setAttribute('cx','16');
+    centre.setAttribute('cy','16');
+    centre.setAttribute('r','5');
+    centre.setAttribute('fill','#fff1bd');
+    svg.append(flower,centre);
+    return svg;
+  }
+
+  const keyIcon=document.createElement('span');
+  keyIcon.className='key-icon';
+  keyIcon.append(icon());
+  document.getElementById('key').append(keyIcon,document.createTextNode(Studio.t('keytext')+' '+p.symbolValue));
+
+  let waiting=false,finished=false,selected=null;
+  p.rows.forEach(entry=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='row';
+    button.setAttribute('data-row',entry.key);
+
+    const name=document.createElement('span');
+    name.className='name';
+    name.textContent=Studio.t(entry.key);
+    const symbols=document.createElement('span');
+    symbols.className='symbols';
+    for(let i=0;i<entry.value/p.symbolValue;i++){
+      const symbol=document.createElement('span');
+      symbol.setAttribute('data-symbol','');
+      symbol.append(icon());
+      symbols.append(symbol);
+    }
+    button.append(name,symbols);
+    chart.append(button);
+
+    button.addEventListener('click',()=>{
+      if(waiting||finished)return;
+      waiting=true;
+      selected=button;
+      Studio.event('row_tap',{row:entry.key});
+      Studio.answer(entry.key);
+    });
+  });
+
+  Studio.onVerdict(({correct})=>{
+    if(!waiting||finished)return;
+    waiting=false;
+    if(correct){
+      finished=true;
+      selected.classList.add('celebrate');
+      feedback.textContent=Studio.t('right')+' '+Studio.t('done');
+      Studio.done();
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      selected.classList.remove('try-again');
+      void selected.offsetWidth;
+      selected.classList.add('try-again');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

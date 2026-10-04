@@ -1,0 +1,94 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ec;color:#553c2c}
+#stage{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(ellipse at 50% 42%,#fffdf7 0%,#fff8ec 78%)}
+h1{position:absolute;top:10px;left:12px;right:12px;margin:0;text-align:center;font-size:19px;line-height:24px;font-weight:750;color:#70482d}
+#ask{position:absolute;top:39px;left:14px;right:14px;min-height:34px;text-align:center;font-size:14px;line-height:18px;color:#785b46}
+#timeline{position:absolute;inset:0;width:360px;height:320px;overflow:visible;pointer-events:none}
+.axis{stroke:#c9874e;stroke-width:4;stroke-linecap:round}
+.connector{stroke:#d8a36e;stroke-width:2;stroke-linecap:round;transition:all .35s}
+.marker{fill:#f3a04f;stroke:#fff9ed;stroke-width:3;transition:transform .25s}
+.event-card{position:absolute;width:88px;height:58px;padding:5px 4px;border:2px solid #e6b77f;border-radius:13px;background:#fffdf8;color:#654831;box-shadow:0 3px 0 #eed8bd,0 5px 12px #69411a18;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:15px;font-size:12px;font-weight:700;cursor:pointer;touch-action:manipulation;transition:transform .16s,box-shadow .16s,border-color .2s;z-index:2}
+.event-card .year{font-size:12px;color:#a86d3b;font-weight:650}
+.event-card:active{transform:scale(.94);box-shadow:0 1px 0 #eed8bd}
+.event-card:hover{border-color:#d5904e}
+#feedback{position:absolute;left:10px;right:10px;bottom:8px;min-height:25px;text-align:center;font-size:14px;font-weight:700;color:#94613a}
+#stage.complete #feedback{color:#62815a}
+</style>
+<div id="stage">
+  <h1 id="title"></h1>
+  <div id="ask"></div>
+  <svg id="timeline" viewBox="0 0 360 320" aria-hidden="true">
+    <line class="axis" x1="28" y1="160" x2="332" y2="160" data-axis="true"></line>
+    <g id="connectors"></g>
+    <g id="markers"></g>
+  </svg>
+  <div id="cards"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=> {
+  const p=Studio.params, events=p.events, stage=document.getElementById('stage');
+  const title=document.getElementById('title'), ask=document.getElementById('ask');
+  const cards=document.getElementById('cards'), markers=document.getElementById('markers');
+  const connectors=document.getElementById('connectors'), feedback=document.getElementById('feedback');
+  title.textContent=Studio.t('title');
+  ask.textContent=Studio.t('ask');
+  const years=events.map(e=>Number(e.year)), lo=Math.min(...years), hi=Math.max(...years);
+  const xFor=y=>lo===hi?180:28+(Number(y)-lo)*304/(hi-lo);
+  const sorted=events.map((e,i)=>({e,i,x:xFor(e.year)})).sort((a,b)=>a.x-b.x);
+  const placements=[];
+  sorted.forEach((item,index)=>{
+    const above=index%2===0;
+    let cx=Math.max(48,Math.min(312,item.x));
+    for(const placed of placements){
+      if(placed.above===above && Math.abs(cx-placed.cx)<94){
+        cx=Math.max(48,Math.min(312,placed.cx+(cx>=placed.cx?94:-94)));
+      }
+    }
+    placements.push({above,cx});
+    const cy=above?111:209, cardY=above?78:181;
+    const ns='http://www.w3.org/2000/svg';
+    const line=document.createElementNS(ns,'line');
+    line.setAttribute('class','connector');
+    line.setAttribute('x1',item.x); line.setAttribute('y1','160');
+    line.setAttribute('x2',cx); line.setAttribute('y2',above?'136':'184');
+    connectors.appendChild(line);
+    const marker=document.createElementNS(ns,'circle');
+    marker.setAttribute('class','marker'); marker.setAttribute('cx',item.x);
+    marker.setAttribute('cy','160'); marker.setAttribute('r','8');
+    marker.setAttribute('data-event',item.e.key);
+    marker.setAttribute('data-year',item.e.year);
+    markers.appendChild(marker);
+    const button=document.createElement('button');
+    button.type='button'; button.className='event-card';
+    button.dataset.card=item.e.key;
+    button.style.left=(cx-44)+'px'; button.style.top=cardY+'px';
+    const name=document.createElement('span');
+    name.textContent=Studio.t(item.e.key);
+    const year=document.createElement('span');
+    year.className='year'; year.textContent=item.e.year;
+    button.append(name,year);
+    button.addEventListener('click',()=>{
+      if(stage.classList.contains('complete')) return;
+      button.style.transform='scale(.95)';
+      setTimeout(()=>{button.style.transform='';},150);
+      Studio.event('event_tap',{key:item.e.key});
+      Studio.answer(item.e.key);
+    });
+    cards.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      stage.classList.add('complete');
+      feedback.textContent=Studio.t('done');
+      cards.querySelectorAll('button').forEach(b=>b.disabled=true);
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

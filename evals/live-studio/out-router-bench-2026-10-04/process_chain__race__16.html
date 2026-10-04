@@ -1,0 +1,94 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#403a35}
+#root{position:relative;width:360px;height:320px;padding:8px 12px;background:linear-gradient(145deg,#fff9ef,#fff1df);overflow:hidden}
+h1{height:28px;margin:0;text-align:center;font-size:18px;line-height:28px;color:#684c3d}
+#map{position:relative;height:150px;margin:0 auto}
+#arrows{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#arrows line{stroke:#d3a675;stroke-width:3;stroke-linecap:round}
+#arrows marker path{fill:#d3a675}
+#stages{position:absolute;inset:0}
+.stage{position:absolute;width:84px;height:46px;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;padding:4px 6px;border:2px solid #e9c7a0;border-radius:15px;background:#fffdf9;text-align:center;font-size:11px;line-height:13px;color:#59483d;transition:box-shadow .25s,border-color .25s,transform .25s}
+.stage.is-active{border-color:#ed995b;box-shadow:0 0 0 5px #ffdfb7,0 4px 10px #a9643340;transform:translate(-50%,-50%) scale(1.06)}
+.token{position:absolute;z-index:2;width:15px;height:15px;border:3px solid white;border-radius:50%;background:#f07850;box-shadow:0 2px 7px #74412c70;transform:translate(-50%,-50%);transition:left .75s cubic-bezier(.2,.8,.25,1),top .75s cubic-bezier(.2,.8,.25,1)}
+#ask{height:25px;text-align:center;font-size:13px;line-height:25px;color:#684c3d}
+#options{height:52px;display:flex;justify-content:center;gap:7px}
+button{font:inherit;border:0;cursor:pointer;touch-action:manipulation;transition:transform .12s,background .2s,box-shadow .2s}
+button:active{transform:scale(.95)}
+.option{flex:1;min-width:0;height:52px;padding:4px;border:2px solid #e9c7a0;border-radius:15px;background:#fffdf9;color:#59483d;font-size:12px;line-height:14px;box-shadow:0 3px 0 #efd8bd}
+.option:hover{background:#fff0dc}
+#footer{height:54px;display:flex;align-items:center;justify-content:center;gap:8px}
+#next{min-width:116px;height:52px;padding:0 18px;border-radius:17px;background:#f28a58;color:white;font-weight:700;box-shadow:0 4px 0 #d86d43}
+#feedback{max-width:185px;font-size:12px;line-height:15px;color:#684c3d;text-align:center}
+</style>
+<div id="root">
+  <h1 id="title"></h1>
+  <div id="map">
+    <svg id="arrows" aria-hidden="true"></svg>
+    <div id="stages"></div>
+    <div class="token" data-token aria-hidden="true"></div>
+  </div>
+  <div id="ask"></div>
+  <div id="options"></div>
+  <div id="footer"><button id="next" data-action="next" type="button"></button><div id="feedback" aria-live="polite"></div></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, root=document.getElementById('root'), map=document.getElementById('map');
+  const stagesEl=document.getElementById('stages'), svg=document.getElementById('arrows'), token=document.querySelector('[data-token]');
+  const positions=[[180,28],[300,75],[180,122],[60,75]];
+  const points=p.stages.map((_,i)=>positions[i%positions.length]);
+  const labels={};
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('next').textContent=Studio.t('next');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  const ns='http://www.w3.org/2000/svg';
+  const defs=document.createElementNS(ns,'defs'), marker=document.createElementNS(ns,'marker');
+  marker.setAttribute('id','arrowhead'); marker.setAttribute('markerWidth','8'); marker.setAttribute('markerHeight','8');
+  marker.setAttribute('refX','6'); marker.setAttribute('refY','4'); marker.setAttribute('orient','auto');
+  const triangle=document.createElementNS(ns,'path'); triangle.setAttribute('d','M0,0 L8,4 L0,8 Z'); marker.appendChild(triangle); defs.appendChild(marker); svg.appendChild(defs);
+  p.stages.forEach((key,i)=>{
+    labels[key]=Studio.t(key);
+    const [x,y]=points[i], node=document.createElement('div');
+    node.className='stage'; node.dataset.stage=key; node.style.left=x+'px'; node.style.top=y+'px';
+    const label=document.createElement('span'); label.dataset.label=key; label.textContent=labels[key];
+    node.appendChild(label); stagesEl.appendChild(node);
+  });
+  const edgeCount=p.cycle?p.stages.length:p.stages.length-1;
+  for(let i=0;i<edgeCount;i++){
+    const j=(i+1)%p.stages.length, [x1,y1]=points[i], [x2,y2]=points[j];
+    const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy), ux=dx/len,uy=dy/len;
+    const line=document.createElementNS(ns,'line');
+    line.dataset.arrow=p.stages[i]+'>'+p.stages[j];
+    line.setAttribute('x1',x1+ux*48); line.setAttribute('y1',y1+uy*29);
+    line.setAttribute('x2',x2-ux*48); line.setAttribute('y2',y2-uy*29);
+    line.setAttribute('marker-end','url(#arrowhead)'); svg.appendChild(line);
+  }
+  const optionButtons=[];
+  p.options.forEach(key=>{
+    const b=document.createElement('button'); b.type='button'; b.className='option'; b.dataset.option=key; b.textContent=labels[key]||Studio.t(key);
+    b.addEventListener('click',()=>{Studio.event('answer',{option:key}); Studio.answer(key);});
+    document.getElementById('options').appendChild(b); optionButtons.push(b);
+  });
+  let index=0, locked=false;
+  function activate(i){
+    index=(i+p.stages.length)%p.stages.length;
+    const key=p.stages[index]; root.dataset.active=key;
+    document.querySelectorAll('[data-stage]').forEach(n=>n.classList.toggle('is-active',n.dataset.stage===key));
+    token.style.left=points[index][0]+'px'; token.style.top=points[index][1]+'px';
+  }
+  activate(0);
+  document.getElementById('next').addEventListener('click',()=>{
+    if(locked)return;
+    activate(index+1); Studio.event('stage',{key:p.stages[index]});
+  });
+  Studio.onVerdict(({correct})=>{
+    const feedback=document.getElementById('feedback');
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){locked=true; Studio.done(); feedback.textContent=Studio.t('done');}
+  });
+  Studio.ready();
+})();
+
+</script>

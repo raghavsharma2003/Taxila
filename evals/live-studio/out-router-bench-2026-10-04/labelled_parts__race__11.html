@@ -1,0 +1,76 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e9;font-family:system-ui,sans-serif;color:#493b37}
+  .card{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 50% 58%,#fffdf5 0,#fff7e9 76%)}
+  .title{height:38px;padding-top:9px;text-align:center;font-size:18px;font-weight:800;color:#704b54}
+  .ask{min-height:39px;margin:0 19px;padding:7px 12px;border-radius:17px;background:#fbe5d6;text-align:center;font-size:16px;font-weight:700}
+  svg{display:block;width:360px;height:232px}
+  .part{cursor:pointer;stroke:#765d50;stroke-width:2.5;stroke-linejoin:round;transition:filter .25s,transform .25s;transform-box:fill-box;transform-origin:center}
+  .part:active{transform:scale(.93)}
+  .part.glow{filter:drop-shadow(0 0 9px #ffbc42);transform:scale(1.06)}
+  .part.shake{animation:shake .35s ease}
+  .leader{fill:none;stroke:#aa9888;stroke-width:1.7;stroke-linecap:round}
+  .label{fill:#594a45;font-size:13px;font-weight:750;pointer-events:none}
+  .feedback{position:absolute;bottom:5px;left:12px;right:12px;height:24px;text-align:center;font-size:15px;font-weight:800;color:#79515a}
+  @keyframes shake{25%,75%{transform:translateX(-4px)}50%{transform:translateX(4px)}}
+</style>
+<div class="card">
+  <div class="title" id="title"></div>
+  <div class="ask" data-ask></div>
+  <svg viewBox="0 0 360 232" aria-hidden="true">
+    <path class="leader" d="M76 30 L105 49 M220 57 L207 62 M213 130 L202 130 M76 153 L105 143 M267 203 L214 190"/>
+    <text class="label" data-label="petal" x="17" y="27"></text>
+    <text class="label" data-label="centre" x="224" y="54"></text>
+    <text class="label" data-label="stem" x="215" y="134"></text>
+    <text class="label" data-label="leaf" x="17" y="151"></text>
+    <text class="label" data-label="root" x="270" y="207"></text>
+    <path class="part" data-part="stem" fill="#79ac69" d="M156 91 Q181 101 205 91 L207 153 Q183 163 155 151 Z"/>
+    <path class="part" data-part="leaf" fill="#80bf79" d="M153 130 Q107 101 72 120 Q75 169 126 169 Q145 160 153 130Z"/>
+    <path class="part" data-part="root" fill="#c99a70" d="M155 156 Q179 165 206 155 L205 174 L232 191 L220 211 L189 192 L180 218 L164 197 L136 211 L125 192 L155 176Z"/>
+    <path class="part" data-part="petal" fill="#f398a5" d="M180 60 Q143 9 118 27 Q97 37 125 61 Q93 69 108 92 Q123 108 161 84 Q185 101 203 85 Q227 65 202 54 Q218 20 194 17 Q181 17 180 60Z"/>
+    <circle class="part" data-part="centre" cx="178" cy="62" r="28" fill="#ffd574"/>
+  </svg>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+  const p=Studio.params;
+  const title=document.getElementById('title');
+  const ask=document.querySelector('[data-ask]');
+  const feedback=document.getElementById('feedback');
+  title.textContent=Studio.t('title');
+  ask.textContent=Studio.t('ask');
+  document.querySelectorAll('[data-label]').forEach(el=>{
+    el.textContent=Studio.t(el.dataset.label);
+  });
+  let pending=null;
+  let finished=false;
+  document.querySelectorAll('[data-part]').forEach(el=>{
+    el.addEventListener('click',()=>{
+      if(finished||pending||!p.parts.includes(el.dataset.part))return;
+      pending=el;
+      Studio.answer(el.dataset.part);
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending||finished)return;
+    const el=pending;
+    pending=null;
+    if(correct){
+      finished=true;
+      el.classList.add('glow');
+      feedback.textContent=Studio.t('right');
+      setTimeout(()=>{
+        feedback.textContent=Studio.t('done');
+        Studio.done();
+      },650);
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      el.classList.remove('shake');
+      void el.getBoundingClientRect();
+      el.classList.add('shake');
+    }
+  });
+  Studio.ready();
+
+</script>

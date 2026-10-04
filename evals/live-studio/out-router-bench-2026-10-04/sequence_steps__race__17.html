@@ -1,0 +1,104 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#42352c;background:#fff8eb}
+#app{width:360px;height:320px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+h1{font-size:20px;line-height:24px;margin:0;color:#694a36}
+#instr{font-size:14px;line-height:18px;margin:0;color:#766353;min-height:36px}
+#track{height:68px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.slot{position:relative;min-width:0;border:2px dashed #e5cba4;border-radius:15px;background:#fffdf7;display:flex;align-items:center;justify-content:center;padding:19px 4px 4px;transition:background .25s,border-color .25s,transform .25s}
+.slot .num{position:absolute;top:4px;left:7px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#f5e4c9;color:#75573d;font-weight:700;font-size:13px}
+.slot.filled{border-style:solid;border-color:#e8b96f;background:#fff0cf;animation:pop .35s ease-out}
+#cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;align-items:center;min-height:68px}
+.card{width:100%;height:60px;min-width:0;border:0;border-radius:15px;background:#f2b86f;color:#543c2b;font:700 16px/19px system-ui,sans-serif;box-shadow:0 4px 0 #d9984d;cursor:pointer;padding:5px;transition:transform .15s,background .2s,box-shadow .15s;overflow-wrap:anywhere}
+.card:active{transform:scale(.94);box-shadow:0 1px 0 #d9984d}
+.card:focus-visible{outline:3px solid #7c9c73;outline-offset:2px}
+.slot .card{height:40px;font-size:14px;line-height:16px;box-shadow:0 2px 0 #d9984d;cursor:default}
+#feedback{height:30px;margin:0;text-align:center;font-size:16px;line-height:22px;font-weight:700;color:#63815a}
+#feedback.bad{color:#b46b55}
+.shake{animation:shake .34s ease-in-out}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}55%{transform:translateX(5px)}80%{transform:translateX(-3px)}}
+@keyframes pop{0%{transform:scale(.88)}65%{transform:scale(1.04)}100%{transform:scale(1)}}
+</style>
+<main id="app">
+  <h1 id="title"></h1>
+  <p id="instr"></p>
+  <div id="track" aria-label=""></div>
+  <div id="cards"></div>
+  <p id="feedback" aria-live="polite"></p>
+</main>
+<script>
+
+(()=> {
+  const params=Studio.params;
+  const track=document.getElementById("track");
+  const cards=document.getElementById("cards");
+  const feedback=document.getElementById("feedback");
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("instr").textContent=Studio.t("instr");
+  const keys=params.shown;
+  const slots=[];
+  for(let i=0;i<keys.length;i++){
+    const slot=document.createElement("div");
+    slot.className="slot";
+    const num=document.createElement("span");
+    num.className="num";
+    num.textContent=String(i+1);
+    slot.appendChild(num);
+    track.appendChild(slot);
+    slots.push(slot);
+  }
+  const nodes=new Map();
+  keys.forEach(key=>{
+    const card=document.createElement("button");
+    card.type="button";
+    card.className="card";
+    card.dataset.step=key;
+    card.textContent=Studio.t(key);
+    card.addEventListener("click",()=>{
+      if(busy||card.dataset.placed) return;
+      busy=true;
+      pending={key,card};
+      feedback.textContent="";
+      feedback.className="";
+      Studio.event("step_tap",{key});
+      Studio.answer({key});
+    });
+    nodes.set(key,card);
+    cards.appendChild(card);
+  });
+  let position=0,busy=false,pending=null,finished=false;
+  Studio.onVerdict(({correct})=>{
+    if(!pending||finished) return;
+    const current=pending;
+    pending=null;
+    busy=false;
+    if(correct){
+      const slot=slots[position];
+      position++;
+      current.card.dataset.placed=String(position);
+      current.card.disabled=true;
+      current.card.setAttribute("aria-label",Studio.t(current.key));
+      slot.classList.add("filled");
+      slot.appendChild(current.card);
+      feedback.textContent=Studio.t("right");
+      feedback.className="";
+      Studio.event("step_placed",{position});
+      if(position===keys.length){
+        finished=true;
+        feedback.textContent=Studio.t("done");
+        Studio.done();
+      }
+    }else{
+      feedback.textContent=Studio.t("wrong");
+      feedback.className="bad";
+      current.card.classList.remove("shake");
+      void current.card.offsetWidth;
+      current.card.classList.add("shake");
+      Studio.event("step_retry",{key:current.key});
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

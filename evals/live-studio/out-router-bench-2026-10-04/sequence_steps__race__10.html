@@ -1,0 +1,158 @@
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    width: 360px; height: 320px; margin: 0; overflow: hidden;
+    font-family: system-ui, sans-serif;
+  }
+  body {
+    color: #563d35;
+    background: #fff8ed;
+  }
+  #app {
+    width: 360px; height: 320px; padding: 13px 16px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  header { display: flex; align-items: center; gap: 8px; min-height: 30px; }
+  header svg { width: 30px; height: 30px; flex: none; }
+  h1 { margin: 0; font-size: 18px; line-height: 1.15; color: #704a38; }
+  #instr { margin: 0; min-height: 32px; font-size: 13px; line-height: 1.25; }
+  #track {
+    height: 55px; display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 7px;
+  }
+  .slot {
+    min-width: 0; height: 55px; position: relative; border-radius: 14px;
+    border: 2px dashed #e8c9a6; background: #fff2dd;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .25s, border-color .25s, transform .25s;
+  }
+  .slot-number {
+    position: absolute; top: 3px; left: 7px; font-size: 12px;
+    font-weight: 800; color: #b1845b;
+  }
+  .slot.filled { border-style: solid; border-color: #e3a761; background: #ffedce; }
+  #cards {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px;
+    flex: 1; min-height: 0;
+  }
+  .card {
+    min-width: 0; min-height: 52px; border: 0; border-radius: 15px;
+    background: #f4d8b4; color: #634633; box-shadow: 0 3px 0 #dfb98e;
+    font: 700 15px system-ui, sans-serif; padding: 6px;
+    cursor: pointer; transition: transform .16s, background .2s, box-shadow .2s;
+    touch-action: manipulation;
+  }
+  .card:hover { background: #f8dfbd; }
+  .card:active { transform: scale(.95); }
+  .card:focus-visible { outline: 3px solid #8bb5a1; outline-offset: 1px; }
+  .slot .card {
+    width: 100%; height: 100%; min-height: 0; padding: 10px 3px 3px;
+    font-size: 11px; line-height: 1.05; border-radius: 11px;
+    box-shadow: none; cursor: default; overflow-wrap: anywhere;
+  }
+  #feedback {
+    height: 20px; flex: none; text-align: center; font-size: 13px;
+    line-height: 20px; font-weight: 700; color: #718e78;
+  }
+  .shake { animation: shake .32s ease-in-out; }
+  .pop { animation: pop .34s ease-out; }
+  @keyframes shake {
+    25% { transform: translateX(-5px); }
+    55% { transform: translateX(5px); }
+    80% { transform: translateX(-2px); }
+  }
+  @keyframes pop { 50% { transform: scale(1.06); } }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+</style>
+<main id="app">
+  <header>
+    <svg viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M16 2c5 5 10 9 10 16a10 10 0 0 1-20 0C6 11 11 7 16 2Z" fill="#f1bd73"/>
+      <path d="M16 8c-2 4-5 7-5 11a5 5 0 0 0 10 0c0-4-3-7-5-11Z" fill="#fff1d7"/>
+      <path d="M11 24c2 2 7 3 10-1" fill="none" stroke="#d78e59" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <h1 id="title"></h1>
+  </header>
+  <p id="instr"></p>
+  <section id="track" aria-label="">
+    <div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
+  </section>
+  <section id="cards"></section>
+  <div id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(() => {
+  const params = Studio.params;
+  const t = key => Studio.t(key);
+  const title = document.getElementById('title');
+  const instr = document.getElementById('instr');
+  const cards = document.getElementById('cards');
+  const slots = [...document.querySelectorAll('.slot')];
+  const feedback = document.getElementById('feedback');
+  title.textContent = t('title');
+  instr.textContent = t('instr');
+
+  const order = ['boil', 'leaves', 'sugar', 'pour'];
+  const labels = {};
+  ['boil', 'pour', 'leaves', 'sugar'].forEach(key => labels[key] = t(key));
+  let next = 0;
+  let pending = false;
+  let finished = false;
+
+  params.shown.forEach(key => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'card';
+    card.dataset.step = key;
+    card.textContent = labels[key];
+    card.addEventListener('click', () => {
+      if (pending || finished || !card.isConnected || card.dataset.placed) return;
+      pending = true;
+      feedback.textContent = '';
+      Studio.event('tap', { step: key });
+      Studio.answer({ key });
+    });
+    cards.appendChild(card);
+  });
+
+  slots.forEach((slot, i) => {
+    const number = document.createElement('span');
+    number.className = 'slot-number';
+    number.textContent = String(i + 1);
+    slot.appendChild(number);
+  });
+
+  Studio.onVerdict(({ correct }) => {
+    if (!pending || finished) return;
+    pending = false;
+    const key = order[next];
+    const card = [...document.querySelectorAll('[data-step]')]
+      .find(item => item.dataset.step === key);
+    if (correct && card) {
+      card.dataset.placed = String(next + 1);
+      slots[next].appendChild(card);
+      slots[next].classList.add('filled', 'pop');
+      feedback.textContent = t('right');
+      next++;
+      if (next === order.length) {
+        finished = true;
+        feedback.textContent = t('done');
+        Studio.done();
+      }
+    } else {
+      feedback.textContent = t('wrong');
+      if (card) {
+        card.classList.remove('shake');
+        void card.offsetWidth;
+        card.classList.add('shake');
+      }
+    }
+  });
+
+  Studio.ready();
+})();
+
+</script>

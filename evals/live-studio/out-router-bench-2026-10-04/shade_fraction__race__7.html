@@ -1,0 +1,122 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff7e9;color:#543c35}
+  #game{width:360px;height:320px;padding:14px 18px;display:flex;flex-direction:column;align-items:center;gap:7px}
+  h1{font-size:20px;line-height:24px;margin:0;font-weight:800;text-align:center}
+  #instruction{font-size:14px;line-height:18px;text-align:center}
+  #item{width:100%;display:flex;flex-direction:column;align-items:center;gap:5px}
+  #target{font-size:28px;font-weight:850;line-height:34px;color:#af523d}
+  #picture{width:314px;height:128px;overflow:visible}
+  [data-part]{fill:#ffead0;stroke:#a77355;stroke-width:2.5;cursor:pointer;transition:fill .2s,filter .2s,transform .2s;transform-box:fill-box;transform-origin:center}
+  [data-part=""]{outline:none}
+  [data-part][data-shaded="true"]{fill:#eb8b5e;filter:drop-shadow(0 2px 2px #b86c5040)}
+  [data-part]:active{transform:scale(.94)}
+  #feedback{height:20px;font-size:14px;font-weight:700;text-align:center;color:#ad6647}
+  #check{min-width:138px;min-height:52px;border:0;border-radius:18px;background:#9a594a;color:white;font:800 17px system-ui,sans-serif;box-shadow:0 4px 0 #754136;cursor:pointer;transition:transform .15s,background .2s}
+  #check:active{transform:translateY(3px) scale(.97)}
+  #check:disabled{opacity:.65;cursor:default}
+  #game.celebrate #picture{animation:bounce .45s ease}
+  #game.celebrate #check{background:#588b69}
+  #game.try-again #picture{animation:wiggle .35s ease}
+  #game.finished{justify-content:center;gap:15px}
+  #game.finished #item,#game.finished #instruction,#game.finished #check{display:none}
+  #game.finished #feedback{height:auto;font-size:22px;color:#588b69}
+  @keyframes bounce{50%{transform:translateY(-9px) scale(1.03)}}
+  @keyframes wiggle{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+</style>
+<div id="game">
+  <h1 id="title"></h1>
+  <div id="instruction"></div>
+  <div id="item" data-item="">
+    <div id="target" data-target></div>
+    <svg id="picture" viewBox="0 0 314 128" aria-hidden="true"></svg>
+  </div>
+  <div id="feedback" aria-live="polite"></div>
+  <button id="check" data-action="check" type="button"></button>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, game=document.getElementById('game'),
+    itemBox=document.getElementById('item'), picture=document.getElementById('picture'),
+    target=document.getElementById('target'), feedback=document.getElementById('feedback'),
+    check=document.getElementById('check');
+  const ns='http://www.w3.org/2000/svg';
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+  let index=0, locked=false;
+  function draw(){
+    const item=p.items[index];
+    itemBox.setAttribute('data-item',item.id);
+    target.textContent=item.n+'/'+item.d;
+    feedback.textContent='';
+    picture.replaceChildren();
+    for(let i=0;i<item.d;i++){
+      let shape;
+      if(p.picture==='pizza'){
+        shape=document.createElementNS(ns,'path');
+        const cx=157,cy=64,r=56, a=-Math.PI/2+i*2*Math.PI/item.d,
+          b=-Math.PI/2+(i+1)*2*Math.PI/item.d;
+        const x1=cx+r*Math.cos(a),y1=cy+r*Math.sin(a),
+          x2=cx+r*Math.cos(b),y2=cy+r*Math.sin(b);
+        shape.setAttribute('d',`M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${1/item.d>0.5?1:0} 1 ${x2} ${y2} Z`);
+        shape.setAttribute('stroke-linejoin','round');
+      }else{
+        shape=document.createElementNS(ns,'rect');
+        const gap=3, width=(292-gap*(item.d-1))/item.d;
+        shape.setAttribute('x',11+i*(width+gap));
+        shape.setAttribute('y',31);
+        shape.setAttribute('width',width);
+        shape.setAttribute('height',66);
+        shape.setAttribute('rx',Math.min(8,width/4));
+      }
+      shape.setAttribute('data-part',i);
+      shape.setAttribute('data-shaded','false');
+      shape.addEventListener('click',()=>{
+        if(locked)return;
+        shape.setAttribute('data-shaded',shape.getAttribute('data-shaded')==='true'?'false':'true');
+        feedback.textContent='';
+        game.classList.remove('try-again');
+      });
+      picture.appendChild(shape);
+    }
+  }
+  check.addEventListener('click',()=>{
+    if(locked)return;
+    locked=true;
+    check.disabled=true;
+    const count=picture.querySelectorAll('[data-shaded="true"]').length;
+    Studio.answer({n:count,d:p.items[index].d});
+  });
+  Studio.onVerdict(({correct})=>{
+    game.classList.remove('celebrate','try-again');
+    void game.offsetWidth;
+    if(correct){
+      feedback.textContent=Studio.t('right');
+      game.classList.add('celebrate');
+      setTimeout(()=>{
+        game.classList.remove('celebrate');
+        index++;
+        if(index<p.items.length){
+          draw();
+          locked=false;
+          check.disabled=false;
+        }else{
+          feedback.textContent=Studio.t('done');
+          game.classList.add('finished');
+          Studio.done();
+        }
+      },650);
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      game.classList.add('try-again');
+      locked=false;
+      check.disabled=false;
+    }
+  });
+  draw();
+  Studio.ready();
+})();
+
+</script>

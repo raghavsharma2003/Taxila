@@ -1,0 +1,96 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ee;font-family:system-ui,sans-serif;color:#46362d}
+  #activity{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 92% 4%,#ffe6be 0,#fff8ee 43%)}
+  #title{position:absolute;left:18px;top:9px;width:324px;margin:0;font-size:18px;line-height:25px;font-weight:800}
+  #ask{position:absolute;left:18px;top:41px;width:324px;margin:0;font-size:15px;line-height:21px;font-weight:650}
+  svg{position:absolute;left:0;top:77px;width:360px;height:220px;overflow:visible}
+  .grid{stroke:#e8dac8;stroke-width:1}
+  .axis{stroke:#9a8879;stroke-width:1.5}
+  .tick{fill:#78695e;font-size:11px;font-weight:600}
+  .axis-title{fill:#78695e;font-size:11px;font-weight:700}
+  .name{fill:#514137;font-size:10.5px;font-weight:700;text-anchor:middle}
+  .bar{fill:#e88762;rx:8;transform-box:fill-box;transform-origin:center bottom;animation:grow .75s cubic-bezier(.2,.8,.25,1) both;transition:fill .2s,filter .2s}
+  @keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  .column{cursor:pointer;outline:none}
+  .column:active .bar{filter:brightness(.88)}
+  .column:active .name{fill:#bd684d}
+  .column.chosen .bar{fill:#ba694f}
+  #feedback{position:absolute;left:18px;right:18px;bottom:8px;height:20px;text-align:center;font-size:14px;font-weight:800;color:#ad5948}
+  #feedback.good{color:#42866d}
+</style>
+<div id="activity">
+  <h1 id="title"></h1>
+  <p id="ask"></p>
+  <svg id="chart" viewBox="0 0 360 220" role="img">
+    <g id="grid"></g>
+    <line class="axis" x1="64" y1="155" x2="348" y2="155"></line>
+    <text id="axisTitle" class="axis-title" x="-85" y="13" text-anchor="middle" transform="rotate(-90)"></text>
+    <g id="columns"></g>
+  </svg>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const data=Studio.params.data;
+  const ns="http://www.w3.org/2000/svg";
+  const make=(tag,attrs,parent)=>{
+    const el=document.createElementNS(ns,tag);
+    for(const [key,value] of Object.entries(attrs)) el.setAttribute(key,String(value));
+    parent.appendChild(el);
+    return el;
+  };
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("ask").textContent=Studio.t("ask");
+  document.getElementById("axisTitle").textContent=Studio.t("yaxis");
+  const grid=document.getElementById("grid");
+  const columns=document.getElementById("columns");
+  const feedback=document.getElementById("feedback");
+  const maximum=Math.max(...data.map(item=>item.value));
+  const step=Math.max(1,Math.ceil(maximum/4));
+  const ceiling=Math.ceil(maximum/step)*step || step;
+  const baseline=155, height=140;
+  for(let value=0;value<=ceiling;value+=step){
+    const y=baseline-height*value/ceiling;
+    make("line",{class:"grid",x1:64,y1:y,x2:348,y2:y},grid);
+    const tick=make("text",{class:"tick",x:55,y:y,"text-anchor":"end","dominant-baseline":"middle","data-tick":value},grid);
+    tick.textContent=String(value);
+  }
+  let waiting=false, finished=false, selected=null;
+  const width=280/data.length;
+  data.forEach((item,index)=>{
+    const x=65+index*width;
+    const group=make("g",{class:"column","data-column":item.key,tabindex:"0",role:"button"},columns);
+    make("rect",{x:x,y:9,width:width,height:198,fill:"transparent"},group);
+    const barHeight=height*item.value/ceiling;
+    make("rect",{class:"bar",x:x+8,y:baseline-barHeight,width:width-16,height:barHeight,"data-bar":item.key,"data-value":item.value},group);
+    const name=make("text",{class:"name",x:x+width/2,y:177},group);
+    name.textContent=Studio.t(item.key);
+    const choose=()=>{
+      if(waiting||finished)return;
+      waiting=true;
+      selected=group;
+      group.classList.add("chosen");
+      Studio.answer(item.key);
+    };
+    group.addEventListener("click",choose);
+    group.addEventListener("keydown",event=>{
+      if(event.key==="Enter"||event.key===" "){event.preventDefault();choose()}
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?"right":"wrong");
+    feedback.classList.toggle("good",correct);
+    if(correct){
+      finished=true;
+      setTimeout(()=>{feedback.textContent=Studio.t("done");Studio.done()},650);
+    }else{
+      if(selected)selected.classList.remove("chosen");
+      waiting=false;
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

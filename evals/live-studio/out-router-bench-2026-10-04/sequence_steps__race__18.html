@@ -1,0 +1,104 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff6e9;color:#49372e}
+  .board{width:360px;height:320px;padding:12px 14px;overflow:hidden;background:radial-gradient(circle at 92% 4%,#ffe0ad 0 46px,transparent 47px),#fff6e9}
+  .head{height:61px;position:relative;padding-right:65px}
+  h1{margin:0;font-size:20px;line-height:25px;font-weight:800;color:#70472f}
+  .instr{margin:2px 0 0;font-size:13px;line-height:18px;color:#805c47}
+  .picture{position:absolute;right:0;top:0;width:57px;height:53px}
+  .cards{height:132px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:60px;gap:8px;align-content:start}
+  .card{width:100%;height:60px;border:2px solid #d5a575;border-radius:17px;background:#fffdf7;color:#573c2d;display:flex;align-items:center;gap:10px;padding:0 12px;font:700 16px system-ui,sans-serif;text-align:left;cursor:pointer;box-shadow:0 4px 0 #ebcfae;transition:transform .2s,box-shadow .2s,background .2s}
+  .card:active{transform:scale(.95);box-shadow:0 1px 0 #ebcfae}
+  .card:focus-visible{outline:3px solid #a65f4d;outline-offset:2px}
+  .dot{width:24px;height:24px;flex:none;border-radius:50%;background:#f4d8b7;display:grid;place-items:center}
+  .dot:after{content:"";width:9px;height:9px;border-radius:50%;background:#c98358}
+  .track{height:80px;display:flex;gap:6px;align-items:center}
+  .slot{min-width:0;flex:1;height:69px;border:2px dashed #d4ab84;border-radius:15px;background:#fcebd7;position:relative;display:flex;align-items:center;justify-content:center}
+  .number{position:absolute;top:3px;left:8px;font-size:13px;font-weight:800;color:#9c6746}
+  .slot .card{height:47px;min-width:0;width:calc(100% - 8px);padding:13px 4px 0;justify-content:center;text-align:center;font-size:12px;line-height:14px;gap:0;border-color:#a5b890;background:#e8f1d9;box-shadow:none;cursor:default;animation:pop .32s ease-out}
+  .slot .dot{display:none}
+  .slot .number{z-index:1}
+  .feedback{height:35px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#846044}
+  .shake{animation:shake .35s ease-in-out}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  @keyframes pop{0%{transform:scale(.7)}70%{transform:scale(1.08)}100%{transform:scale(1)}}
+</style>
+<main class="board">
+  <header class="head">
+    <h1 id="title"></h1>
+    <p class="instr" id="instr"></p>
+    <svg class="picture" viewBox="0 0 64 60" aria-hidden="true">
+      <path d="M13 25h35l-4 25a7 7 0 0 1-7 6H23a7 7 0 0 1-7-6z" fill="#d68962"/>
+      <path d="M18 26v-7a10 10 0 0 1 10-10h5a10 10 0 0 1 10 10v7" fill="none" stroke="#70472f" stroke-width="4" stroke-linecap="round"/>
+      <path d="M46 30h8a7 7 0 0 1 0 14h-7" fill="none" stroke="#70472f" stroke-width="4"/>
+      <path d="M8 29h9" stroke="#70472f" stroke-width="4" stroke-linecap="round"/>
+      <path d="M22 40h18" stroke="#f8d6a5" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+  </header>
+  <div class="cards" id="cards"></div>
+  <div class="track" id="track"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(() => {
+  const keys = Studio.params.shown;
+  const cards = document.getElementById('cards');
+  const track = document.getElementById('track');
+  const feedback = document.getElementById('feedback');
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('instr').textContent = Studio.t('instr');
+  const slots = [];
+  let placed = 0;
+  let pending = null;
+
+  keys.forEach((key, index) => {
+    const slot = document.createElement('div');
+    slot.className = 'slot';
+    const number = document.createElement('span');
+    number.className = 'number';
+    number.textContent = String(index + 1);
+    slot.append(number);
+    track.append(slot);
+    slots.push(slot);
+
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'card';
+    card.dataset.step = key;
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    dot.setAttribute('aria-hidden', 'true');
+    const label = document.createElement('span');
+    label.textContent = Studio.t(key);
+    card.append(dot, label);
+    card.addEventListener('click', () => {
+      if (pending || card.dataset.placed) return;
+      pending = card;
+      Studio.answer({key});
+    });
+    cards.append(card);
+  });
+
+  Studio.onVerdict(({correct}) => {
+    if (!pending) return;
+    const card = pending;
+    pending = null;
+    if (correct) {
+      placed += 1;
+      card.dataset.placed = String(placed);
+      card.disabled = true;
+      slots[placed - 1].append(card);
+      feedback.textContent = Studio.t(placed === keys.length ? 'done' : 'right');
+      if (placed === keys.length) Studio.done();
+    } else {
+      feedback.textContent = Studio.t('wrong');
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

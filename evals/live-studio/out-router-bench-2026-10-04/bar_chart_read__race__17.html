@@ -1,0 +1,95 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8ed;color:#47372d}
+.stage{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(160deg,#fffaf3,#fff1dc)}
+h1{position:absolute;left:15px;top:7px;margin:0;font-size:18px;line-height:24px;font-weight:750;color:#704632}
+.ask{position:absolute;left:16px;top:34px;right:16px;min-height:30px;font-size:14px;line-height:20px;color:#805c43}
+svg{position:absolute;inset:0;width:360px;height:320px}
+.grid{stroke:#e8d8c5;stroke-width:1}
+.axis{stroke:#98795e;stroke-width:1.5}
+.tick-label{font-size:10px;fill:#826c57;text-anchor:end;dominant-baseline:middle}
+.axis-title{font-size:11px;font-weight:650;fill:#765538}
+.bar{fill:#e99a48;stroke:#cf7731;stroke-width:1.5;rx:7;transform-box:fill-box;transform-origin:center bottom;animation:grow .7s cubic-bezier(.2,.85,.3,1) both}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.name{font-size:10px;font-weight:650;fill:#654b37;text-anchor:middle;dominant-baseline:hanging}
+.hit{fill:transparent;cursor:pointer;touch-action:manipulation}
+.hit:active{fill:#f4c98d55}
+.hit:focus{outline:none;fill:#f4c98d55}
+.hit:active~.bar{filter:brightness(1.08)}
+.feedback{position:absolute;left:12px;right:12px;bottom:7px;min-height:28px;text-align:center;font-size:14px;font-weight:700;color:#567a52;pointer-events:none}
+.stage.is-done .feedback{color:#567a52}
+</style>
+<div class="stage" id="stage">
+  <h1 id="title"></h1>
+  <div class="ask" id="ask"></div>
+  <svg id="chart" viewBox="0 0 360 320" role="img" aria-label="">
+    <g id="chart-content"></g>
+  </svg>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(function(){
+  const p=Studio.params;
+  const t=Studio.t;
+  document.getElementById("title").textContent=t("title");
+  document.getElementById("ask").textContent=t("ask");
+  const data=p.data;
+  const group=document.getElementById("chart-content");
+  const left=49, right=350, top=80, base=243, plotH=base-top;
+  const maxValue=Math.max.apply(null,data.map(d=>d.value));
+  const step=maxValue<=5?1:maxValue<=10?2:2;
+  const axisMax=Math.ceil(maxValue/step)*step;
+  const scale=plotH/axisMax;
+  const count=data.length;
+  const slot=(right-left)/count;
+  const barW=Math.min(34,slot*.56);
+  const ns="http://www.w3.org/2000/svg";
+  function el(tag,attrs,parent){
+    const node=document.createElementNS(ns,tag);
+    Object.keys(attrs).forEach(k=>node.setAttribute(k,attrs[k]));
+    parent.appendChild(node);
+    return node;
+  }
+  for(let v=0;v<=axisMax;v+=step){
+    const y=base-v*scale;
+    el("line",{x1:left,y1:y,x2:right,y2:y,class:v===0?"axis":"grid"},group);
+    const label=el("text",{x:left-7,y:y,class:"tick-label","data-tick":String(v)},group);
+    label.textContent=String(v);
+  }
+  const axisTitle=el("text",{x:15,y:(top+base)/2,class:"axis-title",transform:"rotate(-90 15 "+((top+base)/2)+")"},group);
+  axisTitle.textContent=t("yaxis");
+  data.forEach((d,i)=>{
+    const cx=left+slot*(i+.5);
+    const h=d.value*scale;
+    const x=cx-barW/2;
+    const y=base-h;
+    const bar=el("rect",{x:x,y:y,width:barW,height:h,rx:7,class:"bar","data-bar":d.key,"data-value":String(d.value)},group);
+    bar.style.animationDelay=(i*.055)+"s";
+    const label=el("text",{x:cx,y:base+8,class:"name"},group);
+    label.textContent=t(d.key);
+    const hit=el("rect",{x:left+slot*i,y:top-8,width:slot,height:base+57-(top-8),class:"hit",tabindex:"0",role:"button","aria-label":t(d.key),"data-column":d.key},group);
+    const choose=function(){
+      if(document.getElementById("stage").classList.contains("is-done"))return;
+      Studio.event("column_tap",{key:d.key});
+      Studio.answer(d.key);
+    };
+    hit.addEventListener("click",choose);
+    hit.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();choose();}});
+  });
+  let finished=false;
+  Studio.onVerdict(function(v){
+    const feedback=document.getElementById("feedback");
+    if(v.correct){
+      feedback.textContent=t("right")+" "+t("done");
+      document.getElementById("stage").classList.add("is-done");
+      if(!finished){finished=true;Studio.done();}
+    }else{
+      feedback.textContent=t("wrong");
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

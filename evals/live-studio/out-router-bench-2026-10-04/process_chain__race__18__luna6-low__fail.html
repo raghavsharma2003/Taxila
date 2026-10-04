@@ -1,0 +1,49 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+#scene{position:relative;width:360px;height:320px;overflow:hidden;background:#fff8ec;color:#473b35;font-family:system-ui,sans-serif}
+h1{position:absolute;left:14px;top:5px;margin:0;font-size:17px;font-weight:750;color:#65483d}
+#map{position:absolute;left:0;top:0;width:360px;height:200px}
+.path{fill:none;stroke:#d5b69a;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.stage{position:absolute;width:130px;height:56px;border:2px solid #edc99d;border-radius:17px;background:#fffdf8;display:flex;align-items:center;justify-content:center;text-align:center;padding:5px;font-weight:700;font-size:14px;line-height:1.15;transition:background .3s,border-color .3s,transform .3s,box-shadow .3s}
+#scene [data-active="evaporation"],#scene [data-active="condensation"],#scene [data-active="rain"],#scene [data-active="collection"]{background:#fff0bd;border-color:#ed9d46;transform:scale(1.06);box-shadow:0 0 0 5px #fce7bc}
+#token{position:absolute;z-index:3;width:18px;height:18px;border-radius:50%;background:#ef795d;border:3px solid #fff;box-shadow:0 2px 7px #80513d88;transition:left .75s cubic-bezier(.2,.8,.25,1),top .75s cubic-bezier(.2,.8,.25,1);pointer-events:none}
+#panel{position:absolute;left:12px;right:12px;top:205px;height:108px;border-radius:20px;background:#f6eadb;padding:5px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+button{font:700 14px system-ui,sans-serif;color:#fff;background:#cf7554;border:0;border-radius:16px;min-height:52px;padding:8px 16px;box-shadow:0 3px 0 #a9573e;cursor:pointer;transition:transform .12s,background .2s}
+button:active{transform:scale(.94)}
+#next{min-width:150px}
+#question{margin:0;text-align:center;font-weight:750;font-size:14px;line-height:17px}
+#options{display:flex;gap:7px;width:100%;justify-content:center}
+.option{flex:1;min-width:0;min-height:52px;padding:4px 2px;font-size:12px;background:#738f72;box-shadow:0 3px 0 #536b52}
+#feedback{height:16px;line-height:16px;font-weight:700;font-size:13px;color:#65483d;text-align:center;white-space:nowrap}
+[hidden]{display:none!important}
+</style>
+<div id="scene">
+  <h1 id="title"></h1>
+  <svg id="map" viewBox="0 0 360 200" aria-hidden="true">
+    <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#d5b69a"/></marker></defs>
+  </svg>
+  <div id="stages"></div>
+  <div id="token" data-token></div>
+  <div id="panel">
+    <button id="next" data-action="next"></button>
+    <p id="question" hidden></p>
+    <div id="options" hidden></div>
+    <div id="feedback" aria-live="polite"></div>
+  </div>
+</div>
+<script>
+
+(()=>{const p=Studio.params,t=Studio.t,root=document.getElementById('scene'),stages=p.stages,svg=document.getElementById('map'),stageHost=document.getElementById('stages'),token=document.querySelector('[data-token]'),next=document.querySelector('[data-action="next"]'),question=document.getElementById('question'),options=document.getElementById('options'),feedback=document.getElementById('feedback');let index=0,steps=0,asking=false,finished=false;
+document.getElementById('title').textContent=t('title');next.textContent=t('next');
+const positions=[{x:78,y:76,left:13,top:48},{x:282,y:76,left:217,top:48},{x:282,y:160,left:217,top:132},{x:78,y:160,left:13,top:132}];
+stages.forEach((k,i)=>{const pos=positions[i%positions.length],box=document.createElement('div');box.className='stage';box.dataset.stage=k;box.style.left=pos.left+'px';box.style.top=pos.top+'px';const label=document.createElement('span');label.dataset.label=k;label.textContent=t(k);box.appendChild(label);stageHost.appendChild(box)});
+for(let i=0;i<stages.length;i++){if(i===stages.length-1&&!p.cycle)continue;const j=(i+1)%stages.length,a=positions[i%positions.length],b=positions[j%positions.length],dx=b.x-a.x,dy=b.y-a.y,x1=a.x+(dx?Math.sign(dx)*67:0),y1=a.y+(dy?Math.sign(dy)*31:0),x2=b.x-(dx?Math.sign(dx)*67:0),y2=b.y-(dy?Math.sign(dy)*31:0),path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('class','path');path.setAttribute('d',`M${x1} ${y1} L${x2} ${y2}`);path.setAttribute('marker-end','url(#arrow)');path.dataset.arrow=stages[i]+'>'+stages[j];svg.appendChild(path)}
+p.options.forEach(k=>{const b=document.createElement('button');b.className='option';b.dataset.option=k;b.textContent=t(k);b.addEventListener('click',()=>{if(!finished){feedback.textContent='';Studio.answer(k)}});options.appendChild(b)});
+function place(){root.dataset.active=stages[index];const pos=positions[index%positions.length];token.style.left=(pos.x-9)+'px';token.style.top=(pos.y-9)+'px'}
+function showQuestion(){asking=true;next.hidden=true;question.hidden=false;question.textContent=t('ask')+' '+t(p.askAfter)+'?';options.hidden=false}
+next.addEventListener('click',()=>{if(asking||finished)return;index=(index+1)%stages.length;steps++;place();Studio.event('stage',{step:steps});if(steps>=stages.length-1){showQuestion()}});
+Studio.onVerdict(v=>{feedback.textContent=t(v.correct?'right':'wrong');if(v.correct){finished=true;feedback.textContent=t('done');Studio.done()}});
+place();Studio.ready()})();
+
+</script>

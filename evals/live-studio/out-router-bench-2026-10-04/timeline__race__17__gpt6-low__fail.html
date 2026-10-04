@@ -1,0 +1,101 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#493527}
+  .scene{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 86% 12%,#ffe8bb 0 35px,transparent 36px),#fff8ed}
+  .head{position:absolute;left:18px;top:12px;right:18px}
+  .title{font-size:19px;font-weight:800;line-height:24px}
+  .ask{font-size:14px;line-height:19px;margin-top:3px;color:#795b45}
+  svg{position:absolute;inset:0;width:360px;height:320px;overflow:visible;pointer-events:none}
+  [data-axis]{stroke:#bb805c;stroke-width:5;stroke-linecap:round}
+  .join{stroke:#d3a47e;stroke-width:2.5;stroke-linecap:round}
+  .mark{fill:#fff8ed;stroke:#a86144;stroke-width:3}
+  .card{position:absolute;width:94px;height:64px;border:2px solid #e1ac80;border-radius:17px;background:#fff0d8;color:#493527;box-shadow:0 5px 0 #eac9a9;font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:transform .22s,background .22s,box-shadow .22s}
+  .card:active{transform:translateY(4px) scale(.96);box-shadow:0 1px 0 #eac9a9}
+  .card:focus-visible{outline:3px solid #8a5bba;outline-offset:2px}
+  .card span{font-size:17px;font-weight:800}
+  .card small{font-size:13px;font-weight:650}
+  .card.chosen{background:#fbd3a5;transform:scale(1.06)}
+  .card.good{background:#d6efd7;border-color:#6aab78}
+  .card.bad{animation:shake .35s}
+  .feedback{position:absolute;left:18px;right:18px;bottom:15px;min-height:39px;border-radius:14px;display:grid;place-items:center;text-align:center;font-size:17px;font-weight:750;color:#654333}
+  .feedback.show{background:#fce6ca;animation:pop .3s}
+  @keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+  @keyframes shake{25%,75%{transform:translateX(-4px)}50%{transform:translateX(4px)}}
+  @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+<div class="scene">
+  <div class="head"><div class="title" id="title"></div><div class="ask" id="ask"></div></div>
+  <svg viewBox="0 0 360 320" aria-hidden="true"><line data-axis x1="36" y1="162" x2="324" y2="162"></line><g id="joins"></g><g id="marks"></g></svg>
+  <div id="cards"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, events=[...p.events].sort((a,b)=>a.year-b.year);
+  const min=events[0].year,max=events[events.length-1].year;
+  const xOf=y=>min===max?180:36+(y-min)*288/(max-min);
+  const ns="http://www.w3.org/2000/svg";
+  const joins=document.getElementById("joins"),marks=document.getElementById("marks"),cards=document.getElementById("cards"),feedback=document.getElementById("feedback");
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("ask").textContent=Studio.t("ask");
+  const placed=[[],[]];
+  let waiting=false,complete=false,selected=null;
+  events.forEach((e,i)=>{
+    const x=xOf(e.year);
+    let lane=i%2, left=Math.max(8,Math.min(258,x-47));
+    if(placed[lane].some(v=>Math.abs(v-left)<98)){
+      lane=1-lane;
+      if(placed[lane].some(v=>Math.abs(v-left)<98)){
+        for(let step=0;step<=250;step+=2){
+          const options=[left-step,left+step];
+          const found=options.find(v=>v>=8&&v<=258&&placed[lane].every(q=>Math.abs(q-v)>=98));
+          if(found!==undefined){left=found;break}
+        }
+      }
+    }
+    placed[lane].push(left);
+    const top=lane===0?76:194;
+    const line=document.createElementNS(ns,"line");
+    line.setAttribute("class","join");
+    line.setAttribute("x1",x);line.setAttribute("y1",162);
+    line.setAttribute("x2",left+47);line.setAttribute("y2",lane===0?top+64:top);
+    joins.appendChild(line);
+    const marker=document.createElementNS(ns,"circle");
+    marker.setAttribute("class","mark");
+    marker.setAttribute("cx",x);marker.setAttribute("cy",162);marker.setAttribute("r",6);
+    marker.setAttribute("data-event",e.key);marker.setAttribute("data-year",e.year);
+    marks.appendChild(marker);
+    const card=document.createElement("button");
+    card.type="button";card.className="card";card.setAttribute("data-card",e.key);
+    card.style.left=left+"px";card.style.top=top+"px";
+    const name=document.createElement("span"),year=document.createElement("small");
+    name.textContent=Studio.t(e.key);year.textContent=e.year;
+    card.append(name,year);cards.appendChild(card);
+    card.addEventListener("click",()=>{
+      if(waiting||complete)return;
+      waiting=true;selected=card;card.classList.add("chosen");
+      Studio.event("tap",{key:e.key});
+      Studio.answer(e.key);
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!selected||complete)return;
+    feedback.classList.add("show");
+    feedback.textContent=Studio.t(correct?"right":"wrong");
+    selected.classList.remove("chosen");
+    if(correct){
+      complete=true;selected.classList.add("good");
+      feedback.textContent=Studio.t("done");
+      Studio.done();
+    }else{
+      selected.classList.add("bad");
+      const old=selected;
+      setTimeout(()=>old.classList.remove("bad"),400);
+      waiting=false;
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

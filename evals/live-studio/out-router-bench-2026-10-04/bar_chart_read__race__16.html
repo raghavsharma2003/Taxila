@@ -1,0 +1,75 @@
+<style>
+*{box-sizing:border-box}
+.stage{width:360px;height:320px;overflow:hidden;background:#fff8ed;color:#49372d;font-family:system-ui,sans-serif;position:relative;border-radius:18px}
+h1{position:absolute;left:14px;top:8px;margin:0;font-size:17px;line-height:22px;font-weight:750;color:#74452f}
+.ask{position:absolute;left:14px;top:32px;margin:0;font-size:13px;line-height:18px;color:#735b4c}
+svg{position:absolute;inset:0;width:360px;height:320px}
+.grid{stroke:#eadfce;stroke-width:1}
+.axis{stroke:#8c7967;stroke-width:1.4}
+.tick{fill:#725f4e;font-size:10px;text-anchor:end;dominant-baseline:middle}
+.axis-title{fill:#725f4e;font-size:11px;font-weight:650;text-anchor:middle}
+.bar{fill:#e99b48;transform-box:fill-box;transform-origin:center bottom;animation:grow .72s cubic-bezier(.2,.8,.25,1) both}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.name{fill:#49372d;font-size:10px;font-weight:650;text-anchor:middle;dominant-baseline:hanging}
+.hit{fill:transparent;cursor:pointer;touch-action:manipulation}
+.hit:active{fill:#e99b4822}
+.feedback{position:absolute;left:12px;right:12px;bottom:7px;min-height:28px;padding:4px 8px;border-radius:12px;background:#f4e7d5;color:#684631;font-size:13px;font-weight:700;text-align:center;line-height:20px;opacity:0;transform:scale(.96);transition:opacity .2s,transform .2s}
+.feedback.show{opacity:1;transform:scale(1)}
+</style>
+<div class="stage">
+  <h1 id="title"></h1>
+  <p class="ask" id="ask"></p>
+  <svg id="chart" viewBox="0 0 360 320" aria-hidden="true"></svg>
+  <div class="feedback" id="feedback"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params,data=p.data,svg=document.getElementById('chart');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  const left=47,right=350,top=66,bottom=244,plotH=bottom-top;
+  const max=Math.max(...data.map(d=>d.value));
+  const raw=max/4,power=Math.pow(10,Math.floor(Math.log10(raw||1)));
+  const fraction=raw/power;
+  const step=(fraction<=1?1:fraction<=2?2:fraction<=5?5:10)*power;
+  const ceiling=Math.ceil(max/step)*step;
+  let markup='';
+  for(let v=0;v<=ceiling;v+=step){
+    const y=bottom-(v/ceiling)*plotH;
+    markup+=`<line class="grid" x1="${left}" y1="${y}" x2="${right}" y2="${y}"></line><text class="tick" data-tick="${v}" x="${left-7}" y="${y}">${v}</text>`;
+  }
+  markup+=`<line class="axis" x1="${left}" y1="${top}" x2="${left}" y2="${bottom}"></line><line class="axis" x1="${left}" y1="${bottom}" x2="${right}" y2="${bottom}"></line><text class="axis-title" transform="translate(13 ${(top+bottom)/2}) rotate(-90)">${Studio.t('yaxis')}</text>`;
+  const slot=(right-left)/data.length;
+  data.forEach((d,i)=>{
+    const x=left+i*slot,w=slot,barW=Math.min(34,w-14),h=(d.value/ceiling)*plotH,y=bottom-h,cx=x+w/2;
+    markup+=`<rect class="bar" data-bar="${d.key}" data-value="${d.value}" x="${cx-barW/2}" y="${y}" width="${barW}" height="${h}" style="animation-delay:${i*.07}s"></rect><text class="name" x="${cx}" y="${bottom+9}">${Studio.t(d.key)}</text><rect class="hit" data-column="${d.key}" x="${x}" y="${top}" width="${w}" height="${bottom+32-top}"></rect>`;
+  });
+  svg.innerHTML=markup;
+  const feedback=document.getElementById('feedback');
+  let locked=false,finished=false;
+  let pending=false;
+  Studio.onVerdict(({correct})=>{
+    if(!pending||finished)return;
+    pending=false;
+    locked=false;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.classList.add('show');
+    if(correct){
+      finished=true;
+      feedback.textContent=Studio.t('done');
+      Studio.done();
+    }
+  });
+  svg.querySelectorAll('[data-column]').forEach(el=>el.addEventListener('click',()=>{
+    if(locked||finished)return;
+    locked=true;
+    pending=true;
+    const key=el.getAttribute('data-column');
+    Studio.event('bar_tap',{key});
+    Studio.answer(key);
+  }));
+  Studio.ready();
+})();
+
+</script>

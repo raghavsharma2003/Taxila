@@ -1,0 +1,123 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff5e8;color:#503b45}
+  .card{width:360px;height:320px;padding:15px 18px;background:radial-gradient(circle at 88% 8%,#ffe2b5 0 38px,transparent 39px),#fff5e8}
+  h1{margin:0;font-size:21px;line-height:26px;color:#754258}
+  .instruction{margin:3px 0 0;font-size:13px;line-height:18px}
+  .targetBox{display:flex;align-items:center;justify-content:center;gap:10px;height:43px;margin-top:8px;border-radius:15px;background:#fff;color:#754258;box-shadow:0 3px 0 #f2dfd1}
+  [data-target]{font-size:25px;font-weight:800}
+  .track{position:relative;height:105px;margin-top:9px;border-radius:17px;background:#fce9d5}
+  .rail{position:absolute;left:25px;right:25px;top:44px;height:5px;border-radius:9px;background:#d6a0a0}
+  .tick{position:absolute;top:35px;width:2px;height:20px;background:#9b6575;transform:translateX(-50%)}
+  .tick span{position:absolute;top:23px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:650;white-space:nowrap;color:#684a56}
+  [data-marker]{position:absolute;top:15px;width:27px;height:27px;border-radius:50% 50% 50% 12%;background:#ed805f;border:3px solid white;box-shadow:0 3px 7px #ab685b66;transform:translateX(-50%) rotate(-45deg);transition:left .24s ease,background .2s ease;z-index:2}
+  [data-marker].hop{animation:hop .45s ease}
+  @keyframes hop{50%{top:2px;transform:translateX(-50%) rotate(-45deg) scale(1.18)}}
+  .controls{display:flex;gap:9px;margin-top:11px}
+  button{height:56px;min-width:62px;border:0;border-radius:17px;background:#e9b6a4;color:#503b45;font:700 16px system-ui,sans-serif;cursor:pointer;box-shadow:0 4px 0 #cf9689;transition:transform .15s,box-shadow .15s}
+  button:active{transform:translateY(3px) scale(.97);box-shadow:0 1px 0 #cf9689}
+  button:disabled{opacity:.48;cursor:default}
+  [data-action=check]{flex:1;background:#8bc8ae;box-shadow:0 4px 0 #65a78b}
+  .feedback{height:20px;margin-top:8px;text-align:center;font-size:14px;font-weight:700;color:#754258}
+  .finished{display:none;height:100%;align-items:center;justify-content:center;text-align:center;font-size:27px;font-weight:800;color:#754258}
+</style>
+<div class="card">
+  <div id="activity">
+    <h1 id="title"></h1>
+    <p class="instruction" id="instr"></p>
+    <div class="targetBox" id="item"><span data-target></span></div>
+    <div class="track" id="track"><div class="rail"></div><div data-marker></div></div>
+    <div class="controls">
+      <button type="button" data-action="left"></button>
+      <button type="button" data-action="right"></button>
+      <button type="button" data-action="check"></button>
+    </div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+  </div>
+  <div class="finished" id="finished"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const $=s=>document.querySelector(s);
+  const track=$('#track'),marker=$('[data-marker]'),item=$('#item'),feedback=$('#feedback');
+  const round=n=>Math.round(n*1e6)/1e6;
+  const count=Math.round((p.max-p.min)/p.step);
+  const startIndex=Math.max(0,Math.min(count,Math.round((p.start-p.min)/p.step)));
+  const value=k=>round(p.min+k*p.step);
+  const fmt=v=>{
+    if(p.format==='fraction') return `${Math.round(round(v)*p.den)}/${p.den}`;
+    return String(round(v));
+  };
+  const x=k=>25+(track.clientWidth-50)*k/count;
+  let index=startIndex, current=0, busy=false;
+  $('#title').textContent=Studio.t('title');
+  $('#instr').textContent=Studio.t('instr');
+  for(const action of ['left','right','check']){
+    $(`[data-action="${action}"]`).textContent=Studio.t(action==='right'?'right_btn':action);
+  }
+  $('#finished').textContent=Studio.t('done');
+  for(let k=0;k<=count;k++){
+    const tick=document.createElement('div');
+    tick.className='tick';
+    tick.dataset.tick=String(value(k));
+    tick.style.left=x(k)+'px';
+    if(k%p.labelEvery===0){
+      const label=document.createElement('span');
+      label.textContent=fmt(value(k));
+      tick.append(label);
+    }
+    track.append(tick);
+  }
+  function draw(){
+    marker.style.left=x(index)+'px';
+    marker.dataset.value=String(value(index));
+    $('[data-action="left"]').disabled=busy||index===0;
+    $('[data-action="right"]').disabled=busy||index===count;
+    $('[data-action="check"]').disabled=busy;
+  }
+  function showItem(){
+    item.dataset.item=String(p.items[current].id);
+    $('[data-target]').textContent=fmt(p.items[current].target);
+    index=startIndex;
+    feedback.textContent='';
+    busy=false;
+    draw();
+  }
+  for(const [action,delta] of [['left',-1],['right',1]]){
+    $(`[data-action="${action}"]`).addEventListener('click',()=>{
+      if(busy)return;
+      index=Math.max(0,Math.min(count,index+delta));
+      feedback.textContent='';
+      draw();
+      Studio.event('move',{direction:action});
+    });
+  }
+  $('[data-action="check"]').addEventListener('click',()=>{
+    if(busy)return;
+    busy=true;draw();
+    Studio.answer({value:value(index)});
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      marker.classList.remove('hop');
+      void marker.offsetWidth;
+      marker.classList.add('hop');
+      setTimeout(()=>{
+        marker.classList.remove('hop');
+        current++;
+        if(current<p.items.length)showItem();
+        else{
+          $('#activity').style.display='none';
+          $('#finished').style.display='flex';
+          Studio.done();
+        }
+      },500);
+    }else{busy=false;draw();}
+  });
+  showItem();
+  Studio.ready();
+})();
+
+</script>

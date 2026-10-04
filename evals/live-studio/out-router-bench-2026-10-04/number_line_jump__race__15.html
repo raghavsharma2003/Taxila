@@ -1,0 +1,41 @@
+<style>
+*{box-sizing:border-box}
+.stage{width:360px;height:320px;overflow:hidden;background:#fff8ec;color:#354b50;font-family:system-ui,sans-serif;position:relative;padding:12px 14px}
+h1{font-size:18px;line-height:22px;margin:0;color:#31585a;font-weight:750}
+.instr{font-size:13px;line-height:17px;margin:2px 0 0;color:#637679}
+.task{height:38px;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:5px;background:#ffefd5;border-radius:14px;color:#657477;font-size:14px}
+[data-target]{font-size:22px;font-weight:800;color:#b9653e;min-width:36px;text-align:center}
+.track{height:112px;position:relative;margin:2px 0 0}
+.line{position:absolute;left:8px;right:8px;top:47px;height:4px;border-radius:4px;background:#79a9a0}
+.tick{position:absolute;top:39px;width:2px;height:20px;background:#527c76;transform:translateX(-1px)}
+.tick-label{position:absolute;top:63px;transform:translateX(-50%);font-size:12px;color:#52686a;white-space:nowrap}
+.marker{position:absolute;top:20px;width:20px;height:20px;border-radius:50%;background:#e78255;border:3px solid #fff;box-shadow:0 2px 7px #75452d55;transform:translateX(-50%);transition:left .22s cubic-bezier(.2,.8,.2,1),top .2s;z-index:2}
+.marker:after{content:"";position:absolute;left:5px;top:14px;border:5px solid transparent;border-top-color:#e78255}
+.marker.hop{animation:hop .42s ease}
+@keyframes hop{50%{top:5px;transform:translateX(-50%) scale(1.16)}}
+.controls{display:flex;gap:8px;justify-content:center;margin-top:0}
+button{border:0;border-radius:15px;min-width:100px;height:56px;padding:0 12px;background:#6f9e93;color:white;font:700 15px system-ui,sans-serif;box-shadow:0 3px 0 #4e7970;cursor:pointer;transition:transform .12s,background .18s}
+button:active{transform:scale(.95)}
+button.check{background:#e78255;box-shadow:0 3px 0 #b9653e}
+button:disabled{opacity:.48}
+.feedback{height:26px;margin-top:7px;text-align:center;font-size:14px;font-weight:700;color:#557d70}
+.feedback.bad{color:#b9653e;animation:nudge .25s ease}
+@keyframes nudge{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+</style>
+<div class="stage">
+  <h1 id="title"></h1>
+  <div class="instr" id="instr"></div>
+  <div class="task" id="item"><span id="prompt"></span><span data-target></span></div>
+  <div class="track" id="track"><div class="line"></div><div class="ticks" id="ticks"></div><div class="marker" data-marker data-value=""></div></div>
+  <div class="controls">
+    <button type="button" data-action="left"></button>
+    <button type="button" data-action="right"></button>
+    <button type="button" class="check" data-action="check"></button>
+  </div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{const p=Studio.params, t=Studio.t;const title=document.getElementById("title"),instr=document.getElementById("instr"),itemEl=document.getElementById("item"),targetEl=itemEl.querySelector("[data-target]"),prompt=document.getElementById("prompt"),ticksEl=document.getElementById("ticks"),marker=document.querySelector("[data-marker]"),feedback=document.getElementById("feedback"),track=document.getElementById("track"),left=document.querySelector('[data-action="left"]'),right=document.querySelector('[data-action="right"]'),check=document.querySelector('[data-action="check"]');title.textContent=t("title");instr.textContent=t("instr");prompt.textContent="";left.textContent=t("left");right.textContent=t("right_btn");check.textContent=t("check");const places=Math.round((p.max-p.min)/p.step),digits=Math.min(6,Math.max(decimals(p.min),decimals(p.step),decimals(p.max)));function decimals(x){const s=String(x);return s.includes("e-")?Number(s.split("e-")[1]):(s.split(".")[1]||"").length}function value(k){return Number((p.min+k*p.step).toFixed(6))}function fmt(v){v=Number(v.toFixed(6));if(p.format==="integer")return String(Math.round(v));let den=10**digits,num=Math.round(v*den),a=Math.abs(num),b=den;while(b){const r=a%b;a=b;b=r}const gcd=a||1;return String(num/gcd)+"/"+String(den/gcd)}const xFor=k=>8+(track.clientWidth-16)*(k/places);for(let k=0;k<=places;k++){const v=value(k),tick=document.createElement("div");tick.className="tick";tick.dataset.tick=String(v);tick.style.left=xFor(k)+"px";ticksEl.appendChild(tick);if(k%p.labelEvery===0){const label=document.createElement("div");label.className="tick-label";label.textContent=fmt(v);label.style.left=xFor(k)+"px";ticksEl.appendChild(label)}}let itemIndex=0,k=Math.max(0,Math.min(places,Math.round((p.start-p.min)/p.step)));function update(){const v=value(k);marker.dataset.value=String(v);marker.style.left=xFor(k)+"px";const current=p.items[itemIndex];if(current){itemEl.dataset.item=String(current.id);targetEl.textContent=fmt(current.target)}left.disabled=k===0;right.disabled=k===places;feedback.textContent="";feedback.classList.remove("bad")}function finish(){itemIndex++;if(itemIndex>=p.items.length){prompt.textContent=t("done");targetEl.textContent="";itemEl.removeAttribute("data-item");feedback.textContent=t("done");left.disabled=right.disabled=check.disabled=true;Studio.done();return}k=Math.max(0,Math.min(places,Math.round((p.start-p.min)/p.step)));update()}left.addEventListener("click",()=>{if(k>0){k--;update();Studio.event("move",{direction:"left"})}});right.addEventListener("click",()=>{if(k<places){k++;update();Studio.event("move",{direction:"right"})}});check.addEventListener("click",()=>{if(!p.items[itemIndex])return;Studio.answer({value:value(k)})});Studio.onVerdict(({correct})=>{if(correct){feedback.textContent=t("right");marker.classList.remove("hop");void marker.offsetWidth;marker.classList.add("hop");setTimeout(finish,420)}else{feedback.textContent=t("wrong");feedback.classList.remove("bad");void feedback.offsetWidth;feedback.classList.add("bad")} });update();Studio.ready()})()
+
+</script>

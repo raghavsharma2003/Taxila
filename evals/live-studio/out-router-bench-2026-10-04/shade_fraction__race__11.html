@@ -1,0 +1,115 @@
+<style>
+  *{box-sizing:border-box}
+  #activity{width:360px;height:320px;overflow:hidden;background:#fff8eb;color:#593d32;font-family:system-ui,sans-serif;padding:16px;display:flex;flex-direction:column;align-items:center}
+  #activity h1{font-size:20px;line-height:25px;margin:0;font-weight:800;text-align:center}
+  #instruction{font-size:14px;margin:4px 0 0;text-align:center}
+  #item{width:100%;display:flex;flex-direction:column;align-items:center}
+  #target{margin:8px 0 2px;padding:3px 18px;border-radius:18px;background:#ffe4b5;font-size:25px;font-weight:800;line-height:34px}
+  #picture{display:block;width:320px;height:130px;overflow:visible}
+  [data-part]{fill:#f3dfc7;stroke:#a97552;stroke-width:2;cursor:pointer;transition:fill .2s,transform .2s;transform-box:fill-box;transform-origin:center}
+  [data-part][data-shaded="true"]{fill:#ef8d62}
+  [data-part]:active{transform:scale(.94)}
+  #feedback{height:25px;margin:3px 0;font-size:15px;font-weight:700;text-align:center}
+  #check{min-width:150px;min-height:52px;border:0;border-radius:18px;background:#d96851;color:#fff;font:800 17px system-ui,sans-serif;box-shadow:0 5px 0 #ac4939;cursor:pointer;transition:transform .16s,background .16s}
+  #check:active{transform:translateY(4px);box-shadow:0 1px 0 #ac4939}
+  #check:disabled{opacity:.65}
+  #activity.celebrate #picture{animation:bounce .45s ease-in-out}
+  #activity.celebrate #check{background:#65a879}
+  @keyframes bounce{50%{transform:translateY(-7px) scale(1.04)}}
+  #activity.finished #item,#activity.finished #instruction,#activity.finished #check{display:none}
+  #activity.finished #feedback{margin:auto;font-size:25px}
+</style>
+<div id="activity">
+  <h1 id="title"></h1>
+  <div id="instruction"></div>
+  <div id="item" data-item="">
+    <div id="target" data-target></div>
+    <svg id="picture" viewBox="0 0 320 130" aria-hidden="true"></svg>
+  </div>
+  <div id="feedback" aria-live="polite"></div>
+  <button id="check" data-action="check" type="button"></button>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, root=document.getElementById('activity');
+  const itemEl=document.getElementById('item'), svg=document.getElementById('picture');
+  const target=document.getElementById('target'), feedback=document.getElementById('feedback');
+  const check=document.getElementById('check');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+  let index=0, waiting=false;
+  const ns='http://www.w3.org/2000/svg';
+  function draw(){
+    const item=p.items[index];
+    itemEl.setAttribute('data-item',item.id);
+    target.textContent=item.n+'/'+item.d;
+    feedback.textContent='';
+    svg.replaceChildren();
+    for(let i=0;i<item.d;i++){
+      let shape;
+      if(p.picture==='pizza'){
+        shape=document.createElementNS(ns,'path');
+        const a=-Math.PI/2+i*2*Math.PI/item.d, b=-Math.PI/2+(i+1)*2*Math.PI/item.d;
+        const x1=160+59*Math.cos(a),y1=65+59*Math.sin(a);
+        const x2=160+59*Math.cos(b),y2=65+59*Math.sin(b);
+        shape.setAttribute('d',`M 160 65 L ${x1} ${y1} A 59 59 0 ${2*Math.PI/item.d>Math.PI?1:0} 1 ${x2} ${y2} Z`);
+      }else{
+        shape=document.createElementNS(ns,'rect');
+        const cols=Math.min(item.d,4), rows=Math.ceil(item.d/cols);
+        const w=296/cols-6, h=116/rows-6;
+        shape.setAttribute('x',12+(i%cols)*(296/cols)+3);
+        shape.setAttribute('y',7+Math.floor(i/cols)*(116/rows)+3);
+        shape.setAttribute('width',w);
+        shape.setAttribute('height',h);
+        shape.setAttribute('rx',Math.min(13,h/4));
+      }
+      shape.setAttribute('data-part',i);
+      shape.setAttribute('data-shaded','false');
+      shape.addEventListener('click',()=>{
+        if(waiting)return;
+        shape.setAttribute('data-shaded',shape.getAttribute('data-shaded')==='true'?'false':'true');
+        feedback.textContent='';
+        Studio.event('part',{index:i});
+      });
+      svg.appendChild(shape);
+    }
+  }
+  check.addEventListener('click',()=>{
+    if(waiting)return;
+    waiting=true;
+    check.disabled=true;
+    const item=p.items[index];
+    const n=svg.querySelectorAll('[data-shaded="true"]').length;
+    Studio.event('check',{n:n,d:item.d});
+    Studio.answer({n:n,d:item.d});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!waiting)return;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      root.classList.add('celebrate');
+      setTimeout(()=>{
+        root.classList.remove('celebrate');
+        index++;
+        if(index<p.items.length){
+          draw();
+          waiting=false;
+          check.disabled=false;
+        }else{
+          root.classList.add('finished');
+          feedback.textContent=Studio.t('done');
+          Studio.done();
+        }
+      },650);
+    }else{
+      waiting=false;
+      check.disabled=false;
+    }
+  });
+  draw();
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,132 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8e9;font-family:system-ui,sans-serif;color:#344638}
+#activity{position:relative;width:360px;height:320px;overflow:hidden}
+svg{display:block;width:360px;height:170px}
+svg text{font:600 12px system-ui,sans-serif;fill:#344638}
+svg .heading{font-size:15px;fill:#425743}
+#caption{height:29px;margin:0 10px;padding:5px 9px;border-radius:11px;background:#e8f3d9;text-align:center;font-size:13px;font-weight:650;white-space:nowrap;overflow:hidden}
+#controls{height:53px;display:flex;justify-content:center;gap:12px;padding-top:1px}
+button{border:0;font:700 13px system-ui,sans-serif;cursor:pointer;touch-action:manipulation;transition:transform .15s,background .2s}
+button:active{transform:scale(.92)}
+#controls button{min-width:100px;height:52px;border-radius:17px;background:#dcedc9;color:#345840}
+#controls button:first-child{background:#447b60;color:white}
+#ask{height:16px;margin:0;text-align:center;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden}
+#choices{display:flex;gap:7px;padding:0 9px;height:52px}
+#choices button{flex:1;min-width:0;height:52px;border-radius:15px;background:#ffe4a5;color:#57472b}
+#choices button.chosen{background:#acd9bc}
+#feedback{position:absolute;left:10px;top:173px;width:340px;text-align:center;pointer-events:none;font-size:13px;font-weight:700;color:#34694b;opacity:0;transition:opacity .2s}
+#feedback.show{opacity:1}
+.particle{opacity:.95}
+</style>
+<div id="activity">
+  <svg viewBox="0 0 360 170" aria-hidden="true">
+    <text id="title" class="heading" x="180" y="17" text-anchor="middle"></text>
+    <path d="M174 114 Q165 130 170 151 M170 137 Q155 140 149 153 M170 143 Q181 144 191 155" fill="none" stroke="#a67551" stroke-width="7" stroke-linecap="round" data-entity=""></path>
+    <circle cx="43" cy="73" r="20" fill="#ffc761" stroke="#f5a942" stroke-width="3" data-entity=""></circle>
+    <path d="M136 92 Q158 58 207 83 Q194 123 150 111 Q138 105 136 92Z" fill="#76bd79" stroke="#448f62" stroke-width="3" data-entity=""></path>
+    <path d="M148 106 Q177 91 201 84" fill="none" stroke="#e0f2b1" stroke-width="3" stroke-linecap="round"></path>
+    <g id="particles"></g>
+    <text id="entity0" x="70" y="52"></text>
+    <text id="entity1" x="207" y="159"></text>
+    <text id="hubLabel" x="149" y="59"></text>
+    <text id="flow0" x="184" y="132"></text>
+    <text id="flow1" x="267" y="67"></text>
+    <text id="flow2" x="267" y="145"></text>
+  </svg>
+  <p id="caption" data-caption></p>
+  <div id="controls"><button type="button" data-action="play"></button><button type="button" data-action="next"></button></div>
+  <p id="ask"></p>
+  <div id="choices"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params,t=k=>Studio.t(k),svg=document.querySelector('svg');
+  const shapes=[...svg.querySelectorAll('[data-entity]')];
+  shapes[0].dataset.entity=p.entities[1];
+  shapes[1].dataset.entity=p.entities[0];
+  shapes[2].dataset.entity=p.hub;
+  function label(id,key){
+    const e=document.getElementById(id);
+    e.dataset.label=key;
+    e.textContent=t(key);
+  }
+  label('entity0',p.entities[0]);
+  label('entity1',p.entities[1]);
+  label('hubLabel',p.hub);
+  document.getElementById('title').textContent=t('title');
+  document.getElementById('ask').textContent=t('ask');
+  const routes={
+    up_in:[[169,148],[171,113]],
+    in:[[310,88],[211,91]],
+    out:[[209,106],[308,119]]
+  };
+  const colors={up_in:'#65a9d2',in:'#7b9cba',out:'#e6ad67'};
+  const dots=[];
+  p.flows.forEach((flow,i)=>{
+    label('flow'+i,flow.key);
+    for(let j=0;j<4;j++){
+      const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('r',flow.dir==='up_in'?'4':'3.5');
+      c.setAttribute('fill',colors[flow.dir]||'#77aeb0');
+      c.setAttribute('class','particle');
+      c.dataset.flow=flow.key;
+      document.getElementById('particles').appendChild(c);
+      dots.push({el:c,route:routes[flow.dir]||routes.in,phase:j/4,flow:i});
+    }
+  });
+  let playing=true,step=0,elapsed=0,last=0,finished=false;
+  const caption=document.getElementById('caption'),play=document.querySelector('[data-action="play"]');
+  function update(){
+    caption.textContent=t('step'+(step+1));
+    play.textContent=t(playing?'pause':'play');
+    dots.forEach(d=>d.el.style.opacity=d.flow===step?'1':'.48');
+  }
+  function frame(now){
+    if(playing&&last)elapsed+=(now-last)*.00042;
+    last=now;
+    dots.forEach(d=>{
+      const q=(elapsed+d.phase)%1,a=d.route[0],b=d.route[1];
+      d.el.setAttribute('cx',a[0]+(b[0]-a[0])*q);
+      d.el.setAttribute('cy',a[1]+(b[1]-a[1])*q);
+    });
+    requestAnimationFrame(frame);
+  }
+  play.addEventListener('click',()=>{
+    playing=!playing;
+    update();
+    Studio.event('play',{playing:playing?1:0});
+  });
+  document.querySelector('[data-action="next"]').addEventListener('click',()=>{
+    step=(step+1)%p.steps;
+    update();
+    Studio.event('step',{step:step+1});
+  });
+  const choices=document.getElementById('choices'),feedback=document.getElementById('feedback');
+  p.options.forEach(key=>{
+    const b=document.createElement('button');
+    b.type='button';
+    b.dataset.option=key;
+    b.textContent=t(key);
+    b.addEventListener('click',()=>{
+      if(finished)return;
+      choices.querySelectorAll('button').forEach(x=>x.classList.remove('chosen'));
+      b.classList.add('chosen');
+      feedback.classList.remove('show');
+      Studio.answer(key);
+    });
+    choices.appendChild(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=t(correct?'right':'wrong');
+    feedback.classList.add('show');
+    if(correct&&!finished){finished=true;Studio.done()}
+  });
+  update();
+  requestAnimationFrame(frame);
+  Studio.ready();
+})();
+
+</script>

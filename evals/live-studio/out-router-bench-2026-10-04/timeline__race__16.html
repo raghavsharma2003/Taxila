@@ -1,0 +1,110 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif}
+  #scene{position:relative;width:360px;height:320px;overflow:hidden;background:#fff8eb;color:#604536}
+  #scene:before{content:"";position:absolute;width:250px;height:250px;left:-105px;top:-150px;border-radius:50%;background:#ffe8c8}
+  #scene:after{content:"";position:absolute;width:170px;height:170px;right:-110px;bottom:-105px;border-radius:50%;background:#f9dfcf}
+  #title,#ask,#feedback{position:absolute;left:12px;width:336px;text-align:center;z-index:2}
+  #title{top:8px;font-size:19px;font-weight:800;line-height:25px}
+  #ask{top:39px;font-size:14px;font-weight:650;line-height:20px}
+  #feedback{top:279px;min-height:27px;font-size:16px;font-weight:800;line-height:25px}
+  #axis{position:absolute;left:32px;top:159px;width:296px;height:3px;border-radius:9px;background:#b98c72;z-index:1}
+  #axis:before,#axis:after{content:"";position:absolute;top:-4px;width:11px;height:11px;border-radius:50%;background:#b98c72}
+  #axis:before{left:-5px}#axis:after{right:-5px}
+  #links{position:absolute;inset:0;pointer-events:none;z-index:1}
+  #events{position:absolute;inset:0;z-index:2}
+  .marker{position:absolute;top:152px;width:17px;height:17px;transform:translateX(-50%);border:3px solid #fff8eb;border-radius:50%;background:#a95e56;box-shadow:0 0 0 2px #a95e56;pointer-events:none}
+  .card{position:absolute;width:84px;height:60px;border:2px solid #d9a58a;border-radius:17px;background:#fffdf6;color:#604536;box-shadow:0 4px 0 #e8c9b6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:3px;cursor:pointer;transition:transform .2s,background .2s,box-shadow .2s;animation:arrive .45s both}
+  .card:active{transform:scale(.93)}
+  .card:focus-visible{outline:3px solid #7653a2;outline-offset:2px}
+  .card span{font-size:13px;font-weight:750;line-height:15px;text-align:center;overflow-wrap:anywhere}
+  .card small{font-size:12px;font-weight:700;line-height:14px;color:#9a6255}
+  .card.chosen{background:#ffe5c8;transform:scale(1.05)}
+  .card.correct{background:#dff3df;border-color:#6caa83;box-shadow:0 4px 0 #b7d9bc}
+  #feedback.pop{animation:pop .32s ease-out}
+  @keyframes arrive{from{opacity:0;transform:translateY(8px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
+  @keyframes pop{from{transform:scale(.85);opacity:.3}to{transform:scale(1);opacity:1}}
+</style>
+<div id="scene">
+  <div id="title"></div>
+  <div id="ask"></div>
+  <div id="axis" data-axis></div>
+  <svg id="links" width="360" height="320" viewBox="0 0 360 320" aria-hidden="true"></svg>
+  <div id="events"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, list=[...p.events].sort((a,b)=>a.year-b.year);
+  const title=document.getElementById('title'), ask=document.getElementById('ask');
+  const feedback=document.getElementById('feedback'), holder=document.getElementById('events');
+  const links=document.getElementById('links');
+  title.textContent=Studio.t('title');
+  ask.textContent=Studio.t('ask');
+  const first=list[0].year,last=list[list.length-1].year;
+  const placed=[[],[]], width=84, left=32,right=328;
+  let selected=null, finished=false;
+  list.forEach((e,i)=>{
+    const x=first===last?(left+right)/2:left+(e.year-first)/(last-first)*(right-left);
+    const preferred=Math.max(8,Math.min(352-width,x-width/2));
+    let best=null;
+    for(let lane=0;lane<2;lane++){
+      let pos=preferred;
+      const occupied=placed[lane].slice().sort((a,b)=>a-b);
+      for(const other of occupied){
+        if(pos<other+width+4 && pos+width+4>other){
+          const before=other-width-4, after=other+width+4;
+          pos=Math.abs(before-preferred)<Math.abs(after-preferred)?before:after;
+        }
+      }
+      pos=Math.max(8,Math.min(352-width,pos));
+      const overlap=occupied.some(other=>pos<other+width+4&&pos+width+4>other);
+      const score=(overlap?10000:0)+Math.abs(pos-preferred)+(placed[lane].length*3);
+      if(!best||score<best.score)best={lane,pos,score};
+    }
+    placed[best.lane].push(best.pos);
+    const y=best.lane===0?76:202;
+    const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',x);line.setAttribute('y1',160);
+    line.setAttribute('x2',best.pos+width/2);
+    line.setAttribute('y2',best.lane===0?136:202);
+    line.setAttribute('stroke','#c99e85');line.setAttribute('stroke-width','2');
+    line.setAttribute('stroke-linecap','round');links.append(line);
+    const marker=document.createElement('div');
+    marker.className='marker';marker.style.left=x+'px';
+    marker.setAttribute('data-event',e.key);marker.setAttribute('data-year',String(e.year));
+    holder.append(marker);
+    const card=document.createElement('button');
+    card.type='button';card.className='card';card.style.left=best.pos+'px';card.style.top=y+'px';
+    card.style.animationDelay=(i*0.07)+'s';card.setAttribute('data-card',e.key);
+    const name=document.createElement('span'),year=document.createElement('small');
+    name.textContent=Studio.t(e.key);year.textContent=String(e.year);
+    card.append(name,year);holder.append(card);
+    card.addEventListener('click',()=>{
+      if(finished)return;
+      holder.querySelectorAll('.card').forEach(c=>c.classList.remove('chosen'));
+      card.classList.add('chosen');selected=card;
+      feedback.textContent='';
+      Studio.answer(e.key);
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    if(finished||!selected)return;
+    feedback.classList.remove('pop');
+    void feedback.offsetWidth;
+    feedback.classList.add('pop');
+    if(correct){
+      finished=true;selected.classList.add('correct');
+      selected.classList.remove('chosen');
+      feedback.textContent=Studio.t('right');
+      setTimeout(()=>{feedback.textContent=Studio.t('done');Studio.done()},650);
+    }else{
+      selected.classList.remove('chosen');
+      feedback.textContent=Studio.t('wrong');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

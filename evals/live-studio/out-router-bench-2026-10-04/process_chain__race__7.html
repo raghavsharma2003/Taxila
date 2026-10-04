@@ -1,0 +1,114 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0}
+  #activity{position:relative;width:360px;height:320px;overflow:hidden;background:#fff8ed;color:#604537;font-family:system-ui,sans-serif}
+  .title{position:absolute;top:12px;left:16px;width:328px;text-align:center;font-size:20px;font-weight:750}
+  .scene{position:absolute;top:47px;left:16px;width:328px;height:137px}
+  .stage rect{fill:#fffdf8;stroke:#ddb59d;stroke-width:2;transition:fill .25s,stroke .25s,filter .25s}
+  .stage text{fill:#604537;font-size:12px;font-weight:750;text-anchor:middle;dominant-baseline:middle}
+  .stage.lit rect{fill:#ffe5a5;stroke:#e99065;filter:drop-shadow(0 0 7px #f3ba70)}
+  .arrow{fill:none;stroke:#c88e73;stroke-width:3;stroke-linecap:round}
+  .token{fill:#ee7965;stroke:white;stroke-width:3;filter:drop-shadow(0 2px 3px #aa7867)}
+  button{min-width:52px;min-height:52px;border:0;border-radius:16px;font:700 14px system-ui,sans-serif;cursor:pointer;transition:transform .16s,background .2s}
+  button:active{transform:scale(.91)}
+  button:disabled{opacity:.55;cursor:default}
+  .next{position:absolute;top:184px;left:144px;width:72px;height:52px;background:#e99170;color:white}
+  .feedback{position:absolute;top:200px;right:17px;max-width:105px;text-align:right;font-size:13px;font-weight:750;color:#a85e49}
+  .question{position:absolute;top:239px;left:16px;width:328px;text-align:center;font-size:14px;font-weight:750}
+  .options{position:absolute;top:263px;left:16px;width:328px;height:52px;display:flex;gap:8px}
+  .options button{flex:1;width:0;height:52px;padding:4px;background:#f8e2c7;color:#604537;border:2px solid #e8ba9d}
+</style>
+<div id="activity">
+  <div class="title" id="title"></div>
+  <svg class="scene" viewBox="0 0 328 137" aria-hidden="true">
+    <defs><marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#c88e73"/></marker></defs>
+    <g id="arrows"></g><g id="stages"></g>
+    <circle data-token class="token" cx="0" cy="0" r="9"/>
+  </svg>
+  <button class="next" data-action="next" id="next"></button>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params,keys=p.stages,n=keys.length,root=document.getElementById('activity');
+  const ns='http://www.w3.org/2000/svg';
+  const make=(tag,attrs)=>{const el=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);return el};
+  const arrows=document.getElementById('arrows'),stages=document.getElementById('stages');
+  const token=document.querySelector('[data-token]'),next=document.getElementById('next');
+  const feedback=document.getElementById('feedback'),options=document.getElementById('options');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('question').textContent=Studio.t('ask');
+  next.textContent=Studio.t('next');
+  const gap=328/n,w=Math.min(70,gap-10),y=62;
+  const xs=keys.map((_,i)=>gap*(i+.5));
+  for(let i=0;i<n-1+(p.cycle?1:0);i++){
+    const j=(i+1)%n;
+    const d=j===0
+      ?`M ${xs[i]} ${y+23} C ${xs[i]} 130, ${xs[j]} 130, ${xs[j]} ${y+23}`
+      :`M ${xs[i]+w/2+3} ${y} L ${xs[j]-w/2-5} ${y}`;
+    arrows.append(make('path',{d,class:'arrow','marker-end':'url(#tip)','data-arrow':keys[i]+'>'+keys[j]}));
+  }
+  keys.forEach((key,i)=>{
+    const g=make('g',{class:'stage','data-stage':key});
+    g.append(make('rect',{x:xs[i]-w/2,y:y-20,width:w,height:40,rx:15}));
+    const label=make('text',{x:xs[i],y,'data-label':key});
+    label.textContent=Studio.t(key);g.append(label);stages.append(g);
+  });
+  p.options.forEach(key=>{
+    const b=document.createElement('button');
+    b.setAttribute('data-option',key);
+    b.textContent=Studio.t(key);
+    b.addEventListener('click',()=>{Studio.event('answer',{option:key});Studio.answer(key)});
+    options.append(b);
+  });
+  let index=0,moving=false,finished=false,queued=0;
+  function setActive(){
+    root.setAttribute('data-active',keys[index]);
+    [...stages.children].forEach((s,i)=>s.classList.toggle('lit',i===index));
+  }
+  function place(x,z){token.setAttribute('cx',x);token.setAttribute('cy',z)}
+  place(xs[0],y);setActive();
+  function travel(){
+    if(moving||finished||!queued)return;
+    if(!p.cycle&&index===n-1){queued=0;next.disabled=true;return}
+    queued--;moving=true;
+    const start=index,dest=(start+1)%n;
+    const route=dest===0
+      ?make('path',{d:`M ${xs[start]} ${y} L ${xs[start]} ${y+23} C ${xs[start]} 130, ${xs[dest]} 130, ${xs[dest]} ${y+23} L ${xs[dest]} ${y}`})
+      :make('path',{d:`M ${xs[start]} ${y} L ${xs[dest]} ${y}`});
+    const length=route.getTotalLength();
+    const begin=performance.now(),duration=720;
+    function frame(now){
+      const t=Math.min(1,(now-begin)/duration);
+      const point=route.getPointAtLength(length*t);
+      place(point.x,point.y);
+      if(t<1)requestAnimationFrame(frame);
+      else{
+        place(xs[dest],y);
+        index=dest;setActive();moving=false;
+        next.disabled=finished||(!p.cycle&&index===n-1);
+        Studio.event('next',{stage:keys[index]});
+        travel();
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+  next.addEventListener('click',()=>{
+    if(finished||(!p.cycle&&index+queued+(moving?1:0)>=n-1))return;
+    queued++;travel();
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct&&!finished){
+      finished=true;queued=0;next.disabled=true;
+      options.querySelectorAll('button').forEach(b=>b.disabled=true);
+      setTimeout(()=>{feedback.textContent=Studio.t('done');Studio.done()},450);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

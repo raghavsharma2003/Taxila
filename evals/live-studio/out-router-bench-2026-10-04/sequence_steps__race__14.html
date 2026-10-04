@@ -1,0 +1,113 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#49362d;background:#fff8eb}
+#app{width:360px;height:320px;padding:12px;background:radial-gradient(ellipse at 90% 5%,#ffe8c2 0,transparent 42%),#fff8eb}
+h1{font-size:20px;line-height:24px;margin:0 0 3px;color:#704637}
+#instruction{font-size:13px;line-height:17px;margin:0 0 8px;color:#766155}
+#track{height:64px;display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:10px}
+.slot{height:64px;border:2px dashed #e9cda9;border-radius:15px;background:#fffdf8;display:flex;align-items:center;justify-content:center;position:relative;transition:background .25s,border-color .25s,transform .25s}
+.slot-number{position:absolute;left:6px;top:3px;font-size:12px;font-weight:800;color:#bd9263}
+.slot.filled{border-style:solid;border-color:#e6a55f;background:#fff0d6;animation:land .35s ease-out}
+.slot .placed-card{width:100%;height:100%;padding:16px 4px 3px;font-size:12px}
+#cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.card{height:58px;min-width:52px;border:0;border-radius:16px;background:linear-gradient(135deg,#ee9b64,#dd7951);box-shadow:0 4px 0 #bd6547,0 5px 12px #8d523322;color:#fffdf7;font:700 15px system-ui,sans-serif;padding:5px;cursor:pointer;transition:transform .12s,filter .2s,opacity .2s}
+.card:active{transform:scale(.95)}
+.card:focus-visible{outline:3px solid #704637;outline-offset:2px}
+.card.shake{animation:shake .35s ease}
+.card.gone{visibility:hidden;pointer-events:none}
+#feedback{height:34px;margin-top:9px;text-align:center;font-size:15px;font-weight:700;color:#8b6246;display:flex;align-items:center;justify-content:center}
+#feedback.success{color:#557d54;animation:pop .35s ease}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+@keyframes land{50%{transform:scale(1.06)}}
+@keyframes pop{50%{transform:scale(1.08)}}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <p id="instruction"></p>
+  <div id="track" aria-hidden="true"></div>
+  <div id="cards"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const t=Studio.t;
+  const keys=["boil","leaves","sugar","pour"];
+  const title=document.getElementById("title");
+  const instruction=document.getElementById("instruction");
+  const track=document.getElementById("track");
+  const cards=document.getElementById("cards");
+  const feedback=document.getElementById("feedback");
+  title.textContent=t("title");
+  instruction.textContent=t("instr");
+  const slots=[];
+  for(let i=0;i<p.shown.length;i++){
+    const slot=document.createElement("div");
+    slot.className="slot";
+    const number=document.createElement("span");
+    number.className="slot-number";
+    number.textContent=String(i+1);
+    slot.appendChild(number);
+    track.appendChild(slot);
+    slots.push(slot);
+  }
+  const buttons=new Map();
+  p.shown.forEach(key=>{
+    const button=document.createElement("button");
+    button.type="button";
+    button.className="card";
+    button.dataset.step=key;
+    button.textContent=t(key);
+    button.addEventListener("click",()=>{
+      if(button.disabled||button.classList.contains("gone")||finished)return;
+      pending=key;
+      button.disabled=true;
+      feedback.className="";
+      feedback.textContent="";
+      Studio.event("tap",{step:key});
+      Studio.answer({key});
+    });
+    cards.appendChild(button);
+    buttons.set(key,button);
+  });
+  let position=0;
+  let pending=null;
+  let finished=false;
+  Studio.onVerdict(({correct})=>{
+    if(pending===null||finished)return;
+    const button=buttons.get(pending);
+    if(correct){
+      position++;
+      button.dataset.placed=String(position);
+      button.classList.add("placed-card");
+      button.classList.remove("card");
+      button.disabled=true;
+      button.classList.add("gone");
+      const slot=slots[position-1];
+      slot.appendChild(button);
+      slot.classList.add("filled");
+      button.classList.remove("gone");
+      feedback.textContent=t("right");
+      feedback.className="success";
+      Studio.event("placed",{step:pending,position});
+      if(position===p.shown.length){
+        finished=true;
+        feedback.textContent=t("done");
+        Studio.done();
+      }
+    }else{
+      button.disabled=false;
+      button.classList.remove("shake");
+      void button.offsetWidth;
+      button.classList.add("shake");
+      feedback.textContent=t("wrong");
+      Studio.event("retry",{step:pending});
+    }
+    pending=null;
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,181 @@
+<style>
+  * { box-sizing: border-box; }
+  body {
+    width: 360px; height: 320px; margin: 0; overflow: hidden;
+    font-family: system-ui, sans-serif; color: #3f382f;
+    background: #fff8ec;
+  }
+  .stage {
+    width: 360px; height: 320px; padding: 10px 12px;
+    display: flex; flex-direction: column; gap: 7px;
+  }
+  h1 {
+    margin: 0; height: 25px; text-align: center;
+    font-size: 19px; line-height: 25px; font-weight: 800;
+    color: #694b36;
+  }
+  .instruction {
+    height: 29px; margin: 0; text-align: center;
+    font-size: 12px; line-height: 14px; color: #756858;
+  }
+  .cards {
+    height: 112px; display: grid; grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 52px); gap: 6px; justify-items: center;
+  }
+  .card {
+    width: 100px; height: 52px; border: 2px solid #e6cda6; border-radius: 15px;
+    background: #fff; box-shadow: 0 3px 0 #eadcc8;
+    color: #554637; font-size: 15px; font-weight: 750;
+    display: flex; align-items: center; justify-content: center;
+    padding: 3px; text-align: center; cursor: pointer;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    user-select: none;
+  }
+  .card:active { transform: scale(.94); }
+  .card.selected {
+    transform: translateY(-5px) scale(1.04);
+    border-color: #e59b51; box-shadow: 0 7px 16px #d9a45a66;
+  }
+  .card.shake { animation: shake .32s ease; }
+  @keyframes shake {
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-3px); }
+  }
+  .bins { height: 93px; display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+  .bin {
+    min-width: 0; height: 93px; padding: 6px;
+    border: 2px dashed #c8a77b; border-radius: 17px;
+    background: #f6ead7; cursor: pointer; text-align: center;
+    transition: transform .16s ease, background .16s ease, border-color .16s ease;
+  }
+  .bin:active { transform: scale(.97); }
+  .bin-name {
+    display: block; min-height: 30px; font-size: 14px; line-height: 18px;
+    font-weight: 800; color: #715338;
+  }
+  .contents { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+  .placed {
+    min-height: 28px; padding: 4px 7px; border-radius: 10px;
+    background: #fffdf8; border: 1px solid #e6d5bd;
+    color: #554637; font-size: 11px; font-weight: 700;
+    animation: settle .28s ease-out;
+  }
+  @keyframes settle { from { transform: translateY(-8px) scale(.85); opacity: .4; } }
+  .feedback {
+    height: 22px; margin: 0; text-align: center; line-height: 22px;
+    font-size: 14px; font-weight: 800; color: #718250;
+  }
+</style>
+<div class="stage">
+  <h1 id="title"></h1>
+  <p class="instruction" id="instruction"></p>
+  <div class="cards" id="cards"></div>
+  <div class="bins" id="bins"></div>
+  <p class="feedback" id="feedback" aria-live="polite"></p>
+</div>
+<script>
+
+(() => {
+  const params = Studio.params;
+  const cardsEl = document.getElementById("cards");
+  const binsEl = document.getElementById("bins");
+  const feedbackEl = document.getElementById("feedback");
+  document.getElementById("title").textContent = Studio.t("title");
+  document.getElementById("instruction").textContent = Studio.t("instr");
+
+  let selected = null;
+  let pending = null;
+  let completed = 0;
+  let finished = false;
+  const cardNodes = new Map();
+  const binContents = new Map();
+
+  params.bins.forEach(key => {
+    const bin = document.createElement("div");
+    bin.className = "bin";
+    bin.dataset.bin = key;
+    bin.setAttribute("role", "button");
+    bin.setAttribute("aria-label", Studio.t(key));
+    const name = document.createElement("span");
+    name.className = "bin-name";
+    name.textContent = Studio.t(key);
+    const contents = document.createElement("div");
+    contents.className = "contents";
+    bin.append(name, contents);
+    binsEl.appendChild(bin);
+    binContents.set(key, contents);
+    bin.addEventListener("click", () => {
+      if (!selected || finished || pending) return;
+      pending = { card: selected, bin: key };
+      Studio.event("sort_attempt", { card: selected, bin: key });
+      Studio.answer({ card: selected, bin: key });
+    });
+  });
+
+  params.cards.forEach(key => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.dataset.card = key;
+    card.dataset.selected = "false";
+    card.setAttribute("role", "button");
+    card.setAttribute("aria-label", Studio.t(key));
+    card.textContent = Studio.t(key);
+    cardsEl.appendChild(card);
+    cardNodes.set(key, card);
+    card.addEventListener("click", () => {
+      if (finished || pending || card.dataset.placed) return;
+      if (selected === key) {
+        selected = null;
+        card.classList.remove("selected");
+        card.dataset.selected = "false";
+      } else {
+        if (selected) {
+          const previous = cardNodes.get(selected);
+          previous.classList.remove("selected");
+          previous.dataset.selected = "false";
+        }
+        selected = key;
+        card.classList.add("selected");
+        card.dataset.selected = "true";
+      }
+      Studio.event("card_pick", { card: key });
+    });
+  });
+
+  Studio.onVerdict(({ correct }) => {
+    if (!pending) return;
+    const choice = pending;
+    pending = null;
+    const card = cardNodes.get(choice.card);
+    card.classList.remove("selected");
+    card.dataset.selected = "false";
+    selected = null;
+    if (correct) {
+      card.remove();
+      const placed = document.createElement("span");
+      placed.className = "placed";
+      placed.dataset.placed = choice.bin;
+      placed.textContent = Studio.t(choice.card);
+      binContents.get(choice.bin).appendChild(placed);
+      feedbackEl.textContent = Studio.t("right");
+      completed += 1;
+      Studio.event("sort_correct", { card: choice.card, bin: choice.bin });
+      if (completed === params.cards.length && !finished) {
+        finished = true;
+        feedbackEl.textContent = Studio.t("done");
+        Studio.done();
+      }
+    } else {
+      card.classList.remove("shake");
+      void card.offsetWidth;
+      card.classList.add("shake");
+      feedbackEl.textContent = Studio.t("wrong");
+      Studio.event("sort_retry", { card: choice.card, bin: choice.bin });
+    }
+  });
+
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,100 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e8;font-family:Arial,sans-serif;color:#55352c}
+  #app{width:360px;height:320px;position:relative;overflow:hidden;background:
+    radial-gradient(circle at 89% 8%,#ffe1a5 0 27px,transparent 28px),
+    radial-gradient(circle at 8% 93%,#d9efd9 0 38px,transparent 39px),
+    #fff7e8}
+  .top{height:104px;padding:13px 16px 8px;position:relative}
+  h1{font-size:22px;line-height:25px;margin:0;color:#9a4d39;letter-spacing:.1px}
+  #ask{font-size:15px;line-height:19px;margin:5px 0 7px;color:#684a3d}
+  #key{height:29px;display:flex;align-items:center;gap:5px;font-size:12px;color:#795e4d;white-space:nowrap}
+  #keytext{max-width:175px;overflow:hidden;text-overflow:ellipsis}
+  #keynum{font-weight:700;color:#9a4d39;font-size:14px}
+  #chart{padding:0 9px}
+  .row{width:342px;height:62px;border:0;border-radius:18px;background:rgba(255,255,255,.78);display:flex;align-items:center;padding:5px 8px;margin-bottom:4px;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 2px 0 rgba(122,76,53,.08);transition:transform .18s ease,background .18s ease,box-shadow .18s ease}
+  .row:active{transform:scale(.975)}
+  .row.selected{background:#fff0cf;box-shadow:0 3px 0 rgba(210,139,74,.22)}
+  .row.good{background:#daf0d5;animation:happy .55s ease both}
+  .row.bad{background:#ffe0d6;animation:shake .36s ease}
+  .label{width:82px;min-width:82px;height:52px;display:flex;align-items:center;font-size:16px;font-weight:700;color:#74463b;padding-left:6px}
+  .symbols{height:52px;display:flex;align-items:center;gap:3px;overflow:hidden}
+  .symbol{width:20px;height:20px;min-width:20px;display:block;filter:drop-shadow(0 1px 0 rgba(98,62,35,.15));transition:transform .18s ease}
+  .row:hover .symbol{animation:bob .75s ease-in-out infinite alternate}
+  .keysymbol{width:20px;height:20px;display:block;flex:none;filter:drop-shadow(0 1px 0 rgba(98,62,35,.15))}
+  #feedback{position:absolute;left:12px;right:12px;bottom:8px;height:34px;border-radius:17px;background:#fffdf8;box-shadow:0 2px 10px rgba(100,62,36,.12);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#7b5644;opacity:0;transform:translateY(10px);transition:opacity .22s ease,transform .22s ease;pointer-events:none}
+  #feedback.show{opacity:1;transform:translateY(0)}
+  #feedback.ok{color:#477c4d;background:#edfae8}
+  #feedback.no{color:#a15345;background:#fff0eb}
+  #done{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;background:rgba(255,247,232,.94);padding:35px;color:#477c4d;font-weight:700;font-size:22px;line-height:29px;z-index:4}
+  #done.show{display:flex;animation:appear .35s ease}
+  @keyframes bob{to{transform:translateY(-3px) rotate(5deg)}}
+  @keyframes happy{50%{transform:scale(1.025)}}
+  @keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  @keyframes appear{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+</style>
+<div id="app">
+  <div class="top">
+    <h1 id="title"></h1>
+    <div id="ask"></div>
+    <div id="key" data-key><span id="keytext"></span><svg class="keysymbol" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="4" fill="#f7ab4e"/><circle cx="19" cy="9" r="4" fill="#f7ab4e"/><circle cx="18" cy="17" r="4" fill="#f7ab4e"/><circle cx="6" cy="17" r="4" fill="#f7ab4e"/><circle cx="5" cy="9" r="4" fill="#f7ab4e"/><circle cx="12" cy="12" r="4" fill="#dc6d50"/></svg><span id="keynum"></span></div>
+  </div>
+  <div id="chart"></div>
+  <div id="feedback"></div>
+  <div id="done"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, chart=document.getElementById('chart'), feedback=document.getElementById('feedback'), done=document.getElementById('done');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  document.getElementById('keytext').textContent=Studio.t('keytext');
+  document.getElementById('keynum').textContent=p.symbolValue;
+  var flower='<svg class="symbol" data-symbol viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="4" fill="#f7ab4e"/><circle cx="19" cy="9" r="4" fill="#f7ab4e"/><circle cx="18" cy="17" r="4" fill="#f7ab4e"/><circle cx="6" cy="17" r="4" fill="#f7ab4e"/><circle cx="5" cy="9" r="4" fill="#f7ab4e"/><circle cx="12" cy="12" r="4" fill="#dc6d50"/></svg>';
+  var rows=[];
+  p.rows.forEach(function(item){
+    var row=document.createElement('button');
+    row.type='button';
+    row.className='row';
+    row.setAttribute('data-row',item.key);
+    var label=document.createElement('span');
+    label.className='label';
+    label.textContent=Studio.t(item.key);
+    var symbols=document.createElement('span');
+    symbols.className='symbols';
+    var count=item.value/p.symbolValue;
+    for(var i=0;i<count;i++) symbols.insertAdjacentHTML('beforeend',flower);
+    row.appendChild(label);
+    row.appendChild(symbols);
+    row.addEventListener('click',function(){
+      rows.forEach(function(r){r.classList.remove('selected','bad')});
+      row.classList.add('selected');
+      feedback.className='';
+      Studio.event('row_tap',{key:item.key});
+      Studio.answer(item.key);
+    });
+    rows.push(row);
+    chart.appendChild(row);
+  });
+  Studio.onVerdict(function(v){
+    feedback.className='show '+(v.correct?'ok':'no');
+    feedback.textContent=Studio.t(v.correct?'right':'wrong');
+    if(v.correct){
+      rows.forEach(function(r){r.style.pointerEvents='none'});
+      var selected=document.querySelector('.row.selected');
+      if(selected)selected.classList.add('good');
+      setTimeout(function(){
+        done.textContent=Studio.t('done');
+        done.className='show';
+        Studio.done();
+      },420);
+    }else{
+      var selected=document.querySelector('.row.selected');
+      if(selected)selected.classList.add('bad');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

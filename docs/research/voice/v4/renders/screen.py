@@ -65,7 +65,9 @@ def align():
     import align as A3
     A3.OUT = ALN
     A3.EN.update({"tricky": "ट्रिकी", "second": "सेकंड"})
-    for c in clip_list():
+    C = clip_list()
+    if len(sys.argv) > 2: i, n = map(int, sys.argv[2].split("/")); C = C[i::n]  # shard i of n (parallel workers)
+    for c in C:
         try: A3.one(c)
         except Exception as e: print("ERR", c["id"], repr(e)[:200], flush=True)
     print("aligned", len(glob.glob(os.path.join(ALN, "*.json"))))

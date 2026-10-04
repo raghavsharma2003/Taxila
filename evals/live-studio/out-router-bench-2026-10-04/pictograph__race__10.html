@@ -1,0 +1,77 @@
+<style>
+  *{box-sizing:border-box}
+  #picture-card{width:360px;height:320px;overflow:hidden;padding:9px 12px;background:#fff7e9;color:#594437;font-family:system-ui,sans-serif;border-radius:20px}
+  #title{height:25px;font-size:19px;font-weight:800;line-height:25px}
+  #prompt{height:27px;font-size:14px;font-weight:650;line-height:27px;color:#765446}
+  #keyline{height:39px;display:flex;align-items:center;gap:8px;padding:0 12px;background:#ffe8c5;border-radius:13px;font-size:13px;font-weight:700}
+  [data-key]{display:flex;align-items:center;gap:6px}
+  .symbol{width:27px;height:27px;flex:none;display:block}
+  #rows{display:grid;gap:2px;margin-top:7px}
+  [data-row]{width:100%;height:52px;border:2px solid #ead8be;border-radius:13px;background:#fffdf8;display:flex;align-items:center;padding:0 9px;color:inherit;font:700 15px system-ui,sans-serif;text-align:left;cursor:pointer;transition:transform .18s,border-color .18s,background .18s}
+  [data-row]:active{transform:scale(.97)}
+  [data-row]:focus-visible{outline:3px solid #b66d46;outline-offset:-3px}
+  [data-row].picked{background:#ffe9d4;border-color:#dc875d;animation:pop .3s ease}
+  .name{width:72px;flex:none}
+  .symbols{display:flex;align-items:center;gap:8px}
+  .symbols .symbol{animation:rise .35s ease both}
+  @keyframes rise{from{opacity:0;transform:translateY(7px) scale(.85)}to{opacity:1;transform:translateY(0) scale(1)}}
+  @keyframes pop{50%{transform:scale(1.018)}}
+</style>
+<div id="picture-card">
+  <div id="title"></div>
+  <div id="prompt" aria-live="polite"></div>
+  <div id="keyline"><span id="keytext"></span><span data-key><svg class="symbol" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3.5c4.7 0 8.5 3.8 8.5 8.5 0 5.5-4.8 11-8.5 15.8C11.8 23 7.5 17.5 7.5 12A8.5 8.5 0 0 1 16 3.5Z" fill="#e88160"/><circle cx="12.5" cy="11" r="2" fill="#fff3db"/><circle cx="19.5" cy="11" r="2" fill="#fff3db"/><path d="M13 17q3 3 6 0" fill="none" stroke="#fff3db" stroke-width="1.8" stroke-linecap="round"/></svg><span id="key-number"></span></span></div>
+  <div id="rows"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const title=document.getElementById('title');
+  const prompt=document.getElementById('prompt');
+  const rows=document.getElementById('rows');
+  const symbol=document.querySelector('[data-key] svg');
+  title.textContent=Studio.t('title');
+  prompt.textContent=Studio.t('ask');
+  document.getElementById('keytext').textContent=Studio.t('keytext');
+  document.getElementById('key-number').textContent=p.symbolValue;
+  let waiting=false,finished=false,selected=null;
+  for(const item of p.rows){
+    const row=document.createElement('button');
+    row.type='button';
+    row.setAttribute('data-row',item.key);
+    const name=document.createElement('span');
+    name.className='name';
+    name.textContent=Studio.t(item.key);
+    const pictures=document.createElement('span');
+    pictures.className='symbols';
+    for(let i=0;i<item.value/p.symbolValue;i++){
+      const copy=symbol.cloneNode(true);
+      copy.setAttribute('data-symbol','');
+      pictures.appendChild(copy);
+    }
+    row.append(name,pictures);
+    row.addEventListener('click',()=>{
+      if(waiting||finished)return;
+      waiting=true;
+      selected=row;
+      row.classList.add('picked');
+      Studio.answer(item.key);
+    });
+    rows.appendChild(row);
+  }
+  Studio.onVerdict(({correct})=>{
+    if(!waiting||finished)return;
+    waiting=false;
+    prompt.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      finished=true;
+      setTimeout(()=>{prompt.textContent=Studio.t('done');Studio.done();},650);
+    }else{
+      setTimeout(()=>{if(!finished){selected.classList.remove('picked');prompt.textContent=Studio.t('ask');}},850);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

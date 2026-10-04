@@ -1,0 +1,100 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff7e9;color:#493a40}
+  .scene{position:relative;width:360px;height:320px;overflow:hidden;padding:10px 14px;background:radial-gradient(circle at 90% 9%,#ffe5ab 0 32px,transparent 33px),#fff7e9}
+  .title{height:30px;margin:0;text-align:center;font-size:19px;font-weight:800}
+  .readings{display:flex;justify-content:space-around;align-items:center;height:43px;background:#fff;border-radius:18px;box-shadow:0 3px 0 #f2e5d3}
+  .reading{font-size:15px;font-weight:700}
+  .reading span:last-child{color:#aa5370;font-size:21px;margin-left:5px;font-variant-numeric:tabular-nums}
+  .picture{height:48px;display:flex;align-items:center;gap:9px;padding:0 8px}
+  .sun{width:35px;height:35px;flex:none}
+  .track{height:30px;width:200px;border-radius:18px;background:#f3dfc6;box-shadow:inset 0 2px 4px #d7bda5;overflow:visible}
+  [data-visual]{height:30px;width:0;border-radius:18px;background:linear-gradient(90deg,#e9987a,#d96283);box-shadow:0 3px 0 #bd5271;transition:width .35s cubic-bezier(.2,.8,.2,1);position:relative}
+  [data-visual]:after{content:"";position:absolute;right:7px;top:7px;width:8px;height:8px;border-radius:50%;background:#fff9de}
+  .controls,.options{display:flex;gap:10px;justify-content:center}
+  button{border:0;cursor:pointer;min-height:52px;border-radius:17px;font:800 17px system-ui,sans-serif;transition:transform .15s,background .2s,box-shadow .2s;touch-action:manipulation}
+  button:active{transform:scale(.93)}
+  .controls button{width:154px;background:#6c9e8c;color:white;box-shadow:0 4px 0 #4e7668}
+  .controls button:disabled{opacity:.48;box-shadow:none}
+  .question{height:43px;display:flex;align-items:center;justify-content:center;gap:5px;font-weight:750;font-size:15px;text-align:center}
+  .question strong{color:#aa5370;font-size:20px}
+  .options button{width:104px;background:#fff;color:#493a40;box-shadow:0 4px 0 #e8d7c1}
+  .options button:active{box-shadow:0 1px 0 #e8d7c1}
+  .feedback{height:25px;text-align:center;padding-top:7px;font-size:15px;font-weight:800;color:#a65170}
+  .feedback.good{color:#468676;animation:pop .3s ease-out}
+  @keyframes pop{50%{transform:scale(1.12)}}
+</style>
+<div class="scene">
+  <h1 class="title" id="title"></h1>
+  <div class="readings">
+    <div class="reading"><span id="xname"></span><span data-x></span></div>
+    <div class="reading"><span id="yname"></span><span data-output data-value></span></div>
+  </div>
+  <div class="picture">
+    <svg class="sun" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="13" fill="#f6bd68"/><circle cx="16" cy="18" r="1.5" fill="#815b51"/><circle cx="24" cy="18" r="1.5" fill="#815b51"/><path d="M16 24 Q20 28 24 24" fill="none" stroke="#815b51" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <div class="track"><div data-visual data-dim="w"></div></div>
+  </div>
+  <div class="controls">
+    <button type="button" data-action="dec" id="less"></button>
+    <button type="button" data-action="inc" id="more"></button>
+  </div>
+  <div class="question"><span id="ask"></span><strong id="askX"></strong><span id="askName"></span></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, t=k=>Studio.t(k), $=s=>document.querySelector(s);
+  const fmt=n=>String(Number(Number(n).toFixed(8)));
+  let x=p.x.start, finished=false;
+  $('#title').textContent=t('title');
+  $('#xname').textContent=t('xname');
+  $('#yname').textContent=t('yname');
+  $('#less').textContent=t('less');
+  $('#more').textContent=t('more');
+  $('#ask').textContent=t('ask');
+  $('#askX').textContent=fmt(p.ask.x);
+  $('#askName').textContent=t('xname');
+  function render(){
+    const y=p.law.k*x+p.law.b;
+    $('[data-x]').textContent=fmt(x);
+    $('[data-x]').setAttribute('data-x',fmt(x));
+    $('[data-output]').textContent=fmt(y);
+    $('[data-output]').setAttribute('data-value',fmt(y));
+    $('[data-visual]').style.width=(y*p.y.unitsPer)+'px';
+    $('#less').disabled=x-p.x.step<p.x.min;
+    $('#more').disabled=x+p.x.step>p.x.max;
+  }
+  document.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>{
+    const next=x+(btn.dataset.action==='inc'?p.x.step:-p.x.step);
+    if(next<p.x.min||next>p.x.max)return;
+    x=Number(next.toFixed(8));
+    render();
+    Studio.event('change',{x:fmt(x)});
+  }));
+  p.ask.options.forEach(value=>{
+    const btn=document.createElement('button');
+    btn.type='button';
+    btn.dataset.option=fmt(value);
+    btn.textContent=fmt(value);
+    btn.addEventListener('click',()=>{
+      if(finished)return;
+      Studio.answer({value});
+    });
+    $('#options').appendChild(btn);
+  });
+  Studio.onVerdict(({correct})=>{
+    const feedback=$('#feedback');
+    feedback.classList.toggle('good',correct);
+    feedback.textContent=t(correct?'right':'wrong');
+    if(correct&&!finished){
+      finished=true;
+      setTimeout(()=>{feedback.textContent=t('done');Studio.done()},450);
+    }
+  });
+  render();
+  Studio.ready();
+})();
+
+</script>

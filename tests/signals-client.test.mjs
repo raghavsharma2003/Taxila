@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { RATE, FrameAnalyzer } from "../src/voice/dsp.ts";
-import { leadingFilledMs, onsetContentMs, nucleiPerSec, speakerShift, echoRisk, durQ, levelQ, laughCandidate, LAUGH_DETECTOR_ENABLED, signalExtras } from "../src/signals/index.ts";
+import { leadingFilledMs, onsetContentMs, nucleiPerSec, speakerShift, echoRisk, durQ, levelQ, bedQ, laughCandidate, LAUGH_DETECTOR_ENABLED, signalExtras } from "../src/signals/index.ts";
 
 /** 16 kHz audio from segments: { ms, f0, f1?, am? } (am = amplitude-modulation rate, Hz) or { ms } silence. */
 function synth(segments, { amp = 0.2, noise = 0.0005, seed = 7 } = {}) {
@@ -95,4 +95,15 @@ test("perf: extras for a 6 s utterance stay well under 1 ms-per-utterance scale 
   for (let i = 0; i < 50; i++) signalExtras(fr, { onsetMs: 1000, durationMs: 6000, rmsMeanDb: -22, rmsP90Db: -14 });
   const per = (performance.now() - t0) / 50;
   assert.ok(per < 5, `${per.toFixed(2)} ms`);
+});
+
+test("qBed: speech in the room before the teacher stopped (a TV) drops the onset read; a quiet room does not", () => {
+  // 0.6 s seed, then 1.4 s of 'TV' bursts while the teacher talks (AEC removed her), teacher ends at 2000 ms
+  const tv = [];
+  for (let i = 0; i < 7; i++) tv.push({ ms: 130, f0: 180 + 20 * (i % 3) }, { ms: 70 });
+  const busy = frames(synth([...lead, ...tv, { ms: 600 }, { ms: 800, f0: 260 }, { ms: 300 }]));
+  assert.equal(bedQ(busy, 2000), 0);
+  const quiet = frames(synth([...lead, { ms: 1400 }, { ms: 600 }, { ms: 800, f0: 260 }, { ms: 300 }]));
+  assert.equal(bedQ(quiet, 2000), 1);
+  assert.equal(bedQ(quiet, undefined), 1);
 });

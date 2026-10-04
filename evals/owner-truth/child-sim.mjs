@@ -518,6 +518,13 @@ window.send=(m)=>port&&port.postMessage(m);</script></body></html>`;
 /** The value an engine's answer committed, as a comparable number/string (null when the kind carries none). */
 function committedOf(v) {
   if (!v || typeof v !== "object") return null;
+  // a compare commit: the fraction the child picked
+  const pickOf = v.chosen ?? v.choice;
+  if (pickOf != null && Array.isArray(v.fractions)) {
+    if (/^\d+$/.test(String(pickOf)) && v.fractions[Number(pickOf)] != null) return String(v.fractions[Number(pickOf)]);
+    if (v.fractions.map(String).includes(String(pickOf))) return String(pickOf);
+    return String(pickOf);
+  }
   for (const k of ["value", "written", "built", "claimed", "made", "given", "product"]) if (v[k] != null && typeof v[k] !== "object") return String(v[k]);
   return null;
 }
@@ -564,7 +571,7 @@ async function browserPhase(mounts) {
       const itemId = m.params?.itemId ?? (goal.startsWith("item:") ? goal.slice(5) : goal.startsWith("g1:") ? goal.slice(3) : null);
       const kit = kitOf(m.topicId);
       const item = itemOf(kit, itemId);
-      const rec = { session: m.session, engine: m.engine, mode: m.params?.mode ?? null, goal: m.goal ?? null, itemId, key: item?.answer ?? null, paramsTarget: m.params?.target ?? m.params?.value ?? m.params?.n ?? null, commits: [], errors: [], issues: [] };
+      const rec = { session: m.session, params: m.params?.scene ? { scene: "(scene@1, see mounts.json)" } : m.params, engine: m.engine, mode: m.params?.mode ?? null, goal: m.goal ?? null, itemId, key: item?.answer ?? null, paramsTarget: m.params?.target ?? m.params?.value ?? m.params?.n ?? null, commits: [], errors: [], issues: [] };
       consoleErrors.length = 0;
       try {
         await page.evaluate(([e, p, o]) => window.mount(e, p, o), [m.engine, m.params, { lang: m.lang, ageBand: m.classLevel <= 4 ? "6-9" : "10-15", goal: m.goal, moduleId: m.moduleId }]);
@@ -590,8 +597,16 @@ async function browserPhase(mounts) {
           if (answers.length <= before) { rec.commits.push({ label, intended, committed: null, note: "no answer event" }); return null; }
           const a = answers.at(-1);
           const val = committedOf(a.value);
-          const vsKit = val != null && truthKey != null && numOf(truthKey) != null ? sameValue(val, truthKey) : null;
-          const vsParams = val != null && rec.paramsTarget != null ? sameValue(val, rec.paramsTarget) : null;
+          const vsKit = val != null && truthKey != null && numOf(truthKey) != null && /^\s*[-\d]/.test(String(truthKey)) ? sameValue(val, truthKey) : null;
+          let vsParams = val != null && rec.paramsTarget != null ? sameValue(val, rec.paramsTarget) : null;
+          // a compare commit is checked from first principles: the picked fraction is the biggest / smallest shown
+          const cmpQ = a.value?.question, cmpF = a.value?.fractions, cmpPick = a.value?.chosen ?? a.value?.choice;
+          if (vsParams == null && Array.isArray(cmpF) && ["bigger", "smaller"].includes(cmpQ) && cmpPick != null) {
+            const nums = cmpF.map(numOf);
+            const allEq = nums.every((x) => Math.abs(x - nums[0]) < 1e-9);
+            if (String(cmpPick) === "same") vsParams = allEq;
+            else { const i = Number(cmpPick); vsParams = !allEq && nums[i] != null && nums.every((x) => (cmpQ === "bigger" ? nums[i] >= x - 1e-9 : nums[i] <= x + 1e-9)); }
+          }
           let vsScene = null;
           if (m.engine === "scene@1" && a.value?.kind === "sc.commit") {
             const pr = m.params?.scene?.probe;
@@ -665,7 +680,7 @@ async function browserPhase(mounts) {
           await clickCheck();
           await record(`random: ${taps} taps`, before, null);
         }
-        rec.commits = rec.commits.filter((c) => c.committed !== null || !/^random/.test(c.label));
+        rec.commits = rec.commits.filter((c) => c.claim != null || !/^random/.test(c.label));
         const evs = await page.evaluate(() => window.events);
         rec.errors = evs.filter((e) => e.type === "error").map((e) => e.message ?? JSON.stringify(e).slice(0, 160));
         rec.consoleErrors = [...consoleErrors];
@@ -677,6 +692,92 @@ async function browserPhase(mounts) {
       console.log(`browser ${m.engine} ${rec.mode ?? ""} item ${itemId ?? "-"}: ${rec.commits.length} commits, ${rec.issues.length} issues`);
     }
   } finally { await browser.close(); }
+  return out;
+}
+
+// ───────────────────────────── transcript re-analysis (offline, deterministic) ─────────────────────────────
+const EN_WORDS = /\b(the|is|are|of|and|to|in|what|which|how|number|line|fraction|part|parts|equal|first|mark|now|your|you|this|that|with|from|between|bigger|smaller|answer|question|example|step|next|say|tell|find)\b/gi;
+const enShare = (t) => (String(t).match(EN_WORDS) ?? []).length / (String(t).split(/\s+/).filter(Boolean).length || 1);
+const DEFER = /\b(baad mein|later|pehle .{0,40}(khatam|finish|dijiye|batao|bataiye)|after this|abhi .{0,30}(par|pe) (lautte|wapas|focus))/i;
+const sentencesOf = (t) => (String(t ?? "").match(/[^.!?\u0964]+[.!?\u0964]*/g) ?? []).map((x) => x.trim()).filter((x) => x.length > 25);
+/** Item 4/5 checks re-run from the stored rows (stricter than the in-run pass), plus within-turn repeats, garbled replies
+ * and words that contradict the verdict. Pure: the same transcripts always give the same flags. */
+function reanalyze(sessions) {
+  const out = [];
+  for (const sess of sessions) {
+    const add = (f) => out.push({ session: sess.id, persona: sess.persona, topicId: sess.topicId, lane: sess.lane, ...f });
+    let prev = null;
+    for (const t of sess.turns) {
+      if (t.who === "teacher") { prev = t; continue; }
+      if (t.who !== "child" || t.error) continue;
+      const rep = t.teacherReply ?? "";
+      const prevRep = prev?.teacherReply ?? "";
+      const moduleOnly = !t.childText && t.moduleEvents;
+      // within-turn repeat: the same sentence twice in one reply
+      const ss = sentencesOf(rep);
+      const dup = ss.findIndex((a, i) => ss.slice(i + 1).some((b) => norm(a) === norm(b) || jaccard(a, b) >= 0.85));
+      if (dup >= 0) add({ item: 2, turn: t.n, child: t.childText || "[activity answer]", teacher: rep, why: `says the same sentence twice in one turn ("${ss[dup].slice(0, 70)}...")`, auto: "dup_in_turn" });
+      // garbled: stray non-Hindi Indic script, a reply that opens on a dangling quote, or a teaching turn with almost no words
+      if (/[\u0A80-\u0DFF]/.test(rep) || /^[\u201d"'\u2019]/.test(rep.trim()) || (!moduleOnly && ["hook", "explain", "worked_example"].includes(t.kind) && rep.trim().length > 0 && rep.trim().split(/\s+/).length < 9))
+        add({ item: 2, turn: t.n, child: t.childText, teacher: `${t.kind}: "${rep}"`, why: "garbled or gutted teacher turn (stray script / dangling quote / a teaching move with almost no content)", auto: "garbled" });
+      // the words contradict the verdict
+      const v = t.ui?.verdict;
+      if (v === "not_yet" && /^\s*(\u2705|sahi\b|correct\b|bilkul\b|shabash)/i.test(rep))
+        add({ item: 1, turn: t.n, child: t.childText || JSON.stringify(t.moduleEvents?.[0]?.data?.value ?? "").slice(0, 100), teacher: rep, why: "graded not_yet, but the reply opens with a tick / praise: the child is told a wrong answer is right", auto: "words_vs_verdict" });
+      if (v === "correct" && /\b(galti|galat|toot gaya|not quite|sahi nahi)\b|\bnahi, balki\b|zero nahi/i.test(rep))
+        add({ item: 1, turn: t.n, child: t.childText || JSON.stringify(t.moduleEvents?.[0]?.data?.value ?? "").slice(0, 100), teacher: rep, why: "graded correct, but the reply tells the child they made a mistake", auto: "words_vs_verdict" });
+      // item 4: steering, judged on the very next reply
+      if (String(t.probe).startsWith("steer:")) {
+        const id = t.probe.slice(6);
+        const ended = t.end || t.kind === "wrap";
+        let ok, why = "";
+        if (ended) { ok = false; why = "the lesson was ENDED instead"; }
+        else if (DEFER.test(rep) && ["cricket", "talk_else"].includes(id)) { ok = false; why = "deferred ('baad mein' / later) instead of acting"; }
+        else switch (id) {
+          case "talk_else": ok = /\b(kis|kya baat|what would|what do you want|kaunsi baat|kuch aur)\b/i.test(rep) && jaccard(rep, prevRep) < 0.5; break;
+          case "cricket": ok = /\b(cricket|bat|batting|bowling|wicket|overs?|kohli|dhoni|ipl|match)\b/i.test(rep); break;
+          case "differently": ok = jaccard(rep, prevRep) < 0.45 && ["explain", "reteach", "worked_example", "hint", "repair"].includes(t.kind); break;
+          case "slowly": ok = !/dheere bol|dhire bol|speak slowly/i.test(rep) && /\b(dheere|dhire|slow|slowly|aaram se|step by step|ek ek)\b/i.test(rep) && rep.length <= prevRep.length * 1.1;
+            if (/dheere bol|dhire bol/i.test(rep)) why = "read as an instruction to the CHILD to speak slowly"; break;
+          case "example": ok = /\b(example|jaise|maan lo|maano|suppose|for instance|imagine|udaharan)\b/i.test(rep) && jaccard(rep, prevRep) < 0.6; break;
+          case "hindi": ok = (rep.match(DEVANAGARI) ?? []).length > 10 || enShare(rep) < 0.12;
+            if (/hindi mein soch/i.test(rep)) { ok = false; why = "told the child to 'think in Hindi' instead of switching"; } break;
+          case "story": ok = /\b(kahani|story|ek baar|ek din|once upon|one day)\b/i.test(rep) && !/kahani ka agla/i.test(rep); break;
+          default: ok = true;
+        }
+        if (!ok) add({ item: 4, turn: t.n, child: t.childText, teacher: `${t.kind}: "${rep}"`, why: `the steering request (${id}) was not acted on in the next reply${why ? `: ${why}` : ""}`, auto: `steer_${id}` });
+      }
+      // item 5: something NEW on the stage in the very reply to the request
+      if (String(t.probe).startsWith("visual:")) {
+        const id = t.probe.slice(7);
+        const vis = newVisualOf(t, prev);
+        if (!vis.length) {
+          const how = /[\u2500-\u257F\u2014|\u2192\u25CF]{3,}|──|—\|/.test(rep) ? `typed a text 'diagram' into the reply instead${sess.lane.startsWith("cascade") ? " (on the SPOKEN lane, where it is read aloud)" : ""}`
+            : /\b(banao|banaiye|bana lo|sketch banaiye|drawings banao|draw karo)\b/i.test(rep) ? "told the CHILD to draw it"
+            : /\b(socho|sochiye|imagine|picture sochiye|diagram sochiye)\b/i.test(rep) ? "asked the child to imagine it"
+            : /\b(dekhiye|dekho|look)\b/i.test(rep) ? "said 'look' with nothing new on the stage"
+            : "ignored the request (no acknowledgement)";
+          add({ item: 5, turn: t.n, child: t.childText, teacher: `${t.kind}: "${rep}"`, why: `the ${id} request produced nothing new on the stage (no mount, changed whiteboard, studio slot or picture): ${how}`, auto: `visual_${id}` });
+        }
+      }
+      if (!moduleOnly || t.ui) prev = t;
+    }
+  }
+  return out;
+}
+const REANALYZED = /^(steer_|visual_|dup_in_turn|garbled|words_vs_verdict)/;
+
+/** Flag rows from the browser replay: a misgrade or a binding/key disagreement, or an activity that cannot be answered. */
+function browserFlags(browser) {
+  const out = [];
+  for (const m of browser.mounts ?? []) for (const iss of m.issues) {
+    const item = /no engine UI|error events/.test(iss) ? 2 : 1;
+    const why = /no answer could be committed/.test(iss)
+      ? `the activity cannot be answered: deliberate and random taps never produced a graded commit (Check does nothing). Frame showed: "${String(m.text ?? "").replace(/\s+/g, " ").slice(0, 90)}"; params ${m.params ? JSON.stringify(m.params).slice(0, 120) : "(see mounts.json)"}`
+      : iss;
+    out.push({ session: m.session, persona: m.session?.split("-")[1], topicId: null, lane: "browser (production /modules.html)", item, turn: "replay", child: `[${m.engine} ${m.mode ?? ""} item ${m.itemId ?? "-"}]`, teacher: "(the activity frame)", why,
+      auto: `browser_${/frame said/.test(iss) ? "misgrade" : /binding/.test(iss) ? "binding" : /no answer/.test(iss) ? "unanswerable" : "frame"}`, soft: /no answer could be committed/.test(iss) && !m.goal });
+  }
   return out;
 }
 
@@ -693,8 +794,9 @@ if (arg("render", null)) {
   // Re-render FAILURES.md for an existing results dir (after a reviewer edits its review.json). No network.
   const dir = arg("render");
   const ss = readdirSync(join(dir, "sessions")).map((f) => JSON.parse(readFileSync(join(dir, "sessions", f), "utf8"))).sort((a, b) => a.id.localeCompare(b.id));
-  const fl = JSON.parse(readFileSync(join(dir, "flags.json"), "utf8"));
   const br = existsSync(join(dir, "browser.json")) ? JSON.parse(readFileSync(join(dir, "browser.json"), "utf8")) : {};
+  const fl = [...JSON.parse(readFileSync(join(dir, "flags.json"), "utf8")).filter((f) => !String(f.auto).startsWith("browser_")), ...browserFlags(br)];
+  writeFileSync(join(dir, "flags.json"), JSON.stringify(fl, null, 1));
   writeFailures(dir, ss, fl, br);
   console.log(`rendered ${join(dir, "FAILURES.md")}`);
   process.exit(0);
@@ -717,10 +819,7 @@ let browser = { skipped: "--no-browser" };
 if (!flag("no-browser")) {
   mkdirSync(join(OUT, "browser"), { recursive: true });
   try { browser = await browserPhase(allMounts); } catch (e) { browser = { error: String(e.message) }; }
-  for (const m of browser.mounts ?? []) for (const iss of m.issues) {
-    const item = /frame said correct|binding:/.test(iss) ? 1 : /no engine UI|error events|no answer could be committed/.test(iss) ? 2 : 1;
-    flags.push({ session: m.session, persona: m.session?.split("-")[1], topicId: null, lane: "browser (production /modules.html)", item, turn: "replay", child: `[${m.engine} ${m.mode ?? ""} item ${m.itemId ?? "-"}]`, teacher: "(frame)", why: iss, auto: `browser_${/frame said/.test(iss) ? "misgrade" : /binding/.test(iss) ? "binding" : "frame"}` });
-  }
+  flags.push(...browserFlags(browser));
 }
 writeFileSync(join(OUT, "browser.json"), JSON.stringify(browser, null, 1));
 writeFileSync(join(OUT, "flags.json"), JSON.stringify(flags, null, 1));
@@ -733,7 +832,8 @@ writeFileSync(join(OUT, "flags.json"), JSON.stringify(flags, null, 1));
 function writeFailures(OUT, sessions, autoFlags, browser) {
   const review = existsSync(join(OUT, "review.json")) ? JSON.parse(readFileSync(join(OUT, "review.json"), "utf8")) : { add: [], drop: [] };
   const dropped = (f) => (review.drop ?? []).some((d) => d.session === f.session && String(d.turn) === String(f.turn) && d.auto === f.auto);
-  const flags = [...autoFlags.filter((f) => !dropped(f)), ...(review.add ?? []).map((f) => ({ ...f, reviewed: true }))];
+  const auto = [...autoFlags.filter((f) => !REANALYZED.test(String(f.auto))), ...reanalyze(sessions)];
+  const flags = [...auto.filter((f) => !dropped(f)), ...(review.add ?? []).map((f) => ({ ...f, reviewed: true }))];
   const esc = (s) => String(s ?? "").replace(/\|/g, "\\|").replace(/\n/g, " ").slice(0, 420);
   const childTurns = sessions.reduce((a, s) => a + s.turns.filter((t) => t.who === "child").length, 0);
   const byItem = (i) => flags.filter((f) => f.item === i);

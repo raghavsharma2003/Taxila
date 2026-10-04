@@ -1,0 +1,84 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;color:#473528;background:#fff7e9}
+  .card{width:360px;height:320px;overflow:hidden;padding:8px 18px;background:radial-gradient(circle at 92% 12%,#ffe2ad 0 42px,transparent 43px),#fff7e9}
+  h1{height:24px;margin:0;text-align:center;font-size:18px;line-height:24px;font-weight:800}
+  .readouts{display:flex;justify-content:space-around;align-items:center;height:32px;font-size:15px;font-weight:700}
+  .readouts strong{font-size:21px;color:#ad5637}
+  .scene{position:relative;height:70px;margin:2px 5px 3px;border-radius:19px;background:#e7f2e5;overflow:hidden}
+  .scene:after{content:"";position:absolute;left:13px;right:13px;bottom:13px;height:3px;border-radius:5px;background:#a7c7a8}
+  .sun{position:absolute;right:19px;top:12px;width:25px;height:25px;border-radius:50%;background:#ffd47c}
+  .visual{position:absolute;left:17px;bottom:16px;height:31px;width:0;border-radius:8px 8px 4px 4px;background:repeating-linear-gradient(90deg,#d97857 0 16px,#e8976e 16px 20px);box-shadow:0 4px 0 #ad634b;transition:width .38s cubic-bezier(.2,.8,.2,1)}
+  .controls{display:flex;justify-content:center;gap:22px;height:54px}
+  button{border:0;cursor:pointer;font:inherit;font-weight:800;transition:transform .16s,background .2s;touch-action:manipulation}
+  button:active{transform:scale(.92)}
+  .control{width:124px;height:52px;border-radius:18px;background:#f5c982;color:#593c26;box-shadow:0 3px 0 #dca35f;font-size:17px}
+  .control:disabled{opacity:.48;cursor:default}
+  .question{height:34px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:16px;font-weight:750}
+  .options{display:flex;justify-content:center;gap:13px;height:52px}
+  .option{width:94px;height:52px;border-radius:17px;background:#fff;border:2px solid #d69b76;color:#68442f;font-size:23px;box-shadow:0 3px 0 #e9d4bd}
+  .option:hover{background:#fff0d8}
+  .feedback{height:22px;line-height:22px;text-align:center;font-size:14px;font-weight:800;color:#9b583d}
+  .pulse{animation:pulse .4s ease}
+  @keyframes pulse{50%{transform:scale(1.045)}}
+</style>
+<div class="card">
+  <h1 id="title"></h1>
+  <div class="readouts"><div><span id="xname"></span> <strong data-x id="xval"></strong></div><div><span id="yname"></span> <strong data-output id="yval"></strong></div></div>
+  <div class="scene" aria-hidden="true"><div class="sun"></div><div class="visual" data-visual data-dim="w"></div></div>
+  <div class="controls"><button class="control" data-action="dec" id="dec"></button><button class="control" data-action="inc" id="inc"></button></div>
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+  const p=Studio.params;
+  const el=id=>document.getElementById(id);
+  const clean=n=>Number(n.toPrecision(12)).toString();
+  ['title','xname','yname','less','more'].forEach((key,i)=>{
+    el(['title','xname','yname','dec','inc'][i]).textContent=Studio.t(key);
+  });
+  let x=p.x.start,finished=false;
+  const visual=document.querySelector('[data-visual]');
+  function draw(){
+    const y=p.law.k*x+p.law.b;
+    el('xval').textContent=clean(x);
+    el('xval').setAttribute('data-x',clean(x));
+    el('yval').textContent=clean(y);
+    el('yval').setAttribute('data-value',clean(y));
+    visual.style.width=clean(y*p.y.unitsPer)+'px';
+    el('dec').disabled=x-p.x.step<p.x.min;
+    el('inc').disabled=x+p.x.step>p.x.max;
+  }
+  [['dec',-1],['inc',1]].forEach(([id,dir])=>el(id).addEventListener('click',()=>{
+    const next=Number((x+dir*p.x.step).toPrecision(12));
+    if(next<p.x.min||next>p.x.max)return;
+    x=next;
+    draw();
+    visual.classList.remove('pulse');
+    void visual.offsetWidth;
+    visual.classList.add('pulse');
+    Studio.event('change',{x:clean(x)});
+  }));
+  el('question').textContent=Studio.t('ask')+' '+clean(p.ask.x);
+  p.ask.options.forEach(value=>{
+    const button=document.createElement('button');
+    button.className='option';
+    button.textContent=clean(value);
+    button.setAttribute('data-option',clean(value));
+    button.addEventListener('click',()=>{if(!finished)Studio.answer({value})});
+    el('options').appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    el('feedback').textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      finished=true;
+      el('question').textContent=Studio.t('done');
+      Studio.done();
+    }
+  });
+  draw();
+  Studio.ready();
+
+</script>

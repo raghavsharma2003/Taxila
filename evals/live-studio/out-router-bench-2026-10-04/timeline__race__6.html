@@ -1,0 +1,104 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff7e9;color:#513b38}
+  .scene{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 50% 5%,#fffdf6,#fff1dc)}
+  h1{position:absolute;top:9px;left:12px;width:336px;margin:0;text-align:center;font-size:19px;line-height:25px;color:#744c48}
+  .ask{position:absolute;top:38px;left:12px;width:336px;text-align:center;font-size:14px;line-height:20px;color:#745e59}
+  svg{position:absolute;inset:0;width:360px;height:320px;pointer-events:none}
+  [data-axis]{stroke:#bd8175;stroke-width:5;stroke-linecap:round}
+  .connector{stroke:#c99d86;stroke-width:2.5;stroke-linecap:round}
+  [data-event]{fill:#fff8ed;stroke:#b56560;stroke-width:3}
+  .card{position:absolute;width:96px;height:62px;padding:6px 3px;border:2px solid #dfb59d;border-radius:16px;background:#fffdf6;box-shadow:0 4px 0 #e7c7a8;color:#563e3b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;cursor:pointer;touch-action:manipulation;transition:transform .2s,background .2s,box-shadow .2s}
+  .card:active{transform:scale(.94)}
+  .card.chosen{background:#ffe4b7;transform:scale(1.05);box-shadow:0 5px 0 #dba980}
+  .name{font-size:12px;font-weight:700;line-height:14px;overflow-wrap:anywhere}
+  .year{font-size:12px;color:#91655c}
+  .feedback{position:absolute;top:284px;left:12px;width:336px;height:27px;text-align:center;font-size:16px;font-weight:700;color:#a25159}
+  .feedback.show{animation:pop .35s ease-out}
+  @keyframes pop{from{transform:scale(.83);opacity:0}to{transform:scale(1);opacity:1}}
+</style>
+<div class="scene">
+  <h1 id="title"></h1>
+  <div class="ask" id="ask"></div>
+  <svg id="drawing" viewBox="0 0 360 320" aria-hidden="true">
+    <line data-axis x1="28" y1="160" x2="332" y2="160"></line>
+  </svg>
+  <div id="cards"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const events=[...Studio.params.events].sort((a,b)=>a.year-b.year);
+  const first=events[0].year,last=events[events.length-1].year;
+  const svg=document.getElementById('drawing');
+  const cards=document.getElementById('cards');
+  const feedback=document.getElementById('feedback');
+  const NS='http://www.w3.org/2000/svg';
+  let finished=false;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  const positions=[
+    {left:4,top:77},
+    {left:112,top:77},
+    {left:158,top:211},
+    {left:260,top:211}
+  ];
+  events.forEach((ev,i)=>{
+    const p=positions[i];
+    const x=first===last?180:28+(ev.year-first)*304/(last-first);
+    const line=document.createElementNS(NS,'line');
+    line.setAttribute('class','connector');
+    line.setAttribute('x1',x);
+    line.setAttribute('y1',160);
+    line.setAttribute('x2',p.left+48);
+    line.setAttribute('y2',p.top<160?p.top+62:p.top);
+    svg.appendChild(line);
+    const marker=document.createElementNS(NS,'circle');
+    marker.setAttribute('data-event',ev.key);
+    marker.setAttribute('data-year',ev.year);
+    marker.setAttribute('cx',x);
+    marker.setAttribute('cy',160);
+    marker.setAttribute('r',5);
+    svg.appendChild(marker);
+    const card=document.createElement('button');
+    card.type='button';
+    card.className='card';
+    card.setAttribute('data-card',ev.key);
+    card.style.left=p.left+'px';
+    card.style.top=p.top+'px';
+    const name=document.createElement('span');
+    name.className='name';
+    name.textContent=Studio.t(ev.key);
+    const year=document.createElement('span');
+    year.className='year';
+    year.textContent=ev.year;
+    card.append(name,year);
+    card.addEventListener('click',()=>{
+      if(finished)return;
+      cards.querySelectorAll('.card').forEach(c=>c.classList.remove('chosen'));
+      card.classList.add('chosen');
+      feedback.classList.remove('show');
+      feedback.textContent='';
+      Studio.event('tap',{key:ev.key});
+      Studio.answer(ev.key);
+    });
+    cards.appendChild(card);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.classList.remove('show');
+    void feedback.offsetWidth;
+    feedback.classList.add('show');
+    if(correct){
+      finished=true;
+      setTimeout(()=>{
+        feedback.textContent=Studio.t('done');
+        Studio.done();
+      },650);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

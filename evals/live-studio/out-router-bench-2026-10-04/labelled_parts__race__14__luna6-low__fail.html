@@ -1,0 +1,106 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8eb;color:#315344}
+#app{width:360px;height:320px;padding:10px 12px;display:flex;flex-direction:column;align-items:center}
+h1{font-size:18px;line-height:22px;margin:0;font-weight:750;color:#315344}
+#question{font-size:15px;line-height:19px;margin:4px 0 0;text-align:center;color:#634f3b}
+#picture{width:336px;height:228px;margin-top:2px;overflow:visible}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:filter .25s,transform .18s}
+.part:active{transform:scale(.94)}
+.part:focus{outline:none;filter:drop-shadow(0 0 5px #f0a72b)}
+.part.correct{filter:drop-shadow(0 0 10px #ffcf42);animation:glow .8s ease-in-out infinite alternate}
+@keyframes glow{to{filter:drop-shadow(0 0 14px #ffcf42)}}
+.label{font-size:12px;font-weight:650;fill:#4b5b48}
+.leader{fill:none;stroke:#877b68;stroke-width:1.4;stroke-linecap:round}
+#feedback{height:22px;margin-top:0;font-size:14px;font-weight:700;color:#44724d;text-align:center}
+#feedback.wrong{color:#a45c46}
+svg text{user-select:none}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <div id="question" data-ask></div>
+  <svg id="picture" viewBox="0 0 336 228" role="img" aria-label="">
+    <g class="part" data-part="root" tabindex="0" role="button" aria-label="">
+      <rect x="137" y="164" width="62" height="58" rx="25" fill="transparent"/>
+      <path d="M166 161 Q163 181 146 203 M167 162 Q171 185 186 207 M164 173 Q153 188 155 216 M171 173 Q182 190 179 215 M158 180 Q145 191 138 206 M175 181 Q190 193 198 207" fill="none" stroke="#a6784b" stroke-width="4" stroke-linecap="round"/>
+    </g>
+    <path class="leader" d="M194 199 L219 199"/>
+    <text class="label" data-label="root" x="223" y="203"></text>
+
+    <g class="part" data-part="stem" tabindex="0" role="button" aria-label="">
+      <rect x="137" y="101" width="62" height="69" rx="20" fill="transparent"/>
+      <path d="M167 165 Q168 136 166 99" fill="none" stroke="#3d9259" stroke-width="14" stroke-linecap="round"/>
+    </g>
+    <path class="leader" d="M176 137 L219 137"/>
+    <text class="label" data-label="stem" x="223" y="141"></text>
+
+    <g class="part" data-part="leaf" tabindex="0" role="button" aria-label="">
+      <ellipse cx="127" cy="137" rx="37" ry="31" fill="transparent"/>
+      <path d="M163 137 Q139 114 109 123 Q117 151 159 151 Q171 146 163 137Z" fill="#54a960" stroke="#367c49" stroke-width="2"/>
+      <path d="M157 145 Q137 134 117 127" fill="none" stroke="#d8edaa" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <path class="leader" d="M111 129 L88 129"/>
+    <text class="label" data-label="leaf" x="43" y="133"></text>
+
+    <g class="part" data-part="centre" tabindex="0" role="button" aria-label="">
+      <circle cx="167" cy="65" r="31" fill="#efaa3e" stroke="#d88929" stroke-width="2"/>
+      <circle cx="167" cy="65" r="19" fill="#f8cd58"/>
+    </g>
+    <path class="leader" d="M194 65 L219 65"/>
+    <text class="label" data-label="centre" x="223" y="69"></text>
+
+    <g class="part" data-part="petal" tabindex="0" role="button" aria-label="">
+      <ellipse cx="167" cy="31" rx="12" ry="18" fill="#ef8290" stroke="#d86277" stroke-width="1.5"/>
+      <ellipse cx="167" cy="99" rx="12" ry="18" fill="#ef8290" stroke="#d86277" stroke-width="1.5"/>
+      <ellipse cx="133" cy="65" rx="18" ry="12" fill="#ef8290" stroke="#d86277" stroke-width="1.5"/>
+      <ellipse cx="201" cy="65" rx="18" ry="12" fill="#ef8290" stroke="#d86277" stroke-width="1.5"/>
+      <ellipse cx="143" cy="41" rx="12" ry="17" transform="rotate(-45 143 41)" fill="#ef8290" stroke="#d86277" stroke-width="1.5"/>
+      <ellipse cx="191" cy="89" rx="12" ry="17" transform="rotate(-45 191 89)" fill="#ef8290" stroke="#d86277" stroke-width="1.5"/>
+      <ellipse cx="191" cy="41" rx="12" ry="17" transform="rotate(45 191 41)" fill="#ef8290" stroke="#d86277" stroke-width="1.5"/>
+      <ellipse cx="143" cy="89" rx="12" ry="17" transform="rotate(45 143 89)" fill="#ef8290" stroke="#d86277" stroke-width="1.5"/>
+    </g>
+    <path class="leader" d="M141 42 L114 32"/>
+    <text class="label" data-label="petal" x="53" y="36"></text>
+  </svg>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const title=document.getElementById('title');
+  const question=document.getElementById('question');
+  const feedback=document.getElementById('feedback');
+  title.textContent=Studio.t('title');
+  question.textContent=Studio.t('ask')+' '+Studio.t(p.ask);
+  document.querySelectorAll('[data-label]').forEach(el=>{el.textContent=Studio.t(el.dataset.label)});
+  document.querySelectorAll('[data-part]').forEach(el=>{
+    el.setAttribute('aria-label',Studio.t(el.dataset.part));
+    el.addEventListener('click',()=>choose(el));
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();choose(el)}});
+  });
+  let pending=false,complete=false;
+  function choose(el){
+    if(pending||complete)return;
+    pending=true;
+    Studio.event('tap',{part:el.dataset.part});
+    Studio.answer(el.dataset.part);
+  }
+  Studio.onVerdict(({correct})=>{
+    pending=false;
+    if(correct){
+      complete=true;
+      document.querySelector('[data-part="'+p.ask+'"]').classList.add('correct');
+      feedback.className='';
+      feedback.textContent=Studio.t('right')+' '+Studio.t('done');
+      Studio.done();
+    }else{
+      feedback.className='wrong';
+      feedback.textContent=Studio.t('wrong');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

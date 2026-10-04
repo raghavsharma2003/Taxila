@@ -1,0 +1,192 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden}
+  #game{
+    width:360px;height:320px;overflow:hidden;position:relative;
+    font-family:Arial,sans-serif;color:#493938;
+    background:linear-gradient(180deg,#fff3d9 0%,#ffe7c0 100%);
+    border-radius:22px;
+  }
+  .blob{position:absolute;border-radius:50%;pointer-events:none}
+  .blob.one{width:105px;height:105px;background:#ffd181;top:-42px;right:-25px;opacity:.75}
+  .blob.two{width:74px;height:74px;background:#d5edc5;bottom:-30px;left:-20px}
+  .top{height:92px;padding:16px 22px 0;position:relative;z-index:1}
+  h1{margin:0;font-size:21px;line-height:25px;color:#704d42}
+  #instruction{margin-top:5px;font-size:14px;line-height:18px;color:#805f52}
+  #item{
+    position:absolute;top:67px;left:50%;transform:translateX(-50%);
+    min-width:92px;height:43px;padding:6px 15px 5px;
+    border-radius:17px;background:#fffdf7;border:3px solid #edb45e;
+    text-align:center;z-index:3;box-shadow:0 3px 0 rgba(155,93,47,.14);
+  }
+  #target{display:block;font-size:22px;font-weight:bold;line-height:25px;color:#9c5842}
+  #lineWrap{position:absolute;left:0;top:101px;width:360px;height:104px}
+  #line{width:360px;height:104px;overflow:visible}
+  .track{stroke:#80685f;stroke-width:5;stroke-linecap:round}
+  .tick{stroke:#80685f;stroke-width:3;stroke-linecap:round}
+  .tickLabel{fill:#725b53;font-size:14px;font-weight:bold;text-anchor:middle}
+  #marker{filter:drop-shadow(0 3px 1px rgba(104,65,44,.2));transition:transform .22s cubic-bezier(.34,1.5,.6,1)}
+  .markerStem{stroke:#d7604b;stroke-width:4;stroke-linecap:round}
+  .markerDot{fill:#f36f57;stroke:#fff8ea;stroke-width:4}
+  #marker.hop{animation:hop .48s ease-in-out}
+  @keyframes hop{0%,100%{transform:translateY(0)}45%{transform:translateY(-18px)}}
+  #feedback{
+    position:absolute;top:201px;left:0;width:100%;height:22px;text-align:center;
+    font-size:15px;font-weight:bold;color:#875d4e;opacity:0;transform:translateY(-4px);
+    transition:opacity .2s,transform .2s;
+  }
+  #feedback.show{opacity:1;transform:translateY(0)}
+  #feedback.good{color:#47835a}
+  .controls{position:absolute;left:16px;right:16px;top:229px;height:75px;display:flex;gap:10px;align-items:center}
+  button{
+    border:0;font-family:inherit;font-weight:bold;cursor:pointer;touch-action:manipulation;
+    transition:transform .12s ease,filter .12s ease,box-shadow .12s ease;
+  }
+  button:active{transform:scale(.93)}
+  .move{
+    width:61px;height:61px;border-radius:20px;color:#684943;font-size:14px;
+    background:#fffaf0;box-shadow:0 4px 0 #d9af81;
+  }
+  .move:hover{filter:brightness(1.03)}
+  #check{
+    flex:1;height:61px;border-radius:21px;color:#fffdf8;font-size:18px;
+    background:#65a875;box-shadow:0 4px 0 #3f7f55;
+  }
+  #check:disabled,.move:disabled{opacity:.55;cursor:default}
+  #check.pulse{animation:pulse .38s ease}
+  @keyframes pulse{50%{transform:scale(1.05)}}
+  #finish{
+    display:none;position:absolute;inset:0;z-index:8;align-items:center;justify-content:center;
+    text-align:center;background:linear-gradient(180deg,#fff3d9,#d9efce);
+    padding:35px;color:#547047;font-size:25px;font-weight:bold;line-height:33px;
+  }
+  #finish.show{display:flex;animation:appear .35s ease}
+  @keyframes appear{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+</style>
+<div id="game">
+  <div class="blob one"></div><div class="blob two"></div>
+  <div class="top"><h1 id="title"></h1><div id="instruction"></div></div>
+  <div id="item" data-item=""><span id="target" data-target=""></span></div>
+  <div id="lineWrap">
+    <svg id="line" viewBox="0 0 360 104" aria-hidden="true">
+      <line class="track" x1="25" y1="55" x2="335" y2="55"></line>
+      <g id="ticks"></g>
+      <g id="marker" data-marker data-value="">
+        <line class="markerStem" x1="0" y1="31" x2="0" y2="48"></line>
+        <circle class="markerDot" cx="0" cy="24" r="12"></circle>
+      </g>
+    </svg>
+  </div>
+  <div id="feedback"></div>
+  <div class="controls">
+    <button class="move" id="left" data-action="left"></button>
+    <button id="check" data-action="check"></button>
+    <button class="move" id="right" data-action="right"></button>
+  </div>
+  <div id="finish"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, itemIndex=0, steps=Math.round((p.max-p.min)/p.step);
+  var k=Math.round((p.start-p.min)/p.step), waiting=false, finished=false;
+  var ticks=document.getElementById('ticks'), marker=document.getElementById('marker');
+  var target=document.getElementById('target'), item=document.getElementById('item');
+  var feedback=document.getElementById('feedback'), check=document.getElementById('check');
+  var left=document.getElementById('left'), right=document.getElementById('right');
+  var ns='http://www.w3.org/2000/svg';
+
+  function exact(n){ return Math.round(n*1000000)/1000000; }
+  function value(){ return exact(p.min+k*p.step); }
+  function raw(v){ return String(exact(v)); }
+  function places(){
+    for(var d=0;d<=6;d++) if(Math.abs(p.step*Math.pow(10,d)-Math.round(p.step*Math.pow(10,d)))<0.0000001) return d;
+    return 6;
+  }
+  function display(v){
+    if(p.format==='fraction'){
+      return String(Math.round(v*p.den))+'/'+String(p.den);
+    }
+    return exact(v).toFixed(places());
+  }
+  function xFor(index){ return 25+(310*index/steps); }
+  function makeTicks(){
+    for(var i=0;i<=steps;i++){
+      var v=exact(p.min+i*p.step), g=document.createElementNS(ns,'g'), x=xFor(i);
+      g.setAttribute('data-tick',raw(v));
+      var line=document.createElementNS(ns,'line');
+      line.setAttribute('class','tick');line.setAttribute('x1',x);line.setAttribute('x2',x);
+      line.setAttribute('y1','46');line.setAttribute('y2','65');g.appendChild(line);
+      if(i%p.labelEvery===0){
+        var text=document.createElementNS(ns,'text');
+        text.setAttribute('class','tickLabel');text.setAttribute('x',x);text.setAttribute('y','88');
+        text.textContent=display(v);g.appendChild(text);
+      }
+      ticks.appendChild(g);
+    }
+  }
+  function updateMarker(){
+    var v=value();
+    marker.setAttribute('transform','translate('+xFor(k)+' 0)');
+    marker.setAttribute('data-value',raw(v));
+    left.disabled=waiting||k===0;
+    right.disabled=waiting||k===steps;
+  }
+  function showItem(){
+    var current=p.items[itemIndex];
+    item.setAttribute('data-item',current.id);
+    target.setAttribute('data-target',raw(current.target));
+    target.textContent=display(current.target);
+    k=Math.round((p.start-p.min)/p.step);
+    feedback.className='';
+    feedback.textContent='';
+    waiting=false;check.disabled=false;
+    updateMarker();
+  }
+  function move(delta){
+    if(waiting||finished)return;
+    var next=k+delta;
+    if(next<0||next>steps)return;
+    k=next; updateMarker();
+    Studio.event('move',{value:value()});
+  }
+  function verdictText(ok){
+    feedback.textContent=Studio.t(ok?'right':'wrong');
+    feedback.className='show '+(ok?'good':'');
+  }
+  left.addEventListener('click',function(){move(-1);});
+  right.addEventListener('click',function(){move(1);});
+  check.addEventListener('click',function(){
+    if(waiting||finished)return;
+    waiting=true;check.disabled=true;left.disabled=true;right.disabled=true;
+    feedback.className='';check.classList.remove('pulse');void check.offsetWidth;check.classList.add('pulse');
+    Studio.event('check',{value:value()});
+    Studio.answer({value:value()});
+  });
+  Studio.onVerdict(function(result){
+    if(!waiting||finished)return;
+    if(result.correct){
+      verdictText(true);
+      marker.classList.remove('hop');void marker.offsetWidth;marker.classList.add('hop');
+      setTimeout(function(){
+        itemIndex++;
+        if(itemIndex>=p.items.length){
+          finished=true;
+          document.getElementById('finish').textContent=Studio.t('done');
+          document.getElementById('finish').className='show';
+          Studio.done();
+        }else{ showItem(); }
+      },560);
+    }else{
+      waiting=false; verdictText(false); updateMarker();
+    }
+  });
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  left.textContent=Studio.t('left');
+  right.textContent=Studio.t('right_btn');
+  check.textContent=Studio.t('check');
+  makeTicks();showItem();Studio.ready();
+}());
+
+</script>

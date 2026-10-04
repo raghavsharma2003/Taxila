@@ -1,0 +1,238 @@
+<style>
+  *{box-sizing:border-box}
+  #app{
+    width:360px;height:320px;overflow:hidden;position:relative;
+    font-family:Arial,sans-serif;color:#4a3158;
+    background:linear-gradient(180deg,#fff7df 0%,#f6ecff 100%);
+  }
+  #title{
+    position:absolute;left:18px;top:14px;right:18px;margin:0;
+    text-align:center;font-size:22px;font-weight:800;letter-spacing:.2px;
+    color:#6a3e79;
+  }
+  #scene{
+    position:absolute;left:0;top:48px;width:360px;height:156px;
+  }
+  #arrows{
+    position:absolute;inset:0;width:360px;height:156px;overflow:visible;
+  }
+  .arrow{
+    fill:none;stroke:#d9a9cb;stroke-width:5;stroke-linecap:round;
+    stroke-linejoin:round;opacity:.9;
+  }
+  .stage{
+    position:absolute;width:68px;height:76px;margin-left:-34px;margin-top:-38px;
+    border-radius:22px;background:#fffdf7;border:3px solid #e8cad8;
+    display:flex;align-items:flex-end;justify-content:center;padding:8px 4px;
+    box-shadow:0 5px 0 #ead9e3,0 8px 14px rgba(104,57,110,.12);
+    transition:transform .28s ease,background .28s ease,border-color .28s ease,box-shadow .28s ease;
+  }
+  .stage::before{
+    content:"";position:absolute;top:11px;left:20px;width:22px;height:22px;
+    border-radius:50%;background:#f5d566;box-shadow:inset -4px -4px 0 rgba(184,122,53,.16);
+  }
+  .stage:nth-of-type(2)::before{background:#9bd8b3;border-radius:14px 14px 9px 9px}
+  .stage:nth-of-type(3)::before{background:#c8a3dd;border-radius:48% 48% 42% 42%}
+  .stage:nth-of-type(4)::before{background:#f39b87;clip-path:polygon(50% 0,62% 30%,100% 24%,72% 50%,100% 76%,61% 70%,50% 100%,38% 70%,0 76%,28% 50%,0 24%,38% 30%)}
+  .stage.active{
+    background:#fff9cf;border-color:#f0b947;
+    transform:scale(1.1) translateY(-3px);
+    box-shadow:0 5px 0 #edc36c,0 0 0 7px rgba(255,215,102,.28),0 10px 18px rgba(104,57,110,.16);
+  }
+  .stage.active::before{animation:bob .8s ease-in-out infinite alternate}
+  .stage span{
+    position:relative;z-index:1;font-size:12px;font-weight:800;line-height:13px;
+    text-align:center;max-width:60px;overflow-wrap:anywhere;
+  }
+  #token{
+    position:absolute;z-index:5;width:26px;height:26px;margin-left:-13px;margin-top:-13px;
+    filter:drop-shadow(0 3px 2px rgba(88,52,99,.25));
+    pointer-events:none;
+  }
+  #token svg{width:26px;height:26px;display:block}
+  #journey{
+    position:absolute;left:18px;right:18px;top:211px;height:54px;
+    display:flex;justify-content:center;
+  }
+  button{
+    border:0;font-family:inherit;font-weight:800;cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  #next{
+    min-width:150px;height:52px;border-radius:18px;background:#8055a0;color:#fff;
+    font-size:17px;box-shadow:0 5px 0 #593875,0 9px 15px rgba(83,48,96,.2);
+    transition:transform .16s ease,box-shadow .16s ease,opacity .2s ease;
+  }
+  #next:active,.option:active{transform:translateY(3px) scale(.97);box-shadow:0 2px 0 rgba(77,45,90,.6)}
+  #next:disabled{opacity:.55}
+  #question{
+    position:absolute;left:10px;right:10px;top:207px;text-align:center;
+    opacity:0;transform:translateY(12px);pointer-events:none;transition:.35s ease;
+  }
+  #question.show{opacity:1;transform:none;pointer-events:auto}
+  #ask{
+    margin:0 0 9px;font-size:14px;font-weight:800;color:#684471;line-height:18px;
+  }
+  #options{display:flex;gap:6px;justify-content:center}
+  .option{
+    width:104px;height:52px;border-radius:16px;background:#fffdf8;color:#684471;
+    border:2px solid #e3c8dc;font-size:13px;box-shadow:0 4px 0 #d9b9d0;
+    transition:transform .16s ease,background .2s ease;
+  }
+  .option:hover{background:#fff2ba}
+  #feedback{
+    position:absolute;left:20px;right:20px;bottom:8px;height:28px;
+    text-align:center;font-size:16px;font-weight:800;color:#6b4778;
+    opacity:0;transform:scale(.8);transition:.25s ease;
+  }
+  #feedback.show{opacity:1;transform:scale(1)}
+  #feedback.good{color:#45845e}
+  #feedback.bad{color:#b05b70}
+  @keyframes bob{from{transform:translateY(0)}to{transform:translateY(-4px)}}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <div id="scene">
+    <svg id="arrows" viewBox="0 0 360 156" aria-hidden="true">
+      <defs>
+        <marker id="tip" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L7,3 L0,6 Z" fill="#d9a9cb"></path>
+        </marker>
+      </defs>
+    </svg>
+    <div id="board"></div>
+    <div id="token" data-token>
+      <svg viewBox="0 0 30 30" aria-hidden="true">
+        <path d="M15 2 C11 8 6 13 6 19 A9 9 0 0 0 24 19 C24 13 19 8 15 2Z" fill="#61b9d1"></path>
+        <circle cx="12" cy="18" r="1.5" fill="#fff"></circle>
+        <circle cx="18" cy="18" r="1.5" fill="#fff"></circle>
+      </svg>
+    </div>
+  </div>
+  <div id="journey"><button id="next" data-action="next"></button></div>
+  <div id="question">
+    <p id="ask"></p>
+    <div id="options"></div>
+  </div>
+  <div id="feedback"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, stages=p.stages, app=document.getElementById('app');
+  var board=document.getElementById('board'), arrows=document.getElementById('arrows');
+  var token=document.getElementById('token'), next=document.getElementById('next');
+  var question=document.getElementById('question'), journey=document.getElementById('journey');
+  var options=document.getElementById('options'), feedback=document.getElementById('feedback');
+  var count=stages.length, active=0, busy=false, paths=[], positions=[];
+  document.getElementById('title').textContent=Studio.t('title');
+  next.textContent=Studio.t('next');
+
+  function point(i){
+    var spread=count>1?270/(count-1):0;
+    return {x:45+i*spread,y:77};
+  }
+  for(var i=0;i<count;i++){
+    positions.push(point(i));
+    var s=document.createElement('div');
+    s.className='stage'+(i===0?' active':'');
+    s.setAttribute('data-stage',stages[i]);
+    s.style.left=positions[i].x+'px';
+    s.style.top=positions[i].y+'px';
+    var label=document.createElement('span');
+    label.setAttribute('data-label',stages[i]);
+    label.textContent=Studio.t(stages[i]);
+    s.appendChild(label);
+    board.appendChild(s);
+  }
+  function addArrow(from,to,isCycle){
+    var a=positions[from],b=positions[to], path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    var dx=b.x-a.x, dy=b.y-a.y, len=Math.sqrt(dx*dx+dy*dy);
+    var ux=dx/len, uy=dy/len;
+    var d;
+    if(isCycle){
+      d='M '+(a.x-25)+' '+(a.y+20)+' C '+(a.x-45)+' 148, '+(b.x+45)+' 148, '+(b.x+25)+' '+(b.y+20);
+    }else{
+      d='M '+(a.x+ux*38)+' '+(a.y+uy*38)+' L '+(b.x-ux*40)+' '+(b.y-uy*40);
+    }
+    path.setAttribute('d',d);
+    path.setAttribute('class','arrow');
+    path.setAttribute('marker-end','url(#tip)');
+    path.setAttribute('data-arrow',stages[from]+'>'+stages[to]);
+    arrows.appendChild(path);
+    paths[from]=path;
+  }
+  for(var j=0;j<count-1;j++) addArrow(j,j+1,false);
+  if(p.cycle&&count>1) addArrow(count-1,0,true);
+
+  function place(pos){
+    token.style.left=pos.x+'px';token.style.top=pos.y+'px';
+  }
+  place(positions[0]);
+  app.setAttribute('data-active',stages[0]);
+
+  function setActive(i){
+    var boxes=board.children;
+    for(var k=0;k<boxes.length;k++) boxes[k].classList.toggle('active',k===i);
+    active=i; app.setAttribute('data-active',stages[i]);
+  }
+  function showQuestion(){
+    journey.style.display='none';
+    document.getElementById('ask').textContent=Studio.t('ask')+' '+Studio.t(p.askAfter);
+    options.innerHTML='';
+    for(var z=0;z<p.options.length;z++){
+      (function(key){
+        var b=document.createElement('button');
+        b.className='option';b.setAttribute('data-option',key);
+        b.textContent=Studio.t(key);
+        b.addEventListener('click',function(){
+          feedback.className='';
+          Studio.event('option',{key:key});
+          Studio.answer(key);
+        });
+        options.appendChild(b);
+      })(p.options[z]);
+    }
+    question.classList.add('show');
+  }
+  function travel(path,finish){
+    var length=path.getTotalLength(), start=performance.now(), duration=620;
+    function frame(now){
+      var q=Math.min(1,(now-start)/duration), eased=1-Math.pow(1-q,3);
+      var pt=path.getPointAtLength(length*eased);
+      place(pt);
+      if(q<1) requestAnimationFrame(frame); else finish();
+    }
+    requestAnimationFrame(frame);
+  }
+  next.addEventListener('click',function(){
+    if(busy)return;
+    var target=active+1;
+    if(target>=count){
+      if(!p.cycle)return;
+      target=0;
+    }
+    busy=true;next.disabled=true;
+    Studio.event('next',{from:active,to:target});
+    travel(paths[active],function(){
+      setActive(target);busy=false;next.disabled=false;
+      if(stages[target]===p.askAfter) showQuestion();
+    });
+  });
+  Studio.onVerdict(function(v){
+    feedback.textContent=Studio.t(v.correct?'right':'wrong');
+    feedback.className='show '+(v.correct?'good':'bad');
+    if(v.correct){
+      var bs=options.querySelectorAll('button');
+      for(var q=0;q<bs.length;q++)bs[q].disabled=true;
+      setTimeout(function(){
+        feedback.textContent=Studio.t('done');
+        Studio.done();
+      },420);
+    }
+  });
+  if(stages[0]===p.askAfter) showQuestion();
+  Studio.ready();
+})();
+
+</script>

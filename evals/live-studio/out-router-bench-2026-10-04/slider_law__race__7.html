@@ -1,0 +1,91 @@
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;width:360px;height:320px;overflow:hidden}
+  body{font-family:system-ui,sans-serif;color:#3e342c;background:#fff8ed}
+  .scene{width:360px;height:320px;padding:10px 14px;display:flex;flex-direction:column;gap:7px}
+  .title{font-size:17px;line-height:22px;text-align:center;color:#7c4d32;font-weight:800}
+  .readings{display:flex;justify-content:center;gap:24px;font-size:15px;font-weight:700}
+  .reading{background:#ffefd8;border-radius:12px;padding:5px 12px}
+  .picture{height:91px;display:flex;align-items:flex-end;justify-content:center;position:relative}
+  .ground{position:absolute;bottom:4px;width:208px;height:6px;border-radius:8px;background:#d8b994}
+  .bar{position:absolute;bottom:10px;width:76px;min-height:0;background:#f1a64d;border-radius:15px 15px 5px 5px;transition:height .35s cubic-bezier(.2,.8,.2,1);box-shadow:inset -8px 0 #e9953d}
+  .bar:after{content:"";position:absolute;left:13px;right:13px;top:10px;height:5px;border-radius:5px;background:#ffd395}
+  .controls{display:flex;justify-content:center;gap:12px}
+  button{font:inherit;color:#fff;border:0;border-radius:15px;background:#578b73;min-width:112px;height:52px;padding:0 14px;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 3px 0 #3d7058;transition:transform .12s,filter .12s}
+  button:active{transform:scale(.94);filter:brightness(.95)}
+  button:disabled{opacity:.45;cursor:default}
+  .prompt{font-size:14px;text-align:center;font-weight:700;color:#7c4d32}
+  .options{display:flex;justify-content:center;gap:10px}
+  .options button{min-width:76px;width:76px;height:52px;background:#e98568;box-shadow:0 3px 0 #c96b51}
+  .feedback{height:20px;text-align:center;font-size:14px;font-weight:800;color:#578b73}
+  .feedback.bad{color:#ba604b}
+</style>
+<main class="scene">
+  <div class="title" id="title"></div>
+  <div class="readings">
+    <div class="reading"><span id="xname"></span> = <span data-x></span></div>
+    <div class="reading" data-output><span id="yname"></span> = <span data-value></span></div>
+  </div>
+  <div class="picture" aria-hidden="true">
+    <div class="ground"></div>
+    <div class="bar" data-visual data-dim="h"></div>
+  </div>
+  <div class="controls">
+    <button type="button" data-action="dec" id="dec"></button>
+    <button type="button" data-action="inc" id="inc"></button>
+  </div>
+  <div class="prompt"><span id="ask"></span> <span id="askx"></span></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(()=>{
+  const p=Studio.params, t=Studio.t, xEl=document.querySelector('[data-x]'),
+    valEl=document.querySelector('[data-value]'), visual=document.querySelector('[data-visual]'),
+    dec=document.querySelector('[data-action="dec"]'), inc=document.querySelector('[data-action="inc"]'),
+    feedback=document.getElementById('feedback');
+  let x=p.x.start, finished=false;
+  const clean=n=>Number.isInteger(n)?String(n):String(Number(n.toFixed(6)));
+  document.getElementById('title').textContent=t('title');
+  document.getElementById('xname').textContent=t('xname');
+  document.getElementById('yname').textContent=t('yname');
+  dec.textContent=t('less'); inc.textContent=t('more');
+  document.getElementById('ask').textContent=t('ask');
+  document.getElementById('askx').textContent=clean(p.ask.x);
+  const yAt=n=>p.law.k*n+p.law.b;
+  function render(){
+    const y=yAt(x);
+    xEl.textContent=clean(x);
+    xEl.setAttribute('data-x',clean(x));
+    valEl.textContent=clean(y);
+    document.querySelector('[data-output]').setAttribute('data-value',clean(y));
+    visual.style.height=(y*p.y.unitsPer)+'px';
+    dec.disabled=x-p.x.step<p.x.min;
+    inc.disabled=x+p.x.step>p.x.max;
+  }
+  dec.addEventListener('click',()=>{if(x-p.x.step>=p.x.min){x-=p.x.step;render();Studio.event('change',{direction:'less'});}});
+  inc.addEventListener('click',()=>{if(x+p.x.step<=p.x.max){x+=p.x.step;render();Studio.event('change',{direction:'more'});}});
+  for(const option of p.ask.options){
+    const b=document.createElement('button');
+    b.type='button'; b.textContent=String(option); b.setAttribute('data-option',String(option));
+    b.addEventListener('click',()=>{
+      Studio.answer({value:option});
+    });
+    document.getElementById('options').appendChild(b);
+  }
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      feedback.textContent=t('right');
+      feedback.classList.remove('bad');
+      if(!finished){finished=true;Studio.done();feedback.textContent=t('done');}
+    }else{
+      feedback.textContent=t('wrong');
+      feedback.classList.add('bad');
+    }
+  });
+  render();
+  Studio.ready();
+})();
+
+</script>

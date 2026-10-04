@@ -1,0 +1,86 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#49392f;background:#fff8ed}
+#app{width:360px;height:320px;padding:4px 9px;display:flex;flex-direction:column;gap:2px;overflow:hidden}
+h1{height:22px;flex:none;margin:0;text-align:center;font-size:17px;line-height:22px;color:#774e37}
+#ask{height:22px;flex:none;margin:0;text-align:center;font-size:14px;line-height:22px;color:#57483d}
+#key{height:30px;flex:none;display:flex;align-items:center;justify-content:center;gap:7px;background:#f5e8d4;border:1px solid #ead8bd;border-radius:12px;font-size:13px}
+#key svg{width:22px;height:22px;flex:none}
+#rows{flex:none;display:flex;flex-direction:column}
+.row{height:52px;min-height:52px;flex:none;width:100%;border:0;border-bottom:1px solid #f1e4d5;border-radius:10px;background:transparent;padding:0 8px;display:flex;align-items:center;text-align:left;color:inherit;cursor:pointer;transition:background .18s,transform .12s}
+.row:active{transform:scale(.98);background:#f7ead9}
+.row:disabled{cursor:default}
+.name{width:92px;flex:none;font-size:15px;font-weight:650}
+.symbols{display:flex;align-items:center;gap:4px}
+.symbols [data-symbol]{width:20px;height:20px;flex:none;transition:transform .2s}
+.symbols svg{display:block;width:20px;height:20px}
+.row:hover .symbols [data-symbol]{transform:translateY(-2px)}
+#feedback{height:20px;min-height:20px;flex:none;text-align:center;font-size:14px;line-height:20px;font-weight:650;color:#79523b}
+#feedback.good{color:#397252}
+#feedback.try{color:#9b604a}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <p id="ask"></p>
+  <div id="key" data-key="">
+    <span id="keytext"></span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c1.5 2.7 6.3 7.1 6.3 12a6.3 6.3 0 1 1-12.6 0c0-4.9 4.8-9.3 6.3-12Z" fill="#e09b53"/><path d="M12 6.3c.8 2.2 3.8 5.6 3.8 8.6a3.8 3.8 0 1 1-7.6 0c0-3 3-6.4 3.8-8.6Z" fill="#f5c875"/></svg>
+    <span id="keyvalue"></span>
+  </div>
+  <div id="rows"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const shape='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c1.5 2.7 6.3 7.1 6.3 12a6.3 6.3 0 1 1-12.6 0c0-4.9 4.8-9.3 6.3-12Z" fill="#e09b53"/><path d="M12 6.3c.8 2.2 3.8 5.6 3.8 8.6a3.8 3.8 0 1 1-7.6 0c0-3 3-6.4 3.8-8.6Z" fill="#f5c875"/></svg>';
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  document.getElementById('keytext').textContent=Studio.t('keytext');
+  document.getElementById('keyvalue').textContent=String(p.symbolValue);
+  document.getElementById('key').setAttribute('data-key',String(p.symbolValue));
+  const rows=document.getElementById('rows');
+  let locked=false;
+  p.rows.forEach(item=>{
+    const row=document.createElement('button');
+    row.type='button';
+    row.className='row';
+    row.setAttribute('data-row',item.key);
+    const name=document.createElement('span');
+    name.className='name';
+    name.textContent=Studio.t(item.key);
+    const symbols=document.createElement('span');
+    symbols.className='symbols';
+    for(let i=0;i<item.value/p.symbolValue;i++){
+      const holder=document.createElement('span');
+      holder.setAttribute('data-symbol','');
+      holder.innerHTML=shape;
+      symbols.appendChild(holder);
+    }
+    row.append(name,symbols);
+    row.addEventListener('click',()=>{
+      if(locked)return;
+      locked=true;
+      Studio.event('row_tap',{key:item.key});
+      Studio.answer(item.key);
+    });
+    rows.appendChild(row);
+  });
+  Studio.onVerdict(({correct})=>{
+    const feedback=document.getElementById('feedback');
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.className=correct?'good':'try';
+    if(correct){
+      rows.querySelectorAll('.row').forEach(row=>row.disabled=true);
+      feedback.textContent=Studio.t('done');
+      Studio.done();
+    }else{
+      locked=false;
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

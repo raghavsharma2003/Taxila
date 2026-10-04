@@ -1,0 +1,108 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;font-family:system-ui,sans-serif;color:#4d3540}
+  #activity{width:360px;height:320px;padding:10px 14px;overflow:hidden;background:radial-gradient(circle at 92% 8%,#ffe2b7 0,#fff8ed 42%);display:flex;flex-direction:column;gap:6px}
+  #title{height:27px;font-size:19px;font-weight:800;line-height:27px}
+  .scene{height:105px;flex:none;display:flex;align-items:center;gap:12px;padding:9px 12px;background:#fff;border:2px solid #f6dcc3;border-radius:20px;box-shadow:0 4px 0 #f3e4d6}
+  .readings{width:93px;flex:none;display:grid;gap:5px}
+  .reading{display:flex;align-items:baseline;justify-content:space-between;gap:4px;font-size:13px;font-weight:700}
+  .reading strong{font-size:23px;color:#a85057;font-variant-numeric:tabular-nums}
+  .picture{position:relative;width:190px;height:70px;display:flex;align-items:center;overflow:hidden;border-radius:15px;background:repeating-linear-gradient(90deg,#fff2e5 0 9px,#ffeadd 9px 10px)}
+  [data-visual]{height:48px;width:0;flex:none;border-radius:10px 15px 15px 10px;background:linear-gradient(90deg,#ffab76,#f47879);box-shadow:inset 0 -7px 0 #dc696e,0 3px 7px #e5a998;transition:width .38s cubic-bezier(.2,.8,.2,1);position:relative}
+  [data-visual]::after{content:"";position:absolute;top:8px;left:8px;right:8px;height:8px;border-radius:8px;background:#ffffff80}
+  .controls{height:57px;flex:none;display:flex;gap:10px}
+  button{border:0;cursor:pointer;min-width:52px;min-height:52px;font:800 17px system-ui,sans-serif;transition:transform .16s,background .16s,box-shadow .16s}
+  button:active{transform:scale(.93)}
+  .control{flex:1;border-radius:17px;background:#744e72;color:white;box-shadow:0 4px 0 #523852}
+  .control:disabled{opacity:.46;cursor:default}
+  .question{height:37px;flex:none;display:flex;align-items:center;gap:7px;font-size:15px;font-weight:750}
+  .question .bubble{padding:5px 10px;border-radius:12px;background:#ffe5c5;color:#9b4f49;white-space:nowrap}
+  .options{height:54px;flex:none;display:flex;gap:8px}
+  .option{flex:1;border-radius:16px;background:#fff;border:2px solid #e9b78b;color:#9a4e4e;box-shadow:0 3px 0 #ecd4bc;font-size:21px}
+  .option.chosen{background:#ffe0c4;transform:scale(.96)}
+  #feedback{height:21px;flex:none;text-align:center;font-size:14px;font-weight:800;color:#a85057;line-height:21px}
+  #feedback.pop{animation:pop .3s ease-out}
+  @keyframes pop{from{transform:scale(.8);opacity:.2}to{transform:scale(1);opacity:1}}
+</style>
+<div id="activity">
+  <div id="title"></div>
+  <div class="scene">
+    <div class="readings">
+      <div class="reading"><span id="xname"></span><strong id="xvalue" data-x=""></strong></div>
+      <div class="reading"><span id="yname"></span><strong data-output data-value=""></strong></div>
+    </div>
+    <div class="picture"><div data-visual data-dim="w"></div></div>
+  </div>
+  <div class="controls">
+    <button class="control" data-action="dec" type="button"></button>
+    <button class="control" data-action="inc" type="button"></button>
+  </div>
+  <div class="question"><span id="ask"></span><span class="bubble" id="askx"></span><span id="askname"></span></div>
+  <div class="options" id="options"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, t=key=>Studio.t(key);
+  const $=selector=>document.querySelector(selector);
+  const fmt=n=>String(Number(n.toFixed(8)));
+  $('#title').textContent=t('title');
+  $('#xname').textContent=t('xname');
+  $('#yname').textContent=t('yname');
+  $('#ask').textContent=t('ask');
+  $('#askx').textContent=fmt(p.ask.x);
+  $('#askname').textContent=t('yname');
+  $('[data-action="dec"]').textContent=t('less');
+  $('[data-action="inc"]').textContent=t('more');
+  let x=p.x.start, finished=false;
+  function render(){
+    const y=p.law.k*x+p.law.b;
+    $('#xvalue').textContent=fmt(x);
+    $('#xvalue').setAttribute('data-x',fmt(x));
+    $('[data-output]').textContent=fmt(y);
+    $('[data-output]').setAttribute('data-value',fmt(y));
+    $('[data-visual]').style.width=fmt(y*p.y.unitsPer)+'px';
+    $('[data-action="dec"]').disabled=x-p.x.step<p.x.min;
+    $('[data-action="inc"]').disabled=x+p.x.step>p.x.max;
+  }
+  for(const [action,direction] of [['dec',-1],['inc',1]]){
+    $('[data-action="'+action+'"]').addEventListener('click',()=>{
+      if(finished)return;
+      x=Math.min(p.x.max,Math.max(p.x.min,Number((x+direction*p.x.step).toFixed(8))));
+      render();
+      Studio.event(action,{x:fmt(x)});
+    });
+  }
+  p.ask.options.forEach(value=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='option';
+    button.textContent=fmt(value);
+    button.setAttribute('data-option',fmt(value));
+    button.addEventListener('click',()=>{
+      if(finished)return;
+      document.querySelectorAll('.option').forEach(b=>b.classList.remove('chosen'));
+      button.classList.add('chosen');
+      $('#feedback').textContent='';
+      Studio.answer({value});
+    });
+    $('#options').append(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    const feedback=$('#feedback');
+    feedback.textContent=t(correct?'right':'wrong');
+    feedback.classList.remove('pop');
+    void feedback.offsetWidth;
+    feedback.classList.add('pop');
+    if(correct){
+      finished=true;
+      document.querySelectorAll('button').forEach(b=>b.disabled=true);
+      Studio.done();
+    }
+  });
+  render();
+  Studio.ready();
+})();
+
+</script>

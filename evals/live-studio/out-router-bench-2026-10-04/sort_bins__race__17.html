@@ -1,0 +1,130 @@
+<style>
+*{box-sizing:border-box}
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#40352e}
+#stage{width:360px;height:320px;overflow:hidden;padding:10px;background:#fff8eb;display:flex;flex-direction:column;gap:7px}
+#heading{height:28px;flex:none;display:flex;align-items:center;gap:8px}
+#heading svg{width:26px;height:26px;flex:none}
+#title{font-size:17px;line-height:1.1;font-weight:800;color:#654b39}
+#instruction{height:28px;flex:none;margin:0;font-size:12px;line-height:1.2;color:#79695a}
+#cards{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(2,52px);gap:6px 8px;flex:none}
+.card{min-width:0;height:52px;border:2px solid #efd9b7;border-radius:15px;background:#fff;box-shadow:0 3px 0 #e7d5ba;color:#493b31;font:700 14px/1.1 inherit;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s,opacity .2s;display:flex;align-items:center;justify-content:center;padding:4px;text-align:center;touch-action:manipulation}
+.card.selected{transform:translateY(-4px) scale(1.025);border-color:#e7a954;box-shadow:0 7px 14px #c9843c45,0 3px 0 #e7bd7e}
+.card:active,.bin:active{transform:scale(.97)}
+.card.shake{animation:shake .35s ease}
+@keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(4px)}75%{transform:translateX(-2px)}}
+#bins{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;flex:1;min-height:0}
+.bin{min-width:0;min-height:0;border:2px solid #e8c996;border-radius:17px;background:#fff0d6;box-shadow:inset 0 3px 0 #fff9ee;display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px 4px;cursor:pointer;transition:transform .15s,border-color .2s,background .2s;touch-action:manipulation}
+.bin-name{min-height:20px;width:100%;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;line-height:1.05;font-weight:800;color:#755735}
+.bin-items{width:100%;flex:1;min-height:0;display:flex;flex-wrap:wrap;align-content:flex-start;justify-content:center;gap:3px;overflow:hidden}
+.placed{font-size:10px;line-height:1.05;font-weight:700;text-align:center;border:1px solid #efd9b7;border-radius:9px;background:#fffdf8;padding:4px 5px;color:#493b31;animation:land .28s ease both}
+@keyframes land{from{transform:scale(.7) translateY(-7px);opacity:.3}to{transform:scale(1);opacity:1}}
+#feedback{height:18px;flex:none;text-align:center;font-size:12px;line-height:18px;font-weight:700;color:#68845c}
+#feedback.bad{color:#b8755c}
+#feedback.complete{color:#68845c}
+</style>
+<div id="stage">
+  <div id="heading">
+    <svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 2.5c2.2 3.7 8.5 8.3 8.5 14.1a8.5 8.5 0 0 1-17 0C5.5 10.8 11.8 6.2 14 2.5Z" fill="#f2bd72"/><path d="M10 17.5c.4 2.2 1.8 3.4 3.8 3.8" fill="none" stroke="#fff8eb" stroke-width="2" stroke-linecap="round"/></svg>
+    <div id="title"></div>
+  </div>
+  <p id="instruction"></p>
+  <div id="cards"></div>
+  <div id="bins"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+const p=Studio.params;
+const title=document.getElementById("title");
+const instruction=document.getElementById("instruction");
+const cardsEl=document.getElementById("cards");
+const binsEl=document.getElementById("bins");
+const feedback=document.getElementById("feedback");
+title.textContent=Studio.t("title");
+instruction.textContent=Studio.t("instr");
+const cardEls=new Map();
+const binEls=new Map();
+let selected=null;
+let pending=null;
+let finished=false;
+for(const key of p.bins){
+  const bin=document.createElement("div");
+  bin.className="bin";
+  bin.dataset.bin=key;
+  const name=document.createElement("div");
+  name.className="bin-name";
+  name.textContent=Studio.t(key);
+  const items=document.createElement("div");
+  items.className="bin-items";
+  bin.append(name,items);
+  bin.addEventListener("click",()=>{
+    if(!selected||pending||finished)return;
+    pending={card:selected,bin:key};
+    Studio.answer({card:selected,bin:key});
+  });
+  binsEl.append(bin);
+  binEls.set(key,{bin,items});
+}
+for(const key of p.cards){
+  const card=document.createElement("button");
+  card.type="button";
+  card.className="card";
+  card.dataset.card=key;
+  card.dataset.selected="false";
+  card.textContent=Studio.t(key);
+  card.addEventListener("click",()=>{
+    if(pending||finished||card.dataset.placed)return;
+    if(selected===key){
+      selected=null;
+      card.dataset.selected="false";
+      card.classList.remove("selected");
+      return;
+    }
+    if(selected){
+      const prior=cardEls.get(selected);
+      prior.dataset.selected="false";
+      prior.classList.remove("selected");
+    }
+    selected=key;
+    card.dataset.selected="true";
+    card.classList.add("selected");
+  });
+  cardsEl.append(card);
+  cardEls.set(key,card);
+}
+Studio.onVerdict(({correct})=>{
+  if(!pending)return;
+  const move=pending;
+  pending=null;
+  const card=cardEls.get(move.card);
+  if(correct){
+    selected=null;
+    card.dataset.selected="false";
+    card.classList.remove("selected");
+    card.removeAttribute("data-card");
+    card.dataset.placed=move.bin;
+    card.className="placed";
+    binEls.get(move.bin).items.append(card);
+    feedback.className="";
+    feedback.textContent=Studio.t("right");
+    if(p.cards.every(key=>cardEls.get(key).hasAttribute("data-placed"))){
+      finished=true;
+      feedback.className="complete";
+      feedback.textContent=Studio.t("done");
+      Studio.done();
+    }
+  }else{
+    selected=null;
+    card.dataset.selected="false";
+    card.classList.remove("selected");
+    card.classList.add("shake");
+    feedback.className="bad";
+    feedback.textContent=Studio.t("wrong");
+    setTimeout(()=>card.classList.remove("shake"),380);
+  }
+});
+Studio.ready();
+})();
+
+</script>

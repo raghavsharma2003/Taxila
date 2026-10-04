@@ -1,0 +1,217 @@
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    width: 360px;
+    height: 320px;
+    overflow: hidden;
+    font-family: system-ui, sans-serif;
+    color: #49362e;
+    background: #fff7e9;
+  }
+  .stage {
+    width: 360px;
+    height: 320px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .title {
+    min-height: 25px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 800;
+    color: #87492f;
+  }
+  .readouts {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 750;
+  }
+  .readout {
+    padding: 4px 11px;
+    border-radius: 14px;
+    background: #ffe4bd;
+  }
+  .scene {
+    position: relative;
+    height: 76px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    border-radius: 16px;
+    background: #e9f4ec;
+    overflow: hidden;
+  }
+  .ground {
+    position: absolute;
+    bottom: 8px;
+    width: 166px;
+    height: 6px;
+    border-radius: 5px;
+    background: #8aae81;
+  }
+  .tower {
+    position: absolute;
+    bottom: 14px;
+    width: 62px;
+    min-height: 0;
+    border: 3px solid #c66c3b;
+    border-radius: 9px 9px 3px 3px;
+    background: repeating-linear-gradient(
+      to bottom,
+      #f6a75e 0,
+      #f6a75e 11px,
+      #ffce8e 11px,
+      #ffce8e 15px
+    );
+    transition: height 380ms cubic-bezier(.2,.8,.2,1), transform 180ms ease;
+    transform-origin: center bottom;
+  }
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  button {
+    min-width: 76px;
+    height: 52px;
+    border: 0;
+    border-radius: 16px;
+    background: #e58b52;
+    color: white;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 800;
+    box-shadow: 0 3px 0 #b96337;
+    cursor: pointer;
+    transition: transform 120ms ease, background 160ms ease;
+    touch-action: manipulation;
+  }
+  button:active { transform: scale(.94); }
+  button:focus-visible { outline: 3px solid #49362e; outline-offset: 2px; }
+  .question {
+    min-height: 20px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 750;
+  }
+  .options {
+    display: flex;
+    justify-content: center;
+    gap: 9px;
+  }
+  .options button {
+    min-width: 88px;
+    height: 52px;
+    background: #669879;
+    box-shadow: 0 3px 0 #477457;
+    font-size: 18px;
+  }
+  .feedback {
+    min-height: 20px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 800;
+    color: #477457;
+  }
+  .feedback.error { color: #a64f3c; }
+  .complete .tower { animation: glow 700ms ease-in-out infinite alternate; }
+  @keyframes glow {
+    from { filter: brightness(1); }
+    to { filter: brightness(1.18); }
+  }
+</style>
+<div class="stage" id="stage">
+  <div class="title" id="title"></div>
+  <div class="readouts">
+    <div class="readout" id="xread"></div>
+    <div class="readout" id="yread" data-output data-value=""></div>
+  </div>
+  <div class="scene" aria-hidden="true">
+    <div class="ground"></div>
+    <div class="tower" id="visual" data-visual data-dim="h"></div>
+  </div>
+  <div class="controls">
+    <button type="button" data-action="dec" id="dec"></button>
+    <button type="button" data-action="inc" id="inc"></button>
+  </div>
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const p = Studio.params;
+  const words = key => Studio.t(key);
+  const stage = document.getElementById("stage");
+  const xread = document.getElementById("xread");
+  const yread = document.getElementById("yread");
+  const visual = document.getElementById("visual");
+  const dec = document.getElementById("dec");
+  const inc = document.getElementById("inc");
+  const feedback = document.getElementById("feedback");
+  let x = p.x.start;
+  let completed = false;
+
+  document.getElementById("title").textContent = words("title");
+  dec.textContent = words("less");
+  inc.textContent = words("more");
+  document.getElementById("question").textContent = words("ask") + " " + p.ask.x;
+
+  const format = value => String(Number(value.toFixed(10)));
+  function paint() {
+    const y = p.law.k * x + p.law.b;
+    xread.textContent = words("xname") + " " + format(x);
+    yread.textContent = words("yname") + " " + format(y);
+    yread.dataset.value = format(y);
+    xread.dataset.x = format(x);
+    visual.style.height = (y * p.y.unitsPer) + "px";
+    dec.disabled = x <= p.x.min;
+    inc.disabled = x >= p.x.max;
+  }
+  function change(amount) {
+    const next = Math.max(p.x.min, Math.min(p.x.max, x + amount * p.x.step));
+    if (next !== x) {
+      x = next;
+      paint();
+      visual.style.transform = "scaleX(1.07)";
+      setTimeout(() => { visual.style.transform = ""; }, 160);
+      Studio.event("change", { x });
+    }
+  }
+  dec.addEventListener("click", () => change(-1));
+  inc.addEventListener("click", () => change(1));
+
+  for (const option of p.ask.options) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = format(option);
+    button.dataset.option = format(option);
+    button.addEventListener("click", () => {
+      Studio.answer({ value: option });
+      Studio.event("answer", { value: option });
+    });
+    document.getElementById("options").appendChild(button);
+  }
+
+  Studio.onVerdict(({ correct }) => {
+    feedback.classList.toggle("error", !correct);
+    feedback.textContent = correct ? words("right") : words("wrong");
+    if (correct && !completed) {
+      completed = true;
+      stage.classList.add("complete");
+      feedback.textContent = words("done");
+      Studio.done();
+    }
+  });
+
+  paint();
+  Studio.ready();
+})();
+
+</script>

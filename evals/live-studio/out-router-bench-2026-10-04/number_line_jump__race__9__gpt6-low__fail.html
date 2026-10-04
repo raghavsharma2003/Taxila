@@ -1,0 +1,144 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff7e9;color:#473c56}
+  .game{position:relative;width:360px;height:320px;padding:16px 18px;overflow:hidden;background:radial-gradient(circle at 92% 8%,#ffe3ab 0 48px,transparent 49px),#fff7e9}
+  h1{margin:0;font-size:19px;line-height:25px;font-weight:800}
+  .instr{margin:3px 0 0;font-size:13px;line-height:17px}
+  .card{position:relative;margin-top:13px;height:151px;border-radius:22px;background:#fff;box-shadow:0 5px 0 #eddcc7;padding:12px}
+  .target{display:flex;align-items:center;justify-content:center;gap:10px;height:37px;font-size:17px;font-weight:700}
+  [data-target]{display:inline-flex;align-items:center;justify-content:center;min-width:43px;height:36px;padding:0 7px;border-radius:12px;background:#ffda8c;color:#563857;font-size:21px}
+  .line{position:absolute;left:26px;right:26px;top:101px;height:2px;border-radius:2px;background:#a78caa}
+  .ticks{position:absolute;left:26px;right:26px;top:0;height:100%;pointer-events:none}
+  [data-tick]{position:absolute;top:96px;width:1px;height:37px;transform:translateX(-50%);text-align:center}
+  .tick-stem{position:absolute;top:0;left:50%;width:2px;height:11px;transform:translateX(-50%);border-radius:2px;background:#8e7296}
+  .tick-label{position:absolute;top:13px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:700;white-space:nowrap}
+  [data-marker]{position:absolute;top:66px;left:26px;width:25px;height:31px;transform:translateX(-50%);transition:left .22s cubic-bezier(.2,.9,.3,1.2);pointer-events:none}
+  [data-marker] svg{display:block;width:25px;height:31px;filter:drop-shadow(0 2px 1px #ae8c91)}
+  [data-marker].hop svg{animation:hop .48s ease-in-out}
+  @keyframes hop{50%{transform:translateY(-15px) rotate(9deg)}}
+  .controls{display:flex;justify-content:center;gap:12px;margin-top:15px}
+  button{height:58px;min-width:71px;border:0;border-radius:18px;background:#e9d9eb;color:#493956;font:800 16px system-ui,sans-serif;box-shadow:0 4px 0 #c8b3cd;cursor:pointer;transition:transform .12s,box-shadow .12s}
+  button:active{transform:translateY(3px) scale(.96);box-shadow:0 1px 0 #c8b3cd}
+  button:disabled{opacity:.5;cursor:default}
+  [data-action=check]{min-width:115px;background:#ee9c78;box-shadow:0 4px 0 #ca755b}
+  .feedback{height:23px;margin-top:9px;text-align:center;font-size:15px;font-weight:750}
+  .feedback.wrong{animation:soft .35s ease}
+  @keyframes soft{50%{transform:translateX(4px)}}
+  .complete{display:none;position:absolute;inset:74px 18px 16px;border-radius:23px;background:#fff;align-items:center;justify-content:center;text-align:center;font-size:26px;font-weight:800;color:#6e527d}
+</style>
+<div class="game">
+  <h1 id="title"></h1>
+  <p class="instr" id="instr"></p>
+  <div class="card" id="item" data-item="">
+    <div class="target"><span data-target></span></div>
+    <div class="line"></div>
+    <div class="ticks" id="ticks"></div>
+    <div data-marker data-value="">
+      <svg viewBox="0 0 25 31" aria-hidden="true"><path d="M12.5 30C9 23 2 18 2 11a10.5 10.5 0 0 1 21 0c0 7-7 12-10.5 19Z" fill="#e87876"/><circle cx="12.5" cy="11" r="4" fill="#fff7e9"/></svg>
+    </div>
+  </div>
+  <div class="controls">
+    <button type="button" data-action="left"></button>
+    <button type="button" data-action="right"></button>
+    <button type="button" data-action="check"></button>
+  </div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+  <div class="complete" id="complete"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const $=s=>document.querySelector(s);
+  const round=n=>Math.round(n*1e6)/1e6;
+  const count=Math.round((p.max-p.min)/p.step);
+  const value=k=>round(p.min+k*p.step);
+  const decimals=n=>{const s=String(round(n));return s.includes(".")?s.split(".")[1].length:0};
+  const places=Math.max(decimals(p.min),decimals(p.max),decimals(p.step),...p.items.map(i=>decimals(i.target)));
+  function fraction(n){
+    let den=1;
+    for(let d=1;d<=1000;d++){if(Math.abs(n*d-Math.round(n*d))<1e-6){den=d;break}}
+    let num=Math.round(n*den);
+    const gcd=(a,b)=>b?gcd(b,a%b):a;
+    const g=gcd(Math.abs(num),den);
+    num/=g;den/=g;
+    return den===1?String(num):num+"/"+den;
+  }
+  const format=n=>p.format==="fraction"?fraction(n):p.format==="integer"?String(Math.round(n)):round(n).toFixed(places).replace(/\.?0+$/,"");
+  const ticks=$("#ticks"),marker=$("[data-marker]"),feedback=$("#feedback");
+  let index=0,k=Math.max(0,Math.min(count,Math.round((p.start-p.min)/p.step))),waiting=false,finished=false;
+  $("#title").textContent=Studio.t("title");
+  $("#instr").textContent=Studio.t("instr");
+  for(const action of ["left","right","check"])$(`[data-action="${action}"]`).textContent=Studio.t(action==="right"?"right_btn":action);
+  for(let i=0;i<=count;i++){
+    const tick=document.createElement("div");
+    tick.dataset.tick=String(value(i));
+    tick.style.left=(i/count*100)+"%";
+    const stem=document.createElement("span");
+    stem.className="tick-stem";
+    tick.append(stem);
+    if(i%p.labelEvery===0){
+      const label=document.createElement("span");
+      label.className="tick-label";
+      label.textContent=format(value(i));
+      tick.append(label);
+    }
+    ticks.append(tick);
+  }
+  function render(){
+    marker.style.left=`calc(26px + (100% - 52px) * ${k/count})`;
+    marker.dataset.value=String(value(k));
+    $("[data-action=left]").disabled=waiting||k===0;
+    $("[data-action=right]").disabled=waiting||k===count;
+    $("[data-action=check]").disabled=waiting;
+  }
+  function showItem(){
+    $("#item").dataset.item=String(p.items[index].id);
+    $("[data-target]").textContent=format(p.items[index].target);
+    k=Math.max(0,Math.min(count,Math.round((p.start-p.min)/p.step)));
+    feedback.textContent="";
+    feedback.className="feedback";
+    render();
+  }
+  for(const [direction,delta] of [["left",-1],["right",1]]){
+    $(`[data-action="${direction}"]`).addEventListener("click",()=>{
+      if(waiting||finished)return;
+      k=Math.max(0,Math.min(count,k+delta));
+      feedback.textContent="";
+      Studio.event("move",{direction,value:value(k)});
+      render();
+    });
+  }
+  $("[data-action=check]").addEventListener("click",()=>{
+    if(waiting||finished)return;
+    waiting=true;render();
+    Studio.event("check",{value:value(k)});
+    Studio.answer({value:value(k)});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!waiting||finished)return;
+    feedback.textContent=Studio.t(correct?"right":"wrong");
+    feedback.className=correct?"feedback":"feedback wrong";
+    if(correct){
+      marker.classList.remove("hop");
+      void marker.offsetWidth;
+      marker.classList.add("hop");
+      setTimeout(()=>{
+        marker.classList.remove("hop");
+        index++;
+        waiting=false;
+        if(index<p.items.length)showItem();
+        else{
+          finished=true;
+          $("#complete").textContent=Studio.t("done");
+          $("#complete").style.display="flex";
+          Studio.done();
+        }
+      },520);
+    }else{waiting=false;render()}
+  });
+  showItem();
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,174 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e8;font-family:Arial,sans-serif}
+  #card{width:360px;height:320px;position:relative;overflow:hidden;background:linear-gradient(180deg,#fff8ea 0%,#fff1d8 100%)}
+  #chart{display:block;width:360px;height:320px}
+  .title{fill:#6d4227;font-size:20px;font-weight:700}
+  .prompt{fill:#9a6040;font-size:14px;font-weight:700}
+  .axis-title{fill:#9a6040;font-size:12px;font-weight:700;letter-spacing:.4px}
+  .tick{fill:#9a6040;font-size:11px;font-weight:700}
+  .label{fill:#6d4227;font-size:11px;font-weight:700}
+  .grid{stroke:#e9cfac;stroke-width:1}
+  .axis{stroke:#bb7d4d;stroke-width:2}
+  .bar{fill:#f59a54;stroke:#d97736;stroke-width:2;transform-box:fill-box;transform-origin:center bottom;transform:scaleY(0);transition:transform .72s cubic-bezier(.18,.9,.25,1)}
+  .grown .bar{transform:scaleY(1)}
+  .bar-glow{fill:#ffd5a8;opacity:.45;pointer-events:none;transform-box:fill-box;transform-origin:center bottom;transform:scaleY(0);transition:transform .72s cubic-bezier(.18,.9,.25,1)}
+  .grown .bar-glow{transform:scaleY(1)}
+  .column{fill:transparent;cursor:pointer}
+  .column:active{opacity:.55}
+  .chosen .bar{transform:scaleY(1) translateY(-2px);filter:drop-shadow(0 4px 3px rgba(141,75,32,.22))}
+  .wrong .bar{animation:shake .34s ease-in-out}
+  .correct .bar{animation:happy .5s ease-in-out}
+  .status{fill:#b5593b;font-size:14px;font-weight:700}
+  .done-status{fill:#63915a;font-size:15px;font-weight:700}
+  @keyframes shake{
+    0%,100%{transform:scaleY(1) translateX(0)}
+    25%{transform:scaleY(1) translateX(-5px)}
+    75%{transform:scaleY(1) translateX(5px)}
+  }
+  @keyframes happy{
+    0%,100%{transform:scaleY(1) translateY(0)}
+    45%{transform:scaleY(1) translateY(-8px)}
+  }
+</style>
+<div id="card">
+  <svg id="chart" viewBox="0 0 360 320" role="img">
+    <text id="title" class="title" x="180" y="22" text-anchor="middle"></text>
+    <text id="prompt" class="prompt" x="180" y="46" text-anchor="middle"></text>
+    <text id="status" class="status" x="180" y="46" text-anchor="middle"></text>
+    <g id="plot"></g>
+  </svg>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params;
+  var svg=document.getElementById('chart');
+  var plot=document.getElementById('plot');
+  var prompt=document.getElementById('prompt');
+  var status=document.getElementById('status');
+  document.getElementById('title').textContent=Studio.t('title');
+  prompt.textContent=Studio.t('ask');
+
+  var data=p.data;
+  var maxValue=0;
+  for(var i=0;i<data.length;i++){if(data[i].value>maxValue)maxValue=data[i].value}
+  var raw=maxValue/5;
+  var power=Math.pow(10,Math.floor(Math.log(raw||1)/Math.LN10));
+  var unit=raw/power;
+  var nice=unit<=1?1:(unit<=2?2:(unit<=5?5:10));
+  var step=nice*power;
+  var axisMax=Math.ceil(maxValue/step)*step;
+  if(axisMax===0){axisMax=step}
+
+  var left=50, right=342, top=66, base=244, height=base-top;
+  var ns='http://www.w3.org/2000/svg';
+  function el(name,attrs,text){
+    var node=document.createElementNS(ns,name);
+    for(var k in attrs){node.setAttribute(k,attrs[k])}
+    if(text!==undefined){node.textContent=text}
+    return node;
+  }
+
+  var titleAxis=el('text',{class:'axis-title',x:15,y:(top+base)/2,'text-anchor':'middle',transform:'rotate(-90 15 '+((top+base)/2)+')'});
+  titleAxis.textContent=Studio.t('yaxis');
+  plot.appendChild(titleAxis);
+
+  for(var tick=0;tick<=axisMax+step*.001;tick+=step){
+    var y=base-(tick/axisMax)*height;
+    plot.appendChild(el('line',{class:'grid',x1:left+2,y1:y,x2:right,y2:y}));
+    var tickText=el('text',{class:'tick',x:left-8,y:y+4,'text-anchor':'end','data-tick':String(tick)},String(tick));
+    plot.appendChild(tickText);
+  }
+  plot.appendChild(el('line',{class:'axis',x1:left,y1:top,x2:left,y2:base}));
+  plot.appendChild(el('line',{class:'axis',x1:left,y1:base,x2:right,y2:base}));
+
+  var columnWidth=(right-left)/data.length;
+  var pending=false,finished=false;
+  for(var j=0;j<data.length;j++){
+    (function(item,index){
+      var cx=left+columnWidth*(index+.5);
+      var barWidth=Math.min(36,columnWidth-14);
+      var barHeight=(item.value/axisMax)*height;
+      var y=base-barHeight;
+      var group=el('g',{class:'bar-group'});
+      var bar=el('rect',{
+        class:'bar',
+        x:cx-barWidth/2,
+        y:y,
+        width:barWidth,
+        height:barHeight,
+        rx:8,
+        ry:8,
+        'data-bar':item.key,
+        'data-value':String(item.value)
+      });
+      var shine=el('rect',{
+        class:'bar-glow',
+        x:cx-barWidth/2+5,
+        y:y+5,
+        width:7,
+        height:Math.max(0,barHeight-10),
+        rx:4,
+        ry:4
+      });
+      var label=el('text',{class:'label',x:cx,y:274,'text-anchor':'middle'});
+      label.textContent=Studio.t(item.key);
+      var hit=el('rect',{
+        class:'column',
+        x:left+columnWidth*index,
+        y:58,
+        width:columnWidth,
+        height:228,
+        'data-column':item.key
+      });
+      group.appendChild(bar);
+      group.appendChild(shine);
+      group.appendChild(label);
+      group.appendChild(hit);
+      hit.addEventListener('click',function(){
+        if(pending||finished){return}
+        pending=true;
+        group.classList.add('chosen');
+        Studio.event('tap',{key:item.key});
+        Studio.answer(item.key);
+      });
+      plot.appendChild(group);
+      group._hit=hit;
+    })(data[j],j);
+  }
+
+  Studio.onVerdict(function(result){
+    if(!pending||finished){return}
+    var chosen=plot.querySelector('.chosen');
+    if(result.correct){
+      finished=true;
+      if(chosen){chosen.classList.remove('chosen');chosen.classList.add('correct')}
+      prompt.style.display='none';
+      status.classList.remove('status');
+      status.classList.add('done-status');
+      status.textContent=Studio.t('right');
+      Studio.done();
+      setTimeout(function(){status.textContent=Studio.t('done')},520);
+    }else{
+      if(chosen){chosen.classList.remove('chosen');chosen.classList.add('wrong')}
+      prompt.style.display='none';
+      status.textContent=Studio.t('wrong');
+      setTimeout(function(){
+        if(chosen){chosen.classList.remove('wrong')}
+        status.textContent='';
+        prompt.style.display='';
+        pending=false;
+      },430);
+    }
+  });
+
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      plot.classList.add('grown');
+      Studio.ready();
+    });
+  });
+})();
+
+</script>

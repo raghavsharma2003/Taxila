@@ -3208,3 +3208,229 @@ called 31x, the check question graded wrong 22x, labels overlapping 16x, flows t
 
 ## `owner-reset-2026-10-04` (2026-10-04)
 Owner reset after rating the live product 0/100: the 15 requirements in docs/design/OWNER-RESET-2026-10-04.md bind every stream (ages 9-15 design, class-calibrated difficulty, real-time games, cinematic animation, reasoning, diversion handling, no child-triggered ending, steering, zero visible failure, hands-free duplex, working controls, frequent adaptive generation). Outranked only by child safety.
+
+## Signals build (2026-10-04) — pending merge from `inbox/signals.json`
+Built per `docs/design/signals/SIGNALS-SPEC.md` in new modules only: `server/signals/**`, `src/signals/**`,
+`shared/signals.ts`, `evals/signals/**`, tests `tests/signals-{server,client,lint}.test.mjs`. Nothing is wired into a
+W2-E/W2-I file; the integration steps are in the spec §8.2 plus the deltas listed under `sig-layer-evidence-not-authority`.
+
+### sig-layer-evidence-not-authority
+**Decision:** `server/signals/index.js` exports one pure function, `step(session, input, { off }) → { frame, next }`. The
+`SignalFrame` is evidence read by the proposers that already exist (Director, comprehension, RELATIONAL-OS `appraise()` /
+`decide()`, persona/vibe, the Moment); it proposes nothing, so the kernel's authority order is unchanged. On any safety
+turn the frame is `ABSTAIN` with no licence, no cause candidate, no evidence weight and no `sig:*` reason code (10k
+generated turns, `tests/signals-server.test.mjs`). Kill switches `TAXILA_SIGNALS=off|shadow|on` and
+`TAXILA_SIGNALS_OFF=<feature ids>` are parsed by `signalsMode(env)` (the module never reads `process.env`).
+Integration deltas vs SIGNALS-SPEC §8.2 found while building: (1) step 13 must land SERVER FIRST — `validateUtterance`
+rejects unknown features with a 400, so a client sending `onsetContentMs/echoRisk/speakerShift/nucleiPerSec/qDur/qLevel/
+qBed` before `FEATURE_RANGES` admits them would lose the whole utterance (`EXTRA_RANGES` in `src/signals/index.ts` lists
+the ranges); (2) step 10 should call the exported `clipMasteryNudge()` rather than re-implementing the 0.03 cap; (3)
+`SignalInput` carries consumed fields the draft type lacked (`gaming`, `ledger.wheelSpin`, `voice.baseline.onsetMs`,
+`item.key/keyNum`, `plannedMinutes`, `deltaFitted/delta`).
+- **Reverse if:** a state needs its own proposal rank to beat a lower-ranked proposal it never reaches through a proposer
+  (none known).
+
+### sig-closed-vocabulary-lint
+**Decision:** `tests/signals-lint.test.mjs` fails the build on
+`/frustrat|bored|anxi|sad\b|happy|arous|valence|mood|stress|tired|fatigue|confus|delight|emotion|feel|upset|angry|vibe/i`
+in any identifier, key or string literal (comments stripped) under `server/signals`, `src/signals`, `shared/signals.ts`;
+allowlist fixed to read-only input names (`frustration_words`, `pride_words`, `tiredSays`, `tiredSaid`, `TeacherAffect`).
+A self-check proves the scanner catches a planted word.
+- **Reverse if:** Microsoft confirms in writing that a named-state vocabulary is acceptable — the lint stays even then for
+  the parent-facing reasons in RELATIONAL-OS.
+
+### sig-text-baselines-session-only
+**Decision:** only the acoustic baselines persist (M1+, unchanged `voice_baseline`). Every text and interaction baseline
+(session median words, question rate, alignment, filler/repair rates) lives in `lesson.state.sig` for the lesson and is
+cleared at lesson end; band priors (`BAND_PRIORS`, [U]) seed it. No cross-session text profile in any mode.
+- **Reverse if:** an E1 result shows a session-only text baseline misfiring above the S1 fairness bar where a persisted
+  one would fix it, *and* counsel clears it under NM-3.
+
+### sig-latency-timing-only-until-delta
+**Decision:** until the population δ(form, b − θ, band) table passes SG-M10, onset latency (A1/A2) feeds only D11 turn
+timing and D6 pace; the E part of D1, the E path of D2 and I6 require `input.deltaFitted`. Tested: an extreme onset z with
+δ unfitted produces no `evidenceWeight` and no `verifyDue`.
+- **Reverse if:** SG-M10 passes (δ explains ≥ 10% of within-child onset variance).
+
+### sig-synthetic-proves-measurement-only
+**Decision:** ES-1 (latent-state traces) and ES-2 (TTS clips) gate implementation and extractor measurement; no ship bar
+about a state's validity may cite them. Built evidence for why: TTS renders neither child-like filled pauses
+(`rj-sig-tts-fillers-validate-a7`) nor Hindi continuation rises (`rj-sig-tts-hindi-lh`).
+- **Reverse:** never (method rule); superseded only by a real-child corpus.
+
+### sig-supersede-sidecar-inputs
+**Decision (PROPOSED, owner O-7):** narrow `stt-v3-paralinguistic-sidecar`: F0 level and range, energy, voice quality and
+sigh events are not decision inputs. `server/signals` reads none of them (F0 only as q via A14; RMS only as q via qLevel;
+A9 end slope decision-excluded).
+- **Reverse if:** an SG-M1-style per-child LR test passes for a feature *and* the Microsoft answer allows it.
+
+### sig-session-hashes-not-text
+**Decision:** the per-item attempt list in `SignalSession` holds `{ h: FNV-1a(normalised content tokens), num?, v }`, never
+the answer text; a test asserts no child word survives in the serialised session. Needed for I1 (repeated vs different
+wrong answer), I2 cycling and I4 retry without storing text.
+- **Reverse if:** a consumer needs the text itself (then it reads the turn, never the session).
+
+### sig-l15-wordy-forms-only
+**Decision:** L15 (answer words / session median) is computed only on `explain`, `word` and `read_aloud` items.
+ES-1: choiceDue turn-level precision 0.447 → 0.543, episode-level precision 0.788 / recall 0.833 after the change
+(`m-sig-es1-2026-10-04`); supersedes the spec-v1 behaviour (`rj-sig-l15-on-number-items`).
+- **Reverse if:** E1 coders show a withdrawn child whose only signal is shrinking numeric answers.
+
+### sig-repeat-wrong-unproductive
+**Decision:** at I1 ≥ 2, repeating an identical wrong answer counts toward `stuck_unproductive` (I1's own definition calls
+it a held belief; the §3.3 behaviour for it is "address the error, don't re-ask"). ES-1 stuck_unproductive recall
+0.635 → 0.694, precision 0.849 → 0.860.
+- **Reverse if:** SG-M13 shows waiting (productive handling) recovers repeated-answer turns better than addressing them.
+
+### sig-qbed-speech-bed
+**Decision:** new q term `qBed` (`src/signals/q.ts bedQ`): more than 30% speech-flagged frames in the 600 ms before the
+teacher's audio ended on the device → the turn's acoustics are unreliable (q = 0). Found by ES-2: TV babble at 10/5/0 dB
+SNR held A1 within ±60 ms on only 19-20% of clips; qBed flagged 100% of TV runs and 0/600 clean runs. Conservative by
+design (a loudspeaker's residual echo would also trip it, which only drops acoustics).
+- **Reverse if:** a browser loudspeaker run shows qBed dropping > 20% of clean turns, or a real-room recording set shows
+  A1 accurate under speech beds.
+
+### sig-a16-nuclei-q-only
+**Decision:** `src/signals/rate.ts nucleiPerSec` (voiced energy peaks per speech second, after de Jong & Wempe 2009) is a
+q-only cross-check: on lanes without ASR confidence the proxy fails a rule when ASR articulation ÷ nuclei falls outside
+[0.2, 1.25]. ES-2 clean, correctly-transcribed clips: 97.8% inside the band (p05 0.60, p50 0.80, p95 1.12; n = 600), i.e.
+≈ 2.2% false "misheard" flags from this rule alone. Its ±12 dB invariance is poor (5%-bar 0.27 / 0.02), so it is never a
+state and never a baseline.
+- **Reverse if:** SG-M11 shows the proxy (with or without A16) under AUC 0.75 for misheard turns.
+
+### sig-laugh-detector-off
+**Decision:** `src/signals/laugh.ts laughCandidate` (≥ 3 voiced bursts of 60-250 ms at 150-300 ms onset spacing) exists
+for evaluation only and is disabled; L13 (transcript token, suppressed when A14 marks another speaker) is the only live
+laughter source. Sigh detection is not built (affect inference by another name, SL-2). ES-2: laugh candidate false-fire on
+ordinary TTS speech 1.3% (n = 600) — too high to license a teacher laugh.
+- **Reverse if:** a child-validated laughter set shows precision ≥ 0.9 at the operating point.
+
+## W2-G: human voice, the expressive layer on the cascade (2026-10-04)
+
+### w2g-dhd-cascade-config
+**Decision (2026-10-04, BUILD-PLAN W2-G #2, HUMAN-VOICE B1):** the cascade speaks Azure Speech DragonHD whenever
+`AZURE_SPEECH_REGION`/`AZURE_SPEECH_KEY` are set (the India deploy profile sets them from `_SIN`): `server/voice/azureTts.js`
+streams raw PCM 24 kHz from one SSML document. The voice per character is CONFIG, never code (`server/voice/voices.js`:
+Asha `en-IN-Diya`, Arjun `en-IN-Arjun`, Uma `en-IN-Meera`, all `:DragonHDLatestNeural`; `TAXILA_CASCADE_ENGINE=dhd|oai`,
+`TAXILA_DHD_VOICE_<ID>`, `TAXILA_DHD_RATE_<ID>`, `TAXILA_VOICES` JSON), because the persona may change after the next blind
+round. A DragonHD failure before the first byte (or no headers in 4 s, `TAXILA_DHD_HEADER_MS`) falls back to the character's
+gpt-4o-mini-tts voice: an identity change, logged every time and counted `voice.expr.engine_fallback`. The text lane's Hear
+(`/api/tts`) speaks the same DragonHD voice (mp3), so no path gives the lesson a second voice. Without Speech configured,
+nothing changes (gpt-4o-mini-tts, as before).
+- **Reverse if:** a blind round picks another voice (change the config, not the code); the fallback rate exceeds 1% of
+  turns on the probe fleet (then investigate the Speech region before children hear two voices); or `voice-choice-v2`'s
+  own reversal fires.
+
+### w2g-base-rate-minus-35
+**Decision (2026-10-04, HV-15):** base `<prosody rate>` -35% for Diya and Arjun: 12.3 and 12.2 spoken chars/s on Roman-script
+Hinglish (evals/tts-pace.mjs, n=10 lines per cell), inside the 11-13 band. HUMAN-VOICE §12's -25 / -28% came from a
+Devanagari line; the reply guard writes Roman Hinglish, which DragonHD reads faster (plain 19.1 / 18.9 chars/s). Uma's
+voice is unmeasured and starts at -35. Per-clause pace adds slow -10 / brisk +8 on top.
+- **Reverse if:** the owner's ear check (HV-15's second half) calls it slow or draggy (then step to -30 and re-measure), or
+  replies move to Devanagari Hindi (re-run tts-pace on that script).
+
+### w2g-expressive-layer-built
+**Decision (2026-10-04, HUMAN-VOICE B0/B2/B5):** the layer ships behind `TAXILA_VOICE_EXPRESSIVE` (default ON for DragonHD,
+OFF for gpt-4o-mini-tts, which measurably ignores delivery requests; `=all` forces it, `=0` turns it off). The seam
+(`server/voice/expressive/seam.js` planDelivery, called by W2-E's turn after the guard) runs the safety predicate, then
+`momentPlan` (reads only the Brain's Moment: row from move + teacherAffect + engagement, the verdict only as a licence), then
+the clause aligner (`align.js`: clauses inside the same sentence parts the TTS pipeline uses; content law asserted; at most
+one filler from a closed inventory). The plan is engine-free; the governor (`governor.js`, per lesson) and the engine
+compiler (`compile/dhd.js`; omni, mai and oai-tts for the other engines) run in `prewarm.js`/`render.js`, where the lesson and
+the voice are known. DragonHD gets a style marker at every sentence start (only markers heard silent), per-clause
+`<prosody rate>`, `pitch="-6%"` on calm/reassuring rows, `<break>` inside a part and exact silence between parts. Every
+document is linted; a tag or an unproven marker speaks that part plain (`voice.expr.lint_fail`).
+- **Reverse if:** the owner's blind page (HV-9 successor, layer vs plain DragonHD on the same lines) prefers plain on ≥ 3/5
+  lines per voice (then `TAXILA_VOICE_EXPRESSIVE=0`, keep base rate and numbers), or a nightly leak battery hears a marker
+  (then that marker is dropped by `TAXILA_DHD_MARKERS_OFF` the same day). The AI judge measured the no-clips layer slightly
+  worse than plain (pairwise -2 Diya, -1 Arjun, HUMAN-VOICE §4.3) — a weak instrument, but the reason this is a flag.
+
+### w2g-no-bank-no-clip-splicer
+**Decision (2026-10-04):** the clip-bank pipeline (B3) and the clip splicer (B4) are not built: the owner turned non-verbal
+clips off for every voice (`voice-clips-off-and-numbers-normalised`). Licensed non-verbals stay in the plan (governed,
+counted, available to the face); the DragonHD compiler emits nothing for them (tags are spoken on en-IN), the Omni
+compiler writes native tags (benchmark only, unlisted voices), and every cache key carries `BANK_HASH = "nobank"`.
+- **Reverse if:** the owner reopens clips (a blind round prefers clipped renders, or the rung-2 recorded teacher brings a
+  human non-verbal session): then build B3 into the private `voice-bank` container and splice into the pause realiser's gaps.
+
+### w2g-pause-realiser
+**Decision (2026-10-04):** the pause between two TTS parts is exact digital silence written by the server after trimming the
+engine's own edge silence (`server/voice/expressive/pauses.js` edgeTrim: 10 ms frames at -50 dBFS, 30 ms pre-roll kept, at
+most 600 ms dropped at a head, 40 ms tail kept, the last part's tail untouched). Plain DragonHD pauses are nearly uniform
+(SD 0.06 s, the robotic tell, HUMAN-VOICE §4.3); the planned pause is now the pause heard. Only when a plan exists.
+- **Reverse if:** an ear check hears clipped word onsets or a "cut" between sentences (then raise the pre-roll / lower the
+  threshold), or the one-document variant wins (see w2g-sentence-documents).
+
+### w2g-sentence-documents
+**Decision (2026-10-04, deviation from HUMAN-VOICE §5.8):** one SSML document per TTS part (the `splitSentences` chunk), not
+one per reply. It keeps the sentence-pipelined first byte and the prewarm lookahead, gives exact pauses between parts and
+sample-exact clause onsets (the whiteboard's `clause` anchor); the cost is DragonHD's prosodic context across sentence
+boundaries (Maya's per-token fan-out lesson is about splitting INSIDE a sentence, which this never does).
+- **Reverse if:** a blind A/B of per-part vs one-document renders of the same plans prefers one document on ≥ 3/5 lines.
+
+### w2g-framed-tts-v2
+**Decision (2026-10-04, HUMAN-VOICE §5.14):** `/api/voice/tts-stream` answers framed v2 when asked
+(`Accept: application/x-taxila-pcm-frames;v=2`): `[type u8][len u24 BE][payload]`, 0 PCM, 1 event (clause onsets
+`{t:"clause", clause, part, atSample, atMs}`; AvatarVoiceEvents would ride here, none are emitted while clips are off), 2
+header, 3 turn, 4 end. Every other client gets raw `audio/pcm` exactly as before. `src/lesson/ttsStream.ts` parses it
+(`FrameParser`, `pcmOfFrames`, `onTtsEvent`) and the default `fetchSpeechStream` asks for it, so the player is unchanged.
+- **Reverse if:** a real-device run shows frame parsing costs audible jitter on low-end Android (then raw PCM + a sidecar).
+
+### w2g-turn-audio-fold
+**Decision (2026-10-04, BUILD-PLAN W2-G #7):** `POST /api/lesson/turn-audio` (registered in `server/routes/voice.js`) calls
+W2-E's `lessonTurn` and answers one framed response: a header (`audio: follows | none | rate_limited`), the TurnResponse
+exactly as `/api/lesson/turn` returns it, the reply's PCM from the prewarm that turn started, and an end frame; refusals
+before any byte are the turn route's JSON errors. The client's `postTurnAudio()` resolves the same TurnResponse and parks
+the audio, so the link's next `fetchSpeechStream` for that seq plays it with no request; `audio: none` (a replay, another
+replica) falls back to tts-stream by seq. Client flag `voice.turnAudio` default OFF.
+- **Reverse if:** the Central India probe fleet shows no gain over turn + tts-stream (speech end → first audio p50), or
+  outbox resends through turn-audio ever double-speak a turn.
+
+### w2g-governor-in-memory
+**Decision (2026-10-04, deviation from HUMAN-VOICE §5.5):** the governor's per-lesson state is in process memory (LRU 2,000
+lessons), not `lesson.state.voice`: the turn's writer is W2-E's hot file and the seam passes no lesson id.
+- **Reverse if:** telemetry shows filler or laugh-gap breaches on lessons that crossed replicas; then W2-E/W3-E persists
+  `governor.peek(lessonId)` into `lesson.state.voice` through a seam.
+
+### w2g-filler-no-consecutive
+**Decision (2026-10-04):** besides ≤ 5 fillers in any 10 turns and no repeat within 6, never a filler on two turns in a row.
+- **Reverse if:** the owner's ear wants more discourse words (then relax to the window rule alone).
+
+### w2g-no-self-correction
+**Decision (2026-10-04):** self-corrections are not generated. A restart is a wording change a child can copy, and the
+owner's rule sends no "..." to the voice; the only inserted word stays one governed filler.
+- **Reverse if:** a blind check of think-aloud lines with a function-phrase restart is preferred on ≥ 4/5 lines.
+
+### w2g-speakable
+**Decision (2026-10-04, owner `voice-clips-off-and-numbers-normalised`):** `speakable()` (`server/voice/spoken.js`) is the
+last step before every voice (`ttsInput`, `/api/tts`, every compiler): `toSpoken`, then any digit still left read as a
+plain number in the cell's words, the term lexicon (`spoken-lexicon.js` TERMS), and "..."/"…" turned into a comma pause.
+0 digits and 0 ellipses on 2,000+ kit lines × 4 cells (CI). Interpretation of "spoken Hindi words": Hindi number words in the
+Hindi cells (Hindi mode, or a Hindi school medium); a Hinglish child with English or unknown school medium keeps English
+number words, the NCERT convention their classroom uses (spoken-notation §2.3).
+- **Reverse if:** the owner wants Hindi number words for every Hinglish child: set `DEFAULT_MEDIUM.hinglish = "hindi"`
+  (one line, and the spoken.test.mjs cell expectations change with it).
+
+### w2g-identity-predicate-narrowed
+**Decision (2026-10-04):** the safety-register predicate is `moment.safety`, a helpline number in the reply, or an identity
+ANSWER ("not a person", "insaan nahi"). A greeting that only names her an AI teacher stays in its own row.
+- **Reverse if:** an identity answer is found spoken in a playful register (then widen the predicate, keeping greetings out).
+
+### w2g-uptake-prelude
+**Decision (2026-10-04, HUMAN-VOICE B5, TEACHER-BRAIN §5.4 L3):** when the Moment carries `uptakePrelude` (W2-E, behind
+`TAXILA_UPTAKE_PRELUDE=1`, off until HV-16), the aligner strips the leading echo of the token and the stream plays the
+token first (calm, base rate, then 220 ms), from a render that turn-audio warms at receipt into the MEMORY cache only (a
+child's words never reach `asset_cache`). Whether a prelude plays is the Moment's decision (never on a safety turn). Deviation:
+it plays whenever its audio exists, not only when the reply would land later than 1.2 s (on the cascade it nearly always
+would). Counted `voice.expr.prelude` / `prelude_miss`.
+- **Reverse if:** HV-16 fails (listeners guess right/wrong from the prelude > 55%): the flag stays off.
+
+### w2g-annotator-background
+**Decision (2026-10-04, HUMAN-VOICE B7):** `server/voice/expressive/annotate.js` plans delivery for lines where latency is
+free: strict json_schema enum tuples per clause index (never words), validated and clamped to the moment row in code,
+cached per (text, row, language) in memory and `asset_cache`, background quota lane. The live seam uses only a memory hit.
+Nothing on a live path warms it yet (kit narration and Forge narration call sites belong to later waves).
+- **Reverse if:** validity on the nightly sample drops under 95%, or an Azure model annotates in ≤ 300 ms p90 at equal
+  validity (then it can join the live path, `hv-live-planner-is-code`'s reversal).
+
+- `owner-duplex-core-2026-10-04` (2026-10-04): owner: the duplex LLM architecture is core; it becomes a first-class Wave 2.5 stream with experience acceptance and replaces click-to-speak (OWNER-RESET item 16).

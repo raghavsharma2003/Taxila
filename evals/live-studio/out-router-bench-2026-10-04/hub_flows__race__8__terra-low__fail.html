@@ -1,0 +1,191 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff5dc;font-family:Arial,sans-serif;color:#493428}
+  #card{width:360px;height:320px;background:linear-gradient(180deg,#fff9e9 0%,#fff0cb 100%);overflow:hidden}
+  #title{height:22px;text-align:center;font-size:15px;font-weight:800;line-height:22px;color:#70442f;letter-spacing:.2px}
+  #scene{display:block;width:360px;height:176px}
+  .soft{fill:#fff7e6;stroke:#e8c788;stroke-width:2}
+  .leaf{fill:#67b85d;stroke:#397d48;stroke-width:3;stroke-linejoin:round;transform-origin:180px 105px;transition:transform .35s ease,filter .35s ease}
+  .vein{fill:none;stroke:#d9f0b6;stroke-width:2;stroke-linecap:round}
+  .sun{fill:#ffd45c;stroke:#df9b36;stroke-width:3;transform-origin:63px 58px;transition:transform .35s ease,filter .35s ease}
+  .ray{stroke:#eaa73c;stroke-width:3;stroke-linecap:round}
+  .roots{fill:none;stroke:#a96b3e;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;transition:stroke-width .35s ease,filter .35s ease}
+  .ground{fill:none;stroke:#d9b371;stroke-width:3;stroke-linecap:round}
+  .label{font-size:11px;font-weight:800;fill:#684535;paint-order:stroke;stroke:#fff8e9;stroke-width:4;stroke-linejoin:round}
+  .particle{stroke:#fffaf0;stroke-width:1.5;filter:drop-shadow(0 1px 1px rgba(90,55,25,.18))}
+  .particle.water{fill:#53b7da}
+  .particle.co2{fill:#8b7dbb}
+  .particle.o2{fill:#f08b68}
+  .emph{filter:drop-shadow(0 0 6px rgba(239,161,55,.8));transform:scale(1.07)}
+  .flow-emph{r:6}
+  #controls{height:52px;display:flex;align-items:center;padding:0 6px;gap:5px}
+  button{border:0;font-family:inherit;font-weight:800;cursor:pointer;touch-action:manipulation;transition:transform .16s ease,box-shadow .16s ease,background .16s ease}
+  button:active{transform:scale(.93)}
+  .control{height:52px;min-width:52px;border-radius:16px;background:#8b5b43;color:#fffaf0;box-shadow:0 3px 0 #6d4231;font-size:12px;padding:0 10px}
+  .control:hover{background:#a66b4c}
+  #caption{flex:1;height:42px;border-radius:16px;background:#ffe5a3;color:#71472e;display:flex;align-items:center;justify-content:center;text-align:center;padding:3px 7px;font-size:12px;font-weight:800;line-height:15px;transition:transform .28s ease,background .28s ease}
+  #caption.bump{transform:scale(1.04);background:#ffd37c}
+  #askline{height:16px;padding:0 8px;display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:800;color:#674434;white-space:nowrap}
+  #feedback{font-size:10px;color:#b45a39}
+  #feedback.good{color:#38804c}
+  #answers{height:52px;display:flex;gap:4px;padding:0 4px}
+  .option{height:52px;min-width:52px;flex:1;border-radius:15px;background:#f4b95c;color:#563526;box-shadow:0 3px 0 #c98438;font-size:13px}
+  .option:nth-child(2){background:#a8d58b;box-shadow:0 3px 0 #6ea95c}
+  .option:nth-child(3){background:#8bd2dc;box-shadow:0 3px 0 #4d9ba7}
+  .option:hover{filter:brightness(1.05)}
+</style>
+<div id="card">
+  <div id="title"></div>
+  <svg id="scene" viewBox="0 0 360 176" aria-hidden="true">
+    <path class="ground" d="M132 154 Q180 145 232 154"></path>
+
+    <g>
+      <line class="ray" x1="63" y1="29" x2="63" y2="20"></line>
+      <line class="ray" x1="40" y1="38" x2="33" y2="31"></line>
+      <line class="ray" x1="86" y1="38" x2="93" y2="31"></line>
+      <line class="ray" x1="36" y1="59" x2="26" y2="59"></line>
+      <line class="ray" x1="90" y1="59" x2="100" y2="59"></line>
+      <circle id="sunShape" class="sun" cx="63" cy="58" r="20"></circle>
+    </g>
+
+    <path id="hubShape" class="leaf" d="M180 146 C145 132 132 95 151 70 C171 45 209 57 223 78 C239 104 211 139 180 146 Z"></path>
+    <path class="vein" d="M178 137 Q181 103 207 74 M180 112 L158 93 M181 101 L199 96"></path>
+    <path class="vein" d="M180 145 L180 153"></path>
+
+    <path id="rootsShape" class="roots" d="M180 146 L180 163 M180 158 L163 171 M180 158 L198 171 M173 163 L168 176 M188 163 L192 176"></path>
+
+    <text id="hubLabel" class="label" x="151" y="51"></text>
+    <text id="entityLabel0" class="label" x="10" y="22"></text>
+    <text id="entityLabel1" class="label" x="205" y="171"></text>
+
+    <text id="flowLabel0" class="label" x="204" y="145"></text>
+    <text id="flowLabel1" class="label" x="10" y="140"></text>
+    <text id="flowLabel2" class="label" x="274" y="67"></text>
+
+    <circle class="particle" id="p0" r="4"></circle><circle class="particle" id="p1" r="4"></circle><circle class="particle" id="p2" r="4"></circle>
+    <circle class="particle" id="p3" r="4"></circle><circle class="particle" id="p4" r="4"></circle><circle class="particle" id="p5" r="4"></circle>
+    <circle class="particle" id="p6" r="4"></circle><circle class="particle" id="p7" r="4"></circle><circle class="particle" id="p8" r="4"></circle>
+  </svg>
+
+  <div id="controls">
+    <button class="control" data-action="play" id="playButton"></button>
+    <div id="caption" data-caption></div>
+    <button class="control" data-action="next" id="nextButton"></button>
+  </div>
+  <div id="askline"><span id="ask"></span><span id="feedback"></span></div>
+  <div id="answers"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, playing=true, step=0, finished=false, started=performance.now();
+  var title=document.getElementById('title'), caption=document.getElementById('caption');
+  var play=document.getElementById('playButton'), next=document.getElementById('nextButton');
+  var feedback=document.getElementById('feedback'), answers=document.getElementById('answers');
+  var hub=document.getElementById('hubShape'), sun=document.getElementById('sunShape'), roots=document.getElementById('rootsShape');
+
+  title.textContent=Studio.t('title');
+  play.textContent=Studio.t('pause');
+  next.textContent=Studio.t('next');
+  document.getElementById('ask').textContent=Studio.t('ask');
+
+  hub.setAttribute('data-entity',p.hub);
+  sun.setAttribute('data-entity',p.entities[0]);
+  roots.setAttribute('data-entity',p.entities[1]);
+  document.getElementById('hubLabel').setAttribute('data-label',p.hub);
+  document.getElementById('hubLabel').textContent=Studio.t(p.hub);
+  for(var e=0;e<p.entities.length && e<2;e++){
+    var el=document.getElementById('entityLabel'+e);
+    el.setAttribute('data-label',p.entities[e]);
+    el.textContent=Studio.t(p.entities[e]);
+  }
+
+  var paths=[];
+  for(var i=0;i<p.flows.length;i++){
+    var f=p.flows[i], lab=document.getElementById('flowLabel'+i);
+    lab.setAttribute('data-label',f.key);
+    lab.textContent=Studio.t(f.key);
+    var a,b;
+    if(f.dir==='out'){a={x:219,y:99};b={x:319,y:76};}
+    else if(f.dir==='up_in'){a={x:180,y:174};b={x:180,y:133};}
+    else {a={x:32,y:119};b={x:137,y:108};}
+    paths.push({a:a,b:b,key:f.key,dir:f.dir});
+    for(var j=0;j<3;j++){
+      var dot=document.getElementById('p'+(i*3+j));
+      dot.setAttribute('data-flow',f.key);
+      dot.classList.add(f.key);
+    }
+  }
+
+  function showStep(){
+    caption.textContent=Studio.t('step'+(step+1));
+    caption.classList.remove('bump');
+    void caption.offsetWidth;
+    caption.classList.add('bump');
+    hub.classList.remove('emph'); sun.classList.remove('emph'); roots.classList.remove('emph');
+    var all=document.querySelectorAll('.particle');
+    for(var x=0;x<all.length;x++) all[x].classList.remove('flow-emph');
+    if(step===0) hub.classList.add('emph');
+    else{
+      var fi=(step-1)%paths.length;
+      var ds=document.querySelectorAll('[data-flow="'+paths[fi].key+'"]');
+      for(var q=0;q<ds.length;q++) ds[q].classList.add('flow-emph');
+    }
+  }
+  showStep();
+
+  play.addEventListener('click',function(){
+    playing=!playing;
+    play.textContent=Studio.t(playing?'pause':'play');
+    Studio.event('play',{});
+  });
+  next.addEventListener('click',function(){
+    step=(step+1)%p.steps;
+    showStep();
+    Studio.event('next',{});
+  });
+
+  for(var o=0;o<p.options.length;o++){
+    (function(key){
+      var b=document.createElement('button');
+      b.className='option';
+      b.setAttribute('data-option',key);
+      b.textContent=Studio.t(key);
+      b.addEventListener('click',function(){
+        feedback.textContent='';
+        feedback.className='';
+        Studio.answer(key);
+        Studio.event('answer',{});
+      });
+      answers.appendChild(b);
+    })(p.options[o]);
+  }
+
+  Studio.onVerdict(function(v){
+    feedback.textContent=Studio.t(v.correct?'right':'wrong');
+    feedback.className=v.correct?'good':'';
+    if(v.correct && !finished){finished=true;Studio.done();}
+  });
+
+  function animate(now){
+    if(playing){
+      var t=(now-started)/1300;
+      for(var i=0;i<paths.length;i++){
+        for(var j=0;j<3;j++){
+          var d=document.getElementById('p'+(i*3+j));
+          if(!d) continue;
+          var u=(t+j/3)%1, path=paths[i];
+          var x=path.a.x+(path.b.x-path.a.x)*u;
+          var y=path.a.y+(path.b.y-path.a.y)*u;
+          d.setAttribute('cx',x);
+          d.setAttribute('cy',y);
+        }
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+  Studio.ready();
+})();
+
+</script>

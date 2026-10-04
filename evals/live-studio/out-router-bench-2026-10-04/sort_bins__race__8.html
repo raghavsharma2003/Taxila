@@ -1,0 +1,170 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff4dc;font-family:Arial,sans-serif;color:#48342b}
+  #game{width:360px;height:320px;position:relative;overflow:hidden;background:linear-gradient(180deg,#fff8e9 0%,#ffefd0 100%)}
+  .sun{position:absolute;right:-18px;top:-22px;width:102px;height:102px;border-radius:50%;background:#ffd56f;opacity:.55}
+  .hill{position:absolute;left:-35px;bottom:-60px;width:220px;height:110px;border-radius:50%;background:#cde7a2;opacity:.7}
+  .hill.two{left:175px;bottom:-68px;width:235px;background:#b9dda1}
+  #top{height:68px;position:relative;z-index:2;padding:10px 16px 0;text-align:center}
+  #title{font-size:21px;font-weight:800;line-height:25px;color:#5d402d}
+  #instr{font-size:13px;line-height:18px;color:#765543}
+  #feedback{height:18px;margin-top:1px;font-size:13px;font-weight:800;color:#5d8d4d;opacity:0;transform:translateY(-4px);transition:opacity .2s,transform .2s}
+  #feedback.show{opacity:1;transform:translateY(0)}
+  #cards{height:100px;position:relative;z-index:3;padding:9px 0 0;display:flex;justify-content:center;gap:8px}
+  .card{width:62px;height:58px;flex:0 0 62px;border:0;border-radius:16px;background:#fffdf7;box-shadow:0 4px 0 #dcbf91,0 7px 12px rgba(112,73,36,.16);color:#533c2d;font-size:13px;font-weight:800;padding:5px;line-height:16px;display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;transition:transform .2s,box-shadow .2s,opacity .2s;word-break:break-word}
+  .card:active{transform:scale(.94)}
+  .card.selected{transform:translateY(-8px) rotate(-2deg);box-shadow:0 7px 0 #e5af62,0 11px 17px rgba(112,73,36,.23);background:#fff5ce;outline:3px solid #f6bf55}
+  .card.shake{animation:shake .42s ease-in-out}
+  .card.placed{width:59px;height:35px;min-height:35px;border-radius:11px;font-size:11px;line-height:12px;box-shadow:0 2px 0 #c7a66f;background:#fffdf7;animation:land .38s cubic-bezier(.2,1.35,.45,1)}
+  #bins{height:145px;position:relative;z-index:2;display:flex;gap:12px;padding:10px 12px 10px}
+  .bin{width:162px;height:125px;border:3px solid #9ac47b;border-radius:18px 18px 24px 24px;background:rgba(245,255,229,.82);box-shadow:inset 0 -8px 0 rgba(115,168,79,.14),0 4px 0 rgba(102,147,70,.18);position:relative;padding:31px 7px 8px;display:flex;align-content:flex-start;justify-content:center;gap:6px;flex-wrap:wrap;cursor:pointer;transition:transform .18s,background .18s}
+  .bin:nth-child(2){border-color:#91b8d2;background:rgba(235,248,255,.84);box-shadow:inset 0 -8px 0 rgba(92,155,190,.13),0 4px 0 rgba(67,125,162,.18)}
+  .bin.ready{transform:translateY(-3px);background:#effbdc}
+  .bin:nth-child(2).ready{background:#e3f5ff}
+  .bin:active{transform:scale(.98)}
+  .binname{position:absolute;left:8px;right:8px;top:8px;text-align:center;font-size:14px;font-weight:800;color:#527344;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bin:nth-child(2) .binname{color:#47718b}
+  #done{position:absolute;left:27px;right:27px;top:106px;z-index:7;min-height:62px;border-radius:19px;background:#fffdf4;box-shadow:0 5px 15px rgba(93,64,45,.2);display:none;align-items:center;justify-content:center;padding:12px;color:#5b7441;font-size:18px;font-weight:800;text-align:center;animation:pop .35s cubic-bezier(.2,1.35,.45,1)}
+  #done.show{display:flex}
+  .spark{position:absolute;width:8px;height:8px;border-radius:50%;background:#f6be55;opacity:.8}
+  .spark.a{left:21px;top:74px}.spark.b{right:28px;top:126px;background:#a5ce85}.spark.c{left:48px;bottom:24px;background:#8dc0d9}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px) rotate(-2deg)}75%{transform:translateX(7px) rotate(2deg)}}
+  @keyframes land{0%{transform:scale(1.25) translateY(-24px);opacity:.3}100%{transform:scale(1) translateY(0);opacity:1}}
+  @keyframes pop{from{transform:scale(.65);opacity:0}to{transform:scale(1);opacity:1}}
+</style>
+<div id="game">
+  <div class="sun"></div>
+  <div class="hill"></div>
+  <div class="hill two"></div>
+  <i class="spark a"></i><i class="spark b"></i><i class="spark c"></i>
+  <div id="top">
+    <div id="title"></div>
+    <div id="instr"></div>
+    <div id="feedback"></div>
+  </div>
+  <div id="cards"></div>
+  <div id="bins"></div>
+  <div id="done"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, cards=p.cards, bins=p.bins;
+  var cardBox=document.getElementById('cards');
+  var binBox=document.getElementById('bins');
+  var feedback=document.getElementById('feedback');
+  var done=document.getElementById('done');
+  var selected=null, waiting=false, placed=0, finished=false;
+
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+
+  function say(key){
+    feedback.textContent=Studio.t(key);
+    feedback.classList.add('show');
+  }
+  function clearSay(){
+    feedback.classList.remove('show');
+  }
+  function choose(card){
+    if(waiting||card.classList.contains('placed')) return;
+    if(selected===card){
+      card.classList.remove('selected');
+      card.setAttribute('data-selected','false');
+      selected=null;
+      clearSay();
+      return;
+    }
+    if(selected){
+      selected.classList.remove('selected');
+      selected.setAttribute('data-selected','false');
+    }
+    selected=card;
+    selected.classList.add('selected');
+    selected.setAttribute('data-selected','true');
+    clearSay();
+    Array.prototype.forEach.call(document.querySelectorAll('.bin'),function(b){b.classList.add('ready')});
+    Studio.event('pick',{});
+  }
+  function unready(){
+    Array.prototype.forEach.call(document.querySelectorAll('.bin'),function(b){b.classList.remove('ready')});
+  }
+  cards.forEach(function(key){
+    var el=document.createElement('button');
+    el.type='button';
+    el.className='card';
+    el.setAttribute('data-card',key);
+    el.setAttribute('data-selected','false');
+    el.textContent=Studio.t(key);
+    el.addEventListener('click',function(){choose(el)});
+    cardBox.appendChild(el);
+  });
+  bins.forEach(function(key){
+    var bin=document.createElement('div');
+    bin.className='bin';
+    bin.setAttribute('data-bin',key);
+    var name=document.createElement('div');
+    name.className='binname';
+    name.textContent=Studio.t(key);
+    bin.appendChild(name);
+    bin.addEventListener('click',function(){
+      if(!selected||waiting||finished)return;
+      waiting=true;
+      unready();
+      Studio.event('drop',{});
+      Studio.answer({card:selected.getAttribute('data-card'),bin:key});
+    });
+    binBox.appendChild(bin);
+  });
+  Studio.onVerdict(function(result){
+    if(!selected)return;
+    var current=selected;
+    if(result.correct){
+      var key=current.getAttribute('data-card');
+      var target=null;
+      Array.prototype.forEach.call(document.querySelectorAll('.bin'),function(b){
+        if(b.getAttribute('data-bin')===String(result.bin||'') ) target=b;
+      });
+      if(!target){
+        var requested=current._chosenBin;
+        target=document.querySelector('[data-bin="'+requested+'"]');
+      }
+      if(!target){
+        target=document.querySelector('.bin');
+      }
+      current.classList.remove('selected');
+      current.classList.add('placed');
+      current.removeAttribute('data-card');
+      current.removeAttribute('data-selected');
+      current.setAttribute('data-placed',target.getAttribute('data-bin'));
+      target.appendChild(current);
+      selected=null;
+      placed++;
+      say('right');
+      if(placed===cards.length){
+        finished=true;
+        setTimeout(function(){
+          done.textContent=Studio.t('done');
+          done.classList.add('show');
+          Studio.done();
+        },360);
+      }
+    }else{
+      current.classList.remove('selected');
+      current.setAttribute('data-selected','false');
+      current.classList.add('shake');
+      say('wrong');
+      setTimeout(function(){current.classList.remove('shake')},450);
+      selected=null;
+    }
+    waiting=false;
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('.bin'),function(bin){
+    bin.addEventListener('click',function(){
+      if(selected) selected._chosenBin=bin.getAttribute('data-bin');
+    });
+  });
+  Studio.ready();
+}());
+
+</script>

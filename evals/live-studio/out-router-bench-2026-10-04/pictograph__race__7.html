@@ -1,0 +1,91 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#563c36}
+  .card{width:360px;height:320px;padding:16px 18px;background:radial-gradient(circle at 92% 4%,#ffe5b8 0 56px,transparent 57px),#fff8ed;overflow:hidden}
+  h1{margin:0;font-size:21px;line-height:25px;font-weight:800;color:#824c45}
+  .ask{margin:4px 0 10px;font-size:16px;font-weight:650;line-height:20px}
+  .rows{display:flex;flex-direction:column;gap:7px}
+  .row{width:100%;min-height:53px;border:2px solid #f0d9c2;border-radius:17px;background:#fffdf8;display:flex;align-items:center;padding:5px 9px;text-align:left;color:inherit;cursor:pointer;transition:transform .2s,background .2s,border-color .2s}
+  .row:active{transform:scale(.97)}
+  .row:focus-visible{outline:3px solid #a55e56;outline-offset:2px}
+  .name{width:67px;flex:none;font-size:17px;font-weight:750}
+  .symbols{display:flex;align-items:center;gap:5px;flex-wrap:wrap;max-height:42px;overflow:hidden}
+  [data-symbol]{display:inline-block;flex:none;width:23px;height:23px;border-radius:8px 8px 10px 10px;background:#ef9874;position:relative;box-shadow:inset 0 -3px #d97466;transform:rotate(-8deg)}
+  [data-symbol]::before{content:"";position:absolute;width:10px;height:6px;border-radius:10px 1px 10px 1px;background:#78a784;top:-5px;left:12px;transform:rotate(-25deg)}
+  .foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;min-height:33px}
+  [data-key]{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:13px;background:#fbe9d4;font-size:14px;font-weight:700}
+  .feedback{font-size:15px;font-weight:800;color:#98504a;text-align:right}
+  .row.pulse{animation:pulse .45s ease}
+  @keyframes pulse{50%{transform:scale(1.025);background:#e6f3e8;border-color:#83b394}}
+  @media (prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}}
+</style>
+<main class="card">
+  <h1 id="title"></h1>
+  <div class="ask" id="ask"></div>
+  <div class="rows" id="rows"></div>
+  <div class="foot">
+    <div data-key id="key"></div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+  </div>
+</main>
+<script>
+
+(() => {
+  const p = Studio.params;
+  const rows = document.getElementById('rows');
+  const feedback = document.getElementById('feedback');
+  const key = document.getElementById('key');
+  let waiting = false;
+  let complete = false;
+  const symbol = () => {
+    const s = document.createElement('span');
+    s.setAttribute('data-symbol', '');
+    s.setAttribute('aria-hidden', 'true');
+    return s;
+  };
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('ask').textContent = Studio.t('ask');
+  key.append(symbol());
+  const keyWords = document.createElement('span');
+  keyWords.textContent = Studio.t('keytext') + ' ' + p.symbolValue;
+  key.append(keyWords);
+  p.rows.forEach(item => {
+    const row = document.createElement('button');
+    row.type = 'button';
+    row.className = 'row';
+    row.setAttribute('data-row', item.key);
+    const name = document.createElement('span');
+    name.className = 'name';
+    name.textContent = Studio.t(item.key);
+    const pictures = document.createElement('span');
+    pictures.className = 'symbols';
+    for (let i = 0; i < item.value / p.symbolValue; i++) pictures.append(symbol());
+    row.append(name, pictures);
+    row.addEventListener('click', () => {
+      if (waiting || complete) return;
+      waiting = true;
+      feedback.textContent = '';
+      Studio.answer(item.key);
+    });
+    rows.append(row);
+  });
+  Studio.onVerdict(({correct}) => {
+    waiting = false;
+    feedback.textContent = Studio.t(correct ? 'right' : 'wrong');
+    if (correct) {
+      complete = true;
+      feedback.textContent = Studio.t('done');
+      Studio.done();
+    } else {
+      const selected = rows.querySelector('.row:focus');
+      if (selected) {
+        selected.classList.remove('pulse');
+        void selected.offsetWidth;
+        selected.classList.add('pulse');
+      }
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

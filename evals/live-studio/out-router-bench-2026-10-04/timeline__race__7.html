@@ -1,0 +1,87 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#493629;background:#fff8ed}
+.stage{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(ellipse at 50% 48%,#fffdf7 0%,#fff8ed 78%)}
+h1{position:absolute;top:8px;left:12px;width:336px;margin:0;text-align:center;font-size:19px;line-height:25px;font-weight:750;color:#714a32}
+.prompt{position:absolute;top:265px;left:12px;width:336px;min-height:44px;text-align:center;font-size:15px;line-height:20px;font-weight:650;color:#614834}
+svg{position:absolute;inset:0;width:360px;height:320px;overflow:visible;pointer-events:none}
+.axis{stroke:#d5a66b;stroke-width:5;stroke-linecap:round}
+.connector{stroke:#ddb987;stroke-width:2.5;stroke-linecap:round;transition:stroke .2s}
+.marker{fill:#ee9d55;stroke:#fff8ed;stroke-width:3;transition:transform .2s,fill .2s;transform-box:fill-box;transform-origin:center}
+.card{position:absolute;width:106px;height:64px;padding:6px 5px;border:2px solid #edc68f;border-radius:15px;background:#fffefa;box-shadow:0 4px 0 #f1dfc8,0 7px 14px #71502b18;color:#59402e;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font:inherit;cursor:pointer;transition:transform .16s,box-shadow .16s,border-color .16s,background .16s;touch-action:manipulation}
+.card:active{transform:translateY(2px) scale(.97);box-shadow:0 2px 0 #f1dfc8,0 4px 9px #71502b18}
+.card:focus-visible{outline:3px solid #7da99a;outline-offset:2px}
+.card .name{font-size:13px;line-height:16px;font-weight:750;max-width:100%;overflow-wrap:anywhere}
+.card .year{font-size:13px;line-height:16px;font-weight:700;color:#a66d39}
+.card.selected{border-color:#91b8a5;background:#f2fbf5}
+.card.selected .marker{fill:#72a890}
+.feedback{position:absolute;left:12px;right:12px;top:288px;text-align:center;min-height:24px;font-size:14px;line-height:20px;font-weight:700;color:#688c70}
+.feedback.wrong{color:#bb7153}
+.stage.complete .prompt{top:147px;font-size:17px;line-height:24px}
+.stage.complete .card,.stage.complete svg{opacity:.22}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
+</style>
+<div class="stage" id="stage">
+  <h1 id="title"></h1>
+  <div class="prompt" id="prompt"></div>
+  <svg viewBox="0 0 360 320" aria-hidden="true">
+    <line class="axis" x1="18" y1="160" x2="342" y2="160" data-axis=""></line>
+    <g id="drawing"></g>
+  </svg>
+  <div id="cards"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, events=p.events, stage=document.getElementById("stage");
+  const cards=document.getElementById("cards"), drawing=document.getElementById("drawing");
+  const prompt=document.getElementById("prompt"), feedback=document.getElementById("feedback");
+  document.getElementById("title").textContent=Studio.t("title");
+  prompt.textContent=Studio.t("ask");
+  const min=Math.min(...events.map(e=>e.year)), max=Math.max(...events.map(e=>e.year));
+  const sorted=[...events].sort((a,b)=>a.year-b.year||String(a.key).localeCompare(String(b.key)));
+  const slot=new Map(sorted.map((e,i)=>[e.key,i]));
+  const coords=events.map(e=>({e,x:max===min?180:18+(e.year-min)*324/(max-min)}));
+  const ns="http://www.w3.org/2000/svg";
+  coords.forEach(({e,x})=>{
+    const i=slot.get(e.key), above=i%2===0, cy=above?67:253, cardTop=above?35:221, cardCenter=Math.max(54,Math.min(306,x));
+    const line=document.createElementNS(ns,"line");
+    line.setAttribute("class","connector"); line.setAttribute("x1",cardCenter); line.setAttribute("y1",above?99:160);
+    line.setAttribute("x2",x); line.setAttribute("y2",above?160:221); drawing.appendChild(line);
+    const marker=document.createElementNS(ns,"circle");
+    marker.setAttribute("class","marker"); marker.setAttribute("cx",x); marker.setAttribute("cy",160); marker.setAttribute("r",8);
+    marker.dataset.event=e.key; marker.dataset.year=e.year; drawing.appendChild(marker);
+    const button=document.createElement("button");
+    button.type="button"; button.className="card"; button.dataset.card=e.key;
+    button.style.left=cardCenter+"px"; button.style.top=cardTop+"px"; button.style.transform="translateX(-50%)";
+    const name=document.createElement("span"); name.className="name"; name.textContent=Studio.t(e.key);
+    const year=document.createElement("span"); year.className="year"; year.textContent=e.year;
+    button.append(name,year); cards.appendChild(button);
+  });
+  let locked=false;
+  cards.addEventListener("click",event=>{
+    const button=event.target.closest("button[data-card]");
+    if(!button||locked)return;
+    locked=true;
+    button.classList.add("selected");
+    Studio.event("event_tap",{key:button.dataset.card});
+    Studio.answer(button.dataset.card);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?"right":"wrong");
+    feedback.classList.toggle("wrong",!correct);
+    if(correct){
+      stage.classList.add("complete");
+      prompt.textContent=Studio.t("done");
+      Studio.done();
+    }else{
+      locked=false;
+      cards.querySelectorAll(".selected").forEach(el=>el.classList.remove("selected"));
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

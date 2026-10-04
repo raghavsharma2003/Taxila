@@ -1,0 +1,87 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8eb;font-family:system-ui,sans-serif}
+  #card{position:relative;width:360px;height:320px;overflow:hidden;color:#514534}
+  #title{position:absolute;top:5px;left:12px;right:12px;text-align:center;font-size:18px;font-weight:800}
+  #question{position:absolute;top:32px;left:12px;right:12px;text-align:center;font-size:16px;font-weight:700;color:#79553d}
+  svg{position:absolute;top:49px;left:0;width:360px;height:260px}
+  .part{cursor:pointer;transition:filter .25s,transform .25s;transform-box:fill-box;transform-origin:center}
+  .part:active{transform:scale(.93)}
+  .part.glow{filter:drop-shadow(0 0 9px #f4a82f);transform:scale(1.06)}
+  .part.shake{animation:shake .35s ease}
+  @keyframes shake{25%{transform:translateX(-4px)} 65%{transform:translateX(4px)}}
+  .leader{fill:none;stroke:#b9a48e;stroke-width:2;stroke-linecap:round}
+  .label{font-size:13px;font-weight:700;fill:#514534}
+  #feedback{position:absolute;bottom:1px;left:10px;right:10px;height:19px;text-align:center;font-size:13px;font-weight:800;color:#806044}
+</style>
+<div id="card">
+  <div id="title"></div>
+  <div id="question" data-ask></div>
+  <svg viewBox="0 0 360 260" aria-hidden="true">
+    <g class="part" id="p0" fill="#ed8295">
+      <ellipse cx="180" cy="40" rx="27" ry="31"/>
+      <ellipse cx="143" cy="65" rx="27" ry="29" transform="rotate(-35 143 65)"/>
+      <ellipse cx="217" cy="65" rx="27" ry="29" transform="rotate(35 217 65)"/>
+      <ellipse cx="155" cy="83" rx="28" ry="25"/>
+      <ellipse cx="205" cy="83" rx="28" ry="25"/>
+    </g>
+    <path class="part" id="p1" d="M180 82a30 30 0 1 1 0 60a30 30 0 1 1 0-60" fill="#f4bd56"/>
+    <path class="part" id="p2" d="M160 142 Q174 151 180 150 Q188 151 201 142 L207 224 Q179 231 154 222Z" fill="#65a978"/>
+    <path class="part" id="p3" d="M157 180 Q113 143 65 165 Q77 216 154 211 Q128 190 157 180Z" fill="#82bd79"/>
+    <path class="part" id="p4" d="M155 218 Q134 211 122 235 Q142 233 149 254 L161 244 Q175 251 183 271 L195 246 Q217 254 236 236 Q218 211 202 220 Q181 237 155 218Z" fill="#ba8664"/>
+    <path class="leader" d="M276 48 L244 59"/>
+    <path class="leader" d="M244 129 L211 118"/>
+    <path class="leader" d="M242 190 L205 187"/>
+    <path class="leader" d="M62 203 L88 192"/>
+    <path class="leader" d="M251 261 L218 248"/>
+    <text class="label" id="l0" x="279" y="52"></text>
+    <text class="label" id="l1" x="247" y="134"></text>
+    <text class="label" id="l2" x="245" y="195"></text>
+    <text class="label" id="l3" x="13" y="207"></text>
+    <text class="label" id="l4" x="254" y="266"></text>
+  </svg>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+  const parts=Studio.params.parts;
+  const feedback=document.getElementById('feedback');
+  let waiting=false,finished=false,chosen=null;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('question').textContent=Studio.t('ask');
+  parts.forEach((key,i)=>{
+    const shape=document.getElementById('p'+i);
+    const label=document.getElementById('l'+i);
+    if(!shape||!label)return;
+    shape.setAttribute('data-part',key);
+    label.setAttribute('data-label',key);
+    label.textContent=Studio.t(key);
+    shape.addEventListener('click',()=>{
+      if(waiting||finished)return;
+      waiting=true;
+      chosen=shape;
+      Studio.event('part_tap',{part:key});
+      Studio.answer(key);
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!waiting)return;
+    waiting=false;
+    if(correct){
+      finished=true;
+      chosen.classList.add('glow');
+      feedback.textContent=Studio.t('right');
+      setTimeout(()=>{
+        feedback.textContent=Studio.t('done');
+        Studio.done();
+      },650);
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      chosen.classList.remove('shake');
+      void chosen.getBoundingClientRect();
+      chosen.classList.add('shake');
+    }
+  });
+  Studio.ready();
+
+</script>

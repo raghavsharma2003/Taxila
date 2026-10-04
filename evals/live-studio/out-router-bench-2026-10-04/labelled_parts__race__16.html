@@ -1,0 +1,79 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{background:#fff8e9;color:#36534b;font-family:system-ui,sans-serif}
+.card{width:360px;height:320px;padding:8px 14px;display:flex;flex-direction:column;overflow:hidden}
+h1{height:22px;flex:none;margin:0;color:#36534b;font-size:17px;line-height:22px}
+.question{height:38px;flex:none;padding-top:3px;color:#62746a;font-size:14px;line-height:19px}
+svg{width:332px;height:220px;flex:none;display:block;overflow:hidden}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:filter .25s,transform .2s}
+.part:active,.part.pressed{transform:scale(.96)}
+.part.correct{filter:drop-shadow(0 0 8px #ffc94c);animation:glow .8s ease-in-out infinite alternate}
+.shape{stroke:#668052;stroke-width:2;stroke-linejoin:round}
+.label{font:600 13px system-ui,sans-serif;fill:#36534b}
+.leader{stroke:#9b9b7c;stroke-width:1.5;stroke-linecap:round}
+.feedback{height:22px;flex:none;overflow:hidden;text-align:center;font-size:14px;line-height:20px;font-weight:700;color:#638c5b}
+@keyframes glow{to{filter:drop-shadow(0 0 13px #ffc94c)}}
+</style>
+<div class="card">
+  <h1 id="title"></h1>
+  <div class="question" id="question" data-ask></div>
+  <svg id="picture" viewBox="0 0 332 220" role="img" aria-label=""></svg>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params,svg=document.getElementById('picture'),ns='http://www.w3.org/2000/svg';
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('question').textContent=Studio.t('ask')+' '+Studio.t(p.ask);
+  const make=(tag,attrs={})=>{const n=document.createElementNS(ns,tag);for(const k in attrs)n.setAttribute(k,attrs[k]);return n};
+  const shapes={
+    petal:g=>[[166,49,0],[184,62,55],[166,75,90],[148,62,-55],[166,36,0]].forEach(([x,y,r])=>g.appendChild(make('ellipse',{cx:x,cy:y,rx:13,ry:23,transform:`rotate(${r} ${x} ${y})`,fill:'#f39a83',class:'shape'}))),
+    centre:g=>g.appendChild(make('circle',{cx:166,cy:62,r:22,fill:'#f5c84c',class:'shape'})),
+    stem:g=>g.appendChild(make('path',{d:'M160 80 Q166 77 172 80 L172 174 Q166 178 160 174 Z',fill:'#6eaa62',class:'shape'})),
+    leaf:g=>g.appendChild(make('path',{d:'M164 133 Q127 103 111 120 Q123 148 164 145 Z',fill:'#83b96b',class:'shape'})),
+    root:g=>g.appendChild(make('path',{d:'M166 173 Q166 190 151 201 Q141 208 134 216 M166 188 Q181 199 187 216 M158 193 Q153 205 157 216 M174 194 Q171 205 175 216',fill:'none',stroke:'#b98256','stroke-width':7,'stroke-linecap':'round','stroke-linejoin':'round'}))
+  };
+  const layout={
+    petal:{lx:8,ly:51,x1:52,y1:47,x2:143,y2:50,anchor:'start'},
+    centre:{lx:198,ly:94,x1:194,y1:89,x2:181,y2:76,anchor:'start'},
+    stem:{lx:230,ly:130,x1:226,y1:126,x2:172,y2:126,anchor:'start'},
+    leaf:{lx:102,ly:139,x1:106,y1:135,x2:124,y2:133,anchor:'end'},
+    root:{lx:230,ly:204,x1:226,y1:200,x2:188,y2:200,anchor:'start'}
+  };
+  const groups=new Map();
+  p.parts.forEach(key=>{
+    if(!shapes[key])return;
+    const pos=layout[key],group=make('g',{class:'part','data-part':key,tabindex:'0',role:'button'});
+    shapes[key](group);
+    const hit=key==='petal'?make('ellipse',{cx:166,cy:56,rx:36,ry:31,fill:'transparent'}):
+      key==='centre'?make('circle',{cx:166,cy:62,r:27,fill:'transparent'}):
+      key==='stem'?make('rect',{x:146,y:78,width:52,height:103,fill:'transparent'}):
+      key==='leaf'?make('ellipse',{cx:137,cy:127,rx:27,ry:27,fill:'transparent'}):
+      make('ellipse',{cx:164,cy:196,rx:27,ry:27,fill:'transparent'});
+    group.appendChild(hit);svg.appendChild(group);
+    const label=make('text',{x:pos.lx,y:pos.ly,class:'label','text-anchor':pos.anchor,'data-label':key});
+    label.textContent=Studio.t(key);
+    const line=make('line',{x1:pos.x1,y1:pos.y1,x2:pos.x2,y2:pos.y2,class:'leader'});
+    svg.appendChild(line);svg.appendChild(label);
+    groups.set(key,group);
+    const choose=()=>{
+      group.classList.add('pressed');setTimeout(()=>group.classList.remove('pressed'),140);
+      Studio.event('tap',{part:key});Studio.answer(key);
+    };
+    group.addEventListener('click',choose);
+    group.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();choose()}});
+  });
+  Studio.onVerdict(v=>{
+    const feedback=document.getElementById('feedback');
+    if(v.correct){
+      groups.get(p.ask)?.classList.add('correct');
+      feedback.textContent=Studio.t('right')+' '+Studio.t('done');
+      Studio.done();
+    }else feedback.textContent=Studio.t('wrong');
+  });
+  Studio.ready();
+})();
+
+</script>

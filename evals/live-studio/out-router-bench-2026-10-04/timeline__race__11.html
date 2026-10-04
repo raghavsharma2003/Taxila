@@ -1,0 +1,98 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#493829}
+  .scene{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 85% 8%,#ffe4bb 0,#ffe4bb00 38%),#fff8ed}
+  .title{position:absolute;top:12px;left:18px;right:18px;text-align:center;font-size:19px;font-weight:800}
+  .ask{position:absolute;top:45px;left:18px;right:18px;text-align:center;font-size:15px;line-height:21px}
+  svg{position:absolute;inset:0;pointer-events:none}
+  [data-axis]{stroke:#b98760;stroke-width:5;stroke-linecap:round}
+  .join{stroke:#d0a17a;stroke-width:3;stroke-linecap:round}
+  .marker{fill:#fff8ed;stroke:#ba7153;stroke-width:4}
+  .card{position:absolute;width:108px;height:64px;border:2px solid #dfaf83;border-radius:17px;background:#fffdf8;color:#493829;box-shadow:0 5px 0 #edd9bd;font:700 15px/19px system-ui,sans-serif;cursor:pointer;transition:transform .18s,background .18s,box-shadow .18s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+  .card:active{transform:scale(.93);box-shadow:0 2px 0 #edd9bd}
+  .card:focus-visible{outline:3px solid #7553a5;outline-offset:2px}
+  .card.chosen{background:#ffe6c9;transform:scale(1.04)}
+  .year{font-size:13px;font-weight:600;color:#785b48}
+  .feedback{position:absolute;top:273px;left:16px;right:16px;min-height:30px;text-align:center;font-size:17px;font-weight:750;color:#865341}
+  .feedback.show{animation:pop .3s ease-out}
+  @keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+</style>
+<div class="scene">
+  <div class="title" id="title"></div>
+  <div class="ask" id="ask"></div>
+  <svg viewBox="0 0 360 320" aria-hidden="true">
+    <line data-axis x1="34" y1="169" x2="326" y2="169"></line>
+    <g id="drawing"></g>
+  </svg>
+  <div id="cards"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const events = [...Studio.params.events].sort((a,b) => a.year-b.year);
+  const title = document.getElementById('title');
+  const ask = document.getElementById('ask');
+  const cards = document.getElementById('cards');
+  const drawing = document.getElementById('drawing');
+  const feedback = document.getElementById('feedback');
+  title.textContent = Studio.t('title');
+  ask.textContent = Studio.t('ask');
+  const min = events[0].year, max = events[events.length-1].year;
+  const ns = 'http://www.w3.org/2000/svg';
+  let waiting = false, finished = false, selected = null;
+  function svg(tag, attrs) {
+    const el = document.createElementNS(ns, tag);
+    for (const [key,value] of Object.entries(attrs)) el.setAttribute(key, value);
+    drawing.appendChild(el);
+    return el;
+  }
+  events.forEach((event,index) => {
+    const x = max === min ? 180 : 34 + (event.year-min)/(max-min)*292;
+    const top = index % 2 === 0;
+    const y = top ? 75 : 196;
+    const left = Math.max(8, Math.min(244, x-54));
+    const anchor = Math.max(left+12, Math.min(left+96, x));
+    svg('line',{class:'join',x1:x,y1:169,x2:anchor,y2:top ? y+64 : y});
+    svg('circle',{class:'marker','data-event':event.key,'data-year':event.year,cx:x,cy:169,r:7});
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'card';
+    card.setAttribute('data-card',event.key);
+    card.style.left = left+'px';
+    card.style.top = y+'px';
+    const name = document.createElement('span');
+    name.textContent = Studio.t(event.key);
+    const year = document.createElement('span');
+    year.className = 'year';
+    year.textContent = event.year;
+    card.append(name,year);
+    card.addEventListener('click',() => {
+      if(waiting || finished) return;
+      waiting = true;
+      selected?.classList.remove('chosen');
+      selected = card;
+      card.classList.add('chosen');
+      Studio.answer(event.key);
+    });
+    cards.appendChild(card);
+  });
+  Studio.onVerdict(({correct}) => {
+    if(!waiting || finished) return;
+    waiting = false;
+    if(correct) {
+      finished = true;
+      feedback.textContent = Studio.t('done');
+      Studio.done();
+    } else {
+      feedback.textContent = Studio.t('wrong');
+      selected?.classList.remove('chosen');
+    }
+    feedback.classList.remove('show');
+    void feedback.offsetWidth;
+    feedback.classList.add('show');
+  });
+  Studio.ready();
+})();
+
+</script>

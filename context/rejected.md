@@ -1294,3 +1294,56 @@ Tried: recording a race whose gate browser died (the bench process was killed mi
 balance_scale rows read as "failed" in the n = 30 table. A gate that cannot run is an infrastructure fault: the bench now skips
 and re-runs those keys, and in a lesson it reveals nothing (`gate_unavailable`), which is the fallback ladder, not a build
 result.
+
+## W2-G (2026-10-04)
+
+### rj-w2g-identity-word-safety
+Treating any "AI teacher" self-description in a reply as the never-deny-AI answer put the whole first-meeting greeting in
+the safety register (calm 0.3, slow, `[calm]` only) in the first live run (`row=safety` on the opening). Narrowed to identity
+ANSWERS ("not a person", "insaan nahi") plus helplines and `moment.safety` (w2g-identity-predicate-narrowed).
+
+### rj-w2g-dhd-header-2500
+A 2.5 s header timeout on DragonHD (to fall back fast) fired on the first render over a cold TLS connection through the
+sandbox proxy. In production that is an identity change (the child hears another voice) on a healthy service. Raised to 4 s
+and made env-tunable (`TAXILA_DHD_HEADER_MS`).
+
+### rj-w2g-spec-base-rate-on-roman
+HUMAN-VOICE §12's base rates (-25% Diya, -28% Arjun) measured on a Devanagari line give 15.0 chars/s on the Roman-script
+Hinglish the reply guard writes (n=10 at -22%; plain 19.1). -35% does it (w2g-base-rate-minus-35).
+
+### rj-w2g-filler-window-only
+The governor's 10-turn window alone (≤ 5 fillers) let 3 fillers into the first 4 turns of a live run (अच्छा, तो, हम्म): a tic
+opening every lesson. A no-consecutive-turns rule was added (w2g-filler-no-consecutive).
+
+## Signals build (2026-10-04) — pending merge from `inbox/signals.json`
+
+### rj-sig-strip-combining-marks
+**Tried (spec draft):** match the signal lexicons on `\p{M}`-stripped text. **Broke (inherited, not re-measured):** the
+never-rules port found that stripping marks turns "मैं हिंदी में" into "म ह द म", so Devanagari entries collide.
+**Instead:** `server/signals/text.js norm()` = NFC + nukta dropped + chandrabindu folded to anusvara + lowercase (the
+safety.js convention); Devanagari tests in `tests/signals-server.test.mjs` pass ("याद नहीं आ रहा" → recallCue).
+
+### rj-sig-tts-fillers-validate-a7
+**Tried:** Azure neural TTS fillers ("umm", "aaa", "uhh", "matlab", "उम्म", "आआ") as ES-2 ground truth for A7
+`flatVoicedRuns` and A2 `onsetContentMs`, then a probe with `rate −50/−60%` and a flat `contour`. **Broke:** TTS renders a
+filler as a short intoned word: leading voiced runs 200-260 ms with 5-8 st p10-p90 spread (contour-flattened 620-640 ms
+still 4.5-5 st), so A7 (≥ 300 ms and < 1 st) recall was 0.011 (n = 180) and A2 0. That says nothing about children; it says
+TTS cannot calibrate the threshold. **Instead:** recorded human filled pauses (E0 child clips or adult volunteers) for
+`open-sig-a7-human-fillers`; A2 stays computed but unvalidated.
+
+### rj-sig-tts-hindi-lh
+**Tried:** 40 Hindi TTS clips that end on a continuation phrase ("मैंने पहले दो लिए, फिर") to reproduce the Hindi L-H
+end-rise that confounds `f0EndSlopeStPerS` (R §5.2, O-2). **Broke:** the voices fall at continuations (median end slope
+−32 st/s vs −10 st/s for finals); 4/38 reach z ≥ 1.5. The confound can be neither confirmed nor refuted with TTS.
+**Instead:** keep A9 decision-excluded (spec default) until SG-M1 on real speech.
+
+### rj-sig-l15-on-number-items
+**Tried (spec v1 D5):** L15 = answer words / session median on every answer turn. **Broke:** ES-1 first run, choiceDue
+precision 0.447 (n = 8,357 turns): numeric answers are always 1-2 words, so any idk turn after two short numbers fired a
+choice offer. **Instead:** `sig-l15-wordy-forms-only` (precision 0.543 turn-level, 0.788 episode-level).
+
+### rj-sig-ledgerless-last2
+**Tried (spec v1 D9):** "last 2 graded correct" from the session's own record. **Broke:** ES-1 first run, consolidate
+precision 0.437 (n = 1,615 mastered-item turns): the first session encounter of an already-mastered skill always
+consolidated, spending the 2-item cap on knowers. **Instead:** below 2 session items on the skill, the ledger's mastery rule
+(which carries the history) stands in; precision 0.662.

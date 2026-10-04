@@ -1,0 +1,144 @@
+<style>
+  *{box-sizing:border-box}
+  #app{width:360px;height:320px;overflow:hidden;background:linear-gradient(145deg,#fff7df,#ffe9bd);font-family:Arial,sans-serif;color:#563824;padding:9px;position:relative}
+  #card{height:302px;border-radius:24px;background:#fffdf7;box-shadow:0 5px 0 #e8b66c,0 10px 20px rgba(119,71,27,.16);padding:10px;display:flex;flex-direction:column;align-items:center}
+  #title{font-size:20px;font-weight:800;line-height:23px;color:#9d4b26;text-align:center;min-height:23px}
+  #instruction{font-size:13px;font-weight:700;color:#765740;text-align:center;line-height:17px;min-height:17px}
+  #play{height:165px;width:100%;display:flex;align-items:center;justify-content:center;gap:17px}
+  #whole{width:160px;height:160px;overflow:visible;filter:drop-shadow(0 4px 2px rgba(101,55,23,.17))}
+  #whole path,#whole rect{cursor:pointer;stroke:#a95732;stroke-width:2;transform-box:fill-box;transform-origin:center;transition:fill .2s ease,transform .16s ease,filter .16s ease}
+  #whole path[data-shaded="false"],#whole rect[data-shaded="false"]{fill:#ffe19b}
+  #whole path[data-shaded="true"],#whole rect[data-shaded="true"]{fill:#f27b42;filter:drop-shadow(0 1px 1px rgba(112,45,19,.2))}
+  #whole path:active,#whole rect:active{transform:scale(.94)}
+  #targetBox{width:82px;height:100px;border-radius:20px;background:#fff1d0;border:2px solid #f2c46e;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 2px 0 rgba(255,255,255,.8)}
+  #target{font-size:31px;font-weight:800;color:#9d4b26;letter-spacing:-2px}
+  #status{height:22px;line-height:22px;font-size:14px;font-weight:800;color:#a4542b;text-align:center}
+  #check{width:174px;height:52px;border:0;border-radius:18px;background:#e8703e;color:#fffdf6;font-size:17px;font-weight:800;box-shadow:0 4px 0 #b94d2d;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease}
+  #check:active{transform:translateY(3px) scale(.98);box-shadow:0 1px 0 #b94d2d}
+  #check:disabled{opacity:.6}
+  .bounce{animation:bounce .55s ease both}
+  .glow{animation:glow .65s ease both}
+  #doneScreen{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+  #doneArt{width:150px;height:112px}
+  #doneText{font-size:24px;font-weight:800;color:#9d4b26;text-align:center}
+  @keyframes bounce{0%,100%{transform:scale(1)}35%{transform:scale(1.12) rotate(-2deg)}65%{transform:scale(.96) rotate(2deg)}}
+  @keyframes glow{0%{transform:scale(1)}45%{transform:scale(1.06);color:#db6a36}100%{transform:scale(1)}}
+</style>
+<div id="app">
+  <div id="card">
+    <div id="title"></div>
+    <div id="instruction"></div>
+    <div id="play">
+      <svg id="whole" viewBox="0 0 200 200" aria-hidden="true"></svg>
+      <div id="targetBox"><div id="target" data-target></div></div>
+    </div>
+    <div id="status"></div>
+    <button id="check" data-action="check"></button>
+  </div>
+</div>
+<script>
+
+(function(){
+  var items=Studio.params.items, picture=Studio.params.picture, index=0, waiting=false, finished=false;
+  var card=document.getElementById('card'), whole=document.getElementById('whole');
+  var target=document.getElementById('target'), status=document.getElementById('status');
+  var check=document.getElementById('check'), title=document.getElementById('title');
+  var instruction=document.getElementById('instruction');
+
+  title.textContent=Studio.t('title');
+  instruction.textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+
+  function pathFor(i,d){
+    var cx=100,cy=100,r=84,a1=-Math.PI/2+i*2*Math.PI/d,a2=-Math.PI/2+(i+1)*2*Math.PI/d;
+    return 'M '+cx+' '+cy+' L '+(cx+r*Math.cos(a1))+' '+(cy+r*Math.sin(a1))+' A '+r+' '+r+' 0 '+(2*Math.PI/d>Math.PI?1:0)+' 1 '+(cx+r*Math.cos(a2))+' '+(cy+r*Math.sin(a2))+' Z';
+  }
+  function toggle(){
+    if(waiting||finished)return;
+    var now=this.getAttribute('data-shaded')==='true';
+    this.setAttribute('data-shaded',now?'false':'true');
+    Studio.event('part',{n:now?0:1});
+  }
+  function makePizza(item){
+    whole.setAttribute('viewBox','0 0 200 200');
+    for(var i=0;i<item.d;i++){
+      var p=document.createElementNS('http://www.w3.org/2000/svg','path');
+      p.setAttribute('d',pathFor(i,item.d));
+      p.setAttribute('data-part',i);
+      p.setAttribute('data-shaded','false');
+      p.addEventListener('click',toggle);
+      whole.appendChild(p);
+    }
+  }
+  function makeBar(item){
+    whole.setAttribute('viewBox','0 0 200 200');
+    var x=12,w=176/item.d;
+    for(var i=0;i<item.d;i++){
+      var r=document.createElementNS('http://www.w3.org/2000/svg','rect');
+      r.setAttribute('x',x+i*w);
+      r.setAttribute('y','47');
+      r.setAttribute('width',w);
+      r.setAttribute('height','106');
+      r.setAttribute('rx','5');
+      r.setAttribute('data-part',i);
+      r.setAttribute('data-shaded','false');
+      r.addEventListener('click',toggle);
+      whole.appendChild(r);
+    }
+  }
+  function showItem(){
+    var item=items[index];
+    card.setAttribute('data-item',item.id);
+    whole.innerHTML='';
+    target.textContent=item.n+'/'+item.d;
+    status.textContent='';
+    check.disabled=false;
+    if(picture==='pizza')makePizza(item);else makeBar(item);
+  }
+  check.addEventListener('click',function(){
+    if(waiting||finished)return;
+    var item=items[index], parts=whole.querySelectorAll('[data-part]'), count=0;
+    for(var i=0;i<parts.length;i++)if(parts[i].getAttribute('data-shaded')==='true')count++;
+    waiting=true;
+    check.disabled=true;
+    Studio.event('check',{n:count,d:item.d});
+    Studio.answer({n:count,d:item.d});
+  });
+  Studio.onVerdict(function(result){
+    if(finished)return;
+    if(result.correct){
+      status.textContent=Studio.t('right');
+      status.classList.remove('glow');
+      void status.offsetWidth;
+      status.classList.add('glow');
+      whole.classList.remove('bounce');
+      void whole.offsetWidth;
+      whole.classList.add('bounce');
+      Studio.event('verdict',{correct:1});
+      setTimeout(function(){
+        index++;
+        waiting=false;
+        if(index>=items.length)showDone();else showItem();
+      },650);
+    }else{
+      status.textContent=Studio.t('wrong');
+      status.classList.remove('glow');
+      void status.offsetWidth;
+      status.classList.add('glow');
+      waiting=false;
+      check.disabled=false;
+      Studio.event('verdict',{correct:0});
+    }
+  });
+  function showDone(){
+    finished=true;
+    card.removeAttribute('data-item');
+    card.innerHTML='<div id="doneScreen"><svg id="doneArt" viewBox="0 0 150 112" aria-hidden="true"><path d="M18 83 Q35 26 75 58 Q115 26 132 83 Q101 104 75 104 Q49 104 18 83Z" fill="#f47d42"/><path d="M30 79 Q48 45 75 69 Q102 45 120 79" fill="none" stroke="#fff0b5" stroke-width="8" stroke-linecap="round"/><circle cx="49" cy="72" r="6" fill="#9d4b26"/><circle cx="101" cy="72" r="6" fill="#9d4b26"/><path d="M62 86 Q75 96 88 86" fill="none" stroke="#9d4b26" stroke-width="4" stroke-linecap="round"/><path d="M27 25 L33 38 L46 42 L33 46 L27 59 L23 46 L10 42 L23 38Z" fill="#f4bf4f"/><path d="M124 14 L128 25 L140 29 L128 33 L124 45 L120 33 L108 29 L120 25Z" fill="#f4bf4f"/></svg><div id="doneText"></div></div>';
+    document.getElementById('doneText').textContent=Studio.t('done');
+    Studio.done();
+  }
+  showItem();
+  Studio.ready();
+}());
+
+</script>

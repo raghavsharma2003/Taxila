@@ -1,0 +1,90 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8ed;color:#35443a}
+.card{width:360px;height:320px;padding:8px 12px;display:flex;flex-direction:column;align-items:center}
+h1{font-size:18px;line-height:22px;margin:0;color:#42634b;font-weight:750}
+.question{font-size:14px;line-height:18px;height:38px;margin:2px 0 0;text-align:center;color:#594e3e}
+svg{display:block;width:336px;height:218px;flex:none;overflow:hidden}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:filter .22s,transform .18s}
+.part:active{transform:scale(.96)}
+.part:focus{outline:none;filter:drop-shadow(0 0 5px #e4ae43)}
+.part.glowing{filter:drop-shadow(0 0 8px #f2bb43);animation:bloom .65s ease-in-out 2}
+.hit{fill:transparent;stroke:transparent;pointer-events:all}
+.label{font-size:11px;font-weight:700;fill:#455848}
+.leader{stroke:#9b8c73;stroke-width:1.5;stroke-linecap:round}
+.feedback{width:100%;height:24px;flex:none;font-size:13px;line-height:18px;font-weight:700;color:#42634b;text-align:center;overflow:hidden}
+@keyframes bloom{50%{filter:drop-shadow(0 0 12px #f2bb43)}}
+</style>
+<div class="card">
+  <h1 id="title"></h1>
+  <div class="question" id="question" data-ask></div>
+  <svg id="picture" viewBox="0 0 336 218" role="img" aria-label=""></svg>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params,svg=document.getElementById("picture");
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("question").textContent=Studio.t("ask");
+  const NS="http://www.w3.org/2000/svg";
+  const el=(tag,attrs={})=>{const n=document.createElementNS(NS,tag);for(const k in attrs)n.setAttribute(k,attrs[k]);return n};
+  const shapes={
+    petal:{label:[91,34],line:[[123,37],[143,48]],draw:g=>{
+      [[166,39],[190,54],[190,79],[166,93],[142,79],[142,54]].forEach(([x,y])=>g.append(el("ellipse",{cx:x,cy:y,rx:17,ry:26,fill:"#f4a45c",stroke:"#d88142","stroke-width":2,transform:`rotate(${x===166?0:x<166?-45:45} ${x} ${y})`})));
+      g.append(el("rect",{x:132,y:29,width:68,height:70,class:"hit"}));
+    }},
+    centre:{label:[207,69],line:[[202,66],[193,68]],draw:g=>{
+      g.append(el("circle",{cx:166,cy:68,r:29,fill:"#efc84a",stroke:"#d6a92c","stroke-width":3}));
+      g.append(el("circle",{cx:166,cy:68,r:30,class:"hit"}));
+    }},
+    stem:{label:[204,132],line:[[199,128],[187,128]],draw:g=>{
+      g.append(el("path",{d:"M141 88 Q145 119 141 164 L191 164 Q187 120 191 88 Z",fill:"#6eaa58",stroke:"#4e8947","stroke-width":3}));
+      g.append(el("rect",{x:136,y:86,width:60,height:80,class:"hit"}));
+    }},
+    leaf:{label:[73,139],line:[[104,135],[120,132]],draw:g=>{
+      g.append(el("path",{d:"M111 126 Q122 99 155 102 Q177 111 169 143 Q138 160 111 126 Z",fill:"#82bd67",stroke:"#58954e","stroke-width":3}));
+      g.append(el("path",{d:"M119 126 Q143 126 166 116",fill:"none",stroke:"#58954e","stroke-width":2}));
+      g.append(el("rect",{x:108,y:98,width:70,height:65,class:"hit"}));
+    }},
+    root:{label:[204,192],line:[[199,188],[191,182]],draw:g=>{
+      g.append(el("path",{d:"M141 157 Q132 174 125 190 L136 199 L153 181 L159 202 L171 202 L177 181 L194 198 L205 189 L190 157 Z",fill:"#c89462",stroke:"#a9794e","stroke-width":2}));
+      g.append(el("rect",{x:121,y:154,width:88,height:54,class:"hit"}));
+    }}
+  };
+  const addLabel=(key,shape)=>{
+    const [x,y]=shape.label,[x1,y1]=shape.line[0],[x2,y2]=shape.line[1];
+    svg.append(el("line",{x1,y1,x2,y2,class:"leader"}));
+    const text=el("text",{x,y,class:"label","data-label":key});
+    text.textContent=Studio.t(key);svg.append(text);
+  };
+  let completed=false;
+  p.parts.forEach(key=>{
+    const shape=shapes[key];if(!shape)return;
+    const group=el("g",{class:"part",tabindex:"0",role:"button","data-part":key});
+    shape.draw(group);svg.append(group);addLabel(key,shape);
+    const choose=()=>{
+      if(completed)return;
+      group.style.transform="scale(.96)";
+      setTimeout(()=>group.style.transform="",130);
+      Studio.event("tap",{part:key});
+      Studio.answer(key);
+    };
+    group.addEventListener("click",choose);
+    group.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();choose()}});
+  });
+  Studio.onVerdict(({correct})=>{
+    const feedback=document.getElementById("feedback");
+    if(correct){
+      completed=true;
+      const target=svg.querySelector(`[data-part="${CSS.escape(p.ask)}"]`);
+      if(target)target.classList.add("glowing");
+      feedback.textContent=Studio.t("right")+" "+Studio.t("done");
+      Studio.done();
+    }else feedback.textContent=Studio.t("wrong");
+  });
+  Studio.ready();
+})();
+
+</script>

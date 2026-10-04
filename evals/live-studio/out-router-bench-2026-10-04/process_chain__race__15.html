@@ -1,0 +1,128 @@
+<style>
+  *{box-sizing:border-box}
+  #activity{width:360px;height:320px;overflow:hidden;position:relative;background:#fff7e9;color:#554536;font-family:system-ui,sans-serif;text-align:center}
+  #title{height:36px;padding:7px 10px 0;font-size:19px;font-weight:750}
+  #scene{display:block;width:360px;height:172px}
+  .arrow{stroke:#d49b72;stroke-width:4;stroke-linecap:round}
+  .arrowhead{fill:#d49b72}
+  .stage-box{fill:#fffdf7;stroke:#ddbaa0;stroke-width:2.5;transition:fill .25s,stroke .25s,filter .25s}
+  .stage-box.active{fill:#ffe5a6;stroke:#ea995d;filter:drop-shadow(0 0 7px #ffc86f)}
+  .stage-label{fill:#554536;font-size:12px;font-weight:700;pointer-events:none}
+  #traveller{fill:#ef8068;stroke:#fff;stroke-width:3;filter:drop-shadow(0 3px 3px #b88c70)}
+  #prompt{height:36px;padding:5px 8px 0;font-size:14px;font-weight:700}
+  #controls{height:72px;display:flex;align-items:center;gap:5px;padding:4px 7px}
+  button{min-width:52px;min-height:54px;border:0;border-radius:15px;padding:5px 3px;cursor:pointer;font:700 13px system-ui,sans-serif;color:#442f25;transition:transform .15s,background .2s}
+  button:active{transform:translateY(3px) scale(.95)}
+  button:disabled{opacity:.65;cursor:default}
+  #next{flex:0 0 65px;background:#e99a68;box-shadow:0 4px 0 #c77b51}
+  .option{flex:1;min-width:0;background:#ffe2ae;box-shadow:0 4px 0 #d6aa77}
+  #feedback{height:4px}
+  #feedback.good{background:#82bf91}
+  #feedback.try{background:#efaa85}
+</style>
+<div id="activity">
+  <div id="title"></div>
+  <svg id="scene" viewBox="0 0 360 172" aria-hidden="true">
+    <g id="arrows"></g><g id="stages"></g>
+    <circle id="traveller" data-token r="10" cx="0" cy="0"></circle>
+  </svg>
+  <div id="prompt"></div>
+  <div id="controls"><button id="next" data-action="next"></button></div>
+  <div id="feedback"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params,names=p.stages,n=names.length;
+  const root=document.getElementById('activity');
+  const arrows=document.getElementById('arrows');
+  const stages=document.getElementById('stages');
+  const token=document.getElementById('traveller');
+  const controls=document.getElementById('controls');
+  const next=document.getElementById('next');
+  const prompt=document.getElementById('prompt');
+  const feedback=document.getElementById('feedback');
+  const ns='http://www.w3.org/2000/svg';
+  document.getElementById('title').textContent=Studio.t('title');
+  next.textContent=Studio.t('next');
+  prompt.textContent=Studio.t('ask')+' '+Studio.t(p.askAfter);
+
+  function svg(tag,attrs,parent){
+    const node=document.createElementNS(ns,tag);
+    for(const [key,value] of Object.entries(attrs))node.setAttribute(key,value);
+    parent.appendChild(node);
+    return node;
+  }
+  const points=names.map((_,i)=>{
+    if(p.cycle){
+      const angle=-Math.PI/2+2*Math.PI*i/n;
+      return {x:180+112*Math.cos(angle),y:86+57*Math.sin(angle)};
+    }
+    if(n<=4)return {x:46+268*i/Math.max(1,n-1),y:86};
+    const col=i%4,row=Math.floor(i/4);
+    return {x:46+89*(row%2?3-col:col),y:43+83*row};
+  });
+  const shapes=[];
+  points.forEach((pt,i)=>{
+    const group=svg('g',{'data-stage':names[i]},stages);
+    shapes.push(svg('rect',{x:pt.x-34,y:pt.y-28,width:68,height:56,rx:19,class:'stage-box'},group));
+    const label=svg('text',{x:pt.x,y:pt.y+4,'text-anchor':'middle',class:'stage-label','data-label':names[i]},group);
+    label.textContent=Studio.t(names[i]);
+  });
+  for(let i=0;i<(p.cycle?n:n-1);i++){
+    const j=(i+1)%n,a=points[i],b=points[j];
+    const dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy)||1;
+    const ux=dx/length,uy=dy/length;
+    const start={x:a.x+ux*37,y:a.y+uy*30};
+    const end={x:b.x-ux*38,y:b.y-uy*31};
+    svg('line',{x1:start.x,y1:start.y,x2:end.x,y2:end.y,class:'arrow','data-arrow':names[i]+'>'+names[j]},arrows);
+    const base={x:end.x-ux*10,y:end.y-uy*10};
+    svg('polygon',{points:`${end.x},${end.y} ${base.x-uy*6},${base.y+ux*6} ${base.x+uy*6},${base.y-ux*6}`,class:'arrowhead'},arrows);
+  }
+  let current=0,moving=false,finished=false;
+  function place(pt){token.setAttribute('cx',pt.x);token.setAttribute('cy',pt.y)}
+  function activate(){
+    root.setAttribute('data-active',names[current]);
+    shapes.forEach((shape,i)=>shape.classList.toggle('active',i===current));
+    next.disabled=finished||(!p.cycle&&current===n-1);
+  }
+  p.options.forEach(key=>{
+    const button=document.createElement('button');
+    button.className='option';
+    button.setAttribute('data-option',key);
+    button.textContent=Studio.t(key);
+    button.addEventListener('click',()=>{if(!finished)Studio.answer(key)});
+    controls.appendChild(button);
+  });
+  next.addEventListener('click',()=>{
+    if(moving||finished||(!p.cycle&&current===n-1))return;
+    moving=true;
+    next.disabled=true;
+    const from=points[current],target=(current+1)%n,to=points[target];
+    const start=performance.now(),duration=520;
+    function frame(now){
+      const t=Math.min(1,(now-start)/duration);
+      const ease=t*t*(3-2*t);
+      place({x:from.x+(to.x-from.x)*ease,y:from.y+(to.y-from.y)*ease});
+      if(t<1)requestAnimationFrame(frame);
+      else{current=target;moving=false;activate()}
+    }
+    requestAnimationFrame(frame);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.className=correct?'good':'try';
+    prompt.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      finished=true;
+      next.disabled=true;
+      controls.querySelectorAll('.option').forEach(button=>button.disabled=true);
+      prompt.textContent=Studio.t('done');
+      Studio.done();
+    }
+  });
+  place(points[0]);
+  activate();
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,175 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff4d8;font-family:Arial,sans-serif;color:#4b3425}
+  #stage{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 82% 12%,#fffbe9 0 15%,transparent 16%),linear-gradient(180deg,#ffefc5,#fff8e8)}
+  #title{position:absolute;top:6px;left:16px;right:16px;height:20px;text-align:center;font-size:17px;font-weight:800;color:#80502b;letter-spacing:.2px}
+  #scene{position:absolute;top:25px;left:0;width:360px;height:140px}
+  .line{fill:none;stroke-linecap:round;stroke-width:3;opacity:.52}
+  .waterline{stroke:#3999c8}.co2line{stroke:#6d7f8d}.o2line{stroke:#60ae76}
+  .particle{stroke:#fff8e8;stroke-width:1.5;filter:drop-shadow(0 1px 1px rgba(74,54,32,.2))}
+  .water{fill:#36a7d7}.co2{fill:#718797}.o2{fill:#66ba7d}
+  .label{font-size:12px;font-weight:800;fill:#65452f;paint-order:stroke;stroke:#fff8e8;stroke-width:3;stroke-linejoin:round}
+  .entity{transition:transform .35s ease,filter .35s ease}.entity.active{filter:drop-shadow(0 0 5px #f5ad42);transform-origin:center;transform:scale(1.07)}
+  .flowpath{transition:stroke-width .35s ease,opacity .35s ease}.flowpath.active{stroke-width:6;opacity:1}
+  #caption{position:absolute;top:166px;left:16px;right:16px;height:24px;text-align:center;font-size:14px;font-weight:700;color:#795338;line-height:24px}
+  #controls{position:absolute;top:194px;left:0;width:360px;height:52px;display:flex;justify-content:center;gap:16px}
+  button{border:0;font:inherit;font-weight:800;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .control{min-width:112px;height:52px;border-radius:18px;background:#f4b64a;color:#533719;box-shadow:0 4px 0 #d89532;transition:transform .15s,box-shadow .15s}
+  .control:active,.option:active{transform:translateY(3px) scale(.97);box-shadow:0 1px 0 rgba(91,55,25,.3)}
+  #ask{position:absolute;top:250px;left:12px;right:12px;height:17px;text-align:center;font-size:13px;font-weight:800;color:#5d4230;white-space:nowrap;overflow:hidden}
+  #options{position:absolute;top:268px;left:6px;width:348px;height:52px;display:flex;gap:6px}
+  .option{flex:1;min-width:52px;height:52px;border-radius:16px;background:#fffdf5;color:#6e4b30;box-shadow:0 3px 0 #dfcda9;border:2px solid #f0d9aa;transition:transform .15s,background .2s,box-shadow .15s;font-size:13px}
+  .option.tapped{background:#ffe3a1}
+  .leafvein{fill:none;stroke:#79a95d;stroke-width:2;stroke-linecap:round}
+</style>
+<div id="stage">
+  <div id="title"></div>
+  <svg id="scene" viewBox="0 0 360 140" aria-hidden="true">
+    <path class="line waterline flowpath" id="path0" d="M180 137 C181 120 181 102 180 84"></path>
+    <path class="line co2line flowpath" id="path1" d="M342 68 C292 66 240 72 201 79"></path>
+    <path class="line o2line flowpath" id="path2" d="M205 91 C249 102 294 106 343 108"></path>
+
+    <g id="sunShape" class="entity">
+      <circle cx="61" cy="45" r="17" fill="#ffc84f"></circle>
+      <g stroke="#e9a733" stroke-width="3" stroke-linecap="round">
+        <path d="M61 19v-8"></path><path d="M61 71v8"></path><path d="M35 45h-8"></path><path d="M87 45h8"></path>
+        <path d="M43 27l-6-6"></path><path d="M79 27l6-6"></path><path d="M43 63l-6 6"></path><path d="M79 63l6 6"></path>
+      </g>
+      <circle cx="55" cy="42" r="2" fill="#8b5828"></circle><circle cx="67" cy="42" r="2" fill="#8b5828"></circle>
+      <path d="M55 51 Q61 56 67 51" fill="none" stroke="#8b5828" stroke-width="2" stroke-linecap="round"></path>
+    </g>
+
+    <g id="rootShape" class="entity">
+      <path d="M175 112 C174 121 177 127 168 137 M180 112 C181 123 184 128 192 137 M177 120 C170 124 165 127 161 132 M182 122 C188 126 194 128 200 132" fill="none" stroke="#a96d3d" stroke-width="5" stroke-linecap="round"></path>
+      <path d="M164 114 Q180 105 196 114 L193 121 Q180 117 167 121Z" fill="#c7834b"></path>
+    </g>
+
+    <g id="hubShape" class="entity">
+      <path d="M180 39 C225 43 233 75 210 101 C196 117 164 115 148 95 C127 69 143 37 180 39Z" fill="#91c96b" stroke="#548a4b" stroke-width="3"></path>
+      <path class="leafvein" d="M153 91 Q176 79 209 52 M178 79 L166 62 M183 75 L197 81 M171 85 L177 101"></path>
+      <circle cx="181" cy="78" r="4" fill="#eff7c8"></circle>
+    </g>
+
+    <circle class="particle water" id="p00" r="5"></circle><circle class="particle water" id="p01" r="5"></circle><circle class="particle water" id="p02" r="5"></circle>
+    <circle class="particle co2" id="p10" r="5"></circle><circle class="particle co2" id="p11" r="5"></circle><circle class="particle co2" id="p12" r="5"></circle>
+    <circle class="particle o2" id="p20" r="5"></circle><circle class="particle o2" id="p21" r="5"></circle><circle class="particle o2" id="p22" r="5"></circle>
+
+    <text class="label" id="entityLabel0" x="20" y="18"></text>
+    <text class="label" id="entityLabel1" x="205" y="135"></text>
+    <text class="label" id="hubLabel" x="145" y="120"></text>
+    <text class="label" id="flowLabel0" x="207" y="128"></text>
+    <text class="label" id="flowLabel1" x="286" y="57"></text>
+    <text class="label" id="flowLabel2" x="281" y="124"></text>
+  </svg>
+  <div id="caption" data-caption></div>
+  <div id="controls">
+    <button class="control" data-action="play" id="playButton"></button>
+    <button class="control" data-action="next" id="nextButton"></button>
+  </div>
+  <div id="ask"></div>
+  <div id="options"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, playing=true, step=0, finished=false, lastOption=null;
+  var title=document.getElementById('title'), caption=document.getElementById('caption');
+  title.textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  document.getElementById('nextButton').textContent=Studio.t('next');
+
+  var hub=document.getElementById('hubShape');
+  hub.setAttribute('data-entity',p.hub);
+  document.getElementById('hubLabel').setAttribute('data-label',p.hub);
+  document.getElementById('hubLabel').textContent=Studio.t(p.hub);
+
+  var entityShapes=[document.getElementById('sunShape'),document.getElementById('rootShape')];
+  var entityLabels=[document.getElementById('entityLabel0'),document.getElementById('entityLabel1')];
+  p.entities.forEach(function(key,i){
+    if(entityShapes[i]){
+      entityShapes[i].setAttribute('data-entity',key);
+      entityLabels[i].setAttribute('data-label',key);
+      entityLabels[i].textContent=Studio.t(key);
+    }
+  });
+
+  p.flows.forEach(function(flow,i){
+    var label=document.getElementById('flowLabel'+i), path=document.getElementById('path'+i);
+    if(label){label.setAttribute('data-label',flow.key);label.textContent=Studio.t(flow.key);}
+    if(path)path.setAttribute('data-flow',flow.key);
+    for(var j=0;j<3;j++){
+      var dot=document.getElementById('p'+i+j);
+      if(dot)dot.setAttribute('data-flow',flow.key);
+    }
+  });
+
+  var options=document.getElementById('options');
+  p.options.forEach(function(key){
+    var b=document.createElement('button');
+    b.className='option';b.setAttribute('data-option',key);b.textContent=Studio.t(key);
+    b.addEventListener('click',function(){
+      lastOption=key;
+      var all=options.querySelectorAll('.option');
+      for(var i=0;i<all.length;i++)all[i].classList.remove('tapped');
+      b.classList.add('tapped');
+      Studio.event('option',{key:key});
+      Studio.answer(key);
+    });
+    options.appendChild(b);
+  });
+
+  function paintStep(){
+    caption.textContent=Studio.t('step'+(step+1));
+    hub.classList.toggle('active',step===0);
+    entityShapes.forEach(function(x,i){x.classList.toggle('active',step===0&&i===0||step===1&&i===1);});
+    p.flows.forEach(function(f,i){
+      var path=document.getElementById('path'+i);
+      if(path)path.classList.toggle('active',(step===1&&(f.dir==='up_in'||f.dir==='in'))||(step===2&&f.dir==='out'));
+    });
+  }
+  function buttonWords(){document.getElementById('playButton').textContent=Studio.t(playing?'pause':'play');}
+  buttonWords();paintStep();
+
+  document.getElementById('playButton').addEventListener('click',function(){
+    playing=!playing;buttonWords();Studio.event('play',{on:playing?1:0});
+  });
+  document.getElementById('nextButton').addEventListener('click',function(){
+    step=(step+1)%p.steps;paintStep();Studio.event('next',{step:step+1});
+  });
+
+  var routes=[
+    [[180,137],[180,84]],
+    [[342,68],[201,79]],
+    [[205,91],[343,108]]
+  ];
+  function tick(now){
+    if(playing){
+      p.flows.forEach(function(flow,i){
+        var route=routes[i]||routes[0];
+        for(var j=0;j<3;j++){
+          var dot=document.getElementById('p'+i+j);
+          if(dot){
+            var q=((now/1800)+(j/3))%1;
+            var x=route[0][0]+(route[1][0]-route[0][0])*q;
+            var y=route[0][1]+(route[1][1]-route[0][1])*q;
+            dot.setAttribute('cx',x);dot.setAttribute('cy',y);
+          }
+        }
+      });
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  Studio.onVerdict(function(v){
+    if(v.correct){
+      caption.textContent=Studio.t('right');
+      if(!finished){finished=true;Studio.done();}
+    }else{
+      caption.textContent=Studio.t('wrong');
+      setTimeout(paintStep,900);
+    }
+  });
+  Studio.ready();
+}());
+
+</script>

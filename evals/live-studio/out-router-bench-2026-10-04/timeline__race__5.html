@@ -1,0 +1,96 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif}
+  #scene{position:relative;width:360px;height:320px;overflow:hidden;background:#fff5e8;color:#493b50}
+  #scene:before{content:"";position:absolute;width:240px;height:240px;border-radius:50%;background:#ffe9cf;top:-150px;right:-60px}
+  h1{position:absolute;top:10px;left:16px;right:16px;margin:0;font-size:19px;line-height:25px}
+  #prompt{position:absolute;top:41px;left:16px;right:16px;margin:0;font-size:14px;line-height:22px}
+  svg{position:absolute;inset:0;width:360px;height:320px;overflow:visible;pointer-events:none}
+  [data-axis]{stroke:#ab7590;stroke-width:5;stroke-linecap:round}
+  .join{stroke:#c7a1ad;stroke-width:2.5;stroke-linecap:round}
+  [data-event]{fill:#fff5e8;stroke:#a65f83;stroke-width:4}
+  .card{position:absolute;width:116px;height:70px;border:2px solid #dbacc0;border-radius:17px;background:#fffdf8;color:#493b50;box-shadow:0 5px 0 #ead5d5;font:700 15px/1.2 system-ui,sans-serif;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:transform .2s,background .2s,box-shadow .2s;white-space:normal;text-align:center;padding:5px}
+  .card span:last-child{font-size:13px;color:#795b70}
+  .card:active{transform:scale(.94);box-shadow:0 2px 0 #ead5d5}
+  .card:focus-visible{outline:3px solid #754b83;outline-offset:2px}
+  .card.chosen{background:#ffe1d5;transform:scale(1.045)}
+  #feedback{position:absolute;left:15px;right:15px;top:284px;min-height:26px;text-align:center;font-size:16px;font-weight:700;color:#755274}
+  #feedback.pop{animation:pop .4s ease-out}
+  @keyframes pop{0%{transform:scale(.8);opacity:.3}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+</style>
+<div id="scene">
+  <h1 id="title"></h1>
+  <p id="prompt"></p>
+  <svg id="timeline" viewBox="0 0 360 320" aria-hidden="true">
+    <line data-axis x1="38" y1="177" x2="322" y2="177"></line>
+  </svg>
+  <div id="cards"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+  const events=Studio.params.events.slice().sort((a,b)=>a.year-b.year);
+  const svg=document.getElementById('timeline');
+  const cards=document.getElementById('cards');
+  const feedback=document.getElementById('feedback');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('prompt').textContent=Studio.t('ask');
+  const min=events[0].year,max=events[events.length-1].year;
+  const make=(tag,attrs)=>{
+    const node=document.createElementNS('http://www.w3.org/2000/svg',tag);
+    for(const [key,value] of Object.entries(attrs))node.setAttribute(key,value);
+    svg.appendChild(node);
+    return node;
+  };
+  let waiting=false,complete=false,selected=null;
+  const rowEnds=[-Infinity,-Infinity];
+  events.forEach((event,index)=>{
+    const x=min===max?180:38+(event.year-min)*284/(max-min);
+    const row=index%2;
+    const top=row===0?94:211;
+    let left=Math.max(8,Math.min(236,x-58));
+    left=Math.max(left,rowEnds[row]+8);
+    if(left>236)left=236;
+    rowEnds[row]=left+116;
+    const cardCentre=left+58;
+    make('line',{class:'join',x1:x,y1:177,x2:cardCentre,y2:row===0?164:211});
+    make('circle',{'data-event':event.key,'data-year':event.year,cx:x,cy:177,r:7});
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='card';
+    button.setAttribute('data-card',event.key);
+    button.style.left=left+'px';
+    button.style.top=top+'px';
+    const name=document.createElement('span');
+    name.textContent=Studio.t(event.key);
+    const year=document.createElement('span');
+    year.textContent=event.year;
+    button.append(name,year);
+    button.addEventListener('click',()=>{
+      if(waiting||complete)return;
+      waiting=true;
+      selected=button;
+      button.classList.add('chosen');
+      Studio.event('tap',{key:event.key});
+      Studio.answer(event.key);
+    });
+    cards.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!waiting||complete)return;
+    waiting=false;
+    feedback.classList.remove('pop');
+    void feedback.offsetWidth;
+    feedback.classList.add('pop');
+    if(correct){
+      complete=true;
+      feedback.textContent=Studio.t('right')+' '+Studio.t('done');
+      Studio.done();
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      selected?.classList.remove('chosen');
+    }
+  });
+  Studio.ready();
+
+</script>

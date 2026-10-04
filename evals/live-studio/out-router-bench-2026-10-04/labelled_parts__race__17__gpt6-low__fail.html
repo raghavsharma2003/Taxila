@@ -1,0 +1,101 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;font-family:system-ui,sans-serif;color:#59473e}
+  .card{position:relative;width:360px;height:320px;overflow:hidden;border-radius:22px;background:radial-gradient(circle at 50% 32%,#fffdf8,#fff2df)}
+  .heading{height:39px;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:750;color:#765447}
+  svg{display:block;width:360px;height:235px}
+  .leader{fill:none;stroke:#b79d88;stroke-width:2;stroke-linecap:round}
+  .name{font-size:15px;font-weight:700;fill:#634d43}
+  .part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .2s ease,filter .25s ease}
+  .part:active{transform:scale(.94)}
+  .part:focus-visible{outline:none;filter:drop-shadow(0 0 5px #dc9b5a)}
+  .part.glow{filter:drop-shadow(0 0 10px #f3ad41);animation:happy .7s ease-in-out 2}
+  @keyframes happy{50%{transform:scale(1.07)}}
+  .question{height:40px;margin:2px 12px 0;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:15px;background:#f7e4cb;font-size:17px;font-weight:750;color:#65483e}
+  .question.bump{animation:bump .35s ease}
+  @keyframes bump{50%{transform:scale(1.035)}}
+  .status{position:absolute;top:39px;left:245px;width:100px;text-align:center;font-size:14px;font-weight:700;color:#986847;pointer-events:none}
+</style>
+<div class="card">
+  <div class="heading" id="title"></div>
+  <svg viewBox="0 0 360 235" xmlns="http://www.w3.org/2000/svg">
+    <path class="leader" d="M78 35 L114 43 M216 80 L201 77 M112 150 L149 150 M274 155 L263 155 M231 217 L219 215"/>
+    <text class="name" data-label="petal" x="24" y="40"></text>
+    <text class="name" data-label="centre" x="219" y="85"></text>
+    <text class="name" data-label="stem" x="75" y="155"></text>
+    <text class="name" data-label="leaf" x="278" y="160"></text>
+    <text class="name" data-label="root" x="234" y="222"></text>
+
+    <g class="part" data-part="stem" tabindex="0" role="button">
+      <path d="M148 105 Q148 101 154 101 H198 Q204 101 204 107 V186 Q204 192 198 192 H154 Q148 192 148 186Z" fill="#70aa69"/>
+      <path d="M176 117 V179" fill="none" stroke="#9aca86" stroke-width="4" stroke-linecap="round"/>
+    </g>
+    <g class="part" data-part="leaf" tabindex="0" role="button">
+      <path d="M201 145 Q225 115 269 127 Q269 164 227 180 Q207 180 201 145Z" fill="#78b777"/>
+      <path d="M211 159 Q236 146 257 139" fill="none" stroke="#4e9560" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g class="part" data-part="root" tabindex="0" role="button">
+      <path d="M151 180 H200 V194 Q218 190 229 198 Q233 206 220 210 L208 213 Q225 220 222 230 Q217 236 208 229 L186 217 L183 234 H169 L164 217 L142 230 Q130 235 127 227 Q126 218 143 211 L132 210 Q123 205 129 198 Q137 191 151 195Z" fill="#b78360"/>
+      <path d="M176 199 V224 M186 204 L209 224 M164 204 L141 224" fill="none" stroke="#d5a17a" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g class="part" data-part="petal" tabindex="0" role="button">
+      <ellipse cx="176" cy="35" rx="26" ry="30" fill="#f1969a"/>
+      <ellipse cx="136" cy="59" rx="27" ry="31" transform="rotate(-48 136 59)" fill="#f5a5a1"/>
+      <ellipse cx="143" cy="91" rx="25" ry="24" transform="rotate(35 143 91)" fill="#f3a19b"/>
+    </g>
+    <g class="part" data-part="centre" tabindex="0" role="button">
+      <circle cx="176" cy="76" r="27" fill="#f5bf63"/>
+      <circle cx="168" cy="70" r="3" fill="#d99151"/>
+      <circle cx="184" cy="68" r="3" fill="#d99151"/>
+      <circle cx="181" cy="85" r="3" fill="#d99151"/>
+      <circle cx="164" cy="84" r="3" fill="#d99151"/>
+    </g>
+  </svg>
+  <div class="status" id="status" aria-live="polite"></div>
+  <div class="question" data-ask></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params;
+  document.getElementById('title').textContent=Studio.t('title');
+  const question=document.querySelector('[data-ask]');
+  question.textContent=Studio.t('ask');
+  p.parts.forEach(key=>{
+    const label=document.querySelector('[data-label="'+key+'"]');
+    if(label) label.textContent=Studio.t(key);
+  });
+  let pending=false,finished=false,selected=null;
+  const status=document.getElementById('status');
+  function choose(el){
+    if(pending||finished)return;
+    pending=true;
+    selected=el;
+    const key=el.getAttribute('data-part');
+    Studio.event('part_tap',{part:key});
+    Studio.answer(key);
+  }
+  document.querySelectorAll('[data-part]').forEach(el=>{
+    el.addEventListener('click',()=>choose(el));
+    el.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();choose(el)}
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending||finished)return;
+    pending=false;
+    status.textContent=Studio.t(correct?'right':'wrong');
+    question.classList.remove('bump');
+    void question.offsetWidth;
+    question.classList.add('bump');
+    if(correct){
+      finished=true;
+      selected.classList.add('glow');
+      question.textContent=Studio.t('done');
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

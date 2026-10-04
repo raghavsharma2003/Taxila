@@ -1,0 +1,34 @@
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:360px;height:320px;overflow:hidden}body{font-family:system-ui,sans-serif;background:#fff8e9;color:#35463d}.wrap{width:360px;height:320px;padding:7px 9px;display:flex;flex-direction:column;gap:3px}.title{height:23px;text-align:center;font-size:16px;font-weight:800;color:#315d48}.scene{height:134px;width:342px;display:block;overflow:hidden}.scene text{font:700 11px system-ui,sans-serif;fill:#35463d;paint-order:stroke;stroke:#fff8e9;stroke-width:3px;stroke-linejoin:round}.hub-shape{fill:#8bcf72;stroke:#4c9359;stroke-width:3;transition:filter .3s,transform .3s;transform-box:fill-box;transform-origin:center}.entity-shape{stroke:#80603b;stroke-width:2}.flow-label{fill:#547767!important}.particle{fill:#f4ad46;stroke:#fff8e9;stroke-width:1.5}.particle[data-flow="water"]{fill:#54a9df}.particle[data-flow="o2"]{fill:#ef826f}.highlight{filter:drop-shadow(0 0 5px #efa83e);transform:scale(1.08)}.controls{height:52px;display:flex;justify-content:center;gap:8px}.controls button,.options button{font:700 14px system-ui,sans-serif;color:#315d48;background:#e4f1d8;border:2px solid #9ac48b;border-radius:16px;min-width:74px;height:52px;cursor:pointer;transition:transform .12s,background .2s}.controls button:active,.options button:active{transform:scale(.94)}.caption{height:24px;text-align:center;font-size:14px;font-weight:700;color:#855e25;line-height:24px}.ask{height:21px;text-align:center;font-size:13px;font-weight:700;line-height:21px;color:#35463d}.options{height:52px;display:flex;justify-content:center;gap:8px}.options button{min-width:88px;background:#fff;border-color:#e3c992}.feedback{height:17px;text-align:center;font-size:12px;font-weight:700;color:#4c7950;line-height:17px}
+</style>
+<div class="wrap">
+  <div class="title" id="title"></div>
+  <svg class="scene" id="scene" viewBox="0 0 342 134" aria-label="">
+    <g id="art"></g>
+  </svg>
+  <div class="controls"><button id="play" data-action="play"></button><button id="next" data-action="next"></button></div>
+  <div class="caption" data-caption></div>
+  <div class="ask" id="ask"></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback"></div>
+</div>
+<script>
+
+(()=>{const p=Studio.params,t=Studio.t,svgNS="http://www.w3.org/2000/svg",art=document.getElementById("art"),scene=document.getElementById("scene");document.getElementById("title").textContent=t("title");document.getElementById("ask").textContent=t("ask");
+const make=(tag,attrs,parent=art)=>{const e=document.createElementNS(svgNS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);parent.appendChild(e);return e};
+const text=(key,x,y,isFlow=false)=>{const e=make("text",{x,y,"text-anchor":"middle","data-label":key});if(isFlow)e.classList.add("flow-label");e.textContent=t(key);return e};
+const positions={sun:{x:49,y:39},roots:{x:171,y:117},leaf:{x:171,y:66}},hub=positions[p.hub]||{x:171,y:66};
+function drawEntity(key){const q=positions[key]||{x:171,y:117};if(key===p.hub){make("path",{d:`M ${q.x-38} ${q.y+2} C ${q.x-37} ${q.y-31}, ${q.x+2} ${q.y-38}, ${q.x+38} ${q.y-16} C ${q.x+35} ${q.y+14}, ${q.x+1} ${q.y+34}, ${q.x-38} ${q.y+2} Z`,"class":"hub-shape","data-entity":key});make("path",{d:`M ${q.x-29} ${q.y+13} Q ${q.x-2} ${q.y-5} ${q.x+27} ${q.y-19}`,fill:"none",stroke:"#4c9359","stroke-width":"2"});text(key,q.x+49,q.y+7);return}
+if(key==="sun"){make("circle",{cx:q.x,cy:q.y,r:15,fill:"#ffc95c",class:"entity-shape","data-entity":key});for(let i=0;i<8;i++){const a=i*Math.PI/4;make("line",{x1:q.x+20*Math.cos(a),y1:q.y+20*Math.sin(a),x2:q.x+25*Math.cos(a),y2:q.y+25*Math.sin(a),stroke:"#e9a943","stroke-width":"3","stroke-linecap":"round"})}text(key,q.x,q.y+37)}
+else{make("path",{d:`M ${q.x-35} ${q.y-12} Q ${q.x} ${q.y-25} ${q.x+35} ${q.y-12} M ${q.x-24} ${q.y-8} Q ${q.x-21} ${q.y+7} ${q.x-15} ${q.y+13} M ${q.x-8} ${q.y-9} Q ${q.x-6} ${q.y+9} ${q.x} ${q.y+15} M ${q.x+10} ${q.y-9} Q ${q.x+11} ${q.y+8} ${q.x+17} ${q.y+13} M ${q.x+29} ${q.y-9} Q ${q.x+24} ${q.y+4} ${q.x+23} ${q.y+10}`,fill:"none",stroke:"#80603b","stroke-width":"4","stroke-linecap":"round","data-entity":key});text(key,q.x,q.y+16)}}
+(p.entities||[]).forEach(drawEntity);drawEntity(p.hub);
+const configs={water:{start:[171,126],end:[171,94],label:[205,119]},co2:{start:[105,66],end:[132,66],label:[116,53]},o2:{start:[210,66],end:[243,66],label:[231,53]}};
+const paths={};(p.flows||[]).forEach(f=>{const c=configs[f.key]||{start:[80,66],end:[120,66],label:[100,52]};paths[f.key]={...c,dir:f.dir};text(f.key,c.label[0],c.label[1],true);for(let i=0;i<3;i++)make("circle",{r:5,class:"particle","data-flow":f.key,"data-i":i,cx:c.start[0],cy:c.start[1]})});
+const steps=Math.max(1,Number(p.steps)||1),stepNames=["step1","step2","step3","step4"];let step=0,playing=true,done=false,elapsed=0;const caption=document.querySelector("[data-caption]"),play=document.getElementById("play");function sync(){caption.textContent=t(stepNames[step%stepNames.length]);play.textContent=t(playing?"pause":"play");art.querySelectorAll(".highlight").forEach(e=>e.classList.remove("highlight"));const f=(p.flows||[])[step%(p.flows||[]).length];if(f){document.querySelectorAll(`[data-flow="${f.key}"]`).forEach(e=>e.classList.add("highlight"))}else{const e=document.querySelector(`[data-entity="${p.hub}"]`);if(e)e.classList.add("highlight")}}
+play.addEventListener("click",()=>{playing=!playing;sync();Studio.event("play",{playing:playing?1:0})});document.getElementById("next").textContent=t("next");document.getElementById("next").addEventListener("click",()=>{step=(step+1)%steps;sync();Studio.event("step",{step:step+1})});
+const options=document.getElementById("options");(p.options||[]).forEach(key=>{const b=document.createElement("button");b.type="button";b.dataset.option=key;b.textContent=t(key);b.addEventListener("click",()=>Studio.answer(key));options.appendChild(b)});
+Studio.onVerdict(v=>{document.getElementById("feedback").textContent=t(v.correct?"right":"wrong");if(v.correct&&!done){done=true;Studio.done()}});
+function frame(){if(playing){elapsed+=0.012;document.querySelectorAll(".particle").forEach(e=>{const c=paths[e.dataset.flow],i=Number(e.dataset.i),u=(elapsed+i/3)%1;let x,y;if(c.dir==="out"){x=c.start[0]+(c.end[0]-c.start[0])*u;y=c.start[1]+(c.end[1]-c.start[1])*u}else if(c.dir==="up_in"){x=c.start[0]+(c.end[0]-c.start[0])*u;y=c.start[1]+(c.end[1]-c.start[1])*u}else{x=c.start[0]+(c.end[0]-c.start[0])*u;y=c.start[1]+(c.end[1]-c.start[1])*u}e.setAttribute("cx",x);e.setAttribute("cy",y)})}requestAnimationFrame(frame)}
+sync();Studio.ready();requestAnimationFrame(frame)})();
+
+</script>

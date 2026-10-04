@@ -1,0 +1,87 @@
+<style>
+  *{box-sizing:border-box}
+  #activity{width:360px;height:320px;overflow:hidden;position:relative;background:#fff8ec;color:#51403a;font-family:system-ui,sans-serif}
+  #heading{height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:750}
+  #scene{position:relative;width:360px;height:174px}
+  #map{display:block;width:360px;height:174px}
+  #map .stage rect{fill:#fffdf7;stroke:#d7a97e;stroke-width:2;transition:fill .3s,stroke .3s,filter .3s}
+  #map .stage text{fill:#51403a;font-size:12px;font-weight:700;text-anchor:middle;dominant-baseline:middle}
+  #map .stage.active rect{fill:#ffe5a9;stroke:#e99252;filter:drop-shadow(0 0 7px #f4b960)}
+  #map .arrow{fill:none;stroke:#ba8e78;stroke-width:3;stroke-linecap:round}
+  #map [data-token]{fill:#58b9b1;stroke:#fff;stroke-width:3;filter:drop-shadow(0 2px 3px #876b6266)}
+  #next{position:absolute;left:149px;top:61px;width:62px;height:52px;border:0;border-radius:18px;background:#dc7861;color:white;font:700 14px system-ui;box-shadow:0 5px 0 #ac5949;cursor:pointer}
+  #next:active,#choices button:active{transform:translateY(3px) scale(.96);box-shadow:none}
+  #next:disabled{opacity:.65}
+  #prompt{height:32px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:14px;font-weight:700;padding:0 10px}
+  #choices{height:78px;display:flex;align-items:flex-start;justify-content:center;gap:6px;padding:5px 8px}
+  #choices button{min-width:0;flex:1;height:58px;border:2px solid #9dc9bd;border-radius:15px;background:#e8f7ef;color:#365950;font:700 11px system-ui;overflow-wrap:anywhere;padding:3px;cursor:pointer;box-shadow:0 3px 0 #93b9ad;transition:transform .15s,background .2s}
+  #choices button:disabled{opacity:.7;cursor:default}
+  #activity.good #prompt{color:#287d65}
+  #activity.try #prompt{color:#b25f49}
+</style>
+<div id="activity">
+  <div id="heading"></div>
+  <div id="scene">
+    <svg id="map" viewBox="0 0 360 174" aria-hidden="true">
+      <defs><marker id="tip" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L7 4.5 L1 8" fill="none" stroke="#ba8e78" stroke-width="1.6" stroke-linejoin="round"/></marker></defs>
+      <g id="arrows"></g><g id="stages"></g><circle data-token r="10" cx="0" cy="0"></circle>
+    </svg>
+    <button id="next" data-action="next" type="button"></button>
+  </div>
+  <div id="prompt"></div>
+  <div id="choices"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, keys=p.stages, root=document.getElementById('activity');
+  const svgNS='http://www.w3.org/2000/svg';
+  const make=(tag,attrs,parent)=>{const el=document.createElementNS(svgNS,tag);for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);parent.appendChild(el);return el};
+  const positions=keys.map((_,i)=>({x:180+104*Math.cos(-3*Math.PI/4+i*2*Math.PI/keys.length),y:87+59*Math.sin(-3*Math.PI/4+i*2*Math.PI/keys.length)}));
+  const arrows=document.getElementById('arrows'), stages=document.getElementById('stages');
+  const links=[];
+  for(let i=0;i<keys.length-(p.cycle?0:1);i++){
+    const j=(i+1)%keys.length,a=positions[i],b=positions[j],dx=b.x-a.x,dy=b.y-a.y;
+    const scale=Math.max(Math.abs(dx)/67,Math.abs(dy)/28);
+    const x1=a.x+dx/scale,y1=a.y+dy/scale,x2=b.x-dx/scale,y2=b.y-dy/scale;
+    make('path',{class:'arrow','data-arrow':keys[i]+'>'+keys[j],d:`M${x1} ${y1} L${x2} ${y2}`,'marker-end':'url(#tip)'},arrows);
+    links[i]={a,b};
+  }
+  keys.forEach((key,i)=>{
+    const {x,y}=positions[i];
+    const g=make('g',{class:'stage','data-stage':key},stages);
+    make('rect',{x:x-67,y:y-26,width:134,height:52,rx:17},g);
+    const text=make('text',{x,y,'data-label':key},g);
+    text.textContent=Studio.t(key);
+  });
+  const token=document.querySelector('[data-token]'), next=document.getElementById('next'),prompt=document.getElementById('prompt'),choices=document.getElementById('choices');
+  document.getElementById('heading').textContent=Studio.t('title');
+  next.textContent=Studio.t('next');
+  prompt.textContent=Studio.t('ask')+' '+Studio.t(p.askAfter);
+  p.options.forEach(key=>{const b=document.createElement('button');b.type='button';b.dataset.option=key;b.textContent=Studio.t(key);b.addEventListener('click',()=>Studio.answer(key));choices.appendChild(b)});
+  let index=0,moving=false,finished=false;
+  function activate(){root.dataset.active=keys[index];stages.querySelectorAll('.stage').forEach((g,i)=>g.classList.toggle('active',i===index))}
+  function place(x,y){token.setAttribute('cx',x);token.setAttribute('cy',y)}
+  activate();place(positions[0].x,positions[0].y);
+  next.addEventListener('click',()=>{
+    if(moving||finished||(!p.cycle&&index===keys.length-1))return;
+    const link=links[index];if(!link)return;
+    moving=true;next.disabled=true;
+    const start=performance.now(),duration=750;
+    const frame=now=>{
+      const t=Math.min(1,(now-start)/duration),ease=t<.5?2*t*t:1-2*(1-t)*(1-t);
+      place(link.a.x+(link.b.x-link.a.x)*ease,link.a.y+(link.b.y-link.a.y)*ease);
+      if(t<1)requestAnimationFrame(frame);
+      else{index=(index+1)%keys.length;activate();moving=false;next.disabled=!p.cycle&&index===keys.length-1;Studio.event('stage',{key:keys[index]})}
+    };
+    requestAnimationFrame(frame);
+  });
+  Studio.onVerdict(({correct})=>{
+    root.classList.toggle('good',correct);root.classList.toggle('try',!correct);
+    prompt.textContent=Studio.t(correct?'right':'wrong');
+    if(correct&&!finished){finished=true;next.disabled=true;choices.querySelectorAll('button').forEach(b=>b.disabled=true);Studio.done()}
+  });
+  Studio.ready();
+})();
+
+</script>

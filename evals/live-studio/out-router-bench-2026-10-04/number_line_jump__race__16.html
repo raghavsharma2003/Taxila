@@ -1,0 +1,54 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff7ea;color:#473b44}#game{width:360px;height:320px;padding:14px 16px;position:relative;background:radial-gradient(circle at 90% 7%,#ffe3bd 0 18%,transparent 19%),#fff7ea}h1{margin:0;font-size:19px;line-height:25px;font-weight:800}#instr{margin:3px 0 0;font-size:13px;line-height:18px}#item{position:absolute;top:62px;left:16px;right:16px;height:45px;display:flex;align-items:center;gap:10px}#target{min-width:70px;padding:5px 14px;border-radius:15px;background:#fff;border:2px solid #e6b876;text-align:center;font-size:23px;font-weight:800;box-shadow:0 3px 0 #f2ddbc}#line{position:absolute;left:0;top:108px;width:360px;height:91px;overflow:visible}#marker{position:absolute;top:111px;width:38px;height:38px;border-radius:50% 50% 45% 45%;background:#e67866;border:3px solid white;box-shadow:0 4px 0 #ad514c,0 6px 12px #744b4733;transform:translateX(-50%);transition:left .24s ease,transform .2s ease;pointer-events:none}#marker:after{content:"";position:absolute;width:8px;height:8px;background:#fff;border-radius:50%;left:12px;top:10px}#marker.hop{animation:hop .55s ease}#marker.nudge{animation:nudge .4s ease}@keyframes hop{50%{transform:translate(-50%,-22px) rotate(12deg)}}@keyframes nudge{35%{transform:translate(-57%,0)}70%{transform:translate(-43%,0)}}#feedback{position:absolute;top:199px;left:16px;right:16px;height:20px;text-align:center;font-size:14px;font-weight:700;color:#975e50}#controls{position:absolute;left:16px;right:16px;bottom:16px;display:flex;gap:9px}button{height:66px;min-width:74px;flex:1;border:0;border-radius:18px;background:#f5d8a8;color:#473b44;font:700 16px system-ui,sans-serif;box-shadow:0 5px 0 #d9af75;cursor:pointer;transition:transform .14s,box-shadow .14s}button:active{transform:translateY(4px) scale(.97);box-shadow:0 1px 0 #d9af75}button:disabled{opacity:.55;cursor:default}button[data-action=check]{background:#79bfa8;box-shadow:0 5px 0 #4c947e}#finished{display:none;position:absolute;inset:80px 20px 50px;align-items:center;justify-content:center;text-align:center;font-size:28px;font-weight:800;color:#4c947e}
+</style>
+<div id="game">
+  <h1 id="title"></h1>
+  <div id="instr"></div>
+  <div id="item" data-item=""><div id="target" data-target></div></div>
+  <svg id="line" viewBox="0 0 360 91" aria-hidden="true"><path d="M30 47H330" stroke="#8b7770" stroke-width="5" stroke-linecap="round"/></svg>
+  <div id="marker" data-marker data-value=""></div>
+  <div id="feedback" aria-live="polite"></div>
+  <div id="controls">
+    <button type="button" data-action="left"></button>
+    <button type="button" data-action="right"></button>
+    <button type="button" data-action="check"></button>
+  </div>
+  <div id="finished"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, q=s=>document.querySelector(s), svg=q('#line'), marker=q('[data-marker]');
+  const round=v=>Math.round(v*1000000)/1000000;
+  const count=Math.round((p.max-p.min)/p.step);
+  const value=k=>round(p.min+k*p.step);
+  const decimals=String(p.step).split('.')[1]?.length||0;
+  const show=v=>p.format==='fraction'?`${Math.round(v*p.den)}/${p.den}`:String(Number(round(v).toFixed(Math.min(6,decimals))));
+  const x=k=>30+300*k/count;
+  let index=0, pos=Math.max(0,Math.min(count,Math.round((p.start-p.min)/p.step))), waiting=false;
+  q('#title').textContent=Studio.t('title');
+  q('#instr').textContent=Studio.t('instr');
+  for(const action of ['left','right','check']) q(`[data-action="${action}"]`).textContent=Studio.t(action==='right'?'right_btn':action);
+  const ns='http://www.w3.org/2000/svg';
+  for(let k=0;k<=count;k++){
+    const g=document.createElementNS(ns,'g');g.setAttribute('data-tick',String(value(k)));g.setAttribute('transform',`translate(${x(k)} 0)`);
+    const line=document.createElementNS(ns,'path');line.setAttribute('d','M0 37V57');line.setAttribute('stroke','#8b7770');line.setAttribute('stroke-width','3');line.setAttribute('stroke-linecap','round');g.append(line);
+    if(k%p.labelEvery===0){const text=document.createElementNS(ns,'text');text.setAttribute('y','82');text.setAttribute('text-anchor','middle');text.setAttribute('fill','#473b44');text.setAttribute('font-size','14');text.setAttribute('font-weight','700');text.textContent=show(value(k));g.append(text)}
+    svg.append(g);
+  }
+  function place(){marker.style.left=x(pos)+'px';marker.dataset.value=String(value(pos));q('[data-action="left"]').disabled=waiting||pos===0;q('[data-action="right"]').disabled=waiting||pos===count;q('[data-action="check"]').disabled=waiting}
+  function item(){q('#item').dataset.item=String(p.items[index].id);q('#target').textContent=show(p.items[index].target);q('#feedback').textContent='';pos=Math.max(0,Math.min(count,Math.round((p.start-p.min)/p.step)));place()}
+  q('[data-action="left"]').addEventListener('click',()=>{if(waiting||pos===0)return;pos--;place();Studio.event('move',{direction:'left'})});
+  q('[data-action="right"]').addEventListener('click',()=>{if(waiting||pos===count)return;pos++;place();Studio.event('move',{direction:'right'})});
+  q('[data-action="check"]').addEventListener('click',()=>{if(waiting)return;waiting=true;place();Studio.answer({value:value(pos)})});
+  Studio.onVerdict(({correct})=>{
+    if(!waiting)return;
+    q('#feedback').textContent=Studio.t(correct?'right':'wrong');
+    marker.classList.remove('hop','nudge');void marker.offsetWidth;marker.classList.add(correct?'hop':'nudge');
+    if(correct){setTimeout(()=>{marker.classList.remove('hop');index++;waiting=false;if(index<p.items.length)item();else{q('#item').style.display='none';svg.style.display='none';marker.style.display='none';q('#controls').style.display='none';q('#feedback').style.display='none';q('#finished').textContent=Studio.t('done');q('#finished').style.display='flex';Studio.done()}},650)}
+    else{waiting=false;place()}
+  });
+  item();Studio.ready();
+})();
+
+</script>

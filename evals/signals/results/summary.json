@@ -1166,10 +1166,277 @@
  "es5": {
   "n": 10000,
   "p50Ms": 0.419,
-  "p99Ms": 1.159,
-  "maxMs": 13.022,
+  "p99Ms": 4.488,
+  "maxMs": 58.804,
   "bar": "p99 ≤ 30 ms (target ≤ 5 ms)",
   "machine": "node v22.22.0, this container (NOT the ACA image; SG-M18 measures production)"
  },
- "es2": null
+ "es2": {
+  "date": "2026-10-04",
+  "clips": 640,
+  "cleanDetected": 600,
+  "method": "Azure neural TTS (centralindia), pitch +15%, SSML breaks/rate; digital onset; Node run of the REAL worklet (shimmed, 48 kHz) → dsp → tracker → src/signals. No AGC/NS/AEC, no playback latency (browser-only; NOT RUN).",
+  "a1": {
+   "n": 600,
+   "within60": 0.985,
+   "within80": 0.992,
+   "medianErrMs": -10,
+   "p90AbsErrMs": 20,
+   "bar": "±60 ms"
+  },
+  "pauses": {
+   "n": 350,
+   "exact": 0.994,
+   "within1": 1,
+   "meanSignedErr": 0.006,
+   "bar": "exact ±1"
+  },
+  "a7FlatRuns": {
+   "fillerClips": 180,
+   "recall": 0.011,
+   "noFillerClips": 420,
+   "falsePositiveRate": 0.021,
+   "bar": "recall ≥ 0.8"
+  },
+  "a2Lead": {
+   "recall": 0,
+   "falsePositiveRate": 0,
+   "medianLeadMsOnFiller": 0
+  },
+  "invariance": {
+   "onsetMs@gainPlus12": {
+    "n": 600,
+    "within5pct": 0.997
+   },
+   "onsetMs@gainMinus12": {
+    "n": 600,
+    "within5pct": 0.97
+   },
+   "pauseCount@gainPlus12": {
+    "n": 600,
+    "within5pct": 0.962
+   },
+   "pauseCount@gainMinus12": {
+    "n": 600,
+    "within5pct": 0.958
+   },
+   "longestPauseMs@gainPlus12": {
+    "n": 600,
+    "within5pct": 0.665
+   },
+   "longestPauseMs@gainMinus12": {
+    "n": 600,
+    "within5pct": 0.6
+   },
+   "pauseFrac@gainPlus12": {
+    "n": 600,
+    "within5pct": 0.455
+   },
+   "pauseFrac@gainMinus12": {
+    "n": 600,
+    "within5pct": 0.37
+   },
+   "articulationWps@gainPlus12": {
+    "n": 600,
+    "within5pct": 0.592
+   },
+   "articulationWps@gainMinus12": {
+    "n": 600,
+    "within5pct": 0.478
+   },
+   "voicedFrac@gainPlus12": {
+    "n": 600,
+    "within5pct": 0.928
+   },
+   "voicedFrac@gainMinus12": {
+    "n": 600,
+    "within5pct": 0.548
+   },
+   "f0MedianHz@gainPlus12": {
+    "n": 600,
+    "within5pct": 0.993
+   },
+   "f0MedianHz@gainMinus12": {
+    "n": 600,
+    "within5pct": 0.973
+   },
+   "flatVoicedRuns@gainPlus12": {
+    "n": 600,
+    "within5pct": 0.997
+   },
+   "flatVoicedRuns@gainMinus12": {
+    "n": 600,
+    "within5pct": 0.993
+   },
+   "nucleiPerSec@gainPlus12": {
+    "n": 600,
+    "within5pct": 0.262
+   },
+   "nucleiPerSec@gainMinus12": {
+    "n": 600,
+    "within5pct": 0.017
+   },
+   "leadMs@gainPlus12": {
+    "n": 600,
+    "within5pct": 1
+   },
+   "leadMs@gainMinus12": {
+    "n": 600,
+    "within5pct": 1
+   }
+  },
+  "noise": {
+   "fan@10dB": {
+    "n": 67,
+    "onsetMeasured": 67,
+    "qBedFlagged": 0,
+    "a1Within60AmongQBedPass": 0.746,
+    "a1Within60": 0.746,
+    "a1Within80": 0.821,
+    "a1MedianAbsErrMs": 25,
+    "pauseExactPm1": 0.69
+   },
+   "fan@5dB": {
+    "n": 66,
+    "onsetMeasured": 66,
+    "qBedFlagged": 0,
+    "a1Within60AmongQBedPass": 0.697,
+    "a1Within60": 0.697,
+    "a1Within80": 0.742,
+    "a1MedianAbsErrMs": 30,
+    "pauseExactPm1": 0.784
+   },
+   "fan@0dB": {
+    "n": 67,
+    "onsetMeasured": 67,
+    "qBedFlagged": 0,
+    "a1Within60AmongQBedPass": 0.866,
+    "a1Within60": 0.866,
+    "a1Within80": 0.925,
+    "a1MedianAbsErrMs": 15,
+    "pauseExactPm1": 0.73
+   },
+   "tv@10dB": {
+    "n": 66,
+    "onsetMeasured": 66,
+    "qBedFlagged": 1,
+    "a1Within60AmongQBedPass": null,
+    "a1Within60": 0.197,
+    "a1Within80": 0.197,
+    "a1MedianAbsErrMs": 550,
+    "pauseExactPm1": 0.902
+   },
+   "tv@5dB": {
+    "n": 67,
+    "onsetMeasured": 67,
+    "qBedFlagged": 1,
+    "a1Within60AmongQBedPass": null,
+    "a1Within60": 0.194,
+    "a1Within80": 0.194,
+    "a1MedianAbsErrMs": 545,
+    "pauseExactPm1": 0.833
+   },
+   "tv@0dB": {
+    "n": 67,
+    "onsetMeasured": 67,
+    "qBedFlagged": 1,
+    "a1Within60AmongQBedPass": null,
+    "a1Within60": 0.194,
+    "a1Within80": 0.194,
+    "a1MedianAbsErrMs": 550,
+    "pauseExactPm1": 0.825
+   },
+   "traffic@10dB": {
+    "n": 66,
+    "onsetMeasured": 66,
+    "qBedFlagged": 0,
+    "a1Within60AmongQBedPass": 0.818,
+    "a1Within60": 0.818,
+    "a1Within80": 0.894,
+    "a1MedianAbsErrMs": 15,
+    "pauseExactPm1": 0.949
+   },
+   "traffic@5dB": {
+    "n": 67,
+    "onsetMeasured": 67,
+    "qBedFlagged": 0,
+    "a1Within60AmongQBedPass": 0.776,
+    "a1Within60": 0.776,
+    "a1Within80": 0.881,
+    "a1MedianAbsErrMs": 15,
+    "pauseExactPm1": 0.75
+   },
+   "traffic@0dB": {
+    "n": 67,
+    "onsetMeasured": 67,
+    "qBedFlagged": 1,
+    "a1Within60AmongQBedPass": null,
+    "a1Within60": 0.493,
+    "a1Within80": 0.507,
+    "a1MedianAbsErrMs": 65,
+    "pauseExactPm1": 0.714
+   }
+  },
+  "rate": {
+   "-30%": {
+    "n": 50,
+    "medianRatio": 0.702,
+    "expected": 0.7
+   },
+   "-15%": {
+    "n": 100,
+    "medianRatio": 0.802,
+    "expected": 0.85
+   },
+   "10%": {
+    "n": 100,
+    "medianRatio": 0.979,
+    "expected": 1.1
+   },
+   "20%": {
+    "n": 50,
+    "medianRatio": 1.2,
+    "expected": 1.2
+   }
+  },
+  "a16Band": {
+   "n": 600,
+   "insideBand": 0.978,
+   "p05": 0.596,
+   "p50": 0.803,
+   "p95": 1.117
+  },
+  "hindiLH": {
+   "lhClips": 38,
+   "zGe1_5": 0.105,
+   "medianZ": -2.404,
+   "note": "z of f0EndSlope on Hindi clips ENDING on a non-final phrase against the same voice's final statements: the fraction that would count as signalsFrom's 'rising' hesitation cue"
+  },
+  "qBedCleanFalseFlag": {
+   "n": 600,
+   "rate": 0
+  },
+  "hindiFinalEndSlope": {
+   "n": 100,
+   "median": -10.401
+  },
+  "hindiLHEndSlope": {
+   "n": 38,
+   "median": -32.283
+  },
+  "laughFalseFire": {
+   "n": 600,
+   "rate": 0.013
+  },
+  "speakerShiftOwnVoiceFalseFire": {
+   "n": 600,
+   "rate": 0.003
+  },
+  "notRun": [
+   "AGC/NS/AEC (browser getUserMedia)",
+   "echo / loudspeaker",
+   "Bluetooth output latency",
+   "real child voices"
+  ]
+ }
 }

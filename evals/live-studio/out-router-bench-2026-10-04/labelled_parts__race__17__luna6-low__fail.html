@@ -1,0 +1,74 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{background:#fff8e9;color:#394b3d;font-family:system-ui,sans-serif}
+.wrap{width:360px;height:320px;padding:10px 12px;display:flex;flex-direction:column;align-items:center}
+h1{font-size:18px;line-height:22px;margin:0;font-weight:750;color:#38654a}
+.ask{height:42px;flex:none;display:flex;align-items:center;justify-content:center;gap:5px;text-align:center;font-size:15px;font-weight:650;color:#654f35}
+.ask .wanted{color:#b35a36}
+svg{display:block;width:336px;height:226px;overflow:hidden}
+.label{font:600 13px system-ui,sans-serif;fill:#5e604a}
+.leader{stroke:#867b62;stroke-width:1.5;stroke-linecap:round}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:filter .22s,transform .18s}
+.part:active{transform:scale(.94)}
+.part:hover{filter:brightness(1.06)}
+.part.correct{animation:glow .65s ease-in-out infinite alternate}
+@keyframes glow{from{filter:drop-shadow(0 0 3px #ffd34c)}to{filter:drop-shadow(0 0 10px #ffb928)}}
+.status{height:26px;margin-top:-2px;font-size:14px;font-weight:700;color:#38654a;text-align:center}
+</style>
+<div class="wrap">
+  <h1 id="title"></h1>
+  <div class="ask" data-ask><span id="ask"></span><span class="wanted" id="wanted"></span></div>
+  <svg id="picture" viewBox="0 0 336 226" role="img" aria-label="">
+    <g id="art"></g>
+    <g id="labels"></g>
+  </svg>
+  <div class="status" id="status" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, keys=p.parts;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  document.getElementById('wanted').textContent=Studio.t(p.ask);
+  document.getElementById('picture').setAttribute('aria-label',Studio.t('title'));
+  const art=document.getElementById('art'), labels=document.getElementById('labels');
+  const ns='http://www.w3.org/2000/svg';
+  const make=(tag,attrs,parent)=>{const e=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);parent.appendChild(e);return e};
+  const configs={
+    petal:{x:168,y:48,tx:199,ty:29,lx:193,ly:35,draw(g){for(let i=0;i<6;i++){const a=i*Math.PI/3,cx=168+24*Math.cos(a),cy=48+24*Math.sin(a);make('ellipse',{cx,cy,rx:15,ry:26,transform:`rotate(${i*60} ${cx} ${cy})`,fill:'#ee8c7c',stroke:'#cf6e60','stroke-width':2},g)}}},
+    centre:{x:168,y:48,tx:190,ty:72,lx:183,ly:63,draw(g){make('circle',{cx:168,cy:48,r:22,fill:'#f4c84b',stroke:'#d7a62e','stroke-width':2},g);for(let i=0;i<8;i++){const a=i*Math.PI/4;make('circle',{cx:168+13*Math.cos(a),cy:48+13*Math.sin(a),r:1.5,fill:'#ad7825'},g)}}},
+    stem:{x:168,y:133,tx:187,ty:146,lx:181,ly:140,draw(g){make('path',{d:'M154 69 Q168 102 159 195 L177 195 Q171 105 182 69 Z',fill:'#4d9b59',stroke:'#397e47','stroke-width':2},g)}},
+    leaf:{x:130,y:116,tx:74,ty:119,lx:107,ly:117,draw(g){make('path',{d:'M164 116 Q126 80 100 102 Q107 139 163 130 Z',fill:'#62ad68',stroke:'#397e47','stroke-width':2},g);make('path',{d:'M109 105 Q139 117 161 125',fill:'none',stroke:'#397e47','stroke-width':2},g)}},
+    root:{x:168,y:198,tx:198,ty:212,lx:190,ly:205,draw(g){make('path',{d:'M160 187 Q146 198 149 220 M164 188 Q160 205 162 222 M171 188 Q185 202 183 220 M176 187 Q199 197 198 216 M158 192 Q137 203 138 217',fill:'none',stroke:'#a77c52','stroke-width':6,'stroke-linecap':'round'},g)}}
+  };
+  keys.forEach(key=>{
+    const c=configs[key], g=make('g',{class:'part',tabindex:'0',role:'button','data-part':key},art);
+    make('circle',{cx:c.x,cy:c.y,r:33,fill:'#fff',opacity:'0.01'},g);
+    c.draw(g);
+    make('line',{x1:c.x,y1:c.y,x2:c.lx,y2:c.ly,class:'leader'},labels);
+    const label=make('text',{x:c.tx,y:c.ty,class:'label','data-label':key},labels);
+    label.textContent=Studio.t(key);
+    const choose=()=>{Studio.event('tap',{part:key});Studio.answer(key)};
+    g.addEventListener('click',choose);
+    g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();choose()}});
+  });
+  Studio.onVerdict(({correct})=>{
+    const status=document.getElementById('status');
+    if(correct){
+      status.textContent=Studio.t('right');
+      const target=art.querySelector(`[data-part="${CSS.escape(p.ask)}"]`);
+      if(target)target.classList.add('correct');
+      Studio.event('verdict',{result:'correct'});
+      status.textContent=Studio.t('done');
+      Studio.done();
+    }else{
+      status.textContent=Studio.t('wrong');
+      Studio.event('verdict',{result:'wrong'});
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -30,6 +30,11 @@ Node ids: `owner-reset-2026-10-04`, `owner-test-0-of-100-2026-10-04`, `rj-plumbi
 15. **The bar.** "Not an impulse app, not an MVP, not cheap." Build it like magic: innovative, deep, hard, real work; things built and deployed without
     fail; hundreds of problems must be found and fixed. Stop being easy.
 
+16. **Duplex architecture is core, not optional.** The listening-thinking-speaking-building teacher (docs/research/duplex/**,
+    workstream wf_3622f8d6-318) is a first-class Wave 2.5 stream with its own experience acceptance: natural gaps after real turn ends, no
+    talking over the child, no cutting off a thinking child, backchannels at the right moments, instant yield on barge-in, builds started from
+    what the child is saying. It replaces click-to-speak.
+
 ## What changes in how we work
 - Acceptance = real child-like sessions judged on experience (transcripts reviewed), plus the owner's own test. Plumbing batteries are necessary,
   never sufficient (`rj-plumbing-batteries-as-acceptance`).

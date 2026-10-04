@@ -1,0 +1,77 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e9;font-family:system-ui,sans-serif;color:#593f2d}#lesson{width:360px;height:320px;position:relative;overflow:hidden;background:linear-gradient(145deg,#fff9ed 0%,#f8edd5 100%)}.top{height:52px;display:flex;align-items:center;padding:0 10px 0 16px;gap:8px}.title{font-size:18px;font-weight:800;letter-spacing:.1px;flex:1;color:#70432d}.next{width:92px;height:52px;border:0;border-radius:18px;background:#e88752;color:white;font-weight:800;font-size:15px;box-shadow:0 4px 0 #bd613b;transition:transform .16s,box-shadow .16s}.next:active{transform:translateY(3px) scale(.96);box-shadow:0 1px 0 #bd613b}.scene{width:360px;height:156px;display:block}.stage{transition:filter .25s}.stage .card{fill:#fffdf7;stroke:#d9b58d;stroke-width:2;transition:fill .25s,stroke .25s}.stage .orb{fill:#f8d277;opacity:.75}.stage.active .card{fill:#fff1b7;stroke:#e88950;stroke-width:3}.stage.active .orb{fill:#ed9e58;opacity:1}.stage.active{filter:drop-shadow(0 4px 4px #d58b6055)}.stage text{font-size:11px;font-weight:800;fill:#69442e;text-anchor:middle;dominant-baseline:middle}.arrow{fill:none;stroke:#c58e61;stroke-width:3;stroke-linecap:round;marker-end:url(#tip)}.journey{fill:none;stroke:transparent;stroke-width:1}.token{filter:drop-shadow(0 2px 2px #8b5c4377)}.token .drop{fill:#55b9c6;stroke:#fff;stroke-width:2}.token .shine{fill:#fff;opacity:.8}.askbox{height:52px;padding:1px 14px 0;display:flex;align-items:center;gap:7px}.ask{font-size:14px;font-weight:800;color:#70432d;line-height:17px;flex:1}.feedback{font-size:13px;font-weight:900;color:#cc6942;min-width:43px;text-align:right}.feedback.good{color:#4d9b70;animation:pop .35s ease}.choices{height:60px;display:flex;gap:6px;padding:5px 8px}.choice{height:52px;min-width:52px;flex:1;border:2px solid #d6aa77;border-radius:16px;background:#fffdf8;color:#66432f;font-weight:800;font-size:12px;line-height:14px;padding:4px;box-shadow:0 3px 0 #d6aa77;transition:transform .15s,background .15s}.choice:active{transform:translateY(3px) scale(.96);box-shadow:none}.choice:disabled{opacity:.65}.pulse{animation:glow .65s ease}@keyframes glow{0%,100%{transform:scale(1)}45%{transform:scale(1.08)}}@keyframes pop{0%{transform:scale(.7)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+</style>
+<div id="lesson">
+  <div class="top"><div class="title" id="title"></div><button class="next" data-action="next" id="next"></button></div>
+  <svg class="scene" id="scene" viewBox="0 0 360 156" aria-hidden="true">
+    <defs><marker id="tip" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#c58e61"></path></marker></defs>
+    <g id="arrows"></g><g id="stages"></g>
+    <g class="token" data-token id="token"><path class="drop" d="M0,-11 C-8,-2 -9,2 -9,6 A9,9 0 0 0 9,6 C9,2 8,-2 0,-11Z"></path><circle class="shine" cx="-3" cy="3" r="2"></circle></g>
+  </svg>
+  <div class="askbox"><div class="ask" id="ask"></div><div class="feedback" id="feedback"></div></div>
+  <div class="choices" id="choices"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, root=document.getElementById('lesson'), svg=document.getElementById('scene'), sg=document.getElementById('stages'), ag=document.getElementById('arrows'), token=document.getElementById('token');
+  var stages=p.stages, n=stages.length, active=0, moving=false, paths=[], pos=[];
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('next').textContent=Studio.t('next');
+  document.getElementById('ask').textContent=Studio.t('ask')+' '+Studio.t(p.askAfter);
+  var cx=180,cy=78,rx=n<3?105:120,ry=55;
+  for(var i=0;i<n;i++){
+    var a=p.cycle?(-Math.PI/2+i*Math.PI*2/n):0;
+    var x=p.cycle?cx+rx*Math.cos(a):(n===1?180:45+i*270/(n-1));
+    var y=p.cycle?cy+ry*Math.sin(a):(i%2?103:53);
+    pos.push({x:x,y:y});
+  }
+  function edge(a,b){
+    var dx=b.x-a.x,dy=b.y-a.y, L=Math.sqrt(dx*dx+dy*dy)||1, w=37,h=20;
+    return {x:a.x+dx/L*Math.min(w,Math.abs(dx)?w:h),y:a.y+dy/L*Math.min(h,Math.abs(dy)?h:w)};
+  }
+  var links=p.cycle?n:Math.max(0,n-1);
+  for(var j=0;j<links;j++){
+    var k=(j+1)%n, s=edge(pos[j],pos[k]), e=edge(pos[k],pos[j]);
+    var path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('class','arrow');path.setAttribute('data-arrow',stages[j]+'>'+stages[k]);
+    path.setAttribute('d','M'+s.x+' '+s.y+' L'+e.x+' '+e.y);ag.appendChild(path);
+    paths.push({from:pos[j],to:pos[k],line:path});
+  }
+  for(var q=0;q<n;q++){
+    var g=document.createElementNS('http://www.w3.org/2000/svg','g');g.setAttribute('class','stage');g.setAttribute('data-stage',stages[q]);
+    g.setAttribute('transform','translate('+pos[q].x+' '+pos[q].y+')');
+    var r=document.createElementNS('http://www.w3.org/2000/svg','rect');r.setAttribute('class','card');r.setAttribute('x','-37');r.setAttribute('y','-20');r.setAttribute('width','74');r.setAttribute('height','40');r.setAttribute('rx','14');
+    var o=document.createElementNS('http://www.w3.org/2000/svg','circle');o.setAttribute('class','orb');o.setAttribute('cx','0');o.setAttribute('cy','-7');o.setAttribute('r','7');
+    var t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('data-label',stages[q]);t.setAttribute('y','10');t.textContent=Studio.t(stages[q]);
+    g.appendChild(r);g.appendChild(o);g.appendChild(t);sg.appendChild(g);
+  }
+  function place(v){token.setAttribute('transform','translate('+v.x+' '+v.y+')')}
+  function paint(){root.setAttribute('data-active',stages[active]);var gs=sg.children;for(var z=0;z<gs.length;z++)gs[z].classList.toggle('active',z===active);place(pos[active])}
+  paint();
+  document.getElementById('next').addEventListener('click',function(){
+    if(moving||n<2)return;
+    if(!p.cycle&&active===n-1)return;
+    moving=true;var from=active,to=(active+1)%n,start=performance.now(),dur=720;
+    Studio.event('next',{from:from,to:to});
+    function run(now){
+      var u=Math.min(1,(now-start)/dur),e=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+      var x=pos[from].x+(pos[to].x-pos[from].x)*e,y=pos[from].y+(pos[to].y-pos[from].y)*e;
+      place({x:x,y:y});
+      if(u<1)requestAnimationFrame(run);else{active=to;moving=false;paint();sg.children[active].classList.add('pulse');setTimeout(function(){sg.children[active].classList.remove('pulse')},650)}
+    }requestAnimationFrame(run);
+  });
+  var choices=document.getElementById('choices');
+  p.options.forEach(function(key){
+    var b=document.createElement('button');b.className='choice';b.setAttribute('data-option',key);b.textContent=Studio.t(key);
+    b.addEventListener('click',function(){Studio.event('option',{key:key});Studio.answer(key)});choices.appendChild(b);
+  });
+  Studio.onVerdict(function(v){
+    var f=document.getElementById('feedback');
+    f.className='feedback '+(v.correct?'good':'');f.textContent=Studio.t(v.correct?'right':'wrong');
+    if(v.correct){var bs=choices.querySelectorAll('button');for(var i=0;i<bs.length;i++)bs[i].disabled=true;setTimeout(function(){f.textContent=Studio.t('done');Studio.done()},350)}
+  });
+  Studio.ready();
+}());
+
+</script>

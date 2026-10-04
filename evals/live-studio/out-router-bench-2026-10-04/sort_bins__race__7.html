@@ -1,0 +1,102 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#493b39}
+  #game{width:360px;height:320px;padding:14px 12px 12px;position:relative;overflow:hidden;background:radial-gradient(circle at 85% 8%,#ffe4bc 0,transparent 32%),#fff8ed}
+  #title{margin:0;text-align:center;font-size:21px;font-weight:800;line-height:27px}
+  #instruction{margin:3px 0 0;text-align:center;font-size:13px;line-height:19px;color:#79635d}
+  #cards{height:112px;margin-top:13px;display:flex;align-content:flex-start;align-items:flex-start;justify-content:center;flex-wrap:wrap;gap:8px}
+  .card{min-width:70px;height:52px;padding:0 9px;border:2px solid #d9a978;border-radius:16px;background:#fffdf8;color:#493b39;font:700 15px system-ui,sans-serif;box-shadow:0 4px 0 #efd7ba;cursor:pointer;transition:transform .2s,box-shadow .2s,background .2s}
+  .card:active,.bin:active{transform:scale(.95)}
+  .card[data-selected="true"]{transform:translateY(-8px) rotate(-3deg);background:#fff0d0;box-shadow:0 10px 0 #efd7ba,0 0 0 4px #ffd893}
+  #bins{display:flex;gap:7px;height:116px}
+  .bin{flex:1;min-width:0;height:116px;border:2px solid #c8aaa0;border-radius:18px;background:#f7e8df;padding:8px 4px;cursor:pointer;text-align:center;transition:transform .2s,background .2s;display:flex;flex-direction:column;align-items:center}
+  .bin:nth-child(2){background:#e7f1e9;border-color:#a6c9af}
+  .bin:nth-child(3){background:#e9ecf8;border-color:#b5bee0}
+  .bin-name{font-size:15px;font-weight:800;line-height:22px}
+  .placed{width:100%;min-height:24px;margin-top:5px;display:flex;flex-wrap:wrap;align-content:flex-start;justify-content:center;gap:3px;overflow:hidden}
+  .placed-card{max-width:100%;border-radius:9px;background:#fffdf8;padding:3px 7px;font-size:12px;font-weight:700;box-shadow:0 2px 3px #5b403222;animation:arrive .32s ease-out}
+  #feedback{position:absolute;left:12px;right:12px;bottom:3px;height:17px;text-align:center;font-size:13px;font-weight:700;color:#785b62}
+  .shake{animation:shake .38s ease-in-out}
+  @keyframes shake{25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+  @keyframes arrive{from{opacity:.4;transform:translateY(-13px) scale(.85)}to{opacity:1;transform:none}}
+</style>
+<div id="game">
+  <h1 id="title"></h1>
+  <p id="instruction"></p>
+  <div id="cards"></div>
+  <div id="bins"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+  const p=Studio.params;
+  const cards=document.getElementById('cards');
+  const bins=document.getElementById('bins');
+  const feedback=document.getElementById('feedback');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  let selected=null, pending=null, sorted=0;
+  p.cards.forEach(key=>{
+    const card=document.createElement('button');
+    card.type='button';
+    card.className='card';
+    card.dataset.card=key;
+    card.dataset.selected='false';
+    card.textContent=Studio.t(key);
+    card.addEventListener('click',()=>{
+      if(pending)return;
+      if(selected)selected.dataset.selected='false';
+      selected=card;
+      card.dataset.selected='true';
+      feedback.textContent='';
+      Studio.event('pick',{card:key});
+    });
+    cards.append(card);
+  });
+  p.bins.forEach(key=>{
+    const bin=document.createElement('button');
+    bin.type='button';
+    bin.className='bin';
+    bin.dataset.bin=key;
+    const name=document.createElement('span');
+    name.className='bin-name';
+    name.textContent=Studio.t(key);
+    const placed=document.createElement('span');
+    placed.className='placed';
+    bin.append(name,placed);
+    bin.addEventListener('click',()=>{
+      if(!selected||pending)return;
+      pending={card:selected,bin,cardKey:selected.dataset.card,binKey:key};
+      Studio.answer({card:pending.cardKey,bin:key});
+    });
+    bins.append(bin);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    const {card,bin,binKey}=pending;
+    pending=null;
+    card.dataset.selected='false';
+    selected=null;
+    if(correct){
+      feedback.textContent=Studio.t('right');
+      const chip=document.createElement('span');
+      chip.className='placed-card';
+      chip.dataset.placed=binKey;
+      chip.textContent=card.textContent;
+      bin.querySelector('.placed').append(chip);
+      card.remove();
+      sorted++;
+      if(sorted===p.cards.length){
+        feedback.textContent=Studio.t('done');
+        Studio.done();
+      }
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+    }
+  });
+  Studio.ready();
+
+</script>

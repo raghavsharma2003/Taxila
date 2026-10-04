@@ -1,0 +1,149 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+#app{width:360px;height:320px;position:relative;overflow:hidden;background:#fff8ed;color:#59483f;font-family:system-ui,sans-serif;padding:10px 12px}
+h1{height:29px;margin:0;text-align:center;font-size:19px;line-height:25px;color:#785849}
+#scene{height:142px;position:relative;padding-top:21px}
+#track{height:94px;width:100%;position:relative;display:flex;align-items:center;justify-content:space-between}
+.stage{position:relative;z-index:1;flex:0 1 74px;min-width:0;height:78px;border:2px solid #f0ddc8;border-radius:18px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:border-color .25s,box-shadow .25s,transform .25s}
+.stage[data-current="true"]{border-color:#ed886a;box-shadow:0 0 0 4px #f8dfd2;transform:translateY(-3px)}
+.stage[data-arrived="true"]{animation:glow .65s ease-out}
+@keyframes glow{45%{box-shadow:0 0 0 8px #f6df9e}}
+.orb{width:23px;height:23px;flex:none;border-radius:50%;background:var(--orb);box-shadow:inset -4px -4px 0 #00000012}
+.label{font-size:11px;font-weight:700;line-height:13px;text-align:center;max-width:68px;overflow-wrap:anywhere}
+.arrow{position:absolute;z-index:0;height:18px;overflow:visible;pointer-events:none}
+#token{position:absolute;z-index:3;width:15px;height:15px;border:3px solid white;border-radius:50%;background:#ef8063;box-shadow:0 2px 6px #8b503c66;pointer-events:none;left:0;top:0}
+#nextWrap{text-align:center;margin-top:4px}
+button{min-width:52px;min-height:52px;padding:8px 15px;border:0;border-radius:18px;background:#ee9477;color:#fff;font:700 15px system-ui,sans-serif;box-shadow:0 4px 0 #cc7259;cursor:pointer;transition:transform .12s,filter .15s}
+button:active{transform:scale(.94) translateY(2px);filter:brightness(.96);box-shadow:0 2px 0 #cc7259}
+#question{display:none;text-align:center;margin-top:2px}
+#prompt{font-size:16px;font-weight:700;line-height:20px;min-height:25px;color:#785849}
+#choices{display:flex;justify-content:center;gap:8px;margin-top:6px;flex-wrap:wrap}
+#choices button{min-height:52px;padding:8px 12px;background:#8abf9d;box-shadow:0 4px 0 #659477;font-size:13px}
+#feedback{height:23px;margin-top:5px;font-weight:700;font-size:15px;color:#785849}
+</style>
+<div id="app" data-active="">
+  <h1 id="title"></h1>
+  <div id="scene">
+    <div id="track"></div>
+    <div id="token" data-token></div>
+  </div>
+  <div id="nextWrap"><button id="next" data-action="next"></button></div>
+  <div id="question">
+    <div id="prompt"></div>
+    <div id="choices"></div>
+    <div id="feedback"></div>
+  </div>
+</div>
+<script>
+
+(function(){
+  const p=Studio.params, root=document.getElementById('app'), track=document.getElementById('track'), token=document.getElementById('token');
+  const keys=p.stages, colors=['#f3c96d','#8bc9a5','#8db9d5','#ed886a'];
+  document.getElementById('title').textContent=Studio.t('title');
+  const next=document.getElementById('next');
+  next.textContent=Studio.t('next');
+  keys.forEach((key,i)=>{
+    const stage=document.createElement('div');
+    stage.className='stage';
+    stage.dataset.stage=key;
+    stage.dataset.current='false';
+    stage.style.setProperty('--orb',colors[i%colors.length]);
+    const orb=document.createElement('div');
+    orb.className='orb';
+    const label=document.createElement('div');
+    label.className='label';
+    label.dataset.label=key;
+    label.textContent=Studio.t(key);
+    stage.append(orb,label);
+    track.append(stage);
+  });
+  const stages=Array.from(track.querySelectorAll('.stage'));
+  const edges=[];
+  for(let i=0;i<keys.length-1;i++) edges.push([keys[i],keys[i+1],i]);
+  if(p.cycle&&keys.length>1) edges.push([keys[keys.length-1],keys[0],keys.length-1]);
+  edges.forEach(([from,to,i])=>{
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('viewBox','0 0 100 18');
+    svg.setAttribute('class','arrow');
+    svg.dataset.arrow=from+'>'+to;
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d','M2 9h91m-9-6 7 6-7 6');
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke','#c9a98b');
+    path.setAttribute('stroke-width','2.5');
+    path.setAttribute('stroke-linecap','round');
+    path.setAttribute('stroke-linejoin','round');
+    svg.append(path);
+    track.append(svg);
+    if(i<keys.length-1){
+      const a=stages[i], b=stages[i+1];
+      const left=a.offsetLeft+a.offsetWidth/2;
+      const right=b.offsetLeft+b.offsetWidth/2;
+      svg.style.left=left+'px';
+      svg.style.top=(track.clientHeight/2-9)+'px';
+      svg.style.width=Math.max(20,right-left)+'px';
+    }else{
+      svg.style.left='calc(50% - 30px)';
+      svg.style.top='-13px';
+      svg.style.width='60px';
+      svg.style.transform='rotate(90deg)';
+    }
+  });
+  const choices=document.getElementById('choices');
+  p.options.forEach(key=>{
+    const b=document.createElement('button');
+    b.dataset.option=key;
+    b.textContent=Studio.t(key);
+    b.addEventListener('click',()=>Studio.answer(key));
+    choices.append(b);
+  });
+  let index=0, asking=false, moving=false;
+  function pos(i){
+    const r=stages[i].getBoundingClientRect(), a=root.getBoundingClientRect();
+    return {left:r.left-a.left+r.width/2-7.5,top:r.top-a.top+r.height/2-7.5};
+  }
+  function activate(i){
+    root.dataset.active=keys[i];
+    stages.forEach((el,j)=>{el.dataset.current=j===i?'true':'false'});
+    stages[i].dataset.arrived='true';
+    setTimeout(()=>{stages[i].dataset.arrived='false'},700);
+  }
+  const first=pos(0);
+  token.style.left=first.left+'px';
+  token.style.top=first.top+'px';
+  activate(0);
+  function showQuestion(){
+    asking=true;
+    document.getElementById('nextWrap').style.display='none';
+    document.getElementById('question').style.display='block';
+    document.getElementById('prompt').textContent=Studio.t('ask');
+  }
+  Studio.onVerdict(v=>{
+    if(!asking)return;
+    document.getElementById('feedback').textContent=Studio.t(v.correct?'right':'wrong');
+    if(v.correct){
+      document.getElementById('feedback').textContent=Studio.t('done');
+      Studio.done();
+    }
+  });
+  next.addEventListener('click',()=>{
+    if(asking||moving)return;
+    if(index>=keys.length-1){
+      if(p.cycle&&keys.length>1) index=0;
+      else {showQuestion();return}
+    }else index++;
+    const from=pos((index-1+keys.length)%keys.length), to=pos(index);
+    moving=true;
+    token.animate([{left:from.left+'px',top:from.top+'px'},{left:to.left+'px',top:to.top+'px'}],{duration:720,easing:'cubic-bezier(.2,.8,.25,1)',fill:'forwards'}).onfinish=()=>{
+      token.style.left=to.left+'px';
+      token.style.top=to.top+'px';
+      activate(index);
+      moving=false;
+    };
+    Studio.event('stage',{index});
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,81 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#493a36;background:#fff8ee}
+#stage{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(ellipse at 50% 46%,#fffdf7 0%,#fff8ee 78%)}
+h1{position:absolute;top:11px;left:12px;width:336px;margin:0;text-align:center;font-size:19px;line-height:24px;font-weight:750;color:#704b43}
+#ask{position:absolute;top:39px;left:12px;width:336px;margin:0;text-align:center;font-size:14px;line-height:19px;color:#80685e}
+#timeline{position:absolute;inset:0;width:360px;height:320px}
+.axis{stroke:#c87f5b;stroke-width:4;stroke-linecap:round}
+.tick{stroke:#e8b28f;stroke-width:2}
+.marker{fill:#e58b62;stroke:#fff8ee;stroke-width:3;transform-box:fill-box;transform-origin:center;transition:transform .22s ease,fill .22s ease}
+#cards{position:absolute;inset:0}
+.event-card{position:absolute;width:96px;height:62px;padding:5px 4px;border:2px solid #f0c49e;border-radius:15px;background:#fffdf8;color:#604b43;box-shadow:0 3px 0 #edd9c6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font:inherit;cursor:pointer;transition:transform .16s ease,background .2s ease,border-color .2s ease,box-shadow .16s ease}
+.event-card:active{transform:scale(.94)}
+.event-card:focus-visible{outline:3px solid #668a75;outline-offset:2px}
+.event-card .name{font-size:13px;line-height:17px;font-weight:700;white-space:nowrap}
+.event-card .year{font-size:12px;line-height:15px;color:#947363}
+.connector{position:absolute;width:2px;height:17px;background:#e3ad89;border-radius:2px;transform:translateX(-50%)}
+#feedback{position:absolute;left:10px;bottom:8px;width:340px;min-height:28px;text-align:center;font-size:14px;line-height:19px;font-weight:700;color:#66856c}
+#feedback.wrong{color:#a45e4e}
+#feedback.pop{animation:pop .36s ease}
+@keyframes pop{50%{transform:scale(1.08)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+<div id="stage">
+  <h1 id="title"></h1>
+  <p id="ask"></p>
+  <svg id="timeline" viewBox="0 0 360 320" aria-hidden="true">
+    <line class="axis" x1="24" y1="160" x2="336" y2="160" data-axis=""></line>
+    <path class="tick" d="M24 154v12 M336 154v12"></path>
+  </svg>
+  <div id="cards"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, t=Studio.t, svg=document.getElementById("timeline");
+  document.getElementById("title").textContent=t("title");
+  document.getElementById("ask").textContent=t("ask");
+  const events=[...p.events].sort((x,y)=>x.year-y.year);
+  const years=events.map(e=>e.year), min=Math.min(...years), max=Math.max(...years);
+  const xFor=year=>min===max?180:24+(year-min)*312/(max-min);
+  const cards=document.getElementById("cards"), feedback=document.getElementById("feedback");
+  events.forEach((e,i)=>{
+    const x=xFor(e.year), above=i%2===0, top=above?72:194;
+    const left=Math.max(4,Math.min(260,x-48));
+    const connector=document.createElement("div");
+    connector.className="connector";
+    connector.style.left=x+"px";
+    connector.style.top=above?(top+62)+"px":"177px";
+    cards.appendChild(connector);
+    const marker=document.createElementNS("http://www.w3.org/2000/svg","circle");
+    marker.setAttribute("cx",x);marker.setAttribute("cy","160");marker.setAttribute("r","9");
+    marker.setAttribute("class","marker");marker.setAttribute("data-event",e.key);marker.setAttribute("data-year",e.year);
+    svg.appendChild(marker);
+    const button=document.createElement("button");
+    button.type="button";button.className="event-card";button.dataset.card=e.key;
+    button.style.left=left+"px";button.style.top=top+"px";
+    const name=document.createElement("span");name.className="name";name.textContent=t(e.key);
+    const year=document.createElement("span");year.className="year";year.textContent=e.year;
+    button.append(name,year);cards.appendChild(button);
+    button.addEventListener("click",()=>{
+      if(button.disabled)return;
+      Studio.event("event_tap",{key:e.key});
+      Studio.answer(e.key);
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=t(correct?"right":"wrong");
+    feedback.className=correct?"pop":"wrong pop";
+    if(correct){
+      cards.querySelectorAll("button").forEach(b=>b.disabled=true);
+      feedback.textContent=t("done");
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

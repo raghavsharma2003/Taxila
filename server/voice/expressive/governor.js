@@ -2,8 +2,9 @@
 // on the process that speaks the lesson's turns (prewarm / tts-stream), keyed by lesson id with an LRU bound.
 //
 // Rules (each a unit test, each a voice.expr.* counter):
-//   fillers   ≤ 1 per 2 turns on average (≤ 5 in any 10-turn window); the same filler never twice within 6 turns
-//             (another word from the row's inventory is tried first); none in the 2 turns after a not_yet
+//   fillers   ≤ 1 per 2 turns on average (≤ 5 in any 10-turn window) and never on two turns in a row (a local run of
+//             fillers at the start of a lesson read as a tic in the first live run: 3 in 4 turns); the same filler never
+//             twice within 6 turns (another word from the row's inventory is tried first); none in the 2 turns after a not_yet
 //   breath    ≤ 1 per turn; ≥ 20 s since the last
 //   hum       ≥ 180 s since the last
 //   laugh / chuckle  ≥ 300 s since the last; never in the 2 turns after a not_yet verdict
@@ -56,7 +57,8 @@ export function createGovernor({ now = () => Date.now() } = {}) {
       if (c0?.filler) {
         const recent = s.fillers.filter((f) => f.turn > t - FILLER_WINDOW);
         const used = new Set(s.fillers.filter((f) => f.turn > t - FILLER_NO_REPEAT).map((f) => f.word));
-        const pick = recent.length >= FILLER_MAX_IN_WINDOW || afterNotYet || plan.register === "safety" ? null
+        const lastTurn = s.fillers.at(-1)?.turn ?? -1e9;
+        const pick = recent.length >= FILLER_MAX_IN_WINDOW || t - lastTurn < 2 || afterNotYet || plan.register === "safety" ? null
           : [c0.filler, ...(plan.fillerCandidates ?? [])].find((w) => !used.has(w)) ?? null;
         const bare = withoutFiller(c0);
         if (!pick) { out.governed.dropped.push(`filler:${c0.filler}`); delete c0.filler; c0.text = bare; }

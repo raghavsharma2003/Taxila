@@ -1,0 +1,98 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7eb;font-family:system-ui,sans-serif;color:#553d39}
+  #card{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(160deg,#fff9ef,#ffefd9)}
+  #title{position:absolute;top:9px;left:18px;right:18px;font-size:20px;font-weight:800;line-height:25px}
+  #ask{position:absolute;top:38px;left:18px;right:18px;font-size:15px;font-weight:600;line-height:21px}
+  svg{position:absolute;top:64px;left:0;width:360px;height:222px;overflow:visible}
+  .grid{stroke:#e8d8c8;stroke-width:1}
+  .axis{stroke:#a88d7c;stroke-width:1.5}
+  .tick{fill:#806b62;font-size:11px;text-anchor:end;dominant-baseline:middle}
+  .axis-title{fill:#806b62;font-size:11px;font-weight:700;text-anchor:middle}
+  .bar{fill:#ee9573;rx:9;transform-box:fill-box;transform-origin:center bottom;animation:grow .75s cubic-bezier(.2,.8,.25,1) both}
+  @keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  .column{cursor:pointer;outline:none}
+  .column .hit{fill:transparent}
+  .column:active .bar{filter:brightness(.93)}
+  .column:active .name{transform:translateY(2px)}
+  .name{fill:#654b44;font-size:11px;font-weight:650;text-anchor:middle;pointer-events:none;transition:transform .15s}
+  #feedback{position:absolute;left:14px;right:14px;bottom:9px;min-height:23px;text-align:center;font-size:16px;font-weight:750;color:#426d58}
+  #feedback:not(:empty){animation:pop .3s ease-out}
+  #feedback.bad{color:#ae604d}
+  @keyframes pop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+</style>
+<div id="card">
+  <div id="title"></div>
+  <div id="ask"></div>
+  <svg id="chart" viewBox="0 0 360 222" role="img" aria-labelledby="title ask">
+    <g id="grid"></g>
+    <g id="columns"></g>
+  </svg>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const data=Studio.params.data;
+  const ns='http://www.w3.org/2000/svg';
+  const grid=document.getElementById('grid');
+  const columns=document.getElementById('columns');
+  const feedback=document.getElementById('feedback');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  const make=(tag,attrs,parent,text)=>{
+    const el=document.createElementNS(ns,tag);
+    for(const [key,value] of Object.entries(attrs)) el.setAttribute(key,String(value));
+    if(text!==undefined) el.textContent=text;
+    parent.appendChild(el);
+    return el;
+  };
+  const highest=Math.max(...data.map(d=>d.value));
+  const magnitude=Math.pow(10,Math.floor(Math.log10(highest/5)));
+  const options=[1,2,5,10].map(n=>n*magnitude);
+  const step=options.find(n=>Math.ceil(highest/n)<=6)||options[options.length-1];
+  const ceiling=Math.ceil(highest/step)*step;
+  const left=57,right=345,top=17,base=165,height=base-top;
+  for(let value=0;value<=ceiling;value+=step){
+    const y=base-value/ceiling*height;
+    make('line',{x1:left,y1:y,x2:right,y2:y,class:value===0?'axis':'grid'},grid);
+    make('text',{x:49,y,class:'tick','data-tick':value},grid,String(value));
+  }
+  make('text',{x:15,y:89,transform:'rotate(-90 15 89)',class:'axis-title'},grid,Studio.t('yaxis'));
+  const width=(right-left)/data.length;
+  let waiting=false,finished=false;
+  data.forEach((item,index)=>{
+    const x=left+index*width;
+    const group=make('g',{class:'column','data-column':item.key,tabindex:0,role:'button'},columns);
+    const barWidth=Math.min(35,width-16);
+    const barHeight=item.value/ceiling*height;
+    make('rect',{x:x+(width-barWidth)/2,y:base-barHeight,width:barWidth,height:barHeight,class:'bar','data-bar':item.key,'data-value':item.value},group);
+    make('text',{x:x+width/2,y:188,class:'name'},group,Studio.t(item.key));
+    make('rect',{x:x+1,y:top-4,width:width-2,height:194,class:'hit'},group);
+    const choose=()=>{
+      if(waiting||finished)return;
+      waiting=true;
+      Studio.event('column_tap',{key:item.key});
+      Studio.answer(item.key);
+    };
+    group.addEventListener('click',choose);
+    group.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();choose()}
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    waiting=false;
+    feedback.classList.toggle('bad',!correct);
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      finished=true;
+      setTimeout(()=>{
+        feedback.textContent=Studio.t('done');
+        Studio.done();
+      },650);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

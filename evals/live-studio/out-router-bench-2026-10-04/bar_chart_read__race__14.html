@@ -1,0 +1,188 @@
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    width: 360px; height: 320px; margin: 0; overflow: hidden;
+    font-family: system-ui, sans-serif;
+  }
+  body {
+    color: #49352b;
+    background: #fff8ec;
+  }
+  .stage {
+    width: 360px; height: 320px; overflow: hidden;
+    padding-top: 10px;
+    background:
+      radial-gradient(ellipse at 50% 0%, #fffdf7 0%, transparent 72%),
+      #fff8ec;
+  }
+  .heading {
+    height: 34px; padding: 0 16px;
+    color: #75452d; font-size: 20px; line-height: 30px;
+    font-weight: 750; letter-spacing: .1px;
+  }
+  .prompt {
+    height: 30px; margin: 0 14px;
+    padding: 4px 10px; border-radius: 12px;
+    background: #f5e8d3; color: #65452f;
+    font-size: 14px; line-height: 22px; font-weight: 650;
+  }
+  .chart {
+    display: block; width: 360px; height: 236px;
+    overflow: visible;
+  }
+  .grid { stroke: #e7d9c5; stroke-width: 1; }
+  .axis { stroke: #8c735f; stroke-width: 1.5; }
+  .tick-label {
+    fill: #735f4f; font-size: 11px; text-anchor: end;
+    dominant-baseline: middle;
+  }
+  .axis-title {
+    fill: #654b39; font-size: 12px; font-weight: 650;
+    text-anchor: middle;
+  }
+  .bar {
+    fill: #e89a48; stroke: #c77832; stroke-width: 1;
+    transform-box: fill-box; transform-origin: center bottom;
+    animation: grow .72s cubic-bezier(.2,.8,.25,1) both;
+  }
+  @keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  .bar-shine { fill: #f5bb6a; opacity: .5; pointer-events: none; }
+  .bar-name {
+    fill: #594232; font-size: 11px; font-weight: 650;
+    text-anchor: middle; dominant-baseline: middle;
+    pointer-events: none;
+  }
+  .column-hit {
+    fill: transparent; cursor: pointer; pointer-events: all;
+    transform-box: fill-box; transform-origin: center;
+    transition: transform .12s ease;
+  }
+  .column-hit:active { transform: scale(.94); }
+  .column-hit:focus { outline: none; }
+  .column-hit:focus-visible { fill: #f1dfc6; fill-opacity: .45; }
+  .feedback {
+    display: none; height: 26px; margin: 0 14px;
+    padding: 3px 10px; border-radius: 11px;
+    font-size: 14px; line-height: 20px; font-weight: 700;
+  }
+  .feedback.show { display: block; }
+  .feedback.right { color: #35664b; background: #e5f1df; }
+  .feedback.wrong { color: #8a4a38; background: #f8e4d7; }
+  .stage.complete .prompt { display: none; }
+  .stage.complete .feedback { display: block; }
+  @media (prefers-reduced-motion: reduce) {
+    .bar { animation-duration: .01ms; }
+    .column-hit { transition: none; }
+  }
+</style>
+<main class="stage" id="stage">
+  <div class="heading" id="title"></div>
+  <div class="prompt" id="ask"></div>
+  <svg class="chart" id="chart" viewBox="0 0 360 236" role="img"></svg>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(() => {
+  const params = Studio.params;
+  const stage = document.getElementById('stage');
+  const chart = document.getElementById('chart');
+  const prompt = document.getElementById('ask');
+  const feedback = document.getElementById('feedback');
+  document.getElementById('title').textContent = Studio.t('title');
+  prompt.textContent = Studio.t('ask');
+
+  const ns = 'http://www.w3.org/2000/svg';
+  const make = (tag, attrs = {}, text) => {
+    const el = document.createElementNS(ns, tag);
+    for (const [key, value] of Object.entries(attrs)) el.setAttribute(key, value);
+    if (text !== undefined) el.textContent = text;
+    return el;
+  };
+
+  const data = params.data;
+  const maxValue = Math.max(...data.map(d => d.value));
+  const roughStep = maxValue / 6;
+  const magnitude = Math.pow(10, Math.floor(Math.log10(roughStep || 1)));
+  const choices = [1, 2, 5, 10].map(n => n * magnitude);
+  const step = choices.find(n => n >= roughStep) || choices[choices.length - 1];
+  const top = Math.ceil(maxValue / step) * step;
+  const left = 48, right = 352, plotTop = 25, baseline = 174;
+  const plotHeight = baseline - plotTop;
+  const positions = data.map((_, i) => left + (i + .5) * ((right - left) / data.length));
+  const slot = (right - left) / data.length;
+
+  for (let value = 0; value <= top; value += step) {
+    const y = baseline - (value / top) * plotHeight;
+    chart.appendChild(make('line', { x1: left, x2: right, y1: y, y2: y, class: 'grid' }));
+    chart.appendChild(make('text', {
+      x: left - 7, y, class: 'tick-label', 'data-tick': value
+    }, String(value)));
+  }
+
+  chart.appendChild(make('line', { x1: left, x2: right, y1: baseline, y2: baseline, class: 'axis' }));
+  chart.appendChild(make('line', { x1: left, x2: left, y1: plotTop, y2: baseline, class: 'axis' }));
+  chart.appendChild(make('text', {
+    x: 13, y: (plotTop + baseline) / 2,
+    class: 'axis-title', transform: `rotate(-90 13 ${(plotTop + baseline) / 2})`
+  }, Studio.t('yaxis')));
+
+  data.forEach((item, i) => {
+    const center = positions[i];
+    const barWidth = Math.min(32, slot * .58);
+    const height = (item.value / top) * plotHeight;
+    const x = center - barWidth / 2;
+    const y = baseline - height;
+
+    chart.appendChild(make('rect', {
+      x, y, width: barWidth, height, class: 'bar',
+      'data-bar': item.key, 'data-value': item.value
+    }));
+    chart.appendChild(make('rect', {
+      x: x + 3, y: y + 2, width: Math.max(0, barWidth - 6), height: Math.max(0, height - 2),
+      rx: 3, class: 'bar-shine'
+    }));
+    chart.appendChild(make('text', {
+      x: center, y: 198, class: 'bar-name'
+    }, Studio.t(item.key)));
+
+    const hit = make('rect', {
+      x: center - Math.max(26, slot / 2), y: plotTop - 2,
+      width: Math.max(52, slot), height: 207,
+      class: 'column-hit', tabindex: '0', role: 'button',
+      'data-column': item.key, 'aria-label': Studio.t(item.key)
+    });
+    const choose = () => {
+      if (stage.classList.contains('complete') || hit.getAttribute('aria-disabled') === 'true') return;
+      hit.setAttribute('aria-disabled', 'true');
+      Studio.event('column_tap', { key: item.key });
+      Studio.answer(item.key);
+    };
+    hit.addEventListener('click', choose);
+    hit.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        choose();
+      }
+    });
+    chart.appendChild(hit);
+  });
+
+  Studio.onVerdict(({ correct }) => {
+    feedback.textContent = Studio.t(correct ? 'right' : 'wrong');
+    feedback.className = `feedback show ${correct ? 'right' : 'wrong'}`;
+    if (correct) {
+      stage.classList.add('complete');
+      feedback.textContent = Studio.t('done');
+      Studio.done();
+    } else {
+      chart.querySelectorAll('.column-hit[aria-disabled="true"]').forEach(hit => {
+        hit.removeAttribute('aria-disabled');
+      });
+    }
+  });
+
+  Studio.ready();
+})();
+
+</script>

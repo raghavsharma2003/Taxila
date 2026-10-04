@@ -1,0 +1,116 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8eb;color:#493a32}
+#app{width:360px;height:320px;padding:10px 12px;background:linear-gradient(145deg,#fff8eb,#fff1df);overflow:hidden}
+header{height:56px;text-align:center}
+#title{font-size:18px;font-weight:800;line-height:23px;color:#684a3a}
+#instr{font-size:12px;line-height:17px;color:#816d5e}
+#cards{height:116px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:52px 52px;gap:8px;padding:0 14px}
+.card{min-width:0;height:52px;border:2px solid #efd4a8;border-radius:16px;background:#fffdf8;color:#594739;font:700 16px system-ui,sans-serif;box-shadow:0 3px 0 #e8d1ad;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s}
+.card:active{transform:scale(.96)}
+.card.selected{transform:translateY(-5px) scale(1.03);border-color:#efaa64;box-shadow:0 8px 14px #d99b5b55,0 3px 0 #e8d1ad}
+#feedback{height:24px;text-align:center;font-size:13px;font-weight:700;color:#946944;line-height:24px}
+#bins{height:94px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.bin{height:90px;min-width:0;border:2px solid #d9e3d1;border-radius:16px;background:#f4f8ee;box-shadow:0 3px 0 #d3deca;text-align:center;padding:6px 4px;cursor:pointer;transition:transform .16s,border-color .16s,background .16s}
+.bin:active{transform:scale(.97)}
+.bin-name{font-size:13px;line-height:18px;font-weight:800;color:#536648}
+.bin-cards{display:flex;justify-content:center;align-items:center;gap:3px;flex-wrap:wrap;padding-top:4px}
+.bin .card{height:31px;width:auto;min-width:0;padding:0 6px;border-radius:10px;font-size:11px;box-shadow:0 2px 0 #e8d1ad;pointer-events:none}
+.shake{animation:shake .32s ease}
+@keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+</style>
+<div id="app">
+  <header><div id="title"></div><div id="instr"></div></header>
+  <div id="cards"></div>
+  <div id="feedback" aria-live="polite"></div>
+  <div id="bins"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const cardArea=document.getElementById("cards");
+  const binsArea=document.getElementById("bins");
+  const feedback=document.getElementById("feedback");
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("instr").textContent=Studio.t("instr");
+  let selected=null,pending=false,finished=false;
+  const cardEls=new Map(),binEls=new Map();
+
+  p.cards.forEach(key=>{
+    const el=document.createElement("button");
+    el.type="button";
+    el.className="card";
+    el.dataset.card=key;
+    el.dataset.selected="false";
+    el.textContent=Studio.t(key);
+    el.addEventListener("click",()=>{
+      if(pending||finished||el.dataset.placed)return;
+      if(selected===el){
+        el.classList.remove("selected");
+        el.dataset.selected="false";
+        selected=null;
+      }else{
+        if(selected){selected.classList.remove("selected");selected.dataset.selected="false";}
+        selected=el;
+        el.classList.add("selected");
+        el.dataset.selected="true";
+      }
+      Studio.event("card_tap",{card:key});
+    });
+    cardEls.set(key,el);
+    cardArea.appendChild(el);
+  });
+
+  p.bins.forEach(key=>{
+    const bin=document.createElement("div");
+    bin.className="bin";
+    bin.dataset.bin=key;
+    const name=document.createElement("div");
+    name.className="bin-name";
+    name.textContent=Studio.t(key);
+    const contents=document.createElement("div");
+    contents.className="bin-cards";
+    bin.append(name,contents);
+    bin.addEventListener("click",()=>{
+      if(!selected||pending||finished)return;
+      const card=selected,cardKey=card.dataset.card;
+      selected=null;
+      card.classList.remove("selected");
+      card.dataset.selected="false";
+      pending=true;
+      Studio.event("bin_tap",{bin:key});
+      Studio.answer({card:cardKey,bin:key});
+      Studio.onVerdict(({correct})=>{
+        pending=false;
+        if(correct){
+          feedback.textContent=Studio.t("right");
+          cardArea.removeChild(card);
+          card.removeAttribute("data-card");
+          card.dataset.placed=key;
+          card.style.animation="place .35s ease";
+          binEls.get(key).lastElementChild.appendChild(card);
+          Studio.event("sorted",{card:cardKey,bin:key});
+          if([...cardEls.values()].every(el=>el.dataset.placed)){
+            finished=true;
+            feedback.textContent=Studio.t("done");
+            Studio.done();
+          }
+        }else{
+          feedback.textContent=Studio.t("wrong");
+          card.classList.add("shake");
+          card.addEventListener("animationend",()=>card.classList.remove("shake"),{once:true});
+        }
+      });
+    });
+    binEls.set(key,bin);
+    binsArea.appendChild(bin);
+  });
+  const style=document.createElement("style");
+  style.textContent="@keyframes place{from{transform:translateY(-12px) scale(1.08);opacity:.5}to{transform:translateY(0) scale(1);opacity:1}}";
+  document.head.appendChild(style);
+  Studio.ready();
+})();
+
+</script>

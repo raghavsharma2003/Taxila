@@ -1,0 +1,103 @@
+<style>
+*{box-sizing:border-box}
+:root{font-family:system-ui,sans-serif;color:#354653}
+.stage{width:360px;height:320px;overflow:hidden;background:#fff8ed;padding:12px;position:relative}
+h1{font-size:18px;line-height:22px;margin:0 0 7px;color:#395d58}
+.prompt{height:47px;display:flex;align-items:center;gap:8px;font-size:14px}
+.target{font-size:24px;font-weight:800;color:#b75f39;background:#ffe3cd;border-radius:14px;padding:5px 12px;min-width:52px;text-align:center}
+.track{height:88px;position:relative;margin:3px 0 12px}
+.rail{position:absolute;left:12px;right:12px;top:38px;height:4px;background:#6b8c83;border-radius:4px}
+.tick{position:absolute;top:30px;width:2px;height:20px;background:#52746c;transform:translateX(-50%)}
+.tick-label{position:absolute;top:53px;transform:translateX(-50%);font-size:12px;white-space:nowrap;color:#536c66}
+.marker{position:absolute;top:18px;width:30px;height:30px;border:4px solid #fff;background:#e78354;border-radius:50%;transform:translateX(-50%);box-shadow:0 2px 7px #8c573d66;transition:left .22s cubic-bezier(.2,.8,.3,1),top .2s}
+.marker.hop{animation:hop .34s ease}
+@keyframes hop{50%{top:3px;transform:translateX(-50%) scale(1.16)}}
+.feedback{height:23px;text-align:center;font-size:14px;font-weight:700;color:#52746c}
+.controls{display:flex;gap:8px;justify-content:center}
+button{height:56px;min-width:72px;border:0;border-radius:16px;background:#d8ebe2;color:#31564f;font:700 16px system-ui;box-shadow:0 3px 0 #a9c8b9;cursor:pointer;transition:transform .12s,background .15s}
+button:active{transform:scale(.94)}
+button.check{background:#f3bf75;color:#553e26;box-shadow:0 3px 0 #d69d50;min-width:94px}
+button:disabled{opacity:.55}
+</style>
+<main class="stage">
+  <h1 id="title"></h1>
+  <section id="item" data-item="">
+    <div class="prompt"><span id="instr"></span><span class="target" data-target></span></div>
+    <div class="track" id="track"><div class="rail"></div></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="controls">
+      <button type="button" data-action="left" id="left"></button>
+      <button type="button" data-action="right" id="right"></button>
+      <button type="button" class="check" data-action="check" id="check"></button>
+    </div>
+  </section>
+</main>
+<script>
+
+(()=> {
+  const p=Studio.params, t=Studio.t;
+  const title=document.getElementById("title"), instr=document.getElementById("instr");
+  const itemBox=document.getElementById("item"), targetEl=document.querySelector("[data-target]");
+  const track=document.getElementById("track"), feedback=document.getElementById("feedback");
+  const left=document.getElementById("left"), right=document.getElementById("right"), check=document.getElementById("check");
+  title.textContent=t("title"); instr.textContent=t("instr");
+  left.textContent=t("left"); right.textContent=t("right_btn"); check.textContent=t("check");
+  const places=track.clientWidth-24, count=Math.round((p.max-p.min)/p.step);
+  const round=v=>Math.round(v*1000000)/1000000;
+  const valueAt=k=>round(p.min+k*p.step);
+  function format(v){
+    v=round(v);
+    if(p.format==="integer") return String(Math.round(v));
+    let digits=0, scaled=Math.abs(v);
+    while(digits<6 && Math.abs(scaled-Math.round(scaled))>1e-7){scaled*=10;digits++}
+    let den=Math.pow(10,digits), num=Math.round(v*den), a=Math.abs(num), b=den;
+    while(b){const r=a%b;a=b;b=r}
+    return String(num/a)+"/"+String(den/a);
+  }
+  for(let k=0;k<=count;k++){
+    const value=valueAt(k), x=12+places*k/count;
+    const tick=document.createElement("span");
+    tick.className="tick"; tick.dataset.tick=String(value);
+    tick.style.left=x+"px"; track.appendChild(tick);
+    if(k%p.labelEvery===0){
+      const label=document.createElement("span");
+      label.className="tick-label"; label.textContent=format(value); label.style.left=x+"px";
+      track.appendChild(label);
+    }
+  }
+  const marker=document.createElement("span");
+  marker.className="marker"; marker.dataset.marker=""; track.appendChild(marker);
+  let itemIndex=0, k=Math.max(0,Math.min(count,Math.round((p.start-p.min)/p.step))), locked=false;
+  function update(){
+    const value=valueAt(k), x=12+places*k/count;
+    marker.dataset.value=String(value); marker.style.left=x+"px";
+  }
+  function showItem(){
+    if(itemIndex>=p.items.length){
+      feedback.textContent=t("done"); left.disabled=true; right.disabled=true; check.disabled=true;
+      itemBox.removeAttribute("data-item"); Studio.done(); return;
+    }
+    const item=p.items[itemIndex];
+    itemBox.dataset.item=item.id; targetEl.textContent=format(item.target);
+    feedback.textContent=""; k=Math.max(0,Math.min(count,Math.round((p.start-p.min)/p.step)));
+    update(); locked=false;
+  }
+  left.addEventListener("click",()=>{if(!locked&&k>0){k--;update();feedback.textContent="";Studio.event("move",{direction:"left"})}});
+  right.addEventListener("click",()=>{if(!locked&&k<count){k++;update();feedback.textContent="";Studio.event("move",{direction:"right"})}});
+  check.addEventListener("click",()=>{
+    if(locked)return;
+    locked=true; check.disabled=true;
+    Studio.answer({value:valueAt(k)});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      feedback.textContent=t("right"); marker.classList.remove("hop"); void marker.offsetWidth; marker.classList.add("hop");
+      window.setTimeout(()=>{itemIndex++;check.disabled=false;showItem()},350);
+    }else{
+      feedback.textContent=t("wrong"); locked=false; check.disabled=false;
+    }
+  });
+  showItem(); Studio.ready();
+})();
+
+</script>

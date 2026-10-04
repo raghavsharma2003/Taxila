@@ -1,0 +1,37 @@
+{
+  "nodes": [
+    {"id": "duplex-arch-six-loops-device-floor", "kind": "decision", "status": "proposed", "at": "2026-10-04",
+     "title": "Duplex teacher = a duplex CONTROLLER around the cascade, not a native duplex model: six loops (listen, understand, think, speak, build + a floor manager) on two clocks; the floor manager is a pure reducer ON THE DEVICE (20-32 ms ticks), the server thinks; models write notes/drafts/builds, code holds the floor (docs/research/duplex/ARCHITECTURE.md). Reverse if an India phone RTT to the India app is <= 40 ms p90 and a server-side floor measures equal on false take-overs and yield latency (D6)."},
+    {"id": "duplex-fast-mouth-late-verdict", "kind": "decision", "status": "proposed", "at": "2026-10-04",
+     "title": "Fast mouth, late verdict: after a closed answer the first ~1-1.5 s of teacher audio is verdict-free (uptake of the child's own value / neutral opener) and the commit is revocable until the first verdict-bearing word; a child self-repair inside that window yields, merges and re-grades (M-B1 21/21 hesitant first values wrong; M-C1 43% of self-repair breaks still sent). Reverse if E1 shows self-repairs after a complete value in < 2% of closed answers."},
+    {"id": "duplex-wait-time-drafts", "kind": "decision", "status": "proposed", "at": "2026-10-04",
+     "title": "Think during wait time I: on code-gradable closed items, draft the reply body per likely outcome (key without the child's text) and pre-synthesise body + uptake audio for the likely spoken values SERVER-side while the child is still thinking; promote at commit via classifyFast. Only path to sub-1 s first sound in M-D1 (0.85 s p50 [E] vs 2.49 s with every endpoint/India/store lever). Gated on D1: hit >= 60%, blind ear panel W >= K, cost <= +$0.3 per lesson-hour; needs a W2-E replyKey seam."},
+    {"id": "duplex-no-model-in-child-turn", "kind": "decision", "status": "proposed", "at": "2026-10-04",
+     "title": "No model decides, interrupts or grades inside the child's turn; a calibrated decision model may only SHORTEN a hold, inside [candidate silence, hold cap], never end a turn below the candidate, never trigger speech. TypeSafe Jev (typed calibrated decisions, 70-500 ms vendor) is not Direct-from-Azure and too slow for the critical path anyway; its pattern is replicated on Azure (logprob-scored classify deployment if it returns logprobs, or a Qwen2.5-0.5B head on ACA) and tested in D3 (ECE <= 0.08). Reverse if E-C5 finds an intervention class with cut-off-correct <= 2% and better next-turn learning."},
+    {"id": "duplex-safety-sticky-partials", "kind": "decision", "status": "proposed", "at": "2026-10-04",
+     "title": "scanSafety runs on every partial, on the device (same module, never a copy) and on the server slice route; a hit is sticky for the turn: timers freeze, no nods/backchannels, every non-safety draft and cached audio is quarantined, TurnRequest.duplex.safetyPending forces the rank-0 safeguard even if the ASR revises the final; she speaks only at the TRP or after >= 1.5 s silence (LateIntent). Reverse never as a direction."},
+    {"id": "duplex-content-blind-nods", "kind": "decision", "status": "proposed", "at": "2026-10-04",
+     "title": "Listening nods are content-blind (prosody-timed backchannel opportunities only, single continuer form, <= 1 per 3 s, never in number/choice answers or SAFETY_ATTEND); suppressing nods after a wrong step would itself leak the verdict (design-v2-face-verdict-neutral). Audio 'mm' stays off by default (E-C3). Reverse if D5 shows content-blind nods after wrong steps read as agreement by >= 60% of child raters."},
+    {"id": "duplex-result-triage", "kind": "decision", "status": "proposed", "at": "2026-10-04",
+     "title": "Speech track and work track are independent: results landing mid-conversation are triaged in code as INTERRUPT (safety only), WHEN_IDLE (builds/whiteboard/library mounts become a Studio reveal proposal at the next /turn, kernel decides) or SILENT (notes, hints, learner updates as quiet context); nothing new reaches the screen while the child holds the floor; partial-intent may launch prefetch only, never live codegen. Reverse if D9 shows WHEN_IDLE reveals ready at the TRP < 50% because of the wait."},
+    {"id": "m-d1-duplex-budget-sim-2026-10-04", "kind": "measurement", "at": "2026-10-04",
+     "title": "M-D1 budget composition (evals/duplex/budget-sim.mjs, 200k seeded draws/scenario; Director bootstrapped from 48 measured cascade turns; India stages lognormal from measured p50/p90; device commit, India RTT, CHN->CI TTS delta and fast-path server time are [E]). First sound p50/p90 ms: today eastus2 3237/4640 (measured 3244/4640, n=48); India app today 3072/3535; +500 ms candidate 2675/3135; +store after audio 2609/3070; +device commit 2486/2949; +uptake prelude first sound 1018/1101 (content 2488); +wait-time drafts TTS at commit 1114/1212; +server-cached audio 849/928; +300 ms candidate 649/727; explanation held 1.5 s: 3987/4450 -> 2553/2949 with candidate speculation. A composition model, not a measurement of the new system; independence assumed."},
+    {"id": "open-mai-client-commit", "kind": "open", "at": "2026-10-04",
+     "title": "D7: does MAI-Transcribe-2-Streaming (and D4) honour a client input_audio_buffer.commit with server VAD at 1.5 s as backstop (final <= 100 ms after commit from Chennai, no lost audio)? Needed for the device-owned endpoint (-~120-170 ms)."},
+    {"id": "open-duplex-seams-w2", "kind": "open", "at": "2026-10-04",
+     "title": "Duplex seam requests to W2 owners (ARCHITECTURE.md §7.2 S1-S11): duplex route table; TurnRequest.duplex {transcriptHash, genId, safetyPending, superseded, heardUpTo, holdCue}; history trim to heardUpTo; repeat_from move; closed-item replyKey without 'said'; ui.waitNudge + ui.expect; avatar listenerNod/holdPose public API; Moment.uptakePrelude clip id; store after first audio; cascadeLink shadow hook + client commit; floor.ts state mapping."}
+  ],
+  "edges": [
+    {"src": "duplex-arch-six-loops-device-floor", "rel": "inherits", "dst": "owner-duplex-liveliness-2026-10-04"},
+    {"src": "duplex-arch-six-loops-device-floor", "rel": "inherits", "dst": "code-keeps-decisions-2026-10-04"},
+    {"src": "duplex-arch-six-loops-device-floor", "rel": "constrains", "dst": "voice-turn-config"},
+    {"src": "duplex-arch-six-loops-device-floor", "rel": "inherits", "dst": "cascade-barge-pause-decide"},
+    {"src": "duplex-wait-time-drafts", "rel": "measured_by", "dst": "m-d1-duplex-budget-sim-2026-10-04"},
+    {"src": "duplex-wait-time-drafts", "rel": "constrains", "dst": "cascade-speculative-reply"},
+    {"src": "duplex-wait-time-drafts", "rel": "inherits", "dst": "reply-two-drafts"},
+    {"src": "duplex-content-blind-nods", "rel": "inherits", "dst": "design-v2-rejected-correctness-face"},
+    {"src": "duplex-arch-six-loops-device-floor", "rel": "inherits", "dst": "ct-no-voice-emotion-inference"},
+    {"src": "duplex-no-model-in-child-turn", "rel": "constrains", "dst": "open-predictive-turn-model"},
+    {"src": "open-mai-client-commit", "rel": "blocks", "dst": "duplex-arch-six-loops-device-floor"}
+  ]
+}

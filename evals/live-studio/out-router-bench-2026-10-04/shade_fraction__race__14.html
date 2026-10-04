@@ -1,0 +1,128 @@
+<style>
+*{box-sizing:border-box}
+#app{width:360px;height:320px;overflow:hidden;padding:12px 16px;background:#fff8ed;color:#543b32;font-family:system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;gap:5px}
+#title{font-size:18px;line-height:22px;font-weight:800;color:#824b3c}
+#instr{font-size:13px;line-height:17px;text-align:center;min-height:17px;color:#745d51}
+#target{font-size:25px;line-height:30px;font-weight:800;color:#b45d42}
+#whole{width:190px;height:166px;flex:none;overflow:visible}
+.part{fill:#f5d9a9;stroke:#fff8ed;stroke-width:3;cursor:pointer;transition:fill .18s,transform .16s;transform-box:fill-box;transform-origin:center}
+.part.shaded{fill:#e88253}
+.part:active{transform:scale(.94)}
+#bar .part{stroke-width:4}
+#check{height:54px;min-height:54px;min-width:150px;padding:0 20px;border:0;border-radius:18px;background:#6d9b72;color:white;font:700 17px system-ui,sans-serif;box-shadow:0 4px 0 #507b55;cursor:pointer;transition:transform .15s,background .2s}
+#check:active{transform:scale(.96) translateY(2px);box-shadow:0 2px 0 #507b55}
+#feedback{height:20px;min-height:20px;font-size:14px;font-weight:700;color:#b45d42;text-align:center}
+#feedback.good{color:#54845a;animation:bounce .45s ease}
+#feedback.bad{animation:nudge .3s ease}
+@keyframes bounce{50%{transform:scale(1.18)}}
+@keyframes nudge{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+</style>
+<div id="app">
+  <div id="title"></div>
+  <div id="instr"></div>
+  <div id="item" data-item="">
+    <div id="target" data-target></div>
+    <svg id="whole" viewBox="0 0 240 190" aria-hidden="true"></svg>
+  </div>
+  <button id="check" data-action="check"></button>
+  <div id="feedback"></div>
+</div>
+<script>
+
+(()=> {
+  const p=Studio.params, items=p.items;
+  const title=document.getElementById('title'), instr=document.getElementById('instr');
+  const itemBox=document.getElementById('item'), target=document.getElementById('target');
+  const svg=document.getElementById('whole'), check=document.getElementById('check');
+  const feedback=document.getElementById('feedback');
+  title.textContent=Studio.t('title');
+  instr.textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+  let index=0, pending=false, finishing=false;
+
+  function draw(){
+    const it=items[index];
+    itemBox.dataset.item=it.id;
+    target.textContent=it.n+'/'+it.d;
+    svg.replaceChildren();
+    svg.setAttribute('viewBox','0 0 240 190');
+    if(p.picture==='pizza'){
+      for(let i=0;i<it.d;i++){
+        const a1=(i/it.d)*Math.PI*2-Math.PI/2;
+        const a2=((i+1)/it.d)*Math.PI*2-Math.PI/2;
+        const x1=120+104*Math.cos(a1), y1=95+88*Math.sin(a1);
+        const x2=120+104*Math.cos(a2), y2=95+88*Math.sin(a2);
+        const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+        path.setAttribute('d',`M 120 95 L ${x1} ${y1} A 104 88 0 0 1 ${x2} ${y2} Z`);
+        path.classList.add('part');
+        path.dataset.part=i;
+        path.dataset.shaded='false';
+        path.addEventListener('click',toggle);
+        svg.append(path);
+      }
+    }else{
+      svg.setAttribute('viewBox','0 0 320 100');
+      svg.id='bar';
+      for(let i=0;i<it.d;i++){
+        const r=document.createElementNS('http://www.w3.org/2000/svg','rect');
+        r.setAttribute('x',String(i*320/it.d+1));
+        r.setAttribute('y','15');
+        r.setAttribute('width',String(320/it.d-2));
+        r.setAttribute('height','70');
+        r.setAttribute('rx','8');
+        r.classList.add('part');
+        r.dataset.part=i;
+        r.dataset.shaded='false';
+        r.addEventListener('click',toggle);
+        svg.append(r);
+      }
+    }
+    feedback.textContent='';
+    feedback.className='';
+    pending=false;
+  }
+  function toggle(e){
+    if(pending)return;
+    const shape=e.currentTarget;
+    const shaded=shape.dataset.shaded!=='true';
+    shape.dataset.shaded=String(shaded);
+    shape.classList.toggle('shaded',shaded);
+    Studio.event('part_tap',{part:Number(shape.dataset.part),shaded:shaded?1:0});
+  }
+  function advance(){
+    index++;
+    if(index>=items.length){
+      title.textContent=Studio.t('done');
+      instr.textContent='';
+      itemBox.hidden=true;
+      check.hidden=true;
+      feedback.textContent='';
+      Studio.done();
+    }else draw();
+  }
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    pending=false;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.className=correct?'good':'bad';
+    if(correct){
+      finishing=true;
+      feedback.addEventListener('animationend',()=>{
+        if(!finishing)return;
+        finishing=false;
+        advance();
+      },{once:true});
+    }
+  });
+  check.addEventListener('click',()=>{
+    if(pending||index>=items.length)return;
+    const parts=[...svg.querySelectorAll('[data-part]')];
+    const n=parts.filter(x=>x.dataset.shaded==='true').length;
+    pending=true;
+    Studio.answer({n,d:items[index].d});
+  });
+  draw();
+  Studio.ready();
+})();
+
+</script>

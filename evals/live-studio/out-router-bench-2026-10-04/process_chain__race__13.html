@@ -1,0 +1,117 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0}
+  #activity{width:360px;height:320px;overflow:hidden;padding:10px;background:#fff8ed;color:#493d38;font-family:system-ui,sans-serif;display:flex;flex-direction:column;gap:5px}
+  .heading{height:24px;flex:none;font-size:18px;font-weight:750;line-height:24px;color:#754b55}
+  #scene{width:340px;height:112px;flex:none;overflow:hidden}
+  .stage-shape{fill:#fff;stroke:#e6b9a8;stroke-width:2.5;transition:fill .3s,stroke .3s,filter .3s}
+  .stage.active .stage-shape{fill:#ffe7a3;stroke:#ee9c65;filter:drop-shadow(0 0 7px #f5bc66)}
+  .stage text{fill:#594750;font-size:12px;font-weight:700;text-anchor:middle;dominant-baseline:middle}
+  .arrow{fill:none;stroke:#c99889;stroke-width:2.5;stroke-linecap:round}
+  #token{fill:#ed826e;stroke:#fff;stroke-width:2.5;filter:drop-shadow(0 2px 3px #b78270)}
+  .middle{display:flex;align-items:center;justify-content:space-between;height:53px;flex:none}
+  #question{font-size:14px;font-weight:650;max-width:250px;line-height:1.25}
+  button{border:0;cursor:pointer;font:700 14px system-ui,sans-serif;transition:transform .16s,background .2s}
+  button:active{transform:scale(.91)}
+  button:disabled{opacity:.55;cursor:default}
+  #next{width:70px;height:52px;border-radius:17px;background:#8c697f;color:#fff;flex:none}
+  #options{display:flex;gap:7px;height:53px;flex:none}
+  #options button{flex:1;min-width:0;height:52px;border-radius:15px;background:#f9dfce;color:#604757;overflow:hidden;text-overflow:ellipsis;padding:3px}
+  #options button:hover{background:#f3c6ae}
+  #feedback{height:16px;line-height:16px;flex:none;font-size:13px;font-weight:700;color:#845973}
+</style>
+<div id="activity">
+  <div class="heading" id="title"></div>
+  <svg id="scene" viewBox="0 0 340 112" aria-hidden="true"></svg>
+  <div class="middle"><div id="question"></div><button id="next" data-action="next"></button></div>
+  <div id="options"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, keys=p.stages, root=document.getElementById('activity');
+  const svg=document.getElementById('scene'), ns='http://www.w3.org/2000/svg';
+  const make=(tag,attrs,parent)=>{
+    const el=document.createElementNS(ns,tag);
+    for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);
+    parent.appendChild(el);
+    return el;
+  };
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('next').textContent=Studio.t('next');
+  document.getElementById('question').textContent=Studio.t('ask')+' '+Studio.t(p.askAfter);
+
+  const n=keys.length, cyclic=p.cycle;
+  const positions=keys.map((_,i)=>{
+    if(cyclic){
+      const a=-Math.PI/2+i*2*Math.PI/n;
+      return {x:170+112*Math.cos(a),y:56+32*Math.sin(a)};
+    }
+    return {x:30+(n===1?140:i*280/(n-1)),y:56};
+  });
+  const defs=make('defs',{},svg);
+  const marker=make('marker',{id:'tip',viewBox:'0 0 10 10',refX:8,refY:5,markerWidth:5,markerHeight:5,orient:'auto'},defs);
+  make('path',{d:'M 1 1 L 9 5 L 1 9 Z',fill:'#c99889'},marker);
+
+  for(let i=0;i<(cyclic?n:n-1);i++){
+    const a=positions[i],b=positions[(i+1)%n];
+    const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1,ux=dx/len,uy=dy/len;
+    make('path',{'data-arrow':keys[i]+'>'+keys[(i+1)%n],class:'arrow',
+      d:`M ${a.x+ux*27} ${a.y+uy*21} L ${b.x-ux*29} ${b.y-uy*22}`,
+      'marker-end':'url(#tip)'},svg);
+  }
+
+  const groups=[];
+  keys.forEach((key,i)=>{
+    const pos=positions[i],g=make('g',{'data-stage':key,class:'stage'},svg);
+    make('rect',{class:'stage-shape',x:pos.x-25,y:pos.y-19,width:50,height:38,rx:15},g);
+    const label=make('text',{'data-label':key,x:pos.x,y:pos.y},g);
+    label.textContent=Studio.t(key);
+    groups.push(g);
+  });
+  const token=make('circle',{id:'token','data-token':'',cx:positions[0].x,cy:positions[0].y-25,r:7},svg);
+  let active=0,moving=false,finished=false;
+  function refresh(){
+    root.setAttribute('data-active',keys[active]);
+    groups.forEach((g,i)=>g.classList.toggle('active',i===active));
+  }
+  refresh();
+
+  document.getElementById('next').addEventListener('click',()=>{
+    if(moving||finished||(!cyclic&&active===n-1))return;
+    const from=active,to=(active+1)%n,a=positions[from],b=positions[to];
+    const start=performance.now(),duration=650;
+    moving=true;
+    Studio.event('next',{from:keys[from],to:keys[to]});
+    function frame(now){
+      const t=Math.min(1,(now-start)/duration),ease=t*t*(3-2*t);
+      token.setAttribute('cx',a.x+(b.x-a.x)*ease);
+      token.setAttribute('cy',a.y+(b.y-a.y)*ease-25+8*Math.sin(Math.PI*t));
+      if(t<1)requestAnimationFrame(frame);
+      else{active=to;moving=false;refresh()}
+    }
+    requestAnimationFrame(frame);
+  });
+
+  const options=document.getElementById('options'),feedback=document.getElementById('feedback');
+  p.options.forEach(key=>{
+    const b=document.createElement('button');
+    b.setAttribute('data-option',key);
+    b.textContent=Studio.t(key);
+    b.addEventListener('click',()=>{if(!finished)Studio.answer(key)});
+    options.appendChild(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      finished=true;
+      document.getElementById('next').disabled=true;
+      options.querySelectorAll('button').forEach(b=>b.disabled=true);
+      setTimeout(()=>{feedback.textContent=Studio.t('done');Studio.done()},550);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,102 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff7eb;color:#523a32}
+  #game{width:360px;height:320px;padding:12px;display:flex;flex-direction:column;gap:7px;background:radial-gradient(circle at 92% 7%,#ffe4bd,transparent 42%),#fff7eb}
+  h1{margin:0;font-size:20px;line-height:25px}
+  #instruction{margin:0;font-size:13px;line-height:17px;color:#795e51}
+  #tray{height:108px;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:7px}
+  button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .card{min-width:74px;height:52px;padding:0 10px;border:2px solid #d9a772;border-radius:15px;background:#fffdf7;color:#523a32;font-weight:700;box-shadow:0 4px 0 #e9cda8;transition:transform .2s,box-shadow .2s,opacity .25s}
+  .card:active,.bin:active{transform:scale(.95)}
+  .card[data-selected="true"]{transform:translateY(-7px) rotate(-2deg);box-shadow:0 9px 0 #e9cda8,0 0 0 4px #ffe49b}
+  .card.wrong{animation:shake .38s ease}
+  .card.leaving{transform:translateY(26px) scale(.75);opacity:0}
+  @keyframes shake{25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+  #bins{display:flex;gap:7px;flex:1;min-height:0}
+  .bin{flex:1;min-width:0;border:2px solid #d9a772;border-radius:17px;background:#f7e6cf;color:#523a32;padding:6px 3px;display:flex;flex-direction:column;align-items:center;gap:5px;transition:transform .18s,background .2s}
+  .bin.pulse{background:#ffe4a4;animation:pop .35s ease}
+  @keyframes pop{50%{transform:scale(1.04)}}
+  .bin-name{font-size:14px;font-weight:800}
+  .placed{width:100%;padding:4px 2px;border-radius:9px;background:#fffdf7;font-size:12px;font-weight:700;animation:arrive .3s ease}
+  @keyframes arrive{from{transform:translateY(-15px) scale(.8);opacity:0}}
+  #feedback{height:20px;text-align:center;font-size:14px;font-weight:700;color:#8b5743}
+</style>
+<div id="game">
+  <h1 id="title"></h1>
+  <p id="instruction"></p>
+  <div id="tray"></div>
+  <div id="bins"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params;
+  const tray=document.getElementById('tray');
+  const bins=document.getElementById('bins');
+  const feedback=document.getElementById('feedback');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  let selected=null, pending=null, placed=0, busy=false;
+  const cards=new Map(), binEls=new Map();
+  p.cards.forEach(key=>{
+    const el=document.createElement('button');
+    el.type='button'; el.className='card'; el.textContent=Studio.t(key);
+    el.dataset.card=key; el.dataset.selected='false';
+    el.addEventListener('click',()=>{
+      if(busy)return;
+      if(selected&&cards.has(selected))cards.get(selected).dataset.selected='false';
+      selected=selected===key?null:key;
+      if(selected)el.dataset.selected='true';
+      feedback.textContent='';
+      Studio.event('pick',{card:key});
+    });
+    tray.append(el);cards.set(key,el);
+  });
+  p.bins.forEach(key=>{
+    const el=document.createElement('button');
+    el.type='button';el.className='bin';el.dataset.bin=key;
+    const name=document.createElement('span');name.className='bin-name';name.textContent=Studio.t(key);
+    el.append(name);
+    el.addEventListener('click',()=>{
+      if(!selected||busy)return;
+      busy=true;pending={card:selected,bin:key};
+      Studio.event('sort',{card:selected,bin:key});
+      Studio.answer({card:selected,bin:key});
+    });
+    bins.append(el);binEls.set(key,el);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    const {card,bin}=pending;pending=null;
+    const el=cards.get(card);
+    if(correct){
+      feedback.textContent=Studio.t('right');
+      el.classList.add('leaving');
+      const target=binEls.get(bin);
+      target.classList.add('pulse');
+      setTimeout(()=>{
+        el.remove();cards.delete(card);
+        const chip=document.createElement('span');
+        chip.className='placed';chip.dataset.placed=bin;
+        chip.textContent=Studio.t(card);target.append(chip);
+        target.classList.remove('pulse');
+        placed++;selected=null;busy=false;
+        if(placed===p.cards.length){
+          feedback.textContent=Studio.t('done');
+          document.getElementById('instruction').textContent=Studio.t('done');
+          Studio.done();
+        }
+      },260);
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      el.dataset.selected='false';
+      el.classList.add('wrong');
+      selected=null;
+      setTimeout(()=>{el.classList.remove('wrong');busy=false},400);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

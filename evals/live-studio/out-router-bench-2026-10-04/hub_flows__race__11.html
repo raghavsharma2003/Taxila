@@ -1,0 +1,49 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8e9;font-family:system-ui,sans-serif;color:#365345}#scene{display:block;width:360px;height:188px}.title{font-size:16px;font-weight:800;fill:#365345}.label{font-size:13px;font-weight:750;fill:#365345;paint-order:stroke;stroke:#fff8e9;stroke-width:4px;stroke-linejoin:round}.route{fill:none;stroke-width:5;stroke-linecap:round;opacity:.42;transition:opacity .3s,stroke-width .3s}.route.focus{opacity:1;stroke-width:7}.particle{transition:opacity .25s}#middle{height:58px;display:flex;align-items:center;gap:5px;padding:2px 9px}#caption{flex:1;min-width:0;padding:7px 10px;border-radius:15px;background:#e8f2dc;font-size:14px;font-weight:700;line-height:17px;text-align:center}button{border:0;border-radius:15px;font:700 14px system-ui,sans-serif;color:#365345;cursor:pointer;transition:transform .15s,background .2s}button:active{transform:scale(.94)}.control{height:52px;min-width:64px;padding:0 8px;background:#f7dfaa}#ask{height:20px;padding:0 12px;font-size:14px;font-weight:750;text-align:center}#options{height:54px;display:flex;gap:6px;padding:1px 6px}#options button{flex:1;min-width:0;height:52px;background:#dbeccf}#options button.chosen{background:#f7dfaa}#options button.right{background:#b8e6b5}#feedback{position:absolute;left:10px;top:169px;padding:3px 9px;border-radius:10px;background:#fff8e9;font-size:13px;font-weight:750;pointer-events:none}
+</style>
+<svg id="scene" viewBox="0 0 360 188" aria-hidden="true">
+  <rect x="5" y="4" width="350" height="181" rx="24" fill="#f2f6df"/>
+  <text id="title" class="title" x="180" y="22" text-anchor="middle"></text>
+  <g id="routes"></g><g id="things"></g><g id="particles"></g><g id="labels"></g>
+</svg>
+<div id="feedback"></div>
+<div id="middle"><div id="caption" data-caption></div><button class="control" data-action="play"></button><button class="control" data-action="next"></button></div>
+<div id="ask"></div><div id="options"></div>
+<script>
+
+(() => {
+  const p=Studio.params, ns='http://www.w3.org/2000/svg', $=s=>document.querySelector(s);
+  const make=(tag,attrs,parent)=>{const e=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);parent.appendChild(e);return e};
+  const routes=$('#routes'),things=$('#things'),dots=$('#particles'),labels=$('#labels');
+  const coords=[
+    {start:[173,158],end:[173,112],label:[111,148],color:'#55a9d1'},
+    {start:[36,105],end:[141,98],label:[65,127],color:'#9a87c9'},
+    {start:[216,98],end:[322,103],label:[277,88],color:'#72b5a3'}
+  ];
+  const flows=p.flows.map((f,i)=>({...f,geo:coords[i%coords.length],items:[]}));
+  let playing=true,step=0,last=performance.now(),clock=0,finished=false;
+  $('#title').textContent=Studio.t('title');$('#ask').textContent=Studio.t('ask');
+  const label=(key,x,y,anchor='middle')=>{let e=make('text',{'data-label':key,class:'label',x,y,'text-anchor':anchor},labels);e.textContent=Studio.t(key)};
+  make('circle',{cx:49,cy:70,r:22,fill:'#ffd36f',stroke:'#f3a94e','stroke-width':4,'data-entity':p.entities[0]},things);
+  label(p.entities[0],76,62,'start');
+  make('path',{d:'M151 165 Q178 147 207 165 L207 177 Q177 181 151 177Z',fill:'#ae805f','data-entity':p.entities[1]},things);
+  label(p.entities[1],214,176,'start');
+  make('path',{d:'M139 108 Q150 65 216 67 Q207 111 177 120 Q153 122 139 108Z',fill:'#77b86f',stroke:'#4e9363','stroke-width':3,'data-entity':p.hub},things);
+  make('path',{d:'M148 109 Q176 93 205 78',fill:'none',stroke:'#e1f0b5','stroke-width':3},things);
+  label(p.hub,186,55);
+  flows.forEach((f,i)=>{
+    const g=f.geo,a=g.start,b=g.end;
+    const line=make('path',{d:`M${a[0]} ${a[1]} L${b[0]} ${b[1]}`,stroke:g.color,class:'route'},routes);f.line=line;
+    label(f.key,...g.label);
+    for(let j=0;j<4;j++)f.items.push(make('circle',{'data-flow':f.key,cx:a[0],cy:a[1],r:4.5,fill:g.color,class:'particle'},dots));
+  });
+  function display(){ $('#caption').textContent=Studio.t('step'+(step+1));$('[data-action="play"]').textContent=Studio.t(playing?'pause':'play');$('[data-action="next"]').textContent=Studio.t('next');flows.forEach((f,i)=>f.line.classList.toggle('focus',i===step%flows.length))}
+  display();
+  $('[data-action="play"]').addEventListener('click',()=>{playing=!playing;display();Studio.event('play',{on:playing?1:0})});
+  $('[data-action="next"]').addEventListener('click',()=>{step=(step+1)%p.steps;display();Studio.event('step',{step:step+1})});
+  p.options.forEach(key=>{const b=document.createElement('button');b.dataset.option=key;b.textContent=Studio.t(key);$('#options').appendChild(b);b.addEventListener('click',()=>{document.querySelectorAll('[data-option]').forEach(x=>x.classList.remove('chosen','right'));b.classList.add('chosen');$('#feedback').textContent='';Studio.answer(key)})});
+  Studio.onVerdict(({correct})=>{ $('#feedback').textContent=Studio.t(correct?'right':'wrong');if(correct&&!finished){finished=true;document.querySelector('.chosen')?.classList.add('right');Studio.done()}});
+  function tick(now){let dt=Math.min(now-last,50);last=now;if(playing)clock+=dt;flows.forEach((f,i)=>{const {start:a,end:b}=f.geo;f.items.forEach((dot,j)=>{const t=((clock*.00032+j/4+i*.08)%1);dot.setAttribute('cx',a[0]+(b[0]-a[0])*t);dot.setAttribute('cy',a[1]+(b[1]-a[1])*t);dot.style.opacity=i===step%flows.length?'1':'.7'})});requestAnimationFrame(tick)}requestAnimationFrame(tick);Studio.ready();
+})();
+
+</script>

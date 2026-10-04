@@ -64,6 +64,20 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const rows = await page.evaluate(() => window.P2D.stats.rows);
     fs.writeFileSync(`${dir}/rows.json`, JSON.stringify(rows));
     console.log("frames", i);
+  } else if (mode === "gate") {
+    // r4 articulation gate: the scripted "chalo, aao, mama, bubbly" at <fps> -> <dir>/g#####.png + labels.json
+    const fps = +(a || 30), dir = b;
+    fs.mkdirSync(dir, { recursive: true });
+    const dur = await page.evaluate(() => { window.P2D.rig.resetPhysics(); window.P2D.rig.solver.first = true; window.P2D.rig.lastT = -1; return window.P2D.gateDur; });
+    const labels = [];
+    let i = 0;
+    for (let t = 0; t < dur; t += 1 / fps, i++) {
+      const lbl = await page.evaluate(([ta, tb]) => { let l = ""; for (let x = ta; x <= tb + 1e-6; x += 1 / 120) l = window.P2D.gateAt(Math.min(x, tb)); return window.P2D.gateAt(tb); }, [Math.max(0, t - 1 / fps + 1 / 120), t]);
+      labels.push(lbl);
+      await canvas.screenshot({ path: `${dir}/g${String(i).padStart(5, "0")}.png` });
+    }
+    fs.writeFileSync(`${dir}/labels.json`, JSON.stringify(labels));
+    console.log("gate frames", i);
   } else if (mode === "poses") {
     const poses = JSON.parse(fs.readFileSync(a, "utf8"));
     const PD = process.env.P2D_POSEDIR || `${ROOT}/work/poses`;

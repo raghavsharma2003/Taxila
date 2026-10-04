@@ -116,7 +116,9 @@ test("safety predicate: the moment, a helpline number in the words, or an AI-ide
   assert.equal(safetyRegister({ safety: true }, "Chalo."), true);
   assert.equal(safetyRegister({ safety: false }, "Childline 1098 yaad rakhna."), true);
   assert.equal(safetyRegister({ safety: false }, "Tele-MANAS 14416."), true);
-  assert.equal(safetyRegister({ safety: false }, "Main ek AI teacher hoon."), true);
+  assert.equal(safetyRegister({ safety: false }, "Main AI hoon, insaan nahi."), true);
+  assert.equal(safetyRegister({ safety: false }, "I'm an AI, not a real person."), true);
+  assert.equal(safetyRegister({ safety: false }, "Namaste Riya! Main Arjun, tumhara AI teacher. Aaj hum numbers dekhenge."), false, "a greeting that names her an AI is not a safety turn");
   assert.equal(safetyRegister({ safety: false }, "27 aur 35 jodo."), false);
 });
 

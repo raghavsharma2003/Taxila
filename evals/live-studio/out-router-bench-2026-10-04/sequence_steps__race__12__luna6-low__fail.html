@@ -1,0 +1,125 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#493b32;background:#fff8ed}
+#app{width:360px;height:320px;padding:10px 12px;display:flex;flex-direction:column;gap:7px;overflow:hidden;background:radial-gradient(ellipse at 12% 8%,#fffdf4 0,#fff8ed 65%)}
+header{height:48px;display:flex;align-items:center;gap:9px;flex:none}
+.mark{width:38px;height:38px;flex:none}
+h1{font-size:18px;line-height:1.1;margin:0;color:#714c39;font-weight:800}
+#instr{font-size:12px;line-height:1.2;color:#806b5c;min-height:28px;display:flex;align-items:center}
+#track{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;height:52px;flex:none}
+.slot{height:52px;border:2px dashed #e4c9a8;border-radius:13px;background:#fff3df;position:relative;display:flex;align-items:center;justify-content:center;transition:background .25s,border-color .25s,transform .25s}
+.slot-number{position:absolute;top:2px;left:6px;color:#b38b64;font-size:11px;font-weight:800;line-height:14px}
+.slot.filled{border-style:solid;border-color:#a8c7a0;background:#eff8e9;animation:pop .35s ease-out}
+.slot .card{width:100%;height:100%;padding:14px 3px 3px;font-size:11px;line-height:1.05;border:0;box-shadow:none;background:transparent;color:#476444;cursor:default;white-space:normal}
+#cards{display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr);gap:7px;flex:1;min-height:0}
+.card{min-width:0;min-height:52px;border:2px solid #efcf9f;border-radius:15px;background:linear-gradient(145deg,#fffefa,#fff0d9);box-shadow:0 3px 0 #e6c697;color:#684d3a;font:700 14px/1.1 system-ui,-apple-system,"Segoe UI",sans-serif;padding:5px 9px;cursor:pointer;transition:transform .16s,box-shadow .16s,background .2s,border-color .2s;touch-action:manipulation}
+.card:not(:disabled):active{transform:scale(.96);box-shadow:0 1px 0 #e6c697}
+.card:focus-visible{outline:3px solid #83a978;outline-offset:2px}
+.card:disabled{cursor:default}
+.card.shake{animation:shake .38s ease-in-out;border-color:#e3a18f;background:#fff0eb}
+#feedback{height:20px;flex:none;text-align:center;font-size:13px;font-weight:750;color:#668b5e;line-height:20px}
+#feedback.bad{color:#b96e58}
+#feedback.finish{color:#668b5e}
+@keyframes shake{0%,100%{transform:translateX(0)}22%{transform:translateX(-5px)}48%{transform:translateX(5px)}72%{transform:translateX(-3px)}}
+@keyframes pop{0%{transform:scale(.9)}65%{transform:scale(1.06)}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+<main id="app">
+  <header>
+    <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+      <path d="M20 3c7 0 13 6 13 13 0 9-13 21-13 21S7 25 7 16C7 9 13 3 20 3Z" fill="#f2c878"/>
+      <circle cx="20" cy="16" r="7" fill="#fff8ed"/>
+      <path d="M17 17c2-4 5-4 7-1M18 21c2 1 4 1 5-1" fill="none" stroke="#a8754c" stroke-width="1.7" stroke-linecap="round"/>
+      <circle cx="18" cy="15" r="1" fill="#714c39"/><circle cx="23" cy="15" r="1" fill="#714c39"/>
+    </svg>
+    <h1 id="title"></h1>
+  </header>
+  <div id="instr"></div>
+  <section id="track" aria-label="">
+    <div class="slot"><span class="slot-number"></span></div>
+    <div class="slot"><span class="slot-number"></span></div>
+    <div class="slot"><span class="slot-number"></span></div>
+    <div class="slot"><span class="slot-number"></span></div>
+  </section>
+  <section id="cards"></section>
+  <div id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(function(){
+  const params=Studio.params;
+  const shown=params.shown;
+  const title=document.getElementById("title");
+  const instr=document.getElementById("instr");
+  const track=document.getElementById("track");
+  const slots=Array.from(track.children);
+  const cards=document.getElementById("cards");
+  const feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  instr.textContent=Studio.t("instr");
+  slots.forEach((slot,index)=>{slot.querySelector(".slot-number").textContent=String(index+1)});
+  let pending=false;
+  let placed=0;
+  let finished=false;
+  shown.forEach(key=>{
+    const button=document.createElement("button");
+    button.type="button";
+    button.className="card";
+    button.dataset.step=key;
+    button.textContent=Studio.t(key);
+    button.addEventListener("click",()=>{
+      if(pending||finished||button.disabled)return;
+      pending=true;
+      feedback.textContent="";
+      feedback.className="";
+      Studio.event("tap",{key:key});
+      Studio.answer({key:key});
+    });
+    cards.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    pending=false;
+    const buttons=Array.from(cards.querySelectorAll(".card"));
+    const selected=buttons.find(button=>button.dataset.step===lastKey);
+  });
+  let lastKey=null;
+  cards.addEventListener("click",event=>{
+    const button=event.target.closest("button[data-step]");
+    if(button)lastKey=button.dataset.step;
+  },true);
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    pending=false;
+    const button=Array.from(document.querySelectorAll("#cards .card")).find(item=>item.dataset.step===lastKey);
+    if(!button)return;
+    if(correct){
+      placed++;
+      button.dataset.placed=String(placed);
+      button.disabled=true;
+      slots[placed-1].classList.add("filled");
+      slots[placed-1].appendChild(button);
+      feedback.textContent=Studio.t("right");
+      feedback.className="";
+      Studio.event("placed",{position:placed});
+      if(placed===shown.length){
+        finished=true;
+        feedback.textContent=Studio.t("done");
+        feedback.className="finish";
+        Studio.done();
+      }
+    }else{
+      button.classList.remove("shake");
+      void button.offsetWidth;
+      button.classList.add("shake");
+      feedback.textContent=Studio.t("wrong");
+      feedback.className="bad";
+      Studio.event("wrong",{key:lastKey});
+      button.addEventListener("animationend",()=>button.classList.remove("shake"),{once:true});
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

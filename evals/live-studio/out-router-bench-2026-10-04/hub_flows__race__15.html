@@ -1,0 +1,72 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8e9;font-family:system-ui,sans-serif;color:#394a38}
+  #activity{width:360px;height:320px;position:relative;overflow:hidden}
+  #title{position:absolute;top:3px;left:12px;width:336px;text-align:center;font-size:17px;font-weight:750}
+  svg{position:absolute;top:25px;left:0;width:360px;height:160px;overflow:visible}
+  svg text{font-family:system-ui,sans-serif;font-size:13px;font-weight:700;fill:#394a38}
+  .particle{filter:drop-shadow(0 1px 2px #776b5444)}
+  button{border:0;border-radius:16px;background:#e4f0d7;color:#30452f;font:700 14px system-ui,sans-serif;cursor:pointer;transition:transform .16s,background .16s}
+  button:active{transform:scale(.91)}button:focus-visible{outline:3px solid #e69a48;outline-offset:2px}
+  [data-action]{position:absolute;top:186px;height:52px}
+  [data-action=play]{left:6px;width:68px}[data-action=next]{right:6px;width:68px}
+  [data-caption]{position:absolute;top:192px;left:79px;width:202px;height:40px;display:grid;place-items:center;text-align:center;font-size:13px;font-weight:700;line-height:1.2;color:#526346}
+  #question{position:absolute;top:239px;left:10px;width:340px;text-align:center;font-size:14px;font-weight:750}
+  #choices{position:absolute;top:265px;left:6px;right:6px;height:52px;display:flex;gap:6px}
+  #choices button{flex:1;min-width:0;height:52px;background:#f9dcae}
+  #choices button:active{background:#f2bd7b}
+  #feedback{position:absolute;right:9px;top:241px;font-size:12px;font-weight:800;color:#477b53}
+</style>
+<div id="activity">
+  <div id="title"></div>
+  <svg id="scene" viewBox="0 0 360 180" aria-hidden="true">
+    <g id="paths"></g><g id="shapes"></g><g id="particles"></g><g id="labels"></g>
+  </svg>
+  <button type="button" data-action="play"></button>
+  <div data-caption></div>
+  <button type="button" data-action="next"></button>
+  <div id="question"></div><div id="feedback" aria-live="polite"></div>
+  <div id="choices"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, S=document.getElementById('scene'), ns='http://www.w3.org/2000/svg';
+  const make=(tag,attrs,parent)=>{const e=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);parent.appendChild(e);return e};
+  const paths=document.getElementById('paths'),shapes=document.getElementById('shapes'),dots=document.getElementById('particles'),labels=document.getElementById('labels');
+  const pos={sun:[48,50],roots:[174,151],leaf:[177,79]};
+  const routes={water:{a:[174,145],b:[176,99],color:'#59a9cc',label:[190,139]},co2:{a:[61,111],b:[148,88],color:'#8e96c9',label:[73,130]},o2:{a:[207,76],b:[291,94],color:'#e6a269',label:[271,70]}};
+  const labelPos={sun:[14,22],roots:[112,177],leaf:[151,48]};
+  const keyText=k=>Studio.t(k);
+  const text=(key,x,y)=>{const e=make('text',{x,y,'data-label':key},labels);e.textContent=keyText(key)};
+  document.getElementById('title').textContent=keyText('title');
+  document.getElementById('question').textContent=keyText('ask');
+  p.entities.forEach(k=>{
+    const [x,y]=pos[k]||[48,50];
+    if(k==='sun')make('circle',{cx:x,cy:y,r:22,fill:'#f8c665',stroke:'#e7a44e','stroke-width':4,'data-entity':k},shapes);
+    else make('path',{d:`M${x-25} ${y-13} Q${x} ${y-2} ${x} ${y+19} Q${x+23} ${y-9} ${x+28} ${y-17} Q${x} ${y-27} ${x-25} ${y-13}Z`,fill:'#ab7656',stroke:'#805b45','stroke-width':3,'data-entity':k},shapes);
+    text(k,...(labelPos[k]||[x-20,y-27]));
+  });
+  const h=p.hub,[hx,hy]=pos[h]||pos.leaf;
+  make('ellipse',{cx:hx,cy:hy,rx:37,ry:23,transform:`rotate(-25 ${hx} ${hy})`,fill:'#78b978',stroke:'#48885c','stroke-width':4,'data-entity':h},shapes);
+  make('path',{d:`M${hx-31} ${hy+18} Q${hx} ${hy+7} ${hx+30} ${hy-15}`,fill:'none',stroke:'#4a8b5a','stroke-width':2},shapes);
+  text(h,...(labelPos[h]||[hx-20,hy-31]));
+  const moving=[];
+  p.flows.forEach(f=>{
+    const r=routes[f.key];if(!r)return;
+    make('path',{d:`M${r.a.join(' ')} L${r.b.join(' ')}`,stroke:r.color,'stroke-width':5,'stroke-linecap':'round',opacity:.36,fill:'none'},paths);
+    text(f.key,...r.label);
+    for(let i=0;i<4;i++)moving.push({el:make('circle',{r:4.5,fill:r.color,'data-flow':f.key,class:'particle'},dots),r,dir:f.dir,offset:i/4});
+  });
+  let playing=true,step=0,phase=0,last=0,finished=false;
+  const play=document.querySelector('[data-action=play]'),next=document.querySelector('[data-action=next]'),caption=document.querySelector('[data-caption]');
+  function update(){play.textContent=keyText(playing?'pause':'play');caption.textContent=keyText('step'+(step+1));p.flows.forEach((f,i)=>{const active=i===step%p.flows.length;for(const m of moving)if(m.el.getAttribute('data-flow')===f.key)m.el.setAttribute('opacity',active?'1':'.55')})}
+  function tick(now){if(last&&playing)phase+=(now-last)*.00023;last=now;for(const m of moving){let t=(phase+m.offset)%1;if(m.dir==='out'){/* route runs away from the hub */}else if(m.dir==='in'||m.dir==='up_in'){/* route runs toward the hub */}const x=m.r.a[0]+(m.r.b[0]-m.r.a[0])*t,y=m.r.a[1]+(m.r.b[1]-m.r.a[1])*t;m.el.setAttribute('cx',x);m.el.setAttribute('cy',y)}requestAnimationFrame(tick)}
+  play.addEventListener('click',()=>{playing=!playing;update();Studio.event('play',{playing:playing?1:0})});
+  next.addEventListener('click',()=>{step=(step+1)%p.steps;update();Studio.event('step',{step:step+1})});
+  const choices=document.getElementById('choices'),feedback=document.getElementById('feedback');
+  p.options.forEach(k=>{const b=document.createElement('button');b.type='button';b.dataset.option=k;b.textContent=keyText(k);b.addEventListener('click',()=>{if(!finished){feedback.textContent='';Studio.answer(k)}});choices.appendChild(b)});
+  Studio.onVerdict(v=>{feedback.textContent=keyText(v.correct?'right':'wrong');if(v.correct&&!finished){finished=true;Studio.done()}});
+  update();requestAnimationFrame(tick);Studio.ready();
+})();
+
+</script>

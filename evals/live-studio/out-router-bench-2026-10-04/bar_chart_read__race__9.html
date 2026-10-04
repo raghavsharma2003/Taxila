@@ -1,0 +1,72 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ec;font-family:system-ui,sans-serif;color:#493828}
+  .card{width:360px;height:320px;overflow:hidden;position:relative;background:radial-gradient(circle at 92% 8%,#ffe4bb 0 48px,transparent 49px),#fff8ec}
+  h1{position:absolute;top:9px;left:18px;right:18px;margin:0;font-size:20px;line-height:25px;font-weight:800}
+  .prompt{position:absolute;top:43px;left:18px;right:18px;min-height:27px;font-size:16px;font-weight:650}
+  .feedback{position:absolute;top:70px;left:18px;right:18px;height:23px;font-size:15px;font-weight:750;color:#a54f39}
+  .feedback.good{color:#287761}
+  svg{position:absolute;left:0;top:96px;width:360px;height:200px;overflow:visible}
+  .grid{stroke:#e9decb;stroke-width:1}.baseline{stroke:#917d64;stroke-width:1.5}
+  .tick,.axis,.name{fill:#6c5a48;font-family:system-ui,sans-serif}.tick{font-size:11px}.axis{font-size:12px;font-weight:700}.name{font-size:11px;font-weight:700}
+  .column{cursor:pointer;outline:none}.column .hit{fill:transparent;pointer-events:all}
+  .bar{fill:#e69b59;rx:9;transform-box:fill-box;transform-origin:center bottom;animation:rise .75s cubic-bezier(.2,.8,.25,1) both;transition:fill .2s,filter .2s}
+  .column:active .bar{filter:brightness(1.13)}.column:focus-visible .hit{stroke:#775438;stroke-width:2}
+  .column.chosen .bar{fill:#d78257}.column.correct .bar{fill:#67ad8a}
+  @keyframes rise{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  @media(prefers-reduced-motion:reduce){.bar{animation:none}}
+</style>
+<div class="card">
+  <h1 id="title"></h1>
+  <div class="prompt" id="ask"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+  <svg viewBox="0 0 360 200" role="img" aria-labelledby="title">
+    <g id="grid"></g><g id="columns"></g>
+  </svg>
+</div>
+<script>
+
+(()=>{
+  const ns="http://www.w3.org/2000/svg",data=Studio.params.data;
+  const grid=document.getElementById("grid"),columns=document.getElementById("columns");
+  const feedback=document.getElementById("feedback");
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("ask").textContent=Studio.t("ask");
+  const el=(tag,attrs,parent)=>{const node=document.createElementNS(ns,tag);for(const [key,value] of Object.entries(attrs))node.setAttribute(key,String(value));parent.appendChild(node);return node};
+  const maxValue=Math.max(1,...data.map(d=>d.value));
+  const magnitude=Math.pow(10,Math.floor(Math.log10(maxValue/5)));
+  const step=[1,2,5,10].map(n=>n*magnitude).find(n=>Math.ceil(maxValue/n)<=6)||10*magnitude;
+  const ceiling=Math.ceil(maxValue/step)*step;
+  const left=48,right=348,baseline=158,plotHeight=140;
+  for(let value=0;value<=ceiling+step/1000;value+=step){
+    const y=baseline-value/ceiling*plotHeight;
+    el("line",{x1:left,y1:y,x2:right,y2:y,class:value===0?"baseline":"grid"},grid);
+    const label=el("text",{x:39,y:y+3.5,"text-anchor":"end",class:"tick","data-tick":value},grid);
+    label.textContent=String(value);
+  }
+  const axis=el("text",{transform:"translate(13 88) rotate(-90)","text-anchor":"middle",class:"axis"},grid);
+  axis.textContent=Studio.t("yaxis");
+  const width=(right-left)/data.length;
+  let selected=null,finished=false;
+  data.forEach((item,index)=>{
+    const x=left+index*width;
+    const group=el("g",{class:"column","data-column":item.key,tabindex:0,role:"button"},columns);
+    const barWidth=Math.min(38,width-13);
+    const height=item.value/ceiling*plotHeight;
+    el("rect",{x:x+(width-barWidth)/2,y:baseline-height,width:barWidth,height:height,class:"bar","data-bar":item.key,"data-value":item.value},group);
+    const name=el("text",{x:x+width/2,y:183,"text-anchor":"middle",class:"name"},group);
+    name.textContent=Studio.t(item.key);
+    el("rect",{x:x,y:0,width:width,height:198,class:"hit"},group);
+    const choose=()=>{if(finished)return;selected=group;columns.querySelectorAll(".column").forEach(c=>c.classList.remove("chosen"));group.classList.add("chosen");Studio.answer(item.key)};
+    group.addEventListener("click",choose);
+    group.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();choose()}});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(finished||!selected)return;
+    feedback.classList.toggle("good",correct);
+    feedback.textContent=Studio.t(correct?"right":"wrong");
+    if(correct){finished=true;selected.classList.add("correct");document.getElementById("ask").textContent=Studio.t("done");Studio.done()}
+  });
+  Studio.ready();
+})();
+
+</script>

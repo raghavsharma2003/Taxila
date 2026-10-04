@@ -1,0 +1,91 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7ec;font-family:system-ui,sans-serif;color:#493c38}
+  #activity{width:360px;height:320px;padding:17px 14px;overflow:hidden;background:radial-gradient(circle at 92% 8%,#ffe2c0 0 18%,transparent 19%),#fff7ec}
+  h1{margin:0 0 5px;font-size:21px;line-height:1.2}
+  #instruction{margin:0;font-size:14px;line-height:1.3;color:#745f56}
+  #board,#track{display:flex;gap:8px;width:100%}
+  #board{height:77px;margin-top:17px;align-items:center}
+  .card,.slot{width:calc((100% - 16px)/3);min-width:0;border-radius:17px}
+  .card{min-height:64px;padding:7px;border:2px solid #d88b67;background:#ffe4ce;color:#493c38;font:700 16px/1.2 system-ui,sans-serif;text-align:center;display:flex;align-items:center;justify-content:center;overflow-wrap:anywhere;cursor:pointer;transition:transform .2s,background .2s,box-shadow .2s;box-shadow:0 4px 0 #d9aa91}
+  .card:active{transform:scale(.94)}
+  .card:focus-visible{outline:3px solid #537e73;outline-offset:2px}
+  #track{margin-top:15px}
+  .slot{height:75px;border:2px dashed #b7b4a2;background:#f5f1df;position:relative;display:flex;align-items:center;justify-content:center}
+  .slot-label{position:absolute;top:5px;left:9px;color:#786d5d;font-size:14px;font-weight:800}
+  .slot .card{width:100%;height:100%;min-height:0;border-color:#729b81;background:#d9eddd;box-shadow:none;padding:18px 5px 4px}
+  .slot:has(.card){border-color:#729b81;border-style:solid}
+  .slot:has(.card) .slot-label{z-index:1;color:#416a53}
+  #feedback{height:28px;margin-top:12px;text-align:center;font-size:16px;font-weight:700;color:#547961}
+  .shake{animation:shake .35s ease}
+  .arrive{animation:arrive .35s ease}
+  @keyframes shake{25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+  @keyframes arrive{from{transform:translateY(-12px) scale(.9)}to{transform:translateY(0) scale(1)}}
+</style>
+<div id="activity">
+  <h1 id="title"></h1>
+  <p id="instruction"></p>
+  <div id="board"></div>
+  <div id="track"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const shown = Studio.params.shown;
+  const board = document.getElementById('board');
+  const track = document.getElementById('track');
+  const feedback = document.getElementById('feedback');
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('instruction').textContent = Studio.t('instr');
+  const slots = shown.map((_, i) => {
+    const slot = document.createElement('div');
+    slot.className = 'slot';
+    const label = document.createElement('span');
+    label.className = 'slot-label';
+    label.textContent = String(i + 1);
+    slot.append(label);
+    track.append(slot);
+    return slot;
+  });
+  let placed = 0;
+  let waiting = false;
+  let selected = null;
+  shown.forEach(key => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'card';
+    card.dataset.step = key;
+    card.textContent = Studio.t(key);
+    card.addEventListener('click', () => {
+      if (waiting || card.dataset.placed) return;
+      waiting = true;
+      selected = card;
+      Studio.answer({key});
+    });
+    board.append(card);
+  });
+  Studio.onVerdict(({correct}) => {
+    if (!waiting || !selected) return;
+    const card = selected;
+    selected = null;
+    waiting = false;
+    if (correct) {
+      placed++;
+      card.dataset.placed = String(placed);
+      card.disabled = true;
+      slots[placed - 1].append(card);
+      card.classList.add('arrive');
+      feedback.textContent = placed === shown.length ? Studio.t('done') : Studio.t('right');
+      if (placed === shown.length) Studio.done();
+    } else {
+      feedback.textContent = Studio.t('wrong');
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -73,17 +73,17 @@ void main(){
 
 // r3 lip shell: the paint program plus a per-vertex alpha (inner-edge AA row, smile-crease fade)
 const VS_LIP = `#version 300 es
-in vec2 aPos; in vec2 aUv; in float aA;
+in vec2 aPos; in vec2 aUv; in float aA; in float aL;
 uniform vec2 uView; uniform vec4 uCam;
-out vec2 vUv; out float vA;
+out vec2 vUv; out float vA; out float vL;
 void main(){
   vec2 p = (aPos - uCam.xy) * uCam.z;
   gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);
-  vUv = aUv; vA = aA;
+  vUv = aUv; vA = aA; vL = aL;
 }`;
 const FS_LIP = `#version 300 es
 precision mediump float;
-in vec2 vUv; in float vA;
+in vec2 vUv; in float vA; in float vL;
 uniform sampler2D uTex; uniform vec4 uShade; uniform vec4 uRect;
 out vec4 o;
 void main(){
@@ -91,7 +91,7 @@ void main(){
   float x = uRect.x + vUv.x * uRect.z;
   float s = clamp((x - uShade.y) / (uShade.z - uShade.y), 0.0, 1.0);
   s = uShade.x > 0.0 ? s : 1.0 - s;
-  c.rgb *= 1.0 - uShade.w * s * s;
+  c.rgb *= (1.0 - uShade.w * s * s) * vL;
   o = c * vA;
 }`;
 // r3 mouth interior: cavity, tongue, lower and upper teeth from the interior strips (interior.png, cut from the
@@ -111,58 +111,77 @@ precision highp float;
 in float vS; in float vDT; in float vGap;
 uniform sampler2D uTex;
 uniform vec4 uTeeth;   // upper shown 0..1, lower shown 0..1, teeth height px, -
-uniform vec4 uTongue;  // height share, tip, curl, -
+uniform vec4 uTongue;  // body height share, tip, curl, -
 uniform float uShadeK;
 out vec4 o;
-vec3 strip(float row, float u){ return texture(uTex, vec2(u, (row + 0.5) / 64.0)).rgb; }
-vec4 strip4(float row, float u){ return texture(uTex, vec2(u, (row + 0.5) / 64.0)); }
+vec3 rowc(float row, float u){ vec4 c = texture(uTex, vec2(u, (row + 0.5) / 64.0)); return c.rgb / max(c.a, 0.001); }
+// r4 (judge r3 fix 2): the teeth's free edge is the PAINTED contour's smooth fit (rows 12.9 - 2.7u^2 - 0.3u^4 of the
+// 16-row strip, interior-r4.py), drawn with an analytic coverage ramp one screen pixel wide: no ragged alpha, no shimmer
+float contourRows(float u){ return 12.9 - 2.7 * u * u - 0.3 * u * u * u * u; }
 void main(){
   float gap = max(vGap, 0.001);
   float dt = vDT, db = gap - vDT;
   float a = abs(vS);
   float u = clamp(vS * 0.5 + 0.5, 0.0, 1.0);
-  // cavity: roof (dark) to floor, from the aa cell
-  vec3 col = strip(32.0 + clamp(dt / gap, 0.0, 1.0) * 15.0, u);
+  float px = max(fwidth(vDT), 0.35);          // one screen pixel in rest px
+  // cavity: roof (dark) to floor
+  vec3 col = rowc(32.0 + clamp(dt / gap, 0.0, 1.0) * 15.0, u);
+  col = col * 1.22 + vec3(0.035, 0.012, 0.01);   // r4: the refs' cavity is a warm brown, not a black-maroon hole
   col *= 1.0 - 0.35 * pow(a, 3.0);
-  // tongue: a soft mound on the lower lip, a tip that rises behind the upper teeth (dental / lateral), a curl that
-  // shows the darker underside up at the palate (retroflex)
-  float bell = exp(-pow(vS / 0.34, 2.0));
-  float mound = gap * uTongue.x * pow(max(0.0, 1.0 - pow(vS / 0.8, 2.0)), 1.6);
-  float tip = max(0.0, gap - 1.5 - uTeeth.z * uTeeth.x * 0.45) * uTongue.y * bell;
+  // ---- tongue: body mound on the floor; tip = a rounded LOBE that rises to the upper teeth (t d n l); curl = the
+  // retroflex underside up at the palate
+  float th = uTeeth.z, rp = 12.0 / th;
+  float upVis = th * uTeeth.x * contourRows(0.0) / 12.0;          // upper teeth hanging at the centre (px)
+  float mound = min(gap * uTongue.x, 7.0 + 0.12 * gap) * pow(max(0.0, 1.0 - pow(vS / 0.85, 2.0)), 0.8);
+  float lw = 0.34;                                                // lobe half-width (s units)
+  float lob = max(0.0, 1.0 - pow(vS / lw, 2.0));
+  float tipH = max(0.0, gap - upVis * 0.35) * uTongue.y * pow(lob, 0.4);
   float curl = gap * 0.78 * uTongue.z * exp(-pow(vS / 0.3, 2.0));
-  float h = max(mound, max(tip, curl));
-  if (db < h && h > 0.6) {
-    vec3 t = strip(48.0 + clamp(1.0 - db / h, 0.0, 1.0) * 15.0, u);
-    t *= 0.8 * mix(0.88, 1.0, smoothstep(0.0, 2.5, h - db)) * mix(0.82, 1.0, smoothstep(0.0, 0.5 * h, db));
-    t *= 1.0 - 0.3 * pow(a / 0.8, 2.0);
-    if (curl > max(mound, tip) - 0.01) {               // the underside: darker, cooler, with a light lip at the edge
+  float h = max(mound, max(tipH, curl));
+  if (h > 0.4) {
+    float cov = clamp((h - db) / px + 0.5, 0.0, 1.0);
+    vec3 t = rowc(48.0 + clamp(1.0 - db / max(h, 0.5), 0.0, 1.0) * 15.0, u);
+    t *= 0.86 * (1.0 - 0.3 * pow(a / 0.8, 2.0));
+    bool isTip = tipH >= max(mound, curl) - 0.01 && uTongue.y > 0.05;
+    if (isTip) {
+      // the lobe: lit on top, a soft groove down its middle, shadowed where it meets the cavity at the sides
+      float top = clamp((h - db) / 3.0, 0.0, 1.0);
+      t *= mix(1.12, 1.0, top) * (1.0 - 0.10 * exp(-pow(vS / 0.05, 2.0)) * top) * mix(0.78, 1.0, smoothstep(0.0, 0.45, lob));
+    }
+    if (curl > max(mound, tipH) - 0.01 && uTongue.z > 0.05) {
       vec3 under = t * vec3(0.72, 0.62, 0.68);
       t = mix(under, t * 1.08, 1.0 - smoothstep(0.0, 1.4, h - db));
     }
-    col = mix(col, t, clamp((h - db) / 2.2, 0.0, 1.0) * smoothstep(0.6, 2.0, h));
+    // a contact shadow just outside the tongue's edge keeps it legible against the cavity at 1x
+    col *= 1.0 - 0.25 * clamp(1.0 - abs(h - db) / 2.0, 0.0, 1.0) * (1.0 - cov);
+    col = mix(col, t, cov);
   }
-  // lower teeth (bottom-anchored), then upper teeth (top-anchored, slide up under the lip as they hide)
-  float th = uTeeth.z;
-  // the strips are 16 rows for ~12 px of painted tooth: rows per px = 12 / th
-  float rp = 12.0 / th;
-  float lb = (db + (1.0 - 0.45 * uTeeth.y) * th) * rp;
-  float lw = 0.5, uw = 0.74;   // the rows are narrower than the lip span: the corners recede into shadow
-  if (lb < 15.0 && a < lw) {
-    vec4 lt = strip4(31.0 - lb, clamp((vS / lw) * 0.5 + 0.5, 0.0, 1.0));
-    lt *= 1.0 - smoothstep(lw - 0.12, lw, a);
-    lt.rgb *= 0.9 - 0.3 * pow(a / lw, 2.0);
-    col = mix(col, lt.rgb / max(lt.a, 0.001), lt.a);
+  // ---- lower teeth (bottom-anchored on the lower lip), then upper teeth (hang from the upper lip, slide up as they hide)
+  float lwT = 0.52, uwT = 0.76;
+  float gapT = smoothstep(1.5, 4.0, gap);   // no teeth through a 1-2 px slit (it showed as a dotted sliver)     // the rows are narrower than the lip span: the corners recede into shadow
+  if (a < lwT && uTeeth.y > 0.01) {
+    float ul = clamp((vS / lwT) * 0.5 + 0.5, 0.0, 1.0);
+    float hL = th * 0.8 * smoothstep(0.2, 0.5, uTeeth.y) * contourRows(vS / lwT) / 12.0;       // visible height above the lower lip
+    float cov = clamp((hL - db) / px + 0.5, 0.0, 1.0) * (1.0 - smoothstep(lwT - 0.12, lwT, a)) * gapT;
+    float row = 31.0 - clamp(db * rp, 0.0, contourRows(vS / lwT) - 2.5);
+    vec3 lt = rowc(row, ul) * (1.0 - 0.3 * pow(a / lwT, 2.0));
+    col = mix(col, lt, cov);
   }
-  float ub = (dt + (1.0 - uTeeth.x) * th) * rp;
-  if (ub >= 0.0 && ub < 15.0 && a < uw) {
-    vec4 ut = strip4(ub, clamp((vS / uw) * 0.5 + 0.5, 0.0, 1.0));
-    ut *= 1.0 - smoothstep(uw - 0.14, uw, a);
-    ut.rgb *= 1.0 - 0.3 * pow(a / uw, 2.0);
-    col = mix(col, ut.rgb / max(ut.a, 0.001), ut.a);
+  if (a < uwT && uTeeth.x > 0.01) {
+    float uu = clamp((vS / uwT) * 0.5 + 0.5, 0.0, 1.0);
+    float cr = contourRows(vS / uwT);
+    float hU = th * cr / 12.0 - (1.0 - uTeeth.x) * th;                 // visible height below the upper lip
+    float cov = clamp((hU - dt) / px + 0.5, 0.0, 1.0) * (1.0 - smoothstep(uwT - 0.14, uwT, a)) * gapT;
+    float row = clamp((dt + (1.0 - uTeeth.x) * th) * rp, 0.0, cr - 2.5);
+    vec3 ut = rowc(row, uu) * 1.08 * (1.0 - 0.3 * pow(a / uwT, 2.0));
+    // the free edge catches a whisper of shadow (painted teeth have it), inside the coverage ramp only
+    ut *= 1.0 - 0.08 * clamp(1.0 - (hU - dt) / 1.6, 0.0, 1.0);
+    col = mix(col, ut, cov);
   }
   // the upper lip's shadow on whatever sits right under it
   col *= mix(0.78, 1.0, smoothstep(0.0, 2.5, dt));
-  o = vec4(col * uShadeK, 1.0);
+  float al = clamp((gap - 0.6) / 1.2, 0.0, 1.0);          // zero-gap columns draw nothing (no dark tick past the corners)
+  o = vec4(col * uShadeK * al, al);
 }`;
 
 function compile(gl, vs, fs) {

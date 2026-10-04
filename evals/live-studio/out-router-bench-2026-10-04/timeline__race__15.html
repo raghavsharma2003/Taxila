@@ -1,0 +1,103 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#493b38}
+  .scene{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 30px 25px,#ffe7c9 0,transparent 115px),#fff8ed}
+  h1{position:absolute;top:12px;left:18px;right:18px;margin:0;font-size:20px;line-height:26px;color:#65463f}
+  .ask{position:absolute;top:43px;left:18px;right:18px;margin:0;font-size:15px;line-height:21px}
+  .drawing{position:absolute;inset:0;width:360px;height:320px;pointer-events:none}
+  .leader{stroke:#d29c79;stroke-width:2;stroke-linecap:round}
+  [data-axis]{stroke:#be795f;stroke-width:5;stroke-linecap:round}
+  .marker{position:absolute;top:161px;width:18px;height:18px;border:4px solid #fff8ed;border-radius:50%;background:#c56d59;box-shadow:0 0 0 2px #c56d59;transform:translate(-50%,-50%);pointer-events:none}
+  .card{position:absolute;width:106px;min-height:64px;max-height:76px;padding:4px;border:2px solid #e8ad82;border-radius:17px;background:#fff0d9;color:#493b38;box-shadow:0 5px 0 #e8c3a5;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font:inherit;text-align:center;overflow:hidden;transition:transform .2s,background .2s,box-shadow .2s}
+  .card:active{transform:scale(.94);box-shadow:0 2px 0 #e8c3a5}
+  .card span{display:block;width:100%;min-width:0;max-width:100%;overflow:hidden;overflow-wrap:anywhere}
+  .card .name{font-size:15px;font-weight:750;line-height:17px;max-height:34px}
+  .card .year{font-size:13px;line-height:16px;color:#79594f}
+  .card.shake{animation:bump .35s ease}
+  @keyframes bump{50%{transform:scale(1.07)}}
+  .feedback{position:absolute;left:18px;right:18px;bottom:13px;min-height:37px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:16px;font-weight:700;color:#8a5747;border-radius:13px;overflow:hidden;overflow-wrap:anywhere}
+  .feedback.good{background:#e4f3df;color:#426b4b}
+  .feedback.try{background:#fff0d9}
+</style>
+<div class="scene">
+  <h1 id="title"></h1>
+  <p class="ask" id="ask"></p>
+  <svg class="drawing" viewBox="0 0 360 320" aria-hidden="true">
+    <g id="leaders"></g>
+    <line data-axis x1="34" y1="161" x2="326" y2="161"></line>
+  </svg>
+  <div id="events"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const events = [...Studio.params.events].sort((a,b) => a.year-b.year);
+  const lo = events[0].year, hi = events[events.length-1].year;
+  const host = document.getElementById('events');
+  const leaders = document.getElementById('leaders');
+  const feedback = document.getElementById('feedback');
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('ask').textContent = Studio.t('ask');
+  let chosen = null, finished = false, waiting = false;
+  const occupied = [[],[]];
+  events.forEach(event => {
+    const x = hi === lo ? 180 : 34+(event.year-lo)/(hi-lo)*292;
+    const cx = Math.max(53,Math.min(307,x));
+    const lane = occupied.findIndex(row => row.every(previous => Math.abs(previous-cx)>=110));
+    const chosenLane = lane < 0 ? occupied[0].length <= occupied[1].length ? 0 : 1 : lane;
+    occupied[chosenLane].push(cx);
+    const y = chosenLane === 0 ? 76 : 190;
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('class','leader');
+    line.setAttribute('x1',x);
+    line.setAttribute('y1',161);
+    line.setAttribute('x2',cx);
+    line.setAttribute('y2',chosenLane === 0 ? y+76 : y);
+    leaders.appendChild(line);
+    const marker = document.createElement('div');
+    marker.className = 'marker';
+    marker.dataset.event = event.key;
+    marker.dataset.year = String(event.year);
+    marker.style.left = x+'px';
+    host.appendChild(marker);
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'card';
+    card.dataset.card = event.key;
+    card.style.left = (cx-53)+'px';
+    card.style.top = y+'px';
+    const name = document.createElement('span');
+    name.className = 'name';
+    name.textContent = Studio.t(event.key);
+    const year = document.createElement('span');
+    year.className = 'year';
+    year.textContent = String(event.year);
+    card.append(name,year);
+    card.addEventListener('click',() => {
+      if (finished || waiting) return;
+      chosen = card;
+      waiting = true;
+      Studio.event('tap',{key:event.key});
+      Studio.answer(event.key);
+    });
+    host.appendChild(card);
+  });
+  Studio.onVerdict(({correct}) => {
+    if (!waiting || finished) return;
+    waiting = false;
+    feedback.className = 'feedback '+(correct ? 'good' : 'try');
+    feedback.textContent = correct ? Studio.t('right')+' · '+Studio.t('done') : Studio.t('wrong');
+    if (correct) {
+      finished = true;
+      Studio.done();
+    } else if (chosen) {
+      chosen.classList.remove('shake');
+      void chosen.offsetWidth;
+      chosen.classList.add('shake');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

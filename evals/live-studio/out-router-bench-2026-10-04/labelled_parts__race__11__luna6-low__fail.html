@@ -1,0 +1,88 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8eb;color:#344a3c}
+.scene{width:360px;height:320px;padding:9px 12px 7px;display:flex;flex-direction:column;align-items:center}
+h1{margin:0;height:29px;font-size:18px;line-height:27px;font-weight:750;color:#37664a}
+.question{height:42px;max-width:336px;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px;font-size:15px;line-height:19px}
+.question strong{color:#a45139}
+svg{width:336px;height:220px;overflow:hidden;flex:none}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:filter .22s,transform .18s}
+.part:active{transform:scale(.96)}
+.part.selected{filter:drop-shadow(0 0 8px #ffd34d);animation:glow .75s ease-in-out infinite alternate}
+@keyframes glow{from{filter:drop-shadow(0 0 3px #ffd34d)}to{filter:drop-shadow(0 0 11px #ffad35)}}
+.label{font:700 12px system-ui,sans-serif;fill:#425548}
+.leader{stroke:#8b9d87;stroke-width:1.5;stroke-linecap:round}
+.feedback{height:24px;margin-top:0;font-size:14px;font-weight:700;text-align:center;color:#527250}
+</style>
+<div class="scene">
+  <h1 id="title"></h1>
+  <div class="question"><span id="ask" data-ask></span><strong id="asked-name"></strong></div>
+  <svg viewBox="0 0 336 220" role="img" aria-label="">
+    <path class="leader" d="M153 27L160 38M203 59L191 55M205 111L193 116M123 115L140 122M174 194L170 179"/>
+    <g id="shape0" class="part" tabindex="0" role="button">
+      <ellipse cx="168" cy="55" rx="20" ry="33" fill="#f18b61"/>
+      <ellipse cx="168" cy="55" rx="20" ry="33" fill="#f18b61" transform="rotate(60 168 55)"/>
+      <ellipse cx="168" cy="55" rx="20" ry="33" fill="#f18b61" transform="rotate(120 168 55)"/>
+    </g>
+    <circle id="shape1" class="part" tabindex="0" role="button" cx="168" cy="55" r="27" fill="#f5c84c"/>
+    <path id="shape2" class="part" tabindex="0" role="button" d="M138 91Q168 79 198 91L198 174Q168 185 138 174Z" fill="#4f9b60"/>
+    <path id="shape3" class="part" tabindex="0" role="button" d="M158 124Q129 93 105 105Q108 139 154 147Q168 141 158 124Z" fill="#78b957"/>
+    <g id="shape4" class="part" tabindex="0" role="button">
+      <path d="M147 169Q129 188 119 207M153 171Q146 192 145 211M161 173Q160 194 166 211M181 173Q184 194 178 211M188 170Q207 188 216 207M172 175L170 211" fill="none" stroke="#a87952" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="138" y="174" width="60" height="43" fill="transparent"/>
+    </g>
+    <text id="label0" class="label" x="125" y="21"></text>
+    <text id="label1" class="label" x="202" y="62"></text>
+    <text id="label2" class="label" x="205" y="115"></text>
+    <text id="label3" class="label" x="82" y="119"></text>
+    <text id="label4" class="label" x="143" y="207"></text>
+  </svg>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, keys=p.parts;
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("ask").textContent=Studio.t("ask");
+  document.getElementById("ask").setAttribute("data-ask",p.ask);
+  keys.forEach((key,i)=>{
+    const part=document.getElementById("shape"+i);
+    const label=document.getElementById("label"+i);
+    part.setAttribute("data-part",key);
+    label.setAttribute("data-label",key);
+    label.textContent=Studio.t(key);
+    if(key===p.ask) document.getElementById("asked-name").textContent=label.textContent;
+  });
+  const feedback=document.getElementById("feedback");
+  let locked=false,finished=false;
+  function choose(el){
+    if(locked||finished||!el||!el.hasAttribute("data-part")) return;
+    const key=el.getAttribute("data-part");
+    Studio.event("tap",{part:key});
+    locked=true;
+    Studio.answer(key);
+    Studio.onVerdict(result=>{
+      if(finished)return;
+      locked=false;
+      if(result.correct){
+        finished=true;
+        el.classList.add("selected");
+        feedback.textContent=Studio.t("right")+" "+Studio.t("done");
+        Studio.done();
+      }else{
+        feedback.textContent=Studio.t("wrong");
+      }
+    });
+  }
+  document.querySelectorAll(".part").forEach(el=>{
+    el.addEventListener("click",()=>choose(el));
+    el.addEventListener("keydown",e=>{
+      if(e.key==="Enter"||e.key===" "){e.preventDefault();choose(el)}
+    });
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,94 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff8ed;color:#294b3c}
+#app{width:360px;height:320px;padding:10px 14px;background:radial-gradient(ellipse at 50% 54%,#fffdf7 0%,#fff8ed 78%)}
+h1{margin:0;height:32px;text-align:center;font-size:20px;line-height:28px;font-weight:750;color:#315b47}
+#question{height:38px;padding:3px 9px;text-align:center;font-size:14px;line-height:20px;color:#5e5949}
+svg{display:block;width:332px;height:216px;overflow:visible}
+.label{font-family:inherit;font-size:13px;font-weight:650;fill:#526354}
+.leader{fill:none;stroke:#9caa90;stroke-width:1.5;stroke-linecap:round}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:filter .24s ease,transform .18s ease}
+.part:active{transform:scale(.95)}
+.part.correct{filter:drop-shadow(0 0 8px #ffbf3d);animation:glow .7s ease-in-out infinite alternate}
+@keyframes glow{from{filter:drop-shadow(0 0 3px #ffbf3d)}to{filter:drop-shadow(0 0 11px #ffbf3d)}}
+#feedback{height:20px;text-align:center;font-size:14px;font-weight:700;color:#527552}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <div id="question" data-ask></div>
+  <svg id="picture" viewBox="0 0 332 216" role="img" aria-label=""></svg>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(function(){
+  const p=Studio.params;
+  const title=document.getElementById("title");
+  const question=document.getElementById("question");
+  const feedback=document.getElementById("feedback");
+  const svg=document.getElementById("picture");
+  title.textContent=Studio.t("title");
+  question.textContent=Studio.t("ask");
+  question.setAttribute("data-ask",p.ask);
+  const ns="http://www.w3.org/2000/svg";
+  function el(tag,attrs,parent){
+    const n=document.createElementNS(ns,tag);
+    Object.keys(attrs||{}).forEach(k=>n.setAttribute(k,attrs[k]));
+    if(parent) parent.appendChild(n);
+    return n;
+  }
+  const shapes={
+    petal:{tag:"ellipse",attrs:{cx:166,cy:53,rx:22,ry:29,fill:"#f3988e",stroke:"#db796f","stroke-width":2},hit:{x:136,y:22,w:60,h:62}},
+    centre:{tag:"circle",attrs:{cx:166,cy:81,r:23,fill:"#f4c84e",stroke:"#dda933","stroke-width":2},hit:{x:136,y:51,w:60,h:60}},
+    stem:{tag:"path",attrs:{d:"M166 104 C163 126 169 148 166 171",fill:"none",stroke:"#588c53","stroke-width":16,"stroke-linecap":"round"},hit:{x:137,y:108,w:58,h:68}},
+    leaf:{tag:"path",attrs:{d:"M161 145 C140 125 117 128 108 146 C122 162 145 162 163 152 Z",fill:"#79ad65",stroke:"#56894c","stroke-width":2},hit:{x:105,y:119,w:62,h:56}},
+    root:{tag:"path",attrs:{d:"M166 168 C164 179 151 190 144 204 M166 168 C169 181 181 191 188 204 M161 176 C157 187 158 196 157 205 M172 176 C176 187 175 196 176 205",fill:"none",stroke:"#a87952","stroke-width":7,"stroke-linecap":"round"},hit:{x:133,y:166,w:72,h:52}}
+  };
+  const labels={
+    petal:{x:201,y:39,tx:190,ty:48},
+    centre:{x:201,y:84,tx:190,ty:82},
+    stem:{x:201,y:132,tx:174,ty:137},
+    leaf:{x:57,y:150,tx:108,ty:146},
+    root:{x:207,y:201,tx:190,ty:197}
+  };
+  const nodes={};
+  p.parts.forEach(key=>{
+    const def=shapes[key];
+    if(!def)return;
+    const g=el("g",{class:"part",tabindex:"0","data-part":key,role:"button"},svg);
+    el("rect",{x:def.hit.x,y:def.hit.y,width:def.hit.w,height:def.hit.h,fill:"transparent","pointer-events":"all"},g);
+    el(def.tag,def.attrs,g);
+    nodes[key]=g;
+    const q=labels[key];
+    if(q){
+      const startX=q.x<100?q.x+35:q.x-5;
+      el("path",{class:"leader",d:"M"+startX+" "+(q.y-4)+" L"+q.tx+" "+q.ty},svg);
+      const text=el("text",{class:"label",x:q.x,y:q.y,"text-anchor":"start","data-label":key},svg);
+      text.textContent=Studio.t(key);
+    }
+  });
+  let committed=false;
+  function choose(key){
+    if(committed)return;
+    Studio.event("tap",{part:key});
+    Studio.answer(key);
+  }
+  Object.keys(nodes).forEach(key=>{
+    nodes[key].addEventListener("click",()=>choose(key));
+    nodes[key].addEventListener("keydown",e=>{
+      if(e.key==="Enter"||e.key===" "){e.preventDefault();choose(key)}
+    });
+  });
+  Studio.onVerdict(result=>{
+    if(result.correct){
+      committed=true;
+      if(nodes[p.ask])nodes[p.ask].classList.add("correct");
+      feedback.textContent=Studio.t("right")+" "+Studio.t("done");
+      Studio.done();
+    }else feedback.textContent=Studio.t("wrong");
+  });
+  Studio.ready();
+})();
+
+</script>

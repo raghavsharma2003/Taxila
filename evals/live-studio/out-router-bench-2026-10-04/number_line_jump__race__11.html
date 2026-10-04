@@ -1,0 +1,142 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+#game{width:360px;height:320px;padding:10px 12px;background:#fff7e9;color:#493e50;font-family:system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;gap:5px}
+h1{font-size:17px;line-height:21px;margin:0;color:#59466a}
+#instr{font-size:12px;line-height:15px;margin:0;text-align:center}
+#item{width:100%;display:flex;flex-direction:column;align-items:center;gap:3px}
+#targetline{font-size:14px;line-height:19px;color:#59466a}
+#number{font-size:17px;font-weight:750;color:#e36f54}
+#track{width:336px;height:105px;overflow:visible}
+.tick{stroke:#887b8c;stroke-width:1.5}
+.base{stroke:#59466a;stroke-width:3;stroke-linecap:round}
+.ticklabel{fill:#65576a;font-size:11px;text-anchor:middle}
+.markerline{stroke:#e36f54;stroke-width:3;stroke-linecap:round;transition:all .2s ease}
+.marker{fill:#ff9270;stroke:#fff;stroke-width:3;transition:all .2s ease;transform-box:fill-box;transform-origin:center}
+#marker.hop .marker{animation:hop .34s ease}
+@keyframes hop{50%{transform:translateY(-11px) scale(1.12)}}
+#controls{display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
+button{border:0;border-radius:16px;min-width:60px;height:56px;padding:0 12px;background:#f5c96c;color:#493e50;font:700 14px system-ui,sans-serif;box-shadow:0 3px 0 #ddb154;cursor:pointer;touch-action:manipulation;transition:transform .12s,background .12s}
+button:active{transform:scale(.94)}
+#check{background:#8fcdb7;box-shadow:0 3px 0 #6eaf98}
+#status{height:20px;margin:0;font-size:14px;font-weight:700;color:#528b71}
+</style>
+<main id="game">
+  <h1 id="title"></h1>
+  <p id="instr"></p>
+  <section id="item">
+    <div id="targetline"><span id="target-label"></span> <span id="number" data-target></span></div>
+    <svg id="track" viewBox="0 0 336 105" aria-hidden="true">
+      <line class="base" x1="10" y1="48" x2="326" y2="48"></line>
+      <g id="ticks"></g>
+      <g id="marker" data-marker>
+        <line id="markerline" class="markerline" y1="24" y2="43"></line>
+        <circle class="marker" cy="17" r="11"></circle>
+      </g>
+    </svg>
+  </section>
+  <div id="controls">
+    <button id="left" data-action="left"></button>
+    <button id="right" data-action="right"></button>
+    <button id="check" data-action="check"></button>
+  </div>
+  <p id="status" aria-live="polite"></p>
+</main>
+<script>
+
+(function(){
+  const p=Studio.params;
+  const keys=["title","instr","left","right_btn","check","right","wrong","done"];
+  const text={};
+  keys.forEach(k=>text[k]=Studio.t(k));
+  document.getElementById("title").textContent=text.title;
+  document.getElementById("instr").textContent=text.instr;
+  document.getElementById("left").textContent=text.left;
+  document.getElementById("right").textContent=text.right_btn;
+  document.getElementById("check").textContent=text.check;
+  const scale=Math.max(0,...[p.min,p.max,p.step,p.start,...p.items.map(i=>i.target)].map(v=>{
+    const s=String(v); return s.includes(".")?s.split(".")[1].length:0;
+  }));
+  const factor=Math.pow(10,scale);
+  const gcd=(a,b)=>b===0?Math.abs(a):gcd(b,a%b);
+  function fmt(v){
+    const n=Math.round(v*factor);
+    if(p.format==="integer") return String(Math.round(v));
+    const d=factor, g=gcd(n,d);
+    return String(n/g)+"/"+String(d/g);
+  }
+  const count=Math.round((p.max-p.min)/p.step);
+  const x0=10,x1=326,y=48;
+  const ticks=document.getElementById("ticks");
+  for(let k=0;k<=count;k++){
+    const value=Math.round((p.min+k*p.step)*1e6)/1e6;
+    const x=x0+(x1-x0)*k/count;
+    const line=document.createElementNS("http://www.w3.org/2000/svg","line");
+    line.setAttribute("x1",x);line.setAttribute("x2",x);
+    line.setAttribute("y1",k%p.labelEvery===0?39:42);line.setAttribute("y2",k%p.labelEvery===0?57:54);
+    line.setAttribute("class","tick");line.setAttribute("data-tick",String(value));
+    ticks.appendChild(line);
+    if(k%p.labelEvery===0){
+      const label=document.createElementNS("http://www.w3.org/2000/svg","text");
+      label.setAttribute("x",x);label.setAttribute("y",74);label.setAttribute("class","ticklabel");
+      label.textContent=fmt(value);ticks.appendChild(label);
+    }
+  }
+  let index=0, markerValue=p.start, awaiting=false;
+  const itemBox=document.getElementById("item"), marker=document.getElementById("marker");
+  const status=document.getElementById("status"), number=document.getElementById("number");
+  document.getElementById("target-label").textContent=text.instr;
+  function position(){
+    const k=Math.round((markerValue-p.min)/p.step);
+    const x=x0+(x1-x0)*k/count;
+    marker.setAttribute("transform","translate("+x+" 0)");
+    marker.setAttribute("data-value",String(markerValue));
+  }
+  function showItem(){
+    if(index>=p.items.length){
+      itemBox.setAttribute("data-item","");
+      number.textContent="";
+      status.textContent=text.done;
+      document.getElementById("controls").style.display="none";
+      Studio.done();
+      return;
+    }
+    const item=p.items[index];
+    itemBox.setAttribute("data-item",String(item.id));
+    number.textContent=fmt(item.target);
+    markerValue=Math.round(p.start*1e6)/1e6;
+    status.textContent="";
+    position();
+  }
+  function move(delta){
+    markerValue=Math.round((markerValue+delta*p.step)*1e6)/1e6;
+    markerValue=Math.max(p.min,Math.min(p.max,markerValue));
+    position();
+    Studio.event("move",{value:markerValue});
+  }
+  document.getElementById("left").addEventListener("click",()=>move(-1));
+  document.getElementById("right").addEventListener("click",()=>move(1));
+  document.getElementById("check").addEventListener("click",()=>{
+    if(awaiting||index>=p.items.length)return;
+    awaiting=true;
+    Studio.answer({value:markerValue});
+  });
+  Studio.onVerdict(v=>{
+    awaiting=false;
+    if(v.correct){
+      status.textContent=text.right;
+      marker.classList.remove("hop");
+      void marker.getBoundingClientRect();
+      marker.classList.add("hop");
+      Studio.event("verdict",{correct:"yes"});
+      setTimeout(()=>{index++;showItem()},360);
+    }else{
+      status.textContent=text.wrong;
+      Studio.event("verdict",{correct:"no"});
+    }
+  });
+  showItem();
+  Studio.ready();
+})();
+
+</script>

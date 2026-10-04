@@ -1,0 +1,173 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff6e8;font-family:ui-rounded,Arial,sans-serif;color:#5b3a2d}
+  #app{width:360px;height:320px;position:relative;overflow:hidden;background:linear-gradient(145deg,#fff7dc,#ffe8c7)}
+  .blob{position:absolute;border-radius:50%;opacity:.45;pointer-events:none}
+  .b1{width:120px;height:120px;background:#ffd17b;left:-42px;top:-42px}
+  .b2{width:92px;height:92px;background:#f7a6a0;right:-28px;bottom:30px}
+  #play,#finish{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center}
+  #play{padding-top:15px}
+  h1{margin:0;font-size:23px;line-height:28px;color:#a84d37;letter-spacing:.2px}
+  #instruction{margin-top:5px;font-size:14px;line-height:18px;color:#765143;text-align:center;min-height:18px}
+  #targetCard{height:50px;min-width:104px;margin-top:7px;padding:5px 16px;border-radius:18px;background:#fffdf7;box-shadow:0 4px 0 #efd7b6;display:flex;align-items:center;justify-content:center}
+  #target{font-size:23px;font-weight:800;color:#b54c35;line-height:26px;display:flex;align-items:center}
+  .frac{display:inline-flex;flex-direction:column;align-items:center;line-height:18px;min-width:25px}
+  .frac i{width:28px;height:2px;background:#b54c35;margin:1px 0;font-style:normal}
+  #wholeWrap{width:322px;height:122px;margin-top:10px;display:flex;align-items:center;justify-content:center}
+  #whole{width:310px;height:118px;overflow:visible}
+  .part{fill:#ffe7a8;stroke:#c47a49;stroke-width:2;cursor:pointer;transform-box:fill-box;transform-origin:center;transition:fill .18s ease,transform .16s ease,filter .18s ease}
+  .part:active{transform:scale(.93)}
+  .part.shaded{fill:#f4774d;filter:drop-shadow(0 2px 1px rgba(150,62,32,.22))}
+  #feedback{height:20px;margin-top:1px;font-size:14px;font-weight:700;color:#a84d37;text-align:center}
+  #check{width:164px;height:55px;margin-top:4px;border:0;border-radius:19px;background:#e56445;color:#fffdf6;font-size:18px;font-weight:800;box-shadow:0 5px 0 #b64936;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease}
+  #check:active{transform:translateY(4px) scale(.97);box-shadow:0 1px 0 #b64936}
+  #check.pulse{animation:pulse .48s ease}
+  #finish{justify-content:center;padding-bottom:10px}
+  #doneCard{width:276px;min-height:170px;border-radius:30px;background:#fffdf7;box-shadow:0 8px 0 #efd4b5;display:flex;flex-direction:column;align-items:center;justify-content:center;animation:pop .55s cubic-bezier(.2,.9,.25,1)}
+  #doneIcon{width:80px;height:80px;margin-bottom:10px}
+  #doneText{font-size:22px;font-weight:800;color:#a84d37;text-align:center}
+  .hidden{display:none!important}
+  .shine{animation:shine .65s ease}
+  @keyframes pulse{50%{transform:scale(1.07)}}
+  @keyframes pop{0%{transform:scale(.55);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+  @keyframes shine{50%{filter:brightness(1.25);transform:scale(1.04)}}
+</style>
+<div id="app">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <main id="play" data-item="">
+    <h1 id="title"></h1>
+    <div id="instruction"></div>
+    <div id="targetCard"><div id="target" data-target></div></div>
+    <div id="wholeWrap">
+      <svg id="whole" viewBox="0 0 310 118" role="img"></svg>
+    </div>
+    <div id="feedback"></div>
+    <button id="check" data-action="check"></button>
+  </main>
+  <section id="finish" class="hidden">
+    <div id="doneCard">
+      <svg id="doneIcon" viewBox="0 0 80 80" aria-hidden="true">
+        <circle cx="40" cy="40" r="34" fill="#ffd477"></circle>
+        <path d="M23 40l11 11 23-25" fill="none" stroke="#e56445" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+      <div id="doneText"></div>
+    </div>
+  </section>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, items=p.items, index=0, locked=false;
+  var play=document.getElementById('play'), whole=document.getElementById('whole');
+  var target=document.getElementById('target'), feedback=document.getElementById('feedback');
+  var check=document.getElementById('check'), finish=document.getElementById('finish');
+  var ns='http://www.w3.org/2000/svg';
+
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+  document.getElementById('doneText').textContent=Studio.t('done');
+
+  function fraction(n,d){
+    target.innerHTML='';
+    var f=document.createElement('span'), top=document.createElement('span'), line=document.createElement('i'), bottom=document.createElement('span');
+    f.className='frac';
+    top.textContent=n; bottom.textContent=d;
+    f.appendChild(top);f.appendChild(line);f.appendChild(bottom);target.appendChild(f);
+  }
+
+  function partPath(i,d){
+    var cx=155,cy=59,r=52,a1=(-Math.PI/2)+(Math.PI*2*i/d),a2=(-Math.PI/2)+(Math.PI*2*(i+1)/d);
+    return 'M '+cx+' '+cy+' L '+(cx+r*Math.cos(a1))+' '+(cy+r*Math.sin(a1))+' A '+r+' '+r+' 0 0 1 '+(cx+r*Math.cos(a2))+' '+(cy+r*Math.sin(a2))+' Z';
+  }
+
+  function addPart(el,i){
+    el.setAttribute('data-part',i);
+    el.setAttribute('data-shaded','false');
+    el.classList.add('part');
+    el.addEventListener('click',function(){
+      if(locked)return;
+      var on=el.getAttribute('data-shaded')==='true';
+      el.setAttribute('data-shaded',on?'false':'true');
+      el.classList.toggle('shaded',!on);
+      Studio.event('tap',{part:i});
+    });
+    whole.appendChild(el);
+  }
+
+  function render(){
+    locked=false;
+    feedback.textContent='';
+    check.classList.remove('pulse');
+    var item=items[index];
+    play.setAttribute('data-item',item.id);
+    fraction(item.n,item.d);
+    whole.innerHTML='';
+    if(p.picture==='pizza'){
+      whole.setAttribute('viewBox','0 0 310 118');
+      for(var i=0;i<item.d;i++){
+        var path=document.createElementNS(ns,'path');
+        path.setAttribute('d',partPath(i,item.d));
+        addPart(path,i);
+      }
+    }else{
+      whole.setAttribute('viewBox','0 0 310 118');
+      var gap=3, left=14, width=282, y=25, h=68;
+      var each=(width-gap*(item.d-1))/item.d;
+      for(var j=0;j<item.d;j++){
+        var rect=document.createElementNS(ns,'rect');
+        rect.setAttribute('x',left+j*(each+gap));
+        rect.setAttribute('y',y);
+        rect.setAttribute('width',each);
+        rect.setAttribute('height',h);
+        rect.setAttribute('rx',Math.min(12,each/3));
+        addPart(rect,j);
+      }
+    }
+  }
+
+  check.addEventListener('click',function(){
+    if(locked)return;
+    var count=whole.querySelectorAll('[data-shaded="true"]').length;
+    Studio.event('check',{n:count});
+    Studio.answer({n:count,d:items[index].d});
+    locked=true;
+  });
+
+  Studio.onVerdict(function(v){
+    if(v.correct){
+      feedback.textContent=Studio.t('right');
+      whole.classList.remove('shine');
+      void whole.offsetWidth;
+      whole.classList.add('shine');
+      check.classList.add('pulse');
+      Studio.event('right',{item:index});
+      setTimeout(function(){
+        index++;
+        if(index>=items.length){
+          play.classList.add('hidden');
+          finish.classList.remove('hidden');
+          Studio.done();
+        }else{
+          render();
+        }
+      },700);
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      locked=false;
+      check.classList.remove('pulse');
+      void check.offsetWidth;
+      check.classList.add('pulse');
+      Studio.event('wrong',{item:index});
+      setTimeout(function(){
+        if(!locked) feedback.textContent=Studio.t('hint');
+      },500);
+    }
+  });
+
+  render();
+  Studio.ready();
+}());
+
+</script>

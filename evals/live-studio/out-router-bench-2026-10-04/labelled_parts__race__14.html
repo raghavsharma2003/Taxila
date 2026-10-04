@@ -1,0 +1,89 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ec;font-family:system-ui,sans-serif;color:#554535}
+  .scene{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 50% 40%,#fffdf6,#fff5e6);border-radius:20px}
+  .title,.ask,.status{position:absolute;left:12px;width:336px;text-align:center}
+  .title{top:6px;font-size:17px;font-weight:750;color:#55745a}
+  .ask{top:31px;font-size:18px;font-weight:700}
+  .status{bottom:1px;height:21px;font-size:15px;font-weight:700;color:#896546}
+  svg{position:absolute;left:0;top:52px;width:360px;height:246px}
+  [data-part]{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .2s ease,filter .25s ease}
+  [data-part]:active{transform:scale(.94)}
+  [data-part].bump{animation:bump .38s ease}
+  [data-part].glow{filter:drop-shadow(0 0 8px #f6bd47) drop-shadow(0 0 5px #ffdf79);animation:bump .55s ease}
+  .leader{fill:none;stroke:#b6a58d;stroke-width:1.5;stroke-linecap:round}
+  .name{font-size:14px;font-weight:700;fill:#665a46;dominant-baseline:middle}
+  @keyframes bump{50%{transform:scale(1.1)}}
+</style>
+<div class="scene">
+  <div class="title" id="title"></div>
+  <div class="ask" data-ask></div>
+  <svg viewBox="0 0 360 246" aria-hidden="true">
+    <g data-part="stem">
+      <path d="M180 111 Q187 154 180 190" fill="none" stroke="#438f65" stroke-width="17" stroke-linecap="round"/>
+      <path d="M180 115 Q185 151 180 187" fill="none" stroke="#87c486" stroke-width="5" stroke-linecap="round"/>
+      <path d="M150 108 H210 V193 H150 Z" fill="transparent"/>
+    </g>
+    <g data-part="leaf">
+      <path d="M174 160 Q137 121 94 146 Q106 197 175 172 Z" fill="#68ad70" stroke="#418b62" stroke-width="2"/>
+      <path d="M106 151 Q138 156 174 168" fill="none" stroke="#c5dfa0" stroke-width="3" stroke-linecap="round"/>
+      <path d="M94 137 H150 V190 H94 Z" fill="transparent"/>
+    </g>
+    <g data-part="petal">
+      <ellipse cx="180" cy="29" rx="23" ry="27" fill="#f5a0a0" stroke="#dc7884" stroke-width="2"/>
+      <ellipse cx="213" cy="43" rx="22" ry="27" transform="rotate(48 213 43)" fill="#f6aaa4" stroke="#dc7884" stroke-width="2"/>
+      <ellipse cx="147" cy="43" rx="22" ry="27" transform="rotate(-48 147 43)" fill="#f3a1ae" stroke="#dc7884" stroke-width="2"/>
+    </g>
+    <g data-part="centre">
+      <circle cx="180" cy="79" r="27" fill="#f8ca65" stroke="#dca54d" stroke-width="2"/>
+      <circle cx="171" cy="72" r="3" fill="#d79348"/>
+      <circle cx="190" cy="77" r="3" fill="#d79348"/>
+      <circle cx="179" cy="90" r="3" fill="#d79348"/>
+    </g>
+    <g data-part="root">
+      <path d="M180 189 Q154 197 145 231 M180 189 Q180 213 178 239 M180 189 Q207 199 217 231 M162 211 L143 215 M199 212 L218 215" fill="none" stroke="#ad825d" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M139 188 H222 V243 H139 Z" fill="transparent"/>
+    </g>
+    <path class="leader" d="M225 29 L244 25 M198 98 L211 110 M207 157 L219 158 M103 170 L85 171 M215 220 L230 220"/>
+    <text class="name" data-label="petal" x="248" y="25"></text>
+    <text class="name" data-label="centre" x="215" y="113"></text>
+    <text class="name" data-label="stem" x="223" y="158"></text>
+    <text class="name" data-label="leaf" x="81" y="171" text-anchor="end"></text>
+    <text class="name" data-label="root" x="234" y="220"></text>
+  </svg>
+  <div class="status" id="status" aria-live="polite"></div>
+</div>
+<script>
+
+  const parts=Studio.params.parts;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.querySelector('[data-ask]').textContent=Studio.t('ask');
+  document.querySelectorAll('[data-label]').forEach(el=>{el.textContent=Studio.t(el.dataset.label)});
+  const status=document.getElementById('status');
+  let chosen=null,finished=false;
+  document.querySelectorAll('[data-part]').forEach(el=>{
+    if(!parts.includes(el.dataset.part))return;
+    el.addEventListener('click',()=>{
+      if(finished)return;
+      chosen=el;
+      el.classList.remove('bump');
+      void el.getBoundingClientRect();
+      el.classList.add('bump');
+      Studio.answer(el.dataset.part);
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    if(finished||!chosen)return;
+    if(correct){
+      finished=true;
+      chosen.classList.remove('bump');
+      chosen.classList.add('glow');
+      status.textContent=Studio.t('right');
+      setTimeout(()=>{status.textContent=Studio.t('done');Studio.done()},650);
+    }else{
+      status.textContent=Studio.t('wrong');
+    }
+  });
+  Studio.ready();
+
+</script>

@@ -1,0 +1,133 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#493b34;background:#fff8ec}
+#game{width:360px;height:320px;padding:8px 10px;display:flex;flex-direction:column;gap:4px}
+header{height:38px;flex:none;text-align:center}
+#title{font-size:19px;line-height:22px;font-weight:800;color:#654532}
+#instr{font-size:12px;line-height:15px;color:#806d5d}
+#cards{height:104px;flex:none;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:5px}
+.card-slot{min-width:0;display:flex;align-items:center;justify-content:center}
+.card{width:100%;height:48px;border:2px solid #efc989;border-radius:15px;background:#fffdf8;box-shadow:0 3px 0 #e7d6bc;color:#574638;font-size:15px;font-weight:750;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s,opacity .2s;touch-action:manipulation}
+.card:active{transform:scale(.96)}
+.card.selected{transform:translateY(-4px) scale(1.025);border-color:#e9994c;box-shadow:0 7px 15px #d9974b55,0 3px 0 #e7d6bc}
+.card.shake{animation:shake .32s ease}
+.bins{height:130px;flex:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.bin{min-width:0;height:130px;border:2px solid #d8c8ae;border-radius:16px;background:#f4ead8;padding:5px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;transition:background .2s,border-color .2s,transform .2s;touch-action:manipulation}
+.bin:active{transform:scale(.97)}
+.bin-name{height:20px;max-width:100%;font-size:13px;line-height:19px;font-weight:800;color:#68513e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bin-art{width:30px;height:20px;flex:none;transition:transform .25s}
+.bin:hover .bin-art{transform:translateY(-2px)}
+.bin-items{width:100%;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:24px;align-content:start;justify-items:stretch;gap:3px}
+.bin .card{width:100%;min-width:0;height:24px;padding:0 2px;border-radius:8px;font-size:10px;line-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 0 #e7d6bc;cursor:default}
+.bin .card:active{transform:none}
+#feedback{height:18px;flex:none;text-align:center;font-size:13px;font-weight:750;line-height:18px;color:#65805c}
+#feedback.bad{color:#b16b5a}
+@keyframes shake{25%{transform:translateX(-5px)}55%{transform:translateX(4px)}80%{transform:translateX(-2px)}}
+</style>
+<main id="game">
+  <header><div id="title"></div><div id="instr"></div></header>
+  <section id="cards" aria-label=""></section>
+  <section class="bins" aria-label=""></section>
+  <div id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(function(){
+  const params=Studio.params;
+  const title=document.getElementById("title");
+  const instr=document.getElementById("instr");
+  const cardsArea=document.getElementById("cards");
+  const binsArea=document.querySelector(".bins");
+  const feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  instr.textContent=Studio.t("instr");
+  let selected=null;
+  let waiting=false;
+  let finished=false;
+  let sorted=0;
+
+  params.cards.forEach(function(key){
+    const slot=document.createElement("div");
+    slot.className="card-slot";
+    const card=document.createElement("button");
+    card.type="button";
+    card.className="card";
+    card.dataset.card=key;
+    card.dataset.selected="false";
+    card.textContent=Studio.t(key);
+    slot.appendChild(card);
+    cardsArea.appendChild(slot);
+    card.addEventListener("click",function(){
+      if(waiting||finished||card.parentElement!==slot)return;
+      if(selected&&selected!==card){
+        selected.dataset.selected="false";
+        selected.classList.remove("selected");
+      }
+      if(selected===card){
+        selected=null;
+        card.dataset.selected="false";
+        card.classList.remove("selected");
+      }else{
+        selected=card;
+        card.dataset.selected="true";
+        card.classList.add("selected");
+        Studio.event("pick",{});
+      }
+    });
+  });
+
+  params.bins.forEach(function(key){
+    const bin=document.createElement("div");
+    bin.className="bin";
+    bin.dataset.bin=key;
+    bin.innerHTML='<svg class="bin-art" viewBox="0 0 40 32" aria-hidden="true"><path d="M8 8h24l-2 20H10z" fill="#d7aa70"/><path d="M6 8h28v4H6z" fill="#bd8955"/><path d="M14 4h12" stroke="#bd8955" stroke-width="3" stroke-linecap="round"/></svg>';
+    const name=document.createElement("div");
+    name.className="bin-name";
+    name.textContent=Studio.t(key);
+    const items=document.createElement("div");
+    items.className="bin-items";
+    bin.appendChild(name);
+    bin.appendChild(items);
+    binsArea.appendChild(bin);
+    bin.addEventListener("click",function(){
+      if(!selected||waiting||finished)return;
+      const card=selected;
+      const cardKey=card.dataset.card;
+      const binKey=bin.dataset.bin;
+      waiting=true;
+      Studio.event("sort",{});
+      Studio.answer({card:cardKey,bin:binKey});
+      Studio.onVerdict(function(verdict){
+        waiting=false;
+        if(verdict.correct){
+          card.dataset.selected="false";
+          card.classList.remove("selected");
+          card.removeAttribute("data-card");
+          card.dataset.placed=binKey;
+          items.appendChild(card);
+          selected=null;
+          sorted++;
+          feedback.className="";
+          feedback.textContent=Studio.t("right");
+          if(sorted===params.cards.length&&!finished){
+            finished=true;
+            feedback.textContent=Studio.t("done");
+            Studio.done();
+          }
+        }else{
+          card.dataset.selected="false";
+          card.classList.remove("selected");
+          card.classList.add("shake");
+          selected=null;
+          feedback.className="bad";
+          feedback.textContent=Studio.t("wrong");
+          setTimeout(function(){card.classList.remove("shake")},360);
+        }
+      });
+    });
+  });
+  Studio.ready();
+})();
+
+</script>

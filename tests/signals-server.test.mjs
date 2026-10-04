@@ -193,6 +193,7 @@ test("§2.6: no ASR confidence (live lane) caps acoustic q at 0.5, so a proxy pa
   const bad = run([{ asrSource: "gpt-live-transcribe", asrConfidence: undefined, childText: "kuch nahi", voice: { ...voice, f: { durationMs: 2500, voicedFrac: 0.1, articulationWps: 9 } } }]).frames[0];
   assert.equal(bad.q.acoustic, 0);
   assert.equal(run([{ voice: { ...voice, f: { ...voice.f, speakerShift: 1 } } }]).frames[0].q.acoustic, 0, "A14 drops the acoustics");
+  assert.equal(run([{ voice: { ...voice, f: { ...voice.f, qBed: 0 } } }]).frames[0].q.acoustic, 0, "a speech bed (TV) drops the acoustics");
 });
 
 test("D7 breakDue: the child's own words (W2-I tired predicate or a break request) fire immediately", () => {

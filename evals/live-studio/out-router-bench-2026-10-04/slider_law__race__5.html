@@ -1,0 +1,91 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;font-family:system-ui,sans-serif;color:#513d38}
+  .stage{position:relative;width:360px;height:320px;overflow:hidden}
+  .title{position:absolute;top:7px;left:16px;right:16px;font-size:19px;font-weight:800}
+  .scene{position:absolute;top:33px;left:12px;width:336px;height:143px;border-radius:22px;background:#fcebd5;overflow:visible}
+  .scene svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .readings{position:absolute;top:26px;left:15px;display:grid;gap:10px;font-size:16px;font-weight:700}
+  .reading{display:flex;align-items:baseline;gap:7px}
+  .reading strong{font-size:25px;font-variant-numeric:tabular-nums}
+  .visual{position:absolute;bottom:10px;right:38px;width:58px;height:0;border-radius:14px 14px 5px 5px;background:linear-gradient(90deg,#ed9871,#dc745e);box-shadow:inset -8px 0 #cf6857,0 5px 0 #b96351;transition:height .38s cubic-bezier(.2,.8,.2,1)}
+  .visual:after{content:"";position:absolute;left:12px;right:12px;top:10px;height:5px;border-radius:5px;background:#ffe2bb}
+  .controls{position:absolute;top:180px;left:12px;width:336px;height:52px;display:flex;gap:10px}
+  button{border:0;cursor:pointer;touch-action:manipulation;font:700 16px system-ui,sans-serif;transition:transform .15s,background .2s}
+  button:active{transform:scale(.93)}
+  button:disabled{opacity:.45;cursor:default}
+  .controls button{height:52px;flex:1;border-radius:17px;background:#ffe1ad;color:#654333;box-shadow:0 3px 0 #e8bb80}
+  .question{position:absolute;top:236px;left:17px;right:17px;height:18px;display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:700}
+  .feedback{color:#a54f49}
+  .options{position:absolute;left:12px;bottom:8px;width:336px;display:flex;gap:10px}
+  .options button{min-width:0;flex:1;height:52px;border-radius:17px;background:#75b4a0;color:#173f39;box-shadow:0 3px 0 #4a947f;font-size:21px}
+  .options button.chosen{background:#f4b579;transform:scale(1.04)}
+  .options button.correct{background:#b6d891}
+</style>
+<div class="stage">
+  <div class="title" id="title"></div>
+  <div class="scene">
+    <svg viewBox="0 0 336 143" aria-hidden="true"><path d="M0 119 Q80 105 153 120 T336 116 V143 H0Z" fill="#f4d9b6"/><circle cx="299" cy="30" r="12" fill="#ffd68f"/><path d="M202 124h105" stroke="#b98e70" stroke-width="5" stroke-linecap="round"/></svg>
+    <div class="readings"><div class="reading"><span id="xname"></span><strong data-x="" id="xval"></strong></div><div class="reading"><span id="yname"></span><strong data-output data-value="" id="yval"></strong></div></div>
+    <div class="visual" data-visual data-dim="h"></div>
+  </div>
+  <div class="controls"><button type="button" data-action="dec" id="dec"></button><button type="button" data-action="inc" id="inc"></button></div>
+  <div class="question"><span id="ask"></span><span class="feedback" id="feedback" aria-live="polite"></span></div>
+  <div class="options" id="options"></div>
+</div>
+<script>
+
+  const p=Studio.params;
+  const $=id=>document.getElementById(id);
+  for(const key of ['title','xname','yname','less','more','ask']) {
+    $(key==='less'?'dec':key==='more'?'inc':key).textContent=Studio.t(key);
+  }
+  const fmt=n=>String(Number(Number(n).toFixed(10)));
+  let x=p.x.start, finished=false, pending=false;
+  const visual=document.querySelector('[data-visual]');
+  function paint(){
+    const y=p.law.k*x+p.law.b;
+    $('xval').textContent=fmt(x);
+    $('xval').setAttribute('data-x',fmt(x));
+    $('yval').textContent=fmt(y);
+    $('yval').setAttribute('data-value',fmt(y));
+    visual.style.height=fmt(y*p.y.unitsPer)+'px';
+    $('dec').disabled=x<=p.x.min;
+    $('inc').disabled=x>=p.x.max;
+  }
+  function change(direction){
+    if(finished)return;
+    x=Math.min(p.x.max,Math.max(p.x.min,Number((x+direction*p.x.step).toFixed(10))));
+    paint();
+    Studio.event('change',{x:fmt(x)});
+  }
+  $('dec').addEventListener('click',()=>change(-1));
+  $('inc').addEventListener('click',()=>change(1));
+  p.ask.options.forEach(value=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.textContent=fmt(value);
+    button.setAttribute('data-option',fmt(value));
+    button.addEventListener('click',()=>{
+      if(finished||pending)return;
+      pending=true;
+      document.querySelectorAll('[data-option]').forEach(b=>b.classList.remove('chosen'));
+      button.classList.add('chosen');
+      Studio.answer({value});
+    });
+    $('options').append(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    pending=false;
+    $('feedback').textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      finished=true;
+      document.querySelector('.chosen')?.classList.add('correct');
+      $('feedback').textContent=Studio.t('done');
+      Studio.done();
+    }
+  });
+  paint();
+  Studio.ready();
+
+</script>

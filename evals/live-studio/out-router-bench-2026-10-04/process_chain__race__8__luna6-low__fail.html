@@ -1,0 +1,96 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ec;color:#33423a}
+#app{position:relative;width:360px;height:320px;padding:8px 12px;background:linear-gradient(145deg,#fffaf1,#f1f8ed);border-radius:18px;overflow:hidden}
+h1{height:30px;margin:0;text-align:center;font-size:18px;line-height:30px;color:#315d4d}
+#scene{position:relative;width:336px;height:178px;margin:0 auto}
+#paths{position:absolute;inset:0;width:336px;height:178px;overflow:visible}
+#stages{position:absolute;inset:0}
+.stage{position:absolute;width:98px;height:46px;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;padding:3px 6px;border:2px solid #a4c6a1;border-radius:15px;background:#fff;box-shadow:0 3px 0 #dce9d6;color:#365848;text-align:center;font-size:12px;font-weight:700;line-height:1.1;transition:background .25s,border-color .25s,box-shadow .25s,transform .25s}
+.stage[data-active="true"]{background:#fff0c8;border-color:#e4a944;box-shadow:0 0 0 5px #ffe7a1,0 4px 0 #e9c66d;transform:translate(-50%,-50%) scale(1.05)}
+.arrow{fill:none;stroke:#91b69a;stroke-width:3;stroke-linecap:round}
+#token{fill:#f17e55;stroke:#fff;stroke-width:3;filter:drop-shadow(0 2px 2px #876);transition:cx .7s cubic-bezier(.2,.8,.2,1),cy .7s cubic-bezier(.2,.8,.2,1)}
+#controls{height:58px;display:flex;align-items:center;justify-content:center}
+button{font:700 15px system-ui,sans-serif;color:#fff;background:#39785f;border:0;border-radius:16px;min-width:100px;min-height:52px;padding:8px 16px;box-shadow:0 4px 0 #285a46;cursor:pointer;transition:transform .12s,background .2s}
+button:active{transform:scale(.94)}
+button:focus-visible{outline:3px solid #e4a944;outline-offset:2px}
+#question{display:none;height:70px;text-align:center}
+#question p{margin:0 0 5px;font-size:14px;font-weight:700;color:#315d4d}
+#options{display:flex;justify-content:center;gap:7px}
+.option{min-width:90px;max-width:105px;min-height:52px;padding:5px 7px;font-size:12px;line-height:1.05;background:#718a50;box-shadow:0 4px 0 #506b37}
+#feedback{height:20px;text-align:center;font-size:13px;font-weight:700;color:#39785f}
+#feedback.bad{color:#b85b43}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <div id="scene">
+    <svg id="paths" viewBox="0 0 336 178" aria-hidden="true">
+      <defs><marker id="head" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#91b69a"></path></marker></defs>
+      <g id="arrows"></g><circle id="token" data-token r="9" cx="0" cy="0"></circle>
+    </svg>
+    <div id="stages"></div>
+  </div>
+  <div id="controls"><button id="next" data-action="next"></button></div>
+  <section id="question"><p id="prompt"></p><div id="options"></div></section>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(function(){
+  const p=Studio.params,keys=p.stages,root=document.getElementById("app");
+  const title=document.getElementById("title"),next=document.getElementById("next");
+  title.textContent=Studio.t("title");next.textContent=Studio.t("next");
+  const points=keys.map((_,i)=>{
+    if(keys.length===4)return [[90,48],[246,48],[246,136],[90,136]][i];
+    const angle=-Math.PI/2+2*Math.PI*i/keys.length;
+    return [168+105*Math.cos(angle),89+57*Math.sin(angle)];
+  });
+  const stageArea=document.getElementById("stages"),arrows=document.getElementById("arrows"),svgNS="http://www.w3.org/2000/svg";
+  keys.forEach((key,i)=>{
+    const el=document.createElement("div");el.className="stage";el.dataset.stage=key;
+    el.style.left=points[i][0]+"px";el.style.top=points[i][1]+"px";
+    const label=document.createElement("span");label.dataset.label=key;label.textContent=Studio.t(key);
+    el.appendChild(label);stageArea.appendChild(el);
+  });
+  const edges=keys.slice(0,-1).map((_,i)=>[i,i+1]);
+  if(p.cycle&&keys.length>1)edges.push([keys.length-1,0]);
+  edges.forEach(([a,b])=>{
+    const [x1,y1]=points[a],[x2,y2]=points[b],dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy);
+    const ux=dx/len,uy=dy/len,inset=55;
+    const line=document.createElementNS(svgNS,"line");
+    line.setAttribute("x1",x1+ux*inset);line.setAttribute("y1",y1+uy*inset);
+    line.setAttribute("x2",x2-ux*inset);line.setAttribute("y2",y2-uy*inset);
+    line.setAttribute("class","arrow");line.setAttribute("marker-end","url(#head)");
+    line.dataset.arrow=keys[a]+">"+keys[b];arrows.appendChild(line);
+  });
+  let active=0,asked=false;
+  const token=document.getElementById("token");
+  function mark(){
+    root.dataset.active=keys[active];
+    document.querySelectorAll(".stage").forEach((el,i)=>el.dataset.active=i===active?"true":"false");
+    token.setAttribute("cx",points[active][0]);token.setAttribute("cy",points[active][1]);
+  }
+  mark();
+  const question=document.getElementById("question"),controls=document.getElementById("controls");
+  const prompt=document.getElementById("prompt"),options=document.getElementById("options");
+  prompt.textContent=Studio.t("ask")+" "+Studio.t(p.askAfter)+"?";
+  p.options.forEach(key=>{
+    const b=document.createElement("button");b.className="option";b.dataset.option=key;b.textContent=Studio.t(key);
+    b.addEventListener("click",()=>{document.getElementById("feedback").textContent="";Studio.answer(key);});
+    options.appendChild(b);
+  });
+  function showQuestion(){if(asked)return;asked=true;controls.style.display="none";question.style.display="block";}
+  Studio.ready();
+  next.addEventListener("click",()=>{
+    active=(active+1)%keys.length;mark();
+    Studio.event("stage",{index:active});
+    if(keys[active]===p.options[0]&&keys[(active+keys.length-1)%keys.length]===p.askAfter)showQuestion();
+  });
+  Studio.onVerdict(({correct})=>{
+    const f=document.getElementById("feedback");
+    if(correct){f.className="";f.textContent=Studio.t("right")+" "+Studio.t("done");Studio.done();}
+    else{f.className="bad";f.textContent=Studio.t("wrong");}
+  });
+})();
+
+</script>

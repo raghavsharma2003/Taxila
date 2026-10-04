@@ -1,0 +1,136 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e8;font-family:Arial,sans-serif}
+#scene{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(180deg,#fff8ea 0%,#f8edcf 100%)}
+#sun{position:absolute;right:-20px;top:-22px;width:88px;height:88px;border-radius:50%;background:#ffe19a;opacity:.72}
+#card{position:absolute;left:12px;top:9px;width:336px;height:54px;padding:8px 15px;border-radius:20px;background:#fffdf8e8;box-shadow:0 5px 16px #9d735522;z-index:4}
+#title{color:#714b38;font-size:16px;font-weight:800;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#question{color:#a55f3c;font-size:14px;font-weight:700;line-height:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#garden{position:absolute;left:0;top:60px;width:360px;height:252px;overflow:visible}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .2s ease,filter .28s ease,opacity .25s ease}
+.part:active{transform:scale(.93)}
+.part.dim{opacity:.42}
+.part.wiggle{animation:wiggle .46s ease}
+.part.good{filter:drop-shadow(0 0 7px #ffd34b) drop-shadow(0 0 14px #ffad50);animation:happy .76s ease-in-out infinite alternate}
+.leader{fill:none;stroke:#97705a;stroke-width:1.8;stroke-linecap:round}
+.labelbox{fill:#fffdf9;stroke:#e7c99e;stroke-width:1.2}
+.labeltext{fill:#704d3b;font-size:12px;font-weight:700;dominant-baseline:middle}
+.ground{fill:#dbb46e}
+.groundline{fill:none;stroke:#bd8d55;stroke-width:2;stroke-linecap:round}
+#feedback{position:absolute;left:78px;bottom:6px;width:204px;height:40px;border-radius:20px;display:flex;align-items:center;justify-content:center;background:#ffffffed;color:#7d5038;box-shadow:0 4px 13px #9b765529;font-size:14px;font-weight:800;opacity:0;transform:translateY(8px) scale(.94);transition:opacity .24s ease,transform .24s ease;pointer-events:none;z-index:6}
+#feedback.show{opacity:1;transform:translateY(0) scale(1)}
+#feedback.goodmsg{background:#fff2b6;color:#83522b}
+@keyframes happy{from{transform:scale(1)}to{transform:scale(1.065)}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
+</style>
+<div id="scene">
+  <div id="sun"></div>
+  <div id="card">
+    <div id="title"></div>
+    <div id="question" data-ask></div>
+  </div>
+  <svg id="garden" viewBox="0 0 360 252" aria-hidden="true">
+    <path class="ground" d="M0 207 Q65 197 124 207 Q183 217 241 205 Q304 194 360 207 L360 252 L0 252Z"></path>
+    <path class="groundline" d="M0 207 Q65 197 124 207 Q183 217 241 205 Q304 194 360 207"></path>
+
+    <path id="shape0" class="part" fill="#f28a7d" d="M174 75 C152 61 120 66 113 47 C106 29 124 19 140 30 C151 37 156 49 159 60 C158 39 173 25 188 31 C205 38 199 60 184 76 C166 85 158 97 157 116 C142 127 121 120 120 104 C119 89 142 78 158 76 C143 76 130 72 122 64 C143 75 158 80 174 75Z"></path>
+    <circle id="shape1" class="part" cx="222" cy="72" r="31" fill="#f7bd45"></circle>
+    <path id="shape2" class="part" fill="#62a85b" d="M194 98 Q219 106 248 98 L244 202 Q219 210 186 202Z"></path>
+    <path id="shape3" class="part" fill="#78b95f" d="M178 147 C151 130 116 132 105 152 C94 172 111 199 136 204 C156 208 171 193 180 171Z"></path>
+    <path id="shape4" class="part" fill="#bd8755" d="M187 193 Q174 211 165 239 L184 248 Q196 229 205 212 Q203 235 211 248 L230 248 Q232 229 226 211 Q242 230 255 247 L274 247 Q252 211 243 193Z"></path>
+
+    <g>
+      <path class="leader" d="M94 62 L116 62"></path>
+      <rect class="labelbox" x="12" y="49" width="82" height="26" rx="13"></rect>
+      <text class="labeltext" x="22" y="62" data-label="petal"></text>
+    </g>
+    <g>
+      <path class="leader" d="M263 73 L252 73"></path>
+      <rect class="labelbox" x="263" y="60" width="82" height="26" rx="13"></rect>
+      <text class="labeltext" x="273" y="73" data-label="centre"></text>
+    </g>
+    <g>
+      <path class="leader" d="M263 151 L246 151"></path>
+      <rect class="labelbox" x="263" y="138" width="82" height="26" rx="13"></rect>
+      <text class="labeltext" x="273" y="151" data-label="stem"></text>
+    </g>
+    <g>
+      <path class="leader" d="M94 171 L106 171"></path>
+      <rect class="labelbox" x="12" y="158" width="82" height="26" rx="13"></rect>
+      <text class="labeltext" x="22" y="171" data-label="leaf"></text>
+    </g>
+    <g>
+      <path class="leader" d="M263 224 L252 224"></path>
+      <rect class="labelbox" x="263" y="211" width="82" height="26" rx="13"></rect>
+      <text class="labeltext" x="273" y="224" data-label="root"></text>
+    </g>
+  </svg>
+  <div id="feedback"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params;
+  var parts=p.parts;
+  var waiting=false;
+  var complete=false;
+  var active=null;
+  var title=document.getElementById('title');
+  var question=document.querySelector('[data-ask]');
+  var feedback=document.getElementById('feedback');
+
+  title.textContent=Studio.t('title');
+  question.textContent=Studio.t('ask')+' '+Studio.t(p.ask);
+
+  function showMessage(key,good){
+    feedback.textContent=Studio.t(key);
+    feedback.className='show'+(good?' goodmsg':'');
+    window.setTimeout(function(){
+      if(!complete) feedback.className='';
+    },1250);
+  }
+
+  parts.forEach(function(key,index){
+    var shape=document.getElementById('shape'+index);
+    var label=document.querySelector('[data-label="'+key+'"]');
+    if(!shape)return;
+    shape.setAttribute('data-part',key);
+    if(label)label.textContent=Studio.t(key);
+    shape.addEventListener('click',function(){
+      if(waiting||complete)return;
+      waiting=true;
+      active=shape;
+      active.classList.add('wiggle');
+      Studio.event('part_tap',{part:key});
+      Studio.answer(key);
+    });
+  });
+
+  Studio.onVerdict(function(verdict){
+    if(verdict.correct){
+      complete=true;
+      if(active){
+        active.classList.remove('wiggle');
+        active.classList.add('good');
+      }
+      document.querySelectorAll('.part').forEach(function(part){
+        if(part!==active)part.classList.add('dim');
+      });
+      showMessage('right',true);
+      window.setTimeout(function(){
+        feedback.textContent=Studio.t('done');
+        feedback.className='show goodmsg';
+        Studio.done();
+      },850);
+    }else{
+      if(active)active.classList.remove('wiggle');
+      showMessage('wrong',false);
+      waiting=false;
+      active=null;
+    }
+  });
+
+  Studio.ready();
+})();
+
+</script>

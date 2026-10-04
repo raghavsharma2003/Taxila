@@ -1,0 +1,96 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8eb;color:#39483d}
+.scene{width:360px;height:320px;padding:6px 12px;display:flex;flex-direction:column;align-items:center;overflow:hidden}
+h1{margin:0;font-size:17px;line-height:21px;font-weight:750;color:#536c4b}
+[data-ask]{height:20px;font-size:14px;line-height:20px;font-weight:650;text-align:center;color:#71583f}
+svg{display:block;width:336px;height:230px;flex:none}
+.label{font:600 12px system-ui,sans-serif;fill:#53624e}
+.leader{fill:none;stroke:#9a8c70;stroke-width:1.5;stroke-linecap:round}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .18s ease,filter .22s ease}
+.part:active{transform:scale(.94)}
+.part:focus{outline:none}
+.part:focus-visible{filter:drop-shadow(0 0 4px #e9a93b)}
+.part.correct{filter:drop-shadow(0 0 8px #f3bd42) brightness(1.12);animation:glow .7s ease-in-out infinite alternate}
+@keyframes glow{to{filter:drop-shadow(0 0 13px #f3bd42) brightness(1.18)}}
+#feedback{height:18px;flex:none;font-size:13px;line-height:18px;font-weight:650;color:#536c4b;text-align:center}
+</style>
+<div class="scene">
+  <h1 id="title"></h1>
+  <div id="question" data-ask></div>
+  <svg viewBox="0 0 336 258" preserveAspectRatio="none" role="img">
+    <path class="leader" d="M49 51 L132 57"/>
+    <path class="leader" d="M233 99 L194 91"/>
+    <path class="leader" d="M211 145 L193 151"/>
+    <path class="leader" d="M62 144 L96 151"/>
+    <path class="leader" d="M210 224 L190 233"/>
+    <text class="label" data-label="petal" x="3" y="51"></text>
+    <text class="label" data-label="centre" x="236" y="101"></text>
+    <text class="label" data-label="stem" x="213" y="149"></text>
+    <text class="label" data-label="leaf" x="17" y="145"></text>
+    <text class="label" data-label="root" x="213" y="228"></text>
+
+    <g class="part" data-part="petal" tabindex="0" role="button" aria-label="">
+      <rect x="129" y="22" width="78" height="90" rx="30" fill="transparent" pointer-events="all"/>
+      <ellipse cx="168" cy="48" rx="20" ry="30" fill="#f39a8c"/>
+      <ellipse cx="142" cy="67" rx="20" ry="30" transform="rotate(-55 142 67)" fill="#f6b264"/>
+      <ellipse cx="194" cy="67" rx="20" ry="30" transform="rotate(55 194 67)" fill="#f6b264"/>
+      <ellipse cx="151" cy="94" rx="20" ry="30" transform="rotate(-125 151 94)" fill="#ed8c83"/>
+      <ellipse cx="185" cy="94" rx="20" ry="30" transform="rotate(125 185 94)" fill="#ed8c83"/>
+    </g>
+    <g class="part" data-part="stem" tabindex="0" role="button" aria-label="">
+      <rect x="140" y="116" width="56" height="100" rx="20" fill="transparent"/>
+      <path d="M164 113 Q168 158 165 213" fill="none" stroke="#548b55" stroke-width="13" stroke-linecap="round"/>
+    </g>
+    <g class="part" data-part="leaf" tabindex="0" role="button" aria-label="">
+      <path d="M157 157 Q117 126 91 150 Q113 180 158 165Z" fill="#78aa62" stroke="#4d824d" stroke-width="2"/>
+      <path d="M103 153 Q128 157 153 162" fill="none" stroke="#d7e6a2" stroke-width="2"/>
+      <rect x="87" y="122" width="80" height="68" rx="28" fill="transparent"/>
+    </g>
+    <g class="part" data-part="root" tabindex="0" role="button" aria-label="">
+      <rect x="135" y="203" width="70" height="64" rx="24" fill="transparent"/>
+      <path d="M165 205 Q159 222 142 241 M166 211 Q175 226 183 245 M161 216 Q151 227 151 248 M170 216 Q190 225 197 241 M164 216 Q164 235 165 250" fill="none" stroke="#9b7047" stroke-width="6" stroke-linecap="round"/>
+      <path d="M143 238l-4 10m44-7 4 9m10-12 6 8m-47-4-2 9m11-5v9" stroke="#b58a5c" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g class="part" data-part="centre" tabindex="0" role="button" aria-label="">
+      <circle cx="168" cy="77" r="28" fill="#f5cb57" stroke="#d99a36" stroke-width="3"/>
+      <circle cx="159" cy="70" r="2" fill="#fff1b0"/><circle cx="175" cy="68" r="2" fill="#fff1b0"/>
+      <circle cx="168" cy="84" r="2" fill="#fff1b0"/><circle cx="179" cy="82" r="2" fill="#fff1b0"/>
+      <rect x="137" y="46" width="62" height="62" rx="28" fill="transparent"/>
+    </g>
+  </svg>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(function(){
+  document.querySelectorAll("[data-label]").forEach(el=>{
+    el.textContent=Studio.t(el.getAttribute("data-label"));
+  });
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("question").textContent=Studio.t("ask");
+  const feedback=document.getElementById("feedback");
+  document.querySelectorAll("[data-part]").forEach(el=>{
+    const key=el.getAttribute("data-part");
+    el.setAttribute("aria-label",Studio.t(key));
+    el.addEventListener("click",()=>{
+      Studio.event("tap",{part:key});
+      Studio.answer(key);
+    });
+    el.addEventListener("keydown",e=>{
+      if(e.key==="Enter"||e.key===" "){e.preventDefault();el.click();}
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?"right":"wrong");
+    if(correct){
+      document.querySelector('[data-part="'+Studio.params.ask+'"]').classList.add("correct");
+      feedback.textContent=Studio.t("done");
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,108 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#49352c}
+  #activity{position:relative;width:360px;height:320px;overflow:hidden;border-radius:22px;background:linear-gradient(165deg,#fff9ef,#fff0dc)}
+  #title{position:absolute;top:10px;left:18px;right:18px;margin:0;font-size:21px;font-weight:800;line-height:27px}
+  #ask{position:absolute;top:43px;left:18px;right:18px;margin:0;font-size:16px;font-weight:650;line-height:22px}
+  #feedback{position:absolute;top:68px;left:65px;right:10px;height:22px;font-size:14px;font-weight:750;line-height:22px}
+  #feedback.right{color:#28765c}#feedback.wrong{color:#b05247}
+  #yaxis{position:absolute;left:2px;top:118px;width:22px;height:113px;writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;font-size:12px;font-weight:700;color:#806652}
+  #ticks,#grid,#columns{position:absolute;inset:0}
+  .gridline{position:absolute;left:61px;right:10px;height:1px;background:#e5d8c8}
+  .gridline.zero{height:2px;background:#9e8875}
+  .tick{position:absolute;left:26px;width:30px;transform:translateY(-50%);text-align:right;font-size:11px;font-weight:650;color:#786657}
+  .column{position:absolute;top:96px;height:210px;min-width:52px;padding:0;border:0;background:transparent;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+  .column:focus-visible{outline:3px solid #5449a6;outline-offset:-2px;border-radius:12px}
+  .bar{position:absolute;left:14%;width:72%;bottom:56px;height:0;background:#dc8464;border-radius:9px 9px 3px 3px;box-shadow:inset 0 3px 0 #efaa88,0 3px 0 #b96b51;transition:height .72s cubic-bezier(.2,.8,.25,1),transform .18s ease,background .2s ease;transform-origin:bottom}
+  .column:active .bar{transform:scaleX(.9)}
+  .name{position:absolute;left:0;right:0;bottom:4px;min-height:42px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;font-weight:700;color:#63483b;overflow-wrap:anywhere}
+  .column.wrong .bar{animation:shake .35s ease}
+  .column.right .bar{background:#55a78b;animation:pop .45s ease}
+  @keyframes shake{25%,75%{transform:translateX(-4px)}50%{transform:translateX(4px)}}
+  @keyframes pop{50%{transform:scaleX(1.14)}}
+  @media(prefers-reduced-motion:reduce){.bar{transition:none}.column.wrong .bar,.column.right .bar{animation:none}}
+</style>
+<div id="activity">
+  <h1 id="title"></h1>
+  <p id="ask"></p>
+  <div id="feedback" aria-live="polite"></div>
+  <div id="yaxis"></div>
+  <div id="grid" aria-hidden="true"></div>
+  <div id="ticks" aria-hidden="true"></div>
+  <div id="columns"></div>
+</div>
+<script>
+
+(() => {
+  const data=Studio.params.data;
+  const byId=id=>document.getElementById(id);
+  byId('title').textContent=Studio.t('title');
+  byId('ask').textContent=Studio.t('ask');
+  byId('yaxis').textContent=Studio.t('yaxis');
+  const max=Math.max(...data.map(d=>d.value));
+  const rough=max/5;
+  const power=Math.pow(10,Math.floor(Math.log10(rough||1)));
+  const step=[1,2,5,10].map(n=>n*power).find(n=>n>=rough)||10*power;
+  const ceiling=Math.ceil(max/step)*step;
+  const plotHeight=145, baseline=250, left=65, width=285;
+  const grid=byId('grid'),ticks=byId('ticks'),columns=byId('columns');
+  for(let i=0;i<=Math.round(ceiling/step);i++){
+    const value=i*step, y=baseline-plotHeight*value/ceiling;
+    const line=document.createElement('div');
+    line.className='gridline'+(i===0?' zero':'');
+    line.style.top=y+'px';
+    grid.appendChild(line);
+    const tick=document.createElement('div');
+    tick.className='tick';
+    tick.setAttribute('data-tick',String(value));
+    tick.style.top=y+'px';
+    tick.textContent=String(value);
+    ticks.appendChild(tick);
+  }
+  let waiting=false,finished=false,chosen=null;
+  data.forEach((d,i)=>{
+    const column=document.createElement('button');
+    column.type='button';
+    column.className='column';
+    column.setAttribute('data-column',d.key);
+    column.style.left=(left+i*width/data.length)+'px';
+    column.style.width=(width/data.length)+'px';
+    const bar=document.createElement('div');
+    bar.className='bar';
+    bar.setAttribute('data-bar',d.key);
+    bar.setAttribute('data-value',String(d.value));
+    const name=document.createElement('span');
+    name.className='name';
+    name.textContent=Studio.t(d.key);
+    column.append(bar,name);
+    column.addEventListener('click',()=>{
+      if(waiting||finished)return;
+      waiting=true;
+      chosen=column;
+      Studio.answer(d.key);
+    });
+    columns.appendChild(column);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      bar.style.height=(plotHeight*d.value/ceiling)+'px';
+    }));
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!waiting||finished)return;
+    const feedback=byId('feedback');
+    feedback.className=correct?'right':'wrong';
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    chosen.classList.add(correct?'right':'wrong');
+    if(correct){
+      finished=true;
+      byId('ask').textContent=Studio.t('done');
+      Studio.done();
+    }else{
+      waiting=false;
+      const previous=chosen;
+      setTimeout(()=>previous.classList.remove('wrong'),450);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

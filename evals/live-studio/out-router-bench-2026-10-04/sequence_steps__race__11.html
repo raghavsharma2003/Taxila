@@ -1,0 +1,84 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff5e9;font-family:system-ui,sans-serif;color:#49372f}
+  #activity{width:360px;height:320px;padding:18px 16px;display:flex;flex-direction:column;align-items:center;background:radial-gradient(circle at 90% 5%,#ffe0bc 0 18%,transparent 19%),#fff5e9}
+  h1{margin:0;font-size:21px;line-height:1.2;text-align:center}
+  #instruction{margin:7px 0 0;font-size:14px;text-align:center;line-height:1.25}
+  #cards,#track{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+  #cards{margin-top:18px;min-height:72px}
+  .card{min-width:0;min-height:64px;padding:6px;border:2px solid #d88b5b;border-radius:16px;background:#fff;color:#49372f;box-shadow:0 4px 0 #edc5a6;font:600 16px/1.15 system-ui,sans-serif;overflow-wrap:anywhere;cursor:pointer;transition:transform .22s,box-shadow .22s,background .22s}
+  .card:not(:disabled):active{transform:scale(.93);box-shadow:0 1px 0 #edc5a6}
+  .card:focus-visible{outline:3px solid #507c70;outline-offset:2px}
+  .card:disabled{cursor:default}
+  #track{margin-top:22px}
+  .slot{height:82px;min-width:0;padding:5px;border:2px dashed #caa98f;border-radius:18px;background:#fffaf3;display:flex;flex-direction:column;align-items:stretch;gap:3px;transition:background .25s,border-color .25s}
+  .slot.filled{background:#e7f3e7;border-color:#71a78a;border-style:solid}
+  .number{text-align:center;font-size:14px;font-weight:700;color:#806654;line-height:18px}
+  .slot .card{min-height:48px;flex:1;border-color:#71a78a;background:#fff;box-shadow:none;font-size:14px;animation:arrive .35s ease-out}
+  #feedback{min-height:24px;margin-top:14px;text-align:center;font-size:16px;font-weight:700;color:#527d68}
+  #feedback.wrong{color:#ad654d}
+  .shake{animation:shake .38s ease-in-out}
+  @keyframes shake{25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+  @keyframes arrive{from{transform:scale(.78)}to{transform:scale(1)}}
+</style>
+<div id="activity">
+  <h1 id="title"></h1>
+  <div id="instruction"></div>
+  <div id="cards"></div>
+  <div id="track"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+  const shown=Studio.params.shown;
+  const cards=document.getElementById('cards');
+  const track=document.getElementById('track');
+  const feedback=document.getElementById('feedback');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  let placed=0;
+  let pending=null;
+  shown.forEach((key,index)=>{
+    const card=document.createElement('button');
+    card.type='button';
+    card.className='card';
+    card.dataset.step=key;
+    card.textContent=Studio.t(key);
+    card.addEventListener('click',()=>{
+      if(pending!==null)return;
+      pending=card;
+      Studio.answer({key});
+    });
+    cards.appendChild(card);
+    const slot=document.createElement('div');
+    slot.className='slot';
+    const number=document.createElement('div');
+    number.className='number';
+    number.textContent=String(index+1);
+    slot.appendChild(number);
+    track.appendChild(slot);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(pending===null)return;
+    const card=pending;
+    pending=null;
+    feedback.classList.toggle('wrong',!correct);
+    if(correct){
+      placed++;
+      card.dataset.placed=String(placed);
+      card.disabled=true;
+      const slot=track.children[placed-1];
+      slot.classList.add('filled');
+      slot.appendChild(card);
+      feedback.textContent=placed===shown.length?Studio.t('done'):Studio.t('right');
+      if(placed===shown.length)Studio.done();
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+    }
+  });
+  Studio.ready();
+
+</script>

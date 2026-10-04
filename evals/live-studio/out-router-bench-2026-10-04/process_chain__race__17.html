@@ -1,0 +1,138 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#513d36}
+  #activity{width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 22% 12%,#fffdf7,#fff1df);position:relative}
+  .top{height:63px;padding:8px 13px 3px 17px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  #title{font-size:19px;font-weight:800;line-height:1.1;max-width:255px}
+  button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .18s,background .2s,box-shadow .2s}
+  button:active{transform:scale(.91)}
+  #next{min-width:67px;height:52px;border:0;border-radius:18px;background:#e97e5d;color:white;font-weight:800;box-shadow:0 4px 0 #bd624a}
+  #next:disabled{opacity:.5;box-shadow:none}
+  #scene{display:block;width:360px;height:133px}
+  .stage rect{fill:#fffdf8;stroke:#dfbea5;stroke-width:2;transition:fill .3s,stroke .3s,filter .3s}
+  .stage text{fill:#513d36;font-size:11px;font-weight:800;text-anchor:middle;dominant-baseline:middle}
+  .stage.active rect{fill:#ffe3a6;stroke:#ea9862;filter:drop-shadow(0 0 7px #f3b765)}
+  .arrow{fill:none;stroke:#b8947c;stroke-width:3;stroke-linecap:round}
+  #token{fill:#e97e5d;stroke:#fff;stroke-width:3;filter:drop-shadow(0 2px 3px #a97660)}
+  #question{height:39px;padding:0 10px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:15px;font-weight:750}
+  #after{color:#ae6046}
+  #options{height:62px;padding:0 9px;display:flex;justify-content:center;gap:7px}
+  .option{height:52px;min-width:52px;flex:1;max-width:110px;border:2px solid #ddbea5;border-radius:17px;background:#fffdf8;color:#513d36;font-weight:750;box-shadow:0 3px 0 #ead8c5}
+  .option:hover{background:#fff0d5}
+  .option:disabled{opacity:.7}
+  #feedback{height:23px;line-height:20px;text-align:center;font-size:14px;font-weight:800;color:#af6046}
+</style>
+<div id="activity">
+  <div class="top"><div id="title"></div><button id="next" data-action="next"></button></div>
+  <svg id="scene" viewBox="0 0 360 133" aria-hidden="true">
+    <defs><marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#b8947c"/></marker></defs>
+    <g id="arrows"></g><g id="stages"></g><circle id="token" data-token r="8" cx="0" cy="0"/>
+  </svg>
+  <div id="question"><span id="ask"></span><span id="after"></span></div>
+  <div id="options"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, keys=p.stages, n=keys.length;
+  const root=document.getElementById('activity'), token=document.getElementById('token');
+  const next=document.getElementById('next'), feedback=document.getElementById('feedback');
+  const arrows=document.getElementById('arrows'), stages=document.getElementById('stages');
+  const ns='http://www.w3.org/2000/svg';
+  const make=(tag,attrs,parent)=>{
+    const node=document.createElementNS(ns,tag);
+    for(const [key,value] of Object.entries(attrs))node.setAttribute(key,value);
+    parent.appendChild(node);
+    return node;
+  };
+  document.getElementById('title').textContent=Studio.t('title');
+  next.textContent=Studio.t('next');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  document.getElementById('after').textContent=Studio.t(p.askAfter);
+  const positions=keys.map((_,i)=>{
+    if(p.cycle){
+      const angle=-Math.PI/2+2*Math.PI*i/n;
+      return {x:180+119*Math.cos(angle),y:67+43*Math.sin(angle)};
+    }
+    if(n<=4)return {x:n===1?180:43+i*274/(n-1),y:67};
+    return {x:56+(i%3)*124,y:38+Math.floor(i/3)*58};
+  });
+  const routes=[];
+  for(let i=0;i<(p.cycle?n:n-1);i++){
+    const j=(i+1)%n,a=positions[i],b=positions[j];
+    const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1;
+    const ux=dx/d,uy=dy/d;
+    const start={x:a.x+ux*35,y:a.y+uy*26};
+    const end={x:b.x-ux*35,y:b.y-uy*26};
+    make('path',{d:`M${start.x} ${start.y} L${end.x} ${end.y}`,class:'arrow','marker-end':'url(#tip)','data-arrow':keys[i]+'>'+keys[j]},arrows);
+    routes.push({start,end});
+  }
+  const boxes=keys.map((key,i)=>{
+    const {x,y}=positions[i];
+    const group=make('g',{class:'stage','data-stage':key,transform:`translate(${x} ${y})`},stages);
+    make('rect',{x:-33,y:-25,width:66,height:50,rx:16},group);
+    make('text',{'data-label':key,x:0,y:1},group).textContent=Studio.t(key);
+    return group;
+  });
+  let current=0,moving=false,finished=false;
+  const place=point=>{token.setAttribute('cx',point.x);token.setAttribute('cy',point.y)};
+  function activate(i){
+    current=i;
+    root.setAttribute('data-active',keys[i]);
+    boxes.forEach((box,index)=>box.classList.toggle('active',index===i));
+    next.disabled=finished||(!p.cycle&&i===n-1);
+  }
+  activate(0);
+  place(positions[0]);
+  next.addEventListener('click',()=>{
+    if(moving||finished||(!p.cycle&&current===n-1))return;
+    const from=current,to=(from+1)%n,route=routes[from];
+    if(!route)return;
+    moving=true;
+    next.disabled=true;
+    Studio.event('next',{from:keys[from],to:keys[to]});
+    const points=[positions[from],route.start,route.end,positions[to]];
+    const segmentLengths=[0];
+    for(let i=1;i<points.length;i++)segmentLengths.push(segmentLengths[i-1]+Math.hypot(points[i].x-points[i-1].x,points[i].y-points[i-1].y));
+    const total=segmentLengths[segmentLengths.length-1],duration=1150;
+    let startTime;
+    function frame(time){
+      if(startTime===undefined)startTime=time;
+      const progress=Math.min(1,(time-startTime)/duration),distance=total*progress;
+      let part=1;
+      while(part<segmentLengths.length-1&&distance>segmentLengths[part])part++;
+      const span=segmentLengths[part]-segmentLengths[part-1]||1;
+      const fraction=(distance-segmentLengths[part-1])/span;
+      place({x:points[part-1].x+(points[part].x-points[part-1].x)*fraction,y:points[part-1].y+(points[part].y-points[part-1].y)*fraction});
+      if(progress<1)requestAnimationFrame(frame);
+      else{place(positions[to]);activate(to);moving=false}
+    }
+    requestAnimationFrame(frame);
+  });
+  const options=document.getElementById('options');
+  p.options.forEach(key=>{
+    const button=document.createElement('button');
+    button.className='option';
+    button.setAttribute('data-option',key);
+    button.textContent=Studio.t(key);
+    button.addEventListener('click',()=>{
+      if(finished)return;
+      feedback.textContent='';
+      Studio.answer(key);
+    });
+    options.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct&&!finished){
+      finished=true;
+      next.disabled=true;
+      for(const button of options.children)button.disabled=true;
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

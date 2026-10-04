@@ -1,0 +1,95 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#46382f;background:#fff8ed}
+#app{width:360px;height:320px;padding:6px 10px;display:flex;flex-direction:column;gap:3px}
+h1{font-size:19px;line-height:22px;margin:0;color:#754b35}
+#ask{font-size:14px;line-height:18px;margin:0;color:#5e5046}
+#rows{display:flex;flex-direction:column;gap:1px}
+.row{width:100%;height:52px;min-height:52px;padding:0 9px;border:2px solid #f0dfc9;border-radius:15px;background:#fffdf8;display:flex;align-items:center;text-align:left;color:inherit;cursor:pointer;transition:transform .16s ease,background .2s ease,border-color .2s ease,box-shadow .2s ease}
+.row:active{transform:scale(.975)}
+.row:focus-visible{outline:3px solid #d99456;outline-offset:1px}
+.row[disabled]{cursor:default}
+.rowname{width:62px;flex:0 0 62px;font-size:14px;font-weight:650;white-space:nowrap}
+.symbols{display:flex;align-items:center;gap:3px}
+.symbol{width:23px;height:23px;flex:0 0 23px;display:inline-flex;align-items:center;justify-content:center;transition:transform .22s ease}
+.symbol svg{display:block;width:21px;height:21px}
+.row.chosen{border-color:#dfa766;background:#fff4dd;box-shadow:0 3px 9px #754b351a}
+.row.chosen .symbol{transform:translateY(-2px)}
+#key{height:34px;min-height:34px;align-self:flex-start;padding:2px 11px;border-radius:13px;background:#f7ead6;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+#key .symbol{width:23px;height:23px;flex-basis:23px}
+#feedback{height:18px;min-height:18px;margin:0;text-align:center;font-size:14px;line-height:18px;font-weight:700;color:#754b35}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
+</style>
+<main id="app">
+  <h1 id="title"></h1>
+  <p id="ask"></p>
+  <section id="rows"></section>
+  <div id="key" data-key=""><span class="symbol-wrap"></span><span id="keytext"></span><span id="keynumber"></span></div>
+  <p id="feedback" aria-live="polite"></p>
+</main>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const $=id=>document.getElementById(id);
+  const t=k=>Studio.t(k);
+  $("title").textContent=t("title");
+  $("ask").textContent=t("ask");
+  $("keytext").textContent=t("keytext");
+  $("keynumber").textContent=String(p.symbolValue);
+  const colors=["#e8a64e","#d97752","#7eaa83","#8799c8"];
+  function makeSymbol(color){
+    const wrap=document.createElement("span");
+    wrap.className="symbol";
+    wrap.setAttribute("data-symbol","");
+    wrap.setAttribute("aria-hidden","true");
+    const s=document.createElementNS("http://www.w3.org/2000/svg","svg");
+    s.setAttribute("viewBox","0 0 32 32");
+    s.innerHTML='<path d="M16 2.5c2 0 3 2.8 4.8 3.6s4.8-.3 6.2 1.1-.3 4.4.5 6.2 3.5 2.8 3.5 4.6-2.7 3-3.5 4.8.9 4.8-.5 6.2-4.4-.3-6.2.5-2.8 3.5-4.8 3.5-3-2.7-4.8-3.5-4.8.9-6.2-.5.3-4.4-.5-6.2S1 19.8 1 18s2.7-3 3.5-4.8-.9-4.8.5-6.2 4.4.3 6.2-.5S14 2.5 16 2.5Z" fill="'+color+'"/><circle cx="16" cy="18" r="4" fill="#fff8ed"/>';
+    wrap.appendChild(s);
+    return wrap;
+  }
+  $("key").dataset.key="key";
+  $("key").querySelector(".symbol-wrap").appendChild(makeSymbol(colors[0]));
+  const buttons=[];
+  p.rows.forEach((row,i)=>{
+    const b=document.createElement("button");
+    b.type="button";
+    b.className="row";
+    b.setAttribute("data-row",row.key);
+    const name=document.createElement("span");
+    name.className="rowname";
+    name.textContent=t(row.key);
+    const symbols=document.createElement("span");
+    symbols.className="symbols";
+    for(let n=0;n<row.value/p.symbolValue;n++) symbols.appendChild(makeSymbol(colors[i%colors.length]));
+    b.append(name,symbols);
+    b.addEventListener("click",()=>{
+      if(b.disabled)return;
+      buttons.forEach(x=>x.classList.remove("chosen"));
+      b.classList.add("chosen");
+      buttons.forEach(x=>x.disabled=true);
+      $("feedback").textContent="";
+      Studio.event("row_tap",{row:row.key});
+      Studio.answer(row.key);
+    });
+    $("rows").appendChild(b);
+    buttons.push(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    $("feedback").textContent=correct?t("right"):t("wrong");
+    if(correct){
+      $("ask").textContent=t("done");
+      Studio.event("verdict",{result:"correct"});
+      Studio.done();
+    }else{
+      Studio.event("verdict",{result:"try_again"});
+      buttons.forEach(x=>x.disabled=false);
+      buttons.forEach(x=>x.classList.remove("chosen"));
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

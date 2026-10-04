@@ -1,0 +1,127 @@
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:360px;height:320px;overflow:hidden}body{font-family:system-ui,sans-serif;background:#fff8ec;color:#493b32}.app{width:360px;height:320px;padding:10px 14px;display:flex;flex-direction:column;align-items:center;gap:4px}.title{margin:0;font-size:19px;line-height:24px;font-weight:800;color:#684838;text-align:center}.instr{margin:0;height:34px;font-size:13px;line-height:16px;text-align:center;color:#725e50}.scene{width:332px;height:165px;display:block;overflow:visible}.beam{transform-box:view-box;transform-origin:180px 46px;transition:transform 650ms cubic-bezier(.2,.75,.25,1)}.beam line{stroke:#996b42;stroke-width:9;stroke-linecap:round}.support{fill:#dfbd86}.chain{stroke:#ae8a5d;stroke-width:3;stroke-linecap:round}.pan-bowl{fill:#f2cb81;stroke:#a77946;stroke-width:3}.pan-contents{pointer-events:none}.weight-shape{fill:#f8e2ae;stroke:#9c744a;stroke-width:2}.weight-num{font:700 14px system-ui,sans-serif;fill:#59432f;text-anchor:middle;dominant-baseline:middle}.options{width:100%;display:flex;justify-content:center;gap:12px;height:58px}.option{border:2px solid #d3a768;background:#ffedc9;color:#60472e;border-radius:16px;min-width:68px;height:56px;font:800 20px system-ui,sans-serif;box-shadow:0 3px 0 #c3985b;cursor:pointer;transition:transform 140ms,background 180ms,border-color 180ms,box-shadow 140ms}.option:active{transform:scale(.92);box-shadow:0 1px 0 #c3985b}.option:disabled{cursor:default;opacity:.72}.option.chosen{background:#d8edcc;border-color:#82a96c}.message{height:25px;margin:0;text-align:center;font-size:15px;line-height:21px;font-weight:750;color:#66834f}.celebrate{animation:pop 430ms ease-in-out 2}@keyframes pop{50%{transform:scale(1.12)}}
+</style>
+<main class="app">
+  <h1 class="title"></h1>
+  <p class="instr"></p>
+  <svg class="scene" viewBox="0 0 360 170" aria-hidden="true">
+    <path class="support" d="M180 44 L147 151 Q180 162 213 151 Z"/>
+    <ellipse cx="180" cy="153" rx="53" ry="9" fill="#d9b77f"/>
+    <g class="beam">
+      <line x1="66" y1="46" x2="294" y2="46"/>
+      <circle cx="180" cy="46" r="10" fill="#bd8850"/>
+      <g class="pan" data-pan="left">
+        <line class="chain" x1="72" y1="48" x2="72" y2="91"/>
+        <line class="chain" x1="47" y1="48" x2="47" y2="91"/>
+        <line class="chain" x1="97" y1="48" x2="97" y2="91"/>
+        <path class="pan-bowl" d="M35 91 Q72 103 109 91 L101 112 Q72 125 43 112 Z"/>
+        <g class="pan-contents"></g>
+      </g>
+      <g class="pan" data-pan="right">
+        <line class="chain" x1="288" y1="48" x2="288" y2="91"/>
+        <line class="chain" x1="263" y1="48" x2="263" y2="91"/>
+        <line class="chain" x1="313" y1="48" x2="313" y2="91"/>
+        <path class="pan-bowl" d="M251 91 Q288 103 325 91 L317 112 Q288 125 259 112 Z"/>
+        <g class="pan-contents"></g>
+      </g>
+    </g>
+  </svg>
+  <div class="options"></div>
+  <p class="message" aria-live="polite"></p>
+</main>
+<script>
+
+(function(){
+  const items=Studio.params.items;
+  const title=document.querySelector('.title');
+  const instr=document.querySelector('.instr');
+  const message=document.querySelector('.message');
+  const beam=document.querySelector('.beam');
+  const optionBox=document.querySelector('.options');
+  const pans=[...document.querySelectorAll('.pan')];
+  title.textContent=Studio.t('title');
+  instr.textContent=Studio.t('instr');
+  let index=0, locked=false, finished=false;
+  function drawWeight(parent,value,x,y,w,h){
+    const ns='http://www.w3.org/2000/svg';
+    const g=document.createElementNS(ns,'g');
+    g.setAttribute('data-weight',value);
+    const r=document.createElementNS(ns,'rect');
+    r.setAttribute('class','weight-shape');
+    r.setAttribute('x',x);r.setAttribute('y',y);r.setAttribute('width',w);r.setAttribute('height',h);r.setAttribute('rx',7);
+    const t=document.createElementNS(ns,'text');
+    t.setAttribute('class','weight-num');t.setAttribute('x',x+w/2);t.setAttribute('y',y+h/2+1);t.textContent=value;
+    g.append(r,t);parent.append(g);
+  }
+  function render(){
+    const item=items[index];
+    pans.forEach((pan,i)=>{
+      const values=i===0?item.left:item.right;
+      pan.setAttribute('data-total',values.reduce((a,b)=>a+b,0));
+      const content=pan.querySelector('.pan-contents');
+      content.replaceChildren();
+      values.forEach((value,j)=>{
+        const x=(i===0?50:266)+(j%3)*19;
+        const y=91-Math.floor(j/3)*18;
+        drawWeight(content,value,x,y,17,16);
+      });
+    });
+    optionBox.replaceChildren();
+    item.options.forEach(value=>{
+      const b=document.createElement('button');
+      b.type='button';b.className='option';b.setAttribute('data-option',value);b.textContent=value;
+      b.addEventListener('click',()=>choose(value,b));
+      optionBox.append(b);
+    });
+    setTilt();
+  }
+  function setTilt(){
+    const l=Number(pans[0].getAttribute('data-total'));
+    const r=Number(pans[1].getAttribute('data-total'));
+    const tilt=l>r?'left':r>l?'right':'level';
+    beam.setAttribute('data-tilt',tilt);
+    beam.style.transform=tilt==='left'?'rotate(-9deg)':tilt==='right'?'rotate(9deg)':'rotate(0deg)';
+  }
+  function choose(value,button){
+    if(locked||finished)return;
+    locked=true;button.classList.add('chosen');
+    pans[1].querySelector('.pan-contents').replaceChildren();
+    const rightValues=items[index].right.concat([value]);
+    const content=pans[1].querySelector('.pan-contents');
+    rightValues.forEach((v,j)=>drawWeight(content,v,266+(j%3)*19,91-Math.floor(j/3)*18,17,16));
+    pans[1].setAttribute('data-total',rightValues.reduce((a,b)=>a+b,0));
+    setTilt();
+    [...optionBox.children].forEach(b=>b.disabled=true);
+    Studio.event('choose',{value:value});
+    Studio.answer({value:value});
+  }
+  Studio.onVerdict(({correct})=>{
+    if(!locked||finished)return;
+    if(!correct){
+      message.textContent=Studio.t('wrong');
+      window.setTimeout(()=>{
+        if(finished)return;
+        pans[1].querySelector('.pan-contents').replaceChildren();
+        items[index].right.forEach((v,j)=>drawWeight(pans[1].querySelector('.pan-contents'),v,266+(j%3)*19,91-Math.floor(j/3)*18,17,16));
+        pans[1].setAttribute('data-total',items[index].right.reduce((a,b)=>a+b,0));
+        setTilt();message.textContent='';locked=false;render();
+      },850);
+      return;
+    }
+    message.textContent=Studio.t('right');
+    beam.classList.add('celebrate');
+    beam.setAttribute('data-tilt','level');
+    beam.style.transform='rotate(0deg)';
+    window.setTimeout(()=>{
+      beam.classList.remove('celebrate');
+      index++;
+      if(index>=items.length){
+        finished=true;optionBox.replaceChildren();message.textContent=Studio.t('done');Studio.done();
+      }else{message.textContent='';locked=false;render();}
+    },1050);
+  });
+  render();
+  Studio.ready();
+})();
+
+</script>

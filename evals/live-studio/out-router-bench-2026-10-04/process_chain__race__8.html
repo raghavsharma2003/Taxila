@@ -1,0 +1,188 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e8;font-family:Arial,sans-serif}
+  #scene{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 50% 12%,#fffdf4 0 22%,#fff3d8 72%,#f8e4bb 100%);color:#70452f}
+  #title{position:absolute;left:16px;top:11px;right:72px;text-align:center;font-size:19px;font-weight:800;letter-spacing:.2px;color:#8a4c2b}
+  #map{position:absolute;inset:0 0 88px 0;width:360px;height:232px;overflow:visible}
+  .arrow{fill:none;stroke:#d99a61;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+  .stage{position:absolute;width:90px;height:52px;border:3px solid #d89a63;border-radius:18px;background:#fffaf0;display:flex;align-items:center;justify-content:center;text-align:center;padding:5px 7px;font-size:12px;font-weight:800;line-height:14px;color:#75452d;box-shadow:0 4px 0 rgba(179,106,60,.16);transition:transform .28s ease,background .28s ease,border-color .28s ease,box-shadow .28s ease}
+  .stage.active{background:#ffe1a7;border-color:#ed8753;box-shadow:0 0 0 6px rgba(244,160,79,.22),0 5px 0 rgba(179,106,60,.2);transform:scale(1.08)}
+  .stage.arrive{animation:arrive .52s ease}
+  @keyframes arrive{0%{transform:scale(.9)}55%{transform:scale(1.16)}100%{transform:scale(1.08)}}
+  #token{fill:#51a9c8;stroke:#fffdf7;stroke-width:3;filter:drop-shadow(0 2px 2px rgba(54,110,130,.28));transition:none}
+  #tokenDot{fill:#d8f5ff}
+  #next{position:absolute;right:14px;top:13px;width:54px;height:54px;border:0;border-radius:18px;background:#ef8754;color:#fffdf6;font-size:27px;font-weight:800;box-shadow:0 4px 0 #c9653e;cursor:pointer;transition:transform .16s ease,box-shadow .16s ease}
+  #next:active{transform:translateY(3px) scale(.94);box-shadow:0 1px 0 #c9653e}
+  #question{position:absolute;left:0;right:0;bottom:0;height:92px;background:rgba(255,250,239,.94);border-top:2px solid #efcf9f;padding-top:4px}
+  #ask{height:26px;padding:0 12px;text-align:center;font-size:12px;font-weight:800;color:#845039;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #feedback{position:absolute;right:12px;top:4px;font-size:11px;font-weight:800;color:#b75b3f}
+  #options{display:flex;gap:8px;padding:4px 8px 0}
+  .option{height:54px;flex:1;min-width:0;border:2px solid #dfad76;border-radius:16px;background:#fffdf6;color:#7b4930;font-size:11px;font-weight:800;line-height:13px;padding:4px;box-shadow:0 3px 0 #e6c292;cursor:pointer;transition:transform .15s ease,background .2s ease,box-shadow .15s ease}
+  .option:active{transform:translateY(2px) scale(.96);box-shadow:0 1px 0 #e6c292}
+  .option.chosen{background:#ffe2ad;animation:choice .35s ease}
+  @keyframes choice{50%{transform:scale(1.06)}}
+</style>
+<div id="scene">
+  <div id="title"></div>
+  <svg id="map" viewBox="0 0 360 232" aria-hidden="true">
+    <defs>
+      <marker id="tip" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+        <path d="M0,0 L9,4.5 L0,9 Z" fill="#d99a61"></path>
+      </marker>
+    </defs>
+    <g id="arrows"></g>
+    <g id="traveller" data-token>
+      <circle id="token" r="11"></circle>
+      <circle id="tokenDot" r="3"></circle>
+    </g>
+  </svg>
+  <button id="next" data-action="next" type="button">›</button>
+  <div id="question">
+    <div id="ask"></div>
+    <div id="feedback"></div>
+    <div id="options"></div>
+  </div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params;
+  var scene=document.getElementById('scene');
+  var title=document.getElementById('title');
+  var arrows=document.getElementById('arrows');
+  var token=document.getElementById('traveller');
+  var next=document.getElementById('next');
+  var ask=document.getElementById('ask');
+  var feedback=document.getElementById('feedback');
+  var options=document.getElementById('options');
+  var stages=p.stages.slice();
+  var positions=[];
+  var boxes=[];
+  var active=0;
+  var moving=false;
+
+  title.textContent=Studio.t('title');
+  ask.textContent=Studio.t('ask')+' '+Studio.t(p.askAfter);
+
+  function place(){
+    var n=stages.length, i;
+    if(p.cycle){
+      for(i=0;i<n;i++){
+        var a=(-Math.PI/2)+(Math.PI*2*i/n);
+        positions.push({x:180+105*Math.cos(a),y:120+75*Math.sin(a)});
+      }
+    }else{
+      for(i=0;i<n;i++){
+        var col=i%3, row=Math.floor(i/3);
+        positions.push({x:70+110*col,y:63+77*row});
+      }
+    }
+  }
+  function lineEnds(a,b){
+    var dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+    var cut=47;
+    return {x1:a.x+dx*cut/d,y1:a.y+dy*cut/d,x2:b.x-dx*cut/d,y2:b.y-dy*cut/d};
+  }
+  function build(){
+    place();
+    stages.forEach(function(key,i){
+      var box=document.createElement('div');
+      box.className='stage';
+      box.setAttribute('data-stage',key);
+      box.style.left=(positions[i].x-45)+'px';
+      box.style.top=(positions[i].y-26)+'px';
+      var label=document.createElement('span');
+      label.setAttribute('data-label',key);
+      label.textContent=Studio.t(key);
+      box.appendChild(label);
+      scene.appendChild(box);
+      boxes.push(box);
+    });
+    var total=p.cycle?stages.length:Math.max(0,stages.length-1);
+    for(var i=0;i<total;i++){
+      var j=(i+1)%stages.length;
+      var e=lineEnds(positions[i],positions[j]);
+      var path=document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('class','arrow');
+      path.setAttribute('data-arrow',stages[i]+'>'+stages[j]);
+      path.setAttribute('marker-end','url(#tip)');
+      path.setAttribute('d','M '+e.x1+' '+e.y1+' L '+e.x2+' '+e.y2);
+      arrows.appendChild(path);
+    }
+  }
+  function setToken(pos){
+    token.setAttribute('transform','translate('+pos.x+' '+pos.y+')');
+  }
+  function setActive(i,arrived){
+    active=i;
+    scene.setAttribute('data-active',stages[active]);
+    boxes.forEach(function(box,k){
+      box.classList.toggle('active',k===active);
+      if(k===active && arrived){
+        box.classList.remove('arrive');
+        void box.offsetWidth;
+        box.classList.add('arrive');
+      }
+    });
+  }
+  function travel(from,to){
+    moving=true;
+    var start=positions[from],end=positions[to],begin=null,duration=620;
+    function frame(now){
+      if(!begin)begin=now;
+      var q=Math.min(1,(now-begin)/duration);
+      var eased=q<.5?2*q*q:1-Math.pow(-2*q+2,2)/2;
+      setToken({x:start.x+(end.x-start.x)*eased,y:start.y+(end.y-start.y)*eased});
+      if(q<1){requestAnimationFrame(frame);}
+      else{
+        setActive(to,true);
+        moving=false;
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+  next.addEventListener('click',function(){
+    if(moving||!stages.length)return;
+    var target=active+1;
+    if(target>=stages.length){
+      if(!p.cycle)return;
+      target=0;
+    }
+    Studio.event('next',{});
+    travel(active,target);
+  });
+  p.options.forEach(function(key){
+    var b=document.createElement('button');
+    b.type='button';
+    b.className='option';
+    b.setAttribute('data-option',key);
+    b.textContent=Studio.t(key);
+    b.addEventListener('click',function(){
+      b.classList.remove('chosen');
+      void b.offsetWidth;
+      b.classList.add('chosen');
+      feedback.textContent='';
+      Studio.event('option',{});
+      Studio.answer(key);
+    });
+    options.appendChild(b);
+  });
+  Studio.onVerdict(function(v){
+    feedback.textContent=Studio.t(v.correct?'right':'wrong');
+    if(v.correct){
+      options.querySelectorAll('.option').forEach(function(b){b.disabled=true;});
+      setTimeout(function(){
+        feedback.textContent=Studio.t('done');
+        Studio.done();
+      },420);
+    }
+  });
+  build();
+  if(stages.length){
+    setToken(positions[0]);
+    setActive(0,false);
+  }
+  Studio.ready();
+}());
+
+</script>

@@ -102,3 +102,13 @@ BUILD-PLAN W1-C acceptance reads "+1 d: the C31 check fires in the opener, and a
   band); G-LAT on the ACA image.
 - **azure.js (W2-F):** route `quotaLane: "background"` calls to `twinFor(deployment)` when O13a/b exist; tag Studio, the
   annotator and consolidation calls `background` (W2-B's explainer fills already are).
+
+## Signals build (2026-10-04) — pending merge from `inbox/signals.json`
+- **open-sig-ms-tier-e-letter (owner, O-5):** written question to Microsoft listing the exact Tier E outputs (verifyDue from
+  timing, paceDown, waitLonger/nudgeAtSec, a knowledge LR within [0.9, 1.1]). E-tier states stay shadow until answered.
+- **open-sig-safety-predicate-gaps (W2-I, `server/director/safety.js`):** ES-3 pipeline misses — "paanch hai, mujhe marna
+  hai" (the self-harm regex needs "marna chahta/chahti"), "main rahun ya na rahun kya farak" (`naRahunIdeation` skips "ya
+  na rahun"), "kisi ko farak nahi padta main hoon ya nahi", "I hate my life". The signal layer abstains correctly whenever
+  the flag is set; these turns reach it with the flag unset unless the classifier catches them. Child-safety floor: fix
+  first.
+- **open-sig-a7-human-fillers:** calibrate A7/A2 (≥ 300 ms, < 1 st) on recorded human filled pauses.

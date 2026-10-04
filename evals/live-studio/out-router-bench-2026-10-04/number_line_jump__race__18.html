@@ -1,0 +1,141 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;color:#29464a;background:#fff8ed}
+#game{width:360px;height:320px;padding:12px;display:flex;flex-direction:column;gap:8px}
+#head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#title{font-size:17px;font-weight:800;color:#315f5a}
+#targetBox{min-height:52px;padding:6px 12px;border-radius:16px;background:#e3f3e9;display:flex;align-items:center;gap:8px}
+#instr{font-size:14px;line-height:1.2;flex:1}
+#target{font-size:22px;font-weight:800;color:#245f50}
+#numberline{width:100%;height:92px;overflow:visible}
+#numberline line.base{stroke:#8baaa0;stroke-width:4;stroke-linecap:round}
+#numberline line.tick{stroke:#75958a;stroke-width:2}
+#numberline text{font:12px system-ui,sans-serif;fill:#54736a;text-anchor:middle}
+#marker{fill:#f08b58;stroke:#fff8ed;stroke-width:3;transition:cx .2s ease}
+#marker.hop{animation:hop .36s ease}
+@keyframes hop{50%{transform:translateY(-12px)}}
+#controls{display:flex;gap:8px}
+button{height:56px;min-width:56px;border:0;border-radius:16px;font:700 16px system-ui,sans-serif;color:#315f5a;background:#dceee6;box-shadow:0 3px 0 #b8d6c9;cursor:pointer;touch-action:manipulation;transition:transform .12s,background .12s}
+button:active{transform:scale(.94)}
+#left,#right{flex:1}
+#check{flex:1;background:#f5b477;color:#573f2a;box-shadow:0 3px 0 #d89156}
+#feedback{height:30px;text-align:center;font-size:16px;font-weight:700;color:#54736a;line-height:30px}
+</style>
+<div id="game">
+  <div id="head"><div id="title"></div></div>
+  <div id="targetBox"><div id="instr"></div><div id="target" data-target></div></div>
+  <svg id="numberline" viewBox="0 0 336 92" aria-hidden="true">
+    <line class="base" x1="12" y1="29" x2="324" y2="29"></line>
+    <g id="ticks"></g>
+    <circle id="marker" data-marker data-value="0" cx="12" cy="29" r="10"></circle>
+  </svg>
+  <div id="controls">
+    <button id="left" data-action="left" type="button"></button>
+    <button id="right" data-action="right" type="button"></button>
+    <button id="check" data-action="check" type="button"></button>
+  </div>
+  <div id="feedback"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const t=Studio.t;
+  const title=document.getElementById("title");
+  const instr=document.getElementById("instr");
+  const targetEl=document.getElementById("target");
+  const marker=document.getElementById("marker");
+  const ticks=document.getElementById("ticks");
+  const feedback=document.getElementById("feedback");
+  const left=document.getElementById("left");
+  const right=document.getElementById("right");
+  const check=document.getElementById("check");
+  title.textContent=t("title");
+  instr.textContent=t("instr");
+  left.textContent=t("left");
+  right.textContent=t("right_btn");
+  check.textContent=t("check");
+  const clean=n=>Number((Math.round(n*1000000)/1000000).toFixed(6));
+  const span=clean(p.max-p.min);
+  const count=Math.round(span/p.step);
+  const values=Array.from({length:count+1},(_,k)=>clean(p.min+k*p.step));
+  const xFor=k=>12+(312*k/count);
+  const format=v=>{
+    if(p.format==="fraction"){
+      const numerator=Math.round(v*p.den);
+      return String(numerator)+"/"+String(p.den);
+    }
+    return String(v);
+  };
+  values.forEach((v,k)=>{
+    const x=xFor(k);
+    const line=document.createElementNS("http://www.w3.org/2000/svg","line");
+    line.setAttribute("class","tick");
+    line.setAttribute("x1",x); line.setAttribute("x2",x);
+    line.setAttribute("y1","22"); line.setAttribute("y2","36");
+    line.setAttribute("data-tick",String(v));
+    ticks.appendChild(line);
+    if(k%p.labelEvery===0){
+      const label=document.createElementNS("http://www.w3.org/2000/svg","text");
+      label.setAttribute("x",x); label.setAttribute("y","58");
+      label.textContent=format(v);
+      ticks.appendChild(label);
+    }
+  });
+  let itemIndex=0;
+  let markerIndex=values.indexOf(clean(p.start));
+  let awaiting=false;
+  let done=false;
+  const itemBox=document.getElementById("targetBox");
+  function showItem(){
+    if(itemIndex>=p.items.length){
+      feedback.textContent=t("done");
+      if(!done){done=true;Studio.done();}
+      return;
+    }
+    const item=p.items[itemIndex];
+    itemBox.setAttribute("data-item",String(item.id));
+    targetEl.textContent=format(clean(item.target));
+    markerIndex=values.indexOf(clean(p.start));
+    updateMarker();
+    feedback.textContent="";
+  }
+  function updateMarker(){
+    const val=values[markerIndex];
+    marker.setAttribute("cx",xFor(markerIndex));
+    marker.setAttribute("data-value",String(val));
+  }
+  left.addEventListener("click",()=>{
+    if(awaiting||done)return;
+    markerIndex=Math.max(0,markerIndex-1); updateMarker();
+    Studio.event("move",{direction:"left"});
+  });
+  right.addEventListener("click",()=>{
+    if(awaiting||done)return;
+    markerIndex=Math.min(count,markerIndex+1); updateMarker();
+    Studio.event("move",{direction:"right"});
+  });
+  check.addEventListener("click",()=>{
+    if(awaiting||done)return;
+    awaiting=true;
+    Studio.answer({value:values[markerIndex]});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!awaiting||done)return;
+    awaiting=false;
+    if(correct){
+      feedback.textContent=t("right");
+      marker.classList.remove("hop");
+      void marker.getBoundingClientRect();
+      marker.classList.add("hop");
+      itemIndex++;
+      window.setTimeout(showItem,380);
+    }else{
+      feedback.textContent=t("wrong");
+    }
+  });
+  showItem();
+  Studio.ready();
+})();
+
+</script>

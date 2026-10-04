@@ -17,10 +17,12 @@ const G = JSON.parse(readFileSync(new URL("../../evals/live-studio/goldens/golde
 const golden = (id) => readFileSync(new URL(`../../evals/live-studio/goldens/${id}.html`, import.meta.url), "utf8");
 const QA = (process.env.STUDIO_QA_URL || "").replace(/\/+$/, "");
 const TOKEN = process.env.STUDIO_QA_TOKEN || "";
+const PARTS = process.env.W2F_PARTS || "AB";      // run one part alone with W2F_PARTS=A or B
 const q = (xs, p) => { const s = xs.slice().sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.floor(p * s.length))]; };
 
 // ───────────────────────────── A. the gate service ─────────────────────────────
-if (!QA) warn("A: STUDIO_QA_URL unset: the studio-qa gate service part was NOT run (deploy it with scripts/deploy-studio-qa.mjs)");
+if (!PARTS.includes("A")) warn("A: skipped (W2F_PARTS)");
+else if (!QA) warn("A: STUDIO_QA_URL unset: the studio-qa gate service part was NOT run (deploy it with scripts/deploy-studio-qa.mjs)");
 else {
   const post = async (job, auth = true) => {
     const t = Date.now();
@@ -56,7 +58,7 @@ else {
 const TOPICS = ["c5-maths-ch02-t01", "c4-maths-ch05-t01", "c6-maths-ch07-t01", "c7-science-ch01-t01"];
 const LINES = ["haan, main ready hoon", "samjhao na", "mujhe nahi pata", "ek example dikhao", "ok", "haan", "theek hai", "samajh nahi aaya"];
 const boards = [];
-for (const topicId of TOPICS) {
+for (const topicId of PARTS.includes("B") ? TOPICS : []) {
   const classLevel = Number(topicId.match(/^c(\d)/)[1]);
   await withTestAccount(async ({ api, child }) => {
     const start = await api("POST", "/api/lesson/start", { childId: child.id, topicId, mode: "text" });
@@ -74,7 +76,7 @@ for (const topicId of TOPICS) {
     await api("POST", "/api/lesson/end", { lessonId: start.lessonId }).catch(() => {});
   }, { child: { classLevel }, tag: "w2f" });
 }
-if (!boards.length) warn(`B: no whiteboard artifact reached the client in ${TOPICS.length} lessons (the slot is wired by W2-E/W2-H; the script arrives on the SSE channel once they land)`);
+if (PARTS.includes("B") && !boards.length) warn(`B: no whiteboard artifact reached the client in ${TOPICS.length} lessons (the slot is wired by W2-E/W2-H; the script arrives on the SSE channel once they land)`);
 for (const b of boards) {
   const n = normalizeScript(b.script, { strict: true });
   const lint = n.script ? lintScript(n.script) : [{ check: "invalid" }];

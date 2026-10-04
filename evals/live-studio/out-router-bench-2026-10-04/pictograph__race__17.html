@@ -1,0 +1,90 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;font-family:system-ui,sans-serif;color:#493b36}
+  .card{width:360px;height:320px;padding:17px 18px 12px;display:flex;flex-direction:column;background:radial-gradient(circle at 94% 5%,#ffe6bf 0 42px,transparent 43px),#fff8ed}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  h1{font-size:20px;line-height:1.15;margin:0;font-weight:800;color:#8a4b45}
+  .key{display:flex;align-items:center;gap:5px;min-height:38px;padding:3px 9px;border-radius:14px;background:#fff0d6;white-space:nowrap;font-size:13px;font-weight:700}
+  .key svg{width:25px;height:25px;flex:none}
+  .ask{margin:8px 0 10px;font-size:16px;font-weight:700}
+  .rows{display:flex;flex-direction:column;gap:9px}
+  .row{width:100%;height:55px;min-height:55px;border:2px solid #efdac5;border-radius:17px;background:#fffdf8;display:grid;grid-template-columns:78px 1fr;align-items:center;padding:0 12px;text-align:left;color:inherit;cursor:pointer;transition:transform .18s,background .18s,border-color .18s,box-shadow .18s}
+  .row:active{transform:scale(.97)}
+  .row:focus-visible{outline:3px solid #b76d55;outline-offset:2px}
+  .row:hover{background:#fff1dc;border-color:#dea887}
+  .row.chosen{background:#ffe9cc;border-color:#d98265;box-shadow:0 3px 0 #edc1a4}
+  .row .name{font-size:16px;font-weight:800}
+  .symbols{display:flex;align-items:center;gap:var(--gap);white-space:nowrap}
+  .symbols svg{width:var(--size);height:var(--size);flex:none;animation:pop .4s both}
+  .feedback{height:29px;margin-top:8px;font-size:15px;font-weight:800;color:#a45a4b}
+  .feedback.good{color:#377c68}
+  @keyframes pop{from{opacity:0;transform:scale(.55) rotate(-15deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+</style>
+<div class="card">
+  <div class="top">
+    <h1 id="title"></h1>
+    <div class="key" data-key><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 4C24 11 34 12 34 22a14 14 0 0 1-28 0C6 12 16 11 20 4Z" fill="#e98770"/><path d="M15 25c3 4 8 5 12 1" fill="none" stroke="#fff7e9" stroke-width="2.5" stroke-linecap="round"/></svg><span id="keytext"></span><span id="keyvalue"></span></div>
+  </div>
+  <div class="ask" id="ask"></div>
+  <div class="rows" id="rows"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+  const p=Studio.params;
+  const $=id=>document.getElementById(id);
+  $('title').textContent=Studio.t('title');
+  $('ask').textContent=Studio.t('ask');
+  $('keytext').textContent=Studio.t('keytext');
+  $('keyvalue').textContent=p.symbolValue;
+  const sample=document.querySelector('[data-key] svg');
+  const max=Math.max(1,...p.rows.map(r=>r.value/p.symbolValue));
+  const gap=5;
+  const size=Math.min(32,(218-(max-1)*gap)/max);
+  const holder=$('rows');
+  let waiting=false,finished=false,selected=null;
+  p.rows.forEach(row=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='row';
+    button.dataset.row=row.key;
+    const name=document.createElement('span');
+    name.className='name';
+    name.textContent=Studio.t(row.key);
+    const symbols=document.createElement('span');
+    symbols.className='symbols';
+    symbols.style.setProperty('--size',size+'px');
+    symbols.style.setProperty('--gap',gap+'px');
+    for(let i=0;i<row.value/p.symbolValue;i++){
+      const icon=sample.cloneNode(true);
+      icon.setAttribute('data-symbol','');
+      icon.style.animationDelay=(i*55)+'ms';
+      symbols.appendChild(icon);
+    }
+    button.append(name,symbols);
+    button.addEventListener('click',()=>{
+      if(waiting||finished)return;
+      waiting=true;selected=button;
+      button.classList.add('chosen');
+      $('feedback').textContent='';
+      Studio.answer(row.key);
+    });
+    holder.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!waiting||finished)return;
+    waiting=false;
+    if(correct){
+      finished=true;
+      $('feedback').className='feedback good';
+      $('feedback').textContent=Studio.t('right')+' '+Studio.t('done');
+      Studio.done();
+    }else{
+      $('feedback').className='feedback';
+      $('feedback').textContent=Studio.t('wrong');
+      selected.classList.remove('chosen');
+    }
+  });
+  Studio.ready();
+
+</script>

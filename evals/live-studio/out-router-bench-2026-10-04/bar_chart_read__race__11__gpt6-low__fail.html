@@ -1,0 +1,97 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;font-family:system-ui,sans-serif;color:#493c35}
+  #card{width:360px;height:320px;padding:12px 10px 8px;background:linear-gradient(160deg,#fff9ef,#ffefd9);overflow:hidden}
+  #title{height:28px;font-size:19px;font-weight:800;text-align:center;color:#654338}
+  #ask{height:34px;margin:2px 8px 0;text-align:center;font-size:15px;font-weight:650;line-height:1.25}
+  svg{display:block;width:340px;height:225px;overflow:visible}
+  .grid{stroke:#e6d7c5;stroke-width:1}
+  .axis{stroke:#ab9380;stroke-width:1.5}
+  .tick,.label,.axisTitle{fill:#69584e;font-family:system-ui,sans-serif}
+  .tick{font-size:11px;text-anchor:end;dominant-baseline:middle}
+  .label{font-size:11px;text-anchor:middle;font-weight:650}
+  .axisTitle{font-size:11px;text-anchor:middle;font-weight:650}
+  .bar{fill:#e89163;rx:8;transform-box:fill-box;transform-origin:center bottom;animation:grow .65s cubic-bezier(.2,.8,.25,1) both}
+  @keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  .column{cursor:pointer}
+  .column:active .bar{filter:brightness(1.12)}
+  .hit{fill:transparent}
+  #feedback{height:28px;text-align:center;font-size:16px;font-weight:750;color:#745041;transition:transform .2s}
+  #feedback.pop{transform:scale(1.08)}
+</style>
+<div id="card">
+  <div id="title"></div>
+  <div id="ask"></div>
+  <svg id="chart" viewBox="0 0 340 225" role="img">
+    <g id="grid"></g>
+    <g id="columns"></g>
+    <text id="axisTitle" class="axisTitle" transform="translate(12 89) rotate(-90)"></text>
+  </svg>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const svgNS='http://www.w3.org/2000/svg';
+  const data=Studio.params.data;
+  const $=id=>document.getElementById(id);
+  const make=(tag,attrs,parent)=>{
+    const el=document.createElementNS(svgNS,tag);
+    for(const [key,value] of Object.entries(attrs)) el.setAttribute(key,String(value));
+    parent.appendChild(el);
+    return el;
+  };
+  $('title').textContent=Studio.t('title');
+  $('ask').textContent=Studio.t('ask');
+  $('axisTitle').textContent=Studio.t('yaxis');
+  const max=Math.max(...data.map(d=>d.value));
+  const magnitude=Math.pow(10,Math.floor(Math.log10(max||1)));
+  const rough=max/6;
+  const step=[1,2,2.5,5,10].map(n=>n*magnitude).find(n=>n>=rough) || magnitude*10;
+  const ceiling=Math.ceil(max/step)*step;
+  const baseline=158, plotHeight=132, left=47, right=336;
+  const grid=$('grid');
+  for(let i=0;i<=Math.round(ceiling/step);i++){
+    const value=Number((i*step).toPrecision(12));
+    const y=baseline-value/ceiling*plotHeight;
+    make('line',{x1:left,y1:y,x2:right,y2:y,class:i===0?'axis':'grid'},grid);
+    const tick=make('text',{x:left-7,y,class:'tick','data-tick':value},grid);
+    tick.textContent=value;
+  }
+  const cols=$('columns'), width=(right-left)/data.length;
+  let locked=false, selected=null, complete=false;
+  data.forEach((d,i)=>{
+    const cx=left+width*(i+.5);
+    const group=make('g',{class:'column','data-column':d.key},cols);
+    const height=d.value/ceiling*plotHeight;
+    make('rect',{x:cx-17,y:baseline-height,width:34,height,class:'bar','data-bar':d.key,'data-value':d.value},group);
+    const label=make('text',{x:cx,y:180,class:'label'},group);
+    label.textContent=Studio.t(d.key);
+    make('rect',{x:left+i*width,y:20,width,height:178,class:'hit'},group);
+    group.addEventListener('click',()=>{
+      if(locked||complete)return;
+      locked=true;
+      selected=d.key;
+      Studio.event('tap',{key:d.key});
+      Studio.answer(d.key);
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!locked||complete)return;
+    const feedback=$('feedback');
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.classList.remove('pop');
+    void feedback.offsetWidth;
+    feedback.classList.add('pop');
+    if(correct){
+      complete=true;
+      $('ask').textContent=Studio.t('done');
+      Studio.done();
+    }else{
+      locked=false;
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

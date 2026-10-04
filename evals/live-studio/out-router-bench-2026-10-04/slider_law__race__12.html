@@ -1,0 +1,90 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;color:#553b32;background:#fff7e9}
+#app{width:360px;height:320px;padding:8px 12px;display:flex;flex-direction:column;gap:5px}
+header{height:28px;display:flex;align-items:center;justify-content:center;border-radius:14px;background:#f6d49c;color:#69442e;font-size:16px;font-weight:800}
+.readout{height:28px;display:flex;align-items:center;justify-content:center;gap:18px;font-size:15px;font-weight:750}
+.visual-wrap{height:48px;display:flex;align-items:center;justify-content:center;border-radius:14px;background:#e8f3e3;overflow:hidden}
+#visual{height:20px;min-width:2px;border-radius:10px;background:#62a884;transition:width .28s cubic-bezier(.2,.8,.2,1);box-shadow:inset 0 -3px #428263,0 3px 8px #42826344}
+.controls{height:54px;display:flex;gap:10px;justify-content:center}
+button{border:0;border-radius:16px;background:#f0a65f;color:#fff;font:800 16px system-ui;min-height:52px;min-width:96px;padding:0 16px;box-shadow:0 4px 0 #d17d43;cursor:pointer;touch-action:manipulation;transition:transform .12s,background .15s}
+button:active{transform:scale(.94) translateY(2px);box-shadow:0 2px 0 #d17d43}
+button:disabled{opacity:.48}
+.question{height:28px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:14px;font-weight:700}
+.options{height:54px;display:flex;gap:8px;justify-content:center}
+.options button{min-width:84px;background:#7b91c9;box-shadow:0 4px 0 #596da3}
+.options button:active{box-shadow:0 2px 0 #596da3}
+.feedback{height:24px;text-align:center;font-size:14px;font-weight:800;color:#428263}
+</style>
+<div id="app">
+  <header id="title"></header>
+  <div class="readout"><span id="xread" data-x=""></span><span id="yread" data-output data-value=""></span></div>
+  <div class="visual-wrap"><div id="visual" data-visual data-dim="w"></div></div>
+  <div class="controls">
+    <button id="dec" data-action="dec"></button>
+    <button id="inc" data-action="inc"></button>
+  </div>
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback"></div>
+</div>
+<script>
+
+(function(){
+  const p=Studio.params, t=Studio.t, xcfg=p.x;
+  let x=xcfg.start, submitted=false, finished=false;
+  const title=document.getElementById("title");
+  const xr=document.getElementById("xread"), yr=document.getElementById("yread");
+  const visual=document.getElementById("visual");
+  const dec=document.getElementById("dec"), inc=document.getElementById("inc");
+  const feedback=document.getElementById("feedback");
+  title.textContent=t("title");
+  dec.textContent=t("less"); inc.textContent=t("more");
+  function fmt(n){return String(Number(n.toPrecision(12)));}
+  function yval(v){return p.law.k*v+p.law.b;}
+  function update(){
+    const y=yval(x), ys=fmt(y);
+    xr.textContent=t("xname")+" "+fmt(x);
+    xr.setAttribute("data-x",fmt(x));
+    yr.textContent=t("yname")+" "+ys;
+    yr.setAttribute("data-value",ys);
+    visual.style.width=(y*p.y.unitsPer)+"px";
+    dec.disabled=x<=xcfg.min; inc.disabled=x>=xcfg.max;
+  }
+  document.getElementById("question").textContent=t("ask")+" "+t("xname")+" = "+fmt(p.ask.x);
+  const options=document.getElementById("options");
+  p.ask.options.forEach(function(value){
+    const b=document.createElement("button");
+    b.type="button"; b.textContent=String(value);
+    b.setAttribute("data-option",String(value));
+    b.addEventListener("click",function(){
+      if(finished)return;
+      submitted=true;
+      feedback.textContent="";
+      Studio.event("answer",{value:value});
+      Studio.answer({value:value});
+    });
+    options.appendChild(b);
+  });
+  dec.addEventListener("click",function(){
+    if(x>xcfg.min){x=Math.max(xcfg.min,x-xcfg.step);update();Studio.event("change",{x:x});}
+  });
+  inc.addEventListener("click",function(){
+    if(x<xcfg.max){x=Math.min(xcfg.max,x+xcfg.step);update();Studio.event("change",{x:x});}
+  });
+  Studio.onVerdict(function(verdict){
+    if(!submitted||finished)return;
+    submitted=false;
+    if(verdict.correct){
+      feedback.textContent=t("right")+" "+t("done");
+      finished=true;
+      Studio.done();
+    }else{
+      feedback.textContent=t("wrong");
+    }
+  });
+  update();
+  Studio.ready();
+})();
+
+</script>

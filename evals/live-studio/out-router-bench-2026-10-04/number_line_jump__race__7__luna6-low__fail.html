@@ -1,0 +1,97 @@
+<style>
+*{box-sizing:border-box}
+#game{width:360px;height:320px;overflow:hidden;background:#fff8eb;color:#3d4c58;font-family:system-ui,sans-serif;padding:12px;display:flex;flex-direction:column;gap:8px}
+#top{height:68px;flex:none;background:#ffe8c5;border-radius:18px;padding:9px 12px;display:flex;flex-direction:column;justify-content:center;gap:2px}
+#title{font-size:18px;font-weight:800;line-height:22px;color:#57433a}
+#instr{font-size:12px;line-height:15px}
+#item{flex:1;min-height:0;background:#fff;border:1px solid #f2dfc6;border-radius:18px;padding:7px 8px;display:flex;flex-direction:column;align-items:center;justify-content:space-between}
+#prompt{font-size:13px;font-weight:650;line-height:18px}
+#target{display:inline-flex;min-width:34px;justify-content:center;color:#b45143;font-size:18px;font-weight:850}
+#linebox{width:100%;height:74px;position:relative;flex:none}
+#line{position:absolute;left:8px;right:8px;top:30px;height:4px;border-radius:4px;background:#83b9a6}
+.tick{position:absolute;top:23px;width:2px;height:18px;background:#58766e;transform:translateX(-50%)}
+.tick-label{position:absolute;top:45px;transform:translateX(-50%);font-size:10px;white-space:nowrap;color:#586b68}
+#marker{position:absolute;top:10px;left:0;width:18px;height:18px;border:3px solid #fff;background:#ef826e;border-radius:50%;box-shadow:0 1px 5px #67443b66;transform:translateX(-50%);transition:left .22s cubic-bezier(.2,.8,.2,1),top .22s}
+#marker.hop{top:2px}
+#feedback{height:18px;line-height:18px;font-size:13px;font-weight:750;color:#477b65}
+#controls{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:8px;width:100%;flex:none}
+button{height:56px;min-width:52px;border:0;border-radius:16px;background:#d9eee4;color:#345c50;font:700 15px system-ui,sans-serif;box-shadow:0 3px 0 #a9cdbb;cursor:pointer;transition:transform .12s,background .12s}
+button:active{transform:scale(.94);background:#c8e5d7}
+#check{background:#f4b66f;color:#533d2e;box-shadow:0 3px 0 #d89954}
+#check:active{background:#efa95b}
+#done{height:100%;display:none;align-items:center;justify-content:center;text-align:center;background:#e1f1e7;border-radius:20px;color:#477b65;font-size:22px;font-weight:850;padding:20px}
+</style>
+<div id="game">
+  <div id="top"><div id="title"></div><div id="instr"></div></div>
+  <div id="item" data-item=""><div id="prompt"><span id="target" data-target></span></div><div id="linebox"><div id="line"></div><div id="marker" data-marker data-value=""></div></div><div id="feedback" aria-live="polite"></div><div id="controls"><button id="left" data-action="left"></button><button id="right" data-action="right"></button><button id="check" data-action="check"></button></div></div>
+  <div id="done"></div>
+</div>
+<script>
+
+(()=>{
+const p=Studio.params, t=Studio.t;
+const $=id=>document.getElementById(id);
+$("title").textContent=t("title");
+$("instr").textContent=t("instr");
+$("left").textContent=t("left");
+$("right").textContent=t("right_btn");
+$("check").textContent=t("check");
+const items=p.items, total=Math.round((p.max-p.min)/p.step);
+const rounded=n=>Math.round(n*1e6)/1e6;
+const valueAt=k=>rounded(p.min+k*p.step);
+function format(v){
+ if(p.format==="integer") return String(Math.round(v));
+ if(p.format==="fraction"){
+  let s=String(v), places=s.includes(".")?s.split(".")[1].length:0, den=Math.pow(10,places), num=Math.round(v*den);
+  let a=Math.abs(num),b=den;
+  while(b){let r=a%b;a=b;b=r}
+  return (num/(a||1))+"/"+(den/(a||1));
+ }
+ return String(v);
+}
+const box=$("linebox"), line=$("line"), marker=$("marker");
+let k=Math.max(0,Math.min(total,Math.round((p.start-p.min)/p.step))), index=0, pending=false, finished=false;
+for(let i=0;i<=total;i++){
+ const v=valueAt(i), x=8+(box.clientWidth-16)*i/total;
+ const tick=document.createElement("div");tick.className="tick";tick.dataset.tick=String(v);tick.style.left=x+"px";line.appendChild(tick);
+ if(i%p.labelEvery===0){
+  const label=document.createElement("div");label.className="tick-label";label.textContent=format(v);label.style.left=x+"px";line.appendChild(label);
+ }
+}
+function place(){
+ const x=8+(box.clientWidth-16)*k/total;
+ marker.style.left=x+"px";
+ marker.dataset.value=String(valueAt(k));
+}
+function showItem(){
+ if(index>=items.length){finished=true;$("item").style.display="none";$("done").style.display="flex";$("done").textContent=t("done");Studio.done();return}
+ const item=items[index];
+ $("item").dataset.item=String(item.id);
+ $("target").textContent=format(item.target);
+ $("feedback").textContent="";
+ k=Math.max(0,Math.min(total,Math.round((p.start-p.min)/p.step)));
+ place();
+}
+$("left").addEventListener("click",()=>{if(pending||finished)return;k=Math.max(0,k-1);place();Studio.event("move",{direction:"left"})});
+$("right").addEventListener("click",()=>{if(pending||finished)return;k=Math.min(total,k+1);place();Studio.event("move",{direction:"right"})});
+$("check").addEventListener("click",()=>{
+ if(pending||finished)return;
+ pending=true;
+ Studio.answer({value:valueAt(k)});
+});
+Studio.onVerdict(({correct})=>{
+ if(finished)return;
+ pending=false;
+ if(correct){
+  $("feedback").textContent=t("right");
+  marker.classList.add("hop");
+  setTimeout(()=>{marker.classList.remove("hop");index++;showItem()},420);
+ }else{
+  $("feedback").textContent=t("wrong");
+ }
+});
+showItem();
+Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,103 @@
+<style>
+*{box-sizing:border-box}
+.stage{width:360px;height:320px;overflow:hidden;background:#fff8eb;color:#4b382b;font-family:system-ui,sans-serif;position:relative;padding:8px 10px 5px}
+h1{font-size:19px;line-height:23px;margin:0;text-align:center;font-weight:800;color:#75462e}
+.ask{font-size:15px;line-height:20px;text-align:center;margin:1px 0 0;color:#715b49}
+.chart-wrap{width:340px;height:210px;position:relative;margin:1px auto 0}
+svg{display:block;width:340px;height:210px;overflow:hidden}
+.grid{stroke:#eadcc7;stroke-width:1}
+.axis{stroke:#987b61;stroke-width:1.5}
+.tick-label{font-size:11px;fill:#715b49;text-anchor:end;dominant-baseline:middle}
+.axis-title{font-size:12px;font-weight:700;fill:#715b49}
+.bar{fill:#efa94e;stroke:#d98736;stroke-width:1.5;transform-box:fill-box;transform-origin:center bottom;animation:grow .7s cubic-bezier(.2,.8,.25,1) both}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.name{font-size:11px;font-weight:700;fill:#594638;text-anchor:middle}
+.targets{position:absolute;inset:0;pointer-events:none}
+.target{position:absolute;top:0;height:210px;min-width:52px;border:0;border-radius:12px;background:transparent;padding:0;pointer-events:auto;cursor:pointer;touch-action:manipulation}
+.target:active{background:#f2bd6540;transform:scale(.96)}
+.target:focus-visible{outline:3px solid #8b5cde;outline-offset:-3px}
+.feedback{height:22px;margin-top:0;text-align:center;font-size:15px;line-height:20px;font-weight:700;color:#75533d}
+.feedback.right{color:#397248}.feedback.wrong{color:#a84b3a}
+</style>
+<div class="stage" id="stage">
+  <h1 id="title"></h1>
+  <div class="ask" id="ask"></div>
+  <div class="chart-wrap" id="chart-wrap">
+    <svg id="chart" viewBox="0 0 340 210" aria-hidden="true"></svg>
+    <div class="targets" id="targets"></div>
+  </div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(function(){
+  const data=Studio.params.data;
+  const t=Studio.t;
+  document.getElementById('title').textContent=t('title');
+  document.getElementById('ask').textContent=t('ask');
+  const svg=document.getElementById('chart');
+  const targets=document.getElementById('targets');
+  const feedback=document.getElementById('feedback');
+  const NS='http://www.w3.org/2000/svg';
+  const max=Math.max.apply(null,data.map(d=>d.value));
+  const raw=max/5;
+  const power=Math.pow(10,Math.floor(Math.log10(raw)));
+  const fraction=raw/power;
+  const step=(fraction<=1?1:fraction<=2?2:fraction<=5?5:10)*power;
+  const top=Math.ceil(max/step)*step;
+  const left=48,right=333,plotTop=24,base=164,plotHeight=base-plotTop;
+  function node(tag,attrs,text){
+    const el=document.createElementNS(NS,tag);
+    Object.keys(attrs||{}).forEach(k=>el.setAttribute(k,attrs[k]));
+    if(text!==undefined)el.textContent=text;
+    return el;
+  }
+  svg.appendChild(node('text',{x:9,y:96,class:'axis-title',transform:'rotate(-90 9 96)','text-anchor':'middle'},t('yaxis')));
+  for(let v=0;v<=top;v+=step){
+    const y=base-(v/top)*plotHeight;
+    svg.appendChild(node('line',{x1:left,y1:y,x2:right,y2:y,class:v===0?'axis':'grid'}));
+    svg.appendChild(node('text',{x:left-7,y:y,class:'tick-label','data-tick':String(v)},String(v)));
+  }
+  const count=data.length;
+  const span=(right-left)/count;
+  data.forEach((d,i)=>{
+    const cx=left+span*(i+.5);
+    const h=(d.value/top)*plotHeight;
+    const rect=node('rect',{x:cx-15,y:base-h,width:30,height:h,rx:6,class:'bar','data-bar':d.key,'data-value':String(d.value)});
+    rect.style.animationDelay=(i*.055)+'s';
+    svg.appendChild(rect);
+    svg.appendChild(node('text',{x:cx,y:184,class:'name'},t(d.key)));
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='target';
+    button.setAttribute('data-column',d.key);
+    button.setAttribute('aria-label',t(d.key));
+    button.style.left=(cx-span/2)+'px';
+    button.style.width=Math.max(52,span)+'px';
+    button.addEventListener('click',function(){
+      if(button.disabled)return;
+      Studio.event('column_tap',{key:d.key});
+      Studio.answer(d.key);
+    });
+    targets.appendChild(button);
+  });
+  let finished=false;
+  Studio.onVerdict(function(result){
+    if(result.correct){
+      feedback.textContent=t('right');
+      feedback.className='feedback right';
+      if(!finished){
+        finished=true;
+        targets.querySelectorAll('button').forEach(b=>b.disabled=true);
+        feedback.textContent=t('done');
+        Studio.done();
+      }
+    }else{
+      feedback.textContent=t('wrong');
+      feedback.className='feedback wrong';
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,90 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ec;font-family:system-ui,sans-serif;color:#563e35}
+  .card{position:relative;width:360px;height:320px;overflow:hidden;border:3px solid #f0dec5;border-radius:24px;background:radial-gradient(circle at 50% 32%,#fffdf7,#fff7e9)}
+  header{height:59px;padding-top:5px;text-align:center}
+  h1{margin:0;font-size:18px;line-height:23px}
+  [data-ask]{margin:0;font-size:16px;line-height:25px;font-weight:650;color:#795347}
+  svg{display:block;width:354px;height:229px}
+  .leader{fill:none;stroke:#bba18b;stroke-width:2;stroke-linecap:round}
+  .name{fill:#59483d;font-size:14px;font-weight:700;dominant-baseline:middle}
+  [data-part]{cursor:pointer;transition:transform .22s,filter .22s;transform-box:fill-box;transform-origin:center}
+  [data-part]:active{transform:scale(.94)}
+  [data-part].glow{filter:drop-shadow(0 0 9px #ffb83b);animation:bloom .7s ease-in-out infinite alternate}
+  @keyframes bloom{to{transform:scale(1.06)}}
+  #feedback{height:24px;text-align:center;font-size:15px;font-weight:750;line-height:23px;color:#795347}
+  .shake{animation:shake .35s ease}
+  @keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+</style>
+<div class="card">
+  <header><h1 id="title"></h1><p data-ask></p></header>
+  <svg viewBox="0 0 354 229" role="img">
+    <path class="leader" d="M91 38 L119 48 M218 77 L226 77 M128 143 L150 143 M273 148 L281 148 M217 207 L232 207"/>
+    <g data-part="petal">
+      <path d="M166 67 C117 68 101 45 119 31 C130 23 147 31 159 43 C148 12 167 5 181 22 C192 35 186 49 177 65 C158 106 125 106 126 85 C127 74 144 68 166 67Z" fill="#f48e99" stroke="#d97082" stroke-width="3"/>
+    </g>
+    <g data-part="stem">
+      <path d="M150 99 Q174 105 200 98 L202 173 Q183 190 149 174 Z" fill="#69ad71" stroke="#4d955e" stroke-width="3"/>
+    </g>
+    <g data-part="leaf">
+      <path d="M195 155 Q219 115 273 119 Q279 163 228 178 Q206 181 195 155Z" fill="#79bd78" stroke="#4d985d" stroke-width="3"/>
+      <path d="M205 157 Q239 140 261 130" fill="none" stroke="#4d985d" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g data-part="root">
+      <path d="M151 173 Q175 181 201 173 L205 187 L226 195 L218 210 L196 204 L207 222 L190 227 L177 209 L163 227 L147 220 L158 202 L136 211 L130 195 L150 186Z" fill="#af805c" stroke="#906343" stroke-width="3" stroke-linejoin="round"/>
+    </g>
+    <g data-part="centre">
+      <circle cx="186" cy="75" r="29" fill="#ffd17a" stroke="#e9ab55" stroke-width="3"/>
+    </g>
+    <text data-label="petal" class="name" x="12" y="38"></text>
+    <text data-label="centre" class="name" x="229" y="77"></text>
+    <text data-label="stem" class="name" x="91" y="143"></text>
+    <text data-label="leaf" class="name" x="284" y="148"></text>
+    <text data-label="root" class="name" x="235" y="207"></text>
+  </svg>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+  const p=Studio.params;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.querySelector('[data-ask]').textContent=Studio.t('ask');
+  document.querySelectorAll('[data-label]').forEach(el=>{
+    const key=el.getAttribute('data-label');
+    if(p.parts.includes(key)) el.textContent=Studio.t(key);
+  });
+  let pending=null,finished=false,busy=false;
+  const feedback=document.getElementById('feedback');
+  document.querySelectorAll('[data-part]').forEach(el=>{
+    const key=el.getAttribute('data-part');
+    if(!p.parts.includes(key)) return;
+    el.addEventListener('click',()=>{
+      if(finished||busy) return;
+      pending=el;
+      busy=true;
+      feedback.textContent='';
+      Studio.answer(key);
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending) return;
+    if(correct){
+      finished=true;
+      pending.classList.add('glow');
+      feedback.textContent=Studio.t('right');
+      setTimeout(()=>{
+        feedback.textContent=Studio.t('done');
+        Studio.done();
+      },650);
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      pending.classList.remove('shake');
+      void pending.getBoundingClientRect();
+      pending.classList.add('shake');
+      pending=null;
+      busy=false;
+    }
+  });
+  Studio.ready();
+
+</script>

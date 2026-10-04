@@ -1,0 +1,85 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#583b32;background:#fff8ed}
+#app{position:relative;width:360px;height:320px;padding:14px 16px;overflow:hidden}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+h1{font-size:19px;line-height:1.15;margin:0;font-weight:800;color:#784833}
+#target{font-size:25px;font-weight:800;color:#c65e3b;background:#ffead5;border-radius:15px;padding:3px 12px;min-width:67px;text-align:center}
+#instr{font-size:14px;line-height:1.25;margin:8px 0 0;color:#826b5a}
+#whole{position:absolute;left:16px;right:16px;top:82px;height:164px;display:flex;align-items:center;justify-content:center}
+#whole svg{width:164px;height:164px;overflow:visible}
+.part{fill:#ffdca8;stroke:#fff8ed;stroke-width:2;cursor:pointer;transform-box:fill-box;transform-origin:center;transition:fill .22s ease,transform .18s ease,filter .2s ease}
+.part[data-shaded="true"]{fill:#f08b56;filter:drop-shadow(0 2px 2px #d7784b55)}
+.part:active,.bar-part:active{transform:scale(.96)}
+.bar-part{stroke:#fff8ed;stroke-width:3;cursor:pointer;transition:fill .22s ease,transform .18s ease}
+.bar-part[data-shaded="false"]{fill:#ffdca8}
+.bar-part[data-shaded="true"]{fill:#f08b56}
+#check{position:absolute;left:16px;right:16px;bottom:12px;width:328px;height:56px;border:0;border-radius:18px;background:#e98453;color:white;font:800 18px system-ui,sans-serif;box-shadow:0 4px 0 #c95f3e;cursor:pointer;transition:transform .15s,box-shadow .15s,background .2s}
+#check:active{transform:translateY(3px) scale(.985);box-shadow:0 1px 0 #c95f3e}
+#message{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;background:#fff8edee;font-size:23px;font-weight:800;color:#784833;opacity:0;pointer-events:none;transition:opacity .22s}
+#message.show{opacity:1}
+#message.pop{animation:pop .45s ease}
+@keyframes pop{50%{transform:scale(1.08)}}
+</style>
+<main id="app">
+  <header><h1 id="title"></h1><div id="target" data-target></div></header>
+  <p id="instr"></p>
+  <div id="whole"></div>
+  <button id="check" data-action="check" type="button"></button>
+  <div id="message"></div>
+</main>
+<script>
+
+(()=>{
+const items=Studio.params.items,picture=Studio.params.picture;
+const title=document.getElementById('title'),instr=document.getElementById('instr'),target=document.querySelector('[data-target]'),whole=document.getElementById('whole'),check=document.querySelector('[data-action="check"]'),message=document.getElementById('message');
+title.textContent=Studio.t('title');instr.textContent=Studio.t('instr');check.textContent=Studio.t('check');
+let index=0,parts=[],busy=false,finished=false;
+function showMessage(text,pop){message.textContent=text;message.classList.toggle('pop',!!pop);message.classList.add('show')}
+function hideMessage(){message.classList.remove('show','pop')}
+function draw(){
+busy=false;hideMessage();
+const item=items[index];document.getElementById('app').setAttribute('data-item',item.id);
+target.textContent=item.n+'/'+item.d;
+whole.replaceChildren();parts=[];
+if(picture==='pizza'){
+const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 200 200');svg.setAttribute('aria-hidden','true');
+for(let i=0;i<item.d;i++){
+const a=-Math.PI/2+i*2*Math.PI/item.d,b=-Math.PI/2+(i+1)*2*Math.PI/item.d,cx=100,cy=100,r=90;
+const x1=cx+r*Math.cos(a),y1=cy+r*Math.sin(a),x2=cx+r*Math.cos(b),y2=cy+r*Math.sin(b);
+const path=document.createElementNS(svg.namespaceURI,'path');
+path.setAttribute('d',`M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${item.d>2?0:1} 1 ${x2} ${y2} Z`);
+path.setAttribute('class','part');path.setAttribute('data-part',i);path.setAttribute('data-shaded','false');
+path.addEventListener('click',()=>toggle(path));svg.append(path);parts.push(path);
+}
+whole.append(svg);
+}else{
+const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 320 100');svg.setAttribute('aria-hidden','true');
+for(let i=0;i<item.d;i++){
+const rect=document.createElementNS(svg.namespaceURI,'rect');
+rect.setAttribute('x',i*320/item.d);rect.setAttribute('y',23);rect.setAttribute('width',320/item.d);rect.setAttribute('height',54);rect.setAttribute('rx',item.d===1?10:0);
+rect.setAttribute('class','bar-part');rect.setAttribute('data-part',i);rect.setAttribute('data-shaded','false');
+rect.addEventListener('click',()=>toggle(rect));svg.append(rect);parts.push(rect);
+}
+whole.append(svg);
+}
+}
+function toggle(part){if(busy||finished)return;part.setAttribute('data-shaded',part.getAttribute('data-shaded')==='true'?'false':'true');part.classList.remove('tap');void part.getBoundingClientRect();part.classList.add('tap')}
+check.addEventListener('click',()=>{
+if(busy||finished)return;
+busy=true;
+const n=parts.filter(p=>p.getAttribute('data-shaded')==='true').length;
+Studio.answer({n,d:items[index].d});
+});
+Studio.onVerdict(({correct})=>{
+if(finished)return;
+if(correct){
+showMessage(Studio.t('right'),true);
+setTimeout(()=>{index++;if(index>=items.length){finished=true;showMessage(Studio.t('done'),true);Studio.done()}else draw()},850);
+}else{busy=false;showMessage(Studio.t('wrong'),false);setTimeout(hideMessage,900)}
+});
+draw();Studio.ready();
+})();
+
+</script>

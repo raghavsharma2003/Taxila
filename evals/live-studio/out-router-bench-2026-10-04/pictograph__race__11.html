@@ -1,0 +1,116 @@
+<style>
+*{box-sizing:border-box}
+body{width:360px;height:320px;margin:0;overflow:hidden;font-family:system-ui,sans-serif;color:#493b32;background:#fff8ed}
+.card{width:100%;height:100%;padding:12px 14px;background:radial-gradient(ellipse at 85% 4%,#ffedcc 0,transparent 42%),#fff8ed;display:flex;flex-direction:column;gap:7px}
+h1{font-size:20px;line-height:24px;margin:0;color:#754632}
+.ask{font-size:14px;line-height:18px;margin:0;color:#58483c}
+.key{height:52px;flex:none;display:flex;align-items:center;gap:8px;padding:5px 10px;border:1px solid #ead7bc;border-radius:15px;background:#fffdf8;font-size:13px}
+.key-icon{width:30px;height:30px;flex:none}
+.rows{display:flex;flex-direction:column;gap:4px}
+.row{width:100%;min-height:52px;border:1px solid #ead7bc;border-radius:15px;background:#fffdf8;display:grid;grid-template-columns:74px 1fr;align-items:center;padding:3px 9px;text-align:left;color:inherit;cursor:pointer;transition:transform .16s,background .18s,border-color .18s,box-shadow .18s}
+.row:active{transform:scale(.98)}
+.row:hover{background:#fff1d8}
+.row.selected{border-color:#d28b4b;box-shadow:0 0 0 2px #f6d9b4}
+.row:disabled{cursor:default}
+.name{font-size:14px;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.symbols{display:flex;align-items:center;gap:5px;min-width:0}
+.symbol{display:block;width:30px;height:30px;flex:none}
+.feedback{min-height:22px;margin:0;text-align:center;font-size:14px;font-weight:650;color:#754632}
+.feedback.good{color:#38745a;animation:pop .35s ease-out}
+.feedback.bad{color:#a64c3d;animation:pop .35s ease-out}
+@keyframes pop{50%{transform:scale(1.06)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+<main class="card">
+  <h1 id="title"></h1>
+  <p class="ask" id="ask"></p>
+  <div class="key" id="key" data-key="">
+    <svg class="key-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3.5c-2.4 0-3.8 2-5 3.7-1.7 2.5-5.1 6.5-5.1 11.1a10.1 10.1 0 0 0 20.2 0c0-4.6-3.4-8.6-5.1-11.1-1.2-1.7-2.6-3.7-5-3.7Z" fill="#efb45f" stroke="#a96c39" stroke-width="1.5"/><path d="M11 20c.5 2.5 2.2 3.8 4.1 4.3" fill="none" stroke="#fff0cc" stroke-linecap="round" stroke-width="2"/></svg>
+    <span id="keytext"></span>
+  </div>
+  <section class="rows" id="rows"></section>
+  <p class="feedback" id="feedback" aria-live="polite"></p>
+</main>
+<script>
+
+(function(){
+  const p=Studio.params;
+  const words={
+    title:Studio.t("title"),
+    ask:Studio.t("ask"),
+    keytext:Studio.t("keytext"),
+    right:Studio.t("right"),
+    wrong:Studio.t("wrong"),
+    done:Studio.t("done")
+  };
+  document.getElementById("title").textContent=words.title;
+  document.getElementById("ask").textContent=words.ask;
+  document.getElementById("keytext").textContent=words.keytext+" "+p.symbolValue;
+  document.getElementById("key").dataset.key=String(p.symbolValue);
+  const rows=document.getElementById("rows");
+  const feedback=document.getElementById("feedback");
+  let chosen=null, finished=false;
+  function makeSymbol(){
+    const s=document.createElementNS("http://www.w3.org/2000/svg","svg");
+    s.setAttribute("viewBox","0 0 32 32");
+    s.setAttribute("aria-hidden","true");
+    s.classList.add("symbol");
+    const path=document.createElementNS("http://www.w3.org/2000/svg","path");
+    path.setAttribute("d","M16 3.5c-2.4 0-3.8 2-5 3.7-1.7 2.5-5.1 6.5-5.1 11.1a10.1 10.1 0 0 0 20.2 0c0-4.6-3.4-8.6-5.1-11.1-1.2-1.7-2.6-3.7-5-3.7Z");
+    path.setAttribute("fill","#efb45f");
+    path.setAttribute("stroke","#a96c39");
+    path.setAttribute("stroke-width","1.5");
+    s.appendChild(path);
+    const shine=document.createElementNS("http://www.w3.org/2000/svg","path");
+    shine.setAttribute("d","M11 20c.5 2.5 2.2 3.8 4.1 4.3");
+    shine.setAttribute("fill","none");
+    shine.setAttribute("stroke","#fff0cc");
+    shine.setAttribute("stroke-linecap","round");
+    shine.setAttribute("stroke-width","2");
+    s.appendChild(shine);
+    return s;
+  }
+  p.rows.forEach(function(item){
+    const row=document.createElement("button");
+    row.type="button";
+    row.className="row";
+    row.dataset.row=item.key;
+    const name=document.createElement("span");
+    name.className="name";
+    name.textContent=Studio.t(item.key);
+    const symbols=document.createElement("span");
+    symbols.className="symbols";
+    for(let i=0;i<item.value/p.symbolValue;i++){
+      const icon=makeSymbol();
+      icon.setAttribute("data-symbol","");
+      symbols.appendChild(icon);
+    }
+    row.append(name,symbols);
+    row.addEventListener("click",function(){
+      if(finished||row.disabled)return;
+      chosen=item.key;
+      rows.querySelectorAll(".row").forEach(function(r){r.classList.toggle("selected",r===row);r.disabled=true});
+      feedback.textContent="";
+      feedback.className="feedback";
+      Studio.event("row_tap",{key:item.key});
+      Studio.answer(item.key);
+    });
+    rows.appendChild(row);
+  });
+  Studio.onVerdict(function(result){
+    if(finished||chosen===null)return;
+    feedback.textContent=result.correct?words.right:words.wrong;
+    feedback.className="feedback "+(result.correct?"good":"bad");
+    if(result.correct){
+      finished=true;
+      feedback.textContent=words.done;
+      Studio.done();
+    }else{
+      rows.querySelectorAll(".row").forEach(function(r){r.disabled=false;r.classList.remove("selected")});
+      chosen=null;
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

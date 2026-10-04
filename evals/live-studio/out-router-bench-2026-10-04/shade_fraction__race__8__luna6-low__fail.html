@@ -1,0 +1,129 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#49382d;background:#fff8eb}
+.stage{width:360px;height:320px;padding:12px 16px;display:flex;flex-direction:column;align-items:center;gap:6px;overflow:hidden}
+h1{font-size:18px;line-height:22px;margin:0;color:#704b35;font-weight:800}
+.instr{font-size:13px;line-height:17px;text-align:center;margin:0;color:#725d4b}
+.card{width:100%;height:194px;flex:none;border-radius:22px;background:#fff;box-shadow:0 3px 0 #f0dfc8;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.target{position:absolute;z-index:1;top:8px;left:0;right:0;text-align:center;font-size:24px;font-weight:800;color:#a44e35;letter-spacing:1px;pointer-events:none}
+svg.whole{width:160px;height:160px;flex:none;margin-top:12px;overflow:hidden}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:fill .18s ease,transform .14s ease,filter .18s ease}
+.part:active{transform:scale(.96)}
+.part.shaded{filter:drop-shadow(0 2px 2px #d69a55)}
+svg.whole.barwhole{width:270px;height:74px;margin-top:16px}
+.barpart{cursor:pointer;transition:fill .18s ease,transform .14s ease}
+.barpart:active{transform:scale(.97)}
+.feedback{height:22px;flex:none;font-weight:700;font-size:14px;color:#567d4b;text-align:center}
+.feedback.wrong{color:#aa594b}
+button{border:0;border-radius:17px;width:100%;height:56px;min-height:56px;flex:none;background:#ef955c;color:#fff;font:800 18px system-ui,sans-serif;box-shadow:0 4px 0 #d87948;cursor:pointer;transition:transform .14s ease,background .2s ease}
+button:active{transform:translateY(2px) scale(.98);box-shadow:0 2px 0 #d87948}
+button:disabled{opacity:.75}
+.burst{animation:bounce .42s ease}
+@keyframes bounce{50%{transform:scale(1.06)}}
+</style>
+<main class="stage">
+  <h1 id="title"></h1>
+  <p class="instr" id="instr"></p>
+  <section class="card" id="item" data-item="">
+    <div class="target" data-target></div>
+    <svg class="whole" id="whole" viewBox="0 0 200 200" aria-hidden="true"></svg>
+  </section>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+  <button id="check" data-action="check" type="button"></button>
+</main>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const words={};
+  ["title","instr","check","right","wrong","done","hint"].forEach(k=>words[k]=Studio.t(k));
+  const title=document.getElementById("title"),instr=document.getElementById("instr");
+  const card=document.getElementById("item"),target=document.querySelector("[data-target]");
+  const svg=document.getElementById("whole"),feedback=document.getElementById("feedback");
+  const check=document.getElementById("check");
+  title.textContent=words.title;instr.textContent=words.instr;check.textContent=words.check;
+  let index=0,busy=false,completed=false;
+  const ns="http://www.w3.org/2000/svg";
+  function make(tag,attrs){
+    const el=document.createElementNS(ns,tag);
+    Object.keys(attrs).forEach(k=>el.setAttribute(k,attrs[k]));
+    return el;
+  }
+  function draw(){
+    const item=p.items[index];
+    busy=false;feedback.textContent="";feedback.className="feedback";
+    card.dataset.item=item.id;target.textContent=item.n+"/"+item.d;
+    svg.replaceChildren();svg.setAttribute("viewBox","0 0 200 200");svg.classList.remove("barwhole");
+    if(p.picture==="pizza"){
+      for(let i=0;i<item.d;i++){
+        const span=2*Math.PI/item.d;
+        const a=i*span-Math.PI/2,b=(i+1)*span-Math.PI/2;
+        const r=90,c=100;
+        const x1=c+r*Math.cos(a),y1=c+r*Math.sin(a);
+        const x2=c+r*Math.cos(b),y2=c+r*Math.sin(b);
+        const large=span>Math.PI?1:0;
+        const path=make("path",{
+          d:"M 100 100 L "+x1+" "+y1+" A 90 90 0 "+large+" 1 "+x2+" "+y2+" Z",
+          fill:"#f5d9a8",stroke:"#fff8eb","stroke-width":"2",
+          "data-part":i,"data-shaded":"false",class:"part"
+        });
+        path.addEventListener("click",()=>toggle(path));
+        svg.appendChild(path);
+      }
+      svg.appendChild(make("circle",{cx:100,cy:100,r:91,fill:"none",stroke:"#c97643","stroke-width":"2","pointer-events":"none"}));
+    }else{
+      svg.classList.add("barwhole");svg.setAttribute("viewBox","0 0 270 74");
+      const gap=3,w=270/item.d;
+      for(let i=0;i<item.d;i++){
+        const rect=make("rect",{
+          x:i*w+gap/2,y:10,width:w-gap,height:54,rx:6,
+          fill:"#f5d9a8",stroke:"#fff","stroke-width":"2",
+          "data-part":i,"data-shaded":"false",class:"barpart"
+        });
+        rect.addEventListener("click",()=>toggle(rect));
+        svg.appendChild(rect);
+      }
+    }
+    check.disabled=false;
+  }
+  function toggle(el){
+    if(busy||completed)return;
+    const shaded=el.getAttribute("data-shaded")==="true";
+    el.setAttribute("data-shaded",String(!shaded));
+    el.setAttribute("fill",shaded?"#f5d9a8":"#ef955c");
+    el.classList.toggle("shaded",!shaded);
+    Studio.event("part_tap",{index:Number(el.getAttribute("data-part"))});
+  }
+  check.addEventListener("click",()=>{
+    if(busy||completed)return;
+    busy=true;check.disabled=true;
+    const parts=[...svg.querySelectorAll("[data-part]")];
+    const n=parts.filter(el=>el.getAttribute("data-shaded")==="true").length;
+    Studio.event("check",{count:n});
+    Studio.answer({n:n,d:p.items[index].d});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(completed)return;
+    if(correct){
+      feedback.textContent=words.right;feedback.className="feedback burst";
+      Studio.event("verdict",{result:"correct"});
+      window.setTimeout(()=>{
+        index++;
+        if(index<p.items.length)draw();
+        else{
+          completed=true;title.textContent=words.done;instr.textContent="";
+          card.hidden=true;feedback.textContent=words.done;check.hidden=true;
+          Studio.done();
+        }
+      },850);
+    }else{
+      busy=false;check.disabled=false;feedback.textContent=words.wrong;
+      feedback.className="feedback wrong";
+      Studio.event("verdict",{result:"wrong"});
+    }
+  });
+  draw();Studio.ready();
+})();
+
+</script>

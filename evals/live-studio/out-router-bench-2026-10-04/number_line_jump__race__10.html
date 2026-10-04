@@ -1,0 +1,125 @@
+<style>
+*{box-sizing:border-box}
+#app{width:360px;height:320px;overflow:hidden;position:relative;background:#fff8ed;color:#493c58;font-family:system-ui,sans-serif;padding:12px 16px}
+h1{font-size:18px;line-height:22px;margin:0;color:#5b4774}
+#instr{font-size:13px;line-height:17px;margin:3px 0 8px;color:#786b81}
+#item{height:55px;border-radius:15px;background:#f1e8fb;display:flex;align-items:center;justify-content:space-between;padding:0 14px}
+#target{font-size:25px;font-weight:750;color:#5b4774}
+#feedback{font-size:14px;font-weight:650;color:#6b5879}
+#line{height:84px;position:relative;margin:9px 0 4px}
+#track{position:absolute;left:8px;right:8px;top:30px;height:5px;border-radius:4px;background:#d8c6ad}
+.tick{position:absolute;top:24px;width:2px;height:18px;background:#8c7c8d;transform:translateX(-50%);z-index:1}
+.tick.labelled{height:24px;top:21px;background:#66536e}
+.tick-label{position:absolute;top:48px;transform:translateX(-50%);font-size:11px;line-height:14px;color:#655a69;white-space:nowrap}
+#marker{position:absolute;top:13px;width:28px;height:28px;border:3px solid white;border-radius:50%;background:#ec8b62;box-shadow:0 2px 6px #75576b66;transform:translateX(-50%);z-index:2;transition:left .2s ease,top .2s ease}
+#marker.hop{top:0}
+#controls{display:flex;gap:10px;justify-content:center}
+button{border:0;border-radius:16px;background:#e6d8f2;color:#503d66;font:700 15px system-ui,sans-serif;min-width:76px;height:56px;padding:0 14px;touch-action:manipulation;transition:transform .12s,background .12s}
+button:active{transform:scale(.94);background:#d4bee8}
+#check{background:#f0a276;color:#fff}
+#check:active{background:#df895f}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <div id="instr"></div>
+  <div id="item" data-item="">
+    <span id="target" data-target=""></span>
+    <span id="feedback"></span>
+  </div>
+  <div id="line"><div id="track"></div><div id="ticks"></div><div id="marker" data-marker data-value=""></div></div>
+  <div id="controls">
+    <button id="left" data-action="left" type="button"></button>
+    <button id="right" data-action="right" type="button"></button>
+    <button id="check" data-action="check" type="button"></button>
+  </div>
+</div>
+<script>
+
+(()=>{
+const p=Studio.params;
+const $=id=>document.getElementById(id);
+$("title").textContent=Studio.t("title");
+$("instr").textContent=Studio.t("instr");
+$("left").textContent=Studio.t("left");
+$("right").textContent=Studio.t("right_btn");
+$("check").textContent=Studio.t("check");
+const round=v=>Math.round(v*1000000)/1000000;
+const count=Math.round((p.max-p.min)/p.step);
+const valueAt=k=>round(p.min+k*p.step);
+const format=v=>p.format==="fraction"?`${Math.round(v*p.den)}/${p.den}`:String(round(v));
+const startIndex=Math.max(0,Math.min(count,Math.round((p.start-p.min)/p.step)));
+const lineLeft=8,lineWidth=328;
+for(let k=0;k<=count;k++){
+ const v=valueAt(k),x=lineLeft+lineWidth*k/count;
+ const tick=document.createElement("div");
+ tick.className="tick"+(k%p.labelEvery===0?" labelled":"");
+ tick.dataset.tick=String(v);
+ tick.style.left=x+"px";
+ $("ticks").appendChild(tick);
+ if(k%p.labelEvery===0){
+  const label=document.createElement("div");
+  label.className="tick-label";
+  label.textContent=format(v);
+  label.style.left=x+"px";
+  $("ticks").appendChild(label);
+ }
+}
+let itemIndex=0,markerIndex=startIndex,awaiting=false,finished=false;
+const place=()=>{
+ const v=valueAt(markerIndex);
+ $("marker").dataset.value=String(v);
+ $("marker").style.left=(lineLeft+lineWidth*markerIndex/count)+"px";
+};
+const showItem=()=>{
+ if(itemIndex>=p.items.length){
+  finished=true;
+  $("item").removeAttribute("data-item");
+  $("target").textContent=Studio.t("done");
+  $("target").dataset.target="";
+  $("feedback").textContent="";
+  $("controls").style.display="none";
+  Studio.done();
+  return;
+ }
+ const item=p.items[itemIndex];
+ $("item").dataset.item=item.id;
+ $("target").dataset.target=String(item.target);
+ $("target").textContent=format(item.target);
+ $("feedback").textContent="";
+ markerIndex=startIndex;
+ place();
+};
+const move=delta=>{
+ if(awaiting||finished)return;
+ markerIndex=Math.max(0,Math.min(count,markerIndex+delta));
+ place();
+ Studio.event("move",{value:valueAt(markerIndex)});
+};
+$("left").addEventListener("click",()=>move(-1));
+$("right").addEventListener("click",()=>move(1));
+$("check").addEventListener("click",()=>{
+ if(awaiting||finished)return;
+ awaiting=true;
+ Studio.answer({value:valueAt(markerIndex)});
+});
+Studio.onVerdict(({correct})=>{
+ if(finished)return;
+ if(correct){
+  $("feedback").textContent=Studio.t("right");
+  $("marker").classList.add("hop");
+  setTimeout(()=>{
+   $("marker").classList.remove("hop");
+   itemIndex++;
+   awaiting=false;
+   showItem();
+  },360);
+ }else{
+  $("feedback").textContent=Studio.t("wrong");
+  awaiting=false;
+ }
+});
+showItem();
+Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,94 @@
+<style>
+  *{box-sizing:border-box}
+  #activity{width:360px;height:320px;overflow:hidden;background:#fff7eb;color:#594836;font-family:system-ui,sans-serif;display:flex;flex-direction:column}
+  .heading{height:42px;display:flex;align-items:center;padding:0 16px;font-size:19px;font-weight:750;color:#80543d}
+  svg{display:block;width:360px;height:164px;flex:none}
+  .stage rect{fill:#fffdf7;stroke:#dfb992;stroke-width:2;transition:fill .3s,stroke .3s,filter .3s}
+  .stage.active rect{fill:#ffe4ac;stroke:#e99456;filter:drop-shadow(0 0 7px #f5b958)}
+  .stage text{fill:#644834;font-size:11px;font-weight:700;text-anchor:middle;dominant-baseline:middle}
+  .arrow{fill:none;stroke:#bc9579;stroke-width:3;stroke-linecap:round}
+  .journey{height:54px;padding:1px 10px 1px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  #prompt{font-size:14px;font-weight:650;line-height:1.2;min-width:0}
+  button{border:0;border-radius:16px;font:700 14px system-ui,sans-serif;cursor:pointer;transition:transform .16s,background .2s;touch-action:manipulation}
+  button:active{transform:scale(.92)}
+  button:disabled{opacity:.55}
+  #next{height:52px;min-width:72px;padding:0 9px;background:#e98e64;color:#fff;flex:none}
+  .choices{height:60px;padding:3px 8px;display:flex;gap:6px}
+  .choices button{height:54px;min-width:0;flex:1;background:#dcebdc;color:#36594e;padding:2px;font-size:12px;overflow-wrap:anywhere}
+  .choices button:focus-visible,#next:focus-visible{outline:3px solid #7752a0;outline-offset:2px}
+  #token{fill:#57aebb;stroke:#fff;stroke-width:3;filter:drop-shadow(0 2px 2px #837361)}
+</style>
+<div id="activity">
+  <div class="heading" id="title"></div>
+  <svg id="scene" viewBox="0 0 360 164" aria-hidden="true">
+    <defs><marker id="tip" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1 L7 4 L1 7" fill="none" stroke="#bc9579" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+    <g id="arrows"></g><g id="stages"></g>
+    <circle id="token" data-token r="9" cx="180" cy="82"></circle>
+  </svg>
+  <div class="journey"><div id="prompt"></div><button id="next" data-action="next"></button></div>
+  <div class="choices" id="choices"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, keys=p.stages, root=document.getElementById('activity');
+  const svgNS='http://www.w3.org/2000/svg';
+  const make=(tag,attrs,parent)=>{const e=document.createElementNS(svgNS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);parent.appendChild(e);return e};
+  const n=keys.length, positions=keys.map((_,i)=>{
+    const a=(-135+i*360/n)*Math.PI/180;
+    return {x:180+105*Math.cos(a),y:82+48*Math.sin(a)};
+  });
+  const arrows=document.getElementById('arrows'), stages=document.getElementById('stages');
+  const paths=[];
+  const count=p.cycle?n:n-1;
+  for(let i=0;i<count;i++){
+    const j=(i+1)%n,a=positions[i],b=positions[j],dx=b.x-a.x,dy=b.y-a.y;
+    const trim=Math.min(Math.abs(dx)>0?45/Math.abs(dx):Infinity,Math.abs(dy)>0?26/Math.abs(dy):Infinity);
+    const start={x:a.x+dx*trim,y:a.y+dy*trim},end={x:b.x-dx*trim,y:b.y-dy*trim};
+    const path=make('path',{d:`M${start.x} ${start.y} L${end.x} ${end.y}`,class:'arrow','marker-end':'url(#tip)','data-arrow':keys[i]+'>'+keys[j]},arrows);
+    paths.push(path);
+  }
+  const cards=keys.map((key,i)=>{
+    const {x,y}=positions[i],g=make('g',{'class':'stage','data-stage':key},stages);
+    make('rect',{x:x-45,y:y-25,width:90,height:50,rx:17},g);
+    const text=make('text',{x,y,'data-label':key},g);text.textContent=Studio.t(key);
+    return g;
+  });
+  const token=document.getElementById('token'),prompt=document.getElementById('prompt');
+  document.getElementById('title').textContent=Studio.t('title');
+  const next=document.getElementById('next');next.textContent=Studio.t('next');
+  prompt.textContent=Studio.t('ask')+' '+Studio.t(p.askAfter);
+  const choices=document.getElementById('choices');
+  p.options.forEach(key=>{
+    const b=document.createElement('button');b.dataset.option=key;b.textContent=Studio.t(key);
+    b.addEventListener('click',()=>Studio.answer(key));choices.appendChild(b);
+  });
+  let active=0,moving=false,finished=false;
+  function activate(i){active=i;root.dataset.active=keys[i];cards.forEach((c,k)=>c.classList.toggle('active',k===i));}
+  activate(0);token.setAttribute('cx',positions[0].x);token.setAttribute('cy',positions[0].y);
+  next.addEventListener('click',()=>{
+    if(moving||finished||(!p.cycle&&active===n-1))return;
+    const from=active,to=(from+1)%n,path=paths[from];
+    if(!path)return;
+    moving=true;next.disabled=true;Studio.event('next',{stage:keys[to]});
+    const length=path.getTotalLength(),start=performance.now();
+    function frame(now){
+      const t=Math.min(1,(now-start)/650),ease=t*t*(3-2*t),point=path.getPointAtLength(length*ease);
+      token.setAttribute('cx',point.x);token.setAttribute('cy',point.y);
+      if(t<1)requestAnimationFrame(frame);
+      else{
+        token.setAttribute('cx',positions[to].x);token.setAttribute('cy',positions[to].y);
+        activate(to);moving=false;next.disabled=false;
+      }
+    }
+    requestAnimationFrame(frame);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(finished)return;
+    prompt.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){finished=true;next.disabled=true;Studio.done();}
+  });
+  Studio.ready();
+})();
+
+</script>

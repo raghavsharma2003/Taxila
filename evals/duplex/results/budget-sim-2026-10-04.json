@@ -1,0 +1,184 @@
+{
+  "id": "M-D1",
+  "date": "2026-10-04",
+  "method": "Monte Carlo composition of measured stage distributions (see header); n=200000 draws per scenario; seed 20261004",
+  "calibration": {
+    "measuredTodayFirstSound": {
+      "p50": 3244,
+      "p90": 4640,
+      "n": 48
+    },
+    "simulatedToday": {
+      "p50": 3237,
+      "p90": 4640
+    }
+  },
+  "directorShape": {
+    "n": 48,
+    "classifyMs": {
+      "p50": 1006,
+      "p90": 1393
+    },
+    "replyAfterPlanMs": {
+      "p50": 480,
+      "p90": 1617
+    },
+    "storeBeforeReturnMs": {
+      "p50": 63,
+      "p90": 83
+    }
+  },
+  "assumptions": {
+    "clientCommit": "[E] LN(40,90)",
+    "indiaRtt": "[E] LN(60,120)",
+    "chnCiTts": "[E] U(0,60)",
+    "fastServer": "[E] U(55,70)",
+    "storeAfterAudio": "[E] design change, uses measured store step",
+    "independence": "[E]"
+  },
+  "scenarios": {
+    "A today eastus2 (calibration)": {
+      "sound": {
+        "p50": 3237,
+        "p90": 4640
+      },
+      "content": {
+        "p50": 3237,
+        "p90": 4640
+      },
+      "shareSoundLe600": 0,
+      "shareSoundLe1000": 0,
+      "shareSoundLe1600": 0
+    },
+    "B India app today (900 ms server VAD, MAI, Director, DragonHD)": {
+      "sound": {
+        "p50": 3072,
+        "p90": 3535
+      },
+      "content": {
+        "p50": 3072,
+        "p90": 3535
+      },
+      "shareSoundLe600": 0,
+      "shareSoundLe1000": 0,
+      "shareSoundLe1600": 0
+    },
+    "C B + 500 ms candidate, commit at candidate (closed answer)": {
+      "sound": {
+        "p50": 2675,
+        "p90": 3135
+      },
+      "content": {
+        "p50": 2675,
+        "p90": 3135
+      },
+      "shareSoundLe600": 0,
+      "shareSoundLe1000": 0,
+      "shareSoundLe1600": 0
+    },
+    "C2 C + store moved after first audio": {
+      "sound": {
+        "p50": 2609,
+        "p90": 3070
+      },
+      "content": {
+        "p50": 2609,
+        "p90": 3070
+      },
+      "shareSoundLe600": 0,
+      "shareSoundLe1000": 0,
+      "shareSoundLe1600": 0
+    },
+    "C3 C2 + client-decided commit (on-device floor, manual STT commit)": {
+      "sound": {
+        "p50": 2486,
+        "p90": 2949
+      },
+      "content": {
+        "p50": 2486,
+        "p90": 2949
+      },
+      "shareSoundLe600": 0,
+      "shareSoundLe1000": 0,
+      "shareSoundLe1600": 0
+    },
+    "P C3 + uptake prelude (child's token, verdict-neutral) as first sound": {
+      "sound": {
+        "p50": 1018,
+        "p90": 1101
+      },
+      "content": {
+        "p50": 2488,
+        "p90": 2947
+      },
+      "shareSoundLe600": 0,
+      "shareSoundLe1000": 0.375,
+      "shareSoundLe1600": 1
+    },
+    "D C3 + pre-answer drafts (code-graded closed answer; body drafted during wait time I, TTS at commit)": {
+      "sound": {
+        "p50": 1114,
+        "p90": 1212
+      },
+      "content": {
+        "p50": 1114,
+        "p90": 1212
+      },
+      "shareSoundLe600": 0,
+      "shareSoundLe1000": 0.019,
+      "shareSoundLe1600": 1
+    },
+    "E D + body audio pre-synthesised and cached on the device": {
+      "sound": {
+        "p50": 849,
+        "p90": 928
+      },
+      "content": {
+        "p50": 849,
+        "p90": 928
+      },
+      "shareSoundLe600": 0,
+      "shareSoundLe1000": 0.98,
+      "shareSoundLe1600": 1
+    },
+    "F E with a 300 ms candidate (needs a predictive scorer validated on children, X1/E-C1)": {
+      "sound": {
+        "p50": 649,
+        "p90": 727
+      },
+      "content": {
+        "p50": 649,
+        "p90": 727
+      },
+      "shareSoundLe600": 0.083,
+      "shareSoundLe1000": 1,
+      "shareSoundLe1600": 1
+    },
+    "X0 explanation turn, held 1.5 s after the candidate, Director after commit": {
+      "sound": {
+        "p50": 3987,
+        "p90": 4450
+      },
+      "content": {
+        "p50": 3987,
+        "p90": 4450
+      },
+      "shareSoundLe600": 0,
+      "shareSoundLe1000": 0,
+      "shareSoundLe1600": 0
+    },
+    "X1 explanation turn, held 1.5 s, speculation launched at the candidate fragment": {
+      "sound": {
+        "p50": 2553,
+        "p90": 2949
+      },
+      "content": {
+        "p50": 2553,
+        "p90": 2949
+      },
+      "shareSoundLe600": 0,
+      "shareSoundLe1000": 0,
+      "shareSoundLe1600": 0
+    }
+  }
+}

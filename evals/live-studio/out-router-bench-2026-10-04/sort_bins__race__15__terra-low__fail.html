@@ -1,0 +1,186 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:Arial,sans-serif;background:#fff7e8;color:#4a3425}
+  #game{width:360px;height:320px;position:relative;overflow:hidden;background:
+    radial-gradient(circle at 15% 12%,#ffe2a6 0 18px,transparent 19px),
+    radial-gradient(circle at 87% 20%,#ffd7b5 0 13px,transparent 14px),
+    linear-gradient(180deg,#fff9ed,#f8ead6)}
+  .top{height:76px;padding:12px 18px 6px;text-align:center;position:relative;z-index:2}
+  h1{margin:0;color:#9b5438;font-size:23px;line-height:27px;font-weight:800}
+  #instruction{margin:4px 0 0;font-size:14px;line-height:18px;color:#6b5848;font-weight:700}
+  #feedback{height:18px;margin-top:2px;color:#b56342;font-size:13px;font-weight:800;transition:transform .2s,opacity .2s}
+  #feedback.pop{transform:scale(1.12)}
+  #cards{height:116px;padding:5px 18px 7px;display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;align-content:center}
+  .card{
+    min-width:52px;min-height:52px;border:0;border-radius:17px;
+    background:linear-gradient(145deg,#fffef9,#fff1d7);
+    color:#513b2d;font-size:17px;font-weight:800;box-shadow:0 4px 0 #d9b98c,0 7px 12px rgba(103,65,36,.15);
+    cursor:pointer;transition:transform .2s,box-shadow .2s,opacity .25s;
+    position:relative;overflow:hidden
+  }
+  .card:after{content:"";position:absolute;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.55);left:-15px;top:-18px}
+  .card span{position:relative;z-index:1}
+  .card:active{transform:scale(.94)}
+  .card.selected{transform:translateY(-7px) scale(1.035);box-shadow:0 7px 0 #d9b98c,0 0 0 4px #ffca68,0 12px 17px rgba(103,65,36,.2);background:#fff9e7}
+  .card.shake{animation:shake .42s ease-in-out}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px) rotate(-2deg)}70%{transform:translateX(8px) rotate(2deg)}}
+  #bins{height:128px;padding:5px 12px 10px;display:flex;gap:8px;align-items:stretch}
+  .bin{
+    flex:1;min-width:52px;border:3px solid #d59362;border-radius:17px 17px 22px 22px;
+    background:linear-gradient(180deg,#ffe7b9 0 25px,#fff5dd 26px);
+    box-shadow:inset 0 -5px 0 #efc993,0 4px 0 rgba(180,105,67,.18);
+    cursor:pointer;position:relative;padding:7px 5px 6px;display:flex;flex-direction:column;align-items:center;
+    transition:transform .18s,background .18s
+  }
+  .bin:before{content:"";position:absolute;left:8px;right:8px;top:24px;border-top:2px dashed #e0aa75}
+  .bin:active{transform:scale(.97)}
+  .bin.hover{background:linear-gradient(180deg,#ffd98c 0 25px,#fff1d1 26px)}
+  .binname{font-size:13px;color:#8a4b32;font-weight:800;line-height:15px;position:relative;z-index:1;text-align:center}
+  .placed{
+    width:100%;min-height:52px;margin-top:6px;border:0;border-radius:12px;background:#fffdf6;color:#513b2d;
+    font-size:13px;font-weight:800;box-shadow:0 3px 0 #d8b98d;animation:land .42s cubic-bezier(.2,.9,.3,1.3)
+  }
+  @keyframes land{from{opacity:0;transform:translateY(-30px) scale(.7)}to{opacity:1;transform:translateY(0) scale(1)}}
+  .spark{position:absolute;pointer-events:none;opacity:.6}
+  .s1{left:16px;bottom:12px;width:13px;height:13px;background:#f5bf66;transform:rotate(45deg);border-radius:3px}
+  .s2{right:16px;bottom:16px;width:10px;height:10px;border:3px solid #ed9d70;border-radius:50%}
+  #finish{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:34px;text-align:center;background:rgba(255,248,233,.92);z-index:5}
+  #finish.show{display:flex;animation:fade .35s ease-out}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  #doneText{color:#9b5438;font-size:26px;line-height:32px;font-weight:800}
+</style>
+<div id="game">
+  <div class="top">
+    <h1 id="title"></h1>
+    <p id="instruction"></p>
+    <div id="feedback" aria-live="polite"></div>
+  </div>
+  <div id="cards"></div>
+  <div id="bins"></div>
+  <div class="spark s1"></div>
+  <div class="spark s2"></div>
+  <div id="finish"><div id="doneText"></div></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params;
+  var cards=document.getElementById('cards');
+  var bins=document.getElementById('bins');
+  var feedback=document.getElementById('feedback');
+  var selected=null;
+  var waiting=false;
+  var placed=0;
+  var cardNodes={};
+  var binNodes={};
+
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+
+  function note(key){
+    feedback.textContent=Studio.t(key);
+    feedback.classList.remove('pop');
+    void feedback.offsetWidth;
+    feedback.classList.add('pop');
+  }
+
+  p.cards.forEach(function(key){
+    var card=document.createElement('button');
+    card.className='card';
+    card.type='button';
+    card.setAttribute('data-card',key);
+    card.setAttribute('data-selected','false');
+    var word=document.createElement('span');
+    word.textContent=Studio.t(key);
+    card.appendChild(word);
+    card.addEventListener('click',function(){
+      if(waiting){return;}
+      if(selected===key){
+        card.classList.remove('selected');
+        card.setAttribute('data-selected','false');
+        selected=null;
+        return;
+      }
+      if(selected && cardNodes[selected]){
+        cardNodes[selected].classList.remove('selected');
+        cardNodes[selected].setAttribute('data-selected','false');
+      }
+      selected=key;
+      card.classList.add('selected');
+      card.setAttribute('data-selected','true');
+      Studio.event('pick',{card:key});
+    });
+    cards.appendChild(card);
+    cardNodes[key]=card;
+  });
+
+  p.bins.forEach(function(key){
+    var bin=document.createElement('button');
+    bin.className='bin';
+    bin.type='button';
+    bin.setAttribute('data-bin',key);
+    var name=document.createElement('span');
+    name.className='binname';
+    name.textContent=Studio.t(key);
+    bin.appendChild(name);
+    bin.addEventListener('click',function(){
+      if(!selected || waiting){return;}
+      waiting=true;
+      bin.classList.add('hover');
+      Studio.event('sort',{card:selected,bin:key});
+      Studio.answer({card:selected,bin:key});
+    });
+    bins.appendChild(bin);
+    binNodes[key]=bin;
+  });
+
+  Studio.onVerdict(function(result){
+    if(!selected){waiting=false;return;}
+    var key=selected;
+    var card=cardNodes[key];
+    var chosen=null;
+    p.bins.forEach(function(b){
+      binNodes[b].classList.remove('hover');
+      if(binNodes[b].matches(':active')){chosen=b;}
+    });
+    if(result.correct){
+      note('right');
+      card.classList.remove('selected');
+      card.removeAttribute('data-card');
+      card.removeAttribute('data-selected');
+      card.className='placed';
+      var target=null;
+      p.bins.forEach(function(b){
+        if(binNodes[b].classList.contains('hover')){target=binNodes[b];}
+      });
+      if(!target){
+        var last=p.bins[0];
+        target=binNodes[last];
+      }
+      target.appendChild(card);
+      card.setAttribute('data-placed',target.getAttribute('data-bin'));
+      placed++;
+      selected=null;
+      waiting=false;
+      if(placed===p.cards.length){
+        setTimeout(function(){
+          document.getElementById('doneText').textContent=Studio.t('done');
+          document.getElementById('finish').classList.add('show');
+          Studio.done();
+        },260);
+      }
+    }else{
+      note('wrong');
+      card.classList.remove('selected');
+      card.setAttribute('data-selected','false');
+      card.classList.add('shake');
+      setTimeout(function(){card.classList.remove('shake');},450);
+      selected=null;
+      waiting=false;
+    }
+  });
+
+  Studio.ready();
+}());
+
+</script>

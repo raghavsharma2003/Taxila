@@ -1,0 +1,85 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e9;font-family:system-ui,sans-serif;color:#554139}
+  .card{width:360px;height:320px;overflow:hidden;background:linear-gradient(#fffaf1,#fff1dc)}
+  header{height:67px;padding:8px 12px 0;text-align:center}
+  h1{margin:0;font-size:18px;line-height:24px}
+  #prompt{margin:1px 0 0;font-size:16px;line-height:24px;font-weight:700;color:#965a48}
+  svg{display:block;width:360px;height:253px}
+  .leader{fill:none;stroke:#a99a87;stroke-width:1.8;stroke-linecap:round}
+  .label{fill:#584a3f;font-size:14px;font-weight:700;dominant-baseline:middle}
+  [data-part]{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .2s ease,filter .25s ease}
+  [data-part]:active{transform:scale(.94)}
+  [data-part].bump{animation:bump .4s ease}
+  [data-part].glow{filter:drop-shadow(0 0 9px #ffbd45) drop-shadow(0 0 5px white);animation:happy .7s ease}
+  @keyframes bump{50%{transform:scale(1.08)}}
+  @keyframes happy{50%{transform:scale(1.12)}}
+</style>
+<div class="card">
+  <header><h1 id="title"></h1><p id="prompt" data-ask></p></header>
+  <svg viewBox="0 0 360 253" role="img" aria-labelledby="title">
+    <ellipse cx="175" cy="242" rx="105" ry="10" fill="#f1dfc5"/>
+    <g id="picture"></g>
+    <g id="annotations"></g>
+  </svg>
+</div>
+<script>
+
+(()=>{
+  const ns="http://www.w3.org/2000/svg",p=Studio.params;
+  const picture=document.getElementById("picture"),annotations=document.getElementById("annotations"),prompt=document.getElementById("prompt");
+  document.getElementById("title").textContent=Studio.t("title");
+  prompt.textContent=Studio.t("ask");
+
+  const shapes={
+    petal:'<ellipse cx="141" cy="36" rx="27" ry="33" fill="#ee9198"/><ellipse cx="105" cy="56" rx="27" ry="29" transform="rotate(-32 105 56)" fill="#f4a2a3"/><ellipse cx="172" cy="34" rx="25" ry="31" transform="rotate(30 172 34)" fill="#e98491"/><ellipse cx="127" cy="78" rx="28" ry="25" transform="rotate(25 127 78)" fill="#ed9398"/>',
+    stem:'<path d="M150 108 Q156 150 149 201 Q175 214 203 201 Q209 153 204 108Z" fill="#79ae72"/>',
+    leaf:'<path d="M151 169 Q107 128 80 153 Q69 184 103 199 Q130 204 151 177Z" fill="#75b879" stroke="#5d9964" stroke-width="2"/>',
+    root:'<path d="M149 196 Q127 205 111 224 L127 226 L117 249 L146 235 L157 251 L176 231 L195 251 L204 233 L220 241 Q211 209 198 196Z" fill="#bd8c68"/>',
+    centre:'<circle cx="183" cy="83" r="27" fill="#f5c760"/><circle cx="176" cy="77" r="2.5" fill="#d5964a"/><circle cx="190" cy="88" r="2.5" fill="#d5964a"/>'
+  };
+  const marks={
+    petal:{line:"M84 29 L105 40",x:17,y:23},
+    centre:{line:"M215 85 L204 84",x:219,y:85},
+    stem:{line:"M221 139 L202 139",x:225,y:139},
+    leaf:{line:"M72 173 L83 174",x:16,y:171},
+    root:{line:"M221 224 L207 224",x:225,y:223}
+  };
+  let finished=false,waiting=false,selected=null;
+  ["stem","petal","leaf","root","centre"].filter(k=>p.parts.includes(k)).forEach(k=>{
+    const g=document.createElementNS(ns,"g");
+    g.setAttribute("data-part",k);
+    g.innerHTML=shapes[k];
+    picture.appendChild(g);
+    g.addEventListener("click",()=>{
+      if(finished||waiting)return;
+      waiting=true;selected=g;
+      g.classList.remove("bump");void g.getBoundingClientRect();g.classList.add("bump");
+      Studio.event("tap",{part:k});
+      Studio.answer(k);
+    });
+  });
+  p.parts.forEach(k=>{
+    if(!marks[k])return;
+    const m=marks[k],line=document.createElementNS(ns,"path"),text=document.createElementNS(ns,"text");
+    line.setAttribute("class","leader");line.setAttribute("d",m.line);
+    text.setAttribute("class","label");text.setAttribute("data-label",k);
+    text.setAttribute("x",m.x);text.setAttribute("y",m.y);
+    text.textContent=Studio.t(k);
+    annotations.append(line,text);
+  });
+  Studio.onVerdict(({correct})=>{
+    waiting=false;
+    if(correct){
+      finished=true;selected.classList.add("glow");
+      prompt.textContent=Studio.t("right");
+      setTimeout(()=>{prompt.textContent=Studio.t("done");Studio.done()},650);
+    }else{
+      prompt.textContent=Studio.t("wrong");
+      setTimeout(()=>{if(!finished)prompt.textContent=Studio.t("ask")},1100);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

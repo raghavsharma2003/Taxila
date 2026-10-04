@@ -1,0 +1,122 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff8ec;color:#493d32}
+.card{width:360px;height:320px;padding:10px 12px;background:radial-gradient(ellipse at 50% 75%,#fff0d7 0%,#fff8ec 67%);position:relative;display:flex;flex-direction:column;align-items:center}
+h1{font-size:18px;line-height:23px;margin:0 0 2px;font-weight:750;color:#65503b}
+.question{font-size:15px;line-height:20px;text-align:center;min-height:22px;color:#775a42}
+svg{display:block;width:336px;height:246px;flex:none}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:filter .22s ease,transform .18s ease}
+.part:active{transform:scale(.94)}
+.part:focus{outline:none}
+.part:focus-visible{filter:drop-shadow(0 0 4px #d78a39)}
+.hit{fill:transparent;pointer-events:all}
+.petalshape{fill:#f28e78;stroke:#d87363;stroke-width:2}
+.centreshape{fill:#f4c452;stroke:#dc9f32;stroke-width:2}
+.stemshape{fill:none;stroke:#559267;stroke-width:12;stroke-linecap:round}
+.leafshape{fill:#80bd75;stroke:#559267;stroke-width:2}
+.rootshape{fill:none;stroke:#9a704c;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+.leader{fill:none;stroke:#b59c7f;stroke-width:1.6;stroke-linecap:round}
+.label{font-size:13px;font-weight:650;fill:#65503b}
+.feedback{position:absolute;left:12px;right:12px;bottom:3px;min-height:19px;font-size:13px;font-weight:700;color:#56835c;text-align:center;line-height:17px;white-space:nowrap;overflow:hidden}
+.glow{filter:drop-shadow(0 0 8px #f1bb48)!important}
+</style>
+<div class="card">
+<h1 id="title"></h1>
+<div class="question" id="question" data-ask></div>
+<svg viewBox="0 0 336 246" aria-hidden="true">
+<path class="leader" data-line="petal" d="M56 71 L126 76"/>
+<path class="leader" data-line="centre" d="M218 99 L194 96"/>
+<path class="leader" data-line="stem" d="M54 159 L150 159"/>
+<path class="leader" data-line="leaf" d="M235 161 L225 161"/>
+<path class="leader" data-line="root" d="M207 225 L192 225"/>
+<g class="part" data-part="" tabindex="0" role="button">
+<path class="petalshape" d="M155 83 C143 68 150 50 168 48 C185 53 186 70 174 86Z"/>
+<path class="petalshape" d="M180 85 C188 69 207 68 214 82 C215 99 201 105 181 97Z"/>
+<path class="petalshape" d="M180 103 C198 98 210 111 203 127 C192 137 179 127 174 109Z"/>
+<path class="petalshape" d="M158 107 C170 120 164 139 148 139 C132 131 136 114 151 102Z"/>
+<path class="petalshape" d="M149 91 C134 98 120 88 125 72 C136 59 152 67 159 83Z"/>
+<path class="hit" d="M151 54 Q168 43 185 54 L187 75 L176 88 L156 88 L145 74Z"/>
+<path class="hit" d="M188 70 Q207 63 220 79 L220 96 L204 107 L183 98 L181 84Z"/>
+<path class="hit" d="M183 108 L203 103 Q214 117 202 134 L185 140 L171 126 L173 109Z"/>
+<path class="hit" d="M151 110 L169 120 L170 138 Q158 150 141 140 L129 126 L136 111Z"/>
+<path class="hit" d="M122 70 Q137 56 154 68 L163 85 L151 102 L133 99 Q117 88 122 70Z"/>
+</g>
+<g class="part" data-part="" tabindex="0" role="button">
+<circle class="centreshape" cx="168" cy="94" r="22"/>
+<circle class="hit" cx="168" cy="94" r="26"/>
+</g>
+<g class="part" data-part="" tabindex="0" role="button">
+<path class="stemshape" d="M168 112 C166 143 170 174 167 202"/>
+<path class="hit" d="M141 112 H195 V204 H141Z"/>
+</g>
+<g class="part" data-part="" tabindex="0" role="button">
+<path class="leafshape" d="M169 161 C190 140 219 145 226 162 C212 185 187 187 169 161Z"/>
+<path d="M172 163 Q197 162 218 152" fill="none" stroke="#559267" stroke-width="2" stroke-linecap="round"/>
+<path class="hit" d="M166 137 H232 V191 H166Z"/>
+</g>
+<g class="part" data-part="" tabindex="0" role="button">
+<path class="rootshape" d="M167 200 C163 215 152 223 145 239 M167 202 C174 217 186 226 190 240 M166 205 L166 241 M157 216 L140 224 M178 218 L197 215"/>
+<path class="hit" d="M136 188 H201 V246 H136Z"/>
+</g>
+<text class="label" data-label="" x="5" y="75"></text>
+<text class="label" data-label="" x="220" y="103"></text>
+<text class="label" data-label="" x="5" y="163"></text>
+<text class="label" data-label="" x="235" y="165"></text>
+<text class="label" data-label="" x="207" y="229"></text>
+</svg>
+<div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+const params=Studio.params;
+const keys=params.parts;
+const title=document.getElementById("title");
+const question=document.getElementById("question");
+const parts=[...document.querySelectorAll("[data-part]")];
+const labels=[...document.querySelectorAll("[data-label]")];
+title.textContent=Studio.t("title");
+question.textContent=Studio.t("ask");
+parts.forEach((part,i)=>{
+const key=keys[i];
+part.setAttribute("data-part",key);
+part.setAttribute("aria-label",Studio.t(key));
+});
+labels.forEach((label,i)=>{
+const key=keys[i];
+label.setAttribute("data-label",key);
+label.textContent=Studio.t(key);
+});
+let chosen=null,finished=false;
+const feedback=document.getElementById("feedback");
+const commit=part=>{
+if(finished)return;
+chosen=part.getAttribute("data-part");
+feedback.textContent="";
+Studio.event("tap",{part:chosen});
+Studio.answer(chosen);
+};
+parts.forEach(part=>{
+part.addEventListener("click",()=>commit(part));
+part.addEventListener("keydown",event=>{
+if(event.key==="Enter"||event.key===" "){event.preventDefault();commit(part)}
+});
+});
+Studio.onVerdict(result=>{
+if(finished||!chosen)return;
+if(result.correct){
+finished=true;
+parts.find(part=>part.getAttribute("data-part")===chosen).classList.add("glow");
+feedback.textContent=Studio.t("right")+" "+Studio.t("done");
+Studio.event("verdict",{result:"correct"});
+Studio.done();
+}else{
+feedback.textContent=Studio.t("wrong");
+Studio.event("verdict",{result:"wrong"});
+}
+});
+Studio.ready();
+})();
+
+</script>

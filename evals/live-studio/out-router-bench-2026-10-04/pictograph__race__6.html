@@ -1,0 +1,87 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#493b34;background:#fff8ed}
+#app{width:360px;height:320px;display:grid;grid-template-rows:24px 24px 40px 208px 24px;overflow:hidden}
+h1{margin:0;text-align:center;font-size:17px;line-height:24px;font-weight:750;color:#754735}
+#ask{margin:0;text-align:center;font-size:14px;line-height:24px}
+#key{height:36px;margin:2px 12px;background:#ffedcf;border:1px solid #f0d39e;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px}
+#key .symbol{width:24px;height:24px}
+#rows{display:grid;grid-template-rows:repeat(4,52px)}
+.row{appearance:none;border:0;background:transparent;padding:0 12px;width:100%;height:52px;display:flex;align-items:center;text-align:left;color:inherit;border-radius:13px;transition:background .18s,transform .18s;cursor:pointer}
+.row:active{transform:scale(.98);background:#ffedcf}
+.row:focus-visible{outline:2px solid #bd744b;outline-offset:-3px}
+.name{width:80px;flex:0 0 80px;font-size:14px;font-weight:650}
+.symbols{height:100%;display:flex;align-items:center;gap:4px}
+.symbol{width:20px;height:24px;flex:0 0 20px;fill:#e69a4c;transition:transform .2s}
+#feedback{font-size:13px;line-height:24px;text-align:center;font-weight:650;color:#754735}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <p id="ask"></p>
+  <div id="key"></div>
+  <div id="rows"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(function(){
+  const p=Studio.params;
+  const t=Studio.t;
+  document.getElementById("title").textContent=t("title");
+  document.getElementById("ask").textContent=t("ask");
+  function makeSymbol(){
+    const s=document.createElementNS("http://www.w3.org/2000/svg","svg");
+    s.setAttribute("viewBox","0 0 24 24");
+    s.setAttribute("class","symbol");
+    s.setAttribute("aria-hidden","true");
+    const path=document.createElementNS("http://www.w3.org/2000/svg","path");
+    path.setAttribute("d","M12 2.2c-1.3 2.1-7.4 7.3-7.4 12.1a7.4 7.4 0 0 0 14.8 0C19.4 9.5 13.3 4.3 12 2.2z");
+    s.appendChild(path);
+    return s;
+  }
+  const key=document.getElementById("key");
+  key.setAttribute("data-key","");
+  key.appendChild(makeSymbol());
+  const keyText=document.createElement("span");
+  keyText.textContent=t("keytext")+" "+p.symbolValue;
+  key.appendChild(keyText);
+  const rows=document.getElementById("rows");
+  p.rows.forEach(function(entry){
+    const row=document.createElement("button");
+    row.type="button";
+    row.className="row";
+    row.setAttribute("data-row",entry.key);
+    const name=document.createElement("span");
+    name.className="name";
+    name.textContent=t(entry.key);
+    const symbols=document.createElement("span");
+    symbols.className="symbols";
+    for(let i=0;i<entry.value/p.symbolValue;i++){
+      const symbol=makeSymbol();
+      symbol.setAttribute("data-symbol","");
+      symbols.appendChild(symbol);
+    }
+    row.append(name,symbols);
+    row.addEventListener("click",function(){
+      if(row.disabled)return;
+      Array.from(rows.children).forEach(function(item){item.disabled=true});
+      Studio.event("row_tap",{key:entry.key});
+      Studio.answer(entry.key);
+    });
+    rows.appendChild(row);
+  });
+  Studio.onVerdict(function(result){
+    const feedback=document.getElementById("feedback");
+    feedback.textContent=result.correct?t("right"):t("wrong");
+    if(result.correct){
+      feedback.textContent=t("done");
+      Studio.done();
+    }else{
+      Array.from(rows.children).forEach(function(item){item.disabled=false});
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

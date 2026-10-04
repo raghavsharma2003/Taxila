@@ -1,0 +1,99 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff8eb;color:#49372c}
+#app{width:360px;height:320px;padding:11px 12px;background:radial-gradient(circle at 90% 4%,#ffedcf 0,transparent 35%),#fff8eb;overflow:hidden}
+h1{margin:0 0 3px;font-size:19px;line-height:24px;font-weight:800;color:#67432f}
+#instruction{margin:0 0 8px;font-size:12px;line-height:16px;color:#775d4d;min-height:16px}
+#track{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:9px}
+.slot{height:55px;border:2px dashed #e4c7a2;border-radius:13px;background:#fffdf8;display:flex;align-items:center;justify-content:center;gap:3px;overflow:hidden;transition:background .25s,border-color .25s,transform .25s}
+.slot-number{font-size:17px;font-weight:800;color:#c4a37f;flex:none}
+.slot.filled{border-style:solid;border-color:#93b87e;background:#f1f7e9;animation:pop .35s ease-out}
+.slot.filled .slot-number{color:#6c9258}
+#cards{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.card{height:55px;min-width:0;border:0;border-radius:14px;padding:5px 8px;background:#f4c781;color:#553d2a;box-shadow:0 3px 0 #d9a85f,0 5px 10px #754c2514;font:700 14px/17px system-ui,-apple-system,"Segoe UI",sans-serif;cursor:pointer;touch-action:manipulation;transition:transform .15s,box-shadow .15s,background .2s;overflow:hidden}
+.card:nth-child(4n+2){background:#b9d8bd;box-shadow:0 3px 0 #89b294,0 5px 10px #305b3214}
+.card:nth-child(4n+3){background:#f1b9a4;box-shadow:0 3px 0 #d9967a,0 5px 10px #754c2514}
+.card:nth-child(4n+4){background:#c9c1e8;box-shadow:0 3px 0 #a49bcc,0 5px 10px #483b7514}
+.card:active{transform:scale(.96) translateY(2px);box-shadow:0 1px 0 #d9a85f}
+.card:focus-visible{outline:3px solid #7952a0;outline-offset:2px}
+.card.moving{height:43px;width:100%;min-width:0;padding:2px 3px;border-radius:9px;font-size:9px;line-height:11px;box-shadow:none;cursor:default}
+.card.shake{animation:shake .36s ease-in-out}
+.card.gone{display:none}
+#message{height:28px;margin-top:7px;text-align:center;font-size:13px;line-height:18px;font-weight:750;color:#66854f}
+#message.bad{color:#a75f48}
+#message.finish{color:#67432f}
+@keyframes shake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+@keyframes pop{50%{transform:scale(1.06)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+<main id="app">
+  <h1 id="title"></h1>
+  <p id="instruction"></p>
+  <div id="track" aria-label="">
+    <div class="slot"><span class="slot-number"></span></div>
+    <div class="slot"><span class="slot-number"></span></div>
+    <div class="slot"><span class="slot-number"></span></div>
+    <div class="slot"><span class="slot-number"></span></div>
+  </div>
+  <div id="cards"></div>
+  <div id="message" aria-live="polite"></div>
+</main>
+<script>
+
+(()=>{
+  const p=Studio.params, keys=p.shown, cards=document.getElementById('cards');
+  const slots=[...document.querySelectorAll('.slot')];
+  const title=document.getElementById('title'), instruction=document.getElementById('instruction'), message=document.getElementById('message');
+  title.textContent=Studio.t('title');
+  instruction.textContent=Studio.t('instr');
+  slots.forEach((slot,i)=>slot.querySelector('.slot-number').textContent=String(i+1));
+  const labels={boil:'boil',pour:'pour',leaves:'leaves',sugar:'sugar'};
+  keys.forEach(key=>{
+    const b=document.createElement('button');
+    b.type='button'; b.className='card'; b.dataset.step=key;
+    b.textContent=Studio.t(labels[key]);
+    b.addEventListener('click',()=>{
+      if(b.disabled||b.classList.contains('gone'))return;
+      cards.querySelectorAll('.card').forEach(x=>x.disabled=true);
+      message.textContent='';
+      message.className='';
+      Studio.event('tap',{step:key});
+      Studio.answer({key});
+      Studio.onVerdict(({correct})=>{
+        if(correct){
+          const index=slots.findIndex(s=>!s.classList.contains('filled'));
+          if(index<0)return;
+          const slot=slots[index];
+          b.dataset.placed=String(index+1);
+          b.classList.add('moving');
+          b.disabled=true;
+          slot.appendChild(b);
+          slot.classList.add('filled');
+          message.textContent=Studio.t('right');
+          message.className='';
+          Studio.event('placed',{position:index+1});
+          if(index+1===keys.length){
+            message.textContent=Studio.t('done');
+            message.classList.add('finish');
+            Studio.done();
+          }else{
+            cards.querySelectorAll('.card:not(.gone)').forEach(x=>x.disabled=false);
+          }
+        }else{
+          message.textContent=Studio.t('wrong');
+          message.className='bad';
+          b.classList.remove('shake');
+          void b.offsetWidth;
+          b.classList.add('shake');
+          cards.querySelectorAll('.card:not(.gone)').forEach(x=>x.disabled=false);
+          Studio.event('miss',{step:key});
+        }
+      });
+    });
+    cards.appendChild(b);
+  });
+  Studio.ready();
+})();
+
+</script>

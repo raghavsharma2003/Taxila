@@ -1,0 +1,67 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;color:#503b35;background:#fff5e8}
+  .card{width:360px;height:320px;padding:7px 12px;display:grid;grid-template-rows:31px 77px 30px 56px 32px 56px 18px;gap:2px}
+  h1{margin:0;font-size:19px;line-height:31px;text-align:center;color:#79483e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .scene{position:relative;overflow:hidden;border-radius:20px;background:#ffe6c9}
+  .scene svg{position:absolute;inset:0;width:100%;height:100%}
+  .track{position:absolute;left:48px;right:19px;bottom:19px;height:22px;border-radius:14px;background:#fffaf2;box-shadow:inset 0 2px 4px #b77b5933}
+  [data-visual]{height:22px;width:0;max-width:none;border-radius:14px;background:linear-gradient(90deg,#ed8562,#f7b45c);box-shadow:0 3px 0 #d46c50;transition:width .35s cubic-bezier(.2,.8,.2,1)}
+  .readings{display:flex;justify-content:space-around;align-items:center;font-size:15px;font-weight:700}
+  .readings span{color:#a1503e}
+  .controls,.options{display:flex;gap:9px}
+  button{border:0;cursor:pointer;font:700 16px system-ui,sans-serif;transition:transform .14s,background .2s,box-shadow .2s;touch-action:manipulation}
+  button:active{transform:scale(.93)}
+  .controls button{flex:1;min-width:0;height:56px;border-radius:18px;color:#fff;background:#b96855;box-shadow:0 4px 0 #914b3e}
+  .controls button:last-child{background:#dc8750;box-shadow:0 4px 0 #ae603b}
+  button:disabled{opacity:.45;box-shadow:none;cursor:default}
+  .question{display:flex;align-items:center;justify-content:center;gap:7px;font-size:15px;font-weight:700;color:#79483e}
+  .question strong{padding:3px 9px;border-radius:12px;background:#ffe2be}
+  .options button{flex:1;min-width:0;height:56px;border-radius:17px;background:#fff;color:#884d3e;border:2px solid #edb899;box-shadow:0 3px 0 #e5bb9d}
+  .options button.chosen{background:#ffe1ba}
+  .feedback{text-align:center;font-size:13px;font-weight:700;color:#9b5944;line-height:18px}
+</style>
+<div class="card">
+  <h1 id="title"></h1>
+  <div class="scene">
+    <svg viewBox="0 0 336 77" aria-hidden="true"><circle cx="292" cy="21" r="15" fill="#ffd18a"/><path d="M0 59 Q45 39 91 59 T180 59 T270 59 T360 59 V77 H0Z" fill="#f8d4b5"/><path d="M19 45v21m-7-12 7-8 7 8M310 44v22m-8-13 8-10 8 10" fill="none" stroke="#dca987" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="track"><div data-visual data-dim="w"></div></div>
+  </div>
+  <div class="readings"><div><span id="xname"></span> <strong data-x></strong></div><div><span id="yname"></span> <strong data-output></strong></div></div>
+  <div class="controls"><button type="button" data-action="dec"></button><button type="button" data-action="inc"></button></div>
+  <div class="question"><span id="ask"></span><strong id="ask-x"></strong><span id="ask-name"></span></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, q=s=>document.querySelector(s), text=(s,k)=>q(s).textContent=Studio.t(k);
+  text('#title','title');text('#xname','xname');text('#yname','yname');
+  text('[data-action="dec"]','less');text('[data-action="inc"]','more');
+  text('#ask','ask');text('#ask-name','xname');
+  const fmt=n=>String(Number(n.toFixed(8)));
+  q('#ask-x').textContent=fmt(p.ask.x);
+  let x=p.x.start, finished=false;
+  const dec=q('[data-action="dec"]'),inc=q('[data-action="inc"]');
+  function render(){
+    const y=p.law.k*x+p.law.b, xs=fmt(x),ys=fmt(y);
+    q('[data-x]').textContent=xs;q('[data-x]').dataset.x=xs;
+    q('[data-output]').textContent=ys;q('[data-output]').dataset.value=ys;
+    q('[data-visual]').style.width=fmt(y*p.y.unitsPer)+'px';
+    dec.disabled=x-p.x.step<p.x.min;inc.disabled=x+p.x.step>p.x.max;
+  }
+  dec.addEventListener('click',()=>{x=Math.max(p.x.min,Number((x-p.x.step).toFixed(8)));render();Studio.event('change',{x:fmt(x)});});
+  inc.addEventListener('click',()=>{x=Math.min(p.x.max,Number((x+p.x.step).toFixed(8)));render();Studio.event('change',{x:fmt(x)});});
+  p.ask.options.forEach(value=>{
+    const b=document.createElement('button');b.type='button';b.dataset.option=fmt(value);b.textContent=fmt(value);
+    b.addEventListener('click',()=>{if(finished)return;q('#options').querySelectorAll('button').forEach(el=>el.classList.remove('chosen'));b.classList.add('chosen');Studio.answer({value});});
+    q('#options').append(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    q('#feedback').textContent=Studio.t(correct?'right':'wrong');
+    if(correct&&!finished){finished=true;Studio.done();}
+  });
+  render();Studio.ready();
+})();
+
+</script>

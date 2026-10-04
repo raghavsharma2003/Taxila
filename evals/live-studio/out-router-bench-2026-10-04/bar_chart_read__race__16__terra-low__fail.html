@@ -1,0 +1,141 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e9;font-family:Arial,sans-serif}
+  #app{width:360px;height:320px;position:relative;overflow:hidden;background:linear-gradient(145deg,#fff8e8 0%,#fff1d6 100%);color:#5a3d2b}
+  #card{position:absolute;left:8px;top:7px;width:344px;height:306px;border-radius:24px;background:#fffdf8;box-shadow:0 8px 22px rgba(123,75,35,.13);overflow:hidden}
+  #chart{width:344px;height:306px;display:block}
+  .title{font-size:18px;font-weight:800;fill:#74452b}
+  .ask{font-size:13px;font-weight:700;fill:#a16038}
+  .axis-title{font-size:11px;font-weight:800;fill:#a16038;letter-spacing:.3px}
+  .tick{font-size:11px;font-weight:700;fill:#a77c60}
+  .name{font-size:10px;font-weight:800;fill:#754b35}
+  .grid{stroke:#efdcc7;stroke-width:1}
+  .baseline{stroke:#b8794e;stroke-width:2}
+  .bar{fill:#f28b58;stroke:#d96d45;stroke-width:1.5;transform-box:fill-box;transform-origin:center bottom;transition:height 680ms cubic-bezier(.22,.9,.25,1),y 680ms cubic-bezier(.22,.9,.25,1),filter 160ms ease}
+  .column{cursor:pointer;outline:none}
+  .column:active .bar{filter:brightness(1.08);transform:scaleX(.94)}
+  .hit{fill:rgba(255,255,255,.001)}
+  #feedback{font-size:13px;font-weight:800;text-anchor:middle;opacity:0;transform-origin:center;transition:opacity 180ms ease}
+  #feedback.show{opacity:1;animation:pop .42s ease}
+  #feedback.good{fill:#4d9a68}
+  #feedback.bad{fill:#cf6952}
+  .spark{fill:#ffc968;opacity:.75}
+  @keyframes pop{0%{transform:scale(.6)}70%{transform:scale(1.13)}100%{transform:scale(1)}}
+  .bar.ready{filter:none}
+</style>
+<div id="app">
+  <div id="card">
+    <svg id="chart" viewBox="0 0 344 306" role="img">
+      <circle class="spark" cx="319" cy="24" r="4"></circle>
+      <circle class="spark" cx="328" cy="34" r="2.5"></circle>
+      <text id="title" class="title" x="172" y="25" text-anchor="middle"></text>
+      <text id="ask" class="ask" x="172" y="45" text-anchor="middle"></text>
+      <g id="plot"></g>
+      <text id="feedback" x="172" y="299"></text>
+    </svg>
+  </div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params;
+  var svg=document.getElementById('chart');
+  var plot=document.getElementById('plot');
+  var title=document.getElementById('title');
+  var ask=document.getElementById('ask');
+  var feedback=document.getElementById('feedback');
+  title.textContent=Studio.t('title');
+  ask.textContent=Studio.t('ask');
+
+  var left=50, right=336, top=62, base=248, height=base-top;
+  var data=p.data;
+  var max=0;
+  for(var i=0;i<data.length;i++) if(data[i].value>max) max=data[i].value;
+
+  function goodStep(v){
+    var raw=v/4;
+    var pow=Math.pow(10,Math.floor(Math.log(raw||1)/Math.LN10));
+    var unit=raw/pow;
+    var pick=unit<=1?1:(unit<=2?2:(unit<=5?5:10));
+    return pick*pow;
+  }
+  var step=goodStep(max);
+  var ceiling=Math.ceil(max/step)*step;
+  if(ceiling===0){ceiling=step}
+  function el(name,attrs){
+    var n=document.createElementNS('http://www.w3.org/2000/svg',name);
+    for(var k in attrs)n.setAttribute(k,attrs[k]);
+    return n;
+  }
+  var axis=el('text',{x:15,y:(top+base)/2,'text-anchor':'middle','class':'axis-title',transform:'rotate(-90 15 '+((top+base)/2)+')'});
+  axis.textContent=Studio.t('yaxis');
+  plot.appendChild(axis);
+
+  for(var tick=0;tick<=ceiling+step*.001;tick+=step){
+    var y=base-(tick/ceiling)*height;
+    plot.appendChild(el('line',{x1:left,y1:y,x2:right,y2:y,'class':tick===0?'baseline':'grid'}));
+    var lab=el('text',{x:left-8,y:y+4,'text-anchor':'end','class':'tick','data-tick':String(tick)});
+    lab.textContent=String(tick);
+    plot.appendChild(lab);
+  }
+
+  var width=(right-left)/data.length;
+  var bars=[];
+  var waiting=false,complete=false;
+  for(var j=0;j<data.length;j++){
+    (function(item,index){
+      var x=left+index*width;
+      var group=el('g',{'class':'column','data-column':item.key,tabindex:'0'});
+      var hit=el('rect',{x:x,y:top,width:width,height:base-top+34,'class':'hit'});
+      var barWidth=Math.min(34,width-14);
+      var bx=x+(width-barWidth)/2;
+      var finalH=(item.value/ceiling)*height;
+      var bar=el('rect',{x:bx,y:base,width:barWidth,height:0,rx:8,ry:8,'class':'bar','data-bar':item.key,'data-value':String(item.value)});
+      var label=el('text',{x:x+width/2,y:270,'text-anchor':'middle','class':'name'});
+      label.textContent=Studio.t(item.key);
+      group.appendChild(hit);
+      group.appendChild(bar);
+      group.appendChild(label);
+      function choose(){
+        if(waiting||complete)return;
+        waiting=true;
+        Studio.event('tap',{});
+        Studio.answer(item.key);
+      }
+      group.addEventListener('click',choose);
+      group.addEventListener('keydown',function(e){
+        if(e.key==='Enter'||e.key===' '){e.preventDefault();choose()}
+      });
+      plot.appendChild(group);
+      bars.push({node:bar,y:base-finalH,h:finalH});
+    })(data[j],j);
+  }
+
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      for(var q=0;q<bars.length;q++){
+        bars[q].node.setAttribute('y',bars[q].y);
+        bars[q].node.setAttribute('height',bars[q].h);
+      }
+    });
+  });
+
+  Studio.onVerdict(function(result){
+    feedback.classList.remove('show','good','bad');
+    if(result.correct){
+      complete=true;
+      feedback.textContent=Studio.t('right')+' '+Studio.t('done');
+      feedback.classList.add('good');
+      requestAnimationFrame(function(){feedback.classList.add('show')});
+      Studio.done();
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      feedback.classList.add('bad');
+      requestAnimationFrame(function(){feedback.classList.add('show')});
+      waiting=false;
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

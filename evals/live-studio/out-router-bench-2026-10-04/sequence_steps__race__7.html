@@ -1,0 +1,99 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#39434a;background:#fff8ed}
+#app{width:360px;height:320px;padding:12px;background:radial-gradient(ellipse at 90% 5%,#ffe6bd 0,transparent 38%),#fff8ed}
+h1{font-size:20px;line-height:24px;margin:0 0 3px;color:#684c37}
+#instr{font-size:13px;line-height:17px;margin:0 0 8px;color:#68737a}
+#track,#cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.slot{height:66px;border:2px dashed #e9c99f;border-radius:15px;background:#fffdf8;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.slot-num{position:absolute;top:4px;left:7px;font-size:13px;font-weight:800;color:#b7895c}
+#cards{margin-top:10px}
+.card{height:66px;padding:5px;border:0;border-radius:15px;background:#f3d29e;color:#59482f;font:700 14px/17px system-ui,sans-serif;box-shadow:0 4px 0 #d5ae77;cursor:pointer;transition:transform .16s,box-shadow .16s,background .16s;overflow-wrap:anywhere}
+.card:active{transform:scale(.94);box-shadow:0 1px 0 #d5ae77}
+.card:hover{background:#f7dcaf}
+.card.shake{animation:shake .28s ease-in-out}
+.card.placed{height:100%;width:100%;padding:14px 5px 4px;box-shadow:none;background:#d8edcf;cursor:default;animation:pop .32s ease-out}
+#feedback{height:48px;margin-top:10px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:15px;line-height:19px;font-weight:700;color:#647c52}
+#feedback.wrong{color:#ad6d61}
+@keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+@keyframes pop{0%{transform:scale(.8)}70%{transform:scale(1.05)}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <p id="instr"></p>
+  <div id="track" aria-hidden="true"></div>
+  <div id="cards"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const params=Studio.params;
+  const keys=params.shown;
+  const title=document.getElementById("title");
+  const instr=document.getElementById("instr");
+  const track=document.getElementById("track");
+  const cards=document.getElementById("cards");
+  const feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  instr.textContent=Studio.t("instr");
+  const slots=[];
+  keys.forEach((key,index)=>{
+    const slot=document.createElement("div");
+    slot.className="slot";
+    const num=document.createElement("span");
+    num.className="slot-num";
+    num.textContent=String(index+1);
+    slot.appendChild(num);
+    track.appendChild(slot);
+    slots.push(slot);
+  });
+  keys.forEach(key=>{
+    const card=document.createElement("button");
+    card.type="button";
+    card.className="card";
+    card.dataset.step=key;
+    card.textContent=Studio.t(key);
+    card.addEventListener("click",()=>{
+      if(card.dataset.placed||waiting)return;
+      waiting=true;
+      chosen={key,card};
+      feedback.className="";
+      feedback.textContent="";
+      Studio.event("tap",{key});
+      Studio.answer({key});
+    });
+    cards.appendChild(card);
+  });
+  let position=0,waiting=false,chosen=null;
+  Studio.onVerdict(({correct})=>{
+    if(!chosen)return;
+    waiting=false;
+    const current=chosen;
+    chosen=null;
+    if(correct){
+      current.card.dataset.placed=String(position+1);
+      current.card.classList.add("placed");
+      slots[position].appendChild(current.card);
+      position++;
+      feedback.className="";
+      if(position===keys.length){
+        feedback.textContent=Studio.t("done");
+        Studio.done();
+      }else{
+        feedback.textContent=Studio.t("right");
+      }
+    }else{
+      feedback.className="wrong";
+      feedback.textContent=Studio.t("wrong");
+      current.card.classList.remove("shake");
+      void current.card.offsetWidth;
+      current.card.classList.add("shake");
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

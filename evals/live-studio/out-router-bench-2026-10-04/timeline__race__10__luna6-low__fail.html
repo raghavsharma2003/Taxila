@@ -1,0 +1,108 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#493a31;background:#fff8e9}
+#app{position:relative;width:360px;height:320px;overflow:hidden;padding:12px}
+h1{margin:0 0 5px;text-align:center;font-size:18px;line-height:24px;color:#79513b}
+#question{height:38px;margin:0;text-align:center;font-size:14px;line-height:18px;color:#614b3e}
+#timeline{position:relative;width:100%;height:242px}
+[data-axis]{position:absolute;left:12px;right:12px;top:124px;height:4px;border-radius:4px;background:#d7a660}
+.event{position:absolute;inset:0;--x:0px;--top:0px;--card-left:0px;--stem-top:0px;--stem-height:0px}
+.marker{position:absolute;left:calc(var(--x) - 8px);top:116px;width:20px;height:20px;border:4px solid #fff8e9;border-radius:50%;background:#ba7048;box-shadow:0 0 0 2px #ba7048;transition:transform .2s}
+.stem{position:absolute;left:calc(var(--x) - 1px);top:var(--stem-top);width:2px;height:var(--stem-height);background:#bd8a62}
+[data-card]{position:absolute;left:var(--card-left);top:var(--top);width:84px;height:64px;padding:5px 3px;border:2px solid #e2bb85;border-radius:14px;background:#fffdf7;color:#614b3e;font:inherit;line-height:19px;text-align:center;box-shadow:0 3px 0 #edd8b6;cursor:pointer;transition:transform .16s,background .2s,box-shadow .2s}
+[data-card] .name{display:block;font-size:12px;font-weight:700;white-space:nowrap}
+[data-card] .year{display:block;font-size:13px}
+[data-card]:active{transform:scale(.94)}
+[data-card]:focus-visible{outline:3px solid #98683f;outline-offset:2px}
+#feedback{position:absolute;left:10px;right:10px;bottom:5px;min-height:26px;text-align:center;font-size:14px;font-weight:700;color:#79513b}
+#feedback.pop{animation:pop .28s ease-out}
+@keyframes pop{50%{transform:scale(1.08)}}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <p id="question"></p>
+  <div id="timeline">
+    <div data-axis></div>
+    <div id="events"></div>
+  </div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(function(){
+  const p=Studio.params;
+  const events=p.events;
+  const title=document.getElementById("title");
+  const question=document.getElementById("question");
+  const list=document.getElementById("events");
+  const feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  question.textContent=Studio.t("ask");
+  const years=events.map(e=>e.year);
+  const min=Math.min(...years), max=Math.max(...years);
+  const left=12, right=348, lineY=126, cardW=84, cardH=64;
+  const ordered=events.slice().sort((a,b)=>a.year-b.year);
+  const sides=new Map(ordered.map((e,i)=>[e.key,i%2===0?"below":"above"]));
+  const nodes=[];
+  events.forEach(e=>{
+    const x=max===min?(left+right)/2:left+(e.year-min)*(right-left)/(max-min);
+    const cardLeft=Math.max(0,Math.min(360-cardW,x-cardW/2));
+    const side=sides.get(e.key);
+    const top=side==="above"?37:151;
+    const stemTop=side==="above"?top+cardH:lineY+10;
+    const stemHeight=side==="above"?lineY-10-stemTop:top-stemTop;
+    const wrap=document.createElement("div");
+    wrap.className="event";
+    wrap.style.setProperty("--x",x+"px");
+    wrap.style.setProperty("--top",top+"px");
+    wrap.style.setProperty("--card-left",cardLeft+"px");
+    wrap.style.setProperty("--stem-top",stemTop+"px");
+    wrap.style.setProperty("--stem-height",Math.max(0,stemHeight)+"px");
+    const marker=document.createElement("div");
+    marker.className="marker";
+    marker.setAttribute("data-event",e.key);
+    marker.setAttribute("data-year",String(e.year));
+    const stem=document.createElement("div");
+    stem.className="stem";
+    const card=document.createElement("button");
+    card.type="button";
+    card.setAttribute("data-card",e.key);
+    const name=document.createElement("span");
+    name.className="name";
+    name.textContent=Studio.t(e.key);
+    const year=document.createElement("span");
+    year.className="year";
+    year.textContent=String(e.year);
+    card.append(name,year);
+    wrap.append(marker,stem,card);
+    list.appendChild(wrap);
+    nodes.push({key:e.key,card});
+  });
+  Studio.ready();
+  let submitted=false, finished=false;
+  nodes.forEach(item=>item.card.addEventListener("click",()=>{
+    if(submitted||finished)return;
+    submitted=true;
+    nodes.forEach(n=>n.card.disabled=true);
+    Studio.event("select",{key:item.key});
+    Studio.answer(item.key);
+  }));
+  Studio.onVerdict(result=>{
+    if(finished)return;
+    feedback.textContent=Studio.t(result.correct?"right":"wrong");
+    feedback.classList.remove("pop");
+    void feedback.offsetWidth;
+    feedback.classList.add("pop");
+    if(result.correct){
+      finished=true;
+      feedback.textContent=Studio.t("done");
+      Studio.done();
+    }else{
+      submitted=false;
+      nodes.forEach(n=>n.card.disabled=false);
+    }
+  });
+})();
+
+</script>

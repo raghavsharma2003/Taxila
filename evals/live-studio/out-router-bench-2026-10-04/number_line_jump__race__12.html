@@ -1,0 +1,217 @@
+<style>
+  *{box-sizing:border-box}
+  #game{width:360px;height:320px;overflow:hidden;position:relative;background:linear-gradient(155deg,#fff5df 0%,#f7e7ff 100%);font-family:system-ui,sans-serif;color:#51375b}
+  .sun{position:absolute;width:122px;height:122px;border-radius:50%;background:#ffe29b;right:-38px;top:-44px;opacity:.72}
+  .cloud{position:absolute;width:78px;height:28px;border-radius:30px;background:#fff;opacity:.7;left:12px;top:19px}
+  .cloud:before,.cloud:after{content:"";position:absolute;border-radius:50%;background:#fff}
+  .cloud:before{width:33px;height:33px;left:12px;top:-14px}
+  .cloud:after{width:25px;height:25px;left:40px;top:-8px}
+  .panel{position:absolute;inset:0;padding:13px 14px 12px;display:flex;flex-direction:column;align-items:center}
+  h1{margin:0;position:relative;font-size:20px;line-height:25px;font-weight:800;letter-spacing:.1px}
+  .instruction{position:relative;margin:3px 0 7px;font-size:13px;line-height:17px;text-align:center;font-weight:650;min-height:17px}
+  .targetCard{position:relative;min-width:104px;height:45px;padding:4px 16px 5px;border-radius:18px;background:#fff;box-shadow:0 5px 0 rgba(123,76,140,.12);display:flex;align-items:center;justify-content:center}
+  #target{font-size:25px;line-height:28px;font-weight:850;color:#a34d83;font-variant-numeric:tabular-nums}
+  .lineWrap{position:relative;width:332px;height:113px;margin-top:7px}
+  #lineSvg{position:absolute;inset:0;width:332px;height:113px;overflow:visible}
+  .base{stroke:#725072;stroke-width:5;stroke-linecap:round}
+  .tick{stroke:#725072;stroke-width:3;stroke-linecap:round}
+  .tickLabel{fill:#51375b;font-size:14px;font-weight:750;text-anchor:middle;font-family:system-ui,sans-serif}
+  #marker{filter:drop-shadow(0 4px 2px rgba(103,53,115,.22));transition:cx .22s cubic-bezier(.25,1.35,.45,1),cy .18s ease}
+  #markerBubble{fill:#f35d91;stroke:#fff;stroke-width:3}
+  #markerDot{fill:#fff3ba}
+  .hop #marker{animation:hop .55s ease-in-out}
+  @keyframes hop{0%,100%{transform:translateY(0)}45%{transform:translateY(-17px)}65%{transform:translateY(-17px)}}
+  .feedback{height:25px;display:flex;align-items:center;justify-content:center;margin-top:0;font-size:15px;font-weight:800;color:#87506f;transition:transform .2s ease,opacity .2s ease}
+  .feedback.pop{animation:pop .34s ease}
+  @keyframes pop{0%{transform:scale(.7);opacity:.2}70%{transform:scale(1.15);opacity:1}100%{transform:scale(1);opacity:1}}
+  .controls{width:332px;height:59px;display:grid;grid-template-columns:62px 1fr 62px;gap:9px;margin-top:auto}
+  button{border:0;font:inherit;font-weight:850;cursor:pointer;touch-action:manipulation;transition:transform .12s ease,filter .12s ease,box-shadow .12s ease}
+  button:active{transform:scale(.92)}
+  button:disabled{opacity:.48;cursor:default}
+  .move{height:58px;border-radius:19px;background:#fff;color:#82517b;font-size:30px;line-height:1;box-shadow:0 5px 0 #dfc5df}
+  .move:hover:not(:disabled){filter:brightness(1.04);transform:translateY(-2px)}
+  #check{height:58px;border-radius:19px;background:#6bbfae;color:#fff;font-size:17px;letter-spacing:.2px;box-shadow:0 5px 0 #479580}
+  #check:hover:not(:disabled){filter:brightness(1.05);transform:translateY(-2px)}
+  .doneCard{position:absolute;left:25px;right:25px;top:102px;height:126px;border-radius:27px;background:#fff;box-shadow:0 8px 0 rgba(123,76,140,.13);display:none;align-items:center;justify-content:center;text-align:center;padding:20px;color:#7c4f79;font-weight:850;font-size:22px;line-height:29px;z-index:3}
+  .doneCard.show{display:flex;animation:doneIn .45s cubic-bezier(.2,1.45,.4,1)}
+  @keyframes doneIn{from{transform:scale(.55) rotate(-4deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+</style>
+<div id="game">
+  <div class="sun"></div>
+  <div class="cloud"></div>
+  <div class="panel">
+    <h1 id="title"></h1>
+    <div class="instruction" id="instruction"></div>
+    <div class="targetCard" data-item="">
+      <div id="target" data-target=""></div>
+    </div>
+    <div class="lineWrap">
+      <svg id="lineSvg" viewBox="0 0 332 113" aria-hidden="true">
+        <line class="base" x1="16" y1="65" x2="316" y2="65"></line>
+        <g id="ticks"></g>
+        <g id="marker" data-marker data-value="">
+          <circle id="markerBubble" cx="16" cy="46" r="14"></circle>
+          <circle id="markerDot" cx="16" cy="46" r="4"></circle>
+          <path d="M16 58 L10 68 L22 68 Z" fill="#f35d91"></path>
+        </g>
+      </svg>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <div class="controls">
+      <button class="move" id="left" data-action="left" type="button"></button>
+      <button id="check" data-action="check" type="button"></button>
+      <button class="move" id="right" data-action="right" type="button"></button>
+    </div>
+  </div>
+  <div class="doneCard" id="done"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params;
+  var svgNS="http://www.w3.org/2000/svg";
+  var total=Math.round((p.max-p.min)/p.step);
+  var itemIndex=0;
+  var markerIndex=Math.round((p.start-p.min)/p.step);
+  var busy=false;
+  var ticks=document.getElementById("ticks");
+  var marker=document.getElementById("marker");
+  var bubble=document.getElementById("markerBubble");
+  var dot=document.getElementById("markerDot");
+  var pointer=marker.querySelector("path");
+  var target=document.getElementById("target");
+  var card=document.querySelector("[data-item]");
+  var feedback=document.getElementById("feedback");
+  var left=document.getElementById("left");
+  var right=document.getElementById("right");
+  var check=document.getElementById("check");
+  var wrap=document.querySelector(".lineWrap");
+
+  function exact(n){return Number(n.toFixed(6))}
+  function valueAt(i){return exact(p.min+i*p.step)}
+  function raw(n){return String(exact(n))}
+  function decimals(){
+    var a=[p.step,p.min,p.max], d=0;
+    for(var i=0;i<a.length;i++){
+      var s=String(exact(a[i]));
+      if(s.indexOf(".")>-1)d=Math.max(d,s.length-s.indexOf(".")-1);
+    }
+    return d;
+  }
+  function showValue(v){
+    v=exact(v);
+    if(p.format==="fraction"){
+      return String(Math.round(v*p.den))+"/"+String(p.den);
+    }
+    var d=decimals();
+    return d ? v.toFixed(d) : String(Math.round(v));
+  }
+  function xAt(i){return 16+(300*i/total)}
+  function makeTicks(){
+    for(var i=0;i<=total;i++){
+      var v=valueAt(i), x=xAt(i);
+      var g=document.createElementNS(svgNS,"g");
+      g.setAttribute("data-tick",raw(v));
+      var line=document.createElementNS(svgNS,"line");
+      line.setAttribute("class","tick");
+      line.setAttribute("x1",x);
+      line.setAttribute("x2",x);
+      line.setAttribute("y1","56");
+      line.setAttribute("y2","74");
+      g.appendChild(line);
+      if(i%p.labelEvery===0){
+        var text=document.createElementNS(svgNS,"text");
+        text.setAttribute("class","tickLabel");
+        text.setAttribute("x",x);
+        text.setAttribute("y","95");
+        text.textContent=showValue(v);
+        g.appendChild(text);
+      }
+      ticks.appendChild(g);
+    }
+  }
+  function placeMarker(){
+    var x=xAt(markerIndex), v=valueAt(markerIndex);
+    bubble.setAttribute("cx",x);
+    dot.setAttribute("cx",x);
+    pointer.setAttribute("d","M"+x+" 58 L"+(x-6)+" 68 L"+(x+6)+" 68 Z");
+    marker.setAttribute("data-value",raw(v));
+    left.disabled=busy||markerIndex===0;
+    right.disabled=busy||markerIndex===total;
+    check.disabled=busy;
+  }
+  function clearFeedback(){
+    feedback.textContent="";
+    feedback.classList.remove("pop");
+  }
+  function loadItem(){
+    markerIndex=Math.round((p.start-p.min)/p.step);
+    var item=p.items[itemIndex];
+    card.setAttribute("data-item",item.id);
+    target.setAttribute("data-target",raw(item.target));
+    target.textContent=showValue(item.target);
+    clearFeedback();
+    placeMarker();
+  }
+  function move(delta){
+    if(busy)return;
+    markerIndex=Math.max(0,Math.min(total,markerIndex+delta));
+    clearFeedback();
+    placeMarker();
+    Studio.event("move",{value:valueAt(markerIndex)});
+  }
+  function feedbackText(key){
+    feedback.textContent=Studio.t(key);
+    feedback.classList.remove("pop");
+    void feedback.offsetWidth;
+    feedback.classList.add("pop");
+  }
+  left.addEventListener("click",function(){move(-1)});
+  right.addEventListener("click",function(){move(1)});
+  check.addEventListener("click",function(){
+    if(busy)return;
+    busy=true;
+    placeMarker();
+    Studio.event("check",{value:valueAt(markerIndex)});
+    Studio.answer({value:valueAt(markerIndex)});
+  });
+  Studio.onVerdict(function(result){
+    if(result.correct){
+      feedbackText("right");
+      wrap.classList.remove("hop");
+      void wrap.offsetWidth;
+      wrap.classList.add("hop");
+      Studio.event("verdict",{correct:1});
+      setTimeout(function(){
+        wrap.classList.remove("hop");
+        itemIndex++;
+        if(itemIndex>=p.items.length){
+          document.getElementById("done").textContent=Studio.t("done");
+          document.getElementById("done").classList.add("show");
+          left.disabled=true;
+          right.disabled=true;
+          check.disabled=true;
+          Studio.done();
+        }else{
+          busy=false;
+          loadItem();
+        }
+      },620);
+    }else{
+      busy=false;
+      feedbackText("wrong");
+      placeMarker();
+      Studio.event("verdict",{correct:0});
+    }
+  });
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("instruction").textContent=Studio.t("instr");
+  left.textContent=Studio.t("left");
+  right.textContent=Studio.t("right_btn");
+  check.textContent=Studio.t("check");
+  makeTicks();
+  loadItem();
+  Studio.ready();
+}());
+
+</script>

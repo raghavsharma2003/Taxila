@@ -1,0 +1,107 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8e9;font-family:system-ui,sans-serif;color:#395447}
+  #card{width:360px;height:320px;overflow:hidden;position:relative;background:linear-gradient(#fff9eb,#f1f8e9)}
+  #title{height:27px;padding:3px 12px 0;font-size:17px;font-weight:800;color:#486742}
+  svg{display:block;width:360px;height:166px}
+  .entity,.flowLine,.particle,.name{transition:opacity .35s,filter .35s}
+  .flowLine{fill:none;stroke-width:3;stroke-linecap:round;stroke-dasharray:3 7;opacity:.6}
+  .particle{stroke:white;stroke-width:1.5}
+  .muted{opacity:.34}
+  .bright{filter:drop-shadow(0 0 5px #ffd576)}
+  .name{font-size:12px;font-weight:750;paint-order:stroke;stroke:#fff9eb;stroke-width:3px;stroke-linejoin:round;fill:#395447}
+  #bar{height:53px;display:flex;align-items:center;gap:6px;padding:0 8px}
+  #caption{flex:1;min-width:0;padding:7px 9px;border-radius:13px;background:#e5f0d8;font-size:12px;font-weight:700;line-height:1.2}
+  button{border:0;border-radius:14px;background:#4f7956;color:white;font:700 13px system-ui,sans-serif;cursor:pointer;transition:transform .15s,background .2s;touch-action:manipulation}
+  button:active{transform:scale(.92)}
+  #bar button{width:67px;height:52px;flex:none}
+  #bar button:last-child{background:#d47e51}
+  #ask{height:20px;padding:1px 10px;font-size:13px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #options{display:flex;gap:7px;padding:0 8px;height:54px}
+  #options button{flex:1;min-width:0;height:53px;background:#e3efda;color:#355442;border:2px solid #a9c69d}
+  #feedback{position:absolute;right:10px;top:245px;font-size:12px;font-weight:800;color:#3f7650;background:#fff8e9;padding-left:5px}
+</style>
+<div id="card">
+  <div id="title"></div>
+  <svg id="scene" viewBox="0 0 360 166" aria-hidden="true">
+    <path d="M0 155 Q92 139 180 156 T360 151 V166 H0Z" fill="#e4efd7"/>
+    <circle cx="304" cy="29" r="24" fill="#fff1cf" opacity=".45"/>
+    <g id="lines"></g><g id="shapes"></g><g id="dots"></g><g id="labels"></g>
+  </svg>
+  <div id="bar"><div id="caption" data-caption></div><button data-action="play"></button><button data-action="next"></button></div>
+  <div id="ask"></div><div id="options"></div><div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, ns='http://www.w3.org/2000/svg';
+  const $=s=>document.querySelector(s);
+  const make=(tag,attrs,parent)=>{
+    const e=document.createElementNS(ns,tag);
+    for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);
+    parent.appendChild(e);return e;
+  };
+  const lines=$('#lines'),shapes=$('#shapes'),dots=$('#dots'),labels=$('#labels');
+  const hub=p.hub, sun=p.entities[0], roots=p.entities[1];
+  const flows=p.flows;
+  const spots={
+    up_in:{a:[178,134],b:[178,105],color:'#59a8cd',label:[99,124]},
+    in:{a:[43,101],b:[148,83],color:'#8b91bf',label:[58,120]},
+    out:{a:[212,87],b:[320,102],color:'#78b9a3',label:[267,123]}
+  };
+  const label=(key,x,y)=>{const e=make('text',{'data-label':key,x,y,class:'name'},labels);e.textContent=Studio.t(key);return e};
+  const sunShape=make('circle',{'data-entity':sun,cx:48,cy:42,r:22,fill:'#f7bb60',class:'entity'},shapes);
+  make('circle',{cx:48,cy:42,r:15,fill:'#ffdb85'},shapes);
+  const rootShape=make('path',{'data-entity':roots,d:'M179 130 L179 143 M179 139 Q165 138 157 154 M179 140 Q191 137 203 154 M169 145 L170 157 M192 146 L190 159',fill:'none',stroke:'#aa7955','stroke-width':5,'stroke-linecap':'round',class:'entity'},shapes);
+  const leafShape=make('path',{'data-entity':hub,d:'M148 89 Q160 48 217 60 Q211 110 171 113 Q152 109 148 89Z',fill:'#79b66b',stroke:'#4b8d59','stroke-width':3,class:'entity'},shapes);
+  make('path',{d:'M153 99 Q180 86 207 68 M175 89 L170 70 M188 83 L202 96',fill:'none',stroke:'#d4e9ae','stroke-width':2,'stroke-linecap':'round'},shapes);
+  label(sun,74,38);label(hub,222,68);label(roots,211,151);
+  const particles=[];
+  flows.forEach(f=>{
+    const s=spots[f.dir];if(!s)return;
+    make('path',{d:`M${s.a[0]} ${s.a[1]} L${s.b[0]} ${s.b[1]}`,stroke:s.color,class:'flowLine','data-line':f.key},lines);
+    for(let i=0;i<4;i++)particles.push({el:make('circle',{'data-flow':f.key,cx:s.a[0],cy:s.a[1],r:4,fill:s.color,class:'particle'},dots),s,i});
+    label(f.key,...s.label);
+  });
+  $('#title').textContent=Studio.t('title');
+  $('#ask').textContent=Studio.t('ask');
+  const playBtn=$('[data-action="play"]'),nextBtn=$('[data-action="next"]');
+  nextBtn.textContent=Studio.t('next');
+  let playing=true,step=0,phase=0,last=0,done=false;
+  const stepKeys=['step1','step2','step3','step4'];
+  function renderStep(){
+    $('[data-caption]').textContent=Studio.t(stepKeys[step%stepKeys.length]);
+    const focus=step===0?sun:flows[(step-1)%flows.length]?.key;
+    document.querySelectorAll('.entity,.flowLine,.particle,.name').forEach(e=>{
+      const key=e.getAttribute('data-entity')||e.getAttribute('data-line')||e.getAttribute('data-flow')||e.getAttribute('data-label');
+      e.classList.toggle('muted',key!==focus && key!==hub);
+      e.classList.toggle('bright',key===focus);
+    });
+  }
+  function tick(t){
+    if(playing && last)phase+=(t-last)*.00035;
+    last=t;
+    particles.forEach(({el,s,i})=>{
+      const v=(phase+i/4)%1;
+      el.setAttribute('cx',(s.a[0]+(s.b[0]-s.a[0])*v).toFixed(2));
+      el.setAttribute('cy',(s.a[1]+(s.b[1]-s.a[1])*v).toFixed(2));
+    });
+    requestAnimationFrame(tick);
+  }
+  playBtn.textContent=Studio.t('pause');
+  playBtn.addEventListener('click',()=>{playing=!playing;playBtn.textContent=Studio.t(playing?'pause':'play');Studio.event('play',{playing:playing?1:0})});
+  nextBtn.addEventListener('click',()=>{step=(step+1)%p.steps;renderStep();Studio.event('step',{step:step+1})});
+  p.options.forEach(key=>{
+    const b=document.createElement('button');
+    b.setAttribute('data-option',key);b.textContent=Studio.t(key);
+    b.addEventListener('click',()=>{if(!done){$('#feedback').textContent='';Studio.answer(key)}});
+    $('#options').appendChild(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    $('#feedback').textContent=Studio.t(correct?'right':'wrong');
+    if(correct && !done){done=true;Studio.done()}
+  });
+  renderStep();requestAnimationFrame(tick);Studio.ready();
+})();
+
+</script>

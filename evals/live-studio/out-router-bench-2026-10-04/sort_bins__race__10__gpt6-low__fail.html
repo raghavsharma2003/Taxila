@@ -1,0 +1,68 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#594333}#game{width:360px;height:320px;padding:9px 12px 10px;display:flex;flex-direction:column;align-items:stretch;gap:4px;background:radial-gradient(circle at 92% 8%,#ffe7bd 0 28px,transparent 29px),#fff8ed}h1{margin:0;text-align:center;font-size:19px;line-height:25px;color:#765038}#instr{text-align:center;font-size:12px;line-height:18px;color:#816b5b}#cards{height:120px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:56px;gap:5px;align-content:center}.card{min-width:0;min-height:52px;border:2px solid #e9c49c;border-radius:15px;background:#fff;box-shadow:0 3px 0 #e9c49c;color:#594333;font:700 15px system-ui,sans-serif;cursor:pointer;transition:transform .22s,box-shadow .22s,opacity .22s;touch-action:manipulation}.card:active,.bin:active{transform:scale(.96)}.card[data-selected="true"]{transform:translateY(-5px) scale(1.04);box-shadow:0 6px 0 #e9c49c,0 0 0 4px #ffe3a8}.slot{min-height:52px}#feedback{height:22px;text-align:center;font-size:14px;font-weight:700;line-height:22px;color:#9b644a}.bins{height:119px;display:flex;gap:9px}.bin{flex:1;min-width:0;border:2px solid #d7ad83;border-radius:18px;background:#f9e8ce;padding:5px;cursor:pointer;transition:transform .2s,background .2s;touch-action:manipulation}.bin:nth-child(even){background:#e9eee0;border-color:#adc1a6}.bin-name{display:block;text-align:center;font-size:14px;font-weight:800;line-height:22px}.placed-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px}.placed{min-width:0;border-radius:8px;background:#fffdf8;padding:3px 1px;text-align:center;font-size:11px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;animation:pop .3s ease-out}@keyframes pop{from{transform:scale(.7);opacity:.3}to{transform:scale(1);opacity:1}}.shake{animation:shake .35s ease-in-out}@keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}#finish{display:none;position:absolute;inset:0;align-items:center;justify-content:center;background:#fff8edee;color:#765038;font-size:25px;font-weight:800;text-align:center}#finish.show{display:flex}
+</style>
+<div id="game">
+  <h1 id="title"></h1>
+  <div id="instr"></div>
+  <div id="cards"></div>
+  <div id="feedback" aria-live="polite"></div>
+  <div class="bins" id="bins"></div>
+  <div id="finish" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const cards=document.getElementById('cards'),bins=document.getElementById('bins'),feedback=document.getElementById('feedback');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  let selected=null,pending=null,placed=0;
+  const cardEls=new Map(),binEls=new Map();
+  p.cards.forEach(key=>{
+    const slot=document.createElement('div');slot.className='slot';
+    const card=document.createElement('button');card.type='button';card.className='card';
+    card.dataset.card=key;card.dataset.selected='false';card.textContent=Studio.t(key);
+    card.addEventListener('click',()=>{
+      if(pending)return;
+      if(selected)selected.dataset.selected='false';
+      selected=card;card.dataset.selected='true';feedback.textContent='';
+      Studio.event('pick',{card:key});
+    });
+    slot.append(card);cards.append(slot);cardEls.set(key,card);
+  });
+  p.bins.forEach(key=>{
+    const bin=document.createElement('div');bin.className='bin';bin.dataset.bin=key;bin.setAttribute('role','button');bin.tabIndex=0;
+    const name=document.createElement('span');name.className='bin-name';name.textContent=Studio.t(key);
+    const list=document.createElement('div');list.className='placed-list';bin.append(name,list);
+    const choose=()=>{
+      if(!selected||pending)return;
+      pending={card:selected,bin:key};Studio.event('sort',{card:selected.dataset.card,bin:key});
+      Studio.answer({card:selected.dataset.card,bin:key});
+    };
+    bin.addEventListener('click',choose);
+    bin.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();choose()}});
+    bins.append(bin);binEls.set(key,list);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    const {card,bin}=pending;pending=null;selected=null;card.dataset.selected='false';
+    if(correct){
+      feedback.textContent=Studio.t('right');
+      const first=card.getBoundingClientRect();
+      const placedCard=document.createElement('div');placedCard.className='placed';placedCard.dataset.placed=bin;placedCard.textContent=card.textContent;
+      binEls.get(bin).append(placedCard);
+      const last=placedCard.getBoundingClientRect();
+      card.style.visibility='hidden';
+      placedCard.animate([{transform:`translate(${first.left-last.left}px,${first.top-last.top}px) scale(1.35)`,opacity:1},{transform:'translate(0,0) scale(1)',opacity:1}],{duration:420,easing:'cubic-bezier(.2,.8,.2,1)'});
+      placed++;
+      if(placed===p.cards.length){
+        setTimeout(()=>{document.getElementById('finish').textContent=Studio.t('done');document.getElementById('finish').classList.add('show');Studio.done()},530);
+      }
+    }else{
+      feedback.textContent=Studio.t('wrong');card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

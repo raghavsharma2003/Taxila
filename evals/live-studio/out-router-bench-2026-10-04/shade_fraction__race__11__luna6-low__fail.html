@@ -1,0 +1,137 @@
+<style>
+*{box-sizing:border-box}
+body{width:360px;height:320px;margin:0;overflow:hidden;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff8eb;color:#493b32}
+#app{width:360px;height:320px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:7px}
+h1{font-size:19px;line-height:23px;margin:0;color:#a64e35;text-align:center}
+#instr,#hint,#feedback{font-size:14px;line-height:18px;text-align:center;margin:0}
+#hint{color:#8a6a46}
+#play{width:100%;min-height:147px;display:flex;align-items:center;justify-content:center;border-radius:20px;background:#ffedcf;padding:8px}
+#whole{width:100%;height:130px;overflow:visible}
+.part{fill:#fffdf8;stroke:#c98254;stroke-width:3;cursor:pointer;transform-box:fill-box;transform-origin:center;transition:fill .18s ease,transform .18s ease,filter .18s ease}
+.part:hover{filter:brightness(1.04)}
+.part:active{transform:scale(.92)}
+.part[data-shaded="true"]{fill:#f3a84f;stroke:#b96538}
+#target{font-size:22px;font-weight:800;color:#674632;min-height:28px}
+#check{min-width:150px;min-height:52px;padding:9px 22px;border:0;border-radius:18px;background:#cf6846;color:white;font:700 17px system-ui;box-shadow:0 4px 0 #a74e35;cursor:pointer;transition:transform .15s,box-shadow .15s}
+#check:active{transform:translateY(3px) scale(.97);box-shadow:0 1px 0 #a74e35}
+#feedback{min-height:20px;font-weight:700;color:#56835c}
+#feedback.wrong{color:#a64e35}
+#app.celebrate #play{animation:pop .45s ease}
+@keyframes pop{50%{transform:scale(1.035);background:#f9d990}}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <p id="instr"></p>
+  <p id="hint"></p>
+  <section id="play" data-item="">
+    <svg id="whole" viewBox="0 0 300 130" role="presentation"></svg>
+  </section>
+  <div id="target" data-target></div>
+  <button id="check" type="button" data-action="check"></button>
+  <p id="feedback" aria-live="polite"></p>
+</div>
+<script>
+
+(() => {
+  const items = Studio.params.items;
+  const picture = Studio.params.picture;
+  const app = document.getElementById("app");
+  const title = document.getElementById("title");
+  const instr = document.getElementById("instr");
+  const hint = document.getElementById("hint");
+  const play = document.getElementById("play");
+  const whole = document.getElementById("whole");
+  const target = document.getElementById("target");
+  const check = document.getElementById("check");
+  const feedback = document.getElementById("feedback");
+  let index = 0;
+  let pending = false;
+
+  title.textContent = Studio.t("title");
+  instr.textContent = Studio.t("instr");
+  hint.textContent = Studio.t("hint");
+  check.textContent = Studio.t("check");
+
+  function render() {
+    const item = items[index];
+    play.dataset.item = item.id;
+    target.textContent = item.n + "/" + item.d;
+    whole.replaceChildren();
+    const columns = picture === "bar" ? Math.min(4, item.d) : Math.ceil(Math.sqrt(item.d));
+    const rows = Math.ceil(item.d / columns);
+    const gap = 5;
+    const cellW = Math.min(300 / columns, 70);
+    const cellH = Math.min(120 / rows, 64);
+    const totalW = columns * cellW + (columns - 1) * gap;
+    const totalH = rows * cellH + (rows - 1) * gap;
+    whole.setAttribute("viewBox", `0 0 ${totalW} ${totalH}`);
+    for (let i = 0; i < item.d; i++) {
+      const col = i % columns;
+      const row = Math.floor(i / columns);
+      const shape = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      shape.setAttribute("x", col * (cellW + gap));
+      shape.setAttribute("y", row * (cellH + gap));
+      shape.setAttribute("width", cellW);
+      shape.setAttribute("height", cellH);
+      shape.setAttribute("rx", picture === "bar" ? "8" : String(Math.min(cellW, cellH) / 2));
+      shape.setAttribute("class", "part");
+      shape.setAttribute("data-part", i);
+      shape.setAttribute("data-shaded", "false");
+      shape.addEventListener("click", () => {
+        if (pending) return;
+        const shaded = shape.dataset.shaded !== "true";
+        shape.dataset.shaded = String(shaded);
+        Studio.event("part_tap", {part:i, shaded:shaded ? "true" : "false"});
+      });
+      whole.appendChild(shape);
+    }
+    feedback.textContent = "";
+    feedback.className = "";
+    pending = false;
+  }
+
+  check.addEventListener("click", () => {
+    if (pending) return;
+    const item = items[index];
+    const count = whole.querySelectorAll('[data-shaded="true"]').length;
+    pending = true;
+    Studio.event("check", {count:count});
+    Studio.answer({n:count, d:item.d});
+  });
+
+  Studio.onVerdict(({correct}) => {
+    if (!pending) return;
+    if (correct) {
+      feedback.textContent = Studio.t("right");
+      app.classList.add("celebrate");
+      Studio.event("verdict", {result:"correct"});
+      app.addEventListener("animationend", function finish() {
+        app.removeEventListener("animationend", finish);
+        app.classList.remove("celebrate");
+        index++;
+        if (index >= items.length) {
+          title.textContent = Studio.t("done");
+          instr.textContent = "";
+          hint.textContent = "";
+          play.hidden = true;
+          target.hidden = true;
+          check.hidden = true;
+          feedback.textContent = "";
+          Studio.done();
+        } else {
+          render();
+        }
+      });
+    } else {
+      feedback.textContent = Studio.t("wrong");
+      feedback.className = "wrong";
+      pending = false;
+      Studio.event("verdict", {result:"wrong"});
+    }
+  });
+
+  render();
+  Studio.ready();
+})();
+
+</script>

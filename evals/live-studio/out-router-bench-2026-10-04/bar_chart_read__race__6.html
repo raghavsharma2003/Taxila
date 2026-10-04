@@ -1,0 +1,90 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+#scene{width:360px;height:320px;overflow:hidden;background:#fff8ed;color:#49382c;font-family:system-ui,-apple-system,sans-serif;position:relative}
+#title{position:absolute;left:16px;top:7px;font-size:18px;font-weight:800;color:#75442c}
+#ask{position:absolute;left:16px;right:16px;top:34px;min-height:28px;font-size:14px;font-weight:650}
+svg{position:absolute;left:0;top:0;width:360px;height:320px}
+.grid{stroke:#eadac7;stroke-width:1}
+.baseline{stroke:#9b775b;stroke-width:1.6}
+.tick-label{fill:#735f4c;font-size:10px;text-anchor:end;dominant-baseline:middle}
+.axis-title{fill:#735f4c;font-size:11px;font-weight:650;text-anchor:middle}
+.bar{fill:#e58b50;transform-box:fill-box;transform-origin:center bottom;animation:grow .7s cubic-bezier(.2,.8,.25,1) both}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.name{fill:#49382c;font-size:10px;font-weight:650;text-anchor:middle}
+.column-hit{fill:transparent;cursor:pointer;outline:none}
+.column-hit:focus-visible{fill:#f5dfc8;fill-opacity:.42;stroke:#b86233;stroke-width:2}
+.column-hit:active{fill:#edc39f;fill-opacity:.35}
+#feedback{position:absolute;left:14px;right:14px;bottom:6px;min-height:26px;text-align:center;font-size:14px;font-weight:750;color:#75442c}
+#feedback.good{color:#397451}
+</style>
+<div id="scene">
+  <div id="title"></div>
+  <div id="ask"></div>
+  <svg id="chart" viewBox="0 0 360 320" role="img" aria-label="">
+    <g id="chart-content"></g>
+  </svg>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, data=p.data, ns="http://www.w3.org/2000/svg";
+  const title=document.getElementById("title"), ask=document.getElementById("ask");
+  const content=document.getElementById("chart-content"), feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  ask.textContent=Studio.t("ask");
+  const plotLeft=54, plotRight=354, top=70, base=222, plotHeight=base-top;
+  const maxValue=Math.max(...data.map(d=>d.value));
+  const rough=maxValue/4;
+  const power=Math.pow(10,Math.floor(Math.log10(rough)));
+  const scaled=rough/power;
+  const step=(scaled<=1?1:scaled<=2?2:scaled<=5?5:10)*power;
+  const scaleMax=Math.ceil(maxValue/step)*step;
+  const make=(tag,attrs={},text)=>{
+    const el=document.createElementNS(ns,tag);
+    for(const [k,v] of Object.entries(attrs))el.setAttribute(k,String(v));
+    if(text!==undefined)el.textContent=text;
+    content.appendChild(el);
+    return el;
+  };
+  const ticks=[];
+  for(let v=0;v<=scaleMax;v+=step)ticks.push(v);
+  ticks.forEach(v=>{
+    const y=base-(v/scaleMax)*plotHeight;
+    make("line",{x1:plotLeft,y1:y,x2:plotRight,y2:y,class:v===0?"baseline":"grid"});
+    make("text",{x:48,y,"data-tick":v,class:"tick-label"},v);
+  });
+  const axis=make("text",{x:14,y:(top+base)/2,class:"axis-title",transform:`rotate(-90 14 ${(top+base)/2})`},Studio.t("yaxis"));
+  const band=(plotRight-plotLeft)/data.length;
+  let locked=false;
+  data.forEach((d,i)=>{
+    const cx=plotLeft+band*(i+.5);
+    const h=(d.value/scaleMax)*plotHeight;
+    const y=base-h;
+    const bar=make("rect",{x:cx-15,y,width:30,height:h,rx:7,class:"bar","data-bar":d.key,"data-value":d.value});
+    bar.style.animationDelay=(i*.045)+"s";
+    make("text",{x:cx,y:249,class:"name"},Studio.t(d.key));
+    const hit=make("rect",{x:plotLeft+i*band,y:64,width:band,height:232,rx:8,class:"column-hit","data-column":d.key,tabindex:0,role:"button","aria-label":Studio.t(d.key)});
+    const choose=()=>{
+      if(locked)return;
+      locked=true;
+      Studio.answer(d.key);
+    };
+    hit.addEventListener("click",choose);
+    hit.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();choose();}});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      feedback.textContent=Studio.t("right")+" "+Studio.t("done");
+      feedback.classList.add("good");
+      Studio.done();
+    }else{
+      feedback.textContent=Studio.t("wrong");
+      locked=false;
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

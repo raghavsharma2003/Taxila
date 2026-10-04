@@ -1,0 +1,164 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff5df;font-family:Arial,sans-serif;color:#553b27}
+  #stage{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(180deg,#fff9eb 0%,#fff0cd 100%)}
+  #scene{position:absolute;inset:0;width:360px;height:195px}
+  .soft{fill:#f7d77e;opacity:.24}
+  .line{fill:none;stroke:#b88b52;stroke-width:2.5;stroke-linecap:round;stroke-dasharray:4 6;opacity:.7}
+  .entity{filter:drop-shadow(0 3px 2px rgba(98,68,35,.16))}
+  .label{font-size:12px;font-weight:700;fill:#704d2d;paint-order:stroke;stroke:#fff8e8;stroke-width:4px;stroke-linejoin:round}
+  #caption{font-size:13px;font-weight:700;fill:#885f35;text-anchor:middle}
+  .particle{filter:drop-shadow(0 1px 1px rgba(71,48,22,.2))}
+  #controls{position:absolute;left:0;top:195px;width:360px;height:52px;display:flex;align-items:center;justify-content:center;gap:14px}
+  button{border:0;font-family:Arial,sans-serif;font-weight:700;color:#66462d;background:#fffdf6;box-shadow:0 3px 0 #d6ad72,0 5px 10px rgba(111,72,32,.12);cursor:pointer;transition:transform .14s ease,box-shadow .14s ease}
+  button:active{transform:translateY(3px) scale(.96);box-shadow:0 1px 0 #d6ad72}
+  .control{min-width:106px;height:52px;border-radius:18px;font-size:14px}
+  #playBtn{background:#dff1bd}
+  #nextBtn{background:#ffe0a3}
+  #ask{position:absolute;left:12px;top:248px;width:336px;height:18px;text-align:center;font-size:13px;font-weight:700;color:#68472f;white-space:nowrap;overflow:hidden}
+  #options{position:absolute;left:12px;top:268px;width:336px;height:52px;display:flex;gap:8px}
+  .option{height:52px;min-width:0;flex:1;border-radius:16px;background:#fffdf8;font-size:13px;padding:3px}
+  .option:hover{background:#fff0bd}
+  #feedback{position:absolute;right:13px;top:247px;font-size:12px;font-weight:700;color:#8a5934}
+  .pulse{animation:pulse .42s ease}
+  @keyframes pulse{0%{transform:scale(1)}45%{transform:scale(1.08)}100%{transform:scale(1)}}
+  .glow{animation:glow .8s ease}
+  @keyframes glow{0%,100%{filter:drop-shadow(0 3px 2px rgba(98,68,35,.16))}50%{filter:drop-shadow(0 0 8px #f3b94d)}}
+</style>
+<div id="stage">
+  <svg id="scene" viewBox="0 0 360 195" aria-label="">
+    <ellipse class="soft" cx="180" cy="110" rx="62" ry="48"></ellipse>
+    <path class="line" d="M88 68 C116 76 130 86 145 95"></path>
+    <path class="line" d="M179 174 C179 156 179 142 179 130"></path>
+    <path class="line" d="M44 123 C86 123 113 118 141 112"></path>
+    <path class="line" d="M218 112 C250 112 281 116 322 122"></path>
+
+    <circle id="sunShape" class="entity" cx="65" cy="66" r="22" fill="#ffd35b"></circle>
+    <g stroke="#e7a93b" stroke-width="3" stroke-linecap="round">
+      <path d="M65 34v-8"></path><path d="M65 98v8"></path><path d="M33 66h-8"></path><path d="M97 66h8"></path>
+      <path d="M43 44l-6-6"></path><path d="M87 44l6-6"></path><path d="M43 88l-6 6"></path><path d="M87 88l6 6"></path>
+    </g>
+
+    <path id="rootShape" class="entity" d="M180 151 C178 163 174 171 166 181 M180 151 C184 163 190 171 198 181 M180 160 C176 169 176 177 173 187 M180 160 C185 169 184 178 188 187 M170 172l-8 4 M191 171l8 4" fill="none" stroke="#a66a3a" stroke-width="6" stroke-linecap="round"></path>
+
+    <path id="hubShape" class="entity" d="M179 77 C145 78 131 100 143 123 C153 143 178 148 196 132 C216 114 214 85 189 77 C185 76 182 76 179 77Z" fill="#83bf57" stroke="#4e8d45" stroke-width="3"></path>
+    <path d="M151 123 C165 110 178 99 197 84 M164 112l-9-1 M175 101l-2-9 M183 96l9 1" fill="none" stroke="#e4f1a4" stroke-width="3" stroke-linecap="round"></path>
+
+    <g id="particles"></g>
+    <text id="titleLabel" class="label" x="180" y="17" text-anchor="middle"></text>
+    <text id="sunLabel" class="label" x="28" y="103"></text>
+    <text id="rootLabel" class="label" x="202" y="177"></text>
+    <text id="hubLabel" class="label" x="213" y="87"></text>
+    <text id="waterLabel" class="label" x="197" y="154"></text>
+    <text id="inLabel" class="label" x="17" y="116"></text>
+    <text id="outLabel" class="label" x="273" y="108"></text>
+    <text id="caption" data-caption x="180" y="190"></text>
+  </svg>
+
+  <div id="controls">
+    <button id="playBtn" class="control" data-action="play" type="button"></button>
+    <button id="nextBtn" class="control" data-action="next" type="button"></button>
+  </div>
+  <div id="ask"></div>
+  <div id="feedback"></div>
+  <div id="options"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, playing=true, step=1, done=false, particles=[], start=0;
+  var hub=document.getElementById("hubShape"), sun=document.getElementById("sunShape"), roots=document.getElementById("rootShape");
+  hub.setAttribute("data-entity",p.hub);
+  if(p.entities[0]) sun.setAttribute("data-entity",p.entities[0]);
+  if(p.entities[1]) roots.setAttribute("data-entity",p.entities[1]);
+
+  document.getElementById("titleLabel").textContent=Studio.t("title");
+  document.getElementById("sunLabel").textContent=p.entities[0]?Studio.t(p.entities[0]):"";
+  document.getElementById("rootLabel").textContent=p.entities[1]?Studio.t(p.entities[1]):"";
+  document.getElementById("hubLabel").textContent=Studio.t(p.hub);
+  document.getElementById("ask").textContent=Studio.t("ask");
+  document.getElementById("playBtn").textContent=Studio.t("pause");
+  document.getElementById("nextBtn").textContent=Studio.t("next");
+  document.getElementById("caption").textContent=Studio.t("step"+step);
+
+  var labels={};
+  p.flows.forEach(function(f){
+    if(f.dir==="up_in") labels[f.key]=document.getElementById("waterLabel");
+    else if(f.dir==="out") labels[f.key]=document.getElementById("outLabel");
+    else labels[f.key]=document.getElementById("inLabel");
+  });
+  p.flows.forEach(function(f){
+    if(labels[f.key]){
+      labels[f.key].setAttribute("data-label",f.key);
+      labels[f.key].textContent=Studio.t(f.key);
+    }
+  });
+  document.getElementById("sunLabel").setAttribute("data-label",p.entities[0]);
+  document.getElementById("rootLabel").setAttribute("data-label",p.entities[1]);
+  document.getElementById("hubLabel").setAttribute("data-label",p.hub);
+
+  var colors=["#4ca9bd","#75a959","#f39a62","#d98bc2"];
+  p.flows.forEach(function(f,fi){
+    for(var i=0;i<3;i++){
+      var c=document.createElementNS("http://www.w3.org/2000/svg","circle");
+      c.setAttribute("r","4.5");
+      c.setAttribute("fill",colors[fi%colors.length]);
+      c.setAttribute("class","particle");
+      c.setAttribute("data-flow",f.key);
+      document.getElementById("particles").appendChild(c);
+      particles.push({el:c,dir:f.dir,phase:(i/3)+(fi*.13)});
+    }
+  });
+
+  function pos(item,t){
+    var q=(t+item.phase)%1, x,y;
+    if(item.dir==="out"){x=211+q*112;y=111+Math.sin(q*6.28)*5}
+    else if(item.dir==="up_in"){x=180+Math.sin(q*6.28)*3;y=181-q*52}
+    else{x=38+q*104;y=123-Math.sin(q*6.28)*4}
+    item.el.setAttribute("cx",x.toFixed(1)); item.el.setAttribute("cy",y.toFixed(1));
+  }
+  function animate(now){
+    if(!start)start=now;
+    if(playing){
+      var t=(now-start)/2300;
+      particles.forEach(function(a){pos(a,t)});
+    }
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+
+  document.getElementById("playBtn").addEventListener("click",function(){
+    playing=!playing;
+    this.textContent=Studio.t(playing?"pause":"play");
+    this.classList.remove("pulse"); void this.offsetWidth; this.classList.add("pulse");
+    Studio.event("play",{playing:playing?1:0});
+  });
+  document.getElementById("nextBtn").addEventListener("click",function(){
+    step=step>=p.steps?1:step+1;
+    var cap=document.getElementById("caption");
+    cap.textContent=Studio.t("step"+step);
+    cap.classList.remove("pulse"); void cap.offsetWidth; cap.classList.add("pulse");
+    hub.classList.remove("glow"); void hub.offsetWidth; hub.classList.add("glow");
+    Studio.event("next",{step:step});
+  });
+
+  p.options.forEach(function(key){
+    var b=document.createElement("button");
+    b.type="button"; b.className="option"; b.setAttribute("data-option",key);
+    b.textContent=Studio.t(key);
+    b.addEventListener("click",function(){
+      document.getElementById("feedback").textContent="";
+      b.classList.remove("pulse"); void b.offsetWidth; b.classList.add("pulse");
+      Studio.answer(key);
+      Studio.event("answer",{option:key});
+    });
+    document.getElementById("options").appendChild(b);
+  });
+  Studio.onVerdict(function(v){
+    document.getElementById("feedback").textContent=Studio.t(v.correct?"right":"wrong");
+    if(v.correct&&!done){done=true;Studio.done()}
+  });
+  Studio.ready();
+})();
+
+</script>

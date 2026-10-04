@@ -1,0 +1,190 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e8;font-family:Arial,sans-serif}
+  #app{width:360px;height:320px;position:relative;overflow:hidden;background:
+    radial-gradient(circle at 14% 10%,#ffe7ac 0 10px,transparent 11px),
+    radial-gradient(circle at 91% 20%,#ffd9a2 0 7px,transparent 8px),
+    linear-gradient(145deg,#fff9ee,#fff1d7)}
+  .top{height:82px;padding:14px 20px 4px;text-align:center;position:relative;z-index:2}
+  h1{margin:0;color:#8c4d25;font-size:22px;line-height:26px;font-weight:800}
+  #instr{margin:5px 0 0;color:#9c6540;font-size:13px;line-height:16px;font-weight:700}
+  #play{position:relative;height:176px;width:100%}
+  #fractionCard{position:absolute;left:50%;top:0;transform:translateX(-50%);min-width:112px;height:54px;padding:5px 15px 4px;border-radius:18px;background:#fffdf7;border:3px solid #f3c66f;box-shadow:0 4px 0 #e5ad55;color:#8b4c27;text-align:center;font-weight:800}
+  #target{display:inline-block;font-size:23px;line-height:38px;letter-spacing:1px}
+  #wholeWrap{position:absolute;left:18px;right:18px;top:63px;height:108px;display:flex;align-items:center;justify-content:center}
+  #whole{width:324px;height:106px;overflow:visible}
+  .part{fill:#ffe3a2;stroke:#bd7039;stroke-width:3;cursor:pointer;transform-box:fill-box;transform-origin:center;transition:fill .2s ease,transform .16s ease,filter .2s ease}
+  .part:hover{filter:brightness(1.04)}
+  .part:active{transform:scale(.93)}
+  .part.shaded{fill:#f47d45;filter:drop-shadow(0 2px 1px rgba(135,65,23,.2))}
+  .part.pop{animation:pop .28s ease}
+  @keyframes pop{50%{transform:scale(.89)}}
+  #check{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);width:176px;height:54px;border:0;border-radius:19px;background:#75b95b;box-shadow:0 5px 0 #4c9147;color:#fffdf4;font-size:18px;font-weight:800;cursor:pointer;transition:transform .15s ease,filter .15s ease}
+  #check:active{transform:translateX(-50%) translateY(4px) scale(.97);box-shadow:0 1px 0 #4c9147}
+  #check.wait{filter:saturate(.7);pointer-events:none}
+  #message{position:absolute;left:18px;right:18px;bottom:70px;height:25px;text-align:center;color:#9a5931;font-size:14px;font-weight:800;opacity:0;transform:translateY(5px);transition:opacity .2s,transform .2s}
+  #message.show{opacity:1;transform:translateY(0)}
+  #message.good{color:#3e8a49;animation:cheer .55s ease}
+  @keyframes cheer{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-7px) scale(1.08)}}
+  #sparkles{position:absolute;inset:0;pointer-events:none}
+  .spark{position:absolute;width:10px;height:10px;border-radius:50%;background:#f6b94e;opacity:0}
+  .spark.go{animation:spark .65s ease forwards}
+  @keyframes spark{0%{opacity:0;transform:translate(0,0) scale(.3)}25%{opacity:1}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(1.4)}}
+  #doneScreen{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:35px;background:linear-gradient(145deg,#fff8e9,#ffe8bf)}
+  #doneCard{width:276px;min-height:164px;border-radius:30px;background:#fffdf7;border:4px solid #f2c46d;box-shadow:0 7px 0 #e5ad55;padding:28px 18px;color:#8d4d28}
+  #doneIcon{width:58px;height:58px;margin:0 auto 10px;border-radius:50%;background:#f7b94d;position:relative}
+  #doneIcon:before,#doneIcon:after{content:"";position:absolute;background:#fff8e7;border-radius:50%}
+  #doneIcon:before{width:9px;height:9px;left:15px;top:17px;box-shadow:19px 0 #fff8e7}
+  #doneIcon:after{width:28px;height:12px;left:15px;top:31px;border-radius:0 0 20px 20px}
+  #doneText{font-size:21px;font-weight:800;line-height:27px}
+</style>
+<div id="app">
+  <div class="top">
+    <h1 id="title"></h1>
+    <p id="instr"></p>
+  </div>
+  <main id="game" data-item="">
+    <div id="play">
+      <div id="fractionCard"><span id="target" data-target></span></div>
+      <div id="wholeWrap"><svg id="whole" viewBox="0 0 324 106" role="img"></svg></div>
+    </div>
+    <div id="message"></div>
+    <button id="check" data-action="check" type="button"></button>
+  </main>
+  <div id="sparkles"></div>
+  <div id="doneScreen">
+    <div id="doneCard">
+      <div id="doneIcon"></div>
+      <div id="doneText"></div>
+    </div>
+  </div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, items=p.items, index=0, busy=false;
+  var title=document.getElementById('title');
+  var instr=document.getElementById('instr');
+  var target=document.getElementById('target');
+  var whole=document.getElementById('whole');
+  var game=document.getElementById('game');
+  var check=document.getElementById('check');
+  var message=document.getElementById('message');
+  var sparkleBox=document.getElementById('sparkles');
+  var doneScreen=document.getElementById('doneScreen');
+  var doneText=document.getElementById('doneText');
+  var ns='http://www.w3.org/2000/svg';
+
+  title.textContent=Studio.t('title');
+  instr.textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+
+  function make(tag){
+    return document.createElementNS(ns,tag);
+  }
+  function set(el,a,v){el.setAttribute(a,v)}
+  function partsBar(item){
+    var d=item.d, cols=Math.ceil(Math.sqrt(d)), rows=Math.ceil(d/cols);
+    var gap=4, usableW=304, usableH=94;
+    var cw=(usableW-gap*(cols-1))/cols, ch=(usableH-gap*(rows-1))/rows;
+    var startX=10, startY=6;
+    for(var i=0;i<d;i++){
+      var col=i%cols, row=Math.floor(i/cols);
+      var r=make('rect');
+      set(r,'x',startX+col*(cw+gap));
+      set(r,'y',startY+row*(ch+gap));
+      set(r,'width',cw); set(r,'height',ch); set(r,'rx',Math.min(13,cw/5,ch/5));
+      addPart(r,i);
+      whole.appendChild(r);
+    }
+  }
+  function partsPizza(item){
+    var d=item.d, cx=162, cy=53, rad=48;
+    for(var i=0;i<d;i++){
+      var a1=(-Math.PI/2)+(i*2*Math.PI/d);
+      var a2=(-Math.PI/2)+((i+1)*2*Math.PI/d);
+      var x1=cx+rad*Math.cos(a1), y1=cy+rad*Math.sin(a1);
+      var x2=cx+rad*Math.cos(a2), y2=cy+rad*Math.sin(a2);
+      var large=(2*Math.PI/d)>Math.PI?1:0;
+      var path=make('path');
+      set(path,'d','M '+cx+' '+cy+' L '+x1+' '+y1+' A '+rad+' '+rad+' 0 '+large+' 1 '+x2+' '+y2+' Z');
+      addPart(path,i);
+      whole.appendChild(path);
+    }
+  }
+  function addPart(el,i){
+    el.classList.add('part');
+    set(el,'data-part',i);
+    set(el,'data-shaded','false');
+    el.addEventListener('click',function(){
+      if(busy)return;
+      var now=el.getAttribute('data-shaded')==='true';
+      el.setAttribute('data-shaded',now?'false':'true');
+      el.classList.toggle('shaded',!now);
+      el.classList.remove('pop');
+      void el.getBoundingClientRect();
+      el.classList.add('pop');
+      Studio.event('part',{part:i,shaded:now?0:1});
+    });
+  }
+  function load(){
+    busy=false;
+    message.className='';
+    message.textContent='';
+    whole.innerHTML='';
+    var item=items[index];
+    game.setAttribute('data-item',item.id);
+    target.textContent=item.n+'/'+item.d;
+    if(p.picture==='pizza')partsPizza(item); else partsBar(item);
+    check.classList.remove('wait');
+  }
+  function burst(){
+    sparkleBox.innerHTML='';
+    for(var i=0;i<7;i++){
+      var s=document.createElement('i');
+      s.className='spark';
+      s.style.left=(150+(i%4)*20)+'px';
+      s.style.top=(140+Math.floor(i/4)*16)+'px';
+      s.style.setProperty('--x',((i-3)*24)+'px');
+      s.style.setProperty('--y',(-35-(i%3)*18)+'px');
+      sparkleBox.appendChild(s);
+      setTimeout((function(x){return function(){x.classList.add('go')}})(s),i*35);
+    }
+  }
+  check.addEventListener('click',function(){
+    if(busy)return;
+    busy=true;
+    check.classList.add('wait');
+    var shaded=whole.querySelectorAll('[data-shaded="true"]').length;
+    var item=items[index];
+    Studio.event('check',{n:shaded,d:item.d});
+    Studio.answer({n:shaded,d:item.d});
+  });
+  Studio.onVerdict(function(v){
+    if(v.correct){
+      message.textContent=Studio.t('right');
+      message.className='show good';
+      burst();
+      Studio.event('verdict',{correct:1});
+      setTimeout(function(){
+        index++;
+        if(index>=items.length){
+          game.style.display='none';
+          doneText.textContent=Studio.t('done');
+          doneScreen.style.display='flex';
+          Studio.done();
+        }else load();
+      },800);
+    }else{
+      busy=false;
+      check.classList.remove('wait');
+      message.textContent=Studio.t('wrong')+' '+Studio.t('hint');
+      message.className='show';
+      Studio.event('verdict',{correct:0});
+    }
+  });
+  load();
+  Studio.ready();
+}());
+
+</script>

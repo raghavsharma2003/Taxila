@@ -1,0 +1,109 @@
+<style>
+*{box-sizing:border-box}
+.stage{width:360px;height:320px;overflow:hidden;padding:9px 12px;background:#fff8eb;color:#384b57;font-family:system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;gap:5px}
+h1,p{margin:0;text-align:center}
+h1{font-size:19px;line-height:24px;color:#315c60}
+.instr{font-size:13px;line-height:17px;min-height:17px}
+.item{width:100%;display:flex;flex-direction:column;align-items:center;gap:2px}
+.target{font-size:24px;line-height:29px;font-weight:750;color:#d56f48}
+.linebox{width:320px;height:93px;position:relative;margin-top:1px}
+.axis{position:absolute;left:10px;right:10px;top:32px;height:4px;border-radius:4px;background:#6f9c91}
+.tick{position:absolute;top:23px;width:2px;height:21px;background:#47766c;transform:translateX(-50%)}
+.tick-label{position:absolute;top:49px;transform:translateX(-50%);font-size:12px;line-height:16px;color:#50646a;white-space:nowrap}
+.marker{position:absolute;top:6px;width:24px;height:24px;border-radius:50%;background:#ef9a61;border:3px solid #fff;box-shadow:0 2px 5px #8d604655;transform:translateX(-50%);transition:left .22s cubic-bezier(.2,.8,.25,1);z-index:2}
+.marker:after{content:"";position:absolute;left:7px;top:17px;width:4px;height:17px;border-radius:4px;background:#dc794c}
+.controls{width:100%;display:flex;gap:8px;justify-content:center}
+button{font:700 16px system-ui,sans-serif;color:#fff;border:0;border-radius:16px;min-width:88px;height:56px;padding:0 12px;background:#5d9286;box-shadow:0 4px 0 #3e7067;cursor:pointer;touch-action:manipulation;transition:transform .12s,filter .12s}
+button:active{transform:translateY(3px) scale(.97);box-shadow:0 1px 0 #3e7067}
+button.check{background:#e28a58;box-shadow:0 4px 0 #b7643f;min-width:108px}
+.feedback{height:19px;font-size:14px;font-weight:700;color:#47766c;text-align:center}
+.marker.hop{animation:hop .42s ease-in-out}
+@keyframes hop{50%{transform:translateX(-50%) translateY(-18px)}}
+</style>
+<main class="stage">
+<h1 id="title"></h1>
+<p class="instr" id="instr"></p>
+<section class="item" id="item">
+<div class="target" data-target id="target"></div>
+</section>
+<div class="linebox" id="linebox">
+<div class="axis"></div>
+<div class="marker" data-marker data-value="" id="marker"></div>
+</div>
+<div class="controls">
+<button type="button" data-action="left" id="left"></button>
+<button type="button" data-action="right" id="right"></button>
+<button type="button" class="check" data-action="check" id="check"></button>
+</div>
+<div class="feedback" id="feedback"></div>
+</main>
+<script>
+
+(()=>{
+const p=Studio.params,t=Studio.t;
+const $=id=>document.getElementById(id);
+$("title").textContent=t("title");
+$("instr").textContent=t("instr");
+$("left").textContent=t("left");
+$("right").textContent=t("right_btn");
+$("check").textContent=t("check");
+const count=Math.round((p.max-p.min)/p.step);
+const line=$("linebox"), marker=$("marker");
+let index=0,k=Math.round((p.start-p.min)/p.step),locked=false;
+function valueAt(i){return Number((p.min+i*p.step).toFixed(6))}
+function fmt(v){
+ if(p.format==="integer")return String(Math.round(v));
+ let scaled=Math.round(v*1000000),den=1000000,a=Math.abs(scaled);
+ while(den>1&&a%10===0){a/=10;den/=10}
+ let x=scaled<0?-a:a;
+ function gcd(m,n){while(n){let r=m%n;m=n;n=r}return m}
+ let g=gcd(Math.abs(x),den);
+ return String(x/g)+"/"+String(den/g)
+}
+for(let i=0;i<=count;i++){
+ const v=valueAt(i),tick=document.createElement("div");
+ tick.className="tick";tick.setAttribute("data-tick",String(v));
+ tick.style.left=(10+(i/count)*300)+"px";
+ line.appendChild(tick);
+ if(i%p.labelEvery===0){
+  const label=document.createElement("div");
+  label.className="tick-label";label.textContent=fmt(v);
+  label.style.left=(10+(i/count)*300)+"px";line.appendChild(label)
+ }
+}
+function update(){
+ const v=valueAt(k),x=10+(k/count)*300;
+ marker.style.left=x+"px";marker.dataset.value=String(v);
+}
+function showItem(){
+ const item=p.items[index];
+ $("item").dataset.item=item.id;
+ $("target").textContent=fmt(item.target);
+ $("target").dataset.target=String(item.target);
+ $("feedback").textContent="";
+ k=Math.max(0,Math.min(count,Math.round((p.start-p.min)/p.step)));
+ update();locked=false;
+}
+$("left").addEventListener("click",()=>{if(!locked){k=Math.max(0,k-1);update();Studio.event("move",{direction:"left"})}});
+$("right").addEventListener("click",()=>{if(!locked){k=Math.min(count,k+1);update();Studio.event("move",{direction:"right"})}});
+$("check").addEventListener("click",()=>{if(!locked){locked=true;Studio.answer({value:valueAt(k)})}});
+Studio.onVerdict(({correct})=>{
+ if(correct){
+  $("feedback").textContent=t("right");
+  marker.classList.remove("hop");void marker.offsetWidth;marker.classList.add("hop")
+ }else{
+  $("feedback").textContent=t("wrong");locked=false
+ }
+});
+marker.addEventListener("animationend",()=>{
+ marker.classList.remove("hop");
+ if($("feedback").textContent!==t("right"))return;
+ index++;
+ if(index>=p.items.length){$("feedback").textContent=t("done");Studio.done()}
+ else showItem()
+});
+showItem();
+Studio.ready()
+})();
+
+</script>

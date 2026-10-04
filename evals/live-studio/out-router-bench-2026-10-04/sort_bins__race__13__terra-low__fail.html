@@ -1,0 +1,195 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e8;font-family:Arial,sans-serif}
+  #stage{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(180deg,#fff9ed 0%,#fff2d7 100%);color:#563c2d}
+  .orb{position:absolute;border-radius:50%;pointer-events:none}
+  .orb.a{width:92px;height:92px;left:-38px;top:-35px;background:#ffdca9;opacity:.55}
+  .orb.b{width:64px;height:64px;right:-23px;top:28px;background:#bfe8d6;opacity:.62}
+  .orb.c{width:46px;height:46px;right:5px;bottom:-18px;background:#ffc5b4;opacity:.6}
+  .top{position:relative;height:36px;padding:9px 16px 0;text-align:center}
+  #title{font-size:20px;font-weight:800;letter-spacing:.1px;line-height:24px}
+  #instruction{position:relative;height:21px;padding:1px 18px 0;text-align:center;font-size:12px;font-weight:700;color:#876554;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #feedback{position:absolute;z-index:4;left:50%;top:38px;transform:translateX(-50%) translateY(-8px);min-width:76px;height:24px;padding:4px 12px;border-radius:14px;text-align:center;font-size:12px;font-weight:800;opacity:0;pointer-events:none;background:#fffdf7;box-shadow:0 4px 12px #8e604127}
+  #feedback.show{opacity:1;transform:translateX(-50%) translateY(0);transition:opacity .18s,transform .18s}
+  #feedback.good{color:#267257;background:#e3f7e9}
+  #feedback.bad{color:#a84b40;background:#ffe7df}
+  #deck{position:relative;width:318px;height:116px;margin:1px auto 0;display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,52px);gap:8px 10px}
+  .slot{display:flex;align-items:center;justify-content:center;min-width:0;min-height:52px}
+  .card{width:154px;height:52px;border:0;border-radius:16px;background:linear-gradient(145deg,#ffffff,#fffaf0);box-shadow:0 5px 0 #dfc9a8,0 8px 14px #8e604126;color:#563c2d;font-size:15px;font-weight:800;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease,opacity .2s ease;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 8px}
+  .card:active{transform:scale(.95)}
+  .card.selected{transform:translateY(-7px) scale(1.035);box-shadow:0 8px 0 #e9bc73,0 12px 19px #d78e543f;background:#fffdf8;outline:3px solid #ffd58d}
+  .card.shake{animation:shake .38s ease-in-out}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px) rotate(-2deg)}45%{transform:translateX(7px) rotate(2deg)}70%{transform:translateX(-4px)}}
+  #bins{position:relative;width:342px;height:137px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+  .bin{position:relative;min-width:52px;height:132px;border:3px solid #dcbf91;border-top-width:7px;border-radius:13px 13px 20px 20px;background:linear-gradient(180deg,#f9e6c4 0%,#f4d6a2 100%);box-shadow:inset 0 2px #fff7e6,0 5px 0 #d5b178;cursor:pointer;transition:transform .18s ease,filter .18s ease}
+  .bin:active{transform:translateY(2px) scale(.98)}
+  .bin.ready{filter:brightness(1.06);animation:binpulse 1s ease-in-out infinite}
+  @keyframes binpulse{50%{box-shadow:inset 0 2px #fff7e6,0 5px 0 #d5b178,0 0 0 4px #ffe4ac}}
+  .binname{height:26px;padding-top:4px;text-align:center;font-size:12px;font-weight:800;color:#75543d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;padding:2px 5px;align-content:start}
+  .card.placed{width:100%;height:25px;border-radius:8px;padding:0 3px;font-size:10px;box-shadow:0 2px 0 #d1ae79;background:#fffaf0;cursor:default;transition:transform .4s cubic-bezier(.2,.8,.2,1),opacity .2s}
+  #complete{position:absolute;z-index:8;left:25px;right:25px;top:112px;min-height:68px;padding:18px 12px;border-radius:22px;background:#fffdf8;border:3px solid #f3c981;box-shadow:0 8px 22px #98603536;text-align:center;font-size:18px;font-weight:800;color:#5d4936;opacity:0;transform:scale(.8);pointer-events:none;transition:opacity .3s,transform .35s cubic-bezier(.2,1.3,.4,1)}
+  #complete.show{opacity:1;transform:scale(1)}
+  #complete svg{display:block;margin:0 auto 4px}
+</style>
+<div id="stage">
+  <div class="orb a"></div>
+  <div class="orb b"></div>
+  <div class="orb c"></div>
+  <div class="top"><div id="title"></div></div>
+  <div id="instruction"></div>
+  <div id="feedback"></div>
+  <div id="deck"></div>
+  <div id="bins"></div>
+  <div id="complete">
+    <svg width="34" height="20" viewBox="0 0 34 20" aria-hidden="true">
+      <path d="M3 12l7 5 6-12 6 12 7-5" fill="none" stroke="#eea94f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="3" cy="4" r="2" fill="#f3c969"/><circle cx="31" cy="4" r="2" fill="#f3c969"/>
+    </svg>
+    <div id="doneword"></div>
+  </div>
+</div>
+<script>
+
+(function(){
+  var params=Studio.params;
+  var deck=document.getElementById('deck');
+  var bins=document.getElementById('bins');
+  var feedback=document.getElementById('feedback');
+  var complete=document.getElementById('complete');
+  var selected=null;
+  var waiting=false;
+  var placed=0;
+  var feedbackTimer=0;
+
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  document.getElementById('doneword').textContent=Studio.t('done');
+
+  function clearReady(){
+    var all=bins.querySelectorAll('.bin');
+    for(var i=0;i<all.length;i++) all[i].classList.remove('ready');
+  }
+
+  function choose(card){
+    if(waiting || card.classList.contains('placed')) return;
+    if(selected===card){
+      card.classList.remove('selected');
+      card.dataset.selected='false';
+      selected=null;
+      clearReady();
+      return;
+    }
+    if(selected){
+      selected.classList.remove('selected');
+      selected.dataset.selected='false';
+    }
+    selected=card;
+    selected.classList.add('selected');
+    selected.dataset.selected='true';
+    var all=bins.querySelectorAll('.bin');
+    for(var i=0;i<all.length;i++) all[i].classList.add('ready');
+    Studio.event('pick',{});
+  }
+
+  function message(kind){
+    window.clearTimeout(feedbackTimer);
+    feedback.textContent=Studio.t(kind);
+    feedback.className='show '+(kind==='right'?'good':'bad');
+    feedbackTimer=window.setTimeout(function(){feedback.className='';},900);
+  }
+
+  function place(card,bin){
+    var old=card.getBoundingClientRect();
+    card.classList.remove('selected');
+    card.dataset.selected='false';
+    card.removeAttribute('data-card');
+    card.dataset.placed=bin.dataset.bin;
+    card.classList.add('placed');
+    bin.querySelector('.stack').appendChild(card);
+    var now=card.getBoundingClientRect();
+    var dx=old.left-now.left;
+    var dy=old.top-now.top;
+    card.style.transition='none';
+    card.style.transform='translate('+dx+'px,'+dy+'px)';
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        card.style.transition='';
+        card.style.transform='';
+      });
+    });
+    placed++;
+    selected=null;
+    clearReady();
+    if(placed===params.cards.length){
+      window.setTimeout(function(){
+        complete.classList.add('show');
+        Studio.done();
+      },430);
+    }
+  }
+
+  function verdict(result){
+    if(!waiting) return;
+    waiting=false;
+    var card=selected;
+    var bin=waiting.bin;
+    if(result.correct){
+      message('right');
+      place(card,bin);
+    }else{
+      message('wrong');
+      card.classList.remove('selected');
+      card.dataset.selected='false';
+      card.classList.add('shake');
+      window.setTimeout(function(){card.classList.remove('shake');},410);
+      selected=null;
+      clearReady();
+    }
+  }
+
+  Studio.onVerdict(verdict);
+
+  for(var i=0;i<params.cards.length;i++){
+    (function(key){
+      var slot=document.createElement('div');
+      slot.className='slot';
+      var card=document.createElement('button');
+      card.type='button';
+      card.className='card';
+      card.dataset.card=key;
+      card.dataset.selected='false';
+      card.textContent=Studio.t(key);
+      card.addEventListener('click',function(){choose(card);});
+      slot.appendChild(card);
+      deck.appendChild(slot);
+    })(params.cards[i]);
+  }
+
+  for(var j=0;j<params.bins.length;j++){
+    (function(key){
+      var bin=document.createElement('div');
+      bin.className='bin';
+      bin.dataset.bin=key;
+      var name=document.createElement('div');
+      name.className='binname';
+      name.textContent=Studio.t(key);
+      var stack=document.createElement('div');
+      stack.className='stack';
+      bin.appendChild(name);
+      bin.appendChild(stack);
+      bin.addEventListener('click',function(){
+        if(!selected || waiting) return;
+        waiting={bin:bin};
+        clearReady();
+        Studio.event('sort',{});
+        Studio.answer({card:selected.dataset.card,bin:key});
+      });
+      bins.appendChild(bin);
+    })(params.bins[j]);
+  }
+
+  Studio.ready();
+})();
+
+</script>

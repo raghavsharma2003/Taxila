@@ -1,0 +1,116 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#493426}
+  #activity{width:360px;height:320px;padding:14px 18px;display:flex;flex-direction:column;align-items:center;position:relative}
+  h1{font-size:20px;line-height:26px;margin:0;color:#704334;font-weight:800}
+  #instruction{font-size:14px;margin:2px 0 0;color:#73594b}
+  #target{margin:7px 0 2px;padding:3px 18px;border-radius:18px;background:#ffe6bd;color:#653b2c;font-size:25px;font-weight:800;line-height:31px}
+  #item{width:324px;height:157px;display:grid;place-items:center}
+  svg{width:310px;height:150px;overflow:visible}
+  [data-part]{cursor:pointer;transition:fill .2s ease,transform .2s ease;transform-box:fill-box;transform-origin:center;stroke:#9d704f;stroke-width:3}
+  [data-part]:active{transform:scale(.93)}
+  [data-part="0"]{transition-delay:0s}
+  button{min-width:156px;min-height:52px;border:0;border-radius:18px;background:#df7656;color:white;font:800 18px system-ui,sans-serif;box-shadow:0 5px 0 #aa503c;cursor:pointer;transition:transform .15s,box-shadow .15s}
+  button:active{transform:translateY(4px) scale(.97);box-shadow:0 1px 0 #aa503c}
+  button:disabled{opacity:.7;cursor:default}
+  #feedback{height:25px;line-height:25px;font-size:16px;font-weight:750;color:#63804b}
+  #activity.celebrate svg{animation:bounce .48s ease}
+  #activity.try-again svg{animation:wiggle .36s ease}
+  #activity.finished{justify-content:center;gap:18px}
+  #activity.finished h1{font-size:25px}
+  @keyframes bounce{50%{transform:translateY(-9px) scale(1.04)}}
+  @keyframes wiggle{25%,75%{transform:translateX(-4px)}50%{transform:translateX(4px)}}
+</style>
+<div id="activity">
+  <h1 id="title"></h1>
+  <div id="instruction"></div>
+  <div id="target" data-target></div>
+  <div id="item" data-item=""><svg id="picture" viewBox="0 0 310 150" aria-hidden="true"></svg></div>
+  <button id="check" data-action="check" type="button"></button>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, root=document.getElementById('activity');
+  const itemBox=document.getElementById('item'), svg=document.getElementById('picture');
+  const target=document.getElementById('target'), feedback=document.getElementById('feedback');
+  const button=document.getElementById('check');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  button.textContent=Studio.t('check');
+  let index=0, waiting=false;
+  const ns='http://www.w3.org/2000/svg';
+  function render(){
+    const item=p.items[index];
+    itemBox.setAttribute('data-item',item.id);
+    target.textContent=item.n+'/'+item.d;
+    feedback.textContent='';
+    root.classList.remove('celebrate','try-again');
+    svg.replaceChildren();
+    for(let i=0;i<item.d;i++){
+      const shape=document.createElementNS(ns,p.picture==='pizza'?'path':'rect');
+      if(p.picture==='pizza'){
+        const a=-Math.PI/2+2*Math.PI*i/item.d;
+        const b=-Math.PI/2+2*Math.PI*(i+1)/item.d;
+        const x=155,y=75,r=66;
+        shape.setAttribute('d',`M ${x} ${y} L ${x+r*Math.cos(a)} ${y+r*Math.sin(a)} A ${r} ${r} 0 ${b-a>Math.PI?1:0} 1 ${x+r*Math.cos(b)} ${y+r*Math.sin(b)} Z`);
+      }else{
+        const width=280/item.d;
+        shape.setAttribute('x',String(15+i*width+1));
+        shape.setAttribute('y','39');
+        shape.setAttribute('width',String(width-2));
+        shape.setAttribute('height','72');
+        shape.setAttribute('rx',String(Math.min(11,(width-2)/4)));
+      }
+      shape.setAttribute('data-part',String(i));
+      shape.setAttribute('data-shaded','false');
+      shape.setAttribute('fill','#fff0d3');
+      shape.addEventListener('click',()=>{
+        if(waiting)return;
+        const shaded=shape.getAttribute('data-shaded')==='true';
+        shape.setAttribute('data-shaded',String(!shaded));
+        shape.setAttribute('fill',shaded?'#fff0d3':'#dc8057');
+        feedback.textContent='';
+        Studio.event('part',{index:i,shaded:shaded?0:1});
+      });
+      svg.appendChild(shape);
+    }
+    button.disabled=false;
+  }
+  button.addEventListener('click',()=>{
+    if(waiting)return;
+    waiting=true;
+    button.disabled=true;
+    const item=p.items[index];
+    const n=svg.querySelectorAll('[data-part][data-shaded="true"]').length;
+    Studio.event('check',{n,d:item.d});
+    Studio.answer({n,d:item.d});
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    root.classList.remove('celebrate','try-again');
+    void root.offsetWidth;
+    root.classList.add(correct?'celebrate':'try-again');
+    if(correct){
+      setTimeout(()=>{
+        if(++index<p.items.length){waiting=false;render();}
+        else{
+          root.className='finished';
+          root.replaceChildren();
+          const heading=document.createElement('h1');
+          heading.textContent=Studio.t('done');
+          root.appendChild(heading);
+          Studio.done();
+        }
+      },650);
+    }else{
+      waiting=false;
+      button.disabled=false;
+    }
+  });
+  render();
+  Studio.ready();
+})();
+
+</script>

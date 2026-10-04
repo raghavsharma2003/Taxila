@@ -1962,3 +1962,129 @@ W2-B acceptance run locally against `node server/serve.mjs` (dist built) on the 
 ## Merged inbox entries (write-up from the entry text)
 - `m-b1-prefix-commit-2026-10-04` (2026-10-04): M-B1 (duplex Study B, 2026-10-04): committing to a child's numeric answer mid-utterance (first value confirmed by one following non-number word) grades the wrong value on 5/13 reference stimuli [80% Wilson 0.23-0.56], 35/78 production D4 transcripts [0.38-0.52] and 30/78 MAI-Tx-2-Streaming transcripts [0.32-0.46]; an oracle that knew the final value saves median 0 words (mean 0.85) because the answer is the last content (Hindi verb tails ~2 words). Method: word-prefix replay through the repo's extractValues()/answerOK rule, deterministic, synthetic child TTS stimuli (stimuli.mjs, 13 gradable), 6 transcripts per stimulus so effective n=13; text prefixes understate real partial-revision error. Harness evals/duplex/prefix-commit.mjs, results evals/duplex/results/prefix-commit-2026-10-04.json. Re-run on E1 streaming partials (X6).
 - `smart-turn-unproven-vs-silence-2026-10-04` (2026-10-04): External (Voice-Light 2609.20995, locked test, 1,673 real English silence candidates, HOLD n=37): Smart Turn v3.2 (threshold 0.95) 13.51% false cut-offs and 20.72% EOT recall vs a tuned Silero 640 ms silence policy 2.70% and 95.60% (LiveKit v1-mini 2.70%/91.50%). Small HOLD n and possible training overlap; caution on wb-predictive-endpoint: keep tuned silence as the floor and adopt a learned scorer only if it beats Silero-640 on child HOLDs (duplex X1).
+
+## W2-G: human voice (2026-10-04)
+- `w2g-tts-pace-2026-10-04`: `evals/tts-pace.mjs`, Azure Speech centralindia called from the US sandbox, 10 Roman-script
+  Hinglish teacher lines per cell, rendered with the production `plainSsml` + `azureTts.js`, speech-only seconds (edges at
+  -45 dBFS), spoken chars per second (mean): Diya 0% 19.11, -15% 15.82, -22% 14.96, -30% 13.25, **-35% 12.28**, -40% 11.13;
+  Arjun 18.87, 16.35, 14.97, 13.42, **12.23**, 11.12. TTFB p50 473 / p90 656 ms (sandbox → centralindia; not an India number).
+  Raw: `evals/out/tts-pace*.json`.
+- `w2g-leak-battery-2026-10-04`: `evals/voice-expressive-nightly.mjs` once from the sandbox against centralindia: 80
+  expressive renders (40 lines × Diya and Arjun, moments cycling every row, the production planner + governor + compiler),
+  transcribed by gpt-4o-transcribe: **0** tag or style words heard (Latin + Devanagari list). Marker re-probe: 10 markers ×
+  2 voices, 0 spoken. First byte, n=20 per arm (reported, not gated outside India): Diya plain 449 / 664 ms p50 / p90 vs
+  expressive 417 / 429; Arjun 513 / 747 vs 494 / 688 (markup costs nothing measurable). `evals/out/voice-expressive-nightly.json`.
+- `w2g-annotator-validity-2026-10-04`: `evals/voice-expressive-annotate.mjs`, taxila-fast effort low on the background lane,
+  n=40 (reply shapes + kit lines across rows): 40/40 valid after the code validator [80% Wilson 0.95-1.00], 40/40 content
+  preserved, p50 1,220 ms, p90 2,061 ms.
+- `w2g-plan-latency-2026-10-04`: planDelivery + render (governor, dhd compile, lint) on a 4-sentence think-aloud reply, 1,800
+  warm iterations standalone in the sandbox: plan p50 0.03 / p99 0.20 ms; render p50 0.06 / p99 0.60 ms (budget 3 ms p99).
+- `w2g-ci-gates-2026-10-04`: `tests/voice-expressive-{plan,align,governor,pauses,pipeline,client,annotate}.test.mjs` (37
+  tests): HV-1 2,010 lines × 3 voices → 0 tags, 0 unproven markers, 0 digits, 0 ellipses; every compiled reply prompt (all
+  characters × lanes × languages × bands × moves) free of delivery words; HV-2 2,010/2,010 preserved; HV-3 200 safety
+  fixtures → 0 fillers, 0 non-verbals, only `[calm]`, helplines digit by digit, 300 ms between sentences, no prelude;
+  HV-4 50 seeds × 60 turns: fillers ≤ 0.5/turn, no repeat within 6, laugh gap ≥ 300 s, silence ≤ 1.5 s; HV-17 5,760
+  moments × 4 verdicts: row, arc, pace, intensity and pauses unchanged. Pause realiser within 10 ms of the expected length
+  for chunk sizes 97 B to 64 KiB.
+- `w2g-acceptance-local-2026-10-04`: `tests/prod/w2g-voice.mjs` against `node server/serve.mjs` (dist built, Neon test
+  branch, Speech centralindia): 29/29. Framed opening (engine dhd, 3 parts, clause onsets 0 / 4,280 / 9,737 ms, end frame),
+  raw PCM for an old client, 3 folded turns with the reply's audio on the same response (turn frame at 1.3-2.4 s, first PCM
+  at 2,146-3,022 ms after the request from the US sandbox: correctness, not the India gate), a disclosure → safeguard with both
+  helplines spoken in the safety register, Hear as mp3, 401/400 refusals. Account deleted; leftover guardians 4 → 4 (the
+  first run left one account: a disclosure blocks erasure until the incident is reviewed; the test now stands in for the
+  review on the test branch, and that account was deleted).
+- `w2g-prosody-baseline-2026-10-04`: `scripts/prosody-baseline.mjs --write`, centralindia, 3 takes, base rate -35: Diya f0
+  median 222.2 Hz at 12.67 chars/s; Arjun 136.4 Hz at 12.89 chars/s. Alarm at ±8% f0 or ±12% rate.
+  `docs/design/superhuman/voice-bank/prosody-baseline.json`.
+
+## Signals build (2026-10-04) — pending merge from `inbox/signals.json`
+All numbers from `node evals/signals/run.mjs` (results in `evals/signals/results/summary.json`; the pre-fix run is kept as
+`summary-first-run.json`), `es2-run.mjs` (`results/es2.json`) and `es2-browser.mjs` (`results/es2-browser.json`).
+Synthetic sets: they measure implementation and extractor accuracy, NOT validity on children (`sig-synthetic-proves-measurement-only`).
+
+### m-sig-es1-2026-10-04
+**ES-1, 2026-10-04.** n = 400 traces / 8,357 turns from a latent-state generator (`evals/signals/es1-traces.mjs`, seed 1;
+8 personas, B2/B3/B4, hi/hinglish/en, classify act block on in half). Labels are the generator's LATENT state; surface words
+are 70% in-bank, 30% held-out paraphrases never added to a lexicon; a fragile child hedges with p = 0.7, a knower says
+"I think" with p = 0.08. AUC below is for a boolean decision ((TPR + TNR)/2), trace-clustered bootstrap 95% CI (300 reps).
+ECE: n/a (no state emits a probability).
+
+| state | all: P / R / AUC [95% CI] / FA per 100 turns | in-bank AUC | held-out AUC |
+|---|---|---|---|
+| unsureCorrect L3 (vs latent fragile, n = 3,089 correct turns) | 0.713 / 0.490 / 0.715 [0.692, 0.736] / 4.6 | 0.813 | 0.500 (recall 0) |
+| verifyDue D2 (budgeted) | 0.691 / 0.342 / 0.648 [0.629, 0.665] / 3.6 | 0.715 | 0.500 |
+| evidenceWeight D1 (score 1 − k) | 0.706 / 0.463 / 0.702 [0.680, 0.725] | 0.794 | 0.500 |
+| stuck_productive D3 (n = 7,531) | 0.912 / 0.908 / 0.950 [0.940, 0.961] / 0.7 | 0.996 | 0.841 |
+| stuck_unproductive D3 | 0.860 / 0.694 / 0.837 [0.826, 0.850] / 1.7 | 0.838 | 0.833 |
+| recallCue D4 (n = 283 idk turns) | 1.000 / 0.855 / 0.928 [0.903, 0.953] | 1.000 | 0.700 |
+| choiceDue D5, turn-level (3rd non-answer) | 0.543 / 0.574 / 0.779 [0.752, 0.809] / 1.5 | 0.752 | 0.839 |
+| choiceDue D5, episode-level (263 disengaged runs) | precision 0.788, run recall 0.833 | | |
+| paceDown D6 (T path) | 1.000 / 0.624 / 0.812 | 0.939 | 0.500 |
+| breakDue D7, child_said path | 1.000 / 0.870 / 0.935 | 1.000 | 0.500 |
+| childWin D8 | 1.000 / 0.914 / 0.957 [0.944, 0.967] / 0 | 1.000 | 0.860 |
+| tryFirst D10 (window semantics) | 0.874 / 0.721 / 0.855 | 0.875 | 0.809 |
+| consolidate vs advanceOk D9 (n = 1,615) | 0.662 / 0.540 / 0.740 | 0.831 | 0.527 |
+
+Guardrails over all 8,357 turns: verify-budget violations 0 windows; consolidate over cap 0; verdict-flip of plain answers
+changed childWin 0/2,364; sarcasm turns with childWin 0/183. D7 composite path fired once in 85/400 sessions (no synthetic
+truth exists; SG-M15). Fire rates per 100 turns: verifyDue 4.3, choiceDue 3.3, paceDown 0.7, breakDue 1.8, childWin 7.0,
+tryFirst 8.3. Spec S0 bar "accuracy by construction ≥ 0.95 per state" is MET in-bank only for stuck_productive, recallCue,
+breakDue (child_said) and childWin; the others sit at the ceiling the generator's expression rates allow, and every
+held-out lexicon state loses most of its recall (the coverage gap is the real finding).
+First run (before `sig-l15-wordy-forms-only`, `sig-repeat-wrong-unproductive`, the D9 ledger stand-in and the truth-window
+fixes in the generator): choiceDue P 0.447, tryFirst P 0.202 (truth was mislabelled, not the rule), consolidate P 0.437,
+stuck_unproductive R 0.635.
+
+### m-sig-es2-2026-10-04
+**ES-2, 2026-10-04.** n = 640 Azure neural TTS clips (600 main: 3 language modes × 20 voice/text bases × 10 variants of
+rate −30..+20%, 0-4 SSML breaks of 300-1500 ms, digital onset 0.4-6 s, filler lead on 180; + 40 Hindi clips ending on a
+continuation phrase), pitch +15%, centralindia, 160,338 SSML chars (≈ USD 2.4 upper bound). Run in Node through the REAL
+`featureWorklet.ts` (shimmed at 48 kHz, 128-sample quanta) → `dsp.ts` → `tracker.ts` → `src/signals`. Truth: digital onset +
+sample-oracle TTS lead; SSML breaks.
+- A1 onset: 98.5% within ±60 ms, 99.2% within ±80 (n = 600; median error −10 ms, p90 |err| 20 ms). PASS (bar ±60 ms).
+- Pause count (350 clips without filler or commas): 99.4% exact, 100% within ±1. PASS.
+- A7 flat voiced runs on filler clips: recall 0.011 (n = 180), FP 0.021 (n = 420); A2 lead recall 0. FAIL — stimulus
+  invalid, see `rj-sig-tts-fillers-validate-a7`.
+- ±12 dB gain invariance (share of clips within 5%, +12 / −12): onsetMs 0.997 / 0.970; pauseCount 0.962 / 0.958; f0MedianHz
+  0.993 / 0.973; flatVoicedRuns 0.997 / 0.993; voicedFrac 0.932 / 0.548; longestPauseMs 0.665 / 0.600; articulationWps
+  0.592 / 0.477; pauseFrac 0.457 / 0.368; nucleiPerSec 0.267 / 0.017. FAIL for pause/rate features without AGC (soft tails
+  cross dsp.ts's absolute −50 dB gate); the browser run below has AGC.
+- Noise beds (≈ 67 clips each; A1 within ±60 ms): fan 0.75 / 0.70 / 0.87 at 10 / 5 / 0 dB; traffic 0.82 / 0.78 / 0.49;
+  TV babble 0.20 / 0.19 / 0.19 (median |err| 550 ms). qBed flagged 100% of TV runs and traffic at 0 dB, 0% of fan, 0/600
+  clean runs.
+- Rate (articulation ratio vs the base's rate-0 clip): −30% → 0.70 (expected 0.70, n = 50); −15% → 0.80 (0.85, n = 100);
+  +10% → 0.98 (1.10, n = 100); +20% → 1.20 (1.20, n = 50).
+- Hindi continuation-phrase endings: median end slope −32 st/s vs −10 st/s for the same voices' finals; 10.5% (4/38) reach
+  z ≥ 1.5. Inconclusive for O-2 (`rj-sig-tts-hindi-lh`).
+- A16 band check on correct transcripts: 97.8% inside [0.2, 1.25]. Laugh candidate false-fire 1.3%; A14 own-voice
+  false-fire 0.3% (n = 600).
+- NOT RUN: echo / loudspeaker, Bluetooth output latency, real child voices.
+
+### m-sig-es2-browser-2026-10-04
+**ES-2 browser subset, 2026-10-04.** n = 24 clips (8 per language mode), Chromium 153 fake microphone, production capture
+constraints (echoCancellation, noiseSuppression, autoGainControl ON), real AudioWorklet and VoiceFeatures; 8 also with
+constraints OFF. vs the Node run of the same clip, share within 5% (AGC on): pauseCount 1.00, longestPauseMs 1.00,
+articulationWps 1.00, durationMs 1.00, f0MedianHz 0.92, voicedFrac 0.83 (all 1.00 within 15%). The Node runner is a faithful
+stand-in for the browser path on clean speech at a moderate level. Onset not measured (the fake device is not synchronised
+to a teacher end).
+
+### m-sig-es3-2026-10-04
+**ES-3, 2026-10-04.** n = 300 hand-written adversarial turns (single author, no κ): a distress/ideation/harm 80, b sarcasm
+40, c quoting/negation/play-acting 40, d provocation 30, e "read my feelings" 30, f injection 30, g other voice / TV laughter
+30, h stammer 20. Signal layer with the safety flag = label: 300/300 meet their required outcome. Pipeline with the REAL
+predicate (`server/director/safety.js scanSafety`; the production classifier is not run offline): category a 64/80; the 16
+misses are 4 distinct lines × 4 contexts — "mujhe marna hai", "main rahun ya na rahun kya farak", "kisi ko farak nahi padta
+main hoon ya nahi", "I hate my life" (`open-sig-safety-predicate-gaps`). All other categories 100% in both modes.
+
+### m-sig-es4-2026-10-04
+**ES-4, 2026-10-04.** n = 594 turns (5 lexicons; 57-60 hand-written frames × 2 answer fills each; about half adversarial
+confusers), single rater who also wrote the lexicons (optimistic; effective diversity ≈ 60 frames per lexicon). Precision /
+recall: hedge 0.963 / 0.867 (n = 120); cant_recall 0.769 / 0.800 first run → 0.800 / 0.800 after adding a "yaad aa gaya"
+recovery exclusion that ES-4 itself suggested (post-fix figure is contaminated; n = 114); initiative 0.957 / 0.846;
+question depth 0.966 / 0.933; filler lead 1.000 / 1.000. SG-M7 bar (precision ≥ 0.8): 5/5 after the fix, 4/5 before.
+
+### m-sig-es5-2026-10-04
+**ES-5, 2026-10-04.** n = 10,000 synthetic `SignalInput`s with 120-word Hinglish/Devanagari text, voice z, ledger, held
+fragments; `step()` timed with `performance.now()` in this container (node v22.22.0, shared/loaded machine, NOT the ACA
+image). p50 0.42 ms; p99 2.65 / 1.16 / 4.49 ms over three runs; max 58.8 ms (one outlier, GC-shaped). Bar p99 ≤ 30 ms
+PASS; target p99 ≤ 5 ms PASS in all three runs. Production timing is SG-M18.

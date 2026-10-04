@@ -1,0 +1,96 @@
+<style>
+  *{box-sizing:border-box}
+  html,body{width:360px;height:320px;margin:0;overflow:hidden}
+  body{font-family:system-ui,sans-serif;background:#fff8ed;color:#493b32}
+  .frame{width:360px;height:320px;padding:10px 12px;overflow:hidden}
+  .title{height:29px;text-align:center;color:#75462e;font-size:19px;font-weight:800;line-height:26px}
+  .ask{height:29px;text-align:center;color:#70513e;font-size:14px;font-weight:650;line-height:23px}
+  svg{display:block;width:336px;height:210px;overflow:hidden}
+  .grid{stroke:#ead9c5;stroke-width:1}
+  .axis{stroke:#9e8067;stroke-width:1.5}
+  .tick{fill:#766455;font-size:11px;text-anchor:end;dominant-baseline:middle}
+  .yaxis{fill:#70513e;font-size:12px;font-weight:700;text-anchor:middle}
+  .bar{fill:#e89a58;stroke:#c9793d;stroke-width:1.5;transform-box:fill-box;transform-origin:center bottom;animation:grow .72s cubic-bezier(.2,.8,.2,1) both}
+  .column-label{fill:#56473c;font-size:11px;font-weight:650;text-anchor:middle}
+  .hit{fill:transparent;cursor:pointer}
+  .hit:active{fill:#f5d7b5;opacity:.55}
+  .feedback{height:27px;text-align:center;font-size:14px;font-weight:750;line-height:24px;color:#75462e}
+  @keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  @media(prefers-reduced-motion:reduce){.bar{animation:none}}
+</style>
+<div class="frame">
+  <div class="title" id="title"></div>
+  <div class="ask" id="ask"></div>
+  <svg id="chart" viewBox="0 0 336 232" aria-label="">
+    <g id="gridlines"></g>
+    <g id="bars"></g>
+    <g id="labels"></g>
+    <g id="targets"></g>
+  </svg>
+  <div class="feedback" id="feedback"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params,data=p.data;
+  const title=document.getElementById("title"),ask=document.getElementById("ask");
+  const feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  ask.textContent=Studio.t("ask");
+
+  const ns="http://www.w3.org/2000/svg";
+  const make=(tag,attrs,parent)=>{
+    const e=document.createElementNS(ns,tag);
+    for(const [k,v] of Object.entries(attrs))e.setAttribute(k,String(v));
+    parent.appendChild(e);
+    return e;
+  };
+  const max=Math.max(...data.map(d=>d.value));
+  const raw=max/5;
+  const power=Math.pow(10,Math.floor(Math.log10(raw||1)));
+  const ratio=raw/power;
+  const step=(ratio<=1?1:ratio<=2?2:ratio<=5?5:10)*power;
+  const top=Math.ceil(max/step)*step;
+  const left=43,right=330,topY=12,base=181;
+  const plotW=right-left,plotH=base-topY;
+  const grid=document.getElementById("gridlines");
+  const bars=document.getElementById("bars");
+  const labels=document.getElementById("labels");
+  const targets=document.getElementById("targets");
+
+  for(let v=0;v<=top;v+=step){
+    const y=base-(v/top)*plotH;
+    make("line",{x1:left,y1:y,x2:right,y2:y,class:v===0?"axis":"grid"},grid);
+    const tick=make("text",{x:left-5,y,class:"tick","data-tick":v},grid);
+    tick.textContent=String(v);
+  }
+  make("line",{x1:left,y1:topY,x2:left,y2:base,class:"axis"},grid);
+  const axisTitle=make("text",{x:9,y:(topY+base)/2,class:"yaxis",transform:`rotate(-90 9 ${(topY+base)/2})`},grid);
+  axisTitle.textContent=Studio.t("yaxis");
+
+  const slot=plotW/data.length;
+  const barW=Math.min(34,slot-14);
+  data.forEach((d,i)=>{
+    const cx=left+slot*(i+.5);
+    const h=(d.value/top)*plotH;
+    make("rect",{x:cx-barW/2,y:base-h,width:barW,height:h,rx:6,class:"bar","data-bar":d.key,"data-value":d.value},bars);
+    const label=make("text",{x:cx,y:base+18,class:"column-label"},labels);
+    label.textContent=Studio.t(d.key);
+    const hit=make("rect",{x:cx-slot/2,y:topY,width:slot,height:base+35-topY,class:"hit","data-column":d.key},targets);
+    hit.addEventListener("click",()=>{
+      Studio.event("tap",{key:d.key});
+      Studio.answer(d.key);
+    });
+  });
+
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?"right":"wrong");
+    if(correct){
+      ask.textContent=Studio.t("done");
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

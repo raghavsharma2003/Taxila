@@ -1,0 +1,114 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff7eb;color:#563b32}
+  #activity{width:360px;height:320px;padding:13px 18px;display:flex;flex-direction:column;align-items:center;overflow:hidden}
+  h1{font-size:18px;line-height:24px;margin:0;font-weight:800;text-align:center}
+  #instruction{font-size:13px;line-height:19px;margin:3px 0 5px;text-align:center}
+  #target{min-width:69px;height:43px;border-radius:16px;background:#ffe3bd;color:#704329;display:grid;place-items:center;font-size:23px;font-weight:800}
+  #picture{width:324px;height:157px;flex:none;overflow:visible}
+  [data-part]{cursor:pointer;stroke:#fff7eb;stroke-width:3;transition:fill .22s ease,filter .22s ease,transform .18s ease;transform-box:fill-box;transform-origin:center}
+  [data-part]:active{transform:scale(.94)}
+  [data-shaded="false"]{fill:#f1d9b9}
+  [data-shaded="true"]{fill:#e98161}
+  #feedback{height:23px;font-size:14px;font-weight:700;color:#a84f43;text-align:center}
+  #feedback.good{color:#36806b;animation:pop .35s ease}
+  #check{width:168px;min-height:52px;border:0;border-radius:18px;background:#568e79;color:#fff;font:800 17px system-ui,sans-serif;box-shadow:0 5px 0 #376b59;cursor:pointer;transition:transform .16s ease,box-shadow .16s ease}
+  #check:active{transform:translateY(4px) scale(.97);box-shadow:0 1px 0 #376b59}
+  #check:disabled{opacity:.7;cursor:default}
+  #activity.celebrate #picture{animation:pop .45s ease}
+  #activity.finished{justify-content:center;gap:18px}
+  #activity.finished #instruction,#activity.finished #target,#activity.finished #picture,#activity.finished #feedback,#activity.finished #check{display:none}
+  #activity.finished h1{font-size:27px;line-height:36px;color:#36806b}
+  @keyframes pop{50%{transform:scale(1.045)}}
+</style>
+<div id="activity" data-item="">
+  <h1 id="heading"></h1>
+  <div id="instruction"></div>
+  <div id="target" data-target></div>
+  <svg id="picture" viewBox="0 0 324 157" role="group"></svg>
+  <div id="feedback" aria-live="polite"></div>
+  <button id="check" data-action="check" type="button"></button>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, root=document.getElementById('activity');
+  const svg=document.getElementById('picture'), target=document.getElementById('target');
+  const feedback=document.getElementById('feedback'), check=document.getElementById('check');
+  let index=0, waiting=false;
+  document.getElementById('heading').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+  const NS='http://www.w3.org/2000/svg';
+  function shape(tag,attrs,i){
+    const el=document.createElementNS(NS,tag);
+    for(const [key,value] of Object.entries(attrs))el.setAttribute(key,value);
+    el.setAttribute('data-part',i);
+    el.setAttribute('data-shaded','false');
+    el.addEventListener('click',()=>{
+      if(waiting)return;
+      el.setAttribute('data-shaded',el.getAttribute('data-shaded')==='true'?'false':'true');
+      feedback.textContent='';
+      feedback.classList.remove('good');
+      Studio.event('part',{index:i});
+    });
+    svg.appendChild(el);
+  }
+  function render(){
+    const item=p.items[index];
+    root.dataset.item=item.id;
+    target.textContent=item.n+'/'+item.d;
+    feedback.textContent='';
+    feedback.classList.remove('good');
+    svg.replaceChildren();
+    if(p.picture==='pizza'){
+      const cx=162,cy=79,r=73;
+      for(let i=0;i<item.d;i++){
+        const a=-Math.PI/2+i*2*Math.PI/item.d,b=-Math.PI/2+(i+1)*2*Math.PI/item.d;
+        const x1=cx+r*Math.cos(a),y1=cy+r*Math.sin(a),x2=cx+r*Math.cos(b),y2=cy+r*Math.sin(b);
+        shape('path',{d:`M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${b-a>Math.PI?1:0} 1 ${x2} ${y2} Z`,strokeLinejoin:'round'},i);
+      }
+    }else{
+      let cols=1;
+      for(let c=Math.min(5,item.d);c>=1;c--)if(item.d%c===0&&item.d/c<=3){cols=c;break}
+      const rows=item.d/cols,w=280/cols,h=138/rows;
+      for(let i=0;i<item.d;i++)
+        shape('rect',{x:22+(i%cols)*w+2,y:9+Math.floor(i/cols)*h+2,width:w-4,height:h-4,rx:Math.min(13,(w-4)/5,(h-4)/5)},i);
+    }
+  }
+  check.addEventListener('click',()=>{
+    if(waiting)return;
+    waiting=true;
+    check.disabled=true;
+    const n=svg.querySelectorAll('[data-part][data-shaded="true"]').length;
+    Studio.event('check',{n});
+    Studio.answer({n,d:p.items[index].d});
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.classList.toggle('good',correct);
+    if(correct){
+      root.classList.add('celebrate');
+      setTimeout(()=>{
+        root.classList.remove('celebrate');
+        index++;
+        if(index<p.items.length){
+          render();
+          waiting=false;
+          check.disabled=false;
+        }else{
+          root.classList.add('finished');
+          root.removeAttribute('data-item');
+          document.getElementById('heading').textContent=Studio.t('done');
+          Studio.done();
+        }
+      },700);
+    }else{
+      waiting=false;
+      check.disabled=false;
+    }
+  });
+  render();
+  Studio.ready();
+})();
+
+</script>

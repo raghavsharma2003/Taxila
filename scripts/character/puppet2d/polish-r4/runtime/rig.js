@@ -8,7 +8,7 @@
 //   3. head roll about the neck pivot, breath bob, lean scale
 //   4. secondary motion: locks and bun on damped springs driven by the head's screen acceleration
 import { Renderer } from "./gl.js";
-import { LipSolver, LipShell } from "./lips.js";
+import { LipSolver, LipShell, jawProfile } from "./lips.js";
 
 const clamp = (x, a, b) => (x < a ? a : x > b ? b : x);
 const clamp01 = (x) => clamp(x, 0, 1);
@@ -237,7 +237,7 @@ export class Puppet2DRig {
     this.shellMesh = {};
     for (const n of ["U", "L"]) {
       const sh = this.shell.sheets[n];
-      this.shellMesh[n] = this.R.mesh(this.R.lip, { aPos: { data: sh.pos, size: 2, dynamic: true }, aUv: { data: sh.uv, size: 2 }, aA: { data: sh.alpha, size: 1, dynamic: true } }, sh.idx);
+      this.shellMesh[n] = this.R.mesh(this.R.lip, { aPos: { data: sh.pos, size: 2, dynamic: true }, aUv: { data: sh.uv, size: 2, dynamic: true }, aA: { data: sh.alpha, size: 1, dynamic: true }, aL: { data: sh.light, size: 1, dynamic: true } }, sh.idx);
       sh.z = new Float32Array(sh.C * sh.R);
       for (let q = 0; q < sh.C * sh.R; q++) sh.z[q] = zHead(sh.rest[q * 2], sh.rest[q * 2 + 1]);
     }
@@ -401,8 +401,8 @@ export class Puppet2DRig {
   }
 
   /** Rest-space expression offsets on the face surface (cheek lift, jaw drop): shared by face and mouth. */
-  faceOffset(x, y) {
-    const { smile, cheek, open } = this.expr;
+  faceOffset(x, y, noJaw = false) {
+    const { smile, cheek } = this.expr;
     let dx = 0, dy = 0;
     // cheeks lift and widen a touch on a smile
     for (const cx of [455, 605]) {
@@ -410,10 +410,8 @@ export class Puppet2DRig {
       dy -= (smile * 4 + cheek * 3) * f;
       dx += Math.sign(x - 530) * smile * 1.5 * f;
     }
-    // jaw: the chin and lower face move down with the open amount
-    const jw = smooth(615, 700, y) * Math.exp(-(((x - 530) / 115) ** 2));
-    // r3: the chin follows the lower lip's drop (the shell's opening), so the skin between them never crushes
-    dy += (this.solver ? this.solver.lowerDrop() * 0.62 : open * 7) * jw;
+    // r4: the jaw carries lower lip, skin and chin together (lips.js jaw()), so the skin between them never crushes
+    if (!noJaw && this.solver) dy += this.solver.jaw() * jawProfile(x, y);
     return [dx, dy];
   }
 
@@ -646,7 +644,7 @@ export class Puppet2DRig {
       const sh = shell.sheets[n];
       for (let q = 0; q < sh.C * sh.R; q++) {
         let x = sh.pos[q * 2], y = sh.pos[q * 2 + 1];
-        const [dx, dy] = this.faceOffset(sh.rest[q * 2], sh.rest[q * 2 + 1]);
+        const [dx, dy] = this.faceOffset(sh.rest[q * 2], sh.rest[q * 2 + 1], true);
         const p = this.projectTo(x + dx, y + dy, sh.z[q], this._tmp || (this._tmp = [0, 0]));
         sh.pos[q * 2] = p[0];
         sh.pos[q * 2 + 1] = p[1];
@@ -655,7 +653,7 @@ export class Puppet2DRig {
     const I = shell.inner;
     for (let i = 0; i < I.pos.length / 2; i++) {
       const x = I.pos[i * 2], y = I.pos[i * 2 + 1];
-      const [dx, dy] = this.faceOffset(x, y);
+      const [dx, dy] = this.faceOffset(x, y, true);
       const p = this.project(x + dx, y + dy, zHead(x, y));
       I.proj[i * 2] = p[0];
       I.proj[i * 2 + 1] = p[1];
@@ -669,6 +667,8 @@ export class Puppet2DRig {
       const sh = shell.sheets[n];
       R.update(this.shellMesh[n], "aPos", sh.pos);
       R.update(this.shellMesh[n], "aA", sh.alpha);
+      R.update(this.shellMesh[n], "aL", sh.light);
+      R.update(this.shellMesh[n], "aUv", sh.uv);
       R.drawLip(this.shellMesh[n], this.tex.mouth_rest, this.g.rects.mouth_rest, shade);
     }
   }

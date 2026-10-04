@@ -1,0 +1,134 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ec;font-family:system-ui,sans-serif;color:#493b37}
+  .card{width:360px;height:320px;padding:15px 17px;background:radial-gradient(circle at 90% 5%,#ffe5bd,transparent 42%),#fff8ec;overflow:hidden}
+  h1{margin:0;font-size:19px;line-height:25px;color:#805044}
+  .instruction{margin:2px 0 8px;font-size:13px;line-height:18px}
+  .prompt{height:43px;display:flex;align-items:center;gap:10px}
+  .target{min-width:52px;padding:5px 13px;border-radius:15px;background:#fbd59d;color:#754627;text-align:center;font-size:24px;font-weight:800}
+  .track{position:relative;height:100px;margin:0 3px}
+  .line{position:absolute;left:15px;right:15px;top:52px;height:5px;border-radius:9px;background:#d5a980}
+  .tick{position:absolute;top:44px;width:2px;height:20px;background:#ac7658;transform:translateX(-50%);border-radius:2px}
+  .tick.labelled{height:24px;top:42px}
+  .tick span{position:absolute;top:24px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;white-space:nowrap;color:#715b50}
+  .marker{position:absolute;top:5px;width:34px;height:39px;transform:translateX(-50%);transition:left .28s cubic-bezier(.2,1.5,.5,1);z-index:2}
+  .marker svg{display:block;width:34px;height:39px;filter:drop-shadow(0 3px 2px #b97c6555)}
+  .marker.hop{animation:hop .48s ease}
+  @keyframes hop{50%{translate:0 -16px}}
+  .controls{display:flex;gap:10px;margin-top:5px}
+  button{border:0;border-radius:17px;min-width:60px;height:54px;font:700 16px system-ui,sans-serif;cursor:pointer;transition:transform .15s,background .2s;touch-action:manipulation}
+  button:active{transform:scale(.91)}
+  .move{flex:1;background:#f6d8b3;color:#634637}
+  .check{flex:1.25;background:#ce705b;color:white;box-shadow:0 4px 0 #a85243}
+  .feedback{height:25px;margin-top:10px;text-align:center;font-size:15px;font-weight:750;color:#9a6048}
+  .feedback.good{color:#44866a}
+  .feedback.wiggle{animation:wiggle .35s ease}
+  @keyframes wiggle{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  .finished{display:none;align-items:center;justify-content:center;height:235px;text-align:center;font-size:25px;font-weight:800;color:#44866a}
+  .card.complete .activity{display:none}
+  .card.complete .finished{display:flex}
+</style>
+<div class="card" id="card">
+  <h1 id="title"></h1>
+  <div class="activity" id="activity" data-item="">
+    <div class="instruction" id="instr"></div>
+    <div class="prompt"><span class="target" data-target></span></div>
+    <div class="track" id="track">
+      <div class="line"></div>
+      <div class="marker" data-marker data-value="">
+        <svg viewBox="0 0 34 39" aria-hidden="true"><path d="M17 38C13 31 2 23 2 16a15 15 0 0 1 30 0c0 7-11 15-15 22Z" fill="#d8735b"/><circle cx="17" cy="16" r="6" fill="#fff8ec"/></svg>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="move" data-action="left"></button>
+      <button class="move" data-action="right"></button>
+      <button class="check" data-action="check"></button>
+    </div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+  </div>
+  <div class="finished" id="finished"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, $=s=>document.querySelector(s);
+  const count=Math.round((p.max-p.min)/p.step);
+  const value=k=>Number((p.min+k*p.step).toFixed(6));
+  const start=Math.max(0,Math.min(count,Math.round((p.start-p.min)/p.step)));
+  const format=v=>{
+    if(p.format==="integer")return String(Math.round(v));
+    if(p.format==="fraction"){
+      const parts=String(p.step).split(".");
+      const den=parts[1]?10**parts[1].length:1;
+      const n=Math.round(v*den);
+      const gcd=(a,b)=>b?gcd(b,a%b):a;
+      const d=gcd(Math.abs(n),den);
+      return String(n/d)+"/"+String(den/d);
+    }
+    const decimals=(String(p.step).split(".")[1]||"").length;
+    return v.toFixed(decimals);
+  };
+  const track=$("#track"),marker=$("[data-marker]"),feedback=$("#feedback"),activity=$("#activity");
+  const x=k=>15+(k/count)*296;
+  for(let i=0;i<=count;i++){
+    const tick=document.createElement("div");
+    tick.className="tick"+(i%p.labelEvery===0?" labelled":"");
+    tick.dataset.tick=String(value(i));
+    tick.style.left=x(i)+"px";
+    if(i%p.labelEvery===0){
+      const label=document.createElement("span");
+      label.textContent=format(value(i));
+      tick.append(label);
+    }
+    track.append(tick);
+  }
+  for(const [id,key] of [["title","title"],["instr","instr"],["finished","done"]])$("#"+id).textContent=Studio.t(key);
+  for(const [action,key] of [["left","left"],["right","right_btn"],["check","check"]])$('[data-action="'+action+'"]').textContent=Studio.t(key);
+  let index=0,k=start,waiting=false,completed=false;
+  function place(){
+    marker.style.left=x(k)+"px";
+    marker.dataset.value=String(value(k));
+  }
+  function item(){
+    activity.dataset.item=String(p.items[index].id);
+    $("[data-target]").textContent=format(p.items[index].target);
+    k=start;place();feedback.textContent="";feedback.className="feedback";
+  }
+  function move(delta){
+    if(waiting||completed)return;
+    k=Math.max(0,Math.min(count,k+delta));place();
+    feedback.textContent="";feedback.className="feedback";
+    Studio.event("move",{direction:delta<0?"left":"right"});
+  }
+  $('[data-action="left"]').addEventListener("click",()=>move(-1));
+  $('[data-action="right"]').addEventListener("click",()=>move(1));
+  $('[data-action="check"]').addEventListener("click",()=>{
+    if(waiting||completed)return;
+    waiting=true;
+    Studio.event("check",{value:value(k)});
+    Studio.answer({value:value(k)});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!waiting)return;
+    feedback.textContent=Studio.t(correct?"right":"wrong");
+    feedback.className="feedback "+(correct?"good":"wiggle");
+    if(correct){
+      marker.classList.remove("hop");
+      void marker.offsetWidth;
+      marker.classList.add("hop");
+      setTimeout(()=>{
+        marker.classList.remove("hop");
+        index++;
+        if(index<p.items.length){item();waiting=false}
+        else{completed=true;$("#card").classList.add("complete");Studio.done()}
+      },560);
+    }else{
+      waiting=false;
+      setTimeout(()=>feedback.classList.remove("wiggle"),400);
+    }
+  });
+  item();
+  Studio.ready();
+})();
+
+</script>

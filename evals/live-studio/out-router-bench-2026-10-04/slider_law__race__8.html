@@ -1,0 +1,93 @@
+<style>
+*{box-sizing:border-box}
+:root{font-family:system-ui,sans-serif;color:#553b32;background:#fff8ed}
+#app{width:360px;height:320px;overflow:hidden;padding:4px 10px;background:linear-gradient(145deg,#fff8ed,#fff0dc);display:grid;grid-template-rows:28px 52px 160px 24px 52px;gap:0}
+header{display:flex;align-items:center;justify-content:center;color:#754b37;font-weight:800;font-size:17px}
+.controls{display:flex;gap:10px;align-items:center}
+button{font:inherit;color:#553b32;border:0;cursor:pointer;touch-action:manipulation;transition:transform .15s,filter .15s,background .2s}
+button:active{transform:scale(.94)}
+.step{height:52px;flex:1;border-radius:16px;background:#f5c879;font-size:18px;font-weight:750;box-shadow:0 3px 0 #d89c49}
+.step:hover,.option:hover{filter:brightness(1.04)}
+#scene{height:160px;position:relative;display:flex;align-items:flex-end;justify-content:center;border-radius:18px;background:#fffdf8;border:2px solid #f3dfc4;overflow:hidden}
+#readout{position:absolute;top:6px;left:10px;right:10px;z-index:2;display:flex;justify-content:space-between;font-size:14px;font-weight:750}
+#visual{position:absolute;bottom:0;width:70px;height:0;background:linear-gradient(90deg,#63b99b,#93d5a9);border-radius:12px 12px 0 0;transition:height .38s cubic-bezier(.2,.8,.2,1),background .25s;box-shadow:inset -8px 0 rgba(255,255,255,.18)}
+#visual:after{content:"";position:absolute;left:10px;right:10px;top:12px;height:3px;border-radius:3px;background:rgba(255,255,255,.48)}
+#prompt{height:24px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:14px;font-weight:700}
+#feedback{color:#9a623e}
+.options{display:flex;gap:10px;align-items:center}
+.option{height:52px;flex:1;border-radius:15px;background:#e8d8f1;font-size:20px;font-weight:800;box-shadow:0 3px 0 #c6add8}
+.option.chosen{background:#d2b6e4;transform:scale(.97)}
+.option:focus-visible,.step:focus-visible{outline:3px solid #7753a3;outline-offset:2px}
+</style>
+<div id="app">
+  <header id="title"></header>
+  <div class="controls">
+    <button class="step" data-action="dec" id="dec"></button>
+    <button class="step" data-action="inc" id="inc"></button>
+  </div>
+  <section id="scene">
+    <div id="readout"><span id="xread"></span><span data-output id="output"></span></div>
+    <div id="visual" data-visual data-dim="h"></div>
+  </section>
+  <div id="prompt"><span id="ask"></span><span id="askx"></span><span id="feedback"></span></div>
+  <div class="options" id="options"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, t=Studio.t;
+  const title=document.getElementById('title');
+  const xread=document.getElementById('xread');
+  const output=document.getElementById('output');
+  const visual=document.getElementById('visual');
+  const feedback=document.getElementById('feedback');
+  let x=p.x.start, finished=false;
+  title.textContent=t('title');
+  document.getElementById('dec').textContent=t('less');
+  document.getElementById('inc').textContent=t('more');
+  document.getElementById('ask').textContent=t('ask');
+  document.getElementById('askx').textContent=' '+t('xname')+' = '+p.ask.x;
+  function fmt(n){return Number.isInteger(n)?String(n):String(Number(n.toFixed(8)))}
+  function update(){
+    const y=p.law.k*x+p.law.b;
+    xread.textContent=t('xname')+' = '+fmt(x);
+    xread.dataset.x=fmt(x);
+    output.textContent=t('yname')+' = '+fmt(y);
+    output.dataset.value=fmt(y);
+    visual.style.height=(y*p.y.unitsPer)+'px';
+    document.getElementById('dec').disabled=x<=p.x.min;
+    document.getElementById('inc').disabled=x>=p.x.max;
+  }
+  document.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>{
+    const next=x+(btn.dataset.action==='inc'?p.x.step:-p.x.step);
+    x=Math.min(p.x.max,Math.max(p.x.min,next));
+    update();
+    Studio.event('change',{x});
+  }));
+  const box=document.getElementById('options');
+  p.ask.options.forEach(value=>{
+    const b=document.createElement('button');
+    b.className='option';
+    b.dataset.option=String(value);
+    b.textContent=String(value);
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('.option').forEach(o=>o.classList.remove('chosen'));
+      b.classList.add('chosen');
+      feedback.textContent='';
+      Studio.answer({value});
+    });
+    box.appendChild(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=t(correct?'right':'wrong');
+    if(correct&&!finished){
+      finished=true;
+      feedback.textContent=t('done');
+      Studio.done();
+    }
+  });
+  update();
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,32 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8eb;color:#493b31}
+.screen{width:360px;height:320px;padding:10px 12px;display:flex;flex-direction:column;align-items:center}
+h1{margin:0;height:29px;font-size:19px;line-height:25px;font-weight:750;color:#714b37;text-align:center}
+.ask{height:28px;font-size:15px;line-height:24px;font-weight:650;text-align:center;color:#755640}
+svg{display:block;width:336px;height:222px;overflow:visible}
+.axis{stroke:#a98a70;stroke-width:1.4}
+.grid{stroke:#e8d9c6;stroke-width:1}
+.tick-label{fill:#715f50;font-size:10px;text-anchor:end}
+.axis-title{fill:#715640;font-size:11px;font-weight:650;text-anchor:middle}
+.bar{fill:#e9a34d;transform-box:fill-box;transform-origin:center bottom;animation:rise .78s cubic-bezier(.2,.75,.25,1) both}
+.bar-column{fill:transparent;cursor:pointer;outline:none}
+.bar-column:focus-visible{fill:#f2dfbd;fill-opacity:.45;stroke:#bd8050;stroke-width:2}
+.bar-column:active{fill:#e9a34d;fill-opacity:.16}
+.bar-name{fill:#493b31;font-size:10px;font-weight:650;text-anchor:middle}
+.feedback{height:28px;font-size:15px;line-height:25px;font-weight:700;text-align:center;color:#76543b}
+@keyframes rise{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+</style>
+<div class="screen">
+  <h1 id="title"></h1>
+  <div class="ask" id="ask"></div>
+  <svg id="chart" viewBox="0 0 336 222" role="img" aria-label="">
+    <g id="plot"></g>
+  </svg>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{const p=Studio.params,d=p.data,s=Studio.t;document.getElementById("title").textContent=s("title");document.getElementById("ask").textContent=s("ask");const svg=document.getElementById("chart"),g=document.getElementById("plot"),ns="http://www.w3.org/2000/svg",left=38,right=330,top=13,bottom=164,plotH=bottom-top,max=Math.max(...d.map(x=>Number(x.value)));const raw=max/4,pow=Math.pow(10,Math.floor(Math.log10(raw))),m=raw/pow,step=(m<=1?1:m<=2?2:m<=5?5:10)*pow,upper=Math.ceil(max/step)*step;function el(tag,attrs,text){const n=document.createElementNS(ns,tag);for(const k in attrs)n.setAttribute(k,attrs[k]);if(text!==undefined)n.textContent=text;g.appendChild(n);return n}for(let v=0;v<=upper+step*1e-9;v+=step){const y=bottom-(v/upper)*plotH;el("line",{x1:left,y1:y,x2:right,y2:y,class:v===0?"axis":"grid"});const t=el("text",{x:left-6,y:y+3.5,class:"tick-label","data-tick":String(v)},String(v))}el("text",{x:10,y:(top+bottom)/2,class:"axis-title",transform:"rotate(-90 10 "+((top+bottom)/2)+")"},s("yaxis"));const slot=(right-left)/d.length;d.forEach((item,i)=>{const x=left+i*slot,cx=x+slot/2,val=Number(item.value),h=val/upper*plotH,y=bottom-h;const hit=el("rect",{x:x,y:top,width:slot,height:bottom-top+43,class:"bar-column","data-column":item.key,tabindex:"0",role:"button"});const bar=el("rect",{x:cx-15,y:y,width:30,height:h,class:"bar","data-bar":item.key,"data-value":String(item.value),rx:"5"});bar.style.animationDelay=(i*.07)+"s";el("text",{x:cx,y:bottom+16,class:"bar-name"},s(item.key));hit.addEventListener("click",()=>{if(!finished)Studio.answer(item.key)});hit.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&!finished){e.preventDefault();Studio.answer(item.key)}})});let finished=false;Studio.onVerdict(v=>{const f=document.getElementById("feedback");if(v.correct){f.textContent=s("right")+" "+s("done");finished=true;Studio.done()}else f.textContent=s("wrong")});Studio.ready()})();
+
+</script>

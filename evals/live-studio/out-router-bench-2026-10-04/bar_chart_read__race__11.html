@@ -1,0 +1,70 @@
+<style>
+*{box-sizing:border-box}
+#lesson{width:360px;height:320px;overflow:hidden;background:#fff8ec;color:#493b32;font-family:system-ui,sans-serif;position:relative;padding:12px}
+#heading{height:48px}
+#title{font-size:17px;font-weight:800;line-height:21px;color:#754b30}
+#ask{font-size:13px;line-height:18px;color:#806b59}
+#chart{display:block;width:336px;height:224px;overflow:visible}
+.grid{stroke:#eadfce;stroke-width:1}
+.axis{stroke:#9c8874;stroke-width:1.5}
+.tick-label{fill:#806b59;font-size:10px;text-anchor:end;dominant-baseline:middle}
+.axis-title{fill:#806b59;font-size:10px;text-anchor:middle}
+.bar{fill:#e7a64b;transform-box:fill-box;transform-origin:center bottom;animation:rise .72s cubic-bezier(.2,.8,.25,1) both}
+@keyframes rise{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.name{fill:#55463a;font-size:10px;font-weight:650;text-anchor:middle}
+.column-hit{fill:transparent;cursor:pointer}
+.column-hit:active{fill:#f6dfbd;opacity:.55}
+#feedback{position:absolute;left:12px;right:12px;bottom:8px;height:28px;border-radius:12px;padding:4px 9px;font-size:13px;font-weight:700;color:#754b30;background:#f6ead8}
+</style>
+<div id="lesson">
+  <div id="heading"><div id="title"></div><div id="ask"></div></div>
+  <svg id="chart" viewBox="0 0 336 224" aria-label=""></svg>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+const p=Studio.params,d=p.data,svg=document.getElementById("chart");
+const t=k=>Studio.t(k);
+document.getElementById("title").textContent=t("title");
+document.getElementById("ask").textContent=t("ask");
+const left=42,right=330,top=22,base=174,plotH=base-top;
+const max=Math.max(...d.map(x=>x.value));
+const rough=max/5;
+const step=Math.max(1,Math.ceil(rough));
+const ceiling=Math.ceil(max/step)*step;
+const scale=plotH/ceiling;
+for(let v=0;v<=ceiling;v+=step){
+ const y=base-v*scale;
+ const line=document.createElementNS("http://www.w3.org/2000/svg","line");
+ line.setAttribute("x1",left);line.setAttribute("x2",right);line.setAttribute("y1",y);line.setAttribute("y2",y);
+ line.setAttribute("class",v===0?"axis":"grid");svg.appendChild(line);
+ const label=document.createElementNS("http://www.w3.org/2000/svg","text");
+ label.setAttribute("x",left-7);label.setAttribute("y",y);label.setAttribute("class","tick-label");
+ label.setAttribute("data-tick",v);label.textContent=v;svg.appendChild(label);
+}
+const axis=document.createElementNS("http://www.w3.org/2000/svg","text");
+axis.setAttribute("x",8);axis.setAttribute("y",(top+base)/2);axis.setAttribute("transform","rotate(-90 8 "+((top+base)/2)+")");axis.setAttribute("class","axis-title");axis.textContent=t("yaxis");svg.appendChild(axis);
+const usable=right-left,slot=usable/d.length,barW=Math.min(34,slot-8);
+d.forEach((item,i)=>{
+ const cx=left+slot*(i+.5),h=item.value*scale,y=base-h;
+ const bar=document.createElementNS("http://www.w3.org/2000/svg","rect");
+ bar.setAttribute("x",cx-barW/2);bar.setAttribute("y",y);bar.setAttribute("width",barW);bar.setAttribute("height",h);
+ bar.setAttribute("rx",5);bar.setAttribute("class","bar");bar.setAttribute("data-bar",item.key);bar.setAttribute("data-value",item.value);svg.appendChild(bar);
+ const name=document.createElementNS("http://www.w3.org/2000/svg","text");
+ name.setAttribute("x",cx);name.setAttribute("y",base+17);name.setAttribute("class","name");name.textContent=t(item.key);svg.appendChild(name);
+ const hit=document.createElementNS("http://www.w3.org/2000/svg","rect");
+ hit.setAttribute("x",cx-slot/2);hit.setAttribute("y",top);hit.setAttribute("width",slot);hit.setAttribute("height",base+28-top);
+ hit.setAttribute("class","column-hit");hit.setAttribute("data-column",item.key);
+ hit.addEventListener("click",()=>{if(svg.dataset.locked==="true")return;Studio.event("column_tap",{key:item.key});Studio.answer(item.key)});
+ svg.appendChild(hit);
+});
+const feedback=document.getElementById("feedback");
+Studio.onVerdict(v=>{
+ if(v.correct){feedback.textContent=t("right")+" "+t("done");svg.dataset.locked="true";Studio.done()}
+ else feedback.textContent=t("wrong");
+});
+Studio.ready();
+})();
+
+</script>

@@ -455,21 +455,21 @@ var C = class {
 			x(this.nod.x * j + w[0] * S - 3 * this.leanV - O * .2 * p, -20, 20),
 			x(this.headYaw + w[1] * S, -20, 20),
 			x(this.tilt + w[2] * S * .6, -20, 20)
-		], N = this.brow, P = (e - N.t0) * 1e3, ee = P < 0 ? 0 : P < 80 ? N.amp * P / 80 : P < 320 ? N.amp : P < 520 ? N.amp * (1 - (P - 320) / 200) : 0, te = this.reduced ? .3 : 1, F = {}, I = (e, t) => {
-			F[e + "Left"] = (F[e + "Left"] ?? 0) + t * this.asym, F[e + "Right"] = (F[e + "Right"] ?? 0) + t / this.asym;
+		], N = this.brow, P = (e - N.t0) * 1e3, F = P < 0 ? 0 : P < 80 ? N.amp * P / 80 : P < 320 ? N.amp : P < 520 ? N.amp * (1 - (P - 320) / 200) : 0, ee = this.reduced ? .3 : 1, I = {}, te = (e, t) => {
+			I[e + "Left"] = (I[e + "Left"] ?? 0) + t * this.asym, I[e + "Right"] = (I[e + "Right"] ?? 0) + t / this.asym;
 		};
 		if (T) for (let [e, t] of Object.entries(T.bs)) {
-			let n = t * _ * te;
-			e === "mouthSmile" && (n *= this.smileGain / .7), this.gentle && h.has(e) && (n *= .5), e.startsWith("brow") && (n *= this.browGain), e === "browInnerUp" ? F.browInnerUp = (F.browInnerUp ?? 0) + n : I(e, n);
+			let n = t * _ * ee;
+			e === "mouthSmile" && (n *= this.smileGain / .7), this.gentle && h.has(e) && (n *= .5), e.startsWith("brow") && (n *= this.browGain), e === "browInnerUp" ? I.browInnerUp = (I.browInnerUp ?? 0) + n : te(e, n);
 		}
-		I("mouthSmile", (this.state === "thinking" ? .03 : this.state === "speaking" ? .06 : .1) * this.smileGain * (this.gentle ? .5 : 1)), I("browOuterUp", ee * this.browGain), F.browInnerUp = (F.browInnerUp ?? 0) + (ee * .8 + (this.state === "listening" ? .08 : 0)) * this.browGain;
-		let L = Math.max(F.eyeSquintLeft ?? 0, F.eyeSquintRight ?? 0) * .3, R = Math.max(f, L);
-		F.eyeBlinkLeft = R, F.eyeBlinkRight = R;
-		for (let e in F) F[e] = b(F[e]);
+		te("mouthSmile", (this.state === "thinking" ? .03 : this.state === "speaking" ? .06 : .1) * this.smileGain * (this.gentle ? .5 : 1)), te("browOuterUp", F * this.browGain), I.browInnerUp = (I.browInnerUp ?? 0) + (F * .8 + (this.state === "listening" ? .08 : 0)) * this.browGain;
+		let ne = Math.max(I.eyeSquintLeft ?? 0, I.eyeSquintRight ?? 0) * .3, L = Math.max(f, ne);
+		I.eyeBlinkLeft = L, I.eyeBlinkRight = L;
+		for (let e in I) I[e] = b(I[e]);
 		return {
 			t: e,
 			state: this.state,
-			bs: F,
+			bs: I,
 			head: M,
 			gaze: [D, O],
 			lean: this.leanV,
@@ -527,8 +527,8 @@ var C = class {
 		}
 		return this.prev = r, r;
 	}
-}, k = "#version 300 es\nin vec2 aPos; in vec2 aUv;\nuniform vec2 uView; uniform vec4 uCam; // cam: x0, y0, scale, flipY\nout vec2 vUv; out vec2 vRest;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vUv = aUv;\n}", A = "#version 300 es\nprecision mediump float;\nin vec2 vUv;\nuniform sampler2D uTex; uniform float uAlpha; uniform vec4 uShade; // shade: dirX, x0, x1, amount\nuniform vec4 uRect; // texture rect in rest space (x0,y0,w,h) for shading position\nuniform vec4 uTint; // debug: rgb, amount\nout vec4 o;\nvoid main(){\n  vec4 c = texture(uTex, vUv);\n  float x = uRect.x + vUv.x * uRect.z;\n  float s = clamp((x - uShade.y) / (uShade.z - uShade.y), 0.0, 1.0);\n  s = uShade.x > 0.0 ? s : 1.0 - s;\n  c.rgb *= 1.0 - uShade.w * s * s;\n  c.rgb = mix(c.rgb, uTint.rgb * c.a, uTint.a);\n  o = c * uAlpha;\n}", j = "#version 300 es\nin vec2 aPos; in vec2 aRest; in float aEdge; in float aTop;\nuniform vec2 uView; uniform vec4 uCam;\nout vec2 vRest; out float vEdge; out float vTop; out vec2 vScr;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vRest = aRest; vEdge = aEdge; vTop = aTop; vScr = aPos;\n}", M = "#version 300 es\nprecision highp float;\nin vec2 vRest; in float vEdge; in float vTop; in vec2 vScr;\nuniform vec2 uIrisScr; uniform vec2 uCatchScr; uniform float uIrisK; uniform vec2 uCatchC;\nuniform sampler2D uSclera; uniform vec4 uScleraRect;\nuniform sampler2D uIris; uniform vec4 uIrisRect;\nuniform sampler2D uCatch; uniform vec4 uCatchRect;\nuniform vec2 uIrisOff; uniform vec2 uIrisC; uniform vec2 uIrisScale; uniform vec2 uCatchOff; uniform float uCatchA;\nuniform float uLidShade; uniform float uTopY;\nout vec4 o;\nvec4 tex(sampler2D t, vec4 r, vec2 p){\n  vec2 uv = (p - r.xy) / r.zw;\n  if (uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) return vec4(0.0);\n  return texture(t, uv);\n}\nvoid main(){\n  vec4 s = tex(uSclera, uScleraRect, vRest);\n  vec3 col = s.a > 0.0 ? s.rgb / s.a : vec3(0.95);\n  // r3: the iris and the catchlight are placed in SCREEN space and scaled uniformly: they translate with the gaze and\n  // the turn but never squash anisotropically (r2's far eye at yaw 20 became a vertical oval)\n  vec2 ip = uIrisC + (vScr - uIrisScr) / (uIrisK * uIrisScale);\n  vec4 ir = tex(uIris, uIrisRect, ip);\n  col = col * (1.0 - ir.a) + ir.rgb;\n  // lid shadow: the band right under the upper lid darkens a little (wraps the eye)\n  // r2: per-column lid line (vTop), a soft wrap shadow ~10 px deep under the whole lid, as in c-front\n  float dl = clamp((vRest.y - vTop - 2.0) / 9.0, 0.0, 1.0);\n  col *= 1.0 - uLidShade * (1.0 - dl) * (1.0 - dl);\n  vec4 cl = tex(uCatch, uCatchRect, uCatchC + (vScr - uCatchScr) / uIrisK);\n  col = mix(col, vec3(1.0), cl.a * uCatchA);\n  float a = clamp(vEdge, 0.0, 1.0);\n  o = vec4(col * a, a);\n}", N = "#version 300 es\nin vec2 aPos; in vec2 aUv; in float aA;\nuniform vec2 uView; uniform vec4 uCam;\nout vec2 vUv; out float vA;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vUv = aUv; vA = aA;\n}", P = "#version 300 es\nprecision mediump float;\nin vec2 vUv; in float vA;\nuniform sampler2D uTex; uniform vec4 uShade; uniform vec4 uRect;\nout vec4 o;\nvoid main(){\n  vec4 c = texture(uTex, vUv);\n  float x = uRect.x + vUv.x * uRect.z;\n  float s = clamp((x - uShade.y) / (uShade.z - uShade.y), 0.0, 1.0);\n  s = uShade.x > 0.0 ? s : 1.0 - s;\n  c.rgb *= 1.0 - uShade.w * s * s;\n  o = c * vA;\n}", ee = "#version 300 es\nin vec2 aPos; in float aS; in float aDT; in float aGap;\nuniform vec2 uView; uniform vec4 uCam;\nout float vS; out float vDT; out float vGap;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vS = aS; vDT = aDT; vGap = aGap;\n}", te = "#version 300 es\nprecision highp float;\nin float vS; in float vDT; in float vGap;\nuniform sampler2D uTex;\nuniform vec4 uTeeth;   // upper shown 0..1, lower shown 0..1, teeth height px, -\nuniform vec4 uTongue;  // height share, tip, curl, -\nuniform float uShadeK;\nout vec4 o;\nvec3 strip(float row, float u){ return texture(uTex, vec2(u, (row + 0.5) / 64.0)).rgb; }\nvec4 strip4(float row, float u){ return texture(uTex, vec2(u, (row + 0.5) / 64.0)); }\nvoid main(){\n  float gap = max(vGap, 0.001);\n  float dt = vDT, db = gap - vDT;\n  float a = abs(vS);\n  float u = clamp(vS * 0.5 + 0.5, 0.0, 1.0);\n  // cavity: roof (dark) to floor, from the aa cell\n  vec3 col = strip(32.0 + clamp(dt / gap, 0.0, 1.0) * 15.0, u);\n  col *= 1.0 - 0.35 * pow(a, 3.0);\n  // tongue: a soft mound on the lower lip, a tip that rises behind the upper teeth (dental / lateral), a curl that\n  // shows the darker underside up at the palate (retroflex)\n  float bell = exp(-pow(vS / 0.34, 2.0));\n  float mound = gap * uTongue.x * pow(max(0.0, 1.0 - pow(vS / 0.8, 2.0)), 1.6);\n  float tip = max(0.0, gap - 1.5 - uTeeth.z * uTeeth.x * 0.45) * uTongue.y * bell;\n  float curl = gap * 0.78 * uTongue.z * exp(-pow(vS / 0.3, 2.0));\n  float h = max(mound, max(tip, curl));\n  if (db < h && h > 0.6) {\n    vec3 t = strip(48.0 + clamp(1.0 - db / h, 0.0, 1.0) * 15.0, u);\n    t *= 0.8 * mix(0.88, 1.0, smoothstep(0.0, 2.5, h - db)) * mix(0.82, 1.0, smoothstep(0.0, 0.5 * h, db));\n    t *= 1.0 - 0.3 * pow(a / 0.8, 2.0);\n    if (curl > max(mound, tip) - 0.01) {               // the underside: darker, cooler, with a light lip at the edge\n      vec3 under = t * vec3(0.72, 0.62, 0.68);\n      t = mix(under, t * 1.08, 1.0 - smoothstep(0.0, 1.4, h - db));\n    }\n    col = mix(col, t, clamp((h - db) / 2.2, 0.0, 1.0) * smoothstep(0.6, 2.0, h));\n  }\n  // lower teeth (bottom-anchored), then upper teeth (top-anchored, slide up under the lip as they hide)\n  float th = uTeeth.z;\n  // the strips are 16 rows for ~12 px of painted tooth: rows per px = 12 / th\n  float rp = 12.0 / th;\n  float lb = (db + (1.0 - 0.45 * uTeeth.y) * th) * rp;\n  float lw = 0.5, uw = 0.74;   // the rows are narrower than the lip span: the corners recede into shadow\n  if (lb < 15.0 && a < lw) {\n    vec4 lt = strip4(31.0 - lb, clamp((vS / lw) * 0.5 + 0.5, 0.0, 1.0));\n    lt *= 1.0 - smoothstep(lw - 0.12, lw, a);\n    lt.rgb *= 0.9 - 0.3 * pow(a / lw, 2.0);\n    col = mix(col, lt.rgb / max(lt.a, 0.001), lt.a);\n  }\n  float ub = (dt + (1.0 - uTeeth.x) * th) * rp;\n  if (ub >= 0.0 && ub < 15.0 && a < uw) {\n    vec4 ut = strip4(ub, clamp((vS / uw) * 0.5 + 0.5, 0.0, 1.0));\n    ut *= 1.0 - smoothstep(uw - 0.14, uw, a);\n    ut.rgb *= 1.0 - 0.3 * pow(a / uw, 2.0);\n    col = mix(col, ut.rgb / max(ut.a, 0.001), ut.a);\n  }\n  // the upper lip's shadow on whatever sits right under it\n  col *= mix(0.78, 1.0, smoothstep(0.0, 2.5, dt));\n  o = vec4(col * uShadeK, 1.0);\n}";
-function F(e, t, n) {
+}, k = "#version 300 es\nin vec2 aPos; in vec2 aUv;\nuniform vec2 uView; uniform vec4 uCam; // cam: x0, y0, scale, flipY\nout vec2 vUv; out vec2 vRest;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vUv = aUv;\n}", A = "#version 300 es\nprecision mediump float;\nin vec2 vUv;\nuniform sampler2D uTex; uniform float uAlpha; uniform vec4 uShade; // shade: dirX, x0, x1, amount\nuniform vec4 uRect; // texture rect in rest space (x0,y0,w,h) for shading position\nuniform vec4 uTint; // debug: rgb, amount\nout vec4 o;\nvoid main(){\n  vec4 c = texture(uTex, vUv);\n  float x = uRect.x + vUv.x * uRect.z;\n  float s = clamp((x - uShade.y) / (uShade.z - uShade.y), 0.0, 1.0);\n  s = uShade.x > 0.0 ? s : 1.0 - s;\n  c.rgb *= 1.0 - uShade.w * s * s;\n  c.rgb = mix(c.rgb, uTint.rgb * c.a, uTint.a);\n  o = c * uAlpha;\n}", j = "#version 300 es\nin vec2 aPos; in vec2 aRest; in float aEdge; in float aTop;\nuniform vec2 uView; uniform vec4 uCam;\nout vec2 vRest; out float vEdge; out float vTop; out vec2 vScr;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vRest = aRest; vEdge = aEdge; vTop = aTop; vScr = aPos;\n}", M = "#version 300 es\nprecision highp float;\nin vec2 vRest; in float vEdge; in float vTop; in vec2 vScr;\nuniform vec2 uIrisScr; uniform vec2 uCatchScr; uniform float uIrisK; uniform vec2 uCatchC;\nuniform sampler2D uSclera; uniform vec4 uScleraRect;\nuniform sampler2D uIris; uniform vec4 uIrisRect;\nuniform sampler2D uCatch; uniform vec4 uCatchRect;\nuniform vec2 uIrisOff; uniform vec2 uIrisC; uniform vec2 uIrisScale; uniform vec2 uCatchOff; uniform float uCatchA;\nuniform float uLidShade; uniform float uTopY;\nout vec4 o;\nvec4 tex(sampler2D t, vec4 r, vec2 p){\n  vec2 uv = (p - r.xy) / r.zw;\n  if (uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) return vec4(0.0);\n  return texture(t, uv);\n}\nvoid main(){\n  vec4 s = tex(uSclera, uScleraRect, vRest);\n  vec3 col = s.a > 0.0 ? s.rgb / s.a : vec3(0.95);\n  // r3: the iris and the catchlight are placed in SCREEN space and scaled uniformly: they translate with the gaze and\n  // the turn but never squash anisotropically (r2's far eye at yaw 20 became a vertical oval)\n  vec2 ip = uIrisC + (vScr - uIrisScr) / (uIrisK * uIrisScale);\n  vec4 ir = tex(uIris, uIrisRect, ip);\n  col = col * (1.0 - ir.a) + ir.rgb;\n  // lid shadow: the band right under the upper lid darkens a little (wraps the eye)\n  // r2: per-column lid line (vTop), a soft wrap shadow ~10 px deep under the whole lid, as in c-front\n  float dl = clamp((vRest.y - vTop - 2.0) / 9.0, 0.0, 1.0);\n  col *= 1.0 - uLidShade * (1.0 - dl) * (1.0 - dl);\n  vec4 cl = tex(uCatch, uCatchRect, uCatchC + (vScr - uCatchScr) / uIrisK);\n  col = mix(col, vec3(1.0), cl.a * uCatchA);\n  float a = clamp(vEdge, 0.0, 1.0);\n  o = vec4(col * a, a);\n}", N = "#version 300 es\nin vec2 aPos; in vec2 aUv; in float aA; in float aL;\nuniform vec2 uView; uniform vec4 uCam;\nout vec2 vUv; out float vA; out float vL;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vUv = aUv; vA = aA; vL = aL;\n}", P = "#version 300 es\nprecision mediump float;\nin vec2 vUv; in float vA; in float vL;\nuniform sampler2D uTex; uniform vec4 uShade; uniform vec4 uRect;\nout vec4 o;\nvoid main(){\n  vec4 c = texture(uTex, vUv);\n  float x = uRect.x + vUv.x * uRect.z;\n  float s = clamp((x - uShade.y) / (uShade.z - uShade.y), 0.0, 1.0);\n  s = uShade.x > 0.0 ? s : 1.0 - s;\n  c.rgb *= (1.0 - uShade.w * s * s) * vL;\n  o = c * vA;\n}", F = "#version 300 es\nin vec2 aPos; in float aS; in float aDT; in float aGap;\nuniform vec2 uView; uniform vec4 uCam;\nout float vS; out float vDT; out float vGap;\nvoid main(){\n  vec2 p = (aPos - uCam.xy) * uCam.z;\n  gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);\n  vS = aS; vDT = aDT; vGap = aGap;\n}", ee = "#version 300 es\nprecision highp float;\nin float vS; in float vDT; in float vGap;\nuniform sampler2D uTex;\nuniform vec4 uTeeth;   // upper shown 0..1, lower shown 0..1, teeth height px, -\nuniform vec4 uTongue;  // body height share, tip, curl, -\nuniform float uShadeK;\nout vec4 o;\nvec3 rowc(float row, float u){ vec4 c = texture(uTex, vec2(u, (row + 0.5) / 64.0)); return c.rgb / max(c.a, 0.001); }\n// r4 (judge r3 fix 2): the teeth's free edge is the PAINTED contour's smooth fit (rows 12.9 - 2.7u^2 - 0.3u^4 of the\n// 16-row strip, interior-r4.py), drawn with an analytic coverage ramp one screen pixel wide: no ragged alpha, no shimmer\nfloat contourRows(float u){ return 12.9 - 2.7 * u * u - 0.3 * u * u * u * u; }\nvoid main(){\n  float gap = max(vGap, 0.001);\n  float dt = vDT, db = gap - vDT;\n  float a = abs(vS);\n  float u = clamp(vS * 0.5 + 0.5, 0.0, 1.0);\n  float px = max(fwidth(vDT), 0.35);          // one screen pixel in rest px\n  // cavity: roof (dark) to floor\n  vec3 col = rowc(32.0 + clamp(dt / gap, 0.0, 1.0) * 15.0, u);\n  col = col * 1.22 + vec3(0.035, 0.012, 0.01);   // r4: the refs' cavity is a warm brown, not a black-maroon hole\n  col *= 1.0 - 0.35 * pow(a, 3.0);\n  // ---- tongue: body mound on the floor; tip = a rounded LOBE that rises to the upper teeth (t d n l); curl = the\n  // retroflex underside up at the palate\n  float th = uTeeth.z, rp = 12.0 / th;\n  float upVis = th * uTeeth.x * contourRows(0.0) / 12.0;          // upper teeth hanging at the centre (px)\n  float mound = min(gap * uTongue.x, 7.0 + 0.12 * gap) * pow(max(0.0, 1.0 - pow(vS / 0.85, 2.0)), 0.8);\n  float lw = 0.34;                                                // lobe half-width (s units)\n  float lob = max(0.0, 1.0 - pow(vS / lw, 2.0));\n  float tipH = max(0.0, gap - upVis * 0.35) * uTongue.y * pow(lob, 0.4);\n  float curl = gap * 0.78 * uTongue.z * exp(-pow(vS / 0.3, 2.0));\n  float h = max(mound, max(tipH, curl));\n  if (h > 0.4) {\n    float cov = clamp((h - db) / px + 0.5, 0.0, 1.0);\n    vec3 t = rowc(48.0 + clamp(1.0 - db / max(h, 0.5), 0.0, 1.0) * 15.0, u);\n    t *= 0.86 * (1.0 - 0.3 * pow(a / 0.8, 2.0));\n    bool isTip = tipH >= max(mound, curl) - 0.01 && uTongue.y > 0.05;\n    if (isTip) {\n      // the lobe: lit on top, a soft groove down its middle, shadowed where it meets the cavity at the sides\n      float top = clamp((h - db) / 3.0, 0.0, 1.0);\n      t *= mix(1.12, 1.0, top) * (1.0 - 0.10 * exp(-pow(vS / 0.05, 2.0)) * top) * mix(0.78, 1.0, smoothstep(0.0, 0.45, lob));\n    }\n    if (curl > max(mound, tipH) - 0.01 && uTongue.z > 0.05) {\n      vec3 under = t * vec3(0.72, 0.62, 0.68);\n      t = mix(under, t * 1.08, 1.0 - smoothstep(0.0, 1.4, h - db));\n    }\n    // a contact shadow just outside the tongue's edge keeps it legible against the cavity at 1x\n    col *= 1.0 - 0.25 * clamp(1.0 - abs(h - db) / 2.0, 0.0, 1.0) * (1.0 - cov);\n    col = mix(col, t, cov);\n  }\n  // ---- lower teeth (bottom-anchored on the lower lip), then upper teeth (hang from the upper lip, slide up as they hide)\n  float lwT = 0.52, uwT = 0.76;\n  float gapT = smoothstep(1.5, 4.0, gap);   // no teeth through a 1-2 px slit (it showed as a dotted sliver)     // the rows are narrower than the lip span: the corners recede into shadow\n  if (a < lwT && uTeeth.y > 0.01) {\n    float ul = clamp((vS / lwT) * 0.5 + 0.5, 0.0, 1.0);\n    float hL = th * 0.8 * smoothstep(0.2, 0.5, uTeeth.y) * contourRows(vS / lwT) / 12.0;       // visible height above the lower lip\n    float cov = clamp((hL - db) / px + 0.5, 0.0, 1.0) * (1.0 - smoothstep(lwT - 0.12, lwT, a)) * gapT;\n    float row = 31.0 - clamp(db * rp, 0.0, contourRows(vS / lwT) - 2.5);\n    vec3 lt = rowc(row, ul) * (1.0 - 0.3 * pow(a / lwT, 2.0));\n    col = mix(col, lt, cov);\n  }\n  if (a < uwT && uTeeth.x > 0.01) {\n    float uu = clamp((vS / uwT) * 0.5 + 0.5, 0.0, 1.0);\n    float cr = contourRows(vS / uwT);\n    float hU = th * cr / 12.0 - (1.0 - uTeeth.x) * th;                 // visible height below the upper lip\n    float cov = clamp((hU - dt) / px + 0.5, 0.0, 1.0) * (1.0 - smoothstep(uwT - 0.14, uwT, a)) * gapT;\n    float row = clamp((dt + (1.0 - uTeeth.x) * th) * rp, 0.0, cr - 2.5);\n    vec3 ut = rowc(row, uu) * 1.08 * (1.0 - 0.3 * pow(a / uwT, 2.0));\n    // the free edge catches a whisper of shadow (painted teeth have it), inside the coverage ramp only\n    ut *= 1.0 - 0.08 * clamp(1.0 - (hU - dt) / 1.6, 0.0, 1.0);\n    col = mix(col, ut, cov);\n  }\n  // the upper lip's shadow on whatever sits right under it\n  col *= mix(0.78, 1.0, smoothstep(0.0, 2.5, dt));\n  float al = clamp((gap - 0.6) / 1.2, 0.0, 1.0);          // zero-gap columns draw nothing (no dark tick past the corners)\n  o = vec4(col * uShadeK * al, al);\n}";
+function I(e, t, n) {
 	let r = e.createProgram();
 	for (let [i, a] of [[e.VERTEX_SHADER, t], [e.FRAGMENT_SHADER, n]]) {
 		let t = e.createShader(i);
@@ -546,7 +546,7 @@ function F(e, t, n) {
 		u: i
 	};
 }
-var I = class {
+var te = class {
 	constructor(e, { clear: t = [
 		.98,
 		.9,
@@ -560,7 +560,7 @@ var I = class {
 			powerPreference: "high-performance"
 		});
 		if (!r) throw Error("WebGL2 unavailable");
-		this.gl = r, this.canvas = e, this.clear = t, this.paint = F(r, k, A), this.eye = F(r, j, M), this.lip = F(r, N, P), this.inner = F(r, ee, te), r.enable(r.BLEND), r.blendFunc(r.ONE, r.ONE_MINUS_SRC_ALPHA), r.disable(r.DEPTH_TEST), this.cam = [
+		this.gl = r, this.canvas = e, this.clear = t, this.paint = I(r, k, A), this.eye = I(r, j, M), this.lip = I(r, N, P), this.inner = I(r, F, ee), r.enable(r.BLEND), r.blendFunc(r.ONE, r.ONE_MINUS_SRC_ALPHA), r.disable(r.DEPTH_TEST), this.cam = [
 			0,
 			0,
 			1,
@@ -638,8 +638,8 @@ var I = class {
 		};
 		i(0, "uSclera", t.sclera.tex, t.sclera.rect, "uScleraRect"), i(1, "uIris", t.iris.tex, t.iris.rect, "uIrisRect"), i(2, "uCatch", t.catch.tex, t.catch.rect, "uCatchRect"), n.uniform2fv(r.u.uIrisC, t.irisC), n.uniform2fv(r.u.uIrisScale, t.irisScale), n.uniform2fv(r.u.uIrisScr, t.irisScr), n.uniform2fv(r.u.uCatchScr, t.catchScr), n.uniform2fv(r.u.uCatchC, t.catchC), n.uniform1f(r.u.uIrisK, t.irisK), n.uniform1f(r.u.uCatchA, t.catchA), n.uniform1f(r.u.uLidShade, t.lidShade), n.uniform1f(r.u.uTopY, t.topY), n.bindVertexArray(e.vao), n.drawElements(n.TRIANGLES, e.count, n.UNSIGNED_SHORT, 0), this.draws++, this.tris += e.count / 3;
 	}
-}, L = (e, t, n) => e < t ? t : e > n ? n : e, R = (e) => L(e, 0, 1), ne = (e, t, n) => {
-	let r = R((n - e) / (t - e));
+}, ne = (e, t, n) => e < t ? t : e > n ? n : e, L = (e) => ne(e, 0, 1), R = (e, t, n) => {
+	let r = L((n - e) / (t - e));
 	return r * r * (3 - 2 * r);
 }, re = 448, z = [
 	585,
@@ -699,151 +699,164 @@ function ie(e) {
 	let n = Math.floor(t), r = t - n;
 	return z[n] * (1 - r) + z[n + 1] * r;
 }
-var ae = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), oe = (e) => e >= 1 ? 0 : B.tU * (1 - e * e) ** .55, se = (e) => e >= 1 ? 0 : B.tL * Math.max(0, 1 - e ** 2.2) ** .75, V = {
+var ae = ie(B.cx + 4), oe = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), se = (e) => e >= 1 ? 0 : B.tU * (1 - e * e) ** .55, ce = (e) => e >= 1 ? 0 : B.tL * Math.max(0, 1 - e ** 2.2) ** .75, V = {
 	g: 0,
 	up: .3,
-	wid: 0,
+	W: 1,
+	flat: 0,
 	round: 0,
 	press: 0,
-	T: .6,
-	TL: .2,
+	T: .7,
+	TL: .15,
 	th: .25,
 	tip: 0,
 	curl: 0,
 	tuck: 0
-}, ce = {
+}, le = {
 	viseme_sil: { ...V },
 	viseme_PP: {
 		...V,
-		wid: -3,
-		press: 1
+		W: .9,
+		flat: .5,
+		press: 1,
+		T: 0
 	},
 	viseme_FF: {
 		...V,
-		g: 3.5,
-		up: .15,
-		wid: -2,
+		g: 9,
+		up: 0,
+		W: 1,
 		T: 1,
 		TL: 0,
 		tuck: 1
 	},
 	viseme_TH: {
 		...V,
-		g: 9,
-		up: .4,
-		T: .75,
-		TL: .4,
+		g: 13,
+		up: .35,
+		W: 1,
+		T: .8,
+		TL: .5,
 		tip: 1,
 		th: .5
 	},
 	viseme_DD: {
 		...V,
-		g: 11,
+		g: 17,
 		up: .3,
-		T: .8,
-		TL: .45,
-		tip: .8
+		W: .98,
+		T: .55,
+		TL: .1,
+		tip: 1
 	},
 	viseme_kk: {
 		...V,
-		g: 13,
+		g: 19,
 		up: .3,
-		T: .6,
-		TL: .3,
-		th: .55
+		W: .96,
+		T: .65,
+		TL: .15,
+		th: .72
 	},
 	viseme_CH: {
 		...V,
-		g: 7,
-		up: .4,
-		wid: -9,
-		round: .55,
+		g: 10,
+		up: .45,
+		W: .8,
+		flat: .55,
+		round: .6,
 		T: 1,
-		TL: .9
+		TL: .95
 	},
 	viseme_SS: {
 		...V,
-		g: 5,
-		up: .4,
-		wid: 3,
+		g: 6,
+		up: .45,
+		W: 1.06,
 		T: 1,
 		TL: 1
 	},
 	viseme_nn: {
 		...V,
-		g: 10,
+		g: 15,
 		up: .3,
-		T: .7,
-		TL: .4,
-		tip: .8
+		W: .98,
+		T: .55,
+		TL: .1,
+		tip: 1
 	},
 	viseme_RR: {
 		...V,
-		g: 9,
+		g: 12,
 		up: .35,
-		wid: -9,
-		round: .5,
-		T: .6,
-		TL: .3,
-		tip: .6
+		W: .82,
+		flat: .5,
+		round: .55,
+		T: .5,
+		TL: .15,
+		tip: .5
 	},
 	viseme_aa: {
 		...V,
-		g: 31,
-		up: .24,
-		wid: -7,
-		round: .5,
-		T: .6,
-		TL: .05,
-		th: .3
+		g: 56,
+		up: .2,
+		W: .97,
+		flat: .25,
+		round: .3,
+		T: .95,
+		TL: .15,
+		th: .35
 	},
 	viseme_E: {
 		...V,
-		g: 11,
+		g: 17,
 		up: .35,
-		wid: 5,
+		W: 1.1,
 		T: 1,
-		TL: .7
+		TL: .55
 	},
 	viseme_I: {
 		...V,
-		g: 7,
+		g: 9,
 		up: .4,
-		wid: 5,
+		W: 1.08,
 		T: 1,
-		TL: .8
+		TL: .75
 	},
 	viseme_O: {
 		...V,
-		g: 19,
-		up: .35,
-		wid: -17,
-		round: .9,
-		T: .45,
-		TL: .1
+		g: 28,
+		up: .4,
+		W: .7,
+		flat: .85,
+		round: 1,
+		T: .35,
+		TL: .05
 	},
 	viseme_U: {
 		...V,
-		g: 9,
-		up: .4,
-		wid: -24,
+		g: 15,
+		up: .45,
+		W: .6,
+		flat: .9,
 		round: 1,
-		T: .15,
+		T: .1,
 		TL: 0
 	}
-}, H = Object.keys(V), le = {
+}, H = Object.keys(V), ue = {
 	g: .022,
 	up: .03,
-	wid: .045,
-	round: .045,
-	press: .03,
+	W: .04,
+	flat: .04,
+	round: .04,
+	press: .02,
 	T: .03,
 	TL: .03,
 	th: .03,
-	tip: .025,
+	tip: .018,
 	curl: .03,
-	tuck: .025
-}, ue = class {
+	tuck: .02
+}, de = class {
 	constructor() {
 		this.p = { ...V }, this.side = {
 			L: {
@@ -856,66 +869,84 @@ var ae = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), oe = (e) => e >= 1 ? 0 
 				dy: 0,
 				crease: 1
 			}
-		}, this.shift = 0, this.first = !0;
+		}, this.shift = 0, this.first = !0, this.t = 0, this.holdPP = -1, this.holdTip = -1;
 	}
 	solve(e, t) {
-		let n = (t) => e[t] ?? 0, r = R(n("jawOpen") / .85), i = Math.max(n("mouthFunnel"), n("mouthPucker")), a = (n("mouthStretchLeft") + n("mouthStretchRight")) / 2, o = {
+		this.t += t;
+		let n = (t) => e[t] ?? 0, r = L(n("jawOpen") / .85), i = Math.max(n("mouthFunnel"), n("mouthPucker")), a = (n("mouthStretchLeft") + n("mouthStretchRight")) / 2, o = {
 			...V,
-			g: 30 * r,
-			up: .28,
-			wid: -18 * i + 6 * a,
-			round: R(i * 1.2 + .2 * r),
-			T: .35 + .5 * r,
+			g: 44 * r,
+			up: .24,
+			W: 1 - .36 * i + .08 * a,
+			flat: .85 * i,
+			round: L(i * 1.2 + .2 * r),
+			T: .4 + .55 * r,
 			TL: .1 + .3 * a,
 			th: .25
 		}, s = 0, c = {};
 		for (let e of H) c[e] = 0;
-		for (let e in ce) {
+		for (let e in le) {
 			let t = n(e);
 			if (!(t <= .01)) {
 				s += t;
-				for (let n of H) c[n] += t * ce[e][n];
+				for (let n of H) c[n] += t * le[e][n];
 			}
 		}
 		let l = {};
 		if (s > 0) for (let e of H) c[e] /= s;
 		let u = Math.min(1, s);
 		for (let e of H) l[e] = s > 0 ? o[e] * (1 - u) + c[e] * u : o[e];
-		s > 0 && (l.g *= .85 + .35 * R(r / .45));
-		let d = (n("eyeWideLeft") + n("eyeWideRight")) / 2;
-		s < .2 && d > .45 && (l.round = Math.max(l.round, .95), l.wid -= 18, l.T = .3, l.up = .32, l.g *= 1.15);
-		let f = R(((n("mouthSmileLeft") + n("mouthSmileRight")) / 2 - .35) / .4) * R(r / .18);
-		f > 0 && (l.g += 22 * f * (1 - Math.min(1, s)), l.up *= 1 - .6 * f, l.T = Math.max(l.T, .9 * f), l.th = Math.max(l.th, .35 * f)), this.surprised = +(s < .2 && d > .45), l.tip = R(Math.max(l.tip, n("tongueTipUp"))), l.curl = R(Math.max(l.curl, n("tongueCurl"))), l.curl > .3 && (l.T = Math.min(l.T, .5), l.TL = 0, l.g = Math.max(l.g, 13), l.up = .38), l.tip > .3 && (l.TL = Math.min(l.TL, .15)), n("tongueWide") > .2 && (l.th = Math.max(l.th, .35)), l.press = R(Math.max(l.press, (n("mouthPressLeft") + n("mouthPressRight")) / 2 * 1.4));
-		let p = this.p;
+		s > 0 && (l.g *= .8 + .4 * L(r / .45));
+		let d = n("viseme_PP"), f = n("viseme_FF"), p = R(.6, .92, d);
+		p > 0 && (l.g *= 1 - p, l.press = Math.max(l.press, p), l.tuck *= 1 - p, l.W = l.W * (1 - p) + .9 * p, l.flat = l.flat * (1 - p) + .5 * p, l.round *= 1 - p);
+		let m = R(.25, .7, f) * (1 - p);
+		m > 0 && (l.g = l.g * (1 - m) + 9 * m, l.up *= 1 - m, l.tuck = Math.max(l.tuck, m), l.T = Math.max(l.T, m), l.TL *= 1 - m, l.round *= 1 - m, l.flat *= 1 - m), p > .85 && !this.inPP && (this.inPP = !0, this.holdPP = this.t + .067), p < .5 && (this.inPP = !1), this.t < this.holdPP && (l.g = 0, l.press = Math.max(l.press, .9));
+		let h = (n("eyeWideLeft") + n("eyeWideRight")) / 2;
+		if (this.surprised = s < .2 && h > .45 ? L((h - .45) / .3) : 0, this.surprised > 0) {
+			let e = this.surprised;
+			l.round = Math.max(l.round, e), l.flat = Math.max(l.flat, .95 * e), l.W = l.W * (1 - e) + .66 * e, l.T = l.T * (1 - e) + .35 * e, l.TL = 0, l.up = .36, l.g = Math.max(l.g, 40 * e * L(r / .3));
+		}
+		let g = L(((n("mouthSmileLeft") + n("mouthSmileRight")) / 2 - .35) / .4) * L(r / .18) * (1 - this.surprised);
+		g > 0 && (l.g += 26 * g * (1 - Math.min(1, s)), l.up *= 1 - .65 * g, l.T = Math.max(l.T, .95 * g), l.th = Math.max(l.th, .35 * g), l.W = Math.max(l.W, 1.02 * g + l.W * (1 - g))), l.tip = L(Math.max(l.tip, n("tongueTipUp"))), l.curl = L(Math.max(l.curl, n("tongueCurl"))), l.tip > .5 && !this.inTip && (this.inTip = !0, this.holdTip = this.t + .045), l.tip < .3 && (this.inTip = !1), this.t < this.holdTip && p < .5 && (l.tip = Math.max(l.tip, .85)), l.tip > .3 && (l.TL = Math.min(l.TL, .1), l.T = Math.min(l.T, .45), l.g = Math.max(l.g, 15 * l.tip * (1 - p))), l.curl > .3 && (l.T = Math.min(l.T, .5), l.TL = 0, l.g = Math.max(l.g, 15), l.up = .38), n("tongueWide") > .2 && (l.th = Math.max(l.th, .35)), l.press = L(Math.max(l.press, (n("mouthPressLeft") + n("mouthPressRight")) / 2 * 1.4));
+		let _ = this.p;
 		for (let e of H) {
 			if (this.first) {
-				p[e] = l[e];
+				_[e] = l[e];
 				continue;
 			}
-			p[e] += (1 - Math.exp(-t / le[e])) * (l[e] - p[e]);
+			let n = ue[e];
+			e === "g" && (l.g < _.g || l.tip > .5) && (n = .014), _[e] += (1 - Math.exp(-t / n)) * (l[e] - _[e]);
 		}
-		let m = {
+		this.t < this.holdPP && (_.g = Math.min(_.g, .4));
+		let v = {
 			L: n("mouthSmileRight"),
 			R: n("mouthSmileLeft")
-		}, h = {
+		}, y = {
 			L: n("mouthFrownRight"),
 			R: n("mouthFrownLeft")
-		}, g = R((n("mouthFrownLeft") + n("mouthFrownRight")) / 2 * 4 + Math.max(0, n("browInnerUp") - .5) * 1.2), _ = (e) => .22 * (1 - g) + .23 * R(e / .045) + .6 * R((e - .045) / .8), v = n("mouthLeft") - n("mouthRight");
+		}, b = L((n("mouthFrownLeft") + n("mouthFrownRight")) / 2 * 4 + Math.max(0, n("browInnerUp") - .5) * 1.2), x = (e) => .22 * (1 - b) + .23 * L(e / .045) + .6 * L((e - .045) / .8), S = n("mouthLeft") - n("mouthRight"), C = Math.max(_.round, _.flat);
 		for (let e of ["L", "R"]) {
-			let n = _(m[e]), r = 1 - .7 * p.round, i = (n - .45) * 13 * r + p.wid, a = -(n - .45) * 19 * (1 - .5 * p.round) * (1 - .7 * (this.surprised || 0)) + h[e] * 9 + p.press * 1.5, o = R((n - .16) / .29) * (1 - .6 * p.round), s = this.side[e], c = this.first ? 1 : 1 - Math.exp(-t / .06);
-			s.wid += c * (i - s.wid), s.dy += c * (a - s.dy), s.crease += c * (o - s.crease);
+			let n = x(v[e]) * (1 - .5 * C), r = (e === "L" ? B.hwL : B.hwR) * (_.W - 1) + (n - .45) * 13 * (1 - .6 * C), i = -(n - .45) * 19 * (1 - .6 * C) * (1 - .7 * this.surprised) + y[e] * 9 + _.press * 1.5, a = L((n - .16) / .29) * (1 - .7 * C), o = this.side[e], s = this.first ? 1 : 1 - Math.exp(-t / .045);
+			o.wid += s * (r - o.wid), o.dy += s * (i - o.dy), o.crease += s * (a - o.crease);
 		}
-		let y = L(v * 1.6, -1, 1) * 13;
-		return this.shift += (this.first ? 1 : 1 - Math.exp(-t / .08)) * (y - this.shift), this.first = !1, this.sideTilt = L(v * 1.6, -1, 1), this;
+		let w = ne(S * 1.6, -1, 1) * 13;
+		return this.shift += (this.first ? 1 : 1 - Math.exp(-t / .08)) * (w - this.shift), this.first = !1, this.sideTilt = ne(S * 1.6, -1, 1), this;
 	}
 	lowerDrop() {
 		return this.p.g * (1 - this.p.up);
 	}
-}, de = class {
+	jaw() {
+		return .86 * this.lowerDrop();
+	}
+};
+function fe(e, t) {
+	return R(606, 660, t) * Math.exp(-(((e - 530) / 128) ** 2));
+}
+var pe = class {
 	constructor(e) {
 		this.rect = e;
 		let [t, n, r, i] = e, a = [];
-		for (let e = t; e <= r + .01; e += 4) a.push(Math.min(e, r));
+		for (let e = t; e <= r + .01; e += 3) a.push(Math.min(e, r));
 		this.cols = a;
 		let o = [
 			0,
@@ -988,21 +1019,23 @@ var ae = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), oe = (e) => e >= 1 ? 0 
 				R: s,
 				rest: d,
 				uv: f,
+				uv0: new Float32Array(f),
 				d: p,
 				idx: m,
 				pos: new Float32Array(o * s * 2),
 				alpha: new Float32Array(o * s).fill(1),
+				light: new Float32Array(o * s).fill(1),
 				sign: l
 			};
 		}
-		this.IC = 41, this.inner = {
-			pos: /* @__PURE__ */ new Float32Array(164),
-			s: /* @__PURE__ */ new Float32Array(82),
-			dt: /* @__PURE__ */ new Float32Array(82),
-			gap: /* @__PURE__ */ new Float32Array(82)
+		this.IC = 49, this.inner = {
+			pos: /* @__PURE__ */ new Float32Array(196),
+			s: /* @__PURE__ */ new Float32Array(98),
+			dt: /* @__PURE__ */ new Float32Array(98),
+			gap: /* @__PURE__ */ new Float32Array(98)
 		};
-		let c = /* @__PURE__ */ new Uint16Array(240);
-		for (let e = 0; e < 40; e++) {
+		let c = /* @__PURE__ */ new Uint16Array(288);
+		for (let e = 0; e < 48; e++) {
 			let t = e * 2;
 			c.set([
 				t,
@@ -1014,46 +1047,49 @@ var ae = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), oe = (e) => e >= 1 ? 0 
 			], e * 6);
 		}
 		this.inner.idx = c;
-		for (let e = 0; e < 41; e++) {
-			let t = (-1 + 2 * e / 40) * 1.04;
+		for (let e = 0; e < 49; e++) {
+			let t = (-1 + 2 * e / 48) * .995;
 			this.inner.s[e * 2] = this.inner.s[e * 2 + 1] = t;
 		}
 	}
 	edge(e, t, n) {
-		let r = e.p, i = ae(t), a = Math.abs(i), o = i < 0 ? e.side.L : e.side.R, s = Math.min(1, a), c = (a <= 1 ? i : Math.sign(i)) * o.wid + e.shift, l = o.dy * s ** 1.8;
-		l -= (e.sideTilt || 0) * i * 3 * s;
-		let u = 2 + 2.2 * (1 - r.round), d = a < 1 ? Math.max(0, 1 - a ** +u) ** .9 : 0, f = r.g * d;
-		return n < 0 ? l -= f * r.up : l += f * (1 - r.up) - r.tuck * 2.5 * d, [
+		let r = e.p, i = oe(t), a = Math.abs(i), o = i < 0 ? e.side.L : e.side.R, s = Math.min(1, a), c = (a <= 1 ? i : Math.sign(i)) * o.wid + e.shift, l = o.dy * s ** 1.8;
+		l += r.flat * .9 * (ae - ie(t)) * (a <= 1.25 ? 1 : 1 - R(1.25, 1.6, a)), l -= (e.sideTilt || 0) * i * 3 * s;
+		let u = a / (1 - .16 * Math.max(r.round, r.flat * .8)), d = 2 + 2.6 * (1 - r.round), f = .9 - .3 * r.round, p = u < 1 ? Math.max(0, 1 - u ** +d) ** +f : 0, m = r.g * p;
+		return n < 0 ? l -= m * r.up : l += m * (1 - r.up) - r.tuck * 2 * p, [
 			c,
 			l,
-			f
+			m
 		];
 	}
 	deform(e, t, n, r) {
-		let i = e.p, a = t.rest[n * 2], o = t.rest[n * 2 + 1], s = t.d[n], c = t.sign, l = Math.floor(n / t.R), u = c < 0 ? this.colU : this.colL, d = u[l * 3], f = u[l * 3 + 1], p = Math.abs(ae(a)), m = c < 0 ? oe(p) : se(p), h = 1 + .32 * i.round - .38 * i.press - .04 * Math.max(0, i.wid) - (c > 0 ? .12 * i.tuck : 0), g, _;
+		let i = e.p, a = t.rest[n * 2], o = t.rest[n * 2 + 1], s = t.d[n], c = t.sign, l = Math.floor(n / t.R), u = c < 0 ? this.colU : this.colL, d = u[l * 3], f = u[l * 3 + 1], p = Math.abs(oe(a)), m = c < 0 ? se(p) : ce(p), h = 1 + .55 * i.round - .72 * i.press - .3 * Math.max(0, i.W - 1) - (c > 0 ? .32 * i.tuck : 0), g = c > 0 ? e.jaw() * fe(a, o) : 0, _, v;
 		if (s <= m + .001) {
 			let e = m > 0 ? s / m : 0;
-			g = d, _ = f + c * e * (h - 1) * m;
+			_ = d, v = f + c * e * (h - 1) * m;
 		} else {
-			let e = 1 - ne(m, m + (c < 0 ? 26 : 46), s);
-			g = d * e, _ = (f + c * (h - 1) * m) * e;
+			let e = 1 - R(m, m + (c < 0 ? 26 : 40), s), t = i.press * 2.2 * Math.exp(-(((s - m - 4) / 5) ** 2)) * (p < 1 ? 1 - p * p : 0);
+			_ = d * e, v = (f + c * (h - 1) * m) * e + g * (1 - e) + c * t;
 		}
-		let v = Math.abs(ae(a));
-		if (v > 1.2) {
-			let e = 1 - ne(1.2, 1.6, v);
-			g *= e, _ *= e;
+		if (p > 1.2) {
+			let e = 1 - R(1.2, 1.6, p);
+			_ *= e, v = v * e + g * (1 - e) * (s > m);
 		}
-		r[0] = a + g, r[1] = o + _;
+		r[0] = a + _, r[1] = o + v;
 	}
 	alphaOf(e, t, n, r) {
 		let i = n % t.R, a = t.rest[n * 2], o = 1;
-		i === 0 && (o = 1 - R((r - 1) / 1.2));
-		let s = ae(a), c = s < 0 ? this.solCache.side.L : this.solCache.side.R;
+		i === 0 && (o = 1 - L((r - 1) / 1.2));
+		let s = oe(a), c = s < 0 ? this.solCache.side.L : this.solCache.side.R;
 		if (Math.abs(s) > .9 && t.d[n] < 20) {
-			let e = ne(.9, 1.08, Math.abs(s)) * (1 - ne(8, 20, t.d[n]));
+			let e = R(.9, 1.08, Math.abs(s)) * (1 - R(8, 20, t.d[n]));
 			o *= 1 - e * (1 - c.crease);
 		}
 		return o;
+	}
+	lightOf(e, t, n) {
+		let r = e.p, i = t.d[n], a = t.rest[n * 2], o = Math.abs(oe(a)), s = o < 1 ? 1 - o * o : 0, c = t.sign < 0 ? se(o) : ce(o), l = 1;
+		return l -= r.press * .16 * Math.exp(-((i / 2.2) ** 2)) * s, l += r.press * .05 * Math.exp(-(((i - c - 4) / 5) ** 2)) * s, t.sign > 0 && (l -= r.tuck * .2 * Math.exp(-((i / 4) ** 2)) * s), l += .04 * r.round * (i < c ? Math.sin(Math.PI * i / Math.max(1, c)) : 0) * s, l;
 	}
 	update(e) {
 		this.solCache = e;
@@ -1065,7 +1101,14 @@ var ae = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), oe = (e) => e >= 1 ? 0 
 		}
 		for (let n of ["U", "L"]) {
 			let r = this.sheets[n];
-			for (let n = 0; n < r.C * r.R; n++) this.deform(e, r, n, t), r.pos[n * 2] = t[0], r.pos[n * 2 + 1] = t[1], r.alpha[n] = this.alphaOf(e, r, n, this.colL[Math.floor(n / r.R) * 3 + 2]);
+			for (let n = 0; n < r.C * r.R; n++) {
+				this.deform(e, r, n, t), r.pos[n * 2] = t[0], r.pos[n * 2 + 1] = t[1], r.alpha[n] = this.alphaOf(e, r, n, this.colL[Math.floor(n / r.R) * 3 + 2]), r.light[n] = this.lightOf(e, r, n);
+				let i = n % r.R;
+				if (i <= 2) {
+					let e = this.colL[Math.floor(n / r.R) * 3 + 2], t = L(e / 3) * (r.sign > 0 ? 2.5 : 1.2) * (i === 2 ? .4 : 1);
+					r.uv[n * 2 + 1] = r.uv0[n * 2 + 1] + r.sign * t / (this.rect[3] - this.rect[1]);
+				}
+			}
 		}
 		let r = this.inner;
 		for (let t = 0; t < this.IC; t++) {
@@ -1076,7 +1119,7 @@ var ae = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), oe = (e) => e >= 1 ? 0 
 }, U = (e, t, n) => e < t ? t : e > n ? n : e, W = (e) => U(e, 0, 1), G = (e, t, n) => {
 	let r = W((n - e) / (t - e));
 	return r * r * (3 - 2 * r);
-}, K = Math.PI / 180, fe = {
+}, K = Math.PI / 180, me = {
 	hairback: [
 		0,
 		0,
@@ -1163,7 +1206,7 @@ function J(e, t) {
 	for (let n of [452, 608]) a += 8 * Math.exp(-((e - n) ** 2 + (t - 585) ** 2) / 4050);
 	return a;
 }
-function pe(e, t) {
+function he(e, t) {
 	let [n, r, i, a] = e, o = Math.max(1, Math.ceil((i - n) / t)), s = Math.max(1, Math.ceil((a - r) / t)), c = (o + 1) * (s + 1), l = new Float32Array(c * 2), u = new Float32Array(c * 2), d = 0;
 	for (let e = 0; e <= s; e++) for (let t = 0; t <= o; t++) {
 		let c = t / o, f = e / s;
@@ -1189,7 +1232,7 @@ function pe(e, t) {
 		n: c
 	};
 }
-function me(e, t) {
+function ge(e, t) {
 	let n = new Uint16Array((e - 1) * (t - 1) * 6), r = 0;
 	for (let i = 0; i < e - 1; i++) for (let e = 0; e < t - 1; e++) {
 		let a = i * t + e, o = a + 1, s = a + t, c = s + 1;
@@ -1211,7 +1254,7 @@ function Y(e, t, n) {
 	let i = Math.floor(r), a = r - i;
 	return t[i] * (1 - a) + t[i + 1] * a;
 }
-var he = class {
+var _e = class {
 	constructor(e, t) {
 		this.k = e, this.c = 2 * t * Math.sqrt(e), this.x = 0, this.v = 0;
 	}
@@ -1223,7 +1266,7 @@ var he = class {
 		}
 		return this.x;
 	}
-}, ge = class e {
+}, ve = class e {
 	static async load(t, n, r = {}) {
 		let i = await ((e) => fetch(n + e).then((e) => e.json()))("geom.json"), a = Object.keys(i.rects).filter((e) => e !== "bg").concat(["interior"]), o = {};
 		return await Promise.all(a.map(async (e) => {
@@ -1232,7 +1275,7 @@ var he = class {
 		})), new e(t, i, null, o, r);
 	}
 	constructor(e, t, n, r, i) {
-		this.g = t, this.M = n, this.R = new I(e, {
+		this.g = t, this.M = n, this.R = new te(e, {
 			clear: i.clear || [
 				251.4 / 255,
 				229.4 / 255,
@@ -1245,9 +1288,9 @@ var he = class {
 			744
 		], this.tex = {};
 		for (let [e, t] of Object.entries(r)) this.tex[e] = this.R.texture(t, e !== "interior");
-		this.solver = new ue(), this.clock = null, this.lastT = -1, this.layers = {};
+		this.solver = new de(), this.clock = null, this.lastT = -1, this.layers = {};
 		let a = this.R.paint, o = (e, n, r) => {
-			let i = t.rects[e], o = pe(i, n), s = new Float32Array(o.rest), c = new Float32Array(o.n);
+			let i = t.rects[e], o = he(i, n), s = new Float32Array(o.rest), c = new Float32Array(o.n);
 			for (let e = 0; e < o.n; e++) c[e] = J(o.rest[e * 2], o.rest[e * 2 + 1]);
 			let l = this.R.mesh(a, {
 				aPos: {
@@ -1284,9 +1327,9 @@ var he = class {
 		}
 		for (let e of ["L", "R"]) {
 			let t = this.layers["lock" + e];
-			t.y0 = t.rect[1] + 6, t.len = t.rect[3] - t.y0, t.spring = new he(55, .22), t.springY = new he(70, .3);
+			t.y0 = t.rect[1] + 6, t.len = t.rect[3] - t.y0, t.spring = new _e(55, .22), t.springY = new _e(70, .3);
 		}
-		this.bunSpring = [new he(90, .5), new he(90, .5)], this.eyes = {};
+		this.bunSpring = [new _e(90, .5), new _e(90, .5)], this.eyes = {};
 		for (let e of ["L", "R"]) {
 			let n = t.eyes[e], r = n.x[0], i = n.x[1], o = Math.floor((i - r) / 2) + 1, s = o * 4, c = new Float32Array(s * 2), l = new Float32Array(s * 2), u = new Float32Array(s), d = new Float32Array(s);
 			for (let e = 0; e < o; e++) for (let t = 0; t < 4; t++) u[e * 4 + t] = t === 0 || t === 3 ? 0 : Math.min(1, e / 2, (o - 1 - e) / 2);
@@ -1310,7 +1353,7 @@ var he = class {
 					size: 1,
 					dynamic: !0
 				}
-			}, me(o, 4)), p = n.lashX[0], m = n.lashX[1], h = Math.floor((m - p) / 3) + 1, g = new Float32Array(h * 8 * 2), _ = new Float32Array(h * 8 * 2), v = new Float32Array(h * 8), y = t.rects["lid" + e];
+			}, ge(o, 4)), p = n.lashX[0], m = n.lashX[1], h = Math.floor((m - p) / 3) + 1, g = new Float32Array(h * 8 * 2), _ = new Float32Array(h * 8 * 2), v = new Float32Array(h * 8), y = t.rects["lid" + e];
 			for (let e = 0; e < h; e++) {
 				let t = Math.min(m, p + e * 3), r = Y(p, n.lashTop, t) - n.fall, i = Y(p, n.lashBot, t) + 8.5;
 				for (let n = 0; n < 8; n++) {
@@ -1328,7 +1371,7 @@ var he = class {
 					data: _,
 					size: 2
 				}
-			}, me(h, 8)), S = Math.floor((i - r) / 3) + 1, C = new Float32Array(S * 5 * 2), w = new Float32Array(S * 5 * 2), T = new Float32Array(S * 5), E = t.rects["lower" + e];
+			}, ge(h, 8)), S = Math.floor((i - r) / 3) + 1, C = new Float32Array(S * 5 * 2), w = new Float32Array(S * 5 * 2), T = new Float32Array(S * 5), E = t.rects["lower" + e];
 			for (let e = 0; e < S; e++) {
 				let t = Math.min(i, r + e * 3), a = Y(r, n.bot, t);
 				for (let n = 0; n < 5; n++) {
@@ -1346,7 +1389,7 @@ var he = class {
 					data: w,
 					size: 2
 				}
-			}, me(S, 5));
+			}, ge(S, 5));
 			this.eyes[e] = {
 				e: n,
 				xa: r,
@@ -1374,7 +1417,7 @@ var he = class {
 			};
 		}
 		if (this.lidKeyMesh = {}, t.lidKeys) for (let e of ["L", "R"]) for (let n of ["mid", "shut"]) {
-			let r = `lid${n}${e}`, i = t.rects[r], o = pe(i, 8), s = new Float32Array(o.rest), c = new Float32Array(o.n);
+			let r = `lid${n}${e}`, i = t.rects[r], o = he(i, 8), s = new Float32Array(o.rest), c = new Float32Array(o.n);
 			for (let e = 0; e < o.n; e++) c[e] = J(o.rest[e * 2], o.rest[e * 2 + 1]);
 			this.lidKeyMesh[r] = {
 				rect: i,
@@ -1395,7 +1438,7 @@ var he = class {
 				}, o.idx)
 			};
 		}
-		this.shell = new de(t.rects.mouth_rest), this.shellMesh = {};
+		this.shell = new pe(t.rects.mouth_rest), this.shellMesh = {};
 		for (let e of ["U", "L"]) {
 			let t = this.shell.sheets[e];
 			this.shellMesh[e] = this.R.mesh(this.R.lip, {
@@ -1406,10 +1449,16 @@ var he = class {
 				},
 				aUv: {
 					data: t.uv,
-					size: 2
+					size: 2,
+					dynamic: !0
 				},
 				aA: {
 					data: t.alpha,
+					size: 1,
+					dynamic: !0
+				},
+				aL: {
+					data: t.light,
 					size: 1,
 					dynamic: !0
 				}
@@ -1556,14 +1605,13 @@ var he = class {
 		let c = a - q.pivot[0], l = o - q.pivot[1];
 		return a = q.pivot[0] + c * i.cr - l * i.sr, o = q.pivot[1] + c * i.sr + l * i.cr, a = q.pivot[0] + (a - q.pivot[0]) * i.leanS, o = q.pivot[1] + (o - q.pivot[1]) * i.leanS + i.bob * .6 + i.leanY, r[0] = a, r[1] = o, r;
 	}
-	faceOffset(e, t) {
-		let { smile: n, cheek: r, open: i } = this.expr, a = 0, o = 0;
-		for (let i of [455, 605]) {
-			let s = Math.exp(-((e - i) ** 2 + (t - 585) ** 2) / 3528);
-			o -= (n * 4 + r * 3) * s, a += Math.sign(e - 530) * n * 1.5 * s;
+	faceOffset(e, t, n = !1) {
+		let { smile: r, cheek: i } = this.expr, a = 0, o = 0;
+		for (let n of [455, 605]) {
+			let s = Math.exp(-((e - n) ** 2 + (t - 585) ** 2) / 3528);
+			o -= (r * 4 + i * 3) * s, a += Math.sign(e - 530) * r * 1.5 * s;
 		}
-		let s = G(615, 700, t) * Math.exp(-(((e - 530) / 115) ** 2));
-		return o += (this.solver ? this.solver.lowerDrop() * .62 : i * 7) * s, [a, o];
+		return !n && this.solver && (o += this.solver.jaw() * fe(e, t)), [a, o];
 	}
 	deformLayer(e) {
 		let t = this.st, n = e.pos, r = e.rest, i = e.z, a = e.n;
@@ -1629,7 +1677,7 @@ var he = class {
 			.1 * Math.abs(t.yaw) / 20
 		], i = this.debug, a = (t, n) => {
 			let r = this.layers[t];
-			this.deformLayer(r) && e.update(r.mesh, "aPos", r.pos), !(i && i.only && !i.only.includes(t)) && e.drawPaint(r.mesh, this.tex[t], r.rect, 1, n, i && i.tint ? fe[t] : null);
+			this.deformLayer(r) && e.update(r.mesh, "aPos", r.pos), !(i && i.only && !i.only.includes(t)) && e.drawPaint(r.mesh, this.tex[t], r.rect, 1, n, i && i.tint ? me[t] : null);
 		};
 		a("hairback", r), a("bun", r), a("body"), a("ears", n), a("face", n);
 		for (let e of ["L", "R"]) this.drawEye(e, n);
@@ -1719,13 +1767,13 @@ var he = class {
 		for (let e of ["U", "L"]) {
 			let t = r.sheets[e];
 			for (let e = 0; e < t.C * t.R; e++) {
-				let n = t.pos[e * 2], r = t.pos[e * 2 + 1], [i, a] = this.faceOffset(t.rest[e * 2], t.rest[e * 2 + 1]), o = this.projectTo(n + i, r + a, t.z[e], this._tmp ||= [0, 0]);
+				let n = t.pos[e * 2], r = t.pos[e * 2 + 1], [i, a] = this.faceOffset(t.rest[e * 2], t.rest[e * 2 + 1], !0), o = this.projectTo(n + i, r + a, t.z[e], this._tmp ||= [0, 0]);
 				t.pos[e * 2] = o[0], t.pos[e * 2 + 1] = o[1];
 			}
 		}
 		let i = r.inner;
 		for (let e = 0; e < i.pos.length / 2; e++) {
-			let t = i.pos[e * 2], n = i.pos[e * 2 + 1], [r, a] = this.faceOffset(t, n), o = this.project(t + r, n + a, J(t, n));
+			let t = i.pos[e * 2], n = i.pos[e * 2 + 1], [r, a] = this.faceOffset(t, n, !0), o = this.project(t + r, n + a, J(t, n));
 			i.proj[e * 2] = o[0], i.proj[e * 2 + 1] = o[1];
 		}
 		t.update(this.innerMesh, "aPos", i.proj), t.update(this.innerMesh, "aDT", i.dt), t.update(this.innerMesh, "aGap", i.gap);
@@ -1743,7 +1791,7 @@ var he = class {
 		], 1 - .5 * e[3]);
 		for (let n of ["L", "U"]) {
 			let i = r.sheets[n];
-			t.update(this.shellMesh[n], "aPos", i.pos), t.update(this.shellMesh[n], "aA", i.alpha), t.drawLip(this.shellMesh[n], this.tex.mouth_rest, this.g.rects.mouth_rest, e);
+			t.update(this.shellMesh[n], "aPos", i.pos), t.update(this.shellMesh[n], "aA", i.alpha), t.update(this.shellMesh[n], "aL", i.light), t.update(this.shellMesh[n], "aUv", i.uv), t.drawLip(this.shellMesh[n], this.tex.mouth_rest, this.g.rects.mouth_rest, e);
 		}
 	}
 	resetPhysics() {
@@ -1940,7 +1988,7 @@ var he = class {
 			.45
 		]
 	}
-}, _e = (e) => e <= 0 ? 0 : e >= 1 ? 1 : e * e * (3 - 2 * e), ve = class {
+}, ye = (e) => e <= 0 ? 0 : e >= 1 ? 1 : e * e * (3 - 2 * e), be = class {
 	constructor() {
 		this.cur = null, this.bounce = {
 			x: 0,
@@ -1963,7 +2011,7 @@ var he = class {
 	level(e) {
 		let t = this.cur;
 		if (!t) return 0;
-		let [n, , r] = X[t.name].env, i = _e((e - t.t0) / n), a = t.rel >= 0 ? t.rel : t.t0 + n + t.hold, o = e < a ? 1 : 1 - _e((e - a) / r);
+		let [n, , r] = X[t.name].env, i = ye((e - t.t0) / n), a = t.rel >= 0 ? t.rel : t.t0 + n + t.hold, o = e < a ? 1 : 1 - ye((e - a) / r);
 		return o <= 0 && e > a ? (this.cur = null, 0) : i * o * t.I;
 	}
 	apply(e, t, n, r, i, a) {
@@ -1986,7 +2034,7 @@ var he = class {
 		for (let e = 0; e < 3; e++) r[e] += c.head[e] * s;
 		return i[0] = i[0] * (1 - s) + c.gaze[0] * s, i[1] = i[1] * (1 - s) + c.gaze[1] * s, s;
 	}
-}, ye = class {
+}, xe = class {
 	constructor(e = 3) {
 		this.s = {
 			x: 0,
@@ -2011,7 +2059,7 @@ var he = class {
 			smile: this.smile
 		};
 	}
-}, Z = new URLSearchParams(location.search), be = Z.has("capture"), xe = Z.get("base") || "./pack/", Se = Z.get("ext") || (xe.includes("pack") ? "webp" : "png"), Ce = Z.has("facerig"), Q = 5, we = [
+}, Z = new URLSearchParams(location.search), Se = Z.has("capture"), Ce = Z.get("base") || "./pack/", we = Z.get("ext") || (Ce.includes("pack") ? "webp" : "png"), Te = Z.has("facerig"), Q = 5, Ee = [
 	{
 		id: "idle",
 		t0: 0,
@@ -2082,12 +2130,12 @@ var he = class {
 		turn: !0
 	}
 ], $ = 45.2;
-function Te(e) {
-	for (let t of we) if (e >= t.t0 && e < t.t1) return t;
-	return we[we.length - 1];
-}
-var Ee = { baanta: "t" };
 function De(e) {
+	for (let t of Ee) if (e >= t.t0 && e < t.t1) return t;
+	return Ee[Ee.length - 1];
+}
+var Oe = { baanta: "t" };
+function ke(e) {
 	let t = [];
 	for (let n of e.words) {
 		let r = e.visemes.filter((e) => e.word === n.word && e.t0 >= n.t0 - .35 && e.t0 <= n.t1 + .05);
@@ -2096,7 +2144,7 @@ function De(e) {
 			(e.viseme === "viseme_DD" || e.viseme === "viseme_nn") && (c.tongueTipUp = .8), e.letters === "l" && Object.assign(c, {
 				tongueTipUp: .8,
 				tongueWide: .6
-			}), Ee[n.word] && e.letters === Ee[n.word] && Object.assign(c, {
+			}), Oe[n.word] && e.letters === Oe[n.word] && Object.assign(c, {
 				tongueCurl: .9,
 				tongueTipUp: 0
 			}), t.push({
@@ -2111,7 +2159,7 @@ function De(e) {
 	}
 	return t;
 }
-function Oe(e, t) {
+function Ae(e, t) {
 	let n = {};
 	for (let r of e) {
 		if (t < r.t0 - .06 || t > r.t1 + .06) continue;
@@ -2121,25 +2169,25 @@ function Oe(e, t) {
 	}
 	return n;
 }
-async function ke() {
+async function je() {
 	let e = document.getElementById("c"), t = (Z.get("view") || "60,8,904").split(",").map(Number);
 	Z.get("px") && (e.style.width = Z.get("px") + "px");
-	let n = await ge.load(e, xe, {
-		ext: Se,
-		dpr: be ? 1 : Math.min(2, devicePixelRatio || 1),
+	let n = await ve.load(e, Ce, {
+		ext: we,
+		dpr: Se ? 1 : Math.min(2, devicePixelRatio || 1),
 		view: t,
-		preserve: be,
+		preserve: Se,
 		clear: Z.get("bg") ? Z.get("bg").split(",").map((e) => e / 255) : void 0
 	});
 	(Z.get("dbg") || Z.get("only")) && (n.debug = {
 		tint: Z.get("dbg") === "tint",
 		only: Z.get("only") ? Z.get("only").split(",") : null
 	});
-	let a = De(await fetch("./audio/voice.align.json").then((e) => e.json())), o = await fetch("./audio/voice.mp3").then((e) => e.arrayBuffer()), s = await new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100).decodeAudioData(o.slice(0)), c = s.getChannelData(0), l = s.sampleRate, u = new r(l), d = new C({
+	let a = ke(await fetch("./audio/voice.align.json").then((e) => e.json())), o = await fetch("./audio/voice.mp3").then((e) => e.arrayBuffer()), s = await new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100).decodeAudioData(o.slice(0)), c = s.getChannelData(0), l = s.sampleRate, u = new r(l), d = new C({
 		band: "b2",
 		seed: 7,
 		faceStyle: { smile: .7 }
-	}), f = new O(.85), p = /* @__PURE__ */ new Float32Array(1024), m = -1, h = 0, g = null, _ = !1, v = "idle", y = new ve(), b = new ye(), x = {
+	}), f = new O(.85), p = /* @__PURE__ */ new Float32Array(1024), m = -1, h = 0, g = null, _ = !1, v = "idle", y = new be(), b = new xe(), x = {
 		work: [],
 		rig: [],
 		intervals: [],
@@ -2149,7 +2197,7 @@ async function ke() {
 	function w(e) {
 		let t = performance.now(), r = m < 0 ? 1 / 60 : Math.min(.25, e - m);
 		m = e;
-		let o = Te(e);
+		let o = De(e);
 		o.status !== g && (g = o.status, h = e, _ = !1);
 		let s = e - Q, C = Math.floor(s * l);
 		for (let e = 0; e < 1024; e++) {
@@ -2188,13 +2236,13 @@ async function ke() {
 		let j = i(w), M = [...E.gaze];
 		y.apply(e, r, D, O, M, j);
 		let N = f.compose(D, j, r);
-		o.id === "talking" && Object.assign(N, Oe(a, s));
-		let P = Math.sin(e * 2 * Math.PI * .25), ee = performance.now();
-		be && (n.clock = e), n.frame(N, O, M, E.lean, P);
-		let te = performance.now() - ee;
-		x.rig.push(te);
-		let F = performance.now() - t;
-		return x.work.push(F), x.frames++, o.id === "talking" && x.rows.push({
+		o.id === "talking" && Object.assign(N, Ae(a, s));
+		let P = Math.sin(e * 2 * Math.PI * .25), F = performance.now();
+		Se && (n.clock = e), n.frame(N, O, M, E.lean, P);
+		let ee = performance.now() - F;
+		x.rig.push(ee);
+		let I = performance.now() - t;
+		return x.work.push(I), x.frames++, o.id === "talking" && x.rows.push({
 			t: +s.toFixed(3),
 			row: n.mouth.row,
 			name: n.mouth.name,
@@ -2206,16 +2254,156 @@ async function ke() {
 			head: O,
 			gaze: M,
 			mouth: n.mouth.name,
-			work: F
+			work: I
 		};
+	}
+	let T = [
+		["chalo", [
+			[
+				"CH",
+				.09,
+				"ch"
+			],
+			[
+				"aa",
+				.12,
+				"a"
+			],
+			[
+				"nn",
+				.08,
+				"l"
+			],
+			[
+				"O",
+				.17,
+				"o"
+			]
+		]],
+		[null, .22],
+		["aao", [[
+			"aa",
+			.2,
+			"aa"
+		], [
+			"O",
+			.22,
+			"o"
+		]]],
+		[null, .22],
+		["mama", [
+			[
+				"PP",
+				.1,
+				"m"
+			],
+			[
+				"aa",
+				.14,
+				"a"
+			],
+			[
+				"PP",
+				.1,
+				"m"
+			],
+			[
+				"aa",
+				.17,
+				"a"
+			]
+		]],
+		[null, .22],
+		["bubbly", [
+			[
+				"PP",
+				.08,
+				"b"
+			],
+			[
+				"U",
+				.12,
+				"u"
+			],
+			[
+				"PP",
+				.08,
+				"b"
+			],
+			[
+				"nn",
+				.08,
+				"l"
+			],
+			[
+				"I",
+				.15,
+				"ee"
+			]
+		]],
+		[null, .35]
+	], E = {
+		CH: .25,
+		aa: .55,
+		nn: .28,
+		O: .4,
+		PP: 0,
+		U: .2,
+		I: .25
+	}, D = [];
+	{
+		let e = .25;
+		for (let [t, n] of T) {
+			if (!t) {
+				e += n;
+				continue;
+			}
+			for (let [r, i, a] of n) {
+				let n = r === "nn" ? {
+					tongueTipUp: .8,
+					tongueWide: .6
+				} : {};
+				D.push({
+					t0: e,
+					t1: e + i,
+					v: "viseme_" + r,
+					tongue: n,
+					letters: a,
+					word: t,
+					jaw: E[r]
+				}), e += i;
+			}
+		}
+	}
+	let k = D[D.length - 1].t1 + .4;
+	function A(e) {
+		let t = {
+			mouthSmileLeft: .12,
+			mouthSmileRight: .12,
+			...Ae(D, e)
+		}, r = 0;
+		for (let t of D) {
+			let n = Math.max(0, Math.min(1, (e - (t.t0 - .05)) / .05, (t.t1 + .05 - e) / .05));
+			r = Math.max(r, t.jaw * n);
+		}
+		t.jawOpen = r, n.clock = 2e3 + e, n.frame(t, [
+			0,
+			0,
+			0
+		], [0, 0], 0, 0);
+		let i = D.find((t) => e >= t.t0 && e < t.t1);
+		return i ? `${i.word}:${i.letters}` : "";
 	}
 	if (window.P2D = {
 		duration: $,
-		scenes: we,
+		scenes: Ee,
 		stats: x,
 		rig: n,
 		listener: b,
 		EXPRESSIONS: X,
+		gateAt: A,
+		gateDur: k,
+		gateSegs: D,
 		renderAt: (e) => w(e),
 		pose: (e) => {
 			n.lastT = -1, n.solver.first = !0;
@@ -2237,37 +2425,37 @@ async function ke() {
 			for (let a = 0; a < 6; a++) n.clock = 1e3 + a / 60, n.resetPhysics(), n.frame(t, r, i, e.lean || 0, 0);
 			return n.mouth.name;
 		}
-	}, be) {
+	}, Se) {
 		window.P2D.ready = !0;
 		return;
 	}
-	let T = new Audio("./audio/voice.mp3"), E = !1, D = performance.now() - (Z.get("start") || 0) * 1e3, k = -1, A = document.getElementById("hud");
-	Ce && document.body.classList.add("facerig");
-	let j = (() => {
+	let j = new Audio("./audio/voice.mp3"), M = !1, N = performance.now() - (Z.get("start") || 0) * 1e3, P = -1, F = document.getElementById("hud");
+	Te && document.body.classList.add("facerig");
+	let ee = (() => {
 		try {
 			let e = document.createElement("canvas").getContext("webgl2"), t = e.getExtension("WEBGL_debug_renderer_info");
 			return t ? e.getParameter(t.UNMASKED_RENDERER_WEBGL) : "renderer hidden";
 		} catch {
 			return "?";
 		}
-	})(), M = (t) => {
-		let r = (t - D) / 1e3 % $;
-		k > 0 && x.intervals.push(t - k), k = t, n.clock = r + Math.floor((t - D) / 1e3 / $) * $, r < m && (m = -1), !E && r >= Q && r < 17 && (E = !0, T.currentTime = Math.max(0, r - Q), T.play().catch(() => {})), r < Q && (E = !1);
+	})(), I = (t) => {
+		let r = (t - N) / 1e3 % $;
+		P > 0 && x.intervals.push(t - P), P = t, n.clock = r + Math.floor((t - N) / 1e3 / $) * $, r < m && (m = -1), !M && r >= Q && r < 17 && (M = !0, j.currentTime = Math.max(0, r - Q), j.play().catch(() => {})), r < Q && (M = !1);
 		let i = w(r);
-		if (A && x.frames % 15 == 0) {
+		if (F && x.frames % 15 == 0) {
 			let t = x.intervals.slice(-180), r = t.length ? 1e3 / (t.reduce((e, t) => e + t, 0) / t.length) : 0, a = (e, t) => {
 				let n = e.slice(-180).sort((e, t) => e - t);
 				return n[Math.floor(n.length * t)] || 0;
 			}, o = t.filter((e) => e > 20).length;
-			Ce ? A.innerHTML = `<b>${r.toFixed(0)} fps</b> · work p95 <b>${a(x.work, .95).toFixed(2)} ms</b> (p50 ${a(x.work, .5).toFixed(2)}) · rig p95 ${a(x.rig, .95).toFixed(2)} ms<br>slow frames ${o}/${t.length} · canvas ${e.width}x${e.height} @dpr ${(n.R.dpr || 1).toFixed(2)} · ${n.stats().meshes} draws · ${n.stats().triangles} tris<br><small>${j}</small>` : A.textContent = `${i.scene} · ${i.state} · ${r.toFixed(0)} fps · work p95 ${a(x.work, .95).toFixed(2)} ms · ${n.stats().meshes} draws`;
+			Te ? F.innerHTML = `<b>${r.toFixed(0)} fps</b> · work p95 <b>${a(x.work, .95).toFixed(2)} ms</b> (p50 ${a(x.work, .5).toFixed(2)}) · rig p95 ${a(x.rig, .95).toFixed(2)} ms<br>slow frames ${o}/${t.length} · canvas ${e.width}x${e.height} @dpr ${(n.R.dpr || 1).toFixed(2)} · ${n.stats().meshes} draws · ${n.stats().triangles} tris<br><small>${ee}</small>` : F.textContent = `${i.scene} · ${i.state} · ${r.toFixed(0)} fps · work p95 ${a(x.work, .95).toFixed(2)} ms · ${n.stats().meshes} draws`;
 		}
-		requestAnimationFrame(M);
+		requestAnimationFrame(I);
 	};
 	document.getElementById("start")?.addEventListener("click", () => {
-		D = performance.now(), E = !1, m = -1;
-	}), requestAnimationFrame(M), window.P2D.ready = !0;
+		N = performance.now(), M = !1, m = -1;
+	}), requestAnimationFrame(I), window.P2D.ready = !0;
 }
-ke().catch((e) => {
+je().catch((e) => {
 	document.body.insertAdjacentHTML("beforeend", `<pre style="color:red">${e.stack}</pre>`), window.P2D = { error: String(e) };
 });
 //#endregion

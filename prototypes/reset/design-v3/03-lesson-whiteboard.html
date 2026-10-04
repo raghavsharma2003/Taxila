@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lesson · Whiteboard</title>
+<link rel="stylesheet" href="v3.css">
+<style>
+  .line.old { display: none; }
+  @media (min-width: 900px) and (min-aspect-ratio: 5/4) { .line.old { display: grid; opacity: .7; } }
+  /* whiteboard ink */
+  .wb { font-family: var(--f-ui); }
+  .wb .grid line { stroke: rgba(255,255,255,.035); }
+  .ink { fill: none; stroke: var(--board-ink); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .ink.on { transition: stroke-dashoffset .9s var(--e-std); stroke-dashoffset: 0; }
+  .dim { stroke: var(--ink-3); stroke-width: 2; fill: none; opacity: 0; transition: opacity .4s; }
+  .lab { fill: var(--ink-2); font: 600 30px var(--f-mono); opacity: 0; transition: opacity .4s; }
+  .lab.big { font: 700 44px var(--f-display); fill: var(--board-ink); }
+  .on.dim, .on.lab, .on.fade { opacity: 1; }
+  .fade { opacity: 0; transition: opacity .5s; }
+  .alt { stroke: var(--sub-maths); stroke-width: 3; stroke-dasharray: 10 10; fill: none; }
+  .pieceA { fill: rgba(139,152,255,.30); stroke: var(--sub-maths); stroke-width: 2; }
+  .pieceB { fill: rgba(47,211,199,.26); stroke: var(--sub-science); stroke-width: 2; }
+  .ghost { fill: rgba(255,255,255,.035); stroke: rgba(255,255,255,.18); stroke-width: 2; stroke-dasharray: 6 8; }
+  .apex-h { fill: var(--volt); }
+  .apex-ring { fill: none; stroke: var(--volt); stroke-width: 3; opacity: .0; }
+  .apex-ring.on { animation: ring 1.6s var(--e-std) infinite; }
+  @keyframes ring { 0% { opacity: .9; r: 16; } 100% { opacity: 0; r: 44; } }
+  .hl { fill: none; stroke: var(--volt); stroke-width: 3; opacity: 0; }
+  .yourmove { white-space: nowrap; display: none; align-items: center; gap: 10px; padding: 8px 12px 8px 8px; border-radius: 999px; background: var(--glass); backdrop-filter: blur(10px); border: 1px solid rgba(203,255,77,.4); font-size: 13px; font-weight: 600; }
+  .yourmove .k { width: 26px; height: 26px; border-radius: 50%; background: var(--volt); color: var(--on-volt); display: grid; place-items: center; }
+  .yourmove .k .icon { width: 16px; height: 16px; }
+  .yourmove.on { display: flex; animation: up .42s var(--e-std); }
+  @keyframes up { from { transform: translateY(10px); opacity: 0 } }
+  .readout { white-space: nowrap; margin-left: auto; display: flex; align-items: baseline; gap: 8px; font: 600 13px/1.2 var(--f-mono); color: var(--ink-2); background: var(--glass); border: 1px solid var(--line); padding: 8px 10px; border-radius: 12px; opacity: 0; transition: opacity .3s; text-align: right; }
+  .readout.on { opacity: 1; }
+  .readout b { color: var(--ink); font: 700 18px var(--f-display); }
+  @container (max-width: 420px) { .yourmove .muted { display: none; } }
+  svg [data-drag] { cursor: grab; touch-action: none; }
+</style>
+</head>
+<body class="grain">
+<script src="sprite.js"></script>
+<div class="lesson">
+  <header class="l-top">
+    <button class="btn btn-icon" aria-label="Pause lesson"><svg class="icon"><use href="#i-pause"/></svg></button>
+    <div class="l-title">
+      <div class="subj" style="--c:var(--sub-maths)">Class 7 · Maths · Area of a triangle</div>
+      <div class="phases" aria-label="Lesson phase"><span>Warm-up</span><b>Learn</b><span>Try</span><span>Wrap</span></div>
+    </div>
+    <button class="btn btn-icon btn-quiet" aria-label="Captions and settings"><svg class="icon"><use href="#i-more"/></svg></button>
+  </header>
+
+  <div class="stage-wrap">
+    <section class="stage has-rail" aria-label="Whiteboard">
+      <div class="stage-label"><span class="tag"><svg class="icon" style="width:13px;height:13px"><use href="#i-pencil"/></svg>Board</span></div>
+      <div class="stage-slot">
+        <svg class="wb" viewBox="0 0 1000 760" preserveAspectRatio="xMidYMid meet" role="img" aria-label="A rectangle 8 by 5 centimetres with a triangle inside it whose top point touches the top edge">
+          <g class="grid">
+            <!-- faint dot grid -->
+          </g>
+          <!-- outside pieces (rotate onto inside pieces) -->
+          <polygon id="outL" class="pieceA fade" points="160,180 420,180 160,580"/>
+          <polygon id="outR" class="pieceB fade" points="420,180 800,180 800,580"/>
+          <!-- ghosts of inside pieces -->
+          <polygon id="inL" class="ghost fade" points="160,580 420,180 420,580"/>
+          <polygon id="inR" class="ghost fade" points="420,580 420,180 800,580"/>
+          <!-- rectangle + triangle ink -->
+          <path id="rect" class="ink" pathLength="1" d="M160 580 H800 V180 H160 Z"/>
+          <path id="tri" class="ink" pathLength="1" d="M160 580 L420 180 L800 580" style="stroke: var(--volt)"/>
+          <line id="alt" class="alt fade" x1="420" y1="180" x2="420" y2="580"/>
+          <!-- dimensions -->
+          <g id="dimB" class="dim"><path d="M160 620 H800 M160 608 V632 M800 608 V632"/></g>
+          <text id="labB" class="lab" x="480" y="668" text-anchor="middle">b = 8 cm</text>
+          <g id="dimH" class="dim"><path d="M850 180 V580 M838 180 H862 M838 580 H862"/></g>
+          <text id="labH" class="lab" x="874" y="390">h</text>
+          <text id="labH2" class="lab" x="874" y="426" style="font-size:24px">5 cm</text>
+          <!-- formula -->
+          <text id="f1" class="lab big" x="160" y="735">Area = ½ × b × h</text>
+          <text id="f2" class="lab big" x="560" y="735" style="fill:var(--volt)">= 20 cm²</text>
+          <!-- draggable apex -->
+          <g id="apex" class="fade" data-drag>
+            <circle class="apex-ring" id="ring" cx="420" cy="180" r="16"/>
+            <circle class="apex-h" id="apexDot" cx="420" cy="180" r="13"/>
+            <circle cx="420" cy="180" r="34" fill="transparent" id="apexHit"/>
+          </g>
+        </svg>
+      </div>
+      <div class="pip speaking" id="pip"><img src="img/teacher-ira.webp" alt=""><div class="pip-name">Ira</div></div>
+      <div class="rail"><div class="yourmove" id="yourmove"><span class="k"><svg class="icon"><use href="#i-hand"/></svg></span>Your move<span class="muted" style="font-weight:500">· drag the top point</span></div>
+      <div class="readout" id="readout">AREA <b id="areaVal">20 cm²</b></div></div>
+    </section>
+  </div>
+
+  <div class="side">
+    <div class="tile-big speaking" id="tileBig"><img src="img/teacher-ira.webp" alt="Ira, your AI teacher"><div class="pip-name"><span>Ira · AI teacher</span><span class="tag" id="tileState" style="background:rgba(0,0,0,.45);color:#fff">Talking</span></div></div>
+    <section class="convo" aria-live="polite">
+      <div class="line her old"><span class="who"><img src="img/teacher-ira.webp" alt=""></span><p>Last time you found the area of a rectangle in one line. Today, triangles.</p></div>
+      <div class="line me old"><span class="who me">YOU</span><p><span class="heard">heard</span>“isn't it just base into height?”</p></div>
+      <div class="line me"><span class="who me">YOU</span><p><span class="heard">heard</span>“why is there a half in the formula?”</p></div>
+      <div class="line her"><span class="who"><img src="img/teacher-ira.webp" alt=""></span><p id="cap">Good question — watch the rectangle first.</p></div>
+    </section>
+    <footer class="dock">
+      <div class="steer" role="group" aria-label="Steer the lesson">
+        <button class="chip" id="replay"><svg class="icon"><use href="#i-replay"/></svg>Show again</button>
+        <button class="chip"><svg class="icon"><use href="#i-slow"/></svg>Slower</button>
+        <button class="chip"><svg class="icon"><use href="#i-shuffle"/></svg>Another way</button>
+        <button class="chip"><svg class="icon"><use href="#i-globe"/></svg>Hindi mein</button>
+      </div>
+      <div class="dock-row">
+        <button class="btn btn-icon" aria-label="Mute microphone"><svg class="icon"><use href="#i-mic"/></svg></button>
+        <div class="mic" id="mic"><div class="wave idle" id="wave"><i></i><i></i><i></i><i></i><i></i></div><div class="state"><span id="micTitle">Speak anytime</span><small id="micSub">She pauses for you</small></div></div>
+        <button class="btn btn-icon" aria-label="Type instead"><svg class="icon"><use href="#i-keyboard"/></svg></button>
+      </div>
+    </footer>
+  </div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const grid = document.querySelector(".grid");
+for (let x = 40; x < 1000; x += 40) for (let y = 40; y < 760; y += 40) {
+  const c = document.createElementNS("http://www.w3.org/2000/svg", "circle"); c.setAttribute("cx", x); c.setAttribute("cy", y); c.setAttribute("r", 1.4); c.setAttribute("fill", "rgba(255,255,255,.06)"); grid.appendChild(c);
+}
+const caps = [
+  [0, "Good question — watch the rectangle first."],
+  [1100, "Eight by five. Now a triangle whose top touches the top edge."],
+  [2600, "Drop a straight line from the top — that's the height, h."],
+  [4200, "Each side of that line is a smaller rectangle, cut corner to corner."],
+  [5600, "The outside pieces flip in… and fill the triangle exactly."],
+  [7600, "So the triangle is exactly half the rectangle. That's your half."],
+  [9400, "Now try to break it — slide the top point anywhere. Does the area change?"],
+];
+let timers = [];
+function at(ms, fn) { timers.push(setTimeout(fn, ms)); }
+function talking(on) {
+  $("pip").classList.toggle("speaking", on); $("tileBig").classList.toggle("speaking", on);
+  $("tileState").textContent = on ? "Talking" : "Listening";
+  $("wave").className = on ? "wave idle" : "wave child";
+  $("micTitle").textContent = on ? "Speak anytime" : "Your turn";
+  $("micSub").textContent = on ? "She pauses for you" : "Hands-free";
+}
+function reset() {
+  timers.forEach(clearTimeout); timers = [];
+  document.querySelectorAll(".on").forEach((e) => e.classList.remove("on"));
+  ["outL", "outR"].forEach((id) => { $(id).style.transition = "none"; $(id).style.transform = ""; });
+  $("yourmove").classList.remove("on"); $("readout").classList.remove("on");
+  setApex(420); talking(true);
+}
+function play() {
+  reset();
+  caps.forEach(([t, s]) => at(t, () => { $("cap").textContent = s; }));
+  at(300, () => $("rect").classList.add("on"));
+  at(900, () => ["dimB", "labB", "dimH", "labH", "labH2"].forEach((i) => $(i).classList.add("on")));
+  at(1700, () => $("tri").classList.add("on"));
+  at(2800, () => { $("alt").classList.add("on"); $("apex").classList.add("on"); });
+  at(4300, () => ["inL", "inR", "outL", "outR"].forEach((i) => $(i).classList.add("on")));
+  at(5800, () => flip());
+  at(7700, () => $("f1").classList.add("on"));
+  at(8600, () => $("f2").classList.add("on"));
+  at(10400, () => { talking(false); $("yourmove").classList.add("on"); $("ring").classList.add("on"); $("readout").classList.add("on"); });
+}
+let ax = 420;
+function flip() {
+  // rotate each outside triangle 180deg about the midpoint of its diagonal: it lands on the inside piece
+  const mL = [(160 + ax) / 2, 380], mR = [(ax + 800) / 2, 380];
+  [["outL", mL], ["outR", mR]].forEach(([id, m]) => {
+    const el = $(id); el.style.transformOrigin = `${m[0]}px ${m[1]}px`; el.style.transformBox = "view-box";
+    el.style.transition = "transform 1.4s cubic-bezier(.65,0,.35,1)"; requestAnimationFrame(() => (el.style.transform = "rotate(180deg)"));
+  });
+}
+function setApex(x) {
+  ax = Math.max(160, Math.min(800, x));
+  $("tri").setAttribute("d", `M160 580 L${ax} 180 L800 580`);
+  $("alt").setAttribute("x1", ax); $("alt").setAttribute("x2", ax);
+  ["apexDot", "ring", "apexHit"].forEach((i) => $(i).setAttribute("cx", ax));
+  $("outL").setAttribute("points", `160,180 ${ax},180 160,580`);
+  $("outR").setAttribute("points", `${ax},180 800,180 800,580`);
+  $("inL").setAttribute("points", `160,580 ${ax},180 ${ax},580`);
+  $("inR").setAttribute("points", `${ax},580 ${ax},180 800,580`);
+  if ($("outL").style.transform) { $("outL").style.transition = "none"; $("outR").style.transition = "none"; $("outL").style.transformOrigin = `${(160 + ax) / 2}px 380px`; $("outR").style.transformOrigin = `${(ax + 800) / 2}px 380px`; }
+}
+// drag the apex along the top edge — area readout stays 20 cm²
+const svg = document.querySelector(".wb"); let dragging = false; let moved = 0;
+function toSvgX(e) { const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()).x; }
+$("apex").addEventListener("pointerdown", (e) => { dragging = true; $("apex").setPointerCapture(e.pointerId); $("ring").classList.remove("on"); });
+$("apex").addEventListener("pointermove", (e) => {
+  if (!dragging) return; setApex(toSvgX(e)); moved++;
+  $("areaVal").textContent = "20 cm²";
+  if (moved === 25) { $("cap").textContent = "Still 20. The top point moved, the base and height didn't."; talking(true); setTimeout(() => talking(false), 2600); }
+});
+$("apex").addEventListener("pointerup", () => (dragging = false));
+$("replay").addEventListener("click", play);
+play();
+</script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;color:#493b37;background:#fff7ec}
+  .app{width:360px;height:320px;overflow:hidden;position:relative;background:linear-gradient(#fff9f0,#ffefd9)}
+  .head{height:34px;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;color:#704a41}
+  .scene{height:190px;position:relative;overflow:hidden;background:#ffefd9}
+  .scene svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .readings{position:absolute;top:5px;left:14px;right:14px;display:flex;justify-content:space-between;font-size:14px;font-weight:700}
+  .reading{background:#fffaf3e8;border-radius:12px;padding:4px 9px;min-width:76px;text-align:center}
+  .reading span:last-child{color:#ad5844;font-size:19px}
+  .tower{position:absolute;bottom:5px;left:149px;width:62px;height:0;border-radius:13px 13px 5px 5px;background:repeating-linear-gradient(0deg,#df7957 0 17px,#ef9970 17px 20px);box-shadow:inset -9px 0 #b95e4b,0 4px 0 #9e725c;transition:height .38s cubic-bezier(.2,.8,.25,1.2)}
+  .tower:after{content:"";position:absolute;top:10px;left:19px;width:15px;height:15px;border-radius:50%;background:#ffe4aa;box-shadow:0 29px #ffe4aa,0 58px #ffe4aa,0 87px #ffe4aa,0 116px #ffe4aa}
+  button{border:0;cursor:pointer;font:inherit;font-weight:800;touch-action:manipulation;transition:transform .16s,background .16s,opacity .16s}
+  button:active{transform:scale(.9)}button:disabled{opacity:.45;cursor:default}
+  .change{position:absolute;bottom:44px;width:82px;height:54px;border-radius:18px;background:#f8c873;color:#563d34;box-shadow:0 5px 0 #d99d5d;font-size:16px}
+  .change.dec{left:12px}.change.inc{right:12px}
+  .prompt{height:30px;display:flex;align-items:center;justify-content:center;gap:7px;font-weight:750;font-size:15px}
+  .prompt b{color:#ad5844}.feedback{position:absolute;right:9px;background:#fffaf3;border-radius:10px;padding:2px 6px;font-size:13px}
+  .choices{height:66px;display:flex;align-items:center;justify-content:center;gap:10px}
+  .choices button{width:96px;height:54px;border-radius:17px;background:#92c7ab;color:#274c41;box-shadow:0 5px 0 #65a78b;font-size:22px}
+  .choices button:focus-visible,.change:focus-visible{outline:3px solid #594b9b;outline-offset:2px}
+  .choices button.pulse{animation:pop .35s ease}@keyframes pop{50%{transform:scale(1.1)}}
+</style>
+<div class="app">
+  <div class="head" id="title"></div>
+  <div class="scene">
+    <svg viewBox="0 0 360 190" aria-hidden="true">
+      <path d="M0 174 Q90 162 180 174 T360 174 V190 H0Z" fill="#dfc5a5"/>
+      <circle cx="282" cy="64" r="25" fill="#ffdaa1" opacity=".65"/>
+      <path d="M18 165 Q23 137 29 165 M35 165 Q39 146 45 165 M317 165 Q322 138 328 165 M334 165 Q338 148 344 165" fill="none" stroke="#83aa86" stroke-width="4" stroke-linecap="round"/>
+    </svg>
+    <div class="tower" data-visual data-dim="h"></div>
+    <div class="readings">
+      <div class="reading"><span id="xname"></span> <span id="xval" data-x=""></span></div>
+      <div class="reading"><span id="yname"></span> <span id="yval" data-output data-value=""></span></div>
+    </div>
+    <button class="change dec" data-action="dec" id="less"></button>
+    <button class="change inc" data-action="inc" id="more"></button>
+  </div>
+  <div class="prompt"><span id="ask"></span><b id="askx"></b><span class="feedback" id="feedback" aria-live="polite"></span></div>
+  <div class="choices" id="choices"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, get=id=>document.getElementById(id);
+  for(const key of ['title','xname','yname','less','more','ask']) get(key).textContent=Studio.t(key);
+  const clean=n=>String(Math.round(n*1e9)/1e9);
+  let x=p.x.start, finished=false;
+  get('askx').textContent=clean(p.ask.x);
+  const update=()=>{
+    x=Math.max(p.x.min,Math.min(p.x.max,x));
+    const y=p.law.k*x+p.law.b, ys=clean(y);
+    get('xval').textContent=clean(x);
+    get('xval').setAttribute('data-x',clean(x));
+    get('yval').textContent=ys;
+    get('yval').setAttribute('data-value',ys);
+    document.querySelector('[data-visual]').style.height=clean(y*p.y.unitsPer)+'px';
+    get('less').disabled=x-p.x.step<p.x.min;
+    get('more').disabled=x+p.x.step>p.x.max;
+  };
+  document.querySelector('[data-action="dec"]').addEventListener('click',()=>{x-=p.x.step;update();Studio.event('change',{x:clean(x)})});
+  document.querySelector('[data-action="inc"]').addEventListener('click',()=>{x+=p.x.step;update();Studio.event('change',{x:clean(x)})});
+  p.ask.options.forEach(value=>{
+    const btn=document.createElement('button');
+    btn.textContent=clean(value);
+    btn.setAttribute('data-option',clean(value));
+    btn.addEventListener('click',()=>{
+      if(finished)return;
+      btn.classList.remove('pulse');void btn.offsetWidth;btn.classList.add('pulse');
+      Studio.answer({value});
+    });
+    get('choices').appendChild(btn);
+  });
+  Studio.onVerdict(({correct})=>{
+    get('feedback').textContent=Studio.t(correct?'right':'wrong');
+    if(correct&&!finished){
+      finished=true;
+      setTimeout(()=>{get('feedback').textContent=Studio.t('done');Studio.done()},550);
+    }
+  });
+  update();
+  Studio.ready();
+})();
+
+</script>

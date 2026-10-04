@@ -159,8 +159,29 @@ async function main() {
     return { t, scene: sc.id, state: faceState, head, gaze, mouth: rig.mouth.name, work };
   }
 
+  // r4 articulation gate (judge r3): a scripted "chalo, aao, mama, bubbly" through the SAME visemesAt -> LipSolver -> rig
+  // path as the lesson line (40 ms ramps, solver smoothing, holds), audio jaw replaced by a per-viseme opening envelope
+  const GATE_UNITS = [["chalo", [["CH", 0.09, "ch"], ["aa", 0.12, "a"], ["nn", 0.08, "l"], ["O", 0.17, "o"]]], [null, 0.22],
+    ["aao", [["aa", 0.2, "aa"], ["O", 0.22, "o"]]], [null, 0.22],
+    ["mama", [["PP", 0.1, "m"], ["aa", 0.14, "a"], ["PP", 0.1, "m"], ["aa", 0.17, "a"]]], [null, 0.22],
+    ["bubbly", [["PP", 0.08, "b"], ["U", 0.12, "u"], ["PP", 0.08, "b"], ["nn", 0.08, "l"], ["I", 0.15, "ee"]]], [null, 0.35]];
+  const JAW = { CH: 0.25, aa: 0.55, nn: 0.28, O: 0.4, PP: 0, U: 0.2, I: 0.25 };
+  const gateSegs = [];
+  { let t = 0.25; for (const [w, units] of GATE_UNITS) { if (!w) { t += units; continue; } for (const [v, d, letters] of units) { const tongue = v === "nn" ? { tongueTipUp: 0.8, tongueWide: 0.6 } : {}; gateSegs.push({ t0: t, t1: t + d, v: "viseme_" + v, tongue, letters, word: w, jaw: JAW[v] }); t += d; } } }
+  const gateDur = gateSegs[gateSegs.length - 1].t1 + 0.4;
+  function gateAt(t) {
+    const bs = { mouthSmileLeft: 0.12, mouthSmileRight: 0.12, ...visemesAt(gateSegs, t) };
+    let jaw = 0;
+    for (const sg of gateSegs) { const w = Math.max(0, Math.min(1, (t - (sg.t0 - 0.05)) / 0.05, (sg.t1 + 0.05 - t) / 0.05)); jaw = Math.max(jaw, sg.jaw * w); }
+    bs.jawOpen = jaw;
+    rig.clock = 2000 + t;
+    rig.frame(bs, [0, 0, 0], [0, 0], 0, 0);
+    const cur = gateSegs.find((sg) => t >= sg.t0 && t < sg.t1);
+    return cur ? `${cur.word}:${cur.letters}` : "";
+  }
+
   window.P2D = {
-    duration: DURATION, scenes: SCENES, stats, rig, listener, EXPRESSIONS,
+    duration: DURATION, scenes: SCENES, stats, rig, listener, EXPRESSIONS, gateAt, gateDur, gateSegs,
     renderAt: (t) => step(t),
     pose: (spec) => {  // a fixed pose for the frames sheet: {bs, head, gaze} or {expr: name} (full-level preset)
       rig.lastT = -1;

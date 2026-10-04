@@ -1,0 +1,80 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8eb;font-family:system-ui,sans-serif;color:#493b32}
+  .card{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 48% 42%,#fffdf5 0,#fff8eb 78%)}
+  .title{position:absolute;top:8px;left:18px;right:18px;text-align:center;font-size:17px;font-weight:750}
+  [data-ask]{position:absolute;top:34px;left:18px;right:18px;text-align:center;font-size:15px;font-weight:650;color:#735544}
+  svg{position:absolute;inset:0;width:360px;height:320px}
+  .ground{fill:#f4e8d1}
+  .leader{fill:none;stroke:#b5a48d;stroke-width:1.5;stroke-linecap:round}
+  .name{fill:#57483d;font-size:14px;font-weight:650;dominant-baseline:middle}
+  [data-part]{cursor:pointer;transition:filter .25s,transform .25s;transform-box:fill-box;transform-origin:center}
+  [data-part]:active{transform:scale(.94)}
+  [data-part].glow{filter:drop-shadow(0 0 9px #ffd45d);transform:scale(1.06)}
+  [data-part].nudge{animation:nudge .35s ease}
+  @keyframes nudge{25%{transform:rotate(-4deg)}65%{transform:rotate(4deg)}}
+  .status{position:absolute;bottom:5px;left:18px;right:18px;height:21px;text-align:center;font-size:14px;font-weight:700;color:#766044;pointer-events:none}
+</style>
+<div class="card">
+  <div class="title" id="title"></div>
+  <div data-ask id="question"></div>
+  <svg viewBox="0 0 360 320" aria-hidden="true">
+    <ellipse class="ground" cx="130" cy="290" rx="91" ry="9"/>
+    <g data-part="root"><path d="M108 237 Q91 247 85 279 Q104 274 117 258 Q115 281 125 296 Q138 283 138 259 Q155 277 175 282 Q170 250 147 237 Z" fill="#aa7952"/></g>
+    <g data-part="stem"><path d="M106 151 Q111 178 105 205 Q103 228 107 251 L156 251 Q153 226 156 204 Q156 176 153 151 Z" fill="#69a66a"/></g>
+    <g data-part="leaf"><path d="M155 192 Q176 161 222 169 Q217 208 177 219 Q162 214 155 192 Z" fill="#78b778"/><path d="M163 199 Q187 192 209 181" fill="none" stroke="#4b965e" stroke-width="3" stroke-linecap="round" pointer-events="none"/></g>
+    <g data-part="petal"><path d="M107 105 Q70 112 64 90 Q65 72 91 72 Q88 52 109 49 Q124 49 129 67 Q146 52 163 67 Q179 84 156 105 Z" fill="#ee8d91"/></g>
+    <g data-part="centre"><circle cx="130" cy="128" r="28" fill="#f4bd58"/><circle cx="121" cy="122" r="2" fill="#dc9144" pointer-events="none"/><circle cx="138" cy="134" r="2" fill="#dc9144" pointer-events="none"/></g>
+    <g data-label="petal"><path class="leader" d="M167 78 L226 75"/><text class="name" x="232" y="75"></text></g>
+    <g data-label="centre"><path class="leader" d="M159 125 L226 122"/><text class="name" x="232" y="122"></text></g>
+    <g data-label="leaf"><path class="leader" d="M216 181 L235 174"/><text class="name" x="240" y="174"></text></g>
+    <g data-label="stem"><path class="leader" d="M156 226 L226 224"/><text class="name" x="232" y="224"></text></g>
+    <g data-label="root"><path class="leader" d="M175 278 L226 278"/><text class="name" x="232" y="278"></text></g>
+  </svg>
+  <div class="status" id="status" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const parts = new Set(Studio.params.parts);
+  const status = document.getElementById('status');
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('question').textContent = Studio.t('ask');
+  document.querySelectorAll('[data-label]').forEach(label => {
+    const key = label.getAttribute('data-label');
+    if (parts.has(key)) label.querySelector('text').textContent = Studio.t(key);
+    else label.style.display = 'none';
+  });
+  let waiting = false, finished = false, selected = null;
+  document.querySelectorAll('[data-part]').forEach(shape => {
+    const key = shape.getAttribute('data-part');
+    if (!parts.has(key)) { shape.style.display = 'none'; return; }
+    shape.addEventListener('click', () => {
+      if (waiting || finished) return;
+      waiting = true;
+      selected = shape;
+      Studio.answer(key);
+    });
+  });
+  Studio.onVerdict(({correct}) => {
+    if (!waiting || finished) return;
+    waiting = false;
+    if (correct) {
+      finished = true;
+      selected.classList.add('glow');
+      status.textContent = Studio.t('right');
+      setTimeout(() => {
+        status.textContent = Studio.t('done');
+        Studio.done();
+      }, 650);
+    } else {
+      status.textContent = Studio.t('wrong');
+      selected.classList.remove('nudge');
+      void selected.getBoundingClientRect();
+      selected.classList.add('nudge');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

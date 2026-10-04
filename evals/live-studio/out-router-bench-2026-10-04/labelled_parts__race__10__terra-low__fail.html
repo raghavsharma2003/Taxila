@@ -1,0 +1,153 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;font-family:Arial,sans-serif}
+#app{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(180deg,#fffaf2 0%,#fff0d8 100%);color:#704838}
+#top{height:58px;padding:9px 12px 0;text-align:center;position:relative;z-index:3}
+#title{font-size:19px;font-weight:800;line-height:23px;color:#7d4d3a}
+#question{font-size:14px;font-weight:800;line-height:18px;color:#aa6044}
+#garden{display:block;width:360px;height:262px}
+.ground{fill:#e5c185}
+.ground-dot{fill:#d4a76c}
+.leader{fill:none;stroke:#a6755b;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.label{font-size:13px;font-weight:800;fill:#70493a;paint-order:stroke;stroke:#fff7e9;stroke-width:4px;stroke-linejoin:round}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .18s ease,filter .22s ease}
+.part:active{transform:scale(.94)}
+.hit{fill:transparent;stroke:transparent;pointer-events:all}
+.petal-shape{fill:#f38da8;stroke:#d96b8d;stroke-width:2}
+.centre-shape{fill:#f7c54e;stroke:#da982b;stroke-width:2}
+.stem-shape{fill:none;stroke:#68a85c;stroke-width:15;stroke-linecap:round}
+.leaf-shape{fill:#7ccb6c;stroke:#559f51;stroke-width:2}
+.root-shape{fill:none;stroke:#b77b55;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+.part.correct{filter:drop-shadow(0 0 5px #fff486) drop-shadow(0 0 11px #f2bf43);animation:glow .72s ease-in-out infinite alternate}
+.part.correct .petal-shape,.part.correct .centre-shape,.part.correct .leaf-shape{stroke:#fff8a9;stroke-width:4}
+.part.correct .stem-shape,.part.correct .root-shape{stroke:#fff0a0}
+.spark{fill:#ffdb58;opacity:0}
+.correct .spark{animation:spark .8s ease-out infinite}
+#status{position:absolute;z-index:5;left:50%;bottom:7px;transform:translateX(-50%);min-width:112px;max-width:240px;padding:6px 12px;border-radius:16px;background:#fffdf8;color:#8b543e;font-size:13px;font-weight:800;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .25s}
+#status.show{opacity:1;transform:translateX(-50%) translateY(-2px)}
+#status.good{background:#e4f5d8;color:#4d843e}
+#app.wiggle #garden{animation:wiggle .32s ease-in-out}
+@keyframes glow{from{transform:scale(1)}to{transform:scale(1.06)}}
+@keyframes spark{0%{opacity:0;transform:scale(.3)}35%{opacity:1}100%{opacity:0;transform:scale(1.5)}}
+@keyframes wiggle{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+</style>
+<div id="app">
+  <div id="top">
+    <div id="title"></div>
+    <div id="question" data-ask></div>
+  </div>
+  <svg id="garden" viewBox="0 0 360 262" aria-hidden="true">
+    <path class="ground" d="M0 224 Q54 211 111 224 T223 219 T360 224 V262 H0Z"></path>
+    <circle class="ground-dot" cx="30" cy="239" r="2"></circle><circle class="ground-dot" cx="75" cy="232" r="2"></circle>
+    <circle class="ground-dot" cx="283" cy="239" r="2"></circle><circle class="ground-dot" cx="329" cy="232" r="2"></circle>
+
+    <path class="leader" d="M105 28 L121 34"></path>
+    <path class="leader" d="M215 51 L174 49"></path>
+    <path class="leader" d="M214 141 L165 141"></path>
+    <path class="leader" d="M57 146 L67 143"></path>
+    <path class="leader" d="M220 218 L184 218"></path>
+
+    <g id="p0" class="part">
+      <circle class="hit" cx="151" cy="48" r="45"></circle>
+      <ellipse class="petal-shape" cx="151" cy="22" rx="14" ry="26"></ellipse>
+      <ellipse class="petal-shape" cx="174" cy="41" rx="14" ry="26" transform="rotate(72 174 41)"></ellipse>
+      <ellipse class="petal-shape" cx="165" cy="67" rx="14" ry="26" transform="rotate(144 165 67)"></ellipse>
+      <ellipse class="petal-shape" cx="137" cy="67" rx="14" ry="26" transform="rotate(216 137 67)"></ellipse>
+      <ellipse class="petal-shape" cx="128" cy="41" rx="14" ry="26" transform="rotate(288 128 41)"></ellipse>
+      <circle class="spark" cx="115" cy="18" r="4"></circle><circle class="spark" cx="188" cy="26" r="3"></circle>
+    </g>
+
+    <g id="p1" class="part">
+      <circle class="hit" cx="151" cy="48" r="27"></circle>
+      <circle class="centre-shape" cx="151" cy="48" r="19"></circle>
+      <circle cx="145" cy="42" r="3" fill="#ffe68c"></circle><circle cx="157" cy="54" r="3" fill="#ffe68c"></circle>
+      <circle class="spark" cx="151" cy="18" r="4"></circle>
+    </g>
+
+    <g id="p2" class="part">
+      <path class="hit" d="M151 71 L151 188" fill="none" stroke-width="62" stroke-linecap="round"></path>
+      <path class="stem-shape" d="M151 69 C148 105 153 144 151 188"></path>
+      <circle class="spark" cx="126" cy="117" r="4"></circle><circle class="spark" cx="177" cy="149" r="3"></circle>
+    </g>
+
+    <g id="p3" class="part">
+      <path class="hit" d="M149 129 C116 90 70 104 62 145 C95 163 130 156 151 132Z"></path>
+      <path class="leaf-shape" d="M149 129 C116 90 73 104 63 144 C95 161 129 156 149 129Z"></path>
+      <path d="M77 141 Q109 133 141 130" fill="none" stroke="#d9efa9" stroke-width="2" stroke-linecap="round"></path>
+      <circle class="spark" cx="76" cy="113" r="4"></circle><circle class="spark" cx="99" cy="160" r="3"></circle>
+    </g>
+
+    <g id="p4" class="part">
+      <path class="hit" d="M151 181 L151 228 M151 207 L116 231 M151 207 L188 231 M135 219 L124 241 M168 219 L179 241" fill="none" stroke-width="62" stroke-linecap="round"></path>
+      <path class="root-shape" d="M151 181 L151 225 M151 206 L116 230 M151 206 L188 230 M135 218 L124 240 M168 218 L179 240"></path>
+      <circle class="spark" cx="109" cy="220" r="4"></circle><circle class="spark" cx="193" cy="230" r="3"></circle>
+    </g>
+
+    <text id="l0" class="label" data-label="" x="28" y="30"></text>
+    <text id="l1" class="label" data-label="" x="220" y="55"></text>
+    <text id="l2" class="label" data-label="" x="220" y="145"></text>
+    <text id="l3" class="label" data-label="" x="14" y="150"></text>
+    <text id="l4" class="label" data-label="" x="226" y="222"></text>
+  </svg>
+  <div id="status"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params;
+  var app=document.getElementById('app');
+  var status=document.getElementById('status');
+  var locked=false;
+  var finished=false;
+  var ids=['p0','p1','p2','p3','p4'];
+  var lids=['l0','l1','l2','l3','l4'];
+
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('question').textContent=Studio.t('ask')+' '+Studio.t(p.ask);
+
+  function say(key,good){
+    status.textContent=Studio.t(key);
+    status.className='show'+(good?' good':'');
+  }
+
+  p.parts.forEach(function(key,i){
+    var part=document.getElementById(ids[i]);
+    var label=document.getElementById(lids[i]);
+    if(!part||!label)return;
+    part.setAttribute('data-part',key);
+    label.setAttribute('data-label',key);
+    label.textContent=Studio.t(key);
+    part.addEventListener('click',function(){
+      if(locked||finished)return;
+      locked=true;
+      Studio.event('tap',{part:key});
+      Studio.answer(key);
+    });
+  });
+
+  Studio.onVerdict(function(result){
+    if(finished)return;
+    if(result.correct){
+      finished=true;
+      var chosen=document.querySelector('[data-part="'+p.ask+'"]');
+      if(chosen)chosen.classList.add('correct');
+      say('right',true);
+      Studio.event('right',{part:p.ask});
+      setTimeout(function(){
+        status.textContent=Studio.t('done');
+        Studio.done();
+      },650);
+    }else{
+      say('wrong',false);
+      app.classList.remove('wiggle');
+      void app.offsetWidth;
+      app.classList.add('wiggle');
+      Studio.event('wrong',{});
+      setTimeout(function(){locked=false;},330);
+    }
+  });
+
+  Studio.ready();
+}());
+
+</script>

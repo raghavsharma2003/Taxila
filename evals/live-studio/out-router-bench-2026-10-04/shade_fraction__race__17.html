@@ -1,0 +1,97 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e9;font-family:system-ui,sans-serif;color:#593b32}
+  #activity{width:360px;height:320px;padding:12px 18px;display:flex;flex-direction:column;align-items:center;overflow:hidden}
+  h1{margin:0;font-size:21px;line-height:28px;font-weight:800;color:#794b3c}#instruction{margin:2px 0 0;font-size:14px;line-height:20px;text-align:center}
+  #target{height:43px;display:flex;align-items:center;justify-content:center;font-size:27px;font-weight:800;color:#ad573e}
+  #picture{width:316px;height:140px;overflow:visible} [data-part]{cursor:pointer;stroke:#b87958;stroke-width:2.5;transition:fill .2s,transform .2s;transform-box:fill-box;transform-origin:center}
+  [data-part="0"]{}[data-shaded="false"]{fill:#ffe1ac}[data-shaded="true"]{fill:#ef925f}
+  [data-part]:active{transform:scale(.94)}
+  #footer{width:100%;height:61px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  #feedback{font-size:16px;font-weight:750;flex:1;text-align:center;min-height:24px}
+  button{width:128px;height:54px;border:0;border-radius:19px;background:#ad573e;color:white;font:800 18px system-ui,sans-serif;box-shadow:0 5px 0 #793e32;cursor:pointer;transition:transform .15s,box-shadow .15s}
+  button:active{transform:translateY(4px) scale(.97);box-shadow:0 1px 0 #793e32}button:disabled{opacity:.6;cursor:default}
+  .celebrate #picture{animation:pop .5s ease}.celebrate #feedback{color:#4b8665}.try-again #feedback{color:#ad573e}
+  @keyframes pop{50%{transform:scale(1.06)}}#finish{display:none;flex:1;align-items:center;justify-content:center;text-align:center;font-size:28px;font-weight:800;color:#4b8665}
+  .finished #instruction,.finished #target,.finished #picture,.finished #footer{display:none}.finished #finish{display:flex}
+</style>
+<div id="activity" data-item="">
+  <h1 id="title"></h1>
+  <div id="instruction"></div>
+  <div id="target" data-target></div>
+  <svg id="picture" viewBox="0 0 316 140" aria-hidden="true"></svg>
+  <div id="footer"><span id="feedback" aria-live="polite"></span><button type="button" data-action="check"></button></div>
+  <div id="finish"></div>
+</div>
+<script>
+
+(() => {
+  const items=Studio.params.items, root=document.getElementById('activity');
+  const svg=document.getElementById('picture'), target=document.getElementById('target');
+  const feedback=document.getElementById('feedback'), button=document.querySelector('[data-action="check"]');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  document.getElementById('finish').textContent=Studio.t('done');
+  button.textContent=Studio.t('check');
+  let index=0,waiting=false,transitioning=false;
+  const ns='http://www.w3.org/2000/svg';
+  function part(shape,i){
+    const el=document.createElementNS(ns,shape);
+    el.setAttribute('data-part',String(i));
+    el.setAttribute('data-shaded','false');
+    el.addEventListener('click',()=>{
+      if(waiting||transitioning)return;
+      el.setAttribute('data-shaded',el.getAttribute('data-shaded')==='true'?'false':'true');
+      root.classList.remove('try-again');feedback.textContent='';
+      Studio.event('part',{index:i});
+    });
+    svg.appendChild(el);return el;
+  }
+  function draw(){
+    const item=items[index];root.dataset.item=item.id;
+    target.textContent=item.n+'/'+item.d;
+    feedback.textContent='';root.classList.remove('celebrate','try-again');
+    svg.replaceChildren();
+    if(Studio.params.picture==='pizza'){
+      const cx=158,cy=70,r=68;
+      for(let i=0;i<item.d;i++){
+        const a=-Math.PI/2+i*2*Math.PI/item.d,b=-Math.PI/2+(i+1)*2*Math.PI/item.d;
+        const p=part('path',i);
+        if(item.d===1)p.setAttribute('d',`M ${cx-r} ${cy} a ${r} ${r} 0 1 0 ${2*r} 0 a ${r} ${r} 0 1 0 ${-2*r} 0`);
+        else p.setAttribute('d',`M ${cx} ${cy} L ${cx+r*Math.cos(a)} ${cy+r*Math.sin(a)} A ${r} ${r} 0 ${b-a>Math.PI?1:0} 1 ${cx+r*Math.cos(b)} ${cy+r*Math.sin(b)} Z`);
+      }
+    }else{
+      const cols=Math.min(4,item.d),rows=Math.ceil(item.d/cols);
+      const w=292/cols,h=Math.min(60,126/rows),left=(316-cols*w)/2,top=(140-rows*h)/2;
+      for(let i=0;i<item.d;i++){
+        const p=part('rect',i);
+        p.setAttribute('x',left+(i%cols)*w+1);
+        p.setAttribute('y',top+Math.floor(i/cols)*h+1);
+        p.setAttribute('width',w-2);p.setAttribute('height',h-2);
+        p.setAttribute('rx','9');
+      }
+    }
+  }
+  button.addEventListener('click',()=>{
+    if(waiting||transitioning)return;
+    waiting=true;button.disabled=true;
+    const count=svg.querySelectorAll('[data-shaded="true"]').length;
+    Studio.answer({n:count,d:items[index].d});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!waiting)return;
+    waiting=false;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    root.classList.toggle('try-again',!correct);
+    if(!correct){button.disabled=false;return}
+    transitioning=true;root.classList.add('celebrate');
+    setTimeout(()=>{
+      index++;
+      if(index===items.length){
+        root.classList.add('finished');root.removeAttribute('data-item');Studio.done();
+      }else{draw();button.disabled=false;transitioning=false}
+    },700);
+  });
+  draw();Studio.ready();
+})();
+
+</script>

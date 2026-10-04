@@ -1,0 +1,125 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:Arial,sans-serif}
+  #app{
+    width:360px;height:320px;overflow:hidden;position:relative;
+    background:linear-gradient(160deg,#fff7df 0%,#ffe9c2 100%);
+    color:#5b3c2c;padding:10px 12px;
+  }
+  .spark{position:absolute;border-radius:50%;opacity:.45;pointer-events:none}
+  .s1{width:18px;height:18px;background:#f7bd59;top:12px;right:21px}
+  .s2{width:11px;height:11px;background:#f28b68;top:62px;left:12px}
+  .s3{width:15px;height:15px;background:#86c9b2;bottom:19px;right:17px}
+  .top{height:44px;display:flex;align-items:center;justify-content:space-between;position:relative}
+  h1{margin:0;font-size:22px;line-height:1;color:#714334;letter-spacing:.1px}
+  #key{
+    height:38px;min-width:132px;padding:5px 9px;border-radius:15px;
+    background:#fffdf5;border:2px solid #f2cf89;display:flex;align-items:center;
+    gap:5px;font-size:12px;font-weight:bold;color:#795444;white-space:nowrap;
+  }
+  #key svg{width:21px;height:21px;flex:0 0 21px}
+  #chart{height:162px;position:relative}
+  .row{
+    width:100%;height:54px;border:0;border-radius:18px;background:rgba(255,253,245,.77);
+    display:flex;align-items:center;padding:0 9px;margin:0;cursor:pointer;
+    text-align:left;color:#674335;transition:transform .16s ease,background .2s ease,box-shadow .2s ease;
+    position:relative;overflow:hidden;
+  }
+  .row:not(:last-child){margin-bottom:0}
+  .row:hover{background:#fffdf7;box-shadow:0 4px 10px rgba(130,79,44,.12)}
+  .row:active{transform:scale(.975)}
+  .row.pending{pointer-events:none;opacity:.7}
+  .row.good{background:#dff4d9;box-shadow:0 0 0 3px #86c97b inset;animation:pop .42s ease}
+  .row.try{background:#ffe0d5;animation:wiggle .36s ease}
+  .label{
+    width:64px;flex:0 0 64px;font-size:15px;font-weight:bold;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .symbols{height:52px;display:flex;align-items:center;gap:3px;min-width:0}
+  .mark{width:25px;height:25px;flex:0 0 25px;filter:drop-shadow(0 2px 1px rgba(109,65,33,.12));animation:bob 2.1s ease-in-out infinite}
+  .mark:nth-child(2n){animation-delay:.18s}
+  .mark:nth-child(3n){animation-delay:.36s}
+  .bottom{height:84px;display:flex;flex-direction:column;justify-content:center;align-items:center;position:relative}
+  #ask{margin:0;text-align:center;font-size:17px;font-weight:bold;color:#704735;min-height:25px}
+  #feedback{height:28px;margin-top:4px;font-size:15px;font-weight:bold;color:#66854f;opacity:0;transform:translateY(5px);transition:.22s ease}
+  #feedback.show{opacity:1;transform:translateY(0)}
+  #feedback.wrong{color:#b35e4f}
+  #done{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    text-align:center;font-size:20px;font-weight:bold;color:#527d45;
+    background:rgba(255,247,223,.94);border-radius:19px;opacity:0;pointer-events:none;
+    transform:scale(.92);transition:.28s ease;
+  }
+  #done.show{opacity:1;transform:scale(1);pointer-events:auto}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+  @keyframes pop{50%{transform:scale(1.025)}}
+  @keyframes wiggle{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+</style>
+<div id="app">
+  <div class="spark s1"></div><div class="spark s2"></div><div class="spark s3"></div>
+  <div class="top">
+    <h1 id="title"></h1>
+    <div id="key" data-key><span id="keytext"></span><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="8" fill="#f5a94e"/><circle cx="16" cy="5.5" r="5" fill="#f47d62"/><circle cx="25.5" cy="10.5" r="5" fill="#f47d62"/><circle cx="25.5" cy="21.5" r="5" fill="#f47d62"/><circle cx="16" cy="26.5" r="5" fill="#f47d62"/><circle cx="6.5" cy="21.5" r="5" fill="#f47d62"/><circle cx="6.5" cy="10.5" r="5" fill="#f47d62"/></svg><span id="keynum"></span></div>
+  </div>
+  <div id="chart"></div>
+  <div class="bottom">
+    <p id="ask"></p>
+    <div id="feedback" aria-live="polite"></div>
+    <div id="done"></div>
+  </div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, chart=document.getElementById('chart'), waiting=false, chosen=null, finished=false;
+  function flower(){
+    var s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    s.setAttribute('viewBox','0 0 32 32');s.setAttribute('class','mark');s.setAttribute('data-symbol','');
+    var parts=[['circle','16','16','8','#f5a94e'],['circle','16','5.5','5','#f47d62'],['circle','25.5','10.5','5','#f47d62'],['circle','25.5','21.5','5','#f47d62'],['circle','16','26.5','5','#f47d62'],['circle','6.5','21.5','5','#f47d62'],['circle','6.5','10.5','5','#f47d62']];
+    for(var i=0;i<parts.length;i++){var c=document.createElementNS('http://www.w3.org/2000/svg',parts[i][0]);c.setAttribute('cx',parts[i][1]);c.setAttribute('cy',parts[i][2]);c.setAttribute('r',parts[i][3]);c.setAttribute('fill',parts[i][4]);s.appendChild(c)}
+    return s;
+  }
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  document.getElementById('keytext').textContent=Studio.t('keytext');
+  document.getElementById('keynum').textContent=p.symbolValue;
+  p.rows.forEach(function(item){
+    var row=document.createElement('button'), label=document.createElement('span'), symbols=document.createElement('span');
+    row.className='row';row.setAttribute('data-row',item.key);row.type='button';
+    label.className='label';label.textContent=Studio.t(item.key);
+    symbols.className='symbols';
+    var count=item.value/p.symbolValue;
+    for(var n=0;n<count;n++)symbols.appendChild(flower());
+    row.appendChild(label);row.appendChild(symbols);
+    row.addEventListener('click',function(){
+      if(waiting||finished)return;
+      waiting=true;chosen=row;row.classList.add('pending');
+      Studio.event('row_tap',{});
+      Studio.answer(item.key);
+    });
+    chart.appendChild(row);
+  });
+  Studio.onVerdict(function(v){
+    if(!chosen||finished)return;
+    var feedback=document.getElementById('feedback');
+    chosen.classList.remove('pending');
+    if(v.correct){
+      finished=true;chosen.classList.add('good');
+      feedback.className='show';feedback.textContent=Studio.t('right');
+      Studio.event('verdict',{correct:1});
+      setTimeout(function(){
+        document.getElementById('done').textContent=Studio.t('done');
+        document.getElementById('done').className='show';
+        Studio.done();
+      },420);
+    }else{
+      chosen.classList.add('try');
+      feedback.className='show wrong';feedback.textContent=Studio.t('wrong');
+      Studio.event('verdict',{correct:0});
+      setTimeout(function(){chosen.classList.remove('try');waiting=false;feedback.className=''},520);
+    }
+  });
+  Studio.ready();
+}());
+
+</script>

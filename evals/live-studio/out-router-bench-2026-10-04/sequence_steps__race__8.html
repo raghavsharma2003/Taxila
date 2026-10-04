@@ -1,0 +1,89 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff7e9;color:#513b31}
+  .scene{width:360px;height:320px;padding:15px 17px;overflow:hidden;background:radial-gradient(circle at 94% 4%,#ffe2b5 0 45px,transparent 46px),#fff7e9}
+  h1{margin:0;font-size:22px;line-height:27px;font-weight:800}
+  .instr{margin:3px 0 11px;font-size:13px;line-height:18px;color:#76584a}
+  .cards{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:57px;gap:9px;min-height:123px}
+  .card{width:100%;height:100%;min-width:0;border:2px solid #db9e6d;border-radius:17px;background:#fffdf7;color:#513b31;font:700 16px system-ui,sans-serif;box-shadow:0 4px 0 #edcfad;display:flex;align-items:center;justify-content:center;position:relative;transition:transform .22s,box-shadow .22s,background .22s;cursor:pointer}
+  .cards .card:hover{transform:translateY(-2px)}
+  .cards .card:active{transform:scale(.94)}
+  .card:focus-visible{outline:3px solid #5a9e91;outline-offset:2px}
+  .card.shake{animation:shake .38s ease}
+  @keyframes shake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+  .feedback{height:24px;margin:8px 0 5px;text-align:center;font-size:14px;font-weight:700;color:#ad654b}
+  .feedback.good{color:#398270}
+  .track{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .slot{height:66px;border:2px dashed #d6baa0;border-radius:16px;background:#f9ecda;display:flex;align-items:center;justify-content:center;position:relative;min-width:0}
+  .slot-label{font-size:20px;font-weight:800;color:#a98570}
+  .slot .card{border-color:#77ad98;background:#eff9ef;box-shadow:none;font-size:12px;padding:17px 3px 2px;cursor:default;animation:pop .35s ease}
+  .slot .slot-label{display:none}
+  .badge{position:absolute;top:2px;left:50%;transform:translateX(-50%);font-size:11px;line-height:16px;color:#357965}
+  @keyframes pop{from{transform:scale(.72);opacity:.5}to{transform:scale(1);opacity:1}}
+</style>
+<div class="scene">
+  <h1 id="title"></h1>
+  <div class="instr" id="instr"></div>
+  <div class="cards" id="cards"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+  <div class="track" id="track"></div>
+</div>
+<script>
+
+  const shown=Studio.params.shown;
+  const cards=document.getElementById('cards');
+  const track=document.getElementById('track');
+  const feedback=document.getElementById('feedback');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  shown.forEach((key,index)=>{
+    const card=document.createElement('button');
+    card.type='button';
+    card.className='card';
+    card.dataset.step=key;
+    card.textContent=Studio.t(key);
+    cards.appendChild(card);
+    const slot=document.createElement('div');
+    slot.className='slot';
+    const label=document.createElement('span');
+    label.className='slot-label';
+    label.textContent=String(index+1);
+    slot.appendChild(label);
+    track.appendChild(slot);
+  });
+  let pending=null;
+  let placed=0;
+  cards.addEventListener('click',event=>{
+    const card=event.target.closest('[data-step]');
+    if(!card||pending||card.parentElement!==cards)return;
+    pending=card;
+    feedback.textContent='';
+    Studio.answer({key:card.dataset.step});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    const card=pending;
+    pending=null;
+    if(correct){
+      placed+=1;
+      card.dataset.placed=String(placed);
+      const badge=document.createElement('span');
+      badge.className='badge';
+      badge.textContent=String(placed);
+      card.appendChild(badge);
+      track.children[placed-1].appendChild(card);
+      card.disabled=true;
+      feedback.classList.add('good');
+      feedback.textContent=placed===shown.length?Studio.t('done'):Studio.t('right');
+      if(placed===shown.length)Studio.done();
+    }else{
+      feedback.classList.remove('good');
+      feedback.textContent=Studio.t('wrong');
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+    }
+  });
+  Studio.ready();
+
+</script>

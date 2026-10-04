@@ -1,0 +1,84 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff8ed;color:#503c32}
+#app{width:360px;height:320px;padding:10px 12px;overflow:hidden}
+h1{height:28px;margin:0;text-align:center;font-size:19px;line-height:28px;font-weight:800;color:#704c36}
+#ask{height:25px;margin:0;text-align:center;font-size:14px;line-height:22px;color:#705b4c}
+#chart{display:block;width:336px;height:222px;overflow:visible}
+.grid{stroke:#eadfce;stroke-width:1}
+.axis{stroke:#a78b72;stroke-width:1.4}
+.tick-label{font:12px system-ui,sans-serif;fill:#765f4f;text-anchor:end}
+.axis-title{font:12px system-ui,sans-serif;fill:#765f4f;text-anchor:middle}
+.bar{fill:#eaa34b;stroke:#cb7934;stroke-width:1.5;transform-box:fill-box;transform-origin:center bottom;animation:grow .75s cubic-bezier(.2,.75,.25,1) both}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.column{cursor:pointer;outline:none}
+.column-hit{fill:transparent;pointer-events:all}
+.column:focus .bar{stroke:#704c36;stroke-width:3}
+.column:active .bar{filter:brightness(.9)}
+.name-label{font:11px system-ui,sans-serif;fill:#503c32;text-anchor:middle;pointer-events:none}
+#feedback{height:24px;text-align:center;font-size:14px;line-height:22px;font-weight:700;color:#6b8150}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <div id="ask"></div>
+  <svg id="chart" viewBox="0 0 336 222" role="img"></svg>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=> {
+  const p=Studio.params, data=p.data;
+  const t=key=>Studio.t(key);
+  document.getElementById("title").textContent=t("title");
+  document.getElementById("ask").textContent=t("ask");
+
+  const svg=document.getElementById("chart");
+  const NS="http://www.w3.org/2000/svg";
+  const el=(tag,attrs={},text)=>{const n=document.createElementNS(NS,tag);for(const k in attrs)n.setAttribute(k,attrs[k]);if(text!==undefined)n.textContent=text;return n};
+  const left=43,right=330,top=8,bottom=174,plotH=bottom-top;
+  const max=Math.max(...data.map(d=>Number(d.value)));
+  const raw=max/5;
+  const power=Math.pow(10,Math.floor(Math.log10(raw||1)));
+  const fraction=raw/power;
+  const step=(fraction<=1?1:fraction<=2?2:fraction<=5?5:10)*power;
+  const ceiling=Math.ceil(max/step)*step;
+  const scale=plotH/ceiling;
+  for(let v=0;v<=ceiling+step*1e-9;v+=step){
+    const y=bottom-v*scale;
+    svg.appendChild(el("line",{x1:left,y1:y,x2:right,y2:y,class:v===0?"axis":"grid"}));
+    svg.appendChild(el("text",{x:left-7,y:y+4,class:"tick-label","data-tick":String(v)},String(v)));
+  }
+  svg.appendChild(el("line",{x1:left,y1:top,x2:left,y2:bottom,class:"axis"}));
+  const title=el("text",{x:11,y:(top+bottom)/2,class:"axis-title",transform:`rotate(-90 11 ${(top+bottom)/2})`},t("yaxis"));
+  svg.appendChild(title);
+  const plotW=right-left, colW=plotW/data.length;
+  data.forEach((d,i)=>{
+    const x=left+i*colW, cx=x+colW/2, h=Number(d.value)*scale, y=bottom-h;
+    const g=el("g",{class:"column",tabindex:"0",role:"button","data-column":d.key,"aria-label":t(d.key)});
+    g.appendChild(el("rect",{x:x+1,y:top,width:colW-2,height:bottom-top+43,class:"column-hit"}));
+    g.appendChild(el("rect",{x:cx-colW*.29,y,width:colW*.58,height:h,rx:5,class:"bar","data-bar":d.key,"data-value":String(d.value)}));
+    g.appendChild(el("text",{x:cx,y:bottom+17,class:"name-label"},t(d.key)));
+    svg.appendChild(g);
+  });
+  let waiting=false, complete=false;
+  const feedback=document.getElementById("feedback");
+  const choose=key=>{
+    if(waiting||complete)return;
+    waiting=true;
+    Studio.event("select",{key});
+    Studio.answer(key);
+  };
+  svg.querySelectorAll("[data-column]").forEach(g=>{
+    g.addEventListener("click",()=>choose(g.getAttribute("data-column")));
+    g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();choose(g.getAttribute("data-column"));}});
+  });
+  Studio.onVerdict(({correct})=>{
+    waiting=false;
+    feedback.textContent=t(correct?"right":"wrong");
+    if(correct){complete=true;Studio.done();document.getElementById("ask").textContent=t("done");}
+  });
+  Studio.ready();
+})();
+
+</script>

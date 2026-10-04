@@ -1,0 +1,111 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff7e9;color:#513b32}
+  .activity{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 20% 25%,#fffdf5,#fff7e9 70%);border-radius:20px}
+  .title{position:absolute;top:12px;left:17px;right:17px;margin:0;font-size:20px;line-height:28px;font-weight:750}
+  .scene{position:absolute;left:12px;top:47px;width:158px;height:208px;border-radius:20px;background:#fce7d4;overflow:hidden}
+  .scene:after{content:"";position:absolute;left:12px;bottom:12px;width:63px;height:5px;border-radius:5px;background:#bc8d72}
+  .visual{position:absolute;left:22px;bottom:17px;width:43px;height:0;border-radius:13px 13px 5px 5px;background:linear-gradient(90deg,#f29470,#e66965);box-shadow:inset -7px 0 #d85d5b;transition:height .38s cubic-bezier(.2,.8,.25,1)}
+  .visual:before{content:"";position:absolute;top:9px;left:10px;width:8px;height:8px;border-radius:50%;background:#fff3db;box-shadow:16px 0 #fff3db}
+  .readouts{position:absolute;top:12px;left:78px;right:6px;display:grid;gap:9px}
+  .readout{font-size:12px;line-height:17px;overflow-wrap:anywhere}
+  .readout strong{display:block;font-size:23px;line-height:26px;color:#994e47}
+  .question{position:absolute;left:179px;right:12px;top:48px}
+  .prompt{min-height:25px;font-size:15px;font-weight:700;line-height:21px}
+  .feedback{height:20px;font-size:13px;font-weight:700;color:#a35350}
+  .options{display:grid;gap:5px}
+  button{border:0;cursor:pointer;touch-action:manipulation;font:inherit;font-weight:750;transition:transform .16s,background .2s,box-shadow .2s}
+  button:active{transform:scale(.93)}
+  button:focus-visible{outline:3px solid #7654ac;outline-offset:2px}
+  .option{width:100%;height:52px;border-radius:15px;background:#fff;border:2px solid #edc7a7;color:#703f3b;font-size:22px;box-shadow:0 3px 0 #e8c3a7}
+  .option:hover{background:#fff2df}
+  .controls{position:absolute;left:12px;top:263px;width:158px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .control{height:52px;border-radius:16px;background:#7654ac;color:white;font-size:15px;box-shadow:0 4px 0 #573d82}
+  .control:disabled{opacity:.48;box-shadow:none;cursor:default}
+  .bump{animation:bump .3s ease}
+  @keyframes bump{50%{transform:scale(1.04)}}
+</style>
+<div class="activity">
+  <h1 class="title" id="title"></h1>
+  <div class="scene">
+    <div class="visual" data-visual data-dim="h"></div>
+    <div class="readouts">
+      <div class="readout"><span id="xname"></span><strong data-x></strong></div>
+      <div class="readout"><span id="yname"></span><strong data-output data-value></strong></div>
+    </div>
+  </div>
+  <div class="question">
+    <div class="prompt"><span id="ask"></span> <span id="target"></span></div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+    <div class="options" id="options"></div>
+  </div>
+  <div class="controls">
+    <button class="control" type="button" data-action="dec" id="dec"></button>
+    <button class="control" type="button" data-action="inc" id="inc"></button>
+  </div>
+</div>
+<script>
+
+(() => {
+  const p = Studio.params;
+  const byId = id => document.getElementById(id);
+  const tidy = n => String(Number(n.toFixed(10)));
+  let x = p.x.start, waiting = false, finished = false;
+  for (const key of ['title','xname','yname','ask','less','more']) {
+    byId(({less:'dec',more:'inc'})[key] || key).textContent = Studio.t(key);
+  }
+  byId('target').textContent = tidy(p.ask.x);
+  const visual = document.querySelector('[data-visual]');
+  const xDisplay = document.querySelector('[data-x]');
+  const output = document.querySelector('[data-output]');
+  const dec = byId('dec'), inc = byId('inc');
+  function render() {
+    x = Number(tidy(x));
+    const y = Number(tidy(p.law.k * x + p.law.b));
+    xDisplay.textContent = tidy(x);
+    xDisplay.dataset.x = tidy(x);
+    output.textContent = tidy(y);
+    output.dataset.value = tidy(y);
+    visual.style.height = tidy(y * p.y.unitsPer) + 'px';
+    dec.disabled = x - p.x.step < p.x.min;
+    inc.disabled = x + p.x.step > p.x.max;
+  }
+  for (const [button, direction] of [[dec,-1],[inc,1]]) {
+    button.addEventListener('click', () => {
+      const next = Number(tidy(x + direction * p.x.step));
+      if (next < p.x.min || next > p.x.max) return;
+      x = next;
+      render();
+      visual.classList.remove('bump');
+      void visual.offsetWidth;
+      visual.classList.add('bump');
+    });
+  }
+  for (const value of p.ask.options) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'option';
+    button.dataset.option = tidy(value);
+    button.textContent = tidy(value);
+    button.addEventListener('click', () => {
+      if (waiting || finished) return;
+      waiting = true;
+      Studio.answer({value});
+    });
+    byId('options').append(button);
+  }
+  Studio.onVerdict(({correct}) => {
+    if (finished) return;
+    waiting = false;
+    byId('feedback').textContent = Studio.t(correct ? 'right' : 'wrong');
+    if (correct) {
+      finished = true;
+      byId('feedback').textContent = Studio.t('done');
+      Studio.done();
+    }
+  });
+  render();
+  Studio.ready();
+})();
+
+</script>

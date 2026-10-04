@@ -1,0 +1,91 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8ed;color:#47372f}
+#app{position:relative;width:360px;height:320px;overflow:hidden;padding:12px}
+h1{font-size:18px;line-height:22px;margin:0 0 4px;font-weight:750}
+#ask{font-size:13px;line-height:17px;margin:0;max-width:336px;color:#715a4b}
+#scene{position:absolute;inset:0}
+svg{position:absolute;inset:0;width:360px;height:320px;overflow:visible}
+.axis{stroke:#d6a76e;stroke-width:4;stroke-linecap:round}
+.connector{stroke:#d6a76e;stroke-width:2;stroke-linecap:round}
+.marker{fill:#e87952;stroke:#fff8ed;stroke-width:3;transition:transform .2s}
+.card{position:absolute;width:112px;height:66px;border:2px solid #efc99d;border-radius:16px;background:#fffdf8;color:#47372f;box-shadow:0 3px 0 #ecd9c2;padding:7px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;cursor:pointer;transition:transform .16s,background .2s,border-color .2s,box-shadow .16s}
+.card:active{transform:scale(.94)}
+.card:hover{border-color:#e87952}
+.card .name{font-size:13px;line-height:16px;font-weight:700}
+.card .year{font-size:12px;line-height:14px;color:#846951}
+#feedback{position:absolute;left:16px;right:16px;bottom:9px;min-height:30px;text-align:center;font-size:15px;line-height:20px;font-weight:700;color:#5b8057}
+#feedback.wrong{color:#a85a46}
+.card[disabled]{cursor:default}
+.card[disabled]:active{transform:none}
+@keyframes pop{50%{transform:scale(1.07)}}
+.card.pulse{animation:pop .28s ease}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <p id="ask"></p>
+  <div id="scene">
+    <svg viewBox="0 0 360 320" aria-hidden="true">
+      <line class="axis" x1="24" y1="160" x2="336" y2="160" data-axis></line>
+      <g id="drawing"></g>
+    </svg>
+    <div id="cards"></div>
+  </div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, events=p.events, min=Math.min(...events.map(e=>e.year)), max=Math.max(...events.map(e=>e.year));
+  const title=document.getElementById("title"), ask=document.getElementById("ask");
+  const drawing=document.getElementById("drawing"), cards=document.getElementById("cards"), feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  ask.textContent=Studio.t("ask");
+  const lanes=[22,232,92], axisY=160, margin=24, span=312;
+  const ordered=[...events].sort((a,b)=>a.year-b.year);
+  const positions=new Map();
+  ordered.forEach((e,i)=>{
+    const x=min===max?180:margin+(e.year-min)/(max-min)*span;
+    const y=lanes[i%lanes.length];
+    positions.set(e.key,{x,y});
+    const ns="http://www.w3.org/2000/svg";
+    const connector=document.createElementNS(ns,"line");
+    connector.setAttribute("class","connector");
+    connector.setAttribute("x1",x); connector.setAttribute("y1",axisY);
+    connector.setAttribute("x2",x); connector.setAttribute("y2",y<axisY?y+66:y);
+    drawing.appendChild(connector);
+    const marker=document.createElementNS(ns,"circle");
+    marker.setAttribute("class","marker"); marker.setAttribute("cx",x); marker.setAttribute("cy",axisY); marker.setAttribute("r","9");
+    marker.setAttribute("data-event",e.key); marker.setAttribute("data-year",e.year);
+    drawing.appendChild(marker);
+  });
+  events.forEach(e=>{
+    const {x,y}=positions.get(e.key);
+    const card=document.createElement("button");
+    card.type="button"; card.className="card"; card.setAttribute("data-card",e.key);
+    card.style.left=Math.max(4,Math.min(244,x-56))+"px"; card.style.top=y+"px";
+    const name=document.createElement("span"); name.className="name"; name.textContent=Studio.t(e.key);
+    const year=document.createElement("span"); year.className="year"; year.textContent=e.year;
+    card.append(name,year);
+    card.addEventListener("click",()=>{
+      if(card.disabled)return;
+      card.classList.remove("pulse"); void card.offsetWidth; card.classList.add("pulse");
+      Studio.event("event_tap",{key:e.key});
+      Studio.answer(e.key);
+    });
+    cards.appendChild(card);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.className=correct?"":"wrong";
+    feedback.textContent=Studio.t(correct?"right":"wrong");
+    if(correct){
+      cards.querySelectorAll("button").forEach(b=>b.disabled=true);
+      feedback.textContent=Studio.t("done");
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

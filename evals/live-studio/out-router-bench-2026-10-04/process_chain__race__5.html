@@ -1,0 +1,95 @@
+<style>
+  *{box-sizing:border-box}
+  #activity{width:360px;height:320px;overflow:hidden;position:relative;padding:10px 12px;background:#fff8ec;color:#594334;font-family:system-ui,sans-serif}
+  .top{height:52px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  h1{font-size:19px;line-height:1.15;margin:0;font-weight:750;max-width:245px}
+  button{font:inherit;cursor:pointer;border:0;-webkit-tap-highlight-color:transparent;transition:transform .18s,background .2s}
+  button:active{transform:scale(.93)}
+  #next{min-width:78px;height:52px;padding:0 12px;border-radius:18px;background:#e68d68;color:#442c24;font-weight:750;box-shadow:0 4px 0 #ba684d}
+  #next:disabled{opacity:.65}
+  #scene{display:block;width:336px;height:125px}
+  .stage ellipse{fill:#ffedcf;stroke:#d7aa77;stroke-width:2;transition:fill .3s,stroke .3s,filter .3s}
+  .stage text{fill:#594334;font-size:13px;font-weight:700;dominant-baseline:middle;text-anchor:middle;pointer-events:none}
+  .stage.active ellipse{fill:#ffe18b;stroke:#e79348;stroke-width:3;filter:drop-shadow(0 0 7px #f3b756)}
+  .arrow{stroke:#b48c72;stroke-width:2.5;stroke-linecap:round;fill:none}
+  #token{fill:#e57458;stroke:#fff8ec;stroke-width:3;filter:drop-shadow(0 2px 2px #a46d55)}
+  #question{text-align:center;height:32px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700}
+  #options{height:54px;display:flex;align-items:flex-start;justify-content:center;gap:8px}
+  #options button{min-width:52px;min-height:52px;padding:0 12px;border-radius:16px;background:#dceccf;color:#385441;font-weight:700;box-shadow:0 3px 0 #afc6a1}
+  #feedback{text-align:center;height:27px;line-height:27px;font-weight:750;color:#a45c48}
+  #feedback.good{color:#477b59}
+</style>
+<div id="activity">
+  <div class="top"><h1 id="title"></h1><button id="next" data-action="next"></button></div>
+  <svg id="scene" viewBox="0 0 336 125" aria-hidden="true">
+    <defs><marker id="tip" markerWidth="7" markerHeight="7" refX="5.5" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7 Z" fill="#b48c72"/></marker></defs>
+    <g id="arrows"></g><g id="stages"></g><circle id="token" data-token r="9"/>
+  </svg>
+  <div id="question"></div>
+  <div id="options"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params,keys=p.stages,root=document.getElementById('activity');
+  const ns='http://www.w3.org/2000/svg';
+  const make=(tag,attrs,parent)=>{const el=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);parent.appendChild(el);return el};
+  const points=keys.map((_,i)=>{
+    const a=(-135+i*360/keys.length)*Math.PI/180;
+    return {x:168+112*Math.cos(a),y:62+38*Math.sin(a)};
+  });
+  document.getElementById('title').textContent=Studio.t('title');
+  const next=document.getElementById('next');
+  next.textContent=Studio.t('next');
+  document.getElementById('question').textContent=Studio.t('ask');
+  const arrows=document.getElementById('arrows'),stages=document.getElementById('stages');
+  for(let i=0;i<keys.length-(p.cycle?0:1);i++){
+    const j=(i+1)%keys.length,a=points[i],b=points[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1;
+    make('line',{x1:a.x+dx/d*37,y1:a.y+dy/d*27,x2:b.x-dx/d*43,y2:b.y-dy/d*31,class:'arrow','marker-end':'url(#tip)','data-arrow':keys[i]+'>'+keys[j]},arrows);
+  }
+  const boxes=keys.map((key,i)=>{
+    const pos=points[i],g=make('g',{class:'stage','data-stage':key},stages);
+    make('ellipse',{cx:pos.x,cy:pos.y,rx:35,ry:25},g);
+    make('text',{x:pos.x,y:pos.y,'data-label':key},g).textContent=Studio.t(key);
+    return g;
+  });
+  const token=document.getElementById('token');
+  let active=0,moving=false,finished=false;
+  function setActive(i){active=i;root.setAttribute('data-active',keys[i]);boxes.forEach((box,n)=>box.classList.toggle('active',n===i))}
+  function place(x,y){token.setAttribute('cx',x);token.setAttribute('cy',y)}
+  setActive(0);place(points[0].x,points[0].y);
+  next.addEventListener('click',()=>{
+    if(moving||finished||(!p.cycle&&active===keys.length-1))return;
+    const to=(active+1)%keys.length,from=points[active],dest=points[to],start=performance.now(),duration=650;
+    moving=true;next.disabled=true;
+    Studio.event('next',{from:active,to});
+    function frame(now){
+      const t=Math.min(1,(now-start)/duration),ease=t*t*(3-2*t);
+      place(from.x+(dest.x-from.x)*ease,from.y+(dest.y-from.y)*ease);
+      if(t<1)requestAnimationFrame(frame);
+      else{setActive(to);moving=false;next.disabled=false}
+    }
+    requestAnimationFrame(frame);
+  });
+  const options=document.getElementById('options'),feedback=document.getElementById('feedback');
+  p.options.forEach(key=>{
+    const btn=document.createElement('button');
+    btn.setAttribute('data-option',key);
+    btn.textContent=Studio.t(key);
+    btn.addEventListener('click',()=>{if(!finished)Studio.answer(key)});
+    options.appendChild(btn);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.classList.toggle('good',correct);
+    if(correct){
+      finished=true;next.disabled=true;
+      Array.from(options.children).forEach(button=>button.disabled=true);
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

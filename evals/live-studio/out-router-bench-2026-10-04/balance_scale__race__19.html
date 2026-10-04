@@ -1,0 +1,152 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e9;font-family:Arial,sans-serif;color:#593d38}
+  #activity{width:360px;height:320px;position:relative;overflow:hidden;background:radial-gradient(circle at 50% 35%,#fffdf5,#fff1dc)}
+  #title{position:absolute;top:12px;left:20px;width:320px;text-align:center;font-size:22px;font-weight:800}
+  #message{position:absolute;top:42px;left:20px;width:320px;min-height:22px;text-align:center;font-size:15px;font-weight:700;color:#856257}
+  svg{position:absolute;top:64px;left:0;width:360px;height:188px;overflow:visible}
+  #beam{transform-origin:180px 68px;transition:transform .65s cubic-bezier(.22,1.35,.45,1)}
+  .weight rect{fill:#ffbb73;stroke:#b96b48;stroke-width:2}
+  .weight text{fill:#593d38;font:bold 16px Arial,sans-serif;text-anchor:middle;dominant-baseline:middle}
+  #options{position:absolute;top:256px;left:20px;width:320px;display:flex;justify-content:space-between;gap:12px}
+  .option{width:96px;height:56px;border:2px solid #bc7652;border-radius:16px;background:#ffd09b;color:#593d38;font:bold 22px Arial,sans-serif;box-shadow:0 5px 0 #dda777;cursor:pointer;transition:transform .2s,opacity .2s}
+  .option:active{transform:translateY(4px) scale(.96);box-shadow:0 1px 0 #dda777}
+  .option:disabled{cursor:default}
+  .option.chosen{opacity:.3;transform:translateY(-8px) scale(.88)}
+  #activity.celebrate #beam{filter:drop-shadow(0 0 9px #ffc455)}
+  #activity.celebrate #message{animation:pop .55s ease}
+  @keyframes pop{50%{transform:scale(1.14)}}
+</style>
+<div id="activity">
+  <div id="title"></div>
+  <div id="message"></div>
+  <svg viewBox="0 0 360 188" aria-hidden="true">
+    <path d="M180 70 L151 183 Q180 174 209 183 Z" fill="#e9b98e"/>
+    <circle cx="180" cy="68" r="12" fill="#ae7059"/>
+    <g id="beam" data-beam data-tilt="level">
+      <path d="M73 68 Q180 62 287 68" fill="none" stroke="#a86c54" stroke-width="11" stroke-linecap="round"/>
+      <g data-pan="left" data-total="0">
+        <path d="M77 69 L65 139 M77 69 L89 139" fill="none" stroke="#b78a67" stroke-width="3"/>
+        <path d="M38 138 Q77 157 116 138" fill="none" stroke="#b8795c" stroke-width="7" stroke-linecap="round"/>
+        <g class="weights"></g>
+      </g>
+      <g data-pan="right" data-total="0">
+        <path d="M283 69 L271 139 M283 69 L295 139" fill="none" stroke="#b78a67" stroke-width="3"/>
+        <path d="M244 138 Q283 157 322 138" fill="none" stroke="#b8795c" stroke-width="7" stroke-linecap="round"/>
+        <g class="weights"></g>
+      </g>
+    </g>
+    <circle cx="180" cy="68" r="7" fill="#ffe3aa"/>
+  </svg>
+  <div id="options">
+    <button class="option" type="button"></button>
+    <button class="option" type="button"></button>
+    <button class="option" type="button"></button>
+  </div>
+</div>
+<script>
+
+  const items=Studio.params.items;
+  const activity=document.getElementById('activity');
+  const message=document.getElementById('message');
+  const beam=document.getElementById('beam');
+  const pans=[document.querySelector('[data-pan="left"]'),document.querySelector('[data-pan="right"]')];
+  const buttons=[...document.querySelectorAll('.option')];
+  const ns='http://www.w3.org/2000/svg';
+  let index=0,selected=null,busy=false,rightWeights=[];
+  document.getElementById('title').textContent=Studio.t('title');
+  function sum(a){return a.reduce((s,n)=>s+Number(n),0)}
+  function draw(pan,values,center){
+    pan.dataset.total=String(sum(values));
+    const holder=pan.querySelector('.weights');
+    holder.replaceChildren();
+    values.forEach((value,i)=>{
+      const group=document.createElementNS(ns,'g');
+      group.setAttribute('class','weight');
+      group.setAttribute('data-weight',String(value));
+      const count=values.length;
+      const width=Math.min(29,72/count);
+      const x=center+(i-(count-1)/2)*width;
+      const rect=document.createElementNS(ns,'rect');
+      rect.setAttribute('x',String(x-width/2+1));
+      rect.setAttribute('y','111');
+      rect.setAttribute('width',String(width-2));
+      rect.setAttribute('height','27');
+      rect.setAttribute('rx','6');
+      const text=document.createElementNS(ns,'text');
+      text.setAttribute('x',String(x));
+      text.setAttribute('y','125');
+      text.textContent=String(value);
+      group.append(rect,text);
+      holder.append(group);
+    });
+  }
+  function update(){
+    const item=items[index];
+    draw(pans[0],item.left,77);
+    draw(pans[1],rightWeights,283);
+    const difference=sum(rightWeights)-sum(item.left);
+    const tilt=difference>0?'right':difference<0?'left':'level';
+    beam.dataset.tilt=tilt;
+    beam.style.transform=`rotate(${Math.max(-11,Math.min(11,difference*2.5))}deg)`;
+  }
+  function show(){
+    const item=items[index];
+    rightWeights=[...item.right];
+    selected=null;busy=false;
+    activity.classList.remove('celebrate');
+    message.textContent=Studio.t('instr');
+    buttons.forEach((button,i)=>{
+      const value=item.options[i];
+      button.hidden=value===undefined;
+      if(value!==undefined){
+        button.dataset.option=String(value);
+        button.textContent=String(value);
+      }else button.removeAttribute('data-option');
+      button.disabled=false;
+      button.classList.remove('chosen');
+    });
+    update();
+  }
+  buttons.forEach(button=>button.addEventListener('click',()=>{
+    if(busy||button.hidden)return;
+    busy=true;
+    selected=button;
+    button.classList.add('chosen');
+    buttons.forEach(b=>b.disabled=true);
+    const value=Number(button.dataset.option);
+    rightWeights.push(value);
+    update();
+    Studio.answer({value});
+  }));
+  Studio.onVerdict(({correct})=>{
+    if(!busy||!selected)return;
+    if(correct){
+      message.textContent=Studio.t('right');
+      activity.classList.add('celebrate');
+      setTimeout(()=>{
+        index++;
+        if(index<items.length)show();
+        else{
+          message.textContent=Studio.t('done');
+          document.getElementById('options').replaceChildren();
+          Studio.done();
+        }
+      },1050);
+    }else{
+      message.textContent=Studio.t('wrong');
+      setTimeout(()=>{
+        rightWeights.pop();
+        update();
+        selected.classList.remove('chosen');
+        selected=null;
+        buttons.forEach(b=>b.disabled=false);
+        busy=false;
+        message.textContent=Studio.t('instr');
+      },950);
+    }
+  });
+  show();
+  Studio.ready();
+
+</script>

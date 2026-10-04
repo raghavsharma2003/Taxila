@@ -1,0 +1,188 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff5df;font-family:Arial,sans-serif;color:#5d351f}
+  #app{width:360px;height:320px;position:relative;overflow:hidden;background:
+    radial-gradient(circle at 14% 10%,#ffe2a0 0 7px,transparent 8px),
+    radial-gradient(circle at 88% 18%,#ffd28f 0 5px,transparent 6px),
+    linear-gradient(155deg,#fff9eb,#fff0cf)}
+  #play,#finish{width:100%;height:100%;position:absolute;inset:0}
+  #play{display:flex;flex-direction:column;align-items:center}
+  #finish{display:none;align-items:center;justify-content:center;flex-direction:column;background:linear-gradient(145deg,#fff0cb,#ffe3a1)}
+  #top{height:48px;width:100%;display:flex;align-items:center;justify-content:center;padding-top:5px}
+  #title{font-size:20px;font-weight:800;letter-spacing:.2px;color:#8b4525;text-align:center}
+  #fractionRow{height:45px;display:flex;align-items:center;justify-content:center;gap:13px}
+  #target{width:54px;height:42px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:22px;font-weight:800;line-height:17px;color:#8b4525}
+  #target .line{width:32px;height:3px;background:#8b4525;border-radius:4px;margin:3px 0}
+  #instruction{font-size:14px;font-weight:700;color:#9c633d;max-width:220px;line-height:16px}
+  #wholeBox{width:340px;height:166px;position:relative;display:flex;align-items:center;justify-content:center}
+  #whole{width:340px;height:166px;overflow:visible}
+  .part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:fill .22s ease,stroke .22s ease,filter .22s ease,transform .16s ease}
+  .part[data-shaded="false"]{fill:#f7c66f;stroke:#a95b32;stroke-width:3}
+  .part[data-shaded="true"]{fill:#e96d3c;stroke:#8e3e26;stroke-width:3;filter:drop-shadow(0 3px 2px rgba(121,55,28,.2))}
+  .part:active{transform:scale(.94)}
+  .part.pop{animation:pop .32s ease}
+  #feedback{height:25px;width:100%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#a95434;opacity:0;transform:translateY(-4px);transition:opacity .2s,transform .2s}
+  #feedback.show{opacity:1;transform:translateY(0)}
+  #check{width:154px;height:53px;min-height:52px;border:0;border-radius:18px;background:#6fba7a;color:#fffaf0;font-size:17px;font-weight:800;box-shadow:0 5px 0 #438d59,0 8px 12px rgba(89,93,48,.2);cursor:pointer;transition:transform .15s,box-shadow .15s}
+  #check:active{transform:translateY(4px) scale(.97);box-shadow:0 1px 0 #438d59}
+  #check:disabled{opacity:.65}
+  #sparkles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .spark{position:absolute;width:10px;height:10px;border-radius:50%;background:#f4b739;animation:spark .7s ease-out forwards}
+  #doneMark{width:106px;height:106px;border-radius:50%;background:#f4a94e;box-shadow:inset 0 -8px 0 #d98336,0 8px 20px rgba(142,89,40,.18);position:relative;margin-bottom:17px;animation:float 1.7s ease-in-out infinite}
+  #doneMark:before,#doneMark:after{content:"";position:absolute;background:#fff6d8;border-radius:50%}
+  #doneMark:before{width:13px;height:13px;left:28px;top:35px;box-shadow:36px 0 #fff6d8}
+  #doneMark:after{width:42px;height:18px;left:32px;top:59px;border-radius:0 0 28px 28px;background:#fff6d8}
+  #doneText{font-size:22px;font-weight:800;color:#8b4525;text-align:center;max-width:280px}
+  @keyframes pop{0%{transform:scale(.88)}65%{transform:scale(1.08)}100%{transform:scale(1)}}
+  @keyframes spark{0%{transform:translate(0,0) scale(.4);opacity:1}100%{transform:translate(var(--x),var(--y)) scale(1.3);opacity:0}}
+  @keyframes float{50%{transform:translateY(-7px) rotate(3deg)}}
+</style>
+<div id="app">
+  <div id="play">
+    <div id="top"><div id="title"></div></div>
+    <div id="fractionRow">
+      <div id="target" data-target><span id="num"></span><span class="line"></span><span id="den"></span></div>
+      <div id="instruction"></div>
+    </div>
+    <div id="wholeBox" data-item="">
+      <svg id="whole" viewBox="0 0 340 166" aria-hidden="true"></svg>
+    </div>
+    <div id="feedback"></div>
+    <button id="check" data-action="check"></button>
+    <div id="sparkles"></div>
+  </div>
+  <div id="finish">
+    <div id="doneMark"></div>
+    <div id="doneText"></div>
+  </div>
+</div>
+<script>
+
+(function(){
+  var items=Studio.params.items, picture=Studio.params.picture;
+  var index=0, waiting=false, finished=false;
+  var title=document.getElementById('title');
+  var instruction=document.getElementById('instruction');
+  var num=document.getElementById('num');
+  var den=document.getElementById('den');
+  var box=document.getElementById('wholeBox');
+  var whole=document.getElementById('whole');
+  var check=document.getElementById('check');
+  var feedback=document.getElementById('feedback');
+  var sparkles=document.getElementById('sparkles');
+  var ns='http://www.w3.org/2000/svg';
+
+  title.textContent=Studio.t('title');
+  instruction.textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+
+  function make(tag){
+    return document.createElementNS(ns,tag);
+  }
+  function sectorPath(cx,cy,r,a1,a2){
+    var x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1);
+    var x2=cx+r*Math.cos(a2), y2=cy+r*Math.sin(a2);
+    var large=a2-a1>Math.PI?1:0;
+    return 'M '+cx+' '+cy+' L '+x1+' '+y1+' A '+r+' '+r+' 0 '+large+' 1 '+x2+' '+y2+' Z';
+  }
+  function togglePart(e){
+    if(waiting)return;
+    var p=e.currentTarget;
+    var now=p.getAttribute('data-shaded')!=='true';
+    p.setAttribute('data-shaded',now?'true':'false');
+    p.classList.remove('pop');
+    void p.getBBox();
+    p.classList.add('pop');
+    feedback.classList.remove('show');
+    Studio.event('tap',{part:Number(p.getAttribute('data-part'))});
+  }
+  function draw(){
+    var item=items[index], d=item.d;
+    whole.innerHTML='';
+    box.setAttribute('data-item',item.id);
+    num.textContent=item.n;
+    den.textContent=item.d;
+    if(picture==='bar'){
+      var gap=4, total=320, width=(total-gap*(d-1))/d;
+      for(var i=0;i<d;i++){
+        var rect=make('rect');
+        rect.setAttribute('x',10+i*(width+gap));
+        rect.setAttribute('y',19);
+        rect.setAttribute('width',width);
+        rect.setAttribute('height',128);
+        rect.setAttribute('rx',11);
+        rect.setAttribute('data-part',i);
+        rect.setAttribute('data-shaded','false');
+        rect.setAttribute('class','part');
+        rect.addEventListener('click',togglePart);
+        whole.appendChild(rect);
+      }
+    }else{
+      for(var j=0;j<d;j++){
+        var path=make('path');
+        var start=-Math.PI/2+(j*2*Math.PI/d)+.018;
+        var end=-Math.PI/2+((j+1)*2*Math.PI/d)-.018;
+        path.setAttribute('d',sectorPath(170,83,75,start,end));
+        path.setAttribute('data-part',j);
+        path.setAttribute('data-shaded','false');
+        path.setAttribute('class','part');
+        path.addEventListener('click',togglePart);
+        whole.appendChild(path);
+      }
+    }
+    feedback.classList.remove('show');
+    waiting=false;
+    check.disabled=false;
+  }
+  function burst(){
+    for(var i=0;i<10;i++){
+      var s=document.createElement('span');
+      s.className='spark';
+      s.style.left=(174+(i%2?18:-18))+'px';
+      s.style.top='166px';
+      s.style.setProperty('--x',((i-4.5)*18)+'px');
+      s.style.setProperty('--y',(-38-(i%3)*25)+'px');
+      sparkles.appendChild(s);
+      setTimeout((function(node){return function(){node.remove();};})(s),750);
+    }
+  }
+  check.addEventListener('click',function(){
+    if(waiting||finished)return;
+    var parts=whole.querySelectorAll('[data-part]');
+    var count=0;
+    for(var i=0;i<parts.length;i++)if(parts[i].getAttribute('data-shaded')==='true')count++;
+    waiting=true;
+    check.disabled=true;
+    Studio.event('check',{n:count,d:items[index].d});
+    Studio.answer({n:count,d:items[index].d});
+  });
+  Studio.onVerdict(function(result){
+    if(finished)return;
+    if(result.correct){
+      feedback.textContent=Studio.t('right');
+      feedback.className='show';
+      burst();
+      setTimeout(function(){
+        index++;
+        if(index>=items.length){
+          finished=true;
+          document.getElementById('play').style.display='none';
+          document.getElementById('finish').style.display='flex';
+          document.getElementById('doneText').textContent=Studio.t('done');
+          Studio.done();
+        }else{
+          draw();
+        }
+      },720);
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      feedback.className='show';
+      waiting=false;
+      check.disabled=false;
+    }
+  });
+  draw();
+  Studio.ready();
+}());
+
+</script>

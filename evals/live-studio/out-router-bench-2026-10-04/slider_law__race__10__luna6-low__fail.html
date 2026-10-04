@@ -1,0 +1,99 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#493529;background:#fff8ed}
+main{width:360px;height:320px;padding:10px;display:flex;flex-direction:column;gap:7px}
+header{height:27px;text-align:center;font-size:19px;line-height:27px;font-weight:800;color:#70422c}
+.scene{height:145px;display:flex;align-items:center;justify-content:center;gap:16px;background:#fff0d8;border:2px solid #f1d4a7;border-radius:20px;padding:9px}
+.readings{display:flex;flex-direction:column;gap:7px;font-size:18px;font-weight:750}
+.readings span{white-space:nowrap}
+.tower-wrap{height:124px;width:68px;display:flex;align-items:flex-end;justify-content:center;border-bottom:4px solid #9a6843}
+[data-visual]{width:54px;min-height:4px;position:relative;overflow:hidden;border-radius:13px 13px 3px 3px;background:linear-gradient(90deg,#f6a94d,#ffd270 48%,#ef9840);transition:height .35s cubic-bezier(.2,.8,.2,1)}
+[data-visual] svg{position:absolute;inset:0;width:100%;height:100%}
+.controls{display:flex;gap:10px}
+button{border:0;border-radius:16px;min-height:52px;font:700 17px system-ui,sans-serif;color:#fff;cursor:pointer;touch-action:manipulation;transition:transform .12s,filter .15s,background .2s}
+button:active{transform:scale(.94);filter:brightness(.94)}
+.change{flex:1;background:#c76a3d}
+.change:disabled{opacity:.42}
+.question{min-height:22px;text-align:center;color:#70422c;font-size:15px;font-weight:750}
+.options{display:flex;gap:9px}
+.option{flex:1;background:#638f69;font-size:19px}
+.feedback{height:20px;text-align:center;color:#70422c;font-size:15px;font-weight:750}
+</style>
+<main>
+  <header id="title"></header>
+  <section class="scene">
+    <div class="readings">
+      <span id="xread"></span>
+      <span id="output" data-output data-value=""></span>
+    </div>
+    <div class="tower-wrap">
+      <div data-visual data-dim="h" style="height:0px">
+        <svg viewBox="0 0 54 160" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M7 0V160M47 0V160" stroke="#df8034" stroke-width="2" opacity=".45"/>
+          <path d="M12 10h30M12 24h30M12 38h30M12 52h30M12 66h30M12 80h30M12 94h30M12 108h30M12 122h30M12 136h30M12 150h30" stroke="#fff0b4" stroke-width="3" opacity=".75"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+  <div class="controls">
+    <button class="change" data-action="dec" id="less"></button>
+    <button class="change" data-action="inc" id="more"></button>
+  </div>
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback"></div>
+</main>
+<script>
+
+(()=>{
+  const p=Studio.params, t=Studio.t;
+  let x=p.x.start, locked=false;
+  const title=document.getElementById("title");
+  const xread=document.getElementById("xread");
+  const output=document.querySelector("[data-output]");
+  const visual=document.querySelector("[data-visual]");
+  const dec=document.querySelector('[data-action="dec"]');
+  const inc=document.querySelector('[data-action="inc"]');
+  const feedback=document.getElementById("feedback");
+  title.textContent=t("title");
+  document.getElementById("less").textContent=t("less");
+  document.getElementById("more").textContent=t("more");
+  const fmt=n=>Number.isInteger(n)?String(n):String(Number(n.toFixed(6)));
+  function update(){
+    const y=p.law.k*x+p.law.b;
+    xread.textContent=t("xname")+" = "+fmt(x);
+    output.textContent=t("yname")+" = "+fmt(y);
+    output.dataset.value=fmt(y);
+    dec.disabled=x-p.x.step<p.x.min;
+    inc.disabled=x+p.x.step>p.x.max;
+    visual.style.height=(y*p.y.unitsPer)+"px";
+  }
+  dec.addEventListener("click",()=>{if(x-p.x.step>=p.x.min){x-=p.x.step;update();Studio.event("change",{direction:"less"});}});
+  inc.addEventListener("click",()=>{if(x+p.x.step<=p.x.max){x+=p.x.step;update();Studio.event("change",{direction:"more"});}});
+  document.getElementById("question").textContent=t("ask")+" "+t("xname")+" = "+fmt(p.ask.x);
+  const options=document.getElementById("options");
+  p.ask.options.forEach(value=>{
+    const button=document.createElement("button");
+    button.className="option";
+    button.dataset.option=String(value);
+    button.textContent=String(value);
+    button.addEventListener("click",()=>{
+      feedback.textContent="";
+      Studio.answer({value});
+    });
+    options.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=correct?t("right"):t("wrong");
+    if(correct){
+      locked=true;
+      feedback.textContent=t("done");
+      Studio.done();
+    }
+  });
+  update();
+  Studio.ready();
+})();
+
+</script>

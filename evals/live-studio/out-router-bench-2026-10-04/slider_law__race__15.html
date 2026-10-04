@@ -1,0 +1,78 @@
+<style>
+*{box-sizing:border-box}
+body{width:360px;height:320px;margin:0;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#49382d}
+#app{width:360px;height:320px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+header{height:30px;display:flex;align-items:center;justify-content:center;color:#704b32;font-size:19px;font-weight:800}
+.readouts{height:30px;display:flex;gap:8px}
+.readout{flex:1;border-radius:12px;background:#fff;padding:4px 10px;display:flex;align-items:center;justify-content:center;gap:6px;font-weight:700;color:#644d3b}
+.readout output{font-size:18px;color:#a34f32}
+.scene{height:53px;background:#f4e6d4;border-radius:14px;display:flex;align-items:center;padding:0 9px;gap:7px;overflow:hidden}
+.ground{height:26px;min-width:8px;border-radius:7px;background:#dc9b55;transition:width .35s cubic-bezier(.2,.8,.2,1),height .35s cubic-bezier(.2,.8,.2,1);box-shadow:inset 0 -4px 0 #bb7543}
+.controls{height:54px;display:flex;gap:10px}
+button{font:inherit;border:0;border-radius:15px;cursor:pointer;touch-action:manipulation;transition:transform .12s,filter .12s,background .2s}
+button:active{transform:scale(.94);filter:brightness(.96)}
+.change{flex:1;min-width:52px;height:54px;background:#df9f64;color:#fff;font-weight:800;font-size:17px;box-shadow:0 3px 0 #bf7747}
+.change:disabled{opacity:.45}
+.question{height:25px;text-align:center;display:flex;align-items:center;justify-content:center;color:#704b32;font-weight:700;font-size:14px}
+.options{height:54px;display:flex;gap:8px}
+.option{flex:1;min-width:52px;height:54px;background:#fff;border:2px solid #e6c7a3;color:#64452f;font-size:18px;font-weight:800}
+.option:hover{background:#fff0d9}
+.feedback{height:25px;display:flex;align-items:center;justify-content:center;color:#a34f32;font-weight:700;font-size:14px}
+</style>
+<div id="app">
+  <header id="title"></header>
+  <div class="readouts">
+    <div class="readout"><span id="xname"></span><output id="xout" data-x="2"></output></div>
+    <div class="readout"><span id="yname"></span><output id="yout" data-output data-value="5"></output></div>
+  </div>
+  <div class="scene" aria-hidden="true"><div id="visual" class="ground" data-visual data-dim="w" data-value="5"></div></div>
+  <div class="controls">
+    <button class="change" id="dec" data-action="dec" type="button"></button>
+    <button class="change" id="inc" data-action="inc" type="button"></button>
+  </div>
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const words={title:Studio.t("title"),xname:Studio.t("xname"),yname:Studio.t("yname"),less:Studio.t("less"),more:Studio.t("more"),ask:Studio.t("ask")};
+  document.getElementById("title").textContent=words.title;
+  document.getElementById("xname").textContent=words.xname;
+  document.getElementById("yname").textContent=words.yname;
+  document.getElementById("dec").textContent=words.less;
+  document.getElementById("inc").textContent=words.more;
+  document.getElementById("question").textContent=words.ask+" "+p.ask.x;
+  const xout=document.getElementById("xout"), yout=document.getElementById("yout"), visual=document.getElementById("visual");
+  let x=p.x.start;
+  const clean=n=>String(Number(n.toFixed(8)));
+  function update(){
+    const y=p.law.k*x+p.law.b;
+    xout.textContent=clean(x); xout.dataset.x=clean(x);
+    yout.textContent=clean(y); yout.dataset.value=clean(y);
+    visual.style.width=(y*p.y.unitsPer)+"px";
+    visual.dataset.value=clean(y);
+    document.getElementById("dec").disabled=x-p.x.step<p.x.min;
+    document.getElementById("inc").disabled=x+p.x.step>p.x.max;
+  }
+  document.getElementById("dec").addEventListener("click",()=>{if(x-p.x.step>=p.x.min){x-=p.x.step;update();Studio.event("change",{x});}});
+  document.getElementById("inc").addEventListener("click",()=>{if(x+p.x.step<=p.x.max){x+=p.x.step;update();Studio.event("change",{x});}});
+  const choices=document.getElementById("options");
+  p.ask.options.forEach(value=>{
+    const b=document.createElement("button");
+    b.type="button"; b.className="option"; b.dataset.option=String(value); b.textContent=String(value);
+    b.addEventListener("click",()=>{Studio.answer({value});Studio.event("answer",{value});});
+    choices.appendChild(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    const feedback=document.getElementById("feedback");
+    if(correct){feedback.textContent=Studio.t("right")+" "+Studio.t("done");Studio.done();}
+    else feedback.textContent=Studio.t("wrong");
+  });
+  update();
+  Studio.ready();
+})();
+
+</script>

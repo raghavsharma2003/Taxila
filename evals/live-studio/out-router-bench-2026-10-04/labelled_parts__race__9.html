@@ -1,0 +1,92 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8e9;color:#493c32}
+.card{position:relative;width:360px;height:320px;padding:9px 12px;background:linear-gradient(155deg,#fffaf0,#f4f8e9);overflow:hidden}
+h1{height:27px;margin:0;text-align:center;font-size:18px;line-height:25px;color:#496a43;font-weight:750}
+.question{height:34px;display:flex;align-items:center;justify-content:center;gap:5px;text-align:center;color:#57483a;font-size:14px;font-weight:650}
+.question span{display:inline-block}
+svg{display:block;width:336px;height:229px;overflow:hidden}
+.leader{fill:none;stroke:#8a7964;stroke-width:1.5;stroke-linecap:round}
+.label{font:650 12px system-ui,sans-serif;fill:#493c32}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:filter .22s ease,transform .18s ease}
+.part:active{transform:scale(.94)}
+.part:hover{filter:brightness(1.04)}
+.part.selected{filter:drop-shadow(0 0 7px #ffcb48) brightness(1.12)}
+.feedback{position:absolute;left:10px;right:10px;bottom:3px;min-height:21px;text-align:center;font-size:13px;line-height:18px;font-weight:700;color:#496a43}
+.wrong{color:#a45b42}
+</style>
+<div class="card">
+  <h1 id="title"></h1>
+  <div class="question" data-ask><span id="askLead"></span><span id="askPart"></span></div>
+  <svg viewBox="0 0 336 229" role="img">
+    <path class="leader" d="M215 22 L195 34 M215 55 L187 45 M215 103 L205 113 M215 145 L199 148 M215 199 L187 198"/>
+    <text class="label" x="219" y="25" data-label="petal"></text>
+    <text class="label" x="219" y="58" data-label="centre"></text>
+    <text class="label" x="219" y="107" data-label="stem"></text>
+    <text class="label" x="219" y="149" data-label="leaf"></text>
+    <text class="label" x="219" y="203" data-label="root"></text>
+
+    <g class="part" data-part="petal">
+      <rect x="139" y="3" width="58" height="58" fill="transparent"/>
+      <ellipse cx="168" cy="22" rx="16" ry="24" fill="#f1a6a0"/>
+      <ellipse cx="189" cy="34" rx="16" ry="24" fill="#f1a6a0" transform="rotate(72 180 39)"/>
+      <ellipse cx="189" cy="34" rx="16" ry="24" fill="#f1a6a0" transform="rotate(144 180 39)"/>
+      <ellipse cx="189" cy="34" rx="16" ry="24" fill="#f1a6a0" transform="rotate(216 180 39)"/>
+      <ellipse cx="189" cy="34" rx="16" ry="24" fill="#f1a6a0" transform="rotate(288 180 39)"/>
+    </g>
+    <circle class="part" data-part="centre" cx="180" cy="39" r="27" fill="#f5c856" stroke="#e5a83d" stroke-width="2"/>
+    <path class="part" data-part="stem" d="M153 79 Q180 72 207 79 L202 166 Q180 174 158 166 Z" fill="#6d9b57"/>
+    <g class="part" data-part="leaf">
+      <rect x="116" y="113" width="105" height="58" fill="transparent"/>
+      <path d="M164 139 Q126 105 117 136 Q132 165 164 151 Z" fill="#82b96c" stroke="#568c4e" stroke-width="2"/>
+      <path d="M196 150 Q214 111 218 136 Q214 164 196 164 Z" fill="#82b96c" stroke="#568c4e" stroke-width="2"/>
+      <path d="M160 143 L123 138 M198 155 L214 139" fill="none" stroke="#568c4e" stroke-width="2"/>
+    </g>
+    <g class="part" data-part="root">
+      <rect x="148" y="169" width="64" height="57" fill="transparent"/>
+      <path d="M180 168 C177 186 183 201 180 220 M178 183 Q161 193 153 212 M182 192 Q202 198 211 217 M176 201 Q166 211 166 224 M184 204 Q195 214 195 225" fill="none" stroke="#a77a50" stroke-width="8" stroke-linecap="round"/>
+      <path d="M180 171 C178 189 181 206 180 222 M177 186 Q162 198 153 213 M183 194 Q201 203 211 218 M176 203 Q168 214 166 224 M184 206 Q194 216 195 225" fill="none" stroke="#c99a68" stroke-width="3" stroke-linecap="round"/>
+    </g>
+  </svg>
+  <div class="feedback" id="feedback"></div>
+</div>
+<script>
+
+(function(){
+  const p=Studio.params;
+  const t=Studio.t;
+  document.getElementById("title").textContent=t("title");
+  document.getElementById("askLead").textContent=t("ask");
+  document.getElementById("askPart").textContent=t(p.ask);
+  document.querySelectorAll("[data-label]").forEach(function(el){
+    el.textContent=t(el.getAttribute("data-label"));
+  });
+  const feedback=document.getElementById("feedback");
+  let complete=false;
+  document.querySelectorAll("[data-part]").forEach(function(part){
+    part.addEventListener("click",function(){
+      if(complete)return;
+      const key=part.getAttribute("data-part");
+      Studio.event("tap",{part:key});
+      Studio.answer(key);
+    });
+  });
+  Studio.onVerdict(function(result){
+    if(result.correct){
+      complete=true;
+      const chosen=document.querySelector('[data-part="'+p.ask+'"]');
+      if(chosen)chosen.classList.add("selected");
+      feedback.textContent=t("right")+" "+t("done");
+      Studio.event("verdict",{result:"correct"});
+      Studio.done();
+    }else{
+      feedback.textContent=t("wrong");
+      feedback.classList.add("wrong");
+      Studio.event("verdict",{result:"wrong"});
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

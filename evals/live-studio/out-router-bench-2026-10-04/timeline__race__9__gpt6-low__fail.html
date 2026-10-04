@@ -1,0 +1,99 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff7e9;color:#493b35}
+  #scene{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 50% 0%,#fffdf5,#fff3df);border-radius:18px}
+  #title{position:absolute;top:10px;left:16px;right:16px;text-align:center;font-size:19px;font-weight:800;color:#86513d}
+  #ask{position:absolute;top:39px;left:16px;right:16px;text-align:center;font-size:15px;font-weight:600}
+  svg{position:absolute;inset:0;width:360px;height:320px;overflow:visible;pointer-events:none}
+  .axis{stroke:#ba8068;stroke-width:5;stroke-linecap:round}
+  .join{stroke:#c9a489;stroke-width:2.5;stroke-linecap:round}
+  .marker{fill:#fff7e9;stroke:#a76650;stroke-width:3}
+  .card{position:absolute;width:100px;height:70px;border:2px solid #e1b898;border-radius:18px;background:#fffdf7;color:#684635;box-shadow:0 5px 0 #e9d4bc;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font:700 17px system-ui,sans-serif;cursor:pointer;transition:transform .2s,background .2s,box-shadow .2s}
+  .card:active{transform:scale(.94)}
+  .card:focus-visible{outline:3px solid #5d856d;outline-offset:2px}
+  .year{font-size:14px;font-weight:600;color:#976d5b}
+  #feedback{position:absolute;top:281px;left:12px;right:12px;min-height:28px;text-align:center;font-size:17px;font-weight:750;color:#6a7450}
+  #feedback.pop{animation:pop .35s ease-out}
+  @keyframes pop{from{transform:scale(.85);opacity:.3}to{transform:scale(1);opacity:1}}
+</style>
+<div id="scene">
+  <div id="title"></div>
+  <div id="ask"></div>
+  <svg id="drawing" viewBox="0 0 360 320" aria-hidden="true">
+    <line data-axis class="axis" x1="36" y1="164" x2="324" y2="164"></line>
+  </svg>
+  <div id="cards"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const events = Studio.params.events.slice().sort((a,b) => a.year-b.year);
+  const min = events[0].year, max = events[events.length-1].year;
+  const svg = document.getElementById('drawing');
+  const cards = document.getElementById('cards');
+  const feedback = document.getElementById('feedback');
+  const ns = 'http://www.w3.org/2000/svg';
+  let waiting = false, finished = false;
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('ask').textContent = Studio.t('ask');
+
+  events.forEach((event, i) => {
+    const x = 36 + (max === min ? .5 : (event.year-min)/(max-min))*288;
+    const upper = i % 2 === 0;
+    const cx = Math.max(50, Math.min(310, x));
+    const top = upper ? 67 : 202;
+    const join = document.createElementNS(ns,'line');
+    join.setAttribute('class','join');
+    join.setAttribute('x1',x);
+    join.setAttribute('y1',164);
+    join.setAttribute('x2',cx);
+    join.setAttribute('y2',upper ? top+70 : top);
+    svg.appendChild(join);
+    const marker = document.createElementNS(ns,'circle');
+    marker.setAttribute('class','marker');
+    marker.setAttribute('cx',x);
+    marker.setAttribute('cy',164);
+    marker.setAttribute('r',7);
+    marker.setAttribute('data-event',event.key);
+    marker.setAttribute('data-year',event.year);
+    svg.appendChild(marker);
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'card';
+    card.style.left = (cx-50)+'px';
+    card.style.top = top+'px';
+    card.setAttribute('data-card',event.key);
+    const name = document.createElement('span');
+    name.textContent = Studio.t(event.key);
+    const year = document.createElement('span');
+    year.className = 'year';
+    year.textContent = event.year;
+    card.append(name,year);
+    card.addEventListener('click', () => {
+      if(waiting || finished) return;
+      waiting = true;
+      Studio.event('tap',{key:event.key});
+      Studio.answer(event.key);
+    });
+    cards.appendChild(card);
+  });
+
+  Studio.onVerdict(({correct}) => {
+    waiting = false;
+    feedback.classList.remove('pop');
+    void feedback.offsetWidth;
+    feedback.classList.add('pop');
+    feedback.textContent = Studio.t(correct ? 'right' : 'wrong');
+    if(correct){
+      finished = true;
+      setTimeout(() => {
+        feedback.textContent = Studio.t('done');
+        Studio.done();
+      },650);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

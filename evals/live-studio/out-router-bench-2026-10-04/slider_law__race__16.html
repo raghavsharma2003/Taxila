@@ -1,0 +1,70 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;color:#43362d;background:#fff8ec}
+main{width:360px;height:320px;padding:10px;display:flex;flex-direction:column;gap:7px}
+h1{margin:0;text-align:center;font-size:18px;line-height:24px;color:#754b34}
+.readout{display:flex;justify-content:center;gap:18px;font-size:16px;font-weight:750;line-height:24px}
+.controls{display:flex;justify-content:center;gap:12px}
+button{border:0;border-radius:16px;background:#f2bf69;color:#563d2c;font:700 16px system-ui,sans-serif;min-width:70px;min-height:52px;padding:8px 15px;box-shadow:0 3px 0 #d99c46;cursor:pointer;transition:transform .14s,background .2s,box-shadow .14s}
+button:active{transform:scale(.93);box-shadow:0 1px 0 #d99c46}
+button:disabled{opacity:.48;cursor:default}
+.scene{height:82px;display:flex;align-items:flex-end;justify-content:center;position:relative}
+.ground{position:absolute;bottom:0;width:170px;height:5px;border-radius:4px;background:#91ad75}
+.bar{position:absolute;bottom:5px;width:76px;height:0;border-radius:14px 14px 5px 5px;background:linear-gradient(90deg,#f18b64,#edb36c);transition:height .38s cubic-bezier(.2,.8,.25,1);box-shadow:inset -7px 0 0 #dc7855}
+.question{margin:0;text-align:center;font-size:15px;line-height:20px;font-weight:700}
+.options{display:flex;justify-content:center;gap:10px}
+.options button{min-width:66px}
+.feedback{height:22px;text-align:center;font-size:15px;line-height:22px;font-weight:750;color:#63834f}
+</style>
+<main>
+  <h1 id="title"></h1>
+  <div class="readout"><span id="xread"></span><span id="yread" data-output data-value=""></span></div>
+  <div class="controls">
+    <button id="dec" data-action="dec"></button>
+    <button id="inc" data-action="inc"></button>
+  </div>
+  <div class="scene" aria-hidden="true"><div class="ground"></div><div class="bar" data-visual data-dim="h"></div></div>
+  <p class="question" id="question"></p>
+  <div class="options">
+    <button data-option=""></button><button data-option=""></button><button data-option=""></button>
+  </div>
+  <div class="feedback" id="feedback"></div>
+</main>
+<script>
+
+(()=>{
+ const p=Studio.params, t=Studio.t, xcfg=p.x, law=p.law, units=p.y.unitsPer;
+ let x=xcfg.start, complete=false;
+ const title=document.getElementById("title"),xr=document.getElementById("xread"),yr=document.getElementById("yread");
+ const dec=document.getElementById("dec"),inc=document.getElementById("inc"),bar=document.querySelector("[data-visual]");
+ const question=document.getElementById("question"),feedback=document.getElementById("feedback");
+ title.textContent=t("title");dec.textContent=t("less");inc.textContent=t("more");
+ const fmt=n=>Number.isInteger(n)?String(n):String(Number(n.toFixed(8)));
+ question.textContent=t("ask")+" "+fmt(p.ask.x)+"?";
+ const optionButtons=[...document.querySelectorAll("[data-option]")];
+ optionButtons.forEach((b,i)=>{const v=p.ask.options[i];b.dataset.option=String(v);b.textContent=String(v)});
+ function draw(){
+   const y=law.k*x+law.b;
+   xr.textContent=t("xname")+" = "+fmt(x);
+   yr.textContent=t("yname")+" = "+fmt(y);
+   yr.dataset.value=fmt(y);
+   xr.dataset.x=String(x);
+   bar.style.height=(y*units)+"px";
+   dec.disabled=x<=xcfg.min;inc.disabled=x>=xcfg.max;
+ }
+ dec.addEventListener("click",()=>{if(x>xcfg.min){x-=xcfg.step;draw();Studio.event("change",{x});}});
+ inc.addEventListener("click",()=>{if(x<xcfg.max){x+=xcfg.step;draw();Studio.event("change",{x});}});
+ optionButtons.forEach(b=>b.addEventListener("click",()=>{
+   if(complete)return;
+   feedback.textContent="";
+   Studio.answer({value:Number(b.dataset.option)});
+ }));
+ Studio.onVerdict(({correct})=>{
+   feedback.textContent=correct?t("right"):t("wrong");
+   if(correct&&!complete){complete=true;feedback.textContent=t("done");Studio.done();}
+ });
+ draw();
+ Studio.ready();
+})();
+
+</script>

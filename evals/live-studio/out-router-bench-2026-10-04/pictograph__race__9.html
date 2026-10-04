@@ -1,0 +1,94 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff7eb;color:#493b32}
+#app{width:360px;height:320px;padding:10px 12px;overflow:hidden;display:flex;flex-direction:column;gap:5px}
+#title{height:27px;flex:none;margin:0;text-align:center;font-size:19px;line-height:27px;font-weight:750;color:#704a35}
+#ask{height:31px;flex:none;margin:0;text-align:center;font-size:14px;line-height:17px;font-weight:600}
+#key{height:48px;flex:none;border:2px solid #f0d5aa;border-radius:15px;background:#fffdf8;display:flex;align-items:center;justify-content:center;gap:9px;font-size:14px;font-weight:650}
+#key svg{width:26px;height:26px;flex:none}
+#rows{display:flex;flex-direction:column;gap:3px;min-height:0}
+.row{width:100%;height:52px;min-height:52px;border:2px solid #eadcc9;border-radius:15px;background:#fffdf8;color:#493b32;padding:0 9px;display:flex;align-items:center;text-align:left;cursor:pointer;transition:transform .16s,background .18s,border-color .18s,box-shadow .18s}
+.row:active{transform:scale(.975)}
+.row:hover{background:#fff2db}
+.row:focus-visible{outline:3px solid #d99552;outline-offset:1px}
+.name{width:82px;flex:none;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.symbols{display:flex;align-items:center;gap:3px;min-width:0;overflow:hidden}
+.symbols svg{width:23px;height:23px;flex:none}
+#feedback{height:28px;flex:none;margin:0;text-align:center;font-size:14px;line-height:28px;font-weight:750;color:#775039}
+.symbol{fill:#eead55;stroke:#b96e32;stroke-width:1.5;stroke-linejoin:round}
+.row.chosen{border-color:#dfa257;box-shadow:0 0 0 2px #f8e2bf}
+.row.correct{background:#e8f3df;border-color:#86ad69}
+.row.incorrect{background:#fff0e6;border-color:#e7a080}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <p id="ask"></p>
+  <div id="key" data-key=""></div>
+  <div id="rows"></div>
+  <p id="feedback"></p>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const $=id=>document.getElementById(id);
+  const title=$('title'),ask=$('ask'),key=$('key'),rows=$('rows'),feedback=$('feedback');
+  title.textContent=Studio.t('title');
+  ask.textContent=Studio.t('ask');
+  const shape='<svg viewBox="0 0 32 32" aria-hidden="true"><path class="symbol" d="M16 2.8 20 11l9 .9-6.7 6 1.9 8.8-8.2-4.5-8.2 4.5 1.9-8.8-6.7-6 9-.9z"/></svg>';
+  key.innerHTML=shape+'<span>'+Studio.t('keytext')+' '+String(p.symbolValue)+'</span>';
+  const items=[];
+  for(const entry of p.rows){
+    const row=document.createElement('button');
+    row.type='button';
+    row.className='row';
+    row.setAttribute('data-row',entry.key);
+    const name=document.createElement('span');
+    name.className='name';
+    name.textContent=Studio.t(entry.key);
+    const symbols=document.createElement('span');
+    symbols.className='symbols';
+    const count=entry.value/p.symbolValue;
+    for(let i=0;i<count;i++){
+      const holder=document.createElement('span');
+      holder.setAttribute('data-symbol','');
+      holder.innerHTML=shape;
+      symbols.appendChild(holder);
+    }
+    row.append(name,symbols);
+    rows.appendChild(row);
+    items.push({row,key:entry.key});
+  }
+  let pending=null,complete=false;
+  for(const item of items){
+    item.row.addEventListener('click',()=>{
+      if(complete||pending!==null)return;
+      pending=item.key;
+      for(const other of items)other.row.classList.toggle('chosen',other===item);
+      Studio.event('row_tap',{key:item.key});
+      Studio.answer(item.key);
+    });
+  }
+  Studio.onVerdict(({correct})=>{
+    if(pending===null||complete)return;
+    const selected=items.find(item=>item.key===pending);
+    if(correct){
+      complete=true;
+      selected.row.classList.add('correct');
+      feedback.textContent=Studio.t('right');
+      Studio.event('verdict',{result:'correct'});
+      feedback.textContent=Studio.t('done');
+      Studio.done();
+    }else{
+      selected.row.classList.add('incorrect');
+      feedback.textContent=Studio.t('wrong');
+      Studio.event('verdict',{result:'wrong'});
+      pending=null;
+      for(const item of items)item.row.classList.remove('chosen','incorrect');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

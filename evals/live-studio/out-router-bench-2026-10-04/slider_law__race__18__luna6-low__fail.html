@@ -1,0 +1,66 @@
+<style>
+*{box-sizing:border-box}
+.stage{width:360px;height:320px;overflow:hidden;background:#fff8ed;color:#493b34;font-family:system-ui,sans-serif;padding:10px;display:flex;flex-direction:column;gap:7px}
+h1{font-size:17px;line-height:21px;margin:0;color:#714c36}
+.readout{display:flex;justify-content:space-between;gap:8px;font-size:15px;font-weight:700}
+.readout span{background:#ffedcf;border-radius:12px;padding:5px 9px}
+.sim{height:172px;min-height:172px;background:#f8eddc;border-radius:17px;position:relative;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+.ground{position:absolute;bottom:18px;width:80%;height:4px;background:#a47b55;border-radius:4px}
+.bar{position:absolute;bottom:22px;width:48px;height:0;background:linear-gradient(90deg,#ffab57,#ed704c);border-radius:12px 12px 4px 4px;transition:height .38s cubic-bezier(.2,.8,.2,1);box-shadow:0 5px 12px #cc795044}
+.controls{display:flex;gap:8px}
+button{font:700 15px system-ui,sans-serif;border:0;border-radius:14px;min-width:52px;min-height:52px;padding:8px 12px;background:#e9d8c4;color:#493b34;cursor:pointer;touch-action:manipulation;transition:transform .12s,background .2s}
+button:active{transform:scale(.94)}
+button:disabled{opacity:.45}
+.question{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.prompt{font-size:14px;font-weight:700;color:#714c36}
+.options{display:flex;gap:7px}
+.options button{flex:1;background:#d9eee4;color:#285b49}
+.feedback{height:20px;font-size:14px;font-weight:700;color:#714c36;text-align:center}
+</style>
+<div class="stage">
+  <h1 id="title"></h1>
+  <div class="readout"><span id="xread"></span><span id="yread" data-output></span></div>
+  <div class="sim"><div class="ground"></div><div class="bar" data-visual data-dim="h"></div></div>
+  <div class="controls"><button type="button" data-action="dec" id="dec"></button><button type="button" data-action="inc" id="inc"></button></div>
+  <div class="question"><div class="prompt" id="ask"></div><div class="options" id="options"></div></div>
+  <div class="feedback" id="feedback"></div>
+</div>
+<script>
+
+(()=>{
+const p=Studio.params, t=Studio.t;
+const title=document.getElementById('title'), xr=document.getElementById('xread'), yr=document.getElementById('yread');
+const bar=document.querySelector('[data-visual]'), dec=document.getElementById('dec'), inc=document.getElementById('inc');
+const ask=document.getElementById('ask'), opts=document.getElementById('options'), feedback=document.getElementById('feedback');
+title.textContent=t('title'); dec.textContent=t('less'); inc.textContent=t('more');
+let x=p.x.start, finished=false;
+function fmt(n){return String(Number(Number(n).toFixed(10)))}
+function paint(){
+ const y=p.law.k*x+p.law.b;
+ xr.textContent=t('xname')+' = '+fmt(x);
+ yr.textContent=t('yname')+' = '+fmt(y);
+ yr.dataset.value=fmt(y);
+ xr.dataset.x=fmt(x);
+ bar.style.height=(y*p.y.unitsPer)+'px';
+ dec.disabled=x<=p.x.min; inc.disabled=x>=p.x.max;
+}
+dec.addEventListener('click',()=>{if(x>p.x.min){x-=p.x.step;paint();Studio.event('change',{direction:'less'});}});
+inc.addEventListener('click',()=>{if(x<p.x.max){x+=p.x.step;paint();Studio.event('change',{direction:'more'});}});
+ask.textContent=t('ask')+' '+t('xname')+' = '+fmt(p.ask.x);
+p.ask.options.forEach(value=>{
+ const b=document.createElement('button'); b.type='button'; b.textContent=String(value); b.dataset.option=String(value);
+ b.addEventListener('click',()=>{
+  if(finished)return;
+  Studio.answer({value});
+ });
+ opts.appendChild(b);
+});
+Studio.onVerdict(({correct})=>{
+ if(correct){feedback.textContent=t('right')+' '+t('done');finished=true;Studio.done();}
+ else{feedback.textContent=t('wrong');}
+});
+paint();
+Studio.ready();
+})();
+
+</script>

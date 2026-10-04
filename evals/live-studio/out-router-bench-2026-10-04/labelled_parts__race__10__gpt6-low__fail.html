@@ -1,0 +1,87 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8eb;font-family:system-ui,sans-serif;color:#514536}
+  .card{width:360px;height:320px;overflow:hidden;background:linear-gradient(#fffaf0,#fff1db)}
+  .top{height:65px;padding:8px 17px 0}
+  .title{font-size:18px;font-weight:750;line-height:23px}
+  .ask{font-size:16px;font-weight:650;line-height:22px;color:#87562f}
+  .status{height:15px;font-size:12px;font-weight:700;color:#ad6652}
+  svg{display:block;width:360px;height:255px}
+  .part{cursor:pointer;stroke:#745d49;stroke-width:2;stroke-linejoin:round;transition:stroke-width .2s,opacity .2s,filter .2s;transform-box:fill-box;transform-origin:center}
+  .part:active{opacity:.7;transform:scale(.97)}
+  .part.glow{stroke:#f4aa31;stroke-width:7;filter:drop-shadow(0 0 7px #ffd17a)}
+  .part.try{stroke:#c97467;stroke-width:5}
+  .leader{fill:none;stroke:#a99b85;stroke-width:1.5;stroke-linecap:round}
+  .label{fill:#635447;font-size:13px;font-weight:700}
+</style>
+<div class="card">
+  <div class="top">
+    <div class="title" id="title"></div>
+    <div class="ask" data-ask id="ask"></div>
+    <div class="status" id="status" aria-live="polite"></div>
+  </div>
+  <svg viewBox="0 0 360 255" role="img">
+    <path d="M24 244 Q180 236 336 244" fill="none" stroke="#e7d9bb" stroke-width="3"/>
+    <g id="picture"></g>
+    <g id="annotations"></g>
+  </svg>
+</div>
+<script>
+
+(() => {
+  const ns='http://www.w3.org/2000/svg';
+  const make=(tag,attrs)=>{
+    const e=document.createElementNS(ns,tag);
+    for(const [k,v] of Object.entries(attrs)) e.setAttribute(k,v);
+    return e;
+  };
+  const layouts={
+    petal:{d:'M117 58 C99 49 105 24 122 24 C125 5 150 4 156 22 C177 14 193 36 178 52 C181 65 166 71 151 61 C135 73 120 70 117 58 Z',fill:'#ee938e',line:'M88 39 L109 40',label:[23,43]},
+    centre:{d:'M181 94 A28 28 0 1 1 125 94 A28 28 0 1 1 181 94 Z',fill:'#f3c76c',line:'M183 94 L194 94',label:[200,99]},
+    stem:{d:'M123 119 Q119 160 121 211 L179 211 Q175 160 178 119 Z',fill:'#78a66a',line:'M101 165 L119 165',label:[46,170]},
+    leaf:{d:'M174 170 Q202 129 262 145 Q260 189 210 199 Q185 199 174 170 Z',fill:'#83b978',line:'M259 172 L269 172',label:[275,177]},
+    root:{d:'M122 190 Q108 199 101 218 Q92 240 110 247 Q124 252 136 231 Q139 252 152 252 Q167 252 172 231 Q184 251 200 246 Q218 239 202 218 Q191 199 179 190 Z',fill:'#ba8566',line:'M205 225 L215 225',label:[221,230]}
+  };
+  const picture=document.getElementById('picture');
+  const annotations=document.getElementById('annotations');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  const status=document.getElementById('status');
+  const nodes={};
+  let finished=false,waiting=false,selected=null;
+  for(const key of Studio.params.parts){
+    const spec=layouts[key];
+    if(!spec) continue;
+    const shape=make('path',{d:spec.d,fill:spec.fill,'data-part':key,class:'part'});
+    picture.appendChild(shape);
+    nodes[key]=shape;
+    shape.addEventListener('click',()=>{
+      if(finished||waiting) return;
+      selected=key;
+      waiting=true;
+      shape.classList.remove('try');
+      Studio.event('part_tap',{part:key});
+      Studio.answer(key);
+    });
+    annotations.appendChild(make('path',{d:spec.line,class:'leader'}));
+    const label=make('text',{x:spec.label[0],y:spec.label[1],class:'label','data-label':key});
+    label.textContent=Studio.t(key);
+    annotations.appendChild(label);
+  }
+  Studio.onVerdict(({correct})=>{
+    if(!waiting) return;
+    waiting=false;
+    if(correct){
+      finished=true;
+      status.textContent=Studio.t('right');
+      nodes[selected]?.classList.add('glow');
+      Studio.done();
+    }else{
+      status.textContent=Studio.t('wrong');
+      nodes[selected]?.classList.add('try');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

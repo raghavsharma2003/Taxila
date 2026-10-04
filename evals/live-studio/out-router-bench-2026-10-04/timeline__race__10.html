@@ -1,0 +1,104 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff7ea;color:#513b32}
+  #scene{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 50% 0%,#fffdf7,#fff4e4 78%);border-radius:20px}
+  #title{position:absolute;top:14px;left:16px;right:16px;margin:0;text-align:center;font-size:19px;font-weight:800;color:#814d40}
+  #ask{position:absolute;top:43px;left:14px;right:14px;margin:0;text-align:center;font-size:14px;font-weight:600}
+  #timeline{position:absolute;inset:0;width:360px;height:320px;pointer-events:none}
+  #timeline [data-axis]{stroke:#b77b63;stroke-width:5;stroke-linecap:round}
+  #links path{fill:none;stroke:#d6a48b;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  #markers circle{fill:#fff7ea;stroke:#a75d51;stroke-width:3;transition:fill .25s,transform .25s;transform-box:fill-box;transform-origin:center}
+  #markers circle.chosen{fill:#eeb97e;transform:scale(1.35)}
+  #cards{position:absolute;inset:0}
+  [data-card]{position:absolute;width:108px;min-height:62px;border:2px solid #e7b998;border-radius:17px;background:#fffdf8;color:#623e37;box-shadow:0 4px 0 #eacbad,0 8px 16px #986c4830;font:700 12px/1.2 system-ui,sans-serif;text-align:center;padding:7px 4px;cursor:pointer;transition:transform .2s,background .2s,box-shadow .2s}
+  [data-card]:active{transform:scale(.94)}
+  [data-card].chosen{background:#ffe0b8;box-shadow:0 2px 0 #eacbad}
+  [data-card] span{display:block;overflow-wrap:anywhere}
+  [data-card] small{display:block;margin-top:4px;font-size:12px;color:#9b6251}
+  #feedback{position:absolute;left:20px;right:20px;bottom:12px;min-height:25px;text-align:center;font-size:16px;font-weight:800;color:#7e5943}
+  #feedback.pop{animation:pop .35s ease-out}
+  @keyframes pop{from{transform:scale(.85);opacity:.3}to{transform:scale(1);opacity:1}}
+</style>
+<div id="scene">
+  <h1 id="title"></h1>
+  <p id="ask"></p>
+  <svg id="timeline" viewBox="0 0 360 320" aria-hidden="true">
+    <g id="links"></g>
+    <line data-axis x1="28" y1="166" x2="332" y2="166"></line>
+    <g id="markers"></g>
+  </svg>
+  <div id="cards"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const events = [...Studio.params.events].sort((a,b) => a.year-b.year);
+  const first = events[0].year, last = events[events.length-1].year;
+  const cards = document.getElementById('cards');
+  const links = document.getElementById('links');
+  const markers = document.getElementById('markers');
+  const feedback = document.getElementById('feedback');
+  const ns = 'http://www.w3.org/2000/svg';
+  const slots = [
+    {x:8,y:82},{x:124,y:82},{x:160,y:207},{x:244,y:82}
+  ];
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('ask').textContent = Studio.t('ask');
+  let locked = false;
+  events.forEach((event,i) => {
+    const x = first === last ? 180 : 28 + (event.year-first)*304/(last-first);
+    const slot = slots[i] || {x:Math.min(244,Math.max(8,x-54)),y:i%2?207:82};
+    const anchor = Math.max(slot.x+12,Math.min(slot.x+96,x));
+    const path = document.createElementNS(ns,'path');
+    path.setAttribute('d',`M ${x} 166 L ${x} ${slot.y<166?153:180} L ${anchor} ${slot.y<166?144:207}`);
+    links.appendChild(path);
+    const marker = document.createElementNS(ns,'circle');
+    marker.setAttribute('cx',x);
+    marker.setAttribute('cy',166);
+    marker.setAttribute('r',6);
+    marker.setAttribute('data-event',event.key);
+    marker.setAttribute('data-year',event.year);
+    markers.appendChild(marker);
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.setAttribute('data-card',event.key);
+    card.style.left = slot.x+'px';
+    card.style.top = slot.y+'px';
+    const name = document.createElement('span');
+    name.textContent = Studio.t(event.key);
+    const year = document.createElement('small');
+    year.textContent = event.year;
+    card.append(name,year);
+    card.addEventListener('click',() => {
+      if(locked) return;
+      locked = true;
+      card.classList.add('chosen');
+      marker.classList.add('chosen');
+      Studio.event('tap',{key:event.key});
+      Studio.answer(event.key);
+    });
+    cards.appendChild(card);
+  });
+  Studio.onVerdict(({correct}) => {
+    feedback.textContent = Studio.t(correct?'right':'wrong');
+    feedback.classList.remove('pop');
+    void feedback.offsetWidth;
+    feedback.classList.add('pop');
+    if(correct){
+      setTimeout(() => {
+        feedback.textContent = Studio.t('done');
+        Studio.done();
+      },650);
+    }else{
+      setTimeout(() => {
+        cards.querySelectorAll('.chosen').forEach(el=>el.classList.remove('chosen'));
+        markers.querySelectorAll('.chosen').forEach(el=>el.classList.remove('chosen'));
+        locked = false;
+      },500);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,88 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif}
+  #activity{width:360px;height:320px;padding:14px;background:#fff8eb;color:#513c37;display:flex;flex-direction:column;gap:7px;overflow:hidden}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:35px}
+  h1{font-size:19px;line-height:1.1;margin:0;font-weight:800}
+  #key{display:flex;align-items:center;gap:5px;padding:4px 9px;border-radius:16px;background:#fce9ce;white-space:nowrap;font-size:14px;font-weight:700}
+  #key .symbol{width:24px;height:24px}
+  #ask{margin:0;min-height:28px;font-size:16px;line-height:1.25;font-weight:650}
+  #rows{display:flex;flex:1;min-height:0;flex-direction:column;justify-content:center;gap:7px}
+  .row{width:100%;min-height:52px;border:2px solid #ecd9c6;border-radius:17px;background:#fffdf8;display:flex;align-items:center;padding:5px 10px;gap:10px;color:inherit;text-align:left;cursor:pointer;transition:transform .18s,background .18s,border-color .18s,box-shadow .18s}
+  .row:active{transform:scale(.97)}
+  .row:focus-visible{outline:3px solid #408b83;outline-offset:2px}
+  .row span.name{width:57px;flex:none;font-size:16px;font-weight:750}
+  .symbols{display:flex;align-items:center;gap:5px;min-width:0}
+  .symbol{display:block;width:29px;height:29px;flex:none}
+  .symbol svg{display:block;width:100%;height:100%}
+  .row:hover{border-color:#ddaa79;background:#fff4e5}
+  .row.chosen{border-color:#db8d64;background:#fff0df;box-shadow:0 0 0 3px #f9dfc7}
+  .row.correct{border-color:#55a48b;background:#e8f6eb;box-shadow:0 0 0 3px #d1eddb}
+  #feedback{height:25px;flex:none;font-size:15px;font-weight:750;color:#647f65;display:flex;align-items:center}
+  #feedback.pop{animation:pop .35s ease-out}
+  @keyframes pop{50%{transform:scale(1.045)}}
+</style>
+<div id="activity">
+  <div class="top"><h1 id="title"></h1><div id="key" data-key><span id="keySymbol" class="symbol"></span><span id="keyText"></span><span id="keyNumber"></span></div></div>
+  <p id="ask"></p>
+  <div id="rows"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const $=id=>document.getElementById(id);
+  const symbol=()=>'<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="7" r="5" fill="#edaa67"/><circle cx="25" cy="12" r="5" fill="#f4bd79"/><circle cx="22" cy="23" r="5" fill="#edaa67"/><circle cx="10" cy="23" r="5" fill="#f4bd79"/><circle cx="7" cy="12" r="5" fill="#edaa67"/><circle cx="16" cy="16" r="5.5" fill="#9d7062"/></svg>';
+  $('title').textContent=Studio.t('title');
+  $('ask').textContent=Studio.t('ask');
+  $('keyText').textContent=Studio.t('keytext');
+  $('keyNumber').textContent=p.symbolValue;
+  $('keySymbol').innerHTML=symbol();
+  const rows=$('rows');
+  let selected=null, finished=false;
+  p.rows.forEach(item=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='row';
+    button.setAttribute('data-row',item.key);
+    const name=document.createElement('span');
+    name.className='name';
+    name.textContent=Studio.t(item.key);
+    const symbols=document.createElement('span');
+    symbols.className='symbols';
+    for(let i=0;i<item.value/p.symbolValue;i++){
+      const icon=document.createElement('span');
+      icon.className='symbol';
+      icon.setAttribute('data-symbol','');
+      icon.innerHTML=symbol();
+      symbols.append(icon);
+    }
+    button.append(name,symbols);
+    button.addEventListener('click',()=>{
+      if(finished)return;
+      if(selected)selected.classList.remove('chosen');
+      selected=button;
+      button.classList.add('chosen');
+      Studio.answer(item.key);
+    });
+    rows.append(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    const feedback=$('feedback');
+    feedback.classList.remove('pop');
+    void feedback.offsetWidth;
+    feedback.classList.add('pop');
+    if(correct){
+      finished=true;
+      if(selected){selected.classList.remove('chosen');selected.classList.add('correct')}
+      feedback.textContent=Studio.t('right')+' '+Studio.t('done');
+      Studio.done();
+    }else{
+      feedback.textContent=Studio.t('wrong');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,125 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7df;font-family:Arial,sans-serif;color:#3f5a3c}
+  #stage{width:360px;height:320px;position:relative;background:linear-gradient(180deg,#fff8df 0%,#f4f8d7 100%);overflow:hidden}
+  #title{height:31px;text-align:center;padding-top:6px;font-size:17px;font-weight:800;color:#4c743d;letter-spacing:.2px}
+  #scene{display:block;width:360px;height:166px}
+  .label{font-size:12px;font-weight:800;fill:#456044;paint-order:stroke;stroke:#fff8df;stroke-width:3px;stroke-linejoin:round}
+  .flowline{fill:none;stroke-linecap:round;stroke-width:3;stroke-dasharray:5 7;opacity:.48}
+  .particle{filter:drop-shadow(0 1px 1px rgba(55,80,40,.18))}
+  #caption{position:absolute;left:142px;top:200px;width:208px;height:28px;display:flex;align-items:center;justify-content:center;text-align:center;color:#587044;font-size:12px;font-weight:700;background:#fffdf1;border-radius:14px;padding:3px 7px;transition:transform .25s,background .25s}
+  button{position:absolute;border:0;border-radius:17px;min-width:52px;height:52px;font-family:Arial,sans-serif;font-weight:800;font-size:12px;cursor:pointer;box-shadow:0 3px 0 rgba(72,102,57,.18);transition:transform .14s,filter .14s}
+  button:active{transform:scale(.91);filter:brightness(.96)}
+  #play{left:12px;top:197px;width:56px;background:#9acb62;color:#264a2d}
+  #next{left:76px;top:197px;width:58px;background:#f8b85b;color:#624321}
+  #ask{position:absolute;left:10px;top:252px;width:340px;height:15px;text-align:center;font-size:12px;font-weight:800;color:#4e6642;white-space:nowrap}
+  .opt{top:268px;width:100px;background:#fffdf2;border:2px solid #b9d083;color:#42613d}
+  #opt0{left:14px}#opt1{left:130px}#opt2{left:246px}
+  .pulse{animation:pulse .5s ease}
+  @keyframes pulse{50%{transform:scale(1.07)}}
+  .glow{animation:glow .7s ease}
+  @keyframes glow{50%{filter:drop-shadow(0 0 8px #f7c856)}}
+</style>
+<div id="stage">
+  <div id="title"></div>
+  <svg id="scene" viewBox="0 0 360 166" aria-hidden="true">
+    <path d="M180 147 C180 137 180 128 180 118" class="flowline" stroke="#63a8d8"></path>
+    <path d="M27 112 C70 112 106 112 145 112" class="flowline" stroke="#8ca5b4"></path>
+    <path d="M214 106 C257 102 294 92 334 79" class="flowline" stroke="#7cc8ae"></path>
+
+    <circle data-entity="sun" cx="70" cy="46" r="22" fill="#ffd768" stroke="#eeb94b" stroke-width="3"></circle>
+    <g stroke="#eeb94b" stroke-width="3" stroke-linecap="round">
+      <path d="M70 15v-8M70 77v8M39 46h-8M101 46h8M48 24l-6-6M92 68l6 6M92 24l6-6M48 68l-6 6"></path>
+    </g>
+    <text data-label="sun" class="label" x="34" y="83"></text>
+
+    <path data-entity="leaf" d="M178 74 C143 76 124 95 136 121 C148 147 177 139 188 119 C202 92 194 78 178 74Z" fill="#7fc45d" stroke="#4d9148" stroke-width="3"></path>
+    <path d="M145 119 C158 108 169 97 181 84M161 108l-10-1M169 99l1 10" fill="none" stroke="#d9f19e" stroke-width="2.5" stroke-linecap="round"></path>
+    <text data-label="leaf" class="label" x="199" y="88"></text>
+
+    <path data-entity="roots" d="M180 137 C175 149 171 154 164 161 M180 137 C184 149 190 155 198 162 M176 149l-10 5 M187 150l10 4" fill="none" stroke="#a66b43" stroke-width="5" stroke-linecap="round"></path>
+    <text data-label="roots" class="label" x="205" y="155"></text>
+
+    <text data-label="water" class="label" x="201" y="137"></text>
+    <text data-label="co2" class="label" x="12" y="102"></text>
+    <text data-label="o2" class="label" x="289" y="70"></text>
+
+    <circle data-flow="water" class="particle" cx="180" cy="145" r="4" fill="#4ea9db"></circle>
+    <circle data-flow="water" class="particle" cx="180" cy="145" r="4" fill="#4ea9db"></circle>
+    <circle data-flow="water" class="particle" cx="180" cy="145" r="4" fill="#4ea9db"></circle>
+
+    <circle data-flow="co2" class="particle" cx="30" cy="112" r="4" fill="#718d9d"></circle>
+    <circle data-flow="co2" class="particle" cx="30" cy="112" r="4" fill="#718d9d"></circle>
+    <circle data-flow="co2" class="particle" cx="30" cy="112" r="4" fill="#718d9d"></circle>
+
+    <circle data-flow="o2" class="particle" cx="214" cy="106" r="4" fill="#54ba91"></circle>
+    <circle data-flow="o2" class="particle" cx="214" cy="106" r="4" fill="#54ba91"></circle>
+    <circle data-flow="o2" class="particle" cx="214" cy="106" r="4" fill="#54ba91"></circle>
+  </svg>
+  <button id="play" data-action="play"></button>
+  <button id="next" data-action="next"></button>
+  <div id="caption" data-caption></div>
+  <div id="ask"></div>
+  <button id="opt0" class="opt" data-option=""></button>
+  <button id="opt1" class="opt" data-option=""></button>
+  <button id="opt2" class="opt" data-option=""></button>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, playing=true, step=1, done=false, tick=0;
+  var title=document.getElementById('title'), play=document.getElementById('play'), next=document.getElementById('next');
+  var caption=document.getElementById('caption'), ask=document.getElementById('ask');
+  title.textContent=Studio.t('title');
+  play.textContent=Studio.t('pause');
+  next.textContent=Studio.t('next');
+  ask.textContent=Studio.t('ask');
+  document.querySelector('[data-label="'+p.hub+'"]').textContent=Studio.t(p.hub);
+  p.entities.forEach(function(k){document.querySelector('[data-label="'+k+'"]').textContent=Studio.t(k);});
+  p.flows.forEach(function(f){document.querySelector('[data-label="'+f.key+'"]').textContent=Studio.t(f.key);});
+  function showStep(){
+    caption.textContent=Studio.t('step'+step);
+    caption.classList.remove('pulse'); void caption.offsetWidth; caption.classList.add('pulse');
+    var key=p.flows[(step-1)%p.flows.length].key;
+    document.querySelectorAll('[data-flow="'+key+'"]').forEach(function(x){x.classList.remove('glow');void x.offsetWidth;x.classList.add('glow');});
+  }
+  showStep();
+  p.options.forEach(function(k,i){
+    var b=document.getElementById('opt'+i);
+    b.dataset.option=k;b.textContent=Studio.t(k);
+    b.addEventListener('click',function(){Studio.answer(k);Studio.event('answer',{option:k});});
+  });
+  play.addEventListener('click',function(){
+    playing=!playing;play.textContent=Studio.t(playing?'pause':'play');Studio.event('play',{on:playing?1:0});
+  });
+  next.addEventListener('click',function(){
+    step=step%p.steps+1;showStep();Studio.event('next',{step:step});
+  });
+  function move(){
+    if(!playing)return;
+    tick=(tick+1)%120;
+    p.flows.forEach(function(f){
+      var dots=document.querySelectorAll('[data-flow="'+f.key+'"]');
+      dots.forEach(function(dot,i){
+        var q=((tick+i*40)%120)/120, x,y;
+        if(f.dir==='up_in'){x=180;y=147-q*35;}
+        else if(f.dir==='out'){x=214+q*120;y=106-q*27;}
+        else{x=27+q*118;y=112;}
+        dot.setAttribute('cx',x);dot.setAttribute('cy',y);
+      });
+    });
+  }
+  setInterval(move,45);
+  Studio.onVerdict(function(v){
+    if(v.correct){
+      ask.textContent=Studio.t('right');
+      if(!done){done=true;Studio.done();}
+    }else{
+      ask.textContent=Studio.t('wrong');
+      setTimeout(function(){if(!done)ask.textContent=Studio.t('ask');},900);
+    }
+  });
+  Studio.ready();
+}());
+
+</script>

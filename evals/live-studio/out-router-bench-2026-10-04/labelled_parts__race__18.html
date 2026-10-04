@@ -1,0 +1,129 @@
+<style>
+  * { box-sizing: border-box; }
+  body {
+    width: 360px; height: 320px; margin: 0; overflow: hidden;
+    font-family: system-ui, sans-serif; color: #493d32;
+    background: #fff8ec;
+  }
+  .scene {
+    position: relative; width: 360px; height: 320px; overflow: hidden;
+    background: radial-gradient(ellipse at 50% 55%, #fffdf5 0%, #fff8ec 78%);
+  }
+  .title, .ask, .feedback {
+    position: absolute; left: 12px; right: 12px; text-align: center;
+  }
+  .title {
+    top: 6px; height: 27px; font-size: 19px; line-height: 27px;
+    font-weight: 750; color: #527449;
+  }
+  .ask {
+    top: 35px; height: 32px; font-size: 14px; line-height: 17px;
+    font-weight: 650; color: #654e39;
+  }
+  svg { position: absolute; inset: 0; width: 360px; height: 320px; }
+  .leader { fill: none; stroke: #aa987f; stroke-width: 1.5; stroke-linecap: round; }
+  .label {
+    font: 650 13px system-ui, sans-serif; fill: #594a39;
+    paint-order: stroke; stroke: #fff8ec; stroke-width: 4px; stroke-linejoin: round;
+  }
+  [data-part] {
+    cursor: pointer; transform-box: fill-box; transform-origin: center;
+    transition: filter .2s, transform .18s;
+  }
+  [data-part]:active { transform: scale(.94); }
+  .petal-fill { fill: #f2a64a; stroke: #d78633; stroke-width: 2; }
+  .centre-fill { fill: #f6cf52; stroke: #d9a933; stroke-width: 2; }
+  .stem-fill { fill: #579451; stroke: #39723f; stroke-width: 3; }
+  .leaf-fill { fill: #69a85d; stroke: #397b46; stroke-width: 2; }
+  .root-fill { fill: none; stroke: #9b7047; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+  .hit { fill: transparent; stroke: transparent; pointer-events: all; }
+  .glow { filter: drop-shadow(0 0 9px #ffd85d) drop-shadow(0 0 4px #ffb52e); animation: bloom .65s ease-in-out infinite alternate; }
+  @keyframes bloom { to { transform: scale(1.045); } }
+  .feedback {
+    bottom: 5px; min-height: 28px; font-size: 15px; line-height: 22px;
+    font-weight: 750; color: #527449; pointer-events: none;
+  }
+  .feedback.bad { color: #a35541; }
+</style>
+<div class="scene">
+  <div class="title" id="title"></div>
+  <div class="ask" id="ask" data-ask></div>
+  <svg viewBox="0 0 360 320" role="img" aria-label="">
+    <path class="leader" d="M112 76 L136 87"/>
+    <path class="leader" d="M220 113 L207 113"/>
+    <path class="leader" d="M217 224 L191 218"/>
+    <path class="leader" d="M258 164 L239 173"/>
+    <path class="leader" d="M213 277 L199 263"/>
+    <text class="label" x="75" y="76" data-label="petal"></text>
+    <text class="label" x="221" y="117" data-label="centre"></text>
+    <text class="label" x="219" y="229" data-label="stem"></text>
+    <text class="label" x="260" y="168" data-label="leaf"></text>
+    <text class="label" x="215" y="282" data-label="root"></text>
+
+    <g data-part="petal">
+      <ellipse class="petal-fill" cx="180" cy="99" rx="14" ry="25"/>
+      <ellipse class="petal-fill" cx="180" cy="99" rx="14" ry="25" transform="rotate(60 180 113)"/>
+      <ellipse class="petal-fill" cx="180" cy="99" rx="14" ry="25" transform="rotate(120 180 113)"/>
+      <ellipse class="petal-fill" cx="180" cy="99" rx="14" ry="25" transform="rotate(180 180 113)"/>
+      <ellipse class="petal-fill" cx="180" cy="99" rx="14" ry="25" transform="rotate(240 180 113)"/>
+      <ellipse class="petal-fill" cx="180" cy="99" rx="14" ry="25" transform="rotate(300 180 113)"/>
+      <circle class="hit" cx="180" cy="99" r="42"/>
+    </g>
+    <g data-part="centre">
+      <circle class="centre-fill" cx="180" cy="113" r="27"/>
+      <circle class="hit" cx="180" cy="113" r="29"/>
+    </g>
+    <g data-part="leaf">
+      <path class="leaf-fill" d="M174 177 C150 148 119 151 108 174 C127 195 151 197 176 183 C195 197 218 198 237 184 C231 162 207 153 183 174 Z"/>
+      <ellipse class="hit" cx="173" cy="176" rx="37" ry="31"/>
+    </g>
+    <g data-part="stem">
+      <path class="stem-fill" d="M171 137 Q180 132 189 137 L192 238 Q181 244 168 238 Z"/>
+      <rect class="hit" x="150" y="137" width="60" height="104"/>
+    </g>
+    <g data-part="root">
+      <path class="root-fill" d="M180 236 C179 249 168 261 158 276 M180 243 C188 253 197 263 202 278 M172 254 L168 282 M190 254 L193 282 M158 276 L151 282 M202 278 L209 283"/>
+      <rect class="hit" x="149" y="245" width="64" height="66"/>
+    </g>
+  </svg>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const params = Studio.params;
+  const feedback = document.getElementById('feedback');
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('ask').textContent = Studio.t('ask');
+  document.querySelectorAll('[data-label]').forEach(label => {
+    label.textContent = Studio.t(label.getAttribute('data-label'));
+  });
+
+  let pending = false;
+  let complete = false;
+  document.querySelectorAll('[data-part]').forEach(part => {
+    part.addEventListener('click', () => {
+      if (pending || complete) return;
+      pending = true;
+      Studio.event('part_tap', { part: part.getAttribute('data-part') });
+      Studio.answer(part.getAttribute('data-part'));
+    });
+  });
+
+  Studio.onVerdict(({ correct }) => {
+    pending = false;
+    if (correct) {
+      complete = true;
+      document.querySelector(`[data-part="${params.ask}"]`)?.classList.add('glow');
+      feedback.textContent = Studio.t('right') + ' ' + Studio.t('done');
+      feedback.classList.remove('bad');
+      Studio.done();
+    } else {
+      feedback.textContent = Studio.t('wrong');
+      feedback.classList.add('bad');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,104 @@
+<style>
+  *{box-sizing:border-box}
+  #viz{width:360px;height:320px;overflow:hidden;position:relative;background:linear-gradient(155deg,#fff7e9 0%,#fff0d3 100%);font-family:Arial,sans-serif;color:#593d2d}
+  .card{position:absolute;inset:7px;border-radius:22px;background:#fffdf8;box-shadow:0 5px 0 #efd8ae,0 10px 22px rgba(135,83,43,.12);overflow:hidden}
+  .top{height:100px;padding:13px 17px 0;position:relative;background:linear-gradient(105deg,#ffcf70,#ffb65b)}
+  h1{margin:0;color:#744020;font-size:21px;line-height:25px;letter-spacing:.1px}
+  #key{position:absolute;left:17px;top:47px;display:flex;align-items:center;gap:6px;height:27px;color:#744020;font-size:13px;font-weight:700}
+  #key svg{width:21px;height:21px;flex:none}
+  #keynum{font-size:15px}
+  #ask{position:absolute;left:17px;right:17px;bottom:8px;color:#6c4127;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #rows{position:absolute;left:4px;right:4px;top:101px;height:208px}
+  .row{appearance:none;border:0;background:transparent;width:100%;height:52px;padding:0;margin:0;display:block;position:relative;border-radius:16px;cursor:pointer;text-align:left;transition:transform .16s ease,background .16s ease,box-shadow .16s ease}
+  .row:focus-visible{outline:3px solid #7cc9c3;outline-offset:-2px}
+  .row:hover{background:#fff0d6}
+  .row:active,.row.chosen{transform:scale(.975);background:#ffe1a6;box-shadow:inset 0 0 0 2px #f4b653}
+  .name{position:absolute;left:10px;top:0;width:78px;height:52px;display:flex;align-items:center;font-size:14px;font-weight:700;color:#754b35;overflow:hidden}
+  .symbols{position:absolute;left:94px;top:0;height:52px;display:flex;align-items:center;gap:3px}
+  .symbol{width:19px;height:19px;flex:none;filter:drop-shadow(0 2px 0 rgba(191,118,30,.2));transition:transform .18s ease}
+  .row:hover .symbol{animation:wiggle .75s ease-in-out infinite alternate}
+  .row.chosen .symbol{animation:pop .45s ease both}
+  #feedback{position:absolute;left:16px;right:16px;bottom:2px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:14px;background:#fff8e8;color:#754b35;font-size:13px;font-weight:700;opacity:0;transform:translateY(8px);transition:opacity .25s ease,transform .25s ease;pointer-events:none}
+  #feedback.show{opacity:1;transform:translateY(0)}
+  #feedback.good{background:#d8f2dc;color:#286341}
+  #feedback.bad{background:#ffe2d7;color:#9b4c37}
+  #feedback.done{height:39px;bottom:7px;font-size:15px}
+  @keyframes wiggle{from{transform:translateY(0) rotate(-5deg)}to{transform:translateY(-3px) rotate(5deg)}}
+  @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.35) rotate(10deg)}100%{transform:scale(1)}}
+</style>
+<div id="viz">
+  <div class="card">
+    <div class="top">
+      <h1 id="title"></h1>
+      <div id="key" data-key>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <g fill="none" stroke="#d87a26" stroke-width="2.2" stroke-linecap="round">
+            <path d="M12 1.8v3M12 19.2v3M1.8 12h3M19.2 12h3M4.8 4.8l2.1 2.1M17.1 17.1l2.1 2.1M19.2 4.8l-2.1 2.1M6.9 17.1l-2.1 2.1"/>
+          </g>
+          <circle cx="12" cy="12" r="5.4" fill="#ffd15e" stroke="#d87a26" stroke-width="1.5"/>
+        </svg>
+        <span id="keytext"></span><span id="keynum"></span>
+      </div>
+      <div id="ask"></div>
+    </div>
+    <div id="rows"></div>
+    <div id="feedback"></div>
+  </div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, rows=document.getElementById('rows'), feedback=document.getElementById('feedback');
+  var locked=false, completed=false;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  document.getElementById('keytext').textContent=Studio.t('keytext');
+  document.getElementById('keynum').textContent=p.symbolValue;
+
+  function sun(){
+    var ns='http://www.w3.org/2000/svg', s=document.createElementNS(ns,'svg');
+    s.setAttribute('viewBox','0 0 24 24'); s.setAttribute('class','symbol'); s.setAttribute('data-symbol','');
+    var g=document.createElementNS(ns,'g');
+    g.setAttribute('fill','none');g.setAttribute('stroke','#d87a26');g.setAttribute('stroke-width','2.2');g.setAttribute('stroke-linecap','round');
+    ['M12 1.8v3','M12 19.2v3','M1.8 12h3','M19.2 12h3','M4.8 4.8l2.1 2.1','M17.1 17.1l2.1 2.1','M19.2 4.8l-2.1 2.1','M6.9 17.1l-2.1 2.1'].forEach(function(d){var q=document.createElementNS(ns,'path');q.setAttribute('d',d);g.appendChild(q)});
+    var c=document.createElementNS(ns,'circle');c.setAttribute('cx','12');c.setAttribute('cy','12');c.setAttribute('r','5.4');c.setAttribute('fill','#ffd15e');c.setAttribute('stroke','#d87a26');c.setAttribute('stroke-width','1.5');
+    s.appendChild(g);s.appendChild(c);return s;
+  }
+  p.rows.forEach(function(item){
+    var b=document.createElement('button'), n=document.createElement('span'), group=document.createElement('span');
+    b.className='row';b.setAttribute('data-row',item.key);b.type='button';
+    n.className='name';n.textContent=Studio.t(item.key);
+    group.className='symbols';
+    for(var i=0;i<item.value/p.symbolValue;i++)group.appendChild(sun());
+    b.appendChild(n);b.appendChild(group);
+    b.addEventListener('click',function(){
+      if(locked||completed)return;
+      locked=true;b.classList.add('chosen');
+      Studio.answer(item.key);
+    });
+    rows.appendChild(b);
+  });
+  Studio.onVerdict(function(v){
+    if(completed)return;
+    feedback.className='show '+(v.correct?'good':'bad');
+    feedback.textContent=Studio.t(v.correct?'right':'wrong');
+    if(v.correct){
+      completed=true;
+      setTimeout(function(){
+        feedback.className='show good done';
+        feedback.textContent=Studio.t('done');
+        Studio.done();
+      },420);
+    }else{
+      setTimeout(function(){
+        feedback.className='';
+        var chosen=rows.querySelector('.chosen');
+        if(chosen)chosen.classList.remove('chosen');
+        locked=false;
+      },900);
+    }
+  });
+  Studio.ready();
+}());
+
+</script>

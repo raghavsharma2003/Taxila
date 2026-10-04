@@ -1,0 +1,96 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;color:#49352d;background:#fff5e8}
+#app{width:360px;height:320px;padding:12px;display:flex;flex-direction:column;gap:8px}
+header{height:34px;display:flex;align-items:center;justify-content:center;border-radius:14px;background:#ffe2b8;color:#68462f;font-size:17px;font-weight:800}
+#instr{min-height:28px;text-align:center;font-size:14px;font-weight:650}
+#item{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;border:2px solid #f1d9bc;border-radius:20px;background:#fffdf8;transition:transform .25s,background .25s}
+#target{font-size:27px;font-weight:850;color:#a95339;line-height:1}
+#whole{width:320px;height:78px;overflow:visible;touch-action:manipulation}
+.part{fill:#f8dfbd;stroke:#a9704f;stroke-width:2;cursor:pointer;transition:fill .18s,transform .18s;transform-box:fill-box;transform-origin:center}
+.part[data-shaded="true"]{fill:#ef9d55}
+.part:active{transform:scale(.94)}
+#feedback{height:22px;text-align:center;font-weight:750;font-size:14px;color:#588255}
+#check{height:56px;min-height:56px;border:0;border-radius:18px;background:#e8864d;color:white;font:800 17px system-ui,sans-serif;box-shadow:0 4px 0 #bd6239;cursor:pointer;transition:transform .12s,background .2s}
+#check:active{transform:translateY(3px) scale(.98);box-shadow:0 1px 0 #bd6239}
+#check:disabled{background:#d7bda7;box-shadow:0 4px 0 #b99d87}
+#app.pop #item{animation:pop .42s ease}
+@keyframes pop{50%{transform:scale(1.035);background:#eff8e9}}
+</style>
+<div id="app">
+  <header id="title"></header>
+  <div id="instr"></div>
+  <section id="item">
+    <div id="target" data-target></div>
+    <svg id="whole" viewBox="0 0 320 78" role="group" aria-label=""></svg>
+  </section>
+  <div id="feedback" aria-live="polite"></div>
+  <button id="check" data-action="check"></button>
+</div>
+<script>
+
+(()=> {
+  const items=Studio.params.items, picture=Studio.params.picture;
+  const words={title:Studio.t("title"),instr:Studio.t("instr"),check:Studio.t("check"),right:Studio.t("right"),wrong:Studio.t("wrong"),done:Studio.t("done"),hint:Studio.t("hint")};
+  const title=document.getElementById("title"), instr=document.getElementById("instr"), itemBox=document.getElementById("item"), target=document.getElementById("target"), svg=document.getElementById("whole"), feedback=document.getElementById("feedback"), check=document.getElementById("check"), app=document.getElementById("app");
+  title.textContent=words.title; instr.textContent=words.instr; check.textContent=words.check;
+  let current=0, done=false, busy=false;
+  function draw(){
+    const item=items[current];
+    itemBox.dataset.item=item.id;
+    target.textContent=item.n+"/"+item.d;
+    svg.replaceChildren();
+    const ns="http://www.w3.org/2000/svg";
+    const width=320, height=78, partWidth=width/item.d;
+    for(let i=0;i<item.d;i++){
+      const shape=document.createElementNS(ns,"rect");
+      shape.setAttribute("x",String(i*partWidth+1));
+      shape.setAttribute("y","5");
+      shape.setAttribute("width",String(Math.max(0,partWidth-2)));
+      shape.setAttribute("height",String(height-10));
+      shape.setAttribute("rx",picture==="bar"?"5":"10");
+      shape.setAttribute("class","part");
+      shape.setAttribute("data-part",String(i));
+      shape.setAttribute("data-shaded","false");
+      svg.appendChild(shape);
+    }
+    feedback.textContent="";
+    check.disabled=false;
+    busy=false;
+  }
+  svg.addEventListener("click",event=>{
+    const part=event.target.closest("[data-part]");
+    if(!part||busy||done)return;
+    part.dataset.shaded=part.dataset.shaded==="true"?"false":"true";
+    Studio.event("part_tap",{index:Number(part.dataset.part),shaded:part.dataset.shaded==="true"?1:0});
+  });
+  check.addEventListener("click",()=>{
+    if(busy||done)return;
+    const item=items[current];
+    const n=svg.querySelectorAll('[data-shaded="true"]').length;
+    busy=true; check.disabled=true;
+    Studio.event("check",{item:current});
+    Studio.answer({n:n,d:item.d});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(done)return;
+    if(correct){
+      feedback.textContent=words.right;
+      app.classList.remove("pop"); void app.offsetWidth; app.classList.add("pop");
+      current++;
+      if(current>=items.length){
+        done=true;
+        window.setTimeout(()=>{title.textContent=words.done;instr.textContent=words.done;itemBox.hidden=true;check.hidden=true;feedback.textContent="";Studio.done();},650);
+      }else{
+        window.setTimeout(draw,650);
+      }
+    }else{
+      busy=false;check.disabled=false;feedback.textContent=words.wrong;
+      Studio.event("retry",{item:current});
+    }
+  });
+  draw();
+  Studio.ready();
+})();
+
+</script>

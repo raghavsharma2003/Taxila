@@ -1,0 +1,102 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#3d3440;background:#fff8ec}
+#game{width:360px;height:320px;padding:10px;display:flex;flex-direction:column;gap:7px;overflow:hidden}
+#heading{height:37px;flex:none;text-align:center}
+#title{font-size:18px;line-height:21px;font-weight:800;color:#694c78}
+#instr{font-size:12px;line-height:15px;color:#796c7c;white-space:nowrap}
+#cards{height:112px;flex:none;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:5px 8px}
+.card{border:2px solid #edd9c1;border-radius:14px;background:#fff;box-shadow:0 3px 0 #ead9c8;color:#564960;font-size:16px;font-weight:750;cursor:pointer;touch-action:manipulation;transition:transform .18s,box-shadow .18s,border-color .18s,opacity .18s;display:flex;align-items:center;justify-content:center;min-width:0;min-height:52px}
+.card:active,.bin:active{transform:scale(.96)}
+.card.selected{transform:translateY(-4px) scale(1.025);border-color:#e5a94c;box-shadow:0 6px 0 #efd2a6,0 0 13px #f5d58e}
+.card.shake{animation:shake .36s ease}
+@keyframes shake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+#feedback{height:18px;flex:none;text-align:center;font-weight:750;font-size:13px;line-height:18px;color:#6b9a67}
+#bins{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.bin{min-width:0;min-height:52px;border:2px solid #d8c9e5;border-radius:16px;background:#f4eef9;box-shadow:0 4px 0 #e3d9ec;cursor:pointer;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;overflow:hidden;transition:transform .16s,border-color .16s,background .16s}
+.bin-name{height:35px;flex:none;width:100%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#694c78;text-align:center}
+.bin-contents{width:100%;flex:1;min-height:0;display:flex;align-content:flex-start;align-items:flex-start;justify-content:center;flex-wrap:wrap;gap:3px;padding:2px 3px}
+.placed{appearance:none;flex:0 1 auto;min-width:0;min-height:24px;border:1px solid #d9c7e9;border-radius:8px;background:#fff;color:#584664;font:750 11px/14px system-ui,-apple-system,"Segoe UI",sans-serif;padding:3px 5px;animation:arrive .28s ease}
+@keyframes arrive{from{transform:scale(.65) translateY(-5px);opacity:.4}to{transform:scale(1);opacity:1}}
+#done{display:none;height:100%;align-items:center;justify-content:center;text-align:center;font-size:19px;font-weight:800;color:#56855a}
+#game.finished #heading,#game.finished #cards,#game.finished #feedback,#game.finished #bins{display:none}
+#game.finished #done{display:flex}
+</style>
+<div id="game">
+  <div id="heading"><div id="title"></div><div id="instr"></div></div>
+  <div id="cards"></div>
+  <div id="feedback"></div>
+  <div id="bins"></div>
+  <div id="done"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params,game=document.getElementById("game");
+  const cardArea=document.getElementById("cards"),binArea=document.getElementById("bins");
+  const feedback=document.getElementById("feedback");
+  const words=k=>Studio.t(k);
+  document.getElementById("title").textContent=words("title");
+  document.getElementById("instr").textContent=words("instr");
+  document.getElementById("done").textContent=words("done");
+  let chosen=null,pending=null,sorted=0,finished=false;
+  const binEls=new Map();
+  p.cards.forEach(key=>{
+    const el=document.createElement("button");
+    el.type="button";el.className="card";el.dataset.card=key;el.dataset.selected="false";
+    el.textContent=words(key);
+    el.addEventListener("click",()=>{
+      if(pending||finished||el.dataset.placed)return;
+      if(chosen===el){
+        el.classList.remove("selected");el.dataset.selected="false";chosen=null;return;
+      }
+      if(chosen){chosen.classList.remove("selected");chosen.dataset.selected="false"}
+      chosen=el;el.classList.add("selected");el.dataset.selected="true";
+      Studio.event("card_pick",{card:key});
+    });
+    cardArea.appendChild(el);
+  });
+  p.bins.forEach(key=>{
+    const el=document.createElement("button");
+    el.type="button";el.className="bin";el.dataset.bin=key;
+    const name=document.createElement("span");name.className="bin-name";name.textContent=words(key);
+    const contents=document.createElement("span");contents.className="bin-contents";
+    el.append(name,contents);binArea.appendChild(el);binEls.set(key,{el,contents});
+    el.addEventListener("click",()=>{
+      if(!chosen||pending||finished)return;
+      const card=chosen;
+      pending={card,bin:key};
+      chosen=null;feedback.textContent="";
+      Studio.event("bin_tap",{bin:key});
+      Studio.answer({card:card.dataset.card,bin:key});
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    const current=pending,card=current.card;
+    pending=null;
+    if(correct){
+      feedback.textContent=words("right");
+      card.classList.remove("selected");card.dataset.selected="false";
+      card.removeAttribute("data-card");card.removeAttribute("data-selected");
+      card.dataset.placed=current.bin;card.className="placed";
+      card.textContent=words(card.dataset.placed==="solid"?"solid":"");
+      card.textContent=words(card.dataset.placed);
+      binEls.get(current.bin).contents.appendChild(card);
+      sorted++;
+      Studio.event("sort_result",{result:"right"});
+      if(sorted===p.cards.length&&!finished){
+        finished=true;game.classList.add("finished");Studio.done();
+      }
+    }else{
+      feedback.textContent=words("wrong");
+      card.classList.remove("selected");card.dataset.selected="false";card.classList.add("shake");
+      setTimeout(()=>card.classList.remove("shake"),380);
+      Studio.event("sort_result",{result:"wrong"});
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

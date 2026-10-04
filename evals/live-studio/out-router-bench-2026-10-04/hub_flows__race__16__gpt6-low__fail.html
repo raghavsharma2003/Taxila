@@ -1,0 +1,51 @@
+<style>
+*{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8e9;color:#354a40;font-family:system-ui,sans-serif}button{font:inherit;cursor:pointer;border:0;touch-action:manipulation}button:active{transform:scale(.94)}.top{height:54px;display:flex;align-items:center;padding:0 8px 0 14px;gap:6px}.title{flex:1;font-size:17px;font-weight:800;line-height:1.1}.control{min-width:52px;height:52px;border-radius:17px;background:#e5f2dc;color:#315b48;font-size:13px;font-weight:750;transition:transform .15s,background .2s}svg{display:block;width:360px;height:145px}svg text{font:700 12px system-ui,sans-serif;fill:#40534a;paint-order:stroke;stroke:#fff8e9;stroke-width:3px;stroke-linejoin:round}.particle{transition:opacity .2s}.caption{height:27px;margin:0 12px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:#e7f3dc;color:#315b48;font-size:13px;font-weight:700;text-align:center}.ask{height:38px;margin:0 12px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:14px;font-weight:750}.options{display:flex;gap:6px;padding:0 8px}.option{flex:1;min-width:0;height:52px;border-radius:17px;background:#dceee8;color:#315b48;font-size:14px;font-weight:800;transition:transform .15s,background .2s}.option:active{background:#bfe2d3}.feedback{position:absolute;top:225px;right:13px;background:#fff8e9;border-radius:8px;padding:2px 5px;font-size:12px;font-weight:800;pointer-events:none}
+</style>
+<div class="top"><div class="title" id="title"></div><button class="control" data-action="play"></button><button class="control" data-action="next"></button></div>
+<svg viewBox="0 0 360 145" aria-hidden="true">
+<path d="M45 34 Q98 32 151 64" fill="none" stroke="#f6d680" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+<path d="M182 123 Q179 106 181 89" fill="none" stroke="#86b9ae" stroke-width="5" stroke-linecap="round" opacity=".7"/>
+<path d="M221 75 Q267 78 321 84" fill="none" stroke="#b8a6d7" stroke-width="5" stroke-linecap="round" opacity=".6"/>
+<circle id="entity0" data-entity="" cx="43" cy="29" r="22" fill="#ffc96e"/>
+<path id="entity1" data-entity="" d="M181 112 Q169 124 151 125 M181 112 Q192 127 211 126 M181 112 L181 137" fill="none" stroke="#a97c58" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="hub" data-entity="" d="M151 75 Q152 35 220 51 Q218 91 177 91 Q158 90 151 75Z" fill="#74bd7b" stroke="#428c65" stroke-width="3"/>
+<path d="M163 82 Q184 69 209 58" fill="none" stroke="#d9f4bc" stroke-width="3" stroke-linecap="round"/>
+<g id="particles"></g>
+<text id="label0" data-label="" x="9" y="72"></text>
+<text id="label1" data-label="" x="230" y="137"></text>
+<text id="labelHub" data-label="" x="224" y="54"></text>
+<text id="flow0" data-label="" x="99" y="139"></text>
+<text id="flow1" data-label="" x="72" y="98"></text>
+<text id="flow2" data-label="" x="263" y="107"></text>
+</svg>
+<div class="caption" data-caption></div>
+<div class="ask" id="ask"></div>
+<div class="options" id="options"></div><div class="feedback" id="feedback"></div>
+<script>
+
+(()=>{
+const p=Studio.params,t=k=>Studio.t(k),$=s=>document.querySelector(s);
+$('#title').textContent=t('title');$('#ask').textContent=t('ask');
+const play=$('[data-action="play"]'),next=$('[data-action="next"]'),caption=$('[data-caption]');
+let playing=true,step=0,finished=false,last=0,progress=0;
+const showStep=()=>{caption.textContent=t('step'+(step+1));Studio.event('step',{number:step+1})};
+const showPlay=()=>play.textContent=t(playing?'pause':'play');
+$('#hub').setAttribute('data-entity',p.hub);$('#labelHub').setAttribute('data-label',p.hub);$('#labelHub').textContent=t(p.hub);
+p.entities.forEach((key,i)=>{const shape=$('#entity'+i),label=$('#label'+i);if(shape)shape.setAttribute('data-entity',key);if(label){label.setAttribute('data-label',key);label.textContent=t(key)}});
+const tracks={up_in:[181,119,181,86],in:[62,77,151,73],out:[219,76,314,84]};
+const palette={up_in:'#58adae',in:'#72a88c',out:'#aa89c8'};
+const particles=[];
+p.flows.forEach((flow,i)=>{
+const label=$('#flow'+i);if(label){label.setAttribute('data-label',flow.key);label.textContent=t(flow.key)}
+const track=tracks[flow.dir]||tracks.in;
+for(let j=0;j<3;j++){const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');dot.setAttribute('data-flow',flow.key);dot.setAttribute('class','particle');dot.setAttribute('r','4');dot.setAttribute('fill',palette[flow.dir]||'#72a88c');$('#particles').appendChild(dot);particles.push({dot,track,offset:j/3,index:i})}
+});
+p.options.forEach(key=>{const b=document.createElement('button');b.className='option';b.setAttribute('data-option',key);b.textContent=t(key);b.addEventListener('click',()=>{if(!finished){$('#feedback').textContent='';Studio.answer(key)}});$('#options').appendChild(b)});
+Studio.onVerdict(({correct})=>{if(finished)return;$('#feedback').textContent=t(correct?'right':'wrong');if(correct){finished=true;Studio.done()}});
+play.addEventListener('click',()=>{playing=!playing;showPlay();Studio.event('play',{on:playing?1:0})});
+next.addEventListener('click',()=>{step=(step+1)%p.steps;showStep()});
+function frame(now){if(!last)last=now;if(playing)progress+=(now-last)*.00032;last=now;particles.forEach(({dot,track,offset,index})=>{const f=(progress+offset)%1;dot.setAttribute('cx',track[0]+(track[2]-track[0])*f);dot.setAttribute('cy',track[1]+(track[3]-track[1])*f);dot.style.opacity=(step===0||index===(step-1)%p.flows.length)?'1':'.32'});requestAnimationFrame(frame)}
+showPlay();showStep();requestAnimationFrame(frame);Studio.ready();
+})();
+
+</script>

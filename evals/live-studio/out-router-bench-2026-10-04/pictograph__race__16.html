@@ -1,0 +1,102 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#493b32;background:#fff8eb}
+#app{width:360px;height:320px;padding:8px 12px;display:flex;flex-direction:column;gap:4px}
+h1{height:28px;margin:0;text-align:center;font-size:20px;line-height:28px;color:#714b36}
+#prompt{height:28px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:15px;font-weight:650;color:#725c4e}
+#chart{height:208px;display:flex;flex-direction:column}
+.row{height:52px;min-height:52px;width:100%;display:grid;grid-template-columns:64px 1fr;align-items:center;padding:0 6px;border:2px solid transparent;border-radius:15px;background:#fffdf8;cursor:pointer;transition:transform .16s ease,background .2s ease,border-color .2s ease;touch-action:manipulation}
+.row:active{transform:scale(.97)}
+.row:hover{background:#fff1d8}
+.rowname{font-size:15px;font-weight:700;white-space:nowrap}
+.symbols{height:100%;display:flex;align-items:center;gap:5px}
+.symbol{width:29px;height:29px;flex:none;color:#e78648;transition:transform .2s ease}
+#key{height:40px;min-height:40px;display:flex;justify-content:center;align-items:center;gap:8px;border-radius:14px;background:#f8e8d2;color:#674a37;font-size:14px;font-weight:650}
+.key-symbol{width:28px;height:28px;color:#e78648}
+#key-number{font-size:16px;font-weight:800}
+#prompt.pulse{animation:pulse .35s ease}
+@keyframes pulse{50%{transform:scale(1.06)}}
+.row.chosen{border-color:#e8a75f;background:#fff0d7}
+.row.chosen .symbol{transform:translateY(-2px)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <div id="prompt" aria-live="polite"></div>
+  <div id="chart"></div>
+  <div id="key" data-key="true"><svg class="key-symbol" data-symbol viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 2.5c2.7 0 3.8 3.2 6.2 4.1s5.4-.5 6.8 1.8-.7 4.9 0 7.6 3.3 4.6 2.4 7.2-4.1 2.5-6.1 4.5-1.9 5.2-4.5 6.1-4.5-1.7-7.2-2.4-5.3 1.4-7.6 0-.9-4.4-1.8-6.8S2.5 18.7 2.5 16s3.2-3.8 4.1-6.2-.5-5.4 1.8-6.8 4.9.7 7.6 0Z" transform="translate(0 -1) scale(.94)"/><circle cx="16" cy="15" r="4" fill="#fff8eb"/></svg><span id="keytext"></span><span id="key-number"></span></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const t=Studio.t;
+  const app=document.getElementById("app");
+  const title=document.getElementById("title");
+  const prompt=document.getElementById("prompt");
+  const chart=document.getElementById("chart");
+  title.textContent=t("title");
+  prompt.textContent=t("ask");
+  document.getElementById("keytext").textContent=t("keytext");
+  document.getElementById("key-number").textContent=String(p.symbolValue);
+  const makeSymbol=()=>{
+    const s=document.createElementNS("http://www.w3.org/2000/svg","svg");
+    s.setAttribute("class","symbol");
+    s.setAttribute("data-symbol","");
+    s.setAttribute("viewBox","0 0 32 32");
+    s.setAttribute("aria-hidden","true");
+    const path=document.createElementNS("http://www.w3.org/2000/svg","path");
+    path.setAttribute("fill","currentColor");
+    path.setAttribute("d","M16 2.5c2.7 0 3.8 3.2 6.2 4.1s5.4-.5 6.8 1.8-.7 4.9 0 7.6 3.3 4.6 2.4 7.2-4.1 2.5-6.1 4.5-1.9 5.2-4.5 6.1-4.5-1.7-7.2-2.4-5.3 1.4-7.6 0-.9-4.4-1.8-6.8S2.5 18.7 2.5 16s3.2-3.8 4.1-6.2-.5-5.4 1.8-6.8 4.9.7 7.6 0Z");
+    path.setAttribute("transform","translate(0 -1) scale(.94)");
+    const dot=document.createElementNS("http://www.w3.org/2000/svg","circle");
+    dot.setAttribute("cx","16");dot.setAttribute("cy","15");dot.setAttribute("r","4");dot.setAttribute("fill","#fff8eb");
+    s.append(path,dot);
+    return s;
+  };
+  let locked=false;
+  for(const item of p.rows){
+    const row=document.createElement("div");
+    row.className="row";
+    row.setAttribute("data-row",item.key);
+    row.setAttribute("role","button");
+    row.setAttribute("tabindex","0");
+    const name=document.createElement("span");
+    name.className="rowname";
+    name.textContent=t(item.key);
+    const symbols=document.createElement("span");
+    symbols.className="symbols";
+    for(let i=0;i<item.value/p.symbolValue;i++) symbols.appendChild(makeSymbol());
+    row.append(name,symbols);
+    const choose=()=>{
+      if(locked)return;
+      locked=true;
+      row.classList.add("chosen");
+      Studio.event("row_tap",{row:item.key});
+      Studio.answer(item.key);
+    };
+    row.addEventListener("click",choose);
+    row.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();choose();}});
+    chart.appendChild(row);
+  }
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      prompt.textContent=t("right");
+      prompt.classList.add("pulse");
+      window.setTimeout(()=>{prompt.textContent=t("done");Studio.done();},650);
+    }else{
+      prompt.textContent=t("wrong");
+      prompt.classList.add("pulse");
+      window.setTimeout(()=>{
+        prompt.classList.remove("pulse");
+        prompt.textContent=t("ask");
+        chart.querySelectorAll(".row").forEach(row=>row.classList.remove("chosen"));
+        locked=false;
+      },700);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,91 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff5e8;font-family:system-ui,sans-serif;color:#513b35}
+  .activity{position:relative;width:360px;height:320px;padding:14px 16px;overflow:hidden;background:radial-gradient(circle at 95% 4%,#ffe2ad 0 48px,transparent 49px),#fff5e8}
+  .title{margin:0;font-size:21px;font-weight:800;line-height:27px}
+  .instr{margin:3px 0 0;font-size:13px;line-height:18px}
+  .status{height:20px;margin-top:3px;font-size:13px;font-weight:700;color:#a05445}
+  .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:5px;min-height:116px;align-content:start}
+  .card{min-width:0;height:54px;border:2px solid #e3ab78;border-radius:16px;background:#fffaf2;box-shadow:0 4px 0 #e9c9a8;color:#513b35;font:700 16px system-ui,sans-serif;cursor:pointer;transition:transform .2s,background .2s,box-shadow .2s}
+  .card:active{transform:scale(.94);box-shadow:0 1px 0 #e9c9a8}
+  .card:focus-visible{outline:3px solid #7459a6;outline-offset:2px}
+  .card.shake{animation:shake .38s ease}
+  .track{display:flex;gap:6px;margin-top:12px;height:75px}
+  .slot{flex:1;min-width:0;height:75px;border:2px dashed #d6ab87;border-radius:15px;background:#fff9ed;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:background .3s,transform .3s}
+  .slot.filled{border-style:solid;border-color:#a7ba8a;background:#edf5dd;animation:pop .35s ease}
+  .num{font-size:15px;font-weight:800;color:#946c58;line-height:17px}
+  .slot .card{width:calc(100% - 6px);height:52px;min-height:52px;border:0;background:transparent;box-shadow:none;font-size:12px;line-height:14px;padding:2px;cursor:default}
+  .slot.filled{gap:0}
+  .slot.filled .num{line-height:16px}
+  @keyframes shake{25%{transform:translateX(-5px) rotate(-2deg)}50%{transform:translateX(5px) rotate(2deg)}75%{transform:translateX(-3px)}}
+  @keyframes pop{50%{transform:scale(1.07)}}
+</style>
+<div class="activity">
+  <h1 class="title" id="title"></h1>
+  <p class="instr" id="instr"></p>
+  <div class="status" id="status" aria-live="polite"></div>
+  <div class="cards" id="cards"></div>
+  <div class="track" id="track"></div>
+</div>
+<script>
+
+(() => {
+  const shown = Studio.params.shown;
+  const cards = document.getElementById('cards');
+  const track = document.getElementById('track');
+  const status = document.getElementById('status');
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('instr').textContent = Studio.t('instr');
+  const slots = shown.map((_, index) => {
+    const slot = document.createElement('div');
+    slot.className = 'slot';
+    const num = document.createElement('span');
+    num.className = 'num';
+    num.textContent = String(index + 1);
+    slot.append(num);
+    track.append(slot);
+    return slot;
+  });
+  let placed = 0;
+  let waiting = false;
+  let pending = null;
+  shown.forEach(key => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'card';
+    card.dataset.step = key;
+    card.textContent = Studio.t(key);
+    card.addEventListener('click', () => {
+      if (waiting || card.hasAttribute('data-placed')) return;
+      waiting = true;
+      pending = card;
+      card.classList.remove('shake');
+      Studio.answer({key});
+    });
+    cards.append(card);
+  });
+  Studio.onVerdict(({correct}) => {
+    if (!waiting || !pending) return;
+    const card = pending;
+    pending = null;
+    waiting = false;
+    status.textContent = Studio.t(correct ? 'right' : 'wrong');
+    if (!correct) {
+      void card.offsetWidth;
+      card.classList.add('shake');
+      return;
+    }
+    card.dataset.placed = String(placed + 1);
+    card.disabled = true;
+    slots[placed].append(card);
+    slots[placed].classList.add('filled');
+    placed += 1;
+    if (placed === shown.length) {
+      status.textContent = Studio.t('done');
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

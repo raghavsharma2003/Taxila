@@ -1,0 +1,118 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff8ed;color:#493a34}
+#app{width:360px;height:320px;padding:12px 14px;background:radial-gradient(circle at 90% 8%,#ffe9c8 0 42px,transparent 43px),#fff8ed;overflow:hidden}
+header{display:flex;align-items:center;gap:9px;height:36px}
+.mark{width:32px;height:32px;flex:none}
+h1{font-size:18px;line-height:1.1;margin:0;font-weight:800;letter-spacing:-.3px}
+#instr{font-size:13px;line-height:1.25;margin:2px 0 10px;color:#715f54;min-height:17px}
+#track{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}
+.slot{height:62px;border:2px dashed #e8c9a4;background:#fffdf9;border-radius:14px;position:relative;display:flex;align-items:center;justify-content:center;padding:4px}
+.slot-num{position:absolute;left:5px;top:4px;width:21px;height:21px;border-radius:50%;display:grid;place-items:center;background:#ffe8c6;color:#9a6233;font-size:12px;font-weight:800}
+.slot.filled{border-style:solid;border-color:#8fc7a8;background:#eff9f0}
+.slot.filled .slot-num{background:#d1edda;color:#397552}
+#cards{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.card{appearance:none;border:0;background:linear-gradient(145deg,#fff 0%,#fffaf2 100%);box-shadow:0 3px 0 #e9d7c2,0 5px 12px #61492a12;border-radius:14px;min-width:0;height:88px;padding:9px 7px;color:#493a34;font:700 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;cursor:pointer;touch-action:manipulation;transition:transform .16s,box-shadow .16s,background .2s;overflow-wrap:anywhere}
+.card:active{transform:scale(.96);box-shadow:0 1px 0 #e9d7c2}
+.card:hover{background:#fff2df}
+.card.placed{height:100%;width:100%;font-size:12px;box-shadow:none;background:#f7fff8;border-radius:9px;padding:13px 4px 4px;cursor:default}
+.card.shake{animation:shake .34s ease}
+#feedback{height:31px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;font-weight:750;color:#45805a}
+#feedback.bad{color:#a8664f}
+#feedback.finish{color:#45805a}
+@keyframes shake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}100%{transform:translateX(0)}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+<main id="app">
+  <header>
+    <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+      <path d="M20 3 24 10 33 8 30 17 37 22 29 27 30 36 21 32 14 37 12 28 4 25 10 18 7 10 16 12Z" fill="#f2b66c"/>
+      <circle cx="20" cy="20" r="6" fill="#fff8ed"/>
+      <path d="m18 20 2 2 4-5" fill="none" stroke="#56886a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <h1 id="title"></h1>
+  </header>
+  <p id="instr"></p>
+  <section id="track" aria-label=""></section>
+  <section id="cards"></section>
+  <div id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(()=>{
+  const shown=Studio.params.shown;
+  const expected=["a","b","c"];
+  const title=document.getElementById("title");
+  const instr=document.getElementById("instr");
+  const track=document.getElementById("track");
+  const cards=document.getElementById("cards");
+  const feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  instr.textContent=Studio.t("instr");
+  const slots=[];
+  for(let i=0;i<expected.length;i++){
+    const slot=document.createElement("div");
+    slot.className="slot";
+    const number=document.createElement("span");
+    number.className="slot-num";
+    number.textContent=String(i+1);
+    slot.appendChild(number);
+    track.appendChild(slot);
+    slots.push(slot);
+  }
+  const buttons={};
+  shown.forEach(key=>{
+    const button=document.createElement("button");
+    button.type="button";
+    button.className="card";
+    button.dataset.step=key;
+    button.textContent=Studio.t(key);
+    button.addEventListener("click",()=>{
+      if(button.dataset.placed||button.disabled)return;
+      button.disabled=true;
+      Studio.event("tap",{key});
+      Studio.answer({key});
+    });
+    cards.appendChild(button);
+    buttons[key]=button;
+  });
+  let position=0;
+  let pending=null;
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    const button=pending;
+    pending=null;
+    button.disabled=false;
+    if(correct){
+      feedback.className="";
+      feedback.textContent=Studio.t("right");
+      button.dataset.placed=String(position+1);
+      button.classList.add("placed");
+      slots[position].classList.add("filled");
+      slots[position].appendChild(button);
+      position++;
+      if(position===expected.length){
+        feedback.className="finish";
+        feedback.textContent=Studio.t("done");
+        Studio.done();
+      }
+    }else{
+      feedback.className="bad";
+      feedback.textContent=Studio.t("wrong");
+      button.classList.remove("shake");
+      void button.offsetWidth;
+      button.classList.add("shake");
+    }
+  });
+  for(const button of Object.values(buttons)){
+    button.addEventListener("click",()=>{
+      if(button.disabled||button.dataset.placed)return;
+      pending=button;
+      button.disabled=true;
+    },{once:true});
+  }
+  Studio.ready();
+})();
+
+</script>

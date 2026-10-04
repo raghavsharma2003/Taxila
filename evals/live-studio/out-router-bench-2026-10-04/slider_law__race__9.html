@@ -1,0 +1,78 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#35443b}
+  .stage{width:360px;height:320px;padding:12px;display:flex;flex-direction:column;gap:8px}
+  .title{height:32px;margin:0;text-align:center;font-size:20px;line-height:32px;color:#345c4a}
+  .readings{height:34px;display:flex;align-items:center;justify-content:center;gap:18px;border-radius:14px;background:#fff0d8;font-size:17px;font-weight:700}
+  .scene{height:91px;display:flex;align-items:flex-end;justify-content:center;border-radius:16px;background:#eaf5ed;overflow:hidden}
+  .tower{width:50px;min-height:2px;border-radius:12px 12px 4px 4px;background:#f2a64a;box-shadow:inset -7px 0 #df8935;transition:height .32s cubic-bezier(.2,.8,.2,1);transform-origin:bottom}
+  .controls{height:54px;display:flex;justify-content:center;gap:12px}
+  button{border:0;border-radius:16px;font:700 17px system-ui,sans-serif;color:#fff;background:#4c8b69;min-width:88px;height:54px;padding:0 14px;cursor:pointer;touch-action:manipulation;transition:transform .12s,filter .12s,opacity .12s}
+  button:active{transform:scale(.94)}
+  button:disabled{opacity:.45;cursor:default}
+  .question{height:22px;text-align:center;font-size:15px;font-weight:700;color:#526657}
+  .options{height:54px;display:flex;justify-content:center;gap:10px}
+  .options button{min-width:68px;height:54px;background:#e88d5c}
+  .feedback{height:20px;text-align:center;font-size:14px;font-weight:700;color:#4c8b69}
+  .pop{animation:pop .3s ease}
+  @keyframes pop{50%{transform:scale(1.08)}}
+</style>
+<main class="stage">
+  <h1 class="title" id="title"></h1>
+  <div class="readings"><span id="xread"></span><span data-output id="yread"></span></div>
+  <div class="scene"><div class="tower" data-visual data-dim="h" id="tower"></div></div>
+  <div class="controls">
+    <button type="button" data-action="dec" id="dec"></button>
+    <button type="button" data-action="inc" id="inc"></button>
+  </div>
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(()=>{
+  const p=Studio.params, words={};
+  ["title","xname","yname","less","more","ask","right","wrong","done"].forEach(k=>words[k]=Studio.t(k));
+  let x=p.x.start, completed=false;
+  const title=document.getElementById("title"),xr=document.getElementById("xread"),yr=document.getElementById("yread");
+  const tower=document.getElementById("tower"),dec=document.getElementById("dec"),inc=document.getElementById("inc");
+  const q=document.getElementById("question"),opts=document.getElementById("options"),feedback=document.getElementById("feedback");
+  title.textContent=words.title;dec.textContent=words.less;inc.textContent=words.more;
+  q.textContent=words.ask+" "+words.xname+" = "+p.ask.x;
+  const fmt=n=>String(Math.round((n+Number.EPSILON)*1e10)/1e10);
+  function update(){
+    const y=p.law.k*x+p.law.b;
+    xr.textContent=words.xname+" = "+fmt(x);
+    yr.textContent=words.yname+" = "+fmt(y);
+    yr.dataset.value=fmt(y);
+    xr.dataset.x=fmt(x);
+    tower.style.height=(y*p.y.unitsPer)+"px";
+    dec.disabled=x<=p.x.min;inc.disabled=x>=p.x.max;
+  }
+  dec.addEventListener("click",()=>{if(x>p.x.min){x=Math.max(p.x.min,x-p.x.step);update();}});
+  inc.addEventListener("click",()=>{if(x<p.x.max){x=Math.min(p.x.max,x+p.x.step);update();}});
+  p.ask.options.forEach(value=>{
+    const b=document.createElement("button");
+    b.type="button";b.dataset.option=String(value);b.textContent=String(value);
+    b.addEventListener("click",()=>{
+      if(completed)return;
+      Studio.answer({value});
+    });
+    opts.appendChild(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      feedback.textContent=words.right+" "+words.done;
+      completed=true;
+      Studio.done();
+    }else{
+      feedback.textContent=words.wrong;
+      feedback.classList.remove("pop");void feedback.offsetWidth;feedback.classList.add("pop");
+    }
+  });
+  update();
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,110 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8eb;color:#35483d}
+  #card{width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 50% 34%,#fffdf5,#fff1dc);position:relative}
+  #title{position:absolute;top:3px;left:12px;right:12px;text-align:center;font-size:17px;font-weight:800}
+  svg{position:absolute;top:26px;left:0;width:360px;height:148px;overflow:visible}
+  svg text{font:700 13px system-ui,sans-serif;fill:#35483d;paint-order:stroke;stroke:#fff8eb;stroke-width:3px;stroke-linejoin:round}
+  .part{transition:opacity .35s,filter .35s}.dim{opacity:.42}.focus{filter:drop-shadow(0 0 5px #f7b84f)}
+  .particle{opacity:.9}
+  #controls{position:absolute;top:176px;left:12px;right:12px;height:54px;display:flex;align-items:center;gap:8px}
+  button{border:0;border-radius:17px;background:#dbeecf;color:#294638;font:800 14px system-ui,sans-serif;cursor:pointer;transition:transform .16s,background .2s}
+  button:active{transform:scale(.91)}button:focus-visible{outline:3px solid #e5a546;outline-offset:2px}
+  #play,#next{width:72px;height:54px;flex:none}
+  #next{background:#ffd68c}
+  [data-caption]{flex:1;text-align:center;font-size:13px;font-weight:750;line-height:1.2}
+  #ask{position:absolute;top:232px;left:12px;right:12px;text-align:center;font-size:14px;font-weight:750;line-height:23px;white-space:nowrap}
+  #options{position:absolute;top:261px;left:12px;right:12px;height:54px;display:flex;gap:7px}
+  #options button{height:54px;flex:1;min-width:0;background:#e9dfef}
+  #options button.chosen{background:#d4bde5}
+  #feedback{position:absolute;top:232px;right:12px;font-size:12px;font-weight:800;background:#fff8eb}
+</style>
+<div id="card">
+  <div id="title"></div>
+  <svg viewBox="0 0 360 160" aria-hidden="true">
+    <g id="sunPart" class="part">
+      <circle data-entity="sun" cx="65" cy="43" r="22" fill="#ffc86d" stroke="#efaa4e" stroke-width="3"/>
+      <text data-label="sun" x="27" y="82"></text>
+    </g>
+    <g id="rootsPart" class="part">
+      <path data-entity="roots" d="M83 104 Q84 124 68 135 M83 112 Q94 127 107 136 M82 117 Q79 133 84 142" fill="none" stroke="#a67a5b" stroke-width="9" stroke-linecap="round"/>
+      <text data-label="roots" x="19" y="155"></text>
+    </g>
+    <g id="hubPart" class="part">
+      <ellipse data-entity="leaf" cx="180" cy="81" rx="37" ry="27" transform="rotate(-27 180 81)" fill="#81c890" stroke="#4c9d70" stroke-width="4"/>
+      <path d="M148 100 Q179 83 209 63" fill="none" stroke="#4c9d70" stroke-width="3" stroke-linecap="round"/>
+      <text data-label="leaf" x="157" y="42"></text>
+    </g>
+    <g id="waterPart" class="part">
+      <circle class="particle" data-flow="water" r="4" fill="#69bce0"/><circle class="particle" data-flow="water" r="4" fill="#69bce0"/><circle class="particle" data-flow="water" r="4" fill="#69bce0"/>
+      <text data-label="water" x="119" y="145"></text>
+    </g>
+    <g id="co2Part" class="part">
+      <circle class="particle" data-flow="co2" r="4" fill="#a58bd0"/><circle class="particle" data-flow="co2" r="4" fill="#a58bd0"/><circle class="particle" data-flow="co2" r="4" fill="#a58bd0"/>
+      <text data-label="co2" x="267" y="42"></text>
+    </g>
+    <g id="o2Part" class="part">
+      <circle class="particle" data-flow="o2" r="4" fill="#efa789"/><circle class="particle" data-flow="o2" r="4" fill="#efa789"/><circle class="particle" data-flow="o2" r="4" fill="#efa789"/>
+      <text data-label="o2" x="282" y="143"></text>
+    </g>
+  </svg>
+  <div id="controls"><button id="play" data-action="play"></button><div data-caption></div><button id="next" data-action="next"></button></div>
+  <div id="ask"></div><div id="feedback" aria-live="polite"></div><div id="options"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, t=k=>Studio.t(k);
+  document.querySelector('#title').textContent=t('title');
+  document.querySelector('#ask').textContent=t('ask');
+  for(const key of [p.hub,...p.entities,...p.flows.map(f=>f.key)]){
+    document.querySelector('[data-label="'+key+'"]').textContent=t(key);
+  }
+  const options=document.querySelector('#options'),feedback=document.querySelector('#feedback');
+  let finished=false,playing=true,step=0;
+  for(const key of p.options){
+    const b=document.createElement('button');b.dataset.option=key;b.textContent=t(key);
+    b.addEventListener('click',()=>{
+      if(finished)return;
+      options.querySelectorAll('button').forEach(x=>x.classList.remove('chosen'));
+      b.classList.add('chosen');feedback.textContent='';
+      Studio.answer(key);
+    });
+    options.appendChild(b);
+  }
+  Studio.onVerdict(v=>{
+    feedback.textContent=t(v.correct?'right':'wrong');
+    if(v.correct&&!finished){finished=true;Studio.done();}
+  });
+  const play=document.querySelector('#play');
+  function update(){
+    play.textContent=t(playing?'pause':'play');
+    document.querySelector('[data-caption]').textContent=t('step'+(step+1));
+    const featured=step===0?p.entities[0]:p.flows[(step-1)%p.flows.length].key;
+    for(const key of [p.hub,...p.entities,...p.flows.map(f=>f.key)]){
+      const el=document.getElementById(key===p.hub?'hubPart':key+'Part');
+      if(el){el.classList.toggle('dim',key!==featured&&key!==p.hub);el.classList.toggle('focus',key===featured);}
+    }
+  }
+  play.addEventListener('click',()=>{playing=!playing;update();Studio.event('play',{on:playing?1:0});});
+  document.querySelector('#next').addEventListener('click',()=>{step=(step+1)%p.steps;update();Studio.event('step',{step:step+1});});
+  const paths={water:[[111,125],[156,91]],co2:[[279,58],[211,75]],o2:[[211,94],[285,119]]};
+  let progress=0,last=0;
+  function frame(now){
+    if(playing&&last)progress+=(now-last)*.00024;
+    last=now;
+    for(const flow of p.flows){
+      const ends=paths[flow.key];
+      if(!ends)continue;
+      const dots=document.querySelectorAll('[data-flow="'+flow.key+'"]');
+      dots.forEach((dot,i)=>{
+        const q=(progress+i/dots.length)%1;
+        dot.setAttribute('cx',ends[0][0]+(ends[1][0]-ends[0][0])*q);
+        dot.setAttribute('cy',ends[0][1]+(ends[1][1]-ends[0][1])*q);
+      });
+    }
+    requestAnimationFrame(frame);
+  }
+  update();requestAnimationFrame(frame);Studio.ready();
+})();
+
+</script>
