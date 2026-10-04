@@ -1043,3 +1043,42 @@ Its quality is not the problem (T +0.36 vs fast, C 40/40, P 16/16). Deployed mod
 - `rj-stylised-c-sdf-surface-ceiling` (2026-10-04): Arm A's SDF-blend head (smooth union of rounded forms, ~60 params fitted to ref outlines) converges on identity and silhouette but tops out at ~2.2/5 on surface craft: one full polish iteration moved 2.0 -> 2.17 (section-8) / 2.25 (blind). Outlines fit within ~3 mm, but the surfaces BETWEEN fitted outlines (cheek planes, nose, lips, profile around the mouth) are not controlled: painted-stripe mouth, slab teeth, vanished nose, faceted skin with dents, helmet hair with seams. The plan's s3.4 risk was real. Evidence for rj-agent-authored-stylised-face (in-house faces again 2-2.5/5). Do not run another SDF polish loop; any 3D retry needs a subdivision quad cage.
 - `rj-stylised-c-arm-a-traps` (2026-10-04): Arm A pipeline traps: (1) sphere tracing does not converge on the ellipsoid SDF, use step + bisection; (2) inset ring patches need angle-matched monotone parameters along each ring or transition rings fold; (3) Cycles needs light linking so only the catchlight reflects in the cornea, and the world must render black for glossy rays; (4) ARKit mouthClose must carry the lower-lip part of the full jawOpen move or jaw 0.3 + close 0.3 leaks ~26%; (5) a hard sign(x) in brow fields breaks the mirror at midline verts with x = -0.0.
 - `rj-stylised-c-arm-b-traps` (2026-10-04): Arm B traps: (1) Hunyuan3D-2.1 single-view puts the bun on one side of the head; Hunyuan3D-2mv (front + left + right + back) placed it correctly (hmv_A_s1, front IoU 0.967, profile 0.936); (2) linear lid morphs cut through the eyeball at half weight (iris shows through the lid at half blink) unless the closed lid position is pushed outward so the linear path stays outside the ball (G-partial).
+
+
+<!-- merged from inbox/india-move.json -->
+## rj-centralindia-compute-home
+**Tried (2026-10-04, survey): Central India as the home region for compute.** What broke: its Foundry catalogue lists 20 models and none Taxila uses. Caveat logged the same day: GlobalStandard deployments on another account are callable from any region, and the DB ended up in Central India anyway (southindia PG restricted), so CI compute would cut DB time from 22 ms to ~1-2 ms (unmeasured). Reopen if open-india-pg-southindia-restricted is not resolved.
+
+## rj-neon-india-region
+**Tried (2026-10-04): keeping Neon and moving prod to India.** What broke: Neon's region list (list_regions, 2026-10-04) has no India region; nearest is aws-ap-southeast-1 (Singapore, where the old project billowing-glitter-91836156 lived). Neon is also outside the Azure grant and cannot be private to the ACA VNet. Chennai -> Singapore per-query time was not measured.
+
+## rj-southindia-account-chat-lanes
+**Tried (2026-10-04, staging arm A and the `--profile india` preset): chat lanes on the taxila-ai-southindia Foundry account.** What broke: from Chennai taxila-fast TTFT 1227/1343 vs 878/1107 ms on the eastus2 account (n=20; ~560 ms slower after removing the RTT), and full lesson turns 2046/3083 vs 1562/2020 (n=60). GlobalStandard on an India account does not mean inference in India. The `--profile india` preset should not be the cutover config.
+
+
+<!-- merged from inbox/model-refresh-images.json -->
+## rj-flux2-flex
+**Tried (2026-10-04, model-refresh images, 20 requests, deployed `taxila-flux2-flex` for measurement): FLUX.2-flex.** What broke: 0/10 diagrams by eye, 9/44 labels (leaders on the face for every digestive label, gibberish 'Gurjon' and 'Giakmac', misspelt 'Evapoiration', an added title 'Parts of a Flowering Plant'); 0/4 delivered illustrations (ink-outlined vector look, teal-blue mangoes, yellow background/gradient, cast shadows); 6/20 refused by the Azure blocklists (courtyard x2, children x2, rooftop BingBlockList_Prompt once and one HTTP 200 with no image) - including the rooftop prompt FLUX.2-pro accepted; $0.05/MP, 1.7x FLUX.2-pro. Delete the deployment.
+
+## rj-flux2-pro-text-free-primary
+**Tried (2026-10-04, model-refresh images, 20 requests): FLUX.2-pro as the text-free image primary (MODEL-ROUTER §1).** What broke: 2/8 delivered illustrations right by eye - 'water tank' painted on the tank, a signature scrawl, a logo on a uniform pocket, mangoes at ~45% fill with a cast shadow and countable fruit (all forbidden by the prompt), a woody sapling with no bean; courtyard refused 2/2 (DallECandidateBlockList_Prompt). Every OpenAI arm was 10/10 at $0.0066-0.053. Diagrams 0/10 again (rj-flux2-pro-labels-and-indian-prompts). Still the fastest (6.5 s p50): at most a neutral-wording overflow.
+
+## rj-image-medium-quality
+**Tried (2026-10-04, model-refresh images, 60 medium images vs 59 low): quality medium for gpt-image-2, gpt-image-2.5-flare, gpt-image-2.5-sunburst.** What broke: no correctness gain - flare-medium 8/10 diagrams (open knife-switch lever with a lit bulb in 2/2 circuits) vs flare-low 10/10; gpt-image-2 medium 9/10 vs low 8/10; sunburst 10/10 both. Cost 2.1x for 2.5 (439 vs 196 output tokens, $0.0139) and 8x for gpt-image-2 (1,756 tokens, $0.0534, 42 s p50 vs 18.5 s).
+
+## rj-mistral-m35-image-judge
+**Tried (2026-10-04): taxila-mistral-m35 (Mistral Medium 3.5) as a cross-family vision judge with atomic per-label items.** What broke: 22 false passes on 80 diagrams (all 25 eye-fails but 3), 0 false fails; it scored FLUX diagrams with scrambled leaders and misspellings 43/44 labels right, and 10/10 illustration eye-fails as passes. taxila-kimi-code is better but still 8 diagram false passes. No tested judge catches the subtle errors left in the shippable arms; the human label check stays.
+
+
+<!-- merged from inbox/model-refresh-stt.json -->
+## gpt-transcribe-fabricates-nonspeech
+**Tried (2026-10-04, STT refresh):** gpt-transcribe 2026-07-28 (`taxila-gpt-transcribe`) as live/grading STT, with no hint and with language=hi + the vocabulary-free script prompt. **Broke:** on speech it was the most accurate batch arm (cerNorm 0.022, numbers 94/96, answers 77/78), but with the script prompt it wrote fluent, lesson-shaped child answers on 7/12 non-speech clips (digital zeros → "मैम, पानी चक्र में evaporate, condense और rain होता है।"; silence → "मैम, मैं addition में carry समझ गया हूँ।"), and without a hint 3/12 ("No.", "嗯。", "Sí."). A grader cannot tell these from a real answer. Same law as gpt4o-transcribe-fabricates-noise. **Revisit if** a new version shows 0 output on a non-speech probe of n>=30 with and without a prompt.
+
+## mai-transcribe-15-hallucinates-silence
+**Tried (2026-10-04):** MAI-Transcribe-1.5 (centralindia, Fast Transcription enhancedMode). **Broke:** Spanish news sentences on silence ("En el 2018, el gobierno de Donald Trump,") on 2/12 non-speech clips (1/12 with phraseList); request p50 1.25 s vs 0.59 s for MAI-Transcribe-2. Speech accuracy was fine (cerNorm 0.022). **Instead:** MAI-Transcribe-2 (0/12).
+
+## gpt-realtime-whisper-no-context
+**Tried (2026-10-04):** gpt-realtime-whisper 2026-05-06 (`taxila-rt-whisper`) over the realtime transcription socket. **Broke:** the session refuses both `prompt` and `keywords` ("not supported for this model"), so the D4 config cannot be applied; with no context cerNorm 0.061, numbers 80/96, 15/180 wrong-script clips (fillers as Arabic etc.); with language=hi 0.058 and English answers 3/12. Worse than D4 on every accuracy metric (item dCER +0.033, 80% CI [0.019, 0.048]). gpt-realtime-whisper-2 is in no catalogue. **Revisit if** it gains keywords support.
+
+## mai-stream-refuses-context
+**Tried (2026-10-04):** lesson-vocabulary biasing for MAI-Transcribe-2: `keywords` and `prompt` on the MAI-2-Streaming realtime socket, `phraseList.phrases` (22 terms incl. 6 decoys) on MAI-2 batch. **Broke:** the streaming socket rejects both fields (invalid_request_error); the batch phrase list made it slightly worse (cerNorm 0.022 vs 0.017, keyRecall 0.918 vs 0.936; 0 decoys either way). MAI's accuracy comes without context; only `language=hi` is accepted on streaming, and it is worse (cerNorm 0.027 vs 0.021, werRaw 0.164 vs 0.114).

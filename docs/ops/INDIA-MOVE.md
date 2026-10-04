@@ -7,6 +7,10 @@ stays as the rollback copy and keeps the test branches.
 This workflow builds and rehearses. The **main loop does the cutover** after Wave 1 deploys. Nothing here touches
 `taxila-web` (eastus2) or writes to Neon prod.
 
+**Map:** §1 Inventory · §2 Gaps · §3 What was built · §4 Measured latency · §5 Cutover runbook · §6 Owner actions.
+Work logs follow as appendices; scripts and earlier reports that cite the old numbers map as §3→App. A (plan),
+§4→App. B (created resources), §5→App. C (spend), §6→App. D (Foundry twins), §7→App. E (port), §8→App. F (rehearse).
+
 Survey data: `node scripts/region/survey.mjs` (READ-ONLY ARM; prints no secret values) writes
 `node_modules/.cache/india-move/survey.json`. Run date for everything below: 2026-10-04, from the US sandbox.
 
@@ -105,7 +109,7 @@ logical size 129 MB). 55 public tables, 13 rows in `schema_migrations`. Extensio
 branches: `conductor-test` (the test DB) and `restore-drill-2026-10-04` (expires 2026-10-05). The old Singapore
 project `taxila` (`billowing-glitter-91836156`, PG17) is DATABASE_URL_SINGAPORE_OLD.
 Measured with one read-only Neon SQL statement. A direct pg connection from the sandbox hangs because TCP 5432 does
-not pass the proxy. So the dump/restore has to run from inside Azure, as an ACA job (see §3).
+not pass the proxy. So the dump/restore has to run from inside Azure, as an ACA job (see App. A).
 
 ---
 
@@ -238,7 +242,187 @@ linked to the VNet. Public network access stays Disabled. TLS: `require_secure_t
 
 ---
 
-## §3 Plan (for the build step; the main loop owns cutover)
+## §3 What was built (2026-10-04)
+
+Everything below exists and was exercised. Resource names in full: Appendix B. Spend: Appendix C.
+
+| piece | state | where it is written up |
+|---|---|---|
+| RG `taxila-sin` (southindia): `taxila-sin-vnet` (subnets `aca` /23, `pg` /28), private DNS zone `taxila-sin.private.postgres.database.azure.com` (+ links `taxila-sin-vnet-link`, `taxila-cin-vnet-link`), `taxila-sin-logs`, ACA env `taxila-sin-env` (VNet, static outbound IP 20.235.16.222), identity `taxila-sin-pull` | **up** | App. B |
+| `taxila-cin-vnet` (centralindia) peered both ways with `taxila-sin-vnet` (`sin-to-cin`, `cin-to-sin`) | **up** | App. F.1 |
+| PostgreSQL **`taxila-cin-pg`** (centralindia, PG 17.11, D2ds_v5, 64 GB, private access only, public access Disabled, TLS ≥1.2 required, geo-backup on, pgcrypto allow-listed, database `taxila` collation `C` = Neon's sort order). Not in southindia: the subscription is **restricted** there (§2.5, `open-india-pg-southindia-restricted`). Decision `india-move-southindia-azure-pg-2026-10-04`; Neon offers no India region (`rj-neon-india-region`) | **up, holds a verified copy of prod** | App. F.1, F.2 |
+| 17 Foundry twins on `taxila-ai-southindia` under the eastus2 names (+ pre-existing `taxila-mai-tx2-stream`). Realtime/live twins NOT deployed (pooled quota full) | **up** | App. D |
+| Staging app **`taxila-sin-staging`** (prod image `aa263ce`, India env, India DB) | **running** (~$39/mo; delete after cutover) | App. F.3 |
+| `server/endpoints.js`: per-lane account selection (`AZURE_OPENAI_ENDPOINT_<LANE>` + key); defaults identical to today. `server/db.js` / `server/conductor/sweep.js`: `DB_DRIVER=pg` path with verified TLS, no Neon import | **in tree**, swept into git by another session's checkpoint commits; gates green (tsc, vite build, `npm test` 1207 pass) | App. E.1, E.2 |
+| `scripts/deploy-azure.mjs`: `--rg/--region/--env/--registry/--create/--set/--secret/--profile india/--db azure/--migrations-evidence`; defaults unchanged; India values in NEW secret names so `--rollback` stays one traffic PATCH | **in tree** | App. E.4 |
+| `scripts/region/`: `survey.mjs`, `provision.mjs`, `foundry-si.mjs`, `pg-cin.mjs`, `db-copy.mjs` + `db-copy.sh`, `staging.mjs`, `latency.mjs` + `latency-job.mjs` (all idempotent; none prints a secret) | **in tree** | App. A-F |
+| Neon → Azure copy, in-VNet job, one snapshot, per-table count + md5, sequences, migrations | **OK: 57/57 tables, 1,814 rows, 16/16 migrations, 90 s** (`india-db-copy-2026-10-04`) | App. F.2 |
+
+Not built (outside this workflow's files): `scripts/migrate.mjs`, `infra/gate.mjs`, `infra/restore-drill.mjs` are
+Neon-HTTP only; `server/forge/g2/azure-job.js` and `infra/eyes.mjs` hard-code eastus2; `taxilaforge` blob and `taxilacr`
+stay in eastus2; the 4 query alerts are not cloned for an India app; no reverse-copy path (Azure PG → Neon) exists.
+
+## §4 Measured latency (2026-10-04)
+
+Method: `node scripts/region/latency.mjs --staging <url> --n 20 --lessons 20` (context node `india-latency-2026-10-04`)
+runs `latency-job.mjs` as ACA jobs in `taxila-sin-env` (Chennai) and `taxila-env` (eastus2) concurrently, 12:20-12:55
+UTC. First call per target dropped as cold; keep-alive after. p50 / p90 ms. Lessons ran against staging only (smoke
+accounts, all deleted). Two arms on the same India app + India DB + image `aa263ce`: arm A = every model lane on
+`taxila-ai-southindia`, arm B = every model lane on the eastus2 account (`staging.mjs --ai eastus2`).
+Reports: `node_modules/.cache/india-move/latency-2026-10-04T12-32-32-766Z.json` (A), `...T12-41-10-567Z.json` (B).
+
+| what | from Chennai | from eastus2 | n | delta that matters |
+|---|---|---|---|---|
+| `/api/health`, app in South India | 4 / 5 | 232 / 233 | 20 | |
+| `/api/health`, app in eastus2 (prod) | 215 / 215 | 4 / 4 | 20 | **−211 ms per HTTP round trip** for an Indian user when the app is in India |
+| DB per query: India app → `taxila-cin-pg` (Chennai → Pune) | 22 / 24 | | 25 | **+14 ms/query** vs today |
+| DB per query: prod app → Neon us-east-1 | 8 / 9 | | 25 | (≈ +140 ms on a ~10-query turn, estimate) |
+| `taxila-fast` TTFT, southindia account | 1227 / 1343 | 1461 / 1562 | 20 | **SI account +349 ms p50** even from India |
+| `taxila-fast` TTFT, eastus2 account | 878 / 1107 | 602 / 764 | 20 | |
+| live STT commit→final, `taxila-live-transcribe` (eastus2) | 753 / 914 | 499 / 530 | 20 | |
+| live STT commit→final, `taxila-mai-tx2-stream` (MAI-Transcribe-2-Streaming, SI) | 68 / 75 | 260 / 282 | 20 | **−685 ms p50** (different model: quality vs gpt-live-transcribe not measured here) |
+| lesson turn, arm A (SI AI) | 2046 / 3083 | 2260 / 2434 | 60 | |
+| lesson turn, arm B (eastus2 AI) | **1562 / 2020** | — | 60 | **arm B −484 ms p50 / −1063 ms p90** vs arm A |
+| lesson start, arm A / arm B | 1912 / 2071 · 1610 / 1814 | 2270 / 2657 · — | 20 | |
+
+**Not measured:** a production lesson turn from India (it writes Neon prod; the Neon A/B branch was not used), so
+"India app + India DB + eastus2 AI" vs "today's prod" end to end has no number yet. Neon Singapore from Chennai, and a
+South India PG (none can exist), are also unmeasured. The US-sandbox TTFTs in App. D.1 prove only that twins answer.
+
+Reading: compute in India wins every HTTP round trip; the southindia **Foundry account** loses on chat (GlobalStandard
+on that account is not served faster for India); MAI streaming STT is the one AI lane that is clearly better in India.
+Hence decision `india-ai-lanes-eastus2-2026-10-04`: cut over with arm B's lane placement.
+
+## §5 Cutover runbook (main loop; exact order)
+
+Shell vars used below: `SHA` = the gated Wave 1 commit already serving `taxila-web`; `EVID` = the report path printed by
+`--check-migrations`; `SIN=https://taxila-web-sin.calmsmoke-60bec78e.southindia.azurecontainerapps.io` (the FQDN ARM
+returns on create; confirm it). All `node` commands from `/home/user/Taxila` with `NODE_USE_ENV_PROXY=1`. Nothing in
+this runbook has run against prod yet; steps marked **(unrehearsed)** need a dry pass first.
+
+### 5.0 Preconditions (all must hold; T-1 day)
+
+1. Wave 1 is deployed on `taxila-web` by `deploy-azure.mjs` (Multiple revision mode, so `--rollback` works) and its
+   canary smoke passed.
+2. Neon prod carries every migration of `SHA`:
+   `node scripts/region/db-copy.mjs --check-migrations --target DATABASE_URL --sha $SHA` → `ok: true` (read-only).
+3. Public URL decided (§6 item 4). Today users reach `taxila-web.nicebay-a0d3a12f.eastus2.azurecontainerapps.io`
+   and there is **no custom domain**, so there is no DNS record to flip. With a domain: lower its TTL to 300 s now.
+4. Rehearsal copy + India prod app (no user traffic yet):
+   ```
+   node scripts/region/db-copy.mjs --sha $SHA --replace                 # must print status OK
+   node scripts/region/db-copy.mjs --check-migrations --sha $SHA        # → EVID
+   node scripts/deploy-azure.mjs --app taxila-web-sin --rg taxila-sin --env taxila-sin-env --region southindia \
+     --create --db azure --image-tag $SHA --migrations-evidence $EVID --dry-run     # read the plan
+   node scripts/deploy-azure.mjs --app taxila-web-sin --rg taxila-sin --env taxila-sin-env --region southindia \
+     --create --db azure --image-tag $SHA --migrations-evidence $EVID
+   ```
+   No `--profile india`: `--create` copies `taxila-web`'s env, so every model lane stays on the eastus2 account (arm B,
+   §4). Move single lanes later with `--set AZURE_OPENAI_ENDPOINT_<LANE>=… --secret AZURE_OPENAI_API_KEY_<LANE>=…`
+   only after a re-measure. Then run the 5.3 smoke against `$SIN`. Smoke accounts land in `taxila-cin-pg`; the final
+   copy replaces them.
+5. Run `latency.mjs --staging $SIN` once more; arm-B numbers within ±20 % of §4 or stop.
+6. Pick the window at India's lowest traffic (proposal 02:00-02:30 IST = 20:30-21:00 UTC; traffic pattern not
+   measured). Measured copy time: 90 s for a 54.8 MB dump; budget 15 min.
+
+### 5.1 Freeze writes (T0) **(unrehearsed)**
+
+```
+-- Neon prod, branch main, database taxila (Neon SQL; owner-approved prod write)
+ALTER DATABASE taxila SET default_transaction_read_only = on;
+```
+Then restart the serving `taxila-web` revision so pooled connections reopen read-only (ARM
+`POST …/containerApps/taxila-web/revisions/<active>/restart?api-version=2024-03-01`), and suspend every scheduled ACA
+job in `rg-raghavsharma1729-7190` that carries a `database-url` secret (list them with
+`node scripts/region/survey.mjs`; re-enable them only in rollback R1). Check the freeze took:
+`SELECT current_setting('default_transaction_read_only')` from a NEW session → `on`. From here, lesson writes on
+`taxila-web` fail; that is the window. Rehearse this statement on a Neon branch first.
+
+### 5.2 Final copy with verification
+
+```
+node scripts/region/db-copy.mjs --sha $SHA --replace            # status OK: every table count+md5, sequences, migrations
+node scripts/region/db-copy.mjs --verify-only --sha $SHA        # OK again against the frozen live source
+node scripts/region/db-copy.mjs --check-migrations --sha $SHA   # → new EVID (≤ 6 h old at deploy)
+```
+Any non-OK → rollback R1. Do not hand-patch rows.
+
+### 5.3 Fresh revision on the India app + smoke
+
+```
+node scripts/deploy-azure.mjs --app taxila-web-sin --rg taxila-sin --env taxila-sin-env --region southindia \
+  --db azure --image-tag $SHA --migrations-evidence $EVID                     # new revision, canary smoke, /api/health
+node scripts/verify-release.mjs --live $SIN --only live-probes,prod-smoke   # 2/2, 11/11 probes
+node scripts/prod-smoke.mjs $SIN text
+node scripts/prod-smoke.mjs $SIN cascade
+```
+Plus the three voice routes that were red on staging under SI AI (App. F.3), each must be 200 with a smoke session:
+`/api/tts`, `/api/voice/tts-stream`, `/api/realtime/token`. Any red → rollback R1.
+
+### 5.4 Move users
+
+Depends on §6 item 4 (no domain exists today):
+- **Custom domain (recommended):** bind it to `taxila-web-sin` (ACA managed certificate), switch the CNAME from
+  `taxila-web`'s FQDN to `taxila-web-sin`'s. Rollback = CNAME back (TTL 300).
+- **No domain:** users hold the eastus2 FQDN, which cannot be re-pointed. The only moves are a redirect revision on
+  `taxila-web` (code, not built) or Azure Front Door Standard (~$35/mo, an extra hop, latency not measured). Neither is
+  ready; do not cut over on this branch without a decision.
+
+Keep Neon prod **read-only** after the move: it is the frozen rollback copy, and read-only stops split-brain if any old
+client still reaches `taxila-web`.
+
+### 5.5 After the move (first 24 h)
+
+- Re-measure from Chennai (`latency.mjs --staging $SIN --prod $SIN`, n ≥ 20): lesson turn p50/p90 vs §4 arm B.
+- Watch 5xx and turn p90 (the four `taxila-*` query alerts are bound to `taxila-web`; clone them for `taxila-web-sin`
+  or watch `taxila-sin-logs` by hand).
+- Re-point `scripts/prod-smoke.mjs` and `tests/prod/lib.mjs` defaults to the new public URL (not this workflow's files).
+
+### 5.6 Rollback
+
+- **R1, before users move (5.1-5.3 fail):** `ALTER DATABASE taxila SET default_transaction_read_only = off;` on Neon
+  prod, restart the `taxila-web` revision, re-enable the suspended jobs. Nothing is lost: no user wrote to Azure PG.
+- **R2, after users move:** stop India writes first (set `taxila-web-sin` ingress `ipSecurityRestrictions` to deny all,
+  or scale to 0), then: the writes made on `taxila-cin-pg` since 5.4 are **lost on rollback** unless copied back, and no
+  tool copies Azure PG → Neon prod (`db-copy.mjs` refuses Neon prod as a target by design; building it needs owner
+  approval). Then do R1 and flip the CNAME back. Decide before T0 how long R2 is acceptable (proposal: 24 h).
+- `deploy-azure.mjs --app taxila-web-sin --rg taxila-sin --rollback` reverts a bad India revision without leaving India.
+
+### 5.7 When to decommission eastus2 compute
+
+All of: ≥ 7 days on India with no R2; India lesson turn p50 and p90 (n ≥ 20, from Chennai) at or below the pre-cutover
+prod baseline; a restore drill of `taxila-cin-pg` passed (needs `infra/restore-drill.mjs` ported to pg); alerts
+cloned. Then: scale `taxila-web` to 0, delete it a week later (image stays in `taxilacr`). **Keep** `taxila-env` (probe
+jobs) and `taxila-forge-untrusted` / `forge-g2-runner` (Forge batch, gap G4), the eastus2 Foundry account (chat,
+realtime, TTS, image lanes run there, §4), `taxilacr` and `taxilaforge`. Delete SI Foundry twins no lane uses
+(`taxila-fast-bg`, `taxila-studio-sol` first) to give the pooled quota back. Neon prod: keep read-only ≥ 30 days, then
+the owner decides (Neon deletes need owner approval). Delete `taxila-sin-staging` at cutover. If South India PG is
+ever allowed, `provision.mjs` builds `taxila-sin-pg`, the same runbook (5.1-5.4 with `--target`) moves the data, and
+`taxila-cin-pg` becomes the rollback copy.
+
+## §6 Owner actions
+
+| # | action | exact values | needed for |
+|---|---|---|---|
+| 1 | Quota increase (portal → Azure AI Foundry → Quotas; GlobalStandard; pools are subscription-wide) | `gpt-realtime-2.1` 10 → **20**; `gpt-realtime-2.1-mini` 30 → **60**; `gpt-live-1` 10 → **20**; `gpt-live-transcribe` 10 → **20**. Optional headroom: `gpt-5.6-luna` and `gpt-5.6-sol` 2000 → **3000**; `grok-4-1-fast-non-reasoning` and `DeepSeek-V4-Pro` 1000 → **1500** | Not the cutover (realtime stays on eastus2). Needed to *measure* SI realtime twins, and to unblock other workflows: 7 pools are full (App. D.1) |
+| 2 | Azure support request, issue type "Service and subscription limits" | PostgreSQL Flexible Server, region South India, General Purpose Standard_D2ds_v5, PG 17 | Moves the DB from Pune to Chennai (−~20 ms/query, estimate); `open-india-pg-southindia-restricted` |
+| 3 | Role assignment (needs Owner or User Access Administrator; the SP is only Contributor) | AcrPull on `taxilacr` to principal `25e26486-2c49-479e-8496-c9fb340b5913` (`taxila-sin-pull`) | India apps pull without the ACR admin password |
+| 4 | Public URL | A custom domain (CNAME to the India app, ACA managed cert), or approve Front Door Standard (~$35/mo) | §5.4; `open-india-public-url`. Without it there is no cutover |
+| 5 | Approve the prod freeze and the rollback policy | `ALTER DATABASE taxila SET default_transaction_read_only = on` on Neon prod for the window; R2 data-loss window (proposal 24 h) or a reverse-copy build | §5.1, §5.6 |
+
+Auto-expiring leftovers (no action): Neon branch `india-ab-2026-10-04` (expires 2026-10-06 12:00 UTC); database
+`dbcopy_rehearsal` on `restore-drill-2026-10-04` (expires 2026-10-05).
+
+### Context nodes (proposed in `context/inbox/india-move.json`)
+
+Decisions `india-move-southindia-azure-pg-2026-10-04`, `india-ai-lanes-eastus2-2026-10-04`; measurements
+`india-latency-2026-10-04`, `india-db-copy-2026-10-04`; rejections `rj-centralindia-compute-home`,
+`rj-neon-india-region`, `rj-southindia-account-chat-lanes`; open `open-india-pg-southindia-restricted`,
+`open-india-public-url`.
+
+---
+
+## Appendix A · Plan (for the build step; the main loop owns cutover)
 
 1. Confirm the provider registrations. Owner files the quota raise for realtime-2.1, realtime-2.1-mini,
    live-transcribe and live-1 (§2.1a).
@@ -255,7 +439,7 @@ linked to the VNet. Public network access stays Disabled. TLS: `require_secure_t
 5. Hand the main loop: the cutover runbook (freeze writes → final dump/restore → swap DATABASE_URL and
    AZURE_OPENAI_ENDPOINT → DNS/front door), with rollback to Neon + eastus2.
 
-## §4 Created resources (names only)
+## Appendix B · Created resources (names only)
 
 | date | name | type | region | by |
 |---|---|---|---|---|
@@ -281,6 +465,11 @@ linked to the VNet. Public network access stays Disabled. TLS: `require_secure_t
 
 Script: `scripts/region/provision.mjs` (safe to re-run; `--dry` checks only the providers). Machine report:
 `node_modules/.cache/india-move/provision.json`.
+
+Created by later steps (Provision AI, Port, Rehearse):
+
+| date | name | type | region | by |
+|---|---|---|---|---|
 | 2026-10-04 | `taxila-ai-southindia` (REUSED, pre-existing AIServices S0; not created) | Cognitive Services account | southindia | Provision AI |
 | 2026-10-04 | `taxila-fast` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
 | 2026-10-04 | `taxila-brain` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
@@ -299,11 +488,18 @@ Script: `scripts/region/provision.mjs` (safe to re-run; `--dry` checks only the 
 | 2026-10-04 | `taxila-kontext` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
 | 2026-10-04 | `taxila-fast-bg` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
 | 2026-10-04 | `taxila-studio-sol` | Foundry deployment on `taxila-ai-southindia` | southindia | Provision AI (scripts/region/foundry-si.mjs) |
-
 | 2026-10-04 | `taxila-sin-dbcopy` (created and DELETED by each `db-copy.mjs` run; 3 runs: 1 drill copy (auth failed), 2 migrations checks (1 TLS-check false negative, fixed; 1 OK)) | ACA job (Manual) in taxila-sin-env | southindia | Port |
 | 2026-10-04 | `dbcopy_rehearsal` (empty database on Neon branch `restore-drill-2026-10-04`; it goes away when the branch expires 2026-10-05 08:00 UTC; not deleted by hand: Neon deletes need owner approval) | Neon database | aws-us-east-1 | Port |
+| 2026-10-04 | `taxila-cin-vnet` (10.61.0.0/16; subnet `pg` 10.61.2.0/28 → flexibleServers) | virtual network | **centralindia** | Rehearse (scripts/region/pg-cin.mjs) |
+| 2026-10-04 | peerings `sin-to-cin` (on taxila-sin-vnet) + `cin-to-sin` (on taxila-cin-vnet), both Connected | VNet peering (global) | southindia ↔ centralindia | Rehearse |
+| 2026-10-04 | `taxila-cin-vnet-link` (link of zone taxila-sin.private.postgres.database.azure.com to taxila-cin-vnet) | private DNS link | global | Rehearse |
+| 2026-10-04 | **`taxila-cin-pg`** (PG 17.11, GeneralPurpose Standard_D2ds_v5, 64 GB autogrow, 14 d backup, geo-redundant backup Enabled, public access Disabled, TLS required ≥1.2, pgcrypto allow-listed) + database `taxila` (UTF8, collation `C`) | PostgreSQL Flexible | **centralindia** (southindia is restricted, §2.5) | Rehearse |
+| 2026-10-04 | `taxila-sin-dbcopy` (3 more runs, each deleted after: copy FAIL at verify (collation sort bug, fixed), copy FAIL (sort fix typo, fixed), copy `--replace` **OK**) | ACA job (Manual) | southindia | Rehearse |
+| 2026-10-04 | **`taxila-sin-staging`** (image taxila-web:aa263ce, Multiple revision mode, 0.5 vCPU / 1 Gi, 1 replica, external ingress; secrets acr-password, azure-openai-key, storage-key, forge-g2-child-salt, azure-openai-key-sin, database-url-sin, azure-speech-key-sin) | Container App | southindia (taxila-sin-env) | Rehearse (scripts/region/staging.mjs). **Left running** |
+| 2026-10-04 | `taxila-sin-latency`, `taxila-eus2-latency` (created and DELETED per run; 2 runs SI, 1 run eastus2) | ACA jobs (Manual) | southindia (taxila-sin-env), eastus2 (taxila-env) | Rehearse (scripts/region/latency.mjs) |
+| 2026-10-04 | Neon branch `india-ab-2026-10-04` (`br-proud-lake-b7s2jtgy`, endpoint suspended, **expires 2026-10-06 12:00 UTC**). Created for an eastus2 A/B twin; UNUSED (the branch's role password differs from prod's and I did not pull a credential into the session) | Neon branch | aws-us-east-1 | Rehearse |
 
-## §5 Spend estimates (Azure retail, South India, read 2026-10-04 from prices.azure.com; monthly = 730 h)
+## Appendix C · Spend estimates (Azure retail, South India, read 2026-10-04 from prices.azure.com; monthly = 730 h)
 
 | item | price | est. / month |
 |---|---|---|
@@ -319,10 +515,15 @@ Script: `scripts/region/provision.mjs` (safe to re-run; `--dry` checks only the 
 | Foundry twins (GlobalStandard), 17 created 2026-10-04 | per token, same prices as eastus2. No fixed cost. Verification run cost < $1 (≈100 tiny chat/embed/STT calls + 2 images: FLUX.2-pro 512² ≈ $0.03, Kontext 1024² ≈ $0.04) | $0 fixed |
 | DragonHD TTS (centralindia) | ~$22 / 1M chars (MODEL-ROUTER) | usage-based |
 | `taxila-sin-dbcopy` job runs (1 vCPU / 2 GiB, ~1-3 min each; a full 101 MB copy estimated ~5-10 min) | ACA Consumption per second | < $0.05 per run (unmeasured bill; 3 runs so far) |
+| **Rehearse, actual:** PG `taxila-cin-pg` D2ds_v5 in **centralindia** (2 vCore × $0.125/vCore-h, read 2026-10-04) | $0.25/h | **~$183/mo** (replaces the SI D2ds_v5 line above while SI is restricted) |
+| ...backup storage beyond 100% of provisioned (centralindia LRS) | $0.095/GB-mo | ~$0 at 55 MB dump size |
+| Global VNet peering SI ↔ CI (data both ways) | ~$0.035/GB (retail list, not read today) | < $1 at rehearsal volume |
+| `taxila-sin-staging` 0.5 vCPU / 1 Gi, 1 replica always on | Consumption | ~$39/mo gross (≈ $1.30/day); delete when the rehearsal ends |
+| Rehearse runs: 3 db-copy jobs + 3 latency jobs + ~110 staging lessons (≈440 model calls) + 60 TTFT + 60 transcription calls | per call / per second | **< $3 total** (estimate; not read from the bill) |
 | **Fixed new spend** | | **~$290/mo** (~$495 with HA) |
 | Rehearsal overlap | eastus2 stack keeps running until cutover | existing spend continues |
 
-## §6 Provision AI: South India Foundry twins (2026-10-04)
+## Appendix D · Provision AI: South India Foundry twins (2026-10-04)
 
 Script: `node scripts/region/foundry-si.mjs --deploy --verify --env` (idempotent ARM; copies model, version, format,
 SKU, capacity, upgrade option and RAI policy `Microsoft.DefaultV2` from the live eastus2 deployment of the same
@@ -338,7 +539,7 @@ no Azure Speech, so the Speech/DragonHD lane for the India stack is Central Indi
 **Speech DragonHD, re-verified:** `en-IN-Diya`, `en-IN-Arjun`, `en-IN-Meera` `:DragonHDLatestNeural` on
 `centralindia.tts.speech.microsoft.com` → 200 PCM each (n=1, from the US sandbox).
 
-### 6.1 Deployments and verification (TTFT from the US sandbox; NOT India latency)
+### D.1 Deployments and verification (TTFT from the US sandbox; NOT India latency)
 
 Method: one SI call then one eastus2 call to the same deployment name, interleaved, n=3 pairs (images n=1, SI only).
 Chat lanes use streamed chat completions (`reasoning_effort: none` on gpt-5.6/gpt-6), TTFT = first content delta. Codex
@@ -377,7 +578,7 @@ that tries to create or scale up one of these models in ANY region will now get 
 or the main loop deletes the eastus2 copies at cutover. If that blocks a bench, the fix is to scale down
 `taxila-fast-bg` / `taxila-studio-sol` (SI), which are background lanes. Do not touch the eastus2 copies.
 
-### 6.2 Quota requests for the owner (portal → Azure AI Foundry → Quotas, subscription of the grant)
+### D.2 Quota requests for the owner (portal → Azure AI Foundry → Quotas, subscription of the grant)
 
 | model | region | SKU | quota row | today | request | why |
 |---|---|---|---|---|---|---|
@@ -393,11 +594,11 @@ missing twins under the same names. Realtime voice verification is not wired in 
 twin is verified through the transcription socket).
 
 
-## §7 Port: code that makes the move env-only (2026-10-04)
+## Appendix E · Port: code that makes the move env-only (2026-10-04)
 
 Nothing here touched `taxila-web` or wrote to Neon prod. Nothing was committed or pushed.
 
-### 7.1 Server: one endpoint config module
+### E.1 Server: one endpoint config module
 
 `server/endpoints.js` is now the only place the server picks an Azure account for a model lane. Every reader of
 `AZURE_OPENAI_ENDPOINT` goes through it: `server/azure.js` (chat, realtime client secret, batch TTS),
@@ -408,7 +609,7 @@ Safety host).
 | lane | used by | India setting |
 |---|---|---|
 | CHAT | reply, classify, grade, reports, content (`chat()`) | primary (southindia) |
-| REALTIME | `mintRealtimeSecret` for a voice session + its browser `base` | **eastus2** until the realtime quota raise (§6.2); then southindia |
+| REALTIME | `mintRealtimeSecret` for a voice session + its browser `base` | **eastus2** until the realtime quota raise (App. D.2); then southindia |
 | TRANSCRIBE | the cascade transcription session (mint + `base`) and push-to-talk batch transcription | primary (`taxila-transcribe` twin exists) |
 | TTS | gpt-4o-mini-tts batch and streamed | **eastus2** (not sold in southindia) |
 | IMAGE | gpt-image-2 / sora (no server caller today) | **eastus2** |
@@ -423,7 +624,7 @@ open calls on the other. Speech (DragonHD) env is `AZURE_SPEECH_REGION` + `AZURE
 server lane calls Speech yet.
 The test is `tests/endpoints.test.mjs` (8 cases).
 
-### 7.2 Database driver
+### E.2 Database driver
 
 - `DB_DRIVER=pg` works with Azure Database for PostgreSQL and `sslmode=require`. pg 8.23 treats `require` as
   verify-full: it checks the certificate chain and the hostname against Node's CA store, which holds the DigiCert G2
@@ -440,10 +641,10 @@ The test is `tests/endpoints.test.mjs` (8 cases).
 - **Not measured: no Azure PG server exists yet (§2.5).**
 - Still Neon-HTTP-only, in files outside this workflow: `scripts/migrate.mjs`, `infra/gate.mjs` `migrationsGate`
   and `infra/restore-drill.mjs`. They cannot reach a private server anyway. `deploy-azure.mjs` takes migrations
-  evidence from inside the VNet instead (7.4). Running `migrate.mjs` against Azure PG needs it ported to pg AND run
+  evidence from inside the VNet instead (App. E.4). Running `migrate.mjs` against Azure PG needs it ported to pg AND run
   from inside the VNet. The restored `schema_migrations` already carries the applied set.
 
-### 7.3 `scripts/region/db-copy.mjs` (+ `db-copy.sh`, the in-job half)
+### E.3 `scripts/region/db-copy.mjs` (+ `db-copy.sh`, the in-job half)
 
 This is a one-off ACA job `taxila-sin-dbcopy` in `taxila-sin-env` (VNet), running image
 `docker.io/library/postgres:17`. The script creates the job, starts it, reads the `DBCOPY_*` lines back from
@@ -502,7 +703,7 @@ NODE_USE_ENV_PROXY=1 node scripts/region/db-copy.mjs --check-migrations [--sha R
 Reports go to `node_modules/.cache/india-move/db-copy-<mode>-<ts>.json`. They hold hosts, counts and checksums,
 never a URL or password.
 
-### 7.4 `scripts/deploy-azure.mjs`
+### E.4 `scripts/deploy-azure.mjs`
 
 With no new flag, the deploy is unchanged. Re-checked with `--dry-run`: it reached the same gate as before, which
 refused because prod lacks 012/013/015.
@@ -512,7 +713,7 @@ New flags:
 - `--create [--create-from taxila-web]` creates a rehearsal app. It only READS taxila-web's env and secrets, and it
   refuses `taxila-web` as a target.
 - `--set NAME=VALUE` and `--secret NAME=LOCALVAR` set env and secrets one by one.
-- `--profile india` applies the 7.1 table: the primary goes to `_SIN`, and TTS/IMAGE (plus REALTIME unless
+- `--profile india` applies the E.1 table: the primary goes to `_SIN`, and TTS/IMAGE (plus REALTIME unless
   `--realtime-account southindia`) are pinned to eastus2. It also sets Speech from the `_SIN` vars and
   `TAXILA_REGION`.
 - `--db azure` sets DATABASE_URL from `$AZURE_PG_SIN_URL`.
@@ -525,7 +726,7 @@ New flags:
   resolves to. Checked with dry-runs:
   - `--profile india` passed (11 names).
   - `--realtime-account southindia` was refused (`taxila-realtime`, `gpt-realtime-2.1-mini` not deployed on
-    taxila-ai-southindia). This is the quota gap in §6.2.
+    taxila-ai-southindia). This is the quota gap in App. D.2.
 - The post-deploy `/api/health` serving check and the canary smoke are unchanged.
 
 Rehearsal app (not created yet: it needs the PG server for `--db azure`. Without `--db azure` it would run against
@@ -537,9 +738,9 @@ NODE_USE_ENV_PROXY=1 node scripts/deploy-azure.mjs --app taxila-web-si --rg taxi
 ```
 Planned dry-run (verified 2026-10-04): lane check OK, then "create taxila-web-si in taxila-sin/taxila-sin-env".
 The app pulls from `taxilacr` with the copied `acr-password` (the AcrPull grant for `taxila-sin-pull` is still
-pending, §4).
+pending, App. B).
 
-### 7.5 Cutover outline (main loop)
+### E.5 Cutover outline (main loop) — superseded by §5
 
 1. Wave 1 deployed, and prod has every migration applied.
 2. PG server exists. A rehearsal `db-copy.mjs` run is OK, and `taxila-web-si` passes the smoke and the
@@ -548,3 +749,125 @@ pending, §4).
 4. Run `deploy-azure.mjs --profile india --db azure --migrations-evidence …` on the India app, then move DNS.
 5. Rollback is DNS back to taxila-web (eastus2, Neon). Neon prod has not been written since the freeze, so any India
    writes after the cutover are lost on rollback unless they are copied back. Decide the window before cutting over.
+
+## Appendix F · Rehearse (2026-10-04): copy, staging, smoke, latency from India
+
+Nothing here touched `taxila-web` (it was only READ: its template, and `listSecrets` to copy the ACR password, storage
+key and salt) or wrote to Neon prod (the copy reads it inside one read-only snapshot). Nothing committed or pushed.
+
+### F.1 Database: Azure PG lives in Central India for now
+
+South India still answers `restricted: Enabled` for PostgreSQL Flexible (re-read 2026-10-04 12:00 UTC). So the
+rehearsal took §2.5 option 2: `scripts/region/pg-cin.mjs` built `taxila-cin-pg` in **centralindia**, private access
+only, in `taxila-cin-vnet`, peered both ways with `taxila-sin-vnet`, and linked the existing private DNS zone to both.
+The India-stack URL is in `.env.local` as `AZURE_PG_SIN_URL` (name kept so `deploy-azure.mjs --db azure` and
+`db-copy.mjs` need no change; the comment above it says the server is in centralindia). When the SI restriction is
+lifted (owner support request, §2.5 option 1), `scripts/region/provision.mjs` builds `taxila-sin-pg` and the same
+copy moves the data again; `taxila-cin-pg` then becomes the geo/rollback copy or is deleted.
+
+**Collation.** Neon prod's database is `C.UTF-8` (builtin provider). The first Azure database was `en_US.utf8`,
+which would silently reorder every text `ORDER BY` after the move. Recreated as collation `C` (ARM refuses
+`C.UTF-8`: 400 InvalidParameterValue). `C` sorts by code point exactly like `C.UTF-8`; the ctype differs only for
+non-ASCII `upper()/lower()` (no measured caller). The same mismatch broke the copy's own verification (lists
+sorted by each side's collation compared unequal), so every text sort in `db-copy.sh` is now `COLLATE "C"`.
+
+### F.2 Copy Neon prod → taxila-cin-pg (ACA job inside the VNet)
+
+`node scripts/region/db-copy.mjs --sha aa263ce --replace`, 2026-10-04 12:13 UTC
+(report `node_modules/.cache/india-move/db-copy-copy-2026-10-04T12-13-23-961Z.json`):
+
+| check | result |
+|---|---|
+| status | **OK** (job Succeeded, 90 s end to end in the job) |
+| dump / restore | 54.8 MB custom-format dump in 46 s, restore 14 s (`--single-transaction --exit-on-error`) |
+| tables | **57 / 57 match** on row count AND order-independent md5 of every row (1,814 rows total; largest: audit 950, asset_cache 497, turn 134) |
+| sequences | all `last_value`s match |
+| migrations | source = target = 16 (prod now carries 012/013/015: Wave 1 applied them since the App. E.3 check); none missing vs aa263ce (13) |
+| snapshot | dump and source checksums from ONE exported snapshot |
+| TLS | target TLSv1.3, server-side `pg_stat_ssl` = t, verify-full against DigiCert/Microsoft roots; source TLSv1.3 client-verified (Neon proxy terminates TLS, so its `pg_stat_ssl` reads f) |
+| PG versions | 17.11 → 17.11 |
+
+### F.3 Staging app `taxila-sin-staging`
+
+`node scripts/region/staging.mjs` (not `deploy-azure.mjs --create`, which correctly refuses `aa263ce`: that image
+has no gate stamp; staging reuses the exact image production runs, so no unreviewed code ships).
+URL: `https://taxila-sin-staging.calmsmoke-60bec78e.southindia.azurecontainerapps.io`.
+Env = taxila-web's, minus the Neon `database-url` secret (never copied), plus: `AZURE_OPENAI_ENDPOINT` =
+taxila-ai-southindia, `DATABASE_URL` ← `database-url-sin` (taxila-cin-pg), `AZURE_OPENAI_ENDPOINT_{TTS,IMAGE,REALTIME}`
+= eastus2 with their keys (for images that contain server/endpoints.js), Speech = centralindia, `TAXILA_REGION`,
+`TAXILA_STAGING=1`. Same size as prod (0.5 vCPU / 1 Gi) so the A/B compares like with like. It shares prod's
+`taxilaforge` storage account (asset cache writes are content-addressed). `--ai eastus2` flips every model lane to
+the eastus2 account (the A/B arm below); the script deactivates superseded revisions.
+
+| gate (against staging, SI AI config) | result |
+|---|---|
+| `verify-release.mjs --live <staging> --only live-probes,prod-smoke` | **2/2 pass** (11/11 probes; health, DB reach, app shell, 6 auth fences, JSON 404) |
+| `prod-smoke.mjs <staging> text` | **PASS** (start, 3 turns, end; floor predicate clean; account deleted) — run 3 times |
+| `prod-smoke.mjs <staging> cascade` | **PASS** — but this smoke never calls TTS (the reply audio is a separate request) |
+| `/api/tts` (text-mode voice), `/api/voice/tts-stream` (cascade voice) | **RED: 502 "speech service unavailable"** |
+| `/api/realtime/token` (voice lane) | **RED: 500** |
+| `/api/voice/stt-token` | 200 |
+
+**Why the voice lanes are red, and why no config fixes them on this image:** `aa263ce` predates
+`server/endpoints.js`: it sends EVERY lane to `AZURE_OPENAI_ENDPOINT`. South India does not sell gpt-4o-mini-tts, and
+`taxila-realtime` is not deployed there (quota, App. D.2). The per-lane overrides are already set on staging; the first
+image that contains `server/endpoints.js` turns them green with no config change. Proof that config is not the
+problem: with `--ai eastus2` the same image on the same India app/DB returned `/api/tts` 200 (185 KB mp3),
+`tts-stream` 200 (480 KB PCM), `realtime/token` 200 (n=1 each).
+Staging is left on the requested SI-AI config.
+
+### F.4 Latency from an India vantage point (ACA jobs, 2026-10-04 12:20-12:55 UTC)
+
+`node scripts/region/latency.mjs --staging <url> --n 20 --lessons 20` runs `latency-job.mjs` (node:22) as a job in
+`taxila-sin-env` (Chennai) and in `taxila-env` (eastus2) at the same time. First call per target is dropped (cold);
+keep-alive connections after that, like a browser. p50/p90 in ms. Production is only READ (`/api/health`,
+`/api/health?db=1`); lessons run against staging only (smoke accounts, all deleted: 0 left).
+Reports: `node_modules/.cache/india-move/latency-2026-10-04T12-32-32-766Z.json` (arm A) and
+`latency-2026-10-04T12-41-10-567Z.json` (arm B).
+
+| metric | from South India | from eastus2 | n |
+|---|---|---|---|
+| `/api/health` staging (SI) | **4 / 5** | 232 / 233 | 20 |
+| `/api/health` prod (eastus2) | **215 / 215** | 4 / 4 | 20 |
+| → network RTT India ↔ eastus2 per HTTP round trip | **≈ 211 ms** | | |
+| DB per query, staging app → taxila-cin-pg (Chennai → Pune) | 22 / 24 | | 25 |
+| DB per query, prod app → Neon us-east-1 | 8 / 9 | | 25 |
+| taxila-fast TTFT, **southindia account** | 1227 / 1343 | 1461 / 1562 | 20 |
+| taxila-fast TTFT, **eastus2 account** | **878 / 1107** | 602 / 764 | 20 |
+| live STT commit→final: `taxila-live-transcribe` (eastus2; no SI twin, quota) | 753 / 914 | 499 / 530 | 20 |
+| live STT commit→final: `taxila-mai-tx2-stream` (MAI-Transcribe-2-Streaming, SI) | **68 / 75** | 260 / 282 | 20 |
+| live STT socket open, eastus2 / SI account | 1003 / 1111 vs **111 / 167** | 67 / 139 vs 902 / 975 | 20 |
+| batch STT `taxila-transcribe` total, SI / eastus2 | 750 / 2132 vs 2203 / 2249 | 2604 / 2893 (1×404) vs 332 / 365 | 20 |
+| **staging lesson start, arm A (SI AI)** | 1912 / 2071 | 2270 / 2657 | 20 |
+| **staging lesson turn, arm A (SI AI)** | **2046 / 3083** | 2260 / 2434 | 60 |
+| staging lesson start, arm B (India app + India DB, **eastus2 AI**) | 1610 / 1814 | — | 20 |
+| **staging lesson turn, arm B (eastus2 AI)** | **1562 / 2020** | — | 60 |
+
+What the numbers say (measured, n as stated):
+1. **The southindia Foundry account is slower than eastus2 for gpt-5.6-luna, even from India**: TTFT +349 ms p50
+   from Chennai (1227 vs 878). Subtracting the ~211 ms RTT, SI-account processing is ~560 ms slower than eastus2.
+   GlobalStandard on the SI account does not mean "served in India". End to end, India compute with **eastus2 AI
+   beats SI AI by 484 ms p50 / 1063 ms p90 per lesson turn** (1562/2020 vs 2046/3083). For the chat lanes, keep the
+   eastus2 account (or bake off SI DataZoneStandard, §2.1) until a re-measure says otherwise.
+2. **Live transcription is the big India win**: MAI-Transcribe-2-Streaming on the SI account finalises 68 ms after
+   commit from Chennai, vs 753 ms for gpt-live-transcribe on eastus2 (and its socket opens in 111 vs 1003 ms). The
+   STT lane belongs in India.
+3. Each HTTP round trip from India to the app saves ~211 ms when the app is in India.
+4. Central India PG costs 22 ms per query from the SI app, vs 8 ms for prod → Neon today. A turn that runs ~10
+   sequential queries pays ~140 ms more than prod. A South India PG (support request) would be ~1-2 ms
+   (not measured: none exists).
+5. **Missing: a production lesson turn from India.** Not measured, because a lesson against prod writes Neon prod.
+   An eastus2 twin on a Neon branch was prepared (`india-ab-2026-10-04`) but not used (its role password differs
+   from prod's; not pulled into the session). `taxila-web` (aa263ce) writes no access log, so its server-side turn
+   time could not be read from Log Analytics either.
+
+### F.5 Still red / open
+
+- Voice lanes on staging (TTS, realtime) with SI AI: code-bound to aa263ce (App. F.3). Green on the first image that
+  contains `server/endpoints.js`, or now with `--ai eastus2`.
+- PG in South India: subscription restriction (support request). Central India works but costs +14 ms/query vs today.
+- Chat on the SI account is measurably slower (App. F.4, point 1). The `--profile india` preset in `deploy-azure.mjs` points
+  the primary/CHAT lane at SI. Revisit that before cutover: the measured best per lane is CHAT/TTS/REALTIME on eastus2,
+  TRANSCRIBE on SI (MAI-Transcribe-2).
+- Realtime/live quota raise (App. D.2), and AcrPull for `taxila-sin-pull` (App. B) are still owner actions.
+- `scripts/migrate.mjs` and `infra/gate.mjs` are still Neon-only (App. E.2).

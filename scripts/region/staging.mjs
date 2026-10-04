@@ -73,3 +73,7 @@ await until(async () => { const r = await arm("GET", `${SUB_PATH()}/resourceGrou
   if (/Failed/.test(r.properties.runningState || "") || r.properties.healthState === "Unhealthy") throw new Error(`revision ${rev} ${r.properties.runningState}/${r.properties.healthState}`);
   return r.properties.healthState === "Healthy" && /Running/.test(r.properties.runningState || ""); }, { everyMs: 8000, maxMs: 900_000, what: `${rev} healthy` });
 console.log(`ok ${APP} revision ${rev} healthy · https://${app.properties.configuration.ingress.fqdn}`);
+// Multiple revision mode keeps superseded revisions active (each holds a replica): deactivate all but the new one.
+const AP = `${SUB_PATH()}/resourceGroups/${RG}/providers/Microsoft.App/containerApps/${APP}`;
+for (const r of (await arm("GET", `${AP}/revisions?${API}`)).value || [])
+  if (r.name !== rev && r.properties.active) { await arm("POST", `${AP}/revisions/${r.name}/deactivate?${API}`); console.log(`deactivated ${r.name}`); }

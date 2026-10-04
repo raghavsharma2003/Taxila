@@ -6774,6 +6774,181 @@
    "at": "2026-10-04",
    "title": "Arm B traps: (1) Hunyuan3D-2.1 single-view puts the bun on one side of the head; Hunyuan3D-2mv (front + left + right + back) placed it correctly (hmv_A_s1, front IoU 0.967, profile 0.936); (2) linear lid morphs cut through the eyeball at half weight (iris shows through the lid at half blink) unless the closed lid position is pushed outward so the linear path stays outside the ball (G-partial).",
    "source": "inbox/stylised-teacher-build.json"
+  },
+  {
+   "id": "india-move-southindia-azure-pg-2026-10-04",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Production compute moves to Azure South India (ACA env taxila-sin-env, VNet) and the database to Azure PostgreSQL Flexible (private access, TLS) instead of Neon Singapore; PG sits in Central India (taxila-cin-pg, peered) while South India is restricted for the subscription. Neon prod stays as the read-only rollback copy. Reverse if the post-cutover India lesson turn p50/p90 (n>=20 from Chennai) is not below the pre-cutover baseline, or a measured Chennai->Neon-Singapore per-query time is <= 22 ms while SI PG stays restricted",
+   "source": "inbox/india-move.json"
+  },
+  {
+   "id": "india-ai-lanes-eastus2-2026-10-04",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Cut over with every model lane on the eastus2 Foundry account (staging arm B): the southindia account's GlobalStandard chat was +349 ms TTFT p50 even from Chennai and arm B lesson turns were 484 ms p50 / 1063 ms p90 faster. Lanes move to taxila-ai-southindia one at a time only on a re-measure; MAI-Transcribe-2-Streaming (SI) is the first candidate. Reverse per lane when an India-vantage A/B (n>=20) shows the SI account faster",
+   "source": "inbox/india-move.json"
+  },
+  {
+   "id": "india-latency-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "From Chennai (ACA job, n=20, 60 turns): health app-in-India 4 ms vs eastus2 215 ms (-211 ms/round trip); DB/query India app->taxila-cin-pg 22 vs prod->Neon us-east-1 8 (+14); taxila-fast TTFT SI account 1227 vs eastus2 878; live STT commit->final MAI-Transcribe-2 SI 68 vs gpt-live-transcribe eastus2 753; staging lesson turn SI AI 2046/3083 vs eastus2 AI 1562/2020 (p50/p90). Prod turn from India not measured",
+   "source": "inbox/india-move.json"
+  },
+  {
+   "id": "india-db-copy-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Neon prod -> taxila-cin-pg via in-VNet ACA job, one exported snapshot: 57/57 tables match on count + per-row md5 (1,814 rows), sequences equal, 16/16 migrations, 54.8 MB dump 46 s, restore 14 s, 90 s end to end, TLSv1.3 verify-full both sides (n=1 successful run after 2 sort-collation fixes)",
+   "source": "inbox/india-move.json"
+  },
+  {
+   "id": "rj-centralindia-compute-home",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Central India as the compute home: its Foundry catalogue has 20 models and none we use. Weakened on 2026-10-04: GlobalStandard deployments on another account are callable from any region, and the DB had to go to Central India anyway (SI PG restricted), so CI compute would make DB ~1-2 ms (unmeasured). Reopen if SI PG stays restricted",
+   "source": "inbox/india-move.json"
+  },
+  {
+   "id": "rj-neon-india-region",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Keeping Neon and moving it to India: Neon lists no India region (list_regions 2026-10-04: nearest aws-ap-southeast-1 Singapore); Neon is not paid from the Azure grant and cannot be VNet-private to the ACA env",
+   "source": "inbox/india-move.json"
+  },
+  {
+   "id": "rj-southindia-account-chat-lanes",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Chat lanes on the taxila-ai-southindia Foundry account (deploy-azure --profile india primary): from Chennai taxila-fast TTFT 1227/1343 vs 878/1107 on eastus2 (n=20) and lesson turns 2046/3083 vs 1562/2020 (n=60). GlobalStandard on an India account does not mean served in India",
+   "source": "inbox/india-move.json"
+  },
+  {
+   "id": "open-india-pg-southindia-restricted",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "PostgreSQL Flexible is restricted for this subscription in southindia (capabilities restricted=Enabled, no versions); owner support request needed; until then taxila-cin-pg in Central India costs +14 ms/query vs today",
+   "source": "inbox/india-move.json"
+  },
+  {
+   "id": "open-india-public-url",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "No custom domain: users hold taxila-web's eastus2 FQDN, so there is no DNS record to flip at cutover; needs a domain (CNAME + ACA managed cert) or Front Door, plus a reverse-copy decision for rollback after India writes",
+   "source": "inbox/india-move.json"
+  },
+  {
+   "id": "refresh-images-2026-10-04",
+   "kind": "measurement",
+   "title": "Image bench n=160 requests (10 scout prompts x 2 x 8 arms), eye-checked (non-blind): flare-low diagrams 10/10, labels 44/44, illus 9/9 (1/20 refused), 15.1 s p50, $0.0066; sunburst-low 10/10, 44/44, 10/10, 27.5 s, $0.0066; sunburst-medium 10/10, 44/44, 10/10, 35.5 s, $0.0139; flare-medium 8/10 (open switch 2/2), 44/44, 10/10, 17.2 s, $0.0139; gpt-image-2-low 8/10, 43/44, 10/10, 18.5 s, $0.0066; gpt-image-2-medium 9/10, 43/44, 10/10, 42.2 s, $0.0534; FLUX.2-pro 0/10, 14/44, 2/8, 2/20 refused, 6.5 s, $0.03; FLUX.2-flex 0/10, 9/44, 0/4, 6/20 refused, 8.0 s, $0.05",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-images.json"
+  },
+  {
+   "id": "refresh-images-judges-2026-10-04",
+   "kind": "measurement",
+   "title": "Vision judges vs eye on 151 images (25 diagram / 10 illustration eye-fails): taxila-brain 3/7 diagram false pass/fail, 3/7 illus; taxila-kimi-code 8/9, 6/8; taxila-mistral-m35 22/0, 10/0 (passes nearly everything). brain's 3 diagram false passes are exactly the subtle errors left in OpenAI arms (open switch, wire into bulb glass, Mouth leader on the ear)",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-images.json"
+  },
+  {
+   "id": "image-lanes-flare-low-both-2026-10-04",
+   "kind": "decision",
+   "title": "Both image lanes (text-free illustrations and English-labelled diagrams): gpt-image-2.5-flare quality low -> gpt-image-2 quality low (on 429 or content-filter refusal) -> sunburst-low when correctness outweighs ~28 s. FLUX.2-pro leaves the text-free primary slot. No medium quality on any arm. Reverse if a blind human preference test (>= 20 house-style prompts) puts flare-low below gpt-image-2 or sunburst, or a >= 20-diagram set shows flare-low < 19/20 by eye while another arm reaches 20/20",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-images.json"
+  },
+  {
+   "id": "rj-flux2-flex",
+   "kind": "rejection",
+   "title": "FLUX.2-flex (any slot): 0/10 diagrams (9/44 labels, gibberish Gurjon/Giakmac, added title), 0/4 illustrations (vector/glossy look, yellow background, cast shadows), 6/20 requests refused by the Azure prompt blocklist, $0.05/image = 1.7x FLUX.2-pro",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-images.json"
+  },
+  {
+   "id": "rj-flux2-pro-text-free-primary",
+   "kind": "rejection",
+   "title": "FLUX.2-pro as the text-free image primary: 2/8 illustrations right by eye (painted 'water tank' text, signature scrawl, uniform logo, mangoes at ~45% fill with a cast shadow, sapling with no bean), courtyard refused 2/2; every OpenAI arm was 10/10 at <= the same price",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-images.json"
+  },
+  {
+   "id": "rj-image-medium-quality",
+   "kind": "rejection",
+   "title": "Quality medium on gpt-image-2 / 2.5: no correctness gain by eye (gpt-image-2 9/10 vs low 8/10; flare-medium 8/10 vs low 10/10, drawing an open switch 2/2) at 2.1x (2.5: $0.0139, 439 tokens) to 8x (gpt-image-2: $0.0534, 1,756 tokens) the price and 2.3x the latency for gpt-image-2",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-images.json"
+  },
+  {
+   "id": "rj-mistral-m35-image-judge",
+   "kind": "rejection",
+   "title": "mistral-medium-3-5 as a vision judge: 22 false passes on 80 diagrams (25 eye-fails), 0 false fails; scored FLUX diagrams with scrambled leaders 43/44 labels right",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-images.json"
+  },
+  {
+   "id": "stt-refresh-2026-10-04-synthetic",
+   "kind": "measurement",
+   "title": "STT refresh (synthetic, v2 corpus n=180 speech + 12 non-speech per arm, 20 arms): MAI-Transcribe-2 batch cerNorm 0.017, MAI-2-Streaming 0.021 vs live-tx D4 0.028 (item dCER 80% CIs cross 0); answers 78/78 vs 76/78; numbers 93 vs 92/96 (fixed scorer); 0/12 non-speech output for all three; final text p50 MAI-stream 1055 ms vs D4 1289 ms",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-stt.json"
+  },
+  {
+   "id": "stt-default-live-transcribe-kw-reaffirmed",
+   "kind": "decision",
+   "title": "Keep taxila-live-transcribe + lesson-term keywords + script prompt (D4) as live STT; MAI-Transcribe-2-Streaming becomes the first E1 challenger (shadow, ungraded); no switch while MAI is Preview and unmetered",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-stt.json"
+  },
+  {
+   "id": "gpt-transcribe-fabricates-nonspeech",
+   "kind": "rejection",
+   "title": "gpt-transcribe (2026-07-28) rejected for live/grading lanes: most accurate on speech (G3 cerNorm 0.022, numbers 94/96) but wrote fluent lesson-shaped child answers on 7/12 non-speech clips with the vocabulary-free script prompt (3/12 without)",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-stt.json"
+  },
+  {
+   "id": "mai-transcribe-15-hallucinates-silence",
+   "kind": "rejection",
+   "title": "MAI-Transcribe-1.5 rejected: Spanish news sentences on silence (2/12; 1/12 with phraseList) and 1.25 s request time vs 0.59 s for MAI-Transcribe-2",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-stt.json"
+  },
+  {
+   "id": "gpt-realtime-whisper-no-context",
+   "kind": "rejection",
+   "title": "gpt-realtime-whisper rejected: refuses both keywords and prompt; cerNorm 0.061, numbers 81/96, 15/180 wrong-script clips; reliably worse than D4 (item dCER +0.033, 80% CI [0.019, 0.048])",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-stt.json"
+  },
+  {
+   "id": "mai-stream-refuses-context",
+   "kind": "rejection",
+   "title": "Biasing MAI-Transcribe-2 with lesson vocabulary does not work: the streaming socket refuses keywords and prompt; batch phraseList gave no gain (cerNorm 0.022 vs 0.017 without)",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-stt.json"
+  },
+  {
+   "id": "live-tx-d4-ablation",
+   "kind": "measurement",
+   "title": "live-transcribe ablation (n=180): keywords-only +0.008 cerNorm (80% CI [0.004, 0.013]) and 6 wrong-script clips; prompt-only +0.016; neither +0.037 and 19 wrong-script; vocabulary-free prompt 0/12 non-speech output; D4 run-to-run on identical PCM 168/180 transcripts identical",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-stt.json"
+  },
+  {
+   "id": "owner-drop-gpt-live-1-2026-10-04",
+   "kind": "decision",
+   "title": "Owner: gpt-live-1 is out of scope (too expensive, ~$3/h); no quota request, no bench. Of the MAI family only MAI-Transcribe (1.5 / 2) matters. Reverse if gpt-live-1 pricing drops below the cascade per lesson-hour",
+   "at": "2026-10-04",
+   "source": "inbox/owner-mai-livefocus.json"
+  },
+  {
+   "id": "stt-mai2-stream-primary-india-2026-10-04",
+   "kind": "decision",
+   "title": "Live STT for the India app: MAI-Transcribe-2-Streaming (southindia) becomes primary with taxila-live-transcribe as automatic fallback, because from Chennai it returned final text in 68 ms p50 vs 753 ms (n=20) and was at least as accurate on the synthetic Hinglish set (cerNorm 0.021 vs 0.028, answers 78/78 vs 76/78, CIs overlap). Supersedes stt-default-live-transcribe-kw-reaffirmed for the India lane. Risks kept visible: Preview model, cannot take lesson keywords, unmetered price. Reverse if real-child audio (E1) shows worse accuracy, or it leaves Preview at a price above gpt-live-transcribe",
+   "at": "2026-10-04",
+   "source": "inbox/stt-mai-primary.json"
   }
  ],
  "edges": [
@@ -11281,6 +11456,116 @@
    "src": "scout-text-build-mai-thinking1-2026-10-04",
    "rel": "part_of",
    "dst": "model-router-v2"
+  },
+  {
+   "src": "india-move-southindia-azure-pg-2026-10-04",
+   "rel": "constrains",
+   "dst": "owner-india-region-2026-10-04"
+  },
+  {
+   "src": "india-move-southindia-azure-pg-2026-10-04",
+   "rel": "measured_by",
+   "dst": "india-latency-2026-10-04"
+  },
+  {
+   "src": "india-move-southindia-azure-pg-2026-10-04",
+   "rel": "measured_by",
+   "dst": "india-db-copy-2026-10-04"
+  },
+  {
+   "src": "india-move-southindia-azure-pg-2026-10-04",
+   "rel": "blocks",
+   "dst": "open-india-public-url"
+  },
+  {
+   "src": "india-move-southindia-azure-pg-2026-10-04",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
+  },
+  {
+   "src": "india-ai-lanes-eastus2-2026-10-04",
+   "rel": "measured_by",
+   "dst": "india-latency-2026-10-04"
+  },
+  {
+   "src": "india-ai-lanes-eastus2-2026-10-04",
+   "rel": "constrains",
+   "dst": "owner-india-region-2026-10-04"
+  },
+  {
+   "src": "rj-southindia-account-chat-lanes",
+   "rel": "measured_by",
+   "dst": "india-latency-2026-10-04"
+  },
+  {
+   "src": "rj-centralindia-compute-home",
+   "rel": "caused_by",
+   "dst": "owner-india-region-2026-10-04"
+  },
+  {
+   "src": "open-india-pg-southindia-restricted",
+   "rel": "measured_by",
+   "dst": "india-latency-2026-10-04"
+  },
+  {
+   "src": "image-lanes-flare-low-both-2026-10-04",
+   "rel": "measured_by",
+   "dst": "refresh-images-2026-10-04"
+  },
+  {
+   "src": "image-lanes-flare-low-both-2026-10-04",
+   "rel": "inherits",
+   "dst": "image-default-flare-low-2026-10-04"
+  },
+  {
+   "src": "image-lanes-flare-low-both-2026-10-04",
+   "rel": "supersedes",
+   "dst": "image-lane-gpt-image-2-holds-2026-10-04"
+  },
+  {
+   "src": "image-lanes-flare-low-both-2026-10-04",
+   "rel": "constrains",
+   "dst": "model-router-v2"
+  },
+  {
+   "src": "image-lanes-flare-low-both-2026-10-04",
+   "rel": "constrains",
+   "dst": "image-capacity-pool-2026-10-04"
+  },
+  {
+   "src": "refresh-images-2026-10-04",
+   "rel": "constrains",
+   "dst": "diagram-router-no-baked-labels"
+  },
+  {
+   "src": "rj-flux2-flex",
+   "rel": "measured_by",
+   "dst": "refresh-images-2026-10-04"
+  },
+  {
+   "src": "rj-flux2-pro-text-free-primary",
+   "rel": "measured_by",
+   "dst": "refresh-images-2026-10-04"
+  },
+  {
+   "src": "rj-image-medium-quality",
+   "rel": "measured_by",
+   "dst": "refresh-images-2026-10-04"
+  },
+  {
+   "src": "rj-mistral-m35-image-judge",
+   "rel": "measured_by",
+   "dst": "refresh-images-judges-2026-10-04"
+  },
+  {
+   "src": "refresh-images-judges-2026-10-04",
+   "rel": "constrains",
+   "dst": "rj-holistic-model-judge-gate"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "supersedes",
+   "dst": "stt-default-live-transcribe-kw"
   }
  ]
 }

@@ -2371,3 +2371,37 @@ Open (2026-10-04): Bedrock cannot be used on account 780899467240. Per-model tok
 
 ## Which AWS directive is current (2026-10-04)
 `owner-azure-first-aws-second-2026-10-04` is the owner's later word and governs: Azure Foundry first; an AWS model only where Azure is clearly worse, so the AWS credits stay mainly for build GPU. `owner-aws-credit-funded-india-first-2026-10-04` (recorded by the scout from the earlier message) still holds for "credit-funded only" and "India regions preferred", but not as equal footing with Azure.
+
+
+<!-- merged from inbox/india-move.json -->
+## india-move-southindia-azure-pg-2026-10-04
+**Production compute moves to Azure South India (ACA env `taxila-sin-env`, VNet-integrated); the database moves to Azure Database for PostgreSQL Flexible (private access only, TLS required, pgcrypto, collation C), not to Neon Singapore. While southindia is restricted for this subscription the server is `taxila-cin-pg` in Central India, peered to the SI VNet. Neon prod stays read-only as the rollback copy and keeps the test branches.** (2026-10-04)
+- Rationale: users are India-only (owner-india-region-2026-10-04); an app in India saves ~211 ms on every HTTP round trip (india-latency-2026-10-04); Neon has no India region (rj-neon-india-region) and is outside the Azure grant; the copy path is proven (india-db-copy-2026-10-04).
+- Cost: PG D2ds_v5 ~$183/mo (CI), app ~$39-78/mo. Runbook: docs/ops/INDIA-MOVE.md §5.
+- Reverse if: the post-cutover India lesson turn p50/p90 (n>=20 from Chennai) is not below the pre-cutover baseline; or a measured Chennai -> Neon Singapore per-query time is <= 22 ms while SI PG stays restricted (then Neon Singapore is the cheaper equal); or Azure PG fails a restore drill.
+
+## india-ai-lanes-eastus2-2026-10-04
+**Cut over with every model lane on the eastus2 Foundry account (no `--profile india`); move lanes to `taxila-ai-southindia` one at a time only on a re-measure. First candidate: live STT on MAI-Transcribe-2-Streaming (SI).** (2026-10-04)
+- Rationale: from Chennai, SI-account taxila-fast TTFT 1227 vs 878 ms p50; lesson turns with eastus2 AI 1562/2020 vs 2046/3083 (india-latency-2026-10-04). MAI streaming STT finalises in 68 vs 753 ms, but it is a different model whose accuracy vs gpt-live-transcribe was not measured here.
+- Reverse per lane when an India-vantage A/B (n>=20) shows the SI account faster at equal quality.
+
+
+<!-- merged from inbox/model-refresh-images.json -->
+## image-lanes-flare-low-both-2026-10-04
+**Both image lanes use gpt-image-2.5-flare at quality low; fallback gpt-image-2 at quality low (on 429 and on a content-filter refusal); sunburst-low as a slower third arm when correctness outweighs latency. FLUX.2-pro leaves the text-free primary slot. No arm runs at medium quality. diagram-router-no-baked-labels unchanged: English labels only, every generated diagram passes the human label check, pinned-geometry SVG stays the live default for what a child must learn.** (2026-10-04)
+- Rationale: this is the quality check image-default-flare-low-2026-10-04 asked for; flare-low was not below gpt-image-2 (10/10 vs 8/10 low / 9/10 medium diagrams; 9/9 vs 10/10 illustrations) and is the fastest OpenAI arm (15.1 s p50) at the lowest price ($0.0066). All six OpenAI arms tie on illustrations by eye, so cost and latency decide. FLUX.2-pro was 2/8 on illustrations and refused 2/20.
+- Reverse if: a blind human preference test on >= 20 house-style prompts puts flare-low below gpt-image-2 or sunburst; or a >= 20-diagram set shows flare-low < 19/20 by eye while another arm reaches 20/20; or flare's subscription-wide 4 RPM quota cannot be raised (then gpt-image-2-low pool becomes primary).
+- Source: evals/model-refresh-2026-10-04/images/.
+
+
+<!-- merged from inbox/model-refresh-stt.json -->
+## stt-default-live-transcribe-kw-reaffirmed
+2026-10-04 (model refresh). Live STT stays `taxila-live-transcribe` + per-lesson `keywords` (lesson terms only, never answer numbers) + vocabulary-free speaker/script prompt (D4). Fallback stays Azure Speech real-time LID hi-IN/en-IN; lane G stays Azure Fast hi+en. MAI-Transcribe-2-Streaming (`taxila-mai-tx2-stream`, southindia, no context) is the first challenger arm in E1, shadow and ungraded. Rationale: on the synthetic v2 corpus MAI-Transcribe-2 batch (cerNorm 0.017) and streaming (0.021) tie D4 (0.028): item-level dCER 80% CIs [-0.022, 0.001] and [-0.017, 0.003] cross 0; answers 78/78 vs 76/78 are inside overlapping Wilson 80% intervals. MAI reaches this with no lesson context (D4's keyword list equals the stimulus vocabulary, so D4 is flattered) and streaming finished 234 ms sooner at p50 despite ~214 ms more RTT. MAI cannot take the slot today: both models are Preview (the no-Preview-for-children rule, decided for voices in voice-lane-a-v1-panel-decides, should extend to STT — main loop to confirm); the streaming model has no retail meter (fails azure-billed-open-models / MODEL-ROUTER R5); the batch model bills through Azure Speech on our account, but which meter is unidentified until Cost Management shows 2026-10-04 usage. Promote MAI-Transcribe-2-Streaming to default only when ALL hold: GA (or owner extends the Preview rule); a named Direct meter; E1 real-child answers and numbers not worse than D4 with 80% intervals; it survives the TV-babble arm; 0 output on a non-speech probe of n>=30; its 2.6 s first partial does not hurt barge-in or the uptake fragment (else MAI for final text only). Replace lane G with MAI-Transcribe-2 batch under the same gates (it beats Azure Fast by item dCER -0.054, 80% CI [-0.090, -0.024]; answers 78 vs 73), and teach lane G's parser that MAI writes digits and fractions ("7/8 are 56" for a recited seven-eights). Reverse (keep D4 permanently) if E1 shows MAI losing to D4 on real children. Evidence: evals/model-refresh-2026-10-04/stt/.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `owner-drop-gpt-live-1-2026-10-04` (2026-10-04): Owner: gpt-live-1 is out of scope (too expensive, ~$3/h); no quota request, no bench. Of the MAI family only MAI-Transcribe (1.5 / 2) matters. Reverse if gpt-live-1 pricing drops below the cascade per lesson-hour
+
+
+## Merged inbox entries (write-up from the entry text)
+- `stt-mai2-stream-primary-india-2026-10-04` (2026-10-04): Live STT for the India app: MAI-Transcribe-2-Streaming (southindia) becomes primary with taxila-live-transcribe as automatic fallback, because from Chennai it returned final text in 68 ms p50 vs 753 ms (n=20) and was at least as accurate on the synthetic Hinglish set (cerNorm 0.021 vs 0.028, answers 78/78 vs 76/78, CIs overlap). Supersedes stt-default-live-transcribe-kw-reaffirmed for the India lane. Risks kept visible: Preview model, cannot take lesson keywords, unmetered price. Reverse if real-child audio (E1) shows worse accuracy, or it leaves Preview at a price above gpt-live-transcribe
