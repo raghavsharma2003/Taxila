@@ -8903,6 +8903,13 @@
    "title": "Round-3 page functional check (headless Chromium 1194, Playwright, 29 assertions, all passed, 2026-10-04). Covered: 5 cards x 4 voices, words shown on every clip, scores locked until listened, 11 failure boxes; with storage blocked and no runtime, status text plus a ratings-text export that carries v, who, score and ticks; with a mock db, the db score, local score and card note merge, names are indexed, switching person keeps both docs separate with no reload, and a runtime that resolves late after start does not overwrite an earlier device's scores and adopts its seed; with a null runtime, the on-device status shows; no horizontal scroll at 360 px. Not exercised: the real claude.ai db/user runtime, which is checked after publish with an ArtifactData list of ratings.",
    "at": "2026-10-04",
    "source": "inbox/voice-blind-r3-page.json"
+  },
+  {
+   "id": "owner-voice-signals-major-2026-10-04",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Owner: voice is a MAJOR signal of whether the child understood. Built as knowledge/metacognitive states (uncertain-correct, confident-wrong, searching vs not-known, guessing, fluent recall), not emotions. Features + model run on the device or self-hosted (training on AWS GPU credits); per-child baselines in Neon; no Microsoft AI service infers anything from voice. This supersedes the signals spec's 'voice stays minor until Microsoft answers' stance for knowledge states. Emotion-from-voice is at most a shadow research arm. Workstream wf_085e782c-74c.",
+   "source": "inbox/owner-voice-signals.json"
   }
  ],
  "edges": [
