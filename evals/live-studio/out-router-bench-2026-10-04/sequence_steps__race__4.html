@@ -1,0 +1,84 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff5e8;color:#49382f}
+  #activity{width:360px;height:320px;padding:14px 16px;overflow:hidden;background:radial-gradient(circle at 94% 4%,#ffe1a9 0 42px,transparent 43px),#fff5e8}
+  h1{margin:0;font-size:20px;line-height:26px;font-weight:800}
+  #instruction{margin:3px 0 0;font-size:13px;line-height:18px;color:#806252}
+  #cards{height:142px;padding-top:12px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:56px 56px;gap:10px}
+  .step{width:100%;min-height:52px;border:2px solid #d79465;border-radius:16px;background:#fffdf8;color:#49382f;font:700 17px system-ui,sans-serif;box-shadow:0 4px 0 #ebc5a7;cursor:pointer;transition:transform .2s,background .2s,box-shadow .2s}
+  .step:not(:disabled):active{transform:scale(.94);box-shadow:0 1px 0 #ebc5a7}
+  .step:focus-visible{outline:3px solid #5d9b82;outline-offset:2px}
+  .step:disabled{cursor:default}
+  #track{height:70px;display:flex;gap:7px;align-items:center}
+  .slot{position:relative;flex:1;min-width:0;height:62px;border:2px dashed #d8b99d;border-radius:17px;display:flex;align-items:center;justify-content:center;color:#aa8168;font-size:19px;font-weight:800}
+  .slot.filled{border:0}
+  .slot .step{height:62px;background:#e2f1dd;border-color:#82aa85;box-shadow:0 4px 0 #bfd9b9;font-size:13px;padding:14px 3px 2px;animation:land .3s ease-out}
+  .badge{position:absolute;top:3px;left:50%;transform:translateX(-50%);font-size:12px;line-height:13px;color:#477456;pointer-events:none}
+  #feedback{height:25px;margin-top:4px;text-align:center;font-size:15px;font-weight:700;color:#527d60}
+  .wrong{animation:shake .36s ease-in-out}
+  @keyframes shake{25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+  @keyframes land{from{transform:scale(.82)}to{transform:scale(1)}}
+</style>
+<div id="activity">
+  <h1 id="title"></h1>
+  <p id="instruction"></p>
+  <div id="cards"></div>
+  <div id="track"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+  const shown=Studio.params.shown;
+  const cards=document.getElementById('cards');
+  const track=document.getElementById('track');
+  const feedback=document.getElementById('feedback');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  let placed=0,pending=null;
+  shown.forEach((key,index)=>{
+    const card=document.createElement('button');
+    card.type='button';
+    card.className='step';
+    card.dataset.step=key;
+    card.textContent=Studio.t(key);
+    card.addEventListener('click',()=>{
+      if(pending||card.dataset.placed)return;
+      pending=card;
+      feedback.textContent='';
+      Studio.event('tap',{key});
+      Studio.answer({key});
+    });
+    cards.appendChild(card);
+    const slot=document.createElement('div');
+    slot.className='slot';
+    slot.textContent=String(index+1);
+    track.appendChild(slot);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    const card=pending;
+    pending=null;
+    if(correct){
+      placed++;
+      const slot=track.children[placed-1];
+      slot.textContent='';
+      slot.classList.add('filled');
+      card.dataset.placed=String(placed);
+      card.disabled=true;
+      slot.appendChild(card);
+      const badge=document.createElement('span');
+      badge.className='badge';
+      badge.textContent=String(placed);
+      slot.appendChild(badge);
+      feedback.textContent=placed===shown.length?Studio.t('done'):Studio.t('right');
+      if(placed===shown.length)Studio.done();
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      card.classList.remove('wrong');
+      void card.offsetWidth;
+      card.classList.add('wrong');
+    }
+  });
+  Studio.ready();
+
+</script>

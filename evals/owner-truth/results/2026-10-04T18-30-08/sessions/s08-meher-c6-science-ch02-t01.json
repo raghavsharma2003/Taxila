@@ -813,6 +813,119 @@
    "teacherReply": "You identified dhaniya’s softer stem correctly. Sort these into herb, shrub or tree: mint, rose, mango, wheat, hibiscus (gudhal), neem.",
    "visual": [
     "whiteboard text"
+   ],
+   "grade": {
+    "truth": "correct",
+    "verdict": "correct",
+    "reAsked": false,
+    "praise": false,
+    "negative": false
+   }
+  },
+  {
+   "n": 14,
+   "turnSeq": 13,
+   "who": "child",
+   "lessonId": "069cf912-0bfe-4bc1-8923-594c4c2687f9",
+   "slot": "steer",
+   "probe": "steer:slowly",
+   "expect": null,
+   "childText": "slowly please",
+   "ms": 2062,
+   "error": null,
+   "move": {
+    "kind": "repair",
+    "shape": "you did not catch it clearly: ask them to say it once more, slowly; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c6-science-ch02-t01-i02",
+    "skillId": "c6-science-ch02-t01-s2",
+    "hintLevel": 0
+   },
+   "kind": "repair",
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Sort these into herb, shrub or tree: mint, rose, mango, w…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Sort these into herb, shrub or tree: mint, rose, mango, wheat, hibiscus (gudhal), neem.",
+     "itemId": "c6-science-ch02-t01-i02"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Grouping plants"
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "moment": null,
+   "end": false,
+   "teacherReply": "Sure, Meher. We’ll go slowly. Sort these into herb, shrub or tree: mint, rose, mango, wheat, hibiscus (gudhal), neem.",
+   "visual": [
+    "whiteboard text"
+   ],
+   "steerCheck": {
+    "id": "slowly",
+    "ok": false,
+    "kind": "repair",
+    "hindiShare": 0,
+    "simToPrev": 0.57
+   }
+  },
+  {
+   "n": 15,
+   "turnSeq": 14,
+   "who": "child",
+   "lessonId": "069cf912-0bfe-4bc1-8923-594c4c2687f9",
+   "slot": "answer",
+   "probe": null,
+   "expect": {
+    "itemId": "c6-science-ch02-t01-i02",
+    "truth": "correct",
+    "gave": "noisy",
+    "key": "Herbs: mint, wheat. Shrubs: rose, hibiscus. Trees: mango, neem.",
+    "acceptable": [
+     "herbs mint wheat",
+     "shrubs rose hibiscus",
+     "trees mango neem"
+    ]
+   },
+   "childText": "maybe herbs mint wheat",
+   "ms": 1863,
+   "error": null,
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: protege naive but-why; Bittu, who does not know it, asks why; about THIS question; one open question; wait; a real question, never a check on them",
+    "itemId": "c6-science-ch02-t01-i02",
+    "skillId": "c6-science-ch02-t01-s2",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "kind": "probe",
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Sort these into herb, shrub or tree: mint, rose, mango, w…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Grouping plants",
+    "verdict": "correct",
+    "ask": {
+     "text": "How did you know they belong in the herb group?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "moment": null,
+   "end": false,
+   "teacherReply": "Correct, Meher: mint and wheat are herbs. How did you know they belong in the herb group?",
+   "visual": [
+    "whiteboard text"
    ]
   }
  ],
@@ -841,6 +954,18 @@
    "why": "the diagram request produced nothing NEW on the stage (no mount, no changed whiteboard, no studio slot/op, no picture) in that turn or the next",
    "auto": "visual_diagram",
    "refersWithoutShowing": false
+  },
+  {
+   "session": "s08-meher-c6-science-ch02-t01",
+   "persona": "meher",
+   "topicId": "c6-science-ch02-t01",
+   "lane": "cascade/spoken",
+   "item": 4,
+   "turn": 14,
+   "child": "slowly please",
+   "teacher": "repair: \"Sure, Meher. We’ll go slowly. Sort these into herb, shrub or tree: mint, rose, mango, wheat, hibiscus (gudhal), neem.\"",
+   "why": "the steering request (slowly) was not acted on in the next reply",
+   "auto": "steer_slowly"
   }
  ],
  "lessons": [
