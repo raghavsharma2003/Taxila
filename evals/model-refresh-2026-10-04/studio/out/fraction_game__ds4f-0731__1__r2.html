@@ -1,0 +1,170 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #fff8f0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .wrap { max-width: 360px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+  h1 { font-size: 22px; color: #b34700; text-align: center; margin-bottom: 6px; }
+  .instr { font-size: 15px; color: #6b4f3a; text-align: center; margin: 6px 0 8px; line-height: 1.4; }
+  .pizza { width: 200px; height: 200px; margin: 4px auto; position: relative; }
+  .bar { width: 260px; height: 70px; margin: 10px auto; border-radius: 14px; overflow: hidden; display: flex; border: 3px solid #c47a2c; background: #fbe6c2; }
+  .seg { flex: 1; border-right: 3px solid #c47a2c; cursor: pointer; }
+  .seg:last-child { border-right: none; }
+  .seg svg { width: 100%; height: 100%; display: block; }
+  .seg svg path { transition: fill .25s; }
+  .seg:active svg path { transform: scale(.96); transform-origin: center; }
+  .seg:active { background: rgba(0,0,0,0.05); }
+  .target { font-size: 26px; font-weight: 700; color: #7a3b00; background: #ffe8cc; padding: 4px 16px; border-radius: 20px; margin: 4px 0; }
+  .btn { font-size: 20px; font-weight: 700; color: #fff; background: #e67300; border: none; border-radius: 28px; padding: 14px 40px; margin-top: 12px; cursor: pointer; box-shadow: 0 4px 0 #b35500; transition: transform .1s, box-shadow .1s; min-width: 44px; min-height: 44px; }
+  .btn:active { transform: translateY(4px); box-shadow: 0 0 0 #b35500; }
+  .feedback { min-height: 40px; font-size: 17px; font-weight: 600; margin-top: 8px; text-align: center; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity .3s; color: #2d6a2d; }
+  .feedback.show { opacity: 1; }
+  .feedback.wrong { color: #c0392b; }
+  .final { text-align: center; font-size: 26px; color: #2d6a2d; font-weight: 700; margin-top: 24px; animation: pop .5s ease; }
+  @keyframes pop { 0% { transform: scale(.3); opacity: 0; } 80% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes celeb { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
+  .celebrate { animation: celeb .4s ease; }
+</style>
+
+<div class="wrap">
+  <h1></h1>
+  <div class="instr"></div>
+  <div id="target" class="target"></div>
+  <div id="stage"></div>
+  <button class="btn" data-action="check"></button>
+  <div id="feedback" class="feedback"></div>
+</div>
+
+<script>
+  (function(){
+    const items = Studio.params.items;
+    const group = Studio.params.picture === 'bar' ? 'bar' : 'pizza';
+    let idx = 0;
+    let parts = [];
+    let busy = false;
+
+    const title = document.querySelector('h1');
+    const instr = document.querySelector('.instr');
+    const target = document.getElementById('target');
+    const stage = document.getElementById('stage');
+    const btn = document.querySelector('[data-action="check"]');
+    const fb = document.getElementById('feedback');
+    title.textContent = Studio.t('title');
+    instr.textContent = Studio.t('instr');
+    btn.textContent = Studio.t('check');
+
+    function makePart(i, d) {
+      const el = document.createElement('div');
+      el.className = 'seg';
+      el.setAttribute('data-part', i);
+      el.setAttribute('data-shaded', 'false');
+      const ns = 'http://www.w3.org/2000/svg';
+      if (group === 'pizza') {
+        const svg = document.createElementNS(ns, 'svg');
+        svg.setAttribute('viewBox', '0 0 100 100');
+        const cx = 50, cy = 50, r = 48;
+        const startAngle = (i * 360 / d) - 90;
+        const endAngle = ((i + 1) * 360 / d) - 90;
+        const x1 = cx + r * Math.cos(startAngle * Math.PI / 180);
+        const y1 = cy + r * Math.sin(startAngle * Math.PI / 180);
+        const x2 = cx + r * Math.cos(endAngle * Math.PI / 180);
+        const y2 = cy + r * Math.sin(endAngle * Math.PI / 180);
+        const largeArc = (360 / d) > 180 ? 1 : 0;
+        const path = document.createElementNS(ns, 'path');
+        path.setAttribute('d', `M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${largeArc} 1 ${x2},${y2} Z`);
+        path.setAttribute('fill', '#fbe6c2');
+        path.setAttribute('stroke', '#c47a2c');
+        path.setAttribute('stroke-width', '2');
+        svg.appendChild(path);
+        el.appendChild(svg);
+      } else {
+        el.style.background = '#fbe6c2';
+      }
+      el.addEventListener('click', function() {
+        if (busy) return;
+        toggle(i, el);
+      });
+      return el;
+    }
+
+    function toggle(i, el) {
+      const isShaded = el.getAttribute('data-shaded') === 'true';
+      const newVal = !isShaded;
+      el.setAttribute('data-shaded', newVal ? 'true' : 'false');
+      const color = '#e67300';
+      if (group === 'pizza') {
+        const path = el.querySelector('path');
+        path.style.fill = newVal ? color : '#fbe6c2';
+      } else {
+        el.style.background = newVal ? color : '#fbe6c2';
+      }
+      Studio.event('tap_part', {part: i, shaded: newVal});
+    }
+
+    function renderItem() {
+      busy = false;
+      fb.className = 'feedback';
+      fb.textContent = '';
+      const item = items[idx];
+      parts = [];
+      stage.innerHTML = '';
+      const container = document.createElement('div');
+      container.setAttribute('data-item', item.id);
+      container.className = group === 'pizza' ? 'pizza' : 'bar';
+      for (let i = 0; i < item.d; i++) {
+        const part = makePart(i, item.d);
+        parts.push(part);
+        container.appendChild(part);
+      }
+      stage.appendChild(container);
+      target.textContent = item.n + ' / ' + item.d;
+      target.style.animation = 'none';
+      void target.offsetWidth;
+    }
+
+    function check() {
+      if (busy) return;
+      const item = items[idx];
+      let count = 0;
+      parts.forEach(p => { if (p.getAttribute('data-shaded') === 'true') count++; });
+      Studio.answer({n: count, d: item.d});
+      busy = true;
+    }
+
+    Studio.onVerdict(function(res) {
+      if (res.correct) {
+        fb.textContent = Studio.t('right');
+        fb.classList.remove('wrong');
+        fb.classList.add('show');
+        const container = document.querySelector('[data-item]');
+        if (container) container.classList.add('celebrate');
+        setTimeout(() => { if (container) container.classList.remove('celebrate'); }, 500);
+        Studio.event('correct', {item: items[idx].id});
+        setTimeout(() => {
+          idx++;
+          if (idx < items.length) {
+            renderItem();
+          } else {
+            stage.innerHTML = '';
+            target.style.display = 'none';
+            btn.style.display = 'none';
+            fb.style.display = 'none';
+            const done = document.createElement('div');
+            done.className = 'final';
+            done.textContent = Studio.t('done');
+            stage.appendChild(done);
+            Studio.done();
+          }
+        }, 1200);
+      } else {
+        fb.textContent = Studio.t('wrong') + ' ' + Studio.t('hint');
+        fb.classList.add('wrong');
+        fb.classList.add('show');
+        Studio.event('wrong', {item: items[idx].id});
+        busy = false;
+      }
+    });
+
+    btn.addEventListener('click', check);
+    renderItem();
+    Studio.ready();
+  })();
+</script>

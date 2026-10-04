@@ -1,0 +1,406 @@
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --ink:#493b66;
+    --purple:#7457c8;
+    --purple-dark:#5940a8;
+    --cream:#fffaf0;
+    --coral:#ff806f;
+    --gold:#ffc857;
+    --mint:#5cc9a7;
+    --pale:#f1ecff;
+  }
+  body{
+    margin:0;
+    min-width:0;
+    min-height:100vh;
+    overflow-x:hidden;
+    background:linear-gradient(180deg,#fff6dc 0%,#f4edff 52%,#e9fbf5 100%);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Noto Sans",sans-serif;
+  }
+  button{font:inherit}
+  .app{
+    width:100%;
+    max-width:430px;
+    min-height:100vh;
+    margin:auto;
+    padding:18px 16px 22px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .top{
+    width:100%;
+    text-align:center;
+  }
+  .badge{
+    width:62px;
+    height:62px;
+    margin:0 auto 8px;
+    display:grid;
+    place-items:center;
+    border-radius:22px;
+    background:#fff;
+    box-shadow:0 8px 20px rgba(89,64,168,.14);
+    transform:rotate(-4deg);
+  }
+  .badge svg{width:44px;height:44px}
+  h1{
+    margin:0;
+    font-size:clamp(24px,8vw,34px);
+    line-height:1.1;
+    color:var(--purple-dark);
+  }
+  .instruction{
+    margin:8px auto 0;
+    max-width:320px;
+    min-height:48px;
+    font-size:16px;
+    line-height:1.45;
+  }
+  .card{
+    position:relative;
+    width:100%;
+    margin-top:14px;
+    padding:16px 14px 18px;
+    border:2px solid rgba(116,87,200,.12);
+    border-radius:28px;
+    background:rgba(255,255,255,.94);
+    box-shadow:0 14px 34px rgba(73,59,102,.13);
+  }
+  .fraction{
+    width:max-content;
+    min-width:104px;
+    margin:0 auto 12px;
+    padding:7px 18px;
+    border-radius:18px;
+    background:var(--pale);
+    color:var(--purple-dark);
+    font-size:34px;
+    font-weight:850;
+    line-height:1.15;
+    letter-spacing:2px;
+    direction:ltr;
+  }
+  .picture-wrap{
+    position:relative;
+    width:100%;
+    padding:8px;
+    border-radius:24px;
+    background:#fff8e8;
+    overflow:hidden;
+  }
+  #partsSvg{
+    display:block;
+    width:100%;
+    height:190px;
+    overflow:visible;
+    touch-action:manipulation;
+  }
+  .part{
+    fill:#fff3c7;
+    stroke:#9b6d3d;
+    stroke-width:3;
+    cursor:pointer;
+    transition:fill .22s ease,transform .16s ease,filter .22s ease;
+    transform-box:fill-box;
+    transform-origin:center;
+    outline:none;
+  }
+  .part[data-shaded="true"]{
+    fill:var(--coral);
+    filter:drop-shadow(0 4px 3px rgba(255,128,111,.25));
+  }
+  .part.popped{transform:scale(.9)}
+  .part:focus-visible{
+    stroke:var(--purple);
+    stroke-width:5;
+  }
+  .hint{
+    margin:10px 6px 0;
+    min-height:24px;
+    text-align:center;
+    color:#6d6180;
+    font-size:14px;
+    line-height:1.35;
+  }
+  .feedback{
+    min-height:34px;
+    margin:8px 0 4px;
+    display:grid;
+    place-items:center;
+    text-align:center;
+    font-size:18px;
+    font-weight:800;
+    color:var(--purple-dark);
+  }
+  .feedback.good{color:#198865}
+  .feedback.try{color:#c05a4d}
+  .check{
+    position:relative;
+    width:100%;
+    min-height:54px;
+    border:0;
+    border-radius:18px;
+    background:linear-gradient(180deg,#7e63d4,#6248b4);
+    color:white;
+    font-weight:850;
+    font-size:19px;
+    box-shadow:0 7px 0 #49348d,0 12px 20px rgba(89,64,168,.22);
+    cursor:pointer;
+    transition:transform .12s ease,box-shadow .12s ease,opacity .2s ease;
+  }
+  .check:active{
+    transform:translateY(5px) scale(.985);
+    box-shadow:0 2px 0 #49348d,0 6px 12px rgba(89,64,168,.18);
+  }
+  .check:disabled{opacity:.58;cursor:default}
+  .spark{
+    position:absolute;
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    background:var(--gold);
+    opacity:0;
+    pointer-events:none;
+  }
+  .celebrate .spark{animation:burst .75s ease-out}
+  .spark:nth-of-type(1){left:12%;top:32%;--x:-22px;--y:-48px}
+  .spark:nth-of-type(2){left:28%;top:22%;--x:-10px;--y:-58px;background:var(--mint)}
+  .spark:nth-of-type(3){right:28%;top:22%;--x:10px;--y:-58px;background:var(--coral)}
+  .spark:nth-of-type(4){right:12%;top:32%;--x:22px;--y:-48px}
+  .shake{animation:gentle-shake .38s ease}
+  .done-screen{
+    display:none;
+    width:100%;
+    flex:1;
+    place-items:center;
+    text-align:center;
+  }
+  .done-screen.show{display:grid}
+  .done-panel{
+    width:100%;
+    padding:34px 20px;
+    border-radius:30px;
+    background:#fff;
+    box-shadow:0 15px 36px rgba(73,59,102,.14);
+  }
+  .done-art{
+    width:150px;
+    height:150px;
+    margin:auto;
+    animation:float 2.4s ease-in-out infinite;
+  }
+  .done-text{
+    margin-top:14px;
+    color:var(--purple-dark);
+    font-size:28px;
+    font-weight:900;
+  }
+  @keyframes burst{
+    0%{opacity:0;transform:translate(0,0) scale(.3)}
+    35%{opacity:1}
+    100%{opacity:0;transform:translate(var(--x),var(--y)) scale(1.2)}
+  }
+  @keyframes gentle-shake{
+    0%,100%{transform:translateX(0)}
+    30%{transform:translateX(-5px)}
+    65%{transform:translateX(5px)}
+  }
+  @keyframes float{
+    0%,100%{transform:translateY(0) rotate(-2deg)}
+    50%{transform:translateY(-8px) rotate(2deg)}
+  }
+  @media (max-height:600px){
+    .app{padding-top:10px}
+    .badge{width:48px;height:48px;margin-bottom:4px}
+    .badge svg{width:34px;height:34px}
+    .instruction{min-height:38px;margin-top:4px}
+    .card{margin-top:8px;padding-top:10px}
+    #partsSvg{height:150px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  }
+</style>
+
+<main class="app">
+  <section id="playScreen" class="top">
+    <div class="badge" aria-hidden="true">
+      <svg viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r="27" fill="#ffc857"/>
+        <path d="M32 32V5A27 27 0 0 1 55.4 45.5Z" fill="#ff806f"/>
+        <path d="M32 32 55.4 45.5A27 27 0 0 1 8.6 45.5Z" fill="#5cc9a7"/>
+        <circle cx="32" cy="32" r="27" fill="none" stroke="#6b4b2d" stroke-width="3"/>
+        <path d="M32 5v27l23.4 13.5M32 32 8.6 45.5" fill="none" stroke="#6b4b2d" stroke-width="3"/>
+      </svg>
+    </div>
+    <h1 id="title"></h1>
+    <div id="instruction" class="instruction"></div>
+
+    <section id="itemCard" class="card">
+      <i class="spark"></i>
+      <i class="spark"></i>
+      <i class="spark"></i>
+      <i class="spark"></i>
+      <div id="fraction" class="fraction"></div>
+      <div class="picture-wrap">
+        <svg id="partsSvg" viewBox="0 0 320 190" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <filter id="softShadow" x="-20%" y="-20%" width="140%" height="150%">
+              <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#6b4b2d" flood-opacity=".18"/>
+            </filter>
+          </defs>
+          <rect x="10" y="10" width="300" height="170" rx="25" fill="#fffdf6" filter="url(#softShadow)"/>
+          <g id="partsLayer"></g>
+        </svg>
+      </div>
+      <div id="hint" class="hint"></div>
+      <div id="feedback" class="feedback" aria-live="polite"></div>
+      <button id="checkButton" class="check" type="button" data-action="check"></button>
+    </section>
+  </section>
+
+  <section id="doneScreen" class="done-screen">
+    <div class="done-panel">
+      <svg class="done-art" viewBox="0 0 160 160" aria-hidden="true">
+        <circle cx="80" cy="82" r="61" fill="#fff3c7"/>
+        <path d="M80 82V21a61 61 0 0 1 52.8 91.5Z" fill="#ff806f"/>
+        <path d="M80 82 132.8 112.5A61 61 0 0 1 27.2 112.5Z" fill="#5cc9a7"/>
+        <circle cx="80" cy="82" r="61" fill="none" stroke="#6b4b2d" stroke-width="5"/>
+        <path d="M80 21v61l52.8 30.5M80 82l-52.8 30.5" fill="none" stroke="#6b4b2d" stroke-width="5"/>
+        <path d="m25 28 4 9 10 1-8 7 2 10-8-5-9 5 3-10-8-7 10-1Z" fill="#ffc857"/>
+        <path d="m137 20 3 7 8 1-6 5 2 8-7-4-7 4 2-8-6-5 8-1Z" fill="#7457c8"/>
+      </svg>
+      <div id="doneText" class="done-text"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+  (() => {
+    const items = Studio.params.items;
+    const playScreen = document.getElementById('playScreen');
+    const doneScreen = document.getElementById('doneScreen');
+    const itemCard = document.getElementById('itemCard');
+    const fraction = document.getElementById('fraction');
+    const partsLayer = document.getElementById('partsLayer');
+    const feedback = document.getElementById('feedback');
+    const checkButton = document.getElementById('checkButton');
+
+    document.getElementById('title').textContent = Studio.t('title');
+    document.getElementById('instruction').textContent = Studio.t('instr');
+    document.getElementById('hint').textContent = Studio.t('hint');
+    document.getElementById('doneText').textContent = Studio.t('done');
+    checkButton.textContent = Studio.t('check');
+
+    let currentIndex = 0;
+    let locked = false;
+    let finished = false;
+
+    function renderItem() {
+      const item = items[currentIndex];
+      locked = false;
+      checkButton.disabled = false;
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+      itemCard.classList.remove('celebrate', 'shake');
+      itemCard.setAttribute('data-item', item.id);
+      fraction.textContent = item.n + '/' + item.d;
+      partsLayer.replaceChildren();
+
+      const rows = item.d > 5 ? 2 : 1;
+      const cols = Math.ceil(item.d / rows);
+      const left = 25;
+      const top = rows === 1 ? 48 : 30;
+      const totalWidth = 270;
+      const totalHeight = rows === 1 ? 94 : 130;
+      const partWidth = totalWidth / cols;
+      const partHeight = totalHeight / rows;
+
+      for (let index = 0; index < item.d; index += 1) {
+        const row = Math.floor(index / cols);
+        const col = index % cols;
+        const part = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        part.setAttribute('x', left + col * partWidth);
+        part.setAttribute('y', top + row * partHeight);
+        part.setAttribute('width', partWidth);
+        part.setAttribute('height', partHeight);
+        part.setAttribute('rx', 9);
+        part.setAttribute('class', 'part');
+        part.setAttribute('data-part', index);
+        part.setAttribute('data-shaded', 'false');
+        part.setAttribute('tabindex', '0');
+        part.setAttribute('role', 'button');
+
+        const toggle = () => {
+          if (locked) return;
+          const next = part.getAttribute('data-shaded') !== 'true';
+          part.setAttribute('data-shaded', String(next));
+          part.classList.add('popped');
+          setTimeout(() => part.classList.remove('popped'), 150);
+          Studio.event('part_toggle', {
+            item: item.id,
+            part: index,
+            shaded: next
+          });
+        };
+
+        part.addEventListener('click', toggle);
+        part.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggle();
+          }
+        });
+        partsLayer.appendChild(part);
+      }
+
+      Studio.event('item_view', {item: item.id});
+    }
+
+    checkButton.addEventListener('click', () => {
+      if (locked || finished) return;
+      locked = true;
+      checkButton.disabled = true;
+      const item = items[currentIndex];
+      const coloured = partsLayer.querySelectorAll('[data-shaded="true"]').length;
+      Studio.event('check', {item: item.id, n: coloured, d: item.d});
+      Studio.answer({n: coloured, d: item.d});
+    });
+
+    Studio.onVerdict(verdict => {
+      if (finished) return;
+      if (verdict.correct) {
+        feedback.textContent = Studio.t('right');
+        feedback.className = 'feedback good';
+        itemCard.classList.add('celebrate');
+        Studio.event('verdict', {item: items[currentIndex].id, correct: true});
+        setTimeout(() => {
+          currentIndex += 1;
+          if (currentIndex < items.length) {
+            renderItem();
+          } else {
+            finished = true;
+            playScreen.style.display = 'none';
+            doneScreen.classList.add('show');
+            Studio.done();
+          }
+        }, 850);
+      } else {
+        feedback.textContent = Studio.t('wrong');
+        feedback.className = 'feedback try';
+        itemCard.classList.remove('shake');
+        void itemCard.offsetWidth;
+        itemCard.classList.add('shake');
+        locked = false;
+        checkButton.disabled = false;
+        Studio.event('verdict', {item: items[currentIndex].id, correct: false});
+      }
+    });
+
+    renderItem();
+    Studio.ready();
+  })();
+</script>

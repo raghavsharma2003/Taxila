@@ -1,0 +1,351 @@
+<style>
+  :root{
+    --cream:#fff8e8;
+    --ink:#493b55;
+    --purple:#7654a8;
+    --lav:#eee5ff;
+    --pink:#ff8ca1;
+    --cheese:#ffd65a;
+    --crust:#d88748;
+    --mint:#6fc6aa;
+    --white:#ffffff;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-width:320px;
+    background:linear-gradient(180deg,#fff6df 0%,#f7edff 100%);
+    color:var(--ink);
+    font-family:ui-rounded,"Arial Rounded MT Bold",system-ui,sans-serif;
+  }
+  #app{
+    min-height:640px;
+    width:100%;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:18px 16px 22px;
+    position:relative;
+  }
+  .top{
+    width:100%;
+    max-width:420px;
+    text-align:center;
+    position:relative;
+    z-index:2;
+  }
+  h1{
+    font-size:25px;
+    line-height:1.15;
+    margin:3px 0 8px;
+    color:var(--purple);
+    letter-spacing:-.4px;
+  }
+  .instruction{
+    font-size:16px;
+    line-height:1.35;
+    margin:0 auto;
+    max-width:320px;
+    min-height:43px;
+  }
+  .fraction-card{
+    margin:14px 0 4px;
+    min-width:112px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:6px 16px 8px;
+    background:var(--white);
+    border-radius:18px;
+    box-shadow:0 5px 0 rgba(118,84,168,.12);
+  }
+  .fraction{
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    line-height:.93;
+    font-weight:800;
+    font-size:27px;
+    color:var(--purple);
+  }
+  .fraction i{
+    width:34px;
+    height:2px;
+    background:var(--purple);
+    margin:3px 0;
+  }
+  .pizza-wrap{
+    width:min(83vw,315px);
+    height:min(83vw,315px);
+    max-height:315px;
+    position:relative;
+    margin:2px auto 9px;
+    filter:drop-shadow(0 10px 8px rgba(94,60,99,.16));
+  }
+  #pizza{
+    display:block;
+    width:100%;
+    height:100%;
+    overflow:visible;
+  }
+  .slice{
+    cursor:pointer;
+    transform-origin:150px 150px;
+    transition:transform .16s ease,fill .2s ease,filter .2s ease;
+    outline:none;
+  }
+  .slice:active{transform:scale(.95)}
+  .slice.shaded{
+    fill:var(--pink);
+    filter:brightness(1.03);
+  }
+  .slice.unshaded{fill:var(--cheese)}
+  .crust{
+    fill:none;
+    stroke:var(--crust);
+    stroke-width:14;
+    stroke-linecap:round;
+  }
+  .cut{
+    stroke:#f1ad54;
+    stroke-width:2.6;
+    stroke-linecap:round;
+    pointer-events:none;
+  }
+  .pepperoni{fill:#ee7176;pointer-events:none}
+  .feedback{
+    height:29px;
+    width:100%;
+    text-align:center;
+    font-weight:800;
+    font-size:16px;
+    color:var(--purple);
+    opacity:0;
+    transform:translateY(-4px);
+    transition:opacity .2s ease,transform .2s ease;
+  }
+  .feedback.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+  .feedback.bad{color:#c25475}
+  .check{
+    min-height:52px;
+    min-width:180px;
+    border:0;
+    border-radius:18px;
+    background:var(--purple);
+    color:white;
+    font:800 18px ui-rounded,"Arial Rounded MT Bold",system-ui,sans-serif;
+    box-shadow:0 5px 0 #55347f,0 8px 15px rgba(79,44,115,.22);
+    cursor:pointer;
+    padding:10px 24px;
+    transition:transform .15s ease,box-shadow .15s ease,background .2s ease;
+  }
+  .check:active{
+    transform:translateY(4px) scale(.98);
+    box-shadow:0 1px 0 #55347f;
+  }
+  .check:disabled{opacity:.65;cursor:default}
+  .spark{
+    position:absolute;
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:var(--pink);
+    pointer-events:none;
+    opacity:0;
+  }
+  .celebrate .spark{
+    animation:spark .7s ease-out forwards;
+  }
+  .celebrate .spark:nth-child(2){background:var(--mint);animation-delay:.04s}
+  .celebrate .spark:nth-child(3){background:var(--cheese);animation-delay:.1s}
+  .celebrate .spark:nth-child(4){background:var(--purple);animation-delay:.15s}
+  .celebrate .pizza-wrap{animation:happy .65s ease}
+  @keyframes happy{
+    0%,100%{transform:rotate(0) scale(1)}
+    30%{transform:rotate(-4deg) scale(1.05)}
+    60%{transform:rotate(4deg) scale(1.04)}
+  }
+  @keyframes spark{
+    0%{opacity:0;transform:translate(0,0) scale(.2)}
+    20%{opacity:1}
+    100%{opacity:0;transform:translate(var(--x),var(--y)) scale(1.2)}
+  }
+  .done-card{
+    width:min(92vw,360px);
+    margin:auto 0;
+    padding:30px 22px;
+    text-align:center;
+    background:rgba(255,255,255,.86);
+    border-radius:30px;
+    box-shadow:0 12px 26px rgba(91,62,112,.16);
+    animation:pop .45s ease-out;
+  }
+  .done-pizza{
+    width:142px;
+    height:142px;
+    margin:0 auto 14px;
+  }
+  .done-text{
+    color:var(--purple);
+    font-size:25px;
+    font-weight:800;
+    line-height:1.25;
+  }
+  @keyframes pop{
+    from{opacity:0;transform:scale(.8)}
+    to{opacity:1;transform:scale(1)}
+  }
+</style>
+
+<div id="app">
+  <div class="spark" style="left:27%;top:38%;--x:-38px;--y:-66px"></div>
+  <div class="spark" style="left:65%;top:38%;--x:43px;--y:-62px"></div>
+  <div class="spark" style="left:34%;top:56%;--x:-42px;--y:47px"></div>
+  <div class="spark" style="left:66%;top:56%;--x:42px;--y:44px"></div>
+  <main class="top" id="game">
+    <h1 id="title"></h1>
+    <p class="instruction" id="instruction"></p>
+    <div class="fraction-card" aria-hidden="true">
+      <span class="fraction"><span id="num"></span><i></i><span id="den"></span></span>
+    </div>
+    <div class="pizza-wrap">
+      <svg id="pizza" viewBox="0 0 300 300" role="img"></svg>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <button class="check" type="button" data-action="check" id="check"></button>
+  </main>
+</div>
+
+<script>
+(function(){
+  var items=Studio.params.items;
+  var index=0, pending=false, completed=false;
+  var app=document.getElementById('app');
+  var game=document.getElementById('game');
+  var svg=document.getElementById('pizza');
+  var check=document.getElementById('check');
+  var feedback=document.getElementById('feedback');
+  var NS='http://www.w3.org/2000/svg';
+
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+
+  function node(name,attrs){
+    var el=document.createElementNS(NS,name);
+    for(var key in attrs) el.setAttribute(key,attrs[key]);
+    return el;
+  }
+  function point(angle,r){
+    return {x:150+Math.cos(angle)*r,y:150+Math.sin(angle)*r};
+  }
+  function sector(a,b){
+    var p1=point(a,132),p2=point(b,132);
+    var large=b-a>Math.PI?1:0;
+    return 'M 150 150 L '+p1.x+' '+p1.y+' A 132 132 0 '+large+' 1 '+p2.x+' '+p2.y+' Z';
+  }
+  function showItem(){
+    var item=items[index];
+    game.setAttribute('data-item',item.id);
+    document.getElementById('num').textContent=item.n;
+    document.getElementById('den').textContent=item.d;
+    feedback.textContent='';
+    feedback.className='feedback';
+    svg.innerHTML='';
+    var base=node('circle',{cx:150,cy:150,r:139,fill:'#f3a657'});
+    svg.appendChild(base);
+    for(var i=0;i<item.d;i++){
+      var start=-Math.PI/2+(Math.PI*2*i/item.d);
+      var end=-Math.PI/2+(Math.PI*2*(i+1)/item.d);
+      var path=node('path',{
+        d:sector(start,end),
+        'class':'slice unshaded',
+        'data-part':i,
+        'data-shaded':'false',
+        tabindex:'0'
+      });
+      path.addEventListener('click',toggle);
+      path.addEventListener('keydown',function(e){
+        if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle.call(this);}
+      });
+      svg.appendChild(path);
+      var edge=point(end,132);
+      svg.appendChild(node('line',{x1:150,y1:150,x2:edge.x,y2:edge.y,'class':'cut'}));
+      var mid=(start+end)/2;
+      var pep=point(mid,78);
+      svg.appendChild(node('circle',{cx:pep.x,cy:pep.y,r:8,'class':'pepperoni'}));
+    }
+    svg.appendChild(node('circle',{cx:150,cy:150,r:139,'class':'crust'}));
+    pending=false;
+    check.disabled=false;
+  }
+  function toggle(){
+    if(pending)return;
+    var shaded=this.getAttribute('data-shaded')==='true';
+    this.setAttribute('data-shaded',shaded?'false':'true');
+    this.classList.toggle('shaded',!shaded);
+    this.classList.toggle('unshaded',shaded);
+    Studio.event('part_tap',{item:items[index].id,part:Number(this.getAttribute('data-part')),shaded:!shaded});
+  }
+  function selected(){
+    return svg.querySelectorAll('[data-shaded="true"]').length;
+  }
+  check.addEventListener('click',function(){
+    if(pending||completed)return;
+    pending=true;
+    check.disabled=true;
+    feedback.className='feedback';
+    Studio.event('check',{item:items[index].id,n:selected(),d:items[index].d});
+    Studio.answer({n:selected(),d:items[index].d});
+  });
+  Studio.onVerdict(function(result){
+    if(completed)return;
+    if(result.correct){
+      feedback.textContent=Studio.t('right');
+      feedback.className='feedback show';
+      app.classList.add('celebrate');
+      Studio.event('verdict',{item:items[index].id,correct:true});
+      setTimeout(function(){
+        app.classList.remove('celebrate');
+        index++;
+        if(index>=items.length) finish();
+        else showItem();
+      },850);
+    }else{
+      feedback.textContent=Studio.t('wrong')+' '+Studio.t('hint');
+      feedback.className='feedback show bad';
+      pending=false;
+      check.disabled=false;
+      Studio.event('verdict',{item:items[index].id,correct:false});
+    }
+  });
+  function finish(){
+    completed=true;
+    game.remove();
+    var card=document.createElement('div');
+    card.className='done-card';
+    var picture=document.createElementNS(NS,'svg');
+    picture.setAttribute('viewBox','0 0 300 300');
+    picture.setAttribute('class','done-pizza');
+    picture.appendChild(node('circle',{cx:150,cy:150,r:126,fill:'#f3a657'}));
+    for(var j=0;j<8;j++){
+      var a=-Math.PI/2+(Math.PI*2*j/8),b=-Math.PI/2+(Math.PI*2*(j+1)/8);
+      picture.appendChild(node('path',{d:sector(a,b),fill:j%2?'#ff8ca1':'#ffd65a',stroke:'#f1ad54','stroke-width':'2'}));
+    }
+    picture.appendChild(node('circle',{cx:150,cy:150,r:133,fill:'none',stroke:'#d88748','stroke-width':'14'}));
+    card.appendChild(picture);
+    var text=document.createElement('div');
+    text.className='done-text';
+    text.textContent=Studio.t('done');
+    card.appendChild(text);
+    app.appendChild(card);
+    Studio.done();
+  }
+  showItem();
+  Studio.ready();
+}());
+</script>

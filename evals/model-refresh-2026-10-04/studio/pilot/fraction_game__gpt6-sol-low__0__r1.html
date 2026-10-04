@@ -1,0 +1,139 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#fff8eb;color:#463b58;font-family:system-ui,sans-serif}
+  .wrap{width:100%;max-width:480px;min-height:100dvh;margin:auto;padding:12px 16px 16px;display:flex;flex-direction:column;align-items:center;text-align:center}
+  .top{width:100%;display:flex;align-items:center;gap:10px;text-align:left}
+  .badge{width:46px;height:46px;flex:none}
+  h1{margin:0;color:#754a74;font-size:clamp(20px,6vw,26px);line-height:1.15}
+  .card{width:100%;margin-top:12px;padding:15px 14px 18px;border-radius:26px;background:#fff;box-shadow:0 10px 30px #86644a16}
+  .instruction{margin:0 0 8px;font-size:17px;line-height:1.3}
+  .fraction{display:inline-flex;color:#754a74;font-size:34px;font-weight:800;font-variant-numeric:tabular-nums}
+  .stack{display:flex;flex-direction:column;align-items:center;line-height:1}
+  .stack span{padding:2px 8px}
+  .stack span+span{border-top:3px solid currentColor}
+  .picture{width:100%;margin:12px auto 8px;padding:10px;border-radius:22px;background:#f7e8cf}
+  .parts{display:grid;gap:7px;width:100%;height:clamp(120px,27dvh,172px)}
+  .part{min-width:0;min-height:44px;border:3px solid #d9a56e;border-radius:14px;background:#fff8e9;cursor:pointer;touch-action:manipulation;transition:background .2s,transform .18s,box-shadow .2s}
+  .part[data-shaded="true"]{background:#ed8c65;box-shadow:inset 0 -7px 0 #db7357}
+  .part:active{transform:scale(.92)}
+  .part:focus-visible,.check:focus-visible{outline:4px solid #7553a2;outline-offset:2px}
+  .message{min-height:26px;margin:8px 0;font-size:17px;font-weight:700;color:#754a74}
+  .check{width:100%;min-height:54px;border:0;border-radius:18px;background:#7657a0;color:white;font:700 19px system-ui,sans-serif;cursor:pointer;box-shadow:0 5px 0 #59417b;transition:transform .15s,box-shadow .15s}
+  .check:active{transform:translateY(3px);box-shadow:0 2px 0 #59417b}
+  .check:disabled{opacity:.65;cursor:default}
+  .celebrate .part[data-shaded="true"]{animation:pop .45s ease-in-out}
+  @keyframes pop{50%{transform:scale(1.07)}}
+  .finish{width:100%;margin:auto;padding:30px 20px;border-radius:28px;background:#fff;box-shadow:0 10px 30px #86644a16}
+  .finish svg{width:100px;height:100px}
+  .finish p{font-size:25px;font-weight:800;color:#754a74}
+  [hidden]{display:none!important}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <svg class="badge" viewBox="0 0 64 64" aria-hidden="true">
+      <circle cx="32" cy="32" r="29" fill="#f5c879"/>
+      <path d="M32 32V5A27 27 0 0 1 59 32Z" fill="#ed8c65" stroke="#fff8eb" stroke-width="3"/>
+      <path d="M32 32h27A27 27 0 0 1 32 59Z" fill="#e9a9a5" stroke="#fff8eb" stroke-width="3"/>
+      <circle cx="32" cy="32" r="3" fill="#754a74"/>
+    </svg>
+    <h1 id="title"></h1>
+  </div>
+
+  <main class="card" id="activity" data-item="">
+    <p class="instruction" id="instruction"></p>
+    <div class="fraction" aria-live="polite"><div class="stack"><span id="numerator"></span><span id="denominator"></span></div></div>
+    <div class="picture"><div class="parts" id="parts"></div></div>
+    <div class="message" id="message" aria-live="polite"></div>
+    <button class="check" data-action="check" id="check" type="button"></button>
+  </main>
+
+  <div class="finish" id="finish" hidden>
+    <svg viewBox="0 0 110 110" aria-hidden="true">
+      <circle cx="55" cy="55" r="47" fill="#f5c879"/>
+      <path d="M27 57 46 75 84 35" fill="none" stroke="#754a74" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="17" cy="25" r="5" fill="#ed8c65"/>
+      <circle cx="96" cy="81" r="5" fill="#e9a9a5"/>
+    </svg>
+    <p id="doneText"></p>
+  </div>
+</div>
+
+<script>
+(() => {
+  const items = Studio.params.items;
+  const $ = id => document.getElementById(id);
+  const parts = $('parts'), activity = $('activity'), message = $('message'), check = $('check');
+  let index = 0, waiting = false;
+  $('title').textContent = Studio.t('title');
+  $('instruction').textContent = Studio.t('instr');
+  check.textContent = Studio.t('check');
+  $('doneText').textContent = Studio.t('done');
+
+  function showItem() {
+    const item = items[index];
+    activity.dataset.item = item.id;
+    $('numerator').textContent = item.n;
+    $('denominator').textContent = item.d;
+    message.textContent = Studio.t('hint');
+    activity.classList.remove('celebrate');
+    parts.replaceChildren();
+    const cols = item.d > 5 ? Math.ceil(item.d / 2) : item.d;
+    parts.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+    parts.style.gridTemplateRows = `repeat(${Math.ceil(item.d / cols)}, minmax(0, 1fr))`;
+    for (let i = 0; i < item.d; i++) {
+      const part = document.createElement('button');
+      part.type = 'button';
+      part.className = 'part';
+      part.dataset.part = i;
+      part.dataset.shaded = 'false';
+      part.setAttribute('aria-label', `${Studio.t('hint')} ${i + 1}`);
+      part.setAttribute('aria-pressed', 'false');
+      part.addEventListener('click', () => {
+        if (waiting) return;
+        const shaded = part.dataset.shaded !== 'true';
+        part.dataset.shaded = String(shaded);
+        part.setAttribute('aria-pressed', String(shaded));
+        message.textContent = '';
+        Studio.event('part_tap', {item: item.id, part: i, shaded});
+      });
+      parts.append(part);
+    }
+  }
+
+  check.addEventListener('click', () => {
+    if (waiting) return;
+    waiting = true;
+    check.disabled = true;
+    const n = parts.querySelectorAll('[data-shaded="true"]').length;
+    Studio.event('check', {item: items[index].id, n});
+    Studio.answer({n, d: items[index].d});
+  });
+
+  Studio.onVerdict(({correct}) => {
+    if (!waiting) return;
+    message.textContent = Studio.t(correct ? 'right' : 'wrong');
+    if (correct) {
+      activity.classList.add('celebrate');
+      setTimeout(() => {
+        index++;
+        if (index === items.length) {
+          activity.hidden = true;
+          $('finish').hidden = false;
+          Studio.done();
+        } else {
+          waiting = false;
+          check.disabled = false;
+          showItem();
+        }
+      }, 850);
+    } else {
+      waiting = false;
+      check.disabled = false;
+    }
+  });
+
+  showItem();
+  Studio.ready();
+})();
+</script>

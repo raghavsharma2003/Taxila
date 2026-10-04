@@ -1,0 +1,395 @@
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --ink:#24324a;
+    --muted:#66758d;
+    --paper:#fffdf8;
+    --card:#ffffff;
+    --grid:#dce5ea;
+    --axis:#738296;
+    --fruit:#f28b45;
+    --fruit-dark:#d9692e;
+    --focus:#315f83;
+    --right:#27865f;
+    --wrong:#c75151;
+  }
+  body{
+    margin:0;
+    min-width:0;
+    min-height:100vh;
+    overflow-x:hidden;
+    background:
+      radial-gradient(circle at 12% 8%,#fff1bf 0 7%,transparent 7.5%),
+      linear-gradient(180deg,#eaf7f2 0%,#f8f3e9 100%);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  .activity{
+    width:100%;
+    max-width:520px;
+    min-height:100vh;
+    margin:0 auto;
+    padding:18px 12px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .heading{
+    margin:0;
+    min-height:38px;
+    padding:0 8px;
+    text-align:center;
+    font-size:clamp(21px,6vw,28px);
+    line-height:1.25;
+    font-weight:800;
+    letter-spacing:.01em;
+  }
+  .chart-card{
+    position:relative;
+    width:100%;
+    background:var(--card);
+    border:1px solid rgba(49,95,131,.12);
+    border-radius:24px;
+    padding:8px 5px 5px;
+    box-shadow:0 12px 28px rgba(49,74,81,.12);
+    overflow:hidden;
+  }
+  #chart{
+    display:block;
+    width:100%;
+    height:auto;
+    max-height:390px;
+    overflow:visible;
+  }
+  .grid-line{
+    stroke:var(--grid);
+    stroke-width:1;
+  }
+  .axis-line{
+    stroke:var(--axis);
+    stroke-width:1.8;
+    stroke-linecap:round;
+  }
+  .tick-text,.fruit-text,.axis-title,.value-text{
+    fill:var(--ink);
+    font-family:inherit;
+  }
+  .tick-text{
+    font-size:11px;
+    fill:var(--muted);
+    text-anchor:end;
+    dominant-baseline:middle;
+  }
+  .fruit-text{
+    font-size:10.5px;
+    font-weight:700;
+    text-anchor:middle;
+  }
+  .axis-title{
+    font-size:12px;
+    font-weight:700;
+    fill:var(--muted);
+    text-anchor:middle;
+  }
+  .bar{
+    fill:var(--fruit);
+    stroke:var(--fruit-dark);
+    stroke-width:1.5;
+    clip-path:inset(100% 0 0 0 round 10px);
+    transition:clip-path 720ms cubic-bezier(.2,.78,.25,1),filter 160ms ease,fill 160ms ease;
+  }
+  .chart-ready .bar{
+    clip-path:inset(0 0 0 0 round 10px);
+  }
+  .bar-group{
+    cursor:pointer;
+    outline:none;
+    touch-action:manipulation;
+  }
+  .bar-group:active .bar{
+    filter:brightness(.92);
+  }
+  .bar-group:focus-visible .bar{
+    stroke:var(--focus);
+    stroke-width:4;
+  }
+  .bar-group.selected .bar{
+    fill:#f5a05d;
+    filter:drop-shadow(0 4px 3px rgba(113,71,35,.22));
+  }
+  .hit-area{
+    fill:transparent;
+    pointer-events:all;
+  }
+  .value-bubble{
+    opacity:0;
+    transform:translateY(5px) scale(.88);
+    transform-box:fill-box;
+    transform-origin:center;
+    transition:opacity 170ms ease,transform 170ms ease;
+    pointer-events:none;
+  }
+  .value-bubble.visible{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+  .value-pill{
+    fill:var(--ink);
+    filter:drop-shadow(0 3px 3px rgba(28,40,57,.2));
+  }
+  .value-text{
+    fill:white;
+    font-size:12px;
+    font-weight:800;
+    text-anchor:middle;
+    dominant-baseline:middle;
+  }
+  .prompt-card{
+    min-height:104px;
+    background:rgba(255,255,255,.92);
+    border:1px solid rgba(49,95,131,.11);
+    border-radius:22px;
+    padding:14px 16px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    gap:7px;
+    text-align:center;
+    box-shadow:0 8px 20px rgba(49,74,81,.08);
+  }
+  .prompt{
+    margin:0;
+    font-size:clamp(17px,4.8vw,21px);
+    line-height:1.35;
+    font-weight:750;
+  }
+  .feedback{
+    min-height:25px;
+    margin:0;
+    font-size:17px;
+    line-height:1.3;
+    font-weight:800;
+    opacity:0;
+    transform:translateY(4px);
+    transition:opacity 180ms ease,transform 180ms ease;
+  }
+  .feedback.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+  .feedback.right{color:var(--right)}
+  .feedback.wrong{color:var(--wrong)}
+  .prompt-card.bump{animation:bump 360ms ease}
+  @keyframes bump{
+    0%,100%{transform:scale(1)}
+    45%{transform:scale(1.025)}
+  }
+  @media (max-height:620px){
+    .activity{padding-top:10px;gap:8px}
+    .chart-card{padding-top:3px}
+    #chart{max-height:350px}
+    .prompt-card{min-height:88px;padding:10px 14px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .bar,.value-bubble,.feedback{transition-duration:1ms}
+    .prompt-card.bump{animation:none}
+  }
+</style>
+
+<main class="activity">
+  <h1 class="heading" id="title"></h1>
+  <section class="chart-card">
+    <svg id="chart" viewBox="0 0 340 360" role="img" aria-labelledby="title">
+      <g id="grid"></g>
+      <g id="axes"></g>
+      <g id="bars"></g>
+      <g id="labels"></g>
+      <g id="bubble" class="value-bubble">
+        <rect class="value-pill" x="-22" y="-13" width="44" height="26" rx="13"></rect>
+        <text id="bubbleText" class="value-text" x="0" y="1"></text>
+      </g>
+    </svg>
+  </section>
+  <section class="prompt-card" id="promptCard">
+    <p class="prompt" id="prompt"></p>
+    <p class="feedback" id="feedback" aria-live="polite"></p>
+  </section>
+</main>
+
+<script>
+(() => {
+  const data = Studio.params.data;
+  const svgNS = "http://www.w3.org/2000/svg";
+  const chart = document.getElementById("chart");
+  const grid = document.getElementById("grid");
+  const axes = document.getElementById("axes");
+  const barsLayer = document.getElementById("bars");
+  const labels = document.getElementById("labels");
+  const bubble = document.getElementById("bubble");
+  const bubbleText = document.getElementById("bubbleText");
+  const prompt = document.getElementById("prompt");
+  const feedback = document.getElementById("feedback");
+  const promptCard = document.getElementById("promptCard");
+
+  document.getElementById("title").textContent = Studio.t("title");
+  prompt.textContent = Studio.t("ask");
+
+  const make = (name, attrs, parent) => {
+    const node = document.createElementNS(svgNS, name);
+    Object.keys(attrs).forEach(key => node.setAttribute(key, attrs[key]));
+    if (parent) parent.appendChild(node);
+    return node;
+  };
+
+  const left = 57;
+  const right = 328;
+  const top = 25;
+  const baseline = 286;
+  const plotHeight = baseline - top;
+  const maxValue = Math.max.apply(null, data.map(item => item.value));
+  const rough = maxValue / 4;
+  const power = Math.pow(10, Math.floor(Math.log10(rough || 1)));
+  const scaled = rough / power;
+  const stepFactor = scaled <= 1 ? 1 : scaled <= 2 ? 2 : scaled <= 5 ? 5 : 10;
+  const step = stepFactor * power;
+  const scaleMax = Math.ceil(maxValue / step) * step;
+  const yFor = value => baseline - (value / scaleMax) * plotHeight;
+
+  for (let tick = 0; tick <= scaleMax; tick += step) {
+    const y = yFor(tick);
+    make("line", {
+      class: "grid-line",
+      x1: left,
+      x2: right,
+      y1: y,
+      y2: y
+    }, grid);
+
+    const tickText = make("text", {
+      class: "tick-text",
+      x: left - 9,
+      y: y,
+      "data-tick": String(tick)
+    }, labels);
+    tickText.textContent = String(tick);
+  }
+
+  make("line", {
+    class: "axis-line",
+    x1: left,
+    x2: left,
+    y1: top,
+    y2: baseline
+  }, axes);
+
+  make("line", {
+    class: "axis-line",
+    x1: left,
+    x2: right,
+    y1: baseline,
+    y2: baseline
+  }, axes);
+
+  const axisTitle = make("text", {
+    class: "axis-title",
+    x: -(top + plotHeight / 2),
+    y: 14,
+    transform: "rotate(-90)"
+  }, labels);
+  axisTitle.textContent = Studio.t("yaxis");
+
+  const slot = (right - left) / data.length;
+  const barWidth = Math.min(48, slot * .9);
+  let locked = false;
+  let finished = false;
+
+  const choose = (item, group, center, barTop) => {
+    if (locked || finished) return;
+    locked = true;
+
+    Array.from(barsLayer.children).forEach(node => node.classList.remove("selected"));
+    group.classList.add("selected");
+
+    bubbleText.textContent = String(item.value);
+    bubble.setAttribute("transform", "translate(" + center + " " + Math.max(top + 14, barTop - 19) + ")");
+    bubble.classList.add("visible");
+
+    feedback.className = "feedback";
+    feedback.textContent = "";
+    Studio.event("bar_tap", {key:item.key,value:item.value});
+    Studio.answer(item.key);
+  };
+
+  data.forEach((item, index) => {
+    const center = left + slot * (index + .5);
+    const barTop = yFor(item.value);
+    const height = baseline - barTop;
+
+    const group = make("g", {
+      class: "bar-group",
+      tabindex: "0",
+      role: "button"
+    }, barsLayer);
+
+    make("rect", {
+      class: "hit-area",
+      x: center - slot / 2,
+      y: top,
+      width: slot,
+      height: baseline - top + 44
+    }, group);
+
+    const bar = make("rect", {
+      class: "bar",
+      x: center - barWidth / 2,
+      y: barTop,
+      width: barWidth,
+      height: height,
+      rx: Math.min(10, barWidth / 4),
+      "data-bar": item.key,
+      "data-value": String(item.value)
+    }, group);
+    bar.style.transitionDelay = (index * 70) + "ms";
+
+    const fruitLabel = make("text", {
+      class: "fruit-text",
+      x: center,
+      y: baseline + 23
+    }, labels);
+    fruitLabel.textContent = Studio.t(item.key);
+
+    group.addEventListener("click", () => choose(item, group, center, barTop));
+    group.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        choose(item, group, center, barTop);
+      }
+    });
+  });
+
+  Studio.onVerdict(result => {
+    feedback.className = "feedback show " + (result.correct ? "right" : "wrong");
+    feedback.textContent = Studio.t(result.correct ? "right" : "wrong");
+    promptCard.classList.remove("bump");
+    void promptCard.offsetWidth;
+    promptCard.classList.add("bump");
+
+    if (result.correct) {
+      finished = true;
+      prompt.textContent = Studio.t("done");
+      Array.from(barsLayer.children).forEach(node => node.removeAttribute("tabindex"));
+      Studio.event("complete", {});
+      Studio.done();
+    } else {
+      locked = false;
+    }
+  });
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => chart.classList.add("chart-ready"));
+  });
+
+  Studio.ready();
+})();
+</script>

@@ -1,0 +1,353 @@
+<style>
+  *{box-sizing:border-box}
+  .viz{
+    width:100%;
+    min-height:100vh;
+    padding:16px 10px;
+    overflow:hidden;
+    color:#25304a;
+    background:
+      radial-gradient(circle at 12% 8%,rgba(255,214,102,.34),transparent 24%),
+      radial-gradient(circle at 92% 25%,rgba(104,211,191,.23),transparent 28%),
+      linear-gradient(180deg,#fffaf0,#f2fbff);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  .card{
+    width:100%;
+    max-width:520px;
+    margin:auto;
+    padding:15px 8px 12px;
+    border:1px solid rgba(53,77,116,.12);
+    border-radius:26px;
+    background:rgba(255,255,255,.92);
+    box-shadow:0 14px 36px rgba(52,79,112,.13);
+  }
+  .title{
+    margin:0 8px 4px;
+    text-align:center;
+    font-size:clamp(22px,7vw,30px);
+    line-height:1.15;
+    font-weight:850;
+    color:#26375c;
+  }
+  .ask{
+    min-height:44px;
+    margin:3px 10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-size:17px;
+    line-height:1.3;
+    font-weight:700;
+    color:#52617b;
+  }
+  .chart-wrap{
+    width:100%;
+    overflow:hidden;
+    border-radius:20px;
+    background:linear-gradient(180deg,#fafdff,#fff);
+  }
+  svg{
+    display:block;
+    width:100%;
+    height:auto;
+  }
+  .grid{
+    stroke:#dce7ed;
+    stroke-width:1;
+  }
+  .axis{
+    stroke:#66758f;
+    stroke-width:2;
+    stroke-linecap:round;
+  }
+  .tick-label,.fruit-label,.axis-title,.value-label{
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    fill:#52617b;
+  }
+  .tick-label{font-size:12px;font-weight:650}
+  .fruit-label{font-size:11px;font-weight:750}
+  .axis-title{font-size:12px;font-weight:750}
+  .bar{
+    fill:#55b6a8;
+    stroke:#318f86;
+    stroke-width:2;
+    cursor:pointer;
+    clip-path:inset(100% 0 0 0);
+    animation:grow .82s cubic-bezier(.22,.82,.28,1) forwards;
+    transition:fill .2s ease,stroke .2s ease,filter .2s ease;
+  }
+  .bar.chosen{
+    fill:#f3a84b;
+    stroke:#d78226;
+    filter:drop-shadow(0 5px 4px rgba(205,125,31,.22));
+  }
+  .hit{
+    fill:transparent;
+    cursor:pointer;
+    outline:none;
+  }
+  .hit:focus-visible{
+    stroke:#26375c;
+    stroke-width:3;
+    stroke-dasharray:5 4;
+  }
+  .tap-group{
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    transition:transform .14s ease;
+  }
+  .tap-group.pressed{transform:scale(.94)}
+  .bubble{
+    opacity:0;
+    transform:translateY(5px);
+    transition:opacity .2s ease,transform .2s ease;
+    pointer-events:none;
+  }
+  .bubble.show{opacity:1;transform:translateY(0)}
+  .bubble-shape{
+    fill:#26375c;
+    filter:drop-shadow(0 3px 3px rgba(38,55,92,.2));
+  }
+  .value-label{
+    fill:#fff;
+    font-size:13px;
+    font-weight:850;
+    text-anchor:middle;
+  }
+  .status{
+    min-height:54px;
+    margin:4px 8px 0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    text-align:center;
+    font-size:19px;
+    font-weight:850;
+    color:#287a70;
+  }
+  .status.wrong{color:#bd633b;animation:nudge .32s ease}
+  .status.right{color:#287a70;animation:pop .42s ease}
+  @keyframes grow{
+    from{clip-path:inset(100% 0 0 0)}
+    to{clip-path:inset(0 0 0 0)}
+  }
+  @keyframes pop{
+    0%{transform:scale(.9);opacity:.2}
+    65%{transform:scale(1.07)}
+    100%{transform:scale(1);opacity:1}
+  }
+  @keyframes nudge{
+    0%,100%{transform:translateX(0)}
+    30%{transform:translateX(-5px)}
+    65%{transform:translateX(5px)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .bar{animation-duration:.01ms}
+    .status{animation:none!important}
+  }
+</style>
+<main class="viz">
+  <section class="card">
+    <h1 class="title" id="title"></h1>
+    <div class="ask" id="ask"></div>
+    <div class="chart-wrap">
+      <svg id="chart" viewBox="0 0 330 390" role="img" aria-labelledby="title">
+        <g id="grid"></g>
+        <g id="axes"></g>
+        <g id="bars"></g>
+        <g id="labels"></g>
+      </svg>
+    </div>
+    <div class="status" id="status" aria-live="polite"></div>
+  </section>
+</main>
+<script>
+(() => {
+  const data = Studio.params.data;
+  const title = document.getElementById("title");
+  const ask = document.getElementById("ask");
+  const status = document.getElementById("status");
+  const grid = document.getElementById("grid");
+  const axes = document.getElementById("axes");
+  const bars = document.getElementById("bars");
+  const labels = document.getElementById("labels");
+  const ns = "http://www.w3.org/2000/svg";
+  const make = name => document.createElementNS(ns, name);
+
+  title.textContent = Studio.t("title");
+  ask.textContent = Studio.t("ask");
+
+  const left = 55;
+  const right = 320;
+  const top = 35;
+  const bottom = 305;
+  const plotHeight = bottom - top;
+  const maxValue = Math.max(...data.map(item => item.value));
+  const roughStep = maxValue / 5;
+  const magnitude = Math.pow(10, Math.floor(Math.log10(roughStep)));
+  const normalized = roughStep / magnitude;
+  const step = (normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10) * magnitude;
+  const scaleMax = Math.ceil(maxValue / step) * step;
+  const y = value => bottom - value / scaleMax * plotHeight;
+
+  for (let tick = 0; tick <= scaleMax; tick += step) {
+    const py = y(tick);
+    const line = make("line");
+    line.setAttribute("class","grid");
+    line.setAttribute("x1",left);
+    line.setAttribute("x2",right);
+    line.setAttribute("y1",py);
+    line.setAttribute("y2",py);
+    grid.appendChild(line);
+
+    const text = make("text");
+    text.setAttribute("class","tick-label");
+    text.setAttribute("data-tick",String(tick));
+    text.setAttribute("x",left - 9);
+    text.setAttribute("y",py);
+    text.setAttribute("text-anchor","end");
+    text.setAttribute("dominant-baseline","middle");
+    text.textContent = tick;
+    grid.appendChild(text);
+  }
+
+  const yAxis = make("line");
+  yAxis.setAttribute("class","axis");
+  yAxis.setAttribute("x1",left);
+  yAxis.setAttribute("x2",left);
+  yAxis.setAttribute("y1",top);
+  yAxis.setAttribute("y2",bottom);
+  axes.appendChild(yAxis);
+
+  const baseline = make("line");
+  baseline.setAttribute("class","axis");
+  baseline.setAttribute("x1",left);
+  baseline.setAttribute("x2",right);
+  baseline.setAttribute("y1",bottom);
+  baseline.setAttribute("y2",bottom);
+  axes.appendChild(baseline);
+
+  const axisTitle = make("text");
+  axisTitle.setAttribute("class","axis-title");
+  axisTitle.setAttribute("x",15);
+  axisTitle.setAttribute("y",(top + bottom) / 2);
+  axisTitle.setAttribute("text-anchor","middle");
+  axisTitle.setAttribute("transform",`rotate(-90 15 ${(top + bottom) / 2})`);
+  axisTitle.textContent = Studio.t("yaxis");
+  axes.appendChild(axisTitle);
+
+  const slot = (right - left) / data.length;
+  const barWidth = Math.min(48, slot - 4);
+  let waiting = false;
+  let finished = false;
+
+  function choose(item, rect, bubble, group) {
+    if (waiting || finished) return;
+    waiting = true;
+    bars.querySelectorAll(".bar").forEach(node => node.classList.remove("chosen"));
+    labels.querySelectorAll(".bubble").forEach(node => node.classList.remove("show"));
+    rect.classList.add("chosen");
+    bubble.classList.add("show");
+    group.classList.add("pressed");
+    setTimeout(() => group.classList.remove("pressed"), 150);
+    status.textContent = "";
+    status.className = "status";
+    Studio.event("bar_tap",{key:item.key,value:item.value});
+    Studio.answer(item.key);
+  }
+
+  data.forEach((item,index) => {
+    const center = left + slot * index + slot / 2;
+    const barTop = y(item.value);
+    const height = bottom - barTop;
+
+    const group = make("g");
+    group.setAttribute("class","tap-group");
+
+    const rect = make("rect");
+    rect.setAttribute("class","bar");
+    rect.setAttribute("data-bar",item.key);
+    rect.setAttribute("data-value",String(item.value));
+    rect.setAttribute("x",center - barWidth / 2);
+    rect.setAttribute("y",barTop);
+    rect.setAttribute("width",barWidth);
+    rect.setAttribute("height",height);
+    rect.setAttribute("rx",Math.min(9,barWidth / 5));
+    rect.style.animationDelay = `${index * 90}ms`;
+    group.appendChild(rect);
+
+    const hit = make("rect");
+    hit.setAttribute("class","hit");
+    hit.setAttribute("x",center - slot / 2);
+    hit.setAttribute("y",top);
+    hit.setAttribute("width",slot);
+    hit.setAttribute("height",bottom - top);
+    hit.setAttribute("tabindex","0");
+    hit.setAttribute("role","button");
+    hit.setAttribute("aria-label",Studio.t(item.key));
+    group.appendChild(hit);
+    bars.appendChild(group);
+
+    const bubble = make("g");
+    bubble.setAttribute("class","bubble");
+    const bubbleY = Math.max(top + 2,barTop - 31);
+
+    const bubbleShape = make("rect");
+    bubbleShape.setAttribute("class","bubble-shape");
+    bubbleShape.setAttribute("x",center - 20);
+    bubbleShape.setAttribute("y",bubbleY);
+    bubbleShape.setAttribute("width",40);
+    bubbleShape.setAttribute("height",25);
+    bubbleShape.setAttribute("rx",12);
+
+    const valueText = make("text");
+    valueText.setAttribute("class","value-label");
+    valueText.setAttribute("x",center);
+    valueText.setAttribute("y",bubbleY + 13);
+    valueText.setAttribute("dominant-baseline","middle");
+    valueText.textContent = item.value;
+    bubble.append(bubbleShape,valueText);
+    labels.appendChild(bubble);
+
+    const fruit = make("text");
+    fruit.setAttribute("class","fruit-label");
+    fruit.setAttribute("x",center);
+    fruit.setAttribute("y",bottom + 25);
+    fruit.setAttribute("text-anchor","middle");
+    fruit.textContent = Studio.t(item.key);
+    labels.appendChild(fruit);
+
+    hit.addEventListener("click",() => choose(item,rect,bubble,group));
+    hit.addEventListener("keydown",event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        choose(item,rect,bubble,group);
+      }
+    });
+  });
+
+  Studio.onVerdict(verdict => {
+    waiting = false;
+    if (verdict.correct) {
+      finished = true;
+      status.className = "status right";
+      const rightText = document.createElement("span");
+      const doneText = document.createElement("span");
+      rightText.textContent = Studio.t("right");
+      doneText.textContent = Studio.t("done");
+      status.replaceChildren(rightText,doneText);
+      Studio.event("complete",{});
+      Studio.done();
+    } else {
+      status.className = "status wrong";
+      status.textContent = Studio.t("wrong");
+      Studio.event("retry",{});
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

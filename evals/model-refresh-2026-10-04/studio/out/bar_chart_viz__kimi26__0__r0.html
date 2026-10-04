@@ -1,0 +1,298 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: ui-rounded, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: linear-gradient(180deg, #FFFBF0 0%, #FFF3E0 100%);
+    color: #4B2E19;
+    width: 100%;
+    height: 100vh;
+    max-width: 360px;
+    max-height: 640px;
+    margin: 0 auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #app {
+    width: 100%;
+    height: 100%;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 10px;
+    padding-top: 6px;
+  }
+  h1#title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #92400E;
+    letter-spacing: -0.01em;
+  }
+  .chart-box {
+    flex: 1 1 auto;
+    background: #FFFFFF;
+    border-radius: 20px;
+    box-shadow: 0 6px 24px rgba(124, 45, 18, 0.08);
+    padding: 10px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    transition: filter 0.3s ease;
+  }
+  .chart-box.completed {
+    pointer-events: none;
+  }
+  svg { width: 100%; height: 100%; }
+  .bar {
+    transition: y 0.9s cubic-bezier(0.34, 1.56, 0.64, 1),
+                height 0.9s cubic-bezier(0.34, 1.56, 0.64, 1),
+                filter 0.2s ease;
+    cursor: pointer;
+    stroke: rgba(0,0,0,0.08);
+    stroke-width: 1px;
+  }
+  .bar.pressed {
+    filter: brightness(1.15) saturate(1.2);
+  }
+  .grid-line {
+    stroke: #F3F4F6;
+    stroke-width: 1;
+  }
+  .grid-line.zero {
+    stroke: #D1D5DB;
+    stroke-width: 1.5;
+  }
+  .tick-text {
+    fill: #6B7280;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .axis-title {
+    fill: #6B7280;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .fruit-label {
+    fill: #374151;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .ask {
+    background: #FFF7ED;
+    border: 2px solid #FDE68A;
+    border-radius: 14px;
+    padding: 12px 14px;
+    text-align: center;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #78350F;
+    line-height: 1.35;
+    margin-bottom: 10px;
+    transition: background 0.3s, border-color 0.3s, color 0.3s;
+  }
+  .ask.done {
+    background: #D1FAE5;
+    border-color: #6EE7B7;
+    color: #065F46;
+  }
+  .feedback {
+    text-align: center;
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    pointer-events: none;
+  }
+  .feedback.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .feedback.right {
+    background: #D1FAE5;
+    color: #065F46;
+  }
+  .feedback.wrong {
+    background: #FEE2E2;
+    color: #991B1B;
+  }
+</style>
+
+<div id="app">
+  <div class="header">
+    <h1 id="title"></h1>
+  </div>
+  <div class="chart-box" id="chartBox">
+    <svg viewBox="0 0 360 320" preserveAspectRatio="xMidYMid meet">
+      <g id="gridGroup"></g>
+      <g id="barsGroup"></g>
+      <g id="labelsGroup"></g>
+      <g id="tooltip" style="transition: opacity 0.25s ease; opacity: 0; pointer-events: none;">
+        <rect id="ttRect" x="0" y="0" width="36" height="22" rx="5" fill="#1F2937"/>
+        <text id="ttText" x="18" y="15" text-anchor="middle" fill="#FFFFFF" font-size="11" font-weight="700"></text>
+      </g>
+      <text id="yaxisLabel" class="axis-title" transform="rotate(-90, 16, 160)" x="16" y="160" text-anchor="middle"></text>
+    </svg>
+  </div>
+  <div class="ask" id="askEl"></div>
+  <div class="feedback" id="feedbackEl"></div>
+</div>
+
+<script>
+(function(){
+  var data = Studio.params.data;
+  var titleEl = document.getElementById('title');
+  var askEl = document.getElementById('askEl');
+  var feedbackEl = document.getElementById('feedbackEl');
+  var chartBox = document.getElementById('chartBox');
+  var gridGroup = document.getElementById('gridGroup');
+  var barsGroup = document.getElementById('barsGroup');
+  var labelsGroup = document.getElementById('labelsGroup');
+  var tooltip = document.getElementById('tooltip');
+  var ttRect = document.getElementById('ttRect');
+  var ttText = document.getElementById('ttText');
+  var yaxisLabel = document.getElementById('yaxisLabel');
+
+  titleEl.textContent = Studio.t('title');
+  askEl.textContent = Studio.t('ask');
+  yaxisLabel.textContent = Studio.t('yaxis');
+
+  var vbW = 360;
+  var vbH = 320;
+  var margin = { top: 30, right: 22, bottom: 50, left: 50 };
+  var chartW = vbW - margin.left - margin.right;
+  var chartH = vbH - margin.top - margin.bottom;
+  var baselineY = vbH - margin.bottom;
+
+  var maxVal = 0;
+  for (var i = 0; i < data.length; i++) {
+    if (data[i].value > maxVal) maxVal = data[i].value;
+  }
+
+  var tickStep = 2;
+  var maxTick = Math.ceil(maxVal / tickStep) * tickStep;
+  if (maxTick < maxVal) maxTick += tickStep;
+  if (maxTick === 0) maxTick = tickStep;
+  var pxPerUnit = chartH / maxTick;
+
+  for (var v = 0; v <= maxTick; v += tickStep) {
+    var y = baselineY - v * pxPerUnit;
+    var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', margin.left);
+    line.setAttribute('x2', vbW - margin.right);
+    line.setAttribute('y1', y);
+    line.setAttribute('y2', y);
+    line.setAttribute('class', v === 0 ? 'grid-line zero' : 'grid-line');
+    gridGroup.appendChild(line);
+
+    var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    t.setAttribute('x', margin.left - 10);
+    t.setAttribute('y', y + 4);
+    t.setAttribute('text-anchor', 'end');
+    t.setAttribute('class', 'tick-text');
+    t.setAttribute('data-tick', String(v));
+    t.textContent = String(v);
+    gridGroup.appendChild(t);
+  }
+
+  var slotW = chartW / data.length;
+  var barW = 44;
+
+  var colors = {
+    mango: '#F59E0B',
+    banana: '#FBBF24',
+    apple: '#EF4444',
+    guava: '#10B981',
+    orange: '#F97316'
+  };
+
+  data.forEach(function(d, idx){
+    var finalH = d.value * pxPerUnit;
+    var finalY = baselineY - finalH;
+    var x = margin.left + idx * slotW + (slotW - barW) / 2;
+
+    var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', x);
+    rect.setAttribute('y', baselineY);
+    rect.setAttribute('width', barW);
+    rect.setAttribute('height', 0);
+    rect.setAttribute('rx', 6);
+    rect.setAttribute('ry', 6);
+    rect.setAttribute('fill', colors[d.key] || '#6366F1');
+    rect.setAttribute('class', 'bar');
+    rect.setAttribute('data-bar', d.key);
+    rect.setAttribute('data-value', String(d.value));
+
+    function onTap(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      rect.classList.add('pressed');
+      setTimeout(function(){ rect.classList.remove('pressed'); }, 200);
+
+      var cx = x + barW / 2;
+      var ty = finalY - 8;
+      var tw = 36;
+      var tx = cx - tw / 2;
+      var tRectY = ty - 22;
+
+      ttRect.setAttribute('x', tx);
+      ttRect.setAttribute('y', tRectY);
+      ttText.setAttribute('x', cx);
+      ttText.setAttribute('y', ty - 7);
+      ttText.textContent = String(d.value);
+      tooltip.style.opacity = '1';
+
+      clearTimeout(tooltip._t);
+      tooltip._t = setTimeout(function(){ tooltip.style.opacity = '0'; }, 1400);
+
+      Studio.answer(d.key);
+    }
+
+    rect.addEventListener('click', onTap);
+    rect.addEventListener('touchstart', function(e){ e.preventDefault(); onTap(e); }, {passive:false});
+
+    barsGroup.appendChild(rect);
+
+    setTimeout(function(){
+      rect.setAttribute('y', finalY);
+      rect.setAttribute('height', finalH);
+    }, 120 + idx * 110);
+
+    var label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', x + barW / 2);
+    label.setAttribute('y', baselineY + 22);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('class', 'fruit-label');
+    label.textContent = Studio.t(d.key);
+    labelsGroup.appendChild(label);
+  });
+
+  Studio.onVerdict(function(result){
+    if (result.correct) {
+      feedbackEl.textContent = Studio.t('right');
+      feedbackEl.className = 'feedback right show';
+      askEl.textContent = Studio.t('done');
+      askEl.classList.add('done');
+      chartBox.classList.add('completed');
+      Studio.done();
+    } else {
+      feedbackEl.textContent = Studio.t('wrong');
+      feedbackEl.className = 'feedback wrong show';
+      clearTimeout(feedbackEl._t);
+      feedbackEl._t = setTimeout(function(){
+        feedbackEl.classList.remove('show');
+      }, 1800);
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

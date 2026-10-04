@@ -1,0 +1,161 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0}
+  .garden{width:100%;max-width:360px;min-height:100vh;margin:auto;padding:10px 12px 14px;background:#f4f8eb;color:#244c39;font-family:system-ui,sans-serif;display:flex;flex-direction:column;gap:8px}
+  h1{font-size:18px;line-height:1.2;margin:0;text-align:center;color:#24513d}
+  .scene{width:100%;height:310px;display:block;background:#ddf3ed;border:2px solid #c4e6d7;border-radius:22px;overflow:hidden}
+  .scene text{font:600 12px system-ui,sans-serif;fill:#27503e}
+  .ray{stroke:#ffd269;stroke-width:5;stroke-linecap:round;opacity:.75;animation:ray 2.4s ease-in-out infinite alternate}
+  .glow{animation:glow 2s ease-in-out infinite alternate;transform-origin:208px 143px}
+  .garden[data-step="1"] .water-flow,.garden[data-step="2"] .co2-flow,.garden[data-step="3"] .light-flow,.garden[data-step="4"] .glucose-flow,.garden[data-step="5"] .o2-flow{filter:drop-shadow(0 0 4px currentColor)}
+  .controls{display:flex;gap:6px}
+  .controls button,.choices button{border:0;border-radius:14px;min-height:44px;font:700 15px system-ui,sans-serif;cursor:pointer;transition:transform .15s,background .2s,box-shadow .2s}
+  .controls button:active,.choices button:active{transform:scale(.92)}
+  [data-action="play"]{width:68px;background:#286d54;color:white}
+  .steps{display:flex;flex:1;gap:5px}
+  .steps button{flex:1;min-width:0;background:#e1edcf;color:#31523a}
+  .steps button.active{background:#71b584;color:#fff;box-shadow:0 3px 0 #428a5c}
+  .caption{min-height:43px;padding:9px 12px;border-radius:14px;background:#fff;color:#31543f;font-weight:600;font-size:14px;line-height:1.25;text-align:center;display:grid;place-items:center}
+  .question{background:#fff;border-radius:17px;padding:10px;box-shadow:0 3px 12px #2a654314}
+  .question p{margin:0 0 8px;text-align:center;font-weight:700;font-size:14px;line-height:1.25}
+  .choices{display:flex;gap:7px}
+  .choices button{flex:1;min-width:0;background:#dcefe8;color:#285943}
+  .choices button:disabled{cursor:default}
+  .feedback{height:16px;text-align:center;font-size:18px;line-height:16px;color:#309264}
+  .feedback.wrong{color:#c27b46}
+  .garden.paused .ray,.garden.paused .glow{animation-play-state:paused}
+  @keyframes ray{to{opacity:.35}}
+  @keyframes glow{to{opacity:.45;transform:scale(.83)}}
+</style>
+<div class="garden" id="garden" data-step="1">
+  <h1 id="title"></h1>
+  <svg class="scene" viewBox="0 0 332 310" role="img" aria-labelledby="title">
+    <rect x="0" y="246" width="332" height="64" fill="#b98a65"/>
+    <path d="M0 250 Q80 238 166 250 T332 247" fill="none" stroke="#9b704f" stroke-width="5"/>
+    <g class="light-flow">
+      <circle cx="65" cy="51" r="27" fill="#ffcf65" stroke="#f4ad4e" stroke-width="3"/>
+      <path class="ray" d="M82 74 L173 119"/>
+      <path class="ray" d="M91 55 L191 123"/>
+      <path class="ray" d="M75 82 L164 133"/>
+    </g>
+    <path d="M164 252 Q159 204 170 164" fill="none" stroke="#448a56" stroke-width="12" stroke-linecap="round"/>
+    <g data-entity="roots" fill="none" stroke="#76523c" stroke-width="5" stroke-linecap="round">
+      <path d="M164 247 Q138 264 122 283 M164 247 Q183 272 206 287 M164 249 L162 294 M151 258 L138 277 M180 259 L193 278"/>
+    </g>
+    <g data-entity="leaf">
+      <path d="M167 173 Q172 106 247 111 Q242 173 167 173Z" fill="#74bc68" stroke="#3b8755" stroke-width="4"/>
+      <path d="M170 169 Q203 146 239 118" fill="none" stroke="#4d9a57" stroke-width="3"/>
+    </g>
+    <g class="glucose-flow glow"><circle cx="207" cy="143" r="10" fill="#f7db75" opacity=".9"/></g>
+    <g class="water-flow" fill="#59bde2">
+      <circle data-flow="water" r="5"/><circle data-flow="water" r="5"/><circle data-flow="water" r="5"/>
+    </g>
+    <g class="co2-flow" fill="#9a83c8">
+      <circle data-flow="co2" r="5"/><circle data-flow="co2" r="5"/><circle data-flow="co2" r="5"/>
+    </g>
+    <g class="o2-flow" fill="#ed9d70">
+      <circle data-flow="o2" r="5"/><circle data-flow="o2" r="5"/><circle data-flow="o2" r="5"/>
+    </g>
+    <text data-label="sun" data-width="92" x="12" y="105"></text>
+    <text data-label="leaf" data-width="76" x="245" y="96"></text>
+    <text data-label="roots" data-width="95" x="12" y="290"></text>
+    <text data-label="water" data-width="78" x="70" y="228"></text>
+    <text data-label="co2" data-width="72" x="250" y="150"></text>
+    <text data-label="o2" data-width="72" x="250" y="219"></text>
+    <text data-label="glucose" data-width="72" x="174" y="191"></text>
+  </svg>
+  <div class="controls">
+    <button type="button" data-action="play" id="play"></button>
+    <div class="steps">
+      <button type="button" data-action="step-1" class="active"></button>
+      <button type="button" data-action="step-2"></button>
+      <button type="button" data-action="step-3"></button>
+      <button type="button" data-action="step-4"></button>
+      <button type="button" data-action="step-5"></button>
+    </div>
+  </div>
+  <div class="caption" data-caption></div>
+  <div class="question">
+    <p id="ask"></p>
+    <div class="choices">
+      <button type="button" data-option="co2"></button>
+      <button type="button" data-option="o2"></button>
+      <button type="button" data-option="water"></button>
+    </div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+  </div>
+</div>
+<script>
+(()=>{
+  const root=document.getElementById('garden'),play=document.getElementById('play');
+  const count=Studio.params.steps,first=1;
+  let step=first,playing=true,phase=0,last=0,finished=false;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  document.querySelectorAll('[data-label]').forEach(el=>{
+    el.textContent=Studio.t(el.dataset.label);
+    const width=Number(el.dataset.width);
+    if(el.getComputedTextLength()>width){
+      el.setAttribute('textLength',width);
+      el.setAttribute('lengthAdjust','spacingAndGlyphs');
+    }
+  });
+  document.querySelectorAll('[data-option]').forEach(el=>el.textContent=Studio.t(el.dataset.option));
+  const buttons=[...document.querySelectorAll('[data-action^="step-"]')];
+  buttons.forEach((button,index)=>{
+    const number=index+first;
+    button.textContent=number;
+    button.hidden=number>count;
+    button.addEventListener('click',()=>{
+      step=number;root.dataset.step=number;
+      buttons.forEach(b=>b.classList.toggle('active',b===button));
+      document.querySelector('[data-caption]').textContent=Studio.t('step'+number);
+      Studio.event('step',{step:number});
+    });
+  });
+  document.querySelector('[data-caption]').textContent=Studio.t('step'+step);
+  const updatePlay=()=>{play.textContent=Studio.t(playing?'pause':'play');root.classList.toggle('paused',!playing)};
+  updatePlay();
+  play.addEventListener('click',()=>{playing=!playing;updatePlay();Studio.event('play',{playing})});
+  const paths={
+    water:[[147,275],[163,244],[161,204],[171,164],[199,146]],
+    co2:[[314,125],[277,127],[244,136],[215,145]],
+    o2:[[204,147],[239,154],[274,175],[317,198]]
+  };
+  const move=(points,t)=>{
+    const n=points.length-1,p=t*n,i=Math.min(Math.floor(p),n-1),f=p-i;
+    return [points[i][0]+(points[i+1][0]-points[i][0])*f,points[i][1]+(points[i+1][1]-points[i][1])*f];
+  };
+  function frame(now){
+    if(playing&&last)phase+=(now-last)/2800;
+    last=now;
+    Object.keys(paths).forEach(key=>{
+      document.querySelectorAll('[data-flow="'+key+'"]').forEach((circle,index)=>{
+        const pos=move(paths[key],(phase+index/3)%1);
+        circle.setAttribute('cx',pos[0]);
+        circle.setAttribute('cy',pos[1]);
+      });
+    });
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  const feedback=document.getElementById('feedback');
+  document.querySelectorAll('[data-option]').forEach(button=>button.addEventListener('click',()=>{
+    if(!finished){
+      feedback.textContent='';
+      Studio.event('answer',{option:button.dataset.option});
+      Studio.answer(button.dataset.option);
+    }
+  }));
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=correct?'✓':'↻';
+    feedback.classList.toggle('wrong',!correct);
+    if(correct&&!finished){
+      finished=true;
+      document.querySelectorAll('[data-option]').forEach(b=>b.disabled=true);
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+</script>

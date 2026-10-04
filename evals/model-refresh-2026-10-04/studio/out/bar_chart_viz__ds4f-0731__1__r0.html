@@ -1,0 +1,180 @@
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { width:100%; height:100%; overflow-x:hidden; font-family:system-ui, 'Segoe UI', Roboto, sans-serif; background:#fdf6e3; }
+  .wrap { min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:16px 12px 20px; }
+  h1 { font-size:1.25rem; color:#5b3a29; font-weight:700; margin:4px 0 6px; text-align:center; }
+  .ask { font-size:1rem; color:#8a5a3a; background:#ffe8d0; border-radius:16px; padding:10px 14px; margin:0 0 8px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,0.06); }
+  .chartbox { width:100%; max-width:360px; background:#fffdf7; border-radius:20px; padding:12px 8px 8px; box-shadow:0 4px 12px rgba(0,0,0,0.08); }
+  .chart-wrap { position:relative; width:100%; aspect-ratio:1/1.05; }
+  svg { width:100%; height:100%; display:block; overflow:visible; }
+  .gridline { stroke:#e8dcc8; stroke-width:1; }
+  .tick-label { fill:#8a7a6a; font-size:11px; text-anchor:end; }
+  .yaxis-title { fill:#7a5a3a; font-size:12px; text-anchor:middle; font-weight:600; }
+  .fruit-label { fill:#5b3a29; font-size:12px; font-weight:600; }
+  .bar { fill:#f4a261; cursor:pointer; transition:filter 0.2s; }
+  .bar-label { fill:#9c6644; font-size:12px; font-weight:700; text-anchor:middle; pointer-events:none; opacity:0; transition:opacity 0.25s; }
+  .bar:active { filter:brightness(1.15); }
+  .msg { margin-top:10px; font-size:1rem; font-weight:600; text-align:center; min-height:1.5em; padding:0 8px; }
+  .msg.right { color:#2d6a4f; }
+  .msg.wrong { color:#c1440e; }
+  .msg.done { color:#1d3a2f; background:#d9efe2; border-radius:16px; padding:10px 14px; }
+  @keyframes growBar { from { transform:scaleY(0); } to { transform:scaleY(1); } }
+  .bar-anim { transform-origin:bottom; animation:growBar 0.8s cubic-bezier(0.25,0.8,0.25,1) both; }
+</style>
+<div class="wrap">
+  <h1 data-test="title">Studio.t('title')</h1>
+  <div class="ask">Studio.t('ask')</div>
+  <div class="chartbox">
+    <div class="chart-wrap">
+      <svg id="chart" viewBox="0 0 360 380" role="img" aria-label="Studio.t('title')">
+        <text class="yaxis-title" x="22" y="18">Studio.t('yaxis')</text>
+        <g id="grid-lines"></g>
+        <g id="bars"></g>
+        <g id="x-labels"></g>
+      </svg>
+    </div>
+  </div>
+  <div id="msg" class="msg"></div>
+</div>
+
+<script>
+  (function(){
+    const data = Studio.params.data;
+    const total = data.reduce((a,b)=>a+b.value,0);
+    const width = 360, height = 380;
+    const chartTop = 30, chartBottom = 340;
+    const axisLeft = 44, plotWidth = 310;
+    const maxVal = Math.max(...data.map(d=>d.value));
+    const step = niceStep(maxVal);
+    const scaleY = (val) => chartBottom - (val/step)*(chartBottom-chartTop);
+
+    function niceStep(max){
+      let raw = max/4;
+      if(raw<=0) return 1;
+      const pow = Math.pow(10, Math.floor(Math.log10(raw)));
+      const rem = raw/pow;
+      let f=1;
+      if(rem<=1) f=1; else if(rem<=2) f=2; else if(rem<=2.5) f=2.5; else if(rem<=5) f=5; else f=10;
+      return f*pow;
+    }
+
+    const n = data.length;
+    const slot = plotWidth/n;
+    const barWidth = slot*0.6;
+
+    const svg = document.getElementById('chart');
+    const gGrid = document.getElementById('grid-lines');
+    const gBars = document.getElementById('bars');
+    const gX = document.getElementById('x-labels');
+
+    const barH = {};
+
+    function buildStatic(){
+      // ticks & gridlines
+      for(let v=0; v<=step*4; v+=step){
+        const y = scaleY(v);
+        if(v>0){
+          const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+          line.setAttribute('x1',axisLeft); line.setAttribute('y1',y);
+          line.setAttribute('x2',axisLeft+plotWidth); line.setAttribute('y2',y);
+          line.setAttribute('class','gridline');
+          gGrid.appendChild(line);
+        }
+        const label = document.createElementNS('http://www.w3.org/2000/svg','text');
+        label.setAttribute('x',axisLeft-6); label.setAttribute('y',y+4);
+        label.setAttribute('class','tick-label');
+        label.setAttribute('data-tick',v);
+        label.textContent = v;
+        gGrid.appendChild(label);
+      }
+
+      // bars & fruit labels
+      data.forEach((d,i)=>{
+        const x = axisLeft + i*slot + (slot-barWidth)/2;
+        const yBottom = chartBottom;
+        const yTop = scaleY(d.value);
+        const h = yBottom - yTop;
+        barH[d.key] = h;
+
+        const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+        rect.setAttribute('data-bar', d.key);
+        rect.setAttribute('data-value', d.value);
+        rect.setAttribute('x',x); 
+        rect.setAttribute('y',yTop);
+        rect.setAttribute('width',barWidth);
+        rect.setAttribute('height',h);
+        rect.setAttribute('rx',6);
+        rect.setAttribute('class','bar bar-anim');
+        rect.style.transformOrigin = (x+barWidth/2)+'px '+yBottom+'px';
+        gBars.appendChild(rect);
+
+        const valLabel = document.createElementNS('http://www.w3.org/2000/svg','text');
+        valLabel.setAttribute('x', x+barWidth/2);
+        valLabel.setAttribute('y', yTop-6);
+        valLabel.setAttribute('class','bar-label');
+        valLabel.textContent = d.value;
+        rect._label = valLabel;
+        gBars.appendChild(valLabel);
+
+        const xLabel = document.createElementNS('http://www.w3.org/2000/svg','text');
+        xLabel.setAttribute('x', x+barWidth/2);
+        xLabel.setAttribute('y', chartBottom+20);
+        xLabel.setAttribute('class','fruit-label');
+        xLabel.setAttribute('text-anchor','middle');
+        xLabel.textContent = Studio.t(d.key);
+        gX.appendChild(xLabel);
+      });
+    }
+
+    function showValue(key, show){
+      data.forEach(d=>{
+        if(d.key===key && show){
+          d._label.style.opacity = '1';
+        }else{
+          d._label.style.opacity = '0';
+        }
+      });
+    }
+
+    function attachInteractions(){
+      const bars = document.querySelectorAll('[data-bar]');
+      bars.forEach(bar=>{
+        bar.addEventListener('click', function(){
+          if(this._locked) return;
+          const key = this.getAttribute('data-bar');
+          showValue(key, true);
+          this._locked = true;
+          Studio.event('barTap', {key});
+          Studio.answer(key);
+        });
+      });
+    }
+
+    Studio.onVerdict(function(result){
+      const msg = document.getElementById('msg');
+      const correct = result.correct;
+      if(correct){
+        msg.textContent = Studio.t('right');
+        msg.className = 'msg right';
+        setTimeout(()=>{
+          msg.textContent = Studio.t('done');
+          msg.className = 'msg done';
+          Studio.done();
+        },1000);
+      }else{
+        msg.textContent = Studio.t('wrong');
+        msg.className = 'msg wrong';
+        // unlock all bars on wrong for retry
+        const bars = document.querySelectorAll('[data-bar]');
+        bars.forEach(b=>{
+          b._locked = false;
+          showValue(b.getAttribute('data-bar'), false);
+        });
+      }
+    });
+
+    buildStatic();
+    attachInteractions();
+    Studio.ready();
+  })();
+</script>

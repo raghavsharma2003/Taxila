@@ -1,0 +1,405 @@
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --ink:#42394f;
+    --cream:#fff8e8;
+    --card:#ffffff;
+    --crust:#e8a552;
+    --slice:#ffe2a6;
+    --shade:#ef6f61;
+    --shade2:#f58a73;
+    --purple:#7657a8;
+    --soft:#eee7f8;
+    --green:#4fa878;
+    --pink:#e7677d
+  }
+  body{
+    margin:0;
+    min-width:0;
+    min-height:100vh;
+    overflow-x:hidden;
+    background:
+      radial-gradient(circle at 12% 8%,rgba(255,255,255,.9) 0 26px,transparent 27px),
+      radial-gradient(circle at 88% 18%,rgba(255,255,255,.55) 0 19px,transparent 20px),
+      linear-gradient(180deg,#fff3cf,#f6edff);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    -webkit-tap-highlight-color:transparent;
+  }
+  button{font:inherit}
+  .app{
+    width:100%;
+    min-height:100vh;
+    padding:18px 14px 22px;
+    display:flex;
+    justify-content:center;
+  }
+  .card{
+    width:min(100%,430px);
+    min-height:590px;
+    padding:18px 16px;
+    border:2px solid rgba(118,87,168,.13);
+    border-radius:30px;
+    background:rgba(255,255,255,.88);
+    box-shadow:0 16px 40px rgba(82,61,101,.14);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .title{
+    margin:0;
+    text-align:center;
+    font-size:clamp(24px,7vw,31px);
+    line-height:1.1;
+    color:var(--purple);
+  }
+  .instr{
+    margin:9px 0 10px;
+    min-height:24px;
+    text-align:center;
+    font-size:17px;
+    font-weight:650;
+  }
+  .target{
+    min-height:79px;
+    min-width:78px;
+    padding:5px 17px;
+    border-radius:20px;
+    background:var(--soft);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    color:var(--purple);
+    font-size:29px;
+    font-weight:850;
+    line-height:.9;
+    box-shadow:inset 0 0 0 2px rgba(118,87,168,.12);
+  }
+  .fraction-line{
+    width:38px;
+    height:3px;
+    margin:5px 0;
+    border-radius:3px;
+    background:currentColor;
+  }
+  .picture-wrap{
+    width:100%;
+    min-height:282px;
+    display:grid;
+    place-items:center;
+    position:relative;
+  }
+  .pizza{
+    width:min(74vw,260px);
+    height:min(74vw,260px);
+    max-height:260px;
+    overflow:visible;
+    filter:drop-shadow(0 9px 8px rgba(98,68,47,.15));
+  }
+  .part{
+    cursor:pointer;
+    fill:var(--slice);
+    stroke:var(--crust);
+    stroke-width:6;
+    stroke-linejoin:round;
+    transform-origin:150px 150px;
+    transition:fill .2s ease,transform .16s ease,filter .2s ease;
+    outline:none;
+  }
+  .part[data-shaded="true"]{
+    fill:var(--shade);
+    filter:saturate(1.08);
+  }
+  .part:hover{filter:brightness(1.03)}
+  .part:focus-visible{
+    stroke:var(--purple);
+    stroke-width:9;
+  }
+  .part.pop{animation:partPop .28s ease}
+  @keyframes partPop{
+    45%{transform:scale(.94)}
+    75%{transform:scale(1.025)}
+  }
+  .check{
+    width:min(100%,270px);
+    min-height:54px;
+    border:0;
+    border-radius:18px;
+    padding:12px 22px;
+    background:linear-gradient(135deg,var(--purple),#9172c4);
+    color:#fff;
+    font-weight:850;
+    font-size:19px;
+    box-shadow:0 7px 0 #5c4388,0 11px 18px rgba(86,63,128,.2);
+    cursor:pointer;
+    transition:transform .12s ease,box-shadow .12s ease,opacity .2s ease;
+  }
+  .check:active{
+    transform:translateY(5px) scale(.98);
+    box-shadow:0 2px 0 #5c4388,0 5px 10px rgba(86,63,128,.18);
+  }
+  .check:focus-visible{outline:4px solid #d9c8f1;outline-offset:3px}
+  .check:disabled{opacity:.62;cursor:default}
+  .feedback{
+    min-height:52px;
+    margin-top:13px;
+    padding:8px 14px;
+    text-align:center;
+    font-size:18px;
+    line-height:1.25;
+    font-weight:800;
+    border-radius:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .feedback.good{
+    color:#24764c;
+    background:#dcf5e7;
+    animation:bloom .45s ease;
+  }
+  .feedback.try{
+    color:#a84058;
+    background:#ffe3e8;
+    animation:wobble .4s ease;
+  }
+  @keyframes bloom{
+    0%{transform:scale(.7);opacity:0}
+    70%{transform:scale(1.08)}
+  }
+  @keyframes wobble{
+    25%{transform:translateX(-6px)}
+    50%{transform:translateX(5px)}
+    75%{transform:translateX(-3px)}
+  }
+  .celebrate .pizza{animation:happy .65s ease}
+  @keyframes happy{
+    35%{transform:rotate(-5deg) scale(1.05)}
+    70%{transform:rotate(5deg) scale(1.05)}
+  }
+  .sparkles{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+  }
+  .spark{
+    position:absolute;
+    width:12px;
+    height:12px;
+    border-radius:4px;
+    opacity:0;
+  }
+  .celebrate .spark{animation:spark .75s ease-out}
+  .spark:nth-child(1){left:12%;top:31%;background:#f3b63e;animation-delay:.02s}
+  .spark:nth-child(2){left:80%;top:24%;background:#6fc6a0;animation-delay:.1s}
+  .spark:nth-child(3){left:18%;top:58%;background:#9172c4;animation-delay:.16s}
+  .spark:nth-child(4){left:78%;top:62%;background:#ef6f61;animation-delay:.06s}
+  .spark:nth-child(5){left:49%;top:18%;background:#ef87ae;animation-delay:.2s}
+  @keyframes spark{
+    0%{opacity:0;transform:translateY(18px) rotate(0) scale(.4)}
+    35%{opacity:1}
+    100%{opacity:0;transform:translateY(-42px) rotate(150deg) scale(1)}
+  }
+  .done-screen{
+    flex:1;
+    width:100%;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    text-align:center;
+    color:var(--purple);
+  }
+  .done-screen.show{display:flex;animation:bloom .55s ease}
+  .done-icon{
+    width:156px;
+    height:156px;
+    margin-bottom:22px;
+    border-radius:50%;
+    background:linear-gradient(145deg,#ffe4a6,#ffc66f);
+    display:grid;
+    place-items:center;
+    box-shadow:0 12px 0 #e4a44b;
+  }
+  .done-icon svg{width:96px;height:96px}
+  .done-text{font-size:30px;font-weight:900;line-height:1.15}
+  .hidden{display:none!important}
+  @media(max-height:650px){
+    .app{padding:10px}
+    .card{min-height:620px;padding-top:14px}
+    .picture-wrap{min-height:255px}
+    .pizza{width:235px;height:235px}
+    .feedback{margin-top:9px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  }
+</style>
+
+<main class="app">
+  <section class="card" id="card">
+    <div id="play" data-item="">
+      <h1 class="title" id="title"></h1>
+      <p class="instr" id="instr"></p>
+      <div class="target" aria-live="polite">
+        <span id="numerator"></span>
+        <span class="fraction-line"></span>
+        <span id="denominator"></span>
+      </div>
+      <div class="picture-wrap">
+        <svg class="pizza" id="pizza" viewBox="0 0 300 300" role="group"></svg>
+        <div class="sparkles" aria-hidden="true">
+          <i class="spark"></i><i class="spark"></i><i class="spark"></i>
+          <i class="spark"></i><i class="spark"></i>
+        </div>
+      </div>
+      <button class="check" id="check" data-action="check" type="button"></button>
+      <div class="feedback" id="feedback" aria-live="polite"></div>
+    </div>
+    <div class="done-screen" id="doneScreen">
+      <div class="done-icon" aria-hidden="true">
+        <svg viewBox="0 0 100 100">
+          <path d="M22 52L42 71L79 29" fill="none" stroke="#4fa878" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="done-text" id="doneText"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+  (() => {
+    const items = Studio.params.items;
+    const play = document.getElementById('play');
+    const card = document.getElementById('card');
+    const pizza = document.getElementById('pizza');
+    const numerator = document.getElementById('numerator');
+    const denominator = document.getElementById('denominator');
+    const feedback = document.getElementById('feedback');
+    const check = document.getElementById('check');
+    const doneScreen = document.getElementById('doneScreen');
+    let current = 0;
+    let waiting = false;
+    let finished = false;
+
+    document.getElementById('title').textContent = Studio.t('title');
+    document.getElementById('instr').textContent = Studio.t('instr');
+    check.textContent = Studio.t('check');
+    document.getElementById('doneText').textContent = Studio.t('done');
+
+    const point = (cx, cy, radius, angle) => {
+      const radians = (angle - 90) * Math.PI / 180;
+      return {
+        x: cx + radius * Math.cos(radians),
+        y: cy + radius * Math.sin(radians)
+      };
+    };
+
+    const sectorPath = (start, end) => {
+      const center = 150;
+      const radius = 126;
+      const a = point(center, center, radius, start);
+      const b = point(center, center, radius, end);
+      const large = end - start > 180 ? 1 : 0;
+      return [
+        'M', center, center,
+        'L', a.x, a.y,
+        'A', radius, radius, 0, large, 1, b.x, b.y,
+        'Z'
+      ].join(' ');
+    };
+
+    const togglePart = part => {
+      if (waiting) return;
+      const shaded = part.getAttribute('data-shaded') === 'true';
+      part.setAttribute('data-shaded', shaded ? 'false' : 'true');
+      part.classList.remove('pop');
+      void part.getBoundingClientRect();
+      part.classList.add('pop');
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+      Studio.event('part_toggle', {
+        item: items[current].id,
+        part: Number(part.getAttribute('data-part')),
+        shaded: !shaded
+      });
+    };
+
+    const render = () => {
+      const item = items[current];
+      waiting = false;
+      play.setAttribute('data-item', item.id);
+      numerator.textContent = item.n;
+      denominator.textContent = item.d;
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+      check.disabled = false;
+      pizza.replaceChildren();
+
+      for (let index = 0; index < item.d; index += 1) {
+        const start = index * 360 / item.d;
+        const end = (index + 1) * 360 / item.d;
+        const part = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        part.setAttribute('d', sectorPath(start, end));
+        part.setAttribute('class', 'part');
+        part.setAttribute('data-part', String(index));
+        part.setAttribute('data-shaded', 'false');
+        part.setAttribute('tabindex', '0');
+        part.setAttribute('role', 'button');
+        part.addEventListener('click', () => togglePart(part));
+        part.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            togglePart(part);
+          }
+        });
+        pizza.appendChild(part);
+      }
+    };
+
+    check.addEventListener('click', () => {
+      if (waiting || finished) return;
+      waiting = true;
+      check.disabled = true;
+      const count = pizza.querySelectorAll('[data-shaded="true"]').length;
+      const item = items[current];
+      Studio.event('check', {item:item.id, n:count, d:item.d});
+      Studio.answer({n:count, d:item.d});
+    });
+
+    Studio.onVerdict(result => {
+      if (finished) return;
+      if (result.correct) {
+        feedback.textContent = Studio.t('right');
+        feedback.className = 'feedback good';
+        card.classList.add('celebrate');
+        Studio.event('verdict', {item:items[current].id, correct:true});
+        window.setTimeout(() => {
+          card.classList.remove('celebrate');
+          current += 1;
+          if (current < items.length) {
+            render();
+          } else {
+            finished = true;
+            play.classList.add('hidden');
+            doneScreen.classList.add('show');
+            Studio.done();
+          }
+        }, 850);
+      } else {
+        feedback.textContent = Studio.t('wrong') + ' ' + Studio.t('hint');
+        feedback.className = 'feedback try';
+        waiting = false;
+        check.disabled = false;
+        Studio.event('verdict', {item:items[current].id, correct:false});
+      }
+    });
+
+    render();
+    Studio.ready();
+  })();
+</script>

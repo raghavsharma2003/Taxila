@@ -141,7 +141,7 @@ def build():
         r0 = L[key][0]; r1 = L[key][1]
         lo0 = [r0[i] for i in range(len(r0)) if not up[i]]
         lo1 = [r1[i] for i in range(len(r1)) if not up[i]]
-        blend(lo0, COL['lidline'], 0.2)
+        blend(lo0, COL['lidline'], 0.12)
         blend(L[key + '_tuck'][0], COL['lidline'], 0.8)
         upi = [r0[i] for i in range(len(r0)) if up[i]]
         blend(upi, COL['lash'], 0.95)

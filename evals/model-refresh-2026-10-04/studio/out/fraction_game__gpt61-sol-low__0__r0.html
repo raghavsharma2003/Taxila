@@ -1,0 +1,100 @@
+<style>
+*{box-sizing:border-box}body{margin:0;background:#fff8ec;color:#493629;font-family:system-ui,sans-serif}button{font:inherit;-webkit-tap-highlight-color:transparent} .activity{width:min(100%,480px);margin:auto;min-height:100svh;padding:22px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;background:radial-gradient(ellipse at top,#ffefd4,transparent 65%)}h1{font-size:25px;line-height:1.2;margin:0;text-align:center} .instruction{font-size:16px;line-height:1.45;text-align:center;margin:0;max-width:330px}.steps{display:flex;gap:8px;height:12px;align-items:center}.dot{width:8px;height:8px;border-radius:50%;background:#dbcab4;transition:background .3s,transform .3s}.dot.current{background:#bd662a;transform:scale(1.25)}.dot.finished{background:#328975}.item{width:100%;display:flex;flex-direction:column;align-items:center;gap:8px}.fraction{display:flex;flex-direction:column;align-items:center;font-size:27px;font-weight:750;line-height:1.1;min-width:48px;color:#734622}.fraction span:first-child{border-bottom:2px solid #734622;padding:0 10px 5px}.fraction span:last-child{padding-top:5px}.pizza{width:min(100%,310px);display:block;overflow:visible;filter:drop-shadow(0 9px 7px #68422320);transition:transform .35s}.part{fill:#fff0c9;stroke:#b9783c;stroke-width:2;stroke-linejoin:round;cursor:pointer;transition:fill .2s,filter .2s;outline:none}.part[data-shaded=true]{fill:#f5ad42}.part:active{filter:brightness(.9)}.part:focus-visible{stroke:#215f59;stroke-width:5}.feedback{min-height:26px;text-align:center;font-size:16px;font-weight:650;color:#78604c;margin:0}.check{border:0;border-radius:18px;background:#277b6a;color:white;min-height:52px;width:100%;max-width:310px;box-shadow:0 5px 0 #195a4e;cursor:pointer;font-weight:700;font-size:18px;transition:transform .15s,opacity .2s}.check:active{transform:translateY(3px);box-shadow:0 2px 0 #195a4e}.check:disabled{opacity:.6;cursor:default}.hint{font-size:13px;text-align:center;margin:4px 0;color:#8a725f}.success .pizza{animation:happy .65s ease}.success .feedback{color:#277b6a}.done{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;min-height:380px;text-align:center}.done svg{width:150px;height:150px}.done h2{font-size:27px;margin:0}[hidden]{display:none!important}@keyframes happy{0%,100%{transform:scale(1)}40%{transform:scale(1.045) rotate(-3deg)}70%{transform:scale(1.025) rotate(3deg)}}@media(max-height:680px){.activity{padding:14px 20px;gap:10px}.pizza{width:min(100%,270px)}.fraction{font-size:24px}.hint{margin:0}}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<main class="activity" id="activity">
+<h1 id="title"></h1>
+<p class="instruction" id="instr"></p>
+<div class="steps" id="steps" aria-hidden="true"></div>
+<section class="item" id="item">
+<div class="fraction" id="fraction"><span id="numerator"></span><span id="denominator"></span></div>
+<svg class="pizza" id="pizza" viewBox="0 0 320 320">
+<circle cx="160" cy="160" r="146" fill="#dba260"/>
+<circle cx="160" cy="160" r="139" fill="#edc58e"/>
+<g id="parts"></g>
+<circle cx="160" cy="160" r="5" fill="#b9783c" pointer-events="none"/>
+</svg>
+</section>
+<p class="feedback" id="feedback" aria-live="polite"></p>
+<button class="check" id="check" data-action="check" type="button"></button>
+<p class="hint" id="hint"></p>
+<section class="done" id="done" hidden>
+<svg viewBox="0 0 160 160" aria-hidden="true"><circle cx="80" cy="80" r="70" fill="#e1eee0"/><circle cx="80" cy="80" r="52" fill="#328975"/><path d="M52 81 L72 101 L111 59" fill="none" stroke="#fff8ec" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 27 L28 17 M130 33 L140 28 M21 119 L12 124 M127 133 L133 143" stroke="#e3a141" stroke-width="5" stroke-linecap="round"/></svg>
+<h2 id="doneText"></h2>
+</section>
+</main>
+<script>
+(()=>{
+const items=Studio.params.items;
+const el=id=>document.getElementById(id);
+['title','instr','check','hint'].forEach(key=>el(key).textContent=Studio.t(key));
+el('doneText').textContent=Studio.t('done');
+let index=0,shaded=[],waiting=false,completed=false;
+const dots=items.map(()=>{const dot=document.createElement('span');dot.className='dot';el('steps').append(dot);return dot});
+function toggle(i,path){
+ if(waiting||completed)return;
+ shaded[i]=!shaded[i];
+ path.setAttribute('data-shaded',String(shaded[i]));
+ path.setAttribute('aria-pressed',String(shaded[i]));
+ el('feedback').textContent='';
+ Studio.event('toggle',{item:items[index].id,part:i,shaded:shaded[i]});
+}
+function render(){
+ const item=items[index];
+ waiting=false;
+ el('check').disabled=false;
+ el('activity').classList.remove('success');
+ el('feedback').textContent='';
+ el('item').setAttribute('data-item',item.id);
+ el('numerator').textContent=item.n;
+ el('denominator').textContent=item.d;
+ dots.forEach((dot,i)=>dot.className='dot'+(i<index?' finished':i===index?' current':''));
+ shaded=Array.from({length:item.d},()=>false);
+ el('parts').replaceChildren();
+ for(let i=0;i<item.d;i++){
+ const start=-Math.PI/2+i*2*Math.PI/item.d;
+ const end=start+2*Math.PI/item.d;
+ const x=a=>160+134*Math.cos(a),y=a=>160+134*Math.sin(a);
+ const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+ const shape=item.d===1?'M160 26 A134 134 0 1 1 160 294 A134 134 0 1 1 160 26 Z':`M160 160 L${x(start)} ${y(start)} A134 134 0 ${end-start>Math.PI?1:0} 1 ${x(end)} ${y(end)} Z`;
+ path.setAttribute('d',shape);
+ path.setAttribute('class','part');
+ path.setAttribute('data-part',String(i));
+ path.setAttribute('data-shaded','false');
+ path.setAttribute('role','button');
+ path.setAttribute('tabindex','0');
+ path.setAttribute('aria-label',Studio.t('hint'));
+ path.setAttribute('aria-pressed','false');
+ path.addEventListener('click',()=>toggle(i,path));
+ path.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();toggle(i,path)}});
+ el('parts').append(path);
+ }
+}
+el('check').addEventListener('click',()=>{
+ if(waiting||completed)return;
+ waiting=true;
+ el('check').disabled=true;
+ Studio.answer({n:shaded.filter(Boolean).length,d:items[index].d});
+});
+Studio.onVerdict(verdict=>{
+ if(!waiting||completed)return;
+ el('feedback').textContent=Studio.t(verdict.correct?'right':'wrong');
+ if(!verdict.correct){waiting=false;el('check').disabled=false;return}
+ el('activity').classList.add('success');
+ setTimeout(()=>{
+ index++;
+ if(index<items.length){render();return}
+ completed=true;
+ ['instr','steps','item','feedback','check','hint'].forEach(id=>el(id).hidden=true);
+ el('done').hidden=false;
+ Studio.done();
+ },950);
+});
+if(items.length){render()}else{
+ completed=true;
+ ['instr','steps','item','feedback','check','hint'].forEach(id=>el(id).hidden=true);
+ el('done').hidden=false;
+}
+Studio.ready();
+if(completed)Studio.done();
+})();
+</script>

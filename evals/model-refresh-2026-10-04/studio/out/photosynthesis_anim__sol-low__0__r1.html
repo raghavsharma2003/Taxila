@@ -1,0 +1,270 @@
+<style>
+  *{box-sizing:border-box}
+  .activity{width:100%;max-width:360px;height:640px;margin:0 auto;padding:8px 10px;background:linear-gradient(180deg,#e9f8ff 0%,#f8fff2 64%,#fff8e7 100%);color:#173f35;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden;display:flex;flex-direction:column;gap:6px}
+  .title{min-height:34px;margin:0;text-align:center;font-size:22px;line-height:1.2;font-weight:800;color:#176b55}
+  .scene{display:block;width:100%;height:292px;flex:0 0 292px;border-radius:22px;background:linear-gradient(#bdeaff 0%,#e9f9ff 66%,#d7ed9d 66%,#b87d4d 100%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.72),0 5px 14px rgba(38,100,79,.12)}
+  .scene text{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:11px;font-weight:800;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round;fill:#17483d}
+  .ray{stroke:#ffd54c;stroke-width:4;stroke-linecap:round;opacity:.55;animation:rayGlow 1.6s ease-in-out infinite alternate}
+  .particle{transition:opacity .25s,filter .25s}
+  .water-p{fill:#239be6;stroke:#fff;stroke-width:1.5}
+  .co2-p{fill:#7354b8;stroke:#fff;stroke-width:1.5}
+  .o2-p{fill:#f6f8ff;stroke:#338fb6;stroke-width:1.5}
+  .glucose-core{fill:#ffce45;opacity:.76;transform-origin:220px 144px;animation:glow 1.5s ease-in-out infinite alternate}
+  .scene.paused .ray,.scene.paused .glucose-core{animation-play-state:paused}
+  .scene.step-1 .ray,.scene.step-2 [data-flow="water"],.scene.step-3 [data-flow="co2"],.scene.step-4 [data-flow="o2"],.scene.step-5 .glucose-core{filter:drop-shadow(0 0 5px #fff);opacity:1}
+  .scene.step-1 [data-entity="leaf"],.scene.step-5 [data-entity="leaf"]{filter:drop-shadow(0 0 6px #b8ef62)}
+  .controls{height:48px;display:grid;grid-template-columns:64px 1fr;gap:6px}
+  button{font:inherit;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+  button:active{transform:scale(.94)}
+  .play{min-width:64px;min-height:44px;border-radius:15px;background:#176b55;color:#fff;font-size:13px;font-weight:800;box-shadow:0 4px 0 #0e4d3c;transition:transform .12s,background .2s}
+  .steps{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+  .step{min-width:44px;min-height:44px;border-radius:14px;background:#fff;color:#176b55;font-weight:900;box-shadow:0 3px 0 #bbd9cc;transition:transform .15s,background .2s,color .2s}
+  .step.active{background:#ffcc4a;color:#4d3a00;box-shadow:0 3px 0 #d99f19;transform:translateY(-2px)}
+  .caption{height:48px;margin:0;padding:7px 12px;border-radius:15px;background:rgba(255,255,255,.88);display:flex;align-items:center;justify-content:center;text-align:center;font-size:14px;line-height:1.2;font-weight:750;color:#28584b;box-shadow:0 2px 8px rgba(30,92,72,.1)}
+  .check{display:flex;flex-direction:column;gap:6px;min-height:100px}
+  .ask{margin:0;text-align:center;font-size:15px;line-height:1.2;font-weight:850;color:#17483d}
+  .options{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+  .option{min-height:46px;border-radius:16px;background:#fff;color:#28584b;font-weight:850;box-shadow:0 4px 0 #c8dcd3;transition:transform .12s,background .2s,box-shadow .2s}
+  .option.chosen{background:#d7f3ff;box-shadow:0 4px 0 #76bcd7}
+  .check.wrong .option.chosen{background:#ffe1dd;box-shadow:0 4px 0 #e59186;animation:shake .32s}
+  .check.correct .option.chosen{background:#d9f5bd;box-shadow:0 4px 0 #7fb94d;animation:happy .45s}
+  @keyframes rayGlow{to{opacity:1}}
+  @keyframes glow{to{opacity:1;transform:scale(1.28)}}
+  @keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+  @keyframes happy{50%{transform:scale(1.08)}}
+  @media (prefers-reduced-motion:reduce){.ray,.glucose-core{animation:none}}
+</style>
+
+<main class="activity">
+  <h1 class="title" data-title></h1>
+
+  <svg class="scene step-1" viewBox="0 0 340 292" role="img" aria-labelledby="sceneTitle">
+    <title id="sceneTitle"></title>
+
+    <circle cx="55" cy="48" r="27" fill="#ffd34d" stroke="#f2aa25" stroke-width="4"/>
+    <g stroke="#ffd34d" stroke-width="4" stroke-linecap="round">
+      <path d="M55 10v-8M55 94v-8M17 48H9M101 48h-8M28 21l-7-7M89 82l-7-7M28 75l-7 7M89 14l-7 7"/>
+    </g>
+    <text data-label="sun" x="55" y="88" text-anchor="middle"></text>
+
+    <g class="light">
+      <path class="ray" d="M78 58L180 128"/>
+      <path class="ray" d="M82 45L201 122"/>
+      <path class="ray" d="M72 70L168 142"/>
+    </g>
+
+    <path d="M0 194H340V292H0Z" fill="#9b633e" opacity=".94"/>
+    <path d="M0 194Q50 182 100 194T200 194T300 194T340 192V208H0Z" fill="#77ad4a"/>
+
+    <path d="M170 238C169 213 171 187 176 162" fill="none" stroke="#3c8e42" stroke-width="11" stroke-linecap="round"/>
+    <g data-entity="leaf">
+      <path d="M174 166C190 119 238 109 276 127C259 166 220 185 174 166Z" fill="#55aa43" stroke="#267836" stroke-width="4"/>
+      <path d="M181 162Q220 146 260 132" fill="none" stroke="#d5ef82" stroke-width="3" stroke-linecap="round"/>
+      <path d="M210 151l-8-17M229 144l8 15M246 137l7 11" fill="none" stroke="#b5dc70" stroke-width="2"/>
+    </g>
+    <text data-label="leaf" x="267" y="183" text-anchor="middle"></text>
+
+    <g data-entity="roots" fill="none" stroke="#e8c18c" stroke-width="5" stroke-linecap="round">
+      <path d="M170 231Q145 249 131 277"/>
+      <path d="M170 230Q181 254 184 282"/>
+      <path d="M169 239Q201 250 220 273"/>
+      <path d="M151 247l-18 4M190 256l18 3"/>
+    </g>
+    <text data-label="roots" x="110" y="286" text-anchor="middle"></text>
+
+    <g class="glucose-core">
+      <circle cx="216" cy="151" r="12"/>
+      <circle cx="229" cy="145" r="8" opacity=".7"/>
+    </g>
+    <text data-label="glucose" x="220" y="111" text-anchor="middle"></text>
+
+    <g>
+      <circle class="particle water-p" data-flow="water" r="5"/>
+      <circle class="particle water-p" data-flow="water" r="5"/>
+      <circle class="particle water-p" data-flow="water" r="5"/>
+      <circle class="particle water-p" data-flow="water" r="5"/>
+      <text data-label="water" x="76" y="246" text-anchor="middle"></text>
+    </g>
+
+    <g>
+      <circle class="particle co2-p" data-flow="co2" r="5"/>
+      <circle class="particle co2-p" data-flow="co2" r="5"/>
+      <circle class="particle co2-p" data-flow="co2" r="5"/>
+      <circle class="particle co2-p" data-flow="co2" r="5"/>
+      <text data-label="co2" x="276" y="92" text-anchor="middle"></text>
+    </g>
+
+    <g>
+      <circle class="particle o2-p" data-flow="o2" r="5"/>
+      <circle class="particle o2-p" data-flow="o2" r="5"/>
+      <circle class="particle o2-p" data-flow="o2" r="5"/>
+      <circle class="particle o2-p" data-flow="o2" r="5"/>
+      <text data-label="o2" x="122" y="111" text-anchor="middle"></text>
+    </g>
+  </svg>
+
+  <section class="controls">
+    <button class="play" type="button" data-action="play"></button>
+    <div class="steps" data-steps></div>
+  </section>
+
+  <p class="caption" data-caption></p>
+
+  <section class="check" data-check>
+    <p class="ask" data-ask></p>
+    <div class="options">
+      <button class="option" type="button" data-option="co2"></button>
+      <button class="option" type="button" data-option="o2"></button>
+      <button class="option" type="button" data-option="water"></button>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const p = Studio.params;
+  const scene = document.querySelector('.scene');
+  const playButton = document.querySelector('[data-action="play"]');
+  const caption = document.querySelector('[data-caption]');
+  const stepsBox = document.querySelector('[data-steps]');
+  const check = document.querySelector('[data-check]');
+  const first = p.steps - p.steps + 1;
+  let step = first;
+  let playing = true;
+  let completed = false;
+  let motionTime = 0;
+  let cycleTime = 0;
+  let previousFrame = null;
+
+  document.querySelector('[data-title]').textContent = Studio.t('title');
+  document.querySelector('#sceneTitle').textContent = Studio.t('title');
+  document.querySelector('[data-ask]').textContent = Studio.t('ask');
+
+  document.querySelectorAll('[data-label]').forEach(element => {
+    element.textContent = Studio.t(element.getAttribute('data-label'));
+  });
+
+  document.querySelectorAll('[data-option]').forEach(element => {
+    element.textContent = Studio.t(element.getAttribute('data-option'));
+  });
+
+  for (let n = first; n <= p.steps; n += first) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'step';
+    button.setAttribute('data-action', 'step-' + n);
+    button.textContent = String(n);
+    button.addEventListener('click', () => {
+      setStep(n);
+      cycleTime = 0;
+      Studio.event('step', {step:n});
+    });
+    stepsBox.appendChild(button);
+  }
+
+  function setStep(next) {
+    step = next;
+    scene.setAttribute('class', 'scene step-' + step + (playing ? '' : ' paused'));
+    caption.textContent = Studio.t('step' + step);
+    document.querySelectorAll('.step').forEach((button, index) => {
+      button.classList.toggle('active', index + first === step);
+    });
+  }
+
+  function setPlayState() {
+    playButton.textContent = Studio.t(playing ? 'pause' : 'play');
+    playButton.setAttribute('aria-pressed', String(playing));
+    scene.classList.toggle('paused', !playing);
+  }
+
+  playButton.addEventListener('click', () => {
+    playing = !playing;
+    setPlayState();
+    Studio.event('play', {playing:playing});
+  });
+
+  const particles = {
+    water:Array.from(document.querySelectorAll('[data-flow="water"]')),
+    co2:Array.from(document.querySelectorAll('[data-flow="co2"]')),
+    o2:Array.from(document.querySelectorAll('[data-flow="o2"]'))
+  };
+
+  function place(element, x, y) {
+    element.setAttribute('cx', x.toFixed(2));
+    element.setAttribute('cy', y.toFixed(2));
+  }
+
+  function drawParticles(time) {
+    const base = time / 2600;
+
+    particles.water.forEach((element, index) => {
+      const q = (base + index / particles.water.length) % 1;
+      place(element, 169 + Math.sin(q * Math.PI) * 8, 266 - q * 112);
+    });
+
+    particles.co2.forEach((element, index) => {
+      const q = (base * .82 + index / particles.co2.length) % 1;
+      place(element, 326 - q * 100, 112 + q * 31);
+    });
+
+    particles.o2.forEach((element, index) => {
+      const q = (base * .9 + index / particles.o2.length) % 1;
+      place(element, 211 - q * 87, 143 - q * 47);
+    });
+  }
+
+  function animate(now) {
+    if (previousFrame === null) previousFrame = now;
+    const elapsed = Math.min(now - previousFrame, 100);
+    previousFrame = now;
+
+    if (playing) {
+      motionTime += elapsed;
+      cycleTime += elapsed;
+      drawParticles(motionTime);
+
+      if (cycleTime >= 3200) {
+        step = step >= p.steps ? first : step + first;
+        setStep(step);
+        cycleTime = 0;
+      }
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  document.querySelectorAll('[data-option]').forEach(button => {
+    button.addEventListener('click', () => {
+      if (completed) return;
+      const value = button.getAttribute('data-option');
+      check.classList.remove('wrong','correct');
+      document.querySelectorAll('[data-option]').forEach(element => element.classList.remove('chosen'));
+      button.classList.add('chosen');
+      Studio.event('answer', {value:value});
+      Studio.answer(value);
+    });
+  });
+
+  Studio.onVerdict(verdict => {
+    if (completed) return;
+    check.classList.remove('wrong','correct');
+    void check.offsetWidth;
+
+    if (verdict.correct) {
+      check.classList.add('correct');
+      completed = true;
+      playing = false;
+      setPlayState();
+      Studio.done();
+    } else {
+      check.classList.add('wrong');
+    }
+  });
+
+  setStep(step);
+  setPlayState();
+  drawParticles(motionTime);
+  requestAnimationFrame(animate);
+  Studio.ready();
+})();
+</script>

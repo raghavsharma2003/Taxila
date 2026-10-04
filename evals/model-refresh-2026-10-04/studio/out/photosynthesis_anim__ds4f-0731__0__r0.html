@@ -1,0 +1,243 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #fdf6e3; overflow-x: hidden; }
+  .app { width: 360px; min-height: 640px; position: relative; background: linear-gradient(180deg, #87CEEB 0%, #b8e6f0 45%, #fdf6e3 45%); }
+  .scene { position: relative; width: 360px; height: 380px; }
+  .sun { position: absolute; top: 10px; right: 20px; }
+  .sun-pulse { animation: pulse 3s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
+  .ray { stroke: #ffd700; stroke-width: 3; stroke-dasharray: 6 6; animation: dash 2s linear infinite; }
+  @keyframes dash { to { stroke-dashoffset: -24; } }
+  .plant { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); }
+  .soil { fill: #8B4513; }
+  .stem { fill: #2d5a27; }
+  .leaf { fill: #3a8c3f; transition: all .3s; }
+  .leaf.emph { fill: #4CAF50; filter: drop-shadow(0 0 8px rgba(76,175,80,.6)); }
+  .root { fill: #a0785a; stroke: #7a5a40; stroke-width: 1; }
+  .root.emph { stroke: #e0a800; stroke-width: 3; }
+  .glucose { fill: #ff9800; opacity: 0; transition: opacity .5s; }
+  .glucose.show { opacity: 1; animation: glow 2s ease-in-out infinite; }
+  @keyframes glow { 0%,100% { filter: drop-shadow(0 0 4px #ff9800); } 50% { filter: drop-shadow(0 0 12px #ff9800); } }
+  .label { font-size: 11px; font-weight: bold; fill: #333; paint-order: stroke; stroke: #fff; stroke-width: 3px; stroke-linecap: round; stroke-linejoin: round; }
+  .controls { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 8px; justify-content: center; }
+  .btn { border: none; border-radius: 22px; font-size: 14px; font-weight: bold; padding: 6px 12px; min-height: 44px; min-width: 44px; cursor: pointer; transition: transform .15s, box-shadow .15s; background: #fff; color: #333; box-shadow: 0 2px 4px rgba(0,0,0,.15); }
+  .btn:active { transform: scale(.9); }
+  .btn-step { background: #e8f5e9; }
+  .btn-step.on { background: #4CAF50; color: #fff; box-shadow: 0 4px 8px rgba(76,175,80,.4); }
+  .btn-play { background: #2196F3; color: #fff; }
+  .caption-box { text-align: center; font-size: 13px; font-weight: 600; padding: 6px 8px; margin: 4px 8px; background: #fff8e1; border-radius: 12px; min-height: 40px; display: flex; align-items: center; justify-content: center; }
+  .qa-box { padding: 4px 8px 8px; }
+  .options { display: flex; gap: 8px; justify-content: center; margin-top: 4px; }
+  .opt { background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,.15); }
+  .opt.correct { background: #4CAF50; color: #fff; }
+  .opt.wrong { background: #f44336; color: #fff; }
+  .feedback { text-align: center; font-size: 13px; font-weight: bold; margin-top: 4px; min-height: 20px; }
+  .fade { transition: opacity .3s; }
+</style>
+<div class="app">
+  <div class="scene" id="scene">
+    <svg width="360" height="380" viewBox="0 0 360 380">
+      <!-- Sun -->
+      <g class="sun sun-pulse">
+        <circle cx="310" cy="40" r="28" fill="#FFD700" />
+        <text x="310" y="45" text-anchor="middle" class="label" data-label="sun">sun</text>
+      </g>
+      <!-- Light rays -->
+      <g>
+        <line class="ray" x1="290" y1="55" x2="230" y2="150" />
+        <line class="ray" x1="300" y1="60" x2="255" y2="140" />
+        <line class="ray" x1="310" y1="65" x2="275" y2="145" />
+      </g>
+      <!-- Plant group -->
+      <g class="plant">
+        <!-- Roots -->
+        <g data-entity="roots">
+          <path class="root" d="M180 330 Q170 350 155 370" stroke-width="3" fill="none"/>
+          <path class="root" d="M180 330 Q190 355 205 375" stroke-width="3" fill="none"/>
+          <path class="root" d="M180 330 Q178 360 170 380" stroke-width="3" fill="none"/>
+        </g>
+        <!-- Stem -->
+        <line class="stem" x1="180" y1="330" x2="180" y2="200" stroke-width="6" stroke="#2d5a27"/>
+        <!-- Leaf -->
+        <g data-entity="leaf">
+          <path class="leaf" d="M180 210 Q230 180 260 210 Q230 230 180 210 Z" />
+          <path class="leaf" d="M180 210 Q130 180 100 210 Q130 230 180 210 Z" />
+          <text x="180" y="215" text-anchor="middle" class="label" data-label="leaf">leaf</text>
+        </g>
+        <!-- Glucose -->
+        <circle class="glucose" cx="180" cy="215" r="12" />
+        <text x="180" y="219" text-anchor="middle" class="label" data-label="glucose" style="font-size:10px;">glucose</text>
+        <!-- Soil -->
+        <path class="soil" d="M110 330 Q180 320 250 330 L250 380 Q180 375 110 380 Z" />
+        <text x="180" y="355" text-anchor="middle" class="label" data-label="roots">roots</text>
+      </g>
+      <!-- Water label -->
+      <text x="60" y="285" class="label" data-label="water">water</text>
+    </svg>
+  </div>
+  <div class="controls">
+    <button class="btn btn-play" data-action="play">play</button>
+    <button class="btn btn-step" data-action="step-1">1</button>
+    <button class="btn btn-step" data-action="step-2">2</button>
+    <button class="btn btn-step" data-action="step-3">3</button>
+    <button class="btn btn-step" data-action="step-4">4</button>
+    <button class="btn btn-step" data-action="step-5">5</button>
+  </div>
+  <div class="caption-box" data-caption></div>
+  <div class="qa-box">
+    <p style="text-align:center; font-size:14px; font-weight:bold;" data-label="ask">ask</p>
+    <div class="options">
+      <button class="btn opt" data-option="co2">co2</button>
+      <button class="btn opt" data-option="o2">o2</button>
+      <button class="btn opt" data-option="water">water</button>
+    </div>
+    <div class="feedback" data-feedback></div>
+  </div>
+</div>
+<script>
+  (function() {
+    // params
+    var steps = 5;
+    // strings are set below; use placeholders
+    var strings = {};
+    ['title','sun','leaf','roots','water','co2','o2','glucose','play','pause','step1','step2','step3','step4','step5','ask'].forEach(function(k){
+      try { strings[k] = Studio.t(k); } catch(e) { strings[k] = k; }
+    });
+    // set labels
+    document.querySelectorAll('[data-label]').forEach(function(el){
+      var key = el.getAttribute('data-label');
+      if (strings[key]) el.textContent = strings[key];
+    });
+    // buttons labels
+    var playBtn = document.querySelector('[data-action="play"]');
+    playBtn.textContent = strings.pause; // starts playing
+    document.querySelector('[data-action="step-1"]').textContent = '1';
+    document.querySelector('[data-action="step-2"]').textContent = '2';
+    document.querySelector('[data-action="step-3"]').textContent = '3';
+    document.querySelector('[data-action="step-4"]').textContent = '4';
+    document.querySelector('[data-action="step-5"]').textContent = '5';
+    // caption
+    var captionEl = document.querySelector('[data-caption]');
+    // build particles
+    var svgNS = "http://www.w3.org/2000/svg";
+    var scene = document.querySelector('#scene svg');
+    var particles = [];
+    // Water particles: roots->leaf
+    function makeParticle(flow, color) {
+      var c = document.createElementNS(svgNS, 'circle');
+      c.setAttribute('r', 3);
+      c.setAttribute('fill', color);
+      c.setAttribute('data-flow', flow);
+      scene.appendChild(c);
+      var p = { el: c, flow: flow, state: 0, speed: 0.5 + Math.random() * 0.5 };
+      return p;
+    }
+    for (var i = 0; i < 5; i++) particles.push(makeParticle('water', '#2196F3'));
+    for (var i = 0; i < 4; i++) particles.push(makeParticle('co2', '#9C27B0'));
+    for (var i = 0; i < 4; i++) particles.push(makeParticle('o2', '#4CAF50'));
+    // init positions
+    particles.forEach(function(p){
+      if (p.flow === 'water') { p.x = 180 + (Math.random()*20-10); p.y = 330; }
+      if (p.flow === 'co2') { p.x = 100 + Math.random() * 40; p.y = 180 + Math.random() * 30; }
+      if (p.flow === 'o2') { p.x = 260 + Math.random() * 20; p.y = 180 + Math.random() * 30; }
+      p.el.setAttribute('cx', p.x); p.el.setAttribute('cy', p.y);
+    });
+    var playing = true;
+    var currentStep = 1;
+    captionEl.textContent = strings['step1'];
+    function updateEmph(step) {
+      // clear
+      document.querySelectorAll('[data-entity="leaf"]').forEach(function(g){ g.classList.remove('emph'); });
+      document.querySelectorAll('[data-entity="roots"]').forEach(function(g){ g.classList.remove('emph'); });
+      document.querySelector('.glucose').classList.remove('show');
+      if (step === 1) { // water
+        document.querySelector('[data-entity="roots"]').classList.add('emph');
+      } else if (step === 2) { // co2
+        document.querySelector('[data-entity="leaf"]').classList.add('emph');
+      } else if (step === 3) { // o2
+        document.querySelector('[data-entity="leaf"]').classList.add('emph');
+      } else if (step === 5) { // glucose
+        document.querySelector('.glucose').classList.add('show');
+        document.querySelector('[data-entity="leaf"]').classList.add('emph');
+      } else if (step === 4) {
+        document.querySelector('[data-entity="leaf"]').classList.add('emph');
+      }
+    }
+    updateEmph(1);
+    // animation loop
+    function animate() {
+      if (!playing) { requestAnimationFrame(animate); return; }
+      particles.forEach(function(p){
+        if (p.flow === 'water' && currentStep >= 1) {
+          p.y -= p.speed * 2;
+          if (p.y < 215) { p.y = 330; }
+          p.el.setAttribute('cy', p.y);
+        }
+        if (p.flow === 'co2' && currentStep >= 2) {
+          p.x += (180 - p.x) * 0.02 + (Math.random()-0.5)*2;
+          p.y += (215 - p.y) * 0.02 + (Math.random()-0.5)*2;
+          if (Math.abs(p.x-180) < 10 && Math.abs(p.y-215) < 10) { p.x = 100+Math.random()*40; p.y = 180+Math.random()*30; }
+          p.el.setAttribute('cx', p.x); p.el.setAttribute('cy', p.y);
+        }
+        if (p.flow === 'o2' && currentStep >= 3) {
+          p.x += (260 - p.x) * -0.02 + (Math.random()-0.5)*2;
+          p.y += (180 - p.y) * -0.02 + (Math.random()-0.5)*2;
+          if (p.x < 230) { p.x = 260+Math.random()*20; p.y = 180+Math.random()*30; }
+          p.el.setAttribute('cx', p.x); p.el.setAttribute('cy', p.y);
+        }
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+    // play/pause
+    playBtn.addEventListener('click', function(){
+      playing = !playing;
+      playBtn.textContent = playing ? strings.pause : strings.play;
+    });
+    // step buttons
+    document.querySelectorAll('[data-action^="step-"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var n = parseInt(btn.getAttribute('data-action').split('-')[1]);
+        currentStep = n;
+        captionEl.textContent = strings['step' + n];
+        document.querySelectorAll('[data-action^="step-"]').forEach(function(b){ b.classList.remove('on'); });
+        btn.classList.add('on');
+        updateEmph(n);
+      });
+    });
+    // question options
+    var answered = false;
+    document.querySelectorAll('[data-option]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if (answered) return;
+        var opt = btn.getAttribute('data-option');
+        Studio.answer(opt);
+      });
+    });
+    Studio.onVerdict(function(v){
+      var fb = document.querySelector('[data-feedback]');
+      if (v.correct) {
+        answered = true;
+        document.querySelectorAll('[data-option]').forEach(function(b){ b.disabled = true; b.classList.add('correct'); });
+        fb.textContent = '✔';
+        Studio.done();
+      } else {
+        document.querySelectorAll('[data-option]').forEach(function(b){ b.classList.remove('wrong'); });
+        // mark clicked wrong
+        var btns = document.querySelectorAll('[data-option]');
+        btns.forEach(function(b){ b.disabled = false; });
+        // just show try again
+        fb.textContent = '✘ ' + strings.ask;
+        // allow retry: we don't know which clicked, so reset after short time
+        setTimeout(function(){ fb.textContent = ''; }, 800);
+      }
+    });
+    // glows: update step 5 glucose
+    // set data-caption initial
+    // set initial playing
+    playBtn.textContent = strings.pause;
+    document.querySelector('[data-action="step-1"]').classList.add('on');
+    // call ready
+    Studio.ready();
+  })();
+</script>

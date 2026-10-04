@@ -1,0 +1,179 @@
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { margin: 0; padding: 0; background: #FFF3E0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Devanagari", sans-serif; color: #4E342E; }
+#app { width: 100%; max-width: 360px; margin: 0 auto; padding: 16px; }
+header { text-align: center; margin-bottom: 14px; }
+#title { font-size: 24px; font-weight: 800; margin: 0 0 6px; color: #5D4037; }
+#ask { font-size: 16px; margin: 0; color: #6D4C41; line-height: 1.45; }
+.card { background: #fff; border-radius: 22px; box-shadow: 0 10px 28px rgba(93, 64, 55, 0.12); padding: 14px; overflow: hidden; }
+#chart { width: 100%; height: auto; display: block; }
+.gridline { stroke: #EFEBE9; stroke-width: 1; stroke-dasharray: 4 4; }
+.axis-line { stroke: #8D6E63; stroke-width: 2; stroke-linecap: round; }
+.tick-label { fill: #8D6E63; font-size: 12px; font-weight: 600; text-anchor: end; dominant-baseline: middle; }
+.fruit-label { fill: #5D4037; font-size: 13px; font-weight: 700; text-anchor: middle; dominant-baseline: hanging; }
+.axis-title { fill: #6D4C41; font-size: 13px; font-weight: 700; }
+.bar-group { cursor: pointer; transform-box: fill-box; transform-origin: center bottom; transition: transform 0.12s ease; }
+.bar-group:active { transform: scale(0.96); }
+.bar { fill: url(#barGradient); stroke: #E65100; stroke-width: 1; transform-box: fill-box; transform-origin: center bottom; transform: scaleY(0); transition: transform 0.75s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.bar.grown { transform: scaleY(1); }
+#tooltip { display: none; pointer-events: none; }
+#tooltip-bg { fill: #4E342E; opacity: 0.95; rx: 6; }
+#tooltip-text { fill: #fff; font-size: 14px; font-weight: 700; text-anchor: middle; dominant-baseline: middle; }
+#feedback { text-align: center; font-size: 18px; font-weight: 700; min-height: 28px; margin-top: 12px; display: none; }
+#feedback.right { color: #2E7D32; }
+#feedback.wrong { color: #C62828; }
+#done { text-align: center; font-size: 20px; font-weight: 800; color: #2E7D32; margin-top: 14px; display: none; }
+</style>
+
+<div id="app">
+  <header>
+    <h1 id="title"></h1>
+    <p id="ask"></p>
+  </header>
+  <div class="card">
+    <svg id="chart" viewBox="0 0 340 380" role="img">
+      <defs>
+        <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#FFB74D"/>
+          <stop offset="100%" stop-color="#F57C00"/>
+        </linearGradient>
+      </defs>
+      <g id="grid"></g>
+      <g id="ticks"></g>
+      <text id="yaxis-title" class="axis-title" x="16" y="190" transform="rotate(-90 16 190)"></text>
+      <g id="bars"></g>
+      <g id="xlabels"></g>
+      <g id="tooltip" transform="translate(0,0)">
+        <rect id="tooltip-bg" x="-22" y="-18" width="44" height="24"/>
+        <text id="tooltip-text" x="0" y="-6"></text>
+      </g>
+    </svg>
+  </div>
+  <div id="feedback"></div>
+  <div id="done"></div>
+</div>
+
+<script>
+(function () {
+  const data = Studio.params.data;
+  const values = data.map(function (d) { return d.value; });
+  const maxVal = Math.max.apply(null, values);
+  const step = maxVal <= 20 ? 2 : (maxVal <= 50 ? 5 : 10);
+  const yMax = Math.max(step, Math.ceil(maxVal / step) * step);
+
+  const W = 340, H = 380, left = 52, right = 24, bottom = 60;
+  const plotW = W - left - right;
+  const plotH = H - 50 - bottom;
+  const baseline = H - bottom;
+  const n = data.length;
+  const slot = plotW / n;
+  const barW = 50;
+
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('ask').textContent = Studio.t('ask');
+  document.getElementById('yaxis-title').textContent = Studio.t('yaxis');
+
+  const gridG = document.getElementById('grid');
+  const ticksG = document.getElementById('ticks');
+  const barsG = document.getElementById('bars');
+  const labelsG = document.getElementById('xlabels');
+  const tooltip = document.getElementById('tooltip');
+  const tooltipText = document.getElementById('tooltip-text');
+  const feedback = document.getElementById('feedback');
+  const done = document.getElementById('done');
+  const svgNS = 'http://www.w3.org/2000/svg';
+
+  const baseLine = document.createElementNS(svgNS, 'line');
+  baseLine.setAttribute('x1', left);
+  baseLine.setAttribute('x2', W - right);
+  baseLine.setAttribute('y1', baseline);
+  baseLine.setAttribute('y2', baseline);
+  baseLine.setAttribute('class', 'axis-line');
+  gridG.appendChild(baseLine);
+
+  for (let t = 0; t <= yMax; t += step) {
+    const y = baseline - (t / yMax) * plotH;
+    if (t > 0) {
+      const line = document.createElementNS(svgNS, 'line');
+      line.setAttribute('x1', left);
+      line.setAttribute('x2', W - right);
+      line.setAttribute('y1', y);
+      line.setAttribute('y2', y);
+      line.setAttribute('class', 'gridline');
+      gridG.appendChild(line);
+    }
+    const text = document.createElementNS(svgNS, 'text');
+    text.setAttribute('x', left - 10);
+    text.setAttribute('y', y + 4);
+    text.setAttribute('class', 'tick-label');
+    text.setAttribute('data-tick', t);
+    text.textContent = t;
+    ticksG.appendChild(text);
+  }
+
+  data.forEach(function (d, i) {
+    const h = (d.value / yMax) * plotH;
+    const x = left + i * slot + (slot - barW) / 2;
+    const y = baseline - h;
+
+    const g = document.createElementNS(svgNS, 'g');
+    g.setAttribute('class', 'bar-group');
+
+    const rect = document.createElementNS(svgNS, 'rect');
+    rect.setAttribute('x', x);
+    rect.setAttribute('y', y);
+    rect.setAttribute('width', barW);
+    rect.setAttribute('height', h);
+    rect.setAttribute('rx', 8);
+    rect.setAttribute('class', 'bar');
+    rect.setAttribute('data-bar', d.key);
+    rect.setAttribute('data-value', d.value);
+
+    const label = document.createElementNS(svgNS, 'text');
+    label.setAttribute('x', x + barW / 2);
+    label.setAttribute('y', baseline + 22);
+    label.setAttribute('class', 'fruit-label');
+    label.textContent = Studio.t(d.key);
+    labelsG.appendChild(label);
+
+    g.addEventListener('click', function () {
+      tooltipText.textContent = d.value;
+      tooltip.setAttribute('transform', 'translate(' + (x + barW / 2) + ',' + (y - 14) + ')');
+      tooltip.style.display = 'block';
+      Studio.answer(d.key);
+      Studio.event('bar_tap', { key: d.key, value: d.value });
+      feedback.style.display = 'none';
+      done.style.display = 'none';
+    });
+
+    g.appendChild(rect);
+    barsG.appendChild(g);
+
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        rect.classList.add('grown');
+      });
+    });
+  });
+
+  Studio.onVerdict(function (result) {
+    feedback.style.display = 'block';
+    if (result.correct) {
+      feedback.textContent = Studio.t('right');
+      feedback.className = 'feedback right';
+      Studio.event('verdict', { correct: true });
+      setTimeout(function () {
+        Studio.done();
+        done.textContent = Studio.t('done');
+        done.style.display = 'block';
+      }, 700);
+    } else {
+      feedback.textContent = Studio.t('wrong');
+      feedback.className = 'feedback wrong';
+      Studio.event('verdict', { correct: false });
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

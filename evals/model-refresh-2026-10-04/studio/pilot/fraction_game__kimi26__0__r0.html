@@ -1,0 +1,191 @@
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #FFF8E1; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+  .app { width: 100%; max-width: 360px; height: 100%; margin: 0 auto; display: flex; flex-direction: column; padding: 16px; }
+  .header { text-align: center; flex-shrink: 0; }
+  .title { margin: 8px 0 4px; font-size: 22px; color: #4E342E; font-weight: 700; }
+  .instr { margin: 0; font-size: 16px; color: #6D4C41; }
+  .hint { margin: 4px 0 12px; font-size: 14px; color: #8D6E63; }
+  .target { font-size: 56px; font-weight: 800; color: #5D4037; margin: 4px 0 12px; line-height: 1; }
+  .main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
+  .item-wrap { width: 280px; height: 280px; position: relative; }
+  .pizza-svg { width: 100%; height: 100%; overflow: visible; }
+  .crust { fill: #FFCC80; stroke: #EF6C00; stroke-width: 3; }
+  .part { fill: #FFE0B2; stroke: #FFFFFF; stroke-width: 3; transition: fill 0.25s ease, transform 0.12s ease; cursor: pointer; transform-box: fill-box; transform-origin: center; }
+  .part.shaded { fill: #FF7043; }
+  .part:active { transform: scale(1.06); }
+  .feedback { min-height: 28px; margin-top: 12px; font-size: 20px; font-weight: 700; text-align: center; opacity: 0; transition: opacity 0.3s ease; }
+  .feedback.right { opacity: 1; color: #2E7D32; }
+  .feedback.wrong { opacity: 1; color: #C62828; }
+  .footer { flex-shrink: 0; text-align: center; padding-bottom: 16px; }
+  .btn { display: inline-block; min-height: 48px; min-width: 180px; padding: 12px 28px; border: none; border-radius: 28px; background: #FF8A65; color: #FFFFFF; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(255,138,101,0.35); transition: background 0.2s, transform 0.1s; -webkit-tap-highlight-color: transparent; }
+  .btn:active { transform: scale(0.96); background: #FF7043; }
+  .celebrate { animation: pop 0.7s ease; }
+  @keyframes pop { 0% { transform: scale(1); } 30% { transform: scale(1.08) rotate(2deg); } 60% { transform: scale(1.04) rotate(-1deg); } 100% { transform: scale(1) rotate(0deg); } }
+  .shake { animation: shake 0.45s ease; }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(5px); } }
+  .done-screen { display: none; position: fixed; inset: 0; background: #FFF8E1; align-items: center; justify-content: center; flex-direction: column; z-index: 20; }
+  .done-screen:not(.hidden) { display: flex; }
+  .done-card { text-align: center; padding: 24px; }
+  .star-svg { width: 120px; height: 120px; margin-bottom: 16px; animation: starPulse 2s ease-in-out infinite; }
+  @keyframes starPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+  .done-text { font-size: 24px; color: #4E342E; margin: 0; font-weight: 700; }
+</style>
+
+<div id="app" class="app">
+  <div class="header">
+    <h1 id="title" class="title"></h1>
+    <p id="instr" class="instr"></p>
+    <p id="hint" class="hint"></p>
+    <div id="target" class="target"></div>
+  </div>
+  <div class="main">
+    <div id="item-wrap" class="item-wrap" data-item="">
+      <svg id="pizza" class="pizza-svg" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+        <circle class="crust" cx="160" cy="160" r="154"/>
+        <g id="parts-group"></g>
+      </svg>
+    </div>
+    <div id="feedback" class="feedback" aria-live="polite"></div>
+  </div>
+  <div class="footer">
+    <button id="check-btn" class="btn" data-action="check"></button>
+  </div>
+</div>
+
+<div id="done-screen" class="done-screen hidden">
+  <div class="done-card">
+    <svg class="star-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <path d="M60 10 L75 45 L110 48 L84 72 L93 108 L60 88 L27 108 L36 72 L10 48 L45 45 Z" fill="#FFD54F" stroke="#FFA000" stroke-width="2"/>
+    </svg>
+    <h2 id="done-text" class="done-text"></h2>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('instr').textContent = Studio.t('instr');
+  document.getElementById('hint').textContent = Studio.t('hint');
+  document.getElementById('check-btn').textContent = Studio.t('check');
+  document.getElementById('done-text').textContent = Studio.t('done');
+
+  var items = Studio.params.items;
+  var wrap = document.getElementById('item-wrap');
+  var group = document.getElementById('parts-group');
+  var targetEl = document.getElementById('target');
+  var feedbackEl = document.getElementById('feedback');
+  var checkBtn = document.getElementById('check-btn');
+  var app = document.getElementById('app');
+  var doneScreen = document.getElementById('done-screen');
+
+  var currentIndex = 0;
+  var isLocked = false;
+
+  function buildItem(index) {
+    var item = items[index];
+    wrap.setAttribute('data-item', item.id);
+    targetEl.textContent = item.n + '/' + item.d;
+
+    while (group.firstChild) {
+      group.removeChild(group.firstChild);
+    }
+
+    var d = item.d;
+    var cx = 160;
+    var cy = 160;
+    var r = 150;
+    var angle = (2 * Math.PI) / d;
+    var i = 0;
+    for (i = 0; i < d; i++) {
+      var start = i * angle - Math.PI / 2;
+      var end = (i + 1) * angle - Math.PI / 2;
+      var x1 = cx + r * Math.cos(start);
+      var y1 = cy + r * Math.sin(start);
+      var x2 = cx + r * Math.cos(end);
+      var y2 = cy + r * Math.sin(end);
+      var largeArc = angle > Math.PI ? 1 : 0;
+      var dPath = 'M' + cx + ',' + cy + ' L' + x1 + ',' + y1 + ' A' + r + ',' + r + ' 0 ' + largeArc + ' 1 ' + x2 + ',' + y2 + ' Z';
+      var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', dPath);
+      path.setAttribute('class', 'part');
+      path.setAttribute('data-part', String(i));
+      path.setAttribute('data-shaded', 'false');
+      path.addEventListener('click', onPartClick);
+      group.appendChild(path);
+    }
+
+    feedbackEl.textContent = '';
+    feedbackEl.className = 'feedback';
+    wrap.classList.remove('celebrate', 'shake');
+    isLocked = false;
+  }
+
+  function onPartClick(e) {
+    if (isLocked) return;
+    var part = e.currentTarget;
+    var shaded = part.getAttribute('data-shaded') === 'true';
+    var next = !shaded;
+    part.setAttribute('data-shaded', String(next));
+    if (next) {
+      part.classList.add('shaded');
+    } else {
+      part.classList.remove('shaded');
+    }
+    part.blur();
+    Studio.event('part_tap', {
+      item: items[currentIndex].id,
+      part: parseInt(part.getAttribute('data-part')),
+      shaded: next
+    });
+  }
+
+  function getShadedCount() {
+    return group.querySelectorAll('.part[data-shaded="true"]').length;
+  }
+
+  function onCheck() {
+    if (isLocked) return;
+    var count = getShadedCount();
+    var item = items[currentIndex];
+    Studio.answer({ n: count, d: item.d });
+    Studio.event('check', { item: item.id, n: count });
+  }
+
+  checkBtn.addEventListener('click', onCheck);
+
+  Studio.onVerdict(function(result) {
+    if (result.correct) {
+      feedbackEl.textContent = Studio.t('right');
+      feedbackEl.classList.add('right');
+      isLocked = true;
+      wrap.classList.add('celebrate');
+      setTimeout(function() {
+        currentIndex++;
+        if (currentIndex >= items.length) {
+          showDone();
+        } else {
+          buildItem(currentIndex);
+        }
+      }, 1200);
+    } else {
+      feedbackEl.textContent = Studio.t('wrong');
+      feedbackEl.classList.add('wrong');
+      wrap.classList.add('shake');
+      setTimeout(function() {
+        wrap.classList.remove('shake');
+      }, 500);
+    }
+  });
+
+  function showDone() {
+    app.style.display = 'none';
+    doneScreen.classList.remove('hidden');
+    Studio.done();
+  }
+
+  buildItem(0);
+  Studio.ready();
+})();
+</script>

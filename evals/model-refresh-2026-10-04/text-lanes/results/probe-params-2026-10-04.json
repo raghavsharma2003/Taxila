@@ -1,0 +1,134 @@
+[
+ {
+  "label": "prod-shape max_tokens, no effort",
+  "dep": "taxila-gpt6-luna",
+  "http": 400,
+  "ms": 724,
+  "out": "",
+  "err": "Unsupported parameter: 'max_tokens' is not supported with this model. Use 'max_completion_tokens' instead."
+ },
+ {
+  "label": "max_completion_tokens, no effort",
+  "dep": "taxila-gpt6-luna",
+  "http": 200,
+  "ms": 1523,
+  "reasoning_tokens": 36,
+  "out": "3/4 बड़ा है।"
+ },
+ {
+  "label": "max_completion_tokens, effort none",
+  "dep": "taxila-gpt6-luna",
+  "http": 200,
+  "ms": 1127,
+  "reasoning_tokens": 0,
+  "out": "3/4 बड़ा है। (3/4 = 0.75, जबकि 2/3 ≈ 0.67।)"
+ },
+ {
+  "label": "prod-shape max_tokens, no effort",
+  "dep": "taxila-gpt6",
+  "http": 400,
+  "ms": 92,
+  "out": "",
+  "err": "Unsupported parameter: 'max_tokens' is not supported with this model. Use 'max_completion_tokens' instead."
+ },
+ {
+  "label": "max_completion_tokens, no effort",
+  "dep": "taxila-gpt6",
+  "http": 200,
+  "ms": 1307,
+  "reasoning_tokens": 35,
+  "out": "3/4 bada hai; 3/4 = 0.75, 2/3 ≈ 0.67."
+ },
+ {
+  "label": "max_completion_tokens, effort none",
+  "dep": "taxila-gpt6",
+  "http": 200,
+  "ms": 3331,
+  "reasoning_tokens": 0,
+  "out": "3/4 bada hai, didi."
+ },
+ {
+  "label": "prod-shape max_tokens, no effort",
+  "dep": "taxila-gpt61-sol",
+  "http": 400,
+  "ms": 107,
+  "out": "",
+  "err": "Unsupported parameter: 'max_tokens' is not supported with this model. Use 'max_completion_tokens' instead."
+ },
+ {
+  "label": "max_completion_tokens, no effort",
+  "dep": "taxila-gpt61-sol",
+  "http": 200,
+  "ms": 2082,
+  "reasoning_tokens": 88,
+  "out": "3/4 bada hai: 9/12 > 8/12. 😊"
+ },
+ {
+  "label": "max_completion_tokens, effort none",
+  "dep": "taxila-gpt61-sol",
+  "http": 400,
+  "ms": 109,
+  "out": "",
+  "err": "Unsupported value: 'reasoning_effort' does not support 'none' with this model. Supported values are: 'low', 'medium', 'high', and 'xhigh'."
+ },
+ {
+  "label": "max_tokens, effort low",
+  "dep": "taxila-grok46",
+  "http": 200,
+  "ms": 10002,
+  "reasoning_tokens": 265,
+  "out": "3/4 bada hai."
+ },
+ {
+  "label": "max_tokens no effort",
+  "dep": "taxila-grok46",
+  "http": 200,
+  "ms": 21871,
+  "reasoning_tokens": 613,
+  "out": "3/4 bada hai. \n"
+ },
+ {
+  "label": "strict json_schema",
+  "dep": "taxila-ds41",
+  "http": 200,
+  "ms": 252370,
+  "out": "{ \"bigger\": \"3/4 bada hai\" }"
+ },
+ {
+  "label": "strict json_schema",
+  "dep": "taxila-ds4f-0731",
+  "http": 200,
+  "ms": 888,
+  "out": "{\n  \"bigger\": \"3/4\"\n}"
+ },
+ {
+  "label": "strict json_schema",
+  "dep": "taxila-mistral-m35",
+  "http": 200,
+  "ms": 437,
+  "out": "{\"bigger\": \"2/3\"}"
+ },
+ {
+  "label": "strict json_schema",
+  "dep": "DeepSeek-V4-Flash",
+  "http": 200,
+  "ms": 522,
+  "out": "{ \"bigger\": \"3/4\" }"
+ },
+ {
+  "label": "strict json_schema",
+  "dep": "taxila-gpt6-luna",
+  "http": 200,
+  "ms": 929,
+  "reasoning_tokens": 0,
+  "out": "{\"bigger\":\"3/4 bada hai.\"}"
+ },
+ {
+  "label": "strict json_schema",
+  "dep": "taxila-grok46",
+  "http": 200,
+  "ms": 20200,
+  "reasoning_tokens": 600,
+  "out": "{\"bigger\":\"3/4 is bigger than 2/3\"}"
+ }
+]

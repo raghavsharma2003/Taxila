@@ -67,12 +67,27 @@ class HeadSDF:
         for s in (1, -1):
             c = np.array(P["eye_c"]) * [s, 1, 1]
             d = smax(d, -sphere(p, c + np.array(P["socket_off"]) * [s, 1, 1], P["socket_r"]), P["k_socket"])
+        # eye surround (polish r2, fix 4): near each eye the skin is blended (not unioned, not carved) toward a
+        # sphere just outside the lid sphere, so the under-eye is one smooth convex surface with no dent or crease
+        if P.get("eye_blend", 0) > 0:
+            for s in (1, -1):
+                c = np.array(P["eye_c"]) * [s, 1, 1]
+                Rs = P["eye_r"] + P["lid_t"] + P["eye_blend_off"]
+                q = (p - c) * np.asarray(P.get("eye_blend_scale", [1, 1, 1]))
+                r = np.linalg.norm(q, axis=-1)
+                t = np.clip((Rs + P["eye_blend"] - r) / P["eye_blend"], 0, 1)
+                w = t * t * (3 - 2 * t)
+                ds = np.linalg.norm(p - c, axis=-1) - Rs
+                m = P.get("eye_blend_m", 0.008)
+                ds = np.clip(ds, d - m, d + m)   # only moves the surface; never opens a pocket deep inside the head
+                d = d * (1 - w) + ds * w
         if self.with_eyes:
             for s in (1, -1):
                 c = np.array(P["eye_c"]) * [s, 1, 1]
                 d = smin(d, sphere(p, c, P["eye_r"] + P["lid_t"]), P["k_eye"])
         # nose: a button (tip ball + soft wings + a low bridge)
-        d = smin(d, capsule(p, P["bridge_a"], P["bridge_b"], P["bridge_r"]), P["k_bridge"])
+        if P.get("bridge_r", 0) > 0:
+            d = smin(d, capsule(p, P["bridge_a"], P["bridge_b"], P["bridge_r"]), P["k_bridge"])
         d = smin(d, ellipsoid(p, P["nose_c"], P["nose_r"]), P["k_nose"])
         for s in (1, -1):
             c = np.array(P["wing_c"]) * [s, 1, 1]

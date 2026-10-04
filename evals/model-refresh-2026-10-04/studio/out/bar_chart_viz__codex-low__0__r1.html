@@ -1,0 +1,363 @@
+<style>
+  :root{
+    --bg:#f6fbff;
+    --card:#ffffff;
+    --ink:#1f2a44;
+    --muted:#6b7a99;
+    --axis:#8fa1c7;
+    --grid:#dbe5f7;
+    --bar:#5b8def;
+    --bar2:#7aa5ff;
+    --ok:#1fa971;
+    --bad:#d94b63;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--ink);
+  }
+  #app{
+    width:100%;
+    max-width:420px;
+    margin:0 auto;
+    min-height:100vh;
+    padding:14px 12px 18px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .card{
+    background:var(--card);
+    border-radius:18px;
+    box-shadow:0 8px 24px rgba(31,42,68,.08);
+    padding:12px;
+  }
+  #title{
+    margin:0;
+    font-size:22px;
+    line-height:1.2;
+    text-align:center;
+  }
+  #ask{
+    margin:0;
+    text-align:center;
+    color:var(--muted);
+    font-weight:600;
+    min-height:24px;
+  }
+  .chart{
+    display:grid;
+    grid-template-columns:56px 1fr;
+    gap:8px;
+    align-items:end;
+  }
+  .ycol{
+    height:320px;
+    position:relative;
+  }
+  #yaxis{
+    position:absolute;
+    left:2px;
+    top:50%;
+    transform:translateY(-50%) rotate(-90deg);
+    transform-origin:left top;
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+    white-space:nowrap;
+  }
+  #ticks{
+    position:absolute;
+    inset:0;
+  }
+  .tick-label{
+    position:absolute;
+    right:2px;
+    font-size:12px;
+    color:var(--muted);
+    font-weight:700;
+    line-height:1;
+    min-width:28px;
+    text-align:right;
+  }
+  .maincol{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  #plot{
+    position:relative;
+    height:320px;
+    border-left:2px solid var(--axis);
+    border-bottom:3px solid var(--axis);
+    border-radius:0 0 10px 0;
+    overflow:visible;
+  }
+  #grid{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+  }
+  .gridline{
+    position:absolute;
+    left:0;
+    right:0;
+    border-top:1px solid var(--grid);
+  }
+  .gridline.base{
+    border-top:2px solid var(--axis);
+  }
+  #barsRow{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:stretch;
+    justify-content:space-between;
+    gap:4px;
+    padding:0 2px;
+  }
+  .barGroup{
+    flex:1;
+    position:relative;
+    display:flex;
+    justify-content:center;
+  }
+  .barBtn{
+    width:100%;
+    min-width:44px;
+    min-height:44px;
+    height:100%;
+    border:none;
+    background:transparent;
+    padding:0;
+    display:flex;
+    justify-content:center;
+    align-items:flex-end;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .14s ease;
+  }
+  .barBtn:active{ transform:scale(.97); }
+  .bar-rect{
+    width:44px;
+    max-width:100%;
+    min-height:2px;
+    background:linear-gradient(180deg,var(--bar2),var(--bar));
+    border-radius:12px 12px 6px 6px;
+    box-shadow:0 6px 10px rgba(91,141,239,.25);
+    transform-origin:bottom center;
+    transform:scaleY(0);
+    transition:transform .8s cubic-bezier(.22,.9,.24,1), filter .2s ease;
+  }
+  .bar-rect.grow{ transform:scaleY(1); }
+  .barBtn.selected .bar-rect{ filter:brightness(1.08) saturate(1.1); }
+  .valueTag{
+    position:absolute;
+    left:50%;
+    transform:translate(-50%,8px) scale(.96);
+    background:#1f2a44;
+    color:#fff;
+    border-radius:999px;
+    min-width:34px;
+    height:28px;
+    padding:0 10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:14px;
+    font-weight:800;
+    opacity:0;
+    transition:opacity .2s ease, transform .2s ease, bottom .2s ease;
+    pointer-events:none;
+  }
+  .valueTag.show{
+    opacity:1;
+    transform:translate(-50%,0) scale(1);
+  }
+  #labelsRow{
+    display:flex;
+    gap:4px;
+    padding:0 2px;
+  }
+  .xlabel{
+    flex:1;
+    min-width:44px;
+    text-align:center;
+    font-size:13px;
+    font-weight:700;
+    color:var(--ink);
+    line-height:1.2;
+  }
+  #feedback{
+    min-height:28px;
+    text-align:center;
+    font-weight:800;
+    font-size:18px;
+    transition:transform .2s ease, color .2s ease, opacity .2s ease;
+    opacity:0;
+  }
+  #feedback.show{ opacity:1; transform:scale(1.02); }
+  #feedback.ok{ color:var(--ok); }
+  #feedback.bad{ color:var(--bad); }
+  #doneText{
+    text-align:center;
+    color:var(--ok);
+    font-weight:800;
+    min-height:24px;
+    opacity:0;
+    transition:opacity .25s ease;
+  }
+  #doneText.show{ opacity:1; }
+</style>
+
+<div id="app">
+  <div class="card">
+    <h1 id="title"></h1>
+    <p id="ask"></p>
+    <div class="chart">
+      <div class="ycol">
+        <div id="yaxis"></div>
+        <div id="ticks"></div>
+      </div>
+      <div class="maincol">
+        <div id="plot">
+          <div id="grid"></div>
+          <div id="barsRow"></div>
+        </div>
+        <div id="labelsRow"></div>
+      </div>
+    </div>
+  </div>
+  <div id="feedback"></div>
+  <div id="doneText"></div>
+</div>
+
+<script>
+(function(){
+  const data = (Studio.params && Studio.params.data) ? Studio.params.data.slice() : [];
+  const elTitle = document.getElementById('title');
+  const elAsk = document.getElementById('ask');
+  const elYAxis = document.getElementById('yaxis');
+  const elTicks = document.getElementById('ticks');
+  const elGrid = document.getElementById('grid');
+  const elBars = document.getElementById('barsRow');
+  const elLabels = document.getElementById('labelsRow');
+  const elFeedback = document.getElementById('feedback');
+  const elDone = document.getElementById('doneText');
+
+  elTitle.textContent = Studio.t('title');
+  elAsk.textContent = Studio.t('ask');
+  elYAxis.textContent = Studio.t('yaxis');
+
+  function niceStep(max){
+    const rough = Math.max(1, max / 5);
+    const p = Math.pow(10, Math.floor(Math.log10(rough)));
+    const n = rough / p;
+    let m = 1;
+    if (n > 5) m = 10;
+    else if (n > 2) m = 5;
+    else if (n > 1) m = 2;
+    return m * p;
+  }
+
+  const maxVal = data.reduce((m,d)=>Math.max(m, d.value), 0);
+  const step = niceStep(maxVal);
+  const top = Math.max(step, Math.ceil(maxVal / step) * step);
+
+  for(let v=0; v<=top; v+=step){
+    const pct = (v / top) * 100;
+
+    const line = document.createElement('div');
+    line.className = 'gridline' + (v===0 ? ' base' : '');
+    line.style.bottom = pct + '%';
+    elGrid.appendChild(line);
+
+    const tick = document.createElement('div');
+    tick.className = 'tick-label';
+    tick.dataset.tick = String(v);
+    tick.style.bottom = pct + '%';
+    tick.textContent = String(v);
+    elTicks.appendChild(tick);
+  }
+
+  let pending = false;
+  let finished = false;
+  let selectedBtn = null;
+  let doneSent = false;
+
+  function showFeedback(ok){
+    elFeedback.classList.remove('ok','bad','show');
+    elFeedback.textContent = ok ? Studio.t('right') : Studio.t('wrong');
+    elFeedback.classList.add(ok ? 'ok' : 'bad');
+    requestAnimationFrame(()=>elFeedback.classList.add('show'));
+  }
+
+  data.forEach((d)=>{
+    const group = document.createElement('div');
+    group.className = 'barGroup';
+
+    const btn = document.createElement('button');
+    btn.className = 'barBtn';
+    btn.type = 'button';
+
+    const rect = document.createElement('div');
+    rect.className = 'bar-rect';
+    rect.dataset.bar = d.key;
+    rect.dataset.value = String(d.value);
+    rect.style.height = ((d.value / top) * 100) + '%';
+
+    const tag = document.createElement('div');
+    tag.className = 'valueTag';
+    tag.textContent = String(d.value);
+    tag.style.bottom = `calc(${(d.value / top) * 100}% + 8px)`;
+
+    btn.addEventListener('click', function(){
+      if (pending || finished) return;
+      pending = true;
+      if (selectedBtn) {
+        selectedBtn.classList.remove('selected');
+        const oldTag = selectedBtn.parentElement.querySelector('.valueTag');
+        if (oldTag) oldTag.classList.remove('show');
+      }
+      selectedBtn = btn;
+      btn.classList.add('selected');
+      tag.classList.add('show');
+      Studio.event('bar_tap', { key:d.key, value:d.value });
+      Studio.answer(d.key);
+    });
+
+    btn.appendChild(rect);
+    group.appendChild(btn);
+    group.appendChild(tag);
+    elBars.appendChild(group);
+
+    const xl = document.createElement('div');
+    xl.className = 'xlabel';
+    xl.textContent = Studio.t(d.key);
+    elLabels.appendChild(xl);
+
+    requestAnimationFrame(()=>rect.classList.add('grow'));
+  });
+
+  Studio.onVerdict(function(v){
+    pending = false;
+    const ok = !!(v && v.correct);
+    showFeedback(ok);
+    if (ok && !finished){
+      finished = true;
+      elDone.textContent = Studio.t('done');
+      elDone.classList.add('show');
+      if (!doneSent){
+        doneSent = true;
+        Studio.done();
+      }
+    } else if (!ok && selectedBtn){
+      selectedBtn.classList.remove('selected');
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

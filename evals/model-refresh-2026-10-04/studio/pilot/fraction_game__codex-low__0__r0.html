@@ -1,0 +1,325 @@
+<style>
+  :root{
+    --bg:#fff7ef;
+    --card:#ffffff;
+    --ink:#2b2b3a;
+    --muted:#6b6b7a;
+    --accent:#ff8a65;
+    --accent2:#ffd180;
+    --good:#34c759;
+    --bad:#ff4d6d;
+    --line:#ece7df;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  #app{
+    width:100%;
+    height:100vh;
+    min-height:640px;
+    max-height:100vh;
+    background:linear-gradient(180deg,#fffaf4 0%,#fff3e6 100%);
+    display:flex;
+    align-items:stretch;
+    justify-content:center;
+    padding:14px;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--ink);
+    overflow:hidden;
+  }
+  #card{
+    width:100%;
+    max-width:420px;
+    background:var(--card);
+    border:2px solid #ffe3c8;
+    border-radius:22px;
+    box-shadow:0 10px 30px rgba(255,138,101,.15);
+    padding:16px 14px 14px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  #title{
+    font-weight:800;
+    font-size:26px;
+    line-height:1.1;
+    text-align:center;
+    color:#ff7043;
+  }
+  #instr{
+    font-size:18px;
+    line-height:1.25;
+    text-align:center;
+    color:var(--muted);
+    min-height:44px;
+  }
+  #fraction{
+    align-self:center;
+    margin-top:2px;
+    background:#fff4ea;
+    border:2px solid #ffd7bb;
+    border-radius:16px;
+    min-height:58px;
+    min-width:120px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:8px 14px;
+    font-size:34px;
+    font-weight:800;
+    color:#d85c38;
+  }
+  #wholeWrap{
+    margin-top:2px;
+    border-radius:18px;
+    border:2px dashed #ffd8bf;
+    background:#fffdfb;
+    padding:8px 6px;
+  }
+  #barSvg{
+    width:100%;
+    height:150px;
+    display:block;
+    touch-action:manipulation;
+  }
+  .part{
+    fill:#fff;
+    stroke:#f2c8a9;
+    stroke-width:2;
+    cursor:pointer;
+    transition:fill .2s ease, transform .14s ease, filter .2s ease;
+    transform-box:fill-box;
+    transform-origin:center;
+  }
+  .part:hover{filter:brightness(.98)}
+  .part.shaded{fill:var(--accent)}
+  .part.pressed{transform:scale(.96)}
+  #checkBtn{
+    margin-top:2px;
+    min-height:52px;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(180deg,#ff9f7f 0%,#ff7f5f 100%);
+    color:white;
+    font-size:21px;
+    font-weight:800;
+    width:100%;
+    cursor:pointer;
+    transition:transform .12s ease, filter .15s ease, opacity .2s ease;
+  }
+  #checkBtn:active{transform:scale(.98)}
+  #checkBtn[disabled]{opacity:.55;cursor:default}
+  #feedback{
+    min-height:34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:20px;
+    font-weight:800;
+    text-align:center;
+    border-radius:12px;
+    transition:all .2s ease;
+  }
+  #feedback.good{color:var(--good); background:#ecfff0}
+  #feedback.bad{color:var(--bad); background:#fff0f3}
+  #doneWrap{
+    display:none;
+    flex:1;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:16px;
+  }
+  #doneIcon{
+    width:96px;height:96px;border-radius:50%;
+    background:radial-gradient(circle at 30% 25%,#fff4c8 0%,#ffd766 60%,#ffbe3d 100%);
+    display:flex;align-items:center;justify-content:center;
+    font-size:54px;
+    animation:bob 1.4s ease-in-out infinite;
+  }
+  #doneText{
+    font-size:28px;
+    font-weight:900;
+    color:#ff7043;
+    text-align:center;
+  }
+  .celebrate{
+    animation:pop .45s ease;
+  }
+  @keyframes pop{
+    0%{transform:scale(1)}
+    50%{transform:scale(1.05)}
+    100%{transform:scale(1)}
+  }
+  @keyframes bob{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-6px)}
+  }
+</style>
+
+<div id="app">
+  <div id="card" data-item="">
+    <div id="playWrap">
+      <div id="title"></div>
+      <div id="instr"></div>
+      <div id="fraction"><span id="num"></span><span>/</span><span id="den"></span></div>
+      <div id="wholeWrap">
+        <svg id="barSvg" viewBox="0 0 320 120" aria-hidden="true"></svg>
+      </div>
+      <button id="checkBtn" data-action="check"></button>
+      <div id="feedback"></div>
+    </div>
+    <div id="doneWrap">
+      <div id="doneIcon">✓</div>
+      <div id="doneText"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const items = (Studio.params && Studio.params.items) ? Studio.params.items : [];
+  const el = {
+    card: document.getElementById('card'),
+    title: document.getElementById('title'),
+    instr: document.getElementById('instr'),
+    num: document.getElementById('num'),
+    den: document.getElementById('den'),
+    svg: document.getElementById('barSvg'),
+    check: document.getElementById('checkBtn'),
+    feedback: document.getElementById('feedback'),
+    playWrap: document.getElementById('playWrap'),
+    doneWrap: document.getElementById('doneWrap'),
+    doneText: document.getElementById('doneText')
+  };
+
+  let idx = 0;
+  let awaiting = false;
+  let locked = false;
+  let readySent = false;
+  let doneSent = false;
+
+  el.title.textContent = Studio.t('title');
+  el.instr.textContent = Studio.t('instr');
+  el.check.textContent = Studio.t('check');
+  el.doneText.textContent = Studio.t('done');
+
+  function setFeedback(kind){
+    el.feedback.className = '';
+    if(kind === 'good'){
+      el.feedback.classList.add('good');
+      el.feedback.textContent = Studio.t('right');
+    }else if(kind === 'bad'){
+      el.feedback.classList.add('bad');
+      el.feedback.textContent = Studio.t('wrong') + ' ' + Studio.t('hint');
+    }else{
+      el.feedback.textContent = '';
+    }
+  }
+
+  function makeParts(d){
+    el.svg.innerHTML = '';
+    const pad = 10, gap = 4, y = 20, h = 80, totalW = 320 - pad*2;
+    const w = (totalW - gap * (d - 1)) / d;
+
+    for(let i=0;i<d;i++){
+      const x = pad + i * (w + gap);
+      const r = document.createElementNS('http://www.w3.org/2000/svg','rect');
+      r.setAttribute('x', String(x));
+      r.setAttribute('y', String(y));
+      r.setAttribute('width', String(w));
+      r.setAttribute('height', String(h));
+      r.setAttribute('rx', String(i===0 || i===d-1 ? 14 : 6));
+      r.setAttribute('ry', String(i===0 || i===d-1 ? 14 : 6));
+      r.setAttribute('class','part');
+      r.setAttribute('data-part', String(i));
+      r.setAttribute('data-shaded', 'false');
+      r.setAttribute('tabindex', '0');
+
+      const toggle = () => {
+        if(locked || awaiting) return;
+        const on = r.getAttribute('data-shaded') === 'true';
+        r.setAttribute('data-shaded', on ? 'false' : 'true');
+        r.classList.toggle('shaded', !on);
+        Studio.event('part_toggle', {item: items[idx].id, part: i, shaded: !on});
+      };
+
+      r.addEventListener('click', toggle);
+      r.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' '){
+          e.preventDefault();
+          toggle();
+        }
+      });
+      r.addEventListener('pointerdown', ()=> r.classList.add('pressed'));
+      r.addEventListener('pointerup', ()=> r.classList.remove('pressed'));
+      r.addEventListener('pointerleave', ()=> r.classList.remove('pressed'));
+      el.svg.appendChild(r);
+    }
+  }
+
+  function renderItem(){
+    if(idx >= items.length){
+      el.playWrap.style.display = 'none';
+      el.doneWrap.style.display = 'flex';
+      if(!doneSent){
+        doneSent = true;
+        Studio.done();
+      }
+      return;
+    }
+    const it = items[idx];
+    el.card.setAttribute('data-item', String(it.id));
+    el.num.textContent = String(it.n);
+    el.den.textContent = String(it.d);
+    setFeedback('');
+    awaiting = false;
+    locked = false;
+    el.check.disabled = false;
+    makeParts(it.d);
+    if(!readySent){
+      readySent = true;
+      Studio.ready();
+    }
+    Studio.event('item_show', {item: it.id, n: it.n, d: it.d});
+  }
+
+  function shadedCount(){
+    return el.svg.querySelectorAll('[data-part][data-shaded="true"]').length;
+  }
+
+  el.check.addEventListener('click', ()=>{
+    if(awaiting || locked || idx >= items.length) return;
+    const it = items[idx];
+    awaiting = true;
+    el.check.disabled = true;
+    const n = shadedCount();
+    Studio.event('check_press', {item: it.id, n: n, d: it.d});
+    Studio.answer({n: n, d: it.d});
+  });
+
+  Studio.onVerdict(function(v){
+    if(idx >= items.length) return;
+    awaiting = false;
+    el.check.disabled = false;
+
+    if(v && v.correct){
+      locked = true;
+      setFeedback('good');
+      el.card.classList.remove('celebrate');
+      void el.card.offsetWidth;
+      el.card.classList.add('celebrate');
+      Studio.event('verdict', {item: items[idx].id, correct: true});
+      setTimeout(()=>{
+        idx += 1;
+        renderItem();
+      }, 750);
+    }else{
+      setFeedback('bad');
+      Studio.event('verdict', {item: items[idx].id, correct: false});
+    }
+  });
+
+  renderItem();
+})();
+</script>

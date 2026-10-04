@@ -1,0 +1,283 @@
+<style>
+  :root{
+    --ink:#25314d;
+    --muted:#68738d;
+    --paper:#fffdf8;
+    --cream:#fff4dc;
+    --sky:#dff3ff;
+    --grid:#cbd9e9;
+    --bar:#ff9c62;
+    --bar-dark:#ec754d;
+    --leaf:#78bf84;
+    --good:#58ad78;
+    --bad:#e66d78;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-width:360px;
+    background:linear-gradient(180deg,#eaf8ff 0%,#fff9ee 100%);
+    color:var(--ink);
+    font-family:Arial,sans-serif;
+  }
+  #app{
+    width:100%;
+    min-height:640px;
+    overflow:hidden;
+    padding:16px 12px 18px;
+  }
+  .card{
+    width:min(100%,430px);
+    margin:0 auto;
+    background:rgba(255,253,248,.94);
+    border:2px solid rgba(255,255,255,.9);
+    border-radius:26px;
+    box-shadow:0 12px 28px rgba(66,101,130,.16);
+    overflow:hidden;
+  }
+  .top{
+    position:relative;
+    min-height:98px;
+    padding:20px 22px 12px;
+    background:linear-gradient(130deg,#dff5ff,#fdf0cf);
+  }
+  h1{
+    margin:0;
+    max-width:280px;
+    font-size:25px;
+    line-height:1.15;
+    letter-spacing:-.5px;
+  }
+  .fruit-decor{
+    position:absolute;
+    right:15px;
+    top:15px;
+    width:72px;
+    height:62px;
+  }
+  .prompt{
+    margin:0;
+    padding:14px 20px 7px;
+    font-size:17px;
+    line-height:1.35;
+    font-weight:700;
+    text-align:center;
+  }
+  .chart-wrap{
+    position:relative;
+    padding:0 0 2px;
+  }
+  #chart{
+    display:block;
+    width:100%;
+    height:auto;
+    overflow:visible;
+  }
+  .grid{stroke:var(--grid);stroke-width:1}
+  .axis{stroke:#72809c;stroke-width:2;stroke-linecap:round}
+  .tick{
+    fill:var(--muted);
+    font-size:12px;
+    font-weight:700;
+    text-anchor:end;
+    dominant-baseline:middle;
+  }
+  .fruit-label{
+    fill:var(--ink);
+    font-size:12px;
+    font-weight:700;
+    text-anchor:middle;
+  }
+  .axis-title{
+    fill:var(--muted);
+    font-size:12px;
+    font-weight:700;
+    text-anchor:middle;
+  }
+  .bar{
+    fill:var(--bar);
+    stroke:var(--bar-dark);
+    stroke-width:1.5;
+    cursor:pointer;
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    opacity:0;
+    transition:transform .2s ease,fill .2s ease,filter .2s ease,opacity .35s ease;
+  }
+  .bar.grow{
+    animation:rise .7s cubic-bezier(.22,.85,.35,1) forwards;
+  }
+  .bar:hover,.bar:focus{
+    fill:#ffb176;
+    filter:drop-shadow(0 4px 3px rgba(183,91,50,.24));
+    outline:none;
+  }
+  .bar:active,.bar.chosen{
+    transform:scaleX(1.07) scaleY(.96);
+    fill:#f78554;
+  }
+  @keyframes rise{
+    from{transform:scaleY(.02);opacity:.45}
+    to{transform:scaleY(1);opacity:1}
+  }
+  .value-bubble{
+    position:absolute;
+    z-index:2;
+    min-width:44px;
+    min-height:36px;
+    padding:8px 10px;
+    border-radius:18px;
+    color:white;
+    background:var(--ink);
+    box-shadow:0 5px 12px rgba(37,49,77,.22);
+    font-size:15px;
+    font-weight:800;
+    line-height:20px;
+    text-align:center;
+    transform:translate(-50%,-10px) scale(.7);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .18s ease,transform .22s cubic-bezier(.2,.9,.3,1.25);
+  }
+  .value-bubble.show{
+    opacity:1;
+    transform:translate(-50%,-10px) scale(1);
+  }
+  .feedback{
+    min-height:58px;
+    margin:4px 18px 18px;
+    padding:0 14px;
+    border-radius:17px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-size:17px;
+    font-weight:800;
+    opacity:0;
+    transform:translateY(7px);
+    transition:opacity .25s ease,transform .25s ease,background .25s ease;
+  }
+  .feedback.show{opacity:1;transform:translateY(0)}
+  .feedback.good{background:#dcf5e4;color:#287047}
+  .feedback.bad{background:#ffe4e5;color:#a64650}
+  .done .top{background:linear-gradient(130deg,#dff5e4,#fff0c9)}
+  .done .bar{cursor:default}
+</style>
+
+<div id="app">
+  <main class="card" id="card">
+    <section class="top">
+      <h1 id="title"></h1>
+      <svg class="fruit-decor" viewBox="0 0 72 62" aria-hidden="true">
+        <path d="M35 17c5-10 14-12 21-10-4 8-11 12-21 10Z" fill="#78bf84"/>
+        <path d="M34 18c-7 5-11 15-10 27" fill="none" stroke="#477c55" stroke-width="3" stroke-linecap="round"/>
+        <path d="M17 30c0-10 8-18 18-18s18 8 18 18c0 13-8 24-18 24S17 43 17 30Z" fill="#ffad63"/>
+        <path d="M26 29c3-4 6-6 10-6" fill="none" stroke="#ffd59e" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="42" cy="38" r="3" fill="#f27d54"/>
+      </svg>
+    </section>
+    <p class="prompt" id="ask"></p>
+    <div class="chart-wrap" id="chartWrap">
+      <div class="value-bubble" id="bubble"></div>
+      <svg id="chart" viewBox="0 0 360 390" role="img" aria-labelledby="title ask">
+        <g id="gridLayer"></g>
+        <g id="axisLayer"></g>
+        <g id="barLayer"></g>
+        <g id="labelLayer"></g>
+      </svg>
+    </div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+  </main>
+</div>
+
+<script>
+(function(){
+  const data=Studio.params.data;
+  const title=document.getElementById('title');
+  const ask=document.getElementById('ask');
+  const chart=document.getElementById('chart');
+  const grid=document.getElementById('gridLayer');
+  const axes=document.getElementById('axisLayer');
+  const bars=document.getElementById('barLayer');
+  const labels=document.getElementById('labelLayer');
+  const bubble=document.getElementById('bubble');
+  const feedback=document.getElementById('feedback');
+  const card=document.getElementById('card');
+  const ns='http://www.w3.org/2000/svg';
+  title.textContent=Studio.t('title');
+  ask.textContent=Studio.t('ask');
+
+  const max=Math.max.apply(null,data.map(d=>d.value));
+  const raw=max/4;
+  const power=Math.pow(10,Math.floor(Math.log10(raw)));
+  const ratio=raw/power;
+  const step=(ratio<=1?1:ratio<=2?2:ratio<=5?5:10)*power;
+  const top=Math.ceil(max/step)*step;
+  const left=48,right=16,plotTop=34,base=320,plotWidth=360-left-right;
+  const xStep=plotWidth/data.length;
+  const barWidth=Math.min(44,xStep-8);
+  const make=(tag,attrs,text)=>{
+    const el=document.createElementNS(ns,tag);
+    Object.keys(attrs||{}).forEach(k=>el.setAttribute(k,attrs[k]));
+    if(text!==undefined)el.textContent=text;
+    return el;
+  };
+
+  for(let value=0;value<=top;value+=step){
+    const y=base-(value/top)*(base-plotTop);
+    grid.appendChild(make('line',{x1:left,y1:y,x2:360-right,y2:y,class:'grid'}));
+    labels.appendChild(make('text',{x:left-8,y:y,class:'tick','data-tick':value},String(value)));
+  }
+  axes.appendChild(make('line',{x1:left,y1:plotTop,x2:left,y2:base,class:'axis'}));
+  axes.appendChild(make('line',{x1:left,y1:base,x2:360-right,y2:base,class:'axis'}));
+  labels.appendChild(make('text',{x:17,y:(plotTop+base)/2,class:'axis-title',transform:'rotate(-90 17 '+((plotTop+base)/2)+')'},Studio.t('yaxis')));
+
+  data.forEach((item,index)=>{
+    const height=(item.value/top)*(base-plotTop);
+    const x=left+xStep*index+(xStep-barWidth)/2;
+    const y=base-height;
+    const rect=make('rect',{
+      x:x,y:y,width:barWidth,height:height,rx:10,
+      class:'bar','data-bar':item.key,'data-value':item.value,tabindex:0
+    });
+    rect.addEventListener('click',function(){choose(item,rect,x+barWidth/2,y);});
+    rect.addEventListener('keydown',function(e){
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();choose(item,rect,x+barWidth/2,y);}
+    });
+    bars.appendChild(rect);
+    labels.appendChild(make('text',{x:x+barWidth/2,y:347,class:'fruit-label'},Studio.t(item.key)));
+    requestAnimationFrame(()=>rect.classList.add('grow'));
+  });
+
+  function choose(item,rect,cx,y){
+    if(card.classList.contains('done'))return;
+    document.querySelectorAll('.bar.chosen').forEach(el=>el.classList.remove('chosen'));
+    rect.classList.add('chosen');
+    const scale=chart.getBoundingClientRect().width/360;
+    bubble.textContent=String(item.value);
+    bubble.style.left=(cx*scale)+'px';
+    bubble.style.top=(y*scale)+'px';
+    bubble.classList.add('show');
+    feedback.className='feedback';
+    Studio.event('bar_tap',{key:item.key,value:item.value});
+    Studio.answer(item.key);
+  }
+
+  Studio.onVerdict(function(result){
+    feedback.className='feedback show '+(result.correct?'good':'bad');
+    feedback.textContent=Studio.t(result.correct?'right':'wrong');
+    Studio.event('verdict',{correct:result.correct});
+    if(result.correct){
+      card.classList.add('done');
+      setTimeout(function(){
+        feedback.textContent=Studio.t('done');
+        Studio.done();
+      },350);
+    }else{
+      document.querySelectorAll('.bar.chosen').forEach(el=>el.classList.remove('chosen'));
+    }
+  });
+  Studio.ready();
+})();
+</script>

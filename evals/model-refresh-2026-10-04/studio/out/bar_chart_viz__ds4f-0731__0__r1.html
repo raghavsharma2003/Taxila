@@ -1,0 +1,358 @@
+<style>
+  :root {
+    --bg: #fdf6e3;
+    --panel: #fffaf0;
+    --ink: #4a3b32;
+    --fruit-1: #f4b942;
+    --fruit-2: #f5e56b;
+    --fruit-3: #d94f4f;
+    --fruit-4: #9bcc7a;
+    --fruit-5: #f09a4a;
+    --line: #d9c5a0;
+    --tick: #8a7a6a;
+    --correct-bg: #e0f2d0;
+    --wrong-bg: #ffe0d0;
+    --radius: 24px;
+    --bar-w: 36px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 12px;
+    overflow-x: hidden;
+  }
+  .app {
+    background: var(--panel);
+    border-radius: 32px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    width: 100%;
+    max-width: 400px;
+    padding: 22px 12px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-align: center;
+  }
+  h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    margin: 0 4px;
+  }
+  .chart-card {
+    background: #fffdf7;
+    border-radius: var(--radius);
+    padding: 14px 8px 8px;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
+    border: 1px solid #f0e5d2;
+  }
+  .chart-wrapper {
+    display: flex;
+    flex-direction: row;
+  }
+  .y-axis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 160px;
+    padding-right: 6px;
+    color: var(--tick);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 0;
+    flex-shrink: 0;
+    min-width: 24px;
+    transform: translateY(0);
+  }
+  .y-axis span {
+    height: 0;
+    display: flex;
+    align-items: center;
+    transform: translateY(4px);
+  }
+  .plot-area {
+    position: relative;
+    flex: 1;
+    height: 160px;
+    border-bottom: 2px solid var(--line);
+  }
+  .grid-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .grid-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 0;
+    border-top: 1px dashed #e2d3b8;
+  }
+  .bars-row {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    height: 100%;
+    padding: 0 4px;
+    gap: 4px;
+  }
+  .bar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    width: var(--bar-w);
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+  .bar-group:active {
+    transform: scale(0.92);
+  }
+  .bar {
+    width: 100%;
+    border-radius: 10px 10px 3px 3px;
+    min-height: 0;
+    height: 0;
+    transition: height 0.8s cubic-bezier(0.2, 0.9, 0.25, 1);
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,0,0,0.03);
+  }
+  .bar-value {
+    background: #ffffffcc;
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #4a3b32;
+    margin-bottom: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    border: 1px solid var(--line);
+    pointer-events: none;
+    position: absolute;
+    bottom: 100%;
+    white-space: nowrap;
+    z-index: 5;
+  }
+  .fruit-label {
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #5b4a3e;
+    letter-spacing: 0.2px;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .ask-section {
+    background: #f3ecdf;
+    padding: 10px 12px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 500;
+    border: 1px solid #e3d4bf;
+    box-shadow: inset 0 1px 4px rgba(255,255,255,0.7);
+  }
+  .feedback-box {
+    min-height: 44px;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #efe7d9;
+    border-radius: 40px;
+    padding: 8px 10px;
+    transition: background 0.3s;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .feedback-box.correct {
+    background: var(--correct-bg);
+    color: #2f6b2f;
+  }
+  .feedback-box.wrong {
+    background: var(--wrong-bg);
+    color: #a63e3e;
+    animation: shake 0.4s ease;
+  }
+  .done-message {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2f6b2f;
+    width: 100%;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+  .hidden { display: none; }
+</style>
+
+<div class="app">
+  <h1 data-testid="title"></h1>
+  <div class="chart-card">
+    <div class="chart-wrapper">
+      <div class="y-axis" id="yAxis"></div>
+      <div class="plot-area" id="plotArea">
+        <div class="grid-layer" id="gridLayer"></div>
+        <div class="bars-row" id="barsRow"></div>
+      </div>
+    </div>
+  </div>
+  <div class="ask-section" data-testid="ask"></div>
+  <div class="feedback-box" id="feedbackBox"></div>
+</div>
+
+<script>
+  (function() {
+    const params = Studio.params;
+    const data = params.data;
+    const values = data.map(d => d.value);
+    const maxVal = Math.max(...values);
+
+    // tick step: nice step based on max
+    let step = 2;
+    if (maxVal > 12) step = 5;
+    if (maxVal > 25) step = 10;
+    if (maxVal > 50) step = 20;
+    const tickMax = Math.ceil(maxVal / step) * step;
+    const ticks = [];
+    for (let t = 0; t <= tickMax; t += step) ticks.push(t);
+
+    const plotH = 160; // px, matches CSS
+    const yAxisEl = document.getElementById('yAxis');
+    const gridLayer = document.getElementById('gridLayer');
+    const barsRow = document.getElementById('barsRow');
+
+    // Build y-axis ticks
+    ticks.forEach(t => {
+      const span = document.createElement('span');
+      span.textContent = t;
+      span.setAttribute('data-tick', t);
+      span.style.position = 'relative';
+      span.style.top = (plotH - (t / tickMax) * plotH) + 'px';
+      yAxisEl.appendChild(span);
+    });
+
+    // Build gridlines
+    ticks.forEach(t => {
+      const line = document.createElement('div');
+      line.className = 'grid-line';
+      line.style.bottom = (t / tickMax) * plotH + 'px';
+      gridLayer.appendChild(line);
+    });
+
+    // Colors
+    const colorMap = {
+      mango: 'var(--fruit-1)',
+      banana: 'var(--fruit-2)',
+      apple: 'var(--fruit-3)',
+      guava: 'var(--fruit-4)',
+      orange: 'var(--fruit-5)'
+    };
+
+    // Build bars (identical look, no hint)
+    data.forEach(item => {
+      const group = document.createElement('div');
+      group.className = 'bar-group';
+      group.setAttribute('data-bar-group', item.key);
+
+      const barValue = document.createElement('div');
+      barValue.className = 'bar-value';
+      barValue.setAttribute('data-value-label', item.key);
+
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      bar.setAttribute('data-bar', item.key);
+      bar.setAttribute('data-value', item.value);
+      bar.style.background = colorMap[item.key] || '#d4a247';
+
+      const label = document.createElement('div');
+      label.className = 'fruit-label';
+      label.textContent = Studio.t(item.key);
+
+      group.appendChild(barValue);
+      group.appendChild(bar);
+      group.appendChild(label);
+
+      // Tap -> show value, send answer
+      group.addEventListener('click', function() {
+        barValue.textContent = item.value;
+        barValue.style.opacity = '1';
+        Studio.event('bar_tap', { key: item.key, value: item.value });
+        Studio.answer(item.key);
+      });
+
+      barsRow.appendChild(group);
+    });
+
+    // Animate bars after first paint
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.querySelectorAll('.bar[data-bar]').forEach(bar => {
+          const key = bar.getAttribute('data-bar');
+          const item = data.find(d => d.key === key);
+          if (item) {
+            const h = (item.value / tickMax) * plotH;
+            bar.style.height = h + 'px';
+          }
+        });
+      });
+    });
+
+    // Text
+    document.querySelector('h1').textContent = Studio.t('title');
+    document.querySelector('.ask-section').textContent = Studio.t('ask');
+
+    // Feedback
+    const feedbackBox = document.getElementById('feedbackBox');
+    let answered = false;
+
+    Studio.onVerdict((verdict) => {
+      if (answered) return;
+      if (verdict.correct) {
+        feedbackBox.innerHTML = '';
+        feedbackBox.classList.add('correct');
+        feedbackBox.classList.remove('wrong');
+        const rightSpan = document.createElement('span');
+        rightSpan.textContent = Studio.t('right');
+        const doneDiv = document.createElement('div');
+        doneDiv.className = 'done-message';
+        doneDiv.textContent = Studio.t('done');
+        feedbackBox.appendChild(rightSpan);
+        feedbackBox.appendChild(doneDiv);
+        answered = true;
+        Studio.done();
+      } else {
+        feedbackBox.textContent = Studio.t('wrong');
+        feedbackBox.classList.add('wrong');
+        feedbackBox.classList.remove('correct');
+        setTimeout(() => {
+          feedbackBox.classList.remove('wrong');
+        }, 400);
+      }
+    });
+
+    // Ready
+    if (document.readyState === 'complete') {
+      Studio.ready();
+    } else {
+      window.addEventListener('load', () => Studio.ready());
+    }
+  })();
+</script>

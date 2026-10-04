@@ -1,0 +1,4 @@
+{"nodes":[
+{"id":"owner-azure-first-aws-second-2026-10-04","kind":"decision","title":"Owner: model mix is Azure Foundry first; AWS model APIs only where Azure is clearly worse for that use case, so the AWS credits stay mainly for build GPU. Reverse if AWS credits are no longer needed for GPU or an AWS model wins a live lane by non-overlapping intervals.","at":"2026-10-04"},
+{"id":"owner-gpt-image-2-default-2026-10-04","kind":"decision","title":"Owner: gpt-image-2 is the default image model for all generated images (text-free and labelled); FLUX.2-pro and MAI-Image stay as measured alternatives only. Images remain on the eastus2 account (gpt-image-2 is not offered in South India). Reverse if gpt-image-2 latency or quota blocks live use and a measured alternative wins on quality.","at":"2026-10-04"}],
+"edges":[{"from":"owner-gpt-image-2-default-2026-10-04","to":"owner-azure-first-aws-second-2026-10-04","rel":"part_of"}]}

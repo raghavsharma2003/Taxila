@@ -1,0 +1,660 @@
+<style>
+  :root {
+    --bg-top: #FFF9C4;
+    --bg-bot: #C8E6C9;
+    --leaf: #66BB6A;
+    --leaf-dark: #2E7D32;
+    --stem: #5D4037;
+    --sun: #FDD835;
+    --sun-rays: #FFEE58;
+    --water: #4FC3F7;
+    --co2: #9E9E9E;
+    --o2: #FFCA28;
+    --glucose: #FFFFFF;
+    --soil: #795548;
+    --text: #37474F;
+    --ui-bg: #FFFFFF;
+    --btn-primary: #7CB342;
+    --btn-primary-active: #558B2F;
+    --option-bg: #E3F2FD;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(to bottom, var(--bg-top), var(--bg-bot));
+    color: var(--text);
+    overflow-x: hidden;
+    width: 360px;
+    height: 640px;
+    position: relative;
+  }
+
+  #app-container {
+    width: 360px;
+    height: 640px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* SVG Scene */
+  #scene-wrap {
+    position: relative;
+    width: 360px;
+    height: 430px;
+    flex-shrink: 0;
+  }
+  svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: visible;
+  }
+
+  /* Labels overlaid on SVG */
+  .label {
+    position: absolute;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.85);
+    padding: 3px 8px;
+    border-radius: 12px;
+    pointer-events: none;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    white-space: nowrap;
+  }
+  .label[data-label="sun"] { top: 18px; left: 50%; transform: translateX(-50%); }
+  .label[data-label="leaf"] { top: 178px; left: 186px; transform: translateX(-50%); }
+  .label[data-label="roots"] { top: 340px; left: 50%; transform: translateX(-50%); }
+  .label[data-label="water"] { top: 295px; left: 40px; }
+  .label[data-label="co2"] { top: 210px; left: 16px; }
+  .label[data-label="o2"] { top: 210px; right: 16px; }
+  .label[data-label="glucose"] { top: 155px; left: 186px; transform: translateX(-50%); }
+
+  /* Controls & Caption */
+  #ui-panel {
+    width: 100%;
+    padding: 0 12px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  #ctrl-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  #play-btn {
+    width: 52px; height: 52px;
+    border: none; border-radius: 50%;
+    background: var(--leaf);
+    color: white; font-size: 22px; font-weight: 900;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 0 var(--leaf-dark);
+    transition: transform 0.1s, box-shadow 0.1s;
+    flex-shrink: 0;
+  }
+  #play-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 var(--leaf-dark);
+  }
+
+  #step-strip {
+    display: flex;
+    gap: 6px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .s-btn {
+    width: 44px; height: 44px;
+    border: 2px solid var(--leaf);
+    border-radius: 12px;
+    background: white;
+    color: var(--leaf-dark);
+    font-size: 16px; font-weight: 900;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s, color 0.3s, border-color 0.3s;
+  }
+  .s-btn.on {
+    background: var(--leaf);
+    color: white;
+    border-color: var(--leaf-dark);
+    transform: scale(1.15);
+    box-shadow: 0 0 12px var(--leaf);
+  }
+
+  #caption-box {
+    width: 100%;
+    background: white;
+    border-radius: 16px;
+    padding: 12px 16px;
+    min-height: 44px;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.4;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    color: var(--text);
+  }
+  #caption-box.on {
+    border: 2px solid var(--btn-primary);
+  }
+
+  /* Question Area */
+  #q-area {
+    width: 100%;
+    padding: 0 12px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.6s ease-out, opacity 0.5s;
+    opacity: 0;
+    flex-shrink: 0;
+  }
+  #q-area.open {
+    max-height: 220px;
+    opacity: 1;
+  }
+
+  #q-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    text-align: center;
+    background: rgba(255,255,255,0.9);
+    padding: 10px 16px;
+    border-radius: 14px;
+    width: 100%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    line-height: 1.4;
+  }
+
+  #opts-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .opt-btn {
+    flex: 1;
+    height: 56px;
+    border-radius: 16px;
+    border: 3px solid transparent;
+    background: var(--ui-bg);
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.15);
+    transition: transform 0.15s, box-shadow 0.15s, filter 0.2s;
+  }
+  .opt-btn:active {
+    transform: translateY(3px);
+    box-shadow: none;
+  }
+  .opt-btn[data-option="co2"] { background: #ECEFF1; color: #455A64; border-color: #CFD8DC; }
+  .opt-btn[data-option="water"] { background: #E1F5FE; color: #0277BD; border-color: #81D4FA; }
+  .opt-btn[data-option="o2"] { background: #FFF8E1; color: #FF6F00; border-color: #FFE082; }
+
+  .opt-btn.correct { border-color: #7CB342; filter: drop-shadow(0 0 8px #8BC34A); transform: scale(1.05); }
+  .opt-btn.wrong { animation: shake 0.35s ease-in-out; }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  /* SVG particle and glow styles */
+  .p-water { fill: var(--water); }
+  .p-co2 { fill: var(--co2); }
+  .p-o2 { fill: var(--o2); }
+  .p-glucose { fill: var(--glucose); }
+  .glow-glucose { fill: rgba(255,255,255,0.8); }
+  .sun-ray { stroke: var(--sun-rays); stroke-width: 3; stroke-linecap: round; fill: none; opacity: 0.7; }
+  .ray-core { stroke: #FFF59D; stroke-width: 2; fill: none; opacity: 0.9; }
+</style>
+
+<div id="app-container">
+  <div id="scene-wrap">
+    <!-- SVG Scene -->
+    <svg viewBox="0 0 360 430" id="scn">
+      <!-- Sky / Background -->
+      <rect x="0" y="0" width="360" height="430" fill="url(#sky)" opacity="0.4"/>
+      <defs>
+        <radialGradient id="sunGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#FFF9C4"/>
+          <stop offset="60%" stop-color="#FDD835"/>
+          <stop offset="100%" stop-color="#FBC02D"/>
+        </radialGradient>
+        <radialGradient id="leafGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="rgba(255,255,255,0.9)"/>
+          <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+        </radialGradient>
+        <filter id="squiggle">
+          <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="1" result="noise"/>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+      </defs>
+
+      <!-- Sun -->
+      <g id="sun-group">
+        <circle cx="180" cy="50" r="32" fill="url(#sunGrad)"/>
+        <!-- rays (animated later) -->
+        <path class="sun-ray" d="M180,20 L180,5" />
+        <path class="sun-ray" d="M180,80 L180,95" />
+        <path class="sun-ray" d="M150,50 L135,50" />
+        <path class="sun-ray" d="M210,50 L225,50" />
+        <path class="sun-ray" d="M159,29 L148,18" />
+        <path class="sun-ray" d="M201,29 L212,18" />
+        <path class="sun-ray" d="M159,71 L148,82" />
+        <path class="sun-ray" d="M201,71 L212,82" />
+      </g>
+
+      <!-- Light rays to leaf -->
+      <g id="light-rays">
+        <line class="ray-core" x1="172" y1="82" x2="172" y2="150" />
+        <line class="ray-core" x1="180" y1="82" x2="180" y2="140" />
+        <line class="ray-core" x1="188" y1="82" x2="188" y2="150" />
+      </g>
+
+      <!-- Soil -->
+      <path d="M0,400 Q90,395 180,398 Q270,401 360,396 L360,430 L0,430 Z" fill="var(--soil)"/>
+
+      <!-- Stem -->
+      <rect x="174" y="160" width="12" height="180" rx="6" fill="var(--stem)"/>
+
+      <!-- Roots -->
+      <g data-entity="roots">
+        <path d="M180,340 Q170,360 155,375 Q150,390 160,395 Q145,385 135,395" fill="none" stroke="var(--stem)" stroke-width="5" stroke-linecap="round"/>
+        <path d="M180,340 Q190,365 205,380 Q215,390 210,400 Q225,395 235,405" fill="none" stroke="var(--stem)" stroke-width="5" stroke-linecap="round"/>
+        <path d="M180,340 Q180,370 180,400" fill="none" stroke="var(--stem)" stroke-width="5" stroke-linecap="round"/>
+      </g>
+
+      <!-- Leaf -->
+      <g data-entity="leaf">
+        <path d="M240,140 Q300,160 280,200 Q250,230 180,220 Q120,210 130,170 Q140,130 180,135 Q210,135 240,140 Z" fill="var(--leaf)" stroke="var(--leaf-dark)" stroke-width="2" filter="url(#squiggle)"/>
+        <!-- Veins -->
+        <path d="M180,220 Q200,190 220,150" fill="none" stroke="var(--leaf-dark)" stroke-width="2" stroke-opacity="0.5" stroke-linecap="round"/>
+        <path d="M190,218 Q210,200 240,180" fill="none" stroke="var(--leaf-dark)" stroke-width="2" stroke-opacity="0.5" stroke-linecap="round"/>
+        <path d="M170,219 Q150,200 140,170" fill="none" stroke="var(--leaf-dark)" stroke-width="2" stroke-opacity="0.5" stroke-linecap="round"/>
+      </g>
+
+      <!-- Particles -->
+      <g id="particles">
+        <!-- Water -->
+        <circle class="p-water" data-flow="water" r="5"/>
+        <circle class="p-water" data-flow="water" r="5"/>
+        <circle class="p-water" data-flow="water" r="5"/>
+        <circle class="p-water" data-flow="water" r="5"/>
+        <circle class="p-water" data-flow="water" r="5"/>
+
+        <!-- CO2 -->
+        <circle class="p-co2" data-flow="co2" r="5"/>
+        <circle class="p-co2" data-flow="co2" r="5"/>
+        <circle class="p-co2" data-flow="co2" r="5"/>
+        <circle class="p-co2" data-flow="co2" r="5"/>
+        <circle class="p-co2" data-flow="co2" r="5"/>
+
+        <!-- O2 -->
+        <circle class="p-o2" data-flow="o2" r="5"/>
+        <circle class="p-o2" data-flow="o2" r="5"/>
+        <circle class="p-o2" data-flow="o2" r="5"/>
+        <circle class="p-o2" data-flow="o2" r="5"/>
+        <circle class="p-o2" data-flow="o2" r="5"/>
+
+        <!-- Glucose -->
+        <circle class="p-glucose" data-flow="glucose" r="6"/>
+        <circle class="p-glucose" data-flow="glucose" r="5"/>
+        <circle class="p-glucose" data-flow="glucose" r="7"/>
+      </g>
+
+      <!-- Glucose glows -->
+      <g id="glucose-glows">
+        <circle class="glow-glucose" data-flow="glucose" r="16" opacity="0"/>
+        <circle class="glow-glucose" data-flow="glucose" r="20" opacity="0"/>
+      </g>
+    </svg>
+
+    <!-- Labels (HTML) -->
+    <div class="label" data-label="sun"></div>
+    <div class="label" data-label="leaf"></div>
+    <div class="label" data-label="roots"></div>
+    <div class="label" data-label="water"></div>
+    <div class="label" data-label="co2"></div>
+    <div class="label" data-label="o2"></div>
+    <div class="label" data-label="glucose"></div>
+  </div>
+
+  <!-- Controls -->
+  <div id="ui-panel">
+    <div id="ctrl-row">
+      <button id="play-btn" data-action="play">&#9654;</button>
+      <div id="step-strip">
+        <button class="s-btn" data-action="step-1">1</button>
+        <button class="s-btn" data-action="step-2">2</button>
+        <button class="s-btn" data-action="step-3">3</button>
+        <button class="s-btn" data-action="step-4">4</button>
+        <button class="s-btn" data-action="step-5">5</button>
+      </div>
+    </div>
+    <div id="caption-box" data-caption></div>
+  </div>
+
+  <!-- Question Area -->
+  <div id="q-area">
+    <div id="q-text"></div>
+    <div id="opts-row">
+      <button class="opt-btn" data-option="co2"></button>
+      <button class="opt-btn" data-option="water"></button>
+      <button class="opt-btn" data-option="o2"></button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  // --- Helpers ---
+  function $(sel) { return document.querySelector(sel); }
+  function $$(sel) { return Array.from(document.querySelectorAll(sel)); }
+
+  // --- Localization ---
+  const keys = ['title','sun','leaf','roots','water','co2','o2','glucose','play','pause','step1','step2','step3','step4','step5','ask'];
+  const T = {};
+  keys.forEach(k => { try { T[k] = Studio.t(k); } catch(_){ T[k] = k; } });
+
+  // --- Scene Elements ---
+  const playBtn = $('#play-btn');
+  const captionBox = $('#caption-box');
+  const qArea = $('#q-area');
+  const qText = $('#q-text');
+  const labels = $$('.label');
+
+  // Set labels
+  labels.forEach(el => {
+    const k = el.getAttribute('data-label');
+    if (T[k]) el.textContent = T[k];
+  });
+
+  // Set question text
+  qText.textContent = T.ask || '';
+
+  // Set options text
+  $$('.opt-btn').forEach(btn => {
+    const k = btn.getAttribute('data-option');
+    btn.textContent = T[k] || k;
+  });
+
+  // Play / Pause button label
+  function updatePlayLabel() {
+    playBtn.textContent = isPlaying ? (T.pause || '⏸') : (T.play || '►');
+  }
+
+  // --- Particle System ---
+  // Types: water, co2, o2, glucose
+  const particles = $$('#particles circle[data-flow]').map((el, i) => {
+    const type = el.getAttribute('data-flow');
+    return { el, type, t: Math.random(), speed: 0.003 + Math.random()*0.004, baseSpeed: 0, extraOff: Math.random()*Math.PI*2 };
+  });
+  particles.forEach((p, i) => { p.idx = i; p.baseSpeed = p.speed; });
+
+  // Clamp helpers
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  // Paths (approx bezier-style via control points for JS evaluation)
+  function waterPos(t) {
+    // Roots up stem to leaf: start at root tip region, move to leaf center
+    // Roots area ~ x 120..240, y 340..400. Stem x ~180. Leaf y ~180.
+    // Setup: start at random root point then travel up.
+    // Using simple interpolation with slight sine wiggle.
+    const startX = 150 + (t*9773 % 90); // deterministic per particle via offset (handled in animate)
+    const sx = lerp(140, 220, (Math.sin(t*3 + 1)*0.5+0.5));
+    const sy = 390 - t * 200; // up to ~190
+    const wx = lerp(sx, 180, t) + Math.sin(t*10)*3;
+    const wy = lerp(390, 175, t);
+    return { x: wx, y: wy };
+  }
+
+  function co2Pos(t) {
+    // Air into leaf: left side to leaf center
+    const sx = 40 + Math.random()*20; // we'll add deterministic sine wiggle to avoid real randomness each frame
+    const sy = 140 + Math.random()*40;
+    // use per-particle offset stored in p
+    // handled in animate
+    // Actually bake path in animate to keep stateless wiggle
+    return { x: lerp(40, 200, t), y: lerp(180, 180, t) }; // placeholder
+  }
+
+  function o2Pos(t) {
+    // Leaf to air (right)
+    return { x: lerp(200, 320, t), y: lerp(180, 160 + Math.sin(t*10)*20, t) };
+  }
+
+  function glucosePos(t) {
+    // Appears inside leaf, gentle float
+    const ang = t * Math.PI * 2;
+    return {
+      x: 190 + Math.cos(ang)*15,
+      y: 175 + Math.sin(ang*1.3)*10
+    };
+  }
+
+  // Animation State
+  let isPlaying = true;
+  let currentStep = 1;
+  let rafId = null;
+  let lastTs = 0;
+  let lightPhase = 0;
+
+  function setParticleVisibility() {
+    // Step behavior: when a specific step is chosen, dim others slightly but keep playing?
+    // But spec says step buttons "emphasises that process". Let's keep all moving,
+    // but we can scale/emphasize the active type in step selection if we want.
+    // Here: always all visible, steps just captions.
+    // However: to enable "emphasis", let's pop the active type when a step is selected.
+    particles.forEach(p => {
+      const active = (currentStep === 1 && p.type === 'water') ||
+                     (currentStep === 2 && p.type === 'co2') ||
+                     (currentStep === 3 && p.type === 'glucose') ||
+                     (currentStep === 4 && p.type === 'o2') ||
+                     (currentStep === 5); // step 5 all
+      p.el.style.opacity = active ? '1' : '0.45';
+      const r = parseFloat(p.el.getAttribute('r')||5);
+      p.el.setAttribute('r', active ? Math.max(r, 6) : 5);
+    });
+    // Increase/decrease step button style
+    $$('.s-btn').forEach((btn, i) => {
+      if (i+1 === currentStep) btn.classList.add('on');
+      else btn.classList.remove('on');
+    });
+    captionBox.classList.toggle('on', isPlaying);
+  }
+
+  function animate(ts) {
+    if (!lastTs) lastTs = ts;
+    const dt = ts - lastTs;
+    lastTs = ts;
+
+    if (!isPlaying) {
+      rafId = requestAnimationFrame(animate);
+      return;
+    }
+
+    // Animate light rays opacity
+    lightPhase += dt * 0.002;
+    $$('#light-rays line').forEach((ln, i) => {
+      const op = 0.5 + 0.4 * Math.sin(lightPhase + i * 1.2);
+      ln.setAttribute('opacity', op.toFixed(2));
+    });
+
+    // Sun ray pulse
+    $$('#sun-group .sun-ray').forEach((ray, i) => {
+      const s = 1 + 0.08 * Math.sin(lightPhase * 2 + i);
+      // transform around center... simpler to ignore to avoid complexity
+      // We'll just animate stroke-width slightly
+      ray.setAttribute('stroke-width', (3 * s).toFixed(2));
+    });
+
+    particles.forEach(p => {
+      p.t += p.baseSpeed;
+      if (p.t > 1) p.t -= 1;
+
+      let x, y;
+      const tt = p.t;
+      if (p.type === 'water') {
+        // per-particle deterministic horizontal start variation using idx
+        const startX = 140 + ((p.idx * 37) % 80);
+        const wx = lerp(startX, 180, tt) + Math.sin(tt*12 + p.idx)*4;
+        const wy = lerp(390, 175, tt) - Math.sin(tt*6)*3;
+        x = wx; y = wy;
+      } else if (p.type === 'co2') {
+        const startY = 130 + ((p.idx * 53) % 100);
+        const ex = lerp(20, 200, tt) + Math.cos(tt*8 + p.idx)*5;
+        const ey = lerp(startY, 180, tt) + Math.sin(tt*6)*4;
+        x = ex; y = ey;
+      } else if (p.type === 'o2') {
+        const endY = 120 + ((p.idx * 47) % 100);
+        const ex = lerp(200, 340, tt) + Math.sin(tt*7 + p.idx)*6;
+        const ey = lerp(180, endY, tt) + Math.cos(tt*5)*4;
+        x = ex; y = ey;
+      } else if (p.type === 'glucose') {
+        const ang = tt * Math.PI * 2 + p.idx;
+        x = 190 + Math.cos(ang)*18 * (0.6 + 0.4*Math.sin(tt*Math.PI));
+        y = 170 + Math.sin(ang*1.3)*12;
+      }
+
+      p.el.setAttribute('cx', x.toFixed(1));
+      p.el.setAttribute('cy', y.toFixed(1));
+
+      // Pulse scale for glucose via r
+      if (p.type === 'glucose') {
+        const baseR = 5 + (p.idx % 3);
+        const nr = baseR + 1.5 * Math.sin(lightPhase*3 + p.idx);
+        p.el.setAttribute('r', nr.toFixed(1));
+      }
+    });
+
+    // Glucose glows
+    $$('#glucose-glows circle').forEach((g, i) => {
+      const t = (lightPhase * 0.5 + i) % 1;
+      const op = 0.3 + 0.5 * Math.sin(t * Math.PI * 2);
+      g.setAttribute('opacity', op.toFixed(2));
+      g.setAttribute('cx', (190 + Math.cos(lightPhase + i)*8).toFixed(1));
+      g.setAttribute('cy', (170 + Math.sin(lightPhase + i)*6).toFixed(1));
+    });
+
+    rafId = requestAnimationFrame(animate);
+  }
+
+  function setStep(n) {
+    currentStep = n;
+    const key = 'step' + n;
+    captionBox.textContent = T[key] || key;
+    setParticleVisibility();
+    Studio.event('step', { step: n });
+  }
+
+  // --- Controls ---
+  playBtn.addEventListener('click', () => {
+    isPlaying = !isPlaying;
+    updatePlayLabel();
+    setParticleVisibility();
+    Studio.event('playToggle', { playing: isPlaying });
+  });
+
+  $$('.s-btn').forEach(btn => {
+    const step = parseInt(btn.getAttribute('data-action').split('-')[1], 10);
+    btn.addEventListener('click', () => {
+      // When user clicks a step, auto-play if paused? Keep current play state.
+      setStep(step);
+      // If paused, briefly resume to show flow? Actually keep as-is.
+    });
+  });
+
+  // --- Question ---
+  $$('.opt-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const val = btn.getAttribute('data-option');
+      // Reset prev styles
+      $$('.opt-btn').forEach(b => { b.classList.remove('correct','wrong'); });
+      btn.classList.add('wrong'); // tentative, host will correct
+      Studio.answer(val);
+    });
+  });
+
+  Studio.onVerdict(function(res) {
+    const btns = $$('.opt-btn');
+    btns.forEach(b => b.classList.remove('correct','wrong'));
+    if (res && res.correct) {
+      // highlight correct
+      const correctBtn = $(`.opt-btn[data-option="${res.selected}"]`);
+      if (correctBtn) correctBtn.classList.add('correct');
+      Studio.event('answer', { correct: true });
+      // Delay then done
+      setTimeout(() => {
+        Studio.done();
+      }, 900);
+    } else {
+      // Wrong
+      const wrongBtn = $(`.opt-btn[data-option="${res.selected}"]`);
+      if (wrongBtn) wrongBtn.classList.add('wrong');
+      Studio.event('answer', { correct: false });
+      // Keep options clickable for retry
+    }
+  });
+
+  // --- Initialization ---
+  setStep(1);
+  updatePlayLabel();
+  rafId = requestAnimationFrame(animate);
+
+  // Reveal question area after all steps explored?
+  // Spec says: "After the steps, a question...". We can show it immediately since
+  // steps are just captions; but spec says visible from first screen.
+  // We already have HTML in place hidden by max-height.
+  // Let's open it after a brief delay or after step 5 visited once.
+  let questionRevealed = false;
+  function revealQuestion() {
+    if (questionRevealed) return;
+    questionRevealed = true;
+    qArea.classList.add('open');
+  }
+
+  // Reveal when step 5 has been visited at least once, or after 20 seconds.
+  const visitedSteps = new Set();
+  const origSetStep = setStep;
+  setStep = function(n) {
+    origSetStep(n);
+    visitedSteps.add(n);
+    if (visitedSteps.size >= 3) revealQuestion(); // or require all 5? Let's do 3 for engagement.
+  };
+
+  // Also reveal after enough time
+  setTimeout(revealQuestion, 12000);
+
+  // Initial reveal? The spec says visible from first screen. So maybe open immediately?
+  // But the animation is key. We'll open immediately per "visible from the first screen".
+  revealQuestion();
+
+  Studio.ready();
+})();
+</script>

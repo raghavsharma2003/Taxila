@@ -1443,3 +1443,16 @@ Method: local `node server/serve.mjs` against dist, with the Neon test branch as
 - Image: `public/assets/teacher` went from 25 MB to 8.2 MB, and `public/assets/teacher-bakeoff` (52 MB) left `public/`. `public/assets/teacher-candidates` (22 MB, item 2's workflow) is still in `public/`.
 
 - `w1f-fixer-acceptance-2026-10-04`: fixer pass, local serve.mjs with the 404 patch + Neon test branch, Chromium SwiftShader GPU-spoof, n = 1 run: w1f-face 30/30 (strict 404s; slate and teal looks load B+ and reveal at tier B; forced GLB failure -> D with no re-download across two relayouts; GLB held 11 s -> D).
+
+
+<!-- merged from inbox/model-refresh-setup.json -->
+## ds41-direct-meter-evidence
+2026-10-04, method: Foundry catalogue exact-name lookup + Cost Management ActualCost (daily, by meter) + deployment PUT probes. Two catalogue assets exist: `azureml-deepseek/DeepSeek-V4.1-Flash` (isDirectFromAzure true, hostedOn Azure, format DeepSeek = taxila-ds41) and `azureml-fireworks/FW-DeepSeek-V4.1-Flash` (hostedOn Fireworks infrastructure). The retail 'FW DS-V4.1-Flash' meters R5 read belong to the FW asset. Billing 09-15..10-04 has zero 'Azure Fireworks Models' rows; on 10-02/10-03 (ds41 in use) unnamed Direct meters 'Azure Deepseek Models / DS30 1M Tokens' (0.566M, INR 0.544) and 'DS31' (0.097M, INR 0.093) appear. n=2 days, attribution inferred (not yet confirmed by a controlled call). Confirm: one known-size call, re-run evals/model-refresh-2026-10-04/setup/cost-daily.mjs after 48 h. If confirmed, R5's ban on ds41 in production slots lifts. Reverse if DS30/DS31 do not move with ds41 traffic or a Fireworks charge appears.
+
+## mai-transcribe-centralindia
+2026-10-04, n=1 call each on a 5.4 s synthetic Hindi clip (d01-Z-clean). MAI-Transcribe-2 @centralindia 2551 ms, Devanagari with digits; 1.5 3264 ms. eastus2: 'Enhanced mode with model is currently not supported yet'; southindia: HTTP 404. MAI-Transcribe-2-Streaming deployed as taxila-mai-tx2-stream on taxila-ai-southindia, reachable via the OpenAI realtime transcription socket. No retail meter for either is published.
+
+
+<!-- merged from inbox/w1-d.json -->
+## w1d-nightly-job-azure-run-2026-10-04
+The nightly ops job run from the worker image on Azure: `scripts/deploy-worker.mjs --app taxila-wfix --db test --local --jobs-only --manual` (image taxila-worker:cdb64af-local-p1jyo built from the working tree, 290 files), then a manual start of `taxila-wfix-nightly`. n = 1. Execution Succeeded about 43 s after start (polled every 10 s). Log Analytics held the `conductor_rollup` line and `test_account_sweep {found 3, deleted 0, deferred 3, failed 0}` (3 test-branch accounts with open safety matters, deferred as designed). The scratch jobs were deleted afterwards; the image tag remains in ACR. Before the fix, the same tree layout reproduced ERR_MODULE_NOT_FOUND for /scripts/sweep-test-accounts.mjs.

@@ -1,0 +1,103 @@
+<style>
+*{box-sizing:border-box}
+:root{color-scheme:light}
+body{margin:0;font-family:ui-rounded,"Trebuchet MS",Arial,sans-serif;background:#fff8ed;color:#40352e}
+.card{width:min(100%,440px);min-height:100svh;margin:auto;padding:22px 18px 28px;display:flex;flex-direction:column;align-items:center}
+h1{font-size:25px;line-height:1.2;text-align:center;margin:8px 0 12px;color:#534239}
+.instr{font-size:17px;line-height:1.4;text-align:center;margin:0 0 18px;color:#66584e}
+.whole{width:100%;max-width:336px;padding:14px;border-radius:24px;background:#fff;box-shadow:0 7px 0 #eadcc9,0 12px 28px #775b3214}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.part{fill:#f5dfbb;stroke:#fff8ed;stroke-width:5;cursor:pointer;transition:fill .2s,transform .16s;transform-box:fill-box;transform-origin:center}
+.part[data-shaded="true"]{fill:#f28e67}
+.part:active{transform:scale(.94)}
+.frac{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:60px;min-height:64px;margin:22px 0 12px;font-size:25px;font-weight:800;color:#594538}
+.frac .line{width:48px;height:3px;border-radius:3px;background:#594538;margin:3px 0}
+.hint{font-size:15px;text-align:center;color:#75695f;margin:0 0 14px;min-height:22px}
+button{font:inherit;border:0;cursor:pointer;touch-action:manipulation}
+.check{min-height:52px;min-width:160px;padding:12px 28px;border-radius:18px;background:#5b9b78;color:#fff;font-size:18px;font-weight:750;box-shadow:0 5px 0 #417759;transition:transform .15s,box-shadow .15s}
+.check:active{transform:translateY(3px) scale(.98);box-shadow:0 2px 0 #417759}
+.feedback{min-height:34px;margin-top:16px;font-size:18px;font-weight:700;text-align:center;color:#578866}
+.feedback.wrong{color:#bf7156}
+.done-screen{margin:auto;text-align:center;font-size:24px;font-weight:750;color:#578866}
+.card.celebrate{animation:bounce .45s ease}
+@keyframes bounce{50%{transform:scale(1.025)}}
+</style>
+<main class="card" id="card" data-item="">
+  <h1 id="title"></h1>
+  <p class="instr" id="instr"></p>
+  <div class="whole" id="whole">
+    <svg id="parts" role="group" aria-label=""></svg>
+  </div>
+  <div class="frac" aria-label=""><span id="numerator"></span><span class="line"></span><span id="denominator"></span></div>
+  <p class="hint" id="hint"></p>
+  <button class="check" id="check" data-action="check" type="button"></button>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+<script>
+(()=>{
+ const items=Studio.params.items;
+ const t=key=>Studio.t(key);
+ const card=document.getElementById("card"),svg=document.getElementById("parts");
+ const title=document.getElementById("title"),instr=document.getElementById("instr");
+ const num=document.getElementById("numerator"),den=document.getElementById("denominator");
+ const hint=document.getElementById("hint"),check=document.getElementById("check");
+ const feedback=document.getElementById("feedback");
+ let current=0;
+ title.textContent=t("title");
+ instr.textContent=t("instr");
+ hint.textContent=t("hint");
+ check.textContent=t("check");
+ function render(){
+   const item=items[current];
+   card.dataset.item=item.id;
+   num.textContent=item.n;den.textContent=item.d;
+   feedback.textContent="";feedback.className="feedback";
+   svg.replaceChildren();
+   const cols=4,cell=72,gap=8,pad=4,rows=Math.ceil(item.d/cols);
+   svg.setAttribute("viewBox",`0 0 ${cols*cell+pad*2} ${rows*cell+pad*2}`);
+   for(let i=0;i<item.d;i++){
+     const r=document.createElementNS("http://www.w3.org/2000/svg","rect");
+     r.setAttribute("x",pad+(i%cols)*cell+gap/2);
+     r.setAttribute("y",pad+Math.floor(i/cols)*cell+gap/2);
+     r.setAttribute("width",cell-gap);r.setAttribute("height",cell-gap);
+     r.setAttribute("rx","16");r.setAttribute("class","part");
+     r.setAttribute("data-part",i);r.setAttribute("data-shaded","false");
+     r.setAttribute("role","button");r.setAttribute("tabindex","0");
+     r.addEventListener("click",toggle);
+     r.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle.call(r)}});
+     svg.appendChild(r);
+   }
+ }
+ function toggle(){
+   const shaded=this.getAttribute("data-shaded")==="true";
+   this.setAttribute("data-shaded",String(!shaded));
+   Studio.event("part_toggle",{item:items[current].id,part:Number(this.getAttribute("data-part")),shaded:!shaded});
+ }
+ check.addEventListener("click",()=>{
+   const item=items[current];
+   const count=svg.querySelectorAll('[data-shaded="true"]').length;
+   Studio.event("check",{item:item.id});
+   Studio.answer({n:count,d:item.d});
+ });
+ Studio.onVerdict(({correct})=>{
+   feedback.textContent=t(correct?"right":"wrong");
+   feedback.className=correct?"feedback":"feedback wrong";
+   if(correct){
+     card.classList.remove("celebrate");void card.offsetWidth;card.classList.add("celebrate");
+     setTimeout(()=>{
+       current++;
+       if(current<items.length)render();
+       else{
+         card.replaceChildren();
+         card.className="card";
+         const message=document.createElement("div");
+         message.className="done-screen";message.textContent=t("done");
+         card.appendChild(message);Studio.done();
+       }
+     },650);
+   }
+ });
+ render();
+ Studio.ready();
+})();
+</script>

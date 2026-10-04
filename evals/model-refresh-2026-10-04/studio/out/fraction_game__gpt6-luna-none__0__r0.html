@@ -1,0 +1,397 @@
+<style>
+  :root {
+    color-scheme: light;
+    --ink: #27334a;
+    --muted: #68748a;
+    --coral: #f27662;
+    --coral-dark: #db5c4e;
+    --cream: #fff9ef;
+    --paper: #ffffff;
+    --mint: #ccefe0;
+    --line: #ebe5da;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(160deg, #f8f3e9 0%, #edf7f3 100%);
+    color: var(--ink);
+    font-family: "Trebuchet MS", "Arial Rounded MT Bold", system-ui, sans-serif;
+  }
+  #app {
+    width: min(100%, 520px);
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 18px 18px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .top {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 2px 0 12px;
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(22px, 6vw, 28px);
+    line-height: 1.2;
+    text-align: center;
+    letter-spacing: -.4px;
+  }
+  .card {
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    background: var(--paper);
+    border: 1px solid rgba(99, 99, 79, .09);
+    border-radius: 28px;
+    box-shadow: 0 12px 32px rgba(54, 67, 78, .09);
+    padding: 20px 18px 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .prompt {
+    margin: 0;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.45;
+    max-width: 34ch;
+  }
+  .fraction {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 64px;
+    margin: 13px 0 4px;
+    color: var(--ink);
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .fraction span:first-child { padding: 0 8px 5px; }
+  .fraction span:last-child {
+    width: 100%;
+    border-top: 3px solid var(--ink);
+    padding: 5px 8px 0;
+  }
+  .picture-wrap {
+    width: 100%;
+    flex: 1;
+    min-height: 190px;
+    max-height: 360px;
+    display: grid;
+    place-items: center;
+    padding: 4px 0;
+  }
+  #picture {
+    width: min(100%, 330px);
+    max-height: 100%;
+    overflow: visible;
+    touch-action: manipulation;
+  }
+  .part {
+    cursor: pointer;
+    outline: none;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform .16s ease, filter .18s ease;
+  }
+  .part:hover { filter: brightness(1.03); }
+  .part:active { transform: scale(.96); }
+  .part:focus-visible .piece {
+    stroke: #29364d;
+    stroke-width: 4;
+  }
+  .piece {
+    fill: #fff0cf;
+    stroke: #fffaf0;
+    stroke-width: 3;
+    transition: fill .2s ease, stroke .2s ease;
+  }
+  .part[data-shaded="true"] .piece { fill: var(--coral); }
+  .part[data-shaded="true"] { animation: pop .22s ease-out; }
+  .whole-outline {
+    fill: none;
+    stroke: #bf8057;
+    stroke-width: 4;
+    pointer-events: none;
+  }
+  .bar-piece {
+    fill: #fff0cf;
+    stroke: #fffaf0;
+    stroke-width: 4;
+    transition: fill .2s ease;
+  }
+  .part[data-shaded="true"] .bar-piece { fill: var(--coral); }
+  .bar-outline {
+    fill: none;
+    stroke: #bf8057;
+    stroke-width: 4;
+    pointer-events: none;
+  }
+  .hint {
+    min-height: 24px;
+    margin: 1px 0 12px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  .feedback {
+    min-height: 28px;
+    margin: 0 0 8px;
+    font-size: 17px;
+    font-weight: 800;
+    color: #347b62;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  .feedback.show { opacity: 1; transform: translateY(0); }
+  .feedback.error { color: #c75b50; }
+  button {
+    width: min(100%, 300px);
+    min-height: 54px;
+    border: 0;
+    border-radius: 18px;
+    background: var(--coral);
+    color: #fff;
+    font: inherit;
+    font-size: 18px;
+    font-weight: 800;
+    box-shadow: 0 5px 0 var(--coral-dark), 0 9px 16px rgba(203, 94, 77, .18);
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: transform .12s ease, box-shadow .12s ease, background .2s ease;
+  }
+  button:hover { background: #f0806d; }
+  button:active {
+    transform: translateY(4px) scale(.985);
+    box-shadow: 0 1px 0 var(--coral-dark);
+  }
+  button:focus-visible { outline: 3px solid #34415a; outline-offset: 3px; }
+  #done-screen {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    min-height: 65vh;
+  }
+  #done-screen .spark {
+    font-size: 62px;
+    line-height: 1;
+    animation: float 2s ease-in-out infinite;
+  }
+  #done-screen p {
+    max-width: 27ch;
+    margin: 0;
+    font-size: clamp(24px, 7vw, 32px);
+    line-height: 1.25;
+    font-weight: 800;
+  }
+  .celebrate { animation: celebrate .55s ease; }
+  @keyframes pop { 0% { transform: scale(.94); } 65% { transform: scale(1.05); } 100% { transform: scale(1); } }
+  @keyframes float { 50% { transform: translateY(-8px) rotate(5deg); } }
+  @keyframes celebrate { 30% { transform: scale(1.025); } 65% { transform: scale(.99); } }
+  @media (max-height: 700px) {
+    #app { padding-top: 10px; padding-bottom: 14px; }
+    .card { padding-top: 14px; padding-bottom: 16px; }
+    .picture-wrap { min-height: 150px; }
+    .fraction { margin-top: 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+</style>
+
+<main id="app">
+  <header class="top"><h1 id="title"></h1></header>
+  <section class="card" id="activity" aria-live="polite">
+    <p class="prompt" id="instr"></p>
+    <div class="fraction" id="fraction" aria-label="">
+      <span id="numerator"></span><span id="denominator"></span>
+    </div>
+    <div class="picture-wrap">
+      <svg id="picture" role="group" aria-label="" viewBox="0 0 300 300"></svg>
+    </div>
+    <p class="hint" id="hint"></p>
+    <p class="feedback" id="feedback" aria-live="polite"></p>
+    <button id="check" data-action="check" type="button"></button>
+  </section>
+  <section class="card" id="done-screen" aria-live="polite">
+    <div class="spark" aria-hidden="true">✨</div>
+    <p id="done-text"></p>
+  </section>
+</main>
+
+<script>
+(() => {
+  const items = Studio.params.items;
+  const pictureType = Studio.params.picture;
+  const title = document.getElementById("title");
+  const instr = document.getElementById("instr");
+  const numerator = document.getElementById("numerator");
+  const denominator = document.getElementById("denominator");
+  const fraction = document.getElementById("fraction");
+  const picture = document.getElementById("picture");
+  const hint = document.getElementById("hint");
+  const feedback = document.getElementById("feedback");
+  const check = document.getElementById("check");
+  const activity = document.getElementById("activity");
+  const doneScreen = document.getElementById("done-screen");
+  let current = 0;
+  let parts = [];
+  let locked = false;
+  let completed = false;
+
+  title.textContent = Studio.t("title");
+  instr.textContent = Studio.t("instr");
+  hint.textContent = Studio.t("hint");
+  check.textContent = Studio.t("check");
+
+  function makeSvg(tag, attrs) {
+    const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    for (const [key, value] of Object.entries(attrs)) el.setAttribute(key, value);
+    return el;
+  }
+
+  function renderItem() {
+    const item = items[current];
+    activity.setAttribute("data-item", item.id);
+    numerator.textContent = item.n;
+    denominator.textContent = item.d;
+    fraction.setAttribute("aria-label", item.n + " / " + item.d);
+    picture.replaceChildren();
+    picture.setAttribute("viewBox", pictureType === "bar" ? "0 0 320 180" : "0 0 300 300");
+    picture.setAttribute("aria-label", item.d + " equal parts");
+    parts = [];
+    locked = false;
+    feedback.textContent = "";
+    feedback.className = "feedback";
+
+    if (pictureType === "bar") {
+      const gap = 4;
+      const width = (280 - gap * (item.d - 1)) / item.d;
+      const x0 = 20;
+      const y = 62;
+      const h = 56;
+      for (let i = 0; i < item.d; i++) {
+        const x = x0 + i * (width + gap);
+        const group = makeSvg("g", {
+          class: "part",
+          "data-part": i,
+          "data-shaded": "false",
+          tabindex: "0",
+          role: "button",
+          "aria-label": "part " + (i + 1),
+          "aria-pressed": "false"
+        });
+        group.appendChild(makeSvg("rect", {
+          class: "bar-piece",
+          x, y, width, height: h, rx: 10
+        }));
+        group.appendChild(makeSvg("rect", {
+          x: x - 2, y: y - 2, width: width + 4, height: h + 4,
+          rx: 12, fill: "transparent", "pointer-events": "all"
+        }));
+        group.addEventListener("click", () => togglePart(group));
+        group.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            togglePart(group);
+          }
+        });
+        picture.appendChild(group);
+        parts.push(group);
+      }
+      picture.appendChild(makeSvg("rect", {
+        class: "bar-outline", x: 18, y: 60, width: 284, height: 60, rx: 13
+      }));
+    } else {
+      const cx = 150, cy = 150, r = 119;
+      for (let i = 0; i < item.d; i++) {
+        const a1 = -Math.PI / 2 + (2 * Math.PI * i / item.d);
+        const a2 = -Math.PI / 2 + (2 * Math.PI * (i + 1) / item.d);
+        const x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
+        const x2 = cx + r * Math.cos(a2), y2 = cy + r * Math.sin(a2);
+        const path = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${item.d > 2 ? 1 : 0} 1 ${x2} ${y2} Z`;
+        const group = makeSvg("g", {
+          class: "part",
+          "data-part": i,
+          "data-shaded": "false",
+          tabindex: "0",
+          role: "button",
+          "aria-label": "part " + (i + 1),
+          "aria-pressed": "false"
+        });
+        group.appendChild(makeSvg("path", { class: "piece", d: path }));
+        group.addEventListener("click", () => togglePart(group));
+        group.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            togglePart(group);
+          }
+        });
+        picture.appendChild(group);
+        parts.push(group);
+      }
+      picture.appendChild(makeSvg("circle", { class: "whole-outline", cx, cy, r }));
+    }
+  }
+
+  function togglePart(part) {
+    if (locked || completed) return;
+    const shaded = part.getAttribute("data-shaded") !== "true";
+    part.setAttribute("data-shaded", String(shaded));
+    part.setAttribute("aria-pressed", String(shaded));
+    feedback.textContent = "";
+    feedback.className = "feedback";
+    Studio.event("part_toggle", {
+      item: items[current].id,
+      part: Number(part.getAttribute("data-part")),
+      shaded
+    });
+  }
+
+  check.addEventListener("click", () => {
+    if (locked || completed) return;
+    locked = true;
+    const n = parts.filter(part => part.getAttribute("data-shaded") === "true").length;
+    Studio.event("check", { item: items[current].id, n, d: items[current].d });
+    Studio.answer({ n, d: items[current].d });
+  });
+
+  Studio.onVerdict(({ correct }) => {
+    if (completed) return;
+    if (correct) {
+      feedback.textContent = Studio.t("right");
+      feedback.className = "feedback show";
+      activity.classList.add("celebrate");
+      window.setTimeout(() => {
+        activity.classList.remove("celebrate");
+        current += 1;
+        if (current >= items.length) {
+          completed = true;
+          activity.style.display = "none";
+          doneScreen.style.display = "flex";
+          document.getElementById("done-text").textContent = Studio.t("done");
+          Studio.done();
+        } else {
+          renderItem();
+        }
+      }, 850);
+    } else {
+      locked = false;
+      feedback.textContent = Studio.t("wrong");
+      feedback.className = "feedback show error";
+    }
+  });
+
+  renderItem();
+  Studio.ready();
+})();
+</script>

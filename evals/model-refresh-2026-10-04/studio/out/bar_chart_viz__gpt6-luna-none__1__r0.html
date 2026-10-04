@@ -1,0 +1,149 @@
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --ink: #26394a;
+    --muted: #708291;
+    --paper: #fffdf7;
+    --line: #e5e9e5;
+    --teal: #2c9b89;
+    --coral: #ef8b72;
+    --gold: #efbd55;
+    --blue: #78acd1;
+    --plum: #a78ac2;
+  }
+  html, body { margin: 0; min-height: 100%; background: #f4f2eb; color: var(--ink); font-family: system-ui, sans-serif; }
+  .stage { width: 100%; min-height: 100vh; padding: 18px 14px 22px; display: flex; justify-content: center; align-items: flex-start; }
+  .card { width: min(100%, 520px); background: var(--paper); border: 1px solid #eee9dc; border-radius: 26px; padding: 22px 18px 20px; box-shadow: 0 12px 32px #34475814; overflow: hidden; }
+  h1 { margin: 0 0 16px; text-align: center; font-size: clamp(21px, 6vw, 27px); line-height: 1.2; letter-spacing: -.4px; }
+  .chart-shell { position: relative; padding: 8px 8px 0 46px; }
+  .y-title { position: absolute; left: 0; top: 50%; writing-mode: vertical-rl; transform: translateY(-50%) rotate(180deg); color: var(--muted); font-size: 13px; font-weight: 650; letter-spacing: .2px; }
+  .plot { position: relative; height: 286px; border-bottom: 2px solid #536879; }
+  .gridline { position: absolute; left: 0; right: 0; height: 1px; background: var(--line); }
+  .tick { position: absolute; left: -39px; width: 31px; height: 22px; margin-top: -11px; text-align: right; color: var(--muted); font-size: 12px; font-weight: 600; line-height: 22px; }
+  .bars { position: absolute; inset: 0 0 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; align-items: stretch; }
+  .bar-slot { position: relative; min-width: 0; height: 100%; display: flex; align-items: flex-end; justify-content: center; }
+  .bar-button { position: relative; width: 100%; height: 100%; min-width: 44px; padding: 0; border: 0; background: transparent; border-radius: 12px 12px 0 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .bar-button:focus-visible { outline: 3px solid #26394a; outline-offset: 2px; z-index: 2; }
+  .bar { position: absolute; bottom: 0; left: 50%; width: min(72%, 48px); transform: translateX(-50%) scaleY(0); transform-origin: bottom; height: var(--bar-height); border-radius: 10px 10px 2px 2px; box-shadow: inset 0 2px 0 #ffffff55, 0 3px 7px #26394a16; transition: transform 850ms cubic-bezier(.18,.75,.22,1.08), filter 180ms, opacity 180ms; }
+  .bar.grow { transform: translateX(-50%) scaleY(1); }
+  .bar-button:active .bar { filter: brightness(.92); }
+  .bar-button.selected .bar { filter: saturate(1.15) brightness(.96); }
+  .value-pop { position: absolute; left: 50%; bottom: calc(var(--bar-height) + 7px); transform: translate(-50%, 5px) scale(.8); opacity: 0; padding: 3px 8px; min-width: 30px; border-radius: 12px; background: var(--ink); color: white; font-weight: 750; font-size: 13px; line-height: 20px; pointer-events: none; transition: .18s ease; }
+  .bar-button.selected .value-pop { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  .labels { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-left: 46px; padding: 8px 8px 0; }
+  .fruit-label { text-align: center; color: #526778; font-size: clamp(10px, 3vw, 12px); font-weight: 650; line-height: 1.15; overflow-wrap: anywhere; }
+  .prompt { min-height: 54px; margin: 18px 0 0; padding: 13px 14px; border-radius: 16px; background: #f0f6f2; text-align: center; font-size: 16px; font-weight: 700; line-height: 1.35; }
+  .prompt.feedback { animation: pop .28s ease-out; }
+  @keyframes pop { 50% { transform: scale(1.025); } }
+  @media (max-height: 700px) {
+    .stage { padding-top: 10px; }
+    .card { padding-top: 16px; }
+    .plot { height: 245px; }
+    h1 { margin-bottom: 10px; }
+  }
+</style>
+
+<div class="stage">
+  <main class="card">
+    <h1 id="title"></h1>
+    <section class="chart-shell" aria-label="Bar chart">
+      <div class="y-title" id="yaxis"></div>
+      <div class="plot" id="plot"></div>
+    </section>
+    <div class="labels" id="labels"></div>
+    <div class="prompt" id="prompt" aria-live="polite"></div>
+  </main>
+</div>
+
+<script>
+(() => {
+  const data = Studio.params.data;
+  const t = key => Studio.t(key);
+  const title = document.getElementById('title');
+  const yaxis = document.getElementById('yaxis');
+  const plot = document.getElementById('plot');
+  const labels = document.getElementById('labels');
+  const prompt = document.getElementById('prompt');
+  title.textContent = t('title');
+  yaxis.textContent = t('yaxis');
+  prompt.textContent = t('ask');
+
+  const maxValue = Math.max(...data.map(d => Number(d.value)));
+  const step = maxValue <= 10 ? 2 : maxValue <= 25 ? 5 : maxValue <= 50 ? 10 : Math.ceil(maxValue / 5 / 10) * 10;
+  const maxTick = Math.ceil(maxValue / step) * step;
+  const plotHeight = () => plot.clientHeight;
+  for (let value = 0; value <= maxTick; value += step) {
+    const y = (value / maxTick) * 100;
+    const line = document.createElement('div');
+    line.className = 'gridline';
+    line.style.bottom = y + '%';
+    if (value === 0) line.style.background = 'transparent';
+    plot.appendChild(line);
+    const tick = document.createElement('div');
+    tick.className = 'tick';
+    tick.dataset.tick = String(value);
+    tick.textContent = String(value);
+    tick.style.bottom = y + '%';
+    plot.appendChild(tick);
+  }
+
+  const bars = document.createElement('div');
+  bars.className = 'bars';
+  const palette = ['var(--teal)', 'var(--coral)', 'var(--gold)', 'var(--blue)', 'var(--plum)'];
+  let locked = false;
+  data.forEach((item, index) => {
+    const slot = document.createElement('div');
+    slot.className = 'bar-slot';
+    const button = document.createElement('button');
+    button.className = 'bar-button';
+    button.type = 'button';
+    button.setAttribute('aria-label', t(item.key));
+    const rect = document.createElement('div');
+    rect.className = 'bar';
+    rect.dataset.bar = item.key;
+    rect.dataset.value = String(item.value);
+    rect.style.setProperty('--bar-height', (Number(item.value) / maxTick * 100) + '%');
+    rect.style.background = palette[index % palette.length];
+    const valuePop = document.createElement('span');
+    valuePop.className = 'value-pop';
+    valuePop.textContent = String(item.value);
+    button.append(rect, valuePop);
+    button.addEventListener('click', () => {
+      if (locked) return;
+      button.classList.add('selected');
+      Studio.event('bar_tap', { key: item.key });
+      locked = true;
+      Studio.answer(item.key);
+    });
+    slot.appendChild(button);
+    bars.appendChild(slot);
+
+    const label = document.createElement('div');
+    label.className = 'fruit-label';
+    label.textContent = t(item.key);
+    labels.appendChild(label);
+  });
+  plot.appendChild(bars);
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.querySelectorAll('.bar').forEach((bar, i) => {
+      setTimeout(() => bar.classList.add('grow'), i * 65);
+    });
+  }));
+
+  Studio.onVerdict(({ correct }) => {
+    prompt.classList.remove('feedback');
+    void prompt.offsetWidth;
+    prompt.classList.add('feedback');
+    prompt.textContent = correct ? t('right') : t('wrong');
+    if (correct) {
+      Studio.done();
+      setTimeout(() => { prompt.textContent = t('done'); }, 900);
+    } else {
+      locked = false;
+      document.querySelectorAll('.bar-button').forEach(button => button.classList.remove('selected'));
+    }
+  });
+  Studio.ready();
+})();
+</script>

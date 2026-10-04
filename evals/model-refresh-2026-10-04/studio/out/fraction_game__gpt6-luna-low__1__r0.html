@@ -1,0 +1,125 @@
+<style>
+*{box-sizing:border-box}
+:root{color-scheme:light}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff8ec;color:#34424b}
+#app{min-height:100vh;max-width:520px;margin:0 auto;padding:20px 16px 24px;display:flex;flex-direction:column;align-items:center}
+h1{font-size:clamp(23px,7vw,30px);line-height:1.15;text-align:center;margin:8px 0 12px;color:#405e67}
+#instruction{font-size:17px;text-align:center;line-height:1.45;margin:0 0 16px;color:#52646a}
+#work{width:100%;display:flex;flex-direction:column;align-items:center;gap:14px}
+.fraction{display:flex;flex-direction:column;align-items:center;gap:4px;background:#fff;border:2px solid #ead8b7;border-radius:18px;padding:9px 25px;color:#374e55;font-weight:750;font-size:25px;line-height:1.1}
+.fraction-rule{width:35px;height:3px;border-radius:3px;background:#e7a84b}
+#whole{width:min(100%,360px);padding:10px;border:3px solid #d58d53;border-radius:20px;background:#fff0d8;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;touch-action:manipulation}
+.part{appearance:none;border:2px solid #dcaa69;border-radius:10px;background:#fffaf1;min-width:44px;min-height:54px;padding:0;cursor:pointer;transition:background .18s,transform .16s,border-color .18s,box-shadow .18s}
+.part:hover{transform:translateY(-2px)}
+.part:active{transform:scale(.93)}
+.part[data-shaded="true"]{background:#f2a45e;border-color:#d77b40;box-shadow:inset 0 0 0 3px rgba(255,255,255,.28)}
+.part:focus-visible,#check:focus-visible{outline:3px solid #438a9a;outline-offset:2px}
+#hint{font-size:15px;text-align:center;color:#718086;margin:0;min-height:22px}
+#check{appearance:none;border:0;border-radius:16px;background:#438a9a;color:white;font:700 18px system-ui,sans-serif;min-height:52px;min-width:150px;padding:0 26px;cursor:pointer;box-shadow:0 4px 0 #2d6c79;transition:transform .16s,background .2s}
+#check:active{transform:translateY(2px) scale(.98);box-shadow:0 2px 0 #2d6c79}
+#feedback{min-height:30px;font-size:18px;font-weight:700;text-align:center;color:#438a9a}
+#feedback.wrong{color:#b36b51}
+#app.celebrate #whole{animation:yay .55s ease}
+#app.celebrate .fraction{animation:yay .55s ease}
+#app.finished{justify-content:center}
+#app.finished #instruction{font-size:21px}
+@keyframes yay{50%{transform:scale(1.045)}}
+@media(max-height:570px){#app{padding-top:10px;gap:0}h1{margin:3px 0 8px}#instruction{margin-bottom:8px}#whole{gap:3px;padding:7px}.part{min-height:46px}#work{gap:8px}}
+</style>
+<main id="app">
+  <h1 id="title"></h1>
+  <p id="instruction"></p>
+  <section id="work" aria-live="polite">
+    <div class="fraction" id="fraction"></div>
+    <div id="whole"></div>
+    <p id="hint"></p>
+    <button id="check" type="button" data-action="check"></button>
+    <div id="feedback" aria-live="polite"></div>
+  </section>
+</main>
+<script>
+(()=>{
+  const items=Studio.params.items;
+  const app=document.getElementById("app");
+  const title=document.getElementById("title");
+  const instruction=document.getElementById("instruction");
+  const fraction=document.getElementById("fraction");
+  const whole=document.getElementById("whole");
+  const hint=document.getElementById("hint");
+  const check=document.getElementById("check");
+  const feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  instruction.textContent=Studio.t("instr");
+  hint.textContent=Studio.t("hint");
+  check.textContent=Studio.t("check");
+  let current=0;
+  let locked=false;
+  function render(){
+    const item=items[current];
+    if(!item){
+      app.classList.add("finished");
+      instruction.textContent=Studio.t("done");
+      document.getElementById("work").hidden=true;
+      Studio.done();
+      return;
+    }
+    locked=false;
+    feedback.textContent="";
+    feedback.className="";
+    whole.dataset.item=String(item.id);
+    fraction.replaceChildren();
+    const numerator=document.createElement("span");
+    numerator.textContent=String(item.n);
+    const rule=document.createElement("span");
+    rule.className="fraction-rule";
+    const denominator=document.createElement("span");
+    denominator.textContent=String(item.d);
+    fraction.append(numerator,rule,denominator);
+    whole.replaceChildren();
+    for(let i=0;i<item.d;i++){
+      const part=document.createElement("button");
+      part.type="button";
+      part.className="part";
+      part.dataset.part=String(i);
+      part.dataset.shaded="false";
+      part.setAttribute("aria-pressed","false");
+      part.addEventListener("click",()=>{
+        if(locked)return;
+        const shaded=part.dataset.shaded!=="true";
+        part.dataset.shaded=String(shaded);
+        part.setAttribute("aria-pressed",String(shaded));
+        part.classList.remove("tap");
+        void part.offsetWidth;
+        part.classList.add("tap");
+        Studio.event("part_toggle",{item:item.id,part:i,shaded});
+      });
+      whole.appendChild(part);
+    }
+  }
+  check.addEventListener("click",()=>{
+    if(locked)return;
+    const item=items[current];
+    const n=whole.querySelectorAll('[data-shaded="true"]').length;
+    Studio.event("check",{item:item.id,n,d:item.d});
+    Studio.answer({n,d:item.d});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      locked=true;
+      feedback.className="";
+      feedback.textContent=Studio.t("right");
+      app.classList.add("celebrate");
+      setTimeout(()=>{
+        app.classList.remove("celebrate");
+        current++;
+        render();
+      },650);
+    }else{
+      feedback.className="wrong";
+      feedback.textContent=Studio.t("wrong");
+    }
+  });
+  render();
+  Studio.ready();
+})();
+</script>

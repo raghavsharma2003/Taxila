@@ -1,0 +1,342 @@
+<style>
+  :root{
+    --sky:#eef8ff;
+    --paper:#ffffff;
+    --ink:#24364c;
+    --muted:#71849a;
+    --grid:#d7e6ef;
+    --bar:#5a92f2;
+    --bar-dark:#3973d8;
+    --sun:#ffd86a;
+    --mint:#ddf5e8;
+    --rose:#fff0ed;
+    --shadow:0 10px 25px rgba(47,83,116,.16);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-width:320px;
+    background:linear-gradient(180deg,var(--sky),#f9fcff 68%,#effaf4);
+    color:var(--ink);
+    font-family:Arial,sans-serif;
+  }
+  #app{
+    width:min(100%,430px);
+    min-height:640px;
+    margin:auto;
+    padding:17px 14px 22px;
+    overflow:hidden;
+  }
+  .heading{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:12px;
+  }
+  .icon{
+    width:52px;
+    height:52px;
+    flex:none;
+    display:grid;
+    place-items:center;
+    border-radius:18px;
+    background:var(--sun);
+    box-shadow:0 5px 0 #e9b83f;
+  }
+  .icon svg{width:32px;height:32px}
+  h1{
+    margin:0;
+    font-size:23px;
+    line-height:1.14;
+    letter-spacing:-.35px;
+  }
+  .ask{
+    min-height:48px;
+    margin:0 0 13px;
+    padding:12px 15px;
+    border-radius:17px;
+    background:#ddf1ff;
+    color:#245477;
+    font-size:17px;
+    font-weight:700;
+    line-height:1.38;
+  }
+  .chart-card{
+    position:relative;
+    padding:10px 4px 5px;
+    border-radius:24px;
+    background:var(--paper);
+    box-shadow:var(--shadow);
+  }
+  #chart{
+    display:block;
+    width:100%;
+    height:auto;
+    overflow:visible;
+  }
+  .grid{stroke:var(--grid);stroke-width:1}
+  .axis{stroke:#71879b;stroke-width:2;stroke-linecap:round}
+  .tick{
+    fill:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+  .axis-title{
+    fill:#587187;
+    font-size:12px;
+    font-weight:700;
+  }
+  .fruit{
+    fill:var(--ink);
+    font-size:12px;
+    font-weight:700;
+  }
+  .bar-wrap{
+    clip-path:inset(100% 0 0 0);
+  }
+  .bar-wrap.grow{
+    animation:reveal .72s cubic-bezier(.2,.86,.28,1) forwards;
+  }
+  @keyframes reveal{
+    from{clip-path:inset(100% 0 0 0)}
+    to{clip-path:inset(0 0 0 0)}
+  }
+  .bar{
+    fill:var(--bar);
+    cursor:pointer;
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    transition:filter .18s ease,transform .18s ease,fill .18s ease;
+    outline:none;
+  }
+  .bar:hover,.bar:focus{
+    fill:var(--bar-dark);
+    filter:drop-shadow(0 4px 3px rgba(40,88,160,.24));
+  }
+  .bar.chosen{
+    fill:var(--bar-dark);
+    filter:drop-shadow(0 5px 4px rgba(40,88,160,.25));
+    animation:barTap .32s ease;
+  }
+  @keyframes barTap{
+    0%,100%{transform:scaleX(1)}
+    50%{transform:scaleX(1.08)}
+  }
+  .bubble{
+    position:absolute;
+    z-index:2;
+    min-width:44px;
+    padding:7px 10px;
+    border-radius:14px;
+    background:var(--ink);
+    color:#fff;
+    text-align:center;
+    font-size:15px;
+    font-weight:700;
+    opacity:0;
+    pointer-events:none;
+    transform:translate(-50%,-112%) scale(.72);
+    transition:opacity .18s ease,transform .23s cubic-bezier(.2,.9,.3,1);
+    box-shadow:0 5px 12px rgba(26,46,70,.22);
+  }
+  .bubble.show{
+    opacity:1;
+    transform:translate(-50%,-112%) scale(1);
+  }
+  .feedback,.complete{
+    min-height:50px;
+    margin:15px 5px 0;
+    padding:13px 15px;
+    border-radius:16px;
+    text-align:center;
+    font-size:17px;
+    font-weight:700;
+  }
+  .feedback{
+    opacity:0;
+    transform:translateY(7px);
+    transition:opacity .22s ease,transform .22s ease;
+  }
+  .feedback.show{opacity:1;transform:translateY(0)}
+  .feedback.good{background:var(--mint);color:#24744d}
+  .feedback.bad{background:var(--rose);color:#b44b43}
+  .complete{
+    display:none;
+    background:var(--mint);
+    color:#24744d;
+  }
+  .complete.show{
+    display:block;
+    animation:finish .35s ease both;
+  }
+  @keyframes finish{
+    from{opacity:0;transform:scale(.9)}
+    to{opacity:1;transform:scale(1)}
+  }
+</style>
+
+<div id="app">
+  <div class="heading">
+    <div class="icon" aria-hidden="true">
+      <svg viewBox="0 0 32 32">
+        <path d="M5 26V7M5 26H29" fill="none" stroke="#24364c" stroke-width="2.5" stroke-linecap="round"/>
+        <rect x="9" y="17" width="4" height="9" rx="1.4" fill="#5a92f2"/>
+        <rect x="16" y="11" width="4" height="15" rx="1.4" fill="#5a92f2"/>
+        <rect x="23" y="6" width="4" height="20" rx="1.4" fill="#5a92f2"/>
+      </svg>
+    </div>
+    <h1 id="title"></h1>
+  </div>
+  <p class="ask" id="ask"></p>
+  <div class="chart-card" id="card">
+    <svg id="chart" viewBox="0 0 360 350" role="img"></svg>
+    <div class="bubble" id="bubble"></div>
+  </div>
+  <div class="feedback" id="feedback"></div>
+  <div class="complete" id="complete"></div>
+</div>
+
+<script>
+(function(){
+  var data=Studio.params.data;
+  var chart=document.getElementById('chart');
+  var card=document.getElementById('card');
+  var bubble=document.getElementById('bubble');
+  var feedback=document.getElementById('feedback');
+  var complete=document.getElementById('complete');
+  var waiting=false;
+  var finished=false;
+  var ns='http://www.w3.org/2000/svg';
+
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+
+  var max=0;
+  data.forEach(function(item){if(item.value>max)max=item.value;});
+  var rough=max/5;
+  var power=Math.pow(10,Math.floor(Math.log(rough||1)/Math.LN10));
+  var ratio=rough/power;
+  var step=(ratio<=1?1:(ratio<=2?2:(ratio<=5?5:10)))*power;
+  var topValue=Math.ceil(max/step)*step;
+  var left=47;
+  var right=348;
+  var top=27;
+  var bottom=274;
+  var plotHeight=bottom-top;
+  var slot=(right-left)/data.length;
+  var barWidth=56;
+
+  function add(name,attrs,text,parent){
+    var node=document.createElementNS(ns,name);
+    Object.keys(attrs||{}).forEach(function(key){node.setAttribute(key,attrs[key]);});
+    if(text!==undefined)node.textContent=text;
+    (parent||chart).appendChild(node);
+    return node;
+  }
+
+  for(var tick=0;tick<=topValue+step*.001;tick+=step){
+    var tickY=bottom-(tick/topValue)*plotHeight;
+    add('line',{x1:left,y1:tickY,x2:right,y2:tickY,class:'grid'});
+    add('text',{
+      x:left-10,
+      y:tickY+4,
+      'text-anchor':'end',
+      class:'tick',
+      'data-tick':String(tick)
+    },String(tick));
+  }
+
+  add('line',{x1:left,y1:top,x2:left,y2:bottom,class:'axis'});
+  add('line',{x1:left,y1:bottom,x2:right,y2:bottom,class:'axis'});
+  add('text',{
+    x:16,
+    y:(top+bottom)/2,
+    'text-anchor':'middle',
+    class:'axis-title',
+    transform:'rotate(-90 16 '+((top+bottom)/2)+')'
+  },Studio.t('yaxis'));
+
+  function choose(item,rect,x,y){
+    if(waiting||finished)return;
+    waiting=true;
+    feedback.className='feedback';
+    rect.classList.remove('chosen');
+    void rect.getBoundingClientRect();
+    rect.classList.add('chosen');
+
+    var svgBox=chart.getBoundingClientRect();
+    var cardBox=card.getBoundingClientRect();
+    bubble.textContent=String(item.value);
+    bubble.style.left=((x+barWidth/2)/360*svgBox.width+svgBox.left-cardBox.left)+'px';
+    bubble.style.top=(y/350*svgBox.height+svgBox.top-cardBox.top)+'px';
+    bubble.classList.add('show');
+
+    Studio.event('bar_tap',{key:item.key,value:item.value});
+    Studio.answer(item.key);
+  }
+
+  data.forEach(function(item,index){
+    var height=(item.value/topValue)*plotHeight;
+    var x=left+slot*index+(slot-barWidth)/2;
+    var y=bottom-height;
+    var group=add('g',{class:'bar-wrap'});
+    group.style.animationDelay=(.06+index*.09)+'s';
+
+    var rect=add('rect',{
+      x:x,
+      y:y,
+      width:barWidth,
+      height:height,
+      rx:10,
+      class:'bar',
+      'data-bar':item.key,
+      'data-value':String(item.value),
+      tabindex:'0',
+      role:'button'
+    },undefined,group);
+
+    add('text',{
+      x:x+barWidth/2,
+      y:307,
+      'text-anchor':'middle',
+      class:'fruit'
+    },Studio.t(item.key));
+
+    rect.addEventListener('click',function(){choose(item,rect,x,y);});
+    rect.addEventListener('keydown',function(event){
+      if(event.key==='Enter'||event.key===' '){
+        event.preventDefault();
+        choose(item,rect,x,y);
+      }
+    });
+
+    requestAnimationFrame(function(){group.classList.add('grow');});
+  });
+
+  Studio.onVerdict(function(result){
+    if(finished)return;
+    bubble.classList.remove('show');
+    feedback.textContent=Studio.t(result.correct?'right':'wrong');
+    feedback.className='feedback show '+(result.correct?'good':'bad');
+    Studio.event('verdict',{correct:result.correct});
+
+    if(result.correct){
+      finished=true;
+      setTimeout(function(){
+        complete.textContent=Studio.t('done');
+        complete.classList.add('show');
+        Studio.done();
+      },420);
+    }else{
+      setTimeout(function(){
+        waiting=false;
+        Array.prototype.forEach.call(chart.querySelectorAll('.bar.chosen'),function(bar){
+          bar.classList.remove('chosen');
+        });
+      },350);
+    }
+  });
+
+  Studio.ready();
+}());
+</script>

@@ -1,0 +1,241 @@
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #e0f4e8; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 640px; width: 360px; overflow-x: hidden; overflow-y: auto; padding: 6px; }
+.scene { width: 348px; height: 260px; position: relative; margin-bottom: 4px; }
+.scene svg { width: 100%; height: 100%; display: block; }
+.controls { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; width: 348px; margin: 3px 0; }
+.controls button { background: #2d6a4f; color: #fff; border: none; border-radius: 20px; padding: 8px 12px; font-size: 13px; font-weight: 600; cursor: pointer; min-width: 44px; min-height: 44px; transition: transform 0.15s, background 0.2s; }
+.controls button:active { transform: scale(0.92); }
+.controls button.active-step { background: #40916c; box-shadow: 0 0 0 3px #95d5b2; }
+.caption-box { background: #f0f3eb; padding: 6px 10px; border-radius: 14px; font-size: 12px; color: #1b4332; width: 340px; min-height: 36px; text-align: center; margin: 3px 0 6px; border: 1px solid #b7e4c7; }
+.quiz { width: 348px; display: flex; flex-direction: column; gap: 4px; margin-top: 2px; align-items: center; }
+.quiz-question { font-size: 13px; font-weight: 600; color: #1b4332; text-align: center; padding: 4px 0; }
+.quiz-options { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.quiz-options button { background: #e9f5db; border: 2px solid #52b788; border-radius: 18px; padding: 8px 16px; font-size: 13px; color: #1b4332; cursor: pointer; min-width: 56px; min-height: 44px; transition: transform 0.12s, background 0.15s; font-weight: 500; }
+.quiz-options button:active { transform: scale(0.90); background: #d8f3dc; }
+.feedback-text { font-size: 12px; margin-top: 2px; padding: 4px 10px; border-radius: 10px; background: #fff3cd; color: #856404; min-height: 22px; }
+[data-entity] { transition: all 0.3s; }
+.particle { transition: none; }
+</style>
+<div class="scene">
+  <svg viewBox="0 0 348 260" xmlns="http://www.w3.org/2000/svg">
+    <!-- sun -->
+    <circle cx="280" cy="30" r="24" fill="#ffd166" opacity="0.9"/>
+    <text x="280" y="22" text-anchor="middle" fill="#7f4f24" font-size="9" font-weight="bold" data-label="sun">Suraj</text>
+    <!-- sun rays -->
+    <g stroke="#ffd166" stroke-width="2" opacity="0.6" stroke-dasharray="4 3">
+      <line x1="280" y1="5" x2="280" y2="0"/>
+      <line x1="305" y1="12" x2="316" y2="6"/>
+      <line x1="314" y1="30" x2="326" y2="30"/>
+      <line x1="305" y1="48" x2="316" y2="54"/>
+      <line x1="280" y1="55" x2="280" y2="60"/>
+      <line x1="255" y1="48" x2="244" y2="54"/>
+      <line x1="246" y1="30" x2="234" y2="30"/>
+      <line x1="255" y1="12" x2="244" y2="6"/>
+    </g>
+    <!-- light rays from sun to leaf -->
+    <g stroke="#ffe066" stroke-width="1.5" opacity="0.4" class="light-rays">
+      <line x1="260" y1="45" x2="140" y2="130"/>
+      <line x1="270" y1="50" x2="155" y2="125"/>
+      <line x1="280" y1="53" x2="170" y2="120"/>
+    </g>
+    <!-- soil -->
+    <ellipse cx="120" cy="225" rx="85" ry="22" fill="#5c4a3a"/>
+    <ellipse cx="120" cy="220" rx="80" ry="16" fill="#7f5a3e"/>
+    <!-- roots -->
+    <g data-entity="roots" fill="#a0785a" stroke="#7f5a3e" stroke-width="1">
+      <path d="M130 205 C125 215 115 228 108 238" stroke-width="3" fill="none"/>
+      <path d="M130 205 C135 217 140 232 142 242" stroke-width="3" fill="none"/>
+      <path d="M130 205 C120 213 100 222 90 232" stroke-width="2.5" fill="none"/>
+      <path d="M130 205 C145 215 160 228 165 238" stroke-width="2.5" fill="none"/>
+    </g>
+    <!-- stem -->
+    <path d="M130 205 L130 115" stroke="#2d6a4f" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <!-- leaf -->
+    <g data-entity="leaf">
+      <ellipse cx="165" cy="125" rx="38" ry="20" fill="#52b788" transform="rotate(-20,165,125)"/>
+      <ellipse cx="160" cy="120" rx="33" ry="16" fill="#74c69d" transform="rotate(-20,160,120)"/>
+      <line x1="140" y1="130" x2="185" y2="115" stroke="#2d6a4f" stroke-width="1.5" opacity="0.5"/>
+    </g>
+    <!-- glucose glow (shown/hidden by script) -->
+    <ellipse cx="165" cy="125" rx="16" ry="9" fill="#facc15" opacity="0" class="glucose-glow" data-label="glucose"/>
+    <text x="165" y="129" text-anchor="middle" fill="#1b4332" font-size="7" font-weight="bold" opacity="0" class="glucose-text" data-label="glucose">Glucose</text>
+    <!-- labels -->
+    <text x="100" y="245" text-anchor="middle" fill="#d8f3dc" font-size="7" data-label="water">Paani</text>
+    <text x="45" y="25" text-anchor="middle" fill="#2d6a4f" font-size="7" data-label="co2">CO₂</text>
+    <text x="310" y="80" text-anchor="middle" fill="#2d6a4f" font-size="7" data-label="o2">O₂</text>
+    <text x="168" y="102" text-anchor="middle" fill="#1b4332" font-size="7" font-weight="bold" data-label="leaf">Patti</text>
+    <text x="100" y="230" text-anchor="middle" fill="#e9c46a" font-size="7" font-weight="bold" data-label="roots">Jarr</text>
+  </svg>
+</div>
+<div class="controls">
+  <button data-action="play" id="playBtn">Ruk</button>
+  <button data-action="step-1" class="step-btn active-step">1</button>
+  <button data-action="step-2" class="step-btn">2</button>
+  <button data-action="step-3" class="step-btn">3</button>
+  <button data-action="step-4" class="step-btn">4</button>
+  <button data-action="step-5" class="step-btn">5</button>
+</div>
+<div class="caption-box" data-caption>Step 1: Suraj ki roshni patti par padti hai</div>
+<div class="quiz">
+  <div class="quiz-question" id="askText">Sawaal: Photosynthesis mein kaun si gas andar jaati hai?</div>
+  <div class="quiz-options" id="quizOpts">
+    <button data-option="co2">CO₂</button>
+    <button data-option="o2">O₂</button>
+    <button data-option="water">Paani</button>
+  </div>
+  <div class="feedback-text" id="fb"></div>
+</div>
+<script>
+(function() {
+  const playing = { value: true };
+  const currentStep = { value: 1 };
+  const particles = [];
+  const svg = document.querySelector('svg');
+  const ns = 'http://www.w3.org/2000/svg';
+
+  function makeParticle(type) {
+    const circle = document.createElementNS(ns, 'circle');
+    circle.setAttribute('r', 3);
+    circle.setAttribute('data-flow', type);
+    circle.classList.add('particle');
+    let start, target;
+    if (type === 'water') {
+      circle.setAttribute('fill', '#90e0ef');
+      start = { x: 125 + (Math.random() - 0.5) * 10, y: 220 + Math.random() * 15 };
+      target = { x: 155 + (Math.random() - 0.5) * 20, y: 120 + (Math.random() - 0.5) * 15 };
+    } else if (type === 'co2') {
+      circle.setAttribute('fill', '#e76f51');
+      start = { x: 35 + Math.random() * 20, y: 15 + Math.random() * 25 };
+      target = { x: 155 + (Math.random() - 0.5) * 20, y: 120 + (Math.random() - 0.5) * 15 };
+    } else { // o2
+      circle.setAttribute('fill', '#2a9d8f');
+      start = { x: 160 + (Math.random() - 0.5) * 20, y: 115 + (Math.random() - 0.5) * 15 };
+      target = { x: 300 + Math.random() * 30, y: 60 + Math.random() * 35 };
+    }
+    circle._start = start;
+    circle._target = target;
+    circle._t = Math.random();
+    circle.setAttribute('cx', start.x);
+    circle.setAttribute('cy', start.y);
+    svg.appendChild(circle);
+    return circle;
+  }
+
+  function spawnParticles() {
+    ['water', 'co2', 'o2'].forEach(t => {
+      let count = document.querySelectorAll(`circle[data-flow="${t}"]`).length;
+      while (count < 3) {
+        particles.push(makeParticle(t));
+        count++;
+      }
+    });
+  }
+
+  function animateParticles() {
+    if (!playing.value) return;
+    const speed = 0.01;
+    particles.forEach(p => {
+      if (!p._t) p._t = Math.random();
+      p._t += speed;
+      if (p._t >= 1) {
+        p._t = 0;
+        const type = p.getAttribute('data-flow');
+        if (type === 'water') {
+          p._start = { x: 125 + (Math.random() - 0.5) * 10, y: 220 + Math.random() * 15 };
+          p._target = { x: 155 + (Math.random() - 0.5) * 20, y: 120 + (Math.random() - 0.5) * 15 };
+        } else if (type === 'co2') {
+          p._start = { x: 35 + Math.random() * 20, y: 15 + Math.random() * 25 };
+          p._target = { x: 155 + (Math.random() - 0.5) * 20, y: 120 + (Math.random() - 0.5) * 15 };
+        } else {
+          p._start = { x: 160 + (Math.random() - 0.5) * 20, y: 115 + (Math.random() - 0.5) * 15 };
+          p._target = { x: 300 + Math.random() * 30, y: 60 + Math.random() * 35 };
+        }
+      }
+      const t = p._t;
+      const cx = p._start.x + (p._target.x - p._start.x) * t;
+      const cy = p._start.y + (p._target.y - p._start.y) * t;
+      p.setAttribute('cx', cx);
+      p.setAttribute('cy', cy);
+    });
+    requestAnimationFrame(animateParticles);
+  }
+
+  const captions = [
+    'Step 1: Suraj ki roshni patti par padti hai',
+    'Step 2: Pani (H₂O) jarr se patti tak jaata hai',
+    'Step 3: CO₂ hawa se patti mein jaata hai',
+    'Step 4: Suraj ki roshni se glucose banta hai patti mein',
+    'Step 5: O₂ hawa mein chhod di jaati hai'
+  ];
+
+  function updateStepUi(s) {
+    document.querySelectorAll('.step-btn').forEach((btn, idx) => {
+      btn.classList.toggle('active-step', idx + 1 === s);
+    });
+    document.querySelector('[data-caption]').textContent = captions[s - 1] || '';
+    const glow = document.querySelector('.glucose-glow');
+    const txt = document.querySelector('.glucose-text');
+    if (s >= 4) {
+      glow.setAttribute('opacity', '0.7');
+      txt.setAttribute('opacity', '1');
+    } else {
+      glow.setAttribute('opacity', '0');
+      txt.setAttribute('opacity', '0');
+    }
+  }
+
+  document.getElementById('playBtn').addEventListener('click', function() {
+    playing.value = !playing.value;
+    this.textContent = playing.value ? 'Ruk' : 'Chalu';
+    Studio.event('play_toggle', { playing: playing.value });
+    if (playing.value) {
+      animateParticles();
+      spawnParticles();
+    }
+  });
+
+  document.querySelectorAll('.step-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const s = parseInt(this.getAttribute('data-action').split('-')[1]);
+      currentStep.value = s;
+      updateStepUi(s);
+      Studio.event('step_change', { step: s });
+      if (!playing.value) {
+        playing.value = true;
+        document.getElementById('playBtn').textContent = 'Ruk';
+        animateParticles();
+        spawnParticles();
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-option]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const val = this.getAttribute('data-option');
+      Studio.answer(val);
+      Studio.event('quiz_answer', { answer: val });
+    });
+  });
+
+  Studio.onVerdict(function(result) {
+    const fb = document.getElementById('fb');
+    if (result.correct) {
+      fb.textContent = 'Sahi jawab! 🌿';
+      fb.style.background = '#d4edda';
+      fb.style.color = '#155724';
+      document.querySelectorAll('[data-option]').forEach(b => b.disabled = true);
+      Studio.done();
+    } else {
+      fb.textContent = 'Galat jawab, phir se try karo!';
+      fb.style.background = '#fff3cd';
+      fb.style.color = '#856404';
+    }
+  });
+
+  spawnParticles();
+  animateParticles();
+  updateStepUi(1);
+  Studio.ready();
+})();
+</script>

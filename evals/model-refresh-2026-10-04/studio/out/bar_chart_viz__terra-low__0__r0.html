@@ -1,0 +1,296 @@
+<style>
+  :root{
+    --sky:#edf8ff;
+    --paper:#ffffff;
+    --ink:#24344d;
+    --muted:#6f8198;
+    --line:#cfe2ee;
+    --blue:#4e8cff;
+    --blue-dark:#2d66d5;
+    --yellow:#ffd765;
+    --green:#74cfa0;
+    --coral:#ff8b76;
+    --shadow:0 10px 24px rgba(53,90,125,.15);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-width:320px;
+    background:linear-gradient(180deg,var(--sky) 0%,#f8fcff 65%,#eff9f4 100%);
+    color:var(--ink);
+    font-family:Arial,sans-serif;
+  }
+  #app{
+    width:min(100%,430px);
+    min-height:640px;
+    margin:0 auto;
+    padding:18px 14px 20px;
+    overflow:hidden;
+  }
+  .top{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:12px;
+  }
+  .badge{
+    width:50px;
+    height:50px;
+    flex:none;
+    border-radius:17px;
+    display:grid;
+    place-items:center;
+    background:var(--yellow);
+    box-shadow:0 5px 0 #efbd3c;
+  }
+  .badge svg{width:31px;height:31px}
+  h1{
+    margin:0;
+    font-size:23px;
+    line-height:1.14;
+    letter-spacing:-.4px;
+  }
+  .question{
+    margin:0 0 14px;
+    min-height:48px;
+    padding:12px 15px;
+    border-radius:17px;
+    background:#dff2ff;
+    color:#245376;
+    font-size:17px;
+    font-weight:700;
+    line-height:1.35;
+  }
+  .card{
+    position:relative;
+    padding:10px 5px 5px;
+    border-radius:24px;
+    background:var(--paper);
+    box-shadow:var(--shadow);
+  }
+  #chart{
+    display:block;
+    width:100%;
+    height:auto;
+    overflow:visible;
+  }
+  .grid{stroke:var(--line);stroke-width:1}
+  .axis{stroke:#7890a5;stroke-width:2;stroke-linecap:round}
+  .tick{
+    fill:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+  .axis-title{
+    fill:#557187;
+    font-size:12px;
+    font-weight:700;
+  }
+  .fruit-label{
+    fill:var(--ink);
+    font-size:12px;
+    font-weight:700;
+  }
+  .bar{
+    cursor:pointer;
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    transition:filter .18s ease,transform .18s ease,opacity .18s ease;
+    outline:none;
+  }
+  .bar.ready{animation:grow .7s cubic-bezier(.2,.9,.25,1) both}
+  .bar:hover,.bar:focus{filter:brightness(1.08) drop-shadow(0 4px 3px rgba(34,89,150,.22))}
+  .bar.tap{animation:tap .32s ease}
+  .bar.chosen{filter:brightness(1.04) drop-shadow(0 4px 4px rgba(34,89,150,.25))}
+  @keyframes grow{
+    from{transform:scaleY(0)}
+    to{transform:scaleY(1)}
+  }
+  @keyframes tap{
+    0%,100%{transform:scaleY(1) scaleX(1)}
+    50%{transform:scaleY(1.03) scaleX(1.08)}
+  }
+  .value-bubble{
+    position:absolute;
+    z-index:3;
+    min-width:44px;
+    padding:7px 10px;
+    border-radius:14px;
+    background:var(--ink);
+    color:white;
+    text-align:center;
+    font-size:15px;
+    font-weight:700;
+    transform:translate(-50%,-110%) scale(.7);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .18s ease,transform .22s cubic-bezier(.2,.9,.3,1);
+    box-shadow:0 5px 12px rgba(26,46,70,.22);
+  }
+  .value-bubble.show{
+    opacity:1;
+    transform:translate(-50%,-110%) scale(1);
+  }
+  .feedback{
+    min-height:50px;
+    margin:15px 5px 0;
+    padding:13px 15px;
+    border-radius:16px;
+    text-align:center;
+    font-size:17px;
+    font-weight:700;
+    opacity:0;
+    transform:translateY(7px);
+    transition:opacity .24s ease,transform .24s ease;
+  }
+  .feedback.show{opacity:1;transform:translateY(0)}
+  .feedback.good{background:#dff7e8;color:#22734b}
+  .feedback.bad{background:#fff0ed;color:#b44c42}
+  .done{
+    display:none;
+    margin:15px 5px 0;
+    padding:14px;
+    border-radius:16px;
+    background:#dff7e8;
+    color:#22734b;
+    text-align:center;
+    font-size:17px;
+    font-weight:700;
+    animation:appear .35s ease both;
+  }
+  .done.show{display:block}
+  @keyframes appear{
+    from{opacity:0;transform:scale(.9)}
+    to{opacity:1;transform:scale(1)}
+  }
+</style>
+
+<div id="app">
+  <div class="top">
+    <div class="badge" aria-hidden="true">
+      <svg viewBox="0 0 32 32">
+        <path d="M5 25V15M5 25H29" fill="none" stroke="#24344d" stroke-width="2.6" stroke-linecap="round"/>
+        <rect x="9" y="17" width="4" height="8" rx="1.5" fill="#ff8b76"/>
+        <rect x="16" y="11" width="4" height="14" rx="1.5" fill="#4e8cff"/>
+        <rect x="23" y="6" width="4" height="19" rx="1.5" fill="#74cfa0"/>
+      </svg>
+    </div>
+    <h1 id="title"></h1>
+  </div>
+  <p class="question" id="ask"></p>
+  <div class="card" id="card">
+    <svg id="chart" viewBox="0 0 360 350" role="img"></svg>
+    <div class="value-bubble" id="bubble"></div>
+  </div>
+  <div class="feedback" id="feedback"></div>
+  <div class="done" id="done"></div>
+</div>
+
+<script>
+(function(){
+  var data=Studio.params.data;
+  var title=document.getElementById('title');
+  var ask=document.getElementById('ask');
+  var chart=document.getElementById('chart');
+  var card=document.getElementById('card');
+  var bubble=document.getElementById('bubble');
+  var feedback=document.getElementById('feedback');
+  var done=document.getElementById('done');
+  title.textContent=Studio.t('title');
+  ask.textContent=Studio.t('ask');
+
+  var max=0;
+  data.forEach(function(d){if(d.value>max)max=d.value;});
+  var rough=max/5;
+  var power=Math.pow(10,Math.floor(Math.log(rough||1)/Math.LN10));
+  var unit=rough/power;
+  var nice=unit<=1?1:(unit<=2?2:(unit<=5?5:10));
+  var step=nice*power;
+  var topValue=Math.ceil(max/step)*step;
+  var left=44, right=348, top=28, bottom=275, height=bottom-top;
+  var ns='http://www.w3.org/2000/svg';
+
+  function el(name,attrs,text){
+    var node=document.createElementNS(ns,name);
+    Object.keys(attrs||{}).forEach(function(k){node.setAttribute(k,attrs[k]);});
+    if(text!==undefined)node.textContent=text;
+    chart.appendChild(node);
+    return node;
+  }
+  for(var tick=0;tick<=topValue+step*.001;tick+=step){
+    var y=bottom-(tick/topValue)*height;
+    el('line',{x1:left,y1:y,x2:right,y2:y,class:'grid'});
+    el('text',{x:left-9,y:y+4,'text-anchor':'end',class:'tick','data-tick':String(tick)},String(tick));
+  }
+  el('line',{x1:left,y1:top,x2:left,y2:bottom,class:'axis'});
+  el('line',{x1:left,y1:bottom,x2:right,y2:bottom,class:'axis'});
+  var axisTitle=el('text',{x:15,y:(top+bottom)/2,'text-anchor':'middle',class:'axis-title',transform:'rotate(-90 15 '+((top+bottom)/2)+')'},Studio.t('yaxis'));
+
+  var colors=['#4e8cff','#ffd765','#ff8b76','#74cfa0','#a98cf4'];
+  var slot=(right-left)/data.length;
+  var barWidth=48;
+  var waiting=false, complete=false;
+
+  data.forEach(function(item,index){
+    var h=(item.value/topValue)*height;
+    var x=left+slot*index+(slot-barWidth)/2;
+    var y=bottom-h;
+    var rect=el('rect',{
+      x:x,y:y,width:barWidth,height:h,rx:10,
+      fill:colors[index%colors.length],
+      class:'bar',
+      'data-bar':item.key,
+      'data-value':String(item.value),
+      tabindex:'0',
+      role:'button'
+    });
+    rect.style.animationDelay=(.08+index*.09)+'s';
+    requestAnimationFrame(function(){rect.classList.add('ready');});
+    el('text',{x:x+barWidth/2,y:306,'text-anchor':'middle',class:'fruit-label'},Studio.t(item.key));
+    function choose(){
+      if(waiting||complete)return;
+      waiting=true;
+      feedback.className='feedback';
+      rect.classList.remove('tap');
+      void rect.getBoundingClientRect();
+      rect.classList.add('tap','chosen');
+      var svgRect=chart.getBoundingClientRect();
+      var cardRect=card.getBoundingClientRect();
+      var center=(x+barWidth/2)/360*svgRect.width+(svgRect.left-cardRect.left);
+      var barTop=y/350*svgRect.height+(svgRect.top-cardRect.top);
+      bubble.textContent=String(item.value);
+      bubble.style.left=center+'px';
+      bubble.style.top=barTop+'px';
+      bubble.classList.add('show');
+      Studio.event('bar_tap',{key:item.key,value:item.value});
+      Studio.answer(item.key);
+    }
+    rect.addEventListener('click',choose);
+    rect.addEventListener('keydown',function(e){
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();choose();}
+    });
+  });
+
+  Studio.onVerdict(function(result){
+    if(complete)return;
+    bubble.classList.remove('show');
+    feedback.textContent=Studio.t(result.correct?'right':'wrong');
+    feedback.className='feedback show '+(result.correct?'good':'bad');
+    Studio.event('verdict',{correct:result.correct});
+    if(result.correct){
+      complete=true;
+      setTimeout(function(){
+        done.textContent=Studio.t('done');
+        done.classList.add('show');
+        Studio.done();
+      },450);
+    }else{
+      setTimeout(function(){
+        waiting=false;
+        Array.prototype.forEach.call(chart.querySelectorAll('.bar.chosen'),function(b){b.classList.remove('chosen');});
+      },350);
+    }
+  });
+  Studio.ready();
+}());
+</script>

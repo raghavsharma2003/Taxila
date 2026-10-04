@@ -1,0 +1,416 @@
+<style>
+  :root{
+    --bg:#f6f1e7;
+    --panel:#fffdf8;
+    --ink:#243b53;
+    --ink-soft:#5b7186;
+    --grid:#e4dccb;
+    --axis:#b9ac93;
+    --accent:#2f6f9e;
+    --accent-soft:#e3f0f8;
+    --good:#3f9d63;
+    --good-soft:#e4f4e9;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  .viz-wrap{
+    font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    width:100%;
+    min-height:100%;
+    padding:12px 12px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .viz-card{
+    background:var(--panel);
+    border-radius:20px;
+    box-shadow:0 6px 20px rgba(36,59,83,.10), 0 1px 0 rgba(36,59,83,.05);
+    padding:12px 12px 8px;
+  }
+  .viz-title{
+    font-size:16px;
+    font-weight:700;
+    letter-spacing:.2px;
+    margin:2px 2px 8px;
+    color:var(--ink);
+  }
+  .chart-holder{
+    position:relative;
+    width:100%;
+    display:flex;
+    gap:6px;
+  }
+  .yaxis-title{
+    position:absolute;
+    left:0;
+    top:50%;
+    transform:translateY(-50%) rotate(-90deg);
+    transform-origin:left center;
+    font-size:11px;
+    font-weight:600;
+    color:var(--ink-soft);
+    letter-spacing:.4px;
+    white-space:nowrap;
+    pointer-events:none;
+  }
+  .yaxis-col{
+    width:42px;
+    flex:0 0 42px;
+    position:relative;
+    min-height:190px;
+  }
+  .tick-label{
+    position:absolute;
+    right:4px;
+    transform:translateY(50%);
+    font-size:11px;
+    font-weight:600;
+    color:var(--ink-soft);
+    line-height:1;
+  }
+  .plot{
+    position:relative;
+    flex:1 1 auto;
+    min-height:190px;
+    border-left:2px solid var(--axis);
+    border-bottom:2px solid var(--axis);
+    border-bottom-left-radius:2px;
+  }
+  .gridline{
+    position:absolute;
+    left:0;
+    right:0;
+    height:0;
+    border-top:1.5px dashed var(--grid);
+  }
+  .bars{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-around;
+    padding:0 6px;
+    gap:6px;
+  }
+  .bar-slot{
+    flex:1 1 0;
+    height:100%;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+  }
+  .bar{
+    width:100%;
+    max-width:46px;
+    min-width:20px;
+    border-radius:12px 12px 4px 4px;
+    border:none;
+    padding:0;
+    margin:0;
+    cursor:pointer;
+    transform-origin:bottom center;
+    transform:scaleY(0);
+    transition:transform .18s ease, filter .18s ease, box-shadow .18s ease;
+    position:relative;
+    background:#8fa9bd;
+    box-shadow:inset 0 -6px 0 rgba(0,0,0,.08);
+  }
+  .bar::after{
+    content:"";
+    position:absolute;
+    left:8%;
+    right:8%;
+    top:6px;
+    height:22%;
+    border-radius:8px;
+    background:rgba(255,255,255,.35);
+    pointer-events:none;
+  }
+  .bar.grown{transform:scaleY(1);}
+  .bar:focus-visible{outline:3px solid var(--accent);outline-offset:2px;}
+  .bar.tapped{filter:brightness(1.08);}
+  .bar.dim{filter:saturate(.85) brightness(1.03);}
+  .bar b{
+    position:absolute;
+    top:-22px;
+    left:50%;
+    transform:translateX(-50%) scale(.6);
+    opacity:0;
+    background:var(--ink);
+    color:#fff;
+    font-size:12px;
+    font-weight:700;
+    padding:2px 8px;
+    border-radius:999px;
+    white-space:nowrap;
+    transition:transform .18s ease, opacity .18s ease;
+    pointer-events:none;
+  }
+  .bar b.show{transform:translateX(-50%) scale(1);opacity:1;}
+  .xlabels{
+    display:flex;
+    justify-content:space-around;
+    padding:6px 6px 0;
+    gap:6px;
+  }
+  .xlabel-slot{
+    flex:1 1 0;
+    text-align:center;
+    min-width:0;
+  }
+  .xlabel{
+    display:block;
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    transition:color .2s ease;
+  }
+  .xlabel-slot.on .xlabel{color:var(--accent);}
+  .ask{
+    font-size:15.5px;
+    font-weight:700;
+    line-height:1.4;
+    text-align:center;
+    color:var(--ink);
+    background:var(--accent-soft);
+    border-radius:16px;
+    padding:12px 14px;
+    min-height:56px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:background .25s ease,color .25s ease,transform .25s ease;
+  }
+  .ask.right{background:var(--good-soft);color:var(--good);transform:scale(1.015);}
+  .ask.wrong{background:#fdeaea;color:#c24343;}
+  @media (prefers-reduced-motion: reduce){
+    .bar{transition:none;}
+    .bar b{transition:none;}
+  }
+</style>
+
+<div class="viz-wrap" id="vizWrap">
+  <div class="viz-card">
+    <div class="viz-title" id="vizTitle"></div>
+    <div class="chart-holder">
+      <div class="yaxis-title" id="yaxisTitle"></div>
+      <div class="yaxis-col" id="yaxisCol"></div>
+      <div class="plot" id="plot">
+        <div class="gridlines" id="gridlines"></div>
+        <div class="bars" id="bars"></div>
+      </div>
+    </div>
+    <div class="xlabels" id="xlabels"></div>
+  </div>
+
+  <div class="ask" id="ask"></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var params = (Studio && Studio.params) ? Studio.params : {};
+  var rawData = Array.isArray(params.data) ? params.data.slice() : [];
+  var data = rawData.map(function(d){
+    var k = String(d && d.key != null ? d.key : "");
+    var v = Number(d && d.value != null ? d.value : 0);
+    if (!isFinite(v) || v < 0) v = 0;
+    return {key:k, value:v};
+  });
+
+  function t(key){
+    var val = (Studio && typeof Studio.t === "function") ? Studio.t(key) : "";
+    return (val == null) ? "" : String(val);
+  }
+
+  var elTitle = document.getElementById("vizTitle");
+  var elYTitle = document.getElementById("yaxisTitle");
+  var elYCol = document.getElementById("yaxisCol");
+  var elPlot = document.getElementById("plot");
+  var elGrid = document.getElementById("gridlines");
+  var elBars = document.getElementById("bars");
+  var elXLabels = document.getElementById("xlabels");
+  var elAsk = document.getElementById("ask");
+
+  elTitle.textContent = t("title");
+  elYTitle.textContent = t("yaxis");
+  elAsk.textContent = t("ask");
+
+  var maxVal = data.reduce(function(m, d){ return Math.max(m, d.value); }, 0);
+  if (maxVal <= 0) maxVal = 1;
+
+  function niceStep(max){
+    var raw = max / 4;
+    var pow = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10));
+    var choices = [1,2,2.5,5,10];
+    for (var i=0;i<choices.length;i++){
+      var c = choices[i] * pow;
+      if (c >= raw) return c;
+    }
+    return 10 * pow;
+  }
+  var step = niceStep(maxVal);
+  var topValue = Math.ceil(maxVal / step) * step;
+  if (topValue <= 0) topValue = step;
+  var ticks = [];
+  for (var v = 0; v <= topValue + 1e-9; v += step){
+    ticks.push(Math.round(v * 1000) / 1000);
+  }
+
+  function valueToPct(val){
+    return (val / topValue) * 100;
+  }
+
+  ticks.forEach(function(tv){
+    var lab = document.createElement("div");
+    lab.className = "tick-label";
+    lab.setAttribute("data-tick", String(tv));
+    lab.style.bottom = valueToPct(tv) + "%";
+    lab.textContent = String(tv);
+    elYCol.appendChild(lab);
+
+    if (tv > 0){
+      var gl = document.createElement("div");
+      gl.className = "gridline";
+      gl.style.bottom = valueToPct(tv) + "%";
+      elGrid.appendChild(gl);
+    }
+  });
+
+  var barEls = [];
+  var slotEls = [];
+
+  data.forEach(function(d){
+    var slot = document.createElement("div");
+    slot.className = "bar-slot";
+
+    var bar = document.createElement("button");
+    bar.type = "button";
+    bar.className = "bar";
+    bar.setAttribute("data-bar", d.key);
+    bar.setAttribute("data-value", String(d.value));
+    bar.setAttribute("aria-label", (t(d.key) || d.key));
+    bar.style.height = valueToPct(d.value) + "%";
+
+    var bubble = document.createElement("b");
+    bubble.textContent = String(d.value);
+    bar.appendChild(bubble);
+
+    var label = document.createElement("span");
+    label.className = "xlabel";
+    label.textContent = (t(d.key) || d.key);
+
+    var labelSlot = document.createElement("div");
+    labelSlot.className = "xlabel-slot";
+    labelSlot.setAttribute("data-label-slot", d.key);
+    labelSlot.appendChild(label);
+
+    slot.appendChild(bar);
+    elBars.appendChild(slot);
+    elXLabels.appendChild(labelSlot);
+
+    barEls.push(bar);
+    slotEls.push({slot:slot, labelSlot:labelSlot, bar:bar, bubble:bubble, data:d});
+  });
+
+  var reduced = false;
+  try {
+    reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  } catch(e){ reduced = false; }
+
+  barEls.forEach(function(bar, i){
+    var delay = reduced ? 0 : (i * 90);
+    setTimeout(function(){ bar.classList.add("grown"); }, 60 + delay);
+  });
+
+  var answered = false;
+  var currentTap = null;
+
+  function highlightBar(index){
+    barEls.forEach(function(b, j){
+      if (j === index) b.classList.add("tapped");
+      else b.classList.add("dim");
+    });
+    slotEls.forEach(function(s, j){ s.labelSlot.classList.toggle("on", j === index); });
+    var s = slotEls[index];
+    if (s) {
+      s.bubble.classList.add("show");
+      setTimeout(function(){ s.bubble.classList.remove("show"); }, 1500);
+    }
+  }
+
+  function onBarTap(index){
+    if (answered) return;
+    var s = slotEls[index];
+    if (!s) return;
+    currentTap = s.data.key;
+    highlightBar(index);
+    try {
+      if (Studio && typeof Studio.answer === "function") Studio.answer(s.data.key);
+    } catch(e){}
+  }
+
+  barEls.forEach(function(bar, i){
+    bar.addEventListener("click", function(e){
+      e.preventDefault();
+      onBarTap(i);
+    });
+  });
+
+  if (Studio && typeof Studio.onVerdict === "function"){
+    Studio.onVerdict(function(res){
+      if (answered) return;
+      var correct = !!(res && res.correct);
+      if (correct){
+        answered = true;
+        elAsk.textContent = t("right");
+        elAsk.classList.add("right");
+        ui_done();
+      } else {
+        elAsk.textContent = t("wrong");
+        elAsk.classList.remove("right");
+        elAsk.classList.add("wrong");
+        setTimeout(function(){
+          elAsk.classList.remove("wrong");
+          if (!answered) elAsk.textContent = t("ask");
+        }, 1400);
+        var idx = -1;
+        for (var i=0;i<data.length;i++){ if (data[i].key === currentTap) idx = i; }
+        if (idx >= 0){
+          barEls.forEach(function(b){ b.classList.remove("tapped","dim"); });
+          slotEls.forEach(function(s){ s.labelSlot.classList.remove("on"); });
+        }
+      }
+    });
+  }
+
+  var doneFired = false;
+  function ui_done(){
+    if (doneFired) return;
+    doneFired = true;
+    setTimeout(function(){
+      try {
+        if (Studio && typeof Studio.done === "function") Studio.done();
+      } catch(e){}
+    }, 650);
+  }
+
+  try {
+    if (Studio && typeof Studio.event === "function"){
+      Studio.event("chart_ready", {bars: data.length, top: topValue, step: step});
+    }
+  } catch(e){}
+
+  requestAnimationFrame(function(){
+    try {
+      if (Studio && typeof Studio.ready === "function") Studio.ready();
+    } catch(e){}
+  });
+})();
+</script>

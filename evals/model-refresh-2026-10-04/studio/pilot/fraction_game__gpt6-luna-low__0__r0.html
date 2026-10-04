@@ -1,0 +1,137 @@
+<style>
+  *{box-sizing:border-box}
+  :root{color-scheme:light}
+  body{margin:0;font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif;background:#fff8ed;color:#3b3150}
+  .learn{width:min(100%,560px);min-height:100vh;margin:auto;padding:22px 18px 28px;display:flex;flex-direction:column;gap:18px}
+  .top{display:flex;align-items:center;gap:12px}
+  .mark{width:44px;height:44px;border-radius:16px;background:#ffe1a8;display:grid;place-items:center;color:#975c31;font-size:24px;flex:none}
+  h1{font-size:clamp(22px,6vw,30px);line-height:1.1;margin:0;font-weight:800;letter-spacing:-.4px}
+  .card{background:#fff;border:2px solid #f2e7d8;border-radius:26px;padding:20px 18px;box-shadow:0 8px 0 #f4e8da}
+  .instruction{font-size:17px;line-height:1.45;margin:0 0 16px;color:#645c70}
+  .fraction{display:flex;align-items:center;justify-content:center;gap:12px;margin:4px auto 18px;font-size:32px;font-weight:800;color:#55428d}
+  .fraction span{min-width:42px;text-align:center}
+  .fraction i{width:2px;height:42px;background:#b9add4;border-radius:2px}
+  .parts{display:grid;grid-template-columns:repeat(4,minmax(44px,1fr));gap:9px;max-width:360px;margin:0 auto}
+  .part{height:52px;min-width:44px;border:2px solid #e5d9f2;border-radius:15px;background:#f7f1ff;cursor:pointer;transition:transform .16s,background .2s,border-color .2s,box-shadow .2s;padding:0;touch-action:manipulation}
+  .part:active{transform:scale(.92)}
+  .part.on{background:#8d78c9;border-color:#7059b2;box-shadow:inset 0 -4px 0 #6e59a6}
+  .part.on:after{content:"";display:block;width:12px;height:12px;border:3px solid #fff;border-radius:50%;margin:auto}
+  .part:focus-visible,.check:focus-visible{outline:3px solid #e9a83c;outline-offset:3px}
+  .hint{font-size:15px;line-height:1.4;text-align:center;color:#82768f;margin:16px 0 0}
+  .feedback{min-height:26px;text-align:center;font-size:17px;font-weight:700;color:#65518f}
+  .feedback.bad{color:#b46c53}
+  .check{width:100%;min-height:54px;border:0;border-radius:18px;background:#735fb0;color:white;font:700 18px inherit;cursor:pointer;box-shadow:0 5px 0 #58458f;transition:transform .15s,background .2s}
+  .check:active{transform:translateY(3px);box-shadow:0 2px 0 #58458f}
+  .check[disabled]{opacity:.7}
+  .done-card{text-align:center;padding:34px 20px}
+  .done-icon{width:84px;height:84px;margin:0 auto 18px;border-radius:30px;background:#e8f3d6;color:#648944;display:grid;place-items:center;font-size:42px}
+  .done-card p{font-size:20px;line-height:1.4;margin:0}
+  .whole{margin:0 auto 16px;width:66px;height:38px;border-radius:50%;background:#ffe1a8;position:relative}
+  .whole:before,.whole:after{content:"";position:absolute;background:#f3bf70}
+  .whole:before{width:3px;height:100%;left:50%;top:0;transform:translateX(-50%)}
+  .whole:after{height:3px;width:100%;left:0;top:50%;transform:translateY(-50%)}
+  .celebrate{animation:bop .45s ease}
+  @keyframes bop{50%{transform:scale(1.04)}}
+  @media(max-width:390px){.learn{padding:17px 14px 22px;gap:14px}.card{padding:17px 14px}.parts{gap:7px}.part{height:50px}}
+</style>
+<main class="learn" id="app">
+  <header class="top"><div class="mark" aria-hidden="true">½</div><h1 id="title"></h1></header>
+  <section class="card" id="item-card">
+    <p class="instruction" id="instruction"></p>
+    <div class="whole" aria-hidden="true"></div>
+    <div class="fraction" id="fraction"></div>
+    <div class="parts" id="parts"></div>
+    <p class="hint" id="hint"></p>
+  </section>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+  <button class="check" id="check" data-action="check"></button>
+</main>
+<script>
+(function(){
+  const items=Studio.params.items;
+  const t=Studio.t;
+  const app=document.getElementById("app");
+  const title=document.getElementById("title");
+  const instruction=document.getElementById("instruction");
+  const fraction=document.getElementById("fraction");
+  const parts=document.getElementById("parts");
+  const hint=document.getElementById("hint");
+  const feedback=document.getElementById("feedback");
+  const check=document.getElementById("check");
+  title.textContent=t("title");
+  instruction.textContent=t("instr");
+  hint.textContent=t("hint");
+  check.textContent=t("check");
+  let current=0;
+  let shaded=[];
+  let pending=false;
+  function render(){
+    if(current>=items.length){
+      app.innerHTML='<section class="card done-card"><div class="done-icon" aria-hidden="true">✓</div><p id="done-text"></p></section>';
+      app.querySelector("#done-text").textContent=t("done");
+      Studio.done();
+      return;
+    }
+    const item=items[current];
+    app.querySelector("#item-card").setAttribute("data-item",item.id);
+    shaded=Array(item.d).fill(false);
+    fraction.replaceChildren();
+    const n=document.createElement("span");
+    n.textContent=item.n;
+    const line=document.createElement("i");
+    const d=document.createElement("span");
+    d.textContent=item.d;
+    fraction.append(n,line,d);
+    parts.replaceChildren();
+    for(let i=0;i<item.d;i++){
+      const b=document.createElement("button");
+      b.type="button";
+      b.className="part";
+      b.setAttribute("data-part",i);
+      b.setAttribute("data-shaded","false");
+      b.setAttribute("aria-pressed","false");
+      b.addEventListener("click",function(){
+        if(pending)return;
+        shaded[i]=!shaded[i];
+        b.classList.toggle("on",shaded[i]);
+        b.setAttribute("data-shaded",shaded[i]?"true":"false");
+        b.setAttribute("aria-pressed",shaded[i]?"true":"false");
+        feedback.textContent="";
+        feedback.classList.remove("bad");
+        Studio.event("part_toggle",{item:item.id,part:i,shaded:shaded[i]});
+      });
+      parts.appendChild(b);
+    }
+    feedback.textContent="";
+    feedback.classList.remove("bad");
+    check.disabled=false;
+    check.onclick=function(){
+      if(pending)return;
+      pending=true;
+      check.disabled=true;
+      const count=shaded.filter(Boolean).length;
+      Studio.event("check",{item:item.id,coloured:count});
+      Studio.answer({n:count,d:item.d});
+    };
+    Studio.onVerdict(function(verdict){
+      if(!pending)return;
+      if(verdict.correct){
+        feedback.textContent=t("right");
+        app.querySelector("#item-card").classList.add("celebrate");
+        setTimeout(function(){
+          current++;
+          pending=false;
+          render();
+        },650);
+      }else{
+        pending=false;
+        check.disabled=false;
+        feedback.textContent=t("wrong");
+        feedback.classList.add("bad");
+      }
+    });
+  }
+  render();
+  Studio.ready();
+})();
+</script>

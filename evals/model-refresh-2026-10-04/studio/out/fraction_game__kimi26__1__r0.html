@@ -1,0 +1,315 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #FFF7ED;
+    --ink: #431407;
+    --part: #FDBA74;
+    --part-shaded: #F97316;
+    --accent: #0284C7;
+    --accent-down: #0369A1;
+    --good: #059669;
+    --bad: #DC2626;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  #app {
+    max-width: 360px;
+    margin: 0 auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    padding: 16px 0 24px;
+  }
+  .screen.active { display: flex; }
+  .inner {
+    width: 100%;
+    padding: 0 16px;
+    text-align: center;
+  }
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-top: 8px;
+    margin-bottom: 6px;
+    letter-spacing: -0.2px;
+  }
+  p {
+    font-size: 1rem;
+    line-height: 1.4;
+    opacity: 0.9;
+  }
+  .hint-text {
+    margin-top: 4px;
+    font-weight: 500;
+    opacity: 0.75;
+  }
+  .fraction-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 16px 0 6px;
+  }
+  .fnum, .fden {
+    font-size: 2.6rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .fbar {
+    width: 56px;
+    height: 5px;
+    background: var(--ink);
+    border-radius: 3px;
+    margin: 6px 0;
+  }
+  .shape-wrap {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 0;
+  }
+  .shape-wrap svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  .part {
+    cursor: pointer;
+    transition: transform 0.12s ease;
+    touch-action: manipulation;
+  }
+  .part:active {
+    transform: scale(0.96);
+  }
+  .slice {
+    fill: #FED7AA;
+    stroke: #fff;
+    stroke-width: 4px;
+    stroke-linejoin: round;
+    transition: fill 0.25s ease;
+  }
+  .slice.shaded {
+    fill: var(--part-shaded);
+  }
+  .bar-hit {
+    fill: transparent;
+    pointer-events: all;
+  }
+  .bar-rect {
+    fill: #FED7AA;
+    transition: fill 0.25s ease;
+  }
+  .bar-rect.shaded {
+    fill: var(--part-shaded);
+  }
+  .controls {
+    margin-top: 10px;
+    margin-bottom: 6px;
+  }
+  #checkBtn {
+    appearance: none;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-size: 1.15rem;
+    font-weight: 700;
+    padding: 14px 32px;
+    border-radius: 999px;
+    cursor: pointer;
+    min-width: 180px;
+    min-height: 52px;
+    transition: transform 0.12s ease, background 0.2s ease;
+    touch-action: manipulation;
+  }
+  #checkBtn:active {
+    transform: scale(0.96);
+    background: var(--accent-down);
+  }
+  .feedback {
+    min-height: 1.4em;
+    font-weight: 700;
+    font-size: 1.05rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .feedback.show { opacity: 1; }
+  .feedback.right { color: var(--good); }
+  .feedback.wrong { color: var(--bad); }
+  @keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.07); }
+    100% { transform: scale(1); }
+  }
+  .shape-pop { animation: pop 0.55s ease; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-7px); }
+    40% { transform: translateX(7px); }
+    60% { transform: translateX(-7px); }
+    80% { transform: translateX(7px); }
+  }
+  .shape-shake { animation: shake 0.5s ease; }
+  .done-wrap {
+    width: 100%;
+    text-align: center;
+    padding: 0 16px;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+  .done-star {
+    width: 96px;
+    height: 96px;
+    background: var(--part-shaded);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 24px rgba(249,115,22,0.35);
+  }
+  .done-star svg {
+    width: 48px;
+    height: 48px;
+  }
+  #doneTitle {
+    font-size: 1.75rem;
+    font-weight: 800;
+  }
+</style>
+
+<div id="app">
+  <div id="gameScreen" class="screen active" data-item="">
+    <div class="inner">
+      <h1 id="titleEl"></h1>
+      <p id="instrEl"></p>
+    </div>
+    <div class="fraction-box inner">
+      <span id="numEl" class="fnum"></span>
+      <span class="fbar"></span>
+      <span id="denEl" class="fden"></span>
+    </div>
+    <p id="hintEl" class="inner hint-text"></p>
+    <div id="shapeWrap" class="shape-wrap"></div>
+    <div class="controls inner">
+      <button id="checkBtn" data-action="check"></button>
+    </div>
+    <div id="feedback" class="feedback inner"></div>
+  </div>
+
+  <div id="doneScreen" class="screen">
+    <div class="done-wrap">
+      <div class="done-star">
+        <svg viewBox="0 0 24 24" width="48" height="48"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#FFF"/></svg>
+      </div>
+      <h2 id="doneTitle"></h2>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var items = Studio.params.items;
+  var picture = Studio.params.picture || '';
+  var isPizza = /pizza/.test(picture);
+
+  var gameScreen = document.getElementById('gameScreen');
+  var doneScreen = document.getElementById('doneScreen');
+  var titleEl = document.getElementById('titleEl');
+  var instrEl = document.getElementById('instrEl');
+  var hintEl = document.getElementById('hintEl');
+  var numEl = document.getElementById('numEl');
+  var denEl = document.getElementById('denEl');
+  var shapeWrap = document.getElementById('shapeWrap');
+  var checkBtn = document.getElementById('checkBtn');
+  var feedbackEl = document.getElementById('feedback');
+
+  var currentIndex = 0;
+  var locked = false;
+
+  function setText(el, key) {
+    el.textContent = Studio.t(key);
+  }
+
+  function init() {
+    setText(titleEl, 'title');
+    setText(instrEl, 'instr');
+    setText(hintEl, 'hint');
+    setText(checkBtn, 'check');
+    checkBtn.addEventListener('click', onCheck);
+    Studio.onVerdict(onVerdict);
+    renderItem(0);
+    Studio.ready();
+  }
+
+  function renderItem(idx) {
+    currentIndex = idx;
+    locked = false;
+    var item = items[idx];
+    gameScreen.setAttribute('data-item', item.id);
+    numEl.textContent = String(item.n);
+    denEl.textContent = String(item.d);
+    feedbackEl.textContent = '';
+    feedbackEl.classList.remove('show', 'right', 'wrong');
+    shapeWrap.innerHTML = '';
+    if (isPizza) {
+      renderPizza(item.d);
+    } else {
+      renderBar(item.d);
+    }
+    attachPartListeners();
+  }
+
+  function svgEl(tag, attrs) {
+    var el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    for (var k in attrs) {
+      el.setAttribute(k, attrs[k]);
+    }
+    return el;
+  }
+
+  function renderPizza(d) {
+    var svg = svgEl('svg', { viewBox: '0 0 320 320', width: '100%', role: 'img' });
+    var cx = 160, cy = 160, r = 140;
+    for (var i = 0; i < d; i++) {
+      var startAngle = (i * 2 * Math.PI / d) - Math.PI / 2;
+      var endAngle = ((i + 1) * 2 * Math.PI / d) - Math.PI / 2;
+      var x1 = cx + r * Math.cos(startAngle);
+      var y1 = cy + r * Math.sin(startAngle);
+      var x2 = cx + r * Math.cos(endAngle);
+      var y2 = cy + r * Math.sin(endAngle);
+      var largeArc = (endAngle - startAngle) > Math.PI ? 1 : 0;
+      var dpath = 'M ' + cx + ' ' + cy + ' L ' + x1 + ' ' + y1 + ' A ' + r + ' ' + r + ' 0 ' + largeArc + ' 1 ' + x2 + ' ' + y2 + ' Z';
+      var midAngle = (startAngle + endAngle) / 2;
+      var hr = r * 0.6;
+      var hx = cx + hr * Math.cos(midAngle);
+      var hy = cy + hr * Math.sin(midAngle);
+
+      var g = svgEl('g', { class: 'part', 'data-part': String(i), 'data-shaded': 'false' });
+      var path = svgEl('path', { d: dpath, class: 'slice' });
+      var hit = svgEl('circle', { cx: hx, cy: hy, r: '26', fill: 'transparent', class: 'hit' });
+      g.appendChild(path);
+      g.appendChild(hit);
+      svg.appendChild(g);
+    }
+    shapeWrap.appendChild(svg);
+  }
+
+  function renderBar(d) {
+    var totalW = 360;
+    var h = 140;
+    var sw = totalW / d;
+    var svg = svgEl('svg', { viewBox: '0 0 ' + totalW + ' ' + h, width: '100%', role: 'img' });
+    for (var i = 0;

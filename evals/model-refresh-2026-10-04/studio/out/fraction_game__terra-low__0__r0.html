@@ -1,0 +1,293 @@
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --ink:#28344b;
+    --cream:#fff8e9;
+    --card:#ffffff;
+    --tomato:#f26b5b;
+    --tomato-dark:#d84f43;
+    --cheese:#ffd866;
+    --basil:#55a878;
+    --sky:#dff4f3;
+    --shadow:0 10px 24px rgba(48,65,89,.14);
+  }
+  body{
+    margin:0;
+    min-width:320px;
+    min-height:640px;
+    overflow-x:hidden;
+    background:
+      radial-gradient(circle at 8% 8%,#fff2ba 0 18px,transparent 19px),
+      radial-gradient(circle at 92% 12%,#bce8e3 0 23px,transparent 24px),
+      var(--cream);
+    color:var(--ink);
+    font-family:Arial,sans-serif;
+  }
+  #app{
+    width:min(100%,420px);
+    min-height:640px;
+    margin:0 auto;
+    padding:18px 14px 22px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .top{
+    width:100%;
+    text-align:center;
+    margin-bottom:12px;
+  }
+  h1{
+    margin:3px 0 8px;
+    font-size:28px;
+    line-height:1.15;
+    letter-spacing:-.5px;
+  }
+  .instruction{
+    margin:0 auto;
+    max-width:330px;
+    color:#556176;
+    font-size:16px;
+    line-height:1.35;
+  }
+  .game-card{
+    width:100%;
+    max-width:370px;
+    border-radius:27px;
+    background:var(--card);
+    box-shadow:var(--shadow);
+    padding:16px 10px 18px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .fraction{
+    min-width:104px;
+    padding:8px 18px 7px;
+    border-radius:18px;
+    background:#eef8f7;
+    color:var(--tomato-dark);
+    font-size:28px;
+    font-weight:800;
+    text-align:center;
+    line-height:1;
+    margin:0 0 6px;
+    font-variant-numeric:tabular-nums;
+  }
+  .pizza-wrap{
+    width:100%;
+    height:260px;
+    display:grid;
+    place-items:center;
+    position:relative;
+  }
+  #pizza{
+    width:min(100%,352px);
+    height:252px;
+    overflow:visible;
+    filter:drop-shadow(0 7px 5px rgba(106,64,31,.18));
+  }
+  .plate{fill:#e3eef3}
+  .plate-ring{fill:none;stroke:#c6dce2;stroke-width:5}
+  .crust{fill:#e9a955}
+  .sauce{fill:#e85f4f}
+  .part{
+    fill:#fff1bd;
+    stroke:#fff9e9;
+    stroke-width:4;
+    stroke-linejoin:round;
+    cursor:pointer;
+    transition:fill .22s ease,filter .22s ease,transform .16s ease;
+    transform-origin:176px 128px;
+  }
+  .part[data-shaded="true"]{
+    fill:var(--tomato);
+    filter:brightness(1.04);
+  }
+  .part:active{transform:scale(.96)}
+  .topping{fill:#ffe67d;pointer-events:none}
+  .leaf{fill:var(--basil);pointer-events:none}
+  .spark{
+    position:absolute;
+    width:12px;height:12px;border-radius:50%;
+    background:var(--cheese);
+    opacity:0;
+    pointer-events:none;
+  }
+  .feedback{
+    min-height:28px;
+    margin:5px 4px 10px;
+    font-weight:700;
+    font-size:16px;
+    text-align:center;
+    color:#59657a;
+  }
+  .feedback.good{color:#2f8e62;animation:pop .42s ease both}
+  .feedback.bad{color:var(--tomato-dark);animation:wiggle .34s ease}
+  .check{
+    border:0;
+    width:min(100%,300px);
+    min-height:52px;
+    border-radius:18px;
+    background:var(--tomato);
+    color:white;
+    box-shadow:0 5px 0 var(--tomato-dark),0 9px 15px rgba(216,79,67,.22);
+    font-size:18px;
+    font-weight:800;
+    cursor:pointer;
+    transition:transform .15s ease,filter .15s ease;
+  }
+  .check:active{transform:translateY(4px);box-shadow:0 1px 0 var(--tomato-dark)}
+  .check:disabled{filter:saturate(.45);cursor:default}
+  .celebrate .part[data-shaded="true"]{animation:cheer .55s ease infinite alternate}
+  .celebrate .spark{animation:sparkle .7s ease both}
+  .celebrate .s1{left:12%;top:23%;animation-delay:.03s}
+  .celebrate .s2{right:13%;top:30%;animation-delay:.16s;background:#8bd5c6}
+  .celebrate .s3{left:18%;bottom:18%;animation-delay:.26s;background:#ff9e88}
+  .celebrate .s4{right:17%;bottom:19%;animation-delay:.1s}
+  .done-card{
+    width:100%;
+    max-width:370px;
+    min-height:390px;
+    border-radius:28px;
+    background:var(--card);
+    box-shadow:var(--shadow);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:28px;
+    text-align:center;
+    animation:pop .5s ease both;
+  }
+  .done-card svg{width:210px;height:190px;margin-bottom:14px}
+  .done-card h2{font-size:28px;margin:0;color:var(--tomato-dark)}
+  @keyframes pop{0%{transform:scale(.85);opacity:0}75%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+  @keyframes wiggle{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  @keyframes cheer{to{filter:brightness(1.12);transform:scale(1.025)}}
+  @keyframes sparkle{0%{opacity:0;transform:scale(.2)}45%{opacity:1;transform:scale(1.4)}100%{opacity:0;transform:scale(.4) translateY(-22px)}}
+</style>
+
+<main id="app">
+  <header class="top">
+    <h1 id="title"></h1>
+    <p class="instruction" id="instruction"></p>
+  </header>
+  <section class="game-card" id="itemCard" data-item="">
+    <div class="fraction" id="fraction"></div>
+    <div class="pizza-wrap" id="pizzaWrap">
+      <svg id="pizza" viewBox="0 0 352 256" role="img">
+        <ellipse class="plate" cx="176" cy="136" rx="142" ry="101"></ellipse>
+        <ellipse class="plate-ring" cx="176" cy="136" rx="133" ry="93"></ellipse>
+        <circle class="crust" cx="176" cy="128" r="101"></circle>
+        <circle class="sauce" cx="176" cy="128" r="91"></circle>
+        <g id="parts"></g>
+        <g aria-hidden="true">
+          <circle class="topping" cx="149" cy="92" r="7"></circle>
+          <circle class="topping" cx="211" cy="115" r="7"></circle>
+          <circle class="topping" cx="169" cy="162" r="7"></circle>
+          <ellipse class="leaf" cx="193" cy="78" rx="5" ry="9" transform="rotate(32 193 78)"></ellipse>
+          <ellipse class="leaf" cx="132" cy="132" rx="5" ry="9" transform="rotate(-28 132 132)"></ellipse>
+          <ellipse class="leaf" cx="216" cy="158" rx="5" ry="9" transform="rotate(40 216 158)"></ellipse>
+        </g>
+      </svg>
+      <i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i><i class="spark s4"></i>
+    </div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+    <button class="check" id="check" data-action="check" type="button"></button>
+  </section>
+</main>
+
+<script>
+  (function(){
+    const items=Studio.params.items;
+    const title=document.getElementById('title');
+    const instruction=document.getElementById('instruction');
+    const card=document.getElementById('itemCard');
+    const fraction=document.getElementById('fraction');
+    const parts=document.getElementById('parts');
+    const feedback=document.getElementById('feedback');
+    const check=document.getElementById('check');
+    const wrap=document.getElementById('pizzaWrap');
+    let index=0, pending=false, finished=false;
+
+    title.textContent=Studio.t('title');
+    instruction.textContent=Studio.t('instr');
+    check.textContent=Studio.t('check');
+
+    function wedgePath(i,d){
+      const cx=176,cy=128,r=91;
+      const a1=(-Math.PI/2)+(i*Math.PI*2/d);
+      const a2=(-Math.PI/2)+((i+1)*Math.PI*2/d);
+      const x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1);
+      const x2=cx+r*Math.cos(a2), y2=cy+r*Math.sin(a2);
+      const large=(Math.PI*2/d)>Math.PI?1:0;
+      return 'M '+cx+' '+cy+' L '+x1+' '+y1+' A '+r+' '+r+' 0 '+large+' 1 '+x2+' '+y2+' Z';
+    }
+    function draw(){
+      const item=items[index];
+      pending=false;
+      card.classList.remove('celebrate');
+      card.setAttribute('data-item',item.id);
+      fraction.textContent=item.n+'/'+item.d;
+      feedback.textContent='';
+      feedback.className='feedback';
+      check.disabled=false;
+      parts.textContent='';
+      for(let i=0;i<item.d;i++){
+        const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+        path.setAttribute('d',wedgePath(i,item.d));
+        path.setAttribute('class','part');
+        path.setAttribute('data-part',i);
+        path.setAttribute('data-shaded','false');
+        path.addEventListener('click',function(){
+          if(pending)return;
+          const next=path.getAttribute('data-shaded')!=='true';
+          path.setAttribute('data-shaded',next?'true':'false');
+          Studio.event('part_tap',{item:item.id,part:i,shaded:next});
+        });
+        parts.appendChild(path);
+      }
+    }
+    function complete(){
+      finished=true;
+      document.getElementById('app').innerHTML=
+        '<header class="top"><h1 id="endTitle"></h1></header>'+
+        '<section class="done-card"><svg viewBox="0 0 210 190" aria-hidden="true"><circle cx="105" cy="98" r="76" fill="#e9a955"/><circle cx="105" cy="98" r="67" fill="#f26b5b"/><path d="M105 98 L105 31 A67 67 0 0 1 168 76 Z" fill="#ffd866"/><path d="M105 98 L168 76 A67 67 0 0 1 145 153 Z" fill="#ffd866"/><path d="M105 98 L145 153 A67 67 0 0 1 65 153 Z" fill="#ffd866"/><circle cx="105" cy="98" r="9" fill="#55a878"/><circle cx="139" cy="82" r="7" fill="#55a878"/><circle cx="83" cy="132" r="7" fill="#55a878"/></svg><h2 id="doneText"></h2></section>';
+      document.getElementById('endTitle').textContent=Studio.t('title');
+      document.getElementById('doneText').textContent=Studio.t('done');
+      Studio.done();
+    }
+    check.addEventListener('click',function(){
+      if(pending||finished)return;
+      const item=items[index];
+      const count=parts.querySelectorAll('[data-shaded="true"]').length;
+      pending=true;
+      check.disabled=true;
+      Studio.event('check',{item:item.id,n:count,d:item.d});
+      Studio.answer({n:count,d:item.d});
+    });
+    Studio.onVerdict(function(verdict){
+      if(!pending||finished)return;
+      if(verdict.correct){
+        feedback.textContent=Studio.t('right');
+        feedback.className='feedback good';
+        card.classList.add('celebrate');
+        setTimeout(function(){
+          index++;
+          if(index>=items.length) complete();
+          else draw();
+        },750);
+      }else{
+        pending=false;
+        check.disabled=false;
+        feedback.textContent=Studio.t('wrong')+' '+Studio.t('hint');
+        feedback.className='feedback bad';
+      }
+    });
+    draw();
+    Studio.ready();
+  })();
+</script>

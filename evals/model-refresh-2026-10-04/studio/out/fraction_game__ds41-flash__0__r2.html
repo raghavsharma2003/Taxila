@@ -1,0 +1,397 @@
+<style>
+  :root{
+    --bg:#fff7ec; --ink:#3a2a1c; --soft:#8a6f5c;
+    --card:#ffffff; --line:#f0e2d2;
+    --accent:#ff8a3d; --accent2:#ffb570;
+    --good:#37b06a; --goodsoft:#e2f6ea;
+    --bad:#e5734f; --badsoft:#fdece4;
+    --crust:#e7a86a; --cheese:#ffd98a;
+    --shadow:0 8px 20px rgba(120,80,40,.16);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  .wrap{
+    font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;
+    color:var(--ink);
+    background:radial-gradient(120% 90% at 50% 0%, #fffdf8 0%, var(--bg) 70%);
+    min-height:100vh;
+    padding:14px 14px 22px;
+    display:flex; flex-direction:column; gap:12px;
+    max-width:520px; margin:0 auto;
+    overflow-x:hidden;
+  }
+  .top{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .title{
+    font-size:19px; font-weight:800; letter-spacing:.2px; flex:1 1 auto;
+  }
+  .title .dot{
+    display:inline-block; width:12px; height:12px; border-radius:50%;
+    background:var(--accent); margin-right:8px; vertical-align:middle;
+    box-shadow:0 0 0 4px rgba(255,138,61,.18);
+  }
+  .card{
+    background:var(--card); border:2px solid var(--line);
+    border-radius:22px; box-shadow:var(--shadow);
+    padding:14px 14px 16px;
+    display:flex; flex-direction:column; gap:12px;
+    align-items:center;
+    position:relative;
+  }
+  .card.fade-out{animation:fadeOut .3s ease forwards;}
+  .card.fade-in{animation:fadeIn .38s cubic-bezier(.2,.8,.25,1) both;}
+  @keyframes fadeOut{to{opacity:0; transform:scale(.96);}}
+  @keyframes fadeIn{from{opacity:0; transform:scale(.94) translateY(8px);} to{opacity:1; transform:none;}}
+
+  .prompt{
+    background:linear-gradient(180deg,#fff4e6,#ffe9d2);
+    border:2px solid #ffd9b8;
+    border-radius:16px;
+    padding:8px 16px;
+    display:flex; align-items:center; gap:10px;
+    font-size:20px; font-weight:800;
+    flex-wrap:wrap; justify-content:center;
+  }
+  .frac{
+    display:inline-flex; flex-direction:column; align-items:center;
+    line-height:1; vertical-align:middle; font-weight:900;
+  }
+  .frac .num{padding:0 6px 2px;}
+  .frac .den{padding:2px 6px 0; border-top:3px solid var(--ink);}
+
+  .stage{
+    position:relative; width:100%;
+    display:flex; justify-content:center; align-items:center;
+    min-height:230px;
+  }
+  .pizza-wrap{position:relative;}
+  .pizza{
+    display:block; cursor:pointer;
+    touch-action:manipulation;
+    border-radius:50%;
+    transition:transform .18s ease;
+  }
+  .slice{transition:fill .22s ease, opacity .2s ease; cursor:pointer;}
+  .slice[data-shaded="true"]{fill:var(--cheese);}
+  .slice[data-shaded="false"]{fill:#fbf1e4;}
+
+  .bar{
+    width:100%; max-width:340px; height:88px;
+    display:flex; border-radius:16px; overflow:hidden;
+    border:3px solid var(--crust);
+    background:#fbf1e4;
+    box-shadow:inset 0 -6px 0 rgba(0,0,0,.05);
+  }
+  .seg{
+    flex:1 1 0; position:relative;
+    transition:background .22s ease, transform .12s ease;
+    border-right:3px solid var(--crust);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; touch-action:manipulation;
+  }
+  .seg:last-child{border-right:none;}
+  .seg[data-shaded="true"]{background:var(--cheese);}
+  .seg[data-shaded="false"]{background:#fbf1e4;}
+
+  .hint{
+    font-size:14px; color:var(--soft); font-weight:600; text-align:center;
+    min-height:18px;
+  }
+
+  .row{display:flex; gap:10px; width:100%; align-items:center; justify-content:center;}
+  .btn{
+    border:none; border-radius:18px; font-family:inherit;
+    font-size:18px; font-weight:800; letter-spacing:.3px;
+    padding:15px 26px; min-height:52px; min-width:140px;
+    color:#fff; background:linear-gradient(180deg,var(--accent2),var(--accent));
+    box-shadow:0 6px 0 #d96a24, 0 10px 18px rgba(217,106,36,.28);
+    cursor:pointer; transition:transform .1s ease, box-shadow .1s ease, filter .2s;
+    touch-action:manipulation;
+  }
+  .btn:active{transform:translateY(3px); box-shadow:0 3px 0 #d96a24, 0 6px 12px rgba(217,106,36,.25);}
+  .btn:disabled{filter:grayscale(.5) opacity(.55); box-shadow:0 6px 0 #b98b6a; cursor:default;}
+
+  .feedback{
+    width:100%; border-radius:16px; padding:10px 14px;
+    font-size:16px; font-weight:800; text-align:center;
+    display:none; align-items:center; justify-content:center; gap:8px;
+    animation:pop .3s cubic-bezier(.2,1.3,.4,1) both;
+  }
+  @keyframes pop{from{opacity:0; transform:scale(.9);} to{opacity:1; transform:none;}}
+  .feedback.show{display:flex;}
+  .feedback.good{background:var(--goodsoft); color:#1f7a49; border:2px solid #bfe8d1;}
+  .feedback.bad{background:var(--badsoft); color:#b14a28; border:2px solid #f6cfbe;}
+
+  .pulse{animation:pulse .45s ease;}
+  @keyframes pulse{0%{transform:scale(1);} 40%{transform:scale(1.06);} 100%{transform:scale(1);}}
+
+  .prog{display:flex; gap:6px; align-self:center;}
+  .pip{width:9px;height:9px;border-radius:50%;background:#f0dbc6;}
+  .pip.on{background:var(--accent); transform:scale(1.1);}
+
+  .done-screen{
+    text-align:center; display:flex; flex-direction:column; gap:14px; align-items:center;
+    padding:18px 10px;
+  }
+  .done-screen .emoji{font-size:56px; animation:pulse 1.2s ease infinite;}
+
+  .swipe{animation:swipe .32s ease;}
+  @keyframes swipe{0%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}100%{transform:translateX(0);}}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important;}
+  }
+</style>
+
+<div class="wrap" id="app">
+  <div class="top">
+    <div class="title"><span class="dot"></span><span id="titleText"></span></div>
+    <div class="prog" id="progress"></div>
+  </div>
+  <div id="stageHost"></div>
+  <div class="row">
+    <button class="btn" id="checkBtn" data-action="check"></button>
+  </div>
+  <div class="feedback" id="feedbackBox"></div>
+  <div class="hint" id="hintText"></div>
+</div>
+
+<script>
+(function(){
+  var P = (typeof Studio !== 'undefined' && Studio.params) ? Studio.params : {};
+  var ITEMS = (P.items && P.items.length) ? P.items : [];
+  var PICTURE = P.picture || "pizza-or-bar";
+
+  var host = document.getElementById('stageHost');
+  var titleText = document.getElementById('titleText');
+  var progressEl = document.getElementById('progress');
+  var checkBtn = document.getElementById('checkBtn');
+  var feedbackBox = document.getElementById('feedbackBox');
+  var hintText = document.getElementById('hintText');
+
+  var idx = 0;
+  var locked = false;
+  var currentItem = null;
+  var celebrating = false;
+  var verdictTimer = null;
+  var cardEl = null;
+
+  function t(k){
+    try { return Studio.t(k) || ''; } catch(e){ return ''; }
+  }
+  function num(v){ return String(v); }
+
+  function fracSVG(n, d){
+    return '<span class="frac">'+
+      '<span class="num">'+num(n)+'</span>'+
+      '<span class="den">'+num(d)+'</span>'+
+    '</span>';
+  }
+
+  function buildPizza(d){
+    var R = 84, cx = 100, cy = 100;
+    var gap = 1.0;
+    var parts = '';
+    for (var i = 0; i < d; i++){
+      var a0 = -Math.PI/2 + (2*Math.PI)*i/d + gap*Math.PI/180;
+      var a1 = -Math.PI/2 + (2*Math.PI)*(i+1)/d - gap*Math.PI/180;
+      var x0 = cx + R*Math.cos(a0), y0 = cy + R*Math.sin(a0);
+      var x1 = cx + R*Math.cos(a1), y1 = cy + R*Math.sin(a1);
+      var large = (a1 - a0) > Math.PI ? 1 : 0;
+      var dd = 'M'+cx+','+cy+' L'+x0.toFixed(2)+','+y0.toFixed(2)+
+               ' A'+R+','+R+' 0 '+large+' 1 '+x1.toFixed(2)+','+y1.toFixed(2)+' Z';
+      parts += '<path class="slice" data-part="'+i+'" data-shaded="false" d="'+dd+'" stroke="#e7a86a" stroke-width="1.6" stroke-linejoin="round"/>';
+    }
+    return '<div class="pizza-wrap">'+
+        '<svg class="pizza" width="240" height="240" viewBox="0 0 200 200" aria-hidden="true">'+
+          '<circle cx="100" cy="100" r="88" fill="#f6d9b3" stroke="#d9955a" stroke-width="2"/>'+
+          '<g>'+parts+'</g>'+
+          '<circle cx="100" cy="100" r="6" fill="#e7a86a"/>'+
+        '</svg>'+
+      '</div>';
+  }
+
+  function buildBar(d){
+    var segs = '';
+    for (var i = 0; i < d; i++){
+      segs += '<div class="seg" data-part="'+i+'" data-shaded="false"></div>';
+    }
+    return '<div class="bar">'+segs+'</div>';
+  }
+
+  function renderProgress(){
+    if (ITEMS.length <= 1){ progressEl.innerHTML=''; return; }
+    var s = '';
+    for (var i = 0; i < ITEMS.length; i++){
+      s += '<span class="pip'+(i<=idx?' on':'')+'"></span>';
+    }
+    progressEl.innerHTML = s;
+  }
+
+  function styleForItem(itemIdx){
+    if (PICTURE === 'pizza' || PICTURE === 'pizza-only') return 'pizza';
+    if (PICTURE === 'bar' || PICTURE === 'bar-only') return 'bar';
+    return (itemIdx % 2 === 0) ? 'pizza' : 'bar';
+  }
+
+  function countShaded(){
+    var n = 0;
+    for (var i = 0; i < partsEls.length; i++){
+      if (partsEls[i].getAttribute('data-shaded') === 'true') n++;
+    }
+    return n;
+  }
+
+  var partsEls = [];
+
+  function renderItem(item, animate){
+    currentItem = item;
+    locked = false;
+    celebrating = false;
+    clearTimeout(verdictTimer);
+    partsEls = [];
+    feedbackBox.className = 'feedback';
+    feedbackBox.textContent = '';
+
+    var card = document.createElement('div');
+    card.className = 'card' + (animate ? ' fade-in' : '');
+    card.setAttribute('data-item', item.id);
+    cardEl = card;
+
+    var prompt = document.createElement('div');
+    prompt.className = 'prompt';
+    prompt.innerHTML = '<span>'+ t('instr') +'</span>' + fracSVG(item.n, item.d);
+    card.appendChild(prompt);
+
+    var stage = document.createElement('div');
+    stage.className = 'stage';
+    if (styleForItem(idx) === 'pizza') stage.innerHTML = buildPizza(item.d);
+    else stage.innerHTML = buildBar(item.d);
+    card.appendChild(stage);
+
+    host.innerHTML = '';
+    host.appendChild(card);
+
+    var found = card.querySelectorAll('[data-part]');
+    for (var i = 0; i < found.length; i++){
+      partsEls.push(found[i]);
+      found[i].addEventListener('click', makePartHandler(i));
+    }
+
+    renderProgress();
+    hintText.textContent = t('hint') || '';
+    checkBtn.disabled = false;
+    checkBtn.style.display = '';
+  }
+
+  function makePartHandler(i){
+    return function(){
+      if (locked || celebrating || !currentItem) return;
+      var el = partsEls[i];
+      if (!el) return;
+      var on = el.getAttribute('data-shaded') === 'true';
+      var now = !on;
+      el.setAttribute('data-shaded', now ? 'true' : 'false');
+      try { Studio.event('part-toggle', {part:i, shaded: now}); } catch(e){}
+      el.classList.remove('pulse');
+      void el.offsetWidth;
+      el.classList.add('pulse');
+      feedbackBox.className = 'feedback';
+      feedbackBox.textContent = '';
+    };
+  }
+
+  function onCheck(){
+    if (locked || celebrating || !currentItem) return;
+    locked = true;
+    checkBtn.disabled = true;
+    var n = countShaded();
+    var payload = { n: n, d: currentItem.d };
+    try { Studio.event('check', {item: currentItem.id, n: payload.n, d: payload.d}); } catch(e){}
+    try { Studio.answer(payload); } catch(e){}
+    verdictTimer = setTimeout(function(){
+      if (locked && !celebrating){
+        locked = false;
+        checkBtn.disabled = false;
+      }
+    }, 4000);
+  }
+
+  function showFeedback(correct){
+    clearTimeout(verdictTimer);
+    if (correct){
+      feedbackBox.className = 'feedback good show';
+      feedbackBox.textContent = t('right');
+      celebrating = true;
+      locked = true;
+      checkBtn.disabled = true;
+      if (cardEl){
+        cardEl.classList.remove('pulse');
+        void cardEl.offsetWidth;
+        cardEl.classList.add('pulse');
+      }
+      setTimeout(function(){
+        if (cardEl) cardEl.classList.add('fade-out');
+        setTimeout(function(){
+          idx++;
+          if (idx >= ITEMS.length) showDone();
+          else renderItem(ITEMS[idx], true);
+        }, 300);
+      }, 900);
+    } else {
+      feedbackBox.className = 'feedback bad show';
+      feedbackBox.textContent = t('wrong');
+      if (cardEl){
+        cardEl.classList.remove('swipe');
+        void cardEl.offsetWidth;
+        cardEl.classList.add('swipe');
+      }
+      setTimeout(function(){
+        if (celebrating) return;
+        locked = false;
+        checkBtn.disabled = false;
+        feedbackBox.className = 'feedback';
+        feedbackBox.textContent = '';
+      }, 1100);
+    }
+  }
+
+  function showDone(){
+    currentItem = null;
+    cardEl = null;
+    var card = document.createElement('div');
+    card.className = 'card fade-in';
+    card.innerHTML =
+      '<div class="done-screen">'+
+        '<div class="emoji">\uD83C\uDF55</div>'+
+        '<div style="font-size:22px;font-weight:900;">'+ t('done') +'</div>'+
+      '</div>';
+    host.innerHTML = '';
+    host.appendChild(card);
+    checkBtn.style.display = 'none';
+    hintText.textContent = '';
+    feedbackBox.className = 'feedback';
+    feedbackBox.textContent = '';
+    var pips = '';
+    for (var i = 0; i < ITEMS.length; i++) pips += '<span class="pip on"></span>';
+    progressEl.innerHTML = pips;
+    try { Studio.done(); } catch(e){}
+  }
+
+  titleText.textContent = t('title');
+  checkBtn.textContent = t('check');
+
+  if (ITEMS.length === 0){
+    checkBtn.style.display = 'none';
+    showDone();
+  } else {
+    checkBtn.addEventListener('click', onCheck);
+    renderItem(ITEMS[0], false);
+    try { Studio.ready(); } catch(e){}
+  }
+
+  try {
+    Studio.onVerdict(function(v){
+      showFeedback(!!(v && v.correct));
+    });
+  } catch(e){}
+})();
+</script>

@@ -1,0 +1,345 @@
+<style>
+  :root {
+    --bg: #fff9f0;
+    --primary: #ff6b47;
+    --primary-light: #ffb399;
+    --secondary: #4a90e2;
+    --text: #333;
+    --text-light: #666;
+    --correct: #4caf50;
+    --wrong: #e74c3c;
+    --shadow: 0 2px 6px rgba(0,0,0,0.1);
+    --round: 16px;
+    --transition: all 0.2s ease;
+  }
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 12px;
+    touch-action: manipulation;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--primary);
+  }
+  .instr {
+    font-size: 16px;
+    color: var(--text-light);
+    margin-bottom: 16px;
+    text-align: center;
+    line-height: 1.4;
+  }
+  .item-container {
+    width: 100%;
+    max-width: 320px;
+    background: white;
+    border-radius: var(--round);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: var(--transition);
+  }
+  .fraction-display {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--secondary);
+    margin-bottom: 12px;
+  }
+  .pizza-container, .bar-container {
+    width: 240px;
+    height: 240px;
+    position: relative;
+    margin-bottom: 16px;
+  }
+  .pizza {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, repeating-conic-gradient(#fff 0% 100%));
+    position: relative;
+    overflow: hidden;
+  }
+  .pizza-slice {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    transform-origin: center;
+    cursor: pointer;
+    transition: var(--transition);
+    background: #ffd166;
+    border: 1px solid #ffaa00;
+  }
+  .pizza-slice.shaded {
+    background: var(--primary);
+  }
+  .bar {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--round);
+    overflow: hidden;
+    background: #ffd166;
+    border: 1px solid #ffaa00;
+  }
+  .bar-segment {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    border-bottom: 1px solid #ffaa00;
+  }
+  .bar-segment:last-child {
+    border-bottom: none;
+  }
+  .bar-segment.shaded {
+    background: var(--primary);
+  }
+  .check-btn {
+    background: var(--secondary);
+    color: white;
+    border: none;
+    border-radius: var(--round);
+    padding: 10px 24px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: 8px;
+    width: 100%;
+    max-width: 200px;
+  }
+  .check-btn:hover, .check-btn:active {
+    background: #357abd;
+    transform: scale(1.02);
+  }
+  .feedback {
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 8px;
+    height: 24px;
+    text-align: center;
+    opacity: 0;
+    transition: var(--transition);
+  }
+  .feedback.show {
+    opacity: 1;
+  }
+  .feedback.correct {
+    color: var(--correct);
+  }
+  .feedback.wrong {
+    color: var(--wrong);
+  }
+  .hint {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-top: 8px;
+    text-align: center;
+    display: none;
+  }
+  .done-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+  }
+  .done-screen.show {
+    display: flex;
+  }
+  .done-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 12px;
+  }
+  .celebration {
+    font-size: 48px;
+    margin-bottom: 16px;
+    animation: bounce 0.5s ease infinite alternate;
+  }
+  @keyframes bounce {
+    from { transform: scale(1); }
+    to { transform: scale(1.2); }
+  }
+  .part {
+    min-width: 44px;
+    min-height: 44px;
+  }
+</style>
+
+<div class="title" data-test="title"></div>
+<div class="instr" data-test="instr"></div>
+
+<div class="item-container" data-item="" data-test="item-container">
+  <div class="fraction-display" data-test="fraction"></div>
+  <div class="pizza-container" data-test="pizza-container" style="display:none;">
+    <div class="pizza" data-test="pizza"></div>
+  </div>
+  <div class="bar-container" data-test="bar-container" style="display:none;">
+    <div class="bar" data-test="bar"></div>
+  </div>
+  <button class="check-btn" data-action="check" data-test="check-btn"></button>
+  <div class="feedback" data-test="feedback"></div>
+  <div class="hint" data-test="hint"></div>
+</div>
+
+<div class="done-screen" data-test="done-screen">
+  <div class="done-title" data-test="done-title"></div>
+  <div class="celebration">🎉</div>
+</div>
+
+<script>
+  (function() {
+    'use strict';
+
+    const params = Studio.params;
+    const items = params.items;
+    let currentItemIndex = 0;
+    let currentItem = items[0];
+    let parts = [];
+    let isChecking = false;
+
+    const titleEl = document.querySelector('.title');
+    const instrEl = document.querySelector('.instr');
+    const itemContainerEl = document.querySelector('.item-container');
+    const fractionEl = document.querySelector('.fraction-display');
+    const pizzaContainerEl = document.querySelector('.pizza-container');
+    const barContainerEl = document.querySelector('.bar-container');
+    const pizzaEl = document.querySelector('.pizza');
+    const barEl = document.querySelector('.bar');
+    const checkBtnEl = document.querySelector('.check-btn');
+    const feedbackEl = document.querySelector('.feedback');
+    const hintEl = document.querySelector('.hint');
+    const doneScreenEl = document.querySelector('.done-screen');
+    const doneTitleEl = document.querySelector('.done-title');
+
+    titleEl.textContent = Studio.t('title');
+    instrEl.textContent = Studio.t('instr');
+    checkBtnEl.textContent = Studio.t('check');
+    hintEl.textContent = Studio.t('hint');
+    doneTitleEl.textContent = Studio.t('done');
+
+    function renderItem(item) {
+      currentItem = item;
+      itemContainerEl.setAttribute('data-item', item.id);
+      fractionEl.textContent = `${item.n}/${item.d}`;
+
+      pizzaContainerEl.style.display = 'none';
+      barContainerEl.style.display = 'none';
+      pizzaEl.innerHTML = '';
+      barEl.innerHTML = '';
+      parts = [];
+
+      const picture = params.picture;
+      if (picture === 'pizza') {
+        pizzaContainerEl.style.display = 'block';
+        renderPizza(item.d);
+      } else {
+        barContainerEl.style.display = 'block';
+        renderBar(item.d);
+      }
+
+      feedbackEl.className = 'feedback';
+      feedbackEl.textContent = '';
+      hintEl.style.display = 'none';
+      isChecking = false;
+    }
+
+    function renderPizza(d) {
+      const angle = 360 / d;
+      for (let i = 0; i < d; i++) {
+        const slice = document.createElement('div');
+        slice.className = 'pizza-slice part';
+        slice.setAttribute('data-part', i);
+        slice.setAttribute('data-shaded', 'false');
+        slice.style.transform = `rotate(${i * angle}deg) translateY(-50%)`;
+        slice.style.transformOrigin = 'center';
+        slice.style.clipPath = `polygon(0% 0%, 100% 0%, 100% 100%)`;
+        slice.style.webkitClipPath = `polygon(0% 0%, 100% 0%, 100% 100%)`;
+        slice.addEventListener('click', togglePart);
+        pizzaEl.appendChild(slice);
+        parts.push(slice);
+      }
+    }
+
+    function renderBar(d) {
+      for (let i = 0; i < d; i++) {
+        const segment = document.createElement('div');
+        segment.className = 'bar-segment part';
+        segment.setAttribute('data-part', i);
+        segment.setAttribute('data-shaded', 'false');
+        segment.addEventListener('click', togglePart);
+        barEl.appendChild(segment);
+        parts.push(segment);
+      }
+    }
+
+    function togglePart(e) {
+      if (isChecking) return;
+      const part = e.currentTarget;
+      const isShaded = part.getAttribute('data-shaded') === 'true';
+      part.setAttribute('data-shaded', !isShaded);
+      part.classList.toggle('shaded', !isShaded);
+      Studio.event('togglePart', { part: part.getAttribute('data-part'), shaded: !isShaded });
+    }
+
+    function checkAnswer() {
+      if (isChecking) return;
+      isChecking = true;
+
+      const shadedCount = parts.filter(p => p.getAttribute('data-shaded') === 'true').length;
+      Studio.answer({ n: shadedCount, d: currentItem.d });
+
+      Studio.onVerdict(function(verdict) {
+        if (verdict.correct) {
+          feedbackEl.textContent = Studio.t('right');
+          feedbackEl.className = 'feedback show correct';
+          Studio.event('correct', { item: currentItem.id });
+
+          setTimeout(() => {
+            feedbackEl.className = 'feedback';
+            currentItemIndex++;
+            if (currentItemIndex < items.length) {
+              renderItem(items[currentItemIndex]);
+            } else {
+              itemContainerEl.style.display = 'none';
+              doneScreenEl.classList.add('show');
+              Studio.done();
+            }
+            isChecking = false;
+          }, 1000);
+        } else {
+          feedbackEl.textContent = Studio.t('wrong');
+          feedbackEl.className = 'feedback show wrong';
+          hintEl.style.display = 'block';
+          Studio.event('wrong', { item: currentItem.id });
+          isChecking = false;
+        }
+      });
+    }
+
+    checkBtnEl.addEventListener('click', checkAnswer);
+
+    renderItem(items[0]);
+    Studio.ready();
+  })();
+</script>

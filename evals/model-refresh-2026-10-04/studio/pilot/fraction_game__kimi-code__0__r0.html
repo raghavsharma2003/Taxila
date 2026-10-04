@@ -1,0 +1,189 @@
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; padding: 0; background: #fff8f0; color: #4e342e; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Devanagari", sans-serif; overflow-x: hidden; }
+.app { min-height: 100vh; display: flex; flex-direction: column; padding: 16px; }
+header { text-align: center; margin-bottom: 8px; }
+h1 { font-size: 1.65rem; margin: 0 0 8px; color: #6d4c41; }
+.instr { font-size: 1.1rem; line-height: 1.4; margin: 0; }
+.target-frac { display: inline-flex; align-items: center; gap: 2px; font-weight: 800; color: #d84315; font-size: 1.25em; background: #fff; padding: 2px 8px; border-radius: 12px; margin-left: 4px; box-shadow: 0 2px 0 rgba(0,0,0,0.05); }
+main { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%; }
+.item-wrap { width: 100%; display: flex; justify-content: center; align-items: center; position: relative; }
+.graphic { width: 100%; display: flex; justify-content: center; }
+.shape { width: 100%; height: auto; display: block; touch-action: manipulation; }
+.pizza { max-width: 300px; }
+.bar { max-width: 260px; }
+.part { fill: #ffe0b2; stroke: #fff8f0; stroke-width: 4; stroke-linejoin: round; cursor: pointer; transition: fill 0.18s ease, transform 0.12s ease; transform-origin: center; }
+.bar .part { stroke: none; }
+.part.selected { fill: #ff7043; }
+.part:active { transform: scale(0.95); }
+.feedback { min-height: 32px; font-size: 1.1rem; font-weight: 700; text-align: center; }
+.feedback.right { color: #2e7d32; }
+.feedback.wrong { color: #c62828; }
+.check-btn { min-width: 170px; min-height: 52px; border: none; border-radius: 30px; background: #66bb6a; color: #fff; font-size: 1.2rem; font-weight: 800; cursor: pointer; box-shadow: 0 5px 0 #388e3c; transition: transform 0.1s, box-shadow 0.1s; touch-action: manipulation; }
+.check-btn:active { transform: translateY(5px); box-shadow: 0 0 0 #388e3c; }
+.check-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+.celebrate { animation: pop 0.55s ease-in-out; }
+@keyframes pop { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+.done-screen { position: fixed; inset: 0; background: rgba(255,248,240,0.98); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 20; }
+.done-screen.hidden { display: none; }
+.done-card { background: #fff; border-radius: 28px; padding: 36px 24px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.12); max-width: 320px; width: 100%; }
+.done-card h2 { color: #6d4c41; font-size: 1.6rem; margin: 0 0 12px; }
+.done-card p { color: #795548; font-size: 1.2rem; margin: 0; }
+</style>
+
+<div class="app">
+  <header>
+    <h1 id="title"></h1>
+    <p class="instr"><span id="instr"></span><span class="target-frac"><span id="num">0</span><span>/</span><span id="den">1</span></span></p>
+  </header>
+  <main>
+    <div id="itemWrap" class="item-wrap" data-item="">
+      <div id="graphic" class="graphic"></div>
+    </div>
+    <div id="feedback" class="feedback"></div>
+    <button id="checkBtn" class="check-btn" data-action="check"><span id="checkText"></span></button>
+  </main>
+  <div id="doneScreen" class="done-screen hidden">
+    <div class="done-card">
+      <h2 id="doneTitle"></h2>
+      <p id="doneHint">⭐</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const items = Studio.params.items;
+  const picRaw = String(Studio.params.picture || 'pizza').toLowerCase();
+  const usePizza = picRaw.indexOf('bar') !== -1 && picRaw.indexOf('pizza') === -1 ? false : true;
+  let idx = 0;
+
+  const els = {
+    title: document.getElementById('title'),
+    instr: document.getElementById('instr'),
+    num: document.getElementById('num'),
+    den: document.getElementById('den'),
+    itemWrap: document.getElementById('itemWrap'),
+    graphic: document.getElementById('graphic'),
+    feedback: document.getElementById('feedback'),
+    checkBtn: document.getElementById('checkBtn'),
+    checkText: document.getElementById('checkText'),
+    doneScreen: document.getElementById('doneScreen'),
+    doneTitle: document.getElementById('doneTitle')
+  };
+
+  function t(k){ return Studio.t(k); }
+
+  els.title.textContent = t('title');
+  els.instr.textContent = t('instr');
+  els.checkText.textContent = t('check');
+  els.doneTitle.textContent = t('done');
+
+  function createPizza(d){
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 320 320');
+    svg.setAttribute('class', 'shape pizza');
+    const cx = 160, cy = 160, r = 140;
+    const step = 2 * Math.PI / d;
+    for(let i = 0; i < d; i++){
+      const a0 = -Math.PI / 2 + i * step;
+      const a1 = a0 + step;
+      const x1 = cx + r * Math.cos(a0);
+      const y1 = cy + r * Math.sin(a0);
+      const x2 = cx + r * Math.cos(a1);
+      const y2 = cy + r * Math.sin(a1);
+      const large = step > Math.PI ? 1 : 0;
+      const path = document.createElementNS(ns, 'path');
+      path.setAttribute('d', 'M ' + cx + ' ' + cy + ' L ' + x1 + ' ' + y1 + ' A ' + r + ' ' + r + ' 0 ' + large + ' 1 ' + x2 + ' ' + y2 + ' Z');
+      path.setAttribute('class', 'part');
+      path.setAttribute('data-part', String(i));
+      path.setAttribute('data-shaded', 'false');
+      svg.appendChild(path);
+    }
+    return svg;
+  }
+
+  function createBar(d){
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 200 400');
+    svg.setAttribute('class', 'shape bar');
+    const total = 360;
+    const gap = 6;
+    const seg = total / d;
+    for(let i = 0; i < d; i++){
+      const rect = document.createElementNS(ns, 'rect');
+      rect.setAttribute('x', '20');
+      rect.setAttribute('y', String(20 + i * seg));
+      rect.setAttribute('width', '160');
+      rect.setAttribute('height', String(seg - gap));
+      rect.setAttribute('rx', '12');
+      rect.setAttribute('class', 'part');
+      rect.setAttribute('data-part', String(i));
+      rect.setAttribute('data-shaded', 'false');
+      svg.appendChild(rect);
+    }
+    return svg;
+  }
+
+  function renderItem(i){
+    idx = i;
+    const item = items[i];
+    els.itemWrap.setAttribute('data-item', item.id);
+    els.num.textContent = String(item.n);
+    els.den.textContent = String(item.d);
+    els.feedback.textContent = '';
+    els.feedback.className = 'feedback';
+    els.checkBtn.disabled = false;
+    els.graphic.innerHTML = '';
+    const svg = usePizza ? createPizza(item.d) : createBar(item.d);
+    els.graphic.appendChild(svg);
+    svg.addEventListener('click', handlePartClick);
+  }
+
+  function handlePartClick(e){
+    const part = e.target.closest('.part');
+    if(!part) return;
+    const selected = part.classList.toggle('selected');
+    part.setAttribute('data-shaded', String(selected));
+    els.feedback.textContent = '';
+    els.feedback.className = 'feedback';
+    Studio.event('part_toggle', {part: +part.getAttribute('data-part'), shaded: selected, item: items[idx].id});
+  }
+
+  function countShaded(){
+    return els.graphic.querySelectorAll('.part.selected').length;
+  }
+
+  els.checkBtn.addEventListener('click', function(){
+    const item = items[idx];
+    els.checkBtn.disabled = true;
+    Studio.answer({n: countShaded(), d: item.d});
+  });
+
+  Studio.onVerdict(function(v){
+    if(v && v.correct){
+      els.feedback.textContent = t('right');
+      els.feedback.className = 'feedback right';
+      els.itemWrap.classList.add('celebrate');
+      setTimeout(function(){ els.itemWrap.classList.remove('celebrate'); }, 550);
+      setTimeout(function(){
+        if(idx + 1 >= items.length){
+          els.doneScreen.classList.remove('hidden');
+          Studio.done();
+        } else {
+          renderItem(idx + 1);
+        }
+      }, 1200);
+    } else {
+      els.feedback.textContent = t('wrong') + ' ' + t('hint');
+      els.feedback.className = 'feedback wrong';
+      els.checkBtn.disabled = false;
+    }
+  });
+
+  renderItem(0);
+  Studio.ready();
+})();
+</script>

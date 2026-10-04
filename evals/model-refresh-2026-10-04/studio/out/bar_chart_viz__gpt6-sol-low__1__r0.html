@@ -1,0 +1,114 @@
+<style>
+  .fruit-activity{box-sizing:border-box;min-height:100vh;padding:20px 10px 28px;background:#fff8ed;color:#293747;font-family:system-ui,sans-serif;text-align:center}
+  .fruit-activity *{box-sizing:border-box}
+  .fruit-card{max-width:420px;margin:auto;padding:20px 10px 24px;border-radius:28px;background:#fff;box-shadow:0 12px 32px #694b2520}
+  .fruit-title{margin:0 0 8px;font-size:1.5rem;line-height:1.25}
+  .fruit-ask{margin:0 8px 14px;font-size:1.08rem;line-height:1.4}
+  .fruit-chart{display:block;width:min(340px,100%);height:auto;margin:auto;overflow:visible}
+  .grid{stroke:#e7e9e5;stroke-width:1}
+  .axis{stroke:#788693;stroke-width:2;stroke-linecap:round}
+  .tick,.fruit-label,.axis-label{fill:#485a66;font-size:12px;font-weight:600}
+  .axis-label{font-size:11px}
+  .bar{fill:#f39a65;cursor:pointer;transform-box:view-box;transform-origin:0 270px;animation:bar-grow .85s cubic-bezier(.2,.8,.3,1) both;transition:fill .2s,filter .2s}
+  .bar:hover,.bar:focus{fill:#e87955;filter:drop-shadow(0 3px 3px #9b583c55);outline:none}
+  .bar:active{fill:#cf654d}
+  .bar.selected{fill:#dd7656}
+  .value-pill{fill:#344b60}
+  .value-text{fill:white;font-size:13px;font-weight:700;text-anchor:middle}
+  .feedback{min-height:32px;margin:12px 8px 0;font-size:1.1rem;font-weight:700;color:#367966}
+  .feedback.try-again{color:#b65c50}
+  @keyframes bar-grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  @media(prefers-reduced-motion:reduce){.bar{animation:none}}
+</style>
+<main class="fruit-activity">
+  <section class="fruit-card">
+    <h1 class="fruit-title" id="fruit-title"></h1>
+    <p class="fruit-ask" id="fruit-ask"></p>
+    <svg class="fruit-chart" viewBox="0 0 340 330" role="img" aria-labelledby="fruit-title fruit-ask">
+      <g id="chart-grid"></g>
+      <line class="axis" x1="48" y1="45" x2="48" y2="270"></line>
+      <line class="axis" x1="48" y1="270" x2="330" y2="270"></line>
+      <text class="axis-label" id="fruit-yaxis" transform="translate(12 155) rotate(-90)" text-anchor="middle"></text>
+      <g id="chart-bars"></g>
+      <g id="chart-labels"></g>
+      <g id="chart-value"></g>
+    </svg>
+    <p class="feedback" id="fruit-feedback" aria-live="polite"></p>
+  </section>
+</main>
+<script>
+(() => {
+  const ns = 'http://www.w3.org/2000/svg';
+  const data = Studio.params.data;
+  const make = (tag, attrs, text) => {
+    const el = document.createElementNS(ns, tag);
+    for (const [key, value] of Object.entries(attrs)) el.setAttribute(key, value);
+    if (text !== undefined) el.textContent = text;
+    return el;
+  };
+  document.getElementById('fruit-title').textContent = Studio.t('title');
+  document.getElementById('fruit-ask').textContent = Studio.t('ask');
+  document.getElementById('fruit-yaxis').textContent = Studio.t('yaxis');
+
+  const maximum = Math.max(...data.map(item => item.value), 1);
+  const rough = maximum / 5;
+  const magnitude = Math.pow(10, Math.floor(Math.log10(rough)));
+  const step = [1, 2, 5, 10].map(n => n * magnitude).find(n => n >= rough);
+  const ceiling = Math.ceil(maximum / step) * step;
+  const grid = document.getElementById('chart-grid');
+  const bars = document.getElementById('chart-bars');
+  const labels = document.getElementById('chart-labels');
+  const valueLayer = document.getElementById('chart-value');
+  const feedback = document.getElementById('fruit-feedback');
+  let finished = false;
+
+  for (let tick = 0; tick <= ceiling; tick += step) {
+    const y = 270 - tick / ceiling * 225;
+    grid.append(make('line', {class:'grid', x1:48, x2:330, y1:y, y2:y}));
+    grid.append(make('text', {class:'tick', 'data-tick':tick, x:40, y:y, 'text-anchor':'end', 'dominant-baseline':'middle'}, String(tick)));
+  }
+
+  data.forEach((item, index) => {
+    const x = 53 + index * (267 / data.length);
+    const height = item.value / ceiling * 225;
+    const bar = make('rect', {
+      class:'bar', x:x, y:270-height, width:46, height:height, rx:8,
+      'data-bar':item.key, 'data-value':item.value,
+      role:'button', tabindex:'0', 'aria-label':Studio.t(item.key)
+    });
+    const choose = () => {
+      if (finished) return;
+      bars.querySelectorAll('.bar').forEach(el => el.classList.remove('selected'));
+      bar.classList.add('selected');
+      valueLayer.replaceChildren(
+        make('rect', {class:'value-pill', x:x+7, y:Math.max(7, 270-height-32), width:32, height:25, rx:12}),
+        make('text', {class:'value-text', x:x+23, y:Math.max(7, 270-height-32)+17}, String(item.value))
+      );
+      Studio.event('bar_tap', {key:item.key});
+      Studio.answer(item.key);
+    };
+    bar.addEventListener('click', choose);
+    bar.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        choose();
+      }
+    });
+    bars.append(bar);
+    labels.append(make('text', {
+      class:'fruit-label', x:x+23, y:295, 'text-anchor':'middle'
+    }, Studio.t(item.key)));
+  });
+
+  Studio.onVerdict(({correct}) => {
+    feedback.textContent = Studio.t(correct ? 'right' : 'wrong');
+    feedback.classList.toggle('try-again', !correct);
+    if (correct && !finished) {
+      finished = true;
+      feedback.textContent = Studio.t('done');
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+</script>

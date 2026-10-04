@@ -1,0 +1,258 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #FFF5E6; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 16px; margin: 0; }
+  .activity { width: 100%; max-width: 360px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .title { font-size: 20px; font-weight: 700; color: #5D3A1A; text-align: center; }
+  .instr { font-size: 14px; color: #8B6B3E; text-align: center; margin-bottom: 8px; }
+  .target-fraction { font-size: 36px; font-weight: 700; color: #C0392B; background: #FFE0C0; padding: 6px 20px; border-radius: 16px; }
+  .pizza-container, .bar-container { position: relative; width: 240px; height: 240px; margin: 8px 0; cursor: pointer; }
+  .bar-container { height: 80px; display: flex; gap: 4px; align-items: stretch; }
+  .segment { flex: 1; border: 3px solid #8B6B3E; border-radius: 8px; background: #FFE8C8; transition: background 0.3s, transform 0.15s; min-width: 44px; min-height: 44px; }
+  .segment.shaded { background: #E67E22; }
+  .segment:active { transform: scale(0.92); }
+  .check-btn { font-size: 18px; font-weight: 600; color: white; background: #27AE60; border: none; border-radius: 24px; padding: 12px 36px; cursor: pointer; transition: transform 0.2s, background 0.2s; min-width: 120px; }
+  .check-btn:active { transform: scale(0.94); }
+  .check-btn:disabled { background: #95A5A6; cursor: default; }
+  .feedback { font-size: 18px; font-weight: 600; text-align: center; min-height: 44px; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s; }
+  .feedback.success { color: #27AE60; }
+  .feedback.error { color: #E74C3C; }
+  .done-screen { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 32px 16px; }
+  .done-icon { font-size: 64px; }
+  .done-text { font-size: 24px; font-weight: 700; color: #5D3A1A; }
+  .hidden { display: none !important; }
+  .pizza-svg { width: 240px; height: 240px; }
+  .slice { cursor: pointer; transition: fill 0.3s, transform 0.15s; }
+  .slice:active { transform: scale(0.94); }
+</style>
+
+<div class="activity" id="activity">
+  <div class="title" id="title"></div>
+  <div class="instr" id="instr"></div>
+  <div id="itemContainer" data-item="">
+    <div class="target-fraction" id="targetFraction"></div>
+    <div id="pictureContainer"></div>
+  </div>
+  <button class="check-btn" id="checkBtn" data-action="check"></button>
+  <div class="feedback" id="feedback"></div>
+</div>
+
+<div class="done-screen hidden" id="doneScreen">
+  <div class="done-icon">🎉</div>
+  <div class="done-text" id="doneText"></div>
+</div>
+
+<script>
+(function() {
+  // Ensure Studio is available
+  if (typeof Studio === 'undefined') return;
+
+  const items = Studio.params.items;
+  const pictureType = Studio.params.picture; // 'pizza-or-bar' – we handle both
+  let currentIndex = 0;
+  let currentItem = null;
+  let shadedCount = 0;
+  let segments = [];
+
+  const titleEl = document.getElementById('title');
+  const instrEl = document.getElementById('instr');
+  const itemContainer = document.getElementById('itemContainer');
+  const targetFractionEl = document.getElementById('targetFraction');
+  const pictureContainer = document.getElementById('pictureContainer');
+  const checkBtn = document.getElementById('checkBtn');
+  const feedbackEl = document.getElementById('feedback');
+  const doneScreen = document.getElementById('doneScreen');
+  const doneText = document.getElementById('doneText');
+
+  // Set strings
+  titleEl.textContent = Studio.t('title');
+  instrEl.textContent = Studio.t('instr');
+  checkBtn.textContent = Studio.t('check');
+  doneText.textContent = Studio.t('done');
+
+  function renderPizza(parts) {
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('viewBox', '0 0 240 240');
+    svg.classList.add('pizza-svg');
+    const cx = 120, cy = 120, r = 110;
+    const angleStep = (2 * Math.PI) / parts;
+    const colors = ['#FFE8C8', '#FFD699', '#FFCC80', '#FFE0B2'];
+
+    for (let i = 0; i < parts; i++) {
+      const startAngle = i * angleStep - Math.PI / 2;
+      const endAngle = startAngle + angleStep;
+      const x1 = cx + r * Math.cos(startAngle);
+      const y1 = cy + r * Math.sin(startAngle);
+      const x2 = cx + r * Math.cos(endAngle);
+      const y2 = cy + r * Math.sin(endAngle);
+      const largeArc = angleStep > Math.PI ? 1 : 0;
+
+      const d = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+      const path = document.createElementNS(svgNS, 'path');
+      path.setAttribute('d', d);
+      path.setAttribute('data-part', i);
+      path.setAttribute('data-shaded', 'false');
+      path.classList.add('slice');
+      path.style.fill = colors[i % colors.length];
+      path.style.stroke = '#8B6B3E';
+      path.style.strokeWidth = '3';
+      path.style.transformOrigin = `${cx}px ${cy}px`;
+
+      path.addEventListener('click', (function(idx) {
+        return function() {
+          togglePart(idx);
+        };
+      })(i));
+      svg.appendChild(path);
+    }
+    // Add pizza crust circle
+    const circle = document.createElementNS(svgNS, 'circle');
+    circle.setAttribute('cx', cx);
+    circle.setAttribute('cy', cy);
+    circle.setAttribute('r', r - 8);
+    circle.setAttribute('fill', 'none');
+    circle.setAttribute('stroke', '#C0392B');
+    circle.setAttribute('stroke-width', '6');
+    svg.appendChild(circle);
+    return svg;
+  }
+
+  function renderBar(parts) {
+    const bar = document.createElement('div');
+    bar.style.display = 'flex';
+    bar.style.gap = '4px';
+    bar.style.width = '240px';
+    bar.style.height = '80px';
+    bar.style.alignItems = 'stretch';
+    for (let i = 0; i < parts; i++) {
+      const seg = document.createElement('div');
+      seg.className = 'segment';
+      seg.setAttribute('data-part', i);
+      seg.setAttribute('data-shaded', 'false');
+      seg.style.flex = '1';
+      seg.style.border = '3px solid #8B6B3E';
+      seg.style.borderRadius = '8px';
+      seg.style.background = '#FFE8C8';
+      seg.style.minWidth = '44px';
+      seg.style.minHeight = '44px';
+      seg.style.cursor = 'pointer';
+      seg.style.transition = 'background 0.3s, transform 0.15s';
+      seg.addEventListener('click', (function(idx) {
+        return function() {
+          togglePart(idx);
+        };
+      })(i));
+      bar.appendChild(seg);
+    }
+    return bar;
+  }
+
+  function togglePart(index) {
+    const itemData = items[currentIndex];
+    const parts = itemData.d;
+    let el;
+    const container = pictureContainer.firstElementChild;
+    if (pictureType === 'pizza-or-bar') {
+      // Use pizza-style SVG slices if available
+      if (container.tagName === 'svg') {
+        const slices = container.querySelectorAll('.slice');
+        el = slices[index];
+      } else {
+        const segs = container.querySelectorAll('.segment');
+        el = segs[index];
+      }
+    } else {
+      // fallback to segments
+      const segs = container.querySelectorAll('[data-part]');
+      el = segs[index];
+    }
+
+    if (!el) return;
+
+    const isShaded = el.getAttribute('data-shaded') === 'true';
+    if (isShaded) {
+      el.setAttribute('data-shaded', 'false');
+      if (el.tagName === 'path') {
+        el.style.fill = '#FFE8C8';
+      } else {
+        el.style.background = '#FFE8C8';
+      }
+      shadedCount--;
+    } else {
+      el.setAttribute('data-shaded', 'true');
+      if (el.tagName === 'path') {
+        el.style.fill = '#E67E22';
+      } else {
+        el.style.background = '#E67E22';
+      }
+      shadedCount++;
+    }
+    // Update check button state
+    checkBtn.disabled = false;
+    feedbackEl.textContent = '';
+    feedbackEl.className = 'feedback';
+  }
+
+  function showItem(index) {
+    if (index >= items.length) {
+      // Done
+      itemContainer.classList.add('hidden');
+      checkBtn.classList.add('hidden');
+      doneScreen.classList.remove('hidden');
+      Studio.done();
+      return;
+    }
+
+    currentItem = items[index];
+    itemContainer.setAttribute('data-item', currentItem.id);
+    targetFractionEl.textContent = `${currentItem.n}/${currentItem.d}`;
+    pictureContainer.innerHTML = '';
+    shadedCount = 0;
+
+    let visual;
+    if (pictureType === 'pizza-or-bar') {
+      // Use pizza for variety (all pizza to avoid complexity)
+      visual = renderPizza(currentItem.d);
+    } else {
+      visual = renderBar(currentItem.d);
+    }
+    pictureContainer.appendChild(visual);
+
+    feedbackEl.textContent = '';
+    feedbackEl.className = 'feedback';
+    checkBtn.disabled = false;
+  }
+
+  checkBtn.addEventListener('click', function() {
+    const item = items[currentIndex];
+    if (shadedCount === 0) {
+      feedbackEl.textContent = Studio.t('hint');
+      feedbackEl.className = 'feedback error';
+      return;
+    }
+    // Commit answer
+    Studio.answer({ n: shadedCount, d: item.d });
+    checkBtn.disabled = true;
+  });
+
+  Studio.onVerdict(function(result) {
+    if (result.correct) {
+      feedbackEl.textContent = Studio.t('right');
+      feedbackEl.className = 'feedback success';
+      // Celebrate briefly, then next
+      setTimeout(() => {
+        currentIndex++;
+        showItem(currentIndex);
+      }, 1200);
+    } else {
+      feedbackEl.textContent = Studio.t('wrong');
+      feedbackEl.className = 'feedback error';
+      checkBtn.disabled = false;
+    }
+  });
+
+  // Start
+  showItem(0);
+  Studio.ready();
+})();
+</script>

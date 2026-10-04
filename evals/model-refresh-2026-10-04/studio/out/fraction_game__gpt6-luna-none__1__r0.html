@@ -1,0 +1,377 @@
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    color-scheme: light;
+    --ink: #253449;
+    --muted: #68788a;
+    --coral: #ff806b;
+    --coral-dark: #e86655;
+    --cream: #fffaf0;
+    --teal: #3da99c;
+    --teal-pale: #e3f5ef;
+  }
+  body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    padding: 18px 16px 24px;
+    display: flex;
+    justify-content: center;
+    background: linear-gradient(160deg, #f4fbf7 0%, #fff5e7 100%);
+    font-family: "Trebuchet MS", Arial, sans-serif;
+    color: var(--ink);
+  }
+  .app {
+    width: min(100%, 520px);
+    min-height: min(650px, calc(100vh - 42px));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .topline {
+    width: 100%;
+    padding: 4px 2px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(21px, 6vw, 28px);
+    letter-spacing: -.5px;
+    color: #294b57;
+  }
+  .sparkle {
+    width: 42px;
+    height: 42px;
+    border-radius: 15px;
+    background: #fff;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 4px 12px #294b5714;
+  }
+  .sparkle svg { width: 25px; height: 25px; }
+  .card {
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    padding: 20px 18px 18px;
+    border: 1px solid #ffffff;
+    border-radius: 28px;
+    background: rgba(255,255,255,.9);
+    box-shadow: 0 12px 35px #45635b16;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .instruction {
+    max-width: 360px;
+    margin: 0;
+    color: #536575;
+    text-align: center;
+    font-size: 16px;
+    line-height: 1.45;
+  }
+  .fraction {
+    margin: 15px 0 4px;
+    min-width: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 27px;
+    font-weight: 800;
+    line-height: 1.05;
+    color: #294b57;
+    font-variant-numeric: tabular-nums;
+  }
+  .fraction .rule {
+    width: 100%;
+    height: 3px;
+    margin: 3px 0;
+    border-radius: 3px;
+    background: var(--coral);
+  }
+  .picture-wrap {
+    width: min(100%, 310px);
+    height: clamp(230px, 37vh, 300px);
+    margin: 4px auto 10px;
+    display: grid;
+    place-items: center;
+    overflow: visible;
+  }
+  #picture {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .part {
+    cursor: pointer;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: fill .2s ease, stroke .2s ease, transform .16s ease, filter .2s ease;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+  }
+  .part:hover { filter: brightness(1.03); }
+  .part:active { transform: scale(.94); }
+  .part.shaded { fill: #ff9a78; }
+  .part:not(.shaded) { fill: #ffe6b7; }
+  .part:focus-visible { stroke: #294b57; stroke-width: 4; }
+  .hint {
+    min-height: 25px;
+    margin: 2px 0 8px;
+    color: #758495;
+    text-align: center;
+    font-size: 13px;
+  }
+  .feedback {
+    min-height: 26px;
+    margin: 0 0 7px;
+    color: #344b57;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .feedback.good { color: #218675; }
+  .feedback.try { color: #bb6757; }
+  button {
+    min-height: 52px;
+    min-width: 150px;
+    border: 0;
+    border-radius: 18px;
+    padding: 12px 28px;
+    color: #fff;
+    background: var(--teal);
+    box-shadow: 0 5px 0 #278779, 0 9px 16px #27877924;
+    font: inherit;
+    font-size: 17px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform .14s ease, box-shadow .14s ease, background .14s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button:active { transform: translateY(3px) scale(.98); box-shadow: 0 2px 0 #278779; }
+  button:focus-visible { outline: 3px solid #ffb34f; outline-offset: 4px; }
+  button:disabled { cursor: default; opacity: .8; }
+  .complete {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 18px;
+  }
+  .complete svg { width: 130px; height: 130px; animation: float 2s ease-in-out infinite; }
+  .complete h2 { margin: 0; color: #294b57; font-size: 26px; }
+  .celebrate { animation: celebrate .55s ease; }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  @keyframes celebrate { 0% { transform: scale(1); } 45% { transform: scale(1.035); } 100% { transform: scale(1); } }
+  @media (max-height: 680px) {
+    body { padding-top: 10px; padding-bottom: 12px; }
+    .card { padding-top: 14px; }
+    .picture-wrap { height: clamp(190px, 34vh, 245px); }
+    .fraction { margin-top: 10px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+</style>
+
+<main class="app">
+  <header class="topline">
+    <h1 id="title"></h1>
+    <span class="sparkle" aria-hidden="true">
+      <svg viewBox="0 0 32 32" fill="none">
+        <path d="M16 3.5 19.1 12l8.4 3.2-8.4 3.1L16 27l-3.1-8.7-8.4-3.1 8.4-3.2L16 3.5Z" fill="#FFB34F"/>
+        <circle cx="26" cy="7" r="2" fill="#FF806B"/>
+        <circle cx="6" cy="25" r="2" fill="#3DA99C"/>
+      </svg>
+    </span>
+  </header>
+  <section class="card" id="item-container" data-item="">
+    <p class="instruction" id="instruction"></p>
+    <div class="fraction" id="fraction" aria-label="target fraction">
+      <span id="numerator"></span><span class="rule"></span><span id="denominator"></span>
+    </div>
+    <div class="picture-wrap">
+      <svg id="picture" viewBox="0 0 300 280" role="group" aria-label="Whole divided into equal parts"></svg>
+    </div>
+    <p class="hint" id="hint"></p>
+    <p class="feedback" id="feedback" aria-live="polite"></p>
+    <button id="check" type="button" data-action="check"></button>
+  </section>
+</main>
+
+<script>
+(() => {
+  const items = Studio.params.items;
+  const pictureChoice = Studio.params.picture;
+  const words = key => Studio.t(key);
+  const container = document.getElementById("item-container");
+  const svg = document.getElementById("picture");
+  const feedback = document.getElementById("feedback");
+  const check = document.getElementById("check");
+  let current = 0;
+  let locked = false;
+  let verdictHandler = null;
+
+  document.getElementById("title").textContent = words("title");
+  document.getElementById("instruction").textContent = words("instr");
+  document.getElementById("hint").textContent = words("hint");
+  check.textContent = words("check");
+
+  const ns = "http://www.w3.org/2000/svg";
+  function svgEl(tag, attrs) {
+    const el = document.createElementNS(ns, tag);
+    Object.keys(attrs).forEach(key => el.setAttribute(key, attrs[key]));
+    return el;
+  }
+  function makePizza(d) {
+    const group = svgEl("g", { transform: "translate(150 140)" });
+    const radius = 111;
+    const base = svgEl("circle", {
+      cx: 0, cy: 0, r: radius + 8, fill: "#f3c56f",
+      stroke: "#d99d49", "stroke-width": 3
+    });
+    group.appendChild(base);
+    const inner = svgEl("circle", {
+      cx: 0, cy: 0, r: radius, fill: "#fff0cb", stroke: "#e7ad59", "stroke-width": 2
+    });
+    group.appendChild(inner);
+    for (let i = 0; i < d; i++) {
+      const a1 = -Math.PI / 2 + i * 2 * Math.PI / d;
+      const a2 = -Math.PI / 2 + (i + 1) * 2 * Math.PI / d;
+      const x1 = radius * Math.cos(a1), y1 = radius * Math.sin(a1);
+      const x2 = radius * Math.cos(a2), y2 = radius * Math.sin(a2);
+      const large = (2 * Math.PI / d) > Math.PI ? 1 : 0;
+      const path = svgEl("path", {
+        d: `M 0 0 L ${x1} ${y1} A ${radius} ${radius} 0 ${large} 1 ${x2} ${y2} Z`,
+        class: "part",
+        "data-part": String(i),
+        "data-shaded": "false",
+        fill: "#ffe6b7",
+        stroke: "#fffaf0",
+        "stroke-width": 3,
+        tabindex: "0",
+        role: "button",
+        "aria-pressed": "false"
+      });
+      attachPart(path);
+      group.appendChild(path);
+    }
+    const toppings = [[-42,-30], [35,-41], [51,27], [-31,49], [8,5]];
+    toppings.forEach(([x,y], i) => {
+      const dot = svgEl("circle", { cx:x, cy:y, r:5, fill:i%2 ? "#e86655" : "#78a85b", "pointer-events":"none" });
+      group.appendChild(dot);
+    });
+    return group;
+  }
+  function makeBar(d) {
+    const group = svgEl("g", {});
+    const x = 12, y = 77, width = 276, height = 126;
+    const segmentWidth = width / d;
+    for (let i = 0; i < d; i++) {
+      const rect = svgEl("rect", {
+        x: x + i * segmentWidth, y, width: segmentWidth, height,
+        rx: i === 0 || i === d - 1 ? 13 : 2,
+        class: "part",
+        "data-part": String(i),
+        "data-shaded": "false",
+        fill: "#ffe6b7",
+        stroke: "#fffaf0",
+        "stroke-width": 4,
+        tabindex: "0",
+        role: "button",
+        "aria-pressed": "false"
+      });
+      attachPart(rect);
+      group.appendChild(rect);
+    }
+    group.appendChild(svgEl("rect", {
+      x, y, width, height, rx: 13, fill: "none", stroke: "#d99d49", "stroke-width": 4,
+      "pointer-events": "none"
+    }));
+    return group;
+  }
+  function attachPart(part) {
+    const toggle = () => {
+      if (locked) return;
+      const shaded = part.getAttribute("data-shaded") !== "true";
+      part.setAttribute("data-shaded", String(shaded));
+      part.setAttribute("aria-pressed", String(shaded));
+      part.classList.toggle("shaded", shaded);
+      part.classList.toggle("part", true);
+      Studio.event("part_toggle", { item: items[current].id, part: Number(part.getAttribute("data-part")), shaded });
+    };
+    part.addEventListener("click", toggle);
+    part.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        toggle();
+      }
+    });
+  }
+  function renderItem() {
+    const item = items[current];
+    locked = false;
+    container.dataset.item = item.id;
+    document.getElementById("numerator").textContent = item.n;
+    document.getElementById("denominator").textContent = item.d;
+    feedback.textContent = "";
+    feedback.className = "feedback";
+    check.disabled = false;
+    svg.replaceChildren();
+    svg.appendChild(pictureChoice === "pizza-or-bar" && item.d <= 8 ? makePizza(item.d) : makeBar(item.d));
+    container.classList.remove("celebrate");
+  }
+  check.addEventListener("click", () => {
+    if (locked) return;
+    locked = true;
+    check.disabled = true;
+    const parts = [...svg.querySelectorAll("[data-part]")];
+    const n = parts.filter(part => part.getAttribute("data-shaded") === "true").length;
+    Studio.event("check", { item: items[current].id, n, d: items[current].d });
+    Studio.answer({ n, d: items[current].d });
+  });
+  function onVerdict(result) {
+    if (result.correct) {
+      feedback.textContent = words("right");
+      feedback.className = "feedback good";
+      container.classList.remove("celebrate");
+      void container.offsetWidth;
+      container.classList.add("celebrate");
+      window.setTimeout(() => {
+        current += 1;
+        if (current >= items.length) {
+          container.innerHTML = "";
+          container.removeAttribute("data-item");
+          container.className = "card complete";
+          const art = document.createElementNS(ns, "svg");
+          art.setAttribute("viewBox", "0 0 140 140");
+          art.setAttribute("aria-hidden", "true");
+          art.innerHTML = '<circle cx="70" cy="70" r="56" fill="#E3F5EF"/><path d="M41 72 61 91 101 49" fill="none" stroke="#3DA99C" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/><path d="m27 38 4 10 10 4-10 4-4 10-4-10-10-4 10-4 4-10ZM111 91l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7Z" fill="#FFB34F"/>';
+          const heading = document.createElement("h2");
+          heading.textContent = words("done");
+          container.append(art, heading);
+          Studio.event("activity_complete", {});
+          Studio.done();
+        } else {
+          renderItem();
+        }
+      }, 720);
+    } else {
+      locked = false;
+      check.disabled = false;
+      feedback.textContent = words("wrong");
+      feedback.className = "feedback try";
+      container.classList.remove("celebrate");
+    }
+  }
+  verdictHandler = onVerdict;
+  Studio.onVerdict(verdictHandler);
+  renderItem();
+  Studio.ready();
+})();
+</script>

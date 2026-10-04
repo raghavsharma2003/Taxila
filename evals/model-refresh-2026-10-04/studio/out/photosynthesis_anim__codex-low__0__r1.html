@@ -1,0 +1,236 @@
+<style>
+  :root{
+    --bg:#eef8ff;--card:#ffffff;--ink:#1e2a44;--line:#cfe2f4;
+    --sun:#ffd24d;--leaf:#62c874;--stem:#439b53;--soil:#a87043;
+    --water:#39a8ff;--co2:#97a6b6;--o2:#54d7c1;--glu:#ff89cc;--btn:#5f77ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink)}
+  .app{
+    width:360px;height:640px;margin:0 auto;padding:8px;
+    display:flex;flex-direction:column;gap:7px;overflow:hidden;
+  }
+  .title{margin:0;text-align:center;font-size:20px;line-height:1.15;font-weight:800}
+  .scene{background:linear-gradient(#dff1ff 0 73%, #d8efcf 73% 100%);border:2px solid var(--line);border-radius:14px;padding:4px}
+  svg{display:block;width:100%;height:252px}
+  .controls{display:flex;flex-direction:column;gap:6px}
+  button{
+    border:0;border-radius:12px;min-height:44px;padding:10px 8px;
+    font-size:16px;font-weight:800;touch-action:manipulation;
+    transition:transform .12s ease, filter .2s ease, background .2s ease;
+  }
+  button:active{transform:scale(.97)}
+  .play{width:100%;background:#4f90ff;color:#fff}
+  .steps{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+  .step{background:#93a6ff;color:#11234e;padding:0}
+  .step.active{background:#6079ff;color:#fff;box-shadow:0 0 0 3px #dce3ff inset}
+  .caption{
+    min-height:44px;border:2px solid #d5e5ff;border-radius:12px;background:var(--card);
+    display:flex;align-items:center;justify-content:center;text-align:center;padding:6px 8px;font-weight:700
+  }
+  .qa{border:2px solid #d6e6f6;background:var(--card);border-radius:14px;padding:7px;display:flex;flex-direction:column;gap:6px}
+  .ask{text-align:center;font-weight:800;min-height:24px}
+  .opts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .opt{background:#44b2a6;color:#fff;font-size:15px;padding:8px 4px}
+  .feedback{min-height:22px;text-align:center;font-size:20px;line-height:1}
+  .ray,.flow-water,.flow-co2,.flow-o2{opacity:.35;transition:opacity .35s ease}
+  .glucose-dot{opacity:.3;transition:opacity .35s ease, r .35s ease}
+  .focus{opacity:1!important}
+  .pulse{animation:pulse 1.25s ease-in-out infinite}
+  @keyframes pulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.2)}}
+</style>
+
+<div class="app">
+  <h1 class="title" data-i18n="title"></h1>
+
+  <div class="scene">
+    <svg viewBox="0 0 340 260" aria-hidden="true">
+      <defs>
+        <filter id="g">
+          <feGaussianBlur stdDeviation="2.8" result="b"></feGaussianBlur>
+          <feMerge><feMergeNode in="b"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+        </filter>
+      </defs>
+
+      <circle cx="58" cy="40" r="23" fill="var(--sun)"></circle>
+      <g id="rays" class="ray">
+        <line x1="79" y1="55" x2="193" y2="118" stroke="#ffd24d" stroke-width="4" stroke-linecap="round"></line>
+        <line x1="74" y1="68" x2="186" y2="136" stroke="#ffd24d" stroke-width="3.5" stroke-linecap="round"></line>
+        <line x1="66" y1="76" x2="175" y2="150" stroke="#ffd24d" stroke-width="3" stroke-linecap="round"></line>
+      </g>
+
+      <rect x="0" y="205" width="340" height="55" rx="8" fill="var(--soil)"></rect>
+
+      <line x1="174" y1="205" x2="174" y2="135" stroke="var(--stem)" stroke-width="10" stroke-linecap="round"></line>
+      <line x1="174" y1="140" x2="212" y2="126" stroke="var(--stem)" stroke-width="4" stroke-linecap="round"></line>
+      <ellipse id="leafShape" data-entity="leaf" cx="203" cy="127" rx="40" ry="21" transform="rotate(-20 203 127)" fill="var(--leaf)"></ellipse>
+
+      <g id="rootsShape" data-entity="roots" stroke="#e6c8a8" stroke-width="4" stroke-linecap="round" fill="none">
+        <path d="M174 206 C166 216,155 224,145 231"></path>
+        <path d="M174 206 C183 217,196 225,208 233"></path>
+        <path d="M174 208 C173 220,171 230,171 240"></path>
+        <path d="M162 212 C152 220,142 227,133 236"></path>
+        <path d="M186 212 C197 219,210 226,222 235"></path>
+      </g>
+
+      <g id="waterFlow" class="flow-water">
+        <circle data-flow="water" r="4.5" fill="var(--water)"></circle>
+        <circle data-flow="water" r="4.5" fill="var(--water)"></circle>
+        <circle data-flow="water" r="4.5" fill="var(--water)"></circle>
+      </g>
+      <g id="co2Flow" class="flow-co2">
+        <circle data-flow="co2" r="5" fill="var(--co2)"></circle>
+        <circle data-flow="co2" r="5" fill="var(--co2)"></circle>
+        <circle data-flow="co2" r="5" fill="var(--co2)"></circle>
+      </g>
+      <g id="o2Flow" class="flow-o2">
+        <circle data-flow="o2" r="5" fill="var(--o2)"></circle>
+        <circle data-flow="o2" r="5" fill="var(--o2)"></circle>
+        <circle data-flow="o2" r="5" fill="var(--o2)"></circle>
+      </g>
+
+      <g>
+        <circle class="glucose-dot" cx="202" cy="127" r="5" fill="var(--glu)" filter="url(#g)"></circle>
+        <circle class="glucose-dot" cx="214" cy="133" r="4" fill="var(--glu)" filter="url(#g)"></circle>
+        <circle class="glucose-dot" cx="192" cy="134" r="4" fill="var(--glu)" filter="url(#g)"></circle>
+      </g>
+
+      <text data-label="sun" x="14" y="16" font-size="14" font-weight="700" fill="#795200"></text>
+      <text data-label="leaf" x="246" y="107" font-size="14" font-weight="700" fill="#1a6931"></text>
+      <text data-label="roots" x="236" y="236" font-size="14" font-weight="700" fill="#fff1e3"></text>
+      <text data-label="water" x="108" y="186" font-size="14" font-weight="700" fill="#045e96"></text>
+      <text data-label="co2" x="12" y="98" font-size="14" font-weight="700" fill="#4b5968"></text>
+      <text data-label="o2" x="294" y="86" font-size="14" font-weight="700" fill="#0b7b69"></text>
+      <text data-label="glucose" x="206" y="151" font-size="13" font-weight="700" fill="#8a2c69"></text>
+    </svg>
+  </div>
+
+  <div class="controls">
+    <button class="play" data-action="play"></button>
+    <div class="steps">
+      <button class="step" data-action="step-1">1</button>
+      <button class="step" data-action="step-2">2</button>
+      <button class="step" data-action="step-3">3</button>
+      <button class="step" data-action="step-4">4</button>
+      <button class="step" data-action="step-5">5</button>
+    </div>
+    <div class="caption" data-caption></div>
+  </div>
+
+  <div class="qa">
+    <div class="ask" data-i18n="ask"></div>
+    <div class="opts">
+      <button class="opt" data-option="co2"></button>
+      <button class="opt" data-option="o2"></button>
+      <button class="opt" data-option="water"></button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const totalSteps = Studio.params.steps;
+  const state = { step:1, playing:true, done:false, lastStepAt:performance.now() };
+
+  document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = Studio.t(el.getAttribute('data-i18n')));
+  document.querySelectorAll('[data-label]').forEach(el => el.textContent = Studio.t(el.getAttribute('data-label')));
+  document.querySelectorAll('[data-option]').forEach(el => el.textContent = Studio.t(el.getAttribute('data-option')));
+
+  const playBtn = document.querySelector('[data-action="play"]');
+  const caption = document.querySelector('[data-caption]');
+  const stepBtns = Array.from(document.querySelectorAll('.step'));
+  const feedback = document.getElementById('feedback');
+  const rays = document.getElementById('rays');
+  const waterFlow = document.getElementById('waterFlow');
+  const co2Flow = document.getElementById('co2Flow');
+  const o2Flow = document.getElementById('o2Flow');
+  const glucoseDots = Array.from(document.querySelectorAll('.glucose-dot'));
+  const leaf = document.getElementById('leafShape');
+  const roots = document.getElementById('rootsShape');
+
+  function labelPlay(){ playBtn.textContent = Studio.t(state.playing ? 'pause' : 'play'); }
+
+  function applyStep(){
+    stepBtns.forEach((b,i)=>b.classList.toggle('active', i+1===state.step));
+    caption.textContent = Studio.t('step'+state.step);
+
+    rays.classList.toggle('focus', state.step===1);
+    waterFlow.classList.toggle('focus', state.step===2);
+    glucoseDots.forEach(d=>d.classList.toggle('focus', state.step===3));
+    co2Flow.classList.toggle('focus', state.step===4);
+    o2Flow.classList.toggle('focus', state.step===5);
+
+    roots.classList.toggle('pulse', state.step===2);
+    leaf.classList.toggle('pulse', state.step===3);
+  }
+
+  function setStep(n, auto){
+    state.step = n;
+    state.lastStepAt = performance.now();
+    applyStep();
+    if(!auto) Studio.event('step',{step:n});
+  }
+
+  playBtn.addEventListener('click',()=>{
+    state.playing=!state.playing;
+    labelPlay();
+    Studio.event('toggle_play',{playing:state.playing});
+  });
+
+  stepBtns.forEach((b,i)=>b.addEventListener('click',()=>setStep(i+1,false)));
+
+  document.querySelectorAll('[data-option]').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const v=b.getAttribute('data-option');
+      Studio.answer(v);
+      Studio.event('answer',{option:v});
+    });
+  });
+
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent = correct ? "✅" : "❌";
+    if(correct && !state.done){ state.done=true; Studio.done(); }
+  });
+
+  const wp = Array.from(document.querySelectorAll('[data-flow="water"]')).map((el,i)=>({el,t:(i*0.33)%1}));
+  const cp = Array.from(document.querySelectorAll('[data-flow="co2"]')).map((el,i)=>({el,t:(i*0.37)%1}));
+  const op = Array.from(document.querySelectorAll('[data-flow="o2"]')).map((el,i)=>({el,t:(i*0.41)%1}));
+  const lerp=(a,b,t)=>a+(b-a)*t;
+
+  function tick(now){
+    const dt=Math.min(0.04, tick.p? (now-tick.p)/1000 : 0.016); tick.p=now;
+    if(state.playing){
+      wp.forEach(p=>{
+        p.t=(p.t+dt*0.22)%1;
+        const x=174+Math.sin(p.t*9)*2.3, y=lerp(236,140,p.t);
+        p.el.setAttribute('cx',x.toFixed(2)); p.el.setAttribute('cy',y.toFixed(2));
+      });
+      cp.forEach((p,i)=>{
+        p.t=(p.t+dt*0.18)%1;
+        const sx=i===0?20:(i===1?316:34), sy=i===0?102:(i===1?118:160);
+        p.el.setAttribute('cx',lerp(sx,203,p.t).toFixed(2));
+        p.el.setAttribute('cy',lerp(sy,127,p.t).toFixed(2));
+      });
+      op.forEach((p,i)=>{
+        p.t=(p.t+dt*0.2)%1;
+        const ex=i===0?292:(i===1?248:324), ey=i===0?74:(i===1?52:110);
+        p.el.setAttribute('cx',lerp(208,ex,p.t).toFixed(2));
+        p.el.setAttribute('cy',lerp(130,ey,p.t).toFixed(2));
+      });
+      const r=4+Math.sin(now*0.006)*1.6;
+      glucoseDots.forEach((g,i)=>g.setAttribute('r',(r-i*0.45).toFixed(2)));
+
+      if(now-state.lastStepAt>3000){
+        setStep((state.step%totalSteps)+1,true);
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  labelPlay();
+  setStep(1,true);
+  requestAnimationFrame(tick);
+  Studio.ready();
+})();
+</script>

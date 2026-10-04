@@ -1,0 +1,192 @@
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #FFF8E7; min-height: 100vh; display: flex; justify-content: center; align-items: center; }
+  .game { width: 100%; max-width: 400px; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  h1 { font-size: 24px; color: #5D4037; text-align: center; }
+  .instr { font-size: 16px; color: #6D4C41; text-align: center; padding: 0 10px; }
+  .item-wrap { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .target { font-size: 28px; font-weight: bold; color: #E65100; background: #FFE0B2; border-radius: 16px; padding: 4px 20px; }
+  .picture-container { width: 100%; display: flex; justify-content: center; }
+  svg { max-width: 90%; height: auto; }
+  .parts-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .bar-part { width: 52px; height: 44px; border-radius: 10px; background: #FFCC80; border: 3px solid #8D6E63; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+  .bar-part:active { transform: scale(0.92); }
+  .bar-part[data-shaded="true"] { background: #FF7043; box-shadow: 0 2px 8px rgba(255,112,67,0.5); }
+  .check-btn { font-size: 18px; padding: 14px 24px; background: #2E7D32; color: white; border: none; border-radius: 12px; cursor: pointer; transition: transform 0.15s, background 0.2s; box-shadow: 0 3px 6px rgba(0,0,0,0.2); min-width: 120px; }
+  .check-btn:active { transform: scale(0.94); }
+  .feedback { font-size: 16px; text-align: center; padding: 8px 16px; border-radius: 10px; min-height: 36px; opacity: 0; transition: opacity 0.3s; }
+  .feedback.show { opacity: 1; }
+  .feedback.right { background: #C8E6C9; color: #1B5E20; }
+  .feedback.wrong { background: #FFCDD2; color: #B71C1C; }
+  .done { font-size: 20px; color: #2E7D32; text-align: center; padding: 24px; }
+  .celebrate { animation: pop 0.5s ease; }
+  @keyframes pop { 0% { transform: scale(0.8); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+</style>
+
+<h1>🍕 🍫</h1>
+<div class="game">
+  <h1 data-i18n="title">Pizza & Bar</h1>
+  <div class="instr" data-i18n="instr"></div>
+  <div class="item-wrap" id="item-wrap"></div>
+</div>
+
+<script>
+(function() {
+  const items = Studio.params.items;
+  const picture = Studio.params.picture;
+  const isPizza = picture === 'pizza-or-bar' || picture === 'pizza';
+  let currentIndex = 0;
+  let parts = [];
+  let awaitingVerdict = false;
+
+  function makePizzaSVG(d) {
+    const size = 240;
+    let slices = '';
+    for (let i = 0; i < d; i++) {
+      const angle = (360 / d) * i;
+      const sweep = 360 / d;
+      const startX = size/2;
+      const startY = size/2;
+      const rad1 = (angle - 90) * Math.PI / 180;
+      const rad2 = (angle - 90 + sweep) * Math.PI / 180;
+      const x2 = startX + size/2 * Math.cos(rad1);
+      const y2 = startY + size/2 * Math.sin(rad1);
+      const x3 = startX + size/2 * Math.cos(rad2);
+      const y3 = startY + size/2 * Math.sin(rad2);
+      slices += `<path d="M${startX},${startY} L${x2},${y2} A${size/2},${size/2} 0 ${sweep > 180 ? 1 : 0},1 ${x3},${y3} Z" fill="#FFCC80" stroke="#8D6E63" stroke-width="3" data-part="${i}" data-shaded="false" class="pizza-part" style="transition: fill 0.3s"/>`;
+    }
+    return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">${slices}</svg>`;
+  }
+
+  function makeBarSVG(d) {
+    const barH = 60;
+    const segW = 44;
+    const totalW = segW * d + (d-1)*6;
+    const pad = 10;
+    const w = totalW + pad*2;
+    const h = barH + pad*2;
+    let rects = '';
+    for (let i = 0; i < d; i++) {
+      rects += `<rect x="${pad + i*(segW+6)}" y="${pad}" width="${segW}" height="${barH}" rx="8" fill="#FFCC80" stroke="#8D6E63" stroke-width="3" data-part="${i}" data-shaded="false" class="bar-part-svg" style="transition: fill 0.3s"/>`;
+    }
+    return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">${rects}</svg>`;
+  }
+
+  function makeParts(d) {
+    const container = document.createElement('div');
+    container.className = 'parts-row';
+    if (isPizza) {
+      const svg = document.createElement('div');
+      svg.className = 'picture-container';
+      svg.innerHTML = makePizzaSVG(d);
+      container.appendChild(svg.firstChild);
+    } else {
+      const svg = document.createElement('div');
+      svg.className = 'picture-container';
+      svg.innerHTML = makeBarSVG(d);
+      container.appendChild(svg.firstChild);
+    }
+    return container;
+  }
+
+  function showItem(item) {
+    const wrap = document.getElementById('item-wrap');
+    wrap.innerHTML = '';
+    wrap.dataset.item = item.id;
+    awaitingVerdict = false;
+
+    const target = document.createElement('div');
+    target.className = 'target';
+    target.textContent = item.n + '/' + item.d;
+    wrap.appendChild(target);
+
+    const partsContainer = makeParts(item.d);
+    wrap.appendChild(partsContainer);
+
+    const feedback = document.createElement('div');
+    feedback.className = 'feedback';
+    feedback.id = 'feedback';
+    wrap.appendChild(feedback);
+
+    const checkBtn = document.createElement('button');
+    checkBtn.className = 'check-btn';
+    checkBtn.dataset.action = 'check';
+    checkBtn.textContent = Studio.t('check');
+    wrap.appendChild(checkBtn);
+
+    const hint = document.createElement('div');
+    hint.className = 'instr';
+    hint.textContent = Studio.t('hint');
+    wrap.appendChild(hint);
+
+    parts = [];
+    const partEls = wrap.querySelectorAll('[data-part]');
+    partEls.forEach(el => {
+      el.addEventListener('click', () => {
+        if (awaitingVerdict) return;
+        const shaded = el.dataset.shaded === 'true';
+        const newVal = !shaded;
+        el.dataset.shaded = String(newVal);
+        if (isPizza && el.tagName === 'path') {
+          el.setAttribute('fill', newVal ? '#FF7043' : '#FFCC80');
+        }
+        if (!isPizza && el.tagName === 'rect') {
+          el.setAttribute('fill', newVal ? '#FF7043' : '#FFCC80');
+        }
+        el.style.transform = 'scale(0.95)';
+        setTimeout(() => { el.style.transform = ''; }, 150);
+        Studio.event('tap-part', { index: parseInt(el.dataset.part), shaded: newVal });
+      });
+      parts.push(el);
+    });
+
+    checkBtn.addEventListener('click', () => {
+      if (awaitingVerdict) return;
+      const count = parts.filter(p => p.dataset.shaded === 'true').length;
+      Studio.event('check', { n: count, d: item.d });
+      awaitingVerdict = true;
+      Studio.answer({ n: count, d: item.d });
+    });
+  }
+
+  function advance() {
+    currentIndex++;
+    if (currentIndex >= items.length) {
+      const wrap = document.getElementById('item-wrap');
+      wrap.innerHTML = '';
+      const done = document.createElement('div');
+      done.className = 'done';
+      done.textContent = Studio.t('done');
+      wrap.appendChild(done);
+      Studio.done();
+    } else {
+      showItem(items[currentIndex]);
+    }
+  }
+
+  studio.onVerdict = function(result) {
+    const fb = document.getElementById('feedback');
+    if (result.correct) {
+      fb.textContent = Studio.t('right');
+      fb.className = 'feedback right show celebrate';
+      setTimeout(() => {
+        fb.className = 'feedback';
+        advance();
+      }, 1200);
+    } else {
+      fb.textContent = Studio.t('wrong');
+      fb.className = 'feedback wrong show';
+      setTimeout(() => {
+        fb.className = 'feedback';
+        awaitingVerdict = false;
+      }, 1500);
+    }
+  };
+
+  document.title = Studio.t('title');
+  const instr = document.querySelector('.instr');
+  instr.textContent = Studio.t('instr');
+  showItem(items[0]);
+  Studio.ready();
+})();
+</script>

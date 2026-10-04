@@ -1,0 +1,124 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3faf8}
+.learning{font-family:system-ui,sans-serif;color:#233f49;width:100%;max-width:520px;margin:auto;padding:16px 12px}
+.learning h1{font-size:23px;line-height:1.25;margin:0 0 14px;font-weight:800}
+.chart-card{background:#fff;border:1px solid #dbeae5;border-radius:22px;padding:12px 7px 8px;box-shadow:0 8px 24px #204c4210}
+.axis-title{font-size:14px;font-weight:650;margin:0 12px 4px;color:#55756c}
+.chart{display:block;width:100%;overflow:visible}
+.grid{stroke:#dfebe6;stroke-width:1}
+.baseline{stroke:#78968c;stroke-width:1.5}
+.tick{fill:#61766e;font-size:12px}
+.fruit-label{fill:#304e44;font-size:12px;font-weight:650}
+.bar{fill:#48aaa0;animation:grow .75s cubic-bezier(.2,.8,.3,1) both;transition:fill .2s,filter .2s}
+.bar-target{cursor:pointer;outline:none}
+.bar-target:hover .bar,.bar-target:focus .bar{fill:#318e86}
+.bar-target:focus .hit{stroke:#244f48;stroke-width:2}
+.bar-target.selected .bar{fill:#267d76}
+.bar-target:active .bar{filter:brightness(.85)}
+.hit{fill:transparent;stroke:transparent}
+.question{margin:16px 4px 10px;font-size:18px;font-weight:700;line-height:1.4}
+.response{display:flex;align-items:center;gap:12px;min-height:52px;margin:0 4px}
+.value{display:none;min-width:48px;height:48px;align-items:center;justify-content:center;padding:0 12px;background:#def3eb;border-radius:16px;font-size:22px;font-weight:800;color:#24584e}
+.value.visible{display:flex;animation:pop .25s ease-out}
+.feedback{font-size:16px;line-height:1.4;color:#48695f}
+.completion{margin:8px 4px 0;color:#24584e;font-weight:750;font-size:18px}
+@keyframes grow{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes pop{from{transform:scale(.86)}to{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.bar,.value.visible{animation:none}}
+</style>
+<main class="learning">
+<h1 id="title"></h1>
+<section class="chart-card">
+<p class="axis-title" id="axisTitle"></p>
+<svg class="chart" id="chart" viewBox="0 0 320 320" role="group" aria-labelledby="title axisTitle">
+<g id="grid"></g>
+<g id="bars"></g>
+<g id="labels"></g>
+</svg>
+</section>
+<p class="question" id="ask"></p>
+<div class="response" aria-live="polite">
+<output class="value" id="value"></output>
+<span class="feedback" id="feedback"></span>
+</div>
+<p class="completion" id="completion" aria-live="polite"></p>
+</main>
+<script>
+(function(){
+const data=Studio.params.data;
+const ns="http://www.w3.org/2000/svg";
+document.getElementById("title").textContent=Studio.t("title");
+document.getElementById("axisTitle").textContent=Studio.t("yaxis");
+document.getElementById("ask").textContent=Studio.t("ask");
+const grid=document.getElementById("grid"),bars=document.getElementById("bars"),labels=document.getElementById("labels");
+function svg(tag,attrs,text){
+const el=document.createElementNS(ns,tag);
+Object.entries(attrs).forEach(([key,value])=>el.setAttribute(key,value));
+if(text!==undefined)el.textContent=text;
+return el;
+}
+const maximum=Math.max(...data.map(d=>d.value));
+const rough=maximum>0?maximum/5:1;
+const magnitude=Math.pow(10,Math.floor(Math.log10(rough)));
+const fraction=rough/magnitude;
+const step=(fraction<=1?1:fraction<=2?2:fraction<=5?5:10)*magnitude;
+const ceiling=Math.max(step,Math.ceil(maximum/step)*step);
+const left=50,right=315,top=24,bottom=260;
+const height=bottom-top,column=(right-left)/data.length;
+function y(value){return bottom-value/ceiling*height}
+const count=Math.round(ceiling/step);
+for(let i=0;i<=count;i++){
+const value=Number((i*step).toPrecision(12));
+grid.appendChild(svg("line",{x1:left,y1:y(value),x2:right,y2:y(value),class:i===0?"baseline":"grid"}));
+grid.appendChild(svg("text",{x:left-9,y:y(value),"text-anchor":"end","dominant-baseline":"middle","data-tick":value,class:"tick"},String(value)));
+}
+let pending=false,finished=false,chosen=null;
+const valueOutput=document.getElementById("value"),feedback=document.getElementById("feedback");
+data.forEach((d,i)=>{
+const center=left+column*(i+.5);
+const barWidth=48;
+const group=svg("g",{class:"bar-target",role:"button",tabindex:"0","aria-label":Studio.t(d.key)});
+const bar=svg("rect",{x:center-barWidth/2,y:y(d.value),width:barWidth,height:bottom-y(d.value),rx:5,class:"bar","data-bar":d.key,"data-value":d.value});
+const hit=svg("rect",{x:left+column*i,y:top,width:column,height:bottom-top,rx:6,class:"hit"});
+group.append(bar,hit);
+bars.appendChild(group);
+labels.appendChild(svg("text",{x:center,y:286,"text-anchor":"middle",class:"fruit-label"},Studio.t(d.key)));
+function select(){
+if(pending||finished)return;
+pending=true;
+chosen=group;
+bars.querySelectorAll(".selected").forEach(el=>el.classList.remove("selected"));
+group.classList.add("selected");
+valueOutput.textContent=String(d.value);
+valueOutput.classList.remove("visible");
+void valueOutput.offsetWidth;
+valueOutput.classList.add("visible");
+feedback.textContent="";
+Studio.event("bar_tap",{key:d.key,value:d.value});
+Studio.answer(d.key);
+}
+group.addEventListener("click",select);
+group.addEventListener("keydown",e=>{
+if(e.key==="Enter"||e.key===" "){e.preventDefault();select()}
+});
+});
+Studio.onVerdict(({correct})=>{
+if(!pending||finished)return;
+pending=false;
+feedback.textContent=Studio.t(correct?"right":"wrong");
+if(correct){
+finished=true;
+document.getElementById("completion").textContent=Studio.t("done");
+bars.querySelectorAll(".bar-target").forEach(el=>{
+el.setAttribute("aria-disabled","true");
+el.setAttribute("tabindex","-1");
+});
+Studio.done();
+}else if(chosen){
+chosen.classList.remove("selected");
+}
+});
+Studio.ready();
+})();
+</script>

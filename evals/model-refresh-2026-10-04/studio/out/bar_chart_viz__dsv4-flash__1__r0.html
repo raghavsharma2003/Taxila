@@ -1,0 +1,182 @@
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Roboto, system-ui, sans-serif; background: #fef9ef; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 12px 8px; user-select: none; -webkit-tap-highlight-color: transparent; }
+  h1 { font-size: 1.2rem; color: #3d2b1f; margin-bottom: 4px; text-align: center; }
+  .chart-wrap { width: 100%; max-width: 340px; background: #fff8ec; border-radius: 24px; padding: 12px 8px 4px 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  .chart-area { position: relative; width: 100%; overflow: visible; }
+  .bars-container { display: flex; align-items: flex-end; justify-content: space-around; gap: 2px; height: 200px; margin-top: 8px; position: relative; }
+  .bar-wrapper { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 0; cursor: pointer; }
+  .bar { width: 80%; min-width: 28px; max-width: 48px; border-radius: 8px 8px 4px 4px; background: linear-gradient(180deg, #f9a825 0%, #f57f17 100%); transition: transform 0.15s ease, box-shadow 0.15s ease; box-shadow: 0 -2px 6px rgba(245,127,23,0.3); height: 0; will-change: transform, box-shadow; }
+  .bar.animate { animation: riseUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+  @keyframes riseUp { from { height: 0 !important; } to { height: var(--h); } }
+  .bar:active { transform: scale(0.92); box-shadow: 0 0 0 2px #bf360c; }
+  .fruit-label { font-size: 0.7rem; color: #4e342e; margin-top: 4px; font-weight: 500; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 48px; }
+  .value-tooltip { position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%); background: #3d2b1f; color: white; font-size: 0.75rem; padding: 4px 8px; border-radius: 12px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+  .bar-wrapper.tapped .value-tooltip { opacity: 1; }
+  .y-axis-wrap { position: absolute; left: -6px; top: 0; bottom: 0; width: 28px; display: flex; flex-direction: column-reverse; justify-content: space-between; pointer-events: none; }
+  .tick-row { display: flex; align-items: center; width: 100%; }
+  .tick-label { font-size: 0.6rem; color: #6d4c41; width: 24px; text-align: right; padding-right: 2px; }
+  .gridline { flex: 1; height: 1px; background: rgba(109,76,65,0.12); margin-left: 2px; }
+  .yaxis-title { font-size: 0.6rem; color: #6d4c41; text-align: center; margin-top: -4px; letter-spacing: 0.3px; }
+  .ask-text { font-size: 0.95rem; color: #3d2b1f; background: #fff3e0; padding: 10px 14px; border-radius: 20px; margin: 8px 0; text-align: center; font-weight: 500; border: 1px solid #ffe0b2; }
+  .feedback { font-size: 1rem; text-align: center; padding: 10px; border-radius: 20px; margin: 6px 0; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+  .feedback.right { background: #e8f5e9; color: #2e7d32; }
+  .feedback.wrong { background: #ffebee; color: #c62828; }
+  .done-text { font-size: 1rem; color: #2e7d32; text-align: center; padding: 12px; font-weight: 600; }
+  .no-hint { opacity: 0; height: 0; overflow: hidden; }
+  .chart-bottom { margin-bottom: 0; }
+</style>
+
+<h1 id="title-el"></h1>
+<div class="chart-wrap">
+  <div class="chart-area">
+    <div class="bars-container" id="barsContainer">
+      <!-- bars injected by JS -->
+    </div>
+    <div class="yaxis-title" id="yaxisTitle"></div>
+  </div>
+</div>
+<div id="askEl" class="ask-text"></div>
+<div id="feedbackEl" class="feedback"></div>
+<div id="doneEl" class="done-text" style="display:none;"></div>
+
+<script>
+// read data from params
+const data = Studio.params.data;
+const maxVal = Math.max(...data.map(d => d.value));
+// y-axis step: dynamic but sensible for class5
+let step = 2;
+if (maxVal > 15) step = 4;
+else if (maxVal > 10) step = 3;
+const maxTick = Math.ceil(maxVal / step) * step;
+const ticks = [];
+for (let t = 0; t <= maxTick; t += step) ticks.push(t);
+
+// render strings
+document.getElementById('title-el').textContent = Studio.t('title');
+document.getElementById('yaxisTitle').textContent = Studio.t('yaxis');
+document.getElementById('askEl').textContent = Studio.t('ask');
+
+// build bars container + yaxis
+const container = document.getElementById('barsContainer');
+// prepend y-axis elements
+const yAxisWrap = document.createElement('div');
+yAxisWrap.className = 'y-axis-wrap';
+yAxisWrap.style.position = 'absolute';
+yAxisWrap.style.left = '-2px';
+yAxisWrap.style.top = '0';
+yAxisWrap.style.bottom = '20px';
+yAxisWrap.style.width = '30px';
+yAxisWrap.style.display = 'flex';
+yAxisWrap.style.flexDirection = 'column-reverse';
+yAxisWrap.style.justifyContent = 'space-between';
+yAxisWrap.style.pointerEvents = 'none';
+container.style.paddingLeft = '28px';
+
+// add gridlines and ticks
+const tickFrag = document.createDocumentFragment();
+ticks.forEach(t => {
+  const row = document.createElement('div');
+  row.style.display = 'flex';
+  row.style.alignItems = 'center';
+  row.style.width = '100%';
+  row.style.flex = '1';
+  const label = document.createElement('span');
+  label.className = 'tick-label';
+  label.setAttribute('data-tick', t);
+  label.textContent = t;
+  row.appendChild(label);
+  const grid = document.createElement('div');
+  grid.className = 'gridline';
+  row.appendChild(grid);
+  tickFrag.appendChild(row);
+});
+yAxisWrap.appendChild(tickFrag);
+container.parentElement.insertBefore(yAxisWrap, container);
+
+// now build bars (no hint of answer state)
+const barWrapperFrag = document.createDocumentFragment();
+const barHeights = {}; // store for animation
+
+data.forEach((item, idx) => {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'bar-wrapper';
+  wrapper.setAttribute('data-key', item.key);
+
+  const bar = document.createElement('div');
+  bar.className = 'bar';
+  const barHeight = (item.value / maxTick) * 200; // chart height = 200px
+  bar.style.setProperty('--h', barHeight + 'px');
+  bar.style.height = '0px'; // initial zero
+  bar.setAttribute('data-bar', item.key);
+  bar.setAttribute('data-value', item.value);
+  // store for later
+  barHeights[item.key] = barHeight;
+
+  // value tooltip inside wrapper
+  const tooltip = document.createElement('div');
+  tooltip.className = 'value-tooltip';
+  tooltip.textContent = item.value;
+
+  wrapper.appendChild(bar);
+  wrapper.appendChild(tooltip);
+
+  // fruit label below
+  const label = document.createElement('div');
+  label.className = 'fruit-label';
+  label.textContent = Studio.t(item.key);
+  wrapper.appendChild(label);
+
+  // tap handler: only if not answered yet
+  let answered = false;
+  wrapper.addEventListener('click', function(e) {
+    if (answered) return;
+    // remove all tapped classes
+    document.querySelectorAll('.bar-wrapper.tapped').forEach(el => el.classList.remove('tapped'));
+    wrapper.classList.add('tapped');
+    // answer
+    Studio.answer(item.key);
+  });
+
+  barWrapperFrag.appendChild(wrapper);
+});
+
+container.appendChild(barWrapperFrag);
+
+// trigger bar animation after paint
+requestAnimationFrame(() => {
+  const bars = document.querySelectorAll('.bar');
+  bars.forEach((bar, i) => {
+    setTimeout(() => {
+      bar.classList.add('animate');
+      bar.style.height = bar.style.getPropertyValue('--h') || barHeights[bar.getAttribute('data-bar')] + 'px';
+    }, i * 80);
+  });
+});
+
+// feedback handling
+Studio.onVerdict(function(result) {
+  const fb = document.getElementById('feedbackEl');
+  const doneEl = document.getElementById('doneEl');
+  if (result.correct) {
+    fb.textContent = Studio.t('right');
+    fb.className = 'feedback right';
+    // after a short pause, show done and advance
+    setTimeout(() => {
+      fb.style.display = 'none';
+      doneEl.textContent = Studio.t('done');
+      doneEl.style.display = 'block';
+      Studio.done();
+    }, 800);
+  } else {
+    fb.textContent = Studio.t('wrong');
+    fb.className = 'feedback wrong';
+    // remove tapped class from all
+    document.querySelectorAll('.bar-wrapper.tapped').forEach(el => el.classList.remove('tapped'));
+    // allow re-tap
+  }
+});
+
+// let host know we are ready
+Studio.ready();
+</script>

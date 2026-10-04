@@ -1,0 +1,148 @@
+<style>
+  *{box-sizing:border-box}
+  :root{color-scheme:light}
+  body{margin:0;font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif;background:#fff8ed;color:#3b3150}
+  .learn{width:min(100%,560px);min-height:100vh;margin:auto;padding:22px 18px 28px;display:flex;flex-direction:column;gap:18px}
+  .top{display:flex;align-items:center;gap:12px}
+  .mark{width:44px;height:44px;border-radius:16px;background:#ffe1a8;display:grid;place-items:center;color:#975c31;font-size:24px;flex:none}
+  h1{font-size:clamp(22px,6vw,30px);line-height:1.1;margin:0;font-weight:800;letter-spacing:-.4px}
+  .card{background:#fff;border:2px solid #f2e7d8;border-radius:26px;padding:20px 18px;box-shadow:0 8px 0 #f4e8da}
+  .instruction{font-size:17px;line-height:1.45;margin:0 0 16px;color:#645c70}
+  .fraction{display:flex;align-items:center;justify-content:center;gap:12px;margin:4px auto 18px;font-size:32px;font-weight:800;color:#55428d}
+  .fraction span{min-width:42px;text-align:center}
+  .fraction i{width:2px;height:42px;background:#b9add4;border-radius:2px}
+  .parts{display:grid;grid-template-columns:repeat(4,minmax(44px,1fr));gap:9px;max-width:360px;margin:0 auto}
+  .part{height:52px;min-width:44px;border:2px solid #e5d9f2;border-radius:15px;background:#f7f1ff;cursor:pointer;transition:transform .16s,background .2s,border-color .2s,box-shadow .2s;padding:0;touch-action:manipulation}
+  .part:active{transform:scale(.92)}
+  .part.on{background:#8d78c9;border-color:#7059b2;box-shadow:inset 0 -4px 0 #6e59a6}
+  .part.on:after{content:"";display:block;width:12px;height:12px;border:3px solid #fff;border-radius:50%;margin:auto}
+  .part:focus-visible,.check:focus-visible{outline:3px solid #e9a83c;outline-offset:3px}
+  .hint{font-size:15px;line-height:1.4;text-align:center;color:#82768f;margin:16px 0 0}
+  .feedback{min-height:26px;text-align:center;font-size:17px;font-weight:700;color:#65518f}
+  .feedback.bad{color:#b46c53}
+  .check{width:100%;min-height:54px;border:0;border-radius:18px;background:#735fb0;color:white;font:700 18px inherit;cursor:pointer;box-shadow:0 5px 0 #58458f;transition:transform .15s,background .2s}
+  .check:active{transform:translateY(3px);box-shadow:0 2px 0 #58458f}
+  .check[disabled]{opacity:.7}
+  .done-card{text-align:center;padding:34px 20px}
+  .done-icon{width:84px;height:84px;margin:0 auto 18px;border-radius:30px;background:#e8f3d6;color:#648944;display:grid;place-items:center;font-size:42px}
+  .done-card p{font-size:20px;line-height:1.4;margin:0}
+  .celebrate{animation:bop .45s ease}
+  @keyframes bop{50%{transform:scale(1.04)}}
+  @media(max-width:390px){.learn{padding:17px 14px 22px;gap:14px}.card{padding:17px 14px}.parts{gap:7px}.part{height:50px}}
+</style>
+<main class="learn" id="app">
+  <header class="top"><div class="mark" aria-hidden="true">½</div><h1 id="title"></h1></header>
+  <section class="card" id="item-card">
+    <p class="instruction" id="instruction"></p>
+    <div class="fraction" id="fraction"></div>
+    <div class="parts" id="parts"></div>
+    <p class="hint" id="hint"></p>
+  </section>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+  <button class="check" id="check" data-action="check"></button>
+</main>
+<script>
+(function(){
+  const items=Studio.params.items;
+  const t=Studio.t;
+  const app=document.getElementById("app");
+  const title=document.getElementById("title");
+  const instruction=document.getElementById("instruction");
+  const fraction=document.getElementById("fraction");
+  const parts=document.getElementById("parts");
+  const hint=document.getElementById("hint");
+  const feedback=document.getElementById("feedback");
+  const check=document.getElementById("check");
+  title.textContent=t("title");
+  instruction.textContent=t("instr");
+  hint.textContent=t("hint");
+  check.textContent=t("check");
+  let current=0;
+  let shaded=[];
+  let pending=false;
+  let advancing=false;
+
+  function render(){
+    if(current>=items.length){
+      app.replaceChildren();
+      const card=document.createElement("section");
+      card.className="card done-card";
+      const icon=document.createElement("div");
+      icon.className="done-icon";
+      icon.setAttribute("aria-hidden","true");
+      icon.textContent="✓";
+      const message=document.createElement("p");
+      message.textContent=t("done");
+      card.append(icon,message);
+      app.appendChild(card);
+      Studio.done();
+      return;
+    }
+    const item=items[current];
+    const itemCard=document.getElementById("item-card");
+    itemCard.setAttribute("data-item",item.id);
+    shaded=Array(item.d).fill(false);
+    fraction.replaceChildren();
+    const numerator=document.createElement("span");
+    numerator.textContent=item.n;
+    const line=document.createElement("i");
+    const denominator=document.createElement("span");
+    denominator.textContent=item.d;
+    fraction.append(numerator,line,denominator);
+    parts.replaceChildren();
+    for(let i=0;i<item.d;i++){
+      const part=document.createElement("button");
+      part.type="button";
+      part.className="part";
+      part.setAttribute("data-part",i);
+      part.setAttribute("data-shaded","false");
+      part.setAttribute("aria-pressed","false");
+      part.addEventListener("click",function(){
+        if(pending)return;
+        shaded[i]=!shaded[i];
+        part.classList.toggle("on",shaded[i]);
+        part.setAttribute("data-shaded",shaded[i]?"true":"false");
+        part.setAttribute("aria-pressed",shaded[i]?"true":"false");
+        feedback.textContent="";
+        feedback.classList.remove("bad");
+        Studio.event("part_toggle",{item:item.id,part:i,shaded:shaded[i]});
+      });
+      parts.appendChild(part);
+    }
+    feedback.textContent="";
+    feedback.classList.remove("bad");
+    check.disabled=false;
+    check.onclick=function(){
+      if(pending)return;
+      pending=true;
+      check.disabled=true;
+      const count=shaded.filter(Boolean).length;
+      Studio.event("check",{item:item.id,coloured:count});
+      Studio.answer({n:count,d:item.d});
+    };
+  }
+
+  Studio.onVerdict(function(verdict){
+    if(!pending||advancing)return;
+    if(verdict.correct){
+      advancing=true;
+      pending=false;
+      feedback.textContent=t("right");
+      document.getElementById("item-card").classList.add("celebrate");
+      setTimeout(function(){
+        current++;
+        advancing=false;
+        render();
+      },650);
+    }else{
+      pending=false;
+      check.disabled=false;
+      feedback.textContent=t("wrong");
+      feedback.classList.add("bad");
+    }
+  });
+
+  render();
+  Studio.ready();
+})();
+</script>

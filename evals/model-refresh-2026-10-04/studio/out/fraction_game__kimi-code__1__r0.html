@@ -1,0 +1,202 @@
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #FFF8E7; color: #3E2723; }
+#app { width: 360px; min-height: 640px; margin: 0 auto; padding: 16px 0; display: flex; flex-direction: column; position: relative; overflow-x: hidden; }
+.padded { padding: 0 16px; }
+h1 { font-size: 26px; text-align: center; margin: 8px 0; color: #E65100; font-weight: 800; line-height: 1.2; }
+.instr { text-align: center; font-size: 16px; margin: 6px 0; color: #5D4037; line-height: 1.4; }
+.hint { text-align: center; font-size: 13px; margin: 4px 0 8px; color: #8D6E63; font-style: italic; }
+.fraction-wrap { text-align: center; }
+.fraction { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 800; margin: 8px 0; }
+.fraction .num, .fraction .den { font-size: 52px; line-height: 1; color: #E65100; }
+.fraction .bar { width: 64px; height: 5px; background: #E65100; border-radius: 3px; margin: 6px 0; }
+#shape { width: 100%; display: flex; justify-content: center; align-items: center; min-height: 200px; }
+.shape-svg { width: 100%; height: auto; display: block; }
+.part { fill: #FFE0B2; stroke: #FFAB91; stroke-width: 3; cursor: pointer; transition: fill 0.2s ease, stroke 0.2s ease, transform 0.1s ease; transform-box: fill-box; transform-origin: center; }
+.part:hover { filter: brightness(1.03); }
+.part:active { transform: scale(0.94); }
+.part[data-shaded="true"] { fill: #FF8C42; stroke: #E65100; }
+@keyframes tap { 50% { transform: scale(0.92); } }
+.part.tap { animation: tap 0.18s ease; }
+#check { width: calc(100% - 32px); margin: 12px 16px 8px; padding: 16px; font-size: 20px; font-weight: 800; color: #fff; background: #FF8C42; border: none; border-radius: 16px; cursor: pointer; transition: transform 0.12s, background 0.2s, box-shadow 0.12s; box-shadow: 0 5px 0 #E65100; min-height: 56px; }
+#check:active { transform: translateY(4px); box-shadow: 0 1px 0 #E65100; }
+#check:disabled { background: #BDBDBD; box-shadow: 0 5px 0 #9E9E9E; cursor: not-allowed; }
+.feedback { min-height: 28px; text-align: center; font-size: 18px; font-weight: 700; margin: 4px 16px 8px; }
+.feedback.right { color: #2E7D32; }
+.feedback.wrong { color: #C62828; }
+.screen { display: flex; flex-direction: column; flex: 1; }
+.hidden { display: none !important; }
+@keyframes celebrate { 0% { transform: scale(1) rotate(0deg); } 25% { transform: scale(1.06) rotate(1deg); } 50% { transform: scale(1) rotate(0deg); } 75% { transform: scale(1.06) rotate(-1deg); } 100% { transform: scale(1) rotate(0deg); } }
+#shape.celebrate .shape-svg { animation: celebrate 0.6s ease; }
+#screen-done { justify-content: center; align-items: center; text-align: center; }
+.done-icon { width: 120px; height: 120px; margin-bottom: 16px; }
+.done-icon circle { fill: #66BB6A; }
+.done-icon path { fill: none; stroke: #fff; stroke-width: 8; stroke-linecap: round; stroke-linejoin: round; }
+.done-title { font-size: 28px; color: #2E7D32; }
+</style>
+<div id="app">
+  <div class="screen" id="screen-main">
+    <div class="padded">
+      <h1 id="title"></h1>
+      <p class="instr" id="instr"></p>
+      <p class="hint" id="hint"></p>
+    </div>
+    <div class="fraction-wrap padded">
+      <div class="fraction" id="fraction">
+        <span class="num"></span>
+        <span class="bar"></span>
+        <span class="den"></span>
+      </div>
+    </div>
+    <div id="shape"></div>
+    <button id="check" data-action="check"></button>
+    <div class="feedback" id="feedback"></div>
+  </div>
+  <div class="screen hidden" id="screen-done">
+    <div class="done-icon">
+      <svg viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r="56"/>
+        <path d="M34 62 L52 80 L86 42"/>
+      </svg>
+    </div>
+    <h1 class="done-title" id="done-text"></h1>
+  </div>
+</div>
+<script>
+(function(){
+  const items = Studio.params.items;
+  const picture = Studio.params.picture === 'bar' ? 'bar' : 'pizza';
+  let currentIndex = 0;
+  let isWaiting = false;
+
+  const titleEl = document.getElementById('title');
+  const instrEl = document.getElementById('instr');
+  const hintEl = document.getElementById('hint');
+  const numEl = document.querySelector('#fraction .num');
+  const denEl = document.querySelector('#fraction .den');
+  const shapeEl = document.getElementById('shape');
+  const checkBtn = document.getElementById('check');
+  const feedbackEl = document.getElementById('feedback');
+  const mainScreen = document.getElementById('screen-main');
+  const doneScreen = document.getElementById('screen-done');
+  const doneTextEl = document.getElementById('done-text');
+
+  function setTexts(){
+    titleEl.textContent = Studio.t('title');
+    instrEl.textContent = Studio.t('instr');
+    hintEl.textContent = Studio.t('hint');
+    checkBtn.textContent = Studio.t('check');
+    doneTextEl.textContent = Studio.t('done');
+  }
+
+  function makePizza(d){
+    const size = 300;
+    const cx = size/2, cy = size/2, r = 130;
+    let svg = '<svg viewBox="0 0 ' + size + ' ' + size + '" class="shape-svg pizza-svg">';
+    for(let i = 0; i < d; i++){
+      const a1 = -Math.PI/2 + i * 2 * Math.PI / d;
+      const a2 = -Math.PI/2 + (i + 1) * 2 * Math.PI / d;
+      const x1 = cx + r * Math.cos(a1);
+      const y1 = cy + r * Math.sin(a1);
+      const x2 = cx + r * Math.cos(a2);
+      const y2 = cy + r * Math.sin(a2);
+      const dpath = 'M ' + cx + ' ' + cy + ' L ' + x1 + ' ' + y1 + ' A ' + r + ' ' + r + ' 0 0 1 ' + x2 + ' ' + y2 + ' Z';
+      svg += '<path d="' + dpath + '" class="part" data-part="' + i + '" data-shaded="false" role="button" tabindex="0" />';
+    }
+    svg += '</svg>';
+    return svg;
+  }
+
+  function makeBar(d){
+    const w = 360, h = 100, gap = d > 6 ? 0 : 6;
+    const segW = (w - gap * (d - 1)) / d;
+    let svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" class="shape-svg bar-svg">';
+    for(let i = 0; i < d; i++){
+      const x = i * (segW + gap);
+      svg += '<rect x="' + x + '" y="0" width="' + segW + '" height="' + h + '" rx="10" class="part" data-part="' + i + '" data-shaded="false" role="button" tabindex="0" />';
+    }
+    svg += '</svg>';
+    return svg;
+  }
+
+  function renderItem(index){
+    const item = items[index];
+    shapeEl.setAttribute('data-item', item.id);
+    numEl.textContent = item.n;
+    denEl.textContent = item.d;
+    feedbackEl.textContent = '';
+    feedbackEl.className = 'feedback';
+    shapeEl.classList.remove('celebrate');
+    checkBtn.disabled = false;
+
+    if(picture === 'bar'){
+      shapeEl.innerHTML = makeBar(item.d);
+    } else {
+      shapeEl.innerHTML = makePizza(item.d);
+    }
+
+    const parts = shapeEl.querySelectorAll('.part');
+    parts.forEach(function(part){
+      part.addEventListener('click', togglePart);
+      part.addEventListener('keydown', function(e){
+        if(e.key === 'Enter' || e.key === ' '){
+          e.preventDefault();
+          togglePart.call(part, e);
+        }
+      });
+    });
+  }
+
+  function togglePart(e){
+    if(isWaiting) return;
+    const part = e.currentTarget;
+    const shaded = part.getAttribute('data-shaded') === 'true';
+    part.setAttribute('data-shaded', String(!shaded));
+    part.classList.add('tap');
+    setTimeout(function(){ part.classList.remove('tap'); }, 180);
+    Studio.event('part_tap', { part: part.getAttribute('data-part'), shaded: !shaded });
+  }
+
+  function getColoredCount(){
+    return shapeEl.querySelectorAll('.part[data-shaded="true"]').length;
+  }
+
+  function checkAnswer(){
+    if(isWaiting) return;
+    const item = items[currentIndex];
+    Studio.answer({ n: getColoredCount(), d: item.d });
+  }
+
+  checkBtn.addEventListener('click', checkAnswer);
+
+  Studio.onVerdict(function(result){
+    if(result.correct){
+      feedbackEl.textContent = Studio.t('right');
+      feedbackEl.className = 'feedback right';
+      shapeEl.classList.add('celebrate');
+      isWaiting = true;
+      checkBtn.disabled = true;
+      Studio.event('item_correct', { id: items[currentIndex].id });
+      setTimeout(function(){
+        currentIndex++;
+        if(currentIndex >= items.length){
+          mainScreen.classList.add('hidden');
+          doneScreen.classList.remove('hidden');
+          Studio.done();
+        } else {
+          isWaiting = false;
+          renderItem(currentIndex);
+        }
+      }, 1400);
+    } else {
+      feedbackEl.textContent = Studio.t('wrong');
+      feedbackEl.className = 'feedback wrong';
+      Studio.event('item_wrong', { id: items[currentIndex].id });
+    }
+  });
+
+  setTexts();
+  renderItem(0);
+  Studio.ready();
+})();
+</script>

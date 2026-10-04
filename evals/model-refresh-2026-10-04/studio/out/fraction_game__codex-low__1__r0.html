@@ -1,0 +1,346 @@
+<style>
+  :root{
+    --bg:#fff8ef;
+    --card:#ffffff;
+    --ink:#3a2e2a;
+    --muted:#7a6a63;
+    --accent:#ff8a65;
+    --accent2:#ffd180;
+    --good:#43a047;
+    --bad:#e53935;
+    --part:#ffe0b2;
+    --partOn:#ff7043;
+    --shadow:0 8px 20px rgba(0,0,0,.08);
+    --r:18px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
+  .app{
+    width:100%;
+    min-height:640px;
+    max-width:420px;
+    margin:0 auto;
+    padding:14px 14px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .top{
+    background:linear-gradient(180deg,#fff,#fff7f0);
+    border-radius:var(--r);
+    padding:12px;
+    box-shadow:var(--shadow);
+  }
+  h1{
+    margin:0 0 6px;
+    font-size:24px;
+    line-height:1.1;
+  }
+  .instr{
+    margin:0;
+    color:var(--muted);
+    font-size:16px;
+    line-height:1.25;
+    min-height:20px;
+  }
+  .fraction{
+    text-align:center;
+    font-size:36px;
+    font-weight:800;
+    letter-spacing:1px;
+    padding:2px 0 0;
+  }
+  .item{
+    background:var(--card);
+    border-radius:var(--r);
+    box-shadow:var(--shadow);
+    padding:12px;
+    min-height:290px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    overflow:hidden;
+  }
+  svg{width:100%;height:auto;display:block}
+  .part{
+    fill:var(--part);
+    stroke:#f6b775;
+    stroke-width:3;
+    cursor:pointer;
+    transition:transform .16s ease, fill .2s ease, filter .2s ease;
+    transform-origin:center;
+    filter:drop-shadow(0 2px 0 rgba(0,0,0,.08));
+  }
+  .part.on{
+    fill:var(--partOn);
+    stroke:#ef6c49;
+  }
+  .part:active{transform:scale(.95)}
+  .part:focus{outline:none;filter:drop-shadow(0 0 0 rgba(0,0,0,0))}
+  .controls{
+    display:flex;
+    gap:10px;
+  }
+  button{
+    border:0;
+    border-radius:14px;
+    min-height:48px;
+    padding:0 18px;
+    font-size:18px;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow:var(--shadow);
+  }
+  .check{
+    flex:1;
+    background:var(--accent);
+    color:#fff;
+    transition:transform .15s ease, filter .2s ease, opacity .2s ease;
+  }
+  .check:active{transform:scale(.98)}
+  .check[disabled]{opacity:.6;cursor:default}
+  .feedback{
+    min-height:24px;
+    text-align:center;
+    font-size:18px;
+    font-weight:700;
+    transition:all .2s ease;
+  }
+  .feedback.good{color:var(--good)}
+  .feedback.bad{color:var(--bad)}
+  .hint{
+    text-align:center;
+    color:var(--muted);
+    font-size:14px;
+    min-height:18px;
+  }
+  .celebrate{
+    animation:pop .5s ease;
+  }
+  @keyframes pop{
+    0%{transform:scale(1)}
+    40%{transform:scale(1.03)}
+    100%{transform:scale(1)}
+  }
+  .burst{
+    position:absolute;inset:0;pointer-events:none;opacity:0;
+  }
+  .burst.show{animation:burst .7s ease}
+  @keyframes burst{
+    0%{opacity:0}
+    20%{opacity:1}
+    100%{opacity:0}
+  }
+  .done{
+    background:var(--card);
+    border-radius:var(--r);
+    box-shadow:var(--shadow);
+    min-height:260px;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:20px;
+    font-size:30px;
+    font-weight:800;
+    color:var(--good);
+  }
+  .done.show{display:flex}
+</style>
+
+<div class="app" id="app">
+  <div class="top">
+    <h1 id="title"></h1>
+    <p class="instr" id="instr"></p>
+  </div>
+
+  <div class="fraction" id="fraction"></div>
+
+  <div class="item" id="itemWrap" data-item="">
+    <svg id="wholeSvg" viewBox="0 0 400 260" aria-label="">
+      <g id="partsLayer"></g>
+    </svg>
+    <svg class="burst" id="burst" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <circle cx="15" cy="22" r="3" fill="#ff8a65"></circle>
+      <circle cx="32" cy="14" r="2.5" fill="#ffd180"></circle>
+      <circle cx="58" cy="12" r="2.5" fill="#81c784"></circle>
+      <circle cx="82" cy="20" r="3" fill="#64b5f6"></circle>
+      <circle cx="18" cy="66" r="3" fill="#ba68c8"></circle>
+      <circle cx="44" cy="82" r="2.5" fill="#ff8a65"></circle>
+      <circle cx="71" cy="76" r="3" fill="#ffd180"></circle>
+      <circle cx="87" cy="58" r="2.5" fill="#81c784"></circle>
+    </svg>
+  </div>
+
+  <div class="controls">
+    <button class="check" id="checkBtn" data-action="check"></button>
+  </div>
+
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+  <div class="hint" id="hint"></div>
+
+  <div class="done" id="doneScreen"></div>
+</div>
+
+<script>
+(function(){
+  const items = (Studio.params && Studio.params.items) ? Studio.params.items : [];
+  const ns = "http://www.w3.org/2000/svg";
+
+  const el = {
+    title: document.getElementById('title'),
+    instr: document.getElementById('instr'),
+    fraction: document.getElementById('fraction'),
+    itemWrap: document.getElementById('itemWrap'),
+    partsLayer: document.getElementById('partsLayer'),
+    checkBtn: document.getElementById('checkBtn'),
+    feedback: document.getElementById('feedback'),
+    hint: document.getElementById('hint'),
+    done: document.getElementById('doneScreen'),
+    app: document.getElementById('app'),
+    burst: document.getElementById('burst')
+  };
+
+  let idx = 0;
+  let awaiting = false;
+  let completed = false;
+
+  el.title.textContent = Studio.t('title');
+  el.instr.textContent = Studio.t('instr');
+  el.checkBtn.textContent = Studio.t('check');
+  el.hint.textContent = Studio.t('hint');
+
+  function gridFor(d){
+    if (d <= 4) return {cols:d, rows:1};
+    if (d <= 6) return {cols:3, rows:2};
+    if (d <= 8) return {cols:4, rows:2};
+    const cols = Math.ceil(Math.sqrt(d));
+    return {cols, rows:Math.ceil(d/cols)};
+  }
+
+  function clearFeedback(){
+    el.feedback.textContent = '';
+    el.feedback.className = 'feedback';
+  }
+
+  function buildParts(item){
+    el.partsLayer.innerHTML = '';
+    const d = item.d;
+    const g = gridFor(d);
+    const cell = 86;
+    const gap = 10;
+    const pad = 12;
+    const w = g.cols * cell + (g.cols - 1) * gap + pad * 2;
+    const h = g.rows * cell + (g.rows - 1) * gap + pad * 2;
+    document.getElementById('wholeSvg').setAttribute('viewBox', `0 0 ${w} ${h}`);
+
+    for(let i=0;i<d;i++){
+      const c = i % g.cols;
+      const r = Math.floor(i / g.cols);
+      const x = pad + c * (cell + gap);
+      const y = pad + r * (cell + gap);
+
+      const rect = document.createElementNS(ns, 'rect');
+      rect.setAttribute('x', x);
+      rect.setAttribute('y', y);
+      rect.setAttribute('rx', 16);
+      rect.setAttribute('ry', 16);
+      rect.setAttribute('width', cell);
+      rect.setAttribute('height', cell);
+      rect.setAttribute('class', 'part');
+      rect.setAttribute('data-part', String(i));
+      rect.setAttribute('data-shaded', 'false');
+      rect.setAttribute('tabindex', '0');
+
+      rect.addEventListener('click', () => togglePart(rect));
+      rect.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          togglePart(rect);
+        }
+      });
+
+      el.partsLayer.appendChild(rect);
+    }
+  }
+
+  function togglePart(rect){
+    if (awaiting || completed) return;
+    const on = rect.getAttribute('data-shaded') === 'true';
+    rect.setAttribute('data-shaded', on ? 'false' : 'true');
+    rect.classList.toggle('on', !on);
+    Studio.event('part_tap', {
+      itemId: items[idx] && items[idx].id,
+      part: Number(rect.getAttribute('data-part')),
+      shaded: !on
+    });
+    clearFeedback();
+  }
+
+  function shadedCount(){
+    return el.partsLayer.querySelectorAll('[data-shaded="true"]').length;
+  }
+
+  function renderItem(){
+    const item = items[idx];
+    if (!item) return finish();
+
+    awaiting = false;
+    clearFeedback();
+    el.itemWrap.setAttribute('data-item', String(item.id));
+    el.fraction.textContent = String(item.n) + '/' + String(item.d);
+    buildParts(item);
+    Studio.event('item_view', { itemId: item.id, n: item.n, d: item.d });
+  }
+
+  el.checkBtn.addEventListener('click', () => {
+    if (awaiting || completed) return;
+    const item = items[idx];
+    if (!item) return;
+    awaiting = true;
+    const n = shadedCount();
+    Studio.event('check', { itemId: item.id, n: n, d: item.d });
+    Studio.answer({ n: n, d: item.d });
+  });
+
+  Studio.onVerdict(({correct}) => {
+    if (completed) return;
+    awaiting = false;
+    if (correct) {
+      el.feedback.textContent = Studio.t('right');
+      el.feedback.className = 'feedback good';
+      el.itemWrap.classList.remove('celebrate');
+      void el.itemWrap.offsetWidth;
+      el.itemWrap.classList.add('celebrate');
+      el.burst.classList.remove('show');
+      void el.burst.offsetWidth;
+      el.burst.classList.add('show');
+      Studio.event('correct', { itemId: items[idx] && items[idx].id });
+      setTimeout(() => {
+        idx += 1;
+        renderItem();
+      }, 700);
+    } else {
+      el.feedback.textContent = Studio.t('wrong');
+      el.feedback.className = 'feedback bad';
+      Studio.event('wrong', { itemId: items[idx] && items[idx].id });
+    }
+  });
+
+  function finish(){
+    completed = true;
+    el.itemWrap.style.display = 'none';
+    document.querySelector('.controls').style.display = 'none';
+    el.fraction.style.display = 'none';
+    el.feedback.style.display = 'none';
+    el.hint.style.display = 'none';
+    el.done.textContent = Studio.t('done');
+    el.done.classList.add('show');
+    Studio.done();
+  }
+
+  renderItem();
+  Studio.ready();
+})();
+</script>

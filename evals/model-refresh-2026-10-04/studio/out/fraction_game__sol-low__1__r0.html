@@ -1,0 +1,473 @@
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --ink:#29324f;
+    --muted:#68708c;
+    --cream:#fffaf0;
+    --card:#ffffff;
+    --purple:#7457d9;
+    --purple-dark:#5940bd;
+    --gold:#ffbd4a;
+    --gold-soft:#ffe29a;
+    --line:#d9d5ed;
+    --good:#238b68;
+    --bad:#c85a68;
+  }
+  body{
+    margin:0;
+    min-width:0;
+    min-height:100vh;
+    overflow-x:hidden;
+    background:
+      radial-gradient(circle at 12% 8%,#fff0bc 0 7%,transparent 7.5%),
+      radial-gradient(circle at 90% 18%,#e9ddff 0 9%,transparent 9.5%),
+      linear-gradient(180deg,#fffaf0,#f7f2ff);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Noto Sans",sans-serif;
+  }
+  #app{
+    width:100%;
+    min-height:100vh;
+    padding:18px 16px 22px;
+    display:flex;
+    justify-content:center;
+  }
+  .card{
+    width:min(100%,430px);
+    min-height:580px;
+    padding:20px 16px;
+    border:2px solid rgba(116,87,217,.13);
+    border-radius:30px;
+    background:rgba(255,255,255,.94);
+    box-shadow:0 18px 45px rgba(68,52,125,.13);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .sprinkle{
+    position:absolute;
+    border-radius:999px;
+    background:var(--gold);
+    opacity:.55;
+    pointer-events:none;
+  }
+  .s1{width:11px;height:26px;left:18px;top:85px;transform:rotate(-25deg)}
+  .s2{width:13px;height:13px;right:24px;top:115px;background:#9adbc8}
+  .s3{width:9px;height:23px;right:20px;bottom:106px;transform:rotate(28deg);background:#d8c7ff}
+  h1{
+    margin:0;
+    max-width:290px;
+    text-align:center;
+    font-size:clamp(24px,7vw,32px);
+    line-height:1.15;
+    color:var(--purple-dark);
+  }
+  .instruction{
+    margin:10px 8px 4px;
+    min-height:42px;
+    text-align:center;
+    color:var(--muted);
+    font-size:17px;
+    line-height:1.35;
+  }
+  .steps{
+    display:flex;
+    gap:8px;
+    margin:8px 0 10px;
+  }
+  .step{
+    width:11px;
+    height:11px;
+    border-radius:50%;
+    background:#ded9ef;
+    transition:transform .25s,background .25s;
+  }
+  .step.active{background:var(--purple);transform:scale(1.25)}
+  .step.past{background:#81ccb6}
+  .target{
+    min-width:86px;
+    min-height:76px;
+    padding:7px 20px;
+    border-radius:20px;
+    background:#f2edff;
+    color:var(--purple-dark);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    box-shadow:inset 0 0 0 2px #e0d6ff;
+    font-weight:800;
+    font-size:27px;
+    line-height:.88;
+  }
+  .fraction-line{
+    width:38px;
+    height:3px;
+    margin:5px 0;
+    border-radius:4px;
+    background:currentColor;
+  }
+  .picture{
+    width:100%;
+    min-height:245px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:4px 0 2px;
+  }
+  .picture svg{
+    width:min(100%,300px);
+    height:230px;
+    overflow:visible;
+    filter:drop-shadow(0 9px 7px rgba(60,45,105,.12));
+  }
+  [data-part]{
+    cursor:pointer;
+    outline:none;
+    transform-box:fill-box;
+    transform-origin:center;
+    transition:fill .22s,transform .14s,filter .22s;
+    fill:var(--cream);
+    stroke:var(--purple-dark);
+    stroke-width:4;
+  }
+  [data-part][data-shaded="true"]{
+    fill:var(--gold);
+    filter:drop-shadow(0 2px 1px rgba(183,111,13,.22));
+  }
+  [data-part]:active{transform:scale(.94)}
+  [data-part]:focus-visible{
+    stroke:#1a8267;
+    stroke-width:7;
+  }
+  [data-part].pop{animation:partPop .3s ease}
+  @keyframes partPop{
+    45%{transform:scale(1.07)}
+  }
+  .feedback{
+    min-height:44px;
+    padding:7px 12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-size:16px;
+    line-height:1.25;
+    font-weight:700;
+    color:var(--muted);
+  }
+  .feedback.good{color:var(--good);animation:bloom .4s ease}
+  .feedback.bad{color:var(--bad);animation:wiggle .38s ease}
+  .check{
+    width:min(100%,260px);
+    min-height:54px;
+    border:0;
+    border-radius:18px;
+    padding:12px 22px;
+    background:linear-gradient(180deg,#8266e7,var(--purple-dark));
+    color:white;
+    box-shadow:0 7px 0 #443095,0 12px 20px rgba(80,55,170,.22);
+    font:inherit;
+    font-size:19px;
+    font-weight:800;
+    cursor:pointer;
+    transition:transform .13s,box-shadow .13s,opacity .2s;
+  }
+  .check:active{
+    transform:translateY(5px) scale(.98);
+    box-shadow:0 2px 0 #443095,0 7px 12px rgba(80,55,170,.18);
+  }
+  .check:focus-visible{outline:4px solid #ffd87b;outline-offset:3px}
+  .check:disabled{opacity:.58;cursor:default}
+  .celebrate .target{animation:bloom .55s ease}
+  .celebrate .picture{animation:bloom .55s ease}
+  @keyframes bloom{
+    0%{transform:scale(.92)}
+    55%{transform:scale(1.06)}
+    100%{transform:scale(1)}
+  }
+  @keyframes wiggle{
+    25%{transform:translateX(-5px)}
+    50%{transform:translateX(5px)}
+    75%{transform:translateX(-3px)}
+  }
+  .burst{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+  }
+  .confetti{
+    position:absolute;
+    top:44%;
+    left:50%;
+    width:10px;
+    height:16px;
+    border-radius:4px;
+    background:var(--gold);
+    animation:fly .75s ease-out forwards;
+  }
+  @keyframes fly{
+    to{
+      transform:translate(var(--x),var(--y)) rotate(var(--r));
+      opacity:0;
+    }
+  }
+  .done-screen{
+    flex:1;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    animation:bloom .55s ease;
+  }
+  .done-art{
+    width:190px;
+    height:190px;
+    margin-bottom:24px;
+  }
+  .done-art .ray{transform-origin:100px 100px;animation:ray 1.8s ease-in-out infinite}
+  @keyframes ray{50%{transform:scale(1.08);opacity:.72}}
+</style>
+
+<div id="app">
+  <main class="card" id="itemCard">
+    <span class="sprinkle s1"></span>
+    <span class="sprinkle s2"></span>
+    <span class="sprinkle s3"></span>
+    <h1 id="title"></h1>
+    <div class="instruction" id="instr"></div>
+    <div class="steps" id="steps"></div>
+    <div class="target" id="target">
+      <span id="numerator"></span>
+      <span class="fraction-line"></span>
+      <span id="denominator"></span>
+    </div>
+    <div class="picture" id="picture"></div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+    <button class="check" id="check" data-action="check" type="button"></button>
+    <div class="burst" id="burst"></div>
+  </main>
+</div>
+
+<script>
+(() => {
+  const items = Studio.params.items;
+  const app = document.getElementById("app");
+  const card = document.getElementById("itemCard");
+  const title = document.getElementById("title");
+  const instr = document.getElementById("instr");
+  const steps = document.getElementById("steps");
+  const numerator = document.getElementById("numerator");
+  const denominator = document.getElementById("denominator");
+  const picture = document.getElementById("picture");
+  const feedback = document.getElementById("feedback");
+  const check = document.getElementById("check");
+  const burst = document.getElementById("burst");
+  let current = 0;
+  let pending = false;
+  let finished = false;
+
+  title.textContent = Studio.t("title");
+  instr.textContent = Studio.t("instr");
+  check.textContent = Studio.t("check");
+
+  function svgNode(name, attrs) {
+    const node = document.createElementNS("http://www.w3.org/2000/svg", name);
+    Object.keys(attrs).forEach(key => node.setAttribute(key, attrs[key]));
+    return node;
+  }
+
+  function polar(cx, cy, radius, angle) {
+    const radians = (angle - 90) * Math.PI / 180;
+    return {
+      x: cx + radius * Math.cos(radians),
+      y: cy + radius * Math.sin(radians)
+    };
+  }
+
+  function pizzaPath(cx, cy, radius, start, end) {
+    const a = polar(cx, cy, radius, end);
+    const b = polar(cx, cy, radius, start);
+    const large = end - start <= 180 ? 0 : 1;
+    return [
+      "M", cx, cy,
+      "L", b.x, b.y,
+      "A", radius, radius, 0, large, 1, a.x, a.y,
+      "Z"
+    ].join(" ");
+  }
+
+  function activatePart(part, index) {
+    const shaded = part.getAttribute("data-shaded") === "true";
+    part.setAttribute("data-shaded", shaded ? "false" : "true");
+    part.classList.remove("pop");
+    void part.getBoundingClientRect();
+    part.classList.add("pop");
+    feedback.textContent = "";
+    feedback.className = "feedback";
+    Studio.event("part_toggle", {
+      item: items[current].id,
+      part: index,
+      shaded: !shaded
+    });
+  }
+
+  function bindPart(part, index) {
+    part.setAttribute("data-part", index);
+    part.setAttribute("data-shaded", "false");
+    part.setAttribute("tabindex", "0");
+    part.setAttribute("role", "button");
+    part.addEventListener("click", () => {
+      if (!pending) activatePart(part, index);
+    });
+    part.addEventListener("keydown", event => {
+      if (!pending && (event.key === "Enter" || event.key === " ")) {
+        event.preventDefault();
+        activatePart(part, index);
+      }
+    });
+  }
+
+  function makePizza(d) {
+    const svg = svgNode("svg", {viewBox:"0 0 220 230"});
+    const crust = svgNode("circle", {
+      cx:110, cy:115, r:101,
+      fill:"#e9a94b", stroke:"#9b6130", "stroke-width":4
+    });
+    svg.appendChild(crust);
+    const step = 360 / d;
+    for (let i = 0; i < d; i++) {
+      const part = svgNode("path", {
+        d:pizzaPath(110, 115, 92, i * step, (i + 1) * step)
+      });
+      bindPart(part, i);
+      svg.appendChild(part);
+    }
+    return svg;
+  }
+
+  function makeBar(d) {
+    const svg = svgNode("svg", {viewBox:"0 0 310 210"});
+    const gap = 4;
+    const totalWidth = 290;
+    const width = (totalWidth - gap * (d - 1)) / d;
+    for (let i = 0; i < d; i++) {
+      const part = svgNode("rect", {
+        x:10 + i * (width + gap),
+        y:48,
+        width:width,
+        height:114,
+        rx:Math.min(12, width / 4),
+        ry:Math.min(12, width / 4)
+      });
+      bindPart(part, i);
+      svg.appendChild(part);
+    }
+    return svg;
+  }
+
+  function renderSteps() {
+    steps.replaceChildren();
+    items.forEach((item, index) => {
+      const dot = document.createElement("span");
+      dot.className = "step" + (index === current ? " active" : index < current ? " past" : "");
+      steps.appendChild(dot);
+    });
+  }
+
+  function renderItem() {
+    const item = items[current];
+    pending = false;
+    card.classList.remove("celebrate");
+    card.setAttribute("data-item", item.id);
+    numerator.textContent = item.n;
+    denominator.textContent = item.d;
+    feedback.textContent = "";
+    feedback.className = "feedback";
+    check.disabled = false;
+    renderSteps();
+    picture.replaceChildren(current % 2 === 0 ? makePizza(item.d) : makeBar(item.d));
+    Studio.event("item_show", {item:item.id});
+  }
+
+  function celebrate() {
+    burst.replaceChildren();
+    const count = items[current].d + items[current].n;
+    for (let i = 0; i < count; i++) {
+      const bit = document.createElement("span");
+      bit.className = "confetti";
+      const angle = (Math.PI * 2 * i) / count;
+      const distance = 80 + (i % 3) * 22;
+      bit.style.setProperty("--x", Math.cos(angle) * distance + "px");
+      bit.style.setProperty("--y", Math.sin(angle) * distance + "px");
+      bit.style.setProperty("--r", (i + 1) * 47 + "deg");
+      bit.style.background = i % 3 === 0 ? "#7457d9" : i % 3 === 1 ? "#ffbd4a" : "#68c7aa";
+      burst.appendChild(bit);
+    }
+    card.classList.add("celebrate");
+  }
+
+  function showDone() {
+    if (finished) return;
+    finished = true;
+    const wrap = document.createElement("main");
+    wrap.className = "card";
+    const done = document.createElement("div");
+    done.className = "done-screen";
+    done.innerHTML =
+      '<svg class="done-art" viewBox="0 0 200 200" aria-hidden="true">' +
+      '<circle class="ray" cx="100" cy="100" r="82" fill="#fff0b7"/>' +
+      '<circle cx="100" cy="100" r="61" fill="#7457d9"/>' +
+      '<path d="M67 102 L89 124 L137 74" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<circle cx="36" cy="57" r="8" fill="#ffbd4a"/>' +
+      '<circle cx="164" cy="47" r="7" fill="#68c7aa"/>' +
+      '<rect x="154" y="145" width="12" height="24" rx="6" fill="#ff8c9a" transform="rotate(35 160 157)"/>' +
+      '<rect x="35" y="143" width="12" height="24" rx="6" fill="#a98de9" transform="rotate(-35 41 155)"/>' +
+      '</svg>';
+    const heading = document.createElement("h1");
+    heading.textContent = Studio.t("done");
+    done.appendChild(heading);
+    wrap.appendChild(done);
+    app.replaceChildren(wrap);
+    Studio.done();
+  }
+
+  check.addEventListener("click", () => {
+    if (pending || finished) return;
+    pending = true;
+    check.disabled = true;
+    const item = items[current];
+    const count = picture.querySelectorAll('[data-shaded="true"]').length;
+    Studio.event("check", {item:item.id, n:count, d:item.d});
+    Studio.answer({n:count, d:item.d});
+  });
+
+  Studio.onVerdict(verdict => {
+    if (!pending || finished) return;
+    if (verdict.correct) {
+      feedback.textContent = Studio.t("right");
+      feedback.className = "feedback good";
+      celebrate();
+      window.setTimeout(() => {
+        current++;
+        if (current >= items.length) showDone();
+        else renderItem();
+      }, 850);
+    } else {
+      pending = false;
+      check.disabled = false;
+      feedback.textContent = Studio.t("wrong") + " " + Studio.t("hint");
+      feedback.className = "feedback bad";
+      Studio.event("retry", {item:items[current].id});
+    }
+  });
+
+  renderItem();
+  Studio.ready();
+})();
+</script>

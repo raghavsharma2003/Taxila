@@ -1,0 +1,351 @@
+<style>
+  :root {
+    --bg: #fff9f2;
+    --primary: #ff6b47;
+    --primary-light: #ffb399;
+    --secondary: #4ecdc4;
+    --text: #2c3e50;
+    --text-light: #7f8c8d;
+    --correct: #2ecc71;
+    --wrong: #e74c3c;
+    --shadow: 0 2px 6px rgba(0,0,0,0.1);
+    --round: 16px;
+    --transition: all 0.2s ease;
+  }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    box-sizing: border-box;
+    overflow: hidden;
+    touch-action: manipulation;
+  }
+  .title {
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    margin: 8px 0 4px;
+    color: var(--primary);
+  }
+  .instr {
+    font-size: 14px;
+    text-align: center;
+    margin: 0 0 16px;
+    color: var(--text-light);
+    line-height: 1.4;
+  }
+  .item-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+  }
+  .fraction-display {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 8px 0 16px;
+    color: var(--text);
+  }
+  .pizza-container, .bar-container {
+    width: 100%;
+    max-width: 300px;
+    height: 280px;
+    position: relative;
+    margin: 0 auto 16px;
+  }
+  .pizza {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--primary-light);
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .bar {
+    width: 100%;
+    height: 40px;
+    background: var(--primary-light);
+    border-radius: var(--round);
+    position: relative;
+    box-shadow: var(--shadow);
+  }
+  .part {
+    position: absolute;
+    background: var(--primary-light);
+    transition: var(--transition);
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .part.shaded {
+    background: var(--primary);
+  }
+  .pizza .part {
+    width: 50%;
+    height: 50%;
+    top: 0;
+    left: 50%;
+    transform-origin: left center;
+    border-radius: 0 100% 100% 0 / 0 100% 0 100%;
+  }
+  .bar .part {
+    height: 100%;
+    border-radius: var(--round);
+  }
+  .check-btn {
+    background: var(--secondary);
+    color: white;
+    border: none;
+    border-radius: var(--round);
+    padding: 12px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+    margin-top: 8px;
+    min-width: 120px;
+    min-height: 44px;
+  }
+  .check-btn:active {
+    transform: scale(0.96);
+    background: #3aa89e;
+  }
+  .feedback {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 8px 0;
+    height: 24px;
+    opacity: 0;
+    transition: var(--transition);
+  }
+  .feedback.show {
+    opacity: 1;
+  }
+  .feedback.correct {
+    color: var(--correct);
+  }
+  .feedback.wrong {
+    color: var(--wrong);
+  }
+  .hint {
+    font-size: 12px;
+    color: var(--text-light);
+    text-align: center;
+    margin: 4px 0 0;
+    font-style: italic;
+  }
+  .done-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+  }
+  .done-screen.show {
+    display: flex;
+  }
+  .done-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 8px;
+  }
+  .celebration {
+    font-size: 40px;
+    margin: 16px 0;
+    animation: bounce 0.5s ease infinite alternate;
+  }
+  @keyframes bounce {
+    from { transform: scale(1); }
+    to { transform: scale(1.2); }
+  }
+  .pulse {
+    animation: pulse 0.3s ease;
+  }
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+</style>
+
+<div class="title" data-test="title"></div>
+<div class="instr" data-test="instr"></div>
+<div class="item-container" data-item="" data-test="item-container">
+  <div class="fraction-display" data-test="fraction"></div>
+  <div class="pizza-container" data-test="pizza-container" style="display:none;">
+    <div class="pizza" data-test="pizza"></div>
+  </div>
+  <div class="bar-container" data-test="bar-container" style="display:none;">
+    <div class="bar" data-test="bar"></div>
+  </div>
+  <div class="feedback" data-test="feedback"></div>
+  <button class="check-btn" data-action="check" data-test="check-btn"></button>
+  <div class="hint" data-test="hint"></div>
+</div>
+<div class="done-screen" data-test="done-screen">
+  <div class="done-title" data-test="done-title"></div>
+  <div class="celebration" data-test="celebration">🎉</div>
+</div>
+
+<script>
+  (function() {
+    'use strict';
+
+    const params = Studio.params;
+    const items = params.items;
+    let currentItemIndex = 0;
+    let currentItem = items[0];
+    let parts = [];
+    let isCelebrating = false;
+
+    const titleEl = document.querySelector('[data-test="title"]');
+    const instrEl = document.querySelector('[data-test="instr"]');
+    const fractionEl = document.querySelector('[data-test="fraction"]');
+    const pizzaContainerEl = document.querySelector('[data-test="pizza-container"]');
+    const barContainerEl = document.querySelector('[data-test="bar-container"]');
+    const pizzaEl = document.querySelector('[data-test="pizza"]');
+    const barEl = document.querySelector('[data-test="bar"]');
+    const feedbackEl = document.querySelector('[data-test="feedback"]');
+    const checkBtnEl = document.querySelector('[data-test="check-btn"]');
+    const hintEl = document.querySelector('[data-test="hint"]');
+    const itemContainerEl = document.querySelector('[data-test="item-container"]');
+    const doneScreenEl = document.querySelector('[data-test="done-screen"]');
+    const doneTitleEl = document.querySelector('[data-test="done-title"]');
+
+    function updateStrings() {
+      titleEl.textContent = Studio.t('title');
+      instrEl.textContent = Studio.t('instr');
+      checkBtnEl.textContent = Studio.t('check');
+      hintEl.textContent = Studio.t('hint');
+      doneTitleEl.textContent = Studio.t('done');
+    }
+
+    function createPizza(d) {
+      pizzaEl.innerHTML = '';
+      const angle = 360 / d;
+      for (let i = 0; i < d; i++) {
+        const part = document.createElement('div');
+        part.className = 'part';
+        part.dataset.part = i;
+        part.dataset.shaded = 'false';
+        part.style.transform = `rotate(${angle * i}deg)`;
+        part.addEventListener('click', togglePart);
+        pizzaEl.appendChild(part);
+      }
+      parts = Array.from(pizzaEl.children);
+    }
+
+    function createBar(d) {
+      barEl.innerHTML = '';
+      for (let i = 0; i < d; i++) {
+        const part = document.createElement('div');
+        part.className = 'part';
+        part.dataset.part = i;
+        part.dataset.shaded = 'false';
+        part.style.width = `${100 / d}%`;
+        part.style.left = `${(100 / d) * i}%`;
+        part.addEventListener('click', togglePart);
+        barEl.appendChild(part);
+      }
+      parts = Array.from(barEl.children);
+    }
+
+    function togglePart(e) {
+      if (isCelebrating) return;
+      const part = e.currentTarget;
+      const isShaded = part.dataset.shaded === 'true';
+      part.dataset.shaded = !isShaded;
+      part.classList.toggle('shaded', !isShaded);
+      part.classList.add('pulse');
+      setTimeout(() => part.classList.remove('pulse'), 300);
+      Studio.event('togglePart', { part: part.dataset.part, shaded: !isShaded });
+    }
+
+    function showItem(index) {
+      currentItemIndex = index;
+      currentItem = items[index];
+      itemContainerEl.dataset.item = currentItem.id;
+      fractionEl.textContent = `${currentItem.n}/${currentItem.d}`;
+
+      if (params.picture === 'pizza') {
+        pizzaContainerEl.style.display = 'block';
+        barContainerEl.style.display = 'none';
+        createPizza(currentItem.d);
+      } else {
+        pizzaContainerEl.style.display = 'none';
+        barContainerEl.style.display = 'block';
+        createBar(currentItem.d);
+      }
+
+      feedbackEl.classList.remove('show', 'correct', 'wrong');
+      feedbackEl.textContent = '';
+      resetParts();
+    }
+
+    function resetParts() {
+      parts.forEach(part => {
+        part.dataset.shaded = 'false';
+        part.classList.remove('shaded');
+      });
+    }
+
+    function getShadedCount() {
+      return parts.filter(part => part.dataset.shaded === 'true').length;
+    }
+
+    function handleCheck() {
+      if (isCelebrating) return;
+      const shadedCount = getShadedCount();
+      Studio.answer({ n: shadedCount, d: currentItem.d });
+      Studio.event('check', { n: shadedCount, d: currentItem.d });
+    }
+
+    function handleVerdict({ correct }) {
+      if (correct) {
+        feedbackEl.textContent = Studio.t('right');
+        feedbackEl.classList.add('correct');
+        feedbackEl.classList.add('show');
+        isCelebrating = true;
+        checkBtnEl.disabled = true;
+
+        setTimeout(() => {
+          feedbackEl.classList.remove('show', 'correct');
+          isCelebrating = false;
+          checkBtnEl.disabled = false;
+
+          if (currentItemIndex < items.length - 1) {
+            showItem(currentItemIndex + 1);
+          } else {
+            itemContainerEl.style.display = 'none';
+            doneScreenEl.classList.add('show');
+            Studio.done();
+          }
+        }, 1000);
+      } else {
+        feedbackEl.textContent = Studio.t('wrong');
+        feedbackEl.classList.add('wrong');
+        feedbackEl.classList.add('show');
+        setTimeout(() => {
+          feedbackEl.classList.remove('show', 'wrong');
+        }, 1000);
+      }
+    }
+
+    checkBtnEl.addEventListener('click', handleCheck);
+    Studio.onVerdict(handleVerdict);
+
+    updateStrings();
+    showItem(0);
+    Studio.ready();
+  })();
+</script>

@@ -1,0 +1,350 @@
+<style>
+  :root {
+    --bg: #fff9f0;
+    --primary: #ff6b47;
+    --primary-light: #ffb399;
+    --secondary: #4ecdc4;
+    --text: #2c3e50;
+    --text-light: #7f8c8d;
+    --correct: #2ecc71;
+    --wrong: #e74c3c;
+    --shadow: 0 2px 6px rgba(0,0,0,0.1);
+    --round: 16px;
+    --transition: all 0.2s ease;
+  }
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    box-sizing: border-box;
+    overflow: hidden;
+    touch-action: manipulation;
+  }
+  .title {
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    margin: 8px 0 4px;
+    color: var(--primary);
+  }
+  .instr {
+    font-size: 14px;
+    text-align: center;
+    margin: 0 0 16px;
+    color: var(--text-light);
+  }
+  .item-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+  }
+  .fraction-display {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 8px 0;
+    color: var(--text);
+  }
+  .pizza-container, .bar-container {
+    width: 280px;
+    height: 280px;
+    position: relative;
+    margin: 16px 0;
+  }
+  .pizza {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--primary-light);
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .bar {
+    width: 100%;
+    height: 100%;
+    background: var(--primary-light);
+    position: relative;
+    border-radius: var(--round);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: row;
+  }
+  .part {
+    position: absolute;
+    cursor: pointer;
+    transition: var(--transition);
+    transform-origin: center;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .pizza .part {
+    width: 100%;
+    height: 100%;
+    transform-origin: 50% 100%;
+  }
+  .bar .part {
+    height: 100%;
+    border-right: 1px solid rgba(255,255,255,0.3);
+  }
+  .bar .part:last-child {
+    border-right: none;
+  }
+  .part.unshaded {
+    background: var(--primary-light);
+  }
+  .part.shaded {
+    background: var(--primary);
+  }
+  .part:active {
+    transform: scale(0.95);
+  }
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .btn {
+    padding: 10px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--round);
+    background: var(--secondary);
+    color: white;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+    min-width: 120px;
+    min-height: 44px;
+  }
+  .btn:active {
+    transform: scale(0.98);
+    background: #3aa89e;
+  }
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .feedback {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px 30px;
+    border-radius: var(--round);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    font-size: 18px;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: var(--transition);
+    z-index: 100;
+  }
+  .feedback.show {
+    opacity: 1;
+  }
+  .feedback.correct {
+    color: var(--correct);
+    animation: pulse 0.5s ease;
+  }
+  .feedback.wrong {
+    color: var(--wrong);
+  }
+  .hint {
+    font-size: 12px;
+    color: var(--text-light);
+    text-align: center;
+    margin-top: 8px;
+  }
+  .done-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+  }
+  .done-screen.show {
+    display: flex;
+  }
+  .done-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 16px;
+  }
+  @keyframes pulse {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.05); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+  }
+</style>
+
+<div class="title" data-test="title"></div>
+<div class="instr" data-test="instr"></div>
+
+<div class="item-container" data-item="" data-test="item-container">
+  <div class="fraction-display" data-test="fraction-display"></div>
+  <div class="pizza-container" data-test="pizza-container" style="display:none;">
+    <div class="pizza" data-test="pizza"></div>
+  </div>
+  <div class="bar-container" data-test="bar-container" style="display:none;">
+    <div class="bar" data-test="bar"></div>
+  </div>
+  <div class="hint" data-test="hint"></div>
+  <div class="controls">
+    <button class="btn" data-action="check" data-test="check-btn"></button>
+  </div>
+</div>
+
+<div class="feedback" data-test="feedback"></div>
+
+<div class="done-screen" data-test="done-screen">
+  <div class="done-title" data-test="done-title"></div>
+</div>
+
+<script>
+  (function() {
+    'use strict';
+
+    const params = Studio.params;
+    const picture = params.picture;
+    const items = params.items;
+    let currentItemIndex = 0;
+    let currentItem = null;
+    let parts = [];
+    let shadedCount = 0;
+
+    const titleEl = document.querySelector('[data-test="title"]');
+    const instrEl = document.querySelector('[data-test="instr"]');
+    const fractionDisplayEl = document.querySelector('[data-test="fraction-display"]');
+    const pizzaContainerEl = document.querySelector('[data-test="pizza-container"]');
+    const barContainerEl = document.querySelector('[data-test="bar-container"]');
+    const pizzaEl = document.querySelector('[data-test="pizza"]');
+    const barEl = document.querySelector('[data-test="bar"]');
+    const hintEl = document.querySelector('[data-test="hint"]');
+    const checkBtn = document.querySelector('[data-test="check-btn"]');
+    const feedbackEl = document.querySelector('[data-test="feedback"]');
+    const itemContainerEl = document.querySelector('[data-test="item-container"]');
+    const doneScreenEl = document.querySelector('[data-test="done-screen"]');
+    const doneTitleEl = document.querySelector('[data-test="done-title"]');
+
+    function init() {
+      titleEl.textContent = Studio.t('title');
+      instrEl.textContent = Studio.t('instr');
+      checkBtn.textContent = Studio.t('check');
+      hintEl.textContent = Studio.t('hint');
+      doneTitleEl.textContent = Studio.t('done');
+
+      if (picture === 'pizza-or-bar') {
+        barContainerEl.style.display = 'block';
+      } else {
+        pizzaContainerEl.style.display = 'block';
+      }
+
+      loadItem(currentItemIndex);
+      Studio.ready();
+    }
+
+    function loadItem(index) {
+      if (index >= items.length) {
+        showDoneScreen();
+        return;
+      }
+
+      currentItemIndex = index;
+      currentItem = items[index];
+      itemContainerEl.setAttribute('data-item', currentItem.id);
+      fractionDisplayEl.textContent = `${currentItem.n}/${currentItem.d}`;
+      shadedCount = 0;
+
+      createParts(currentItem.d);
+      updateCheckButton();
+    }
+
+    function createParts(totalParts) {
+      const container = picture === 'pizza' ? pizzaEl : barEl;
+      container.innerHTML = '';
+
+      const angle = 360 / totalParts;
+      parts = [];
+
+      for (let i = 0; i < totalParts; i++) {
+        const part = document.createElement('div');
+        part.className = 'part unshaded';
+        part.setAttribute('data-part', i);
+        part.setAttribute('data-shaded', 'false');
+
+        if (picture === 'pizza') {
+          part.style.transform = `rotate(${i * angle}deg)`;
+          part.style.clipPath = `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.cos((angle * (i + 1)) * Math.PI / 180)}% ${50 - 50 * Math.sin((angle * (i + 1)) * Math.PI / 180)}%)`;
+        } else {
+          part.style.width = `${100 / totalParts}%`;
+        }
+
+        part.addEventListener('click', () => togglePart(part));
+        container.appendChild(part);
+        parts.push(part);
+      }
+    }
+
+    function togglePart(part) {
+      const isShaded = part.getAttribute('data-shaded') === 'true';
+      if (isShaded) {
+        part.classList.remove('shaded');
+        part.classList.add('unshaded');
+        part.setAttribute('data-shaded', 'false');
+        shadedCount--;
+      } else {
+        part.classList.remove('unshaded');
+        part.classList.add('shaded');
+        part.setAttribute('data-shaded', 'true');
+        shadedCount++;
+      }
+      updateCheckButton();
+      Studio.event('part_toggle', { part: part.getAttribute('data-part'), shaded: !isShaded });
+    }
+
+    function updateCheckButton() {
+      checkBtn.disabled = shadedCount === 0;
+    }
+
+    function showFeedback(isCorrect) {
+      feedbackEl.textContent = isCorrect ? Studio.t('right') : Studio.t('wrong');
+      feedbackEl.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
+      feedbackEl.classList.add('show');
+
+      setTimeout(() => {
+        feedbackEl.classList.remove('show');
+        if (isCorrect) {
+          loadItem(currentItemIndex + 1);
+        }
+      }, 1000);
+    }
+
+    function showDoneScreen() {
+      itemContainerEl.style.display = 'none';
+      doneScreenEl.classList.add('show');
+      Studio.done();
+    }
+
+    checkBtn.addEventListener('click', () => {
+      Studio.answer({ n: shadedCount, d: currentItem.d });
+      Studio.onVerdict(({ correct }) => {
+        showFeedback(correct);
+      });
+    });
+
+    init();
+  })();
+</script>

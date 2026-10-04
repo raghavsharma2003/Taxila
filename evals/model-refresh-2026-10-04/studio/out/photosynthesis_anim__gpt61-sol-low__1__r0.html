@@ -1,0 +1,110 @@
+<style>
+*{box-sizing:border-box}body{margin:0;background:#eef6ed;color:#234a3d;font-family:system-ui,sans-serif}#activity{max-width:460px;margin:auto;padding:12px;display:flex;flex-direction:column;gap:8px}h1{font-size:19px;line-height:1.25;margin:0;text-align:center} .scene{width:100%;height:295px;display:block;background:linear-gradient(#e2f5fb,#f7fbef);border-radius:24px;box-shadow:0 4px 16px #234a3d12}svg text{font:600 12px system-ui,sans-serif;fill:#234a3d}button{border:0;border-radius:14px;min-height:44px;min-width:44px;font:600 15px system-ui,sans-serif;cursor:pointer;color:#234a3d;background:#fff;box-shadow:0 3px 0 #d3e4d7;transition:transform .15s,background .2s}button:active{transform:scale(.94)}button:focus-visible{outline:3px solid #eeac37;outline-offset:2px}.controls{display:flex;gap:6px;align-items:center}#play{flex:1;background:#d4eedf;font-size:14px;padding:0 8px}.steps{display:flex;gap:5px}.steps button{min-width:0;width:39px;min-height:44px}.steps button[aria-pressed=true]{background:#fbd782;box-shadow:0 3px 0 #e9b953}#caption{margin:0;background:#fff5d9;border-radius:14px;padding:9px 12px;min-height:54px;font-size:14px;line-height:1.3}#question{background:#fff;border-radius:18px;padding:10px}#ask{margin:0 0 8px;font-size:14px;line-height:1.3}.options{display:flex;gap:7px}.options button{flex:1;padding:6px;font-size:13px;background:#eaf4ef;overflow-wrap:anywhere}#feedback{display:inline-block;font-size:19px;margin-left:5px;vertical-align:middle}.process{transition:opacity .4s}.dim{opacity:.22}.glow{filter:drop-shadow(0 0 5px #ffe269)}#question.retry{animation:nudge .25s}#question.success{background:#daf3df}@keyframes nudge{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}@media(max-width:380px){#activity{padding:10px;gap:7px}.steps{gap:4px}.steps button{width:44px}#play{padding:0 4px;font-size:12px}.scene{height:282px}}
+</style>
+<div id="activity">
+<h1 data-label="title"></h1>
+<svg class="scene" viewBox="0 0 340 295" role="img">
+<defs><linearGradient id="leafFill" x2="1" y2="1"><stop stop-color="#9ddc65"/><stop offset="1" stop-color="#32955b"/></linearGradient></defs>
+<g id="light" class="process" stroke="#f7c951" stroke-width="5" stroke-linecap="round">
+<path d="M158 56L195 104M146 62L174 115M169 52L217 100" opacity=".65"/>
+</g>
+<g fill="#ffcf56" stroke="#efb43d" stroke-width="3">
+<circle cx="127" cy="37" r="21"/>
+<path d="M127 6V1M127 68V73M96 37H88M158 37H166M105 15L99 9M149 59L155 65M105 59L99 65M149 15L155 9" stroke-linecap="round"/>
+</g>
+<text x="174" y="39" data-label="sun"></text>
+<path d="M0 240Q70 224 145 239T340 237V295H0Z" fill="#d6b593"/>
+<path d="M0 251Q85 238 173 250T340 249" fill="none" stroke="#c59d78" stroke-width="2"/>
+<g data-entity="roots" stroke="#8d6948" stroke-width="4" fill="none" stroke-linecap="round">
+<path d="M156 234L150 263L135 280M150 261L170 280M154 247L177 262L189 274M152 251L130 262L115 270"/>
+</g>
+<text x="218" y="280" data-label="roots"></text>
+<path d="M155 239Q154 185 177 151" stroke="#388556" stroke-width="10" fill="none" stroke-linecap="round"/>
+<path d="M157 203Q123 180 113 189Q122 215 157 212" fill="#69b778"/>
+<path data-entity="leaf" d="M174 161Q159 106 235 94Q253 148 174 161Z" fill="url(#leafFill)" stroke="#318454" stroke-width="2"/>
+<path d="M174 158L225 110M193 139L191 118M203 130L226 132" stroke="#c4e99a" stroke-width="2" fill="none"/>
+<text x="239" y="92" data-label="leaf"></text>
+<g id="glucose" class="process glow" fill="#ffe884">
+<circle cx="207" cy="118" r="5"/><circle cx="219" cy="141" r="4"/><circle cx="190" cy="144" r="4"/>
+</g>
+<text x="204" y="183" data-label="glucose"></text>
+<text x="13" y="108" data-label="co2"></text>
+<text x="280" y="205" text-anchor="middle" data-label="o2"></text>
+<text x="18" y="225" data-label="water"></text>
+<g id="waterFlow" class="process" fill="#409ed9" stroke="#fff" stroke-width="1">
+<circle data-flow="water" cx="148" cy="267" r="4"/><circle data-flow="water" cx="155" cy="220" r="4"/><circle data-flow="water" cx="162" cy="180" r="4"/>
+</g>
+<g id="co2Flow" class="process" fill="#8b94c9" stroke="#fff" stroke-width="1">
+<circle data-flow="co2" cx="30" cy="135" r="4"/><circle data-flow="co2" cx="85" cy="130" r="4"/><circle data-flow="co2" cx="140" cy="128" r="4"/>
+</g>
+<g id="o2Flow" class="process" fill="#e99b78" stroke="#fff" stroke-width="1">
+<circle data-flow="o2" cx="229" cy="149" r="4"/><circle data-flow="o2" cx="264" cy="163" r="4"/><circle data-flow="o2" cx="303" cy="172" r="4"/>
+</g>
+</svg>
+<div class="controls">
+<button id="play" data-action="play" aria-pressed="true"></button>
+<div class="steps">
+<button data-action="step-1"></button><button data-action="step-2"></button><button data-action="step-3"></button><button data-action="step-4"></button><button data-action="step-5"></button>
+</div>
+</div>
+<p id="caption" data-caption aria-live="polite"></p>
+<div id="question">
+<p id="ask"><span data-label="ask"></span><span id="feedback" role="status" aria-live="polite"></span></p>
+<div class="options">
+<button data-option="co2" data-label="co2"></button>
+<button data-option="o2" data-label="o2"></button>
+<button data-option="water" data-label="water"></button>
+</div>
+</div>
+</div>
+<script>
+(()=>{
+const p=Studio.params;
+document.querySelectorAll('[data-label]').forEach(el=>el.textContent=Studio.t(el.dataset.label));
+const play=document.getElementById('play'),caption=document.getElementById('caption');
+const buttons=[...document.querySelectorAll('.steps button')];
+const groups=['light',...Object.keys(p.flows).map(k=>k==='glucose'?k:k+'Flow')];
+let playing=true,step=1,clock=0,last=0,finished=false;
+function select(n){
+step=n;caption.textContent=Studio.t('step'+n);
+buttons.forEach((b,i)=>b.setAttribute('aria-pressed',String(i+1===n)));
+groups.forEach((id,i)=>document.getElementById(id)?.classList.toggle('dim',i!==n-1));
+}
+buttons.forEach((b,i)=>{
+b.textContent=String(i+1);
+b.hidden=i>=p.steps;
+b.onclick=()=>{select(i+1);Studio.event('step',{step:i+1});};
+});
+function updatePlay(){play.textContent=Studio.t(playing?'pause':'play');play.setAttribute('aria-pressed',String(playing));}
+play.onclick=()=>{playing=!playing;updatePlay();Studio.event('play',{playing});};
+const particles=[...document.querySelectorAll('[data-flow]')];
+function frame(t){
+if(last&&playing)clock+=Math.min(t-last,80);last=t;
+particles.forEach(el=>{
+const siblings=particles.filter(x=>x.dataset.flow===el.dataset.flow);
+const index=siblings.indexOf(el),u=(clock/3200+index/siblings.length)%1;
+let x,y;
+if(el.dataset.flow==='water'){x=148+32*u;y=272-122*u;}
+else if(el.dataset.flow==='co2'){x=24+158*u;y=136-9*u+Math.sin(u*Math.PI)*-8;}
+else{x=228+88*u;y=145+32*u;}
+el.setAttribute('cx',x);el.setAttribute('cy',y);
+});
+document.getElementById('glucose').style.opacity=String(.6+.4*Math.sin(clock/650)**2);
+requestAnimationFrame(frame);
+}
+document.querySelectorAll('[data-option]').forEach(b=>b.onclick=()=>{
+if(finished)return;
+document.getElementById('feedback').textContent='';
+Studio.event('answer',{option:b.dataset.option,step});
+Studio.answer(b.dataset.option);
+});
+Studio.onVerdict(({correct})=>{
+const q=document.getElementById('question');
+q.classList.remove('retry','success');void q.offsetWidth;
+q.classList.add(correct?'success':'retry');
+document.getElementById('feedback').textContent=correct?'✓':'↻';
+if(correct&&!finished){finished=true;document.querySelectorAll('[data-option]').forEach(b=>b.disabled=true);Studio.done();}
+});
+select(step);updatePlay();requestAnimationFrame(frame);Studio.ready();
+})();
+</script>

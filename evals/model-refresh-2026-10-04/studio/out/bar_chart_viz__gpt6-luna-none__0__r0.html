@@ -1,0 +1,125 @@
+<style>
+:root{color-scheme:light;--ink:#253b54;--muted:#668097;--paper:#fffdf7;--line:#dce8eb;--accent:#f2a84a;--green:#378a6b;--red:#c65d55}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;min-height:100%;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:#edf6f5}
+main{width:min(100%,520px);min-height:100vh;margin:auto;padding:16px 14px 20px;display:flex;flex-direction:column;gap:12px}
+.card{background:var(--paper);border:1px solid #e4ece6;border-radius:24px;box-shadow:0 8px 24px #355d6812}
+header{padding:18px 20px 14px}
+h1{font-size:clamp(22px,6vw,30px);line-height:1.16;margin:0;font-weight:800;letter-spacing:-.4px}
+.chart-card{padding:12px 10px 10px}
+.chart-wrap{position:relative;width:100%;height:clamp(310px,52vh,420px);padding-left:52px;padding-bottom:47px}
+.y-title{position:absolute;left:3px;top:50%;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl;font-size:13px;font-weight:700;color:var(--muted);text-align:center}
+.plot{position:absolute;left:54px;right:7px;top:12px;bottom:48px}
+.grid{position:absolute;inset:0 0 0 0;display:flex;flex-direction:column;justify-content:space-between}
+.grid-row{height:0;border-top:1px solid var(--line);position:relative}
+.tick{position:absolute;right:calc(100% + 8px);top:0;transform:translateY(-50%);min-width:22px;text-align:right;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bars{position:absolute;inset:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(5px,2vw,12px);align-items:stretch}
+.bar-slot{height:100%;display:flex;align-items:stretch;justify-content:center;position:relative;min-width:0}
+.bar-hit{position:relative;width:100%;height:100%;min-width:44px;max-width:54px;padding:0;border:0;background:transparent;border-radius:12px;cursor:pointer;touch-action:manipulation}
+.bar-hit:focus-visible{outline:3px solid #5b9d9a;outline-offset:2px}
+.bar-fill{position:absolute;left:5px;right:5px;bottom:0;height:var(--height);min-height:3px;border-radius:11px 11px 4px 4px;background:var(--bar);transform-origin:bottom;transform:scaleY(0);animation:grow .9s cubic-bezier(.2,.75,.25,1) forwards;animation-delay:var(--delay);box-shadow:inset 0 2px 0 #ffffff55,0 3px 8px #253b5414;transition:filter .2s,transform .16s}
+.bar-hit:active .bar-fill{filter:brightness(.94);transform:scaleY(.96)}
+.bar-hit.selected .bar-fill{filter:saturate(1.12) brightness(.98)}
+@keyframes grow{to{transform:scaleY(1)}}
+.labels{position:absolute;left:0;right:0;top:calc(100% + 7px);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(5px,2vw,12px);pointer-events:none}
+.labels span{text-align:center;font-size:clamp(10px,2.9vw,12px);line-height:1.2;font-weight:700;color:#506c7d;overflow-wrap:anywhere}
+.prompt{min-height:76px;padding:15px 18px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:17px;font-weight:750;line-height:1.35;transition:background .25s,color .25s}
+.prompt.feedback{animation:pop .35s ease both}
+.prompt.good{background:#e8f5ed;color:#286f53}
+.prompt.bad{background:#fff0eb;color:#a74843}
+@keyframes pop{50%{transform:scale(1.015)}}
+@media(max-height:700px){main{gap:9px;padding-top:11px}.chart-wrap{height:clamp(280px,48vh,350px)}header{padding-top:14px;padding-bottom:12px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+<main>
+  <header class="card"><h1 id="title"></h1></header>
+  <section class="card chart-card" aria-label="Bar chart">
+    <div class="chart-wrap">
+      <div class="y-title" id="ytitle"></div>
+      <div class="plot" id="plot">
+        <div class="grid" id="grid"></div>
+        <div class="bars" id="bars"></div>
+        <div class="labels" id="labels"></div>
+      </div>
+    </div>
+  </section>
+  <section class="card prompt" id="prompt" aria-live="polite"></section>
+</main>
+<script>
+(()=>{
+  const data=Studio.params.data;
+  const words={};
+  ["title","mango","banana","apple","guava","orange","yaxis","ask","right","wrong","done"].forEach(k=>words[k]=Studio.t(k));
+  document.getElementById("title").textContent=words.title;
+  document.getElementById("ytitle").textContent=words.yaxis;
+  const maxValue=Math.max(...data.map(d=>Number(d.value)),1);
+  const rough=maxValue/4;
+  const magnitude=Math.pow(10,Math.floor(Math.log10(rough||1)));
+  const choices=[1,2,5,10].map(n=>n*magnitude);
+  let step=choices.find(n=>n>=rough)||10*magnitude;
+  const top=Math.ceil(maxValue/step)*step;
+  const grid=document.getElementById("grid");
+  for(let value=top;value>=0;value-=step){
+    const row=document.createElement("div");
+    row.className="grid-row";
+    const tick=document.createElement("span");
+    tick.className="tick";
+    tick.dataset.tick=String(value);
+    tick.textContent=String(value);
+    row.appendChild(tick);
+    grid.appendChild(row);
+  }
+  const bars=document.getElementById("bars");
+  const labels=document.getElementById("labels");
+  const colors=["#f3ad59","#e9cc58","#e87962","#7ec0a3","#e99b68"];
+  let locked=false;
+  data.forEach((item,i)=>{
+    const key=item.key;
+    const value=Number(item.value);
+    const slot=document.createElement("div");
+    slot.className="bar-slot";
+    const button=document.createElement("button");
+    button.className="bar-hit";
+    button.type="button";
+    button.setAttribute("aria-label",words[key]);
+    const bar=document.createElement("div");
+    bar.className="bar-fill";
+    bar.dataset.bar=key;
+    bar.dataset.value=String(item.value);
+    bar.style.setProperty("--height",(value/top*100)+"%");
+    bar.style.setProperty("--bar",colors[i%colors.length]);
+    bar.style.setProperty("--delay",(i*.09)+"s");
+    button.appendChild(bar);
+    button.addEventListener("click",()=>{
+      if(locked)return;
+      bars.querySelectorAll(".selected").forEach(el=>el.classList.remove("selected"));
+      button.classList.add("selected");
+      Studio.event("bar_tap",{key:key,value:item.value});
+      Studio.answer(key);
+    });
+    slot.appendChild(button);
+    bars.appendChild(slot);
+    const label=document.createElement("span");
+    label.textContent=words[key];
+    labels.appendChild(label);
+  });
+  const prompt=document.getElementById("prompt");
+  prompt.textContent=words.ask;
+  Studio.onVerdict(({correct})=>{
+    prompt.classList.remove("good","bad","feedback");
+    void prompt.offsetWidth;
+    prompt.classList.add("feedback",correct?"good":"bad");
+    prompt.textContent=correct?words.right:words.wrong;
+    Studio.event("verdict",{correct:!!correct});
+    if(correct){
+      locked=true;
+      setTimeout(()=>{
+        prompt.classList.remove("good","feedback");
+        prompt.textContent=words.done;
+        Studio.done();
+      },850);
+    }
+  });
+  Studio.ready();
+})();
+</script>

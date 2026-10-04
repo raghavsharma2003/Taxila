@@ -1,0 +1,276 @@
+<style>
+  :root {
+    --bg: #fff9f0;
+    --bar0: #ffb347;
+    --bar1: #ff8c42;
+    --bar2: #ff6947;
+    --bar3: #e84778;
+    --bar4: #b347e8;
+    --text: #2d2d2d;
+    --axis: #5d4037;
+    --grid: #e0e0e0;
+    --feedback-bg: #4caf50;
+    --feedback-wrong-bg: #f44336;
+    --feedback-color: #ffffff;
+    --rounded: 12px;
+    --shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 16px;
+    overflow: hidden;
+    touch-action: manipulation;
+  }
+  .title {
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .chart-container {
+    position: relative;
+    width: 100%;
+    height: 320px;
+    margin-bottom: 20px;
+  }
+  .chart-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .axis-title {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: rotate(-90deg) translateX(50%);
+    transform-origin: left top;
+    font-size: 14px;
+    font-weight: 500;
+    fill: var(--axis);
+  }
+  .gridline {
+    stroke: var(--grid);
+    stroke-width: 1;
+    stroke-dasharray: 2,2;
+  }
+  .tick text {
+    font-size: 12px;
+    fill: var(--axis);
+    text-anchor: end;
+    dx: -8px;
+    dy: 4px;
+  }
+  .bar {
+    fill-opacity: 0;
+    transition: fill-opacity 0.6s ease, height 0.6s ease, y 0.6s ease;
+    rx: var(--rounded);
+    ry: var(--rounded);
+    cursor: pointer;
+  }
+  .bar:hover {
+    opacity: 0.9;
+  }
+  .bar:active {
+    transform: scale(0.98);
+    transform-origin: center bottom;
+  }
+  .bar-label {
+    font-size: 13px;
+    text-anchor: middle;
+    fill: var(--text);
+  }
+  .value-popup {
+    position: absolute;
+    background: rgba(0,0,0,0.7);
+    color: var(--feedback-color);
+    padding: 6px 10px;
+    border-radius: var(--rounded);
+    font-size: 14px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 10;
+  }
+  .question {
+    font-size: 18px;
+    font-weight: 500;
+    text-align: center;
+    margin: 16px 0;
+  }
+  .feedback {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--feedback-bg);
+    color: var(--feedback-color);
+    padding: 16px 24px;
+    border-radius: var(--rounded);
+    font-size: 18px;
+    font-weight: 600;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 20;
+  }
+  .feedback.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .feedback.wrong {
+    background: var(--feedback-wrong-bg);
+  }
+  .done-text {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--feedback-bg);
+    margin-top: 20px;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .done-text.show {
+    opacity: 1;
+  }
+</style>
+
+<svg class="chart-svg" viewBox="0 0 320 320">
+  <text class="axis-title" data-test="yaxis-label"></text>
+  <g class="gridlines"></g>
+  <g class="ticks"></g>
+  <g class="bars"></g>
+  <g class="bar-labels"></g>
+</svg>
+<div class="title"></div>
+<div class="question"></div>
+<div class="feedback" data-test="feedback"></div>
+<div class="done-text" data-test="done-text"></div>
+<div class="value-popup" data-test="value-popup"></div>
+
+<script>
+  (() => {
+    const params = Studio.params;
+    const data = params.data;
+    const t = Studio.t;
+
+    document.querySelector('.title').textContent = t('title');
+    document.querySelector('.axis-title').textContent = t('yaxis');
+    document.querySelector('.question').textContent = t('ask');
+    document.querySelector('.done-text').textContent = t('done');
+
+    const svg = document.querySelector('.chart-svg');
+    const chartWidth = 320;
+    const chartHeight = 320;
+    const margin = { top: 20, right: 20, bottom: 60, left: 40 };
+    const graphWidth = chartWidth - margin.left - margin.right;
+    const graphHeight = chartHeight - margin.top - margin.bottom;
+
+    const values = data.map(d => d.value);
+    const maxValue = Math.max(...values);
+    const step = Math.ceil(maxValue / 5);
+    const yScale = graphHeight / maxValue;
+
+    const gridlines = document.querySelector('.gridlines');
+    const ticks = document.querySelector('.ticks');
+    const bars = document.querySelector('.bars');
+    const barLabels = document.querySelector('.bar-labels');
+
+    for (let i = 0; i <= maxValue; i += step) {
+      const y = graphHeight - i * yScale + margin.top;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('class', 'gridline');
+      line.setAttribute('x1', margin.left);
+      line.setAttribute('y1', y);
+      line.setAttribute('x2', chartWidth - margin.right);
+      line.setAttribute('y2', y);
+      gridlines.appendChild(line);
+
+      const tick = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      tick.setAttribute('class', 'tick');
+      tick.setAttribute('transform', `translate(${margin.left - 5}, ${y})`);
+      const tickText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      tickText.setAttribute('data-tick', i);
+      tickText.textContent = i;
+      tick.appendChild(tickText);
+      ticks.appendChild(tick);
+    }
+
+    const barWidth = graphWidth / data.length;
+    const colors = ['var(--bar0)', 'var(--bar1)', 'var(--bar2)', 'var(--bar3)', 'var(--bar4)'];
+
+    data.forEach((d, i) => {
+      const barHeight = d.value * yScale;
+      const x = margin.left + i * barWidth;
+      const y = graphHeight - barHeight + margin.top;
+
+      const bar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      bar.setAttribute('class', 'bar');
+      bar.setAttribute('data-bar', d.key);
+      bar.setAttribute('data-value', d.value);
+      bar.setAttribute('x', x + 2);
+      bar.setAttribute('y', graphHeight + margin.top);
+      bar.setAttribute('width', barWidth - 4);
+      bar.setAttribute('height', 0);
+      bar.setAttribute('fill', colors[i]);
+      bar.setAttribute('data-test', `bar-${d.key}`);
+      bars.appendChild(bar);
+
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('class', 'bar-label');
+      label.setAttribute('x', x + barWidth / 2);
+      label.setAttribute('y', graphHeight + margin.top + 20);
+      label.textContent = t(d.key);
+      barLabels.appendChild(label);
+
+      setTimeout(() => {
+        bar.setAttribute('y', y);
+        bar.setAttribute('height', barHeight);
+        bar.setAttribute('fill-opacity', '1');
+      }, 100);
+    });
+
+    const popup = document.querySelector('.value-popup');
+    const feedback = document.querySelector('.feedback');
+    const doneText = document.querySelector('.done-text');
+    let answered = false;
+
+    bars.addEventListener('click', (e) => {
+      if (answered) return;
+      const bar = e.target.closest('.bar');
+      if (!bar) return;
+      const key = bar.getAttribute('data-bar');
+      const value = bar.getAttribute('data-value');
+      popup.textContent = value;
+      popup.style.left = `${parseFloat(bar.getAttribute('x')) + parseFloat(bar.getAttribute('width')) / 2}px`;
+      popup.style.top = `${parseFloat(bar.getAttribute('y')) - 10}px`;
+      popup.style.opacity = 1;
+      setTimeout(() => { popup.style.opacity = 0; }, 800);
+      Studio.answer(key);
+      answered = true;
+    });
+
+    Studio.onVerdict(({ correct }) => {
+      if (correct) {
+        feedback.textContent = t('right');
+        feedback.classList.add('show');
+        setTimeout(() => {
+          feedback.classList.remove('show');
+          doneText.classList.add('show');
+          Studio.done();
+        }, 1000);
+      } else {
+        feedback.textContent = t('wrong');
+        feedback.classList.add('show', 'wrong');
+        setTimeout(() => {
+          feedback.classList.remove('show', 'wrong');
+          answered = false;
+        }, 1000);
+      }
+    });
+
+    Studio.ready();
+  })();
+</script>

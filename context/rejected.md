@@ -929,3 +929,19 @@ src/app/beacon.ts first used navigator.sendBeacon(Blob). Through the sandbox's H
 ## w1f-rejected-spa-404
 What was tried: meeting "`/assets/teacher-bakeoff/*` returns 404" by moving the files out of `public/`.
 What broke: `server/serve.mjs` answers every missing path, including `/assets/*`, with `index.html` and status 200, so the old URLs return 200 text/html. The identities are unreachable, since no GLB bytes are served, but the status is not 404. A strict 404 needs `serve.mjs` to skip the SPA fallback for paths under `/assets/`. That file is not in W1-F's paths.
+
+
+<!-- merged from inbox/model-refresh-setup.json -->
+## fw-partner-models-gated
+**Tried (2026-10-04):** deploying FW-Kimi-K3 (GlobalStandard and DataZoneStandard) and FW-DeepSeek-V4.1-Flash for measurement only. **Broke:** `SpecialFeatureOrQuotaIdRequired: The current subscription does not have access to this model`. No first-party Kimi-K3 exists (`DeploymentModelNotSupported`). Kimi K3 is therefore unreachable on Azure for Taxila, both for production and for measurement. **Revisit if** a first-party (azureml-moonshotai) Kimi-K3 appears in the catalogue, or the owner enables partner models.
+
+## mai-code-quota-tier
+**Tried (2026-10-04):** deploying MAI-Code-1.1-Flash (format Microsoft) on GlobalStandard and DeveloperTier. **Broke:** `SpecialFeatureOrQuotaIdRequired`. The catalogue says `minQuotaTier: 1`. **Revisit if** the owner requests a quota tier.
+
+
+<!-- merged from inbox/w1-d.json -->
+## w1d-nightly-sweep-not-in-image
+ops.mjs --nightly did `import('../../scripts/sweep-test-accounts.mjs')`, which imports `../infra/azure.mjs`. Dockerfile.worker copies server/, shared/, data/ and db/migrations only, and deploy-worker's --local context matches it. The scheduled job would have printed its rollup and exited 1 every night, so the job-failures alert would have mailed the owner nightly and the prod leftovers would never be swept. The builder proved the Conductor 'with the worker running on Azure' but never executed the nightly JOB there. Fix: the sweep lives in server/conductor/sweep.js (imports only server/); scripts/sweep-test-accounts.mjs is a CLI wrapper. Lesson: run every scheduled job once on its real image before calling it proven.
+
+## w1d-dirty-stamp-poisoned-sha
+infra/gate.mjs wrote a failed --allow-dirty run as `<sha>.json {pass:false}`, and gateEvidence lets a failed stamp win over everything, so a dirty acceptance run (deliberately failing test) left HEAD 624298b permanently undeployable even with green GitHub evidence. The cleanliness check also ignored untracked files the build imports (src/avatar/looks.ts etc.), which ACR's GitHub build never sees. Fix: dirty runs are keyed `<sha>-dirty` and never consulted; untracked non-ignored files count as dirt. The poisoned stamp was deleted.

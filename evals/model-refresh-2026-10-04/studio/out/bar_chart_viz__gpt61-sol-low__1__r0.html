@@ -1,0 +1,114 @@
+<style>
+*{box-sizing:border-box}
+:root{font-family:system-ui,sans-serif;color:#263d48;background:#f5f1e8}
+main{width:100%;max-width:480px;margin:auto;padding:18px 14px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.emblem{width:48px;height:48px;flex-shrink:0;background:#dfede5;border-radius:16px;padding:9px}
+h1{font-size:21px;line-height:1.25;margin:0;font-weight:800}
+.card{background:#fffdf8;border:1px solid #e6e0d3;border-radius:24px;padding:16px 8px 12px;box-shadow:0 8px 24px #35453509}
+.axis-title{margin:0 12px 8px;font-size:13px;color:#627570;font-weight:650}
+.chart{display:block;width:100%;height:auto;overflow:visible}
+.grid{stroke:#dce5df;stroke-width:1}
+.baseline{stroke:#6a8077;stroke-width:1.5}
+.tick{font-size:12px;fill:#65776f}
+.fruit-label{font-size:11px;fill:#334c43;font-weight:650}
+.bar{fill:#66b29c;rx:9;transform-box:fill-box;transform-origin:center bottom;animation:grow .85s cubic-bezier(.2,.7,.25,1) both;transition:fill .2s,filter .2s}
+.bar-choice{cursor:pointer;outline:none}
+.bar-choice:hover .bar,.bar-choice:focus-visible .bar{fill:#439b81;filter:drop-shadow(0 2px 3px #3d78694d)}
+.bar-choice.selected .bar{fill:#439b81;stroke:#265e50;stroke-width:2}
+.bar-choice:active .bar{filter:brightness(.9)}
+.value-bubble{fill:#254e42;font-size:14px;font-weight:750;pointer-events:none}
+.question{margin:18px 4px 0;padding:16px;background:#e5eee7;border-radius:18px;font-size:18px;line-height:1.4;font-weight:700}
+.feedback{min-height:58px;padding:14px 8px 0;font-size:16px;line-height:1.4;color:#345a4b}
+.feedback.bump{animation:bump .3s ease}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes bump{50%{transform:translateY(-3px)}}
+@media(prefers-reduced-motion:reduce){.bar,.feedback.bump{animation:none}}
+</style>
+<main>
+<header>
+<svg class="emblem" viewBox="0 0 32 32" aria-hidden="true"><path d="M4 27H29" fill="none" stroke="#426c59" stroke-width="2" stroke-linecap="round"/><rect x="5" y="16" width="5" height="9" rx="2" fill="#66b29c"/><rect x="13" y="6" width="5" height="19" rx="2" fill="#66b29c"/><rect x="21" y="11" width="5" height="14" rx="2" fill="#66b29c"/></svg>
+<h1 id="title"></h1>
+</header>
+<section class="card">
+<p class="axis-title" id="axisTitle"></p>
+<svg id="chart" class="chart" viewBox="0 0 320 320" role="group" aria-labelledby="title axisTitle"></svg>
+</section>
+<p class="question" id="ask"></p>
+<div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+</main>
+<script>
+(function(){
+const data=Studio.params.data;
+const ns='http://www.w3.org/2000/svg';
+const chart=document.getElementById('chart');
+document.getElementById('title').textContent=Studio.t('title');
+document.getElementById('axisTitle').textContent=Studio.t('yaxis');
+document.getElementById('ask').textContent=Studio.t('ask');
+function svg(tag,attrs,text){
+ const el=document.createElementNS(ns,tag);
+ Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));
+ if(text!==undefined)el.textContent=text;
+ return el;
+}
+const maximum=Math.max(...data.map(d=>Number(d.value)));
+const rough=Math.max(maximum,1)/5;
+const magnitude=Math.pow(10,Math.floor(Math.log10(rough)));
+const step=[1,2,5,10].find(n=>n*magnitude>=rough)*magnitude;
+const ceiling=Math.ceil(Math.max(maximum,1)/step)*step;
+const left=48,right=316,top=30,bottom=264;
+const y=v=>bottom-v/ceiling*(bottom-top);
+for(let i=0;i<=Math.round(ceiling/step);i++){
+ const v=Number((i*step).toPrecision(12));
+ chart.appendChild(svg('line',{x1:left,y1:y(v),x2:right,y2:y(v),class:v===0?'baseline':'grid'}));
+ chart.appendChild(svg('text',{x:left-10,y:y(v),'text-anchor':'end','dominant-baseline':'middle','data-tick':v,class:'tick'},String(v)));
+}
+chart.appendChild(svg('line',{x1:left,y1:top,x2:left,y2:bottom,class:'baseline'}));
+let waiting=false,finished=false,selected=null;
+const groups=[];
+const slot=(right-left)/data.length;
+data.forEach((d,i)=>{
+ const cx=left+slot*(i+.5);
+ const width=Math.min(44,slot-6);
+ const g=svg('g',{class:'bar-choice',role:'button',tabindex:'0','aria-label':Studio.t(d.key)});
+ const bar=svg('rect',{x:cx-width/2,y:y(d.value),width:width,height:bottom-y(d.value),class:'bar','data-bar':d.key,'data-value':d.value});
+ g.appendChild(bar);
+ g.appendChild(svg('rect',{x:cx-Math.max(width,44)/2,y:top,width:Math.max(width,44),height:bottom-top,fill:'transparent'}));
+ const bubble=svg('text',{x:cx,y:y(d.value)-9,'text-anchor':'middle',class:'value-bubble',visibility:'hidden'},String(d.value));
+ g.appendChild(bubble);
+ chart.appendChild(g);
+ chart.appendChild(svg('text',{x:cx,y:bottom+24,'text-anchor':'middle',class:'fruit-label'},Studio.t(d.key)));
+ groups.push({g,bubble});
+ function choose(){
+  if(waiting||finished)return;
+  groups.forEach(item=>{item.g.classList.remove('selected');item.bubble.setAttribute('visibility','hidden')});
+  g.classList.add('selected');
+  bubble.setAttribute('visibility','visible');
+  selected=d.key;
+  waiting=true;
+  Studio.event('bar_tap',{key:d.key,value:d.value});
+  Studio.answer(d.key);
+ }
+ g.addEventListener('click',choose);
+ g.addEventListener('keydown',e=>{
+  if(e.key==='Enter'||e.key===' '){e.preventDefault();choose()}
+ });
+});
+Studio.onVerdict(function(verdict){
+ if(!waiting||finished)return;
+ waiting=false;
+ const feedback=document.getElementById('feedback');
+ feedback.textContent=Studio.t(verdict.correct?'right':'wrong');
+ feedback.classList.remove('bump');
+ void feedback.offsetWidth;
+ feedback.classList.add('bump');
+ if(verdict.correct){
+  finished=true;
+  document.getElementById('ask').textContent=Studio.t('done');
+  groups.forEach(item=>{item.g.setAttribute('aria-disabled','true');item.g.setAttribute('tabindex','-1')});
+  Studio.done();
+ }
+});
+Studio.ready();
+})();
+</script>

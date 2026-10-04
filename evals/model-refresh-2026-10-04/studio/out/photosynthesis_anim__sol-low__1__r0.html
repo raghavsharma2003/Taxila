@@ -1,0 +1,269 @@
+<style>
+  *{box-sizing:border-box}
+  :root{font-family:system-ui,-apple-system,"Noto Sans",sans-serif;color:#173d35}
+  .app{width:100%;max-width:360px;height:640px;margin:auto;padding:8px;background:linear-gradient(180deg,#e8f8ff 0%,#f7fff1 58%,#fff9e8 100%);overflow:hidden}
+  .title{height:34px;margin:0;text-align:center;font-size:21px;font-weight:800;line-height:30px;color:#20594b}
+  .scene-wrap{height:320px;border:2px solid #b9dfd1;border-radius:22px;background:linear-gradient(#dff6ff 0 69%,#a56b47 69% 100%);box-shadow:0 5px 0 #d3e9df;overflow:hidden}
+  svg{display:block;width:100%;height:100%}
+  svg text{font:700 12px system-ui,-apple-system,"Noto Sans",sans-serif;fill:#183f38;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+  .sun-core{fill:#ffd84d;stroke:#f4a72c;stroke-width:4}
+  .sun-ray{stroke:#ffc83d;stroke-width:4;stroke-linecap:round}
+  .light-path{fill:none;stroke:#ffd84d;stroke-width:5;stroke-linecap:round;stroke-dasharray:9 9;opacity:.34}
+  .stem{fill:none;stroke:#348d4c;stroke-width:12;stroke-linecap:round}
+  .leaf-shape{fill:#56bd5f;stroke:#237841;stroke-width:4;transform-origin:218px 166px;transition:filter .3s,transform .3s}
+  .leaf-vein{fill:none;stroke:#288348;stroke-width:3;stroke-linecap:round}
+  .root-line{fill:none;stroke:#79533d;stroke-width:5;stroke-linecap:round}
+  .flow{stroke:#fff;stroke-width:1.8;opacity:.35;transition:opacity .3s,filter .3s}
+  [data-flow="water"]{fill:#3aa9ed}
+  [data-flow="co2"]{fill:#77798a}
+  [data-flow="o2"]{fill:#8bdff4}
+  .glucose-dot{fill:#ffe56a;opacity:.35;filter:drop-shadow(0 0 3px #ffc928);transition:opacity .3s}
+  .playing .light-path{animation:rays 1.2s linear infinite}
+  .paused .light-path{animation-play-state:paused}
+  .scene[data-step="1"] .light-path,
+  .scene[data-step="2"] [data-flow="water"],
+  .scene[data-step="3"] [data-flow="co2"],
+  .scene[data-step="5"] [data-flow="o2"]{opacity:1;filter:drop-shadow(0 0 4px #fff)}
+  .scene[data-step="4"] .glucose-dot{opacity:1;animation:glow .8s ease-in-out infinite alternate}
+  .scene[data-step="4"] .leaf-shape{filter:drop-shadow(0 0 8px #f5d83c);transform:scale(1.03)}
+  @keyframes rays{to{stroke-dashoffset:-36}}
+  @keyframes glow{to{filter:drop-shadow(0 0 9px #ffb900);transform:scale(1.25)}}
+  .controls{display:grid;grid-template-columns:58px repeat(5,1fr);gap:5px;margin-top:8px}
+  button{min-width:44px;min-height:44px;border:0;border-radius:14px;background:#fff;color:#17483e;font:800 15px system-ui,-apple-system,"Noto Sans",sans-serif;box-shadow:0 3px 0 #bdd9ce;cursor:pointer;touch-action:manipulation;transition:transform .12s,background .2s,box-shadow .2s}
+  button:active{transform:scale(.92);box-shadow:0 1px 0 #bdd9ce}
+  [data-action="play"]{font-size:12px;background:#246e5c;color:#fff;box-shadow:0 3px 0 #164c40}
+  .step.active{background:#ffdf65;color:#493e13;box-shadow:0 3px 0 #d4a92c;transform:translateY(-1px)}
+  [data-caption]{height:50px;margin:7px 2px 0;padding:7px 10px;border-radius:14px;background:#e4f5e8;display:flex;align-items:center;justify-content:center;text-align:center;font-size:14px;font-weight:750;line-height:18px;color:#285948}
+  .check{margin-top:7px;padding:7px;border-radius:17px;background:rgba(255,255,255,.82);border:2px solid #dbe9b9}
+  .ask{min-height:34px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:14px;font-weight:800;line-height:17px}
+  .options{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+  .option{min-height:45px;background:#f8fff4}
+  .option.chosen{background:#d9f0ff;transform:scale(.96)}
+  .option.good{background:#bdecc5;box-shadow:0 0 0 4px rgba(63,169,87,.2)}
+  .option.try{animation:retry .35s ease}
+  @keyframes retry{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+
+<main class="app">
+  <h1 class="title" data-text="title"></h1>
+
+  <div class="scene-wrap">
+    <svg class="scene playing" data-step="1" viewBox="0 0 340 320" role="img">
+      <g>
+        <circle class="sun-core" cx="54" cy="48" r="25"/>
+        <path class="sun-ray" d="M54 9v-8M54 95v-8M15 48H7M101 48h-8M27 21l-6-6M87 81l-6-6M27 75l-6 6M87 15l-6 6"/>
+        <text data-label="sun" x="20" y="88"></text>
+      </g>
+
+      <path class="light-path" d="M79 62 Q140 83 195 137"/>
+
+      <path class="stem" d="M170 252 Q176 209 193 168"/>
+      <g data-entity="leaf">
+        <path class="leaf-shape" d="M174 171 Q202 115 271 129 Q260 190 198 190 Q180 188 174 171Z"/>
+        <path class="leaf-vein" d="M181 176 Q220 163 256 140M211 166l-4-24M229 157l18 10"/>
+      </g>
+
+      <g data-entity="roots">
+        <path class="root-line" d="M170 246 Q152 266 128 293M169 250q4 24-10 51M174 249q21 22 42 45M159 267l-22 6M188 269l24 2"/>
+      </g>
+
+      <circle class="flow" data-flow="water" cx="148" cy="287" r="5"/>
+      <circle class="flow" data-flow="water" cx="164" cy="260" r="5"/>
+      <circle class="flow" data-flow="water" cx="178" cy="222" r="5"/>
+      <circle class="flow" data-flow="water" cx="187" cy="186" r="5"/>
+
+      <circle class="flow" data-flow="co2" cx="22" cy="129" r="6"/>
+      <circle class="flow" data-flow="co2" cx="70" cy="143" r="6"/>
+      <circle class="flow" data-flow="co2" cx="121" cy="153" r="6"/>
+      <circle class="flow" data-flow="co2" cx="161" cy="160" r="6"/>
+
+      <circle class="flow" data-flow="o2" cx="234" cy="157" r="5"/>
+      <circle class="flow" data-flow="o2" cx="268" cy="126" r="5"/>
+      <circle class="flow" data-flow="o2" cx="298" cy="99" r="5"/>
+      <circle class="flow" data-flow="o2" cx="322" cy="74" r="5"/>
+
+      <circle class="glucose-dot" cx="211" cy="174" r="7"/>
+      <circle class="glucose-dot" cx="229" cy="159" r="6"/>
+      <circle class="glucose-dot" cx="244" cy="176" r="5"/>
+
+      <text data-label="leaf" x="232" y="207"></text>
+      <text data-label="roots" x="186" y="310"></text>
+      <text data-label="water" x="16" y="272"></text>
+      <text data-label="co2" x="15" y="116"></text>
+      <text data-label="o2" x="292" y="59"></text>
+      <text data-label="glucose" x="197" y="221"></text>
+    </svg>
+  </div>
+
+  <div class="controls">
+    <button type="button" data-action="play"></button>
+    <button type="button" class="step active" data-action="step-1"></button>
+    <button type="button" class="step" data-action="step-2"></button>
+    <button type="button" class="step" data-action="step-3"></button>
+    <button type="button" class="step" data-action="step-4"></button>
+    <button type="button" class="step" data-action="step-5"></button>
+  </div>
+
+  <div data-caption></div>
+
+  <section class="check">
+    <div class="ask" data-text="ask"></div>
+    <div class="options">
+      <button type="button" class="option" data-option="co2"></button>
+      <button type="button" class="option" data-option="o2"></button>
+      <button type="button" class="option" data-option="water"></button>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const params = Studio.params;
+  const scene = document.querySelector('.scene');
+  const play = document.querySelector('[data-action="play"]');
+  const caption = document.querySelector('[data-caption]');
+  const steps = Array.from(document.querySelectorAll('.step'));
+  const options = Array.from(document.querySelectorAll('.option'));
+  const labels = Array.from(document.querySelectorAll('[data-label]'));
+  const texts = Array.from(document.querySelectorAll('[data-text]'));
+  const count = params.steps;
+  let active = 1;
+  let playing = true;
+  let previous = performance.now();
+  let cycleTime = 0;
+  let answered = null;
+  let finished = false;
+
+  texts.forEach(el => {
+    el.textContent = Studio.t(el.dataset.text);
+  });
+
+  labels.forEach(el => {
+    el.textContent = Studio.t(el.dataset.label);
+  });
+
+  options.forEach(el => {
+    el.textContent = Studio.t(el.dataset.option);
+  });
+
+  steps.forEach((el, index) => {
+    el.textContent = String(index + 1);
+  });
+
+  function showStep(value, source) {
+    active = value;
+    scene.dataset.step = String(active);
+    caption.textContent = Studio.t('step' + active);
+    steps.forEach((el, index) => {
+      el.classList.toggle('active', index + 1 === active);
+    });
+    if (source) Studio.event('step', {step: active, source});
+  }
+
+  function showPlayState() {
+    play.textContent = Studio.t(playing ? 'pause' : 'play');
+    scene.classList.toggle('playing', playing);
+    scene.classList.toggle('paused', !playing);
+  }
+
+  play.addEventListener('click', () => {
+    playing = !playing;
+    showPlayState();
+    Studio.event('play', {playing});
+  });
+
+  steps.forEach((el, index) => {
+    el.addEventListener('click', () => {
+      cycleTime = 0;
+      showStep(index + 1, 'tap');
+    });
+  });
+
+  options.forEach(el => {
+    el.addEventListener('click', () => {
+      answered = el.dataset.option;
+      options.forEach(option => option.classList.remove('chosen', 'try'));
+      el.classList.add('chosen');
+      Studio.event('answer', {value: answered});
+      Studio.answer(answered);
+    });
+  });
+
+  Studio.onVerdict(verdict => {
+    const selected = options.find(el => el.dataset.option === answered);
+    if (!selected) return;
+    if (verdict.correct) {
+      selected.classList.remove('chosen');
+      selected.classList.add('good');
+      if (!finished) {
+        finished = true;
+        Studio.done();
+      }
+    } else {
+      selected.classList.remove('chosen');
+      selected.classList.add('try');
+      setTimeout(() => selected.classList.remove('try'), 400);
+    }
+  });
+
+  const paths = {
+    water: [
+      [145, 291], [161, 263], [171, 239], [177, 213], [187, 184], [205, 169]
+    ],
+    co2: [
+      [12, 126], [61, 139], [112, 151], [160, 161], [199, 166], [226, 157]
+    ],
+    o2: [
+      [218, 169], [245, 148], [271, 123], [298, 97], [329, 72]
+    ]
+  };
+
+  const flowElements = {};
+  Object.keys(paths).forEach(key => {
+    flowElements[key] = Array.from(document.querySelectorAll('[data-flow="' + key + '"]'));
+  });
+
+  function pointOnPath(points, progress) {
+    const scaled = progress * (points.length - 1);
+    const index = Math.min(points.length - 2, Math.floor(scaled));
+    const part = scaled - index;
+    return [
+      points[index][0] + (points[index + 1][0] - points[index][0]) * part,
+      points[index][1] + (points[index + 1][1] - points[index][1]) * part
+    ];
+  }
+
+  function frame(now) {
+    const delta = Math.min(50, now - previous);
+    previous = now;
+
+    if (playing) {
+      cycleTime += delta;
+      if (cycleTime >= 3600) {
+        cycleTime = 0;
+        showStep(active >= count ? 1 : active + 1, 'auto');
+      }
+
+      Object.keys(flowElements).forEach((key, flowIndex) => {
+        const points = paths[key];
+        flowElements[key].forEach((particle, particleIndex) => {
+          const offset = particleIndex / flowElements[key].length;
+          const speed = 0.00008 + flowIndex * 0.00001;
+          const progress = (now * speed + offset) % 1;
+          const point = pointOnPath(points, progress);
+          particle.setAttribute('cx', point[0].toFixed(2));
+          particle.setAttribute('cy', point[1].toFixed(2));
+        });
+      });
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  showStep(1);
+  showPlayState();
+  requestAnimationFrame(frame);
+  Studio.ready();
+})();
+</script>

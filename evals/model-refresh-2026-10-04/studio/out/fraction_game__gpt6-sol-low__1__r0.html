@@ -1,0 +1,141 @@
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #fff8ed; font-family: system-ui, sans-serif; color: #493b51; }
+  .activity { min-height: 100vh; padding: 20px 18px 28px; display: flex; flex-direction: column; align-items: center; text-align: center; background: radial-gradient(circle at 12% 10%, #ffe8be 0 55px, transparent 56px), radial-gradient(circle at 94% 72%, #fce4df 0 65px, transparent 66px), #fff8ed; }
+  h1 { margin: 12px 0 8px; font-size: clamp(25px, 7vw, 32px); line-height: 1.15; }
+  .instruction { margin: 0; font-size: 17px; line-height: 1.4; }
+  .card { width: min(100%, 360px); margin-top: 22px; padding: 18px 12px 16px; border: 2px solid #f1dcc8; border-radius: 28px; background: #fffdf8; box-shadow: 0 9px 0 #f4e7d8; }
+  .fraction { display: inline-flex; flex-direction: column; align-items: center; min-width: 56px; font-size: 29px; font-weight: 800; line-height: 1.05; color: #785496; }
+  .fraction span:first-child { width: 100%; padding-bottom: 3px; border-bottom: 3px solid currentColor; }
+  .fraction span:last-child { padding-top: 3px; }
+  svg { display: block; width: min(100%, 320px); height: auto; margin: 14px auto 0; overflow: visible; }
+  [data-part] { cursor: pointer; transition: fill .2s ease, filter .2s ease, transform .16s ease; transform-box: fill-box; transform-origin: center; }
+  [data-part]:active { transform: scale(.94); }
+  [data-part]:focus-visible { outline: 4px solid #785496; }
+  [data-shaded="true"] { filter: drop-shadow(0 3px 2px #b9788b55); }
+  .message { min-height: 48px; margin: 15px 0 6px; font-size: 18px; font-weight: 700; color: #785496; }
+  button { min-width: 150px; min-height: 54px; padding: 10px 26px; border: 0; border-radius: 18px; background: #785496; color: white; font: inherit; font-size: 19px; font-weight: 750; box-shadow: 0 6px 0 #51366b; cursor: pointer; transition: transform .15s, box-shadow .15s; }
+  button:active { transform: translateY(4px); box-shadow: 0 2px 0 #51366b; }
+  button:disabled { opacity: .65; cursor: default; }
+  .pop { animation: pop .4s ease; }
+  @keyframes pop { 50% { transform: scale(1.08); } }
+</style>
+
+<main class="activity">
+  <h1 id="title"></h1>
+  <p class="instruction" id="instruction"></p>
+  <section class="card" id="item">
+    <div class="fraction" aria-label=""><span id="numerator"></span><span id="denominator"></span></div>
+    <svg viewBox="0 0 320 180" role="img" aria-label="">
+      <rect x="4" y="7" width="312" height="166" rx="25" fill="#fff0df"/>
+      <g id="parts"></g>
+    </svg>
+  </section>
+  <p class="message" id="message" aria-live="polite"></p>
+  <button type="button" data-action="check" id="check"></button>
+</main>
+
+<script>
+(() => {
+  const items = Studio.params.items;
+  const itemBox = document.getElementById('item');
+  const partsBox = document.getElementById('parts');
+  const message = document.getElementById('message');
+  const check = document.getElementById('check');
+  const svgNS = 'http://www.w3.org/2000/svg';
+  let index = 0;
+  let selected = new Set();
+  let waiting = false;
+
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('instruction').textContent = Studio.t('instr');
+  check.textContent = Studio.t('check');
+
+  function showItem() {
+    const item = items[index];
+    selected = new Set();
+    waiting = false;
+    check.disabled = false;
+    message.textContent = Studio.t('hint');
+    itemBox.dataset.item = item.id;
+    document.getElementById('numerator').textContent = item.n;
+    document.getElementById('denominator').textContent = item.d;
+    partsBox.replaceChildren();
+
+    const columns = item.d > 5 ? Math.ceil(item.d / 2) : item.d;
+    const rows = Math.ceil(item.d / columns);
+    const width = 296 / columns;
+    const height = 144 / rows;
+
+    for (let partIndex = 0; partIndex < item.d; partIndex++) {
+      const part = document.createElementNS(svgNS, 'rect');
+      part.setAttribute('x', 12 + (partIndex % columns) * width);
+      part.setAttribute('y', 18 + Math.floor(partIndex / columns) * height);
+      part.setAttribute('width', width);
+      part.setAttribute('height', height);
+      part.setAttribute('rx', 9);
+      part.setAttribute('fill', '#f9dcae');
+      part.setAttribute('stroke', '#fffdf8');
+      part.setAttribute('stroke-width', 5);
+      part.setAttribute('data-part', partIndex);
+      part.setAttribute('data-shaded', 'false');
+      part.setAttribute('role', 'button');
+      part.setAttribute('tabindex', '0');
+
+      function toggle() {
+        if (waiting) return;
+        if (selected.has(partIndex)) selected.delete(partIndex);
+        else selected.add(partIndex);
+        const shaded = selected.has(partIndex);
+        part.dataset.shaded = String(shaded);
+        part.setAttribute('fill', shaded ? '#ed86a0' : '#f9dcae');
+        message.textContent = Studio.t('hint');
+        Studio.event('part_toggle', { item: item.id, part: partIndex, shaded });
+      }
+      part.addEventListener('click', toggle);
+      part.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          toggle();
+        }
+      });
+      partsBox.appendChild(part);
+    }
+  }
+
+  check.addEventListener('click', () => {
+    if (waiting || index >= items.length) return;
+    waiting = true;
+    check.disabled = true;
+    Studio.answer({ n: selected.size, d: items[index].d });
+  });
+
+  Studio.onVerdict(({ correct }) => {
+    if (!waiting) return;
+    message.textContent = Studio.t(correct ? 'right' : 'wrong');
+    message.classList.remove('pop');
+    void message.offsetWidth;
+    message.classList.add('pop');
+    if (!correct) {
+      waiting = false;
+      check.disabled = false;
+      return;
+    }
+    setTimeout(() => {
+      index++;
+      if (index < items.length) {
+        showItem();
+      } else {
+        itemBox.remove();
+        check.remove();
+        document.getElementById('instruction').textContent = '';
+        message.textContent = Studio.t('done');
+        Studio.done();
+      }
+    }, 850);
+  });
+
+  showItem();
+  Studio.ready();
+})();
+</script>

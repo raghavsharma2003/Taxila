@@ -6109,6 +6109,146 @@
    "title": "Fixer pass, local serve.mjs with the 404 patch (scratch copy) + Neon test branch, Chromium SwiftShader GPU-spoof: w1f-face 30/30 (n = 1 run): strict 404 for bake-off and old unversioned URLs; slate and teal (class-2 Asha) each load B+ and reveal at data-tier=B; forced GLB failure -> D same look and no new GLB request across two relayouts (a remount was not separately confirmed); GLB held 11 s -> D same look, never revealed; flag-on landing / Hello / teacher / child home show only look faces (0 drawn SVG, 0 pre-rig); flag off -> no .glb. avatar-rig unit 16/16 incl. a real MeshoptDecoder decode of all 113 compressed buffer views per GLB (KTX2 not decoded in node)",
    "at": "2026-10-04",
    "source": "inbox/w1-f.json"
+  },
+  {
+   "id": "ds41-direct-meter-evidence",
+   "kind": "measurement",
+   "title": "taxila-ds41 (DeepSeek-V4.1-Flash, format DeepSeek) bills on Direct 'Azure Deepseek Models' meters DS30/DS31, not Fireworks: Cost Mgmt 09-15..10-04 shows 0 Fireworks charges; the FW asset cannot even be deployed on this subscription",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-setup.json"
+  },
+  {
+   "id": "fw-partner-models-gated",
+   "kind": "rejection",
+   "title": "Fireworks-hosted Foundry models (FW-Kimi-K3, FW-DeepSeek-V4.1-Flash) cannot be deployed on this subscription: SpecialFeatureOrQuotaIdRequired",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-setup.json"
+  },
+  {
+   "id": "mai-transcribe-centralindia",
+   "kind": "measurement",
+   "title": "MAI-Transcribe-2/1.5 (Fast Transcription enhancedMode) callable on taxila-ai-centralindia; eastus2 says 'not supported yet', southindia 404; MAI-Transcribe-2-Streaming deployable only in centralus/eastus/southindia/swedencentral/westus (deployed in southindia)",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-setup.json"
+  },
+  {
+   "id": "mai-code-quota-tier",
+   "kind": "rejection",
+   "title": "MAI-Code-1.1-Flash not deployable: SpecialFeatureOrQuotaIdRequired (catalogue minQuotaTier 1); needs an owner quota-tier request",
+   "at": "2026-10-04",
+   "source": "inbox/model-refresh-setup.json"
+  },
+  {
+   "id": "owner-azure-first-aws-second-2026-10-04",
+   "kind": "decision",
+   "title": "Owner: model mix is Azure Foundry first; AWS model APIs only where Azure is clearly worse for that use case, so the AWS credits stay mainly for build GPU. Reverse if AWS credits are no longer needed for GPU or an AWS model wins a live lane by non-overlapping intervals.",
+   "at": "2026-10-04",
+   "source": "inbox/owner-model-mix.json"
+  },
+  {
+   "id": "owner-gpt-image-2-default-2026-10-04",
+   "kind": "decision",
+   "title": "Owner: gpt-image-2 is the default image model for all generated images (text-free and labelled); FLUX.2-pro and MAI-Image stay as measured alternatives only. Images remain on the eastus2 account (gpt-image-2 is not offered in South India). Reverse if gpt-image-2 latency or quota blocks live use and a measured alternative wins on quality.",
+   "at": "2026-10-04",
+   "source": "inbox/owner-model-mix.json"
+  },
+  {
+   "id": "w1d-web-single-replica",
+   "kind": "decision",
+   "title": "deploy-azure.mjs pins every taxila-web revision to min 1 / max 1 replica (was max 5 at 50 concurrent): without session affinity, per-process state (prewarm, comprehension PENDING, TTS limiters) splits across replicas; TAXILA_MAX_REPLICAS overrides once that state is shared",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-migrations-gate-at-deploy",
+   "kind": "decision",
+   "title": "deploy-azure.mjs and deploy-worker.mjs check the TARGET database's schema_migrations against the deployed sha's db/migrations (git ls-tree) before creating a revision or job, whatever the gate evidence; a CI `gates` run has no production DATABASE_URL so its migrations-applied test skips",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-image-tag-must-name-commit",
+   "kind": "decision",
+   "title": "deploy-azure.mjs --image-tag accepts only an exact commit-sha prefix and gates THAT commit (not HEAD); --stamp-sha must agree; local-*/<sha>-local-* and hand-made tags are refused",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-one-db-url-resolver",
+   "kind": "decision",
+   "title": "server/db.js dbUrl(env, {direct}) is the one database resolver: server/db.js, conductor/pg.js (unconfigured pool), worker.mjs and ops.mjs all use it, so TAXILA_DB=test moves lessons AND the Conductor to the test branch together; tests/prod (run.mjs, lib.mjs) default a LOCAL target's DB checks to the test branch; production only by explicit TAXILA_DB_URL",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-forced-500-locked",
+   "kind": "decision",
+   "title": "GET /api/test/boom needs an @taxila.test session AND the operator key header x-taxila-ops (TAXILA_OPS_KEY, a Container App secret via deploy-azure SECRET_ENV; no key on the app = refused) AND fits 4 per hour per replica (429 after); rate limits key on the RIGHTMOST x-forwarded-for hop",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-route-error-log-no-message",
+   "kind": "decision",
+   "title": "The router's 'route error' stderr line carries the error class + code and server/ frames only, never the message (romanised child text survives any scrubber); TAXILA_LOG_FULL_ERRORS=1 prints the full error outside production",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-react-errors-beaconed",
+   "kind": "decision",
+   "title": "src/main.tsx passes React 19 createRoot onCaughtError/onUncaughtError → reportClientError('react'), so a render crash caught by React Router's errorElement reaches the beacon without touching Shell.tsx",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-test-clock-wakeups-real-clock",
+   "kind": "decision",
+   "title": "Test-clock days advance by events and reads only: fire_wakeups stays on the real clock for test children (documented in server/conductor/offsets.js); the e2e folds the night with a next-day lesson",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-nightly-job-azure-run-2026-10-04",
+   "kind": "measurement",
+   "title": "Nightly ops job from the worker image on Azure (scratch manual job taxila-wfix-nightly, image built from the working tree, Neon test branch, n=1): Succeeded in ~43 s; rollup line + test_account_sweep {found 3, deleted 0, deferred 3, failed 0} in Log Analytics",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-nightly-sweep-not-in-image",
+   "kind": "rejection",
+   "title": "ops.mjs --nightly imported scripts/sweep-test-accounts.mjs (which imports infra/azure.mjs); the worker image ships neither scripts/ nor infra/, so the scheduled nightly job would have died with ERR_MODULE_NOT_FOUND every night and mailed the owner; the sweep moved to server/conductor/sweep.js",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "w1d-dirty-stamp-poisoned-sha",
+   "kind": "rejection",
+   "title": "infra/gate.mjs stamped a failed DIRTY-tree run under the committed sha, and a failed stamp wins over GitHub evidence, so one --allow-dirty acceptance run blocked deploys of that sha; dirty runs are now keyed <sha>-dirty and untracked non-ignored files count as dirt",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "open-sweep-shares-erasure",
+   "kind": "open",
+   "title": "server/conductor/sweep.js duplicates DELETE /api/account's erasure statements; account.js (W1-A/B3) should export its erasure statement builder and the sweep reuse it",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "open-migrate-default-test-branch",
+   "kind": "open",
+   "title": "scripts/migrate.mjs (not a W1-D path) still reads DATABASE_URL (production) by default; it should honour server/db.js dbUrl() and require --prod for production; server/forge/cache.js dbConfigured() also reads DATABASE_URL directly",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
+  },
+  {
+   "id": "open-ci-secrets",
+   "kind": "open",
+   "title": "The gates workflow references TEST_DATABASE_URL / CONDUCTOR_TEST_DATABASE_URL repository secrets (owner adds them; DB suites skip without) and installs Chromium for the browser suites; it has not run on GitHub yet",
+   "at": "2026-10-04",
+   "source": "inbox/w1-d.json"
   }
  ],
  "edges": [
@@ -10286,6 +10426,56 @@
    "src": "w1f-rig-runtime-behind-flag",
    "rel": "measured_by",
    "dst": "w1f-fixer-acceptance-2026-10-04"
+  },
+  {
+   "src": "ds41-direct-meter-evidence",
+   "rel": "constrains",
+   "dst": "azure-billed-open-models"
+  },
+  {
+   "src": "w1d-web-single-replica",
+   "rel": "supersedes",
+   "dst": "w1d-no-session-affinity-in-multiple-mode"
+  },
+  {
+   "src": "w1d-react-errors-beaconed",
+   "rel": "supersedes",
+   "dst": "open-route-errors-not-beaconed"
+  },
+  {
+   "src": "w1d-migrations-gate-at-deploy",
+   "rel": "part_of",
+   "dst": "w1d-gated-canary-deploys"
+  },
+  {
+   "src": "w1d-image-tag-must-name-commit",
+   "rel": "part_of",
+   "dst": "w1d-gated-canary-deploys"
+  },
+  {
+   "src": "w1d-dirty-stamp-poisoned-sha",
+   "rel": "part_of",
+   "dst": "w1d-gated-canary-deploys"
+  },
+  {
+   "src": "w1d-nightly-sweep-not-in-image",
+   "rel": "part_of",
+   "dst": "w1d-test-account-sweep-2026-10-04"
+  },
+  {
+   "src": "w1d-nightly-job-azure-run-2026-10-04",
+   "rel": "part_of",
+   "dst": "w1d-nightly-sweep-not-in-image"
+  },
+  {
+   "src": "w1d-test-clock-wakeups-real-clock",
+   "rel": "part_of",
+   "dst": "w1d-worker-on-test-clock"
+  },
+  {
+   "src": "open-sweep-shares-erasure",
+   "rel": "part_of",
+   "dst": "w1d-nightly-sweep-not-in-image"
   }
  ]
 }

@@ -2231,3 +2231,51 @@ Without it a test child's report.daily (due 04:10 tomorrow in shifted time) wait
 - `w1f-assets-404`: a missing /assets/* path returns 404, never the SPA shell, so removed looks and stale chunks fail visibly. Ships as a serve.mjs patch applied at integration. Reverse if a client legitimately depends on the shell for an /assets path.
 - `w1f-rig-failure-remembered-per-page`: after a rig failure the same page starts later mounts at tier D on the look's plate instead of re-downloading the GLB during her speech; a new page load retries. Reverse if field data shows same-page retries usually succeed.
 - `w1f-publish-requires-plate`: publish-look.mjs refuses a look without its 2D plate (unless --no-plate), since a plate-less look silently fell back to the procedural head. Reverse if the plate stops being the rig's fallback.
+
+## Owner model-mix directives (2026-10-04)
+- `owner-azure-first-aws-second-2026-10-04`: Azure Foundry first; AWS model APIs only where Azure is clearly worse for a use case, keeping AWS credits mainly for build GPU. Reverse if the credits are no longer needed for GPU or an AWS model wins a live lane by non-overlapping intervals.
+- `owner-gpt-image-2-default-2026-10-04`: gpt-image-2 is the default for all generated images; FLUX.2-pro and MAI-Image are measured alternatives only. Images stay on eastus2 (not offered in South India). Known trade-off: 17-19 s at low quality vs FLUX 4-6 s, covered by prefetch; quota is 4/4 used, so live volume needs a quota raise. Reverse if latency or quota blocks live use and an alternative wins on quality.
+
+
+<!-- merged from inbox/w1-d.json -->
+## w1d-web-single-replica (2026-10-04)
+**`scripts/deploy-azure.mjs` sets `template.scale` to min 1 / max 1 on every new taxila-web revision (the plan line says so). Live taxila-web was configured min 1 / max 5 at 50 concurrent requests.**
+- Rationale: ACA refuses sticky sessions in Multiple revision mode (measured, `w1d-no-session-affinity-in-multiple-mode`), and the 0% canary plus one-PATCH rollback need Multiple mode. Smooth G10's per-process state (prewarm, the comprehension PENDING map, TTS limiters) would split across replicas the moment the app scaled, so a /turn and its tts-stream could land on different processes. One 1 vCPU / 2 GiB replica is correct; five without affinity is not.
+- Cost accepted: the `previous` revision stays active (min 1) so `--rollback` stays a 14 s traffic switch; that is a second always-on replica, reachable at its label URL.
+- Reverse if: W2-A moves that state to a shared store (Postgres/Blob) or makes it replica-safe (then set TAXILA_MAX_REPLICAS); or ACA supports affinity in Multiple mode; or one replica's measured p90 turn latency under peak load breaks the 3 s alert (then scale and accept the split, with the state fixed first).
+
+## w1d-migrations-gate-at-deploy (2026-10-04)
+**Both deploy scripts refuse when the target database lacks any db/migrations file of the deployed sha (`infra/gate.mjs migrationsGate`, listing from `git ls-tree <sha>`). taxila-web's own DATABASE_URL secret is the target for the web; the worker's resolved URL for the worker.**
+- Rationale: a green GitHub `gates` run is accepted as evidence, but CI has no production DATABASE_URL, so `migrations-applied` skips there; without this, CI evidence would unlock a deploy whose code writes columns production lacks.
+- Measured: today it refuses HEAD with "the target database lacks 012_pending_grade.sql, 013_reteach_resolution.sql, 015_open_now.sql"; the test branch passes.
+- Reverse if: deploys run migrations themselves as a release step (then the gate becomes that step's check).
+
+## w1d-image-tag-must-name-commit (2026-10-04)
+**`--image-tag TAG` is accepted only when TAG is an exact commit-sha prefix that resolves; the gate and the migrations check apply to that commit, and GIT_SHA is the tag.**
+- Rationale: the gate was checked against HEAD while any ACR image went out, so `--image-tag` let an ungated image through.
+- Reverse if: images carry a signed provenance label read at deploy time.
+
+## w1d-one-db-url-resolver (2026-10-04)
+**`server/db.js dbUrl(env, { direct })` resolves the database for every server process: TAXILA_DB=test → CONDUCTOR_TEST_DATABASE_URL / TEST_DATABASE_URL (throws if unset, never falls back to prod); TAXILA_DB=prod or unset → DATABASE_URL (DATABASE_URL_DIRECT first when direct). Used by db.js, conductor/pg.js's unconfigured pool, worker.mjs and ops.mjs. tests/prod/run.mjs and lib.mjs default a LOCAL target's DB checks to the test branch.**
+- Rationale: only db.js honoured TAXILA_DB, so a TAXILA_DB=test web process wrote lessons to the test branch while planToday, parent reports and the inline step read production.
+- Measured: `TAXILA_DB=test node server/worker.mjs` with production DATABASE_URL in env started and stepped test-branch children (production would have refused: 012/013/015 missing).
+- Reverse if: the Azure PostgreSQL move (owner directive) replaces Neon branches with a different test-database mechanism; keep the single resolver.
+
+## w1d-forced-500-locked (2026-10-04)
+**/api/test/boom requires an @taxila.test session, the operator key in `x-taxila-ops` (TAXILA_OPS_KEY; no key on the app = 403 for everyone), and at most 4 per hour per replica (429). `ipOf` keys rate limits on the rightmost x-forwarded-for hop.**
+- Rationale: signup is open to any @taxila.test address, so anyone could mail the owner a 5xx alert at will; the leftmost XFF is client-chosen.
+- The key was generated into .env.local (TAXILA_OPS_KEY) and reaches the app as the `taxila-ops-key` secret on the next deploy-azure run.
+- Reverse if: the forced 500 moves to an internal-only endpoint (e.g. an ACA job inside the environment).
+
+## w1d-route-error-log-no-message (2026-10-04)
+**The 'route error' stderr line is `route error <route> <Class:code> <server frames>`; never the message.**
+- Rationale: that output ships to Log Analytics; a model or DB error message can quote a child's words, and romanised Hinglish passes any ASCII scrubber.
+- Reverse if: debugging needs messages in production; then route them to a separate, shorter-retention table with access controls.
+
+## w1d-react-errors-beaconed (2026-10-04)
+**src/main.tsx: `createRoot(root, { onCaughtError, onUncaughtError })` → `reportClientError('react', e)`, keeping console.error.** Proven locally: a /promises page chunk replaced by a throwing module produced a `react` beacon (204) on /promises.
+- Reverse if: RouteError starts reporting itself (then drop onCaughtError to avoid double reports).
+
+## w1d-test-clock-wakeups-real-clock (2026-10-04)
+**fire_wakeups stays on the real clock for test children; a test-clock day advances by events and reads.** The real-clock timer path is exercised by real children and watched by the canary's wakeups_late.
+- Reverse if: a test needs the 04:10 timer itself; then add an offset-aware fire_wakeups for test children.

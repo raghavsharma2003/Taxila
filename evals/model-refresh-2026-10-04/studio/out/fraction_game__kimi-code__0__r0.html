@@ -1,0 +1,394 @@
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; overflow-x: hidden; }
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 32px;
+  background: linear-gradient(180deg, #e0f7fa 0%, #ffffff 100%);
+  color: #263238;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+.header { width: 100%; max-width: 320px; text-align: center; margin-bottom: 8px; }
+h1 { margin: 0 0 8px; font-size: 1.55rem; line-height: 1.25; color: #00695c; }
+.instr { margin: 0 0 6px; font-size: 1.05rem; line-height: 1.4; }
+.hint { margin: 0 0 14px; font-size: 0.95rem; line-height: 1.35; opacity: 0.85; }
+.progress {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+  max-width: 280px;
+  margin-bottom: 16px;
+}
+.progress-seg {
+  flex: 1;
+  height: 8px;
+  background: #b2dfdb;
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+.progress-seg.active { background: #00897b; }
+#stage {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.fraction {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #00897b;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.num, .den { display: inline-block; min-width: 1.1em; text-align: center; }
+.slash { opacity: 0.7; }
+.parts { width: 100%; display: flex; justify-content: center; margin-bottom: 8px; }
+.bar {
+  width: 280px;
+  border: 3px solid #ff7043;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff3e0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+.bar .part {
+  width: 100%;
+  height: 48px;
+  background: #fff3e0;
+  border-bottom: 2px solid #ffccbc;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+.bar .part:last-child { border-bottom: none; }
+.bar .part:active { transform: scale(0.98); }
+.bar .part.selected { background: #ffb74d; }
+.pizza-svg {
+  width: 280px;
+  height: 280px;
+  display: block;
+  cursor: pointer;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.08));
+}
+.pizza-svg .part {
+  fill: #fff3e0;
+  stroke: #ffffff;
+  stroke-width: 3;
+  transition: fill 0.2s;
+  pointer-events: none;
+}
+.pizza-svg .part.selected { fill: #ffb74d; }
+.feedback {
+  min-height: 1.6em;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 6px 0 14px;
+}
+.feedback.right { color: #2e7d32; }
+.feedback.wrong { color: #c62828; }
+.check {
+  width: 100%;
+  max-width: 280px;
+  padding: 15px 22px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: #00897b;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.2s;
+  margin-top: auto;
+  touch-action: manipulation;
+}
+.check:active { transform: scale(0.97); }
+.check:disabled { opacity: 0.65; cursor: default; }
+.done {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.done.hidden { display: none; }
+.done-icon { width: 120px; height: 120px; margin-bottom: 18px; }
+.done-text { font-size: 1.35rem; font-weight: 700; color: #00695c; margin: 0; }
+.confetti {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+  left: 50%;
+  top: 50%;
+  animation: pop 0.85s ease-out forwards;
+}
+@keyframes pop {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0); opacity: 0; }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+.shake { animation: shake 0.35s ease-in-out; }
+</style>
+
+<div id="app">
+  <div class="header">
+    <h1 id="title"></h1>
+    <p id="instr" class="instr"></p>
+    <p id="hint" class="hint"></p>
+  </div>
+  <div id="progress" class="progress"></div>
+  <div id="stage" data-item="">
+    <div id="fraction" class="fraction"></div>
+    <div id="parts" class="parts"></div>
+  </div>
+  <div id="feedback" class="feedback"></div>
+  <button id="check" class="check" data-action="check"></button>
+  <div id="done" class="done hidden">
+    <svg class="done-icon" viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="54" fill="#ffb74d"/>
+      <path d="M38 62 L52 76 L82 46" stroke="#ffffff" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <p class="done-text"></p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const params = Studio.params || {};
+  const items = params.items || [];
+  const picture = params.picture || 'pizza';
+  const app = document.getElementById('app');
+  const title = document.getElementById('title');
+  const instr = document.getElementById('instr');
+  const hint = document.getElementById('hint');
+  const progress = document.getElementById('progress');
+  const stage = document.getElementById('stage');
+  const fraction = document.getElementById('fraction');
+  const parts = document.getElementById('parts');
+  const feedback = document.getElementById('feedback');
+  const check = document.getElementById('check');
+  const done = document.getElementById('done');
+  const doneText = done.querySelector('.done-text');
+  let current = 0;
+  let doneCalled = false;
+
+  function setStrings(){
+    title.textContent = Studio.t('title');
+    instr.textContent = Studio.t('instr');
+    hint.textContent = Studio.t('hint');
+    check.textContent = Studio.t('check');
+    doneText.textContent = Studio.t('done');
+  }
+
+  function renderProgress(){
+    progress.innerHTML = '';
+    const total = items.length;
+    for(let i = 0; i < total; i++){
+      const seg = document.createElement('span');
+      seg.className = 'progress-seg' + (i <= current ? ' active' : '');
+      progress.appendChild(seg);
+    }
+  }
+
+  function togglePart(el, item){
+    const shaded = el.classList.toggle('selected');
+    el.setAttribute('data-shaded', String(shaded));
+    const index = el.getAttribute('data-part');
+    Studio.event('part_toggle', {item: item.id, part: index, shaded: shaded});
+  }
+
+  function countSelected(){
+    return parts.querySelectorAll('.part.selected').length;
+  }
+
+  function celebrate(){
+    const colors = ['#ff8a65', '#ffb74d', '#4db6ac', '#81d4fa', '#a5d6a7'];
+    for(let i = 0; i < 14; i++){
+      const p = document.createElement('span');
+      p.className = 'confetti';
+      p.style.backgroundColor = colors[i % colors.length];
+      const angle = (Math.PI * 2 * i) / 14;
+      const dist = 60 + Math.random() * 70;
+      const tx = Math.cos(angle) * dist;
+      const ty = Math.sin(angle) * dist - 40;
+      p.style.setProperty('--tx', tx + 'px');
+      p.style.setProperty('--ty', ty + 'px');
+      app.appendChild(p);
+      setTimeout(function(){ if(p.parentNode) p.parentNode.removeChild(p); }, 900);
+    }
+  }
+
+  function shake(el){
+    el.classList.remove('shake');
+    void el.offsetWidth;
+    el.classList.add('shake');
+  }
+
+  function renderPizza(item){
+    const d = item.d;
+    const cx = 150, cy = 150, r = 130;
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('viewBox', '0 0 300 300');
+    svg.setAttribute('class', 'pizza-svg');
+    const g = document.createElementNS(svgNS, 'g');
+    for(let i = 0; i < d; i++){
+      const path = document.createElementNS(svgNS, 'path');
+      const a1 = -Math.PI / 2 + i * 2 * Math.PI / d;
+      const a2 = -Math.PI / 2 + (i + 1) * 2 * Math.PI / d;
+      const x1 = cx + r * Math.cos(a1);
+      const y1 = cy + r * Math.sin(a1);
+      const x2 = cx + r * Math.cos(a2);
+      const y2 = cy + r * Math.sin(a2);
+      const large = (a2 - a1) > Math.PI ? 1 : 0;
+      const dattr = 'M ' + cx + ' ' + cy + ' L ' + x1 + ' ' + y1 + ' A ' + r + ' ' + r + ' 0 ' + large + ' 1 ' + x2 + ' ' + y2 + ' Z';
+      path.setAttribute('d', dattr);
+      path.setAttribute('class', 'part');
+      path.setAttribute('data-part', String(i));
+      path.setAttribute('data-shaded', 'false');
+      path.style.pointerEvents = 'none';
+      g.appendChild(path);
+    }
+    const rim = document.createElementNS(svgNS, 'circle');
+    rim.setAttribute('cx', cx);
+    rim.setAttribute('cy', cy);
+    rim.setAttribute('r', r);
+    rim.setAttribute('fill', 'none');
+    rim.setAttribute('stroke', '#ff7043');
+    rim.setAttribute('stroke-width', '6');
+    rim.style.pointerEvents = 'none';
+    g.appendChild(rim);
+    svg.appendChild(g);
+
+    const catcher = document.createElementNS(svgNS, 'circle');
+    catcher.setAttribute('cx', cx);
+    catcher.setAttribute('cy', cy);
+    catcher.setAttribute('r', r);
+    catcher.setAttribute('fill', 'rgba(0,0,0,0)');
+    catcher.style.pointerEvents = 'all';
+    catcher.style.cursor = 'pointer';
+    svg.appendChild(catcher);
+
+    svg.addEventListener('click', function(e){
+      const rect = svg.getBoundingClientRect();
+      const scaleX = 300 / rect.width;
+      const scaleY = 300 / rect.height;
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+      const dx = x - cx;
+      const dy = y - cy;
+      let angle = Math.atan2(dy, dx) + Math.PI / 2;
+      if(angle < 0) angle += 2 * Math.PI;
+      let idx = Math.floor(angle / (2 * Math.PI / d));
+      if(idx < 0) idx = 0;
+      if(idx >= d) idx = d - 1;
+      const el = parts.querySelector('.part[data-part="' + idx + '"]');
+      if(el) togglePart(el, item);
+    });
+    parts.appendChild(svg);
+  }
+
+  function renderBar(item){
+    const d = item.d;
+    const wrap = document.createElement('div');
+    wrap.className = 'bar';
+    for(let i = 0; i < d; i++){
+      const seg = document.createElement('div');
+      seg.className = 'part';
+      seg.setAttribute('data-part', String(i));
+      seg.setAttribute('data-shaded', 'false');
+      seg.addEventListener('click', function(){
+        togglePart(seg, item);
+      });
+      wrap.appendChild(seg);
+    }
+    parts.appendChild(wrap);
+  }
+
+  function renderItem(i){
+    current = i;
+    const item = items[i];
+    stage.setAttribute('data-item', item.id);
+    parts.innerHTML = '';
+    fraction.innerHTML = '<span class="num">' + item.n + '</span><span class="slash">/</span><span class="den">' + item.d + '</span>';
+    feedback.textContent = '';
+    feedback.className = 'feedback';
+    if(String(picture).toLowerCase().includes('pizza')){
+      renderPizza(item);
+    } else {
+      renderBar(item);
+    }
+    renderProgress();
+  }
+
+  function nextItem(){
+    current++;
+    if(current < items.length){
+      renderItem(current);
+    } else {
+      showDone();
+    }
+  }
+
+  function showDone(){
+    stage.style.display = 'none';
+    fraction.style.display = 'none';
+    check.style.display = 'none';
+    feedback.style.display = 'none';
+    progress.style.display = 'none';
+    done.classList.remove('hidden');
+    if(!doneCalled){
+      doneCalled = true;
+      Studio.done();
+    }
+  }
+
+  check.addEventListener('click', function(){
+    const item = items[current];
+    const n = countSelected();
+    Studio.event('check', {item: item.id, n: n, d: item.d});
+    Studio.answer({n: n, d: item.d});
+  });
+
+  Studio.onVerdict(function(v){
+    if(v && v.correct){
+      feedback.textContent = Studio.t('right');
+      feedback.className = 'feedback right';
+      celebrate();
+      check.disabled = true;
+      setTimeout(function(){
+        check.disabled = false;
+        nextItem();
+      }, 1300);
+    } else {
+      feedback.textContent = Studio.t('wrong');
+      feedback.className = 'feedback wrong';
+      shake(stage);
+    }
+  });
+
+  setStrings();
+  if(items.length > 0){
+    renderItem(0);
+  } else {
+    showDone();
+  }
+  Studio.ready();
+})();
+</script>

@@ -1,0 +1,178 @@
+<style>
+  :root{
+    --bg:#f4f8ff;--card:#ffffff;--ink:#1f2a44;--muted:#6f7fa8;--axis:#90a4cc;--grid:#d9e4fb;
+    --barA:#7aa8ff;--barB:#4f83eb;--ok:#1da56f;--bad:#d14a60;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
+  #app{max-width:420px;margin:0 auto;min-height:100vh;padding:12px;display:flex;flex-direction:column;gap:10px}
+  .card{background:var(--card);border-radius:18px;box-shadow:0 8px 24px rgba(31,42,68,.08);padding:12px}
+  #title{margin:0;text-align:center;font-size:22px;line-height:1.2}
+  #ask{margin:6px 0 10px;text-align:center;color:var(--muted);font-weight:700;min-height:24px}
+  #chart{position:relative;height:360px}
+  #plotTop{position:relative;height:320px}
+  #axisArea{position:absolute;left:0;top:0;bottom:0;width:56px}
+  #yaxis{position:absolute;left:3px;top:50%;transform:translateY(-50%) rotate(-90deg);transform-origin:left top;font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+  #tickLayer{position:absolute;inset:0}
+  .tick{position:absolute;right:6px;font-size:12px;line-height:1;color:var(--muted);font-weight:800;transform:translateY(50%);min-width:28px;text-align:right}
+  #plotArea{position:absolute;left:56px;right:0;top:0;bottom:0;border-left:2px solid var(--axis);border-bottom:3px solid var(--axis);border-radius:0 0 10px 0}
+  #gridLayer{position:absolute;inset:0;pointer-events:none}
+  .grid{position:absolute;left:0;right:0;border-top:1px solid var(--grid)}
+  .grid.base{border-top:2px solid var(--axis)}
+  #barsRow{position:absolute;inset:0;display:flex;gap:4px;padding:0 2px;align-items:stretch}
+  .g{flex:1;position:relative;display:flex;justify-content:center}
+  .b{width:100%;height:100%;min-width:44px;min-height:44px;border:0;background:transparent;padding:0;display:flex;align-items:flex-end;justify-content:center;transition:transform .12s ease}
+  .b:active{transform:scale(.97)}
+  .barFill{width:44px;max-width:100%;min-height:2px;border-radius:12px 12px 6px 6px;background:linear-gradient(180deg,var(--barA),var(--barB));box-shadow:0 6px 10px rgba(79,131,235,.25);transform-origin:bottom;transform:scaleY(0);transition:transform .8s cubic-bezier(.22,.9,.24,1),filter .2s ease}
+  .barFill.in{transform:scaleY(1)}
+  .b.sel .barFill{filter:brightness(1.08)}
+  .tag{position:absolute;left:50%;transform:translate(-50%,8px) scale(.96);height:28px;min-width:34px;padding:0 10px;border-radius:999px;background:#1f2a44;color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s;pointer-events:none}
+  .tag.show{opacity:1;transform:translate(-50%,0) scale(1)}
+  #labels{display:flex;gap:4px;padding-left:56px;padding-right:2px;margin-top:6px}
+  .xl{flex:1;min-width:44px;text-align:center;font-size:13px;font-weight:700;line-height:1.2}
+  #feedback{min-height:28px;text-align:center;font-size:18px;font-weight:800;opacity:0;transition:.2s}
+  #feedback.show{opacity:1}
+  #feedback.ok{color:var(--ok)}
+  #feedback.bad{color:var(--bad)}
+  #done{min-height:24px;text-align:center;font-weight:800;color:var(--ok);opacity:0;transition:.25s}
+  #done.show{opacity:1}
+</style>
+
+<div id="app">
+  <div class="card">
+    <h1 id="title"></h1>
+    <p id="ask"></p>
+    <div id="chart">
+      <div id="plotTop">
+        <div id="axisArea">
+          <div id="yaxis"></div>
+          <div id="tickLayer"></div>
+        </div>
+        <div id="plotArea">
+          <div id="gridLayer"></div>
+          <div id="barsRow"></div>
+        </div>
+      </div>
+      <div id="labels"></div>
+    </div>
+  </div>
+  <div id="feedback"></div>
+  <div id="done"></div>
+</div>
+
+<script>
+(function(){
+  const data=(Studio.params&&Studio.params.data)?Studio.params.data.slice():[];
+  const title=document.getElementById('title');
+  const ask=document.getElementById('ask');
+  const yaxis=document.getElementById('yaxis');
+  const ticks=document.getElementById('tickLayer');
+  const grid=document.getElementById('gridLayer');
+  const bars=document.getElementById('barsRow');
+  const labels=document.getElementById('labels');
+  const feedback=document.getElementById('feedback');
+  const done=document.getElementById('done');
+
+  title.textContent=Studio.t('title');
+  ask.textContent=Studio.t('ask');
+  yaxis.textContent=Studio.t('yaxis');
+
+  function niceStep(max){
+    const rough=Math.max(1,max/5);
+    const p=Math.pow(10,Math.floor(Math.log10(rough)));
+    const n=rough/p;
+    let m=1;
+    if(n>5)m=10; else if(n>2)m=5; else if(n>1)m=2;
+    return m*p;
+  }
+
+  const maxVal=data.reduce((m,d)=>Math.max(m,d.value),0);
+  const step=niceStep(maxVal);
+  const top=Math.max(step,Math.ceil(maxVal/step)*step);
+
+  for(let v=0;v<=top;v+=step){
+    const pct=(v/top)*100;
+
+    const gl=document.createElement('div');
+    gl.className='grid'+(v===0?' base':'');
+    gl.style.bottom=pct+'%';
+    grid.appendChild(gl);
+
+    const tk=document.createElement('div');
+    tk.className='tick';
+    tk.dataset.tick=String(v);
+    tk.style.bottom=pct+'%';
+    tk.textContent=String(v);
+    ticks.appendChild(tk);
+  }
+
+  let pending=false, finished=false, selected=null, doneSent=false;
+
+  function showVerdict(ok){
+    feedback.className='';
+    feedback.id='feedback';
+    feedback.textContent=ok?Studio.t('right'):Studio.t('wrong');
+    feedback.classList.add(ok?'ok':'bad');
+    requestAnimationFrame(()=>feedback.classList.add('show'));
+  }
+
+  data.forEach(function(d){
+    const g=document.createElement('div'); g.className='g';
+    const b=document.createElement('button'); b.className='b'; b.type='button';
+
+    const bar=document.createElement('div');
+    bar.className='barFill';
+    bar.dataset.bar=d.key;
+    bar.dataset.value=String(d.value);
+    bar.style.height=((d.value/top)*100)+'%';
+
+    const tag=document.createElement('div');
+    tag.className='tag';
+    tag.textContent=String(d.value);
+    tag.style.bottom='calc('+((d.value/top)*100)+'% + 8px)';
+
+    b.appendChild(bar);
+    g.appendChild(b);
+    g.appendChild(tag);
+    bars.appendChild(g);
+
+    const xl=document.createElement('div');
+    xl.className='xl';
+    xl.textContent=Studio.t(d.key);
+    labels.appendChild(xl);
+
+    b.addEventListener('click',function(){
+      if(pending||finished)return;
+      pending=true;
+      if(selected){
+        selected.classList.remove('sel');
+        const ot=selected.parentElement.querySelector('.tag');
+        if(ot)ot.classList.remove('show');
+      }
+      selected=b;
+      b.classList.add('sel');
+      tag.classList.add('show');
+      Studio.event('bar_tap',{key:d.key,value:d.value});
+      Studio.answer(d.key);
+    });
+
+    requestAnimationFrame(()=>bar.classList.add('in'));
+  });
+
+  Studio.onVerdict(function(v){
+    pending=false;
+    const ok=!!(v&&v.correct);
+    showVerdict(ok);
+    if(ok){
+      finished=true;
+      done.textContent=Studio.t('done');
+      done.classList.add('show');
+      if(!doneSent){doneSent=true;Studio.done();}
+    }else if(selected){
+      selected.classList.remove('sel');
+    }
+  });
+
+  Studio.ready();
+})();
+</script>
