@@ -150,6 +150,24 @@ for f, (vs, ls, m) in enumerate(polys):
     else:
         fclass[f] = "face"
 
+# polish 2 (resume run): main-island faces that went to the shell one at a time read as hard dark triangles on the
+# forehead ("spikes" at the hairline in every front view). A main-island hair face with fewer than 2 hair neighbours
+# (shared edge) goes back to the face, where the skin shader draws its painted hairline texels smoothly. Two sweeps.
+from collections import defaultdict
+_edge_f = defaultdict(list)
+for f, (vs, ls, m) in enumerate(polys):
+    if fclass.get(f) in ("hair", "face"):
+        for j in range(len(vs)):
+            _edge_f[tuple(sorted((vs[j], vs[(j + 1) % len(vs)])))].append(f)
+HAIR_LONERS = 0
+for _sweep in range(2):
+    for f, (vs, ls, m) in enumerate(polys):
+        if fclass.get(f) != "hair":
+            continue
+        nb = {g for j in range(len(vs)) for g in _edge_f[tuple(sorted((vs[j], vs[(j + 1) % len(vs)])))] if g != f}
+        if sum(fclass.get(g) == "hair" for g in nb) < 2:
+            fclass[f] = "face"; HAIR_LONERS += 1; hair_main -= 1
+
 # polish: Rocketbox's strand cards on the crown stand up to 23 mm off the shell, which read as spikes in silhouette.
 # Pull every crown-card vertex toward the nearest shell vertex: offsets above 3 mm keep 30% of their excess. Lashes
 # (eye-level cards) and the low bun cards at the nape are left alone.
@@ -220,15 +238,23 @@ def vertex_normals(fids, Pos):
     return N / np.maximum(l, 1e-12)
 body_f = [f for f in range(len(polys)) if fclass.get(f) in ("face", "hair", "garment")]
 N_body = vertex_normals(body_f, P)
+# polish 2: the hair shell's temple flaps sit edge-on to a front camera, so the hair shader's cool grazing rim term
+# (albedo-independent) lit them as a navy stripe between hair and forehead. Shell normals in front of the ears are
+# bent toward the front (-Y), more the further forward the vertex sits; the shell's silhouette elsewhere is unchanged.
+N_hair = N_body.copy()
+_hv = np.array(sorted({v for f, c in fclass.items() if c == "hair" for v in polys[f][0]}))
+_w = np.clip((0.02 - P[_hv, 1]) / 0.06, 0, 1) * 1.6
+N_hair[_hv] = N_body[_hv] + _w[:, None] * np.array([0, -1.0, 0])
+N_hair[_hv] /= np.maximum(np.linalg.norm(N_hair[_hv], axis=1, keepdims=True), 1e-9)
 
-stats = {"source": "Microsoft Rocketbox Business_Female_01 (MIT)", "hairFacesFromMainIsland": hair_main, "cardPull": CARD_PULL,
+stats = {"source": "Microsoft Rocketbox Business_Female_01 (MIT)", "hairFacesFromMainIsland": hair_main, "cardPull": CARD_PULL, "hairLonersToFace": HAIR_LONERS,
          "partFaces": {}}
 for f, c in fclass.items():
     stats["partFaces"][c] = stats["partFaces"].get(c, 0) + 1
 
 
 # ------------------------------------------------------------------ mesh builder
-def build(name, fids, keynames, custom_normals=True, region=None, uvx=None):
+def build(name, fids, keynames, custom_normals=True, region=None, uvx=None, normals=None):
     vs_all = sorted({v for f in fids for v in polys[f][0]})
     remap = {v: i for i, v in enumerate(vs_all)}
     verts = P[vs_all]
@@ -252,7 +278,7 @@ def build(name, fids, keynames, custom_normals=True, region=None, uvx=None):
             kb = ob.shape_key_add(name=k, from_mix=False)
             kb.data.foreach_set("co", (verts + d).astype(np.float32).ravel())
     if custom_normals:
-        me.normals_split_custom_set_from_vertices([tuple(N_body[v]) for v in vs_all])
+        me.normals_split_custom_set_from_vertices([tuple((N_body if normals is None else normals)[v]) for v in vs_all])
     if region is not None:
         a = me.attributes.new("_region", "FLOAT", "POINT")
         rv = np.zeros(len(vs_all), np.float32)
@@ -462,7 +488,7 @@ def export(tier):
     # atlas (left: alpha cards, right: the shell's texels from the head atlas). As `hair`, the shell took TaxilaHair's
     # Kajiya-Kay lobe, which on Rocketbox's large smooth shell read as grey plastic bands (first polish look);
     # `cards` gets no KK lobe and keeps Rocketbox's painted sheen. 4 draws instead of 5.
-    hair = build("hair", hair_f, [k for k in moving(hair_f, ARKIT52)], uvx=(0.5, 0.5))
+    hair = build("hair", hair_f, [k for k in moving(hair_f, ARKIT52)], uvx=(0.5, 0.5), normals=N_hair)
     cards = build("cards", card_f, moving(card_f, ARKIT52), custom_normals=False, uvx=(0.0, 0.5))
     garment = build("garment", garm_f, [])
     if tier == "H" and args.subdiv > 0:

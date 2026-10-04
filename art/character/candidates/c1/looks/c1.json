@@ -10,12 +10,18 @@
   "skin": {
     "mst": 6,
     "albedoGain": [
+      0.6485,
+      0.738,
+      0.6988
+    ],
+    "_note": "albedoGain is the linear per-channel gain baked into the skin texels of the source albedo (tex.py), solved against the render by g9.mjs --solve",
+    "_warmth": "after the G9 solve: R x1.05 (a* +~1-2 inside the band); the hex's hue read olive-grey on this photo albedo",
+    "albedoGain_prePolish": [
       0.6235,
       0.7531,
       0.7279
     ],
-    "_note": "albedoGain is the linear per-channel gain baked into the skin texels of the source albedo (tex.py), solved against the render by g9.mjs --solve",
-    "_warmth": "after the G9 solve: R x1.05 (a* +~1-2 inside the band); the hex's hue read olive-grey on this photo albedo"
+    "_polish": "polish pass 2 (2026-10-04): R +4%, G -2%, B -4% on the G9 gain: the solved gain read olive-grey on the photo albedo; re-checked by g9 below"
   },
   "eyes": {
     "iris": "#3A2416"

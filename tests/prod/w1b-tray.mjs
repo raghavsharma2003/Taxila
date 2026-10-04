@@ -55,13 +55,21 @@ await withTestAccount(async ({ api, child }) => {
     } else ok(false, `no activity mounted in ${LINES.length} turns on ${TOPIC} (mounts seen: ${turns.flatMap((t) => (t.moduleCommands ?? []).filter((c) => c.op === "mount").map((c) => c.engine)).join(", ") || "none"})`);
 
     // ── 2. a forced unknown engine: rewrite ONE turn response ──
-    let forced = false;
+    // The mount reuses the moduleId the SERVER holds (the last mount not unmounted since), so the frame's `unknown
+    // engine` error names the server's own module and the Director must clear it (modules.js noteModuleEvents). With
+    // nothing mounted server-side the tray check still runs; the screen-reference check then proves less (WARN).
+    let forced = false, forcedId = null;
     await page.route("**/api/lesson/turn", async (route) => {
       const res = await route.fetch();
       if (forced) return route.fulfill({ response: res });
       forced = true;
       const body = await res.json();
-      body.moduleCommands = [...(body.moduleCommands ?? []), { op: "mount", moduleId: "forced-x", engine: "nope@1", params: {} }];
+      let held = null;
+      for (const c of [...turns.flatMap((t) => t.moduleCommands ?? []), ...(body.moduleCommands ?? [])]) {
+        if (c.op === "mount") held = c.moduleId; else if (c.op === "unmount" && c.moduleId === held) held = null;
+      }
+      forcedId = held ?? "forced-x";
+      body.moduleCommands = [...(body.moduleCommands ?? []), { op: "mount", moduleId: forcedId, engine: "nope@1", params: {} }];
       body.ui = { ...(body.ui ?? {}), tray: "module" };
       return route.fulfill({ response: res, json: body });
     });
@@ -82,8 +90,12 @@ await withTestAccount(async ({ api, child }) => {
     await send(page, "theek hai");
     for (let i = 0; i < 40 && turns.length <= n0; i++) await page.waitForTimeout(500);
     const next = turns.at(-1);
-    if (turns.length > n0 && typeof next?.teacherReply === "string") ok(!refersToScreen(next.teacherReply), `the next teacher line has no screen reference: "${next.teacherReply.slice(0, 90)}"`);
-    else warn("no next teacher line captured");
+    if (forcedId === "forced-x") warn("the server held no module when the unknown engine was forced: the screen check below proves less");
+    if (turns.length > n0 && typeof next?.teacherReply === "string") {
+      ok(!refersToScreen(next.teacherReply), `the next teacher line has no screen reference: "${next.teacherReply.slice(0, 90)}"`);
+      ok(next.ui?.tray !== "module" || (next.moduleCommands ?? []).some((c) => c.op === "mount" && c.engine !== "nope@1"),
+        `the next turn carries no module tray without a mount (tray ${next.ui?.tray ?? "none"})`);
+    } else warn("no next teacher line captured");
   } finally { await browser.close(); }
 }, { tag: "w1b-tray", child: { classLevel: 5, firstName: "Riya" } });
 done();

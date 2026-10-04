@@ -32,7 +32,7 @@ let rig = null, look = null, eyeY = 1.47, lipY = 1.40;
 
 const FRAMES = {
   bust: { dist: 1.05, dy: -0.07, fov: 22 },
-  face: { dist: 0.62, dy: -0.025, fov: 20 },
+  face: { dist: 0.74, dy: -0.012, fov: 20 }, // c1 polish: was 0.62 / -0.025 (cropped the forehead and hairline)
   mouth: { dist: 0.42, dy: -0.06, fov: 16 },
 };
 function frame(name = "bust", yawDeg = 0) {

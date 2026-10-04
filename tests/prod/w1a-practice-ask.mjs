@@ -76,7 +76,25 @@ await withTestAccount(async ({ api, child, password }) => {
   } finally { await b2.browser.close(); }
   // the parent's one tap (Controls → "Open now for 1 hour"), inside an unlocked Parent corner
   await setPin(api, password);
-  const opened = await api("POST", "/api/lesson/open-now", { childId: kid.id });
+  // On the real client first (Controls at 360×640, the parent's one tap); the API call is the fallback when the corner
+  // shows its gate in this browser (the check then says so).
+  let opened = null;
+  const b3 = await launch({ viewport: { width: 360, height: 640 }, cookieFrom: api });
+  try {
+    await b3.page.goto(`${BASE}/parent/controls?c=${kid.id}`);
+    const btn = b3.page.locator('[data-testid="open-now-button"]');
+    await btn.waitFor({ timeout: 20_000 }).catch(() => {});
+    if (await btn.count()) {
+      const respP = b3.page.waitForResponse((r) => r.url().endsWith("/api/lesson/open-now"), { timeout: 20_000 });
+      await btn.click();
+      const resp = await respP.catch(() => null);
+      opened = resp?.ok() ? await resp.json().catch(() => null) : null;
+      ok(resp?.status() === 200, `Controls: one tap on "Open now for 1 hour" → ${resp?.status()}`);
+      const status = await b3.page.locator('[data-testid="open-now"] [role="status"]').innerText({ timeout: 5000 }).catch(() => "");
+      ok(/open until/i.test(status), `Controls says until when: "${status}"`);
+    } else warn("Controls showed no Open now button in this browser (corner gate); opening through the API instead");
+  } finally { await b3.browser.close(); }
+  opened ??= await api("POST", "/api/lesson/open-now", { childId: kid.id });
   ok(!!opened.openUntil && opened.plan?.state !== "resting", `open now → open until ${opened.openUntil}, home state ${opened.plan?.state}`);
   const s2 = await api("POST", "/api/lesson/start", { childId: kid.id, mode: "text" });
   ok(s2.status === 201, `after one parent tap a lesson starts (${s2.status})`);

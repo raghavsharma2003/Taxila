@@ -32,12 +32,14 @@ child, so the next child with the same need gets it in under a second with their
 **Why this is now possible when `forge-live-codegen-race` said it was not.** That rejection had three legs. Two of
 them were measured away this session and one is replaced by design:
 1. *"Every lesson start would pay minutes of codegen."* Measured: a full single-file interactive, streamed, is
-   **~20-45 s of generation** on the best Foundry models and the strict gate adds **~10-15 s** [M §14]. A teacher's
+   **~20-45 s of generation** on the best Foundry models and the strict gate adds **~5-12 s** [M §14]. A teacher's
    explanation segment is 60-180 s [T: lesson-arc.md]. The build fits *inside* the talk if it starts at the right
    moment, which the Brain's lookahead provides (§3.1).
-2. *"Dollars per artefact against ~$3/month revenue."* Measured: **$0.002-0.09 per passed build** depending on the
-   model [M §14], against G2's $0.20 offline harness. And the library effect (§3.11) makes the marginal build cost per
-   child fall towards zero: a passed build re-gated with new params passed in most cases [M §14.4].
+2. *"Dollars per artefact against ~$3/month revenue."* Measured: **$0.04-0.12 per passed build** on the routed
+   arms, **$0.13-0.23 per raced live build** [M §14], against G2's $0.20 offline harness. That is still too much to
+   pay per child per lesson, so live builds are the exception and the library is the rule (§3.11, §7): a passed
+   build re-gated with new params passed **37/44** times with no model call [M §14.4], and the failures were one
+   archetype design bug that the chart primitive removes.
 3. *"Human review before generated code reaches a child."* This is the leg the DIRECTIVE changes. It is replaced by
    (a) an **automated gate that plays the artifact against code truth** (strict all-checks, measured recall on seeded
    bugs in G2 = 1.0 [T]), (b) **architecture that makes the dangerous failures impossible rather than detected**: the
@@ -54,12 +56,12 @@ them were measured away this session and one is replaced by design:
 | D2 | **One artifact contract, `studio-kit@1`**: a trusted runtime (`Studio.params / t / answer / onVerdict / event / ready / done`), a declared **test seam** (data attributes per kind), and a **stream order** (style → static markup → one script). Models write against it; the gate plays against it. | GameASG: a test interface declared before generation is what makes strict checking possible [V via world-best]; the probe's seam let a code bot play 100% of passed builds with real pointer clicks [M]. |
 | D3 | **Truth never comes from the model.** Params (numbers, keys, data) are injected at runtime from the verified kit; words come from a strings table that passed Q8 *before* the build; the host grades `Studio.answer`. A build that hard-codes a value fails the param-transfer re-gate. | `generated-media-carries-facts`, `forge-g2-code-gates-miss-pictures` [T]; the photosynthesis builds needed the science-direction check to catch flows drawn backwards [M]. |
 | D4 | **Model routing is per kind and measured, not chosen by name.** The router table in §6 is the output of `evals/live-studio/run.mjs`, re-run weekly; the live race (D5) uses the two best arms per kind. | Per-kind pass rates differ by model and kind [M §14]. |
-| D5 | **Race two builders, ship the first that passes.** For every live build, two different model families build in parallel; the first gate-pass is revealed, the other is cancelled (or kept as the library's second variant). | Single-arm first-pass rates are well below 100% [M]; two independent arms raise P(pass by deadline) and cut tail latency; cost stays cents. |
+| D5 | **Race two builders, ship the first that passes.** For every live build, two independently provisioned deployments build in parallel; the first gate-pass is revealed, the other is cancelled (or kept as the library's second variant). Target: two model families; today both routed arms are gpt-5.6 (terra + sol) because no other family reached 3/3 on all kinds (§6). | Single-arm first-try rates were 0-3 of 3 [M]; the routed pair passed 3/3 on every kind at 37-54 s p50 [M §14.2]; cost $0.13-0.23 per raced build. |
 | D6 | **Self-repair is bounded and fed by the gate, not by a judge**: ≤ 2 repair rounds, each prompt = failing check ids + details + the previous file + negative memory for that kind (placed last). | Repair recovered a large share of first-pass failures in the probe [M]; ManimAgent negative memory halves rounds [V via world-best]. |
 | D7 | **QA runs server-side in an isolated pool, before the child sees anything.** Production: **Azure Container Apps Sandboxes** (GA 2026-09-23, microVM, egress deny-by-default, sub-second start) with a warm Chromium snapshot; fallback: a dedicated `studio-qa` Container App in the existing untrusted environment `taxila-forge-untrusted`. Never on the child's phone, never in the trusted API process. | GA + microVM [V]; the G2 runner showed Chromium's own sandbox fails in ACA jobs (14/14) so the VM boundary must be the boundary [T]. |
 | D8 | **The child sees making, not code.** A "your teacher is making you something" moment: a living sketch that fills in (skeleton → streamed paint behind a soft veil → reveal on the teacher's cue). No progress bars with percentages, no code, no spinner. | Kids-UX research: symbolic wait indicators rejected (`rj-symbolic-wait-indicator`) [T]; Claude/v0/Lovable all show the build; for a child the build must read as craft, not machinery. |
 | D9 | **The teacher narrates the build from facts, not scripts.** The Brain receives `StudioStatus` as a telegraphic row (`studio: fraction-pizza building; eta 18s; shows 3/4`), never sentences; the teacher may only point at what is `revealed`. | Recitation law; `screenHasTargets` false-reference bug in production [T]. |
-| D10 | **Images are art, never facts, and are made in a separate lane.** FLUX.2-pro for text-free illustration (**~4-6 s** [M]); gpt-image-2 *low* (~17-19 s [M]) when a reference or edit is needed; *medium* (~43 s [M]) only near-line. Every label is drawn by code on top. | `generated-media-carries-facts`, KVBench 51% best [T/V]; capacity today (FLUX 1, gpt-image-2 4) produced 429s at 3 concurrent calls [M] → owner must raise capacity before live images scale. |
+| D10 | **Images are art, never facts, and are made in a separate lane.** FLUX.2-pro for text-free illustration (**~4-6 s** [M]); gpt-image-2 *low* (~17-19 s [M]) when a reference or edit is needed; *medium* (~43 s [M]) only near-line. Every label is drawn by code on top. | `generated-media-carries-facts`, KVBench 51% best [T/V]; capacity today (FLUX 1, gpt-image-2 4): 2 of 4 FLUX calls were rejected under 3-way concurrency [M] → owner must raise capacity before live images scale. |
 | D11 | **The library is the moat.** Identity = (kind, archetype, skill, band, lang-family, kit-hash, studio-kit version); params and strings are per child. Promotion after K gate passes across distinct param sets + a sampled human review. | Param transfer measured [M §14.4]; G2's identity/single-flight/catalogue code is reused [T]. |
 | D12 | **Every Studio interaction is evidence with a declared trust level.** `Studio.answer` → host-graded evidence `source: studio` (weight from the comprehension ledger, initially ×0.75 like modules); `Studio.event` → process facts for the learner model (hesitation, undo, strategy) but never correctness. | `ledger-game-full-weight` open item; `in-game-success-as-mastery` rejection [T]. |
 
@@ -119,8 +121,9 @@ four mechanisms that compound:
    *start* of the hook (or on the turn where a misconception is first suspected), it emits a `StudioIntent` for the
    piece it will want at the *explain* or *practice* beat. Measured build-to-playable (p50) is 30-60 s for the best
    arms [M]; the hook plus the first explanation turn last 60-180 s in a voice lesson [T]. **Rule:** an intent must be
-   emitted ≥ 45 s (p50 budget) before the beat that needs it, or it is marked `opportunistic` (revealed whenever ready,
-   the teacher adapts).
+   emitted at least the archetype's race p90 time-to-playable before the beat that needs it (default **90 s** until the
+   archetype has n ≥ 30 bench runs; measured race p50 37-54 s, passer max 46-74 s [M §14.2]), or it is marked
+   `opportunistic` (revealed whenever ready, the teacher adapts).
 2. **Library first.** Before any model call, the router looks up the library by identity (§3.11). A hit is mounted
    with this child's params in ≤ 300 ms (frame warm) and still passes the per-mount param gate in the background
    (§3.6 G-mount) before the reveal.
@@ -140,7 +143,7 @@ four mechanisms that compound:
 | Skeleton painted in the frame | `src/studio/skeletons/*` | **≤ 300 ms** after intent reaches client | code only (D1) |
 | First streamed paint (behind the veil) | builder | ≤ 25 / 40 s | §14 |
 | Generation complete | builder | ≤ 40 / 60 s | §14 |
-| Gate (G0-G9) | `studio-qa` sandbox | ≤ 12 / 18 s | 10-15 s local Chromium [M] |
+| Gate (G0-G9) | `studio-qa` sandbox | ≤ 12 / 18 s | 4.8-11.6 s p50 local Chromium [M] |
 | Repair round (if needed) | builder | ≤ 30 / 45 s per round, ≤ 2 rounds | §14 |
 | Reveal on cue | client | ≤ 150 ms (warm frame swap) | frame pre-warm target [T: W2-B #4] |
 
@@ -240,7 +243,8 @@ Deterministic code, no model:
 2. **Library lookup** by identity (§3.11). Hit with status `promoted` → mount now. Hit with status `live_passed`
    (passed for another child, not yet reviewed) → mount for this child too only if the build has ≥ 3 passes across
    distinct param sets and 0 incident reports (§3.11), else build live.
-3. **Budget check:** lesson live-build count < 3, daily per-child spend < $0.30, global breaker (G2's breaker code).
+3. **Budget check:** lesson live-build count < 3, per-child spend < $0.60/day and < $8/month, global breaker (G2's
+   breaker code); numbers and reasoning in §7.
 4. **Live build** with the per-kind route: `routes.json` = `{kind: [{dep, effort, weight}], race: 2, deadlineMs}`
    produced by the weekly router bench (§6).
 
@@ -401,8 +405,9 @@ size-limited (≤ 1 KB).
   them on learning outcome (next-item-unaided correctness), which is the experiment loop the DIRECTIVE asks for.
 - **Storage:** reuse `server/forge/g2/store.js` trust zones: run containers per build (untrusted writes), private
   catalogue (trusted), public content-addressed bundles (immutable, `forge/studio/b/<sha>.html`).
-- **Measured transfer [M §14.4]:** of the builds that passed, the share that still passed with new params (fraction:
-  1/3, 4/6, 2/7; chart: new values and a different top bar; photosynthesis: the English strings table).
+- **Measured transfer [M §14.4]:** gate-passed builds re-gated with new truth and no model call: fraction 20/21 (new
+  items 1/3, 4/6, 2/7), photosynthesis 10/10 (v1) and 12/13 (v2) with the English strings table, bar chart 5/11 (all
+  six failures = the short-bar tap-target design bug fixed by the chart primitive's column hit area).
 
 ### 3.12 Fallback ladder (never a placeholder)
 
@@ -427,7 +432,9 @@ Charts, number lines, geometry, maps, timelines: the kit ships **truth primitive
 `geo.construct(constraints)` via a JSXGraph-MIT-based solver [V licence via world-best], `map.places(ids)` from a
 vetted India/world vector set, `timeline(events)`). The model composes, styles and animates them and adds
 interaction, but the geometry/scale is computed by the primitive, so G6 checks become cheap invariants. Free-drawn
-charts are allowed (the probe measured them) but must pass the same G6 tick/height truth.
+charts are allowed (the probe measured them) but must pass the same G6 tick/height truth. **Every chart's tap
+target is the whole column (bar + label), ≥ 44 px wide and tall regardless of the value**: the probe's chart builds
+failed param transfer 6/11 because a small value made its bar a sub-40 px target [M §14.4].
 
 ### 3.15 Generated images
 
@@ -437,8 +444,8 @@ charts are allowed (the probe measured them) but must pass the same G6 tick/heig
   "what does a mangrove look like". **Never** labels, counts, maps, diagrams or anything with a right answer.
 - Gate: OCR any-text presence = fail (text-free prompt contract), Content Safety image, a binary vision checklist
   (no people stereotypes, no logos/currency/emblems: `content-safety-sole-gate` [T]); labels drawn by code on top.
-- **Capacity is the blocker:** 3 concurrent calls hit 429 on both FLUX.2-pro (capacity 1) and gpt-image-2
-  (capacity 4) [M]. Owner action O-2: raise to ≥ 20 (FLUX) and ≥ 20 (image) before live images are on by default.
+- **Capacity is the blocker:** under 3-way concurrency 2 of 4 FLUX.2-pro calls (capacity 1) were rejected; gpt-image-2
+  (capacity 4) held at 3 concurrent but is too slow for a live window at *medium* [M §14.7]. Owner action O-2: raise to ≥ 20 (FLUX) and ≥ 20 (image) before live images are on by default.
 
 ### 3.16 Mini-sites
 
@@ -552,13 +559,84 @@ Direct**: excluded [T: MODEL-ROUTER R5]), `grok-4.3`, `grok-4-20-*`, `grok-4-1-f
 `taxila-realtime`, `gpt-realtime-2.1-mini`, `taxila-live`, `taxila-live-transcribe`, `taxila-transcribe`,
 `gpt-4o-mini-transcribe`, `gpt-4o-mini-tts`, `text-embedding-3-small`.
 
-<<ROUTING>>
+**Router table v1 (output of `evals/live-studio/run.mjs`, 2026-10-04, n = 3 per cell: a starting point, not a ship
+bar; §8 needs n ≥ 30 per archetype before an archetype goes live).** Race pairs are seed-aligned (§14.2).
+
+| kind (probe archetype) | arm A | arm B (race) | race pass / n | race time-to-playable p50 | cost per live build (both arms) | why |
+|---|---|---|---|---|---|---|
+| game (`fraction_game`, shade-the-fraction) | `gpt-5.6-terra` effort low | `taxila-brain` (gpt-5.6-sol) low | 3/3 | **36.7 s** | ≈ $0.13 | terra 3/3 first try, fastest (36.7 s p50), cheapest of the passers ($0.042); sol 3/3 first try |
+| animation (`photosynthesis_anim`, brief v2) | `taxila-brain` low | `gpt-5.6-terra` low | 3/3 | **38.8 s** | ≈ $0.23 | sol 2/3 first try, 3/3 after repair, 38.8 s p50; terra 3/3 after repair |
+| chart (`bar_chart_viz`) | `taxila-brain` low | `gpt-5.6-terra` low | 3/3 | **54.2 s** | ≈ $0.20 | the only two arms at 3/3 after repair |
+| simulation, explorable, diagram, mini-site page | `taxila-brain` low | `gpt-5.6-terra` low | not measured | — | ≈ $0.20 [U] | default until the router bench covers them (S4) |
+| image | `taxila-flux2` (text-free art) | `taxila-image` low (reference/edit) | — | 4-6 s / 17-19 s | ≈ $0.04-0.07 [U: list price] | §3.15 |
+| plan (strings, cue) | `taxila-fast` effort none | — | 8/8 schema-valid | 3.25 s | < $0.001 | §14.5 |
+
+**What the bench says about each family (and why the race is two OpenAI deployments today, not two families):**
+- **gpt-5.6-terra / gpt-5.6-sol (low effort)** are the only arms that reached 3/3 after repair on all three kinds.
+  They are separate deployments with separate quota pools, so they race independently on capacity even though they are
+  one family. D5's "two families" is the *target*: the second-family slot is filled as soon as a non-OpenAI arm
+  reaches ≥ 0.8 after repair on an archetype at n ≥ 10.
+- **`taxila-codex` (gpt-5.3-codex):** low effort is a good third arm (fraction 3/3, chart 2/3, photosynthesis v2 3/3)
+  but 10-50% slower than terra; *medium* effort was slower **and** worse (chart 1/3, $0.63 per passed build). Codex
+  is kept for the patch-build lane (§3.7) and as the fallback arm when a terra/sol deployment returns 429.
+- **DeepSeek-V4-Flash:** by far the fastest TTFT (1.1-1.4 s) and cheapest ($0.003-0.008 a build), 2/3 on fractions,
+  but **0/6** on photosynthesis (both briefs) and 1/3 on charts. Used as an *opportunistic third arm* on game
+  archetypes only (it costs < 5% of the race), never as a guaranteed arm.
+- **DeepSeek-V4-Pro:** stalled (TTFT 239 s p50 on fractions; 300 s timeout) and 0/6 on the other two kinds. Excluded
+  from live; re-bench monthly.
+- **grok-4.3:** 2/3 fractions, 1/3 photosynthesis, 0/3 charts; reasoning tokens 2-4× its output; TTFT 24-26 s. Not
+  routed; kept as the cross-family **advisory vision judge** candidate (§3.6).
+- **`taxila-kimi-code` (Kimi-K2.7-Code):** TTFT **119-187 s p50** and 11-16 k output tokens per file (2-4× the
+  others; one hit the 16 k cap). It passed fractions 3/3 after repair but at 239 s p50 (max 631 s). Unusable in a live
+  window on today's deployment; used **offline only** (library pre-warm, §3.11) where its price per token is low.
+  Owner action O-3 asks for a re-bench after a capacity change (the TTFT looks like queueing, not decode speed [U]).
+
+**Router bench (production of this table):** `evals/live-studio/router-bench.mjs` (S10) = `run.mjs` over every
+live archetype × the candidate arms, n = 10 weekly (n = 30 on a new archetype), writes `server/studio/routes.json`
+as `{archetype: {arms: [{dep, effort}], race: 2, leadMs: p90 race time-to-playable, passByDeadline}}` and a row per
+archetype to `context/inbox/`. A route changes only when the new arm beats the old on P(pass by deadline) with
+non-overlapping 80% Wilson intervals; cost breaks ties.
 
 ---
 
 ## 7. Latency and cost budgets
 
-<<BUDGETS>>
+**Latency (per live build; the critical path is intent → playable, the skeleton hides it):**
+
+| measure | budget p50 / p90 | measured today (routed race) | gate |
+|---|---|---|---|
+| intent → skeleton painted | ≤ 300 / 300 ms | code-only (D1); acceptance test 7 measures it | hard |
+| intent → first streamed paint (veil) | ≤ 25 / 40 s | 14-22 s p50 on terra/sol [M] | soft |
+| intent → playable (gate passed) | ≤ 45 / 75 s | race p50 36.7 s (game), 38.8 s (animation), 54.2 s (chart); max of passers 46-74 s [M] | router metric |
+| lead time the Brain must give (`neededAtMs − now`) | ≥ archetype's race p90 (default **90 s** until n ≥ 30) | — | router enforces: shorter lead → `opportunistic` |
+| gate (G0-G9) | ≤ 12 / 18 s | 4.8 s (chart), 5.6-6.4 s (animation), 11.6 s (game, scripted play of all items) p50 local Chromium [M] | hard |
+| repair round | ≤ 30 / 45 s | 27.9 s p50 (n = 89 repair generations; min 11 s) [M] | router metric |
+| library hit → revealable | ≤ 1 s mount + G-mount ≈ 5-12 s in background | transfer re-gate 5-11 s per build [M] | hard (acceptance test 9) |
+| reveal | ≤ 150 ms | frame pre-warmed | hard |
+
+**Cost (USD, Azure retail list prices in `evals/live-studio/models.mjs`):**
+
+| item | unit cost | basis |
+|---|---|---|
+| plan (`taxila-fast`, none) | < $0.001 | ~1.5 k tokens |
+| one arm, first try, routed models | $0.04-0.12 | measured mean per build: terra $0.042 (game) / $0.110 (anim) / $0.085 (chart); sol $0.084 / $0.122 / $0.119 [M] |
+| one repair round | ≈ 1.1-1.6 × a first try | previous file is re-sent as input [M] |
+| **race of two, per live build** | **$0.13-0.23** | both arms usually finish; the loser is cancelled only if it is still streaming |
+| gate (fallback lane, always-on Container App) | ≈ $78/month flat | 1 vCPU / 2 GiB, min 1 replica [T] |
+| gate (ACA Sandboxes, after O-1) | per-second microVM [U: price sheet] | ~8 s per build |
+| image | FLUX.2-pro or gpt-image-2 low per image [U: list price] | §3.15 |
+
+**The economics (the reason the library is not optional).** At ~$3/child/month revenue, a live race at ~$0.20 cannot
+run every lesson for every child: 20 lessons × 1.5 pieces × $0.20 = **$6/child-month** if nothing were reused. The
+design therefore budgets **live builds as the exception**:
+- **Pre-warm offline:** every admissible (archetype × skill × band × lang family) identity is built in the batch lane
+  (Kimi/DeepSeek/codex at batch prices, no deadline, same gate) before it is needed. Estimate: ~40 archetypes ×
+  ~120 admissible skills each on average ≈ 5 k identities × ≈ $0.25 ≈ **$1.2 k one-time** per studio-kit version [U].
+- **Live builds** then fill misses (new misconception pairing, a curiosity question, a variant the library lacks).
+  Target hit rate ≥ 90% after warm-up → ≈ 20 × 1.5 × 0.10 × $0.20 ≈ **$0.60/child-month** live spend [U: measure
+  the hit rate in S7].
+- **Caps (enforced in `router.js`):** ≤ 3 live builds per lesson, ≤ $0.60 per child per day, ≤ $8 per child per month
+  (above this, library and fallback only), a global daily breaker (G2 breaker code).
 
 ---
 
@@ -590,7 +668,7 @@ Direct**: excluded [T: MODEL-ROUTER R5]), `grok-4.3`, `grok-4-20-*`, `grok-4-1-f
 | Runtime error after reveal | frame `error` | §4.4 |
 | Child taps faster than the game can handle | G9 + debounce in kit | kit-level input queue |
 | The teacher refers to a piece that is not there | `screenHasTargets` reads Studio state | the Brain's line is regenerated (say.js guard) |
-| Cost runaway | per-lesson 3, per-child $0.30/day, global breaker | breaker trips → library and fallback only |
+| Cost runaway | per-lesson 3, per-child $0.60/day and $8/month, global breaker | breaker trips → library and fallback only |
 | Model deployment retired/renamed | router bench fails | the route drops to the next arm; alert |
 | Quota 429 | per-deployment token buckets in `build.js` | route to the second arm; images queue (§3.15) |
 | A prompt-injection attempt via the child's words | closed-vocabulary intents (§5.4) | teacher answers in words |
@@ -650,7 +728,7 @@ child_id, revealed_at, outcome)` (child id only here, under the existing erasure
 
 **Azure (router bench, weekly; costs money)**
 5. `node evals/live-studio/run.mjs --n 10` over all live archetypes: publish the §6 table; an archetype is live only
-   if P(pass by 60 s) with the race ≥ 0.95 (n ≥ 30).
+   if P(pass by its lead time) with the race ≥ 0.95 (n ≥ 30).
 6. Param transfer (`transfer.mjs`) ≥ 0.9 on promoted builds; anchoring (`anchor.mjs`) 100% on promoted photosynthesis-
    class builds.
 
@@ -700,7 +778,74 @@ Total ≈ 39 agent-days; S1-S3 can run in parallel streams; S5 depends on the Br
 
 ## 14. Measurements (this session, 2026-10-04)
 
-<<MEASUREMENTS>>
+All runs: 2026-10-04, from this container through the agent proxy (`NODE_USE_ENV_PROXY=1`) to the Foundry account in
+eastus2; the gate ran locally in Playwright Chromium (headless, 360×640 primary viewport), so gate times are an
+upper-bound proxy for the Azure sandbox lane [U until S2 measures it on ACA]. Raw data: `evals/live-studio/out-2026-10-04/`
+(72 builds) and `evals/live-studio/out-2026-10-04-photo-v2/` (21 builds), each with `results.json`, every fragment
+per round (`*__rN.html`), first-paint and end screenshots, `summary.md` (from `analyze.mjs`), `transfer.json`,
+`anchor.json`. Total model spend **$8.59** (6.53 + 2.06). **n = 3 per cell is small:** read every rate below as
+"k of 3", not as a percentage.
+
+**14.1 Method.** `run.mjs` streams one single-file fragment per build (style → markup → one script) written against
+the probe's `studio-kit` runtime and seam (`kinds.mjs`: `SYSTEM` + per-kind brief with params, strings table, seam
+and quality bar; no example code). Each output goes through the strict gate (`qa.mjs`: static, boot/console/network,
+seam, words ⊆ strings table, layout and target size, scripted play with real pointer clicks against host truth, kind
+semantics, no-hint, perf); a failure triggers up to 2 repair rounds fed with the failing check ids and details.
+"Time to playable" = request start → gate pass, including repair rounds. "Stream paint" = first moment the partial
+stream rendered ≥ 15% of the viewport in a shadow page. Arms: `taxila-codex` (low, medium), `taxila-brain`
+(gpt-5.6-sol, low), `gpt-5.6-terra` (low), `taxila-kimi-code`, `DeepSeek-V4-Pro`, `DeepSeek-V4-Flash`, `grok-4.3`.
+Cost = Azure list prices × reported usage.
+
+**14.2 Results: the three asked-for kinds (strict pass = every hard check).**
+
+| kind | best arm | pass first try | pass ≤ 2 repairs | TTFT p50 | stream first paint p50 | time to playable p50 / max | $ per passed build |
+|---|---|---|---|---|---|---|---|
+| fraction game | gpt-5.6-terra low | 3/3 | 3/3 | 6.7 s | 16.0 s | **36.7 / 37.3 s** | **$0.042** |
+| fraction game | gpt-5.6-sol low | 3/3 | 3/3 | 10.5 s | 22.0 s | 42.6 / 46.5 s | $0.084 |
+| fraction game | gpt-5.3-codex low | 3/3 | 3/3 | 19.6 s | 30.1 s | 53.2 / 55.3 s | $0.054 |
+| photosynthesis animation (brief v1) | gpt-5.3-codex medium | 0/3 | 3/3 | 26.5 s | 40.0 s | 120.9 / 133.4 s | $0.225 |
+| photosynthesis animation (brief v2) | gpt-5.6-sol low | 2/3 | 3/3 | 9.0 s | 19.8 s | **38.8 / 72.7 s** | **$0.122** |
+| photosynthesis animation (brief v2) | gpt-5.6-terra low | 0/3 | 3/3 | 5.3 s | 13.8 s | 62.9 / 92.4 s | $0.110 |
+| bar-chart visualisation | gpt-5.6-sol low | 1/3 | 3/3 | 12.0 s | 21.0 s | **54.2 / 54.8 s** | $0.119 |
+| bar-chart visualisation | gpt-5.6-terra low | 1/3 | 3/3 | 12.3 s | 20.3 s | 62.9 / 73.6 s | **$0.085** |
+
+Full per-arm tables (24 + 7 rows) are in the two `summary.md` files. Across all 72 v1 builds: **20 passed first
+try, 42 after ≤ 2 repairs**; repair recovered **20/47** first-try gate failures (v2 photosynthesis: 11/19). Race of
+two on seed-aligned pairs: 3/3 on every kind for the routed pair (§6), at 36.7 / 38.8 / 54.2 s p50.
+
+**14.3 What the gate caught that a "does it run" check would not** (failing-check counts over all rounds, v1):
+bar targets under 40 px (35), animation never signalled done (31), the animation's check question graded wrong
+against truth (22), labels overlapping (16), **flows drawn in the scientifically wrong direction (13)**, chart tick
+labels at the wrong heights (13), fraction play-through graded wrong (10), a hint before the tap (10), bar heights
+not proportional (8). Every one of these renders without a console error. Brief v2 for photosynthesis (the question
+and options visible from the first screen; clarified flow directions) moved first-try passes from 0/24 to 2/21 and
+after-repair passes from 8/24 to 13/21; the flow-direction and label checks stayed the top failures (17 and 19).
+
+**14.4 Library effect (param transfer, `transfer.mjs`; no model calls).** Every gate-passed build re-gated with new
+host truth: **fraction 20/21** (new items 1/3, 4/6, 2/7 incl. a 7-part whole; the one failure graded an item wrong),
+**photosynthesis v1 10/10 and v2 12/13** (English strings table instead of Hinglish; the v2 failure was a flow
+direction under new strings, so G6 must run on every mount), **bar chart 5/11**: all 6 failures were
+`targets_ge_40px`, because the new data has a value of 3 whose bar is shorter than 40 px. That is a *design* bug in
+the archetype, not a model bug: tap targets must be the whole column (bar + label), which the chart truth primitive
+(§3.14) now provides; the chart archetype's seam requires a column hit area ≥ 44 px regardless of value.
+
+**14.5 Anchoring (`anchor.mjs`, post-hoc).** A gate-passed v1 build was seen with "Oxygen" written by the sun. A
+label-to-referent distance check would have failed **4/10** v1 and **4/13** v2 passed photosynthesis builds (mostly
+the "water" label > 100 px from any water particle). This check is now G4 "labels anchored to their referent"
+and is a hard check; the v1/v2 pass rates above are *before* it, so the real strict rate for animations is lower
+until the anchor rule is in the brief and the negative memory.
+
+**14.6 Plan step (`plan-latency.mjs`).** `taxila-fast`, effort none, strict JSON schema, 8 intents in parallel:
+**3.25 s p50, 3.70 s max, 8/8 valid**. Quality of the strings was not judged here (Q8 does that in production).
+
+**14.7 Images (`image-latency*.mjs`).** FLUX.2-pro (`taxila-flux2`): 768 px 4.1-5.3 s, 1024 px 5.9-6.1 s (n = 4 OK);
+under 3-way concurrency 2 of 4 FLUX calls were rejected (HTTP 400 recorded) while the sequential re-run passed.
+gpt-image-2 (`taxila-image`): *low* 1024 px 16.5-18.7 s (n = 3), *medium* 43.6-43.8 s (n = 3). Capacity is the
+binding constraint (FLUX capacity 1).
+
+**14.8 Not measured (and therefore not claimed).** Gate time inside an ACA sandbox; the skeleton's 300 ms in a real
+lesson (code exists only in the probe); kinds other than the three; learning effect of a Studio piece vs the
+fallback; the vision judge; FLUX/gpt-image-2 per-image cost; library hit rate in real use.
 
 ---
 
@@ -711,7 +856,12 @@ Total ≈ 39 agent-days; S1-S3 can run in parallel streams; S5 depends on the Br
   `studio-qa` Container App lane (§3.6).
 - **O-2 Image capacity:** raise `taxila-flux2` from 1 and `taxila-image` from 4 to ≥ 20 each. Default: images
   library-only and near-line.
-<<OWNERMODELS>>
+- **O-3 Code-model capacity:** raise TPM on `gpt-5.6-terra` and `taxila-brain` so ≥ 20 concurrent races fit
+  (each race ≈ 2 × 6 k output tokens in ~40 s), and give `taxila-kimi-code` and `DeepSeek-V4-Pro` a higher-capacity
+  (Global Standard) deployment if Foundry sells one Direct; Studio re-benches them (their TTFT of 2-4 minutes looks
+  like queueing [U]). Default: race on terra + sol, codex as the 429 fallback, Kimi/DeepSeek offline only.
+- **O-4 No new model is required to ship.** If Foundry adds a faster code-specialised model sold Direct, the router
+  bench evaluates it within a week; nothing in the spec names a model outside `routes.json`.
 
 ---
 
@@ -734,4 +884,20 @@ Total ≈ 39 agent-days; S1-S3 can run in parallel streams; S5 depends on the Br
 
 ## 17. Sources
 
-<<SOURCES>>
+- [V] Vercel, "Introducing the v0 composite model family": https://vercel.com/blog/v0-composite-model-family
+- [V] Vercel, "How we made v0 an effective coding agent" (LLM Suspense, autofixers, "errors as often as 10%"): https://vercel.com/blog/how-we-made-v0-an-effective-coding-agent
+- [S] Fireworks, Vercel autofixer model (speculative decoding, RFT, 40× faster): https://fireworks.ai/blog/vercel
+- [V] Leviathan, Valevski et al., "Generative UI: LLMs are Effective UI Generators", arXiv 2604.09577: https://arxiv.org/abs/2604.09577 ; Google Research blog: https://research.google/blog/generative-ui-a-rich-custom-visual-interactive-user-experience-for-any-prompt/
+- [V] Microsoft, "Azure Container Apps Sandboxes, Now Generally Available" (2026-09-23; microVM, sub-second start, egress policy, snapshots): https://techcommunity.microsoft.com/blog/appsonazureblog/azure-container-apps-sandboxes-now-generally-available/4559125 ; samples: https://github.com/Azure-Samples/azure-container-apps-sandboxes
+- [V] OpenAI Codex cloud docs (agent internet access off by default, setup-phase network, allowlists): https://learn.chatgpt.com/docs/cloud/internet-access (redirect from developers.openai.com/codex/cloud/internet-access)
+- [V] Anthropic, artifacts help (sandboxed iframe, CSP host list): https://support.anthropic.com/en/articles/9487310-what-are-artifacts-and-how-do-i-use-them
+- [S] Reid Barber, reverse-engineering Claude artifacts (separate origin, `allow-scripts`, postMessage): https://www.reidbarber.com/blog/reverse-engineering-claude-artifacts
+- [V] Lovable, Agent mode (vendor claim of 90% fewer build errors): https://lovable.dev/blog/agent-mode-beta
+- [S] StackBlitz, Bolt.new and WebContainers: https://github.com/stackblitz/bolt.new
+- [S] Code2Video (Planner-Coder-Critic, visual anchor prompts), arXiv 2510.01174: https://arxiv.org/abs/2510.01174
+- [T] Taxila: `docs/research/world-best/generated-learning-content.md`, `docs/research/content/genui-reliability.md`,
+  `docs/research/factory/*`, `docs/design/gap-audit/live-content.md`, `docs/research/models/MODEL-ROUTER.md`,
+  `server/forge/g2/*`, `context/{decisions,rejected,measurements}.md`.
+- [M] This session: `evals/live-studio/{run,kinds,models,qa,analyze,transfer,anchor,plan-latency,image-latency,image-latency-seq}.mjs`
+  and their outputs under `evals/live-studio/out-2026-10-04*/` and `img-2026-10-04/`.
+- [S] Reid Barber, reverse-engineering "Imagine with Claude": https://reidbarber.com/blog/reverse-engineering-imagine-with-claude

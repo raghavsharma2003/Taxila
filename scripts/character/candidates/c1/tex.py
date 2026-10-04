@@ -114,8 +114,21 @@ if ylw.any():
     lab_y[..., 2] = np.where(ylw, tie[2], lab_y[..., 2])
     head = l2s(from_lab(lab_y))
     skin_m[ylw] = 0
+# (polish pass 2) lips: the donor's lips are paler and pinker than her skin, which read "pasted on" at MST 6. Inside a
+# feathered ellipse on the mouth, texels redder than the cheek median are taken to a deeper rose-brown: L* down by up
+# to 9, b* pulled toward the skin's, a* kept (lips stay lips, no lipstick).
+lab_l = to_lab(s2l(head))
+dl = np.sqrt(((xx - 1022) / 105.0) ** 2 + ((yy - 822) / 38.0) ** 2)
+ck = lab_l[870:930, 760:840].reshape(-1, 3)
+a_ck, b_ck = np.median(ck[:, 1]), np.median(ck[:, 2])
+lipm = (1 - smooth(0.7, 1.0, dl)) * np.clip((lab_l[..., 1] - a_ck - 1.5) / 5, 0, 1) * skin_m
+lab_l[..., 0] -= 9 * lipm
+lab_l[..., 2] = lab_l[..., 2] * (1 - 0.5 * lipm) + b_ck * 0.5 * lipm
+head = l2s(from_lab(lab_l))
 lin = s2l(head)
 alb = l2s(lin * (1 - skin_m[..., None] + skin_m[..., None] * gain))
+# the head atlas' upper-chest skin, linear, after the gain: what the body atlas' V-neck must meet at the seam
+head_chest = np.median((lin * gain)[1440:1600, 900:1140].reshape(-1, 3), 0)
 save(alb, "skin_albedo_H.png")
 save(alb, "skin_albedo.png")
 # eye crop (v up in UV, rows down in the image)
@@ -149,7 +162,14 @@ Ld = lab[..., 0]
 mL = np.median(Ld[bskin < 0.1])
 newL = tgt[0] + (Ld - mL) * 1.15          # keep the knit's relative light/dark, centred on the target's L*
 dress = from_lab(np.stack([newL, np.full_like(newL, tgt[1]), np.full_like(newL, tgt[2])], -1))
-glin = blin * gain * bskin[..., None] + dress * (1 - bskin[..., None])
+# (polish pass 2) the body atlas' skin is more orange and lighter than the head atlas' after the same gain: a visible
+# lighter triangle at the bottom of the V-neck. Its skin texels take one per-channel ratio onto the head's chest colour.
+# the core of the V-neck island only (its rim is collar shadow and dilation fill, which dragged a mean dark: the first
+# try of this pass brightened the patch by 1.3x instead of darkening it); medians, not means
+vneck = (bskin > 0.9) & (yy > 1090) & (yy < 1150) & (xx > 990) & (xx < 1060)
+body_skin = np.median((blin * gain)[vneck].reshape(-1, 3), 0) if vneck.any() else head_chest
+match = np.clip(head_chest / body_skin, 0.6, 1.4)
+glin = blin * gain * match * bskin[..., None] + dress * (1 - bskin[..., None])
 galb = l2s(glin)
 grough = 0.9 * (1 - bskin) + 0.6 * bskin
 save(np.concatenate([galb, grough[..., None]], -1), "garment_albedo.png", "RGBA")
@@ -164,5 +184,5 @@ op[..., :3] = dilate(rgb, 64)
 save(op, "hair_atlas.png", "RGBA")
 save(op, "cards_atlas.png", "RGBA")
 json.dump({"albedoGain": gain.tolist(), "skinTexelsHead": float(skin_m.mean()), "skinTexelsBody": float((bskin > 0.5).mean()),
-           "garmentTarget": hx}, open(os.path.join(out, "tex.json"), "w"), indent=1)
+           "garmentTarget": hx, "bodySkinMatch": match.tolist()}, open(os.path.join(out, "tex.json"), "w"), indent=1)
 print("tex ok", gain)

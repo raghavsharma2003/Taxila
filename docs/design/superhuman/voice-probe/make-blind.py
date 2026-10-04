@@ -24,16 +24,19 @@ keyf = os.path.join(OUT, "blind-key.json")
 key = json.load(open(keyf)) if os.path.exists(keyf) else {}
 by_id = {v["id"]: c for c, v in key.items()}
 
+TRIM = "silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.15,areverse,silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.4,areverse"
 def encode(src, dst):
-    # loudnorm pass 1
-    st = subprocess.run(["ffmpeg", "-hide_banner", "-i", src, "-af",
-        "silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.15,areverse,silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.4,areverse,loudnorm=I=-24:TP=-1.5:LRA=20:print_format=json",
-        "-f", "null", "-"], capture_output=True, text=True, stdin=subprocess.DEVNULL).stderr
+    # Two steps: the single graph (silenceremove+areverse feeding loudnorm linear) hung ffmpeg indefinitely on
+    # omni-diya L3 (2026-10-04); trimming to a temp wav first, then 2-pass loudnorm, finishes in < 1 s.
+    tmp = dst + ".trim.wav"
+    subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", src, "-af", TRIM, tmp], check=True, stdin=subprocess.DEVNULL, timeout=60)
+    st = subprocess.run(["ffmpeg", "-hide_banner", "-i", tmp, "-af", "loudnorm=I=-24:TP=-1.5:LRA=20:print_format=json", "-f", "null", "-"],
+        capture_output=True, text=True, stdin=subprocess.DEVNULL, timeout=60).stderr
     m = json.loads(st[st.rindex("{"):st.rindex("}") + 1])
-    subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", src, "-af",
-        "silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.15,areverse,silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.4,areverse,"
+    subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", tmp, "-af",
         f"loudnorm=I=-24:TP=-1.5:LRA=20:measured_I={m['input_i']}:measured_TP={m['input_tp']}:measured_LRA={m['input_lra']}:measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true",
-        "-ac", "1", "-ar", "24000", "-c:a", "libmp3lame", "-b:a", "64k", dst], check=True, stdin=subprocess.DEVNULL)
+        "-ac", "1", "-ar", "24000", "-c:a", "libmp3lame", "-b:a", "64k", dst], check=True, stdin=subprocess.DEVNULL, timeout=60)
+    os.remove(tmp)
 
 for c in clips:
     code = by_id.get(c["id"])
@@ -43,6 +46,7 @@ for c in clips:
         key[code] = {"id": c["id"], "arm": c["arm"], "line": c["line"], "cond": c["cond"], "src": c["file"]}
     dst = os.path.join(OUT, f"{code}.mp3")
     if not os.path.exists(dst): encode(os.path.join(HERE, c["file"]), dst)
+    json.dump(key, open(keyf, "w"), indent=1)  # incremental: a restart keeps the code<->clip map
 json.dump(key, open(keyf, "w"), indent=1)
 
 # pairs: plain vs expressive for every (arm, line); for DragonHD also expressive-noclip vs expressive (splice effect)

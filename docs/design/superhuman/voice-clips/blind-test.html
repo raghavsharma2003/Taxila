@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teacher Voice A/B</title>
+<style>
+:root{--bg:#f7f6f3;--panel:#fff;--fg:#1d1c1a;--mut:#6b6862;--line:#e3e0da;--accent:#2f5d8a;--accent-fg:#fff;--ok:#2e7d4f;--chip:#efece6;--focus:#7aa7d6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161614;--panel:#201f1d;--fg:#ecebe7;--mut:#a3a09a;--line:#34322e;--accent:#7fb0e0;--accent-fg:#0d1a26;--ok:#6cc596;--chip:#2a2926;--focus:#7fb0e0}}
+:root[data-theme="dark"]{--bg:#161614;--panel:#201f1d;--fg:#ecebe7;--mut:#a3a09a;--line:#34322e;--accent:#7fb0e0;--accent-fg:#0d1a26;--ok:#6cc596;--chip:#2a2926;--focus:#7fb0e0}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--fg)}
+body{font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Noto Sans Devanagari",sans-serif;padding:16px}
+main{max-width:760px;margin:0 auto}h1{font-size:1.3rem;margin:.2rem 0}p{color:var(--mut)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0}
+button{font:inherit;border-radius:8px;border:1px solid var(--line);background:var(--chip);color:var(--fg);padding:8px 12px;cursor:pointer;min-height:40px}
+button.primary,button.on{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}button:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.ab{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.clip{border:1px solid var(--line);border-radius:10px;padding:10px}.clip h3{margin:0 0 6px;font-size:1rem}
+.bar{height:6px;background:var(--chip);border-radius:3px;overflow:hidden;margin:6px 0}.bar>i{display:block;height:100%;background:var(--ok);width:0}
+.scene{font-size:.9rem;color:var(--mut)}.said{font-size:.95rem}.chk{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.85rem;color:var(--mut)}
+.prog{font-size:.85rem;color:var(--mut)}textarea{width:100%;font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px}
+@media (max-width:520px){.ab{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<h1>Teacher voice: which one sounds like a real person?</h1>
+<p>Each card plays two versions of the same teacher line in the same voice. Listen to both, then pick the one that sounds more like a real, warm teacher <b>talking</b> to this child (not reading). Use headphones. Ratings save in this browser as you go; press Export when done.</p>
+<div class="panel row"><label>Your name or initials <input id="who" style="font:inherit;padding:6px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)"></label>
+<span class="prog" id="prog"></span><button id="exp" class="primary">Export ratings</button><button id="imp">Import</button><input id="impf" type="file" accept=".json" hidden></div>
+<div id="cards"></div>
+<p id="store" class="prog"></p>
+</main>
+<script>
+const M={"v": "taxila-human-voice-blind/v1", "pairs": [{"pid": "e4f42a", "voice": "Voice 1", "line": "L1-think", "a": "8DA88", "b": "BF62A"}, {"pid": "4aa6e4", "voice": "Voice 1", "line": "L2-laugh", "a": "25085", "b": "DAA0A"}, {"pid": "34e885", "voice": "Voice 1", "line": "L3-surprise", "a": "33E50", "b": "29046"}, {"pid": "1402f8", "voice": "Voice 1", "line": "L4-correct", "a": "9101D", "b": "7505B"}, {"pid": "a64283", "voice": "Voice 1", "line": "L5-wonder", "a": "72452", "b": "7B249"}, {"pid": "7770c9", "voice": "Voice 2", "line": "L1-think", "a": "AC28A", "b": "5C7A0"}, {"pid": "429932", "voice": "Voice 2", "line": "L1-think", "a": "61AF2", "b": "5C7A0"}, {"pid": "cb4fb7", "voice": "Voice 2", "line": "L2-laugh", "a": "B42A3", "b": "F5243"}, {"pid": "e3513b", "voice": "Voice 2", "line": "L2-laugh", "a": "1E470", "b": "F5243"}, {"pid": "812ee2", "voice": "Voice 2", "line": "L3-surprise", "a": "87B09", "b": "F3ED2"}, {"pid": "98e53a", "voice": "Voice 2", "line": "L3-surprise", "a": "C5E7C", "b": "F3ED2"}, {"pid": "266de3", "voice": "Voice 2", "line": "L4-correct", "a": "49351", "b": "DE671"}, {"pid": "829e1f", "voice": "Voice 2", "line": "L4-correct", "a": "3C237", "b": "DE671"}, {"pid": "19c71a", "voice": "Voice 2", "line": "L5-wonder", "a": "C4D37", "b": "8D402"}, {"pid": "fffb17", "voice": "Voice 2", "line": "L5-wonder", "a": "13391", "b": "8D402"}, {"pid": "31a07a", "voice": "Voice 3", "line": "L1-think", "a": "A16E4", "b": "D92D2"}, {"pid": "63cbfe", "voice": "Voice 3", "line": "L1-think", "a": "311B9", "b": "D92D2"}, {"pid": "d817a1", "voice": "Voice 3", "line": "L2-laugh", "a": "FCEB9", "b": "7568C"}, {"pid": "685564", "voice": "Voice 3", "line": "L2-laugh", "a": "EE423", "b": "7568C"}, {"pid": "650664", "voice": "Voice 3", "line": "L3-surprise", "a": "24DF3", "b": "05680"}, {"pid": "deb377", "voice": "Voice 3", "line": "L3-surprise", "a": "49713", "b": "05680"}, {"pid": "6ad473", "voice": "Voice 3", "line": "L4-correct", "a": "AA8D5", "b": "1E05D"}, {"pid": "bd89e3", "voice": "Voice 3", "line": "L4-correct", "a": "083A5", "b": "1E05D"}, {"pid": "ae7e14", "voice": "Voice 3", "line": "L5-wonder", "a": "6019C", "b": "427F0"}, {"pid": "74e3fc", "voice": "Voice 3", "line": "L5-wonder", "a": "C210D", "b": "427F0"}, {"pid": "361f8e", "voice": "Voice 4", "line": "L1-think", "a": "E3F1F", "b": "69D63"}, {"pid": "ac47e3", "voice": "Voice 4", "line": "L2-laugh", "a": "611D4", "b": "F217C"}, {"pid": "97674f", "voice": "Voice 4", "line": "L3-surprise", "a": "1FC44", "b": "832A4"}, {"pid": "1e14cd", "voice": "Voice 4", "line": "L4-correct", "a": "652F6", "b": "4BE53"}, {"pid": "e8c1a2", "voice": "Voice 4", "line": "L5-wonder", "a": "D6494", "b": "B7031"}, {"pid": "321ebc", "voice": "Voice 5", "line": "L1-think", "a": "6BDFD", "b": "6129C"}, {"pid": "d5d53b", "voice": "Voice 5", "line": "L2-laugh", "a": "19AC6", "b": "D388D"}, {"pid": "fa4558", "voice": "Voice 5", "line": "L3-surprise", "a": "82DE2", "b": "F6B98"}, {"pid": "6e5f72", "voice": "Voice 5", "line": "L4-correct", "a": "BD7C9", "b": "7DCA9"}, {"pid": "41b0a2", "voice": "Voice 5", "line": "L5-wonder", "a": "68BFB", "b": "65ADD"}, {"pid": "9d71de", "voice": "Voice 6", "line": "L1-think", "a": "E618C", "b": "523B4"}, {"pid": "3926a5", "voice": "Voice 6", "line": "L2-laugh", "a": "21F30", "b": "C558C"}, {"pid": "7e3985", "voice": "Voice 6", "line": "L3-surprise", "a": "1DD7F", "b": "5AB42"}, {"pid": "73c456", "voice": "Voice 6", "line": "L4-correct", "a": "7F2EF", "b": "0AA5F"}, {"pid": "6a4f60", "voice": "Voice 6", "line": "L5-wonder", "a": "9BCC6", "b": "87171"}], "scenes": {"L1-think": {"scene": "The child asked a sum. The teacher works it out out loud together with the child, step by step, as if thinking.", "child": "सत्ताईस और पैंतीस कितना होगा?", "text": "सत्ताईस और पैंतीस। पहले tens जोड़ते हैं, बीस और तीस, पचास। फिर सात और पाँच, बारह। तो total हुआ बासठ!"}, "L2-laugh": {"scene": "The child made a joke and is laughing. The teacher laughs along, plays with the joke, then brings the fact back.", "child": "पौधे cold drink पीते हैं! (laughing)", "text": "Cold drink? फिर तो सारे पौधे गमले में burp करते! नहीं, पौधे सिर्फ़ पानी पीते हैं, अपनी जड़ों से।"}, "L3-surprise": {"scene": "The child solved a hard simplification on the first try. The teacher is genuinely surprised and delighted, specific about what was good.", "child": "बारह बटा सोलह मतलब तीन बटा चार!", "text": "अरे! पहली बार में ही? तुमने ऊपर और नीचे दोनों को चार से divide किया, बिल्कुल सही। ये वाला तो बहुत लोग गलत करते हैं!"}, "L4-correct": {"scene": "The child gave a wrong answer and sounds unsure. The teacher is calm and kind, no disappointment, slows down to look at it together.", "child": "तीन बटा चार छोटा है, दो बटा तीन बड़ा है।", "text": "अच्छा, यहाँ थोड़ा रुकते हैं। तीन बटा चार में हम चार में से तीन हिस्से लेते हैं, यानी लगभग पूरा pizza। अब दो बटा तीन को देखो।"}, "L5-wonder": {"scene": "Start of a science topic. The teacher shares an amazing fact with quiet wonder that builds into excitement, inviting the child to imagine.", "child": "दिल क्या करता है?", "text": "पता है, तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है। सोचो, अभी इसी वक़्त भी!"}}};
+let store=null;try{localStorage.setItem("_t","1");localStorage.removeItem("_t");store=localStorage}catch(e){}
+const KEY="taxila-hv-blind-v1";let R={};try{R=JSON.parse((store&&store.getItem(KEY))||"{}")}catch(e){R={}}
+document.getElementById("store").textContent=store?"":"Browser storage is unavailable here: ratings live only until you close this tab. Export before leaving.";
+const save=()=>{try{store&&store.setItem(KEY,JSON.stringify(R))}catch(e){}prog()};
+// seeded shuffle per listener so order and A/B side differ between listeners but stay stable on reload
+let seed=R.__seed||(R.__seed=Math.floor(Math.random()*1e9));const rnd=()=>{seed=(seed*1103515245+12345)%2147483648;return seed/2147483648};
+const pairs=M.pairs.map(p=>({...p,flip:rnd()<.5})).sort(()=>rnd()-.5);
+const who=document.getElementById("who");who.value=R.__who||"";who.oninput=()=>{R.__who=who.value;save()};
+function prog(){const n=pairs.filter(p=>R[p.pid]&&R[p.pid].pick).length;document.getElementById("prog").textContent=`${n} / ${pairs.length} pairs rated`}
+const ODD=[["direction","said a stage direction or tag aloud"],["splice","a sound was pasted in / glitch"],["pause","a pause felt wrong"],["voice","voice or room changed"],["over","overacted"]];
+function clipBox(side,code,p){const d=document.createElement("div");d.className="clip";
+  d.innerHTML=`<h3>${side}</h3><button>Play ${side}</button><div class="bar"><i></i></div><div class="chk">${ODD.map(([k,t])=>`<label><input type="checkbox" data-k="${k}"> ${t}</label>`).join("")}</div>`;
+  const a=new Audio(`${code}.mp3`);a.preload="none";const b=d.querySelector("button"),bar=d.querySelector(".bar>i");
+  b.onclick=()=>{document.querySelectorAll("audio").forEach(x=>x.pause());if(a.paused){a.play();b.textContent="Pause "+side}else{a.pause();b.textContent="Play "+side}};
+  a.ontimeupdate=()=>{bar.style.width=(100*a.currentTime/(a.duration||1))+"%";const r=R[p.pid]||(R[p.pid]={});r["heard_"+side]=Math.max(r["heard_"+side]||0,a.currentTime/(a.duration||1));save();unlock()};
+  a.onended=()=>{b.textContent="Play "+side};
+  d.querySelectorAll("input").forEach(cb=>{const r=R[p.pid]||{};cb.checked=!!(r["odd_"+side]||[]).includes(cb.dataset.k);
+    cb.onchange=()=>{const r=R[p.pid]||(R[p.pid]={});const s=new Set(r["odd_"+side]||[]);cb.checked?s.add(cb.dataset.k):s.delete(cb.dataset.k);r["odd_"+side]=[...s];save()}});
+  let unlock=()=>{};d._setUnlock=f=>unlock=f;return d}
+const cards=document.getElementById("cards");
+pairs.forEach((p,i)=>{const s=M.scenes[p.line];const c=document.createElement("div");c.className="panel";
+  const left=p.flip?p.b:p.a,right=p.flip?p.a:p.b;
+  c.innerHTML=`<div class="prog">Card ${i+1} · ${p.voice}</div><p class="scene">${s.scene}<br>Child: ${s.child}</p><p class="said">${s.text}</p><div class="ab"></div>
+  <div class="row" style="margin-top:8px"><span>More like a real teacher:</span><button data-v="A" disabled>A</button><button data-v="tie" disabled>Same</button><button data-v="B" disabled>B</button></div>
+  <textarea rows="1" placeholder="Optional note"></textarea>`;
+  const ab=c.querySelector(".ab");const A=clipBox("A",left,p),B=clipBox("B",right,p);ab.append(A,B);
+  const btns=[...c.querySelectorAll("button[data-v]")];
+  const unlock=()=>{const r=R[p.pid]||{};const ok=(r.heard_A||0)>.8&&(r.heard_B||0)>.8;btns.forEach(b=>b.disabled=!ok)};A._setUnlock(unlock);B._setUnlock(unlock);unlock();
+  const paint=()=>{const r=R[p.pid]||{};btns.forEach(b=>b.classList.toggle("on",r.pickSide===b.dataset.v))};paint();
+  btns.forEach(b=>b.onclick=()=>{const r=R[p.pid]||(R[p.pid]={});r.pickSide=b.dataset.v;r.pick=b.dataset.v==="tie"?"tie":(b.dataset.v==="A"?left:right);r.A=left;r.B=right;save();paint()});
+  const ta=c.querySelector("textarea");ta.value=(R[p.pid]||{}).note||"";ta.oninput=()=>{(R[p.pid]||(R[p.pid]={})).note=ta.value;save()};
+  cards.append(c)});
+prog();
+document.getElementById("exp").onclick=()=>{const blob=new Blob([JSON.stringify({v:M.v,who:R.__who||"",at:new Date().toISOString(),ratings:R},null,1)],{type:"application/json"});
+  const u=URL.createObjectURL(blob);const a=document.createElement("a");a.href=u;a.download=`taxila-voice-ab-${(R.__who||"anon").replace(/\W+/g,"_")}.json`;a.click()};
+document.getElementById("imp").onclick=()=>document.getElementById("impf").click();
+document.getElementById("impf").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const j=JSON.parse(await f.text());R=j.ratings||{};save();location.reload()}catch(err){alert("Not a ratings file")}};
+</script>
+</body>
+</html>

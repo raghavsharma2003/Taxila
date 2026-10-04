@@ -135,6 +135,19 @@ lab2[..., 2] = lab2[..., 2] * (1 - d * lipm) + tgt[2] * 0.9 * d * lipm
 lab2[..., 0] -= lipm * L.get("lips", {}).get("darken", 3.0)
 alb = lab2rgb(lab2)
 
+# polish 2 (resume run): the remapped paint reads sallow / olive under the neutral tone map (one flat hue everywhere).
+# A soft warm flush on the cheek apples and the nose tip (+a*, a little -L), sized so the G9 cheek patches move < 1 dE
+cw = L.get("skin", {}).get("cheekWarm", 0.0)
+if cw:
+    fl = np.zeros_like(yy)
+    for (cx, cy, rx, ry, g) in [(0.396, 0.36, 0.055, 0.04, 1.0), (0.604, 0.36, 0.055, 0.04, 1.0), (0.5, 0.345, 0.02, 0.015, 0.6)]:
+        fl = np.maximum(fl, g * np.exp(-(((xx - cx) / rx) ** 2 + ((yy - cy) / ry) ** 2)))
+    fl *= skin
+    lab3 = rgb2lab(alb)
+    lab3[..., 1] += fl * cw
+    lab3[..., 0] -= fl * cw * 0.3
+    alb = lab2rgb(lab3)
+
 # hair (both in this atlas and for the hair-shell atlas): luminance-preserving tint toward the look's hair colour
 hc = hex2rgb(L["hair"]["color"])
 lum = head @ np.array([0.3, 0.59, 0.11])
