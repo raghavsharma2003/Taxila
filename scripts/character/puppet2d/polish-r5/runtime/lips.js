@@ -38,28 +38,36 @@ const tUof = (a) => (a >= 1 ? 0 : MOUTH.tU * Math.pow(1 - a * a, 0.55));
 const tLof = (a) => (a >= 1 ? 0 : MOUTH.tL * Math.pow(Math.max(0, 1 - Math.pow(a, 2.2)), 0.75));
 
 // ---- viseme targets (shapes, measured against the refs mouth-*.webp and c-talking; px at 1024)
-const Z = { g: 0, up: 0.3, W: 1, flat: 0, round: 0, press: 0, T: 0.7, TL: 0.15, th: 0.25, tip: 0, curl: 0, tuck: 0 };
+// r5 (judge r4, visemes pass 2): three new per-viseme parameters
+//   sm    smile RETENTION while this shape is held (1 = c-front's own warm smile, 0 = neutral corners): the talking
+//         smile bias drops to ~0.55 so not every talking frame is chirpy; f/v and ch hold no smile at all
+//   pout  lip fullness / protrusion WITHOUT an elliptical opening (ch: flared, squared lips)
+//   sq    squareness of the opening (ch: a rounded rectangle, teeth behind)
+const Z = { g: 0, up: 0.3, W: 1, flat: 0, round: 0, press: 0, T: 0.7, TL: 0.15, th: 0.25, tip: 0, curl: 0, tuck: 0, sm: 0.55, pout: 0, sq: 0 };
 const V = {
-  viseme_sil: { ...Z },
-  viseme_PP: { ...Z, W: 0.9, flat: 0.5, press: 1, T: 0 },
-  viseme_FF: { ...Z, g: 9, up: 0.0, W: 1.0, T: 1, TL: 0, tuck: 1 },
-  viseme_TH: { ...Z, g: 13, up: 0.35, W: 1.0, T: 0.8, TL: 0.5, tip: 1, th: 0.5 },
-  viseme_DD: { ...Z, g: 17, up: 0.3, W: 0.98, T: 0.55, TL: 0.1, tip: 1 },
-  viseme_kk: { ...Z, g: 19, up: 0.3, W: 0.96, T: 0.65, TL: 0.15, th: 0.72 },
-  viseme_CH: { ...Z, g: 10, up: 0.45, W: 0.8, flat: 0.55, round: 0.6, T: 1, TL: 0.95 },
-  viseme_SS: { ...Z, g: 6, up: 0.45, W: 1.06, T: 1, TL: 1 },
-  viseme_nn: { ...Z, g: 15, up: 0.3, W: 0.98, T: 0.55, TL: 0.1, tip: 1 },
-  viseme_RR: { ...Z, g: 12, up: 0.35, W: 0.82, flat: 0.5, round: 0.55, T: 0.5, TL: 0.15, tip: 0.5 },
-  viseme_aa: { ...Z, g: 60, up: 0.2, W: 0.9, flat: 0.62, round: 0.45,   // r4b: a controlled tall aa, not a laughing grin (blind r4a 3/3)
-    T: 0.95, TL: 0.15, th: 0.35 },
-  viseme_E: { ...Z, g: 17, up: 0.35, W: 1.1, T: 1, TL: 0.55 },
-  viseme_I: { ...Z, g: 9, up: 0.4, W: 1.08, T: 1, TL: 0.75 },
-  viseme_O: { ...Z, g: 28, up: 0.4, W: 0.7, flat: 0.85, round: 1, T: 0.35, TL: 0.05 },
-  viseme_U: { ...Z, g: 20, up: 0.45, W: 0.6, flat: 0.9, round: 1, T: 0, TL: 0, th: 0.3 },
+  viseme_sil: { ...Z, sm: 1 },
+  viseme_PP: { ...Z, W: 0.9, flat: 0.5, press: 1, T: 0, sm: 0.6 },
+  // f/v: the UPPER lip lifts off the upper teeth, the lower lip rolls in and up to touch their edge; no smile
+  viseme_FF: { ...Z, g: 12, up: 1.0, W: 0.95, flat: 0.75, T: 1, TL: 0, tuck: 1, th: 0, sm: 0.08 },
+  viseme_TH: { ...Z, g: 14, up: 0.35, W: 1.0, T: 0.8, TL: 0.5, tip: 1, th: 0.1, sm: 0.45 },
+  // t / d / n / l: a clear opening with the tongue TIP up behind the upper teeth (the floor mound drops out of the way)
+  viseme_DD: { ...Z, g: 22, up: 0.3, W: 0.95, flat: 0.25, T: 0.5, TL: 0, tip: 1, th: 0.05, sm: 0.45 },
+  viseme_kk: { ...Z, g: 19, up: 0.3, W: 0.96, T: 0.65, TL: 0.15, th: 0.72, sm: 0.5 },
+  // ch / j / sh: lips pushed forward and SQUARED, both teeth rows meeting behind them; no smile, narrower than E
+  viseme_CH: { ...Z, g: 14, up: 0.5, W: 0.74, flat: 0.9, round: 0, sq: 1, pout: 1, T: 0.55, TL: 1, sm: 0.06 },
+  viseme_SS: { ...Z, g: 6, up: 0.45, W: 1.06, T: 1, TL: 1, sm: 0.5 },
+  viseme_nn: { ...Z, g: 22, up: 0.3, W: 0.95, flat: 0.25, T: 0.5, TL: 0, tip: 1, th: 0.05, sm: 0.45 },
+  viseme_RR: { ...Z, g: 12, up: 0.35, W: 0.82, flat: 0.5, round: 0.55, T: 0.5, TL: 0.15, tip: 0.5, sm: 0.4 },
+  // r5: aa is the WIDE open shape (surprise owns the tall narrow oval)
+  viseme_aa: { ...Z, g: 54, up: 0.2, W: 1.02, flat: 0.45, round: 0.2, T: 0.95, TL: 0.15, th: 0.35, sm: 0.6 },
+  viseme_E: { ...Z, g: 17, up: 0.35, W: 1.1, T: 1, TL: 0.55, sm: 0.75 },
+  viseme_I: { ...Z, g: 9, up: 0.4, W: 1.08, T: 1, TL: 0.75, sm: 0.7 },
+  viseme_O: { ...Z, g: 28, up: 0.4, W: 0.7, flat: 0.85, round: 1, T: 0.35, TL: 0.05, sm: 0.4 },
+  viseme_U: { ...Z, g: 20, up: 0.45, W: 0.6, flat: 0.9, round: 1, T: 0, TL: 0, th: 0.3, sm: 0.4 },
 };
 const KEYS = Object.keys(Z);
 // per-parameter smoothing time constants (s): the opening tracks the phonemes, the width and curvature glide
-const TAU = { g: 0.022, up: 0.03, W: 0.04, flat: 0.04, round: 0.04, press: 0.02, T: 0.03, TL: 0.03, th: 0.03, tip: 0.018, curl: 0.03, tuck: 0.02 };
+const TAU = { g: 0.022, up: 0.03, W: 0.04, flat: 0.04, round: 0.04, press: 0.02, T: 0.03, TL: 0.03, th: 0.03, tip: 0.018, curl: 0.03, tuck: 0.02, sm: 0.06, pout: 0.04, sq: 0.04 };
 
 export class LipSolver {
   constructor() {
@@ -80,7 +88,7 @@ export class LipSolver {
     const open = clamp01(k("jawOpen") / 0.85);
     const round = Math.max(k("mouthFunnel"), k("mouthPucker"));
     const stretch = (k("mouthStretchLeft") + k("mouthStretchRight")) / 2;
-    const jawT = { ...Z, g: 44 * open, up: 0.24, W: 1 - 0.36 * round + 0.08 * stretch, flat: 0.85 * round, round: clamp01(round * 1.2 + 0.2 * open), T: 0.4 + 0.55 * open, TL: 0.1 + 0.3 * stretch, th: 0.25 };
+    const jawT = { ...Z, g: 44 * open, up: 0.24, W: 1 - 0.36 * round + 0.08 * stretch, flat: 0.85 * round, round: clamp01(round * 1.2 + 0.2 * open), T: 0.4 + 0.55 * open, TL: 0.1 + 0.3 * stretch, th: 0.25, sm: 1 - 0.45 * clamp01(open / 0.25) };
     let Wsum = 0;
     const vt = {};
     for (const key of KEYS) vt[key] = 0;
@@ -102,7 +110,7 @@ export class LipSolver {
     const cPP = sstep(0.6, 0.92, wPP);   // a plosive releases abruptly (the burst), it does not fade open
     if (cPP > 0) { tgt.g *= 1 - cPP; tgt.press = Math.max(tgt.press, cPP); tgt.tuck *= 1 - cPP; tgt.W = tgt.W * (1 - cPP) + 0.9 * cPP; tgt.flat = tgt.flat * (1 - cPP) + 0.5 * cPP; tgt.round *= 1 - cPP; }
     const cFF = sstep(0.25, 0.7, wFF) * (1 - cPP);
-    if (cFF > 0) { tgt.g = tgt.g * (1 - cFF) + 9 * cFF; tgt.up = tgt.up * (1 - cFF); tgt.tuck = Math.max(tgt.tuck, cFF); tgt.T = Math.max(tgt.T, cFF); tgt.TL *= 1 - cFF; tgt.round *= 1 - cFF; tgt.flat *= 1 - cFF; }
+    if (cFF > 0) { tgt.g = tgt.g * (1 - cFF) + 12 * cFF; tgt.up = tgt.up * (1 - cFF) + cFF; tgt.tuck = Math.max(tgt.tuck, cFF); tgt.T = Math.max(tgt.T, cFF); tgt.TL *= 1 - cFF; tgt.round *= 1 - cFF; tgt.flat = tgt.flat * (1 - cFF) + 0.75 * cFF; tgt.sm = tgt.sm * (1 - cFF) + 0.08 * cFF; tgt.th *= 1 - cFF; tgt.tip *= 1 - cFF; tgt.W = tgt.W * (1 - cFF) + 0.95 * cFF; }
     // minimum hold for the closure: once contact is reached it stays >= 66 ms (2 frames at 30 fps)
     // (a MINIMUM closure length counted from contact onset: it never extends a closure that already lasted 66 ms, so the
     // vowel after it keeps its frames)
@@ -115,8 +123,9 @@ export class LipSolver {
     if (this.surprised > 0) {
       const s = this.surprised;
       // r4: a DROPPED jaw-O (taller than wide, the lower lip carries the drop), not a full-lipped pucker (it read "ooh")
-      tgt.round = Math.max(tgt.round, 0.7 * s); tgt.flat = Math.max(tgt.flat, 0.95 * s); tgt.W = tgt.W * (1 - s) + 0.8 * s;
-      tgt.T = tgt.T * (1 - s) + 0.55 * s; tgt.TL = 0; tgt.up = 0.26; tgt.th = Math.max(tgt.th, 0.3); tgt.g = Math.max(tgt.g, 54 * s * clamp01(open / 0.3));
+      // r5 (judge r4): a TALLER, NARROWER oval than aa (aa is the wide one now)
+      tgt.round = Math.max(tgt.round, 1.0 * s); tgt.flat = Math.max(tgt.flat, 1.0 * s); tgt.W = tgt.W * (1 - s) + 0.6 * s; tgt.sq = 0; tgt.pout = Math.max(tgt.pout, 0.3 * s);
+      tgt.T = tgt.T * (1 - s) + 0.45 * s; tgt.TL = 0; tgt.up = 0.24; tgt.th = Math.max(tgt.th, 0.3); tgt.g = Math.max(tgt.g, 72 * s * clamp01(open / 0.3)); tgt.sm = 0;
     }
     // an open-mouthed smile (delight / laugh): the D-shape. More opening, the upper lip stays high and flat, the
     // lower lip carries the drop, upper teeth show
@@ -127,11 +136,11 @@ export class LipSolver {
     // tongue keys from the contract (Hindi dental / retroflex / lateral)
     tgt.tip = clamp01(Math.max(tgt.tip, k("tongueTipUp")));
     tgt.curl = clamp01(Math.max(tgt.curl, k("tongueCurl")));
-    if (tgt.tip > 0.5 && !this.inTip) { this.inTip = true; this.holdTip = this.t + 0.06; }   // r4b: 45 -> 60 ms
+    if (tgt.tip > 0.5 && !this.inTip) { this.inTip = true; this.holdTip = this.t + 0.075; }   // r5: 60 -> 75 ms (>= 2 frames at 30 fps)
     if (tgt.tip < 0.3) this.inTip = false;
-    if (this.t < this.holdTip && cPP < 0.5) tgt.tip = Math.max(tgt.tip, 0.85);
+    if (this.t < this.holdTip && cPP < 0.5) tgt.tip = Math.max(tgt.tip, 0.9);
     // a tongue tip or a curl must be SEEN: the gap opens enough to show it, lower teeth drop out of the way
-    if (tgt.tip > 0.3) { tgt.TL = Math.min(tgt.TL, 0.1); tgt.T = Math.min(tgt.T, 0.45); tgt.g = Math.max(tgt.g, 20 * tgt.tip * (1 - cPP)); }   // r4b: 15 -> 20 px (after a b/p the l lobe read faint)
+    if (tgt.tip > 0.3) { tgt.TL = 0; tgt.T = Math.min(tgt.T, 0.5); tgt.g = Math.max(tgt.g, 22 * tgt.tip * (1 - cPP)); tgt.th = Math.min(tgt.th, 0.1); }   // r4b: 15 -> 20 px (after a b/p the l lobe read faint)
     if (tgt.curl > 0.3) { tgt.T = Math.min(tgt.T, 0.5); tgt.TL = 0; tgt.g = Math.max(tgt.g, 15); tgt.up = 0.38; }
     if (k("tongueWide") > 0.2) tgt.th = Math.max(tgt.th, 0.35);
     tgt.press = clamp01(Math.max(tgt.press, (k("mouthPressLeft") + k("mouthPressRight")) / 2 * 1.4));
@@ -150,12 +159,14 @@ export class LipSolver {
     const frown = { L: k("mouthFrownRight"), R: k("mouthFrownLeft") };
     const worry = clamp01(((k("mouthFrownLeft") + k("mouthFrownRight")) / 2) * 2 + Math.max(0, k("browInnerUp") - 0.5) * 1.2);   // r4b: x4 -> x2 (thinking's 0.4/0.15 frowns saturated it: a skeptical slant)
     this.worry = worry;
+    this.unsmile = clamp01(1 - p.sm);   // r5: lip-line curvature flattening from the smile retention (edge())
     const lift = (sm) => 0.22 * (1 - worry) + 0.23 * clamp01(sm / 0.045) + 0.6 * clamp01((sm - 0.045) / 0.8);
     const side = k("mouthLeft") - k("mouthRight");   // + = her left = screen right
     // the smile is a bias, not a replacement: rounding caps it to half (judge r3: "cap mouthSmile ~0.5 while rounded")
     const rc = Math.max(p.round, p.flat);
     for (const s of ["L", "R"]) {
-      const se = lift(smile[s]) * (1 - 0.5 * rc);   // capped smile
+      // r5: the talking smile bias: while a viseme holds, the corners relax toward a neutral 0.3 by its smile retention
+      const se0 = lift(smile[s]) * (1 - 0.5 * rc), se = 0.3 + (se0 - 0.3) * (se0 > 0.3 ? p.sm : 1);   // capped smile
       const hw = s === "L" ? MOUTH.hwL : MOUTH.hwR;
       const wid = hw * (p.W - 1) + (se - 0.45) * 13 * (1 - 0.6 * rc);
       const dy = -(se - 0.45) * 19 * (1 - 0.6 * rc) * (1 - 0.7 * this.surprised) + frown[s] * 12.5 + p.press * 1.5;   // r4: frown 9 -> 12.5 (concern)
@@ -249,7 +260,7 @@ export class LipShell {
     // curvature: rounded shapes flatten c-front's smile curve toward the centre height (an "o", not a V)
     // r4b: concern / a frown flattens c-front's smile CURVE too (its lip line rises 25 px at the corners, so pulling the
     // corners down alone still left a smile: blind r4a 3/3 "a closed smile contradicts the concern")
-    const flatE = Math.max(p.flat, 0.95 * (sol.worry || 0));
+    const flatE = Math.max(p.flat, 0.95 * (sol.worry || 0), 0.55 * (sol.unsmile || 0));
     dy += flatE * 0.9 * (LC - lineY(x)) * (1 - sstep(1.05, 1.45, a));   // r4: zero inside the shell's opaque skin
     // the side the mouth slid to tucks up (c-thinking)
     dy -= (sol.sideTilt || 0) * s * 3 * am;
@@ -258,12 +269,12 @@ export class LipShell {
     // an ellipse running to the lipless corner showed a hard dark end cap
     const e = 1 - 0.16 * Math.max(p.round, p.flat * 0.8);
     const ae = a / e;
-    const kexp = 2 + 2.6 * (1 - p.round);
-    const pw = 0.9 - 0.3 * p.round;
+    const kexp = 2 + 2.6 * (1 - p.round) + 5 * p.sq;
+    const pw = 0.9 - 0.3 * p.round - 0.45 * p.sq;
     const prof = ae < 1 ? Math.pow(Math.max(0, 1 - Math.pow(ae, kexp)), pw) : 0;
     const g = p.g * prof;
     if (sign < 0) dy -= g * p.up;
-    else dy += g * (1 - p.up) - p.tuck * 2.0 * prof;
+    else dy += g * (1 - p.up) - p.tuck * 3.5 * prof;
     return [dx, dy, g];
   }
 
@@ -276,7 +287,7 @@ export class LipShell {
     const a = Math.abs(sOf(x));
     const t = sign < 0 ? tUof(a) : tLof(a);
     // lip thickness: fuller when rounded, thinner when pressed / spread / rolled in
-    const thick = 1 + 0.55 * p.round - 0.72 * p.press - 0.3 * Math.max(0, p.W - 1) - (sign > 0 ? 0.32 * p.tuck : 0);
+    const thick = 1 + 0.55 * p.round + 0.5 * p.pout - 0.72 * p.press - 0.3 * Math.max(0, p.W - 1) - (sign > 0 ? 0.45 * p.tuck : 0);
     const J = sign > 0 ? sol.jaw() * jawProfile(x, y) : 0;
     let dx, dy;
     if (d <= t + 1e-3) {
@@ -323,7 +334,7 @@ export class LipShell {
     // f/v: the lower lip's top, rolled under the upper teeth, sits in the teeth's shadow
     if (sheet.sign > 0) l -= p.tuck * 0.2 * Math.exp(-((d / 4) ** 2)) * inside;
     // rounded lips push forward: their centre catches a little more light
-    l += 0.04 * p.round * (d < t ? Math.sin(Math.PI * d / Math.max(1, t)) : 0) * inside;
+    l += (0.04 * p.round + 0.07 * p.pout) * (d < t ? Math.sin(Math.PI * d / Math.max(1, t)) : 0) * inside;
     return l;
   }
 

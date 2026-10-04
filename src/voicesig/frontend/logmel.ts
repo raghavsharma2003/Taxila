@@ -39,15 +39,12 @@ export function melFilters(): Float32Array {
   return w;
 }
 
-let tables: { cos: Float32Array; sin: Float32Array; win: Float32Array; mel: Float32Array; melLo: Int16Array; melHi: Int16Array } | null = null;
+let tables: { cosN: Float64Array; sinN: Float64Array; win: Float32Array; mel: Float32Array; melLo: Int16Array; melHi: Int16Array } | null = null;
 function getTables() {
   if (tables) return tables;
-  const cos = new Float32Array(N_BINS * N_FFT), sin = new Float32Array(N_BINS * N_FFT);
-  for (let k = 0; k < N_BINS; k++) for (let n = 0; n < N_FFT; n++) {
-    const a = (2 * Math.PI * k * n) / N_FFT;
-    cos[k * N_FFT + n] = Math.cos(a);
-    sin[k * N_FFT + n] = Math.sin(a);
-  }
+  // Twiddles W_400^t = exp(-2πi t/400); a sub-transform of size n uses W_400^(t·400/n).
+  const cosN = new Float64Array(N_FFT), sinN = new Float64Array(N_FFT);
+  for (let t = 0; t < N_FFT; t++) { cosN[t] = Math.cos((2 * Math.PI * t) / N_FFT); sinN[t] = Math.sin((2 * Math.PI * t) / N_FFT); }
   // Periodic Hann (torch.hann_window default).
   const win = new Float32Array(N_FFT);
   for (let n = 0; n < N_FFT; n++) win[n] = 0.5 - 0.5 * Math.cos((2 * Math.PI * n) / N_FFT);
@@ -58,22 +55,56 @@ function getTables() {
     for (let k = 0; k < N_BINS; k++) if (mel[m * N_BINS + k] > 0) { lo = Math.min(lo, k); hi = Math.max(hi, k); }
     melLo[m] = lo; melHi[m] = hi;
   }
-  tables = { cos, sin, win, mel, melLo, melHi };
+  tables = { cosN, sinN, win, mel, melLo, melHi };
   return tables;
 }
 
-/** log10 mel spectrum of one 400-sample window (direct real DFT; ≈ 160k multiply-adds). */
+/** Mixed-radix factors of 400 (4·4·5·5): N·Σp ≈ 7.2k complex multiply-adds per frame vs 80k for a direct DFT. */
+const FACTORS = [4, 4, 5, 5];
+
+/**
+ * Recursive mixed-radix Cooley-Tukey DFT of size n over x[off + q·stride] (q < n), written to out[oOff .. oOff+n).
+ * Exact DFT (not an approximation); tests check it against the direct sum.
+ */
+function fftRec(xr: Float64Array, xi: Float64Array, off: number, stride: number, n: number, or: Float64Array, oi: Float64Array, oOff: number, fi: number, T: { cosN: Float64Array; sinN: Float64Array }): void {
+  if (n === 1) { or[oOff] = xr[off]; oi[oOff] = xi[off]; return; }
+  const p = FACTORS[fi], m = n / p;
+  for (let j = 0; j < p; j++) fftRec(xr, xi, off + j * stride, stride * p, m, or, oi, oOff + j * m, fi + 1, T);
+  const step = N_FFT / n;
+  const yr = new Float64Array(n), yi = new Float64Array(n);
+  for (let k = 0; k < m; k++) {
+    for (let s = 0; s < p; s++) {
+      const kk = k + s * m;
+      let sr = 0, si = 0;
+      for (let j = 0; j < p; j++) {
+        const e = ((j * kk) % n) * step;
+        const c = T.cosN[e], sn = T.sinN[e];
+        const ar = or[oOff + j * m + k], ai = oi[oOff + j * m + k];
+        sr += ar * c + ai * sn;
+        si += ai * c - ar * sn;
+      }
+      yr[kk] = sr; yi[kk] = si;
+    }
+  }
+  or.set(yr, oOff); oi.set(yi, oOff);
+}
+
+/** Power spectrum |X[k]|² (k ≤ 200) of a 400-sample frame (window already applied). */
+export function power400(xw: Float64Array): Float64Array {
+  const T = getTables();
+  const xi = new Float64Array(N_FFT), or = new Float64Array(N_FFT), oi = new Float64Array(N_FFT);
+  fftRec(xw, xi, 0, 1, N_FFT, or, oi, 0, 0, T);
+  const pow = new Float64Array(N_BINS);
+  for (let k = 0; k < N_BINS; k++) pow[k] = or[k] * or[k] + oi[k] * oi[k];
+  return pow;
+}
+
+/** log10 mel spectrum of one 400-sample window. */
 export function logMelFrame(x: ArrayLike<number>, out = new Float32Array(N_MELS)): Float32Array {
   const T = getTables();
-  const xw = new Float32Array(N_FFT);
+  const xw = new Float64Array(N_FFT);
   for (let n = 0; n < N_FFT; n++) xw[n] = (x[n] ?? 0) * T.win[n];
-  const pow = new Float32Array(N_BINS);
-  for (let k = 0; k < N_BINS; k++) {
-    let re = 0, im = 0;
-    const base = k * N_FFT;
-    for (let n = 0; n < N_FFT; n++) { re += xw[n] * T.cos[base + n]; im -= xw[n] * T.sin[base + n]; }
-    pow[k] = re * re + im * im;
-  }
+  const pow = power400(xw);
   for (let m = 0; m < N_MELS; m++) {
     let s = 0;
     for (let k = T.melLo[m]; k <= T.melHi[m]; k++) s += T.mel[m * N_BINS + k] * pow[k];

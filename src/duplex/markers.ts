@@ -105,8 +105,9 @@ export class MarkerTracker {
       values: form.values.length ? form.values : n.values,
       lastValueAgeMs: null,
       holdRequest: n.holdTail,
-      fillerTail: n.lex.cue === "filler" && !closedByQuestion,
-      openTail: n.lex.cue === "open" && !closedByQuestion,
+      // a tail the form grammar already closed ("दूसरा वाला" for a choice) is not an open tail (M-D7 a09)
+      fillerTail: n.lex.cue === "filler" && !closedByQuestion && !formValue,
+      openTail: n.lex.cue === "open" && !closedByQuestion && !formValue,
       projection: n.lex.cue === "projection",
       wordSearch: n.wordSearch,
       // closed forms: the form grammar reads values in every script (understand.js's number list is partial and has no
