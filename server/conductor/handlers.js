@@ -6,6 +6,15 @@ import "../forge/g2/conductor-job.js";   // forge.g2.nightly (Forge G2 end-of-da
 import { one } from "./pg.js";
 
 /**
+ * forge.g2.nightly stays PAUSED (BUILD-PLAN W1-D item 4) until W3-D delivers next-day Forge to children: the night
+ * fold still enqueues one per active day (decide.js, unchanged, so replay is unchanged), and this handler completes it
+ * at once with no build and no model call, so no money is spent on builds nobody can receive. FORGE_G2_NIGHTLY=on
+ * restores the real handler (server/forge/g2/conductor-job.js) without a code change.
+ */
+export const forgeNightlyLive = () => process.env.FORGE_G2_NIGHTLY === "on";
+if (!forgeNightlyLive()) registerHandler("forge.g2.nightly", async () => "paused:w1-d");
+
+/**
  * memory.consolidate:{lessonId}. Today /api/lesson/end writes the lesson's cited memories inline, so this job
  * is the seam (and the queue's end-to-end proof): it re-checks the memory consent at claim time (§8.2: "P3
  * re-checked at claim + steps") and completes. Moving consolidation here is a lesson.js change, not a
