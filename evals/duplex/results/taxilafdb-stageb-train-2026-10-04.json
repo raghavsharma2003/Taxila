@@ -1,0 +1,310 @@
+{
+ "version": "2026-10-04.1",
+ "date": "2026-10-04",
+ "featureSpec": "cce-features/1",
+ "ablations": {
+  "fused": {
+   "oof_train_uncalibrated": {
+    "ticks": 98886,
+    "silentTicks": 54179,
+    "aucEnd_silent": 0.6394163761731518,
+    "aucHold_silent": 0.6425387584238491,
+    "eceEnd_silent": 0.2974722028071814,
+    "eceByExchange": {
+     "closed_answer": {
+      "n": 26014,
+      "ece": 0.4552,
+      "auc": 0.43458146375580475
+     },
+     "open_explanation": {
+      "n": 26647,
+      "ece": 0.1091,
+      "auc": 0.9013323868682677
+     },
+     "chit_chat": {
+      "n": 1518,
+      "ece": 0.9012,
+      "auc": 0.5185623781676413
+     }
+    }
+   },
+   "dev": {
+    "ticks": 10764,
+    "silentTicks": 6144,
+    "aucEnd_silent": 0.46469445605590154,
+    "aucHold_silent": 0.6594873832121465,
+    "eceEnd_silent": 0.31298828125,
+    "eceByExchange": {
+     "closed_answer": {
+      "n": 1486,
+      "ece": 0.6299,
+      "auc": 0.4486713286713287
+     },
+     "open_explanation": {
+      "n": 4658,
+      "ece": 0.2119,
+      "auc": 0.5725678715704043
+     }
+    }
+   },
+   "test": {
+    "ticks": 72856,
+    "silentTicks": 40784,
+    "aucEnd_silent": 0.5071562963543769,
+    "aucHold_silent": 0.6673664067644608,
+    "eceEnd_silent": 0.33061984338950723,
+    "eceByExchange": {
+     "closed_answer": {
+      "n": 23766,
+      "ece": 0.2961,
+      "auc": 0.4571090152943052
+     },
+     "open_explanation": {
+      "n": 16358,
+      "ece": 0.386,
+      "auc": 0.553094654032236
+     },
+     "chit_chat": {
+      "n": 660,
+      "ece": 0.2,
+      "auc": 0.36791207529843895
+     }
+    }
+   }
+  },
+  "features_only": {
+   "oof_train_uncalibrated": {
+    "ticks": 98886,
+    "silentTicks": 54179,
+    "aucEnd_silent": 0.6343447863780816,
+    "aucHold_silent": 0.6274262185365015,
+    "eceEnd_silent": 0.2868670945486781,
+    "eceByExchange": {
+     "closed_answer": {
+      "n": 26014,
+      "ece": 0.4321,
+      "auc": 0.42511205025647314
+     },
+     "open_explanation": {
+      "n": 26647,
+      "ece": 0.1182,
+      "auc": 0.8926947105795853
+     },
+     "chit_chat": {
+      "n": 1518,
+      "ece": 0.9012,
+      "auc": 0.5185623781676413
+     }
+    }
+   },
+   "dev": {
+    "ticks": 10764,
+    "silentTicks": 6144,
+    "aucEnd_silent": 0.9075406465678196,
+    "aucHold_silent": 0.5691457635132818,
+    "eceEnd_silent": 0.10822544324037153,
+    "eceByExchange": {
+     "closed_answer": {
+      "n": 1486,
+      "ece": 0.3701,
+      "auc": 0.4486713286713287
+     },
+     "open_explanation": {
+      "n": 4658,
+      "ece": 0.0247,
+      "auc": 0.9556379487408774
+     }
+    }
+   },
+   "test": {
+    "ticks": 72856,
+    "silentTicks": 40784,
+    "aucEnd_silent": 0.6296707564562998,
+    "aucHold_silent": 0.5376453248334503,
+    "eceEnd_silent": 0.45048724845246874,
+    "eceByExchange": {
+     "closed_answer": {
+      "n": 23766,
+      "ece": 0.7039,
+      "auc": 0.4571090152943052
+     },
+     "open_explanation": {
+      "n": 16358,
+      "ece": 0.0683,
+      "auc": 0.9282676968882057
+     },
+     "chit_chat": {
+      "n": 660,
+      "ece": 0.8,
+      "auc": 0.36791207529843895
+     }
+    }
+   }
+  },
+  "audio_only": {
+   "oof_train_uncalibrated": {
+    "ticks": 98886,
+    "silentTicks": 54179,
+    "aucEnd_silent": 0.6314326399657944,
+    "aucHold_silent": 0.6369878446250439,
+    "eceEnd_silent": 0.30755750675063587,
+    "eceByExchange": {
+     "closed_answer": {
+      "n": 26014,
+      "ece": 0.2777,
+      "auc": 0.6497265643348298
+     },
+     "open_explanation": {
+      "n": 26647,
+      "ece": 0.327,
+      "auc": 0.702809917680079
+     },
+     "chit_chat": {
+      "n": 1518,
+      "ece": 0.7879,
+      "auc": 0.6034746588693957
+     }
+    }
+   },
+   "dev": {
+    "ticks": 10764,
+    "silentTicks": 6144,
+    "aucEnd_silent": 0.6025067441930086,
+    "aucHold_silent": 0.5071086738386185,
+    "eceEnd_silent": 0.2669270935584791,
+    "eceByExchange": {
+     "closed_answer": {
+      "n": 1486,
+      "ece": 0.5061,
+      "auc": 0.5673562548562548
+     },
+     "open_explanation": {
+      "n": 4658,
+      "ece": 0.1906,
+      "auc": 0.5256338392013639
+     }
+    }
+   },
+   "test": {
+    "ticks": 72856,
+    "silentTicks": 40784,
+    "aucEnd_silent": 0.620736556855799,
+    "aucHold_silent": 0.6643986465587409,
+    "eceEnd_silent": 0.29227121077878376,
+    "eceByExchange": {
+     "closed_answer": {
+      "n": 23766,
+      "ece": 0.2815,
+      "auc": 0.6793006849881948
+     },
+     "open_explanation": {
+      "n": 16358,
+      "ece": 0.3084,
+      "auc": 0.5887742807163211
+     },
+     "chit_chat": {
+      "n": 660,
+      "ece": 0.2833,
+      "auc": 0.514606290174472
+     }
+    }
+   }
+  },
+  "smart_turn_alone": {
+   "dev": {
+    "ticks": 10764,
+    "silentTicks": 6144,
+    "aucEnd_silent": 0.5605142945352972,
+    "aucHold_silent": 0.560896169123791,
+    "eceEnd_silent": 0.5012198333788547,
+    "eceByExchange": {
+     "closed_answer": {
+      "n": 1486,
+      "ece": 0.3075,
+      "auc": 0.5324300699300699
+     },
+     "open_explanation": {
+      "n": 4658,
+      "ece": 0.5823,
+      "auc": 0.5747956890958102
+     }
+    }
+   },
+   "test": {
+    "ticks": 72856,
+    "silentTicks": 40784,
+    "aucEnd_silent": 0.4652157960934427,
+    "aucHold_silent": 0.4579791963078329,
+    "eceEnd_silent": 0.5217844756077515,
+    "eceByExchange": {
+     "closed_answer": {
+      "n": 23766,
+      "ece": 0.5465,
+      "auc": 0.46436693530467726
+     },
+     "open_explanation": {
+      "n": 16358,
+      "ece": 0.4978,
+      "auc": 0.42528836060831865
+     },
+     "chit_chat": {
+      "n": 660,
+      "ece": 0.2982,
+      "auc": 0.33945994031221305
+     }
+    }
+   }
+  },
+  "stage_a": {
+   "dev": {
+    "ticks": 10764,
+    "silentTicks": 6144,
+    "aucEnd_silent": 0.7204370145902732,
+    "aucHold_silent": 0.6876906234039519,
+    "eceEnd_silent": 0.18890188707980948,
+    "eceByExchange": {
+     "closed_answer": {
+      "n": 1486,
+      "ece": 0.4396,
+      "auc": 0.846907536907537
+     },
+     "open_explanation": {
+      "n": 4658,
+      "ece": 0.1732,
+      "auc": 0.7688131489808812
+     }
+    }
+   },
+   "test": {
+    "ticks": 72856,
+    "silentTicks": 40784,
+    "aucEnd_silent": 0.6010541135265017,
+    "aucHold_silent": 0.6858672820333827,
+    "eceEnd_silent": 0.21557469163137633,
+    "eceByExchange": {
+     "closed_answer": {
+      "n": 23766,
+      "ece": 0.2373,
+      "auc": 0.45667403460805583
+     },
+     "open_explanation": {
+      "n": 16358,
+      "ece": 0.1703,
+      "auc": 0.7432262567982474
+     },
+     "chit_chat": {
+      "n": 660,
+      "ece": 0.7428,
+      "auc": 0.5144341138659321
+     }
+    }
+   }
+  }
+ },
+ "export": {
+  "onnx": "models/duplex/cce-stageb-2026-10-04.1.onnx",
+  "onnxBytes": 103095,
+  "json": "models/duplex/cce-stageb-2026-10-04.1.json"
+ },
+ "seconds": 224
+}
