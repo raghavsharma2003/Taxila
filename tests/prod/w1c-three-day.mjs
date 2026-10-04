@@ -2,15 +2,24 @@
 // so nobody could test it in one sitting. With the test clock:
 //   day 0   a scripted lesson: right answers, but "pata nahi" to every why (the typical first-lesson child: shallow);
 //           the parent "how we know" card is NOT null (G1: it was null for every English / shallow child);
-//   +1 day  the opener checks a day-0 skill (C31, the delayed check) and the child answers it right; the review lesson on
-//           the same topic, now with reasons, moves the state above shallow;
-//   +3 days the day-0 skill is checked again (woven, or its expired weave entry as a callback);
+//   +1 day  a lesson on a DIFFERENT topic: its opener asks a day-0 item (so it can only be the C31 delayed check; with
+//           TAXILA_DB_URL the lesson state's pendingProbe must say C31 / delayed_check), the child answers it right, and
+//           the card is read RIGHT THEN, before any why answer. The card changes (the "used it again days later" chip).
+//           Whether the STATE rises above shallow on that alone is reported honestly: by the ladder (state.js) a
+//           correct delayed check is K / D evidence, and leaving shallow needs U ≥ U_FRAGILE, i.e. a reason. If it
+//           stays shallow the test says so (a warn naming the rule), it does not borrow the rise from reasons;
+//   +2 days a review lesson on the day-0 topic WITH reasons: the state rises above shallow (labelled: from reasons);
+//   +3 days a lesson on a third topic: its opener checks a day-0 skill again (delayed check / expired weave callback);
 //   the parent card's wording changes as the state rises.
 // And a REAL account (not @taxila.test) asking for an offset gets 403.
 import { withTestAccount, apiClient, ok, warn, done } from "./lib.mjs";
-import { driveLesson, advanceClock, cardRow, kitTopic, topicOfItem } from "./_w1c.mjs";
+import { driveLesson, advanceClock, cardRow, kitTopic, topicOfItem, replyFor, targetDb } from "./_w1c.mjs";
 
-const DAY0 = "c5-maths-ch01-t01", DAY3 = "c5-maths-ch02-t01";
+const DAY0 = "c5-maths-ch01-t01", DAY1 = "c5-maths-ch01-t02", DAY3 = "c5-maths-ch02-t01";
+const db = await targetDb();
+if (!db) warn("TAXILA_DB_URL is not set: the C31 reason in the lesson state cannot be read (the opener item is still checked)");
+/** The saved lesson state (the Director's), or null without a database. */
+const lessonState = async (lessonId) => (db ? (await db("select state from lesson where id = $1", [lessonId]))[0]?.state ?? null : null);
 const STATE_OF = [[/Gets the answers on their own|Answers khud se sahi/i, "shallow"], [/Explained it in their own words|apne shabdon mein/i, "fragile"],
   [/Still had it|din baad bhi yaad/i, "understood"], [/Kept it for a month|mahine baad/i, "durable"], [/Started|shuru kiya|mix-up|confusion/i, "not_yet"]];
 const stateOf = (row) => (row ? STATE_OF.find(([re]) => re.test(row))?.[1] ?? "unknown" : null);
@@ -42,9 +51,12 @@ await withTestAccount(async ({ api, child, password }) => {
     const out = {};
     for (const s of skills) out[s] = await cardRow(api, child.id, s).catch((e) => ({ row: null, err: e.message }));
     const shown = Object.entries(out).filter(([, v]) => v.row);
-    console.log(`${label}: ${shown.map(([s, v]) => `${s.split("-").pop()}=${stateOf(v.row)}`).join(" ") || "no card"}`);
+    console.log(`${label}: ${shown.map(([s, v]) => `${s.split("-").pop()}=${stateOf(v.row)} [${(v.card?.chips ?? []).length} chips]`).join(" ") || "no card"}`);
     return out;
   };
+  const best = (c) => Math.max(-1, ...Object.values(c).map((v) => RANK[stateOf(v.row)] ?? -1));
+  const states = (c) => Object.values(c).map((v) => stateOf(v.row)).join("/");
+  const wording = (v) => JSON.stringify([v?.card?.rows ?? [], v?.card?.chips ?? []]);
 
   // ── day 0 ──
   const d0 = await driveLesson(api, child.id, { topicId: DAY0, maxTurns: 18, explain: false });
@@ -55,37 +67,67 @@ await withTestAccount(async ({ api, child, password }) => {
   const shown0 = Object.entries(c0).filter(([, v]) => v.row);
   ok(shown0.length > 0, `the parent "how we know" card is shown after a scripted lesson (${shown0.length}/${skills.length} skills)`);
 
-  // ── +1 day: the delayed check in the opener ──
+  // ── +1 day: the C31 delayed check in the opener of a lesson on ANOTHER topic ──
   const adv1 = await advanceClock(api, 1);
   ok(adv1.offsetDays === 1, `test clock +1 day (now reads ${adv1.now})`);
-  const d1 = await driveLesson(api, child.id, { topicId: DAY0, maxTurns: 16, explain: true });
-  ok(d1.start.status === 201, "+1 day: a new lesson starts (a new learning day, not 'done for today')");
-  // the opener's retrieval items come before the topic's own teaching (moves "retrieval" first)
-  // the warm-up: items asked BEFORE the lesson's first teaching move (day 0 opened straight on a hook, with no item)
-  const firstTeach = d1.turns.findIndex((t) => ["hook", "explain", "worked_example"].includes(t.move));
-  const before = [d1.start.ui?.ask?.itemId, ...d1.turns.slice(0, firstTeach < 0 ? 3 : firstTeach).map((t) => t.itemId)].filter(Boolean);
-  ok(before.some((id) => topicOfItem(id) === DAY0), `+1 day: the opener checks a day-0 skill before any teaching (C31) — warm-up asks ${before.join(", ") || "none"}; moves ${d1.turns.slice(0, 5).map((t) => t.move).join(",")}`);
-  const firstCheck = d1.turns.find((t, i) => i < 6 && t.verdict);
-  ok(!!firstCheck && firstCheck.verdict === "correct", `+1 day: the child answers the delayed check right (${firstCheck?.verdict ?? "no verdict"})`);
-  const c1 = await cards("+1 day card");
-  const r1max = Math.max(-1, ...Object.values(c1).map((v) => RANK[stateOf(v.row)] ?? -1));
-  ok(r1max > RANK.shallow, `+1 day: a day-0 skill is above shallow after the delayed check and the reasons (${Object.values(c1).map((v) => stateOf(v.row)).join("/")})`);
+  const s1 = await api("POST", "/api/lesson/start", { childId: child.id, mode: "text", topicId: DAY1 });
+  ok(s1.status === 201, `+1 day: a new lesson starts on ${DAY1} (a new learning day, not 'done for today')`);
+  const warm = s1.ui?.ask?.itemId ?? null;
+  ok(!!warm && topicOfItem(warm) === DAY0, `+1 day: the opener of a ${DAY1} lesson asks a day-0 item before any teaching (${warm ?? "none"})`);
+  const st1 = await lessonState(s1.lessonId);
+  if (st1) ok(st1.pendingProbe?.shapeId === "C31" && st1.pendingProbe?.reason === "delayed_check" && topicOfItem(st1.activeItemId) === DAY0,
+    `+1 day: the lesson state says it is the C31 delayed check (pendingProbe ${st1.pendingProbe?.shapeId ?? "none"}/${st1.pendingProbe?.reason ?? "-"} on ${st1.activeItemId ?? "-"})`);
+  // answer ONLY the warm-up (day-0) items, right; no why answer has been given since day 0
+  let ui = s1.ui, seq = 0;
+  const warmTurns = [];
+  while (ui?.ask?.itemId && topicOfItem(ui.ask.itemId) === DAY0 && warmTurns.length < 4) {
+    const rep = replyFor(ui, DAY0, { explain: false });
+    const body = rep.chip ? { childText: rep.chip.label, chipId: rep.chip.id } : { childText: rep.text };
+    const r = await api("POST", "/api/lesson/turn", { lessonId: s1.lessonId, typed: true, asrConfidence: 0.95, turnSeq: ++seq, ...body });
+    warmTurns.push({ item: ui.ask.itemId, verdict: r.ui?.verdict ?? null, move: r.move?.kind });
+    ui = r.ui;
+    if (r.end) break;
+  }
+  ok(warmTurns[0]?.verdict === "correct", `+1 day: the child answers the delayed check right (${warmTurns.map((t) => `${t.item}=${t.verdict}`).join(", ") || "no warm-up turn"})`);
+  const c1 = await cards("+1 day card, right after the delayed check (no why answered since day 0)");
+  const changed1 = skills.filter((s) => c1[s].row && wording(c1[s]) !== wording(c0[s]));
+  ok(changed1.length > 0, `+1 day: the parent card changes after the delayed check alone (${changed1.map((s) => s.split("-").pop()).join(",") || "none"}: ${states(c0)} → ${states(c1)})`);
+  const r1 = best(c1);
+  ok(r1 >= best(c0), `+1 day: a correct delayed check never lowers the state (${states(c0)} → ${states(c1)})`);
+  if (r1 > RANK.shallow) ok(true, `+1 day: the delayed check alone moved a day-0 skill above shallow (${states(c1)})`);
+  else warn(`+1 day: the state stays shallow after a correct delayed check (${states(c1)}). This is the ladder, not a bug in the check: state.js leaves shallow only with U ≥ U_FRAGILE (a reason), and a delayed check is K / D evidence. The plan's "a correct answer moves the state above shallow" cannot hold on the delayed check alone; the rise below comes from reasons`);
+  await api("POST", "/api/lesson/end", { lessonId: s1.lessonId });
 
-  // ── +3 days: the woven check (or its callback) ──
-  await advanceClock(api, 2);
-  const d3 = await driveLesson(api, child.id, { topicId: DAY3, maxTurns: 12 });
-  ok(d3.start.status === 201, "+3 days: a lesson starts");
-  const checked3 = d3.asked.filter((id) => topicOfItem(id) === DAY0);
-  ok(checked3.length > 0, `+3 days: an earlier skill is checked again (woven or callback) — asked ${d3.asked.slice(0, 6).join(", ")}`);
+  // ── +2 days: review on the day-0 topic WITH reasons (the rise above shallow, labelled as coming from reasons) ──
+  await advanceClock(api, 1);
+  const d2 = await driveLesson(api, child.id, { topicId: DAY0, maxTurns: 16, explain: true });
+  ok(d2.start.status === 201, "+2 days: a review lesson starts on the day-0 topic");
+  const c2 = await cards("+2 days card (after reasons)");
+  ok(best(c2) > RANK.shallow, `+2 days: with reasons given, a day-0 skill is above shallow (${states(c2)}) — from reasons, not from the delayed check`);
+
+  // ── +3 days: the day-0 skill is checked again in the opener of a third topic's lesson ──
+  await advanceClock(api, 1);
+  const s3 = await api("POST", "/api/lesson/start", { childId: child.id, mode: "text", topicId: DAY3 });
+  ok(s3.status === 201, "+3 days: a lesson starts");
+  const warm3 = s3.ui?.ask?.itemId ?? null;
+  const st3 = await lessonState(s3.lessonId);
+  const due3 = (st3?.warmup ?? []).map((w) => w.id ?? w.itemId).filter(Boolean);
+  ok((!!warm3 && topicOfItem(warm3) === DAY0) || due3.some((id) => topicOfItem(id) === DAY0),
+    `+3 days: the opener of a ${DAY3} lesson checks a day-0 skill again (asks ${warm3 ?? "none"}; warm-up ${due3.join(", ") || "n/a"})`);
+  if (st3) ok(st3.pendingProbe?.shapeId === "C31" && topicOfItem(st3.activeItemId) === DAY0, `+3 days: it is a C31 delayed check (pendingProbe ${st3.pendingProbe?.shapeId ?? "none"} on ${st3.activeItemId ?? "-"})`);
+  ui = s3.ui; seq = 0;
+  for (let i = 0; i < 3 && ui?.ask?.itemId && topicOfItem(ui.ask.itemId) === DAY0; i++) {
+    const rep = replyFor(ui, DAY0);
+    const body = rep.chip ? { childText: rep.chip.label, chipId: rep.chip.id } : { childText: rep.text };
+    const r = await api("POST", "/api/lesson/turn", { lessonId: s3.lessonId, typed: true, asrConfidence: 0.95, turnSeq: ++seq, ...body });
+    ui = r.ui;
+  }
+  await api("POST", "/api/lesson/end", { lessonId: s3.lessonId });
   const c3 = await cards("+3 days card");
 
   // ── the card follows the state ──
-  const best = (c) => Math.max(-1, ...Object.values(c).map((v) => RANK[stateOf(v.row)] ?? -1));
-  const r0 = best(c0), r3 = best(c3);
   const changed = skills.some((s) => (c0[s].row ?? "") !== (c3[s].row ?? "") && c3[s].row);
-  ok(changed, `the parent card wording changes between day 0 and +3 days (${Object.values(c0).map((v) => stateOf(v.row)).join("/")} → ${Object.values(c3).map((v) => stateOf(v.row)).join("/")})`);
-  ok(r3 >= r0, `the state never falls back after correct delayed checks (rank ${r0} → ${r3})`);
-  if (r3 <= RANK.shallow) warn("no skill rose above shallow by +3 days: the live lane's U evidence is why-probes only (W3-A widens it)");
-  void c1;
+  ok(changed, `the parent card's state row changes between day 0 and +3 days (${states(c0)} → ${states(c3)})`);
+  ok(best(c3) >= best(c0), `the state never falls back after correct delayed checks (rank ${best(c0)} → ${best(c3)})`);
 }, { tag: "w1c", child: { firstName: "Riya", classLevel: 5, languagePref: "english", interests: ["cricket"] } });
 done();

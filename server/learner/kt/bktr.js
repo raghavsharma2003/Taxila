@@ -54,9 +54,14 @@ export function gatedEmission(ev, R, confusionOverrides) {
  * guessers over the pL 0.6 "does it" line (comprehension sim: not_yet accuracy 0.62 with game evidence, 0.75 without).
  */
 export const SOURCE_WEIGHT = Object.freeze({ game: 0.5, module: 0.75 });
+/**
+ * The source an event's weight comes from: its via, except a late verdict's correction (via 'late',
+ * comprehension/later.js lateEvent), which carries its held event's game / module source in its id (`<id>:late:<via>`).
+ */
+export const sourceOf = (ev) => (ev.via === "late" ? /:late:(game|module)$/.exec(String(ev.id ?? ""))?.[1] ?? "late" : ev.via);
 /** Rule 4 tempering exponent: assisted ^0.5, gaming window ^0.25, controllerEasy ^0.5, unverified kit ^0.5, source (game/module). */
 export function temper(ev) {
-  let x = SOURCE_WEIGHT[ev.via] ?? 1;
+  let x = SOURCE_WEIGHT[sourceOf(ev)] ?? 1;
   if (ev.assisted) x *= 0.5;
   if (ev.gamingWindowKt) x *= 0.25;
   if (ev.controllerEasy) x *= 0.5;

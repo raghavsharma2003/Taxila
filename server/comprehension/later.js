@@ -19,11 +19,16 @@
 // spanOk:false: it carries K evidence but no U/T (E6 fails closed).
 import { gradeClosed, GRADER_VERSION } from "./grade/closed.js";
 import { whyOutcome, teachbackOutcome } from "./grade/ops.js";
+import { realNow } from "./testclock.js";
+import { SOURCE_WEIGHT } from "../learner/kt/bktr.js";
 
 const PENDING = new Map();
 const TTL_MS = 30 * 60_000;
 const MAX_TARGETS = 4;
-function sweep(now = Date.now()) {
+// Process-wide bookkeeping (the PENDING ages, the sweep, the settle deadline) runs on the REAL clock: inside a test
+// account's request Date.now() may be up to 60 days ahead (testclock.js), and a sweep "by its clock" would drop every
+// real child's in-flight verdict.
+function sweep(now = realNow()) {
   if (PENDING.size < 500) return;
   for (const [k, v] of PENDING) if (now - v.at > TTL_MS) PENDING.delete(k);
 }
@@ -93,7 +98,7 @@ export function gradeLater(ev, { childText, targets, echo = [], lang = "en" }, {
   const text = String(childText ?? "").trim();
   const ts = (targets ?? []).filter((t) => t?.id && t?.textEn).slice(0, MAX_TARGETS);
   if (!text || !ts.length) return null;
-  const entry = { at: Date.now(), settled: false, results: null, fallback: false, partial: ts.map(() => null), decided: false, cls: ev.cls };
+  const entry = { at: realNow(), settled: false, results: null, fallback: false, partial: ts.map(() => null), decided: false, cls: ev.cls };
   entry.promise = Promise.all(ts.map((target, i) => grade({ op: "R-EXP", childSpan: text, target, lang }, { echo })
     .catch(() => ({ label: "NA", spanOk: false, op: "R-EXP", targetId: target.id, graderVersion: GRADER_VERSION, model: null, ms: 0, span: null }))
     .then((res) => { entry.partial[i] = res; if (!entry.decided && decides(entry)) entry.decided = true; return res; })))
@@ -139,12 +144,14 @@ export function settledGrade(evId) {
 function adopt(evId, results) {
   const e = PENDING.get(evId);
   if (e) { e.results = results; e.settled = true; e.fallback = false; return; }
-  PENDING.set(evId, { at: Date.now(), settled: true, results, fallback: false, adopted: true, promise: Promise.resolve(results) });
+  PENDING.set(evId, { at: realNow(), settled: true, results, fallback: false, adopted: true, promise: Promise.resolve(results) });
 }
 
 // ───────────── the settle (the next turn, and lesson end) ─────────────
 
 const POLL_MS = 100;
+/** The longest a settle that runs beside the classifier may last (its `until`), whatever the classifier does. */
+export const SETTLE_CAP_MS = 2500;
 const LOCAL_POLL_MS = 40;
 const stats = { turns: 0, held: 0, settled: 0, local: 0, db: 0, fallback: 0, late: 0, waitedMs: 0 };
 /** Settle counters since process start (the per-turn line is logged; this is for probes and tests). */
@@ -156,16 +163,25 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
  * Wait at most `maxMs` for the verdicts of held events: in-process ones by their promise, others (another replica
  * graded them, or a restart) from pending_grade. Ids still unsettled at the deadline are CLAIMED as folded without a
  * verdict (so a verdict that lands later becomes a correction, never a double count). Never rejects.
- * @param {string[]} eventIds @param {number} [maxMs] @param {{ log?: boolean, label?: string }} [o]
+ *
+ * `until` (optional): a promise for work the caller does meanwhile (the turn's classifier). The wait then lasts until
+ * BOTH `maxMs` has passed and `until` has settled, capped at `capMs`: a verdict that lands while the classifier is
+ * still running is folded at no cost to the turn, and the turn never waits longer than max(maxMs, the classifier).
+ * @param {string[]} eventIds @param {number} [maxMs]
+ * @param {{ log?: boolean, label?: string, until?: Promise<any> | null, capMs?: number }} [o]
  * @returns {Promise<{ held: number, settled: number, fallback: string[], waitedMs: number }>}
  */
-export async function settleHeld(eventIds, maxMs = 600, { log = true, label = "turn" } = {}) {
+export async function settleHeld(eventIds, maxMs = 600, { log = true, label = "turn", until = null, capMs = SETTLE_CAP_MS } = {}) {
   const ids = [...new Set((eventIds ?? []).filter(Boolean))];
-  const t0 = Date.now();
+  const t0 = realNow();
+  let untilDone = !until;
+  const untilP = until ? Promise.resolve(until).then(() => { untilDone = true; }, () => { untilDone = true; }) : null;
   const out = { held: ids.length, settled: 0, fallback: [], waitedMs: 0, via: { local: 0, db: 0 } };
   if (!ids.length) return out;
   const done = (id) => isIn(PENDING.get(id));
-  const deadline = t0 + Math.max(0, maxMs);
+  const floor = t0 + Math.max(0, maxMs);
+  const cap = t0 + Math.max(maxMs, capMs);
+  const deadline = () => (untilDone ? floor : cap);
   let s = null;
   try { s = await dbStore(); } catch { s = null; }
   const fromDb = new Set();
@@ -176,27 +192,27 @@ export async function settleHeld(eventIds, maxMs = 600, { log = true, label = "t
     if (remote.length && s) {
       try { for (const [id, res] of Object.entries(await s.read(remote))) { adopt(id, res); fromDb.add(id); } } catch { /* the deadline still holds */ }
     }
-    const left = deadline - Date.now();
+    const left = deadline() - realNow();
     if (left <= 0 || !ids.some((id) => !done(id))) break;
     // wake on the first local verdict, at the deadline, or (when some are graded elsewhere) at the next poll
     const local = ids.filter((id) => !done(id) && PENDING.has(id)).map((id) => PENDING.get(id).promise);
     // (a local why can be DECIDED by its first present target before the promise settles: poll for that too)
-    await Promise.race([sleep(Math.min(left, remote.length ? POLL_MS : LOCAL_POLL_MS)), ...(local.length ? [Promise.race(local)] : [])]);
+    await Promise.race([sleep(Math.min(left, remote.length ? POLL_MS : LOCAL_POLL_MS)), ...(local.length ? [Promise.race(local)] : []), ...(untilP && !untilDone ? [untilP] : [])]);
   }
   const unsettled = ids.filter((id) => !done(id));
   if (unsettled.length) {
-    for (const id of unsettled) { const e = PENDING.get(id); if (e) e.fallback = true; else PENDING.set(id, { at: Date.now(), settled: false, results: null, fallback: true, adopted: true, promise: Promise.resolve(null) }); }
+    for (const id of unsettled) { const e = PENDING.get(id); if (e) e.fallback = true; else PENDING.set(id, { at: realNow(), settled: false, results: null, fallback: true, adopted: true, promise: Promise.resolve(null) }); }
     if (s) {
       try { for (const [id, res] of Object.entries(await s.claim(unsettled))) { adopt(id, res); fromDb.add(id); } } catch (e) { console.warn("[settle] claim failed:", String(e?.message ?? e).slice(0, 160)); }
     }
   }
-  out.waitedMs = Date.now() - t0;
+  out.waitedMs = realNow() - t0;
   out.fallback = ids.filter((id) => !done(id));
   out.settled = ids.length - out.fallback.length;
   out.via = { db: ids.filter((id) => fromDb.has(id) && done(id)).length, local: out.settled - ids.filter((id) => fromDb.has(id) && done(id)).length };
   stats.turns++; stats.held += out.held; stats.settled += out.settled; stats.local += out.via.local; stats.db += out.via.db;
   stats.fallback += out.fallback.length; stats.waitedMs += out.waitedMs;
-  if (log) console.info(`[settle] ${label} lesson=${lessonOfEvent(ids[0]) ?? "?"} held=${out.held} settled=${out.settled} local=${out.via.local} db=${out.via.db} fallback=${out.fallback.length} waited=${out.waitedMs}ms rate=${settleStats().rate}`);
+  if (log) console.info(`[settle] ${label} lesson=${lessonOfEvent(ids[0]) ?? "?"} held=${out.held} settled=${out.settled} local=${out.via.local} db=${out.via.db} fallback=${out.fallback.length} waited=${out.waitedMs}ms${until ? " beside-classifier" : ""} rate=${settleStats().rate}`);
   return out;
 }
 
@@ -242,12 +258,16 @@ export function finalEvent(ev, results) {
  * The correction event for a verdict that landed after its event folded: the verdict's outcome and span check, a
  * deterministic id, via 'late' (U/T only; the ledger already took the K step from the fallback). Null when the
  * verdict carries nothing (every target NA). Pure; exported for tests.
+ * The original event's source weight survives the correction: a held event from a game or module turn gets the id
+ * `<id>:late:<via>`, which learner/kt/bktr.js temper() reads back (kt_evidence.via holds only 'late', and the id is
+ * what a replay sees), so the correction weighs ×0.5 / ×0.75 like its event, never full weight.
  */
 export function lateEvent(ev, results) {
   const fe = finalEvent(ev, results);
   if (!fe.graded) return null;
   const { seq: _s, ...rest } = fe.event;
-  return { ...rest, id: `${ev.id}:late`, via: LATE_VIA };
+  const src = ev.via && ev.via !== "dialogue" && ev.via !== LATE_VIA && SOURCE_WEIGHT[ev.via] ? `:${ev.via}` : "";
+  return { ...rest, id: `${ev.id}:late${src}`, via: LATE_VIA };
 }
 
 /**

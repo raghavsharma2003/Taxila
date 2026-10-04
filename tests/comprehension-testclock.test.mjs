@@ -98,3 +98,34 @@ test("runWithOffset shifts Date.now and new Date() inside the context only; Date
   assert.equal(out.realAfterPatch, true);
   assert.equal(out.req, true);
 });
+
+// The route itself (fixer finding: the 403 was only exercised by the production script): a real guardian is refused
+// on read and on set, nothing is written to test_clock, and the refusal is logged; a test guardian's set is written,
+// audited and logged.
+test("GET/POST /api/test/clock: 403 and no write for a real account; a test account sets its own clock", async () => {
+  const { routes, _setGuardianOf } = await import("../server/comprehension/testclock.js");
+  const calls = [];
+  _setTestQuery(async (text, params) => { calls.push({ text, params }); return /select offset_ms from test_clock/.test(text) ? [] : []; });
+  const lines = [];
+  const info = console.info; console.info = (...a) => lines.push(a.join(" "));
+  const res = () => ({ statusCode: 0, headers: {}, body: "", setHeader(k, v) { this.headers[k] = v; }, end(b) { this.body = b ?? ""; } });
+  try {
+    _setGuardianOf(async () => ({ id: "g-real", email: "parent@gmail.com" }));
+    for (const [route, body] of [["GET /api/test/clock", undefined], ["POST /api/test/clock", { offsetDays: 1 }]]) {
+      await assert.rejects(routes[route]({}, res(), body), (e) => e.status === 403 || e.statusCode === 403, route);
+    }
+    assert.equal(calls.filter((c) => /test_clock|audit/.test(c.text) && /insert|update/i.test(c.text)).length, 0, "no test_clock or audit write for a real account");
+    assert.equal(lines.filter((l) => /\[test-clock\] refused (read|set) guardian=g-real/.test(l)).length, 2, "each refusal is logged");
+    assert.ok(!lines.some((l) => /gmail/.test(l)), "the log carries the guardian id, never the email");
+
+    calls.length = 0; lines.length = 0;
+    _setGuardianOf(async () => ({ id: "g-test", email: "probe+1@taxila.test" }));
+    const r = res();
+    await routes["POST /api/test/clock"]({}, r, { offsetDays: 2 });
+    assert.equal(r.statusCode, 200);
+    const w = calls.find((c) => /insert into test_clock/.test(c.text));
+    assert.deepEqual(w?.params, ["g-test", 2 * DAY]);
+    assert.ok(calls.some((c) => /insert into audit/.test(c.text) && c.params[0] === "g-test"), "audited");
+    assert.ok(lines.some((l) => /\[test-clock\] set guardian=g-test offset=172800000ms \(was 0ms\)/.test(l)), "logged");
+  } finally { console.info = info; _setGuardianOf(null); _setTestQuery(null); }
+});

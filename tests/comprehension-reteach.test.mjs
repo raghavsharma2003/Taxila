@@ -54,8 +54,10 @@ test("resolveAttempts: only changed rows are written, a rewarded row is never to
 
 test("resolutionStmt: the posterior is paid inside the guarded update (once per attempt, only when final, no child id)", () => {
   const s = resolutionStmt({ id: 7, armId: "a", outcome: "resolved_delayed", reward: 1, final: true, cluster: "maths:B3" });
-  assert.match(s.text, /where id = \$1 and rewarded_at is null returning arm_id, reward/);
-  assert.match(s.text, /insert into arm_posteriors \(arm_id, cluster, a, b, n\)\s+select arm_id, \$5, 1 \+ reward, 2 - reward, 1 from u where \$4::boolean/);
+  assert.match(s.text, /where id = \$1 and rewarded_at is null returning arm_id, reward,/);
+  assert.match(s.text, /g\.email ~\* '@taxila\\\.test\$'\) as test_account\)/, "the attempt's guardian decides whether it is a test account");
+  assert.match(s.text, /insert into arm_posteriors \(arm_id, cluster, a, b, n\)\s+select arm_id, \$5, 1 \+ reward, 2 - reward, 1 from u where \$4::boolean and reward is not null and not test_account/,
+    "a test account never pays the population posterior");
   assert.ok(!/child_id/.test(s.text.split("insert into arm_posteriors")[1]), "arm_posteriors never carries a child id");
   assert.deepEqual(s.params, [7, "resolved_delayed", 1, true, "maths:B3"]);
 });

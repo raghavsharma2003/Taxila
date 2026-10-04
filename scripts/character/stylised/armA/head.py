@@ -350,6 +350,21 @@ def monotone_halves(t, upper, i0, i1, t_uniform, mix):
     return t
 
 
+def push_out(X, P, margin=None):
+    X = np.array(X, float)
+    m = P.get('push_margin', 0.0008) if margin is None else margin
+    for side in (1, -1):
+        c = np.array(P['eye_c'], float) * [side, 1, 1]
+        q = X - c
+        d = np.linalg.norm(q, axis=1)
+        th = np.degrees(np.arccos(np.clip(-q[:, 1] / np.maximum(d, 1e-9), -1, 1)))
+        k = np.clip((th - P.get('ball_tuck_deg', 55)) / P.get('ball_tuck_ramp', 45.0), 0, 1)
+        reff = P['eye_r'] * (1 - P.get('ball_tuck', 0.3) * k * k * (3 - 2 * k)) + m
+        bad = d < reff
+        X[bad] = c + q[bad] / d[bad, None] * reff[bad, None]
+    return X
+
+
 def place(bm, loops, sdf, P):
     """Put the named rings on their analytic curves, then relax the band around them onto the SDF."""
     pinned = {}
@@ -496,6 +511,7 @@ def place(bm, loops, sdf, P):
         d = pts - H
         d /= np.linalg.norm(d, axis=1, keepdims=True)
         pr = march_out(sdf, H, d)
+        pr = push_out(pr, P, P.get('push_margin', 0.0008) + 0.0006)
         for v, q in zip(band, pr):
             v.co = Vector(q)
     return meta

@@ -109,7 +109,11 @@ export async function runRequestClock(req, fn) {
 /** Logged on every set and every refusal (no email: guardian id only). */
 function logClock(line) { console.info(`[test-clock] ${line}`); }
 
+let guardianFn = null;
+/** Tests: swap how the route reads the signed-in guardian (null restores server/auth.js requireGuardian). */
+export function _setGuardianOf(fn) { guardianFn = fn; }
 async function guardianOf(req) {
+  if (guardianFn) return guardianFn(req);
   const { requireGuardian } = await import("../auth.js");
   return requireGuardian(req);
 }

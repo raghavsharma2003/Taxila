@@ -133,6 +133,7 @@ def build(T, R, cfg, a):
     RG.smooth(ob, 3, 0.5)
     RG.decimate(ob, cfg.get("hair_tris", 9000))
     RG.smooth(ob, 1, 0.3)
+    RG.smooth_boundary(ob, 3, 12)
     RG.tuck_boundary(ob, 0.003, 2)
     L.shade_smooth(ob)
     L.set_vcol(ob, np.tile(RG.HAIR, (len(ob.data.vertices), 1)))

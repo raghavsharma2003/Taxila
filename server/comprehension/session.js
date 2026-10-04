@@ -121,13 +121,19 @@ export async function readContext(childId, { skillIds = [], now = Date.now() } =
  * One statement per resolution: the attempt's outcome and reward, and — only when the outcome is final and the row was
  * not rewarded before — the arm's population posterior (no child id), atomically (a concurrent start cannot add the
  * same reward twice: the update is guarded on rewarded_at is null and the insert reads its returning row).
+ * A TEST account's child (guardian email @taxila.test: prod-smoke, the probe fleet, tests/prod) resolves its own
+ * attempt rows but never pays the population posterior: arm_posteriors are the priors every real child's arm choice
+ * reads, and a scripted child's failures would bias them. The guard is in SQL (the attempt's child → guardian), so no
+ * caller can forget it.
  */
 export const resolutionStmt = (u) => ({
   text: `with u as (update reteach_attempts set outcome = $2, reward = $3::double precision, resolved_at = now(),
       rewarded_at = case when $4::boolean then now() else null end, cluster = $5
-      where id = $1 and rewarded_at is null returning arm_id, reward)
+      where id = $1 and rewarded_at is null returning arm_id, reward,
+        exists (select 1 from child c join guardian g on g.id = c.guardian_id
+          where c.id = reteach_attempts.child_id and g.email ~* '@taxila\\.test$') as test_account)
     insert into arm_posteriors (arm_id, cluster, a, b, n)
-      select arm_id, $5, 1 + reward, 2 - reward, 1 from u where $4::boolean and reward is not null
+      select arm_id, $5, 1 + reward, 2 - reward, 1 from u where $4::boolean and reward is not null and not test_account
     on conflict (arm_id, cluster) do update set a = arm_posteriors.a + excluded.a - 1, b = arm_posteriors.b + excluded.b - 1,
       n = arm_posteriors.n + 1, updated_at = now()`,
   params: [u.id, u.outcome, u.reward, !!u.final, u.cluster],
@@ -147,10 +153,18 @@ export { reteachSessionInputs, noteReteach } from "./reteach.js";
  * ids. Resolves when every id has settled or the time is up; never rejects (the caller also catches). Verdicts that
  * landed on another replica are read from pending_grade by event id and made visible to settledGrade; ids still
  * unsettled at the deadline are claimed as folded without a verdict (a later verdict becomes a correction).
+ *
+ * Optional third argument (backward compatible with the W0 seam): `{ until }`, a promise for the turn's classifier.
+ * Started BESIDE the classifier (seam-patches/w1c-lesson-early-grade.patch), the wait lasts until both `maxMs` has
+ * passed and the classifier is done (capped at later.js SETTLE_CAP_MS): a verdict that lands while the classifier
+ * runs costs the turn nothing, and the turn never waits longer than max(maxMs, classifier) — never longer than the
+ * old serial 600 ms wait added on top of the classifier.
  * @param {string[]} eventIds  empty when nothing is held (resolve at once)
  * @param {number} [maxMs]
+ * @param {{ until?: Promise<any> | null, capMs?: number }} [opts]
  * @returns {Promise<void>}
  */
-export async function awaitSettled(eventIds, maxMs = 600) {
-  try { await settleHeld(eventIds, maxMs, { label: "turn" }); } catch (e) { console.warn("[settle] awaitSettled:", String(e?.message ?? e).slice(0, 160)); }
+export async function awaitSettled(eventIds, maxMs = 600, opts = {}) {
+  try { await settleHeld(eventIds, maxMs, { label: "turn", until: opts?.until ?? null, ...(opts?.capMs ? { capMs: opts.capMs } : {}) }); }
+  catch (e) { console.warn("[settle] awaitSettled:", String(e?.message ?? e).slice(0, 160)); }
 }

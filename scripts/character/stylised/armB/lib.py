@@ -77,6 +77,8 @@ def nearest(bvh, P):
         loc, nor, idx, dist = bvh.find_nearest(Vector(P[k]))
         if loc is not None:
             Q[k] = loc; N[k] = nor; fi[k] = idx; d[k] = dist
+            if not np.isfinite(N[k]).all():
+                N[k] = 0.0
     return Q, N, fi, d
 
 

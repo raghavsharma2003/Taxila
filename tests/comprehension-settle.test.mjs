@@ -172,3 +172,56 @@ test("a teach-back waits for every target (its coverage rule needs all of them)"
   assert.equal(s.calls.correct.length, 1, "it lands as a correction instead");
   forgetGrade(ev.id);
 }));
+
+// Settle BESIDE the classifier (seam-patches/w1c-lesson-early-grade.patch; fixer finding: a serial 600 ms wait after
+// a post-commit grade settled 0/4 at a 0 s reply): the wait lasts until both 600 ms have passed and the classifier is
+// done, capped; it never outlasts max(600 ms, classifier).
+test("until: a verdict that lands while the classifier still runs is folded; the wait ends with the classifier", quiet(async () => {
+  const s = memStore(); _setStore(s);
+  const ev = why();
+  gradeLater(ev, req, { grade: gradeIn(900) });
+  let release; const cls = new Promise((r) => { release = r; });
+  setTimeout(release, 1200);                                   // the classifier takes 1.2 s
+  const t0 = Date.now();
+  const r = await settleHeld([ev.id], 600, { until: cls });
+  const waited = Date.now() - t0;
+  assert.equal(r.settled, 1, "the 900 ms verdict is in: past the old 600 ms deadline, inside the classifier's time");
+  assert.ok(waited >= 850 && waited < 1150, `returns when the verdict lands (${waited} ms), not at the classifier's end`);
+}));
+
+test("until: an unsettled verdict holds the turn no longer than max(600 ms, classifier), and is claimed", quiet(async () => {
+  const s = memStore(); _setStore(s);
+  const a = why(), b = why();
+  gradeLater(a, req, { grade: gradeIn(3000) });
+  gradeLater(b, req, { grade: gradeIn(3000) });
+  // fast classifier (100 ms): the 600 ms floor holds
+  let t0 = Date.now();
+  let r = await awaitSettled([a.id], 600, { until: new Promise((res) => setTimeout(res, 100)) }).then(() => null);
+  let waited = Date.now() - t0;
+  assert.ok(waited >= 580 && waited < 800, `fast classifier: the 600 ms floor (${waited} ms)`);
+  assert.deepEqual(s.calls.claim.at(-1), [a.id], "claimed at the deadline");
+  // slow classifier (1 s): the wait ends with it
+  t0 = Date.now();
+  r = await settleHeld([b.id], 600, { until: new Promise((res) => setTimeout(res, 1000)) });
+  waited = Date.now() - t0;
+  assert.equal(r.settled, 0);
+  assert.ok(waited >= 980 && waited < 1200, `slow classifier: ends with it (${waited} ms)`);
+  // a hung classifier: the cap holds
+  const c = why();
+  gradeLater(c, req, { grade: gradeIn(5000) });
+  t0 = Date.now();
+  r = await settleHeld([c.id], 100, { until: new Promise(() => {}), capMs: 400 });
+  waited = Date.now() - t0;
+  assert.ok(waited >= 380 && waited < 600, `hung classifier: capped (${waited} ms)`);
+  assert.equal(r.fallback.length, 1);
+}));
+
+test("a late correction keeps its held event's source weight (game / module), never full weight", async () => {
+  const { temper, sourceOf } = await import("../server/learner/kt/bktr.js");
+  const dlg = lateEvent(why(), PRESENT), mod = lateEvent({ ...why(), via: "module" }, PRESENT), game = lateEvent({ ...why(), via: "game" }, PRESENT);
+  assert.ok(dlg.id.endsWith(":late") && mod.id.endsWith(":late:module") && game.id.endsWith(":late:game"));
+  for (const e of [dlg, mod, game]) assert.equal(e.via, LATE_VIA);
+  assert.deepEqual([sourceOf(dlg), sourceOf(mod), sourceOf(game)], ["late", "module", "game"]);
+  assert.deepEqual([temper(dlg), temper(mod), temper(game)], [1, 0.75, 0.5]);
+  assert.equal(temper({ via: "module", id: "x" }), 0.75, "an ordinary event: its own via, as before");
+});

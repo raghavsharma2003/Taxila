@@ -41,7 +41,7 @@ def mat(name, rgb=None, rough=0.5, metal=0.0, spec=0.5, ss=0.0, trans=0.0, ior=1
     if ss > 0:
         b.inputs['Subsurface Weight'].default_value = ss
         b.inputs['Subsurface Radius'].default_value = (1.0, 0.42, 0.28)
-        b.inputs['Subsurface Scale'].default_value = 0.004
+        b.inputs['Subsurface Scale'].default_value = 0.0018
     if trans > 0:
         b.inputs['Transmission Weight'].default_value = trans
     if sheen > 0:
@@ -151,7 +151,10 @@ def build():
     tex = iris_image()
     m_eye = mat('eye', rough=0.75, spec=0.05, tex=tex)
     _b = m_eye.node_tree.nodes['Principled BSDF']; _ti = [n for n in m_eye.node_tree.nodes if n.type == 'TEX_IMAGE'][0]
-    m_eye.node_tree.links.new(_ti.outputs['Color'], _b.inputs['Emission Color']); _b.inputs['Emission Strength'].default_value = 0.22
+    _nt = m_eye.node_tree
+    _lp = _nt.nodes.new('ShaderNodeLightPath'); _mul = _nt.nodes.new('ShaderNodeMath'); _mul.operation = 'MULTIPLY'; _mul.inputs[1].default_value = 0.22
+    _nt.links.new(_lp.outputs['Is Camera Ray'], _mul.inputs[0])
+    _nt.links.new(_ti.outputs['Color'], _b.inputs['Emission Color']); _nt.links.new(_mul.outputs[0], _b.inputs['Emission Strength'])
     m_cornea = cornea_mat()
     for s, tag in ((1, 'L'), (-1, 'R')):
         V, F, ex = PT.eyeball(PH | PP, s)

@@ -94,3 +94,22 @@ def mirror_symmetrize(ob):
     bvh = L.bvh_from_np(Pm, [f[::-1] for f in F])
     Q, _, _, _ = L.nearest(bvh, P)
     L.set_co(ob.data, 0.5 * (P + Q))
+
+
+def smooth_boundary(ob, rings=3, iters=12):
+    """relax the ragged open edge of a remeshed region (hairline / sideburn crust) and the rings next to it."""
+    bm = bmesh.new(); bm.from_mesh(ob.data); bm.verts.ensure_lookup_table()
+    sel = {v for v in bm.verts if any(e.is_boundary for e in v.link_edges)}
+    front = set(sel)
+    for _ in range(rings - 1):
+        nxt = set()
+        for v in front:
+            for e in v.link_edges:
+                w = e.other_vert(v)
+                if w not in sel:
+                    nxt.add(w)
+        sel |= nxt; front = nxt
+    vs = list(sel)
+    for _ in range(iters):
+        bmesh.ops.smooth_vert(bm, verts=vs, factor=0.5, use_axis_x=True, use_axis_y=True, use_axis_z=True)
+    bm.to_mesh(ob.data); bm.free()

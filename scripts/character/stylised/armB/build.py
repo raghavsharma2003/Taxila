@@ -87,7 +87,7 @@ def default_cfg(T, W0):
         "n_bridge": 3, "n_neck": 6,
         "eye_scales": [[1.75, 1.95, 3.0], [1.42, 1.55, 3.5], [1.16, 1.22, 2.0], [1.0, 1.0, 0.0]],
         "mouth_spec": [[1.9, 1.75, 14.0], [1.0, 1.0, 5.0], [0.62, 0.66, 3.0], [0.28, 0.3, 1.5], [0.0, 0.0, 0.0]],
-        "chin_up": 0.008, "cheek_wide": 0.07, "cheek_full": 0.003, "nose_back": 0.0025,
+        "chin_up": 0.010, "cheek_wide": 0.085, "cheek_full": 0.004, "nose_back": 0.0035,
         "eyeball_r_frac": 0.60, "eyeball_back": 0.80, "hair_in": 0.010, "cloth_in": 0.008,
     }
 
@@ -378,7 +378,7 @@ def build_skin(T, cfg):
     for _ in range(12):
         P[idx] = 0.5 * P[idx] + 0.5 * np.array([P[nb[i]].mean(0) for i in idx])
     P[~used] = W.c
-    out = dict(used=used, twin=twin, eyes=eyes, mouth=mouth, S=S, W=W, P=P, placed=placed, hitlab=hitlab, rings=rings, nb=nb, kind=kind, D=D, pxT=pxT, nf=nf,
+    out = dict(hidden=(inw > 0.85 * cfg["hair_in"]), used=used, twin=twin, eyes=eyes, mouth=mouth, S=S, W=W, P=P, placed=placed, hitlab=hitlab, rings=rings, nb=nb, kind=kind, D=D, pxT=pxT, nf=nf,
                e_face=e_face, F=F, j0e=j0e, k0L=k0L, j0m=j0m)
     return out
 
@@ -420,15 +420,15 @@ def make_skin_object(R):
     return ob
 
 
-def make_eyes(R, iris_png):
+def make_eyes(R, iris_png, seg=(24, 18), cseg=24):
     from parts import eyeball, cornea
     Vs, Fs, UVs, Vc, Fc = [], [], [], [], []
     for side in ("L", "R"):
         E = R["eyes"][side]
-        V, F, UV = eyeball(E["C"], E["r"])
+        V, F, UV = eyeball(E["C"], E["r"], nseg=seg[0], nring=seg[1])
         off = sum(len(v) for v in Vs)
         Vs.append(V); Fs += [[q + off for q in f] for f in F]; UVs.append(UV)
-        V2, F2 = cornea(E["C"], E["r"])
+        V2, F2 = cornea(E["C"], E["r"], nseg=cseg, nr=5 if cseg < 24 else 7)
         off = sum(len(v) for v in Vc)
         Vc.append(V2); Fc += [[q + off for q in f] for f in F2]
     eyes = L.mesh_from_np("eyes", np.concatenate(Vs), Fs)
@@ -470,6 +470,8 @@ def front_on(bvh, T, px, off=0.0):
     for k in range(len(px)):
         loc, n, idx, d = bvh.ray_cast(Vector(O[k]), Vector((0, 1, 0)), 10)
         out[k] = loc; nrm[k] = n
+        if not np.isfinite(nrm[k]).all() or np.linalg.norm(nrm[k]) < 0.5:
+            nrm[k] = (0, -1, 0)
     return out + nrm * off, nrm
 
 
@@ -682,18 +684,24 @@ if __name__ == "__main__":
     ap.add_argument("--res", type=int, default=512)
     ap.add_argument("--show-target", action="store_true")
     ap.add_argument("--skin-only", action="store_true")
+    ap.add_argument("--tier", default="H", choices=["H", "Bplus"])
     a = ap.parse_args(sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:])
     T = load_target(a.target, a.lm)
     W0 = SK.Wrap(T, {"axis_y": 0, "axis_z": 0})
     cfg = default_cfg(T, W0)
     if a.cfg:
         cfg.update(json.load(open(a.cfg)))
+    cfg.update({"H": {"hair_tris": 7600, "garment_tris": 3400}, "Bplus": {"hair_tris": 3000, "garment_tris": 1400}}[a.tier])
     warp_target(T, cfg)
     R = build_skin(T, cfg)
+    R["F_full"] = list(R["F"])
+    if a.tier != "H":
+        hid = R["hidden"]
+        R["F"] = [f for f in R["F"] if not all(hid[q] for q in f)]
     print("[build] skin verts", len(R["P"]), "faces", len(R["F"]), "placed", int(R["placed"].sum()))
     L.clear_scene()
     import extras
-    R["skin_bvh"] = L.bvh_from_np(R["P"], R["F"])
+    R["skin_bvh"] = L.bvh_from_np(R["P"], R["F_full"])
     nskin = len(R["P"])
     if a.skin_only:
         XV, XF, XC, xtag, xmat, ears = np.zeros((0, 3)), [], np.zeros((0, 3)), np.array([]), np.array([], int), {}
@@ -709,7 +717,7 @@ if __name__ == "__main__":
     ftag = np.array(["skin"] * nskin + list(xtag))
     iris = os.path.join(os.path.dirname(os.path.abspath(a.out)), "iris.png")
     os.system(f"{sys.executable} {os.path.dirname(os.path.abspath(__file__))}/iris.py {iris} --size 256 > /dev/null")
-    eyes, cor = make_eyes(R, iris)
+    eyes, cor = make_eyes(R, iris, *(((24, 18), 24) if a.tier == "H" else ((16, 12), 16)))
     fix_normals(eyes); fix_normals(cor)
     if a.preview:
         preview(T, R, a)
@@ -732,11 +740,17 @@ if __name__ == "__main__":
     Pbr = L.co(brows.data)[bm_ids]
     Qb, Nb, _, db = L.nearest(R["skin_bvh"], Pbr)
     offs = ((Pbr - Qb) * Nb).sum(1)
-    meta["brow_proj"] = {"faces": [tuple(f) for f in R["F"]], "ids": bm_ids, "off": offs}
+    meta["brow_proj"] = {"faces": [tuple(f) for f in R["F_full"]], "ids": bm_ids, "off": offs}
     rig = SH.Rig(parts, meta)
     keys = SH.all_keys()
+    if a.tier != "H":
+        keys = SH.ARKIT + ["tongueTipUp", "jawOpen_mouthClose", "eyeBlink_eyeLookDownLeft", "eyeBlink_eyeLookDownRight",
+                           "eyeBlink_eyeSquintLeft", "eyeBlink_eyeSquintRight"]
     D = SH.bake(rig, keys)
     if os.environ.get("ARMB_DEBUG"):
+        print("[dbg] brows rest nan", int(np.isnan(parts["brows"]).sum()), np.nonzero(np.isnan(parts["brows"]).any(1))[0][:20])
+        print("[dbg] brow mask", len(meta["brow"]["L"]["mask"]), "skinW", float(meta["brow"]["L"]["skinW"].sum()), "lash", len(meta["eye"]["L"]["lashIds"]), "parts", {k: len(v) for k, v in parts.items()})
+        [print("[dbg] pose", kk, int(np.isnan(rig.evaluate(SH.POSES[kk])["skin"]).sum())) for kk in ("jawOpen", "eyeBlinkLeft", "mouthSmileLeft", "browDownLeft")]; print("[dbg] rest", int(np.isnan(rig.evaluate({})["skin"]).sum()), [kk for kk, vv in meta["brow"]["L"].items() if np.isnan(np.asarray(vv, float)).any()]); Pq = rig.evaluate(SH.POSES["browInnerUp"]); print("[dbg] nan skin", int(np.isnan(Pq["skin"]).sum()), "nan brows", int(np.isnan(Pq["brows"]).sum()), "nan offs", int(np.isnan(meta["brow_proj"]["off"]).sum()), "nan rest skin", int(np.isnan(parts["skin"]).sum()))
         E = R["eyes"]["L"]; lm_, rm_, up_, lo_ = E["split"]; r4 = np.asarray(E["rings"][4])
         for lab, ps in (("blink", ["eyeBlinkLeft"]), ("squint", ["eyeSquintLeft"]), ("both", ["eyeBlinkLeft", "eyeSquintLeft"])):
             Pp = rig.evaluate(SH.merge_pose(*[SH.POSES[k] for k in ps]))["skin"]
