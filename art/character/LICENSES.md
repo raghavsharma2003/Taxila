@@ -409,3 +409,18 @@ Not used: Live2D (licence blocked), Rive (GUI authoring), PixiJS (plain WebGL2 s
 | Foundry `taxila-brain` (gpt-5.6-sol) | advisory blind judge (`scripts/character/puppet2d/judge-r3-blind.mjs`) | Azure AI Foundry (sold direct) | Azure terms | raw replies in `docs/design/teacher/puppet2d/judge-r3/` |
 
 Not used: Live2D (licence blocked), Rive (GUI authoring), PixiJS (plain WebGL2 suffices).
+
+## 2D puppet, polish r4 of arm P, 2026-10-04 (`art/character/puppet2d/polish-r4/`, `scripts/character/puppet2d/polish-r4/`)
+
+| What | Used for | Source | Licence | Notes |
+|---|---|---|---|---|
+| c-front + the r3 layers (carried over); `mouthwide.py` re-cuts the mouth-shell texture wider from c-front's own pixels | every head/body layer | ours | ours / Azure OpenAI terms | |
+| 4 new painted keys on `taxila-image` (gpt-image-2 edit, c-front as identity reference, high quality, `gen-keys.mjs`): `keys/yawRbun-0` (bun on the correct side; the mask was not honoured, so the whole plate was repainted), `keys/mid62-0` (squeeze mid-blink; superseded, see below), `keys/yawL30-0`, `keys/yawR30-0` (clearer three-quarter keys with the 20-degree keys and `q3-*` as references) | **two-texture yaw keyform**: `plates.py` cuts the face skin of yawL30 / yawR30 into `layers/plateL/R.png` (SHIPPED as runtime textures, cross-dissolved through the shared field); `keyfield.py` fits the field to them | Azure AI Foundry `taxila-image` (sold direct) | our output under the Azure OpenAI terms | USD 1.22 in r4; ledger total 9.98 of the 30 cap (`art/character/puppet2d/ledger.json`) |
+| r3 `keys/closed-0` (painted closed lids) | the mid-blink key is now built from it (`lidkeys.py`, `P2D_MIDFROM=shut`): the shut lid compressed per column so its lash lands at 0.88 of the opening | carried over | ours / Azure OpenAI terms | `mid62-0` paid for but not shipped (two-tone skin band, smeared lash ends) |
+| The arm-P gpt-image-2 mouth atlas strips (`interior.png`) | teeth colour (contour now analytic, `interior-r4.py` + `gl.js` FS_IN), cavity, tongue | carried over | ours / Azure OpenAI terms | |
+| Own WebGL2 renderer, rig, lip shell + re-derived viseme solver, blink shaper, expression emitters, plate blend (`scripts/character/puppet2d/polish-r4/runtime/*.js`) | runtime | ours | ours | zero runtime dependencies |
+| OpenCV 5.0 (DIS optical flow, Telea inpainting), numpy, scipy (RBF thin-plate spline, ndimage), Pillow (WebP) | build time: landmark transfer between keys (`regplate.py`, `lm30.py`), plate lock / brow / bindi inpainting, colour band matching, WebP pack | pip | Apache-2.0 / BSD-3 / BSD-3 / HPND | build-time only; nothing but the PNG/WebP outputs ships |
+| vite 8, Playwright 1.63 + Chromium (SwiftShader), ffmpeg | bundle, gate strips, sheets, clips, fps proxy | npm / system | MIT / Apache-2.0 / BSD / LGPL | build/evidence only |
+| Foundry `taxila-brain` (gpt-5.6-sol) | advisory blind judge, same prompt as r3 (`scripts/character/puppet2d/judge-r4-blind.mjs`) | Azure AI Foundry (sold direct) | Azure terms | raw replies in `docs/design/teacher/puppet2d/judge-r4/` |
+
+Not used: Live2D (licence blocked), Rive (GUI authoring), PixiJS (plain WebGL2 suffices).

@@ -132,7 +132,7 @@ describe("live learner path", () => {
     assert.equal(temper({ via: "module" }), 0.75);
     assert.equal(temper({ via: "dialogue" }), 1);
     assert.equal(temper({ via: "game", assisted: "parent" }), 0.25);
-    assert.deepEqual(SOURCE_WEIGHT, { game: 0.5, module: 0.75 });
+    assert.deepEqual(SOURCE_WEIGHT, { game: 0.5, module: 0.75, studio: 0.75 });   // studio: W2-H host-graded Studio answers (LIVE-STUDIO D12)
     const ev = (id, via) => ({ id, sessionId: "S", episodeId: id, at: "2026-10-01T10:00:00Z", sessionStartAt: "2026-10-01T10:00:00Z", skillIds: ["c5-maths-ch01-t01-s1"],
       cls: "item.open", outcome: 0, grader: "code", graderVersion: "t", itemKey: id, ...(via ? { via } : {}) });
     const pl = (via) => fold(newLedger({ childId: "c", classLevel: 5 }), [ev("a", via)]).skills["c5-maths-ch01-t01-s1"].pL;

@@ -801,7 +801,7 @@ var ae = ie(B.cx + 4), V = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), oe = 
 		g: 60,
 		up: .2,
 		W: .9,
-		flat: .4,
+		flat: .62,
 		round: .45,
 		T: .95,
 		TL: .15,
@@ -908,7 +908,7 @@ var ae = ie(B.cx + 4), V = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), oe = 
 			l.round = Math.max(l.round, .7 * e), l.flat = Math.max(l.flat, .95 * e), l.W = l.W * (1 - e) + .8 * e, l.T = l.T * (1 - e) + .55 * e, l.TL = 0, l.up = .26, l.th = Math.max(l.th, .3), l.g = Math.max(l.g, 54 * e * L(r / .3));
 		}
 		let g = L(((n("mouthSmileLeft") + n("mouthSmileRight")) / 2 - .35) / .4) * L(r / .18) * (1 - this.surprised);
-		g > 0 && (l.g += 36 * g * (1 - Math.min(1, s)), l.up *= 1 - .7 * g, l.T = Math.max(l.T, 1 * g), l.th = Math.max(l.th, .42 * g), l.W = Math.max(l.W, 1.08 * g + l.W * (1 - g))), l.tip = L(Math.max(l.tip, n("tongueTipUp"))), l.curl = L(Math.max(l.curl, n("tongueCurl"))), l.tip > .5 && !this.inTip && (this.inTip = !0, this.holdTip = this.t + .045), l.tip < .3 && (this.inTip = !1), this.t < this.holdTip && p < .5 && (l.tip = Math.max(l.tip, .85)), l.tip > .3 && (l.TL = Math.min(l.TL, .1), l.T = Math.min(l.T, .45), l.g = Math.max(l.g, 15 * l.tip * (1 - p))), l.curl > .3 && (l.T = Math.min(l.T, .5), l.TL = 0, l.g = Math.max(l.g, 15), l.up = .38), n("tongueWide") > .2 && (l.th = Math.max(l.th, .35)), l.press = L(Math.max(l.press, (n("mouthPressLeft") + n("mouthPressRight")) / 2 * 1.4));
+		g > 0 && (l.g += 36 * g * (1 - Math.min(1, s)), l.up *= 1 - .7 * g, l.T = Math.max(l.T, 1 * g), l.th = Math.max(l.th, .42 * g), l.W = Math.max(l.W, 1.08 * g + l.W * (1 - g))), l.tip = L(Math.max(l.tip, n("tongueTipUp"))), l.curl = L(Math.max(l.curl, n("tongueCurl"))), l.tip > .5 && !this.inTip && (this.inTip = !0, this.holdTip = this.t + .06), l.tip < .3 && (this.inTip = !1), this.t < this.holdTip && p < .5 && (l.tip = Math.max(l.tip, .85)), l.tip > .3 && (l.TL = Math.min(l.TL, .1), l.T = Math.min(l.T, .45), l.g = Math.max(l.g, 20 * l.tip * (1 - p))), l.curl > .3 && (l.T = Math.min(l.T, .5), l.TL = 0, l.g = Math.max(l.g, 15), l.up = .38), n("tongueWide") > .2 && (l.th = Math.max(l.th, .35)), l.press = L(Math.max(l.press, (n("mouthPressLeft") + n("mouthPressRight")) / 2 * 1.4));
 		let _ = this.p;
 		for (let e of U) {
 			if (this.first) {
@@ -925,7 +925,7 @@ var ae = ie(B.cx + 4), V = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), oe = 
 		}, y = {
 			L: n("mouthFrownRight"),
 			R: n("mouthFrownLeft")
-		}, b = L((n("mouthFrownLeft") + n("mouthFrownRight")) / 2 * 4 + Math.max(0, n("browInnerUp") - .5) * 1.2);
+		}, b = L((n("mouthFrownLeft") + n("mouthFrownRight")) / 2 * 2 + Math.max(0, n("browInnerUp") - .5) * 1.2);
 		this.worry = b;
 		let x = (e) => .22 * (1 - b) + .23 * L(e / .045) + .6 * L((e - .045) / .8), S = n("mouthLeft") - n("mouthRight"), C = Math.max(_.round, _.flat);
 		for (let e of ["L", "R"]) {
@@ -1502,7 +1502,7 @@ var ge = class {
 					let i = Math.abs(e - r.c[0]) - (r.h[0] - r.r), a = Math.abs(t - r.c[1]) - (r.h[1] - r.r), o = Math.hypot(Math.max(i, 0), Math.max(a, 0)) + Math.min(Math.max(i, a), 0) - r.r;
 					n *= K(-r.f, 0, o);
 				}
-				return n * (1 - K(640, 690, t));
+				return n * (1 - K(675, 715, t));
 			};
 			for (let a of ["L", "R"]) {
 				let s = n[a], c = n.norm[a], l = t.plates[a].rect, u = new Float32Array(e.n * 2), d = new Float32Array(e.n), f = new Float32Array(e.n);
@@ -1740,7 +1740,7 @@ var ge = class {
 		a("browL"), a("browR"), this.drawMouth(n), this.drawPlate(), a("lockbed", n), a("hair", r), a("lockL"), a("lockR");
 	}
 	drawEye(e, t) {
-		let n = this.eyes[e], r = n.e, i = this.R, a = this.st, o = (e, t) => Y(e, t), s = (r.top[Math.floor(r.top.length / 2)] + r.bot[Math.floor(r.bot.length / 2)]) / 2, c = this.project(n.xa, s, o(n.xa, s)), l = this.project(n.xb, s, o(n.xb, s)), u = (l[0] - c[0]) / (n.xb - n.xa), d = (c[0] + l[0]) / 2, f = u < .72 ? .72 / u : 1, p = (e) => (f !== 1 && (e[0] = d + (e[0] - d) * f), e);
+		let n = this.eyes[e], r = n.e, i = this.R, a = this.st, o = (e, t) => Y(e, t), s = (r.top[Math.floor(r.top.length / 2)] + r.bot[Math.floor(r.bot.length / 2)]) / 2, c = this.project(n.xa, s, o(n.xa, s)), l = this.project(n.xb, s, o(n.xb, s)), u = (l[0] - c[0]) / (n.xb - n.xa), d = (c[0] + l[0]) / 2, f = u < .6 ? .6 / u : 1, p = (e) => (f !== 1 && (e[0] = d + (e[0] - d) * f), e);
 		this.eyeFix = {
 			ecx: d,
 			em: f
@@ -1896,17 +1896,17 @@ var ge = class {
 }, ve = {
 	thinking: {
 		bs: {
-			browOuterUpLeft: .95,
-			browInnerUp: .05,
-			browDownRight: .55,
-			eyeSquintRight: .25,
+			browOuterUpLeft: .72,
+			browInnerUp: .08,
+			browDownRight: .38,
+			eyeSquintRight: .2,
 			eyeWideLeft: .04,
-			mouthLeft: .7,
-			mouthPressLeft: .35,
-			mouthPressRight: .35,
+			mouthLeft: .6,
+			mouthPressLeft: .25,
+			mouthPressRight: .25,
 			mouthPucker: .15,
-			mouthFrownRight: .4,
-			mouthFrownLeft: .15,
+			mouthFrownRight: .22,
+			mouthFrownLeft: .08,
 			mouthSmileLeft: -1,
 			mouthSmileRight: -1
 		},

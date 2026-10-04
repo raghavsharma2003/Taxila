@@ -10,8 +10,10 @@
 export const EXPRESSIONS = {
   // c-thinking: head rolled, one brow arched high, the other low; eyes up and away; small pressed mouth slid aside
   thinking: {
-    bs: { browOuterUpLeft: 0.95, browInnerUp: 0.05, browDownRight: 0.55, eyeSquintRight: 0.25, eyeWideLeft: 0.04,
-      mouthLeft: 0.7, mouthPressLeft: 0.35, mouthPressRight: 0.35, mouthPucker: 0.15, mouthFrownRight: 0.4, mouthFrownLeft: 0.15, mouthSmileLeft: -1, mouthSmileRight: -1 },
+    // r4: rig brow gains rose ~35% (surprise / concern range), so thinking's arch / knit / frown come down to keep the r3
+    // read (blind r4c 3/3: "skeptical" with the old weights through the new gains)
+    bs: { browOuterUpLeft: 0.72, browInnerUp: 0.08, browDownRight: 0.38, eyeSquintRight: 0.2, eyeWideLeft: 0.04,
+      mouthLeft: 0.6, mouthPressLeft: 0.25, mouthPressRight: 0.25, mouthPucker: 0.15, mouthFrownRight: 0.22, mouthFrownLeft: 0.08, mouthSmileLeft: -1, mouthSmileRight: -1 },
     head: [-4, -7, 8], gaze: [21, 20], env: [0.35, 0, 0.45],
   },
   // c-listening: soft closed smile, brows gently up, head tilted toward the child

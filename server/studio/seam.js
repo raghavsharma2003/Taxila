@@ -396,6 +396,9 @@ export const studioSeam = {
   slotFor(lessonId, turnStudio, hint = null) {
     const L = lessons.get(lessonId);
     if (!L) return null;
+    // a safeguarding turn: the Help sheet replaces the Desk; whatever was on screen is frozen and retired, and nothing
+    // new is shown for the rest of the lesson (STUDENT-FLOW §5.7)
+    if (hint?.safety) { studioSeam.onSafety(lessonId); return null; }
     if (turnStudio?.retire && turnStudio.retire === L.onScreen) return null;
     // the Director's move needs the tray this turn (an item's tiles or pad, its module, the board): Studio yields it
     const trayTaken = typeof hint?.tray === "string" && DIRECTOR_TRAYS.has(hint.tray);

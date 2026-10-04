@@ -300,7 +300,9 @@ export async function chatStream(deployment, messages, opts = {}) {
       const t = await res.text();
       err = new AzureError(`${kind} ${deployment} HTTP ${status}: ${excerpt(t)}`, status, bodyIsContentFilter(t) ? CONTENT_FILTER : "");
     } else {
+      let events = 0;
       for await (const ev of sseEvents(res.body)) {
+        events++;
         clearTimeout(stall); stall = setTimeout(() => abort("stalled"), stallMs);
         if (ev.type === "response.output_text.delta") push(ev.delta);
         else if (ev.type === "response.completed" || ev.type === "response.incomplete") {
@@ -318,6 +320,8 @@ export async function chatStream(deployment, messages, opts = {}) {
         if (ev.usage && !ev.type) usage = normUsage(ev.usage);
       }
       if (finishReason === CONTENT_FILTER) err = new AzureError(`${kind} ${deployment} completion blocked by the content filter`, 200, CONTENT_FILTER);
+      // a 200 whose stream closed before a single event is a cut connection, not an empty answer
+      else if (!events && !err) err = new AzureError(`${kind} ${deployment} stream closed with no events`, 200, "empty_stream");
     }
   } catch (e) {
     err = why ? new AzureError(`${kind} ${deployment} ${why} after ${Math.round(performance.now() - t0)} ms`, 0, why)

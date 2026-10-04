@@ -170,7 +170,7 @@
   const lights = [];   // light pools from bulbs
 
   /* ------------------------------------------------------------------ tray */
-  const TRAY_X = 16, TRAY_W = 176;
+  const TRAY_X = 14, TRAY_W = 190;
   function layoutTray(ids) {
     const many = ids.length > 4;
     const h = many ? 80 : 104, gap = many ? 6 : 10;
@@ -398,17 +398,28 @@
 
   /* ------------------------------------------------------------------ render */
   const PANEL = { x: 222, y: 168, w: 762, h: 430 };
+  let bgCache = null, bgKey = "";
+  function background(ctx) {
+    const key = st.canvas.width + "x" + st.canvas.height;
+    if (key !== bgKey) {
+      bgKey = key;
+      bgCache = document.createElement("canvas");
+      bgCache.width = st.canvas.width; bgCache.height = st.canvas.height;
+      const g = bgCache.getContext("2d");
+      g.setTransform(st.scale, 0, 0, st.scale, 0, 0);
+      const bgG = g.createRadialGradient(600, 380, 50, 600, 380, 700);
+      bgG.addColorStop(0, "#121725"); bgG.addColorStop(1, "#0A0C12");
+      g.fillStyle = bgG; g.fillRect(0, 0, W, H);
+      g.fillStyle = "#121621"; S.roundRect(g, PANEL.x, PANEL.y, PANEL.w, PANEL.h, 26); g.fill();
+      g.strokeStyle = C.line2; g.lineWidth = 2; g.stroke();
+      g.fillStyle = "rgba(255,255,255,.05)";
+      for (let x = PANEL.x + 26; x < PANEL.x + PANEL.w - 10; x += 31) for (let y = PANEL.y + 26; y < PANEL.y + PANEL.h - 10; y += 31) g.fillRect(x - 1.5, y - 1.5, 3, 3);
+    }
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(bgCache, 0, 0); ctx.restore();
+  }
   function render(ctx, now) {
-    ctx.fillStyle = C.stage; ctx.fillRect(0, 0, W, H);
-    const bgG = ctx.createRadialGradient(600, 380, 50, 600, 380, 700);
-    bgG.addColorStop(0, "#121725"); bgG.addColorStop(1, "#0A0C12");
-    ctx.fillStyle = bgG; ctx.fillRect(0, 0, W, H);
+    background(ctx);
     ctx.save(); ctx.translate(fx.ox, fx.oy);
-    // bench panel with breadboard dots
-    ctx.fillStyle = "#121621"; S.roundRect(ctx, PANEL.x, PANEL.y, PANEL.w, PANEL.h, 26); ctx.fill();
-    ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke();
-    ctx.fillStyle = "rgba(255,255,255,.05)";
-    for (let x = PANEL.x + 26; x < PANEL.x + PANEL.w - 10; x += 31) for (let y = PANEL.y + 26; y < PANEL.y + PANEL.h - 10; y += 31) ctx.fillRect(x - 1.5, y - 1.5, 3, 3);
     // light pools (additive): the room lights up around a glowing bulb
     ctx.save(); ctx.globalCompositeOperation = "lighter";
     for (const e of bulbs()) {
@@ -610,13 +621,17 @@
       ctx.strokeStyle = tested === "conducts" ? "rgba(61,220,151,.6)" : C.line2; ctx.lineWidth = 2; ctx.stroke();
       const cy = t.y + t.h / 2;
       if (mat) {
-        ctx.save(); ctx.translate(t.x + 40, cy); ctx.scale(0.42, 0.42); drawMaterial(ctx, t.id, 1); ctx.restore();
-        S.text(ctx, mat.name, t.x + 76, cy + 2, { font: "ui", size: 38, weight: 600, color: tested ? C.ink2 : C.ink, baseline: "middle" });
-        if (tested === "conducts") { ctx.strokeStyle = C.mint; ctx.lineWidth = 5; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(t.x + t.w - 30, cy - 18); ctx.lineTo(t.x + t.w - 22, cy - 10); ctx.lineTo(t.x + t.w - 8, cy - 28); ctx.stroke(); }
-        if (tested === "blocks") { ctx.strokeStyle = C.ink3; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(t.x + t.w - 19, cy - 19, 9, 0, Math.PI * 2); ctx.stroke(); }
+        ctx.save(); ctx.translate(t.x + 36, cy); ctx.scale(0.4, 0.4); drawMaterial(ctx, t.id, 1); ctx.restore();
+        S.text(ctx, mat.name, t.x + 66, cy + 2, { font: "display", size: 38, weight: 600, color: tested ? C.ink2 : C.ink, baseline: "middle" });
+        if (tested) {                      // verdict badge on the icon: tick = let current through, ring = blocked it
+          const bx = t.x + 50, by = cy + 18;
+          ctx.fillStyle = "#161A24"; ctx.beginPath(); ctx.arc(bx, by, 13, 0, Math.PI * 2); ctx.fill();
+          if (tested === "conducts") { ctx.strokeStyle = C.mint; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.beginPath(); ctx.moveTo(bx - 6, by); ctx.lineTo(bx - 1.5, by + 5); ctx.lineTo(bx + 7, by - 5); ctx.stroke(); }
+          else { ctx.strokeStyle = C.ink3; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.arc(bx, by, 7, 0, Math.PI * 2); ctx.stroke(); }
+        }
       } else {
         ctx.save(); ctx.translate(t.x + t.w / 2, t.y + 36); ctx.scale(0.6, 0.6); drawToolIcon(ctx, t.id); ctx.restore();
-        S.text(ctx, TOOLS[t.id], t.x + t.w / 2, t.y + t.h - 22, { font: "ui", size: 38, weight: 600, color: C.ink, align: "center", baseline: "middle" });
+        S.text(ctx, TOOLS[t.id], t.x + t.w / 2, t.y + t.h - 22, { font: "display", size: 38, weight: 600, color: C.ink, align: "center", baseline: "middle" });
       }
       ctx.restore();
     }
@@ -696,8 +711,8 @@
   });
 
   S.fontsReady().then(() => {
+    startStep(0);
     S.loop(st, update, render);
     S.studio.ready();
-    setTimeout(() => startStep(0), 300);
   });
 })();

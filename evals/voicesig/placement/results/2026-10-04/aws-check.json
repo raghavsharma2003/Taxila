@@ -1,0 +1,161 @@
+{
+ "default_region": "us-east-1",
+ "build_bucket_set": true,
+ "account": "780899467240",
+ "ap-south-1": {
+  "On-Demand G+VT vCPU": 0.0,
+  "Spot G+VT vCPU": 0.0,
+  "On-Demand P vCPU": 0.0,
+  "Spot P vCPU": 0.0,
+  "On-Demand Standard vCPU": 16.0,
+  "Spot Standard vCPU": 32.0,
+  "offered": [
+   "c7i.2xlarge",
+   "g4dn.xlarge",
+   "g5.xlarge",
+   "g6.2xlarge",
+   "g6.xlarge",
+   "g6e.xlarge"
+  ],
+  "spot_min_usd_h_6h": {
+   "c7i.2xlarge": [
+    0.1527,
+    "ap-south-1c"
+   ],
+   "g4dn.xlarge": [
+    0.2155,
+    "ap-south-1a"
+   ],
+   "g5.xlarge": [
+    0.6556,
+    "ap-south-1a"
+   ],
+   "g6.2xlarge": [
+    0.3817,
+    "ap-south-1a"
+   ],
+   "g6.xlarge": [
+    0.5289,
+    "ap-south-1a"
+   ],
+   "g6e.xlarge": [
+    2.0523,
+    "ap-south-1a"
+   ]
+  },
+  "instances_not_terminated": [],
+  "unattached_volumes_GB": 0
+ },
+ "us-east-1": {
+  "On-Demand G+VT vCPU": 8.0,
+  "Spot G+VT vCPU": 8.0,
+  "On-Demand P vCPU": 0.0,
+  "Spot P vCPU": 0.0,
+  "On-Demand Standard vCPU": 16.0,
+  "Spot Standard vCPU": 32.0,
+  "offered": [
+   "c7a.2xlarge",
+   "c7i.2xlarge",
+   "g4dn.xlarge",
+   "g5.xlarge",
+   "g6.2xlarge",
+   "g6.xlarge",
+   "g6e.xlarge"
+  ],
+  "spot_min_usd_h_6h": {
+   "c7a.2xlarge": [
+    0.1642,
+    "us-east-1d"
+   ],
+   "c7i.2xlarge": [
+    0.1556,
+    "us-east-1b"
+   ],
+   "g4dn.xlarge": [
+    0.2524,
+    "us-east-1f"
+   ],
+   "g5.xlarge": [
+    0.412,
+    "us-east-1d"
+   ],
+   "g6.2xlarge": [
+    0.8707,
+    "us-east-1d"
+   ],
+   "g6.xlarge": [
+    0.5637,
+    "us-east-1c"
+   ],
+   "g6e.xlarge": [
+    1.8385,
+    "us-east-1d"
+   ]
+  },
+  "instances_not_terminated": [],
+  "unattached_volumes_GB": 0
+ },
+ "on_demand_usd_h": {
+  "ap-south-1:g4dn.xlarge": 0.579,
+  "ap-south-1:g5.xlarge": 1.208,
+  "ap-south-1:g6.xlarge": 0.9664,
+  "ap-south-1:g6e.xlarge": 2.235,
+  "ap-south-1:g6.2xlarge": 1.1739,
+  "ap-south-1:c7i.2xlarge": 0.357,
+  "us-east-1:g4dn.xlarge": 0.526,
+  "us-east-1:g5.xlarge": 1.006,
+  "us-east-1:g6.xlarge": 0.8048,
+  "us-east-1:g6e.xlarge": 1.861,
+  "us-east-1:g6.2xlarge": 0.9776,
+  "us-east-1:c7i.2xlarge": 0.357,
+  "us-east-1:c7a.2xlarge": 0.41056
+ },
+ "budgets": [
+  {
+   "name": "taxila-build-gpu",
+   "limit": {
+    "Amount": "100.0",
+    "Unit": "USD"
+   },
+   "type": "COST",
+   "time": "MONTHLY",
+   "actual": {
+    "Amount": "0.0",
+    "Unit": "USD"
+   }
+  }
+ ],
+ "cost_by_record_type": [
+  {
+   "period": "2026-09-01",
+   "groups": {
+    "Credit": -0.0,
+    "Tax": 0.0,
+    "Usage": 0.0
+   }
+  },
+  {
+   "period": "2026-10-01",
+   "groups": {
+    "Credit": -1.1,
+    "Tax": 0.0,
+    "Usage": 1.1
+   }
+  }
+ ],
+ "gross_cost_by_service": [
+  {
+   "period": "2026-09-01",
+   "groups": {}
+  },
+  {
+   "period": "2026-10-01",
+   "groups": {
+    "AWS Cost Explorer": 0.02,
+    "EC2 - Other": 0.28,
+    "Amazon Elastic Compute Cloud - Compute": 0.78,
+    "Amazon Simple Storage Service": 0.02
+   }
+  }
+ ]
+}

@@ -98,7 +98,7 @@ await Promise.all(Array.from({ length: CONC }, async () => {
     let note = null, err = null, usage = null;
     try {
       const r = await chat(arm.dep, [{ role: "system", content: SYSTEM }, { role: "user", content: userPrompt(item.ctx) }],
-        { json: true, maxTokens: arm.effort === "low" ? 1500 : 300, effort: arm.effort, timeoutMs: 20000, retries: 0, quotaLane: "background" });
+        { json: true, maxTokens: arm.effort === "low" ? 1500 : 300, effort: arm.effort, timeoutMs: 20000, retries: 0 });
       note = parseNote(r.json); usage = r.usage;
       if (!note) err = "unusable note";
     } catch (e) { err = String(e.message).slice(0, 120); }

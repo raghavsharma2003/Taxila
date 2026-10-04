@@ -50,7 +50,7 @@ const V = {
   viseme_SS: { ...Z, g: 6, up: 0.45, W: 1.06, T: 1, TL: 1 },
   viseme_nn: { ...Z, g: 15, up: 0.3, W: 0.98, T: 0.55, TL: 0.1, tip: 1 },
   viseme_RR: { ...Z, g: 12, up: 0.35, W: 0.82, flat: 0.5, round: 0.55, T: 0.5, TL: 0.15, tip: 0.5 },
-  viseme_aa: { ...Z, g: 60, up: 0.2, W: 0.9, flat: 0.4, round: 0.45,   // r4b: a controlled tall aa, not a laughing grin (blind r4a 3/3)
+  viseme_aa: { ...Z, g: 60, up: 0.2, W: 0.9, flat: 0.62, round: 0.45,   // r4b: a controlled tall aa, not a laughing grin (blind r4a 3/3)
     T: 0.95, TL: 0.15, th: 0.35 },
   viseme_E: { ...Z, g: 17, up: 0.35, W: 1.1, T: 1, TL: 0.55 },
   viseme_I: { ...Z, g: 9, up: 0.4, W: 1.08, T: 1, TL: 0.75 },
@@ -127,11 +127,11 @@ export class LipSolver {
     // tongue keys from the contract (Hindi dental / retroflex / lateral)
     tgt.tip = clamp01(Math.max(tgt.tip, k("tongueTipUp")));
     tgt.curl = clamp01(Math.max(tgt.curl, k("tongueCurl")));
-    if (tgt.tip > 0.5 && !this.inTip) { this.inTip = true; this.holdTip = this.t + 0.045; }
+    if (tgt.tip > 0.5 && !this.inTip) { this.inTip = true; this.holdTip = this.t + 0.06; }   // r4b: 45 -> 60 ms
     if (tgt.tip < 0.3) this.inTip = false;
     if (this.t < this.holdTip && cPP < 0.5) tgt.tip = Math.max(tgt.tip, 0.85);
     // a tongue tip or a curl must be SEEN: the gap opens enough to show it, lower teeth drop out of the way
-    if (tgt.tip > 0.3) { tgt.TL = Math.min(tgt.TL, 0.1); tgt.T = Math.min(tgt.T, 0.45); tgt.g = Math.max(tgt.g, 15 * tgt.tip * (1 - cPP)); }
+    if (tgt.tip > 0.3) { tgt.TL = Math.min(tgt.TL, 0.1); tgt.T = Math.min(tgt.T, 0.45); tgt.g = Math.max(tgt.g, 20 * tgt.tip * (1 - cPP)); }   // r4b: 15 -> 20 px (after a b/p the l lobe read faint)
     if (tgt.curl > 0.3) { tgt.T = Math.min(tgt.T, 0.5); tgt.TL = 0; tgt.g = Math.max(tgt.g, 15); tgt.up = 0.38; }
     if (k("tongueWide") > 0.2) tgt.th = Math.max(tgt.th, 0.35);
     tgt.press = clamp01(Math.max(tgt.press, (k("mouthPressLeft") + k("mouthPressRight")) / 2 * 1.4));
@@ -148,7 +148,7 @@ export class LipSolver {
     // 0.45 (behaviour's idle warmth ~0.05 maps there); 0 = soft neutral, 1 = the big delight grin.
     const smile = { L: k("mouthSmileRight"), R: k("mouthSmileLeft") };
     const frown = { L: k("mouthFrownRight"), R: k("mouthFrownLeft") };
-    const worry = clamp01(((k("mouthFrownLeft") + k("mouthFrownRight")) / 2) * 4 + Math.max(0, k("browInnerUp") - 0.5) * 1.2);
+    const worry = clamp01(((k("mouthFrownLeft") + k("mouthFrownRight")) / 2) * 2 + Math.max(0, k("browInnerUp") - 0.5) * 1.2);   // r4b: x4 -> x2 (thinking's 0.4/0.15 frowns saturated it: a skeptical slant)
     this.worry = worry;
     const lift = (sm) => 0.22 * (1 - worry) + 0.23 * clamp01(sm / 0.045) + 0.6 * clamp01((sm - 0.045) / 0.8);
     const side = k("mouthLeft") - k("mouthRight");   // + = her left = screen right

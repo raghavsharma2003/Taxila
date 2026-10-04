@@ -473,3 +473,15 @@ test("a reveal accepted as the turn moves into another beat, or into a tray the 
   assert.equal(seam.slotFor(LESSON, null, { beat: "practice_set", tray: "pad" }), null, "an on-screen piece yields the tray to the Director's pad");
   assert.equal(seam.slotFor(LESSON, null, { beat: "practice_set", tray: "none" })?.intentId, id, "and comes back after");
 });
+
+test("a safeguarding turn freezes Studio: the piece on screen is retired and nothing new is shown for the rest of the lesson", async () => {
+  const { seam } = await seamWith();
+  await startLesson(seam, { activeMisconceptionIds: [] });
+  for (let i = 0; i < 4; i++) seam.statusFacts(LESSON, { beat: "practice_set" });
+  const id = [...seamMod._lesson(LESSON).pieces.keys()][0];
+  await seam.onReveal({ lessonId: LESSON, childId: CHILD.id, turn: 5, studio: { reveal: id } });
+  assert.equal(seam.slotFor(LESSON, null, { safety: true }), null);
+  assert.equal(seamMod._lesson(LESSON).onScreen, null);
+  for (let i = 0; i < 6; i++) assert.equal(seam.statusFacts(LESSON, { beat: "practice_set" })?.propose?.reveal, undefined);
+  assert.equal(seam.requestIntent({ intent: { intentId: `${LESSON}:wb:20`, lessonId: LESSON, kind: "whiteboard" }, line: { lessonId: LESSON, text: "x y" }, mode: "fresh", kit: {} }), null);
+});

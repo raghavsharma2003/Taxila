@@ -67,7 +67,7 @@ async function ask(dep, r, spec) {
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
       const res = await chat(dep, [{ role: "system", content: SYSTEM }, { role: "user", content: userPrompt(r, spec) }],
-        { json: true, maxTokens: dep === "taxila-gpt6" ? 1500 : 700, effort: dep === "taxila-gpt6" ? "low" : undefined, timeoutMs: 60000, quotaLane: "background" });
+        { json: true, maxTokens: dep === "taxila-gpt6" ? 1500 : 700, effort: dep === "taxila-gpt6" ? "low" : undefined, timeoutMs: 60000 });
       const u = res.usage ?? {};
       const p = PRICE[dep] ?? [0, 0];
       spend.calls++; spend.in += u.prompt_tokens ?? 0; spend.out += u.completion_tokens ?? 0;

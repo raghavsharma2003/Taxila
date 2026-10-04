@@ -1,5 +1,5 @@
 --- a/server/brain/turn.js	2026-10-04 19:36:48.826801497 +0000
-+++ b/server/brain/turn.js	2026-10-04 19:58:38.327608263 +0000
++++ b/server/brain/turn.js	2026-10-04 20:16:13.461125443 +0000
 @@ -31,7 +31,7 @@
  import { onTurnCommit } from "../conductor/hooks.js";
  import { awaitSettled } from "../comprehension/session.js";
@@ -18,7 +18,7 @@
    const planCtx = { kit, child, lesson, activeItem, moduleOnly, moduleEvents, chipId: body.chipId, answer: help ? "" : answer, leaked, live: liveP, carried,
      childText, typed, asrConfidence: body.asrConfidence, bargeIn: !!body.teacherInterrupted, ...(studioView ? { studio: studioView } : {}) };
    // A module-only turn or a help request stored no child row, so the whole recent transcript is history.
-@@ -374,7 +374,12 @@
+@@ -374,7 +374,13 @@
      childLaughed: !!cls?.flags?.humour || (!moduleOnly && !help && turnSignals({ text: childText }).laughter),
      studio: turnStudioOf(kernel.arb)?.reveal || studioSlot ? "revealing" : undefined, lane, childText: moduleOnly || help ? "" : childText, typed });
    let moment = null;
@@ -27,12 +27,13 @@
 +  // the piece already on screen (it stays in the tray across turns until retired). Known BEFORE the reply, so the reply
 +  // guard counts it as a screen target (director/say.js screenHasTargets reads ui.studioSlot). A whiteboard ack below
 +  // replaces it. null = nothing from Studio (the pre-seam turn).
-+  let studioSlot = late || r.move.kind === "safeguard" ? null
-+    : seamSafe("studio.slotFor", () => (typeof studioSeam.slotFor === "function" ? studioSeam.slotFor(lesson.id, turnStudioOf(kernel.arb), { beat: kernel.beat?.type ?? null, tray: r.ui?.tray ?? null }) : null), null);
++  let studioSlot = late ? null
++    : seamSafe("studio.slotFor", () => (typeof studioSeam.slotFor === "function" ? studioSeam.slotFor(lesson.id, turnStudioOf(kernel.arb),
++      { beat: kernel.beat?.type ?? null, tray: r.ui?.tray ?? null, safety: r.move.kind === "safeguard" || !!incident }) : null), null);
    // The verdict the teacher's words must agree with (G-PRAISE-1; planTurn: only a kit item graded against its key has one).
    const verdict = next.lastVerdict ?? "ungraded";
    if (textLane && !r.hold && !late) {
-@@ -385,7 +390,7 @@
+@@ -385,7 +391,7 @@
      let filtered;
      ({ reply: teacherReply, guard, filtered, floor: replyFloor = [] } = hit
        ? hit.result
@@ -41,7 +42,7 @@
      // The content filter blocked the reply call that carried the child's words: fail CLOSED. The turn is
      // re-planned as a disclosure (safeguard move, incident row) and the fixed helpline line is sent, with no
      // further model call on the same words.
-@@ -664,6 +669,11 @@
+@@ -664,6 +670,11 @@
    const stepped = moduleOnly
      ? step(state, { ...stepIn, event: "module", moduleEvents: c.moduleEvents })
      : step(state, { ...stepIn, event: "turn" });

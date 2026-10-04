@@ -19,5 +19,5 @@ import { routes as lane } from "./voice/realtimeSession.js";
 // live in W2-H's module.
 import { routes as studio } from "./routes/studio.js";
 
-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...lane, ...studio });
+register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...lane });
 export { handle, register };

@@ -79,6 +79,18 @@ body.no-pip .pip { display: none; }
 .task.warn .ico { border-color: var(--amber); }
 .task.swap { opacity: 0; transform: translateX(-50%) translateY(-6px); }
 
+/* Narration captions (host transcript stand-in): phrase-level, never word-lit (karaoke-from-transcript-estimate). */
+.captions { position: absolute; z-index: 2; left: 50%; bottom: 3.2cqh; transform: translateX(-50%); max-width: 82%; text-align: center; pointer-events: none;
+  font: 600 clamp(13px, 2.15cqw, 24px)/1.32 var(--f-ui); color: var(--ink); text-wrap: balance;
+  background: rgba(10,12,18,.66); border: 1px solid var(--line); border-radius: 14px; padding: .45em .9em; backdrop-filter: blur(8px);
+  transition: opacity .22s, transform .22s; }
+.captions.off { opacity: 0; transform: translateX(-50%) translateY(6px); }
+.progress { position: absolute; z-index: 2; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255,255,255,.07); pointer-events: none; }
+.progress i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--ion); }
+.progress b { position: absolute; top: -2px; width: 2px; height: 7px; background: rgba(255,255,255,.35); }
+.playgate { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; background: rgba(10,12,18,.55); }
+.playgate button { font: 700 clamp(14px, 2.2cqw, 22px)/1 var(--f-display); color: var(--on-volt, #0A0C12); background: var(--volt); border: 0; border-radius: 999px; padding: .9em 1.6em; cursor: pointer; }
+
 /* Safe-zone overlay for review (press S or add ?safe=1). */
 .safe-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 4; display: none; }
 body.show-safe .safe-overlay { display: block; }

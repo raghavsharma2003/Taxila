@@ -11,7 +11,7 @@ cells = [("c-front (reference)", "art/character/puppet2d/polish-r4/c-front.png")
          ("talk m / b / p (closure)", "talk_PP"), ("talk f / v (tuck)", "talk_FF"), ("talk l / t / d (tongue tip)", "talk_L"),
          ("talk ch", "talk_CH"), ("listening", "listening"), ("thinking", "thinking"),
          ("warm", "warm"), ("delight", "delight"), ("concern", "concern"), ("surprise", "surprise"), ("playful", "playful"),
-         ("blink: painted 0.62 mid key", "blink_mid"), ("turn yaw -20 (painted plate)", "yaw_m20"), ("turn yaw -10 (blend)", "yaw_m10"),
+         ("blink: a frame of the real blink (painted 0.75 key)", "blink_mid"), ("turn yaw -20 (painted plate)", "yaw_m20"), ("turn yaw -10 (blend)", "yaw_m10"),
          ("turn yaw +10 (blend)", "yaw_p10"), ("turn yaw +20 (painted plate)", "yaw_p20"), ("roll +8, thinking", "thinking_r8"),
          ("yaw +20, delight", "delight_yp20")]
 S, cols = 400, 6
@@ -31,7 +31,7 @@ J = "docs/design/teacher/puppet2d/judge-r4"
 os.makedirs(J, exist_ok=True)
 G = Image.new("RGB", (1536, 1536), (251, 229, 189))
 for i, n in enumerate(["rest", "talk_aa", "thinking", "delight", "concern", "surprise", "playful", "blink_mid", "yaw_p20"]):
-    im = Image.open(B + n + ".png").convert("RGB").crop((200, 40, 840, 680)).resize((512, 512), Image.LANCZOS)
+    im = Image.open(B + n + ".png").convert("RGB").crop((165, 40, 885, 760)).resize((512, 512), Image.LANCZOS)   # r3 framing (hair to collar)
     G.paste(im, ((i % 3) * 512, (i // 3) * 512))
 G.save(f"{J}/grid_X.jpg", quality=92)
 Image.open("art/character/puppet2d/polish-r4/c-front.png").convert("RGB").resize((768, 768), Image.LANCZOS).save(f"{J}/ref.jpg", quality=92)

@@ -254,14 +254,16 @@ test("azure chatStream: SSE deltas, usage and cost; a cancel and a stall abort t
   const { chatStream, sseEvents, usdOf } = await import("../server/azure.js");
   const sse = (o) => `data: ${JSON.stringify(o)}\n\n`;
   const srv = http.createServer((req, res) => {
-    res.writeHead(200, { "content-type": "text/event-stream" });
     if (req.url.endsWith("/responses")) {
+      res.writeHead(200, { "content-type": "text/event-stream" });
       res.write(sse({ type: "response.output_text.delta", delta: "<div>" }));
       res.end(sse({ type: "response.completed", response: { usage: { input_tokens: 10, output_tokens: 5, input_tokens_details: { cached_tokens: 4 } } } }));
       return;
     }
     let body = ""; req.on("data", (c) => (body += c)); req.on("end", () => {
       const mode = JSON.parse(body).messages.at(-1).content;
+      res.writeHead(200, { "content-type": "text/event-stream" });         // headers only after the whole request arrived
+      if (mode === "empty") { res.end(); return; }                    // a 200 cut before any event
       res.write(sse({ choices: [{ delta: { content: "<style>" } }] }));
       if (mode === "stall") return;                                   // never ends: the watchdog must cut it
       if (mode === "slow") { setTimeout(() => res.write(sse({ choices: [{ delta: { content: "x" } }] })), 400); return; }
@@ -287,6 +289,7 @@ test("azure chatStream: SSE deltas, usage and cost; a cancel and a stall abort t
     setTimeout(() => ctl.abort(), 150);
     await assert.rejects(chatStream("gpt-5.6-terra", [{ role: "user", content: "slow" }], { signal: ctl.signal }), (e) => e.code === "cancelled" && e.partial.usage?.estimated === true && e.partial.usd > 0);
     await assert.rejects(chatStream("gpt-5.6-terra", [{ role: "user", content: "stall" }], { stallMs: 200 }), (e) => e.code === "stalled" && e.partial.text === "<style>");
+    await assert.rejects(chatStream("gpt-5.6-terra", [{ role: "user", content: "empty" }]), (e) => e.code === "empty_stream");
     const evs = []; for await (const ev of sseEvents(["data: {\"a\":1}\r\n\r\ndata: [DONE]\n\n", ": keep-alive\n\n"])) evs.push(ev);
     assert.deepEqual(evs, [{ a: 1 }]);
   } finally {
