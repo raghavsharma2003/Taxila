@@ -82,3 +82,23 @@ BUILD-PLAN W1-C acceptance reads "+1 d: the C31 check fires in the opener, and a
 
 ## w1c-late-double-count-reports (2026-10-04)
 `server/reports/*` count the fallback event and its `<id>:late` correction as two events. W2-A (one parent truth) should treat kt_evidence via='late' as a correction of its parent id (strip `:late[:via]`), not a new event.
+
+<!-- W2-E -->
+## w2e-open-2026-10-04
+- **W2-H:** add `requestIntent(ask: StudioAsk) → StudioAskAck | null` to `server/studio/seam.js` (synchronous, starts the
+  drawing-script build, never throws); until then the whiteboard ask is accepted by the kernel but nothing appears.
+- **W2-I + W2-C:** the compile must render `state.rel` (the accepted overlay's shape id, a callback or notice id) in the
+  RELATIONSHIP block / the move; the adapter already places it for exactly one turn.
+- **W2-C:** `server/director/state.js` should pass `signals: input.cls?.signals` to `turnSignals` and read `affect.idk`
+  (recall cue vs teach) once the signals block is on.
+- **Safety (W2-I, scanSafety):** "mujhe ghar pe bahut maar padti hai aur main dar jaata hoon" (I get beaten a lot at home)
+  is NOT caught by the predicate (`scanSafety` → distress false); "papa mujhe maarte hain" is. Found while scripting the
+  replay; the model's distress flag is the only net for that phrasing.
+- **G-SIG:** a two-rater act set with κ (O22c); a re-run of the label arm with the block in a separate object or on
+  grok-4-20-non-reasoning.
+- **L1:** Smart Turn v3.2 assets + an ONNX runtime in the bundle, S1(a) on Hindi/Hinglish child audio, then the cut-off
+  comparison against the 900 ms arm. L2 (speculation at the candidate) needs client partials sent before the commit.
+- **Timing:** speech end → first audio, receipt and first-audible numbers from the Central India probe fleet (n ≥ 30 per
+  band); G-LAT on the ACA image.
+- **azure.js (W2-F):** route `quotaLane: "background"` calls to `twinFor(deployment)` when O13a/b exist; tag Studio, the
+  annotator and consolidation calls `background` (W2-B's explainer fills already are).

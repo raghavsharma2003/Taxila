@@ -8,7 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { chromium } from "playwright";
 
-const ROOT = "art/character/puppet2d/polish-r3";
+const ROOT = process.env.P2D_ROOT || "art/character/puppet2d/polish-r3";
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".json": "application/json", ".png": "image/png", ".mp3": "audio/mpeg", ".webp": "image/webp" };
 export function serve() {
   const srv = http.createServer((req, res) => {

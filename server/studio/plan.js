@@ -16,7 +16,7 @@
 //   time budget allows; a script that fails is never drawn (the explainer template rung or her voice instead).
 import { chat, DEPLOY } from "../azure.js";
 import { archetype, validateParams, stringKeys, buildParams } from "./archetypes/index.js";
-import { gateWhiteboard, numbersIn, CHARS_PER_SEC } from "./qa/whiteboard.js";
+import { gateWhiteboard, numbersIn, CHARS_PER_SEC, segmentsOf, segHitsBox, innerBox } from "./qa/whiteboard.js";
 import { opGeometry } from "../../shared/whiteboard.js";
 import { localStringFindings } from "../forge/g2/safety.js";
 
@@ -224,7 +224,8 @@ const WB_SYSTEM = [
   "rules: draw only what her line says (its numbers, its words) or the kit facts given; text is a label, a number or a short term (at most 24 characters, at most 4 words), never a sentence;",
   "  draw the situation she says is true NOW (\"here\" / \"yahan\"); a wrong or what-if case only when she contrasts it, smaller and marked;",
   "  never write a person's name; the first op starts by t = 800;",
-  "  every label has `to`; no two texts overlap; equal parts are exactly equal (sectors of 360/d degrees); arithmetic written on the board is correct;",
+  "  every label has `to`; no two texts overlap; no text sits on a line or a box edge; arithmetic written on the board is correct;",
+  "  a whole in N equal parts: N sectors of 360/N degrees for a round whole (never lines across a circle), N equal rects side by side for a bar or for N groups; N is her number;",
   "  6-24 ops; the drawing follows her words in order and is spread across the whole line; nothing is drawn after her line ends;",
   "  nothing to draw (pure talk, a feeling, a question with no picture): return {\"ops\": []}.",
 ].join("\n");
@@ -268,7 +269,49 @@ export function fitOps(ops, board, margin = 6) {
     if (Array.isArray(n.points)) n.points = n.points.map((p) => sh(p, dx, dy));
     return n;
   });
-  return { ops: out, fixes };
+  return { ops: separateTexts(out, board, margin, fixes), fixes };
+}
+
+/**
+ * Overlapping words (the layout half the model gets wrong most: 6/29 lines in the 2026-10-04 bench) are moved apart by
+ * code: a later text or label that overlaps an earlier one on the board at the same time slides down (then up) in 4-unit
+ * steps, at most 64, staying inside the board. Labels keep their leader's point. Pure shape, never truth.
+ */
+function separateTexts(ops, board, margin, fixes) {
+  const byId = new Map(ops.map((o) => [o.id, o]));
+  const erasedAt = new Map(ops.filter((o) => o?.op === "erase").map((o) => [o.target, o.startMs]));
+  const boxOf = (o) => { try { return o.op === "label" ? opGeometry({ ...o, to: undefined, target: undefined }, byId).box : opGeometry(o, byId).box; } catch { return null; } };
+  const textual = (o) => o && (o.op === "text" || o.op === "label" || o.op === "numwork");
+  const live = (a, b) => !((erasedAt.get(a.id) ?? Infinity) <= b.startMs || (erasedAt.get(b.id) ?? Infinity) <= a.startMs);
+  const hit = (A, B) => Math.min(A.x + A.w, B.x + B.w) - Math.max(A.x, B.x) > 3 && Math.min(A.y + A.h, B.y + B.h) - Math.max(A.y, B.y) > 3;
+  const placed = [];
+  const segs = segmentsOf(ops.filter(Boolean));
+  const out = ops.slice().sort((a, b) => (a?.startMs ?? 0) - (b?.startMs ?? 0));
+  for (let i = 0; i < out.length; i++) {
+    const o = out[i];
+    if (!textual(o)) continue;
+    const box0 = boxOf(o);
+    if (!box0) continue;
+    const crosses = (b) => o.op !== "numwork" && segs.some((sg) => sg.id !== o.id && segHitsBox(sg.a, sg.b, innerBox(b)));
+    const clash = (b) => placed.some((p) => live(p.o, o) && hit(p.b, b)) || crosses(b);
+    if (o.op !== "numwork" && clash(box0)) {
+      let moved = null;
+      for (let d = 4; d <= (o.op === "label" ? 64 : 40) && !moved; d += 4) for (const dy of [d, -d]) {
+        const b = { ...box0, y: box0.y + dy };
+        if (b.y < margin || b.y + b.h > board.h - margin || clash(b)) continue;
+        moved = dy; break;
+      }
+      if (moved !== null) { out[i] = { ...o, at: [o.at[0], Math.round((o.at[1] + moved) * 10) / 10] }; byId.set(o.id, out[i]); fixes.push(`separate:${o.id}`); }
+    }
+    placed.push({ o: out[i], b: boxOf(out[i]) ?? box0 });
+  }
+  return out;
+}
+
+/** Bound any promise by a deadline (a queued background call must not outlive the moment it is for). */
+function withDeadline(p, ms, code = "deadline") {
+  let t;
+  return Promise.race([p, new Promise((_, rej) => { t = setTimeout(() => rej(Object.assign(new Error(code), { code })), ms); })]).finally(() => clearTimeout(t));
 }
 
 /** Compact model ops → WbOp (t → startMs / endMs). Unknown keys dropped; the strict normaliser judges the rest. */
@@ -290,7 +333,7 @@ export function expandOps(ops) {
  * @param {{ kit?: any, prev?: any, deployment?: string, effort?: string, budgetMs?: number, repairs?: number, trace?: object[] }} [ctx]
  * @returns {Promise<{ ok: boolean, script: any | null, gate: any, ms: number, attempts: number, usage: any[], why?: string, empty?: boolean }>}
  */
-export async function planWhiteboard(ask, { kit, prev, redact = [], deployment = process.env.STUDIO_WB_DEPLOY || DEPLOY.fast, effort = "none", budgetMs = 7000, repairs = 1, trace } = {}) {
+export async function planWhiteboard(ask, { kit, prev, redact = [], deployment = process.env.STUDIO_WB_DEPLOY || "taxila-gpt6-luna", effort = "none", budgetMs = 7000, repairs = 1, trace } = {}) {
   const t0 = performance.now();
   const ms = () => Math.round(performance.now() - t0);
   // child-free (LIVE-STUDIO §5.4): the child's name (her vocative, and any name the caller lists) never reaches the model
@@ -316,7 +359,8 @@ export async function planWhiteboard(ask, { kit, prev, redact = [], deployment =
     try {
       const msgs = [{ role: "system", content: WB_SYSTEM }, { role: "user", content: JSON.stringify(user) }];
       if (feedback) msgs.push({ role: "user", content: `previous script failed the board check: ${feedback}. Return the corrected script.` });
-      const r = await chatFn(deployment, msgs, { json: true, effort, maxTokens: 2200, timeoutMs: Math.min(left, 9000), retries: 0, trace, quotaLane: "background" });
+      // the deadline covers a wait for the background bucket too (server/lanes.js may queue the call before it is sent)
+      const r = await withDeadline(chatFn(deployment, msgs, { json: true, effort, maxTokens: 2200, timeoutMs: Math.min(left, 9000), retries: 0, trace, quotaLane: "background" }), left);
       usage.push(r.usage);
       const fit = fitOps(expandOps(r.json?.ops), WB_BOARD);
       const ops = fit.ops;
@@ -330,7 +374,7 @@ export async function planWhiteboard(ask, { kit, prev, redact = [], deployment =
       feedback = gate.checks.filter((c) => !c.pass).map((c) => `${c.id} ${JSON.stringify(c.detail).slice(0, 160)}`).join("; ");
     } catch (e) {
       feedback = `error ${String(e?.code || e?.message || e).slice(0, 60)}`;
-      if (e?.code === "content_filter") break;
+      if (e?.code === "content_filter" || e?.code === "deadline") break;
     }
   }
   return { ok: false, script: null, gate, ms: ms(), attempts, usage, why: feedback ?? "budget" };

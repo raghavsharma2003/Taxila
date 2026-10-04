@@ -10,7 +10,7 @@ await build({
   build: {
     outDir: "art/character/puppet2d/polish-r3",
     emptyOutDir: false,
-    minify: true,
+    minify: !process.env.NOMIN,
     lib: { entry: "scripts/character/puppet2d/polish-r3/runtime/demo.js", formats: ["es"], fileName: () => "demo.bundle.js" },
   },
 });

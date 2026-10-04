@@ -1225,3 +1225,20 @@ attribute a sound to the note.
 SSML in the model's own text on Voice Live (a reader prompt repeating `<break time="600ms"/>`) is spoken as words ("time
 equal 600 mi", "break time …") on OmniIndic Diya and en-IN DragonHD Latest Diya, 6/6. A lane-B transform cannot carry
 pauses as SSML in the text stream.
+
+## W2-E (2026-10-04)
+
+### rj-w2e-token-bucket-burst
+A token bucket for the background share (capacity one minute's 30%, starting full, refilling at 30%/min) lets background
+traffic spend about twice its share in the first minute — the full bucket plus the refill. In the G-QUOTA simulation
+(`w2e-g-quota-sim-2026-10-04`) it produced 28 hot-path 429s. A sliding-minute window (≤ 30% of TPM in any 60 s) gave 0.
+
+### rj-w2e-signals-on-prod-classifier-now
+Turning the classify signals block on for production on 2026-10-04: label agreement with the plain arm was 58/60 (bar
+99%), and both disagreements turned the edges-vs-corners misconception into "incorrect" — the misconception signal the
+comprehension engine and the re-teach depend on — for +127 ms p50 (`w2e-g-sig-labels-2026-10-04`). Built, off.
+
+### rj-w2e-parts-guard-on-kit-question
+Running W2-B's `screenContradiction` over the whole reply: in the replay it flagged the kit's own verified question
+("Halves, quarters aur eighths wali fraction wall par kaun se fractions 1/2 ke saath…") beside a 1/2-only predict screen,
+which cost a rewrite call and her lead-in sentence. It now judges her own words only.

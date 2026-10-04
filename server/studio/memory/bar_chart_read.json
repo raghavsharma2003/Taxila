@@ -1,0 +1,6 @@
+{ "archetype": "bar_chart_read", "source": "LIVE-STUDIO §14.3-14.4, probe 2026-10-04 (72 v1 builds, failing-check counts over all rounds)",
+  "patterns": [
+    { "shape": "a short bar is a tap target smaller than the minimum: make the whole column (bar + its name, full chart height) the target", "seen": 35, "check": "G4.targets_min" },
+    { "shape": "tick labels laid out as evenly spaced text instead of each at its value's height on the bar scale", "seen": 13, "check": "G6.ticks_tell_truth" },
+    { "shape": "bar heights not exactly proportional to value on one baseline (padding or rounding per bar)", "seen": 8, "check": "G6.heights_proportional" }
+  ] }

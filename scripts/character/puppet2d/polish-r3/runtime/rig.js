@@ -366,6 +366,11 @@ export class Puppet2DRig {
 
   /** The head transform: rest (x, y) with depth z -> screen-space rest coordinates. */
   project(x, y, z) {
+    return this.projectTo(x, y, z, [0, 0]);
+  }
+
+  /** project() into a caller-owned [x, y] (the hot loops reuse one array: no per-vertex allocation). */
+  projectTo(x, y, z, out) {
     const s = this.st;
     // r3: the yaw is an angle KEYFORM: the displacement field fitted to the painted 3/4 plate (keyfield.py), scaled by
     // yaw / keyDeg and sampled at this rest point (one shared field: nothing tears between head layers). The pitch
@@ -388,7 +393,8 @@ export class Puppet2DRig {
     // breath bob (head follows the chest 60%) and lean (scale about the pivot, down)
     X = PX.pivot[0] + (X - PX.pivot[0]) * s.leanS;
     Y = PX.pivot[1] + (Y - PX.pivot[1]) * s.leanS + s.bob * 0.6 + s.leanY;
-    return [X, Y];
+    out[0] = X; out[1] = Y;
+    return out;
   }
 
   /** Rest-space expression offsets on the face surface (cheek lift, jaw drop): shared by face and mouth. */
@@ -453,7 +459,7 @@ export class Puppet2DRig {
         x += this.bunOff ? this.bunOff[0] : 0;
         y += this.bunOff ? this.bunOff[1] : 0;
       }
-      const p = this.project(x, y, z[i]);
+      const p = this.projectTo(x, y, z[i], this._tmp || (this._tmp = [0, 0]));
       pos[i * 2] = p[0];
       pos[i * 2 + 1] = p[1];
     }
@@ -619,7 +625,7 @@ export class Puppet2DRig {
         // the lid keys ride the brow a little when it lifts (the lid skin is attached under the brow)
         for (let q = 0; q < M.n; q++) {
           const x = M.rest[q * 2], y = M.rest[q * 2 + 1];
-          const p = fixX(this.project(x, y, M.z[q]));
+          const p = fixX(this.projectTo(x, y, M.z[q], this._tmp || (this._tmp = [0, 0])));
           M.pos[q * 2] = p[0];
           M.pos[q * 2 + 1] = p[1];
         }
@@ -638,7 +644,7 @@ export class Puppet2DRig {
       for (let q = 0; q < sh.C * sh.R; q++) {
         let x = sh.pos[q * 2], y = sh.pos[q * 2 + 1];
         const [dx, dy] = this.faceOffset(sh.rest[q * 2], sh.rest[q * 2 + 1]);
-        const p = this.project(x + dx, y + dy, sh.z[q]);
+        const p = this.projectTo(x + dx, y + dy, sh.z[q], this._tmp || (this._tmp = [0, 0]));
         sh.pos[q * 2] = p[0];
         sh.pos[q * 2 + 1] = p[1];
       }

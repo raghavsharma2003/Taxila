@@ -146,6 +146,9 @@ async function main() {
     if (sc.id === "talking") Object.assign(bs, visemesAt(segs, ta));
     const breath = Math.sin(t * 2 * Math.PI * 0.25);
     const r0 = performance.now();
+    // capture mode: the rig's clock IS the timeline clock (its springs and the blink shaper's 30 Hz frame curve run on
+    // it); r2 left it on performance.now() in capture, so the physics and timing in the stepped clips ran on wall time
+    if (CAPTURE) rig.clock = t;
     rig.frame(bs, head, gaze, b.lean, breath);
     const rigMs = performance.now() - r0;
     stats.rig.push(rigMs);

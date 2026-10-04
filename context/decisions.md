@@ -2940,3 +2940,151 @@ the cost of relaying audio. Until then `voicelive.js` gives lane B the lane-A no
 - **Reverse if:** a Voice Live API version renders SSML in text silently, or Azure exposes a text-transform hook.
 
 - `owner-stt-order-2026-10-04` (2026-10-04): owner STT order: gpt-live-transcribe in production now; MAI-Transcribe-2-Streaming primary on the India app with gpt-live-transcribe fallback; self-hosted open STT only at scale; Hugging Face-gated models not pursued now.
+
+## W2-E (2026-10-04): Teacher Brain I — the kernel, the turn, the gap after the child speaks
+
+### w2e-turn-in-brain
+**Decision (BUILD-PLAN W2-E #2, TEACHER-BRAIN BR1):** the turn's orchestration lives in `server/brain/turn.js`
+(`lessonTurn(req, body)` → the TurnResponse; every refusal is a thrown HttpError exactly as before). The reply and its
+guards moved to `server/brain/say.js`, rows and lane helpers to `server/brain/rows.js`. `server/routes/lesson.js` keeps
+start, end, the realtime token and Open now; its turn route is a three-line adapter, and it re-exports every name tests and
+evals imported from it. `lessonTurn` is the seam W2-G's `/api/lesson/turn-audio` calls. Proved behaviour-identical by
+`w2e-replay-byte-identical-2026-10-04`. The W2-B screen-guard patch and the W2-C purpose/talk patch were applied in the
+same change (the parts guard on her own words only: `w2e-parts-guard-own-words`).
+- **Reverse if:** never as a direction (the kernel needs the turn in one place); individual helpers move back to the route
+  only if a non-turn route needs them and the Brain does not.
+
+### w2e-kernel-live
+**Decision (TEACHER-BRAIN TB1/TB5, §10; BUILD-PLAN W2-E #2):** `server/brain/kernel.js` `arbitrate(proposals, budgets)`
+runs on every turn (≈ tens of µs). Proposers (`server/brain/propose.js`): the Director's move (W2-C `proposal.js`, marked
+mandatory: a turn has exactly one move; a safeguard move carries `vetoes: ["*"]`), the relational directive (BR5), Studio's
+`statusFacts().propose` actions, the whiteboard ask, the vibe knobs. Authority is read from priority (rank 0 safety … 12
+Studio novelty); vetoes act only downward; the attention budget is 1 new thing on screen; the conflict table forbids a
+reveal on a wrap/safeguard/break, a callback or notice in a correction, humour in a re-teach, two moves. Studio's actions
+reach the wire only through the kernel (`turnStudioOf`), so a reveal beside a newly mounted module now waits. The
+conductor guard has no per-turn proposer yet (the Director's minutes wrap carries it).
+- **Reverse if:** the brain-sim (W3/W4) shows a proposer starved by the attention budget in > 10% of turns where its piece
+  was the better rung (then attention becomes per beat, as §10.2 words it, instead of per turn).
+
+### w2e-brain-trace-lesson-keyed
+**Decision (TB12; BR0):** `db/migrations/016_brain.sql` — `brain_trace` (lesson, turn, lane, move, beat, inputs digest,
+proposals/accepted/rejected as source·kind·rank·reason codes, reason codes, server_ms, kernel_us, legal mode, 90-day
+`expires_at`), `decision_record` (point, options, chosen, chosen_by, randomised, propensity, seed ref), `lesson_plan`,
+`format_posterior` (population rows, no child id). Per-child rows are keyed by `lesson_id ON DELETE CASCADE`, not
+`child_id`: erasure and the M0 ratchet remove them with the lesson and no `learner/mode.js` classification change is needed.
+The turn writes one trace row inside its transaction and a `decision_record` for an RT-ARM re-teach choice, but only after
+a once-per-process `to_regclass` probe sees the tables (a revision deployed before the migration never fails a turn).
+Never words, never an affect label (`w2e-acceptance-local-2026-10-04`: "no child words in any trace row").
+- **Reverse if:** research analysis needs per-child decision rows across lessons faster than a lesson join gives (then a
+  pseudonymous child key under P4, classified in mode.js).
+
+### w2e-relational-adapter
+**Decision (BR5; TEACHER-BRAIN §9.5):** `server/brain/relational-adapter.js` splits W2-I's directive into ranks: floor
+SAFETY and floorFix → rank 0 (SAFETY freezes everything below); floor/overlay RELEASE → rank 1 as the turn's move; CHECK_IN
+→ rank 1 overlay; OWN_SLIP / AFFIRM_RECHECK → rank 7 (said before the next move); WARM_BOUNDARY / POINT_OUT → rank 8
+(merged into the move); NOTICE, CHRISTEN, SHARE_UPTAKE, LAUGH_WITH, HOME_TEACH_BACK and callbacks → rank 10. When the
+kernel accepts a RELEASE (or a relational SAFETY) the turn re-plans through the Director's own stop (or safeguarding) path —
+one more pure plan, no model call, as the content-filter path does — so the lesson ends that turn with the Director's
+goodbye shape (NEVER MANIPULATE). An accepted overlay re-plans with `state.rel = {turn, overlay, callbackId, noticeId}`,
+which lives exactly one turn. floorFix families join `state.correction`. The affect is not a proposal: it is the Moment's.
+- **Open:** the compile does not render `state.rel` yet (W2-I's shape catalogue + W2-C's compiler).
+- **Reverse if:** AT-B1 shows a release re-plan producing a non-goodbye reply in > 0 runs (then RELEASE gets a fixed line).
+
+### w2e-moment
+**Decision (TB6; BR2):** `server/brain/moment.js` `momentOf` builds one Moment per turn: move; verdict (for licences only);
+engagement (`learner/affect.js engagementOf`: words and actions, never tone); `teacherAffect` only from the relational
+directive's `affect`, else `neutral_warm` with cause `none` (an absence, not a second producer); `calm_steady`/`safety` on
+a safeguarding turn (TA8); bond stage (the lesson's pinned RELATIONAL-OS snapshot stage, `ctx.bondStage`, else
+first-meeting vs not); band (B1-B4 from the one table); lang; `thinkAloud` on worked examples; `studio: "revealing"` with a
+reveal or a whiteboard slot; `uptakePrelude` (the child's own key token) only with `TAXILA_UPTAKE_PRELUDE=1` on the cascade
+lane (HV-16 gates it). It feeds `expressiveSeam.planDelivery(moment, reply)` and the wire (`TurnResponse.moment`).
+`ui.teacherAffect` still rides only when a directive exists (no face change until W2-I is live). G-MOMENT (Brain side):
+flipping the verdict changes nothing else in the Moment (`tests/brain-moment.test.mjs`).
+- **Reverse if:** the ear and eye panels prefer voice and face driven separately (TB6's condition).
+
+### w2e-beats-from-moves
+**Decision:** each turn's beat is read from the Director's move (`server/brain/beat.js`): greet→arrive, retrieval→warmup,
+hook, explain, worked_example, practice→practice_set, probe, teachback, wrap, break, safeguard, celebrate→reflect; a
+re-teach of a confirmed misconception is `contrast`, another re-teach re-explains; hint, repair and module turns continue
+the beat. `ui.beat {beatId, type, index}` on every turn; `state.beat` holds it. The client's end-of-turn thresholds and the
+whiteboard ask read it. BR3 (W3-E) turns beats into the planning unit.
+- **Reverse if:** superseded by BR3's planned beats.
+
+### w2e-whiteboard-ask
+**Decision (owner priority 6, `whiteboard-by-drawing-script-2026-10-04`):** on an explanation beat the kernel weighs a
+Studio whiteboard ask (rank 12, attention 1). Refused on the voice lane (the realtime model's words are not known before it
+speaks), during strain (TEACHER-BRAIN §6.3 step 2), on a closing move, for a late answer, and whenever something else new
+is on screen. When accepted and the reply survived its guards, the turn calls `studioSeam.requestIntent(StudioAsk)` with the
+guarded line (`line.teacherReplySeq`, the drawing's audio anchor) and the move's kit content (never the child's id or words,
+never an unasked item's answer; `mode: "continue"` within one beat). An ack `{slotId, intentId}` sets `ui.tray = "studio"`
+and `ui.studioSlot` (state "planning"); the script then streams over W2-H's SSE (`{t: "script"}`). `requestIntent` is not in
+W2-H's seam yet, so nothing changes on screen today; W2-B's explainer@1 rung already draws the explanation in most topics
+(`w2e-whiteboard-ask-replay-2026-10-04`).
+- **Reverse if:** the Studio whiteboard (W2-F archetype) is measured better than the template rung on teaching turns: then
+  the ladder lets the Studio slot displace the rung (W3, beats drive the Director), instead of waiting for a free tray.
+
+### w2e-signals-built-off
+**Decision (TB4; BR2):** `server/director/classify.js` carries the signals block (act with the IDK split, personal_share,
+interest from `shared/interests.js`, humour) appended LAST in the classify prompt and schema, parsed strictly
+(`parseSignals`; malformed → dropped, labels kept) and mirrored to flags only when true (`signalFlags`). Consumers:
+`learner/affect.js` (two turns of frustration words or a break asked → the frustration loop; `affect.idk` = cant_recall /
+not_known), `persona/signals.js` (meta_slow → slower pace, humour → laughter; the model's interest tag is never read: two-day
+rule), the Moment (`childLaughed`). OFF unless `TAXILA_CLASSIFY_SIGNALS=1`, because G-SIG failed on labels
+(`w2e-g-sig-labels-2026-10-04`). W2-C's `state.js` must pass `cls.signals` to `turnSignals` and read `affect.idk` for the
+recall-cue vs teach choice (steal 8).
+- **Reverse if:** G-SIG passes: ≥ 99% label agreement on the full item set (re-run with the block placed in a separate
+  `signals` object or with grok-4-20-non-reasoning) and ≥ 0.9 acts on a two-rater set.
+
+### w2e-classify-fallback
+**Decision (L5, failure drill):** a classify call that fails for any reason but a content-filter block is retried once on
+`taxila-fast` (`TAXILA_CLASSIFY_FALLBACK`; "0" off; never the deployment that failed; 6 s, no retry). Measured locally with a
+dead classify deployment: every turn classified on the fallback, 0 error cards (`w2e-acceptance-local-2026-10-04`).
+- **Reverse if:** the fallback's labels disagree with the primary's on > 5% of the classify-accuracy set (then it returns
+  no_evidence as before and only the distress backup runs).
+
+### w2e-quota-window
+**Decision (`superhuman-quota-isolation`; BUILD-PLAN §1.3):** `server/lanes.js` shapes only calls tagged
+`quotaLane: "background"`: ≤ 30% of the deployment's TPM per sliding minute (capacities from §10.2; `TAXILA_TPM` JSON
+overrides), queued FIFO (azure.js awaits; never dropped), with settle() booking actual usage against the estimate, and a
+10 s pause of that deployment's background traffic after a hot 429 (5 s after a background 429). Hot and untagged calls
+never wait. `twinFor()` reads O13 twins from `TAXILA_BG_TWINS` for azure.js (W2-F) to route background calls to them.
+Classify is tagged hot. G-QUOTA passes in simulation (`w2e-g-quota-sim-2026-10-04`).
+- **Reverse if:** O13a/b twins exist and carry all background traffic (then the window only guards misrouted calls), or a
+  Studio race misses its deadline in > 10% of builds because of the window (then the share rises for that deployment).
+
+### w2e-predictive-turn-lite
+**Decision (BR2b L1; world-best S1):** behind `turn.predictive` (default OFF; `?predictive=1`, localStorage
+`tx.flag.turn.predictive`, or `VITE_TURN_PREDICTIVE=1`) the cascade link sets the transcription VAD silence to 500 ms and
+`src/lesson/turnModel.ts`'s FragmentMerger scores each final: the transcript heuristic (a trailing connective/filler or a
+short start of an explanation reads unfinished; a number or a question reads done) against a threshold from `ui.beat` /
+`answerForm` (0.3 for numbers and taps with no hold; 0.8 and a 1.5 s hold for teach-back and explanations; 0.75/1.2 s for a
+probe); a held fragment merges with what the child says next into one turn, or goes as it was. The floor controller feeds
+the turn context. Smart Turn v3.2 is NOT shipped (no ONNX runtime in the bundle; not validated on Hindi/Hinglish children,
+S1(a)); `loadSmartTurn()` returns null. L0's receipt is the existing floor `heard` state (synchronous on the commit). L2
+(speculation at the candidate) and L3 synthesis (W2-G B5) are not built here; `Moment.uptakePrelude` carries L3's token.
+- **Reverse if:** the cut-off rate with child-like clips is worse than the 900 ms fixed arm (BUILD-PLAN W2-E acceptance),
+  then it stays off; or S1(a) passes and Smart Turn replaces the heuristic.
+
+### w2e-holding-as-flag
+**Decision:** HOLDING is the cascade link's merger holding a fragment (the floor shows the heard receipt, then listening if
+the child goes on), not a ninth `Floor` state, which would break `Record<Floor, …>` maps in W2-A and W2-D files.
+- **Reverse if:** the Desk needs a distinct "still listening" carrier (then W2-A and E add the state together).
+
+### w2e-parts-guard-own-words
+**Decision:** W2-B's `screenContradiction` guard in `textReply` judges the teacher's OWN words (`own(t)`, the posed kit
+question removed), like the units guard; the patch as written judged the whole line (`rj-w2e-parts-guard-on-kit-question`).
+- **Reverse if:** W2-B shows a contradiction that only appears inside a posed kit question (then the kit is wrong, not the
+  guard).
+
+### w2e-replay-harness
+**Decision:** `evals/teacher-brain/replay/` (loader.mjs, fake-db.mjs, fake-azure.mjs, run.mjs) is the refactor proof for
+the turn: the REAL handler over 30 scripted lessons with the database and Azure faked deterministically (frozen clock,
+seeded `Math.random` and UUIDs; compute times masked). Before a refactor of `server/brain/turn.js`, record
+`--write-digest`; after, `--check-digest`. `--rel` scripts relational directives, `REPLAY_KILL_DEPLOY` runs the failure
+drill. `tests/brain-turn.test.mjs` runs it for determinism and the turn invariants (not against the digest, which other
+streams' legitimate Director changes would move).
+- **Reverse if:** a real recorded-lesson corpus exists (then replay those instead of scripts).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `voice-next-situation-delivery-2026-10-04` (2026-10-04): After round 2, voice work moves from engine search to situation-specific spoken-register lines plus per-clause delivery planning on DragonHD Diya, then a custom professional voice from a consented Indian teacher recorded talking to children. Reverse if a new engine beats Diya by >= 0.5 equal-weight in a blind round.

@@ -37,6 +37,9 @@ import { purposeSeam } from "../lesson/purpose.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
 import { fallbackReply, safeguardLine, scrubbed, textReply, words } from "../brain/say.js";
 import { clientInstructions, debugFor, floorIncidentStmt, kitFor, stageTurns, turnInsertStmt, withAsk } from "../brain/rows.js";
+import { nextBeat, uiBeatOf } from "../brain/beat.js";
+import { momentOf } from "../brain/moment.js";
+import { expressiveSeam } from "../voice/expressive/seam.js";
 import { flushHeld, lessonTurn, noteDid, planTurn, replyKey, specFanout, speculate, uiVerdictOf } from "../brain/turn.js";
 
 // W2-E BR1 (BUILD-PLAN W2-E #2): the turn's orchestration lives in server/brain/turn.js (the reply and its guards in
@@ -234,6 +237,10 @@ async function start(req, res, body) {
   const first = step(state0, { event: "start", kit, now });
   const { r, instructions } = instructionsAfter({ ...first, state: { ...first.state, brief, mode, kitVerified: kit.verified, kitHash: kit.hash } }, kit, now);
   const state = r.state;
+  // W2-E: the opening's beat (ui.beat; the client's end-of-turn thresholds read it) and its Moment for the voice layer.
+  state.beat = nextBeat(undefined, r.move, state);
+  const openingMoment = momentOf({ move: r.move, verdict: "ungraded", engagement: "warming", relational: null, ctx: state.ctx, turn: state.turn ?? 0,
+    safety: r.move.kind === "safeguard", lane: mode === "voice" ? "voice" : mode === "cascade" ? "cascade" : "text" });
 
   let teacherOpening, teacherOpeningSeq, rows = [], openingFloor = [];
   if (mode !== "voice") {
@@ -271,14 +278,17 @@ async function start(req, res, body) {
   seamSafe("studio.prefetch", () => studioSeam.prefetch({ lessonId, child, topicId: topic.id, kit, band, mode, purpose,
     skillIds: kit.skills.map((s) => s.id), activeMisconceptionIds, reteach: sessionCtx?.reteach ?? null, bond }), null);
   if ((mode === "cascade" || mode === "text") && teacherOpeningSeq) {
-    prewarm({ lessonId, seq: teacherOpeningSeq, text: teacherOpening, tokenHash: sessionTokenHash(req), guardianId: guardian.id, style: styleForChild(child, undefined, state.ctx?.teacherId, state.ctx?.teacherName) });
+    // Seam (W2-G): the opening's DeliveryPlan from its Moment, as on every turn (null = spoken plain).
+    const delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(openingMoment, teacherOpening), null);
+    prewarm({ lessonId, seq: teacherOpeningSeq, text: teacherOpening, tokenHash: sessionTokenHash(req), guardianId: guardian.id, style: styleForChild(child, undefined, state.ctx?.teacherId, state.ctx?.teacherName),
+      ...(delivery ? { delivery } : {}) });
   }
   console.info(`[lesson] start ${lessonId} topic=${topic.id} kit=${kit.verified ? "verified" : "mini"} ${Math.round(performance.now() - t0)}ms`);
   /** @type {import("../../shared/contracts").LessonStartResponse} */
   const out = {
     lessonId, topic: { id: topic.id, title: topic.title, chapter: topic.chapter.title },
     ...clientInstructions(mode, instructions), teacher: teacherCard(teacher), moduleCommands: r.moduleCommands,
-    ui: withAsk(r.ui, teacherOpening), address,
+    ui: withAsk(r.ui, teacherOpening, state.beat ? { beat: uiBeatOf(state.beat) } : {}), address, moment: openingMoment,
     ...(teacherOpening ? { teacherOpening, teacherOpeningSeq } : {}),
   };
   send(res, 201, debugFor(req) ? { ...out, debug: { move: r.move, kitVerified: kit.verified, timings: trace } } : out);

@@ -1906,3 +1906,52 @@ W2-B acceptance run locally against `node server/serve.mjs` (dist built) on the 
   (explain) → its `/api/voice/tts-stream` 200, 873,600 PCM bytes, first-byte header 758 ms → the next turn answered
   (worked_example) → end 200; a text lesson 409, an ended lesson 409, a reverse switch 400, a bad id 400. Account deleted,
   leftover @taxila.test guardians 4 → 4. Local, not Central India; no timing claim.
+
+## W2-E (2026-10-04)
+
+- `w2e-replay-byte-identical-2026-10-04`: `evals/teacher-brain/replay/run.mjs`, the REAL `POST /api/lesson/turn` handler,
+  30 scripted lessons (classes 3-8, Hinglish/English/Hindi, text/cascade/voice, maths/science/EVS; 14 turns each: right,
+  wrong, don't-know, why reason, hint tap, chit-chat, teach-back, a scripted disclosure in 5 lessons, goodbye), database and
+  Azure faked deterministically. 420 turns (hook 30, explain 54, worked_example 33, practice 84, hint 83, probe 74, wrap 30,
+  safeguard 10, repair 14, retrieval 5, reteach 3). Responses + every transaction statement (text and params, i.e. the full
+  next lesson state, turn rows, evidence rows) byte-identical before vs after the move into `server/brain/`; after the
+  kernel, the W2-B/W2-C patches and the trace: identical once the additive `ui.beat` / `moment` fields and the brain-table
+  statements are stripped. Runtime 4.5 s. Digest: `evals/teacher-brain/replay/golden.digest.json`.
+- `w2e-g-sig-labels-2026-10-04`: `evals/classify-accuracy.mjs --models grok-4-1-fast-non-reasoning --reps 3`, plain vs
+  `TAXILA_CLASSIFY_SIGNALS=1`, 20 model-reaching cases × 3 reps per arm (n = 60), US sandbox → eastus2, sequential. Label
+  agreement 58/60 (96.7%; bar 99%); exact vs hand labels 56/60 → 54/60; graded-wrong 0 → 0; distress 15/15 both; p50 816 →
+  943 ms, p90 3448 → 1331 ms. Disagreements: "वो तो corner है ना?" and "बारह corners" labelled the edges-vs-corners
+  misconception less often with the block. Files: `evals/teacher-brain/results/g-sig-labels-{plain,signals}-2026-10-04.json`.
+- `w2e-g-sig-acts-2026-10-04`: `evals/teacher-brain/g-sig.mjs`, grok-4-1-fast-non-reasoning, signals on, 120 replies
+  (10 acts × 12; Hinglish, Hindi, English; none decided by the bytes) on item c4-maths-ch01-t01-i01, labels written before
+  the run by ONE rater: 115/120 (0.958). answer, curious, chit-chat, idk_not_known, idk_cant_recall, meta_break 12/12;
+  clarify 11 (→ curious), frustration 10 (→ idk_cant_recall, meta_break), pride 11 (→ chit_chat), meta_slow 11 (→
+  meta_break). IDK split 24/24. p50 1376 / p90 3917 ms at 6-wide concurrency. File:
+  `evals/teacher-brain/results/g-sig-acts-2026-10-04.json`. κ needs a second rater (O22c).
+- `w2e-kernel-gates-2026-10-04`: `tests/brain-kernel.test.mjs` (Node 22, sandbox, seeded generators over the real Director
+  proposal shapes): G-KERNEL-PURE 500 turns byte-equal and order-independent with `Date.now`/`Math.random` trapped (a planted
+  clock read is caught); G-KERNEL-ORDER 5,000 turns; G-BUDGET 10,000 (exactly one move, attention ≤ 1, no reveal or
+  whiteboard ask on wrap/safeguard/break, no callback in a correction, no humour in a re-teach); G-AUTHORITY 10,000 turns
+  with a goodbye: RELEASE is the move in every turn without a disclosure, and a safeguard outranks it in the rest; a
+  teacher-owned repair precedes the next item for 4 moves × 2 kinds; G-LAT p99 ≪ 10 ms over 10,000 turns (not yet on the
+  ACA image).
+- `w2e-g-quota-sim-2026-10-04`: `tests/brain-lanes.test.mjs`, fake clock, one deployment of 500k TPM enforced over a sliding
+  minute (a call over it is a 429): at t = 0, 20 Studio races (2 arms × 12k tokens) + 40 consolidations (2k), beside live
+  traffic of a 1.5k classify + a 4k reply every second for 3 minutes (≈ 330k TPM, 66%). With `server/lanes.js`: 0 hot 429s
+  of 360, all 80 background calls ran (queued, longest wait > 10 s). Without: hot 429s > 0. Simulation, not the bench on a
+  real deployment.
+- `w2e-acceptance-local-2026-10-04`: `tests/prod/w2e-brain.mjs` against `node server/serve.mjs` (dist built), Neon test
+  branch with 016 applied: 16/16 — a 7-turn text lesson (hook → explain → worked_example → practice_set; every turn with
+  her words, ui.beat and a contract-shaped Moment), a disclosure → safeguard with the helpline and a calm_steady Moment, one
+  brain_trace row per turn naming its move and beat with exactly one accepted move, no child words in any row, the safety
+  floor alone accepted on the safeguarding turn. Failure drill (server started with `DEPLOY_CLASSIFY` = a deployment that
+  does not exist): 17/17; 8 classify 404s, every one classified by the taxila-fast fallback (`cls=…/model`). Text turn round
+  trip from the sandbox p50 ≈ 1.6 s (not a gate). Accounts deleted; leftover @taxila.test guardians 4 → 4. (The first run
+  left one account: a disclosure blocks erasure until the incident is reviewed; the test now stands in for the review on
+  the test branch, and that account was cleaned up.)
+- `w2e-whiteboard-ask-replay-2026-10-04`: in the 420-turn replay the whiteboard ask was proposed on 66 explanation-beat
+  turns; accepted 14 (tray free), refused 52 for attention (W2-B's explainer@1 rung or an engine already in the tray).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `voice-r2-diya-stays-2026-10-04` (2026-10-04): Voice blind round 2 (2 raters, 39+40 clips, 6 voices): equal-weight means Diya plain 2.60, Nova kiara plain 1.90, Veena 1.80, Chatterbox M 1.80, Nova expressive 1.80, OmniIndic Hazelmori 1.10, Omni Arjun 1.00; 'reading, not talking' dominates every arm; no new voice adopted

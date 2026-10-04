@@ -1,0 +1,9 @@
+{ "archetype": "hub_flows", "source": "LIVE-STUDIO §14.3, §14.5, probe 2026-10-04 (photosynthesis v1 + v2)",
+  "patterns": [
+    { "shape": "Studio.done() never called: call it once, after the correct answer to the check question", "seen": 31, "check": "G5.done" },
+    { "shape": "the check question graded by the build or wired to the wrong option keys: post the tapped option's key and wait for the verdict", "seen": 22, "check": "G5.play_truth" },
+    { "shape": "labels overlapping each other or crossing the stage edge", "seen": 16, "check": "G4.labels_no_overlap" },
+    { "shape": "particles of a flow moving the wrong way (an outgoing gas drawn moving into the leaf)", "seen": 13, "check": "G6.flow_directions" },
+    { "shape": "a label placed beside the wrong thing (oxygen written by the sun): each label sits next to its own referent", "seen": 8, "check": "G4.labels_anchored" },
+    { "shape": "the seam's data-entity on an empty group instead of the drawn shape", "seen": 4, "check": "G2.seam" }
+  ] }

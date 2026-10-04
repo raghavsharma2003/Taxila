@@ -106,3 +106,7 @@
 - `open-w2c-lesson-purpose-talk-patch` (2026-10-04): W2-E: apply server/director/seam-patches/w2c-lesson-purpose-talk.patch in lesson.js (ctx.purpose + ctx.askText for the Ask opening; the [talk] telemetry line at lesson end)
 - `open-w2c-budget-gate-v2` (2026-10-04): scripts/check-prompt-budget.mjs still compiles the legacy brief; add a full-size briefView case so the gate measures the brief production ships (tests/w2c-director.test.mjs measures it today: 1348/2600)
 - `open-w2c-history-b-on-prod` (2026-10-04): Personalisation acceptance (b) (the arm that repaired the child's mix-up first on day 2; not after two failures) is proven offline over selectReteach only; a production two-day scripted mix-up run is not built
+
+
+## Merged inbox entries (write-up from the entry text)
+- `w2e-open-2026-10-04` (2026-10-04): W2-E open items: W2-H requestIntent seam; compile rendering state.rel overlays; W2-C state.js passing cls.signals to turnSignals and reading affect.idk; Smart Turn assets + ONNX runtime; G-SIG two-rater act set; Central India turn timing; G-LAT on the ACA image; scanSafety misses 'mujhe ghar pe bahut maar padti hai'

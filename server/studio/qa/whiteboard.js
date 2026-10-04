@@ -177,6 +177,74 @@ function numberAllowed(t, allowed, derived) {
   return false;
 }
 
+// ───────────────────────────── picture counts and legibility ─────────────────────────────
+
+const PART_WORDS = "parts?|gaps?|groups?|pieces?|slices?|hisse|hisson|hissa|tukde|tukdon|tukda|barabar|equal|columns?|rows?|boxes?|jagah|samaan";
+/** Counts her line gives a partition ("4 equal parts", "do barabar hisse", "one-eighth" → 8). */
+export function partitionCounts(text) {
+  const s = String(text ?? "").toLowerCase();
+  const out = new Set();
+  const num = (w) => (/^\d+$/.test(w) ? Number(w) : WORD_NUM[w]);
+  for (const m of s.matchAll(new RegExp(`\\b(\\d+|${Object.keys(WORD_NUM).join("|")})(?:[\\s-]+(?:${PART_WORDS})){1,3}\\b`, "g"))) { const n = num(m[1]); if (n >= 2 && n <= 24) out.add(n); }
+  for (const w of s.match(/[\p{L}]+/gu) ?? []) if (FRAC_WORD[w]) out.add(FRAC_WORD[w]);
+  for (const m of s.matchAll(/\b(\d+)\s*\/\s*(\d+)\b/g)) { const d = +m[2]; if (d >= 2 && d <= 24) out.add(d); }
+  return out;
+}
+/** Families of equal shapes: sectors of one circle, boxes of one size, circles of one radius (each ≥ 2 members). */
+function shapeFamilies(ops) {
+  const fam = new Map();
+  const key = (o) => o.op === "sector" ? `sector@${Math.round(o.c[0] / 4)},${Math.round(o.c[1] / 4)},${Math.round(o.r / 4)}`
+    : o.op === "rect" ? `rect@${Math.round(o.w / 3)}x${Math.round(o.h / 3)}` : o.op === "circle" && o.r < 40 ? `dot@${Math.round(o.r / 3)}` : null;
+  for (const o of ops) { const k = key(o); if (k) fam.set(k, [...(fam.get(k) ?? []), o]); }
+  return [...fam].filter(([, v]) => v.length >= 2).map(([k, v]) => ({ kind: k.split("@")[0], n: v.length }));
+}
+/** A circle cut by line strokes through (near) its centre: the parts cannot be checked equal; sectors can. */
+function circleCutByLines(ops) {
+  const out = [];
+  for (const c of ops.filter((o) => o.op === "circle" && o.r >= 30)) {
+    const through = ops.filter((o) => (o.op === "line" || o.op === "stroke") && (() => {
+      const pts = o.op === "line" ? [o.from, o.to] : [o.points[0], o.points.at(-1)];
+      const [a, b] = pts; const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1;
+      const dist = Math.abs(dy * c.c[0] - dx * c.c[1] + b[0] * a[1] - b[1] * a[0]) / L;   // centre to the line
+      const near = (p) => Math.abs(Math.hypot(p[0] - c.c[0], p[1] - c.c[1]) - c.r) <= c.r * 0.25 || Math.hypot(p[0] - c.c[0], p[1] - c.c[1]) <= 6;
+      return dist <= 8 && near(a) && near(b);
+    })());
+    if (through.length >= 1) out.push(`${c.id} cut by ${through.length} line(s)`);
+  }
+  return out;
+}
+/** The straight segments a script draws that words must not sit on: lines, arrow shafts, box edges. */
+export function segmentsOf(ops) {
+  const segs = [];
+  for (const o of ops) {
+    if (o.op === "line" || o.op === "arrow") segs.push({ id: o.id, a: o.from, b: o.to });
+    if (o.op === "rect") { const [x, y] = o.at; const X = x + o.w, Y = y + o.h; segs.push({ id: o.id, a: [x, y], b: [X, y] }, { id: o.id, a: [X, y], b: [X, Y] }, { id: o.id, a: [X, Y], b: [x, Y] }, { id: o.id, a: [x, Y], b: [x, y] }); }
+  }
+  return segs;
+}
+/** Does segment p-q cross box b (Liang-Barsky)? */
+export function segHitsBox(p, q, b) {
+  let t0 = 0, t1 = 1; const dx = q[0] - p[0], dy = q[1] - p[1];
+  for (const [pp, qq] of [[-dx, p[0] - b.x], [dx, b.x + b.w - p[0]], [-dy, p[1] - b.y], [dy, b.y + b.h - p[1]]]) {
+    if (pp === 0) { if (qq < 0) return false; continue; }
+    const r = qq / pp; if (pp < 0) { if (r > t1) return false; if (r > t0) t0 = r; } else { if (r < t0) return false; if (r < t1) t1 = r; }
+  }
+  return t0 <= t1;
+}
+/** A word box shrunk 2 units on each side (touching a line is fine, crossing it is not). */
+export const innerBox = (g) => ({ x: g.x + 2, y: g.y + 2, w: Math.max(0, g.w - 4), h: Math.max(0, g.h - 4) });
+/** Text / label boxes crossed by a line, an arrow shaft or a box edge. */
+function textsCrossed(ops, byId) {
+  const segs = segmentsOf(ops);
+  const out = [];
+  for (const o of ops) {
+    if (o.op !== "text" && o.op !== "label") continue;
+    const b = innerBox(opGeometry(o.op === "label" ? { ...o, to: undefined, target: undefined } : o, byId).box);
+    for (const s of segs) if (s.id !== o.id && segHitsBox(s.a, s.b, b)) { out.push(`${o.id}×${s.id}`); break; }
+  }
+  return out;
+}
+
 // ───────────────────────────── the gate ─────────────────────────────
 
 /**
@@ -260,6 +328,19 @@ export function gateWhiteboard(raw, ctx) {
   if (named.length) long.push(...named.map((t) => `name: ${t}`));
   const unsafe = texts.filter((t) => SEVERE.some((re) => re.test(t)) || MILD.some((re) => re.test(t)) || PII.some((re) => re.test(t)));
   add("W7.register", long.length === 0 && unsafe.length === 0, { long: long.slice(0, 2), unsafe: unsafe.slice(0, 2) });
+  // W8 the picture's counts are her counts: a whole drawn in equal parts (sectors of one circle, equal boxes, equal
+  // circles) has as many parts as she says; a round whole is never cut by lines through its centre (equal parts are
+  // sectors, which code draws exactly)
+  const said = partitionCounts(ctx.reply);
+  const lineNums = new Set([...numbersIn(ctx.reply)].filter((x) => /^\d+$/.test(x)).map(Number));
+  const fams = shapeFamilies(ops);
+  const okCount = (n) => said.has(n) || lineNums.has(n) || [...said].some((a) => [...said].some((b) => a * b === n));
+  const badCount = said.size ? fams.filter((f) => !okCount(f.n)).map((f) => `${f.kind} x${f.n}`) : [];
+  const cut = circleCutByLines(ops);
+  add("W8.counts_match_line", badCount.length === 0 && cut.length === 0, { said: [...said], families: fams.map((f) => `${f.kind} x${f.n}`), bad: badCount, cutByLines: cut });
+  // W2b words clear of lines: no text or label box crossed by a drawn line, arrow or box edge (legibility at 360 dp)
+  const crossed = textsCrossed(ops, byId);
+  add("W2.text_clear_of_lines", crossed.length === 0, crossed.slice(0, 3));
   const pass = checks.every((c) => c.pass);
   return { pass, checks, script, facts: pass ? scriptFacts(script, { kind: "diagram", archetype: "whiteboard" }) : null };
 }

@@ -213,7 +213,8 @@ export class LipShell {
   deform(sol, sheet, q, out) {
     const p = sol.p;
     const x = sheet.rest[q * 2], y = sheet.rest[q * 2 + 1], d = sheet.d[q], sign = sheet.sign;
-    const [ex, ey] = this.edge(sol, x, sign);
+    const ci = Math.floor(q / sheet.R), E = sign < 0 ? this.colU : this.colL;
+    const ex = E[ci * 3], ey = E[ci * 3 + 1];
     const a = Math.abs(sOf(x));
     const t = sign < 0 ? tUof(a) : tLof(a);
     // lip thickness: fuller when rounded, thinner when pressed or spread
@@ -254,14 +255,20 @@ export class LipShell {
   update(sol) {
     this.solCache = sol;
     const o = [0, 0];
+    // per-column edge displacement, computed once per frame (both sheets share the columns)
+    const C = this.cols.length;
+    if (!this.colU) { this.colU = new Float32Array(C * 3); this.colL = new Float32Array(C * 3); }
+    for (let i = 0; i < C; i++) {
+      const u = this.edge(sol, this.cols[i], -1), l = this.edge(sol, this.cols[i], 1);
+      this.colU.set(u, i * 3); this.colL.set(l, i * 3);
+    }
     for (const name of ["U", "L"]) {
       const sh = this.sheets[name];
       for (let q = 0; q < sh.C * sh.R; q++) {
         this.deform(sol, sh, q, o);
         sh.pos[q * 2] = o[0];
         sh.pos[q * 2 + 1] = o[1];
-        const g = this.edge(sol, sh.rest[q * 2], 1)[2];
-        sh.alpha[q] = this.alphaOf(sol, sh, q, g);
+        sh.alpha[q] = this.alphaOf(sol, sh, q, this.colL[Math.floor(q / sh.R) * 3 + 2]);
       }
     }
     // interior strip between the deformed inner edges (rest-space x of each column -> its deformed position)
