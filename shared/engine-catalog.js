@@ -285,6 +285,29 @@ const ADAPT = {
       const ok = ans === target && max - min <= 40 && !atEnd;
       return { params: { mode: "jump", start: String(a), target: String(target), jumps, min: String(min), max: String(max), question: `${a} ${b < 0 ? "−" : "+"} ${Math.abs(b)}`, ...(lo < 0 && { numberKind: "integer" }) }, key: String(target), bindItem: ok, why: ok ? "jump: landing = kit key" : atEnd ? "jump: the landing is an end of the line" : "jump: key differs or the line is too long" };
     }
+    // Read a mark (W1-B): "A line from 0 to 1 ... 4 equal gaps. What is the first mark?" / "... split into 2 equal parts.
+    // What number is at the middle mark?" → read mode: the marker sits on the mark, only the ends are labelled, and the
+    // child TYPES its value (engines-v1-bind-on-child-answer). Bound when that value is the kit key.
+    const askRead = /\bwhat\s+(?:number\s+)?is\s+(?:at\s+)?the\s+[\w ]{0,20}?mark\b|\bwhat\s+is\s+the\s+(?:first|second|third|fourth|middle|last|\d+(?:st|nd|rd|th))\s+mark\b/i.test(p);
+    const range = p.match(/\(?\b(\d+)\)?\s*(?:-\s*to\s*-|to)\s*(?:the\s+[a-z][a-z ]{0,24}?\s*\()?(\d+)\b/i);
+    const parts = p.match(/\b(\d+)\s+equal\s+(?:parts|gaps|pieces|spaces)\b/i);
+    if (askRead && range && parts && !fr.length) {
+      const A = Number(range[1]), B = Number(range[2]), N = Number(parts[1]);
+      const each = /\beach\s+(?:whole|unit|one)\b/i.test(p);
+      const per = each ? N : N / (B - A);                       // ticks per whole
+      const word = { first: 1, second: 2, third: 3, fourth: 4 }[(p.match(/\b(first|second|third|fourth)\s+mark\b/i)?.[1] ?? "").toLowerCase()];
+      const nth = Number(p.match(/\b(\d+)(?:st|nd|rd|th)\s+mark\b/i)?.[1] ?? NaN);
+      const total = (B - A) * per;
+      const k = /\bmiddle\s+mark\b/i.test(p) ? total / 2 : word ?? (Number.isFinite(nth) ? nth : null);
+      if (B > A && B - A <= 5 && Number.isInteger(per) && per >= 2 && per <= 12 && total <= 40 && Number.isInteger(k) && k > 0 && k < total) {
+        const num = A * per + k, g = gcd(num, per);
+        const key = [num / g, per / g];
+        const target = key[1] === 1 ? String(key[0]) : `${key[0]}/${key[1]}`;
+        const ok = Array.isArray(ans) ? frEq(ans, key) : typeof ans === "number" && key[1] === 1 && ans === key[0];
+        return { params: { mode: "read", target, min: String(A), max: String(B), partition: per, labels: "ends", ...(key[1] !== 1 && { numberKind: "fraction" }) }, key: target, bindItem: ok,
+          why: ok ? "read: the marked value = kit key" : "read: the kit key is not the marked value" };
+      }
+    }
     if (/\b(mark|place|show|locate|put)\b/i.test(p) && /number line/i.test(p)) {
       const v = fr.length === 1 ? fr[0] : numsIn(p).length === 1 ? numsIn(p)[0] : null;
       if (v === null) return null;
@@ -517,21 +540,44 @@ export function planEngine({ kit, item, lang, mode = "show", representation, top
       if (a?.bindItem) { adapted = a; used = sib; break; }
     }
   }
+  // W1-B #6: the kit's OTHER engines may bind the item where its first one cannot (c5 fractions on a line lists
+  // number-line, fraction-strips, roti-cutter: a "shade 3/4" item binds fractions@1, not the number line). Only a
+  // BINDING plan is taken from them; an unbound activity stays on the kit's first engine.
+  let usedPreset = null;
+  if (item && (!adapted || !adapted.bindItem)) {
+    const tried = new Set([engine, ...(SIBLINGS[engine] ?? [])]);
+    for (const h of kit?.formats?.engineHints ?? []) {
+      const r = resolveHint(h);
+      if (!r || tried.has(r.engine)) continue;
+      tried.add(r.engine);
+      const a = ADAPT[r.engine]?.(prompt, parseAnswer(item.answer), representation, r.preset, actx);
+      if (a?.bindItem) { adapted = a; used = r.engine; usedPreset = r.preset; break; }
+    }
+  }
   const base = { hint: picked.hint, via: picked.via, predict };
   if (adapted) {
     const bind = !!adapted.bindItem && !!item;
-    const pre = used === engine ? preset : {};
-    const params = { ...ctx, ...pre, ...adapted.params, ...(predict && { predict: true }), ...(bind && { itemId: item.id }) };
-    return { engine: used, params, goal: bind ? `item:${item.id}` : undefined, bindItem: bind, itemId: bind ? item.id : null, key: adapted.key ?? null, why: adapted.why + (used !== engine ? ` (via sibling of ${engine})` : ""), ...base };
+    const pre = used === engine ? preset : usedPreset ?? {};
+    const params = validModes(used, { ...ctx, ...pre, ...adapted.params, ...(predict && { predict: true }), ...(bind && { itemId: item.id }) });
+    return { engine: used, params, goal: bind ? `item:${item.id}` : undefined, bindItem: bind, itemId: bind ? item.id : null, key: adapted.key ?? null, why: adapted.why + (used !== engine ? ` (via ${usedPreset ? "another kit hint" : "sibling"} of ${engine})` : ""), ...base };
   }
   // Unbound: the item's values (as the Director sent them before engines-v1) so the engine builds its activity
   // from this item, not from its demo defaults.
   const values = extractValues(prompt);
   const maths = !SCIENCE.has(engine);
   if (maths && !(CONSUMES[engine]?.(values, preset) ?? false)) return null;
-  const generic = engine === "fraction-bars@1" ? {} : preset.mode ? {} : { mode };
-  const params = { ...ctx, ...(maths ? fallbackShape(engine, values) : {}), ...preset, ...(predict && { predict: true }), ...generic };
+  // The Director's "show" / "predict" is NOT an engine mode (live-content audit 10: number-line@1 got mode "show",
+  // which the frame then "adjusted"). Every engine's normalize treats an absent mode exactly as show / predict (the
+  // generic path), predict travels as `predict: true`, so an unbound plan sends no mode unless a preset names one.
+  const params = validModes(engine, { ...ctx, ...(maths ? fallbackShape(engine, values) : {}), ...preset, ...(predict && { predict: true }) });
   return { engine, params, goal: undefined, bindItem: false, itemId: null, key: null, why: item ? "no item adapter matched: unbound activity from the item's values" : "no item: unbound activity", ...base };
+}
+
+/** Params with `mode` only when it is one of the engine's own modes (ENGINES[engine].modes); an invalid one is dropped. */
+export function validModes(engine, params) {
+  if (params?.mode === undefined || ENGINES[engine]?.modes.includes(params.mode)) return params;
+  const { mode: _drop, ...rest } = params;
+  return rest;
 }
 
 const sameJson = (a, b) => JSON.stringify(a) === JSON.stringify(b);

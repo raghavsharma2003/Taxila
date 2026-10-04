@@ -24,6 +24,7 @@ import { captionVisible, SpeechRow, TeacherWindow } from "./TeacherWindow.tsx";
 import { TroubleScreen } from "./TroubleScreen.tsx";
 import { TroubleStrip } from "./TroubleStrip.tsx";
 import { WorkTray } from "./WorkTray.tsx";
+import { AnswerTray } from "./AnswerTray.tsx";
 import "./desk.css";
 
 export interface DeskMedia {
@@ -187,7 +188,12 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
 
   const topBar = <TopBar m={m} a={a} notMeWindow={!!(notMeWindow ?? m.notMeWindow)} phaseLine={phaseLine} wide={L.kind === "wide"} />;
   const card = <QuestionCard ask={m.ask} answer={m.answer} young={young} onHear={a.hearQuestion} onFix={a.fixAnswer} goal={m.ask ? null : m.shortTitle ? t("card.goal", { topic: m.shortTitle }) : null} />;
-  const tray = m.tray && L.geometry === "work" ? (
+  // The answer surfaces (tiles, the NumberPad, the Help menu over them) are AnswerTray's; the activity and the board
+  // stay WorkTray's (W1-B). BUILD-PLAN W1-A items 3 and 11.
+  const answerTray = m.tray && (m.tray.kind === "tiles" || m.tray.kind === "pad" || !!m.tray.overlay);
+  const tray = m.tray && L.geometry === "work" ? answerTray ? (
+    <AnswerTray tray={m.tray} floor={floor} young={young} actions={a} slash={m.padSlash} />
+  ) : (
     <WorkTray tray={m.tray} floor={floor} young={young} modules={media.modules} lang={media.lang} ageBand={media.ageBand} actions={a} onModuleFailed={a.moduleFailed} />
   ) : null;
   const dock = <AnswerDock m={m} a={a} micMeter={media.mic} stripId={stripId} lit={lit} setRef={dockRef} />;

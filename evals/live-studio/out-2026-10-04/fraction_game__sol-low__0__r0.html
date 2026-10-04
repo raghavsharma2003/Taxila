@@ -1,0 +1,361 @@
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --ink:#43385d;
+    --soft:#fff8ed;
+    --card:#ffffff;
+    --crust:#e6a75d;
+    --plain:#fff1c9;
+    --shade:#f36f67;
+    --shade2:#ff9b62;
+    --line:#754f4b;
+    --good:#3dbb87;
+    --try:#f2a83b
+  }
+  body{
+    margin:0;
+    min-width:0;
+    min-height:100vh;
+    overflow-x:hidden;
+    background:
+      radial-gradient(circle at 12% 8%,#ffe7a8 0 34px,transparent 35px),
+      radial-gradient(circle at 90% 18%,#dff5e7 0 42px,transparent 43px),
+      linear-gradient(180deg,#fff8ed,#f8eeff);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Noto Sans",sans-serif;
+  }
+  .game{
+    width:100%;
+    max-width:520px;
+    min-height:100vh;
+    margin:auto;
+    padding:18px 16px 22px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .title{
+    margin:2px 0 6px;
+    font-size:clamp(24px,7vw,34px);
+    line-height:1.12;
+    text-align:center;
+    font-weight:900;
+  }
+  .instr{
+    margin:0;
+    min-height:42px;
+    max-width:340px;
+    text-align:center;
+    font-size:17px;
+    line-height:1.3;
+    font-weight:650;
+  }
+  .item{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .target{
+    margin:8px 0 5px;
+    min-width:112px;
+    padding:7px 20px 9px;
+    border-radius:18px;
+    background:var(--card);
+    box-shadow:0 5px 0 #e4d8ef;
+    text-align:center;
+    font-size:34px;
+    line-height:1;
+    font-weight:950;
+    letter-spacing:2px;
+  }
+  .picture-wrap{
+    width:min(76vw,290px);
+    aspect-ratio:1;
+    margin-top:5px;
+    filter:drop-shadow(0 8px 5px rgba(83,56,70,.18));
+  }
+  svg{
+    display:block;
+    width:100%;
+    height:100%;
+    overflow:visible;
+  }
+  .crust{fill:var(--crust)}
+  .cheese{fill:var(--plain)}
+  .part{
+    fill:var(--plain);
+    stroke:var(--line);
+    stroke-width:2.3;
+    cursor:pointer;
+    transform-box:fill-box;
+    transform-origin:center;
+    transition:fill .25s ease,transform .16s ease,filter .25s ease;
+    touch-action:manipulation;
+  }
+  .part[data-shaded="true"]{
+    fill:var(--shade);
+    filter:saturate(1.08);
+  }
+  .part:active{transform:scale(.94)}
+  .part.pop{animation:partPop .3s ease}
+  .rim{
+    fill:none;
+    stroke:#bc743f;
+    stroke-width:7;
+    pointer-events:none;
+  }
+  .center-dot{
+    fill:#8d5545;
+    pointer-events:none;
+  }
+  .feedback{
+    height:48px;
+    margin:2px 0 3px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    text-align:center;
+    font-size:18px;
+    line-height:1.15;
+    font-weight:850;
+  }
+  .feedback.good{color:#16865f}
+  .feedback.try{color:#a75d12}
+  .check{
+    width:min(100%,330px);
+    min-height:54px;
+    border:0;
+    border-radius:18px;
+    padding:10px 24px;
+    background:linear-gradient(180deg,#6754c7,#5140ae);
+    color:white;
+    box-shadow:0 7px 0 #382a82;
+    font:900 20px/1 system-ui,-apple-system,"Noto Sans",sans-serif;
+    cursor:pointer;
+    touch-action:manipulation;
+    transition:transform .12s ease,box-shadow .12s ease,opacity .2s ease;
+  }
+  .check:active{
+    transform:translateY(5px) scale(.98);
+    box-shadow:0 2px 0 #382a82;
+  }
+  .check:disabled{opacity:.58;cursor:default}
+  .celebrate .picture-wrap{animation:celebrate .65s ease}
+  .celebrate .target{animation:targetPop .65s ease}
+  .done-panel{
+    display:none;
+    flex:1;
+    width:100%;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-size:clamp(30px,9vw,44px);
+    line-height:1.2;
+    font-weight:950;
+  }
+  .done-panel.show{
+    display:flex;
+    animation:doneIn .6s cubic-bezier(.2,.9,.3,1.2);
+  }
+  .done-mark{
+    width:170px;
+    height:170px;
+    margin:0 auto 22px;
+    display:grid;
+    place-items:center;
+    border-radius:50%;
+    background:linear-gradient(145deg,#64d7a5,#38b983);
+    color:white;
+    box-shadow:0 12px 0 #208c64;
+    font-size:92px;
+  }
+  @keyframes partPop{
+    0%{transform:scale(.9)}
+    60%{transform:scale(1.07)}
+    100%{transform:scale(1)}
+  }
+  @keyframes celebrate{
+    35%{transform:rotate(-5deg) scale(1.06)}
+    70%{transform:rotate(5deg) scale(1.06)}
+  }
+  @keyframes targetPop{
+    50%{transform:scale(1.14);background:#dff8e9}
+  }
+  @keyframes doneIn{
+    from{opacity:0;transform:scale(.8)}
+    to{opacity:1;transform:scale(1)}
+  }
+  @media (max-height:600px){
+    .game{padding-top:10px}
+    .title{font-size:24px}
+    .instr{font-size:15px;min-height:34px}
+    .picture-wrap{width:min(58vh,245px)}
+    .target{font-size:29px;margin-top:4px}
+    .feedback{height:39px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  }
+</style>
+
+<main class="game" id="game">
+  <h1 class="title" id="title"></h1>
+  <p class="instr" id="instr"></p>
+
+  <section class="item" id="item" data-item="">
+    <div class="target" id="target"></div>
+
+    <div class="picture-wrap">
+      <svg id="pizza" viewBox="0 0 280 280" role="img">
+        <circle class="crust" cx="140" cy="140" r="128"></circle>
+        <circle class="cheese" cx="140" cy="140" r="116"></circle>
+        <g id="parts"></g>
+        <circle class="rim" cx="140" cy="140" r="116"></circle>
+        <circle class="center-dot" cx="140" cy="140" r="5"></circle>
+      </svg>
+    </div>
+
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+    <button class="check" id="check" data-action="check" type="button"></button>
+  </section>
+
+  <section class="done-panel" id="donePanel">
+    <div>
+      <div class="done-mark">✓</div>
+      <div id="doneText"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const params = Studio.params;
+  const items = params.items;
+  const game = document.getElementById('game');
+  const itemBox = document.getElementById('item');
+  const partsBox = document.getElementById('parts');
+  const target = document.getElementById('target');
+  const feedback = document.getElementById('feedback');
+  const check = document.getElementById('check');
+  const donePanel = document.getElementById('donePanel');
+  let itemIndex = 0;
+  let shaded = [];
+  let waiting = false;
+  let finished = false;
+
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('instr').textContent = Studio.t('instr');
+  check.textContent = Studio.t('check');
+  document.getElementById('doneText').textContent = Studio.t('done');
+
+  function point(angle, radius) {
+    const radians = (angle - 90) * Math.PI / 180;
+    return {
+      x: 140 + radius * Math.cos(radians),
+      y: 140 + radius * Math.sin(radians)
+    };
+  }
+
+  function sectorPath(start, end) {
+    const a = point(start, 116);
+    const b = point(end, 116);
+    const large = end - start > 180 ? 1 : 0;
+    return 'M 140 140 L ' + a.x + ' ' + a.y +
+      ' A 116 116 0 ' + large + ' 1 ' + b.x + ' ' + b.y + ' Z';
+  }
+
+  function renderItem() {
+    const current = items[itemIndex];
+    waiting = false;
+    shaded = Array(current.d).fill(false);
+    itemBox.dataset.item = current.id;
+    target.textContent = current.n + '/' + current.d;
+    feedback.textContent = '';
+    feedback.className = 'feedback';
+    check.disabled = false;
+    partsBox.replaceChildren();
+
+    for (let i = 0; i < current.d; i += 1) {
+      const part = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      const start = i * 360 / current.d;
+      const end = (i + 1) * 360 / current.d;
+      part.setAttribute('d', sectorPath(start, end));
+      part.setAttribute('class', 'part');
+      part.setAttribute('data-part', String(i));
+      part.setAttribute('data-shaded', 'false');
+      part.addEventListener('click', () => togglePart(i, part));
+      partsBox.appendChild(part);
+    }
+
+    Studio.event('item_view', {id: current.id});
+  }
+
+  function togglePart(index, part) {
+    if (waiting || finished) return;
+    shaded[index] = !shaded[index];
+    part.setAttribute('data-shaded', shaded[index] ? 'true' : 'false');
+    part.classList.remove('pop');
+    void part.getBoundingClientRect();
+    part.classList.add('pop');
+    Studio.event('part_toggle', {
+      id: items[itemIndex].id,
+      part: index,
+      shaded: shaded[index]
+    });
+  }
+
+  check.addEventListener('click', () => {
+    if (waiting || finished) return;
+    waiting = true;
+    check.disabled = true;
+    feedback.textContent = '';
+    feedback.className = 'feedback';
+    const current = items[itemIndex];
+    const count = shaded.reduce((sum, value) => sum + (value ? 1 : 0), 0);
+    Studio.event('check', {id: current.id, n: count, d: current.d});
+    Studio.answer({n: count, d: current.d});
+  });
+
+  Studio.onVerdict(result => {
+    if (finished || !waiting) return;
+
+    if (result.correct) {
+      feedback.textContent = Studio.t('right');
+      feedback.className = 'feedback good';
+      game.classList.add('celebrate');
+      Studio.event('verdict', {id: items[itemIndex].id, correct: true});
+
+      setTimeout(() => {
+        game.classList.remove('celebrate');
+        itemIndex += 1;
+        if (itemIndex < items.length) {
+          renderItem();
+        } else {
+          finish();
+        }
+      }, 700);
+    } else {
+      waiting = false;
+      check.disabled = false;
+      feedback.textContent = Studio.t('wrong') + ' ' + Studio.t('hint');
+      feedback.className = 'feedback try';
+      Studio.event('verdict', {id: items[itemIndex].id, correct: false});
+    }
+  });
+
+  function finish() {
+    finished = true;
+    itemBox.hidden = true;
+    document.getElementById('instr').hidden = true;
+    donePanel.classList.add('show');
+    Studio.event('complete', {});
+    Studio.done();
+  }
+
+  void params.picture;
+  renderItem();
+  Studio.ready();
+})();
+</script>

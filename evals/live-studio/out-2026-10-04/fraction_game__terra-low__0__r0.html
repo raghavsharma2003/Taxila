@@ -1,0 +1,186 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;min-width:320px;background:#fff8ec;font-family:Arial,sans-serif;color:#503b31}
+  #app{width:100%;min-height:640px;overflow:hidden;background:
+    radial-gradient(circle at 10% 8%,#ffe1a8 0 34px,transparent 35px),
+    radial-gradient(circle at 92% 19%,#ffd0bf 0 27px,transparent 28px),
+    linear-gradient(180deg,#fff9ef 0%,#fff2dc 100%);position:relative}
+  .wrap{width:min(100%,430px);margin:auto;padding:22px 18px 26px;text-align:center}
+  .top{display:flex;justify-content:center;align-items:center;min-height:48px}
+  h1{font-size:25px;line-height:1.15;margin:0;color:#a94835;letter-spacing:.2px}
+  .instruction{font-size:16px;line-height:1.35;margin:13px auto 10px;max-width:330px;color:#664a3e}
+  .fraction{display:flex;align-items:center;justify-content:center;gap:10px;margin:8px auto 12px;height:56px}
+  .frac{display:inline-grid;grid-template-rows:1fr 3px 1fr;align-items:center;min-width:46px;font-size:25px;font-weight:800;color:#6f402f}
+  .frac i{height:3px;background:#6f402f;border-radius:4px}
+  .pizza-box{width:min(84vw,318px);height:min(84vw,318px);margin:2px auto 17px;position:relative}
+  #pizza{width:100%;height:100%;display:block;filter:drop-shadow(0 9px 4px rgba(114,63,38,.14))}
+  .plate{fill:#e7d4bf}
+  .rim{fill:#fff7e8;stroke:#d8b899;stroke-width:4}
+  .crust{fill:#d88945;stroke:#a94e31;stroke-width:3}
+  .base{fill:#ffe4a4}
+  .part{fill:#fff1c8;stroke:#ae5834;stroke-width:2;cursor:pointer;transform-origin:160px 160px;transition:fill .2s ease,transform .16s ease,filter .2s ease}
+  .part[data-shaded="true"]{fill:#ed7652;filter:brightness(1.04)}
+  .part:active{transform:scale(.97)}
+  .spark{fill:#f6bb45;opacity:.9}
+  .check{width:min(100%,330px);min-height:52px;border:0;border-radius:18px;background:#2f9b8f;color:#fffaf0;font-size:18px;font-weight:800;box-shadow:0 5px 0 #19736d,0 8px 15px rgba(29,103,94,.2);cursor:pointer;transition:transform .15s,box-shadow .15s}
+  .check:active{transform:translateY(4px) scale(.98);box-shadow:0 1px 0 #19736d}
+  .check:disabled{opacity:.65;cursor:default}
+  #feedback{min-height:28px;margin:13px auto 0;font-size:17px;font-weight:700;color:#9a553c;transition:transform .2s,opacity .2s}
+  #feedback.good{color:#25846e;animation:pop .45s ease}
+  #feedback.bad{animation:shake .38s ease}
+  .hint{font-size:14px;line-height:1.2;color:#927060;margin:4px auto 0;min-height:18px}
+  .confetti{opacity:0;pointer-events:none}
+  .celebrate .confetti{animation:fall .9s ease forwards}
+  .celebrate .part[data-shaded="true"]{animation:wiggle .5s ease}
+  #finish{display:none;min-height:570px;align-items:center;justify-content:center}
+  #finish.show{display:flex}
+  .finish-card{background:#fffdf6;border:3px solid #f3c76e;border-radius:30px;padding:35px 24px;width:min(100%,350px);box-shadow:0 10px 26px rgba(145,92,48,.13)}
+  .bigpizza{width:150px;height:150px;margin:0 auto 21px;display:block}
+  .done-text{font-size:25px;line-height:1.25;font-weight:800;color:#a94835}
+  @keyframes pop{0%{transform:scale(.8)}65%{transform:scale(1.12)}100%{transform:scale(1)}}
+  @keyframes shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}100%{transform:translateX(0)}}
+  @keyframes wiggle{50%{transform:rotate(2deg) scale(1.025)}}
+  @keyframes fall{0%{opacity:0;transform:translateY(-10px)}20%{opacity:1}100%{opacity:0;transform:translateY(125px)}}
+</style>
+
+<div id="app">
+  <main class="wrap" id="game">
+    <div class="top"><h1 id="title"></h1></div>
+    <div class="instruction" id="instruction"></div>
+    <div class="fraction" aria-live="polite">
+      <span class="frac"><b id="num"></b><i></i><b id="den"></b></span>
+    </div>
+    <section id="item" data-item="">
+      <div class="pizza-box">
+        <svg id="pizza" viewBox="0 0 320 320" role="img">
+          <circle class="plate" cx="160" cy="164" r="151"></circle>
+          <circle class="rim" cx="160" cy="156" r="143"></circle>
+          <circle class="crust" cx="160" cy="156" r="133"></circle>
+          <circle class="base" cx="160" cy="156" r="121"></circle>
+          <g id="parts"></g>
+          <g class="confetti">
+            <circle class="spark" cx="62" cy="42" r="6"></circle>
+            <circle class="spark" cx="261" cy="49" r="5"></circle>
+            <circle class="spark" cx="42" cy="238" r="5"></circle>
+            <circle class="spark" cx="278" cy="229" r="7"></circle>
+          </g>
+        </svg>
+      </div>
+      <button class="check" id="check" data-action="check" type="button"></button>
+      <div id="feedback" aria-live="polite"></div>
+      <div class="hint" id="hint"></div>
+    </section>
+  </main>
+  <section id="finish">
+    <div class="finish-card">
+      <svg class="bigpizza" viewBox="0 0 160 160" aria-hidden="true">
+        <circle fill="#e7d4bf" cx="80" cy="83" r="76"></circle>
+        <circle fill="#fff7e8" cx="80" cy="77" r="70"></circle>
+        <circle fill="#d88945" cx="80" cy="77" r="63"></circle>
+        <circle fill="#ffe4a4" cx="80" cy="77" r="56"></circle>
+        <path fill="#ed7652" stroke="#ae5834" stroke-width="2" d="M80 77 L80 21 A56 56 0 0 1 128.5 49 Z"></path>
+        <path fill="#ed7652" stroke="#ae5834" stroke-width="2" d="M80 77 L128.5 49 A56 56 0 0 1 128.5 105 Z"></path>
+        <path fill="#ed7652" stroke="#ae5834" stroke-width="2" d="M80 77 L128.5 105 A56 56 0 0 1 80 133 Z"></path>
+        <path fill="#ed7652" stroke="#ae5834" stroke-width="2" d="M80 77 L80 133 A56 56 0 0 1 31.5 105 Z"></path>
+        <path fill="#ed7652" stroke="#ae5834" stroke-width="2" d="M80 77 L31.5 105 A56 56 0 0 1 31.5 49 Z"></path>
+        <path fill="#ed7652" stroke="#ae5834" stroke-width="2" d="M80 77 L31.5 49 A56 56 0 0 1 80 21 Z"></path>
+      </svg>
+      <div class="done-text" id="doneText"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var items=Studio.params.items;
+  var index=0, waiting=false, finished=false;
+  var item=document.getElementById('item');
+  var parts=document.getElementById('parts');
+  var game=document.getElementById('game');
+  var check=document.getElementById('check');
+  var feedback=document.getElementById('feedback');
+  var hint=document.getElementById('hint');
+  var svgNS='http://www.w3.org/2000/svg';
+
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+  hint.textContent=Studio.t('hint');
+  document.getElementById('doneText').textContent=Studio.t('done');
+
+  function wedge(a,b){
+    var cx=160,cy=156,r=121;
+    var x1=cx+r*Math.cos(a), y1=cy+r*Math.sin(a);
+    var x2=cx+r*Math.cos(b), y2=cy+r*Math.sin(b);
+    var large=(b-a)>Math.PI?1:0;
+    return 'M '+cx+' '+cy+' L '+x1+' '+y1+' A '+r+' '+r+' 0 '+large+' 1 '+x2+' '+y2+' Z';
+  }
+  function render(){
+    var current=items[index];
+    item.setAttribute('data-item',current.id);
+    document.getElementById('num').textContent=current.n;
+    document.getElementById('den').textContent=current.d;
+    parts.innerHTML='';
+    feedback.textContent='';
+    feedback.className='';
+    hint.textContent=Studio.t('hint');
+    waiting=false;
+    check.disabled=false;
+    for(var i=0;i<current.d;i++){
+      var p=document.createElementNS(svgNS,'path');
+      p.setAttribute('d',wedge(-Math.PI/2+i*2*Math.PI/current.d,-Math.PI/2+(i+1)*2*Math.PI/current.d));
+      p.setAttribute('class','part');
+      p.setAttribute('data-part',i);
+      p.setAttribute('data-shaded','false');
+      p.addEventListener('click',toggle);
+      parts.appendChild(p);
+    }
+  }
+  function toggle(e){
+    if(waiting)return;
+    var p=e.currentTarget;
+    var shaded=p.getAttribute('data-shaded')==='true';
+    p.setAttribute('data-shaded',shaded?'false':'true');
+    Studio.event('part',{item:items[index].id,part:Number(p.getAttribute('data-part')),shaded:!shaded});
+  }
+  check.addEventListener('click',function(){
+    if(waiting)return;
+    var all=parts.querySelectorAll('[data-shaded="true"]');
+    waiting=true;
+    check.disabled=true;
+    Studio.event('check',{item:items[index].id,n:all.length,d:items[index].d});
+    Studio.answer({n:all.length,d:items[index].d});
+  });
+  Studio.onVerdict(function(v){
+    if(finished)return;
+    if(v.correct){
+      feedback.textContent=Studio.t('right');
+      feedback.className='good';
+      hint.textContent='';
+      game.classList.add('celebrate');
+      Studio.event('verdict',{item:items[index].id,correct:true});
+      setTimeout(function(){
+        game.classList.remove('celebrate');
+        index++;
+        if(index>=items.length){
+          finished=true;
+          game.style.display='none';
+          document.getElementById('finish').className='show';
+          Studio.done();
+        }else{
+          render();
+        }
+      },900);
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      feedback.className='bad';
+      hint.textContent=Studio.t('hint');
+      waiting=false;
+      check.disabled=false;
+      Studio.event('verdict',{item:items[index].id,correct:false});
+    }
+  });
+  render();
+  Studio.ready();
+}());
+</script>

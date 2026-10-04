@@ -1,0 +1,351 @@
+<style>
+  :root{
+    --bg:#f7f4ff;
+    --card:#ffffff;
+    --ink:#2f2a4a;
+    --muted:#726b9b;
+    --grid:#e6e1f5;
+    --bar:#7a8cff;
+    --bar-press:#5e71ef;
+    --ok:#1f9d67;
+    --no:#d24d57;
+    --accent:#ffd37a;
+  }
+  *{box-sizing:border-box}
+  #app{
+    width:100%;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    background:linear-gradient(180deg,#f9f7ff 0%,#f2eeff 100%);
+    padding:10px;
+    font-family:ui-rounded, "Noto Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    color:var(--ink);
+    overflow:hidden;
+  }
+  #card{
+    width:min(100%,360px);
+    background:var(--card);
+    border-radius:18px;
+    box-shadow:0 10px 30px rgba(77,58,139,.12);
+    padding:12px 12px 10px;
+  }
+  #title{
+    margin:2px 2px 6px;
+    font-size:22px;
+    line-height:1.2;
+    font-weight:800;
+    color:#3a3260;
+  }
+  #question{
+    margin:0 2px 8px;
+    font-size:16px;
+    line-height:1.35;
+    color:#524a7c;
+    min-height:22px;
+  }
+  #valueReadout{
+    margin:0 2px 8px;
+    min-height:28px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:4px 12px;
+    border-radius:999px;
+    background:#fff6d9;
+    color:#5f4d1f;
+    font-weight:800;
+    transform:scale(.9);
+    opacity:0;
+    transition:transform .2s ease,opacity .2s ease;
+  }
+  #valueReadout.show{
+    transform:scale(1);
+    opacity:1;
+  }
+  #chartWrap{
+    display:grid;
+    grid-template-columns:28px 1fr;
+    gap:4px;
+    align-items:stretch;
+  }
+  #yTitle{
+    writing-mode:vertical-rl;
+    transform:rotate(180deg);
+    text-align:center;
+    color:var(--muted);
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.2px;
+    user-select:none;
+    padding-top:8px;
+  }
+  #chartArea{
+    min-width:0;
+  }
+  #plot{
+    position:relative;
+    height:270px;
+    border-radius:12px;
+    background:linear-gradient(180deg,#fcfbff 0%,#f9f7ff 100%);
+    overflow:hidden;
+  }
+  #ticks{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+  }
+  .tickRow{
+    position:absolute;
+    left:0;
+    right:0;
+    height:0;
+  }
+  .tickNum{
+    position:absolute;
+    left:2px;
+    transform:translateY(50%);
+    color:#837ab1;
+    font-size:12px;
+    font-weight:700;
+    line-height:1;
+    min-width:24px;
+  }
+  #gridArea{
+    position:absolute;
+    left:30px;
+    right:6px;
+    top:8px;
+    bottom:0;
+  }
+  .gridLine{
+    position:absolute;
+    left:0;
+    right:0;
+    height:0;
+    border-top:1.5px solid var(--grid);
+  }
+  #bars{
+    position:absolute;
+    left:0;
+    right:0;
+    top:0;
+    bottom:0;
+    display:grid;
+    align-items:end;
+    gap:8px;
+    padding:0 2px;
+  }
+  .bar{
+    align-self:end;
+    width:100%;
+    min-height:0;
+    height:0%;
+    border:none;
+    border-radius:12px 12px 4px 4px;
+    background:linear-gradient(180deg,#91a1ff 0%,var(--bar) 78%);
+    box-shadow:inset 0 -2px 0 rgba(45,58,146,.25);
+    transition:height .9s cubic-bezier(.2,.8,.2,1), transform .12s ease, filter .2s ease;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .bar:active{
+    transform:scale(.98);
+    background:linear-gradient(180deg,#7b8df8 0%,var(--bar-press) 78%);
+  }
+  .bar.selected{
+    animation:pulse .45s ease;
+    filter:brightness(1.05);
+  }
+  @keyframes pulse{
+    0%{transform:scale(1)}
+    40%{transform:scale(1.04)}
+    100%{transform:scale(1)}
+  }
+  #xLabels{
+    margin-top:8px;
+    margin-left:30px;
+    margin-right:6px;
+    display:grid;
+    gap:8px;
+    padding:0 2px;
+  }
+  .xLab{
+    text-align:center;
+    font-size:13px;
+    line-height:1.2;
+    font-weight:700;
+    color:#5e5689;
+    min-height:32px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+  }
+  #feedback{
+    margin-top:8px;
+    min-height:24px;
+    font-size:17px;
+    font-weight:800;
+  }
+  #feedback.ok{color:var(--ok)}
+  #feedback.no{color:var(--no)}
+  #doneText{
+    margin-top:4px;
+    min-height:22px;
+    color:#3f7d57;
+    font-weight:800;
+    font-size:16px;
+  }
+  .lock .bar{pointer-events:none}
+</style>
+
+<div id="app">
+  <div id="card">
+    <div id="title"></div>
+    <div id="question"></div>
+    <div id="valueReadout"></div>
+    <div id="chartWrap">
+      <div id="yTitle"></div>
+      <div id="chartArea">
+        <div id="plot">
+          <div id="ticks"></div>
+          <div id="gridArea">
+            <div id="bars"></div>
+          </div>
+        </div>
+        <div id="xLabels"></div>
+      </div>
+    </div>
+    <div id="feedback"></div>
+    <div id="doneText"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const data = Array.isArray(Studio.params && Studio.params.data) ? Studio.params.data.slice() : [];
+  const titleEl = document.getElementById('title');
+  const questionEl = document.getElementById('question');
+  const yTitleEl = document.getElementById('yTitle');
+  const ticksEl = document.getElementById('ticks');
+  const barsEl = document.getElementById('bars');
+  const xLabelsEl = document.getElementById('xLabels');
+  const feedbackEl = document.getElementById('feedback');
+  const doneEl = document.getElementById('doneText');
+  const valueReadout = document.getElementById('valueReadout');
+  const app = document.getElementById('app');
+
+  titleEl.textContent = Studio.t('title');
+  questionEl.textContent = Studio.t('ask');
+  yTitleEl.textContent = Studio.t('yaxis');
+
+  const maxVal = data.reduce((m,d)=>Math.max(m, Number(d.value)||0), 0);
+
+  function niceStep(maximum){
+    if (maximum <= 5) return 1;
+    const rough = maximum / 4;
+    const pow = Math.pow(10, Math.floor(Math.log10(rough)));
+    const n = rough / pow;
+    let nice;
+    if (n <= 1) nice = 1;
+    else if (n <= 2) nice = 2;
+    else if (n <= 5) nice = 5;
+    else nice = 10;
+    return nice * pow;
+  }
+
+  const step = niceStep(maxVal || 1);
+  const topTick = Math.ceil((maxVal || 1) / step) * step;
+  const ticks = [];
+  for (let v = 0; v <= topTick; v += step) ticks.push(v);
+
+  ticks.forEach((v)=>{
+    const p = topTick === 0 ? 0 : (v / topTick) * 100;
+
+    const row = document.createElement('div');
+    row.className = 'tickRow';
+    row.style.bottom = p + '%';
+
+    const num = document.createElement('div');
+    num.className = 'tickNum';
+    num.textContent = String(v);
+    num.setAttribute('data-tick', String(v));
+    row.appendChild(num);
+    ticksEl.appendChild(row);
+
+    const gl = document.createElement('div');
+    gl.className = 'gridLine';
+    gl.style.bottom = p + '%';
+    document.getElementById('gridArea').appendChild(gl);
+  });
+
+  barsEl.style.gridTemplateColumns = `repeat(${data.length}, minmax(44px, 1fr))`;
+  xLabelsEl.style.gridTemplateColumns = `repeat(${data.length}, minmax(44px, 1fr))`;
+
+  const bars = [];
+  let awaiting = false;
+  let completed = false;
+
+  data.forEach((d)=>{
+    const value = Number(d.value) || 0;
+    const key = d.key;
+    const h = topTick === 0 ? 0 : (value / topTick) * 100;
+
+    const bar = document.createElement('button');
+    bar.className = 'bar';
+    bar.type = 'button';
+    bar.style.height = '0%';
+    bar.setAttribute('data-bar', key);
+    bar.setAttribute('data-value', String(value));
+
+    bar.addEventListener('click', function(){
+      if (awaiting || completed) return;
+      awaiting = true;
+
+      bars.forEach(b => b.classList.remove('selected'));
+      bar.classList.add('selected');
+
+      valueReadout.textContent = String(value);
+      valueReadout.classList.add('show');
+
+      Studio.event('bar_tap', { key: key, value: value });
+      Studio.answer(String(key));
+    });
+
+    barsEl.appendChild(bar);
+    bars.push(bar);
+
+    const xl = document.createElement('div');
+    xl.className = 'xLab';
+    xl.textContent = Studio.t(key);
+    xLabelsEl.appendChild(xl);
+
+    bar.dataset.targetHeight = String(h);
+  });
+
+  requestAnimationFrame(()=>{
+    bars.forEach((b, i)=>{
+      b.style.transitionDelay = (i * 70) + 'ms';
+      b.style.height = b.dataset.targetHeight + '%';
+    });
+  });
+
+  Studio.onVerdict(function(v){
+    awaiting = false;
+    const correct = !!(v && v.correct);
+    feedbackEl.className = correct ? 'ok' : 'no';
+    feedbackEl.textContent = correct ? Studio.t('right') : Studio.t('wrong');
+    Studio.event('verdict', { correct: correct });
+
+    if (correct && !completed){
+      completed = true;
+      doneEl.textContent = Studio.t('done');
+      app.classList.add('lock');
+      Studio.done();
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

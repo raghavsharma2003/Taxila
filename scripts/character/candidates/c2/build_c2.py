@@ -39,6 +39,40 @@ D = load()
 P, polys, uv, Wt, J = D["P"], D["polys"], D["uv"], D["weights"], D["joints"]
 K = contract_keys(D["keys"])
 mats = D["mats"]
+# rest lip seal: Rocketbox's neutral rests with the lips ~2 mm apart (the "parted lips" register CHARACTER-PIPELINE §2
+# step 3 also fixed). Bake SEAL x mouthClose into the basis; mouthClose keeps the rest of its travel (so weight 1 is the
+# original full close) and viseme_PP loses the share the basis now already has.
+LOOK = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../../../art/character/candidates/c2/look.json")))
+for k, g in LOOK.get("keyGain", {}).items():      # baked expression gains (Rocketbox's smile units are soft)
+    K[k] = K[k] * g
+for k, mix in LOOK.get("keyMix", {}).items():     # contract key += w x a Rocketbox FACS / HeadBox key
+    if k.startswith("_"):
+        continue
+    for item in mix:
+        src, w = item[0], item[1]
+        d = w * D["keys"][src]
+        if len(item) > 2:          # one side of a bilateral key: smooth split across the midline (her left = +x)
+            t = np.clip((P[:, 0] + 0.008) / 0.016, 0, 1)
+            t = t * t * (3 - 2 * t)
+            d = d * (t if item[2] == "L" else 1 - t)[:, None]
+        K[k] = K[k] + d
+SEAL = LOOK.get("restSeal", 0.3)
+dC = K["mouthClose"].copy()
+P = P + SEAL * dC
+K["mouthClose"] = (1 - SEAL) * dC
+K["viseme_PP"] = K["viseme_PP"] - SEAL * dC
+# resting expression baked into the basis (CHARACTER-PIPELINE §2 step 3 `faceStyle.restSmile`, generalised): Rocketbox's
+# neutral reads sullen (corners down, a pout); look.restPose is a soft closed smile chosen by eye in the polish pass
+for k, w in LOOK.get("restPose", {}).items():
+    if not k.startswith("_"):
+        P = P + w * K[k]
+# relaxed upper lid: Rocketbox's neutral lids sit high (a slight stare at teacher distance); bake restLid x eyeBlink
+# into the basis and scale the blink keys so weight 1 is still exactly closed
+RL = LOOK.get("restLid", 0.0)
+for S_ in ("Left", "Right"):
+    dB = K[f"eyeBlink{S_}"].copy()
+    P = P + RL * dB
+    K[f"eyeBlink{S_}"] = (1 - RL) * dB
 M_BODY, M_HEAD, M_OPA = mats.index("f014_body"), mats.index("f014_head"), mats.index("f014_opacity")
 head_tex = np.asarray(Image.open(os.path.join(SRC, "f014_head_color.tga")).convert("RGB")).astype(np.float32) / 255
 TH, TW = head_tex.shape[:2]
@@ -83,6 +117,8 @@ for r, fs in islands.items():
         cls = "drop_eye"
     elif len(fs) > 1000:
         cls = "main"
+    elif cu < 0.22 and cv < 0.38 and P[list(vs), 1].mean() > 0.05:
+        cls = "drop_clip"          # Rocketbox's hair clip at the back of the head shares the mouth atlas corner
     elif cu < 0.22 and cv < 0.38:
         tongue = sum(b == "Bip01 MTongue" for b in bones) > 0.4 * len(bones)
         if tongue:
@@ -114,12 +150,47 @@ for f, (vs, ls, m) in enumerate(polys):
     else:
         fclass[f] = "face"
 
+# polish: Rocketbox's strand cards on the crown stand up to 23 mm off the shell, which read as spikes in silhouette.
+# Pull every crown-card vertex toward the nearest shell vertex: offsets above 3 mm keep 30% of their excess. Lashes
+# (eye-level cards) and the low bun cards at the nape are left alone.
+from scipy.spatial import cKDTree
+shell_v = sorted({v for f, c in fclass.items() if c == "hair" for v in polys[f][0]})
+tree = cKDTree(P[shell_v])
+card_v = sorted({v for f, (vs, ls, m) in enumerate(polys) if m == M_OPA for v in vs})
+cv_ = np.array([v for v in card_v if P[v, 2] > 1.6 and P[v, 1] > -0.03])
+dd, ii = tree.query(P[cv_])
+near = P[np.array(shell_v)[ii]]
+off = P[cv_] - near
+keep_ = np.where(dd > 0.003, (0.003 + 0.3 * (dd - 0.003)) / np.maximum(dd, 1e-9), 1.0)
+P[cv_] = near + off * keep_[:, None]
+CARD_PULL = {"verts": int(len(cv_)), "maxOffBeforeMm": round(float(dd.max()) * 1000, 1),
+             "maxOffAfterMm": round(float((dd * keep_).max()) * 1000, 1)}
+
 # opacity cards: dedupe Rocketbox's back-face duplicates (same vertex positions, reversed winding)
+# polish: the one fringe card lying flat across her right temple (centroid ~ (-0.036, -0.013, 1.688)) read as a dark
+# blue-black stripe on the forehead in every front view; it is dropped (the painted fringe under it stays)
+opa_par = {}
+def ofind(a):
+    while opa_par.setdefault(a, a) != a:
+        a = opa_par[a]
+    return a
+for vs, ls, m in polys:
+    if m == M_OPA:
+        for v in vs[1:]:
+            opa_par[ofind(v)] = ofind(vs[0])
+opa_c = {}
+for v in opa_par:
+    opa_c.setdefault(ofind(v), []).append(v)
+opa_c = {r: P[vs].mean(0) for r, vs in opa_c.items()}
 seen = set()
 for f, (vs, ls, m) in enumerate(polys):
     if m == M_OPA:
         key = tuple(sorted(tuple(np.round(P[v], 5)) for v in vs))
-        fclass[f] = "drop_dup" if key in seen else "cards"
+        c = opa_c[ofind(vs[0])]
+        if c[1] < 0.0 and c[2] > 1.66:
+            fclass[f] = "drop_fringe"
+        else:
+            fclass[f] = "drop_dup" if key in seen else "cards"
         seen.add(key)
     elif m == M_BODY:
         fclass[f] = "garment"
@@ -150,14 +221,14 @@ def vertex_normals(fids, Pos):
 body_f = [f for f in range(len(polys)) if fclass.get(f) in ("face", "hair", "garment")]
 N_body = vertex_normals(body_f, P)
 
-stats = {"source": "Microsoft Rocketbox Business_Female_01 (MIT)", "hairFacesFromMainIsland": hair_main,
+stats = {"source": "Microsoft Rocketbox Business_Female_01 (MIT)", "hairFacesFromMainIsland": hair_main, "cardPull": CARD_PULL,
          "partFaces": {}}
 for f, c in fclass.items():
     stats["partFaces"][c] = stats["partFaces"].get(c, 0) + 1
 
 
 # ------------------------------------------------------------------ mesh builder
-def build(name, fids, keynames, custom_normals=True, region=None):
+def build(name, fids, keynames, custom_normals=True, region=None, uvx=None):
     vs_all = sorted({v for f in fids for v in polys[f][0]})
     remap = {v: i for i, v in enumerate(vs_all)}
     verts = P[vs_all]
@@ -167,6 +238,8 @@ def build(name, fids, keynames, custom_normals=True, region=None):
     me.update()
     uvl = me.uv_layers.new(name="UVMap")
     lu = np.array([uv[l] for f in fids for l in polys[f][1]], np.float32)
+    if uvx is not None:            # atlas packing: (u0, du) -> u' = u0 + du * u
+        lu[:, 0] = uvx[0] + uvx[1] * lu[:, 0]
     uvl.data.foreach_set("uv", lu.ravel())
     ob = bpy.data.objects.new(name, me)
     bpy.context.collection.objects.link(ob)
@@ -203,6 +276,11 @@ face_f = [f for f, c in fclass.items() if c in ("face", "mouth")]
 hair_f = [f for f, c in fclass.items() if c == "hair"]
 card_f = [f for f, c in fclass.items() if c == "cards"]
 garm_f = [f for f, c in fclass.items() if c == "garment"]
+# UV polygons per part: texture_c2.py flattens every texel no shipped polygon samples (the atlases also hold the hands,
+# trousers, shoes and the parts the bust cut removed), which is most of what the KTX2 encoder was paying for
+json.dump({nm: [uv[polys[f][1]].round(5).tolist() for f in fs] for nm, fs in
+           (("face", face_f), ("hair", hair_f), ("cards", card_f), ("garment", garm_f))},
+          open(os.path.join(args.out, "uvpolys.json"), "w"))
 FACE_KEYS = ARKIT52 + VISEMES + ["tongueTipUp", "tongueCurl", "tongueWide"]
 
 
@@ -374,25 +452,38 @@ def export(tier):
         bpy.data.objects.remove(o, do_unlink=True)
     for m in list(bpy.data.meshes):
         bpy.data.meshes.remove(m)
+    for m in list(bpy.data.materials):
+        bpy.data.materials.remove(m)
+    for a in list(bpy.data.armatures):
+        bpy.data.armatures.remove(a)
     keys_face = FACE_KEYS if tier == "H" else ARKIT52 + ["tongueTipUp"]
     face = build("face", face_f, keys_face, region=freg)
-    hair = build("hair", hair_f, [k for k in moving(hair_f, ARKIT52)])
-    cards = build("cards", card_f, moving(card_f, ARKIT52), custom_normals=False)
+    # the painted hair shell and Rocketbox's alpha cards (strands + lashes) ship as ONE `cards` mesh on a two-half
+    # atlas (left: alpha cards, right: the shell's texels from the head atlas). As `hair`, the shell took TaxilaHair's
+    # Kajiya-Kay lobe, which on Rocketbox's large smooth shell read as grey plastic bands (first polish look);
+    # `cards` gets no KK lobe and keeps Rocketbox's painted sheen. 4 draws instead of 5.
+    hair = build("hair", hair_f, [k for k in moving(hair_f, ARKIT52)], uvx=(0.5, 0.5))
+    cards = build("cards", card_f, moving(card_f, ARKIT52), custom_normals=False, uvx=(0.0, 0.5))
     garment = build("garment", garm_f, [])
     if tier == "H" and args.subdiv > 0:
         subdivide(face, args.subdiv)
         subdivide(hair, args.subdiv)
     eyes = make_eyes(36, 28, "eyes") if tier == "H" else make_eyes(16, 12, "eyes")
+    for o in bpy.context.selected_objects:
+        o.select_set(False)
+    hair.select_set(True); cards.select_set(True)
+    bpy.context.view_layer.objects.active = cards
+    bpy.ops.object.join()
+    cards.name = "cards"
     hc = J["Bip01 Head"] + np.array([0, 0.0, 0.10])
-    strand_tangent(hair, hc)
     strand_tangent(cards, hc)
-    for ob in (face, hair, cards, garment, eyes):
+    for ob in (face, cards, garment, eyes):
         ob.data.materials.clear()
         m = bpy.data.materials.new(MATS[ob.name])
         m.use_nodes = True
         ob.data.materials.append(m)
     arm = make_armature()
-    for ob in (face, hair, cards, garment, eyes):
+    for ob in (face, cards, garment, eyes):
         md = ob.modifiers.new("Armature", "ARMATURE")
         md.object = arm
         ob.parent = arm
@@ -403,9 +494,9 @@ def export(tier):
     tri = lambda ob: int(sum(len(p.vertices) - 2 for p in ob.data.polygons))
     st = {"tier": tier, "meshes": {o.name: {"verts": len(o.data.vertices), "tris": tri(o),
           "keys": (len(o.data.shape_keys.key_blocks) - 1) if o.data.shape_keys else 0}
-          for o in (face, hair, cards, garment, eyes)}}
+          for o in (face, cards, garment, eyes)}}
     st["tris"] = sum(v["tris"] for v in st["meshes"].values())
-    st["draws"] = 5
+    st["draws"] = 4
     st["faceKeys"] = [k.name for k in face.data.shape_keys.key_blocks[1:]]
     out = os.path.join(args.out, f"{tier}.raw.glb")
     bpy.ops.export_scene.gltf(filepath=out, export_format="GLB", export_morph=True, export_morph_normal=False,

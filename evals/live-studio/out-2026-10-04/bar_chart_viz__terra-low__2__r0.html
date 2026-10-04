@@ -1,0 +1,311 @@
+<style>
+  *{box-sizing:border-box}
+  .activity{
+    width:100%;
+    min-height:640px;
+    overflow:hidden;
+    padding:18px 14px 20px;
+    background:linear-gradient(155deg,#fff7df 0%,#f4fbef 52%,#e5f4ff 100%);
+    color:#24354b;
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .top{
+    width:100%;
+    max-width:430px;
+    text-align:center;
+  }
+  h1{
+    margin:0;
+    color:#294264;
+    font-size:24px;
+    line-height:1.18;
+    font-weight:800;
+    letter-spacing:-.4px;
+  }
+  .question{
+    margin:9px auto 4px;
+    min-height:24px;
+    color:#597089;
+    font-size:16px;
+    font-weight:700;
+    line-height:1.3;
+  }
+  .chart-card{
+    width:100%;
+    max-width:430px;
+    margin-top:5px;
+    padding:9px 3px 4px;
+    border:2px solid rgba(81,126,161,.16);
+    border-radius:24px;
+    background:rgba(255,255,255,.72);
+    box-shadow:0 10px 24px rgba(62,104,130,.12);
+  }
+  #chart{
+    display:block;
+    width:100%;
+    height:auto;
+    overflow:visible;
+  }
+  .grid{
+    stroke:#bbd7d0;
+    stroke-width:1;
+    stroke-dasharray:3 4;
+  }
+  .axis{
+    stroke:#53718d;
+    stroke-width:2;
+    stroke-linecap:round;
+  }
+  .tick{
+    fill:#627a8d;
+    font-size:11px;
+    font-weight:700;
+    text-anchor:end;
+  }
+  .fruit{
+    fill:#38536d;
+    font-size:11px;
+    font-weight:800;
+    text-anchor:middle;
+  }
+  .axis-title{
+    fill:#59748b;
+    font-size:12px;
+    font-weight:800;
+    text-anchor:middle;
+  }
+  .bar{
+    fill:#ff9f55;
+    stroke:#df783a;
+    stroke-width:1.5;
+    cursor:pointer;
+    transform:scaleY(0);
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    transition:transform 720ms cubic-bezier(.2,.85,.25,1),fill 180ms ease,filter 180ms ease;
+  }
+  .bar.grow{transform:scaleY(1)}
+  .bar:active{filter:brightness(.96)}
+  .bar.chosen{
+    fill:#f58a48;
+    filter:drop-shadow(0 4px 3px rgba(192,92,35,.28));
+  }
+  .bar.waiting{pointer-events:none}
+  .cap{
+    fill:#ffd270;
+    opacity:.96;
+    pointer-events:none;
+    transform:scaleY(0);
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    transition:transform 720ms cubic-bezier(.2,.85,.25,1);
+  }
+  .cap.grow{transform:scaleY(1)}
+  .tip-box{
+    fill:#294b69;
+    stroke:#fff;
+    stroke-width:2;
+  }
+  .tip-text{
+    fill:#fff;
+    font-size:13px;
+    font-weight:800;
+    text-anchor:middle;
+  }
+  .tip-stem{fill:#294b69}
+  .feedback{
+    width:100%;
+    max-width:390px;
+    min-height:0;
+    margin-top:13px;
+    padding:0 18px;
+    border-radius:18px;
+    background:#e7f7e5;
+    color:#2d7047;
+    text-align:center;
+    font-size:17px;
+    font-weight:800;
+    line-height:1.35;
+    opacity:0;
+    transform:translateY(10px) scale(.96);
+    pointer-events:none;
+    transition:opacity 260ms ease,transform 260ms ease,padding 260ms ease;
+  }
+  .feedback.show{
+    min-height:48px;
+    padding:13px 18px;
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+  .feedback.wrong{
+    background:#fff0e8;
+    color:#a95237;
+  }
+  .feedback.done{
+    background:#e6f6e9;
+    color:#297044;
+  }
+  .feedback span{display:block}
+  .feedback span+span{margin-top:3px;font-size:14px}
+  @media (max-width:370px){
+    .activity{padding-left:8px;padding-right:8px}
+    h1{font-size:22px}
+  }
+</style>
+
+<div class="activity">
+  <div class="top">
+    <h1 id="title"></h1>
+    <div class="question" id="ask"></div>
+  </div>
+  <div class="chart-card">
+    <svg id="chart" viewBox="0 0 360 395" role="img">
+      <g id="grid"></g>
+      <g id="axes"></g>
+      <g id="bars"></g>
+      <g id="labels"></g>
+      <g id="tooltip" visibility="hidden">
+        <path id="tipStem" class="tip-stem"></path>
+        <rect id="tipBox" class="tip-box" rx="11" ry="11"></rect>
+        <text id="tipText" class="tip-text"></text>
+      </g>
+    </svg>
+  </div>
+  <div class="feedback" id="feedback"><span id="feedbackMain"></span><span id="feedbackDone"></span></div>
+</div>
+
+<script>
+(function(){
+  var data=Studio.params.data;
+  var NS="http://www.w3.org/2000/svg";
+  var base=316, top=48, left=52, right=342, chartHeight=base-top;
+  var title=document.getElementById("title");
+  var ask=document.getElementById("ask");
+  var grid=document.getElementById("grid");
+  var axes=document.getElementById("axes");
+  var barsGroup=document.getElementById("bars");
+  var labels=document.getElementById("labels");
+  var tooltip=document.getElementById("tooltip");
+  var tipBox=document.getElementById("tipBox");
+  var tipStem=document.getElementById("tipStem");
+  var tipText=document.getElementById("tipText");
+  var feedback=document.getElementById("feedback");
+  var feedbackMain=document.getElementById("feedbackMain");
+  var feedbackDone=document.getElementById("feedbackDone");
+  var waiting=false, finished=false;
+
+  title.textContent=Studio.t("title");
+  ask.textContent=Studio.t("ask");
+
+  function svg(tag, attrs, text){
+    var el=document.createElementNS(NS,tag);
+    if(attrs){for(var k in attrs){el.setAttribute(k,attrs[k]);}}
+    if(text!==undefined){el.textContent=text;}
+    return el;
+  }
+  function niceStep(n){
+    var rough=n/4, p=Math.pow(10,Math.floor(Math.log(rough)/Math.LN10));
+    var f=rough/p, m=f<=1?1:f<=2?2:f<=5?5:10;
+    return m*p;
+  }
+  var max=0;
+  for(var i=0;i<data.length;i++){if(data[i].value>max)max=data[i].value;}
+  var step=niceStep(max||1);
+  var topValue=Math.ceil(max/step)*step;
+  if(topValue===0)topValue=step;
+  function yFor(v){return base-(v/topValue)*chartHeight;}
+
+  axes.appendChild(svg("line",{x1:left,y1:top,x2:left,y2:base,"class":"axis"}));
+  axes.appendChild(svg("line",{x1:left,y1:base,x2:right,y2:base,"class":"axis"}));
+  var axisTitle=svg("text",{x:17,y:(top+base)/2,"class":"axis-title",transform:"rotate(-90 17 "+((top+base)/2)+")"},Studio.t("yaxis"));
+  labels.appendChild(axisTitle);
+
+  for(var tick=0;tick<=topValue;tick+=step){
+    var ty=yFor(tick);
+    grid.appendChild(svg("line",{x1:left,y1:ty,x2:right,y2:ty,"class":"grid"}));
+    labels.appendChild(svg("text",{x:left-8,y:ty+4,"class":"tick","data-tick":String(tick)},String(tick)));
+  }
+
+  var slot=(right-left)/data.length;
+  var rects=[];
+  for(var j=0;j<data.length;j++){
+    (function(item,index){
+      var cx=left+slot*(index+.5);
+      var bw=Math.min(42,slot-13);
+      var height=(item.value/topValue)*chartHeight;
+      var rect=svg("rect",{
+        x:cx-bw/2,y:base-height,width:bw,height:height,rx:10,ry:10,
+        "class":"bar","data-bar":item.key,"data-value":String(item.value)
+      });
+      rect.style.transformOrigin=cx+"px "+base+"px";
+      var cap=svg("rect",{
+        x:cx-bw/2+3,y:base-height+3,width:bw-6,height:9,rx:5,ry:5,"class":"cap"
+      });
+      cap.style.transformOrigin=cx+"px "+base+"px";
+      rect.addEventListener("click",function(){choose(item,rect,cx,yFor(item.value));});
+      barsGroup.appendChild(rect);
+      barsGroup.appendChild(cap);
+      rects.push(rect);
+      labels.appendChild(svg("text",{x:cx,y:344,"class":"fruit"},Studio.t(item.key)));
+    })(data[j],j);
+  }
+
+  function showTip(value,cx,barTop){
+    var width=40, height=30;
+    var x=Math.max(left,Math.min(right-width,cx-width/2));
+    var y=Math.max(22,barTop-42);
+    tipBox.setAttribute("x",x);
+    tipBox.setAttribute("y",y);
+    tipBox.setAttribute("width",width);
+    tipBox.setAttribute("height",height);
+    tipStem.setAttribute("d","M "+(cx-6)+" "+(y+height)+" L "+(cx+6)+" "+(y+height)+" L "+cx+" "+(y+height+7)+" Z");
+    tipText.setAttribute("x",cx);
+    tipText.setAttribute("y",y+20);
+    tipText.textContent=String(value);
+    tooltip.setAttribute("visibility","visible");
+  }
+
+  function choose(item,rect,cx,barTop){
+    if(waiting||finished)return;
+    waiting=true;
+    for(var r=0;r<rects.length;r++){rects[r].classList.add("waiting");}
+    rect.classList.add("chosen");
+    showTip(item.value,cx,barTop);
+    Studio.answer(item.key);
+  }
+
+  Studio.onVerdict(function(result){
+    if(finished)return;
+    if(result.correct){
+      finished=true;
+      feedback.className="feedback show done";
+      feedbackMain.textContent=Studio.t("right");
+      feedbackDone.textContent=Studio.t("done");
+      Studio.done();
+    }else{
+      feedback.className="feedback show wrong";
+      feedbackMain.textContent=Studio.t("wrong");
+      feedbackDone.textContent="";
+      setTimeout(function(){
+        if(finished)return;
+        waiting=false;
+        for(var r=0;r<rects.length;r++){
+          rects[r].classList.remove("waiting");
+          rects[r].classList.remove("chosen");
+        }
+      },650);
+    }
+  });
+
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      var all=document.querySelectorAll(".bar,.cap");
+      for(var q=0;q<all.length;q++){all[q].classList.add("grow");}
+      Studio.ready();
+    });
+  });
+})();
+</script>

@@ -190,7 +190,8 @@ test("G-PRAISE-1: the move carries the verdict, and the guard removes praise the
   replyDeps.chat = async () => { calls += 1; return { text: calls === 1 ? "Bilkul! Socho, roti ke tukde barabar hain?" : "Bilkul sahi socha. Tukde barabar hain kya?" }; };
   try {
     const out = await L.textReply({ instructions: "x", state: r.state, kit: K, childText: "1/3", verdict: "not_yet", ui: r.ui, module: r.state.module });
-    assert.deepEqual(out.guard.caught, ["praise"]);
+    // W1-A G-ASK parity: the draft also ended on a side question instead of the pinned item ("ask").
+    assert.ok(out.guard.caught.includes("praise"), JSON.stringify(out.guard.caught));
     assert.equal(praiseProblem(out.reply, "not_yet"), null, out.reply);
     assert.ok(!out.guard.final, JSON.stringify(out.guard));
     assert.ok(item);

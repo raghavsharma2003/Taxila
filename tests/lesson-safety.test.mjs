@@ -122,7 +122,11 @@ test("ui.hint: a hint move sends the rung's text at rungs 1-3 (never the asserti
   const item = findItem(r.state, K, r.state.activeItemId);
   r = turn(r, cls("incorrect"));
   assert.equal(r.move.kind, "hint");
-  assert.deepEqual(r.ui.hint, { level: 1, text: item.hints[0] });
+  // W1-A (flows G5): the fixture's rung 1 is a teacher note ("pump: ask what the parts means"): its rung label never
+  // reaches the card, and a line that still reads as a note to the teacher is not shown at all.
+  assert.equal(item.hints[0], "pump: ask what the parts means");
+  assert.equal(r.ui.hint, undefined);
+  assert.deepEqual(hintFor({ kind: "hint" }, { answer: "7", hints: ["Prompt: count the tens first"] }, 1), { level: 1, text: "count the tens first" });
   r = turn(r, cls("incorrect"));
   if (r.move.kind === "hint") assert.equal(r.ui.hint?.level, 2);
   const it = { answer: "24,360", acceptable: ["24360"], hints: ["Which place?", "It is 24,360 in all.", "24 thousands, ___ ones.", "24,360."] };

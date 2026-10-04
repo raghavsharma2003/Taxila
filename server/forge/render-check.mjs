@@ -1,8 +1,15 @@
-// Q2-lite + Q4-lite for G1 engine fills (FACTORY.md §5.1: G1 "Q2 boot & hygiene: sampled 5 % async"; QA R15: the
-// live path must not skip the solver). Boots the REAL production frame (dist/modules.html, its meta CSP, the real
-// fraction-bars@1 chunk) in an opaque-origin iframe exactly as the ModuleHost mounts it, then replays the gate's
-// solution by pointer and one wrong path (assets get CORS "*" as server/serve.mjs serves them to the opaque-origin frame), and checks the engine's own verdicts agree with the gate's key.
+// Q2-lite + Q4-lite for G1 fills (FACTORY.md §5.1: G1 "Q2 boot & hygiene: sampled 5 % async"; QA R15: the live path
+// must not skip the solver). Boots the REAL production frame (dist/modules.html, its meta CSP, the real engine chunk)
+// in an opaque-origin iframe exactly as the ModuleHost mounts it, then replays the gate's solution by pointer and one
+// wrong path (assets get CORS "*" as server/serve.mjs serves them to the opaque-origin frame), and checks the engine's
+// own verdicts agree with the gate's key.
+//   fraction-bars@1: shade / compare, wrong tap then the solution, in one mount.
+//   scene@1 (W1-B #5): choice-card@1 and sequence-steps@1, a wrong commit and the solution in TWO mounts (a committed
+//     probe is final in the frame). Each committed answer is also re-graded by the SERVER's grader (grade.js
+//     gradeEvent over the stored binding): the frame's verdict and the server's must agree, and every control must lie
+//     inside the frame at 360 x 640 (no clipped Check).
 // Dev/eval/forge-validator only: needs playwright + a Chromium binary; never imported by the request path.
+import { gradeEvent } from "./grade.js";
 import http from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, join, resolve } from "node:path";
@@ -39,7 +46,7 @@ function serve(dist) {
 }
 
 /**
- * @param {{ fillKey: string, renderer: string, payload: any, grade: any, itemId: string }[]} fills  engine fills only
+ * @param {{ fillKey: string, renderer: string, payload: any, grade: any, itemId: string }[]} fills  fraction-bars@1 and scene@1 fills
  * @returns {Promise<{ fillKey: string, ok: boolean, bootMs: number, failures: string[] }[]>}
  */
 export async function renderCheck(fills, { dist = "dist", executablePath = process.env.FORGE_CHROMIUM || "/opt/pw-browsers/chromium", timeoutMs = 6000 } = {}) {
@@ -57,6 +64,7 @@ export async function renderCheck(fills, { dist = "dist", executablePath = proce
     await page.route("**/*", (route) => { const u = route.request().url(); if (!u.startsWith(base)) { outside.push(u); return route.abort(); } return route.continue(); });
     await page.goto(`${base}/__host.html`);
     for (const f of fills) {
+      if (f.renderer === "scene@1") { out.push(await checkScene(page, f, { timeoutMs, consoleErrors, outside })); continue; }
       if (f.renderer !== "fraction-bars@1") { out.push({ fillKey: f.fillKey, ok: false, bootMs: 0, failures: ["renderer_not_checkable"] }); continue; }
       const failures = []; consoleErrors.length = 0; outside.length = 0;
       const mid = `g1-${f.fillKey.slice(-8)}`; const goal = `g1:${f.itemId}`;
@@ -100,6 +108,78 @@ export async function renderCheck(fills, { dist = "dist", executablePath = proce
     }
   } finally { await browser.close(); server.close(); }
   return out;
+}
+
+/** One scene@1 mount: the wrong path (first = true) or the solution. → { bootMs, answers, failures } */
+async function sceneRun(page, f, b, { wrong, timeoutMs }) {
+  const failures = [];
+  const mid = `g1-${f.fillKey.slice(-8)}`; const goal = `g1:${f.itemId}`;
+  const t0 = Date.now();
+  await page.evaluate(([m, p, g]) => window.__mount(m, "scene@1", p, g, "hinglish"), [mid, f.payload, goal]);
+  const frame = await currentFrame(page, timeoutMs);   // the NEW iframe (a second mount reuses the moduleId and URL)
+  await frame.waitForSelector(".sc-stage", { timeout: timeoutMs });
+  const bootMs = Date.now() - t0;
+  if (await frame.$("[data-card]")) failures.push("fallback_card_shown");
+  // every control inside the frame's view (the tray clips nothing the child must press)
+  const off = await frame.$$eval("button, input", (els) => els.filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && (r.bottom > innerHeight + 1 || r.right > innerWidth + 1 || r.top < -1 || r.left < -1); }).length);
+  if (off) failures.push(`controls_outside_frame:${off}`);
+  if (b.template === "choice-card@1") {
+    const ids = Object.keys(b.options);
+    const pick = wrong ? ids.find((id) => id !== b.correctId) : b.correctId;
+    await frame.click(`button[data-choice="${pick}"]`, { timeout: timeoutMs });
+  } else {
+    const order = f.payload.scene.nodes.find((n) => n.kind === "order" && n.id === b.orderNode);
+    let cur = [...(order?.start ?? [])];
+    if (!wrong) {
+      for (let i = 0; i < b.correctOrder.length; i++) {
+        if (cur[i] === b.correctOrder[i]) continue;
+        await frame.click(`button[data-order-item="${cur[i]}"]`, { timeout: timeoutMs });
+        await frame.click(`button[data-order-item="${b.correctOrder[i]}"]`, { timeout: timeoutMs });
+        const j = cur.indexOf(b.correctOrder[i]); [cur[i], cur[j]] = [cur[j], cur[i]];
+      }
+    }
+    await frame.click('button[data-target="check"]', { timeout: timeoutMs });
+  }
+  await page.waitForFunction(() => window.__ev.some((e) => e.type === "answer"), null, { timeout: timeoutMs }).catch(() => failures.push("no_answer_event"));
+  const ev = await page.evaluate(() => window.__ev);
+  if (ev.some((e) => e.type === "error")) failures.push(`engine_error:${ev.find((e) => e.type === "error").message.slice(0, 60)}`);
+  if (ev.some((e) => e.type === "interaction" && e.name === "params_adjusted")) failures.push("params_adjusted");
+  if ((await page.evaluate(() => window.__ready)) !== 1) failures.push("ready_count");
+  return { bootMs, answers: ev.filter((e) => e.type === "answer"), failures };
+}
+
+/** A scene@1 fill: wrong path and solution, frame verdicts vs the gate's key vs the server grader. */
+async function checkScene(page, f, { timeoutMs, consoleErrors, outside }) {
+  const failures = []; consoleErrors.length = 0; outside.length = 0;
+  const b = f.grade?.binding;
+  let bootMs = 0;
+  if (!b || b.engine !== "scene@1") return { fillKey: f.fillKey, ok: false, bootMs: 0, failures: ["no_scene_binding"] };
+  const mid = `g1-${f.fillKey.slice(-8)}`;
+  for (const wrong of [true, false]) {
+    try {
+      const r = await sceneRun(page, f, b, { wrong, timeoutMs });
+      bootMs = Math.max(bootMs, r.bootMs);
+      failures.push(...r.failures.map((x) => `${wrong ? "wrong" : "solution"}.${x}`));
+      const a = r.answers;
+      if (a.length !== 1 || a[0].correct !== !wrong) failures.push(`${wrong ? "wrong" : "solution"}.engine_verdict_disagrees_with_gate:${a.map((x) => x.correct).join(",")}`);
+      const g = a[0] && gradeEvent(f.grade, { moduleId: mid, engine: "scene@1", type: "answer", name: "answer", data: { value: a[0].value, correct: a[0].correct } });
+      if (!g) failures.push(`${wrong ? "wrong" : "solution"}.server_grader_null`);
+      else if ((g.outcome === "correct") !== !wrong) failures.push(`${wrong ? "wrong" : "solution"}.server_grader_disagrees:${g.outcome}`);
+    } catch (e) { failures.push(`${wrong ? "wrong" : "solution"}.boot:${String(e.message).slice(0, 80)}`); }
+  }
+  if (consoleErrors.length) failures.push(`console:${consoleErrors[0]}`);
+  if (outside.length) failures.push(`network:${outside[0].slice(0, 60)}`);
+  return { fillKey: f.fillKey, ok: failures.length === 0, bootMs, failures };
+}
+
+async function currentFrame(page, timeoutMs) {
+  const t0 = Date.now();
+  while (Date.now() - t0 < timeoutMs) {
+    const fr = await (await page.$("#f"))?.contentFrame();
+    if (fr && !fr.isDetached() && fr.url().includes("/modules.html")) return fr;
+    await new Promise((r) => setTimeout(r, 25));
+  }
+  throw new Error("frame did not attach");
 }
 
 async function waitFrame(page, mid, timeoutMs) {

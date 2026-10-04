@@ -1,0 +1,240 @@
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    width:360px; height:640px; margin:0 auto;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #FEF7E9;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-start;
+    overflow: hidden;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .screen {
+    width:100%; height:100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 20px;
+    gap: 16px;
+    position: relative;
+  }
+  .title {
+    font-size: 28px; font-weight: 700;
+    color: #B34B3A;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .instr {
+    font-size: 18px; font-weight: 500;
+    color: #5E3E2C;
+    text-align: center;
+    background: rgba(255,255,255,0.7);
+    padding: 10px 18px;
+    border-radius: 40px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .card {
+    background: #FFFFFF;
+    border-radius: 48px;
+    box-shadow: 0 12px 30px rgba(155, 100, 70, 0.12);
+    padding: 20px 24px 24px;
+    display: flex; flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    width: 90%;
+    max-width: 320px;
+    transition: all 0.3s ease;
+  }
+  .fraction-display {
+    font-size: 42px; font-weight: 800;
+    color: #2D5B4E;
+    background: #F3F0E8;
+    padding: 12px 32px;
+    border-radius: 36px;
+    letter-spacing: 2px;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.04);
+  }
+  .picture-area {
+    display: flex; justify-content: center; align-items: center;
+    width: 100%;
+    margin: 8px 0;
+  }
+  .pizza, .bar-container {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 8px;
+  }
+  .pizza-slice, .bar-segment {
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1);
+    -webkit-tap-highlight-color: transparent;
+    border-radius: 16px;
+    min-width: 44px; min-height: 44px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pizza-slice:active, .bar-segment:active {
+    transform: scale(0.9);
+  }
+  .pizza-slice:hover, .bar-segment:hover {
+    filter: brightness(1.05);
+  }
+  .coloured {
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+  }
+  .controls {
+    display: flex; gap: 16px; align-items: center;
+    width: 100%; justify-content: center;
+    margin-top: 8px;
+  }
+  .btn {
+    background: #F4A261;
+    border: none;
+    color: white;
+    font-weight: 700;
+    font-size: 22px;
+    padding: 16px 28px;
+    border-radius: 60px;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #C97A3A, 0 8px 18px rgba(0,0,0,0.12);
+    transition: all 0.15s ease;
+    min-width: 44px; min-height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    letter-spacing: 0.5px;
+  }
+  .btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 3px 0 #C97A3A, 0 5px 12px rgba(0,0,0,0.1);
+  }
+  .feedback {
+    font-size: 20px; font-weight: 600;
+    text-align: center;
+    min-height: 32px;
+    color: #2D5B4E;
+    transition: all 0.2s;
+  }
+  .done-screen {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 28px;
+    justify-content: center;
+    height: 100%;
+  }
+  .done-icon {
+    font-size: 82px;
+  }
+  .celebration {
+    animation: pop 0.5s ease-out;
+  }
+  @keyframes pop {
+    0% { transform: scale(0.7); opacity:0; }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity:1; }
+  }
+  .hidden { display: none !important; }
+</style>
+
+<div class="screen" id="main-screen">
+  <div class="title" id="title"></div>
+  <div class="instr" id="instr"></div>
+  <div class="card" id="item-card" data-item="">
+    <div class="fraction-display" id="fraction-text"></div>
+    <div class="picture-area" id="picture-area"></div>
+    <div class="controls">
+      <button class="btn" data-action="check" id="check-btn"></button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+</div>
+<div class="screen hidden" id="done-screen">
+  <div class="done-screen">
+    <div class="done-icon">🎉</div>
+    <div class="title" id="done-title"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  // Wait for runtime
+  const params = Studio.params;
+  const items = params.items;
+  const pictureType = params.picture;
+  let currentItemIndex = 0;
+  let currentItem = null;
+  let shadedCount = 0;
+  let partsElements = [];
+  let currentDivisions = 0;
+
+  // DOM refs
+  const mainScreen = document.getElementById('main-screen');
+  const doneScreen = document.getElementById('done-screen');
+  const titleEl = document.getElementById('title');
+  const instrEl = document.getElementById('instr');
+  const itemCard = document.getElementById('item-card');
+  const fractionText = document.getElementById('fraction-text');
+  const pictureArea = document.getElementById('picture-area');
+  const checkBtn = document.getElementById('check-btn');
+  const feedbackEl = document.getElementById('feedback');
+  const doneTitle = document.getElementById('done-title');
+
+  // Set static strings
+  titleEl.textContent = Studio.t('title');
+  instrEl.textContent = Studio.t('instr');
+  checkBtn.textContent = Studio.t('check');
+  doneTitle.textContent = Studio.t('done');
+
+  function renderPicture(item) {
+    const d = item.d;
+    currentDivisions = d;
+    pictureArea.innerHTML = '';
+    partsElements = [];
+    shadedCount = 0;
+
+    if (pictureType === 'pizza-or-bar') {
+      // Decide pizza or bar based on d (pizza for even divisions looks better, but we can use pizza for all or mix)
+      // Use pizza for all since it's visually rich
+      const isPizza = true; // consistent pizza representation
+      const container = document.createElement('div');
+      container.className = isPizza ? 'pizza' : 'bar-container';
+      
+      for (let i = 0; i < d; i++) {
+        const part = document.createElement('div');
+        part.className = isPizza ? 'pizza-slice' : 'bar-segment';
+        part.setAttribute('data-part', i);
+        part.setAttribute('data-shaded', 'false');
+        
+        if (isPizza) {
+          // Create inline SVG pizza slice
+          const angle = 360 / d;
+          const startAngle = i * angle;
+          const endAngle = (i + 1) * angle;
+          const svg = createPizzaSliceSVG(startAngle, endAngle, i, d);
+          part.appendChild(svg);
+        } else {
+          // Bar segment
+          part.style.width = (280 / d) + 'px';
+          part.style.height = '64px';
+          part.style.background = '#F9E4C8';
+          part.style.border = '2px solid #D4A373';
+          part.style.borderRadius = '12px';
+        }
+        
+        part.addEventListener('click', () => togglePart(part, i));
+        container.appendChild(part);
+        partsElements.push(part);
+      }
+      pictureArea.appendChild(container);
+    }
+    updateCardData(item);
+  }
+
+  function createPizzaSliceSVG(startAngle, endAngle, index, total) {
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("viewBox", "0 0 100 100");
+    svg.setAttribute("width", total <= 6 ? "90" : total <= 8 ? "72" : "64");
+    svg.setAttribute("height", total <= 6 ? "90" : total <= 8 ? "72" : "64");
+    
+    const radius = 40;
+    const cx = 50, cy = 50;
+    
+    // Convert angles to radians, SVG uses 0 at 3 o'clock going clockwise
+    function polarToCartesian(cx, cy, r, angleDeg) {
+      const rad = (

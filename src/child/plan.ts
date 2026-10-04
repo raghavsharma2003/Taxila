@@ -26,6 +26,8 @@ export interface HomePlan {
   did: DidCard[];
   tried: number | null;
   opensAt: string | null;
+  /** The parent's lesson hours (resting names the control that refused: W1-A item 2). Null when not known. */
+  window?: { from: string; to: string } | null;
   surfaces: { map: boolean; notebook: boolean; resume: boolean };
   /** An offline practice pack is on this device (plan.packReady). Only then may the offline card offer Practice. */
   packReady: boolean;
@@ -73,6 +75,7 @@ export function fromServer(r: ChildPlanResponse): HomePlan {
     did: (summary?.cards ?? []).slice(0, 3),
     tried: summary?.tried ?? null,
     opensAt: r.opensAt ?? null,
+    window: r.plan?.window ?? null,
     surfaces: { ...ALL_SURFACES, ...(r.surfaces ?? {}) },
     packReady: !!r.packReady,
     source: "server",

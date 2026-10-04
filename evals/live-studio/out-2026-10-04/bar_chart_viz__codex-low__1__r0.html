@@ -1,0 +1,307 @@
+<style>
+  :root{
+    --bg:#f6fbff;
+    --card:#ffffff;
+    --ink:#1f2a44;
+    --muted:#5f6b85;
+    --grid:#d9e4f5;
+    --axis:#8ca0c2;
+    --bar:#5aa9ff;
+    --bar-dark:#3c86db;
+    --ok:#1f9d62;
+    --bad:#d9534f;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+  }
+  .wrap{
+    width:100%;
+    max-width:420px;
+    margin:0 auto;
+    padding:12px;
+  }
+  .card{
+    background:var(--card);
+    border-radius:18px;
+    box-shadow:0 8px 24px rgba(31,42,68,.12);
+    padding:12px 12px 14px;
+  }
+  .title{
+    margin:2px 4px 6px;
+    font-size:22px;
+    font-weight:800;
+    line-height:1.2;
+  }
+  .ask{
+    margin:0 4px 8px;
+    font-size:16px;
+    color:var(--muted);
+    min-height:24px;
+  }
+  .chartBox{
+    width:100%;
+    border-radius:14px;
+    background:linear-gradient(180deg,#f9fcff 0%, #f2f8ff 100%);
+    padding:6px;
+  }
+  svg{
+    display:block;
+    width:100%;
+    height:auto;
+  }
+  .grid{
+    stroke:var(--grid);
+    stroke-width:1.5;
+  }
+  .axis{
+    stroke:var(--axis);
+    stroke-width:2;
+  }
+  .tick-label{
+    fill:var(--muted);
+    font-size:12px;
+    font-weight:600;
+  }
+  .axis-title{
+    fill:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+  .fruit-label{
+    fill:var(--ink);
+    font-size:12px;
+    font-weight:700;
+  }
+  .bar{
+    fill:var(--bar);
+    transition:y .8s cubic-bezier(.22,.9,.28,1), height .8s cubic-bezier(.22,.9,.28,1), transform .15s ease, fill .2s ease;
+    transform-origin:center bottom;
+    filter:drop-shadow(0 3px 2px rgba(60,134,219,.25));
+    rx:10;
+  }
+  .bar-group{
+    cursor:pointer;
+  }
+  .bar-group:active .bar{
+    transform:scaleY(.96) scaleX(.98);
+    fill:var(--bar-dark);
+  }
+  .hit{
+    fill:transparent;
+  }
+  .value-pill{
+    fill:#ffffff;
+    stroke:#cfe0fb;
+    stroke-width:1.5;
+    opacity:0;
+    transform-origin:center center;
+    transition:opacity .2s ease;
+  }
+  .value-text{
+    fill:var(--ink);
+    font-size:12px;
+    font-weight:800;
+    opacity:0;
+    transition:opacity .2s ease;
+  }
+  .show-value .value-pill,
+  .show-value .value-text{
+    opacity:1;
+  }
+  .feedback{
+    margin-top:8px;
+    min-height:28px;
+    font-size:18px;
+    font-weight:800;
+    text-align:center;
+    transition:transform .2s ease, color .2s ease;
+  }
+  .feedback.ok{color:var(--ok)}
+  .feedback.bad{color:var(--bad)}
+  .feedback.pop{transform:scale(1.05)}
+</style>
+
+<div class="wrap">
+  <div class="card">
+    <div class="title" id="title"></div>
+    <div class="ask" id="ask"></div>
+
+    <div class="chartBox">
+      <svg id="chart" viewBox="0 0 340 300" preserveAspectRatio="xMidYMid meet">
+        <g id="gridLayer"></g>
+        <line class="axis" id="yAxis" x1="54" y1="24" x2="54" y2="252"></line>
+        <line class="axis" id="xAxis" x1="54" y1="252" x2="324" y2="252"></line>
+        <text class="axis-title" id="yTitle" x="12" y="18"></text>
+        <g id="barsLayer"></g>
+      </svg>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const data = (Studio.params && Studio.params.data) ? Studio.params.data.slice() : [];
+  const titleEl = document.getElementById('title');
+  const askEl = document.getElementById('ask');
+  const yTitle = document.getElementById('yTitle');
+  const gridLayer = document.getElementById('gridLayer');
+  const barsLayer = document.getElementById('barsLayer');
+  const feedbackEl = document.getElementById('feedback');
+
+  titleEl.textContent = Studio.t('title');
+  askEl.textContent = Studio.t('ask');
+  yTitle.textContent = Studio.t('yaxis');
+
+  const plot = {left:54, right:324, top:24, bottom:252};
+  const plotW = plot.right - plot.left;
+  const plotH = plot.bottom - plot.top;
+
+  const maxVal = Math.max.apply(null, data.map(d => d.value).concat([1]));
+  let step = Math.ceil(maxVal / 4);
+  if (step < 1) step = 1;
+  const tickCount = Math.ceil(maxVal / step);
+  const maxTick = tickCount * step;
+
+  function yFor(v){
+    return plot.bottom - (v / maxTick) * plotH;
+  }
+
+  for(let t=0; t<=maxTick; t+=step){
+    const y = yFor(t);
+
+    const gl = document.createElementNS('http://www.w3.org/2000/svg','line');
+    gl.setAttribute('class','grid');
+    gl.setAttribute('x1', String(plot.left));
+    gl.setAttribute('x2', String(plot.right));
+    gl.setAttribute('y1', String(y));
+    gl.setAttribute('y2', String(y));
+    gridLayer.appendChild(gl);
+
+    const tx = document.createElementNS('http://www.w3.org/2000/svg','text');
+    tx.setAttribute('class','tick-label');
+    tx.setAttribute('x', String(plot.left - 8));
+    tx.setAttribute('y', String(y + 4));
+    tx.setAttribute('text-anchor','end');
+    tx.setAttribute('data-tick', String(t));
+    tx.textContent = String(t);
+    gridLayer.appendChild(tx);
+  }
+
+  const n = data.length || 1;
+  const slot = plotW / n;
+  const barW = Math.min(34, Math.max(26, slot * 0.58));
+  const hitW = Math.max(44, slot * 0.9);
+
+  let locked = false;
+  let answeredKey = null;
+
+  function clearValueBubbles(){
+    const groups = barsLayer.querySelectorAll('.bar-group');
+    groups.forEach(g => g.classList.remove('show-value'));
+  }
+
+  data.forEach((d, i) => {
+    const cx = plot.left + slot * (i + 0.5);
+    const finalH = (d.value / maxTick) * plotH;
+    const finalY = plot.bottom - finalH;
+
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('class','bar-group');
+    g.setAttribute('tabindex','0');
+
+    const hit = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    hit.setAttribute('class','hit');
+    hit.setAttribute('x', String(cx - hitW/2));
+    hit.setAttribute('y', String(plot.top));
+    hit.setAttribute('width', String(hitW));
+    hit.setAttribute('height', String(plotH + 44));
+
+    const bar = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    bar.setAttribute('class','bar');
+    bar.setAttribute('x', String(cx - barW/2));
+    bar.setAttribute('y', String(plot.bottom));
+    bar.setAttribute('width', String(barW));
+    bar.setAttribute('height', '0');
+    bar.setAttribute('data-bar', d.key);
+    bar.setAttribute('data-value', String(d.value));
+
+    const pillW = 34, pillH = 22;
+    const pill = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    pill.setAttribute('class','value-pill');
+    pill.setAttribute('x', String(cx - pillW/2));
+    pill.setAttribute('y', String(Math.max(plot.top + 2, finalY - 28)));
+    pill.setAttribute('width', String(pillW));
+    pill.setAttribute('height', String(pillH));
+    pill.setAttribute('rx','11');
+
+    const vText = document.createElementNS('http://www.w3.org/2000/svg','text');
+    vText.setAttribute('class','value-text');
+    vText.setAttribute('x', String(cx));
+    vText.setAttribute('y', String(Math.max(plot.top + 17, finalY - 13)));
+    vText.setAttribute('text-anchor','middle');
+    vText.textContent = String(d.value);
+
+    const label = document.createElementNS('http://www.w3.org/2000/svg','text');
+    label.setAttribute('class','fruit-label');
+    label.setAttribute('x', String(cx));
+    label.setAttribute('y', String(plot.bottom + 22));
+    label.setAttribute('text-anchor','middle');
+    label.textContent = Studio.t(d.key);
+
+    g.appendChild(hit);
+    g.appendChild(bar);
+    g.appendChild(pill);
+    g.appendChild(vText);
+    g.appendChild(label);
+    barsLayer.appendChild(g);
+
+    const submit = () => {
+      if (locked) return;
+      answeredKey = d.key;
+      clearValueBubbles();
+      g.classList.add('show-value');
+      Studio.event('bar_tap', {key:d.key, value:d.value});
+      Studio.answer(d.key);
+    };
+
+    g.addEventListener('click', submit);
+    g.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        submit();
+      }
+    });
+
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        bar.setAttribute('y', String(finalY));
+        bar.setAttribute('height', String(finalH));
+      }, 80 + i * 90);
+    });
+  });
+
+  Studio.onVerdict(function(v){
+    if (!answeredKey) return;
+    feedbackEl.classList.remove('ok','bad','pop');
+    if (v && v.correct){
+      locked = true;
+      feedbackEl.textContent = Studio.t('right') + ' ' + Studio.t('done');
+      feedbackEl.classList.add('ok','pop');
+      askEl.textContent = Studio.t('done');
+      Studio.done();
+    } else {
+      feedbackEl.textContent = Studio.t('wrong');
+      feedbackEl.classList.add('bad','pop');
+      setTimeout(() => feedbackEl.classList.remove('pop'), 220);
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

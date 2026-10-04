@@ -37,7 +37,10 @@ export function targetFor(s, kit, item) {
   const own = item.expectations ?? kit.expectations;
   const ideas = own.length ? own : [whyKey(kit, item.skillId)].filter(Boolean);
   if (s.pendingWhy === item.id) return { mode: "why", item, ideas, misconceptions: mis };
-  return { mode: "item", item, key: item.answer, also: item.acceptable || [], ideas, misconceptions: mis, options: item.options, open: OPEN_KINDS.has(item.kind) };
+  // "Show me choices" tiles offered for THIS item (state.js offerChoices): a tap on one is graded in code.
+  const offered = s.offered?.itemId === item.id && Array.isArray(s.offered.options) ? s.offered.options : undefined;
+  return { mode: "item", item, key: item.answer, also: item.acceptable || [], ideas, misconceptions: mis, options: item.options, open: OPEN_KINDS.has(item.kind),
+    ...(offered ? { offered } : {}) };
 }
 
 /** Exact-match form: canonical fractions, punctuation and trailing filler stripped. */
@@ -250,8 +253,28 @@ export function askedOther(heard, item, lang) {
 export const isChoiceQuestion = (q) =>
   /\d[\d,]*(?:[./]\d+)?\s*(?:hai|he|h|hoga|is|aayega)?\s*(?:,|ya\s+phir|ya|or|या|athva|athwa|vs\.?|versus)\s*[^?？]*?\d/iu.test(String(q ?? "").replace(/(\d),(?=\d)/g, "$1"));
 
+/**
+ * The child's help requests (the Hint sheet and the Young Help menu, src/child/lesson/useDesk.ts REQUESTS): a tap on
+ * one sends a fixed label with this chip id. They are client ACTIONS, never the child's words (audit flows G3: "Choices
+ * dikhao" ×13 in the parent transcript, quoted as "In Aarav's words"; G6: "Skip for now" read as "I want to stop").
+ * chip id → the request the Director acts on (state.js decide).
+ */
+export const HELP_REQUESTS = Object.freeze({
+  hint: "hint", why: "why", know: "know", another: "another", slower: "slower", skip: "skip",
+  choices: "choices", help_choices: "choices", how: "how", help_how: "how",
+});
+/** @returns {string | null} the help request a chip id names */
+export const helpOf = (chipId) => (typeof chipId === "string" && Object.hasOwn(HELP_REQUESTS, chipId) ? HELP_REQUESTS[chipId] : null);
+
 export function classifyFast({ target, childText, asrConfidence, typed, chipId, moduleAnswer, heard, lang }) {
   const text = String(childText || "").trim();
+  // A help request is never graded and never read for stop words or a don't-know (no evidence, no flags) — unless
+  // the words that came with it trip the safety predicate, which always decides first.
+  const help = helpOf(chipId);
+  if (help && !scanSafety(text).distress) {
+    const none = { dontKnow: false, asksForAnswer: false, minimal: false, offTopic: false, distress: false, distressKind: null, wantsToStop: false };
+    return { result: { outcome: "no_evidence", confidence: 1, source: "help", help, flags: none }, flags: none, text };
+  }
   const read = readUtterance(text);
   const safety = scanSafety(text);
   const flags = {
@@ -264,6 +287,13 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   if (chipId && target.options && /^opt:\d+$/.test(chipId)) {
     const o = target.options[Number(chipId.slice(4))];
     if (o) { const m = fromMatch(optionTag(o, target), target); return done(m.outcome, "chip", m); }
+  }
+  if (chipId && target.offered && /^pick:\d+$/.test(chipId)) {
+    const picked = target.offered[Number(chipId.slice(5))];
+    if (typeof picked === "string") {
+      const right = [target.key, ...(target.also || [])].some((k) => k && norm(k) === norm(picked));
+      return done(right ? "correct" : "incorrect", "chip");
+    }
   }
   if (moduleAnswer && typeof moduleAnswer.correct === "boolean" && target.mode === "item") {
     return done(moduleAnswer.correct ? "correct" : "incorrect", "module");

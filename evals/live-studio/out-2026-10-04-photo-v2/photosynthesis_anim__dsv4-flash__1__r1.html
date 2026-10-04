@@ -1,0 +1,233 @@
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: sans-serif; background: #e8f5e9; height: 640px; width: 360px; overflow: hidden; position: relative; }
+  #scene { position: relative; width: 360px; height: 640px; overflow: hidden; }
+  svg { position: absolute; top: 0; left: 0; width: 360px; height: 520px; }
+  #bottom-panel { position: absolute; bottom: 0; left: 0; width: 360px; background: #c8e6c9; border-radius: 24px 24px 0 0; padding: 8px; display: flex; flex-direction: column; gap: 4px; align-items: center; }
+  #play-area { display: flex; align-items: center; gap: 8px; width: 100%; justify-content: center; }
+  #play-btn { background: #2e7d32; border: none; border-radius: 60px; width: 60px; height: 44px; font-size: 14px; font-weight: bold; color: white; cursor: pointer; transition: transform 0.15s; display: flex; align-items: center; justify-content: center; gap: 4px; }
+  #play-btn:active { transform: scale(0.92); }
+  #step-btns { display: flex; gap: 4px; }
+  .step-btn { background: #81c784; border: none; border-radius: 40px; width: 44px; height: 44px; font-size: 14px; font-weight: bold; color: #1b5e20; cursor: pointer; transition: transform 0.15s, background 0.3s; }
+  .step-btn.active { background: #2e7d32; color: white; transform: scale(1.05); }
+  .step-btn:active { transform: scale(0.88); }
+  #caption { font-size: 11px; color: #1b5e20; background: #a5d6a7; border-radius: 40px; padding: 4px 12px; width: 100%; text-align: center; min-height: 24px; display: flex; align-items: center; justify-content: center; }
+  #ask-area { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; margin-top: 4px; }
+  #ask-label { font-size: 11px; font-weight: bold; color: #1b5e20; text-align: center; }
+  #options { display: flex; gap: 6px; }
+  .opt-btn { background: #66bb6a; border: none; border-radius: 60px; width: 80px; height: 44px; font-size: 12px; font-weight: bold; color: white; cursor: pointer; transition: transform 0.15s; }
+  .opt-btn:active { transform: scale(0.92); }
+  .opt-btn:disabled { opacity: 0.5; }
+  .feedback { font-size: 11px; font-weight: bold; margin-top: 2px; min-height: 18px; text-align: center; }
+  .feedback.correct { color: #1b5e20; }
+  .feedback.wrong { color: #b71c1c; }
+</style>
+<div id="scene">
+<svg viewBox="0 0 360 520" xmlns="http://www.w3.org/2000/svg">
+  <!-- sky -->
+  <rect x="0" y="0" width="360" height="520" fill="#c8e6c9"/>
+  <defs>
+    <radialGradient id="sunGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff9c4"/>
+      <stop offset="60%" stop-color="#ffee58"/>
+      <stop offset="100%" stop-color="#fdd835"/>
+    </radialGradient>
+    <linearGradient id="soilGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#795548"/>
+      <stop offset="100%" stop-color="#4e342e"/>
+    </linearGradient>
+  </defs>
+  <!-- sun -->
+  <circle cx="280" cy="50" r="30" fill="url(#sunGrad)"/>
+  <text x="280" y="55" text-anchor="middle" fill="#b71c1c" font-size="11" font-weight="bold" data-label="sun">सूरज</text>
+  <!-- light rays -->
+  <line x1="270" y1="68" x2="210" y2="160" stroke="#fdd835" stroke-width="2" opacity="0.6"/>
+  <line x1="290" y1="68" x2="250" y2="160" stroke="#fdd835" stroke-width="2" opacity="0.6"/>
+  <line x1="250" y1="68" x2="170" y2="160" stroke="#fdd835" stroke-width="2" opacity="0.6"/>
+  <!-- soil -->
+  <path d="M30 420 H330 V510 H30 Z" fill="url(#soilGrad)"/>
+  <text x="60" y="480" fill="#fff" font-size="10" data-label="roots">जड़ें</text>
+  <!-- plant stem -->
+  <path d="M180 400 Q175 300 180 250 Q185 210 180 180" stroke="#388e3c" stroke-width="8" fill="none"/>
+  <!-- leaf group -->
+  <g data-entity="leaf">
+    <path d="M180 180 Q140 150 150 210 Q160 250 180 180" fill="#43a047" stroke="#2e7d32" stroke-width="2"/>
+    <path d="M180 180 Q220 150 210 210 Q200 250 180 180" fill="#43a047" stroke="#2e7d32" stroke-width="2"/>
+  </g>
+  <text x="135" y="170" fill="#fff" font-size="10" font-weight="bold" data-label="leaf">पत्ती</text>
+  <!-- roots group -->
+  <g data-entity="roots">
+    <path d="M170 430 Q160 460 155 490" stroke="#6d4c41" stroke-width="3" fill="none"/>
+    <path d="M190 430 Q200 460 195 490" stroke="#6d4c41" stroke-width="3" fill="none"/>
+    <path d="M180 435 Q175 465 170 495" stroke="#6d4c41" stroke-width="3" fill="none"/>
+  </g>
+  <!-- water label -->
+  <text x="130" y="440" fill="#1565c0" font-size="10" font-weight="bold" data-label="water">पानी</text>
+  <!-- co2 label -->
+  <text x="50" y="170" fill="#546e7a" font-size="10" font-weight="bold" data-label="co2">CO₂</text>
+  <!-- o2 label -->
+  <text x="295" y="170" fill="#2e7d32" font-size="10" font-weight="bold" data-label="o2">O₂</text>
+  <!-- glucose label inside leaf -->
+  <text x="195" y="220" fill="#fff" font-size="9" font-weight="bold" data-label="glucose">ग्लूकोज़</text>
+  <!-- particles containers -->
+  <g id="water-particles"></g>
+  <g id="co2-particles"></g>
+  <g id="o2-particles"></g>
+</svg>
+<div id="bottom-panel">
+  <div id="play-area">
+    <button id="play-btn" data-action="play">⏸ pause</button>
+    <div id="step-btns">
+      <button class="step-btn" data-action="step-1">1</button>
+      <button class="step-btn" data-action="step-2">2</button>
+      <button class="step-btn" data-action="step-3">3</button>
+      <button class="step-btn" data-action="step-4">4</button>
+      <button class="step-btn" data-action="step-5">5</button>
+    </div>
+  </div>
+  <div id="caption" data-caption>प्रकाश संश्लेषण शुरू</div>
+  <div id="ask-area">
+    <div id="ask-label">प्रकाश संश्लेषण के लिए क्या चाहिए?</div>
+    <div id="options">
+      <button class="opt-btn" data-option="co2" style="width:80px;height:44px;">CO₂</button>
+      <button class="opt-btn" data-option="o2" style="width:80px;height:44px;">O₂</button>
+      <button class="opt-btn" data-option="water" style="width:80px;height:44px;">पानी</button>
+    </div>
+    <div id="feedback" class="feedback"></div>
+  </div>
+</div>
+</div>
+<script>
+(function(){
+  const waterParticles = document.getElementById('water-particles');
+  const co2Particles = document.getElementById('co2-particles');
+  const o2Particles = document.getElementById('o2-particles');
+  const playBtn = document.getElementById('play-btn');
+  const stepBtns = document.querySelectorAll('.step-btn');
+  const caption = document.getElementById('caption');
+  const feedback = document.getElementById('feedback');
+  const optBtns = document.querySelectorAll('.opt-btn');
+
+  let playing = true;
+  let currentStep = 1;
+  let animFrame;
+  let time = 0;
+  const particleCount = 4;
+
+  // create particles
+  function makeParticles(container, type, baseX, baseY) {
+    const colors = {water:'#42a5f5', co2:'#90a4ae', o2:'#66bb6a'};
+    for (let i = 0; i < particleCount; i++) {
+      const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      circle.setAttribute('r','4');
+      circle.setAttribute('fill', colors[type]);
+      circle.setAttribute('data-flow', type);
+      circle.setAttribute('cx', baseX + (i * 10 - 15));
+      circle.setAttribute('cy', baseY + (i * 5 - 8));
+      container.appendChild(circle);
+    }
+  }
+  // water particles start near roots (y=430), move up stem to leaf (y=200)
+  makeParticles(waterParticles, 'water', 170, 430);
+  // CO2 particles start near air left (x=70, y=200), move into leaf (x=160)
+  makeParticles(co2Particles, 'co2', 70, 200);
+  // O2 particles start in leaf (x=200, y=190), move out to air right (x=300)
+  makeParticles(o2Particles, 'o2', 200, 190);
+
+  function getParticles(container) {
+    return container.querySelectorAll('circle');
+  }
+
+  function animate() {
+    if (playing) {
+      time += 0.05;
+      // Water: move up along stem (y decreases), reset at bottom
+      const waterCircs = getParticles(waterParticles);
+      waterCircs.forEach((c, i) => {
+        let cy = parseFloat(c.getAttribute('cy'));
+        cy -= 1.8;
+        if (cy < 195) cy = 440 + (i * 5);
+        c.setAttribute('cy', cy);
+        let cx = parseFloat(c.getAttribute('cx'));
+        cx += Math.sin(cy * 0.04 + i) * 0.4;
+        c.setAttribute('cx', cx);
+      });
+      // CO2: move into leaf - x increases towards leaf, y slightly down
+      const co2Circs = getParticles(co2Particles);
+      co2Circs.forEach((c, i) => {
+        let cx = parseFloat(c.getAttribute('cx'));
+        cx += 1.2;
+        if (cx > 170) cx = 60 + (i * 8);
+        c.setAttribute('cx', cx);
+        let cy = parseFloat(c.getAttribute('cy'));
+        cy += Math.sin(time * 0.5 + i) * 0.3;
+        c.setAttribute('cy', cy);
+      });
+      // O2: move out of leaf - x increases away
+      const o2Circs = getParticles(o2Particles);
+      o2Circs.forEach((c, i) => {
+        let cx = parseFloat(c.getAttribute('cx'));
+        cx += 1.5;
+        if (cx > 310) cx = 190 + (i * 8);
+        c.setAttribute('cx', cx);
+        let cy = parseFloat(c.getAttribute('cy'));
+        cy += Math.sin(time * 0.4 + i) * 0.3;
+        c.setAttribute('cy', cy);
+      });
+    }
+    animFrame = requestAnimationFrame(animate);
+  }
+  animate();
+
+  // play/pause toggle
+  playBtn.addEventListener('click', function(){
+    playing = !playing;
+    this.innerHTML = playing ? '⏸ pause' : '▶ play';
+    this.dataset.action='play';
+  });
+
+  // step buttons
+  const stepCaptions = ['step1','step2','step3','step4','step5'];
+  stepBtns.forEach((btn, idx) => {
+    btn.addEventListener('click', function(){
+      currentStep = idx+1;
+      stepBtns.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      caption.textContent = Studio.t(stepCaptions[idx]);
+      if (!playing) {
+        playing = true;
+        playBtn.innerHTML = '⏸ pause';
+      }
+    });
+  });
+  stepBtns[0].classList.add('active');
+  caption.textContent = Studio.t('step1');
+
+  // question
+  let answered = false;
+
+  optBtns.forEach(btn => {
+    btn.addEventListener('click', function(){
+      if (answered) return;
+      const val = this.dataset.option;
+      Studio.answer(val);
+    });
+  });
+
+  Studio.onVerdict(function(result){
+    if (result.correct) {
+      feedback.textContent = 'सही! बहुत अच्छे!';
+      feedback.className = 'feedback correct';
+      answered = true;
+      optBtns.forEach(b => b.disabled = true);
+      Studio.done();
+    } else {
+      feedback.textContent = 'गलत, फिर कोशिश करो';
+      feedback.className = 'feedback wrong';
+      setTimeout(() => { feedback.className = 'feedback'; }, 2000);
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

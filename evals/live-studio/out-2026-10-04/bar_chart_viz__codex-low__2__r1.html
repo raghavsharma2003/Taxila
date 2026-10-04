@@ -1,0 +1,269 @@
+<style>
+  :root{
+    --bg:#f6fbff;
+    --card:#ffffff;
+    --ink:#1f2a44;
+    --muted:#6b7a99;
+    --axis:#8aa0bf;
+    --grid:#dbe7f5;
+    --bar:#4f8cff;
+    --bar-press:#3e73d1;
+    --ok:#1f9d68;
+    --no:#d64545;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    width:100%;
+    max-width:420px;
+    margin:0 auto;
+    min-height:640px;
+    background:linear-gradient(180deg,#eef7ff 0%,#f9fcff 100%);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--ink);
+    padding:14px 12px 16px;
+  }
+  .card{
+    background:var(--card);
+    border-radius:20px;
+    box-shadow:0 8px 24px rgba(40,88,160,.12);
+    padding:14px 10px 12px;
+  }
+  .title{
+    text-align:center;
+    font-weight:800;
+    font-size:22px;
+    line-height:1.2;
+    margin:2px 8px 10px;
+  }
+  .ask{
+    text-align:center;
+    font-size:18px;
+    font-weight:700;
+    margin:4px 8px 10px;
+    color:#2a3c5f;
+    min-height:28px;
+  }
+  .chartBox{
+    width:100%;
+    border-radius:16px;
+    background:#fbfdff;
+    border:1px solid #e7effa;
+    padding:8px 6px 2px;
+    overflow:hidden;
+  }
+  svg{display:block;width:100%;height:auto}
+  .grid{stroke:var(--grid);stroke-width:1}
+  .axis{stroke:var(--axis);stroke-width:1.6}
+  .tickText{fill:var(--muted);font-size:12px;font-weight:700}
+  .xText{fill:#3f4f6e;font-size:13px;font-weight:700}
+  .yTitle{fill:#4f6286;font-size:13px;font-weight:800}
+  .bar{
+    fill:var(--bar);
+    rx:9; ry:9;
+    transform-box:fill-box;
+    transform-origin:50% 100%;
+    transform:scaleY(0);
+    transition:transform 700ms cubic-bezier(.2,.8,.2,1), fill 120ms ease;
+    cursor:pointer;
+  }
+  .bar.in{transform:scaleY(1)}
+  .bar.pressed{fill:var(--bar-press); transform:scaleY(1) scale(0.97)}
+  .valueTag{
+    fill:#1d2c47;
+    font-size:14px;
+    font-weight:800;
+    opacity:0;
+    transition:opacity .2s ease;
+    pointer-events:none;
+  }
+  .valueTag.show{opacity:1}
+  .feedback{
+    min-height:30px;
+    margin-top:8px;
+    text-align:center;
+    font-size:20px;
+    font-weight:800;
+    transition:transform .2s ease, color .2s ease, opacity .2s ease;
+    opacity:.98;
+  }
+  .feedback.ok{color:var(--ok); transform:scale(1.03)}
+  .feedback.no{color:var(--no)}
+  .feedback.done{color:#0e7a50}
+</style>
+
+<div class="wrap">
+  <div class="card">
+    <div id="title" class="title"></div>
+    <div id="ask" class="ask"></div>
+    <div class="chartBox">
+      <svg id="chart" viewBox="0 0 340 360" aria-hidden="true">
+        <g id="grid"></g>
+        <line id="yAxis" class="axis"></line>
+        <line id="xAxis" class="axis"></line>
+        <text id="yTitle" class="yTitle" x="16" y="160" transform="rotate(-90 16 160)"></text>
+        <g id="ticks"></g>
+        <g id="bars"></g>
+        <g id="labels"></g>
+        <g id="values"></g>
+      </svg>
+    </div>
+    <div id="feedback" class="feedback"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const p = Studio.params;
+  const data = Array.isArray(p.data) ? p.data.slice() : [];
+  const titleEl = document.getElementById('title');
+  const askEl = document.getElementById('ask');
+  const fbEl = document.getElementById('feedback');
+  const gGrid = document.getElementById('grid');
+  const gTicks = document.getElementById('ticks');
+  const gBars = document.getElementById('bars');
+  const gLabels = document.getElementById('labels');
+  const gValues = document.getElementById('values');
+  const yTitle = document.getElementById('yTitle');
+  const yAxis = document.getElementById('yAxis');
+  const xAxis = document.getElementById('xAxis');
+
+  titleEl.textContent = Studio.t('title');
+  askEl.textContent = Studio.t('ask');
+  yTitle.textContent = Studio.t('yaxis');
+
+  const W0 = 44, Y0 = 30, PW = 286, PH = 250, BASE = 280;
+  yAxis.setAttribute('x1', W0);
+  yAxis.setAttribute('y1', Y0);
+  yAxis.setAttribute('x2', W0);
+  yAxis.setAttribute('y2', BASE);
+  xAxis.setAttribute('x1', W0);
+  xAxis.setAttribute('y1', BASE);
+  xAxis.setAttribute('x2', W0 + PW);
+  xAxis.setAttribute('y2', BASE);
+
+  const maxValue = data.reduce((m,d)=>Math.max(m, Number(d.value)||0), 0);
+  function niceStep(max){
+    if(max <= 5) return 1;
+    const raw = max / 5;
+    const pow = Math.pow(10, Math.floor(Math.log10(raw)));
+    const n = raw / pow;
+    let step = 1;
+    if(n <= 1) step = 1;
+    else if(n <= 2) step = 2;
+    else if(n <= 5) step = 5;
+    else step = 10;
+    return step * pow;
+  }
+  const step = niceStep(maxValue || 1);
+  const topTick = Math.max(step, Math.ceil((maxValue || 1) / step) * step);
+  const yOf = v => BASE - (v / topTick) * PH;
+
+  for(let t=0; t<=topTick; t+=step){
+    const y = yOf(t);
+    const gl = document.createElementNS('http://www.w3.org/2000/svg','line');
+    gl.setAttribute('class','grid');
+    gl.setAttribute('x1', W0);
+    gl.setAttribute('x2', W0 + PW);
+    gl.setAttribute('y1', y);
+    gl.setAttribute('y2', y);
+    gGrid.appendChild(gl);
+
+    const tx = document.createElementNS('http://www.w3.org/2000/svg','text');
+    tx.setAttribute('class','tickText');
+    tx.setAttribute('x', W0 - 8);
+    tx.setAttribute('y', y + 4);
+    tx.setAttribute('text-anchor','end');
+    tx.setAttribute('data-tick', String(t));
+    tx.textContent = String(t);
+    gTicks.appendChild(tx);
+  }
+
+  const n = Math.max(1, data.length);
+  const slot = PW / n;
+  const barW = Math.max(50, Math.min(52, slot - 4));
+
+  let awaiting = false;
+  let completed = false;
+  let currentTag = null;
+
+  data.forEach((d,i)=>{
+    const key = d.key;
+    const value = Number(d.value) || 0;
+    const h = (value / topTick) * PH;
+    const x = W0 + i * slot + (slot - barW) / 2;
+    const y = BASE - h;
+
+    const bar = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    bar.setAttribute('class','bar');
+    bar.setAttribute('x', x);
+    bar.setAttribute('y', y);
+    bar.setAttribute('width', barW);
+    bar.setAttribute('height', h);
+    bar.setAttribute('data-bar', key);
+    bar.setAttribute('data-value', String(value));
+    bar.setAttribute('tabindex', '0');
+
+    const lbl = document.createElementNS('http://www.w3.org/2000/svg','text');
+    lbl.setAttribute('class','xText');
+    lbl.setAttribute('x', x + barW/2);
+    lbl.setAttribute('y', BASE + 22);
+    lbl.setAttribute('text-anchor','middle');
+    lbl.textContent = Studio.t(key);
+
+    const val = document.createElementNS('http://www.w3.org/2000/svg','text');
+    val.setAttribute('class','valueTag');
+    val.setAttribute('x', x + barW/2);
+    val.setAttribute('y', Math.max(22, y - 8));
+    val.setAttribute('text-anchor','middle');
+    val.textContent = String(value);
+
+    function activate(){
+      if(completed || awaiting) return;
+      if(currentTag) currentTag.classList.remove('show');
+      currentTag = val;
+      val.classList.add('show');
+      bar.classList.add('pressed');
+      setTimeout(()=>bar.classList.remove('pressed'),120);
+      awaiting = true;
+      Studio.event('bar_tap',{key:key,value:value});
+      Studio.answer(String(key));
+    }
+
+    bar.addEventListener('click', activate);
+    bar.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        activate();
+      }
+    });
+
+    gBars.appendChild(bar);
+    gLabels.appendChild(lbl);
+    gValues.appendChild(val);
+  });
+
+  requestAnimationFrame(()=>{
+    const all = gBars.querySelectorAll('.bar');
+    all.forEach((b,idx)=>setTimeout(()=>b.classList.add('in'), idx*90));
+  });
+
+  Studio.onVerdict(function(v){
+    awaiting = false;
+    if(v && v.correct){
+      completed = true;
+      fbEl.className = 'feedback ok done';
+      fbEl.textContent = Studio.t('right') + ' ' + Studio.t('done');
+      askEl.textContent = Studio.t('done');
+      Studio.event('complete',{ok:true});
+      Studio.done();
+    }else{
+      fbEl.className = 'feedback no';
+      fbEl.textContent = Studio.t('wrong');
+      Studio.event('verdict',{ok:false});
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

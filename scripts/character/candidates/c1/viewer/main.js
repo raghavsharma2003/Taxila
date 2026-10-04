@@ -45,6 +45,14 @@ function frame(name = "bust", yawDeg = 0) {
   camera.lookAt(0, y0, 0);
   camera.updateProjectionMatrix();
   pivot.rotation.y = (yawDeg * Math.PI) / 180;
+  if (name === "face" && yawDeg % 360 !== 0 && rig) {
+    // c1 (as the gnm fork's "facec"): centre the face camera on the turned head; the pivot is the body axis
+    pivot.updateMatrixWorld(true);
+    const m = rig.landmarks.eyeL.clone().add(rig.landmarks.eyeR).multiplyScalar(0.5);
+    pivot.localToWorld(m);
+    camera.position.x = m.x; camera.lookAt(m.x, eyeY + f.dy, 0);
+    camera.updateProjectionMatrix();
+  }
 }
 
 window.TX = {

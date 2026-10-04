@@ -1,0 +1,137 @@
+<style>
+  body { margin:0; padding:0; background:#fff8e1; font-family: system-ui, -apple-system, sans-serif; color:#5d4037; }
+  #app { width:360px; height:640px; display:flex; flex-direction:column; padding:16px; box-sizing:border-box; }
+  #title { font-size:28px; margin:0 0 8px; text-align:center; color:#e65100; }
+  #instr { font-size:18px; margin:0 0 12px; text-align:center; line-height:1.3; }
+  #fraction { font-size:48px; font-weight:700; text-align:center; margin:12px 0; color:#bf360c; background:#fff; border-radius:20px; padding:8px 24px; align-self:center; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+  #visual { width:300px; height:300px; margin:16px auto; background:#fff; border-radius:50%; padding:10px; box-shadow:0 8px 24px rgba(230,81,0,0.25); display:flex; align-items:center; justify-content:center; }
+  #visual svg { width:280px; height:280px; }
+  #check { font-size:22px; padding:16px 48px; background:#ff9800; color:white; border:none; border-radius:9999px; margin:20px auto 12px; box-shadow:0 6px 16px rgba(255,152,0,0.4); min-width:200px; min-height:56px; }
+  #check:active { transform:scale(0.95); }
+  #feedback { min-height:48px; font-size:20px; text-align:center; padding:8px; border-radius:12px; }
+  .done { text-align:center; padding-top:80px; }
+  .done svg { width:160px; height:160px; }
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <p id="instr"></p>
+  <div id="fraction"></div>
+  <div id="visual"></div>
+  <button id="check" data-action="check"></button>
+  <div id="feedback"></div>
+</div>
+<script>
+const params = Studio.params;
+const items = params.items;
+let currentIndex = 0;
+let currentItem = null;
+const app = document.getElementById('app');
+const titleEl = document.getElementById('title');
+const instrEl = document.getElementById('instr');
+const fracEl = document.getElementById('fraction');
+const visualEl = document.getElementById('visual');
+const checkBtn = document.getElementById('check');
+const fbEl = document.getElementById('feedback');
+function setText(el, key) { el.textContent = Studio.t(key); }
+function createPizza(d) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', '280');
+  svg.setAttribute('height', '280');
+  svg.setAttribute('viewBox', '0 0 280 280');
+  const cx = 140, cy = 140, r = 125;
+  const step = 360 / d;
+  for (let i = 0; i < d; i++) {
+    const a0 = -90 + i * step;
+    const a1 = a0 + step;
+    const x0 = cx + r * Math.cos(a0 * Math.PI / 180);
+    const y0 = cy + r * Math.sin(a0 * Math.PI / 180);
+    const x1 = cx + r * Math.cos(a1 * Math.PI / 180);
+    const y1 = cy + r * Math.sin(a1 * Math.PI / 180);
+    const large = step > 180 ? 1 : 0;
+    const dAttr = `M${cx},${cy} L${x0},${y0} A${r},${r} 0 ${large} 1 ${x1},${y1} Z`;
+    const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    p.setAttribute('d', dAttr);
+    p.setAttribute('fill', '#ffe0b2');
+    p.setAttribute('stroke', '#e65100');
+    p.setAttribute('stroke-width', '4');
+    p.setAttribute('data-part', String(i));
+    p.setAttribute('data-shaded', 'false');
+    p.style.transition = 'fill 120ms ease, transform 120ms ease';
+    p.addEventListener('click', () => toggle(p));
+    svg.appendChild(p);
+  }
+  return svg;
+}
+function toggle(path) {
+  const isShaded = path.getAttribute('data-shaded') === 'true';
+  if (isShaded) {
+    path.setAttribute('fill', '#ffe0b2');
+    path.setAttribute('data-shaded', 'false');
+  } else {
+    path.setAttribute('fill', '#ff7043');
+    path.setAttribute('data-shaded', 'true');
+  }
+  path.style.transform = 'scale(0.92)';
+  setTimeout(() => { path.style.transform = 'scale(1)'; }, 120);
+}
+function countShaded() {
+  return Array.from(visualEl.querySelectorAll('path[data-part]'))
+    .filter(p => p.getAttribute('data-shaded') === 'true').length;
+}
+function loadItem(idx) {
+  currentItem = items[idx];
+  visualEl.innerHTML = '';
+  const svg = createPizza(currentItem.d);
+  visualEl.appendChild(svg);
+  visualEl.setAttribute('data-item', currentItem.id);
+  fracEl.textContent = currentItem.n + '/' + currentItem.d;
+  fbEl.textContent = '';
+}
+function celebrate() {
+  const paths = visualEl.querySelectorAll('path');
+  paths.forEach((p, i) => {
+    setTimeout(() => {
+      p.setAttribute('fill', '#66bb6a');
+      setTimeout(() => {
+        if (p.getAttribute('data-shaded') === 'true') p.setAttribute('fill', '#ff7043');
+        else p.setAttribute('fill', '#ffe0b2');
+      }, 400);
+    }, i * 60);
+  });
+}
+function showDone() {
+  app.innerHTML = `
+    <div class="done">
+      <svg viewBox="0 0 160 160"><circle cx="80" cy="80" r="70" fill="#c8e6c9"/><path d="M50 80 Q80 115 110 80" fill="none" stroke="#2e7d32" stroke-width="14" stroke-linecap="round"/><circle cx="55" cy="60" r="9" fill="#2e7d32"/><circle cx="105" cy="60" r="9" fill="#2e7d32"/></svg>
+      <h2 style="font-size:32px;color:#2e7d32;margin:24px 0 0;">${Studio.t('done')}</h2>
+    </div>`;
+  Studio.done();
+}
+checkBtn.addEventListener('click', () => {
+  const n = countShaded();
+  Studio.answer({ n, d: currentItem.d });
+});
+Studio.onVerdict(({ correct }) => {
+  if (correct) {
+    fbEl.style.color = '#2e7d32';
+    fbEl.textContent = Studio.t('right');
+    celebrate();
+    setTimeout(() => {
+      currentIndex++;
+      if (currentIndex < items.length) {
+        loadItem(currentIndex);
+      } else {
+        showDone();
+      }
+    }, 1100);
+  } else {
+    fbEl.style.color = '#e65100';
+    fbEl.textContent = Studio.t('wrong') + ' ' + Studio.t('hint');
+  }
+});
+setText(titleEl, 'title');
+setText(instrEl, 'instr');
+setText(checkBtn, 'check');
+loadItem(0);
+Studio.ready();
+</script>

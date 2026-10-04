@@ -1,0 +1,225 @@
+<style>
+  :root{
+    --bg:#eef7ff;--card:#ffffff;--ink:#1f2d3d;--line:#d7e7f6;
+    --sun:#ffd54f;--leaf:#5fbe6f;--stem:#4c8a4f;--soil:#a87450;
+    --water:#42a5f5;--co2:#8f8f8f;--o2:#5cc8ff;--glu:#ffbe55;--accent:#7a62d3;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:ui-rounded,system-ui,sans-serif;color:var(--ink)}
+  #app{max-width:420px;margin:0 auto;padding:10px}
+  h1{margin:2px 4px 8px;text-align:center;font-size:22px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 6px 18px rgba(16,48,80,.12)}
+  svg{display:block;width:100%;height:auto}
+  .label{font-size:12px;font-weight:800;fill:#1f2d3d;paint-order:stroke;stroke:#fff;stroke-width:3}
+  .ray{stroke:#ffe06d;stroke-width:3;stroke-linecap:round;stroke-dasharray:10 10;animation:raymove 2s linear infinite;opacity:.8}
+  @keyframes raymove{to{stroke-dashoffset:-20}}
+  #glow{fill:var(--glu);opacity:.35;animation:pulse 1.8s ease-in-out infinite;transform-origin:center}
+  @keyframes pulse{0%,100%{opacity:.25;transform:scale(1)}50%{opacity:.6;transform:scale(1.18)}}
+  [data-flow]{transition:opacity .25s ease}
+  .controls{margin-top:10px;display:grid;gap:8px}
+  #playBtn{min-height:46px;border:0;border-radius:12px;background:var(--accent);color:#fff;font-size:17px;font-weight:800}
+  #playBtn:active,.step:active,.opt:active{transform:scale(.97)}
+  #steps{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+  .step{min-height:46px;border-radius:12px;border:1.5px solid #c9d9eb;background:#fff;font-size:18px;font-weight:800}
+  .step.on{background:#e9f2ff;border-color:#75a6ff}
+  [data-caption]{min-height:52px;border:1px solid var(--line);border-radius:12px;background:#fff;margin-top:8px;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px 10px;font-weight:800}
+  #qWrap{margin-top:10px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:10px;opacity:.45;pointer-events:none;transition:opacity .25s ease}
+  #qWrap.open{opacity:1;pointer-events:auto}
+  #ask{text-align:center;font-weight:800;margin-bottom:8px}
+  .opts{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+  .opt{min-height:46px;border:0;border-radius:11px;background:#e8f6ef;color:#1d5e42;font-size:16px;font-weight:800}
+  #fb{min-height:26px;text-align:center;font-size:22px;margin-top:7px}
+  #app[data-step="1"] #rays{opacity:1} #app[data-step="1"] #waterG,#app[data-step="1"] #co2G,#app[data-step="1"] #o2G,#app[data-step="1"] #gluG{opacity:.28}
+  #app[data-step="2"] #waterG{opacity:1} #app[data-step="2"] #rays,#app[data-step="2"] #co2G,#app[data-step="2"] #o2G,#app[data-step="2"] #gluG{opacity:.28}
+  #app[data-step="3"] #co2G{opacity:1} #app[data-step="3"] #rays,#app[data-step="3"] #waterG,#app[data-step="3"] #o2G,#app[data-step="3"] #gluG{opacity:.28}
+  #app[data-step="4"] #gluG{opacity:1} #app[data-step="4"] #rays,#app[data-step="4"] #waterG,#app[data-step="4"] #co2G,#app[data-step="4"] #o2G{opacity:.28}
+  #app[data-step="5"] #o2G{opacity:1} #app[data-step="5"] #rays,#app[data-step="5"] #waterG,#app[data-step="5"] #co2G,#app[data-step="5"] #gluG{opacity:.28}
+</style>
+
+<div id="app" data-step="1">
+  <h1 id="title"></h1>
+  <div class="card">
+    <svg viewBox="0 0 360 360" aria-hidden="true">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ddf2ff"></stop>
+          <stop offset="100%" stop-color="#f8fcff"></stop>
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="360" height="270" fill="url(#sky)"></rect>
+      <rect x="0" y="270" width="360" height="90" fill="var(--soil)"></rect>
+      <rect x="0" y="270" width="360" height="10" fill="#976846"></rect>
+
+      <g>
+        <circle cx="58" cy="56" r="30" fill="var(--sun)"></circle>
+        <circle cx="58" cy="56" r="40" fill="none" stroke="#ffe58a" stroke-width="6" opacity=".55"></circle>
+      </g>
+
+      <g id="rays">
+        <line class="ray" x1="82" y1="74" x2="159" y2="132"></line>
+        <line class="ray" x1="88" y1="62" x2="176" y2="126"></line>
+        <line class="ray" x1="80" y1="86" x2="154" y2="150"></line>
+      </g>
+
+      <path d="M178 274 C176 242 177 214 180 175" fill="none" stroke="var(--stem)" stroke-width="10" stroke-linecap="round"></path>
+      <g data-entity="leaf">
+        <ellipse cx="210" cy="160" rx="54" ry="30" fill="var(--leaf)"></ellipse>
+        <path d="M162 162 Q210 161 257 160" stroke="#3f7d45" stroke-width="3" fill="none"></path>
+      </g>
+      <g data-entity="roots" fill="none" stroke="#7a4e33" stroke-width="5" stroke-linecap="round">
+        <path d="M178 274 C160 287 146 301 132 320"></path>
+        <path d="M178 274 C188 289 197 307 206 325"></path>
+        <path d="M178 274 C169 291 162 306 156 327"></path>
+        <path d="M178 274 C191 286 206 299 221 317"></path>
+      </g>
+
+      <g id="gluG">
+        <circle id="glow" cx="210" cy="160" r="16"></circle>
+        <circle cx="201" cy="156" r="3" fill="#ffd48a"></circle>
+        <circle cx="210" cy="164" r="3" fill="#ffd48a"></circle>
+        <circle cx="219" cy="156" r="3" fill="#ffd48a"></circle>
+      </g>
+
+      <g id="waterG">
+        <circle data-flow="water" r="4" cx="178" cy="320" fill="var(--water)"></circle>
+        <circle data-flow="water" r="4" cx="178" cy="320" fill="var(--water)"></circle>
+        <circle data-flow="water" r="4" cx="178" cy="320" fill="var(--water)"></circle>
+        <circle data-flow="water" r="4" cx="178" cy="320" fill="var(--water)"></circle>
+      </g>
+      <g id="co2G">
+        <circle data-flow="co2" r="4" cx="40" cy="120" fill="var(--co2)"></circle>
+        <circle data-flow="co2" r="4" cx="40" cy="120" fill="var(--co2)"></circle>
+        <circle data-flow="co2" r="4" cx="40" cy="120" fill="var(--co2)"></circle>
+        <circle data-flow="co2" r="4" cx="40" cy="120" fill="var(--co2)"></circle>
+      </g>
+      <g id="o2G">
+        <circle data-flow="o2" r="4" cx="210" cy="160" fill="var(--o2)"></circle>
+        <circle data-flow="o2" r="4" cx="210" cy="160" fill="var(--o2)"></circle>
+        <circle data-flow="o2" r="4" cx="210" cy="160" fill="var(--o2)"></circle>
+        <circle data-flow="o2" r="4" cx="210" cy="160" fill="var(--o2)"></circle>
+      </g>
+
+      <text class="label" data-label="sun" x="18" y="16"></text>
+      <text class="label" data-label="leaf" x="255" y="150"></text>
+      <text class="label" data-label="roots" x="222" y="321"></text>
+      <text class="label" data-label="water" x="108" y="252"></text>
+      <text class="label" data-label="co2" x="28" y="116"></text>
+      <text class="label" data-label="o2" x="296" y="96"></text>
+      <text class="label" data-label="glucose" x="186" y="201"></text>
+    </svg>
+  </div>
+
+  <div class="controls">
+    <button id="playBtn" data-action="play"></button>
+    <div id="steps"></div>
+  </div>
+
+  <div data-caption></div>
+
+  <div id="qWrap">
+    <div id="ask"></div>
+    <div class="opts">
+      <button class="opt" data-option="co2"></button>
+      <button class="opt" data-option="o2"></button>
+      <button class="opt" data-option="water"></button>
+    </div>
+    <div id="fb"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var stepsCount = Number(Studio.params.steps) || 5;
+  var app = document.getElementById('app');
+  var title = document.getElementById('title');
+  var playBtn = document.getElementById('playBtn');
+  var stepsEl = document.getElementById('steps');
+  var caption = document.querySelector('[data-caption]');
+  var qWrap = document.getElementById('qWrap');
+  var ask = document.getElementById('ask');
+  var fb = document.getElementById('fb');
+  var current = 1, playing = true, asked = false, doneOnce = false, phase = 0, last = 0, autoT = 0;
+
+  title.textContent = Studio.t('title');
+  ask.textContent = Studio.t('ask');
+  document.querySelectorAll('[data-label]').forEach(function(n){ n.textContent = Studio.t(n.getAttribute('data-label')); });
+  document.querySelectorAll('[data-option]').forEach(function(b){
+    var k = b.getAttribute('data-option');
+    b.textContent = Studio.t(k);
+    b.addEventListener('click', function(){ Studio.event('option_tap',{option:k}); Studio.answer(k); });
+  });
+
+  function lockQuestion(open){
+    asked = open;
+    qWrap.classList.toggle('open', open);
+  }
+
+  function setPlayText(){ playBtn.textContent = playing ? Studio.t('pause') : Studio.t('play'); }
+
+  function setStep(n){
+    current = n;
+    app.setAttribute('data-step', String(n));
+    caption.textContent = Studio.t('step' + n);
+    stepsEl.querySelectorAll('.step').forEach(function(b){ b.classList.toggle('on', Number(b.dataset.step)===n); });
+    if (n >= stepsCount) lockQuestion(true);
+    Studio.event('step_set',{step:n});
+  }
+
+  for (var i=1;i<=stepsCount;i++){
+    var b=document.createElement('button');
+    b.className='step'; b.dataset.step=String(i); b.setAttribute('data-action','step-'+i); b.textContent=String(i);
+    b.addEventListener('click', function(e){ setStep(Number(e.currentTarget.dataset.step)); });
+    stepsEl.appendChild(b);
+  }
+
+  playBtn.addEventListener('click', function(){
+    playing=!playing; setPlayText(); Studio.event('play_toggle',{playing:playing});
+  });
+
+  Studio.onVerdict(function(v){
+    if(v && v.correct){
+      fb.textContent='✅';
+      if(!doneOnce){ doneOnce=true; Studio.done(); }
+    }else{
+      fb.textContent='🔁';
+    }
+  });
+
+  var ws=[].slice.call(document.querySelectorAll('[data-flow="water"]'));
+  var cs=[].slice.call(document.querySelectorAll('[data-flow="co2"]'));
+  var os=[].slice.call(document.querySelectorAll('[data-flow="o2"]'));
+
+  function setXY(el,x,y){ el.setAttribute('cx',x.toFixed(1)); el.setAttribute('cy',y.toFixed(1)); }
+  function water(t,l){ return [178+Math.sin(t*6+l)*6+(l-1.5), 318-t*165]; }
+  function co2(t,l){
+    var left=l%2===0, sx=left?30+l*8:330-l*10, sy=95+l*16, ex=176+l*5, ey=160+(l-1.5)*8;
+    return [sx+(ex-sx)*t, sy+(ey-sy)*t];
+  }
+  function o2(t,l){
+    var sx=212+(l-1.5)*6, sy=160+(l-1.5)*3, ex=(l%2===0)?300+l*5:118-l*4, ey=78-l*5;
+    return [sx+(ex-sx)*t, sy+(ey-sy)*t];
+  }
+
+  function tick(ts){
+    if(!last) last=ts;
+    var dt=ts-last; last=ts;
+    if(playing){
+      phase += dt*0.00022;
+      autoT += dt;
+      if(autoT>3300 && current<stepsCount){
+        autoT=0; setStep(current+1);
+      }
+    }
+    for(var i=0;i<ws.length;i++){ var a=water((phase+i*0.24)%1,i); setXY(ws[i],a[0],a[1]); }
+    for(var j=0;j<cs.length;j++){ var b=co2((phase+0.2+j*0.23)%1,j); setXY(cs[j],b[0],b[1]); }
+    for(var k=0;k<os.length;k++){ var c=o2((phase+0.4+k*0.26)%1,k); setXY(os[k],c[0],c[1]); }
+    requestAnimationFrame(tick);
+  }
+
+  setPlayText();
+  setStep(1);
+  lockQuestion(false);
+  requestAnimationFrame(tick);
+  Studio.ready();
+})();
+</script>

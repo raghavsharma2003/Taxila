@@ -1,0 +1,306 @@
+<style>
+*{box-sizing:border-box}
+:root{--ink:#17453d;--deep:#16754d;--leaf:#69ca72;--sky:#e8f8ff;--soil:#96613f;--water:#34a8ed;--co2:#8c70d4;--o2:#ff846c;--sun:#ffd45b;--glucose:#ffe566;--paper:#fffdf7}
+body{margin:0;background:linear-gradient(#dcf4ff,#f6fff0);font-family:system-ui,sans-serif;color:var(--ink);overflow-x:hidden}
+#app{width:100%;max-width:540px;min-height:100vh;margin:auto;padding:8px;display:flex;flex-direction:column;gap:7px}
+h1{margin:2px 0;text-align:center;font-size:clamp(20px,6vw,27px);line-height:1.1;color:var(--deep)}
+.scene-card{overflow:hidden;border:2px solid rgba(22,117,77,.16);border-radius:23px;background:rgba(255,255,255,.86);box-shadow:0 8px 22px rgba(23,69,61,.11)}
+svg{display:block;width:100%;height:auto}
+text{font-family:system-ui,sans-serif;font-size:12px;font-weight:800;fill:var(--ink);paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+.guide{stroke:var(--ink);stroke-width:1.4;opacity:.5}
+.sun{fill:var(--sun);filter:drop-shadow(0 0 8px rgba(255,194,45,.7));transform-origin:54px 47px;animation:sunPulse 2.3s ease-in-out infinite}
+.sun-ray{stroke:var(--sun);stroke-width:4;stroke-linecap:round}
+.light-ray{fill:none;stroke:#ffd346;stroke-width:4;stroke-linecap:round;stroke-dasharray:10 9;animation:lightMove 1.3s linear infinite}
+.stem{fill:none;stroke:var(--deep);stroke-width:11;stroke-linecap:round}
+.branch{fill:none;stroke:var(--deep);stroke-width:7;stroke-linecap:round}
+[data-entity="leaf"]{fill:var(--leaf);stroke:var(--deep);stroke-width:3;transition:filter .3s,stroke-width .3s}
+.vein{fill:none;stroke:var(--deep);stroke-width:2;opacity:.65}
+[data-entity="roots"]{fill:none;stroke:#70442e;stroke-width:5;stroke-linecap:round;transition:filter .3s}
+.soil{fill:var(--soil)}
+.soil-top{fill:#b77b4e}
+.particle{stroke:#fff;stroke-width:2;filter:drop-shadow(0 2px 2px rgba(0,0,0,.18));animation-duration:3s;animation-timing-function:linear;animation-iteration-count:infinite}
+[data-flow="water"]{fill:var(--water);animation-name:waterFlow}
+[data-flow="co2"]{fill:var(--co2);animation-name:co2Flow}
+[data-flow="o2"]{fill:var(--o2);animation-name:o2Flow}
+.delay-2{animation-delay:-1s}
+.delay-3{animation-delay:-2s}
+.delay-4{animation-delay:-2.5s}
+.glucose{fill:var(--glucose);stroke:#fff;stroke-width:2;transform-origin:center;animation:glucoseGlow 1.5s ease-in-out infinite}
+.glucose.delay-2{animation-delay:-.5s}
+.glucose.delay-3{animation-delay:-1s}
+#app.paused *{animation-play-state:paused!important}
+#app.step-1 .light-ray,
+#app.step-2 [data-flow="water"],
+#app.step-3 [data-flow="co2"],
+#app.step-4 [data-flow="o2"],
+#app.step-5 .glucose{filter:drop-shadow(0 0 5px #fff) drop-shadow(0 0 9px currentColor)}
+#app.step-2 [data-entity="roots"],
+#app.step-3 [data-entity="leaf"],
+#app.step-4 [data-entity="leaf"],
+#app.step-5 [data-entity="leaf"]{filter:drop-shadow(0 0 7px rgba(255,255,255,.9))}
+.controls{display:grid;grid-template-columns:1.55fr repeat(5,1fr);gap:5px}
+button{min-width:44px;min-height:44px;border:0;border-radius:14px;background:#fff;color:var(--ink);font:inherit;font-weight:850;box-shadow:0 3px 0 rgba(23,69,61,.17);cursor:pointer;transition:transform .14s,background .2s,color .2s}
+button:active{transform:scale(.92)}
+button:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+[data-action="play"]{padding:0 8px;background:var(--deep);color:#fff}
+.step.active{background:var(--sun);color:#493800;transform:translateY(-2px)}
+[data-caption]{min-height:52px;margin:0;padding:9px 13px;display:grid;place-items:center;border:2px solid rgba(48,157,95,.2);border-radius:17px;background:var(--paper);text-align:center;font-size:15px;font-weight:750;line-height:1.25}
+#check{display:none;padding:10px;border:2px solid rgba(140,112,212,.2);border-radius:19px;background:#fff}
+#check.show{display:block;animation:rise .35s ease-out}
+#ask{margin:0 0 8px;text-align:center;font-weight:850;line-height:1.25}
+.options{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.option{background:#edf9f1}
+.option.pending{animation:tapPulse .55s ease}
+.option.correct{background:var(--leaf)}
+.option.incorrect{background:#ffdcd4}
+.option:disabled{opacity:1}
+@keyframes sunPulse{50%{transform:scale(1.08)}}
+@keyframes lightMove{to{stroke-dashoffset:-38}}
+@keyframes waterFlow{0%{transform:translate(0,75px);opacity:0}14%,86%{opacity:1}100%{transform:translate(82px,-78px);opacity:0}}
+@keyframes co2Flow{0%{transform:translate(65px,-18px);opacity:0}14%,86%{opacity:1}100%{transform:translate(-43px,23px);opacity:0}}
+@keyframes o2Flow{0%{transform:translate(-5px,7px);opacity:0}14%,86%{opacity:1}100%{transform:translate(75px,-48px);opacity:0}}
+@keyframes glucoseGlow{50%{transform:scale(1.8);filter:drop-shadow(0 0 8px #fff06a)}}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+@keyframes tapPulse{50%{transform:scale(1.06)}}
+@media(max-height:680px){
+  #app{padding:6px;gap:5px}
+  h1{font-size:20px}
+  .scene-card svg{max-height:330px}
+  [data-caption]{min-height:46px;padding:7px}
+}
+@media(prefers-reduced-motion:reduce){
+  .particle,.light-ray,.sun,.glucose{animation-duration:7s}
+}
+</style>
+
+<main id="app" class="step-1">
+  <h1 id="title"></h1>
+
+  <section class="scene-card">
+    <svg id="scene" viewBox="0 0 340 370" role="img">
+      <rect width="340" height="370" fill="#e8f8ff"/>
+
+      <circle class="sun" cx="54" cy="47" r="29"/>
+      <g class="sun-ray">
+        <path d="M54 9V2"/><path d="M54 92v-8"/>
+        <path d="M16 47H8"/><path d="M99 47h-8"/>
+        <path d="M27 20l-6-6"/><path d="M87 80l-6-6"/>
+        <path d="M27 74l-6 6"/><path d="M87 14l-6 6"/>
+      </g>
+      <text x="99" y="29" data-label="sun"></text>
+      <path class="guide" d="M94 32L76 40"/>
+
+      <g>
+        <path class="light-ray" d="M78 61L191 143"/>
+        <path class="light-ray" d="M70 72L176 166"/>
+        <path class="light-ray" d="M87 53L214 130"/>
+      </g>
+
+      <rect class="soil" x="0" y="278" width="340" height="92"/>
+      <path class="soil-top" d="M0 281Q35 267 73 280T143 278T211 280T275 276T340 280V298H0Z"/>
+
+      <path class="stem" d="M154 289C154 250 157 208 174 170"/>
+      <path class="branch" d="M169 194C190 185 207 175 221 160"/>
+
+      <path data-entity="leaf" d="M174 168C191 116 251 112 286 133C266 180 220 210 174 168Z"/>
+      <path class="vein" d="M181 168C215 159 242 147 273 135M218 158l-5-23M240 149l12 17"/>
+
+      <g data-entity="roots">
+        <path d="M154 286C139 305 129 324 119 351"/>
+        <path d="M154 286C164 309 176 326 185 354"/>
+        <path d="M150 300C137 307 126 313 111 319"/>
+        <path d="M161 307C177 310 192 320 204 335"/>
+        <path d="M143 316C147 331 146 344 144 360"/>
+      </g>
+
+      <circle data-flow="water" class="particle" cx="122" cy="331" r="6"/>
+      <circle data-flow="water" class="particle delay-2" cx="133" cy="337" r="6"/>
+      <circle data-flow="water" class="particle delay-3" cx="144" cy="326" r="6"/>
+      <circle data-flow="water" class="particle delay-4" cx="129" cy="348" r="6"/>
+
+      <circle data-flow="co2" class="particle" cx="306" cy="129" r="7"/>
+      <circle data-flow="co2" class="particle delay-2" cx="301" cy="151" r="7"/>
+      <circle data-flow="co2" class="particle delay-3" cx="315" cy="174" r="7"/>
+
+      <circle data-flow="o2" class="particle" cx="226" cy="154" r="6"/>
+      <circle data-flow="o2" class="particle delay-2" cx="241" cy="163" r="6"/>
+      <circle data-flow="o2" class="particle delay-3" cx="252" cy="146" r="6"/>
+
+      <circle class="glucose" cx="211" cy="167" r="5"/>
+      <circle class="glucose delay-2" cx="231" cy="151" r="5"/>
+      <circle class="glucose delay-3" cx="248" cy="166" r="5"/>
+
+      <text x="204" y="110" data-label="leaf"></text>
+      <path class="guide" d="M225 114L230 128"/>
+
+      <text x="16" y="326" data-label="water"></text>
+      <path class="guide" d="M78 322L116 329"/>
+
+      <text x="17" y="355" data-label="roots"></text>
+      <path class="guide" d="M72 348L118 337"/>
+
+      <text x="286" y="105" text-anchor="middle" data-label="co2"></text>
+      <path class="guide" d="M288 109L296 125"/>
+
+      <text x="305" y="215" text-anchor="middle" data-label="o2"></text>
+      <path class="guide" d="M295 207L280 186"/>
+
+      <text x="229" y="231" text-anchor="middle" data-label="glucose"></text>
+      <path class="guide" d="M229 217L231 179"/>
+    </svg>
+  </section>
+
+  <div class="controls">
+    <button type="button" data-action="play" id="playButton"></button>
+    <button type="button" class="step active" data-action="step-1"></button>
+    <button type="button" class="step" data-action="step-2"></button>
+    <button type="button" class="step" data-action="step-3"></button>
+    <button type="button" class="step" data-action="step-4"></button>
+    <button type="button" class="step" data-action="step-5"></button>
+  </div>
+
+  <p data-caption id="caption"></p>
+
+  <section id="check">
+    <p id="ask"></p>
+    <div class="options">
+      <button type="button" class="option" data-option="o2"></button>
+      <button type="button" class="option" data-option="co2"></button>
+      <button type="button" class="option" data-option="water"></button>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const app = document.getElementById('app');
+  const playButton = document.getElementById('playButton');
+  const caption = document.getElementById('caption');
+  const check = document.getElementById('check');
+  const stepButtons = Array.from(document.querySelectorAll('.step'));
+  const optionButtons = Array.from(document.querySelectorAll('[data-option]'));
+  const total = Studio.params.steps;
+  let step = 1;
+  let playing = true;
+  let pending = null;
+  let complete = false;
+  let timer = null;
+
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('ask').textContent = Studio.t('ask');
+
+  document.querySelectorAll('[data-label]').forEach(element => {
+    const key = element.getAttribute('data-label');
+    element.textContent = Studio.t(key);
+  });
+
+  stepButtons.forEach((button, index) => {
+    const value = index + 1;
+    button.textContent = String(value);
+    button.setAttribute('aria-label', Studio.t('step' + value));
+  });
+
+  optionButtons.forEach(button => {
+    const option = button.getAttribute('data-option');
+    button.textContent = Studio.t(option);
+    button.setAttribute('aria-label', Studio.t(option));
+  });
+
+  function updatePlay() {
+    app.classList.toggle('paused', !playing);
+    const key = playing ? 'pause' : 'play';
+    playButton.textContent = Studio.t(key);
+    playButton.setAttribute('aria-label', Studio.t(key));
+  }
+
+  function revealCheck() {
+    check.classList.add('show');
+  }
+
+  function schedule() {
+    clearTimeout(timer);
+    if (!playing || complete) return;
+    timer = setTimeout(() => {
+      if (step < total) {
+        setStep(step + 1, 'auto');
+      } else {
+        playing = false;
+        updatePlay();
+        revealCheck();
+      }
+    }, 3800);
+  }
+
+  function setStep(next, source) {
+    step = next;
+    for (let value = 1; value <= total; value += 1) {
+      app.classList.remove('step-' + value);
+    }
+    app.classList.add('step-' + step);
+    caption.textContent = Studio.t('step' + step);
+    stepButtons.forEach((button, index) => {
+      button.classList.toggle('active', index + 1 === step);
+    });
+    if (step === total) revealCheck();
+    Studio.event('step', {step, source});
+    schedule();
+  }
+
+  playButton.addEventListener('click', () => {
+    playing = !playing;
+    updatePlay();
+    Studio.event('play', {playing, step});
+    schedule();
+  });
+
+  stepButtons.forEach((button, index) => {
+    button.addEventListener('click', () => {
+      setStep(index + 1, 'tap');
+    });
+  });
+
+  optionButtons.forEach(button => {
+    button.addEventListener('click', event => {
+      if (pending || complete) return;
+      const selected = event.currentTarget;
+      const value = selected.getAttribute('data-option');
+      pending = selected;
+      optionButtons.forEach(option => {
+        option.classList.remove('correct', 'incorrect', 'pending');
+        option.disabled = true;
+      });
+      selected.classList.add('pending');
+      Studio.event('answer', {value});
+      Studio.answer(value);
+    });
+  });
+
+  Studio.onVerdict(verdict => {
+    if (!pending || complete) return;
+    const selected = pending;
+    selected.classList.remove('pending');
+    selected.classList.add(verdict.correct ? 'correct' : 'incorrect');
+
+    if (verdict.correct) {
+      complete = true;
+      playing = false;
+      clearTimeout(timer);
+      updatePlay();
+      Studio.done();
+      return;
+    }
+
+    pending = null;
+    setTimeout(() => {
+      selected.classList.remove('incorrect');
+      optionButtons.forEach(option => {
+        option.disabled = false;
+      });
+    }, 700);
+  });
+
+  updatePlay();
+  setStep(1, 'start');
+  Studio.ready();
+})();
+</script>

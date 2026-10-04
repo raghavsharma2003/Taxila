@@ -3,7 +3,7 @@
 // tab bar took about 120 px of a 640 px screen). Only controls the server stores are shown (P6: only what works).
 import { useEffect, useState, type ReactNode } from "react";
 import { Button, Icon, TileGroup } from "../ui/index.ts";
-import { refreshMe, request, type ChildRow } from "../app/api.ts";
+import { postJson, refreshMe, request, type ChildRow } from "../app/api.ts";
 import { HoursFields } from "../onboarding/Setup.tsx";
 import { teacherRecord } from "../ui/teacher/useTeacher.ts";
 import { bandForClass } from "../app/band.ts";
@@ -12,6 +12,54 @@ import { fmtClock, parentError } from "./copy.ts";
 import { useGate } from "./Gate.tsx";
 import { PageState, ParentShell, useChildren, useParentData } from "./Shell.tsx";
 import { ParentTeacherName } from "../child/teacher/ParentTeacherName.tsx";
+import { readPrefs, setChildPref } from "../child/prefs.ts";
+import { tw } from "../copy/en.ts";
+
+/**
+ * "Open now for 1 hour" (W1-A item 2; smooth G8): one tap opens the child's lesson hours for the next hour, today only,
+ * without changing the saved hours (POST /api/lesson/open-now). The daily limit still holds.
+ */
+function OpenNow({ childId, name, onRelock }: { childId: string; name: string; onRelock: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const [until, setUntil] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const open = async () => {
+    setBusy(true); setErr(null);
+    try {
+      const out = await postJson<{ openUntil: string }>("/api/lesson/open-now", { childId });
+      setUntil(out.openUntil);
+    } catch (e) {
+      if (isRelock(e)) { onRelock(); return; }
+      setErr(parentError(e));
+    } finally { setBusy(false); }
+  };
+  const at = until ? new Date(until).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" }) : null;
+  return (
+    <div className="pa-control" data-testid="open-now">
+      <h3 className="pa-h3">{tw("controls.open.title")}</h3>
+      <Button onClick={open} disabled={busy} data-testid="open-now-button">{busy ? tw("controls.open.busy") : tw("controls.open.button")}</Button>
+      <p className="pa-effect">{at ? <span role="status">{tw("controls.open.done", { time: at })}</span> : tw("controls.open.effect")}</p>
+      {err && <p className="pa-form-err" role="alert" aria-label={`Open lessons for ${name}`}>{err}</p>}
+    </div>
+  );
+}
+
+/** "Tap and type only" (W1-A item 9; flows G8): the child's prefs.quiet on this phone (lessons start in the text lane). */
+function TapAndType({ childId, name, T }: { childId: string; name: string; T: string }) {
+  const [on, setOn] = useState(() => readPrefs(childId).quiet);
+  useEffect(() => setOn(readPrefs(childId).quiet), [childId]);
+  return (
+    <section className="pa-card pa-group" aria-labelledby="pa-g-type" data-group="type">
+      <h2 id="pa-g-type" className="pa-h2">{tw("controls.type.title")}</h2>
+      <div className="pa-control">
+        <TileGroup label={tw("controls.type.title")} columns={2} value={on ? "on" : "off"}
+          onChange={(v) => { const next = v === "on"; setChildPref(childId, { quiet: next }); setOn(next); }}
+          options={[{ value: "on", label: "On" }, { value: "off", label: "Off" }]} />
+        <p className="pa-effect">{on ? tw("controls.type.on", { name, T }) : tw("controls.type.off", { name, T })} {tw("controls.type.device")}</p>
+      </div>
+    </section>
+  );
+}
 
 type Group = "time" | "voice" | "screen" | "reports";
 
@@ -98,6 +146,7 @@ export default function Controls() {
               <HoursFields start={c.hoursStart} end={c.hoursEnd} onChange={(s, e) => patch({ hoursStart: s, hoursEnd: e })} />
               <p className="pa-effect">Lessons open from {fmtClock(c.hoursStart)} to {fmtClock(c.hoursEnd)}. Outside these hours the home says when they open.</p>
             </div>
+            <OpenNow childId={current.id} name={name} onRelock={relock} />
           </GroupCard>
           <GroupCard id="voice" title={`How ${T} speaks`} {...props("voice")}>
             <div className="pa-control">
@@ -115,6 +164,7 @@ export default function Controls() {
           </GroupCard>
           {/* the name the child gave the teacher: view and reset (child-names-teacher; lesson-safety-naming workstream) */}
           <ParentTeacherName childId={current.id} childName={name} className="pa-card" onGateError={relock} />
+          <TapAndType childId={current.id} name={name} T={T} />
           <GroupCard id="screen" title="Words and screen" {...props("screen")}>
             <div className="pa-control">
               <h3 className="pa-h3">Words on screen</h3>

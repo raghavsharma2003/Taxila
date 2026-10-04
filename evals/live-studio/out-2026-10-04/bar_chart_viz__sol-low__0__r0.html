@@ -1,0 +1,330 @@
+<style>
+  *{box-sizing:border-box}
+  :root{
+    color-scheme:light;
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    --ink:#263552;
+    --muted:#66738b;
+    --paper:#fffdf8;
+    --card:#ffffff;
+    --grid:#dfe7ee;
+    --axis:#7c899d;
+    --bar:#36a99a;
+    --bar-dark:#278d82;
+    --sun:#ffc857;
+    --right:#218c62;
+    --wrong:#c94f5f;
+  }
+  .lesson{
+    width:100%;
+    min-height:640px;
+    padding:16px 14px 20px;
+    overflow:hidden;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 8% 5%,rgba(255,200,87,.25),transparent 24%),
+      radial-gradient(circle at 95% 18%,rgba(54,169,154,.16),transparent 26%),
+      var(--paper);
+  }
+  .heading{
+    min-height:38px;
+    margin:0 8px 10px;
+    font-size:24px;
+    line-height:1.2;
+    font-weight:800;
+    letter-spacing:-.02em;
+  }
+  .chart-card{
+    position:relative;
+    width:100%;
+    height:430px;
+    border:1px solid rgba(38,53,82,.08);
+    border-radius:24px;
+    background:var(--card);
+    box-shadow:0 12px 30px rgba(55,72,96,.11);
+    overflow:hidden;
+  }
+  #chart{
+    display:block;
+    width:100%;
+    height:100%;
+    overflow:visible;
+  }
+  .grid-line{
+    stroke:var(--grid);
+    stroke-width:1;
+    vector-effect:non-scaling-stroke;
+  }
+  .axis-line{
+    stroke:var(--axis);
+    stroke-width:1.5;
+    vector-effect:non-scaling-stroke;
+  }
+  .tick-label,.fruit-label,.axis-title,.value-label{
+    fill:var(--muted);
+    font-family:inherit;
+  }
+  .tick-label{font-size:11px}
+  .fruit-label{
+    font-size:10.5px;
+    font-weight:700;
+    fill:var(--ink);
+  }
+  .axis-title{
+    font-size:11px;
+    font-weight:700;
+  }
+  .bar{
+    fill:var(--bar);
+    stroke:rgba(27,112,104,.18);
+    stroke-width:1;
+    cursor:pointer;
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    transition:y .85s cubic-bezier(.2,.75,.25,1),height .85s cubic-bezier(.2,.75,.25,1),fill .18s,transform .14s;
+    outline:none;
+  }
+  .bar:hover,.bar:focus{fill:var(--bar-dark)}
+  .bar:active{transform:scale(.94, .98)}
+  .bar.picked{animation:barPulse .34s ease}
+  .value-pill{
+    fill:var(--ink);
+    opacity:0;
+    transform:translateY(5px);
+    transition:opacity .2s,transform .2s;
+    pointer-events:none;
+  }
+  .value-label{
+    fill:white;
+    font-size:12px;
+    font-weight:800;
+    opacity:0;
+    transform:translateY(5px);
+    transition:opacity .2s,transform .2s;
+    pointer-events:none;
+  }
+  .value-group.show .value-pill,
+  .value-group.show .value-label{
+    opacity:1;
+    transform:translateY(0);
+  }
+  .prompt{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:64px;
+    margin:12px 4px 0;
+    padding:10px 16px;
+    border-radius:18px;
+    background:rgba(255,200,87,.22);
+    text-align:center;
+    font-size:17px;
+    line-height:1.3;
+    font-weight:750;
+  }
+  .feedback{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:44px;
+    margin:6px 4px 0;
+    border-radius:14px;
+    text-align:center;
+    font-size:16px;
+    font-weight:800;
+    opacity:0;
+    transform:translateY(5px);
+    transition:opacity .22s,transform .22s,background .22s,color .22s;
+  }
+  .feedback.show{opacity:1;transform:translateY(0)}
+  .feedback.good{color:var(--right);background:rgba(33,140,98,.1)}
+  .feedback.try{color:var(--wrong);background:rgba(201,79,95,.1)}
+  @keyframes barPulse{
+    0%{transform:scale(1)}
+    50%{transform:scale(1.08,.97)}
+    100%{transform:scale(1)}
+  }
+  @media (max-height:620px){
+    .lesson{min-height:100vh;padding-top:10px}
+    .heading{font-size:21px;margin-bottom:7px}
+    .chart-card{height:398px}
+    .prompt{min-height:56px;margin-top:8px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .bar,.value-pill,.value-label,.feedback{transition-duration:.01ms}
+    .bar.picked{animation:none}
+  }
+</style>
+
+<main class="lesson">
+  <h1 class="heading" id="title"></h1>
+  <section class="chart-card">
+    <svg id="chart" viewBox="0 0 332 430" role="img">
+      <g id="grid"></g>
+      <g id="axes"></g>
+      <g id="bars"></g>
+      <g id="labels"></g>
+      <g id="values"></g>
+    </svg>
+  </section>
+  <div class="prompt" id="ask"></div>
+  <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+</main>
+
+<script>
+(() => {
+  const data = Studio.params.data;
+  const svgNS = "http://www.w3.org/2000/svg";
+  const title = document.getElementById("title");
+  const ask = document.getElementById("ask");
+  const feedback = document.getElementById("feedback");
+  const grid = document.getElementById("grid");
+  const axes = document.getElementById("axes");
+  const barsLayer = document.getElementById("bars");
+  const labels = document.getElementById("labels");
+  const valuesLayer = document.getElementById("values");
+
+  title.textContent = Studio.t("title");
+  ask.textContent = Studio.t("ask");
+
+  const make = (name, attrs, parent) => {
+    const node = document.createElementNS(svgNS, name);
+    Object.keys(attrs).forEach(key => node.setAttribute(key, attrs[key]));
+    parent.appendChild(node);
+    return node;
+  };
+
+  const maximum = Math.max.apply(null, data.map(item => item.value));
+  const rough = maximum / 4;
+  const power = Math.pow(10, Math.floor(Math.log10(rough || 1)));
+  const scaled = rough / power;
+  const factor = scaled <= 1 ? 1 : scaled <= 2 ? 2 : scaled <= 5 ? 5 : 10;
+  const step = factor * power;
+  const scaleMax = Math.ceil(maximum / step) * step;
+
+  const left = 53;
+  const right = 320;
+  const top = 42;
+  const baseline = 358;
+  const plotHeight = baseline - top;
+  const plotWidth = right - left;
+  const band = plotWidth / data.length;
+  const barWidth = Math.min(44, band * .72);
+  const yAt = value => baseline - (value / scaleMax) * plotHeight;
+
+  for (let tick = 0; tick <= scaleMax; tick += step) {
+    const y = yAt(tick);
+    make("line", {
+      x1:left, y1:y, x2:right, y2:y, class:"grid-line"
+    }, grid);
+    const tickText = make("text", {
+      x:left - 9, y:y + 4, "text-anchor":"end",
+      class:"tick-label", "data-tick":String(tick)
+    }, labels);
+    tickText.textContent = String(tick);
+  }
+
+  make("line", {
+    x1:left, y1:top, x2:left, y2:baseline, class:"axis-line"
+  }, axes);
+  make("line", {
+    x1:left, y1:baseline, x2:right, y2:baseline, class:"axis-line"
+  }, axes);
+
+  const axisTitle = make("text", {
+    x:17, y:(top + baseline) / 2,
+    transform:"rotate(-90 17 " + ((top + baseline) / 2) + ")",
+    "text-anchor":"middle", class:"axis-title"
+  }, labels);
+  axisTitle.textContent = Studio.t("yaxis");
+
+  let waiting = false;
+  let finished = false;
+  const animatedBars = [];
+
+  data.forEach((item, index) => {
+    const center = left + band * index + band / 2;
+    const finalY = yAt(item.value);
+    const finalHeight = baseline - finalY;
+
+    const bar = make("rect", {
+      x:center - barWidth / 2,
+      y:baseline,
+      width:barWidth,
+      height:0,
+      rx:10,
+      class:"bar",
+      tabindex:"0",
+      role:"button",
+      "data-bar":item.key,
+      "data-value":String(item.value),
+      "aria-label":Studio.t(item.key) + " " + String(item.value)
+    }, barsLayer);
+
+    animatedBars.push({bar, finalY, finalHeight});
+
+    const fruit = make("text", {
+      x:center, y:382, "text-anchor":"middle", class:"fruit-label"
+    }, labels);
+    fruit.textContent = Studio.t(item.key);
+
+    const valueGroup = make("g", {
+      class:"value-group", "data-value-group":item.key
+    }, valuesLayer);
+    const pillWidth = 38;
+    const pillY = Math.max(8, finalY - 34);
+    make("rect", {
+      x:center - pillWidth / 2, y:pillY,
+      width:pillWidth, height:26, rx:13, class:"value-pill"
+    }, valueGroup);
+    const valueText = make("text", {
+      x:center, y:pillY + 18, "text-anchor":"middle", class:"value-label"
+    }, valueGroup);
+    valueText.textContent = String(item.value);
+
+    const choose = () => {
+      if (waiting || finished) return;
+      valuesLayer.querySelectorAll(".value-group").forEach(group => group.classList.remove("show"));
+      valueGroup.classList.add("show");
+      bar.classList.remove("picked");
+      void bar.getBoundingClientRect();
+      bar.classList.add("picked");
+      feedback.className = "feedback";
+      feedback.textContent = "";
+      waiting = true;
+      Studio.event("bar_tap", {key:item.key, value:item.value});
+      Studio.answer(item.key);
+    };
+
+    bar.addEventListener("click", choose);
+    bar.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        choose();
+      }
+    });
+  });
+
+  Studio.onVerdict(result => {
+    waiting = false;
+    feedback.className = "feedback show " + (result.correct ? "good" : "try");
+    feedback.textContent = Studio.t(result.correct ? "right" : "wrong");
+    if (result.correct && !finished) {
+      finished = true;
+      ask.textContent = Studio.t("done");
+      Studio.done();
+    }
+  });
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      animatedBars.forEach(entry => {
+        entry.bar.setAttribute("y", entry.finalY);
+        entry.bar.setAttribute("height", entry.finalHeight);
+      });
+    });
+  });
+
+  Studio.ready();
+})();
+</script>

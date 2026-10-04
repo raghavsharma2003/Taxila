@@ -18,6 +18,8 @@ import { classifyTrouble, factOfLinkError, isStrip, RC_MS, T1_MS, T2_LINK_MS, ty
 import type { Emotion } from "../../avatar/behaviour.ts";
 import type { UiBridge } from "../../lesson/uiBridge.ts";
 import { t } from "../../ui/copy.ts";
+import { tw } from "../../copy/en.ts";
+import { fractionQuestion, helpAskedKey } from "./answers.ts";
 import { prepareEarcons, setEarcons } from "../../ui/sound/earcons.ts";
 import { setHapticsEnabled } from "../../ui/haptics.ts";
 import { BAND_TOKENS, type Band, type Family } from "../band.ts";
@@ -58,6 +60,9 @@ export interface DeskContext {
   setCaptionsAlways?: (on: boolean) => void;
   /** The child's first lesson on this device: the T6 "Can't hear?" heuristic runs only then (§3.13). */
   firstLesson?: boolean;
+  /** The push-to-talk note was dismissed once on this device: it never shows again (prefs.pttNoteSeen; flows G8). */
+  pttNoteSeen?: boolean;
+  markPttNoteSeen?: () => void;
 }
 
 export interface DeskNav {
@@ -293,7 +298,11 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     return runtime.events.on((e) => {
       if (e.type === "child_speech_end") setItem((it) => ({ ...it, answer: { text: null, form: "spoken", delivery: "sending" }, pendingVerdict: null }));
       else if (e.type === "child_final") {
-        if (e.typed) setItem((it) => ({ ...it, answer: { text: e.text, form: e.chipId ? "tapped" : "typed", delivery: "sending" }, pendingVerdict: null }));
+        const asked = e.typed ? helpAskedKey(e.chipId) : null;
+        if (asked) {
+          // A help request is a chip state under the ask ("Hint asked"), never "Your answer: Can I have a hint".
+          setItem((it) => (it.ask ? { ...it, ask: { ...it.ask, lines: [...it.ask.lines.filter((l) => l.kind !== "asked"), { kind: "asked", text: tw(asked) }] } } : it));
+        } else if (e.typed) setItem((it) => ({ ...it, answer: { text: e.text, form: e.chipId ? "tapped" : "typed", delivery: "sending" }, pendingVerdict: null }));
         else if (e.text) setItem((it) => ({ ...it, answer: { ...(it.answer ?? { form: "spoken", delivery: "sending" }), text: e.text } as AnswerChip }));
       } else if (e.type === "teacher_audio_start") {
         setItem((it) => (it.pendingVerdict && it.answer ? { ...it, answer: { ...it.answer, verdict: it.pendingVerdict, withHelp: it.pendingWithHelp }, pendingVerdict: null } : it));
@@ -316,6 +325,9 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   const modulesMounted = useMountedModules(runtime.modules);
   const [moduleFailed, setModuleFailed] = useState(false);
   useEffect(() => setModuleFailed(false), [modulesMounted.join(",")]);
+  // A live mount: an activity the runtime mounted that has not failed. Only then does the tray hold a module, or the dock
+  // drop Type for "tap_in_tray" (W1-A item 4; flows G2: an unknown engine left an empty tray and no way to answer).
+  const liveModule = modulesMounted.length > 0 && !moduleFailed;
   const chips = ui.chips ?? [];
   const wb = ui.whiteboard?.value ? ui.whiteboard : null;
   // The voice the child can use right now (no mic, or speech recognition down → tap and type only).
@@ -328,10 +340,15 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   useEffect(() => setPadOpen(false), [ui.ask?.text, ui.answerForm]);
   const padWanted = numberItem && (young || voiceDown || padOpen);
   const serverTray = ui.tray && ui.tray !== "none" ? ui.tray : null;
-  const trayKind: TrayModel["kind"] | null = serverTray === "module" ? "module"
-    : padWanted && !(modulesMounted.length && !moduleFailed) ? "pad"
-      : serverTray ? serverTray
-        : modulesMounted.length && !moduleFailed ? "module" : chips.length ? "tiles" : wb && (phase === "teach" || phase === "practice") ? "board" : null;
+  // Young answer a number item on the NumberPad, every time (flows G3: the pad never showed in a class-2 text lesson);
+  // Older and voice-down children get it unless a live activity holds the tray. Choices take the tray over a module.
+  const trayKind: TrayModel["kind"] | null = numberItem && young ? "pad"
+    : chips.length && serverTray !== "module" ? "tiles"
+      : (serverTray === "module" || modulesMounted.length) && liveModule ? "module"
+        : padWanted ? "pad"
+          : chips.length ? "tiles"
+            : serverTray && serverTray !== "module" ? serverTray
+              : wb && (phase === "teach" || phase === "practice") ? "board" : null;
   // Geometry is decided at a phase boundary; within a phase it only ever grows Face → Work (legacy: content that
   // the Director did not announce with ui.tray), never back, so nothing reflows mid-item.
   const [geometry, setGeometry] = useState<"face" | "work">("face");
@@ -431,7 +448,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     likelyMuted: t6 === "showing",
     dismissed,
     recoveredAt: recoveredAt !== null && (troubleShown.current !== null || sentFlashAt !== null) ? recoveredAt : null,
-    pttFallback: facts.ptt && !ctx.textOnly,
+    pttFallback: facts.ptt && !ctx.textOnly && !ctx.pttNoteSeen,
   });
   useEffect(() => {
     if (strip && strip !== "RC" && strip !== "PTT") troubleShown.current = strip;
@@ -563,7 +580,8 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
           chalked: beats?.chalk || floor === "speaking" ? item.answer?.text ?? null : null,
           mark: item.answer?.verdict === "correct" ? "tick" : item.answer?.verdict === "not_yet" ? "underline" : null,
         } : undefined,
-        overlay: trayOverlay ?? (young && yt.tapOptions && floor === "your_turn" && trayKind !== "pad" ? "help_menu" : null),
+        // The timed Young help menu never covers an answer surface (the pad, the choices): Help opens it there on demand.
+        overlay: trayOverlay ?? (young && yt.tapOptions && floor === "your_turn" && trayKind !== "pad" && trayKind !== "tiles" ? "help_menu" : null),
       }
     : trayOverlay
       ? { kind: "tiles", tiles: [], overlay: trayOverlay }
@@ -575,7 +593,9 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   const geometryOut = tray && (trayOverlay || tray.overlay) ? "work" : effectiveGeometry;
   const finalLayout = geometryOut === effectiveGeometry ? layout : solveDesk({ width: size.w, height: size.h, family: ctx.family, geometry: geometryOut, fontScale: size.fontScale, captionsOn: ctx.captionsAlways || ctx.band !== "b1", strip: stripH, cardNeed: size.cardNeed, stripNeed: size.stripNeed, trayNeed: size.trayNeed });
 
-  const answerForm: DeskModel["answerForm"] = ui.answerForm ?? (chips.length ? "choice" : trayKind === "module" ? "tap_in_tray" : "words");
+  // A "tap_in_tray" item whose activity failed (or never mounted) carries on by tiles or by words: Type comes back.
+  const formNow = ui.answerForm === "tap_in_tray" && trayKind !== "module" ? (chips.length ? "choice" : "words") : ui.answerForm;
+  const answerForm: DeskModel["answerForm"] = formNow ?? (chips.length ? "choice" : trayKind === "module" ? "tap_in_tray" : "words");
   // Captions: on by reading level (R1+), "always" by preference, forced on for a turn whose sound failed (T5);
   // the CC button overrides for this lesson.
   const captionsOn = facts.tts || t6 !== "no" || (captionsOverride ?? (ctx.captionsAlways || ctx.band !== "b1"));
@@ -617,6 +637,10 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     notMeWindow,
     affect: strip && isStrip(strip) && strip !== "RC" && strip !== "PTT" ? "warm" : ui.affect ? AFFECT[ui.affect] ?? null : null,
     fixDraft,
+    // Text lane: typing (and the tiles and pad) stay open while she speaks; a typed answer is the barge-in (smooth G4).
+    openWhileSpeaking: ctx.textOnly,
+    // "/" on the Older pad in a fraction question (live-content 10).
+    padSlash: !young && fractionQuestion(askText, state.topic?.title ?? ""),
   };
 
   // ───────── actions ─────────
@@ -679,6 +703,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
       if (row) runtime.tapChip({ id: k, label: row[ctx.lessonLang === "hindi" ? 1 : ctx.lessonLang === "english" ? 2 : 0] });
     },
     helpMenuPick: (k) => {
+      setTrayOverlay((o) => (o === "help_menu" ? null : o)); // the menu closes back over the pad or tiles it covered
       if (k === "again") return a.hearQuestion();
       const row = REQUESTS[k === "choices" ? "choices" : "how"];
       runtime.tapChip({ id: `help_${k}`, label: row[ctx.lessonLang === "hindi" ? 1 : ctx.lessonLang === "english" ? 2 : 0] });
@@ -759,6 +784,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
           setTyping(true);
           return setDismissed((d) => new Set([...d, "T3"]));
         case "ok":
+          if (strip === "PTT") ctx.markPttNoteSeen?.(); // dismissed once, for good (flows G8)
           return setDismissed((d) => new Set([...d, strip === "T3" ? "T3" : "PTT"]));
         case "sign_in":
           return nav.signIn();
@@ -779,8 +805,10 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
       if (e.type === "error") setModuleFailed(true);
       runtime.moduleEvent(e);
     },
-    // W1 seam: WorkTray onModuleFailed → here (W1-A fills; the error event itself still arrives via moduleEvent).
-    moduleFailed: () => {},
+    // W1 seam: WorkTray onModuleFailed → here. The tray drops the activity at once, tiles or the pad take its place,
+    // and a "tap_in_tray" item gets Type back (answerForm above). The error event itself still reaches moduleEvent.
+    moduleFailed: () => setModuleFailed(true),
+    closeHelpMenu: () => setTrayOverlay((o) => (o === "help_menu" ? null : o)),
     fixAnswer: () => {
       ptt.stop();
       setFixDraft(item.answer?.text ?? "");

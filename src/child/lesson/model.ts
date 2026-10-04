@@ -14,7 +14,8 @@ export type Verdict = "correct" | "not_yet" | "partial";
 export type DeskPhase = "warmup" | "teach" | "practice" | "teachback" | "wrap";
 export type Sheet = null | "pause" | "end" | "hint" | "help" | "grownup";
 
-export interface AskLine { kind: "hint" | "reask" | "didnt_catch" | "know" | "step"; text: string; level?: 1 | 2 | 3 }
+/** "asked": the child's help request as a chip state under the ask ("Hint asked"; W1-A item 6), never the answer row. */
+export interface AskLine { kind: "hint" | "reask" | "didnt_catch" | "know" | "step" | "asked"; text: string; level?: 1 | 2 | 3 }
 
 export interface Ask {
   text: string;
@@ -109,6 +110,10 @@ export interface DeskModel {
   thinkingSince?: number | null;
   /** "Fix": the type row opens prefilled with the heard transcript; sending re-sends the turn in flight. */
   fixDraft?: string | null;
+  /** Text lane: the dock (type row, side controls) stays open while she speaks; typing interrupts her (smooth G4). */
+  openWhileSpeaking?: boolean;
+  /** The Older pad shows a "/" key (a fraction question; live-content 10). */
+  padSlash?: boolean;
 }
 
 export interface DeskActions {
@@ -147,4 +152,6 @@ export interface DeskActions {
   fixAnswer(): void;
   /** Older "123": the NumberPad opens in the tray (§6.3.4 answerForm number). */
   openPad?(): void;
+  /** The Help menu closes back over the pad or tiles it covered (W1-A item 3). */
+  closeHelpMenu?(): void;
 }

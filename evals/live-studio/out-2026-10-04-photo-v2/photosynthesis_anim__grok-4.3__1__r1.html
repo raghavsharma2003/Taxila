@@ -1,0 +1,194 @@
+<style>
+#wrap{width:360px;height:640px;margin:0 auto;background:linear-gradient(#e0f7fa,#f1f8e9);font-family:system-ui,-apple-system,sans-serif;overflow:hidden;position:relative}
+svg{display:block}
+.label{font-size:12px;font-weight:700;fill:#37474f;pointer-events:none}
+button{min-width:44px;min-height:44px;border:none;border-radius:22px;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s ease}
+#playBtn{background:#ffca28;color:#37474f}
+.step{background:#81c784;color:#fff;font-size:15px}
+.step.active{background:#ff7043;transform:scale(1.12);box-shadow:0 3px 8px rgba(255,112,67,.4)}
+#caption{background:#fff;border-radius:12px;padding:8px 12px;margin:6px 12px;font-size:13px;color:#455a64;min-height:36px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.opt{background:#4fc3f7;color:#fff;margin:4px 6px;font-size:15px}
+.opt:active{transform:scale(.92)}
+.particle{transition:cx .08s linear,cy .08s linear}
+.ray{stroke:#ffe082;stroke-width:3;opacity:.7}
+.glow{animation:glow 1.2s ease-in-out infinite}
+@keyframes glow{0%,100%{opacity:.6}50%{opacity:1}}
+.soil{fill:#a1887f}
+.stem{fill:#66bb6a}
+.leaf{fill:#43a047;stroke:#2e7d32;stroke-width:3}
+.sun{fill:#ffd54f;stroke:#ffb300;stroke-width:4}
+.root{stroke:#5d4037;stroke-width:5;stroke-linecap:round}
+#feedback{position:absolute;bottom:92px;left:50%;transform:translateX(-50%);font-size:15px;font-weight:700;color:#2e7d32;text-align:center}
+</style>
+<div id="wrap">
+<svg id="scene" width="360" height="295" viewBox="0 0 360 295">
+<circle cx="180" cy="38" r="26" class="sun"/>
+<g id="rays">
+<line x1="155" y1="52" x2="138" y2="98" class="ray"/>
+<line x1="180" y1="65" x2="180" y2="115" class="ray"/>
+<line x1="205" y1="52" x2="222" y2="98" class="ray"/>
+<line x1="142" y1="42" x2="115" y2="85" class="ray"/>
+<line x1="218" y1="42" x2="245" y2="85" class="ray"/>
+</g>
+<rect x="72" y="238" width="216" height="57" rx="8" class="soil"/>
+<rect x="175" y="105" width="10" height="138" rx="5" class="stem"/>
+<ellipse id="leaf" data-entity="leaf" cx="235" cy="138" rx="52" ry="31" class="leaf"/>
+<g id="roots" data-entity="roots">
+<path d="M180 240 Q165 260 152 280" class="root" fill="none"/>
+<path d="M180 240 Q180 265 185 285" class="root" fill="none"/>
+<path d="M180 240 Q195 258 208 278" class="root" fill="none"/>
+<path d="M180 242 Q170 262 160 275" class="root" fill="none"/>
+</g>
+<circle data-flow="water" r="4.5" fill="#42a5f5"/>
+<circle data-flow="water" r="4.5" fill="#42a5f5"/>
+<circle data-flow="water" r="4.5" fill="#42a5f5"/>
+<circle data-flow="co2" r="4" fill="#78909c"/>
+<circle data-flow="co2" r="4" fill="#78909c"/>
+<circle data-flow="co2" r="4" fill="#78909c"/>
+<circle data-flow="o2" r="4.5" fill="#66bb6a"/>
+<circle data-flow="o2" r="4.5" fill="#66bb6a"/>
+<circle data-flow="o2" r="4.5" fill="#66bb6a"/>
+<circle id="glucose" cx="235" cy="138" r="9" fill="#ffd54f" opacity="0.75"/>
+<text data-label="sun" x="180" y="8" text-anchor="middle" class="label"></text>
+<text data-label="leaf" x="235" y="100" text-anchor="middle" class="label"></text>
+<text data-label="roots" x="70" y="280" class="label"></text>
+<text data-label="water" x="70" y="210" class="label"></text>
+<text data-label="co2" x="300" y="75" text-anchor="middle" class="label"></text>
+<text data-label="o2" x="300" y="190" text-anchor="middle" class="label"></text>
+<text data-label="glucose" x="300" y="155" text-anchor="middle" class="label"></text>
+</svg>
+<div style="padding:0 12px 8px">
+<div style="display:flex;gap:8px;align-items:center;justify-content:center">
+<button id="playBtn" data-action="play"></button>
+<button class="step" data-action="step-1">1</button>
+<button class="step" data-action="step-2">2</button>
+<button class="step" data-action="step-3">3</button>
+<button class="step" data-action="step-4">4</button>
+<button class="step" data-action="step-5">5</button>
+</div>
+<div id="caption" data-caption></div>
+<div style="margin-top:4px;text-align:center">
+<div style="font-size:13px;color:#37474f;margin-bottom:4px" data-label="ask"></div>
+<button class="opt" data-option="co2"></button>
+<button class="opt" data-option="o2"></button>
+<button class="opt" data-option="water"></button>
+</div>
+</div>
+<div id="feedback"></div>
+</div>
+<script>
+(function(){
+const svg=document.getElementById('scene');
+const playBtn=document.getElementById('playBtn');
+const caption=document.querySelector('[data-caption]');
+const feedback=document.getElementById('feedback');
+const glucose=document.getElementById('glucose');
+const leaf=document.getElementById('leaf');
+let playing=true;
+let step=1;
+let t=0;
+const particles=Array.from(svg.querySelectorAll('circle[data-flow]'));
+function setText(el,key){if(el)el.textContent=Studio.t(key);}
+function populateTexts(){
+document.querySelectorAll('[data-label]').forEach(el=>setText(el,el.getAttribute('data-label')));
+setText(playBtn,'play');
+document.querySelectorAll('[data-option]').forEach(b=>setText(b,b.getAttribute('data-option')));
+}
+function updateCaption(){caption.textContent=Studio.t('step'+step);}
+function setStep(n){
+step=n;
+document.querySelectorAll('.step').forEach((b,i)=>{
+b.classList.toggle('active',i+1===n);
+});
+updateCaption();
+Studio.event('step',{step:n});
+}
+function togglePlay(){
+playing=!playing;
+setText(playBtn,playing?'pause':'play');
+if(playing)animate();
+Studio.event('playpause',{playing});
+}
+playBtn.onclick=togglePlay;
+document.querySelectorAll('.step').forEach(b=>{
+b.onclick=()=>setStep(parseInt(b.getAttribute('data-action').split('-')[1]));
+});
+document.querySelectorAll('[data-option]').forEach(b=>{
+b.onclick=()=>Studio.answer(b.getAttribute('data-option'));
+});
+Studio.onVerdict(v=>{
+if(v.correct){
+feedback.innerHTML='★ '+Studio.t('o2')+' ★';
+feedback.style.color='#2e7d32';
+setTimeout(()=>{Studio.done();},650);
+}else{
+feedback.innerHTML='↻';
+feedback.style.color='#e53935';
+setTimeout(()=>{feedback.innerHTML='';},700);
+}
+});
+function pos(p,flow){
+if(flow==='water'){
+if(p<0.6){const pp=p/0.6;return {x:180,y:255-pp*140};}
+const pp=(p-0.6)/0.4;return {x:180+pp*55,y:115+pp*25};
+}
+if(flow==='co2'){
+const px=320-p*90;
+const py=120+Math.sin(p*3.14)*15;
+return {x:px,y:py};
+}
+if(flow==='o2'){
+const px=230+p*95;
+const py=140+Math.cos(p*3.14)*12;
+return {x:px,y:py};
+}
+return {x:235,y:138};
+}
+function updateParticles(){
+const offs=[0,0.33,0.66];
+particles.forEach((c,i)=>{
+const flow=c.getAttribute('data-flow');
+const o=offs[i%3];
+const pr=((t*0.9+o)%1);
+const pt=pos(pr,flow);
+c.setAttribute('cx',pt.x);
+c.setAttribute('cy',pt.y);
+});
+}
+function updateGlucose(){
+const s=0.75+Math.sin(t*4.2)*0.25;
+glucose.setAttribute('transform',`translate(235 138)scale(${s})translate(-235 -138)`);
+glucose.style.opacity=playing?0.85:0.4;
+}
+function updateRays(){
+const rays=svg.querySelectorAll('.ray');
+rays.forEach((r,i)=>{
+r.style.opacity=playing?(0.55+Math.sin(t*3.5+i)*0.25):0.35;
+});
+}
+function animate(){
+if(!playing)return;
+t+=0.028;
+updateParticles();
+updateGlucose();
+updateRays();
+requestAnimationFrame(animate);
+}
+function init(){
+populateTexts();
+setStep(1);
+setText(playBtn,'pause');
+particles.forEach((c,i)=>{
+const f=c.getAttribute('data-flow');
+if(f==='water')c.setAttribute('cy','255');
+if(f==='co2')c.setAttribute('cx','320');
+if(f==='o2')c.setAttribute('cx','230');
+});
+glucose.style.transition='transform .18s ease';
+leaf.style.transition='transform .2s ease';
+Studio.ready();
+setTimeout(()=>{if(playing)animate();},120);
+}
+init();
+})();
+</script>

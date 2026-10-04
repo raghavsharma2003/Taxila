@@ -1,0 +1,325 @@
+<style>
+  :root{
+    --bg:#fff8ef;
+    --card:#ffffff;
+    --ink:#2d2a32;
+    --sub:#5b5566;
+    --accent:#ff8a5b;
+    --accent2:#ffd166;
+    --good:#2bb673;
+    --bad:#ef476f;
+    --part:#ffe9d9;
+    --partOn:#ff9f68;
+    --shadow:0 10px 24px rgba(45,42,50,.12);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink)}
+  #app{
+    width:100%;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:14px 12px 18px;
+    gap:10px;
+  }
+  #title{
+    margin:0;
+    font-size:28px;
+    line-height:1.1;
+    text-align:center;
+    color:#3a3144;
+  }
+  #instr{
+    margin:0;
+    font-size:17px;
+    line-height:1.3;
+    text-align:center;
+    color:var(--sub);
+  }
+  #card{
+    width:min(100%,340px);
+    background:var(--card);
+    border-radius:22px;
+    box-shadow:var(--shadow);
+    padding:14px 12px 12px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+  }
+  #itemWrap{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+  }
+  #fractionBox{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    font-size:34px;
+    font-weight:800;
+    color:#4a3f58;
+    min-height:46px;
+  }
+  #visualArea{
+    width:100%;
+    border-radius:18px;
+    background:linear-gradient(180deg,#fffdf9,#fff6ef);
+    padding:8px;
+  }
+  #barSvg{
+    width:100%;
+    height:auto;
+    display:block;
+  }
+  .part{
+    cursor:pointer;
+    transition:transform .14s ease, fill .2s ease, filter .2s ease, stroke .2s ease;
+    transform-origin:center;
+    fill:var(--part);
+    stroke:#f4b994;
+    stroke-width:2;
+  }
+  .part:active{transform:scale(.97)}
+  .part.shaded{
+    fill:var(--partOn);
+    stroke:#ff7f45;
+    filter:drop-shadow(0 3px 4px rgba(255,127,69,.35));
+  }
+  .part.pop{animation:pop .2s ease}
+  @keyframes pop{0%{transform:scale(.96)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
+  #hint{
+    margin:0;
+    min-height:22px;
+    text-align:center;
+    color:#7a6f87;
+    font-size:15px;
+  }
+  #feedback{
+    min-height:26px;
+    font-size:20px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    transition:transform .2s ease, opacity .2s ease;
+  }
+  #feedback.good{color:var(--good);animation:bounce .35s ease}
+  #feedback.bad{color:var(--bad);animation:shake .28s ease}
+  @keyframes bounce{0%{transform:scale(.9)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+  @keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}100%{transform:translateX(0)}}
+  #checkBtn{
+    min-width:140px;
+    min-height:48px;
+    border:0;
+    border-radius:999px;
+    background:linear-gradient(180deg,#ffad73,#ff8a5b);
+    color:white;
+    font-size:20px;
+    font-weight:800;
+    padding:10px 22px;
+    cursor:pointer;
+    box-shadow:0 6px 12px rgba(255,138,91,.35);
+    transition:transform .12s ease, filter .2s ease, opacity .2s ease;
+  }
+  #checkBtn:active{transform:scale(.97)}
+  #checkBtn:disabled{opacity:.65;cursor:default}
+  .celebrate #visualArea{animation:glow .6s ease}
+  @keyframes glow{0%{filter:none}45%{filter:drop-shadow(0 0 10px rgba(43,182,115,.45))}100%{filter:none}}
+  #doneScreen{
+    width:min(100%,340px);
+    background:var(--card);
+    border-radius:22px;
+    box-shadow:var(--shadow);
+    padding:24px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:180px;
+    font-size:30px;
+    font-weight:800;
+    color:#3f3560;
+    text-align:center;
+    animation:fadeIn .35s ease;
+  }
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  [hidden]{display:none!important}
+</style>
+
+<div id="app">
+  <h1 id="title"></h1>
+  <p id="instr"></p>
+
+  <div id="card">
+    <div id="itemWrap" data-item="">
+      <div id="fractionBox">
+        <span id="num"></span>
+        <span>/</span>
+        <span id="den"></span>
+      </div>
+      <div id="visualArea">
+        <svg id="barSvg" viewBox="0 0 320 140" aria-hidden="true"></svg>
+      </div>
+    </div>
+    <p id="hint"></p>
+    <div id="feedback"></div>
+    <button id="checkBtn" data-action="check"></button>
+  </div>
+
+  <div id="doneScreen" hidden></div>
+</div>
+
+<script>
+(function(){
+  const items = (Studio.params && Array.isArray(Studio.params.items)) ? Studio.params.items : [];
+  const el = {
+    title: document.getElementById('title'),
+    instr: document.getElementById('instr'),
+    itemWrap: document.getElementById('itemWrap'),
+    num: document.getElementById('num'),
+    den: document.getElementById('den'),
+    svg: document.getElementById('barSvg'),
+    hint: document.getElementById('hint'),
+    feedback: document.getElementById('feedback'),
+    check: document.getElementById('checkBtn'),
+    card: document.getElementById('card'),
+    done: document.getElementById('doneScreen')
+  };
+
+  el.title.textContent = Studio.t('title');
+  el.instr.textContent = Studio.t('instr');
+  el.check.textContent = Studio.t('check');
+  el.hint.textContent = Studio.t('hint');
+
+  let idx = 0;
+  let waiting = false;
+  let finished = false;
+
+  function partTap(part){
+    if (waiting) return;
+    const on = part.getAttribute('data-shaded') === 'true';
+    part.setAttribute('data-shaded', on ? 'false' : 'true');
+    part.classList.toggle('shaded', !on);
+    part.classList.remove('pop');
+    void part.getBoundingClientRect();
+    part.classList.add('pop');
+    Studio.event('part_tap', {
+      itemId: items[idx] && items[idx].id,
+      part: Number(part.getAttribute('data-part')),
+      shaded: !on
+    });
+  }
+
+  function makeBar(d){
+    const svgNS = 'http://www.w3.org/2000/svg';
+    el.svg.innerHTML = '';
+
+    const base = document.createElementNS(svgNS,'rect');
+    base.setAttribute('x','8');
+    base.setAttribute('y','20');
+    base.setAttribute('width','304');
+    base.setAttribute('height','100');
+    base.setAttribute('rx','18');
+    base.setAttribute('fill','#fff1e6');
+    base.setAttribute('stroke','#ffd4b6');
+    base.setAttribute('stroke-width','2');
+    el.svg.appendChild(base);
+
+    const gap = 4;
+    const innerX = 14;
+    const innerY = 26;
+    const innerW = 292;
+    const innerH = 88;
+    const w = (innerW - gap * (d - 1)) / d;
+
+    for(let i=0;i<d;i++){
+      const r = document.createElementNS(svgNS,'rect');
+      const x = innerX + i * (w + gap);
+      r.setAttribute('x', String(x));
+      r.setAttribute('y', String(innerY));
+      r.setAttribute('width', String(w));
+      r.setAttribute('height', String(innerH));
+      r.setAttribute('rx', String(Math.min(12, w/3)));
+      r.setAttribute('class', 'part');
+      r.setAttribute('data-part', String(i));
+      r.setAttribute('data-shaded', 'false');
+      r.setAttribute('tabindex', '0');
+      r.addEventListener('click', () => partTap(r));
+      r.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          partTap(r);
+        }
+      });
+      el.svg.appendChild(r);
+    }
+  }
+
+  function clearFeedback(){
+    el.feedback.textContent = '';
+    el.feedback.className = '';
+    el.itemWrap.classList.remove('celebrate');
+  }
+
+  function render(){
+    if (idx >= items.length){
+      finished = true;
+      el.card.hidden = true;
+      el.done.hidden = false;
+      el.done.textContent = Studio.t('done');
+      Studio.done();
+      return;
+    }
+
+    const item = items[idx];
+    el.itemWrap.setAttribute('data-item', item.id);
+    el.num.textContent = String(item.n);
+    el.den.textContent = String(item.d);
+    makeBar(item.d);
+    clearFeedback();
+    waiting = false;
+    el.check.disabled = false;
+    Studio.event('item_show', { itemId: item.id, n: item.n, d: item.d });
+  }
+
+  el.check.addEventListener('click', function(){
+    if (waiting || finished || idx >= items.length) return;
+    const item = items[idx];
+    const shaded = el.svg.querySelectorAll('[data-part][data-shaded="true"]').length;
+    waiting = true;
+    el.check.disabled = true;
+    Studio.event('check', { itemId: item.id, n: shaded, d: item.d });
+    Studio.answer({ n: shaded, d: item.d });
+  });
+
+  Studio.onVerdict(function(v){
+    if (finished || idx >= items.length) return;
+    waiting = false;
+    el.check.disabled = false;
+
+    if (v && v.correct){
+      el.feedback.textContent = Studio.t('right');
+      el.feedback.className = 'good';
+      el.itemWrap.classList.add('celebrate');
+      Studio.event('verdict', { itemId: items[idx].id, correct: true });
+      setTimeout(function(){
+        idx += 1;
+        render();
+      }, 700);
+    } else {
+      el.feedback.textContent = Studio.t('wrong');
+      el.feedback.className = 'bad';
+      el.hint.textContent = Studio.t('hint');
+      Studio.event('verdict', { itemId: items[idx].id, correct: false });
+    }
+  });
+
+  render();
+  Studio.ready();
+})();
+</script>

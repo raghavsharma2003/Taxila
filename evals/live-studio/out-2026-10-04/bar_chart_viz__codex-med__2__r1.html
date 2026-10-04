@@ -1,0 +1,300 @@
+<style>
+  :root{
+    --bg:#f6fbff;
+    --card:#ffffff;
+    --ink:#1f2a44;
+    --muted:#5b6b8c;
+    --grid:#dbe7f5;
+    --axis:#8aa1bf;
+    --bar:#5aa9e6;
+    --bar-dark:#3d8dd1;
+    --ok:#2e9b57;
+    --bad:#d64545;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .app{
+    width:100%;
+    min-height:100vh;
+    background:linear-gradient(180deg,#eef7ff 0%,#f9fcff 100%);
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:12px;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--ink);
+  }
+  .card{
+    width:min(100%,520px);
+    background:var(--card);
+    border-radius:20px;
+    padding:14px 12px 12px;
+    box-shadow:0 8px 24px rgba(34,73,120,.12);
+  }
+  #title{
+    margin:0;
+    text-align:center;
+    font-size:22px;
+    line-height:1.2;
+    font-weight:800;
+  }
+  #ask{
+    margin:8px 2px 8px;
+    text-align:center;
+    font-size:17px;
+    line-height:1.3;
+    min-height:24px;
+    color:var(--muted);
+    font-weight:700;
+  }
+  #chartWrap{
+    position:relative;
+    width:100%;
+    border-radius:14px;
+    background:var(--bg);
+    padding:6px 4px 2px;
+    overflow:hidden;
+  }
+  #chart{
+    width:100%;
+    height:auto;
+    display:block;
+    touch-action:manipulation;
+  }
+  .grid{stroke:var(--grid);stroke-width:1.2}
+  .axis{stroke:var(--axis);stroke-width:2}
+  .tick{
+    fill:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+  .fruit{
+    fill:var(--ink);
+    font-size:13px;
+    font-weight:700;
+  }
+  .ytitle{
+    fill:var(--muted);
+    font-size:12px;
+    font-weight:800;
+  }
+  .bar-rect{
+    fill:var(--bar);
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    transform:scaleY(0.001);
+    transition:transform 700ms cubic-bezier(.2,.8,.2,1), fill .2s ease, filter .2s ease;
+    rx:10;
+  }
+  #chart.grown .bar-rect{transform:scaleY(1)}
+  .bar-g{transition:transform .16s ease}
+  .bar-g.tap{transform:translateY(-2px)}
+  .bar-g.tap .bar-rect{filter:brightness(1.08)}
+  .hit{
+    fill:transparent;
+    cursor:pointer;
+  }
+  .selected .bar-rect{fill:var(--bar-dark)}
+  #valueBadge{
+    position:absolute;
+    min-width:44px;
+    min-height:44px;
+    padding:10px 12px;
+    border-radius:999px;
+    background:#1f2a44;
+    color:#fff;
+    font-size:18px;
+    font-weight:800;
+    line-height:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transform:translate(-50%,-110%) scale(.85);
+    opacity:0;
+    pointer-events:none;
+    transition:transform .2s ease,opacity .2s ease;
+  }
+  #valueBadge.show{
+    opacity:1;
+    transform:translate(-50%,-110%) scale(1);
+  }
+  #feedback{
+    min-height:32px;
+    margin-top:8px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:800;
+    font-size:18px;
+  }
+  #feedback.good{color:var(--ok)}
+  #feedback.bad{color:var(--bad)}
+</style>
+
+<div class="app">
+  <div class="card">
+    <h1 id="title"></h1>
+    <div id="ask"></div>
+    <div id="chartWrap">
+      <svg id="chart" viewBox="0 0 340 320" aria-hidden="true">
+        <g id="gridLayer"></g>
+        <g id="axisLayer"></g>
+        <g id="barsLayer"></g>
+        <g id="xLabelsLayer"></g>
+      </svg>
+      <div id="valueBadge"><span id="valueText"></span></div>
+    </div>
+    <div id="feedback"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const data = (Studio.params && Studio.params.data) ? Studio.params.data.slice() : [];
+  const titleEl = document.getElementById('title');
+  const askEl = document.getElementById('ask');
+  const feedbackEl = document.getElementById('feedback');
+  const chart = document.getElementById('chart');
+  const gridLayer = document.getElementById('gridLayer');
+  const axisLayer = document.getElementById('axisLayer');
+  const barsLayer = document.getElementById('barsLayer');
+  const xLabelsLayer = document.getElementById('xLabelsLayer');
+  const badge = document.getElementById('valueBadge');
+  const valueText = document.getElementById('valueText');
+
+  titleEl.textContent = Studio.t('title');
+  askEl.textContent = Studio.t('ask');
+
+  const vbW = 340, vbH = 320;
+  const plotX = 52, plotY = 24, plotW = 274, plotH = 224;
+  const baseY = plotY + plotH;
+
+  function niceStep(maxVal){
+    if (maxVal <= 5) return 1;
+    const rough = maxVal / 5;
+    const p = Math.pow(10, Math.floor(Math.log10(rough)));
+    const n = rough / p;
+    let m = 1;
+    if (n > 1 && n <= 2) m = 2;
+    else if (n > 2 && n <= 5) m = 5;
+    else if (n > 5) m = 10;
+    return m * p;
+  }
+
+  const maxVal = data.reduce((m,d)=>Math.max(m, d.value), 0);
+  const step = niceStep(maxVal || 1);
+  const yMax = Math.max(step, Math.ceil(maxVal / step) * step);
+  const scale = plotH / yMax;
+
+  function svgEl(tag, attrs){
+    const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    for (const k in attrs) el.setAttribute(k, attrs[k]);
+    return el;
+  }
+
+  for(let t=0; t<=yMax; t+=step){
+    const y = baseY - t * scale;
+    gridLayer.appendChild(svgEl('line',{
+      x1:plotX, y1:y, x2:plotX+plotW, y2:y, class:'grid'
+    }));
+    const tick = svgEl('text',{
+      x:plotX-8, y:y+4, class:'tick', 'text-anchor':'end', 'data-tick': String(t)
+    });
+    tick.textContent = String(t);
+    axisLayer.appendChild(tick);
+  }
+
+  axisLayer.appendChild(svgEl('line',{x1:plotX,y1:plotY,x2:plotX,y2:baseY,class:'axis'}));
+  axisLayer.appendChild(svgEl('line',{x1:plotX,y1:baseY,x2:plotX+plotW,y2:baseY,class:'axis'}));
+
+  const yTitle = svgEl('text',{
+    x:16, y:plotY + plotH/2, class:'ytitle', 'text-anchor':'middle',
+    transform:'rotate(-90 16 ' + (plotY + plotH/2) + ')'
+  });
+  yTitle.textContent = Studio.t('yaxis');
+  axisLayer.appendChild(yTitle);
+
+  const n = data.length || 1;
+  const slot = plotW / n;
+  const barW = Math.min(slot * 0.84, Math.max(44, slot * 0.75));
+  const hitW = Math.max(44, slot * 0.92);
+
+  let awaiting = false;
+  let completed = false;
+  let doneCalled = false;
+  let activeGroup = null;
+
+  function setBadge(x, y, val){
+    const px = (x / vbW) * chart.clientWidth;
+    const py = (y / vbH) * chart.clientHeight;
+    badge.style.left = px + 'px';
+    badge.style.top = py + 'px';
+    valueText.textContent = String(val);
+    badge.classList.add('show');
+  }
+
+  data.forEach((d,i)=>{
+    const h = d.value * scale;
+    const x = plotX + i*slot + (slot-barW)/2;
+    const y = baseY - h;
+    const centerX = x + barW/2;
+
+    const g = svgEl('g',{class:'bar-g'});
+    const bar = svgEl('rect',{
+      x:x, y:y, width:barW, height:h,
+      class:'bar-rect',
+      'data-bar': d.key,
+      'data-value': String(d.value)
+    });
+    const hit = svgEl('rect',{
+      x:centerX - hitW/2, y:plotY, width:hitW, height:plotH + 50, class:'hit'
+    });
+
+    hit.addEventListener('pointerdown', ()=>{ if(!completed) g.classList.add('tap'); });
+    hit.addEventListener('pointerup', ()=> g.classList.remove('tap'));
+    hit.addEventListener('pointercancel', ()=> g.classList.remove('tap'));
+    hit.addEventListener('click', ()=>{
+      if (awaiting || completed) return;
+      awaiting = true;
+      if (activeGroup) activeGroup.classList.remove('selected');
+      activeGroup = g;
+      g.classList.add('selected');
+      setBadge(centerX, y, d.value);
+      Studio.event('bar_tap',{key:d.key,value:d.value});
+      Studio.answer(String(d.key));
+    });
+
+    g.appendChild(bar);
+    g.appendChild(hit);
+    barsLayer.appendChild(g);
+
+    const lbl = svgEl('text',{
+      x:centerX, y:baseY+24, class:'fruit', 'text-anchor':'middle'
+    });
+    lbl.textContent = Studio.t(d.key);
+    xLabelsLayer.appendChild(lbl);
+  });
+
+  Studio.onVerdict(function(v){
+    if (!v) return;
+    awaiting = false;
+    feedbackEl.classList.remove('good','bad');
+    if (v.correct){
+      completed = true;
+      feedbackEl.classList.add('good');
+      feedbackEl.textContent = Studio.t('right');
+      setTimeout(function(){
+        feedbackEl.textContent = Studio.t('done');
+        if (!doneCalled){ doneCalled = true; Studio.done(); }
+      }, 350);
+    }else{
+      feedbackEl.classList.add('bad');
+      feedbackEl.textContent = Studio.t('wrong');
+    }
+  });
+
+  requestAnimationFrame(function(){ chart.classList.add('grown'); });
+  Studio.ready();
+})();
+</script>

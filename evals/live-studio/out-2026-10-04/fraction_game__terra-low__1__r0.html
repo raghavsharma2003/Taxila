@@ -1,0 +1,320 @@
+<style>
+  :root{
+    --ink:#24324a;
+    --cream:#fff8e9;
+    --card:#ffffff;
+    --tomato:#f36b5d;
+    --cheese:#ffd45a;
+    --crust:#dc8a46;
+    --mint:#76cfa6;
+    --lav:#9a8de2;
+    --soft:#edf4f7;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-width:320px;
+    background:linear-gradient(155deg,#fff4d9 0%,#f5fbf7 55%,#eef4ff 100%);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    overflow-x:hidden;
+  }
+  #app{
+    width:min(100%,440px);
+    min-height:640px;
+    margin:0 auto;
+    padding:18px 16px 24px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .top{
+    width:100%;
+    text-align:center;
+    animation:enter .45s ease-out both;
+  }
+  h1{
+    margin:2px 0 8px;
+    font-size:25px;
+    line-height:1.15;
+    letter-spacing:-.4px;
+  }
+  .instruction{
+    margin:0 auto;
+    max-width:330px;
+    font-size:16px;
+    line-height:1.38;
+    color:#53647a;
+  }
+  .game-card{
+    width:100%;
+    margin-top:18px;
+    padding:18px 14px 16px;
+    border-radius:28px;
+    background:rgba(255,255,255,.94);
+    box-shadow:0 12px 32px rgba(67,91,116,.15);
+    text-align:center;
+    animation:enter .55s .08s ease-out both;
+  }
+  .fraction{
+    min-height:57px;
+    display:inline-flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    margin:0 auto 6px;
+    color:var(--tomato);
+    font-weight:800;
+    line-height:1;
+    font-size:28px;
+  }
+  .fraction .line{
+    height:3px;
+    width:41px;
+    margin:5px 0;
+    border-radius:4px;
+    background:var(--ink);
+  }
+  .pizza-wrap{
+    position:relative;
+    width:284px;
+    height:284px;
+    max-width:100%;
+    margin:0 auto;
+    display:grid;
+    place-items:center;
+  }
+  #pizza{
+    width:284px;
+    height:284px;
+    max-width:100%;
+    overflow:visible;
+    filter:drop-shadow(0 8px 7px rgba(66,74,78,.14));
+  }
+  .plate{fill:#dce9ed}
+  .plate-rim{fill:#c6dadd}
+  .pizza-base{fill:var(--crust)}
+  .part{
+    fill:#fff2c2;
+    stroke:#fffaf0;
+    stroke-width:3;
+    cursor:pointer;
+    transition:fill .2s ease,transform .16s ease,filter .16s ease;
+    transform-box:fill-box;
+    transform-origin:center;
+  }
+  .part.shaded{
+    fill:var(--tomato);
+    filter:brightness(1.04);
+  }
+  .part:active{transform:scale(.94)}
+  .part.pop{animation:pop .28s ease-out}
+  .spark{
+    fill:var(--cheese);
+    opacity:0;
+    transform-origin:center;
+  }
+  .status{
+    min-height:42px;
+    margin:4px auto 10px;
+    padding:9px 12px;
+    border-radius:15px;
+    font-size:15px;
+    font-weight:700;
+    color:#5b6980;
+    transition:background .2s,color .2s,transform .2s;
+  }
+  .status.good{background:#e3f8ec;color:#227452;animation:statusPop .35s ease}
+  .status.bad{background:#fff0ed;color:#bf554d;animation:shake .35s ease}
+  .status.hint{background:#f1edff;color:#6658a7}
+  button{
+    width:100%;
+    min-height:50px;
+    border:0;
+    border-radius:17px;
+    background:var(--lav);
+    color:#fff;
+    font:800 17px system-ui,-apple-system,"Segoe UI",sans-serif;
+    box-shadow:0 5px 0 #7468bb,0 9px 16px rgba(100,85,162,.25);
+    cursor:pointer;
+    transition:transform .14s ease,box-shadow .14s ease,opacity .14s ease;
+  }
+  button:active{transform:translateY(4px) scale(.985);box-shadow:0 1px 0 #7468bb,0 4px 8px rgba(100,85,162,.2)}
+  button:disabled{opacity:.58;cursor:default}
+  .celebrate .part.shaded{animation:glow .5s ease-in-out 2}
+  .celebrate .spark{animation:spark .8s ease-out forwards}
+  .done-card{
+    width:100%;
+    margin-top:80px;
+    padding:34px 22px;
+    text-align:center;
+    border-radius:30px;
+    background:#fff;
+    box-shadow:0 14px 35px rgba(67,91,116,.16);
+    animation:enter .5s ease-out both;
+  }
+  .done-art{
+    width:155px;
+    height:118px;
+    margin:0 auto 12px;
+    display:block;
+  }
+  .done-text{
+    margin:0;
+    font-size:24px;
+    font-weight:800;
+  }
+  @keyframes enter{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pop{50%{transform:scale(1.055)}}
+  @keyframes statusPop{50%{transform:scale(1.03)}}
+  @keyframes shake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+  @keyframes glow{50%{filter:brightness(1.22) drop-shadow(0 0 8px #ffd45a)}}
+  @keyframes spark{0%{opacity:0;transform:translate(0,0) scale(.4)}20%{opacity:1}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(1.15)}}
+</style>
+
+<div id="app">
+  <div class="top">
+    <h1 id="title"></h1>
+    <p class="instruction" id="instruction"></p>
+  </div>
+  <main class="game-card" id="itemBox" data-item="">
+    <div class="fraction" aria-live="polite">
+      <span id="numerator"></span>
+      <span class="line"></span>
+      <span id="denominator"></span>
+    </div>
+    <div class="pizza-wrap">
+      <svg id="pizza" viewBox="0 0 300 300" role="img">
+        <circle class="plate-rim" cx="150" cy="154" r="135"></circle>
+        <circle class="plate" cx="150" cy="150" r="130"></circle>
+        <circle class="pizza-base" cx="150" cy="146" r="110"></circle>
+        <g id="parts"></g>
+        <g id="sparks">
+          <circle class="spark" style="--x:-30px;--y:-43px" cx="150" cy="146" r="6"></circle>
+          <circle class="spark" style="--x:42px;--y:-27px" cx="150" cy="146" r="5"></circle>
+          <circle class="spark" style="--x:35px;--y:41px" cx="150" cy="146" r="6"></circle>
+          <circle class="spark" style="--x:-42px;--y:31px" cx="150" cy="146" r="5"></circle>
+        </g>
+      </svg>
+    </div>
+    <div class="status" id="status"></div>
+    <button id="check" data-action="check" type="button"></button>
+  </main>
+</div>
+
+<script>
+(function(){
+  var items=Studio.params.items;
+  var pos=0, waiting=false, completed=false;
+  var title=document.getElementById('title');
+  var instruction=document.getElementById('instruction');
+  var itemBox=document.getElementById('itemBox');
+  var numerator=document.getElementById('numerator');
+  var denominator=document.getElementById('denominator');
+  var parts=document.getElementById('parts');
+  var status=document.getElementById('status');
+  var check=document.getElementById('check');
+  var app=document.getElementById('app');
+  var pizza=document.getElementById('pizza');
+
+  title.textContent=Studio.t('title');
+  instruction.textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+
+  function sectorPath(cx,cy,r,a1,a2){
+    var x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1);
+    var x2=cx+r*Math.cos(a2), y2=cy+r*Math.sin(a2);
+    var large=a2-a1>Math.PI?1:0;
+    return 'M '+cx+' '+cy+' L '+x1+' '+y1+' A '+r+' '+r+' 0 '+large+' 1 '+x2+' '+y2+' Z';
+  }
+
+  function render(){
+    var item=items[pos];
+    waiting=false;
+    itemBox.setAttribute('data-item',item.id);
+    numerator.textContent=item.n;
+    denominator.textContent=item.d;
+    status.textContent=Studio.t('hint');
+    status.className='status hint';
+    check.disabled=false;
+    parts.innerHTML='';
+    for(var i=0;i<item.d;i++){
+      var start=-Math.PI/2+(Math.PI*2*i/item.d);
+      var end=-Math.PI/2+(Math.PI*2*(i+1)/item.d);
+      var path=document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d',sectorPath(150,146,106,start,end));
+      path.setAttribute('class','part');
+      path.setAttribute('data-part',i);
+      path.setAttribute('data-shaded','false');
+      path.addEventListener('click',toggle);
+      parts.appendChild(path);
+    }
+  }
+
+  function toggle(){
+    if(waiting)return;
+    var on=this.getAttribute('data-shaded')==='true';
+    this.setAttribute('data-shaded',on?'false':'true');
+    this.classList.toggle('shaded',!on);
+    this.classList.remove('pop');
+    void this.getBoundingClientRect();
+    this.classList.add('pop');
+    Studio.event('part_toggle',{item:items[pos].id,part:Number(this.getAttribute('data-part')),shaded:!on});
+  }
+
+  check.addEventListener('click',function(){
+    if(waiting)return;
+    waiting=true;
+    check.disabled=true;
+    var chosen=parts.querySelectorAll('[data-shaded="true"]').length;
+    status.textContent='';
+    status.className='status';
+    Studio.event('check',{item:items[pos].id,n:chosen,d:items[pos].d});
+    Studio.answer({n:chosen,d:items[pos].d});
+  });
+
+  Studio.onVerdict(function(result){
+    if(completed)return;
+    if(result.correct){
+      status.textContent=Studio.t('right');
+      status.className='status good';
+      itemBox.classList.add('celebrate');
+      setTimeout(function(){
+        itemBox.classList.remove('celebrate');
+        pos++;
+        if(pos<items.length){
+          render();
+        }else{
+          finish();
+        }
+      },850);
+    }else{
+      waiting=false;
+      check.disabled=false;
+      status.textContent=Studio.t('wrong');
+      status.className='status bad';
+    }
+  });
+
+  function finish(){
+    completed=true;
+    app.innerHTML='';
+    var card=document.createElement('section');
+    card.className='done-card';
+    var art=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    art.setAttribute('class','done-art');
+    art.setAttribute('viewBox','0 0 160 120');
+    art.innerHTML='<circle cx="80" cy="62" r="48" fill="#dce9ed"/><circle cx="80" cy="60" r="43" fill="#dc8a46"/><path d="M80 60 L80 17 A43 43 0 0 1 117 38 Z" fill="#f36b5d" stroke="#fff8e9" stroke-width="3"/><path d="M80 60 L117 38 A43 43 0 0 1 117 82 Z" fill="#f36b5d" stroke="#fff8e9" stroke-width="3"/><path d="M80 60 L117 82 A43 43 0 0 1 80 103 Z" fill="#f36b5d" stroke="#fff8e9" stroke-width="3"/><path d="M80 60 L80 103 A43 43 0 0 1 43 82 Z" fill="#f36b5d" stroke="#fff8e9" stroke-width="3"/><path d="M80 60 L43 82 A43 43 0 0 1 43 38 Z" fill="#f36b5d" stroke="#fff8e9" stroke-width="3"/><path d="M80 60 L43 38 A43 43 0 0 1 80 17 Z" fill="#f36b5d" stroke="#fff8e9" stroke-width="3"/><circle cx="80" cy="60" r="5" fill="#ffd45a"/></svg>';
+    var text=document.createElement('p');
+    text.className='done-text';
+    text.textContent=Studio.t('done');
+    card.appendChild(art);
+    card.appendChild(text);
+    app.appendChild(card);
+    Studio.done();
+  }
+
+  render();
+  Studio.ready();
+}());
+</script>

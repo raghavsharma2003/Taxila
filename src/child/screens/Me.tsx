@@ -13,6 +13,7 @@ import { updateChild } from "../api.ts";
 import { ChildScreen } from "../chrome.tsx";
 import { useChild } from "../ChildShell.tsx";
 import { t } from "../copy.ts";
+import { tw } from "../../copy/en.ts";
 import { useHeadset } from "../lesson/headset.ts";
 import { AVATARS, Avatar, avatarName, Icon, Picto, type IconName } from "../pictos.tsx";
 import { usePlan } from "../plan.ts";
@@ -86,6 +87,9 @@ export function Me() {
         ) : (
           <Switch id="words" label={t("wordsYoung")} on={prefs.captionsAlways} set={(v) => setPrefs({ captionsAlways: v })} icon={ic("captions", "picto/captions")} />
         )}
+        {/* "Type instead" (W1-A item 9; flows G8): lessons start in the text lane (prefs.quiet); she still talks */}
+        <Switch id="type" label={tw("me.type.title")} note={prefs.quiet ? tw("me.type.on", { T: rec.name }) : tw("me.type.off")}
+          on={prefs.quiet} set={(v) => setPrefs({ quiet: v })} icon={ic("text", "picto/captions")} />
         <Switch id="sounds" label={older ? t("soundsOlder") : t("soundsYoung")} on={sounds} set={(v) => setPrefs({ sounds: v })}
           icon={ic("sound", sounds ? "picto/sound-on" : "picto/sound-off")} />
         {older && (

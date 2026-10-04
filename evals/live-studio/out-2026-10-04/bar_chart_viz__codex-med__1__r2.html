@@ -1,0 +1,293 @@
+<style>
+  :root{
+    --bg:#f3f8ff;
+    --card:#ffffff;
+    --ink:#23344d;
+    --muted:#6f8198;
+    --axis:#8da0b8;
+    --grid:#dce7f4;
+    --bar:#5aa9ff;
+    --barDark:#2f7fd8;
+    --good:#1f9d55;
+    --bad:#d64545;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
+  #app{min-height:100vh;padding:12px;display:flex;justify-content:center}
+  .card{
+    width:min(100%,430px);
+    background:var(--card);
+    border-radius:18px;
+    padding:12px;
+    box-shadow:0 8px 24px rgba(30,70,120,.12);
+  }
+  h1{margin:2px 6px 8px;font-size:1.2rem;line-height:1.2}
+  .ask{margin:0 6px 8px;font-weight:700}
+  .chartWrap{
+    background:linear-gradient(180deg,#f9fcff 0%,#f1f7ff 100%);
+    border-radius:14px;
+    padding:8px 6px;
+  }
+  svg{width:100%;height:auto;display:block}
+  .grid{stroke:var(--grid);stroke-width:1}
+  .axis{stroke:var(--axis);stroke-width:1.8}
+  .tickText{fill:var(--muted);font-size:12px;dominant-baseline:middle}
+  .axisTitle{fill:var(--muted);font-size:12px;font-weight:700}
+  .xLabel{fill:var(--ink);font-size:12px;text-anchor:middle}
+  .bar{
+    fill:var(--bar);
+    transition:fill .2s ease, filter .2s ease;
+    filter:drop-shadow(0 3px 0 rgba(47,127,216,.16));
+  }
+  .bar.active{
+    fill:var(--barDark);
+    filter:drop-shadow(0 6px 10px rgba(47,127,216,.3));
+  }
+  .hit{fill:transparent;cursor:pointer}
+  .tapPulse{animation:pulse .22s ease}
+  @keyframes pulse{
+    0%{transform:scale(1)}
+    50%{transform:scale(1.04)}
+    100%{transform:scale(1)}
+  }
+  .valueBox{
+    min-height:30px;
+    margin:8px 6px 2px;
+    padding:4px 10px;
+    border-radius:999px;
+    background:#eaf3ff;
+    color:#27466e;
+    font-weight:700;
+    display:inline-flex;
+    align-items:center;
+  }
+  .feedback{min-height:24px;margin:8px 6px 0;font-weight:800}
+  .feedback.good{color:var(--good)}
+  .feedback.bad{color:var(--bad)}
+  .done{
+    margin:4px 6px 2px;
+    color:var(--good);
+    font-weight:900;
+    opacity:0;
+    transform:translateY(4px);
+    transition:opacity .25s ease,transform .25s ease;
+  }
+  .done.show{opacity:1;transform:translateY(0)}
+</style>
+
+<div id="app">
+  <div class="card">
+    <h1 id="title"></h1>
+    <div class="ask" id="ask"></div>
+    <div class="chartWrap">
+      <svg id="chart" viewBox="0 0 340 300" aria-hidden="true">
+        <defs>
+          <clipPath id="growClip">
+            <rect id="growRect" x="54" y="244" width="272" height="0"></rect>
+          </clipPath>
+        </defs>
+        <g id="layer-grid"></g>
+        <g id="layer-axis"></g>
+        <g id="layer-bars" clip-path="url(#growClip)"></g>
+        <g id="layer-hits"></g>
+        <g id="layer-labels"></g>
+      </svg>
+    </div>
+    <div class="valueBox" id="valueBox"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="done" id="done"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const NS="http://www.w3.org/2000/svg";
+  const data=(Studio.params&&Array.isArray(Studio.params.data))?Studio.params.data:[];
+  const elTitle=document.getElementById("title");
+  const elAsk=document.getElementById("ask");
+  const elValue=document.getElementById("valueBox");
+  const elFeedback=document.getElementById("feedback");
+  const elDone=document.getElementById("done");
+
+  elTitle.textContent=Studio.t("title");
+  elAsk.textContent=Studio.t("ask");
+  elValue.textContent="";
+  elDone.textContent=Studio.t("done");
+
+  const gridLayer=document.getElementById("layer-grid");
+  const axisLayer=document.getElementById("layer-axis");
+  const barsLayer=document.getElementById("layer-bars");
+  const hitsLayer=document.getElementById("layer-hits");
+  const labelsLayer=document.getElementById("layer-labels");
+  const growRect=document.getElementById("growRect");
+
+  const W=340,H=300;
+  const m={top:18,right:14,bottom:56,left:54};
+  const plotW=W-m.left-m.right;
+  const plotH=H-m.top-m.bottom;
+  const baselineY=m.top+plotH;
+
+  function niceStep(maxVal){
+    if(maxVal<=0)return 1;
+    const rough=maxVal/5;
+    const p=Math.pow(10,Math.floor(Math.log10(rough)));
+    const n=rough/p;
+    let base=10;
+    if(n<=1)base=1;
+    else if(n<=2)base=2;
+    else if(n<=5)base=5;
+    return base*p;
+  }
+
+  const maxValue=data.reduce((a,d)=>Math.max(a,Number(d.value)||0),0);
+  const step=niceStep(maxValue);
+  const maxTick=Math.max(step,Math.ceil(maxValue/step)*step);
+
+  function yFromVal(v){ return m.top + plotH - (v/maxTick)*plotH; }
+
+  const ticks=[];
+  for(let t=0;t<=maxTick+1e-9;t+=step)ticks.push(Number(t.toFixed(10)));
+
+  ticks.forEach(function(v){
+    const y=yFromVal(v);
+
+    const line=document.createElementNS(NS,"line");
+    line.setAttribute("x1",m.left);
+    line.setAttribute("x2",W-m.right);
+    line.setAttribute("y1",y);
+    line.setAttribute("y2",y);
+    line.setAttribute("class","grid");
+    gridLayer.appendChild(line);
+
+    const txt=document.createElementNS(NS,"text");
+    txt.setAttribute("x",m.left-8);
+    txt.setAttribute("y",y);
+    txt.setAttribute("text-anchor","end");
+    txt.setAttribute("class","tickText");
+    txt.setAttribute("data-tick",String(v));
+    txt.textContent=String(v);
+    labelsLayer.appendChild(txt);
+  });
+
+  const yAxis=document.createElementNS(NS,"line");
+  yAxis.setAttribute("x1",m.left); yAxis.setAttribute("x2",m.left);
+  yAxis.setAttribute("y1",m.top); yAxis.setAttribute("y2",baselineY);
+  yAxis.setAttribute("class","axis");
+  axisLayer.appendChild(yAxis);
+
+  const xAxis=document.createElementNS(NS,"line");
+  xAxis.setAttribute("x1",m.left); xAxis.setAttribute("x2",W-m.right);
+  xAxis.setAttribute("y1",baselineY); xAxis.setAttribute("y2",baselineY);
+  xAxis.setAttribute("class","axis");
+  axisLayer.appendChild(xAxis);
+
+  const yTitle=document.createElementNS(NS,"text");
+  yTitle.setAttribute("x",14);
+  yTitle.setAttribute("y",m.top+plotH/2);
+  yTitle.setAttribute("class","axisTitle");
+  yTitle.setAttribute("transform","rotate(-90 14 "+(m.top+plotH/2)+")");
+  yTitle.textContent=Studio.t("yaxis");
+  labelsLayer.appendChild(yTitle);
+
+  const n=Math.max(1,data.length);
+  const slot=plotW/n;
+  const barW=Math.max(46,Math.min(64,slot*0.86));
+  const hitW=Math.max(44,Math.min(slot,60));
+
+  let locked=false,done=false,selectedKey=null;
+  const barMap=new Map();
+
+  function clearActive(){ barMap.forEach(o=>o.classList.remove("active")); }
+
+  data.forEach(function(d,i){
+    const key=d.key;
+    const value=Number(d.value)||0;
+    const cx=m.left+i*slot+slot/2;
+    const x=cx-barW/2;
+    const h=(value/maxTick)*plotH;
+    const y=baselineY-h;
+
+    const bar=document.createElementNS(NS,"rect");
+    bar.setAttribute("x",x);
+    bar.setAttribute("y",y);
+    bar.setAttribute("width",barW);
+    bar.setAttribute("height",h);
+    bar.setAttribute("rx",8);
+    bar.setAttribute("class","bar");
+    bar.setAttribute("data-bar",key);
+    bar.setAttribute("data-value",String(value));
+    barsLayer.appendChild(bar);
+
+    const hit=document.createElementNS(NS,"rect");
+    hit.setAttribute("x",cx-hitW/2);
+    hit.setAttribute("y",m.top);
+    hit.setAttribute("width",hitW);
+    hit.setAttribute("height",plotH+44);
+    hit.setAttribute("class","hit");
+    hit.setAttribute("tabindex","0");
+    hitsLayer.appendChild(hit);
+
+    const label=document.createElementNS(NS,"text");
+    label.setAttribute("x",cx);
+    label.setAttribute("y",baselineY+22);
+    label.setAttribute("class","xLabel");
+    label.textContent=Studio.t(key);
+    labelsLayer.appendChild(label);
+
+    barMap.set(key,bar);
+
+    const tap=function(){
+      if(locked||done)return;
+      selectedKey=key;
+      clearActive();
+      bar.classList.add("active");
+      bar.classList.remove("tapPulse");
+      void bar.getBoundingClientRect();
+      bar.classList.add("tapPulse");
+      elValue.textContent=Studio.t(key)+" "+String(value);
+      elFeedback.textContent="";
+      elFeedback.className="feedback";
+      locked=true;
+      Studio.event("bar_tap",{key:key,value:value});
+      Studio.answer(key);
+    };
+
+    hit.addEventListener("click",tap);
+    hit.addEventListener("keydown",function(e){
+      if(e.key==="Enter"||e.key===" "){e.preventDefault();tap();}
+    });
+  });
+
+  growRect.setAttribute("x",m.left);
+  growRect.setAttribute("width",plotW);
+  growRect.setAttribute("y",baselineY);
+  growRect.setAttribute("height",0);
+
+  requestAnimationFrame(function(){
+    growRect.animate(
+      [{y:baselineY,height:0},{y:m.top,height:plotH}],
+      {duration:850,easing:"cubic-bezier(.2,.8,.2,1)",fill:"forwards"}
+    );
+  });
+
+  Studio.onVerdict(function(v){
+    if(done)return;
+    if(v&&v.correct){
+      elFeedback.textContent=Studio.t("right");
+      elFeedback.className="feedback good";
+      elDone.classList.add("show");
+      done=true;
+      locked=true;
+      Studio.event("verdict",{correct:true,key:selectedKey});
+      Studio.done();
+    }else{
+      elFeedback.textContent=Studio.t("wrong");
+      elFeedback.className="feedback bad";
+      locked=false;
+      Studio.event("verdict",{correct:false,key:selectedKey});
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

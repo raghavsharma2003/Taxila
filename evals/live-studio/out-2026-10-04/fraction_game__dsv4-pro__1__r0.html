@@ -1,0 +1,222 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 360px; height: 640px; margin: 0 auto;
+    font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+    background: #FEF9E7; display: flex;
+    flex-direction: column; align-items: center;
+    justify-content: center; overflow: hidden;
+    user-select: none; -webkit-tap-highlight-color: transparent;
+    position: relative;
+  }
+  .screen {
+    width: 100%; height: 100%; display: flex;
+    flex-direction: column; align-items: center;
+    justify-content: center; padding: 24px 20px;
+  }
+  .title {
+    font-size: 28px; font-weight: 700;
+    color: #D35400; margin-bottom: 12px;
+    text-align: center; line-height: 1.2;
+  }
+  .instr {
+    font-size: 17px; color: #5D4E37;
+    text-align: center; margin-bottom: 18px;
+    background: #FFF5E1; padding: 12px 16px;
+    border-radius: 24px; max-width: 320px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .fraction-display {
+    font-size: 36px; font-weight: 700;
+    color: #B9770E; margin: 8px 0 18px;
+    background: #FDEDEC; padding: 6px 20px;
+    border-radius: 40px; letter-spacing: 2px;
+    box-shadow: 0 2px 6px rgba(211,84,0,0.1);
+  }
+  .visual-container {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    align-items: center; gap: 10px; margin-bottom: 24px;
+    max-width: 340px;
+  }
+  .pizza {
+    position: relative; width: 240px; height: 240px;
+  }
+  .bar-group {
+    display: flex; width: 280px; height: 48px;
+    gap: 4px; justify-content: center;
+  }
+  .bar-segment {
+    flex: 1; height: 100%; border-radius: 14px;
+    background: #FAD7A1; transition: background 0.25s ease, transform 0.2s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    border: 2px solid #F5CBA7; cursor: pointer;
+    min-width: 44px; position: relative;
+  }
+  .bar-segment.shaded {
+    background: #E67E22;
+    border-color: #D35400;
+  }
+  .check-btn {
+    background: #2ECC71; border: none;
+    color: white; font-size: 22px; font-weight: 600;
+    padding: 14px 36px; border-radius: 40px;
+    cursor: pointer; box-shadow: 0 6px 0 #27AE60;
+    transition: all 0.1s ease; margin: 10px 0;
+    min-width: 160px; min-height: 54px;
+    letter-spacing: 0.5px; display: flex;
+    align-items: center; justify-content: center;
+  }
+  .check-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 4px 0 #27AE60;
+  }
+  .feedback {
+    font-size: 20px; font-weight: 600;
+    margin-top: 12px; min-height: 32px;
+    text-align: center; border-radius: 20px;
+    padding: 8px 20px;
+  }
+  .wrong-fb {
+    background: #FDEDEC; color: #C0392B;
+  }
+  .right-fb {
+    background: #EAFAF1; color: #1E8449;
+  }
+  .done-screen {
+    text-align: center;
+  }
+  .done-icon {
+    font-size: 64px; margin-bottom: 16px;
+  }
+  .done-msg {
+    font-size: 26px; font-weight: 700;
+    color: #D35400; margin-bottom: 24px;
+  }
+  .hidden {
+    display: none !important;
+  }
+  svg { overflow: visible; }
+  .slice {
+    transition: fill 0.25s ease, transform 0.2s;
+    cursor: pointer; stroke: #fff; stroke-width: 1.5px;
+    vector-effect: non-scaling-stroke;
+  }
+  .slice:hover {
+    filter: brightness(1.05);
+  }
+  .slice:active {
+    transform: scale(0.96);
+  }
+  .slice.unshaded {
+    fill: #FAD7A1;
+  }
+  .slice.shaded {
+    fill: #E67E22;
+  }
+</style>
+
+<div id="activity-root" class="screen">
+  <div class="title" id="title-text"></div>
+  <div class="instr" id="instr-text"></div>
+  <div class="fraction-display" id="fraction-num"></div>
+  <div id="item-container" data-item="i1" class="visual-container"></div>
+  <button class="check-btn" data-action="check" id="check-button"></button>
+  <div class="feedback hidden" id="feedback-msg"></div>
+</div>
+
+<div id="done-root" class="screen hidden done-screen">
+  <div class="done-icon">🎉</div>
+  <div class="done-msg" id="done-text"></div>
+</div>
+
+<script>
+  (function() {
+    const items = Studio.params.items;
+    const picture = Studio.params.picture;
+    let currentIndex = 0;
+    let currentItem = items[currentIndex];
+    let shadedCount = 0;
+    let totalParts = currentItem.d;
+    let partsArray = new Array(totalParts).fill(false);
+    let feedbackTimer = null;
+
+    const activityRoot = document.getElementById('activity-root');
+    const doneRoot = document.getElementById('done-root');
+    const itemContainer = document.getElementById('item-container');
+    const fractionDisplay = document.getElementById('fraction-num');
+    const checkButton = document.getElementById('check-button');
+    const feedbackMsg = document.getElementById('feedback-msg');
+    const titleText = document.getElementById('title-text');
+    const instrText = document.getElementById('instr-text');
+    const doneText = document.getElementById('done-text');
+
+    function setTexts() {
+      titleText.textContent = Studio.t('title');
+      instrText.textContent = Studio.t('instr');
+      checkButton.textContent = Studio.t('check');
+      doneText.textContent = Studio.t('done');
+    }
+
+    function updateFractionDisplay() {
+      fractionDisplay.textContent = currentItem.n + ' / ' + currentItem.d;
+    }
+
+    function clearFeedback() {
+      if (feedbackTimer) clearTimeout(feedbackTimer);
+      feedbackMsg.classList.add('hidden');
+      feedbackMsg.textContent = '';
+    }
+
+    function showFeedback(msg, type) {
+      clearFeedback();
+      feedbackMsg.textContent = msg;
+      feedbackMsg.classList.remove('hidden');
+      feedbackMsg.className = 'feedback ' + (type === 'right' ? 'right-fb' : 'wrong-fb');
+      if (type === 'right') {
+        feedbackTimer = setTimeout(() => {
+          feedbackMsg.classList.add('hidden');
+        }, 1500);
+      }
+    }
+
+    function buildVisual() {
+      itemContainer.innerHTML = '';
+      shadedCount = 0;
+      totalParts = currentItem.d;
+      partsArray = new Array(totalParts).fill(false);
+
+      if (picture === 'pizza-or-bar' || picture === 'pizza') {
+        buildPizza();
+      } else {
+        buildBar();
+      }
+      itemContainer.setAttribute('data-item', currentItem.id);
+      updateFractionDisplay();
+      clearFeedback();
+    }
+
+    function buildPizza() {
+      const svgNS = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(svgNS, "svg");
+      svg.setAttribute("viewBox", "-100 -100 200 200");
+      svg.setAttribute("width", "240");
+      svg.setAttribute("height", "240");
+      svg.classList.add("pizza");
+
+      const angleStep = (2 * Math.PI) / totalParts;
+      for (let i = 0; i < totalParts; i++) {
+        const startAngle = i * angleStep - Math.PI/2;
+        const endAngle = (i+1) * angleStep - Math.PI/2;
+        const x1 = Math.cos(startAngle) * 90;
+        const y1 = Math.sin(startAngle) * 90;
+        const x2 = Math.cos(endAngle) * 90;
+        const y2 = Math.sin(endAngle) * 90;
+
+        const path = document.createElementNS(svgNS, "path");
+        const largeArc = angleStep > Math.PI ? 1 : 0;
+        const d = `M 0 0 L ${x1} ${y1} A 90 90 0 ${largeArc} 1 ${x2} ${y2} Z`;
+        path.setAttribute("d", d);
+        path.setAttribute("data-part", i);
+        path.setAttribute("data-shaded", "false");
+        path.classList.add("slice", "unshaded");
+        path.addEventListener('click', (e

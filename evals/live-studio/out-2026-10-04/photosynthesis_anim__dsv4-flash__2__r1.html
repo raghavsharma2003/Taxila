@@ -1,0 +1,247 @@
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #e8f5e9; font-family: 'Segoe UI', sans-serif; padding: 4px; width: 360px; min-height: 640px; overflow-x: hidden; }
+.container { position: relative; width: 352px; background: #c8e6c9; border-radius: 24px; padding: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.title { text-align: center; font-size: 16px; font-weight: bold; color: #2e7d32; padding: 4px 0; }
+.scene { position: relative; width: 340px; height: 280px; margin: 4px auto; border-radius: 16px; background: linear-gradient(180deg, #b3e5fc 0%, #81c784 70%); overflow: hidden; }
+.scene svg { width: 100%; height: 100%; display: block; }
+.controls { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; padding: 4px 0; }
+.btn { background: #66bb6a; border: none; border-radius: 20px; padding: 6px 14px; font-size: 14px; color: white; font-weight: bold; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+.btn:active { transform: scale(0.92); box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+.btn.step { background: #43a047; min-width: 44px; }
+.btn.step.active { background: #fdd835; color: #1b5e20; box-shadow: 0 0 0 2px #f9a825; }
+.btn.play { background: #2e7d32; }
+.caption { text-align: center; font-size: 13px; font-weight: 600; color: #1b5e20; padding: 4px; min-height: 36px; background: #e8f5e9; border-radius: 12px; margin: 4px 0; display: flex; align-items: center; justify-content: center; }
+.feedback { text-align: center; font-size: 14px; padding: 8px; border-radius: 12px; margin: 6px 0; }
+.feedback.correct { background: #a5d6a7; color: #1b5e20; }
+.feedback.wrong { background: #ef9a9a; color: #b71c1c; }
+.quiz { margin: 6px 0; text-align: center; }
+.quiz label { display: block; font-size: 14px; margin-bottom: 6px; color: #1b5e20; font-weight: 600; }
+.quiz .opts { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.quiz .opts .btn.option { background: #81c784; min-width: 80px; min-height: 44px; }
+.quiz .opts .btn.option:active { background: #66bb6a; }
+</style>
+
+<div class="container" id="app">
+  <div class="title" data-label="title"></div>
+  <div class="scene" id="scene">
+    <svg viewBox="0 0 340 280" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" style="stop-color:#fff59d;stop-opacity:0.8"/>
+          <stop offset="100%" style="stop-color:#fdd835;stop-opacity:0"/>
+        </radialGradient>
+      </defs>
+      <rect width="340" height="200" fill="#b3e5fc"/>
+      <rect x="0" y="200" width="340" height="80" fill="#5d4037"/>
+      <circle cx="280" cy="40" r="24" fill="#fdd835" data-label="sun">
+        <animate attributeName="r" values="24;26;24" dur="3s" repeatCount="indefinite"/>
+      </circle>
+      <text x="280" y="40" text-anchor="middle" dominant-baseline="central" font-size="8" fill="#1b5e20" data-label="sun"></text>
+      <line x1="260" y1="56" x2="170" y2="100" stroke="#fdd835" stroke-width="2" opacity="0.6">
+        <animate attributeName="opacity" values="0.6;0.2;0.6" dur="2s" repeatCount="indefinite"/>
+      </line>
+      <line x1="280" y1="64" x2="190" y2="110" stroke="#fdd835" stroke-width="2" opacity="0.4">
+        <animate attributeName="opacity" values="0.4;0.1;0.4" dur="2.5s" repeatCount="indefinite"/>
+      </line>
+      <line x1="290" y1="50" x2="200" y2="95" stroke="#fdd835" stroke-width="1.5" opacity="0.3">
+        <animate attributeName="opacity" values="0.3;0.1;0.3" dur="1.8s" repeatCount="indefinite"/>
+      </line>
+      <line x1="270" y1="60" x2="180" y2="105" stroke="#fdd835" stroke-width="1.5" opacity="0.5">
+        <animate attributeName="opacity" values="0.5;0.15;0.5" dur="2.2s" repeatCount="indefinite"/>
+      </line>
+      <path d="M164 200 Q164 140 164 120" stroke="#2e7d32" stroke-width="6" fill="none"/>
+      <ellipse cx="164" cy="106" rx="28" ry="14" fill="#4caf50" transform="rotate(-15 164 106)" data-entity="leaf">
+        <animate attributeName="ry" values="14;15;14" dur="4s" repeatCount="indefinite"/>
+      </ellipse>
+      <text x="164" y="100" text-anchor="middle" font-size="7" fill="#1b5e20" data-label="leaf"></text>
+      <g data-entity="roots">
+        <path d="M158 202 Q150 220 140 235" stroke="#795548" stroke-width="3" fill="none"/>
+        <path d="M164 204 Q164 224 162 240" stroke="#795548" stroke-width="3" fill="none"/>
+        <path d="M170 202 Q178 220 188 235" stroke="#795548" stroke-width="3" fill="none"/>
+      </g>
+      <text x="164" y="210" text-anchor="middle" font-size="7" fill="#efebe9" data-label="roots"></text>
+      <text x="48" y="222" text-anchor="middle" font-size="8" fill="#e3f2fd" data-label="water"></text>
+      <text x="270" y="120" text-anchor="middle" font-size="8" fill="#fff9c4" data-label="co2"></text>
+      <text x="60" y="120" text-anchor="middle" font-size="8" fill="#b2dfdb" data-label="o2"></text>
+      <text x="164" y="84" text-anchor="middle" font-size="7" fill="#ffeb3b" font-weight="bold" data-label="glucose"></text>
+      <circle cx="164" cy="80" r="8" fill="#ffeb3b" opacity="0.3">
+        <animate attributeName="opacity" values="0.3;0.1;0.3" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="164" cy="80" r="12" fill="url(#sunGlow)" opacity="0.2"/>
+    </svg>
+  </div>
+  <div class="controls">
+    <button class="btn play" data-action="play"></button>
+    <button class="btn step" data-action="step-1">1</button>
+    <button class="btn step" data-action="step-2">2</button>
+    <button class="btn step" data-action="step-3">3</button>
+    <button class="btn step" data-action="step-4">4</button>
+    <button class="btn step" data-action="step-5">5</button>
+  </div>
+  <div class="caption" data-caption></div>
+  <div class="quiz" id="quiz" style="display:none">
+    <label data-label="ask"></label>
+    <div class="opts">
+      <button class="btn option" data-option="co2"></button>
+      <button class="btn option" data-option="o2"></button>
+      <button class="btn option" data-option="water"></button>
+    </div>
+  </div>
+  <div class="feedback" id="feedback"></div>
+</div>
+
+<script>
+(function() {
+  var app = document.getElementById('app');
+  var playing = true;
+  var currentStep = 1;
+  var intervalId = null;
+  var particleTimers = [];
+
+  function setText(sel, key) {
+    var el = typeof sel === 'string' ? document.querySelector(sel) : sel;
+    if (el) el.textContent = Studio.t(key);
+  }
+
+  setText('[data-label="title"]', 'title');
+  setText('[data-label="sun"]', 'sun');
+  setText('[data-label="leaf"]', 'leaf');
+  setText('[data-label="roots"]', 'roots');
+  setText('[data-label="water"]', 'water');
+  setText('[data-label="co2"]', 'co2');
+  setText('[data-label="o2"]', 'o2');
+  setText('[data-label="glucose"]', 'glucose');
+  setText('[data-action="play"]', 'play');
+  document.querySelectorAll('[data-option]').forEach(function(b) {
+    setText(b, b.getAttribute('data-option'));
+  });
+
+  function createParticle(type) {
+    var svg = document.querySelector('.scene svg');
+    var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('r', '3.5');
+    circle.setAttribute('fill', type === 'water' ? '#42a5f5' : type === 'co2' ? '#b0bec5' : '#4db6ac');
+    circle.setAttribute('data-flow', type);
+    circle.setAttribute('class', 'particle');
+    circle.setAttribute('cx', '-10');
+    circle.setAttribute('cy', '-10');
+    svg.appendChild(circle);
+    return circle;
+  }
+
+  function spawnParticle(type) {
+    var el = createParticle(type);
+    var startX, startY, endX, endY, duration;
+    if (type === 'water') {
+      startX = 140 + Math.random() * 48;
+      startY = 205 + Math.random() * 35;
+      endX = 164 + (Math.random()-0.5)*20;
+      endY = 106 + (Math.random()-0.5)*10;
+      duration = 5 + Math.random()*3;
+    } else if (type === 'co2') {
+      startX = 260 + Math.random() * 40;
+      startY = 20 + Math.random() * 60;
+      endX = 164 + (Math.random()-0.5)*20;
+      endY = 106 + (Math.random()-0.5)*10;
+      duration = 4 + Math.random()*2;
+    } else {
+      startX = 164 + (Math.random()-0.5)*20;
+      startY = 106 + (Math.random()-0.5)*10;
+      endX = 20 + Math.random() * 40;
+      endY = 30 + Math.random() * 80;
+      duration = 4 + Math.random()*2;
+    }
+    el.setAttribute('cx', startX);
+    el.setAttribute('cy', startY);
+    el.style.transition = 'transform ' + duration + 's linear';
+    el.style.transform = 'translate(' + (endX - startX) + 'px, ' + (endY - startY) + 'px)';
+    var tid = setTimeout(function() {
+      if (el.parentNode) el.parentNode.removeChild(el);
+    }, duration * 1000 + 100);
+    particleTimers.push(tid);
+  }
+
+  function startFlow() {
+    if (intervalId) clearInterval(intervalId);
+    intervalId = setInterval(function() {
+      if (playing) {
+        spawnParticle('water');
+        spawnParticle('co2');
+        spawnParticle('o2');
+      }
+    }, 2500);
+    for (var i = 0; i < 3; i++) {
+      setTimeout(function() { if(playing) spawnParticle('water'); }, i*400);
+      setTimeout(function() { if(playing) spawnParticle('co2'); }, i*400+150);
+      setTimeout(function() { if(playing) spawnParticle('o2'); }, i*400+300);
+    }
+  }
+
+  function stopFlow() {
+    if (intervalId) { clearInterval(intervalId); intervalId = null; }
+    particleTimers.forEach(function(t) { clearTimeout(t); });
+    particleTimers = [];
+    document.querySelectorAll('.particle').forEach(function(p) { p.remove(); });
+  }
+
+  function updateStep(step) {
+    currentStep = step;
+    var capKey = 'step' + step;
+    setText('[data-caption]', capKey);
+    document.querySelectorAll('[data-action^="step-"]').forEach(function(b) {
+      b.classList.toggle('active', b.getAttribute('data-action') === 'step-'+step);
+    });
+    var quiz = document.getElementById('quiz');
+    quiz.style.display = step >= 5 ? 'block' : 'none';
+  }
+
+  function togglePlay() {
+    playing = !playing;
+    var btn = document.querySelector('[data-action="play"]');
+    btn.textContent = playing ? Studio.t('pause') : Studio.t('play');
+    if (playing) {
+      startFlow();
+    } else {
+      stopFlow();
+    }
+  }
+
+  document.querySelector('[data-action="play"]').addEventListener('click', function() {
+    togglePlay();
+    Studio.event('toggle_play', {playing: playing});
+  });
+
+  document.querySelectorAll('[data-action^="step-"]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var step = parseInt(btn.getAttribute('data-action').split('-')[1]);
+      updateStep(step);
+      Studio.event('step_click', {step: step});
+    });
+  });
+
+  document.querySelectorAll('[data-option]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var val = btn.getAttribute('data-option');
+      Studio.answer(val);
+    });
+  });
+
+  Studio.onVerdict(function(result) {
+    var fb = document.getElementById('feedback');
+    if (result.correct) {
+      fb.textContent = 'Sahi jawab!';
+      fb.className = 'feedback correct';
+      setTimeout(function() { Studio.done(); }, 1200);
+    } else {
+      fb.textContent = 'Galat jawab, phir try karo';
+      fb.className = 'feedback wrong';
+    }
+  });
+
+  setText('[data-label="ask"]', 'ask');
+  updateStep(1);
+  startFlow();
+  Studio.ready();
+})();
+</script>

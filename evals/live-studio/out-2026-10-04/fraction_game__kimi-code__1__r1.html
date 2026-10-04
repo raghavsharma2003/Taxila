@@ -1,0 +1,94 @@
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+body { background: linear-gradient(180deg, #FFF4E1 0%, #FFE8C9 100%); font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #5D3A2A; }
+#app { width: 100%; max-width: 360px; height: 100%; margin: 0 auto; padding: 12px; display: flex; flex-direction: column; }
+.card { background: #fff; border-radius: 24px; padding: 18px; box-shadow: 0 10px 28px rgba(255, 140, 66, 0.18); width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; overflow: visible; position: relative; }
+.title { margin: 0 0 6px; font-size: 22px; text-align: center; color: #D35400; }
+.instr { margin: 0 0 10px; font-size: 14px; text-align: center; line-height: 1.35; color: #7E5039; }
+.fraction { display: flex; flex-direction: column; align-items: center; font-weight: 800; font-size: 44px; line-height: 1; margin: 0 0 10px; }
+.fraction .line { width: 56px; height: 5px; background: #5D3A2A; border-radius: 3px; margin: 5px 0; }
+.picture { position: relative; width: 100%; max-width: 300px; flex: 1 1 auto; min-height: 0; max-height: min(45vh, 300px); margin: 6px 0 12px; display: flex; align-items: center; justify-content: center; overflow: visible; }
+.pizza, .bar { width: 100%; height: 100%; display: block; }
+.part { cursor: pointer; transition: fill 0.2s ease, transform 0.12s ease; transform-box: fill-box; transform-origin: center; touch-action: manipulation; }
+.pizza .part { fill: #FFF8EE; stroke: #FFCF9E; stroke-width: 3; stroke-linejoin: round; }
+.pizza .part.shaded { fill: #FFB84D; }
+.bar .part { fill: #FFF8EE; stroke: #FFCF9E; stroke-width: 3; }
+.bar .part.shaded { fill: #FFB84D; }
+.part:active { transform: scale(0.92); }
+.hint { margin: 8px 0 0; font-size: 13px; text-align: center; color: #A67B5B; }
+.feedback { min-height: 22px; margin-top: 8px; text-align: center; font-weight: 700; font-size: 15px; opacity: 0; transition: opacity 0.2s; }
+.feedback.right { color: #2ECC71; opacity: 1; }
+.feedback.wrong { color: #E74C3C; opacity: 1; }
+.check { width: 100%; margin-top: auto; padding: 14px 20px; border: none; border-radius: 18px; background: linear-gradient(135deg, #FF8C42 0%, #FF6A00 100%); color: #fff; font-size: 18px; font-weight: 800; cursor: pointer; box-shadow: 0 5px 0 #CC5200, 0 8px 16px rgba(255, 106, 0, 0.25); transition: transform 0.1s, box-shadow 0.1s; touch-action: manipulation; }
+.check:active { transform: translateY(4px); box-shadow: 0 1px 0 #CC5200, 0 4px 8px rgba(255, 106, 0, 0.25); }
+.party { animation: pop 0.55s ease; }
+.shake { animation: shake 0.42s ease; }
+.confetti { position: absolute; width: 9px; height: 9px; border-radius: 50%; pointer-events: none; }
+@keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+@keyframes confetti-fall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(140px) rotate(720deg); opacity: 0; } }
+.done-card { justify-content: center; text-align: center; }
+</style>
+<div id="app"></div>
+<script>
+(function () {
+  var NS = "http://www.w3.org/2000/svg";
+  var params = Studio.params || {};
+  var items = params.items || [];
+  var picture = params.picture;
+  var index = 0;
+  var busy = false;
+  var doneCalled = false;
+  var app = document.getElementById("app");
+
+  function svg(tag) {
+    return document.createElementNS(NS, tag);
+  }
+
+  function wedgePath(i, d) {
+    var r = 100;
+    var step = (2 * Math.PI) / d;
+    var a = -Math.PI / 2 + i * step;
+    var b = a + step;
+    var x1 = r * Math.cos(a), y1 = r * Math.sin(a);
+    var x2 = r * Math.cos(b), y2 = r * Math.sin(b);
+    var large = step > Math.PI ? 1 : 0;
+    return "M0,0 L" + x1.toFixed(2) + "," + y1.toFixed(2) + " A" + r + "," + r + " 0 " + large + " 1 " + x2.toFixed(2) + "," + y2.toFixed(2) + " Z";
+  }
+
+  function makePizza(d) {
+    var s = svg("svg");
+    s.setAttribute("viewBox", "-110 -110 220 220");
+    s.setAttribute("class", "pizza");
+    for (var i = 0; i < d; i++) {
+      var p = svg("path");
+      p.setAttribute("d", wedgePath(i, d));
+      p.setAttribute("class", "part");
+      p.setAttribute("data-part", i);
+      p.setAttribute("data-shaded", "false");
+      s.appendChild(p);
+    }
+    return s;
+  }
+
+  function barGrid(d) {
+    var cols = Math.floor(Math.sqrt(d));
+    while (cols > 1 && d % cols !== 0) cols--;
+    if (cols === 1) cols = Math.ceil(Math.sqrt(d));
+    var rows = Math.ceil(d / cols);
+    return { cols: cols, rows: rows };
+  }
+
+  function makeBar(d) {
+    var s = svg("svg");
+    s.setAttribute("class", "bar");
+    s.setAttribute("preserveAspectRatio", "xMidYMid meet");
+    var gap = 6;
+    var g = barGrid(d);
+    var cols = g.cols, rows = g.rows;
+    var vbW = cols * 100 + (cols - 1) * gap;
+    var vbH = rows * 100 + (rows - 1) * gap;
+    s.setAttribute("viewBox", "0 0 " + vbW + " " + vbH);
+    var idx = 0;
+    for (var r = 0; r < rows; r

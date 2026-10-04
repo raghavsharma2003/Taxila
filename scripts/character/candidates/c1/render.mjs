@@ -12,8 +12,10 @@ const argv = process.argv.slice(2);
 const opt = (f, d) => { const i = argv.indexOf(f); return i >= 0 ? argv[i + 1] : d; };
 const LOOKS = opt("--looks", "teal,slate,plum").split(",");
 const OUT = opt("--out", "docs/design/teacher/polished");
-const only = opt("--only", "turntable,emotions,states,visemes,tiers,lipsync,plates").split(",");
-const AUDIO = path.join(OUT, "audio");
+const only = opt("--only", "portraits,turntable,emotions,states,visemes,tiers,lipsync").split(",");
+// c1: the bake-off's TTS sentence and its forced alignment (the same audio every candidate is judged on)
+const AUDIO = "docs/design/teacher/renders/audio";
+const VOICE = opt("--voice", "teal");
 const ff = (args) => execFileSync("ffmpeg", ["-y", "-loglevel", "error", ...args]);
 const log = (m) => console.log(`[render] ${m}`);
 
@@ -29,6 +31,15 @@ for (const look of LOOKS) {
     meta.load = await P.evaluate((l) => TX.load(l, "H"), look);
     meta.renderer = await P.evaluate(() => TX.measure(1, false).gpu);
     const still = async (file, fn, arg) => { await P.evaluate(fn, arg); await hx.shot(file); };
+    // c1: front and 3/4 portraits (face camera re-centred on the turned head) and bust, neutral and warm
+    if (only.includes("portraits")) {
+      fs.mkdirSync(path.join(dir, "portraits"), { recursive: true });
+      for (const [nm, fr, yaw, emo] of [["front_neutral", "face", 0, null], ["front_warm", "face", 0, "warm"], ["q34_neutral", "face", 30, null],
+        ["q34_warm", "face", 30, "warm"], ["bust_front", "bust", 0, "idle"], ["bust_q34", "bust", 30, "idle"]]) {
+        await still(path.join(dir, "portraits", `${nm}.png`), ([fr, yaw, emo]) => { TX.frame(fr, yaw); if (emo === "idle") TX.pose(TX.state("idle")); else TX.pose(emo ? TX.emotion(emo, 1) : { bs: {} }); TX.render(); }, [fr, yaw, emo]);
+      }
+      log(`${look} portraits`);
+    }
     if (only.includes("turntable")) {
       const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "tt-"));
       for (let i = 0; i < 36; i++) {
@@ -74,12 +85,12 @@ for (const look of LOOKS) {
   }
 
   // ---------------- lip-sync clip: real TTS, real LipDriver + Behaviour + Compositor
-  if (only.includes("lipsync") && fs.existsSync(path.join(AUDIO, `${look}.mp3`))) {
+  if (only.includes("lipsync") && fs.existsSync(path.join(AUDIO, `${VOICE}.mp3`))) {
     hx = await openHarness({ w: 480, h: 600 });
     try {
       await hx.page.evaluate((l) => TX.load(l, "H"), look);
-      const b64 = fs.readFileSync(path.join(AUDIO, `${look}.mp3`)).toString("base64");
-      const alignF = path.join(AUDIO, `${look}.align.json`);
+      const b64 = fs.readFileSync(path.join(AUDIO, `${VOICE}.mp3`)).toString("base64");
+      const alignF = path.join(AUDIO, `${VOICE}.align.json`);
       const align = fs.existsSync(alignF) ? JSON.parse(fs.readFileSync(alignF)) : null;
       const L = JSON.parse(fs.readFileSync(`art/character/candidates/c1/looks/${look}.json`));
       // Two arms, same audio. "visemes" (the evidence clip, lipsync.mp4): the forced-aligned sentence drives H's viseme
@@ -99,7 +110,7 @@ for (const look of LOOKS) {
           await hx.page.evaluate((k) => { TX.frame("face", 0); TX.lipFrame(k); TX.render(); }, i);
           await hx.shot(path.join(tmp, `${String(i).padStart(4, "0")}.png`));
         }
-        ff(["-framerate", "25", "-i", path.join(tmp, "%04d.png"), "-i", path.join(AUDIO, `${look}.mp3`), "-c:v", "libx264", "-crf", "22",
+        ff(["-framerate", "25", "-i", path.join(tmp, "%04d.png"), "-i", path.join(AUDIO, `${VOICE}.mp3`), "-c:v", "libx264", "-crf", "22",
           "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "96k", "-shortest", path.join(dir, `${name}.mp4`)]);
         if (name === "lipsync") {
           // the contact strip: 8 frames, half of them ON aligned bilabials so the closure is visible, half on vowels

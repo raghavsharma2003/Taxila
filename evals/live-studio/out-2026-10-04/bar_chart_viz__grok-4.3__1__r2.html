@@ -1,0 +1,146 @@
+<style>
+.container{width:100%;max-width:360px;height:640px;background:#fffbeb;font-family:system-ui,-apple-system,sans-serif;margin:0;padding:16px;box-sizing:border-box;display:flex;flex-direction:column}
+h1{margin:8px 0 4px;font-size:22px;color:#854d0e;text-align:center}
+#ask{margin:0 0 12px;font-size:16px;color:#713f12;text-align:center;line-height:1.3}
+#chart{flex:1;display:flex;justify-content:center;align-items:center}
+svg{background:#fff;border:2px solid #fcd34d;border-radius:12px;box-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1)}
+.bar{transition:y .85s cubic-bezier(.34,1.56,.64,1),height .85s cubic-bezier(.34,1.56,.64,1);transform-origin:50% 100%;cursor:pointer}
+.bar:active{transform:scale(1.03)}
+.tick-label{font-size:11px;fill:#854d0e}
+.axis-title{font-size:12px;fill:#713f12}
+.fruit-label{font-size:12px;fill:#713f12}
+.grid-line{stroke:#fed7aa;stroke-width:1}
+.y-axis{stroke:#854d0e;stroke-width:1.5}
+.feedback{margin-top:12px;height:48px;border-radius:9999px;background:#fefce8;border:2px solid #fcd34d;display:flex;align-items:center;justify-content:center;font-size:15px;color:#713f12;visibility:hidden}
+.feedback.show{visibility:visible}
+.feedback.right{background:#dcfce7;border-color:#86efac;color:#166534}
+.feedback.wrong{background:#fee2e2;border-color:#fca5a5;color:#991b1b}
+.done-text{font-size:18px;font-weight:600;color:#166534}
+</style>
+<div class="container">
+<h1 id="title"></h1>
+<p id="ask"></p>
+<div id="chart"></div>
+<div id="feedback" class="feedback"></div>
+</div>
+<script>
+(function(){
+const params=Studio.params;
+const data=params.data;
+const maxVal=Math.max(...data.map(d=>d.value));
+const chartH=250,chartW=266,marginL=46,marginB=42,marginT=12,marginR=14;
+const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+svg.setAttribute("width",chartW+marginL+marginR);
+svg.setAttribute("height",chartH+marginT+marginB);
+svg.setAttribute("viewBox",`0 0 ${chartW+marginL+marginR} ${chartH+marginT+marginB}`);
+const colors={mango:"#facc15",banana:"#fde047",apple:"#ef4444",guava:"#4ade80",orange:"#fb923c"};
+const scale=chartH/maxVal;
+const barW=44,gap=10,startX=marginL+6;
+const ticks=[0,3,6,9,12];
+data.forEach((d,i)=>{
+const x=startX+i*(barW+gap);
+const barH=d.value*scale;
+const g=document.createElementNS("http://www.w3.org/2000/svg","g");
+const rect=document.createElementNS("http://www.w3.org/2000/svg","rect");
+rect.setAttribute("x",x);
+rect.setAttribute("y",marginT+chartH);
+rect.setAttribute("width",barW);
+rect.setAttribute("height",0);
+rect.setAttribute("rx","6");
+rect.setAttribute("ry","6");
+rect.setAttribute("fill",colors[d.key]);
+rect.setAttribute("class","bar");
+rect.setAttribute("data-bar",d.key);
+rect.setAttribute("data-value",d.value);
+rect.onclick=()=>{
+Studio.event("bar_tap",{key:d.key});
+Studio.answer(d.key);
+const oldTip=svg.querySelector(".value-tip");
+if(oldTip)oldTip.remove();
+const tip=document.createElementNS("http://www.w3.org/2000/svg","text");
+tip.setAttribute("x",x+barW/2);
+tip.setAttribute("y",marginT+chartH-barH-10);
+tip.setAttribute("text-anchor","middle");
+tip.setAttribute("font-size","14");
+tip.setAttribute("fill","#854d0e");
+tip.setAttribute("font-weight","700");
+tip.textContent=d.value;
+tip.setAttribute("class","value-tip");
+svg.appendChild(tip);
+setTimeout(()=>{if(tip.parentNode)tip.parentNode.removeChild(tip)},1600);
+};
+g.appendChild(rect);
+const label=document.createElementNS("http://www.w3.org/2000/svg","text");
+label.setAttribute("x",x+barW/2);
+label.setAttribute("y",marginT+chartH+24);
+label.setAttribute("text-anchor","middle");
+label.setAttribute("class","fruit-label");
+label.textContent=Studio.t(d.key);
+g.appendChild(label);
+svg.appendChild(g);
+});
+ticks.forEach(t=>{
+const y=marginT+chartH-t*scale;
+const line=document.createElementNS("http://www.w3.org/2000/svg","line");
+line.setAttribute("x1",marginL);
+line.setAttribute("y1",y);
+line.setAttribute("x2",marginL+chartW-8);
+line.setAttribute("y2",y);
+line.setAttribute("class","grid-line");
+svg.appendChild(line);
+const lbl=document.createElementNS("http://www.w3.org/2000/svg","text");
+lbl.setAttribute("x",marginL-10);
+lbl.setAttribute("y",y+4);
+lbl.setAttribute("text-anchor","end");
+lbl.setAttribute("class","tick-label");
+lbl.setAttribute("data-tick",t);
+lbl.textContent=t;
+svg.appendChild(lbl);
+});
+const yAxis=document.createElementNS("http://www.w3.org/2000/svg","line");
+yAxis.setAttribute("x1",marginL);
+yAxis.setAttribute("y1",marginT);
+yAxis.setAttribute("x2",marginL);
+yAxis.setAttribute("y2",marginT+chartH+4);
+yAxis.setAttribute("class","y-axis");
+svg.appendChild(yAxis);
+const yTitle=document.createElementNS("http://www.w3.org/2000/svg","text");
+yTitle.setAttribute("x",18);
+yTitle.setAttribute("y",marginT+chartH/2+32);
+yTitle.setAttribute("transform",`rotate(-90 18 ${marginT+chartH/2+32})`);
+yTitle.setAttribute("text-anchor","middle");
+yTitle.setAttribute("class","axis-title");
+yTitle.textContent=Studio.t("yaxis");
+svg.appendChild(yTitle);
+const chartEl=document.getElementById("chart");
+chartEl.appendChild(svg);
+requestAnimationFrame(()=>{
+setTimeout(()=>{
+data.forEach((d,i)=>{
+const rect=svg.querySelector(`rect[data-bar="${d.key}"]`);
+if(rect){
+const barH=d.value*scale;
+rect.setAttribute("y",marginT+chartH-barH);
+rect.setAttribute("height",barH);
+}
+});
+},70);
+});
+document.getElementById("title").textContent=Studio.t("title");
+document.getElementById("ask").textContent=Studio.t("ask");
+const fb=document.getElementById("feedback");
+Studio.onVerdict(v=>{
+fb.innerHTML="";
+fb.classList.remove("right","wrong");
+fb.classList.add("show",v.correct?"right":"wrong");
+fb.textContent=Studio.t(v.correct?"right":"wrong");
+if(v.correct){
+setTimeout(()=>{
+fb.innerHTML=`<span class="done-text">${Studio.t("done")}</span>`;
+Studio.done();
+},620);
+}
+});
+Studio.ready();
+})();
+</script>

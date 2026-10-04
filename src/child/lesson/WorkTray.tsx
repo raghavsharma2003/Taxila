@@ -40,6 +40,9 @@ export function WorkTray({ tray, floor, young, modules, lang, ageBand, actions, 
   );
 }
 
+/** The engine frame fills the tray (ModuleHost `fill`): never the iframe's 150 px default (live-content audit 3). */
+const FRAME_STYLE = { height: "100%", width: "100%", border: 0, display: "block" } as const;
+
 function ModuleTray({ modules, lang, ageBand, onEvent, onFailed }: { modules: ModuleCommandSource; lang: string; ageBand: string; onEvent: (e: unknown) => void; onFailed?: () => void }) {
   const [failed, setFailed] = useState(false);
   useEffect(() => setFailed(false), [modules]);
@@ -52,7 +55,7 @@ function ModuleTray({ modules, lang, ageBand, onEvent, onFailed }: { modules: Mo
   };
   return (
     <div className="dk-module" data-failed={failed ? "1" : undefined}>
-      <ModuleHost source={modules} onEvent={handle} lang={lang} ageBand={ageBand} frameStyle={{ height: "100%", width: "100%", border: 0, display: "block" }} />
+      <ModuleHost source={modules} onEvent={handle} lang={lang} ageBand={ageBand} fill className="dk-module-host" frameStyle={FRAME_STYLE} />
     </div>
   );
 }

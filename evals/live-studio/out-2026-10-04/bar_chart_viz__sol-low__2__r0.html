@@ -1,0 +1,341 @@
+<style>
+  *{box-sizing:border-box}
+  :root{color-scheme:light}
+  .activity{
+    width:100%;
+    min-height:100vh;
+    margin:0;
+    padding:18px 14px 22px;
+    overflow:hidden;
+    font-family:system-ui,-apple-system,"Noto Sans",sans-serif;
+    color:#25364a;
+    background:
+      radial-gradient(circle at 12% 8%,rgba(255,209,102,.35),transparent 24%),
+      radial-gradient(circle at 92% 18%,rgba(89,196,184,.22),transparent 26%),
+      linear-gradient(180deg,#fffaf0 0%,#f3fbfa 100%);
+  }
+  .top{
+    text-align:center;
+    padding:2px 8px 10px;
+  }
+  .title{
+    margin:0;
+    color:#294a5e;
+    font-size:clamp(23px,7vw,31px);
+    line-height:1.15;
+    font-weight:850;
+    letter-spacing:.01em;
+  }
+  .ask{
+    margin:8px auto 0;
+    max-width:320px;
+    min-height:44px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#526575;
+    font-size:16px;
+    line-height:1.35;
+    font-weight:650;
+  }
+  .chart-card{
+    position:relative;
+    width:100%;
+    max-width:520px;
+    margin:0 auto;
+    padding:10px 5px 5px;
+    border:1px solid rgba(43,91,103,.1);
+    border-radius:24px;
+    background:rgba(255,255,255,.88);
+    box-shadow:0 12px 30px rgba(42,82,91,.12);
+  }
+  #chart{
+    display:block;
+    width:100%;
+    height:auto;
+    overflow:visible;
+  }
+  .grid{
+    stroke:#d7e4e5;
+    stroke-width:1;
+    stroke-dasharray:4 5;
+  }
+  .axis{
+    stroke:#6b7f88;
+    stroke-width:2;
+    stroke-linecap:round;
+  }
+  .tick-label{
+    fill:#60737c;
+    font-size:12px;
+    font-weight:650;
+    text-anchor:end;
+    dominant-baseline:middle;
+  }
+  .fruit-label{
+    fill:#314f5d;
+    font-size:11px;
+    font-weight:750;
+    text-anchor:middle;
+  }
+  .axis-title{
+    fill:#526b76;
+    font-size:12px;
+    font-weight:750;
+    text-anchor:middle;
+  }
+  .bar-hit{
+    cursor:pointer;
+    outline:none;
+  }
+  .bar{
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    transform:scaleY(0);
+    animation:barGrow .8s cubic-bezier(.2,.8,.25,1) forwards;
+    filter:drop-shadow(0 4px 3px rgba(35,68,75,.14));
+    transition:filter .2s ease,opacity .2s ease;
+  }
+  .bar-hit:active .bar{filter:brightness(1.05) drop-shadow(0 2px 2px rgba(35,68,75,.12))}
+  .bar-hit.popped .bar{animation:barPop .28s ease}
+  .value-bubble{
+    opacity:0;
+    transform:translateY(5px) scale(.85);
+    transform-box:fill-box;
+    transform-origin:center;
+    transition:opacity .2s ease,transform .25s cubic-bezier(.2,.8,.25,1.2);
+    pointer-events:none;
+  }
+  .value-bubble.show{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+  .bubble-shape{
+    fill:#253f4c;
+    stroke:#fff;
+    stroke-width:2;
+  }
+  .bubble-text{
+    fill:#fff;
+    font-size:13px;
+    font-weight:850;
+    text-anchor:middle;
+    dominant-baseline:middle;
+  }
+  .feedback{
+    min-height:62px;
+    padding:9px 12px 0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:2px;
+    text-align:center;
+    font-size:19px;
+    line-height:1.25;
+    font-weight:850;
+    color:#3c6471;
+  }
+  .feedback.show{animation:feedbackIn .38s cubic-bezier(.2,.8,.25,1.2)}
+  .feedback.wrong{color:#b64b58}
+  .feedback.right{color:#248163}
+  .done{
+    font-size:15px;
+    font-weight:700;
+    color:#526b76;
+  }
+  @keyframes barGrow{
+    from{transform:scaleY(0)}
+    to{transform:scaleY(1)}
+  }
+  @keyframes barPop{
+    0%,100%{transform:scaleY(1) scaleX(1)}
+    45%{transform:scaleY(1.04) scaleX(1.09)}
+  }
+  @keyframes feedbackIn{
+    0%{opacity:0;transform:translateY(7px) scale(.94)}
+    100%{opacity:1;transform:translateY(0) scale(1)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .bar{animation-duration:.01ms}
+    .value-bubble,.feedback{transition:none;animation:none}
+  }
+</style>
+
+<main class="activity">
+  <header class="top">
+    <h1 class="title" id="title"></h1>
+    <div class="ask" id="ask"></div>
+  </header>
+
+  <section class="chart-card">
+    <svg id="chart" viewBox="0 0 360 410" role="img" aria-labelledby="title">
+      <g id="gridLayer"></g>
+      <g id="axisLayer"></g>
+      <g id="barLayer"></g>
+      <g id="labelLayer"></g>
+      <g id="bubbleLayer"></g>
+    </svg>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const data = Studio.params.data;
+  const title = document.getElementById('title');
+  const ask = document.getElementById('ask');
+  const feedback = document.getElementById('feedback');
+  const gridLayer = document.getElementById('gridLayer');
+  const axisLayer = document.getElementById('axisLayer');
+  const barLayer = document.getElementById('barLayer');
+  const labelLayer = document.getElementById('labelLayer');
+  const bubbleLayer = document.getElementById('bubbleLayer');
+  const NS = 'http://www.w3.org/2000/svg';
+
+  title.textContent = Studio.t('title');
+  ask.textContent = Studio.t('ask');
+
+  const left = 55;
+  const right = 348;
+  const top = 30;
+  const bottom = 326;
+  const plotHeight = bottom - top;
+  const plotWidth = right - left;
+  const maxValue = Math.max(...data.map(item => item.value));
+  const rawStep = maxValue / 4;
+  const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep || 1)));
+  const normalized = rawStep / magnitude;
+  const stepBase = normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
+  const step = stepBase * magnitude;
+  const scaleMax = Math.ceil(maxValue / step) * step;
+  const ticks = [];
+  for (let value = 0; value <= scaleMax; value += step) ticks.push(value);
+
+  const make = (name, attrs, parent) => {
+    const node = document.createElementNS(NS, name);
+    Object.keys(attrs).forEach(key => node.setAttribute(key, attrs[key]));
+    if (parent) parent.appendChild(node);
+    return node;
+  };
+
+  const yFor = value => bottom - (value / scaleMax) * plotHeight;
+
+  ticks.forEach(value => {
+    const y = yFor(value);
+    make('line', {x1:left, y1:y, x2:right, y2:y, class:'grid'}, gridLayer);
+    const label = make('text', {
+      x:left - 9,
+      y:y,
+      class:'tick-label',
+      'data-tick':String(value)
+    }, axisLayer);
+    label.textContent = String(value);
+  });
+
+  make('line', {x1:left, y1:top, x2:left, y2:bottom, class:'axis'}, axisLayer);
+  make('line', {x1:left, y1:bottom, x2:right, y2:bottom, class:'axis'}, axisLayer);
+
+  const axisTitle = make('text', {
+    x:17,
+    y:(top + bottom) / 2,
+    class:'axis-title',
+    transform:'rotate(-90 17 ' + ((top + bottom) / 2) + ')'
+  }, axisLayer);
+  axisTitle.textContent = Studio.t('yaxis');
+
+  const slot = plotWidth / data.length;
+  const barWidth = Math.min(38, slot * .62);
+  const colors = ['#f39a55','#f2c94c','#e76f73','#62b893','#f08b43'];
+  let locked = false;
+  let activeBubble = null;
+
+  data.forEach((item, index) => {
+    const center = left + slot * (index + .5);
+    const y = yFor(item.value);
+    const height = bottom - y;
+    const group = make('g', {
+      class:'bar-hit',
+      tabindex:'0',
+      role:'button',
+      'aria-label':Studio.t(item.key)
+    }, barLayer);
+
+    const rect = make('rect', {
+      x:center - barWidth / 2,
+      y:y,
+      width:barWidth,
+      height:height,
+      rx:barWidth * .28,
+      fill:colors[index % colors.length],
+      class:'bar',
+      'data-bar':item.key,
+      'data-value':String(item.value),
+      style:'animation-delay:' + (index * .09) + 's'
+    }, group);
+
+    const fruit = make('text', {
+      x:center,
+      y:bottom + 24,
+      class:'fruit-label'
+    }, labelLayer);
+    fruit.textContent = Studio.t(item.key);
+
+    const bubble = make('g', {class:'value-bubble'}, bubbleLayer);
+    const bubbleY = Math.max(7, y - 31);
+    make('rect', {
+      x:center - 22,
+      y:bubbleY,
+      width:44,
+      height:27,
+      rx:13.5,
+      class:'bubble-shape'
+    }, bubble);
+    const bubbleText = make('text', {
+      x:center,
+      y:bubbleY + 14,
+      class:'bubble-text'
+    }, bubble);
+    bubbleText.textContent = String(item.value);
+
+    const choose = () => {
+      if (locked) return;
+      if (activeBubble) activeBubble.classList.remove('show');
+      activeBubble = bubble;
+      bubble.classList.add('show');
+      group.classList.remove('popped');
+      void rect.getBoundingClientRect();
+      group.classList.add('popped');
+      Studio.event('bar_tap', {key:item.key, value:item.value});
+      Studio.answer(item.key);
+    };
+
+    group.addEventListener('click', choose);
+    group.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        choose();
+      }
+    });
+  });
+
+  Studio.onVerdict(result => {
+    feedback.className = 'feedback show ' + (result.correct ? 'right' : 'wrong');
+    feedback.replaceChildren();
+    const verdict = document.createElement('div');
+    verdict.textContent = Studio.t(result.correct ? 'right' : 'wrong');
+    feedback.appendChild(verdict);
+
+    if (result.correct) {
+      locked = true;
+      const done = document.createElement('div');
+      done.className = 'done';
+      done.textContent = Studio.t('done');
+      feedback.appendChild(done);
+      Studio.done();
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

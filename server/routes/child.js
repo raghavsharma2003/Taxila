@@ -51,8 +51,10 @@ export const lessonMinutes = (classLevel, capRemaining) => Math.max(5, Math.min(
  * @param {{ resumable: boolean, usedMin: number, capMin: number, doneToday: boolean, now: string, from: string, to: string, anyLesson: boolean }} a
  * @returns {import("../../shared/contracts").ChildHomeState}
  */
-export function homeStateOf({ resumable, usedMin, capMin, doneToday, now, from, to, anyLesson }) {
-  const inHours = now >= from && now < to;
+export function homeStateOf({ resumable, usedMin, capMin, doneToday, now, from, to, anyLesson, openNow = false }) {
+  // openNow: the parent's "Open now for 1 hour" (child_controls.open_until, W1-A) opens the HOURS only; the cap and
+  // "done for today" still hold.
+  const inHours = openNow || (now >= from && now < to);
   if (resumable && inHours) return "resume";
   if (usedMin >= capMin) return "capped";
   if (doneToday) return "done";
@@ -64,9 +66,14 @@ export function homeStateOf({ resumable, usedMin, capMin, doneToday, now, from, 
 export const legacyHome = (state) => (state === "done" || state === "capped" ? "done" : state === "resting" ? "resting" : "default");
 
 async function controlsOf(child) {
-  const row = await one("select daily_minutes, hours_start, hours_end from child_controls where child_id = $1", [child.id]).catch(() => null);
+  const [row, open] = await Promise.all([
+    one("select daily_minutes, hours_start, hours_end from child_controls where child_id = $1", [child.id]).catch(() => null),
+    // A separate read: before migration 015 the column does not exist, and that must never cost the saved controls.
+    one("select open_until from child_controls where child_id = $1 and open_until > now()", [child.id]).catch(() => null),
+  ]);
   const d = defaultControls(child.class_level);
   return {
+    openUntil: open?.open_until ? new Date(open.open_until).toISOString() : null,
     capMin: Number(row?.daily_minutes) || d.dailyMinutes,
     from: HHMM.test(row?.hours_start ?? "") ? row.hours_start : d.hoursStart,
     to: HHMM.test(row?.hours_end ?? "") ? row.hours_end : d.hoursEnd,
@@ -107,14 +114,14 @@ export async function planFor(child, guardian, now = new Date()) {
   const resumable = !!open && profile && open.child_turns > 0 && now.getTime() - lastAt < RESUME_HOURS * 3600_000;
   const doneRows = todayRows.filter((r) => countsAsDone(r.state));
   const state = homeStateOf({ resumable, usedMin, capMin, doneToday: doneRows.length > 0, now: localTime(now, tz),
-    from: controls.from, to: controls.to, anyLesson: !!anyRow?.any });
+    from: controls.from, to: controls.to, anyLesson: !!anyRow?.any, openNow: !!controls.openUntil });
   const teacher = teacherFor(child);
   const topic = next ? { id: next.id, title: next.title, shortTitle: shortTitleOf(next.title), chapter: next.chapter.title, subject: next.subject,
     minutes: Number(dayPlan?.plan?.slots?.find((x) => x.kind === "live_lesson")?.targetMin) || lessonMinutes(child.class_level, capRemaining) } : null;
   const last = doneRows[0];
   return {
     state, homeState: legacyHome(state),
-    plan: { openLesson: state === "resume" ? open.id : null, window: { from: controls.from, to: controls.to } },
+    plan: { openLesson: state === "resume" ? open.id : null, window: { from: controls.from, to: controls.to }, openUntil: controls.openUntil },
     topic: state === "resume" ? null : topic,
     resume: state === "resume" ? { lessonId: open.id, ask: open.ask ?? null, topicTitle: getTopic(open.topic_id)?.title ?? "" } : null,
     today: last ? { lessonId: last.id, summary: lessonSummary(last.state, { topic: getTopic(last.topic_id), teacher }) } : null,

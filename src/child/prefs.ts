@@ -35,12 +35,14 @@ export interface ChildPrefs {
   address: "tum" | "aap" | null;
   /** Laptop keyboard shortcuts in the lesson (Space, 1-4, R, H, C, Esc); A9: can be turned off. */
   shortcuts: boolean;
+  /** The push-to-talk note ("Tap the mic to talk, then tap Done") was dismissed: it never shows again (flows G8). */
+  pttNoteSeen: boolean;
 }
 
 export const DEFAULT_PREFS: ChildPrefs = {
   captionsAlways: false, sounds: null, haptics: true, talk: "tap", face: "face", quiet: false, world: null,
   largeText: false, calm: false, bandUp: false, theme: "system", mirror: false, hello: false, picture: null, address: null,
-  shortcuts: true,
+  shortcuts: true, pttNoteSeen: false,
 };
 
 const key = (cid: string) => `taxila.child.${cid}.prefs`;
@@ -60,6 +62,16 @@ function writePrefs(cid: string, p: ChildPrefs): void {
   } catch {
     /* storage unavailable: the setting lasts for this visit */
   }
+}
+
+/**
+ * Write one child's prefs from outside their screens (the parent's Controls on this device: "Tap and type only" is
+ * prefs.quiet, W1-A item 9). Same storage and same try/catch as usePrefs.
+ */
+export function setChildPref(cid: string, patch: Partial<ChildPrefs>): ChildPrefs {
+  const next = { ...readPrefs(cid), ...patch };
+  writePrefs(cid, next);
+  return next;
 }
 
 export function usePrefs(cid: string): [ChildPrefs, (patch: Partial<ChildPrefs>) => void] {

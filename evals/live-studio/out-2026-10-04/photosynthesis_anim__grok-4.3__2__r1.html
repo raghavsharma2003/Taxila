@@ -1,0 +1,155 @@
+<style>
+body{margin:0;font-family:system-ui,-apple-system,sans-serif;background:#f1f8e9}
+#wrap{width:360px;height:640px;display:flex;flex-direction:column;overflow:hidden}
+h1{margin:0;padding:8px 0;text-align:center;font-size:18px;color:#2e7d32;background:#fff}
+svg{background:#e3f2fd;flex-shrink:0}
+.controls{padding:8px;background:#fff;display:flex;flex-direction:column;gap:8px}
+.row{display:flex;gap:8px;align-items:center;justify-content:center}
+button{height:44px;border:none;border-radius:22px;font-size:15px;cursor:pointer;transition:transform .1s ease}
+button:active{transform:scale(0.95)}
+#play{background:#4caf50;color:#fff;padding:0 30px}
+.step{min-width:44px;padding:0 8px;height:44px;background:#81c784;color:#1b5e20;font-weight:700}
+#cap{min-height:38px;padding:6px 10px;margin:0 4px;background:#fff;border-radius:10px;border:1px solid #a5d6a7;font-size:13px;color:#33691e;text-align:center}
+.qbox{background:#fff8e1;padding:8px 10px;margin-top:4px}
+.opts{display:flex;gap:8px}
+.opt{flex:1;height:44px;background:#ffcc80;color:#e65100;font-weight:600}
+</style>
+<div id="wrap">
+<svg id="scene" width="360" height="300" viewBox="0 0 360 300">
+  <rect x="0" y="255" width="360" height="45" fill="#a1887f" rx="4"/>
+  <circle cx="180" cy="38" r="20" fill="#ffeb3b"/>
+  <line x1="180" y1="58" x2="160" y2="105" stroke="#ffe082" stroke-width="3" stroke-linecap="round"/>
+  <line x1="180" y1="58" x2="200" y2="105" stroke="#ffe082" stroke-width="3" stroke-linecap="round"/>
+  <line x1="180" y1="58" x2="140" y2="95" stroke="#ffe082" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="180" y1="58" x2="220" y2="95" stroke="#ffe082" stroke-width="2.5" stroke-linecap="round"/>
+  <rect x="197" y="125" width="8" height="135" fill="#8d6e63" rx="4"/>
+  <ellipse id="leaf" data-entity="leaf" cx="245" cy="138" rx="48" ry="24" fill="#66bb6a"/>
+  <path d="M200 260 Q185 275 172 290" fill="none" stroke="#6d4c41" stroke-width="4" stroke-linecap="round"/>
+  <path d="M203 260 Q215 278 230 295" fill="none" stroke="#6d4c41" stroke-width="4" stroke-linecap="round"/>
+  <path d="M200 262 Q192 282 178 295" fill="none" stroke="#6d4c41" stroke-width="3" stroke-linecap="round"/>
+  <g data-entity="roots"></g>
+  <circle id="glu" cx="255" cy="138" r="7" fill="#ffd54f" opacity="0"/>
+  <text data-label="sun" x="180" y="85" text-anchor="middle" font-size="11" fill="#5d4037"/>
+  <text data-label="leaf" x="245" y="108" text-anchor="middle" font-size="11" fill="#2e7d32"/>
+  <text data-label="roots" x="200" y="305" text-anchor="middle" font-size="11" fill="#5d4037"/>
+  <text data-label="water" x="165" y="200" text-anchor="middle" font-size="10" fill="#1565c0"/>
+  <text data-label="co2" x="305" y="138" text-anchor="middle" font-size="10" fill="#455a64"/>
+  <text data-label="o2" x="95" y="115" text-anchor="middle" font-size="10" fill="#0277bd"/>
+  <text data-label="glucose" x="295" y="155" text-anchor="middle" font-size="10" fill="#f9a825"/>
+</svg>
+<div class="controls">
+<button id="play" data-action="play"></button>
+<div class="row">
+<button class="step" data-action="step-1">1</button>
+<button class="step" data-action="step-2">2</button>
+<button class="step" data-action="step-3">3</button>
+<button class="step" data-action="step-4">4</button>
+<button class="step" data-action="step-5">5</button>
+</div>
+<div id="cap" data-caption></div>
+<div class="qbox">
+<div id="ask"></div>
+<div class="opts">
+<button class="opt" data-option="co2"></button>
+<button class="opt" data-option="o2"></button>
+<button class="opt" data-option="water"></button>
+</div>
+<div id="fb" style="text-align:center;font-size:18px;height:22px"></div>
+</div>
+</div>
+</div>
+<script>
+(function(){
+const s=document.getElementById('scene')
+const playBtn=document.getElementById('play')
+const cap=document.querySelector('[data-caption]')
+const fb=document.getElementById('fb')
+let playing=true,current=1
+function t(k){return Studio.t(k)}
+document.querySelectorAll('[data-label]').forEach(el=>{el.textContent=t(el.getAttribute('data-label'))})
+playBtn.textContent=t('play')
+document.getElementById('ask').textContent=t('ask')
+document.querySelectorAll('.opt').forEach(b=>{b.textContent=t(b.getAttribute('data-option'))})
+const water=[],co2=[],o2=[]
+function makeParts(flow,arr,n,startX,startY,dx,dy){
+for(let i=0;i<n;i++){
+const c=document.createElementNS('http://www.w3.org/2000/svg','circle')
+c.setAttribute('r',flow==='water'?4.5:4)
+c.setAttribute('fill',flow==='water'?'#42a5f5':flow==='co2'?'#90a4ae':'#4fc3f7')
+c.setAttribute('data-flow',flow)
+s.appendChild(c)
+const p0=i/n
+arr.push({el:c,p:p0,x:startX,y:startY,dx,dy})
+const xx=startX+Math.sin(p0*8)*2.5
+const yy=startY+p0*dy*82
+c.setAttribute('cx',flow==='water'?xx:startX+p0*dx*68)
+c.setAttribute('cy',flow==='water'?yy:startY+p0*12)
+}}
+makeParts('water',water,3,200,255,0,-1.1)
+makeParts('co2',co2,3,310,145,-1.4,0.1)
+makeParts('o2',o2,3,220,130,-1.3,-0.6)
+const glu=s.getElementById('glu')
+const rays=s.querySelectorAll('line')
+function step(n){
+current=n
+cap.textContent=t('step'+n)
+playing=true
+playBtn.textContent=t('pause')
+rays.forEach(r=>r.style.opacity=n===1?'1':'0.35')
+glu.style.transition='opacity .3s'
+glu.style.opacity=n===5?'0.9':'0'
+}
+function loop(){
+if(playing){
+water.forEach(p=>{
+p.p=(p.p+0.009)%1
+const xx=p.x+Math.sin(p.p*8)*2.5
+const yy=p.y+p.p*p.dy*82
+p.el.setAttribute('cx',xx)
+p.el.setAttribute('cy',yy)
+})
+co2.forEach(p=>{
+p.p=(p.p+0.011)%1
+const xx=p.x+p.p*p.dx*68
+const yy=p.y+p.p*12
+p.el.setAttribute('cx',xx)
+p.el.setAttribute('cy',yy)
+if(p.p>0.92)p.p=0
+})
+o2.forEach(p=>{
+p.p=(p.p+0.01)%1
+const xx=p.x+p.p*p.dx*95
+const yy=p.y+p.p*p.dy*55
+p.el.setAttribute('cx',xx)
+p.el.setAttribute('cy',yy)
+if(p.p>0.9)p.p=0
+})
+if(current===5){
+const op=0.5+Math.sin(Date.now()/280)*0.45
+glu.setAttribute('opacity',op)
+}
+}
+requestAnimationFrame(loop)
+}
+playBtn.onclick=()=>{
+playing=!playing
+playBtn.textContent=t(playing?'pause':'play')
+}
+document.querySelectorAll('[data-action^="step"]').forEach(btn=>{
+btn.onclick=()=>{
+const n=parseInt(btn.getAttribute('data-action').slice(5))
+step(n)
+}
+})
+document.querySelectorAll('[data-option]').forEach(btn=>{
+btn.onclick=()=>Studio.answer(btn.getAttribute('data-option'))
+})
+Studio.onVerdict(v=>{
+fb.textContent=v.correct?'✅':'❌'
+if(v.correct)setTimeout(()=>Studio.done(),900)
+})
+step(1)
+loop()
+Studio.ready()
+})()
+</script>

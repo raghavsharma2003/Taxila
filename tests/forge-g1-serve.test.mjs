@@ -131,8 +131,10 @@ describe("prefetch plans before it counts", () => {
     for (const x of out) assert.equal((await requestFill({ kit, itemId: x.itemId, move: "practice", learner: L, needByMs: TURN_NEED_BY_MS })).cached, "memory");
   });
   test("a kit with nothing mountable spends no slots and calls nothing", async () => {
+    // bars only: since W1-B turned scene@1 on by default, this kit's diagnostic plans as a choice card (and its gate
+    // rejects the build, a gap); without scene@1 nothing in it can mount
     const kit = await getKit("c7-science-ch01-t02", { generate: false });
-    assert.deepEqual(await prefetchLessonFills({ kit, learner: learnerOf("Asha") }), []);
+    assert.deepEqual(await prefetchLessonFills({ kit, learner: learnerOf("Asha"), renderers: new Set(["fraction-bars@1"]) }), []);
   });
 });
 
@@ -235,7 +237,9 @@ describe("drift pins", () => {
     const src = readFileSync(new URL("../src/modules/frame/registry.ts", import.meta.url), "utf8");
     const registered = [...src.slice(src.indexOf("LOADERS"), src.indexOf("};")).matchAll(/"([a-z-]+@\d+)":/g)].map((m) => m[1]);
     assert.ok(registered.includes("fraction-bars@1"));
-    for (const env of [{}, { FORGE_SCENE_RENDERER: "1" }]) {
+    assert.ok(liveRenderers({}).has("scene@1"), "scene@1 is live by default (W1-B #5)");
+    assert.ok(!liveRenderers({ FORGE_SCENE_RENDERER: "0" }).has("scene@1"), "FORGE_SCENE_RENDERER=0 is the kill switch");
+    for (const env of [{}, { FORGE_SCENE_RENDERER: "1" }, { FORGE_SCENE_RENDERER: "0" }]) {
       for (const r of liveRenderers(env)) assert.ok(registered.includes(r), `${r} is live in G1 (${JSON.stringify(env)}) but not in the frame registry`);
     }
     for (const r of G1_RENDERERS) assert.ok(registered.includes(r), `G1 derives ${r} but the frame does not register it`);

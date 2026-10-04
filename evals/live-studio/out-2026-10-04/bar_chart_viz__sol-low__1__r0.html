@@ -1,0 +1,371 @@
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --ink:#283044;
+    --muted:#687086;
+    --paper:#fffdf8;
+    --card:#ffffff;
+    --grid:#dfe8e7;
+    --axis:#657475;
+    --bar:#ff9d5c;
+    --bar-dark:#ef7c43;
+    --good:#2f9b72;
+    --bad:#d85b68;
+    --soft:#fff0df
+  }
+  body{
+    margin:0;
+    min-width:0;
+    min-height:100vh;
+    overflow-x:hidden;
+    background:linear-gradient(180deg,#eaf8f3 0%,#fff7e9 100%);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Noto Sans",sans-serif;
+  }
+  .lesson{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    margin:0 auto;
+    padding:16px 12px 20px;
+  }
+  .title{
+    min-height:38px;
+    margin:0 4px 10px;
+    text-align:center;
+    font-size:24px;
+    line-height:1.25;
+    font-weight:800;
+    letter-spacing:.01em;
+  }
+  .card{
+    position:relative;
+    width:100%;
+    overflow:hidden;
+    border:1px solid rgba(60,95,90,.12);
+    border-radius:24px;
+    background:var(--card);
+    box-shadow:0 12px 28px rgba(58,91,84,.13);
+  }
+  .chart-wrap{
+    position:relative;
+    width:100%;
+    aspect-ratio:332/350;
+    min-height:365px;
+    padding:4px 2px 0;
+  }
+  #chart{
+    display:block;
+    width:100%;
+    height:100%;
+    overflow:visible;
+  }
+  .grid{
+    stroke:var(--grid);
+    stroke-width:1;
+    vector-effect:non-scaling-stroke;
+  }
+  .axis{
+    stroke:var(--axis);
+    stroke-width:1.6;
+    stroke-linecap:round;
+    vector-effect:non-scaling-stroke;
+  }
+  .tick-text,.fruit-text,.axis-title{
+    fill:var(--muted);
+    font-weight:650;
+  }
+  .tick-text{font-size:11px}
+  .fruit-text{font-size:10px}
+  .axis-title{font-size:11px}
+  .bar{
+    fill:var(--bar);
+    stroke:var(--bar-dark);
+    stroke-width:1;
+    cursor:pointer;
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    transition:filter .18s ease,opacity .18s ease,transform .18s ease;
+    outline:none;
+  }
+  .bar.grow{animation:grow-bar .75s cubic-bezier(.2,.8,.25,1) both}
+  .bar:hover,.bar:focus{filter:brightness(1.04);stroke-width:2}
+  .bar:active{transform:scale(.94)}
+  .bar.chosen{filter:saturate(1.1) brightness(1.03)}
+  .bar.wiggle{animation:wiggle .42s ease}
+  .value-bubble{
+    opacity:0;
+    transform:translateY(5px) scale(.88);
+    transform-box:fill-box;
+    transform-origin:center;
+    transition:opacity .18s ease,transform .18s ease;
+    pointer-events:none;
+  }
+  .value-bubble.show{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+  .bubble-shape{
+    fill:var(--ink);
+    filter:drop-shadow(0 3px 3px rgba(20,30,40,.18));
+  }
+  .bubble-text{
+    fill:#fff;
+    font-size:13px;
+    font-weight:800;
+    text-anchor:middle;
+    dominant-baseline:middle;
+  }
+  .prompt{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:84px;
+    margin:12px 0 0;
+    padding:14px 18px;
+    border-radius:22px;
+    background:var(--paper);
+    box-shadow:0 8px 20px rgba(58,91,84,.1);
+    text-align:center;
+  }
+  .prompt-text{
+    margin:0;
+    font-size:18px;
+    line-height:1.35;
+    font-weight:750;
+  }
+  .prompt.right{color:var(--good);animation:pop .4s ease}
+  .prompt.wrong{color:var(--bad);animation:shake .4s ease}
+  .prompt.done{background:#e8f7ef}
+  @keyframes grow-bar{
+    from{transform:scaleY(0)}
+    to{transform:scaleY(1)}
+  }
+  @keyframes pop{
+    0%{transform:scale(.94)}
+    65%{transform:scale(1.035)}
+    100%{transform:scale(1)}
+  }
+  @keyframes shake{
+    0%,100%{transform:translateX(0)}
+    25%{transform:translateX(-5px)}
+    75%{transform:translateX(5px)}
+  }
+  @keyframes wiggle{
+    0%,100%{transform:translateX(0)}
+    30%{transform:translateX(-4px)}
+    65%{transform:translateX(4px)}
+  }
+  @media (max-height:620px){
+    .lesson{padding-top:10px}
+    .title{font-size:21px;margin-bottom:6px}
+    .chart-wrap{min-height:340px}
+    .prompt{min-height:70px;margin-top:8px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .bar.grow,.bar.wiggle,.prompt.right,.prompt.wrong{animation-duration:.01ms}
+    .bar,.value-bubble{transition-duration:.01ms}
+  }
+</style>
+
+<main class="lesson">
+  <h1 class="title" id="title"></h1>
+  <section class="card">
+    <div class="chart-wrap">
+      <svg id="chart" viewBox="0 0 332 350" preserveAspectRatio="xMidYMid meet">
+        <g id="gridLayer"></g>
+        <g id="axisLayer"></g>
+        <g id="barLayer"></g>
+        <g id="labelLayer"></g>
+        <g id="bubbleLayer"></g>
+      </svg>
+    </div>
+  </section>
+  <section class="prompt" id="prompt" aria-live="polite">
+    <p class="prompt-text" id="promptText"></p>
+  </section>
+</main>
+
+<script>
+  (() => {
+    const data = Studio.params.data;
+    const svgNS = "http://www.w3.org/2000/svg";
+    const chart = document.getElementById("chart");
+    const gridLayer = document.getElementById("gridLayer");
+    const axisLayer = document.getElementById("axisLayer");
+    const barLayer = document.getElementById("barLayer");
+    const labelLayer = document.getElementById("labelLayer");
+    const bubbleLayer = document.getElementById("bubbleLayer");
+    const prompt = document.getElementById("prompt");
+    const promptText = document.getElementById("promptText");
+    const title = document.getElementById("title");
+
+    const plotLeft = 49;
+    const plotRight = 323;
+    const plotTop = 24;
+    const baseline = 274;
+    const plotHeight = baseline - plotTop;
+    const count = data.length;
+    const maxValue = Math.max(...data.map(item => item.value));
+    const rawStep = maxValue / 6;
+    const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep || 1)));
+    const fraction = rawStep / magnitude;
+    const niceFraction = fraction <= 1 ? 1 : fraction <= 2 ? 2 : fraction <= 5 ? 5 : 10;
+    const step = niceFraction * magnitude;
+    const scaleMax = Math.ceil(maxValue / step) * step;
+    const slot = (plotRight - plotLeft) / count;
+    const barWidth = Math.min(44, slot - 8);
+    let pending = false;
+    let selected = null;
+    let finished = false;
+
+    const make = (name, attrs, text) => {
+      const node = document.createElementNS(svgNS, name);
+      Object.keys(attrs || {}).forEach(key => node.setAttribute(key, attrs[key]));
+      if (text !== undefined) node.textContent = text;
+      return node;
+    };
+
+    title.textContent = Studio.t("title");
+    promptText.textContent = Studio.t("ask");
+
+    for (let value = 0; value <= scaleMax; value += step) {
+      const y = baseline - (value / scaleMax) * plotHeight;
+      gridLayer.appendChild(make("line", {
+        x1: plotLeft,
+        y1: y,
+        x2: plotRight,
+        y2: y,
+        class: "grid"
+      }));
+      const tick = make("text", {
+        x: plotLeft - 8,
+        y: y,
+        "text-anchor": "end",
+        "dominant-baseline": "middle",
+        class: "tick-text",
+        "data-tick": String(value)
+      }, String(value));
+      labelLayer.appendChild(tick);
+    }
+
+    axisLayer.appendChild(make("line", {
+      x1: plotLeft,
+      y1: plotTop,
+      x2: plotLeft,
+      y2: baseline,
+      class: "axis"
+    }));
+    axisLayer.appendChild(make("line", {
+      x1: plotLeft,
+      y1: baseline,
+      x2: plotRight,
+      y2: baseline,
+      class: "axis"
+    }));
+
+    labelLayer.appendChild(make("text", {
+      x: 15,
+      y: (plotTop + baseline) / 2,
+      transform: "rotate(-90 15 " + ((plotTop + baseline) / 2) + ")",
+      "text-anchor": "middle",
+      class: "axis-title"
+    }, Studio.t("yaxis")));
+
+    data.forEach((item, index) => {
+      const center = plotLeft + slot * index + slot / 2;
+      const height = (item.value / scaleMax) * plotHeight;
+      const y = baseline - height;
+
+      const bar = make("rect", {
+        x: center - barWidth / 2,
+        y: y,
+        width: barWidth,
+        height: height,
+        rx: 9,
+        class: "bar grow",
+        tabindex: "0",
+        role: "button",
+        "data-bar": item.key,
+        "data-value": String(item.value)
+      });
+      barLayer.appendChild(bar);
+
+      const fruit = make("text", {
+        x: center,
+        y: baseline + 22,
+        "text-anchor": "middle",
+        class: "fruit-text"
+      }, Studio.t(item.key));
+      labelLayer.appendChild(fruit);
+
+      const bubbleY = Math.max(plotTop + 1, y - 34);
+      const bubble = make("g", {
+        class: "value-bubble",
+        "data-bubble": item.key
+      });
+      bubble.appendChild(make("rect", {
+        x: center - 20,
+        y: bubbleY,
+        width: 40,
+        height: 27,
+        rx: 13.5,
+        class: "bubble-shape"
+      }));
+      bubble.appendChild(make("text", {
+        x: center,
+        y: bubbleY + 14,
+        class: "bubble-text"
+      }, String(item.value)));
+      bubbleLayer.appendChild(bubble);
+
+      const choose = () => {
+        if (pending || finished) return;
+        selected = bar;
+        pending = true;
+
+        chart.querySelectorAll(".bar").forEach(node => node.classList.remove("chosen", "wiggle"));
+        chart.querySelectorAll(".value-bubble").forEach(node => node.classList.remove("show"));
+        bar.classList.add("chosen");
+        bubble.classList.add("show");
+        prompt.className = "prompt";
+        promptText.textContent = Studio.t("ask");
+
+        Studio.event("bar_tap", {key:item.key,value:item.value});
+        Studio.answer(item.key);
+      };
+
+      bar.addEventListener("click", choose);
+      bar.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          choose();
+        }
+      });
+    });
+
+    Studio.onVerdict(result => {
+      if (finished) return;
+      pending = false;
+      if (result.correct) {
+        finished = true;
+        prompt.className = "prompt right done";
+        promptText.textContent = Studio.t("right") + " " + Studio.t("done");
+        chart.querySelectorAll(".bar").forEach(node => node.setAttribute("tabindex", "-1"));
+        Studio.event("complete", {});
+        Studio.done();
+      } else {
+        prompt.className = "prompt wrong";
+        promptText.textContent = Studio.t("wrong");
+        if (selected) {
+          selected.classList.remove("wiggle");
+          void selected.getBoundingClientRect();
+          selected.classList.add("wiggle");
+        }
+        Studio.event("retry", {});
+      }
+    });
+
+    requestAnimationFrame(() => Studio.ready());
+  })();
+</script>

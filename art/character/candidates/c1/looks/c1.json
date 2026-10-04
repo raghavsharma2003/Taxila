@@ -9,14 +9,28 @@
   },
   "skin": {
     "mst": 6,
-    "albedoGain": [1, 1, 1],
-    "_note": "albedoGain is the linear per-channel gain baked into the skin texels of the source albedo (tex.py), solved against the render by g9.mjs --solve"
+    "albedoGain": [
+      0.6235,
+      0.7531,
+      0.7279
+    ],
+    "_note": "albedoGain is the linear per-channel gain baked into the skin texels of the source albedo (tex.py), solved against the render by g9.mjs --solve",
+    "_warmth": "after the G9 solve: R x1.05 (a* +~1-2 inside the band); the hex's hue read olive-grey on this photo albedo"
   },
-  "eyes": { "iris": "#3A2416" },
-  "garment": { "base": "#2F6F6A", "_note": "the source dress re-toned to a deep teal kurta colour, luminance detail kept" },
+  "eyes": {
+    "iris": "#3A2416"
+  },
+  "garment": {
+    "base": "#2F6F6A",
+    "_note": "the source dress re-toned to a deep teal kurta colour, luminance detail kept"
+  },
   "faceStyle": {
-    "asym": { "smile": 0.05, "brow": 0.04, "squint": 0.03 },
-    "restSmile": 0.0
+    "asym": {
+      "smile": 0.05,
+      "brow": 0.04,
+      "squint": 0.03
+    },
+    "restSmile": 0
   },
   "ageYears": 35,
   "jawCeiling": 0.6

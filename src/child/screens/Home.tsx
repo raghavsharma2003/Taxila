@@ -16,6 +16,7 @@ import { artTierD, Spot, useTopicArt } from "../art.tsx";
 import { ChildScreen } from "../chrome.tsx";
 import { useChild } from "../ChildShell.tsx";
 import { clock, t } from "../copy.ts";
+import { tw } from "../../copy/en.ts";
 import { Icon, Picto } from "../pictos.tsx";
 import { practiceOffered, usePlan, type HomePlan } from "../plan.ts";
 import { SkyStar } from "../progress/StateShape.tsx";
@@ -176,7 +177,11 @@ export function PrimaryCard({ plan, reload }: { plan: HomePlan; reload: () => vo
       break;
     case "resting":
       body = (
-        <div className="hpc-text"><h2 className="hpc-head hpc-head--line" id={headId}>{t("resting", { time: clock(plan.opensAt) })}</h2></div>
+        <div className="hpc-text">
+          <h2 className="hpc-head hpc-head--line" id={headId}>{t("resting", { time: clock(plan.opensAt) })}</h2>
+          {/* the control that refused, by name (W1-A item 2): the parent's lesson hours, and who can open them now */}
+          {plan.window && <p className="hpc-sub" data-testid="resting-control">{tw("refused.resting.body", { from: clock(plan.window.from), to: clock(plan.window.to) })} {tw("refused.resting.ask")}</p>}
+        </div>
       );
       break;
     case "offline":

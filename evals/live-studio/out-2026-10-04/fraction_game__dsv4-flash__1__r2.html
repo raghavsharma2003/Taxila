@@ -1,0 +1,303 @@
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #fff8f0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.screen {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 0 4px;
+}
+h1 {
+  font-size: 22px;
+  color: #c44536;
+  text-align: center;
+  margin-top: 4px;
+}
+.instr {
+  font-size: 15px;
+  color: #5a3e36;
+  text-align: center;
+  line-height: 1.4;
+}
+.fraction-display {
+  font-size: 28px;
+  font-weight: bold;
+  color: #2d1b14;
+  background: #fce4d6;
+  padding: 6px 20px;
+  border-radius: 20px;
+  margin: 4px 0;
+}
+.picture-container {
+  width: 300px;
+  height: 260px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 4px 0;
+  position: relative;
+  touch-action: pan-y;
+}
+.pizza-svg, .bar-svg {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+.part {
+  cursor: pointer;
+  transition: transform 0.12s ease;
+  touch-action: manipulation;
+}
+.part:active {
+  transform: scale(0.90);
+}
+.check-btn {
+  background: #e67e22;
+  color: white;
+  border: none;
+  border-radius: 28px;
+  padding: 14px 40px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #b85e1a;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  touch-action: manipulation;
+  margin: 6px 0;
+  min-width: 160px;
+  text-align: center;
+}
+.check-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #b85e1a;
+}
+.check-btn:disabled {
+  opacity: 0.5;
+  transform: none;
+  box-shadow: 0 4px 0 #b85e1a;
+  cursor: default;
+}
+.msg {
+  font-size: 17px;
+  text-align: center;
+  padding: 8px 18px;
+  border-radius: 20px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  width: 100%;
+  max-width: 300px;
+}
+.msg.correct {
+  background: #d4edda;
+  color: #155724;
+}
+.msg.wrong {
+  background: #f8d7da;
+  color: #721c24;
+}
+.msg.done {
+  background: #cce5ff;
+  color: #004085;
+  font-size: 24px;
+  font-weight: bold;
+}
+.hint {
+  font-size: 13px;
+  color: #8a6f60;
+  text-align: center;
+  margin-top: 2px;
+  min-height: 20px;
+}
+.hidden {
+  display: none !important;
+}
+</style>
+
+<div id="app" class="screen" data-item="">
+  <h1 id="title"></h1>
+  <div id="instr" class="instr"></div>
+  <div id="fractionDisplay" class="fraction-display"></div>
+  <div id="pictureContainer" class="picture-container">
+    <div id="pizzaArea" class="pizza-svg-wrapper"></div>
+    <div id="barArea" class="hidden"></div>
+  </div>
+  <button id="checkBtn" class="check-btn" data-action="check"></button>
+  <div id="msgArea" class="msg"></div>
+  <div id="hintArea" class="hint"></div>
+</div>
+
+<script>
+(function() {
+  const app = document.getElementById('app');
+  const titleEl = document.getElementById('title');
+  const instrEl = document.getElementById('instr');
+  const fractionDisplay = document.getElementById('fractionDisplay');
+  const pizzaArea = document.getElementById('pizzaArea');
+  const barArea = document.getElementById('barArea');
+  const checkBtn = document.getElementById('checkBtn');
+  const msgArea = document.getElementById('msgArea');
+  const hintArea = document.getElementById('hintArea');
+
+  const items = Studio.params.items;
+  const pictureType = Studio.params.picture; 
+
+  let currentIndex = 0;
+  let partsState = [];
+  let waitingForVerdict = false;
+  let isDone = false;
+
+  // strings
+  const TITLE = Studio.t('title');
+  const INSTR = Studio.t('instr');
+  const CHECK = Studio.t('check');
+  const RIGHT = Studio.t('right');
+  const WRONG = Studio.t('wrong');
+  const DONE = Studio.t('done');
+  const HINT = Studio.t('hint');
+
+  titleEl.textContent = TITLE;
+  instrEl.textContent = INSTR;
+  checkBtn.textContent = CHECK;
+  hintArea.textContent = HINT;
+
+  function buildPizzaSvg(d, shaded) {
+    const cx = 140, cy = 130, r = 105;
+    let paths = '';
+    for (let i = 0; i < d; i++) {
+      const startAngle = (i / d) * 2 * Math.PI - Math.PI/2;
+      const endAngle = ((i+1) / d) * 2 * Math.PI - Math.PI/2;
+      const x1 = cx + r * Math.cos(startAngle);
+      const y1 = cy + r * Math.sin(startAngle);
+      const x2 = cx + r * Math.cos(endAngle);
+      const y2 = cy + r * Math.sin(endAngle);
+      const large = (endAngle - startAngle) > Math.PI ? 1 : 0;
+      const fill = shaded[i] ? '#e67e22' : '#fce4d6';
+      const stroke = '#c44536';
+      const pathD = `M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${large} 1 ${x2},${y2} Z`;
+      paths += `<path d="${pathD}" fill="${fill}" stroke="${stroke}" stroke-width="2.8" data-part="${i}" data-shaded="${shaded[i] ? 'true' : 'false'}" class="part"/>`;
+    }
+    return `<svg viewBox="0 0 280 260" class="pizza-svg" style="max-height:260px;max-width:300px;">${paths}</svg>`;
+  }
+
+  function renderItem(index) {
+    const item = items[index];
+    if (!item) {
+      showDone();
+      return;
+    }
+    const d = item.d;
+    partsState = new Array(d).fill(false);
+    waitingForVerdict = false;
+    checkBtn.disabled = false;
+    checkBtn.classList.remove('hidden');
+    hintArea.classList.remove('hidden');
+    fractionDisplay.classList.remove('hidden');
+
+    app.setAttribute('data-item', item.id);
+
+    fractionDisplay.textContent = `${item.n}/${item.d}`;
+
+    pizzaArea.classList.remove('hidden');
+    barArea.classList.add('hidden');
+    pizzaArea.innerHTML = buildPizzaSvg(d, partsState);
+
+    msgArea.textContent = '';
+    msgArea.className = 'msg';
+
+    const parts = document.querySelectorAll('.part');
+    parts.forEach(el => {
+      el.addEventListener('click', function(e) {
+        if (waitingForVerdict || isDone) return;
+        const partIdx = parseInt(this.dataset.part, 10);
+        if (isNaN(partIdx) || partIdx < 0 || partIdx >= d) return;
+        partsState[partIdx] = !partsState[partIdx];
+        const newShaded = partsState[partIdx];
+        this.dataset.shaded = newShaded ? 'true' : 'false';
+        this.setAttribute('fill', newShaded ? '#e67e22' : '#fce4d6');
+        this.style.transform = 'scale(0.92)';
+        setTimeout(() => { this.style.transform = ''; }, 150);
+        Studio.event('part_toggle', { itemId: item.id, part: partIdx, shaded: newShaded });
+      });
+    });
+  }
+
+  function handleCheck() {
+    if (waitingForVerdict || isDone) return;
+    const item = items[currentIndex];
+    if (!item) return;
+    const colouredCount = partsState.filter(v => v).length;
+    const answer = { n: colouredCount, d: item.d };
+    waitingForVerdict = true;
+    checkBtn.disabled = true;
+    Studio.answer(answer);
+  }
+
+  function showFeedback(correct) {
+    if (correct) {
+      msgArea.textContent = RIGHT;
+      msgArea.className = 'msg correct';
+      msgArea.style.transform = 'scale(1.08)';
+      setTimeout(() => { msgArea.style.transform = ''; }, 300);
+      Studio.event('correct', { itemId: items[currentIndex].id });
+      setTimeout(() => {
+        currentIndex++;
+        if (currentIndex >= items.length) {
+          showDone();
+        } else {
+          renderItem(currentIndex);
+        }
+      }, 1200);
+    } else {
+      msgArea.textContent = WRONG;
+      msgArea.className = 'msg wrong';
+      waitingForVerdict = false;
+      checkBtn.disabled = false;
+      Studio.event('wrong', { itemId: items[currentIndex].id });
+    }
+  }
+
+  function showDone() {
+    isDone = true;
+    app.removeAttribute('data-item');
+    checkBtn.classList.add('hidden');
+    hintArea.classList.add('hidden');
+    fractionDisplay.classList.add('hidden');
+    pizzaArea.classList.add('hidden');
+    barArea.classList.add('hidden');
+    msgArea.textContent = DONE;
+    msgArea.className = 'msg done';
+    Studio.done();
+  }
+
+  Studio.onVerdict(function(result) {
+    if (result.correct !== undefined) {
+      showFeedback(result.correct);
+    }
+  });
+
+  checkBtn.addEventListener('click', handleCheck);
+
+  renderItem(0);
+  Studio.ready();
+})();
+</script>

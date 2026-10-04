@@ -1,0 +1,223 @@
+<style>
+*{box-sizing:border-box}
+:root{--ink:#17495a;--sky:#dff5ff;--leaf:#45a85c;--soil:#89533d;--sun:#ffd451;--water:#319de2;--co:#728398;--oxy:#62cbd4}
+body{margin:0;overflow:hidden;background:linear-gradient(#ccefff,#eefbff 64%,#fff1ce);font-family:system-ui,sans-serif;color:var(--ink)}
+#app{height:100vh;max-width:520px;margin:auto;padding:10px 12px;display:flex;flex-direction:column;gap:7px}
+h1{margin:0;text-align:center;font-size:clamp(20px,6vw,27px);line-height:1.15}
+#sceneWrap{flex:1;min-height:284px;max-height:414px;overflow:hidden;border:3px solid rgba(255,255,255,.86);border-radius:25px;background:rgba(255,255,255,.54);box-shadow:0 8px 20px rgba(34,103,129,.15)}
+svg{display:block;width:100%;height:100%}
+.label{font-size:11px;font-weight:850;fill:var(--ink);paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
+.ray{stroke:#ffd451;stroke-width:5;stroke-linecap:round;opacity:.76;transition:opacity .25s}
+.particle{filter:drop-shadow(0 1px 1px rgba(0,0,0,.22));transition:opacity .2s}
+.waterP{fill:var(--water)}.coP{fill:var(--co)}.oP{fill:var(--oxy)}
+.muted{opacity:.16}
+#glucoseGlow{transform-origin:240px 164px;transition:opacity .25s}
+#controls{display:flex;align-items:center;justify-content:center;gap:7px;min-height:46px}
+button{border:0;font:inherit;font-weight:850;color:var(--ink);cursor:pointer;touch-action:manipulation;box-shadow:0 3px 0 rgba(20,67,82,.18),0 5px 12px rgba(34,102,124,.13);transition:transform .14s,background .2s}
+button:active{transform:scale(.91);box-shadow:0 1px 0 rgba(20,67,82,.18)}
+#play{height:46px;min-width:84px;padding:0 10px;border-radius:15px;background:#ffe47b}
+#steps{display:flex;gap:6px}
+.step{width:44px;height:44px;border-radius:50%;background:#fff;font-size:17px}
+.step.active{color:#fff;background:var(--leaf);transform:translateY(-2px);box-shadow:0 5px 0 #277a43,0 7px 13px rgba(34,102,72,.18)}
+#caption{min-height:45px;margin:0;padding:10px 12px;text-align:center;font-size:15px;line-height:1.35;font-weight:750;border-radius:16px;background:rgba(255,255,255,.94);box-shadow:0 3px 10px rgba(34,94,110,.1)}
+#caption.bump{animation:bump .25s ease-out}
+@keyframes bump{50%{transform:scale(1.02);background:#fff8ca}}
+#question{display:none;padding:9px;border-radius:18px;background:#fff;text-align:center;box-shadow:0 3px 12px rgba(34,94,110,.13)}
+#ask{margin:0 0 7px;font-size:15px;font-weight:850}
+#options{display:flex;justify-content:center;gap:7px}
+.option{height:44px;min-width:76px;padding:0 10px;border-radius:14px;background:#e4f7fb}
+.option.wait{pointer-events:none;opacity:.56}
+.option.good{background:#9de4aa;transform:scale(1.04)}
+.option.retry{background:#ffd7d0;animation:shake .35s ease-in-out}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.spark{animation:twinkle 1.3s ease-in-out infinite}
+@keyframes twinkle{50%{opacity:.45}}
+</style>
+
+<div id="app">
+  <h1 id="title"></h1>
+  <div id="sceneWrap">
+    <svg viewBox="0 0 340 390" role="img">
+      <defs>
+        <linearGradient id="leafFill" x1="0" x2="1"><stop stop-color="#91db71"/><stop offset="1" stop-color="#309a55"/></linearGradient>
+        <linearGradient id="stemFill" x1="0" x2="1"><stop stop-color="#4cad60"/><stop offset="1" stop-color="#287d49"/></linearGradient>
+      </defs>
+
+      <circle cx="53" cy="52" r="28" fill="#ffd451"/>
+      <g id="rays">
+        <line class="ray" x1="77" y1="74" x2="170" y2="138"/>
+        <line class="ray" x1="68" y1="81" x2="151" y2="162"/>
+        <line class="ray" x1="88" y1="57" x2="177" y2="114"/>
+      </g>
+      <text class="label" data-label="sun" x="18" y="101"></text>
+
+      <path d="M0 302 Q50 286 102 301 T207 296 T340 302 L340 390 L0 390Z" fill="#89533d"/>
+      <path d="M0 306 Q56 292 104 306 T208 301 T340 307" fill="none" stroke="#6a402e" stroke-width="7"/>
+
+      <path d="M197 304 C197 264 198 217 199 181" fill="none" stroke="url(#stemFill)" stroke-width="13" stroke-linecap="round"/>
+      <g data-entity="roots" id="roots">
+        <path d="M197 296 C180 317 166 337 154 359 M198 301 C211 321 222 339 240 356 M193 303 C184 327 182 346 176 371 M202 303 C209 330 211 351 214 373" fill="none" stroke="#f4d18a" stroke-width="6" stroke-linecap="round"/>
+      </g>
+      <text class="label" data-label="roots" x="254" y="364" text-anchor="middle"></text>
+
+      <g data-entity="leaf" id="leaf">
+        <path d="M198 185 C203 116 267 102 300 126 C286 192 238 211 198 185Z" fill="url(#leafFill)" stroke="#267f48" stroke-width="3"/>
+        <path d="M204 181 Q241 158 285 132 M235 164 L239 186 M252 153 L258 174" fill="none" stroke="#d6f28c" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+      <text class="label" data-label="leaf" x="283" y="221" text-anchor="middle"></text>
+
+      <g id="glucoseGlow">
+        <circle cx="240" cy="163" r="22" fill="#ffe66d" opacity=".43"/>
+        <circle class="spark" cx="240" cy="163" r="9" fill="#ffcf35"/>
+        <path d="M236 160h8m-4-4v8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      </g>
+      <text class="label" data-label="glucose" x="206" y="92" text-anchor="middle"></text>
+
+      <g id="waterFlow">
+        <circle class="particle waterP" data-flow="water" cx="198" cy="338" r="5"/>
+        <circle class="particle waterP" data-flow="water" cx="198" cy="296" r="5"/>
+        <circle class="particle waterP" data-flow="water" cx="198" cy="252" r="5"/>
+      </g>
+      <text class="label" data-label="water" x="77" y="338" text-anchor="middle"></text>
+
+      <g id="co2Flow">
+        <circle class="particle coP" data-flow="co2" cx="334" cy="139" r="5"/>
+        <circle class="particle coP" data-flow="co2" cx="306" cy="154" r="5"/>
+        <circle class="particle coP" data-flow="co2" cx="278" cy="169" r="5"/>
+      </g>
+      <text class="label" data-label="co2" x="326" y="48" text-anchor="end"></text>
+
+      <g id="o2Flow">
+        <circle class="particle oP" data-flow="o2" cx="218" cy="142" r="5"/>
+        <circle class="particle oP" data-flow="o2" cx="164" cy="116" r="5"/>
+        <circle class="particle oP" data-flow="o2" cx="112" cy="91" r="5"/>
+      </g>
+      <text class="label" data-label="o2" x="88" y="131" text-anchor="middle"></text>
+    </svg>
+  </div>
+
+  <div id="controls">
+    <button id="play" data-action="play"></button>
+    <div id="steps">
+      <button class="step" data-action="step-1"></button>
+      <button class="step" data-action="step-2"></button>
+      <button class="step" data-action="step-3"></button>
+      <button class="step" data-action="step-4"></button>
+      <button class="step" data-action="step-5"></button>
+    </div>
+  </div>
+
+  <p id="caption" data-caption></p>
+
+  <div id="question">
+    <p id="ask"></p>
+    <div id="options">
+      <button class="option" data-option="co2"></button>
+      <button class="option" data-option="o2"></button>
+      <button class="option" data-option="water"></button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var P=Studio.params,playing=true,step=1,tick=0,frame=0,locked=false;
+  var play=document.getElementById('play'),caption=document.getElementById('caption');
+  var question=document.getElementById('question'),glow=document.getElementById('glucoseGlow');
+  var rays=document.getElementById('rays');
+  var water=[].slice.call(document.querySelectorAll('[data-flow="water"]'));
+  var co2=[].slice.call(document.querySelectorAll('[data-flow="co2"]'));
+  var o2=[].slice.call(document.querySelectorAll('[data-flow="o2"]'));
+  var steps=[].slice.call(document.querySelectorAll('.step'));
+
+  document.getElementById('title').textContent=Studio.t('title');
+  document.querySelectorAll('[data-label]').forEach(function(el){el.textContent=Studio.t(el.getAttribute('data-label'));});
+  document.getElementById('ask').textContent=Studio.t('ask');
+  document.querySelectorAll('[data-option]').forEach(function(el){el.textContent=Studio.t(el.getAttribute('data-option'));});
+  steps.forEach(function(el,i){el.textContent=String(i+1);});
+
+  function visual(){
+    play.textContent=Studio.t(playing?'pause':'play');
+    caption.textContent=Studio.t('step'+step);
+    caption.classList.remove('bump');
+    void caption.offsetWidth;
+    caption.classList.add('bump');
+    steps.forEach(function(el,i){el.classList.toggle('active',i===step-1);});
+    document.getElementById('waterFlow').classList.toggle('muted',step!==2);
+    document.getElementById('co2Flow').classList.toggle('muted',step!==3);
+    document.getElementById('o2Flow').classList.toggle('muted',step!==4);
+    glow.classList.toggle('muted',step!==5);
+    rays.classList.toggle('muted',step!==1);
+  }
+
+  function animate(){
+    if(!playing){frame=0;return;}
+    tick++;
+    water.forEach(function(el,i){
+      var y=350-((tick*2.4+i*48)%170);
+      el.setAttribute('cx',198+Math.sin((tick+i*7)/10)*3);
+      el.setAttribute('cy',y);
+    });
+    co2.forEach(function(el,i){
+      var x=338-((tick*1.7+i*29)%104);
+      el.setAttribute('cx',x);
+      el.setAttribute('cy',139+i*15+Math.sin((tick+i*5)/9)*3);
+    });
+    o2.forEach(function(el,i){
+      var x=218-((tick*1.8+i*37)%124);
+      el.setAttribute('cx',x);
+      el.setAttribute('cy',142-((tick*0.78+i*15)%58));
+    });
+    glow.setAttribute('transform','scale('+(1+Math.sin(tick/7)*.07)+')');
+    frame=requestAnimationFrame(animate);
+  }
+
+  function motion(){if(!frame&&playing){frame=requestAnimationFrame(animate);}}
+
+  play.addEventListener('click',function(){
+    playing=!playing;
+    if(!playing&&frame){cancelAnimationFrame(frame);frame=0;}
+    visual();
+    motion();
+    Studio.event('play',{playing:playing});
+  });
+
+  steps.forEach(function(el,i){
+    el.addEventListener('click',function(){
+      step=i+1;
+      playing=true;
+      visual();
+      motion();
+      if(step===P.steps){question.style.display='block';}
+      Studio.event('step',{step:step});
+    });
+  });
+
+  document.querySelectorAll('[data-option]').forEach(function(el){
+    el.addEventListener('click',function(){
+      if(locked){return;}
+      locked=true;
+      document.querySelectorAll('.option').forEach(function(x){x.classList.add('wait');});
+      Studio.event('answer',{option:el.getAttribute('data-option')});
+      Studio.answer(el.getAttribute('data-option'));
+    });
+  });
+
+  Studio.onVerdict(function(verdict){
+    var chosen=document.querySelector('.option.wait');
+    if(chosen){chosen.classList.add(verdict.correct?'good':'retry');}
+    if(verdict.correct){
+      Studio.done();
+    }else{
+      locked=false;
+      setTimeout(function(){
+        document.querySelectorAll('.option').forEach(function(el){el.classList.remove('wait','retry');});
+      },500);
+    }
+  });
+
+  visual();
+  motion();
+  Studio.ready();
+}());
+</script>

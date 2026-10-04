@@ -1,0 +1,102 @@
+<style>
+.main{background:#FFF8E1;border-radius:24px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,0.1);width:360px;height:640px;margin:0 auto;font-family:system-ui;display:flex;flex-direction:column;gap:12px;overflow:hidden}
+.title{font-size:26px;font-weight:700;color:#E65100;text-align:center;margin:8px 0}
+.ask{font-size:18px;color:#5D4037;text-align:center;padding:0 12px}
+#chart{background:#E8F5E9;border-radius:16px;box-shadow:inset 0 2px 8px rgba(0,0,0,0.06)}
+.bar{transition:all 800ms cubic-bezier(0.34,1.56,0.64,1),transform 160ms ease;transform-origin:bottom;cursor:pointer}
+.bar.tapped{transform:scale(1.08)}
+.tick-label{font-size:13px;fill:#5D4037;font-weight:600}
+.fruit-label{font-size:15px;fill:#3E2723;font-weight:600}
+.grid{stroke:#A5D6A7;stroke-width:1.5}
+.axis{stroke:#66BB6A;stroke-width:3}
+.feedback{font-size:20px;font-weight:700;text-align:center;padding:8px;border-radius:12px;min-height:36px}
+.feedback.correct{color:#2E7D32;background:#C8E6C9}
+.feedback.wrong{color:#C62828;background:#FFCDD2}
+#done{font-size:22px;font-weight:700;color:#1565C0;text-align:center;margin-top:12px}
+</style>
+<div class="main">
+<div class="title" id="title"></div>
+<div class="ask" id="ask"></div>
+<svg id="chart" width="360" height="480" viewBox="0 0 360 480"></svg>
+<div class="feedback" id="feedback"></div>
+<div id="done"></div>
+</div>
+<script>
+const params=Studio.params;
+const data=params.data;
+const svg=document.getElementById('chart');
+const colors={mango:'#FFB300',banana:'#FFEB3B',apple:'#E53935',guava:'#43A047',orange:'#FB8C00'};
+const baselineY=355;
+const chartH=300;
+const unit=20;
+const maxY=15;
+const leftX=55;
+const barW=42;
+const gap=21;
+const startX=leftX+12;
+function make(el,attrs){
+  const n=document.createElementNS('http://www.w3.org/2000/svg',el);
+  for(const k in attrs)n.setAttribute(k,attrs[k]);
+  return n;
+}
+const axis=make('line',{x1:leftX-8,y1:55,x2:leftX-8,y2:baselineY+5,class:'axis'});
+svg.appendChild(axis);
+const base=make('line',{x1:leftX-12,y1:baselineY+1,x2:340,y2:baselineY+1,class:'axis'});
+svg.appendChild(base);
+const ticks=[0,3,6,9,12,15];
+ticks.forEach(t=>{
+  const y=baselineY-t*unit;
+  const line=make('line',{x1:leftX-8,y1:y,x2:340,y2:y,class:'grid'});
+  svg.appendChild(line);
+  const lbl=make('text',{x:leftX-22,y:y+5,class:'tick-label','data-tick':t});
+  lbl.textContent=t;
+  svg.appendChild(lbl);
+});
+const ytitle=make('text',{x:28,y:baselineY-150,class:'tick-label',transform:'rotate(-90,28,205)'});
+ytitle.textContent=Studio.t('yaxis');
+svg.appendChild(ytitle);
+data.forEach((d,i)=>{
+  const x=startX+i*(barW+gap);
+  const h=d.value*unit;
+  const r=make('rect',{x:x,y:baselineY,width:barW,height:0,rx:7,class:'bar',fill:colors[d.key],'data-bar':d.key,'data-value':d.value});
+  r.style.filter='drop-shadow(2px 4px 4px rgba(0,0,0,0.18))';
+  svg.appendChild(r);
+  const lbl=make('text',{x:x+barW/2,y:baselineY+28,class:'fruit-label',textAnchor:'middle'});
+  lbl.textContent=Studio.t(d.key);
+  svg.appendChild(lbl);
+  r.addEventListener('click',()=>{
+    r.classList.add('tapped');
+    const valLbl=make('text',{x:x+barW/2,y:baselineY-h-14,class:'tick-label',textAnchor:'middle',fill:colors[d.key]});
+    valLbl.textContent=d.value;
+    svg.appendChild(valLbl);
+    setTimeout(()=>{r.classList.remove('tapped');valLbl.remove();},1200);
+    Studio.answer(d.key);
+  });
+});
+setTimeout(()=>{
+  Array.from(svg.querySelectorAll('rect.bar')).forEach(r=>{
+    const v=parseInt(r.getAttribute('data-value'));
+    const h=v*unit;
+    r.setAttribute('y',baselineY-h);
+    r.setAttribute('height',h);
+  });
+},80);
+document.getElementById('title').textContent=Studio.t('title');
+document.getElementById('ask').textContent=Studio.t('ask');
+Studio.onVerdict(v=>{
+  const fb=document.getElementById('feedback');
+  if(v.correct){
+    fb.textContent=Studio.t('right');
+    fb.className='feedback correct';
+    setTimeout(()=>{
+      document.getElementById('done').textContent=Studio.t('done');
+      Studio.done();
+    },700);
+  }else{
+    fb.textContent=Studio.t('wrong');
+    fb.className='feedback wrong';
+    setTimeout(()=>{fb.textContent='';fb.className='feedback';},1400);
+  }
+});
+Studio.ready();
+</script>

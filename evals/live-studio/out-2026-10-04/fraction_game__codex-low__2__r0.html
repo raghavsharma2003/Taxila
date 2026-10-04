@@ -1,0 +1,351 @@
+<style>
+  :root{
+    --bg:#fff8ef;
+    --card:#ffffff;
+    --ink:#2f2a3a;
+    --soft:#7a6f8f;
+    --accent:#ff8a65;
+    --accent2:#ffd166;
+    --ok:#34c38f;
+    --bad:#ff6b6b;
+    --part:#ffe9d6;
+    --partOn:#ff9f43;
+    --shadow:0 8px 24px rgba(47,42,58,.12);
+    --r:18px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color:var(--ink);
+  }
+  .app{
+    width:100%;
+    max-width:420px;
+    margin:0 auto;
+    min-height:640px;
+    padding:14px 14px 18px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .card{
+    background:var(--card);
+    border-radius:var(--r);
+    box-shadow:var(--shadow);
+    padding:14px;
+  }
+  .title{
+    margin:2px 0 2px;
+    font-size:24px;
+    line-height:1.2;
+    font-weight:800;
+  }
+  .instr{
+    margin:0;
+    color:var(--soft);
+    font-size:16px;
+    line-height:1.25;
+    min-height:40px;
+  }
+  .fraction{
+    text-align:center;
+    font-size:36px;
+    font-weight:900;
+    letter-spacing:.5px;
+    margin:4px 0 0;
+    color:#5c3d2e;
+  }
+  .board{
+    border-radius:16px;
+    background:linear-gradient(180deg,#fffdf9,#fff7ee);
+    border:2px solid #ffe1c8;
+    padding:8px;
+  }
+  svg{
+    width:100%;
+    height:auto;
+    display:block;
+  }
+  .whole{
+    fill:#fff6ea;
+    stroke:#ffdcb8;
+    stroke-width:2;
+  }
+  .part{
+    fill:var(--part);
+    stroke:#fff;
+    stroke-width:2;
+    cursor:pointer;
+    transition:transform .14s ease, fill .2s ease, filter .2s ease;
+    transform-box:fill-box;
+    transform-origin:center;
+  }
+  .part.on{
+    fill:var(--partOn);
+    filter:drop-shadow(0 2px 4px rgba(255,132,0,.35));
+  }
+  .part:active{
+    transform:scale(.95);
+  }
+  .controls{
+    display:flex;
+    gap:10px;
+    align-items:center;
+  }
+  .check{
+    min-height:48px;
+    min-width:120px;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(180deg,var(--accent),#ff7b55);
+    color:white;
+    font-size:18px;
+    font-weight:800;
+    padding:10px 18px;
+    box-shadow:0 6px 12px rgba(255,122,89,.35);
+    cursor:pointer;
+    transition:transform .1s ease, filter .2s ease, opacity .2s ease;
+  }
+  .check:active{ transform:scale(.97); }
+  .check[disabled]{ opacity:.6; cursor:not-allowed; }
+  .feedback{
+    min-height:46px;
+    flex:1;
+    border-radius:12px;
+    padding:10px 12px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    transition:all .2s ease;
+    background:#f6f2ff;
+    color:#5c5470;
+  }
+  .feedback.ok{ background:#e8fff5; color:#187a57; }
+  .feedback.bad{ background:#fff0f0; color:#b24343; }
+  .pulse{
+    animation:pulse .55s ease;
+  }
+  @keyframes pulse{
+    0%{transform:scale(1)}
+    35%{transform:scale(1.03)}
+    100%{transform:scale(1)}
+  }
+  .done{
+    display:none;
+    text-align:center;
+    padding:22px 14px;
+  }
+  .done.show{ display:block; }
+  .doneBadge{
+    width:96px;height:96px;margin:0 auto 8px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #fff7cf, #ffd166);
+    display:grid;place-items:center;
+    font-size:46px;
+    box-shadow:0 10px 20px rgba(255,209,102,.35);
+  }
+  .doneText{
+    font-size:24px;
+    font-weight:900;
+    margin:4px 0 0;
+  }
+  .hidden{ display:none; }
+</style>
+
+<div class="app" id="app">
+  <div class="card" id="playCard">
+    <h1 class="title" id="title"></h1>
+    <p class="instr" id="instr"></p>
+    <div class="fraction" id="fraction" aria-live="polite"></div>
+
+    <div class="board" id="itemContainer">
+      <svg id="pic" viewBox="0 0 320 220" role="img" aria-label=""></svg>
+    </div>
+
+    <div class="controls">
+      <button class="check" data-action="check" id="checkBtn"></button>
+      <div class="feedback" id="feedback"></div>
+    </div>
+  </div>
+
+  <div class="card done" id="doneCard">
+    <div class="doneBadge">✓</div>
+    <div class="doneText" id="doneText"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const items = (Studio.params && Array.isArray(Studio.params.items)) ? Studio.params.items : [];
+  const el = {
+    title: document.getElementById('title'),
+    instr: document.getElementById('instr'),
+    fraction: document.getElementById('fraction'),
+    itemContainer: document.getElementById('itemContainer'),
+    pic: document.getElementById('pic'),
+    checkBtn: document.getElementById('checkBtn'),
+    feedback: document.getElementById('feedback'),
+    playCard: document.getElementById('playCard'),
+    doneCard: document.getElementById('doneCard'),
+    doneText: document.getElementById('doneText')
+  };
+
+  let idx = 0;
+  let shaded = new Set();
+  let awaiting = false;
+  let finished = false;
+
+  function t(k){ return Studio.t(k) || ''; }
+
+  function setBaseText(){
+    el.title.textContent = t('title');
+    el.instr.textContent = t('instr');
+    el.checkBtn.textContent = t('check');
+    el.feedback.textContent = t('hint');
+    el.doneText.textContent = t('done');
+  }
+
+  function layoutFor(d){
+    if (d <= 5) return {cols:d, rows:1};
+    if (d % 4 === 0) return {cols:4, rows:d/4};
+    if (d % 3 === 0) return {cols:3, rows:d/3};
+    return {cols:Math.min(d,4), rows:Math.ceil(d/Math.min(d,4))};
+  }
+
+  function clearSvg(){
+    while (el.pic.firstChild) el.pic.removeChild(el.pic.firstChild);
+  }
+
+  function buildItem(item){
+    shaded = new Set();
+    awaiting = false;
+    el.itemContainer.setAttribute('data-item', item.id);
+    el.fraction.textContent = String(item.n) + '/' + String(item.d);
+    el.feedback.className = 'feedback';
+    el.feedback.textContent = t('hint');
+    el.checkBtn.disabled = false;
+
+    clearSvg();
+
+    const NS = 'http://www.w3.org/2000/svg';
+    const W = 320, H = 220;
+    const pad = 20;
+    const {cols, rows} = layoutFor(item.d);
+
+    const boxW = W - pad*2;
+    const boxH = Math.max(84, Math.min(140, rows * 54));
+    const y0 = (H - boxH)/2;
+    const gap = 6;
+    const cellW = (boxW - gap*(cols-1))/cols;
+    const cellH = (boxH - gap*(rows-1))/rows;
+
+    const whole = document.createElementNS(NS,'rect');
+    whole.setAttribute('x', pad);
+    whole.setAttribute('y', y0);
+    whole.setAttribute('width', boxW);
+    whole.setAttribute('height', boxH);
+    whole.setAttribute('rx', 18);
+    whole.setAttribute('class','whole');
+    el.pic.appendChild(whole);
+
+    for(let i=0;i<item.d;i++){
+      const r = Math.floor(i/cols);
+      const c = i%cols;
+      const x = pad + c*(cellW+gap);
+      const y = y0 + r*(cellH+gap);
+
+      const part = document.createElementNS(NS,'rect');
+      part.setAttribute('x', x);
+      part.setAttribute('y', y);
+      part.setAttribute('width', cellW);
+      part.setAttribute('height', cellH);
+      part.setAttribute('rx', 10);
+      part.setAttribute('class','part');
+      part.setAttribute('data-part', String(i));
+      part.setAttribute('data-shaded', 'false');
+      part.setAttribute('tabindex', '0');
+      part.setAttribute('role', 'button');
+
+      const toggle = function(){
+        if (awaiting || finished) return;
+        const on = shaded.has(i);
+        if (on) shaded.delete(i); else shaded.add(i);
+        part.setAttribute('data-shaded', on ? 'false' : 'true');
+        part.classList.toggle('on', !on);
+        part.classList.remove('pulse');
+        void part.getBoundingClientRect();
+        part.classList.add('pulse');
+        Studio.event('part_tap', {itemId:item.id, part:i, shaded:!on});
+      };
+
+      part.addEventListener('click', toggle);
+      part.addEventListener('keydown', function(e){
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggle();
+        }
+      });
+
+      el.pic.appendChild(part);
+    }
+  }
+
+  function render(){
+    if (!items.length) {
+      el.playCard.classList.add('hidden');
+      el.doneCard.classList.add('show');
+      Studio.done();
+      return;
+    }
+    buildItem(items[idx]);
+  }
+
+  el.checkBtn.addEventListener('click', function(){
+    if (awaiting || finished || !items[idx]) return;
+    awaiting = true;
+    el.checkBtn.disabled = true;
+    el.feedback.className = 'feedback';
+    el.feedback.textContent = t('hint');
+    const item = items[idx];
+    Studio.event('check', {itemId:item.id, n:shaded.size, d:item.d});
+    Studio.answer({ n: shaded.size, d: item.d });
+  });
+
+  Studio.onVerdict(function(v){
+    if (finished || !items[idx]) return;
+    awaiting = false;
+    el.checkBtn.disabled = false;
+
+    if (v && v.correct){
+      el.feedback.className = 'feedback ok';
+      el.feedback.textContent = t('right');
+      el.itemContainer.classList.remove('pulse');
+      void el.itemContainer.getBoundingClientRect();
+      el.itemContainer.classList.add('pulse');
+
+      setTimeout(function(){
+        idx += 1;
+        if (idx >= items.length){
+          finished = true;
+          el.playCard.classList.add('hidden');
+          el.doneCard.classList.add('show');
+          Studio.done();
+        } else {
+          buildItem(items[idx]);
+        }
+      }, 700);
+    } else {
+      el.feedback.className = 'feedback bad';
+      el.feedback.textContent = t('wrong') + ' ' + t('hint');
+    }
+  });
+
+  setBaseText();
+  render();
+  Studio.ready();
+})();
+</script>

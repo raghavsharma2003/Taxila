@@ -77,6 +77,28 @@ for k in kb[1:]:
         D["viseme_" + {"Sil": "sil", "KK": "kk"}.get(v, v)] = kco(k) - P
     elif n in ("HB_12_TongueUp", "HB_09_TongueIn"):
         D[n] = kco(k) - P
+# Amplitude: the source's expression shapes are authored small (smile corner travel 4.3 mm against ~27 mm on our
+# in-house keys and roughly 10-15 mm in Apple's reference), and the rig clamps weights at 1, so a runtime gain cannot
+# reach a readable smile. The authored deltas of these keys are scaled here (shape kept, travel extended); measured
+# max travel before -> after is written to the stats. Visemes, jaw, blink and gaze-lid keys keep the source travel.
+KEY_GAIN = {"mouthSmileLeft": 2.6, "mouthSmileRight": 2.6, "mouthDimpleLeft": 1.6, "mouthDimpleRight": 1.6,
+            "cheekSquintLeft": 1.35, "cheekSquintRight": 1.35, "eyeSquintLeft": 1.3, "eyeSquintRight": 1.3,
+            "browOuterUpLeft": 1.6, "browOuterUpRight": 1.5, "browDownLeft": 1.45, "browDownRight": 1.45,
+            "mouthPressLeft": 1.5, "mouthPressRight": 1.1, "mouthFrownLeft": 1.4, "mouthFrownRight": 2.4,
+            "mouthStretchLeft": 1.5, "mouthStretchRight": 2.0, "eyeWideLeft": 1.4, "eyeWideRight": 1.2,
+            "mouthPucker": 1.5, "mouthRollUpper": 1.5, "cheekPuff": 1.5}
+KEY_TRAVEL = {}
+for k, g in KEY_GAIN.items():
+    if k in D:
+        t0 = float(np.linalg.norm(D[k], axis=1).max())
+        D[k] = D[k] * g
+        KEY_TRAVEL[k] = [round(t0 * 1000, 2), round(t0 * g * 1000, 2), g]
+# Rest lid (polish pass): the source's neutral opens the upper lids wide (sclera above the iris; read as a stare). 12%
+# of the authored blink is baked into the rest pose, and the blink keys keep 88%, so a full blink still lands closed.
+REST_LID = 0.12
+P = P + REST_LID * (D["eyeBlinkLeft"] + D["eyeBlinkRight"])
+for k in ("eyeBlinkLeft", "eyeBlinkRight"):
+    D[k] = D[k] * (1 - REST_LID)
 missing = [k for k in ARKIT52 + VISEMES if k not in D]
 assert not missing, f"source lacks {missing}"
 tmove = np.linalg.norm(D["tongueOut"], axis=1) > 1e-3          # the tongue: what tongueOut moves
@@ -136,7 +158,7 @@ for r, I in pinfo.items():
     for p in I["polys"]:
         if r in dup or (P[poly_v[p], 2] < zc).any():
             continue
-        m, c = I["mat"], I["c"]
+        m, c = int(mat[p]), I["c"]
         if m == 1 and I["n"] < 120 and c[2] > 1.58 and c[1] < -0.02:
             cls[p] = "eyes"
         elif m == 2:
@@ -146,7 +168,8 @@ for r, I in pinfo.items():
             cls[p] = "interior" if (u0[0] < 0.205 and u0[1] < 0.37) else "face"
         else:
             cls[p] = "garment"
-stats = {"source": os.path.basename(args.fbx), "zcut": zc, "duplicateCardParts": len(dup),
+print("CLS", {k: int((cls == k).sum()) for k in ("face","interior","eyes","cards","hair","garment","drop")}, len(dup), P[:,2].min(), P[:,2].max())
+stats = {"source": os.path.basename(args.fbx), "zcut": zc, "keyGainMm": KEY_TRAVEL, "duplicateCardParts": len(dup),
          "polys": {k: int((cls == k).sum()) for k in ("face", "interior", "eyes", "cards", "hair", "garment", "drop")}}
 
 # ------------------------------------------------------------------ head texture (mouth interior classification)
@@ -192,7 +215,7 @@ for o in list(bpy.data.objects):
 coll = bpy.context.scene.collection
 
 
-def build(name, polys, split=None, weights=None, keys=()):
+def build(name, polys, split=None, weights=None, keys=(), keep_zero=False):
     """split: set of polygon ids whose vertices get their OWN copies (mouth interior: a hard `_region` edge)."""
     vmap, verts, faces, fuv, src_idx = {}, [], [], [], []
     for p in polys:
@@ -220,7 +243,7 @@ def build(name, polys, split=None, weights=None, keys=()):
         ob.shape_key_add(name="Basis", from_mix=False)
         for k in keys:
             d = D[k][src_idx]
-            if np.abs(d).max() < 5e-5:
+            if np.abs(d).max() < 5e-5 and not keep_zero:   # contract names stay even when the source rests there
                 continue
             sk = ob.shape_key_add(name=k, from_mix=False)
             sk.data.foreach_set("co", (P[src_idx] + d).astype(np.float32).ravel())
@@ -230,7 +253,7 @@ def build(name, polys, split=None, weights=None, keys=()):
 
 idx = lambda k: [i for i in range(npoly) if cls[i] == k]
 interior = set(idx("interior"))
-face, fsrc, Wf, _ = build("face", idx("face") + sorted(interior), split=interior, keys=TIER_KEYS["H"])
+face, fsrc, Wf, _ = build("face", idx("face") + sorted(interior), split=interior, keys=TIER_KEYS["H"], keep_zero=True)
 eyes, esrc, We, _ = build("eyes", idx("eyes"), weights=lambda s: np.stack([np.zeros(len(s))] * 3 + [
     (P[s, 0] > 0).astype(float), (P[s, 0] <= 0).astype(float)] + [np.zeros(len(s))] * 2, 1))
 cards, csrc, Wc, _ = build("cards", idx("cards"), keys=ARKIT52)
@@ -400,7 +423,7 @@ def rebuild_subdivided(ob, W, levels):
     mats = list(ob.data.materials)
     bpy.data.objects.remove(ob, do_unlink=True)
     nob = bpy.data.objects.new(name, nm)
-    coll.objects.link(nob)
+    bpy.context.scene.collection.objects.link(nob)
     for m in mats:
         nm.materials.append(m)
     for k, v in attrs.items():

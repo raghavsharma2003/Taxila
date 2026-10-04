@@ -1,0 +1,296 @@
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #FFF5E6;
+  min-height: 640px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.title { 
+  font-size: 20px;
+  font-weight: 700;
+  color: #6B3A2A;
+  margin: 12px 0 8px;
+  text-align: center;
+}
+.ask-text {
+  font-size: 15px;
+  color: #8B5E3C;
+  text-align: center;
+  margin: 0 16px 12px;
+  background: #FFE8D0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+.chart-container {
+  position: relative;
+  width: 340px;
+  height: 340px;
+  margin: 4px auto;
+  overflow: visible;
+}
+.bar {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.bar:hover { opacity: 0.8; }
+.bar:active { opacity: 0.6; }
+.bar-bg {
+  fill: #E0C9B0;
+  rx: 6;
+  ry: 6;
+}
+.bar-fill {
+  fill: #C1733D;
+  rx: 6;
+  ry: 6;
+  transition: opacity 0.2s;
+}
+.bar-fill.tapped {
+  fill: #4CAF50;
+}
+.yaxis-title {
+  font-size: 11px;
+  fill: #6B3A2A;
+  font-weight: 600;
+}
+.tick-label {
+  font-size: 10px;
+  fill: #6B3A2A;
+  text-anchor: end;
+}
+.gridline {
+  stroke: #D6C0A8;
+  stroke-width: 0.8;
+  stroke-dasharray: 3 3;
+}
+.bar-label {
+  font-size: 11px;
+  fill: #6B3A2A;
+  text-anchor: middle;
+  font-weight: 600;
+}
+.value-label {
+  font-size: 10px;
+  fill: #fff;
+  text-anchor: middle;
+  font-weight: 700;
+  pointer-events: none;
+}
+.verdict {
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  margin: 6px 0;
+  transition: opacity 0.3s;
+}
+.done-text {
+  font-size: 18px;
+  color: #2E7D32;
+  text-align: center;
+  margin: 6px 0;
+  font-weight: 700;
+}
+</style>
+
+<div class="title" id="title"></div>
+<div class="ask-text" id="ask"></div>
+<div class="chart-container" id="chart">
+  <svg width="340" height="340" viewBox="0 0 340 340" style="overflow:visible;">
+    <text class="yaxis-title" x="14" y="58" transform="rotate(-90,14,58)"></text>
+    <g id="grid-ticks"></g>
+    <g id="bars"></g>
+    <g id="bar-labels"></g>
+  </svg>
+</div>
+<div id="verdict" class="verdict" style="opacity:0; height:0;"></div>
+<div id="done" class="done-text" style="display:none;"></div>
+
+<script>
+(function(){
+  const params = Studio.params;
+  const data = params.data;
+  const items = data.map(d => ({key: d.key, value: d.value}));
+  const maxVal = Math.max(...items.map(i => i.value));
+  const step = maxVal <= 8 ? 2 : maxVal <= 15 ? 3 : maxVal <= 20 ? 5 : 10;
+  const tickMax = Math.ceil(maxVal / step) * step;
+  const ticks = [];
+  for (let v = 0; v <= tickMax; v += step) ticks.push(v);
+  if (ticks[ticks.length-1] < maxVal) ticks.push(Math.ceil(maxVal / step) * step);
+
+  // Chart geometry
+  const chartW = 340;
+  const chartH = 300;
+  const marginLeft = 44;
+  const marginRight = 8;
+  const marginTop = 16;
+  const marginBottom = 40;
+  const plotW = chartW - marginLeft - marginRight;
+  const plotH = chartH - marginTop - marginBottom;
+  const barCount = items.length;
+  const barGap = 8;
+  const barW = (plotW - barGap * (barCount + 1)) / barCount;
+
+  // Scale
+  function yScale(val) { return marginTop + plotH - (val / tickMax) * plotH; }
+
+  // strings
+  const str = {};
+  const strKeys = ['title','mango','banana','apple','guava','orange','yaxis','ask','right','wrong','done'];
+  strKeys.forEach(k => {
+    try { str[k] = Studio.t(k); } catch(e) { str[k] = k; }
+  });
+
+  document.getElementById('title').textContent = str.title;
+  document.getElementById('ask').textContent = str.ask;
+  document.querySelector('.yaxis-title').textContent = str.yaxis;
+
+  // grid & ticks
+  const gridGroup = document.getElementById('grid-ticks');
+  const tickYPositions = ticks.map(v => yScale(v));
+  tickYPositions.forEach((y, i) => {
+    const v = ticks[i];
+    // gridline
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1', marginLeft);
+    line.setAttribute('y1', y);
+    line.setAttribute('x2', chartW - marginRight);
+    line.setAttribute('y2', y);
+    line.setAttribute('class','gridline');
+    gridGroup.appendChild(line);
+    // tick label
+    const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+    text.setAttribute('x', marginLeft - 6);
+    text.setAttribute('y', y + 4);
+    text.setAttribute('class','tick-label');
+    text.setAttribute('data-tick', v);
+    text.textContent = v;
+    gridGroup.appendChild(text);
+  });
+
+  // bars
+  const barsGroup = document.getElementById('bars');
+  const labelsGroup = document.getElementById('bar-labels');
+  const barElements = [];
+
+  items.forEach((item, idx) => {
+    const x = marginLeft + barGap + idx * (barW + barGap);
+    const barH = (item.value / tickMax) * plotH;
+    const y = yScale(item.value);
+
+    // background bar (empty)
+    const bgBar = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    bgBar.setAttribute('x', x);
+    bgBar.setAttribute('y', marginTop);
+    bgBar.setAttribute('width', barW);
+    bgBar.setAttribute('height', plotH);
+    bgBar.setAttribute('class','bar-bg');
+    barsGroup.appendChild(bgBar);
+
+    // fill bar (animated)
+    const fillBar = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    fillBar.setAttribute('x', x);
+    fillBar.setAttribute('y', marginTop + plotH); // start from bottom
+    fillBar.setAttribute('width', barW);
+    fillBar.setAttribute('height', plotH);
+    fillBar.setAttribute('class','bar-fill');
+    fillBar.setAttribute('data-bar', item.key);
+    fillBar.setAttribute('data-value', item.value);
+    fillBar.style.transition = 'y 0.6s cubic-bezier(0.22, 0.61, 0.36, 1), height 0.6s cubic-bezier(0.22, 0.61, 0.36, 1)';
+    barsGroup.appendChild(fillBar);
+
+    // value label (hidden until tap)
+    const valLabel = document.createElementNS('http://www.w3.org/2000/svg','text');
+    valLabel.setAttribute('x', x + barW/2);
+    valLabel.setAttribute('y', y + 16);
+    valLabel.setAttribute('class','value-label');
+    valLabel.textContent = item.value;
+    valLabel.style.opacity = 0;
+    labelsGroup.appendChild(valLabel);
+
+    // fruit name label
+    const nameLabel = document.createElementNS('http://www.w3.org/2000/svg','text');
+    nameLabel.setAttribute('x', x + barW/2);
+    nameLabel.setAttribute('y', marginTop + plotH + 20);
+    nameLabel.setAttribute('class','bar-label');
+    nameLabel.textContent = str[item.key] || item.key;
+    labelsGroup.appendChild(nameLabel);
+
+    barElements.push({
+      key: item.key,
+      value: item.value,
+      fillBar,
+      yTarget: y,
+      hTarget: barH,
+      valLabel
+    });
+
+    // tap handler
+    fillBar.addEventListener('click', function(e) {
+      if (window.answered) return;
+      // reveal value
+      valLabel.style.opacity = 1;
+      valLabel.style.transition = 'opacity 0.3s';
+      // highlight bar
+      fillBar.classList.add('tapped');
+      // trigger animation reset? keep value visible
+      // answer
+      window.answered = true;
+      Studio.answer(item.key);
+      Studio.event('barTap', { key: item.key, value: item.value });
+    });
+  });
+
+  // animate bars on next frame
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      barElements.forEach(elm => {
+        elm.fillBar.setAttribute('y', elm.yTarget);
+        elm.fillBar.setAttribute('height', elm.hTarget);
+      });
+    });
+  });
+
+  // verdict handler
+  Studio.onVerdict(function(result) {
+    const verdictEl = document.getElementById('verdict');
+    const doneEl = document.getElementById('done');
+    if (result.correct) {
+      verdictEl.textContent = str.right;
+      verdictEl.style.color = '#2E7D32';
+      verdictEl.style.opacity = 1;
+      verdictEl.style.height = 'auto';
+      doneEl.textContent = str.done;
+      doneEl.style.display = 'block';
+      setTimeout(() => {
+        Studio.done();
+      }, 800);
+    } else {
+      verdictEl.textContent = str.wrong;
+      verdictEl.style.color = '#C62828';
+      verdictEl.style.opacity = 1;
+      verdictEl.style.height = 'auto';
+      // allow retry
+      window.answered = false;
+      // reset tap visual after a moment
+      setTimeout(() => {
+        document.querySelectorAll('.bar-fill.tapped').forEach(el => {
+          el.classList.remove('tapped');
+        });
+        document.querySelectorAll('.value-label').forEach(el => {
+          el.style.opacity = 0;
+        });
+        verdictEl.style.opacity = 0;
+        setTimeout(() => { verdictEl.style.height = 0; }, 300);
+      }, 1200);
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

@@ -3,7 +3,12 @@
 // useDesk's model. Voice lessons start on the CASCADE lane (voice-lane-cascade-default) with no second start
 // gate: the audio unlock is carried from the tap that opened the lesson. The Summary renders here when the lesson
 // ends (the separate /lesson/:lid/summary route belongs to the child-routes owner; Summary.tsx is ready for it).
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { LessonStartRequest } from "../../../shared/contracts.ts";
+import { ApiError } from "../../lesson/api.ts";
+import type { RuntimeDeps } from "../../lesson/runtime.ts";
+import { RefusedScreen } from "./Refused.tsx";
+import { purposeOf, refusalOf, type StartRefusal } from "./answers.ts";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ECHO_DEMOTE_FLAGS, UiBridge } from "../../lesson/uiBridge.ts";
 import { useLesson } from "../../lesson/useLesson.ts";
@@ -37,7 +42,12 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
   const [search] = useSearchParams();
   const [bridge] = useState(() => new UiBridge());
   useEffect(() => () => bridge.dispose(), [bridge]);
-  const { runtime } = useLesson(bridge.deps);
+  // The start says what it is for (flows G1): Practice and Ask pass a "Done for today" plan; a lesson does not. A 409
+  // LessonStartRefused becomes the designed done / capped / resting screen (Refused.tsx), never the generic error.
+  const [refusal, setRefusal] = useState<StartRefusal | null>(null);
+  const onRefused = useRef(setRefusal);
+  const [deps] = useState<RuntimeDeps>(() => withPurpose(bridge.deps, purposeOf(variant), (r) => onRefused.current(r)));
+  const { runtime } = useLesson(deps);
   const bs = useSyncExternalStore(bridge.store.subscribe, bridge.store.get, bridge.store.get);
   const headset = useHeadset();
   const [firstLesson] = useState(() => readArtefacts(cid).length === 0);
@@ -62,6 +72,8 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
     topicId: topicId || search.get("topic") || undefined,
     firstText,
     textOnly: variant === "practice" || search.get("mode") === "text" || prefs.quiet,
+    pttNoteSeen: prefs.pttNoteSeen,
+    markPttNoteSeen: () => setPrefs({ pttNoteSeen: true }),
     openMic: openMicAllowed({ older: family === "older", wanted: prefs.talk === "open", headset, echoDemoted: bs.echoFlags >= ECHO_DEMOTE_FLAGS }),
     faceForm: "live",
     setCaptionsAlways: (on) => setPrefs({ captionsAlways: on }),
@@ -110,6 +122,10 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
     document.title = `${m.shortTitle || "Lesson"} · Taxila`;
   }, [m.shortTitle]);
 
+  if (refusal) {
+    return <RefusedScreen refusal={refusal} young={family === "young"} onHome={() => navigate(`/c/${cid}`)} onGrownUp={() => navigate("/parent/controls")} />;
+  }
+
   // The lesson's own identity: the name pinned at lesson start (state.teacher), so a rename never changes an open lesson.
   return (
     <TeacherNameProvider id={m.teacher.id} name={m.teacher.name}>
@@ -117,4 +133,24 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
         dockRef={dockRef} live={live} onSize={onSize} theme={prefs.theme === "system" ? null : prefs.theme} />
     </TeacherNameProvider>
   );
+}
+
+/**
+ * The runtime's deps with every start carrying `purpose`, and a 409 refusal body handed to `onRefused` (the runtime
+ * still records the failure; the screen shows the refusal instead of the trouble screen). Pure wrapper (tested).
+ */
+export function withPurpose(deps: RuntimeDeps, purpose: NonNullable<LessonStartRequest["purpose"]>, onRefused: (r: StartRefusal) => void): RuntimeDeps {
+  const api = deps.api;
+  if (!api) return deps;
+  return {
+    ...deps,
+    api: {
+      ...api,
+      start: (req: LessonStartRequest) => api.start({ ...req, purpose }).catch((e: unknown) => {
+        const r = e instanceof ApiError && e.status === 409 ? refusalOf(e.body) : null;
+        if (r) onRefused(r);
+        throw e;
+      }),
+    },
+  };
 }

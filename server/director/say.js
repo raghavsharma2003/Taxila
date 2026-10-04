@@ -159,3 +159,54 @@ export const leaksStage = (text) => STAGE.test(String(text ?? "").replace(/_{2,}
 export const stripStage = (text) => String(text ?? "")
   .replace(/(^|[\s(—-])(?:whiteboard|board|ask|shape|move|note|key|ladder|rung|lesson now|one more check|turn shape|your move)\s*:\s*/gi, "$1")
   .replace(/\[[^\]]*\]/g, " ").replace(/[\[\]*#]+/g, "").replace(/\s{2,}/g, " ").replace(/\s+([,.!?])/g, "$1").trim();
+
+// ── G-ASK parity (audit flows G4: the card said "13 ka square kitna hai?" while she asked "10 ka square kitna hoga?"; two
+// questions in one turn) ──
+const normQ = (t) => String(t ?? "").toLowerCase().replace(/…/g, " ").replace(/[^\p{L}\p{N}/]+/gu, " ").trim();
+const sentencesOf = (t) => (String(t ?? "").replace(/\s+/g, " ").match(/[^.!?।？]+[.!?।？]*/g) ?? []).map((x) => x.trim()).filter(Boolean);
+const isQuestion = (x) => /[?？]/.test(x);
+
+/**
+ * How a reply stands against the pinned question (UiDirectives.ask.text): does it END on that question (its last words
+ * are the ask's words), and how many questions does it put to the child — the ask itself counts once however many
+ * question marks it carries, every other question sentence counts one. Pure; the battery and the reply guard share it.
+ * `ask` null: only the question count (a turn with no pinned item).
+ * @returns {{ endsOnAsk: boolean, questions: number, finalQuestion: string | null }}
+ */
+export function askParity(reply, ask) {
+  const r = normQ(reply);
+  const a = normQ(ask);
+  // A card ask cut with "…" (askText: no sentence fits 120 characters) is a prefix of the question: contained is enough.
+  const endsOnAsk = !a || (!!r && (/…\s*$/.test(String(ask)) ? r.includes(a) : r.endsWith(a)));
+  const rest = a && r.includes(a) ? String(reply).split(new RegExp(escapeRe(String(ask).replace(/…$/, "").trim()), "i")).join(" ") : String(reply ?? "");
+  const others = sentencesOf(rest).filter(isQuestion).length;
+  const askIn = a && r.includes(a) ? 1 : 0;
+  const finalQuestion = [...sentencesOf(reply)].reverse().find(isQuestion) ?? null;
+  return { endsOnAsk, questions: others + askIn, finalQuestion };
+}
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/**
+ * The reply rewritten in code to end on the pinned question and hold no other: every question sentence that is not
+ * the ask is dropped, and the ask closes the turn. What was said before (the acknowledgement, the nudge) stays. The
+ * hint itself is on the card (UiDirectives.hint), so a scaffold question that is dropped is not lost to the child.
+ */
+export function endOnAsk(reply, askFull) {
+  const a = normQ(askFull);
+  const kept = sentencesOf(reply).filter((x) => !isQuestion(x) && !(a && normQ(x) && a.includes(normQ(x))));
+  return `${kept.join(" ").trim()} ${askFull}`.replace(/\s{2,}/g, " ").trim();
+}
+
+/** Keep only the LAST question of a turn with no pinned item (one question per turn). */
+export function lastQuestionOnly(reply) {
+  const ss = sentencesOf(reply);
+  const lastQ = ss.map(isQuestion).lastIndexOf(true);
+  return ss.filter((x, i) => !isQuestion(x) || i === lastQ).join(" ").trim();
+}
+
+// ── wrap language only on a wrap move (personalisation 13: "Aaj ke liye bas itna." in a probe turn, mid-lesson) ──
+const WRAP_WORDS = /\b(?:aaj\s+ke\s+liye\s+(?:bas\s+)?(?:itna|itni|yahin|ye(?:h)?\s+hi)|aaj\s+(?:ka\s+)?(?:lesson|class|session)\s+(?:khatam|khatm|poora|pura|yahin)|that'?s\s+(?:all|it)\s+for\s+today|see\s+you\s+(?:next\s+time|tomorrow|soon|later)|(?:phir|kal|jaldi)\s+milte\s+hain|good\s*bye|bye[\s-]*bye|alvida|we(?:'re|\s+are)\s+done\s+for\s+today|let'?s\s+stop\s+(?:here|for\s+today))\b|आज\s+के\s+लिए\s+(?:बस\s+)?इतना|फिर\s+मिलते\s+हैं/iu;
+/** Does a line close the lesson (a goodbye, "that's all for today")? Only a wrap move may say that. */
+export const wrapsUp = (text) => WRAP_WORDS.test(String(text ?? ""));
+/** The line without its closing sentences. */
+export const stripWrap = (text) => sentencesOf(text).filter((x) => !wrapsUp(x)).join(" ").trim();

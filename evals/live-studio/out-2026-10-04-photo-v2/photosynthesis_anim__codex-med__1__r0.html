@@ -1,0 +1,396 @@
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Trebuchet MS", "Segoe UI", sans-serif; background: #f0fbff; }
+  #app {
+    width: min(360px, 100vw);
+    height: 640px;
+    margin: 0 auto;
+    padding: 8px 10px 10px;
+    display: grid;
+    grid-template-rows: auto 300px auto 1fr;
+    gap: 8px;
+    overflow: hidden;
+    color: #163042;
+    background: linear-gradient(180deg, #dff6ff 0%, #f6ffef 100%);
+  }
+  #title {
+    margin: 0;
+    font-size: 20px;
+    text-align: center;
+    line-height: 1.2;
+  }
+  #sceneWrap {
+    border-radius: 16px;
+    background: #cfeeff;
+    border: 2px solid #a8d9ee;
+    overflow: hidden;
+    position: relative;
+  }
+  svg { width: 100%; height: 100%; display: block; }
+  [data-label] {
+    font-size: 12px;
+    font-weight: 700;
+    fill: #123;
+    paint-order: stroke;
+    stroke: rgba(255,255,255,0.9);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+  }
+  .lightRay {
+    stroke: #ffd95e;
+    stroke-width: 3;
+    stroke-linecap: round;
+    opacity: 0.45;
+    transition: opacity 300ms ease, stroke-width 300ms ease;
+  }
+  #scene[data-step="1"] .lightRay { opacity: 1; stroke-width: 4; }
+  #leafShape {
+    transform-origin: 190px 130px;
+    animation: sway 2.4s ease-in-out infinite;
+    transition: filter 300ms ease, transform 300ms ease;
+  }
+  #scene.paused #leafShape { animation-play-state: paused; }
+  @keyframes sway {
+    0%, 100% { transform: rotate(-2deg); }
+    50% { transform: rotate(2deg); }
+  }
+  #scene[data-step="4"] #leafShape {
+    filter: drop-shadow(0 0 7px rgba(255, 235, 59, 0.9));
+  }
+  .particle {
+    opacity: 0.75;
+    transition: opacity 240ms ease, r 240ms ease;
+  }
+  [data-flow="water"] { fill: #3b82f6; }
+  [data-flow="co2"] { fill: #64748b; }
+  [data-flow="o2"] { fill: #22c55e; }
+  #scene[data-step="2"] [data-flow="water"],
+  #scene[data-step="3"] [data-flow="co2"],
+  #scene[data-step="5"] [data-flow="o2"] {
+    opacity: 1;
+  }
+  #scene[data-step="2"] [data-flow="water"] { r: 4.8; }
+  #scene[data-step="3"] [data-flow="co2"] { r: 4.8; }
+  #scene[data-step="5"] [data-flow="o2"] { r: 4.8; }
+  #glucoseDot {
+    fill: #ffd84d;
+    opacity: 0.55;
+    transform-origin: 190px 125px;
+    animation: glow 1.8s ease-in-out infinite;
+    transition: opacity 300ms ease, filter 300ms ease;
+  }
+  #scene.paused #glucoseDot { animation-play-state: paused; }
+  #scene[data-step="4"] #glucoseDot {
+    opacity: 1;
+    filter: drop-shadow(0 0 8px rgba(255, 213, 0, 1));
+  }
+  @keyframes glow {
+    0%,100% { transform: scale(0.9); }
+    50% { transform: scale(1.15); }
+  }
+  #controls {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 8px;
+    align-items: start;
+  }
+  button {
+    border: none;
+    border-radius: 14px;
+    background: #ffffff;
+    color: #123;
+    font-weight: 700;
+    min-height: 44px;
+    min-width: 44px;
+    box-shadow: 0 2px 0 #b9d7e7;
+    transition: transform 120ms ease, background 180ms ease, color 180ms ease;
+  }
+  button:active { transform: scale(0.96); }
+  #playBtn {
+    width: 90px;
+    background: #0ea5e9;
+    color: #fff;
+  }
+  #steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .stepBtn {
+    width: 44px;
+    height: 44px;
+    background: #e7f5ff;
+  }
+  .stepBtn.active {
+    background: #22c55e;
+    color: #fff;
+    transform: scale(1.04);
+  }
+  #caption {
+    grid-column: 1 / -1;
+    min-height: 40px;
+    border-radius: 12px;
+    background: #ffffffd8;
+    border: 1px solid #c8e6f2;
+    padding: 8px 10px;
+    font-size: 14px;
+    line-height: 1.2;
+    display: flex;
+    align-items: center;
+  }
+  #qa {
+    display: grid;
+    grid-template-rows: auto auto auto;
+    gap: 8px;
+    align-content: start;
+  }
+  #ask {
+    font-weight: 700;
+    font-size: 15px;
+    line-height: 1.2;
+    background: #fff7d6;
+    border: 1px solid #f2e2a7;
+    border-radius: 12px;
+    padding: 8px 10px;
+  }
+  #options {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  .optBtn { background: #ffffff; }
+  .optBtn.good { background: #bbf7d0; }
+  .optBtn.bad { background: #fecaca; }
+  #verdict {
+    min-height: 24px;
+    font-size: 24px;
+    line-height: 1;
+    text-align: center;
+    font-weight: 800;
+  }
+</style>
+
+<div id="app">
+  <h1 id="title" data-i18n="title"></h1>
+
+  <div id="sceneWrap">
+    <svg id="scene" viewBox="0 0 360 300" xmlns="http://www.w3.org/2000/svg" data-step="1">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#bfe8ff"/>
+          <stop offset="100%" stop-color="#dcf5ff"/>
+        </linearGradient>
+        <linearGradient id="soilGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#b8845a"/>
+          <stop offset="100%" stop-color="#8a5f3f"/>
+        </linearGradient>
+      </defs>
+
+      <rect x="0" y="0" width="360" height="300" fill="url(#sky)"/>
+      <rect x="0" y="235" width="360" height="65" fill="url(#soilGrad)"/>
+
+      <circle cx="70" cy="50" r="28" fill="#ffd24d"/>
+      <g id="rays">
+        <line class="lightRay" x1="88" y1="65" x2="150" y2="110"/>
+        <line class="lightRay" x1="95" y1="52" x2="155" y2="95"/>
+        <line class="lightRay" x1="84" y1="78" x2="165" y2="128"/>
+      </g>
+
+      <rect x="168" y="130" width="8" height="105" rx="4" fill="#2f9e44"/>
+      <ellipse id="leafShape" data-entity="leaf" cx="190" cy="130" rx="52" ry="30" fill="#52c76d"/>
+      <circle id="glucoseDot" cx="190" cy="125" r="8"/>
+
+      <path data-entity="roots" d="M172 235
+        C165 246,155 252,146 260
+        M172 236
+        C180 247,191 255,200 266
+        M171 238
+        C166 249,162 260,160 271
+        M174 238
+        C180 249,187 259,192 272"
+        stroke="#f2d3a2" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+      <g id="particles">
+        <circle class="particle" data-flow="water" cx="0" cy="0" r="4"/>
+        <circle class="particle" data-flow="water" cx="0" cy="0" r="4"/>
+        <circle class="particle" data-flow="water" cx="0" cy="0" r="4"/>
+        <circle class="particle" data-flow="water" cx="0" cy="0" r="4"/>
+
+        <circle class="particle" data-flow="co2" cx="0" cy="0" r="4"/>
+        <circle class="particle" data-flow="co2" cx="0" cy="0" r="4"/>
+        <circle class="particle" data-flow="co2" cx="0" cy="0" r="4"/>
+        <circle class="particle" data-flow="co2" cx="0" cy="0" r="4"/>
+
+        <circle class="particle" data-flow="o2" cx="0" cy="0" r="4"/>
+        <circle class="particle" data-flow="o2" cx="0" cy="0" r="4"/>
+        <circle class="particle" data-flow="o2" cx="0" cy="0" r="4"/>
+        <circle class="particle" data-flow="o2" cx="0" cy="0" r="4"/>
+      </g>
+
+      <text data-label="sun" x="22" y="20"></text>
+      <text data-label="leaf" x="242" y="120"></text>
+      <text data-label="roots" x="225" y="268"></text>
+      <text data-label="water" x="14" y="255"></text>
+      <text data-label="co2" x="300" y="92"></text>
+      <text data-label="o2" x="305" y="52"></text>
+      <text data-label="glucose" x="132" y="98"></text>
+    </svg>
+  </div>
+
+  <div id="controls">
+    <button id="playBtn" data-action="play"></button>
+    <div id="steps"></div>
+    <div id="caption" data-caption></div>
+  </div>
+
+  <div id="qa">
+    <div id="ask" data-i18n="ask"></div>
+    <div id="options">
+      <button class="optBtn" data-option="co2" data-i18n="co2"></button>
+      <button class="optBtn" data-option="o2" data-i18n="o2"></button>
+      <button class="optBtn" data-option="water" data-i18n="water"></button>
+    </div>
+    <div id="verdict"></div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const app = document.getElementById('app');
+    const scene = document.getElementById('scene');
+    const stepsWrap = document.getElementById('steps');
+    const captionEl = document.querySelector('[data-caption]');
+    const playBtn = document.getElementById('playBtn');
+    const verdictEl = document.getElementById('verdict');
+    const optionButtons = Array.from(document.querySelectorAll('.optBtn'));
+
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      el.textContent = Studio.t(el.getAttribute('data-i18n'));
+    });
+    document.querySelectorAll('[data-label]').forEach(el => {
+      el.textContent = Studio.t(el.getAttribute('data-label'));
+    });
+
+    const totalSteps = Math.max(1, Number(Studio.params && Studio.params.steps) || 1);
+    let activeStep = 1;
+    let playing = true;
+    let doneSent = false;
+
+    function updatePlayText() {
+      playBtn.textContent = playing ? Studio.t('pause') : Studio.t('play');
+      if (playing) scene.classList.remove('paused'); else scene.classList.add('paused');
+    }
+
+    const stepButtons = [];
+    for (let i = 1; i <= totalSteps; i++) {
+      const b = document.createElement('button');
+      b.className = 'stepBtn' + (i === 1 ? ' active' : '');
+      b.setAttribute('data-action', 'step-' + i);
+      b.textContent = String(i);
+      b.addEventListener('click', () => {
+        activeStep = i;
+        scene.setAttribute('data-step', String(activeStep));
+        stepButtons.forEach((x, ix) => x.classList.toggle('active', ix === i - 1));
+        captionEl.textContent = Studio.t('step' + i);
+        Studio.event('step', { step: i });
+      });
+      stepsWrap.appendChild(b);
+      stepButtons.push(b);
+    }
+
+    captionEl.textContent = Studio.t('step1');
+    scene.setAttribute('data-step', '1');
+    updatePlayText();
+
+    playBtn.addEventListener('click', () => {
+      playing = !playing;
+      updatePlayText();
+      Studio.event('play_toggle', { playing: playing });
+    });
+
+    const flowPoints = {
+      water: [
+        { s: [152, 262], e: [174, 156] },
+        { s: [166, 270], e: [178, 168] },
+        { s: [190, 264], e: [184, 158] },
+        { s: [204, 258], e: [188, 166] }
+      ],
+      co2: [
+        { s: [330, 86], e: [233, 120] },
+        { s: [30, 104], e: [145, 126] },
+        { s: [325, 132], e: [236, 135] },
+        { s: [34, 146], e: [146, 138] }
+      ],
+      o2: [
+        { s: [194, 120], e: [322, 45] },
+        { s: [183, 124], e: [38, 52] },
+        { s: [197, 133], e: [318, 100] },
+        { s: [182, 136], e: [42, 102] }
+      ]
+    };
+
+    const particles = [];
+    ['water', 'co2', 'o2'].forEach((flow, fi) => {
+      const els = Array.from(document.querySelectorAll('[data-flow="' + flow + '"]'));
+      els.forEach((el, i) => {
+        const p = flowPoints[flow][i % flowPoints[flow].length];
+        particles.push({
+          el,
+          s: p.s,
+          e: p.e,
+          dur: 2600 + fi * 300 + i * 140,
+          off: fi * 700 + i * 420
+        });
+      });
+    });
+
+    const rays = Array.from(document.querySelectorAll('.lightRay'));
+    let start = null;
+
+    function lerp(a, b, t) { return a + (b - a) * t; }
+
+    function tick(ts) {
+      if (!start) start = ts;
+      const t = ts - start;
+
+      if (playing) {
+        particles.forEach(p => {
+          const u = ((t + p.off) % p.dur) / p.dur;
+          const x = lerp(p.s[0], p.e[0], u);
+          const y = lerp(p.s[1], p.e[1], u);
+          p.el.setAttribute('transform', 'translate(' + x.toFixed(2) + ' ' + y.toFixed(2) + ')');
+        });
+        rays.forEach((r, i) => {
+          const wave = 0.45 + 0.55 * (0.5 + 0.5 * Math.sin((t / 350) + i));
+          r.style.opacity = String(wave);
+        });
+      }
+
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+
+    optionButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        optionButtons.forEach(b => b.classList.remove('good', 'bad'));
+        verdictEl.textContent = '';
+        const v = btn.getAttribute('data-option');
+        Studio.answer(v);
+        Studio.event('answer', { option: v });
+      });
+    });
+
+    Studio.onVerdict(function (res) {
+      const correct = !!(res && res.correct);
+      const selected = optionButtons.find(b => b.matches(':focus')) || null;
+      if (selected) selected.classList.add(correct ? 'good' : 'bad');
+      verdictEl.textContent = correct ? '✓' : '✗';
+      if (correct && !doneSent) {
+        doneSent = true;
+        setTimeout(() => Studio.done(), 120);
+      }
+    });
+
+    Studio.ready();
+  })();
+</script>

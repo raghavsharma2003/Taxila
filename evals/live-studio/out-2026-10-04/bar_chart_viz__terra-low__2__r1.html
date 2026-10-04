@@ -1,0 +1,285 @@
+<style>
+*{box-sizing:border-box}
+.activity{
+  width:100%;
+  min-height:640px;
+  overflow:hidden;
+  padding:18px 10px 22px;
+  background:linear-gradient(150deg,#fff5dc 0%,#eff9ed 52%,#e5f4fb 100%);
+  color:#29435b;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.top{width:100%;max-width:440px;text-align:center}
+h1{
+  margin:0;
+  color:#294766;
+  font-size:25px;
+  line-height:1.18;
+  font-weight:850;
+  letter-spacing:-.4px;
+}
+.question{
+  min-height:25px;
+  margin:9px 5px 8px;
+  color:#58748b;
+  font-size:16px;
+  line-height:1.35;
+  font-weight:750;
+}
+.chart-card{
+  width:100%;
+  max-width:440px;
+  padding:9px 2px 6px;
+  border:2px solid rgba(74,121,151,.17);
+  border-radius:25px;
+  background:rgba(255,255,255,.77);
+  box-shadow:0 11px 25px rgba(58,102,130,.13);
+}
+#chart{display:block;width:100%;height:auto;overflow:visible}
+.grid{stroke:#bad9d2;stroke-width:1.2;stroke-dasharray:3 4}
+.axis{stroke:#54748d;stroke-width:2.2;stroke-linecap:round}
+.tick{
+  fill:#617b8f;
+  font-size:11px;
+  font-weight:800;
+  text-anchor:end;
+}
+.fruit{
+  fill:#35536b;
+  font-size:11px;
+  font-weight:850;
+  text-anchor:middle;
+}
+.axis-title{
+  fill:#5a768d;
+  font-size:12px;
+  font-weight:850;
+  text-anchor:middle;
+}
+.bar{
+  fill:#ff9f56;
+  stroke:#dc773b;
+  stroke-width:1.6;
+  cursor:pointer;
+  pointer-events:all;
+  transform:scaleY(0);
+  transform-box:fill-box;
+  transform-origin:center bottom;
+  transition:transform 680ms cubic-bezier(.18,.9,.28,1),fill 180ms ease,filter 180ms ease;
+}
+.bar.grow{transform:scaleY(1)}
+.bar:active{filter:brightness(.94)}
+.bar.chosen{
+  fill:#f48746;
+  filter:drop-shadow(0 4px 3px rgba(186,84,34,.3));
+}
+.bar.waiting{pointer-events:none}
+.shine{
+  fill:#ffd477;
+  opacity:.9;
+  pointer-events:none;
+  transform:scaleY(0);
+  transform-box:fill-box;
+  transform-origin:center bottom;
+  transition:transform 680ms cubic-bezier(.18,.9,.28,1);
+}
+.shine.grow{transform:scaleY(1)}
+.tip-box{fill:#294d6b;stroke:#fff;stroke-width:2}
+.tip-text{fill:#fff;font-size:13px;font-weight:850;text-anchor:middle}
+.tip-stem{fill:#294d6b}
+.feedback{
+  width:100%;
+  max-width:400px;
+  min-height:0;
+  margin-top:13px;
+  padding:0 18px;
+  border-radius:18px;
+  color:#2c7047;
+  text-align:center;
+  font-size:17px;
+  font-weight:850;
+  line-height:1.35;
+  opacity:0;
+  transform:translateY(10px) scale(.96);
+  pointer-events:none;
+  transition:opacity 250ms ease,transform 250ms ease,padding 250ms ease;
+}
+.feedback.show{
+  min-height:48px;
+  padding:13px 18px;
+  opacity:1;
+  transform:translateY(0) scale(1);
+}
+.feedback.wrong{background:#fff0e8;color:#a95237}
+.feedback.done{background:#e5f6e8;color:#297044}
+.feedback span{display:block}
+.feedback span+span{margin-top:3px;font-size:14px}
+@media(max-width:370px){
+  .activity{padding-left:7px;padding-right:7px}
+  h1{font-size:23px}
+}
+</style>
+
+<div class="activity">
+  <div class="top">
+    <h1 id="title"></h1>
+    <div class="question" id="ask"></div>
+  </div>
+  <div class="chart-card">
+    <svg id="chart" viewBox="0 0 360 390" role="img">
+      <g id="grid"></g>
+      <g id="axes"></g>
+      <g id="bars"></g>
+      <g id="labels"></g>
+      <g id="tooltip" visibility="hidden">
+        <path id="tipStem" class="tip-stem"></path>
+        <rect id="tipBox" class="tip-box" rx="10" ry="10"></rect>
+        <text id="tipText" class="tip-text"></text>
+      </g>
+    </svg>
+  </div>
+  <div class="feedback" id="feedback"><span id="feedbackMain"></span><span id="feedbackDone"></span></div>
+</div>
+
+<script>
+(function(){
+  var data=Studio.params.data;
+  var NS="http://www.w3.org/2000/svg";
+  var base=310, top=46, left=52, right=342, plotHeight=base-top;
+  var waiting=false, finished=false, rects=[];
+  var grid=document.getElementById("grid");
+  var axes=document.getElementById("axes");
+  var bars=document.getElementById("bars");
+  var labels=document.getElementById("labels");
+  var tooltip=document.getElementById("tooltip");
+  var tipBox=document.getElementById("tipBox");
+  var tipStem=document.getElementById("tipStem");
+  var tipText=document.getElementById("tipText");
+  var feedback=document.getElementById("feedback");
+  var feedbackMain=document.getElementById("feedbackMain");
+  var feedbackDone=document.getElementById("feedbackDone");
+
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("ask").textContent=Studio.t("ask");
+
+  function make(tag,attrs,text){
+    var el=document.createElementNS(NS,tag), key;
+    for(key in attrs){el.setAttribute(key,attrs[key]);}
+    if(text!==undefined){el.textContent=text;}
+    return el;
+  }
+  function niceStep(value){
+    var raw=value/4;
+    var p=Math.pow(10,Math.floor(Math.log(raw)/Math.LN10));
+    var f=raw/p;
+    return (f<=1?1:f<=2?2:f<=5?5:10)*p;
+  }
+
+  var maximum=0, i;
+  for(i=0;i<data.length;i++){maximum=Math.max(maximum,data[i].value);}
+  var step=niceStep(maximum||1);
+  var ceiling=Math.ceil(maximum/step)*step;
+  if(!ceiling){ceiling=step;}
+  function y(value){return base-(value/ceiling)*plotHeight;}
+
+  axes.appendChild(make("line",{x1:left,y1:top,x2:left,y2:base,"class":"axis"}));
+  axes.appendChild(make("line",{x1:left,y1:base,x2:right,y2:base,"class":"axis"}));
+  labels.appendChild(make("text",{
+    x:17,y:(top+base)/2,"class":"axis-title",
+    transform:"rotate(-90 17 "+((top+base)/2)+")"
+  },Studio.t("yaxis")));
+
+  var tick;
+  for(tick=0;tick<=ceiling;tick+=step){
+    var ty=y(tick);
+    grid.appendChild(make("line",{x1:left,y1:ty,x2:right,y2:ty,"class":"grid"}));
+    labels.appendChild(make("text",{
+      x:left-8,y:ty+4,"class":"tick","data-tick":String(tick)
+    },String(tick)));
+  }
+
+  var slot=(right-left)/data.length;
+  for(i=0;i<data.length;i++){
+    (function(item,index){
+      var cx=left+slot*(index+.5);
+      var width=Math.min(54,slot-3);
+      var height=(item.value/ceiling)*plotHeight;
+      var bar=make("rect",{
+        x:cx-width/2,y:base-height,width:width,height:height,rx:10,ry:10,
+        "class":"bar","data-bar":item.key,"data-value":String(item.value)
+      });
+      var shine=make("rect",{
+        x:cx-width/2+5,y:base-height+5,width:width-10,height:8,rx:4,ry:4,
+        "class":"shine"
+      });
+      bar.style.transformOrigin=cx+"px "+base+"px";
+      shine.style.transformOrigin=cx+"px "+base+"px";
+      bar.addEventListener("click",function(){
+        choose(item,bar,cx,y(item.value));
+      });
+      bars.appendChild(bar);
+      bars.appendChild(shine);
+      rects.push(bar);
+      labels.appendChild(make("text",{x:cx,y:340,"class":"fruit"},Studio.t(item.key)));
+    })(data[i],i);
+  }
+
+  function showValue(value,cx,barTop){
+    var w=42,h=30;
+    var x=Math.max(left,Math.min(right-w,cx-w/2));
+    var yy=Math.max(15,barTop-41);
+    tipBox.setAttribute("x",x);
+    tipBox.setAttribute("y",yy);
+    tipBox.setAttribute("width",w);
+    tipBox.setAttribute("height",h);
+    tipStem.setAttribute("d","M "+(cx-6)+" "+(yy+h)+" L "+(cx+6)+" "+(yy+h)+" L "+cx+" "+(yy+h+7)+" Z");
+    tipText.setAttribute("x",cx);
+    tipText.setAttribute("y",yy+20);
+    tipText.textContent=String(value);
+    tooltip.setAttribute("visibility","visible");
+  }
+
+  function choose(item,bar,cx,barTop){
+    if(waiting||finished){return;}
+    waiting=true;
+    for(var j=0;j<rects.length;j++){rects[j].classList.add("waiting");}
+    bar.classList.add("chosen");
+    showValue(item.value,cx,barTop);
+    Studio.event("bar_tap",{key:item.key,value:item.value});
+    Studio.answer(item.key);
+  }
+
+  Studio.onVerdict(function(verdict){
+    if(finished){return;}
+    if(verdict.correct){
+      finished=true;
+      feedback.className="feedback show done";
+      feedbackMain.textContent=Studio.t("right");
+      feedbackDone.textContent=Studio.t("done");
+      Studio.done();
+    }else{
+      feedback.className="feedback show wrong";
+      feedbackMain.textContent=Studio.t("wrong");
+      feedbackDone.textContent="";
+      setTimeout(function(){
+        if(finished){return;}
+        waiting=false;
+        tooltip.setAttribute("visibility","hidden");
+        for(var j=0;j<rects.length;j++){
+          rects[j].classList.remove("waiting");
+          rects[j].classList.remove("chosen");
+        }
+      },500);
+    }
+  });
+
+  requestAnimationFrame(function(){
+    var animated=document.querySelectorAll(".bar,.shine");
+    for(var j=0;j<animated.length;j++){animated[j].classList.add("grow");}
+    Studio.ready();
+  });
+})();
+</script>

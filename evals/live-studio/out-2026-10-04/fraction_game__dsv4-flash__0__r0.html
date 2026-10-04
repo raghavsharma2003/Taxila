@@ -1,0 +1,343 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: system-ui, sans-serif;
+    background: #fff8f0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .game {
+    width: 100%;
+    max-width: 360px;
+    min-height: 640px;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #b34a2c;
+    margin-bottom: 6px;
+    text-align: center;
+  }
+  .instr {
+    font-size: 15px;
+    color: #6b4f3a;
+    margin-bottom: 16px;
+    text-align: center;
+    line-height: 1.4;
+  }
+  .item-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: opacity 0.3s;
+  }
+  .target-frac {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2d5a4b;
+    background: #e6f0ea;
+    padding: 8px 20px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+    letter-spacing: 0.05em;
+  }
+  .pizza-box, .bar-box {
+    width: 260px;
+    height: 260px;
+    position: relative;
+    margin-bottom: 20px;
+  }
+  .bar-box {
+    height: auto;
+  }
+  .pizza-svg, .bar-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .bar-svg {
+    height: auto;
+  }
+  .part {
+    cursor: pointer;
+    transition: fill 0.2s, transform 0.15s;
+  }
+  .part:active {
+    transform: scale(0.93);
+  }
+  .check-btn {
+    background: #d4875e;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 14px 40px;
+    font-size: 20px;
+    font-weight: 600;
+    box-shadow: 0 4px 0 #a65e3a;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s, opacity 0.2s;
+    margin-top: 8px;
+    min-width: 160px;
+    text-align: center;
+  }
+  .check-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #a65e3a;
+  }
+  .feedback {
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 14px;
+    min-height: 28px;
+    text-align: center;
+    transition: opacity 0.25s;
+  }
+  .feedback.right {
+    color: #2d7a4b;
+  }
+  .feedback.wrong {
+    color: #b34a2c;
+  }
+  .done-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+  }
+  .done-screen svg {
+    width: 140px;
+    height: 140px;
+    margin-bottom: 20px;
+  }
+  .done-text {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2d5a4b;
+  }
+  .hidden { display: none; }
+  .fade-in { animation: fadeIn 0.35s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+  .celebrate {
+    animation: pop 0.4s ease;
+  }
+  @keyframes pop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.12); }
+    100% { transform: scale(1); }
+  }
+  .hint-text {
+    font-size: 14px;
+    color: #8b6f5a;
+    margin-top: 6px;
+    text-align: center;
+    opacity: 0.85;
+  }
+</style>
+
+<div class="game" id="app">
+  <div class="title" id="title"></div>
+  <div class="instr" id="instr"></div>
+  <div id="itemArea"></div>
+  <div id="feedback" class="feedback"></div>
+  <div id="hintArea" class="hint-text"></div>
+</div>
+
+<script>
+(function() {
+  const params = Studio.params;
+  const items = params.items;
+  const picture = params.picture; // "pizza-or-bar" but we use 'bar' for simplicity? Actually brief says pizza or bar. Let's use pizza for all, it's friendly. But spec says "pizza-or-bar" – use pizzaSVG for all, it fits.
+  // We'll draw pizza (circle) for every item. Parts are equal sectors.
+  
+  let currentIndex = 0;
+  let currentItem = null;
+  let shadedCount = 0;
+  let partElements = [];
+  let verdictReceived = false; // after correct advance, reset for next.
+  let answered = false; // to prevent double answer
+
+  const titleEl = document.getElementById('title');
+  const instrEl = document.getElementById('instr');
+  const itemArea = document.getElementById('itemArea');
+  const feedbackEl = document.getElementById('feedback');
+  const hintEl = document.getElementById('hintArea');
+
+  titleEl.textContent = Studio.t('title');
+  instrEl.textContent = Studio.t('instr');
+  hintEl.textContent = Studio.t('hint');
+
+  function pizzaSVG(d, cx=130, cy=130, r=120) {
+    // returns SVG string for d equal slices starting at top (12 o'clock)
+    const parts = [];
+    const anglePerSlice = 360 / d;
+    const startAngle = -90; // top
+    for (let i = 0; i < d; i++) {
+      const a1 = (startAngle + i * anglePerSlice) * Math.PI / 180;
+      const a2 = (startAngle + (i+1) * anglePerSlice) * Math.PI / 180;
+      const x1 = cx + r * Math.cos(a1);
+      const y1 = cy + r * Math.sin(a1);
+      const x2 = cx + r * Math.cos(a2);
+      const y2 = cy + r * Math.sin(a2);
+      const large = anglePerSlice > 180 ? 1 : 0;
+      // path: M cx cy L x1 y1 A r r 0 large 1 x2 y2 Z
+      const path = `M ${cx} ${cy} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 ${large} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
+      parts.push({d: path, index: i});
+    }
+    return parts;
+  }
+
+  function renderItem(item) {
+    verdictReceived = false;
+    answered = false;
+    shadedCount = 0;
+    partElements = [];
+    feedbackEl.textContent = '';
+    feedbackEl.className = 'feedback';
+
+    const container = document.createElement('div');
+    container.className = 'item-container fade-in';
+    container.dataset.item = item.id;
+
+    const targetDiv = document.createElement('div');
+    targetDiv.className = 'target-frac';
+    targetDiv.textContent = item.n + '/' + item.d;
+    container.appendChild(targetDiv);
+
+    const svgParts = pizzaSVG(item.d);
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('viewBox', '0 0 260 260');
+    svg.setAttribute('class', 'pizza-svg');
+    svg.style.width = '260px';
+    svg.style.height = '260px';
+
+    // background circle
+    const bgCircle = document.createElementNS(svgNS, 'circle');
+    bgCircle.setAttribute('cx', '130');
+    bgCircle.setAttribute('cy', '130');
+    bgCircle.setAttribute('r', '120');
+    bgCircle.setAttribute('fill', '#f5e3d0');
+    bgCircle.setAttribute('stroke', '#b3856a');
+    bgCircle.setAttribute('stroke-width', '2');
+    svg.appendChild(bgCircle);
+
+    svgParts.forEach((partData) => {
+      const path = document.createElementNS(svgNS, 'path');
+      path.setAttribute('d', partData.d);
+      path.setAttribute('fill', '#f5e3d0');
+      path.setAttribute('stroke', '#b3856a');
+      path.setAttribute('stroke-width', '2');
+      path.dataset.part = partData.index;
+      path.dataset.shaded = 'false';
+      path.classList.add('part');
+      // tap handler
+      path.addEventListener('click', function(e) {
+        if (verdictReceived) return; // wait after correct, no toggle
+        const isShaded = this.dataset.shaded === 'true';
+        if (isShaded) {
+          this.dataset.shaded = 'false';
+          this.setAttribute('fill', '#f5e3d0');
+          shadedCount--;
+        } else {
+          this.dataset.shaded = 'true';
+          this.setAttribute('fill', '#d4875e');
+          shadedCount++;
+        }
+        // reset feedback if it was wrong
+        if (feedbackEl.classList.contains('wrong')) {
+          feedbackEl.textContent = '';
+          feedbackEl.className = 'feedback';
+        }
+        answered = false;
+      });
+      svg.appendChild(path);
+      partElements.push(path);
+    });
+
+    container.appendChild(svg);
+
+    const checkBtn = document.createElement('button');
+    checkBtn.className = 'check-btn';
+    checkBtn.dataset.action = 'check';
+    checkBtn.textContent = Studio.t('check');
+    checkBtn.addEventListener('click', function() {
+      if (verdictReceived) return; // already correct
+      if (answered) return; // prevent double
+      if (!currentItem) return;
+      const n = shadedCount;
+      const d = currentItem.d;
+      answered = true;
+      Studio.answer({n, d});
+    });
+    container.appendChild(checkBtn);
+
+    // Clear and append
+    itemArea.innerHTML = '';
+    itemArea.appendChild(container);
+    currentItem = item;
+  }
+
+  // Listen for verdict
+  Studio.onVerdict(function(result) {
+    if (!currentItem) return;
+    if (result.correct) {
+      feedbackEl.textContent = Studio.t('right');
+      feedbackEl.className = 'feedback right celebrate';
+      verdictReceived = true;
+      // after short celebration, advance
+      setTimeout(() => {
+        advanceToNext();
+      }, 700);
+    } else {
+      feedbackEl.textContent = Studio.t('wrong');
+      feedbackEl.className = 'feedback wrong';
+      answered = false; // allow retry
+    }
+  });
+
+  function advanceToNext() {
+    currentIndex++;
+    if (currentIndex >= items.length) {
+      showDone();
+    } else {
+      renderItem(items[currentIndex]);
+      Studio.ready();
+    }
+  }
+
+  function showDone() {
+    itemArea.innerHTML = '';
+    feedbackEl.textContent = '';
+    feedbackEl.className = 'feedback';
+    hintEl.textContent = '';
+    const doneDiv = document.createElement('div');
+    doneDiv.className = 'done-screen fade-in';
+    doneDiv.innerHTML = `
+      <svg viewBox="0 0 100 100" width="120" height="120">
+        <circle cx="50" cy="50" r="45" fill="#ffd166" />
+        <text x="50" y="62" font-size="40" text-anchor="middle" fill="#2d5a4b">&#10003;</text>
+      </svg>
+      <div class="done-text">${Studio.t('done')}</div>
+    `;
+    itemArea.appendChild(doneDiv);
+    Studio.done();
+  }
+
+  // Initialize first item
+  if (items.length > 0) {
+    renderItem(items[0]);
+    Studio.ready();
+  } else {
+    showDone();
+  }
+
+})();
+</script>

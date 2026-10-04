@@ -1,0 +1,328 @@
+<style>
+  :root{
+    --bg:#f0f9ff;
+    --card:#ffffff;
+    --ink:#1f2937;
+    --soft:#6b7280;
+    --sun:#ffd54f;
+    --leaf:#4caf50;
+    --stem:#2e7d32;
+    --soil:#8d6e63;
+    --water:#42a5f5;
+    --co2:#7e57c2;
+    --o2:#26c6da;
+    --glucose:#ffca28;
+    --accent:#22c55e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink)}
+  #app{
+    width:100%;
+    max-width:420px;
+    margin:0 auto;
+    min-height:640px;
+    padding:10px 10px 14px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .card{
+    background:var(--card);
+    border-radius:18px;
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+    overflow:hidden;
+  }
+  #title{
+    font-size:22px;
+    font-weight:800;
+    text-align:center;
+    padding:8px 6px 0;
+  }
+  #sceneWrap{padding:8px}
+  svg{display:block;width:100%;height:auto;background:linear-gradient(#dff3ff,#f6fcff);border-radius:14px}
+  text{font-size:12px;font-weight:700;fill:#0f172a;paint-order:stroke;stroke:#ffffff;stroke-width:3px;stroke-linejoin:round}
+  .soil{fill:var(--soil)}
+  .stem{fill:var(--stem)}
+  .leaf-shape{fill:var(--leaf);transform-origin:225px 178px;transition:transform .4s ease,filter .4s ease}
+  .roots-shape{fill:none;stroke:#6d4c41;stroke-width:5;stroke-linecap:round}
+  .ray{stroke:#fbc02d;stroke-width:3.5;stroke-linecap:round;opacity:.55;stroke-dasharray:6 8;animation:ray 1.6s linear infinite;animation-play-state:paused}
+  #app.playing .ray{animation-play-state:running}
+  @keyframes ray{to{stroke-dashoffset:-28}}
+  .particle{r:5;opacity:.5;animation-duration:2.8s;animation-iteration-count:infinite;animation-timing-function:linear;animation-play-state:paused;transform-box:fill-box;transform-origin:center}
+  #app.playing .particle{animation-play-state:running}
+  .flow-water{fill:var(--water)}
+  .flow-co2{fill:var(--co2)}
+  .flow-o2{fill:var(--o2)}
+  .glucose-wrap{opacity:.35;transition:opacity .35s ease}
+  .glucose-core{fill:var(--glucose);filter:drop-shadow(0 0 6px rgba(255,202,40,.95));animation:glow 1.2s ease-in-out infinite;animation-play-state:paused}
+  #app.playing .glucose-core{animation-play-state:running}
+  @keyframes glow{50%{transform:scale(1.18);opacity:1}100%{transform:scale(1);opacity:.7}}
+  @keyframes w1{0%{transform:translate(0,0);opacity:0}20%{opacity:.9}100%{transform:translate(0,-120px);opacity:0}}
+  @keyframes w2{0%{transform:translate(-4px,0);opacity:0}20%{opacity:.9}100%{transform:translate(2px,-122px);opacity:0}}
+  @keyframes w3{0%{transform:translate(3px,0);opacity:0}20%{opacity:.9}100%{transform:translate(-2px,-118px);opacity:0}}
+  @keyframes c1{0%{transform:translate(0,0);opacity:0}20%{opacity:.85}100%{transform:translate(-90px,22px);opacity:0}}
+  @keyframes c2{0%{transform:translate(0,0);opacity:0}20%{opacity:.85}100%{transform:translate(-84px,18px);opacity:0}}
+  @keyframes c3{0%{transform:translate(0,0);opacity:0}20%{opacity:.85}100%{transform:translate(-88px,26px);opacity:0}}
+  @keyframes o1{0%{transform:translate(0,0);opacity:0}20%{opacity:.85}100%{transform:translate(92px,-28px);opacity:0}}
+  @keyframes o2{0%{transform:translate(0,0);opacity:0}20%{opacity:.85}100%{transform:translate(84px,-22px);opacity:0}}
+  @keyframes o3{0%{transform:translate(0,0);opacity:0}20%{opacity:.85}100%{transform:translate(88px,-34px);opacity:0}}
+  .w1{animation-name:w1}.w2{animation-name:w2;animation-delay:.5s}.w3{animation-name:w3;animation-delay:1s}.w4{animation-name:w1;animation-delay:1.5s}
+  .c1{animation-name:c1}.c2{animation-name:c2;animation-delay:.6s}.c3{animation-name:c3;animation-delay:1.1s}.c4{animation-name:c1;animation-delay:1.7s}
+  .o1{animation-name:o1}.o2{animation-name:o2;animation-delay:.6s}.o3{animation-name:o3;animation-delay:1.2s}.o4{animation-name:o1;animation-delay:1.8s}
+  #controls{display:flex;gap:8px;align-items:center;padding:0 8px 8px}
+  #playBtn{
+    min-width:88px;height:46px;border:0;border-radius:12px;background:#0ea5e9;color:#fff;font-weight:800;
+    transform:scale(1);transition:transform .15s ease,filter .2s ease;cursor:pointer
+  }
+  #playBtn:active{transform:scale(.96)}
+  #steps{display:flex;gap:6px;flex:1;overflow:hidden}
+  .stepBtn{
+    min-width:44px;height:46px;border:2px solid #bfdbfe;border-radius:12px;background:#eff6ff;color:#0f172a;
+    font-weight:800;cursor:pointer;transition:transform .15s ease,background .2s ease,border-color .2s ease
+  }
+  .stepBtn:active{transform:scale(.95)}
+  .stepBtn.active{background:#d1fae5;border-color:#22c55e}
+  #caption{
+    margin:0 8px 4px;
+    min-height:48px;
+    border-radius:12px;
+    background:#f8fafc;
+    padding:10px 12px;
+    font-weight:700;
+    color:#0f172a;
+  }
+  #quiz{
+    margin:0 8px;
+    border-radius:12px;
+    background:#fff7ed;
+    padding:10px;
+    display:none;
+    gap:8px;
+    flex-direction:column;
+  }
+  #quiz.show{display:flex}
+  #ask{font-weight:800}
+  #options{display:flex;gap:8px;flex-wrap:wrap}
+  .opt{
+    min-width:84px;height:46px;padding:0 12px;border:2px solid #fed7aa;border-radius:12px;background:#fff;color:#7c2d12;font-weight:800;cursor:pointer;
+    transition:transform .15s ease,background .2s ease,border-color .2s ease
+  }
+  .opt:active{transform:scale(.95)}
+  #feedback{min-height:24px;font-size:22px;font-weight:900}
+  #feedback.ok{color:#16a34a}
+  #feedback.no{color:#dc2626}
+  #app.step-1 .rays{opacity:1}
+  #app.step-1 .leaf-shape{transform:scale(1.03)}
+  #app.step-2 .flow-water{opacity:1}
+  #app.step-2 .leaf-shape{transform:scale(1.04)}
+  #app.step-3 .flow-co2{opacity:1}
+  #app.step-4 .glucose-wrap{opacity:1}
+  #app.step-4 .leaf-shape{filter:drop-shadow(0 0 10px rgba(255,193,7,.55))}
+  #app.step-5 .flow-o2{opacity:1}
+</style>
+
+<div id="app" class="card playing step-1">
+  <div id="title"></div>
+  <div id="sceneWrap">
+    <svg id="scene" viewBox="0 0 360 360" aria-hidden="true">
+      <defs>
+        <linearGradient id="stemGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#43a047"/>
+          <stop offset="100%" stop-color="#2e7d32"/>
+        </linearGradient>
+      </defs>
+
+      <circle cx="68" cy="58" r="30" fill="#ffd54f"/>
+      <g class="rays">
+        <line class="ray" x1="96" y1="70" x2="190" y2="150"/>
+        <line class="ray" x1="86" y1="84" x2="176" y2="170"/>
+        <line class="ray" x1="102" y1="58" x2="205" y2="142"/>
+      </g>
+
+      <rect class="soil" x="0" y="288" width="360" height="72" rx="10"/>
+      <rect class="stem" x="174" y="162" width="12" height="126" rx="6" fill="url(#stemGrad)"/>
+
+      <g data-entity="roots">
+        <path class="roots-shape" d="M180 288 C165 298 156 313 145 326"/>
+        <path class="roots-shape" d="M180 288 C193 301 206 315 218 330"/>
+        <path class="roots-shape" d="M179 294 C170 305 165 318 162 333"/>
+        <path class="roots-shape" d="M182 294 C191 307 196 320 200 334"/>
+      </g>
+
+      <g>
+        <ellipse data-entity="leaf" class="leaf-shape" cx="225" cy="178" rx="56" ry="28" transform="rotate(-16 225 178)"/>
+        <path d="M182 188 Q222 169 269 168" fill="none" stroke="#1b5e20" stroke-width="2.2"/>
+      </g>
+
+      <g class="glucose-wrap">
+        <circle class="glucose-core" cx="228" cy="178" r="8"/>
+        <circle class="glucose-core" cx="214" cy="184" r="5"/>
+      </g>
+
+      <circle class="particle flow-water w1" data-flow="water" cx="179" cy="286" r="5"/>
+      <circle class="particle flow-water w2" data-flow="water" cx="176" cy="300" r="5"/>
+      <circle class="particle flow-water w3" data-flow="water" cx="183" cy="312" r="5"/>
+      <circle class="particle flow-water w4" data-flow="water" cx="178" cy="325" r="5"/>
+
+      <circle class="particle flow-co2 c1" data-flow="co2" cx="324" cy="148" r="5"/>
+      <circle class="particle flow-co2 c2" data-flow="co2" cx="334" cy="170" r="5"/>
+      <circle class="particle flow-co2 c3" data-flow="co2" cx="318" cy="188" r="5"/>
+      <circle class="particle flow-co2 c4" data-flow="co2" cx="338" cy="132" r="5"/>
+
+      <circle class="particle flow-o2 o1" data-flow="o2" cx="226" cy="165" r="5"/>
+      <circle class="particle flow-o2 o2" data-flow="o2" cx="236" cy="177" r="5"/>
+      <circle class="particle flow-o2 o3" data-flow="o2" cx="214" cy="183" r="5"/>
+      <circle class="particle flow-o2 o4" data-flow="o2" cx="222" cy="192" r="5"/>
+
+      <text data-label="sun" x="108" y="38"></text>
+      <text data-label="leaf" x="268" y="156"></text>
+      <text data-label="roots" x="98" y="330"></text>
+      <text data-label="water" x="128" y="248"></text>
+      <text data-label="co2" x="302" y="118"></text>
+      <text data-label="o2" x="294" y="84"></text>
+      <text data-label="glucose" x="182" y="214"></text>
+    </svg>
+  </div>
+
+  <div id="controls">
+    <button id="playBtn" data-action="play"></button>
+    <div id="steps"></div>
+  </div>
+
+  <div id="caption" data-caption></div>
+
+  <div id="quiz">
+    <div id="ask"></div>
+    <div id="options">
+      <button class="opt" data-option="co2"></button>
+      <button class="opt" data-option="o2"></button>
+      <button class="opt" data-option="water"></button>
+    </div>
+    <div id="feedback" aria-live="polite"></div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const params = Studio.params || {};
+  const stepsCount = Number(params.steps) || 1;
+
+  const app = document.getElementById('app');
+  const title = document.getElementById('title');
+  const playBtn = document.getElementById('playBtn');
+  const stepsBox = document.getElementById('steps');
+  const caption = document.getElementById('caption');
+  const quiz = document.getElementById('quiz');
+  const ask = document.getElementById('ask');
+  const feedback = document.getElementById('feedback');
+  const optionButtons = Array.from(document.querySelectorAll('[data-option]'));
+
+  let currentStep = 1;
+  let playing = true;
+  let finished = false;
+  let timer = null;
+
+  const stepButtons = [];
+  const stepTexts = [];
+  for (let i = 1; i <= stepsCount; i++) {
+    stepTexts.push(Studio.t('step' + i));
+    const b = document.createElement('button');
+    b.className = 'stepBtn' + (i === 1 ? ' active' : '');
+    b.setAttribute('data-action', 'step-' + i);
+    b.textContent = String(i);
+    b.addEventListener('click', () => {
+      setStep(i, true);
+    });
+    stepButtons.push(b);
+    stepsBox.appendChild(b);
+  }
+
+  function fillStaticText() {
+    title.textContent = Studio.t('title');
+    document.querySelectorAll('[data-label]').forEach(el => {
+      el.textContent = Studio.t(el.getAttribute('data-label'));
+    });
+    ask.textContent = Studio.t('ask');
+    optionButtons.forEach(btn => {
+      btn.textContent = Studio.t(btn.getAttribute('data-option'));
+    });
+    updatePlayText();
+    updateCaption();
+  }
+
+  function updatePlayText() {
+    playBtn.textContent = playing ? Studio.t('pause') : Studio.t('play');
+  }
+
+  function updateCaption() {
+    caption.textContent = stepTexts[currentStep - 1] || '';
+  }
+
+  function updateStepUI() {
+    for (let i = 0; i < stepButtons.length; i++) {
+      stepButtons[i].classList.toggle('active', i + 1 === currentStep);
+    }
+    for (let i = 1; i <= stepsCount; i++) {
+      app.classList.remove('step-' + i);
+    }
+    app.classList.add('step-' + currentStep);
+    if (playing) app.classList.add('playing'); else app.classList.remove('playing');
+  }
+
+  function showQuiz(show) {
+    quiz.classList.toggle('show', !!show);
+  }
+
+  function setStep(step, manual) {
+    currentStep = Math.max(1, Math.min(stepsCount, step));
+    updateCaption();
+    updateStepUI();
+    if (currentStep >= stepsCount) showQuiz(true);
+    Studio.event('step', { step: currentStep, manual: !!manual });
+  }
+
+  function tick() {
+    if (!playing) return;
+    if (currentStep < stepsCount) {
+      setStep(currentStep + 1, false);
+    } else {
+      playing = false;
+      updatePlayText();
+      updateStepUI();
+      showQuiz(true);
+    }
+  }
+
+  playBtn.addEventListener('click', () => {
+    playing = !playing;
+    updatePlayText();
+    updateStepUI();
+    Studio.event('play', { playing });
+  });
+
+  optionButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const val = btn.getAttribute('data-option');
+      feedback.textContent = '';
+      feedback.className = '';
+      Studio.answer(val);
+      Studio.event('answer', { value: val });
+    });
+  });
+
+  Studio.onVerdict(({ correct }) => {
+    feedback.textContent = correct ? '✓' : '✗';
+    feedback.className = correct ? 'ok' : 'no';
+    if (correct && !finished) {
+      finished = true;
+      Studio.done();
+    }
+  });
+
+  fillStaticText();
+  setStep(1, false);
+  timer = setInterval(tick, 3200);
+
+  Studio.ready();
+})();
+</script>

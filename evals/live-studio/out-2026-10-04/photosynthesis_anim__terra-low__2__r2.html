@@ -1,0 +1,195 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#f7f2e7;color:#244142;font-family:system-ui,sans-serif;overflow-x:hidden}
+  #app{width:100%;max-width:480px;min-height:640px;margin:auto;background:linear-gradient(180deg,#dff4fa 0%,#edf8df 57%,#f6dfb1 57%);overflow:hidden}
+  h1{margin:0;padding:13px 14px 7px;font-size:23px;line-height:1.15;text-align:center;color:#28535b}
+  #scene{display:block;width:100%;height:356px}
+  .label{font-size:14px;font-weight:800;fill:#244142;paint-order:stroke;stroke:#fff9e9;stroke-width:4px;stroke-linejoin:round}
+  #sun{transform-origin:66px 59px;animation:glow 2.8s ease-in-out infinite}
+  .ray{stroke:#f4b73f;stroke-width:5;stroke-linecap:round;opacity:.7;animation:ray 2s ease-in-out infinite}
+  .ray:nth-of-type(2){animation-delay:.35s}.ray:nth-of-type(3){animation-delay:.7s}
+  #leafShape{fill:#55ae62;stroke:#237443;stroke-width:3}
+  #leafVein{fill:none;stroke:#d8f3a8;stroke-width:2.5;stroke-linecap:round}
+  #stem{fill:none;stroke:#358c4b;stroke-width:12;stroke-linecap:round}
+  #soil{fill:#b77b4d}.root{fill:none;stroke:#855334;stroke-width:5;stroke-linecap:round}
+  .particle{filter:drop-shadow(0 1px 1px #ffffff)}
+  .water{fill:#3299df}.co2{fill:#8162aa}.o2{fill:#71bd43}
+  #glucose{opacity:.38;transition:opacity .3s,transform .3s;transform-origin:220px 161px}
+  .glow{fill:#ffd55d;stroke:#df9828;stroke-width:2}
+  .em-water .water,.em-co2 .co2,.em-o2 .o2{filter:drop-shadow(0 0 5px currentColor)}
+  .em-glucose #glucose{opacity:1;transform:scale(1.14)}
+  .em-light .ray{stroke-width:8;opacity:1}
+  #controls{padding:0 12px 14px;background:#fffaf0;border-radius:22px 22px 0 0;box-shadow:0 -3px 12px #85533422}
+  #topControls{display:flex;gap:7px;padding-top:10px;align-items:center}
+  button{border:0;font:800 16px system-ui,sans-serif;color:#244142;cursor:pointer;min-height:44px;touch-action:manipulation;transition:transform .15s,box-shadow .15s,background .2s}
+  button:active{transform:scale(.93)}
+  #play{padding:0 13px;border-radius:15px;background:#f6c95c;box-shadow:0 3px 0 #d99e25}
+  #steps{display:flex;gap:5px;flex:1;justify-content:flex-end}
+  .step{width:44px;border-radius:50%;background:#d9ebdd;box-shadow:0 3px 0 #9abca0}
+  .step.active{background:#57ae68;color:#fff;box-shadow:0 3px 0 #287442;transform:translateY(-2px)}
+  #caption{min-height:42px;margin:10px 2px 0;padding:9px 10px;border-radius:14px;background:#e9f6e7;color:#285e3d;font-size:15px;font-weight:750;text-align:center;transition:transform .22s,background .22s}
+  #question{display:none;margin-top:8px;padding:10px;border-radius:16px;background:#e5f3fa;text-align:center}
+  #ask{font-weight:800;margin-bottom:8px;color:#28535b}
+  #options{display:flex;gap:7px;justify-content:center}
+  .option{min-width:76px;padding:0 9px;border-radius:14px;background:#fff;box-shadow:0 3px 0 #abc7d0}
+  #question.good{background:#dff2d9}#question.bad{background:#f8ded8}
+  @keyframes glow{50%{transform:scale(1.06)}}@keyframes ray{50%{opacity:.28;stroke-width:3px}}
+</style>
+
+<div id="app">
+  <h1 id="title"></h1>
+  <svg id="scene" viewBox="0 0 360 356" role="img">
+    <g id="sun">
+      <circle cx="66" cy="58" r="27" fill="#ffd45f" stroke="#e8a82d" stroke-width="3"/>
+      <path d="M66 15V4M66 112v-11M23 58H10M122 58h-13M36 28 27 19M96 28l9-9M36 88l-9 9M96 88l9 9" stroke="#efad31" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <line class="ray" x1="91" y1="80" x2="176" y2="135"/>
+    <line class="ray" x1="100" y1="62" x2="180" y2="125"/>
+    <line class="ray" x1="81" y1="94" x2="171" y2="149"/>
+    <text class="label" data-label="sun" x="23" y="132"></text>
+
+    <path id="stem" d="M177 300 C180 258 184 211 196 171"/>
+    <path id="leafShape" data-entity="leaf" d="M196 171 C208 108 280 96 311 118 C292 177 244 202 196 171Z"/>
+    <path id="leafVein" d="M202 169 C234 154 267 137 299 121M235 153l-4-21M257 143l4-22M275 133l11-13"/>
+    <text class="label" data-label="leaf" x="270" y="219"></text>
+
+    <g id="glucose">
+      <circle class="glow" cx="217" cy="160" r="9"/><circle class="glow" cx="232" cy="151" r="7"/><circle class="glow" cx="232" cy="169" r="7"/>
+      <text class="label" data-label="glucose" x="195" y="190"></text>
+    </g>
+
+    <path id="soil" d="M0 302Q30 292 60 302T120 302T180 302T240 302T300 302T360 302V356H0Z"/>
+    <g data-entity="roots">
+      <path class="root" d="M177 297q-18 21-44 32M177 297q11 27 36 39M167 308q-7 20-29 30M188 310q20 13 33 30"/>
+    </g>
+    <text class="label" data-label="roots" x="48" y="341"></text>
+
+    <circle class="particle water" data-flow="water" cx="174" cy="288" r="5"/>
+    <circle class="particle water" data-flow="water" cx="177" cy="261" r="5"/>
+    <circle class="particle water" data-flow="water" cx="182" cy="230" r="5"/>
+
+    <circle class="particle co2" data-flow="co2" cx="344" cy="132" r="5"/>
+    <circle class="particle co2" data-flow="co2" cx="337" cy="164" r="5"/>
+    <circle class="particle co2" data-flow="co2" cx="330" cy="193" r="5"/>
+
+    <circle class="particle o2" data-flow="o2" cx="253" cy="104" r="5"/>
+    <circle class="particle o2" data-flow="o2" cx="286" cy="87" r="5"/>
+    <circle class="particle o2" data-flow="o2" cx="318" cy="72" r="5"/>
+
+    <text class="label" data-label="water" x="83" y="274"></text>
+    <text class="label" data-label="o2" x="274" y="54"></text>
+    <text class="label" data-label="co2" x="347" y="242" text-anchor="end"></text>
+  </svg>
+
+  <div id="controls">
+    <div id="topControls">
+      <button id="play" data-action="play"></button>
+      <div id="steps">
+        <button class="step active" data-action="step-1"></button>
+        <button class="step" data-action="step-2"></button>
+        <button class="step" data-action="step-3"></button>
+        <button class="step" data-action="step-4"></button>
+        <button class="step" data-action="step-5"></button>
+      </div>
+    </div>
+    <div id="caption" data-caption></div>
+    <div id="question">
+      <div id="ask"></div>
+      <div id="options">
+        <button class="option" data-option="co2"></button>
+        <button class="option" data-option="o2"></button>
+        <button class="option" data-option="water"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var p=Studio.params,playing=true,step=1,submitted=false;
+  document.querySelectorAll('[data-label]').forEach(function(e){e.textContent=Studio.t(e.getAttribute('data-label'));});
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  document.querySelectorAll('[data-option]').forEach(function(e){e.textContent=Studio.t(e.getAttribute('data-option'));});
+  var buttons=document.querySelectorAll('.step');
+  buttons.forEach(function(b,i){
+    if(i<p.steps){b.textContent=i+1;}else{b.style.display='none';}
+  });
+
+  function render(){
+    document.getElementById('play').textContent=Studio.t(playing?'pause':'play');
+    buttons.forEach(function(b,i){b.classList.toggle('active',i===step-1);});
+    var caption=document.querySelector('[data-caption]');
+    caption.textContent=Studio.t('step'+step);
+    caption.style.transform='scale(1.025)';
+    setTimeout(function(){caption.style.transform='scale(1)';},180);
+    var scene=document.getElementById('scene');
+    scene.className.baseVal='';
+    scene.classList.add(['em-light','em-water','em-co2','em-o2','em-glucose'][step-1]);
+  }
+
+  var water=[288,261,230],co2=[344,337,330],o2=[253,286,318];
+  var waterDots=document.querySelectorAll('[data-flow="water"]');
+  var co2Dots=document.querySelectorAll('[data-flow="co2"]');
+  var o2Dots=document.querySelectorAll('[data-flow="o2"]');
+
+  function animate(){
+    if(playing){
+      water.forEach(function(v,i){
+        v-=.72;
+        if(v<174)v=292;
+        water[i]=v;
+        waterDots[i].setAttribute('cy',v);
+      });
+      co2.forEach(function(v,i){
+        v-=.62;
+        if(v<244)v=346;
+        co2[i]=v;
+        co2Dots[i].setAttribute('cx',v);
+      });
+      o2.forEach(function(v,i){
+        v+=.67;
+        if(v>348)v=244;
+        o2[i]=v;
+        o2Dots[i].setAttribute('cx',v);
+        o2Dots[i].setAttribute('cy',104-i*16-(v-244)*.22);
+      });
+    }
+    requestAnimationFrame(animate);
+  }
+
+  document.getElementById('play').addEventListener('click',function(){
+    playing=!playing;
+    render();
+    Studio.event('play',{playing:playing});
+  });
+  buttons.forEach(function(b,i){
+    b.addEventListener('click',function(){
+      if(i>=p.steps)return;
+      step=i+1;
+      playing=true;
+      render();
+      Studio.event('step',{step:step});
+      if(step===p.steps)document.getElementById('question').style.display='block';
+    });
+  });
+  document.querySelectorAll('[data-option]').forEach(function(b){
+    b.addEventListener('click',function(){
+      if(submitted)return;
+      submitted=true;
+      document.getElementById('question').className='';
+      Studio.event('answer',{option:b.getAttribute('data-option')});
+      Studio.answer(b.getAttribute('data-option'));
+    });
+  });
+  Studio.onVerdict(function(v){
+    submitted=false;
+    var q=document.getElementById('question');
+    q.className=v.correct?'good':'bad';
+    if(v.correct){setTimeout(function(){Studio.done();},450);}
+  });
+  render();
+  animate();
+  Studio.ready();
+}());
+</script>

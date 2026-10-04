@@ -244,10 +244,11 @@ function upgradeLater(key, activity, item, kit, p) {   // no trace: it runs afte
  * (errorReplays), diagnostics of their active misconceptions, then the Director's own practice queue
  * (server/director/items.js buildPracticeQueue). Every candidate is PLANNED first (pure, ms): only items that can
  * become a mountable activity count toward `max`, so slots are not spent on gaps (and prefetch writes no gap rows:
- * demand is counted when a lesson actually reaches an item). Never awaited by the lesson start.
+ * demand is counted when a lesson actually reaches an item). Never awaited by the lesson start. `onFill(item, result)`
+ * receives every result as it lands (server/forge/seam.js keeps the ready ones in the lesson's table).
  * @returns {Promise<{ itemId: string, role: string, status: string, tier: string|null, ms: number }[]>}
  */
-export async function prefetchLessonFills({ lessonId, childId, topicId, kit: kitIn, learner: learnerIn, max = 6, concurrency = 3, renderers, needByMs }) {
+export async function prefetchLessonFills({ lessonId, childId, topicId, kit: kitIn, learner: learnerIn, max = 6, concurrency = 3, renderers, needByMs, onFill }) {
   const kit = kitIn ?? await getKit(topicId, { generate: false });
   if (!kit) return [];
   const learner = learnerIn ?? (childId ? await learnerFor(childId, kit.topicId, { fresh: true }) : EMPTY_LEARNER);
@@ -268,6 +269,8 @@ export async function prefetchLessonFills({ lessonId, childId, topicId, kit: kit
   for (let i = 0; i < picks.length; i += concurrency) {
     out.push(...await Promise.all(picks.slice(i, i + concurrency).map(async ({ item, role }) => {
       const r = await requestFill({ lessonId, childId, kit, item, move: "practice", learner, renderers: live, needByMs, noGapRow: true });
+      // the lesson's table (lesson-fills.js): the Director mounts a ready fill synchronously when it poses the item
+      if (onFill) try { onFill(item, r); } catch (e) { console.warn("[forge] onFill failed:", String(e.message).slice(0, 120)); }
       return { itemId: item.id, role, status: r.status, tier: r.tier ?? null, ms: r.timings?.total ?? 0 };
     })));
   }

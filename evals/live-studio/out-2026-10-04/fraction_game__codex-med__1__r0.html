@@ -1,0 +1,379 @@
+<style>
+  :root{
+    --bg:#fff8ef;
+    --card:#ffffff;
+    --ink:#3b2f2f;
+    --muted:#7a6d6d;
+    --accent:#ff8a3d;
+    --accent2:#ffd166;
+    --good:#22b573;
+    --bad:#e85d75;
+    --line:#f1e3d6;
+  }
+  *{box-sizing:border-box;}
+  #app{
+    width:100%;
+    min-height:100vh;
+    background:linear-gradient(180deg,#fffaf3 0%, #fff3e6 100%);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans", sans-serif;
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+    padding:12px;
+  }
+  .card{
+    width:100%;
+    max-width:340px;
+    background:var(--card);
+    border:2px solid var(--line);
+    border-radius:20px;
+    padding:12px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.06);
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  #title{
+    font-weight:800;
+    font-size:22px;
+    line-height:1.2;
+    text-align:center;
+    min-height:28px;
+  }
+  #instr{
+    font-size:15px;
+    color:var(--muted);
+    text-align:center;
+    min-height:20px;
+  }
+  #target{
+    text-align:center;
+    font-size:34px;
+    font-weight:900;
+    letter-spacing:1px;
+    color:#4a3c3c;
+    min-height:44px;
+  }
+  #itemWrap{
+    width:100%;
+    border-radius:16px;
+    background:#fffdf9;
+    border:2px dashed #f2d9bf;
+    padding:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:300px;
+  }
+  #pic{
+    width:100%;
+    max-width:300px;
+    height:auto;
+    touch-action:manipulation;
+  }
+  .part{
+    fill:#ffe8cc;
+    stroke:#ffffff;
+    stroke-width:2.5;
+    cursor:pointer;
+    transition:transform .15s ease, fill .2s ease, filter .2s ease, opacity .2s ease;
+    transform-origin:160px 160px;
+  }
+  .part[data-shaded="true"]{
+    fill:var(--accent);
+    filter:saturate(1.1);
+  }
+  .part:active{
+    transform:scale(0.98);
+  }
+  #feedback{
+    min-height:24px;
+    text-align:center;
+    font-weight:800;
+    font-size:18px;
+    opacity:0;
+    transform:translateY(4px);
+    transition:all .2s ease;
+  }
+  #feedback.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+  #feedback.good{ color:var(--good); }
+  #feedback.bad{ color:var(--bad); }
+  #hint{
+    min-height:20px;
+    text-align:center;
+    color:#8f7a5f;
+    font-size:14px;
+    opacity:0;
+    transition:opacity .2s ease;
+  }
+  #hint.show{opacity:1;}
+  #checkBtn{
+    margin-top:4px;
+    min-height:48px;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(180deg,#ff9b55,#ff7f32);
+    color:white;
+    font-size:18px;
+    font-weight:800;
+    letter-spacing:.2px;
+    box-shadow:0 6px 0 #de6923;
+    cursor:pointer;
+    transition:transform .08s ease, filter .2s ease, opacity .2s ease;
+  }
+  #checkBtn:active{ transform:translateY(2px); box-shadow:0 4px 0 #de6923; }
+  #checkBtn[disabled]{ opacity:.6; filter:grayscale(.1); cursor:default; }
+  .pulse{
+    animation:pulse .5s ease;
+  }
+  @keyframes pulse{
+    0%{transform:scale(1);}
+    40%{transform:scale(1.02);}
+    100%{transform:scale(1);}
+  }
+  .shake{
+    animation:shake .35s ease;
+  }
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    20%{transform:translateX(-5px);}
+    40%{transform:translateX(5px);}
+    60%{transform:translateX(-3px);}
+    80%{transform:translateX(3px);}
+  }
+  #doneScreen{
+    width:100%;
+    max-width:340px;
+    background:var(--card);
+    border:2px solid var(--line);
+    border-radius:20px;
+    padding:16px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.06);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    min-height:420px;
+  }
+  #doneText{
+    font-size:30px;
+    font-weight:900;
+    color:var(--good);
+    text-align:center;
+    min-height:40px;
+  }
+  #doneScreen[hidden]{display:none;}
+</style>
+
+<div id="app">
+  <div id="gameCard" class="card">
+    <div id="title"></div>
+    <div id="instr"></div>
+    <div id="target"></div>
+    <div id="itemWrap" data-item="">
+      <svg id="pic" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="160" cy="160" r="124" fill="#fff2dc" stroke="#f4d8ba" stroke-width="4"></circle>
+      </svg>
+    </div>
+    <div id="feedback"></div>
+    <div id="hint"></div>
+    <button id="checkBtn" data-action="check" type="button"></button>
+  </div>
+
+  <div id="doneScreen" hidden>
+    <svg viewBox="0 0 220 180" width="220" height="180" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="110" cy="92" r="72" fill="#e9fff3" stroke="#c9f2dc" stroke-width="4"/>
+      <path d="M68 92 L98 122 L152 66" fill="none" stroke="#22b573" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="40" cy="34" r="8" fill="#ffd166"/>
+      <circle cx="182" cy="30" r="6" fill="#ff8a3d"/>
+      <circle cx="187" cy="148" r="7" fill="#ffd166"/>
+      <circle cx="31" cy="145" r="5" fill="#ff8a3d"/>
+    </svg>
+    <div id="doneText"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const items = (Studio.params && Array.isArray(Studio.params.items)) ? Studio.params.items : [];
+  const titleEl = document.getElementById('title');
+  const instrEl = document.getElementById('instr');
+  const targetEl = document.getElementById('target');
+  const itemWrap = document.getElementById('itemWrap');
+  const svg = document.getElementById('pic');
+  const feedbackEl = document.getElementById('feedback');
+  const hintEl = document.getElementById('hint');
+  const checkBtn = document.getElementById('checkBtn');
+  const gameCard = document.getElementById('gameCard');
+  const doneScreen = document.getElementById('doneScreen');
+  const doneText = document.getElementById('doneText');
+
+  let currentIndex = 0;
+  let shaded = [];
+  let awaitingVerdict = false;
+  let completed = false;
+  let readySent = false;
+  let doneSent = false;
+
+  titleEl.textContent = Studio.t('title');
+  instrEl.textContent = Studio.t('instr');
+  checkBtn.textContent = Studio.t('check');
+  hintEl.textContent = Studio.t('hint');
+  doneText.textContent = Studio.t('done');
+
+  function sectorPath(cx, cy, r, start, end){
+    const x1 = cx + r * Math.cos(start);
+    const y1 = cy + r * Math.sin(start);
+    const x2 = cx + r * Math.cos(end);
+    const y2 = cy + r * Math.sin(end);
+    const largeArc = (end - start) > Math.PI ? 1 : 0;
+    return `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+  }
+
+  function setFeedback(kind){
+    feedbackEl.className = '';
+    if(kind === 'good'){
+      feedbackEl.textContent = Studio.t('right');
+      feedbackEl.classList.add('show','good');
+      hintEl.classList.remove('show');
+    }else if(kind === 'bad'){
+      feedbackEl.textContent = Studio.t('wrong');
+      feedbackEl.classList.add('show','bad');
+      hintEl.classList.add('show');
+      gameCard.classList.remove('shake');
+      void gameCard.offsetWidth;
+      gameCard.classList.add('shake');
+    }else{
+      feedbackEl.textContent = '';
+      hintEl.classList.remove('show');
+    }
+  }
+
+  function setPartState(el, isOn){
+    el.setAttribute('data-shaded', isOn ? 'true' : 'false');
+  }
+
+  function buildItem(item){
+    itemWrap.setAttribute('data-item', String(item.id));
+    targetEl.textContent = String(item.n) + '/' + String(item.d);
+    shaded = Array(item.d).fill(false);
+    setFeedback(null);
+    checkBtn.disabled = false;
+    awaitingVerdict = false;
+
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+
+    const plate = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    plate.setAttribute('cx','160');
+    plate.setAttribute('cy','160');
+    plate.setAttribute('r','124');
+    plate.setAttribute('fill','#fff2dc');
+    plate.setAttribute('stroke','#f4d8ba');
+    plate.setAttribute('stroke-width','4');
+    svg.appendChild(plate);
+
+    const crust = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    crust.setAttribute('cx','160');
+    crust.setAttribute('cy','160');
+    crust.setAttribute('r','126');
+    crust.setAttribute('fill','none');
+    crust.setAttribute('stroke','#e8b07b');
+    crust.setAttribute('stroke-width','8');
+    svg.appendChild(crust);
+
+    const d = item.d;
+    const step = (Math.PI * 2) / d;
+    const base = -Math.PI / 2;
+
+    for(let i=0;i<d;i++){
+      const part = document.createElementNS('http://www.w3.org/2000/svg','path');
+      const p = sectorPath(160,160,118,base + i*step,base + (i+1)*step);
+      part.setAttribute('d', p);
+      part.setAttribute('class','part');
+      part.setAttribute('data-part', String(i));
+      setPartState(part,false);
+
+      part.addEventListener('click', function(){
+        if(awaitingVerdict || completed) return;
+        shaded[i] = !shaded[i];
+        setPartState(part, shaded[i]);
+        Studio.event('tap_part', {item:String(item.id), part:i, shaded:shaded[i]});
+      });
+
+      svg.appendChild(part);
+    }
+
+    const center = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    center.setAttribute('cx','160');
+    center.setAttribute('cy','160');
+    center.setAttribute('r','10');
+    center.setAttribute('fill','#f2c194');
+    center.setAttribute('stroke','#ffffff');
+    center.setAttribute('stroke-width','2');
+    svg.appendChild(center);
+  }
+
+  function finish(){
+    completed = true;
+    gameCard.hidden = true;
+    doneScreen.hidden = false;
+    Studio.event('complete', {count: items.length});
+    if(!doneSent){
+      doneSent = true;
+      Studio.done();
+    }
+  }
+
+  checkBtn.addEventListener('click', function(){
+    if(completed || awaitingVerdict || !items[currentIndex]) return;
+    const item = items[currentIndex];
+    const n = shaded.reduce((a,b)=>a+(b?1:0),0);
+    awaitingVerdict = true;
+    checkBtn.disabled = true;
+    Studio.event('check', {item:String(item.id), n:n, d:item.d});
+    Studio.answer({n:n, d:item.d});
+  });
+
+  Studio.onVerdict(function(v){
+    if(!awaitingVerdict || completed) return;
+    awaitingVerdict = false;
+    checkBtn.disabled = false;
+
+    const correct = !!(v && v.correct);
+    Studio.event('verdict', {item:String(items[currentIndex].id), correct:correct});
+
+    if(correct){
+      setFeedback('good');
+      gameCard.classList.remove('pulse');
+      void gameCard.offsetWidth;
+      gameCard.classList.add('pulse');
+      setTimeout(function(){
+        currentIndex += 1;
+        if(currentIndex >= items.length){
+          finish();
+        }else{
+          buildItem(items[currentIndex]);
+          Studio.event('next_item', {index: currentIndex});
+        }
+      }, 650);
+    }else{
+      setFeedback('bad');
+    }
+  });
+
+  if(items.length > 0){
+    buildItem(items[0]);
+  }else{
+    finish();
+  }
+
+  if(!readySent){
+    readySent = true;
+    Studio.ready();
+  }
+})();
+</script>

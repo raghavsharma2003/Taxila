@@ -15,7 +15,7 @@
 // Usage: node evals/engines-coverage.mjs [--out evals/results/engines-v1-coverage-<date>.json]
 import { readFileSync, readdirSync, writeFileSync } from "fs";
 import { ENGINES, planEngine, resolveHint } from "../shared/engine-catalog.js";
-import { engineId } from "../server/director/modules.js";
+import { engineId, planModule } from "../server/director/modules.js";
 import * as FB from "../src/modules/frame/engines/fractionBars.logic.ts";
 import * as FR from "../src/modules/frame/engines/fractions.logic.ts";
 import * as NL from "../src/modules/frame/engines/numberLine.logic.ts";
@@ -146,7 +146,13 @@ export function run({ classes = /^c[1-9]-/ } = {}) {
       const viaTopic = topicMap[kit.topicId] ?? null;
       const before = hints.length > 0 && BEFORE.has(engineId(hints[0]));
       for (const h of hints) if (!resolveHint(h)) gapHints[h] = (gapHints[h] ?? 0) + 1;
-      const row = { topicId: kit.topicId, class: kitFile.class, subject: kitFile.subject, hint: resolved.length > 0, topic: !!viaTopic, before, engine: resolved[0]?.engine ?? viaTopic };
+      // What the LIVE Director mounts (server/director/modules.js planModule, W1-B #1): an explain move with no item, and
+      // an item-bound mount on any practice item. Every mount is a registered engine (tests/director-mounts.test.mjs).
+      const st = { module: null, turn: 1, ctx: { sessionId: null, lang: "english", classLevel: kitFile.class } };
+      const shows = planModule(st, { kit, item: null, move: { kind: "explain" }, lang: "english", band: "B3" }).some((c) => c.op === "mount" && ENGINES[c.engine]);
+      const boundMount = (kit.items ?? []).some((it) => { st.module = null; st.turn++; return planModule(st, { kit, item: it, move: { kind: "practice" }, lang: "english", band: "B3" }).some((c) => c.op === "mount" && c.params?.itemId === it.id); });
+      const anyMount = shows || boundMount || (kit.items ?? []).some((it) => ["explain", "practice"].some((kind) => { st.module = null; st.turn++; return planModule(st, { kit, item: it, move: { kind }, lang: "english", band: "B3" }).some((c) => c.op === "mount" && ENGINES[c.engine]); }));
+      const row = { topicId: kit.topicId, class: kitFile.class, subject: kitFile.subject, hint: resolved.length > 0, topic: !!viaTopic, before, engine: resolved[0]?.engine ?? viaTopic, director: anyMount, directorExplain: shows, directorBound: boundMount };
       topics.push(row);
       for (const item of kit.items ?? []) {
         items.total++;
@@ -195,9 +201,9 @@ export function run({ classes = /^c[1-9]-/ } = {}) {
     scope: String(classes),
     engines: Object.keys(ENGINES),
     topics: {
-      all: { before: agg(topics, (t) => t.before), hint: agg(topics, (t) => t.hint), hintOrTopicMap: agg(topics, (t) => t.hint || t.topic) },
+      all: { before: agg(topics, (t) => t.before), hint: agg(topics, (t) => t.hint), hintOrTopicMap: agg(topics, (t) => t.hint || t.topic), director: agg(topics, (t) => t.director), directorExplain: agg(topics, (t) => t.directorExplain), directorBound: agg(topics, (t) => t.directorBound) },
       mathsScienceEvs: { before: agg(topics.filter(ms), (t) => t.before), hint: agg(topics.filter(ms), (t) => t.hint), hintOrTopicMap: agg(topics.filter(ms), (t) => t.hint || t.topic) },
-      bySubject: { hint: bySub((t) => t.hint), hintOrTopicMap: bySub((t) => t.hint || t.topic) },
+      bySubject: { hint: bySub((t) => t.hint), hintOrTopicMap: bySub((t) => t.hint || t.topic), director: bySub((t) => t.director), directorBound: bySub((t) => t.directorBound) },
       byClass: { hint: byClass((t) => t.hint), hintOrTopicMap: byClass((t) => t.hint || t.topic) },
       byEngine: Object.fromEntries(Object.entries(topics.reduce((a, t) => (t.engine ? ((a[t.engine] = (a[t.engine] ?? 0) + 1), a) : a), {})).sort((a, b) => b[1] - a[1])),
     },
@@ -212,5 +218,5 @@ if (process.argv[1]?.endsWith("engines-coverage.mjs")) {
   const r = { c4to7: run({ classes: /^c[4-7]-/ }), all: run() };
   const i = process.argv.indexOf("--out");
   if (i > 0) writeFileSync(process.argv[i + 1], JSON.stringify(r, null, 1) + "\n");
-  for (const [k, x] of Object.entries(r)) console.log(k, JSON.stringify({ topics: x.topics.all, mse: x.topics.mathsScienceEvs, bySubject: x.topics.bySubject.hint, items: { ...x.items, disagree: x.items.disagree.slice(0, 5) }, unbound: x.unbound }, null, 1));
+  for (const [k, x] of Object.entries(r)) console.log(k, JSON.stringify({ topics: x.topics.all, mse: x.topics.mathsScienceEvs, bySubject: x.topics.bySubject.hint, director: x.topics.bySubject.director, directorBound: x.topics.bySubject.directorBound, items: { ...x.items, disagree: x.items.disagree.slice(0, 5) }, unbound: x.unbound }, null, 1));
 }

@@ -1,0 +1,248 @@
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Segoe UI', 'Comic Sans MS', 'Arial Rounded MT Bold', sans-serif;
+    background: #FFF9F0;
+    width: 360px;
+    height: 640px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #4A2E2B;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .chart-area {
+    position: relative;
+    width: 320px;
+    height: 380px;
+    margin: 8px 0;
+    background: #FFFFFF;
+    border-radius: 24px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    padding: 24px 16px 12px 56px;
+  }
+  .yaxis-label {
+    position: absolute;
+    left: -32px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    font-size: 0.8rem;
+    color: #9C7A6B;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .grid-container {
+    position: absolute;
+    top: 24px;
+    left: 56px;
+    right: 16px;
+    bottom: 44px;
+  }
+  .grid-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    border-top: 1px dashed #E0D3C5;
+  }
+  .tick-label {
+    position: absolute;
+    left: -48px;
+    transform: translateY(-50%);
+    font-size: 0.7rem;
+    color: #B29486;
+    font-weight: 500;
+    text-align: right;
+    width: 40px;
+  }
+  .bars-container {
+    position: absolute;
+    top: 24px;
+    left: 56px;
+    right: 16px;
+    bottom: 44px;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    z-index: 2;
+  }
+  .bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+    height: 100%;
+    justify-content: flex-end;
+    min-width: 48px;
+  }
+  .bar-wrapper:active {
+    transform: scale(0.96);
+  }
+  .bar {
+    width: 44px;
+    min-width: 44px;
+    background: linear-gradient(180deg, #FF9F7A 0%, #FF7F5C 100%);
+    border-radius: 12px 12px 4px 4px;
+    box-shadow: 0 4px 10px rgba(255, 127, 92, 0.3);
+    transition: height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s;
+    height: 0px;
+  }
+  .bar-label {
+    margin-top: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #5D4037;
+    text-transform: capitalize;
+    margin-bottom: 0;
+    min-height: 18px;
+  }
+  .question {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #4A2E2B;
+    text-align: center;
+    margin: 12px 0 8px;
+    min-height: 32px;
+  }
+  .feedback {
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    min-height: 28px;
+    margin-top: 4px;
+    transition: color 0.2s;
+  }
+  .feedback.right { color: #2E7D32; }
+  .feedback.wrong { color: #C62828; }
+  .done-message {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #2E7D32;
+    text-align: center;
+    margin-top: 8px;
+  }
+  .bar-wrapper.correct-pulse .bar {
+    animation: pulse 0.4s ease;
+  }
+  @keyframes pulse {
+    0% { transform: scaleY(1); }
+    50% { transform: scaleY(1.05); background: #FFBCA3; }
+    100% { transform: scaleY(1); background: #FF7F5C; }
+  }
+</style>
+
+<div class="title" id="title"></div>
+<div class="chart-area">
+  <div class="yaxis-label" id="yaxis"></div>
+  <div class="grid-container" id="gridContainer"></div>
+  <div class="bars-container" id="barsContainer"></div>
+</div>
+<div class="question" id="question"></div>
+<div class="feedback" id="feedback"></div>
+<div class="done-message" id="doneMessage" style="display:none;"></div>
+
+<script>
+  (function() {
+    const data = Studio.params.data;
+    const maxVal = Math.max(...data.map(d => d.value));
+    let step = 1;
+    if (maxVal <= 5) step = 1;
+    else if (maxVal <= 10) step = 2;
+    else step = 5;
+    const maxTick = Math.ceil(maxVal / step) * step;
+    const ticks = [];
+    for (let v = 0; v <= maxTick; v += step) ticks.push(v);
+
+    document.getElementById('title').textContent = Studio.t('title');
+    document.getElementById('yaxis').textContent = Studio.t('yaxis');
+    document.getElementById('question').textContent = Studio.t('ask');
+
+    const gridContainer = document.getElementById('gridContainer');
+    const barsContainer = document.getElementById('barsContainer');
+    gridContainer.innerHTML = '';
+    barsContainer.innerHTML = '';
+
+    const gridHeight = gridContainer.clientHeight;
+    ticks.forEach(tickVal => {
+      const percent = (tickVal / maxTick) * 100;
+      const topPercent = 100 - percent;
+      const line = document.createElement('div');
+      line.className = 'grid-line';
+      line.style.top = topPercent + '%';
+      gridContainer.appendChild(line);
+      const label = document.createElement('div');
+      label.className = 'tick-label';
+      label.setAttribute('data-tick', tickVal);
+      label.textContent = tickVal;
+      label.style.top = topPercent + '%';
+      gridContainer.appendChild(label);
+    });
+
+    data.forEach(item => {
+      const barHeightPx = (item.value / maxTick) * gridHeight;
+      const wrapper = document.createElement('div');
+      wrapper.className = 'bar-wrapper';
+      wrapper.setAttribute('data-fruit', item.key);
+      wrapper.style.minHeight = (barHeightPx + 24) + 'px';
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      bar.setAttribute('data-bar', item.key);
+      bar.setAttribute('data-value', item.value);
+      bar.style.height = '0px';
+      const label = document.createElement('div');
+      label.className = 'bar-label';
+      label.textContent = Studio.t(item.key);
+      wrapper.appendChild(bar);
+      wrapper.appendChild(label);
+      barsContainer.appendChild(wrapper);
+      const finalHeight = barHeightPx;
+      setTimeout(() => { bar.style.height = finalHeight + 'px'; }, 50);
+    });
+
+    Studio.ready();
+
+    let answered = false;
+    const feedbackDiv = document.getElementById('feedback');
+    const doneDiv = document.getElementById('doneMessage');
+
+    document.querySelectorAll('.bar-wrapper').forEach(wrapper => {
+      wrapper.addEventListener('click', function(e) {
+        if (answered) return;
+        const fruitKey = this.getAttribute('data-fruit');
+        Studio.answer(fruitKey);
+        Studio.event('bar-tap', { fruit: fruitKey });
+        answered = true;
+        document.querySelectorAll('.bar-wrapper').forEach(w => w.style.pointerEvents = 'none');
+      });
+    });
+
+    Studio.onVerdict(function(verdict) {
+      const correct = verdict.correct;
+      feedbackDiv.textContent = correct ? Studio.t('right') : Studio.t('wrong');
+      feedbackDiv.className = 'feedback ' + (correct ? 'right' : 'wrong');
+      if (correct) {
+        doneDiv.style.display = 'block';
+        doneDiv.textContent = Studio.t('done');
+        Studio.done();
+        const correctBar = document.querySelector(`[data-bar="${verdict.correctKey}"]`);
+        if (correctBar && correctBar.parentElement) {
+          correctBar.parentElement.classList.add('correct-pulse');
+        }
+      } else {
+        answered = false;
+        document.querySelectorAll('.bar-wrapper').forEach(w => w.style.pointerEvents = 'auto');
+      }
+    });
+  })();
+</script>

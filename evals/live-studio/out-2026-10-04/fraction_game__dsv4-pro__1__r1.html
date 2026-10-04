@@ -1,0 +1,289 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { 
+    font-family: system-ui, 'Segoe UI', sans-serif; 
+    background: #fffaf3; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    min-height: 100vh; 
+    padding: 20px; 
+    max-width: 360px; 
+    margin: 0 auto; 
+    color: #3e2c1b;
+    user-select: none;
+  }
+  .container { 
+    width: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 20px; 
+    padding: 10px;
+  }
+  .title { 
+    font-size: 1.8rem; 
+    font-weight: 700; 
+    color: #c44f1c; 
+    text-align: center; 
+    margin-bottom: 5px;
+  }
+  .instr { 
+    font-size: 1.1rem; 
+    text-align: center; 
+    color: #5c3d2e;
+    background: #ffeedd; 
+    padding: 10px 15px; 
+    border-radius: 20px; 
+    width: 100%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .target-fraction { 
+    font-size: 3rem; 
+    font-weight: 800; 
+    background: #ffe0c0; 
+    padding: 10px 25px; 
+    border-radius: 30px; 
+    color: #b33f10;
+    box-shadow: 0 4px 12px rgba(180, 80, 30, 0.2);
+    margin: 5px 0;
+  }
+  .picture-area { 
+    width: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 15px;
+  }
+  .visual-container { 
+    width: 260px; 
+    height: 260px; 
+    position: relative;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+  }
+  svg { 
+    width: 100%; 
+    height: 100%; 
+    overflow: visible;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.08));
+  }
+  .part { 
+    cursor: pointer; 
+    transition: transform 0.2s ease, filter 0.2s; 
+    stroke: #fff; 
+    stroke-width: 2; 
+  }
+  .part:active { 
+    transform: scale(0.95); 
+  }
+  .bar-piece { 
+    stroke: #fff; 
+    stroke-width: 2.5; 
+    rx: 5; 
+    cursor: pointer; 
+    transition: transform 0.2s ease, filter 0.2s;
+  }
+  .bar-piece:active { 
+    transform: scaleY(0.92); 
+  }
+  .shaded { 
+    fill: #f59e4b; 
+    filter: drop-shadow(0 0 3px rgba(255,140,0,0.3));
+  }
+  .unshaded { 
+    fill: #ffe7ce; 
+  }
+  .check-btn { 
+    background: #4c9f70; 
+    color: white; 
+    border: none; 
+    padding: 14px 32px; 
+    font-size: 1.4rem; 
+    font-weight: bold; 
+    border-radius: 40px; 
+    cursor: pointer; 
+    box-shadow: 0 6px 0 #2d6a4f, 0 8px 18px rgba(0,0,0,0.12); 
+    transition: all 0.15s ease; 
+    min-width: 140px; 
+    text-align: center;
+    letter-spacing: 0.5px;
+    margin-top: 10px;
+  }
+  .check-btn:active { 
+    transform: translateY(3px); 
+    box-shadow: 0 3px 0 #2d6a4f, 0 5px 10px rgba(0,0,0,0.12); 
+  }
+  .feedback { 
+    font-size: 1.2rem; 
+    font-weight: 600; 
+    min-height: 2.5rem; 
+    padding: 6px 16px; 
+    border-radius: 20px; 
+    text-align: center;
+  }
+  .right-fb { background: #d4edda; color: #155724; }
+  .wrong-fb { background: #ffe5e0; color: #a12b1c; }
+  .done-screen { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 25px; 
+    font-size: 2rem; 
+    font-weight: 700; 
+    color: #c44f1c; 
+  }
+  .hidden { display: none; }
+  .done-emoji { font-size: 5rem; margin-bottom: 20px; }
+</style>
+
+<div class="container" id="mainContainer">
+  <div class="title" id="title"></div>
+  <div class="instr" id="instr"></div>
+  <div class="target-fraction" id="targetFraction"></div>
+  <div class="picture-area" id="pictureArea">
+    <div class="visual-container" id="visualContainer"></div>
+  </div>
+  <button class="check-btn" data-action="check" id="checkButton"></button>
+  <div class="feedback" id="feedbackMsg"></div>
+</div>
+<div class="done-screen hidden" id="doneScreen">
+  <div class="done-emoji">🎉</div>
+  <div id="doneText"></div>
+</div>
+
+<script>
+  (function() {
+    const params = Studio.params;
+    const items = params.items;
+    const pictureType = params.picture; // "pizza" or "bar"
+    let currentIndex = 0;
+    let selectedCount = 0;
+    let currentItem = items[0];
+    let parts = [];
+    
+    const mainContainer = document.getElementById('mainContainer');
+    const doneScreen = document.getElementById('doneScreen');
+    const titleEl = document.getElementById('title');
+    const instrEl = document.getElementById('instr');
+    const targetFractionEl = document.getElementById('targetFraction');
+    const visualContainer = document.getElementById('visualContainer');
+    const checkBtn = document.getElementById('checkButton');
+    const feedbackEl = document.getElementById('feedbackMsg');
+    const doneTextEl = document.getElementById('doneText');
+    
+    titleEl.textContent = Studio.t('title');
+    instrEl.textContent = Studio.t('instr');
+    checkBtn.textContent = Studio.t('check');
+    
+    function renderItem(item) {
+      currentItem = item;
+      const d = item.d;
+      const n = item.n;
+      targetFractionEl.textContent = `${n}/${d}`;
+      parts = [];
+      selectedCount = 0;
+      feedbackEl.textContent = '';
+      feedbackEl.className = 'feedback';
+      
+      visualContainer.innerHTML = '';
+      const svgNS = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(svgNS, "svg");
+      svg.setAttribute("viewBox", "0 0 200 200");
+      svg.setAttribute("data-item", item.id);
+      
+      if (pictureType === 'pizza') {
+        const cx = 100, cy = 100, r = 85;
+        const angle = (2 * Math.PI) / d;
+        for (let i = 0; i < d; i++) {
+          const startAngle = i * angle - Math.PI/2;
+          const endAngle = startAngle + angle;
+          const x1 = cx + r * Math.cos(startAngle);
+          const y1 = cy + r * Math.sin(startAngle);
+          const x2 = cx + r * Math.cos(endAngle);
+          const y2 = cy + r * Math.sin(endAngle);
+          const largeArc = angle > Math.PI ? 1 : 0;
+          const pathData = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+          
+          const path = document.createElementNS(svgNS, "path");
+          path.setAttribute("d", pathData);
+          path.setAttribute("class", "part unshaded");
+          path.setAttribute("data-part", i);
+          path.setAttribute("data-shaded", "false");
+          path.addEventListener('click', () => togglePart(i));
+          svg.appendChild(path);
+          parts.push(path);
+        }
+      } else {
+        const barWidth = 180, barHeight = 160, x = 10, y = 20;
+        const segHeight = barHeight / d;
+        for (let i = 0; i < d; i++) {
+          const rect = document.createElementNS(svgNS, "rect");
+          const segY = y + i * segHeight;
+          rect.setAttribute("x", x);
+          rect.setAttribute("y", segY);
+          rect.setAttribute("width", barWidth);
+          rect.setAttribute("height", segHeight);
+          rect.setAttribute("class", "bar-piece unshaded");
+          rect.setAttribute("data-part", i);
+          rect.setAttribute("data-shaded", "false");
+          rect.addEventListener('click', () => togglePart(i));
+          svg.appendChild(rect);
+          parts.push(rect);
+        }
+      }
+      visualContainer.appendChild(svg);
+    }
+    
+    function togglePart(index) {
+      const part = parts[index];
+      const isShaded = part.getAttribute('data-shaded') === 'true';
+      if (isShaded) {
+        part.setAttribute('data-shaded', 'false');
+        part.classList.remove('shaded');
+        part.classList.add('unshaded');
+        selectedCount--;
+      } else {
+        part.setAttribute('data-shaded', 'true');
+        part.classList.add('shaded');
+        part.classList.remove('unshaded');
+        selectedCount++;
+      }
+      Studio.event('partToggled', { index, shaded: !isShaded });
+    }
+    
+    function checkAnswer() {
+      const answer = { n: selectedCount, d: currentItem.d };
+      Studio.answer(answer);
+      Studio.event('check', { itemId: currentItem.id, selected: selectedCount });
+    }
+    
+    Studio.onVerdict((verdict) => {
+      if (verdict.correct) {
+        feedbackEl.textContent = Studio.t('right');
+        feedbackEl.className = 'feedback right-fb';
+        setTimeout(() => {
+          currentIndex++;
+          if (currentIndex < items.length) {
+            renderItem(items[currentIndex]);
+          } else {
+            mainContainer.classList.add('hidden');
+            doneScreen.classList.remove('hidden');
+            doneTextEl.textContent = Studio.t('done');
+            Studio.done();
+          }
+        }, 1200);
+      } else {
+        feedbackEl.textContent = Studio.t('wrong') + ' ' + Studio.t('hint');
+        feedbackEl.className = 'feedback wrong-fb';
+      }
+    });
+    
+    checkBtn.addEventListener('click', checkAnswer);
+    
+    renderItem(items[0]);
+    Studio.ready();
+  })();
+</script>

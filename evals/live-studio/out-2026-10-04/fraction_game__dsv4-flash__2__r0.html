@@ -1,0 +1,327 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: linear-gradient(145deg, #fdf6e3 0%, #fcebb8 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+  .frame {
+    width: 340px;
+    min-height: 600px;
+    background: white;
+    border-radius: 40px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    padding: 24px 20px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #5b3e1f;
+    text-align: center;
+    width: 100%;
+  }
+  .instr {
+    font-size: 14px;
+    color: #8b6f4a;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 4px;
+  }
+  .target {
+    font-size: 28px;
+    font-weight: bold;
+    color: #b1551e;
+    background: #fce8d0;
+    padding: 4px 18px;
+    border-radius: 30px;
+    margin: 4px 0 8px;
+  }
+  .svg-wrap {
+    width: 260px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4px 0;
+  }
+  .svg-wrap svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .part {
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.2s;
+  }
+  .part:active {
+    transform: scale(0.94);
+  }
+  .check-btn {
+    background: #5fa85c;
+    border: none;
+    border-radius: 40px;
+    padding: 14px 40px;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    box-shadow: 0 6px 0 #3d7a3a;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    margin-top: 10px;
+    touch-action: manipulation;
+  }
+  .check-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #3d7a3a;
+  }
+  .feedback {
+    min-height: 48px;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    color: #5b3e1f;
+    padding: 4px 6px;
+    width: 100%;
+  }
+  .feedback.right {
+    color: #2a7a2a;
+  }
+  .feedback.wrong {
+    color: #b34141;
+  }
+  .done-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 30px 0;
+  }
+  .done-screen .big {
+    font-size: 52px;
+  }
+  .done-screen .msg {
+    font-size: 22px;
+    font-weight: 600;
+    color: #5b3e1f;
+  }
+  .hidden { display: none; }
+  .celebrate {
+    animation: pop 0.5s ease;
+  }
+  @keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+</style>
+<div class="frame" id="app">
+  <div class="title" id="title"></div>
+  <div class="instr" id="instr"></div>
+  <div class="target" id="target"></div>
+  <div class="svg-wrap" id="svgWrap"></div>
+  <div style="display:flex; gap: 8px; flex-wrap: wrap; justify-content:center;" id="extraHint"></div>
+  <button class="check-btn" data-action="check" id="checkBtn"></button>
+  <div class="feedback" id="feedback"></div>
+</div>
+<script>
+(function(){
+  const app = document.getElementById('app');
+  const titleEl = document.getElementById('title');
+  const instrEl = document.getElementById('instr');
+  const targetEl = document.getElementById('target');
+  const svgWrap = document.getElementById('svgWrap');
+  const checkBtn = document.getElementById('checkBtn');
+  const feedbackEl = document.getElementById('feedback');
+  const extraHint = document.getElementById('extraHint');
+
+  const items = Studio.params.items;
+  const picture = Studio.params.picture;
+  let currentIdx = 0;
+  let currentItem = null;
+  let shaded = [];
+
+  function t(key) { return Studio.t(key); }
+
+  function renderItem(idx) {
+    const item = items[idx];
+    if (!item) { showDone(); return; }
+    currentItem = item;
+    const d = item.d;
+    shaded = new Array(d).fill(false);
+    feedbackEl.className = 'feedback';
+    feedbackEl.textContent = '';
+    targetEl.textContent = item.n + '/' + d;
+    const container = document.createElement('div');
+    container.style.width = '100%';
+    container.style.height = '100%';
+    container.setAttribute('data-item', item.id);
+    container.className = 'svg-wrap';
+    // build svg
+    let svg;
+    if (picture === 'pizza-or-bar' || picture === 'pizza') {
+      svg = buildPizza(d);
+    } else {
+      svg = buildBar(d);
+    }
+    container.innerHTML = '';
+    container.appendChild(svg);
+    svgWrap.innerHTML = '';
+    svgWrap.appendChild(container);
+
+    // update parts data attrs
+    const parts = container.querySelectorAll('[data-part]');
+    parts.forEach(el => {
+      const idx = parseInt(el.getAttribute('data-part'), 10);
+      el.setAttribute('data-shaded', 'false');
+      el.style.fill = getFill(idx, false);
+      el.addEventListener('click', function(e) {
+        const i = parseInt(this.getAttribute('data-part'), 10);
+        if (currentItem == null) return;
+        shaded[i] = !shaded[i];
+        this.setAttribute('data-shaded', shaded[i] ? 'true' : 'false');
+        this.style.fill = getFill(i, shaded[i]);
+        this.style.transform = 'scale(0.93)';
+        setTimeout(() => { this.style.transform = ''; }, 150);
+        Studio.event('tap_part', {item: currentItem.id, part: i, shaded: shaded[i]});
+      });
+    });
+    // refresh after shade reset
+    checkBtn.textContent = t('check');
+    titleEl.textContent = t('title');
+    instrEl.textContent = t('instr');
+    extraHint.innerHTML = '';
+    const hintSpan = document.createElement('span');
+    hintSpan.textContent = t('hint');
+    hintSpan.style.fontSize = '13px'; hintSpan.style.color = '#9b7b56';
+    extraHint.appendChild(hintSpan);
+    Studio.ready();
+  }
+
+  function getFill(i, sh) {
+    if (sh) return '#f7b731';
+    return '#f7e9d7';
+  }
+
+  function buildPizza(d) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 200 200');
+    const cx = 100, cy = 100, r = 80;
+    const angleStep = 360 / d;
+    for (let i = 0; i < d; i++) {
+      const a1 = i * angleStep - 90;
+      const a2 = (i+1) * angleStep - 90;
+      const x1 = cx + r * Math.cos(a1 * Math.PI/180);
+      const y1 = cy + r * Math.sin(a1 * Math.PI/180);
+      const x2 = cx + r * Math.cos(a2 * Math.PI/180);
+      const y2 = cy + r * Math.sin(a2 * Math.PI/180);
+      const large = (angleStep > 180) ? 1 : 0;
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', `M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${large} 1 ${x2},${y2} Z`);
+      path.setAttribute('data-part', i);
+      path.setAttribute('data-shaded', 'false');
+      path.style.fill = '#f7e9d7';
+      path.style.stroke = '#b97c4a';
+      path.style.strokeWidth = '2';
+      path.classList.add('part');
+      svg.appendChild(path);
+      // crust
+      const crust = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      crust.setAttribute('cx', cx); crust.setAttribute('cy', cy); crust.setAttribute('r', r);
+      crust.style.fill = 'none'; crust.style.stroke = '#c28a4a'; crust.style.strokeWidth = '6';
+      svg.appendChild(crust);
+      // center
+      const center = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      center.setAttribute('cx', cx); center.setAttribute('cy', cy); center.setAttribute('r', 6);
+      center.style.fill = '#c28a4a';
+      svg.appendChild(center);
+    }
+    return svg;
+  }
+
+  function buildBar(d) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 240 100');
+    const wSeg = 200 / d;
+    const offsetX = 20, y = 10, h = 80;
+    for (let i = 0; i < d; i++) {
+      const x = offsetX + i * wSeg;
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', x);
+      rect.setAttribute('y', y);
+      rect.setAttribute('width', wSeg - 2);
+      rect.setAttribute('height', h);
+      rect.setAttribute('rx', 6);
+      rect.setAttribute('data-part', i);
+      rect.setAttribute('data-shaded', 'false');
+      rect.style.fill = '#f7e9d7';
+      rect.style.stroke = '#b97c4a';
+      rect.style.strokeWidth = '2';
+      rect.classList.add('part');
+      svg.appendChild(rect);
+    }
+    return svg;
+  }
+
+  function showDone() {
+    svgWrap.innerHTML = '';
+    extraHint.innerHTML = '';
+    targetEl.textContent = '';
+    checkBtn.classList.add('hidden');
+    feedbackEl.className = 'feedback';
+    feedbackEl.textContent = '';
+    const div = document.createElement('div');
+    div.className = 'done-screen';
+    div.innerHTML = `<div class="big">🎉</div><div class="msg">${t('done')}</div>`;
+    svgWrap.appendChild(div);
+    titleEl.textContent = t('title');
+    instrEl.textContent = '';
+    Studio.done();
+  }
+
+  function checkAnswer() {
+    if (!currentItem) return;
+    const count = shaded.filter(Boolean).length;
+    const ans = { n: count, d: currentItem.d };
+    Studio.answer(ans);
+    // host will call onVerdict
+  }
+
+  Studio.onVerdict(function(verdict) {
+    if (verdict.correct) {
+      feedbackEl.className = 'feedback right';
+      feedbackEl.textContent = t('right');
+      app.querySelector('.svg-wrap')?.classList.add('celebrate');
+      setTimeout(() => {
+        app.querySelector('.svg-wrap')?.classList.remove('celebrate');
+        currentIdx++;
+        if (currentIdx >= items.length) {
+          showDone();
+        } else {
+          renderItem(currentIdx);
+        }
+      }, 900);
+    } else {
+      feedbackEl.className = 'feedback wrong';
+      feedbackEl.textContent = t('wrong');
+      // shake
+      app.querySelector('.svg-wrap')?.classList.add('celebrate');
+      setTimeout(() => {
+        app.querySelector('.svg-wrap')?.classList.remove('celebrate');
+      }, 400);
+    }
+  });
+
+  checkBtn.addEventListener('click', checkAnswer);
+
+  // start
+  renderItem(0);
+})();
+</script>

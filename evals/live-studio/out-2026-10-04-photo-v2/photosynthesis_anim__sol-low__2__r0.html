@@ -1,0 +1,290 @@
+<style>
+  *{box-sizing:border-box}
+  :root{color-scheme:light}
+  .photo-wrap{
+    width:100%;max-width:360px;height:640px;margin:0 auto;padding:8px 10px;
+    overflow:hidden;background:linear-gradient(#e8f8ff 0%,#f8fff0 70%,#fff8df 100%);
+    color:#183f36;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    display:flex;flex-direction:column;gap:6px;touch-action:manipulation
+  }
+  .title{
+    min-height:30px;margin:0;text-align:center;font-size:22px;line-height:30px;
+    font-weight:800;color:#176b55
+  }
+  .scene{
+    width:100%;height:284px;display:block;border-radius:22px;
+    background:linear-gradient(#caefff 0%,#efffe8 72%,#a86b43 72%,#74442f 100%);
+    box-shadow:0 5px 16px #295c4630,inset 0 0 0 2px #ffffffaa
+  }
+  .ray{stroke:#ffd84d;stroke-width:4;stroke-linecap:round;opacity:.42;transition:opacity .3s,stroke-width .3s}
+  .leaf-shape{fill:#42b95f;stroke:#147241;stroke-width:3;transition:filter .3s,transform .3s;transform-origin:center}
+  .leaf-vein{fill:none;stroke:#d4f29c;stroke-width:2;stroke-linecap:round}
+  .root-shape{fill:none;stroke:#8c5838;stroke-width:5;stroke-linecap:round}
+  .stem{fill:none;stroke:#26864b;stroke-width:9;stroke-linecap:round}
+  .label{
+    font-size:13px;font-weight:800;paint-order:stroke;stroke:#fff;stroke-width:4px;
+    stroke-linejoin:round;fill:#194d42
+  }
+  .glow{fill:#ffe86d;opacity:.7;filter:drop-shadow(0 0 7px #ffd524);transform-origin:center}
+  [data-flow]{filter:drop-shadow(0 1px 1px #17423055)}
+  [data-flow="water"]{fill:#2c9df2}
+  [data-flow="co2"]{fill:#8268dc}
+  [data-flow="o2"]{fill:#f7fbff;stroke:#4ea8cf;stroke-width:2}
+  .flow,.process{opacity:.28;transition:opacity .35s}
+  .photo-wrap[data-step="1"] .light-process,
+  .photo-wrap[data-step="2"] .water-process,
+  .photo-wrap[data-step="3"] .co2-process,
+  .photo-wrap[data-step="4"] .glucose-process,
+  .photo-wrap[data-step="5"] .o2-process{opacity:1}
+  .photo-wrap[data-step="1"] .ray{opacity:1;stroke-width:6}
+  .photo-wrap[data-step="4"] .leaf-shape{filter:drop-shadow(0 0 9px #ffe34c);transform:scale(1.03)}
+  .photo-wrap.paused .moving{animation-play-state:paused!important}
+  .water-a{animation:waterMove 2.2s linear infinite}
+  .water-b{animation:waterMove 2.2s -.7s linear infinite}
+  .water-c{animation:waterMove 2.2s -1.4s linear infinite}
+  .co2-a{animation:co2Move 2.4s linear infinite}
+  .co2-b{animation:co2Move 2.4s -.8s linear infinite}
+  .co2-c{animation:co2Move 2.4s -1.6s linear infinite}
+  .o2-a{animation:o2Move 2.3s linear infinite}
+  .o2-b{animation:o2Move 2.3s -.75s linear infinite}
+  .o2-c{animation:o2Move 2.3s -1.5s linear infinite}
+  .sugar{animation:sugarPulse 1.8s ease-in-out infinite}
+  @keyframes waterMove{
+    0%{transform:translate(0,72px);opacity:0}
+    15%,85%{opacity:1}
+    100%{transform:translate(37px,-77px);opacity:0}
+  }
+  @keyframes co2Move{
+    0%{transform:translate(-78px,-18px);opacity:0}
+    18%,82%{opacity:1}
+    100%{transform:translate(3px,8px);opacity:0}
+  }
+  @keyframes o2Move{
+    0%{transform:translate(0,0);opacity:0}
+    18%,82%{opacity:1}
+    100%{transform:translate(78px,-55px);opacity:0}
+  }
+  @keyframes sugarPulse{50%{transform:scale(1.28);opacity:1}}
+  .control-row{display:grid;grid-template-columns:72px 1fr;gap:6px}
+  .steps{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+  button{
+    min-width:44px;min-height:44px;border:0;border-radius:14px;
+    font:inherit;font-weight:800;color:#174c41;background:#fff;
+    box-shadow:0 3px 0 #b7d8cd,0 4px 10px #264f4130;
+    cursor:pointer;transition:transform .13s,background .2s,box-shadow .2s
+  }
+  button:active{transform:scale(.92);box-shadow:0 1px 0 #b7d8cd}
+  .play{background:#176f59;color:#fff;box-shadow:0 3px 0 #0b493a}
+  .step.active{background:#ffe16c;color:#5c4700;box-shadow:0 3px 0 #d3a92c}
+  .caption{
+    min-height:42px;padding:7px 12px;border-radius:14px;background:#ffffffd9;
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    font-size:14px;line-height:18px;font-weight:750;color:#24594b;
+    box-shadow:inset 0 0 0 2px #d8eee5
+  }
+  .ask{margin:0;min-height:28px;text-align:center;font-size:15px;line-height:28px;font-weight:800}
+  .answers{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+  .answer{padding:4px;background:#f7fffd;color:#195c4d}
+  .answer.selected{background:#d9f4ec;transform:scale(.96)}
+  .answer.correct{background:#bdf2c4;box-shadow:0 3px 0 #54a968}
+  .answer.wrong{animation:nudge .32s ease;background:#ffe0dc;box-shadow:0 3px 0 #d77d72}
+  @keyframes nudge{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+  .feedback{height:20px;text-align:center;font-size:20px;line-height:20px;font-weight:900}
+  .feedback.good{color:#258444}.feedback.bad{color:#c8564d}
+  @media(max-height:620px){
+    .photo-wrap{height:100vh;padding-top:4px;gap:4px}
+    .scene{height:264px}
+    .title{min-height:26px;font-size:20px;line-height:26px}
+    .caption{min-height:38px;padding:4px 10px}
+  }
+</style>
+
+<main class="photo-wrap" data-step="1">
+  <h1 class="title" data-text="title"></h1>
+
+  <svg class="scene" viewBox="0 0 340 284" role="img">
+    <g class="process light-process">
+      <circle cx="57" cy="44" r="24" fill="#ffd94f" stroke="#f4a928" stroke-width="4"/>
+      <g stroke="#ffd94f" stroke-width="4" stroke-linecap="round">
+        <path d="M57 9v-7"/><path d="M57 86v-7"/><path d="M22 44h-8"/><path d="M100 44h-8"/>
+        <path d="M31 18l-6-6"/><path d="M83 70l6 6"/><path d="M31 70l-6 6"/><path d="M83 18l6-6"/>
+      </g>
+      <path class="ray" d="M77 59L180 135"/>
+      <path class="ray" d="M69 66L158 145"/>
+      <path class="ray" d="M85 51L202 126"/>
+    </g>
+
+    <text class="label" data-label="sun" x="13" y="102"></text>
+
+    <path class="stem" d="M151 238C151 205 154 179 172 147"/>
+    <g data-entity="roots">
+      <path class="root-shape" d="M151 231L128 268M151 235L165 272M145 245L111 258M158 248L190 263"/>
+    </g>
+
+    <g data-entity="leaf">
+      <path class="leaf-shape" d="M164 150C185 105 251 106 269 132C241 171 198 180 164 150Z"/>
+      <path class="leaf-vein" d="M170 151C201 143 228 137 260 132M202 143L216 122M225 138L243 153"/>
+    </g>
+
+    <g class="process glucose-process">
+      <circle class="glow sugar moving" cx="214" cy="143" r="12"/>
+      <circle class="glow sugar moving" cx="238" cy="136" r="7" style="animation-delay:-.6s"/>
+      <circle class="glow sugar moving" cx="195" cy="153" r="6" style="animation-delay:-1.2s"/>
+    </g>
+
+    <g class="flow water-process">
+      <circle class="moving water-a" data-flow="water" cx="139" cy="205" r="6"/>
+      <circle class="moving water-b" data-flow="water" cx="139" cy="205" r="6"/>
+      <circle class="moving water-c" data-flow="water" cx="139" cy="205" r="6"/>
+    </g>
+
+    <g class="flow co2-process">
+      <circle class="moving co2-a" data-flow="co2" cx="184" cy="140" r="7"/>
+      <circle class="moving co2-b" data-flow="co2" cx="184" cy="140" r="7"/>
+      <circle class="moving co2-c" data-flow="co2" cx="184" cy="140" r="7"/>
+    </g>
+
+    <g class="flow o2-process">
+      <circle class="moving o2-a" data-flow="o2" cx="239" cy="126" r="7"/>
+      <circle class="moving o2-b" data-flow="o2" cx="239" cy="126" r="7"/>
+      <circle class="moving o2-c" data-flow="o2" cx="239" cy="126" r="7"/>
+    </g>
+
+    <text class="label" data-label="leaf" x="222" y="188"></text>
+    <text class="label" data-label="roots" x="176" y="278"></text>
+    <text class="label" data-label="water" x="70" y="222"></text>
+    <text class="label" data-label="co2" x="87" y="129"></text>
+    <text class="label" data-label="o2" x="287" y="91"></text>
+    <text class="label" data-label="glucose" x="235" y="211" text-anchor="middle"></text>
+  </svg>
+
+  <div class="control-row">
+    <button class="play" type="button" data-action="play"></button>
+    <div class="steps">
+      <button class="step active" type="button" data-action="step-1"></button>
+      <button class="step" type="button" data-action="step-2"></button>
+      <button class="step" type="button" data-action="step-3"></button>
+      <button class="step" type="button" data-action="step-4"></button>
+      <button class="step" type="button" data-action="step-5"></button>
+    </div>
+  </div>
+
+  <div class="caption" data-caption></div>
+  <p class="ask" data-text="ask"></p>
+
+  <div class="answers">
+    <button class="answer" type="button" data-option="co2"></button>
+    <button class="answer" type="button" data-option="o2"></button>
+    <button class="answer" type="button" data-option="water"></button>
+  </div>
+  <div class="feedback" aria-live="polite"></div>
+</main>
+
+<script>
+  (() => {
+    const root = document.querySelector('.photo-wrap');
+    const playButton = root.querySelector('[data-action="play"]');
+    const stepButtons = [...root.querySelectorAll('.step')];
+    const caption = root.querySelector('[data-caption]');
+    const options = [...root.querySelectorAll('[data-option]')];
+    const feedback = root.querySelector('.feedback');
+    const total = Studio.params.steps;
+    let step = 1;
+    let playing = true;
+    let lastChange = performance.now();
+    let pending = null;
+    let finished = false;
+
+    root.querySelector('[data-text="title"]').textContent = Studio.t('title');
+    root.querySelector('[data-text="ask"]').textContent = Studio.t('ask');
+
+    root.querySelectorAll('[data-label]').forEach((label) => {
+      label.textContent = Studio.t(label.dataset.label);
+    });
+
+    stepButtons.forEach((button, index) => {
+      button.textContent = String(index + 1);
+      button.setAttribute('aria-label', Studio.t('step' + (index + 1)));
+    });
+
+    options.forEach((button) => {
+      button.textContent = Studio.t(button.dataset.option);
+      button.setAttribute('aria-label', Studio.t(button.dataset.option));
+    });
+
+    function renderStep(next, source) {
+      step = next;
+      root.dataset.step = String(step);
+      caption.textContent = Studio.t('step' + step);
+      stepButtons.forEach((button, index) => {
+        button.classList.toggle('active', index + 1 === step);
+      });
+      lastChange = performance.now();
+      if (source) Studio.event('step', {step, source});
+    }
+
+    function renderPlay() {
+      root.classList.toggle('paused', !playing);
+      playButton.textContent = Studio.t(playing ? 'pause' : 'play');
+      playButton.setAttribute('aria-label', Studio.t(playing ? 'pause' : 'play'));
+    }
+
+    playButton.addEventListener('click', () => {
+      playing = !playing;
+      renderPlay();
+      lastChange = performance.now();
+      Studio.event('play_toggle', {playing});
+    });
+
+    stepButtons.forEach((button, index) => {
+      button.addEventListener('click', () => {
+        renderStep(index + 1, 'tap');
+      });
+    });
+
+    options.forEach((button) => {
+      button.addEventListener('click', () => {
+        if (finished || pending) return;
+        pending = button;
+        options.forEach((item) => item.classList.remove('selected', 'wrong', 'correct'));
+        button.classList.add('selected');
+        feedback.textContent = '';
+        Studio.event('answer', {value: button.dataset.option});
+        Studio.answer(button.dataset.option);
+      });
+    });
+
+    Studio.onVerdict(({correct}) => {
+      if (!pending || finished) return;
+      const chosen = pending;
+      pending = null;
+      chosen.classList.remove('selected');
+      if (correct) {
+        finished = true;
+        playing = false;
+        renderPlay();
+        chosen.classList.add('correct');
+        feedback.className = 'feedback good';
+        feedback.textContent = '✓';
+        Studio.done();
+      } else {
+        chosen.classList.add('wrong');
+        feedback.className = 'feedback bad';
+        feedback.textContent = '×';
+        setTimeout(() => chosen.classList.remove('wrong'), 500);
+      }
+    });
+
+    function tick(now) {
+      if (playing && now - lastChange > 3600) {
+        renderStep(step >= total ? 1 : step + 1, 'auto');
+      }
+      requestAnimationFrame(tick);
+    }
+
+    renderStep(1);
+    renderPlay();
+    requestAnimationFrame(tick);
+    Studio.ready();
+  })();
+</script>

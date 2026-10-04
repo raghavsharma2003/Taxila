@@ -1,0 +1,142 @@
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #E3F2FD;
+  color: #1A237E;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+#app {
+  max-width: 360px;
+  margin: 0 auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+h1 {
+  text-align: center;
+  font-size: 1.25rem;
+  color: #1565C0;
+  line-height: 1.2;
+}
+.stage {
+  width: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #B3E5FC;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+}
+.stage svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.soil { fill: url(#soilGrad); }
+.sun-circle { fill: url(#sunGrad); animation: sunPulse 3s ease-in-out infinite; transform-origin: 280px 50px; }
+.sun-ray { stroke: #FFEB3B; stroke-width: 3; stroke-linecap: round; opacity: 0.7; }
+.light-ray { stroke: #FFF59D; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 10 6; animation: dash 0.8s linear infinite; }
+.stem { stroke: #388E3C; stroke-width: 12; fill: none; stroke-linecap: round; }
+.leaf-shape { fill: #66BB6A; stroke: #2E7D32; stroke-width: 2; transition: fill 0.3s, filter 0.3s; }
+.root { stroke: #8D6E63; stroke-width: 6; fill: none; stroke-linecap: round; }
+.label { font-size: 13px; fill: #1A237E; font-weight: 800; text-anchor: middle; pointer-events: none; }
+.particle { transition: opacity 0.3s, r 0.3s; pointer-events: none; }
+.particle.water { fill: #2196F3; }
+.particle.co2 { fill: #78909C; }
+.particle.o2 { fill: #CDDC39; }
+.particle.glucose { fill: #FFC107; filter: url(#glow); }
+@keyframes sunPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+@keyframes dash { to { stroke-dashoffset: -16; } }
+body:not(.playing) .light-ray { animation-play-state: paused; }
+.app-step-2 .particle:not([data-flow="water"]) { opacity: 0.25; }
+.app-step-2 .particle[data-flow="water"] { r: 6; }
+.app-step-3 .particle:not([data-flow="co2"]) { opacity: 0.25; }
+.app-step-3 .particle[data-flow="co2"] { r: 6; }
+.app-step-4 .particle { opacity: 0.2; }
+.app-step-4 .light-ray { stroke: #FFF176; stroke-width: 5; filter: url(#glow); }
+.app-step-4 .leaf-shape { fill: #81C784; filter: url(#glow); }
+.app-step-5 .particle:not([data-flow="o2"]):not([data-flow="glucose"]) { opacity: 0.25; }
+.app-step-5 .particle[data-flow="o2"],
+.app-step-5 .particle[data-flow="glucose"] { r: 6; }
+.caption {
+  min-height: 48px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 12px;
+  text-align: center;
+  font-weight: 700;
+  color: #0D47A1;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.play-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: 24px;
+  background: #42A5F5;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.2s;
+}
+.play-btn:active { transform: scale(0.96); background: #1E88E5; }
+body.playing .play-text, body.playing .play-icon { display: none; }
+body:not(.playing) .pause-text, body:not(.playing) .pause-icon { display: none; }
+.step-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+.step-buttons button {
+  flex: 1;
+  height: 48px;
+  border: none;
+  border-radius: 14px;
+  background: #90CAF9;
+  color: #0D47A1;
+  font-size: 1.1rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.2s;
+}
+.step-buttons button:active { transform: scale(0.92); }
+.step-buttons button.active { background: #1E88E5; color: #fff; transform: scale(1.06); box-shadow: 0 2px 8px rgba(30,136,229,0.4); }
+.check {
+  background: #fff;
+  border-radius: 20px;
+  padding: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.check p {
+  text-align: center;
+  font-weight: 800;
+  margin-bottom: 12px;
+  color: #0D47A1;
+}
+.options {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.options button {
+  flex: 1;
+  min-height: 56px;
+  border: 2px solid #90CAF9;
+  border-radius: 16px;
+  background: #E3F2FD;
+  color: #

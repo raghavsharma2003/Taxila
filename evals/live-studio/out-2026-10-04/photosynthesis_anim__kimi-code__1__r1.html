@@ -1,0 +1,87 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { margin: 0; background: #e8f5e9; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; }
+  #app { position: relative; width: 100%; max-width: 360px; height: 100vh; margin: 0 auto; overflow: hidden; background: #f1f8e9; display: flex; flex-direction: column; align-items: center; padding: 8px; }
+  #title { font-size: 22px; font-weight: 800; color: #33691e; text-align: center; margin: 6px 0 4px; }
+  #scene { width: 100%; height: auto; max-height: 46vh; flex-shrink: 0; border-radius: 20px; background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+  .label { font-size: 13px; font-weight: 700; fill: #37474f; }
+  #controls { width: 100%; margin-top: auto; padding-bottom: 8px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+  #playBtn { min-width: 120px; height: 48px; border: none; border-radius: 24px; background: #43a047; color: #fff; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.15); transition: transform .12s, background .2s; }
+  #playBtn:active { transform: scale(0.95); }
+  #playIcon { width: 20px; text-align: center; }
+  #stepBtns { width: 100%; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  #stepBtns button { height: 48px; border: none; border-radius: 14px; background: #c8e6c9; color: #1b5e20; font-size: 17px; font-weight: 800; box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: transform .12s, background .2s; }
+  #stepBtns button.active { background: #66bb6a; color: #fff; transform: scale(1.06); }
+  #stepBtns button:active { transform: scale(0.94); }
+  #caption { width: 100%; min-height: 48px; text-align: center; color: #424242; font-size: 15px; font-weight: 700; padding: 12px; background: #fff; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: center; }
+  #check { position: absolute; bottom: 10px; left: 10px; right: 10px; background: #fff; border-radius: 18px; padding: 14px; box-shadow: 0 6px 22px rgba(0,0,0,0.15); z-index: 20; transition: opacity .35s; }
+  #check.hidden { display: none; }
+  #ask { text-align: center; color: #33691e; font-size: 16px; font-weight: 800; margin-bottom: 12px; }
+  #options { display: flex; gap: 10px; justify-content: center; }
+  #options button { flex: 1; min-width: 80px; height: 52px; border: none; border-radius: 16px; background: #e3f2fd; color: #1565c0; font-size: 15px; font-weight: 800; box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: transform .12s, background .2s; }
+  #options button:active { transform: scale(0.94); }
+  #options button.correct { background: #a5d6a7; color: #1b5e20; }
+  #options button.wrong { background: #ef9a9a; color: #b71c1c; }
+</style>
+
+<div id="app">
+  <h1 id="title" data-label="title"></h1>
+  <svg id="scene" viewBox="0 0 360 340" aria-hidden="true">
+    <defs>
+      <radialGradient id="sunGrad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fff59d"/>
+        <stop offset="100%" stop-color="#fdd835"/>
+      </radialGradient>
+      <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#e1f5fe"/>
+        <stop offset="100%" stop-color="#ffffff"/>
+      </linearGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <rect width="360" height="340" fill="url(#skyGrad)"/>
+    <g id="sunGroup">
+      <circle cx="180" cy="45" r="35" fill="url(#sunGrad)"/>
+      <text x="180" y="92" text-anchor="middle" class="label" data-label="sun"></text>
+    </g>
+    <g id="rays" stroke="#fdd835" stroke-width="3" stroke-linecap="round" opacity="0.7">
+      <line x1="165" y1="78" x2="165" y2="155"/>
+      <line x1="180" y1="82" x2="180" y2="155"/>
+      <line x1="195" y1="78" x2="195" y2="155"/>
+    </g>
+    <path d="M0 270 Q180 260 360 270 L360 340 L0 340 Z" fill="#8d6e63"/>
+    <g id="roots" data-entity="roots">
+      <path d="M180 250 Q150 280 130 305" stroke="#a1887f" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path d="M180 250 L180 310" stroke="#a1887f" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path d="M180 250 Q210 280 230 305" stroke="#a1887f" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <text x="60" y="325" text-anchor="middle" class="label" data-label="roots"></text>
+    </g>
+    <path d="M180 250 L180 190" stroke="#66bb6a" stroke-width="14" stroke-linecap="round"/>
+    <g id="leaf" data-entity="leaf">
+      <path d="M135 180 Q180 135 225 180 Q180 220 135 180 Z" fill="#66bb6a" stroke="#388e3c" stroke-width="2"/>
+      <path d="M155 180 Q180 165 205 180" stroke="#388e3c" stroke-width="2" fill="none"/>
+      <circle id="glucose" cx="180" cy="180" r="11" fill="#ffb300" opacity="0"/>
+      <text x="250" y="185" text-anchor="start" class="label" data-label="leaf"></text>
+      <text x="250" y="210" text-anchor="start" class="label" data-label="glucose"></text>
+    </g>
+    <g id="particles"></g>
+    <text x="30" y="220" text-anchor="start" class="label" data-label="water"></text>
+    <text x="30" y="110" text-anchor="start" class="label" data-label="co2"></text>
+    <text x="330" y="110" text-anchor="end" class="label" data-label="o2"></text>
+  </svg>
+
+  <div id="controls">
+    <button id="playBtn" data-action="play"><span id="playIcon"></span><span id="playText"></span></button>
+    <div id="stepBtns"></div>
+    <p id="caption" data-caption></p>
+  </div>
+
+  <div id="check" class="hidden">
+    <p id="ask" data-label="ask"></p>
+    <div id="options">
+      <button data-option="co2"></button

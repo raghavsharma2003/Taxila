@@ -52,14 +52,70 @@ export function diagnosticItem(kit, m, seed = 0) {
     id: DIAG_PREFIX + m.id, skillId: anchor.skillId, kind: "contrast", difficulty: 2,
     prompt_en: d.prompt_en, prompt_hi: d.prompt_hi,
     answer: correct.text, acceptable: [],
-    hints: [
+    // Two ladders (audit flows G5: "pump: ask them to picture both choices as real things" reached the child's card).
+    // `rungShapes` are the teacher's notes, server-side only (state.js hands them to SH.hint). `hints` are the
+    // child-facing lines the Question card may show under the ask: plain, no rung label, no teacher shape words,
+    // never the answer. Rung 4 has none: the assertion is never a card line (state.js hintFor).
+    rungShapes: [
       "pump: ask them to picture both choices as real things",
       `hint: use ${m.remediation.representation}`,
       "prompt: a fill-in-the-blank that compares the two choices",
       "assertion: say which option is right, with a one-line reason",
     ],
+    hints: DIAG_CHILD_HINTS,
     targetsMisconception: m.id, diagnostic: true, options,
   };
+}
+
+/** The card lines for a diagnostic's rungs 1-3 (English chrome: the Question card's hint line is UI text). */
+export const DIAG_CHILD_HINTS = Object.freeze([
+  "Picture each choice as real things.",
+  "Look at each choice one part at a time.",
+  "Which choice fits what the question asks?",
+]);
+
+/**
+ * Rung labels a kit hint or a teacher shape may start with ("Prompt: …", "Assert: …", "pump: …"). Only these words:
+ * a kit hint like "Rule: ___" or "Cars: 4. Dolls?" is content and keeps its label.
+ */
+export const RUNG_LABEL = /^\s*(?:pump|hint|prompt|assert(?:ion)?|point|ask|nudge|clue)\s*[:\-–]\s*/i;
+export const stripRungLabel = (t) => String(t ?? "").replace(RUNG_LABEL, "");
+
+const NUMERIC = /^[-−]?\d[\d,]*$/;
+const FRACTION = /^(\d+)\s*\/\s*(\d+)$/;
+/**
+ * "Show me choices" for an item with no diagnostic options (flows G3: the button sent "Choices dikhao" as an answer
+ * and she then read out another item's choices): 3 tiles, the key and two distractors, in a per-lesson seeded
+ * order. Numbers: near neighbours (±1, ±10, ×10); a fraction: its flip and a neighbour; words: other answers of the
+ * same kit, same skill first. Never a distractor that is itself an accepted form of the key. null when fewer than
+ * one distractor exists (the caller gives a hint instead).
+ * @returns {string[] | null} the tile labels, the key among them
+ */
+export function choicesFor(item, kit, seed = 0) {
+  const key = String(item?.answer ?? "").trim();
+  if (!key || key.length > 40) return null;
+  const accepted = new Set([key, ...(item.acceptable ?? [])].map((x) => norm(x)));
+  const ok = (x) => !!x && String(x).length <= 40 && !accepted.has(norm(x));
+  let pool = [];
+  const flat = key.replace(/,/g, "");
+  const f = key.match(FRACTION);
+  if (NUMERIC.test(key)) {
+    const n = Number(flat.replace("−", "-"));
+    const comma = key.includes(",");
+    const fmt = (v) => (comma ? v.toLocaleString("en-IN") : String(v));
+    pool = [n + 1, n - 1, n + 10, n - 10, n * 10, n + 2].filter((v) => v >= 0 && v !== n).map(fmt);
+  } else if (f) {
+    const [a, b] = [Number(f[1]), Number(f[2])];
+    pool = [`${b}/${a}`, `${a + 1}/${b}`, `${a}/${b + 1}`, `${Math.max(1, a - 1)}/${b}`];
+  } else {
+    const others = (kit?.items ?? []).filter((i) => i.id !== item.id && i.kind !== "teachback" && i.kind !== "why")
+      .sort((a, b) => (b.skillId === item.skillId) - (a.skillId === item.skillId));
+    pool = others.map((i) => String(i.answer ?? "").trim()).filter((x) => x && x.length <= 40 && x.split(/\s+/).length <= 5);
+  }
+  const distractors = [...new Set(pool.filter(ok))].slice(0, 2);
+  if (!distractors.length) return null;
+  const rnd = prng((seed >>> 0) ^ hashStr(item.id));
+  return [key, ...distractors].map((o) => ({ o, k: rnd() })).sort((a, b) => a.k - b.k).map(({ o }) => o);
 }
 
 /** A diagnostic's options as they are said aloud: "1/2 ya 1/3" (Hinglish/Hindi) or "1/2 or 1/3". */

@@ -82,7 +82,8 @@ export function AnswerDock({ m, a, micMeter, stripId, lit, setRef }:
   const mode = held ? null : yourTurn && !stripId ? modeOf(m) : m.floor === "listening" && m.mic.tapToTalk ? { key: (young ? "floor.mode.done_young" : "floor.mode.done") as CopyKey, glyph: null } : null;
   // While she talks (or shows), the dock holds only the mic (barge-in); the side controls come with YOUR TURN
   // (§4.2 speaking row), so SPEAKING and YOUR TURN differ by shape, not only by the lamp's colour (V-SIG-3).
-  const sidesHidden = m.floor === "speaking" || m.floor === "showing";
+  // Text lane (m.openWhileSpeaking): the dock stays whole while she speaks, and a typed answer interrupts her (smooth G4).
+  const sidesHidden = (m.floor === "speaking" || m.floor === "showing") && !m.openWhileSpeaking;
   const [momentNote, setMomentNote] = useState(false);
   useEffect(() => {
     if (m.floor !== "thinking") setMomentNote(false);
@@ -161,6 +162,7 @@ export function AnswerDock({ m, a, micMeter, stripId, lit, setRef }:
       data-lamp={lit ? "" : undefined}
       data-trouble={stripId ?? undefined}
       data-breath={m.lampBreath || undefined}
+      data-open-speaking={m.openWhileSpeaking ? "1" : undefined}
       aria-label="Answer"
       data-testid="dock"
     >

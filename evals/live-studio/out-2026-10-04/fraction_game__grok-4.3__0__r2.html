@@ -1,0 +1,47 @@
+<style>
+:root { --bg:#FFF8E7; --accent:#FF9F1C; --stroke:#E85D04; --green:#4CAF50; }
+.container { width:360px; height:640px; margin:0 auto; background:#FFF8E7; font-family:system-ui,-apple-system,sans-serif; display:flex; flex-direction:column; padding:16px; box-sizing:border-box; overflow:hidden; }
+h1 { font-size:26px; margin:0 0 6px; color:#5D4037; text-align:center; }
+.instr { font-size:17px; color:#5D4037; text-align:center; margin-bottom:10px; line-height:1.3; }
+.frac-display { font-size:40px; font-weight:700; color:#E85D04; text-align:center; margin:8px 0 12px; letter-spacing:2px; }
+.visual { display:flex; justify-content:center; margin:10px 0; }
+.visual svg { border-radius:9999px; box-shadow:0 4px 12px rgba(232,93,4,.15); background:#FFF; }
+.feedback { min-height:44px; font-size:19px; font-weight:600; text-align:center; margin:6px 0; padding:6px; }
+button[data-action="check"] { width:100%; height:56px; background:#FF6B35; color:white; border:none; border-radius:28px; font-size:21px; font-weight:700; margin-top:auto; box-shadow:0 5px 0 #E85D04; transition:transform .1s ease; }
+button[data-action="check"]:active { transform:translateY(3px); box-shadow:0 2px 0 #E85D04; }
+.done { display:flex; align-items:center; justify-content:center; height:100%; font-size:26px; color:#5D4037; text-align:center; }
+</style>
+<div class="container">
+  <h1 data-key="title"></h1>
+  <p class="instr" data-key="instr"></p>
+  <div class="frac-display"><span id="numer"></span>/<span id="denom"></span></div>
+  <div class="visual" data-item="i1">
+    <svg width="300" height="300" viewBox="0 0 300 300">
+      <path data-part="0" data-shaded="false" d="M150 150 L150 30 A120 120 0 0 1 234 66 Z" fill="#FFF8E7" stroke="#E85D04" stroke-width="4"/>
+      <path data-part="1" data-shaded="false" d="M150 150 L234 66 A120 120 0 0 1 234 234 Z" fill="#FFF8E7" stroke="#E85D04" stroke-width="4"/>
+      <path data-part="2" data-shaded="false" d="M150 150 L234 234 A120 120 0 0 1 150 270 Z" fill="#FFF8E7" stroke="#E85D04" stroke-width="4"/>
+      <path data-part="3" data-shaded="false" d="M150 150 L150 270 A120 120 0 0 1 66 234 Z" fill="#FFF8E7" stroke="#E85D04" stroke-width="4"/>
+    </svg>
+  </div>
+  <div class="feedback"></div>
+  <button data-action="check" data-key="check"></button>
+</div>
+<script>
+const params=Studio.params;let idx=0;let current=params.items[0];
+function setText(k){const el=document.querySelector(`[data-key="${k}"]`);if(el)el.textContent=Studio.t(k);}
+function initTexts(){["title","instr","check"].forEach(setText);}
+function polar(cx,cy,r,a){const rad=(a-90)*Math.PI/180;return {x:cx+r*Math.cos(rad),y:cy+r*Math.sin(rad)};}
+function sectorPath(cx,cy,r,sa,ea){const s=polar(cx,cy,r,sa),e=polar(cx,cy,r,ea);const la=ea-sa>180?1:0;return `M${cx} ${cy} L${s.x} ${s.y} A${r} ${r} 0 ${la} 1 ${e.x} ${e.y} Z`;}
+function makePizza(d){const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");svg.setAttribute("width","300");svg.setAttribute("height","300");svg.setAttribute("viewBox","0 0 300 300");const cx=150,cy=150,r=120;const step=360/d;for(let i=0;i<d;i++){const p=document.createElementNS("http://www.w3.org/2000/svg","path");const sa=-90+i*step,ea=sa+step;p.setAttribute("d",sectorPath(cx,cy,r,sa,ea));p.setAttribute("fill","#FFF8E7");p.setAttribute("stroke","#E85D04");p.setAttribute("stroke-width","4");p.setAttribute("data-part",i);p.setAttribute("data-shaded","false");p.addEventListener("click",()=>toggle(p));svg.appendChild(p);}return svg;}
+function setup(it){const v=document.querySelector(".visual");v.innerHTML="";v.dataset.item=it.id;v.appendChild(makePizza(it.d));document.getElementById("numer").textContent=it.n;document.getElementById("denom").textContent=it.d;document.querySelector(".feedback").textContent="";}
+function toggle(p){const sh=p.getAttribute("data-shaded")==="true";const ns=!sh;p.setAttribute("data-shaded",ns?"true":"false");p.setAttribute("fill",ns?"#FF9F1C":"#FFF8E7");}
+function countShaded(){let c=0;document.querySelectorAll(".visual path[data-part]").forEach(p=>{if(p.getAttribute("data-shaded")==="true")c++;});return c;}
+function check(){const n=countShaded();const d=current.d;Studio.event("check",{n,d});Studio.answer({n,d});}
+function celebrate(cb){const v=document.querySelector(".visual svg");if(v){v.style.transition="transform .25s";v.style.transform="scale(1.12)";setTimeout(()=>{v.style.transform="scale(1)";setTimeout(cb,280)},520)}else cb();}
+function next(){idx++;if(idx>=params.items.length){done();}else{current=params.items[idx];setup(current);}}
+function showVerdict(ok){const fb=document.querySelector(".feedback");if(ok){fb.style.color="var(--green)";fb.textContent=Studio.t("right");celebrate(()=>{fb.textContent="";next();});}else{fb.style.color="#D32F2F";fb.textContent=Studio.t("wrong");setTimeout(()=>{if(fb.textContent===Studio.t("wrong"))fb.textContent=Studio.t("hint");},1200);}}
+function done(){const c=document.querySelector(".container");c.innerHTML=`<div class="done"><div><p data-key="done"></p></div></div>`;setText("done");Studio.done();}
+document.querySelector('[data-action="check"]').addEventListener("click",check);
+Studio.onVerdict(showVerdict);
+initTexts();setup(current);Studio.ready();
+</script>

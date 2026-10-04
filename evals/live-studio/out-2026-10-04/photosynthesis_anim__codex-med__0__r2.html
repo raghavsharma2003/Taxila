@@ -1,0 +1,235 @@
+<style>
+  :root{
+    --bg:#eef8ff;--card:#ffffff;--ink:#1f2937;--sun:#ffd54f;--leaf:#4caf50;--stem:#2e7d32;--soil:#8d6e63;
+    --water:#42a5f5;--co2:#7e57c2;--o2:#26c6da;--glucose:#ffca28;--active:#22c55e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink)}
+  #app{width:100%;max-width:360px;min-height:640px;margin:0 auto;padding:8px;display:flex;flex-direction:column;gap:8px}
+  .card{background:var(--card);border-radius:18px;box-shadow:0 8px 22px rgba(0,0,0,.08);overflow:hidden}
+  #title{font-size:22px;font-weight:800;text-align:center;padding:8px 8px 0}
+  #sceneWrap{padding:8px}
+  svg{display:block;width:100%;height:auto;border-radius:14px;background:linear-gradient(#dff2ff,#f7fcff)}
+  text{font-size:12px;font-weight:800;fill:#0f172a;paint-order:stroke;stroke:#fff;stroke-width:3;stroke-linejoin:round}
+  .soil{fill:var(--soil)}
+  .stem{fill:var(--stem)}
+  .roots-shape{fill:none;stroke:#6d4c41;stroke-width:5;stroke-linecap:round}
+  .leaf-shape{fill:var(--leaf);transform-origin:222px 162px;transition:transform .35s ease,filter .35s ease}
+  .ray{stroke:#fbc02d;stroke-width:3.6;stroke-linecap:round;stroke-dasharray:7 9;opacity:.6;animation:ray 1.5s linear infinite;animation-play-state:paused}
+  #app.playing .ray{animation-play-state:running}
+  @keyframes ray{to{stroke-dashoffset:-32}}
+  .particle{opacity:.15;animation-duration:2.8s;animation-iteration-count:infinite;animation-timing-function:linear;animation-play-state:paused}
+  #app.playing .particle{animation-play-state:running}
+  .flow-water{fill:var(--water)}
+  .flow-co2{fill:var(--co2)}
+  .flow-o2{fill:var(--o2)}
+  @keyframes w1{0%{transform:translate(0,0);opacity:0}20%{opacity:.95}100%{transform:translate(0,-118px);opacity:0}}
+  @keyframes w2{0%{transform:translate(2px,0);opacity:0}20%{opacity:.95}100%{transform:translate(-2px,-122px);opacity:0}}
+  @keyframes w3{0%{transform:translate(-2px,0);opacity:0}20%{opacity:.95}100%{transform:translate(1px,-116px);opacity:0}}
+  @keyframes c1{0%{transform:translate(0,0);opacity:0}20%{opacity:.9}100%{transform:translate(-86px,20px);opacity:0}}
+  @keyframes c2{0%{transform:translate(0,0);opacity:0}20%{opacity:.9}100%{transform:translate(-82px,16px);opacity:0}}
+  @keyframes c3{0%{transform:translate(0,0);opacity:0}20%{opacity:.9}100%{transform:translate(-90px,24px);opacity:0}}
+  @keyframes o1{0%{transform:translate(0,0);opacity:0}20%{opacity:.9}100%{transform:translate(86px,-30px);opacity:0}}
+  @keyframes o2{0%{transform:translate(0,0);opacity:0}20%{opacity:.9}100%{transform:translate(82px,-24px);opacity:0}}
+  @keyframes o3{0%{transform:translate(0,0);opacity:0}20%{opacity:.9}100%{transform:translate(90px,-34px);opacity:0}}
+  .w1{animation-name:w1}.w2{animation-name:w2;animation-delay:.7s}.w3{animation-name:w3;animation-delay:1.4s}
+  .c1{animation-name:c1}.c2{animation-name:c2;animation-delay:.8s}.c3{animation-name:c3;animation-delay:1.6s}
+  .o1{animation-name:o1}.o2{animation-name:o2;animation-delay:.8s}.o3{animation-name:o3;animation-delay:1.6s}
+  .glucose-wrap{opacity:.35;transition:opacity .35s ease}
+  .glucose-core{fill:var(--glucose);filter:drop-shadow(0 0 6px rgba(255,202,40,.9));animation:glow 1.2s ease-in-out infinite;animation-play-state:paused}
+  #app.playing .glucose-core{animation-play-state:running}
+  @keyframes glow{50%{transform:scale(1.16)}}
+  #controls{display:flex;gap:6px;padding:0 8px 8px;align-items:center;min-width:0}
+  #playBtn{width:74px;min-width:74px;height:46px;border:0;border-radius:12px;background:#0ea5e9;color:#fff;font-weight:800;cursor:pointer;transition:transform .15s ease}
+  #playBtn:active{transform:scale(.96)}
+  #steps{display:flex;gap:6px;flex:1;min-width:0}
+  .stepBtn{flex:1;min-width:44px;height:46px;border:2px solid #bfdbfe;border-radius:12px;background:#eff6ff;color:#0f172a;font-weight:800;cursor:pointer;transition:transform .15s ease,background .2s ease,border-color .2s ease}
+  .stepBtn:active{transform:scale(.95)}
+  .stepBtn.active{background:#d1fae5;border-color:var(--active)}
+  #caption{margin:0 8px 6px;min-height:48px;border-radius:12px;background:#f8fafc;padding:10px 12px;font-weight:700}
+  #quiz{display:none;flex-direction:column;gap:8px;margin:0 8px 10px;padding:10px;border-radius:12px;background:#fff7ed}
+  #quiz.show{display:flex}
+  #ask{font-weight:800}
+  #options{display:flex;gap:8px;flex-wrap:wrap}
+  .opt{min-width:84px;height:46px;border:2px solid #fed7aa;border-radius:12px;background:#fff;font-weight:800;color:#7c2d12;cursor:pointer;transition:transform .15s ease}
+  .opt:active{transform:scale(.95)}
+  #feedback{min-height:22px;font-size:22px;font-weight:900}
+  #feedback.ok{color:#16a34a} #feedback.no{color:#dc2626}
+  #app.step-1 .leaf-shape{transform:scale(1.02)}
+  #app.step-2 .flow-water{opacity:1}
+  #app.step-3 .flow-co2{opacity:1}
+  #app.step-4 .glucose-wrap{opacity:1}
+  #app.step-4 .leaf-shape{filter:drop-shadow(0 0 10px rgba(255,193,7,.55))}
+  #app.step-5 .flow-o2{opacity:1}
+</style>
+
+<div id="app" class="card playing step-1">
+  <div id="title"></div>
+  <div id="sceneWrap">
+    <svg viewBox="0 0 360 330" aria-hidden="true">
+      <circle cx="64" cy="52" r="30" fill="#ffd54f"></circle>
+      <g class="rays">
+        <line class="ray" x1="92" y1="66" x2="182" y2="132"></line>
+        <line class="ray" x1="78" y1="84" x2="172" y2="152"></line>
+        <line class="ray" x1="102" y1="54" x2="198" y2="128"></line>
+      </g>
+
+      <rect class="soil" x="0" y="262" width="360" height="68" rx="10"></rect>
+      <rect class="stem" x="174" y="148" width="12" height="114" rx="6"></rect>
+
+      <g data-entity="roots">
+        <path class="roots-shape" d="M180 262 C165 274 154 292 144 305"></path>
+        <path class="roots-shape" d="M180 262 C194 276 208 291 220 306"></path>
+        <path class="roots-shape" d="M179 268 C170 279 164 293 161 307"></path>
+        <path class="roots-shape" d="M182 268 C190 282 197 294 202 308"></path>
+      </g>
+
+      <g>
+        <ellipse data-entity="leaf" class="leaf-shape" cx="222" cy="162" rx="56" ry="28" transform="rotate(-16 222 162)"></ellipse>
+        <path d="M180 171 Q220 153 266 152" fill="none" stroke="#1b5e20" stroke-width="2.2"></path>
+      </g>
+
+      <g class="glucose-wrap">
+        <circle class="glucose-core" cx="222" cy="162" r="8"></circle>
+        <circle class="glucose-core" cx="208" cy="168" r="5"></circle>
+      </g>
+
+      <circle class="particle flow-water w1" data-flow="water" cx="179" cy="260" r="5"></circle>
+      <circle class="particle flow-water w2" data-flow="water" cx="176" cy="276" r="5"></circle>
+      <circle class="particle flow-water w3" data-flow="water" cx="183" cy="292" r="5"></circle>
+
+      <circle class="particle flow-co2 c1" data-flow="co2" cx="320" cy="132" r="5"></circle>
+      <circle class="particle flow-co2 c2" data-flow="co2" cx="334" cy="150" r="5"></circle>
+      <circle class="particle flow-co2 c3" data-flow="co2" cx="318" cy="170" r="5"></circle>
+
+      <circle class="particle flow-o2 o1" data-flow="o2" cx="224" cy="152" r="5"></circle>
+      <circle class="particle flow-o2 o2" data-flow="o2" cx="236" cy="164" r="5"></circle>
+      <circle class="particle flow-o2 o3" data-flow="o2" cx="214" cy="172" r="5"></circle>
+
+      <text data-label="sun" x="102" y="36"></text>
+      <text data-label="leaf" x="258" y="144"></text>
+      <text data-label="roots" x="92" y="308"></text>
+      <text data-label="water" x="120" y="228"></text>
+      <text data-label="co2" x="252" y="116"></text>
+      <text data-label="o2" x="280" y="72"></text>
+      <text data-label="glucose" x="176" y="198"></text>
+    </svg>
+  </div>
+
+  <div id="controls">
+    <button id="playBtn" data-action="play"></button>
+    <div id="steps"></div>
+  </div>
+
+  <div id="caption" data-caption></div>
+
+  <div id="quiz">
+    <div id="ask"></div>
+    <div id="options">
+      <button class="opt" data-option="co2"></button>
+      <button class="opt" data-option="o2"></button>
+      <button class="opt" data-option="water"></button>
+    </div>
+    <div id="feedback" aria-live="polite"></div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const params = Studio.params || {};
+  const stepsCount = Number(params.steps) || 5;
+
+  const app = document.getElementById('app');
+  const title = document.getElementById('title');
+  const playBtn = document.getElementById('playBtn');
+  const stepsWrap = document.getElementById('steps');
+  const caption = document.querySelector('[data-caption]');
+  const quiz = document.getElementById('quiz');
+  const ask = document.getElementById('ask');
+  const feedback = document.getElementById('feedback');
+  const optionButtons = Array.from(document.querySelectorAll('[data-option]'));
+
+  let currentStep = 1;
+  let playing = true;
+  let completed = false;
+  const stepButtons = [];
+  const stepTexts = [];
+
+  function setTexts() {
+    title.textContent = Studio.t('title');
+    document.querySelectorAll('[data-label]').forEach(el => {
+      el.textContent = Studio.t(el.getAttribute('data-label'));
+    });
+    ask.textContent = Studio.t('ask');
+    optionButtons.forEach(btn => btn.textContent = Studio.t(btn.getAttribute('data-option')));
+    for (let i = 1; i <= stepsCount; i++) stepTexts[i] = Studio.t('step' + i);
+    updatePlayLabel();
+    updateCaption();
+  }
+
+  function updatePlayLabel() {
+    playBtn.textContent = playing ? Studio.t('pause') : Studio.t('play');
+  }
+
+  function updateCaption() {
+    caption.textContent = stepTexts[currentStep] || '';
+  }
+
+  function paintStepState() {
+    for (let i = 1; i <= stepsCount; i++) {
+      app.classList.remove('step-' + i);
+      if (stepButtons[i]) stepButtons[i].classList.toggle('active', i === currentStep);
+    }
+    app.classList.add('step-' + currentStep);
+    app.classList.toggle('playing', playing);
+    quiz.classList.toggle('show', currentStep === stepsCount);
+  }
+
+  function goStep(n, manual) {
+    currentStep = Math.max(1, Math.min(stepsCount, n));
+    updateCaption();
+    paintStepState();
+    Studio.event('step', { step: currentStep, manual: !!manual });
+  }
+
+  for (let i = 1; i <= stepsCount; i++) {
+    const b = document.createElement('button');
+    b.className = 'stepBtn' + (i === 1 ? ' active' : '');
+    b.textContent = String(i);
+    b.setAttribute('data-action', 'step-' + i);
+    b.addEventListener('click', () => goStep(i, true));
+    stepButtons[i] = b;
+    stepsWrap.appendChild(b);
+  }
+
+  playBtn.addEventListener('click', () => {
+    playing = !playing;
+    updatePlayLabel();
+    paintStepState();
+    Studio.event('play', { playing });
+  });
+
+  optionButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      feedback.textContent = '';
+      feedback.className = '';
+      const v = btn.getAttribute('data-option');
+      Studio.answer(v);
+      Studio.event('answer', { value: v });
+    });
+  });
+
+  Studio.onVerdict(({ correct }) => {
+    feedback.textContent = correct ? '✓' : '✗';
+    feedback.className = correct ? 'ok' : 'no';
+    if (correct && !completed) {
+      completed = true;
+      Studio.done();
+    }
+  });
+
+  setTexts();
+  goStep(1, false);
+  Studio.ready();
+})();
+</script>

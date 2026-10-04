@@ -1,0 +1,118 @@
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #e6f7ff;
+  color: #154c79;
+  overflow-x: hidden;
+}
+.app {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+h1 {
+  font-size: 1.3rem;
+  text-align: center;
+  margin: 6px 0 10px;
+}
+.stage {
+  width: 100%;
+  max-width: 360px;
+}
+svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 18px;
+  background: #e6f7ff;
+}
+.soil { fill: #7f5539; }
+.roots {
+  fill: none;
+  stroke: #8d5524;
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: filter .2s, stroke-width .2s;
+}
+.stem {
+  fill: none;
+  stroke: #38b000;
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+.leaf {
+  fill: #70e000;
+  stroke: #38b000;
+  stroke-width: 2;
+  transition: filter .2s;
+}
+.sun {
+  fill: #ffd166;
+  transition: transform .2s, filter .2s;
+  transform-origin: 180px 55px;
+}
+.sun-ray {
+  stroke: #ffd166;
+  stroke-width: 2;
+  stroke-linecap: round;
+  transition: stroke-width .2s;
+}
+.flow-path {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  opacity: .35;
+  transition: opacity .2s, stroke-width .2s;
+}
+.particle { transition: r .2s, stroke-width .2s; stroke: none; }
+.particle-water { fill: #4cc9f0; }
+.particle-co2 { fill: #9d4edd; }
+.particle-o2 { fill: #f94144; }
+.glucose-group {
+  transform-origin: 180px 220px;
+  transition: filter .2s, opacity .2s;
+}
+.glucose-blob { fill: #ffbe0b; }
+.label {
+  font-size: 14px;
+  font-weight: 700;
+  fill: #154c79;
+  transition: font-size .2s, fill .2s;
+}
+.active-path { opacity: .95; stroke-width: 5; filter: drop-shadow(0 0 4px currentColor); }
+.active-particle { r: 7; stroke: #fff; stroke-width: 2; }
+.active-label { font-size: 17px; fill: #083d5c; }
+.active-ray { opacity: .9; stroke-width: 4; }
+.active-sun { transform: scale(1.12); filter: drop-shadow(0 0 10px #ffd166); }
+.active-leaf { filter: drop-shadow(0 0 10px #70e000); }
+.active-roots { stroke-width: 6; filter: drop-shadow(0 0 5px #8d5524); }
+.active-glucose { filter: drop-shadow(0 0 12px #ffbe0b); }
+.controls {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+.play-btn {
+  min-width: 64px;
+  min-height: 44px;
+  border-radius: 22px;
+  border: none;
+  background: #ffd166;
+  color: #5a3e00;
+  font-weight: 800;
+  font-size: .95rem;
+  cursor: pointer;
+  transition: transform .1s, background .2s;
+}
+.play-btn:active { transform: scale(0.94); }
+.steps {
+  display:

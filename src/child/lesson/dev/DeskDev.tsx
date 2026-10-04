@@ -23,7 +23,7 @@ const silent = { value: 0, subscribe: () => () => {} };
 
 export const FIXTURES = [
   "idle", "speaking", "showing", "yielding", "your_turn", "listening", "heard", "thinking",
-  "work-speaking", "work-showing", "work-your_turn", "work-listening", "work-heard", "work-thinking", "work-tiles",
+  "work-speaking", "work-showing", "work-your_turn", "work-listening", "work-heard", "work-thinking", "work-tiles", "work-pad", "work-pad-help",
   "T1", "T2", "T3", "T4", "T5", "T6", "T8", "T9", "RC", "PTT",
   "pause", "end", "hint", "help-menu", "help", "grownup", "no-mic", "locked",
   "correct", "not_yet", "partial", "hint-line", "with-help", "board-correct", "board-not_yet",
@@ -36,7 +36,7 @@ const ACTIONS: DeskActions = {
   start: noop, tapToHear: noop, talk: noop, send: noop, pickTile: noop, padSend: noop, hearQuestion: noop, hearAgain: noop, openHint: noop,
   hintPick: noop, helpMenuPick: noop, openHelpMenu: noop, wait: noop, setTyping: noop, setTypingFocus: noop, toggleCaptions: noop, pause: noop,
   resume: noop, askEnd: noop, cancelEnd: noop, endLesson: noop, openGrownUp: noop, closeGrownUp: noop, grownUpHere: noop, closeHelp: noop,
-  troubleAction: noop, dismissNoMic: noop, finish: noop, moduleEvent: noop, moduleFailed: noop, fixAnswer: noop,
+  troubleAction: noop, dismissNoMic: noop, finish: noop, moduleEvent: noop, moduleFailed: noop, fixAnswer: noop, closeHelpMenu: noop,
 };
 
 export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm: "live" | "plate", reducedMotion: boolean): DeskModel {
@@ -47,7 +47,7 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
   const floorOf = (n: string): Floor => {
     const f = n.replace(/^work-/, "");
     if (["idle", "speaking", "showing", "yielding", "your_turn", "listening", "heard", "thinking"].includes(f)) return f as Floor;
-    if (f === "tiles" || f === "help-menu" || f === "no-mic") return "your_turn";
+    if (f === "tiles" || f === "help-menu" || f === "no-mic" || f === "pad" || f === "pad-help") return "your_turn";
     if (["correct", "not_yet", "partial", "with-help", "board-correct", "board-not_yet"].includes(n)) return "speaking";
     if (n === "hint-line") return "your_turn";
     if (n === "thinking-4s") return "thinking";
@@ -70,20 +70,21 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
     : null;
   const tiles = young ? [{ id: "a", label: "1/2" }, { id: "b", label: "1/3" }] : [{ id: "a", label: "1/3" }, { id: "b", label: "2/3" }, { id: "c", label: "3/3" }];
   let tray: TrayModel | null = null;
-  if (name === "work-tiles" || name === "help-menu" || name === "no-mic") tray = { kind: "tiles", tiles, overlay: name === "help-menu" ? "help_menu" : name === "no-mic" ? "no_mic" : null };
+  if (name === "work-pad" || name === "work-pad-help") tray = { kind: "pad", overlay: name === "work-pad-help" ? "help_menu" : null };
+  else if (name === "work-tiles" || name === "help-menu" || name === "no-mic") tray = { kind: "tiles", tiles, overlay: name === "help-menu" ? "help_menu" : name === "no-mic" ? "no_mic" : null };
   else if (work || name.startsWith("board-")) tray = { kind: "board", board: { lines: [{ text: "1/2 = 2/4", kind: "math" }], chalked: answered ? (young ? "1/2" : "two") : null, mark: verdict === "correct" ? "tick" : verdict === "not_yet" ? "underline" : null } };
   const geometry = tray ? "work" : "face";
   const keyboard = name === "keyboard";
   const strip = (["T1", "T2", "T3", "T4", "T5", "T6", "T8", "T9", "RC", "PTT"] as const).includes(name as StripId & string) ? (name as StripId) : null;
   const stripH = strip && isStrip(strip) ? stripHeight(strip, { noPack: true, young, width: Math.min(size.w, 600) - 32 }) : 0;
-  const layout = solveDesk({ width: size.w, height: size.h, family, geometry, keyboard: keyboard && !young, fontScale: size.fontScale, captionsOn: band !== "b1", strip: stripH, cardNeed: size.cardNeed, stripNeed: size.stripNeed });
+  const layout = solveDesk({ width: size.w, height: size.h, family, geometry, keyboard: keyboard && !young, fontScale: size.fontScale, captionsOn: band !== "b1", strip: stripH, cardNeed: size.cardNeed, stripNeed: size.stripNeed, trayNeed: size.trayNeed });
   const sheet: Sheet = name === "pause" ? "pause" : name === "end" ? "end" : name === "hint" ? "hint" : name === "help" ? "help" : name === "grownup" ? "grownup" : null;
   const caption = young ? "Do barabar tukde gino. Kaunsa aadha hai?" : "Board dekho: 1/2 barabar 2/4. Toh ek half mein kitne quarters hote hain?";
   return {
     band, family, teacher: { id: rec.id, name: rec.name }, childName: young ? "Riya" : "Kabir",
     floor, sheet, strip, noPack: true, ask: askModel, answer,
     caption: { text: caption, speaking: floor === "speaking" || floor === "showing", mode: "phrase", lang: "hi-Latn" },
-    tray, answerForm: name === "work-tiles" ? "choice" : young ? "words" : "number", phase: name === "summary" ? "wrap" : work ? "teach" : "warmup",
+    tray, padSlash: !young && name.startsWith("work-pad"), answerForm: name === "work-tiles" ? "choice" : young && !name.startsWith("work-pad") ? "words" : "number", phase: name === "summary" ? "wrap" : work ? "teach" : "warmup",
     shortTitle: young ? "Halves" : "Fractions: halves", lastOne: false,
     thinkingSeconds: name === "thinking-4s" && !young ? 4 : null, thinkingLabel: floor === "thinking",
     mic: { available: true, talking: floor === "listening", drain: floor === "listening" ? 0.3 : 0, tapToTalk: true },

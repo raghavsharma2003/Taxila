@@ -1,0 +1,336 @@
+<style>
+  :root{
+    --bg:#f3fbff;
+    --card:#ffffff;
+    --ink:#1f2a44;
+    --sun:#ffd54f;
+    --leaf:#45b36b;
+    --stem:#3a8f55;
+    --soil:#9a6a45;
+    --water:#3aa7ff;
+    --co2:#7a8aa0;
+    --o2:#76d66a;
+    --glucose:#ffd166;
+    --accent:#7c5cff;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color:var(--ink);
+  }
+  .app{
+    width:100%;
+    max-width:360px;
+    min-height:640px;
+    margin:0 auto;
+    padding:10px 10px 14px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .title{
+    margin:2px 2px 0;
+    font-weight:800;
+    font-size:22px;
+    line-height:1.1;
+    text-align:center;
+  }
+  .card{
+    background:var(--card);
+    border-radius:18px;
+    box-shadow:0 6px 18px rgba(31,42,68,.12);
+    padding:8px;
+  }
+  svg{
+    width:100%;
+    height:auto;
+    display:block;
+    border-radius:14px;
+    background:linear-gradient(#dff4ff 0 66%, #f7efe8 66% 100%);
+  }
+  .lbl{
+    font-size:12px;
+    font-weight:700;
+    fill:#1f2a44;
+    paint-order:stroke;
+    stroke:#fff;
+    stroke-width:3px;
+    stroke-linejoin:round;
+  }
+  .controls{display:flex;gap:8px}
+  button{
+    border:0;
+    border-radius:12px;
+    min-height:44px;
+    min-width:44px;
+    padding:10px 12px;
+    font-size:16px;
+    font-weight:700;
+    background:#e8efff;
+    color:#20305a;
+    box-shadow:0 2px 0 rgba(0,0,0,.08);
+    transition:transform .12s ease, background .2s ease;
+  }
+  button:active{transform:scale(.96)}
+  .play{flex:1;background:#d9ebff}
+  .steps{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+  .step.active{background:var(--accent);color:#fff;transform:translateY(-1px)}
+  [data-caption]{
+    min-height:44px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-weight:700;
+    color:#253250;
+    background:#f0f4ff;
+    border-radius:12px;
+    padding:8px;
+  }
+  .question{
+    background:#fff7e8;
+    border-radius:14px;
+    padding:8px;
+    display:none;
+    gap:8px;
+    flex-direction:column;
+  }
+  .question.show{display:flex}
+  .ask{text-align:center;font-weight:800}
+  .options{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .opt{background:#ffe6b8}
+  .feedback{min-height:24px;text-align:center;font-size:22px;font-weight:800}
+  .wrong{color:#c44343}.right{color:#2a9d4b}
+
+  .ray{stroke:#ffd54f;stroke-width:4;stroke-linecap:round;opacity:.35;transition:opacity .3s}
+  .light-on .ray{opacity:.95}
+  .water-dot{fill:var(--water);opacity:.9}
+  .co2-dot{fill:var(--co2);opacity:.85}
+  .o2-dot{fill:var(--o2);opacity:.9}
+  .flow-dim .water-dot,.flow-dim .co2-dot,.flow-dim .o2-dot{opacity:.25}
+  .em-water .water-dot{opacity:1;filter:drop-shadow(0 0 4px rgba(58,167,255,.9))}
+  .em-co2 .co2-dot{opacity:1;filter:drop-shadow(0 0 4px rgba(122,138,160,.9))}
+  .em-o2 .o2-dot{opacity:1;filter:drop-shadow(0 0 4px rgba(118,214,106,.9))}
+  #glucoseCore{opacity:.35;transition:opacity .35s, r .35s}
+  .em-glucose #glucoseCore{opacity:1}
+</style>
+
+<div class="app">
+  <div class="title" id="title"></div>
+
+  <div class="card">
+    <svg id="scene" viewBox="0 0 360 360" aria-hidden="true">
+      <g>
+        <line class="ray" x1="58" y1="62" x2="210" y2="132"></line>
+        <line class="ray" x1="74" y1="56" x2="220" y2="144"></line>
+        <line class="ray" x1="90" y1="56" x2="230" y2="152"></line>
+      </g>
+
+      <circle cx="62" cy="62" r="28" fill="#ffd54f"></circle>
+      <circle cx="55" cy="54" r="9" fill="#fff1a8"></circle>
+
+      <rect x="0" y="238" width="360" height="122" fill="#a47652"></rect>
+
+      <g data-entity="roots" id="roots">
+        <path d="M180 238 C165 255,150 270,138 298" fill="none" stroke="#8a5d3d" stroke-width="6" stroke-linecap="round"/>
+        <path d="M180 238 C194 257,212 272,228 296" fill="none" stroke="#8a5d3d" stroke-width="6" stroke-linecap="round"/>
+        <path d="M179 242 C168 261,162 282,160 306" fill="none" stroke="#8a5d3d" stroke-width="5" stroke-linecap="round"/>
+        <path d="M181 242 C193 262,200 284,202 308" fill="none" stroke="#8a5d3d" stroke-width="5" stroke-linecap="round"/>
+      </g>
+
+      <rect x="173" y="145" width="14" height="95" rx="7" fill="#3a8f55"></rect>
+
+      <g data-entity="leaf" id="leaf">
+        <ellipse cx="225" cy="150" rx="56" ry="30" fill="#45b36b" transform="rotate(-18 225 150)"></ellipse>
+        <path d="M184 162 Q225 149 266 135" stroke="#2d7c48" stroke-width="3" fill="none"/>
+      </g>
+
+      <circle id="glucoseCore" cx="232" cy="150" r="7" fill="#ffd166"></circle>
+
+      <g>
+        <circle class="water-dot" data-flow="water" r="4"></circle>
+        <circle class="water-dot" data-flow="water" r="4"></circle>
+        <circle class="water-dot" data-flow="water" r="4"></circle>
+        <circle class="water-dot" data-flow="water" r="4"></circle>
+      </g>
+      <g>
+        <circle class="co2-dot" data-flow="co2" r="4"></circle>
+        <circle class="co2-dot" data-flow="co2" r="4"></circle>
+        <circle class="co2-dot" data-flow="co2" r="4"></circle>
+        <circle class="co2-dot" data-flow="co2" r="4"></circle>
+      </g>
+      <g>
+        <circle class="o2-dot" data-flow="o2" r="4"></circle>
+        <circle class="o2-dot" data-flow="o2" r="4"></circle>
+        <circle class="o2-dot" data-flow="o2" r="4"></circle>
+        <circle class="o2-dot" data-flow="o2" r="4"></circle>
+      </g>
+
+      <text class="lbl" data-label="sun" x="18" y="22"></text>
+      <text class="lbl" data-label="leaf" x="252" y="120"></text>
+      <text class="lbl" data-label="roots" x="242" y="316"></text>
+      <text class="lbl" data-label="water" x="124" y="208"></text>
+      <text class="lbl" data-label="co2" x="18" y="130"></text>
+      <text class="lbl" data-label="o2" x="286" y="84"></text>
+      <text class="lbl" data-label="glucose" x="244" y="170"></text>
+    </svg>
+  </div>
+
+  <div class="controls">
+    <button class="play" data-action="play" id="playBtn"></button>
+  </div>
+
+  <div class="steps card" id="steps"></div>
+  <div class="card" data-caption id="caption"></div>
+
+  <div class="question" id="question">
+    <div class="ask" id="ask"></div>
+    <div class="options">
+      <button class="opt" data-option="co2" id="opt-co2"></button>
+      <button class="opt" data-option="o2" id="opt-o2"></button>
+      <button class="opt" data-option="water" id="opt-water"></button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const stepsCount = Number(Studio.params.steps) || 1;
+  const scene = document.getElementById('scene');
+  const caption = document.getElementById('caption');
+  const playBtn = document.getElementById('playBtn');
+  const stepsWrap = document.getElementById('steps');
+  const question = document.getElementById('question');
+  const feedback = document.getElementById('feedback');
+  const glucoseCore = document.getElementById('glucoseCore');
+
+  let currentStep = 1;
+  let playing = true;
+  let doneSent = false;
+  let questionShown = false;
+  let lastStepSwitch = performance.now();
+
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('ask').textContent = Studio.t('ask');
+  document.getElementById('opt-co2').textContent = Studio.t('co2');
+  document.getElementById('opt-o2').textContent = Studio.t('o2');
+  document.getElementById('opt-water').textContent = Studio.t('water');
+  document.querySelectorAll('[data-label]').forEach(el=>{ el.textContent = Studio.t(el.getAttribute('data-label')); });
+
+  const stepButtons = [];
+  for(let i=1;i<=stepsCount;i++){
+    const b = document.createElement('button');
+    b.className = 'step';
+    b.setAttribute('data-action','step-'+i);
+    b.textContent = String(i);
+    b.addEventListener('click', function(){
+      setStep(i);
+      playing = false;
+      updatePlayLabel();
+      Studio.event('step_tap',{step:i});
+    });
+    stepsWrap.appendChild(b);
+    stepButtons.push(b);
+  }
+
+  function updatePlayLabel(){
+    playBtn.textContent = playing ? Studio.t('pause') : Studio.t('play');
+  }
+
+  function revealQuestion(){
+    if(questionShown) return;
+    questionShown = true;
+    question.classList.add('show');
+  }
+
+  function setStep(n){
+    currentStep = n;
+    caption.textContent = Studio.t('step' + n);
+    stepButtons.forEach((b,idx)=>b.classList.toggle('active', idx===n-1));
+
+    scene.classList.remove('light-on','flow-dim','em-water','em-co2','em-o2','em-glucose');
+    if(n===1){ scene.classList.add('light-on'); }
+    if(n===2){ scene.classList.add('flow-dim','em-water'); }
+    if(n===3){ scene.classList.add('em-glucose'); }
+    if(n===4){ scene.classList.add('flow-dim','em-co2'); }
+    if(n===5){ scene.classList.add('flow-dim','em-o2'); revealQuestion(); }
+  }
+
+  playBtn.addEventListener('click', function(){
+    playing = !playing;
+    lastStepSwitch = performance.now();
+    updatePlayLabel();
+    Studio.event('play_toggle',{playing:playing});
+  });
+
+  const wEls = Array.from(document.querySelectorAll('[data-flow="water"]'));
+  const cEls = Array.from(document.querySelectorAll('[data-flow="co2"]'));
+  const oEls = Array.from(document.querySelectorAll('[data-flow="o2"]'));
+
+  const waterPts = [{x:180,y:300},{x:178,y:250},{x:180,y:205},{x:210,y:165},{x:232,y:152}];
+  const co2Pts = [{x:30,y:120},{x:90,y:126},{x:150,y:137},{x:205,y:146},{x:226,y:150}];
+  const o2Pts = [{x:232,y:150},{x:258,y:126},{x:286,y:102},{x:314,y:84}];
+
+  function interp(path, t){
+    const segs = path.length - 1;
+    const p = Math.max(0, Math.min(0.9999, t)) * segs;
+    const i = Math.floor(p);
+    const lt = p - i;
+    const a = path[i], b = path[i+1];
+    return {x:a.x+(b.x-a.x)*lt, y:a.y+(b.y-a.y)*lt};
+  }
+  function place(el, pos){
+    el.setAttribute('cx', pos.x.toFixed(2));
+    el.setAttribute('cy', pos.y.toFixed(2));
+  }
+
+  function animate(t){
+    if(playing && (t-lastStepSwitch>3200)){
+      lastStepSwitch = t;
+      if(currentStep < stepsCount){ setStep(currentStep+1); }
+      else{ setStep(stepsCount); playing = false; updatePlayLabel(); }
+    }
+
+    const k = t * 0.00022;
+    wEls.forEach((el,i)=>place(el, interp(waterPts, (k + i*0.22)%1 )));
+    cEls.forEach((el,i)=>place(el, interp(co2Pts, (k*0.82 + i*0.25)%1 )));
+    oEls.forEach((el,i)=>place(el, interp(o2Pts, (k*1.1 + i*0.28)%1 )));
+    const pulse = 7 + (Math.sin(t*0.006)+1)*1.7;
+    glucoseCore.setAttribute('r', pulse.toFixed(2));
+
+    requestAnimationFrame(animate);
+  }
+
+  document.querySelectorAll('[data-option]').forEach(function(btn){
+    const opt = btn.getAttribute('data-option');
+    btn.addEventListener('click', function(){
+      feedback.className = 'feedback';
+      feedback.textContent = '';
+      Studio.answer(opt);
+      Studio.event('option_tap',{option:opt});
+    });
+  });
+
+  Studio.onVerdict(function(v){
+    if(v && v.correct){
+      feedback.className = 'feedback right';
+      feedback.textContent = '✓';
+      if(!doneSent){
+        doneSent = true;
+        Studio.done();
+      }
+    }else{
+      feedback.className = 'feedback wrong';
+      feedback.textContent = '✗';
+    }
+  });
+
+  updatePlayLabel();
+  setStep(1);
+  requestAnimationFrame(animate);
+  Studio.ready();
+})();
+</script>

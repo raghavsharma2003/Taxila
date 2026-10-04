@@ -1,0 +1,200 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #FFF8F0; color: #4A3B2A; }
+  .app { width: 100%; max-width: 360px; min-height: 640px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; padding: 16px; }
+  .title { text-align: center; font-size: 1.45rem; font-weight: 800; color: #D35400; margin-top: 8px; }
+  .ask { text-align: center; font-size: 1.05rem; color: #5D4037; margin: 14px 8px 18px; line-height: 1.45; }
+  .card { width: 100%; background: #FFFFFF; border-radius: 26px; box-shadow: 0 12px 28px rgba(211, 84, 0, 0.12); padding: 16px; }
+  #chart { width: 100%; height: 320px; display: block; overflow: visible; }
+  .axis-title { font-size: 12px; font-weight: 800; fill: #8D6E63; text-anchor: middle; }
+  .tick-label { font-size: 11px; fill: #8D6E63; text-anchor: end; dominant-baseline: middle; }
+  .grid-line { stroke: #F0E6E0; stroke-width: 1; }
+  .baseline { stroke: #8D6E63; stroke-width: 2; }
+  .fruit-label { font-size: 12px; font-weight: 700; fill: #5D4037; text-anchor: middle; dominant-baseline: hanging; }
+  .bar { cursor: pointer; touch-action: manipulation; transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1), filter 0.2s; transform-box: fill-box; transform-origin: bottom center; transform: scaleY(0); }
+  .bar.grow { transform: scaleY(1); }
+  .bar.tapped { filter: brightness(1.15); }
+  @keyframes tapPulse { 0% { transform: scaleY(1); } 50% { transform: scaleY(1.06); } 100% { transform: scaleY(1); } }
+  .bar.pulse { animation: tapPulse 0.3s ease; }
+  #tooltip { opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+  #tooltip rect { fill: #3E2723; }
+  #tooltip text { font-size: 13px; font-weight: 800; fill: #FFFFFF; text-anchor: middle; dominant-baseline: central; }
+  .feedback { margin-top: 20px; text-align: center; font-size: 1.15rem; font-weight: 800; min-height: 34px; }
+  .feedback.right { color: #2E7D32; }
+  .feedback.wrong { color: #C62828; }
+  .done-text { margin-top: 6px; text-align: center; font-size: 1rem; color: #5D4037; font-weight: 700; }
+  .hidden { display: none; }
+</style>
+
+<div class="app">
+  <div class="title" id="chart-title"></div>
+  <div class="ask" id="ask"></div>
+  <div class="card">
+    <svg id="chart" aria-label="bar chart"></svg>
+  </div>
+  <div id="feedback" class="feedback"></div>
+  <div id="done-text" class="done-text hidden"></div>
+</div>
+
+<script>
+  (function () {
+    function ns(tag) { return document.createElementNS("http://www.w3.org/2000/svg", tag); }
+    var data = Studio.params.data;
+    var palette = { mango: "#FFB74D", banana: "#FFF176", apple: "#EF5350", guava: "#81C784", orange: "#FFA726" };
+    var svg = document.getElementById("chart");
+    var feedback = document.getElementById("feedback");
+    var doneText = document.getElementById("done-text");
+
+    document.getElementById("chart-title").textContent = Studio.t("title");
+    document.getElementById("ask").textContent = Studio.t("ask");
+
+    var values = data.map(function (d) { return d.value; });
+    var maxValue = Math.max.apply(null, values);
+    var step = maxValue <= 12 ? 2 : 5;
+    var maxTick = Math.ceil(maxValue / step) * step;
+    if (maxTick === 0) { maxTick = step; }
+
+    var svgW = 320, padLeft = 40, chartW = 280;
+    var padTop = 24, chartH = 252, chartBottom = padTop + chartH;
+
+    svg.setAttribute("viewBox", "0 0 " + svgW + " " + svgW);
+
+    var defs = ns("defs");
+    var clip = ns("clipPath");
+    clip.setAttribute("id", "chartClip");
+    var clipRect = ns("rect");
+    clipRect.setAttribute("x", padLeft);
+    clipRect.setAttribute("y", padTop);
+    clipRect.setAttribute("width", chartW);
+    clipRect.setAttribute("height", chartH);
+    clip.appendChild(clipRect);
+    defs.appendChild(clip);
+    svg.appendChild(defs);
+
+    var gridGroup = ns("g");
+    var barsGroup = ns("g");
+    barsGroup.setAttribute("clip-path", "url(#chartClip)");
+    var labelsGroup = ns("g");
+    svg.appendChild(gridGroup);
+    svg.appendChild(barsGroup);
+    svg.appendChild(labelsGroup);
+
+    var ytitle = ns("text");
+    ytitle.setAttribute("class", "axis-title");
+    ytitle.setAttribute("x", 14);
+    ytitle.setAttribute("y", padTop + chartH / 2);
+    ytitle.setAttribute("transform", "rotate(-90, 14, " + (padTop + chartH / 2) + ")");
+    ytitle.textContent = Studio.t("yaxis");
+    svg.appendChild(ytitle);
+
+    for (var v = 0; v <= maxTick; v += step) {
+      var y = chartBottom - (v / maxTick) * chartH;
+      var line = ns("line");
+      line.setAttribute("x1", padLeft);
+      line.setAttribute("x2", padLeft + chartW);
+      line.setAttribute("y1", y);
+      line.setAttribute("y2", y);
+      line.setAttribute("class", v === 0 ? "baseline" : "grid-line");
+      gridGroup.appendChild(line);
+
+      var tick = ns("text");
+      tick.setAttribute("class", "tick-label");
+      tick.setAttribute("x", padLeft - 8);
+      tick.setAttribute("y", y);
+      tick.setAttribute("data-tick", v);
+      tick.textContent = v;
+      gridGroup.appendChild(tick);
+    }
+
+    var tooltip = ns("g");
+    tooltip.setAttribute("id", "tooltip");
+    var ttRect = ns("rect");
+    ttRect.setAttribute("width", 38);
+    ttRect.setAttribute("height", 24);
+    ttRect.setAttribute("rx", 6);
+    ttRect.setAttribute("ry", 6);
+    var ttText = ns("text");
+    tooltip.appendChild(ttRect);
+    tooltip.appendChild(ttText);
+    svg.appendChild(tooltip);
+
+    var barCount = data.length;
+    var barWidth = 44;
+    var gap = (chartW - barCount * barWidth) / (barCount + 1);
+
+    data.forEach(function (d, i) {
+      var h = (d.value / maxTick) * chartH;
+      var x = padLeft + gap + i * (barWidth + gap);
+
+      var bar = ns("rect");
+      bar.setAttribute("class", "bar");
+      bar.setAttribute("x", x);
+      bar.setAttribute("y", chartBottom - h);
+      bar.setAttribute("width", barWidth);
+      bar.setAttribute("height", h);
+      bar.setAttribute("rx", 7);
+      bar.setAttribute("ry", 7);
+      bar.setAttribute("fill", palette[d.key] || "#90A4AE");
+      bar.setAttribute("data-bar", d.key);
+      bar.setAttribute("data-value", d.value);
+      bar.setAttribute("tabindex", "0");
+      bar.setAttribute("role", "button");
+
+      function showTip() {
+        ttText.textContent = d.value;
+        var tw = 38, th = 24;
+        var tx = x + barWidth / 2 - tw / 2;
+        var ty = chartBottom - h - th - 6;
+        ttRect.setAttribute("x", tx);
+        ttRect.setAttribute("y", ty);
+        ttText.setAttribute("x", tx + tw / 2);
+        ttText.setAttribute("y", ty + th / 2);
+        tooltip.setAttribute("opacity", "1");
+      }
+
+      function tap(e) {
+        if (e && e.cancelable) e.preventDefault();
+        bar.classList.add("tapped", "pulse");
+        setTimeout(function () { bar.classList.remove("pulse"); }, 300);
+        showTip();
+        Studio.event("barTap", { key: d.key, value: d.value });
+        Studio.answer(d.key);
+      }
+
+      bar.addEventListener("pointerdown", tap);
+      bar.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); tap(e); }
+      });
+      barsGroup.appendChild(bar);
+
+      var label = ns("text");
+      label.setAttribute("class", "fruit-label");
+      label.setAttribute("x", x + barWidth / 2);
+      label.setAttribute("y", chartBottom + 14);
+      label.textContent = Studio.t(d.key);
+      labelsGroup.appendChild(label);
+    });
+
+    Studio.onVerdict(function (result) {
+      if (result.correct) {
+        feedback.textContent = Studio.t("right");
+        feedback.className = "feedback right";
+        doneText.textContent = Studio.t("done");
+        doneText.classList.remove("hidden");
+        barsGroup.style.pointerEvents = "none";
+        setTimeout(function () { Studio.done(); }, 900);
+      } else {
+        feedback.textContent = Studio.t("wrong");
+        feedback.className = "feedback wrong";
+        doneText.classList.add("hidden");
+      }
+    });
+
+    requestAnimationFrame(function () {
+      var bars = barsGroup.querySelectorAll(".bar");
+      bars.forEach(function (b) { b.classList.add("grow"); });
+    });
+
+    Studio.ready();
+  })();
+</script>

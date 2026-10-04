@@ -38,6 +38,12 @@ export interface ModuleHostProps {
   readyTimeoutMs?: number;
   className?: string;
   frameStyle?: CSSProperties;
+  /**
+   * Fill the parent box: the host wrapper and every tile take height 100%, so a frame styled `height: 100%` gets the
+   * parent's height. Without it a percentage height resolves against an auto-height wrapper and the iframe falls back
+   * to the browser's 150 px default (live-content audit 3: a 150 px frame in a 404 px tray, Check out of view).
+   */
+  fill?: boolean;
 }
 
 interface Slot {
@@ -63,6 +69,9 @@ interface Tile {
   status: TileStatus;
 }
 
+const FILL_STYLE: CSSProperties = { height: "100%", width: "100%" };
+const TILE_STYLE: CSSProperties = { position: "relative" };
+const TILE_FILL_STYLE: CSSProperties = { position: "relative", height: "100%" };
 const DEFAULT_FRAME_STYLE: CSSProperties = { display: "block", width: "100%", height: 360, border: 0, background: "transparent" };
 const NOTICE_STYLE: CSSProperties = {
   position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
@@ -92,6 +101,7 @@ export function ModuleHost({
   readyTimeoutMs = 15_000,
   className,
   frameStyle,
+  fill = false,
 }: ModuleHostProps) {
   const slots = useRef(new Map<string, Slot>());
   const [tiles, setTiles] = useState<Tile[]>([]);
@@ -221,9 +231,9 @@ export function ModuleHost({
   }, [source]);
 
   return (
-    <div className={className} data-module-host="">
+    <div className={className} data-module-host="" style={fill ? FILL_STYLE : undefined}>
       {tiles.map((t) => (
-        <div key={t.key} data-module-id={t.moduleId} data-status={t.status} style={{ position: "relative" }}>
+        <div key={t.key} data-module-id={t.moduleId} data-status={t.status} style={fill ? TILE_FILL_STYLE : TILE_STYLE}>
           {t.status !== "dead" && (
             <iframe
               ref={(el) => {

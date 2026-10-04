@@ -1,0 +1,382 @@
+<style>
+  :root{
+    --bg:#fff7ef;
+    --card:#ffffff;
+    --ink:#3a2e2a;
+    --soft:#7a6a63;
+    --accent:#ff8a65;
+    --accent2:#ffd166;
+    --ok:#2e9e6f;
+    --no:#d45d5d;
+    --ring:#ffd9cc;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  #app{
+    width:100%;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:10px 8px 14px;
+    color:var(--ink);
+    overflow:hidden;
+  }
+  .top{
+    width:100%;
+    text-align:center;
+    margin-bottom:8px;
+  }
+  #title{
+    margin:4px 0 2px;
+    font-size:26px;
+    line-height:1.15;
+    font-weight:800;
+    color:var(--ink);
+  }
+  #instr{
+    margin:0 auto 8px;
+    max-width:340px;
+    font-size:16px;
+    line-height:1.3;
+    color:var(--soft);
+  }
+  #itemCard{
+    width:100%;
+    border-radius:20px;
+    background:var(--card);
+    box-shadow:0 8px 24px rgba(120,82,62,.12);
+    padding:10px 0 12px;
+    transform-origin:center;
+    animation:floaty 3s ease-in-out infinite;
+  }
+  @keyframes floaty{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-2px)}
+  }
+  .fractionRow{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:8px;
+    margin:2px 0 8px;
+    font-weight:900;
+    color:#5f4339;
+    user-select:none;
+  }
+  #fracN,#fracD{
+    font-size:38px;
+    min-width:28px;
+    text-align:center;
+  }
+  .slash{
+    font-size:34px;
+    opacity:.7;
+    transform:translateY(-1px);
+  }
+  #svgWrap{
+    width:100vw;
+    max-width:100vw;
+    overflow:hidden;
+  }
+  #wholeSvg{
+    width:100vw;
+    height:auto;
+    display:block;
+    touch-action:manipulation;
+  }
+  .part{
+    fill:#ffe8b3;
+    stroke:#fff;
+    stroke-width:2;
+    transition:fill .22s ease, transform .12s ease;
+    transform-box:fill-box;
+    transform-origin:center;
+    cursor:pointer;
+  }
+  .part.on{fill:var(--accent)}
+  .part.pop{animation:pop .24s ease}
+  @keyframes pop{
+    0%{transform:scale(1)}
+    45%{transform:scale(1.05)}
+    100%{transform:scale(1)}
+  }
+  .part:active{transform:scale(.97)}
+  #msg{
+    min-height:28px;
+    margin:10px 6px 8px;
+    text-align:center;
+    font-size:18px;
+    font-weight:700;
+    color:var(--soft);
+  }
+  #msg.ok{color:var(--ok);animation:bounce .45s ease}
+  #msg.no{color:var(--no);animation:shake .35s ease}
+  @keyframes shake{
+    0%,100%{transform:translateX(0)}
+    25%{transform:translateX(-5px)}
+    75%{transform:translateX(5px)}
+  }
+  @keyframes bounce{
+    0%{transform:translateY(0)}
+    35%{transform:translateY(-5px)}
+    100%{transform:translateY(0)}
+  }
+  #checkBtn{
+    margin-top:auto;
+    width:min(320px,92vw);
+    min-height:50px;
+    border:0;
+    border-radius:16px;
+    background:linear-gradient(180deg,#ffad90,#ff8a65);
+    color:#fff;
+    font-size:20px;
+    font-weight:800;
+    box-shadow:0 8px 18px rgba(255,138,101,.35);
+    transform:scale(1);
+    transition:transform .08s ease, filter .15s ease, opacity .2s ease;
+  }
+  #checkBtn:active{transform:scale(.98)}
+  #checkBtn[disabled]{opacity:.6;filter:grayscale(.15)}
+  #doneScreen{
+    width:100%;
+    min-height:220px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  #doneText{
+    background:#fff;
+    color:#4f3a32;
+    border-radius:20px;
+    padding:22px 18px;
+    font-size:30px;
+    font-weight:900;
+    box-shadow:0 8px 24px rgba(120,82,62,.14);
+    text-align:center;
+  }
+  .spark{
+    opacity:0;
+    transform-origin:center;
+  }
+  .celebrate .spark{
+    animation:spark .7s ease;
+  }
+  @keyframes spark{
+    0%{opacity:0;transform:scale(.2)}
+    30%{opacity:1}
+    100%{opacity:0;transform:scale(1.4)}
+  }
+</style>
+
+<div id="app">
+  <div class="top">
+    <h1 id="title"></h1>
+    <p id="instr"></p>
+  </div>
+
+  <div id="itemCard" data-item="">
+    <div class="fractionRow">
+      <span id="fracN">0</span>
+      <span class="slash">/</span>
+      <span id="fracD">0</span>
+    </div>
+    <div id="svgWrap">
+      <svg id="wholeSvg" viewBox="0 0 360 230" aria-hidden="true">
+        <defs>
+          <clipPath id="barClip">
+            <rect x="4" y="56" width="352" height="120" rx="22" ry="22"></rect>
+          </clipPath>
+        </defs>
+        <rect x="4" y="56" width="352" height="120" rx="22" ry="22" fill="#fff2d4" stroke="#f0c9a2" stroke-width="3"></rect>
+        <g id="partsLayer" clip-path="url(#barClip)"></g>
+        <g id="sparkles">
+          <circle class="spark" cx="38" cy="40" r="5" fill="#ffd166"></circle>
+          <circle class="spark" cx="90" cy="30" r="4" fill="#ff8a65"></circle>
+          <circle class="spark" cx="170" cy="24" r="6" fill="#ffd166"></circle>
+          <circle class="spark" cx="250" cy="30" r="4" fill="#ff8a65"></circle>
+          <circle class="spark" cx="322" cy="42" r="5" fill="#ffd166"></circle>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <div id="msg" aria-live="polite"></div>
+  <button id="checkBtn" data-action="check"></button>
+
+  <div id="doneScreen" hidden>
+    <div id="doneText"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const items = (Studio.params && Studio.params.items) ? Studio.params.items : [];
+  const ns = "http://www.w3.org/2000/svg";
+
+  const el = {
+    title: document.getElementById("title"),
+    instr: document.getElementById("instr"),
+    card: document.getElementById("itemCard"),
+    n: document.getElementById("fracN"),
+    d: document.getElementById("fracD"),
+    parts: document.getElementById("partsLayer"),
+    msg: document.getElementById("msg"),
+    check: document.getElementById("checkBtn"),
+    doneWrap: document.getElementById("doneScreen"),
+    doneText: document.getElementById("doneText"),
+    svg: document.getElementById("wholeSvg")
+  };
+
+  let idx = 0;
+  let shaded = [];
+  let waiting = false;
+  let finished = false;
+  let doneOnce = false;
+
+  function txt(){
+    el.title.textContent = Studio.t("title");
+    el.instr.textContent = Studio.t("instr");
+    el.check.textContent = Studio.t("check");
+    el.doneText.textContent = Studio.t("done");
+  }
+
+  function setMsg(kind){
+    el.msg.className = "";
+    if(kind === "ok"){
+      el.msg.textContent = Studio.t("right");
+      el.msg.classList.add("ok");
+    }else if(kind === "no"){
+      el.msg.textContent = Studio.t("wrong") + " " + Studio.t("hint");
+      el.msg.classList.add("no");
+    }else{
+      el.msg.textContent = "";
+    }
+  }
+
+  function togglePart(i, node){
+    if(waiting || finished) return;
+    shaded[i] = !shaded[i];
+    node.dataset.shaded = shaded[i] ? "true" : "false";
+    node.classList.toggle("on", shaded[i]);
+    node.classList.remove("pop");
+    void node.getBoundingClientRect();
+    node.classList.add("pop");
+    Studio.event("part_toggle", {item: items[idx].id, part: i, shaded: shaded[i]});
+  }
+
+  function buildParts(d){
+    el.parts.innerHTML = "";
+    shaded = new Array(d).fill(false);
+
+    const segW = 352 / d;
+    for(let i=0;i<d;i++){
+      const r = document.createElementNS(ns, "rect");
+      r.setAttribute("x", String(4 + i * segW));
+      r.setAttribute("y", "56");
+      r.setAttribute("width", String(segW));
+      r.setAttribute("height", "120");
+      r.setAttribute("class", "part");
+      r.setAttribute("data-part", String(i));
+      r.setAttribute("data-shaded", "false");
+      r.setAttribute("role", "button");
+      r.setAttribute("tabindex", "0");
+      r.addEventListener("click", function(){ togglePart(i, r); });
+      r.addEventListener("keydown", function(e){
+        if(e.key === "Enter" || e.key === " "){
+          e.preventDefault();
+          togglePart(i, r);
+        }
+      });
+      el.parts.appendChild(r);
+    }
+
+    for(let j=1;j<d;j++){
+      const line = document.createElementNS(ns, "line");
+      const x = 4 + j * segW;
+      line.setAttribute("x1", String(x));
+      line.setAttribute("y1", "56");
+      line.setAttribute("x2", String(x));
+      line.setAttribute("y2", "176");
+      line.setAttribute("stroke", "#fff");
+      line.setAttribute("stroke-width", "2");
+      line.setAttribute("pointer-events", "none");
+      el.parts.appendChild(line);
+    }
+  }
+
+  function renderItem(){
+    if(idx >= items.length){
+      finish();
+      return;
+    }
+    const it = items[idx];
+    el.card.hidden = false;
+    el.check.hidden = false;
+    el.msg.hidden = false;
+    el.doneWrap.hidden = true;
+
+    el.card.setAttribute("data-item", String(it.id));
+    el.n.textContent = String(it.n);
+    el.d.textContent = String(it.d);
+    setMsg("");
+    waiting = false;
+    el.check.disabled = false;
+    buildParts(it.d);
+  }
+
+  function celebrateThenNext(){
+    el.card.classList.add("celebrate");
+    setTimeout(function(){
+      el.card.classList.remove("celebrate");
+      idx += 1;
+      renderItem();
+    }, 700);
+  }
+
+  function finish(){
+    if(finished) return;
+    finished = true;
+    el.card.hidden = true;
+    el.check.hidden = true;
+    el.msg.hidden = true;
+    el.doneWrap.hidden = false;
+    if(!doneOnce){
+      doneOnce = true;
+      Studio.done();
+    }
+  }
+
+  el.check.addEventListener("click", function(){
+    if(waiting || finished || idx >= items.length) return;
+    const it = items[idx];
+    const n = shaded.reduce((a,b)=>a + (b?1:0), 0);
+    waiting = true;
+    el.check.disabled = true;
+    Studio.event("check", {item: it.id, n: n, d: it.d});
+    Studio.answer({n:n, d:it.d});
+  });
+
+  Studio.onVerdict(function(v){
+    if(!waiting || finished) return;
+    waiting = false;
+    el.check.disabled = false;
+    if(v && v.correct){
+      setMsg("ok");
+      Studio.event("verdict", {item: items[idx] && items[idx].id, correct: true});
+      celebrateThenNext();
+    }else{
+      setMsg("no");
+      Studio.event("verdict", {item: items[idx] && items[idx].id, correct: false});
+    }
+  });
+
+  txt();
+  if(items.length){
+    renderItem();
+  }else{
+    finish();
+  }
+  Studio.ready();
+})();
+</script>

@@ -1,0 +1,169 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#fff7e8;font-family:system-ui,-apple-system,sans-serif;color:#4b2c20}
+  #app{min-height:100vh;display:flex;flex-direction:column;overflow:hidden;background:
+    radial-gradient(circle at 15% 7%,#fffdf7 0 9%,transparent 10%),
+    radial-gradient(circle at 91% 18%,#ffe4a9 0 7%,transparent 8%),#fff7e8}
+  header{padding:22px 20px 10px;text-align:center}
+  h1{margin:0;color:#cc5739;font-size:25px;line-height:1.15;font-weight:800}
+  #instruction{margin:10px auto 0;max-width:310px;color:#765345;font-size:16px;line-height:1.35;font-weight:650}
+  main{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 18px 20px}
+  #card{width:min(100%,350px);background:#fffdf8;border:3px solid #f6d79a;border-radius:28px;padding:18px 14px 16px;box-shadow:0 10px 0 #f2d6a1,0 16px 28px rgba(114,67,38,.12);position:relative}
+  #targetRow{display:flex;align-items:center;justify-content:center;gap:11px;margin:0 0 11px}
+  #fraction{display:inline-grid;grid-template-rows:auto 3px auto;min-width:54px;justify-items:center;color:#c64c35;font-weight:850;font-size:26px;line-height:1}
+  #fractionLine{width:48px;background:#c64c35;border-radius:8px;margin:5px 0}
+  #pizzaWrap{width:min(76vw,270px);height:min(76vw,270px);margin:0 auto 12px;position:relative}
+  #pizza{width:100%;height:100%;display:block;overflow:visible}
+  #pizzaBase{fill:#f6c95a;stroke:#a85832;stroke-width:5}
+  .part{fill:#fff0c8;stroke:#a85832;stroke-width:3;cursor:pointer;transition:fill .18s ease,transform .18s ease,filter .18s ease;transform-origin:200px 200px}
+  .part[data-shaded="true"]{fill:#e96243;filter:drop-shadow(0 3px 2px rgba(130,51,26,.22))}
+  .part:active{transform:scale(.96)}
+  .part:focus{outline:none;filter:drop-shadow(0 0 0 5px #6ec9b6)}
+  #feedback{min-height:27px;text-align:center;font-size:16px;font-weight:800;color:#835d48;margin:3px 0 8px;transition:transform .2s ease,opacity .2s ease}
+  #feedback.good{color:#25846d;animation:bounce .55s ease}
+  #feedback.bad{color:#c75b46;animation:shake .36s ease}
+  #check{width:100%;min-height:52px;border:0;border-radius:17px;background:#3caa91;color:#fffdf8;font:800 18px system-ui,-apple-system,sans-serif;box-shadow:0 5px 0 #267864;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease}
+  #check:active{transform:translateY(4px);box-shadow:0 1px 0 #267864}
+  #check:disabled{opacity:.62;cursor:default}
+  #sparkles{position:absolute;inset:-17px;pointer-events:none;opacity:0}
+  #card.celebrate #sparkles{opacity:1;animation:flash .8s ease}
+  .spark{position:absolute;width:13px;height:13px;background:#f3b638;border-radius:3px;transform:rotate(45deg)}
+  .spark:nth-child(1){left:4%;top:31%}.spark:nth-child(2){right:4%;top:22%;background:#62bda8}.spark:nth-child(3){left:15%;bottom:18%;background:#ef7654}.spark:nth-child(4){right:11%;bottom:14%}
+  #finish{display:none;flex:1;align-items:center;justify-content:center;padding:20px}
+  #finish.show{display:flex}
+  #finishCard{width:min(100%,350px);background:#fffdf8;border:3px solid #f6d79a;border-radius:30px;padding:34px 22px;text-align:center;box-shadow:0 10px 0 #f2d6a1}
+  #flower{width:104px;height:104px;margin:0 auto 18px;display:block}
+  #doneText{margin:0;color:#25846d;font-size:25px;line-height:1.25;font-weight:850}
+  @keyframes bounce{50%{transform:scale(1.12)}}
+  @keyframes shake{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+  @keyframes flash{50%{transform:scale(1.04)}}
+</style>
+
+<div id="app">
+  <header>
+    <h1 id="title"></h1>
+    <div id="instruction"></div>
+  </header>
+  <main id="game">
+    <section id="card" data-item="">
+      <div id="targetRow">
+        <div id="fraction"><span id="topNum"></span><span id="fractionLine"></span><span id="bottomNum"></span></div>
+      </div>
+      <div id="pizzaWrap">
+        <svg id="pizza" viewBox="0 0 400 400" role="img">
+          <circle id="pizzaBase" cx="200" cy="200" r="176"></circle>
+          <g id="parts"></g>
+          <circle cx="200" cy="200" r="9" fill="#a85832"></circle>
+        </svg>
+      </div>
+      <div id="feedback" aria-live="polite"></div>
+      <button id="check" type="button" data-action="check"></button>
+      <div id="sparkles"><i class="spark"></i><i class="spark"></i><i class="spark"></i><i class="spark"></i></div>
+    </section>
+  </main>
+  <section id="finish">
+    <div id="finishCard">
+      <svg id="flower" viewBox="0 0 120 120" aria-hidden="true">
+        <circle cx="60" cy="25" r="20" fill="#f6c95a"/><circle cx="91" cy="43" r="20" fill="#ef7654"/>
+        <circle cx="84" cy="78" r="20" fill="#62bda8"/><circle cx="36" cy="78" r="20" fill="#f6c95a"/>
+        <circle cx="29" cy="43" r="20" fill="#ef7654"/><circle cx="60" cy="58" r="22" fill="#fff4cc"/>
+        <path d="M51 58l6 7 13-15" fill="none" stroke="#25846d" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <p id="doneText"></p>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var items=Studio.params.items, index=0, waiting=false, complete=false;
+  var title=document.getElementById('title'), instruction=document.getElementById('instruction');
+  var card=document.getElementById('card'), parts=document.getElementById('parts');
+  var topNum=document.getElementById('topNum'), bottomNum=document.getElementById('bottomNum');
+  var feedback=document.getElementById('feedback'), check=document.getElementById('check');
+  var game=document.getElementById('game'), finish=document.getElementById('finish');
+
+  title.textContent=Studio.t('title');
+  instruction.textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+  document.getElementById('doneText').textContent=Studio.t('done');
+
+  function wedge(a,b){
+    var r=174,c=200;
+    var x1=c+r*Math.cos(a),y1=c+r*Math.sin(a);
+    var x2=c+r*Math.cos(b),y2=c+r*Math.sin(b);
+    return 'M '+c+' '+c+' L '+x1+' '+y1+' A '+r+' '+r+' 0 0 1 '+x2+' '+y2+' Z';
+  }
+  function showItem(){
+    var item=items[index], d=item.d;
+    card.setAttribute('data-item',item.id);
+    topNum.textContent=item.n;
+    bottomNum.textContent=d;
+    parts.textContent='';
+    feedback.textContent=Studio.t('hint');
+    feedback.className='';
+    check.disabled=false;
+    waiting=false;
+    for(var i=0;i<d;i++){
+      var p=document.createElementNS('http://www.w3.org/2000/svg','path');
+      var start=-Math.PI/2+(Math.PI*2*i/d);
+      p.setAttribute('d',wedge(start,start+Math.PI*2/d));
+      p.setAttribute('class','part');
+      p.setAttribute('data-part',i);
+      p.setAttribute('data-shaded','false');
+      p.setAttribute('tabindex','0');
+      p.addEventListener('click',toggle);
+      p.addEventListener('keydown',function(e){
+        if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle.call(this);}
+      });
+      parts.appendChild(p);
+    }
+  }
+  function toggle(){
+    if(waiting)return;
+    var shaded=this.getAttribute('data-shaded')==='true';
+    this.setAttribute('data-shaded',shaded?'false':'true');
+    Studio.event('tap',{item:items[index].id,part:this.getAttribute('data-part'),shaded:!shaded});
+  }
+  function count(){
+    return parts.querySelectorAll('[data-shaded="true"]').length;
+  }
+  check.addEventListener('click',function(){
+    if(waiting||complete)return;
+    waiting=true;
+    check.disabled=true;
+    feedback.textContent='';
+    Studio.event('check',{item:items[index].id});
+    Studio.answer({n:count(),d:items[index].d});
+  });
+  Studio.onVerdict(function(result){
+    if(complete)return;
+    if(result.correct){
+      feedback.textContent=Studio.t('right');
+      feedback.className='good';
+      card.classList.add('celebrate');
+      Studio.event('verdict',{correct:true});
+      setTimeout(function(){
+        card.classList.remove('celebrate');
+        index++;
+        if(index>=items.length){
+          complete=true;
+          game.style.display='none';
+          finish.classList.add('show');
+          Studio.done();
+        }else{
+          showItem();
+        }
+      },800);
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      feedback.className='bad';
+      waiting=false;
+      check.disabled=false;
+      Studio.event('verdict',{correct:false});
+    }
+  });
+  showItem();
+  Studio.ready();
+}());
+</script>

@@ -26,20 +26,22 @@ import {
 } from "../comprehension/index.js";
 import { facetStmts, probeLogStmt, reteachStmt, gradeAuditStmt, weaveEnqueueStmt, weaveStmts } from "../comprehension/store.js";
 import { gradeLater, settledGrade, finalEvent, awaitGrade, forgetGrade } from "../comprehension/later.js";
-import { classify, classifyFast, targetFor } from "../director/classify.js";
+import { classify, classifyFast, targetFor, helpOf } from "../director/classify.js";
 import { scanSafety, floorViolations, scrubPii } from "../director/safety.js";
 import { initLessonState, step, evidenceFrom, upcomingItem, LIMITS, shortTitleOf } from "../director/state.js";
 import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, whyKey, norm as normAnswer } from "../director/items.js";
 import { TURN_WORDS, FLOOR_FIX } from "../compiler/compile.js";
 import { HELPLINES } from "../compiler/floor.js";
 import { resolveAddress, registerBroken, toAap } from "../director/register.js";
-import { verdictFor, uiVerdict, praiseProblem, stripPraise, screenProblem, stripScreenRefs, askFromReply, askText, refersToScreen, leaksStage, stripStage } from "../director/say.js";
+import { verdictFor, uiVerdict, praiseProblem, stripPraise, screenProblem, stripScreenRefs, askFromReply, askText, refersToScreen, leaksStage, stripStage,
+  askParity, endOnAsk, lastQuestionOnly, wrapsUp, stripWrap } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
 import { teacherFor, teacherForLesson, teacherCard } from "../compiler/characters/index.js";
 import { prewarm, drop as dropPrewarm } from "../voice/prewarm.js";
 import { styleForChild } from "./voice.js";
 import { planFor } from "./child.js";
+import { requireParentIfPinSet, defaultControls } from "./parent.js";
 // W1 seams (BUILD-PLAN §2): pure modules other streams own, reached from this hot file only here.
 import { forgeSeam } from "../forge/seam.js";
 import { onLessonStart, onTurnCommit, onLessonEnd } from "../conductor/hooks.js";
@@ -284,6 +286,12 @@ async function textReply({ instructions, state, kit, childText, trace, history =
   // The floor's NEVER rules on the teacher's own words (director/safety.js; verified kit content is not judged).
   const floorContent = floorContentOf(item);
   const floorOf = (t) => floorViolations(t, { content: floorContent, requireHelpline: kindNow === "safeguard", goodbye: kindNow === "wrap" });
+  // G-ASK parity: a turn with a pinned question (UiDirectives.ask for THIS item) ends on that question and asks no
+  // other — a corrective move (hint, re-teach, repair) re-poses the same item, it never moves to a side question.
+  // Any other handing-back turn asks one question at most (audit flows G4: "…14 times 14 karke batayiye. 9² kitna hota hai?").
+  const pinned = item && ui?.ask?.itemId === item.id ? ui.ask.text : null;
+  const parityOf = (t) => askParity(t, pinned);
+  const wrapping = !CLOSING_MOVES.has(kindNow);
   const praiseOf = (t) => praiseProblem(t, verdict);
   const problems = (t) => [
     floorOf(t).length && "floor",
@@ -299,7 +307,20 @@ async function textReply({ instructions, state, kit, childText, trace, history =
     mustHandBack && !handsBack(t) && "flat",
     !(SCRIPT_OK[lang] ?? LATIN).test(t) && "script",
     words(t) > max && "long",
+    pinned && !parityOf(t).endsOnAsk && "ask",
+    mustHandBack && parityOf(t).questions > 1 && "twoq",
+    wrapping && wrapsUp(t) && "wrap",
   ].filter(Boolean);
+  // The code repairs for the turn's shape (no model call): goodbye sentences out of a non-wrap turn, then the turn
+  // ends on the pinned question (or keeps only its last question).
+  const shapeFix = (t, f) => {
+    let out = f.includes("wrap") ? stripWrap(t) : t;
+    if (pinned) out = endOnAsk(out, promptFor(item, lang));
+    else if (f.includes("drift")) out = repairDrift(out, item, lang);
+    else if (f.includes("twoq")) out = lastQuestionOnly(out);
+    return out;
+  };
+  const SHAPE = new Set(["drift", "flat", "ask", "twoq", "wrap"]);
   const messages = [
     { role: "system", content: instructions },
     // The turn being answered is the last message (childText); by default it is the newest recent row.
@@ -329,8 +350,9 @@ async function textReply({ instructions, state, kit, childText, trace, history =
   // question (the acknowledgement), then the verified question itself — what the rewrite produced in 9/9
   // measured drift rewrites (5 the question alone, 4 acknowledgement + question; evals/cascade-latency.mjs,
   // 2026-10-02), at ~1 s less. Every guard runs again on the result; anything left goes to the rewrite.
-  if (found.includes("drift") && found.every((p) => p === "drift" || p === "flat")) {
-    const repaired = repairDrift(reply, item, lang);
+  // The same holds for the G-ASK parity, two-question and goodbye problems (a pure shape fix, measured below).
+  if (found.length && found.every((p) => SHAPE.has(p))) {
+    const repaired = shapeFix(reply, found);
     if (!problems(repaired).length) {
       reply = repaired;
       found = [];
@@ -353,6 +375,9 @@ async function textReply({ instructions, state, kit, childText, trace, history =
       found.includes("screen") && "it tells them to tap or pick something on the screen, but nothing is on the screen to tap this turn — ask them to say it",
       found.includes("stage") && "it reads out a field name or markup (like 'Whiteboard:' or brackets) — plain spoken words only",
       found.includes("register") && (address === "aap" ? "it uses tum forms — address the child with aap forms only (aap, aapka; verbs ending -iye)" : "it uses aap — address the child with tum forms (tum, tumhara)"),
+      found.includes("ask") && !found.includes("drift") && `it must end by asking exactly this question, and ask nothing else: "${promptFor(item, lang)}"`,
+      found.includes("twoq") && !found.includes("ask") && "it asks more than one question — keep only one question, at the end",
+      found.includes("wrap") && "it says goodbye or that the lesson is over, but the lesson goes on — no goodbye words",
     ].filter(Boolean).join("; and ");
     try {
       reply = await ask([...messages, { role: "assistant", content: reply }, { role: "system", content: `Rewrite that turn: ${why}. Same move, same language, one idea, end by handing the floor back.` }]);
@@ -385,6 +410,9 @@ async function textReply({ instructions, state, kit, childText, trace, history =
       if (found.includes("register") && address === "aap") { reply = toAap(reply); guard.repaired = true; }
       if (found.includes("stage")) { reply = stripStage(reply) || fallbackReply(state, item); guard.replaced = true; }
       if (found.includes("long")) reply = trimToWords(reply, max);
+      // Last: the turn's shape (goodbye words out, the pinned question at the end, one question), in code.
+      const left = problems(reply).filter((p) => SHAPE.has(p));
+      if (left.length) { reply = shapeFix(reply, left); guard.repaired = true; }
     }
   }
   // The final words, checked once more (debug and the evals read it): what reached the child.
@@ -469,6 +497,9 @@ export function childTurnRow({ childText, chipId, asrConfidence, typed, extra = 
 }
 
 const START_PURPOSES = new Set(["lesson", "practice", "doubt"]);
+/** What a help request is, in the reply model's user turn (it is not the child's words). */
+const HELP_SAID = { hint: "asked for a hint", why: "asked why", know: "says they know this", another: "asked for it another way", slower: "asked her to go slower",
+  skip: "asked to skip this one for now", choices: "asked to see choices", how: "asked how to do it" };
 /**
  * PURE. Why a lesson cannot start in this plan state (null: it can). capped and resting refuse everything; done
  * refuses a lesson ("never one more") but lets Practice and Ask through (§6.3.3 done row: "Practise something").
@@ -480,6 +511,30 @@ export function startRefusal(state, purpose) {
   if (state === "resting") return "outside today's lesson hours";
   if (state === "done" && p === "lesson") return "today's lesson is done";
   return null;
+}
+
+/** Which parent control (or day rule) a refusal comes from: "hours" (lesson hours), "daily_limit", "done" (today's lesson). */
+export const refusalControl = (state) => (state === "resting" ? "hours" : state === "capped" ? "daily_limit" : state === "done" ? "done" : null);
+
+/** How long "Open now" opens the lesson hours for (Controls; BUILD-PLAN W1-A item 2). */
+export const OPEN_NOW_MS = 3600_000;
+
+/**
+ * POST /api/lesson/open-now { childId } → { openUntil, plan }. The parent's one tap from Controls (or the resting screen's
+ * hand-over): the lesson hours are open for the next hour, today only, without changing the saved hours. The daily
+ * limit and "never one more" still hold (child.js homeStateOf honours open_until for the hours only). Gate: as every
+ * consent-grade action, an unlocked Parent corner once a PIN exists. Audited.
+ */
+async function openNow(req, res, body) {
+  const g = await requireParentIfPinSet(req);
+  const { guardian, child } = await requireChild(req, need(body, "childId").childId);
+  if (guardian.id !== g.id) throw forbidden("child not found for this account");
+  const until = new Date(Date.now() + OPEN_NOW_MS);
+  await one(`insert into child_controls(child_id, daily_minutes, open_until) values ($1, $2, $3)
+      on conflict (child_id) do update set open_until = excluded.open_until, updated_at = now() returning child_id`,
+  [child.id, defaultControls(child.class_level).dailyMinutes, until.toISOString()]);
+  await q("insert into audit(guardian_id, action, detail) values ($1, 'open_now', $2)", [g.id, { childId: child.id, until: until.toISOString() }]).catch(() => {});
+  send(res, 200, { openUntil: until.toISOString(), plan: await planFor(child, guardian) });
 }
 
 /** @type {(req: any, res: any, body: import("../../shared/contracts").LessonStartRequest) => Promise<void>} */
@@ -507,7 +562,10 @@ async function start(req, res, body) {
   // before getKit: a topic with no kit would otherwise be generated (a model call) for a refused start
   const dayPlan = await planP;
   const refusal = startRefusal(dayPlan.state, body.purpose);
-  if (refusal) throw new HttpError(409, refusal, { state: dayPlan.state, opensAt: dayPlan.opensAt, capRemaining: dayPlan.capRemaining });
+  // The refusal names the control that refused (the parent's lesson hours or daily limit, or today's lesson done) and the
+  // hours window, so the child's screen can say which and when (BUILD-PLAN W1-A item 2; smooth G8).
+  if (refusal) throw new HttpError(409, refusal, { state: dayPlan.state, opensAt: dayPlan.opensAt, capRemaining: dayPlan.capRemaining,
+    control: refusalControl(dayPlan.state), window: dayPlan.plan?.window ?? null });
   const kit = await getKit(topic.id, { trace });
   if (!kit) throw new HttpError(503, "no teaching content is available for this topic yet");
   // Every later request of this lesson reads back exactly this kit (kitFor).
@@ -594,7 +652,7 @@ async function start(req, res, body) {
     Promise.resolve(forgeSeam.prefetchLessonFills({ child, lessonId, topicId: topic.id, kit, lang: child.language_pref, band, mode }))
       .catch((e) => console.warn("[lesson] forge prefetch failed:", e?.message));
   } catch (e) { console.warn("[lesson] forge prefetch failed:", e?.message); }
-  if (mode === "cascade" && teacherOpeningSeq) {
+  if ((mode === "cascade" || mode === "text") && teacherOpeningSeq) {
     prewarm({ lessonId, seq: teacherOpeningSeq, text: teacherOpening, tokenHash: sessionTokenHash(req), guardianId: guardian.id, style: styleForChild(child, undefined, state.ctx?.teacherId, state.ctx?.teacherName) });
   }
   console.info(`[lesson] start ${lessonId} topic=${topic.id} kit=${kit.verified ? "verified" : "mini"} ${Math.round(performance.now() - t0)}ms`);
@@ -760,6 +818,9 @@ async function turn(req, res, body) {
   // contracts.ts TurnRequest: the child acted in an activity and said nothing. Never graded as a reply —
   // it was once stored as "[no speech]", classified unclear, and walked the lesson plan.
   const moduleOnly = !childText && !body.chipId && body.asrConfidence !== 0 && moduleEvents.length > 0;
+  // A help request (the Hint sheet, the Young Help menu: classify.js HELP_REQUESTS) is a client action, never the child's
+  // words: stored as a system row (never in a transcript, the parent's quote or "In {child}'s words"), never graded.
+  const help = helpOf(body.chipId);
 
   // The teacher's last turn as heard (voice lane only: in the text lane the server wrote and stored every
   // teacher line, and an echo of it stored each one twice), then the child's turn.
@@ -799,7 +860,8 @@ async function turn(req, res, body) {
     ...(edited ? { edited: true } : {}), ...(late ? { late: true } : {}) };
   turnRows.push(moduleOnly
     ? { speaker: "system", text: `[activity: ${activitySummary(moduleEvents, dropped)}]`, meta: { module: true, ...extra } }
-    : childTurnRow({ childText, chipId: body.chipId, asrConfidence: body.asrConfidence, typed, extra }));
+    : help ? { speaker: "system", text: `[help: ${help}]`, meta: { help, typed: true, chipId: body.chipId, ...extra } }
+      : childTurnRow({ childText, chipId: body.chipId, asrConfidence: body.asrConfidence, typed, extra }));
   const staged = stageTurns(state, turnRows);
 
   // Classify against the active item's key (never free grading). A module answer on the active item's own
@@ -811,17 +873,19 @@ async function turn(req, res, body) {
   const clsArgs = { target, childText, heard, lang: state.ctx?.lang, asrConfidence: body.asrConfidence, typed, chipId: body.chipId, moduleAnswer, classLevel: child.class_level, trace };
   const classified = !(moduleOnly && !machineAnswer);
   const answer = normAnswer(childText);
-  const tapped = body.chipId?.startsWith("opt:") ? activeItem?.options?.[Number(body.chipId.slice(4))]?.text : body.chipId?.split(":")[1];
-  const said = childText || (moduleOnly ? `(no words; in the activity: ${activitySummary(moduleEvents, 0)})` : `(tapped: ${tapped ?? "nothing"})`);
+  const tapped = body.chipId?.startsWith("opt:") ? activeItem?.options?.[Number(body.chipId.slice(4))]?.text
+    : body.chipId?.startsWith("pick:") ? state.offered?.options?.[Number(body.chipId.slice(5))] : body.chipId?.split(":")[1];
+  const said = help ? `(the child tapped a help button: ${HELP_SAID[help] ?? help} — not an answer)`
+    : childText || (moduleOnly ? `(no words; in the activity: ${activitySummary(moduleEvents, 0)})` : `(tapped: ${tapped ?? "nothing"})`);
   // Last turn's held why / teach-back events, with their blind verdict if it is in. Seam (W1-C): awaitSettled may wait
   // up to 600 ms for those verdicts (a no-op resolves at once: never waited for).
   const heldIds = (state.kt?.deferred ?? []).map((d) => d.event.id);
   if (heldIds.length) await awaitSettled(heldIds, 600).catch(() => {});
   const carried = carriedFrom(state);
-  const planCtx = { kit, child, lesson, activeItem, moduleOnly, moduleEvents, chipId: body.chipId, answer, leaked, live: liveP, carried,
+  const planCtx = { kit, child, lesson, activeItem, moduleOnly, moduleEvents, chipId: body.chipId, answer: help ? "" : answer, leaked, live: liveP, carried,
     childText, typed, asrConfidence: body.asrConfidence, bargeIn: !!body.teacherInterrupted };
-  // A module-only turn stored no child row, so the whole recent transcript is history.
-  const historyOf = (next) => (moduleOnly ? next.recent : next.recent.slice(0, -1));
+  // A module-only turn or a help request stored no child row, so the whole recent transcript is history.
+  const historyOf = (next) => (moduleOnly || help ? next.recent : next.recent.slice(0, -1));
 
   // Text lanes: when the classifier must ask the model, the reply for its likely outcomes starts NOW, in
   // parallel, and the one whose inputs turn out identical to the real plan's is used (speculate()).
@@ -901,7 +965,9 @@ async function turn(req, res, body) {
     mark("replied");
     // Cascade: the guarded reply starts speaking now, while the transaction below runs (server/voice/prewarm.js);
     // a turn that is not stored drops it.
-    if (state.mode === "cascade") {
+    // The text lane too (smooth G4): its voice was a whole-mp3 /api/tts call 1.6-2.1 s after the text; TextLink now
+    // streams /api/voice/tts-stream, which takes this prewarm (decision cascade-tts-prewarm).
+    if (state.mode === "cascade" || state.mode === "text") {
       prewarmed = prewarm({ lessonId: lesson.id, seq: teacherReplySeq, text: teacherReply, tokenHash: sessionTokenHash(req), guardianId: guardian.id, style: styleForChild(child, undefined, state.ctx?.teacherId, state.ctx?.teacherName) });
     }
   } else if (specs.length) {
@@ -1098,7 +1164,7 @@ async function planTurn(base, cls, c) {
 
   // 2. the Director step on beliefs that include this answer (voice: capped tie-breakers only, CE8)
   const stepIn = { kit, cls: cls ?? undefined, chipId: c.chipId, answer: c.answer, now, comp: state.comp, voice: c.voice?.signals, voiceZ: c.voice?.z,
-    text: c.childText, bargeIn: c.bargeIn };
+    text: c.childText, bargeIn: c.bargeIn, typed: !!c.typed };
   const stepped = moduleOnly
     ? step(state, { ...stepIn, event: "module", moduleEvents: c.moduleEvents })
     : step(state, { ...stepIn, event: "turn" });
@@ -1496,6 +1562,7 @@ async function flushHeld(child, lesson, state) {
 }
 
 export const routes = {
+  "POST /api/lesson/open-now": openNow,
   "POST /api/lesson/start": start,
   "POST /api/realtime/token": realtimeToken,
   "POST /api/lesson/turn": turn,

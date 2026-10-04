@@ -1,0 +1,301 @@
+<style>
+  :root{
+    --bg:#fff8ef;
+    --card:#ffffff;
+    --ink:#2b2b2b;
+    --muted:#6b7280;
+    --accent:#ff8a5b;
+    --accent2:#ffd166;
+    --good:#22b573;
+    --bad:#ef4444;
+    --part:#ffe9d6;
+    --partOn:#ff9f68;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color:var(--ink);
+  }
+  .app{
+    width:100%;
+    max-width:360px;
+    min-height:640px;
+    margin:0 auto;
+    padding:14px 12px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    overflow:hidden;
+  }
+  .title{
+    font-weight:800;
+    font-size:24px;
+    line-height:1.1;
+    text-align:center;
+    color:#d95f2b;
+    min-height:28px;
+  }
+  .instr{
+    text-align:center;
+    font-size:15px;
+    color:var(--muted);
+    min-height:22px;
+  }
+  .card{
+    background:var(--card);
+    border-radius:20px;
+    padding:12px;
+    box-shadow:0 8px 24px rgba(0,0,0,.08);
+  }
+  .fraction{
+    text-align:center;
+    font-weight:800;
+    font-size:30px;
+    margin-bottom:10px;
+    color:#5d4037;
+  }
+  .whole{
+    width:100%;
+    height:260px;
+    border-radius:22px;
+    padding:10px;
+    background:linear-gradient(180deg,#fff6ee,#fff);
+    border:2px solid #ffd7c0;
+    display:grid;
+    gap:8px;
+    align-content:stretch;
+    justify-content:stretch;
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .whole.celebrate{
+    animation:pop .55s ease;
+    box-shadow:0 0 0 6px rgba(34,181,115,.15) inset;
+  }
+  @keyframes pop{
+    0%{transform:scale(1)}
+    30%{transform:scale(1.02)}
+    100%{transform:scale(1)}
+  }
+  .part{
+    width:100%;
+    height:100%;
+    min-height:52px;
+    min-width:52px;
+    border:none;
+    border-radius:12px;
+    background:var(--part);
+    box-shadow:inset 0 -2px 0 rgba(0,0,0,.08);
+    transition:transform .12s ease, background .2s ease, box-shadow .2s ease;
+    touch-action:manipulation;
+  }
+  .part[data-shaded="true"]{
+    background:linear-gradient(180deg,var(--partOn),#ff8750);
+    box-shadow:inset 0 -3px 0 rgba(0,0,0,.12);
+  }
+  .part:active{ transform:scale(.96); }
+  .controls{
+    margin-top:auto;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .status{
+    min-height:24px;
+    text-align:center;
+    font-weight:700;
+    font-size:18px;
+    transition:opacity .2s ease;
+  }
+  .status.good{ color:var(--good); }
+  .status.bad{ color:var(--bad); }
+  .hint{
+    min-height:20px;
+    text-align:center;
+    color:var(--muted);
+    font-size:14px;
+  }
+  .check{
+    width:100%;
+    min-height:50px;
+    border:none;
+    border-radius:14px;
+    background:var(--accent);
+    color:white;
+    font-weight:800;
+    font-size:18px;
+    box-shadow:0 6px 0 #e77447;
+    transition:transform .08s ease, filter .2s ease;
+    touch-action:manipulation;
+  }
+  .check:active{ transform:translateY(2px); box-shadow:0 4px 0 #e77447; }
+  .check[disabled]{ filter:grayscale(.2) brightness(.95); opacity:.75; }
+  .done{
+    display:none;
+    height:100%;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-size:30px;
+    font-weight:800;
+    color:#d95f2b;
+    background:radial-gradient(circle at top,#fff,#fff4e8);
+    border-radius:18px;
+    padding:24px;
+  }
+</style>
+
+<div class="app">
+  <div id="title" class="title"></div>
+  <div id="instr" class="instr"></div>
+
+  <div id="play" class="card" data-item="">
+    <div id="fraction" class="fraction">0/0</div>
+    <div id="whole" class="whole"></div>
+  </div>
+
+  <div class="controls">
+    <div id="status" class="status"></div>
+    <div id="hint" class="hint"></div>
+    <button id="checkBtn" class="check" data-action="check"></button>
+  </div>
+
+  <div id="done" class="done"></div>
+</div>
+
+<script>
+(function(){
+  const items = (Studio.params && Studio.params.items) ? Studio.params.items : [];
+  let idx = 0;
+  let waitingVerdict = false;
+  let readySent = false;
+
+  const elTitle = document.getElementById('title');
+  const elInstr = document.getElementById('instr');
+  const elPlay = document.getElementById('play');
+  const elFraction = document.getElementById('fraction');
+  const elWhole = document.getElementById('whole');
+  const elStatus = document.getElementById('status');
+  const elHint = document.getElementById('hint');
+  const elCheck = document.getElementById('checkBtn');
+  const elDone = document.getElementById('done');
+
+  elTitle.textContent = Studio.t('title');
+  elInstr.textContent = Studio.t('instr');
+  elCheck.textContent = Studio.t('check');
+  elHint.textContent = '';
+
+  function bestGrid(d){
+    let best = {r:1,c:d,score:-1};
+    const W = 300, H = 220;
+    for(let r=1;r<=d;r++){
+      if(d % r !== 0) continue;
+      const c = d / r;
+      const cellW = W / c, cellH = H / r;
+      const minSide = Math.min(cellW, cellH);
+      const fitPenalty = Math.abs((cellW/cellH) - 1);
+      const score = minSide - fitPenalty;
+      if(score > best.score) best = {r,c,score};
+    }
+    return {rows: best.r, cols: best.c};
+  }
+
+  function clearFeedback(){
+    elStatus.textContent = '';
+    elStatus.className = 'status';
+    elHint.textContent = '';
+  }
+
+  function shadedCount(){
+    return elWhole.querySelectorAll('.part[data-shaded="true"]').length;
+  }
+
+  function togglePart(btn){
+    if(waitingVerdict) return;
+    const on = btn.getAttribute('data-shaded') === 'true';
+    btn.setAttribute('data-shaded', on ? 'false' : 'true');
+    Studio.event('tap_part', {item: items[idx].id, part: Number(btn.getAttribute('data-part')), shaded: !on});
+  }
+
+  function renderItem(i){
+    const item = items[i];
+    elPlay.setAttribute('data-item', item.id);
+    elFraction.textContent = item.n + '/' + item.d;
+    elWhole.innerHTML = '';
+    clearFeedback();
+    waitingVerdict = false;
+    elCheck.disabled = false;
+
+    const g = bestGrid(item.d);
+    elWhole.style.gridTemplateColumns = 'repeat(' + g.cols + ', 1fr)';
+    elWhole.style.gridTemplateRows = 'repeat(' + g.rows + ', 1fr)';
+
+    for(let p=0;p<item.d;p++){
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'part';
+      b.setAttribute('data-part', String(p));
+      b.setAttribute('data-shaded', 'false');
+      b.addEventListener('click', function(){ togglePart(b); });
+      elWhole.appendChild(b);
+    }
+  }
+
+  elCheck.addEventListener('click', function(){
+    if(waitingVerdict || idx >= items.length) return;
+    const item = items[idx];
+    waitingVerdict = true;
+    elCheck.disabled = true;
+    clearFeedback();
+    const n = shadedCount();
+    Studio.event('check', {item: item.id, n: n, d: item.d});
+    Studio.answer({n:n, d:item.d});
+  });
+
+  Studio.onVerdict(function(v){
+    if(idx >= items.length) return;
+    waitingVerdict = false;
+    elCheck.disabled = false;
+    if(v && v.correct){
+      elStatus.textContent = Studio.t('right');
+      elStatus.className = 'status good';
+      elWhole.classList.add('celebrate');
+      Studio.event('correct', {item: items[idx].id});
+      setTimeout(function(){
+        elWhole.classList.remove('celebrate');
+        idx += 1;
+        if(idx < items.length){
+          renderItem(idx);
+        }else{
+          elPlay.style.display = 'none';
+          document.querySelector('.controls').style.display = 'none';
+          elDone.style.display = 'flex';
+          elDone.textContent = Studio.t('done');
+          Studio.done();
+        }
+      }, 700);
+    }else{
+      elStatus.textContent = Studio.t('wrong');
+      elStatus.className = 'status bad';
+      elHint.textContent = Studio.t('hint');
+      Studio.event('wrong', {item: items[idx].id});
+    }
+  });
+
+  if(items.length > 0){
+    renderItem(0);
+  }else{
+    elPlay.style.display = 'none';
+    document.querySelector('.controls').style.display = 'none';
+    elDone.style.display = 'flex';
+    elDone.textContent = Studio.t('done');
+    Studio.done();
+  }
+
+  if(!readySent){
+    readySent = true;
+    Studio.ready();
+  }
+})();
+</script>

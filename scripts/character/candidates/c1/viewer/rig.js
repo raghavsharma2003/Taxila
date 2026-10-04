@@ -78,10 +78,22 @@ export async function loadTeacher(renderer, url, opts = {}) {
     for (let i = 0; i < p.count; i++) { const x = p.getX(i); if (x > 0) { L.x += x; L.y += p.getY(i); L.z += p.getZ(i); nl++; } else { R.x += x; R.y += p.getY(i); R.z += p.getZ(i); nr++; } }
     L.divideScalar(nl); R.divideScalar(nr);
     for (let i = 0; i < p.count; i++) { const x = p.getX(i); if (x > 0 && p.getZ(i) < L.z) rad = Math.max(rad, Math.hypot(x - L.x, p.getY(i) - L.y, p.getZ(i) - L.z)); }
+    // c1: the source eye is a front cap (a hemisphere), not a full ball, so the centroid sits forward of the centre.
+    // Centre = the cap's lateral bbox centre, pushed back from the apex by the lateral radius (bind space).
+    const eyeTex = !!(src(eyes).map);
+    if (eyeTex) {
+      for (const [C, sg] of [[L, 1], [R, -1]]) {
+        let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9, z1 = -1e9;
+        for (let i = 0; i < p.count; i++) { const x = p.getX(i); if (x * sg <= 0) continue; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, p.getY(i)); y1 = Math.max(y1, p.getY(i)); z1 = Math.max(z1, p.getZ(i)); }
+        rad = (x1 - x0) / 2;
+        C.set((x0 + x1) / 2, (y0 + y1) / 2, z1 - rad);
+      }
+    }
     const iris = new THREE.Color(look.iris || "#3A2416").convertSRGBToLinear();
     eyes.material = mk(eyes, SHADERS.EYE_VERT, SHADERS.EYE_FRAG, {
       uEyeL: { value: L }, uEyeR: { value: R }, uEyeRad: { value: rad }, uIris: { value: new THREE.Vector3(iris.r, iris.g, iris.b) },
-      uPupil: { value: 0.42 }, uLidShadow: { value: 0.8 }, uIrisDetail: { value: tier === "H" ? 1 : 0.6 } }, {});
+      uPupil: { value: 0.42 }, uLidShadow: { value: 0.8 }, uIrisDetail: { value: tier === "H" ? 1 : 0.6 },
+      tEye: { value: src(eyes).map || null } }, eyeTex ? { EYE_TEX: "" } : {});   // c1: the source's photo eye
   }
   // ---------------- hair + cards (alpha-to-coverage under MSAA; never alpha-blend)
   for (const nm of ["hair", "cards"]) {
@@ -89,7 +101,7 @@ export async function loadTeacher(renderer, url, opts = {}) {
     if (!o) continue;
     // brows and lashes take no Kajiya-Kay highlight: it lit the brow cards tan and patchy (review item 11)
     o.material = mk(o, SHADERS.HAIR_VERT, SHADERS.HAIR_FRAG, { tAlbedo: { value: src(o).map }, uShift: { value: nm === "hair" ? 0.1 : 0 },
-      uSpecTint: { value: new THREE.Vector3(1.0, 0.85, 0.7) }, uKK: { value: nm === "hair" ? 0.32 : 0.0 } },
+      uSpecTint: { value: new THREE.Vector3(1.0, 0.85, 0.7) }, uKK: { value: nm === "hair" ? 0.1 : 0.0 } },   // c1: 0.32 -> 0.1: the source bun's curl cards lit as pale vertical stripes
     o.geometry.attributes._strand ? { HAS_STRAND: "" } : {},
     { side: THREE.DoubleSide, alphaToCoverage: true, transparent: false });
   }

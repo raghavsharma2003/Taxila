@@ -1,0 +1,245 @@
+<style>
+  :root{
+    --bg:#f3f5ff;
+    --card:#ffffff;
+    --ink:#2d2a4a;
+    --muted:#6f6a94;
+    --grid:#dfe3fb;
+    --axis:#b5bce9;
+    --bar:#6f7cff;
+    --barDark:#5464ef;
+    --good:#1f9a63;
+    --bad:#d44747;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:ui-rounded,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
+  .app{width:100%;max-width:420px;min-height:640px;margin:0 auto;padding:12px}
+  .card{
+    background:var(--card);
+    border-radius:18px;
+    box-shadow:0 10px 26px rgba(49,53,111,.12);
+    padding:12px;
+  }
+  .title{margin:2px 4px 6px;text-align:center;font-size:24px;line-height:1.2;font-weight:800}
+  .ask{margin:0 4px 10px;text-align:center;font-size:16px;color:var(--muted);min-height:24px}
+  .chartWrap{position:relative;width:100%}
+  .chart{
+    width:100%;
+    height:auto;
+    display:block;
+    background:linear-gradient(180deg,#fbfcff 0%,#ffffff 100%);
+    border-radius:14px;
+  }
+  .bar{
+    fill:url(#barGrad);
+    filter:drop-shadow(0 6px 8px rgba(84,100,239,.24));
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    transform:scaleY(0);
+    transition:transform .75s cubic-bezier(.2,.8,.2,1), filter .2s ease;
+    cursor:pointer;
+  }
+  .bar.show{transform:scaleY(1)}
+  .bar:active{filter:drop-shadow(0 3px 6px rgba(84,100,239,.32))}
+  .hit{fill:transparent;cursor:pointer}
+  .xlab{font-size:12px;fill:var(--ink);font-weight:700}
+  .tick{font-size:11px;fill:var(--muted);font-weight:700}
+  .ytitle{font-size:12px;fill:var(--muted);font-weight:700}
+  .grid{stroke:var(--grid);stroke-width:1}
+  .axis{stroke:var(--axis);stroke-width:2}
+  .valueBubble{
+    position:absolute;
+    min-width:44px;
+    min-height:28px;
+    padding:4px 10px;
+    border-radius:999px;
+    background:#2d2a4a;
+    color:#fff;
+    font-size:14px;
+    font-weight:800;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    pointer-events:none;
+    opacity:0;
+    transform:translate(-50%,-8px) scale(.92);
+    transition:opacity .18s ease,transform .18s ease,left .15s ease,top .15s ease;
+  }
+  .valueBubble.show{opacity:1;transform:translate(-50%,-8px) scale(1)}
+  .feedback{margin-top:8px;min-height:26px;text-align:center;font-size:18px;font-weight:800}
+  .feedback.good{color:var(--good)}
+  .feedback.bad{color:var(--bad)}
+</style>
+
+<div class="app">
+  <div class="card">
+    <div class="title" id="title"></div>
+    <div class="ask" id="ask"></div>
+    <div class="chartWrap" id="chartWrap">
+      <svg id="svg" class="chart" viewBox="0 0 320 320" aria-hidden="true">
+        <defs>
+          <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#7f8bff"></stop>
+            <stop offset="100%" stop-color="#5464ef"></stop>
+          </linearGradient>
+        </defs>
+        <g id="gridLayer"></g>
+        <g id="axisLayer"></g>
+        <g id="barLayer"></g>
+        <g id="labelLayer"></g>
+      </svg>
+      <div id="bubble" class="valueBubble"></div>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const data = (Studio.params && Studio.params.data) ? Studio.params.data.slice() : [];
+  const title = document.getElementById('title');
+  const ask = document.getElementById('ask');
+  const svg = document.getElementById('svg');
+  const gridLayer = document.getElementById('gridLayer');
+  const axisLayer = document.getElementById('axisLayer');
+  const barLayer = document.getElementById('barLayer');
+  const labelLayer = document.getElementById('labelLayer');
+  const bubble = document.getElementById('bubble');
+  const feedback = document.getElementById('feedback');
+  const wrap = document.getElementById('chartWrap');
+
+  title.textContent = Studio.t('title');
+  ask.textContent = Studio.t('ask');
+
+  const W = 320, H = 320;
+  const m = {l:44, r:10, t:16, b:54};
+  const plotW = W - m.l - m.r;
+  const plotH = H - m.t - m.b;
+  const baseY = m.t + plotH;
+
+  const maxVal = Math.max(1, ...data.map(d => d.value));
+  function niceStep(max){
+    const rough = max / 5;
+    const p = Math.pow(10, Math.floor(Math.log10(rough)));
+    const n = rough / p;
+    if(n <= 1) return 1*p;
+    if(n <= 2) return 2*p;
+    if(n <= 5) return 5*p;
+    return 10*p;
+  }
+  const step = niceStep(maxVal);
+  const topTick = Math.ceil(maxVal / step) * step;
+  const yForVal = v => baseY - (v / topTick) * plotH;
+
+  function make(tag, attrs){
+    const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    for (const k in attrs) el.setAttribute(k, attrs[k]);
+    return el;
+  }
+
+  for(let t=0; t<=topTick; t+=step){
+    const y = yForVal(t);
+    const gl = make('line', {x1:m.l, y1:y, x2:W-m.r, y2:y, class:'grid'});
+    gridLayer.appendChild(gl);
+
+    const tk = make('text', {x:m.l-8, y:y, class:'tick', 'text-anchor':'end', 'dominant-baseline':'middle', 'data-tick':String(t)});
+    tk.textContent = String(t);
+    labelLayer.appendChild(tk);
+  }
+
+  axisLayer.appendChild(make('line', {x1:m.l, y1:m.t, x2:m.l, y2:baseY, class:'axis'}));
+  axisLayer.appendChild(make('line', {x1:m.l, y1:baseY, x2:W-m.r, y2:baseY, class:'axis'}));
+
+  const yTitle = make('text', {
+    x:14, y:m.t + plotH/2,
+    class:'ytitle',
+    transform:'rotate(-90 14 ' + (m.t + plotH/2) + ')',
+    'text-anchor':'middle',
+    'dominant-baseline':'middle'
+  });
+  yTitle.textContent = Studio.t('yaxis');
+  labelLayer.appendChild(yTitle);
+
+  const slot = plotW / Math.max(1,data.length);
+  const drawW = Math.min(34, Math.max(24, slot*0.55));
+  const hitW = Math.max(44, drawW);
+
+  let locked = false;
+  const bars = [];
+
+  data.forEach((d,i)=>{
+    const cx = m.l + slot*(i+0.5);
+    const y = yForVal(d.value);
+    const h = baseY - y;
+    const bar = make('rect', {
+      x: cx - drawW/2,
+      y: y,
+      width: drawW,
+      height: h,
+      rx: 10,
+      ry: 10,
+      class: 'bar',
+      'data-bar': d.key,
+      'data-value': String(d.value)
+    });
+    const hit = make('rect', {
+      x: cx - hitW/2,
+      y: m.t,
+      width: hitW,
+      height: plotH,
+      class: 'hit'
+    });
+
+    const xlab = make('text', {
+      x: cx,
+      y: baseY + 20,
+      class:'xlab',
+      'text-anchor':'middle',
+      'dominant-baseline':'middle'
+    });
+    xlab.textContent = Studio.t(d.key);
+
+    function tap(){
+      if(locked) return;
+      const r = svg.getBoundingClientRect();
+      const scaleX = r.width / W;
+      const scaleY = r.height / H;
+      bubble.textContent = String(d.value);
+      bubble.style.left = (cx * scaleX) + 'px';
+      bubble.style.top = (y * scaleY) + 'px';
+      bubble.classList.add('show');
+      Studio.event('bar_tap', {key:d.key, value:d.value});
+      Studio.answer(d.key);
+    }
+
+    hit.addEventListener('click', tap);
+    bar.addEventListener('click', tap);
+
+    barLayer.appendChild(bar);
+    barLayer.appendChild(hit);
+    labelLayer.appendChild(xlab);
+    bars.push(bar);
+  });
+
+  requestAnimationFrame(()=>{
+    bars.forEach((b, i)=>{
+      setTimeout(()=>b.classList.add('show'), i*90);
+    });
+  });
+
+  Studio.onVerdict(function(v){
+    feedback.className = 'feedback';
+    if(v && v.correct){
+      locked = true;
+      feedback.textContent = Studio.t('right') + ' ' + Studio.t('done');
+      feedback.classList.add('good');
+      Studio.done();
+    }else{
+      feedback.textContent = Studio.t('wrong');
+      feedback.classList.add('bad');
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

@@ -21,6 +21,9 @@ def tile(paths, labels, w, h, cols):
 
 
 sec = []
+PR = ["front_neutral", "front_warm", "q34_neutral", "q34_warm", "bust_front", "bust_q34"]
+if os.path.isdir(os.path.join(d, "portraits")):  # c1: portraits row first
+    sec.append(("portraits (H): front / 3/4, neutral / warm, bust", tile([os.path.join(d, "portraits", p + ".png") for p in PR], PR, 300, 375, 6)))
 tt = sorted(f for f in os.listdir(os.path.join(d, "turntable")) if f.endswith(".png"))
 sec.append(("turntable (H)", tile([os.path.join(d, "turntable", f) for f in tt], [f[:-4] for f in tt], 220, 275, 8)))
 E = ["warm", "encouraging", "curious", "thinking", "listening", "concerned", "delighted", "playful", "surprised"]
@@ -43,7 +46,7 @@ W = max(s[1].width for s in sec)
 H = sum(s[1].height + 30 for s in sec) + 40
 sheet = Image.new("RGB", (W, H), (16, 16, 18))
 dr = ImageDraw.Draw(sheet)
-dr.text((10, 10), f"look '{look}': in-house teacher character, three.js runtime, SwiftShader (software GL) renders", fill=(255, 255, 255))
+dr.text((10, 10), f"candidate c1 (Microsoft Rocketbox Female_Adult_11, MIT; re-toned + re-rigged to the Taxila contract): OUR three.js renderer + rig, SwiftShader (software GL) renders", fill=(255, 255, 255))
 y = 40
 for title, im in sec:
     dr.text((10, y + 8), title, fill=(160, 210, 255))

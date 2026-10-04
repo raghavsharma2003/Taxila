@@ -1,0 +1,371 @@
+<style>
+  :root{
+    --bg1:#fff7ed;
+    --bg2:#ffe4e6;
+    --card:#ffffff;
+    --ink:#3f3f46;
+    --muted:#71717a;
+    --accent:#f97316;
+    --accent2:#fb7185;
+    --good:#16a34a;
+    --bad:#dc2626;
+    --part:#fde68a;
+    --partOn:#fb923c;
+    --ring:#fdba74;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;
+    font-family:ui-rounded,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--ink);
+  }
+  .app{
+    width:100%;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:12px;
+  }
+  .card{
+    width:min(100%,360px);
+    min-height:600px;
+    background:var(--card);
+    border-radius:24px;
+    box-shadow:0 12px 30px rgba(0,0,0,.12);
+    padding:14px 14px 18px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    overflow:hidden;
+  }
+  h1{
+    margin:2px 4px 0;
+    text-align:center;
+    font-size:28px;
+    line-height:1.15;
+    color:#7c2d12;
+  }
+  .instr{
+    margin:0 8px;
+    text-align:center;
+    font-size:17px;
+    line-height:1.3;
+    color:var(--muted);
+    min-height:44px;
+  }
+  #itemWrap{
+    margin-top:2px;
+    border-radius:20px;
+    background:linear-gradient(180deg,#fff,#fff7ed);
+    border:2px solid #fed7aa;
+    padding:10px 8px 12px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+    flex:1;
+    min-height:370px;
+  }
+  .fraction{
+    font-size:34px;
+    font-weight:800;
+    color:#9a3412;
+    background:#ffedd5;
+    border:2px solid #fdba74;
+    border-radius:16px;
+    min-height:48px;
+    min-width:120px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:4px 12px;
+  }
+  .plate{
+    width:100%;
+    min-height:290px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex:1;
+  }
+  svg{
+    width:min(92vw,290px);
+    height:auto;
+    overflow:visible;
+    filter:drop-shadow(0 8px 8px rgba(0,0,0,.08));
+  }
+  .part{
+    fill:var(--part);
+    stroke:#fff7ed;
+    stroke-width:3;
+    transition:fill .2s ease,transform .12s ease,filter .2s ease;
+    transform-box:fill-box;
+    transform-origin:center;
+    cursor:pointer;
+    outline:none;
+  }
+  .part:active{transform:scale(.96)}
+  .part[data-shaded="true"]{fill:var(--partOn)}
+  .part:focus-visible{
+    stroke:var(--ring);
+    stroke-width:5;
+  }
+  .pizza-edge{fill:#f59e0b;opacity:.55}
+  .pizza-base{fill:#fde68a}
+  .pizza-center{fill:#fbbf24;opacity:.85;pointer-events:none}
+  .feedback{
+    min-height:44px;
+    padding:4px 6px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-size:20px;
+    font-weight:800;
+    transition:all .25s ease;
+  }
+  .feedback.good{color:var(--good);background:#dcfce7}
+  .feedback.bad{color:var(--bad);background:#fee2e2}
+  .controls{padding:0 4px}
+  button{
+    width:100%;
+    min-height:52px;
+    border:none;
+    border-radius:16px;
+    background:linear-gradient(180deg,var(--accent),var(--accent2));
+    color:#fff;
+    font-size:22px;
+    font-weight:800;
+    cursor:pointer;
+    transition:transform .08s ease,opacity .2s ease;
+  }
+  button:active{transform:scale(.98)}
+  button[disabled]{opacity:.6;cursor:default}
+  .celebrate{animation:pop .55s ease}
+  .shake{animation:shake .28s ease}
+  .doneBox{
+    width:100%;
+    height:100%;
+    border-radius:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-size:32px;
+    font-weight:900;
+    color:#7c2d12;
+    background:radial-gradient(circle at 50% 35%,#fff7ed,#ffedd5);
+  }
+  @keyframes pop{
+    0%{transform:scale(1)}
+    35%{transform:scale(1.06)}
+    100%{transform:scale(1)}
+  }
+  @keyframes shake{
+    0%{transform:translateX(0)}
+    25%{transform:translateX(-5px)}
+    50%{transform:translateX(5px)}
+    75%{transform:translateX(-3px)}
+    100%{transform:translateX(0)}
+  }
+</style>
+
+<div class="app">
+  <div class="card">
+    <h1 id="title"></h1>
+    <div class="instr" id="instr"></div>
+
+    <div id="itemWrap" data-item="">
+      <div class="fraction" id="fractionText"></div>
+      <div class="plate">
+        <svg id="shape" viewBox="0 0 280 280" aria-hidden="true"></svg>
+      </div>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+    <div class="controls">
+      <button id="checkBtn" data-action="check"></button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const items = (Studio.params && Array.isArray(Studio.params.items)) ? Studio.params.items : [];
+  let idx = 0;
+  let shaded = new Set();
+  let mode = 'play';
+  let doneSent = false;
+  let readySent = false;
+
+  const titleEl = document.getElementById('title');
+  const instrEl = document.getElementById('instr');
+  const itemWrap = document.getElementById('itemWrap');
+  const fractionText = document.getElementById('fractionText');
+  const shape = document.getElementById('shape');
+  const feedback = document.getElementById('feedback');
+  const checkBtn = document.getElementById('checkBtn');
+
+  titleEl.textContent = Studio.t('title');
+  instrEl.textContent = Studio.t('instr');
+  checkBtn.textContent = Studio.t('check');
+
+  function pxy(cx, cy, r, a){
+    return {x: cx + r * Math.cos(a), y: cy + r * Math.sin(a)};
+  }
+
+  function wedgePath(cx, cy, r, a0, a1){
+    const p0 = pxy(cx, cy, r, a0);
+    const p1 = pxy(cx, cy, r, a1);
+    const large = (a1 - a0) > Math.PI ? 1 : 0;
+    return 'M ' + cx + ' ' + cy + ' L ' + p0.x + ' ' + p0.y + ' A ' + r + ' ' + r + ' 0 ' + large + ' 1 ' + p1.x + ' ' + p1.y + ' Z';
+  }
+
+  function clearFeedback(){
+    feedback.textContent = '';
+    feedback.className = 'feedback';
+  }
+
+  function renderParts(d){
+    shape.innerHTML = '';
+    const ns = 'http://www.w3.org/2000/svg';
+    const cx = 140, cy = 140, rOuter = 116, rInner = 104;
+
+    const edge = document.createElementNS(ns,'circle');
+    edge.setAttribute('cx',cx);
+    edge.setAttribute('cy',cy);
+    edge.setAttribute('r',rOuter);
+    edge.setAttribute('class','pizza-edge');
+    shape.appendChild(edge);
+
+    const base = document.createElementNS(ns,'circle');
+    base.setAttribute('cx',cx);
+    base.setAttribute('cy',cy);
+    base.setAttribute('r',rInner);
+    base.setAttribute('class','pizza-base');
+    shape.appendChild(base);
+
+    const start = -Math.PI / 2;
+    const step = (Math.PI * 2) / d;
+
+    for(let i=0;i<d;i++){
+      const a0 = start + i * step;
+      const a1 = a0 + step;
+      const part = document.createElementNS(ns,'path');
+      part.setAttribute('d', wedgePath(cx, cy, rInner, a0, a1));
+      part.setAttribute('class','part');
+      part.setAttribute('tabindex','0');
+      part.setAttribute('data-part', String(i));
+      part.setAttribute('data-shaded','false');
+
+      function toggle(){
+        if(mode !== 'play') return;
+        const on = part.getAttribute('data-shaded') === 'true';
+        const next = !on;
+        part.setAttribute('data-shaded', next ? 'true' : 'false');
+        if(next){ shaded.add(i); } else { shaded.delete(i); }
+        Studio.event('toggle', { itemId: items[idx] ? items[idx].id : null, part: i, shaded: next });
+      }
+
+      part.addEventListener('click', toggle);
+      part.addEventListener('keydown', function(e){
+        if(e.key === 'Enter' || e.key === ' '){
+          e.preventDefault();
+          toggle();
+        }
+      });
+
+      shape.appendChild(part);
+    }
+
+    const center = document.createElementNS(ns,'circle');
+    center.setAttribute('cx',cx);
+    center.setAttribute('cy',cy);
+    center.setAttribute('r',20);
+    center.setAttribute('class','pizza-center');
+    shape.appendChild(center);
+  }
+
+  function showDone(){
+    mode = 'done';
+    itemWrap.setAttribute('data-item','');
+    itemWrap.innerHTML = '<div class="doneBox"></div>';
+    itemWrap.querySelector('.doneBox').textContent = Studio.t('done');
+    checkBtn.style.display = 'none';
+    if(!doneSent){
+      doneSent = true;
+      Studio.done();
+    }
+  }
+
+  function renderItem(){
+    clearFeedback();
+    shape.classList.remove('celebrate','shake');
+    shaded = new Set();
+
+    if(idx >= items.length){
+      showDone();
+      return;
+    }
+
+    const it = items[idx];
+    mode = 'play';
+    itemWrap.setAttribute('data-item', String(it.id));
+    fractionText.style.display = 'flex';
+    shape.style.display = 'block';
+    checkBtn.style.display = 'block';
+    checkBtn.disabled = false;
+    fractionText.textContent = String(it.n) + '/' + String(it.d);
+    renderParts(it.d);
+  }
+
+  checkBtn.addEventListener('click', function(){
+    if(mode !== 'play') return;
+    const it = items[idx];
+    if(!it) return;
+    mode = 'await';
+    checkBtn.disabled = true;
+    const ans = { n: shaded.size, d: it.d };
+    Studio.event('check', { itemId: it.id, n: ans.n, d: ans.d });
+    Studio.answer(ans);
+  });
+
+  Studio.onVerdict(function(v){
+    if(mode !== 'await') return;
+    const correct = !!(v && v.correct);
+    const it = items[idx];
+    Studio.event('verdict', { itemId: it ? it.id : null, correct: correct });
+
+    if(correct){
+      mode = 'advance';
+      feedback.textContent = Studio.t('right');
+      feedback.className = 'feedback good';
+      shape.classList.remove('shake');
+      void shape.offsetWidth;
+      shape.classList.add('celebrate');
+      setTimeout(function(){
+        idx += 1;
+        renderItem();
+      }, 700);
+    }else{
+      mode = 'play';
+      checkBtn.disabled = false;
+      feedback.textContent = Studio.t('wrong') + ' ' + Studio.t('hint');
+      feedback.className = 'feedback bad';
+      shape.classList.remove('celebrate');
+      void shape.offsetWidth;
+      shape.classList.add('shake');
+    }
+  });
+
+  renderItem();
+  if(!readySent){
+    readySent = true;
+    Studio.ready();
+  }
+})();
+</script>

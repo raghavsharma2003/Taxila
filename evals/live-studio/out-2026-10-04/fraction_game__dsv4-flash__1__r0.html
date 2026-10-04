@@ -1,0 +1,326 @@
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #fff8f0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.screen {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+h1 {
+  font-size: 22px;
+  color: #c44536;
+  text-align: center;
+  margin-top: 4px;
+}
+.instr {
+  font-size: 15px;
+  color: #5a3e36;
+  text-align: center;
+  line-height: 1.4;
+}
+.fraction-display {
+  font-size: 28px;
+  font-weight: bold;
+  color: #2d1b14;
+  background: #fce4d6;
+  padding: 6px 20px;
+  border-radius: 20px;
+  margin: 4px 0;
+}
+.picture-container {
+  width: 260px;
+  height: 220px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 4px 0;
+}
+.pizza-svg, .bar-svg {
+  max-width: 100%;
+  max-height: 100%;
+}
+.part {
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.part:active {
+  transform: scale(0.93);
+}
+.part-shaded path, .part-shaded rect {
+  transition: fill 0.2s ease;
+}
+.check-btn {
+  background: #e67e22;
+  color: white;
+  border: none;
+  border-radius: 28px;
+  padding: 14px 36px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #b85e1a;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  touch-action: manipulation;
+  margin: 6px 0;
+}
+.check-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #b85e1a;
+}
+.check-btn:disabled {
+  opacity: 0.5;
+  transform: none;
+  box-shadow: 0 4px 0 #b85e1a;
+  cursor: default;
+}
+.msg {
+  font-size: 17px;
+  text-align: center;
+  padding: 8px 16px;
+  border-radius: 16px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.msg.correct {
+  background: #d4edda;
+  color: #155724;
+}
+.msg.wrong {
+  background: #f8d7da;
+  color: #721c24;
+}
+.msg.done {
+  background: #cce5ff;
+  color: #004085;
+  font-size: 22px;
+  font-weight: bold;
+}
+.hint {
+  font-size: 13px;
+  color: #8a6f60;
+  text-align: center;
+}
+.hidden {
+  display: none !important;
+}
+</style>
+
+<div id="app" class="screen">
+  <h1 id="title"></h1>
+  <div id="instr" class="instr"></div>
+  <div id="fractionDisplay" class="fraction-display"></div>
+  <div id="pictureContainer" class="picture-container">
+    <div id="pizzaArea" class="hidden"></div>
+    <div id="barArea" class="hidden"></div>
+  </div>
+  <button id="checkBtn" class="check-btn" data-action="check"></button>
+  <div id="msgArea" class="msg"></div>
+  <div id="hintArea" class="hint"></div>
+</div>
+
+<script>
+(function() {
+  const app = document.getElementById('app');
+  const titleEl = document.getElementById('title');
+  const instrEl = document.getElementById('instr');
+  const fractionDisplay = document.getElementById('fractionDisplay');
+  const pizzaArea = document.getElementById('pizzaArea');
+  const barArea = document.getElementById('barArea');
+  const checkBtn = document.getElementById('checkBtn');
+  const msgArea = document.getElementById('msgArea');
+  const hintArea = document.getElementById('hintArea');
+
+  const items = Studio.params.items;
+  const pictureType = Studio.params.picture; // "pizza-or-bar" but we treat the value
+  const isPizza = pictureType === 'pizza-or-bar' || pictureType === 'pizza'; // fallback
+  // Actually the param says "pizza-or-bar", we'll use that as pizza (circles) for this build
+  // but we keep both implementations ready and decide based on a simpler heuristic: if it includes 'pizza' use pizza else bar
+  const usePizza = pictureType && pictureType.includes('pizza');
+
+  let currentIndex = 0;
+  let partsState = []; // boolean per part
+  let verdictReceived = false;
+  let waitingForVerdict = false;
+  let isDone = false;
+
+  // strings
+  const TITLE = Studio.t('title');
+  const INSTR = Studio.t('instr');
+  const CHECK = Studio.t('check');
+  const RIGHT = Studio.t('right');
+  const WRONG = Studio.t('wrong');
+  const DONE = Studio.t('done');
+  const HINT = Studio.t('hint');
+
+  titleEl.textContent = TITLE;
+  instrEl.textContent = INSTR;
+  checkBtn.textContent = CHECK;
+  hintArea.textContent = HINT;
+
+  function buildPizzaSvg(d, shaded) {
+    const cx = 130, cy = 110, r = 90;
+    let paths = '';
+    for (let i = 0; i < d; i++) {
+      const startAngle = (i / d) * 2 * Math.PI - Math.PI/2;
+      const endAngle = ((i+1) / d) * 2 * Math.PI - Math.PI/2;
+      const x1 = cx + r * Math.cos(startAngle);
+      const y1 = cy + r * Math.sin(startAngle);
+      const x2 = cx + r * Math.cos(endAngle);
+      const y2 = cy + r * Math.sin(endAngle);
+      const large = (endAngle - startAngle) > Math.PI ? 1 : 0;
+      const fill = shaded[i] ? '#e67e22' : '#fce4d6';
+      const stroke = '#c44536';
+      paths += `<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${large} 1 ${x2},${y2} Z" fill="${fill}" stroke="${stroke}" stroke-width="2" data-part="${i}" data-shaded="${shaded[i]}" class="part part-shaded"/>`;
+    }
+    const svg = `<svg viewBox="0 0 260 220" class="pizza-svg">${paths}</svg>`;
+    return svg;
+  }
+
+  function buildBarSvg(d, shaded) {
+    const totalW = 220, totalH = 120, gap = 2;
+    const segW = (totalW - (d-1)*gap) / d;
+    let rects = '';
+    for (let i = 0; i < d; i++) {
+      const x = i * (segW + gap);
+      const fill = shaded[i] ? '#e67e22' : '#fce4d6';
+      rects += `<rect x="${x}" y="0" width="${segW}" height="${totalH}" rx="6" fill="${fill}" stroke="#c44536" stroke-width="2" data-part="${i}" data-shaded="${shaded[i]}" class="part part-shaded"/>`;
+    }
+    const svg = `<svg viewBox="0 0 ${totalW} ${totalH}" class="bar-svg" style="margin:40px 0">${rects}</svg>`;
+    return svg;
+  }
+
+  function renderItem(index) {
+    const item = items[index];
+    if (!item) {
+      showDone();
+      return;
+    }
+    const d = item.d;
+    partsState = new Array(d).fill(false);
+    verdictReceived = false;
+    waitingForVerdict = false;
+    checkBtn.disabled = false;
+
+    // Update data-item on container
+    app.setAttribute('data-item', item.id);
+
+    fractionDisplay.textContent = `${item.n}/${item.d}`;
+
+    // Build picture
+    if (usePizza) {
+      pizzaArea.classList.remove('hidden');
+      barArea.classList.add('hidden');
+      pizzaArea.innerHTML = buildPizzaSvg(d, partsState);
+    } else {
+      barArea.classList.remove('hidden');
+      pizzaArea.classList.add('hidden');
+      barArea.innerHTML = buildBarSvg(d, partsState);
+    }
+
+    msgArea.textContent = '';
+    msgArea.className = 'msg';
+
+    // Attach part click listeners
+    document.querySelectorAll('.part').forEach(el => {
+      el.addEventListener('click', function(e) {
+        if (waitingForVerdict || isDone) return;
+        const partIdx = parseInt(this.dataset.part, 10);
+        partsState[partIdx] = !partsState[partIdx];
+        this.dataset.shaded = partsState[partIdx];
+        if (usePizza) {
+          this.setAttribute('fill', partsState[partIdx] ? '#e67e22' : '#fce4d6');
+        } else {
+          this.setAttribute('fill', partsState[partIdx] ? '#e67e22' : '#fce4d6');
+        }
+        // pulse animation
+        this.style.transform = 'scale(0.92)';
+        setTimeout(() => { this.style.transform = ''; }, 150);
+        Studio.event('part_toggle', { itemId: item.id, part: partIdx, shaded: partsState[partIdx] });
+      });
+    });
+  }
+
+  function handleCheck() {
+    if (waitingForVerdict || isDone) return;
+    const item = items[currentIndex];
+    const colouredCount = partsState.filter(v => v).length;
+    const answer = { n: colouredCount, d: item.d };
+    waitingForVerdict = true;
+    checkBtn.disabled = true;
+    Studio.answer(answer);
+  }
+
+  function showFeedback(correct) {
+    if (correct) {
+      msgArea.textContent = RIGHT;
+      msgArea.className = 'msg correct';
+      // brief celebration effect
+      msgArea.style.transform = 'scale(1.1)';
+      setTimeout(() => { msgArea.style.transform = ''; }, 300);
+      Studio.event('correct', { itemId: items[currentIndex].id });
+      setTimeout(() => {
+        currentIndex++;
+        if (currentIndex >= items.length) {
+          showDone();
+        } else {
+          renderItem(currentIndex);
+        }
+      }, 1200);
+    } else {
+      msgArea.textContent = WRONG;
+      msgArea.className = 'msg wrong';
+      waitingForVerdict = false;
+      checkBtn.disabled = false;
+      Studio.event('wrong', { itemId: items[currentIndex].id });
+    }
+  }
+
+  function showDone() {
+    isDone = true;
+    app.removeAttribute('data-item');
+    checkBtn.classList.add('hidden');
+    hintArea.classList.add('hidden');
+    fractionDisplay.classList.add('hidden');
+    document.querySelector('#pictureContainer .pizza-svg')?.remove();
+    document.querySelector('#pictureContainer .bar-svg')?.remove();
+    pizzaArea.classList.add('hidden');
+    barArea.classList.add('hidden');
+    msgArea.textContent = DONE;
+    msgArea.className = 'msg done';
+    Studio.done();
+  }
+
+  // Listen for verdict
+  Studio.onVerdict(function(result) {
+    if (result.correct !== undefined) {
+      showFeedback(result.correct);
+    }
+  });
+
+  // Check button
+  checkBtn.addEventListener('click', handleCheck);
+
+  // Start
+  renderItem(0);
+  Studio.ready();
+})();
+</script>

@@ -17,7 +17,7 @@ const req = createRequire(path.join(TOOLS, "package.json"));
 const { NodeIO } = req("@gltf-transform/core");
 const { ALL_EXTENSIONS, KHRTextureBasisu, EXTMeshoptCompression, KHRMeshQuantization,
   KHRMaterialsClearcoat, KHRMaterialsSheen } = req("@gltf-transform/extensions");
-const { meshopt, prune, dedup } = req("@gltf-transform/functions");
+const { meshopt, prune, dedup, sparse } = req("@gltf-transform/functions");
 const { MeshoptEncoder, MeshoptDecoder } = req("meshoptimizer");
 const KTX = fs.readdirSync(TOOLS).find((d) => d.startsWith("KTX-Software"));
 const TOKTX = path.join(TOOLS, KTX, "bin", "toktx");
@@ -29,23 +29,19 @@ const tex = (f) => path.join(buildDir, "tex", f);
 
 // [file, slotOwner, slot, {H:[w,h,enc], Bplus:[...], Blite:[...]}, colour?]
 // enc: "u" = UASTC (normals, alpha, hero colour), "e" = ETC1S (B+ colour), null = not shipped on that tier
+// c1: the source's maps (tex.py), no wrinkle / mask / stretch maps (the source has none; TaxilaSkin drops those paths)
 const MAPS = [
-  // H: albedo without the painted brows (the H brow cards carry them; painted + cards was a double brow). B+ face albedo
-  // in UASTC: ETC1S left a yellow blotch on plum's forehead (review item 14); B-lite keeps ETC1S.
   ["skin_albedo_H.png", "TaxilaSkin", "baseColor", { H: [2048, 2048, "u"], Bplus: null, Blite: null }, true],
   ["skin_albedo.png", "TaxilaSkin", "baseColor", { H: null, Bplus: [1024, 1024, "u"], Blite: [1024, 1024, "e"] }, true],
-  ["skin_normal.png", "TaxilaSkin", "normal", { H: [2048, 2048, "u"], Bplus: [1024, 1024, "u"], Blite: null }, false],
-  ["skin_packed.png", "TaxilaSkin", "occlusion", { H: [1024, 1024, "u"], Bplus: [512, 512, "u"], Blite: [256, 256, "e"] }, false],
-  ["skin_wrinkle.png", "TaxilaSkin", "emissive", { H: [1024, 1024, "u"], Bplus: [512, 512, "u"], Blite: null }, false],
-  ["skin_maskA.png", "TaxilaSkin", "metallicRoughness", { H: [512, 512, "u"], Bplus: [256, 256, "u"], Blite: null }, false],
-  ["skin_maskB.png", "TaxilaSkin", "sheenColor", { H: [512, 512, "u"], Bplus: [256, 256, "u"], Blite: null }, false],
-  ["skin_wrinkle_stretch.png", "TaxilaSkin", "clearcoatNormal", { H: [1024, 1024, "u"], Bplus: null, Blite: null }, false],
-  ["garment_albedo.png", "TaxilaCloth", "baseColor", { H: [1024, 1024, "u"], Bplus: [512, 512, "e"], Blite: [512, 512, "e"] }, true],
-  ["hair_atlas.png", "TaxilaHair", "baseColor", { H: [2048, 2048, "u"], Bplus: [1024, 1024, "u"], Blite: [1024, 1024, "e"] }, true],
-  ["cards_atlas.png", "TaxilaCards", "baseColor", { H: [2048, 1024, "u"], Bplus: [512, 256, "u"], Blite: [512, 256, "e"] }, true],
+  ["skin_normal.png", "TaxilaSkin", "normal", { H: [1024, 1024, "u"], Bplus: [512, 512, "u"], Blite: null }, false],
+  ["skin_packed.png", "TaxilaSkin", "occlusion", { H: [512, 512, "u"], Bplus: [512, 512, "u"], Blite: [256, 256, "e"] }, false],
+  ["garment_albedo.png", "TaxilaCloth", "baseColor", { H: [512, 512, "u"], Bplus: [512, 512, "e"], Blite: [512, 512, "e"] }, true],
+  ["hair_atlas.png", "TaxilaHair", "baseColor", { H: [1024, 1024, "u"], Bplus: [1024, 1024, "u"], Blite: [1024, 1024, "e"] }, true],
+  ["cards_atlas.png", "TaxilaCards", "baseColor", { H: [512, 512, "u"], Bplus: [512, 512, "u"], Blite: [512, 512, "e"] }, true],
+  ["eye_albedo.png", "TaxilaEye", "baseColor", { H: [512, 512, "u"], Bplus: [256, 256, "u"], Blite: [256, 256, "e"] }, true],
 ];
 const MEANING = {
-  baseColor: "albedo (sRGB; garment alpha = roughness)", normal: "tangent-space normal (base detail)",
+  baseColor: "albedo (sRGB; garment alpha = roughness; TaxilaEye: the photo eye, sampled by c1 rig)", normal: "tangent-space normal (base detail)",
   occlusion: "packed: R cavity, G roughness, B thickness, A ambient occlusion",
   emissive: "wrinkle normal, compress (blend by region masks)", metallicRoughness: "region mask A: forehead, glabella, crowL, crowR",
   sheenColor: "region mask B: nasoL, nasoR, chin, neck", clearcoatNormal: "wrinkle normal, stretch",
@@ -53,7 +49,9 @@ const MEANING = {
 
 // card textures (hair, brows, lashes) take a stronger UASTC rate-distortion setting: their fine alpha survives it,
 // and it pays for the 2x brow alpha resolution on H inside the 6 MB cap
-const RDO = { "hair_atlas.png": "2.5", "cards_atlas.png": "2.5" };
+// c1: the photo albedo and the source normal take a stronger RDO (the H tier was 10.3 MB of textures at RDO 1.0; the
+// normal map's detail is low-frequency, so 1024 px loses nothing visible at the face camera)
+const RDO = { "hair_atlas.png": "2.5", "cards_atlas.png": "2.5", "skin_albedo_H.png": "3.0", "skin_albedo.png": "3.0", "skin_normal.png": "2.0", "garment_albedo.png": "3.0" };
 function ktx2(src, w, h, enc, srgb) {
   const out = path.join(os.tmpdir(), `tx-${process.pid}-${path.basename(src, ".png")}-${w}-${enc}.ktx2`);
   const args = ["--t2", "--genmipmap", "--resize", `${w}x${h}`, "--assign_oetf", srgb ? "srgb" : "linear"];
@@ -110,9 +108,13 @@ for (const tier of ["H", "Bplus", "Blite"]) {
     if (m.getName() === "TaxilaLens") m.setAlphaMode("BLEND").setBaseColorFactor([0.9, 0.95, 1, 0.08]);
     m.setExtras({ taxila: { shader: m.getName(), slots: slotsUsed[m.getName()] || {}, tier } });
   }
-  doc.getRoot().setExtras({ taxila: { look, tier, generator: "scripts/character (in-house, CC0 inputs)" } });
+  doc.getRoot().setExtras({ taxila: { look, tier, generator: "scripts/character/candidates/c1 (Microsoft Rocketbox Female_Adult_11, MIT; re-toned and re-rigged to the Taxila contract)" } });
   doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.FILTER });
-  await doc.transform(dedup(), prune({ keepAttributes: true, keepLeaves: false }), meshopt({ encoder: MeshoptEncoder, level: "medium" }));
+  // c1: sparse morph accessors (most source shapes move a small region of the face; the subdivided H face would
+  // otherwise store ~10k zero deltas per target), then meshopt as the in-house pipeline
+  await doc.transform(dedup(), prune({ keepAttributes: true, keepLeaves: false }), sparse({ ratio: 1 / 3 }), meshopt({ encoder: MeshoptEncoder, level: "medium" }));
+  let texBytes = 0; for (const t of root.listTextures()) { texBytes += t.getImage().byteLength; console.log(`   ${t.getName()} ${(t.getImage().byteLength / 1e6).toFixed(2)} MB`); }
+  console.log(`[finish:c1] ${tier} textures ${(texBytes / 1e6).toFixed(2)} MB`);
   const out = path.join(outDir, `${tier}.glb`);
   await io.write(out, doc);
   let tris = 0, draws = 0, morphVerts = 0, morphs = 0;

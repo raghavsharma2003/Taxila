@@ -1,0 +1,226 @@
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, sans-serif; background: #fef7e9; display: flex; flex-direction: column; align-items: center; padding: 8px; min-height: 640px; width: 360px; }
+  .header { width: 100%; text-align: center; padding: 6px 0 2px; }
+  .title { font-size: 16px; font-weight: bold; color: #5a3e1b; background: #ffefd0; border-radius: 20px; padding: 6px 14px; display: inline-block; }
+  .chart-wrap { width: 100%; flex: 1; display: flex; flex-direction: column; justify-content: center; margin: 4px 0; }
+  .chart-area { position: relative; width: 100%; height: 320px; background: #fffdf5; border-radius: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); padding: 8px 8px 4px 8px; }
+  svg { width: 100%; height: 100%; display: block; }
+  .bar { fill: #f7b731; stroke: #e09c1a; stroke-width: 1.5; rx: 5; ry: 5; cursor: pointer; transition: fill 0.2s; }
+  .bar:active { fill: #ffd966; transform: scaleY(0.98); }
+  .bar:hover { fill: #f9c754; }
+  .tick-text { font-size: 11px; fill: #8a7a5a; }
+  .tick-line { stroke: #e6ddd0; stroke-width: 1; }
+  .axis-title { font-size: 11px; fill: #6b5b3e; }
+  .fruit-label { font-size: 12px; fill: #4a3a1e; text-anchor: middle; }
+  .ask-area { width: 100%; text-align: center; padding: 6px 4px; background: #ffeac2; border-radius: 20px; margin: 4px 0; }
+  .ask-text { font-size: 16px; color: #5a3e1b; font-weight: 500; }
+  .feedback { font-size: 18px; color: #2a7a2a; text-align: center; padding: 6px; min-height: 30px; }
+  .feedback.wrong { color: #b33; }
+  .feedback.done { color: #2a7a2a; font-weight: bold; }
+  .bar-tapped-value { position: absolute; font-size: 14px; color: #5a3e1b; font-weight: bold; background: #ffeac2; border-radius: 10px; padding: 2px 8px; pointer-events: none; transform: translate(-50%, -110%); }
+</style>
+
+<div class="header">
+  <span class="title" id="title-el"></span>
+</div>
+
+<div class="chart-wrap">
+  <div class="chart-area" id="chartArea">
+    <svg viewBox="0 0 340 300" preserveAspectRatio="xMidYMid meet" id="chartSvg">
+      <!-- axes & grid will be injected -->
+      <g id="gridGroup"></g>
+      <g id="barsGroup"></g>
+      <g id="labelsGroup"></g>
+    </svg>
+  </div>
+</div>
+
+<div class="ask-area">
+  <span class="ask-text" id="askEl"></span>
+</div>
+
+<div class="feedback" id="feedbackEl"></div>
+
+<script>
+(function() {
+  const data = Studio.params.data;
+  const keys = data.map(d => d.key);
+  const values = data.map(d => d.value);
+  const maxVal = Math.max(...values);
+  // compute nice step: 2, 5, 10 etc.
+  let step = 10;
+  if (maxVal <= 10) step = 2;
+  else if (maxVal <= 20) step = 5;
+  else step = 10;
+  const maxTick = Math.ceil(maxVal / step) * step;
+
+  // translation table for fruit keys (only keys that appear)
+  const fruitNames = {
+    mango: Studio.t('mango'),
+    banana: Studio.t('banana'),
+    apple: Studio.t('apple'),
+    guava: Studio.t('guava'),
+    orange: Studio.t('orange')
+  };
+
+  // set text contents via DOM
+  document.getElementById('title-el').textContent = Studio.t('title');
+  document.getElementById('askEl').textContent = Studio.t('ask');
+
+  const svg = document.getElementById('chartSvg');
+  const gridGroup = document.getElementById('gridGroup');
+  const barsGroup = document.getElementById('barsGroup');
+  const labelsGroup = document.getElementById('labelsGroup');
+
+  const margin = { top: 10, bottom: 40, left: 40, right: 10 };
+  const chartW = 340 - margin.left - margin.right;
+  const chartH = 300 - margin.top - margin.bottom;
+  const barCount = data.length;
+  const barWidth = Math.min(44, (chartW - 10) / barCount - 6);
+  const gap = (chartW - barCount * barWidth) / (barCount + 1);
+
+  // compute ticks
+  const ticks = [];
+  for (let v = 0; v <= maxTick; v += step) {
+    ticks.push(v);
+  }
+
+  // y scale: 0 at bottom, maxTick at top
+  function yPos(value) {
+    return margin.top + chartH - (value / maxTick) * chartH;
+  }
+
+  // draw grid lines and tick labels
+  ticks.forEach(tickVal => {
+    const y = yPos(tickVal);
+    // gridline
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', margin.left);
+    line.setAttribute('y1', y);
+    line.setAttribute('x2', margin.left + chartW);
+    line.setAttribute('y2', y);
+    line.classList.add('tick-line');
+    gridGroup.appendChild(line);
+    // tick label
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', margin.left - 6);
+    text.setAttribute('y', y + 4);
+    text.setAttribute('text-anchor', 'end');
+    text.classList.add('tick-text');
+    text.setAttribute('data-tick', tickVal);
+    text.textContent = tickVal;
+    gridGroup.appendChild(text);
+  });
+
+  // y-axis title
+  const yTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  yTitle.setAttribute('x', 8);
+  yTitle.setAttribute('y', margin.top + chartH / 2);
+  yTitle.setAttribute('transform', `rotate(-90, 8, ${margin.top + chartH/2})`);
+  yTitle.setAttribute('text-anchor', 'middle');
+  yTitle.classList.add('axis-title');
+  yTitle.textContent = Studio.t('yaxis');
+  gridGroup.appendChild(yTitle);
+
+  // bars
+  data.forEach((item, i) => {
+    const x = margin.left + gap + i * (barWidth + gap);
+    const barH = (item.value / maxTick) * chartH;
+    const y = yPos(item.value);
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', x);
+    rect.setAttribute('y', y);
+    rect.setAttribute('width', barWidth);
+    rect.setAttribute('height', 0); // animate from 0
+    rect.setAttribute('data-bar', item.key);
+    rect.setAttribute('data-value', item.value);
+    rect.classList.add('bar');
+    barsGroup.appendChild(rect);
+
+    // fruit label
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', x + barWidth / 2);
+    label.setAttribute('y', margin.top + chartH + 14);
+    label.classList.add('fruit-label');
+    label.textContent = fruitNames[item.key] || item.key;
+    labelsGroup.appendChild(label);
+
+    // store for animation
+    rect._targetHeight = barH;
+    rect._targetY = y;
+  });
+
+  // animate bars growing after paint
+  requestAnimationFrame(() => {
+    const allBars = barsGroup.querySelectorAll('.bar');
+    allBars.forEach((rect, idx) => {
+      const targetH = rect._targetHeight;
+      const targetY = rect._targetY;
+      let start = null;
+      const duration = 600 + idx * 80;
+      function step(timestamp) {
+        if (!start) start = timestamp;
+        const progress = Math.min((timestamp - start) / duration, 1);
+        // easeOutQuad
+        const eased = 1 - (1 - progress) * (1 - progress);
+        const h = targetH * eased;
+        rect.setAttribute('height', h);
+        rect.setAttribute('y', targetY + (targetH - h));
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          rect.setAttribute('height', targetH);
+          rect.setAttribute('y', targetY);
+        }
+      }
+      requestAnimationFrame(step);
+    });
+  });
+
+  // interaction: tap bar -> answer
+  let answered = false;
+  barsGroup.addEventListener('click', function(e) {
+    const rect = e.target.closest('.bar');
+    if (!rect || answered) return;
+    const key = rect.getAttribute('data-bar');
+    // show value popup
+    const val = rect.getAttribute('data-value');
+    const svgRect = svg.getBoundingClientRect();
+    const rRect = rect.getBoundingClientRect();
+    const popup = document.createElement('div');
+    popup.className = 'bar-tapped-value';
+    popup.textContent = val;
+    popup.style.left = (rRect.left - svgRect.left + rRect.width/2) + 'px';
+    popup.style.top = (rRect.top - svgRect.top - 6) + 'px';
+    document.querySelector('.chart-area').appendChild(popup);
+    setTimeout(() => popup.remove(), 1200);
+
+    answered = true;
+    Studio.answer(key);
+  });
+
+  Studio.onVerdict(function(result) {
+    const feed = document.getElementById('feedbackEl');
+    if (result.correct) {
+      feed.textContent = Studio.t('right');
+      feed.className = 'feedback done';
+      setTimeout(() => {
+        feed.textContent = Studio.t('done');
+        Studio.done();
+      }, 800);
+    } else {
+      feed.textContent = Studio.t('wrong');
+      feed.className = 'feedback wrong';
+      answered = false; // allow retry
+      // but wait a bit
+      setTimeout(() => {
+        feed.textContent = '';
+        feed.className = 'feedback';
+      }, 1500);
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

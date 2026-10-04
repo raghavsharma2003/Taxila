@@ -1,0 +1,528 @@
+<style>
+  :root {
+    --bg: #e0f7e0;
+    --sky: #a3d5ff;
+    --soil: #8b5e3c;
+    --leaf: #4caf50;
+    --stem: #5d4037;
+    --sun: #ffb300;
+    --water: #2196f3;
+    --co2: #9e9e9e;
+    --o2: #ff5252;
+    --glucose: #ffca28;
+    --text: #2e2e2e;
+    --white: #fff;
+    --shadow: rgba(0,0,0,0.15);
+    --radius: 20px;
+  }
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    width: 360px;
+    height: 640px;
+    margin: 0 auto;
+    background: var(--bg);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #scene-container {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    background: linear-gradient(180deg, var(--sky) 0%, var(--sky) 35%, var(--soil) 35%, var(--soil) 100%);
+    overflow: hidden;
+  }
+  svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  #controls {
+    padding: 12px 16px;
+    background: var(--white);
+    border-top: 3px solid #c8e6c9;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 -4px 12px var(--shadow);
+    z-index: 10;
+  }
+  button {
+    border: none;
+    background: #e8f5e8;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 15px;
+    padding: 8px 14px;
+    border-radius: 30px;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px var(--shadow);
+    letter-spacing: 0.3px;
+  }
+  button:active {
+    transform: scale(0.94);
+    background: #c8e6c9;
+  }
+  .btn-primary {
+    background: #2e7d32;
+    color: white;
+    box-shadow: 0 4px 8px rgba(46,125,50,0.3);
+  }
+  .btn-primary:active {
+    background: #1b5e20;
+  }
+  .step-buttons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .step-btn {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    font-weight: 700;
+    border-radius: 50%;
+    background: #f1f8e9;
+  }
+  .step-btn.active-step {
+    background: #ffb74d;
+    color: #3e2723;
+    box-shadow: 0 0 0 3px #ffb300;
+    transform: scale(1.08);
+  }
+  #caption-box {
+    width: 100%;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+    color: #1e3a2f;
+    background: #f5f5f5;
+    padding: 6px;
+    border-radius: 20px;
+    margin: 4px 0 2px;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.2px;
+  }
+  .question-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+  .option-btns {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .option-btn {
+    background: #e3f2fd;
+    font-weight: 600;
+    padding: 10px 18px;
+  }
+  @keyframes float-particle {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
+  }
+  .particle {
+    animation: float-particle 2s infinite ease-in-out;
+  }
+</style>
+
+<div id="scene-container">
+  <svg id="main-svg" viewBox="0 0 360 480" preserveAspectRatio="xMidYMid meet">
+    <!-- Sky and Soil background done via CSS gradient, but we add some details -->
+    <rect x="0" y="0" width="360" height="480" fill="transparent" />
+    
+    <!-- Sun -->
+    <circle cx="290" cy="70" r="38" fill="#FFB300" opacity="0.95" filter="url(#glow)"/>
+    <circle cx="290" cy="70" r="30" fill="#FFCA28" />
+    <text data-label="sun" x="290" y="125" text-anchor="middle" fill="#5D4037" font-weight="bold" font-size="12" font-family="system-ui, sans-serif">☀️</text>
+    
+    <!-- Light rays from sun to leaf (animated dashed line) -->
+    <line id="ray1" x1="260" y1="90" x2="175" y2="190" stroke="#FFB300" stroke-width="3" stroke-dasharray="6,4" opacity="0.7"/>
+    <line id="ray2" x1="290" y1="105" x2="185" y2="195" stroke="#FFB300" stroke-width="2.5" stroke-dasharray="5,5" opacity="0.6"/>
+    <line id="ray3" x1="310" y1="95" x2="195" y2="200" stroke="#FFB300" stroke-width="2" stroke-dasharray="4,6" opacity="0.5"/>
+    
+    <!-- Soil ground -->
+    <ellipse cx="180" cy="360" rx="160" ry="30" fill="#8B5E3C" opacity="0.8"/>
+    <rect x="20" y="360" width="320" height="120" fill="#8B5E3C" opacity="0.9"/>
+    
+    <!-- Roots -->
+    <g data-entity="roots">
+      <path d="M180 345 Q160 380 140 410" stroke="#5D4037" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path d="M180 345 Q200 385 220 415" stroke="#5D4037" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path d="M180 345 Q175 390 170 420" stroke="#5D4037" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M180 345 Q190 390 195 425" stroke="#5D4037" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <text data-label="roots" x="130" y="440" fill="#FFF" font-weight="bold" font-size="12" font-family="system-ui, sans-serif" text-anchor="middle">🌱</text>
+    </g>
+    
+    <!-- Stem -->
+    <path d="M180 345 L180 210" stroke="#5D4037" stroke-width="8" fill="none"/>
+    
+    <!-- Leaf -->
+    <g data-entity="leaf">
+      <ellipse cx="180" cy="200" rx="45" ry="25" fill="#4CAF50" stroke="#2E7D32" stroke-width="2"/>
+      <path d="M180 200 L160 180" stroke="#2E7D32" stroke-width="2"/>
+      <path d="M180 200 L200 175" stroke="#2E7D32" stroke-width="2"/>
+      <path d="M180 200 L175 225" stroke="#2E7D32" stroke-width="1.5"/>
+      <text data-label="leaf" x="180" y="195" fill="#FFF" font-weight="bold" font-size="11" text-anchor="middle" font-family="system-ui, sans-serif">🍃</text>
+    </g>
+    
+    <!-- Particles (water, co2, o2) will be injected and animated by script -->
+    
+    <!-- Glucose glow inside leaf -->
+    <circle id="glucose-glow" cx="180" cy="198" r="12" fill="#FFCA28" opacity="0" filter="url(#glow)"/>
+    
+    <defs>
+      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+  </svg>
+</div>
+
+<div id="controls">
+  <button id="play-pause-btn" data-action="play" class="btn-primary">▶</button>
+  <div class="step-buttons" id="step-btns-container"></div>
+  <div id="caption-box" data-caption></div>
+  <div id="question-container" style="display: none;" class="question-panel"></div>
+</div>
+
+<script>
+  (function() {
+    // ---- STATE ----
+    const params = Studio.params;
+    const flows = params.flows;
+    const totalSteps = params.steps;
+    
+    let currentStep = 1;
+    let isPlaying = true;
+    let animationFrameId = null;
+    let particles = [];
+    let verdictDone = false;
+    
+    // ---- DOM refs ----
+    const svg = document.getElementById('main-svg');
+    const playBtn = document.getElementById('play-pause-btn');
+    const stepContainer = document.getElementById('step-btns-container');
+    const captionBox = document.getElementById('caption-box');
+    const questionContainer = document.getElementById('question-container');
+    const glucoseGlow = document.getElementById('glucose-glow');
+    
+    // ---- Build step buttons ----
+    for (let i = 1; i <= totalSteps; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'step-btn';
+      btn.setAttribute('data-action', `step-${i}`);
+      btn.textContent = i;
+      btn.addEventListener('click', (e) => {
+        setStep(i);
+        isPlaying = false;
+        updatePlayButton();
+        Studio.event('step_click', {step: i});
+      });
+      stepContainer.appendChild(btn);
+    }
+    const stepButtons = document.querySelectorAll('.step-btn');
+    
+    // ---- Play/Pause ----
+    playBtn.addEventListener('click', () => {
+      if (verdictDone) return;
+      isPlaying = !isPlaying;
+      updatePlayButton();
+      Studio.event('play_toggle', {playing: isPlaying});
+      if (isPlaying) startAnimation();
+      else stopAnimation();
+    });
+    
+    function updatePlayButton() {
+      playBtn.textContent = isPlaying ? Studio.t('pause') : Studio.t('play');
+    }
+    
+    // ---- Set step ----
+    function setStep(step) {
+      if (step < 1 || step > totalSteps) return;
+      currentStep = step;
+      highlightStepButton();
+      updateCaption();
+      updateParticleVisibility();
+    }
+    
+    function highlightStepButton() {
+      stepButtons.forEach((btn, idx) => {
+        const stepVal = idx + 1;
+        if (stepVal === currentStep) {
+          btn.classList.add('active-step');
+        } else {
+          btn.classList.remove('active-step');
+        }
+      });
+    }
+    
+    function updateCaption() {
+      const key = `step${currentStep}`;
+      captionBox.textContent = Studio.t(key);
+    }
+    
+    // ---- Particle system ----
+    function createParticles() {
+      // Remove existing
+      particles.forEach(p => p.el.remove());
+      particles = [];
+      
+      // Water particles (blue, move from roots up stem to leaf)
+      for (let i = 0; i < 5; i++) {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute('r', '4');
+        circle.setAttribute('fill', '#2196F3');
+        circle.setAttribute('data-flow', 'water');
+        circle.classList.add('particle');
+        svg.appendChild(circle);
+        particles.push({
+          el: circle,
+          type: 'water',
+          progress: Math.random(), // 0 = roots, 1 = leaf
+          speed: 0.004 + Math.random() * 0.006,
+          offsetY: (Math.random() - 0.5) * 6
+        });
+      }
+      
+      // CO2 particles (grey, move from air into leaf)
+      for (let i = 0; i < 5; i++) {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute('r', '4.5');
+        circle.setAttribute('fill', '#9E9E9E');
+        circle.setAttribute('data-flow', 'co2');
+        circle.classList.add('particle');
+        svg.appendChild(circle);
+        particles.push({
+          el: circle,
+          type: 'co2',
+          progress: Math.random(),
+          speed: 0.005 + Math.random() * 0.007,
+          startX: 100 + Math.random() * 160,
+          startY: 120 + Math.random() * 50,
+          offsetY: (Math.random() - 0.5) * 10
+        });
+      }
+      
+      // O2 particles (red, move from leaf into air)
+      for (let i = 0; i < 5; i++) {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute('r', '4.5');
+        circle.setAttribute('fill', '#FF5252');
+        circle.setAttribute('data-flow', 'o2');
+        circle.classList.add('particle');
+        svg.appendChild(circle);
+        particles.push({
+          el: circle,
+          type: 'o2',
+          progress: Math.random(),
+          speed: 0.005 + Math.random() * 0.008,
+          targetX: 50 + Math.random() * 260,
+          targetY: 80 + Math.random() * 70,
+          offsetX: (Math.random() - 0.5) * 15
+        });
+      }
+    }
+    
+    function updateParticleVisibility() {
+      particles.forEach(p => {
+        let visible = false;
+        if (currentStep === 1 && p.type === 'water') visible = true;
+        if (currentStep === 2 && p.type === 'co2') visible = true;
+        if (currentStep === 3 && p.type === 'o2') visible = true;
+        if (currentStep === 4 && (p.type === 'water' || p.type === 'co2' || p.type === 'o2')) visible = true;
+        if (currentStep === 5 && p.type === 'o2') visible = true;
+        p.el.setAttribute('opacity', visible ? '0.85' : '0');
+      });
+      
+      // Glucose glow visibility
+      if (currentStep === 4 || currentStep === 5) {
+        glucoseGlow.setAttribute('opacity', '0.9');
+      } else {
+        glucoseGlow.setAttribute('opacity', '0');
+      }
+    }
+    
+    function animateParticles() {
+      if (!isPlaying) {
+        animationFrameId = requestAnimationFrame(animateParticles);
+        return;
+      }
+      
+      particles.forEach(p => {
+        p.progress += p.speed;
+        if (p.progress > 1.0) p.progress = 0.0;
+        
+        let cx, cy;
+        if (p.type === 'water') {
+          // Roots (180, 370) up stem to leaf (180, 200)
+          const startY = 370;
+          const endY = 200;
+          cy = startY + (endY - startY) * p.progress + p.offsetY;
+          cx = 180 + Math.sin(p.progress * Math.PI * 2) * 4;
+        } else if (p.type === 'co2') {
+          // Air around (startX, startY) to leaf center (180, 200)
+          const leafX = 180, leafY = 200;
+          cx = p.startX + (leafX - p.startX) * p.progress;
+          cy = p.startY + (leafY - p.startY) * p.progress + p.offsetY;
+        } else if (p.type === 'o2') {
+          // Leaf (180, 200) to air (targetX, targetY)
+          const leafX = 180, leafY = 200;
+          cx = leafX + (p.targetX - leafX) * p.progress + p.offsetX;
+          cy = leafY + (p.targetY - leafY) * p.progress;
+        }
+        
+        p.el.setAttribute('cx', cx);
+        p.el.setAttribute('cy', cy);
+      });
+      
+      // Animate light rays
+      const ray1 = document.getElementById('ray1');
+      const ray2 = document.getElementById('ray2');
+      const ray3 = document.getElementById('ray3');
+      if (ray1) {
+        const dashOffset = Date.now() / 50;
+        ray1.setAttribute('stroke-dashoffset', dashOffset % 20);
+        ray2.setAttribute('stroke-dashoffset', (dashOffset + 7) % 20);
+        ray3.setAttribute('stroke-dashoffset', (dashOffset + 14) % 20);
+      }
+      
+      animationFrameId = requestAnimationFrame(animateParticles);
+    }
+    
+    function startAnimation() {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      animateParticles();
+    }
+    
+    function stopAnimation() {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+    }
+    
+    // ---- Question handling ----
+    function showQuestion() {
+      isPlaying = false;
+      updatePlayButton();
+      stopAnimation();
+      
+      questionContainer.style.display = 'flex';
+      questionContainer.innerHTML = '';
+      
+      const askText = document.createElement('div');
+      askText.textContent = Studio.t('ask');
+      askText.style.fontWeight = 'bold';
+      askText.style.fontSize = '15px';
+      askText.style.marginBottom = '6px';
+      questionContainer.appendChild(askText);
+      
+      const optDiv = document.createElement('div');
+      optDiv.className = 'option-btns';
+      
+      const options = ['co2', 'o2', 'water'];
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.setAttribute('data-option', opt);
+        btn.textContent = Studio.t(opt);
+        btn.addEventListener('click', () => {
+          Studio.answer(opt);
+          Studio.event('answer', {option: opt});
+          // disable buttons
+          document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+        });
+        optDiv.appendChild(btn);
+      });
+      
+      questionContainer.appendChild(optDiv);
+    }
+    
+    // ---- Step next logic ----
+    function advanceStepIfPlaying() {
+      if (!isPlaying) return;
+      if (currentStep < totalSteps) {
+        setStep(currentStep + 1);
+      } else {
+        // After last step, show question
+        if (!verdictDone) {
+          isPlaying = false;
+          updatePlayButton();
+          stopAnimation();
+          showQuestion();
+        }
+      }
+    }
+    
+    // Auto-advance timer
+    let stepTimer = null;
+    function scheduleNextStep() {
+      if (stepTimer) clearTimeout(stepTimer);
+      if (isPlaying && currentStep <= totalSteps) {
+        stepTimer = setTimeout(() => {
+          advanceStepIfPlaying();
+          scheduleNextStep();
+        }, 4500);
+      }
+    }
+    
+    // ---- Initialize ----
+    function init() {
+      createParticles();
+      setStep(1);
+      updatePlayButton();
+      startAnimation();
+      scheduleNextStep();
+      
+      // Listen for verdict
+      Studio.onVerdict((verdict) => {
+        if (verdict.correct) {
+          captionBox.textContent = '✓ ' + Studio.t('glucose') + '!';
+          questionContainer.style.display = 'none';
+          verdictDone = true;
+          stopAnimation();
+          isPlaying = false;
+          updatePlayButton();
+          Studio.done();
+        } else {
+          captionBox.textContent = '✗ ' + Studio.t('ask');
+          // Re-enable buttons
+          document.querySelectorAll('.option-btn').forEach(b => b.disabled = false);
+        }
+      });
+      
+      Studio.ready();
+    }
+    
+    init();
+  })();
+</script>

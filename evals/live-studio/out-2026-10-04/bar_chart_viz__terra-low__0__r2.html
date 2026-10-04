@@ -1,0 +1,354 @@
+<style>
+  :root{
+    --ink:#26354a;
+    --soft:#667a91;
+    --paper:#fffdf8;
+    --line:#c8dce8;
+    --bar:#697ee8;
+    --bar-stroke:#5067d1;
+    --mint:#dff7eb;
+    --good:#247757;
+    --rose:#fff0f2;
+    --bad:#b84b61;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:linear-gradient(180deg,#eaf7ff 0%,#fffaf1 100%);
+    color:var(--ink);
+    font-family:Arial,system-ui,sans-serif;
+  }
+  #app{
+    width:100%;
+    max-width:480px;
+    min-height:640px;
+    margin:0 auto;
+    padding:18px 12px 24px;
+    overflow:hidden;
+  }
+  .card{
+    background:rgba(255,253,248,.96);
+    border:1px solid rgba(151,181,205,.38);
+    border-radius:25px;
+    box-shadow:0 12px 30px rgba(68,111,143,.12);
+    padding:18px 9px 15px;
+  }
+  h1{
+    margin:0 10px 6px;
+    text-align:center;
+    font-size:24px;
+    line-height:1.2;
+    letter-spacing:-.4px;
+  }
+  .ask{
+    margin:0 14px 14px;
+    min-height:22px;
+    text-align:center;
+    color:var(--soft);
+    font-size:16px;
+    line-height:1.35;
+  }
+  .chart-wrap{
+    position:relative;
+    width:100%;
+    overflow:hidden;
+    border:1px solid #e1edf3;
+    border-radius:19px;
+    background:linear-gradient(180deg,#f4fbff,#fffdf8);
+  }
+  svg{
+    display:block;
+    width:100%;
+    height:auto;
+    min-height:385px;
+  }
+  .grid{
+    stroke:var(--line);
+    stroke-width:1;
+    stroke-dasharray:3 4;
+  }
+  .axis{
+    stroke:#71869a;
+    stroke-width:1.5;
+  }
+  .tick{
+    fill:#60748b;
+    font-size:12px;
+    font-weight:700;
+  }
+  .axis-title{
+    fill:#527087;
+    font-size:13px;
+    font-weight:700;
+  }
+  .fruit{
+    fill:#33465b;
+    font-size:12px;
+    font-weight:700;
+  }
+  .bar{
+    fill:var(--bar);
+    stroke:var(--bar-stroke);
+    stroke-width:1;
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    transform:scaleY(.9);
+    opacity:.45;
+    transition:transform .65s cubic-bezier(.2,.85,.3,1),opacity .45s ease,fill .18s ease;
+    cursor:pointer;
+  }
+  .bar.grown{
+    transform:scaleY(1);
+    opacity:1;
+  }
+  .bar:active{fill:#5168d7}
+  .bar.selected{
+    fill:#ff9f67;
+    stroke:#df7644;
+    animation:barPulse .5s ease;
+  }
+  @keyframes barPulse{
+    50%{filter:brightness(1.12)}
+  }
+  .value-bubble{
+    opacity:0;
+    transform:translateY(5px);
+    transition:opacity .18s ease,transform .18s ease;
+    pointer-events:none;
+  }
+  .value-bubble.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+  .bubble-box{fill:#25334a}
+  .bubble-text{
+    fill:#fff;
+    font-size:13px;
+    font-weight:700;
+    text-anchor:middle;
+  }
+  .feedback{
+    min-height:48px;
+    margin:14px 8px 0;
+    padding:12px 15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:16px;
+    text-align:center;
+    font-size:16px;
+    font-weight:700;
+    opacity:0;
+    transform:translateY(7px);
+    transition:opacity .25s ease,transform .25s ease,background .25s ease;
+  }
+  .feedback.show{opacity:1;transform:translateY(0)}
+  .feedback.good{background:var(--mint);color:var(--good)}
+  .feedback.bad{background:var(--rose);color:var(--bad)}
+  .feedback.done{background:#e8f3ff;color:#315b91}
+  .hint-dot{
+    fill:#ffd979;
+    animation:floatDot 2s ease-in-out infinite;
+  }
+  @keyframes floatDot{
+    50%{transform:translateY(-3px)}
+  }
+</style>
+
+<div id="app">
+  <section class="card" aria-live="polite">
+    <h1 id="title"></h1>
+    <p class="ask" id="ask"></p>
+    <div class="chart-wrap">
+      <svg id="chart" viewBox="0 0 360 390" role="img" aria-labelledby="title ask">
+        <circle class="hint-dot" cx="331" cy="26" r="6"></circle>
+        <g id="gridLayer"></g>
+        <g id="axisLayer"></g>
+        <g id="barsLayer"></g>
+        <g id="labelLayer"></g>
+        <g id="bubbleLayer"></g>
+      </svg>
+    </div>
+    <div id="feedback" class="feedback"></div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var data=Studio.params.data;
+  var ns="http://www.w3.org/2000/svg";
+  var grid=document.getElementById("gridLayer");
+  var axes=document.getElementById("axisLayer");
+  var bars=document.getElementById("barsLayer");
+  var labels=document.getElementById("labelLayer");
+  var bubbles=document.getElementById("bubbleLayer");
+  var feedback=document.getElementById("feedback");
+  var pending=false;
+  var complete=false;
+  var selected=null;
+
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("ask").textContent=Studio.t("ask");
+
+  function el(name,attrs,text){
+    var node=document.createElementNS(ns,name);
+    for(var key in attrs) node.setAttribute(key,attrs[key]);
+    if(text!==undefined) node.textContent=text;
+    return node;
+  }
+
+  var max=0;
+  data.forEach(function(item){
+    if(item.value>max) max=item.value;
+  });
+
+  function niceStep(value){
+    var raw=value/5;
+    var power=Math.pow(10,Math.floor(Math.log(raw)/Math.LN10));
+    var unit=raw/power;
+    var nice=unit<=1?1:unit<=2?2:unit<=5?5:10;
+    return nice*power;
+  }
+
+  var step=niceStep(max);
+  var top=Math.ceil(max/step)*step;
+  var left=48;
+  var right=342;
+  var base=320;
+  var topY=48;
+  var plotH=base-topY;
+
+  function yFor(value){
+    return base-(value/top)*plotH;
+  }
+
+  for(var tick=0;tick<=top;tick+=step){
+    var tickY=yFor(tick);
+    grid.appendChild(el("line",{x1:left,y1:tickY,x2:right,y2:tickY,class:"grid"}));
+    axes.appendChild(el("text",{
+      x:left-9,
+      y:tickY+4,
+      class:"tick",
+      "text-anchor":"end",
+      "data-tick":tick
+    },String(tick)));
+  }
+
+  axes.appendChild(el("line",{x1:left,y1:topY,x2:left,y2:base,class:"axis"}));
+  axes.appendChild(el("line",{x1:left,y1:base,x2:right,y2:base,class:"axis"}));
+  axes.appendChild(el("text",{
+    x:17,
+    y:(topY+base)/2,
+    class:"axis-title",
+    transform:"rotate(-90 17 "+((topY+base)/2)+")",
+    "text-anchor":"middle"
+  },Studio.t("yaxis")));
+
+  var span=(right-left)/data.length;
+  var barWidth=60;
+
+  data.forEach(function(item,index){
+    var x=left+span*index+(span-barWidth)/2;
+    var y=yFor(item.value);
+    var rect=el("rect",{
+      x:x,
+      y:y,
+      width:barWidth,
+      height:base-y,
+      rx:10,
+      class:"bar",
+      "data-bar":item.key,
+      "data-value":item.value,
+      tabindex:"0",
+      role:"button",
+      "aria-label":Studio.t(item.key)
+    });
+
+    rect.addEventListener("click",function(){
+      choose(item,rect);
+    });
+
+    rect.addEventListener("keydown",function(event){
+      if(event.key==="Enter"||event.key===" "){
+        event.preventDefault();
+        choose(item,rect);
+      }
+    });
+
+    bars.appendChild(rect);
+
+    labels.appendChild(el("text",{
+      x:x+barWidth/2,
+      y:346,
+      class:"fruit",
+      "text-anchor":"middle"
+    },Studio.t(item.key)));
+
+    var bubble=el("g",{class:"value-bubble",id:"bubble-"+item.key});
+    bubble.appendChild(el("rect",{
+      x:x+5,
+      y:y-32,
+      width:barWidth-10,
+      height:25,
+      rx:10,
+      class:"bubble-box"
+    }));
+    bubble.appendChild(el("text",{
+      x:x+barWidth/2,
+      y:y-15,
+      class:"bubble-text"
+    },String(item.value)));
+    bubbles.appendChild(bubble);
+  });
+
+  function choose(item,rect){
+    if(pending||complete) return;
+    pending=true;
+
+    if(selected) selected.classList.remove("selected");
+    selected=rect;
+    selected.classList.add("selected");
+
+    Array.prototype.forEach.call(document.querySelectorAll(".value-bubble"),function(bubble){
+      bubble.classList.remove("show");
+    });
+    document.getElementById("bubble-"+item.key).classList.add("show");
+
+    feedback.className="feedback";
+    feedback.textContent="";
+    Studio.event("bar_tap",{key:item.key,value:item.value});
+    Studio.answer(item.key);
+  }
+
+  Studio.onVerdict(function(result){
+    pending=false;
+    feedback.className="feedback show "+(result.correct?"good":"bad");
+    feedback.textContent=Studio.t(result.correct?"right":"wrong");
+
+    if(result.correct){
+      complete=true;
+      Array.prototype.forEach.call(document.querySelectorAll(".bar"),function(bar){
+        bar.style.pointerEvents="none";
+      });
+      Studio.done();
+      setTimeout(function(){
+        feedback.className="feedback show done";
+        feedback.textContent=Studio.t("done");
+      },650);
+    }else if(selected){
+      selected.classList.remove("selected");
+    }
+  });
+
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      Array.prototype.forEach.call(document.querySelectorAll(".bar"),function(bar,index){
+        setTimeout(function(){
+          bar.classList.add("grown");
+        },index*75);
+      });
+      Studio.ready();
+    });
+  });
+}());
+</script>

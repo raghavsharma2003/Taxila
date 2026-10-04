@@ -1,0 +1,205 @@
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 360px; height: 640px; margin: 0 auto;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #fef7ed;
+    display: flex; flex-direction: column;
+    align-items: center; overflow-y: auto;
+    overflow-x: hidden; position: relative;
+  }
+  .screen {
+    width: 100%; display: flex; flex-direction: column;
+    align-items: center; padding: 24px 16px;
+  }
+  .title {
+    font-size: 28px; font-weight: 700;
+    color: #b45f2b; margin-bottom: 8px;
+    text-align: center; line-height: 1.3;
+  }
+  .instr {
+    font-size: 16px; color: #5c3b2c;
+    margin-bottom: 24px; text-align: center;
+    padding: 0 8px;
+  }
+  .fraction {
+    font-size: 32px; font-weight: 700;
+    color: #d9793e; margin-bottom: 20px;
+    display: flex; align-items: center;
+    gap: 4px;
+  }
+  .whole {
+    display: flex; flex-wrap: wrap;
+    justify-content: center; gap: 8px;
+    margin-bottom: 28px; width: 100%;
+    max-width: 320px;
+  }
+  .part {
+    border-radius: 16px; background: #ffdbb5;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    transition: all 0.25s cubic-bezier(.4,0,.2,1);
+    cursor: pointer; position: relative;
+    display: flex; align-items: center;
+    justify-content: center;
+  }
+  .part:active { transform: scale(0.92); }
+  .part.shaded {
+    background: #f28b42;
+    box-shadow: 0 4px 12px rgba(242,139,66,0.4);
+    transform: scale(1.02);
+  }
+  .pizza .part {
+    width: 90px; height: 90px;
+    clip-path: polygon(50% 50%, 100% 0%, 100% 100%, 0% 100%, 0% 0%);
+  }
+  .bar .part {
+    width: 60px; height: 120px;
+    border-radius: 20px;
+  }
+  .check-btn {
+    background: #f28b42; color: white;
+    border: none; border-radius: 40px;
+    padding: 16px 48px; font-size: 22px;
+    font-weight: 600; letter-spacing: 0.5px;
+    box-shadow: 0 8px 18px rgba(242,139,66,0.35);
+    transition: all 0.2s; cursor: pointer;
+    min-width: 180px; text-align: center;
+  }
+  .check-btn:active { transform: scale(0.94); }
+  .feedback {
+    margin-top: 20px; font-size: 18px;
+    font-weight: 600; min-height: 32px;
+    text-align: center; padding: 0 12px;
+  }
+  .feedback.right { color: #2d7a3c; }
+  .feedback.wrong { color: #b54b2b; }
+  .done-screen {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    height: 100%; text-align: center;
+    padding: 32px;
+  }
+  .done-icon {
+    font-size: 64px; margin-bottom: 16px;
+    animation: bounce 0.6s ease infinite alternate;
+  }
+  @keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-12px); }
+  }
+  .done-text {
+    font-size: 26px; font-weight: 700;
+    color: #b45f2b;
+  }
+</style>
+
+<div class="screen" id="activityScreen" data-item="i1">
+  <div class="title" id="titleText"></div>
+  <div class="instr" id="instrText"></div>
+  <div class="fraction" id="fractionDisplay"></div>
+  <div class="whole" id="wholeContainer"></div>
+  <button class="check-btn" data-action="check" id="checkButton"></button>
+  <div class="feedback" id="feedbackText"></div>
+</div>
+
+<div class="screen done-screen" id="doneScreen" style="display:none;">
+  <div class="done-icon">🎉</div>
+  <div class="done-text" id="doneText"></div>
+</div>
+
+<script>
+  (function() {
+    const params = Studio.params;
+    const items = params.items;
+    const picture = params.picture || 'pizza';
+    let currentIdx = 0;
+    let shadedCount = 0;
+    let parts = [];
+
+    const activityScreen = document.getElementById('activityScreen');
+    const doneScreen = document.getElementById('doneScreen');
+    const titleText = document.getElementById('titleText');
+    const instrText = document.getElementById('instrText');
+    const fractionDisplay = document.getElementById('fractionDisplay');
+    const wholeContainer = document.getElementById('wholeContainer');
+    const checkButton = document.getElementById('checkButton');
+    const feedbackText = document.getElementById('feedbackText');
+    const doneText = document.getElementById('doneText');
+
+    titleText.textContent = Studio.t('title');
+    instrText.textContent = Studio.t('instr');
+    checkButton.textContent = Studio.t('check');
+    doneText.textContent = Studio.t('done');
+
+    wholeContainer.className = 'whole ' + (picture === 'bar' ? 'bar' : 'pizza');
+
+    function renderItem(item) {
+      activityScreen.setAttribute('data-item', item.id);
+      fractionDisplay.innerHTML = '<span>' + item.n + '</span><span>/</span><span>' + item.d + '</span>';
+      wholeContainer.innerHTML = '';
+      shadedCount = 0;
+      parts = [];
+      const total = item.d;
+
+      for (let i = 0; i < total; i++) {
+        const part = document.createElement('div');
+        part.className = 'part';
+        part.setAttribute('data-part', i);
+        part.setAttribute('data-shaded', 'false');
+        part.addEventListener('click', () => togglePart(part, i));
+        wholeContainer.appendChild(part);
+        parts.push(part);
+      }
+      feedbackText.textContent = '';
+      feedbackText.className = 'feedback';
+      Studio.event('item_displayed', { itemId: item.id, n: item.n, d: item.d });
+    }
+
+    function togglePart(part, idx) {
+      const isShaded = part.getAttribute('data-shaded') === 'true';
+      if (isShaded) {
+        part.classList.remove('shaded');
+        part.setAttribute('data-shaded', 'false');
+        shadedCount--;
+      } else {
+        part.classList.add('shaded');
+        part.setAttribute('data-shaded', 'true');
+        shadedCount++;
+      }
+      Studio.event('part_toggled', { index: idx, shaded: !isShaded });
+    }
+
+    function checkAnswer() {
+      const currentItem = items[currentIdx];
+      Studio.answer({ n: shadedCount, d: currentItem.d });
+      Studio.event('check_pressed', { itemId: currentItem.id, n: shadedCount, d: currentItem.d });
+    }
+
+    Studio.onVerdict((result) => {
+      if (result.correct) {
+        feedbackText.textContent = Studio.t('right');
+        feedbackText.className = 'feedback right';
+        Studio.event('verdict', { correct: true, itemId: items[currentIdx].id });
+        setTimeout(() => {
+          currentIdx++;
+          if (currentIdx < items.length) {
+            renderItem(items[currentIdx]);
+          } else {
+            activityScreen.style.display = 'none';
+            doneScreen.style.display = 'flex';
+            Studio.done();
+            Studio.event('activity_complete', { totalItems: items.length });
+          }
+        }, 900);
+      } else {
+        feedbackText.textContent = Studio.t('wrong') + ' ' + Studio.t('hint');
+        feedbackText.className = 'feedback wrong';
+        Studio.event('verdict', { correct: false, itemId: items[currentIdx].id });
+      }
+    });
+
+    checkButton.addEventListener('click', checkAnswer);
+    renderItem(items[0]);
+    Studio.ready();
+  })();
+</script>

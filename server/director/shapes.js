@@ -93,8 +93,8 @@ export const probe = ({ shape, ageBand, contrast, skin, protege }) => join(
   "a real question, never a check on them",
 );
 
-/** Kit hints often carry their own rung label ("pump: …"); the shape adds it once. */
-export const rungText = (h) => String(h || "").replace(/^\s*(pump|hint|prompt|assertion)\s*[:\-–]\s*/i, "");
+/** Kit hints often carry their own rung label ("pump: …", "Prompt: …", "Assert: …"); the shape adds it once. */
+export const rungText = (h) => String(h || "").replace(/^\s*(?:pump|hint|prompt|assert(?:ion)?|point|ask|nudge|clue)\s*[:\-–]\s*/i, "");
 
 export const hint = ({ level, rungShape, askedForAnswer }) => join(
   askedForAnswer && "they asked for the answer: decline lightly and give this nudge instead",
@@ -120,6 +120,40 @@ export const repairUnclear = ({ chips = false } = {}) => (chips
   ? "you did not catch it clearly: ask them to say it once more, or to tap one of the choices on screen"
   : "you did not catch it clearly: ask them to say it once more, slowly");
 export const repairOffTopic = () => "one warm line about what they said; then back to the question";
+
+// ── typed turns and the unclear-try cap (BUILD-PLAN W1-A items 5 and 8; audit flows G4, comprehension G11) ──
+/** A typed reply that answers nothing (no attempt): never "say it again" — they typed it; a small nudge, then the same question. */
+export const typedNoAnswer = () => join(
+  "their typed reply did not answer the question: no verdict, never ask them to repeat or say it again",
+  "one small nudge toward what the question asks; then the same question again, as written",
+);
+/** The third unclear reply on one item: the choices go on screen (UiDirectives.chips) and the question is asked once more. */
+export const offerChoices = () => join(
+  "no verdict on their reply; the choices are now on screen",
+  "the same question again, as written; tell them they can pick one of the choices on screen",
+  "do not read the choices with any lean toward one",
+);
+/** Unclear past the cap: this item is left without a verdict (no evidence) and the lesson moves on. */
+export const MOVE_ON_UNCLEAR = "leave this one for later, no verdict and no answer given; the next question";
+
+// ── the child's help requests (Hint sheet, Young Help menu): client actions, never the child's words ──
+/** "Show me choices": the choices for THIS question are on screen now. */
+export const showChoices = () => join(
+  "they asked to see choices: the choices for this question are on screen now",
+  "the same question again, as written; let them pick one of the choices on screen",
+  "do not read the choices out with any lean toward one; the key stays unsaid",
+);
+export const SKIP_ITEM = "they asked to skip this one for now: no verdict, it comes back another day; the next question";
+export const KNOWS_IT = "they say they know this: no teaching; let them show it";
+export const SLOWER = "say it again more slowly, in short simple words";
+/** "Show me why" / "Explain it differently" / "Show me how" on the question on the table. */
+export const helpExplain = ({ how }) => join(
+  how ? "they asked how to do it: show the first step only, with a smaller example of your own (different numbers)"
+    : "they asked for it another way: one new, simpler picture of the same idea, with a different example",
+  "the key stays unsaid",
+  "then the same question again, as written",
+);
+
 
 /** Module-only turns: the child acted in the activity and said nothing; the lesson stays where it was. */
 export const moduleGoal = ({ goal }) => join(

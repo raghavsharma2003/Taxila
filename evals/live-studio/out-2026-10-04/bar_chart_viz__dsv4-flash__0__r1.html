@@ -1,0 +1,173 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: sans-serif; background: #FFF8E7; padding: 12px; width: 360px; min-height: 640px; overflow-y: auto; }
+  .container { display: flex; flex-direction: column; align-items: center; width: 100%; }
+  .title { font-size: 20px; font-weight: bold; color: #4A2E1B; margin: 8px 0; text-align: center; }
+  .ask { font-size: 16px; color: #6B4F35; margin: 6px 0; text-align: center; background: #F5E6CC; padding: 8px 12px; border-radius: 20px; }
+  .chart-wrap { width: 336px; height: 420px; background: white; border-radius: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 10px 8px 4px 8px; position: relative; }
+  .chart { width: 100%; height: 100%; display: block; }
+  .bar { cursor: pointer; }
+  .bar:active { transform: scale(0.95); transform-origin: center bottom; }
+  .bar-fill { fill: #FF9E4A; rx: 6; ry: 6; }
+  .bar-label { font-size: 12px; fill: #4A2E1B; text-anchor: middle; }
+  .tick-label { font-size: 11px; fill: #7A6A5A; text-anchor: end; }
+  .gridline { stroke: #E8DDD0; stroke-width: 1; }
+  .yaxis-title { font-size: 12px; fill: #4A2E1B; text-anchor: middle; }
+  .feedback { font-size: 18px; font-weight: bold; margin: 6px 0; text-align: center; min-height: 28px; transition: opacity 0.3s; }
+  .feedback.right { color: #2E7D32; }
+  .feedback.wrong { color: #C62828; }
+  .done-text { font-size: 18px; color: #2E7D32; font-weight: bold; margin: 6px 0; text-align: center; }
+  .value-tooltip { font-size: 14px; fill: #4A2E1B; font-weight: bold; text-anchor: middle; }
+  @keyframes growBar { 
+    0% { transform: scaleY(0); transform-origin: bottom; }
+    100% { transform: scaleY(1); transform-origin: bottom; } 
+  }
+  .bar-animate { animation: growBar 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+</style>
+<div class="container">
+  <div class="title" id="title"></div>
+  <div class="ask" id="ask"></div>
+  <div class="chart-wrap">
+    <svg class="chart" viewBox="0 0 320 400" preserveAspectRatio="xMidYMid meet">
+      <g id="grid-group"></g>
+      <g id="bars-group"></g>
+      <g id="yaxis-group"></g>
+      <text class="yaxis-title" id="yaxis-title" x="-200" y="14" transform="rotate(-90)"></text>
+    </svg>
+  </div>
+  <div class="feedback" id="feedback"></div>
+  <div class="done-text" id="done-text" style="display:none;"></div>
+</div>
+<script>
+(function(){
+  const data = Studio.params.data;
+  const keys = data.map(d => d.key);
+  const values = data.map(d => d.value);
+  const maxVal = Math.max(...values);
+  const step = maxVal <= 10 ? 2 : maxVal <= 20 ? 5 : 10;
+  const maxTick = Math.ceil(maxVal / step) * step;
+  const chartW = 320;
+  const chartH = 380;
+  const marginL = 40;
+  const marginR = 10;
+  const marginT = 10;
+  const marginB = 36;
+  const plotW = chartW - marginL - marginR;
+  const plotH = chartH - marginT - marginB;
+  const barCount = data.length;
+  const barWidth = Math.min(36, (plotW / barCount) - 6);
+  const gap = (plotW - barWidth * barCount) / (barCount + 1);
+  const baseline = chartH - marginB;
+
+  // set texts
+  document.getElementById('title').textContent = Studio.t('title');
+  document.getElementById('ask').textContent = Studio.t('ask');
+  document.getElementById('yaxis-title').textContent = Studio.t('yaxis');
+
+  const gridGroup = document.getElementById('grid-group');
+  const yaxisGroup = document.getElementById('yaxis-group');
+  const barsGroup = document.getElementById('bars-group');
+
+  // y axis ticks and gridlines
+  for (let v = 0; v <= maxTick; v += step) {
+    const y = baseline - (v / maxTick) * plotH;
+    // gridline
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', marginL);
+    line.setAttribute('y1', y);
+    line.setAttribute('x2', chartW - marginR);
+    line.setAttribute('y2', y);
+    line.classList.add('gridline');
+    gridGroup.appendChild(line);
+    // tick label
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', marginL - 6);
+    label.setAttribute('y', y + 4);
+    label.classList.add('tick-label');
+    label.setAttribute('data-tick', v);
+    label.textContent = v;
+    yaxisGroup.appendChild(label);
+  }
+
+  // bars
+  data.forEach((d, i) => {
+    const x = marginL + gap + i * (barWidth + gap);
+    const barH = (d.value / maxTick) * plotH;
+    const y = baseline - barH;
+    const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    group.classList.add('bar');
+    group.setAttribute('data-bar', d.key);
+    group.setAttribute('data-value', d.value);
+
+    // fill rect (actual bar)
+    const rectFill = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rectFill.setAttribute('x', x);
+    rectFill.setAttribute('y', y);
+    rectFill.setAttribute('width', barWidth);
+    rectFill.setAttribute('height', barH);
+    rectFill.classList.add('bar-fill');
+    group.appendChild(rectFill);
+
+    // value tooltip (hidden initially, shown on tap)
+    const tooltip = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    tooltip.setAttribute('x', x + barWidth/2);
+    tooltip.setAttribute('y', y - 6);
+    tooltip.classList.add('value-tooltip');
+    tooltip.style.opacity = '0';
+    tooltip.textContent = d.value;
+    group.appendChild(tooltip);
+
+    // fruit label under bar
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', x + barWidth/2);
+    label.setAttribute('y', chartH - marginB + 20);
+    label.classList.add('bar-label');
+    label.textContent = Studio.t(d.key);
+    label.setAttribute('data-bar-label', d.key);
+    group.appendChild(label);
+
+    // tap handling
+    group.addEventListener('click', function(e) {
+      // show value
+      const tip = this.querySelector('.value-tooltip');
+      tip.style.opacity = '1';
+      tip.style.transition = 'opacity 0.2s';
+      // answer
+      Studio.answer(d.key);
+      // telemetry
+      Studio.event('bar_tap', { key: d.key, value: d.value });
+    });
+
+    // animate bar growth after a small delay
+    setTimeout(() => {
+      group.classList.add('bar-animate');
+    }, 100 + i * 100);
+
+    barsGroup.appendChild(group);
+  });
+
+  // feedback
+  Studio.onVerdict(function(result) {
+    const fb = document.getElementById('feedback');
+    if (result.correct) {
+      fb.textContent = Studio.t('right');
+      fb.className = 'feedback right';
+      // done
+      setTimeout(() => {
+        document.getElementById('done-text').textContent = Studio.t('done');
+        document.getElementById('done-text').style.display = 'block';
+        Studio.done();
+      }, 800);
+    } else {
+      fb.textContent = Studio.t('wrong');
+      fb.className = 'feedback wrong';
+      // hide wrong feedback after 1.5s
+      setTimeout(() => {
+        fb.textContent = '';
+      }, 1500);
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

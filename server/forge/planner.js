@@ -7,13 +7,14 @@ import { bandOf, sceneLang, interestSet, interestIdOf } from "./strings.js";
 
 /** Renderers G1 can fill (derive.js) — the only ones that matter here; the frame may register more (number-line@1). */
 export const G1_RENDERERS = ["fraction-bars@1", "scene@1"];
-/** The G1 renderers the child's frame can mount today (src/modules/frame/registry.ts; tests/forge-g1.test.mjs pins this
- *  against the registry, so a registry change fails a test instead of drifting). scene@1 has no frame renderer yet:
- *  its fills are built, gated and cached, but not mounted until FORGE_SCENE_RENDERER=1 says it shipped. Swap for
- *  shared/engine-catalog.js once that file lands. */
+/** The G1 renderers the child's frame can mount (src/modules/frame/registry.ts; tests/forge-g1.test.mjs pins this against
+ *  the registry, so a registry change fails a test instead of drifting). scene@1 is ON by default since W1-B #5: its
+ *  frame renderer shipped (scene-renderer-validator-ports) and render-check.mjs now drives scene@1 fills (wrong commit
+ *  + solution, frame verdict = gate key = server grader; evals/forge-g1-render.mjs). FORGE_SCENE_RENDERER=0 turns it
+ *  off (the kill switch, e.g. if a renderer regression ships). */
 export function liveRenderers(env = process.env) {
   const r = new Set(["fraction-bars@1"]);
-  if (env.FORGE_SCENE_RENDERER === "1") r.add("scene@1");
+  if (env.FORGE_SCENE_RENDERER !== "0") r.add("scene@1");
   return r;
 }
 

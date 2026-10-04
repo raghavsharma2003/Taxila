@@ -1,0 +1,443 @@
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --ink:#3f3552;
+    --cream:#fff8e9;
+    --card:#ffffff;
+    --berry:#ef6684;
+    --berry-dark:#d94d70;
+    --gold:#ffc85c;
+    --soft:#f3e8ff;
+    --line:#6d587b;
+    --good:#3dbb86;
+    --try:#f29b54;
+  }
+  body{
+    margin:0;
+    min-width:0;
+    min-height:100vh;
+    overflow-x:hidden;
+    background:
+      radial-gradient(circle at 12% 8%,#ffe3b4 0 8%,transparent 8.5%),
+      radial-gradient(circle at 91% 20%,#ecd9ff 0 9%,transparent 9.5%),
+      linear-gradient(180deg,#fff8e9,#f8efff);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  .app{
+    width:100%;
+    min-height:100vh;
+    padding:20px 16px 24px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .title{
+    margin:0;
+    max-width:320px;
+    text-align:center;
+    font-size:clamp(25px,8vw,34px);
+    line-height:1.1;
+    font-weight:900;
+    letter-spacing:-.03em;
+  }
+  .progress{
+    height:28px;
+    margin:10px 0 6px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+  }
+  .dot{
+    width:11px;
+    height:11px;
+    border-radius:999px;
+    background:#d9cce4;
+    transition:width .25s ease,background .25s ease,transform .25s ease;
+  }
+  .dot.now{
+    width:28px;
+    background:var(--berry);
+    transform:scale(1.05);
+  }
+  .dot.past{background:var(--good)}
+  .card{
+    width:min(100%,340px);
+    min-height:475px;
+    padding:16px 14px 20px;
+    border:2px solid rgba(109,88,123,.12);
+    border-radius:30px;
+    background:rgba(255,255,255,.92);
+    box-shadow:0 14px 34px rgba(76,52,93,.13);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .instr{
+    margin:0;
+    min-height:48px;
+    max-width:290px;
+    text-align:center;
+    font-size:17px;
+    line-height:1.35;
+    font-weight:700;
+  }
+  .target{
+    margin:6px 0 4px;
+    min-width:104px;
+    padding:7px 18px;
+    border-radius:18px;
+    background:var(--soft);
+    color:#69488b;
+    text-align:center;
+    font-size:35px;
+    line-height:1;
+    font-weight:950;
+    font-variant-numeric:tabular-nums;
+    box-shadow:inset 0 -3px 0 rgba(105,72,139,.1);
+  }
+  .picture-wrap{
+    width:276px;
+    height:276px;
+    margin:3px auto 2px;
+    display:grid;
+    place-items:center;
+    position:relative;
+  }
+  .pizza{
+    width:266px;
+    height:266px;
+    overflow:visible;
+    filter:drop-shadow(0 9px 7px rgba(70,45,76,.14));
+  }
+  .plate{fill:#f2e8fa}
+  .rim{fill:#fff;stroke:#dfcdea;stroke-width:3}
+  .part{
+    fill:#fff2c7;
+    stroke:var(--line);
+    stroke-width:3;
+    stroke-linejoin:round;
+    cursor:pointer;
+    transform-box:fill-box;
+    transform-origin:center;
+    transition:fill .22s ease,transform .14s ease,filter .22s ease;
+    -webkit-tap-highlight-color:transparent;
+    outline:none;
+  }
+  .part[data-shaded="true"]{
+    fill:var(--berry);
+    filter:drop-shadow(0 2px 1px rgba(139,42,74,.22));
+  }
+  .part:active{transform:scale(.94)}
+  .part:focus-visible{
+    stroke:#31233d;
+    stroke-width:5;
+  }
+  .part.pop{animation:partPop .3s ease}
+  @keyframes partPop{
+    50%{transform:scale(1.07)}
+  }
+  .hub{
+    fill:var(--gold);
+    stroke:var(--line);
+    stroke-width:2.5;
+    pointer-events:none;
+  }
+  .feedback{
+    min-height:46px;
+    width:100%;
+    padding:5px 8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-size:17px;
+    line-height:1.2;
+    font-weight:850;
+    color:var(--ink);
+  }
+  .feedback.good{color:#18835c}
+  .feedback.try{color:#b25b24}
+  .check{
+    width:min(100%,270px);
+    min-height:54px;
+    border:0;
+    border-radius:18px;
+    padding:10px 18px;
+    color:#fff;
+    background:linear-gradient(180deg,var(--berry),var(--berry-dark));
+    box-shadow:0 7px 0 #b8385b,0 11px 18px rgba(181,56,91,.2);
+    font:inherit;
+    font-size:19px;
+    font-weight:900;
+    cursor:pointer;
+    transition:transform .12s ease,box-shadow .12s ease,opacity .2s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .check:active{
+    transform:translateY(5px) scale(.98);
+    box-shadow:0 2px 0 #b8385b,0 5px 10px rgba(181,56,91,.18);
+  }
+  .check:disabled{opacity:.58;cursor:default}
+  .card.success{animation:cardGlow .65s ease}
+  @keyframes cardGlow{
+    35%{box-shadow:0 0 0 8px rgba(61,187,134,.2),0 16px 36px rgba(76,52,93,.14)}
+  }
+  .spark{
+    position:absolute;
+    width:12px;
+    height:12px;
+    border-radius:4px;
+    background:var(--gold);
+    pointer-events:none;
+    animation:spark .75s ease-out forwards;
+  }
+  @keyframes spark{
+    from{opacity:1;transform:translate(0,0) rotate(0) scale(.4)}
+    to{opacity:0;transform:translate(var(--sx),var(--sy)) rotate(160deg) scale(1.1)}
+  }
+  .done-screen{
+    min-height:475px;
+    justify-content:center;
+    gap:22px;
+  }
+  .done-icon{
+    width:170px;
+    height:170px;
+    display:grid;
+    place-items:center;
+    border-radius:50%;
+    background:linear-gradient(145deg,#fff0ae,#ffd66b);
+    box-shadow:0 12px 0 #efb84c,0 18px 30px rgba(119,79,32,.16);
+    animation:doneBounce .7s cubic-bezier(.2,.8,.3,1.3);
+  }
+  .done-icon svg{width:108px;height:108px}
+  .done-text{
+    margin:0;
+    max-width:280px;
+    text-align:center;
+    font-size:28px;
+    line-height:1.15;
+    font-weight:950;
+    color:#674582;
+  }
+  @keyframes doneBounce{
+    0%{transform:scale(.3) rotate(-10deg)}
+    65%{transform:scale(1.08) rotate(4deg)}
+    100%{transform:scale(1) rotate(0)}
+  }
+  @media (max-height:620px){
+    .app{padding-top:10px}
+    .progress{margin:5px 0 2px}
+    .card{min-height:0;padding-top:11px}
+    .picture-wrap{width:232px;height:232px}
+    .pizza{width:226px;height:226px}
+    .instr{min-height:42px;font-size:16px}
+    .feedback{min-height:38px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  }
+</style>
+
+<main class="app">
+  <h1 class="title" id="title"></h1>
+  <div class="progress" id="progress"></div>
+  <section class="card" id="itemCard" data-item="">
+    <p class="instr" id="instr"></p>
+    <div class="target" id="target"></div>
+    <div class="picture-wrap">
+      <svg class="pizza" id="pizza" viewBox="0 0 300 300" role="group">
+        <circle class="plate" cx="150" cy="154" r="139"></circle>
+        <circle class="rim" cx="150" cy="150" r="128"></circle>
+        <g id="parts"></g>
+        <circle class="hub" id="hub" cx="150" cy="150" r="10"></circle>
+      </svg>
+    </div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+    <button class="check" id="check" data-action="check" type="button"></button>
+  </section>
+</main>
+
+<script>
+(() => {
+  const items = Studio.params.items;
+  const title = document.getElementById('title');
+  const instr = document.getElementById('instr');
+  const target = document.getElementById('target');
+  const progress = document.getElementById('progress');
+  const card = document.getElementById('itemCard');
+  const partsGroup = document.getElementById('parts');
+  const feedback = document.getElementById('feedback');
+  const check = document.getElementById('check');
+  const hub = document.getElementById('hub');
+  let current = 0;
+  let waiting = false;
+  let finished = false;
+
+  title.textContent = Studio.t('title');
+  instr.textContent = Studio.t('instr');
+  check.textContent = Studio.t('check');
+
+  function point(angle, radius) {
+    const radians = (angle - 90) * Math.PI / 180;
+    return {
+      x: 150 + radius * Math.cos(radians),
+      y: 150 + radius * Math.sin(radians)
+    };
+  }
+
+  function sectorPath(start, end) {
+    const a = point(start, 119);
+    const b = point(end, 119);
+    const large = end - start > 180 ? 1 : 0;
+    return 'M 150 150 L ' + a.x + ' ' + a.y +
+      ' A 119 119 0 ' + large + ' 1 ' + b.x + ' ' + b.y + ' Z';
+  }
+
+  function drawProgress() {
+    progress.replaceChildren();
+    items.forEach((item, index) => {
+      const dot = document.createElement('span');
+      dot.className = 'dot' + (index === current ? ' now' : index < current ? ' past' : '');
+      progress.appendChild(dot);
+    });
+  }
+
+  function togglePart(part) {
+    if (waiting) return;
+    const shaded = part.getAttribute('data-shaded') === 'true';
+    part.setAttribute('data-shaded', shaded ? 'false' : 'true');
+    part.classList.remove('pop');
+    void part.getBoundingClientRect();
+    part.classList.add('pop');
+    feedback.textContent = '';
+    feedback.className = 'feedback';
+    Studio.event('part_toggle', {
+      item: items[current].id,
+      part: Number(part.getAttribute('data-part')),
+      shaded: !shaded
+    });
+  }
+
+  function renderItem() {
+    const item = items[current];
+    waiting = false;
+    card.className = 'card';
+    card.setAttribute('data-item', item.id);
+    target.textContent = item.n + '/' + item.d;
+    feedback.textContent = '';
+    feedback.className = 'feedback';
+    check.disabled = false;
+    partsGroup.replaceChildren();
+    drawProgress();
+
+    const step = 360 / item.d;
+    for (let index = 0; index < item.d; index += 1) {
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', sectorPath(index * step, (index + 1) * step));
+      path.setAttribute('class', 'part');
+      path.setAttribute('data-part', String(index));
+      path.setAttribute('data-shaded', 'false');
+      path.setAttribute('tabindex', '0');
+      path.addEventListener('click', () => togglePart(path));
+      path.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          togglePart(path);
+        }
+      });
+      partsGroup.appendChild(path);
+    }
+    hub.parentNode.appendChild(hub);
+    Studio.event('item_view', {item:item.id});
+  }
+
+  function celebrate() {
+    card.classList.add('success');
+    const vectors = [
+      [-104,-88],[-58,-118],[0,-126],[62,-112],[105,-76],
+      [-112,4],[112,8],[-78,92],[0,116],[80,88]
+    ];
+    vectors.forEach((vector, index) => {
+      const spark = document.createElement('span');
+      spark.className = 'spark';
+      spark.style.left = (card.clientWidth / 2 - 6) + 'px';
+      spark.style.top = (card.clientHeight / 2 - 6) + 'px';
+      spark.style.setProperty('--sx', vector[0] + 'px');
+      spark.style.setProperty('--sy', vector[1] + 'px');
+      spark.style.background = index % 2 ? 'var(--berry)' : 'var(--gold)';
+      card.appendChild(spark);
+      spark.addEventListener('animationend', () => spark.remove());
+    });
+  }
+
+  function showDone() {
+    finished = true;
+    progress.replaceChildren();
+    card.removeAttribute('data-item');
+    card.className = 'card done-screen';
+    card.replaceChildren();
+
+    const icon = document.createElement('div');
+    icon.className = 'done-icon';
+    icon.innerHTML =
+      '<svg viewBox="0 0 120 120" aria-hidden="true">' +
+      '<path d="M25 62 L49 85 L96 34" fill="none" stroke="#674582" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"></path>' +
+      '</svg>';
+
+    const text = document.createElement('p');
+    text.className = 'done-text';
+    text.textContent = Studio.t('done');
+    card.append(icon, text);
+    Studio.event('complete', {});
+    Studio.done();
+  }
+
+  check.addEventListener('click', () => {
+    if (waiting || finished) return;
+    const item = items[current];
+    const shaded = partsGroup.querySelectorAll('[data-shaded="true"]').length;
+    waiting = true;
+    check.disabled = true;
+    Studio.event('check', {item:item.id, n:shaded, d:item.d});
+    Studio.answer({n:shaded, d:item.d});
+  });
+
+  Studio.onVerdict(verdict => {
+    if (!waiting || finished) return;
+    if (verdict.correct) {
+      feedback.textContent = Studio.t('right');
+      feedback.className = 'feedback good';
+      celebrate();
+      Studio.event('verdict', {item:items[current].id, correct:true});
+      window.setTimeout(() => {
+        current += 1;
+        if (current < items.length) renderItem();
+        else showDone();
+      }, 850);
+    } else {
+      waiting = false;
+      check.disabled = false;
+      feedback.textContent = Studio.t('wrong') + ' ' + Studio.t('hint');
+      feedback.className = 'feedback try';
+      card.animate(
+        [
+          {transform:'translateX(0)'},
+          {transform:'translateX(-5px)'},
+          {transform:'translateX(5px)'},
+          {transform:'translateX(0)'}
+        ],
+        {duration:280, easing:'ease-out'}
+      );
+      Studio.event('verdict', {item:items[current].id, correct:false});
+    }
+  });
+
+  renderItem();
+  Studio.ready();
+})();
+</script>

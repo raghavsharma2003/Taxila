@@ -1,0 +1,233 @@
+<style>
+:root{--bg:#FFF8F0;--card:#FFFFFF;--accent:#FF8C42;--accent-dark:#E06C22;--slice:#FFF0D6;--shaded:#FFC75F;--bar:#FFF0D6;--bar-shaded:#FFC75F;--crust:#D2691E;--text:#4A3B2A;--muted:#8C7B68;--green:#4CAF50;--red:#E57373;--shadow:rgba(74,59,42,0.15);}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans',sans-serif;background:linear-gradient(180deg,#FFF8F0 0%,#FFE8D6 100%);color:var(--text);min-height:640px;display:flex;justify-content:center;}
+#app{width:100%;max-width:360px;padding:16px;display:flex;flex-direction:column;align-items:center;}
+.card{width:100%;background:var(--card);border-radius:28px;box-shadow:0 10px 30px var(--shadow);padding:20px;display:flex;flex-direction:column;align-items:center;gap:14px;position:relative;overflow:hidden;}
+h1{margin:0;font-size:1.55rem;text-align:center;color:var(--accent-dark);}
+.instr{margin:0;font-size:1rem;text-align:center;color:var(--text);}
+.hint{margin:0;font-size:.85rem;text-align:center;color:var(--muted);}
+.stage{width:100%;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.item-container{width:100%;display:flex;flex-direction:column;align-items:center;gap:12px;}
+.whole{width:260px;height:auto;max-width:100%;touch-action:manipulation;}
+.slice{fill:var(--slice);stroke:#fff;stroke-width:3;transition:fill .18s ease,transform .12s ease;cursor:pointer;transform-origin:center;}
+.slice.shaded{fill:var(--shaded);}
+.bar-seg{fill:var(--bar);stroke:#fff;stroke-width:4;transition:fill .18s ease,transform .12s ease;cursor:pointer;transform-origin:center;}
+.bar-seg.shaded{fill:var(--bar-shaded);}
+.fraction-display{display:flex;align-items:center;gap:8px;font-size:1.6rem;font-weight:700;color:var(--text);}
+.fraction-display .num{color:var(--accent-dark);min-width:1.2em;text-align:center;}
+.fraction-display .target{color:var(--muted);}
+.check{width:100%;min-height:52px;border:none;border-radius:16px;background:linear-gradient(180deg,var(--accent) 0%,var(--accent-dark) 100%);color:#fff;font-size:1.15rem;font-weight:700;cursor:pointer;transition:transform .1s ease,filter .2s ease;box-shadow:0 6px 0 #C45A1E;}
+.check:active{transform:translateY(4px);box-shadow:0 2px 0 #C45A1E;}
+.check:focus-visible{outline:3px solid var(--accent);outline-offset:2px;}
+.feedback{min-height:1.6em;text-align:center;font-weight:700;font-size:1.05rem;}
+.feedback.right{color:var(--green);}
+.feedback.wrong{color:var(--red);}
+.done-screen{display:flex;flex-direction:column;align-items:center;gap:16px;padding:30px 10px;text-align:center;}
+.done-emoji{font-size:4rem;animation:pop .6s ease;}
+.done-text{font-size:1.4rem;font-weight:700;color:var(--accent-dark);}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-8px);}75%{transform:translateX(8px);}}
+@keyframes pop{0%{transform:scale(.5);opacity:0;}60%{transform:scale(1.1);opacity:1;}100%{transform:scale(1);}}
+@keyframes fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1;}100%{transform:translateY(280px) rotate(720deg);opacity:0;}}
+.confetti{position:absolute;width:10px;height:10px;border-radius:50%;pointer-events:none;animation:fall 1.2s ease-out forwards;}
+</style>
+<div id="app">
+  <div class="card">
+    <h1 id="title"></h1>
+    <p id="instr" class="instr"></p>
+    <p id="hint" class="hint"></p>
+    <div id="stage" class="stage"></div>
+    <div id="feedback" class="feedback"></div>
+    <button id="checkBtn" class="check" type="button" data-action="check"></button>
+  </div>
+</div>
+<script>
+(function(){
+  var items = Studio.params.items || [];
+  var picture = Studio.params.picture === 'bar' ? 'bar' : 'pizza';
+  var idx = 0;
+  var selected = new Set();
+  var waiting = false;
+  var svgNS = 'http://www.w3.org/2000/svg';
+  var titleEl = document.getElementById('title');
+  var instrEl = document.getElementById('instr');
+  var hintEl = document.getElementById('hint');
+  var stageEl = document.getElementById('stage');
+  var feedbackEl = document.getElementById('feedback');
+  var checkBtn = document.getElementById('checkBtn');
+  titleEl.textContent = Studio.t('title');
+  instrEl.textContent = Studio.t('instr');
+  hintEl.textContent = Studio.t('hint');
+  checkBtn.textContent = Studio.t('check');
+  function fmt(n){ return n.toFixed(2); }
+  function createPizza(d){
+    var svg = document.createElementNS(svgNS,'svg');
+    svg.setAttribute('viewBox','-105 -105 210 210');
+    svg.setAttribute('class','whole pizza');
+    var r = 100;
+    if(d === 1){
+      var c = document.createElementNS(svgNS,'circle');
+      c.setAttribute('r',r);
+      c.setAttribute('class','slice');
+      c.setAttribute('data-part','0');
+      c.setAttribute('data-shaded','false');
+      svg.appendChild(c);
+    } else {
+      var angle = 2 * Math.PI / d;
+      var large = angle > Math.PI ? 1 : 0;
+      for(var i=0;i<d;i++){
+        var a0 = i * angle - Math.PI / 2;
+        var a1 = (i + 1) * angle - Math.PI / 2;
+        var x1 = Math.cos(a0) * r;
+        var y1 = Math.sin(a0) * r;
+        var x2 = Math.cos(a1) * r;
+        var y2 = Math.sin(a1) * r;
+        var path = document.createElementNS(svgNS,'path');
+        path.setAttribute('d','M0,0 L'+fmt(x1)+','+fmt(y1)+' A'+r+','+r+' 0 '+large+' 1 '+fmt(x2)+','+fmt(y2)+' Z');
+        path.setAttribute('class','slice');
+        path.setAttribute('data-part',String(i));
+        path.setAttribute('data-shaded','false');
+        svg.appendChild(path);
+      }
+    }
+    var rim = document.createElementNS(svgNS,'circle');
+    rim.setAttribute('r',r);
+    rim.setAttribute('fill','none');
+    rim.setAttribute('stroke','var(--crust)');
+    rim.setAttribute('stroke-width','6');
+    svg.appendChild(rim);
+    return svg;
+  }
+  function createBar(d){
+    var w = d * 60;
+    var h = 120;
+    var svg = document.createElementNS(svgNS,'svg');
+    svg.setAttribute('viewBox','0 0 '+w+' '+h);
+    svg.setAttribute('class','whole bar');
+    svg.setAttribute('preserveAspectRatio','xMidYMid meet');
+    for(var i=0;i<d;i++){
+      var rect = document.createElementNS(svgNS,'rect');
+      rect.setAttribute('x',i*60);
+      rect.setAttribute('y',0);
+      rect.setAttribute('width',60);
+      rect.setAttribute('height',h);
+      rect.setAttribute('rx',12);
+      rect.setAttribute('class','bar-seg');
+      rect.setAttribute('data-part',String(i));
+      rect.setAttribute('data-shaded','false');
+      svg.appendChild(rect);
+    }
+    return svg;
+  }
+  function updateCount(){
+    var el = document.getElementById('countNum');
+    if(el) el.textContent = String(selected.size);
+  }
+  function updateShade(el,shaded){
+    el.setAttribute('data-shaded',shaded ? 'true' : 'false');
+    el.classList.toggle('shaded',shaded);
+  }
+  function pulse(el){
+    el.style.transform = 'scale(0.92)';
+    setTimeout(function(){ el.style.transform = ''; },120);
+  }
+  function toggle(el){
+    var i = parseInt(el.getAttribute('data-part'),10);
+    var shaded = el.getAttribute('data-shaded') === 'true';
+    if(shaded){
+      selected.delete(i);
+      updateShade(el,false);
+    } else {
+      selected.add(i);
+      updateShade(el,true);
+    }
+    pulse(el);
+    updateCount();
+    feedbackEl.textContent = '';
+    feedbackEl.className = 'feedback';
+    Studio.event('toggle',{item:items[idx].id,part:i,shaded:!shaded});
+  }
+  function renderItem(item){
+    selected.clear();
+    waiting = false;
+    stageEl.innerHTML = '';
+    feedbackEl.textContent = '';
+    feedbackEl.className = 'feedback';
+    var container = document.createElement('div');
+    container.className = 'item-container';
+    container.setAttribute('data-item',item.id);
+    var pic = picture === 'bar' ? createBar(item.d) : createPizza(item.d);
+    container.appendChild(pic);
+    var disp = document.createElement('div');
+    disp.className = 'fraction-display';
+    disp.innerHTML = '<span class="num" id="countNum">0</span><span>/</span><span>'+item.d+'</span><span>=</span><span class="target">'+item.n+'/'+item.d+'</span>';
+    container.appendChild(disp);
+    stageEl.appendChild(container);
+    updateCount();
+  }
+  function shake(el){
+    el.style.animation = 'shake 0.4s ease';
+    setTimeout(function(){ el.style.animation = ''; },400);
+  }
+  function celebrate(){
+    var parts = stageEl.querySelectorAll('[data-shaded="true"]');
+    for(var k=0;k<parts.length;k++){
+      (function(p){
+        p.style.animation = 'pop 0.5s ease';
+        setTimeout(function(){ p.style.animation = ''; },500);
+      })(parts[k]);
+    }
+    var colors = ['#FFB347','#FF6F61','#FFD93D','#6BCB77','#4D96FF'];
+    for(var i=0;i<12;i++){
+      var c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = (20 + Math.random() * 60) + '%';
+      c.style.top = '30%';
+      c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDelay = (Math.random() * 0.2) + 's';
+      stageEl.appendChild(c);
+      setTimeout(function(el){ return function(){ el.remove(); }; }(c),1400);
+    }
+  }
+  function showDone(){
+    stageEl.innerHTML = '<div class="done-screen"><div class="done-emoji">🎉</div><div class="done-text" id="doneText"></div></div>';
+    document.getElementById('doneText').textContent = Studio.t('done');
+    checkBtn.style.display = 'none';
+    feedbackEl.textContent = '';
+    Studio.done();
+  }
+  stageEl.addEventListener('click',function(e){
+    if(waiting) return;
+    var el = e.target.closest('[data-part]');
+    if(!el) return;
+    toggle(el);
+  });
+  checkBtn.addEventListener('click',function(){
+    if(waiting || idx >= items.length) return;
+    Studio.answer({n:selected.size,d:items[idx].d});
+  });
+  Studio.onVerdict(function(v){
+    if(v.correct){
+      feedbackEl.textContent = Studio.t('right');
+      feedbackEl.className = 'feedback right';
+      waiting = true;
+      celebrate();
+      setTimeout(function(){
+        idx++;
+        if(idx < items.length){ renderItem(items[idx]); }
+        else { showDone(); }
+      },1400);
+    } else {
+      feedbackEl.textContent = Studio.t('wrong');
+      feedbackEl.className = 'feedback wrong';
+      shake(stageEl);
+    }
+  });
+  if(items.length > 0){
+    renderItem(items[0]);
+    Studio.ready();
+  } else {
+    showDone();
+  }
+})();
+</script>

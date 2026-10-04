@@ -19,7 +19,7 @@
 // lines are the director's own next moves, never a second guess at them.
 import * as SH from "./shapes.js";
 import { readFileSync } from "fs";
-import { buildPracticeQueue, findItem, isomorphicFor, probeFor, promptFor, optionsSpoken, selectNext, anchorOf, whyKey, PROBE_WEIGHT, revealsAnswer } from "./items.js";
+import { buildPracticeQueue, findItem, isomorphicFor, probeFor, promptFor, optionsSpoken, selectNext, anchorOf, whyKey, PROBE_WEIGHT, revealsAnswer, choicesFor, stripRungLabel } from "./items.js";
 import { registerNote } from "./register.js";
 import { askText } from "./say.js";
 import { getTopic } from "../content/curriculum.js";
@@ -51,7 +51,10 @@ export const LIMITS = {
   minutes: { "6-9": 25, "10-15": 35 },
   whyConsolidating: 0.4,   // fusion rule 5: a why on ~30-50% of correct answers once a skill is consolidating
   breakGapTurns: 6,
-  unclearTries: 2,
+  // Unclear replies (no attempt, off-topic, a misheard transcript) on ONE item: the third puts the choices on screen
+  // (or, with none to offer, moves on); past that the item is left with no verdict (no evidence) and the lesson moves
+  // on. Measured on production before this: 12 repair/hint turns in a row on one diagnostic (comprehension G11).
+  unclearTries: 3,
 };
 const LEARNED = new Set(["learned_today", "mastered", "due"]);
 const join = (...parts) => parts.filter(Boolean).join("; ");
@@ -156,6 +159,8 @@ function verdict(cls) {
 }
 
 const plan = (kind, shape, extra = {}) => ({ kind, shape, ...extra });
+/** The teacher's note for a hint rung: an item's server-side rung shapes (a diagnostic) else its kit hint. */
+const rungShapeOf = (item, rung) => (item.rungShapes ?? item.hints ?? [])[rung - 1];
 const moveKindFor = (item) => (item.kind === "practice" ? "practice" : item.kind === "retrieval" ? "retrieval" : "probe");
 
 /** Chip labels are UI chrome: English in every lesson language (owner directive; PRODUCT-DESIGN-V2 §0.10, §5.3). */
@@ -166,7 +171,7 @@ const optionChips = (item) => (item?.diagnostic && item.options.length <= 4
   ? item.options.map((o, i) => ({ id: `opt:${i}`, label: o.text.slice(0, 40) })) : undefined);
 
 function activate(s, item) {
-  s.activeItemId = item.id; s.hintLevel = 0; s.tries = 0; s.unclear = 0; s.pendingWhy = undefined;
+  s.activeItemId = item.id; s.hintLevel = 0; s.tries = 0; s.unclear = 0; s.pendingWhy = undefined; s.offered = undefined;
   // A warm-up item on an opener skill IS that skill's delayed check (C31, callback in passing): it clears the trigger.
   if (item.kind === "retrieval" && s.probeSess?.pending.some((t) => t.skillId === item.skillId && t.reason === "delayed_check")) {
     const plan = { skillId: item.skillId, shapeId: "C31", facet: "D", mandatory: true, reason: "delayed_check", testWeight: testWeight(shapeById("C31")), family: "H", cls: "item.open" };
@@ -197,9 +202,9 @@ function warmup(s, input, item) {
     s.tries += 1;
     if (s.tries >= LIMITS.warmupTries) return leave();
     s.hintLevel = Math.min(2, s.hintLevel + 1);
-    return plan("hint", SH.hint({ level: s.hintLevel, rungShape: item.hints[s.hintLevel - 1], askedForAnswer: input.cls?.flags?.asksForAnswer }), { item, hintRung: s.hintLevel });
+    return plan("hint", SH.hint({ level: s.hintLevel, rungShape: rungShapeOf(item, s.hintLevel), askedForAnswer: input.cls?.flags?.asksForAnswer }), { item, hintRung: s.hintLevel });
   }
-  return unclear(s, input, item, v, leave);
+  return unclear(s, input, item, v);
 }
 
 function nextWarmup(s, input, prefix) {
@@ -285,7 +290,7 @@ function practice(s, input, item) {
   if (engine) return engine;
   if (v === "right") return afterCorrect(s, input, item);
   if (v === "wrong" || v === "stuck") return afterMiss(s, input, item);
-  return unclear(s, input, item, v, () => afterMiss(s, input, item));
+  return unclear(s, input, item, v);
 }
 
 /** Correct answer, wrong reason — the correct-answer trap (rule 3): a misconception flag, not a success. */
@@ -357,7 +362,7 @@ function afterMiss(s, input, item) {
   // (pump instead of hint) — the hint count, the key gate and the C-outcome are unchanged. Never at the assertion.
   const gentle = !!input.voice?.gentlerHint && s.hintLevel >= 2 && s.hintLevel < 4;
   const shown = gentle ? s.hintLevel - 1 : s.hintLevel;
-  return plan("hint", SH.hint({ level: shown, rungShape: item.hints[shown - 1], askedForAnswer: cls?.flags?.asksForAnswer }), { item, hintRung: shown });
+  return plan("hint", SH.hint({ level: shown, rungShape: rungShapeOf(item, shown), askedForAnswer: cls?.flags?.asksForAnswer }), { item, hintRung: shown });
 }
 
 const GENERIC_REP = { manipulative: "objects they can hold or imagine moving", diagram: "a simple drawing on the whiteboard",
@@ -416,13 +421,102 @@ function engineReteach(s, input, item, v) {
   return plan("reteach", SH.reteach({ representation, moveShape, again: true }), { item, skillId: k, representation });
 }
 
-/** Unclear transcript or off-topic: re-ask (no evidence either way); after a few, `giveUp`. */
-function unclear(s, input, item, v, giveUp) {
-  if (v === "off") return plan("repair", SH.repairOffTopic(), { item });
+/**
+ * "Show me choices" tiles for the item on the table: a diagnostic's own options (opt:i, graded by the option's tag),
+ * else the key and two distractors (items.js choicesFor; pick:i, graded in code against the key). The generated
+ * labels are kept in the state so the tap is graded against exactly what was shown. undefined: nothing to offer.
+ */
+function offerChoices(s, kit, item) {
+  const own = optionChips(item);
+  if (own) return own;
+  const labels = choicesFor(item, kit, s.seed);
+  if (!labels) return undefined;
+  s.offered = { itemId: item.id, options: labels };
+  return labels.map((label, i) => ({ id: `pick:${i}`, label: label.slice(0, 40) }));
+}
+
+/** Leave the item with no verdict (no evidence) and pose the next one: the unclear cap, or "Skip for now". */
+function leaveItem(s, input, item, prefix) {
+  if (!s.skipped.includes(item.id)) s.skipped.push(item.id);
+  s.unclear = 0;
+  if (s.phase === "warmup") return nextWarmup(s, input, prefix);
+  return poseNext(s, input, prefix);
+}
+
+/**
+ * An unclear reply: a misheard transcript, no attempt, or off-topic. No evidence either way. Spoken: re-ask (repair).
+ * Typed: never "say it again" — they typed it — a small nudge on the same question (audit flows G4: typed "100", "1"
+ * and "yes" all got "I didn't catch that clearly"). The third unclear reply on one item puts the choices on screen (or,
+ * with none, leaves the item); past that the item is left with no verdict and the lesson moves on (comprehension G11).
+ */
+function unclear(s, input, item, v) {
   s.unclear += 1;
-  if (s.unclear > LIMITS.unclearTries) { s.unclear = 0; return giveUp(); }
+  const typed = !!input.typed;
+  const shown = !!(s.lastUi?.chips?.length && s.lastMove?.itemId === item.id);
+  if (s.unclear >= LIMITS.unclearTries) {
+    const chips = s.unclear === LIMITS.unclearTries && !shown ? offerChoices(s, input.kit, item) : undefined;
+    if (!chips) return leaveItem(s, input, item, SH.MOVE_ON_UNCLEAR);
+    return plan(typed ? "hint" : "repair", SH.offerChoices(), { item, chips });
+  }
   const chips = optionChips(item);
+  if (v === "off") return plan(typed ? "hint" : "repair", SH.repairOffTopic(), { item, chips });
+  if (typed) return plan("hint", SH.typedNoAnswer(), { item, chips });
   return plan("repair", SH.repairUnclear({ chips: !!chips }), { item, chips });
+}
+
+/**
+ * The child's help request (classify.js HELP_REQUESTS; a client action from the Hint sheet or the Young Help menu,
+ * never their words and never evidence). With a question on the table it acts on THAT question: a hint rung, its
+ * choices on screen, skip it (no verdict), show it another way, slower, or "I know this" (let them show it). With no
+ * question on the table (a hook, an explanation), it re-says the teaching more simply, or skips ahead to a question.
+ */
+function helpMove(s, input, item, help) {
+  const kit = input.kit;
+  if (s.phase === "teachback") {
+    if (help === "skip") return toWrap(s, {});
+    return plan("teachback", join(SH.SLOWER, SH.teachback({ protege: s.ctx.protege })), { probe: "P1", format: "F7" });
+  }
+  if (!item) {
+    if (help === "skip" || help === "know") {
+      if (s.phase === "teach") { s.teachIdx = s.teachPlan.length; return teach(s, input, help === "know" ? SH.KNOWS_IT : "move on"); }
+      if (s.phase === "warmup") { s.phase = "teach"; return teach(s, input); }
+      return poseNext(s, input);
+    }
+    // Any other help on a teaching turn moves the teaching on, more simply: a Young child in the text lane can answer a
+    // teaching turn only through the Help menu, and a help that re-said the same step would hold them there for good.
+    const prefix = help === "slower" ? SH.SLOWER : "they asked for help: simpler words, one concrete example";
+    if (s.phase === "warmup") { s.phase = "teach"; return teach(s, input, prefix); }
+    if (s.phase === "teach") return teach(s, input, prefix);
+    return poseNext(s, input, prefix);
+  }
+  // A help request on a "why?" (the reason is the child's to give): they cannot give it now. No evidence; she gives the
+  // reason in one line and the lesson moves on (a Young text-lane child can answer a why only through the Help menu,
+  // and re-teaching the answered item there looped: 6 re-teach turns in a row, measured on the W1-A Young battery).
+  if (s.pendingWhy === item.id) return afterWhy(s, { ...input, cls: { outcome: "no_evidence", confidence: 1, source: "help", flags: {} } }, item);
+  const pose = (prefix, extra = {}) => plan(moveKindFor(item), SH.pose({ item, prefix }), { item, probe: probeFor(item), chips: optionChips(item), ...extra });
+  switch (help) {
+    case "skip": return leaveItem(s, input, item, SH.SKIP_ITEM);
+    case "know": return pose(SH.KNOWS_IT);
+    case "slower": return pose(SH.SLOWER);
+    case "choices": {
+      const chips = offerChoices(s, kit, item);
+      if (chips) return plan(moveKindFor(item), SH.showChoices(), { item, probe: probeFor(item), chips });
+      return decideAs(s, input, item, "stuck"); // nothing to offer: a hint rung instead
+    }
+    case "why": case "another": case "how": {
+      s.hintLevel = Math.min(3, s.hintLevel + 1); // help spends a rung (the answer then counts "with help"), never the assertion
+      const we = help === "how" ? kit.workedExample : null;
+      return plan("reteach", SH.helpExplain({ how: help === "how" }), { item, content: we ? workedContent(we, 1, 1) : [] });
+    }
+    default: return decideAs(s, input, item, "stuck"); // "hint"
+  }
+}
+
+/** Run the phase's own path as if the child had said they were stuck (a hint request): a rung, never evidence. */
+function decideAs(s, input, item, _v) {
+  const cls = { outcome: "no_evidence", confidence: 1, source: "help", flags: { dontKnow: true, asksForAnswer: false, minimal: false, offTopic: false, distress: false, distressKind: null, wantsToStop: false } };
+  const next = { ...input, cls };
+  return s.phase === "warmup" ? warmup(s, next, item) : practice(s, next, item);
 }
 
 function enterTeachback(s, prefix) {
@@ -474,8 +568,11 @@ function decide(s, input, item) {
     s.flagged[cls.voiced] = (s.flagged[cls.voiced] ?? 0) + 1;
     if (!s.itemsDone.includes(`diag:${cls.voiced}`)) s.verify = cls.voiced;
   }
-  // 2. The child wants to stop: whatever was mid-way is over (NEVER MANIPULATE — no holding at goodbye).
+  // 2. The child wants to stop: whatever was mid-way is over (NEVER MANIPULATE — no holding at goodbye). Only their own
+  // stop words (or Pause → End, which never reaches here) end the lesson: "Skip for now" is a help request below.
   if (flags.wantsToStop) return toWrap(s, { stopping: true });
+  // 2b. A help request (a client action): acts on the question on the table; never evidence, never a stop.
+  if (cls?.help && ["warmup", "teach", "practice", "teachback"].includes(s.phase)) return helpMove(s, input, item, cls.help);
   // 3. Choices offered by a break.
   if (chipId === "break:rest") return plan("break", SH.stretch());
   if (chipId === "break:easier" && s.phase === "practice") {
@@ -537,9 +634,11 @@ export function step(prev, input) {
   const childTurn = input.event === "turn" || (input.event === "module" && !!input.cls);
   // The answer just given was graded against a kit item's key (not a covert why / teach-back, not past the
   // assertion): its verdict is noted on the move so the teacher's words cannot contradict it (G-PRAISE-1).
-  const gradedItem = childTurn && !!active && s.pendingWhy !== active.id && s.hintLevel < 4 && !(s.phase === "teachback" && s.teachbackAsked);
+  // A help request (cls.help) is a client action: nothing was graded, and it spends no test budget.
+  const helpTurn = !!input.cls?.help;
+  const gradedItem = childTurn && !helpTurn && !!active && s.pendingWhy !== active.id && s.hintLevel < 4 && !(s.phase === "teachback" && s.teachbackAsked);
   const asked = s.pendingProbe;
-  if (childTurn && s.probeSess) {
+  if (childTurn && !helpTurn && s.probeSess) {
     // Every child turn spends its test weight (budget.js): the answer to a probe at the probe's weight, a plain
     // item at 1 (0.25 once the window is near its cap: the covert C21 role-play form), teaching talk at 0.
     s.probeSess = asked
@@ -661,10 +760,13 @@ function uiFor(s, p, move, item, kit) {
     const text = askText(promptFor(item, s.ctx.lang));
     if (!isObjective(text, kit, topic)) ui.ask = { text, itemId: item.id };
   }
+  // Choices on screen always take the tray: a choice item is never left with its options only in speech behind an
+  // activity (audit flows G2: tray "module" + answerForm "tap_in_tray" on a diagnostic, with no Type and no tiles).
+  // "tap_in_tray" and tray "module" only with a mount the Director holds (s.module, cleared on a module failure).
   ui.answerForm = ui.chips ? "choice"
-    : asking && s.module?.awaitingReveal && s.module.itemId === item.id ? "tap_in_tray"
+    : asking && s.module?.id && s.module.awaitingReveal && s.module.itemId === item.id ? "tap_in_tray"
       : asking && NUMERIC_KEY.test(String(item.answer).trim()) ? "number" : "words";
-  ui.tray = s.module ? "module" : ui.chips ? "tiles" : "none";
+  ui.tray = ui.chips ? "tiles" : s.module?.id ? "module" : "none";
   const hint = hintFor(move, item, p.hintRung);
   if (hint) ui.hint = hint;
   const short = shortTitleOf(s.ctx.topicTitle);
@@ -680,10 +782,19 @@ function uiFor(s, p, move, item, kit) {
  */
 export function hintFor(move, item, rung) {
   if (move?.kind !== "hint" || !item || !Number.isInteger(rung) || rung < 1 || rung > 3) return null;
-  const text = String(item.hints?.[rung - 1] ?? "").replace(/\s+/g, " ").trim();
-  if (!text || revealsAnswer(text, item)) return null;
+  // The card line is child-facing: the rung label goes ("Prompt: …", "pump: …"), and a line that still reads as a note
+  // to the teacher (audit flows G5: "pump: ask them to picture both choices as real things") is never shown.
+  const text = stripRungLabel(String(item.hints?.[rung - 1] ?? "")).replace(/\s+/g, " ").trim();
+  if (!text || revealsAnswer(text, item) || hintShapeWords(text)) return null;
   return { level: /** @type {1 | 2 | 3} */ (rung), text: text.length > 120 ? `${text.slice(0, 119).replace(/\s+\S*$/, "")}…` : text };
 }
+
+/**
+ * Words that mark a hint line as a note to the teacher, not something to show a child (G-HINT lint over ui.hint.text):
+ * "ask them…", "say which…", "pump", "tell them", "the child", "their answer", a rung name as a label. Exported for tests.
+ */
+const SHAPE_WORDS = /^\s*ask\s+(?:what|why|how|which|whether|if|about)\b|\b(?:ask\s+them|tell\s+them|say\s+which|have\s+them|get\s+them|remind\s+them|pump|assertion|the\s+key|their\s+answer|rung\s+\d)\b|^\s*(?:pump|hint|prompt|assert(?:ion)?)\s*[:\-–]/i;
+export const hintShapeWords = (text) => SHAPE_WORDS.test(String(text ?? ""));
 
 /**
  * What the compiler needs about the current move, derived from state alone (the realtime-token route

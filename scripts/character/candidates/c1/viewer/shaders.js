@@ -129,8 +129,11 @@ void main() {
     float spec = mix(D_GGX(NoH, a1) * V_SmithJointApprox(NoV, nl, a1), D_GGX(NoH, a2) * V_SmithJointApprox(NoV, nl, a2), 0.15);
     col += uKeyColor * nl * spec * F_Schlick(0.028, VoH) * cav * uSpec;
     // ambient specular sheen + rim (subtle)
-    col += shIrradiance(reflect(-V, Nn)) * F_Schlick(0.028, NoV) * 0.35 * ao * cav;
-    col += uRimColor * pow(1.0 - NoV, 3.0) * max(dot(Nn, normalize(uRimDir)), 0.0) * 0.45 * ao;
+    col += shIrradiance(reflect(-V, Nn)) * F_Schlick(0.028, NoV) * 0.35 * ao * cav * mix(0.4, 1.0, smoothstep(0.015, 0.06, dot(albedo, vec3(0.2126, 0.7152, 0.0722))));
+    // c1: the source paints the scalp hair into the skin atlas; rim and sheen on those dark texels read as a blue-grey
+    // halo around the bun, so both scale with the albedo's luminance (skin texels are unaffected: luma >> 0.06)
+    float hairK = smoothstep(0.015, 0.06, dot(albedo, vec3(0.2126, 0.7152, 0.0722)));
+    col += uRimColor * pow(1.0 - NoV, 3.0) * max(dot(Nn, normalize(uRimDir)), 0.0) * 0.45 * ao * hairK;
   #ifdef TIER_H
     // back-scatter through thin regions (ears, nostrils, lids)
     float bs = pow(clamp(dot(V, -normalize(L + Nn * 0.3)), 0.0, 1.0), 3.0) * thick;
@@ -182,6 +185,9 @@ const EYE_FRAG = /* glsl */ `
 precision highp float;
 ${LIGHT_PARS}
 uniform vec3 uIris; uniform float uPupil; uniform float uLidShadow; uniform float uIrisDetail;
+#ifdef EYE_TEX
+uniform sampler2D tEye;   // c1: the source's photo eye (sclera + iris), sampled instead of the procedural iris
+#endif
 varying vec2 vUv; varying vec3 vWorldPos; varying vec3 vNormalW;
 varying vec3 vLocal; varying vec3 vViewL; varying mat3 vToWorld;
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -222,6 +228,10 @@ void main() {
     albedo = mix(vec3(0.78, 0.74, 0.70), vec3(0.70, 0.56, 0.54), corner) * (1.0 - veins * vec3(0.0, 1.0, 1.0));
     albedo = mix(albedo, uIris * 0.3 + 0.55, smoothstep(1.02, 1.12, rr) * smoothstep(1.2, 1.0, rr) * 0.0);
   }
+#ifdef EYE_TEX
+  albedo = texture2D(tEye, vUv).rgb;
+  cornea = p.z > 0.82;
+#endif
   // lid shadow + corner occlusion (the AO shell, analytically): darker towards the top and the corners
   // the upper lid's shadow covers the top quarter of the visible ball; the lower lid's wet line a thin band
   float ao = mix(1.0, 0.3, smoothstep(0.25, 0.62, p.y) * uLidShadow) * mix(1.0, 0.55, smoothstep(0.4, 0.85, abs(p.x)))
@@ -289,7 +299,7 @@ void main() {
   float s2 = kk(normalize(T + N * (uShift - 0.25)), H, 22.0);
   // no highlight on the card fringe: at alpha < 0.5 the edge texels lit as bright lines in profile
   col += uKeyColor * wrap * (s1 * 0.22 + s2 * 0.12 * uSpecTint * a.rgb * 4.0) * uKK * smoothstep(0.35, 0.6, a.a);
-  col += uRimColor * pow(1.0 - max(dot(N, V), 0.0), 3.0) * 0.15;
+  // c1: no rim on the cards: the source's bun cards seen edge-on lit as pale blue-grey lines (turntable back view)
   gl_FragColor = vec4(col, a.a);
   #include <tonemapping_fragment>
   #include <colorspace_fragment>

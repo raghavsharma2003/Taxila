@@ -1,0 +1,278 @@
+<style>
+  :root{
+    --ink:#25334a;
+    --soft:#6e7e96;
+    --paper:#fffdf8;
+    --sky:#e8f5ff;
+    --line:#c8dce8;
+    --bar:#6e81ef;
+    --bar2:#8ea0ff;
+    --mint:#dff7eb;
+    --good:#247757;
+    --rose:#fff0f1;
+    --bad:#b84b61;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-width:360px;
+    background:linear-gradient(180deg,#eaf7ff 0%,#fffaf1 100%);
+    color:var(--ink);
+    font-family:Arial,system-ui,sans-serif;
+  }
+  #app{
+    width:min(100%,480px);
+    min-height:640px;
+    margin:0 auto;
+    padding:18px 14px 24px;
+    overflow:hidden;
+  }
+  .card{
+    background:rgba(255,253,248,.94);
+    border:1px solid rgba(151,181,205,.38);
+    border-radius:25px;
+    box-shadow:0 12px 30px rgba(68,111,143,.12);
+    padding:18px 10px 15px;
+  }
+  h1{
+    margin:0 10px 5px;
+    text-align:center;
+    font-size:24px;
+    line-height:1.2;
+    letter-spacing:-.4px;
+  }
+  .ask{
+    margin:0 14px 14px;
+    text-align:center;
+    color:var(--soft);
+    font-size:16px;
+    line-height:1.35;
+    min-height:22px;
+  }
+  .chart-wrap{
+    position:relative;
+    width:100%;
+    border-radius:19px;
+    overflow:hidden;
+    background:linear-gradient(180deg,#f4fbff,#fffdf8);
+    border:1px solid #e1edf3;
+  }
+  svg{
+    display:block;
+    width:100%;
+    height:auto;
+    min-height:385px;
+  }
+  .grid{
+    stroke:var(--line);
+    stroke-width:1;
+    stroke-dasharray:3 4;
+  }
+  .axis{
+    stroke:#71869a;
+    stroke-width:1.5;
+  }
+  .tick{
+    fill:#60748b;
+    font-size:12px;
+    font-weight:700;
+  }
+  .axis-title{
+    fill:#527087;
+    font-size:13px;
+    font-weight:700;
+  }
+  .fruit{
+    fill:#33465b;
+    font-size:12px;
+    font-weight:700;
+  }
+  .bar{
+    fill:var(--bar);
+    stroke:#5267d7;
+    stroke-width:1;
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    transform:scaleY(0);
+    transition:transform .72s cubic-bezier(.2,.85,.3,1),fill .18s ease;
+    cursor:pointer;
+  }
+  .bar.grown{transform:scaleY(1)}
+  .bar:active{fill:#5168d7}
+  .bar.selected{
+    fill:#ff9f67;
+    stroke:#df7644;
+    animation:barPulse .5s ease;
+  }
+  @keyframes barPulse{
+    50%{filter:brightness(1.1)}
+  }
+  .value-bubble{
+    opacity:0;
+    transform:translateY(5px);
+    transition:opacity .18s ease,transform .18s ease;
+    pointer-events:none;
+  }
+  .value-bubble.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+  .bubble-box{fill:#25334a}
+  .bubble-text{
+    fill:#fff;
+    font-size:13px;
+    font-weight:700;
+    text-anchor:middle;
+  }
+  .feedback{
+    min-height:48px;
+    margin:14px 8px 0;
+    padding:12px 15px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border-radius:16px;
+    text-align:center;
+    font-size:16px;
+    font-weight:700;
+    opacity:0;
+    transform:translateY(7px);
+    transition:opacity .25s ease,transform .25s ease,background .25s ease;
+  }
+  .feedback.show{opacity:1;transform:translateY(0)}
+  .feedback.good{background:var(--mint);color:var(--good)}
+  .feedback.bad{background:var(--rose);color:var(--bad)}
+  .feedback.done{background:#e8f3ff;color:#315b91}
+  .hint-dot{
+    fill:#ffd979;
+    animation:floatDot 2s ease-in-out infinite;
+  }
+  @keyframes floatDot{
+    50%{transform:translateY(-3px)}
+  }
+</style>
+
+<div id="app">
+  <section class="card" aria-live="polite">
+    <h1 id="title"></h1>
+    <p class="ask" id="ask"></p>
+    <div class="chart-wrap">
+      <svg id="chart" viewBox="0 0 360 390" role="img" aria-labelledby="title ask">
+        <circle class="hint-dot" cx="331" cy="26" r="6"></circle>
+        <g id="gridLayer"></g>
+        <g id="axisLayer"></g>
+        <g id="barsLayer"></g>
+        <g id="labelLayer"></g>
+        <g id="bubbleLayer"></g>
+      </svg>
+    </div>
+    <div id="feedback" class="feedback"></div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var data=Studio.params.data;
+  var ns="http://www.w3.org/2000/svg";
+  var chart=document.getElementById("chart");
+  var grid=document.getElementById("gridLayer");
+  var axes=document.getElementById("axisLayer");
+  var bars=document.getElementById("barsLayer");
+  var labels=document.getElementById("labelLayer");
+  var bubbles=document.getElementById("bubbleLayer");
+  var feedback=document.getElementById("feedback");
+  var pending=false, complete=false, selected=null;
+
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("ask").textContent=Studio.t("ask");
+
+  function el(name,attrs,text){
+    var node=document.createElementNS(ns,name);
+    for(var k in attrs) node.setAttribute(k,attrs[k]);
+    if(text!==undefined) node.textContent=text;
+    return node;
+  }
+  var max=0;
+  data.forEach(function(d){if(d.value>max)max=d.value;});
+  function niceStep(n){
+    var raw=n/5;
+    var pow=Math.pow(10,Math.floor(Math.log(raw)/Math.LN10));
+    var unit=raw/pow;
+    var nice=unit<=1?1:unit<=2?2:unit<=5?5:10;
+    return nice*pow;
+  }
+  var step=niceStep(max);
+  var top=Math.ceil(max/step)*step;
+  var left=48, right=342, base=320, topY=48, plotH=base-topY;
+  function yFor(v){return base-(v/top)*plotH;}
+
+  for(var tick=0;tick<=top;tick+=step){
+    var y=yFor(tick);
+    grid.appendChild(el("line",{x1:left,y1:y,x2:right,y2:y,class:"grid"}));
+    var tickText=el("text",{x:left-9,y:y+4,class:"tick","text-anchor":"end","data-tick":tick},String(tick));
+    axes.appendChild(tickText);
+  }
+  axes.appendChild(el("line",{x1:left,y1:topY,x2:left,y2:base,class:"axis"}));
+  axes.appendChild(el("line",{x1:left,y1:base,x2:right,y2:base,class:"axis"}));
+  axes.appendChild(el("text",{x:17,y:(topY+base)/2,class:"axis-title",transform:"rotate(-90 17 "+((topY+base)/2)+")","text-anchor":"middle"},Studio.t("yaxis")));
+
+  var span=(right-left)/data.length;
+  data.forEach(function(d,i){
+    var width=48;
+    var x=left+span*i+(span-width)/2;
+    var y=yFor(d.value);
+    var rect=el("rect",{x:x,y:y,width:width,height:base-y,rx:10,class:"bar","data-bar":d.key,"data-value":d.value,tabindex:"0",role:"button","aria-label":Studio.t(d.key)});
+    rect.addEventListener("click",function(){choose(d,rect);});
+    rect.addEventListener("keydown",function(e){
+      if(e.key==="Enter"||e.key===" "){e.preventDefault();choose(d,rect);}
+    });
+    bars.appendChild(rect);
+    labels.appendChild(el("text",{x:x+width/2,y:346,class:"fruit","text-anchor":"middle"},Studio.t(d.key)));
+
+    var group=el("g",{class:"value-bubble",id:"bubble-"+d.key});
+    group.appendChild(el("rect",{x:x+5,y:y-32,width:width-10,height:25,rx:10,class:"bubble-box"}));
+    group.appendChild(el("text",{x:x+width/2,y:y-15,class:"bubble-text"},String(d.value)));
+    bubbles.appendChild(group);
+  });
+
+  function choose(d,rect){
+    if(pending||complete)return;
+    pending=true;
+    if(selected)selected.classList.remove("selected");
+    selected=rect;
+    selected.classList.add("selected");
+    Array.prototype.forEach.call(document.querySelectorAll(".value-bubble"),function(b){b.classList.remove("show");});
+    document.getElementById("bubble-"+d.key).classList.add("show");
+    feedback.className="feedback";
+    feedback.textContent="";
+    Studio.event("bar_tap",{key:d.key,value:d.value});
+    Studio.answer(d.key);
+  }
+
+  Studio.onVerdict(function(result){
+    pending=false;
+    feedback.className="feedback show "+(result.correct?"good":"bad");
+    feedback.textContent=Studio.t(result.correct?"right":"wrong");
+    if(result.correct){
+      complete=true;
+      Array.prototype.forEach.call(document.querySelectorAll(".bar"),function(bar){bar.style.pointerEvents="none";});
+      Studio.done();
+      setTimeout(function(){
+        feedback.className="feedback show done";
+        feedback.textContent=Studio.t("done");
+      },650);
+    }else if(selected){
+      selected.classList.remove("selected");
+    }
+  });
+
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      Array.prototype.forEach.call(document.querySelectorAll(".bar"),function(bar,i){
+        setTimeout(function(){bar.classList.add("grown");},i*75);
+      });
+      Studio.ready();
+    });
+  });
+}());
+</script>

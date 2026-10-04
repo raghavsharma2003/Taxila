@@ -1,0 +1,225 @@
+<style>
+  :root { --bg:#F0F7F4; --green:#2E7D32; --leaf:#43A047; --sun:#FFCA28; --water:#42A5F5; --co2:#7E57C2; --o2:#EF5350; --soil:#795548; --accent:#FF7043; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); font-family:system-ui,-apple-system,sans-serif; width:360px; height:640px; overflow:hidden; }
+  #wrap { width:360px; height:640px; display:flex; flex-direction:column; }
+  svg { width:360px; height:400px; background:linear-gradient(#E3F2FD,#F0F7F4); display:block; }
+  .controls { flex:1; background:#fff; padding:12px 16px; display:flex; flex-direction:column; gap:10px; border-top:1px solid #E0E0E0; }
+  .topbar { display:flex; align-items:center; gap:8px; }
+  button[data-action="play"] { width:64px; height:44px; border:none; border-radius:999px; background:var(--green); color:#fff; font-size:15px; font-weight:600; cursor:pointer; transition:transform .1s ease, background .2s; }
+  button[data-action="play"]:active { transform:scale(0.94); }
+  .steps { display:flex; gap:8px; }
+  button[data-action^="step-"] { flex:1; height:44px; border:2px solid #BDBDBD; border-radius:12px; background:#FAFAFA; font-size:18px; font-weight:700; color:#37474F; cursor:pointer; transition:all .15s ease; }
+  button[data-action^="step-"].active { border-color:var(--accent); background:#FFF3E0; color:#E65100; transform:scale(1.04); }
+  [data-caption] { min-height:42px; padding:8px 12px; border-radius:10px; background:#E8F5E9; color:#1B5E20; font-size:14px; line-height:1.3; display:flex; align-items:center; }
+  #question { margin-top:6px; padding:10px; background:#FFF8E1; border-radius:12px; display:none; }
+  #question p { font-size:15px; color:#5D4037; margin-bottom:8px; }
+  .opts { display:flex; gap:8px; }
+  button[data-option] { flex:1; height:48px; border:2px solid #FFB74D; border-radius:999px; background:#FFFDE7; font-size:15px; font-weight:600; color:#E65100; cursor:pointer; }
+  button[data-option]:active { transform:scale(0.96); background:#FFECB3; }
+  .particle { transition:transform .05s linear; }
+  .glow { animation:glucose-glow 1.2s ease-in-out infinite; }
+  @keyframes glucose-glow { 0%,100%{opacity:.3; transform:scale(1);} 50%{opacity:1; transform:scale(1.25);} }
+  .ray { stroke:#FFEB3B; stroke-width:2.5; stroke-opacity:.65; }
+</style>
+<svg id="scene" width="360" height="400" viewBox="0 0 360 400">
+  <circle data-label="sun" cx="180" cy="55" r="26" fill="#FFCA28"/>
+  <g id="rays">
+    <line class="ray" x1="180" y1="55" x2="210" y2="165"/>
+    <line class="ray" x1="180" y1="55" x2="235" y2="170"/>
+    <line class="ray" x1="180" y1="55" x2="260" y2="175"/>
+    <line class="ray" x1="180" y1="55" x2="285" y2="168"/>
+    <line class="ray" x1="180" y1="55" x2="305" y2="155"/>
+  </g>
+  <rect x="0" y="320" width="360" height="80" fill="#8D6E63"/>
+  <rect x="172" y="210" width="16" height="115" rx="3" fill="#6D4C41"/>
+  <ellipse data-entity="leaf" cx="255" cy="185" rx="58" ry="32" fill="#43A047"/>
+  <path d="M210 185 Q235 172 280 185" fill="none" stroke="#2E7D32" stroke-width="2.5" stroke-opacity=".5"/>
+  <g data-entity="roots">
+    <path d="M172 325 Q160 355 145 375" fill="none" stroke="#5D4037" stroke-width="7" stroke-linecap="round"/>
+    <path d="M180 322 Q182 355 190 378" fill="none" stroke="#5D4037" stroke-width="6" stroke-linecap="round"/>
+    <path d="M188 325 Q205 352 215 372" fill="none" stroke="#5D4037" stroke-width="7" stroke-linecap="round"/>
+  </g>
+  <circle class="particle" data-flow="water" cx="165" cy="310" r="4.5" fill="#42A5F5"/>
+  <circle class="particle" data-flow="water" cx="182" cy="318" r="4.5" fill="#42A5F5"/>
+  <circle class="particle" data-flow="water" cx="175" cy="305" r="4.5" fill="#42A5F5"/>
+  <circle class="particle" data-flow="co2" cx="330" cy="145" r="4.5" fill="#7E57C2"/>
+  <circle class="particle" data-flow="co2" cx="340" cy="195" r="4.5" fill="#7E57C2"/>
+  <circle class="particle" data-flow="co2" cx="325" cy="170" r="4.5" fill="#7E57C2"/>
+  <circle class="particle" data-flow="o2" cx="255" cy="185" r="4.5" fill="#EF5350"/>
+  <circle class="particle" data-flow="o2" cx="260" cy="190" r="4.5" fill="#EF5350"/>
+  <circle class="particle" data-flow="o2" cx="250" cy="180" r="4.5" fill="#EF5350"/>
+  <circle id="glucose" cx="255" cy="185" r="9" fill="#FFD54F" opacity="0"/>
+  <text data-label="sun" x="70" y="22" font-size="12" fill="#F9A825" font-weight="700"></text>
+  <text data-label="water" x="30" y="240" font-size="12" fill="#1565C0" font-weight="600"></text>
+  <text data-label="co2" x="295" y="82" font-size="12" fill="#512DA8" font-weight="600"></text>
+  <text data-label="o2" x="310" y="165" font-size="12" fill="#C62828" font-weight="600"></text>
+  <text data-label="glucose" x="285" y="230" font-size="12" fill="#F57F17" font-weight="600"></text>
+  <text data-label="leaf" x="155" y="138" font-size="13" fill="#1B5E20" font-weight="700"></text>
+  <text data-label="roots" x="35" y="392" font-size="13" fill="#3E2723" font-weight="700"></text>
+</svg>
+<div class="controls">
+  <div class="topbar">
+    <button data-action="play"></button>
+    <div style="flex:1; font-size:15px; color:#37474F; font-weight:600;" data-label="title"></div>
+  </div>
+  <div class="steps">
+    <button data-action="step-1">1</button>
+    <button data-action="step-2">2</button>
+    <button data-action="step-3">3</button>
+    <button data-action="step-4">4</button>
+    <button data-action="step-5">5</button>
+  </div>
+  <div data-caption></div>
+  <div id="question">
+    <p data-label="ask"></p>
+    <div class="opts">
+      <button data-option="co2"></button>
+      <button data-option="o2"></button>
+      <button data-option="water"></button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  const S = window.Studio;
+  if(!S) return;
+  const svg = document.getElementById('scene');
+  const playBtn = document.querySelector('[data-action="play"]');
+  const captionEl = document.querySelector('[data-caption]');
+  const question = document.getElementById('question');
+  const glucose = document.getElementById('glucose');
+  let playing = false;
+  let currentStep = 1;
+  let visited = new Set();
+  let raf = null;
+  let t = 0;
+
+  function setText(el, key){ if(el && key) el.textContent = S.t(key); }
+  function setAllLabels(){
+    document.querySelectorAll('[data-label]').forEach(el => setText(el, el.getAttribute('data-label')));
+    document.querySelectorAll('[data-option]').forEach(el => setText(el, el.getAttribute('data-option')));
+    setText(playBtn, 'play');
+    setText(captionEl, 'step1');
+  }
+  function updateCaption(step){
+    setText(captionEl, 'step'+step);
+  }
+  function emphasize(step){
+    document.querySelectorAll('[data-action^="step-"]').forEach(b => b.classList.remove('active'));
+    const btn = document.querySelector(`[data-action="step-${step}"]`);
+    if(btn) btn.classList.add('active');
+    const rays = document.getElementById('rays');
+    const leaf = svg.querySelector('[data-entity="leaf"]');
+    const roots = svg.querySelector('[data-entity="roots"]');
+    if(rays) rays.style.opacity = (step===1)?'1':'0.5';
+    if(leaf) leaf.style.filter = (step===3||step===5)?'brightness(1.15)':'none';
+    if(roots) roots.style.opacity = (step===2)?'1':'0.75';
+    glucose.style.opacity = (step===5)?'0.9':'0';
+    if(step===5) glucose.classList.add('glow'); else glucose.classList.remove('glow');
+  }
+  function togglePlay(){
+    playing = !playing;
+    setText(playBtn, playing ? 'pause' : 'play');
+    if(playing && !raf) animate();
+    S.event('play_toggle', {playing});
+  }
+  function goToStep(n){
+    currentStep = n;
+    visited.add(n);
+    updateCaption(n);
+    emphasize(n);
+    if(visited.size >= 5) question.style.display = 'block';
+    S.event('step', {step:n});
+  }
+  function animate(){
+    if(!playing){ raf=null; return; }
+    t += 1;
+    const particles = svg.querySelectorAll('.particle');
+    particles.forEach(p => {
+      const flow = p.getAttribute('data-flow');
+      let cx = parseFloat(p.getAttribute('cx'));
+      let cy = parseFloat(p.getAttribute('cy'));
+      const speed = 1.8;
+      if(flow==='water'){
+        cy -= speed * 0.9;
+        if(cy < 195){ cx += 1.6; }
+        if(cy < 185 || cx > 255){ cx=165+Math.random()*20; cy=305+Math.random()*18; }
+      }else if(flow==='co2'){
+        cx -= speed * 1.1;
+        if(cx < 255){ cy += (Math.sin(t/8)*0.6); }
+        if(cx < 250){ cx=325+Math.random()*18; cy=145+Math.random()*55; }
+      }else if(flow==='o2'){
+        cx += speed * 1.05;
+        cy += Math.sin(t/9 + parseFloat(p.getAttribute('r')))*0.8;
+        if(cx > 340){ cx=250+Math.random()*12; cy=178+Math.random()*14; }
+      }
+      p.setAttribute('cx', cx);
+      p.setAttribute('cy', cy);
+    });
+    if(currentStep===5 && glucose){
+      glucose.setAttribute('r', 9 + Math.sin(t/6)*1.5);
+    }
+    raf = requestAnimationFrame(animate);
+  }
+  function initControls(){
+    playBtn.onclick = () => togglePlay();
+    document.querySelectorAll('[data-action^="step-"]').forEach(btn => {
+      btn.onclick = () => {
+        const s = parseInt(btn.getAttribute('data-action').split('-')[1]);
+        goToStep(s);
+        if(!playing){ playing=true; setText(playBtn,'pause'); animate(); }
+      };
+    });
+    document.querySelectorAll('[data-option]').forEach(btn => {
+      btn.onclick = () => {
+        const val = btn.getAttribute('data-option');
+        S.answer(val);
+      };
+    });
+  }
+  function initParticles(){
+    const ps = svg.querySelectorAll('.particle');
+    ps.forEach((p,i) => {
+      const f = p.getAttribute('data-flow');
+      if(f==='water'){
+        p.setAttribute('cx', 162 + (i%3)*9);
+        p.setAttribute('cy', 302 + i*7);
+      }else if(f==='co2'){
+        p.setAttribute('cx', 322 + (i%3)*7);
+        p.setAttribute('cy', 148 + i*18);
+      }else if(f==='o2'){
+        p.setAttribute('cx', 248 + (i%3)*5);
+        p.setAttribute('cy', 180 + i*4);
+      }
+    });
+  }
+  function start(){
+    setAllLabels();
+    initParticles();
+    initControls();
+    goToStep(1);
+    playing = true;
+    setText(playBtn, 'pause');
+    emphasize(1);
+    animate();
+    S.ready();
+    S.onVerdict(({correct}) => {
+      const fb = question;
+      if(correct){
+        fb.style.border = '3px solid #4CAF50';
+        fb.style.background = '#E8F5E9';
+        setTimeout(() => S.done(), 420);
+      } else {
+        fb.style.border = '3px solid #E53935';
+        fb.style.background = '#FFEBEE';
+        setTimeout(() => {
+          fb.style.border = 'none';
+          fb.style.background = '#FFF8E1';
+        }, 650);
+      }
+    });
+  }
+  start();
+})();
+</script>

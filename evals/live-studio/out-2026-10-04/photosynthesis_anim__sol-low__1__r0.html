@@ -1,0 +1,290 @@
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --ink:#173f3a;--green:#39a96b;--deep:#18784e;--leaf:#63c96f;
+    --sun:#ffd65a;--sky:#e9f8ff;--soil:#9a623e;--water:#3aa9ef;
+    --co2:#8d72d8;--o2:#ff8f70;--glucose:#ffe36e;--card:#fffdf6
+  }
+  body{margin:0;background:linear-gradient(#dff5ff,#f8fff0);color:var(--ink);font-family:system-ui,sans-serif;overflow-x:hidden}
+  #app{width:100%;max-width:560px;min-height:100vh;margin:auto;padding:10px;display:flex;flex-direction:column;gap:8px}
+  h1{font-size:clamp(20px,6vw,28px);line-height:1.1;text-align:center;margin:2px 0;color:var(--deep)}
+  .scene-card{background:rgba(255,255,255,.85);border:2px solid rgba(24,120,78,.16);border-radius:24px;box-shadow:0 8px 24px rgba(23,63,58,.11);overflow:hidden}
+  svg{display:block;width:100%;height:auto}
+  text{font-family:system-ui,sans-serif;font-weight:750;fill:var(--ink);paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+  .small-label{font-size:12px}
+  .label-line{stroke:var(--ink);stroke-width:1.5;opacity:.5}
+  .sun-core{fill:var(--sun);filter:drop-shadow(0 0 8px rgba(255,198,47,.65));transform-origin:55px 48px;animation:sunPulse 2.4s ease-in-out infinite}
+  .ray{stroke:#ffd24b;stroke-width:4;stroke-linecap:round;stroke-dasharray:9 9;animation:rays 1.4s linear infinite}
+  .stem{fill:none;stroke:var(--deep);stroke-width:11;stroke-linecap:round}
+  .branch{fill:none;stroke:var(--deep);stroke-width:7;stroke-linecap:round}
+  [data-entity="leaf"]{fill:var(--leaf);stroke:var(--deep);stroke-width:3;transform-origin:218px 169px;transition:.35s}
+  .vein{fill:none;stroke:var(--deep);stroke-width:2;opacity:.65}
+  [data-entity="roots"]{fill:none;stroke:#74462e;stroke-width:5;stroke-linecap:round;transition:.35s}
+  .soil{fill:var(--soil)}
+  .soil-top{fill:#b77b4d}
+  .particle{stroke:#fff;stroke-width:2;filter:drop-shadow(0 2px 2px rgba(0,0,0,.18));animation-duration:3s;animation-timing-function:linear;animation-iteration-count:infinite;transform-box:fill-box}
+  [data-flow="water"]{fill:var(--water);animation-name:waterFlow}
+  [data-flow="co2"]{fill:var(--co2);animation-name:co2Flow}
+  [data-flow="o2"]{fill:var(--o2);animation-name:o2Flow}
+  .d2{animation-delay:-1s}.d3{animation-delay:-2s}.d4{animation-delay:-2.5s}
+  .glucose-dot{fill:var(--glucose);stroke:#fff;stroke-width:2;opacity:.7;transform-origin:center;animation:glow 1.6s ease-in-out infinite}
+  .g2{animation-delay:-.55s}.g3{animation-delay:-1.1s}
+  #app.paused *{animation-play-state:paused!important}
+  #app.step-1 .ray,#app.step-2 [data-flow="water"],#app.step-3 [data-flow="co2"],#app.step-4 [data-flow="o2"],#app.step-5 .glucose-dot{filter:drop-shadow(0 0 7px #fff) drop-shadow(0 0 9px currentColor)}
+  #app.step-2 [data-entity="roots"],#app.step-3 [data-entity="leaf"],#app.step-4 [data-entity="leaf"],#app.step-5 [data-entity="leaf"]{stroke-width:5}
+  .controls{display:grid;grid-template-columns:1.5fr repeat(5,1fr);gap:6px}
+  button{min-width:44px;min-height:46px;border:0;border-radius:15px;background:#fff;color:var(--ink);font:inherit;font-weight:800;box-shadow:0 3px 0 rgba(23,63,58,.16);cursor:pointer;transition:transform .15s,background .2s,color .2s,box-shadow .2s}
+  button:active{transform:scale(.93);box-shadow:0 1px 0 rgba(23,63,58,.18)}
+  button:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+  [data-action="play"]{background:var(--deep);color:#fff;padding:0 10px}
+  .step.active{background:var(--sun);color:#4e3b00;transform:translateY(-2px)}
+  [data-caption]{min-height:58px;margin:0;padding:11px 14px;border-radius:17px;background:var(--card);border:2px solid rgba(57,169,107,.22);display:grid;place-items:center;text-align:center;font-size:16px;font-weight:700;line-height:1.25}
+  #check{display:none;background:#fff;border-radius:20px;padding:12px;border:2px solid rgba(141,114,216,.2)}
+  #check.show{display:block;animation:rise .35s ease-out}
+  #ask{margin:0 0 10px;text-align:center;font-weight:800;line-height:1.25}
+  .options{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .option{background:#edf9f1}
+  .option.pending{animation:tapPulse .5s ease}
+  .option.correct{background:var(--leaf);color:#103d2b}
+  .option.incorrect{background:#ffe0d8}
+  @keyframes rays{to{stroke-dashoffset:-36}}
+  @keyframes sunPulse{50%{transform:scale(1.08)}}
+  @keyframes waterFlow{0%{transform:translate(0,82px);opacity:0}15%,85%{opacity:1}100%{transform:translate(78px,-75px);opacity:0}}
+  @keyframes co2Flow{0%{transform:translate(62px,-19px);opacity:0}15%,85%{opacity:1}100%{transform:translate(-42px,22px);opacity:0}}
+  @keyframes o2Flow{0%{transform:translate(-4px,8px);opacity:0}15%,85%{opacity:1}100%{transform:translate(77px,-48px);opacity:0}}
+  @keyframes glow{50%{transform:scale(1.8);opacity:1;filter:drop-shadow(0 0 8px #fff06a)}}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}}
+  @keyframes tapPulse{50%{transform:scale(1.06)}}
+  @media(max-height:680px){
+    #app{padding:7px;gap:6px}
+    h1{font-size:20px}
+    .scene-card svg{max-height:335px}
+    [data-caption]{min-height:50px;padding:8px}
+    button{min-height:44px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *,*:before,*:after{animation-duration:8s!important;transition-duration:0s!important}
+  }
+</style>
+
+<main id="app" class="step-1">
+  <h1 id="title"></h1>
+
+  <section class="scene-card">
+    <svg viewBox="0 0 340 370" role="img" id="scene">
+      <rect width="340" height="370" fill="#eaf9ff"/>
+      <circle cx="55" cy="48" r="29" class="sun-core"/>
+      <g stroke="#ffd65a" stroke-width="4" stroke-linecap="round">
+        <path d="M55 9V2"/><path d="M55 94v-8"/><path d="M16 48H8"/><path d="M101 48h-8"/>
+        <path d="M28 21l-6-6"/><path d="M88 81l-6-6"/><path d="M28 75l-6 6"/><path d="M88 15l-6 6"/>
+      </g>
+      <text x="101" y="31" class="small-label" data-label="sun"></text>
+      <path class="label-line" d="M94 34L76 42"/>
+
+      <g class="light">
+        <path class="ray" d="M78 62L190 143"/>
+        <path class="ray" d="M70 72L174 166"/>
+        <path class="ray" d="M87 53L212 129"/>
+      </g>
+
+      <rect x="0" y="278" width="340" height="92" class="soil"/>
+      <path d="M0 281Q35 267 73 280T143 278T211 280T275 276T340 280V298H0Z" class="soil-top"/>
+
+      <path d="M154 289C154 250 157 208 174 170" class="stem"/>
+      <path d="M169 194C190 185 207 175 221 160" class="branch"/>
+
+      <path data-entity="leaf" d="M174 168C191 116 251 112 286 133C266 180 220 210 174 168Z"/>
+      <path class="vein" d="M181 168C215 159 242 147 273 135M218 158l-5-23M240 149l12 17"/>
+
+      <g data-entity="roots">
+        <path d="M154 286C139 305 129 324 119 351"/>
+        <path d="M154 286C164 309 176 326 185 354"/>
+        <path d="M150 300C137 307 126 313 111 319"/>
+        <path d="M161 307C177 310 192 320 204 335"/>
+        <path d="M143 316C147 331 146 344 144 360"/>
+      </g>
+
+      <circle data-flow="water" class="particle d1" cx="122" cy="331" r="6"/>
+      <circle data-flow="water" class="particle d2" cx="133" cy="337" r="6"/>
+      <circle data-flow="water" class="particle d3" cx="144" cy="326" r="6"/>
+      <circle data-flow="water" class="particle d4" cx="129" cy="348" r="6"/>
+
+      <circle data-flow="co2" class="particle d1" cx="306" cy="129" r="7"/>
+      <circle data-flow="co2" class="particle d2" cx="301" cy="151" r="7"/>
+      <circle data-flow="co2" class="particle d3" cx="315" cy="174" r="7"/>
+
+      <circle data-flow="o2" class="particle d1" cx="226" cy="154" r="6"/>
+      <circle data-flow="o2" class="particle d2" cx="241" cy="163" r="6"/>
+      <circle data-flow="o2" class="particle d3" cx="252" cy="146" r="6"/>
+
+      <circle class="glucose-dot g1" cx="211" cy="167" r="5"/>
+      <circle class="glucose-dot g2" cx="231" cy="151" r="5"/>
+      <circle class="glucose-dot g3" cx="248" cy="166" r="5"/>
+
+      <text x="204" y="111" class="small-label" data-label="leaf"></text>
+      <path class="label-line" d="M226 115L230 128"/>
+
+      <text x="16" y="326" class="small-label" data-label="water"></text>
+      <path class="label-line" d="M78 322L116 329"/>
+
+      <text x="17" y="355" class="small-label" data-label="roots"></text>
+      <path class="label-line" d="M72 348L118 337"/>
+
+      <text x="286" y="105" text-anchor="middle" class="small-label" data-label="co2"></text>
+      <path class="label-line" d="M288 109L296 125"/>
+
+      <text x="305" y="215" text-anchor="middle" class="small-label" data-label="o2"></text>
+      <path class="label-line" d="M295 207L280 186"/>
+
+      <text x="229" y="231" text-anchor="middle" class="small-label" data-label="glucose"></text>
+      <path class="label-line" d="M229 217L231 179"/>
+    </svg>
+  </section>
+
+  <div class="controls" id="controls">
+    <button type="button" data-action="play" id="playButton"></button>
+    <button type="button" class="step active" data-action="step-1"></button>
+    <button type="button" class="step" data-action="step-2"></button>
+    <button type="button" class="step" data-action="step-3"></button>
+    <button type="button" class="step" data-action="step-4"></button>
+    <button type="button" class="step" data-action="step-5"></button>
+  </div>
+
+  <p data-caption id="caption"></p>
+
+  <section id="check">
+    <p id="ask"></p>
+    <div class="options">
+      <button type="button" class="option" data-option="co2"></button>
+      <button type="button" class="option" data-option="o2"></button>
+      <button type="button" class="option" data-option="water"></button>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const app = document.getElementById('app');
+  const title = document.getElementById('title');
+  const playButton = document.getElementById('playButton');
+  const caption = document.getElementById('caption');
+  const check = document.getElementById('check');
+  const ask = document.getElementById('ask');
+  const stepButtons = Array.from(document.querySelectorAll('.step'));
+  const optionButtons = Array.from(document.querySelectorAll('[data-option]'));
+  const total = Studio.params.steps;
+  let step = 1;
+  let playing = true;
+  let completed = false;
+  let timer = null;
+  let pending = null;
+
+  title.textContent = Studio.t('title');
+
+  document.querySelectorAll('[data-label]').forEach(el => {
+    el.textContent = Studio.t(el.getAttribute('data-label'));
+  });
+
+  stepButtons.forEach((button, index) => {
+    button.textContent = String(index + 1);
+    button.setAttribute('aria-label', Studio.t('step' + (index + 1)));
+  });
+
+  optionButtons.forEach(button => {
+    const key = button.getAttribute('data-option');
+    button.textContent = Studio.t(key);
+    button.setAttribute('aria-label', Studio.t(key));
+  });
+
+  ask.textContent = Studio.t('ask');
+
+  function schedule() {
+    clearTimeout(timer);
+    if (!playing || completed) return;
+    timer = setTimeout(() => {
+      if (step < total) {
+        setStep(step + 1, 'auto');
+      } else {
+        playing = false;
+        updatePlay();
+        revealCheck();
+      }
+    }, 3800);
+  }
+
+  function updatePlay() {
+    app.classList.toggle('paused', !playing);
+    playButton.textContent = Studio.t(playing ? 'pause' : 'play');
+    playButton.setAttribute('aria-label', Studio.t(playing ? 'pause' : 'play'));
+  }
+
+  function revealCheck() {
+    check.classList.add('show');
+  }
+
+  function setStep(next, source) {
+    step = next;
+    for (let n = 1; n <= total; n++) app.classList.remove('step-' + n);
+    app.classList.add('step-' + step);
+    caption.textContent = Studio.t('step' + step);
+    stepButtons.forEach((button, index) => {
+      button.classList.toggle('active', index + 1 === step);
+    });
+    if (step === total) revealCheck();
+    Studio.event('step', {step: step, source: source});
+    schedule();
+  }
+
+  playButton.addEventListener('click', () => {
+    playing = !playing;
+    updatePlay();
+    Studio.event('play', {playing: playing, step: step});
+    schedule();
+  });
+
+  stepButtons.forEach((button, index) => {
+    button.addEventListener('click', () => {
+      setStep(index + 1, 'tap');
+    });
+  });
+
+  optionButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      if (pending || completed) return;
+      pending = button;
+      optionButtons.forEach(item => {
+        item.classList.remove('incorrect', 'correct', 'pending');
+        item.disabled = true;
+      });
+      button.classList.add('pending');
+      const value = button.getAttribute('data-option');
+      Studio.event('answer', {value: value});
+      Studio.answer(value);
+    });
+  });
+
+  Studio.onVerdict(result => {
+    if (!pending || completed) return;
+    pending.classList.remove('pending');
+    pending.classList.add(result.correct ? 'correct' : 'incorrect');
+    if (result.correct) {
+      completed = true;
+      playing = false;
+      clearTimeout(timer);
+      updatePlay();
+      Studio.done();
+    } else {
+      const oldPending = pending;
+      pending = null;
+      setTimeout(() => {
+        oldPending.classList.remove('incorrect');
+        optionButtons.forEach(item => item.disabled = false);
+      }, 700);
+    }
+  });
+
+  updatePlay();
+  setStep(1, 'start');
+  Studio.ready();
+})();
+</script>

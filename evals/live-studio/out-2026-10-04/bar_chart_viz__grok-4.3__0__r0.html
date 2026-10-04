@@ -1,0 +1,171 @@
+<style>
+.main{width:360px;height:640px;background:#FFF8E1;font-family:system-ui,-apple-system,sans-serif;margin:0 auto;overflow:hidden;position:relative}
+.header{padding:16px 20px 8px}
+.title{font-size:22px;font-weight:700;color:#E65100;text-align:center}
+.question{padding:0 20px 12px}
+.ask{font-size:17px;color:#5D4037;text-align:center;line-height:1.3}
+.chart-wrap{display:flex;justify-content:center;padding:8px 0}
+svg rect.bar{transition:height 800ms cubic-bezier(0.34,1.56,0.64,1),y 800ms cubic-bezier(0.34,1.56,0.64,1);transform-origin:center bottom;cursor:pointer}
+svg rect.bar:active{fill:#FFCC80}
+.feedback{margin:12px 20px 0;height:44px;font-size:18px;font-weight:600;text-align:center;transition:all .2s}
+.done-text{position:absolute;bottom:40px;left:0;right:0;text-align:center;font-size:20px;font-weight:700;color:#2E7D32;animation:pop .4s ease}
+@keyframes pop{from{transform:scale(0.6);opacity:0}to{transform:scale(1);opacity:1}}
+</style>
+<div class="main">
+  <div class="header"><div class="title"></div></div>
+  <div class="question"><div class="ask"></div></div>
+  <div class="chart-wrap"></div>
+  <div class="feedback"></div>
+  <div class="done-text" style="display:none"></div>
+</div>
+<script>
+(function(){
+  const params=Studio.params;
+  const data=params.data;
+  const main=document.querySelector('.main');
+  const titleEl=main.querySelector('.title');
+  const askEl=main.querySelector('.ask');
+  const chartWrap=main.querySelector('.chart-wrap');
+  const fbEl=main.querySelector('.feedback');
+  const doneEl=main.querySelector('.done-text');
+
+  titleEl.textContent=Studio.t('title');
+  askEl.textContent=Studio.t('ask');
+
+  const svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');
+  svg.setAttribute('width','360');
+  svg.setAttribute('height','300');
+  svg.style.borderRadius='12px';
+  svg.style.background='#FFFFFF';
+  chartWrap.appendChild(svg);
+
+  const margin={left:50,right:10,top:22,bottom:58};
+  const plotH=300-margin.top-margin.bottom;
+  const plotW=360-margin.left-margin.right;
+  const maxVal=12;
+  const unitH=plotH/maxVal;
+  const baselineY=margin.top+plotH;
+  const colors={'mango':'#FF9800','banana':'#FFEB3B','apple':'#E53935','guava':'#66BB6A','orange':'#FB8C00'};
+
+  // y-axis title
+  const yTitle=document.createElementNS(svgNS,'text');
+  yTitle.setAttribute('transform','rotate(-90)');
+  yTitle.setAttribute('x',-170);
+  yTitle.setAttribute('y',18);
+  yTitle.setAttribute('font-size','13');
+  yTitle.setAttribute('fill','#5D4037');
+  yTitle.setAttribute('text-anchor','middle');
+  yTitle.textContent=Studio.t('yaxis');
+  svg.appendChild(yTitle);
+
+  // ticks & gridlines
+  const ticks=[0,3,6,9,12];
+  ticks.forEach(t=>{
+    const y=baselineY-(t*unitH);
+    const grid=document.createElementNS(svgNS,'line');
+    grid.setAttribute('x1',margin.left);
+    grid.setAttribute('x2',360-margin.right);
+    grid.setAttribute('y1',y);
+    grid.setAttribute('y2',y);
+    grid.setAttribute('stroke',t===0?'#BDBDBD':'#E0E0E0');
+    grid.setAttribute('stroke-width',t===0?'2':'1');
+    svg.appendChild(grid);
+
+    const lbl=document.createElementNS(svgNS,'text');
+    lbl.setAttribute('x',margin.left-12);
+    lbl.setAttribute('y',y+5);
+    lbl.setAttribute('text-anchor','end');
+    lbl.setAttribute('font-size','13');
+    lbl.setAttribute('fill','#5D4037');
+    lbl.setAttribute('data-tick',t);
+    lbl.textContent=t;
+    svg.appendChild(lbl);
+  });
+
+  // zero baseline
+  const baseLine=document.createElementNS(svgNS,'line');
+  baseLine.setAttribute('x1',margin.left);
+  baseLine.setAttribute('x2',360-margin.right);
+  baseLine.setAttribute('y1',baselineY);
+  baseLine.setAttribute('y2',baselineY);
+  baseLine.setAttribute('stroke','#BDBDBD');
+  baseLine.setAttribute('stroke-width','3');
+  svg.appendChild(baseLine);
+
+  // bars
+  const barW=48;
+  const gap=12;
+  const barsWidth=data.length*barW+(data.length-1)*gap;
+  const startX=margin.left+(plotW-barsWidth)/2;
+
+  data.forEach((d,idx)=>{
+    const barX=startX+idx*(barW+gap);
+    const barH=d.value*unitH;
+
+    const rect=document.createElementNS(svgNS,'rect');
+    rect.setAttribute('class','bar');
+    rect.setAttribute('x',barX);
+    rect.setAttribute('y',baselineY);
+    rect.setAttribute('width',barW);
+    rect.setAttribute('height','0');
+    rect.setAttribute('fill',colors[d.key]);
+    rect.setAttribute('rx','8');
+    rect.setAttribute('ry','8');
+    rect.setAttribute('data-bar',d.key);
+    rect.setAttribute('data-value',d.value);
+    svg.appendChild(rect);
+
+    const lbl=document.createElementNS(svgNS,'text');
+    lbl.setAttribute('x',barX+barW/2);
+    lbl.setAttribute('y',baselineY+28);
+    lbl.setAttribute('text-anchor','middle');
+    lbl.setAttribute('font-size','14');
+    lbl.setAttribute('fill','#5D4037');
+    lbl.textContent=Studio.t(d.key);
+    svg.appendChild(lbl);
+
+    // grow animation
+    requestAnimationFrame(()=>{
+      setTimeout(()=>{
+        rect.setAttribute('y',baselineY-barH);
+        rect.setAttribute('height',barH);
+      },30);
+    });
+
+    rect.addEventListener('click',()=>{
+      // show value above bar
+      const old=svg.querySelector('.valpop');
+      if(old)old.remove();
+      const pop=document.createElementNS(svgNS,'text');
+      pop.setAttribute('class','valpop');
+      pop.setAttribute('x',barX+barW/2);
+      pop.setAttribute('y',baselineY-barH-10);
+      pop.setAttribute('text-anchor','middle');
+      pop.setAttribute('font-size','18');
+      pop.setAttribute('font-weight','700');
+      pop.setAttribute('fill','#37474F');
+      pop.textContent=d.value;
+      svg.appendChild(pop);
+
+      Studio.answer(d.key);
+    });
+  });
+
+  Studio.onVerdict(v=>{
+    if(v.correct){
+      fbEl.textContent=Studio.t('right');
+      fbEl.style.color='#2E7D32';
+      doneEl.style.display='block';
+      doneEl.textContent=Studio.t('done');
+      Studio.done();
+    }else{
+      fbEl.textContent=Studio.t('wrong');
+      fbEl.style.color='#C62828';
+      setTimeout(()=>{fbEl.textContent='';},1400);
+    }
+  });
+
+  Studio.ready();
+})();
+</script>

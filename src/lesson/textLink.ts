@@ -1,10 +1,14 @@
 // Text mode (sandbox, e2e, accessibility, no-mic rooms): the child types or taps, the Director writes the
-// teacher's reply (TurnResponse.teacherReply), and this link shows it and speaks it through /api/tts.
-// /api/tts speaks only a teacher turn the server stored for this lesson (by seq), in the teacher's voice,
-// so the link never sends free text to be spoken.
+// teacher's reply (TurnResponse.teacherReply), and this link shows it and speaks it.
+// Speech (smooth G4, BUILD-PLAN W1-A item 10): STREAMED through /api/voice/tts-stream + PcmStreamPlayer, the cascade
+// lane's path, which /turn prewarms for text lessons too (decision cascade-tts-prewarm): first audio in ~0.1-0.4 s of
+// the turn response instead of the whole-mp3 /api/tts call (1.6-2.1 s measured). /api/tts stays as the fallback (no
+// WebAudio, or a stream that never sounded) and for "Hear" replays. Both speak only a teacher turn the server stored for
+// this lesson (by seq), in the teacher's voice, so the link never sends free text to be spoken.
 // Same TeacherLink surface as VoiceLink, including the teacher level meter for lip-sync.
 import type { TtsRequest } from "../../shared/contracts.ts";
 import { fetchSpeech } from "./api.ts";
+import { fetchSpeechStream, PcmStreamPlayer, type SpeechStreamFetch, type StreamPlayback } from "./ttsStream.ts";
 import type { LinkEvent, LinkLevels, TeacherLink, TeacherReply } from "./link.ts";
 import { createLevelAnalyser } from "./level.ts";
 import { Emitter } from "./store.ts";
@@ -21,8 +25,10 @@ const MAX_REPLY_MS = 45_000;
 export interface TextLinkOptions {
   lessonId: string;
   levels: LinkLevels;
-  /** Injectable for tests; defaults to POST /api/tts. */
+  /** The whole-clip fallback; injectable for tests; defaults to POST /api/tts. */
   speech?: Speech;
+  /** The streamed path (preferred whenever WebAudio exists); defaults to POST /api/voice/tts-stream. */
+  stream?: SpeechStreamFetch;
 }
 
 export class TextLink implements TeacherLink {
@@ -33,6 +39,9 @@ export class TextLink implements TeacherLink {
   private readonly events = new Emitter<LinkEvent>();
   private audio: HTMLAudioElement | null = null;
   private ctx: AudioContext | null = null;
+  private readonly stream: SpeechStreamFetch;
+  private player: PcmStreamPlayer | null = null;
+  private playback: StreamPlayback | null = null;
   private seq = 0;
   /** The reply being fetched or played; null when the teacher is quiet. */
   private current: { id: string; abort: AbortController; url: string | null; playing: boolean; timer?: ReturnType<typeof setTimeout> } | null = null;
@@ -41,6 +50,7 @@ export class TextLink implements TeacherLink {
     this.lessonId = opts.lessonId;
     this.levels = opts.levels;
     this.speech = opts.speech ?? fetchSpeech;
+    this.stream = opts.stream ?? fetchSpeechStream;
   }
 
   on(fn: (e: LinkEvent) => void): () => void {
@@ -55,8 +65,12 @@ export class TextLink implements TeacherLink {
       // element has a MediaElementSource its sound only reaches the speakers through the graph.
       this.ctx = new AudioContext();
       const src = this.ctx.createMediaElementSource(this.audio);
-      src.connect(this.ctx.destination);
-      this.levels.teacher.attach(createLevelAnalyser(this.ctx, src));
+      // One analyser for both paths: the clip element and the PCM stream player feed the same gain node.
+      const mix = this.ctx.createGain();
+      src.connect(mix);
+      mix.connect(this.ctx.destination);
+      this.player = new PcmStreamPlayer(this.ctx, mix);
+      this.levels.teacher.attach(createLevelAnalyser(this.ctx, mix));
     } catch (err) {
       console.warn("text link: no WebAudio, lip-sync level unavailable", err);
       this.ctx = null;
@@ -84,7 +98,38 @@ export class TextLink implements TeacherLink {
     // The caption appears at once; speech follows when the audio arrives.
     this.events.emit({ type: "teacher_delta", responseId: id, delta: text });
     this.events.emit({ type: "teacher_done", responseId: id, text });
-    void this.play(id, reply?.seq, abort.signal);
+    // A context that is not running yet (no user activation on a cold load) would hold a streamed reply silent and
+    // unfinished forever; the clip element plays (silently) through it and ends, so the turn still completes.
+    if (this.player && this.ctx?.state === "running" && reply?.seq !== undefined) this.playStream(id, reply.seq, abort.signal);
+    else void this.play(id, reply?.seq, abort.signal);
+  }
+
+  /**
+   * The streamed path: the first sentence sounds on its first bytes. A stream that fails before any audio sounded falls
+   * back to the whole clip (/api/tts) once; one that fails mid-reply ends the reply (the words are on screen).
+   */
+  private playStream(id: string, seq: number, signal: AbortSignal): void {
+    const player = this.player!;
+    void this.ctx?.resume().catch(() => {});
+    const playback = player.play((sig) => this.stream({ lessonId: this.lessonId, seq }, sig));
+    this.playback = playback;
+    let sounded = false;
+    playback.started.then(() => {
+      if (this.current?.id !== id || this.playback !== playback) return;
+      sounded = true;
+      this.current.playing = true;
+      this.events.emit({ type: "teacher_audio_start" });
+    }, () => {});
+    void playback.ended.then((status) => {
+      if (this.current?.id !== id || this.playback !== playback) return;
+      this.playback = null;
+      if (status === "failed" && !sounded && !signal.aborted) {
+        void this.play(id, seq, signal); // the whole clip instead
+        return;
+      }
+      if (status === "failed") this.events.emit({ type: "error", message: "the teacher's voice is unavailable; showing text only", fatal: false, code: "tts_failed" });
+      this.stop(status === "stopped" ? "cancelled" : status, false);
+    });
   }
 
   interrupt(): void {
@@ -98,6 +143,8 @@ export class TextLink implements TeacherLink {
   close(): void {
     this.stop("cancelled", false);
     this.levels.teacher.detach();
+    this.player?.stop();
+    this.player = null;
     void this.ctx?.close().catch(() => {});
     this.ctx = null;
     this.audio = null;
@@ -167,6 +214,11 @@ export class TextLink implements TeacherLink {
     this.current = null;
     cur.abort.abort();
     clearTimeout(cur.timer);
+    if (this.playback) {
+      const pb = this.playback;
+      this.playback = null;
+      pb.stop();
+    }
     if (this.audio) {
       this.audio.onplaying = this.audio.onended = this.audio.onerror = this.audio.onabort = this.audio.onloadedmetadata = null;
       this.audio.pause();

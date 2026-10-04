@@ -1,0 +1,182 @@
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { margin: 0; background: linear-gradient(180deg,#FFF4E1 0%,#FFE8C9 100%); font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; color: #5D3A2A; overflow-x: hidden; }
+#app { width: 100%; max-width: 360px; margin: 0 auto; min-height: 100vh; padding: 16px; display: flex; flex-direction: column; }
+.card { background: #fff; border-radius: 28px; padding: 22px; box-shadow: 0 10px 30px rgba(255,140,66,0.15); flex: 1; display: flex; flex-direction: column; align-items: center; }
+.title { margin: 0 0 8px; font-size: 24px; text-align: center; color: #D35400; }
+.instr { margin: 0 0 16px; font-size: 15px; text-align: center; line-height: 1.4; color: #7E5039; }
+.hint { margin: 8px 0 0; font-size: 13px; text-align: center; color: #A67B5B; }
+.fraction { display: flex; flex-direction: column; align-items: center; font-weight: 800; font-size: 52px; line-height: 1; margin-bottom: 16px; }
+.fraction .line { width: 64px; height: 5px; background: #5D3A2A; border-radius: 3px; margin: 6px 0; }
+.picture { position: relative; width: 100%; max-width: 280px; aspect-ratio: 1/1; margin: 10px 0 18px; display: flex; align-items: center; justify-content: center; }
+.pizza { width: 100%; height: 100%; overflow: visible; }
+.pizza .part { fill: #FFF8EE; stroke: #FFCF9E; stroke-width: 3; cursor: pointer; transition: fill .2s ease, transform .1s ease; transform-origin: center; transform-box: fill-box; }
+.pizza .part.shaded { fill: #FFB84D; }
+.bar { width: 100%; height: 100%; display: flex; gap: 10px; align-items: stretch; }
+.bar-part { flex: 1; background: #FFF8EE; border: 3px solid #FFCF9E; border-radius: 16px; cursor: pointer; transition: background .2s ease, transform .1s ease; min-height: 80px; }
+.bar-part.shaded { background: #FFB84D; }
+.part:active { transform: scale(0.94); }
+.check { width: 100%; margin-top: auto; padding: 16px; border: none; border-radius: 18px; background: linear-gradient(135deg,#FF8C42 0%,#FF6A00 100%); color: #fff; font-size: 20px; font-weight: 800; cursor: pointer; box-shadow: 0 6px 0 #CC5200,0 8px 16px rgba(255,106,0,0.25); transition: transform .1s,box-shadow .1s; }
+.check:active { transform: translateY(4px); box-shadow: 0 2px 0 #CC5200,0 4px 8px rgba(255,106,0,0.25); }
+.feedback { min-height: 24px; margin-top: 12px; text-align: center; font-weight: 700; font-size: 16px; opacity: 0; transition: opacity .2s; }
+.feedback.right { color: #2ECC71; opacity: 1; }
+.feedback.wrong { color: #E74C3C; opacity: 1; }
+.party { animation: pop .55s ease; }
+.shake { animation: shake .42s ease; }
+.confetti { position: absolute; width: 9px; height: 9px; border-radius: 50%; pointer-events: none; }
+@keyframes pop {0%{transform:scale(1)}50%{transform:scale(1.09)}100%{transform:scale(1)}}
+@keyframes shake {0%,100%{transform:translateX(0)}25%{transform:translateX(-9px)}75%{transform:translateX(9px)}}
+@keyframes confetti-fall {0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(140px) rotate(720deg);opacity:0}}
+.done-card { justify-content: center; padding: 40px 22px; text-align: center; }
+</style>
+<div id="app"></div>
+<script>
+(function(){
+  var params = Studio.params || {};
+  var items = params.items || [];
+  var picture = params.picture;
+  var index = 0;
+  var doneCalled = false;
+  var app = document.getElementById('app');
+
+  function wedgePath(i,d){
+    var r = 100;
+    var step = 2 * Math.PI / d;
+    var a = -Math.PI/2 + i * step;
+    var b = a + step;
+    var x1 = r * Math.cos(a), y1 = r * Math.sin(a);
+    var x2 = r * Math.cos(b), y2 = r * Math.sin(b);
+    var large = step > Math.PI ? 1 : 0;
+    return 'M0,0 L' + x1.toFixed(2) + ',' + y1.toFixed(2) + ' A' + r + ',' + r + ' 0 ' + large + ' 1 ' + x2.toFixed(2) + ',' + y2.toFixed(2) + ' Z';
+  }
+
+  function makePizza(d){
+    var svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('viewBox','-110 -110 220 220');
+    svg.setAttribute('class','pizza');
+    for(var i=0;i<d;i++){
+      var p = document.createElementNS('http://www.w3.org/2000/svg','path');
+      p.setAttribute('d',wedgePath(i,d));
+      p.setAttribute('class','part');
+      p.setAttribute('data-part',i);
+      p.setAttribute('data-shaded','false');
+      svg.appendChild(p);
+    }
+    return svg;
+  }
+
+  function makeBar(d){
+    var wrap = document.createElement('div');
+    wrap.className = 'bar';
+    for(var i=0;i<d;i++){
+      var seg = document.createElement('div');
+      seg.className = 'part bar-part';
+      seg.setAttribute('data-part',i);
+      seg.setAttribute('data-shaded','false');
+      wrap.appendChild(seg);
+    }
+    return wrap;
+  }
+
+  function renderItem(){
+    if(index >= items.length){ renderDone(); return; }
+    var item = items[index];
+    app.innerHTML = '';
+    var card = document.createElement('div');
+    card.className = 'card';
+    card.setAttribute('data-item', item.id);
+    var h = document.createElement('h1');
+    h.className = 'title';
+    h.textContent = Studio.t('title');
+    var ins = document.createElement('p');
+    ins.className = 'instr';
+    ins.textContent = Studio.t('instr');
+    var frac = document.createElement('div');
+    frac.className = 'fraction';
+    frac.innerHTML = '<span class="num">' + item.n + '</span><span class="line"></span><span class="den">' + item.d + '</span>';
+    var pic = document.createElement('div');
+    pic.className = 'picture';
+    if(picture === 'bar'){ pic.appendChild(makeBar(item.d)); } else { pic.appendChild(makePizza(item.d)); }
+    var hint = document.createElement('p');
+    hint.className = 'hint';
+    hint.textContent = Studio.t('hint');
+    var fb = document.createElement('div');
+    fb.className = 'feedback';
+    fb.id = 'feedback';
+    var btn = document.createElement('button');
+    btn.className = 'check';
+    btn.setAttribute('data-action','check');
+    btn.textContent = Studio.t('check');
+    card.append(h, ins, frac, pic, hint, fb, btn);
+    app.appendChild(card);
+  }
+
+  function renderDone(){
+    app.innerHTML = '';
+    var card = document.createElement('div');
+    card.className = 'card done-card';
+    var h = document.createElement('h1');
+    h.className = 'title';
+    h.textContent = Studio.t('done');
+    card.appendChild(h);
+    app.appendChild(card);
+    if(!doneCalled){
+      doneCalled = true;
+      setTimeout(function(){ Studio.done(); }, 600);
+    }
+  }
+
+  function togglePart(el){
+    var was = el.getAttribute('data-shaded') === 'true';
+    el.setAttribute('data-shaded', was ? 'false' : 'true');
+    el.classList.toggle('shaded', !was);
+    Studio.event('part_toggle',{part: el.getAttribute('data-part'), shaded: !was});
+  }
+
+  function checkAnswer(){
+    var item = items[index];
+    var sel = '[data-item="' + item.id + '"] [data-shaded="true"]';
+    var cnt = document.querySelectorAll(sel).length;
+    Studio.answer({n: cnt, d: item.d});
+    Studio.event('check',{id: item.id, n: cnt, d: item.d});
+  }
+
+  function celebrate(pic){
+    if(!pic) return;
+    for(var i=0;i<14;i++){
+      var c = document.createElement('span');
+      c.className = 'confetti';
+      c.style.left = (15 + Math.random()*70) + '%';
+      c.style.top = (10 + Math.random()*40) + '%';
+      c.style.background = 'hsl(' + Math.floor(Math.random()*360) + ',85%,60%)';
+      c.style.animationDelay = (Math.random()*0.25) + 's';
+      pic.appendChild(c);
+      setTimeout(function(el){ return function(){ el.remove(); }; }(c), 1000);
+    }
+  }
+
+  Studio.onVerdict(function(v){
+    var fb = document.getElementById('feedback');
+    var card = document.querySelector('[data-item]');
+    var pic = document.querySelector('.picture');
+    if(v.correct){
+      if(fb){ fb.textContent = Studio.t('right'); fb.className = 'feedback right'; }
+      if(pic){ pic.classList.add('party'); setTimeout(function(){ pic.classList.remove('party'); }, 600); }
+      celebrate(pic);
+      setTimeout(function(){ index++; renderItem(); }, 1100);
+    } else {
+      if(fb){ fb.textContent = Studio.t('wrong'); fb.className = 'feedback wrong'; }
+      if(card){ card.classList.add('shake'); setTimeout(function(){ card.classList.remove('shake'); }, 420); }
+    }
+  });
+
+  app.addEventListener('click', function(e){
+    var part = e.target.closest('.part');
+    if(part){ e.preventDefault(); togglePart(part); return; }
+    if(e.target.closest('[data-action="check"]')){ e.preventDefault(); checkAnswer(); }
+  });
+
+  renderItem();
+  Studio.ready();
+})();
+</script>

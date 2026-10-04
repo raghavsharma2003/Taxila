@@ -142,3 +142,32 @@ modified from GNM Head v3.0 (Google LLC), and keep this attribution: "Face geome
 Copyright 2026 Google LLC, Apache License 2.0." No trademark use. Not used: the third-party GNM ear-landmark model
 (research-only licence), GNM's semantic sampler `.h5` decoders (Apache-2.0 too, but not needed), Mitsuba/pyrender.
 Build-time tools added by this row: mediapipe 0.10.14 (Apache-2.0, apw venv), scipy 1.17.1, numpy 2.4.6 (BSD-3).
+
+## Polished-face candidate `c2` (2026-10-04; outputs under `public/assets/teacher-candidates/c2/**` only)
+
+Slot 2 of `docs/design/teacher/polished/SCOUT.md` is ThreeDee (a purchase, owner only; not bought). Per the brief, c2
+instead builds the best **free** alternative on the scout's list that no other slot uses: **Microsoft Rocketbox**
+(SCOUT row 7, "licence-perfect floor"). Riya (row 5) costs $10 on Superhive and its free Fab listing could not be
+reached (Fab returns 403 to this container); CharacterZ has no published licence; VRoid is anime; Canino3d is a
+Western teen with non-ARKit shapes. Not shipped to `public/assets/teacher/**`.
+
+| input | used for | source | licence / terms | evidence |
+|---|---|---|---|---|
+| `Business_Female_01_facial.fbx` (2,190,000 B, sha256 `bf886b61087bf494431c5124bffe2f3d2cb80887fd19daeaec19abb72ae14868`) | every vertex, UV and skin weight of the c2 face, hair shell, cards and garment; the ARKit 52 (2022 set by Fang Ma and Matias Volonte), the 15 visemes, and the HeadBox / FACS units mixed into tongue, smile, brow and lid keys | github.com/microsoft/Microsoft-Rocketbox @ `0943055db6ec570bcef9f2c8b41c9e5467c808f9`, `Assets/Avatars/Professions/Business_Female_01/Export/` | **MIT** ("Copyright (c) 2020 Microsoft"; MIT since Nov 2020, README "November 2020 License Update") | repo `LICENSE.md` sha256 `17474e386e0b9e1a700cc3d06b2b0882a2c376d9c6b49c7f8274409b8f8d2352`, verbatim copy at `art/character/candidates/c2/third_party/ROCKETBOX-LICENSE.txt` |
+| `f014_head_color.tga` (sha256 `8a4f4762f69b67a4f40e80436b66e359d319606874895e0e02e51aba15a9ffd2`), `f014_head_normal.tga` (`31a9b1e4343698b58a2fc34b3b630e3672067b20b5c05849c3dea37b1710f3d1`), `f014_head_specular.tga` (`16b10139caf59c79b31d4a290504a5684d3c65270889e09ff3758b25b9ffcbc4`), `f014_body_color.tga` (`168c58454bf7c28171c6f4bf2e7be2106bd0285aea576ff4076a2168d8d97aec`), `f014_opacity_color.tga` (`2bbcf46ac04f0e913e06e36c90a7d53198c7db99d614c70dca80f0d1a95d8390`) | skin albedo (recoloured to MST 6 in L\*a\*b\*, lips desaturated, G9 trim), normal, packed (roughness from the specular map; cavity/AO from the normal map), garment (blazer and shirt recoloured), hair shell and alpha cards (re-tinted) | same repo and commit, `.../Business_Female_01/Textures/` | **MIT** | as above. MIT explicitly permits "modify, merge, publish, distribute, sublicense, and/or sell" |
+| `Business_Female_01.fbx`, `f014_body_normal.tga`, `f014_body_specular.tga` | not used (downloaded, hashes `7a13fa1e…`, `afef9ffc…`, `7208f6c2…`) | same | MIT | — |
+| our eyeballs, armature, `_region` / `_strand` attributes, the recolour, the key mixes, the lip seal and rest lid | | written by us (`scripts/character/candidates/c2/**`) | ours | — |
+| Monk Skin Tone scale MST 6 hex | albedo anchor and G9 target | skintone.google | CC BY 4.0 (attribution as above) | — |
+
+Terms that matter for a paid children's web app: MIT has **no** field-of-use, revenue, territory, platform or
+"protected format" clause, so a plain GLB delivered to a browser or an Android WebView is fine. The one obligation:
+"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+Software." If c2 ships, the app's third-party notices (and the repo) carry the verbatim MIT text above with
+"Copyright (c) 2020 Microsoft" and the attribution "Teacher character derived from the Microsoft Rocketbox Avatar
+Library (Business_Female_01), MIT License; modified by Taxila." The licence text gives no warranty. Rocketbox's README
+asks research users to cite Gonzalez-Franco et al. 2020 (Frontiers in VR, doi 10.3389/frvir.2020.561558): a courtesy,
+not a licence term. Not used from the Rocketbox ecosystem: the HeadBox Unity demo (github.com/openVRlab/Headbox; its
+tracking path depends on non-commercial OpenFace), MoveBox, and the `.max` sources. The TTS audio of the lip-sync clip
+is the bake-off's existing Azure `gpt-4o-mini-tts` sentence (first 6.0 s), re-used unchanged. Build-time tools: the same
+pinned `bpy` 4.2 / gltf-transform / KTX-Software set as the in-house pipeline (Blender's bundled FBX importer, GPL; output
+is ours).
