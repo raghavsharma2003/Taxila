@@ -1,0 +1,83 @@
+<style>
+*{box-sizing:border-box}
+.stage{width:360px;height:320px;overflow:hidden;padding:10px 12px;background:#fff8ec;color:#473a31;font-family:system-ui,sans-serif;display:flex;flex-direction:column;gap:7px}
+h1{font-size:19px;line-height:23px;margin:0;text-align:center;color:#684d39}
+.instr{font-size:12px;line-height:15px;text-align:center;min-height:15px;color:#806c5b}
+.cards{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(2,52px);gap:7px 8px}
+.card{min-width:0;height:52px;border:2px solid #e9c995;border-radius:15px;background:#fffdf8;color:#514238;font:600 14px system-ui,sans-serif;box-shadow:0 3px 0 #e5d3b8;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s;touch-action:manipulation}
+.card:active,.bin:active{transform:scale(.96)}
+.card.selected{transform:translateY(-4px);border-color:#e5a94f;box-shadow:0 7px 14px #d4a65b66,0 3px 0 #e5d3b8}
+.bins{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;flex:1;min-height:0}
+.bin{min-width:0;border:2px dashed #d8bfa0;border-radius:16px;background:#f7ead7;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:7px 4px;gap:5px;cursor:pointer;transition:background .2s,transform .18s,border-color .2s;touch-action:manipulation}
+.bin:hover{background:#f4e2c8}
+.bin-name{font-size:13px;font-weight:700;line-height:18px;text-align:center;color:#72553b;overflow-wrap:anywhere}
+.contents{width:100%;display:flex;flex-wrap:wrap;align-content:flex-start;justify-content:center;gap:3px}
+.placed{font-size:11px;line-height:15px;max-width:100%;padding:2px 5px;border-radius:8px;background:#fffdf8;color:#594938;overflow-wrap:anywhere;animation:arrive .35s ease-out}
+.notice{height:17px;min-height:17px;text-align:center;font-size:12px;line-height:17px;color:#8b6543}
+.wrong{animation:shake .3s ease-in-out}
+@keyframes arrive{from{transform:scale(.65);opacity:.3}to{transform:scale(1);opacity:1}}
+@keyframes shake{25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-2px)}}
+</style>
+<div class="stage">
+  <h1 id="title"></h1>
+  <div class="instr" id="instr"></div>
+  <div class="cards" id="cards"></div>
+  <div class="notice" id="notice" aria-live="polite"></div>
+  <div class="bins" id="bins"></div>
+</div>
+<script>
+
+(()=>{
+ const p=Studio.params, cardsRoot=document.getElementById('cards'), binsRoot=document.getElementById('bins');
+ document.getElementById('title').textContent=Studio.t('title');
+ document.getElementById('instr').textContent=Studio.t('instr');
+ const cardEls=new Map(), binEls=new Map();
+ let selected=null, pending=null, remaining=p.cards.length, finished=false;
+ for(const key of p.cards){
+   const el=document.createElement('button');
+   el.type='button'; el.className='card'; el.dataset.card=key; el.dataset.selected='false'; el.textContent=Studio.t(key);
+   el.addEventListener('click',()=>{
+     if(finished||pending||el.dataset.placed)return;
+     if(selected===el){selected=null;el.dataset.selected='false';el.classList.remove('selected');return}
+     if(selected){selected.dataset.selected='false';selected.classList.remove('selected')}
+     selected=el;el.dataset.selected='true';el.classList.add('selected');
+     Studio.event('card_pick',{card:key});
+   });
+   cardEls.set(key,el);cardsRoot.appendChild(el);
+ }
+ for(const key of p.bins){
+   const bin=document.createElement('div');bin.className='bin';bin.dataset.bin=key;bin.setAttribute('role','button');bin.tabIndex=0;
+   const name=document.createElement('div');name.className='bin-name';name.textContent=Studio.t(key);
+   const contents=document.createElement('div');contents.className='contents';
+   bin.append(name,contents);binEls.set(key,bin);
+   const choose=()=>{
+     if(!selected||pending||finished)return;
+     const card=selected;pending={card,bin:key};
+     Studio.event('bin_pick',{bin:key});
+     Studio.answer({card:card.dataset.card,bin:key});
+   };
+   bin.addEventListener('click',choose);
+   bin.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();choose()}});
+   binsRoot.appendChild(bin);
+ }
+ Studio.onVerdict(({correct})=>{
+   if(!pending)return;
+   const {card,bin}=pending;pending=null;
+   const notice=document.getElementById('notice');
+   if(correct){
+     notice.textContent=Studio.t('right');
+     selected=null;card.dataset.selected='false';card.classList.remove('selected');
+     card.dataset.placed=bin;card.className='placed';card.removeAttribute('type');card.removeAttribute('aria-label');
+     binEls.get(bin).querySelector('.contents').appendChild(card);
+     remaining--;
+     if(remaining===0&&!finished){finished=true;notice.textContent=Studio.t('done');Studio.done()}
+   }else{
+     notice.textContent=Studio.t('wrong');
+     card.classList.remove('selected');card.dataset.selected='false';selected=null;
+     card.classList.add('wrong');setTimeout(()=>card.classList.remove('wrong'),320);
+   }
+ });
+ Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,114 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#54372d}
+  #activity{width:360px;height:320px;padding:14px 18px;display:flex;flex-direction:column;align-items:center}
+  h1{font-size:20px;line-height:24px;margin:0;font-weight:800;color:#8b4939}
+  #instr{font-size:14px;line-height:19px;margin:3px 0 0;text-align:center}
+  #target{font-size:27px;font-weight:850;color:#a94e3f;background:#ffe5bf;border-radius:16px;padding:2px 17px;line-height:34px;margin-top:7px}
+  #picture{width:320px;height:164px;flex:none;margin-top:3px;overflow:visible}
+  [data-part]{cursor:pointer;stroke:#a96d55;stroke-width:2.5;transition:fill .2s ease,transform .18s ease;transform-box:fill-box;transform-origin:center}
+  [data-part]:active{transform:scale(.92)}
+  [data-shaded="false"]{fill:#fff1d9}
+  [data-shaded="true"]{fill:#ef925f}
+  #bottom{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:55px}
+  #feedback{font-size:15px;font-weight:750;min-width:88px;text-align:right;color:#985342}
+  button{border:0;border-radius:18px;background:#aa5846;color:white;font:800 16px system-ui,sans-serif;min-width:112px;min-height:52px;cursor:pointer;box-shadow:0 4px 0 #783c31;transition:transform .16s,background .16s}
+  button:active{transform:translateY(3px);box-shadow:0 1px 0 #783c31}
+  button:disabled{opacity:.65;cursor:default}
+  .pop{animation:pop .4s ease}
+  .wiggle{animation:wiggle .36s ease}
+  @keyframes pop{50%{transform:scale(1.07)}}
+  @keyframes wiggle{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+  #finish{display:none;flex:1;align-items:center;justify-content:center;text-align:center;font-size:26px;font-weight:850;color:#a94e3f}
+</style>
+<div id="activity" data-item="">
+  <h1 id="title"></h1>
+  <div id="instr"></div>
+  <div id="target" data-target></div>
+  <svg id="picture" viewBox="0 0 320 164" aria-label=""></svg>
+  <div id="bottom"><span id="feedback"></span><button type="button" data-action="check" id="check"></button></div>
+  <div id="finish"></div>
+</div>
+<script>
+
+(() => {
+  const items=Studio.params.items, root=document.getElementById('activity');
+  const svg=document.getElementById('picture'), target=document.getElementById('target');
+  const feedback=document.getElementById('feedback'), button=document.getElementById('check');
+  const ns='http://www.w3.org/2000/svg';
+  let index=0,waiting=false,finished=false;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  button.textContent=Studio.t('check');
+  function shape(tag,attrs){
+    const el=document.createElementNS(ns,tag);
+    for(const [k,v] of Object.entries(attrs))el.setAttribute(k,String(v));
+    return el;
+  }
+  function render(){
+    const item=items[index];
+    root.dataset.item=item.id;
+    target.textContent=item.n+'/'+item.d;
+    feedback.textContent='';
+    svg.replaceChildren();
+    const d=item.d;
+    for(let i=0;i<d;i++){
+      let part;
+      if(Studio.params.picture==='pizza'){
+        const a=-Math.PI/2+i*2*Math.PI/d,b=-Math.PI/2+(i+1)*2*Math.PI/d;
+        const x1=160+70*Math.cos(a),y1=82+70*Math.sin(a);
+        const x2=160+70*Math.cos(b),y2=82+70*Math.sin(b);
+        part=shape('path',{d:`M 160 82 L ${x1} ${y1} A 70 70 0 ${2*Math.PI/d>Math.PI?1:0} 1 ${x2} ${y2} Z`});
+      }else{
+        const cols=Math.min(4,d),rows=Math.ceil(d/cols);
+        const w=280/cols,h=Math.min(66,150/rows);
+        const x=20+(i%cols)*w,y=(164-rows*h)/2+Math.floor(i/cols)*h;
+        part=shape('rect',{x:x+3,y:y+3,width:w-6,height:h-6,rx:11});
+      }
+      part.dataset.part=String(i);
+      part.dataset.shaded='false';
+      part.addEventListener('click',()=>{
+        if(waiting||finished)return;
+        part.dataset.shaded=part.dataset.shaded==='true'?'false':'true';
+        feedback.textContent='';
+        Studio.event('part',{index:i});
+      });
+      svg.appendChild(part);
+    }
+  }
+  button.addEventListener('click',()=>{
+    if(waiting||finished)return;
+    waiting=true;button.disabled=true;
+    const item=items[index];
+    const n=svg.querySelectorAll('[data-part][data-shaded="true"]').length;
+    Studio.event('check',{n:n,d:item.d});
+    Studio.answer({n:n,d:item.d});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!waiting||finished)return;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    svg.classList.remove('pop','wiggle');
+    void svg.getBoundingClientRect();
+    svg.classList.add(correct?'pop':'wiggle');
+    if(correct){
+      setTimeout(()=>{
+        if(index+1<items.length){
+          index++;waiting=false;button.disabled=false;render();
+        }else{
+          finished=true;root.removeAttribute('data-item');
+          document.getElementById('title').style.display='none';
+          document.getElementById('instr').style.display='none';
+          target.style.display='none';svg.style.display='none';
+          document.getElementById('bottom').style.display='none';
+          const end=document.getElementById('finish');
+          end.textContent=Studio.t('done');end.style.display='flex';
+          Studio.done();
+        }
+      },650);
+    }else{waiting=false;button.disabled=false}
+  });
+  render();
+  Studio.ready();
+})();
+
+</script>

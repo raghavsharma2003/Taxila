@@ -1,0 +1,111 @@
+<style>
+  *{box-sizing:border-box}
+  #activity{width:360px;height:320px;overflow:hidden;position:relative;background:#fff7e9;color:#59483d;font-family:system-ui,sans-serif}
+  #activity::before{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:#ffe8c8;left:50px;top:9px;opacity:.45}
+  #title{position:absolute;top:5px;left:12px;right:12px;text-align:center;font-size:17px;font-weight:800}
+  #scene{position:absolute;top:27px;left:0;width:360px;height:205px;overflow:visible}
+  .arrow{fill:none;stroke:#bd9c83;stroke-width:3;stroke-linecap:round}
+  .arrowhead{fill:#bd9c83}
+  .stage rect{fill:#fffdfa;stroke:#e6c6a4;stroke-width:2.5;transition:fill .3s,stroke .3s,filter .3s}
+  .stage.active rect{fill:#fff0bd;stroke:#eaa94f;filter:drop-shadow(0 0 7px #f6c66f)}
+  .stage text{fill:#59483d;font-size:12px;font-weight:750;text-anchor:middle;dominant-baseline:middle}
+  #token{fill:#55adc1;stroke:#fff;stroke-width:3;filter:drop-shadow(0 2px 3px #658c91)}
+  #next{position:absolute;left:154px;top:102px;width:52px;height:52px;border:0;border-radius:50%;background:#e98766;color:white;font-size:12px;font-weight:800;box-shadow:0 4px 0 #bf684e;cursor:pointer;transition:transform .15s}
+  #next:active,.option:active{transform:scale(.91)}
+  #next:disabled{opacity:.6}
+  #prompt{position:absolute;top:233px;left:10px;width:340px;height:27px;text-align:center;font-size:14px;font-weight:750}
+  #options{position:absolute;top:263px;left:5px;width:350px;display:flex;gap:5px}
+  .option{flex:1;min-width:0;height:53px;padding:2px;border:2px solid #d9bba0;border-radius:16px;background:#fffdfa;color:#59483d;font:700 11px system-ui,sans-serif;cursor:pointer;transition:transform .15s,background .2s}
+  .option:focus-visible,#next:focus-visible{outline:3px solid #55adc1;outline-offset:2px}
+</style>
+<div id="activity">
+  <div id="title"></div>
+  <svg id="scene" viewBox="0 0 360 205" aria-hidden="true">
+    <g id="arrows"></g>
+    <g id="stages"></g>
+    <circle id="token" data-token cx="72" cy="45" r="10"></circle>
+  </svg>
+  <button id="next" data-action="next" type="button"></button>
+  <div id="prompt"></div>
+  <div id="options"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, keys=p.stages, root=document.getElementById('activity');
+  const svgNS='http://www.w3.org/2000/svg';
+  const positions=[[72,45],[282,45],[282,166],[72,166]];
+  const points=keys.map((_,i)=>{
+    if(keys.length===4)return positions[i];
+    const a=-Math.PI/2+i*2*Math.PI/keys.length;
+    return [180+107*Math.cos(a),105+66*Math.sin(a)];
+  });
+  const make=(tag,attrs,parent)=>{
+    const el=document.createElementNS(svgNS,tag);
+    for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);
+    parent.appendChild(el);return el;
+  };
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('next').textContent=Studio.t('next');
+  const prompt=document.getElementById('prompt');
+  prompt.textContent=Studio.t('ask')+' '+Studio.t(p.askAfter);
+  const arrows=document.getElementById('arrows'),stageLayer=document.getElementById('stages');
+  const count=p.cycle?keys.length:keys.length-1;
+  for(let i=0;i<count;i++){
+    const j=(i+1)%keys.length,[x1,y1]=points[i],[x2,y2]=points[j];
+    const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy),ux=dx/len,uy=dy/len;
+    const sx=x1+ux*55,sy=y1+uy*34,ex=x2-ux*55,ey=y2-uy*34;
+    const g=make('g',{'data-arrow':keys[i]+'>'+keys[j]},arrows);
+    make('path',{class:'arrow',d:`M ${sx} ${sy} L ${ex} ${ey}`},g);
+    make('polygon',{class:'arrowhead',points:`${ex},${ey} ${ex-ux*10-uy*5},${ey-uy*10+ux*5} ${ex-ux*10+uy*5},${ey-uy*10-ux*5}`},g);
+  }
+  const stageEls=keys.map((key,i)=>{
+    const [x,y]=points[i],g=make('g',{class:'stage','data-stage':key},stageLayer);
+    make('rect',{x:x-56,y:y-31,width:112,height:62,rx:19},g);
+    const text=make('text',{x,y,'data-label':key},g);
+    text.textContent=Studio.t(key);
+    return g;
+  });
+  const token=document.getElementById('token'),next=document.getElementById('next');
+  let index=0,moving=false,finished=false;
+  function activate(){
+    root.setAttribute('data-active',keys[index]);
+    stageEls.forEach((el,i)=>el.classList.toggle('active',i===index));
+  }
+  activate();
+  next.addEventListener('click',()=>{
+    if(moving||finished||(!p.cycle&&index===keys.length-1))return;
+    const target=(index+1)%keys.length,from=points[index],to=points[target];
+    moving=true;next.disabled=true;
+    Studio.event('next',{stage:keys[target]});
+    const start=performance.now(),duration=680;
+    function frame(now){
+      const t=Math.min(1,(now-start)/duration),ease=t*t*(3-2*t);
+      token.setAttribute('cx',from[0]+(to[0]-from[0])*ease);
+      token.setAttribute('cy',from[1]+(to[1]-from[1])*ease-9*Math.sin(Math.PI*t));
+      if(t<1)requestAnimationFrame(frame);
+      else{index=target;activate();moving=false;next.disabled=false;}
+    }
+    requestAnimationFrame(frame);
+  });
+  const options=document.getElementById('options');
+  p.options.forEach(key=>{
+    const button=document.createElement('button');
+    button.type='button';button.className='option';
+    button.setAttribute('data-option',key);
+    button.textContent=Studio.t(key);
+    button.addEventListener('click',()=>{if(!finished)Studio.answer(key);});
+    options.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      finished=true;prompt.textContent=Studio.t('right')+' '+Studio.t('done');
+      next.disabled=true;
+      options.querySelectorAll('button').forEach(b=>b.disabled=true);
+      Studio.done();
+    }else prompt.textContent=Studio.t('wrong')+' · '+Studio.t('ask')+' '+Studio.t(p.askAfter);
+  });
+  Studio.ready();
+})();
+
+</script>

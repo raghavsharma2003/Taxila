@@ -1,0 +1,90 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ee;color:#493c36;font-family:system-ui,sans-serif}
+  #game{width:360px;height:320px;padding:12px;display:flex;flex-direction:column;gap:7px;overflow:hidden}
+  header{height:38px;display:flex;align-items:center;justify-content:space-between;flex:none}
+  h1{margin:0;font-size:20px;line-height:1.1;font-weight:800}
+  .spark{width:42px;height:38px;flex:none}
+  #instr{height:29px;margin:0;font-size:13px;line-height:1.2;color:#765e50;flex:none}
+  #cards{height:91px;display:flex;flex-wrap:wrap;align-content:flex-start;justify-content:center;gap:7px;flex:none}
+  .card{min-width:57px;height:57px;padding:0 8px;border:2px solid #ddaa79;border-radius:17px;background:#fff0d8;color:#493c36;font:700 14px system-ui,sans-serif;box-shadow:0 4px 0 #e8c7a5;cursor:pointer;transition:transform .22s,box-shadow .22s,background .22s}
+  .card:active{transform:scale(.94)}
+  .card[data-selected="true"]{transform:translateY(-7px) scale(1.06);background:#fff6e8;box-shadow:0 7px 0 #e8c7a5,0 0 0 4px #ffd78b}
+  #bins{height:104px;display:flex;gap:10px;flex:none}
+  .bin{flex:1;min-width:0;height:104px;border:2px solid #cba891;border-radius:19px;background:#f5e4d4;padding:8px;cursor:pointer;transition:transform .18s,background .18s;overflow:hidden}
+  .bin:nth-child(even){background:#e9e4d5;border-color:#b5b19b}
+  .bin:active{transform:scale(.97)}
+  .binName{display:block;font-size:14px;font-weight:800;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .contents{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin-top:7px}
+  .placed{display:inline-flex;align-items:center;justify-content:center;min-height:25px;padding:2px 7px;border-radius:9px;background:#fffaf1;border:1px solid #d7baa0;font-size:12px;font-weight:700}
+  #message{height:22px;text-align:center;font-size:14px;font-weight:800;color:#8b624c;flex:none}
+  .shake{animation:shake .38s ease-in-out}
+  @keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+  .pop{animation:pop .4s ease-out}
+  @keyframes pop{50%{transform:scale(1.12)}}
+</style>
+<div id="game">
+  <header><h1 id="title"></h1><svg class="spark" viewBox="0 0 42 38" aria-hidden="true"><path d="M21 3q2 10 12 12-10 2-12 12-2-10-12-12Q19 13 21 3Z" fill="#f6bd70"/><circle cx="36" cy="29" r="3" fill="#d49d80"/><circle cx="5" cy="29" r="2" fill="#c7b894"/></svg></header>
+  <p id="instr"></p>
+  <div id="cards"></div>
+  <div id="bins"></div>
+  <div id="message" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, cards=document.getElementById('cards'), bins=document.getElementById('bins'), msg=document.getElementById('message');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  let selected=null, pending=null, remaining=p.cards.length;
+  p.cards.forEach(key=>{
+    const card=document.createElement('button');
+    card.type='button';card.className='card';card.textContent=Studio.t(key);
+    card.dataset.card=key;card.dataset.selected='false';
+    card.addEventListener('click',()=>{
+      if(pending)return;
+      if(selected)selected.dataset.selected='false';
+      selected=card;card.dataset.selected='true';msg.textContent='';
+      Studio.event('pick',{card:key});
+    });
+    cards.append(card);
+  });
+  p.bins.forEach(key=>{
+    const bin=document.createElement('div');
+    bin.className='bin';bin.dataset.bin=key;bin.setAttribute('role','button');bin.tabIndex=0;
+    const name=document.createElement('span');name.className='binName';name.textContent=Studio.t(key);
+    const contents=document.createElement('div');contents.className='contents';
+    bin.append(name,contents);
+    const choose=()=>{
+      if(!selected||pending)return;
+      pending={card:selected,bin,key};
+      Studio.answer({card:selected.dataset.card,bin:key});
+    };
+    bin.addEventListener('click',choose);
+    bin.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();choose()}});
+    bins.append(bin);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    const {card,bin,key}=pending;
+    pending=null;selected=null;
+    if(correct){
+      const before=card.getBoundingClientRect();
+      card.removeAttribute('data-card');card.removeAttribute('data-selected');
+      card.className='placed';card.dataset.placed=key;
+      bin.querySelector('.contents').append(card);
+      const after=card.getBoundingClientRect();
+      card.animate([{transform:`translate(${before.left-after.left}px,${before.top-after.top}px) scale(1.25)`,opacity:.8},{transform:'translate(0,0) scale(1)',opacity:1}],{duration:420,easing:'cubic-bezier(.2,.8,.2,1)'});
+      msg.textContent=Studio.t('right');
+      remaining--;
+      if(remaining===0){setTimeout(()=>{msg.textContent=Studio.t('done');msg.classList.add('pop');Studio.done()},450)}
+    }else{
+      card.dataset.selected='false';card.classList.add('shake');
+      msg.textContent=Studio.t('wrong');
+      setTimeout(()=>card.classList.remove('shake'),400);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,140 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#554236}
+  .scene{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 50% 28%,#fffdf7,#fff1de)}
+  .title{position:absolute;top:12px;left:18px;right:18px;text-align:center;font-size:20px;font-weight:800}
+  .message{position:absolute;top:43px;left:16px;right:16px;min-height:27px;text-align:center;font-size:14px;font-weight:650;color:#80624d}
+  .scale{position:absolute;left:0;top:75px;width:360px;height:163px;overflow:visible}
+  .beam{transform-origin:180px 34px;transition:transform .65s cubic-bezier(.2,1.4,.45,1)}
+  .hanger{transition:transform .65s cubic-bezier(.2,1.4,.45,1)}
+  .pan{position:absolute;top:163px;width:140px;height:69px;display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;padding:6px 4px 11px;transition:transform .65s cubic-bezier(.2,1.4,.45,1)}
+  .pan.left{left:20px}.pan.right{right:20px}
+  .weight,.option{display:flex;align-items:center;justify-content:center;border-radius:13px;font-weight:800;box-shadow:0 4px 0 #b9825f;background:#edaa78;color:#49372c}
+  .weight{min-width:34px;height:35px;padding:0 5px;font-size:18px}
+  .pan.right .weight{background:#a5cbb7;box-shadow:0 4px 0 #709e89}
+  .choices{position:absolute;left:18px;right:18px;bottom:15px;height:61px;display:flex;justify-content:center;gap:14px}
+  .option{border:2px solid #fff9ef;width:70px;height:56px;font-size:21px;cursor:pointer;transition:transform .18s,box-shadow .18s,opacity .2s}
+  .option:active{transform:scale(.9)}
+  .option:focus-visible{outline:3px solid #667eaa;outline-offset:2px}
+  .choices.busy .option{pointer-events:none;opacity:.55}
+  .choices.busy .option.chosen{opacity:1;transform:scale(1.08)}
+  .spark{position:absolute;left:50%;top:110px;width:12px;height:12px;border-radius:50%;background:#f6c96c;opacity:0;pointer-events:none}
+  .celebrate .spark{animation:pop .75s ease-out}
+  @keyframes pop{0%{opacity:1;transform:translate(-50%,30px) scale(.4)}65%{opacity:1;transform:translate(-50%,-28px) scale(1.7)}100%{opacity:0;transform:translate(-50%,-42px) scale(.5)}}
+</style>
+<div class="scene" id="scene">
+  <div class="title" id="title"></div>
+  <div class="message" id="message"></div>
+  <svg class="scale" viewBox="0 0 360 163" aria-hidden="true">
+    <path d="M180 37 L180 140 M151 143 Q180 113 209 143Z" fill="#d6a67c" stroke="#a77d61" stroke-width="5" stroke-linejoin="round"/>
+    <g class="beam" data-beam data-tilt="level">
+      <path d="M66 34 Q180 29 294 34" fill="none" stroke="#88664d" stroke-width="12" stroke-linecap="round"/>
+      <circle cx="180" cy="34" r="11" fill="#efbd83" stroke="#88664d" stroke-width="4"/>
+    </g>
+    <g class="hanger" id="leftHanger">
+      <path d="M66 34 V89 M30 89 Q90 108 150 89" fill="none" stroke="#aa8060" stroke-width="4" stroke-linecap="round"/>
+      <path d="M30 89 Q90 119 150 89 L142 105 Q90 129 38 105Z" fill="#f5d3a7" stroke="#aa8060" stroke-width="3"/>
+    </g>
+    <g class="hanger" id="rightHanger">
+      <path d="M294 34 V89 M210 89 Q270 108 330 89" fill="none" stroke="#aa8060" stroke-width="4" stroke-linecap="round"/>
+      <path d="M210 89 Q270 119 330 89 L322 105 Q270 129 218 105Z" fill="#f5d3a7" stroke="#aa8060" stroke-width="3"/>
+    </g>
+  </svg>
+  <div class="pan left" data-pan="left" data-total="0"></div>
+  <div class="pan right" data-pan="right" data-total="0"></div>
+  <div class="spark"></div>
+  <div class="choices" id="choices"></div>
+</div>
+<script>
+
+(()=>{
+  const items=Studio.params.items;
+  const scene=document.getElementById('scene');
+  const message=document.getElementById('message');
+  const choices=document.getElementById('choices');
+  const left=document.querySelector('[data-pan="left"]');
+  const right=document.querySelector('[data-pan="right"]');
+  const beam=document.querySelector('[data-beam]');
+  const hangers=[document.getElementById('leftHanger'),document.getElementById('rightHanger')];
+  let index=0,added=null,busy=false;
+  document.getElementById('title').textContent=Studio.t('title');
+  function total(values){return values.reduce((sum,value)=>sum+Number(value),0)}
+  function weights(node,values){
+    node.replaceChildren();
+    values.forEach(value=>{
+      const chip=document.createElement('div');
+      chip.className='weight';
+      chip.dataset.weight=String(value);
+      chip.textContent=String(value);
+      node.append(chip);
+    });
+    node.dataset.total=String(total(values));
+  }
+  function sync(){
+    const item=items[index];
+    const l=total(item.left),r=total(item.right)+(added===null?0:Number(added));
+    weights(left,item.left);
+    weights(right,added===null?item.right:[...item.right,added]);
+    const tilt=l>r?'left':r>l?'right':'level';
+    beam.dataset.tilt=tilt;
+    beam.style.transform=`rotate(${tilt==='left'?-8:tilt==='right'?8:0}deg)`;
+    const shift=tilt==='left'?[15,-15]:tilt==='right'?[-15,15]:[0,0];
+    [left,right].forEach((pan,i)=>pan.style.transform=`translateY(${shift[i]}px)`);
+    hangers.forEach((hanger,i)=>hanger.style.transform=`translateY(${shift[i]}px)`);
+  }
+  function show(){
+    added=null;busy=false;
+    scene.classList.remove('celebrate');
+    choices.classList.remove('busy');
+    message.textContent=Studio.t('instr');
+    choices.replaceChildren();
+    items[index].options.forEach(value=>{
+      const button=document.createElement('button');
+      button.type='button';
+      button.className='option';
+      button.dataset.option=String(value);
+      button.textContent=String(value);
+      button.addEventListener('click',()=>{
+        if(busy)return;
+        busy=true;added=value;
+        button.classList.add('chosen');
+        choices.classList.add('busy');
+        sync();
+        Studio.event('choose',{value:String(value)});
+        Studio.answer({value:value});
+      });
+      choices.append(button);
+    });
+    sync();
+  }
+  Studio.onVerdict(({correct})=>{
+    if(!busy)return;
+    message.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      scene.classList.add('celebrate');
+      setTimeout(()=>{
+        index++;
+        if(index<items.length)show();
+        else{
+          choices.replaceChildren();
+          message.textContent=Studio.t('done');
+          Studio.done();
+        }
+      },1050);
+    }else{
+      setTimeout(()=>{
+        added=null;
+        sync();
+        choices.classList.remove('busy');
+        choices.querySelector('.chosen')?.classList.remove('chosen');
+        busy=false;
+        message.textContent=Studio.t('instr');
+      },950);
+    }
+  });
+  if(items.length)show();
+  else{message.textContent=Studio.t('done');Studio.done()}
+  Studio.ready();
+})();
+
+</script>

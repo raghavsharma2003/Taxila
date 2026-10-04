@@ -1,0 +1,150 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff4df;font-family:Arial,sans-serif}
+  #app{width:360px;height:320px;position:relative;overflow:hidden;color:#5b3b28;background:linear-gradient(180deg,#fff9ea 0%,#ffe9bd 100%)}
+  #top{height:54px;text-align:center;padding-top:8px;position:relative;z-index:4}
+  #title{font-size:20px;font-weight:800;line-height:23px;color:#8b4b2b}
+  #instr{font-size:12px;font-weight:700;color:#996746;margin-top:2px}
+  #scene{position:absolute;left:0;top:45px;width:360px;height:205px}
+  #balance{position:absolute;inset:0;width:360px;height:205px}
+  #beam{transform-origin:180px 104px;transition:transform .65s cubic-bezier(.25,1.35,.45,1);filter:drop-shadow(0 3px 1px rgba(106,61,30,.16))}
+  #beam[data-tilt="left"]{transform:rotate(-8deg)}
+  #beam[data-tilt="right"]{transform:rotate(8deg)}
+  #beam[data-tilt="level"]{transform:rotate(0deg)}
+  .pan{position:absolute;width:112px;height:90px;top:103px;display:flex;justify-content:center;align-items:flex-end;gap:3px;padding:0 7px 20px;transition:transform .65s cubic-bezier(.25,1.35,.45,1)}
+  #leftPan{left:17px}
+  #rightPan{right:17px}
+  .pan.down{transform:translateY(15px)}
+  .pan.up{transform:translateY(-5px)}
+  .weight{width:31px;height:37px;flex:0 0 31px;border-radius:7px 7px 10px 10px;background:linear-gradient(90deg,#e98743,#ffc167 52%,#dc7538);border:2px solid #a9542e;color:#fffdf2;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;box-shadow:inset 2px 2px 0 rgba(255,255,255,.34),0 3px 0 rgba(125,58,34,.2);position:relative;animation:land .38s cubic-bezier(.2,1.5,.5,1)}
+  .weight:before{content:"";position:absolute;top:-7px;left:8px;width:11px;height:7px;border:2px solid #a9542e;border-bottom:0;border-radius:6px 6px 0 0;background:#f4a554}
+  @keyframes land{0%{transform:translateY(-23px) scale(.7)}100%{transform:translateY(0) scale(1)}}
+  #options{position:absolute;left:0;bottom:8px;width:360px;height:59px;display:flex;justify-content:center;gap:16px;z-index:5}
+  .option{width:72px;height:56px;border:0;border-radius:15px;background:linear-gradient(180deg,#8ecfbd,#57a995);box-shadow:0 4px 0 #398472,0 7px 11px rgba(77,91,63,.17);color:#fffef4;font-size:18px;font-weight:800;position:relative;cursor:pointer;transition:transform .16s ease,filter .16s ease}
+  .option:before{content:"";position:absolute;left:21px;top:-7px;width:26px;height:8px;border:3px solid #398472;border-bottom:0;border-radius:9px 9px 0 0}
+  .option:active{transform:translateY(4px) scale(.94);box-shadow:0 1px 0 #398472}
+  .option.chosen{transform:scale(.82);opacity:.45}
+  #feedback{position:absolute;left:50%;top:197px;transform:translateX(-50%) scale(.7);min-width:112px;text-align:center;padding:7px 12px;border-radius:16px;background:#fffaf0;color:#8b4b2b;font-size:14px;font-weight:800;opacity:0;pointer-events:none;z-index:8;box-shadow:0 3px 10px rgba(123,76,37,.16);transition:opacity .22s,transform .22s}
+  #feedback.show{opacity:1;transform:translateX(-50%) scale(1)}
+  #feedback.good{background:#dff5cf;color:#39784e}
+  #sparkles{position:absolute;inset:0;pointer-events:none;z-index:7}
+  .spark{position:absolute;width:8px;height:8px;background:#ffc94f;border-radius:50%;animation:spark .7s ease-out forwards}
+  @keyframes spark{from{opacity:1;transform:translate(0,0) scale(.4)}to{opacity:0;transform:translate(var(--x),var(--y)) scale(1.4)}}
+  #done{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:35px;color:#7d4930;font-size:23px;font-weight:800;background:rgba(255,249,234,.88);z-index:12}
+  #done.show{display:flex;animation:appear .45s ease-out}
+  @keyframes appear{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+</style>
+<div id="app">
+  <div id="top"><div id="title"></div><div id="instr"></div></div>
+  <div id="scene">
+    <svg id="balance" viewBox="0 0 360 205" aria-hidden="true">
+      <path d="M151 185 L180 109 L209 185 Z" fill="#c97942" stroke="#81452d" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M140 185 H220" stroke="#81452d" stroke-width="8" stroke-linecap="round"/>
+      <g id="beam" data-beam data-tilt="level">
+        <path d="M72 98 H288" stroke="#81452d" stroke-width="10" stroke-linecap="round"/>
+        <path d="M72 97 L72 128 M288 97 L288 128" stroke="#81452d" stroke-width="3"/>
+        <path d="M37 128 Q72 145 107 128 M253 128 Q288 145 323 128" fill="none" stroke="#81452d" stroke-width="4"/>
+        <circle cx="180" cy="98" r="11" fill="#f4b95e" stroke="#81452d" stroke-width="4"/>
+      </g>
+    </svg>
+    <div id="leftPan" class="pan" data-pan="left" data-total=""></div>
+    <div id="rightPan" class="pan" data-pan="right" data-total=""></div>
+  </div>
+  <div id="feedback"></div>
+  <div id="sparkles"></div>
+  <div id="options"></div>
+  <div id="done"></div>
+</div>
+<script>
+
+(function(){
+  var items=Studio.params.items, index=0, selected=null, locked=false;
+  var left=document.getElementById('leftPan'), right=document.getElementById('rightPan');
+  var beam=document.getElementById('beam'), options=document.getElementById('options');
+  var feedback=document.getElementById('feedback'), sparks=document.getElementById('sparkles');
+  var title=document.getElementById('title'), instr=document.getElementById('instr'), done=document.getElementById('done');
+
+  title.textContent=Studio.t('title');
+  instr.textContent=Studio.t('instr');
+
+  function sum(a){return a.reduce(function(x,y){return x+y},0)}
+  function weight(value){
+    var d=document.createElement('div');
+    d.className='weight'; d.dataset.weight=value; d.textContent=value;
+    return d;
+  }
+  function tilt(){
+    var item=items[index], l=sum(item.left), r=sum(item.right)+(selected===null?0:selected);
+    left.dataset.total=l; right.dataset.total=r;
+    var state=l===r?'level':l>r?'left':'right';
+    beam.dataset.tilt=state;
+    left.className='pan '+(state==='left'?'down':state==='right'?'up':'');
+    right.className='pan '+(state==='right'?'down':state==='left'?'up':'');
+  }
+  function drawPans(){
+    var item=items[index];
+    left.innerHTML=''; right.innerHTML='';
+    item.left.forEach(function(v){left.appendChild(weight(v))});
+    item.right.forEach(function(v){right.appendChild(weight(v))});
+    if(selected!==null)right.appendChild(weight(selected));
+    tilt();
+  }
+  function drawOptions(){
+    options.innerHTML='';
+    items[index].options.forEach(function(v){
+      if(v===selected)return;
+      var b=document.createElement('button');
+      b.className='option'; b.dataset.option=v; b.textContent=v;
+      b.addEventListener('click',function(){choose(v)});
+      options.appendChild(b);
+    });
+  }
+  function showFeedback(key, good){
+    feedback.textContent=Studio.t(key);
+    feedback.className='show'+(good?' good':'');
+  }
+  function hideFeedback(){feedback.className=''}
+  function celebrate(){
+    for(var i=0;i<9;i++){
+      var s=document.createElement('i'); s.className='spark';
+      s.style.left=(176+(Math.random()-.5)*35)+'px'; s.style.top='171px';
+      s.style.setProperty('--x',((Math.random()-.5)*130)+'px');
+      s.style.setProperty('--y',(-25-Math.random()*80)+'px');
+      sparks.appendChild(s);
+      setTimeout((function(x){return function(){if(x.parentNode)x.parentNode.removeChild(x)}})(s),750);
+    }
+  }
+  function choose(v){
+    if(locked)return;
+    locked=true; selected=v;
+    drawPans(); drawOptions();
+    Studio.event('choose',{value:v});
+    Studio.answer({value:v});
+  }
+  Studio.onVerdict(function(result){
+    if(!locked)return;
+    if(result.correct){
+      showFeedback('right',true); celebrate();
+      Studio.event('verdict',{correct:1});
+      setTimeout(function(){
+        index++;
+        selected=null; hideFeedback();
+        if(index>=items.length){
+          done.textContent=Studio.t('done'); done.className='show';
+          Studio.done();
+        }else{
+          locked=false; drawPans(); drawOptions();
+        }
+      },1000);
+    }else{
+      showFeedback('wrong',false);
+      Studio.event('verdict',{correct:0});
+      setTimeout(function(){
+        selected=null; drawPans(); drawOptions(); hideFeedback(); locked=false;
+      },850);
+    }
+  });
+  drawPans(); drawOptions();
+  Studio.ready();
+}());
+
+</script>

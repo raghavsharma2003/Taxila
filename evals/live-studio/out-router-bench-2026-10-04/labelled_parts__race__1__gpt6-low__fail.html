@@ -1,0 +1,107 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ec;color:#514039}
+  .card{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(#fffaf0,#fff1df)}
+  .top{height:60px;padding:8px 16px 0}
+  .title{font-size:14px;font-weight:700;color:#916a55;line-height:19px}
+  .ask{font-size:20px;font-weight:800;line-height:28px}
+  svg{display:block;width:360px;height:260px}
+  [data-part]{cursor:pointer;transition:filter .3s,transform .2s;transform-box:fill-box;transform-origin:center}
+  [data-part]:active{transform:scale(.94)}
+  [data-part].glow{filter:drop-shadow(0 0 9px #ffc34f) drop-shadow(0 0 5px white);animation:bloom .65s ease-out}
+  [data-part].try-again{animation:wiggle .35s}
+  @keyframes bloom{50%{transform:scale(1.09)}}
+  @keyframes wiggle{25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+  .leaders{fill:none;stroke:#b9a292;stroke-width:1.5;stroke-linecap:round;pointer-events:none}
+  .labels{font-size:15px;font-weight:700;fill:#604c42;pointer-events:none}
+  .status{position:absolute;left:115px;top:293px;width:130px;text-align:center;font-size:14px;font-weight:800;color:#765a47;pointer-events:none}
+</style>
+<div class="card">
+  <div class="top"><div class="title" id="title"></div><div class="ask" data-ask></div></div>
+  <svg viewBox="0 0 360 260" aria-hidden="true">
+    <path d="M0 218 Q95 209 180 219 T360 217 V260 H0Z" fill="#e9dfc1"/>
+    <g data-part="stem">
+      <path d="M178 119 Q168 166 176 213" fill="none" stroke="#568e61" stroke-width="19" stroke-linecap="round"/>
+      <rect x="150" y="124" width="51" height="89" fill="transparent"/>
+    </g>
+    <g data-part="root">
+      <path d="M176 210 Q161 229 139 241 M176 210 Q193 231 216 242 M176 211 L175 255 M154 231 L143 254 M198 231 L209 254" fill="none" stroke="#936b50" stroke-width="11" stroke-linecap="round"/>
+      <rect x="130" y="204" width="94" height="55" fill="transparent"/>
+    </g>
+    <g data-part="leaf">
+      <path d="M177 181 Q215 139 253 160 Q240 208 177 181Z" fill="#72af6d" stroke="#528d5e" stroke-width="3"/>
+      <path d="M186 181 Q216 178 242 163" fill="none" stroke="#d4e4a6" stroke-width="2"/>
+      <rect x="190" y="153" width="66" height="55" fill="transparent"/>
+    </g>
+    <g data-part="petal" fill="#ec918c" stroke="#d8797d" stroke-width="2">
+      <ellipse cx="164" cy="38" rx="27" ry="35"/>
+      <ellipse cx="120" cy="65" rx="34" ry="27" transform="rotate(28 120 65)"/>
+      <ellipse cx="145" cy="107" rx="29" ry="27" transform="rotate(-30 145 107)"/>
+      <ellipse cx="210" cy="47" rx="24" ry="32" transform="rotate(35 210 47)"/>
+    </g>
+    <g data-part="centre">
+      <circle cx="190" cy="91" r="29" fill="#f5bf59" stroke="#dda34e" stroke-width="3"/>
+      <circle cx="181" cy="85" r="3" fill="#dc9950"/>
+      <circle cx="199" cy="99" r="3" fill="#dc9950"/>
+    </g>
+    <g class="leaders">
+      <path data-line="petal" d="M101 39 L85 32"/>
+      <path data-line="centre" d="M219 94 L233 104"/>
+      <path data-line="stem" d="M152 181 L136 188"/>
+      <path data-line="leaf" d="M246 181 L259 190"/>
+      <path data-line="root" d="M210 239 L234 246"/>
+    </g>
+    <g class="labels">
+      <text data-label="petal" x="18" y="31"></text>
+      <text data-label="centre" x="235" y="110"></text>
+      <text data-label="stem" x="88" y="194"></text>
+      <text data-label="leaf" x="263" y="196"></text>
+      <text data-label="root" x="238" y="253"></text>
+    </g>
+  </svg>
+  <div class="status" id="status" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const parts = new Set(Studio.params.parts);
+  const keys = ["petal","centre","stem","leaf","root"];
+  const status = document.getElementById("status");
+  document.getElementById("title").textContent = Studio.t("title");
+  document.querySelector("[data-ask]").textContent = Studio.t("ask");
+  for (const key of keys) {
+    const shape = document.querySelector('[data-part="'+key+'"]');
+    const label = document.querySelector('[data-label="'+key+'"]');
+    const line = document.querySelector('[data-line="'+key+'"]');
+    if (parts.has(key)) label.textContent = Studio.t(key);
+    else { shape.remove(); label.remove(); line.remove(); }
+  }
+  let pending = false, finished = false, selected = null;
+  document.querySelector("svg").addEventListener("click", event => {
+    const shape = event.target.closest("[data-part]");
+    if (!shape || pending || finished) return;
+    selected = shape;
+    pending = true;
+    status.textContent = "";
+    Studio.event("tap", {part:shape.dataset.part});
+    Studio.answer(shape.dataset.part);
+  });
+  Studio.onVerdict(({correct}) => {
+    if (!pending || finished) return;
+    pending = false;
+    if (correct) {
+      finished = true;
+      selected.classList.add("glow");
+      status.textContent = Studio.t("right");
+      Studio.done();
+    } else {
+      status.textContent = Studio.t("wrong");
+      selected.classList.remove("try-again");
+      void selected.getBoundingClientRect();
+      selected.classList.add("try-again");
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

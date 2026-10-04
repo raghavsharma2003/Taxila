@@ -116,6 +116,12 @@ export function align(reply, moment) {
     if (m && clauses[0].text.length > m[0].length) {
       clauses[0].stripped = m[0];
       clauses[0].text = clauses[0].text.slice(m[0].length);
+    } else if (m && clauses.length > 1) {
+      // clause 0 IS the echo ("62!"): it goes, and the next clause opens the reply
+      const gone = clauses.shift();
+      clauses[0].stripped = `${gone.text} `;
+      clauses[0].pauseBeforeMs = 0;
+      clauses[0].sentenceStart = true;
     }
   }
   // the filler candidate (the governor confirms or drops it)

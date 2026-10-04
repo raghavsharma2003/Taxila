@@ -1,0 +1,146 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;font-family:Arial,sans-serif;background:#fff6df}
+#card{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(180deg,#fff0c9 0%,#fffaf0 63%,#f3dfbc 100%)}
+#top{height:42px;padding-top:8px;text-align:center;font-size:19px;font-weight:800;color:#704a37}
+#prompt{height:48px;margin:0 12px;padding:7px 14px;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:17px;background:#fffdfa;box-shadow:0 3px 0 rgba(139,91,57,.14);font-size:16px;font-weight:800;color:#704a37}
+#feedback{position:absolute;z-index:4;left:52px;right:52px;top:91px;opacity:0;text-align:center;font-size:14px;font-weight:800;color:#704a37;pointer-events:none;transform:translateY(-5px);transition:opacity .2s ease,transform .2s ease}
+#feedback.show{opacity:1;transform:translateY(0)}
+#picture{display:block;width:360px;height:230px}
+.ground{fill:#e9d1a8}
+.dot{fill:#f4dfa8}
+.leader{fill:none;stroke:#aa8365;stroke-width:2;stroke-linecap:round}
+.label{font-size:13px;font-weight:800;fill:#704a37;paint-order:stroke;stroke:#fffaf0;stroke-width:4px;stroke-linejoin:round}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .18s ease,filter .2s ease}
+.part:hover{filter:brightness(1.08)}
+.part:active{transform:scale(.94)}
+.part.chosen{filter:drop-shadow(0 0 6px #ffe171)}
+.part.correct{filter:drop-shadow(0 0 5px #ffe272) drop-shadow(0 0 12px #edae40);animation:glow .9s ease-in-out infinite alternate}
+.part.wiggle{animation:wiggle .42s ease-in-out}
+@keyframes glow{from{transform:scale(1)}to{transform:scale(1.06)}}
+@keyframes wiggle{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+</style>
+<div id="card">
+  <div id="top"></div>
+  <div id="prompt" data-ask></div>
+  <div id="feedback"></div>
+  <svg id="picture" viewBox="0 0 360 230" role="img">
+    <ellipse class="ground" cx="180" cy="216" rx="126" ry="11"></ellipse>
+    <circle class="dot" cx="35" cy="38" r="4"></circle>
+    <circle class="dot" cx="324" cy="45" r="5"></circle>
+    <circle class="dot" cx="28" cy="188" r="3"></circle>
+    <circle class="dot" cx="331" cy="186" r="3"></circle>
+    <g id="diagram"></g>
+  </svg>
+</div>
+<script>
+
+(function(){
+  var ns="http://www.w3.org/2000/svg";
+  var diagram=document.getElementById("diagram");
+  var feedback=document.getElementById("feedback");
+  var pending=false, selected=null, finished=false;
+  var parts=Studio.params.parts;
+
+  document.getElementById("top").textContent=Studio.t("title");
+  document.querySelector("[data-ask]").textContent=Studio.t("ask")+" "+Studio.t(Studio.params.ask);
+
+  var designs=[
+    {
+      tag:"path",
+      attrs:{d:"M180 57 C161 18 127 24 139 58 C104 43 91 78 126 90 C96 105 119 133 148 111 C143 147 174 153 180 116 C194 148 223 139 212 110 C245 129 264 99 231 88 C266 73 249 43 218 58 C230 24 197 18 180 57 Z",fill:"#ee8290"},
+      leader:"M126 57 L95 40", label:[10,42,"start"]
+    },
+    {
+      tag:"circle",
+      attrs:{cx:"180",cy:"82",r:"28",fill:"#f6bd42"},
+      leader:"M180 110 L180 114", label:[180,121,"middle"]
+    },
+    {
+      tag:"path",
+      attrs:{d:"M154 126 L206 126 L202 178 Q180 188 158 178 Z",fill:"#68a75d"},
+      leader:"M206 153 L237 153", label:[242,158,"start"]
+    },
+    {
+      tag:"path",
+      attrs:{d:"M158 144 C126 115 79 122 78 154 C79 188 122 190 160 158 Z",fill:"#83be69"},
+      leader:"M103 164 L71 170", label:[10,175,"start"]
+    },
+    {
+      tag:"path",
+      attrs:{d:"M180 175 C164 190 145 198 126 205 M180 175 C176 197 166 207 153 214 M180 175 C193 193 214 200 238 204 M180 175 C198 185 222 187 244 184",fill:"none",stroke:"#b97852","stroke-width":"22","stroke-linecap":"round","stroke-linejoin":"round"},
+      leader:"M237 204 L246 207", label:[250,212,"start"]
+    }
+  ];
+
+  function el(name){return document.createElementNS(ns,name)}
+  function attrs(node,obj){
+    Object.keys(obj).forEach(function(k){node.setAttribute(k,obj[k])});
+  }
+
+  parts.forEach(function(key,index){
+    var d=designs[index%designs.length];
+    var shape=el(d.tag);
+    attrs(shape,d.attrs);
+    shape.setAttribute("class","part");
+    shape.setAttribute("data-part",key);
+    shape.setAttribute("tabindex","0");
+
+    var leader=el("path");
+    leader.setAttribute("class","leader");
+    leader.setAttribute("d",d.leader);
+
+    var label=el("text");
+    label.setAttribute("class","label");
+    label.setAttribute("data-label",key);
+    label.setAttribute("x",d.label[0]);
+    label.setAttribute("y",d.label[1]);
+    if(d.label[2]==="middle") label.setAttribute("text-anchor","middle");
+    label.textContent=Studio.t(key);
+
+    function choose(){
+      if(pending||finished)return;
+      pending=true;
+      selected=shape;
+      shape.classList.add("chosen");
+      Studio.event("tap",{});
+      Studio.answer(key);
+    }
+    shape.addEventListener("click",choose);
+    shape.addEventListener("keydown",function(e){
+      if(e.key==="Enter"||e.key===" "){e.preventDefault();choose();}
+    });
+
+    diagram.appendChild(shape);
+    diagram.appendChild(leader);
+    diagram.appendChild(label);
+  });
+
+  Studio.onVerdict(function(result){
+    if(!selected)return;
+    if(result.correct){
+      finished=true;
+      selected.classList.remove("chosen");
+      selected.classList.add("correct");
+      feedback.textContent=Studio.t("right")+" "+Studio.t("done");
+      feedback.classList.add("show");
+      Studio.done();
+    }else{
+      var old=selected;
+      old.classList.remove("chosen");
+      old.classList.add("wiggle");
+      feedback.textContent=Studio.t("wrong");
+      feedback.classList.add("show");
+      setTimeout(function(){
+        old.classList.remove("wiggle");
+        feedback.classList.remove("show");
+        selected=null;
+        pending=false;
+      },650);
+    }
+  });
+
+  Studio.ready();
+}());
+
+</script>

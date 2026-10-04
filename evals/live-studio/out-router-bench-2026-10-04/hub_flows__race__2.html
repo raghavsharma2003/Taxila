@@ -1,0 +1,49 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#28443b;background:#fff8e8}
+.stage{width:360px;height:320px;padding:3px 8px;display:flex;flex-direction:column;gap:3px;overflow:hidden}
+.title{height:22px;flex:none;text-align:center;font-size:15px;line-height:22px;font-weight:800;color:#285b48}
+.scene{width:344px;height:136px;flex:none;border-radius:20px;background:#eaf5dc;overflow:hidden}
+.scene svg{display:block;width:100%;height:100%}
+.label{font-family:system-ui,sans-serif;font-size:10px;font-weight:750;fill:#335448}
+.controlrow{display:flex;gap:8px;height:52px;flex:none;align-items:center}
+.btn{border:0;border-radius:15px;background:#f3c86a;color:#493d22;font:700 13px system-ui;min-width:52px;min-height:52px;padding:0 10px;box-shadow:0 3px 0 #d5a849;cursor:pointer;transition:transform .15s,filter .15s}
+.btn:active,.option:active{transform:scale(.94);filter:brightness(.97)}
+.btn.alt{background:#c5e5d4;box-shadow:0 3px 0 #98c3aa}
+.caption{flex:1;text-align:center;font-weight:750;font-size:12px;color:#35634e}
+.ask{height:18px;flex:none;text-align:center;font-size:12px;line-height:18px;font-weight:750;color:#3d5748}
+.options{display:flex;justify-content:center;gap:8px;height:52px;flex:none}
+.option{min-width:52px;flex:1;padding:0 4px;background:#fff;border:2px solid #d8e8d4;border-radius:15px;color:#335448;font-size:12px}
+.feedback{height:18px;flex:none;text-align:center;font-size:12px;line-height:18px;font-weight:750;color:#39805b}
+</style>
+<div class="stage">
+  <div class="title" id="title"></div>
+  <div class="scene"><svg id="picture" viewBox="0 0 344 136" aria-label=""></svg></div>
+  <div class="controlrow"><button class="btn" id="play" data-action="play"></button><button class="btn alt" id="next" data-action="next"></button><div class="caption" data-caption></div></div>
+  <div class="ask" id="ask"></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback"></div>
+</div>
+<script>
+
+(()=>{const p=Studio.params,svg=document.getElementById('picture'),caption=document.querySelector('[data-caption]'),play=document.getElementById('play'),next=document.getElementById('next'),feedback=document.getElementById('feedback'),word=k=>Studio.t(k);document.getElementById('title').textContent=word('title');document.getElementById('ask').textContent=word('ask');play.textContent=word('pause');next.textContent=word('next');let step=0,running=true,done=false,particles=[];
+const el=(tag,attrs={})=>{const n=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);svg.appendChild(n);return n};
+const hub=p.hub,cx=172,cy=65;
+function shape(key,x,y){if(key===hub){return el('path',{d:`M ${x-30} ${y+3} Q ${x-9} ${y-31} ${x+29} ${y-7} Q ${x+13} ${y+28} ${x-30} ${y+3} Z`,fill:'#67b875',stroke:'#327b53','stroke-width':3,'data-entity':key})}
+if(key==='sun'){el('circle',{cx:x,cy:y,r:17,fill:'#ffd267',stroke:'#e8a93f','stroke-width':3,'data-entity':key});for(let a=0;a<8;a++){let ang=a*Math.PI/4;el('line',{x1:x+21*Math.cos(ang),y1:y+21*Math.sin(ang),x2:x+25*Math.cos(ang),y2:y+25*Math.sin(ang),stroke:'#e8a93f','stroke-width':3,'stroke-linecap':'round'})}}
+else if(key==='roots'){el('path',{d:`M${x} ${y-16} v16 m0 -4 l-12 16 m12 -12 l11 16 m-11 -11 v16`,fill:'none',stroke:'#9b7047','stroke-width':6,'stroke-linecap':'round','data-entity':key})}
+else el('circle',{cx:x,cy:y,r:15,fill:'#9dc9df','data-entity':key})}
+function label(key,x,y){let t=el('text',{x,y,class:'label','text-anchor':'middle','data-label':key});t.textContent=word(key)}
+shape(hub,cx,cy);label(hub,cx,105);
+const positions={sun:[49,27],roots:[49,112]};(p.entities||[]).forEach(k=>{let q=positions[k]||[49,67];shape(k,...q);label(k,q[0],q[1]+25)});
+const coords={water:[157,131,163,88],co2:[304,52,205,63],o2:[205,77,304,91]};
+(p.flows||[]).forEach(f=>{let c=coords[f.key]||[300,112,207,75],x1=c[0],y1=c[1],x2=c[2],y2=c[3];el('path',{d:`M${x1} ${y1} Q ${(x1+x2)/2} ${(y1+y2)/2-7} ${x2} ${y2}`,fill:'none',stroke:'#aac7ae','stroke-width':2,'stroke-dasharray':'4 5'});let lx=(x1+x2)/2,ly=(y1+y2)/2-8;if(f.key==='water'){lx=126;ly=112}else if(f.key==='co2'){lx=255;ly=43}else if(f.key==='o2'){lx=255;ly=108}label(f.key,lx,ly);for(let i=0;i<3;i++){let dot=el('circle',{r:4,fill:f.key==='water'?'#55a9d5':f.key==='co2'?'#9a7dc3':'#f09369','data-flow':f.key,cx:x1,cy:y1});particles.push({dot,x1,y1,x2,y2,phase:i/3})}});
+function showStep(){caption.textContent=word('step'+(step+1))}
+showStep();const opts=document.getElementById('options');p.options.forEach(k=>{let b=document.createElement('button');b.className='btn option';b.dataset.option=k;b.textContent=word(k);b.addEventListener('click',()=>{Studio.answer(k);Studio.event('answer',{key:k})});opts.appendChild(b)});
+play.addEventListener('click',()=>{running=!running;play.textContent=word(running?'pause':'play');Studio.event('play',{running:running?1:0})});
+next.addEventListener('click',()=>{step=(step+1)%(p.steps||4);showStep();Studio.event('step',{step:step+1})});
+Studio.onVerdict(v=>{feedback.textContent=word(v.correct?'right':'wrong');if(v.correct&&!done){done=true;Studio.done()}});
+let last=0;function animate(ts){if(running){let dt=last?Math.min((ts-last)/1100,.05):0;particles.forEach(o=>{o.phase=(o.phase+dt*.42)%1;let t=o.phase;o.dot.setAttribute('cx',o.x1+(o.x2-o.x1)*t);o.dot.setAttribute('cy',o.y1+(o.y2-o.y1)*t)})}last=ts;requestAnimationFrame(animate)}requestAnimationFrame(animate);Studio.ready()})();
+
+</script>

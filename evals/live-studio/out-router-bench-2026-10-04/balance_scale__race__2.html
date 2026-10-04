@@ -1,0 +1,107 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8eb;color:#493b32}
+#app{width:360px;height:320px;padding:10px 12px;display:flex;flex-direction:column;align-items:center;gap:5px}
+#title{font-size:18px;font-weight:800;color:#744a32;line-height:22px;text-align:center}
+#instr{font-size:12px;line-height:16px;text-align:center;min-height:16px;color:#715f51}
+#stage{width:336px;height:169px;position:relative;background:#fff1d9;border:2px solid #f1d7ae;border-radius:20px;overflow:hidden}
+#pivot{position:absolute;left:50%;top:54px;width:0;height:0}
+#beam{position:absolute;width:230px;height:12px;left:-115px;top:-6px;border-radius:9px;background:#bd7548;transform-origin:50% 50%;transition:transform .65s cubic-bezier(.2,.8,.2,1)}
+#beam[data-tilt="left"]{transform:rotate(-11deg)}
+#beam[data-tilt="right"]{transform:rotate(11deg)}
+#beam[data-tilt="level"]{transform:rotate(0deg)}
+#fulcrum{position:absolute;left:-17px;top:0;width:34px;height:68px;background:#d99962;clip-path:polygon(50% 0,100% 100%,0 100%)}
+.pan{position:absolute;top:54px;width:108px;height:78px;left:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;transition:transform .65s cubic-bezier(.2,.8,.2,1)}
+#leftPan{left:14px}
+#rightPan{right:14px}
+.pan svg{position:absolute;bottom:0;width:108px;height:30px;overflow:visible}
+.pan svg path{fill:#e7a65e;stroke:#a96b42;stroke-width:3;stroke-linejoin:round}
+.rope{position:absolute;top:-54px;width:3px;height:58px;background:#a96b42}
+.rope.a{left:17px}.rope.b{right:17px}
+.weights{z-index:1;display:flex;gap:4px;justify-content:center;align-items:flex-end;min-height:31px;max-width:102px;flex-wrap:wrap;padding-bottom:17px}
+.weight{min-width:27px;height:27px;border-radius:8px 8px 5px 5px;background:#f5c875;border:2px solid #b9783f;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#5b422d;box-shadow:0 2px 0 #d99a55}
+#base{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);width:56px;height:10px;border-radius:8px;background:#bd7548}
+#options{display:flex;justify-content:center;gap:12px;width:100%;height:60px}
+#options button{border:2px solid #c7844d;background:#f6cd83;color:#543e2b;border-radius:15px;width:76px;height:56px;font:800 20px system-ui;box-shadow:0 4px 0 #d69a5d;cursor:pointer;transition:transform .15s,background .2s,box-shadow .15s}
+#options button:active{transform:scale(.91);box-shadow:0 1px 0 #d69a5d}
+#options button:disabled{cursor:default;opacity:.62}
+#message{height:24px;line-height:24px;font-size:15px;font-weight:800;color:#8b5b36;text-align:center}
+#message.pop{animation:pop .45s ease}
+@keyframes pop{50%{transform:scale(1.18);color:#bb713e}}
+</style>
+<div id="app">
+  <div id="title"></div>
+  <div id="instr"></div>
+  <div id="stage">
+    <div id="pivot"><div id="beam" data-beam data-tilt="level"></div><div id="fulcrum"></div></div>
+    <div class="pan" id="leftPan" data-pan="left" data-total="0"><div class="rope a"></div><div class="rope b"></div><div class="weights"></div><svg viewBox="0 0 108 30" aria-hidden="true"><path d="M4 3 Q54 27 104 3 L97 27 Q54 43 11 27 Z"/></svg></div>
+    <div class="pan" id="rightPan" data-pan="right" data-total="0"><div class="rope a"></div><div class="rope b"></div><div class="weights"></div><svg viewBox="0 0 108 30" aria-hidden="true"><path d="M4 3 Q54 27 104 3 L97 27 Q54 43 11 27 Z"/></svg></div>
+    <div id="base"></div>
+  </div>
+  <div id="options"></div>
+  <div id="message"></div>
+</div>
+<script>
+
+(()=>{
+ const items=Studio.params.items;
+ const t=key=>Studio.t(key);
+ const title=document.getElementById("title"),instr=document.getElementById("instr"),message=document.getElementById("message");
+ const left=document.getElementById("leftPan"),right=document.getElementById("rightPan"),beam=document.querySelector("[data-beam]"),options=document.getElementById("options");
+ title.textContent=t("title");instr.textContent=t("instr");
+ let index=0,locked=false,finished=false,choice=null;
+ const makeWeight=value=>{const el=document.createElement("div");el.className="weight";el.dataset.weight=value;el.textContent=value;return el};
+ function show(){
+   if(index>=items.length){finish();return}
+   locked=false;choice=null;message.textContent="";
+   const item=items[index];
+   [left,right].forEach((pan,i)=>{const values=i===0?item.left:item.right;const area=pan.querySelector(".weights");area.replaceChildren(...values.map(makeWeight));pan.dataset.total=values.reduce((a,b)=>a+b,0)});
+   drawTilt();
+   options.replaceChildren(...item.options.map(value=>{
+     const button=document.createElement("button");button.type="button";button.dataset.option=value;button.textContent=value;
+     button.addEventListener("click",()=>select(value,button));return button;
+   }));
+ }
+ function drawTilt(){
+   const l=Number(left.dataset.total),r=Number(right.dataset.total);
+   const tilt=l>r?"left":r>l?"right":"level";
+   beam.dataset.tilt=tilt;
+   left.style.transform=tilt==="left"?"translateY(13px)":tilt==="right"?"translateY(-13px)":"";
+   right.style.transform=tilt==="right"?"translateY(13px)":tilt==="left"?"translateY(-13px)":"";
+ }
+ function select(value,button){
+   if(locked||finished)return;
+   locked=true;choice=value;
+   const area=right.querySelector(".weights");
+   const weight=makeWeight(value);area.appendChild(weight);
+   right.dataset.total=Number(right.dataset.total)+Number(value);
+   drawTilt();options.querySelectorAll("button").forEach(b=>b.disabled=true);
+   Studio.event("choose",{value:Number(value)});
+   Studio.answer({value});
+ }
+ Studio.onVerdict(({correct})=>{
+   if(!locked||finished)return;
+   if(correct){
+     message.textContent=t("right");message.classList.remove("pop");void message.offsetWidth;message.classList.add("pop");
+     beam.dataset.tilt="level";left.style.transform="";right.style.transform="";
+     setTimeout(()=>{index++;show()},1000);
+   }else{
+     message.textContent=t("wrong");
+     setTimeout(()=>{
+       const area=right.querySelector(".weights");
+       const added=[...area.children].find(el=>Number(el.dataset.weight)===Number(choice));
+       if(added)added.remove();
+       right.dataset.total=Number(right.dataset.total)-Number(choice);
+       drawTilt();message.textContent="";locked=false;
+       options.querySelectorAll("button").forEach(b=>b.disabled=false);
+     },900);
+   }
+ });
+ function finish(){
+   finished=true;options.replaceChildren();message.textContent=t("done");beam.dataset.tilt="level";left.style.transform="";right.style.transform="";Studio.done();
+ }
+ show();Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,81 @@
+<style>
+*{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;font-family:Arial,sans-serif;background:#fff7e8;color:#54372c}.board{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(145deg,#fff9ee,#ffe9bf);border-radius:22px}.title{position:absolute;left:18px;top:12px;width:324px;text-align:center;font-size:19px;font-weight:800;color:#8b4b30}.scene{position:absolute;inset:0}.pathway{position:absolute;left:0;top:0;width:360px;height:245px;overflow:visible}.arrow{fill:none;stroke:#d48a54;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#tip)}.arrowGlow{fill:none;stroke:#ffe2a7;stroke-width:2;stroke-dasharray:5 7}.stage{position:absolute;width:128px;height:72px;border-radius:20px;background:#fffdf7;border:3px solid #efc88f;box-shadow:0 5px 0 rgba(163,92,49,.14);display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;transition:transform .3s,background .3s,border-color .3s,box-shadow .3s}.stage[data-current="yes"]{background:#fff1b9;border-color:#ef9e45;box-shadow:0 0 0 6px rgba(255,194,75,.24),0 6px 0 rgba(163,92,49,.16);transform:scale(1.06)}.stage[data-current="yes"] .spark{opacity:1;transform:scale(1)}.label{position:relative;z-index:2;font-size:16px;font-weight:800;line-height:18px}.spark{position:absolute;right:8px;top:6px;width:16px;height:16px;opacity:0;transform:scale(.4);transition:.3s}.spark:before,.spark:after{content:"";position:absolute;left:7px;top:0;width:3px;height:16px;border-radius:3px;background:#f3a62f}.spark:after{transform:rotate(90deg)}.s0{left:18px;top:54px}.s1{left:214px;top:54px}.s2{left:214px;top:145px}.s3{left:18px;top:145px}.token{position:absolute;z-index:5;left:76px;top:90px;width:30px;height:30px;border-radius:50% 50% 50% 12px;background:#63b9b1;border:3px solid #fff;box-shadow:0 3px 0 #358981;transform:rotate(-35deg);transition:left .72s cubic-bezier(.48,.02,.24,1),top .72s cubic-bezier(.48,.02,.24,1),transform .35s}.token:after{content:"";position:absolute;width:6px;height:6px;right:6px;top:7px;border-radius:50%;background:#fff}.token.moving{transform:rotate(35deg) scale(1.16)}.next{position:absolute;left:140px;top:248px;width:80px;height:56px;border:0;border-radius:18px;background:#d96f48;color:#fffdf7;font-size:16px;font-weight:800;box-shadow:0 5px 0 #a94a32;transition:transform .15s,box-shadow .15s}.next:active,.option:active{transform:translateY(4px) scale(.97);box-shadow:0 1px 0 #a94a32}.next[disabled]{opacity:.5}.question{position:absolute;inset:0;padding:14px 16px;background:linear-gradient(145deg,#fff9ee,#ffe6b2);display:none;flex-direction:column;align-items:center}.question.show{display:flex;animation:appear .45s ease both}.ask{margin-top:8px;width:100%;font-size:18px;font-weight:800;text-align:center;line-height:23px}.askStage{color:#bd5f3c}.options{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:17px}.option{min-height:56px;border:3px solid #efc88f;border-radius:18px;background:#fffdf7;color:#54372c;font-size:15px;font-weight:800;box-shadow:0 4px 0 rgba(163,92,49,.18);transition:transform .15s,background .2s}.option:last-child:nth-child(odd){grid-column:1/3;width:calc(50% - 5px);justify-self:center}.feedback{height:28px;margin-top:14px;font-size:17px;font-weight:800;color:#bd5f3c}.feedback.good{color:#4f9a72;animation:pulse .5s ease}.question.done .option{opacity:.55}@keyframes appear{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}@keyframes pulse{50%{transform:scale(1.1)}} 
+</style>
+<div class="board" data-active="">
+  <div class="scene">
+    <div class="title" id="title"></div>
+    <svg class="pathway" viewBox="0 0 360 245" aria-hidden="true">
+      <defs><marker id="tip" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 Z" fill="#d48a54"/></marker></defs>
+      <path class="arrowGlow" d="M150 90 H204"></path><path class="arrow" data-arrow="egg>larva" d="M150 90 H204"></path>
+      <path class="arrowGlow" d="M278 130 V138"></path><path class="arrow" data-arrow="larva>pupa" d="M278 130 V138"></path>
+      <path class="arrowGlow" d="M204 181 H151"></path><path class="arrow" data-arrow="pupa>adult" d="M204 181 H151"></path>
+    </svg>
+    <div class="stage s0" data-stage="egg"><span class="spark"></span><span class="label" data-label="egg"></span></div>
+    <div class="stage s1" data-stage="larva"><span class="spark"></span><span class="label" data-label="larva"></span></div>
+    <div class="stage s2" data-stage="pupa"><span class="spark"></span><span class="label" data-label="pupa"></span></div>
+    <div class="stage s3" data-stage="adult"><span class="spark"></span><span class="label" data-label="adult"></span></div>
+    <div class="token" data-token></div>
+    <button class="next" data-action="next"></button>
+  </div>
+  <div class="question" id="question">
+    <div class="title" id="qtitle"></div>
+    <div class="ask"><span id="ask"></span> <span class="askStage" id="after"></span>?</div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, root=document.querySelector('.board'), stages=p.stages, index=0, moving=false;
+  var pos=[[76,90],[272,90],[272,181],[76,181]];
+  var token=document.querySelector('[data-token]'), next=document.querySelector('[data-action="next"]');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('qtitle').textContent=Studio.t('title');
+  next.textContent=Studio.t('next');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  document.getElementById('after').textContent=Studio.t(p.askAfter);
+  stages.forEach(function(key){
+    var el=document.querySelector('[data-stage="'+key+'"]');
+    if(el){el.querySelector('[data-label]').textContent=Studio.t(key);}
+  });
+  if(p.cycle){
+    var svg=document.querySelector('.pathway'), ns='http://www.w3.org/2000/svg';
+    var glow=document.createElementNS(ns,'path'), arrow=document.createElementNS(ns,'path');
+    glow.setAttribute('class','arrowGlow');glow.setAttribute('d','M76 217 V230 H10 V90 H12');
+    arrow.setAttribute('class','arrow');arrow.setAttribute('data-arrow',stages[stages.length-1]+'>'+stages[0]);arrow.setAttribute('d','M76 217 V230 H10 V90 H12');
+    svg.appendChild(glow);svg.appendChild(arrow);
+  }
+  function setActive(){
+    var key=stages[index];root.setAttribute('data-active',key);
+    document.querySelectorAll('[data-stage]').forEach(function(el){el.setAttribute('data-current',el.getAttribute('data-stage')===key?'yes':'no');});
+  }
+  setActive();
+  function showQuestion(){
+    document.querySelector('.scene').style.display='none';
+    document.getElementById('question').classList.add('show');
+  }
+  next.addEventListener('click',function(){
+    if(moving)return;
+    if(index===stages.length-1&&!p.cycle){showQuestion();return;}
+    moving=true;next.disabled=true;
+    index=(index+1)%stages.length;
+    token.classList.add('moving');
+    token.style.left=pos[index][0]+'px';token.style.top=pos[index][1]+'px';
+    window.setTimeout(function(){token.classList.remove('moving');setActive();moving=false;next.disabled=false;},730);
+  });
+  var options=document.getElementById('options');
+  p.options.forEach(function(key){
+    var b=document.createElement('button');b.className='option';b.setAttribute('data-option',key);b.textContent=Studio.t(key);
+    b.addEventListener('click',function(){Studio.answer(key);});
+    options.appendChild(b);
+  });
+  Studio.onVerdict(function(v){
+    var f=document.getElementById('feedback');
+    if(v.correct){f.textContent=Studio.t('right')+' '+Studio.t('done');f.className='feedback good';document.getElementById('question').classList.add('done');Studio.done();}
+    else{f.textContent=Studio.t('wrong');f.className='feedback';}
+  });
+  Studio.ready();
+}());
+
+</script>

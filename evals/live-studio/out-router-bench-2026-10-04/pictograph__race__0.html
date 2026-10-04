@@ -1,0 +1,84 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e9;font-family:system-ui,sans-serif;color:#513c37}
+  #activity{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 95% 0%,#ffe6bd 0,transparent 42%),#fff7e9}
+  #title{position:absolute;top:5px;left:16px;right:16px;height:26px;font-size:20px;font-weight:800;line-height:26px}
+  #prompt{position:absolute;top:32px;left:16px;right:16px;height:23px;font-size:14px;font-weight:650;line-height:23px}
+  [data-key]{position:absolute;top:58px;left:16px;right:16px;height:34px;display:flex;align-items:center;gap:7px;padding:0 10px;border-radius:12px;background:#ffe9cb;font-size:13px;font-weight:700}
+  .key-symbol{width:25px;height:25px;flex:none}
+  #rows{position:absolute;top:95px;left:12px;right:12px;display:grid;gap:3px}
+  [data-row]{width:100%;height:52px;display:flex;align-items:center;padding:0 9px;border:2px solid #ecd9c2;border-radius:15px;background:#fffdf8;color:#513c37;text-align:left;cursor:pointer;transition:transform .18s,background .18s,border-color .18s}
+  [data-row]:active{transform:scale(.97)}
+  [data-row]:focus-visible{outline:3px solid #be765c;outline-offset:1px}
+  [data-row].picked{background:#fff0db;border-color:#d9906a;animation:pulse .35s ease}
+  [data-row].correct{background:#e5f3df;border-color:#79ad77}
+  .name{width:65px;flex:none;font-size:15px;font-weight:750}
+  .symbols{display:flex;align-items:center;gap:3px;min-width:0}
+  [data-symbol]{width:27px;height:27px;flex:none}
+  @keyframes pulse{50%{transform:scale(1.025)}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+<div id="activity">
+  <div id="title"></div>
+  <div id="prompt" aria-live="polite"></div>
+  <div data-key><span id="key-label"></span><span id="key-picture"></span><span id="key-number"></span></div>
+  <div id="rows"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params;
+  const title=document.getElementById('title');
+  const prompt=document.getElementById('prompt');
+  const rows=document.getElementById('rows');
+  const picture='<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M17 8c2-4 5-5 8-4-1 4-4 6-8 6" fill="#76a979"/><path d="M16 9c-1-3 0-5 1-6" fill="none" stroke="#76513d" stroke-width="2" stroke-linecap="round"/><path d="M16 9C7 5 3 13 6 22c2 7 8 8 11 5 4 2 9 0 10-8 1-8-5-13-11-10Z" fill="#ee9b65" stroke="#b66d52" stroke-width="1.5"/><path d="M10 15c1-2 2-3 4-3" fill="none" stroke="#ffd5a4" stroke-width="2" stroke-linecap="round"/></svg>';
+  title.textContent=Studio.t('title');
+  prompt.textContent=Studio.t('ask');
+  document.getElementById('key-label').textContent=Studio.t('keytext');
+  const keyPicture=document.getElementById('key-picture');
+  keyPicture.className='key-symbol';
+  keyPicture.innerHTML=picture;
+  document.getElementById('key-number').textContent='= '+p.symbolValue;
+  let selected=null,finished=false;
+  p.rows.forEach(entry=>{
+    const row=document.createElement('button');
+    row.type='button';
+    row.setAttribute('data-row',entry.key);
+    const name=document.createElement('span');
+    name.className='name';
+    name.textContent=Studio.t(entry.key);
+    const symbols=document.createElement('span');
+    symbols.className='symbols';
+    for(let i=0;i<entry.value/p.symbolValue;i++){
+      const symbol=document.createElement('span');
+      symbol.setAttribute('data-symbol','');
+      symbol.innerHTML=picture;
+      symbols.appendChild(symbol);
+    }
+    row.append(name,symbols);
+    row.addEventListener('click',()=>{
+      if(finished)return;
+      if(selected)selected.classList.remove('picked');
+      selected=row;
+      row.classList.add('picked');
+      Studio.answer(entry.key);
+    });
+    rows.appendChild(row);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(finished)return;
+    if(correct){
+      finished=true;
+      if(selected)selected.classList.add('correct');
+      prompt.textContent=Studio.t('right');
+      setTimeout(()=>{prompt.textContent=Studio.t('done');Studio.done()},650);
+    }else{
+      prompt.textContent=Studio.t('wrong');
+      if(selected)selected.classList.remove('picked');
+      selected=null;
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

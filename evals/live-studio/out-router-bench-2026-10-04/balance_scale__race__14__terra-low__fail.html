@@ -1,0 +1,166 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e8;font-family:Arial,sans-serif;color:#4a3027}
+  #app{width:360px;height:320px;position:relative;overflow:hidden;background:linear-gradient(#fff4dc,#fffaf0)}
+  #title{height:34px;padding-top:8px;text-align:center;font-size:19px;font-weight:800;color:#a64d3c}
+  #instr{height:25px;text-align:center;font-size:13px;font-weight:700;color:#795848}
+  #scene{height:181px;position:relative}
+  #balanceSvg{position:absolute;inset:0;width:360px;height:181px;overflow:visible}
+  #beamGroup{transition:transform .6s cubic-bezier(.23,1.35,.42,1)}
+  .pan{position:absolute;top:90px;width:116px;height:76px;display:flex;align-items:flex-end;justify-content:center;gap:3px;padding:20px 7px 7px;transition:transform .6s cubic-bezier(.23,1.35,.42,1)}
+  #leftPan{left:26px}
+  #rightPan{right:26px}
+  .weight{width:34px;height:36px;flex:0 0 34px;border-radius:10px 10px 8px 8px;background:linear-gradient(135deg,#ffbd59,#e87e3e);border:2px solid #b85835;box-shadow:inset 0 3px 0 rgba(255,255,255,.45),0 3px 0 rgba(133,66,43,.22);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:#68321e;transition:transform .35s ease,opacity .35s ease}
+  .weight.new{animation:land .55s cubic-bezier(.25,1.5,.5,1)}
+  @keyframes land{0%{transform:translateY(-45px) scale(.7)}65%{transform:translateY(5px) scale(1.08)}100%{transform:translateY(0) scale(1)}}
+  #options{height:64px;display:flex;justify-content:center;gap:18px;align-items:center}
+  .option{width:66px;height:56px;border:0;border-radius:16px;background:linear-gradient(145deg,#ffd36f,#f39a49);border:2px solid #b85835;box-shadow:0 4px 0 #bc6a3e, inset 0 3px 0 rgba(255,255,255,.5);font-size:18px;font-weight:900;color:#67321e;cursor:pointer;transition:transform .16s ease,opacity .25s ease,filter .2s ease}
+  .option:active{transform:translateY(3px) scale(.93);box-shadow:0 1px 0 #bc6a3e}
+  .option.chosen{opacity:.28;transform:scale(.85);pointer-events:none}
+  #feedback{height:16px;text-align:center;font-size:13px;font-weight:800;color:#a64d3c;opacity:0;transform:translateY(4px);transition:opacity .2s,transform .2s}
+  #feedback.show{opacity:1;transform:translateY(0)}
+  #celebrate{position:absolute;left:0;right:0;top:38px;height:125px;pointer-events:none;opacity:0}
+  #celebrate.show{opacity:1}
+  .spark{position:absolute;width:10px;height:10px;border-radius:50%;background:#f39a49;animation:spark .8s ease-out forwards}
+  .spark:nth-child(1){left:92px;top:55px;background:#ef7560}
+  .spark:nth-child(2){left:140px;top:25px;background:#f6bc46;animation-delay:.05s}
+  .spark:nth-child(3){left:215px;top:30px;background:#72b99a;animation-delay:.1s}
+  .spark:nth-child(4){left:257px;top:63px;background:#ef7560;animation-delay:.15s}
+  @keyframes spark{0%{transform:scale(.3);opacity:0}30%{transform:scale(1.4);opacity:1}100%{transform:translateY(-28px) scale(.2);opacity:0}}
+  #done{position:absolute;inset:58px 24px 70px;display:none;align-items:center;justify-content:center;text-align:center;border-radius:24px;background:#fff0c9;border:3px solid #e9a14b;color:#9b4937;font-size:21px;font-weight:900;box-shadow:0 6px 0 rgba(180,100,50,.16)}
+  #done.show{display:flex;animation:donepop .55s cubic-bezier(.2,1.4,.4,1)}
+  @keyframes donepop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+</style>
+<div id="app">
+  <div id="title"></div>
+  <div id="instr"></div>
+  <div id="scene">
+    <svg id="balanceSvg" viewBox="0 0 360 181" aria-hidden="true">
+      <path d="M180 111 L146 166 L214 166 Z" fill="#8d5a43"></path>
+      <path d="M180 111 L158 157 L202 157 Z" fill="#f5b460"></path>
+      <rect x="133" y="165" width="94" height="10" rx="5" fill="#744735"></rect>
+      <g id="beamGroup" data-beam data-tilt="level">
+        <rect x="59" y="54" width="242" height="10" rx="5" fill="#9b5a3e"></rect>
+        <rect x="63" y="55" width="234" height="4" rx="2" fill="#f5bc68"></rect>
+        <circle cx="180" cy="59" r="10" fill="#d97945" stroke="#82442f" stroke-width="3"></circle>
+        <path d="M82 64 L82 108 M278 64 L278 108" stroke="#8d5a43" stroke-width="3"></path>
+      </g>
+      <path d="M38 120 Q84 139 130 120 L124 142 Q84 157 44 142 Z" fill="#f6c66d" stroke="#9b5a3e" stroke-width="3"></path>
+      <path d="M230 120 Q276 139 322 120 L316 142 Q276 157 236 142 Z" fill="#f6c66d" stroke="#9b5a3e" stroke-width="3"></path>
+    </svg>
+    <div class="pan" id="leftPan" data-pan="left"></div>
+    <div class="pan" id="rightPan" data-pan="right"></div>
+    <div id="celebrate"><i class="spark"></i><i class="spark"></i><i class="spark"></i><i class="spark"></i></div>
+  </div>
+  <div id="feedback"></div>
+  <div id="options"></div>
+  <div id="done"></div>
+</div>
+<script>
+
+(function(){
+  var items=Studio.params.items, index=0, busy=false, picked=null;
+  var title=document.getElementById('title'), instr=document.getElementById('instr');
+  var leftPan=document.getElementById('leftPan'), rightPan=document.getElementById('rightPan');
+  var beam=document.getElementById('beamGroup'), options=document.getElementById('options');
+  var feedback=document.getElementById('feedback'), celebrate=document.getElementById('celebrate');
+  var done=document.getElementById('done');
+
+  title.textContent=Studio.t('title');
+  instr.textContent=Studio.t('instr');
+
+  function total(list){
+    return list.reduce(function(a,b){return a+b},0);
+  }
+  function tilt(){
+    var l=total(items[index].left), r=total(items[index].right);
+    var side=l===r?'level':(l>r?'left':'right');
+    var angle=side==='left'?-8:(side==='right'?8:0);
+    beam.setAttribute('data-tilt',side);
+    beam.setAttribute('transform','rotate('+angle+' 180 59)');
+    leftPan.style.transform='translateY('+(side==='left'?12:(side==='right'?-12:0))+'px)';
+    rightPan.style.transform='translateY('+(side==='right'?12:(side==='left'?-12:0))+'px)';
+  }
+  function drawPan(el,list,isNew){
+    el.innerHTML='';
+    el.setAttribute('data-total',total(list));
+    list.forEach(function(value,position){
+      var w=document.createElement('div');
+      w.className='weight'+(isNew && position===list.length-1?' new':'');
+      w.setAttribute('data-weight',value);
+      w.textContent=value;
+      el.appendChild(w);
+    });
+  }
+  function drawOptions(){
+    options.innerHTML='';
+    items[index].options.forEach(function(value){
+      var b=document.createElement('button');
+      b.className='option';
+      b.setAttribute('data-option',value);
+      b.textContent=value;
+      b.addEventListener('click',function(){choose(value,b)});
+      options.appendChild(b);
+    });
+  }
+  function render(newWeight){
+    drawPan(leftPan,items[index].left,false);
+    drawPan(rightPan,items[index].right,newWeight);
+    drawOptions();
+    tilt();
+  }
+  function choose(value,button){
+    if(busy)return;
+    busy=true;
+    picked=value;
+    button.classList.add('chosen');
+    items[index].right.push(value);
+    drawPan(rightPan,items[index].right,true);
+    tilt();
+    Studio.event('pick',{value:value});
+    Studio.answer({value:value});
+  }
+  Studio.onVerdict(function(result){
+    if(!busy)return;
+    if(result.correct){
+      feedback.textContent=Studio.t('right');
+      feedback.classList.add('show');
+      celebrate.classList.add('show');
+      Studio.event('right',{});
+      setTimeout(function(){
+        feedback.classList.remove('show');
+        celebrate.classList.remove('show');
+        index++;
+        busy=false;
+        picked=null;
+        if(index>=items.length){
+          options.innerHTML='';
+          done.textContent=Studio.t('done');
+          done.classList.add('show');
+          Studio.done();
+        }else{
+          render(false);
+        }
+      },900);
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      feedback.classList.add('show');
+      Studio.event('wrong',{});
+      setTimeout(function(){
+        var list=items[index].right;
+        var at=list.lastIndexOf(picked);
+        if(at!==-1)list.splice(at,1);
+        drawPan(rightPan,list,false);
+        tilt();
+        feedback.classList.remove('show');
+        busy=false;
+        picked=null;
+        drawOptions();
+      },700);
+    }
+  });
+  render(false);
+  Studio.ready();
+}());
+
+</script>

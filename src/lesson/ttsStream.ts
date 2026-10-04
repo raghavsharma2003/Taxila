@@ -289,12 +289,13 @@ export async function postTurnAudio(req: TurnRequest, signal?: AbortSignal): Pro
               const k = foldKey(req.lessonId, ttsReq.seq);
               folded.set(k, { stream: readable, at: Date.now() });
               // nobody took it (the runtime chose not to speak): release the response
-              setTimeout(() => {
+              const timer: unknown = setTimeout(() => {
                 if (folded.get(k)?.stream === readable) {
                   folded.delete(k);
                   void readable.cancel().catch(() => {});
                 }
               }, FOLD_TTL_MS);
+              (timer as { unref?: () => void }).unref?.(); // Node (tests): never hold the process open
             }
           }
           resolveTurn(t);

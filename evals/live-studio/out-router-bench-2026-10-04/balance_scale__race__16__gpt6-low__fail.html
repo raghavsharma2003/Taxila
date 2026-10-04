@@ -1,0 +1,125 @@
+<style>
+  *{box-sizing:border-box}
+  #balance-game{width:360px;height:320px;overflow:hidden;position:relative;background:#fff6e9;color:#634633;font-family:system-ui,sans-serif;text-align:center}
+  #balance-game h1{font-size:20px;line-height:25px;margin:12px 12px 1px;font-weight:800}
+  #balance-game .instruction{font-size:14px;line-height:19px;margin:0 12px}
+  #balance-game .scene{position:absolute;top:60px;left:0;width:360px;height:165px}
+  #balance-game .assembly{position:absolute;left:30px;top:35px;width:300px;height:116px;transform-origin:150px 20px;transition:transform .65s cubic-bezier(.2,1.5,.4,1)}
+  #balance-game .rig{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+  #balance-game .pan{position:absolute;top:64px;width:92px;height:49px;border:4px solid #c88656;border-top:0;border-radius:8px 8px 36px 36px;background:#f9d9a8;display:flex;align-items:center;justify-content:center;gap:3px;padding:3px}
+  #balance-game [data-pan="left"]{left:0}
+  #balance-game [data-pan="right"]{right:0}
+  #balance-game .weight{min-width:28px;height:30px;padding:0 3px;border-radius:7px 7px 5px 5px;background:#729c89;color:#fff;display:grid;place-items:center;font-size:16px;font-weight:800;box-shadow:inset 0 -4px #527b69}
+  #balance-game .pivot{position:absolute;left:166px;top:41px;width:28px;height:28px;border-radius:50%;background:#dd9568;border:5px solid #fff0dc;box-shadow:0 2px 5px #a6755266}
+  #balance-game .stand{position:absolute;left:175px;top:64px;width:10px;height:95px;background:#b77b59;border-radius:6px}
+  #balance-game .base{position:absolute;left:137px;top:153px;width:86px;height:10px;background:#b77b59;border-radius:10px}
+  #balance-game .feedback{position:absolute;top:219px;left:12px;width:336px;height:22px;font-size:16px;font-weight:800;color:#678d75}
+  #balance-game .options{position:absolute;top:246px;left:30px;width:300px;display:flex;justify-content:space-between}
+  #balance-game button{width:88px;height:60px;border:3px solid #d3996d;border-radius:17px;background:#ffe3bb;color:#684735;font:800 22px system-ui,sans-serif;box-shadow:0 5px 0 #bf8058;cursor:pointer;transition:transform .18s,opacity .2s}
+  #balance-game button:active{transform:translateY(4px) scale(.94);box-shadow:0 1px 0 #bf8058}
+  #balance-game button:disabled{cursor:default;opacity:.55}
+  #balance-game .celebrate .pivot{animation:glow .55s ease-in-out 2}
+  @keyframes glow{50%{transform:scale(1.35);background:#f3c65c}}
+  #balance-game .finished .scene,#balance-game .finished .options{display:none}
+  #balance-game .finished .feedback{top:135px;font-size:22px}
+</style>
+<div id="balance-game">
+  <h1 id="title"></h1>
+  <div class="instruction" id="instr"></div>
+  <div class="scene">
+    <div class="stand"></div><div class="base"></div>
+    <div class="assembly" data-beam data-tilt="level">
+      <svg class="rig" viewBox="0 0 300 116" aria-hidden="true">
+        <path d="M45 20 H255" stroke="#b77b59" stroke-width="12" stroke-linecap="round"/>
+        <path d="M45 22 L10 65 M45 22 L80 65 M255 22 L220 65 M255 22 L290 65" fill="none" stroke="#c88656" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <div class="pan" data-pan="left" data-total=""></div>
+      <div class="pan" data-pan="right" data-total=""></div>
+    </div>
+    <div class="pivot"></div>
+  </div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+  <div class="options" id="options"></div>
+</div>
+<script>
+
+(() => {
+  const root=document.getElementById('balance-game');
+  const beam=root.querySelector('[data-beam]');
+  const left=root.querySelector('[data-pan="left"]');
+  const right=root.querySelector('[data-pan="right"]');
+  const options=document.getElementById('options');
+  const feedback=document.getElementById('feedback');
+  const items=Studio.params.items;
+  let index=0,chosen=null,busy=false;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  const sum=a=>a.reduce((n,v)=>n+Number(v),0);
+  function weights(pan,values){
+    pan.replaceChildren();
+    values.forEach(value=>{
+      const el=document.createElement('span');
+      el.className='weight';
+      el.dataset.weight=String(value);
+      el.textContent=String(value);
+      pan.appendChild(el);
+    });
+    pan.dataset.total=String(sum(values));
+  }
+  function draw(){
+    const item=items[index];
+    weights(left,item.left);
+    weights(right,chosen===null?item.right:[...item.right,chosen]);
+    const difference=Number(left.dataset.total)-Number(right.dataset.total);
+    beam.dataset.tilt=difference>0?'left':difference<0?'right':'level';
+    beam.style.transform=`rotate(${difference>0?-9:difference<0?9:0}deg)`;
+    options.replaceChildren();
+    item.options.forEach(value=>{
+      if(chosen!==null && String(chosen)===String(value))return;
+      const button=document.createElement('button');
+      button.type='button';
+      button.dataset.option=String(value);
+      button.textContent=String(value);
+      button.disabled=busy;
+      button.addEventListener('click',()=>pick(value));
+      options.appendChild(button);
+    });
+  }
+  function pick(value){
+    if(busy)return;
+    busy=true;
+    chosen=value;
+    feedback.textContent='';
+    draw();
+    Studio.answer({value});
+  }
+  Studio.onVerdict(({correct})=>{
+    if(chosen===null)return;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      root.classList.add('celebrate');
+      setTimeout(()=>{
+        root.classList.remove('celebrate');
+        index++;
+        chosen=null;
+        busy=false;
+        feedback.textContent='';
+        if(index>=items.length){
+          root.classList.add('finished');
+          feedback.textContent=Studio.t('done');
+          Studio.done();
+        }else draw();
+      },1100);
+    }else{
+      setTimeout(()=>{
+        chosen=null;
+        busy=false;
+        draw();
+      },850);
+    }
+  });
+  draw();
+  Studio.ready();
+})();
+
+</script>

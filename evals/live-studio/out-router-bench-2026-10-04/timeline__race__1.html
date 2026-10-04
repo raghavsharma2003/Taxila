@@ -1,0 +1,104 @@
+<style>
+*{box-sizing:border-box}
+body{width:360px;height:320px;margin:0;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#493c32}
+#scene{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(ellipse at 50% 45%,#fffdf7 0%,#fff8ed 74%)}
+#title{position:absolute;top:10px;left:16px;right:16px;margin:0;text-align:center;font-size:18px;line-height:24px;font-weight:750;color:#664a38}
+#question{position:absolute;top:40px;left:20px;right:20px;margin:0;text-align:center;font-size:14px;line-height:19px;color:#795d49}
+#axis{position:absolute;left:22px;right:22px;top:165px;height:4px;border-radius:4px;background:#d69c5e;box-shadow:0 2px 0 #f3dfc5}
+#axis:before,#axis:after{content:"";position:absolute;top:-5px;width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent}
+#axis:before{left:-2px;border-right:9px solid #d69c5e}
+#axis:after{right:-2px;border-left:9px solid #d69c5e}
+.marker{position:absolute;top:158px;width:18px;height:18px;margin-left:-9px;border:3px solid #fff8ed;border-radius:50%;background:#d8784c;box-shadow:0 0 0 2px #d8784c;z-index:2;transition:transform .22s ease}
+.event-card{position:absolute;width:112px;min-height:58px;padding:7px 8px;border:2px solid #e8bd83;border-radius:14px;background:#fffdf8;color:#594536;font:600 13px/17px system-ui,sans-serif;text-align:center;box-shadow:0 3px 0 #f0dfc9;cursor:pointer;transition:transform .16s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease;z-index:3}
+.event-card:active{transform:scale(.95)}
+.event-card:hover{border-color:#d88b55}
+.event-card .year{display:block;margin-top:2px;color:#a2623e;font-weight:750}
+.event-card.above{top:85px}
+.event-card.below{top:190px}
+.connector{position:absolute;width:2px;height:20px;background:#e5bd8b;z-index:1}
+.connector.above{top:143px}
+.connector.below{top:166px}
+#feedback{position:absolute;left:16px;right:16px;bottom:9px;min-height:42px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:14px;line-height:18px;font-weight:700;color:#795d49}
+#feedback.show{animation:pop .35s ease both}
+#feedback.correct{color:#417659}
+#feedback.incorrect{color:#a45d45}
+@keyframes pop{0%{transform:scale(.94);opacity:.45}70%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+.event-card.pulse{animation:tap .36s ease}
+@keyframes tap{50%{transform:scale(1.055)}}
+</style>
+<div id="scene">
+  <h1 id="title"></h1>
+  <p id="question"></p>
+  <div id="axis" data-axis></div>
+  <div id="events"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const params=Studio.params;
+  const title=document.getElementById("title");
+  const question=document.getElementById("question");
+  const layer=document.getElementById("events");
+  const feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  question.textContent=Studio.t("ask");
+  const events=params.events;
+  const years=events.map(e=>e.year);
+  const min=Math.min(...years),max=Math.max(...years);
+  const left=22,right=338,span=right-left;
+  const sorted=[...events].sort((a,b)=>a.year-b.year);
+  const lanes=[];
+  sorted.forEach((event,index)=>{
+    const x=max===min?(left+right)/2:left+(event.year-min)/(max-min)*span;
+    let lane=index%2;
+    const cardWidth=112;
+    const cardX=Math.max(0,Math.min(360-cardWidth,x-cardWidth/2));
+    for(let tries=0;tries<2;tries++){
+      const conflict=lanes.some(item=>item.lane===lane&&Math.abs(item.x-cardX)<cardWidth);
+      if(!conflict)break;
+      lane=1-lane;
+    }
+    lanes.push({lane,x:cardX});
+    const marker=document.createElement("div");
+    marker.className="marker";
+    marker.dataset.event=event.key;
+    marker.dataset.year=event.year;
+    marker.style.left=x+"px";
+    layer.appendChild(marker);
+    const connector=document.createElement("div");
+    connector.className="connector "+(lane===0?"above":"below");
+    connector.style.left=x+"px";
+    layer.appendChild(connector);
+    const card=document.createElement("button");
+    card.type="button";
+    card.className="event-card "+(lane===0?"above":"below");
+    card.dataset.card=event.key;
+    card.style.left=cardX+"px";
+    const name=document.createElement("span");
+    name.textContent=Studio.t(event.key);
+    const year=document.createElement("span");
+    year.className="year";
+    year.textContent=event.year;
+    card.append(name,year);
+    card.addEventListener("click",()=>{
+      card.classList.remove("pulse");
+      void card.offsetWidth;
+      card.classList.add("pulse");
+      Studio.event("event_tap",{key:event.key});
+      Studio.answer(event.key);
+    });
+    layer.appendChild(card);
+  });
+  Studio.onVerdict(result=>{
+    feedback.textContent=Studio.t(result.correct?"right":"wrong");
+    feedback.className="show "+(result.correct?"correct":"incorrect");
+    if(result.correct){
+      question.textContent=Studio.t("done");
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

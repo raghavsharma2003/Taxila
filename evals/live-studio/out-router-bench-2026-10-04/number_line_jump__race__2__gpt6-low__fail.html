@@ -1,0 +1,123 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ee;color:#49352d}
+  .card{position:relative;width:360px;height:320px;overflow:hidden;padding:15px 18px;background:radial-gradient(circle at 90% 8%,#ffe4b7 0 54px,transparent 55px),#fff8ee}
+  h1{margin:0;font-size:20px;line-height:25px;color:#704531}
+  .instruction{margin:3px 0 0;font-size:13px;color:#775d4e}
+  .targetBox{position:absolute;top:64px;left:18px;right:18px;height:47px;border-radius:17px;background:#ffe8d5;display:flex;align-items:center;justify-content:center;gap:12px;font-size:24px;font-weight:750;color:#68432f}
+  .targetBox svg{width:29px;height:29px;flex:none}
+  .lineArea{position:absolute;top:126px;left:32px;width:296px;height:91px}
+  .rail{position:absolute;top:38px;left:8px;right:8px;height:6px;border-radius:8px;background:#b7957d}
+  .track{position:absolute;top:0;left:8px;width:280px;height:91px}
+  .tick{position:absolute;top:30px;transform:translateX(-50%);width:2px;height:22px;background:#98735d}
+  .tick span{position:absolute;top:28px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:15px;font-weight:650;color:#624b3c}
+  .marker{position:absolute;top:3px;transform:translateX(-50%);width:36px;height:36px;border-radius:50% 50% 50% 7px;background:#e87558;border:3px solid #fff;box-shadow:0 3px 8px #77412d55;rotate:-45deg;transition:left .25s ease,background .2s ease;z-index:2}
+  .marker::after{content:"";position:absolute;inset:10px;border-radius:50%;background:#fff5e7}
+  .marker.hop{animation:hop .48s ease}
+  .marker.nudge{animation:nudge .35s ease}
+  @keyframes hop{50%{top:-17px;scale:1.16}}
+  @keyframes nudge{50%{scale:.88;background:#eca077}}
+  .feedback{position:absolute;top:218px;left:18px;right:18px;height:23px;text-align:center;font-size:15px;font-weight:700;color:#a35440}
+  .controls{position:absolute;bottom:14px;left:18px;right:18px;display:flex;gap:8px}
+  button{height:58px;min-width:70px;border:0;border-radius:17px;background:#f5d9bc;color:#563c30;font:700 15px system-ui,sans-serif;cursor:pointer;transition:transform .15s,background .15s}
+  button:active{transform:scale(.92)}
+  button:disabled{opacity:.55;cursor:default}
+  button[data-action=check]{flex:1;background:#478c75;color:white}
+  button[data-action=left],button[data-action=right]{flex:0 0 76px}
+  .done{position:absolute;inset:64px 18px 25px;display:none;align-items:center;justify-content:center;text-align:center;border-radius:22px;background:#e4f3e8;color:#32735f;font-size:25px;font-weight:750;padding:18px}
+  .card.finished .done{display:flex}
+  .card.finished .targetBox,.card.finished .lineArea,.card.finished .feedback,.card.finished .controls{display:none}
+</style>
+<div class="card" id="card">
+  <h1 id="title"></h1>
+  <p class="instruction" id="instr"></p>
+  <div id="item" data-item="">
+    <div class="targetBox"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2 19.7 12.3 30 16l-10.3 3.7L16 30l-3.7-10.3L2 16l10.3-3.7Z" fill="#e8995b"/></svg><span data-target></span></div>
+    <div class="lineArea"><div class="rail"></div><div class="track" id="track"><div class="marker" data-marker data-value=""></div></div></div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+    <div class="controls"><button type="button" data-action="left"></button><button type="button" data-action="right"></button><button type="button" data-action="check"></button></div>
+  </div>
+  <div class="done" id="done"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, card=document.getElementById('card'), track=document.getElementById('track');
+  const marker=track.querySelector('[data-marker]'), item=document.getElementById('item');
+  const feedback=document.getElementById('feedback');
+  const buttons={
+    left:document.querySelector('[data-action="left"]'),
+    right:document.querySelector('[data-action="right"]'),
+    check:document.querySelector('[data-action="check"]')
+  };
+  for(const key of ['title','instr','done']) document.getElementById(key).textContent=Studio.t(key);
+  for(const key of ['left','right']) buttons[key].textContent=Studio.t(key==='right'?'right_btn':key);
+  buttons.check.textContent=Studio.t('check');
+  const count=Math.round((p.max-p.min)/p.step);
+  const value=k=>Math.round((p.min+k*p.step)*1e6)/1e6;
+  const format=v=>p.format==='fraction' ? `${Math.round(v*p.den)}/${p.den}` : String(v);
+  const textValue=v=>String(Math.round(v*1e6)/1e6);
+  for(let i=0;i<=count;i++){
+    const tick=document.createElement('div');
+    tick.className='tick';
+    tick.dataset.tick=textValue(value(i));
+    tick.style.left=`${i/count*100}%`;
+    if(i%p.labelEvery===0){
+      const label=document.createElement('span');
+      label.textContent=format(value(i));
+      tick.appendChild(label);
+    }
+    track.appendChild(tick);
+  }
+  let index=0, k=Math.max(0,Math.min(count,Math.round((p.start-p.min)/p.step))), busy=false;
+  function position(){
+    marker.style.left=`${k/count*100}%`;
+    marker.dataset.value=textValue(value(k));
+  }
+  function showItem(){
+    item.dataset.item=String(p.items[index].id);
+    item.querySelector('[data-target]').textContent=format(p.items[index].target);
+    k=Math.max(0,Math.min(count,Math.round((p.start-p.min)/p.step)));
+    feedback.textContent='';
+    position();
+  }
+  function move(delta){
+    if(busy)return;
+    k=Math.max(0,Math.min(count,k+delta));
+    feedback.textContent='';
+    position();
+    Studio.event('move',{direction:delta<0?'left':'right'});
+  }
+  buttons.left.addEventListener('click',()=>move(-1));
+  buttons.right.addEventListener('click',()=>move(1));
+  buttons.check.addEventListener('click',()=>{
+    if(busy)return;
+    busy=true;
+    Studio.answer({value:value(k)});
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    marker.classList.remove('hop','nudge');
+    void marker.offsetWidth;
+    marker.classList.add(correct?'hop':'nudge');
+    if(correct){
+      setTimeout(()=>{
+        marker.classList.remove('hop');
+        index++;
+        if(index>=p.items.length){
+          card.classList.add('finished');
+          Studio.done();
+        }else{
+          showItem();
+          busy=false;
+        }
+      },520);
+    }else{
+      setTimeout(()=>{marker.classList.remove('nudge');busy=false},380);
+    }
+  });
+  showItem();
+  Studio.ready();
+})();
+
+</script>

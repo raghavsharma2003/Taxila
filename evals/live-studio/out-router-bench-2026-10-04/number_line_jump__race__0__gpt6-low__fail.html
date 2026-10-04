@@ -1,0 +1,133 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#493b38}
+  #game{position:relative;width:360px;height:320px;overflow:hidden;padding:13px 18px}
+  h1{margin:0;font-size:19px;line-height:25px;font-weight:800;color:#714b5c;text-align:center}
+  #instr{margin:2px 0 0;text-align:center;font-size:13px;line-height:18px}
+  #item{height:58px;display:flex;align-items:center;justify-content:center}
+  #targetCard{min-width:76px;height:46px;padding:0 15px;display:flex;align-items:center;justify-content:center;border-radius:17px;background:#ffe0a7;box-shadow:0 4px 0 #e8b97b;font-size:25px;font-weight:800;color:#70483b}
+  #lineArea{position:relative;height:103px;margin-top:2px}
+  #track{position:absolute;left:17px;right:17px;top:35px;height:7px;border-radius:9px;background:#b2d6c7}
+  #ticks{position:absolute;left:17px;right:17px;top:0;height:90px}
+  [data-tick]{position:absolute;top:29px;width:0;height:57px;transform:translateX(-50%)}
+  .tickStem{position:absolute;top:0;left:-2px;width:4px;height:19px;border-radius:4px;background:#588e80}
+  .tickLabel{position:absolute;top:27px;left:0;transform:translateX(-50%);white-space:nowrap;font-size:13px;font-weight:700;color:#546a61}
+  [data-marker]{position:absolute;top:0;left:0;width:38px;height:38px;transform:translateX(-50%);border:4px solid #fff;background:#ef806b;border-radius:50% 50% 48% 48%;box-shadow:0 3px 0 #c95e56,0 5px 12px #9e665045;transition:left .24s cubic-bezier(.2,1.5,.5,1)}
+  [data-marker]::after{content:"";position:absolute;left:12px;bottom:-13px;border-left:4px solid transparent;border-right:4px solid transparent;border-top:9px solid #c95e56}
+  [data-marker].hop{animation:hop .52s ease-in-out}
+  @keyframes hop{50%{transform:translateX(-50%) translateY(-16px) scale(1.12)}}
+  #feedback{height:21px;text-align:center;font-size:14px;font-weight:750;color:#9b6171}
+  #controls{display:flex;justify-content:center;gap:12px;align-items:center;margin-top:2px}
+  button{border:0;min-width:74px;height:55px;padding:0 11px;border-radius:18px;background:#dbece3;color:#345c52;font:750 16px system-ui,sans-serif;box-shadow:0 4px 0 #a6c7b7;cursor:pointer;transition:transform .15s,box-shadow .15s}
+  button:active{transform:translateY(3px) scale(.96);box-shadow:0 1px 0 #a6c7b7}
+  button:disabled{opacity:.52;cursor:default}
+  [data-action="check"]{background:#ed806b;color:white;box-shadow:0 4px 0 #c76056;min-width:100px}
+  #finish{display:none;position:absolute;inset:0;align-items:center;justify-content:center;text-align:center;padding:30px;background:#fff8ed;color:#714b5c;font-size:27px;font-weight:800}
+</style>
+<div id="game">
+  <h1 id="title"></h1>
+  <div id="instr"></div>
+  <div id="item" data-item=""><div id="targetCard"><span data-target></span></div></div>
+  <div id="lineArea">
+    <div id="track"></div>
+    <div id="ticks"></div>
+    <div data-marker data-value=""></div>
+  </div>
+  <div id="feedback" aria-live="polite"></div>
+  <div id="controls">
+    <button type="button" data-action="left"></button>
+    <button type="button" data-action="check"></button>
+    <button type="button" data-action="right"></button>
+  </div>
+  <div id="finish"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const $=s=>document.querySelector(s);
+  const round=n=>Math.round(n*1000000)/1000000;
+  const count=Math.round((p.max-p.min)/p.step);
+  const value=k=>round(p.min+k*p.step);
+  const indexOf=n=>Math.max(0,Math.min(count,Math.round((n-p.min)/p.step)));
+  const format=n=>p.format==="fraction"
+    ?`${Math.round(n*p.den)}/${p.den}`
+    :String(round(n));
+  const marker=$("[data-marker]"),feedback=$("#feedback"),item=$("#item");
+  const buttons=[...document.querySelectorAll("button")];
+  let current=0,k=indexOf(p.start),busy=false;
+  $("#title").textContent=Studio.t("title");
+  $("#instr").textContent=Studio.t("instr");
+  for(const action of ["left","right","check"]){
+    $(`[data-action="${action}"]`).textContent=Studio.t(action==="right"?"right_btn":action);
+  }
+  const ticks=$("#ticks");
+  for(let i=0;i<=count;i++){
+    const tick=document.createElement("div");
+    tick.setAttribute("data-tick",String(value(i)));
+    tick.style.left=`${i/count*100}%`;
+    const stem=document.createElement("span");
+    stem.className="tickStem";
+    tick.append(stem);
+    if(i%p.labelEvery===0){
+      const label=document.createElement("span");
+      label.className="tickLabel";
+      label.textContent=format(value(i));
+      tick.append(label);
+    }
+    ticks.append(tick);
+  }
+  function draw(){
+    marker.style.left=`${k/count*100}%`;
+    marker.setAttribute("data-value",String(value(k)));
+    $('[data-action="left"]').disabled=busy||k===0;
+    $('[data-action="right"]').disabled=busy||k===count;
+    $('[data-action="check"]').disabled=busy;
+  }
+  function showItem(){
+    item.setAttribute("data-item",String(p.items[current].id));
+    $("[data-target]").textContent=format(p.items[current].target);
+    k=indexOf(p.start);
+    feedback.textContent="";
+    draw();
+  }
+  $('[data-action="left"]').addEventListener("click",()=>{
+    if(busy||k===0)return;
+    k--;feedback.textContent="";draw();Studio.event("move",{direction:"left"});
+  });
+  $('[data-action="right"]').addEventListener("click",()=>{
+    if(busy||k===count)return;
+    k++;feedback.textContent="";draw();Studio.event("move",{direction:"right"});
+  });
+  $('[data-action="check"]').addEventListener("click",()=>{
+    if(busy)return;
+    busy=true;draw();
+    Studio.answer({value:value(k)});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      feedback.textContent=Studio.t("right");
+      marker.classList.remove("hop");
+      void marker.offsetWidth;
+      marker.classList.add("hop");
+      setTimeout(()=>{
+        marker.classList.remove("hop");
+        current++;
+        if(current>=p.items.length){
+          $("#item").removeAttribute("data-item");
+          $("#finish").textContent=Studio.t("done");
+          $("#finish").style.display="flex";
+          Studio.done();
+        }else{
+          busy=false;showItem();
+        }
+      },620);
+    }else{
+      feedback.textContent=Studio.t("wrong");
+      busy=false;draw();
+    }
+  });
+  showItem();
+  Studio.ready();
+})();
+
+</script>

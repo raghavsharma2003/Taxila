@@ -1,0 +1,47 @@
+<style>
+*{box-sizing:border-box}
+#board{width:360px;height:320px;padding:10px;background:#fff8ec;color:#493b32;font-family:system-ui,sans-serif;overflow:hidden;display:flex;flex-direction:column;gap:7px}
+#heading{height:28px;display:flex;align-items:center;justify-content:center;gap:7px;color:#59473a}
+#heading svg{width:25px;height:25px;flex:none}
+#title{font-size:17px;font-weight:800;line-height:1}
+#instruction{height:33px;margin:0;text-align:center;font-size:12px;line-height:1.25;color:#806e5c;display:flex;align-items:center;justify-content:center}
+#cards{height:114px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,52px);gap:6px;align-content:center}
+.card{border:2px solid #ead8bd;border-radius:14px;background:#fffdf8;color:#57483b;font:700 14px system-ui,sans-serif;padding:4px;min-width:0;min-height:52px;box-shadow:0 3px 0 #e4d1b6;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s}
+.card:active,.bin:active{transform:scale(.96)}
+.card.selected{transform:translateY(-4px) scale(1.03);border-color:#e8a54f;box-shadow:0 7px 0 #e5cfaa,0 0 14px #f4c36b;background:#fff4d9}
+.card.shake{animation:shake .32s ease}
+#bins{height:104px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bin{min-width:0;min-height:52px;border:2px solid #c9dcca;border-radius:18px;background:#edf6ec;color:#42624b;padding:7px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;transition:transform .18s,background .18s,border-color .18s;overflow:hidden}
+.bin:nth-child(2){background:#f1eff9;border-color:#d7cfe8;color:#62577b}
+.bin-name{font:800 14px system-ui,sans-serif;line-height:1.1}
+.placed-list{display:flex;justify-content:center;align-content:flex-start;gap:4px;flex-wrap:wrap;width:100%}
+.placed{border-radius:9px;background:#fffdf8;padding:3px 6px;font-size:11px;font-weight:700;color:#584c40;box-shadow:0 2px 0 #ded5c8}
+#message{height:20px;text-align:center;font-size:13px;font-weight:800;color:#52805b;line-height:20px}
+@keyframes shake{20%{transform:translateX(-5px)}45%{transform:translateX(5px)}70%{transform:translateX(-3px)}100%{transform:translateX(0)}}
+</style>
+<main id="board">
+  <header id="heading">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3c1.5 5 5 7 10 8-4 2-6 5-6 10-2-4-5-6-10-6 4-2 6-5 6-12Z" fill="#f1ba61"/><circle cx="9" cy="24" r="4" fill="#8dbb91"/><circle cx="23" cy="25" r="3" fill="#e9987c"/></svg>
+    <span id="title"></span>
+  </header>
+  <p id="instruction"></p>
+  <section id="cards" aria-label=""></section>
+  <section id="bins"></section>
+  <div id="message" aria-live="polite"></div>
+</main>
+<script>
+
+(()=>{const p=Studio.params, cards=p.cards, bins=p.bins, cardArea=document.getElementById("cards"), binArea=document.getElementById("bins"), message=document.getElementById("message");let selected=null,pending=null,sorted=new Map(),locked=false;
+document.getElementById("title").textContent=Studio.t("title");
+document.getElementById("instruction").textContent=Studio.t("instr");
+function draw(){
+ cardArea.replaceChildren();
+ cards.filter(k=>!sorted.has(k)).forEach(k=>{const b=document.createElement("button");b.type="button";b.className="card"+(selected===k?" selected":"");b.dataset.card=k;b.dataset.selected=selected===k?"true":"false";b.textContent=Studio.t(k);b.addEventListener("click",()=>{if(locked)return;selected=selected===k?null:k;message.textContent="";draw();Studio.event("card_tap",{card:k})});cardArea.appendChild(b)});
+ binArea.replaceChildren();
+ bins.forEach(k=>{const b=document.createElement("button");b.type="button";b.className="bin";b.dataset.bin=k;const name=document.createElement("span");name.className="bin-name";name.textContent=Studio.t(k);b.appendChild(name);const list=document.createElement("span");list.className="placed-list";cards.filter(c=>sorted.get(c)===k).forEach(c=>{const chip=document.createElement("span");chip.className="placed";chip.dataset.placed=k;chip.textContent=Studio.t(c);list.appendChild(chip)});b.appendChild(list);b.addEventListener("click",()=>{if(locked||selected===null)return;pending={card:selected,bin:k};locked=true;Studio.event("bin_tap",{bin:k});Studio.answer({card:selected,bin:k})});binArea.appendChild(b)})
+}
+Studio.onVerdict(({correct})=>{if(!pending)return;const {card,bin}=pending;pending=null;locked=false;if(correct){sorted.set(card,bin);selected=null;message.textContent=Studio.t("right");draw();if(sorted.size===cards.length){message.textContent=Studio.t("done");Studio.done()}}else{selected=null;draw();const el=cardArea.querySelector("[data-card='"+CSS.escape(card)+"']");if(el)el.classList.add("shake");message.textContent=Studio.t("wrong")}});
+draw();Studio.ready()
+})();
+
+</script>

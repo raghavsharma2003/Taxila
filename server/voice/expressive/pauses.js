@@ -46,16 +46,23 @@ export async function* edgeTrim(src, { lead = false, tail = false } = {}) {
   let leading = lead;
   let held = Buffer.alloc(0); // tail hold-back
   let dropped = 0;
+  let pre = Buffer.alloc(0);
   for await (const piece of src) {
     let buf = Buffer.concat([carry, Buffer.from(piece)]);
     const even = buf.length & ~1;
     carry = buf.subarray(even);
     buf = buf.subarray(0, even);
     if (leading) {
-      const on = onsetOf(buf);
-      if (on < 0 && dropped + (buf.length >> 1) <= samplesOf(MAX_LEAD_MS)) { dropped += buf.length >> 1; continue; }
+      // the dropped audio's last KEEP_MS rides along, so the pre-roll survives any chunk boundary
+      const all = Buffer.concat([pre, buf]);
+      const on = onsetOf(all);
+      if (on < 0 && dropped + (buf.length >> 1) <= samplesOf(MAX_LEAD_MS)) {
+        dropped += buf.length >> 1;
+        pre = all.subarray(Math.max(0, all.length - samplesOf(KEEP_MS) * 2));
+        continue;
+      }
       const cut = on < 0 ? 0 : Math.max(0, on - samplesOf(KEEP_MS));
-      buf = buf.subarray(cut * 2);
+      buf = all.subarray(cut * 2);
       leading = false;
     }
     if (!tail) { if (buf.length) yield buf; continue; }

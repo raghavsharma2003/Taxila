@@ -1,0 +1,164 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden}
+  #stage{
+    width:360px;height:320px;overflow:hidden;position:relative;
+    background:linear-gradient(155deg,#fff8e8 0%,#fff2d1 100%);
+    font-family:Arial,sans-serif;color:#5a3b26;
+  }
+  #chart{display:block;width:360px;height:320px}
+  .title{font-size:20px;font-weight:800;fill:#6b4228}
+  .ask{font-size:14px;font-weight:700;fill:#8a5a35}
+  .feedback{font-size:14px;font-weight:800;fill:#b65735}
+  .done{font-size:13px;font-weight:800;fill:#4d8a57}
+  .axis-title{font-size:12px;font-weight:800;fill:#9a704f;letter-spacing:.4px}
+  .tick{font-size:11px;font-weight:700;fill:#98755a}
+  .name{font-size:11px;font-weight:800;fill:#724b30}
+  .grid{stroke:#e9d7b8;stroke-width:1}
+  .baseline{stroke:#b9875c;stroke-width:2}
+  .axis{stroke:#c59970;stroke-width:1.5}
+  .bar{
+    fill:#ee8e4f;
+    stroke:#d9733e;
+    stroke-width:1.2;
+    transform-box:fill-box;
+    transform-origin:center bottom;
+    transform:scaleY(0);
+  }
+  .bar.grow{animation:rise .68s cubic-bezier(.19,.85,.32,1.12) forwards}
+  .column{cursor:pointer}
+  .column:active .bar{filter:brightness(1.08)}
+  .column.tap .bar{animation:tap .28s ease-out}
+  .column.locked{pointer-events:none}
+  .bubble{fill:#fffdf7;stroke:#f0d5ae;stroke-width:1.2}
+  @keyframes rise{to{transform:scaleY(1)}}
+  @keyframes tap{
+    0%{transform:scaleY(1)}
+    45%{transform:scale(1.06,1.025)}
+    100%{transform:scaleY(1)}
+  }
+  .wrong{animation:wiggle .34s ease-in-out}
+  @keyframes wiggle{
+    0%,100%{transform:translateX(0)}
+    25%{transform:translateX(-4px)}
+    75%{transform:translateX(4px)}
+  }
+</style>
+<div id="stage">
+  <svg id="chart" viewBox="0 0 360 320" aria-live="polite">
+    <rect class="bubble" x="8" y="5" width="344" height="46" rx="18"></rect>
+    <text id="title" class="title" x="180" y="24" text-anchor="middle"></text>
+    <text id="ask" class="ask" x="180" y="43" text-anchor="middle"></text>
+    <text id="feedback" class="feedback" x="180" y="66" text-anchor="middle"></text>
+    <text id="done" class="done" x="180" y="66" text-anchor="middle"></text>
+    <g id="chartParts"></g>
+  </svg>
+</div>
+<script>
+
+(function(){
+  var svg=document.getElementById('chart');
+  var parts=document.getElementById('chartParts');
+  var ns='http://www.w3.org/2000/svg';
+  var data=Studio.params.data;
+  var title=document.getElementById('title');
+  var ask=document.getElementById('ask');
+  var feedback=document.getElementById('feedback');
+  var done=document.getElementById('done');
+  var locked=false;
+  var completed=false;
+
+  title.textContent=Studio.t('title');
+  ask.textContent=Studio.t('ask');
+
+  var max=0;
+  for(var i=0;i<data.length;i++){if(data[i].value>max)max=data[i].value;}
+  var raw=max/4;
+  var power=Math.pow(10,Math.floor(Math.log(raw||1)/Math.LN10));
+  var unit=raw/power;
+  var nice=unit<=1?1:(unit<=2?2:(unit<=5?5:10));
+  var step=nice*power;
+  var topValue=Math.ceil(max/step)*step;
+  if(topValue===0){topValue=step;}
+
+  var left=55, right=355, plotTop=76, base=258, plotHeight=base-plotTop;
+  var columnWidth=(right-left)/data.length;
+
+  function make(tag,attrs,parent){
+    var el=document.createElementNS(ns,tag);
+    for(var k in attrs){el.setAttribute(k,attrs[k]);}
+    (parent||parts).appendChild(el);
+    return el;
+  }
+
+  make('line',{x1:left,y1:plotTop,x2:left,y2:base,'class':'axis'});
+  for(var tick=0;tick<=topValue;tick+=step){
+    var y=base-(tick/topValue)*plotHeight;
+    make('line',{x1:left,y1:y,x2:right,y2:y,'class':tick===0?'baseline':'grid'});
+    var tl=make('text',{x:43,y:y,'text-anchor':'end','dominant-baseline':'middle','class':'tick','data-tick':tick});
+    tl.textContent=tick;
+  }
+
+  var at=make('text',{x:15,y:(plotTop+base)/2,'text-anchor':'middle','class':'axis-title',transform:'rotate(-90 15 '+((plotTop+base)/2)+')'});
+  at.textContent=Studio.t('yaxis');
+
+  for(var j=0;j<data.length;j++){
+    (function(d,index){
+      var x=left+index*columnWidth;
+      var center=x+columnWidth/2;
+      var barWidth=34;
+      var barX=center-barWidth/2;
+      var height=(d.value/topValue)*plotHeight;
+      var barY=base-height;
+      var g=make('g',{'class':'column','data-column':d.key});
+      var bar=make('rect',{
+        x:barX,y:barY,width:barWidth,height:height,rx:7,ry:7,
+        'class':'bar','data-bar':d.key,'data-value':d.value
+      },g);
+      var label=make('text',{
+        x:center,y:282,'text-anchor':'middle','dominant-baseline':'middle','class':'name'
+      },g);
+      label.textContent=Studio.t(d.key);
+      var hit=make('rect',{
+        x:x,y:70,width:columnWidth,height:245,fill:'transparent',
+        'data-column':d.key,role:'button','aria-label':Studio.t(d.key)
+      },g);
+
+      function choose(){
+        if(locked||completed){return;}
+        locked=true;
+        g.setAttribute('class','column tap');
+        Studio.event('tap',{key:d.key});
+        Studio.answer(d.key);
+      }
+      hit.addEventListener('click',choose);
+      hit.addEventListener('touchend',function(e){e.preventDefault();choose();},{passive:false});
+      requestAnimationFrame(function(){bar.setAttribute('class','bar grow');});
+    })(data[j],j);
+  }
+
+  Studio.onVerdict(function(result){
+    if(completed){return;}
+    if(result.correct){
+      completed=true;
+      feedback.textContent=Studio.t('right');
+      feedback.setAttribute('fill','#4d8a57');
+      done.textContent=Studio.t('done');
+      for(var q=0;q<document.querySelectorAll('.column').length;q++){
+        document.querySelectorAll('.column')[q].setAttribute('class','column locked');
+      }
+      Studio.done();
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      feedback.setAttribute('class','feedback wrong');
+      setTimeout(function(){
+        feedback.setAttribute('class','feedback');
+        locked=false;
+      },380);
+    }
+  });
+
+  Studio.ready();
+})();
+
+</script>

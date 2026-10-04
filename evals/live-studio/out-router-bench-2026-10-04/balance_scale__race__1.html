@@ -1,0 +1,141 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff6e8;font-family:system-ui,sans-serif;color:#513d36}
+  #activity{width:360px;height:320px;padding:8px 16px;text-align:center;overflow:hidden}
+  h1{height:26px;margin:0;font-size:21px;line-height:26px;color:#784e43}
+  #instruction{height:22px;margin:0;font-size:14px;line-height:22px}
+  svg{display:block;width:328px;height:174px;overflow:hidden}
+  .stand{fill:#ddad83}
+  .beam{stroke:#b76e54;stroke-width:12;stroke-linecap:round}
+  .cord{stroke:#aa7962;stroke-width:3}
+  .tray{fill:#efc18f;stroke:#ae765e;stroke-width:2}
+  .weight rect{fill:#75a9a0;stroke:#53867e;stroke-width:2}
+  .weight text{fill:white;font-size:17px;font-weight:800;text-anchor:middle;dominant-baseline:middle}
+  [data-beam],[data-pan]{transform-box:view-box;transition:transform .65s cubic-bezier(.22,1.25,.35,1)}
+  [data-beam]{transform-origin:180px 99px}
+  #choices{display:flex;justify-content:center;align-items:center;gap:17px;height:58px}
+  button{width:66px;height:54px;border:3px solid #53867e;border-radius:15px;background:#75a9a0;color:white;font:800 22px system-ui,sans-serif;box-shadow:0 4px 0 #48776f;cursor:pointer;transition:transform .2s,opacity .2s}
+  button:active{transform:translateY(3px) scale(.94);box-shadow:0 1px 0 #48776f}
+  button:disabled{cursor:default}
+  #message{height:24px;margin:0;font-size:17px;line-height:24px;font-weight:700;color:#8a604e}
+  .celebrate #message{animation:pop .6s ease}
+  @keyframes pop{50%{transform:scale(1.15);color:#4d9680}}
+</style>
+<div id="activity">
+  <h1 id="title"></h1>
+  <p id="instruction"></p>
+  <svg viewBox="0 0 328 200" aria-hidden="true">
+    <path class="stand" d="M159 175h42l-12-9V99h-18v67z"/>
+    <circle class="stand" cx="180" cy="99" r="12"/>
+    <line data-beam data-tilt="level" class="beam" x1="95" y1="99" x2="265" y2="99"/>
+    <g data-pan="left" data-total="0"></g>
+    <g data-pan="right" data-total="0"></g>
+  </svg>
+  <div id="choices"></div>
+  <div id="message" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const items=Studio.params.items;
+  const root=document.getElementById('activity');
+  const beam=document.querySelector('[data-beam]');
+  const pans={left:document.querySelector('[data-pan="left"]'),right:document.querySelector('[data-pan="right"]')};
+  const choices=document.getElementById('choices');
+  const message=document.getElementById('message');
+  const ns='http://www.w3.org/2000/svg';
+  let index=0,added=null,busy=false,finished=false;
+
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+
+  function svg(tag,attrs,parent){
+    const el=document.createElementNS(ns,tag);
+    for(const [key,value] of Object.entries(attrs))el.setAttribute(key,value);
+    parent.appendChild(el);
+    return el;
+  }
+  function sum(weights){return weights.reduce((total,value)=>total+Number(value),0)}
+  function drawPan(side,weights,x,y){
+    const pan=pans[side];
+    pan.replaceChildren();
+    pan.setAttribute('data-total',sum(weights));
+    pan.style.transform=`translate(${x}px,${y}px)`;
+    svg('line',{class:'cord',x1:0,y1:0,x2:0,y2:42},pan);
+    svg('path',{class:'tray',d:'M-62 42 Q0 62 62 42 L56 57 Q0 76 -56 57 Z'},pan);
+    const width=Math.min(38,116/Math.max(weights.length,1));
+    weights.forEach((value,i)=>{
+      const left=-weights.length*width/2+i*width+2;
+      const group=svg('g',{'data-weight':value,class:'weight'},pan);
+      svg('rect',{x:left,y:8,width:width-4,height:36,rx:8},group);
+      svg('text',{x:left+(width-4)/2,y:27},group).textContent=value;
+    });
+  }
+  function render(){
+    const item=items[index];
+    const right=added===null?item.right:[...item.right,added];
+    const difference=sum(item.left)-sum(right);
+    const tilt=difference>0?'left':difference<0?'right':'level';
+    const angle=tilt==='left'?-10:tilt==='right'?10:0;
+    beam.setAttribute('data-tilt',tilt);
+    beam.style.transform=`rotate(${angle}deg)`;
+    const radians=angle*Math.PI/180;
+    for(const [side,offset] of [['left',-85],['right',85]]){
+      drawPan(side,side==='left'?item.left:right,180+offset*Math.cos(radians),99+offset*Math.sin(radians));
+    }
+  }
+  function showItem(){
+    added=null;
+    busy=false;
+    message.textContent='';
+    root.classList.remove('celebrate');
+    choices.replaceChildren();
+    for(const value of items[index].options){
+      const button=document.createElement('button');
+      button.type='button';
+      button.setAttribute('data-option',value);
+      button.textContent=value;
+      button.addEventListener('click',()=>{
+        if(busy)return;
+        busy=true;
+        added=value;
+        button.style.visibility='hidden';
+        render();
+        Studio.event('choose',{value});
+        Studio.answer({value});
+      });
+      choices.appendChild(button);
+    }
+    render();
+  }
+  Studio.onVerdict(({correct})=>{
+    if(finished||!busy)return;
+    message.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      root.classList.add('celebrate');
+      setTimeout(()=>{
+        if(index+1<items.length){
+          index++;
+          showItem();
+        }else{
+          finished=true;
+          choices.replaceChildren();
+          message.textContent=Studio.t('done');
+          Studio.done();
+        }
+      },1050);
+    }else{
+      setTimeout(()=>{
+        added=null;
+        busy=false;
+        render();
+        choices.querySelectorAll('button').forEach(button=>button.style.visibility='visible');
+        message.textContent='';
+      },950);
+    }
+  });
+  showItem();
+  Studio.ready();
+})();
+
+</script>

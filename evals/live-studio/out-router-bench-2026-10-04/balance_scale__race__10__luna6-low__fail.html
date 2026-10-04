@@ -1,0 +1,114 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8eb;color:#493b32}
+#app{width:360px;height:320px;padding:10px 14px;display:flex;flex-direction:column;align-items:center;gap:4px}
+#title{height:30px;line-height:30px;font-size:19px;font-weight:800;color:#795139}
+#instruction{height:25px;line-height:25px;font-size:14px;color:#786453}
+#scene{width:332px;height:165px;overflow:visible}
+#rig{transform-origin:180px 76px;transition:transform .72s cubic-bezier(.2,.8,.25,1)}
+.beam{stroke:#a76538;stroke-width:10;stroke-linecap:round}
+.rope{stroke:#bf895f;stroke-width:4;stroke-linecap:round}
+.bowl{fill:#f3ca8a;stroke:#a76538;stroke-width:3}
+.pivot{fill:#db9a52;stroke:#a76538;stroke-width:3}
+.panweight{fill:#77b8aa;stroke:#397b70;stroke-width:2}
+.weightnum{font-size:14px;font-weight:800;fill:#fff;text-anchor:middle;dominant-baseline:middle}
+.panweight{animation:pop .3s ease-out}
+@keyframes pop{from{opacity:.35;transform:scale(.75)}to{opacity:1;transform:scale(1)}}
+#feedback{height:25px;line-height:25px;font-size:15px;font-weight:750;color:#6d8f68;text-align:center}
+#options{display:flex;justify-content:center;gap:12px;width:100%;height:64px}
+.option{min-width:68px;height:60px;border:2px solid #d49c65;border-radius:18px;background:#ffe4b8;color:#704c30;font:800 20px system-ui;box-shadow:0 4px 0 #d4a16d;cursor:pointer;transition:transform .16s,background .2s,box-shadow .16s}
+.option:active{transform:scale(.92);box-shadow:0 1px 0 #d4a16d}
+.option:disabled{opacity:.65;cursor:default}
+#app.celebrate #scene{animation:bloom .55s ease-in-out 2}
+@keyframes bloom{50%{transform:scale(1.04)}}
+</style>
+<div id="app">
+  <div id="title"></div>
+  <div id="instruction"></div>
+  <svg id="scene" viewBox="0 0 360 170" role="img" aria-label="">
+    <g id="rig">
+      <line class="beam" x1="55" y1="76" x2="305" y2="76"></line>
+      <line class="rope" x1="82" y1="78" x2="82" y2="119"></line>
+      <line class="rope" x1="278" y1="78" x2="278" y2="119"></line>
+      <g data-pan="left" data-total="0">
+        <path class="bowl" d="M43 120 Q82 153 121 120 Z"></path>
+        <g class="weights"></g>
+      </g>
+      <g data-pan="right" data-total="0">
+        <path class="bowl" d="M239 120 Q278 153 317 120 Z"></path>
+        <g class="weights"></g>
+      </g>
+      <path class="pivot" d="M180 80 L151 148 Q180 160 209 148 Z"></path>
+      <circle class="pivot" cx="180" cy="76" r="9"></circle>
+    </g>
+    <line data-beam data-tilt="level" x1="55" y1="76" x2="305" y2="76" visibility="hidden"></line>
+  </svg>
+  <div id="feedback"></div>
+  <div id="options"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, t=key=>Studio.t(key);
+  const app=document.getElementById("app"), rig=document.getElementById("rig");
+  const beam=document.querySelector("[data-beam]"), left=document.querySelector('[data-pan="left"]'), right=document.querySelector('[data-pan="right"]');
+  const title=document.getElementById("title"), instruction=document.getElementById("instruction"), feedback=document.getElementById("feedback"), options=document.getElementById("options");
+  title.textContent=t("title"); instruction.textContent=t("instr");
+  let index=0,locked=false;
+  const ns="http://www.w3.org/2000/svg";
+  function makeWeight(value,x,y){
+    const g=document.createElementNS(ns,"g");g.setAttribute("data-weight",String(value));g.setAttribute("class","panweight");
+    const c=document.createElementNS(ns,"circle");c.setAttribute("cx",x);c.setAttribute("cy",y);c.setAttribute("r","14");
+    const tx=document.createElementNS(ns,"text");tx.setAttribute("x",x);tx.setAttribute("y",y);tx.setAttribute("class","weightnum");tx.textContent=value;
+    g.append(c,tx);return g;
+  }
+  function drawPan(pan,values,x){
+    pan.querySelector(".weights").replaceChildren();
+    const total=values.reduce((a,b)=>a+b,0);pan.setAttribute("data-total",String(total));
+    values.forEach((v,i)=>pan.querySelector(".weights").appendChild(makeWeight(v,x,112-i*27)));
+  }
+  function render(){
+    locked=false;feedback.textContent="";options.replaceChildren();
+    const item=p.items[index], L=item.left.slice(), R=item.right.slice();
+    drawPan(left,L,82);drawPan(right,R,278);
+    const lt=L.reduce((a,b)=>a+b,0),rt=R.reduce((a,b)=>a+b,0);
+    const tilt=lt>rt?"left":rt>lt?"right":"level";
+    beam.setAttribute("data-tilt",tilt);
+    rig.style.transform=`rotate(${tilt==="left"?7:tilt==="right"?-7:0}deg)`;
+    item.options.forEach(value=>{
+      const b=document.createElement("button");b.type="button";b.className="option";b.setAttribute("data-option",String(value));b.textContent=value;
+      b.addEventListener("click",()=>{
+        if(locked)return;locked=true;
+        b.disabled=true;R.push(value);drawPan(right,R,278);
+        const nextL=L.reduce((a,n)=>a+n,0),nextR=R.reduce((a,n)=>a+n,0);
+        const nextTilt=nextL>nextR?"left":nextR>nextL?"right":"level";
+        beam.setAttribute("data-tilt",nextTilt);
+        rig.style.transform=`rotate(${nextTilt==="left"?7:nextTilt==="right"?-7:0}deg)`;
+        Studio.event("choose",{value});
+        Studio.answer({value});
+      });
+      options.appendChild(b);
+    });
+  }
+  render();
+  Studio.ready();
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      feedback.textContent=t("right");
+      beam.setAttribute("data-tilt","level");rig.style.transform="rotate(0deg)";
+      app.classList.add("celebrate");
+      setTimeout(()=>{
+        app.classList.remove("celebrate");
+        index++;
+        if(index>=p.items.length){options.replaceChildren();feedback.textContent=t("done");Studio.done();return}
+        render();
+      },1100);
+    }else{
+      feedback.textContent=t("wrong");
+      setTimeout(()=>{render()},900);
+    }
+  });
+})();
+
+</script>

@@ -1,0 +1,85 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8ed;color:#503b30}
+#app{width:360px;height:320px;padding:12px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+header{height:44px;display:flex;align-items:center;gap:9px}
+h1{font-size:19px;line-height:1.1;margin:0;color:#624334}
+.mark{width:38px;height:38px;flex:none}
+#instr{font-size:13px;line-height:1.25;margin:0;height:31px;color:#765d4b}
+#track{height:66px;display:flex;align-items:center;justify-content:center;gap:8px}
+.slot{height:56px;width:72px;position:relative;border:2px dashed #e8c9a5;border-radius:15px;background:#fffdf8;display:flex;align-items:center;justify-content:center;transition:background .25s,border-color .25s,transform .25s}
+.slot-num{position:absolute;left:5px;top:4px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:#f7e4c8;color:#805d3a;font-size:12px;font-weight:800}
+.slot-word{font-size:12px;font-weight:750;text-align:center;padding:15px 4px 2px}
+.slot.filled{background:#e7f2df;border:2px solid #a9c98e;transform:scale(1.03)}
+#cards{display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr);gap:8px;flex:1;min-height:0}
+.card{border:0;border-radius:15px;background:#f2d9b7;color:#503b30;box-shadow:0 4px 0 #dbb98f;min-width:0;min-height:52px;padding:6px 10px;font:750 15px system-ui,sans-serif;cursor:pointer;transition:transform .12s,background .2s,box-shadow .12s}
+.card:active{transform:scale(.95);box-shadow:0 1px 0 #dbb98f}
+.card:disabled{cursor:default;opacity:.85}
+.card.shake{animation:shake .34s ease-in-out;background:#f3d0c5}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+#feedback{height:26px;text-align:center;font-size:14px;font-weight:750;color:#668b50}
+#feedback.bad{color:#b46b58}
+</style>
+<div id="app">
+  <header>
+    <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+      <rect x="3" y="5" width="34" height="30" rx="12" fill="#f6dfbd"/>
+      <path d="M13 26c-3-6 1-12 7-13 1 6-2 11-7 13Zm4 1c1-7 6-10 11-9-1 6-5 10-11 9Z" fill="#86a96c"/>
+      <path d="M15 27c3-4 6-7 10-9" fill="none" stroke="#fff8ed" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <h1 id="title"></h1>
+  </header>
+  <p id="instr"></p>
+  <div id="track" aria-label=""></div>
+  <div id="cards"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, shown=p.shown, keys=["boil","pour","leaves","sugar"];
+  const t=Studio.t;
+  document.getElementById("title").textContent=t("title");
+  document.getElementById("instr").textContent=t("instr");
+  const track=document.getElementById("track"), cards=document.getElementById("cards"), feedback=document.getElementById("feedback");
+  const slots=[];
+  for(let i=0;i<shown.length;i++){
+    const s=document.createElement("div");s.className="slot";
+    const n=document.createElement("span");n.className="slot-num";n.textContent=String(i+1);
+    const w=document.createElement("span");w.className="slot-word";
+    s.append(n,w);track.append(s);slots.push({el:s,word:w});
+  }
+  let pos=0,pending=null,waiting=false,finished=false;
+  shown.forEach(key=>{
+    const b=document.createElement("button");b.type="button";b.className="card";b.dataset.step=key;b.textContent=t(key);
+    b.addEventListener("click",()=>{
+      if(waiting||finished||b.disabled)return;
+      waiting=true;pending={key,button:b};feedback.textContent="";
+      Studio.event("tap",{key});
+      Studio.answer({key});
+    });
+    cards.append(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    const {key,button}=pending;pending=null;waiting=false;
+    if(correct){
+      button.dataset.placed=String(pos+1);
+      button.disabled=true;
+      slots[pos].word.textContent=t(key);
+      slots[pos].el.classList.add("filled");
+      feedback.classList.remove("bad");feedback.textContent=t("right");
+      pos++;
+      if(pos===shown.length){
+        finished=true;feedback.textContent=t("done");Studio.done();
+      }
+    }else{
+      button.classList.remove("shake");void button.offsetWidth;button.classList.add("shake");
+      feedback.classList.add("bad");feedback.textContent=t("wrong");
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

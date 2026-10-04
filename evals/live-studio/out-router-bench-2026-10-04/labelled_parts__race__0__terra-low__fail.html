@@ -1,0 +1,106 @@
+<style>
+*{box-sizing:border-box}
+#app{width:360px;height:320px;overflow:hidden;position:relative;font-family:Arial,sans-serif;color:#624535;background:linear-gradient(180deg,#fff5d8 0%,#fffdf7 54%,#e9f5d6 100%)}
+#top{height:46px;display:flex;align-items:center;justify-content:center;background:#f5c66a;border-bottom:3px solid #dfaa4b;border-radius:0 0 20px 20px;font-size:21px;font-weight:800;color:#70452c}
+#question{height:42px;display:flex;align-items:center;justify-content:center;padding:0 10px;text-align:center;font-size:16px;font-weight:800;color:#654b3b}
+#scene{height:201px;position:relative}
+#plant{display:block;width:360px;height:201px;overflow:visible}
+.part{cursor:pointer;outline:none;transform-box:fill-box;transform-origin:center;transition:transform .16s ease,filter .2s ease,opacity .2s ease}
+.part:hover{filter:brightness(1.07)}
+.part:active{transform:scale(.94);filter:brightness(.93)}
+.part.waiting{opacity:.68}
+.part.chosen{animation:glow .72s ease-in-out infinite alternate}
+.leader{stroke:#a97857;stroke-width:2;stroke-linecap:round}
+.label{fill:#694938;font-size:13px;font-weight:800;paint-order:stroke;stroke:#fffbed;stroke-width:4px;stroke-linejoin:round;pointer-events:none}
+.spark{fill:#fff0a3;animation:float 2.1s ease-in-out infinite alternate}
+#feedback{height:31px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;opacity:0;transform:translateY(5px);transition:opacity .2s ease,transform .2s ease}
+#feedback.show{opacity:1;transform:translateY(0)}
+#feedback.good{color:#628632}
+#feedback.bad{color:#b75b48}
+@keyframes glow{from{filter:drop-shadow(0 0 4px #ffe06f)}to{filter:drop-shadow(0 0 10px #f5aa43) drop-shadow(0 0 17px #fff4ad)}}
+@keyframes float{to{transform:translateY(-5px)}}
+</style>
+<div id="app">
+  <div id="top"></div>
+  <div id="question" data-ask=""></div>
+  <div id="scene">
+    <svg id="plant" viewBox="0 0 360 201" aria-hidden="true">
+      <circle class="spark" cx="43" cy="37" r="3"></circle>
+      <circle class="spark" cx="314" cy="42" r="4" style="animation-delay:.5s"></circle>
+      <circle class="spark" cx="291" cy="105" r="2.5" style="animation-delay:1.1s"></circle>
+    </svg>
+  </div>
+  <div id="feedback"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, svg=document.getElementById('plant'), ns='http://www.w3.org/2000/svg';
+  var feedback=document.getElementById('feedback'), pending=false, finished=false, selected=null;
+  document.getElementById('top').textContent=Studio.t('title');
+  var question=document.getElementById('question');
+  question.setAttribute('data-ask',p.ask);
+  question.textContent=Studio.t('ask')+' '+Studio.t(p.ask);
+
+  function make(tag,a){
+    var e=document.createElementNS(ns,tag);
+    for(var k in a)e.setAttribute(k,a[k]);
+    return e;
+  }
+  function label(key,x1,y1,x2,y2,x,y){
+    svg.appendChild(make('line',{class:'leader',x1:x1,y1:y1,x2:x2,y2:y2}));
+    var t=make('text',{class:'label','data-label':key,x:x,y:y});
+    t.textContent=Studio.t(key);
+    svg.appendChild(t);
+  }
+  var shapes={
+    petal:{tag:'ellipse',a:{cx:160,cy:39,rx:70,ry:29,fill:'#ed8193',transform:'rotate(-5 160 39)'},l:[100,31,73,25,28,29]},
+    centre:{tag:'circle',a:{cx:160,cy:55,r:29,fill:'#f3b94f'},l:[188,53,198,51,202,55]},
+    stem:{tag:'rect',a:{x:133,y:78,width:58,height:91,rx:27,fill:'#70aa58'},l:[133,124,120,124,76,128]},
+    leaf:{tag:'path',a:{d:'M181 124 C206 84 274 89 292 105 C268 145 213 153 181 135 Z',fill:'#66aa60'},l:[250,120,279,120,283,124]},
+    root:{tag:'path',a:{d:'M160 157 C151 168 133 178 112 197 L138 197 L151 187 L150 211 L163 191 L178 211 L176 187 L194 197 L218 197 C192 177 172 168 165 157 Z',fill:'#c98e5c'},l:[137,188,111,188,61,192]}
+  };
+  function bind(el,key,index){
+    function choose(){
+      if(pending||finished)return;
+      pending=true;selected=el;el.classList.add('waiting');
+      feedback.className='';feedback.textContent='';
+      Studio.event('tap',{part:index});
+      Studio.answer(key);
+    }
+    el.addEventListener('click',choose);
+    el.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();choose();}});
+  }
+  for(var i=0;i<p.parts.length;i++){
+    var key=p.parts[i], d=shapes[key];
+    if(!d)continue;
+    var el=make(d.tag,d.a);
+    el.setAttribute('class','part');
+    el.setAttribute('data-part',key);
+    el.setAttribute('tabindex','0');
+    el.setAttribute('role','button');
+    svg.appendChild(el);
+    bind(el,key,i);
+    label(key,d.l[0],d.l[1],d.l[2],d.l[3],d.l[4],d.l[5]);
+  }
+  Studio.onVerdict(function(v){
+    if(finished)return;
+    if(v.correct){
+      finished=true;
+      if(selected){selected.classList.remove('waiting');selected.classList.add('chosen')}
+      feedback.textContent=Studio.t('right')+' '+Studio.t('done');
+      feedback.className='show good';
+      Studio.event('result',{correct:1});
+      Studio.done();
+    }else{
+      if(selected)selected.classList.remove('waiting');
+      pending=false;
+      feedback.textContent=Studio.t('wrong');
+      feedback.className='show bad';
+      Studio.event('result',{correct:0});
+    }
+  });
+  Studio.ready();
+}());
+
+</script>

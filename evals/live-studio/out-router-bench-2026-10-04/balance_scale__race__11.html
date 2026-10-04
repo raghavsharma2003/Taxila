@@ -1,0 +1,132 @@
+<style>
+  *{box-sizing:border-box}
+  #balance-activity{width:360px;height:320px;overflow:hidden;position:relative;background:#fff6e9;color:#624635;font-family:system-ui,sans-serif;text-align:center}
+  #balance-activity .title{position:absolute;top:10px;width:100%;font-size:20px;font-weight:800}
+  #balance-activity .instr{position:absolute;top:39px;width:100%;font-size:13px}
+  #balance-activity .scene{position:absolute;top:63px;left:0;width:360px;height:163px}
+  #balance-activity .stand{position:absolute;left:173px;top:67px;width:14px;height:92px;background:#d39a6a;border-radius:8px}
+  #balance-activity .base{position:absolute;left:135px;bottom:0;width:90px;height:12px;background:#b97c55;border-radius:12px}
+  #balance-activity .assembly{position:absolute;left:180px;top:65px;width:0;height:0;transition:transform .65s cubic-bezier(.2,1.5,.45,1)}
+  #balance-activity .beam{position:absolute;left:-100px;top:-5px;width:200px;height:10px;background:#a97050;border-radius:10px;box-shadow:0 3px 0 #86583f}
+  #balance-activity .pan{position:absolute;top:0;width:90px;height:106px}
+  #balance-activity .pan.left{left:-145px}
+  #balance-activity .pan.right{left:55px}
+  #balance-activity .cord{position:absolute;top:3px;left:44px;width:2px;height:53px;background:#b78865}
+  #balance-activity .tray{position:absolute;top:52px;width:90px;height:13px;background:#dfa86e;border-radius:3px 3px 45px 45px;box-shadow:0 4px 0 #bd8055}
+  #balance-activity .weights{position:absolute;top:11px;left:1px;width:88px;height:42px;display:flex;align-items:end;justify-content:center;gap:2px}
+  #balance-activity .weight,#balance-activity .option{display:flex;align-items:center;justify-content:center;background:#f4bd69;border:2px solid #b87546;color:#593b2c;font-weight:800;box-shadow:0 3px 0 #a86c44}
+  #balance-activity .weight{width:27px;height:36px;flex:none;border-radius:9px 9px 7px 7px;font-size:15px}
+  #balance-activity .pivot{position:absolute;left:170px;top:57px;width:20px;height:20px;border-radius:50%;background:#724f42;border:4px solid #efca91}
+  #balance-activity .choices{position:absolute;top:235px;width:100%;display:flex;justify-content:center;gap:18px}
+  #balance-activity .option{width:64px;height:58px;border-radius:17px;font-size:24px;cursor:pointer;transition:transform .2s,opacity .2s}
+  #balance-activity .option:active{transform:scale(.88)}
+  #balance-activity .option:disabled{cursor:default;opacity:.5}
+  #balance-activity .message{position:absolute;top:207px;width:100%;height:27px;font-weight:800;color:#866044}
+  #balance-activity .celebrate{animation:pop .45s ease}
+  @keyframes pop{50%{transform:scale(1.08)}}
+</style>
+<div id="balance-activity">
+  <div class="title"></div><div class="instr"></div>
+  <div class="scene">
+    <div class="stand"></div><div class="base"></div>
+    <div class="assembly">
+      <div class="beam" data-beam data-tilt="level"></div>
+      <div class="pan left" data-pan="left" data-total="0"><div class="cord"></div><div class="weights"></div><div class="tray"></div></div>
+      <div class="pan right" data-pan="right" data-total="0"><div class="cord"></div><div class="weights"></div><div class="tray"></div></div>
+    </div>
+    <div class="pivot"></div>
+  </div>
+  <div class="message"></div><div class="choices"></div>
+</div>
+<script>
+
+(() => {
+  const root=document.getElementById('balance-activity');
+  const items=Studio.params.items;
+  const beam=root.querySelector('[data-beam]');
+  const assembly=root.querySelector('.assembly');
+  const left=root.querySelector('[data-pan="left"]');
+  const right=root.querySelector('[data-pan="right"]');
+  const choices=root.querySelector('.choices');
+  const message=root.querySelector('.message');
+  root.querySelector('.title').textContent=Studio.t('title');
+  root.querySelector('.instr').textContent=Studio.t('instr');
+  let index=0,busy=false;
+  const sum=values=>values.reduce((total,value)=>total+Number(value),0);
+  function drawPan(pan,values){
+    pan.dataset.total=String(sum(values));
+    const holder=pan.querySelector('.weights');
+    holder.replaceChildren();
+    values.forEach(value=>{
+      const weight=document.createElement('div');
+      weight.className='weight';
+      weight.dataset.weight=String(value);
+      weight.textContent=String(value);
+      holder.append(weight);
+    });
+  }
+  function tilt(){
+    const difference=Number(right.dataset.total)-Number(left.dataset.total);
+    beam.dataset.tilt=difference>0?'right':difference<0?'left':'level';
+    assembly.style.transform=`rotate(${difference>0?10:difference<0?-10:0}deg)`;
+  }
+  function render(){
+    const item=items[index];
+    busy=false;
+    message.textContent='';
+    drawPan(left,item.left);
+    drawPan(right,item.right);
+    choices.replaceChildren();
+    item.options.forEach(value=>{
+      const button=document.createElement('button');
+      button.type='button';
+      button.className='option';
+      button.dataset.option=String(value);
+      button.textContent=String(value);
+      button.addEventListener('click',()=>{
+        if(busy)return;
+        busy=true;
+        button.style.visibility='hidden';
+        choices.querySelectorAll('button').forEach(choice=>choice.disabled=true);
+        drawPan(right,[...item.right,value]);
+        tilt();
+        Studio.answer({value});
+      });
+      choices.append(button);
+    });
+    tilt();
+  }
+  Studio.onVerdict(({correct})=>{
+    if(!busy)return;
+    message.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      root.classList.remove('celebrate');
+      void root.offsetWidth;
+      root.classList.add('celebrate');
+      setTimeout(()=>{
+        index++;
+        if(index<items.length)render();
+        else{
+          choices.replaceChildren();
+          message.textContent=Studio.t('done');
+          Studio.done();
+        }
+      },1050);
+    }else{
+      setTimeout(()=>{
+        drawPan(right,items[index].right);
+        tilt();
+        choices.querySelectorAll('button').forEach(button=>{
+          button.disabled=false;
+          button.style.visibility='';
+        });
+        busy=false;
+        setTimeout(()=>{if(!busy)message.textContent='';},850);
+      },850);
+    }
+  });
+  if(items.length){render();Studio.ready();}
+  else{message.textContent=Studio.t('done');Studio.ready();Studio.done();}
+})();
+
+</script>

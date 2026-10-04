@@ -1,0 +1,103 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8ed;color:#493b31}
+.screen{width:360px;height:320px;padding:10px 8px 8px;overflow:hidden}
+h1{margin:0;text-align:center;font-size:19px;line-height:25px;font-weight:800;color:#76503a}
+.ask{height:38px;margin:2px 0 0;text-align:center;font-size:15px;line-height:19px;font-weight:650;color:#594b40}
+svg{display:block;width:344px;height:205px;overflow:hidden}
+.grid{stroke:#eadfce;stroke-width:1}
+.axis{stroke:#9b826d;stroke-width:1.5}
+.tick-label{font-size:10px;fill:#6b5a4e;text-anchor:end;dominant-baseline:middle}
+.axis-title{font-size:11px;font-weight:700;fill:#76503a;text-anchor:middle}
+.bar{fill:#e8a34f;rx:5;transform-box:fill-box;transform-origin:center bottom;animation:grow .8s cubic-bezier(.2,.75,.25,1) both}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.bar-column{cursor:pointer;fill:transparent;pointer-events:all}
+.bar-column:active{fill:#f3d9b8}
+.bar-column:focus-visible{outline:none;stroke:#76503a;stroke-width:2}
+.bar-name{font-size:10px;font-weight:700;fill:#594b40;text-anchor:middle;dominant-baseline:hanging;pointer-events:none}
+.feedback{height:22px;margin:0;text-align:center;font-size:14px;line-height:22px;font-weight:750;color:#76503a}
+</style>
+<div class="screen">
+  <h1 id="title"></h1>
+  <div class="ask" id="ask"></div>
+  <svg id="chart" viewBox="0 0 344 210" role="img" aria-label="">
+    <g id="gridlines"></g>
+    <g id="ticks"></g>
+    <line class="axis" x1="42" y1="12" x2="42" y2="154"></line>
+    <line class="axis" x1="42" y1="154" x2="340" y2="154"></line>
+    <text id="axisTitle" class="axis-title" transform="translate(10 83) rotate(-90)"></text>
+    <g id="columns"></g>
+  </svg>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const data=Studio.params.data;
+  const t=Studio.t;
+  document.getElementById("title").textContent=t("title");
+  document.getElementById("ask").textContent=t("ask");
+  document.getElementById("axisTitle").textContent=t("yaxis");
+  const svgNS="http://www.w3.org/2000/svg";
+  const top=12,base=154,left=42,right=340,plotH=base-top;
+  const max=Math.max(...data.map(d=>d.value));
+  const raw=max/4;
+  const power=Math.pow(10,Math.floor(Math.log10(raw||1)));
+  const scaled=raw/power;
+  const step=(scaled<=1?1:scaled<=2?2:scaled<=5?5:10)*power;
+  const ceiling=Math.ceil(max/step)*step;
+  const grid=document.getElementById("gridlines");
+  const ticks=document.getElementById("ticks");
+  for(let n=0;n<=ceiling;n+=step){
+    const y=base-(n/ceiling)*plotH;
+    const line=document.createElementNS(svgNS,"line");
+    line.setAttribute("x1",left);line.setAttribute("x2",right);
+    line.setAttribute("y1",y);line.setAttribute("y2",y);line.setAttribute("class","grid");
+    grid.appendChild(line);
+    const label=document.createElementNS(svgNS,"text");
+    label.setAttribute("x","37");label.setAttribute("y",y);label.setAttribute("class","tick-label");
+    label.setAttribute("data-tick",String(n));label.textContent=String(n);ticks.appendChild(label);
+  }
+  const group=document.getElementById("columns");
+  const width=(right-left)/data.length;
+  let locked=false;
+  data.forEach((item,i)=>{
+    const x=left+i*width;
+    const barH=(item.value/ceiling)*plotH;
+    const bar=document.createElementNS(svgNS,"rect");
+    bar.setAttribute("x",x+width*.2);bar.setAttribute("y",base-barH);
+    bar.setAttribute("width",width*.6);bar.setAttribute("height",barH);
+    bar.setAttribute("class","bar");bar.setAttribute("data-bar",item.key);
+    bar.setAttribute("data-value",String(item.value));
+    bar.style.animationDelay=(i*.07)+"s";
+    group.appendChild(bar);
+    const name=document.createElementNS(svgNS,"text");
+    name.setAttribute("x",x+width/2);name.setAttribute("y","161");
+    name.setAttribute("class","bar-name");name.textContent=t(item.key);group.appendChild(name);
+    const hit=document.createElementNS(svgNS,"rect");
+    hit.setAttribute("x",x);hit.setAttribute("y",top);
+    hit.setAttribute("width",width);hit.setAttribute("height","190");
+    hit.setAttribute("class","bar-column");hit.setAttribute("data-column",item.key);
+    hit.setAttribute("tabindex","0");hit.setAttribute("role","button");
+    hit.addEventListener("click",()=>choose(item.key));
+    hit.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();choose(item.key)}});
+    group.appendChild(hit);
+  });
+  function choose(key){
+    if(locked)return;
+    Studio.event("bar_tap",{key});
+    Studio.answer(key);
+  }
+  Studio.onVerdict(({correct})=>{
+    document.getElementById("feedback").textContent=correct?t("right"):t("wrong");
+    if(correct&&!locked){
+      locked=true;
+      document.getElementById("feedback").textContent=t("done");
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

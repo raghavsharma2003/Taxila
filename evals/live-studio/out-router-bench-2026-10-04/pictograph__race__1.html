@@ -1,0 +1,94 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#543c32;background:#fff8ed}
+#app{width:360px;height:320px;padding:12px 14px;overflow:hidden;background:radial-gradient(ellipse at 90% 0%,#ffedcf 0%,transparent 42%),#fff8ed}
+h1{margin:0 0 6px;font-size:21px;line-height:26px;font-weight:800;letter-spacing:.1px;color:#704633}
+#key{display:flex;align-items:center;gap:7px;height:35px;padding:4px 10px;border:1.5px solid #f2d3a4;border-radius:14px;background:#fffdf8;color:#805439;font-size:14px;font-weight:650}
+#key-symbol{display:flex;align-items:center}
+#key-number{font-weight:800;color:#b56537}
+#ask{margin:7px 2px 4px;font-size:14px;font-weight:700;color:#79513b;line-height:19px}
+#rows{display:flex;flex-direction:column;gap:3px}
+.row{height:55px;width:100%;border:1.5px solid transparent;border-radius:15px;background:#fffdf8;display:grid;grid-template-columns:70px 1fr;align-items:center;padding:0 9px;text-align:left;color:#573f35;cursor:pointer;transition:transform .16s ease,background .2s ease,border-color .2s ease,box-shadow .2s ease;touch-action:manipulation}
+.row:active{transform:scale(.975);background:#fff0d9}
+.row:focus-visible{outline:3px solid #e5a451;outline-offset:1px}
+.row-name{font-size:15px;font-weight:750;white-space:nowrap}
+.symbols{display:flex;align-items:center;gap:3px;min-width:0}
+.symbol{display:block;flex:0 0 22px;width:22px;height:22px;color:#e89548;transition:transform .2s ease}
+.row:hover .symbol{transform:translateY(-1px)}
+.row.is-selected{border-color:#e5a451;background:#fff2dd;box-shadow:0 3px 10px #a76d2920}
+#feedback{height:27px;margin-top:4px;text-align:center;font-size:14px;font-weight:750;color:#598264;line-height:25px}
+#feedback.is-wrong{color:#a65b43}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
+</style>
+<main id="app">
+  <h1 id="title"></h1>
+  <div id="key"><span id="key-symbol"></span><span id="key-text"></span><span id="key-number"></span></div>
+  <div id="ask"></div>
+  <div id="rows"></div>
+  <div id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const t=Studio.t;
+  const title=document.getElementById("title");
+  const keyText=document.getElementById("key-text");
+  const keyNumber=document.getElementById("key-number");
+  const keySymbol=document.getElementById("key-symbol");
+  const ask=document.getElementById("ask");
+  const rows=document.getElementById("rows");
+  const feedback=document.getElementById("feedback");
+  const svg='<svg class="symbol" data-symbol viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8c-1.1 2.1-5.8 6.6-5.8 11.1a5.8 5.8 0 0 0 11.6 0C17.8 9.4 13.1 4.9 12 2.8Z" fill="currentColor"/><path d="M9.1 14.1c.1 1.5 1 2.5 2.5 2.8" fill="none" stroke="#fff8ed" stroke-width="1.5" stroke-linecap="round"/></svg>';
+  title.textContent=t("title");
+  ask.textContent=t("ask");
+  keyText.textContent=t("keytext");
+  keyNumber.textContent=String(p.symbolValue);
+  keySymbol.innerHTML=svg;
+  document.getElementById("key").setAttribute("data-key","");
+  let locked=false;
+  p.rows.forEach(row=>{
+    const button=document.createElement("button");
+    button.type="button";
+    button.className="row";
+    button.setAttribute("data-row",row.key);
+    const name=document.createElement("span");
+    name.className="row-name";
+    name.textContent=t(row.key);
+    const line=document.createElement("span");
+    line.className="symbols";
+    for(let i=0;i<row.value/p.symbolValue;i++){
+      const holder=document.createElement("span");
+      holder.innerHTML=svg;
+      line.appendChild(holder.firstChild);
+    }
+    button.append(name,line);
+    button.addEventListener("click",()=>{
+      if(locked)return;
+      rows.querySelectorAll(".row").forEach(r=>r.classList.remove("is-selected"));
+      button.classList.add("is-selected");
+      feedback.textContent="";
+      feedback.classList.remove("is-wrong");
+      Studio.event("row_tap",{key:row.key});
+      Studio.answer(row.key);
+    });
+    rows.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      locked=true;
+      feedback.classList.remove("is-wrong");
+      feedback.textContent=t("done");
+      rows.querySelectorAll(".row").forEach(r=>r.disabled=true);
+      Studio.done();
+    }else{
+      feedback.textContent=t("wrong");
+      feedback.classList.add("is-wrong");
+      rows.querySelectorAll(".row").forEach(r=>r.classList.remove("is-selected"));
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

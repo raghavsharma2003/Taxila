@@ -65,7 +65,9 @@ export function staticChecks(html, { keys = [], bytes = 60_000 } = {}) {
   const checks = [];
   const size = Buffer.byteLength(String(html));
   checks.push({ id: "G0.size", pass: size <= bytes, detail: size });
-  const urls = (String(html).match(/\b(?:https?:)?\/\/[a-z0-9.-]+\.[a-z]{2,}[^\s"'<>)]*/gi) ?? []).filter((u) => !/^https?:\/\/www\.w3\.org\//i.test(u));
+  // any http(s) URL (bar the SVG / XHTML namespace URIs), any protocol-relative //host in an attribute or url(), any bare www. host
+  const urls = [...(String(html).match(/\bhttps?:\/\/[^\s"'<>)`]*/gi) ?? []).filter((u) => !/^https?:\/\/www\.w3\.org\//i.test(u)),
+    ...(String(html).match(/(?:=\s*["']|url\(\s*["']?)\/\/[^\s"'<>)]+/gi) ?? []), ...(String(html).match(/(?<![\/\w.])www\.[a-z0-9-]+\.[a-z]{2,}/gi) ?? [])];
   checks.push({ id: "G0.no_url", pass: urls.length === 0, detail: urls.slice(0, 3) });
   const { scripts, markup } = splitFragment(html);
   const tags = markup.match(/<(?:script|link|iframe|object|embed|base|meta|frame|form|a\s[^>]*href\s*=\s*["'](?!#))[^>]*>/gi) ?? [];

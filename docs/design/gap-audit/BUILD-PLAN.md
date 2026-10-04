@@ -1682,3 +1682,6 @@ Owner-reported failures, verbatim intent. Each becomes an acceptance test under 
 6. **Voice is robotic** — tracked by the voice v4 workstream (spoken-register lines + delivery plans); ship the round-3 winner.
 7. **Teacher animation is not good** — the 2D puppet at >= 4.5/5 replaces the current face; until then use the best available.
 8. **Product design needs to improve** — full design/flow review with screenshots on phone/tablet/laptop after Wave 2 integration.
+
+## OWNER RESET 2026-10-04 — supersedes conflicting parts of this plan
+Read docs/design/OWNER-RESET-2026-10-04.md. Its 15 requirements are exit criteria for Wave 2 and every later wave. Where PRODUCT-DESIGN-V2, the image pack or any spec targets younger children, the reset wins (ages 9-15).

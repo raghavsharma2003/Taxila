@@ -1,0 +1,125 @@
+<style>
+  *{box-sizing:border-box}
+  #balance-app{width:360px;height:320px;overflow:hidden;position:relative;background:#fff7e9;color:#49372e;font-family:system-ui,sans-serif;text-align:center}
+  #balance-app .title{height:36px;padding-top:7px;font-size:20px;font-weight:800}
+  #balance-app .instruction{height:28px;font-size:14px;font-weight:600}
+  #balance-app .scene{position:absolute;left:0;top:62px;width:360px;height:174px}
+  #balance-app .glow{position:absolute;left:115px;top:24px;width:130px;height:130px;border-radius:50%;background:#ffe9bd}
+  #balance-app .stand{position:absolute;left:174px;top:47px;width:12px;height:119px;border-radius:8px;background:#ae7455}
+  #balance-app .foot{position:absolute;left:143px;top:158px;width:74px;height:9px;border-radius:9px;background:#ae7455}
+  #balance-app [data-beam]{position:absolute;inset:0;transform-origin:180px 47px;transition:transform .65s cubic-bezier(.22,1.35,.38,1)}
+  #balance-app .bar{position:absolute;left:66px;top:43px;width:228px;height:9px;border-radius:9px;background:#d18b61;box-shadow:0 3px 0 #a9694b}
+  #balance-app .rope{position:absolute;top:48px;width:3px;height:72px;background:#bf9475}
+  #balance-app .rope.left{left:75px}#balance-app .rope.right{left:282px}
+  #balance-app [data-pan]{position:absolute;top:112px;width:104px;height:55px;border-bottom:9px solid #bd7856;border-radius:0 0 55px 55px;display:flex;align-items:flex-end;justify-content:center;gap:3px;padding-bottom:8px}
+  #balance-app [data-pan="left"]{left:25px}#balance-app [data-pan="right"]{left:231px}
+  #balance-app .weight{min-width:29px;height:34px;padding:4px 2px;border-radius:9px 9px 6px 6px;background:#719c91;color:white;font-size:18px;font-weight:800;box-shadow:inset 0 -4px #527d75;display:grid;place-items:center}
+  #balance-app [data-pan="right"] .weight{background:#de9a69;box-shadow:inset 0 -4px #ba7753}
+  #balance-app .pin{position:absolute;left:172px;top:39px;width:16px;height:16px;border-radius:50%;background:#795c53}
+  #balance-app .feedback{position:absolute;top:225px;left:0;width:360px;height:24px;font-size:17px;font-weight:800;color:#558479}
+  #balance-app .options{position:absolute;top:253px;left:26px;width:308px;display:flex;justify-content:space-between}
+  #balance-app button{width:82px;height:58px;border:0;border-radius:16px;background:#f1c28e;color:#49372e;font:800 23px system-ui,sans-serif;box-shadow:0 5px 0 #cf986b;cursor:pointer;transition:transform .18s,opacity .2s}
+  #balance-app button:active{transform:translateY(4px) scale(.94)}
+  #balance-app button:disabled{cursor:default;opacity:.5}
+  #balance-app .celebrate .glow{animation:shine .65s ease-in-out}
+  @keyframes shine{50%{transform:scale(1.35);background:#ffe09b}}
+</style>
+<div id="balance-app">
+  <div class="title"></div>
+  <div class="instruction"></div>
+  <div class="scene">
+    <div class="glow"></div><div class="stand"></div><div class="foot"></div>
+    <div data-beam data-tilt="level">
+      <div class="bar"></div><div class="rope left"></div><div class="rope right"></div>
+      <div data-pan="left" data-total="0"></div><div data-pan="right" data-total="0"></div>
+    </div>
+    <div class="pin"></div>
+  </div>
+  <div class="feedback" aria-live="polite"></div>
+  <div class="options"></div>
+</div>
+<script>
+
+  (() => {
+    const app=document.getElementById('balance-app');
+    const beam=app.querySelector('[data-beam]');
+    const left=app.querySelector('[data-pan="left"]');
+    const right=app.querySelector('[data-pan="right"]');
+    const options=app.querySelector('.options');
+    const feedback=app.querySelector('.feedback');
+    const items=Studio.params.items;
+    let index=0,chosen=null,busy=false,finished=false;
+    app.querySelector('.title').textContent=Studio.t('title');
+    app.querySelector('.instruction').textContent=Studio.t('instr');
+    function sum(a){return a.reduce((s,n)=>s+Number(n),0)}
+    function drawPan(el,values){
+      el.replaceChildren();
+      el.dataset.total=String(sum(values));
+      values.forEach(value=>{
+        const w=document.createElement('div');
+        w.className='weight';
+        w.dataset.weight=String(value);
+        w.textContent=String(value);
+        el.append(w);
+      });
+    }
+    function tilt(){
+      const a=Number(left.dataset.total),b=Number(right.dataset.total);
+      const side=a>b?'left':b>a?'right':'level';
+      beam.dataset.tilt=side;
+      beam.style.transform='rotate('+(side==='left'?-9:side==='right'?9:0)+'deg)';
+    }
+    function showItem(){
+      const item=items[index];
+      chosen=null;busy=false;feedback.textContent='';
+      app.classList.remove('celebrate');
+      drawPan(left,item.left);drawPan(right,item.right);tilt();
+      options.replaceChildren();
+      item.options.forEach(value=>{
+        const button=document.createElement('button');
+        button.type='button';
+        button.dataset.option=String(value);
+        button.textContent=String(value);
+        button.addEventListener('click',()=>choose(value,button));
+        options.append(button);
+      });
+    }
+    function choose(value,button){
+      if(busy||finished)return;
+      busy=true;chosen=value;
+      button.style.visibility='hidden';
+      drawPan(right,[...items[index].right,value]);
+      tilt();
+      Studio.event('choose',{value});
+      Studio.answer({value});
+    }
+    Studio.onVerdict(({correct})=>{
+      if(!busy||finished)return;
+      feedback.textContent=Studio.t(correct?'right':'wrong');
+      if(correct){
+        app.classList.add('celebrate');
+        setTimeout(()=>{
+          index++;
+          if(index<items.length)showItem();
+          else{
+            finished=true;options.replaceChildren();
+            feedback.textContent=Studio.t('done');
+            Studio.done();
+          }
+        },850);
+      }else{
+        setTimeout(()=>{
+          drawPan(right,items[index].right);
+          tilt();
+          const button=[...options.children].find(el=>el.dataset.option===String(chosen));
+          if(button)button.style.visibility='';
+          chosen=null;busy=false;feedback.textContent='';
+        },850);
+      }
+    });
+    if(items.length)showItem();
+    else{finished=true;feedback.textContent=Studio.t('done');Studio.done()}
+    Studio.ready();
+  })();
+
+</script>

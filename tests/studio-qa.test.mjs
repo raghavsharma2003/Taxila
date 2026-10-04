@@ -115,13 +115,16 @@ test("whiteboard gate: each defect is caught by its check", () => {
     ["W1.fits_stage", swap("t1", { at: [395, 220] }), "text running off the board"],
     ["W5.words_from_line_or_kit", swap("t1", { text: "4 tasty pizzas" }), "words she never said"],
     ["W6.timing", swap("n1", { startMs: 9000, endMs: 14000 }), "drawing after her line ends"],
-    ["W8.counts_match_line", GOOD_OPS.filter((o) => o.id !== "s4"), "3 parts where she said 4"],
     ["W2.text_clear_of_lines", [...GOOD_OPS, { id: "ln", op: "line", from: [240, 214], to: [370, 214], startMs: 4700, endMs: 5000 }], "a line through a word"],
   ];
   for (const [check, ops, what] of cases) {
     const r = gateWhiteboard(S(ops), ctx());
     assert.ok(failing(r).includes(check), `${what}: expected ${check}, got ${failing(r).join(",") || "pass"}`);
   }
+  const four = "0 se 1 tak 4 equal parts banayein; pehla point one-fourth hoga, chalo dekhte hain kaise.";
+  const three = gateWhiteboard(S(GOOD_OPS.filter((o) => o.id !== "s4" && o.id !== "n1")), ctx({ reply: four }));
+  assert.ok(failing(three).includes("W8.counts_match_line"), `3 parts where she said 4: got ${failing(three).join(",") || "pass"}`);
+  assert.deepEqual(failing(gateWhiteboard(S(GOOD_OPS.filter((o) => o.id !== "n1")), ctx({ reply: four }))), [], "the 4-part board passes on that line");
   const named = gateWhiteboard(S(swap("t1", { text: "Riya 4 parts" })), ctx({ reply: `Riya, ${LINE}`, banned: ["Riya"] }));
   assert.ok(failing(named).includes("W7.register"), "the child's name is never written on the board");
   const cut = gateWhiteboard(S([GOOD_OPS[0], { id: "x1", op: "line", from: [40, 150], to: [200, 150], startMs: 1000, endMs: 1400 }, GOOD_OPS[5]]), ctx());

@@ -1,0 +1,99 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e8;font-family:Arial,sans-serif;color:#563b2b}
+  #app{position:relative;width:360px;height:320px;overflow:hidden;padding:10px 8px 7px;background:
+    radial-gradient(circle at 92% 8%,#ffe0a2 0 20px,transparent 21px),
+    radial-gradient(circle at 7% 90%,#f7d5bd 0 30px,transparent 31px),
+    #fff7e8}
+  .top{height:31px;display:flex;align-items:center;justify-content:space-between;padding:0 8px}
+  h1{margin:0;font-size:19px;line-height:1;color:#71462e;letter-spacing:.1px}
+  .key{height:29px;display:flex;align-items:center;gap:5px;padding:3px 9px;border-radius:16px;background:#ffe5b4;color:#754a2d;font-size:12px;font-weight:700;white-space:nowrap}
+  [data-key] svg{width:20px;height:20px;flex:none}
+  .ask{height:30px;margin:2px 7px 1px;display:flex;align-items:center;font-size:15px;font-weight:700;color:#694331}
+  #rows{height:212px;display:flex;flex-direction:column;gap:1px}
+  .row{position:relative;width:344px;height:52px;min-height:52px;border:0;border-radius:18px;background:#fffdf8;box-shadow:0 2px 0 rgba(143,91,47,.12),0 4px 10px rgba(132,84,44,.08);padding:0;cursor:pointer;overflow:hidden;text-align:left;transition:transform .16s ease,background .16s ease,box-shadow .16s ease}
+  .row:active{transform:scale(.97)}
+  .row:hover{background:#fff4da}
+  .row:focus-visible{outline:3px solid #e69051;outline-offset:2px}
+  .name{position:absolute;left:10px;top:0;width:70px;height:52px;display:flex;align-items:center;font-size:14px;font-weight:700;color:#855436}
+  .symbols{position:absolute;left:88px;top:0;height:52px;display:flex;align-items:center;gap:4px}
+  [data-symbol]{display:block;width:27px;height:27px;flex:none;filter:drop-shadow(0 2px 1px rgba(111,61,25,.16))}
+  .row.chosen{transform:scale(.985);background:#ffe9bd;box-shadow:0 0 0 3px #f4bd70,0 4px 12px rgba(132,84,44,.12)}
+  .row.wiggle{animation:wiggle .42s ease}
+  .row.good{animation:happy .55s ease;background:#e8f4d5}
+  .feedback{height:20px;margin:1px 9px 0;text-align:center;font-size:13px;font-weight:700;color:#9b5b38;line-height:20px}
+  .feedback.goodtext{color:#4d7a43}
+  .petal{fill:#f19a55}.petal2{fill:#f6b966}.center{fill:#824c2e}.leaf{fill:#79ad65}.stem{stroke:#61945a;stroke-width:3;stroke-linecap:round}
+  @keyframes wiggle{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  @keyframes happy{50%{transform:scale(1.025)}}
+</style>
+<div id="app">
+  <div class="top">
+    <h1 id="title"></h1>
+    <div class="key" data-key>
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <path class="stem" d="M16 27V17"></path><path class="leaf" d="M15 23c-5-1-6-5-6-7 4 0 7 2 7 6z"></path>
+        <circle class="petal" cx="16" cy="10" r="7"></circle><circle class="petal2" cx="10" cy="14" r="6"></circle><circle class="petal2" cx="22" cy="14" r="6"></circle><circle class="petal" cx="16" cy="18" r="6"></circle><circle class="center" cx="16" cy="14" r="4"></circle>
+      </svg>
+      <span id="keytext"></span><span id="keynum"></span>
+    </div>
+  </div>
+  <div class="ask" id="ask"></div>
+  <div id="rows"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, rows=document.getElementById('rows'), feedback=document.getElementById('feedback');
+  var waiting=false, finished=false;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  document.getElementById('keytext').textContent=Studio.t('keytext');
+  document.getElementById('keynum').textContent=p.symbolValue;
+
+  function flower(){
+    var s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    s.setAttribute('viewBox','0 0 32 32');
+    s.setAttribute('data-symbol','');
+    s.setAttribute('aria-hidden','true');
+    s.innerHTML='<path class="stem" d="M16 27V17"></path><path class="leaf" d="M15 23c-5-1-6-5-6-7 4 0 7 2 7 6z"></path><circle class="petal" cx="16" cy="10" r="7"></circle><circle class="petal2" cx="10" cy="14" r="6"></circle><circle class="petal2" cx="22" cy="14" r="6"></circle><circle class="petal" cx="16" cy="18" r="6"></circle><circle class="center" cx="16" cy="14" r="4"></circle>';
+    return s;
+  }
+  p.rows.forEach(function(item){
+    var b=document.createElement('button'), n=document.createElement('span'), sy=document.createElement('span');
+    b.className='row'; b.setAttribute('data-row',item.key); b.type='button';
+    n.className='name'; n.textContent=Studio.t(item.key);
+    sy.className='symbols';
+    for(var i=0;i<item.value/p.symbolValue;i++) sy.appendChild(flower());
+    b.appendChild(n); b.appendChild(sy);
+    b.addEventListener('click',function(){
+      if(waiting||finished)return;
+      waiting=true;
+      b.classList.add('chosen');
+      feedback.textContent='';
+      Studio.event('row_tap',{key:item.key});
+      Studio.answer(item.key);
+    });
+    rows.appendChild(b);
+  });
+  Studio.onVerdict(function(v){
+    if(finished)return;
+    var chosen=rows.querySelector('.chosen');
+    if(v.correct){
+      finished=true;
+      if(chosen)chosen.classList.add('good');
+      feedback.className='feedback goodtext';
+      feedback.textContent=Studio.t('right')+' '+Studio.t('done');
+      Studio.done();
+    }else{
+      if(chosen){chosen.classList.remove('chosen');chosen.classList.add('wiggle');setTimeout(function(){chosen.classList.remove('wiggle')},450)}
+      feedback.className='feedback';
+      feedback.textContent=Studio.t('wrong');
+      waiting=false;
+    }
+  });
+  Studio.ready();
+}());
+
+</script>

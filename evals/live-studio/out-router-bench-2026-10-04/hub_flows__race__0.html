@@ -1,0 +1,135 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8e9;font-family:system-ui,sans-serif;color:#394a38}
+  .artifact{width:360px;height:320px;overflow:hidden;background:linear-gradient(#fff9ec,#f2faed);position:relative}
+  .title{height:22px;text-align:center;font-size:15px;font-weight:800;line-height:22px}
+  svg{display:block;width:360px;height:172px;overflow:hidden}
+  svg text{font:700 13px system-ui,sans-serif;fill:#425642;paint-order:stroke;stroke:#fff9ec;stroke-width:4px;stroke-linejoin:round}
+  .entity,.particle{transition:opacity .25s,filter .25s}
+  .glow{filter:drop-shadow(0 0 7px #f4b64f)}
+  .controls{height:52px;display:flex;align-items:center;gap:5px;padding:0 8px}
+  button{border:0;border-radius:16px;background:#dcebd4;color:#344c37;font:800 14px system-ui,sans-serif;cursor:pointer;touch-action:manipulation;transition:transform .16s,background .2s}
+  button:active{transform:scale(.92)}
+  .control{height:52px;min-width:52px;padding:0 8px}
+  [data-action=next]{min-width:62px}
+  [data-caption]{flex:1;text-align:center;font-size:12px;font-weight:750;line-height:1.2;padding:0 3px}
+  .ask{height:20px;text-align:center;font-size:13px;font-weight:800;line-height:20px}
+  .options{height:52px;display:flex;gap:8px;padding:0 8px}
+  .options button{height:52px;flex:1;min-width:0;background:#f5dca9}
+  .options button.chosen{background:#f1ba75}
+  .feedback{position:absolute;right:8px;bottom:56px;background:#fff8e9;border-radius:10px;padding:2px 7px;font-size:12px;font-weight:800;pointer-events:none}
+</style>
+<div class="artifact">
+  <div class="title" id="title"></div>
+  <svg viewBox="0 0 360 190" aria-hidden="true">
+    <path d="M68 60 Q106 77 145 92 M70 115 Q110 106 145 97 M215 96 Q262 91 314 110 M180 155 L180 117" fill="none" stroke="#dce6d4" stroke-width="5" stroke-linecap="round"/>
+    <circle id="entity0" class="entity" cx="48" cy="54" r="23" fill="#ffc75b" stroke="#f3a54d" stroke-width="4"/>
+    <path id="entity1" class="entity" d="M180 149 Q168 163 156 170 M180 149 Q190 165 205 171 M180 149 L180 177" fill="none" stroke="#a77b55" stroke-width="8" stroke-linecap="round"/>
+    <path id="hub" class="entity" d="M180 115 C115 107 127 53 184 67 C239 49 241 107 180 115Z" fill="#80bd76" stroke="#4f985f" stroke-width="4"/>
+    <path d="M151 87 Q180 91 208 75" fill="none" stroke="#c7e8aa" stroke-width="3" stroke-linecap="round"/>
+    <g id="particles"></g>
+    <text id="label-entity0" x="75" y="42"></text>
+    <text id="label-flow1" x="76" y="133"></text>
+    <text id="label-flow2" x="268" y="83"></text>
+    <text id="label-hub" x="224" y="125"></text>
+    <text id="label-flow0" x="202" y="150"></text>
+    <text id="label-entity1" x="210" y="181"></text>
+  </svg>
+  <div class="controls"><button class="control" data-action="play"></button><div data-caption></div><button class="control" data-action="next"></button></div>
+  <div class="ask" id="ask"></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback" hidden></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params,t=k=>Studio.t(k);
+  const bind=(id,key,attribute)=>{
+    const el=document.getElementById(id);
+    el.setAttribute(attribute,key);
+    if(attribute==='data-label')el.textContent=t(key);
+  };
+  bind('hub',p.hub,'data-entity');
+  bind('label-hub',p.hub,'data-label');
+  p.entities.forEach((key,i)=>{bind('entity'+i,key,'data-entity');bind('label-entity'+i,key,'data-label')});
+  p.flows.forEach((flow,i)=>bind('label-flow'+i,flow.key,'data-label'));
+  document.getElementById('title').textContent=t('title');
+  document.getElementById('ask').textContent=t('ask');
+
+  const play=document.querySelector('[data-action="play"]');
+  const next=document.querySelector('[data-action="next"]');
+  const caption=document.querySelector('[data-caption]');
+  const paths=[[[180,155],[180,117]],[[70,113],[146,96]],[[215,96],[314,110]]];
+  const colors=['#64b9cf','#edab80','#9acb87'];
+  const dots=[];
+  p.flows.forEach((flow,fi)=>{
+    for(let i=0;i<4;i++){
+      const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot.setAttribute('data-flow',flow.key);
+      dot.setAttribute('r','3.8');
+      dot.setAttribute('fill',colors[fi]);
+      dot.classList.add('particle');
+      document.getElementById('particles').appendChild(dot);
+      dots.push({dot,line:paths[fi],i,key:flow.key});
+    }
+  });
+  let playing=true,step=0,finished=false,phase=0,last=0;
+  function showStep(){
+    caption.textContent=t('step'+(step+1));
+    document.querySelectorAll('.entity').forEach(el=>el.classList.remove('glow'));
+    const focus=[p.entities[0],...p.flows.map(flow=>flow.key)][step%p.steps];
+    const target=document.querySelector('[data-entity="'+focus+'"]')||document.querySelector('[data-entity="'+p.hub+'"]');
+    target.classList.add('glow');
+    dots.forEach(d=>d.dot.style.opacity=(focus===d.key||focus===p.entities[0])?'1':'.55');
+  }
+  function tick(now){
+    if(playing){
+      if(last)phase+=(now-last)*.00038;
+      last=now;
+      dots.forEach(({dot,line,i})=>{
+        const f=(phase+i/4)%1;
+        dot.setAttribute('cx',line[0][0]+(line[1][0]-line[0][0])*f);
+        dot.setAttribute('cy',line[0][1]+(line[1][1]-line[0][1])*f);
+      });
+    }else last=0;
+    requestAnimationFrame(tick);
+  }
+  play.addEventListener('click',()=>{
+    playing=!playing;
+    play.textContent=t(playing?'pause':'play');
+    Studio.event('play',{state:playing?'on':'off'});
+  });
+  next.addEventListener('click',()=>{
+    step=(step+1)%p.steps;
+    showStep();
+    Studio.event('step',{number:step+1});
+  });
+  play.textContent=t('pause');
+  next.textContent=t('next');
+  showStep();
+
+  const options=document.getElementById('options');
+  const feedback=document.getElementById('feedback');
+  p.options.forEach(key=>{
+    const button=document.createElement('button');
+    button.dataset.option=key;
+    button.textContent=t(key);
+    button.addEventListener('click',()=>{
+      if(finished)return;
+      options.querySelectorAll('button').forEach(b=>b.classList.remove('chosen'));
+      button.classList.add('chosen');
+      feedback.hidden=true;
+      Studio.answer(key);
+    });
+    options.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=t(correct?'right':'wrong');
+    feedback.hidden=false;
+    if(correct&&!finished){finished=true;Studio.done()}
+  });
+  requestAnimationFrame(tick);
+  Studio.ready();
+})();
+
+</script>

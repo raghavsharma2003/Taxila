@@ -1,0 +1,119 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e9;font-family:system-ui,sans-serif;color:#694632}
+  #app{width:360px;height:320px;overflow:hidden;position:relative}
+  header{height:59px;padding:10px 18px 0;text-align:center}
+  h1{margin:0;font-size:19px;line-height:24px;color:#8d4b38}
+  #message{height:22px;font-size:13px;line-height:22px;color:#765a48}
+  svg{display:block;width:360px;height:181px;overflow:hidden}
+  #beam{transform-origin:180px 54px;transition:transform .65s cubic-bezier(.2,1.25,.35,1)}
+  .pan{transition:transform .65s cubic-bezier(.2,1.25,.35,1)}
+  .weight rect{fill:#e9a66b;stroke:#ae6546;stroke-width:2}
+  .weight text{fill:#583c34;font-size:16px;font-weight:800;text-anchor:middle;dominant-baseline:central}
+  #choices{height:80px;display:flex;align-items:center;justify-content:center;gap:13px;padding:3px 13px}
+  button{appearance:none;border:2px solid #ae6546;border-radius:14px;background:#e9a66b;color:#583c34;min-width:72px;height:58px;font:800 21px system-ui,sans-serif;box-shadow:0 5px 0 #a8654a;cursor:pointer;transition:transform .2s,box-shadow .2s}
+  button:active{transform:translateY(4px) scale(.95);box-shadow:0 1px 0 #a8654a}
+  button:disabled{opacity:.55;cursor:default}
+  #app.celebrate #beam{filter:drop-shadow(0 0 7px #f6c657)}
+  #app.celebrate .weight{animation:pop .45s ease}
+  @keyframes pop{50%{transform:translateY(-7px)}}
+</style>
+<div id="app">
+  <header><h1 id="title"></h1><div id="message"></div></header>
+  <svg viewBox="0 0 360 181" aria-hidden="true">
+    <path d="M180 59 V164 M153 169 H207" fill="none" stroke="#b98b70" stroke-width="12" stroke-linecap="round"/>
+    <g id="beam" data-beam data-tilt="level">
+      <path d="M75 54 H285" fill="none" stroke="#895b4d" stroke-width="12" stroke-linecap="round"/>
+      <circle cx="180" cy="54" r="9" fill="#f5c56b" stroke="#895b4d" stroke-width="3"/>
+    </g>
+    <g id="leftPan" class="pan" data-pan="left" data-total="0">
+      <path d="M75 54 L54 132 M75 54 L96 132" fill="none" stroke="#ad8068" stroke-width="3"/>
+      <path d="M43 132 Q75 154 107 132" fill="#f3d6a9" stroke="#a66f54" stroke-width="4"/>
+      <g id="leftWeights"></g>
+    </g>
+    <g id="rightPan" class="pan" data-pan="right" data-total="0">
+      <path d="M285 54 L264 132 M285 54 L306 132" fill="none" stroke="#ad8068" stroke-width="3"/>
+      <path d="M253 132 Q285 154 317 132" fill="#f3d6a9" stroke="#a66f54" stroke-width="4"/>
+      <g id="rightWeights"></g>
+    </g>
+  </svg>
+  <div id="choices"></div>
+</div>
+<script>
+
+(() => {
+  const items=Studio.params.items, app=document.getElementById('app');
+  const beam=document.getElementById('beam'), leftPan=document.getElementById('leftPan'), rightPan=document.getElementById('rightPan');
+  const leftWeights=document.getElementById('leftWeights'), rightWeights=document.getElementById('rightWeights');
+  const choices=document.getElementById('choices'), message=document.getElementById('message');
+  document.getElementById('title').textContent=Studio.t('title');
+  const ns='http://www.w3.org/2000/svg';
+  let index=0, added=null, waiting=false, finished=false;
+  const sum=a=>a.reduce((s,v)=>s+Number(v),0);
+  function drawWeights(target,values,cx){
+    target.replaceChildren();
+    const cols=Math.min(3,Math.max(1,values.length));
+    const size=Math.min(35,94/cols);
+    values.forEach((value,i)=>{
+      const g=document.createElementNS(ns,'g');
+      g.setAttribute('class','weight');g.setAttribute('data-weight',String(value));
+      const x=cx+(i%cols-(cols-1)/2)*size, y=126-Math.floor(i/cols)*35-size;
+      const r=document.createElementNS(ns,'rect');
+      r.setAttribute('x',x-size/2);r.setAttribute('y',y);
+      r.setAttribute('width',size-2);r.setAttribute('height',size-2);r.setAttribute('rx','7');
+      const t=document.createElementNS(ns,'text');
+      t.setAttribute('x',x-1);t.setAttribute('y',y+(size-2)/2);t.textContent=String(value);
+      g.append(r,t);target.append(g);
+    });
+  }
+  function refresh(){
+    const item=items[index], left=item.left, right=added===null?item.right:[...item.right,added];
+    const l=sum(left),r=sum(right);
+    leftPan.setAttribute('data-total',String(l));rightPan.setAttribute('data-total',String(r));
+    drawWeights(leftWeights,left,75);drawWeights(rightWeights,right,285);
+    const tilt=l>r?'left':r>l?'right':'level';
+    beam.setAttribute('data-tilt',tilt);
+    const angle=tilt==='left'?-10:tilt==='right'?10:0;
+    beam.style.transform=`rotate(${angle}deg)`;
+    const shift=Math.sin(angle*Math.PI/180)*105;
+    leftPan.style.transform=`translateY(${-shift}px)`;
+    rightPan.style.transform=`translateY(${shift}px)`;
+  }
+  function render(){
+    added=null;waiting=false;app.classList.remove('celebrate');
+    message.textContent=Studio.t('instr');
+    choices.replaceChildren();
+    items[index].options.forEach(value=>{
+      const b=document.createElement('button');
+      b.type='button';b.setAttribute('data-option',String(value));b.textContent=String(value);
+      b.addEventListener('click',()=>{
+        if(waiting||finished)return;
+        waiting=true;added=value;b.remove();refresh();
+        Studio.event('choose',{value:String(value)});
+        Studio.answer({value});
+      });
+      choices.append(b);
+    });
+    refresh();
+  }
+  Studio.onVerdict(({correct})=>{
+    if(!waiting||finished)return;
+    if(correct){
+      message.textContent=Studio.t('right');app.classList.add('celebrate');
+      setTimeout(()=>{
+        index++;
+        if(index>=items.length){
+          finished=true;choices.replaceChildren();message.textContent=Studio.t('done');Studio.done();
+        }else render();
+      },950);
+    }else{
+      message.textContent=Studio.t('wrong');
+      setTimeout(()=>{if(!finished)render()},950);
+    }
+  });
+  if(items.length)render();
+  else{finished=true;message.textContent=Studio.t('done');Studio.done()}
+  Studio.ready();
+})();
+
+</script>

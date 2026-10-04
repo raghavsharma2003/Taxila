@@ -1,0 +1,95 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8eb;color:#385547}
+.card{width:360px;height:320px;padding:10px 12px;background:linear-gradient(145deg,#fffaf1,#f0f7e9);overflow:hidden}
+h1{height:28px;margin:0;text-align:center;color:#315b48;font-size:19px;line-height:27px;font-weight:750}
+.question{height:38px;display:flex;align-items:center;justify-content:center;gap:7px;color:#694f36;font-size:14px;font-weight:650}
+.question span:last-child{color:#3c7658}
+svg{display:block;width:336px;height:220px;overflow:hidden}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:filter .22s,transform .18s}
+.part:active{transform:scale(.95)}
+.part.glow{filter:drop-shadow(0 0 7px #f3b82f);animation:bloom .7s ease-out}
+@keyframes bloom{50%{transform:scale(1.08)}}
+.leader{fill:none;stroke:#a58e6d;stroke-width:1.5;stroke-linecap:round}
+.label{font-size:12px;font-weight:650;fill:#5f594a}
+.feedback{height:22px;margin-top:1px;text-align:center;font-size:13px;line-height:20px;font-weight:700;color:#477851;overflow:hidden}
+.hit{fill:transparent;stroke:transparent;pointer-events:all}
+</style>
+<div class="card">
+  <h1 id="title"></h1>
+  <div class="question" data-ask><span id="question"></span><span id="asked-name"></span></div>
+  <svg viewBox="0 0 336 220" role="img" aria-label="">
+    <path class="leader" d="M210 31 L193 37"/>
+    <path class="leader" d="M218 81 L195 81"/>
+    <path class="leader" d="M211 128 L184 139"/>
+    <path class="leader" d="M95 145 L119 145"/>
+    <path class="leader" d="M216 198 L188 198"/>
+    <text class="label" x="215" y="34" data-label></text>
+    <text class="label" x="220" y="85" data-label></text>
+    <text class="label" x="214" y="132" data-label></text>
+    <text class="label" x="12" y="149" data-label></text>
+    <text class="label" x="219" y="202" data-label></text>
+    <g class="part" data-part>
+      <circle class="hit" cx="168" cy="38" r="27"/>
+      <path d="M168 56 C146 57 139 43 148 28 C155 17 165 27 168 35 C171 27 181 17 188 28 C197 43 190 57 168 56Z" fill="#ef8fa0" stroke="#d66f82" stroke-width="2"/>
+    </g>
+    <g class="part" data-part>
+      <circle class="hit" cx="168" cy="81" r="26"/>
+      <circle cx="168" cy="81" r="17" fill="#f4c74e" stroke="#dba734" stroke-width="2"/>
+    </g>
+    <g class="part" data-part>
+      <rect class="hit" x="142" y="111" width="52" height="66" rx="18"/>
+      <path d="M160 98 Q168 96 176 98 L176 169 Q168 174 160 169Z" fill="#78b96d" stroke="#57945a" stroke-width="2"/>
+    </g>
+    <g class="part" data-part>
+      <ellipse class="hit" cx="119" cy="145" rx="27" ry="27"/>
+      <path d="M157 132 C139 113 116 119 117 134 C119 149 139 156 157 145Z" fill="#75bd78" stroke="#4e965d" stroke-width="2"/>
+    </g>
+    <g class="part" data-part>
+      <ellipse class="hit" cx="168" cy="198" rx="27" ry="20"/>
+      <path d="M160 170 Q168 177 176 170 L173 188 Q189 193 187 207 Q178 199 171 194 Q173 211 166 218 Q160 205 164 194 Q152 203 147 213 Q145 197 161 188Z" fill="#b98b63" stroke="#916947" stroke-width="2"/>
+    </g>
+  </svg>
+  <div class="feedback" id="feedback"></div>
+</div>
+<script>
+
+(()=>{
+  const parts=Studio.params.parts;
+  const ask=Studio.params.ask;
+  const title=document.getElementById('title');
+  const question=document.getElementById('question');
+  const askedName=document.getElementById('asked-name');
+  const feedback=document.getElementById('feedback');
+  title.textContent=Studio.t('title');
+  question.textContent=Studio.t('ask');
+  askedName.textContent=Studio.t(ask);
+  const shapes=[...document.querySelectorAll('[data-part]')];
+  const labels=[...document.querySelectorAll('[data-label]')];
+  shapes.forEach((shape,i)=>{
+    shape.dataset.part=parts[i];
+    labels[i].dataset.label=parts[i];
+    labels[i].textContent=Studio.t(parts[i]);
+  });
+  let finished=false;
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      finished=true;
+      const chosen=shapes.find(shape=>shape.dataset.part===ask);
+      if(chosen) chosen.classList.add('glow');
+      feedback.textContent=Studio.t('right')+' '+Studio.t('done');
+      Studio.done();
+    }else{
+      feedback.textContent=Studio.t('wrong');
+    }
+  });
+  shapes.forEach(shape=>shape.addEventListener('click',()=>{
+    if(finished)return;
+    Studio.event('part_tap',{part:shape.dataset.part});
+    Studio.answer(shape.dataset.part);
+  }));
+  Studio.ready();
+})();
+
+</script>

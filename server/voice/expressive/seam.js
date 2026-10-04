@@ -14,6 +14,7 @@
 import { align } from "./align.js";
 import { safetyRegister } from "./safety.js";
 import { count } from "./telemetry.js";
+import { cachedAnnotation, withAnnotation } from "./annotate.js";
 
 /** What the governor needs from the Moment that the DeliveryPlan contract does not carry (verdict as licence only). */
 const info = new WeakMap();
@@ -32,8 +33,11 @@ export const expressiveSeam = {
     try {
       // the safety predicate runs on the moment AND the words: a helpline number in the reply is a safety turn
       const m = safetyRegister(moment, reply) ? { ...moment, safety: true, childLaughed: false, uptakePrelude: undefined } : moment;
-      const plan = align(reply, m);
-      if (!plan) { count("plain_fallback"); return null; }
+      const aligned = align(reply, m);
+      if (!aligned) { count("plain_fallback"); return null; }
+      // a line the background annotator already planned (B7: kit narration, openings): its clause delivery, from memory
+      const ann = m.safety ? null : cachedAnnotation(reply, m);
+      const plan = ann ? withAnnotation(aligned, ann) : aligned;
       info.set(plan, { verdict: moment.verdict, band: moment.band });
       return plan;
     } catch (e) {

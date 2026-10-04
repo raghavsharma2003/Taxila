@@ -3096,3 +3096,115 @@ streams' legitimate Director changes would move).
 - `duplex-cascade-listening-teacher-2026-10-04` (2026-10-04): Proposed (Study B, docs/research/duplex/MODELS-PAPERS.md §7): the 'listening teacher' cascade. Always-on ear; a code floor FSM fed by device VAD, personalised VAD, STT partials, prosodic EoT score and answer-form completeness computed in code; listening notes per stable slice (code first, gated fast model for why/teach-back, never speech); speculation (classify + replies + prelude warm-up) fired at the endpoint candidate, promoted only on lexical identity; speech only at the committed endpoint; commit-safe uptake prefix from the child's token; playback-anchored history (heardUpTo); Studio intents may fire from notes, kernel decides reveal. Mid-utterance teacher action only for distress, explicit wait/stop, repeat requests, fold-in of a called-out answer, long off-task hold. Reverse if X1 shows the completeness feature adds no AUC over silence on child HOLDs, or X2 saves < 150 ms p50 first reply audio.
 - `duplex-partial-safety-first-2026-10-04` (2026-10-04): Proposed: run scanSafety on every STT partial/slice (not only finals); a distress hit stops teacher speech immediately and routes the turn to safeguard at turn end or after 1.5 s of silence (LateIntent 2610.00272: 1.5 s pause after intent revelation keeps premature response near baseline). First item in the duplex rollout because it only adds detection points. Reverse if the false-attend rate on E1 exceeds 1 per lesson-hour.
 - `duplex-heard-upto-2026-10-04` (2026-10-04): Proposed: the client reports heardUpTo {responseId, chars, ms} (last fully played word boundary) instead of only teacher_interrupted; the server keeps only heard teacher text in history and re-says unheard safety lines. Evidence: PACE (2608.07631) referent anchoring 25.0% -> 96.3%; Self-Listening (2609.05592) 7.8% -> 73.0%; Voice-Light builds history only from browser-acknowledged audio. Reverse if duplex X5 shows no anchoring gain on tutor repeat/continue requests.
+
+## W2-F (2026-10-04): Studio build system: gate, builders, archetypes, the whiteboard archetype
+
+### w2f-gate-archetype-driven
+**Decision (LIVE-STUDIO S2, BUILD-PLAN W2-F #1):** the gate is `server/studio/qa/`: `gate.js runGate(browser, job)` runs
+every hard check on one build (G0 AST static `static.js`; G1 boot / errors / CSP violations / network / a CSP probe; G2 seam;
+G3 words ⊆ strings table; G4 layout; G5 scripted play with real pointer taps; G6 per-archetype semantics; G7 state graph from
+the host's own log; G8 no-hint; G9 4x-CPU perf) and passes a build only if EVERY check passes. G10 determinism is by
+construction (the runtime seeds `Math.random` per session). Truth stays in Node: `Studio.answer` reaches the host through a
+Playwright binding the runtime captures and deletes, and `qa/graders.js` grades (the ONE grader: W2-H's `grade.js` wraps it
+for `kt_evidence`). One player per archetype (`qa/players/*.js`) holds its G2/G5/G6/G8. Hard goldens for all 12 archetypes
+(`evals/live-studio/goldens/`) pass at their params AND held-out params (24/24).
+- **Reverse if:** a check false-alarms on a reviewed good build (then that check is fixed with the build as a new golden), or
+  a semantic class the gate cannot express shows up in human review (then a new G6 check, not a model judge:
+  `rj-holistic-model-judge-gate`).
+
+### w2f-stage-360x320-targets
+**Decision (owner priority 4):** every frame archetype is designed at 360 x 320 units, the aspect of the phone tray (328 x 290
+CSS px at 360 x 800, `tests/studio-stage-geometry`), and the gate renders it at exactly that size: nothing may scroll either way
+or sit outside the box (a CONTENT element: text, a seam attribute, or interactive; a purely decorative shape may bleed, the
+stage clips it); every target is ≥ 52 units (44 CSS px at the tray's 0.86 scale; 66 units = 56 px for B1-B2), inside the box,
+reachable by a finger (some point of it hits it) and not overlapping another HTML target. The probe's 360 x 640 portrait builds
+would have been scaled to 0.37 in the tray (`rj-w2f-probe-portrait-viewport`).
+- **Reverse if:** W2-H's Desk gives the tray a different aspect at 360 dp (then the design size follows the tray), or children
+  mis-tap at 52 units in the owner's test.
+
+### w2f-race-orchestrator
+**Decision (S3, D5, D6):** `build.js buildRace(plan)` races the routed arms (MODEL-ROUTER §0: `taxila-gpt6` low + `gpt-5.6-terra`
+low, `taxila-gpt6-luna` low as an opportunistic third; `taxila-codex` low on the Responses API takes an arm's place once on a
+429), each streamed through the stream guard (`builders/index.js` on `azure.js chatStream`), fixed by the deterministic fixers
+(`fixers.js`: unfence, unwrap, styles first, one script last, close a final script, seam spellings, add `Studio.ready`; never
+truth), gated, and repaired ≤ 2 times from the gate's failing checks + the guard's removals + the previous file + the archetype's
+negative memory placed LAST (`repair.js`); two safety-shaped failures (G1/G3/G8) drop the arm. The first pass wins, the rest
+are cancelled; the winner's bytes are exactly the gated bytes (`sha256`). A dead gate or a failed full Q8 (`plan.js q8Strings`,
+run beside the build) reveals nothing. Every call is child-free and on the BACKGROUND quota lane; cancelled arms are billed by
+an estimate so caps never count them as free. Records go to `telemetry.js` (`setSink` for W2-H's `studio_build` rows).
+- **Reverse if:** the router bench shows a third repair round recovers ≥ 25% of round-2 failures inside the lead (D6), or one arm
+  reaches P(pass by lead) ≥ 0.97 at n ≥ 50 for an archetype (then single-arm for it, D5).
+
+### w2f-stream-guard-safe-boundaries
+**Decision (LIVE-STUDIO §1.2):** `stream-guard.js` rewrites a builder's tokens at token time (URLs except the SVG/XHTML
+namespace URIs, protocol-relative src/href, CSS `url()` to anything but `data:`/`#`, fetch/XHR/WebSocket/EventSource/beacon/
+dynamic import/importScripts, eval/new Function/string timers, storage and cookies, loading/embedding tags, `Studio.t` keys
+outside the table), replacing each with an inert, parseable form and recording a repair hint. It commits only up to the end of
+a tag, statement, rule or line before its 96-char hold-back, and never inside a still-open attribute value, `url(`, URL or
+`Studio.t(`; so `guard(a)+guard(b) === guard(a+b)` for every split (tested on every cut of a hostile stream + 300 random
+chunkings).
+- **Reverse if:** a rule needs context wider than one statement (then the guard runs on whole statements from an incremental
+  parser instead of boundaries).
+
+### w2f-router-rules
+**Decision (LIVE-STUDIO §3.2, §7; TEACHER-BRAIN §6.3 step 2):** `router.js decide()` is pure and ordered: parent "off" or safety
+mode → fallback; whiteboard → the script planner; no admissible archetype (no kit truth) → fallback; a promoted library build
+→ library; bond stage `meeting` or "Only ready-made ones" → promoted only (else fallback); a live/transfer-passed build with ≥ 3
+distinct param passes, 0 incidents, < 20 mounts → library; an archetype not live-buildable (router bench P(pass by lead) < 0.95
+at n ≥ 30, or `pictureTruth: human_review`) → fallback; caps (≤ 3 live builds per lesson, ≤ $0.60 per child per day, ≤ $8 per
+month, the global breaker: daily spend or 8 failed races in a row) → fallback; a lead shorter than the archetype's p90 → live
+but opportunistic. `revealable()` is the one never-un-gated predicate (a gate pass, or W2-H's gate-result cache hit).
+- **Reverse if:** the owner sets different caps, or the library hit rate after warm-up stays < 90% (then the live budget is
+  re-measured against revenue, §7).
+
+### w2f-archetype-library-v1
+**Decision (S4):** 12 frame archetypes (`server/studio/archetypes/*.json`: shade_fraction, bar_chart_read, hub_flows [the
+probe's photosynthesis generalised to flows into/out of a hub], number_line_jump, balance_scale, sort_bins, sequence_steps,
+slider_law, process_chain, labelled_parts, pictograph, timeline) + the whiteboard. Each declares a seam, states, checks, a
+params schema plus truth rules (`archetypes/index.js validateParams`: answerable and unambiguous), string keys, a skeleton id,
+budgets, anti-patterns, hostOnly truth the build never sees (answers, bin assignments, the true order) and the 360 x 320 stage.
+Interaction is tap-only with big controls (step buttons instead of sliders and drag). CODE picks the archetype from the kind and
+the truth on hand; params come from a verified truth pack (W3-B) or what the kit itself proves (fractions, number-line targets:
+`plan.js paramsFromKit`); the model writes only the strings table and a craft line (`planBuild`, taxila-fast effort none), which
+must pass the local Q8 predicates and may carry a number only if it is a params value; the teacher cue is code.
+`labelled_parts` is library-only (`pictureTruth: human_review`: that the shape called "root" is a root is not code-checkable).
+- **Reverse if:** a reviewed archetype's play pattern misteaches (it is retired), or W3-B's truth packs need a field an archetype
+  lacks (then the archetype gains it in a versioned file).
+
+### w2f-whiteboard-archetype
+**Decision (owner priority 6, `whiteboard-by-drawing-script-2026-10-04`):** `plan.js planWhiteboard(ask)` takes the Brain's
+StudioAsk (the guarded line + the move's kit content), redacts the child's name (her vocative and any name the caller lists:
+never in a prompt, never on the board), and asks `taxila-gpt6-luna` (effort none, json_object, background lane) for COMPACT
+timed ops for that line (`t: [start, end]` from the line's first audio sample, clause start times at 12 chars/s). Code expands
+them to a `WhiteboardScript`, moves anything sticking out of the board back in and slides overlapping or line-crossed words
+apart (shape only, never truth), and `qa/whiteboard.js gateWhiteboard` checks W0 strict shape, W1 fits the stage (aspect
+0.75-2, smallest text ≥ 11 px at the phone tray, inside the board), W2 no overlapping words and no word on a line or box edge,
+W3 every label has a leader ending on a drawn shape, W4 every number is in her line or the kit (or re-computed true: column
+sums, equal sides, a named number line's ticks) and all arithmetic is correct, W5 every word is hers or the book's, W6 timing
+in step with her voice, W7 labels/short terms only and no names, W8 the picture's counts are hers (equal shapes, never a circle
+cut by lines). One repair round with the failing checks inside a 7 s budget that includes any wait for the quota bucket; a
+script that fails is never drawn (the explainer template rung or her voice instead). W2-B's renderer draws it inside the stage.
+- **Reverse if:** a cheaper or faster arm passes ≥ the luna-none rate on the whiteboard bench at lower p90, or children's
+  next-item correctness shows no gain from the board over voice alone (then it is drawn only for maths number work).
+
+### w2f-studio-qa-service
+**Decision (D7 fallback lane until O-1):** `infra/studio-qa` (Playwright image pinned to 1.63.0, only the gate's files) serves
+`POST /gate` and `GET /healthz` with one shared Chromium recycled every 50 gates, one context per gate, a bounded queue and an
+optional bearer token. `scripts/deploy-studio-qa.mjs` builds it in ACR and runs it as the Container App `studio-qa` in the
+untrusted environment `taxila-forge-untrusted` (1 vCPU / 2 GiB, min 1). `qa/pool.js gateClient()` uses `STUDIO_QA_URL` in the
+API; a local Chromium only under `STUDIO_QA_LOCAL=1` (bench, tests, the image itself): generated code never runs in the trusted
+API process. **Deviation:** ingress is external, token-locked (an IP allow-list too when taxila-web reports ≤ 64 outbound IPs;
+it reports 401 shared addresses today), because taxila-web lives in another environment and internal ingress is only reachable
+inside its own one.
+- **Reverse if:** O-1 lands (ACA Sandboxes pool, S8), or the two apps move into one VNet (then internal ingress).
+
+### w2f-negative-memory-seeded
+**Decision (§3.7):** `server/studio/memory/<archetype>.json` holds failure SHAPES (never code) that recurred ≥ 3 times; seeded
+for the three probe archetypes from LIVE-STUDIO §14.3's failing-check counts (bar targets under the minimum 35x, done never
+called 31x, the check question graded wrong 22x, labels overlapping 16x, flows the wrong way 13x, ticks off their value 13x
+...). They go in the build prompt and, last, in every repair prompt.
+- **Reverse if:** a memory line is recited into builds as a phrase (then it is rewritten as a shape) or stops recurring over 4
+  weekly benches (then it is retired to rejected.md).
+
+## `owner-reset-2026-10-04` (2026-10-04)
+Owner reset after rating the live product 0/100: the 15 requirements in docs/design/OWNER-RESET-2026-10-04.md bind every stream (ages 9-15 design, class-calibrated difficulty, real-time games, cinematic animation, reasoning, diversion handling, no child-triggered ending, steering, zero visible failure, hands-free duplex, working controls, frequent adaptive generation). Outranked only by child safety.

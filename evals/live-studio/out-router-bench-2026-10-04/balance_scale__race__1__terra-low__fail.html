@@ -1,0 +1,167 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e8;font-family:Arial,sans-serif;color:#563d31}
+#app{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 50% 12%,#fffdf5 0 25%,#fff1d6 76%,#f9e1b7 100%)}
+#title{position:absolute;top:7px;left:12px;right:12px;height:25px;margin:0;text-align:center;font-size:20px;line-height:25px;font-weight:800;color:#70472e}
+#instr{position:absolute;top:33px;left:16px;right:16px;height:18px;margin:0;text-align:center;font-size:12px;line-height:18px;font-weight:700;color:#9a6c4a}
+#feedback{position:absolute;top:52px;left:110px;right:110px;height:22px;text-align:center;font-size:15px;line-height:22px;font-weight:800;color:#8f4f30;opacity:0;transform:translateY(-5px);transition:opacity .22s,transform .22s;z-index:3}
+#feedback.show{opacity:1;transform:translateY(0)}
+#balance{position:absolute;left:0;top:55px;width:360px;height:181px;overflow:visible}
+#assembly{transform-origin:180px 82px;transition:transform .68s cubic-bezier(.22,.9,.25,1.16)}
+#beam{stroke:#805238;stroke-width:12;stroke-linecap:round}
+#beamshine{stroke:#c98a58;stroke-width:3;stroke-linecap:round;opacity:.8}
+.string{stroke:#805238;stroke-width:3;stroke-linecap:round}
+.panplate{fill:#d99655;stroke:#805238;stroke-width:3}
+.panlip{fill:#f3bd73}
+.support{fill:#b97848;stroke:#805238;stroke-width:3}
+.base{fill:#d99756;stroke:#805238;stroke-width:3}
+.weight-body{fill:#ed9c43;stroke:#855237;stroke-width:2.5}
+.weight-top{fill:#ffc970;stroke:#855237;stroke-width:2}
+.weight-number{fill:#fff9e9;font-size:14px;font-weight:800;text-anchor:middle;dominant-baseline:middle}
+#options{position:absolute;left:12px;right:12px;bottom:8px;height:55px;display:flex;justify-content:center;gap:12px}
+.option{width:62px;height:54px;border:3px solid #855237;border-radius:15px;background:linear-gradient(#ffc96f,#e9933d);box-shadow:0 4px 0 #b56a34;cursor:pointer;color:#fffaf0;font-size:17px;font-weight:800;transition:transform .16s,filter .16s,opacity .18s;position:relative;padding:8px 0 0}
+.option:before{content:"";position:absolute;left:19px;top:4px;width:20px;height:10px;border:3px solid #855237;border-bottom:0;border-radius:9px 9px 0 0}
+.option:active{transform:translateY(3px) scale(.94);box-shadow:0 1px 0 #b56a34}
+.option.chosen{opacity:.2;transform:translateY(-13px) scale(.82);pointer-events:none}
+.option[disabled]{cursor:default}
+#sparkles{opacity:0;transition:opacity .2s}
+#sparkles.party{opacity:1}
+.spark{fill:#f2a133;transform-box:fill-box;transform-origin:center;animation:twinkle .55s ease-in-out infinite alternate}
+.spark:nth-child(2){animation-delay:.12s;fill:#e87558}
+.spark:nth-child(3){animation-delay:.25s;fill:#74a890}
+.spark:nth-child(4){animation-delay:.36s;fill:#f2a133}
+@keyframes twinkle{from{transform:scale(.45) rotate(0deg);opacity:.35}to{transform:scale(1.2) rotate(30deg);opacity:1}}
+#balance.celebrate #assembly{animation:bounce .55s ease-in-out 2}
+@keyframes bounce{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-2deg)}}
+.doneonly{display:none}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <p id="instr"></p>
+  <div id="feedback"></div>
+  <svg id="balance" viewBox="0 0 360 181" aria-hidden="true">
+    <ellipse cx="180" cy="169" rx="92" ry="8" fill="#e6c794" opacity=".42"></ellipse>
+    <path class="base" d="M137 164 Q180 147 223 164 Z"></path>
+    <path class="support" d="M171 160 L180 87 L189 160 Z"></path>
+    <circle cx="180" cy="84" r="11" fill="#f5bd6c" stroke="#805238" stroke-width="3"></circle>
+    <g id="assembly">
+      <line id="beam" x1="75" y1="82" x2="285" y2="82"></line>
+      <line id="beamshine" x1="79" y1="79" x2="281" y2="79"></line>
+      <g data-pan="left" data-total="0" id="leftPan">
+        <line class="string" x1="86" y1="85" x2="69" y2="119"></line>
+        <line class="string" x1="86" y1="85" x2="103" y2="119"></line>
+        <path class="panplate" d="M55 117 Q86 130 117 117 L111 128 Q86 137 61 128 Z"></path>
+        <path class="panlip" d="M58 117 Q86 125 114 117"></path>
+        <g id="leftWeights"></g>
+      </g>
+      <g data-pan="right" data-total="0" id="rightPan">
+        <line class="string" x1="274" y1="85" x2="257" y2="119"></line>
+        <line class="string" x1="274" y1="85" x2="291" y2="119"></line>
+        <path class="panplate" d="M243 117 Q274 130 305 117 L299 128 Q274 137 249 128 Z"></path>
+        <path class="panlip" d="M246 117 Q274 125 302 117"></path>
+        <g id="rightWeights"></g>
+      </g>
+    </g>
+    <g id="sparkles">
+      <path class="spark" d="M106 40 l4 9 9 4-9 4-4 9-4-9-9-4 9-4z"></path>
+      <path class="spark" d="M255 38 l3 7 7 3-7 3-3 7-3-7-7-3 7-3z"></path>
+      <path class="spark" d="M132 91 l3 7 7 3-7 3-3 7-3-7-7-3 7-3z"></path>
+      <path class="spark" d="M230 92 l3 7 7 3-7 3-3 7-3-7-7-3 7-3z"></path>
+    </g>
+  </svg>
+  <div id="options"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, items=p.items, index=0, pending=null, finished=false;
+  var title=document.getElementById("title"), instr=document.getElementById("instr");
+  var feedback=document.getElementById("feedback"), options=document.getElementById("options");
+  var leftPan=document.getElementById("leftPan"), rightPan=document.getElementById("rightPan");
+  var leftWeights=document.getElementById("leftWeights"), rightWeights=document.getElementById("rightWeights");
+  var assembly=document.getElementById("assembly"), balance=document.getElementById("balance");
+  var sparks=document.getElementById("sparkles"), ns="http://www.w3.org/2000/svg";
+  title.textContent=Studio.t("title");
+  instr.textContent=Studio.t("instr");
+
+  function total(a){return a.reduce(function(s,v){return s+Number(v)},0)}
+  function makeWeight(v,x,y){
+    var g=document.createElementNS(ns,"g"), r=document.createElementNS(ns,"rect"), top=document.createElementNS(ns,"path"), t=document.createElementNS(ns,"text");
+    g.setAttribute("data-weight",v);
+    r.setAttribute("class","weight-body");r.setAttribute("x",x);r.setAttribute("y",y);r.setAttribute("width","28");r.setAttribute("height","25");r.setAttribute("rx","5");
+    top.setAttribute("class","weight-top");top.setAttribute("d","M "+(x+7)+" "+y+" Q "+(x+14)+" "+(y-9)+" "+(x+21)+" "+y+" Z");
+    t.setAttribute("class","weight-number");t.setAttribute("x",x+14);t.setAttribute("y",y+14);t.textContent=v;
+    g.appendChild(r);g.appendChild(top);g.appendChild(t);return g;
+  }
+  function drawPile(node,vals,cx){
+    node.textContent="";
+    vals.forEach(function(v,i){
+      var col=i%2,row=Math.floor(i/2), x=cx-30+col*31, y=112-row*27;
+      node.appendChild(makeWeight(v,x,y));
+    });
+  }
+  function tilt(){
+    var it=items[index], l=total(it.left), r=total(it.right), side="level", deg=0;
+    if(l>r){side="left";deg=-8}
+    if(r>l){side="right";deg=8}
+    document.getElementById("beam").setAttribute("data-beam","");
+    document.getElementById("beam").setAttribute("data-tilt",side);
+    assembly.style.transform="rotate("+deg+"deg)";
+    leftPan.setAttribute("data-total",l);
+    rightPan.setAttribute("data-total",r);
+  }
+  function drawOptions(){
+    var it=items[index];options.textContent="";
+    it.options.forEach(function(v){
+      var b=document.createElement("button");
+      b.className="option";b.type="button";b.setAttribute("data-option",v);b.textContent=v;
+      b.addEventListener("click",function(){choose(v,b)});
+      options.appendChild(b);
+    });
+  }
+  function render(){
+    var it=items[index];
+    drawPile(leftWeights,it.left,86);
+    drawPile(rightWeights,it.right,274);
+    tilt();drawOptions();
+  }
+  function show(key){
+    feedback.textContent=Studio.t(key);feedback.classList.add("show");
+  }
+  function hide(){feedback.classList.remove("show")}
+  function choose(v,button){
+    if(pending!==null||finished)return;
+    pending=v;button.classList.add("chosen");
+    var it=items[index];it.right.push(v);
+    drawPile(rightWeights,it.right,274);tilt();
+    Studio.event("choose",{value:Number(v)});
+    Studio.answer({value:v});
+  }
+  Studio.onVerdict(function(result){
+    if(pending===null||finished)return;
+    if(result.correct){
+      show("right");sparks.classList.add("party");balance.classList.add("celebrate");
+      Studio.event("verdict",{correct:1});
+      setTimeout(function(){
+        sparks.classList.remove("party");balance.classList.remove("celebrate");hide();pending=null;index++;
+        if(index>=items.length){
+          finished=true;options.textContent="";leftWeights.textContent="";rightWeights.textContent="";
+          title.textContent=Studio.t("done");instr.textContent="";feedback.textContent="";feedback.classList.remove("show");
+          Studio.done();
+        }else{render()}
+      },1050);
+    }else{
+      show("wrong");Studio.event("verdict",{correct:0});
+      setTimeout(function(){
+        var it=items[index], pos=it.right.lastIndexOf(pending);
+        if(pos>-1)it.right.splice(pos,1);
+        pending=null;drawPile(rightWeights,it.right,274);tilt();drawOptions();
+        setTimeout(hide,260);
+      },720);
+    }
+  });
+  render();
+  Studio.ready();
+}());
+
+</script>

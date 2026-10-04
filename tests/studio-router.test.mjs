@@ -9,7 +9,7 @@ import { decide, CAPS, createBreaker, revealable, _setRoutes, loadRoutes, routeF
 import { buildRace } from "../server/studio/build.js";
 import { _setStream } from "../server/studio/builders/index.js";
 import { setSink, _clear } from "../server/studio/telemetry.js";
-import { planBuild, _setChat, checkStringsTable, chooseArchetype, paramsFromKit, teacherCue } from "../server/studio/plan.js";
+import { planBuild, _setChat, checkStringsTable, chooseArchetype, paramsFromKit, teacherCue, q8Strings } from "../server/studio/plan.js";
 import { archetype, FRAME_ARCHETYPES, validateParams, stringKeys, buildParams, minTarget } from "../server/studio/archetypes/index.js";
 import { readFileSync } from "node:fs";
 
@@ -218,4 +218,14 @@ test("planner (code): params only from truth; the kit proves fractions; a string
   assert.match(good.plan.teacherCue, /shades 3\/4 1\/2/);
   _setChat(null);
   assert.equal(routeFor("shade_fraction").race, 2);
+});
+
+test("full Q8 beside the build: Content Safety per string + the Hindi classifier, failing closed", async () => {
+  _setChat(async () => ({ json: { verdicts: [{ i: 0, safe: true, category: "ok" }, { i: 1, safe: false, category: "romance" }] } }));
+  assert.deepEqual((await q8Strings({ strings: { a: "Pizza", b: "x" } }, { contentSafety: async () => 0 })).findings, [{ key: "b", code: "brain_romance" }]);
+  assert.equal((await q8Strings({ strings: { a: "x" } }, { lang: "en", contentSafety: async () => { throw new Error("down"); } })).ok, false, "a Content Safety error is a finding");
+  assert.equal((await q8Strings({ strings: { a: "x" } }, { lang: "en", contentSafety: async () => 2 })).ok, false);
+  _setChat(async () => { throw Object.assign(new Error("f"), { code: "content_filter" }); });
+  assert.deepEqual((await q8Strings({ strings: { a: "x" } }, { contentSafety: async () => 0 })).findings, [{ key: "-", code: "brain_content_filter" }]);
+  _setChat(null);
 });

@@ -1,0 +1,85 @@
+<style>
+*{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff5dc;font-family:Arial,sans-serif;color:#49382d}#app{width:360px;height:320px;position:relative;overflow:hidden;background:linear-gradient(180deg,#fff8e9 0%,#fff0cf 100%)}svg{display:block;width:360px;height:190px}.title{font-size:17px;font-weight:700;fill:#65442f;text-anchor:middle}.label{font-size:13px;font-weight:700;fill:#684936;paint-order:stroke;stroke:#fff8e9;stroke-width:4px;stroke-linejoin:round}.flowlabel{font-size:12px;font-weight:700;fill:#876047;paint-order:stroke;stroke:#fff8e9;stroke-width:4px;stroke-linejoin:round}.sun{fill:#ffca55;stroke:#e9a93a;stroke-width:3px}.ray{stroke:#efae3a;stroke-width:4px;stroke-linecap:round}.leaf{fill:#78bd62;stroke:#3e8c54;stroke-width:4px}.vein{fill:none;stroke:#d7ed9a;stroke-width:2px;stroke-linecap:round}.root{fill:none;stroke:#9b6a3e;stroke-width:5px;stroke-linecap:round;stroke-linejoin:round}.stem{stroke:#5b984b;stroke-width:6px;stroke-linecap:round}.line{fill:none;stroke-linecap:round;stroke-width:3px;opacity:.45}.waterline{stroke:#5ea9d9}.co2line{stroke:#8c8996}.o2line{stroke:#e57a73}.particle{filter:drop-shadow(0 1px 1px rgba(70,50,30,.18))}.water{fill:#55aee0}.co2{fill:#827d91}.o2{fill:#e66f68}.focus{filter:drop-shadow(0 0 5px #ffad48);opacity:1!important}.soft{opacity:.68}.pulse{animation:pulse 1.3s ease-in-out infinite}@keyframes pulse{50%{transform:scale(1.05);transform-origin:center}}#controls{position:absolute;top:191px;left:0;width:360px;height:52px}button{border:0;font:700 14px Arial,sans-serif;color:#fff;background:#d77951;border-radius:17px;box-shadow:0 4px 0 #ad563b;transition:transform .15s,box-shadow .15s;cursor:pointer}button:active{transform:translateY(3px) scale(.97);box-shadow:0 1px 0 #ad563b}#play{position:absolute;left:10px;top:0;width:110px;height:52px;background:#6ca967;box-shadow:0 4px 0 #4b8148}#next{position:absolute;right:10px;top:0;width:110px;height:52px}.caption{position:absolute;left:126px;top:7px;width:108px;height:38px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;font-weight:700;color:#865b43;line-height:14px}.ask{position:absolute;top:246px;left:6px;width:348px;height:19px;text-align:center;font-size:13px;font-weight:700;color:#65442f;white-space:nowrap}.options{position:absolute;left:0;top:268px;width:360px;height:52px;display:flex;justify-content:space-around;gap:8px;padding:0 8px}.option{width:104px;height:52px;flex:1;background:#d77951}.option:nth-child(2){background:#6ca967;box-shadow:0 4px 0 #4b8148}.option:nth-child(3){background:#5e9fc7;box-shadow:0 4px 0 #417b9f}.wrong{animation:wiggle .35s ease-in-out}@keyframes wiggle{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}.right{color:#4d884b}
+</style>
+<div id="app">
+<svg viewBox="0 0 360 190" aria-hidden="true">
+<text id="title" class="title" x="180" y="20"></text>
+<g id="scene">
+<path id="co2path" class="line co2line" d="M24 111 C72 107 105 107 143 108"></path>
+<path id="o2path" class="line o2line" d="M216 99 C258 95 297 92 337 87"></path>
+<path id="waterpath" class="line waterline" d="M160 166 C159 146 160 131 166 117"></path>
+<g id="sunDraw">
+<circle id="sunEntity" class="sun" cx="57" cy="73" r="20"></circle>
+<g class="ray"><path d="M57 43v-9"/><path d="M57 103v9"/><path d="M27 73h-9"/><path d="M87 73h9"/><path d="M36 52l-7-7"/><path d="M78 94l7 7"/><path d="M36 94l-7 7"/><path d="M78 52l7-7"/></g>
+</g>
+<path id="stemDraw" class="stem" d="M178 142 C174 151 171 160 168 170"></path>
+<path id="rootEntity" class="root" d="M168 166v13m0-6l-13 9m13-5l12 8m-12-11l7-12"></path>
+<path id="hubEntity" class="leaf" d="M181 66 C220 67 235 91 216 119 C198 143 165 139 147 115 C135 96 149 72 181 66Z"></path>
+<path class="vein" d="M157 111 C176 104 193 94 212 81 M176 103l-6-17 M184 98l5 17 M168 108l-12-6"></path>
+<g id="particles"></g>
+<g id="labels"></g>
+</g>
+</svg>
+<div id="controls"><button id="play" data-action="play"></button><div id="caption" class="caption" data-caption></div><button id="next" data-action="next"></button></div>
+<div id="ask" class="ask"></div>
+<div id="options" class="options"></div>
+</div>
+<script>
+
+(function(){
+var p=Studio.params, ns="http://www.w3.org/2000/svg", particles=document.getElementById("particles"), labels=document.getElementById("labels"), playing=true, step=0, done=false, frozen=0, pauseAt=0;
+function tx(k){return Studio.t(k)}
+function setEntity(el,key){el.setAttribute("data-entity",key)}
+setEntity(document.getElementById("hubEntity"),p.hub);
+setEntity(document.getElementById("sunEntity"),p.entities[0]);
+setEntity(document.getElementById("rootEntity"),p.entities[1]);
+document.getElementById("title").textContent=tx("title");
+var positions={sun:[17,44],roots:[205,178],leaf:[222,125],water:[113,160],co2:[15,126],o2:[283,80]};
+function label(key,kind){
+var t=document.createElementNS(ns,"text"),q=positions[key]||[10,10];
+t.setAttribute("class",kind?"flowlabel":"label");t.setAttribute("x",q[0]);t.setAttribute("y",q[1]);t.setAttribute("data-label",key);t.textContent=tx(key);labels.appendChild(t);
+}
+label(p.hub,0);p.entities.forEach(function(k){label(k,0)});p.flows.forEach(function(f){label(f.key,1)});
+var routes={water:[[160,158],[166,118]],co2:[[27,111],[143,108]],o2:[[218,99],[335,87]]}, dots=[];
+p.flows.forEach(function(f,fi){
+for(var i=0;i<3;i++){var c=document.createElementNS(ns,"circle");c.setAttribute("r","5");c.setAttribute("class","particle "+f.key);c.setAttribute("data-flow",f.key);particles.appendChild(c);dots.push({el:c,f:f,offset:(i/3)+fi*.09});}
+});
+function now(){return playing?Date.now()-frozen:pauseAt-frozen}
+function move(){
+var n=now()/1900;
+dots.forEach(function(d){
+var a=routes[d.f.key],v=(n+d.offset)%1,x=a[0][0]+(a[1][0]-a[0][0])*v,y=a[0][1]+(a[1][1]-a[0][1])*v;
+d.el.setAttribute("cx",x);d.el.setAttribute("cy",y);
+});
+requestAnimationFrame(move);
+}
+function emphasis(){
+document.getElementById("hubEntity").classList.remove("focus","pulse");
+p.flows.forEach(function(f){document.querySelectorAll('[data-flow="'+f.key+'"]').forEach(function(x){x.classList.remove("focus")})});
+var which=step===0?"hub":p.flows[step-1]&&p.flows[step-1].key;
+if(which==="hub"){document.getElementById("hubEntity").classList.add("focus","pulse")}
+else if(which){document.querySelectorAll('[data-flow="'+which+'"]').forEach(function(x){x.classList.add("focus")})}
+document.getElementById("caption").textContent=tx("step"+(step+1));
+}
+function toggle(){
+if(playing){pauseAt=Date.now();playing=false}else{frozen+=Date.now()-pauseAt;playing=true}
+document.getElementById("play").textContent=tx(playing?"pause":"play");
+Studio.event("play",{on:playing?1:0});
+}
+document.getElementById("play").addEventListener("click",toggle);
+document.getElementById("next").textContent=tx("next");
+document.getElementById("next").addEventListener("click",function(){step=(step+1)%p.steps;emphasis();Studio.event("next",{step:step+1})});
+document.getElementById("play").textContent=tx("pause");
+document.getElementById("ask").textContent=tx("ask");
+p.options.forEach(function(k){
+var b=document.createElement("button");b.className="option";b.setAttribute("data-option",k);b.textContent=tx(k);
+b.addEventListener("click",function(){Studio.answer(k);Studio.event("answer",{option:k})});document.getElementById("options").appendChild(b);
+});
+Studio.onVerdict(function(v){
+var a=document.getElementById("ask");a.textContent=tx(v.correct?"right":"wrong");a.className="ask "+(v.correct?"right":"wrong");
+if(v.correct&&!done){done=true;Studio.done()}
+});
+emphasis();move();Studio.ready();
+})();
+
+</script>

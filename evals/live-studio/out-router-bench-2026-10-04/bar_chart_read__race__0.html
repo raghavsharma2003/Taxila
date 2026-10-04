@@ -1,0 +1,96 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#503a2c;background:#fff8eb}
+.screen{width:360px;height:320px;padding:12px 10px 8px;overflow:hidden;background:linear-gradient(145deg,#fffaf0,#fff1d9)}
+.top{height:57px;padding:0 5px}
+.title{font-size:18px;line-height:23px;font-weight:800;color:#794b2e}
+.ask{font-size:14px;line-height:20px;font-weight:650;color:#674b39}
+.chart{display:block;width:340px;height:211px;overflow:visible}
+.grid{stroke:#eadfce;stroke-width:1}
+.axis{stroke:#a98b6c;stroke-width:1.4}
+.tick{font:11px system-ui,sans-serif;fill:#705b49;text-anchor:end}
+.axis-title{font:12px system-ui,sans-serif;font-weight:700;fill:#705b49}
+.bar{fill:#e9a24d;stroke:#c67c32;stroke-width:1.3;rx:5;transform-box:fill-box;transform-origin:center bottom;transform:scaleY(0)}
+.bar.grow{transform:scaleY(1);transition:transform .75s cubic-bezier(.2,.85,.25,1)}
+.bar:active{filter:brightness(.94)}
+.name{font:10px system-ui,sans-serif;font-weight:650;fill:#604934;text-anchor:middle}
+.column{fill:transparent;cursor:pointer}
+.column:active{fill:#f4d7ad55}
+.status{height:32px;padding:5px 8px;border-radius:12px;background:#fff0d9;color:#704a2c;font-size:13px;line-height:20px;font-weight:700;text-align:center;opacity:0;transition:opacity .2s,transform .2s;transform:translateY(3px)}
+.status.show{opacity:1;transform:translateY(0)}
+</style>
+<div class="screen">
+  <div class="top">
+    <div class="title" id="title"></div>
+    <div class="ask" id="ask"></div>
+  </div>
+  <svg class="chart" id="chart" viewBox="0 0 340 222" role="img" aria-label=""></svg>
+  <div class="status" id="status" aria-live="polite"></div>
+</div>
+<script>
+
+(()=> {
+  const p=Studio.params;
+  const data=p.data;
+  const t=key=>Studio.t(key);
+  document.getElementById("title").textContent=t("title");
+  document.getElementById("ask").textContent=t("ask");
+  const svg=document.getElementById("chart");
+  const ns="http://www.w3.org/2000/svg";
+  const make=(tag,attrs={},text)=> {
+    const el=document.createElementNS(ns,tag);
+    for(const [k,v] of Object.entries(attrs)) el.setAttribute(k,v);
+    if(text!==undefined) el.textContent=text;
+    return el;
+  };
+  const plotLeft=40, plotRight=336, plotTop=14, base=172, plotHeight=base-plotTop;
+  const maxValue=Math.max(...data.map(d=>Number(d.value)));
+  const step=Math.max(1,Math.ceil(maxValue/4));
+  const maxScale=Math.ceil(maxValue/step)*step;
+  svg.append(make("text",{class:"axis-title",x:11,y:96,transform:"rotate(-90 11 96)","text-anchor":"middle"},t("yaxis")));
+  for(let v=0;v<=maxScale;v+=step){
+    const y=base-(v/maxScale)*plotHeight;
+    svg.append(make("line",{class:v===0?"axis":"grid",x1:plotLeft,y1:y,x2:plotRight,y2:y}));
+    svg.append(make("text",{class:"tick",x:34,y:y+4,"data-tick":v},String(v)));
+  }
+  const colWidth=(plotRight-plotLeft)/data.length;
+  data.forEach((d,i)=>{
+    const center=plotLeft+colWidth*(i+.5);
+    const h=(Number(d.value)/maxScale)*plotHeight;
+    const bar=make("rect",{class:"bar","data-bar":d.key,"data-value":d.value,x:center-17,y:base-h,width:34,height:h});
+    svg.append(bar);
+    svg.append(make("text",{class:"name",x:center,y:194},t(d.key)));
+    const target=make("rect",{class:"column","data-column":d.key,x:plotLeft+colWidth*i,y:plotTop,width:colWidth,height:208,tabindex:"0",role:"button","aria-label":t(d.key)});
+    target.addEventListener("click",()=>submit(d.key));
+    target.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();submit(d.key)}});
+    svg.append(target);
+  });
+  let locked=false, completed=false;
+  const status=document.getElementById("status");
+  function show(key){
+    status.textContent=t(key);
+    status.classList.add("show");
+  }
+  function submit(key){
+    if(locked||completed)return;
+    locked=true;
+    Studio.event("bar_tap",{key});
+    Studio.answer(key);
+  }
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      completed=true;
+      show("right");
+      status.textContent=t("right")+" "+t("done");
+      Studio.done();
+    }else{
+      show("wrong");
+      locked=false;
+    }
+  });
+  requestAnimationFrame(()=>requestAnimationFrame(()=>svg.querySelectorAll(".bar").forEach(b=>b.classList.add("grow"))));
+  Studio.ready();
+})();
+
+</script>

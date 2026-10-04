@@ -1,0 +1,130 @@
+<style>
+  *{box-sizing:border-box}
+  #balance{width:360px;height:320px;overflow:hidden;position:relative;background:#fff8eb;color:#584536;font-family:system-ui,sans-serif;text-align:center}
+  #balance h1{margin:10px 12px 0;font-size:19px;line-height:24px;color:#704b38}
+  #instruction{height:26px;margin:2px 12px 0;font-size:13px;line-height:22px}
+  #scene{position:relative;height:177px}
+  #stand{position:absolute;left:174px;top:72px;width:12px;height:102px;border-radius:8px;background:#d7a46b}
+  #stand:after{content:"";position:absolute;left:-30px;bottom:0;width:72px;height:9px;border-radius:9px;background:#b87955}
+  #pivot{position:absolute;left:169px;top:67px;width:22px;height:22px;border:5px solid #9c6447;border-radius:50%;background:#ffe0a3;z-index:2}
+  #swing{position:absolute;left:30px;top:77px;width:300px;height:108px;transform-origin:150px 0;transition:transform .65s cubic-bezier(.2,1.35,.45,1)}
+  [data-beam]{position:absolute;left:0;top:0;width:300px;height:10px;border-radius:10px;background:#a76b4d;box-shadow:0 3px 0 #80533f}
+  .pan{position:absolute;top:10px;width:112px;height:91px}
+  .pan.left{left:-27px}.pan.right{right:-27px}
+  .cord{position:absolute;top:0;width:3px;height:45px;background:#b78965}
+  .cord.a{left:15px}.cord.b{right:15px}
+  .tray{position:absolute;left:0;bottom:0;width:112px;height:53px;border-radius:8px 8px 28px 28px;background:#e8b981;border:3px solid #b87955;display:flex;align-items:center;justify-content:center;gap:3px;flex-wrap:wrap;padding:4px}
+  .weight{min-width:29px;height:32px;padding:0 3px;border-radius:9px 9px 5px 5px;background:#68a8a0;border:2px solid #407d79;color:white;display:grid;place-items:center;font-size:15px;font-weight:800;box-shadow:0 3px 0 #39736f}
+  #options{height:61px;display:flex;justify-content:center;gap:14px;align-items:center}
+  [data-option]{width:64px;height:56px;border:2px solid #ad7853;border-radius:15px;background:#f4cd91;color:#63452f;font:800 23px system-ui,sans-serif;box-shadow:0 5px 0 #bd8b61;cursor:pointer;transition:transform .2s,opacity .2s}
+  [data-option]:active{transform:translateY(4px) scale(.94);box-shadow:0 1px 0 #bd8b61}
+  [data-option]:disabled{cursor:default}
+  #feedback{height:25px;font-size:16px;font-weight:750;color:#658c68}
+  #balance.celebrate #pivot{animation:pop .55s ease}
+  @keyframes pop{50%{transform:scale(1.5);background:#ffcf68}}
+</style>
+<div id="balance">
+  <h1 id="title"></h1>
+  <div id="instruction"></div>
+  <div id="scene">
+    <div id="stand"></div><div id="pivot"></div>
+    <div id="swing">
+      <div data-beam data-tilt="level"></div>
+      <div class="pan left" data-pan="left" data-total=""><i class="cord a"></i><i class="cord b"></i><div class="tray"></div></div>
+      <div class="pan right" data-pan="right" data-total=""><i class="cord a"></i><i class="cord b"></i><div class="tray"></div></div>
+    </div>
+  </div>
+  <div id="options"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const root=document.getElementById('balance'), swing=document.getElementById('swing');
+  const beam=root.querySelector('[data-beam]'), left=root.querySelector('[data-pan="left"]'), right=root.querySelector('[data-pan="right"]');
+  const options=document.getElementById('options'), feedback=document.getElementById('feedback');
+  const items=Studio.params.items;
+  let index=0, chosen=null, busy=false, finished=false;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instruction').textContent=Studio.t('instr');
+  function sum(values){return values.reduce((a,b)=>a+Number(b),0)}
+  function drawPan(pan,values){
+    pan.dataset.total=String(sum(values));
+    const tray=pan.querySelector('.tray');
+    tray.replaceChildren();
+    values.forEach(value=>{
+      const weight=document.createElement('div');
+      weight.className='weight';
+      weight.dataset.weight=String(value);
+      weight.textContent=String(value);
+      tray.append(weight);
+    });
+  }
+  function tilt(){
+    const l=Number(left.dataset.total),r=Number(right.dataset.total);
+    const side=l>r?'left':r>l?'right':'level';
+    beam.dataset.tilt=side;
+    swing.style.transform='rotate('+(side==='left'?-12:side==='right'?12:0)+'deg)';
+  }
+  function render(){
+    const item=items[index];
+    chosen=null;busy=false;
+    root.classList.remove('celebrate');
+    feedback.textContent='';
+    drawPan(left,item.left);
+    drawPan(right,item.right);
+    options.replaceChildren();
+    item.options.forEach(value=>{
+      const button=document.createElement('button');
+      button.type='button';
+      button.dataset.option=String(value);
+      button.textContent=String(value);
+      button.addEventListener('click',()=>choose(value,button));
+      options.append(button);
+    });
+    tilt();
+  }
+  function choose(value,button){
+    if(busy||finished)return;
+    busy=true;chosen=value;
+    button.remove();
+    drawPan(right,[...items[index].right,value]);
+    tilt();
+    Studio.event('choose',{value:String(value)});
+    Studio.answer({value:value});
+  }
+  Studio.onVerdict(({correct})=>{
+    if(!busy||finished)return;
+    if(correct){
+      feedback.textContent=Studio.t('right');
+      root.classList.add('celebrate');
+      setTimeout(()=>{
+        if(index+1<items.length){index++;render()}
+        else{
+          finished=true;
+          options.replaceChildren();
+          feedback.textContent=Studio.t('done');
+          Studio.done();
+        }
+      },1050);
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      setTimeout(()=>{
+        drawPan(right,items[index].right);
+        tilt();
+        const button=document.createElement('button');
+        button.type='button';
+        button.dataset.option=String(chosen);
+        button.textContent=String(chosen);
+        button.addEventListener('click',()=>choose(chosen,button));
+        const position=items[index].options.findIndex(v=>String(v)===String(chosen));
+        options.insertBefore(button,options.children[position]||null);
+        chosen=null;busy=false;
+      },850);
+    }
+  });
+  render();
+  Studio.ready();
+})();
+
+</script>

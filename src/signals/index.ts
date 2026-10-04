@@ -6,11 +6,11 @@
 import type { SignalExtras } from "../../shared/signals.ts";
 import { HOP_MS, type Frame } from "../voice/dsp.ts";
 import { onsetContentMs } from "./onset.ts";
-import { durQ, echoRisk, levelQ, speakerShift, type OutputRoute } from "./q.ts";
+import { bedQ, durQ, echoRisk, levelQ, speakerShift, type OutputRoute } from "./q.ts";
 import { nucleiPerSec } from "./rate.ts";
 
 export { leadingFilledMs, onsetContentMs } from "./onset.ts";
-export { echoRisk, speakerShift, durQ, levelQ } from "./q.ts";
+export { echoRisk, speakerShift, durQ, levelQ, bedQ } from "./q.ts";
 export { nucleiPerSec } from "./rate.ts";
 export { laughCandidate, LAUGH_DETECTOR_ENABLED } from "./laugh.ts";
 
@@ -26,11 +26,15 @@ export interface ExtrasContext {
   baselineF0Hz?: number;
   baselineN?: number;
   band?: string;
+  /** Epoch ms the teacher's audio ended on this device (the tracker's teacherEndAt); enables qBed. */
+  teacherEndAt?: number;
+  /** The full recent frame track (the tracker's 90 s ring), for qBed's pre-onset window; defaults to the window. */
+  history?: Frame[];
 }
 
 /** Feature ranges the server must admit before the client sends these (for server/voice/features.js FEATURE_RANGES). */
 export const EXTRA_RANGES: Record<keyof SignalExtras, [number, number]> = {
-  onsetContentMs: [0, 140_000], echoRisk: [0, 1], speakerShift: [0, 1], nucleiPerSec: [0, 20], qDur: [0, 1], qLevel: [0, 1],
+  onsetContentMs: [0, 140_000], echoRisk: [0, 1], speakerShift: [0, 1], nucleiPerSec: [0, 20], qDur: [0, 1], qLevel: [0, 1], qBed: [0, 1],
 };
 
 /** Compute the extras for one utterance window (the same frames utteranceStats() read). */
@@ -40,6 +44,7 @@ export function signalExtras(window: Frame[], ctx: ExtrasContext, hopMs = HOP_MS
     speakerShift: speakerShift(window, { baselineF0Hz: ctx.baselineF0Hz, baselineN: ctx.baselineN, band: ctx.band }, hopMs),
     qDur: durQ(ctx.durationMs),
     qLevel: levelQ(ctx),
+    qBed: bedQ(ctx.history ?? window, ctx.teacherEndAt, undefined),
   };
   const oc = onsetContentMs(ctx.onsetMs, window, ctx.durationMs, hopMs);
   if (oc != null) out.onsetContentMs = oc;

@@ -48,6 +48,24 @@ export function speakerShift(frames: Frame[], o: { baselineF0Hz?: number; baseli
   return far && jump > SPEAKER_JUMP_ST ? 1 : 0;
 }
 
+/** Speech-flagged fraction of the window before the teacher stopped above which the room counts as a speech bed. [U] */
+export const BED_SPEECH_FRAC = 0.3;
+export const BED_WINDOW_MS = 600;
+
+/**
+ * qBed (build addition, found by ES-2): fraction of speech-flagged frames in the BED_WINDOW_MS before the teacher's audio
+ * ended on this device. Echo cancellation removes the teacher, so speech there is the room: a TV, siblings, a classroom.
+ * ES-2 (2026-10-04): with TV babble at 10/0 dB SNR, A1 fell to 19-20% within ±60 ms (the babble starts the clock), so a
+ * speech bed makes the onset and pause reads unreliable. Conservative by design: a loudspeaker's residual echo would also
+ * trip it, which only drops acoustics (q), never causes a move. Returns 1 (clean) or 0 (bed), or 1 without frames.
+ */
+export function bedQ(frames: Frame[], teacherEndAt: number | undefined, windowMs = BED_WINDOW_MS): number {
+  if (teacherEndAt == null) return 1;
+  const w = frames.filter((f) => f.t >= teacherEndAt - windowMs && f.t <= teacherEndAt);
+  if (w.length < Math.floor(windowMs / HOP_MS / 2)) return 1;
+  return w.filter((f) => f.speech).length / w.length > BED_SPEECH_FRAC ? 0 : 1;
+}
+
 /** qDur: 0 under MIN_RELIABLE_MS, else 1 (the server halves it for pause features under 1500 ms). */
 export const durQ = (durationMs: number): number => (durationMs >= MIN_RELIABLE_MS ? 1 : 0);
 

@@ -1,0 +1,115 @@
+<style>
+*{box-sizing:border-box}
+.stage{width:360px;height:320px;overflow:hidden;background:#fff8eb;color:#42372f;font-family:system-ui,sans-serif;padding:12px;position:relative}
+h1{font-size:18px;line-height:22px;margin:0 0 3px;color:#644a39;text-align:center}
+.instr{font-size:12px;line-height:15px;text-align:center;margin:0;height:18px;color:#79695b}
+.balance{height:164px;position:relative;margin-top:1px}
+.rig{position:absolute;inset:0;transform-origin:180px 111px;transition:transform 650ms cubic-bezier(.2,.8,.2,1)}
+.beam{position:absolute;left:63px;top:41px;width:234px;height:12px;border-radius:12px;background:#c47b42;box-shadow:inset 0 -3px #a85d32}
+.hanger{position:absolute;top:51px;width:3px;height:42px;background:#9b7659}
+.hanger.left{left:84px}.hanger.right{right:84px}
+.pan{position:absolute;top:91px;width:112px;height:52px;border:3px solid #bc8050;border-top:0;border-radius:0 0 50% 50%;background:#f6dfbf;display:flex;align-items:center;justify-content:center;gap:4px;padding:3px}
+.pan.left{left:26px}.pan.right{right:26px}
+.pivot{position:absolute;left:159px;top:52px;width:0;height:0;border-left:21px solid transparent;border-right:21px solid transparent;border-bottom:57px solid #8c674b}
+.base{position:absolute;left:131px;top:107px;width:98px;height:9px;border-radius:8px;background:#cba27a}
+.weight{min-width:26px;height:27px;padding:2px 4px;border-radius:8px 8px 6px 6px;background:#efad62;border:2px solid #d8893f;color:#543c2b;font-weight:800;font-size:14px;line-height:19px;text-align:center;box-shadow:0 2px 0 #c77a38}
+.options{height:67px;display:flex;justify-content:center;align-items:center;gap:12px}
+.option{width:68px;height:60px;border:0;border-radius:16px;background:#f1d6b5;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s,background .2s;box-shadow:0 3px 0 #dfbd96}
+.option .weight{width:38px;height:38px;border-radius:11px;font-size:18px;line-height:30px}
+.option:active{transform:scale(.92)}
+.option:disabled{opacity:.5;cursor:default}
+.status{height:22px;text-align:center;font-size:14px;font-weight:700;color:#6a7951;padding-top:2px}
+.done{position:absolute;inset:0;background:#fff8eb;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;font-size:20px;font-weight:800;color:#644a39}
+[hidden]{display:none!important}
+</style>
+<div class="stage">
+  <h1 id="title"></h1>
+  <p class="instr" id="instr"></p>
+  <div class="balance">
+    <div class="rig" id="rig">
+      <div class="beam" data-beam data-tilt="level"></div>
+      <div class="hanger left"></div><div class="hanger right"></div>
+      <div class="pan left" data-pan="left" data-total="0"></div>
+      <div class="pan right" data-pan="right" data-total="0"></div>
+    </div>
+    <div class="pivot"></div><div class="base"></div>
+  </div>
+  <div class="options" id="options"></div>
+  <div class="status" id="status" aria-live="polite"></div>
+  <div class="done" id="done" hidden></div>
+</div>
+<script>
+
+(()=>{
+const p=Studio.params, t=k=>Studio.t(k);
+const title=document.getElementById('title'), instr=document.getElementById('instr');
+const rig=document.getElementById('rig'), beam=document.querySelector('[data-beam]');
+const leftPan=document.querySelector('[data-pan="left"]'), rightPan=document.querySelector('[data-pan="right"]');
+const optionsEl=document.getElementById('options'), status=document.getElementById('status'), doneEl=document.getElementById('done');
+title.textContent=t('title'); instr.textContent=t('instr');
+let index=0, locked=false, finished=false;
+function weight(v){const n=document.createElement('span');n.className='weight';n.dataset.weight=String(v);n.textContent=String(v);return n}
+function updateTilt(){
+ const a=Number(leftPan.dataset.total), b=Number(rightPan.dataset.total);
+ const tilt=a>b?'left':b>a?'right':'level';
+ beam.dataset.tilt=tilt;
+ rig.style.transform=tilt==='left'?'rotate(-9deg)':tilt==='right'?'rotate(9deg)':'rotate(0deg)';
+}
+function totals(item){
+ leftPan.replaceChildren(...item.left.map(weight));
+ rightPan.replaceChildren(...item.right.map(weight));
+ leftPan.dataset.total=String(item.left.reduce((a,b)=>a+b,0));
+ rightPan.dataset.total=String(item.right.reduce((a,b)=>a+b,0));
+ updateTilt();
+}
+function showItem(){
+ locked=false;status.textContent='';optionsEl.replaceChildren();
+ const item=p.items[index];totals(item);
+ item.options.forEach(value=>{
+  const button=document.createElement('button');button.type='button';button.className='option';button.dataset.option=String(value);button.setAttribute('aria-label',String(value));button.append(weight(value));
+  button.addEventListener('click',()=>{
+   if(locked||finished)return;
+   locked=true;
+   const moving=weight(value);rightPan.append(moving);
+   rightPan.dataset.total=String(Number(rightPan.dataset.total)+Number(value));
+   updateTilt();
+   Array.from(optionsEl.children).forEach(x=>x.disabled=true);
+   Studio.event('choose',{value:Number(value)});
+   Studio.answer({value});
+  });
+  optionsEl.append(button);
+ });
+}
+Studio.onVerdict(({correct})=>{
+ if(finished)return;
+ if(!correct){
+  status.textContent=t('wrong');
+  Studio.event('verdict',{result:'wrong'});
+  setTimeout(()=>{
+   const item=p.items[index];
+   const picked=rightPan.querySelector('[data-weight]:last-child');
+   if(picked&&item.options.some(v=>String(v)===picked.dataset.weight))picked.remove();
+   rightPan.dataset.total=String(item.right.reduce((a,b)=>a+b,0));
+   updateTilt();locked=false;
+   Array.from(optionsEl.children).forEach(x=>x.disabled=false);
+   status.textContent='';
+  },850);
+  return;
+ }
+ status.textContent=t('right');
+ Studio.event('verdict',{result:'correct'});
+ rightPan.dataset.total=String(leftPan.dataset.total);
+ updateTilt();
+ setTimeout(()=>{
+  index++;
+  if(index>=p.items.length){
+   finished=true;optionsEl.replaceChildren();status.textContent='';
+   doneEl.textContent=t('done');doneEl.hidden=false;Studio.done();
+  }else showItem();
+ },900);
+});
+showItem();
+Studio.ready();
+})();
+
+</script>

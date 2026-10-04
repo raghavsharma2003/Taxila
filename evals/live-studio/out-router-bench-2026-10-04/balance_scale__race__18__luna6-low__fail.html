@@ -1,0 +1,139 @@
+<style>
+*{box-sizing:border-box}
+.stage{width:360px;height:320px;overflow:hidden;position:relative;background:#fff7e8;color:#533c32;font-family:system-ui,sans-serif;border-radius:18px}
+h1{position:absolute;top:9px;left:14px;margin:0;font-size:19px;line-height:24px;font-weight:800}
+#instr{position:absolute;top:35px;left:14px;right:14px;margin:0;font-size:12px;line-height:15px;color:#795d4d}
+svg{position:absolute;left:0;top:55px;width:360px;height:185px;overflow:visible}
+#moving{transform-box:view-box;transform-origin:180px 65px;transition:transform .75s cubic-bezier(.2,.8,.25,1)}
+.beam{stroke:#a96938;stroke-width:9;stroke-linecap:round}
+.hanger{stroke:#bd8653;stroke-width:3}
+.pan{fill:#f6c96f;stroke:#a96938;stroke-width:3}
+.support{fill:#df9e50}
+.panweight{fill:#fff0c9;stroke:#9f633b;stroke-width:2}
+.pannum{font-size:14px;font-weight:800;fill:#533c32;text-anchor:middle;dominant-baseline:middle}
+.options{position:absolute;left:13px;right:13px;bottom:13px;height:64px;display:flex;gap:10px;justify-content:center}
+.option{height:62px;min-width:72px;flex:1;border:2px solid #b97843;border-radius:15px;background:#ffe2a0;color:#533c32;font-size:21px;font-weight:800;box-shadow:0 4px 0 #d3a45e;cursor:pointer;transition:transform .16s,background .2s,opacity .2s}
+.option:active{transform:scale(.93)}
+.option[disabled]{opacity:.5;cursor:default}
+#feedback{position:absolute;left:14px;right:14px;bottom:82px;height:24px;text-align:center;font-size:16px;font-weight:800;color:#a45f36}
+.bounce{animation:bounce .55s ease-in-out 2}
+@keyframes bounce{50%{transform:scale(1.08)}}
+</style>
+<div class="stage">
+  <h1 id="title"></h1>
+  <p id="instr"></p>
+  <svg viewBox="0 0 360 185" aria-hidden="true">
+    <path class="support" d="M180 64 L151 159 Q180 170 209 159 Z"/>
+    <rect x="140" y="158" width="80" height="10" rx="5" fill="#c47c3f"/>
+    <g id="moving">
+      <line class="beam" x1="66" y1="65" x2="294" y2="65"/>
+      <g id="leftPan" data-pan="left" data-total="0">
+        <line class="hanger" x1="76" y1="67" x2="76" y2="120"/>
+        <line class="hanger" x1="64" y1="67" x2="64" y2="120"/>
+        <path class="pan" d="M48 120 Q70 141 92 120 Z"/>
+        <g class="weights"></g>
+      </g>
+      <g id="rightPan" data-pan="right" data-total="0">
+        <line class="hanger" x1="284" y1="67" x2="284" y2="120"/>
+        <line class="hanger" x1="296" y1="67" x2="296" y2="120"/>
+        <path class="pan" d="M268 120 Q290 141 312 120 Z"/>
+        <g class="weights"></g>
+      </g>
+    </g>
+    <circle cx="180" cy="65" r="9" fill="#f6c96f" stroke="#a96938" stroke-width="3"/>
+  </svg>
+  <div id="feedback"></div>
+  <div class="options" id="options"></div>
+</div>
+<script>
+
+(()=> {
+  const items=Studio.params.items;
+  const title=document.getElementById('title');
+  const instr=document.getElementById('instr');
+  const feedback=document.getElementById('feedback');
+  const moving=document.getElementById('moving');
+  const leftPan=document.getElementById('leftPan');
+  const rightPan=document.getElementById('rightPan');
+  const optionBox=document.getElementById('options');
+  title.textContent=Studio.t('title');
+  instr.textContent=Studio.t('instr');
+  let index=0, locked=false, finished=false;
+  const total=a=>a.reduce((s,n)=>s+n,0);
+  function weightSvg(value,x,y){
+    const ns='http://www.w3.org/2000/svg';
+    const g=document.createElementNS(ns,'g');
+    g.setAttribute('data-weight',String(value));
+    const r=document.createElementNS(ns,'rect');
+    r.setAttribute('class','panweight');r.setAttribute('x',x-17);r.setAttribute('y',y-10);r.setAttribute('width','34');r.setAttribute('height','20');r.setAttribute('rx','7');
+    const t=document.createElementNS(ns,'text');
+    t.setAttribute('class','pannum');t.setAttribute('x',x);t.setAttribute('y',y);t.textContent=value;
+    g.append(r,t);return g;
+  }
+  function drawPan(pan,values,cx){
+    pan.dataset.total=String(total(values));
+    const holder=pan.querySelector('.weights');
+    holder.replaceChildren();
+    values.forEach((v,i)=>holder.append(weightSvg(v,cx,114-i*19)));
+  }
+  function setTilt(){
+    const l=Number(leftPan.dataset.total),r=Number(rightPan.dataset.total);
+    const tilt=l>r?'left':r>l?'right':'level';
+    moving.dataset.tilt=tilt;
+    moving.style.transform=`rotate(${tilt==='left'?-10:tilt==='right'?10:0}deg)`;
+  }
+  function paint(){
+    const item=items[index];
+    drawPan(leftPan,item.left,70);drawPan(rightPan,item.right,290);
+    setTilt();
+    optionBox.replaceChildren();
+    item.options.forEach(value=>{
+      const b=document.createElement('button');
+      b.type='button';b.className='option';b.dataset.option=String(value);b.textContent=value;
+      b.addEventListener('click',()=>choose(value,b));
+      optionBox.append(b);
+    });
+    feedback.textContent='';
+  }
+  function choose(value,button){
+    if(locked||finished)return;
+    locked=true;
+    const item=items[index];
+    button.disabled=true;
+    drawPan(rightPan,[...item.right,value],290);setTilt();
+    Studio.event('choose',{item:index,value});
+    Studio.answer({value});
+  }
+  Studio.onVerdict(({correct})=>{
+    if(finished)return;
+    if(correct){
+      feedback.textContent=Studio.t('right');
+      moving.dataset.tilt='level';
+      moving.style.transform='rotate(0deg)';
+      moving.classList.add('bounce');
+      window.setTimeout(()=>{
+        moving.classList.remove('bounce');
+        index++;
+        if(index>=items.length){
+          finished=true;
+          optionBox.replaceChildren();
+          feedback.textContent=Studio.t('done');
+          Studio.done();
+        }else{locked=false;paint();}
+      },1000);
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      window.setTimeout(()=>{
+        if(finished)return;
+        drawPan(rightPan,items[index].right,290);setTilt();
+        feedback.textContent='';
+        optionBox.querySelectorAll('.option').forEach(b=>b.disabled=false);
+        locked=false;
+      },900);
+    }
+  });
+  paint();
+  Studio.ready();
+})();
+
+</script>

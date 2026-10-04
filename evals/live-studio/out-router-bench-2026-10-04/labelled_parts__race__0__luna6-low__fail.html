@@ -1,0 +1,92 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8eb;color:#493d35}
+.card{width:360px;height:320px;padding:12px 14px;position:relative;overflow:hidden}
+h1{font-size:18px;line-height:24px;margin:0 0 5px;color:#42654a;font-weight:750}
+.question{height:48px;border-radius:15px;background:#f2ead9;padding:7px 12px;display:flex;align-items:center;gap:6px;font-size:14px;line-height:18px}
+#asked{font-weight:750;color:#a75939}
+svg{display:block;width:332px;height:220px;margin-top:4px;overflow:visible}
+.leader{fill:none;stroke:#968c7e;stroke-width:1.5;stroke-linecap:round}
+.label{font:600 12px system-ui,sans-serif;fill:#493d35}
+.part{cursor:pointer;transition:filter .2s,transform .2s;transform-box:fill-box;transform-origin:center}
+.part:hover{filter:brightness(1.08)}
+.part:active{transform:scale(.94)}
+.part path,.part ellipse{stroke-linecap:round;stroke-linejoin:round}
+.hit{fill:transparent;stroke:transparent;pointer-events:all}
+.part.selected{filter:drop-shadow(0 0 7px #f4c64b);animation:glow .75s ease-in-out infinite alternate}
+@keyframes glow{to{filter:drop-shadow(0 0 11px #f4c64b)}}
+.feedback{position:absolute;left:14px;right:14px;bottom:8px;height:32px;text-align:center;font-size:13px;font-weight:700;color:#42654a}
+.feedback:empty{display:none}
+</style>
+<div class="card">
+  <h1 id="title"></h1>
+  <div class="question" data-ask><span id="ask"></span><span id="asked"></span></div>
+  <svg viewBox="0 0 332 220" role="img" aria-label="">
+    <g aria-hidden="true">
+      <path class="leader" d="M103 39 L125 43"/>
+      <path class="leader" d="M170 48 L175 48"/>
+      <path class="leader" d="M67 148 L151 148"/>
+      <path class="leader" d="M102 122 L126 119"/>
+      <path class="leader" d="M205 184 L184 181"/>
+    </g>
+    <text class="label" data-label="petal" x="62" y="42"></text>
+    <text class="label" data-label="centre" x="177" y="52"></text>
+    <text class="label" data-label="stem" x="55" y="152"></text>
+    <text class="label" data-label="leaf" x="62" y="126"></text>
+    <text class="label" data-label="root" x="206" y="189"></text>
+
+    <g class="part" data-part="petal" tabindex="0" role="button" aria-label="">
+      <circle class="hit" cx="158" cy="47" r="27"/>
+      <path d="M148 41 C120 35 118 10 137 8 C150 7 157 22 158 35 C162 21 177 8 189 16 C204 27 188 42 165 49 C187 47 203 58 195 71 C186 83 169 68 160 55 C163 76 154 91 141 85 C126 78 138 58 153 48 C132 58 115 55 116 43 C118 30 138 34 148 41Z" fill="#ef9b77" stroke="#d8795e" stroke-width="2"/>
+    </g>
+    <g class="part" data-part="centre" tabindex="0" role="button" aria-label="">
+      <circle class="hit" cx="158" cy="47" r="27"/>
+      <circle cx="158" cy="47" r="12" fill="#f5c34e" stroke="#dc9d35" stroke-width="2"/>
+      <circle cx="158" cy="47" r="4" fill="#ffe69a"/>
+    </g>
+    <g class="part" data-part="stem" tabindex="0" role="button" aria-label="">
+      <circle class="hit" cx="158" cy="118" r="27"/>
+      <path d="M158 59 C155 93 162 127 157 160" fill="none" stroke="#568856" stroke-width="9"/>
+      <path d="M158 65 C157 98 159 125 157 151" fill="none" stroke="#83ae69" stroke-width="3"/>
+    </g>
+    <g class="part" data-part="leaf" tabindex="0" role="button" aria-label="">
+      <circle class="hit" cx="157" cy="113" r="27"/>
+      <path d="M157 111 C137 89 111 93 115 108 C119 124 139 129 158 119 C174 103 198 101 198 115 C198 132 175 138 158 121Z" fill="#78a95f" stroke="#4e824c" stroke-width="2"/>
+      <path d="M119 104 Q139 109 155 117 M194 111 Q176 116 160 120" fill="none" stroke="#d2e2a2" stroke-width="1.5"/>
+    </g>
+    <g class="part" data-part="root" tabindex="0" role="button" aria-label="">
+      <circle class="hit" cx="158" cy="179" r="27"/>
+      <path d="M157 158 Q141 172 135 191 M159 159 Q157 179 158 204 M161 158 Q176 174 183 193 M151 166 Q142 168 129 177 M166 167 Q177 168 190 178" fill="none" stroke="#a9774f" stroke-width="5"/>
+      <path d="M157 158 Q141 172 135 191 M159 159 Q157 179 158 204 M161 158 Q176 174 183 193" fill="none" stroke="#c49768" stroke-width="2"/>
+    </g>
+  </svg>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  for(const label of document.querySelectorAll('[data-label]')) label.textContent=Studio.t(label.dataset.label);
+  document.getElementById('asked').textContent=Studio.t(p.ask);
+  for(const el of document.querySelectorAll('[data-part]')){
+    el.setAttribute('aria-label',Studio.t(el.dataset.part));
+    const choose=()=>{Studio.event('tap',{part:el.dataset.part});Studio.answer(el.dataset.part)};
+    el.addEventListener('click',choose);
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();choose()}});
+  }
+  Studio.onVerdict(({correct})=>{
+    const feedback=document.getElementById('feedback');
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      document.querySelector('[data-part="'+p.ask+'"]').classList.add('selected');
+      feedback.textContent=Studio.t('done');
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

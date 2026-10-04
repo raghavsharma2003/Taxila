@@ -1,0 +1,138 @@
+<style>
+  *{box-sizing:border-box}
+  #balance-activity{width:360px;height:320px;overflow:hidden;background:#fff5e7;color:#543d39;font-family:system-ui,sans-serif;position:relative;text-align:center}
+  #balance-activity h2{font-size:19px;line-height:24px;margin:10px 12px 2px;font-weight:800}
+  #balance-activity .message{height:24px;font-size:14px;font-weight:650;color:#805b50}
+  #balance-activity svg{display:block;width:360px;height:188px;overflow:visible}
+  #balance-activity .beam-motion{transition:transform .65s cubic-bezier(.2,1.35,.45,1);transform-origin:180px 78px}
+  #balance-activity .pan{fill:#e7a964;stroke:#a56a50;stroke-width:3;stroke-linejoin:round}
+  #balance-activity .weight-shape{fill:#fff0c8;stroke:#ac7051;stroke-width:2}
+  #balance-activity .weight-number{fill:#543d39;font-size:17px;font-weight:800;text-anchor:middle;dominant-baseline:middle}
+  #balance-activity .choices{display:flex;justify-content:center;gap:14px;height:58px}
+  #balance-activity button{width:72px;height:54px;border:2px solid #ad7051;border-radius:15px;background:#ffe6ae;color:#543d39;font:800 21px system-ui,sans-serif;box-shadow:0 4px 0 #cfaa7b;cursor:pointer;transition:transform .18s,opacity .2s,background .2s}
+  #balance-activity button:hover{transform:translateY(-3px)}
+  #balance-activity button:active{transform:translateY(3px) scale(.94);box-shadow:0 1px 0 #cfaa7b}
+  #balance-activity button:disabled{cursor:default;opacity:.6}
+  #balance-activity .spark{opacity:0;transition:opacity .25s;fill:#eea758}
+  #balance-activity.celebrate .spark{opacity:1;animation:twinkle .55s ease-in-out alternate infinite}
+  @keyframes twinkle{to{transform:scale(1.35);opacity:.45}}
+</style>
+<div id="balance-activity">
+  <h2 id="heading"></h2>
+  <div class="message" id="message"></div>
+  <svg viewBox="0 0 360 188" aria-hidden="true">
+    <path d="M180 84 L153 181 Q180 171 207 181 Z" fill="#d98e6c"/>
+    <path d="M145 181 H215" stroke="#a56a50" stroke-width="7" stroke-linecap="round"/>
+    <g class="beam-motion" id="moving">
+      <g data-beam data-tilt="level">
+        <path d="M65 78 H295" stroke="#955c48" stroke-width="12" stroke-linecap="round"/>
+        <circle cx="180" cy="78" r="10" fill="#f5c878" stroke="#955c48" stroke-width="3"/>
+      </g>
+      <g data-pan="left" data-total="0" id="leftPan">
+        <path d="M78 82 V135 M42 82 V135 M114 82 V135" stroke="#ae7958" stroke-width="2"/>
+        <path class="pan" d="M37 135 Q78 158 119 135 L111 148 Q78 165 45 148 Z"/>
+        <g id="leftWeights"></g>
+      </g>
+      <g data-pan="right" data-total="0" id="rightPan">
+        <path d="M282 82 V135 M246 82 V135 M318 82 V135" stroke="#ae7958" stroke-width="2"/>
+        <path class="pan" d="M241 135 Q282 158 323 135 L315 148 Q282 165 249 148 Z"/>
+        <g id="rightWeights"></g>
+      </g>
+    </g>
+    <g class="spark"><circle cx="145" cy="35" r="4"/><circle cx="220" cy="43" r="5"/><circle cx="180" cy="23" r="3"/></g>
+  </svg>
+  <div class="choices" id="choices"></div>
+</div>
+<script>
+
+(() => {
+  const root=document.getElementById('balance-activity');
+  const heading=document.getElementById('heading');
+  const message=document.getElementById('message');
+  const choices=document.getElementById('choices');
+  const moving=document.getElementById('moving');
+  const beam=root.querySelector('[data-beam]');
+  const pans=[document.getElementById('leftPan'),document.getElementById('rightPan')];
+  const holders=[document.getElementById('leftWeights'),document.getElementById('rightWeights')];
+  const ns='http://www.w3.org/2000/svg';
+  let index=0,selected=null,waiting=false,finished=false,token=0;
+  heading.textContent=Studio.t('title');
+  const sum=values=>values.reduce((a,b)=>a+Number(b),0);
+  function drawWeights(holder,values,center){
+    holder.replaceChildren();
+    values.forEach((value,i)=>{
+      const x=center+(i-(values.length-1)/2)*31;
+      const g=document.createElementNS(ns,'g');
+      g.setAttribute('data-weight',String(value));
+      const rect=document.createElementNS(ns,'rect');
+      rect.setAttribute('class','weight-shape');
+      rect.setAttribute('x',x-14);rect.setAttribute('y',108);
+      rect.setAttribute('width',28);rect.setAttribute('height',29);
+      rect.setAttribute('rx',6);
+      const text=document.createElementNS(ns,'text');
+      text.setAttribute('class','weight-number');
+      text.setAttribute('x',x);text.setAttribute('y',123);
+      text.textContent=String(value);
+      g.append(rect,text);holder.append(g);
+    });
+  }
+  function paint(){
+    const item=Studio.params.items[index];
+    const left=item.left;
+    const right=selected===null?item.right:[...item.right,selected];
+    const difference=sum(right)-sum(left);
+    pans[0].dataset.total=String(sum(left));
+    pans[1].dataset.total=String(sum(right));
+    beam.dataset.tilt=difference>0?'right':difference<0?'left':'level';
+    moving.style.transform=`rotate(${Math.max(-17,Math.min(17,difference*4))}deg)`;
+    drawWeights(holders[0],left,78);
+    drawWeights(holders[1],right,282);
+  }
+  function showItem(){
+    selected=null;waiting=false;root.classList.remove('celebrate');
+    message.textContent=Studio.t('instr');
+    choices.replaceChildren();
+    Studio.params.items[index].options.forEach(value=>{
+      const button=document.createElement('button');
+      button.type='button';button.dataset.option=String(value);
+      button.textContent=String(value);
+      button.addEventListener('click',()=>{
+        if(waiting||finished)return;
+        waiting=true;selected=value;
+        choices.querySelectorAll('button').forEach(b=>{b.disabled=true;});
+        button.style.opacity='0';
+        paint();
+        Studio.event('choose',{value:String(value)});
+        Studio.answer({value});
+      });
+      choices.append(button);
+    });
+    paint();
+  }
+  Studio.onVerdict(({correct})=>{
+    if(!waiting||finished)return;
+    const current=++token;
+    message.textContent=Studio.t(correct?'right':'wrong');
+    if(correct)root.classList.add('celebrate');
+    setTimeout(()=>{
+      if(current!==token)return;
+      if(correct){
+        index++;
+        if(index>=Studio.params.items.length){
+          finished=true;choices.replaceChildren();
+          message.textContent=Studio.t('done');
+          Studio.done();
+        }else showItem();
+      }else{
+        selected=null;waiting=false;
+        choices.querySelectorAll('button').forEach(b=>{b.disabled=false;b.style.opacity='';});
+        paint();
+        message.textContent=Studio.t('instr');
+      }
+    },correct?1050:900);
+  });
+  showItem();
+  Studio.ready();
+})();
+
+</script>

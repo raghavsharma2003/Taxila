@@ -1,0 +1,85 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7ea;font-family:system-ui,sans-serif;color:#55382d}
+  .activity{width:360px;height:320px;padding:12px 14px;display:flex;flex-direction:column;gap:7px;background:radial-gradient(circle at 92% 8%,#ffe2a8 0,transparent 35%),#fff7ea}
+  .title{height:31px;margin:0;font-size:21px;line-height:31px;font-weight:800}
+  .instr{height:27px;margin:0;font-size:13px;line-height:27px;color:#76574a}
+  .cards{height:126px;display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,56px);gap:10px}
+  .card{min-width:0;min-height:52px;border:2px solid #d89065;border-radius:16px;background:#ffdfb7;color:#55382d;font:700 16px system-ui,sans-serif;box-shadow:0 4px 0 #d9a47e;cursor:pointer;transition:transform .2s,background .25s,box-shadow .2s;display:flex;align-items:center;justify-content:center;gap:5px}
+  .card:active{transform:scale(.94);box-shadow:0 1px 0 #d9a47e}
+  .card:focus-visible{outline:3px solid #715aa5;outline-offset:2px}
+  .card.shake{animation:shake .35s ease}
+  .track{height:73px;display:flex;gap:6px;align-items:stretch}
+  .slot{flex:1;min-width:0;border:2px dashed #c9ad94;border-radius:15px;background:#fffaf2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#997660;font-size:16px;font-weight:800;transition:background .3s,border-color .3s}
+  .slot.filled{border-style:solid;border-color:#9ab999;background:#edf5df}
+  .slot .card{width:100%;height:100%;min-height:52px;padding:3px;font-size:12px;line-height:1.1;text-align:center;background:#e2efce;border-color:#8cad83;box-shadow:none;cursor:default;animation:land .4s cubic-bezier(.2,1.5,.5,1)}
+  .badge{display:inline-grid;place-items:center;flex:none;width:20px;height:20px;border-radius:50%;background:#71966b;color:white;font-size:12px}
+  .feedback{height:26px;margin:0;text-align:center;font-size:14px;line-height:26px;font-weight:700;color:#76574a}
+  .feedback.good{color:#467347}.feedback.bad{color:#a4514b}
+  @keyframes shake{25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+  @keyframes land{from{transform:scale(.7);opacity:.4}to{transform:scale(1);opacity:1}}
+</style>
+<div class="activity">
+  <h1 class="title" id="title"></h1>
+  <p class="instr" id="instr"></p>
+  <div class="cards" id="cards"></div>
+  <div class="track" id="track"></div>
+  <p class="feedback" id="feedback" aria-live="polite"></p>
+</div>
+<script>
+
+  const shown=Studio.params.shown;
+  const cards=document.getElementById('cards');
+  const track=document.getElementById('track');
+  const feedback=document.getElementById('feedback');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  let placed=0,pending=null;
+  shown.forEach((key)=>{
+    const card=document.createElement('button');
+    card.type='button';
+    card.className='card';
+    card.dataset.step=key;
+    card.textContent=Studio.t(key);
+    card.addEventListener('click',()=>{
+      if(pending||card.dataset.placed)return;
+      pending=card;
+      feedback.textContent='';
+      Studio.answer({key});
+    });
+    cards.appendChild(card);
+    const slot=document.createElement('div');
+    slot.className='slot';
+    slot.textContent=String(track.children.length+1);
+    track.appendChild(slot);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    const card=pending;
+    pending=null;
+    if(correct){
+      placed++;
+      card.dataset.placed=String(placed);
+      const badge=document.createElement('span');
+      badge.className='badge';
+      badge.textContent=String(placed);
+      card.prepend(badge);
+      card.disabled=true;
+      const slot=track.children[placed-1];
+      slot.textContent='';
+      slot.classList.add('filled');
+      slot.appendChild(card);
+      feedback.className='feedback good';
+      feedback.textContent=Studio.t(placed===shown.length?'done':'right');
+      if(placed===shown.length)Studio.done();
+    }else{
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+      feedback.className='feedback bad';
+      feedback.textContent=Studio.t('wrong');
+    }
+  });
+  Studio.ready();
+
+</script>

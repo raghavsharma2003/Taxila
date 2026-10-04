@@ -1,0 +1,96 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;font-family:system-ui,sans-serif;color:#513d37}
+  .card{width:360px;height:320px;padding:12px 14px;background:radial-gradient(circle at 15% 15%,#fffdf5,#fff3e5 75%);overflow:hidden}
+  .title{height:30px;font-size:20px;font-weight:800;white-space:nowrap;overflow:hidden}
+  .main{height:188px;display:flex;gap:14px}
+  .picture{position:relative;width:130px;height:182px;flex:none;border-radius:20px;background:#e8f4ec;overflow:hidden}
+  .ground{position:absolute;bottom:0;width:100%;height:7px;background:#8ba98b}
+  [data-visual]{position:absolute;bottom:7px;left:35px;width:60px;height:0;border-radius:13px 13px 0 0;background:linear-gradient(90deg,#ec9678,#f6b193);box-shadow:inset -7px 0 #df816b;transition:height .35s cubic-bezier(.2,.9,.2,1)}
+  [data-visual]:before{content:"";position:absolute;top:13px;left:14px;width:32px;height:6px;border-radius:9px;background:#fff4da;box-shadow:0 17px #fff4da,0 34px #fff4da}
+  .side{flex:1;min-width:0;padding-top:5px}
+  .readout{height:48px;margin-bottom:6px;padding:6px 10px;border-radius:15px;background:#fff;box-shadow:0 3px 0 #eedfd0}
+  .name{display:block;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden}
+  .number{display:block;font-size:23px;font-weight:800;line-height:25px}
+  .controls{display:flex;gap:8px;margin-top:12px}
+  button{border:0;cursor:pointer;font:inherit;font-weight:800;color:#513d37;touch-action:manipulation;transition:transform .15s,background .2s,box-shadow .2s}
+  button:active{transform:scale(.92)}
+  .control{width:89px;height:52px;border-radius:16px;background:#ffe0b4;box-shadow:0 4px 0 #e9bb80;font-size:15px}
+  .control:disabled{opacity:.45;cursor:default}
+  .bottom{height:78px;padding-top:2px}
+  .prompt{height:22px;font-size:15px;font-weight:750;white-space:nowrap;overflow:hidden}
+  .options{display:flex;gap:9px}
+  .option{flex:1;height:52px;border-radius:16px;background:#d9eae1;box-shadow:0 4px 0 #a9c9b5;font-size:22px}
+  .option.pulse{animation:pop .35s}
+  @keyframes pop{50%{transform:scale(1.08)}}
+</style>
+<div class="card">
+  <div class="title" id="title"></div>
+  <div class="main">
+    <div class="picture" aria-hidden="true"><div data-visual data-dim="h"></div><div class="ground"></div></div>
+    <div class="side">
+      <div class="readout"><span class="name" id="xname"></span><span class="number" id="xvalue" data-x=""></span></div>
+      <div class="readout"><span class="name" id="yname"></span><span class="number" data-output data-value=""></span></div>
+      <div class="controls"><button class="control" data-action="dec" type="button"></button><button class="control" data-action="inc" type="button"></button></div>
+    </div>
+  </div>
+  <div class="bottom"><div class="prompt" id="prompt"></div><div class="options" id="options"></div></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const $=s=>document.querySelector(s);
+  const t=k=>Studio.t(k);
+  const fmt=n=>String(Number(Number(n).toFixed(10)));
+  let x=p.x.start,finished=false;
+  $('#title').textContent=t('title');
+  $('#xname').textContent=t('xname');
+  $('#yname').textContent=t('yname');
+  $('[data-action="dec"]').textContent=t('less');
+  $('[data-action="inc"]').textContent=t('more');
+  const prompt=$('#prompt');
+  prompt.textContent=t('ask')+' '+fmt(p.ask.x);
+  function draw(){
+    const y=p.law.k*x+p.law.b;
+    $('#xvalue').textContent=fmt(x);
+    $('#xvalue').setAttribute('data-x',fmt(x));
+    $('[data-output]').textContent=fmt(y);
+    $('[data-output]').setAttribute('data-value',fmt(y));
+    $('[data-visual]').style.height=fmt(y*p.y.unitsPer)+'px';
+    $('[data-action="dec"]').disabled=x-p.x.step<p.x.min;
+    $('[data-action="inc"]').disabled=x+p.x.step>p.x.max;
+  }
+  for(const [action,delta] of [['dec',-1],['inc',1]]){
+    $('[data-action="'+action+'"]').addEventListener('click',()=>{
+      const next=x+delta*p.x.step;
+      if(next<p.x.min||next>p.x.max)return;
+      x=Number(next.toFixed(10));draw();
+      Studio.event('change',{x});
+    });
+  }
+  p.ask.options.forEach(value=>{
+    const b=document.createElement('button');
+    b.type='button';b.className='option';
+    b.setAttribute('data-option',fmt(value));
+    b.textContent=fmt(value);
+    b.addEventListener('click',()=>{
+      if(finished)return;
+      b.classList.remove('pulse');void b.offsetWidth;b.classList.add('pulse');
+      Studio.answer({value});
+    });
+    $('#options').appendChild(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(finished)return;
+    prompt.textContent=t(correct?'right':'wrong');
+    if(correct){
+      finished=true;
+      setTimeout(()=>{prompt.textContent=t('done');Studio.done()},450);
+    }
+  });
+  draw();
+  Studio.ready();
+})();
+
+</script>

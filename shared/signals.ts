@@ -110,8 +110,8 @@ export interface SignalExtras {
   speakerShift: 0 | 1;
   /** A16 (q only, added by the build): energy-peak syllable nuclei per voiced second, an ASR-independent rate. */
   nucleiPerSec?: number;
-  /** q terms computed on the device. */
-  qDur: number; qLevel: number;
+  /** q terms computed on the device. qBed (build addition): 0 when the room held speech before the teacher stopped. */
+  qDur: number; qLevel: number; qBed: number;
 }
 
 /** The closed output vocabulary (SIGNALS-SPEC §3.1). The reasons pattern and the lint both read it. */

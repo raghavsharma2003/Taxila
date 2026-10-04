@@ -1,0 +1,108 @@
+<style>
+  *{box-sizing:border-box}
+  #sort-game{width:360px;height:320px;overflow:hidden;position:relative;padding:14px;background:#fff8ed;color:#493b38;font-family:system-ui,sans-serif}
+  #sort-game::before{content:"";position:absolute;width:170px;height:170px;right:-65px;top:-90px;border-radius:50%;background:#ffe9c8;opacity:.7}
+  #sort-game h1{position:relative;margin:0;font-size:21px;line-height:27px;font-weight:800}
+  #sort-game .hint{position:relative;margin:2px 0 9px;font-size:13px;line-height:18px;color:#806b61}
+  #cards{position:relative;height:134px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:58px;gap:8px;align-content:center}
+  .card{min-width:0;min-height:52px;border:2px solid #e8be93;border-radius:17px;background:#fffdf8;color:#493b38;font:700 17px system-ui,sans-serif;box-shadow:0 4px 0 #eddbc5;cursor:pointer;transition:transform .23s ease,box-shadow .23s ease,background .23s ease}
+  .card:active,.bin:active{transform:scale(.96)}
+  .card[data-selected="true"]{transform:translateY(-6px) rotate(-2deg);background:#fff2d6;box-shadow:0 9px 0 #eddbc5,0 0 0 4px #ffe3a8}
+  .card.wrong{animation:wobble .42s ease}
+  @keyframes wobble{25%{transform:translateX(-7px) rotate(-3deg)}50%{transform:translateX(6px) rotate(3deg)}75%{transform:translateX(-3px)}}
+  #bins{position:relative;display:flex;gap:7px;height:91px;margin-top:3px}
+  .bin{flex:1;min-width:0;min-height:91px;padding:6px 4px;border:2px solid #d5b99e;border-radius:15px;background:#f7e6d2;cursor:pointer;text-align:center;transition:transform .2s,background .2s}
+  .bin:nth-child(2){background:#e8eee4;border-color:#b8cbb9}
+  .bin:nth-child(3){background:#e9e9f4;border-color:#c6c3db}
+  .bin-name{display:block;font-size:14px;font-weight:800;line-height:19px}
+  .contents{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;margin-top:4px}
+  .placed{max-width:100%;padding:3px 6px;border-radius:8px;background:#fffdf8;font-size:11px;font-weight:700;animation:pop .3s ease}
+  @keyframes pop{from{transform:scale(.65)}to{transform:scale(1)}}
+  #message{position:relative;height:25px;margin-top:5px;text-align:center;font-size:15px;font-weight:800;color:#79556a}
+</style>
+<div id="sort-game">
+  <h1 id="title"></h1>
+  <p class="hint" id="hint"></p>
+  <div id="cards"></div>
+  <div id="bins"></div>
+  <div id="message" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, root=document.getElementById('sort-game');
+  const cards=document.getElementById('cards'), bins=document.getElementById('bins');
+  const message=document.getElementById('message');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('hint').textContent=Studio.t('instr');
+  let selected=null, pending=false, placed=0, finished=false;
+  p.cards.forEach(key=>{
+    const el=document.createElement('button');
+    el.type='button'; el.className='card';
+    el.dataset.card=key; el.dataset.selected='false';
+    el.textContent=Studio.t(key);
+    el.addEventListener('click',()=>{
+      if(pending||finished)return;
+      if(selected)selected.dataset.selected='false';
+      selected=el;
+      el.dataset.selected='true';
+      message.textContent='';
+    });
+    cards.appendChild(el);
+  });
+  p.bins.forEach(key=>{
+    const bin=document.createElement('div');
+    bin.className='bin'; bin.dataset.bin=key;
+    const name=document.createElement('span');
+    name.className='bin-name'; name.textContent=Studio.t(key);
+    const contents=document.createElement('div');
+    contents.className='contents';
+    bin.append(name,contents);
+    bin.addEventListener('click',()=>{
+      if(!selected||pending||finished)return;
+      pending=true;
+      const card=selected;
+      Studio.answer({card:card.dataset.card,bin:key});
+      const verdict=({correct})=>{
+        if(!pending)return;
+        if(correct){
+          message.textContent=Studio.t('right');
+          const start=card.getBoundingClientRect(), end=bin.getBoundingClientRect();
+          card.style.position='fixed';
+          card.style.left=start.left+'px';card.style.top=start.top+'px';
+          card.style.width=start.width+'px';card.style.height=start.height+'px';
+          card.style.zIndex='5';
+          card.dataset.selected='false';
+          requestAnimationFrame(()=>{
+            card.style.transform='translate('+(end.left-start.left+(end.width-start.width)/2)+'px,'+(end.top-start.top+31)+'px) scale(.55)';
+            card.style.opacity='0';
+          });
+          setTimeout(()=>{
+            const chip=document.createElement('span');
+            chip.className='placed';chip.dataset.placed=key;
+            chip.textContent=Studio.t(card.dataset.card);
+            contents.appendChild(chip);
+            card.remove();
+            placed++;
+            pending=false;selected=null;
+            if(placed===p.cards.length){
+              finished=true;message.textContent=Studio.t('done');Studio.done();
+            }
+          },260);
+        }else{
+          message.textContent=Studio.t('wrong');
+          card.dataset.selected='false';
+          card.classList.remove('wrong');
+          void card.offsetWidth;
+          card.classList.add('wrong');
+          selected=null;pending=false;
+        }
+      };
+      Studio.onVerdict(verdict);
+    });
+    bins.appendChild(bin);
+  });
+  Studio.ready();
+})();
+
+</script>

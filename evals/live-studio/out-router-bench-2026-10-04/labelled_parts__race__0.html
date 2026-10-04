@@ -1,0 +1,100 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;font-family:system-ui,sans-serif;color:#55483e}
+  .card{width:360px;height:320px;overflow:hidden;background:linear-gradient(#fff9ef,#f5f3df)}
+  header{height:45px;text-align:center;padding-top:4px}
+  #title{font-size:13px;font-weight:700;color:#94735d}
+  [data-ask]{font-size:19px;line-height:23px;font-weight:800}
+  svg{display:block;width:360px;height:235px}
+  .leader{fill:none;stroke:#ac9f89;stroke-width:2;stroke-linecap:round}
+  .name{font-size:14px;font-weight:750;fill:#594b40}
+  [data-part]{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .2s ease,filter .25s ease}
+  [data-part]:active{transform:scale(.94)}
+  [data-part].glow{filter:drop-shadow(0 0 10px #ffc44c);transform:scale(1.06)}
+  .hit{fill:#fff;fill-opacity:.001}
+  #feedback{height:40px;text-align:center;padding-top:5px;font-size:18px;font-weight:800;color:#678758}
+  #feedback.pop{animation:pop .36s ease}
+  @keyframes pop{50%{transform:scale(1.13)}}
+</style>
+<div class="card">
+  <header><div id="title"></div><div data-ask></div></header>
+  <svg viewBox="0 0 360 235" aria-hidden="true">
+    <path d="M0 225 Q90 211 180 225 Q270 212 360 225 V235 H0Z" fill="#e9dfc5"/>
+    <path class="leader" d="M94 71 L110 71 M239 76 L213 76 M143 139 L163 139 M285 147 L270 147 M245 211 L219 211"/>
+    <text class="name" data-label="petal" x="22" y="75"></text>
+    <text class="name" data-label="centre" x="241" y="80"></text>
+    <text class="name" data-label="stem" x="99" y="143"></text>
+    <text class="name" data-label="leaf" x="286" y="151"></text>
+    <text class="name" data-label="root" x="247" y="215"></text>
+    <g data-part="root">
+      <path d="M182 184 Q169 210 146 219 M182 184 Q193 207 220 220 M182 184 L182 224" fill="none" stroke="#a57958" stroke-width="13" stroke-linecap="round"/>
+      <rect class="hit" x="143" y="181" width="82" height="53"/>
+    </g>
+    <g data-part="stem">
+      <path d="M182 108 Q177 152 182 190" fill="none" stroke="#599b66" stroke-width="30" stroke-linecap="round"/>
+      <rect class="hit" x="157" y="111" width="52" height="75"/>
+    </g>
+    <g data-part="leaf">
+      <path d="M195 157 Q232 112 279 128 Q268 174 195 157Z" fill="#79b980" stroke="#519b65" stroke-width="3"/>
+      <path d="M203 155 Q241 145 268 131" fill="none" stroke="#d9eeb7" stroke-width="3"/>
+      <rect class="hit" x="211" y="119" width="70" height="55"/>
+    </g>
+    <g data-part="petal">
+      <path d="M163 76 Q137 25 110 48 Q91 74 119 101 Q144 114 169 91Z" fill="#ee92a2" stroke="#da728a" stroke-width="3"/>
+      <path d="M119 67 Q142 71 160 82" fill="none" stroke="#fac6c8" stroke-width="3"/>
+      <rect class="hit" x="104" y="43" width="64" height="65"/>
+    </g>
+    <g data-part="centre">
+      <circle cx="188" cy="78" r="29" fill="#f5c25d" stroke="#dc9d42" stroke-width="3"/>
+      <circle cx="179" cy="72" r="2.5" fill="#aa793d"/>
+      <circle cx="197" cy="72" r="2.5" fill="#aa793d"/>
+      <path d="M180 86 Q188 93 197 85" fill="none" stroke="#aa793d" stroke-width="2.5" stroke-linecap="round"/>
+      <rect class="hit" x="160" y="49" width="57" height="58"/>
+    </g>
+  </svg>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const keys=Studio.params.parts;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.querySelector('[data-ask]').textContent=Studio.t('ask');
+  document.querySelectorAll('[data-label]').forEach(el=>{
+    const key=el.getAttribute('data-label');
+    if(keys.includes(key)) el.textContent=Studio.t(key);
+    else el.style.display='none';
+  });
+  const feedback=document.getElementById('feedback');
+  let selected=null,finished=false,pending=false;
+  document.querySelectorAll('[data-part]').forEach(el=>{
+    const key=el.getAttribute('data-part');
+    if(!keys.includes(key)){el.style.display='none';return}
+    el.addEventListener('click',()=>{
+      if(finished||pending)return;
+      selected=el;
+      pending=true;
+      feedback.textContent='';
+      feedback.classList.remove('pop');
+      Studio.answer(key);
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending||finished)return;
+    pending=false;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    void feedback.offsetWidth;
+    feedback.classList.add('pop');
+    if(correct){
+      finished=true;
+      selected.classList.add('glow');
+      setTimeout(()=>{
+        feedback.textContent=Studio.t('done');
+        Studio.done();
+      },850);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

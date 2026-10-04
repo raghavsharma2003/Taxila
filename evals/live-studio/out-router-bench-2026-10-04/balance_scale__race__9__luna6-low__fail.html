@@ -1,0 +1,125 @@
+<style>
+*{box-sizing:border-box}
+#lesson{width:360px;height:320px;overflow:hidden;background:#fff8ed;color:#493b34;font-family:system-ui,sans-serif;position:relative}
+#title{position:absolute;left:14px;top:8px;width:332px;height:28px;font-size:17px;font-weight:750;line-height:28px;white-space:nowrap;overflow:hidden}
+#instr{position:absolute;left:14px;top:36px;width:332px;height:24px;font-size:12px;line-height:24px;white-space:nowrap;overflow:hidden}
+#picture{position:absolute;left:0;top:62px;width:360px;height:196px}
+#message{position:absolute;left:14px;right:14px;bottom:6px;height:24px;text-align:center;font-size:14px;font-weight:700;line-height:24px}
+.ground{fill:#f2e4d2}
+.support{fill:#d59b59}
+.beam{fill:#d58c49;transform-box:fill-box;transform-origin:50% 50%;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.pan{fill:#f5bd66;stroke:#a96f3c;stroke-width:2}
+.rope{stroke:#a96f3c;stroke-width:2}
+.weight{fill:#f6d38f;stroke:#ad7948;stroke-width:2}
+.weight-number{fill:#493b34;font-weight:800;font-size:16px;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+.option{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .14s ease,opacity .2s}
+.option:active{transform:scale(.92)}
+.option[aria-disabled="true"]{cursor:default;pointer-events:none}
+#picture.celebrate .pan{animation:bob .42s ease-in-out 2}
+@keyframes bob{50%{transform:translateY(-5px)}}
+</style>
+<div id="lesson">
+  <div id="title"></div>
+  <div id="instr"></div>
+  <svg id="picture" viewBox="0 0 360 196" role="img">
+    <ellipse class="ground" cx="180" cy="177" rx="140" ry="10"/>
+    <path class="support" d="M180 70 L153 166 Q180 178 207 166 Z"/>
+    <circle cx="180" cy="70" r="8" fill="#a96f3c"/>
+    <g id="beam" class="beam" data-beam data-tilt="level">
+      <rect x="58" y="64" width="244" height="12" rx="6"/>
+      <line class="rope" x1="85" y1="76" x2="85" y2="119"/>
+      <line class="rope" x1="275" y1="76" x2="275" y2="119"/>
+      <path class="pan" d="M52 119 Q85 143 118 119 Z"/>
+      <path class="pan" d="M242 119 Q275 143 308 119 Z"/>
+    </g>
+    <g id="left-pan" data-pan="left" data-total="0"></g>
+    <g id="right-pan" data-pan="right" data-total="0"></g>
+    <g id="options"></g>
+  </svg>
+  <div id="message"></div>
+</div>
+<script>
+
+(()=>{
+const items=Studio.params.items;
+const title=document.getElementById("title");
+const instr=document.getElementById("instr");
+const message=document.getElementById("message");
+const picture=document.getElementById("picture");
+const beam=document.getElementById("beam");
+const leftPan=document.getElementById("left-pan");
+const rightPan=document.getElementById("right-pan");
+const optionsRoot=document.getElementById("options");
+title.textContent=Studio.t("title");
+instr.textContent=Studio.t("instr");
+let index=0, locked=false, finished=false, selected=null, optionNodes=[];
+const ns="http://www.w3.org/2000/svg";
+function svg(tag,attrs={}){const e=document.createElementNS(ns,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e}
+function weight(value,x,y,pan=false){
+ const g=svg("g",{});
+ if(pan)g.setAttribute("data-weight",String(value));
+ const r=svg("rect",{class:"weight",x:x-22,y:y-15,width:44,height:30,rx:9});
+ const t=svg("text",{class:"weight-number",x:x,y:y});
+ t.textContent=String(value);g.append(r,t);return g;
+}
+function totals(item,extra){
+ const l=item.left.reduce((a,b)=>a+b,0),r=item.right.reduce((a,b)=>a+b,0)+(extra===null?0:extra);
+ return [l,r];
+}
+function setTilt(l,r){
+ const tilt=l>r?"left":r>l?"right":"level";
+ beam.setAttribute("data-tilt",tilt);
+ beam.style.transform=tilt==="left"?"rotate(-8deg)":tilt==="right"?"rotate(8deg)":"rotate(0deg)";
+}
+function render(){
+ const item=items[index];
+ leftPan.replaceChildren();rightPan.replaceChildren();optionsRoot.replaceChildren();
+ item.left.forEach((v,i)=>leftPan.append(weight(v,85,107-i*29,true)));
+ item.right.forEach((v,i)=>rightPan.append(weight(v,275,107-i*29,true)));
+ const [l,r]=totals(item,selected===null?null:selected.value);
+ leftPan.setAttribute("data-total",String(l));rightPan.setAttribute("data-total",String(r));
+ setTilt(l,r);
+ optionNodes=[];
+ item.options.forEach((v,i)=>{
+   const x=70+i*110;
+   const g=svg("g",{class:"option",role:"button",tabindex:"0","data-option":String(v),"aria-disabled":String(locked)});
+   g.append(svg("rect",{x:x-31,y:143,width:62,height:48,rx:13,fill:"#fff0d6",stroke:"#e2c79f","stroke-width":"1"}));
+   const w=weight(v,x,167,false);g.append(w);
+   const choose=()=>pick(i);
+   g.addEventListener("click",choose);
+   g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();choose()}});
+   optionsRoot.append(g);optionNodes.push(g);
+ });
+ if(selected!==null){
+   rightPan.append(weight(selected.value,275,107-item.right.length*29,true));
+   optionNodes[selected.i].setAttribute("visibility","hidden");
+ }
+}
+function pick(i){
+ if(locked||finished)return;
+ locked=true;selected={i,value:items[index].options[i]};
+ optionNodes.forEach(n=>n.setAttribute("aria-disabled","true"));
+ render();
+ Studio.event("choose",{value:selected.value});
+ Studio.answer({value:selected.value});
+ Studio.onVerdict(({correct})=>{
+   if(correct){
+     message.textContent=Studio.t("right");
+     picture.classList.add("celebrate");
+     setTimeout(()=>{
+       picture.classList.remove("celebrate");
+       selected=null;index++;
+       if(index>=items.length){finished=true;message.textContent=Studio.t("done");Studio.done();return}
+       message.textContent="";locked=false;render();
+     },900);
+   }else{
+     message.textContent=Studio.t("wrong");
+     setTimeout(()=>{selected=null;locked=false;message.textContent="";render()},850);
+   }
+ });
+}
+render();
+Studio.ready();
+})();
+
+</script>

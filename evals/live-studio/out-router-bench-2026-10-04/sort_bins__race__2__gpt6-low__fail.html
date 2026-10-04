@@ -1,0 +1,116 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#493c35}
+  .board{width:360px;height:320px;padding:12px 14px;overflow:hidden;background:radial-gradient(circle at 90% 8%,#ffe8c7,transparent 38%),#fff8ed}
+  .heading{height:50px;text-align:center}
+  .title{font-size:19px;font-weight:800;line-height:23px}
+  .hint{font-size:12px;line-height:18px;color:#77665b}
+  .cards{height:123px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,56px);gap:7px;padding:2px 9px}
+  .slot{display:flex;align-items:center;justify-content:center}
+  .card{width:100%;height:54px;border:2px solid #e9b88e;border-radius:16px;background:#fffdf8;box-shadow:0 4px 0 #efd3b9;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:750;color:#493c35;cursor:pointer;touch-action:manipulation;transition:transform .3s ease,box-shadow .3s ease,opacity .3s ease}
+  .card:active{transform:scale(.94)}
+  .card[data-selected="true"]{transform:translateY(-6px) scale(1.04);box-shadow:0 8px 0 #efd3b9,0 0 0 4px #ffd899}
+  .card.shake{animation:shake .38s ease}
+  @keyframes shake{25%{transform:translateX(-7px) rotate(-3deg)}50%{transform:translateX(6px) rotate(3deg)}75%{transform:translateX(-3px)}}
+  .bins{height:112px;display:flex;gap:10px;margin-top:3px}
+  .bin{flex:1;min-width:0;height:108px;border:2px solid #d9aa8f;border-radius:19px;background:#f8e6d6;padding:8px;cursor:pointer;touch-action:manipulation;transition:transform .2s,background .2s}
+  .bin:nth-child(even){background:#e5eee0;border-color:#aac3a5}
+  .bin:active{transform:scale(.96)}
+  .binname{text-align:center;font-size:15px;font-weight:800;line-height:21px}
+  .inside{display:flex;flex-wrap:wrap;gap:4px;align-content:flex-start;justify-content:center;padding-top:5px}
+  .placed{min-width:52px;min-height:27px;padding:3px 7px;border-radius:10px;background:#fffdf8;text-align:center;font-size:13px;font-weight:700;box-shadow:0 2px 0 #d8c8b9;animation:pop .3s ease}
+  @keyframes pop{from{transform:scale(.65)}to{transform:scale(1)}}
+  .status{height:20px;margin-top:2px;text-align:center;font-size:14px;font-weight:750;color:#8a5a49}
+</style>
+<div class="board">
+  <div class="heading"><div class="title" id="title"></div><div class="hint" id="hint"></div></div>
+  <div class="cards" id="cards"></div>
+  <div class="bins" id="bins"></div>
+  <div class="status" id="status" aria-live="polite"></div>
+</div>
+<script>
+
+  const p=Studio.params;
+  const cards=document.getElementById('cards');
+  const bins=document.getElementById('bins');
+  const status=document.getElementById('status');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('hint').textContent=Studio.t('instr');
+  let selected=null,pending=null,placed=0;
+  const binNodes=new Map();
+  p.cards.forEach(key=>{
+    const slot=document.createElement('div');
+    slot.className='slot';
+    const card=document.createElement('div');
+    card.className='card';
+    card.dataset.card=key;
+    card.dataset.selected='false';
+    card.textContent=Studio.t(key);
+    card.addEventListener('click',()=>{
+      if(pending)return;
+      if(selected)selected.dataset.selected='false';
+      selected=card;
+      card.dataset.selected='true';
+      status.textContent='';
+      Studio.event('pick',{card:key});
+    });
+    slot.append(card);
+    cards.append(slot);
+  });
+  p.bins.forEach(key=>{
+    const bin=document.createElement('div');
+    bin.className='bin';
+    bin.dataset.bin=key;
+    const name=document.createElement('div');
+    name.className='binname';
+    name.textContent=Studio.t(key);
+    const inside=document.createElement('div');
+    inside.className='inside';
+    bin.append(name,inside);
+    bin.addEventListener('click',()=>{
+      if(!selected||pending)return;
+      pending={card:selected,bin:key,inside};
+      Studio.event('sort',{card:selected.dataset.card,bin:key});
+      Studio.answer({card:selected.dataset.card,bin:key});
+    });
+    bins.append(bin);
+    binNodes.set(key,bin);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    const {card,bin,inside}=pending;
+    pending=null;
+    selected=null;
+    card.dataset.selected='false';
+    if(correct){
+      status.textContent=Studio.t('right');
+      const start=card.getBoundingClientRect();
+      const end=inside.getBoundingClientRect();
+      const dx=end.left+end.width/2-(start.left+start.width/2);
+      const dy=end.top+end.height/2-(start.top+start.height/2);
+      card.style.transform=`translate(${dx}px,${dy}px) scale(.65)`;
+      card.style.opacity='0';
+      setTimeout(()=>{
+        const chip=document.createElement('div');
+        chip.className='placed';
+        chip.dataset.placed=bin;
+        chip.textContent=card.textContent;
+        inside.append(chip);
+        card.remove();
+        placed++;
+        if(placed===p.cards.length){
+          status.textContent=Studio.t('done');
+          Studio.done();
+        }
+      },310);
+    }else{
+      status.textContent=Studio.t('wrong');
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+      setTimeout(()=>card.classList.remove('shake'),400);
+    }
+  });
+  Studio.ready();
+
+</script>

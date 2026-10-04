@@ -1,0 +1,119 @@
+<style>
+*{box-sizing:border-box}
+#lesson{width:360px;height:320px;overflow:hidden;background:#fff8ec;color:#3d4d55;font-family:system-ui,sans-serif;position:relative;padding:12px 14px}
+#card{height:100%;border-radius:20px;background:#fff;box-shadow:0 4px 16px #69583b1c;padding:12px;position:relative}
+#title{font-size:17px;line-height:22px;font-weight:800;color:#375c62}
+#instr{font-size:13px;line-height:17px;margin-top:2px;color:#63777b}
+#item{position:relative}
+#targetWrap{margin-top:8px;text-align:center;font-size:13px;color:#63777b}
+#target{display:inline-block;min-width:52px;font-size:21px;font-weight:800;color:#d36d48;line-height:27px}
+#linebox{height:107px;position:relative;margin-top:3px}
+#numberline{width:100%;height:100%;overflow:visible}
+.tick{stroke:#92a8a5;stroke-width:2}
+.axis{stroke:#638580;stroke-width:3;stroke-linecap:round}
+.ticklabel{font:12px system-ui,sans-serif;fill:#526a6e;text-anchor:middle}
+#marker{position:absolute;width:20px;height:20px;border-radius:50%;background:#f08b5c;border:3px solid white;box-shadow:0 2px 7px #75482f55;top:34px;transform:translate(-50%,-50%);transition:left .22s cubic-bezier(.2,.8,.25,1),top .22s}
+#marker:after{content:"";position:absolute;left:5px;top:14px;width:4px;height:11px;border-radius:3px;background:#f08b5c}
+#marker.hop{animation:hop .38s ease}
+@keyframes hop{50%{top:19px;scale:1.18}}
+#controls{display:flex;gap:8px;margin-top:5px;align-items:center;justify-content:center}
+button{height:54px;min-width:66px;border:0;border-radius:15px;background:#dceee8;color:#315c59;font:700 15px system-ui,sans-serif;box-shadow:0 3px 0 #b8d4cb;cursor:pointer;transition:transform .12s,background .15s}
+button:active{transform:scale(.94)}
+#check{background:#f4c879;color:#604b27;min-width:92px;box-shadow:0 3px 0 #dfad5d}
+#feedback{height:21px;text-align:center;font-size:13px;font-weight:700;color:#51836c;margin-top:5px}
+#feedback.wrong{color:#bd765a}
+#doneScreen{display:none;height:100%;align-items:center;justify-content:center;text-align:center;font-size:22px;font-weight:800;color:#375c62}
+</style>
+<div id="lesson">
+  <div id="card">
+    <div id="item" data-item="">
+      <div id="title"></div>
+      <div id="instr"></div>
+      <div id="targetWrap"><span id="target" data-target=""></span></div>
+      <div id="linebox">
+        <svg id="numberline" viewBox="0 0 360 107" aria-hidden="true">
+          <line class="axis" x1="18" y1="34" x2="342" y2="34"></line>
+          <g id="ticks"></g>
+        </svg>
+        <div id="marker" data-marker data-value=""></div>
+      </div>
+      <div id="controls">
+        <button id="left" data-action="left"></button>
+        <button id="right" data-action="right"></button>
+        <button id="check" data-action="check"></button>
+      </div>
+      <div id="feedback"></div>
+    </div>
+    <div id="doneScreen"></div>
+  </div>
+</div>
+<script>
+
+(function(){
+  const p=Studio.params, $=id=>document.getElementById(id);
+  const min=p.min,max=p.max,step=p.step,count=Math.round((max-min)/step);
+  const valueAt=k=>Number((min+k*step).toFixed(6));
+  const xAt=v=>18+(v-min)/(max-min)*324;
+  function fmt(v){
+    if(p.format==="fraction") return String(Math.round(v*p.den))+"/"+p.den;
+    let s=Number(v).toFixed(6).replace(/0+$/,"").replace(/\.$/,"");
+    return s||"0";
+  }
+  $("title").textContent=Studio.t("title");
+  $("instr").textContent=Studio.t("instr");
+  $("left").textContent=Studio.t("left");
+  $("right").textContent=Studio.t("right_btn");
+  $("check").textContent=Studio.t("check");
+  const ticks=$("ticks");
+  for(let k=0;k<=count;k++){
+    const v=valueAt(k),x=xAt(v),ns="http://www.w3.org/2000/svg";
+    const line=document.createElementNS(ns,"line");
+    line.setAttribute("class","tick");line.setAttribute("x1",x);line.setAttribute("x2",x);
+    line.setAttribute("y1","27");line.setAttribute("y2","43");line.dataset.tick=String(v);
+    ticks.appendChild(line);
+    if(k%p.labelEvery===0){
+      const text=document.createElementNS(ns,"text");
+      text.setAttribute("class","ticklabel");text.setAttribute("x",x);text.setAttribute("y","65");
+      text.textContent=fmt(v);ticks.appendChild(text);
+    }
+  }
+  let index=0,k=Math.max(0,Math.min(count,Math.round((p.start-min)/step))),waiting=false,finished=false;
+  function paint(){
+    const item=p.items[index],v=valueAt(k);
+    $("item").dataset.item=item.id;
+    $("target").dataset.target=String(item.target);
+    $("target").textContent=fmt(item.target);
+    $("marker").dataset.value=String(v);
+    $("marker").style.left=(xAt(v)/360*100)+"%";
+    $("feedback").textContent="";
+    $("feedback").className="";
+  }
+  $("left").addEventListener("click",()=>{if(waiting||finished)return;k=Math.max(0,k-1);paint();Studio.event("move",{direction:"left"});});
+  $("right").addEventListener("click",()=>{if(waiting||finished)return;k=Math.min(count,k+1);paint();Studio.event("move",{direction:"right"});});
+  $("check").addEventListener("click",()=>{
+    if(waiting||finished)return;
+    waiting=true;
+    Studio.answer({value:valueAt(k)});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(finished)return;
+    waiting=false;
+    $("feedback").textContent=Studio.t(correct?"right":"wrong");
+    $("feedback").className=correct?"":"wrong";
+    if(correct){
+      $("marker").classList.remove("hop");void $("marker").offsetWidth;$("marker").classList.add("hop");
+      setTimeout(()=>{
+        index++;
+        if(index>=p.items.length){
+          finished=true;$("item").style.display="none";
+          $("doneScreen").textContent=Studio.t("done");$("doneScreen").style.display="flex";
+          Studio.done();
+        }else{k=Math.max(0,Math.min(count,Math.round((p.start-min)/step)));paint();}
+      },390);
+    }
+  });
+  paint();
+  Studio.ready();
+})();
+
+</script>

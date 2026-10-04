@@ -50,9 +50,10 @@ export function quality(input, ling) {
   const pauseDur = fin(f.durationMs) && f.durationMs >= 1500 ? 1 : 0.5;
   const echo = f.echoRisk === 1 && (!fin(f.onsetMs) || f.onsetMs < 400) ? 0 : 1;
   const speaker = f.speakerShift === 1 ? 0 : 1;
+  const bed = f.qBed === 0 ? 0 : 1;                                     // a speech bed (TV) before onset (ES-2 finding)
   let level = fin(f.qLevel) ? f.qLevel : 1;
   if (!fin(f.qLevel) && ((fin(f.rmsMeanDb) && f.rmsMeanDb < -55) || (fin(f.rmsP90Db) && f.rmsP90Db > -0.5))) level = 0;
-  let acoustic = Math.min(asr, dur, echo, speaker, level);
+  let acoustic = Math.min(asr, dur, echo, speaker, level, bed);
   if (!v.reliable) acoustic = Math.min(acoustic, 0.4);
   return { asr, acoustic, pause: Math.min(acoustic, pauseDur), fails };
 }

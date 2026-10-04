@@ -1,0 +1,97 @@
+<style>
+  *{box-sizing:border-box}
+  #activity{width:360px;height:320px;overflow:hidden;background:#fff8ec;color:#604537;font-family:system-ui,sans-serif;position:relative;text-align:center}
+  #title{height:34px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#87533e}
+  #scene{position:relative;width:360px;height:150px}
+  #arrows{position:absolute;inset:0;width:360px;height:150px;overflow:visible}
+  #arrows path{fill:none;stroke:#d69b72;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .stage{position:absolute;width:120px;height:52px;border:2px solid #e4b58a;border-radius:17px;background:#fff1d9;display:flex;align-items:flex-end;justify-content:center;padding:0 3px 7px;transition:background .3s,box-shadow .3s,transform .3s}
+  .stage.glow{background:#ffdfac;box-shadow:0 0 0 5px #ffdc9b80;transform:scale(1.04)}
+  .stage [data-label]{font-size:12px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  [data-token]{position:absolute;width:17px;height:21px;border-radius:55% 55% 55% 12%;background:#56abc0;border:2px solid #fff;box-shadow:0 2px 6px #47778566;z-index:2;transform:translate(-50%,-50%) rotate(-45deg);transition:left .7s ease-in-out,top .7s ease-in-out}
+  #nextRow{height:57px;display:flex;justify-content:center;align-items:center}
+  button{border:0;cursor:pointer;font:inherit;font-weight:750;transition:transform .15s,background .2s}
+  button:active{transform:scale(.94)}
+  [data-action="next"]{min-width:128px;height:52px;border-radius:26px;color:white;background:#b6684e;box-shadow:0 4px 0 #8e4c3b}
+  #prompt{height:23px;font-size:13px;font-weight:750;display:flex;justify-content:center;align-items:center;color:#87533e}
+  #options{height:56px;display:flex;gap:5px;padding:2px 5px}
+  [data-option]{flex:1;min-width:0;height:52px;padding:2px;border:2px solid #96b7a4;border-radius:15px;background:#e5f3e8;color:#365e50;font-size:12px;overflow:hidden;text-overflow:ellipsis}
+  #activity.answered #prompt{animation:pulse .35s ease}
+  @keyframes pulse{50%{transform:scale(1.08)}}
+</style>
+<div id="activity">
+  <div id="title"></div>
+  <div id="scene">
+    <svg id="arrows" viewBox="0 0 360 150" aria-hidden="true"><defs><marker id="tip" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1 L7 4 L1 7" fill="none" stroke="#d69b72" stroke-width="1.5"/></marker></defs></svg>
+    <div data-token></div>
+  </div>
+  <div id="nextRow"><button type="button" data-action="next"></button></div>
+  <div id="prompt"></div>
+  <div id="options"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, keys=p.stages, root=document.getElementById('activity');
+  const scene=document.getElementById('scene'), svg=document.getElementById('arrows');
+  const token=scene.querySelector('[data-token]'), prompt=document.getElementById('prompt');
+  const next=root.querySelector('[data-action="next"]');
+  document.getElementById('title').textContent=Studio.t('title');
+  next.textContent=Studio.t('next');
+  prompt.textContent=Studio.t('ask');
+  const n=keys.length;
+  const spots=keys.map((_,i)=>{
+    if(n===4) return [{x:76,y:34},{x:284,y:34},{x:284,y:116},{x:76,y:116}][i];
+    const angle=-Math.PI/2+2*Math.PI*i/n;
+    return {x:180+104*Math.cos(angle),y:75+42*Math.sin(angle)};
+  });
+  const boxes=[];
+  keys.forEach((key,i)=>{
+    const box=document.createElement('div');
+    box.className='stage';
+    box.dataset.stage=key;
+    box.style.left=(spots[i].x-60)+'px';
+    box.style.top=(spots[i].y-26)+'px';
+    const label=document.createElement('span');
+    label.dataset.label=key;
+    label.textContent=Studio.t(key);
+    box.appendChild(label);scene.appendChild(box);boxes.push(box);
+  });
+  const count=p.cycle?n:n-1;
+  for(let i=0;i<count;i++){
+    const j=(i+1)%n,a=spots[i],b=spots[j],dx=b.x-a.x,dy=b.y-a.y;
+    const distance=Math.hypot(dx,dy)||1,ux=dx/distance,uy=dy/distance;
+    const inset=Math.min(34,distance/3);
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',`M ${a.x+ux*inset} ${a.y+uy*inset} L ${b.x-ux*inset} ${b.y-uy*inset}`);
+    path.setAttribute('marker-end','url(#tip)');
+    path.setAttribute('data-arrow',keys[i]+'>'+keys[j]);
+    svg.appendChild(path);
+  }
+  let current=0, travelling=false, finished=false;
+  function position(i){token.style.left=spots[i].x+'px';token.style.top=(spots[i].y-15)+'px'}
+  function activate(i){root.dataset.active=keys[i];boxes.forEach((box,j)=>box.classList.toggle('glow',i===j))}
+  position(0);activate(0);
+  next.addEventListener('click',()=>{
+    if(travelling||finished||(!p.cycle&&current===n-1))return;
+    travelling=true;
+    current=(current+1)%n;
+    position(current);
+    Studio.event('next',{stage:keys[current]});
+    setTimeout(()=>{activate(current);travelling=false},700);
+  });
+  p.options.forEach(key=>{
+    const button=document.createElement('button');
+    button.type='button';button.dataset.option=key;button.textContent=Studio.t(key);
+    button.addEventListener('click',()=>{if(!finished)Studio.answer(key)});
+    document.getElementById('options').appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    prompt.textContent=Studio.t(correct?'right':'wrong');
+    root.classList.remove('answered');void root.offsetWidth;root.classList.add('answered');
+    if(correct){finished=true;next.disabled=true;setTimeout(()=>{prompt.textContent=Studio.t('done');Studio.done()},550)}
+  });
+  Studio.ready();
+})();
+
+</script>

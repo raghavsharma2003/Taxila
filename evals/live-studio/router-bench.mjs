@@ -46,12 +46,17 @@ export function wilson(k, n, z = 1.2816) {
 const q = (xs, p) => { const s = xs.slice().sort((a, b) => a - b); return s.length ? s[Math.min(s.length - 1, Math.floor(p * s.length))] : null; };
 
 const jobs = [];
+// interleaved: run s = 0 of every archetype, then s = 1 ... so a cut-short run still covers every archetype evenly
+const perArch = [];
 for (const id of ids) {
   const g = G[id]; if (!g) { console.log(`no golden truth for ${id}, skipped`); continue; }
   const route = routeFor(id);
   const armSets = MODE === "arms" ? route.arms.map((arm) => ({ label: arm.name, route: { ...route, arms: [{ ...arm, opportunistic: false }], race: 1 } })) : [{ label: "race", route }];
-  for (const set of armSets) for (let s = 0; s < N; s++) jobs.push({ id, s, set, which: s % 2 && g.alt ? "alt" : "params" });
+  const list = [];
+  for (const set of armSets) for (let s = 0; s < N; s++) list.push({ id, s, set, which: s % 2 && g.alt ? "alt" : "params" });
+  perArch.push(list);
 }
+for (let i = 0; perArch.some((l) => i < l.length); i++) for (const l of perArch) if (l[i]) jobs.push(l[i]);
 console.log(`${jobs.length} ${MODE} jobs over ${ids.length} archetypes`);
 const resultsFile = path.join(OUT, `results-${MODE}.json`);
 const rows = fs.existsSync(resultsFile) ? JSON.parse(fs.readFileSync(resultsFile, "utf8")) : [];
@@ -77,6 +82,8 @@ await Promise.all(Array.from({ length: CONC }, async () => {
       winner: res.winner?.arm ?? null, toPlayableMs: res.ok ? res.winner.record?.timings.toPlayableMs ?? res.ms : null,
       arms: recs.map((r) => ({ arm: r.arm, pass: r.gate.pass, repairs: r.timings.repairs, ttftMs: r.timings.ttftMs, firstPaintMs: r.timings.firstPaintMs ?? null, genMs: r.timings.genMs, qaMs: r.timings.qaMs, usd: r.usd,
         failed: r.gate.checks.filter((c) => !c.pass).map((c) => c.id), fixes: r.fixes, error: r.error })) };
+    // an infrastructure failure (the gate's browser died) is not a build result: not recorded, retried by the next run
+    if (res.reason === "gate_unavailable") { console.log(`${key} SKIPPED: gate unavailable (not counted; re-run to fill)`); continue; }
     if (res.ok) fs.writeFileSync(path.join(OUT, `${key.replace(/\|/g, "__")}.html`), res.winner.html);
     for (const r of recs) if (r.html && !r.gate.pass) fs.writeFileSync(path.join(OUT, `${key.replace(/\|/g, "__")}__${r.arm}__fail.html`), r.html);
     rows.push(row);
@@ -106,6 +113,36 @@ for (const id of ids) for (const label of [...new Set(rows.filter((r) => r.arche
 fs.writeFileSync(path.join(OUT, `table-${MODE}.json`), JSON.stringify(table, null, 1));
 console.table(table.map((t) => ({ ...t, wilson80: t.wilson80.join("-"), topFails: t.topFails.map(([k, v]) => `${k}:${v}`).join(" ") })));
 
+// arms mode: re-order an archetype's race arms only when the 80% Wilson intervals of P(pass by lead) do NOT overlap;
+// arms whose intervals overlap keep their order unless one is cheaper per passed build (cost breaks ties)
+if (process.argv.includes("--write") && MODE === "arms") {
+  const routes = loadRoutes(true);
+  const inbox = [];
+  for (const id of ids) {
+    const rows = table.filter((t) => t.archetype === id);
+    const r = routes.archetypes[id] ?? (routes.archetypes[id] = { ...routes.defaults });
+    const byName = new Map(rows.map((t) => [t.set, t]));
+    const current = r.arms.slice();
+    const better = (a, b) => {
+      const A = byName.get(a.name), B = byName.get(b.name);
+      if (!A || !B) return 0;
+      if (A.wilson80[0] > B.wilson80[1]) return -1;                // A clearly better
+      if (B.wilson80[0] > A.wilson80[1]) return 1;
+      return (A.usdPerPassed ?? Infinity) < (B.usdPerPassed ?? Infinity) * 0.8 ? -1 : 0;   // a tie, broken by a clear cost gap
+    };
+    const next = current.slice().sort((a, b) => (a.opportunistic === b.opportunistic ? better(a, b) : a.opportunistic ? 1 : -1));
+    if (next.map((a) => a.name).join() !== current.map((a) => a.name).join()) {
+      r.arms = next;
+      inbox.push({ id: `studio-route-${id}-${new Date().toISOString().slice(0, 10)}`, kind: "decision", at: new Date().toISOString().slice(0, 10),
+        title: `Router bench (arms) re-ordered ${id}: ${next.map((a) => a.name).join(" > ")} on non-overlapping 80% Wilson intervals (${rows.map((t) => `${t.set} ${t.passByLead}/${t.n} [${t.wilson80.join("-")}]`).join("; ")}).` });
+    }
+  }
+  _setRoutes(routes);
+  fs.writeFileSync(path.join(ROOT, "server/studio/routes.json"), JSON.stringify(routes, null, 1));
+  fs.writeFileSync(path.join(ROOT, "context/inbox/w2-f-router-arms.json"), JSON.stringify({ nodes: inbox, edges: [] }, null, 1));
+  console.log(`routes.json arms ${inbox.length ? "re-ordered" : "unchanged"}`);
+}
+
 if (process.argv.includes("--write") && MODE === "race") {
   const routes = loadRoutes(true);
   const inbox = [];
@@ -116,11 +153,11 @@ if (process.argv.includes("--write") && MODE === "race") {
     if (t.p90ms) r.leadMs = Math.max(30_000, Math.round(t.p90ms * 1.1));
     r.bench = { date: new Date().toISOString().slice(0, 10), n: t.n, passFirst: t.passFirst, passFinal: t.passFinal, pByLead: t.pByLead, wilson80: t.wilson80, p50ms: t.p50ms, p90ms: t.p90ms, usdPerPassed: t.usdPerPassed };
     if (t.usdPerPassed) r.estUsd = t.usdPerPassed;
-    inbox.push({ id: `studio-bench-${t.archetype}-${r.bench.date}`, type: "measurement", date: r.bench.date,
-      text: `Router bench (${MODE}, server code path) ${t.archetype}: ${t.passByLead}/${t.n} passed by the ${Math.round((r.leadMs ?? 90000) / 1000)} s lead (80% Wilson ${t.wilson80.join("-")}), first try ${t.passFirst}/${t.n}, after repair ${t.passFinal}/${t.n}, time to playable p50 ${t.p50ms} ms / p90 ${t.p90ms} ms, $${t.usdPerPassed} per passed build; live=${live}.` });
+    inbox.push({ id: `studio-bench-${t.archetype}-${r.bench.date}`, kind: "measurement", at: r.bench.date,
+      title: `Router bench (${MODE}, server code path) ${t.archetype}: ${t.passByLead}/${t.n} passed by the ${Math.round((r.leadMs ?? 90000) / 1000)} s lead (80% Wilson ${t.wilson80.join("-")}), first try ${t.passFirst}/${t.n}, after repair ${t.passFinal}/${t.n}, time to playable p50 ${t.p50ms} ms / p90 ${t.p90ms} ms, $${t.usdPerPassed} per passed build; live=${live}.` });
   }
   _setRoutes(routes);
   fs.writeFileSync(path.join(ROOT, "server/studio/routes.json"), JSON.stringify(routes, null, 1));
-  fs.writeFileSync(path.join(ROOT, "context/inbox/w2-f-router-bench.json"), JSON.stringify(inbox, null, 1));
+  fs.writeFileSync(path.join(ROOT, "context/inbox/w2-f-router-bench.json"), JSON.stringify({ nodes: inbox, edges: [] }, null, 1));
   console.log("routes.json and context/inbox/w2-f-router-bench.json written");
 }

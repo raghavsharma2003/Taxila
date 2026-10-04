@@ -1250,3 +1250,47 @@ Tried: accepting Wave 1 on green production batteries (API and flow checks). Bro
 ## Merged inbox entries (write-up from the entry text)
 - `rj-native-duplex-teacher-2026-10-04` (2026-10-04): Rejected by evidence (not trial): a native full-duplex speech model as the teacher. IndicFDB Hindi (NVIDIA 2609.31967): Human-1 content rating 0.564/5 at 2.02 s; GPT Live takes over in 38% of natural pauses (61.6% pause success) and fails 85% of backchannel samples; FDB-v2 open duplex correction/entity 2.6-2.9; DuplexJail +34-39 pt attack success on PersonaPlex; HumDial 2026 ranks 1-3 were cascaded/semi-cascaded, Moshi 34.5 and Freeze-Omni 43.8 final vs 76.6. GPT-Live-1 is out on cost (owner). Revisit if an Azure duplex model passes our Hindi safety evals with IndicFDB content rating >= 4.5 and pause success >= 95%.
 - `rj-mid-utterance-model-grading-2026-10-04` (2026-10-04): Rejected by evidence: grading or correcting the child mid-utterance (by a model or by first-value code). M-B1: 38-45% wrong early verdicts on numeric answers; SHANKS (2510.06917, cascade arm) interrupts 24.9% of fully correct spoken solutions (E2E 30.6%, 3 s chunks 41.1%); 'take the floor when asked' (2609.19596): duplex models challenge false claims in only 14-15% of replies. Grading waits for the committed endpoint. Revisit if a code-keyed early verdict reaches <= 2% error on E1 streaming partials.
+
+## W2-F (2026-10-04): Studio build system
+
+### rj-w2f-www-rule-ate-svg-namespace
+Tried: the stream guard's first `www` rule (`\bwww\.host...` removed) ran after the URL rule had KEPT
+`http://www.w3.org/2000/svg`, and stripped its tail, leaving `const ns='http://'`. What broke: every build that creates SVG
+from script (`createElementNS`) drew nothing; in the 24-race pilot 10 of 17 failed arms were this bug, not the model (fractions
+with no pizza, flows with no particles, timelines with no markers). Fixed with a lookbehind (a bare `www.` only) and a
+split-invariance test. Lesson: a rewriter that runs before the gate must itself be tested against goldens that use the
+legitimate form of everything it removes.
+
+### rj-w2f-guard-cut-anywhere
+Tried: committing the guarded stream at a fixed hold-back (length − 96) and backing off only for known open tokens. What
+broke: a cut between `href` and `="//cdn..."`, or right after `http`, hid the token from its rule, so the same text guarded
+differently depending on chunking (27 differing cuts in the property test). Replaced by commits at tag / statement / rule /
+line ends only (`w2f-stream-guard-safe-boundaries`).
+
+### rj-w2f-probe-portrait-viewport
+Tried (the probe, LIVE-STUDIO §14): building and gating at a 360 x 640 portrait viewport. What breaks in the product: the
+Studio stage is a fitted box inside the phone tray (328 x 290 CSS px at 360 x 800), so a portrait build would be scaled to
+~0.37 and its 44 px targets would become ~16 px. Replaced by `w2f-stage-360x320-targets`; the probe's pass rates are therefore
+not directly comparable with the v1 archetypes'.
+
+### rj-w2f-wb-taxila-fast-none
+Tried: `taxila-fast` (gpt-5.6-luna) effort none as the whiteboard planner. What broke: 6/30 lines passed the board gate after
+one repair (W0 shape 9, words overlapping 11, labels unanchored 7, invented numbers 3) vs 22-26/29 for `taxila-gpt6-luna` none
+at the same speed (`w2f-whiteboard-bench-2026-10-04`).
+
+### rj-w2f-bbox-label-checks
+Tried: deciding "a label is written over another part" from bounding boxes. What broke: a group's box (two petal circles)
+covers the centre of the flower, so a label correctly inside the centre failed. Replaced by sampling points of the label box
+and reading the drawn part under each through every layer (`elementsFromPoint`).
+
+### rj-w2f-model-whiteboard-without-picture-counts
+Tried: a whiteboard gate with only numbers / words / layout checks. What broke (bench, by eye): boards that passed drew a pizza
+cut into 6 by 3 diameters for "8 parts", and 2 group boxes for "3 equal groups". Added W8 (equal-shape families must have her
+count; a round whole is never cut by lines: equal parts are sectors code draws exactly). Picture semantics beyond counts (which
+region is shaded for "half of a third") remain unchecked by code and are a review item.
+
+### rj-w2f-gate-unavailable-as-failure
+Tried: recording a race whose gate browser died (the bench process was killed mid-run) as a failed build. What broke: 5
+balance_scale rows read as "failed" in the n = 30 table. A gate that cannot run is an infrastructure fault: the bench now skips
+and re-runs those keys, and in a lesson it reveals nothing (`gate_unavailable`), which is the fallback ladder, not a build
+result.

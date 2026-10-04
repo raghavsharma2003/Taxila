@@ -1,0 +1,109 @@
+<style>
+  *{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e9;font-family:system-ui,sans-serif;color:#573e35}
+  .activity{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 50% 4%,#fffdf5,#fff1dd 85%)}
+  .title{position:absolute;top:11px;left:16px;right:16px;text-align:center;font-size:19px;font-weight:800}
+  .instruction{position:absolute;top:40px;left:14px;right:14px;text-align:center;font-size:13px;min-height:20px}
+  .balance{position:absolute;inset:0;pointer-events:none}
+  .stand{position:absolute;left:168px;top:107px;width:24px;height:115px;background:#e8ad76;border-radius:12px 12px 5px 5px}
+  .base{position:absolute;left:136px;top:212px;width:88px;height:12px;background:#cf8b60;border-radius:12px}
+  .beam{position:absolute;left:78px;top:100px;width:204px;height:14px;border-radius:12px;background:#b76f50;box-shadow:0 3px 0 #92543f;transform-origin:center;transition:transform .65s cubic-bezier(.2,1.4,.35,1)}
+  .pivot{position:absolute;left:169px;top:97px;width:22px;height:22px;border-radius:50%;background:#f6c56f;border:4px solid #a96248}
+  .pan{position:absolute;top:107px;width:140px;height:105px;transition:transform .65s cubic-bezier(.2,1.4,.35,1)}
+  .pan.left{left:22px}.pan.right{left:198px}
+  .cord{position:absolute;left:69px;top:0;width:3px;height:67px;background:#ad765d}
+  .dish{position:absolute;bottom:7px;left:7px;width:126px;height:22px;background:#e9ad76;border:3px solid #b87152;border-top:0;border-radius:4px 4px 65px 65px}
+  .weights{position:absolute;left:4px;right:4px;bottom:26px;min-height:46px;display:flex;align-items:flex-end;justify-content:center;gap:4px}
+  .weight{width:46px;height:44px;display:grid;place-items:center;background:#77a8a0;border:3px solid #4e827b;border-radius:12px 12px 9px 9px;color:#fff;font-size:19px;font-weight:800;box-shadow:0 4px 0 #386963}
+  .choices{position:absolute;left:16px;right:16px;bottom:13px;display:flex;justify-content:center;gap:17px}
+  .option{width:86px;height:65px;border:3px solid #d58d62;border-radius:18px;background:#ffce91;color:#623f32;font:800 22px system-ui,sans-serif;box-shadow:0 5px 0 #ba7654;cursor:pointer;transition:transform .18s,opacity .25s}
+  .option:active{transform:translateY(4px) scale(.95);box-shadow:0 1px 0 #ba7654}
+  .option:disabled{cursor:default}.option.hidden{visibility:hidden}
+  .feedback{position:absolute;top:219px;left:0;right:0;text-align:center;font-size:17px;font-weight:800;min-height:24px;pointer-events:none}
+  .feedback.show{animation:pop .4s ease-out}
+  @keyframes pop{0%{transform:scale(.7);opacity:0}70%{transform:scale(1.13)}100%{transform:scale(1);opacity:1}}
+  .spark{position:absolute;top:82px;font-size:23px;color:#edaa54;opacity:0;pointer-events:none}
+  .spark.a{left:47px}.spark.b{right:47px}
+  .celebrate .spark{animation:glimmer .8s ease-out}
+  @keyframes glimmer{30%{opacity:1;transform:translateY(-12px) rotate(20deg)}100%{opacity:0;transform:translateY(-25px) rotate(35deg)}}
+</style>
+<div class="activity" id="activity">
+  <div class="title" id="title"></div>
+  <div class="instruction" id="instruction"></div>
+  <div class="balance" aria-hidden="true">
+    <div class="stand"></div><div class="base"></div>
+    <div class="beam" data-beam data-tilt="level" id="beam"></div>
+    <div class="pivot"></div>
+    <div class="pan left" data-pan="left" data-total="0" id="left"><div class="cord"></div><div class="weights"></div><div class="dish"></div></div>
+    <div class="pan right" data-pan="right" data-total="0" id="right"><div class="cord"></div><div class="weights"></div><div class="dish"></div></div>
+  </div>
+  <span class="spark a" aria-hidden="true">✦</span><span class="spark b" aria-hidden="true">✦</span>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+  <div class="choices" id="choices"></div>
+</div>
+<script>
+
+(() => {
+  const items=Studio.params.items, root=document.getElementById('activity');
+  const left=document.getElementById('left'),right=document.getElementById('right');
+  const beam=document.getElementById('beam'),choices=document.getElementById('choices');
+  const feedback=document.getElementById('feedback'),instruction=document.getElementById('instruction');
+  document.getElementById('title').textContent=Studio.t('title');
+  instruction.textContent=Studio.t('instr');
+  let index=0, selected=null, busy=false, finished=false;
+  function sum(a){return a.reduce((total,value)=>total+Number(value),0)}
+  function weight(value){
+    const el=document.createElement('div');
+    el.className='weight';el.dataset.weight=String(value);el.textContent=String(value);
+    return el;
+  }
+  function update(){
+    const item=items[index], l=sum(item.left), r=sum(item.right)+(selected===null?0:Number(selected));
+    left.dataset.total=String(l);right.dataset.total=String(r);
+    const tilt=l>r?'left':r>l?'right':'level';
+    beam.dataset.tilt=tilt;
+    beam.style.transform=`rotate(${tilt==='left'?-9:tilt==='right'?9:0}deg)`;
+    left.style.transform=`translateY(${tilt==='left'?15:tilt==='right'?-15:0}px)`;
+    right.style.transform=`translateY(${tilt==='right'?15:tilt==='left'?-15:0}px)`;
+    left.querySelector('.weights').replaceChildren(...item.left.map(weight));
+    right.querySelector('.weights').replaceChildren(...item.right.map(weight),...(selected===null?[]:[weight(selected)]));
+  }
+  function render(){
+    selected=null;busy=false;feedback.textContent='';feedback.classList.remove('show');
+    choices.replaceChildren();
+    items[index].options.forEach(value=>{
+      const button=document.createElement('button');
+      button.type='button';button.className='option';button.dataset.option=String(value);
+      button.textContent=String(value);
+      button.addEventListener('click',()=>{
+        if(busy||finished)return;
+        busy=true;selected=value;button.classList.add('hidden');
+        choices.querySelectorAll('button').forEach(b=>b.disabled=true);
+        update();Studio.event('choose',{value:Number(value)});Studio.answer({value});
+      });
+      choices.append(button);
+    });
+    update();
+  }
+  Studio.onVerdict(({correct})=>{
+    if(!busy||finished)return;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.classList.remove('show');void feedback.offsetWidth;feedback.classList.add('show');
+    if(correct){
+      root.classList.add('celebrate');
+      setTimeout(()=>{
+        root.classList.remove('celebrate');
+        if(index+1<items.length){index++;render()}
+        else{finished=true;choices.replaceChildren();feedback.textContent='';instruction.textContent=Studio.t('done');Studio.done()}
+      },1050);
+    }else{
+      setTimeout(()=>{
+        selected=null;update();
+        choices.querySelectorAll('button').forEach(b=>{b.disabled=false;b.classList.remove('hidden')});
+        busy=false;
+      },850);
+    }
+  });
+  render();Studio.ready();
+})();
+
+</script>

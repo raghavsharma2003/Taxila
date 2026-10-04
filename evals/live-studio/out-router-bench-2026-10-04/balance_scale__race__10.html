@@ -1,0 +1,130 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif}
+  #balanceActivity{width:360px;height:320px;overflow:hidden;background:#fff7e9;color:#493b38;position:relative;text-align:center}
+  #title{height:34px;padding-top:8px;font-size:19px;font-weight:800;color:#854b49}
+  #instr{height:27px;font-size:13px;font-weight:600;color:#685650}
+  #scene{display:block;width:360px;height:178px}
+  #swing{transform-origin:180px 62px;transition:transform .65s cubic-bezier(.2,1.45,.4,1)}
+  .pan-bowl{fill:#e9ad80;stroke:#aa684e;stroke-width:3;stroke-linejoin:round}
+  .cord{stroke:#a77761;stroke-width:2.5}
+  .weight rect{fill:#87b7a5;stroke:#4f8879;stroke-width:2}
+  .weight text{fill:#183e39;font-size:17px;font-weight:800;text-anchor:middle;dominant-baseline:middle}
+  #choices{height:57px;display:flex;justify-content:center;align-items:center;gap:16px}
+  .option{width:64px;height:54px;border:2px solid #4f8879;border-radius:16px;background:#a9d6c2;color:#183e39;font:800 21px system-ui,sans-serif;box-shadow:0 4px 0 #6d9e8b;cursor:pointer;transition:transform .18s,opacity .18s}
+  .option:active{transform:translateY(3px) scale(.95);box-shadow:0 1px 0 #6d9e8b}
+  .option:disabled{cursor:default}
+  #message{height:24px;font-size:16px;font-weight:800;color:#a25455}
+  #balanceActivity.celebrate #swing{filter:drop-shadow(0 0 7px #f4c36d)}
+  #balanceActivity.celebrate #message{color:#428674}
+</style>
+<div id="balanceActivity">
+  <div id="title"></div>
+  <div id="instr"></div>
+  <svg id="scene" viewBox="0 0 360 178" aria-hidden="true">
+    <path d="M155 166h50l-12-13h-26z" fill="#b87d66"/>
+    <path d="M176 64h8v92h-8z" fill="#d3a17d"/>
+    <circle cx="180" cy="62" r="11" fill="#f2bf72"/>
+    <g id="swing">
+      <path data-beam data-tilt="level" d="M63 58 Q180 52 297 58 L297 66 Q180 61 63 66Z" fill="#aa715c"/>
+      <g data-pan="left" data-total="0">
+        <path class="cord" d="M75 64v56m90-56v56"/>
+        <path class="pan-bowl" d="M68 120 Q120 157 172 120 Q120 136 68 120Z"/>
+        <g class="weights"></g>
+      </g>
+      <g data-pan="right" data-total="0">
+        <path class="cord" d="M195 64v56m90-56v56"/>
+        <path class="pan-bowl" d="M188 120 Q240 157 292 120 Q240 136 188 120Z"/>
+        <g class="weights"></g>
+      </g>
+    </g>
+  </svg>
+  <div id="choices"></div>
+  <div id="message" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const root=document.getElementById('balanceActivity');
+  const beam=root.querySelector('[data-beam]');
+  const swing=document.getElementById('swing');
+  const pans={
+    left:root.querySelector('[data-pan="left"]'),
+    right:root.querySelector('[data-pan="right"]')
+  };
+  const choices=document.getElementById('choices');
+  const message=document.getElementById('message');
+  const ns='http://www.w3.org/2000/svg';
+  let index=0,selected=null,locked=false;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+
+  function total(values){return values.reduce((sum,value)=>sum+value,0)}
+  function drawWeights(side,values){
+    const pan=pans[side],holder=pan.querySelector('.weights');
+    holder.replaceChildren();
+    pan.setAttribute('data-total',String(total(values)));
+    values.forEach((value,i)=>{
+      const group=document.createElementNS(ns,'g');
+      group.setAttribute('class','weight');
+      group.setAttribute('data-weight',String(value));
+      const x=(side==='left'?120:240)+(i-(values.length-1)/2)*35;
+      const rect=document.createElementNS(ns,'rect');
+      rect.setAttribute('x',x-16);rect.setAttribute('y','91');
+      rect.setAttribute('width','32');rect.setAttribute('height','31');
+      rect.setAttribute('rx','8');
+      const text=document.createElementNS(ns,'text');
+      text.setAttribute('x',x);text.setAttribute('y','107');
+      text.textContent=String(value);
+      group.append(rect,text);holder.append(group);
+    });
+  }
+  function paint(){
+    const item=Studio.params.items[index];
+    const left=item.left,right=selected===null?item.right:[...item.right,selected];
+    drawWeights('left',left);drawWeights('right',right);
+    const difference=total(right)-total(left);
+    const tilt=difference>0?'right':difference<0?'left':'level';
+    beam.setAttribute('data-tilt',tilt);
+    swing.style.transform=`rotate(${Math.max(-12,Math.min(12,difference*3))}deg)`;
+    choices.replaceChildren();
+    item.options.forEach(value=>{
+      if(value===selected)return;
+      const button=document.createElement('button');
+      button.type='button';button.className='option';
+      button.setAttribute('data-option',String(value));
+      button.textContent=String(value);
+      button.disabled=locked;
+      button.addEventListener('click',()=>{
+        if(locked)return;
+        locked=true;selected=value;message.textContent='';
+        Studio.event('choose',{value});
+        paint();
+        Studio.answer({value});
+      });
+      choices.append(button);
+    });
+  }
+  Studio.onVerdict(({correct})=>{
+    message.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      root.classList.add('celebrate');
+      setTimeout(()=>{
+        root.classList.remove('celebrate');
+        if(index+1===Studio.params.items.length){
+          choices.replaceChildren();
+          message.textContent=Studio.t('done');
+          Studio.done();
+        }else{
+          index++;selected=null;locked=false;message.textContent='';paint();
+        }
+      },1100);
+    }else{
+      setTimeout(()=>{selected=null;locked=false;message.textContent='';paint()},950);
+    }
+  });
+  paint();
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,111 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff7e9;color:#493b32}
+#app{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#fffdf7 0,#fff7e9 72%)}
+header{height:47px;padding:8px 12px 0;text-align:center}
+#title{font-size:17px;font-weight:800;line-height:20px;color:#6a4936}
+#instr{font-size:12px;line-height:15px;color:#846a56}
+#scene{position:relative;height:168px}
+#balance{position:absolute;left:30px;top:29px;width:300px;height:137px;transform-origin:150px 15px;transition:transform .72s cubic-bezier(.2,.8,.2,1)}
+#beam{position:absolute;left:5px;top:10px;width:290px;height:10px;border-radius:10px;background:#bd783d;box-shadow:0 3px 0 #98603a}
+#pivot{position:absolute;left:131px;top:17px;width:38px;height:46px;background:#e8b968;clip-path:polygon(50% 0,100% 100%,0 100%);filter:drop-shadow(0 2px 1px #b68b52)}
+.pan{position:absolute;top:19px;width:82px;height:83px}
+.pan.left{left:9px}.pan.right{right:9px}
+.cord{position:absolute;top:0;left:10px;width:62px;height:38px;border-left:2px solid #a77d5e;border-right:2px solid #a77d5e;border-bottom:2px solid #a77d5e;border-radius:0 0 28px 28px}
+.bowl{position:absolute;left:0;top:35px;width:82px;min-height:34px;border:3px solid #ce8951;border-top:0;border-radius:0 0 42px 42px;background:#f5c978;display:flex;align-content:flex-start;justify-content:center;align-items:center;flex-wrap:wrap;gap:3px;padding:2px 3px 5px;transition:background .2s}
+.weight{min-width:24px;height:23px;border-radius:8px 8px 6px 6px;background:#fff9e9;border:2px solid #b86d42;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#71482f;box-shadow:0 2px 0 #d3a574}
+#options{height:65px;display:flex;justify-content:center;align-items:center;gap:10px}
+.option{width:64px;height:58px;border:2px solid #dfa753;border-radius:16px;background:#ffdfa0;color:#704a2c;font:800 20px system-ui;box-shadow:0 4px 0 #d4a056;cursor:pointer;transition:transform .14s,background .2s,box-shadow .14s}
+.option:active{transform:scale(.9);box-shadow:0 1px 0 #d4a056}
+.option:disabled{opacity:.55;cursor:default}
+#feedback{height:25px;text-align:center;font-size:14px;font-weight:800;color:#a65e3c;padding-top:2px}
+#app.celebrate #scene{animation:pop .45s ease}
+#app.celebrate .bowl{background:#ffe69a}
+@keyframes pop{50%{transform:scale(1.035)}}
+</style>
+<div id="app">
+  <header><div id="title"></div><div id="instr"></div></header>
+  <div id="scene">
+    <div id="balance" data-beam data-tilt="level">
+      <div id="beam"></div><div id="pivot"></div>
+      <div class="pan left" data-pan="left" data-total="0"><div class="cord"></div><div class="bowl"></div></div>
+      <div class="pan right" data-pan="right" data-total="0"><div class="cord"></div><div class="bowl"></div></div>
+    </div>
+  </div>
+  <div id="options"></div>
+  <div id="feedback"></div>
+</div>
+<script>
+
+(()=>{
+const items=Studio.params.items;
+const app=document.getElementById('app'),balance=document.getElementById('balance');
+const left=document.querySelector('[data-pan="left"]'),right=document.querySelector('[data-pan="right"]');
+const optionsEl=document.getElementById('options'),feedback=document.getElementById('feedback');
+document.getElementById('title').textContent=Studio.t('title');
+document.getElementById('instr').textContent=Studio.t('instr');
+let index=0, locked=false, pending=null, readySent=false;
+function weight(value){
+ const el=document.createElement('span');el.className='weight';el.dataset.weight=String(value);el.textContent=String(value);return el;
+}
+function total(values){return values.reduce((a,b)=>a+Number(b),0)}
+function tilt(l,r){
+ const side=l>r?'left':r>l?'right':'level';
+ balance.dataset.tilt=side;
+ balance.style.transform=side==='left'?'rotate(-8deg)':side==='right'?'rotate(8deg)':'rotate(0deg)';
+}
+function draw(){
+ const item=items[index];
+ left.querySelector('.bowl').replaceChildren(...item.left.map(weight));
+ right.querySelector('.bowl').replaceChildren(...item.right.map(weight));
+ left.dataset.total=String(total(item.left));
+ right.dataset.total=String(total(item.right));
+ tilt(total(item.left),total(item.right));
+ optionsEl.replaceChildren(...item.options.map(value=>{
+   const b=document.createElement('button');b.className='option';b.type='button';b.dataset.option=String(value);b.textContent=String(value);
+   b.addEventListener('click',()=>choose(value,b));return b;
+ }));
+ feedback.textContent='';
+ locked=false;pending=null;
+ if(!readySent){readySent=true;Studio.ready()}
+}
+function choose(value,button){
+ if(locked)return;
+ locked=true;pending={value,button};
+ const item=items[index], rightValues=item.right.concat([value]);
+ right.querySelector('.bowl').append(weight(value));
+ right.dataset.total=String(total(rightValues));
+ tilt(total(item.left),total(rightValues));
+ button.disabled=true;
+ Studio.event('choose',{value:Number(value)});
+ Studio.answer({value});
+}
+Studio.onVerdict(({correct})=>{
+ if(!pending)return;
+ if(!correct){
+   feedback.textContent=Studio.t('wrong');
+   setTimeout(()=>{
+     const value=pending.value;
+     const weights=right.querySelectorAll('.weight');
+     for(let i=weights.length-1;i>=0;i--)if(weights[i].dataset.weight===String(value)){weights[i].remove();break}
+     const item=items[index];
+     right.dataset.total=String(total(item.right));
+     tilt(total(item.left),total(item.right));
+     pending.button.disabled=false;pending=null;locked=false;
+   },850);
+   return;
+ }
+ feedback.textContent=Studio.t('right');
+ app.classList.add('celebrate');
+ balance.dataset.tilt='level';balance.style.transform='rotate(0deg)';
+ setTimeout(()=>{
+   app.classList.remove('celebrate');index++;
+   if(index<items.length)draw();
+   else{optionsEl.replaceChildren();feedback.textContent=Studio.t('done');Studio.done()}
+ },950);
+});
+draw();
+})();
+
+</script>

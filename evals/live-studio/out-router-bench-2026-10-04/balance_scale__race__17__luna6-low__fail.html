@@ -1,0 +1,123 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8eb;color:#493d35}
+#app{width:360px;height:320px;padding:10px 14px;display:flex;flex-direction:column;align-items:center;gap:5px;overflow:hidden}
+h1{font-size:19px;line-height:24px;margin:0;color:#654e39;font-weight:800}
+#instr{font-size:13px;line-height:17px;text-align:center;margin:0;color:#766452;min-height:17px}
+#balance-area{height:151px;width:332px;position:relative;flex:none}
+#moving{position:absolute;inset:0;transform-origin:50% 51%;transition:transform .72s cubic-bezier(.2,.8,.2,1)}
+#beam{position:absolute;left:36px;right:36px;top:69px;height:12px;border-radius:12px;background:#c98850;box-shadow:inset 0 -3px #a8663c}
+#beam[data-tilt="left"]{transform:rotate(-11deg)}
+#beam[data-tilt="right"]{transform:rotate(11deg)}
+#beam[data-tilt="level"]{transform:rotate(0deg)}
+.pan{position:absolute;top:57px;width:112px;height:84px;border:3px solid #bb7950;border-top:0;border-radius:0 0 25px 25px;background:#f5d9b5;display:flex;align-items:flex-end;justify-content:center;padding:5px 4px 7px;transition:background .25s}
+.pan:before,.pan:after{content:"";position:absolute;top:-13px;width:3px;height:17px;background:#bb7950}
+.pan:before{left:11px;transform:rotate(-22deg)}
+.pan:after{right:11px;transform:rotate(22deg)}
+#left-pan{left:9px}
+#right-pan{right:9px}
+#pivot{position:absolute;left:calc(50% - 22px);top:72px;width:44px;height:66px;background:#dfac6e;clip-path:polygon(50% 0,100% 100%,0 100%);filter:drop-shadow(0 3px 1px #c88e53)}
+#base{position:absolute;left:calc(50% - 48px);bottom:3px;width:96px;height:11px;border-radius:10px;background:#c98850}
+.weights{width:100%;display:flex;align-content:flex-end;justify-content:center;align-items:flex-end;gap:3px;flex-wrap:wrap;max-height:66px;overflow:hidden}
+.weight{min-width:27px;height:30px;border-radius:9px 9px 7px 7px;background:#f0a753;color:#573e2a;font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 -3px #d98739,0 2px 3px #9e704333}
+#choices{width:100%;height:58px;display:flex;justify-content:center;gap:10px;flex:none}
+.option{height:56px;min-width:70px;padding:0 12px;border:0;border-radius:17px;background:#ffe0a8;color:#63482f;font:800 20px system-ui;box-shadow:0 4px 0 #e3b66e;cursor:pointer;transition:transform .14s,background .2s,box-shadow .14s}
+.option:active{transform:scale(.92) translateY(2px);box-shadow:0 1px 0 #e3b66e}
+.option:disabled{opacity:.62;cursor:default}
+#status{min-height:20px;font-size:14px;font-weight:750;color:#6b8f56;text-align:center;line-height:19px}
+#status.wrong{color:#bd6957}
+#status.celebrate{animation:pop .55s ease}
+@keyframes pop{50%{transform:scale(1.18)}}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <p id="instr"></p>
+  <div id="balance-area">
+    <div id="moving">
+      <div id="beam" data-beam data-tilt="level"></div>
+      <div class="pan" id="left-pan" data-pan="left" data-total="0"><div class="weights" id="left-weights"></div></div>
+      <div class="pan" id="right-pan" data-pan="right" data-total="0"><div class="weights" id="right-weights"></div></div>
+    </div>
+    <div id="pivot"></div><div id="base"></div>
+  </div>
+  <div id="choices"></div>
+  <div id="status"></div>
+</div>
+<script>
+
+(()=>{
+const items=Studio.params.items;
+const title=document.getElementById("title"),instr=document.getElementById("instr");
+const leftPan=document.getElementById("left-pan"),rightPan=document.getElementById("right-pan");
+const leftWeights=document.getElementById("left-weights"),rightWeights=document.getElementById("right-weights");
+const beam=document.querySelector("[data-beam]"),moving=document.getElementById("moving");
+const choices=document.getElementById("choices"),status=document.getElementById("status");
+title.textContent=Studio.t("title");instr.textContent=Studio.t("instr");
+let index=0,locked=false,finished=false,added=null;
+function sum(values){return values.reduce((a,b)=>a+b,0)}
+function paint(item){
+ leftWeights.replaceChildren();rightWeights.replaceChildren();
+ item.left.forEach(v=>leftWeights.append(weight(v)));
+ item.right.forEach(v=>rightWeights.append(weight(v)));
+ leftPan.dataset.total=String(sum(item.left));
+ rightPan.dataset.total=String(sum(item.right));
+ setTilt(sum(item.left),sum(item.right));
+ choices.replaceChildren();
+ item.options.forEach(value=>{
+   const b=document.createElement("button");b.className="option";b.type="button";
+   b.dataset.option=String(value);b.textContent=String(value);
+   b.addEventListener("click",()=>choose(value,b));choices.appendChild(b);
+ });
+}
+function weight(value){
+ const el=document.createElement("span");el.className="weight";el.dataset.weight=String(value);el.textContent=String(value);return el;
+}
+function setTilt(left,right){
+ const tilt=left>right?"left":right>left?"right":"level";
+ beam.dataset.tilt=tilt;
+ moving.style.transform=tilt==="left"?"rotate(-11deg)":tilt==="right"?"rotate(11deg)":"rotate(0deg)";
+}
+function choose(value,button){
+ if(locked||finished)return;
+ locked=true;added=value;
+ button.disabled=true;
+ rightWeights.append(weight(value));
+ const nextTotal=Number(rightPan.dataset.total)+value;
+ rightPan.dataset.total=String(nextTotal);
+ setTilt(Number(leftPan.dataset.total),nextTotal);
+ status.textContent="";status.className="";
+ Studio.event("choose",{value});
+ Studio.answer({value});
+}
+Studio.onVerdict(({correct})=>{
+ if(!locked||finished)return;
+ if(!correct){
+   status.textContent=Studio.t("wrong");status.className="wrong";
+   window.setTimeout(()=>{
+     const found=Array.from(rightWeights.children).find(el=>el.dataset.weight===String(added));
+     if(found)found.remove();
+     const item=items[index];
+     rightPan.dataset.total=String(sum(item.right));
+     setTilt(Number(leftPan.dataset.total),Number(rightPan.dataset.total));
+     const option=choices.querySelector('[data-option="'+String(added)+'"]');
+     if(option)option.disabled=false;
+     status.textContent="";status.className="";locked=false;added=null;
+   },900);
+   return;
+ }
+ status.textContent=Studio.t("right");status.className="celebrate";
+ setTilt(Number(leftPan.dataset.total),Number(leftPan.dataset.total));
+ window.setTimeout(()=>{
+   index++;
+   if(index>=items.length){
+     finished=true;status.textContent=Studio.t("done");status.className="celebrate";Studio.done();return;
+   }
+   locked=false;added=null;status.textContent="";status.className="";paint(items[index]);
+ },1000);
+});
+paint(items[index]);
+Studio.ready();
+})();
+
+</script>

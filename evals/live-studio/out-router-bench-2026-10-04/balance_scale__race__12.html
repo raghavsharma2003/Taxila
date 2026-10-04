@@ -1,0 +1,123 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0}
+  #activity{width:360px;height:320px;overflow:hidden;position:relative;background:#fff7e9;color:#514139;font-family:system-ui,sans-serif;text-align:center}
+  #title{position:absolute;top:8px;width:100%;font-size:19px;font-weight:800}
+  #instr{position:absolute;top:37px;width:100%;font-size:13px}
+  #message{position:absolute;top:58px;width:100%;height:25px;font-size:17px;font-weight:800;color:#bc6652}
+  #balance{position:absolute;inset:0;width:360px;height:320px;pointer-events:none}
+  #beam{transform-origin:180px 112px;transition:transform .55s cubic-bezier(.2,1.6,.35,1)}
+  .pan-art{transition:transform .55s cubic-bezier(.2,1.6,.35,1)}
+  .pan{position:absolute;top:139px;width:126px;min-height:52px;display:flex;align-items:center;justify-content:center;gap:4px;transition:transform .55s cubic-bezier(.2,1.6,.35,1);pointer-events:none}
+  [data-pan="left"]{left:26px}
+  [data-pan="right"]{right:26px}
+  .weight{min-width:38px;height:42px;padding:0 5px;border-radius:12px 12px 9px 9px;background:#eaa16e;border:2px solid #b96c4d;box-shadow:inset 0 4px #ffd0a5,0 3px 0 #a85d45;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#583b32}
+  #choices{position:absolute;left:16px;right:16px;bottom:15px;height:64px;display:flex;justify-content:space-around;align-items:center}
+  button[data-option]{width:70px;height:58px;border:2px solid #ad6a4d;border-radius:16px;background:#f3ba86;box-shadow:inset 0 5px #ffdbad,0 5px 0 #aa7054;color:#583b32;font:800 23px system-ui,sans-serif;cursor:pointer;transition:transform .16s,opacity .2s}
+  button[data-option]:active{transform:translateY(4px) scale(.94);box-shadow:inset 0 4px #ffdbad,0 1px 0 #aa7054}
+  button[data-option]:disabled{cursor:default}
+  .pop{animation:pop .6s ease}
+  @keyframes pop{50%{transform:scale(1.16)}}
+  #finish{display:none;position:absolute;inset:0;align-items:center;justify-content:center;background:#fff7e9;color:#a65c48;font-size:27px;font-weight:800}
+</style>
+<div id="activity">
+  <div id="title"></div><div id="instr"></div><div id="message" aria-live="polite"></div>
+  <svg id="balance" viewBox="0 0 360 320" aria-hidden="true">
+    <path d="M180 114 V215 M151 218 H209" fill="none" stroke="#9b6857" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="180" cy="112" r="12" fill="#e4a36e" stroke="#9b6857" stroke-width="3"/>
+    <g data-beam data-tilt="left" id="beam">
+      <path d="M92 112 H268" stroke="#a6674f" stroke-width="11" stroke-linecap="round"/>
+      <circle cx="92" cy="112" r="6" fill="#efbb84"/><circle cx="268" cy="112" r="6" fill="#efbb84"/>
+    </g>
+    <g id="leftArt" class="pan-art"><path d="M92 112 L44 195 Q92 217 140 195 L92 112" fill="none" stroke="#b98468" stroke-width="3"/><path d="M44 195 Q92 217 140 195" fill="none" stroke="#a6674f" stroke-width="7" stroke-linecap="round"/></g>
+    <g id="rightArt" class="pan-art"><path d="M268 112 L220 195 Q268 217 316 195 L268 112" fill="none" stroke="#b98468" stroke-width="3"/><path d="M220 195 Q268 217 316 195" fill="none" stroke="#a6674f" stroke-width="7" stroke-linecap="round"/></g>
+  </svg>
+  <div class="pan" data-pan="left" data-total="0"></div>
+  <div class="pan" data-pan="right" data-total="0"></div>
+  <div id="choices"></div>
+  <div id="finish"></div>
+</div>
+<script>
+
+(() => {
+  const items=Studio.params.items;
+  const left=document.querySelector('[data-pan="left"]');
+  const right=document.querySelector('[data-pan="right"]');
+  const beam=document.querySelector('[data-beam]');
+  const choices=document.getElementById('choices');
+  const message=document.getElementById('message');
+  const finish=document.getElementById('finish');
+  const sum=a=>a.reduce((x,y)=>x+Number(y),0);
+  let index=0, added=null, busy=false, token=0;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  finish.textContent=Studio.t('done');
+  function weight(v){
+    const el=document.createElement('div');
+    el.className='weight';
+    el.dataset.weight=String(v);
+    el.textContent=String(v);
+    return el;
+  }
+  function draw(){
+    const item=items[index];
+    const l=sum(item.left),r=sum(item.right)+(added===null?0:Number(added));
+    left.dataset.total=String(l);
+    right.dataset.total=String(r);
+    left.replaceChildren(...item.left.map(weight));
+    right.replaceChildren(...item.right.map(weight),...(added===null?[]:[weight(added)]));
+    const tilt=l>r?'left':r>l?'right':'level';
+    beam.dataset.tilt=tilt;
+    const shift=tilt==='left'?-17:tilt==='right'?17:0;
+    beam.style.transform=`rotate(${shift/5}deg)`;
+    left.style.transform=`translateY(${-shift}px)`;
+    right.style.transform=`translateY(${shift}px)`;
+    document.getElementById('leftArt').style.transform=`translateY(${-shift}px)`;
+    document.getElementById('rightArt').style.transform=`translateY(${shift}px)`;
+  }
+  function show(){
+    added=null;busy=false;message.textContent='';
+    choices.replaceChildren();
+    items[index].options.forEach(v=>{
+      const b=document.createElement('button');
+      b.type='button';b.dataset.option=String(v);b.textContent=String(v);
+      b.addEventListener('click',()=>{
+        if(busy)return;
+        busy=true;added=v;b.style.visibility='hidden';
+        draw();
+        Studio.event('choose',{value:v});
+        Studio.answer({value:v});
+      });
+      choices.append(b);
+    });
+    draw();
+  }
+  Studio.onVerdict(({correct})=>{
+    if(!busy)return;
+    const n=++token;
+    message.textContent=Studio.t(correct?'right':'wrong');
+    message.classList.remove('pop');void message.offsetWidth;message.classList.add('pop');
+    if(correct){
+      setTimeout(()=>{
+        if(n!==token)return;
+        index++;
+        if(index===items.length){
+          finish.style.display='flex';
+          Studio.done();
+        }else show();
+      },1050);
+    }else{
+      setTimeout(()=>{
+        if(n!==token)return;
+        added=null;draw();
+        const selected=choices.querySelector('button[style*="visibility"]');
+        if(selected)selected.style.visibility='';
+        busy=false;
+      },850);
+    }
+  });
+  show();
+  Studio.ready();
+})();
+
+</script>

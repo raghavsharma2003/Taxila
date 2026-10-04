@@ -1,0 +1,99 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;font-family:system-ui,sans-serif;color:#594334}
+  .card{position:relative;width:360px;height:320px;overflow:hidden;border:3px solid #f2dfc5;border-radius:24px;background:radial-gradient(circle at 50% 34%,#fffdf7,#fff7e9 76%)}
+  header{height:54px;padding:9px 16px 0;text-align:center}
+  h1{margin:0;font-size:17px;line-height:20px;font-weight:800}
+  [data-ask]{margin:2px 0 0;font-size:15px;line-height:19px;font-weight:650;color:#8a534c}
+  svg{display:block;width:354px;height:260px}
+  .part{cursor:pointer;touch-action:manipulation;transition:filter .25s,transform .25s;transform-box:fill-box;transform-origin:center}
+  .part:active{transform:scale(.94)}
+  .part.glow{filter:drop-shadow(0 0 8px #ffd45b) drop-shadow(0 0 4px #ffcb54);animation:bloom .65s ease-in-out infinite alternate}
+  @keyframes bloom{to{transform:scale(1.045)}}
+  .leader{fill:none;stroke:#b39b83;stroke-width:1.8;stroke-linecap:round;pointer-events:none}
+  .label{fill:#614b3e;font-size:14px;font-weight:750;dominant-baseline:middle;pointer-events:none}
+  #feedback{position:absolute;left:105px;bottom:7px;width:144px;min-height:23px;text-align:center;font-size:15px;font-weight:800;color:#a75350;pointer-events:none}
+  #feedback.good{color:#477d4b}
+  .nudge{animation:nudge .35s ease}
+  @keyframes nudge{25%{transform:translateX(-4px)}70%{transform:translateX(4px)}}
+</style>
+<div class="card">
+  <header><h1 id="title"></h1><p data-ask></p></header>
+  <svg viewBox="0 0 354 260" aria-hidden="true">
+    <g id="shape0" class="part">
+      <ellipse cx="164" cy="36" rx="27" ry="30" fill="#f48e9d"/>
+      <ellipse cx="208" cy="72" rx="29" ry="26" fill="#f6a2a4"/>
+      <ellipse cx="139" cy="111" rx="27" ry="29" fill="#f48e9d"/>
+      <ellipse cx="189" cy="111" rx="27" ry="29" fill="#f48e9d"/>
+    </g>
+    <g id="shape2" class="part">
+      <rect x="138" y="132" width="56" height="82" rx="25" fill="#559765"/>
+      <path d="M164 122 Q170 158 166 198" fill="none" stroke="#559765" stroke-width="23" stroke-linecap="round" pointer-events="none"/>
+    </g>
+    <g id="shape3" class="part">
+      <ellipse cx="108" cy="172" rx="42" ry="27" transform="rotate(28 108 172)" fill="#72ad70"/>
+      <path d="M78 156 Q115 171 155 190" fill="none" stroke="#498b60" stroke-width="3" stroke-linecap="round" pointer-events="none"/>
+    </g>
+    <g id="shape4" class="part">
+      <rect x="130" y="202" width="70" height="54" rx="22" fill="#ac8061"/>
+      <path d="M164 208 Q151 233 135 247 M165 212 Q180 238 197 248" fill="none" stroke="#ac8061" stroke-width="12" stroke-linecap="round" pointer-events="none"/>
+    </g>
+    <g id="shape1" class="part">
+      <circle cx="164" cy="78" r="29" fill="#f5bd54"/>
+      <circle cx="157" cy="70" r="5" fill="#ffdf88" pointer-events="none"/>
+      <circle cx="176" cy="84" r="4" fill="#ffdf88" pointer-events="none"/>
+    </g>
+    <path class="leader" d="M211 39 L243 32 M99 91 L135 80 M193 181 L240 190 M78 187 L65 199 M200 230 L243 235"/>
+    <text id="label0" class="label" x="247" y="32"></text>
+    <text id="label1" class="label" x="18" y="91"></text>
+    <text id="label2" class="label" x="244" y="190"></text>
+    <text id="label3" class="label" x="12" y="204"></text>
+    <text id="label4" class="label" x="247" y="235"></text>
+  </svg>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const parts=Studio.params.parts;
+  const shapes=Array.from({length:5},(_,i)=>document.getElementById('shape'+i));
+  const labels=Array.from({length:5},(_,i)=>document.getElementById('label'+i));
+  document.getElementById('title').textContent=Studio.t('title');
+  document.querySelector('[data-ask]').textContent=Studio.t('ask');
+  let pending=false,finished=false,selected=null;
+  parts.forEach((key,i)=>{
+    if(i>=shapes.length)return;
+    shapes[i].setAttribute('data-part',key);
+    labels[i].setAttribute('data-label',key);
+    labels[i].textContent=Studio.t(key);
+    shapes[i].addEventListener('click',()=>{
+      if(pending||finished)return;
+      pending=true;
+      selected=shapes[i];
+      Studio.answer(key);
+    });
+  });
+  for(let i=parts.length;i<shapes.length;i++){
+    shapes[i].style.display='none';
+    labels[i].style.display='none';
+  }
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    pending=false;
+    const feedback=document.getElementById('feedback');
+    feedback.classList.toggle('good',!!correct);
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      finished=true;
+      selected.classList.add('glow');
+      setTimeout(()=>{feedback.textContent=Studio.t('done');Studio.done()},650);
+    }else{
+      selected.classList.remove('nudge');
+      void selected.getBoundingClientRect();
+      selected.classList.add('nudge');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>
