@@ -1,0 +1,881 @@
+{
+ "v": "taxila-voice-blind-r3/v1",
+ "date": "2026-10-04",
+ "built_by": "docs/research/voice/v4/blind/build.py",
+ "DO_NOT_PUBLISH": "this file un-blinds the page; publish index.html and the .mp3 files only",
+ "arms": {
+  "A": "DragonHD Diya, the exact round-2 clip (original line, plain SSML) — anchor",
+  "B": "DragonHD Diya, v4 spoken-register line, plain SSML (no prosody, no breaks)",
+  "C": "DragonHD Diya, the same line + per-clause DeliveryPlan compiled to SSML (lines.mjs compileDragonHD: <break> = pause-200 ms, slow-only <prosody rate>, pitch -8%)",
+  "D": "Nova 2 Sonic kiara (AWS us-east-1), the same line as the user turn; system = reader rule + band + the situation + the clause plan as prose (lines.mjs compileNova)"
+ },
+ "lines_rule": "variant A of each v4 line (TALKING-RULES section 6 uses A as the primary), except L3-surprise, where A keeps 'बहुत लोग गलत करते हैं' (a comparison with other children, forbidden by Arjun's sheet and the safety floor), so the primary is L3 B; L3 A is rendered as a reserve so the owner can still pick it",
+ "take_rule": "per arm-line, the first take in render order (t1, t2, t3) that passes every clip gate: (1) no reference word missed by BOTH STTs (gpt-transcribe and Azure hi-IN), 'burp' excepted as known STT noise; (2) no number word missed by both STTs and none inserted by both; (3) longest internal silence <= 1.5 s; (4) no mid-phrase pause >= 0.3 s (a pause after a word with no punctuation, placed by CTC forced alignment). If no take passes, take 1, flagged in the manifest. Arm A has one clip (the round-2 file). Written 2026-10-04 before any render of this set was screened or heard.",
+ "page_text": "each clip shows the words it says; arm A says the round-2 line, B/C/D the v4 line, so the text separates A from B/C/D exactly as the audio already does and says nothing about B vs C vs D",
+ "loudness": "ffmpeg ebur128 measurement of the raw source, then one static volume gain per clip to I=-26.0 LUFS (true peak must stay <= -2.0 dBFS, no compression), then 44.1 kHz mono MP3 96 kbps; output measured with ebur128 (procedure imported from ../../v3/blind/build.py)",
+ "fail_ticks_added_in_r3": [
+  "mood",
+  "fades",
+  "choppy"
+ ],
+ "clips": {
+  "7YVMD": {
+   "arm": "A",
+   "engine_arm": "dhd-diya-anchor",
+   "arm_desc": "DragonHD Diya, the exact round-2 clip (original line, plain SSML) — anchor",
+   "line": "L1-think",
+   "line_variant": "orig",
+   "text": "सत्ताईस और पैंतीस। पहले tens जोड़ते हैं, बीस और तीस, पचास। फिर सात और पाँच, बारह। तो total हुआ बासठ!",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/design/superhuman/voice-probe/wav/dhd-diya__L1-think__plain.wav",
+   "manifest_id": "A__dhd-diya-anchor__L1-think",
+   "screen_clip_id": "A__dhd-diya-anchor__L1-think__t1",
+   "round2_code": "7A9PL",
+   "input_lufs": -23.1,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -7.9,
+   "loudnorm_mode": "static gain -2.90 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "ins_num_both": [],
+    "max_pause_s": 0.58,
+    "pauses_ge_180ms": 2,
+    "pause_total_s": 0.94,
+    "planned_hit": null,
+    "planned_pauses": null,
+    "unplanned_pauses": null,
+    "rate_syl_s": 3.44,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "YCVUM": {
+   "arm": "A",
+   "engine_arm": "dhd-diya-anchor",
+   "arm_desc": "DragonHD Diya, the exact round-2 clip (original line, plain SSML) — anchor",
+   "line": "L2-laugh",
+   "line_variant": "orig",
+   "text": "Cold drink? फिर तो सारे पौधे गमले में burp करते! नहीं, पौधे सिर्फ़ पानी पीते हैं, अपनी जड़ों से।",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/design/superhuman/voice-probe/wav/dhd-diya__L2-laugh__plain.wav",
+   "manifest_id": "A__dhd-diya-anchor__L2-laugh",
+   "screen_clip_id": "A__dhd-diya-anchor__L2-laugh__t1",
+   "round2_code": "TXFMD",
+   "input_lufs": -22.8,
+   "output_lufs": -26.4,
+   "output_true_peak_dbfs": -10.4,
+   "loudnorm_mode": "static gain -3.20 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "ins_num_both": [],
+    "max_pause_s": 0.4,
+    "pauses_ge_180ms": 1,
+    "pause_total_s": 0.4,
+    "planned_hit": null,
+    "planned_pauses": null,
+    "unplanned_pauses": null,
+    "rate_syl_s": 5.3,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "AN7Y3": {
+   "arm": "A",
+   "engine_arm": "dhd-diya-anchor",
+   "arm_desc": "DragonHD Diya, the exact round-2 clip (original line, plain SSML) — anchor",
+   "line": "L3-surprise",
+   "line_variant": "orig",
+   "text": "अरे! पहली बार में ही? तुमने ऊपर और नीचे दोनों को चार से divide किया, बिल्कुल सही। ये वाला तो बहुत लोग गलत करते हैं!",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/design/superhuman/voice-probe/wav/dhd-diya__L3-surprise__plain.wav",
+   "manifest_id": "A__dhd-diya-anchor__L3-surprise",
+   "screen_clip_id": "A__dhd-diya-anchor__L3-surprise__t1",
+   "round2_code": "PVLRJ",
+   "input_lufs": -22.5,
+   "output_lufs": -26.4,
+   "output_true_peak_dbfs": -7.6,
+   "loudnorm_mode": "static gain -3.50 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "ins_num_both": [],
+    "max_pause_s": 0.24,
+    "pauses_ge_180ms": 1,
+    "pause_total_s": 0.24,
+    "planned_hit": null,
+    "planned_pauses": null,
+    "unplanned_pauses": null,
+    "rate_syl_s": 5.57,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "4T39C": {
+   "arm": "A",
+   "engine_arm": "dhd-diya-anchor",
+   "arm_desc": "DragonHD Diya, the exact round-2 clip (original line, plain SSML) — anchor",
+   "line": "L4-correct",
+   "line_variant": "orig",
+   "text": "अच्छा, यहाँ थोड़ा रुकते हैं। तीन बटा चार में हम चार में से तीन हिस्से लेते हैं, यानी लगभग पूरा pizza। अब दो बटा तीन को देखो।",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/design/superhuman/voice-probe/wav/dhd-diya__L4-correct__plain.wav",
+   "manifest_id": "A__dhd-diya-anchor__L4-correct",
+   "screen_clip_id": "A__dhd-diya-anchor__L4-correct__t1",
+   "round2_code": "J94AD",
+   "input_lufs": -24.2,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -7.4,
+   "loudnorm_mode": "static gain -1.80 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "ins_num_both": [],
+    "max_pause_s": 0.36,
+    "pauses_ge_180ms": 1,
+    "pause_total_s": 0.36,
+    "planned_hit": null,
+    "planned_pauses": null,
+    "unplanned_pauses": null,
+    "rate_syl_s": 4.87,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "UKL9T": {
+   "arm": "A",
+   "engine_arm": "dhd-diya-anchor",
+   "arm_desc": "DragonHD Diya, the exact round-2 clip (original line, plain SSML) — anchor",
+   "line": "L5-wonder",
+   "line_variant": "orig",
+   "text": "पता है, तुम्हारे शरीर का सारा खून लगभग एक मिनट में पूरे शरीर का एक चक्कर लगा लेता है। सोचो, अभी इसी वक़्त भी!",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/design/superhuman/voice-probe/wav/dhd-diya__L5-wonder__plain.wav",
+   "manifest_id": "A__dhd-diya-anchor__L5-wonder",
+   "screen_clip_id": "A__dhd-diya-anchor__L5-wonder__t1",
+   "round2_code": "V3EFL",
+   "input_lufs": -25.1,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -8.4,
+   "loudnorm_mode": "static gain -0.90 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "ins_num_both": [],
+    "max_pause_s": 0,
+    "pauses_ge_180ms": 0,
+    "pause_total_s": 0,
+    "planned_hit": null,
+    "planned_pauses": null,
+    "unplanned_pauses": null,
+    "rate_syl_s": 5.63,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "J9TRM": {
+   "arm": "B",
+   "engine_arm": "dhd-diya-text",
+   "arm_desc": "DragonHD Diya, v4 spoken-register line, plain SSML (no prosody, no breaks)",
+   "line": "L1-think",
+   "line_variant": "A",
+   "text": "सत्ताईस और पैंतीस, चलो, साथ में करते हैं। पहले tens, बीस और तीस, पचास। फिर सात और पाँच, बारह। तो पचास और बारह, बासठ!",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    },
+    {
+     "take": 2,
+     "gate_fails": []
+    },
+    {
+     "take": 3,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v4/renders/wav-takes/B__dhd-diya-text__L1-thinkA__t1.wav",
+   "manifest_id": "B__dhd-diya-text__L1-think",
+   "screen_clip_id": "B__dhd-diya-text__L1-thinkA__t1",
+   "round2_code": null,
+   "input_lufs": -25.6,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -6.2,
+   "loudnorm_mode": "static gain -0.40 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "ins_num_both": [],
+    "max_pause_s": 0.2,
+    "pauses_ge_180ms": 1,
+    "pause_total_s": 0.2,
+    "planned_hit": 1,
+    "planned_pauses": 7,
+    "unplanned_pauses": [],
+    "rate_syl_s": 3.59,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "RKWDL": {
+   "arm": "B",
+   "engine_arm": "dhd-diya-text",
+   "arm_desc": "DragonHD Diya, v4 spoken-register line, plain SSML (no prosody, no breaks)",
+   "line": "L2-laugh",
+   "line_variant": "A",
+   "text": "Cold drink? सोचो ज़रा, फिर तो सारे पौधे गमले में burp करते! एक के बाद एक! पर नहीं, पौधे सिर्फ़ पानी पीते हैं, अपनी जड़ों से।",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    },
+    {
+     "take": 2,
+     "gate_fails": []
+    },
+    {
+     "take": 3,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v4/renders/wav-takes/B__dhd-diya-text__L2-laughA__t1.wav",
+   "manifest_id": "B__dhd-diya-text__L2-laugh",
+   "screen_clip_id": "B__dhd-diya-text__L2-laughA__t1",
+   "round2_code": null,
+   "input_lufs": -23.6,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -9.9,
+   "loudnorm_mode": "static gain -2.40 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "ins_num_both": [],
+    "max_pause_s": 0.26,
+    "pauses_ge_180ms": 2,
+    "pause_total_s": 0.5,
+    "planned_hit": 1,
+    "planned_pauses": 3,
+    "unplanned_pauses": [],
+    "rate_syl_s": 5.16,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "PYAU3": {
+   "arm": "B",
+   "engine_arm": "dhd-diya-text",
+   "arm_desc": "DragonHD Diya, v4 spoken-register line, plain SSML (no prosody, no breaks)",
+   "line": "L3-surprise",
+   "line_variant": "B",
+   "text": "अरे, पहली बार में ही? ऊपर भी चार से, नीचे भी चार से, divide! बिल्कुल सही। ये वाला सच में tricky होता है।",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    },
+    {
+     "take": 2,
+     "gate_fails": []
+    },
+    {
+     "take": 3,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v4/renders/wav-takes/B__dhd-diya-text__L3-surpriseB__t1.wav",
+   "manifest_id": "B__dhd-diya-text__L3-surprise",
+   "screen_clip_id": "B__dhd-diya-text__L3-surpriseB__t1",
+   "round2_code": null,
+   "input_lufs": -22.1,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -8.6,
+   "loudnorm_mode": "static gain -3.90 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "ins_num_both": [],
+    "max_pause_s": 0.26,
+    "pauses_ge_180ms": 2,
+    "pause_total_s": 0.5,
+    "planned_hit": 2,
+    "planned_pauses": 3,
+    "unplanned_pauses": [],
+    "rate_syl_s": 4.59,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "DDL7F": {
+   "arm": "B",
+   "engine_arm": "dhd-diya-text",
+   "arm_desc": "DragonHD Diya, v4 spoken-register line, plain SSML (no prosody, no breaks)",
+   "line": "L4-correct",
+   "line_variant": "A",
+   "text": "अच्छा, चलो इसे साथ में देखते हैं। तीन बटा चार, मतलब चार हिस्से, और हम लेते हैं तीन। सोचो, लगभग पूरा pizza! अब दो बटा तीन को देखो।",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    },
+    {
+     "take": 2,
+     "gate_fails": []
+    },
+    {
+     "take": 3,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v4/renders/wav-takes/B__dhd-diya-text__L4-correctA__t1.wav",
+   "manifest_id": "B__dhd-diya-text__L4-correct",
+   "screen_clip_id": "B__dhd-diya-text__L4-correctA__t1",
+   "round2_code": null,
+   "input_lufs": -25.4,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -6.8,
+   "loudnorm_mode": "static gain -0.60 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "ins_num_both": [],
+    "max_pause_s": 0.6,
+    "pauses_ge_180ms": 4,
+    "pause_total_s": 1.62,
+    "planned_hit": 4,
+    "planned_pauses": 4,
+    "unplanned_pauses": [],
+    "rate_syl_s": 4.17,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "ANKRU": {
+   "arm": "B",
+   "engine_arm": "dhd-diya-text",
+   "arm_desc": "DragonHD Diya, v4 spoken-register line, plain SSML (no prosody, no breaks)",
+   "line": "L5-wonder",
+   "line_variant": "A",
+   "text": "पता है, तुम्हारा सारा खून, पूरे शरीर का एक चक्कर लगा लेता है, लगभग एक मिनट में! एक मिनट! सोचो, अभी, इसी वक़्त भी।",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    },
+    {
+     "take": 2,
+     "gate_fails": []
+    },
+    {
+     "take": 3,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v4/renders/wav-takes/B__dhd-diya-text__L5-wonderA__t1.wav",
+   "manifest_id": "B__dhd-diya-text__L5-wonder",
+   "screen_clip_id": "B__dhd-diya-text__L5-wonderA__t1",
+   "round2_code": null,
+   "input_lufs": -24.6,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -5.1,
+   "loudnorm_mode": "static gain -1.40 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "ins_num_both": [],
+    "max_pause_s": 0.26,
+    "pauses_ge_180ms": 2,
+    "pause_total_s": 0.48,
+    "planned_hit": 1,
+    "planned_pauses": 4,
+    "unplanned_pauses": [
+     "अभी"
+    ],
+    "rate_syl_s": 5.21,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "WDX7H": {
+   "arm": "C",
+   "engine_arm": "dhd-diya-plan",
+   "arm_desc": "DragonHD Diya, the same line + per-clause DeliveryPlan compiled to SSML (lines.mjs compileDragonHD: <break> = pause-200 ms, slow-only <prosody rate>, pitch -8%)",
+   "line": "L1-think",
+   "line_variant": "A",
+   "text": "सत्ताईस और पैंतीस, चलो, साथ में करते हैं। पहले tens, बीस और तीस, पचास। फिर सात और पाँच, बारह। तो पचास और बारह, बासठ!",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    },
+    {
+     "take": 2,
+     "gate_fails": []
+    },
+    {
+     "take": 3,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v4/renders/wav-takes/C__dhd-diya-plan__L1-thinkA__t1.wav",
+   "manifest_id": "C__dhd-diya-plan__L1-think",
+   "screen_clip_id": "C__dhd-diya-plan__L1-thinkA__t1",
+   "round2_code": null,
+   "input_lufs": -24.8,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -6.9,
+   "loudnorm_mode": "static gain -1.20 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "ins_num_both": [],
+    "max_pause_s": 0.76,
+    "pauses_ge_180ms": 7,
+    "pause_total_s": 2.66,
+    "planned_hit": 7,
+    "planned_pauses": 7,
+    "unplanned_pauses": [],
+    "rate_syl_s": 2.96,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "DKJUT": {
+   "arm": "C",
+   "engine_arm": "dhd-diya-plan",
+   "arm_desc": "DragonHD Diya, the same line + per-clause DeliveryPlan compiled to SSML (lines.mjs compileDragonHD: <break> = pause-200 ms, slow-only <prosody rate>, pitch -8%)",
+   "line": "L2-laugh",
+   "line_variant": "A",
+   "text": "Cold drink? सोचो ज़रा, फिर तो सारे पौधे गमले में burp करते! एक के बाद एक! पर नहीं, पौधे सिर्फ़ पानी पीते हैं, अपनी जड़ों से।",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    },
+    {
+     "take": 2,
+     "gate_fails": []
+    },
+    {
+     "take": 3,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v4/renders/wav-takes/C__dhd-diya-plan__L2-laughA__t1.wav",
+   "manifest_id": "C__dhd-diya-plan__L2-laugh",
+   "screen_clip_id": "C__dhd-diya-plan__L2-laughA__t1",
+   "round2_code": null,
+   "input_lufs": -25.1,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -9.2,
+   "loudnorm_mode": "static gain -0.90 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "ins_num_both": [],
+    "max_pause_s": 0.5,
+    "pauses_ge_180ms": 3,
+    "pause_total_s": 1.3,
+    "planned_hit": 3,
+    "planned_pauses": 3,
+    "unplanned_pauses": [],
+    "rate_syl_s": 4.26,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "TE4LJ": {
+   "arm": "C",
+   "engine_arm": "dhd-diya-plan",
+   "arm_desc": "DragonHD Diya, the same line + per-clause DeliveryPlan compiled to SSML (lines.mjs compileDragonHD: <break> = pause-200 ms, slow-only <prosody rate>, pitch -8%)",
+   "line": "L3-surprise",
+   "line_variant": "B",
+   "text": "अरे, पहली बार में ही? ऊपर भी चार से, नीचे भी चार से, divide! बिल्कुल सही। ये वाला सच में tricky होता है।",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    },
+    {
+     "take": 2,
+     "gate_fails": [
+      "numbers"
+     ]
+    },
+    {
+     "take": 3,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v4/renders/wav-takes/C__dhd-diya-plan__L3-surpriseB__t1.wav",
+   "manifest_id": "C__dhd-diya-plan__L3-surprise",
+   "screen_clip_id": "C__dhd-diya-plan__L3-surpriseB__t1",
+   "round2_code": null,
+   "input_lufs": -23.9,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -5.9,
+   "loudnorm_mode": "static gain -2.10 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "ins_num_both": [],
+    "max_pause_s": 0.68,
+    "pauses_ge_180ms": 3,
+    "pause_total_s": 1.5,
+    "planned_hit": 3,
+    "planned_pauses": 3,
+    "unplanned_pauses": [],
+    "rate_syl_s": 4.12,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "MFXAY": {
+   "arm": "C",
+   "engine_arm": "dhd-diya-plan",
+   "arm_desc": "DragonHD Diya, the same line + per-clause DeliveryPlan compiled to SSML (lines.mjs compileDragonHD: <break> = pause-200 ms, slow-only <prosody rate>, pitch -8%)",
+   "line": "L4-correct",
+   "line_variant": "A",
+   "text": "अच्छा, चलो इसे साथ में देखते हैं। तीन बटा चार, मतलब चार हिस्से, और हम लेते हैं तीन। सोचो, लगभग पूरा pizza! अब दो बटा तीन को देखो।",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    },
+    {
+     "take": 2,
+     "gate_fails": []
+    },
+    {
+     "take": 3,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v4/renders/wav-takes/C__dhd-diya-plan__L4-correctA__t1.wav",
+   "manifest_id": "C__dhd-diya-plan__L4-correct",
+   "screen_clip_id": "C__dhd-diya-plan__L4-correctA__t1",
+   "round2_code": null,
+   "input_lufs": -24.7,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -6.9,
+   "loudnorm_mode": "static gain -1.30 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "ins_num_both": [],
+    "max_pause_s": 1.02,
+    "pauses_ge_180ms": 4,
+    "pause_total_s": 2.64,
+    "planned_hit": 4,
+    "planned_pauses": 4,
+    "unplanned_pauses": [],
+    "rate_syl_s": 3.5,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "KFPKD": {
+   "arm": "C",
+   "engine_arm": "dhd-diya-plan",
+   "arm_desc": "DragonHD Diya, the same line + per-clause DeliveryPlan compiled to SSML (lines.mjs compileDragonHD: <break> = pause-200 ms, slow-only <prosody rate>, pitch -8%)",
+   "line": "L5-wonder",
+   "line_variant": "A",
+   "text": "पता है, तुम्हारा सारा खून, पूरे शरीर का एक चक्कर लगा लेता है, लगभग एक मिनट में! एक मिनट! सोचो, अभी, इसी वक़्त भी।",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    },
+    {
+     "take": 2,
+     "gate_fails": []
+    },
+    {
+     "take": 3,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v4/renders/wav-takes/C__dhd-diya-plan__L5-wonderA__t1.wav",
+   "manifest_id": "C__dhd-diya-plan__L5-wonder",
+   "screen_clip_id": "C__dhd-diya-plan__L5-wonderA__t1",
+   "round2_code": null,
+   "input_lufs": -25.2,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -4.2,
+   "loudnorm_mode": "static gain -0.80 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "ins_num_both": [],
+    "max_pause_s": 0.76,
+    "pauses_ge_180ms": 4,
+    "pause_total_s": 1.98,
+    "planned_hit": 4,
+    "planned_pauses": 4,
+    "unplanned_pauses": [],
+    "rate_syl_s": 3.99,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "4AD9X": {
+   "arm": "D",
+   "engine_arm": "nova-kiara-plan",
+   "arm_desc": "Nova 2 Sonic kiara (AWS us-east-1), the same line as the user turn; system = reader rule + band + the situation + the clause plan as prose (lines.mjs compileNova)",
+   "line": "L1-think",
+   "line_variant": "A",
+   "text": "सत्ताईस और पैंतीस, चलो, साथ में करते हैं। पहले tens, बीस और तीस, पचास। फिर सात और पाँच, बारह। तो पचास और बारह, बासठ!",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    },
+    {
+     "take": 2,
+     "gate_fails": []
+    },
+    {
+     "take": 3,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v4/renders/wav-takes/D__nova-kiara-plan__L1-thinkA__t1.wav",
+   "manifest_id": "D__nova-kiara-plan__L1-think",
+   "screen_clip_id": "D__nova-kiara-plan__L1-thinkA__t1",
+   "round2_code": null,
+   "input_lufs": -21.9,
+   "output_lufs": -26.4,
+   "output_true_peak_dbfs": -9.7,
+   "loudnorm_mode": "static gain -4.10 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "ins_num_both": [],
+    "max_pause_s": 0.64,
+    "pauses_ge_180ms": 6,
+    "pause_total_s": 1.88,
+    "planned_hit": 5,
+    "planned_pauses": 7,
+    "unplanned_pauses": [
+     "चलो"
+    ],
+    "rate_syl_s": 3.5,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "4YAXX": {
+   "arm": "D",
+   "engine_arm": "nova-kiara-plan",
+   "arm_desc": "Nova 2 Sonic kiara (AWS us-east-1), the same line as the user turn; system = reader rule + band + the situation + the clause plan as prose (lines.mjs compileNova)",
+   "line": "L2-laugh",
+   "line_variant": "A",
+   "text": "Cold drink? सोचो ज़रा, फिर तो सारे पौधे गमले में burp करते! एक के बाद एक! पर नहीं, पौधे सिर्फ़ पानी पीते हैं, अपनी जड़ों से।",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    },
+    {
+     "take": 2,
+     "gate_fails": []
+    },
+    {
+     "take": 3,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v4/renders/wav-takes/D__nova-kiara-plan__L2-laughA__t1.wav",
+   "manifest_id": "D__nova-kiara-plan__L2-laugh",
+   "screen_clip_id": "D__nova-kiara-plan__L2-laughA__t1",
+   "round2_code": null,
+   "input_lufs": -22.0,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -11.2,
+   "loudnorm_mode": "static gain -4.00 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "ins_num_both": [],
+    "max_pause_s": 0.9,
+    "pauses_ge_180ms": 5,
+    "pause_total_s": 2.04,
+    "planned_hit": 3,
+    "planned_pauses": 3,
+    "unplanned_pauses": [
+     "ज़रा",
+     "नहीं"
+    ],
+    "rate_syl_s": 4.32,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "J337H": {
+   "arm": "D",
+   "engine_arm": "nova-kiara-plan",
+   "arm_desc": "Nova 2 Sonic kiara (AWS us-east-1), the same line as the user turn; system = reader rule + band + the situation + the clause plan as prose (lines.mjs compileNova)",
+   "line": "L3-surprise",
+   "line_variant": "B",
+   "text": "अरे, पहली बार में ही? ऊपर भी चार से, नीचे भी चार से, divide! बिल्कुल सही। ये वाला सच में tricky होता है।",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    },
+    {
+     "take": 2,
+     "gate_fails": []
+    },
+    {
+     "take": 3,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v4/renders/wav-takes/D__nova-kiara-plan__L3-surpriseB__t1.wav",
+   "manifest_id": "D__nova-kiara-plan__L3-surprise",
+   "screen_clip_id": "D__nova-kiara-plan__L3-surpriseB__t1",
+   "round2_code": null,
+   "input_lufs": -20.4,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -10.8,
+   "loudnorm_mode": "static gain -5.60 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "ins_num_both": [],
+    "max_pause_s": 0.84,
+    "pauses_ge_180ms": 4,
+    "pause_total_s": 1.64,
+    "planned_hit": 3,
+    "planned_pauses": 3,
+    "unplanned_pauses": [
+     "अरे"
+    ],
+    "rate_syl_s": 4.21,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "7EM7U": {
+   "arm": "D",
+   "engine_arm": "nova-kiara-plan",
+   "arm_desc": "Nova 2 Sonic kiara (AWS us-east-1), the same line as the user turn; system = reader rule + band + the situation + the clause plan as prose (lines.mjs compileNova)",
+   "line": "L4-correct",
+   "line_variant": "A",
+   "text": "अच्छा, चलो इसे साथ में देखते हैं। तीन बटा चार, मतलब चार हिस्से, और हम लेते हैं तीन। सोचो, लगभग पूरा pizza! अब दो बटा तीन को देखो।",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    },
+    {
+     "take": 2,
+     "gate_fails": []
+    },
+    {
+     "take": 3,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v4/renders/wav-takes/D__nova-kiara-plan__L4-correctA__t1.wav",
+   "manifest_id": "D__nova-kiara-plan__L4-correct",
+   "screen_clip_id": "D__nova-kiara-plan__L4-correctA__t1",
+   "round2_code": null,
+   "input_lufs": -22.5,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -10.4,
+   "loudnorm_mode": "static gain -3.50 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "ins_num_both": [],
+    "max_pause_s": 0.6,
+    "pauses_ge_180ms": 7,
+    "pause_total_s": 2.08,
+    "planned_hit": 4,
+    "planned_pauses": 4,
+    "unplanned_pauses": [
+     "अच्छा",
+     "मतलब",
+     "हिस्से"
+    ],
+    "rate_syl_s": 4.27,
+    "mid_pauses_ge_0.3s": []
+   }
+  },
+  "AWMAU": {
+   "arm": "D",
+   "engine_arm": "nova-kiara-plan",
+   "arm_desc": "Nova 2 Sonic kiara (AWS us-east-1), the same line as the user turn; system = reader rule + band + the situation + the clause plan as prose (lines.mjs compileNova)",
+   "line": "L5-wonder",
+   "line_variant": "A",
+   "text": "पता है, तुम्हारा सारा खून, पूरे शरीर का एक चक्कर लगा लेता है, लगभग एक मिनट में! एक मिनट! सोचो, अभी, इसी वक़्त भी।",
+   "take": 1,
+   "take_check": [
+    {
+     "take": 1,
+     "gate_fails": []
+    },
+    {
+     "take": 2,
+     "gate_fails": []
+    },
+    {
+     "take": 3,
+     "gate_fails": []
+    }
+   ],
+   "source": "docs/research/voice/v4/renders/wav-takes/D__nova-kiara-plan__L5-wonderA__t1.wav",
+   "manifest_id": "D__nova-kiara-plan__L5-wonder",
+   "screen_clip_id": "D__nova-kiara-plan__L5-wonderA__t1",
+   "round2_code": null,
+   "input_lufs": -22.1,
+   "output_lufs": -26.5,
+   "output_true_peak_dbfs": -10.4,
+   "loudnorm_mode": "static gain -3.90 dB",
+   "screen_flags": {
+    "miss_both": [],
+    "num_miss_both": [],
+    "ins_num_both": [],
+    "max_pause_s": 1.04,
+    "pauses_ge_180ms": 6,
+    "pause_total_s": 2.42,
+    "planned_hit": 3,
+    "planned_pauses": 4,
+    "unplanned_pauses": [
+     "खून",
+     "लगभग"
+    ],
+    "rate_syl_s": 3.87,
+    "mid_pauses_ge_0.3s": []
+   }
+  }
+ }
+}
