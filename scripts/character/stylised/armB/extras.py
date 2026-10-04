@@ -158,7 +158,7 @@ def build(T, R, cfg, a):
     RG.smooth(low, 1, 0.3)
     L.shade_smooth(low)
     garment = low
-    tex_path = os.path.join(os.path.dirname(os.path.abspath(a.out)), "garment_albedo.png")
+    tex_path = os.path.join(os.path.dirname(os.path.abspath(a.out)), f"garment_albedo_{a.tier}.png")
     bake_colour(src, low, tex_path, 512)
     img = bpy.data.images.load(tex_path)
     low.data.materials.clear()

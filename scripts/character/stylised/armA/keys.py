@@ -23,7 +23,7 @@ ARKIT = ["eyeBlinkLeft", "eyeLookDownLeft", "eyeLookInLeft", "eyeLookOutLeft", "
          "cheekSquintRight", "noseSneerLeft", "noseSneerRight", "tongueOut"]
 VISEMES = {  # TECH-PLAN §5.3 recipes, in ARKit + tongue channels
     "viseme_sil": {},
-    "viseme_PP": {"mouthClose": 1.0, "mouthPressLeft": 0.4, "mouthPressRight": 0.4, "mouthRollLower": 0.15, "jawOpen": 0.04},
+    "viseme_PP": {"jawOpen": 0.06, "mouthClose": 0.06, "mouthPressLeft": 0.5, "mouthPressRight": 0.5, "mouthRollLower": 0.15, "mouthRollUpper": 0.1},
     "viseme_FF": {"mouthRollLower": 0.6, "jawOpen": 0.08, "mouthUpperUpLeft": 0.2, "mouthUpperUpRight": 0.2},
     "viseme_TH": {"jawOpen": 0.15, "tongueOut": 0.3, "tongueTipUp": 0.2},
     "viseme_DD": {"jawOpen": 0.15, "tongueTipUp": 1.0, "mouthStretchLeft": 0.1, "mouthStretchRight": 0.1},

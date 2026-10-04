@@ -98,11 +98,19 @@ const STRENGTH = { hi: [0.65, 0.95], lo: [0.05, 0.40], cut: 0.6, forget: 0.35 };
 export const SETTLE = Object.freeze({ gradeMedianMs: Number(process.env.SIM_GRADE_MEDIAN_MS ?? 1220), gradeSigma: 0.35,
   gapBaseMs: 2500, gapHesitationMs: 4000, gapJitterMs: 3000, waitMs: 600, classifyMedianMs: 700, classifySigma: 0.5, capMs: 2500 });
 const normal = (r) => Math.sqrt(-2 * Math.log(r() || 1e-12)) * Math.cos(2 * Math.PI * r());
-function settles(P, r) {
+/**
+ * Production BEFORE W1-C (live_presettle): the grade started after the turn committed (it lost the reply-writing time,
+ * replyMs [U]), was not hedged (the unhedged fit of the same local runs: median 1440 ms, σ 0.63), and the next turn did
+ * not wait at all (production settled 0/5 at a 0 s reply, comprehension audit G2).
+ */
+export const SETTLE_PRE = Object.freeze({ gradeMedianMs: 1440, gradeSigma: 0.63, replyMs: 1200 });
+function settles(P, r, regime = "w1c") {
+  const gap = SETTLE.gapBaseMs + P.hesitation * SETTLE.gapHesitationMs + r() * SETTLE.gapJitterMs;
+  if (regime === "none") return SETTLE_PRE.gradeMedianMs * Math.exp(SETTLE_PRE.gradeSigma * normal(r)) <= gap - SETTLE_PRE.replyMs;
   const latency = SETTLE.gradeMedianMs * Math.exp(SETTLE.gradeSigma * normal(r));
   const classify = SETTLE.classifyMedianMs * Math.exp(SETTLE.classifySigma * normal(r));
   const wait = Math.min(SETTLE.capMs, Math.max(SETTLE.waitMs, classify));
-  return latency <= SETTLE.gapBaseMs + P.hesitation * SETTLE.gapHesitationMs + r() * SETTLE.gapJitterMs + wait;
+  return latency <= gap + wait;
 }
 /** X1: a facet whose belief is within this of the hidden truth bit is "already right" and is not offered to the scheduler. */
 const ORACLE_SETTLED = 0.3;
@@ -245,7 +253,7 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null, 
         ...(misHit ? { misconceptionId: mis } : {}), ...(!misHit && mis && shape.verifier ? { discriminates: mis } : {}) };
       if (pol.live && (shape.emits === "probe.why" || shape.emits === "probe.teachback") && ev.grader === "llm") {
         counters.held++;
-        if (settles(P, r)) { counters.settled++; fuse(ev); }
+        if (settles(P, r, pol.settle)) { counters.settled++; fuse(ev); }
         else { fuse({ ...ev, spanOk: false }); if (pol.settle === "w1c") lateQ.push(ev); }
       } else fuse(ev);
       if (shape.facets.includes("U")) info[k].uProbes++;

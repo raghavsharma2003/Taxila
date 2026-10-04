@@ -7,6 +7,13 @@
 // BEHIND the events it already folded. Here the worker reads every live offset (one small query per loop pass, cached
 // 5 s), claims a test child's job against now() + offset, and runs that child's step() and job handler inside
 // runWithOffset. Every real child has no row: offset 0, the real clock, the exact pre-W1 SQL.
+//
+// NOT covered, by design (W1-D fixer review): WAKEUPS. fire_wakeups (004 SQL, `due_at <= now()`) runs on the REAL
+// clock for everyone, so a test child's 04:10 night fold / day_start wakeup does not fire when its shifted clock
+// passes 04:10. A test-clock day advances by EVENTS and READS instead: the next shifted-day event (a lesson, an
+// app.opened) or the parent reports read folds the night and writes report.daily (w1d-conductor folds it with a
+// next-day lesson). The real-clock timer path is exercised by real children and watched by the canary
+// (wakeups_late). An offset-aware fire_wakeups is the fix if a test ever needs the timer itself.
 import { runWithOffset } from "../comprehension/testclock.js";
 
 const TTL_MS = 5_000;

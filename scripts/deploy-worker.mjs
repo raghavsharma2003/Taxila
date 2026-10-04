@@ -12,6 +12,8 @@
 //   node scripts/deploy-worker.mjs [--dry-run] [--force] [--jobs] [--jobs-only]
 //   test targets:  --app NAME (default taxila-worker; jobs are prefixed by it) --db test (the Neon TEST branch,
 //                  CONDUCTOR_TEST_DATABASE_URL) --local (build the WORKING TREE, uploaded; only with --db test)
+//                  --manual (jobs are MANUAL-trigger, never scheduled: a proof run starts them by hand, so a scratch
+//                  canary with no worker behind it never fails on a timer and mails the owner; only with --db test)
 //
 // Production (`--db` not test) needs HEAD pushed AND a passing gate for HEAD (infra/gate.mjs), exactly like the web,
 // AND every migration of HEAD applied on the target database (migrationsGate; --local test builds skip it).
@@ -31,6 +33,8 @@ const APP = opt("--app", "taxila-worker"), WEB = "taxila-web", ACR = "taxilacr",
 const TEST_DB = opt("--db", "prod") === "test", LOCAL = flag("--local");
 if (LOCAL && !TEST_DB) throw new Error("--local builds an unpushed, ungated tree: only with --db test (never against production data)");
 const PROD = !TEST_DB;
+const MANUAL = flag("--manual");
+if (MANUAL && PROD) throw new Error("--manual (unscheduled jobs) is for --db test proof runs only");
 
 // X37 deploy freeze, evaluated in IST whatever the machine's timezone.
 const istMin = (() => { const d = new Date(Date.now() + 330 * 60_000); return d.getUTCHours() * 60 + d.getUTCMinutes(); })();
@@ -117,8 +121,9 @@ const body = { location: web.location, properties: { managedEnvironmentId: envId
 
 /** An ACA scheduled job running ops.mjs on the worker image. */
 const jobBody = (cron, args, timeoutSec) => ({ location: web.location, properties: { environmentId: envId,
-  configuration: { triggerType: "Schedule", replicaTimeout: timeoutSec, replicaRetryLimit: 0, registries, secrets,
-    scheduleTriggerConfig: { cronExpression: cron, parallelism: 1, replicaCompletionCount: 1 } },
+  configuration: { replicaTimeout: timeoutSec, replicaRetryLimit: 0, registries, secrets,
+    ...(MANUAL ? { triggerType: "Manual", manualTriggerConfig: { parallelism: 1, replicaCompletionCount: 1 } }
+      : { triggerType: "Schedule", scheduleTriggerConfig: { cronExpression: cron, parallelism: 1, replicaCompletionCount: 1 } }) },
   template: { containers: [{ name: "ops", image, command: ["node", "server/conductor/ops.mjs", ...args],
     env: env.filter((e) => ["DATABASE_URL", "DB_DRIVER", "NODE_ENV", "GIT_SHA", "TAXILA_HOST"].includes(e.name)), resources: { cpu: 0.25, memory: "0.5Gi" } }] } } });
 const JOBS_SPEC = [
