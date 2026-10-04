@@ -83,7 +83,14 @@ export function personaStep(st, sig, { minute = 0 } = {}) {
   const topInt = Object.entries(ints).filter(([, n]) => n >= 2).sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))[0];
   if (topInt) k.exampleDomain = topInt[0];
   k.challenge = ["B3", "B4"].includes(st.band) && harder.filter((x) => x === 1).length >= 3 ? "dare" : "standard";
-  if (sig.slowerPace) k.endpointBoostTurns = 6; else k.endpointBoostTurns = Math.max(0, k.endpointBoostTurns - 1);
+  // Explicit pace (persona/pace.js, W2-C #6): the child ASKED, so it applies this turn — no two-signal wait and no
+  // 10-minute cadence (explicit preferences outrank session inference, LM §6.6). Bounded by the band's wait cap; kept as
+  // an explicit session preference so an inferred step cannot undo it.
+  const waitCap = BAND_DEFAULTS[st.band].waitCap - BAND_DEFAULTS[st.band].wait;
+  if (sig.explicitSlower) { k.waitExtra = Math.min(waitCap, Math.max(k.waitExtra, (explicit.waitExtra ?? 0)) + 1); explicit.waitExtra = k.waitExtra; explicit.pace = "slow"; }
+  else if (sig.explicitFaster) { k.waitExtra = 0; explicit.waitExtra = 0; explicit.pace = "brisk"; k.endpointBoostTurns = 0; }
+  else if (explicit.waitExtra != null) k.waitExtra = Math.max(k.waitExtra, explicit.waitExtra);
+  if (sig.slowerPace || sig.explicitSlower) k.endpointBoostTurns = 6; else k.endpointBoostTurns = Math.max(0, k.endpointBoostTurns - 1);
   k.mixObserved = 0.7 * k.mixObserved + 0.3 * (sig.hindiShare ?? 0);
   return { ...st, turn, knobs: k, explicit, pendingExplicit, log, lastStepMin, harder };
 }
