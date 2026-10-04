@@ -5,13 +5,14 @@
 #   - the lesson ends on "stop for today", on a second stop within two turns, or at once on the relational RELEASE
 #     (cls.relRelease from the W2-E patch) — a TRUE goodbye ("bye", "mummy bula rahi hai") — or when the child's own words
 #     read as leaving (server/relational/signals.js stopKind), so a seam failure never turns a goodbye into a hold;
-#   - a relational CHECK_IN (RELATIONAL-OS I-7: a goodbye right after distress) is that same single check-in;
+#   - a relational CHECK_IN (RELATIONAL-OS I-7: a goodbye right after distress) is that same single check-in, also inside
+#     the safeguard branch (AT-B1: 9/10 goodbyes right after a disclosure ended at once without it; 15/15 with it);
 #   - toWrap marks stoppedEarly (child.js countsAsDone: one 'bas' must not cost the day; that half is W2-A's child.js).
 # NEVER MANIPULATE holds: one check-in, never a second, no guilt, the stop chip ends it at once.
 # Includes the one test that encoded "a first stop phrase wraps" (tests/director-truth.test.mjs, flows G6): it now asserts
 # the check-in, the second stop, the stop chip, the relational RELEASE and leaving words.
 --- a/server/director/state.js	2026-10-04 21:25:44.351496283 +0000
-+++ b/server/director/state.js	2026-10-04 21:27:31.995407963 +0000
++++ b/server/director/state.js	2026-10-04 22:55:48.112431337 +0000
 @@ -17,6 +17,7 @@
  // The route classifies, updates the learner model, then calls step with the updated skill snapshot.
  // branchesFor() runs step() on a synthetic right and wrong reply: the voice lane's "if right / if not"
@@ -29,7 +30,20 @@
    s.phase = "done"; s.activeItemId = undefined; s.pendingWhy = undefined; s.hintLevel = 0;
    return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), stopping ? { stopping: true } : {});
  }
-@@ -676,7 +679,22 @@
+@@ -657,6 +660,12 @@
+   // 1. Safety before anything else — the predicate or the classifier, either one.
+   if (flags.distress) { s.safeguard = { calm: 0, asked: false }; return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES }); }
+   if (s.safeguard) {
++    // RELATIONAL-OS I-7 / AT-B6 (AT-B1 first run: 9/10 goodbyes right after a disclosure ended at once): a goodbye during
++    // the safeguard gets ONE check-in before release when the relational policy asks for it; the stop chip always ends it
++    if (flags.wantsToStop && chipId !== "safe:stop" && s.rel?.overlay?.kind === "CHECK_IN" && s.stopAsked == null) {
++      s.stopAsked = s.turn;
++      return plan("safeguard", SH.relCheckIn(), { whiteboard: HELPLINES, chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
++    }
+     if (flags.wantsToStop || chipId === "safe:stop") { s.safeguard = null; return toWrap(s, { stopping: true }); }
+     if (s.safeguard.asked || chipId === "safe:continue") {
+       s.safeguard = null;
+@@ -676,7 +685,22 @@
    }
    // 2. The child wants to stop: whatever was mid-way is over (NEVER MANIPULATE — no holding at goodbye). Only their own
    // stop words (or Pause → End, which never reaches here) end the lesson: "Skip for now" is a help request below.

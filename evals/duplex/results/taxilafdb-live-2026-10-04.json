@@ -11,13 +11,13 @@
   "live": {
    "firstPartialAfterOnsetMs": {
     "n": 48,
-    "p50": 1094,
-    "p90": 1493
+    "p50": 1154,
+    "p90": 1517
    },
    "partialLagMs": {
-    "n": 316,
-    "p50": 503,
-    "p90": 1210
+    "n": 313,
+    "p50": 396,
+    "p90": 1218
    }
   },
   "simModelD4_M2": {
@@ -39,73 +39,73 @@
  },
  "live": {
   "M2_thinkingCutoff": {
-   "k": 0,
+   "k": 1,
    "n": 38,
-   "rate": 0,
+   "rate": 0.026,
    "ci95": [
     0,
-    0
+    0.083
    ]
   },
   "M2_turnCutoff": {
-   "k": 0,
+   "k": 1,
    "n": 29,
-   "rate": 0,
+   "rate": 0.034,
    "ci95": [
     0,
-    0
+    0.103
    ]
   },
   "M3_gapDecision": {
-   "n": 34,
-   "p50": 855,
-   "p90": 1517,
+   "n": 33,
+   "p50": 840,
+   "p90": 1548,
    "ci95p50": [
-    810,
-    980
+    780,
+    1052
    ],
    "ci95p90": [
-    1067,
-    1550
+    1436,
+    1890
    ],
-   "mean": 987
+   "mean": 1040
   },
   "M3_gapAudible": {
-   "n": 34,
-   "p50": 2510,
-   "p90": 3983,
+   "n": 33,
+   "p50": 2473,
+   "p90": 4155,
    "ci95p50": [
-    2262,
-    2752
+    2192,
+    3132
    ],
    "ci95p90": [
-    3063,
+    3412,
     4623
    ],
-   "mean": 2462
+   "mean": 2613
   },
   "M4_missedRespond": {
-   "k": 2,
+   "k": 3,
    "n": 36,
-   "rate": 0.056,
+   "rate": 0.083,
    "ci95": [
     0,
-    0.139
+    0.194
    ]
   },
   "M7_yieldLatency": {
    "n": 5,
-   "p50": 701,
-   "p90": 1216,
+   "p50": 250,
+   "p90": 1228,
    "ci95p50": [
     71,
-    1553
+    1573
    ],
    "ci95p90": [
-    521,
-    1553
+    190,
+    1573
    ],
-   "mean": 657
+   "mean": 541
   },
   "M11_verdictOnRepaired": {
    "k": 0,
@@ -117,12 +117,12 @@
    ]
   },
   "M12_holdViolation": {
-   "k": 0,
+   "k": 1,
    "n": 5,
-   "rate": 0,
+   "rate": 0.2,
    "ci95": [
     0,
-    0
+    0.6
    ]
   },
   "M13_nonSafetySpeechAfterDistress": {
@@ -203,16 +203,16 @@
   "M7_yieldLatency": {
    "n": 4,
    "p50": 691,
-   "p90": 866,
+   "p90": 950,
    "ci95p50": [
     250,
-    933
+    1053
    ],
    "ci95p90": [
     572,
-    933
+    1053
    ],
-   "mean": 641
+   "mean": 671
   },
   "M11_verdictOnRepaired": {
    "k": 0,
@@ -233,38 +233,38 @@
    ]
   },
   "M13_nonSafetySpeechAfterDistress": {
-   "k": 1,
+   "k": 0,
    "n": 4,
-   "rate": 0.25,
+   "rate": 0,
    "ci95": [
     0,
-    0.75
+    0
    ]
   },
   "M13_detected": {
-   "k": 3,
+   "k": 4,
    "n": 4,
-   "rate": 0.75,
+   "rate": 1,
    "ci95": [
-    0.25,
+    1,
     1
    ]
   }
  },
  "agreement": {
   "turnCutoff": [
-   29,
+   28,
    29
   ],
   "missedRespond": [
-   36,
+   35,
    36
   ],
   "gapLiveMinusSimMs": {
-   "n": 34,
-   "p50": -260,
-   "p10": -596,
-   "p90": 224
+   "n": 33,
+   "p50": -100,
+   "p10": -592,
+   "p90": 476
   }
  },
  "perStream": [
@@ -272,7 +272,7 @@
    "id": "f1-fluent_choice_yn-0033~Kavya~noisy",
    "commits": 1,
    "events": 9,
-   "gap": 870,
+   "gap": 890,
    "simGap": 970,
    "missed": false,
    "turnCutoff": false
@@ -308,7 +308,7 @@
    "id": "f1-hes_preface-0086~Kavya~clean",
    "commits": 2,
    "events": 28,
-   "gap": 850,
+   "gap": 1550,
    "simGap": 1390,
    "missed": false,
    "turnCutoff": false
@@ -326,7 +326,7 @@
    "id": "f1-hes_preface-0098~Kavya~noisy",
    "commits": 2,
    "events": 19,
-   "gap": 680,
+   "gap": 640,
    "simGap": 860,
    "missed": false,
    "turnCutoff": false
@@ -335,7 +335,7 @@
    "id": "f1-rep_marker-0121~Rehaan~noisy",
    "commits": 3,
    "events": 35,
-   "gap": 1000,
+   "gap": 780,
    "simGap": 1120,
    "missed": false,
    "turnCutoff": false
@@ -344,7 +344,7 @@
    "id": "f1-tail-0053~Kavya~noisy",
    "commits": 1,
    "events": 10,
-   "gap": 1060,
+   "gap": 640,
    "simGap": 1680,
    "missed": false,
    "turnCutoff": false
@@ -362,7 +362,7 @@
    "id": "f1-tail-0061~Rehaan~noisy",
    "commits": 1,
    "events": 11,
-   "gap": 650,
+   "gap": 630,
    "simGap": 1070,
    "missed": false,
    "turnCutoff": false
@@ -370,8 +370,8 @@
   {
    "id": "f1-rep_marker-0136~Kavya~clean",
    "commits": 3,
-   "events": 58,
-   "gap": 870,
+   "events": 54,
+   "gap": 790,
    "simGap": 1250,
    "missed": false,
    "turnCutoff": false
@@ -379,8 +379,8 @@
   {
    "id": "f2-cue_maths-0168~Kavya~noisy",
    "commits": 3,
-   "events": 44,
-   "gap": 870,
+   "events": 45,
+   "gap": 830,
    "simGap": 1290,
    "missed": false,
    "turnCutoff": false
@@ -388,17 +388,17 @@
   {
    "id": "f2-cue_maths-0141~Kavya~clean",
    "commits": 3,
-   "events": 63,
-   "gap": 820,
+   "events": 47,
+   "gap": 3040,
    "simGap": 1180,
-   "missed": false,
+   "missed": true,
    "turnCutoff": false
   },
   {
    "id": "f2-cue_maths-0183~Rehaan~clean",
    "commits": 4,
-   "events": 60,
-   "gap": 850,
+   "events": 59,
+   "gap": 1990,
    "simGap": 1130,
    "missed": false,
    "turnCutoff": false
@@ -407,7 +407,7 @@
    "id": "f2-cue_maths-0216~Rehaan~noisy",
    "commits": 3,
    "events": 35,
-   "gap": 1550,
+   "gap": 730,
    "simGap": 1290,
    "missed": false,
    "turnCutoff": false
@@ -415,7 +415,7 @@
   {
    "id": "f2-nocue_sci-0164~Kavya~clean",
    "commits": 3,
-   "events": 49,
+   "events": 50,
    "gap": 2990,
    "simGap": 2990,
    "missed": true,
@@ -424,7 +424,7 @@
   {
    "id": "f2-nocue_sci-0172~Kavya~noisy",
    "commits": 3,
-   "events": 50,
+   "events": 48,
    "gap": 2520,
    "simGap": 2520,
    "missed": true,
@@ -451,8 +451,8 @@
   {
    "id": "f3-initial_address-0225~Kavya~clean",
    "commits": 2,
-   "events": 32,
-   "gap": 800,
+   "events": 31,
+   "gap": 1140,
    "simGap": 1740,
    "missed": false,
    "turnCutoff": false
@@ -461,7 +461,7 @@
    "id": "f3-initial_address-0249~Kavya~clean",
    "commits": 2,
    "events": 39,
-   "gap": 990,
+   "gap": 1170,
    "simGap": 950,
    "missed": false,
    "turnCutoff": false
@@ -470,7 +470,7 @@
    "id": "f4-one_en-0263~Kavya~clean",
    "commits": 1,
    "events": 18,
-   "gap": 810,
+   "gap": 770,
    "simGap": 1150,
    "missed": false,
    "turnCutoff": false
@@ -485,15 +485,6 @@
    "turnCutoff": false
   },
   {
-   "id": "f4-one_en-0273~Kavya~noisy",
-   "commits": 1,
-   "events": 18,
-   "gap": 1010,
-   "simGap": 1090,
-   "missed": false,
-   "turnCutoff": false
-  },
-  {
    "id": "f3-mid_b-0248~Kavya~clean",
    "commits": 3,
    "events": 57,
@@ -503,10 +494,19 @@
    "turnCutoff": false
   },
   {
+   "id": "f4-one_en-0273~Kavya~noisy",
+   "commits": 1,
+   "events": 17,
+   "gap": 990,
+   "simGap": 1090,
+   "missed": false,
+   "turnCutoff": false
+  },
+  {
    "id": "f4-one_en-0283~Rehaan~clean",
    "commits": 1,
    "events": 18,
-   "gap": 810,
+   "gap": 1890,
    "simGap": 1050,
    "missed": false,
    "turnCutoff": false
@@ -515,7 +515,7 @@
    "id": "f4-two_hi-0266~Rehaan~noisy",
    "commits": 2,
    "events": 21,
-   "gap": 1100,
+   "gap": 840,
    "simGap": 680,
    "missed": false,
    "turnCutoff": false
@@ -532,7 +532,7 @@
   {
    "id": "f5-hold_think-0304~Kavya~noisy",
    "commits": 2,
-   "events": 37,
+   "events": 36,
    "gap": 840,
    "simGap": 1380,
    "missed": false,
@@ -541,17 +541,17 @@
   {
    "id": "f5-hold_long-0305~Rehaan~noisy",
    "commits": 2,
-   "events": 31,
-   "gap": 700,
+   "events": 17,
+   "gap": 740,
    "simGap": 1180,
    "missed": false,
-   "turnCutoff": false
+   "turnCutoff": true
   },
   {
    "id": "f5-hold_long-0293~Kavya~clean",
    "commits": 2,
    "events": 31,
-   "gap": 810,
+   "gap": 1770,
    "simGap": 1110,
    "missed": false,
    "turnCutoff": false
@@ -559,8 +559,8 @@
   {
    "id": "f5-hold_think-0319~Kavya~clean",
    "commits": 2,
-   "events": 40,
-   "gap": 770,
+   "events": 41,
+   "gap": 750,
    "simGap": 1510,
    "missed": false,
    "turnCutoff": false
@@ -595,8 +595,8 @@
   {
    "id": "f6-filler_idk-0342~Kavya~clean",
    "commits": 2,
-   "events": 25,
-   "gap": 970,
+   "events": 26,
+   "gap": 1050,
    "simGap": 870,
    "missed": false,
    "turnCutoff": false
@@ -605,7 +605,7 @@
    "id": "f6-filler_idk-0348~Kavya~noisy",
    "commits": 2,
    "events": 21,
-   "gap": 1850,
+   "gap": 870,
    "simGap": 750,
    "missed": false,
    "turnCutoff": false
@@ -623,7 +623,7 @@
    "id": "f6-filler_idk-0360~Rehaan~noisy",
    "commits": 2,
    "events": 14,
-   "gap": 650,
+   "gap": 690,
    "simGap": 1130,
    "missed": false,
    "turnCutoff": false
@@ -631,8 +631,8 @@
   {
    "id": "f6-filler_idk-0354~Rehaan~clean",
    "commits": 2,
-   "events": 32,
-   "gap": 800,
+   "events": 33,
+   "gap": 780,
    "simGap": 1180,
    "missed": false,
    "turnCutoff": false
@@ -640,7 +640,7 @@
   {
    "id": "f7-fold_in-0394~Kavya~clean",
    "commits": 1,
-   "events": 17,
+   "events": 20,
    "gap": null,
    "simGap": null,
    "missed": null,

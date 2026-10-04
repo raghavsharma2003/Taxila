@@ -262,7 +262,7 @@ def train(files_tr, files_va, hidden, bi, epochs, steps, log):
             mask = Y >= 0
             loss = nn.functional.binary_cross_entropy_with_logits(logit[mask], Y[mask], pos_weight=pos_w)
             opt.zero_grad(); loss.backward(); nn.utils.clip_grad_norm_(m.parameters(), 1.0); opt.step()
-            tot += float(loss)
+            tot += float(loss.detach())
         pv = [predict(m, d) for d in files_va]
         wt = word_table(files_va, pv)
         a = auroc([r["p"] for r in wt], [r["y"] for r in wt])
@@ -283,6 +283,8 @@ def main():
     ap.add_argument("--model", required=True)
     ap.add_argument("--epochs", type=int, default=14)
     ap.add_argument("--steps", type=int, default=120)
+    ap.add_argument("--eval-onnx", help="skip training: evaluate an exported model (same splits, same metrics)")
+    ap.add_argument("--history", help="training log to attach (candidate val curves) in --eval-onnx mode")
     a = ap.parse_args()
     random.seed(SEED); np.random.seed(SEED)
     log = lambda s: print(s, flush=True)
@@ -300,16 +302,36 @@ def main():
            "featuresVer": files[0]["meta"]["ver"], "data": {k: counts(v) for k, v in S.items()},
            "split": "speaker-disjoint by AMI meeting series; test = all series with an Indian-L1 speaker", "seed": SEED}
     log(json.dumps(res["data"]))
-    cands = {}
-    for name, hid, bi in (("uni48", 48, False), ("bi32", 32, True)):
-        m, best, hist = train(S["train"], S["val"], hid, bi, a.epochs, a.steps, lambda s, n=name: log(n + " " + s))
-        cands[name] = (m, best, hist)
-    name = max(cands, key=lambda k: cands[k][1])
-    m = cands[name][0]
-    res["candidates"] = {k: {"valWordAuroc": round(v[1], 4), "params": sum(p.numel() for p in v[0].parameters()), "history": v[2]} for k, v in cands.items()}
-    res["chosen"] = name
+    import onnxruntime as ort
+    if a.eval_onnx:
+        sess0 = ort.InferenceSession(a.eval_onnx, providers=["CPUExecutionProvider"])
+        def pred(d):
+            p = np.zeros(len(d["t"]), np.float32)
+            for s0, s1 in zip(d["seg"][:-1], d["seg"][1:]):
+                p[s0:s1] = sess0.run(None, {"x": d["x"][s0:s1][None]})[0][0]
+            return p
+        m = None
+        hist = {}
+        for line in open(a.history) if a.history else []:
+            if line.startswith(("uni48 {", "bi32 {")):
+                k, j = line.split(" ", 1)
+                hist.setdefault(k, []).append(json.loads(j))
+        name = json.load(open(os.path.join(os.path.dirname(a.eval_onnx), "filler-gru.json")))["ver"].split("-")[-1]
+        res["candidates"] = {k: {"valWordAurocBest": max(h["valWordAuroc"] for h in v), "history": v} for k, v in hist.items()}
+        res["chosen"] = name
+        res["evaluatedFrom"] = "exported ONNX (training run's results write failed on a float32 JSON encode; model unchanged)"
+    else:
+        cands = {}
+        for name, hid, bi in (("uni48", 48, False), ("bi32", 32, True)):
+            m, best, hist = train(S["train"], S["val"], hid, bi, a.epochs, a.steps, lambda s, n=name: log(n + " " + s))
+            cands[name] = (m, best, hist)
+        name = max(cands, key=lambda k: cands[k][1])
+        m = cands[name][0]
+        res["candidates"] = {k: {"valWordAuroc": round(v[1], 4), "params": sum(p.numel() for p in v[0].parameters()), "history": v[2]} for k, v in cands.items()}
+        res["chosen"] = name
+        pred = lambda d: predict(m, d)
     # Threshold on VAL: best word-level F1, and the Platt map for calibrated word probabilities.
-    pv = [predict(m, d) for d in S["val"]]
+    pv = [pred(d) for d in S["val"]]
     wv = word_table(S["val"], pv)
     ab = platt(np.array([r["p"] for r in wv]), np.array([r["y"] for r in wv]))
     ths = np.linspace(0.05, 0.95, 91)
@@ -319,7 +341,7 @@ def main():
     thr = float(max(ths, key=lambda t: f1(t, S["val"], pv)))
     res["threshold"] = {"frame": round(thr, 3), "chosenOn": "val, event-level F1"}
     # TEST
-    pt = [predict(m, d) for d in S["test"]]
+    pt = [pred(d) for d in S["test"]]
     wt = word_table(S["test"], pt)
     lab = np.concatenate([d["lab"] for d in S["test"]]); pp = np.concatenate(pt); mk = lab >= 0
     units = [(r["spk"], r) for r in wt]
@@ -349,7 +371,7 @@ def main():
     if a.icsi:
         ist = sorted(f[:-5] for f in glob.glob(os.path.join(a.icsi, "*.json")))
         ifs = [load(s) for s in ist]
-        ip = [predict(m, d) for d in ifs]
+        ip = [pred(d) for d in ifs]
         iw = word_table(ifs, ip)
         iu = [(r["spk"] + str(i // 200), r) for i, r in enumerate(iw)]  # mix audio: cluster by meeting x 200-word blocks
         res["xcorpusICSI"] = {"meetings": [d["meta"]["meeting"] for d in ifs], "hours": round(sum(len(d["t"]) for d in ifs) * 0.02 / 3600, 2),
@@ -365,7 +387,7 @@ def main():
                 continue
             runs = 0; speech_min = 0
             for d in fs:
-                p = predict(m, d)
+                p = pred(d)
                 on = (p >= thr) & (d["speech"] > 0)
                 i = 0
                 while i < len(on):
@@ -382,6 +404,29 @@ def main():
             fa[lang] = {"speechMin": round(float(speech_min), 1), "falseRunsPerSpeechMin": round(runs / max(1e-9, speech_min), 3), "runs": runs}
         res["fleursFalseAlarms"] = fa
     # EXPORT
+    if a.eval_onnx:
+        onnx_path = a.eval_onnx
+        sess = ort.InferenceSession(onnx_path, providers=["CPUExecutionProvider"])
+        xs = S["test"][1]["x"][:1500][None]
+        got = sess.run(None, {"x": xs})[0]
+        res["export"] = {"path": "models/voicesig/filler-gru.onnx", "bytes": os.path.getsize(onnx_path), "opset": 17}
+        q_path = onnx_path.replace(".onnx", ".int8.onnx")
+        try:
+            qs = ort.InferenceSession(q_path, providers=["CPUExecutionProvider"])
+            res["export"]["int8"] = {"bytes": os.path.getsize(q_path), "maxAbsDiffVsFp32": float(np.abs(qs.run(None, {"x": xs})[0] - got).max())}
+            qp = []
+            for d in S["test"]:
+                p = np.zeros(len(d["t"]), np.float32)
+                for s0, s1 in zip(d["seg"][:-1], d["seg"][1:]):
+                    p[s0:s1] = qs.run(None, {"x": d["x"][s0:s1][None]})[0][0]
+                qp.append(p)
+            qwt = word_table(S["test"], qp)
+            res["export"]["int8"]["testWordAuroc"] = round(auroc([r["p"] for r in qwt], [r["y"] for r in qwt]), 4)
+        except Exception as e:  # noqa: BLE001
+            res["export"]["int8"] = {"error": str(e)[:200]}
+        json.dump(res, open(a.out, "w"), indent=1, default=float)
+        log(json.dumps(res["test"], indent=1, default=float))
+        return
     os.makedirs(a.model, exist_ok=True)
     w = Wrap(m).eval()
     onnx_path = os.path.join(a.model, "filler-gru.onnx")
@@ -416,9 +461,9 @@ def main():
             "trainingData": "AMI Meeting Corpus individual headsets (University of Edinburgh et al.), CC BY 4.0, commercial use permitted with attribution",
             "notCovered": ["child speech (any language)", "Hindi or Hinglish spontaneous speech", "phone microphones / AGC-processed capture", "Hindi fillers 'aaa' / 'matlab' / 'woh'"],
             "metrics": {k: res["test"][k] for k in ("frameAuroc", "wordAurocModel", "eventModel")}, "date": res["date"]}
-    json.dump(card, open(os.path.join(a.model, "filler-gru.json"), "w"), indent=1)
-    json.dump(res, open(a.out, "w"), indent=1)
-    log(json.dumps(res["test"], indent=1))
+    json.dump(card, open(os.path.join(a.model, "filler-gru.json"), "w"), indent=1, default=float)
+    json.dump(res, open(a.out, "w"), indent=1, default=float)
+    log(json.dumps(res["test"], indent=1, default=float))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,356 @@
+{
+ "date": "2026-10-04",
+ "task": "filled-pause (um/uh/er) per-frame detection on the product front-end",
+ "featuresVer": "vsgru-in/1",
+ "data": {
+  "train": {
+   "channels": 48,
+   "speakers": 48,
+   "hours": 10.34,
+   "fillerFrames": 78371,
+   "wordFrames": 1001353,
+   "fillerWords": 2225,
+   "otherWords": 54222
+  },
+  "val": {
+   "channels": 12,
+   "speakers": 12,
+   "hours": 2.56,
+   "fillerFrames": 18570,
+   "wordFrames": 245832,
+   "fillerWords": 485,
+   "otherWords": 12758
+  },
+  "test": {
+   "channels": 32,
+   "speakers": 32,
+   "hours": 7.23,
+   "fillerFrames": 52568,
+   "wordFrames": 704786,
+   "fillerWords": 1685,
+   "otherWords": 36972
+  }
+ },
+ "split": "speaker-disjoint by AMI meeting series; test = all series with an Indian-L1 speaker",
+ "seed": 1234,
+ "candidates": {
+  "uni48": {
+   "valWordAurocBest": 0.9652,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.5256,
+     "valWordAuroc": 0.9139,
+     "s": 613.5
+    },
+    {
+     "epoch": 1,
+     "loss": 0.3465,
+     "valWordAuroc": 0.9333,
+     "s": 48.5
+    },
+    {
+     "epoch": 2,
+     "loss": 0.306,
+     "valWordAuroc": 0.9421,
+     "s": 90.6
+    },
+    {
+     "epoch": 3,
+     "loss": 0.2786,
+     "valWordAuroc": 0.9451,
+     "s": 33.7
+    },
+    {
+     "epoch": 4,
+     "loss": 0.2599,
+     "valWordAuroc": 0.9485,
+     "s": 47.3
+    },
+    {
+     "epoch": 5,
+     "loss": 0.2414,
+     "valWordAuroc": 0.9613,
+     "s": 40.2
+    },
+    {
+     "epoch": 6,
+     "loss": 0.2397,
+     "valWordAuroc": 0.9573,
+     "s": 30.5
+    },
+    {
+     "epoch": 7,
+     "loss": 0.2257,
+     "valWordAuroc": 0.9613,
+     "s": 35.4
+    },
+    {
+     "epoch": 8,
+     "loss": 0.2172,
+     "valWordAuroc": 0.961,
+     "s": 89.5
+    },
+    {
+     "epoch": 9,
+     "loss": 0.2198,
+     "valWordAuroc": 0.9565,
+     "s": 37.9
+    },
+    {
+     "epoch": 10,
+     "loss": 0.2049,
+     "valWordAuroc": 0.9605,
+     "s": 56.4
+    },
+    {
+     "epoch": 11,
+     "loss": 0.2041,
+     "valWordAuroc": 0.9586,
+     "s": 762.5
+    },
+    {
+     "epoch": 12,
+     "loss": 0.2036,
+     "valWordAuroc": 0.9557,
+     "s": 59.5
+    },
+    {
+     "epoch": 13,
+     "loss": 0.1987,
+     "valWordAuroc": 0.9652,
+     "s": 396.6
+    }
+   ]
+  },
+  "bi32": {
+   "valWordAurocBest": 0.9672,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.5002,
+     "valWordAuroc": 0.9039,
+     "s": 34.1
+    },
+    {
+     "epoch": 1,
+     "loss": 0.3166,
+     "valWordAuroc": 0.9411,
+     "s": 33.0
+    },
+    {
+     "epoch": 2,
+     "loss": 0.2717,
+     "valWordAuroc": 0.9511,
+     "s": 35.1
+    },
+    {
+     "epoch": 3,
+     "loss": 0.2435,
+     "valWordAuroc": 0.9536,
+     "s": 118.6
+    },
+    {
+     "epoch": 4,
+     "loss": 0.216,
+     "valWordAuroc": 0.9577,
+     "s": 190.7
+    },
+    {
+     "epoch": 5,
+     "loss": 0.2053,
+     "valWordAuroc": 0.9667,
+     "s": 199.8
+    },
+    {
+     "epoch": 6,
+     "loss": 0.1998,
+     "valWordAuroc": 0.9595,
+     "s": 173.4
+    },
+    {
+     "epoch": 7,
+     "loss": 0.1865,
+     "valWordAuroc": 0.9657,
+     "s": 54.8
+    },
+    {
+     "epoch": 8,
+     "loss": 0.1774,
+     "valWordAuroc": 0.959,
+     "s": 62.9
+    },
+    {
+     "epoch": 9,
+     "loss": 0.1693,
+     "valWordAuroc": 0.9624,
+     "s": 47.0
+    },
+    {
+     "epoch": 10,
+     "loss": 0.1645,
+     "valWordAuroc": 0.9616,
+     "s": 49.2
+    },
+    {
+     "epoch": 11,
+     "loss": 0.1641,
+     "valWordAuroc": 0.9642,
+     "s": 121.5
+    },
+    {
+     "epoch": 12,
+     "loss": 0.1672,
+     "valWordAuroc": 0.9636,
+     "s": 1003.8
+    },
+    {
+     "epoch": 13,
+     "loss": 0.1555,
+     "valWordAuroc": 0.9672,
+     "s": 419.1
+    }
+   ]
+  }
+ },
+ "chosen": "bi32",
+ "evaluatedFrom": "exported ONNX (training run's results write failed on a float32 JSON encode; model unchanged)",
+ "threshold": {
+  "frame": 0.44,
+  "chosenOn": "val, event-level F1"
+ },
+ "test": {
+  "frameAuroc": 0.948,
+  "wordAurocModel": {
+   "est": 0.9421,
+   "lo": 0.9294,
+   "hi": 0.9546,
+   "clusters": 32,
+   "n": 38657
+  },
+  "wordAurocFlatRunHeuristic": {
+   "est": 0.5611,
+   "lo": 0.5262,
+   "hi": 0.5939,
+   "clusters": 32,
+   "n": 38657
+  },
+  "wordAurocDelta": {
+   "est": 0.3809,
+   "lo": 0.3511,
+   "hi": 0.4118,
+   "clusters": 32,
+   "n": 38657
+  },
+  "eventModel": {
+   "precision": 0.7526,
+   "recall": 0.6012,
+   "runs": 1241,
+   "fillerWords": 1522
+  },
+  "eventFlatRunHeuristic": {
+   "precision": 0.278,
+   "recall": 0.1656,
+   "runs": 946,
+   "fillerWords": 1522
+  },
+  "wordEceCalibrated": 0.0073,
+  "wordEceRaw": 0.0098,
+  "groups": {
+   "indianL1": {
+    "est": 0.9223,
+    "lo": 0.9065,
+    "hi": 0.9363,
+    "clusters": 9,
+    "n": 10187
+   },
+   "otherL1": {
+    "est": 0.9502,
+    "lo": 0.9354,
+    "hi": 0.9635,
+    "clusters": 23,
+    "n": 28470
+   },
+   "female": {
+    "est": 0.9615,
+    "lo": 0.945,
+    "hi": 0.9787,
+    "clusters": 11,
+    "n": 13735
+   },
+   "male": {
+    "est": 0.9303,
+    "lo": 0.915,
+    "hi": 0.9447,
+    "clusters": 21,
+    "n": 24922
+   },
+   "indianL1Event": {
+    "precision": 0.7368,
+    "recall": 0.4937,
+    "runs": 266,
+    "fillerWords": 397
+   }
+  }
+ },
+ "xcorpusICSI": {
+  "meetings": [
+   "Bed003",
+   "Bmr013",
+   "Bns002",
+   "Bro018",
+   "Btr001"
+  ],
+  "hours": 5.82,
+  "fillerWords": 1457,
+  "wordAurocModel": {
+   "est": 0.9564,
+   "lo": 0.9504,
+   "hi": 0.9624,
+   "clusters": 193,
+   "n": 38499
+  },
+  "wordAurocFlatRunHeuristic": {
+   "est": 0.5244,
+   "lo": 0.5085,
+   "hi": 0.539,
+   "clusters": 193,
+   "n": 38499
+  },
+  "eventModel": {
+   "precision": 0.6958,
+   "recall": 0.6257,
+   "runs": 1203,
+   "fillerWords": 1301
+  },
+  "eventFlatRunHeuristic": {
+   "precision": 0.1745,
+   "recall": 0.0676,
+   "runs": 510,
+   "fillerWords": 1301
+  },
+  "note": "headset-MIX audio (all speakers), overlaps ignored; clusters = meeting x 200-word blocks (no per-speaker channels)"
+ },
+ "fleursFalseAlarms": {
+  "hi_in": {
+   "speechMin": 10.8,
+   "falseRunsPerSpeechMin": 3.8010001182556152,
+   "runs": 41
+  },
+  "en_us": {
+   "speechMin": 4.2,
+   "falseRunsPerSpeechMin": 3.36299991607666,
+   "runs": 14
+  }
+ },
+ "export": {
+  "path": "models/voicesig/filler-gru.onnx",
+  "bytes": 45496,
+  "opset": 17,
+  "int8": {
+   "bytes": 47092,
+   "maxAbsDiffVsFp32": 0.004468291997909546,
+   "testWordAuroc": 0.942
+  }
+ }
+}

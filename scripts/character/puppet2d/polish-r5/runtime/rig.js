@@ -445,10 +445,13 @@ export class Puppet2DRig {
     // ---- lids: screen-left eye (L) is her right eye (ARKit *Right)
     const side = { L: "Right", R: "Left" };
     const lookDown = clamp01(-gaze[1] / 25), lookUp = clamp01(gaze[1] / 20);
-    const lidL = this.blinkShape(t, dt, k("eyeBlinkRight"));  // one shaper drives both lids
+    const bLk = k("eyeBlinkLeft"), bRk = k("eyeBlinkRight"), winkI = Math.max(bLk, bRk) > 0.08 && Math.abs(bLk - bRk) > 0.5 * Math.max(bLk, bRk);
+    // r5: which eye is winking (screen-left L reads eyeBlinkRight): it skips the mid-blink key (drawEye)
+    this.winkI = { L: winkI && bRk > bLk, R: winkI && bLk > bRk };
+    const lidL = this.blinkShape(t, dt, bRk, winkI ? 1 : 0);  // one shaper drives both lids
     this.lid = { L: lidL, R: this.blinkShape2(k("eyeBlinkLeft")) };
     // r5 (judge r4): a WINK = one lid shut while the other stays open; it takes the curved happy-closed lid + cheek raise
-    this.wink = { L: smooth(0.55, 0.95, this.lid.L - this.lid.R) * smooth(0.7, 0.95, this.lid.L), R: smooth(0.55, 0.95, this.lid.R - this.lid.L) * smooth(0.7, 0.95, this.lid.R) };
+    this.wink = { L: smooth(0.4, 0.9, this.lid.L - this.lid.R) * smooth(0.35, 0.85, this.lid.L), R: smooth(0.4, 0.9, this.lid.R - this.lid.L) * smooth(0.35, 0.85, this.lid.R) };
     this.life.update(t, dt, bs, gaze, head, this.solver, breath);
     for (const s of ["L", "R"]) {
       const E = this.eyes[s], e = E.e, sfx = side[s];
@@ -516,8 +519,11 @@ export class Puppet2DRig {
   /** r3 blink shaper (judge r2 fix 4): an autonomic blink (a fast rise of eyeBlink) plays a 2-1-3 frame curve on
    *  30 Hz steps: 2 frames closing (mid key, shut key), 1 held shut, 3 opening (mid, mid, a light live lid), every frame
    *  a clean painted key, never a cross-faded smear. Slow changes (expression half-lids) pass through continuously. */
-  blinkShape(t, dt, b) {
+  blinkShape(t, dt, b, asym = 0) {
     const S = this.bsh || (this.bsh = { active: false, t0: 0, base: 0, prev: b, settle: false });
+    // r5: a WINK (one lid only) is a deliberate expression, not an autonomic blink: it never triggers the shaper (in r5's
+    // first clip the wink's fast rise did, and the settle step then held the winking lid at its pre-blink height)
+    if (asym > 0.5 && !S.active) { S.prev = b; S.settle = false; this.blinkDip = 0; this.lidShared = b; this.lidRaw = b; return b; }
     const SEQ = [0.5, 1.0, 1.0, 0.5, 0.14, 0.04];   // r4: mid squeeze key, shut | shut | squeeze, a light live lid, open   // every frame a clean key: mid, shut | shut | mid, mid, a barely-lowered live lid
     const rate = dt > 0 ? (b - S.prev) / dt : 0;
     if (!S.active && rate > 5 && b - S.prev > 0.06 && b > 0.15) { S.active = true; S.t0 = t; S.base = Math.min(S.prev, 0.5); }
@@ -794,7 +800,7 @@ export class Puppet2DRig {
     R.update(E.mesh, "aRest", E.restA);
     R.update(E.mesh, "aTop", E.topA);
     // r5: under a full wink the arched shut key leaves the live rims (lower waterline highlight) uncovered: they fade out
-    const liveA = 1 - smooth(0.3, 0.7, this.wink ? this.wink[sd] : 0);
+    const liveA = this.winkI && this.winkI[sd] ? 1 - smooth(0.5, 0.54, E.blink) : 1 - smooth(0.05, 0.35, this.wink ? this.wink[sd] : 0);
     // iris: gaze in rest-space px, foreshortened by gaze + head yaw; squashed a little at full blink
     // r4b: Bell's phenomenon: in a real blink the eyes dip down; a still caught mid-blink then reads as a blink in
     // motion (looking down through closing lids), not a sleepy / smug half-lid stare (blind r4f 3/3)
@@ -855,7 +861,9 @@ export class Puppet2DRig {
     R.drawPaint(E.lmesh, this.tex["lid" + sd], this.g.rects["lid" + sd], liveA, shade);
     // r3 painted lid keys over the live eye: mid (a real lowered lid with its crease) then shut
     if (this.g.lidKeys) {
-      const l = E.blink, midA = smooth(0.3, 0.36, l), shutA = smooth(0.72, 0.82, l);
+      const l = E.blink, wI = this.winkI && this.winkI[sd];
+      // a winking eye goes live lid -> arched shut key directly (the mid key under a raised cheek made a broken lash)
+      const midA = wI ? 0 : smooth(0.3, 0.36, l), shutA = wI ? smooth(0.5, 0.54, l) : smooth(0.72, 0.82, l);
       for (const [kk, a] of [["mid", midA * (1 - (shutA >= 1 ? 1 : 0))], ["shut", shutA]]) {
         if (a <= 0.003 || (this.debug && this.debug.noKey === kk)) continue;
         const M = this.lidKeyMesh[`lid${kk}${sd}`];

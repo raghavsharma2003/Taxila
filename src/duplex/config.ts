@@ -47,6 +47,13 @@ export const CONTEXT: Record<ExchangeContext, ContextRow> = {
 export const BACKSTOP_HOLD_PH = 0.6;
 export const BACKSTOP_HOLD_STRETCH = 2.5;
 
+/**
+ * Within-turn pace (critique 2026-10-04): the longest pause this turn after which the child went on (>= minMs) sets a floor
+ * of k x that pause on every later backstop (capMs) and on the verdict delay (verdictCapMs). k [E], chosen on the TaxilaFDB
+ * TRAIN split under the slow-child perturbation (evals/duplex/critic), never on test.
+ */
+export const TURN_PACE = { k: 1.3, minMs: 400 as Ms, capMs: 6000 as Ms, verdictCapMs: 4000 as Ms };
+
 /** The child's within-turn hold pauses until session 3 (§2.5.6, P12). B1/B4 extrapolated [E]. */
 export const BAND_PACE: Record<Band4, { p50: Ms; p90: Ms }> = {
   B1: { p50: 800, p90: 2300 },

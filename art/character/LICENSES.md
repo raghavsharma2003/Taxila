@@ -424,3 +424,12 @@ Not used: Live2D (licence blocked), Rive (GUI authoring), PixiJS (plain WebGL2 s
 | Foundry `taxila-brain` (gpt-5.6-sol) | advisory blind judge, same prompt as r3 (`scripts/character/puppet2d/judge-r4-blind.mjs`) | Azure AI Foundry (sold direct) | Azure terms | raw replies in `docs/design/teacher/puppet2d/judge-r4/` |
 
 Not used: Live2D (licence blocked), Rive (GUI authoring), PixiJS (plain WebGL2 suffices).
+
+## 2D puppet, polish r5 of arm P, 2026-10-04 (`art/character/puppet2d/polish-r5/`, `scripts/character/puppet2d/polish-r5/`)
+
+| What | Used for | Source | Licence | Notes |
+|---|---|---|---|---|
+| All r4 layers, keys and plates (carried over); `plates.py` re-run with a wider feather | every layer; the plates only on the opt-in `?turn=plates` path | ours | ours / Azure OpenAI terms | **no new images in r5: USD 0.00 spent**, ledger total stays 9.98 of the 30 cap |
+| Own runtime additions: `life.js` (micro-saccades, stressed-syllable brow flick, shoulder breath, stud glint state), wink key bend, viseme pass 2 (`lips.js`), f/v teeth-over-lip pass (`gl.js`), adaptive plate mesh, warm-up pass | runtime | ours | ours | still zero runtime dependencies (plain WebGL2) |
+| Foundry `taxila-brain` (gpt-5.6-sol), `grok-4-20-reasoning` | advisory blind forced-choice mouth-crop label test (`labeltest.mjs`) and blind sheet opinion | Azure AI Foundry (sold direct) | Azure terms | raw replies in `art/character/puppet2d/polish-r5/work/labelres/`, `.../work/blind/` |
+| vite 8, Playwright + Chromium (SwiftShader), ffmpeg, numpy / scipy / Pillow / OpenCV | build, evidence, fps proxy | as r4 | as r4 | build/evidence only |

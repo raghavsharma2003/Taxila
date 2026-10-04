@@ -92,8 +92,11 @@ for side, f in KEYS:
     np.maximum.at(M, (iy, ix), a)
     M = ndi.grey_closing(M, size=3)
     hard = M > 0.5
-    hard = ndi.binary_erosion(hard, iterations=16)
-    m = ndi.gaussian_filter(hard.astype(np.float32), 6.0)   # the outer ~28 px stay the frontal-warped silhouette (the plate's inpainted locks / earring smudged there)
+    hard = ndi.binary_erosion(hard, iterations=34)
+    # r5 (judge r4 fix 1): a 40-60 px feather (sigma 13 ~ a 52 px 10-90 ramp) instead of r4's ~15 px: the near-cheek
+    # plate edge was a visible vertical shading break; across a wide band, with the band colour transfer below, the
+    # plate's turned shading fades into the frontal-warped skin with no step
+    m = ndi.gaussian_filter(hard.astype(np.float32), 13.0)   # the outer ~28 px stay the frontal-warped silhouette (the plate's inpainted locks / earring smudged there)
     # 2. locks: dark strands in the outer band of the face region (the eyes / brows / nostrils / bindi are interior)
     dist = ndi.distance_transform_edt(M > 0.5)
     dark = (lum(im) < 95) & (M > 0.5) & (dist < 70)
@@ -138,7 +141,7 @@ for side, f in KEYS:
     # r4b: and along the matte's own border (the outer 34 px): there the plate fades into the frontal-warped skin, which
     # on the near side is stretched and lit differently - a soft seam from the ear to the jaw at the strong key
     dm = ndi.distance_transform_edt(m > 0.02)
-    BW = np.maximum(BW, 1 - np.clip((dm - 6) / 34.0, 0, 1))
+    BW = np.maximum(BW, 1 - np.clip((dm - 6) / 70.0, 0, 1))   # r5: the transfer covers the whole wide feather
     # 3b. global skin colour match (skin = bright, inside, away from the features)
     sk_p = (m > 0.95) & (lum(im) > 110) & ~lockm
     sk_f = np.zeros(cf.shape[:2], bool)

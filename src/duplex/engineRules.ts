@@ -118,6 +118,8 @@ export function estimate(tick: EngineTick): Estimate {
     - 3.0 * (m.repairOpen ? 1 : 0) - 2.0 * (m.holdRequest ? 1 : 0) - 1.5 * (m.openTail ? 1 : 0) - 1.5 * (m.fillerTail ? 1 : 0)
     - 1.2 * (m.projection ? 1 : 0) - 1.0 * (m.wordSearch ? 1 : 0) - 0.8 * (m.codeSwitchAtEdge ? 1 : 0);
   if (!tr.text) zBase -= 2.0;
+  // unreadable newest words (another script): never complete on their own; the backstop asks again (critique 2026-10-04)
+  if (m.unreadable) { zBase -= 4.0; reasons.push("transcript_unstable"); }
   // a closed question with NO value of the asked form yet: a finished-sounding clause is not an answer (completeness is
   // relative to the question). TaxilaFDB train, 2026-10-04: off-task drift chunks ("वहाँ एक बहुत बड़ा dog था") were
   // taken as turn ends in 46/192 drift pauses on the fast lane. idk / a question / a yield tag still end the turn.
@@ -334,15 +336,30 @@ export function extraWait(tick: EngineTick, est: Estimate): number {
   return 0;
 }
 
-/** G7: the earliest time a verdict word may play on a closed answer (the last value's end + 1.2 s). */
+/**
+ * The verdict clock's anchor: the LATER of the last value's end and the child's last voiced frame. Anchoring on the value
+ * word alone let a unit or tail word eat the wait ("पंद्रह | सेंटीमीटर [1.4 s] सॉरी बारह": value end + 2.0 s fell 90 ms before
+ * the child's "सॉरी", so the verdict on 15 played; critique 2026-10-04, TaxilaFDB test F1.rep_marker 4/40 on the fast
+ * lane). A verdict now needs VERDICT.delayMs of the child's own silence after both.
+ */
+export function verdictAnchor(tick: EngineTick): number | null {
+  const m = tick.markers;
+  if (m.lastValueAgeMs === null) return null;
+  const valueEnd = tick.t - m.lastValueAgeMs;
+  const lastVoice = tick.child.voicing ? tick.t : tick.child.lastOffsetAt;
+  return Math.max(valueEnd, lastVoice ?? valueEnd);
+}
+
+/** G7: the earliest time a verdict word may play on a closed answer (the anchor + VERDICT.delayMs). */
 export function verdictNotBefore(tick: EngineTick): number | null {
   if (tick.context.exchange !== "closed_answer" || !tick.markers.values.length || tick.markers.lastValueAgeMs === null) return null;
-  return tick.t - tick.markers.lastValueAgeMs + VERDICT.delayMs;
+  return (verdictAnchor(tick) as number) + VERDICT.delayMs;
 }
 
 export function verdictReady(tick: EngineTick, est: Estimate): boolean {
   const m = tick.markers;
-  return m.lastValueAgeMs !== null && m.lastValueAgeMs >= VERDICT.delayMs && !m.repairOpen && !est.horizonBlocked && !tick.child.voicing;
+  const a = verdictAnchor(tick);
+  return a !== null && tick.t - a >= VERDICT.delayMs && !m.repairOpen && !est.horizonBlocked && !tick.child.voicing;
 }
 
 export class RulesEngine implements DuplexEngine {

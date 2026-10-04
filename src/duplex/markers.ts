@@ -18,6 +18,13 @@ import type { CueClass } from "./turnPolicy.ts";
 const REPEAT = /(?:^|\s)(?:फिर से|phir se|दोबारा|dobara|kya bola|क्या बोला|kya kaha|क्या कहा|repeat|say (?:it )?again|once more)(?:\s|$)|^(?:क्या|kya|what|sorry|huh|हैं)$/u;
 const QWORDS = /(?:^|\s)(?:क्या|kya|क्यों|kyun|kyon|कैसे|kaise|कौन|kaun|कब|kab|कहाँ|कहां|kahan|कितना|कितने|kitna|kitne|what|why|how|which|who|when|where|can|could|is it|are you|आप)(?=\s|$)/u;
 const DEVANAGARI = /[ऀ-ॿ]/u;
+/** A letter outside Devanagari and Latin (CJK, Hangul, Telugu, Bengali, …): the STT hallucinated another script. */
+const OTHER_SCRIPT = /[^\p{Script=Devanagari}\p{Script=Latin}\p{Script=Common}\p{Script=Inherited}]/u;
+/** The last two tokens carry a letter of another script (the newest words cannot be read). */
+export function unreadableTail(text: string): boolean {
+  const toks = String(text ?? "").trim().split(/\s+/).filter(Boolean).slice(-2);
+  return toks.some((w) => /\p{L}/u.test(w) && OTHER_SCRIPT.test(w.replace(/[^\p{L}\p{M}]/gu, "")));
+}
 const LATIN = /[a-z]/i;
 
 const FORM_ANSWER: Record<string, string> = {
@@ -122,6 +129,7 @@ export class MarkerTracker {
       repeatRequest: REPEAT.test(t) && toks.length <= 4,
       codeSwitchAtEdge,
       offTaskMs: 0,
+      unreadable: unreadableTail(text),
     };
     return { markers, form, text, distress: n.safety };
   }

@@ -13,28 +13,28 @@
    "kind": "decision",
    "status": "proposed",
    "at": "2026-10-04",
-   "title": "Fast mouth, late verdict: the verdict-bearing words of a closed-answer reply play no earlier than the child's last value end + 2.0 s (config VERDICT.delayMs; was 1.2 s in the v2 draft). The first sound (the code-built uptake of the child's own value) is not delayed: only the verdict segment, which the player holds (INTEGRATION.md §4). Evidence M-D7 (n = 96 scenarios x 10 seeds, fast word-timed lane): verdict played before the child finished / on a value the child then repaired = 13/9 of 371 at 1.2 s, 4/4 at 1.6 s, 0/0 at 2.0 s; first-audio p50 unchanged (2,052 vs 2,031 ms). Caveat: tuned on one author's scripted self-corrections (repair pauses 400-1,500 ms +-20 %), so it is a corpus bound, not a child bound. Reverse if: DX-6 on TaxilaFDB or real consented children shows repairs after a value pause > 2.0 s at a rate that matters (then raise, or key it to the child's own repair-pause p90), or that 2.0 s reads as unnatural hesitation in a blind listen against 1.2-1.6 s with 0 wrong-value verdicts."
+   "title": "Fast mouth, late verdict: the verdict-bearing words of a closed-answer reply play no earlier than the child's last value end + 2.0 s (config VERDICT.delayMs; was 1.2 s in the v2 draft). The first sound (the code-built uptake of the child's own value) is not delayed: only the verdict segment, which the player holds (INTEGRATION.md §4). Evidence M-D7 (n = 96 scenarios x 10 seeds, fast word-timed lane): verdict played before the child finished / on a value the child then repaired = 13/9 of 379 at 1.2 s, 4/4 at 1.6 s, 0/0 at 2.0 s; first-audio p50 unchanged (2,027 vs 2,019 ms). Caveat: tuned on one author's scripted self-corrections (repair pauses 400-1,500 ms +-20 %), so it is a corpus bound, not a child bound. Reverse if: DX-6 on TaxilaFDB or real consented children shows repairs after a value pause > 2.0 s at a rate that matters (then raise, or key it to the child's own repair-pause p90), or that 2.0 s reads as unnatural hesitation in a blind listen against 1.2-1.6 s with 0 wrong-value verdicts."
   },
   {
    "id": "duplex-overlap-stay-ducked",
    "kind": "decision",
    "status": "proposed",
    "at": "2026-10-04",
-   "title": "Overlap while she speaks: a burst still voicing at 250-449 ms is UNDECIDED (stay ducked at 0.2, keep listening) instead of adding +1.0 barge-in evidence (config OVERLAP.earlyVoicedZ = 0); it yields at the 450 ms sustain, on a raised/rising onset, after her yes/no question (~200-300 ms), or when words land; a burst that ends short reads as a continuer and she un-ducks. The reflex duck at onset (~40 ms) already backs her voice off. Evidence M-D7 fast lane: the eager rule yielded on 20/30 continuers ('हम्म/अच्छा/ओके' over her) and resumed ~0.8 s later, vs 0/30 now; cost: barge-in yield p50 500 ms vs 300 ms (yes/no answers still yield at 300 ms). Reverse if: on real audio (DX-5) the stay-ducked rule's barge-in yield p50 exceeds 600 ms or children re-try their interruption, while the eager rule's continuer false-yields stay under 10 %."
+   "title": "Overlap while she speaks: a burst still voicing at 250-449 ms is UNDECIDED (stay ducked at 0.2, keep listening) instead of adding +1.0 barge-in evidence (config OVERLAP.earlyVoicedZ = 0); it yields at the sustain threshold (OVERLAP.sustainedMs: 450 ms here; 600 ms after the TaxilaFDB tuning workstream), on a raised/rising onset, after her yes/no question (~200-300 ms), or when words land; a burst that ends short reads as a continuer and she un-ducks. The reflex duck at onset (~40 ms) already backs her voice off. Evidence M-D7 fast lane: the eager rule yielded on 20/30 continuers ('हम्म/अच्छा/ओके' over her) and resumed ~0.8 s later, vs 0/30 now; cost: barge-in yield p50 500 ms (fast) / 600 ms (D4, MAI) vs 300 ms (yes/no answers still yield at 300 ms). Reverse if: on real audio (DX-5) the stay-ducked rule's barge-in yield p50 exceeds 600 ms or children re-try their interruption, while the eager rule's continuer false-yields stay under 10 %."
   },
   {
    "id": "duplex-explain-sentence-cap",
    "kind": "decision",
    "status": "proposed",
    "at": "2026-10-04",
-   "title": "Stage A without a fresh semantic read is uncertain about the end of a teach-back: in open_explanation a finished SENTENCE (verb-final, falling contour) caps pComplete at 0.8 < speakPc 0.9 (engineRules.ts EXPLAIN_SENTENCE_CAP), so only a fresh semantic estimate on the same text, an idk / complete question / repeat request, or the governor's context backstop (B3: 2.0 s, stretched x2.5 on an open tail) ends it. Evidence M-D7 (pre-cap dev run, 3 seeds): 'triangle के तीन sides होते हैं' + 1.6 s pause and 'जो ऊपर होता है ना' were taken over 3/3 and 3/3 (revoked before audio only because the reply was slow); after the cap 0 hard cut-offs in explanations; explanation gap p50 2,028-2,035 ms on every lane (the price, paid until the semantic call lands). Reverse when: the semantic arm (server/duplex/semantic.js, taxila-fast) is measured on TaxilaFDB F2 with thinking-pause cut-offs <= silence-640 on the same audio; then the cap applies only while the semantic estimate is stale."
+   "title": "Stage A without a fresh semantic read is uncertain about the end of a teach-back: in open_explanation a finished SENTENCE (verb-final, falling contour) caps pComplete at 0.8 < speakPc 0.9 (engineRules.ts EXPLAIN_SENTENCE_CAP), so only a fresh semantic estimate on the same text, an idk / complete question / repeat request, or the governor's context backstop (B3: 2.0 s at decision time, 2.5 s after the TaxilaFDB tuning change; x2.5 on an open tail) ends it. Evidence M-D7 (pre-cap dev run, 3 seeds): 'triangle के तीन sides होते हैं' + 1.6 s pause and 'जो ऊपर होता है ना' were taken over 3/3 and 3/3 (revoked before audio only because the reply was slow); after the cap 0 hard cut-offs in explanations; explanation gap p50 ~2.03 s on every lane (~2.53 s with the raised backstop) (the price, paid until the semantic call lands). Reverse when: the semantic arm (server/duplex/semantic.js, taxila-fast) is measured on TaxilaFDB F2 with thinking-pause cut-offs <= silence-640 on the same audio; then the cap applies only while the semantic estimate is stale."
   },
   {
    "id": "duplex-safeguard-defer-on-onset",
    "kind": "decision",
    "status": "proposed",
    "at": "2026-10-04",
-   "title": "The safeguard never plays over the child: a child onset while the safeguard is committed or audible defers it (governor YIELD reason safety, back to safety_attend, re-decided at the next pause; the distress state stays sticky and the safeguard is never dropped). Evidence M-D7 j05 ('मुझे मर जाना है' + 1.2 s pause + more words): 5/10 seeds had the safeguard decided in the pause and the child resume 16-130 ms before its first sound; after the fix 0 safeguards audible over child voice for > 100 ms on every lane; residual brushes < 100 ms (onset detector 40 ms + word-boundary stop 50 ms) are counted separately: 3 (D4) / 10 (fast) of 70 distress turns. Reverse if: real sessions show a child who keeps talking in short bursts never gets the safeguard within 10 s; then speak it at the first >= 1.5 s pause even mid-turn (still never over voice)."
+   "title": "The safeguard never plays over the child: a child onset while the safeguard is committed or audible defers it (governor YIELD reason safety, back to safety_attend, re-decided at the next pause; the distress state stays sticky and the safeguard is never dropped). Evidence M-D7 j05 ('मुझे मर जाना है' + 1.2 s pause + more words): 5/10 seeds had the safeguard decided in the pause and the child resume 16-130 ms before its first sound; after the fix 0 safeguards audible over child voice for > 120 ms on every lane; stops within <= 120 ms of a child onset (onset detector 40 ms + one frame tick + word-boundary stop 50 ms) are counted separately: 3 (D4) / 10 (MAI, fast) of 70 distress turns. Reverse if: real sessions show a child who keeps talking in short bursts never gets the safeguard within 10 s; then speak it at the first >= 1.5 s pause even mid-turn (still never over voice)."
   },
   {
    "id": "duplex-hold-grant-fresh-words",
@@ -47,7 +47,7 @@
    "id": "m-d7-duplex-runtime-tick-sim-2026-10-04",
    "kind": "measurement",
    "at": "2026-10-04",
-   "title": "M-D7 (2026-10-04, $0, no network): the v2 runtime at tick level. Method: evals/duplex/tick-sim.mjs replays evals/duplex/scenarios.mjs (96 scripted Hinglish child turns, 10 categories, one author) x 10 seeds = 960 turns per arm through the REAL src/duplex/host.ts → engineRules.ts → governor.ts, with server/duplex/speculator.js on the think track; streams.mjs frames (20 ms RMS/F0) and reactive STT (D4 calibrated from M-D2 n=28; MAI_HOME and FAST are [E] priors); her replies scheduled from the host's own speak commands (first audio = decision + bootstrapped measured Director/TTS stages, or the warm uptake / promoted draft). Results (gap = decision after the child's true end; ttfa = first audio): cce-mai gap p50/p90 362/2,046 ms (closed answers 319-351 / 419-449), ttfa p50 1,888; cce-fast 406/2,044 (closed 312-367), ttfa 2,031; cce-d4 1,285/2,046, ttfa 2,539; cascade-900 1,895/2,360, ttfa 3,800; silence-640 1,590/2,077, ttfa 3,500. Hard cut-offs (an audible non-uptake turn before the child finished): 0.0 % all CCE arms vs 2.9 % cascade-900, 3.9 % silence-640. Early verdict-free uptakes the child talked over (revoked at their onset): 8.4 % MAI/fast, 1.3 % D4 (all self-correction / hesitant scripts). Hold violations 0 % vs 31.7 % / 38.3 %. Verdicts before the child finished or on a repaired value 0/0 of 370 (vs 0/8 and 0/13 wrong-value for the baselines). Unsafe non-safeguard lines 0 (1 in cce-fast-nospec: an idk reply audible 7 ms after the distress segment began, before its words existed); safeguard over child voice 0. Overlap accuracy 99.5 % fast/MAI, 97.4 % D4 vs 79.5 % / 77.4 %; yield p50 500 ms (300 eager). Think-while-listening cuts ttfa p50 by ~500-930 ms (cce-d4 2,539 vs nospec 3,468; fast 2,031 vs 2,527); warm uptake promoted on 44-47 % of speaks; wasted speculative tokens 22 % (MAI) to 63 % (fast) of generated. Explanations end by the stage A backstop (~2.0 s, decision duplex-explain-sentence-cap). Caveats: synthetic voice and contours (a short rising 'क्या?' is too flat to exercise the acoustic repair rule), no echo in the frames, MAI/FAST latencies estimated, one author, category mix chosen (rates are per scenario, not per lesson); Smart Turn off the shelf not an arm. Gap p90 targets (<= 700 ms) are met for closed answers on MAI/fast but not pooled (explanations)."
+   "title": "M-D7 (2026-10-04, $0, no network): the v2 runtime at tick level. Method: evals/duplex/tick-sim.mjs replays evals/duplex/scenarios.mjs (96 scripted Hinglish child turns, 10 categories, one author) x 10 seeds = 960 turns per arm through the REAL src/duplex/host.ts → engineRules.ts → governor.ts with server/duplex/speculator.js on the think track; streams.mjs frames (20 ms RMS/F0) and reactive STT (D4 calibrated from M-D2 n=28; MAI_HOME and FAST are [E] priors); her replies scheduled from the host's own speak commands (first audio = decision + bootstrapped measured Director/TTS stages, or the warm uptake / promoted draft). The tree includes the parallel TaxilaFDB tuning edits (sustain 600 ms, explanation backstop 2.5-3.5 s). Results (gap = decision after the child's true end; ttfa = first audio): cce-mai gap p50/p90 361/2,546 ms (closed answers p50 308-352 / p90 385-425), ttfa p50 1,888; cce-fast 400/2,546 (closed 300-366 / 537-587), ttfa 2,019; cce-d4 1,265/2,546, ttfa 2,672; cascade-900 1,895/2,360, ttfa 3,800; silence-640 1,590/2,077, ttfa 3,500. Hard cut-offs (an audible non-uptake turn before the child finished) 0.0 % on all CCE arms vs 2.9 % cascade-900 and 3.9 % silence-640; early verdict-free uptakes the child talked over (revoked at their onset) 9.1 % MAI, 8.4 % fast, 1.3 % D4 (self-correction / hesitant scripts). Hold violations 0 % vs 31.7 % / 38.3 %. Verdicts before the child finished or on a repaired value 0/0 of 370 (baselines 8/325 and 13/314 wrong-value). Unsafe non-safeguard lines 0 (cce-fast-nospec 1: an idk reply audible 7 ms after the distress segment began, before its words existed); safeguard over child voice > 120 ms 0. Overlap accuracy 99.5 % fast, 96.3 % MAI, 94.7 % D4 vs 79.5 % / 77.4 %; yield p50 500 ms fast (yes/no 300), 600 ms D4/MAI. Think-while-listening cuts ttfa p50 by 451-844 ms; warm uptake promoted on 44-48 % of speaks; wasted speculative tokens 20 % (MAI) to 61 % (fast). Explanations end by the stage A backstop (~2.53 s). Ablations: eager overlap 20/30 continuers yielded-then-resumed; verdict delay 1.2/1.6/2.0 s → 9/4/0 wrong-value verdicts. Caveats: synthetic voice/contours (short rising 'क्या?' too flat for the acoustic repair rule), no echo in frames, MAI/FAST latencies estimated, one author, chosen category mix; Smart Turn off the shelf not an arm. Pooled gap p90 misses the <= 700 ms target (explanations); closed answers on MAI/fast meet it."
   },
   {
    "id": "rj-duplex-fanin-single-commit-slot",
@@ -84,6 +84,19 @@
    "kind": "open",
    "at": "2026-10-04",
    "title": "Open: server/duplex/semantic.js (the stage A fast-LLM completeness read on a stable prefix; host.ts already calls opts.semantic and engineRules weights it, decaying over 1.5 s, stale on a new text hash) is not built. Until it is, open explanations end only by the ~2.0 s backstop (duplex-explain-sentence-cap) and off-task drift never fires (it needs semantic.offTask). M-D5's taxila-fast numbers (accuracy 127/140 at 0.5, p50 963 ms) are the prior."
+  },
+  {
+   "id": "duplex-echo-span-and-uptake",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Known-text echo subtraction removes only her words that were audible INSIDE the audio a transcript version describes: the fan-in passes each version's audio span (item start → word end / commit / arrival − lag) and, on word-timed sources, per-token times (a token is echo only if heard while her matching word was audible, ±300 ms); the single-token 'fresh echo' rule (added by the TaxilaFDB workstream) must match the surface form, not the consonant skeleton, and without token times only in the last two tokens; her UPTAKE (the child's own words re-voiced) is never subtracted. Evidence M-D7: before, 'हाँ' over her yes/no question was deleted as her 'हैं' (shared skeleton) and she resumed over the answer on 30/30 fast-lane turns; her uptake 'तीन बटा आठ' deleted the child's correction 'तीन बटा चार' → verdicts on 4 instead of 3/4 (2/30 MAI, 2/30 fast). After: 0 wrong-value verdicts on every lane. Reverse if: DX-7 on recorded speaker sessions shows the guards leave real echo that self-yields; then add the playback-level correlation (layer 3), never widen the text match."
+  },
+  {
+   "id": "rj-duplex-echo-skeleton-single-token",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried (TaxilaFDB tuning workstream, 2026-10-04, against self-yields on word-timed streams): drop a single transcript token as echo when its consonant skeleton matches one of her words that ended within 1 s, anywhere in the text. What broke (M-D7): skeletons are too lossy for one word ('हाँ' = 'हैं' = 'h'), so a child's yes over her yes/no question vanished and she resumed over it (30/30 fast-lane turns); and it matched every occurrence, so her uptake 'तीन' deleted both of the child's own 'तीन's, the first spoken a second before hers (wrong-value verdicts). Replaced by decision duplex-echo-span-and-uptake (surface match, tail-only without token times, time-aligned with them, uptake never subtracted)."
   }
  ],
  "edges": [
@@ -159,6 +172,21 @@
   },
   {
    "src": "open-duplex-fast-lane-draft-churn",
+   "rel": "part_of",
+   "dst": "duplex-runtime-2026-10-04"
+  },
+  {
+   "src": "duplex-echo-span-and-uptake",
+   "rel": "caused_by",
+   "dst": "rj-duplex-echo-skeleton-single-token"
+  },
+  {
+   "src": "duplex-echo-span-and-uptake",
+   "rel": "measured_by",
+   "dst": "m-d7-duplex-runtime-tick-sim-2026-10-04"
+  },
+  {
+   "src": "duplex-echo-span-and-uptake",
    "rel": "part_of",
    "dst": "duplex-runtime-2026-10-04"
   }

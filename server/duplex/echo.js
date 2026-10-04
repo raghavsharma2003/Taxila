@@ -72,6 +72,18 @@ export class EchoSubtractor {
   }
 
   /**
+   * SAFETY-ONLY reading: every token that matches ANY recent word of hers removed (single matches too). Never used for
+   * the engine's words, only as a second text for the safety predicate: her echo interleaved with a disclosure
+   * ("मुझे खुद पानी को चोट और लगानी") must not break the predicate's phrase (TaxilaFDB F10 during_her, 2026-10-04).
+   */
+  stripAll(text, t, lagMs = 0) {
+    const toks = split(text);
+    const set = new Set(this.recent(t, lagMs).map((x) => x.sk).filter(Boolean));
+    if (!set.size) return toks.join(" ");
+    return toks.filter((w) => { const k = sk(w); return !k || !set.has(k); }).join(" ");
+  }
+
+  /**
    * @param {string} text the child's transcript (one item version, or the turn)
    * @param {number} t arrival time on the session clock
    * @param {number} [lagMs] the source's lag (her words that far back may be in this text)
@@ -81,8 +93,17 @@ export class EchoSubtractor {
   subtract(text, t, lagMs = 0, span = null, times = null) {
     const toks = split(text);
     if (!toks.length) return { text: String(text ?? "").trim(), removed: 0 };
-    // `span` = the audio the text describes: her words outside it cannot be in it (echo is captured, not remembered)
-    const her = this.recent(t, lagMs).filter((x) => x.sk && (!span || (x.endMs >= span.fromMs - 100 && x.startMs <= span.toMs + 100)));
+    // `span` = the audio the text describes: her words outside it cannot be in it (echo is captured, not remembered) — and
+    // her words INSIDE it can, however late the text arrives. The arrival-time window alone dropped them: a straddling item
+    // (opened on her question's echo, the child's answer appended) is re-transcribed 3+ s after her words, past the 2 s
+    // window, and her tail leaked into the child's turn ("है? तीन सौ साठ डिग्री", "बाघ? गाय"; critique 2026-10-04: 51% of
+    // stage A replies on a TaxilaFDB test sample re-voiced her own last word in the uptake)
+    const inSpan = (x) => !span || (x.endMs >= span.fromMs - 100 && x.startMs <= span.toMs + 100);
+    const pool = span ? this.words.filter((x) => !(this.stopped.has(x.u) && x.startMs > this.stopped.get(x.u)) && x.startMs <= t) : this.recent(t, lagMs);
+    const her = pool.filter((x) => x.sk && inSpan(x));
+    // her words with an EMPTY skeleton ("है", "हैं": the skeleton drops h) cannot anchor a run; at a run's end they are
+    // matched by surface instead (otherwise "…होता है?" left "है?" in front of the child's answer)
+    const herSurfEmpty = new Set(pool.filter((x) => !x.sk && inSpan(x)).map((x) => surf(x.w)).filter(Boolean));
     if (!her.length) return { text: toks.join(" "), removed: 0 };
     const hs = her.map((x) => x.sk);
     const set = new Set(hs);
@@ -99,6 +120,7 @@ export class EchoSubtractor {
           if (ts[a] !== hs[b]) break;
           a++; b++; n++;
         }
+        if (n >= this.o.minRun) while (a < toks.length && !ts[a] && herSurfEmpty.has(surf(toks[a]))) a++;
         // a single matching token is kept (a child repeating one word of hers is a turn) UNLESS it is FRESH: her word ended
         // within freshMs of the text's own audio time (t - lag). While she is mid-sentence that is her echo arriving word by
         // word (word-timed streaming STT emits it one token at a time: TaxilaFDB F12, 2026-10-04, 26/40 self-yields).
@@ -114,8 +136,20 @@ export class EchoSubtractor {
           const tw = times[x], hw = her[k + d];
           return !tw || !hw || (tw.endMs >= hw.startMs - 300 && tw.startMs <= hw.endMs + 300);
         });
-        if ((n >= this.o.minRun || fresh) && aligned) for (let x = i; x < a; x++) drop[x] = true;
+        // a single token whose OWN audio time sits on her matching word (word-timed sources) is her echo whatever its age:
+        // the child's repeat of her word is spoken after her, never on top of it (the aligned test is ±300 ms)
+        const timedSingle = n === 1 && !!times && !!times[i] && surf(toks[i]) === surf(her[k].w);
+        if ((n >= this.o.minRun || fresh || timedSingle) && aligned) for (let x = i; x < a; x++) drop[x] = true;
       }
+    }
+    // word-timed sources: an empty-skeleton token ("है?") whose audio time sits on her word of the same surface is echo too
+    if (times) {
+      const hersAll = pool.filter(inSpan);
+      toks.forEach((w, i) => {
+        if (drop[i] || ts[i] || !times[i]) return;
+        const sw = surf(w);
+        if (sw && hersAll.some((x) => surf(x.w) === sw && times[i].endMs >= x.startMs - 300 && times[i].startMs <= x.endMs + 300)) drop[i] = true;
+      });
     }
     // the whole text is echo-shaped: the shipped isEcho rule (>= 4 tokens, >= 70 % hers)
     const content = ts.filter(Boolean);

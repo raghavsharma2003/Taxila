@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Teacher C Puppet r4</title>
+<title>Teacher C Puppet r5</title>
 <style>
   :root { --bg: #fbe5bd; --ink: #3a2c22; }
   html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.4 system-ui, sans-serif; }
@@ -22,7 +22,7 @@
   <canvas id="c"></canvas>
   <div id="hud"></div>
   <button id="start">Restart timeline</button>
-  <div id="note">Polish r4 of arm P. New in r4: visemes re-derived so the mouth SHAPE varies independently of the smile (rounded o/u, full m/b/p closure with a press, a real aa jaw drop, f/v tuck, a visible tongue tip for t/d/n/l); teeth drawn from the painted contour with an antialiased edge; the head turn is a true two-texture keyform (the painted 3/4 face cross-dissolves in through the shared field, no extrapolation; bun repainted on the correct side); stronger surprise / concern / delight; a clean painted 0.62 mid-blink key. Tap Restart to hear the voice. Options: ?facerig=1 performance read-out (fps, work p95), ?bg=r,g,b backdrop, ?start=seconds, ?base=./layers/ for the PNG layers.</div>
+  <div id="note">Polish r5 of arm P. New in r5: the head turn is clamped to &plusmn;10&deg; and drawn by the shared field only (no painted plate, so no cheek seam or mouth-corner crease); visemes pass 2 (f/v upper teeth resting on the tucked lower lip, a clear tongue tip for l/t/d/n, a protruded squared ch, surprise is a tall narrow oval and aa the wide one, a lower talking smile bias); a real wink on a curved closed lid with the cheek raised; secondary life (micro-saccades between fixations, a brow flick on stressed syllables, shoulder breathing); about half the CPU work per frame. Tap Restart to hear the voice. Options: ?facerig=1 performance read-out (fps, work p95), ?turn=plates the old &plusmn;20 painted-plate turn (evaluation only), ?bg=r,g,b backdrop, ?start=seconds.</div>
 </div>
 <script>if (new URLSearchParams(location.search).has("capture")) document.body.classList.add("capture");</script>
 <script type="module" src="./demo.bundle.js"></script>

@@ -1,0 +1,131 @@
+{
+ "id": "critic-cost",
+ "date": "2026-10-04",
+ "streams": 161,
+ "prices": {
+  "fastIn": 2e-7,
+  "fastOut": 0.0000012,
+  "ttsChar": 0.000022,
+  "semIn": 2e-7,
+  "semOut": 5e-7,
+  "semTokIn": 700,
+  "semTokOut": 12,
+  "turnsPerHour": 80
+ },
+ "method": "L1 TaxilaFDB test sample (every Nth stream), Speculator accounting from the simulated launcher (token counts are the draft model's [E] sizes, harness.mjs draftModel), scaled by A1 = 80 child turns per lesson-hour [E]",
+ "base": "cascade expected $1.61/h incl. 60 min streamed STT (MODEL-STACK §2.2)",
+ "table": {
+  "stage-a@FAST": {
+   "streams": 161,
+   "replyTurns": 163,
+   "usedIn": 254700,
+   "usedOut": 12048,
+   "wastedIn": 865980,
+   "wastedOut": 10165,
+   "draftStarts": 330,
+   "warmStarts": 76,
+   "warmWastedChars": 157,
+   "warmPromoted": 33,
+   "semCalls": 0,
+   "speaks": 0,
+   "perReplyTurn": {
+    "draftStarts": 2.02,
+    "wastedTokensIn": 5313,
+    "wastedTokensOut": 62,
+    "warmStarts": 0.47,
+    "warmWastedChars": 1,
+    "semCalls": 0
+   },
+   "addedUsdPerLessonHour": {
+    "wastedDrafts": 0.091,
+    "wastedWarmTts": 0.0017,
+    "semantic": 0,
+    "total": 0.0927
+   }
+  },
+  "stage-a-sem@FAST": {
+   "streams": 161,
+   "replyTurns": 163,
+   "usedIn": 254700,
+   "usedOut": 12048,
+   "wastedIn": 865980,
+   "wastedOut": 9960,
+   "draftStarts": 330,
+   "warmStarts": 76,
+   "warmWastedChars": 157,
+   "warmPromoted": 33,
+   "semCalls": 180,
+   "speaks": 0,
+   "perReplyTurn": {
+    "draftStarts": 2.02,
+    "wastedTokensIn": 5313,
+    "wastedTokensOut": 61,
+    "warmStarts": 0.47,
+    "warmWastedChars": 1,
+    "semCalls": 1.1
+   },
+   "addedUsdPerLessonHour": {
+    "wastedDrafts": 0.0909,
+    "wastedWarmTts": 0.0017,
+    "semantic": 0.0129,
+    "total": 0.1055
+   }
+  },
+  "stage-a@D4": {
+   "streams": 161,
+   "replyTurns": 129,
+   "usedIn": 312432,
+   "usedOut": 14544,
+   "wastedIn": 485628,
+   "wastedOut": 11224,
+   "draftStarts": 235,
+   "warmStarts": 50,
+   "warmWastedChars": 75,
+   "warmPromoted": 30,
+   "semCalls": 0,
+   "speaks": 0,
+   "perReplyTurn": {
+    "draftStarts": 1.82,
+    "wastedTokensIn": 3765,
+    "wastedTokensOut": 87,
+    "warmStarts": 0.39,
+    "warmWastedChars": 1,
+    "semCalls": 0
+   },
+   "addedUsdPerLessonHour": {
+    "wastedDrafts": 0.0686,
+    "wastedWarmTts": 0.001,
+    "semantic": 0,
+    "total": 0.0696
+   }
+  },
+  "stage-a-sem@D4": {
+   "streams": 161,
+   "replyTurns": 130,
+   "usedIn": 312432,
+   "usedOut": 14544,
+   "wastedIn": 485628,
+   "wastedOut": 10926,
+   "draftStarts": 235,
+   "warmStarts": 50,
+   "warmWastedChars": 75,
+   "warmPromoted": 30,
+   "semCalls": 102,
+   "speaks": 0,
+   "perReplyTurn": {
+    "draftStarts": 1.81,
+    "wastedTokensIn": 3736,
+    "wastedTokensOut": 84,
+    "warmStarts": 0.38,
+    "warmWastedChars": 1,
+    "semCalls": 0.78
+   },
+   "addedUsdPerLessonHour": {
+    "wastedDrafts": 0.0678,
+    "wastedWarmTts": 0.001,
+    "semantic": 0.0092,
+    "total": 0.078
+   }
+  }
+ }
+}

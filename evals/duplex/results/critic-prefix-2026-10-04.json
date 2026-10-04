@@ -1,0 +1,9714 @@
+{
+ "id": "critic-prefix",
+ "date": "2026-10-04",
+ "runtimeHash": "1d138d3168bf",
+ "streams": 960,
+ "conds": [
+  "base",
+  "sttReal",
+  "slow",
+  "quiet",
+  "phone",
+  "sttReal+slow+phone"
+ ],
+ "arms": [
+  "stage-a",
+  "silence-640",
+  "cascade-900",
+  "silence-640-gov"
+ ],
+ "lanes": [
+  "D4",
+  "FAST"
+ ],
+ "method": "evals/duplex/critic/{perturb,stress}.mjs over the TaxilaFDB test split at L1 (world.mjs + the real src/duplex runtime); perturbations are world-side and identical across arms; CIs = 95% bootstrap over scenarios (1,000). Perturbation parameters [E], calibrated where stated on the L2 real-STT run (n=48 streams).",
+ "seconds": 824,
+ "nErrors": 0,
+ "errors": [],
+ "table": {
+  "base|stage-a@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 19,
+    "n": 732,
+    "rate": 0.026,
+    "ci95": [
+     0.008,
+     0.044
+    ]
+   },
+   "turnCutoff": {
+    "k": 16,
+    "n": 412,
+    "rate": 0.039,
+    "ci95": [
+     0.012,
+     0.075
+    ]
+   },
+   "gap": {
+    "n": 474,
+    "p50": 1170,
+    "p90": 1610,
+    "ci95p50": [
+     1130,
+     1220
+    ],
+    "ci95p90": [
+     1550,
+     1702
+    ],
+    "mean": 1192
+   },
+   "audible": {
+    "n": 474,
+    "p50": 2666,
+    "p90": 3824,
+    "ci95p50": [
+     2383,
+     2833
+    ],
+    "ci95p90": [
+     3652,
+     4016
+    ],
+    "mean": 2577
+   },
+   "missed2s": {
+    "k": 54,
+    "n": 528,
+    "rate": 0.102,
+    "ci95": [
+     0.059,
+     0.155
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 48,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "repairCollision": {
+    "k": 9,
+    "n": 40,
+    "rate": 0.225,
+    "ci95": [
+     0,
+     0.475
+    ]
+   },
+   "distressDetected": {
+    "k": 84,
+    "n": 84,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 1,
+    "n": 84,
+    "rate": 0.012,
+    "ci95": [
+     0,
+     0.036
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 86,
+    "p50": 1207,
+    "p90": 1800,
+    "ci95p50": [
+     1070,
+     1353
+    ],
+    "ci95p90": [
+     1600,
+     2350
+    ],
+    "mean": 1240
+   },
+   "keepTalking": {
+    "k": 53,
+    "n": 72,
+    "rate": 0.736,
+    "ci95": [
+     0.611,
+     0.847
+    ]
+   },
+   "falseYieldTV": {
+    "k": 33,
+    "n": 48,
+    "rate": 0.688,
+    "ci95": [
+     0.479,
+     0.854
+    ]
+   },
+   "nodsPerS": 0.203,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.01,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.011,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.046,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.048,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.01,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.25,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 0,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.025,
+   "respondEndRule": {
+    "speak:turn_end": 339,
+    "speak:backstop_silence": 140,
+    "speak:idk_help": 34
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 822
+  },
+  "base|silence-640@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 553,
+    "n": 732,
+    "rate": 0.755,
+    "ci95": [
+     0.703,
+     0.812
+    ]
+   },
+   "turnCutoff": {
+    "k": 321,
+    "n": 412,
+    "rate": 0.779,
+    "ci95": [
+     0.716,
+     0.84
+    ]
+   },
+   "gap": {
+    "n": 512,
+    "p50": 650,
+    "p90": 960,
+    "ci95p50": [
+     640,
+     660
+    ],
+    "ci95p90": [
+     800,
+     1120
+    ],
+    "mean": 700
+   },
+   "audible": {
+    "n": 512,
+    "p50": 2507,
+    "p90": 3733,
+    "ci95p50": [
+     2476,
+     2541
+    ],
+    "ci95p90": [
+     3408,
+     3968
+    ],
+    "mean": 2759
+   },
+   "missed2s": {
+    "k": 16,
+    "n": 528,
+    "rate": 0.03,
+    "ci95": [
+     0.011,
+     0.055
+    ]
+   },
+   "holdViolation": {
+    "k": 48,
+    "n": 48,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 18,
+    "n": 40,
+    "rate": 0.45,
+    "ci95": [
+     0.275,
+     0.675
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "distressDetected": {
+    "k": 80,
+    "n": 84,
+    "rate": 0.952,
+    "ci95": [
+     0.917,
+     0.988
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 33,
+    "n": 84,
+    "rate": 0.393,
+    "ci95": [
+     0.25,
+     0.56
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 85,
+    "p50": 1260,
+    "p90": 1957,
+    "ci95p50": [
+     1221,
+     1410
+    ],
+    "ci95p90": [
+     1650,
+     2415
+    ],
+    "mean": 1380
+   },
+   "keepTalking": {
+    "k": 54,
+    "n": 72,
+    "rate": 0.75,
+    "ci95": [
+     0.625,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 30,
+    "n": 48,
+    "rate": 0.625,
+    "ci95": [
+     0.375,
+     0.833
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.229,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.633,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.895,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.856,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.917,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 1,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 1,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.622,
+   "respondEndRule": {
+    "speak:turn_end": 520
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 550
+  },
+  "base|cascade-900@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 231,
+    "n": 732,
+    "rate": 0.316,
+    "ci95": [
+     0.225,
+     0.412
+    ]
+   },
+   "turnCutoff": {
+    "k": 180,
+    "n": 412,
+    "rate": 0.437,
+    "ci95": [
+     0.345,
+     0.529
+    ]
+   },
+   "gap": {
+    "n": 320,
+    "p50": 1685,
+    "p90": 1940,
+    "ci95p50": [
+     1625,
+     1720
+    ],
+    "ci95p90": [
+     1920,
+     1951
+    ],
+    "mean": 1230
+   },
+   "audible": {
+    "n": 320,
+    "p50": 3478,
+    "p90": 4421,
+    "ci95p50": [
+     3419,
+     3515
+    ],
+    "ci95p90": [
+     4302,
+     4551
+    ],
+    "mean": 3303
+   },
+   "missed2s": {
+    "k": 208,
+    "n": 528,
+    "rate": 0.394,
+    "ci95": [
+     0.347,
+     0.443
+    ]
+   },
+   "holdViolation": {
+    "k": 47,
+    "n": 48,
+    "rate": 0.979,
+    "ci95": [
+     0.938,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 1,
+    "n": 40,
+    "rate": 0.025,
+    "ci95": [
+     0,
+     0.075
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "distressDetected": {
+    "k": 84,
+    "n": 84,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 6,
+    "n": 84,
+    "rate": 0.071,
+    "ci95": [
+     0,
+     0.19
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 85,
+    "p50": 1260,
+    "p90": 1957,
+    "ci95p50": [
+     1221,
+     1410
+    ],
+    "ci95p90": [
+     1650,
+     2415
+    ],
+    "mean": 1380
+   },
+   "keepTalking": {
+    "k": 54,
+    "n": 72,
+    "rate": 0.75,
+    "ci95": [
+     0.625,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 30,
+    "n": 48,
+    "rate": 0.625,
+    "ci95": [
+     0.375,
+     0.833
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.01,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.096,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.243,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.144,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.633,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.9,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 1,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.189,
+   "respondEndRule": {
+    "speak:turn_end": 512
+   },
+   "respondDecisionsUnder300ms": 0.199,
+   "respondGapP10": 80
+  },
+  "base|silence-640-gov@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 66,
+    "n": 732,
+    "rate": 0.09,
+    "ci95": [
+     0.055,
+     0.129
+    ]
+   },
+   "turnCutoff": {
+    "k": 59,
+    "n": 412,
+    "rate": 0.143,
+    "ci95": [
+     0.092,
+     0.197
+    ]
+   },
+   "gap": {
+    "n": 108,
+    "p50": 1490,
+    "p90": 1810,
+    "ci95p50": [
+     1450,
+     1540
+    ],
+    "ci95p90": [
+     1700,
+     1840
+    ],
+    "mean": 1515
+   },
+   "audible": {
+    "n": 108,
+    "p50": 3335,
+    "p90": 4370,
+    "ci95p50": [
+     3256,
+     3450
+    ],
+    "ci95p90": [
+     4036,
+     5129
+    ],
+    "mean": 3529
+   },
+   "missed2s": {
+    "k": 420,
+    "n": 528,
+    "rate": 0.795,
+    "ci95": [
+     0.761,
+     0.833
+    ]
+   },
+   "holdViolation": {
+    "k": 8,
+    "n": 48,
+    "rate": 0.167,
+    "ci95": [
+     0.063,
+     0.292
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "distressDetected": {
+    "k": 83,
+    "n": 84,
+    "rate": 0.988,
+    "ci95": [
+     0.964,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 1,
+    "n": 84,
+    "rate": 0.012,
+    "ci95": [
+     0,
+     0.036
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 85,
+    "p50": 1260,
+    "p90": 1957,
+    "ci95p50": [
+     1221,
+     1410
+    ],
+    "ci95p90": [
+     1650,
+     2415
+    ],
+    "mean": 1380
+   },
+   "keepTalking": {
+    "k": 54,
+    "n": 72,
+    "rate": 0.75,
+    "ci95": [
+     0.625,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 30,
+    "n": 48,
+    "rate": 0.625,
+    "ci95": [
+     0.375,
+     0.833
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.077,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.1,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.42,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.667,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 0.1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.05,
+   "respondEndRule": {
+    "speak:turn_end": 524
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 1483
+  },
+  "base|stage-a@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 17,
+    "n": 732,
+    "rate": 0.023,
+    "ci95": [
+     0.007,
+     0.047
+    ]
+   },
+   "turnCutoff": {
+    "k": 17,
+    "n": 412,
+    "rate": 0.041,
+    "ci95": [
+     0.012,
+     0.08
+    ]
+   },
+   "gap": {
+    "n": 483,
+    "p50": 360,
+    "p90": 1480,
+    "ci95p50": [
+     340,
+     390
+    ],
+    "ci95p90": [
+     881,
+     1530
+    ],
+    "mean": 562
+   },
+   "audible": {
+    "n": 483,
+    "p50": 2074,
+    "p90": 3618,
+    "ci95p50": [
+     1921,
+     2171
+    ],
+    "ci95p90": [
+     3366,
+     4015
+    ],
+    "mean": 2063
+   },
+   "missed2s": {
+    "k": 45,
+    "n": 528,
+    "rate": 0.085,
+    "ci95": [
+     0.044,
+     0.133
+    ]
+   },
+   "holdViolation": {
+    "k": 3,
+    "n": 48,
+    "rate": 0.063,
+    "ci95": [
+     0,
+     0.188
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 3,
+    "n": 40,
+    "rate": 0.075,
+    "ci95": [
+     0,
+     0.225
+    ]
+   },
+   "repairCollision": {
+    "k": 23,
+    "n": 40,
+    "rate": 0.575,
+    "ci95": [
+     0.325,
+     0.825
+    ]
+   },
+   "distressDetected": {
+    "k": 84,
+    "n": 84,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 2,
+    "n": 84,
+    "rate": 0.024,
+    "ci95": [
+     0,
+     0.06
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 106,
+    "p50": 760,
+    "p90": 1043,
+    "ci95p50": [
+     679,
+     841
+    ],
+    "ci95p90": [
+     923,
+     1146
+    ],
+    "mean": 774
+   },
+   "keepTalking": {
+    "k": 47,
+    "n": 72,
+    "rate": 0.653,
+    "ci95": [
+     0.417,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 24,
+    "n": 48,
+    "rate": 0.5,
+    "ci95": [
+     0.25,
+     0.75
+    ]
+   },
+   "nodsPerS": 0.196,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.031,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.077,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.02,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.083,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 0.15,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.025,
+   "respondEndRule": {
+    "speak:turn_end": 350,
+    "speak:backstop_silence": 132,
+    "speak:idk_help": 35
+   },
+   "respondDecisionsUnder300ms": 0.263,
+   "respondGapP10": 230
+  },
+  "base|silence-640@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 606,
+    "n": 732,
+    "rate": 0.828,
+    "ci95": [
+     0.774,
+     0.886
+    ]
+   },
+   "turnCutoff": {
+    "k": 365,
+    "n": 412,
+    "rate": 0.886,
+    "ci95": [
+     0.837,
+     0.934
+    ]
+   },
+   "gap": {
+    "n": 524,
+    "p50": 640,
+    "p90": 700,
+    "ci95p50": [
+     630,
+     640
+    ],
+    "ci95p90": [
+     700,
+     710
+    ],
+    "mean": 631
+   },
+   "audible": {
+    "n": 524,
+    "p50": 2459,
+    "p90": 3452,
+    "ci95p50": [
+     2439,
+     2478
+    ],
+    "ci95p90": [
+     3294,
+     3800
+    ],
+    "mean": 2673
+   },
+   "missed2s": {
+    "k": 4,
+    "n": 528,
+    "rate": 0.008,
+    "ci95": [
+     0.002,
+     0.017
+    ]
+   },
+   "holdViolation": {
+    "k": 48,
+    "n": 48,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 2,
+    "n": 40,
+    "rate": 0.05,
+    "ci95": [
+     0,
+     0.125
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "distressDetected": {
+    "k": 84,
+    "n": 84,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 0,
+    "n": 84,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 106,
+    "p50": 760,
+    "p90": 1043,
+    "ci95p50": [
+     679,
+     841
+    ],
+    "ci95p90": [
+     923,
+     1146
+    ],
+    "mean": 774
+   },
+   "keepTalking": {
+    "k": 47,
+    "n": 72,
+    "rate": 0.653,
+    "ci95": [
+     0.417,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 24,
+    "n": 48,
+    "rate": 0.5,
+    "ci95": [
+     0.25,
+     0.75
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.229,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.723,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 1,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 1,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 1,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 1,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 1,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.687,
+   "respondEndRule": {
+    "speak:turn_end": 524
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 540
+  },
+  "base|cascade-900@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 299,
+    "n": 732,
+    "rate": 0.408,
+    "ci95": [
+     0.307,
+     0.524
+    ]
+   },
+   "turnCutoff": {
+    "k": 230,
+    "n": 412,
+    "rate": 0.558,
+    "ci95": [
+     0.476,
+     0.636
+    ]
+   },
+   "gap": {
+    "n": 522,
+    "p50": 1330,
+    "p90": 1560,
+    "ci95p50": [
+     1320,
+     1350
+    ],
+    "ci95p90": [
+     1530,
+     1580
+    ],
+    "mean": 1228
+   },
+   "audible": {
+    "n": 522,
+    "p50": 3165,
+    "p90": 4090,
+    "ci95p50": [
+     3123,
+     3190
+    ],
+    "ci95p90": [
+     3946,
+     4343
+    ],
+    "mean": 3234
+   },
+   "missed2s": {
+    "k": 6,
+    "n": 528,
+    "rate": 0.011,
+    "ci95": [
+     0.002,
+     0.023
+    ]
+   },
+   "holdViolation": {
+    "k": 47,
+    "n": 48,
+    "rate": 0.979,
+    "ci95": [
+     0.938,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 3,
+    "n": 40,
+    "rate": 0.075,
+    "ci95": [
+     0,
+     0.15
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "distressDetected": {
+    "k": 84,
+    "n": 84,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 0,
+    "n": 84,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 106,
+    "p50": 760,
+    "p90": 1043,
+    "ci95p50": [
+     679,
+     841
+    ],
+    "ci95p90": [
+     923,
+     1146
+    ],
+    "mean": 774
+   },
+   "keepTalking": {
+    "k": 47,
+    "n": 72,
+    "rate": 0.653,
+    "ci95": [
+     0.417,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 24,
+    "n": 48,
+    "rate": 0.5,
+    "ci95": [
+     0.25,
+     0.75
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.063,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.117,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.184,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.519,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.967,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.99,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 1,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.287,
+   "respondEndRule": {
+    "speak:turn_end": 522
+   },
+   "respondDecisionsUnder300ms": 0.111,
+   "respondGapP10": 90
+  },
+  "base|silence-640-gov@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 558,
+    "n": 732,
+    "rate": 0.762,
+    "ci95": [
+     0.705,
+     0.822
+    ]
+   },
+   "turnCutoff": {
+    "k": 319,
+    "n": 412,
+    "rate": 0.774,
+    "ci95": [
+     0.699,
+     0.84
+    ]
+   },
+   "gap": {
+    "n": 522,
+    "p50": 640,
+    "p90": 700,
+    "ci95p50": [
+     640,
+     650
+    ],
+    "ci95p90": [
+     700,
+     710
+    ],
+    "mean": 633
+   },
+   "audible": {
+    "n": 522,
+    "p50": 2466,
+    "p90": 3491,
+    "ci95p50": [
+     2446,
+     2482
+    ],
+    "ci95p90": [
+     3334,
+     3827
+    ],
+    "mean": 2696
+   },
+   "missed2s": {
+    "k": 6,
+    "n": 528,
+    "rate": 0.011,
+    "ci95": [
+     0.004,
+     0.021
+    ]
+   },
+   "holdViolation": {
+    "k": 3,
+    "n": 48,
+    "rate": 0.063,
+    "ci95": [
+     0,
+     0.188
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "distressDetected": {
+    "k": 84,
+    "n": 84,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 0,
+    "n": 84,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 106,
+    "p50": 760,
+    "p90": 1043,
+    "ci95p50": [
+     679,
+     841
+    ],
+    "ci95p90": [
+     923,
+     1146
+    ],
+    "mean": 774
+   },
+   "keepTalking": {
+    "k": 47,
+    "n": 72,
+    "rate": 0.653,
+    "ci95": [
+     0.417,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 24,
+    "n": 48,
+    "rate": 0.5,
+    "ci95": [
+     0.25,
+     0.75
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.229,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.718,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.993,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 1,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.983,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.8,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.333,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 0.15,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.661,
+   "respondEndRule": {
+    "speak:turn_end": 524
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 540
+  },
+  "sttReal|stage-a@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 24,
+    "n": 732,
+    "rate": 0.033,
+    "ci95": [
+     0.015,
+     0.053
+    ]
+   },
+   "turnCutoff": {
+    "k": 22,
+    "n": 412,
+    "rate": 0.053,
+    "ci95": [
+     0.024,
+     0.09
+    ]
+   },
+   "gap": {
+    "n": 450,
+    "p50": 1200,
+    "p90": 1610,
+    "ci95p50": [
+     1140,
+     1250
+    ],
+    "ci95p90": [
+     1550,
+     1710
+    ],
+    "mean": 1207
+   },
+   "audible": {
+    "n": 450,
+    "p50": 2856,
+    "p90": 3986,
+    "ci95p50": [
+     2738,
+     3001
+    ],
+    "ci95p90": [
+     3756,
+     4345
+    ],
+    "mean": 2786
+   },
+   "missed2s": {
+    "k": 78,
+    "n": 528,
+    "rate": 0.148,
+    "ci95": [
+     0.102,
+     0.199
+    ]
+   },
+   "holdViolation": {
+    "k": 6,
+    "n": 48,
+    "rate": 0.125,
+    "ci95": [
+     0.042,
+     0.229
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "repairCollision": {
+    "k": 9,
+    "n": 40,
+    "rate": 0.225,
+    "ci95": [
+     0,
+     0.475
+    ]
+   },
+   "distressDetected": {
+    "k": 68,
+    "n": 84,
+    "rate": 0.81,
+    "ci95": [
+     0.726,
+     0.881
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 16,
+    "n": 84,
+    "rate": 0.19,
+    "ci95": [
+     0.107,
+     0.274
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 86,
+    "p50": 1196,
+    "p90": 1800,
+    "ci95p50": [
+     1061,
+     1341
+    ],
+    "ci95p90": [
+     1550,
+     2350
+    ],
+    "mean": 1230
+   },
+   "keepTalking": {
+    "k": 45,
+    "n": 72,
+    "rate": 0.625,
+    "ci95": [
+     0.486,
+     0.75
+    ]
+   },
+   "falseYieldTV": {
+    "k": 33,
+    "n": 48,
+    "rate": 0.688,
+    "ci95": [
+     0.479,
+     0.854
+    ]
+   },
+   "nodsPerS": 0.203,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.005,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.046,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.058,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.02,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.333,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 0.2,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.025,
+   "respondEndRule": {
+    "speak:turn_end": 267,
+    "speak:backstop_silence": 207,
+    "speak:idk_help": 28
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 840
+  },
+  "sttReal|silence-640@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 550,
+    "n": 732,
+    "rate": 0.751,
+    "ci95": [
+     0.699,
+     0.807
+    ]
+   },
+   "turnCutoff": {
+    "k": 316,
+    "n": 412,
+    "rate": 0.767,
+    "ci95": [
+     0.701,
+     0.828
+    ]
+   },
+   "gap": {
+    "n": 512,
+    "p50": 650,
+    "p90": 960,
+    "ci95p50": [
+     640,
+     660
+    ],
+    "ci95p90": [
+     800,
+     1080
+    ],
+    "mean": 700
+   },
+   "audible": {
+    "n": 512,
+    "p50": 2506,
+    "p90": 3733,
+    "ci95p50": [
+     2473,
+     2541
+    ],
+    "ci95p90": [
+     3418,
+     3978
+    ],
+    "mean": 2760
+   },
+   "missed2s": {
+    "k": 16,
+    "n": 528,
+    "rate": 0.03,
+    "ci95": [
+     0.011,
+     0.055
+    ]
+   },
+   "holdViolation": {
+    "k": 48,
+    "n": 48,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 20,
+    "n": 40,
+    "rate": 0.5,
+    "ci95": [
+     0.324,
+     0.7
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "distressDetected": {
+    "k": 64,
+    "n": 84,
+    "rate": 0.762,
+    "ci95": [
+     0.679,
+     0.845
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 41,
+    "n": 84,
+    "rate": 0.488,
+    "ci95": [
+     0.345,
+     0.643
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 85,
+    "p50": 1250,
+    "p90": 1957,
+    "ci95p50": [
+     1206,
+     1410
+    ],
+    "ci95p90": [
+     1650,
+     2415
+    ],
+    "mean": 1369
+   },
+   "keepTalking": {
+    "k": 46,
+    "n": 72,
+    "rate": 0.639,
+    "ci95": [
+     0.5,
+     0.75
+    ]
+   },
+   "falseYieldTV": {
+    "k": 30,
+    "n": 48,
+    "rate": 0.625,
+    "ci95": [
+     0.375,
+     0.833
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.229,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.622,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.895,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.837,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.933,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 1,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 1,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.617,
+   "respondEndRule": {
+    "speak:turn_end": 520
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 550
+  },
+  "sttReal|cascade-900@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 254,
+    "n": 732,
+    "rate": 0.347,
+    "ci95": [
+     0.259,
+     0.442
+    ]
+   },
+   "turnCutoff": {
+    "k": 191,
+    "n": 412,
+    "rate": 0.464,
+    "ci95": [
+     0.374,
+     0.551
+    ]
+   },
+   "gap": {
+    "n": 333,
+    "p50": 1670,
+    "p90": 1940,
+    "ci95p50": [
+     1610,
+     1700
+    ],
+    "ci95p90": [
+     1920,
+     1960
+    ],
+    "mean": 1234
+   },
+   "audible": {
+    "n": 333,
+    "p50": 3465,
+    "p90": 4448,
+    "ci95p50": [
+     3395,
+     3503
+    ],
+    "ci95p90": [
+     4313,
+     4555
+    ],
+    "mean": 3313
+   },
+   "missed2s": {
+    "k": 195,
+    "n": 528,
+    "rate": 0.369,
+    "ci95": [
+     0.324,
+     0.42
+    ]
+   },
+   "holdViolation": {
+    "k": 47,
+    "n": 48,
+    "rate": 0.979,
+    "ci95": [
+     0.938,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 2,
+    "n": 40,
+    "rate": 0.05,
+    "ci95": [
+     0,
+     0.125
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "distressDetected": {
+    "k": 68,
+    "n": 84,
+    "rate": 0.81,
+    "ci95": [
+     0.726,
+     0.881
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 19,
+    "n": 84,
+    "rate": 0.226,
+    "ci95": [
+     0.119,
+     0.345
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 85,
+    "p50": 1250,
+    "p90": 1957,
+    "ci95p50": [
+     1206,
+     1410
+    ],
+    "ci95p90": [
+     1650,
+     2415
+    ],
+    "mean": 1369
+   },
+   "keepTalking": {
+    "k": 46,
+    "n": 72,
+    "rate": 0.639,
+    "ci95": [
+     0.5,
+     0.75
+    ]
+   },
+   "falseYieldTV": {
+    "k": 30,
+    "n": 48,
+    "rate": 0.625,
+    "ci95": [
+     0.375,
+     0.833
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.063,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.133,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.276,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.183,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.633,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.92,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 1,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.227,
+   "respondEndRule": {
+    "speak:turn_end": 513
+   },
+   "respondDecisionsUnder300ms": 0.201,
+   "respondGapP10": 80
+  },
+  "sttReal|silence-640-gov@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 71,
+    "n": 732,
+    "rate": 0.097,
+    "ci95": [
+     0.059,
+     0.137
+    ]
+   },
+   "turnCutoff": {
+    "k": 64,
+    "n": 412,
+    "rate": 0.155,
+    "ci95": [
+     0.102,
+     0.209
+    ]
+   },
+   "gap": {
+    "n": 109,
+    "p50": 1520,
+    "p90": 1810,
+    "ci95p50": [
+     1470,
+     1560
+    ],
+    "ci95p90": [
+     1714,
+     1840
+    ],
+    "mean": 1526
+   },
+   "audible": {
+    "n": 109,
+    "p50": 3341,
+    "p90": 4290,
+    "ci95p50": [
+     3256,
+     3450
+    ],
+    "ci95p90": [
+     3890,
+     4827
+    ],
+    "mean": 3513
+   },
+   "missed2s": {
+    "k": 419,
+    "n": 528,
+    "rate": 0.794,
+    "ci95": [
+     0.759,
+     0.83
+    ]
+   },
+   "holdViolation": {
+    "k": 15,
+    "n": 48,
+    "rate": 0.313,
+    "ci95": [
+     0.146,
+     0.479
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "distressDetected": {
+    "k": 67,
+    "n": 84,
+    "rate": 0.798,
+    "ci95": [
+     0.702,
+     0.881
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 14,
+    "n": 84,
+    "rate": 0.167,
+    "ci95": [
+     0.095,
+     0.25
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 85,
+    "p50": 1250,
+    "p90": 1957,
+    "ci95p50": [
+     1206,
+     1410
+    ],
+    "ci95p90": [
+     1650,
+     2415
+    ],
+    "mean": 1369
+   },
+   "keepTalking": {
+    "k": 46,
+    "n": 72,
+    "rate": 0.639,
+    "ci95": [
+     0.5,
+     0.75
+    ]
+   },
+   "falseYieldTV": {
+    "k": 30,
+    "n": 48,
+    "rate": 0.625,
+    "ci95": [
+     0.375,
+     0.833
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.067,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.1,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.43,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.75,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 0.3,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.051,
+   "respondEndRule": {
+    "speak:turn_end": 510
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 1490
+  },
+  "sttReal|stage-a@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 33,
+    "n": 732,
+    "rate": 0.045,
+    "ci95": [
+     0.025,
+     0.068
+    ]
+   },
+   "turnCutoff": {
+    "k": 32,
+    "n": 412,
+    "rate": 0.078,
+    "ci95": [
+     0.044,
+     0.117
+    ]
+   },
+   "gap": {
+    "n": 457,
+    "p50": 410,
+    "p90": 1510,
+    "ci95p50": [
+     370,
+     500
+    ],
+    "ci95p90": [
+     1471,
+     1530
+    ],
+    "mean": 626
+   },
+   "audible": {
+    "n": 457,
+    "p50": 2227,
+    "p90": 3737,
+    "ci95p50": [
+     2095,
+     2365
+    ],
+    "ci95p90": [
+     3453,
+     4059
+    ],
+    "mean": 2247
+   },
+   "missed2s": {
+    "k": 71,
+    "n": 528,
+    "rate": 0.134,
+    "ci95": [
+     0.091,
+     0.182
+    ]
+   },
+   "holdViolation": {
+    "k": 10,
+    "n": 48,
+    "rate": 0.208,
+    "ci95": [
+     0.083,
+     0.333
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 3,
+    "n": 40,
+    "rate": 0.075,
+    "ci95": [
+     0,
+     0.225
+    ]
+   },
+   "repairCollision": {
+    "k": 21,
+    "n": 40,
+    "rate": 0.525,
+    "ci95": [
+     0.275,
+     0.8
+    ]
+   },
+   "distressDetected": {
+    "k": 68,
+    "n": 84,
+    "rate": 0.81,
+    "ci95": [
+     0.726,
+     0.881
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 17,
+    "n": 84,
+    "rate": 0.202,
+    "ci95": [
+     0.107,
+     0.298
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 106,
+    "p50": 756,
+    "p90": 1043,
+    "ci95p50": [
+     670,
+     836
+    ],
+    "ci95p90": [
+     923,
+     1146
+    ],
+    "mean": 768
+   },
+   "keepTalking": {
+    "k": 39,
+    "n": 72,
+    "rate": 0.542,
+    "ci95": [
+     0.333,
+     0.722
+    ]
+   },
+   "falseYieldTV": {
+    "k": 24,
+    "n": 48,
+    "rate": 0.5,
+    "ci95": [
+     0.25,
+     0.75
+    ]
+   },
+   "nodsPerS": 0.198,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.042,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.027,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.096,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.05,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.167,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 0.35,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.041,
+   "respondEndRule": {
+    "speak:turn_end": 276,
+    "speak:backstop_silence": 199,
+    "speak:idk_help": 29
+   },
+   "respondDecisionsUnder300ms": 0.22,
+   "respondGapP10": 230
+  },
+  "sttReal|silence-640@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 606,
+    "n": 732,
+    "rate": 0.828,
+    "ci95": [
+     0.774,
+     0.886
+    ]
+   },
+   "turnCutoff": {
+    "k": 365,
+    "n": 412,
+    "rate": 0.886,
+    "ci95": [
+     0.837,
+     0.934
+    ]
+   },
+   "gap": {
+    "n": 523,
+    "p50": 640,
+    "p90": 700,
+    "ci95p50": [
+     630,
+     640
+    ],
+    "ci95p90": [
+     700,
+     710
+    ],
+    "mean": 631
+   },
+   "audible": {
+    "n": 523,
+    "p50": 2459,
+    "p90": 3452,
+    "ci95p50": [
+     2439,
+     2478
+    ],
+    "ci95p90": [
+     3294,
+     3801
+    ],
+    "mean": 2674
+   },
+   "missed2s": {
+    "k": 5,
+    "n": 528,
+    "rate": 0.009,
+    "ci95": [
+     0.002,
+     0.019
+    ]
+   },
+   "holdViolation": {
+    "k": 48,
+    "n": 48,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 5,
+    "n": 40,
+    "rate": 0.125,
+    "ci95": [
+     0.05,
+     0.2
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "distressDetected": {
+    "k": 68,
+    "n": 84,
+    "rate": 0.81,
+    "ci95": [
+     0.726,
+     0.881
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 16,
+    "n": 84,
+    "rate": 0.19,
+    "ci95": [
+     0.119,
+     0.274
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 106,
+    "p50": 756,
+    "p90": 1043,
+    "ci95p50": [
+     670,
+     836
+    ],
+    "ci95p90": [
+     923,
+     1146
+    ],
+    "mean": 768
+   },
+   "keepTalking": {
+    "k": 39,
+    "n": 72,
+    "rate": 0.542,
+    "ci95": [
+     0.333,
+     0.722
+    ]
+   },
+   "falseYieldTV": {
+    "k": 24,
+    "n": 48,
+    "rate": 0.5,
+    "ci95": [
+     0.25,
+     0.75
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.229,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.723,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 1,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 1,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 1,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 1,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 1,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.687,
+   "respondEndRule": {
+    "speak:turn_end": 523
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 540
+  },
+  "sttReal|cascade-900@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 316,
+    "n": 732,
+    "rate": 0.432,
+    "ci95": [
+     0.332,
+     0.545
+    ]
+   },
+   "turnCutoff": {
+    "k": 242,
+    "n": 412,
+    "rate": 0.587,
+    "ci95": [
+     0.507,
+     0.663
+    ]
+   },
+   "gap": {
+    "n": 522,
+    "p50": 1330,
+    "p90": 1560,
+    "ci95p50": [
+     1305,
+     1350
+    ],
+    "ci95p90": [
+     1530,
+     1580
+    ],
+    "mean": 1200
+   },
+   "audible": {
+    "n": 522,
+    "p50": 3159,
+    "p90": 4090,
+    "ci95p50": [
+     3111,
+     3183
+    ],
+    "ci95p90": [
+     3948,
+     4317
+    ],
+    "mean": 3208
+   },
+   "missed2s": {
+    "k": 6,
+    "n": 528,
+    "rate": 0.011,
+    "ci95": [
+     0.002,
+     0.023
+    ]
+   },
+   "holdViolation": {
+    "k": 47,
+    "n": 48,
+    "rate": 0.979,
+    "ci95": [
+     0.938,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 5,
+    "n": 40,
+    "rate": 0.125,
+    "ci95": [
+     0.05,
+     0.2
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "distressDetected": {
+    "k": 68,
+    "n": 84,
+    "rate": 0.81,
+    "ci95": [
+     0.726,
+     0.881
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 16,
+    "n": 84,
+    "rate": 0.19,
+    "ci95": [
+     0.119,
+     0.274
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 106,
+    "p50": 756,
+    "p90": 1043,
+    "ci95p50": [
+     670,
+     836
+    ],
+    "ci95p90": [
+     923,
+     1146
+    ],
+    "mean": 768
+   },
+   "keepTalking": {
+    "k": 39,
+    "n": 72,
+    "rate": 0.542,
+    "ci95": [
+     0.333,
+     0.722
+    ]
+   },
+   "falseYieldTV": {
+    "k": 24,
+    "n": 48,
+    "rate": 0.5,
+    "ci95": [
+     0.25,
+     0.75
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.115,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.128,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.211,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.577,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.967,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.99,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 1,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.319,
+   "respondEndRule": {
+    "speak:turn_end": 522
+   },
+   "respondDecisionsUnder300ms": 0.119,
+   "respondGapP10": 90
+  },
+  "sttReal|silence-640-gov@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 535,
+    "n": 732,
+    "rate": 0.731,
+    "ci95": [
+     0.673,
+     0.787
+    ]
+   },
+   "turnCutoff": {
+    "k": 316,
+    "n": 412,
+    "rate": 0.767,
+    "ci95": [
+     0.699,
+     0.825
+    ]
+   },
+   "gap": {
+    "n": 497,
+    "p50": 640,
+    "p90": 700,
+    "ci95p50": [
+     640,
+     650
+    ],
+    "ci95p90": [
+     700,
+     710
+    ],
+    "mean": 632
+   },
+   "audible": {
+    "n": 497,
+    "p50": 2456,
+    "p90": 3561,
+    "ci95p50": [
+     2430,
+     2479
+    ],
+    "ci95p90": [
+     3324,
+     3880
+    ],
+    "mean": 2684
+   },
+   "missed2s": {
+    "k": 31,
+    "n": 528,
+    "rate": 0.059,
+    "ci95": [
+     0.04,
+     0.078
+    ]
+   },
+   "holdViolation": {
+    "k": 10,
+    "n": 48,
+    "rate": 0.208,
+    "ci95": [
+     0.083,
+     0.333
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "distressDetected": {
+    "k": 68,
+    "n": 84,
+    "rate": 0.81,
+    "ci95": [
+     0.726,
+     0.881
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 15,
+    "n": 84,
+    "rate": 0.179,
+    "ci95": [
+     0.095,
+     0.262
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 106,
+    "p50": 756,
+    "p90": 1043,
+    "ci95p50": [
+     670,
+     836
+    ],
+    "ci95p90": [
+     923,
+     1146
+    ],
+    "mean": 768
+   },
+   "keepTalking": {
+    "k": 39,
+    "n": 72,
+    "rate": 0.542,
+    "ci95": [
+     0.333,
+     0.722
+    ]
+   },
+   "falseYieldTV": {
+    "k": 24,
+    "n": 48,
+    "rate": 0.5,
+    "ci95": [
+     0.25,
+     0.75
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.208,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.697,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.954,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.894,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.933,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.78,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.417,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 0.35,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.624,
+   "respondEndRule": {
+    "speak:turn_end": 507
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 540
+  },
+  "slow|stage-a@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 157,
+    "n": 732,
+    "rate": 0.214,
+    "ci95": [
+     0.155,
+     0.276
+    ]
+   },
+   "turnCutoff": {
+    "k": 98,
+    "n": 412,
+    "rate": 0.238,
+    "ci95": [
+     0.172,
+     0.308
+    ]
+   },
+   "gap": {
+    "n": 472,
+    "p50": 1165,
+    "p90": 1620,
+    "ci95p50": [
+     1120,
+     1220
+    ],
+    "ci95p90": [
+     1560,
+     1700
+    ],
+    "mean": 1191
+   },
+   "audible": {
+    "n": 472,
+    "p50": 2673,
+    "p90": 3789,
+    "ci95p50": [
+     2287,
+     2824
+    ],
+    "ci95p90": [
+     3609,
+     3952
+    ],
+    "mean": 2561
+   },
+   "missed2s": {
+    "k": 56,
+    "n": 528,
+    "rate": 0.106,
+    "ci95": [
+     0.064,
+     0.159
+    ]
+   },
+   "holdViolation": {
+    "k": 17,
+    "n": 48,
+    "rate": 0.354,
+    "ci95": [
+     0.125,
+     0.583
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 10,
+    "n": 40,
+    "rate": 0.25,
+    "ci95": [
+     0.05,
+     0.5
+    ]
+   },
+   "repairCollision": {
+    "k": 17,
+    "n": 40,
+    "rate": 0.425,
+    "ci95": [
+     0.175,
+     0.701
+    ]
+   },
+   "distressDetected": {
+    "k": 84,
+    "n": 84,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 1,
+    "n": 84,
+    "rate": 0.012,
+    "ci95": [
+     0,
+     0.036
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 86,
+    "p50": 1207,
+    "p90": 1800,
+    "ci95p50": [
+     1070,
+     1353
+    ],
+    "ci95p90": [
+     1600,
+     2350
+    ],
+    "mean": 1240
+   },
+   "keepTalking": {
+    "k": 53,
+    "n": 72,
+    "rate": 0.736,
+    "ci95": [
+     0.611,
+     0.847
+    ]
+   },
+   "falseYieldTV": {
+    "k": 33,
+    "n": 48,
+    "rate": 0.688,
+    "ci95": [
+     0.479,
+     0.854
+    ]
+   },
+   "nodsPerS": 0.22,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 52,
+     "cutoff": 0.019,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 100,
+     "cutoff": 0.16,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 242,
+     "cutoff": 0.223,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 92,
+     "cutoff": 0.174,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 102,
+     "cutoff": 0.216,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 114,
+     "cutoff": 0.263,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 30,
+     "cutoff": 0.6,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.135,
+   "respondEndRule": {
+    "speak:turn_end": 333,
+    "speak:backstop_silence": 145,
+    "speak:idk_help": 34
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 830
+  },
+  "slow|silence-640@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 678,
+    "n": 732,
+    "rate": 0.926,
+    "ci95": [
+     0.893,
+     0.954
+    ]
+   },
+   "turnCutoff": {
+    "k": 376,
+    "n": 412,
+    "rate": 0.913,
+    "ci95": [
+     0.862,
+     0.954
+    ]
+   },
+   "gap": {
+    "n": 504,
+    "p50": 660,
+    "p90": 1087,
+    "ci95p50": [
+     650,
+     670
+    ],
+    "ci95p90": [
+     952,
+     1190
+    ],
+    "mean": 729
+   },
+   "audible": {
+    "n": 504,
+    "p50": 2533,
+    "p90": 3753,
+    "ci95p50": [
+     2493,
+     2561
+    ],
+    "ci95p90": [
+     3470,
+     3974
+    ],
+    "mean": 2798
+   },
+   "missed2s": {
+    "k": 24,
+    "n": 528,
+    "rate": 0.045,
+    "ci95": [
+     0.019,
+     0.076
+    ]
+   },
+   "holdViolation": {
+    "k": 48,
+    "n": 48,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 16,
+    "n": 40,
+    "rate": 0.4,
+    "ci95": [
+     0.275,
+     0.55
+    ]
+   },
+   "repairCollision": {
+    "k": 7,
+    "n": 40,
+    "rate": 0.175,
+    "ci95": [
+     0.05,
+     0.3
+    ]
+   },
+   "distressDetected": {
+    "k": 81,
+    "n": 84,
+    "rate": 0.964,
+    "ci95": [
+     0.929,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 34,
+    "n": 84,
+    "rate": 0.405,
+    "ci95": [
+     0.262,
+     0.56
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 85,
+    "p50": 1260,
+    "p90": 1957,
+    "ci95p50": [
+     1221,
+     1410
+    ],
+    "ci95p90": [
+     1650,
+     2415
+    ],
+    "mean": 1380
+   },
+   "keepTalking": {
+    "k": 54,
+    "n": 72,
+    "rate": 0.75,
+    "ci95": [
+     0.625,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 30,
+    "n": 48,
+    "rate": 0.625,
+    "ci95": [
+     0.375,
+     0.833
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 52,
+     "cutoff": 0.519,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 100,
+     "cutoff": 0.95,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 242,
+     "cutoff": 0.934,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 92,
+     "cutoff": 0.946,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 102,
+     "cutoff": 0.971,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 114,
+     "cutoff": 1,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 30,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.797,
+   "respondEndRule": {
+    "speak:turn_end": 511
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 560
+  },
+  "slow|cascade-900@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 364,
+    "n": 732,
+    "rate": 0.497,
+    "ci95": [
+     0.41,
+     0.597
+    ]
+   },
+   "turnCutoff": {
+    "k": 270,
+    "n": 412,
+    "rate": 0.655,
+    "ci95": [
+     0.57,
+     0.731
+    ]
+   },
+   "gap": {
+    "n": 328,
+    "p50": 1615,
+    "p90": 1930,
+    "ci95p50": [
+     90,
+     1680
+    ],
+    "ci95p90": [
+     1910,
+     1950
+    ],
+    "mean": 1034
+   },
+   "audible": {
+    "n": 328,
+    "p50": 3419,
+    "p90": 4400,
+    "ci95p50": [
+     3223,
+     3490
+    ],
+    "ci95p90": [
+     4312,
+     4556
+    ],
+    "mean": 3134
+   },
+   "missed2s": {
+    "k": 200,
+    "n": 528,
+    "rate": 0.379,
+    "ci95": [
+     0.331,
+     0.424
+    ]
+   },
+   "holdViolation": {
+    "k": 48,
+    "n": 48,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 13,
+    "n": 40,
+    "rate": 0.325,
+    "ci95": [
+     0.125,
+     0.55
+    ]
+   },
+   "repairCollision": {
+    "k": 5,
+    "n": 40,
+    "rate": 0.125,
+    "ci95": [
+     0,
+     0.275
+    ]
+   },
+   "distressDetected": {
+    "k": 83,
+    "n": 84,
+    "rate": 0.988,
+    "ci95": [
+     0.964,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 13,
+    "n": 84,
+    "rate": 0.155,
+    "ci95": [
+     0.024,
+     0.321
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 85,
+    "p50": 1260,
+    "p90": 1957,
+    "ci95p50": [
+     1221,
+     1410
+    ],
+    "ci95p90": [
+     1650,
+     2415
+    ],
+    "mean": 1380
+   },
+   "keepTalking": {
+    "k": 54,
+    "n": 72,
+    "rate": 0.75,
+    "ci95": [
+     0.625,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 30,
+    "n": 48,
+    "rate": 0.625,
+    "ci95": [
+     0.375,
+     0.833
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 52,
+     "cutoff": 0.212,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 100,
+     "cutoff": 0.23,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 242,
+     "cutoff": 0.231,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 92,
+     "cutoff": 0.533,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 102,
+     "cutoff": 0.833,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 114,
+     "cutoff": 0.965,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 30,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.316,
+   "respondEndRule": {
+    "speak:turn_end": 491
+   },
+   "respondDecisionsUnder300ms": 0.291,
+   "respondGapP10": 60
+  },
+  "slow|silence-640-gov@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 204,
+    "n": 732,
+    "rate": 0.279,
+    "ci95": [
+     0.193,
+     0.373
+    ]
+   },
+   "turnCutoff": {
+    "k": 148,
+    "n": 412,
+    "rate": 0.359,
+    "ci95": [
+     0.281,
+     0.439
+    ]
+   },
+   "gap": {
+    "n": 121,
+    "p50": 1490,
+    "p90": 1790,
+    "ci95p50": [
+     1450,
+     1550
+    ],
+    "ci95p90": [
+     1695,
+     1830
+    ],
+    "mean": 1513
+   },
+   "audible": {
+    "n": 121,
+    "p50": 3319,
+    "p90": 4342,
+    "ci95p50": [
+     3256,
+     3403
+    ],
+    "ci95p90": [
+     4055,
+     4778
+    ],
+    "mean": 3527
+   },
+   "missed2s": {
+    "k": 407,
+    "n": 528,
+    "rate": 0.771,
+    "ci95": [
+     0.731,
+     0.809
+    ]
+   },
+   "holdViolation": {
+    "k": 8,
+    "n": 48,
+    "rate": 0.167,
+    "ci95": [
+     0.063,
+     0.292
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "distressDetected": {
+    "k": 83,
+    "n": 84,
+    "rate": 0.988,
+    "ci95": [
+     0.964,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 1,
+    "n": 84,
+    "rate": 0.012,
+    "ci95": [
+     0,
+     0.036
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 85,
+    "p50": 1260,
+    "p90": 1957,
+    "ci95p50": [
+     1221,
+     1410
+    ],
+    "ci95p90": [
+     1650,
+     2415
+    ],
+    "mean": 1380
+   },
+   "keepTalking": {
+    "k": 54,
+    "n": 72,
+    "rate": 0.75,
+    "ci95": [
+     0.625,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 30,
+    "n": 48,
+    "rate": 0.625,
+    "ci95": [
+     0.375,
+     0.833
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 52,
+     "cutoff": 0,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 100,
+     "cutoff": 0,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 242,
+     "cutoff": 0.05,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 92,
+     "cutoff": 0.152,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 102,
+     "cutoff": 0.725,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 114,
+     "cutoff": 0.842,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 30,
+     "cutoff": 0.267,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.098,
+   "respondEndRule": {
+    "speak:turn_end": 519
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 1450
+  },
+  "slow|stage-a@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 145,
+    "n": 732,
+    "rate": 0.198,
+    "ci95": [
+     0.137,
+     0.266
+    ]
+   },
+   "turnCutoff": {
+    "k": 86,
+    "n": 412,
+    "rate": 0.209,
+    "ci95": [
+     0.146,
+     0.274
+    ]
+   },
+   "gap": {
+    "n": 482,
+    "p50": 360,
+    "p90": 1490,
+    "ci95p50": [
+     340,
+     390
+    ],
+    "ci95p90": [
+     790,
+     1530
+    ],
+    "mean": 553
+   },
+   "audible": {
+    "n": 482,
+    "p50": 2080,
+    "p90": 3511,
+    "ci95p50": [
+     1912,
+     2181
+    ],
+    "ci95p90": [
+     3296,
+     3895
+    ],
+    "mean": 2022
+   },
+   "missed2s": {
+    "k": 46,
+    "n": 528,
+    "rate": 0.087,
+    "ci95": [
+     0.045,
+     0.134
+    ]
+   },
+   "holdViolation": {
+    "k": 14,
+    "n": 48,
+    "rate": 0.292,
+    "ci95": [
+     0.104,
+     0.5
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 13,
+    "n": 40,
+    "rate": 0.325,
+    "ci95": [
+     0.05,
+     0.625
+    ]
+   },
+   "repairCollision": {
+    "k": 33,
+    "n": 40,
+    "rate": 0.825,
+    "ci95": [
+     0.7,
+     0.95
+    ]
+   },
+   "distressDetected": {
+    "k": 84,
+    "n": 84,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 6,
+    "n": 84,
+    "rate": 0.071,
+    "ci95": [
+     0.012,
+     0.143
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 106,
+    "p50": 760,
+    "p90": 1043,
+    "ci95p50": [
+     679,
+     841
+    ],
+    "ci95p90": [
+     923,
+     1146
+    ],
+    "mean": 774
+   },
+   "keepTalking": {
+    "k": 47,
+    "n": 72,
+    "rate": 0.653,
+    "ci95": [
+     0.417,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 24,
+    "n": 48,
+    "rate": 0.5,
+    "ci95": [
+     0.25,
+     0.75
+    ]
+   },
+   "nodsPerS": 0.215,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 52,
+     "cutoff": 0.173,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 100,
+     "cutoff": 0.23,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 242,
+     "cutoff": 0.161,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 92,
+     "cutoff": 0.228,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 102,
+     "cutoff": 0.127,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 114,
+     "cutoff": 0.219,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 30,
+     "cutoff": 0.5,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.188,
+   "respondEndRule": {
+    "speak:turn_end": 343,
+    "speak:backstop_silence": 138,
+    "speak:idk_help": 35
+   },
+   "respondDecisionsUnder300ms": 0.273,
+   "respondGapP10": 220
+  },
+  "slow|silence-640@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 702,
+    "n": 732,
+    "rate": 0.959,
+    "ci95": [
+     0.934,
+     0.98
+    ]
+   },
+   "turnCutoff": {
+    "k": 394,
+    "n": 412,
+    "rate": 0.956,
+    "ci95": [
+     0.92,
+     0.988
+    ]
+   },
+   "gap": {
+    "n": 517,
+    "p50": 640,
+    "p90": 700,
+    "ci95p50": [
+     630,
+     640
+    ],
+    "ci95p90": [
+     690,
+     710
+    ],
+    "mean": 633
+   },
+   "audible": {
+    "n": 517,
+    "p50": 2462,
+    "p90": 3416,
+    "ci95p50": [
+     2442,
+     2479
+    ],
+    "ci95p90": [
+     3295,
+     3798
+    ],
+    "mean": 2675
+   },
+   "missed2s": {
+    "k": 11,
+    "n": 528,
+    "rate": 0.021,
+    "ci95": [
+     0.006,
+     0.04
+    ]
+   },
+   "holdViolation": {
+    "k": 48,
+    "n": 48,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 10,
+    "n": 40,
+    "rate": 0.25,
+    "ci95": [
+     0.05,
+     0.5
+    ]
+   },
+   "repairCollision": {
+    "k": 10,
+    "n": 40,
+    "rate": 0.25,
+    "ci95": [
+     0.025,
+     0.525
+    ]
+   },
+   "distressDetected": {
+    "k": 84,
+    "n": 84,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 0,
+    "n": 84,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 106,
+    "p50": 760,
+    "p90": 1043,
+    "ci95p50": [
+     679,
+     841
+    ],
+    "ci95p90": [
+     923,
+     1146
+    ],
+    "mean": 774
+   },
+   "keepTalking": {
+    "k": 47,
+    "n": 72,
+    "rate": 0.653,
+    "ci95": [
+     0.417,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 24,
+    "n": 48,
+    "rate": 0.5,
+    "ci95": [
+     0.25,
+     0.75
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 52,
+     "cutoff": 0.596,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 100,
+     "cutoff": 1,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 242,
+     "cutoff": 0.979,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 92,
+     "cutoff": 0.957,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 102,
+     "cutoff": 1,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 114,
+     "cutoff": 1,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 30,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.849,
+   "respondEndRule": {
+    "speak:turn_end": 517
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 540
+  },
+  "slow|cascade-900@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 476,
+    "n": 732,
+    "rate": 0.65,
+    "ci95": [
+     0.56,
+     0.757
+    ]
+   },
+   "turnCutoff": {
+    "k": 332,
+    "n": 412,
+    "rate": 0.806,
+    "ci95": [
+     0.745,
+     0.867
+    ]
+   },
+   "gap": {
+    "n": 507,
+    "p50": 1330,
+    "p90": 1560,
+    "ci95p50": [
+     1310,
+     1350
+    ],
+    "ci95p90": [
+     1530,
+     1580
+    ],
+    "mean": 1242
+   },
+   "audible": {
+    "n": 507,
+    "p50": 3159,
+    "p90": 4118,
+    "ci95p50": [
+     3116,
+     3203
+    ],
+    "ci95p90": [
+     4012,
+     4480
+    ],
+    "mean": 3289
+   },
+   "missed2s": {
+    "k": 21,
+    "n": 528,
+    "rate": 0.04,
+    "ci95": [
+     0.019,
+     0.063
+    ]
+   },
+   "holdViolation": {
+    "k": 47,
+    "n": 48,
+    "rate": 0.979,
+    "ci95": [
+     0.938,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 13,
+    "n": 40,
+    "rate": 0.325,
+    "ci95": [
+     0.15,
+     0.55
+    ]
+   },
+   "repairCollision": {
+    "k": 5,
+    "n": 40,
+    "rate": 0.125,
+    "ci95": [
+     0,
+     0.275
+    ]
+   },
+   "distressDetected": {
+    "k": 84,
+    "n": 84,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 0,
+    "n": 84,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 106,
+    "p50": 760,
+    "p90": 1043,
+    "ci95p50": [
+     679,
+     841
+    ],
+    "ci95p90": [
+     923,
+     1146
+    ],
+    "mean": 774
+   },
+   "keepTalking": {
+    "k": 47,
+    "n": 72,
+    "rate": 0.653,
+    "ci95": [
+     0.417,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 24,
+    "n": 48,
+    "rate": 0.5,
+    "ci95": [
+     0.25,
+     0.75
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 52,
+     "cutoff": 0.173,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 100,
+     "cutoff": 0.06,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 242,
+     "cutoff": 0.541,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 92,
+     "cutoff": 0.957,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 102,
+     "cutoff": 0.971,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 114,
+     "cutoff": 0.991,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 30,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.387,
+   "respondEndRule": {
+    "speak:turn_end": 507
+   },
+   "respondDecisionsUnder300ms": 0.097,
+   "respondGapP10": 1126
+  },
+  "slow|silence-640-gov@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 653,
+    "n": 732,
+    "rate": 0.892,
+    "ci95": [
+     0.845,
+     0.931
+    ]
+   },
+   "turnCutoff": {
+    "k": 345,
+    "n": 412,
+    "rate": 0.837,
+    "ci95": [
+     0.769,
+     0.898
+    ]
+   },
+   "gap": {
+    "n": 520,
+    "p50": 640,
+    "p90": 700,
+    "ci95p50": [
+     630,
+     640
+    ],
+    "ci95p90": [
+     700,
+     710
+    ],
+    "mean": 634
+   },
+   "audible": {
+    "n": 520,
+    "p50": 2467,
+    "p90": 3452,
+    "ci95p50": [
+     2446,
+     2484
+    ],
+    "ci95p90": [
+     3334,
+     3863
+    ],
+    "mean": 2695
+   },
+   "missed2s": {
+    "k": 8,
+    "n": 528,
+    "rate": 0.015,
+    "ci95": [
+     0.006,
+     0.027
+    ]
+   },
+   "holdViolation": {
+    "k": 3,
+    "n": 48,
+    "rate": 0.063,
+    "ci95": [
+     0,
+     0.188
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 8,
+    "n": 40,
+    "rate": 0.2,
+    "ci95": [
+     0,
+     0.45
+    ]
+   },
+   "repairCollision": {
+    "k": 9,
+    "n": 40,
+    "rate": 0.225,
+    "ci95": [
+     0.025,
+     0.475
+    ]
+   },
+   "distressDetected": {
+    "k": 84,
+    "n": 84,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 0,
+    "n": 84,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 106,
+    "p50": 760,
+    "p90": 1043,
+    "ci95p50": [
+     679,
+     841
+    ],
+    "ci95p90": [
+     923,
+     1146
+    ],
+    "mean": 774
+   },
+   "keepTalking": {
+    "k": 47,
+    "n": 72,
+    "rate": 0.653,
+    "ci95": [
+     0.417,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 24,
+    "n": 48,
+    "rate": 0.5,
+    "ci95": [
+     0.25,
+     0.75
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 52,
+     "cutoff": 0.596,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 100,
+     "cutoff": 0.98,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 242,
+     "cutoff": 0.967,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 92,
+     "cutoff": 0.967,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 102,
+     "cutoff": 1,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 114,
+     "cutoff": 0.825,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 30,
+     "cutoff": 0.167,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.834,
+   "respondEndRule": {
+    "speak:turn_end": 522
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 540
+  },
+  "quiet|stage-a@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 61,
+    "n": 732,
+    "rate": 0.083,
+    "ci95": [
+     0.056,
+     0.108
+    ]
+   },
+   "turnCutoff": {
+    "k": 45,
+    "n": 412,
+    "rate": 0.109,
+    "ci95": [
+     0.073,
+     0.148
+    ]
+   },
+   "gap": {
+    "n": 437,
+    "p50": 1090,
+    "p90": 1574,
+    "ci95p50": [
+     1060,
+     1160
+    ],
+    "ci95p90": [
+     1510,
+     1649
+    ],
+    "mean": 1115
+   },
+   "audible": {
+    "n": 437,
+    "p50": 2609,
+    "p90": 3877,
+    "ci95p50": [
+     2367,
+     2729
+    ],
+    "ci95p90": [
+     3655,
+     4134
+    ],
+    "mean": 2542
+   },
+   "missed2s": {
+    "k": 91,
+    "n": 528,
+    "rate": 0.172,
+    "ci95": [
+     0.125,
+     0.223
+    ]
+   },
+   "holdViolation": {
+    "k": 6,
+    "n": 48,
+    "rate": 0.125,
+    "ci95": [
+     0.042,
+     0.229
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 2,
+    "n": 40,
+    "rate": 0.05,
+    "ci95": [
+     0,
+     0.125
+    ]
+   },
+   "repairCollision": {
+    "k": 9,
+    "n": 40,
+    "rate": 0.225,
+    "ci95": [
+     0.05,
+     0.475
+    ]
+   },
+   "distressDetected": {
+    "k": 83,
+    "n": 84,
+    "rate": 0.988,
+    "ci95": [
+     0.964,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 13,
+    "n": 84,
+    "rate": 0.155,
+    "ci95": [
+     0.095,
+     0.226
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 82,
+    "p50": 1221,
+    "p90": 1918,
+    "ci95p50": [
+     1116,
+     1410
+    ],
+    "ci95p90": [
+     1610,
+     2350
+    ],
+    "mean": 1263
+   },
+   "keepTalking": {
+    "k": 54,
+    "n": 72,
+    "rate": 0.75,
+    "ci95": [
+     0.625,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 33,
+    "n": 48,
+    "rate": 0.688,
+    "ci95": [
+     0.479,
+     0.854
+    ]
+   },
+   "nodsPerS": 0.132,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.063,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.043,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.112,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.067,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.033,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.17,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.333,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 0,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.073,
+   "respondEndRule": {
+    "speak:turn_end": 288,
+    "speak:backstop_silence": 161,
+    "cut_in:word_search_cue": 2,
+    "speak:idk_help": 27
+   },
+   "respondDecisionsUnder300ms": 0.01,
+   "respondGapP10": 697
+  },
+  "quiet|silence-640@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 532,
+    "n": 732,
+    "rate": 0.727,
+    "ci95": [
+     0.674,
+     0.776
+    ]
+   },
+   "turnCutoff": {
+    "k": 308,
+    "n": 412,
+    "rate": 0.748,
+    "ci95": [
+     0.684,
+     0.806
+    ]
+   },
+   "gap": {
+    "n": 462,
+    "p50": 610,
+    "p90": 1000,
+    "ci95p50": [
+     600,
+     620
+    ],
+    "ci95p90": [
+     830,
+     1140
+    ],
+    "mean": 616
+   },
+   "audible": {
+    "n": 462,
+    "p50": 2481,
+    "p90": 3733,
+    "ci95p50": [
+     2457,
+     2531
+    ],
+    "ci95p90": [
+     3436,
+     3978
+    ],
+    "mean": 2712
+   },
+   "missed2s": {
+    "k": 66,
+    "n": 528,
+    "rate": 0.125,
+    "ci95": [
+     0.097,
+     0.159
+    ]
+   },
+   "holdViolation": {
+    "k": 45,
+    "n": 48,
+    "rate": 0.938,
+    "ci95": [
+     0.875,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 18,
+    "n": 40,
+    "rate": 0.45,
+    "ci95": [
+     0.275,
+     0.65
+    ]
+   },
+   "repairCollision": {
+    "k": 1,
+    "n": 40,
+    "rate": 0.025,
+    "ci95": [
+     0,
+     0.075
+    ]
+   },
+   "distressDetected": {
+    "k": 82,
+    "n": 84,
+    "rate": 0.976,
+    "ci95": [
+     0.94,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 33,
+    "n": 84,
+    "rate": 0.393,
+    "ci95": [
+     0.25,
+     0.571
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 80,
+    "p50": 1311,
+    "p90": 1983,
+    "ci95p50": [
+     1221,
+     1429
+    ],
+    "ci95p90": [
+     1711,
+     2448
+    ],
+    "mean": 1398
+   },
+   "keepTalking": {
+    "k": 54,
+    "n": 72,
+    "rate": 0.75,
+    "ci95": [
+     0.625,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 30,
+    "n": 48,
+    "rate": 0.625,
+    "ci95": [
+     0.375,
+     0.833
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.365,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.633,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.776,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.817,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.883,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.91,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.917,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.633,
+   "respondEndRule": {
+    "speak:turn_end": 463,
+    "speak:wt1_nudge": 8
+   },
+   "respondDecisionsUnder300ms": 0.091,
+   "respondGapP10": 300
+  },
+  "quiet|cascade-900@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 181,
+    "n": 732,
+    "rate": 0.247,
+    "ci95": [
+     0.177,
+     0.321
+    ]
+   },
+   "turnCutoff": {
+    "k": 151,
+    "n": 412,
+    "rate": 0.367,
+    "ci95": [
+     0.289,
+     0.442
+    ]
+   },
+   "gap": {
+    "n": 266,
+    "p50": 1710,
+    "p90": 1950,
+    "ci95p50": [
+     1680,
+     1755
+    ],
+    "ci95p90": [
+     1920,
+     1970
+    ],
+    "mean": 1377
+   },
+   "audible": {
+    "n": 266,
+    "p50": 3492,
+    "p90": 4460,
+    "ci95p50": [
+     3443,
+     3527
+    ],
+    "ci95p90": [
+     4330,
+     4752
+    ],
+    "mean": 3411
+   },
+   "missed2s": {
+    "k": 262,
+    "n": 528,
+    "rate": 0.496,
+    "ci95": [
+     0.455,
+     0.536
+    ]
+   },
+   "holdViolation": {
+    "k": 45,
+    "n": 48,
+    "rate": 0.938,
+    "ci95": [
+     0.875,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 3,
+    "n": 40,
+    "rate": 0.075,
+    "ci95": [
+     0,
+     0.15
+    ]
+   },
+   "repairCollision": {
+    "k": 1,
+    "n": 40,
+    "rate": 0.025,
+    "ci95": [
+     0,
+     0.075
+    ]
+   },
+   "distressDetected": {
+    "k": 84,
+    "n": 84,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 10,
+    "n": 84,
+    "rate": 0.119,
+    "ci95": [
+     0.024,
+     0.25
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 80,
+    "p50": 1311,
+    "p90": 1983,
+    "ci95p50": [
+     1221,
+     1429
+    ],
+    "ci95p90": [
+     1711,
+     2448
+    ],
+    "mean": 1398
+   },
+   "keepTalking": {
+    "k": 54,
+    "n": 72,
+    "rate": 0.75,
+    "ci95": [
+     0.625,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 30,
+    "n": 48,
+    "rate": 0.625,
+    "ci95": [
+     0.375,
+     0.833
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.021,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.053,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.138,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.106,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.533,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.74,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.917,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.145,
+   "respondEndRule": {
+    "speak:turn_end": 441,
+    "speak:wt1_nudge": 8
+   },
+   "respondDecisionsUnder300ms": 0.127,
+   "respondGapP10": 60
+  },
+  "quiet|silence-640-gov@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 130,
+    "n": 732,
+    "rate": 0.178,
+    "ci95": [
+     0.134,
+     0.223
+    ]
+   },
+   "turnCutoff": {
+    "k": 99,
+    "n": 412,
+    "rate": 0.24,
+    "ci95": [
+     0.184,
+     0.296
+    ]
+   },
+   "gap": {
+    "n": 188,
+    "p50": 1270,
+    "p90": 1633,
+    "ci95p50": [
+     1170,
+     1320
+    ],
+    "ci95p90": [
+     1580,
+     1740
+    ],
+    "mean": 1149
+   },
+   "audible": {
+    "n": 188,
+    "p50": 3136,
+    "p90": 4172,
+    "ci95p50": [
+     3017,
+     3188
+    ],
+    "ci95p90": [
+     3912,
+     4755
+    ],
+    "mean": 3212
+   },
+   "missed2s": {
+    "k": 340,
+    "n": 528,
+    "rate": 0.644,
+    "ci95": [
+     0.608,
+     0.682
+    ]
+   },
+   "holdViolation": {
+    "k": 12,
+    "n": 48,
+    "rate": 0.25,
+    "ci95": [
+     0.083,
+     0.458
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 3,
+    "n": 40,
+    "rate": 0.075,
+    "ci95": [
+     0,
+     0.15
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "distressDetected": {
+    "k": 83,
+    "n": 84,
+    "rate": 0.988,
+    "ci95": [
+     0.964,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 8,
+    "n": 84,
+    "rate": 0.095,
+    "ci95": [
+     0.048,
+     0.167
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 80,
+    "p50": 1311,
+    "p90": 1983,
+    "ci95p50": [
+     1221,
+     1429
+    ],
+    "ci95p90": [
+     1711,
+     2448
+    ],
+    "mean": 1398
+   },
+   "keepTalking": {
+    "k": 54,
+    "n": 72,
+    "rate": 0.75,
+    "ci95": [
+     0.625,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 30,
+    "n": 48,
+    "rate": 0.625,
+    "ci95": [
+     0.375,
+     0.833
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.052,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.059,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.099,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.212,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.283,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.45,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.917,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 0.2,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.134,
+   "respondEndRule": {
+    "speak:turn_end": 481,
+    "speak:wt1_nudge": 8,
+    "speak:backstop_silence": 1
+   },
+   "respondDecisionsUnder300ms": 0.027,
+   "respondGapP10": 909
+  },
+  "quiet|stage-a@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 44,
+    "n": 732,
+    "rate": 0.06,
+    "ci95": [
+     0.035,
+     0.089
+    ]
+   },
+   "turnCutoff": {
+    "k": 31,
+    "n": 412,
+    "rate": 0.075,
+    "ci95": [
+     0.044,
+     0.112
+    ]
+   },
+   "gap": {
+    "n": 425,
+    "p50": 350,
+    "p90": 1380,
+    "ci95p50": [
+     330,
+     380
+    ],
+    "ci95p90": [
+     750,
+     1480
+    ],
+    "mean": 506
+   },
+   "audible": {
+    "n": 425,
+    "p50": 2037,
+    "p90": 3575,
+    "ci95p50": [
+     1903,
+     2166
+    ],
+    "ci95p90": [
+     3340,
+     3989
+    ],
+    "mean": 2032
+   },
+   "missed2s": {
+    "k": 103,
+    "n": 528,
+    "rate": 0.195,
+    "ci95": [
+     0.155,
+     0.244
+    ]
+   },
+   "holdViolation": {
+    "k": 5,
+    "n": 48,
+    "rate": 0.104,
+    "ci95": [
+     0,
+     0.229
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 4,
+    "n": 40,
+    "rate": 0.1,
+    "ci95": [
+     0,
+     0.225
+    ]
+   },
+   "repairCollision": {
+    "k": 24,
+    "n": 40,
+    "rate": 0.6,
+    "ci95": [
+     0.424,
+     0.8
+    ]
+   },
+   "distressDetected": {
+    "k": 78,
+    "n": 84,
+    "rate": 0.929,
+    "ci95": [
+     0.869,
+     0.976
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 11,
+    "n": 84,
+    "rate": 0.131,
+    "ci95": [
+     0.06,
+     0.202
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 102,
+    "p50": 761,
+    "p90": 1059,
+    "ci95p50": [
+     678,
+     861
+    ],
+    "ci95p90": [
+     953,
+     1181
+    ],
+    "mean": 785
+   },
+   "keepTalking": {
+    "k": 47,
+    "n": 72,
+    "rate": 0.653,
+    "ci95": [
+     0.417,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 24,
+    "n": 48,
+    "rate": 0.5,
+    "ci95": [
+     0.25,
+     0.75
+    ]
+   },
+   "nodsPerS": 0.127,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.073,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.032,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.072,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.058,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.017,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.09,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.083,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 0.15,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.058,
+   "respondEndRule": {
+    "speak:turn_end": 302,
+    "speak:backstop_silence": 118,
+    "speak:idk_help": 31
+   },
+   "respondDecisionsUnder300ms": 0.326,
+   "respondGapP10": 190
+  },
+  "quiet|silence-640@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 571,
+    "n": 732,
+    "rate": 0.78,
+    "ci95": [
+     0.727,
+     0.833
+    ]
+   },
+   "turnCutoff": {
+    "k": 347,
+    "n": 412,
+    "rate": 0.842,
+    "ci95": [
+     0.796,
+     0.888
+    ]
+   },
+   "gap": {
+    "n": 465,
+    "p50": 580,
+    "p90": 660,
+    "ci95p50": [
+     570,
+     590
+    ],
+    "ci95p90": [
+     650,
+     670
+    ],
+    "mean": 515
+   },
+   "audible": {
+    "n": 465,
+    "p50": 2377,
+    "p90": 3364,
+    "ci95p50": [
+     2330,
+     2422
+    ],
+    "ci95p90": [
+     3212,
+     3783
+    ],
+    "mean": 2548
+   },
+   "missed2s": {
+    "k": 63,
+    "n": 528,
+    "rate": 0.119,
+    "ci95": [
+     0.095,
+     0.144
+    ]
+   },
+   "holdViolation": {
+    "k": 45,
+    "n": 48,
+    "rate": 0.938,
+    "ci95": [
+     0.875,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 4,
+    "n": 40,
+    "rate": 0.1,
+    "ci95": [
+     0.025,
+     0.175
+    ]
+   },
+   "repairCollision": {
+    "k": 1,
+    "n": 40,
+    "rate": 0.025,
+    "ci95": [
+     0,
+     0.075
+    ]
+   },
+   "distressDetected": {
+    "k": 82,
+    "n": 84,
+    "rate": 0.976,
+    "ci95": [
+     0.94,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 10,
+    "n": 84,
+    "rate": 0.119,
+    "ci95": [
+     0.071,
+     0.179
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 102,
+    "p50": 761,
+    "p90": 1059,
+    "ci95p50": [
+     678,
+     861
+    ],
+    "ci95p90": [
+     953,
+     1181
+    ],
+    "mean": 785
+   },
+   "keepTalking": {
+    "k": 47,
+    "n": 72,
+    "rate": 0.653,
+    "ci95": [
+     0.417,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 24,
+    "n": 48,
+    "rate": 0.5,
+    "ci95": [
+     0.25,
+     0.75
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.354,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.718,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.855,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.933,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.933,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.88,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.917,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.682,
+   "respondEndRule": {
+    "speak:turn_end": 458,
+    "speak:wt1_nudge": 8
+   },
+   "respondDecisionsUnder300ms": 0.124,
+   "respondGapP10": 250
+  },
+  "quiet|cascade-900@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 244,
+    "n": 732,
+    "rate": 0.333,
+    "ci95": [
+     0.253,
+     0.429
+    ]
+   },
+   "turnCutoff": {
+    "k": 194,
+    "n": 412,
+    "rate": 0.471,
+    "ci95": [
+     0.396,
+     0.541
+    ]
+   },
+   "gap": {
+    "n": 450,
+    "p50": 1330,
+    "p90": 1551,
+    "ci95p50": [
+     1320,
+     1350
+    ],
+    "ci95p90": [
+     1520,
+     1570
+    ],
+    "mean": 1255
+   },
+   "audible": {
+    "n": 450,
+    "p50": 3164,
+    "p90": 4197,
+    "ci95p50": [
+     3120,
+     3191
+    ],
+    "ci95p90": [
+     3972,
+     4451
+    ],
+    "mean": 3271
+   },
+   "missed2s": {
+    "k": 78,
+    "n": 528,
+    "rate": 0.148,
+    "ci95": [
+     0.116,
+     0.184
+    ]
+   },
+   "holdViolation": {
+    "k": 44,
+    "n": 48,
+    "rate": 0.917,
+    "ci95": [
+     0.792,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 3,
+    "n": 40,
+    "rate": 0.075,
+    "ci95": [
+     0,
+     0.15
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "distressDetected": {
+    "k": 81,
+    "n": 84,
+    "rate": 0.964,
+    "ci95": [
+     0.917,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 3,
+    "n": 84,
+    "rate": 0.036,
+    "ci95": [
+     0,
+     0.071
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 102,
+    "p50": 761,
+    "p90": 1059,
+    "ci95p50": [
+     678,
+     861
+    ],
+    "ci95p90": [
+     953,
+     1181
+    ],
+    "mean": 785
+   },
+   "keepTalking": {
+    "k": 47,
+    "n": 72,
+    "rate": 0.653,
+    "ci95": [
+     0.417,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 24,
+    "n": 48,
+    "rate": 0.5,
+    "ci95": [
+     0.25,
+     0.75
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.052,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.08,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.105,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.423,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.8,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.86,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.833,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.228,
+   "respondEndRule": {
+    "speak:turn_end": 443,
+    "speak:wt1_nudge": 8
+   },
+   "respondDecisionsUnder300ms": 0.082,
+   "respondGapP10": 1130
+  },
+  "quiet|silence-640-gov@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 535,
+    "n": 732,
+    "rate": 0.731,
+    "ci95": [
+     0.677,
+     0.785
+    ]
+   },
+   "turnCutoff": {
+    "k": 312,
+    "n": 412,
+    "rate": 0.757,
+    "ci95": [
+     0.697,
+     0.816
+    ]
+   },
+   "gap": {
+    "n": 469,
+    "p50": 580,
+    "p90": 670,
+    "ci95p50": [
+     570,
+     590
+    ],
+    "ci95p90": [
+     660,
+     670
+    ],
+    "mean": 520
+   },
+   "audible": {
+    "n": 469,
+    "p50": 2399,
+    "p90": 3396,
+    "ci95p50": [
+     2342,
+     2439
+    ],
+    "ci95p90": [
+     3267,
+     3805
+    ],
+    "mean": 2571
+   },
+   "missed2s": {
+    "k": 59,
+    "n": 528,
+    "rate": 0.112,
+    "ci95": [
+     0.089,
+     0.136
+    ]
+   },
+   "holdViolation": {
+    "k": 10,
+    "n": 48,
+    "rate": 0.208,
+    "ci95": [
+     0.104,
+     0.313
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 4,
+    "n": 40,
+    "rate": 0.1,
+    "ci95": [
+     0.025,
+     0.175
+    ]
+   },
+   "repairCollision": {
+    "k": 1,
+    "n": 40,
+    "rate": 0.025,
+    "ci95": [
+     0,
+     0.075
+    ]
+   },
+   "distressDetected": {
+    "k": 82,
+    "n": 84,
+    "rate": 0.976,
+    "ci95": [
+     0.94,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 10,
+    "n": 84,
+    "rate": 0.119,
+    "ci95": [
+     0.071,
+     0.179
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 102,
+    "p50": 761,
+    "p90": 1059,
+    "ci95p50": [
+     678,
+     861
+    ],
+    "ci95p90": [
+     953,
+     1181
+    ],
+    "mean": 785
+   },
+   "keepTalking": {
+    "k": 47,
+    "n": 72,
+    "rate": 0.653,
+    "ci95": [
+     0.417,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 24,
+    "n": 48,
+    "rate": 0.5,
+    "ci95": [
+     0.25,
+     0.75
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.344,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.718,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.855,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.933,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.933,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.72,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.5,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 0.3,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.662,
+   "respondEndRule": {
+    "speak:turn_end": 461,
+    "speak:wt1_nudge": 8,
+    "speak:backstop_silence": 1
+   },
+   "respondDecisionsUnder300ms": 0.121,
+   "respondGapP10": 259
+  },
+  "phone|stage-a@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 68,
+    "n": 732,
+    "rate": 0.093,
+    "ci95": [
+     0.05,
+     0.135
+    ]
+   },
+   "turnCutoff": {
+    "k": 48,
+    "n": 412,
+    "rate": 0.117,
+    "ci95": [
+     0.068,
+     0.168
+    ]
+   },
+   "gap": {
+    "n": 452,
+    "p50": 1090,
+    "p90": 1570,
+    "ci95p50": [
+     1040,
+     1150
+    ],
+    "ci95p90": [
+     1490,
+     1624
+    ],
+    "mean": 1094
+   },
+   "audible": {
+    "n": 452,
+    "p50": 2678,
+    "p90": 3848,
+    "ci95p50": [
+     2393,
+     2802
+    ],
+    "ci95p90": [
+     3514,
+     4102
+    ],
+    "mean": 2508
+   },
+   "missed2s": {
+    "k": 76,
+    "n": 528,
+    "rate": 0.144,
+    "ci95": [
+     0.095,
+     0.197
+    ]
+   },
+   "holdViolation": {
+    "k": 5,
+    "n": 48,
+    "rate": 0.104,
+    "ci95": [
+     0,
+     0.209
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "repairCollision": {
+    "k": 9,
+    "n": 40,
+    "rate": 0.225,
+    "ci95": [
+     0.075,
+     0.45
+    ]
+   },
+   "distressDetected": {
+    "k": 82,
+    "n": 84,
+    "rate": 0.976,
+    "ci95": [
+     0.94,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 16,
+    "n": 84,
+    "rate": 0.19,
+    "ci95": [
+     0.083,
+     0.345
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 88,
+    "p50": 1196,
+    "p90": 1846,
+    "ci95p50": [
+     1071,
+     1360
+    ],
+    "ci95p90": [
+     1610,
+     2350
+    ],
+    "mean": 1215
+   },
+   "keepTalking": {
+    "k": 51,
+    "n": 72,
+    "rate": 0.708,
+    "ci95": [
+     0.583,
+     0.819
+    ]
+   },
+   "falseYieldTV": {
+    "k": 16,
+    "n": 48,
+    "rate": 0.333,
+    "ci95": [
+     0.125,
+     0.542
+    ]
+   },
+   "nodsPerS": 0.095,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.083,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.069,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.105,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.058,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.2,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.25,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 0.1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.082,
+   "respondEndRule": {
+    "speak:turn_end": 309,
+    "speak:backstop_silence": 181,
+    "speak:idk_help": 23,
+    "speak:repair_request": 1
+   },
+   "respondDecisionsUnder300ms": 0.002,
+   "respondGapP10": 663
+  },
+  "phone|silence-640@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 632,
+    "n": 732,
+    "rate": 0.863,
+    "ci95": [
+     0.821,
+     0.899
+    ]
+   },
+   "turnCutoff": {
+    "k": 340,
+    "n": 412,
+    "rate": 0.825,
+    "ci95": [
+     0.765,
+     0.881
+    ]
+   },
+   "gap": {
+    "n": 508,
+    "p50": 460,
+    "p90": 960,
+    "ci95p50": [
+     430,
+     480
+    ],
+    "ci95p90": [
+     732,
+     1120
+    ],
+    "mean": 522
+   },
+   "audible": {
+    "n": 508,
+    "p50": 2362,
+    "p90": 3674,
+    "ci95p50": [
+     2302,
+     2417
+    ],
+    "ci95p90": [
+     3300,
+     3778
+    ],
+    "mean": 2600
+   },
+   "missed2s": {
+    "k": 20,
+    "n": 528,
+    "rate": 0.038,
+    "ci95": [
+     0.017,
+     0.063
+    ]
+   },
+   "holdViolation": {
+    "k": 48,
+    "n": 48,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 21,
+    "n": 40,
+    "rate": 0.525,
+    "ci95": [
+     0.35,
+     0.7
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "distressDetected": {
+    "k": 81,
+    "n": 84,
+    "rate": 0.964,
+    "ci95": [
+     0.929,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 39,
+    "n": 84,
+    "rate": 0.464,
+    "ci95": [
+     0.298,
+     0.655
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 85,
+    "p50": 1260,
+    "p90": 1957,
+    "ci95p50": [
+     1221,
+     1410
+    ],
+    "ci95p90": [
+     1650,
+     2415
+    ],
+    "mean": 1380
+   },
+   "keepTalking": {
+    "k": 54,
+    "n": 72,
+    "rate": 0.75,
+    "ci95": [
+     0.625,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 16,
+    "n": 48,
+    "rate": 0.333,
+    "ci95": [
+     0.125,
+     0.542
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.604,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.846,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.908,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.856,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.933,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 1,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 1,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.795,
+   "respondEndRule": {
+    "speak:turn_end": 516
+   },
+   "respondDecisionsUnder300ms": 0.112,
+   "respondGapP10": 280
+  },
+  "phone|cascade-900@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 121,
+    "n": 732,
+    "rate": 0.165,
+    "ci95": [
+     0.112,
+     0.228
+    ]
+   },
+   "turnCutoff": {
+    "k": 115,
+    "n": 412,
+    "rate": 0.279,
+    "ci95": [
+     0.204,
+     0.352
+    ]
+   },
+   "gap": {
+    "n": 228,
+    "p50": 1770,
+    "p90": 1953,
+    "ci95p50": [
+     1730,
+     1810
+    ],
+    "ci95p90": [
+     1940,
+     1980
+    ],
+    "mean": 1661
+   },
+   "audible": {
+    "n": 228,
+    "p50": 3562,
+    "p90": 4539,
+    "ci95p50": [
+     3509,
+     3639
+    ],
+    "ci95p90": [
+     4382,
+     4881
+    ],
+    "mean": 3707
+   },
+   "missed2s": {
+    "k": 300,
+    "n": 528,
+    "rate": 0.568,
+    "ci95": [
+     0.519,
+     0.616
+    ]
+   },
+   "holdViolation": {
+    "k": 47,
+    "n": 48,
+    "rate": 0.979,
+    "ci95": [
+     0.938,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 3,
+    "n": 40,
+    "rate": 0.075,
+    "ci95": [
+     0,
+     0.15
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "distressDetected": {
+    "k": 83,
+    "n": 84,
+    "rate": 0.988,
+    "ci95": [
+     0.964,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 10,
+    "n": 84,
+    "rate": 0.119,
+    "ci95": [
+     0.024,
+     0.238
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 85,
+    "p50": 1260,
+    "p90": 1957,
+    "ci95p50": [
+     1221,
+     1410
+    ],
+    "ci95p90": [
+     1650,
+     2415
+    ],
+    "mean": 1380
+   },
+   "keepTalking": {
+    "k": 54,
+    "n": 72,
+    "rate": 0.75,
+    "ci95": [
+     0.625,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 16,
+    "n": 48,
+    "rate": 0.333,
+    "ci95": [
+     0.125,
+     0.542
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.011,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.039,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.019,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.283,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.62,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 1,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.079,
+   "respondEndRule": {
+    "speak:turn_end": 419
+   },
+   "respondDecisionsUnder300ms": 0.036,
+   "respondGapP10": 1610
+  },
+  "phone|silence-640-gov@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 140,
+    "n": 732,
+    "rate": 0.191,
+    "ci95": [
+     0.14,
+     0.248
+    ]
+   },
+   "turnCutoff": {
+    "k": 114,
+    "n": 412,
+    "rate": 0.277,
+    "ci95": [
+     0.214,
+     0.34
+    ]
+   },
+   "gap": {
+    "n": 231,
+    "p50": 1260,
+    "p90": 1600,
+    "ci95p50": [
+     1200,
+     1290
+    ],
+    "ci95p90": [
+     1569,
+     1674
+    ],
+    "mean": 1250
+   },
+   "audible": {
+    "n": 231,
+    "p50": 3176,
+    "p90": 4212,
+    "ci95p50": [
+     3089,
+     3261
+    ],
+    "ci95p90": [
+     4027,
+     4778
+    ],
+    "mean": 3326
+   },
+   "missed2s": {
+    "k": 297,
+    "n": 528,
+    "rate": 0.563,
+    "ci95": [
+     0.515,
+     0.612
+    ]
+   },
+   "holdViolation": {
+    "k": 9,
+    "n": 48,
+    "rate": 0.188,
+    "ci95": [
+     0.083,
+     0.292
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 1,
+    "n": 40,
+    "rate": 0.025,
+    "ci95": [
+     0,
+     0.075
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "distressDetected": {
+    "k": 83,
+    "n": 84,
+    "rate": 0.988,
+    "ci95": [
+     0.964,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 2,
+    "n": 84,
+    "rate": 0.024,
+    "ci95": [
+     0,
+     0.071
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 85,
+    "p50": 1260,
+    "p90": 1957,
+    "ci95p50": [
+     1221,
+     1410
+    ],
+    "ci95p90": [
+     1650,
+     2415
+    ],
+    "mean": 1380
+   },
+   "keepTalking": {
+    "k": 54,
+    "n": 72,
+    "rate": 0.75,
+    "ci95": [
+     0.625,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 16,
+    "n": 48,
+    "rate": 0.333,
+    "ci95": [
+     0.125,
+     0.542
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.01,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.032,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.079,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.317,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.35,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.58,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.667,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 0.05,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.134,
+   "respondEndRule": {
+    "speak:turn_end": 527
+   },
+   "respondDecisionsUnder300ms": 0.002,
+   "respondGapP10": 1030
+  },
+  "phone|stage-a@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 56,
+    "n": 732,
+    "rate": 0.077,
+    "ci95": [
+     0.034,
+     0.128
+    ]
+   },
+   "turnCutoff": {
+    "k": 36,
+    "n": 412,
+    "rate": 0.087,
+    "ci95": [
+     0.044,
+     0.138
+    ]
+   },
+   "gap": {
+    "n": 446,
+    "p50": 345,
+    "p90": 1250,
+    "ci95p50": [
+     320,
+     380
+    ],
+    "ci95p90": [
+     821,
+     1300
+    ],
+    "mean": 480
+   },
+   "audible": {
+    "n": 446,
+    "p50": 1981,
+    "p90": 3285,
+    "ci95p50": [
+     1833,
+     2099
+    ],
+    "ci95p90": [
+     3140,
+     3542
+    ],
+    "mean": 1922
+   },
+   "missed2s": {
+    "k": 82,
+    "n": 528,
+    "rate": 0.155,
+    "ci95": [
+     0.108,
+     0.21
+    ]
+   },
+   "holdViolation": {
+    "k": 7,
+    "n": 48,
+    "rate": 0.146,
+    "ci95": [
+     0,
+     0.334
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 3,
+    "n": 40,
+    "rate": 0.075,
+    "ci95": [
+     0,
+     0.225
+    ]
+   },
+   "repairCollision": {
+    "k": 26,
+    "n": 40,
+    "rate": 0.65,
+    "ci95": [
+     0.4,
+     0.9
+    ]
+   },
+   "distressDetected": {
+    "k": 76,
+    "n": 84,
+    "rate": 0.905,
+    "ci95": [
+     0.81,
+     0.988
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 23,
+    "n": 84,
+    "rate": 0.274,
+    "ci95": [
+     0.131,
+     0.429
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 106,
+    "p50": 760,
+    "p90": 1043,
+    "ci95p50": [
+     679,
+     841
+    ],
+    "ci95p90": [
+     923,
+     1146
+    ],
+    "mean": 774
+   },
+   "keepTalking": {
+    "k": 47,
+    "n": 72,
+    "rate": 0.653,
+    "ci95": [
+     0.417,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 16,
+    "n": 48,
+    "rate": 0.333,
+    "ci95": [
+     0.125,
+     0.542
+    ]
+   },
+   "nodsPerS": 0.095,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.094,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.064,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.053,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.058,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.16,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.083,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 0.2,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.072,
+   "respondEndRule": {
+    "speak:turn_end": 324,
+    "speak:backstop_silence": 123,
+    "speak:idk_help": 31
+   },
+   "respondDecisionsUnder300ms": 0.347,
+   "respondGapP10": 140
+  },
+  "phone|silence-640@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 691,
+    "n": 732,
+    "rate": 0.944,
+    "ci95": [
+     0.916,
+     0.969
+    ]
+   },
+   "turnCutoff": {
+    "k": 394,
+    "n": 412,
+    "rate": 0.956,
+    "ci95": [
+     0.917,
+     0.988
+    ]
+   },
+   "gap": {
+    "n": 514,
+    "p50": 430,
+    "p90": 550,
+    "ci95p50": [
+     410,
+     450
+    ],
+    "ci95p90": [
+     530,
+     560
+    ],
+    "mean": 418
+   },
+   "audible": {
+    "n": 514,
+    "p50": 2278,
+    "p90": 3346,
+    "ci95p50": [
+     2240,
+     2306
+    ],
+    "ci95p90": [
+     3135,
+     3668
+    ],
+    "mean": 2481
+   },
+   "missed2s": {
+    "k": 14,
+    "n": 528,
+    "rate": 0.027,
+    "ci95": [
+     0.008,
+     0.053
+    ]
+   },
+   "holdViolation": {
+    "k": 48,
+    "n": 48,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 2,
+    "n": 40,
+    "rate": 0.05,
+    "ci95": [
+     0,
+     0.125
+    ]
+   },
+   "repairCollision": {
+    "k": 1,
+    "n": 40,
+    "rate": 0.025,
+    "ci95": [
+     0,
+     0.075
+    ]
+   },
+   "distressDetected": {
+    "k": 84,
+    "n": 84,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 13,
+    "n": 84,
+    "rate": 0.155,
+    "ci95": [
+     0.048,
+     0.31
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 106,
+    "p50": 760,
+    "p90": 1043,
+    "ci95p50": [
+     679,
+     841
+    ],
+    "ci95p90": [
+     923,
+     1146
+    ],
+    "mean": 774
+   },
+   "keepTalking": {
+    "k": 47,
+    "n": 72,
+    "rate": 0.653,
+    "ci95": [
+     0.417,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 16,
+    "n": 48,
+    "rate": 0.333,
+    "ci95": [
+     0.125,
+     0.542
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.615,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.984,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 1,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.99,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 1,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 1,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 1,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.871,
+   "respondEndRule": {
+    "speak:turn_end": 514
+   },
+   "respondDecisionsUnder300ms": 0.126,
+   "respondGapP10": 270
+  },
+  "phone|cascade-900@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 199,
+    "n": 732,
+    "rate": 0.272,
+    "ci95": [
+     0.195,
+     0.36
+    ]
+   },
+   "turnCutoff": {
+    "k": 167,
+    "n": 412,
+    "rate": 0.405,
+    "ci95": [
+     0.32,
+     0.488
+    ]
+   },
+   "gap": {
+    "n": 434,
+    "p50": 1350,
+    "p90": 1560,
+    "ci95p50": [
+     1335,
+     1370
+    ],
+    "ci95p90": [
+     1530,
+     1580
+    ],
+    "mean": 1336
+   },
+   "audible": {
+    "n": 434,
+    "p50": 3184,
+    "p90": 4243,
+    "ci95p50": [
+     3150,
+     3221
+    ],
+    "ci95p90": [
+     3955,
+     4485
+    ],
+    "mean": 3350
+   },
+   "missed2s": {
+    "k": 94,
+    "n": 528,
+    "rate": 0.178,
+    "ci95": [
+     0.125,
+     0.233
+    ]
+   },
+   "holdViolation": {
+    "k": 43,
+    "n": 48,
+    "rate": 0.896,
+    "ci95": [
+     0.792,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 4,
+    "n": 40,
+    "rate": 0.1,
+    "ci95": [
+     0,
+     0.2
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "distressDetected": {
+    "k": 84,
+    "n": 84,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 0,
+    "n": 84,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 106,
+    "p50": 760,
+    "p90": 1043,
+    "ci95p50": [
+     679,
+     841
+    ],
+    "ci95p90": [
+     923,
+     1146
+    ],
+    "mean": 774
+   },
+   "keepTalking": {
+    "k": 47,
+    "n": 72,
+    "rate": 0.653,
+    "ci95": [
+     0.417,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 16,
+    "n": 48,
+    "rate": 0.333,
+    "ci95": [
+     0.125,
+     0.542
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.016,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 0.026,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.356,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 0.7,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.83,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.833,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.165,
+   "respondEndRule": {
+    "speak:turn_end": 434
+   },
+   "respondDecisionsUnder300ms": 0.028,
+   "respondGapP10": 1190
+  },
+  "phone|silence-640-gov@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 646,
+    "n": 732,
+    "rate": 0.883,
+    "ci95": [
+     0.839,
+     0.918
+    ]
+   },
+   "turnCutoff": {
+    "k": 351,
+    "n": 412,
+    "rate": 0.852,
+    "ci95": [
+     0.786,
+     0.908
+    ]
+   },
+   "gap": {
+    "n": 518,
+    "p50": 440,
+    "p90": 550,
+    "ci95p50": [
+     415,
+     460
+    ],
+    "ci95p90": [
+     540,
+     570
+    ],
+    "mean": 428
+   },
+   "audible": {
+    "n": 518,
+    "p50": 2288,
+    "p90": 3385,
+    "ci95p50": [
+     2249,
+     2309
+    ],
+    "ci95p90": [
+     3134,
+     3664
+    ],
+    "mean": 2492
+   },
+   "missed2s": {
+    "k": 10,
+    "n": 528,
+    "rate": 0.019,
+    "ci95": [
+     0,
+     0.045
+    ]
+   },
+   "holdViolation": {
+    "k": 6,
+    "n": 48,
+    "rate": 0.125,
+    "ci95": [
+     0,
+     0.292
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 1,
+    "n": 40,
+    "rate": 0.025,
+    "ci95": [
+     0,
+     0.075
+    ]
+   },
+   "repairCollision": {
+    "k": 1,
+    "n": 40,
+    "rate": 0.025,
+    "ci95": [
+     0,
+     0.075
+    ]
+   },
+   "distressDetected": {
+    "k": 84,
+    "n": 84,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 12,
+    "n": 84,
+    "rate": 0.143,
+    "ci95": [
+     0.036,
+     0.298
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 106,
+    "p50": 760,
+    "p90": 1043,
+    "ci95p50": [
+     679,
+     841
+    ],
+    "ci95p90": [
+     923,
+     1146
+    ],
+    "mean": 774
+   },
+   "keepTalking": {
+    "k": 47,
+    "n": 72,
+    "rate": 0.653,
+    "ci95": [
+     0.417,
+     0.861
+    ]
+   },
+   "falseYieldTV": {
+    "k": 16,
+    "n": 48,
+    "rate": 0.333,
+    "ci95": [
+     0.125,
+     0.542
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 96,
+     "cutoff": 0.594,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 188,
+     "cutoff": 0.979,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 152,
+     "cutoff": 1,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 104,
+     "cutoff": 0.99,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 60,
+     "cutoff": 1,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 100,
+     "cutoff": 0.81,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 12,
+     "cutoff": 0.417,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 20,
+     "cutoff": 0.2,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.842,
+   "respondEndRule": {
+    "speak:turn_end": 518
+   },
+   "respondDecisionsUnder300ms": 0.11,
+   "respondGapP10": 290
+  },
+  "sttReal+slow+phone|stage-a@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 195,
+    "n": 732,
+    "rate": 0.266,
+    "ci95": [
+     0.202,
+     0.319
+    ]
+   },
+   "turnCutoff": {
+    "k": 122,
+    "n": 412,
+    "rate": 0.296,
+    "ci95": [
+     0.223,
+     0.367
+    ]
+   },
+   "gap": {
+    "n": 439,
+    "p50": 1140,
+    "p90": 1570,
+    "ci95p50": [
+     1060,
+     1180
+    ],
+    "ci95p90": [
+     1490,
+     1631
+    ],
+    "mean": 1116
+   },
+   "audible": {
+    "n": 439,
+    "p50": 2814,
+    "p90": 4127,
+    "ci95p50": [
+     2675,
+     3001
+    ],
+    "ci95p90": [
+     3881,
+     4277
+    ],
+    "mean": 2722
+   },
+   "missed2s": {
+    "k": 89,
+    "n": 528,
+    "rate": 0.169,
+    "ci95": [
+     0.117,
+     0.222
+    ]
+   },
+   "holdViolation": {
+    "k": 24,
+    "n": 48,
+    "rate": 0.5,
+    "ci95": [
+     0.313,
+     0.688
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 10,
+    "n": 40,
+    "rate": 0.25,
+    "ci95": [
+     0.075,
+     0.475
+    ]
+   },
+   "repairCollision": {
+    "k": 19,
+    "n": 40,
+    "rate": 0.475,
+    "ci95": [
+     0.25,
+     0.725
+    ]
+   },
+   "distressDetected": {
+    "k": 65,
+    "n": 84,
+    "rate": 0.774,
+    "ci95": [
+     0.679,
+     0.857
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 27,
+    "n": 84,
+    "rate": 0.321,
+    "ci95": [
+     0.19,
+     0.476
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 88,
+    "p50": 1180,
+    "p90": 1846,
+    "ci95p50": [
+     1061,
+     1345
+    ],
+    "ci95p90": [
+     1610,
+     2350
+    ],
+    "mean": 1204
+   },
+   "keepTalking": {
+    "k": 45,
+    "n": 72,
+    "rate": 0.625,
+    "ci95": [
+     0.486,
+     0.75
+    ]
+   },
+   "falseYieldTV": {
+    "k": 16,
+    "n": 48,
+    "rate": 0.333,
+    "ci95": [
+     0.125,
+     0.542
+    ]
+   },
+   "nodsPerS": 0.098,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 52,
+     "cutoff": 0.115,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 100,
+     "cutoff": 0.22,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 242,
+     "cutoff": 0.256,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 92,
+     "cutoff": 0.196,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 102,
+     "cutoff": 0.255,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 114,
+     "cutoff": 0.36,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 30,
+     "cutoff": 0.667,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.197,
+   "respondEndRule": {
+    "speak:turn_end": 250,
+    "speak:backstop_silence": 230,
+    "speak:idk_help": 21,
+    "speak:repair_request": 1
+   },
+   "respondDecisionsUnder300ms": 0.004,
+   "respondGapP10": 690
+  },
+  "sttReal+slow+phone|silence-640@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 684,
+    "n": 732,
+    "rate": 0.934,
+    "ci95": [
+     0.9,
+     0.959
+    ]
+   },
+   "turnCutoff": {
+    "k": 373,
+    "n": 412,
+    "rate": 0.905,
+    "ci95": [
+     0.859,
+     0.944
+    ]
+   },
+   "gap": {
+    "n": 493,
+    "p50": 480,
+    "p90": 1070,
+    "ci95p50": [
+     450,
+     510
+    ],
+    "ci95p90": [
+     960,
+     1192
+    ],
+    "mean": 566
+   },
+   "audible": {
+    "n": 493,
+    "p50": 2399,
+    "p90": 3669,
+    "ci95p50": [
+     2332,
+     2503
+    ],
+    "ci95p90": [
+     3456,
+     3866
+    ],
+    "mean": 2643
+   },
+   "missed2s": {
+    "k": 35,
+    "n": 528,
+    "rate": 0.066,
+    "ci95": [
+     0.036,
+     0.099
+    ]
+   },
+   "holdViolation": {
+    "k": 48,
+    "n": 48,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 21,
+    "n": 40,
+    "rate": 0.525,
+    "ci95": [
+     0.375,
+     0.65
+    ]
+   },
+   "repairCollision": {
+    "k": 10,
+    "n": 40,
+    "rate": 0.25,
+    "ci95": [
+     0.1,
+     0.425
+    ]
+   },
+   "distressDetected": {
+    "k": 65,
+    "n": 84,
+    "rate": 0.774,
+    "ci95": [
+     0.69,
+     0.857
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 49,
+    "n": 84,
+    "rate": 0.583,
+    "ci95": [
+     0.429,
+     0.738
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 85,
+    "p50": 1250,
+    "p90": 1957,
+    "ci95p50": [
+     1206,
+     1410
+    ],
+    "ci95p90": [
+     1650,
+     2415
+    ],
+    "mean": 1370
+   },
+   "keepTalking": {
+    "k": 46,
+    "n": 72,
+    "rate": 0.639,
+    "ci95": [
+     0.5,
+     0.75
+    ]
+   },
+   "falseYieldTV": {
+    "k": 16,
+    "n": 48,
+    "rate": 0.333,
+    "ci95": [
+     0.125,
+     0.542
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 52,
+     "cutoff": 0.827,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 100,
+     "cutoff": 0.94,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 242,
+     "cutoff": 0.917,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 92,
+     "cutoff": 0.935,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 102,
+     "cutoff": 0.951,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 114,
+     "cutoff": 0.991,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 30,
+     "cutoff": 0.967,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.897,
+   "respondEndRule": {
+    "speak:turn_end": 500
+   },
+   "respondDecisionsUnder300ms": 0.134,
+   "respondGapP10": 270
+  },
+  "sttReal+slow+phone|cascade-900@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 196,
+    "n": 732,
+    "rate": 0.268,
+    "ci95": [
+     0.201,
+     0.346
+    ]
+   },
+   "turnCutoff": {
+    "k": 183,
+    "n": 412,
+    "rate": 0.444,
+    "ci95": [
+     0.362,
+     0.527
+    ]
+   },
+   "gap": {
+    "n": 198,
+    "p50": 1760,
+    "p90": 1950,
+    "ci95p50": [
+     1710,
+     1800
+    ],
+    "ci95p90": [
+     1934,
+     1970
+    ],
+    "mean": 1663
+   },
+   "audible": {
+    "n": 198,
+    "p50": 3618,
+    "p90": 4755,
+    "ci95p50": [
+     3555,
+     3717
+    ],
+    "ci95p90": [
+     4450,
+     5023
+    ],
+    "mean": 3765
+   },
+   "missed2s": {
+    "k": 330,
+    "n": 528,
+    "rate": 0.625,
+    "ci95": [
+     0.57,
+     0.676
+    ]
+   },
+   "holdViolation": {
+    "k": 48,
+    "n": 48,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 18,
+    "n": 40,
+    "rate": 0.45,
+    "ci95": [
+     0.225,
+     0.675
+    ]
+   },
+   "repairCollision": {
+    "k": 8,
+    "n": 40,
+    "rate": 0.2,
+    "ci95": [
+     0.05,
+     0.4
+    ]
+   },
+   "distressDetected": {
+    "k": 66,
+    "n": 84,
+    "rate": 0.786,
+    "ci95": [
+     0.69,
+     0.869
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 32,
+    "n": 84,
+    "rate": 0.381,
+    "ci95": [
+     0.238,
+     0.524
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 85,
+    "p50": 1250,
+    "p90": 1957,
+    "ci95p50": [
+     1206,
+     1410
+    ],
+    "ci95p90": [
+     1650,
+     2415
+    ],
+    "mean": 1370
+   },
+   "keepTalking": {
+    "k": 46,
+    "n": 72,
+    "rate": 0.639,
+    "ci95": [
+     0.5,
+     0.75
+    ]
+   },
+   "falseYieldTV": {
+    "k": 16,
+    "n": 48,
+    "rate": 0.333,
+    "ci95": [
+     0.125,
+     0.542
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 52,
+     "cutoff": 0,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 100,
+     "cutoff": 0.04,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 242,
+     "cutoff": 0.045,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 92,
+     "cutoff": 0.283,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 102,
+     "cutoff": 0.569,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 114,
+     "cutoff": 0.588,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 30,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.105,
+   "respondEndRule": {
+    "speak:turn_end": 350
+   },
+   "respondDecisionsUnder300ms": 0.031,
+   "respondGapP10": 1599
+  },
+  "sttReal+slow+phone|silence-640-gov@D4": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 290,
+    "n": 732,
+    "rate": 0.396,
+    "ci95": [
+     0.327,
+     0.48
+    ]
+   },
+   "turnCutoff": {
+    "k": 208,
+    "n": 412,
+    "rate": 0.505,
+    "ci95": [
+     0.432,
+     0.583
+    ]
+   },
+   "gap": {
+    "n": 230,
+    "p50": 1290,
+    "p90": 1650,
+    "ci95p50": [
+     1260,
+     1310
+    ],
+    "ci95p90": [
+     1580,
+     1768
+    ],
+    "mean": 1282
+   },
+   "audible": {
+    "n": 230,
+    "p50": 3178,
+    "p90": 4315,
+    "ci95p50": [
+     3139,
+     3273
+    ],
+    "ci95p90": [
+     4106,
+     4767
+    ],
+    "mean": 3388
+   },
+   "missed2s": {
+    "k": 298,
+    "n": 528,
+    "rate": 0.564,
+    "ci95": [
+     0.519,
+     0.61
+    ]
+   },
+   "holdViolation": {
+    "k": 17,
+    "n": 48,
+    "rate": 0.354,
+    "ci95": [
+     0.208,
+     0.521
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 2,
+    "n": 40,
+    "rate": 0.05,
+    "ci95": [
+     0,
+     0.125
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 40,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "distressDetected": {
+    "k": 67,
+    "n": 84,
+    "rate": 0.798,
+    "ci95": [
+     0.702,
+     0.881
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 14,
+    "n": 84,
+    "rate": 0.167,
+    "ci95": [
+     0.083,
+     0.25
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 85,
+    "p50": 1250,
+    "p90": 1957,
+    "ci95p50": [
+     1206,
+     1410
+    ],
+    "ci95p90": [
+     1650,
+     2415
+    ],
+    "mean": 1370
+   },
+   "keepTalking": {
+    "k": 46,
+    "n": 72,
+    "rate": 0.639,
+    "ci95": [
+     0.5,
+     0.75
+    ]
+   },
+   "falseYieldTV": {
+    "k": 16,
+    "n": 48,
+    "rate": 0.333,
+    "ci95": [
+     0.125,
+     0.542
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 52,
+     "cutoff": 0,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 100,
+     "cutoff": 0.08,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 242,
+     "cutoff": 0.252,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 92,
+     "cutoff": 0.391,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 102,
+     "cutoff": 0.765,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 114,
+     "cutoff": 0.842,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 30,
+     "cutoff": 0.367,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.188,
+   "respondEndRule": {
+    "speak:turn_end": 506
+   },
+   "respondDecisionsUnder300ms": 0.004,
+   "respondGapP10": 1080
+  },
+  "sttReal+slow+phone|stage-a@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 238,
+    "n": 732,
+    "rate": 0.325,
+    "ci95": [
+     0.238,
+     0.408
+    ]
+   },
+   "turnCutoff": {
+    "k": 123,
+    "n": 412,
+    "rate": 0.299,
+    "ci95": [
+     0.235,
+     0.371
+    ]
+   },
+   "gap": {
+    "n": 415,
+    "p50": 370,
+    "p90": 1276,
+    "ci95p50": [
+     340,
+     430
+    ],
+    "ci95p90": [
+     1218,
+     1320
+    ],
+    "mean": 505
+   },
+   "audible": {
+    "n": 415,
+    "p50": 2085,
+    "p90": 3284,
+    "ci95p50": [
+     1982,
+     2189
+    ],
+    "ci95p90": [
+     3149,
+     3550
+    ],
+    "mean": 2020
+   },
+   "missed2s": {
+    "k": 113,
+    "n": 528,
+    "rate": 0.214,
+    "ci95": [
+     0.163,
+     0.269
+    ]
+   },
+   "holdViolation": {
+    "k": 21,
+    "n": 48,
+    "rate": 0.438,
+    "ci95": [
+     0.25,
+     0.625
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 15,
+    "n": 40,
+    "rate": 0.375,
+    "ci95": [
+     0.125,
+     0.65
+    ]
+   },
+   "repairCollision": {
+    "k": 36,
+    "n": 40,
+    "rate": 0.9,
+    "ci95": [
+     0.75,
+     1
+    ]
+   },
+   "distressDetected": {
+    "k": 66,
+    "n": 84,
+    "rate": 0.786,
+    "ci95": [
+     0.69,
+     0.881
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 29,
+    "n": 84,
+    "rate": 0.345,
+    "ci95": [
+     0.214,
+     0.5
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 106,
+    "p50": 756,
+    "p90": 1043,
+    "ci95p50": [
+     670,
+     836
+    ],
+    "ci95p90": [
+     923,
+     1146
+    ],
+    "mean": 768
+   },
+   "keepTalking": {
+    "k": 39,
+    "n": 72,
+    "rate": 0.542,
+    "ci95": [
+     0.333,
+     0.722
+    ]
+   },
+   "falseYieldTV": {
+    "k": 16,
+    "n": 48,
+    "rate": 0.333,
+    "ci95": [
+     0.125,
+     0.542
+    ]
+   },
+   "nodsPerS": 0.098,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 52,
+     "cutoff": 0.288,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 100,
+     "cutoff": 0.47,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 242,
+     "cutoff": 0.351,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 92,
+     "cutoff": 0.239,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 102,
+     "cutoff": 0.216,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 114,
+     "cutoff": 0.263,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 30,
+     "cutoff": 0.567,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.335,
+   "respondEndRule": {
+    "speak:turn_end": 262,
+    "speak:backstop_silence": 182,
+    "speak:idk_help": 23
+   },
+   "respondDecisionsUnder300ms": 0.317,
+   "respondGapP10": 126
+  },
+  "sttReal+slow+phone|silence-640@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 718,
+    "n": 732,
+    "rate": 0.981,
+    "ci95": [
+     0.958,
+     0.996
+    ]
+   },
+   "turnCutoff": {
+    "k": 399,
+    "n": 412,
+    "rate": 0.968,
+    "ci95": [
+     0.932,
+     0.995
+    ]
+   },
+   "gap": {
+    "n": 514,
+    "p50": 430,
+    "p90": 550,
+    "ci95p50": [
+     410,
+     450
+    ],
+    "ci95p90": [
+     530,
+     560
+    ],
+    "mean": 417
+   },
+   "audible": {
+    "n": 514,
+    "p50": 2272,
+    "p90": 3205,
+    "ci95p50": [
+     2230,
+     2310
+    ],
+    "ci95p90": [
+     3103,
+     3658
+    ],
+    "mean": 2463
+   },
+   "missed2s": {
+    "k": 14,
+    "n": 528,
+    "rate": 0.027,
+    "ci95": [
+     0.008,
+     0.047
+    ]
+   },
+   "holdViolation": {
+    "k": 48,
+    "n": 48,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 14,
+    "n": 40,
+    "rate": 0.35,
+    "ci95": [
+     0.125,
+     0.6
+    ]
+   },
+   "repairCollision": {
+    "k": 14,
+    "n": 40,
+    "rate": 0.35,
+    "ci95": [
+     0.125,
+     0.6
+    ]
+   },
+   "distressDetected": {
+    "k": 68,
+    "n": 84,
+    "rate": 0.81,
+    "ci95": [
+     0.726,
+     0.881
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 24,
+    "n": 84,
+    "rate": 0.286,
+    "ci95": [
+     0.179,
+     0.429
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 106,
+    "p50": 756,
+    "p90": 1043,
+    "ci95p50": [
+     670,
+     836
+    ],
+    "ci95p90": [
+     923,
+     1146
+    ],
+    "mean": 768
+   },
+   "keepTalking": {
+    "k": 39,
+    "n": 72,
+    "rate": 0.542,
+    "ci95": [
+     0.333,
+     0.722
+    ]
+   },
+   "falseYieldTV": {
+    "k": 16,
+    "n": 48,
+    "rate": 0.333,
+    "ci95": [
+     0.125,
+     0.542
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 52,
+     "cutoff": 0.942,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 100,
+     "cutoff": 1,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 242,
+     "cutoff": 0.979,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 92,
+     "cutoff": 0.946,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 102,
+     "cutoff": 0.99,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 114,
+     "cutoff": 1,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 30,
+     "cutoff": 1,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.969,
+   "respondEndRule": {
+    "speak:turn_end": 514
+   },
+   "respondDecisionsUnder300ms": 0.14,
+   "respondGapP10": 270
+  },
+  "sttReal+slow+phone|cascade-900@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 355,
+    "n": 732,
+    "rate": 0.485,
+    "ci95": [
+     0.423,
+     0.56
+    ]
+   },
+   "turnCutoff": {
+    "k": 264,
+    "n": 412,
+    "rate": 0.641,
+    "ci95": [
+     0.568,
+     0.721
+    ]
+   },
+   "gap": {
+    "n": 424,
+    "p50": 1350,
+    "p90": 1560,
+    "ci95p50": [
+     1330,
+     1360
+    ],
+    "ci95p90": [
+     1520,
+     1600
+    ],
+    "mean": 1322
+   },
+   "audible": {
+    "n": 424,
+    "p50": 3182,
+    "p90": 4327,
+    "ci95p50": [
+     3134,
+     3227
+    ],
+    "ci95p90": [
+     4044,
+     4533
+    ],
+    "mean": 3372
+   },
+   "missed2s": {
+    "k": 104,
+    "n": 528,
+    "rate": 0.197,
+    "ci95": [
+     0.144,
+     0.254
+    ]
+   },
+   "holdViolation": {
+    "k": 43,
+    "n": 48,
+    "rate": 0.896,
+    "ci95": [
+     0.792,
+     1
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 19,
+    "n": 40,
+    "rate": 0.475,
+    "ci95": [
+     0.25,
+     0.725
+    ]
+   },
+   "repairCollision": {
+    "k": 11,
+    "n": 40,
+    "rate": 0.275,
+    "ci95": [
+     0.075,
+     0.475
+    ]
+   },
+   "distressDetected": {
+    "k": 68,
+    "n": 84,
+    "rate": 0.81,
+    "ci95": [
+     0.726,
+     0.881
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 16,
+    "n": 84,
+    "rate": 0.19,
+    "ci95": [
+     0.119,
+     0.274
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 106,
+    "p50": 756,
+    "p90": 1043,
+    "ci95p50": [
+     670,
+     836
+    ],
+    "ci95p90": [
+     923,
+     1146
+    ],
+    "mean": 768
+   },
+   "keepTalking": {
+    "k": 39,
+    "n": 72,
+    "rate": 0.542,
+    "ci95": [
+     0.333,
+     0.722
+    ]
+   },
+   "falseYieldTV": {
+    "k": 16,
+    "n": 48,
+    "rate": 0.333,
+    "ci95": [
+     0.125,
+     0.542
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 52,
+     "cutoff": 0.038,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 100,
+     "cutoff": 0.04,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 242,
+     "cutoff": 0.372,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 92,
+     "cutoff": 0.707,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 102,
+     "cutoff": 0.745,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 114,
+     "cutoff": 0.789,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 30,
+     "cutoff": 0.933,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.251,
+   "respondEndRule": {
+    "speak:turn_end": 424
+   },
+   "respondDecisionsUnder300ms": 0.017,
+   "respondGapP10": 1170
+  },
+  "sttReal+slow+phone|silence-640-gov@FAST": {
+   "streams": 960,
+   "cutoffThinking": {
+    "k": 651,
+    "n": 732,
+    "rate": 0.889,
+    "ci95": [
+     0.847,
+     0.923
+    ]
+   },
+   "turnCutoff": {
+    "k": 355,
+    "n": 412,
+    "rate": 0.862,
+    "ci95": [
+     0.801,
+     0.913
+    ]
+   },
+   "gap": {
+    "n": 502,
+    "p50": 440,
+    "p90": 560,
+    "ci95p50": [
+     420,
+     460
+    ],
+    "ci95p90": [
+     540,
+     572
+    ],
+    "mean": 427
+   },
+   "audible": {
+    "n": 502,
+    "p50": 2270,
+    "p90": 3290,
+    "ci95p50": [
+     2227,
+     2309
+    ],
+    "ci95p90": [
+     3132,
+     3683
+    ],
+    "mean": 2482
+   },
+   "missed2s": {
+    "k": 26,
+    "n": 528,
+    "rate": 0.049,
+    "ci95": [
+     0.032,
+     0.068
+    ]
+   },
+   "holdViolation": {
+    "k": 13,
+    "n": 48,
+    "rate": 0.271,
+    "ci95": [
+     0.125,
+     0.438
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 12,
+    "n": 40,
+    "rate": 0.3,
+    "ci95": [
+     0.075,
+     0.575
+    ]
+   },
+   "repairCollision": {
+    "k": 13,
+    "n": 40,
+    "rate": 0.325,
+    "ci95": [
+     0.1,
+     0.576
+    ]
+   },
+   "distressDetected": {
+    "k": 68,
+    "n": 84,
+    "rate": 0.81,
+    "ci95": [
+     0.726,
+     0.881
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 23,
+    "n": 84,
+    "rate": 0.274,
+    "ci95": [
+     0.155,
+     0.417
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 106,
+    "p50": 756,
+    "p90": 1043,
+    "ci95p50": [
+     670,
+     836
+    ],
+    "ci95p90": [
+     923,
+     1146
+    ],
+    "mean": 768
+   },
+   "keepTalking": {
+    "k": 39,
+    "n": 72,
+    "rate": 0.542,
+    "ci95": [
+     0.333,
+     0.722
+    ]
+   },
+   "falseYieldTV": {
+    "k": 16,
+    "n": 48,
+    "rate": 0.333,
+    "ci95": [
+     0.125,
+     0.542
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 52,
+     "cutoff": 0.885,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 100,
+     "cutoff": 0.95,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 242,
+     "cutoff": 0.946,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 92,
+     "cutoff": 0.891,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 102,
+     "cutoff": 0.922,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 114,
+     "cutoff": 0.825,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 30,
+     "cutoff": 0.367,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": 0.913,
+   "respondEndRule": {
+    "speak:turn_end": 517
+   },
+   "respondDecisionsUnder300ms": 0.128,
+   "respondGapP10": 280
+  }
+ },
+ "runtimeHashNote": "pre-fix tree (workers loaded it at start; the end-of-run hash was taken after the critique fixes landed and is replaced here)"
+}

@@ -447,7 +447,12 @@ test("adapter: stage A by default; the trained engine only with the flag AND a m
   const fresh = eng.tick({ ...t0, t: t0.t + 50 });
   assert.equal(fresh.pComplete, 0.97);
   assert.equal(fresh.engine.stage, "B");
-  assert.equal(eng.latestAcoustic().pComplete, 0.97, "vouches for the unseen tail through G5");
+  // a features-only model (audioMs 0) never vouches for unseen audio (TaxilaFDB 2026-10-04); one that hears audio does
+  assert.equal(eng.latestAcoustic(), null, "features-only: no G5 vouching");
+  const heard = new TrainedEngine({ ...model, audioMs: 8000 });
+  heard.reset({});
+  await heard.infer(t0);
+  assert.equal(heard.latestAcoustic().pComplete, 0.97, "an audio model vouches for the unseen tail through G5");
   assert.equal(eng.tick({ ...t0, t: t0.t + 2000 }).reasons[0], "fallback_rules", "stale again → stage A");
 });
 

@@ -32,9 +32,9 @@ import type {
 } from "./engine.ts";
 import {
   BACKSTOP_HOLD_PH, BACKSTOP_HOLD_STRETCH, CONTEXT, CUT_IN, FALLBACK, HOLD, HORIZON_ACOUSTIC_P, HORIZON_MS, OVERLAP, RATE,
-  REVOCABLE_MS, SAFETY, VERDICT, ACOUSTIC_FRESH_MS, FIRST_TEXT_P90,
+  REVOCABLE_MS, SAFETY, VERDICT, ACOUSTIC_FRESH_MS, FIRST_TEXT_P90, TURN_PACE,
 } from "./config.ts";
-import { exchangeOf, holdProfile } from "./engineRules.ts";
+import { exchangeOf, holdProfile, verdictAnchor } from "./engineRules.ts";
 import { overlapKind } from "./turnPolicy.ts";
 
 export type GovernorEvent =
@@ -137,6 +137,8 @@ export class Governor {
     this.childSpoke = carryFrom !== null;
     this.quarantined = false;
     this.holdGrantedHash = null;
+    this.turnPauseMs = 0;
+    this.prevSil = null;
     this.events.push({ kind: "turn_begin", at, carryFrom, turnSeq: this.turnSeq });
   }
 
@@ -237,6 +239,11 @@ export class Governor {
     const audioAct = (x: EngineDecision) => x.action === "SPEAK" || x.action === "CUT_IN" || (x.action === "BACKCHANNEL" && x.detail?.action === "BACKCHANNEL" && x.detail.kind !== "nod");
     const sil = c.silenceRunMs;
     const herAudible = HER_FLOOR.has(ph);
+    // (a granted hold's silence is not pace: the child asked for it)
+    if (ph === "child_turn") {
+      if (c.voicing && this.prevSil !== null && this.prevSil >= TURN_PACE.minMs) this.turnPauseMs = Math.max(this.turnPauseMs, this.prevSil);
+      this.prevSil = c.voicing ? null : sil;
+    } else this.prevSil = null;
 
     // ── G1 SAFETY (sticky) ──
     if (tick.safety.distress) {
@@ -373,7 +380,8 @@ export class Governor {
             const closed = tick.context.exchange === "closed_answer";
             // a repair still open (or no words): a verdict-free prompt, never an uptake of the abandoned value (law 3;
             // TaxilaFDB train: "आठ पैर … नहीं नहीं [छह dropped by the STT] पैर" got a verdict on 8 from the backstop, 3/40)
-            const fs = m.repairOpen || !text ? "prompt" : closed && m.values.length ? "uptake" : "body";
+            // unreadable newest words (another script): a verdict-free prompt to say it again, never an uptake of them
+            const fs = m.repairOpen || !text || m.unreadable ? "prompt" : closed && m.values.length ? "uptake" : "body";
             veto("SPEAK", "backstop", { action: "SPEAK", reason: "backstop_silence", firstSound: fs, verdictNotBefore: null });
           }
         }
@@ -400,7 +408,8 @@ export class Governor {
     // ── G7 (stamp half): a closed-answer SPEAK carries its verdict gate ──
     if (d.action === "SPEAK" && d.detail?.action === "SPEAK" && d.detail.firstSound === "prompt" && m.repairOpen) d = { ...d, detail: { ...d.detail, verdictNotBefore: null } };
     else if (d.action === "SPEAK" && d.detail?.action === "SPEAK" && d.detail.reason !== "safeguard" && tick.context.exchange === "closed_answer" && m.lastValueAgeMs !== null && m.values.length) {
-      const vnb = t - m.lastValueAgeMs + VERDICT.delayMs;
+      // anchored on the later of the value's end and the child's last voice (verdictAnchor; critique 2026-10-04)
+      const vnb = (verdictAnchor(tick) as number) + Math.max(VERDICT.delayMs, Math.min(TURN_PACE.verdictCapMs, this.paceMs()));
       if (d.detail.verdictNotBefore === null || d.detail.verdictNotBefore < vnb) d = { ...d, detail: { ...d.detail, verdictNotBefore: vnb } };
     }
     return this.finish(tick, d);
@@ -411,7 +420,16 @@ export class Governor {
     const ex = exchangeOf(tick);
     const { p50, p90 } = holdProfile(tick);
     const base = CONTEXT[ex].backstopMs(p50, p90, tick.markers.values.length > 0);
-    return base * (this.stretch(tick) ? BACKSTOP_HOLD_STRETCH : 1);
+    const b = base * (this.stretch(tick) ? BACKSTOP_HOLD_STRETCH : 1);
+    // within-turn pace: a child who already paused this long and went on is given at least PACE_K x that pause again
+    // (critique 2026-10-04: with every pause x1.6, the absolute 2.5-3.5 s wait-time-II backstop cut 11-12% of
+    // mid-explanation and drift pauses; the band prior only adapts after session 3)
+    return Math.max(b, this.paceMs());
+  }
+
+  /** PACE_K x the longest pause this turn after which the child resumed (0 until one is seen), capped. */
+  paceMs(): number {
+    return Math.min(TURN_PACE.capMs, TURN_PACE.k * this.turnPauseMs);
   }
 
   private stretch(tick: EngineTick): boolean {
@@ -422,6 +440,9 @@ export class Governor {
   }
 
   private lastGovernedPH: number | null = null;
+  /** The longest silence this turn that ended with the child voicing again (within-turn pace), and last tick's silence. */
+  private turnPauseMs = 0;
+  private prevSil: number | null = null;
 
   /** Each listed CUT_IN reason's own condition (§3.4). */
   private cutInCondition(tick: EngineTick, r: string): boolean {

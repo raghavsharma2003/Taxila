@@ -86,6 +86,9 @@ const PROJ_CLOSE = /(?:^|\s)(?:तो|तब|to|toh|tab|then)(?=\s|$)/u;
 /** Address / politeness tokens that may trail a request without adding content (TaxilaFDB F5: "एक मिनट दीदी"). */
 export const VOCATIVE = /^(?:दीदी|दी|didi|di|मैम|मैडम|ma'?am|mam|madam|miss|teacher|टीचर|sir|सर|please|plz|प्लीज़|प्लीज|जी|ji|भैया|bhaiya)$/u;
 
+/** Particles that may follow "पता नहीं" without continuing the turn ("पता नहीं यार", "नहीं पता ना", "i don't know really"). */
+const IDK_TAIL_OK = /^(?:यार|yaar|yar|ना|na|naa|bilkul|बिल्कुल|really|sach|सच|mujhe|मुझे|hai|है|tha|था)$/u;
+
 /** The text after the last explicit hold request: the part the end-of-turn scorer should read (finding F-HOLD, §2 of the write-up). */
 export function afterHold(text) {
   const toks = normText(text).split(" ").filter(Boolean);
@@ -136,8 +139,20 @@ export function understand(text, ctx = {}) {
   const asks = /[?？]\s*$/.test(raw.trim()) || (QWORD.test(t) && YIELD_Q_TAIL.test(t) && toks.length <= 12) || /(?:^|\s)(?:matlab|मतलब)\s*[?？]\s*$/u.test(raw);
   const lastValue = vals.length ? vals[vals.length - 1].v : null;
   const mis = (ctx.misconceptionValues || []).find((v) => lastValue !== null && String(v) === lastValue) ?? null;
+  // "I don't know" ends the turn only at the TAIL: after "पता नहीं" the child may keep going ("पता नहीं … कभी कभी लगता है
+  // मैं ना रहूं"), and an IDK anywhere in the turn let idk_help SPEAK on any later micro-pause (critique 2026-10-04: TaxilaFDB
+  // test F10 after_pause, a reply committed 30 ms after the child's last word, before the distress phrase was visible).
+  // `idkAny` keeps the old reading for the Director's quiet context.
+  const idkAny = IDK.test(t);
+  let idk = false;
+  if (idkAny) {
+    const all = [...t.matchAll(new RegExp(IDK.source, "gu"))];
+    const last = all[all.length - 1];
+    const rest = t.slice(last.index + last[0].length).split(" ").filter(Boolean);
+    idk = rest.every((w) => VOCATIVE.test(w) || IDK_TAIL_OK.test(w));
+  }
   return {
-    safety, stop: wantsToStop(raw), holdTail, repairOpen, repaired, asks, idk: IDK.test(t), wordSearch: WORD_SEARCH.test(t),
+    safety, stop: wantsToStop(raw), holdTail, repairOpen, repaired, asks, idk, idkAny, wordSearch: WORD_SEARCH.test(t),
     values: vals.map((x) => x.v), lastValue, misconception: mis, lex, tokens: toks.length, tailText: hold.held ? hold.rest : t,
   };
 }

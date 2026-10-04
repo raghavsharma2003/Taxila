@@ -11,7 +11,7 @@ export declare class PartialSafety {
   constructor(o?: { scan?: (text: string) => { distress: boolean; kind: string | null } });
   readonly checks: number;
   begin(t: number, o?: { carry?: boolean }): void;
-  check(text: string, coverageEndMs: number | null, t: number): PartialSafetyState & { tripped: boolean };
+  check(text: string, coverageEndMs: number | null, t: number, alts?: string[]): PartialSafetyState & { tripped: boolean };
   modelNote(kind: SafetyKind, t: number): PartialSafetyState & { tripped: boolean };
   state(): PartialSafetyState;
 }

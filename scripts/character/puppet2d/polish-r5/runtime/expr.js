@@ -60,6 +60,8 @@ export const EXPRESSIONS = {
     bs: { mouthSmileRight: 0.8, mouthSmileLeft: 0.12, cheekSquintRight: 0.85, browOuterUpLeft: 0.9, browDownRight: 0.35,
       eyeBlinkRight: 1.0, eyeWideLeft: 0.1, eyeSquintLeft: 0.04 },
     head: [-2, -6, 8], gaze: [-5, 3], env: [0.22, 0, 0.4],
+    // the wink itself is a quick beat inside the held smirk: 0.12 s close, 0.5 s held, 0.18 s open
+    pulse: { keys: ["eyeBlinkRight", "cheekSquintRight"], delay: 0.1, a: 0.1, hold: 0.5, r: 0.12 },
   },
 };
 /** behaviour.ts's Emotion names -> the preset that renders them on this rig (so arm()/emote() map 1:1). */
@@ -100,7 +102,10 @@ export class Expressions {
     const e = this.level(t);
     if (!this.cur || e <= 0) return 0;
     const P = EXPRESSIONS[this.cur.name];
-    for (const [k, v] of Object.entries(P.bs)) {
+    const pu = P.pulse, pt = t - this.cur.t0 - (pu ? pu.delay : 0);
+    const pw = pu ? (pt < 0 ? 0 : pt < pu.a ? smooth01(pt / pu.a) : pt < pu.a + pu.hold ? 1 : 1 - smooth01((pt - pu.a - pu.hold) / pu.r)) : 1;
+    for (const [k, v0] of Object.entries(P.bs)) {
+      const v = pu && pu.keys.includes(k) ? v0 * pw : v0;
       if (k === "jawOpen") { if (lip) lip.jawOpen = Math.max(lip.jawOpen ?? 0, v * e); continue; }
       if (v < 0) bs[k] = (bs[k] ?? 0) * (1 - e);
       else bs[k] = Math.max(bs[k] ?? 0, v * e) ;

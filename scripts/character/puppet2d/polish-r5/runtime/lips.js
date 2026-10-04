@@ -48,13 +48,13 @@ const V = {
   viseme_sil: { ...Z, sm: 1 },
   viseme_PP: { ...Z, W: 0.9, flat: 0.5, press: 1, T: 0, sm: 0.6 },
   // f/v: the UPPER lip lifts off the upper teeth, the lower lip rolls in and up to touch their edge; no smile
-  viseme_FF: { ...Z, g: 18, up: 1.0, W: 0.8, flat: 0.9, T: 1, TL: 0, tuck: 1, th: 0, sm: 0.0 },
+  viseme_FF: { ...Z, g: 18, up: 1.0, W: 0.72, flat: 0.9, T: 1, TL: 0, tuck: 1, th: 0, sm: 0.0 },
   viseme_TH: { ...Z, g: 14, up: 0.35, W: 1.0, T: 0.8, TL: 0.5, tip: 1, th: 0.1, sm: 0.45 },
   // t / d / n / l: a clear opening with the tongue TIP up behind the upper teeth (the floor mound drops out of the way)
   viseme_DD: { ...Z, g: 26, up: 0.3, W: 0.88, flat: 0.55, T: 0.35, TL: 0, tip: 1, th: 0.05, sm: 0.2 },
   viseme_kk: { ...Z, g: 19, up: 0.3, W: 0.96, T: 0.65, TL: 0.15, th: 0.72, sm: 0.5 },
   // ch / j / sh: lips pushed forward and SQUARED, both teeth rows meeting behind them; no smile, narrower than E
-  viseme_CH: { ...Z, g: 20, up: 0.5, W: 0.6, flat: 1.0, round: 0.55, sq: 0.7, pout: 1.4, T: 0.6, TL: 0.85, sm: 0.0 },
+  viseme_CH: { ...Z, g: 20, up: 0.5, W: 0.6, flat: 1.0, round: 0.25, sq: 1, pout: 1.4, T: 0.6, TL: 0.85, sm: 0.0 },
   viseme_SS: { ...Z, g: 6, up: 0.45, W: 1.06, T: 1, TL: 1, sm: 0.5 },
   viseme_nn: { ...Z, g: 26, up: 0.3, W: 0.88, flat: 0.55, T: 0.35, TL: 0, tip: 1, th: 0.05, sm: 0.2 },
   viseme_RR: { ...Z, g: 12, up: 0.35, W: 0.82, flat: 0.5, round: 0.55, T: 0.5, TL: 0.15, tip: 0.5, sm: 0.4 },
@@ -110,7 +110,7 @@ export class LipSolver {
     const cPP = sstep(0.6, 0.92, wPP);   // a plosive releases abruptly (the burst), it does not fade open
     if (cPP > 0) { tgt.g *= 1 - cPP; tgt.press = Math.max(tgt.press, cPP); tgt.tuck *= 1 - cPP; tgt.W = tgt.W * (1 - cPP) + 0.9 * cPP; tgt.flat = tgt.flat * (1 - cPP) + 0.5 * cPP; tgt.round *= 1 - cPP; }
     const cFF = sstep(0.25, 0.7, wFF) * (1 - cPP);
-    if (cFF > 0) { tgt.g = tgt.g * (1 - cFF) + 18 * cFF; tgt.up = tgt.up * (1 - cFF) + cFF; tgt.tuck = Math.max(tgt.tuck, cFF); tgt.T = Math.max(tgt.T, cFF); tgt.TL *= 1 - cFF; tgt.round *= 1 - cFF; tgt.flat = tgt.flat * (1 - cFF) + 0.85 * cFF; tgt.sm = tgt.sm * (1 - cFF); tgt.th *= 1 - cFF; tgt.tip *= 1 - cFF; tgt.W = tgt.W * (1 - cFF) + 0.8 * cFF; }
+    if (cFF > 0) { tgt.g = tgt.g * (1 - cFF) + 18 * cFF; tgt.up = tgt.up * (1 - cFF) + cFF; tgt.tuck = Math.max(tgt.tuck, cFF); tgt.T = Math.max(tgt.T, cFF); tgt.TL *= 1 - cFF; tgt.round *= 1 - cFF; tgt.flat = tgt.flat * (1 - cFF) + 0.85 * cFF; tgt.sm = tgt.sm * (1 - cFF); tgt.th *= 1 - cFF; tgt.tip *= 1 - cFF; tgt.W = tgt.W * (1 - cFF) + 0.72 * cFF; }
     // minimum hold for the closure: once contact is reached it stays >= 66 ms (2 frames at 30 fps)
     // (a MINIMUM closure length counted from contact onset: it never extends a closure that already lasted 66 ms, so the
     // vowel after it keeps its frames)

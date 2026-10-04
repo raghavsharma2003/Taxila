@@ -13,6 +13,9 @@ import { tokens, valuesOf } from "../../../src/duplex/numerals.ts";
 
 export { THINKING, CUTIN_OK };
 const BOOT = 1000;
+/** The hold offer is due at 15 s of the DEVICE's silence clock, which starts at the last loud frame; a TTS word's fade can
+ *  end up to a few hundred ms before the render's gold word end, so the gold-clock check allows 500 ms. */
+const HOLD_OFFER_TOL = 500;
 
 function mulberry(seed) { let s = seed >>> 0; return () => { s = (s + 0x6d2b79f5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 export const quantile = (a, p) => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y); const i = (s.length - 1) * p, lo = Math.floor(i), hi = Math.ceil(i); return s[lo] + (s[hi] - s[lo]) * (i - lo); };
@@ -60,7 +63,7 @@ function allowedCutIn(c, p) {
   if (c.op !== "cut_in") return false;
   const want = CUTIN_OK[p.cls];
   if (!want || c.reason !== want) return false;
-  if (want === "hold_offer") return c.t - p.start >= 15000 - 100;
+  if (want === "hold_offer") return c.t - p.start >= 15000 - HOLD_OFFER_TOL;
   return true;
 }
 
@@ -118,7 +121,7 @@ export function facts(r) {
   // ── holds (M12) ──
   if (sg.holdRequest) {
     const holds = (g.pauses || []).filter((p) => p.cls === "hold_request" || p.cls === "hold_long");
-    f.holdViolation = holds.some((p) => acts.some((c) => c.t >= p.start && c.t < p.end && !(c.op === "cut_in" && c.reason === "hold_offer" && c.t - p.start >= 15000 - 100)));
+    f.holdViolation = holds.some((p) => acts.some((c) => c.t >= p.start && c.t < p.end && !(c.op === "cut_in" && c.reason === "hold_offer" && c.t - p.start >= 15000 - HOLD_OFFER_TOL)));
   }
   // ── verdict on a repaired value (M11) ──
   if (sg.repairedFrom !== undefined) {

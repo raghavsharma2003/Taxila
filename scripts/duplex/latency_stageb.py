@@ -21,6 +21,7 @@ for th in (1, 2):
     so = ort.SessionOptions(); so.intra_op_num_threads = th; so.inter_op_num_threads = 1
     enc = ort.InferenceSession(ENC, so, providers=["CPUExecutionProvider"])
     head = ort.InferenceSession(HEAD, so, providers=["CPUExecutionProvider"])
+    names = {i.name for i in head.get_inputs()}
     def once():
         t0 = time.perf_counter()
         mel = logmel(window(audio, 16000 * 9))[None]
@@ -28,7 +29,8 @@ for th in (1, 2):
         p, emb, _ = enc.run(None, {"input_features": mel})
         t2 = time.perf_counter()
         pp = float(np.clip(p[0, 0], 1e-4, 1 - 1e-4))
-        head.run(None, {"features": np.zeros((1, F), np.float32), "emb": emb.astype(np.float32), "st_logit": np.array([[np.log(pp / (1 - pp))]], np.float32), "audio_missing": np.zeros((1, 1), np.float32)})
+        feeds = {"features": np.zeros((1, F), np.float32), "emb": emb.astype(np.float32), "st_logit": np.array([[np.log(pp / (1 - pp))]], np.float32), "audio_missing": np.zeros((1, 1), np.float32)}
+        head.run(None, {k: v for k, v in feeds.items() if k in names})  # a features-only export prunes the audio inputs
         t3 = time.perf_counter()
         return (t1 - t0) * 1000, (t2 - t1) * 1000, (t3 - t2) * 1000, (t3 - t0) * 1000
     for _ in range(20): once()

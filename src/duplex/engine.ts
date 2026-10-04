@@ -274,6 +274,13 @@ export interface LexicalMarkers {
   codeSwitchAtEdge: boolean;
   /** Continuous ms of child talk with no item term and no value (the off-task drift clock). */
   offTaskMs: Ms;
+  /**
+   * The newest words are in neither Devanagari nor Latin script (the live transcriber hallucinates Japanese / Telugu /
+   * Korean / Bengali on Hindi child audio: 5/90 segments on the L2 run, 2026-10-04). Nothing in them can be read — not a
+   * value, not a hold, not distress — so they are never "complete" and never re-voiced; the reply is a verdict-free
+   * prompt to say it again (critique 2026-10-04). Optional for older constructors.
+   */
+  unreadable?: boolean;
 }
 
 /** Expected-answer grammar state. "prefix_ambiguous": complete as is but a longer value is possible ("sixty" → "sixty-two",

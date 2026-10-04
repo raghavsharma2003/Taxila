@@ -130,3 +130,20 @@ test("stage B: the JS head matches the exported ONNX graph on held-out ticks", a
   }
   assert.ok(worst < 2e-3, `max |JS - torch| = ${worst}`);
 });
+
+test("partial safety also reads the punctuation-free text (the STT's danda after the last word)", async () => {
+  const { PartialSafety } = await import("../server/duplex/partialSafety.js");
+  const p = new PartialSafety();
+  assert.equal(p.check("पता नहीं. कभी कभी लगता है मैं ना रहूं।", 1000, 1000).distress, true);
+  const q = new PartialSafety();
+  assert.equal(q.check("मुझे खुद पानी को चोट और लगानी", 1000, 1000, ["मुझे खुद को चोट लगानी"]).distress, true);
+});
+
+test("a features-only trained model never vouches for unseen audio (G5 stays)", async () => {
+  const { TrainedEngine } = await import("../src/duplex/adapter.ts");
+  const { FEATURE_SPEC } = await import("../src/duplex/features.ts");
+  const m = { id: "t", version: "1", featureSpec: FEATURE_SPEC, audioMs: 0, run: async () => ({ pComplete: 0.99, pHoldWanted: 0.01 }) };
+  const e = new TrainedEngine(m);
+  e.latest = { atMs: 0, out: { pComplete: 0.99, pHoldWanted: 0.01 }, computeMs: 1 };
+  assert.equal(e.latestAcoustic(), null);
+});

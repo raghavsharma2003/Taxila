@@ -1642,3 +1642,90 @@ is now one warm specific line with no question, then back to the work.
 grooming shape is part of `abuse`.
 
 - `rj-worktree-isolation-on-this-repo` (2026-10-04): tried running the Wave 2.5 pre-work streams with `isolation: worktree`. Each worktree is a 2.4 GB checkout (docs and art are large and tracked), and two of them took the disk from 6.6 GB to 1.9 GB inside minutes. The workflow was stopped and the worktrees removed. While freeing space, deleting ignored-looking `puppet2d/{P,V}/work` dirs removed 413 tracked frames; they were restored with `git checkout`, and nothing was lost. Rule: on this repo, run parallel streams in the main tree restricted to new paths, and check `git ls-files` before deleting any directory. **Reverse if:** the repo's tracked binary weight drops below ~500 MB, or disk headroom exceeds 20 GB.
+
+### `rj-duplex-echo-skeleton-single-token`
+**Tried (TaxilaFDB tuning workstream, 2026-10-04):** drop a single transcript token as echo when its consonant skeleton
+matched one of her words that ended within 1 s, anywhere in the text (aimed at self-yields on word-timed streams).
+
+**What broke (M-D7):**
+- skeletons are too lossy for one word ("हाँ" = "हैं" = "h"): a child's yes over her yes/no question vanished and she
+  resumed over it on 30/30 fast-lane turns;
+- it matched every occurrence: her uptake "तीन" deleted both of the child's own "तीन"s, the first spoken a second before
+  hers, and verdicts played on the wrong value.
+
+**Replaced by:** `duplex-echo-span-and-uptake`.
+
+## voicesig build (2026-10-04; inbox `context/inbox/voicesig.json`)
+
+### rj-vs-knowledge-head-on-public-data
+**Tried:** training the knowledge heads h1-h4 (SPEC §1.2) on a licence-clean public corpus.
+
+**What broke:** no public corpus has the outcomes those heads predict: delayed/transfer success, recognition-probe
+success, persistence of the same wrong answer, re-ask agreement. AMI, ICSI and FLEURS have word timings and nothing
+else. IndicVoices and Vaani are gated on Hugging Face (`gated: auto`, HF API 2026-10-04) and also lack outcomes.
+Training a head on a proxy label (a coder's rating, or an "uncertain-sounding" tag) would break the outcome-only label
+test (restriction 12 guard).
+
+**Replaced by:** a public-data component that does not need outcomes: the filled-pause detector trained on AMI
+(`vs-filler-detector-ami`). The knowledge heads are trained only on consented pilot/flywheel rows
+(`scripts/voicesig/k1-train.mjs`). Today that script runs on simulated rows, and it refuses to write simulated weights
+under `models/`.
+
+### rj-vs-direct-dft-logmel
+**Tried:** a direct 400-point real DFT for the 10 ms log-mel ring (`src/voicesig/frontend/logmel.ts`, first version).
+
+**What broke:** it cost 22.9 ms CPU per audio second, measured with `process.cpuUsage` on a 4-vCPU Xeon (n = 60 s
+audio, 2026-10-04). SPEC §3.4 budgets 20 ms for the whole frame DSP.
+
+**Replaced by:** a mixed-radix (4·4·5·5) FFT. It costs 9.85 ms CPU per audio second, and its power spectrum matches the
+direct sum to within 1e-9 relative (test).
+
+### rj-vs-whole-channel-extraction-shared-box
+**Tried:** running the product front-end over whole 40-minute AMI headset channels, 4 at a time.
+
+**What broke:** the container was shared with other sessions' test runs (load average 15-23 on 4 cores). Each extractor
+got about 14% CPU, which projected to about 4 hours for 112 channels.
+
+**Replaced by:** analysing only the channel owner's annotated speech ±2 s, with gaps under 4 s bridged. This is one
+continuous FrameCore session with clock jumps, and FrameAnalyzer re-anchors on a jump exactly as it does after a dropped
+chunk. 92 channels took about 55 minutes.
+
+### rj-vs-sim-null-not-null
+**Tried:** `simulate-pilot.mjs --effect 0` as the "voice carries no information" null.
+
+**What broke:** the rapid-guess branch set onset z = −2.6 regardless of `effect`, so the null still carried a voice
+signal. The harness reported a median ΔAUROC of 0.025, and the L2 bar "passed" in 8/20 replicates. This looked like a
+harness bias but was a simulator bug.
+
+**Replaced by:** every voice difference in the simulator scales with `effect`. At a true null the median ΔAUROC is
+−0.001 at 30 and at 200 children.
+
+### rj-vs-l2-bar-80ci-at-pilot-scale
+**Tried:** the pre-registered L2 entry bar as written in SPEC §4.3 / §7 VS-A1: ΔAUROC ≥ 0.03 and the 80% child-clustered
+CI excludes 0.
+
+**What broke:** under a true null with 30 children it passed in 10 of 60 simulated pilots, 16.7% (Wilson 95% about
+9-28%). At 200 children it passed in 0 of 20. The percentile cluster bootstrap with about 30 clusters under-covers, and
+an 80% interval allows 10% one-sided by design.
+
+**Replaced by (proposed):** L2 uses the 95% CI and at least 200 children. This is decision `vs-l2-bar-95ci-200`, which
+the main loop must accept before any ladder row is raised. The pilot gates L1 only, as SPEC §6.3 already says.
+
+### rj-vs-r-chunk-reset-alignment
+**Tried:** in the two-input worklet, filling R into its own 320-sample chunk and resetting it whenever a P chunk was
+posted.
+
+**What broke:** R samples decimated past the P boundary inside one render quantum were dropped. Every following R chunk
+then held different samples from its P twin, which corrupts per-window relative intensity.
+
+**Replaced by:** an R FIFO read in lock-step with P. When R joins mid-chunk, its FIFO is padded to P's position and that
+partial chunk is not sent. The test checks R/P = −6.02 dB ± 0.3 on every chunk after the join.
+
+### rj-vs-worklet-globals-in-shared-test-process
+**Tried:** stubbing `sampleRate` / `AudioWorkletProcessor` / `registerProcessor` on `globalThis` to run both worklets
+in Node.
+
+**What broke (would have):** `npm test` runs every test file in one process (`tests/index.js`), so the stubs would leak
+into later files.
+
+**Replaced by:** saving and restoring the four globals in `finally`.

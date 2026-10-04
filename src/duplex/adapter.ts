@@ -88,7 +88,10 @@ export class TrainedEngine implements DuplexEngine, AcousticSource {
   }
 
   latestAcoustic(): AcousticEstimate | null {
-    if (!this.latest) return null;
+    // only a model that READS AUDIO can vouch for audio the words have not covered (G5). A features-only model sees the
+    // same stale words as the rules: letting it vouch removed the lexical horizon and spoke verdicts on stale prefixes
+    // (TaxilaFDB test 2026-10-04, stage B features-only: 32 verdicts on repaired values, 86% thinking-pause cut-offs).
+    if (!this.latest || this.model.audioMs <= 0) return null;
     const o = this.latest.out;
     return { atMs: this.latest.atMs, pComplete: o.pComplete, pHoldWanted: o.pHoldWanted, pBackchannel: o.pBackchannel, overlap: o.overlap, model: this.id.id, computeMs: this.latest.computeMs };
   }
@@ -105,8 +108,11 @@ export class TrainedEngine implements DuplexEngine, AcousticSource {
     this.stats.freshTicks++;
     const o = (this.latest as { out: FloorModelOutput }).out;
     const reasons: ReasonCode[] = [o.pComplete >= 0.5 ? "acoustic_complete" : "acoustic_incomplete", ...rules.reasons];
-    const est: Estimate = { ...rules, pComplete: o.pComplete, pHoldWanted: o.pHoldWanted, pProjected: Math.max(o.pComplete, rules.pProjected),
-      pBackchannel: o.pBackchannel ?? rules.pBackchannel, horizonBlocked: rules.horizonBlocked && o.pComplete < 0.8, acousticVouches: o.pComplete >= 0.8, reasons };
+    const hearsAudio = this.model.audioMs > 0;
+    // the horizon still gates a features-only model's estimate exactly as it gates the rules' (the same -4 logit penalty)
+    const pc = rules.horizonBlocked && !(hearsAudio && o.pComplete >= 0.8) ? Math.min(o.pComplete, rules.pComplete) : o.pComplete;
+    const est: Estimate = { ...rules, pComplete: pc, pHoldWanted: o.pHoldWanted, pProjected: Math.max(o.pComplete, rules.pProjected),
+      pBackchannel: o.pBackchannel ?? rules.pBackchannel, horizonBlocked: rules.horizonBlocked && !(hearsAudio && o.pComplete >= 0.8), acousticVouches: hearsAudio && o.pComplete >= 0.8, reasons };
     const d = this.rules.decideWith(input, est);
     return { ...d, overlapP: o.overlap ?? d.overlapP, computeMs: (this.latest as { computeMs: number }).computeMs };
   }

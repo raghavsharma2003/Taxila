@@ -1,0 +1,195 @@
+{
+ "source": "Build: engine model + TaxilaFDB (workstream, 2026-10-04): evals/duplex/taxilafdb/**, scripts/duplex/**, server/duplex/semantic.js, models/duplex/**, docs/research/duplex/{TAXILAFDB,ENGINE-MODEL}.md. Merge AFTER context/inbox/duplex-v2.json (edges point at its nodes).",
+ "nodes": [
+  {
+   "id": "duplex-stage-a-ships-2026-10-04",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Duplex engine: stage A (rules + governor, src/duplex/engineRules.ts) is THE engine; the fast LLM semantic estimate stays behind flags.semantic (off); stage B stays behind flags.trained (off). Why: on the frozen TaxilaFDB test split (960 streams, held-out template families AND voices) stage A cut children off in 2.3% (FAST lane) / 2.6% (D4) of 732 thinking pauses vs cascade-900 31.3%, silence-640 74.2-82.8%, Smart Turn v3.2 off-the-shelf 36.9-64.2%, at a decision gap p50 370 ms (FAST) / 1,140 ms (D4), dominating the whole silence frontier (no threshold < 5% cut-offs without ~100% missed replies); the LLM did not lower cut-offs (3.6% / 4.6%, overlapping CIs) and costs ~640 ms per call; stage B failed the promotion gates (closed-loop cut-offs 13-55%). Reverse if: real-child audio (E1) shows stage A's cut-offs above silence-640 on the same audio, or a stage B trained on consented real audio beats stage A on held-out children (tick AUC beyond CI AND closed-loop cut-offs <= stage A at equal gap AND ECE <= 0.05 per context AND <= 30 ms on ACA 2 vCPU)."
+  },
+  {
+   "id": "duplex-stageb-features-only-no-vouch",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Only a floor model that READS AUDIO (audioMs > 0) may vouch for unseen audio at G5 (adapter.ts TrainedEngine.latestAcoustic); a features-only model's pComplete is also capped by the rules' horizon-penalised estimate. Why: letting the features-only stage B vouch removed the lexical horizon: 32/40 verdicts on repaired values and 86.9% thinking-pause cut-offs on TaxilaFDB test (D4), vs 1/40 and 13.4% after the fix. Reverse if: a features-only model is shown to predict the unseen tail (it cannot: it sees the same stale words)."
+  },
+  {
+   "id": "duplex-safety-alt-readings",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Duplex partial safety runs the SAME shipped predicate (scanSafety) over extra readings of every partial: her echo stripped (echo.js stripAll) and punctuation removed. Why: TaxilaFDB F10 showed her echo interleaved inside a disclosure ('मुझे खुद पानी को चोट और लगानी') breaks the predicate's phrase, and the predicate misses 'कभी कभी लगता है मैं ना रहूं।' when the STT's danda follows the last word (true without the danda). After the fix: distress detected 84/84 test streams, safeguard over a talking child 0. One predicate, more readings — not a fork. Reverse if: server/director/safety.js normalises punctuation itself (then drop the punctuation reading) or alt readings produce false safety trips (0/24 benign on test today)."
+  },
+  {
+   "id": "duplex-wait-time-ii-backstop",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Open-explanation silence backstop = clamp(1.5 x hold p90, 2.5 s, 3.5 s) (was clamp(1.2 x p90, 2 s, 3 s)), and a yield tag ('है ना', 'bas') lifts stage A's explanation cap. Why: TaxilaFDB train, FAST lane: 49/440 mid-explanation pauses of 2.2-2.8 s were cut by the 2 s backstop; with the change train cut-offs 9.8% -> 2.0% and missed 11.2% -> 1.8%. Cost: either-class explanation ends wait p50 2.5 s (wait time II). Reverse if: real-child data shows mid-explanation pauses rarely exceed 2 s, or missed replies on open explanations exceed 5%."
+  },
+  {
+   "id": "m-taxilafdb-test-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "TaxilaFDB v1 test split, L1, 2026-10-04, runtime hash 1d138d3168bf (evals/duplex/results/taxilafdb-test-final3-2026-10-04.json): n=960 streams = 240 scenarios x 2 held-out voices x clean/noisy; 732 thinking pauses, 528 respond ends; 95% cluster-bootstrap CIs over scenarios (1,000). Thinking-pause cut-offs: cascade-900 D4 31.3% [22.0-41.1]; silence-640 D4 74.2% [68.7-80.0], FAST 82.8% [77.4-88.6]; Smart Turn v3.2 thr 0.5 FAST 64.2% [58.6-70.2], thr 0.95 36.9% [29.6-45.0]; stage A D4 2.6% [1.0-4.4], FAST 2.3% [0.6-4.6]; stage A + grok LLM FAST 3.6% [1.4-6.2]; stage B (features-only) FAST 55.2%. Decision gap p50/p90: cascade-900 1,690/1,950 ms; silence-640 640-650 ms; stage A D4 1,140/1,608, FAST 370/1,488 [CI p50 350-400]. Missed reply <= 2 s: stage A 8.5-10.4%, silence-640 2.1-2.5%, cascade-900 D4 37.3%. Hold violations: stage A 0/48 (D4), 2/48 (FAST); every silence arm 48/48. Verdict on a repaired value: stage A 0/40 (D4), 4/40 (FAST, one template, 1.4 s repair pause > 1.2 s verdict delay). Non-safety speech after distress: stage A 1-2/84; distress detected 84/84; safeguard over a talking child 0. Cut-in precision 100%, out-of-policy 0, recall 97% (FAST). Echo self-trigger 0/40. FAILS: yield on barge-in p50 770-1,151 ms (bar 200), keep-talking through continuers 67-72% (bar 90%), false yields to TV/sibling 50-67% (bar 10%), audible gap p50 2.0-2.7 s (bar 350 ms), nods 2.5x human rate. Synthetic TTS voices, one author's scripts, FAST lane modelled [E]."
+  },
+  {
+   "id": "m-taxilafdb-l2-live-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "TaxilaFDB L2 simulator check (evals/duplex/results/taxilafdb-live-2026-10-04.json): 48 stratified TEST streams streamed in real time (20 ms chunks, 24 kHz) to taxila-live-transcribe (gpt-live-transcribe, eastus2) from the US sandbox with stage A live (its micro-commit probes sent as commits), vs the L1 simulator on the same streams; third pass 2026-10-04. Real STT: first partial after onset p50 1,154 / p90 1,517 ms, partial lag p50 396 / p90 1,218 ms (M-D2 calibration: 1,743 / 2,048 and 713 / 1,477: today's transcriber ran faster). Engine outcomes live vs sim: thinking-pause cut-offs 1/38 vs 0/38; gap p50 840 vs 1,165 ms (per-stream live-sim p50 -100, p10 -592, p90 +476 ms); missed 3/36 vs 2/36; per-stream agreement turn-cut-off 28/29, missed 35/36; distress detected 4/4 both; unsafe 0 both. The first pass exposed that the real transcriber DOES transcribe her -30 dB echo into the child's item (4/48) and hallucinates other scripts on noisy child audio (Korean/Japanese/Bengali tokens): the simulator was corrected (echo transcribed at >= -30 dB, dominant-speaker masking) and the runtime fixed (straddling items)."
+  },
+  {
+   "id": "m-taxilafdb-stageb-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Stage B training (scripts/duplex/train_stageb.py; evals/duplex/results/taxilafdb-stageb-train-2026-10-04.json): 54,146 silent child-floor train ticks (916 streams x 2 STT lanes), labels by construction; frozen Smart Turn v3.2 encoder embedding (384-d) + engine features (cce-features/1, 82) -> late-fusion MLP, silence-matched weights, per-exchange Platt on GroupKFold(template family) OOF. Tick AUC of pComplete, dev / test: fused 0.07 / 0.36 (OOF train 0.78), features-only 0.90 / 0.75, audio-only 0.47 / 0.51, Smart Turn's own probability 0.56 / 0.47, stage A 0.67 / 0.61. ECE (features-only, test): closed 0.42, open 0.10, chit-chat 0.20 (bar 0.05). Closed loop (features-only exported): thinking cut-offs 13.4% D4 / 55.2% FAST vs stage A 2.6% / 2.3%. Size/latency (sandbox x86, contended, load 6.8-12): head 53.7 KB, 0.29 ms CPU / 0.21 ms wasm p50; Smart Turn encoder 8.68 MB int8, 123 ms CPU (1 thread, contended; 39 ms at lower load) / 278 ms wasm SIMD p50; log-mel 36 ms."
+  },
+  {
+   "id": "m-taxilafdb-silence-frontier-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Silence frontier on TaxilaFDB test (FAST lane; D4 within +-5 pts), thinking-pause cut-offs / gap p50 / missed<=2 s: 300 ms 98.9% / 300 / 3.6%; 450 ms 94.0% / 460 / 2.8%; 640 ms 82.8% / 640 / 2.1%; 900 ms 56.1% / 900 / 0.8%; 1,200 ms 39.2% / 1,200 / 0.6%; 1,600 ms 26.9% / 1,600 / 0.9%; 2,200 ms 17.3% / 1,980 / 97.5%; 3,000 ms 5.1% / - / 100%. Stage A: 2.3% / 370 ms / 8.5% — fewer cut-offs than every threshold and a shorter gap than every threshold >= 450 ms. Children's thinking pauses (TaxilaFDB scripts: 0.4-3 s, holds to 16 s) are inseparable from turn ends by silence alone."
+  },
+  {
+   "id": "m-taxilafdb-spend-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "TaxilaFDB build spend 2026-10-04: Azure Speech renders <= $4.54 (1,120 renders, 237,492 SSML chars); Smart Turn features on Azure Container Apps (taxila-env eastus2, 16 executions x 4 vCPU / 8 GiB, stock python:3.12-slim, 8 min wall; job deleted, private blob container cleaned) ~ $1 [E list price]; semantic LLM cache 3,092 prefixes: grok-4-1-fast-nr $5.58, taxila-fast $0.27; L2 live STT < $0.10 [E]. Total Azure ~ $11.5 (cap $40). AWS $0 (no GPU needed: the fusion head trains on CPU in ~3 min)."
+  },
+  {
+   "id": "rj-smart-turn-off-the-shelf-child-hinglish",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Smart Turn v3.2 off the shelf as the child end-of-turn signal (and as stage B's audio branch on TTS training data). Tried: Pipecat pattern (run at 200 ms silence, thr 0.5 / 0.95, 3 s timeout) on TaxilaFDB test, and its frozen embedding fused into stage B. Broke: 64.2% / 36.9% thinking-pause cut-offs with 39-71% of replies falling to the 3 s timeout; its probability's tick AUC 0.47 on held-out voices; the fused stage B fell to AUC 0.36 (test) / 0.07 (dev) while its OOF train AUC was 0.78 — it learned the 4 TTS training voices. Smart Turn reads ~1 (complete) on almost every child window including silence before speech. Reverse if: fine-tuned and validated on REAL child Hinglish audio (E1), not TTS."
+  },
+  {
+   "id": "rj-stageb-features-only-closed-loop",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Promoting a trained floor model on tick-level AUC alone. Tried: the dev-selected features-only stage B (tick AUC 0.75 test vs stage A 0.61) dropped into TrainedEngine behind the same governor. Broke: closed-loop thinking-pause cut-offs 13.4% (D4) / 55.2% (FAST) vs stage A 2.6% / 2.3%: its calibrated pComplete is high inside complete-LOOKING pauses (verb-final clauses mid-explanation), where stage A's hand-set caps (explanation cap, closed-question no-value penalty) hold. Lesson: promotion is decided in closed loop on TaxilaFDB, never by tick AUC. Reverse if: a model passes the closed-loop gates (ARCHITECTURE.md §5.5)."
+  },
+  {
+   "id": "rj-llm-semantic-cutoff-benefit",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "The fast Azure LLM semantic completeness estimate as a cut-off reducer for stage A. Tried: grok-4-1-fast-nr on every stable-prefix change in open contexts (>= 2 new words, >= 600 ms apart), typed {pComplete, pHoldWanted, asksHer, offTask}, replayed at measured latency (p50 636 ms, sandbox -> eastus2), 3,092 unique prefixes. Broke: no cut-off benefit on TaxilaFDB test (2.3% -> 3.6% FAST, 2.6% -> 4.6% D4, overlapping CIs; on train 1.1-1.7% -> 3.7-4.9%): it reads finished-sounding clauses inside explanations as complete. It did cut missed replies 10.4% -> 5.9% on D4. Kept behind flags.semantic (off). Reverse if: from India (DX-4) a model returns in < 250 ms and lowers train+dev cut-offs at equal missed rate."
+  },
+  {
+   "id": "open-duplex-engine-failing-bars",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "Stage A fails these TaxilaFDB test bars (ARCHITECTURE.md §7): A4 yield on barge-in p50 770-1,151 ms (bar 200; G11's 1 s sustained-voice rule decides most yields — the acoustic early classifier rarely fires on TTS barge-ins); A5 keep-talking through continuers 67-72% (bar 90%); A6 false yields to TV/sibling 50-67% (bar 10%; needs the target-speaker model X3); A1 audible gap p50 2.0 s FAST (the warm uptake primed only 164/483 first sounds; the rest are drafts or cold Director+TTS); A8 4/40 verdicts on a repaired value (F1.rep_marker: 1.4 s repair pause > VERDICT_DELAY 1.2 s; try 1.6 s on train first); A11 missed replies 8.5-10.4% (bar 2%); A7 nod rate 0.197/s = 2.5x human 0.079/s (bar <= 2x)."
+  },
+  {
+   "id": "open-scansafety-danda-miss",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "server/director/safety.js scanSafety('कभी कभी लगता है मैं ना रहूं।') returns distress:false; without the final danda it returns true (and 'पता नहीं. कभी कभी…' without the danda is true). Every STT final ends with a danda, so the cascade lane can miss this passive-ideation disclosure. The duplex partial-safety now also scans a punctuation-free reading (duplex-safety-alt-readings), but the predicate itself should normalise punctuation (owner of server/director/** to fix; child-safety floor)."
+  }
+ ],
+ "edges": [
+  {
+   "src": "duplex-stage-a-ships-2026-10-04",
+   "rel": "measured_by",
+   "dst": "m-taxilafdb-test-2026-10-04"
+  },
+  {
+   "src": "duplex-stage-a-ships-2026-10-04",
+   "rel": "measured_by",
+   "dst": "m-taxilafdb-silence-frontier-2026-10-04"
+  },
+  {
+   "src": "duplex-stage-a-ships-2026-10-04",
+   "rel": "measured_by",
+   "dst": "m-taxilafdb-stageb-2026-10-04"
+  },
+  {
+   "src": "duplex-stage-a-ships-2026-10-04",
+   "rel": "measured_by",
+   "dst": "m-taxilafdb-l2-live-2026-10-04"
+  },
+  {
+   "src": "duplex-stage-a-ships-2026-10-04",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-stage-a-ships-2026-10-04",
+   "rel": "caused_by",
+   "dst": "rj-stageb-features-only-closed-loop"
+  },
+  {
+   "src": "duplex-stage-a-ships-2026-10-04",
+   "rel": "caused_by",
+   "dst": "rj-llm-semantic-cutoff-benefit"
+  },
+  {
+   "src": "duplex-stageb-features-only-no-vouch",
+   "rel": "constrains",
+   "dst": "duplex-lexical-horizon-guard"
+  },
+  {
+   "src": "duplex-stageb-features-only-no-vouch",
+   "rel": "measured_by",
+   "dst": "m-taxilafdb-stageb-2026-10-04"
+  },
+  {
+   "src": "duplex-safety-alt-readings",
+   "rel": "caused_by",
+   "dst": "open-scansafety-danda-miss"
+  },
+  {
+   "src": "duplex-safety-alt-readings",
+   "rel": "measured_by",
+   "dst": "m-taxilafdb-test-2026-10-04"
+  },
+  {
+   "src": "duplex-wait-time-ii-backstop",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "m-taxilafdb-test-2026-10-04",
+   "rel": "part_of",
+   "dst": "duplex-taxilafdb"
+  },
+  {
+   "src": "m-taxilafdb-l2-live-2026-10-04",
+   "rel": "part_of",
+   "dst": "duplex-taxilafdb"
+  },
+  {
+   "src": "rj-smart-turn-off-the-shelf-child-hinglish",
+   "rel": "constrains",
+   "dst": "wb-predictive-endpoint"
+  },
+  {
+   "src": "rj-smart-turn-off-the-shelf-child-hinglish",
+   "rel": "measured_by",
+   "dst": "m-taxilafdb-test-2026-10-04"
+  },
+  {
+   "src": "open-duplex-engine-failing-bars",
+   "rel": "blocks",
+   "dst": "duplex-stage-a-ships-2026-10-04"
+  },
+  {
+   "src": "m-taxilafdb-l2-live-2026-10-04",
+   "rel": "inherits",
+   "dst": "m-d2-duplex-live-stt-2026-10-04"
+  },
+  {
+   "src": "rj-llm-semantic-cutoff-benefit",
+   "rel": "inherits",
+   "dst": "m-d5-duplex-model-arm-2026-10-04"
+  }
+ ],
+ "md": {
+  "decisions": "## Duplex engine model + TaxilaFDB (2026-10-04, inbox duplex-engine.json; merge AFTER duplex-v2.json)\n- `duplex-stage-a-ships-2026-10-04`: stage A (rules + governor) is the engine. The LLM semantic estimate and stage B both stay off behind their flags.\n  - Test split (960 streams, held-out families and voices), thinking-pause cut-offs:\n\n    | arm | cut-offs |\n    |---|---|\n    | stage A | 2.3-2.6% |\n    | cascade-900 | 31% |\n    | silence-640 | 74-83% |\n    | Smart Turn | 37-64% |\n\n  - Stage A's decision gap is p50 370 ms on the fast lane and 1,140 ms on D4.\n  - Reversal: real-child audio (E1), or a real-audio stage B that passes the closed-loop gates. Write-up in docs/research/duplex/ENGINE-MODEL.md.\n- `duplex-stageb-features-only-no-vouch`: only an audio-reading model may vouch for unseen audio at G5. A features-only stage B that vouched spoke 32 verdicts on repaired values.\n- `duplex-safety-alt-readings`: duplex partial safety scans the echo-stripped and punctuation-free readings with the same predicate. Result: 84/84 distress detected on test, 0 safeguards over a talking child.\n- `duplex-wait-time-ii-backstop`: the open-explanation backstop is now 2.5-3.5 s, and a yield tag can end an explanation.\n  - Train split, fast lane: cut-offs 9.8% → 2.0%, missed replies 11.2% → 1.8%.\n",
+  "measurements": "## TaxilaFDB v1 (2026-10-04; inbox duplex-engine.json)\nFull write-up: docs/research/duplex/TAXILAFDB.md.\n\n**Test split, L1, runtime 1d138d3168bf** (`m-taxilafdb-test-2026-10-04`). n = 960 streams, 732 thinking pauses, 528 respond ends.\n- Thinking-pause cut-offs, stage A: 2.3% [0.6-4.6] on FAST and 2.6% [1.0-4.4] on D4.\n- Thinking-pause cut-offs, the baselines:\n\n  | baseline | cut-offs |\n  |---|---|\n  | silence-640 | 74.2-82.8% |\n  | cascade-900 | 31.3% |\n  | Smart Turn 0.5 / 0.95 | 64.2% / 36.9% |\n\n- Stage A's decision gap is p50 370 ms on FAST and 1,140 ms on D4.\n- The silence sweep from 300 to 3,000 ms is dominated (`m-taxilafdb-silence-frontier-2026-10-04`).\n- Stage A fails the bars for yield latency, continuers, background rejection and audible gap.\n\n**L2 check** (`m-taxilafdb-l2-live-2026-10-04`). 48 test streams on the real gpt-live-transcribe.\n- Per-stream agreement: turn cut-off 28/29, missed replies 35/36.\n- Gap: live is 100 ms faster than the simulator at p50.\n- The real STT transcribes her −30 dB echo. The simulator and runtime were corrected for this.\n\n**Stage B** (`m-taxilafdb-stageb-2026-10-04`). Tick AUC on test:\n\n| model | AUC |\n|---|---|\n| features-only | 0.75 |\n| stage A | 0.61 |\n| fused | 0.36 |\n| Smart Turn alone | 0.47 |\n\n- Features-only stage B in closed loop: 13.4% / 55.2% cut-offs.\n- Head: 53.7 KB, 0.3 ms.\n- Encoder: 8.7 MB, 123 ms on a contended CPU, 278 ms on wasm.\n\n**Spend** (`m-taxilafdb-spend-2026-10-04`). About $11.5 on Azure, $0 on AWS.\n",
+  "rejected": "## Duplex engine model (2026-10-04; inbox duplex-engine.json)\n- `rj-smart-turn-off-the-shelf-child-hinglish`: Smart Turn v3.2 off the shelf on child Hinglish, also tried as a frozen audio branch.\n  - Cut-offs were 64% / 37%.\n  - Tick AUC was 0.47.\n  - Fused into stage B it collapsed to AUC 0.36 on held-out voices: it learned the TTS training voices.\n- `rj-stageb-features-only-closed-loop`: promoting on tick AUC. The features-only model (AUC 0.75) cut children off in 55% of thinking pauses in closed loop. Promotion is decided in closed loop.\n- `rj-llm-semantic-cutoff-benefit`: the grok fast semantic estimate gave no cut-off benefit (2.3% → 3.6%). It reads finished-sounding clauses inside explanations as complete.\n"
+ }
+}

@@ -116,9 +116,11 @@ export class TurnTranscript {
     // (TaxilaFDB 2026-10-04: with her -30 dB echo transcribed, as the real transcriber does in L2, items opened by the echo
     // swallowed the child's answer and 32-48% of respond ends got no reply.)
     const startMs = it.audioStartMs ?? it.firstAt;
-    if (!it.inTurn && startMs < this.turnStart - 40 && ev.t >= this.turnStart + this.lag.p50) { it.straddle = true; it.inTurn = true; }
+    // the turn's audio begins at its carried overlap onset when there is one (a barge-in's first words precede the yield)
+    const bound = this.carryFrom !== null ? Math.min(this.carryFrom, this.turnStart) : this.turnStart;
+    if (!it.inTurn && startMs < bound - 40 && ev.t >= this.turnStart + this.lag.p50) { it.straddle = true; it.inTurn = true; }
     if (it.straddle && ev.words && ev.words.length === (text ? text.split(/\s+/).length : 0)) {
-      const keep = ev.words.map((w) => w.endMs >= this.turnStart - 40);
+      const keep = ev.words.map((w) => w.endMs >= bound - 40);
       text = text.split(/\s+/).filter((_, i) => keep[i]).join(" ");
       ev = { ...ev, words: ev.words.filter((_, i) => keep[i]) };
     }

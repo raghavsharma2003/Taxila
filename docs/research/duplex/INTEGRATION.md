@@ -15,7 +15,7 @@ under the duplex paths only:
 | face | `src/duplex/face.ts` | governed decisions → avatar cues (seam S7) and the shipped `Floor` (seam S11) |
 | server slice | `server/duplex/slice.js`, `routes.js`, `fanin.js`, `echo.js`, `partialSafety.js`, `speculator.js`, `buildIntent.js` | partials fan-in, echo subtraction, sticky safety (server authority), speculation + TTS warm-up, build intents, `/api/duplex/*` |
 | measurement | `evals/duplex/tick-sim.mjs` → `results/tick-sim-2026-10-04.json` | M-D7, the runtime at tick level vs cascade-900 and silence-640 |
-| tests | `tests/duplex-runtime.test.mjs` | 41 tests: hands-free host, every governor veto, stage A, overlap, face, adapter, fan-in, echo, safety, speculator, builds, slice, routes |
+| tests | `tests/duplex-runtime.test.mjs` | 42 tests: hands-free host, every governor veto, stage A, overlap, face, adapter, fan-in, echo (span, uptake, skeleton collision), safety, speculator, builds, slice, routes |
 
 Everything below is **additive and behind a flag**; with every flag off the shipped lesson behaves byte-for-byte as today.
 
@@ -100,7 +100,7 @@ decide, (c) supports push-to-talk. Under `duplex.engine` the decision moves to `
 | local VAD onset → `player.duck(0.2)`, sustained → pause | unchanged | host emits `duck` / `unduck` / `yield{atWordBoundary, resumable, heardUpTo}` / `resume`; the link obeys (`player.duck`, `player.stopAtWordBoundary`, `player.resumeFrom(heardUpTo)`) |
 | `isBackchannel` / `isEcho` verdict on the final | unchanged | superseded by the overlap classifier + `EchoSubtractor` (both reuse `skeleton()` from this file) |
 | `input_audio_buffer.commit` only on push-to-talk release | — | also on `{to:"stt", op:"commit"}` (the micro-commit probe) |
-| her playback | `host.herEvent({kind:"start", words: ttsWordTimings, act, handsOver})`, `verdict`, `end`, `stopped` from the player clock (S14) | same |
+| her playback | `host.herEvent({kind:"start", words: ttsWordTimings, act, handsOver})`, `verdict`, `end`, `stopped` from the player clock (S14). The reply text must START with the uptake the host emitted (the host skips those words in echo subtraction: they are the child's own) | same |
 | — | `{to:"think", …}` → `POST /api/duplex/handover | prepare | speak` (debounced to changes; `prepare` only on hint change) | same |
 | — | `{to:"log"}` → telemetry (S15), consent-gated, numbers + codes only | same |
 
@@ -175,5 +175,25 @@ a reveal waits for the kernel at the next boundary.
 | semantic estimate call (`server/duplex/semantic.js`) | open explanations end only by backstop (~2.0 s) until a fresh semantic read lifts the stage-A cap | duplex path; host already calls `opts.semantic` |
 | real echo on speakers | the sim carries no echo; `EchoSubtractor` is unit-tested only | DX-7 on recorded sessions |
 | acoustic repair-request ("क्या?") | the synthetic rising contour is too flat on one short word, so the acoustic rule is not exercised (M-D7 i04 yields on words) | real audio, DX-5 |
-| draft churn on the fast lane | 62.6 % of speculative tokens wasted on `cce-fast` (frequent relaunch as words land) | raise `PREPARE_CAPS.minNewWords` / debounce after DX-4 |
+| draft churn on the fast lane | 61 % of speculative tokens wasted on `cce-fast` (~3.8k tokens/turn; frequent relaunch as words land) vs 20 % on MAI | raise `PREPARE_CAPS.minNewWords` / debounce after DX-4 |
 | trained stage B | `adapter.ts` is ready; no model exists | `scripts/duplex/**`, `models/duplex/**` |
+
+## 12. Measured state of the runtime at hand-off (M-D7, 2026-10-04, `evals/duplex/results/tick-sim-2026-10-04.json`)
+
+Synthetic streams, 96 scripted turns × 10 seeds per arm; MAI/FAST latencies are estimates; see `context/measurements.md`.
+
+| arm | gap p50 / p90 (ms) | first audio p50 | hard cut-off | hold violations | wrong-value verdicts | overlap accuracy |
+|---|---|---|---|---|---|---|
+| cce-mai | 361 / 2,546 | 1,888 | 0.0 % | 0 % | 0 / 370 | 96.3 % |
+| cce-fast | 400 / 2,546 | 2,019 | 0.0 % | 0 % | 0 / 370 | 99.5 % |
+| cce-d4 | 1,265 / 2,546 | 2,672 | 0.0 % | 0 % | 0 / 370 | 94.7 % |
+| cascade-900 (today) | 1,895 / 2,360 | 3,800 | 2.9 % | 31.7 % | 8 / 325 | 79.5 % |
+| silence-640 | 1,590 / 2,077 | 3,500 | 3.9 % | 38.3 % | 13 / 314 | 77.4 % |
+
+- The pooled p90 is set by explanations ending on the stage A backstop (~2.5 s) until the semantic call lands; closed
+  answers on MAI/fast are at p50 300-366 ms, p90 385-587 ms.
+- **D4 cannot meet the gap target** (its words arrive 0.7-2 s late); the India lanes can.
+- **Concurrent edits:** a TaxilaFDB tuning workstream changed runtime thresholds in the same files on the same evening
+  (`OVERLAP.sustainedMs` 600, explanation backstop 2.5-3.5 s, a closed-no-value penalty, a fresh-echo rule). This
+  workstream kept those, and narrowed the fresh-echo rule after it deleted children's answers
+  (`rj-duplex-echo-skeleton-single-token`). The integration owner should freeze one config row before W2.5-4.

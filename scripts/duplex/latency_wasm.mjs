@@ -24,7 +24,8 @@ async function once() {
   const o = await enc.run({ input_features: mel });
   const t1 = performance.now();
   const embName = enc.outputNames.find((n) => n.startsWith("sum_1"));
-  await head.run({ features: new ort.Tensor("float32", new Float32Array(F), [1, F]), emb: o[embName], st_logit: new ort.Tensor("float32", new Float32Array([0]), [1, 1]), audio_missing: new ort.Tensor("float32", new Float32Array([0]), [1, 1]) });
+  const feeds = { features: new ort.Tensor("float32", new Float32Array(F), [1, F]), emb: o[embName], st_logit: new ort.Tensor("float32", new Float32Array([0]), [1, 1]), audio_missing: new ort.Tensor("float32", new Float32Array([0]), [1, 1]) };
+  await head.run(Object.fromEntries(Object.entries(feeds).filter(([k]) => head.inputNames.includes(k))));
   const t2 = performance.now();
   return [t1 - t0, t2 - t1, t2 - t0];
 }

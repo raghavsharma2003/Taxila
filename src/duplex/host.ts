@@ -208,7 +208,8 @@ export class EngineHost {
     const changed = this.fanin.push(ev);
     if (!changed) return;
     const view = this.fanin.view(ev.t, (from) => this.audio.voicedAfter(from));
-    const s = this.safety.check(view.text, view.coverageEndMs, ev.t);
+    const alt = view.text ? this.echo.stripAll(view.text, ev.t, this.fanin.lag.p90) : "";
+    const s = this.safety.check(view.text, view.coverageEndMs, ev.t, alt && alt !== view.text ? [alt] : []);
     this.maybeAskSemantic(view, ev.t);
     this.step(s.tripped ? "safety" : ev.type === "final" ? "final" : "partial", ev.t);
   }

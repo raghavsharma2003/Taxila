@@ -212,9 +212,13 @@ if __name__ == "__main__":
         res["ablations"][vname] = {"oof_train_uncalibrated": report(f"{vname} OOF", tr, oofp), "dev": report(f"{vname} dev", dv, pred(dv)), "test": report(f"{vname} test", te, pred(te))}
     res["ablations"]["smart_turn_alone"] = {"dev": report("smart-turn dev", dv, st_only(dv)), "test": report("smart-turn test", te, st_only(te))}
     res["ablations"]["stage_a"] = {"dev": report("stage-A dev", dv, stageA(dv)), "test": report("stage-A test", te, stageA(te))}
-    # export the fused model
+    # export the variant that wins on DEV (selection never looks at test): AUC of pComplete on silent ticks
     os.makedirs(OUTDIR, exist_ok=True)
-    mdl = final["fused"].eval()
+    pick = max(variants, key=lambda v: res["ablations"][v]["dev"]["aucEnd_silent"] or 0)
+    res["exported_variant"] = pick
+    print("exporting variant", pick, flush=True)
+    mdl = final[pick].eval()
+    use_audio = variants[pick][0]
     name = f"cce-stageb-{VERSION}"
     dummy = (torch.zeros(1, F), torch.zeros(1, 384), torch.zeros(1, 1), torch.ones(1, 1))
     class Export(nn.Module):
@@ -225,7 +229,7 @@ if __name__ == "__main__":
     torch.onnx.export(Export(mdl), dummy, onnx_path, input_names=["features", "emb", "st_logit", "audio_missing"], output_names=["p_complete", "p_hold"],
                       dynamic_axes={k: {0: "b"} for k in ["features", "emb", "st_logit", "audio_missing", "p_complete", "p_hold"]}, opset_version=17, dynamo=False)
     sd = {k: v.detach().numpy().round(6).tolist() for k, v in mdl.state_dict().items()}
-    manifest = {"id": "cce-stageb", "version": VERSION, "featureSpec": meta["featureSpec"], "featureNames": NAMES, "audioMs": 8000,
+    manifest = {"id": "cce-stageb", "version": VERSION, "variant": pick, "useAudio": bool(use_audio), "featureSpec": meta["featureSpec"], "featureNames": NAMES, "audioMs": 8000 if use_audio else 0,
                 "audio": {"encoder": "smart-turn-v3.2-cpu.onnx (BSD-2) with sum_1 exposed (st32-emb.onnx)", "window": "last <= 8 s of the child floor, zero-padded at the start", "embDim": 384},
                 "exchanges": EXCH, "inputs": ["features", "emb", "st_logit", "audio_missing"], "outputs": ["p_complete", "p_hold"],
                 "trained": {"ticks": int(len(tr[0])), "streams": len(set(r["id"] for r in tr[0])), "epochs": epochs}, "weights": sd}
@@ -233,8 +237,8 @@ if __name__ == "__main__":
     res["export"] = {"onnx": os.path.relpath(onnx_path, ROOT), "onnxBytes": os.path.getsize(onnx_path), "json": os.path.relpath(os.path.join(OUTDIR, name + ".json"), ROOT)}
     # parity samples for the JS replay test (first 64 test ticks)
     with torch.no_grad():
-        pp = mdl(torch.tensor(te[1][:64]), torch.tensor(te[2][:64]), torch.tensor(te[3][:64]), torch.tensor(te[4][:64])).numpy()
-    json.dump({"features": te[1][:64].round(5).tolist(), "emb": te[2][:64].round(5).tolist(), "st": te[3][:64].round(5).tolist(), "missing": te[4][:64].tolist(), "p": pp.round(6).tolist()},
+        pp = mdl(torch.tensor(te[1][:64]), torch.tensor(te[2][:64]), torch.tensor(te[3][:64]), torch.tensor(te[4][:64]) if use_audio else torch.ones(64, 1)).numpy()
+    json.dump({"features": te[1][:64].round(5).tolist(), "emb": te[2][:64].round(5).tolist(), "st": te[3][:64].round(5).tolist(), "missing": (te[4][:64] if use_audio else np.ones((64, 1), np.float32)).tolist(), "p": pp.round(6).tolist()},
               open(os.path.join(ROOT, "evals/duplex/taxilafdb/data/stageb-parity.json"), "w"))
     res["seconds"] = round(time.time() - t0)
     json.dump(res, open(os.path.join(ROOT, "evals/duplex/results/taxilafdb-stageb-train-2026-10-04.json"), "w"), indent=1)

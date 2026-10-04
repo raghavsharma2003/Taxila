@@ -218,3 +218,10 @@ test("seam: onLessonEnd writes nothing until the tables are probed, nothing for 
   assert.deepEqual(relationalSeam.onLessonEnd(kid, { lessonId: "y", childId: kid.id, endedBy: "client", turns: 0 }), []);
   __relTest.reset();
 });
+
+test("I-7 bookkeeping: a safeguarded PLEADING turn is the check-in (the goodbye releases); later harm needs a new check-in", () => {
+  const plead = runLesson([["Mat jao na, mujhe akela lagta hai", "no_evidence", { safety: true }], "bye"]).out;
+  assert.equal(plead[1].floor, "RELEASE", "the pleading safeguard was the check-in");
+  const harm = runLesson([["Ghar pe koi mujhse baat nahi karta", "no_evidence", { safety: true }], ["Papa maarte hain", "no_evidence", { safety: true }], "bye"]).out;
+  assert.equal(harm[2].moveOverlay.kind, "CHECK_IN", "a goodbye after harm words gets its own check-in");
+});

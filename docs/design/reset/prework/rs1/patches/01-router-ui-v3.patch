@@ -1,0 +1,26 @@
+--- a/src/app/routes.tsx	2026-10-04 23:19:53.801754218 +0000
++++ b/src/app/routes.tsx	2026-10-04 23:19:53.851200108 +0000
+@@ -8,10 +8,14 @@
+ import { childStubRoutes } from "./childStubs.tsx";
+ import { Loading, RouteError } from "./Shell.tsx";
+ import Who from "./Who.tsx";
++import { uiV3Enabled } from "../ui-v3/flag.ts";
+ 
+ const Landing = lazy(() => import("./landing/Landing.tsx"));
+ const Onboarding = lazy(() => import("../onboarding/index.tsx"));
+ const ParentCorner = lazy(() => import("../parent/index.tsx"));
++// ui.v3 (RS-1, ages 9-15 design system): the v3 screens with fixtures at /v3 while the flag is on, so the owner and the
++// EXP harness can see every v3 screen on staging before the data wiring lands. Lazy: never on the cold path.
++const V3Preview = lazy(() => import("../ui-v3/Preview.tsx"));
+ // The public pages share the marketing site's chrome (B4, PRODUCT-DESIGN-V2 §6.1.2): one lazy chunk, off the child path.
+ const pub = (k: "Promises" | "Privacy" | "Help" | "Leaving" | "NotFound") => lazy(() => import("./Public.tsx").then((m) => ({ default: m[k] })));
+ const Promises = pub("Promises"), Privacy = pub("Privacy"), PublicHelp = pub("Help"), Leaving = pub("Leaving"), NotFound = pub("NotFound");
+@@ -60,6 +64,8 @@
+       { path: "/who", element: <Who /> },
+       { element: <ChildMode />, children: childRouteTree() },
+       { path: "/parent/*", element: s(<ParentCorner />) },
++      // `?uiv3=1` on any URL turns the flag on for this device (src/ui-v3/flag.ts); off → /v3 is a 404 like any unknown path.
++      { path: "/v3", element: uiV3Enabled() ? s(<V3Preview />) : s(<NotFound />) },
+       ...(LessonDev ? [{ path: "/dev/lesson", element: s(<LessonDev />) }] : []),
+       ...(AvatarDev ? [{ path: "/dev/avatar", element: s(<AvatarDev />) }] : []),
+       ...(DeskDev ? [{ path: "/dev/desk", element: s(<DeskDev />) }] : []),

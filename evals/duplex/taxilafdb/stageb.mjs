@@ -66,7 +66,7 @@ export function loadStageB({ store, version = STAGEB_VERSION } = {}) {
   return ({ d, rec }) => ({
     id: "cce-stageb", version: manifest.version, featureSpec: manifest.featureSpec, audioMs: 0,
     async run(features) {
-      const e = store ? store.emb(d.id, rec.now ?? 0) : null;
+      const e = store && manifest.useAudio !== false ? store.emb(d.id, rec.now ?? 0) : null;
       const stLogit = e ? Math.log(Math.min(0.9999, Math.max(1e-4, e.p)) / (1 - Math.min(0.9999, Math.max(1e-4, e.p)))) : 0;
       const [pComplete, pHoldWanted] = head(features, e ? e.v : null, stLogit, !e);
       return { pComplete, pHoldWanted };

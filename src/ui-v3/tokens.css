@@ -1,0 +1,100 @@
+/* Taxila design v3 tokens (ages 9-15). Mirrors src/ui-v3/tokens.ts exactly; tests/ui-v3-lint.test.mjs checks the mirror.
+   Scoped to .v3 so the Wave 2 screens (src/styles/tokens.css) are untouched while the ui.v3 flag is off.
+   Fonts are self-hosted: Bricolage Grotesque + Geist Mono ship from ./fonts (OFL, latin subset, fetched from Google Fonts
+   2026-10-04); Atkinson Hyperlegible Next and Mukta reuse the existing /fonts files (public/fonts, OFL-NOTICE.txt). */
+@font-face {
+  font-family: "Bricolage Grotesque"; src: url(./fonts/bricolage-grotesque-latin.woff2) format("woff2");
+  font-weight: 500 800; font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Geist Mono"; src: url(./fonts/geist-mono-latin.woff2) format("woff2");
+  font-weight: 500 600; font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next"; src: url(/fonts/atkinson-hyperlegible-next-latin.woff2) format("woff2");
+  font-weight: 400 700; font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Mukta"; src: url(/fonts/mukta-600-devanagari.woff2) format("woff2"); font-weight: 500 700; font-display: swap;
+  unicode-range: U+0900-097F, U+1CD0-1CFF, U+200C-200D, U+A8E0-A8FF;
+}
+
+.v3 {
+  /* --- Night (default child theme) --- */
+  --bg: #0A0C12;
+  --bg-1: #10131B;
+  --bg-2: #161A24;
+  --bg-3: #1F2431;
+  --line: rgba(255, 255, 255, .08);
+  --line-2: rgba(255, 255, 255, .15);
+  --ink: #F2F4F8;
+  --ink-2: #A9B0C0;
+  --ink-3: #848CA0;
+  --ion: #8B98FF;
+  --ion-deep: #4F5BD5;
+  --volt: #CBFF4D;
+  --on-volt: #0A0C12;
+  --mint: #3DDC97;
+  --amber: #FFB547;
+  --rose: #FF6B81;
+  --sub-maths: #8B98FF;
+  --sub-science: #2FD3C7;
+  --sub-social: #5AB8FF;
+  --sub-english: #FF8A7A;
+  --sub-hindi: #C69BFF;
+  --stage-bg: #0D1017;
+  --board: #0F141C;
+  --board-ink: #EEF2F7;
+  --glass: rgba(16, 19, 27, .72);
+  --ion-wash: rgba(139, 152, 255, .14);
+  --ion-ring: rgba(139, 152, 255, .85);
+  --hi: rgba(255, 255, 255, .03);
+  --shadow-lg: 0 30px 80px -40px rgba(0, 0, 0, .8);
+
+  /* --- type --- */
+  --f-display: "Bricolage Grotesque", "Atkinson Hyperlegible Next", system-ui, sans-serif;
+  --f-ui: "Atkinson Hyperlegible Next", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --f-deva: "Mukta", "Atkinson Hyperlegible Next", sans-serif;
+  --t-xs: 12px; --t-sm: 14px; --t-md: 16px; --t-lg: 18px; --t-xl: 22px; --t-2xl: 28px; --t-3xl: 36px; --t-4xl: 48px;
+
+  /* --- shape + space --- */
+  --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --r-xl: 28px; --r-pill: 999px;
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 20px; --s6: 24px; --s8: 32px; --s10: 40px; --s12: 48px;
+  --gutter: 16px;
+  --hit: 44px;
+
+  /* --- motion (DESIGN-V3 §4; mirrored in motion.ts) --- */
+  --m-press: 90ms; --m-quick: 160ms; --m-base: 240ms; --m-stage: 420ms; --m-cine: 720ms; --m-spring: 500ms;
+  --e-std: cubic-bezier(.2, .8, .2, 1);
+  --e-exit: cubic-bezier(.4, 0, 1, 1);
+  --e-spring: cubic-bezier(.34, 1.36, .64, 1);
+
+  color-scheme: dark;
+}
+
+/* --- Day theme: child opt-in, parent default --- */
+.v3[data-theme="day"], .v3 .theme-day {
+  --bg: #F5F6F8; --bg-1: #FFFFFF; --bg-2: #FFFFFF; --bg-3: #EEF0F4;
+  --line: rgba(14, 17, 22, .09); --line-2: rgba(14, 17, 22, .16);
+  --ink: #0E1116; --ink-2: #4A5263; --ink-3: #5E6677;
+  --ion: #3F4FD8; --ion-deep: #2F3BB0;
+  --volt: #C2F542; --on-volt: #0E1116;
+  --mint: #0B7D55; --amber: #965700; --rose: #C2334D;
+  --sub-maths: #3F4FD8; --sub-science: #0B8C83; --sub-social: #1F6FB8; --sub-english: #C2493A; --sub-hindi: #7B4FC4;
+  --stage-bg: #EEF0F4; --board: #FBFBFC; --board-ink: #12161D; --glass: rgba(255, 255, 255, .8);
+  --ion-wash: rgba(63, 79, 216, .08);
+  --ion-ring: rgba(63, 79, 216, .8);
+  --hi: rgba(255, 255, 255, 0);
+  --shadow-lg: 0 20px 50px -30px rgba(14, 17, 22, .25);
+  color-scheme: light;
+}
+
+/* Reduced motion (OS setting or the app's own switch): every animation becomes a <= 1 ms cross-fade. */
+@media (prefers-reduced-motion: reduce) {
+  .v3 { --m-press: 1ms; --m-quick: 1ms; --m-base: 1ms; --m-stage: 1ms; --m-cine: 1ms; --m-spring: 1ms; }
+}
+.v3[data-motion="reduced"] { --m-press: 1ms; --m-quick: 1ms; --m-base: 1ms; --m-stage: 1ms; --m-cine: 1ms; --m-spring: 1ms; }

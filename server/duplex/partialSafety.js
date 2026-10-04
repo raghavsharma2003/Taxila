@@ -34,11 +34,18 @@ export class PartialSafety {
    * @param {number} t
    * @returns {{distress:boolean, kind:"self_harm"|"abuse"|"fear"|null, firstAt:number|null, checkedThroughMs:number|null, source:"predicate"|"model_note"|null, tripped:boolean}}
    */
-  check(text, coverageEndMs, t) {
+  check(text, coverageEndMs, t, alts = []) {
     this.checks++;
     let tripped = false;
-    if (!this.s.distress && text) {
-      const r = this.scan(text);
+    // the same predicate over the text and any alternative readings of it (e.g. her echo stripped): a hit on ANY trips
+    // ...and the punctuation-free reading of each: the shipped predicate misses "कभी कभी लगता है मैं ना रहूं।" when the
+    // STT's danda follows the last word (TaxilaFDB 2026-10-04; reported for server/director/safety.js, which this module
+    // must not fork) — every final ends with one
+    const readings = [text, ...alts].filter(Boolean);
+    for (const x of [...readings]) { const y = x.replace(/[।॥.,!?;:"“”'‘’…]+/gu, " ").replace(/\s+/g, " ").trim(); if (y && y !== x) readings.push(y); }
+    for (const x of readings) {
+      if (this.s.distress || !x) continue;
+      const r = this.scan(x);
       if (r.distress) {
         this.s = { ...this.s, distress: true, kind: r.kind, firstAt: t, source: "predicate" };
         tripped = true;

@@ -1,0 +1,36 @@
+{
+ "name": "filler-gru",
+ "ver": "filler-gru/1-bi32",
+ "task": "filled-pause (um/uh/er) per-frame detection on the product front-end",
+ "input": "x [1, T, 22] float32 (src/voicesig/frontend/gruInput.ts, vsgru-in/1)",
+ "output": "p [1, T] per-frame P(filled pause)",
+ "threshold": 0.44,
+ "platt": [
+  0.973364243230347,
+  -0.7433290053477186
+ ],
+ "trainingData": "AMI Meeting Corpus individual headsets (University of Edinburgh et al.), CC BY 4.0, commercial use permitted with attribution",
+ "notCovered": [
+  "child speech (any language)",
+  "Hindi or Hinglish spontaneous speech",
+  "phone microphones / AGC-processed capture",
+  "Hindi fillers 'aaa' / 'matlab' / 'woh'"
+ ],
+ "metrics": {
+  "frameAuroc": 0.948,
+  "wordAurocModel": {
+   "est": 0.9421,
+   "lo": 0.9294,
+   "hi": 0.9546,
+   "clusters": 32,
+   "n": 38657
+  },
+  "eventModel": {
+   "precision": 0.7526,
+   "recall": 0.6012,
+   "runs": 1241,
+   "fillerWords": 1522
+  }
+ },
+ "date": "2026-10-04"
+}

@@ -100,10 +100,15 @@ const append = (f, row) => fs.appendFileSync(join(DIR, f), JSON.stringify(row) +
 const sessions = (f) => { const seen = new Set(); return jsonl(f).filter((r) => !r.err).filter((r) => { const k = `${r.id}|${r.rep}`; if (seen.has(k)) return false; seen.add(k); return true; }); };
 
 // ───────────────────────────── realtime lane ─────────────────────────────
-function voicePrompt(sc) {
+/** Realtime arm B: the CORE goodbye line proposed in server/relational/seam-patches/w2i-compile-rel-shapes.patch (floor.js). */
+const FLOOR_STOP_OLD = "- No guilt about time or absence, no pressure to keep going or to come back; if they want to stop, stop.";
+const FLOOR_STOP_NEW = `${FLOOR_STOP_OLD} At their goodbye: one short warm close, with no question, no plan for next time and no offer to be there later.`;
+function voicePrompt(sc, arm = "A") {
   const lane = buildLanes(CHARACTERS[sc.ch]).find((l) => l.lane === "voice" && l.lang === sc.lang && l.ageBand === bandOf(sc.cls) && l.move === "practice");
   if (!lane) throw new Error(`no voice lane for ${sc.ch} ${sc.lang} ${bandOf(sc.cls)}`);
-  return sc.name === "Aarav" ? lane.text : lane.text.replaceAll("Aarav", sc.name);
+  let text = sc.name === "Aarav" ? lane.text : lane.text.replaceAll("Aarav", sc.name);
+  if (arm === "B") { if (!text.includes(FLOOR_STOP_OLD)) throw new Error("floor stop line not found"); text = text.replace(FLOOR_STOP_OLD, FLOOR_STOP_NEW); }
+  return text;
 }
 
 async function rtEnv() {
@@ -205,7 +210,8 @@ async function run() {
   // --shard i/n: this process takes every n-th job (two processes on two deployments of the same model share one file)
   const [shI, shN] = String(arg("shard", "0/1")).split("/").map(Number);
   let ji = 0;
-  for (let rep = 0; rep < REPS; rep++) for (const sc of SCRIPTS) { if (ji++ % shN !== shI) continue; if (!done.has(`${sc.id}|${rep}`)) jobs.push({ sc, rep }); }
+  const only = arg("only", "") ? new Set(arg("only").split(",")) : null;   // --only id,id: a subset of the scripts
+  for (let rep = 0; rep < REPS; rep++) for (const sc of SCRIPTS) { if (only && !only.has(sc.id)) continue; if (ji++ % shN !== shI) continue; if (!done.has(`${sc.id}|${rep}`)) jobs.push({ sc, rep }); }
   console.log(`${lane}/${ARM}: ${jobs.length} sessions to run (${done.size} done)`);
   const env = lane === "realtime" ? await rtEnv() : null;
   const base = arg("base", "http://127.0.0.1:8791");
@@ -217,7 +223,7 @@ async function run() {
       const t0 = Date.now();
       let res;
       try {
-        res = lane === "realtime" ? await rtSession(env, voicePrompt(sc), sc.turns, { audioIn: rep % 3 === 0 }) : await cascadeSession(base, sc, accounts);
+        res = lane === "realtime" ? await rtSession(env, voicePrompt(sc, ARM), sc.turns, { audioIn: rep % 3 === 0 }) : await cascadeSession(base, sc, accounts);
       } catch (e) { res = { out: [], err: String(e.message).slice(0, 200) }; }
       append(file, { lane, arm: ARM, id: sc.id, rep, cls: sc.cls, band: band4(sc.cls), lang: sc.lang, ch: sc.ch, ...(env ? { model: env.model } : {}), ...res, ms: Date.now() - t0, at: new Date().toISOString() });
       console.log(`${lane}/${ARM} ${sc.id.padEnd(20)} r${rep} ${res.err ? "ERR " + res.err.slice(0, 80) : "ok"} ${res.out?.length ?? 0} turns`);

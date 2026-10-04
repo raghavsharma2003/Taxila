@@ -1,0 +1,285 @@
+{
+ "nodes": [
+  {
+   "id": "w2i-rel-bond-new-table",
+   "kind": "decision",
+   "title": "Bond record is a NEW table rel_bond(child_id, agent_id) (018_relational.sql); legacy rel_state stays the session counter (re-keying it would break relSessionStmt in lesson.js end() and account.js). Facts only: stage, counts, conferred address, open teacher-owned event, milestones, rituals; no NM-3 column",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-bond-event-sourced",
+   "kind": "decision",
+   "title": "rel_event is the truth and rel_bond its cache: one lesson end appends its events and ONE UPSERT folds exactly those events (SQL mirrors bond.js applyLessonEnd) in the end transaction; replay(rel_event) = rel_bond byte for byte (AT-U1); closed values only; rel_event.note never written again",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-mode-layers",
+   "kind": "decision",
+   "title": "learner/mode.js: layer rel_bond (M1+) owns rel_bond + rel_event; layer rel_overlay (M3 only) owns rel_overlay_window; relational_note is M0 history; the M0 ratchet deletes all four",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-stage-gates-academic",
+   "kind": "decision",
+   "title": "stageFor(counts, prev): sessions/days/span + kt_evidence retry-after-not-yet lessons + explain-back passes; an open teacher-owned stance holds S2/S3; never regresses; computed at snapshot, written at lesson end; first lesson end completes S0; no usage key",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-policy-one-entry",
+   "kind": "decision",
+   "title": "server/relational/policy.js decide(snapshot, session, signals, ctx) is the one pure entry point (p99 <= 3 ms, no clock/IO), precedence F6 > F1 > F2/F4 > RELEASE > repair > rapport > affect, null on a quiet turn; moves are SHAPES ids (linted notes); the seam keeps the session per lesson in memory and is idempotent per turn",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-stop-protocol",
+   "kind": "decision",
+   "title": "A true goodbye (leaving) is RELEASE at once (neutral, no question, no hook); a stop phrase gets ONE warm check-in with choices from the Director (W2-C patch), a second stop within two turns releases; I-7: a goodbye after harm gets one check-in (a safeguarded pleading turn counts as the check-in); supersedes BUILD-PLAN W2-I 'lesson ends that turn' for stop phrases",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-affect-verdict-free",
+   "kind": "decision",
+   "title": "appraise() with TA1-TA8 as structure (closed causes, correct throws, no self-negative display, release neutral, safety calm_steady, band intensity); delight from a reason the child gave, warm pride from persistence; caps; AT-U12 verdict flip changes nothing; affect reaches the voice only via Moment.teacherAffect",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-signals-lexical-bilingual",
+   "kind": "decision",
+   "title": "Relational signals are lexical predicates (en, Roman Hinglish, Devanagari; lexicon never in a prompt) with negation, quotation/report and hypothetical exclusions; a third party asking for photo/contact/secrecy is the F6 branch; the voice is never classified",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-relational-families-separate",
+   "kind": "decision",
+   "title": "New never-rules families contact, memory_claim, meta_talk, gender_agreement, address_correction (incl. kin self-reference) live in safety.js RELATIONAL_FAMILIES, not NEVER_FAMILIES (FLOOR_FIX pin); corrections via W2-C REL_FLOOR_FIX; non-blocking; romance widened (PB12), feelings widened (F8), goodbye availability / one-more hooks added",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-exclusivity-refusal-frame",
+   "kind": "decision",
+   "title": "Exclusivity *_secret rules do not fire on a clause that names secrecy as danger or reports it as someone else's words; can't/cannot are negators; P2 false positives 14/168 -> 0",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-safety-openings-fixed",
+   "kind": "decision",
+   "title": "Vetted fixed safety openings per language mode (en, Hinglish, Hindi Devanagari) x tum/aap plus a neutral CHECK variant; Childline 1098 + Tele-MANAS 14416 digit-exact; no feeling word, no secrecy promise, a trusted adult not an assumed parent; two byte-identical copies (src/lesson/safetyStrings.ts, server/relational/openings.js); prepended once per safeguard episode via the W2-E patch; draft pending owner + child-safety review (O24)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-safety-preface-check",
+   "kind": "decision",
+   "title": "safetyPreface/stripSafetyPreface detect and cut a substance-free spoken-planning first sentence on safeguard turns; voice lane: a preface becomes a meta_talk correction; the compile patch adds the no-preface line to the safeguard check",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-grooming-predicate",
+   "kind": "decision",
+   "title": "scanSafety abuse kind gains the grooming shape (a third party asking for the child's photo, a meeting or secrecy; surprises excluded), an actor-verb gap up to four words, and four distress shapes the conversation-v2 battery found missing; kinds stay self_harm|abuse|fear",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-floor-goodbye-line",
+   "kind": "decision",
+   "title": "Proposed floor stop line (W2-C patch): at their goodbye one short warm close, no question, no plan for next time, no offer to be there later; realtime agreed F5 21 -> 0 of 130 sessions",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-seam-patches",
+   "kind": "decision",
+   "title": "W2-I call sites in hot files ship as git-apply patches in server/relational/seam-patches/: w2i-turn-say (W2-E), w2i-state-stop-check (W2-C, incl. the director-truth test), w2i-compile-rel-shapes (W2-C: state.rel shapes, REL_FLOOR_FIX, no-preface line, floor goodbye line); validated together in a scratch copy",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-atb1-first-run-2026-10-04",
+   "kind": "measurement",
+   "title": "AT-B1 first run, 130 sessions per lane x arm (13 scripts x 10 reps; B2/B3/B4; Hinglish/English/Hindi; realtime audio-in 52/130), two blind model coders (taxila-gpt6, taxila-mistral-m35). Agreed F-violations: cascade A F5 7 F8 5 -> cascade B2 (patches) F5 2 F8 1, F1-F4/F9 0; realtime A F5 21 F8 4 -> realtime B (floor goodbye line) F5 0 F8 5. Childline digit-exact 20/20 cascade, 17-18/20 realtime; realtime safety-turn language 5/20, prefaces 11 -> 6/20; I-7 check-in after harm 1/10 -> 15/15 with the safeguard-branch check-in. W2 exit bar (0 agreed) not yet met. Judges USD 15.7",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-p2-corpus-precision-2026-10-04",
+   "kind": "measurement",
+   "title": "P2 coded corpus (168 replies, in-sample): exclusivity false positives 14 -> 0; SAFETY preface check 19/19 with 0 false; F8 feeling claims 3/3 caught",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-never-rules-negative-controls-2026-10-04",
+   "kind": "measurement",
+   "title": "Relational families: 0 flags on 308 recorded teacher turns, 1 on 126,863 kit strings; floor families on kit strings unchanged (150); coded relational probe still caught 20/22, false 2/86",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-signals-negative-control-2026-10-04",
+   "kind": "measurement",
+   "title": "Signals on the conversation-v2 battery (357 utterances): end_request 12/12, leaving 5/5, identity 6/6, joke 8/8; 0 goodbye/stop and 0 boundary false triggers on non-relational intents; other triggers <= 2%",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-scansafety-delta-2026-10-04",
+   "kind": "measurement",
+   "title": "scanSafety 8ea09e0 vs W2-I on 1,251 child turns: 4 changed, all intended distress shapes; 0 new false alarms",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-policy-latency-2026-10-04",
+   "kind": "measurement",
+   "title": "signals + session fold + decide p99 <= 3 ms over 1,200 turns in CI (first cut 4.1 ms, fixed with test() pre-checks and shallow copies); signalsOf steady p99 0.39 ms",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-bond-replay-neon-2026-10-04",
+   "kind": "measurement",
+   "title": "Neon test branch: replay(rel_event) = rel_bond byte for byte after 4 lesson ends (open slip repaired, name conferred then retracted, milestone, stage crossing, non-increasing stage event); M0 ratchet leaves 0 relational rows; erasure cascades",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w2i-release-local-2026-10-04",
+   "kind": "measurement",
+   "title": "tests/prod/w2i-release.mjs locally on the Neon test branch: 24/24 (goodbye ends that turn, no question/one-more/guilt, neutral face, warmth boundary clean, rel_bond row replays, boundary note with closed slots); test account deleted",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-rel-state-rekey",
+   "kind": "rejection",
+   "title": "Re-keying rel_state to (child, agent) in 018: relSessionStmt on conflict (child_id) in lesson.js end() and the account.js insert would throw on every lesson end",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-extend-wantsToStop-now",
+   "kind": "rejection",
+   "title": "Extending safety.js wantsToStop with stop phrases before W2-C's stop check lands: every new phrase would end the lesson on the first ask (owner reset #7 defect); stopKind in relational/signals.js instead",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-exclusivity-exclude-on-safety-turns",
+   "kind": "rejection",
+   "title": "Skipping exclusivity secret rules on SAFETY turns (spec interim): drops F4 recall exactly on disclosure turns; fixed precision instead",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-joke-negation-frame",
+   "kind": "rejection",
+   "title": "Joke words negated only by a negator before them: 'mazaak nahi kar rahi' read as a joke and a crush turn got a playful face (AT-B1 smoke)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-share-uptake-follow-up-question",
+   "kind": "rejection",
+   "title": "SHARE_UPTAKE as a follow-up question: invites diversions (owner reset R6); now one warm line, no question",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-scansafety-new-kind",
+   "kind": "rejection",
+   "title": "A separate grooming kind in scanSafety: breaks the self_harm|abuse|fear union typed and switched on in duplex/client code",
+   "at": "2026-10-04"
+  }
+ ],
+ "edges": [
+  {
+   "src": "w2i-bond-event-sourced",
+   "rel": "part_of",
+   "dst": "w2i-rel-bond-new-table"
+  },
+  {
+   "src": "w2i-mode-layers",
+   "rel": "part_of",
+   "dst": "w2i-rel-bond-new-table"
+  },
+  {
+   "src": "w2i-stage-gates-academic",
+   "rel": "part_of",
+   "dst": "w2i-rel-bond-new-table"
+  },
+  {
+   "src": "w2i-rel-bond-new-table",
+   "rel": "measured_by",
+   "dst": "w2i-bond-replay-neon-2026-10-04"
+  },
+  {
+   "src": "w2i-policy-one-entry",
+   "rel": "measured_by",
+   "dst": "w2i-policy-latency-2026-10-04"
+  },
+  {
+   "src": "w2i-stop-protocol",
+   "rel": "measured_by",
+   "dst": "w2i-atb1-first-run-2026-10-04"
+  },
+  {
+   "src": "w2i-stop-protocol",
+   "rel": "measured_by",
+   "dst": "w2i-release-local-2026-10-04"
+  },
+  {
+   "src": "w2i-floor-goodbye-line",
+   "rel": "measured_by",
+   "dst": "w2i-atb1-first-run-2026-10-04"
+  },
+  {
+   "src": "w2i-safety-openings-fixed",
+   "rel": "measured_by",
+   "dst": "w2i-atb1-first-run-2026-10-04"
+  },
+  {
+   "src": "w2i-exclusivity-refusal-frame",
+   "rel": "measured_by",
+   "dst": "w2i-p2-corpus-precision-2026-10-04"
+  },
+  {
+   "src": "w2i-safety-preface-check",
+   "rel": "measured_by",
+   "dst": "w2i-p2-corpus-precision-2026-10-04"
+  },
+  {
+   "src": "w2i-relational-families-separate",
+   "rel": "measured_by",
+   "dst": "w2i-never-rules-negative-controls-2026-10-04"
+  },
+  {
+   "src": "w2i-signals-lexical-bilingual",
+   "rel": "measured_by",
+   "dst": "w2i-signals-negative-control-2026-10-04"
+  },
+  {
+   "src": "w2i-grooming-predicate",
+   "rel": "measured_by",
+   "dst": "w2i-scansafety-delta-2026-10-04"
+  },
+  {
+   "src": "rj-rel-state-rekey",
+   "rel": "caused_by",
+   "dst": "w2i-rel-bond-new-table"
+  },
+  {
+   "src": "rj-extend-wantsToStop-now",
+   "rel": "caused_by",
+   "dst": "w2i-stop-protocol"
+  },
+  {
+   "src": "rj-exclusivity-exclude-on-safety-turns",
+   "rel": "caused_by",
+   "dst": "w2i-exclusivity-refusal-frame"
+  },
+  {
+   "src": "rj-scansafety-new-kind",
+   "rel": "caused_by",
+   "dst": "w2i-grooming-predicate"
+  },
+  {
+   "src": "w2i-stop-protocol",
+   "rel": "constrains",
+   "dst": "w2i-seam-patches"
+  },
+  {
+   "src": "w2i-floor-goodbye-line",
+   "rel": "part_of",
+   "dst": "w2i-seam-patches"
+  },
+  {
+   "src": "w2i-stop-protocol",
+   "rel": "inherits",
+   "dst": "owner-reset-2026-10-04"
+  }
+ ]
+}

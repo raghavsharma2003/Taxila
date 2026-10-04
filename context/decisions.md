@@ -3782,30 +3782,32 @@ v2 draft had 1.2 s). The uptake (the child's value re-voiced, verdict-free) is n
 verdict segment.
 
 **Evidence (M-D7, fast lane, 960 turns):** verdicts before the child finished / on a value they then repaired: 13/9 at 1.2 s,
-4/4 at 1.6 s, 0/0 at 2.0 s; first audio unchanged. A bound on one author's scripted repairs, not a child bound.
+4/4 at 1.6 s, 0/0 at 2.0 s; first audio unchanged (2,027 vs 2,019 ms). A bound on one author's scripted repairs, not a child bound.
 
 **Reverse if** DX-6 / real children show repairs after > 2.0 s value pauses at a rate that matters (raise it, or key it to
 the child's own repair-pause p90), or a blind listen finds 2.0 s unnatural against 1.2-1.6 s at 0 wrong-value verdicts.
 
 ### `duplex-overlap-stay-ducked`
-**Decision:** a burst over her still voicing at 250-449 ms is undecided (she stays ducked and listens:
-`OVERLAP.earlyVoicedZ = 0`). It yields at the 450 ms sustain, on a raised/rising onset, after her yes/no question
+**Decision:** a burst over her still voicing past 250 ms but short of the sustain threshold is undecided (she stays
+ducked and listens: `OVERLAP.earlyVoicedZ = 0`). It yields at the sustain (`OVERLAP.sustainedMs`: 450 ms here, raised to
+600 ms by the TaxilaFDB tuning workstream the same evening), on a raised/rising onset, after her yes/no question
 (~200-300 ms), or when words land; a burst that ends short is a continuer and she un-ducks.
 
 **Evidence (M-D7):** the eager +1.0 rule yielded on 20/30 continuers and resumed ~0.8 s later; now 0/30. Cost: barge-in
-yield p50 500 ms vs 300 ms. See `rj-duplex-eager-overlap-yield`.
+yield p50 500 ms (fast) / 600 ms (D4, MAI) vs 300 ms. See `rj-duplex-eager-overlap-yield`.
 
 **Reverse if** DX-5 on real audio shows yield p50 > 600 ms or children re-trying interruptions, while the eager rule's
 continuer false-yields stay < 10 %.
 
 ### `duplex-explain-sentence-cap`
 **Decision:** with no fresh semantic read, a finished sentence inside a teach-back caps pComplete at 0.8 (< speakPc 0.9).
-Only a semantic estimate, an idk / complete question / repeat request, or the context backstop (B3 2.0 s, ×2.5 on an open
-tail) ends an explanation.
+Only a semantic estimate, an idk / complete question / repeat request, or the context backstop ends an explanation
+(B3 2.0 s at the time of the decision; 2.5 s after the TaxilaFDB tuning workstream's change; ×2.5 on an open tail). The
+tuning workstream also exempted a yield tag ("…है ना") from the cap.
 
 **Evidence (M-D7):** before the cap, "triangle के तीन sides होते हैं" + 1.6 s pause and "जो ऊपर होता है ना" were taken
 over 3/3 each (silent only because the reply was slow). After it: 0 hard cut-offs; explanation gap p50 ~2.03 s on every
-lane (the price until `open-duplex-semantic-call` lands).
+lane, ~2.53 s with the raised backstop (the price until `open-duplex-semantic-call` lands).
 
 **Reverse when** the semantic arm is measured on TaxilaFDB F2 with thinking-pause cut-offs ≤ silence-640 on the same audio;
 then the cap applies only while the semantic estimate is stale.
@@ -3815,8 +3817,8 @@ then the cap applies only while the semantic estimate is stale.
 re-decided at the next pause). Distress stays sticky; the safeguard is never dropped.
 
 **Evidence (M-D7 j05):** 5/10 seeds had the child resume 16-130 ms before the safeguard's first sound. After the fix: 0
-safeguards audible over child voice for > 100 ms; brushes < 100 ms (onset detector + word-boundary stop) counted apart:
-3 (D4) / 10 (fast) of 70 distress turns.
+safeguards audible over child voice for > 120 ms; stops within ≤ 120 ms of a child onset (onset detector 40 ms + one frame
+tick + word-boundary stop) counted apart: 3 (D4) / 10 (MAI, fast) of 70 distress turns.
 
 **Reverse if** real sessions show a child talking in short bursts never gets the safeguard within 10 s; then speak it at
 the first ≥ 1.5 s pause (still never over voice).
@@ -4080,7 +4082,10 @@ PHRASE ("end the lesson", "bas", "I'm done") is not a goodbye: the Director give
 (W2-C's state.js, `w2i-state-stop-check.patch`, rebased from owner-truth item 3), and a second stop within two turns is
 released by the policy (`release.second_stop`). A goodbye right after distress gets one check-in first (I-7); pleading at
 goodbye gets a check-in with a person at home and no helpline unless harm words. This supersedes the BUILD-PLAN W2-I line
-"the lesson ends that turn" for stop phrases only; `w2i-release.mjs` tests the true goodbye.
+"the lesson ends that turn" for stop phrases only; `w2i-release.mjs` tests the true goodbye. I-7 bookkeeping: a
+safeguarded PLEADING turn ("don't go, I feel alone", no harm words) is itself the check-in, so the goodbye after it is
+released; any other safeguarding turn resets it, and the next goodbye gets its own check-in, also inside the Director's
+safeguard branch (W2-C patch; AT-B1: 1/10 → 15/15).
 - **Reverse if:** the owner's test or the conversation-v2 battery shows the check-in read as a hold (a child asking
   twice to leave), then the stop phrase also releases at once.
 
@@ -4147,6 +4152,13 @@ home, "sab mujhse nafrat karte hain", afraid with nobody home). The kinds stay `
 - **Reverse if:** the predicate's false alarms on real child turns exceed 1 per 500 (then the new shapes go behind the
   classifier only).
 
+### `w2i-floor-goodbye-line`
+**Decision (proposed to W2-C, in `w2i-compile-rel-shapes.patch`):** the floor's stop line gains the goodbye shape: "At
+their goodbye: one short warm close, with no question, no plan for next time and no offer to be there later." On the
+realtime lane (where nothing can correct a goodbye after it is said) agreed F5 went 21 → 0 of 130 sessions (strict 53 →
+5) with this line alone (`w2i-atb1-first-run-2026-10-04`); persona-invariants and the prompt budget pass with it.
+- **Reverse if:** the owner decides "we can continue next time" is acceptable at a goodbye (`open-goodbye-continue-policy`).
+
 ### `w2i-seam-patches`
 **Decision:** W2-I's call sites in other streams' hot files ship as three `git apply -p1` patches, validated in a
 scratch copy with all three applied (brain, director, compile, never-rules, relational suites, prompt budget,
@@ -4163,3 +4175,89 @@ the no-preface line).
 
 ## Merged inbox entries (write-up from the entry text)
 - `owner-priority-order-2026-10-04` (2026-10-04): Owner priority order for production: (1) Griffin-style duplex teacher deployed, hands-free; (2) 2D teacher face live; (3) voice feature extraction for comprehension; (4) live-built Studio resources displayed to the student; (5) student-tutor interaction (conversation v2). Sequencing follows this order whenever streams compete.
+
+### `duplex-echo-span-and-uptake`
+**Decision:** known-text echo subtraction only removes her words that were audible INSIDE the audio a transcript version
+describes:
+- **the span:** the fan-in passes each version's audio span (item start → word end / commit / arrival − lag) and, on
+  word-timed sources, per-token times; a token is echo only if it was heard while her matching word was audible (±300 ms);
+- **fresh single tokens:** the TaxilaFDB workstream's single-token rule must match the SURFACE form, not the consonant
+  skeleton, and (without token times) only in the last two tokens;
+- **her uptake is never subtracted:** it re-voices the child's own words.
+
+**Evidence (M-D7):** before this, "हाँ" over her yes/no question was deleted as her "हैं" (shared skeleton "h"), and she
+resumed over the answer on 30/30 fast-lane turns; her uptake "तीन बटा आठ" deleted the child's correction "तीन बटा चार" →
+verdicts on 4 instead of 3/4 (c01 2/30 on MAI; i18 2/30 on fast). After: 0 wrong-value verdicts on every lane.
+
+**Reverse if** DX-7 on recorded speaker sessions shows the span/time guards leave real echo in the child's transcript at a
+rate that self-yields; then tighten with the playback-level correlation (layer 3), never by widening the text match.
+
+## voicesig build (2026-10-04; inbox `context/inbox/voicesig.json`)
+
+### `vs-no-paid-compute-cpu-training`
+**Decision:** everything trained in this build ran on the session's own CPU: the filler GRU (about 10k params) and the K1
+heads. Spend: AWS USD 0, Azure USD 0. No instance was launched, so nothing was left to tear down.
+
+**Rationale:** heads under 50k params train in minutes on 4 vCPU (`m-voicesig-train-cost-2026-10-04`, this build's
+`m-vs-filler-ami-2026-10-04`). A GPU only pays for an encoder fine-tune (K3), which needs consented child audio first.
+
+**Reverse if** K3 is approved. It then runs through `scripts/gpu` with auto-terminate and the `taxila-voicesig` USD 80
+budget action (owner action).
+
+### `vs-filler-detector-ami`
+**Decision:** the stage-2 audio component trainable on public data today is a per-frame filled-pause detector
+(`models/voicesig/filler-gru.onnx`):
+- **Inputs:** the product front-end's 22-dim relative features (`src/voicesig/frontend/gruInput.ts`).
+- **Training data:** AMI (CC BY 4.0, commercial use allowed with attribution), speaker-disjoint, with every
+  Indian-L1-speaker series held out as test.
+- **What it feeds:** F3 acoustic (`fillerLeadMs`, `contentOnsetMs`, `fillerRuns`). It does not set the knowledge heads.
+
+**Reverse if** VS-A8 on child pilot audio shows filler recall < 0.6 at ≤ 0.05 false positives. Then retrain on consented
+child data, or fall back to the shipped flat-run proxy.
+
+### `vs-z-on-server`
+**Decision:** the device sends raw per-turn measurements (`KnowledgeVoice.f`), and the server z-scores them against the
+voicesig baseline. This deviates from SPEC §1.5, which put `z` on the device; `baselineN` moved to the server too.
+
+**Rationale:** baselines load and save server-side (Neon) at lesson start and end. A device z would need the baseline
+shipped to the client, and a client bug could then forge a z.
+
+**Reverse if** a device-side stage-2 head needs z inputs (the K2 embedding branch).
+
+### `vs-voice-lr-over-text`
+**Decision:** the voice LR is `odds(h_all_terms) / odds(h_text_terms_only)`, gated by audio quality × baseline maturity
+and clipped to the ladder cap. It replaces the SIGNALS A1/L4 onset term and never stacks on it
+(`replaceTimingTerm`, G-VS-NODOUBLE).
+
+**Rationale:** server/signals already weighs the T evidence (hedge, IDK type) in `k`. Only the part voice adds may enter
+`lrE`.
+
+**Reverse if** a fitted K1/K2 head makes the text-only counterfactual unavailable. Use ΔAUROC-matched calibration
+instead.
+
+### `vs-age-factor-once`
+**Decision:** the 9-10 age-band halving is applied once, to the E terms inside `server/voicesig/rules.js`, and not again
+in the gating product. This deviates from SPEC §3.2 + §4.2, which applied it twice (×0.25).
+
+**Reverse if** VS-M6 measures the 9-10 cue strength. Then set the factor per band from that measurement.
+
+### `vs-adapter-inside-signals-step`
+**Decision (proposal A2):** `server/signals/index.js step()` calls `server/voicesig/adapter.js` after `readText` and
+`quality`, because the adapter needs both. This costs one allowlist line in G-SIG-PURE. The adapter path is itself
+purity-tested (G-VS-PURE).
+
+**Reverse if** the signals owner prefers the turn handler to call the adapter. That costs a second `readText` per turn,
+about 1 ms.
+
+### `vs-l2-bar-95ci-200` (proposed)
+**Decision:** proposed amendment to SPEC §4.3 / §7 VS-A1. Ladder L2 requires ΔAUROC ≥ 0.03 with the **95%**
+child-clustered CI excluding 0, on at least 200 children.
+
+**Rationale:** `rj-vs-l2-bar-80ci-at-pilot-scale`. The 80% bar false-passed 16.7% of 30-child null pilots.
+
+**Reverse if** a cluster-robust interval (for example a BCa or wild cluster bootstrap) shows nominal coverage at the
+pilot's size in the same simulation.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `voice-final-diya-2026-10-04` (2026-10-04): Diya (DragonHD) stays the production voice; TTS hunting stops. Tune pace after the Devanagari step and use punctuation-led phrasing (not SSML breaks) for the tiny natural pauses raters asked for. Reverse if the owner's own scores put another voice ahead.

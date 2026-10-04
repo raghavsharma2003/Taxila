@@ -80,6 +80,12 @@ export function sttTimeline(d) {
     segs.push({ start: g.herSpan.start, end: g.herSpan.end, contour: "l", text: sc.her.text, src: "echo" });
     for (const w of g.herWords) words.push({ w: w.w, seg: si, start: Math.round(w.start), end: Math.round(w.end), src: "echo" });
   }
+  // dominant-speaker masking: where the child is speaking, a recogniser outputs the child, not a -30 dB echo or a quieter
+  // overlay under it (L2 live transcripts never interleaved her echo INSIDE the child's phrase; the first simulator did,
+  // and that broke the safety predicate's phrase in F10 during_her). Near-field overlays (side talk at 0 dB) are kept.
+  const child = words.filter((w) => w.src === "child");
+  const masked = (w) => w.src !== "child" && w.src !== "side_talk" && child.some((c) => w.start < c.end + 80 && w.end > c.start - 80);
+  for (let i = words.length - 1; i >= 0; i--) if (masked(words[i])) words.splice(i, 1);
   words.sort((a, b) => a.start - b.start || a.end - b.end);
   const end = words.length ? Math.max(...words.map((w) => w.end)) : 0;
   return { words, segs, end, childStart: g.childStart ?? null };
@@ -186,7 +192,7 @@ export async function runStream(id, arm) {
       return;
     }
     if (c.to !== "voice") return;
-    if (c.op === "duck") { rec.ducks++; return; }
+    if (c.op === "duck") { rec.ducks++; (rec.duckAt ??= []).push(c.t); return; }
     if (c.op === "speak" || c.op === "cut_in") {
       const s = stage();
       const safeguard = c.op === "speak" ? c.reason === "safeguard" : c.reason === "safety";
@@ -208,7 +214,10 @@ export async function runStream(id, arm) {
     if (c.op === "yield") {
       rec.yields.push({ t: c.t, reason: c.reason, resumable: c.resumable, herSpeaking: !!(her && her.stoppedAt === null) });
       lastYieldHeard = c.heardUpTo;
-      if (c.reason === "revoke") {
+      // a revoke OR a safety yield cancels the pending reply (actuator contract: a yield stops her audio and drops any reply
+      // not yet audible; critique 2026-10-04: the first world only cancelled on "revoke", so a turn_end committed just before
+      // a distress trip was scored as spoken after the safeguard although it could never play — PLAN.md W2.5-3 tests it)
+      if (c.reason === "revoke" || c.reason === "safety") {
         const live = rec.speaks.at(-1);
         if (live && live.revokedAt === null) live.revokedAt = c.t;
       }
@@ -298,7 +307,7 @@ export async function runStream(id, arm) {
   if (stt.close) rec.stt = await stt.close();
   rec.ticks = host.stats.ticks;
   rec.endMs = endMs;
-  if (spec) { spec.close(endMs); rec.spec = spec.summary().prepare; }
+  if (spec) { spec.close(endMs); const sm = spec.summary(); rec.spec = sm.prepare; rec.specFull = sm; }
   if (host.engine.stats) rec.engineStats = host.engine.stats;
   return rec;
 }

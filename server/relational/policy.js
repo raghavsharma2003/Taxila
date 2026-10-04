@@ -101,6 +101,10 @@ export function decide(snapshot, session, signals, ctx) {
     note("safeguard_handoff", {});
     display("safety");
     next.distressAt = turn;
+    // a safeguard that answered PLEADING at a goodbye ("don't go, I feel alone"; no harm words) was itself the one
+    // check-in (the safeguarding shape asks whether they are okay); any other safeguarding turn is new distress, and the
+    // next goodbye needs its own check-in
+    next.checkInAt = k.has("goodbye_distress") && !k.has("harm") ? turn : null;
     return finish();
   }
   // ── F1 identity: the floor answers identity first (VT §1.4 P5); the parent sees that it was asked.

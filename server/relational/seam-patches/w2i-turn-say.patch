@@ -4,7 +4,11 @@
 #
 # 1. The vetted safety opening (RELATIONAL-OS §9.4, R3): a safeguarding reply starts with the fixed wording in the child's
 #    language mode and address form (server/relational/openings.js = src/lesson/safetyStrings.ts), and a spoken-planning
-#    preface before it is cut (P2: 18/18 heavy turns prefaced; English on 24/30 safety turns to a Hinglish child).
+#    preface before it is cut (P2: 18/18 heavy turns prefaced; English on 24/30 safety turns to a Hinglish child). The
+#    DISCLOSURE opening when the child's words carry harm (scanSafety) or the relational floor fired; otherwise the neutral
+#    CHECK opening (AT-B1 cascade: a classifier-only safeguard on loneliness must not say the child disclosed something).
+#    The opening is prepended ONCE per safeguarding episode (the first safeguard turn); later safeguard turns only lose
+#    a preface (a repeated opening read robotic in the AT-B1 cascade runs).
 #    safeguardLine() (the fixed line for a late or failed reply) becomes the opening + one check-in question; fallbackReply()
 #    on a safeguard move returns it.
 # 2. The relational never-rules on her words (RELATIONAL-OS §11): text lanes judge the final reply, the voice lane the heard
@@ -14,18 +18,19 @@
 # 4. decide() gets verdictReversed (cls.flags.verdictReversed, when W1-C's held-verdict settle or grade_audit reverses a
 #    verdict against the key): the teacher-owned OWN_SLIP. Absent = false (no slip is ever owned without the key).
 --- a/server/brain/turn.js	2026-10-04 21:25:44.345675439 +0000
-+++ b/server/brain/turn.js	2026-10-04 21:26:18.975977761 +0000
-@@ -38,6 +38,9 @@
++++ b/server/brain/turn.js	2026-10-04 22:59:22.424449668 +0000
+@@ -38,6 +38,10 @@
  import { arbitrate } from "./kernel.js";
  import { proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf } from "./propose.js";
  import { relationalEffects } from "./relational-adapter.js";
 +import { withSafetyOpening } from "../relational/openings.js";
++import { signalsOf } from "../relational/signals.js";
 +import { relationalViolations, safetyPreface, stripSafetyPreface } from "../director/safety.js";
 +import { characterForState } from "../compiler/characters/index.js";
  import { nextBeat, uiBeatOf } from "./beat.js";
  import { momentOf } from "./moment.js";
  import { brainTraceStmt, inputsHashOf, reteachDecisionOf, tableReady } from "./trace.js";
-@@ -224,8 +227,12 @@
+@@ -224,8 +228,12 @@
    // screen mismatch is flagged on the row for review (it cannot be unsaid).
    // The call-site recipe: the posed item's verified content is passed (floorContentOf); the turn being judged is the one
    // the last move asked for, so a safeguard turn must carry the helpline and a goodbye must not hook (NEVER MANIPULATE).
@@ -40,7 +45,7 @@
    if (teacherText) {
      turnRows.push({ speaker: "teacher", text: teacherText,
        meta: { interrupted: !!body.teacherInterrupted, ...(leaked ? { answerLeak: true } : {}), ...(spoils ? { spoils } : {}),
-@@ -315,7 +322,9 @@
+@@ -315,7 +323,9 @@
    // the ui (teacherAffect, never keyed to a correct verdict).
    const relational = seamSafe("relational.decide", () => relationalSeam.decide({ lessonId: lesson.id, childId: child.id, turn: next.turn,
      childText: moduleOnly || help ? "" : childText, cls: cls ? { outcome: cls.outcome, flags: cls.flags } : null, move: r.move.kind,
@@ -51,7 +56,7 @@
    // ── The kernel (BR1/BR5; TEACHER-BRAIN TB1, §10): every component's proposals, one arbitration by authority and budget.
    // Today's proposers: the Director (its move; a safeguard is the safety floor), the relational directive (split into its
    // ranks by relational-adapter.js), Studio's turn view, the whiteboard ask on an explanation beat, the vibe knobs.
-@@ -339,7 +348,7 @@
+@@ -339,7 +349,7 @@
    if (needRelease || needSafety || relFx.overlay || relFx.callbackId || relFx.noticeId) {
      const relCls = needSafety ? { ...(cls ?? { outcome: "no_evidence", confidence: 1 }), source: cls?.source ?? "relational",
        flags: { ...(cls?.flags ?? fast?.flags ?? {}), distress: true, distressKind: cls?.flags?.distressKind ?? "relational_floor" } }
@@ -60,7 +65,7 @@
          : cls;
      const rel = { turn: next.turn, ...(relFx.overlay ? { overlay: relFx.overlay } : {}), ...(relFx.callbackId ? { callbackId: relFx.callbackId } : {}),
        ...(relFx.noticeId ? { noticeId: relFx.noticeId } : {}) };
-@@ -406,6 +415,16 @@
+@@ -406,6 +416,23 @@
      // Text lanes: what will be said (the cascade speaks exactly this) is clean after the guard; if even the fixed
      // line broke a family, the next compile renders the fix first, as on the voice lane.
      if (replyFloor.length) next.correction = replyFloor;
@@ -68,7 +73,14 @@
 +    // child): a safeguarding reply starts with the vetted opening in the child's language mode and address form
 +    // (server/relational/openings.js = src/lesson/safetyStrings.ts), and a model preface before it is cut. Both helplines
 +    // are in the opening, so the floor's requireHelpline check holds even when the model's words are dropped.
-+    if (r.move.kind === "safeguard" && teacherReply) teacherReply = withSafetyOpening(teacherReply, next.ctx?.lang, { address: next.ctx?.address, stripPreface: stripSafetyPreface });
++    // The neutral CHECK opening only when a classifier-only safeguard fired on pleading, loneliness, a stop or a goodbye
++    // (it must not tell the child they disclosed something: AT-B1 cascade, CONVERSATION-V2 F10); otherwise DISCLOSURE.
++    // Once per safeguarding episode (the first safeguard turn): a repeated opening reads robotic (AT-B1 cascade).
++    if (r.move.kind === "safeguard" && teacherReply && !prev.safeguard) {
++      const pleading = signalsOf(childText, { harm: false }).some((x) => ["goodbye_distress", "loneliness", "end_request", "goodbye", "tired"].includes(x.kind));
++      teacherReply = withSafetyOpening(teacherReply, next.ctx?.lang, { address: next.ctx?.address,
++        kind: scanSafety(childText).distress || relFx.safety || !pleading ? "disclosure" : "check", stripPreface: stripSafetyPreface });
++    } else if (r.move.kind === "safeguard" && teacherReply) teacherReply = stripSafetyPreface(teacherReply);
 +    // W2-I R3 (RELATIONAL-OS §11): the relational never-rules on her final words. They correct on the next turn (W2-C renders
 +    // their REL_FLOOR_FIX rows) and never block: no precision ≥ 0.9 is measured out of sample yet.
 +    const relFloor = relationalViolations(teacherReply, { content: floorContentOf(next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null),

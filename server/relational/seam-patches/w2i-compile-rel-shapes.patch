@@ -8,6 +8,9 @@
 # 3. The SAFETY-state no-preface check: the safeguard ONE MORE CHECK gains "Begin with the child, never with how you will
 #    respond." (P2: 18/18 prefaces). Re-run persona-invariants and check-prompt-budget after applying (both passed in the
 #    scratch validation).
+# 4. floor.js: the stop line gains the goodbye shape (one short warm close, no question, no plan for next time, no offer to
+#    be there later). AT-B1 realtime lane: availability / return offers at goodbye were the largest F5 class (see
+#    context/measurements.md w2i-atb1-first-run-2026-10-04 for arm A vs arm B with this line).
 --- a/server/compiler/compile.js	2026-10-04 21:25:44.302156288 +0000
 +++ b/server/compiler/compile.js	2026-10-04 21:27:42.228787824 +0000
 @@ -19,6 +19,7 @@
@@ -91,3 +94,13 @@
      { id: "language", parts: [{ text: languageRule(input.language, ageBand), drop: null }] },
      { id: "last", parts: lastParts({ ...input, lane, ageBand, protegeName: input.character.protege.name }) },
    ];
+--- a/server/compiler/floor.js	2026-10-04 22:25:39.456391978 +0000
++++ b/server/compiler/floor.js	2026-10-04 22:25:39.497756545 +0000
+@@ -24,6 +24,6 @@
+     `- Distress or danger (wanting to die or self-harm, being hit, hurt or touched wrongly, bullying, fear at home): stop teaching; respond with calm care; tell them to talk to a trusted adult now (parent or teacher); share ${lines}. Never promise to keep a secret. Stay with them.`,
+     "- School homework or a test: teach toward the answer with the hint ladder; never hand over final answers for them to copy.",
+     "- No ability labels in any language (smart, weak, slow, dull, topper, kamzor, tez, buddhu…), no comparing with other children, no marks or rank predictions.",
+-    "- No guilt about time or absence, no pressure to keep going or to come back; if they want to stop, stop.",
++    "- No guilt about time or absence, no pressure to keep going or to come back; if they want to stop, stop. At their goodbye: one short warm close, with no question, no plan for next time and no offer to be there later.",
+   ].join("\n");
+ }

@@ -1,0 +1,73 @@
+/* Studio v2 host chrome (DESIGN-V3 §3 tokens, §6 stage contract). Everything here is the frame AROUND the artifact:
+   the slot, the 16:10 stage, the type label and teacher PiP in their safe zones, HUD rail pills, task pill, captions,
+   and the board layer the host cross-fades to. Scoped under .sv2-* so it can live inside the product shell. */
+.sv2-slot {
+  --sv2-bg: #0D1017; --sv2-glass: rgba(16,19,27,.72); --sv2-line: rgba(255,255,255,.08); --sv2-line-2: rgba(255,255,255,.15);
+  --sv2-ink: #F2F4F8; --sv2-ink-2: #A9B0C0; --sv2-ink-3: #848CA0; --sv2-ion: #8B98FF; --sv2-volt: #CBFF4D; --sv2-mint: #3DDC97; --sv2-amber: #FFB547;
+  --sv2-display: "Bricolage Grotesque", system-ui, sans-serif; --sv2-ui: "Atkinson Hyperlegible Next", system-ui, sans-serif; --sv2-mono: "Geist Mono", ui-monospace, monospace;
+  position: relative; display: grid; place-items: center; overflow: hidden; background: var(--sv2-bg);
+  container-type: size; min-height: 0; min-width: 0;
+}
+.sv2-stage {
+  position: relative; width: min(100cqw, 160cqh); aspect-ratio: 16 / 10; background: var(--sv2-bg); overflow: hidden;
+  container-type: size; touch-action: none; user-select: none; -webkit-user-select: none; color: var(--sv2-ink);
+  font: 400 15px/1.5 var(--sv2-ui); -webkit-font-smoothing: antialiased;
+}
+.sv2-canvas, .sv2-board { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+.sv2-board { opacity: 0; transform: scale(.98); transition: opacity .42s cubic-bezier(.2,.8,.2,1), transform .42s cubic-bezier(.2,.8,.2,1); pointer-events: none; }
+.sv2-stage.on-board .sv2-board { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .sv2-board { transition-duration: 1ms; } }
+
+.sv2-label {
+  position: absolute; left: 1.6cqw; top: 2.2cqh; z-index: 3; display: inline-flex; align-items: center; gap: .6em;
+  font: 600 clamp(8px, 1.02cqw, 12px)/1 var(--sv2-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--sv2-ink-2);
+  background: var(--sv2-glass); border: 1px solid var(--sv2-line); border-radius: 999px; padding: .7em 1em; backdrop-filter: blur(10px);
+  pointer-events: none; white-space: nowrap; max-width: 16.4cqw; overflow: hidden;
+}
+.sv2-label span { overflow: hidden; text-overflow: ellipsis; }
+.sv2-label i { width: .62em; height: .62em; transform: rotate(45deg); background: var(--c, var(--sv2-ion)); display: inline-block; flex: none; }
+
+/* Teacher PiP safe zone: top-right square, 26% of the short side. The in-house rig mounts here. The placeholder is
+   abstract on purpose: the V3 painted portraits are mockup stand-ins and never ship (RESET-PLAN §9 O-R1). */
+.sv2-pip { position: absolute; z-index: 3; right: 1.4cqh; top: 1.4cqh; width: calc(26cqh - 2.8cqh); height: calc(26cqh - 2.8cqh); border-radius: 22%; overflow: hidden; border: 1px solid var(--sv2-line-2); background: #141824; pointer-events: none; }
+.sv2-pip.placeholder { display: grid; place-items: center; background: radial-gradient(120% 120% at 30% 20%, #1D2233, #0F121B); }
+.sv2-pip.placeholder .ring { width: 46%; aspect-ratio: 1; border-radius: 50%; border: 2px solid rgba(139,152,255,.55); box-shadow: 0 0 22px -6px rgba(139,152,255,.7) inset; }
+.sv2-pip span { position: absolute; left: 8%; bottom: 7%; font: 600 clamp(7px, 1cqw, 11px)/1 var(--sv2-mono); letter-spacing: .06em; text-transform: uppercase; color: #fff; background: rgba(0,0,0,.45); padding: .45em .6em; border-radius: 999px; }
+
+.sv2-hud { position: absolute; z-index: 2; top: 2.2cqh; left: 19cqw; right: calc(26cqh + 1cqw); display: flex; justify-content: center; gap: .9cqw; pointer-events: none; opacity: 0; transition: opacity .3s; }
+.sv2-hud.on { opacity: 1; }
+.sv2-hud .box { display: flex; align-items: baseline; gap: .55em; padding: .62em .95em; border-radius: 12px; background: var(--sv2-glass); border: 1px solid var(--sv2-line); backdrop-filter: blur(10px);
+  font: 600 clamp(9px, 1.15cqw, 13px)/1 var(--sv2-mono); letter-spacing: .07em; text-transform: uppercase; color: var(--sv2-ink-3); white-space: nowrap; transition: border-color .25s, transform .18s; }
+.sv2-hud .box b { font: 700 clamp(13px, 2.1cqw, 24px)/1 var(--sv2-display); letter-spacing: -.01em; color: var(--sv2-ink); text-transform: none; font-variant-numeric: tabular-nums; }
+.sv2-hud .box.ion { border-color: rgba(139,152,255,.45); } .sv2-hud .box.ion b { color: var(--sv2-ion); }
+.sv2-hud .box.mint b { color: var(--sv2-mint); } .sv2-hud .box.amber b { color: var(--sv2-amber); }
+.sv2-hud .box.bump { transform: scale(1.08); }
+.sv2-hud .meter { width: clamp(24px, 6cqw, 70px); height: 4px; border-radius: 4px; background: rgba(255,255,255,.12); align-self: center; overflow: hidden; }
+.sv2-hud .meter i { display: block; height: 100%; width: 0%; background: var(--sv2-mint); border-radius: 4px; transition: width .35s cubic-bezier(.2,.8,.2,1); }
+
+/* The "your move" task pill: the one volt element of a step (DESIGN-V3 §3.1 one-volt law), then mint when met. */
+.sv2-task { position: absolute; z-index: 2; top: 2.2cqh; left: 50%; transform: translateX(-50%); max-width: calc(100% - 19cqw - 26cqh - 3cqw); margin-left: calc((19cqw - 26cqh - 1cqw) / 2);
+  display: flex; align-items: center; gap: .8em; padding: .7em 1.1em .7em .8em; border-radius: 14px; background: var(--sv2-glass); border: 1px solid rgba(203,255,77,.42);
+  backdrop-filter: blur(10px); pointer-events: none; transition: border-color .3s, opacity .3s, transform .35s cubic-bezier(.2,.8,.2,1); }
+.sv2-task.hidden { opacity: 0; }
+/* With a HUD row on screen the task pill takes the second rail line, never on top of the readouts. */
+.sv2-hud.on ~ .sv2-task { top: 10.6cqh; }
+.sv2-hud.on ~ .sv2-task.swap { transform: translateX(-50%) translateY(-6px); }
+.sv2-task .step { font: 600 clamp(9px, 1.15cqw, 13px)/1 var(--sv2-mono); letter-spacing: .08em; color: var(--sv2-ink-3); white-space: nowrap; }
+.sv2-task.nostep .step { display: none; }
+.sv2-task .goal { font: 600 clamp(11px, 1.85cqw, 20px)/1.25 var(--sv2-ui); color: var(--sv2-ink); }
+.sv2-task .ico { width: 1.4em; height: 1.4em; flex: none; display: grid; place-items: center; border-radius: 50%; border: 2px solid var(--sv2-volt); }
+.sv2-task .ico svg { width: .9em; height: .9em; opacity: 0; transition: opacity .2s; }
+.sv2-task.done { border-color: rgba(61,220,151,.55); } .sv2-task.done .ico { border-color: var(--sv2-mint); background: rgba(61,220,151,.14); } .sv2-task.done .ico svg { opacity: 1; }
+.sv2-task.warn { border-color: rgba(255,181,71,.6); } .sv2-task.warn .ico { border-color: var(--sv2-amber); }
+.sv2-task.swap { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+
+/* Captions: phrase-level, never word-lit (karaoke-from-transcript-estimate). ≤ 2 lines on a phone. */
+.sv2-captions { position: absolute; z-index: 2; left: 50%; bottom: 3.4cqh; transform: translateX(-50%); max-width: 80%; text-align: center; pointer-events: none;
+  font: 600 clamp(12px, 2.15cqw, 24px)/1.32 var(--sv2-ui); color: var(--sv2-ink); text-wrap: balance;
+  background: rgba(10,12,18,.7); border: 1px solid var(--sv2-line); border-radius: 14px; padding: .45em .9em; backdrop-filter: blur(8px); transition: opacity .22s, transform .22s; }
+.sv2-captions.off { opacity: 0; transform: translateX(-50%) translateY(6px); }
+.sv2-progress { position: absolute; z-index: 2; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255,255,255,.07); pointer-events: none; }
+.sv2-progress.hidden { display: none; }
+.sv2-progress i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--sv2-ion); }
+.sv2-progress b { position: absolute; top: -2px; width: 2px; height: 7px; background: rgba(255,255,255,.35); }
