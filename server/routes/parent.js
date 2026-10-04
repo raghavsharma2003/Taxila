@@ -24,11 +24,14 @@ import { MIN_DELAY_MS } from "../learner/bkt.js";
 import { loadLive } from "../learner/live.js";
 import { beliefFor, conceptCard } from "../comprehension/index.js";
 import { CADENCES, LANGS, LANG_OF_PREF } from "../reports/config.js";
-import { learningDay, isoWeek } from "../conductor/clock.js";
+import { learningDay, isoWeek, addDays, zonedToUtc } from "../conductor/clock.js";
+import { madeForOf } from "../reports/madeFor.js";
 import { listReports, previewReport, reportById, windowOf } from "../reports/index.js";
 import { HOW, renderFixed } from "../reports/templates.js";
 import { outcomeName } from "../learner/kt/outcomes.js";
 import { shortTitleOf } from "../director/state.js";
+import { COUNTED_LESSON_SQL, loadTruth, loadLessonTally, claimRows, topicTruth, lessonFactsSummary, renderSummaryLine, summaryClaimsHold,
+  supersede, engineRow, lessonEndMs, GRADER_WORDS } from "../reports/truth.js";
 
 export const PIN_RE = /^\d{4,6}$/;
 export const PIN_MAX_TRIES = 5;
@@ -351,6 +354,8 @@ export function parentState(row, dc = null) {
   if (s === "mastered") return { level: 3, key: "mastered", recheck: false };
   if (s === "learned_today") return { level: 2, key: "learned_today", recheck: false };
   if (s === "due") return row.delayed_pass ? { level: 3, key: "mastered", recheck: false } : { level: 2, key: "learned_today", recheck: false };
+  // taught but never tried is not a sprout (flows G7): "introduced" with no attempt reads Not started
+  if (s === "introduced" && !(Number(row?.attempts) > 0)) return { level: 0, key: "unseen", recheck: false };
   if (s === "introduced" || s === "practising") return { level: 1, key: "practising", recheck: false };
   return { level: 0, key: "unseen", recheck: false };
 }
@@ -480,7 +485,8 @@ export function defaultControls(classLevel) {
 const controlsOut = (row, child) => row ? {
   dailyMinutes: row.daily_minutes, hoursStart: row.hours_start, hoursEnd: row.hours_end, captionsAlways: row.captions_always,
   comfortMode: row.comfort_mode, address: row.address, reportChannel: row.report_channel, saved: true,
-} : { ...defaultControls(child.class_level), saved: false };
+  textOnly: !!row.text_only, homeworkToday: !!row.homework_until && new Date(row.homework_until) > new Date(),
+} : { ...defaultControls(child.class_level), saved: false, textOnly: false, homeworkToday: false };
 
 const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
 /** Validate a partial controls body against the current values → the full row to store. */
@@ -498,7 +504,7 @@ export function mergeControls(current, body) {
     }
   }
   if (out.hoursStart >= out.hoursEnd) throw bad("allowed hours must end after they start");
-  for (const k of ["captionsAlways", "comfortMode"]) if (body[k] !== undefined) out[k] = !!body[k];
+  for (const k of ["captionsAlways", "comfortMode", "textOnly", "homeworkToday"]) if (body[k] !== undefined) out[k] = !!body[k];
   if (body.address !== undefined) {
     if (body.address !== null && !["tum", "aap"].includes(body.address)) throw bad("address must be tum or aap");
     out.address = body.address;
@@ -536,8 +542,54 @@ async function setControls(req, res, body) {
        captions_always = excluded.captions_always, comfort_mode = excluded.comfort_mode, address = excluded.address,
        report_channel = excluded.report_channel, updated_at = now()
      returning *`, [child.id, c.dailyMinutes, c.hoursStart, c.hoursEnd, c.captionsAlways, c.comfortMode, c.address, c.reportChannel]);
+  // 019 columns (W2-A): "Tap and type only" per child, and "Homework help today" (until the end of today's learning day)
+  let saved2 = saved;
+  if (body.textOnly !== undefined || body.homeworkToday !== undefined) {
+    const tz = await tzOf(child.id);
+    const until = c.homeworkToday ? zonedToUtc(addDays(learningDay(new Date(), tz), 1), "04:00", tz).toISOString() : null;
+    saved2 = await one(`update child_controls set text_only = $2,
+        homework_until = case when $4::boolean then coalesce(case when homework_until > now() then homework_until end, $3::timestamptz) else null end
+        where child_id = $1 returning *`, [child.id, !!c.textOnly, until, !!c.homeworkToday]).catch((e) => {
+      if (e?.code === "42703") throw new HttpError(503, "this setting is not available yet");
+      throw e;
+    }) ?? saved;
+  }
   await q("insert into audit(guardian_id, action, detail) values ($1, 'controls', $2)", [g.id, { childId: child.id }]);
-  send(res, 200, { controls: controlsOut(saved, child) });
+  send(res, 200, { controls: controlsOut(saved2, child) });
+}
+
+// ───────────────────────────── school test window (W2-A SF1, STUDENT-FLOW §4.2 test_window) ─────────────────────────────
+
+const DAY = /^\d{4}-\d{2}-\d{2}$/;
+const TEST_SUBJECTS = new Set(["maths", "science", "evs", "english", "hindi", "sst"]);
+/** GET /api/parent/test-window?childId= → { window } (null when none, or it ended before yesterday). */
+async function getTestWindows(req, res) {
+  const { child } = await requireParentChild(req, query(req).get("childId"));
+  const r = await one("select test_window from child_controls where child_id = $1", [child.id]).catch(() => null);
+  const w = r?.test_window ?? null;
+  const today = learningDay(new Date(), await tzOf(child.id));
+  send(res, 200, { window: w && w.to >= addDays(today, -1) ? w : null });
+}
+/** POST /api/parent/test-window { childId, subject, from, to } (≤ 21 days; one window per child). Unlocked corner. */
+async function setTestWindow(req, res, body) {
+  const { guardian, child } = await requireParentChild(req, need(body, "childId").childId);
+  const subject = String(body.subject ?? "");
+  if (!TEST_SUBJECTS.has(subject) || !topicSequence(child.class_level, subject).length) throw bad("subject must be one of the class's subjects");
+  if (!DAY.test(String(body.from ?? "")) || !DAY.test(String(body.to ?? ""))) throw bad("from and to must be dates (YYYY-MM-DD)");
+  if (body.to < body.from) throw bad("the test window must end after it starts");
+  if ((Date.parse(body.to) - Date.parse(body.from)) / 86_400_000 > 21) throw bad("a test window is at most 3 weeks");
+  const w = { subject, from: body.from, to: body.to };
+  await one(`insert into child_controls(child_id, daily_minutes, test_window) values ($1, $2, $3)
+      on conflict (child_id) do update set test_window = excluded.test_window, updated_at = now() returning child_id`,
+  [child.id, defaultControls(child.class_level).dailyMinutes, w]);
+  await q("insert into audit(guardian_id, action, detail) values ($1, 'test_window', $2)", [guardian.id, { childId: child.id, subject }]);
+  send(res, 200, { window: w });
+}
+/** DELETE /api/parent/test-window { childId } */
+async function deleteTestWindow(req, res, body) {
+  const { child } = await requireParentChild(req, need(body, "childId").childId);
+  await q("update child_controls set test_window = null where child_id = $1", [child.id]);
+  send(res, 200, { window: null });
 }
 
 // ───────────────────────────── reads ─────────────────────────────
@@ -553,9 +605,7 @@ async function overview(req, res) {
  * was not an abandoned zero-turn start (the same rule as the child home's "Done for today", child.js countsAsDone).
  * A one-minute question visit is not "a lesson" (audit #20: "2 lessons" was one lesson and a 1-minute doubt).
  */
-const COUNTED_SQL = `(coalesce(l.state->>'abandoned', 'false') <> 'true' and (
-    (jsonb_typeof(l.state->'did') = 'array' and jsonb_array_length(l.state->'did') > 0)
-    or extract(epoch from (coalesce(l.ended_at, l.started_at) - l.started_at)) >= 300))`;
+const COUNTED_SQL = COUNTED_LESSON_SQL("l");
 
 /** Subject of a weekly home activity → the home/* pictures that show exactly the things its sentence names. */
 const HOME_PICTURES = { maths: ["home/roti"] };
@@ -638,56 +688,59 @@ export function reconcileTryAtHome(t, head, name) {
   return { ...t, text: renderFixed("home.generic", "en", { name }), claimId: null, skillId: null, pictures: [], generic: true };
 }
 
+/**
+ * The parent's "This week": the ISO week in the child's time zone, the SAME window and the SAME lessons-and-minutes
+ * rule as the weekly note (reports/truth.js lessonTally), so the two can never disagree (flows G7).
+ */
+export async function weekTally(child, now = new Date()) {
+  const tz = await tzOf(child.id);
+  const w = windowOf("weekly", isoWeek(learningDay(now, tz)), tz);
+  return loadLessonTally(child.id, w, { openUntil: now.toISOString() });
+}
+
 /** Everything Parent Home shows for one child (overview, and the "Listen to this page" read-aloud). */
 async function homeData(child, guardian) {
   const now = new Date();
-  const [skills, mis, counts, week, recent, controls, firstLesson, hold, profile] = await Promise.all([
+  const [skills, mis, counts, week, recent, controls, firstLesson, hold, profile, truth] = await Promise.all([
     q("select * from skill_state where child_id = $1 order by last_seen desc nulls last limit 60", [child.id]),
     q(`select misconception_id, evidence_count, last_seen from misconception_state
          where child_id = $1 and not resolved and last_seen > now() - interval '7 days' order by last_seen desc limit 3`, [child.id]),
-    one(`select (select count(*)::int from evidence where child_id = $1 and outcome <> 'no_evidence') as rows,
-            (select count(*)::int from lesson l where l.child_id = $1 and ${COUNTED_SQL}) as lessons`, [child.id]),
-    one(`select count(*)::int as lessons,
-           coalesce(round(sum(extract(epoch from (coalesce(l.ended_at, l.started_at) - l.started_at))) / 60), 0)::int as minutes
-         from lesson l where l.child_id = $1 and l.started_at > now() - interval '7 days' and ${COUNTED_SQL}`, [child.id]),
+    one(`select (select count(*)::int from lesson l where l.child_id = $1 and ${COUNTED_SQL}) as lessons`, [child.id]),
+    weekTally(child, now),
     q(`select l.id, l.topic_id, l.started_at, l.ended_at from lesson l where l.child_id = $1 and ${COUNTED_SQL} order by l.started_at desc limit 3`, [child.id]),
     one("select * from child_controls where child_id = $1", [child.id]),
     one(`select l.topic_id from lesson l where l.child_id = $1 and ${COUNTED_SQL} order by l.started_at limit 1`, [child.id]),
     reportHold(child.id),
     guardian ? hasConsent(guardian.id, child.id, "learning_profile") : Promise.resolve(true),
+    loadTruth(child),
   ]);
-  const ids = skills.map((r) => r.skill_id);
-  const [dcs, evRows] = ids.length ? await Promise.all([
-    delayedCheckMap(child.id, ids),
-    q(`select skill_id, at, outcome, hints_used from evidence where child_id = $1 and outcome <> 'no_evidence' and skill_id = any($2::text[])
-         order by at desc`, [child.id, ids]),
-  ]) : [new Map(), []];
-  const rowsBySkill = new Map();
-  for (const r of evRows) { if (!rowsBySkill.has(r.skill_id)) rowsBySkill.set(r.skill_id, []); rowsBySkill.get(r.skill_id).push(r); }
+  // ONE claim source (reports/truth.js): the engine's graded rows behind every word, never the Director's legacy rows
+  const rowsBySkill = new Map(skills.map((r) => [r.skill_id, claimRows(truth.rowsOf(r.skill_id))]));
+  const totalRows = truth.rows.filter((r) => r.scored).length;
   const titled = await Promise.all(skills.map(async (r) => ({
     skillId: r.skill_id, title: (await skillTitle(r.skill_id)) ?? r.skill_id, label: (await parentLabelOf(r.skill_id)) ?? r.skill_id,
-    ...parentState(r, dcs.get(r.skill_id)), nextReview: r.next_review, lastSeen: r.last_seen,
+    ...stateOut(truth.state(r.skill_id)), nextReview: r.next_review, lastSeen: r.last_seen,
   })));
   // A misconception seen this week may only steer WHICH practising skill is named, never whether one is (the gate decides).
   let misSkill = null, belief = null;
   if (mis[0]) {
-    misSkill = (await one("select skill_id from evidence where child_id = $1 and misconception_id = $2 order by at desc limit 1", [child.id, mis[0].misconception_id]))?.skill_id ?? null;
+    misSkill = truth.rows.filter((x) => x.misconceptionId === mis[0].misconception_id).at(-1)?.skillIds[0] ?? null;
     try { belief = (await misconceptionById(mis[0].misconception_id))?.belief ?? null; } catch { belief = null; }
   }
   // During a safety hold the headline holds too (the protocol decides what reaches the family; reports-safety-hold-read-side).
-  const head = hold ? { kind: "held", canNow: null, practising: null } : homeHeadline({ skills: titled, rowsBySkill, totalRows: counts?.rows ?? 0, lessonsEver: counts?.lessons ?? 0,
-    lessonsThisWeek: week?.lessons ?? 0, preferPractising: misSkill, now });
+  const head = hold ? { kind: "held", canNow: null, practising: null } : homeHeadline({ skills: titled, rowsBySkill, totalRows, lessonsEver: counts?.lessons ?? 0,
+    lessonsThisWeek: week.lessons, preferPractising: misSkill, now });
   const claimOut = (id, kind) => {
     const s = titled.find((x) => x.skillId === id);
     if (!s) return null;
-    return { ...s, kind, misconception: kind === "practising" && id === misSkill ? belief : null,
-      rows: (rowsBySkill.get(id) ?? []).slice(0, 40).map((r) => ({ at: r.at, outcome: r.outcome, hintsUsed: r.hints_used })) };
+    return { ...s, kind, misconception: kind === "practising" && id === misSkill ? belief : null, rows: (rowsBySkill.get(id) ?? []).slice(0, 40) };
   };
   const canNow = head.canNow ? claimOut(head.canNow, "can_now") : null;
   const practising = head.practising ? claimOut(head.practising, "practising") : null;
   const [tryAtHome0, alert, next] = await Promise.all([tryAtHomeOf(child, hold), alertOf(child), guardian ? nextOf(child, guardian) : null]);
   const tryAtHome = reconcileTryAtHome(tryAtHome0, { canNow, practising }, child.first_name);
   const topicOut = (tid) => { const t = getTopic(tid); return t ? { id: t.id, title: t.title, chapter: t.chapter.title, subject: t.subject } : { id: tid, title: tid }; };
+  const minutesById = new Map(week.all.map((l) => [l.id, l.minutes]));
   return {
     child: childOut(child),
     headline: { kind: head.kind, canNow, practising, firstTopic: firstLesson ? topicOut(firstLesson.topic_id) : null, profileKept: !!profile },
@@ -697,49 +750,81 @@ async function homeData(child, guardian) {
     next,
     alert,
     held: !!hold,
-    week: { lessons: week?.lessons ?? 0, minutes: week?.minutes ?? 0 },
+    week: { lessons: week.lessons, minutes: week.minutes },
     recent: recent.map((l) => ({ id: l.id, topic: topicOut(l.topic_id), startedAt: l.started_at,
-      minutes: l.ended_at ? Math.max(1, Math.round((new Date(l.ended_at) - new Date(l.started_at)) / 60000)) : null })),
-    skills: titled,
+      minutes: minutesById.get(String(l.id)) ?? (l.ended_at ? Math.max(0, Math.round((new Date(l.ended_at) - new Date(l.started_at)) / 60000)) : null) })),
+    // the skill list one level down names only skills the engine has a scored row on (never a taught-only "Practising")
+    skills: titled.filter((x) => x.level > 0),
     controls: controlsOut(controls, child),
     updatedAt: now.toISOString(),
   };
 }
 
-/** GET /api/parent/evidence?childId=&skill= → the Kaise pata? sheet (§6.4). */
+/** skillTruth → the LedgerState the client renders (level, key, recheck). */
+const stateOut = (t) => ({ level: t.level, key: t.key, recheck: t.recheck });
+
+/** Words for a kit item's prompt (the question as the kit poses it), by the engine row's item key. */
+async function itemPrompt(itemKey, skillId) {
+  if (!itemKey || String(itemKey).startsWith("teach:")) return null;
+  try {
+    const tid = topicOf(skillId);
+    const kit = tid ? kitFromFile(getTopic(tid)) : null;
+    const it = kit?.items?.find((i) => i.id === itemKey) ?? kit?.misconceptions?.find((m) => m.diagnostic && `diag:${m.id}` === itemKey)?.diagnostic;
+    return it ? quote(it.prompt_en || it.prompt_hi, 30) : null;
+  } catch { return null; }
+}
+
+/**
+ * GET /api/parent/evidence?childId=&skill= → the "How do we know?" sheet (§6.4; W2-A #1). One row per ENGINE-graded check
+ * (kt_evidence, a late correction replacing the row it corrects): the real question (the kit item, else her line just
+ * before), the child's own words (≤ 25), the closed-label result, and who graded it ("exact answer" / "checked against
+ * the book's key idea"). The state is the same skillTruth every other surface shows.
+ */
 async function evidence(req, res) {
   const sp = query(req);
   const { child } = await requireParentChild(req, sp.get("childId"));
   const skill = sp.get("skill");
   if (!skill || skill.length > 120) throw bad("invalid skill");
-  const [state, rows, dcs, live] = await Promise.all([
+  const [state, truth, live] = await Promise.all([
     one("select * from skill_state where child_id = $1 and skill_id = $2", [child.id, skill]),
-    q(`select e.id, e.at, e.probe, e.outcome, e.misconception_id, e.hints_used, e.lesson_id, t.text as child_text, t.speaker
-         from evidence e left join turn t on t.id = e.turn_id
-        where e.child_id = $1 and e.skill_id = $2 order by e.at desc limit 40`, [child.id, skill]),
-    delayedCheckMap(child.id, [skill]),
+    loadTruth(child, { skillIds: [skill] }),
     loadLive(child).catch(() => null),
   ]);
+  const shown = truth.rowsOf(skill).filter((r) => r.scored).sort((a, b) => b.seq - a.seq).slice(0, 40);
+  // the child's turn each row came from, and her line just before it (one read for every row)
+  const keys = shown.filter((r) => r.turnSeq != null).map((r) => [r.lessonId, r.turnSeq]);
+  const turns = keys.length ? await q(`select t.lesson_id::text as lesson_id, t.seq, t.speaker, t.text from turn t
+      join lesson l on l.id = t.lesson_id and l.child_id = $1
+     where (t.lesson_id::text, t.seq) in (select * from unnest($2::text[], $3::int[]))
+        or (t.lesson_id::text, t.seq + 1) in (select * from unnest($2::text[], $3::int[]))`,
+  [child.id, keys.map((k) => k[0]), keys.map((k) => k[1])]).catch(() => []) : [];
+  const turnAt = new Map(turns.map((t) => [`${t.lesson_id}:${t.seq}`, t]));
   const beliefs = new Map();
-  for (const r of rows) {
-    if (r.misconception_id && !beliefs.has(r.misconception_id)) {
-      try { beliefs.set(r.misconception_id, (await misconceptionById(r.misconception_id))?.belief ?? null); } catch { beliefs.set(r.misconception_id, null); }
+  for (const r of shown) {
+    if (r.misconceptionId && !beliefs.has(r.misconceptionId)) {
+      try { beliefs.set(r.misconceptionId, (await misconceptionById(r.misconceptionId))?.belief ?? null); } catch { beliefs.set(r.misconceptionId, null); }
     }
   }
+  const rows = await Promise.all(shown.map(async (r) => {
+    const own = r.turnSeq != null ? turnAt.get(`${r.lessonId}:${r.turnSeq}`) : null;
+    const before = r.turnSeq != null ? turnAt.get(`${r.lessonId}:${r.turnSeq - 1}`) : null;
+    const prompt = (await itemPrompt(r.itemKey, skill)) ?? (before?.speaker === "teacher" ? quote(before.text, 30) : null);
+    return {
+      id: r.id, at: r.at, kind: r.kind, probe: r.cls, outcome: r.outcome, result: r.result, hintsUsed: r.hintsUsed, lessonId: r.lessonId,
+      prompt, words: own?.speaker === "child" && !String(own.text).startsWith("[") ? quote(own.text) : null,
+      grader: r.grader, graderWords: r.graderWords, misconception: r.misconceptionId ? beliefs.get(r.misconceptionId) ?? null : null,
+    };
+  }));
   const topicId = topicOf(skill);
   const topic = topicId ? getTopic(topicId) : null;
   send(res, 200, {
     skill: { id: skill, title: (await skillTitle(skill)) ?? skill, label: (await parentLabelOf(skill)) ?? skill, outcomes: topic?.outcomes ?? [], topic: topic ? { id: topic.id, title: topic.title, chapter: topic.chapter.title } : null },
-    state: state ? { ...parentState(state, dcs.get(skill)), nextReview: state.next_review, attempts: state.attempts, correctUnaided: state.correct_unaided,
-      generativePass: state.generative_pass, delayedPass: state.delayed_pass } : { ...parentState(null), nextReview: null },
+    state: { ...stateOut(truth.state(skill)), nextReview: state?.next_review ?? null, attempts: truth.state(skill).counted,
+      correctUnaided: shown.filter((r) => r.firstTryUnaided).length },
     // "How we know" from the comprehension engine (COMPREHENSION-ENGINE.md §7): evidence rows and chips, never a
     // verdict or a state name; conceptCard throws on a banned word, and a card that throws is not shown.
     comprehension: await comprehensionCard(child, live, skill),
-    rows: rows.map((r) => ({
-      id: String(r.id), at: r.at, kind: PROBE_KIND[r.probe] ?? "practice", probe: r.probe, outcome: r.outcome, hintsUsed: r.hints_used,
-      lessonId: r.lesson_id, words: r.speaker === "child" ? quote(r.child_text) : null,
-      misconception: r.misconception_id ? beliefs.get(r.misconception_id) ?? null : null,
-    })),
+    rows,
   });
 }
 
@@ -766,59 +851,80 @@ const topicOf_ = (tid) => {
 
 /**
  * GET /api/parent/lessons?childId= → reverse-chronological lesson list (§6.5.3). `counted` = it counts as a lesson
- * (COUNTED_SQL: ≥ 5 min or something graded); a short visit is listed, but never counted in "Lessons this week".
+ * (reports/truth.js countsAsLesson: something graded, or ≥ 5 min); a short visit is listed but never counted.
+ * Minutes use the ONE rule (truth.js lessonEndMs: an open lesson runs to its last graded row).
  */
 async function lessons(req, res) {
   const { child } = await requireParentChild(req, query(req).get("childId"));
   const rows = await q(`select l.id, l.topic_id, l.kind, l.started_at, l.ended_at, ${COUNTED_SQL} as counted,
-       (select count(*)::int from evidence e where e.lesson_id = l.id) as evidence_count
+       (select count(*)::int from kt_evidence e where e.child_id = l.child_id and e.session_id = l.id::text and not e.teach and right(e.id, 5) <> ':late') as evidence_count,
+       (select max(e.occurred_at) from kt_evidence e where e.child_id = l.child_id and e.session_id = l.id::text) as last_ev
      from lesson l where l.child_id = $1 order by l.started_at desc limit 50`, [child.id]);
   send(res, 200, {
     lessons: rows.map((r) => ({ id: r.id, topic: topicOf_(r.topic_id), kind: r.kind, startedAt: r.started_at, endedAt: r.ended_at,
-      minutes: r.ended_at ? Math.max(1, Math.round((new Date(r.ended_at) - new Date(r.started_at)) / 60000)) : null,
-      evidenceCount: r.evidence_count, counted: !!r.counted })),
+      minutes: minutesOfRow(r), evidenceCount: r.evidence_count, counted: !!r.counted })),
   });
+}
+
+/** A lesson row's minutes by the ONE rule (null for an open lesson with nothing graded yet). */
+function minutesOfRow(r) {
+  const l = { id: String(r.id), startedAt: new Date(r.started_at).toISOString(), endedAt: r.ended_at ? new Date(r.ended_at).toISOString() : null };
+  if (!l.endedAt && !r.last_ev) return null;
+  const ev = r.last_ev ? [{ sessionId: l.id, at: new Date(r.last_ev).toISOString() }] : [];
+  return Math.max(0, Math.round((lessonEndMs(l, ev) - Date.parse(l.startedAt)) / 60_000));
 }
 
 /**
  * GET /api/parent/lesson?childId=&lessonId= → the Lesson card (§6.5.3): what the child did (the same DidCards the
  * child's Summary shows: their own answers, a tick only where the key verified it), one quote, the skills with their
- * evidence, and the next re-check.
+ * ENGINE evidence from this lesson and the one state word, the summary built from facts (and checked), the next re-check.
  */
 async function lessonCard(req, res) {
   const sp = query(req);
   const { child } = await requireParentChild(req, sp.get("childId"));
   const lid = sp.get("lessonId");
   if (!lid || !/^[0-9a-f-]{36}$/i.test(lid)) throw bad("invalid lessonId");
-  const l = await one(`select l.*, ${COUNTED_SQL} as counted from lesson l where l.id = $1 and l.child_id = $2`, [lid, child.id]);
+  const l = await one(`select l.*, ${COUNTED_SQL} as counted,
+      (select max(e.occurred_at) from kt_evidence e where e.child_id = l.child_id and e.session_id = l.id::text) as last_ev
+    from lesson l where l.id = $1 and l.child_id = $2`, [lid, child.id]);
   if (!l) throw new HttpError(404, "lesson not found");
-  const [ev, turns] = await Promise.all([
-    q(`select skill_id, count(*)::int as n, sum(case when outcome = 'correct' and hints_used = 0 then 1 else 0 end)::int as unaided
-         from evidence where lesson_id = $1 and outcome <> 'no_evidence' group by skill_id order by n desc`, [l.id]),
+  const [raw, turns] = await Promise.all([
+    q(`select id, seq, session_id, occurred_at, skill_ids, cls, outcome, grader, item_key, teach, pre_attempt_help, entry_rung, misconception_id,
+         via, contaminated, assisted from kt_evidence where child_id = $1 and session_id = $2 order by seq`, [child.id, l.id]).catch(() => []),
     q("select seq, speaker, text from turn where lesson_id = $1 and speaker in ('child','teacher') order by seq", [l.id]),
   ]);
-  const states = ev.length ? await q("select * from skill_state where child_id = $1 and skill_id = any($2::text[])", [child.id, ev.map((r) => r.skill_id)]) : [];
-  const byId = new Map(states.map((s) => [s.skill_id, s]));
-  const dcs = ev.length ? await delayedCheckMap(child.id, ev.map((r) => r.skill_id)) : new Map();
+  const here = supersede(raw).map(engineRow).filter((r) => r.scored);
+  const skillIds = [...new Set(here.flatMap((r) => r.skillIds))];
+  const [truth, states] = skillIds.length ? await Promise.all([loadTruth(child, { skillIds }),
+    q("select skill_id, next_review from skill_state where child_id = $1 and skill_id = any($2::text[])", [child.id, skillIds])]) : [null, []];
+  const nextBy = new Map(states.map((s) => [s.skill_id, s.next_review]));
   const t = getTopic(l.topic_id);
   // One child quote: the longest child turn (a sentence the child actually built), capped at 25 words.
-  const childTurns = turns.filter((x) => x.speaker === "child" && x.text?.trim());
-  const best = childTurns.sort((a, b) => b.text.split(/\s+/).length - a.text.split(/\s+/).length)[0];
+  const childTurns = turns.filter((x) => x.speaker === "child" && x.text?.trim() && !x.text.startsWith("["));
+  const best = [...childTurns].sort((a, b) => b.text.split(/\s+/).length - a.text.split(/\s+/).length)[0];
   // Full verbatim transcripts: Class 1-4 visible; Class 5-9 on request (§6.11). The request path is not built
   // yet, so Class 5-9 transcripts are withheld here and the client says so.
   const transcriptVisible = child.class_level <= 4;
   let did = null;
   try { did = (await import("./lesson.js")).lessonSummary(l.state, { topic: t, teacher: null }); } catch { did = null; }
-  const skillsOut = await Promise.all(ev.map(async (r) => ({ skillId: r.skill_id, title: (await skillTitle(r.skill_id)) ?? r.skill_id,
-    label: (await parentLabelOf(r.skill_id)) ?? r.skill_id, attempts: r.n, unaided: r.unaided,
-    ...parentState(byId.get(r.skill_id), dcs.get(r.skill_id)), nextReview: byId.get(r.skill_id)?.next_review ?? null })));
+  const skillsOut = await Promise.all(skillIds.map(async (id) => {
+    const mine = here.filter((r) => r.skillIds.includes(id));
+    return { skillId: id, title: (await skillTitle(id)) ?? id, label: (await parentLabelOf(id)) ?? id, attempts: mine.length,
+      unaided: mine.filter((r) => r.firstTryUnaided).length, ...stateOut(truth.state(id)), nextReview: nextBy.get(id) ?? null };
+  }));
+  skillsOut.sort((a, b) => b.attempts - a.attempts);
   const ahead = skillsOut.map((s) => s.nextReview).filter((x) => x && new Date(x) > new Date()).sort((a, b) => new Date(a) - new Date(b));
+  // The summary, built from the engine's rows of this lesson and claim-checked against the raw rows (W2-A #1). A
+  // summary that fails its check is withheld, never shown (the card's DidCards and skills still stand on their own).
+  const facts = lessonFactsSummary({ topicTitle: t?.title ?? null, rows: here });
+  const failed = summaryClaimsHold(facts, raw);
+  if (failed.length) console.warn(`[parent] lesson summary withheld for ${l.id}: ${failed.join("; ")}`);
   send(res, 200, {
     // lesson.parent_note / summary are model-written text (audit #20 read them as the system voice, and they can be in
     // another language): never shown on the card. The card is built from rows: DidCards, one quote, the checks.
-    lesson: { id: l.id, topic: topicOf_(l.topic_id), startedAt: l.started_at, endedAt: l.ended_at,
-      minutes: l.ended_at ? Math.max(1, Math.round((new Date(l.ended_at) - new Date(l.started_at)) / 60000)) : null, counted: !!l.counted },
+    lesson: { id: l.id, topic: topicOf_(l.topic_id), startedAt: l.started_at, endedAt: l.ended_at, minutes: minutesOfRow(l), counted: !!l.counted },
     did: did ? { cards: did.cards.map((c) => ({ kind: c.kind, ask: c.ask, answer: c.answer, tick: !!c.tick, withHelp: !!c.withHelp })), tried: did.tried ?? null } : null,
+    summary: failed.length ? null : { lines: facts.lines.map((x) => renderSummaryLine(x, { name: child.first_name, topicTitle: t?.title ?? "" })), counts: facts.counts },
     skills: skillsOut,
     nextCheck: ahead[0] ?? null,
     quote: best ? quote(best.text) : null,
@@ -834,21 +940,15 @@ async function lessonCard(req, res) {
  */
 async function syllabus(req, res) {
   const { guardian, child } = await requireParentChild(req, query(req).get("childId"));
-  const [rows, next, profile] = await Promise.all([
-    q("select * from skill_state where child_id = $1", [child.id]),
-    nextTopicFor(child).catch(() => null),
-    hasConsent(guardian.id, child.id, "learning_profile"),
-  ]);
-  const byTopic = new Map(), skillsOf = new Map();
-  // the checked skills under each topic (Progress's "How do we know?" buttons), in parent words, with the SAME state
-  // fold the evidence sheet shows (Progress no longer runs the whole home pipeline just to group these).
-  const dcs = rows.length ? await delayedCheckMap(child.id, rows.map((r) => r.skill_id)) : new Map();
-  for (const r of rows) {
-    const tid = topicOf(r.skill_id);
+  const [truth, next, profile] = await Promise.all([loadTruth(child), nextTopicFor(child).catch(() => null), hasConsent(guardian.id, child.id, "learning_profile")]);
+  // ONE state per skill (truth.state) and the topic's state derived from its skills (topicTruth): Progress, the map,
+  // the lesson card and the evidence sheet read the same words (G-PARENT-1 across surfaces).
+  const skillsOf = new Map();
+  for (const id of truth.triedSkills()) {
+    const tid = topicOf(id);
     if (!tid) continue;
-    if (!byTopic.has(tid)) { byTopic.set(tid, []); skillsOf.set(tid, []); }
-    byTopic.get(tid).push({ status: r.status, pKnown: r.p_known, attempts: r.attempts });
-    if (r.attempts > 0) skillsOf.get(tid).push({ skillId: r.skill_id, label: (await parentLabelOf(r.skill_id)) ?? r.skill_id, ...parentState(r, dcs.get(r.skill_id)) });
+    if (!skillsOf.has(tid)) skillsOf.set(tid, []);
+    skillsOf.get(tid).push({ skillId: id, label: (await parentLabelOf(id)) ?? id, ...stateOut(truth.state(id)) });
   }
   const subjects = [];
   for (const subject of SUBJECT_ORDER) {
@@ -861,7 +961,8 @@ async function syllabus(req, res) {
       if (!ch || ch.id !== t.chapter.id) chapters.push(ch = { id: t.chapter.id, number: t.chapter.number, title: t.chapter.title, topics: [] });
       let skillCount = 0;
       try { skillCount = kitFromFile(t)?.skills.length ?? 0; } catch { /* no kit file */ }
-      ch.topics.push({ id: t.id, title: t.title, ...topicParentState(topicStatus(byTopic.get(t.id) ?? [], skillCount)), skills: skillsOf.get(t.id) ?? [] });
+      const sk = skillsOf.get(t.id) ?? [];
+      ch.topics.push({ id: t.id, title: t.title, ...topicTruth(sk, skillCount), skills: sk });
     }
     subjects.push({ subject, book: getTopic(ids[0]).book, chapters });
   }
@@ -876,7 +977,7 @@ async function syllabus(req, res) {
   const secure = all.filter((t) => t.level === 3).length;
   send(res, 200, {
     classLevel: child.class_level, board: child.board, subjects, profileKept: !!profile,
-    here: here ? { chapterId: here.id, topicId: nextTopic.id } : null, bridge,
+    here: here ? { chapterId: here.id, topicId: nextTopic.id } : null, bridge, next: nextTopic ? { id: nextTopic.id, title: nextTopic.title } : null,
     header: { chaptersStarted, secure, topics: all.length, chaptersTouched: chaptersStarted, topicsPakka: secure },
   });
 }
@@ -898,6 +999,12 @@ async function homeTask(req, res, body) {
   } else throw bad("lessonId or period is required");
   await q("insert into audit(guardian_id, action, detail) values ($1, 'home_task', $2)", [guardian.id, detail]);
   send(res, 200, { ok: true });
+}
+
+/** GET /api/parent/made-for?childId= → the parent corner's "Made for {child}" list (STUDENT-FLOW §12.1; full daily card W4-F). */
+async function madeForList(req, res) {
+  const { child } = await requireParentChild(req, query(req).get("childId"));
+  send(res, 200, { items: await madeForOf(child.id, { limit: 12 }) });
 }
 
 // ───────────────────────────── read-aloud (PX10) ─────────────────────────────
@@ -1224,6 +1331,10 @@ export const routes = {
   "GET /api/parent/controls": getControls,
   "POST /api/parent/controls": setControls,
   "POST /api/parent/hometask": homeTask,
+  "GET /api/parent/test-window": getTestWindows,
+  "POST /api/parent/test-window": setTestWindow,
+  "DELETE /api/parent/test-window": deleteTestWindow,
+  "GET /api/parent/made-for": madeForList,
   "GET /api/parent/reports": reports,
   "GET /api/parent/report": report,
   "GET /api/parent/report/evidence": reportEvidence,

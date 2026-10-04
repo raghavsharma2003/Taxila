@@ -58,7 +58,10 @@ export async function checkReport(db, report, lookup) {
     const onSkill = (r) => (r.skill_ids || []).includes(c.skillId);
     if (ev.some((r) => c.skillId && !onSkill(r) && !c.shapeId.startsWith("header"))) why.push("a cited row is on another skill");
     // completeness reads: every row in the window on this skill
-    const all = c.skillId ? await db.q("select * from kt_evidence where child_id = $1 and $2 = any(skill_ids) and occurred_at < $3 order by seq", [report.child_id, c.skillId, report.window_to]) : [];
+    const all0 = c.skillId ? await db.q("select * from kt_evidence where child_id = $1 and $2 = any(skill_ids) and occurred_at < $3 order by seq", [report.child_id, c.skillId, report.window_to]) : [];
+    // a row with a late correction (`<id>:late`) is replaced by it: the correction is the row that counts
+    const corrected = new Set(all0.map((r) => String(r.id)).filter((id) => id.endsWith(":late")).map((id) => id.slice(0, -5)));
+    const all = all0.filter((r) => !corrected.has(String(r.id)));
     const allIn = all.filter((r) => inWin(r.occurred_at));
     const exact = (pred, label) => {
       const want = allIn.filter(pred).map((r) => r.id).sort().join(",");
@@ -90,7 +93,14 @@ export async function checkReport(db, report, lookup) {
     };
     switch (c.shapeId) {
       case "header.daily": case "header.weekly": case "header.zero": case "header.nolesson": {
-        const win = await db.q("select id, started_at, ended_at from lesson where child_id = $1 and started_at >= $2 and started_at < $3", [report.child_id, report.window_from, report.window_to]);
+        // a lesson counts when something in it was graded or it ran ≥ 5 min, and it was not an abandoned start
+        const win0 = await db.q("select id, started_at, ended_at, state from lesson where child_id = $1 and started_at >= $2 and started_at < $3", [report.child_id, report.window_from, report.window_to]);
+        const win = win0.filter((l) => {
+          const st = l.state ?? {};
+          if (String(st.abandoned) === "true") return false;
+          if (Array.isArray(st.did) && st.did.length) return true;
+          return !!l.ended_at && ms(l.ended_at) - ms(l.started_at) >= 300_000;
+        });
         if (win.map((l) => String(l.id)).sort().join(",") !== lessons.map((l) => String(l.id)).sort().join(",")) why.push("header does not cite exactly the window's lessons");
         if (c.shapeId === "header.zero") { if (win.length) why.push("zero header but lessons exist"); break; }
         if (c.shapeId === "header.nolesson") {

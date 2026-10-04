@@ -7243,6 +7243,48 @@
    "title": "Reusing server/azure.js's `lane` option for the hot/background quota tag: post() resolves endpoint(lane), and endpoint('hot') throws 'unknown model lane hot', so every tagged call would fail",
    "at": "2026-10-04",
    "source": "inbox/w2-seam.json"
+  },
+  {
+   "id": "vercel-autobuild-off-2026-10-04",
+   "kind": "decision",
+   "title": "Owner: no Vercel build per commit (hundreds of WIP commits were each starting a blocked production build). The Vercel project 'taxila' now has an ignored build step ('exit 0'); releases are deployed deliberately. taxila.dev (Vercel registrar/DNS) is the pre-launch domain and points at the Azure app (A 20.88.123.49 + asuid TXT, www CNAME) once the owner adds the DNS records; Vercel MCP lacks DNS write. Reverse when a release flow needs Vercel previews.",
+   "at": "2026-10-04",
+   "source": "inbox/vercel-builds-off.json"
+  },
+  {
+   "id": "voice-v3-screen-2026-10-04",
+   "kind": "measurement",
+   "title": "VOICE v3 machine screen of 440 round-2 clips (16 hosted + 6 open-weight arms; 2026-10-04; method docs/research/voice/v3/SCREEN.md). Words (gpt-transcribe + chained Azure hi-IN STT, a word wrong only when both miss), Hindi-acoustic accent proxies (vakyansh wav2vec2 CTC CER + GOP, MIT), WavLM x-vector timbre, VAD pauses mapped to clause boundaries, rate. Defects found: MAI-Voice-2.1 silences 2.9-15.7 s and 2.0-2.9 syl/s; OmniIndic Diya drops words on L1 in both conditions; Nova arjun says a different L5 sentence; Polly generative 15-16/18 numbers; Svara male 0.8-0.9 mid-phrase pauses per clip. Veena 216/216 numbers once Azure short-audio truncation is removed. Picks for the blind page: r1 DragonHD Diya plain (anchor), Veena kavya, Chatterbox-hi design-M, OmniIndic Hazelmori (plain+expr), Nova 2 Sonic kiara (plain+expr), Omni Arjun plain. No human has listened yet.",
+   "at": "2026-10-04",
+   "source": "inbox/voice-v3-screen.json"
+  },
+  {
+   "id": "gop-english-accent-switch-proxy",
+   "kind": "measurement",
+   "title": "GOP of English words aligned to their Indian Devanagari spelling (total->टोटल) with a Hindi CTC model ranks the Omni family and realtime marin worst (-1.7 to -3.8) and Nova kiara, DragonHD and Veena best (-0.4 to -0.9). This matches the round-1 raters' remark that Omni and realtime voices keep the accent problem. n=5 lines per arm, not calibrated against human labels; it missed Polly generative's English-accented Hindi. Reverse if the round-2 blind notes disagree on accent for 2+ picks.",
+   "at": "2026-10-04",
+   "source": "inbox/voice-v3-screen.json"
+  },
+  {
+   "id": "rj-realtime-judge-hinglish-delivery",
+   "kind": "rejection",
+   "title": "Tried gpt-realtime-2.1 and gpt-realtime-2.1-mini as audio judges of talking/warmth/accent on 240 Hinglish TTS clips. Broke: inter-model Spearman 0.15-0.18 (accent -0.04); 0/15 clips with >2 s silence flagged odd_pause; got round-1 realtime-marin expressive-vs-plain direction wrong 1-4. Scores compress to 2-4 for every arm including MAI's 15 s silences. Revisit only with a judge calibrated on human labels from the round-2 page.",
+   "at": "2026-10-04",
+   "source": "inbox/voice-v3-screen.json"
+  },
+  {
+   "id": "rj-phi4mm-hindi-judge",
+   "kind": "rejection",
+   "title": "Tried Phi-4-multimodal-instruct (Azure GlobalStandard, southindia) as a second-family audio judge. Broke: its speech input has no Hindi; the probe line came back as garbled mixed-script text, and full-length 16 kHz WAV requests hit token-rate 429 at 50k TPM. The deployment was deleted. Voxtral on Bedrock: 0 tokens/day quota on this account in us-east-1, us-west-2 and ap-south-1. gpt-live-1 refuses the realtime text-out socket (400). No second judge family exists on our platforms today.",
+   "at": "2026-10-04",
+   "source": "inbox/voice-v3-screen.json"
+  },
+  {
+   "id": "rj-azure-short-audio-as-number-check",
+   "kind": "rejection",
+   "title": "Azure Speech short-audio hi-IN (used by the v3 renders asr-check) stops at the first long pause, so it under-reported numbers (e.g. बासठ 'missing' on 11/20 Veena takes, which gpt-transcribe + chained STT heard on 216/216). Its word timestamps also misplace the last word. Fast Transcription in centralindia returned all-zero word offsets. Use gpt-transcribe plus chained short-audio, or forced alignment, for number checks.",
+   "at": "2026-10-04",
+   "source": "inbox/voice-v3-screen.json"
   }
  ],
  "edges": [

@@ -156,9 +156,9 @@ export class Puppet2DRig {
     mk("lockR", 6, "lock");
     // r2: no per-layer depth offsets except the bun, which sits behind the skull (its hidden part is painted)
     { const L = this.layers.bun; for (let i = 0; i < L.n; i++) L.z[i] = L.z[i] - 45; }
-    // the right lock hangs over the knot: its lower part sits half-way to the knot's depth, so lock and knot slide
-    // over each other by ~half as much on a turn (the strand still reads in front)
-    { const L = this.layers.lockR; for (let i = 0; i < L.n; i++) L.z[i] -= 22 * smooth(600, 690, L.rest[i * 2 + 1]); }
+    // the right lock hangs over the knot: its lower part takes the knot's depth, so lock and knot never slide over
+    // each other on a turn (their shared dark-on-dark contour is unknown in c-front; any slide uncovered a jagged cut)
+    { const L = this.layers.lockR; for (let i = 0; i < L.n; i++) L.z[i] -= 45 * smooth(585, 650, L.rest[i * 2 + 1]); }
     // locks: anchor (top) and length for the pendulum weight
     for (const s of ["L", "R"]) {
       const L = this.layers["lock" + s];
@@ -177,7 +177,8 @@ export class Puppet2DRig {
       const R = 4;
       const n = C * R;
       const pos = new Float32Array(n * 2), restA = new Float32Array(n * 2), edge = new Float32Array(n);
-      for (let i = 0; i < C; i++) for (let j = 0; j < R; j++) edge[i * R + j] = j === 0 || j === R - 1 ? 0 : 1;
+      // AA on all four sides: the end columns too (r1 showed a hard stair at the corners once a turn widened the eye)
+      for (let i = 0; i < C; i++) for (let j = 0; j < R; j++) edge[i * R + j] = j === 0 || j === R - 1 || i === 0 || i === C - 1 ? 0 : 1;
       const mesh = this.R.mesh(this.R.eye, { aPos: { data: pos, size: 2, dynamic: true }, aRest: { data: restA, size: 2, dynamic: true }, aEdge: { data: edge, size: 1 } }, strip(C, R));
       // lid mesh: columns along the lash, rows from (lash top - fall) to (lash bottom + 2)
       const lx0 = e.lashX[0], lx1 = e.lashX[1];

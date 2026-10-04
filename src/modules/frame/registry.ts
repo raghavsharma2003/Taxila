@@ -18,6 +18,7 @@ const LOADERS: Record<string, () => Promise<{ engine: EngineModule }>> = {
   "motion-lab@1": () => import("./engines/motionLab.tsx"),
   "water-cycle@1": () => import("./engines/waterCycle.tsx"),
   "scene@1": () => import("./scene/scene.tsx"),
+  "explainer@1": () => import("./engines/explainer.tsx"),
 };
 
 export const ENGINE_IDS: readonly string[] = Object.keys(LOADERS);

@@ -37,6 +37,8 @@ export const ENGINES = {
   "motion-lab@1": { subjects: ["science", "evs"], modes: ["speed", "friction", "pendulum"] },
   "water-cycle@1": { subjects: ["science", "evs"], modes: ["cycle", "states", "groundwater"] },
   "scene@1": { subjects: ["maths", "science", "evs", "english", "hindi", "sst"], modes: ["scene"] },
+  // W2-B: the board explanation / diagram template rung (server/forge/explainer/**); never a kit hint, never graded
+  "explainer@1": { subjects: ["maths", "science", "evs", "english", "hindi", "sst"], modes: ["play"] },
 };
 export const ENGINE_IDS = Object.keys(ENGINES);
 

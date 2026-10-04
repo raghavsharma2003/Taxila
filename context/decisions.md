@@ -2519,3 +2519,5 @@ client shows a studio tray only when the turn carries `ui.studioSlot` (never an 
 
 - `owner-2d-bar-4-5-2026-10-04` (2026-10-04): owner set the 2D teacher bar at 4.5/5 or higher with no round limit; the polish loop now runs up to 30 rounds and integration waits for 4.5.
 - `jev-decision-model-candidate-2026-10-04` (2026-10-04): TypeSafe Jev, a decision-only model, is a candidate for comprehension, grading, distress and Brain move choice; needs an owner API key and approval for a non-Azure service receiving child text; bench on our harnesses first.
+
+- `vercel-autobuild-off-2026-10-04` (2026-10-04): Vercel per-commit builds stopped for project taxila (ignored build step exit 0) on the owner's request; taxila.dev is the pre-launch domain pointed at the Azure app once the owner adds DNS records (the Vercel connector cannot write DNS).

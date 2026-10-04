@@ -899,7 +899,7 @@ var K = class {
 		}
 		{
 			let e = this.layers.lockR;
-			for (let t = 0; t < e.n; t++) e.z[t] -= 22 * B(600, 690, e.rest[t * 2 + 1]);
+			for (let t = 0; t < e.n; t++) e.z[t] -= 45 * B(585, 650, e.rest[t * 2 + 1]);
 		}
 		for (let e of ["L", "R"]) {
 			let t = this.layers["lock" + e];
@@ -908,7 +908,7 @@ var K = class {
 		this.bunSpring = [new K(90, .5), new K(90, .5)], this.eyes = {};
 		for (let e of ["L", "R"]) {
 			let n = t.eyes[e], r = n.x[0], i = n.x[1], o = Math.floor((i - r) / 2) + 1, s = o * 4, c = new Float32Array(s * 2), l = new Float32Array(s * 2), u = new Float32Array(s);
-			for (let e = 0; e < o; e++) for (let t = 0; t < 4; t++) u[e * 4 + t] = t === 0 || t === 3 ? 0 : 1;
+			for (let e = 0; e < o; e++) for (let t = 0; t < 4; t++) u[e * 4 + t] = t === 0 || t === 3 || e === 0 || e === o - 1 ? 0 : 1;
 			let d = this.R.mesh(this.R.eye, {
 				aPos: {
 					data: c,

@@ -1104,3 +1104,9 @@ BUILD-PLAN §4 words it. `post()` already destructures `lane` (default `"CHAT"`)
 options straight through, so `chat(dep, msgs, { lane: "hot" })` would resolve the endpoint for a lane named "hot". Checked:
 `endpoint("hot")` throws `AzureError: unknown model lane hot`, i.e. every tagged call would fail before reaching Azure. The
 quota tag is `quotaLane` instead (`w2-quota-lane-option-quotaLane`).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-realtime-judge-hinglish-delivery` (2026-10-04): Tried gpt-realtime-2.1 and gpt-realtime-2.1-mini as audio judges of talking/warmth/accent on 240 Hinglish TTS clips. Broke: inter-model Spearman 0.15-0.18 (accent -0.04); 0/15 clips with >2 s silence flagged odd_pause; got round-1 realtime-marin expressive-vs-plain direction wrong 1-4. Scores compress to 2-4 for every arm including MAI's 15 s silences. Revisit only with a judge calibrated on human labels from the round-2 page.
+- `rj-phi4mm-hindi-judge` (2026-10-04): Tried Phi-4-multimodal-instruct (Azure GlobalStandard, southindia) as a second-family audio judge. Broke: its speech input has no Hindi; the probe line came back as garbled mixed-script text, and full-length 16 kHz WAV requests hit token-rate 429 at 50k TPM. The deployment was deleted. Voxtral on Bedrock: 0 tokens/day quota on this account in us-east-1, us-west-2 and ap-south-1. gpt-live-1 refuses the realtime text-out socket (400). No second judge family exists on our platforms today.
+- `rj-azure-short-audio-as-number-check` (2026-10-04): Azure Speech short-audio hi-IN (used by the v3 renders asr-check) stops at the first long pause, so it under-reported numbers (e.g. बासठ 'missing' on 11/20 Veena takes, which gpt-transcribe + chained STT heard on 216/216). Its word timestamps also misplace the last word. Fast Transcription in centralindia returned all-zero word offsets. Use gpt-transcribe plus chained short-audio, or forced alignment, for number checks.

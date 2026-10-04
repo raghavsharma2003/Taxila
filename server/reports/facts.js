@@ -5,6 +5,7 @@
 import { createHash } from "crypto";
 import { addDays, isoWeek, localParts, zonedToUtc } from "../conductor/clock.js";
 import { HISTORY_DAYS } from "./config.js";
+import { COUNTED_LESSON_SQL, supersede } from "./truth.js";
 
 export const DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
 export const WEEK_RE = /^(\d{4})-W(\d{2})$/;
@@ -58,7 +59,9 @@ export async function loadFacts(db, childId, { cadence, period }, lookup = {}) {
   const histFrom = new Date(Date.parse(w.from) - HISTORY_DAYS * 86_400_000).toISOString();
   const [consentRows, lessons, events, skills, mis] = await Promise.all([
     db.q(LATEST_CONSENT, [c.guardian_id, childId, ["core_tutoring"]]),
-    db.q(`select id, topic_id, started_at, ended_at from lesson where child_id = $1 and started_at >= $2 and started_at < $3 order by started_at, id`, [childId, w.from, w.to]),
+    // ONE "a lesson" definition (truth.js): an abandoned start or a short visit with nothing graded is not a lesson
+    db.q(`select l.id, l.topic_id, l.started_at, l.ended_at from lesson l where l.child_id = $1 and l.started_at >= $2 and l.started_at < $3
+        and ${COUNTED_LESSON_SQL("l")} order by l.started_at, l.id`, [childId, w.from, w.to]),
     db.q(`select id, seq, session_id, occurred_at, skill_ids, cls, outcome, grader, item_key, teach, pre_attempt_help, entry_rung, misconception_id,
         discriminates, via, contaminated, assisted
       from kt_evidence where child_id = $1 and occurred_at >= $2 and occurred_at < $3 order by seq`, [childId, histFrom, w.to]),
@@ -71,7 +74,8 @@ export async function loadFacts(db, childId, { cadence, period }, lookup = {}) {
     window: w,
     consent,
     lessons: lessons.map((l) => ({ id: String(l.id), topicId: l.topic_id, startedAt: iso(l.started_at), endedAt: iso(l.ended_at) })),
-    events: events.map((e) => ({ id: e.id, seq: Number(e.seq), sessionId: e.session_id, at: iso(e.occurred_at), skillIds: e.skill_ids, cls: e.cls,
+    // a late correction replaces the row it corrects (never counted twice: w1c-late-double-count-reports)
+    events: supersede(events).map((e) => ({ id: e.id, seq: Number(e.seq), sessionId: e.session_id, at: iso(e.occurred_at), skillIds: e.skill_ids, cls: e.cls,
       outcome: Number(e.outcome), grader: e.grader, itemKey: e.item_key, teach: !!e.teach, preAttemptHelp: !!e.pre_attempt_help, entryRung: Number(e.entry_rung) || 0,
       misconceptionId: e.misconception_id, discriminates: e.discriminates, via: e.via, contaminated: !!e.contaminated, assisted: e.assisted })),
     skills: Object.fromEntries(skills.map((s) => [s.skill_id, { display: s.display, nextReviewAt: iso(s.next_review_at), refresh: !!s.refresh }])),

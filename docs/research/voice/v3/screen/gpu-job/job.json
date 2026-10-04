@@ -1,0 +1,24 @@
+{
+ "name": "voice-v3-screen-align",
+ "gpuTypes": [
+  "g6.xlarge",
+  "g6.2xlarge",
+  "g5.xlarge"
+ ],
+ "maxMinutes": 60,
+ "diskGb": 120,
+ "amiSsm": "/aws/service/deeplearning/ami/x86_64/oss-nvidia-driver-gpu-pytorch-2.7-ubuntu-22.04/latest/ami-id",
+ "include": {
+  "renders": "docs/research/voice/v3/renders"
+ },
+ "exclude": [
+  "runs",
+  "__pycache__"
+ ],
+ "cpuTypes": [
+  "c7i.4xlarge",
+  "c6i.4xlarge",
+  "m7i.4xlarge"
+ ],
+ "cpuAmi": "dlami"
+}

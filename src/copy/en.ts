@@ -60,3 +60,105 @@ export const W1B = {
 } as const;
 
 export type W1BKey = keyof typeof W1B;
+
+/** W2-A: home states (STUDENT-FLOW §4.2), practice and Ask, the parent's one truth, sign-in and onboarding. */
+export const W2A = {
+  // home: the new states (one primary action each)
+  "home.homework.head": "Homework help",
+  "home.homework.sub": "Bring the question you are stuck on.",
+  "home.homework.start": "Start",
+  "home.homework.lesson": "Today's lesson",
+  "home.test.head": "Revision for your {subject} test",
+  "home.hold.head": "Let's take a break today.",
+  "home.hold.sub": "Talk to a grown-up at home.",
+  "home.hold.help": "Help",
+  "home.madefor.title": "Made for you",
+  "home.madefor.play": "Play again",
+  // practice
+  "practice.count": "Practice · {n} of {of}",
+  "practice.done": "That's the set",
+  "practice.done.sub": "You did the whole set.",
+  // Ask
+  "ask.title.prefix": "Your question",
+  // subjects in plain words
+  "subject.maths": "maths",
+  "subject.science": "science",
+  "subject.evs": "EVS",
+  "subject.english": "English",
+  "subject.hindi": "Hindi",
+  "subject.sst": "social science",
+  // parent: the evidence sheet (who graded it) and the lesson card summary
+  "evidence.prompt": "Question",
+  "evidence.said": "{name} said",
+  "evidence.grader.code": "Checked: exact answer",
+  "evidence.grader.llm": "Checked against the book's key idea",
+  "evidence.grader.human": "Checked by a person",
+  "evidence.result.right": "Right, on their own",
+  "evidence.result.right_hint": "Right, with a hint",
+  "evidence.result.with_help": "Not yet on their own",
+  "evidence.result.partly": "Partly right",
+  "evidence.result.not_yet": "Not yet",
+  "evidence.result.not_sure": "Said they were not sure",
+  "evidence.result.mixup": "A common mix-up",
+  "lesson.summary.title": "What the checks show",
+  // parent Controls: per-child type-only, homework help, school test
+  "controls.type.child": "Saved for {name} on every phone.",
+  "controls.homework.title": "Homework help today",
+  "controls.homework.on": "{name}'s home shows Homework help today. Today's lesson is still there.",
+  "controls.homework.off": "{name}'s home shows today's lesson.",
+  "controls.test.title": "School test coming up",
+  "controls.test.none": "No test entered.",
+  "controls.test.set": "{subject} test, {from} to {to}. Lessons revise {subject} until then.",
+  "controls.test.subject": "Subject",
+  "controls.test.from": "From",
+  "controls.test.to": "To",
+  "controls.test.save": "Save test dates",
+  "controls.test.clear": "Remove",
+  // parent: Made for {child}
+  "parent.madefor.title": "Made for {name}",
+  "parent.madefor.none": "Nothing made yet. {T} makes things when they help.",
+  // sign-in and onboarding (flows G12)
+  "auth.show": "Show",
+  "auth.hide": "Hide",
+  "auth.forgot": "Forgot password?",
+  "auth.forgot.title": "Reset your password",
+  "auth.forgot.body": "Enter the email you signed up with. We will send a link to set a new password.",
+  "auth.forgot.send": "Send the link",
+  "auth.forgot.sent": "If that email has an account, a link is on its way. It works for 30 minutes.",
+  "auth.reset.title": "Set a new password",
+  "auth.reset.save": "Save the new password",
+  "auth.reset.done": "Your password is changed. You are signed in.",
+  "auth.reset.bad": "This link has expired or was already used. Ask for a new one.",
+  "auth.err.email.missing": "Enter your email.",
+  "auth.err.email.bad": "That email does not look right. Check it and try again.",
+  "auth.err.email.taken": "An account with this email already exists. Sign in instead.",
+  "auth.err.password.missing": "Enter a password.",
+  "auth.err.password.short": "Use at least 8 characters.",
+  "auth.err.signin": "That email and password do not match.",
+  "auth.err.name.missing": "Enter your name.",
+  "auth.err.network": "We could not reach Taxila. Check the internet and try again.",
+  "auth.err.generic": "Something went wrong. Please try again.",
+  "auth.err.wait": "Too many tries. Wait a few minutes and try again.",
+  // onboarding step 8: the sound and mic check
+  "check.title": "Check sound and the microphone",
+  "check.body": "So {child} can hear {T} and {T} can hear {child}.",
+  "check.sound": "Play a sound",
+  "check.sound.ok": "I heard it",
+  "check.mic": "Test the microphone",
+  "check.mic.listening": "Say something",
+  "check.mic.ok": "The microphone works",
+  "check.mic.no": "No microphone. {child} can type and tap instead.",
+  "check.skip": "Skip for now",
+  "check.next": "Continue",
+} as const;
+
+export type W2AKey = keyof typeof W2A;
+
+/** A W2-A label with its {vars} filled. */
+export function tw2(key: W2AKey, vars: Record<string, string | number> = {}): string {
+  return W2A[key].replace(/\{(\w+)\}/g, (m, k: string) => (vars[k] === undefined ? m : String(vars[k])));
+}
+
+/** A subject id in plain words (chrome). */
+export const subjectWords = (s: string | null | undefined): string =>
+  (s && (W2A as Record<string, string>)[`subject.${s}`]) || (s ?? "");

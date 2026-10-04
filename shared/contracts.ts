@@ -123,6 +123,12 @@ export interface UiDirectives {
   studioSlot?: StudioSlot;
   /** The teacher's face display from RELATIONAL-OS appraise() only (W2-I → W2-D); never keyed to a correct verdict. */
   teacherAffect?: TeacherAffectUi;
+  /**
+   * Quick practice's counter (W2-A client; producer W2-C, the practice purpose): item `n` of `of` (≤ 5) is on the table;
+   * `done` on the turn that closes the set ("That's the set"). Older shows "Practice · n of 5"; Young shows no count.
+   * Until W2-C sends it, the client counts the graded items of a practice lesson itself (useDesk practiceCount).
+   */
+  practice?: { n: number; of: number; done?: boolean };
 }
 
 /** The teacher as every surface shows them: the server is the one source (compiler/characters teacherCard). */
@@ -254,6 +260,11 @@ export interface LessonStartRequest {
    * The aap/tum register is never a request field: the parent's controls decide it (V2 §3.3 step 4).
    */
   purpose?: "lesson" | "practice" | "doubt";
+  /**
+   * Ask ("doubt") only: the child's question, sent WITH the start (flows G11), so the server routes the lesson to the
+   * matching topic (server/lesson/purpose.js routeAsk) and titles it by the question. ≤ 500 characters are read.
+   */
+  firstText?: string;
 }
 /** 409 from POST /api/lesson/start when the plan does not allow a lesson now (daily cap, lesson hours, done). */
 export interface LessonStartRefused { error: string; state: ChildHomeState; opensAt: string | null; capRemaining: number }
@@ -293,7 +304,19 @@ export interface LessonSummary {
 
 // ───────────────────────────── child surfaces (server/routes/child.js) ─────────────────────────────
 /** GET /api/child/plan?childId= → the child home's one primary card (V2 §6.3.3). */
-export type ChildHomeState = "start" | "first" | "resume" | "done" | "capped" | "resting";
+export type ChildHomeState = "start" | "first" | "resume" | "done" | "capped" | "resting"
+  /** W2-A SF1 (STUDENT-FLOW §4.2): the parent's "Homework help today"; a school test window; the Conductor's safety hold. */
+  | "homework" | "test_window" | "safety_hold";
+/** One "Made for you" piece (STUDENT-FLOW §9.3), read from W2-H's studio_mount feed; [] until it has data. */
+export interface MadeForItem {
+  id: string; kind: string; title: string; topicTitle: string | null; at: string;
+  /** the still rendered at reveal (an image URL), or null */
+  still: string | null;
+  /** "Why {T} made this", in plain words from the build record's misconception id (lexicon), never model prose */
+  because: string | null;
+  /** the child's result in it, for the parent ("On their own" / "With a hint"), never a score */
+  result?: "on_own" | "with_hint" | null;
+}
 export interface ChildPlanResponse {
   state: ChildHomeState;
   /** Legacy shape for src/child/day.ts: start/first/resume → "default", done/capped → "done", resting → "resting". */
@@ -312,6 +335,16 @@ export interface ChildPlanResponse {
   /** Surfaces hidden by the parent's "Only this session" choice (learning_profile consent off). */
   surfaces: { map: boolean; notebook: boolean; resume: boolean };
   source: { dayPlan: number | null };
+  /** W2-A SF1: today's (done) or recent made-for pieces for the mini-shelf; [] hides it (W2-H fills the feed). */
+  madeFor?: MadeForItem[];
+  /** W2-A SF1: the Question jar (STUDENT-FLOW §7); null until W3 stores jar items. */
+  jar?: { waiting: number } | null;
+  /** `test_window`: the school test the parent entered (calm copy, never a countdown). */
+  testWindow?: { subject: string; from: string; to: string } | null;
+  /** `homework`: the parent's homework help is on until this time; today's lesson stays as the second card. */
+  homework?: { until: string } | null;
+  /** The parent's per-child "Tap and type only" (Controls): the lesson starts in text mode on any device. */
+  textOnly?: boolean;
 }
 /** Spec state shapes (V2 §4.8): plot/dot → sprout/ring → bloom/star → fruit/ticked star. */
 export type MapState = "not_started" | "practising" | "got_it" | "secure";

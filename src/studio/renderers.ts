@@ -11,6 +11,7 @@
 // through onEvent only (the host grades answers, never the renderer).
 import type { ComponentType } from "react";
 import type { StageSize, StudioArtifact, StudioArtifactKind } from "../../shared/studio.ts";
+import { StudioWhiteboard } from "../modules/whiteboard/StudioWhiteboard.tsx";
 
 /** What a renderer may tell the stage. An answer is host-graded (LIVE-STUDIO §3.10); `correct` is never trusted. */
 export type StudioStageEvent =
@@ -34,7 +35,9 @@ export interface ArtifactRendererProps<K extends StudioArtifactKind = StudioArti
 export type ArtifactRenderer<K extends StudioArtifactKind = StudioArtifactKind> = ComponentType<ArtifactRendererProps<K>>;
 
 /** The registry. One line per kind, added by its owner (see the header). */
-export const RENDERERS: { [K in StudioArtifactKind]?: ArtifactRenderer<K> } = {};
+export const RENDERERS: { [K in StudioArtifactKind]?: ArtifactRenderer<K> } = {
+  whiteboard: StudioWhiteboard, // W2-B: the drawing-script renderer (src/modules/whiteboard/**)
+};
 
 export function rendererFor<K extends StudioArtifactKind>(kind: K): ArtifactRenderer<K> | null {
   return (RENDERERS[kind] as ArtifactRenderer<K> | undefined) ?? null;
