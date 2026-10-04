@@ -5017,6 +5017,13 @@
    "at": "2026-10-04",
    "title": "gnm open after round 2: curious under the held-out judge on all three faces; per-face brow designs for slate (through the frames) and plum; slate hair (iteration-2 helmet vs reference curls), temple ear-hooks; plum brow cards too heavy; teal upper-forehead light zone; B+ slate PP light 5% and B+ garment penetration (slate 22, plum 5); render-likeness gap on slate/plum",
    "source": "inbox/teacher-gnm.json"
+  },
+  {
+   "id": "owner-rejects-generated-faces",
+   "kind": "decision",
+   "title": "Owner: the GNM/generated teacher faces look scary, cheap and unpolished; source a clean, polished, human-like head from existing professional avatar projects or assets instead; AWS spend up to $400",
+   "at": "2026-10-04",
+   "source": "inbox/owner-face-verdict.json"
   }
  ],
  "edges": [
@@ -8629,6 +8636,11 @@
    "src": "rj-gain-screen-bypasses-caps",
    "rel": "constrains",
    "dst": "teacher-presets-per-face"
+  },
+  {
+   "src": "owner-rejects-generated-faces",
+   "rel": "supersedes",
+   "dst": "gnm-adopted-identity-base"
   }
  ]
 }
