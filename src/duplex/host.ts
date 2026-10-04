@@ -168,7 +168,7 @@ export class EngineHost {
     this.flags = { ...DEFAULT_FLAGS, ...o.session.flags };
     this.engine = o.engine ?? createEngine({ flags: this.flags, model: o.model ?? null, supportsProbe: o.supportsCommit });
     this.governor = new Governor({ flags: this.flags, fallback: this.engine instanceof RulesEngine ? null : new RulesEngine({ supportsProbe: o.supportsCommit }), mode: o.governorMode });
-    this.fanin = new TurnTranscript({ source: o.source, filter: (text, meta) => this.echo.subtract(text, meta.t, this.fanin.lag.p90) });
+    this.fanin = new TurnTranscript({ source: o.source, filter: (text, meta) => this.echo.subtract(text, meta.t, this.fanin.lag.p90, meta.fromMs !== undefined && meta.toMs !== undefined ? { fromMs: meta.fromMs, toMs: meta.toMs } : null, meta.times ?? null) });
     this.safety = new PartialSafety(o.scan ? { scan: o.scan } : {});
     this.pace = { sessions: 0, holdPauseMs: null, answerGapMs: null, speechRateSylPerS: null, fillerRatePerMin: null, source: "band_default", strain: false };
     this.engine.reset(o.session);

@@ -77,6 +77,12 @@ export class TurnTranscript {
    */
   commitSent(t) { this.commits.push(t); if (this.commits.length > 16) this.commits.shift(); }
 
+  /** The commit that WOULD answer a final of an item starting at `start` (no side effects). */
+  peekCommit(start) {
+    const c = this.commits.find((x) => x >= start - 40);
+    return c === undefined ? null : c;
+  }
+
   /** The pending commit that answers a final of an item whose audio started at `start` (stale ones are dropped). */
   takeCommit(start) {
     while (this.commits.length && this.commits[0] < start - 40) this.commits.shift();
@@ -105,7 +111,19 @@ export class TurnTranscript {
     it.raw = raw;
     let text = raw.trim();
     if (this.filter) {
-      const f = this.filter(text, { itemId: it.id, t: ev.t });
+      // the audio this version describes: only her words audible INSIDE it can be echo in it (M-D7 c01 / i18: a late final
+      // of the child's "तीन बटा चार", spoken BEFORE her uptake re-voiced it, was emptied as an echo of that uptake; on a
+      // revoke the merged turn then read "आठ नहीं नहीं" and a verdict played on 4 instead of 3/4)
+      const fromMs = it.audioStartMs ?? it.firstAt;
+      let toMs;
+      if (ev.words && ev.words.length) toMs = ev.words[ev.words.length - 1].endMs;
+      else if (ev.type === "final") {
+        const c = this.peekCommit(fromMs);
+        toMs = c !== null ? (ev.audioEndMs !== undefined ? Math.min(c, ev.audioEndMs) : c) : (ev.audioEndMs ?? ev.t - this.lag.p50);
+      } else toMs = ev.t - this.lag.p50;
+      const nTok = text ? text.split(/\s+/).length : 0;
+      const times = ev.words && ev.words.length === nTok ? ev.words : null;
+      const f = this.filter(text, { itemId: it.id, t: ev.t, fromMs, toMs, times });
       if (f.removed && it.inTurn) this.echoRemoved += f.removed;
       text = f.text;
     }

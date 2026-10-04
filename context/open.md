@@ -112,3 +112,17 @@ BUILD-PLAN W1-C acceptance reads "+1 d: the C31 check fires in the opener, and a
   the flag is set; these turns reach it with the flag unset unless the classifier catches them. Child-safety floor: fix
   first.
 - **open-sig-a7-human-fillers:** calibrate A7/A2 (≥ 300 ms, < 1 st) on recorded human filled pauses.
+
+<!-- reset-plan (2026-10-04) -->
+### `open-reset-owner-decisions`
+RESET-PLAN §9 needs these owner decisions:
+
+| id | decision needed |
+|---|---|
+| O-R1 | Teacher look for ages 9-15: the style-C puppet (`stylised-c-owner-directive`) or DESIGN-V3's painterly stand-in portraits. |
+| O-R3 | Confirm that off-topic diversions are hidden from parents. Safety events are always shown. |
+| O-R4 | Buy or name the reference phone (about INR 10k, Android) for QB-G9 and X6. |
+| O-R5 | Provide a fast ear in India for duplex L3: MAI-Transcribe in-region, or Nemotron hosted in India. |
+| O-R6 | Approve a consented child panel (n ≥ 24) for X1, X4, X6 and the Fun Toolkit. |
+| O-R7 | A human reviews the synthetic safeguarding incidents that block deletion of 3 leftover production test accounts. |
+| O-R9 | Approve the Wave 2.5 Azure envelope, about USD 60-90 [E]. |

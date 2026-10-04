@@ -1,0 +1,209 @@
+{
+ "n": 3780,
+ "children": 30,
+ "metrics": {
+  "VS-A12": {
+   "value": 1,
+   "n": 103,
+   "bar": "= 1.0",
+   "pass": true
+  },
+  "VS-A1": {
+   "value": 0.085,
+   "aurocText": 0.54,
+   "aurocTextVoice": 0.625,
+   "ci80": [
+    0.05756264116958183,
+    0.1093833848852034
+   ],
+   "ci95": [
+    0.04560958251599494,
+    0.12118654355690334
+   ],
+   "n": 648,
+   "children": 30,
+   "bar": "dAUROC >= 0.03 and 80% CI lower > 0",
+   "pass": true
+  },
+  "VS-A2": {
+   "value": 0.57,
+   "ci95": [
+    0.5206667342382407,
+    0.6136759837229441
+   ],
+   "n": 648,
+   "bar": "AUROC >= 0.62, lower > 0.55",
+   "pass": false
+  },
+  "VS-A3": {
+   "value": 0.717,
+   "ci95": [
+    0.6701767747860625,
+    0.7650891473674334
+   ],
+   "gap": {
+    "value": 0.207,
+    "ci95": [
+     0.11324472114265909,
+     0.2959034711265129
+    ]
+   },
+   "n": 373,
+   "bar": "AUROC >= 0.70; gap >= 0.15 with n >= 200 IDK per band",
+   "pass": true
+  },
+  "VS-A4": {
+   "h1": {
+    "eceCalibratedCV": 0.069,
+    "ecePlaceholder": 0.051,
+    "n": 648,
+    "pass": "L1 only"
+   },
+   "h2": {
+    "eceCalibratedCV": 0.085,
+    "ecePlaceholder": 0.154,
+    "n": 373,
+    "pass": false
+   },
+   "h3": {
+    "eceCalibratedCV": 0.103,
+    "ecePlaceholder": 0.067,
+    "n": 385,
+    "pass": false
+   },
+   "h4": {
+    "n": 33,
+    "pass": "insufficient"
+   },
+   "bar": "ECE <= 0.08 (L1), <= 0.05 (L2)"
+  },
+  "VS-A5": {
+   "value": 0.622,
+   "n": 119,
+   "o4DisagreeRapid": {
+    "value": 0.515
+   },
+   "o4DisagreeBase": {
+    "value": 0.443
+   },
+   "bar": "precision >= 0.7; O4 disagreement >= 2x base",
+   "pass": false
+  },
+  "VS-A6": {
+   "langMode": {
+    "en": {
+     "n": 734,
+     "aurocO1": 0.72,
+     "firePer100": 29,
+     "pass": false
+    },
+    "hinglish": {
+     "n": 2211,
+     "aurocO1": 0.607,
+     "firePer100": 28,
+     "pass": true
+    },
+    "hi": {
+     "n": 732,
+     "aurocO1": 0.563,
+     "firePer100": 31.7,
+     "pass": false
+    }
+   },
+   "micClass": {
+    "builtin": {
+     "n": 2576,
+     "aurocO1": 0.628,
+     "firePer100": 28.1,
+     "pass": true
+    },
+    "bt": {
+     "n": 609,
+     "aurocO1": 0.556,
+     "firePer100": 32.7,
+     "pass": false
+    },
+    "wired": {
+     "n": 492,
+     "aurocO1": 0.657,
+     "firePer100": 28.7,
+     "pass": true
+    }
+   },
+   "ageBand": {
+    "11-13": {
+     "n": 1838,
+     "aurocO1": 0.587,
+     "firePer100": 32,
+     "pass": false
+    },
+    "9-10": {
+     "n": 1839,
+     "aurocO1": 0.67,
+     "firePer100": 25.8,
+     "pass": false
+    }
+   },
+   "gender": {
+    "f": {
+     "n": 1960,
+     "aurocO1": 0.635,
+     "firePer100": 25.7,
+     "pass": false
+    },
+    "m": {
+     "n": 1717,
+     "aurocO1": 0.609,
+     "firePer100": 32.6,
+     "pass": false
+    }
+   },
+   "homeLang": {
+    "en": {
+     "n": 734,
+     "aurocO1": 0.72,
+     "firePer100": 29,
+     "pass": false
+    },
+    "hi": {
+     "n": 2943,
+     "aurocO1": 0.6,
+     "firePer100": 28.9,
+     "pass": true
+    }
+   },
+   "pooledAuroc": 0.625,
+   "pooledFirePer100": 28.9,
+   "bar": "per-group AUROC within 0.05 of pooled; fire-rate gap <= 2 per 100 turns"
+  },
+  "VS-A7": {
+   "value": 0.008,
+   "ci95": [
+    -0.1602691352458329,
+    0.16451473392111138
+   ],
+   "n": 385,
+   "nHeld": 45,
+   "bar": ">= 0.15, CI excludes 0",
+   "pass": false
+  },
+  "VS-A9": {
+   "value": 4.86,
+   "p50": 3.498408889514394,
+   "n": 3780,
+   "bar": "head p95 <= 20 ms (device lab, mid class)",
+   "pass": true
+  }
+ },
+ "stateCounts": {
+  "null": 2614,
+  "effortfulGuess": 218,
+  "rapidGuess": 119,
+  "fragileCorrect": 175,
+  "searching": 427,
+  "heldBelief": 124
+ },
+ "disagreements": 9,
+ "input": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/sim30.jsonl",
+ "ranAt": "2026-10-04T21:39:57.710Z"
+}

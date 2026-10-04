@@ -6,5 +6,5 @@ export declare class EchoSubtractor {
   heardText(utteranceId: string, text: string, startedAt: number, msPerChar: number): void;
   stopAt(utteranceId: string, t: number): void;
   recent(t: number, lagMs?: number): { u: string; w: string; sk: string; startMs: number; endMs: number }[];
-  subtract(text: string, t: number, lagMs?: number): { text: string; removed: number };
+  subtract(text: string, t: number, lagMs?: number, span?: { fromMs: number; toMs: number } | null, times?: { startMs: number; endMs: number }[] | null): { text: string; removed: number };
 }

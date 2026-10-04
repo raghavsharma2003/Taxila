@@ -2418,3 +2418,96 @@ governor in baseline mode (safety + legality only).
 **Caveats:** synthetic voice and contours (a short rising "क्या?" is too flat to exercise the acoustic repair rule); no
 echo in the frames; MAI/FAST latencies are estimates; one author; category mix chosen (per-scenario rates, not per-lesson);
 Smart Turn off the shelf not an arm. The gap p90 target (≤ 700 ms) is met for closed answers on MAI/fast, not pooled.
+
+<!-- reset-plan (docs/design/reset/RESET-PLAN.md, 2026-10-04); graph rows in context/inbox/reset-plan.json -->
+### `m-reset-baseline-2026-10-04`
+**What:** the Wave 2.5 baseline on production 9242020, consolidated from the five reset deliverables and owner-truth,
+2026-10-04. Nothing was re-run for this entry. Each figure keeps its source's n, method and caveats (RESET-PLAN §2).
+
+| measure | value | source |
+|---|---|---|
+| owner's rating | 0/100 | OWNER-RESET |
+| conversation battery | 134/345 = 39% (Wilson 80% 36-42); 58 lessons, 916 turns, 2 judges + a human read of 65 disputes | CONVERSATION-V2 |
+| a first stop request ended the lesson | 11/12 | CONVERSATION-V2 |
+| check-ins on a stop request | 0/16 | owner-truth |
+| lessons ended on a non-stop intent | 17 | CONVERSATION-V2 |
+| diversions parked | 0/14 | CONVERSATION-V2 |
+| parked questions returned to | 2/24 | CONVERSATION-V2 |
+| visual, game or animation requests that put new content on the stage | 1/25 | CONVERSATION-V2 |
+| the same, child simulator | 0/12 | owner-truth |
+| Studio artifacts | 0 in 52 turns | audit |
+| partial answers graded correct | 4/4 | CONVERSATION-V2 |
+| frame claims trusted on recheck probes | 6/6 | owner-truth |
+| replies that only restate the question | 33/345 | CONVERSATION-V2 |
+| the same, child simulator | 38/394 | owner-truth |
+
+**First item served ≥ 2 classes below the child's class** (strict, by the gpt-5 judge plus a blind second rater,
+κ 0.32; CONTENT-LEVEL):
+
+| class | share | n |
+|---|---|---|
+| 4 | 35% | 26/75 |
+| 5 | 59% | 44/74 |
+| 6 | 45% | 50/112 |
+| 7 | 40% | 50/124 |
+
+**Latency** (audit, US sandbox to eastus2): voice reply median 3.9 s (max 9.3 s, n=11); typed reply median 2.6 s
+(max 9.5 s, n=25).
+
+**Wave 2 tree:** Studio frame archetypes are admissible on 23/385 class 4-7 topics.
+
+**Other:** the phone time picker was broken on 2/2 screens. The safety floor was present and correct.
+
+**Caveats:**
+- The judges are models, plus one human reader.
+- Latencies come from the US sandbox, not India.
+- The two content raters are both models.
+
+**Use:** this is the "before" figure for every Wave 2.5 bar. A new number is comparable only on the same battery and
+method.
+
+### `m-reset-plan-coverage-2026-10-04`
+**What:** `node evals/reset-plan/coverage.mjs`, 2026-10-04. It parses `docs/design/reset/audit/DEFECTS.md` and
+RESET-PLAN §6-§8.
+
+**Result:**
+- Owner requirements: 16/16 have a lead stream.
+- Top 40: 40/40 mapped exactly once.
+
+  | stream | top-40 rows |
+  |---|---|
+  | RS-1 | 7 |
+  | RS-2 | 8 |
+  | RS-3 | 7 |
+  | RS-4 | 3 |
+  | RS-5 | 10 |
+  | RS-6 | 4 |
+  | RS-7 | 1 |
+
+- All defects: 187/187 mapped exactly once.
+
+  | stream | defects |
+  |---|---|
+  | RS-0 | 1 |
+  | RS-1 | 52 |
+  | RS-2 | 51 |
+  | RS-3 | 25 |
+  | RS-4 | 17 |
+  | RS-5 | 27 |
+  | RS-6 | 10 |
+  | RS-7 | 4 |
+
+- The two "still works" rows are kept, and there are 0 unknown ids.
+
+**Negative test:** a duplicate mapping, an unknown id and a top-40 row moved between streams were injected. The check
+reported 4/4 problems and exited 1.
+
+**Limits:** it checks the plan's bookkeeping, never the product.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `design-v3-checks-2026-10-04` (2026-10-04): Design-v3 mockups, Playwright Chromium on file:// with routed Google Fonts: 55 renders (11 page states x 360x640, 390x844, 768x1024, 1024x768, 1440x900) 0 h-scroll, 0 page errors; 3 lesson screens x 5 viewports: 0 doc scroll, 0 artifact overflow/under-rail, 0 SVG ink outside viewport, dock visible 15/15, transcript clipped 0/15, buttons < 36 px 0/15. Floor 360x640 zones: top 52, stage 362-414, slot 326 x 334-360, rail 62, dock 108. Board label glyph box 10 px -> 16-19 px after raising labels to 38/48 units. Contrast: all text pairs >= 5:1 except day mint 4.36 -> #0B7D55 5.15. 18/18 scripted interaction assertions (reschedule, clash, lesson-hours, onboarding zero-days, 4 diversion scenarios).
+- `m-conv2-prod-2026-10-04` (2026-10-04): Conversation-v2 battery on PRODUCTION (taxila-web--s9242020-kj16), evals/conversation-v2/results/2026-10-04-run1: 357 class 4-7 child utterances in context, 47 intents; 58 real lessons, 916 child turns, 0 HTTP errors, text + cascade lanes, Hinglish/English/Hindi children. Judged by gpt-6-sol + mistral-m35 on binary rubric checks (kappa 0.657, case agreement 0.812), all 65 disputes decided by a human read, spot check of agreed cases 39/40. PASS 134/345 (39%, Wilson80 36-42%). Families: work 28/63, questions 26/35, steering 44/113, attention 20/73, energy 2/22, session 5/17, low-signal 9/22. Zero passes: diversion 0/14 (parked 0), visual 0/12, game 0/8, animation 0/5, change_topic 0/8 (4 ended the lesson), skip_item 0/5 (4 ended), end_request 0/12 (11 ended, 1 safeguard), thinking_aloud 0/8, joke 0/8, out_of_bounds 0/12 (1 complied: PUBG kill tips), frustration 0/8. Best: question_on_topic 12/14, method_instruction 10/12, language_switch 8/10 (never persisted), identity 6/6, leaving 5/5. Director: 89/90 teaching-moment probes got the next teach step regardless of the words; 171/181 practice non-answers got hint/repair; the lesson ended on 33 probes (17 on non-session intents); 1/25 stage requests put anything new on stage; parked-topic return 2/24; 33/345 replies are only the pending question; partial answers graded correct 4/4; 2 safeguard false alarms in 916 turns (a correct 'no', and 'i'm done'). Offline on the prod commit's detection path, distress 10/10 (5 predicate, 5 classifier). Spend about USD 5.35.
+- `m-conv2-understand-bakeoff-2026-10-04` (2026-10-04): UNDERSTAND (intent note) bake-off, prototypes/reset/conversation-v2/bakeoff.mjs, n=355 battery cases read in production's own context (teacher's last turn, question + verified key, setup turns), scored as 'note → policy.mjs move equals gold move' (language switch counted as a modifier). gpt-6-sol effort none 330/355 (93%, Wilson80 91-95%), p50/p90 1810/2174 ms; gpt-6-sol low 332/355 (94%), 1936/2401 ms; grok-4-1-fast-nr (prod classifier) 313/355 (88%, 86-90%), 861/2483 ms; gpt-6-luna 316/355 (89%), 1242/1480; taxila-fast 313/355 (88%), 1141/1411; mistral-m35 not measured (130/355 calls 429-throttled; 202/225 completed right). Paired sol-none minus grok +4.8 pts [2.3, 7.0] (26 vs 9 discordant); sol low minus sol none +0.6 [-0.6, 2.3]. grok and gpt-6-sol agree on the move 313/355, right 302/313 when they agree; on the 42 disagreements gpt-6-sol right 28, grok 11. Deadline race (gpt-6-sol if back by D else grok): D=2000 ms 91.8%, D=2500 ms 93.0%. gpt-6-sol left lang_to empty 10/10 while labelling every switch (code now fills it). Latency from the US sandbox to eastus2. Spend USD 2.73.
+- `content-level-audit-2026-10-04` (2026-10-04): Content-level audit classes 4-7 (evals/content-level/, docs/design/reset/CONTENT-LEVEL.md). Bank n=60/class stratified by subject, 2 raters (taxila-brain gpt-5 blind judge + Claude), kappa 0.32: too easy floor/strict(GE<=C-2)/ceiling c4 20/25/43%, c5 13/33/60%, c6 7/30/35%, c7 18/38/48%; too hard 1/240. First item actually served (real buildPracticeQueue, all 385 topics) GE<=C-2: c4 35%, c5 59%, c6 45%, c7 40%. Full bank n=5076 judged GE<=C-2 25.5% (judge precision 23/40 vs 2025-26 NCERT books). Class-4 maths first items: 19/30 below class-4 demand (Claude), 18/30 (judge). Models only, no human teacher, no child data.
+- `content-level-queue-structure-2026-10-04` (2026-10-04): Practice queue structure over all class 4-7 kits (deterministic): first item is kit difficulty 1 in 318/385 topics; only 221/420 difficulty>=4 items can ever be posed (QUEUE_MAX=12 after easiest-first sort); in 83/385 topics the hardest skill never enters the queue.

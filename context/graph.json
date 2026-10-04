@@ -9092,6 +9092,279 @@
    "at": "2026-10-04",
    "title": "Owner item 4 (free-form steering) has no Wave-2 stream; patches 07-08 supply the Director side, but no stream owns the acceptance run, the lexicon's precision on real child turns, or the voice lane's language pin",
    "source": "inbox/owner-truth.json"
+  },
+  {
+   "id": "reset-wave-2-5-streams",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Wave 2.5 (docs/design/reset/RESET-PLAN.md) runs right after Wave 2 integrates as eight streams with exclusive owned paths: RS-0 integration + truth floor + experience harness (main loop), RS-1 design system + every screen for ages 9-15, RS-2 onboarding + working scheduling + parent one-truth, RS-3 lesson screen + hands-free duplex, RS-4 Studio v2 (engines + specs, whiteboard, zero visible failure, frequent adaptive generation), RS-5 conversation intelligence v2, RS-6 content re-levelling + placement, RS-7 teacher face + voice. ~96 agent-days, ~17 stream-days + 3 integration days [E]; flags default off; cross-path changes ship as seam patches. Reverse if the Day-0 baseline EXP run shows Wave 2 as integrated already passes the EXP-R1 gate (then fold the remaining items into W3), or if two streams' owned paths prove inseparable in the first integration day (merge those two streams).",
+   "source": "inbox/reset-plan.json"
+  },
+  {
+   "id": "reset-exp-acceptance-gate",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Wave 2.5 exits on experience, not plumbing: EXP-30 (24 probed + 6 natural full-lesson sessions, classes 4-7 x 6 personas, browser-typed and browser-spoken with a fake mic fed by Azure TTS child clips) scored on the frozen rubric EXP-R1 (D1 heard-me .. D12 truth, 0/1/2 anchors; critical fails: safety breach, first stop ends lesson, out-of-bounds compliance, any visible failure, claimed-absent visual, wrong verdict spoken); battery passes at >=90% sessions >=85% of points and 0 critical fails; plus the top-40 re-walk closed, conversation battery bars, owner-truth suite, duplex L2/L3 bars, stream bars, safety suites unchanged, and the owner's own scripted-but-free test. Judges: gpt-6-sol + a non-mistral second family, human read of all disagreements and critical fails, D10/D11 human-scored. Reverse if a second human rater on >=10 sessions gets kappa < 0.6 with the first on EXP-R1 (rewrite the anchors before using it as a gate), or if the owner's verdict and the EXP result disagree in direction (the owner wins and the rubric is revised to what he saw).",
+   "source": "inbox/reset-plan.json"
+  },
+  {
+   "id": "reset-truth-floor-day-0",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Day 0 of Wave 2.5, before any stream builds: integrate Wave 2, verify W2-I built the rewritten stop gate (BUILD-PLAN:684/:865, one check-in; a real goodbye releases), rebase and apply owner-truth patches 01-10 (07/08 as stopgaps until TAXILA_CONV2=on), land CONTENT-LEVEL F0 selection-only behind content.f0 ON (no item >=2 classes below as item 1-2; skill-round-robin cap; diagnostic at position 3+), and the seam commit (Note, Move kinds, LessonPrefs, LaterItem, StageRequest.source child_request, StudioSpec, Placement + item ge/demand, EngineContext, migrations child_later/schedule_exceptions/placement, one flag table). Reverse if any owner-truth patch cannot be rebased without breaking a Wave 2 acceptance test (then that patch's fix moves into its owning stream's step 1, not Day 0).",
+   "source": "inbox/reset-plan.json"
+  },
+  {
+   "id": "reset-studio-v2-on-w2h-host",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Studio v2 engine+spec (STUDIO-V2 D-S1) becomes rung 1 inside W2-H's host rather than a replacement: rung order engine+spec -> library hit -> live code build (only with >=90 s lead) -> board version -> W2-H skeleton; W2-H's gate, sha-checked frame assembly, library identity and host grader are kept as built. Catalogue grows to >=12 engines by Wave 2.5 day 13 (>=6 real-time games, >=4 cinematic explainers, >=2 simulations) covering the top 60 first-month topics. Requests: a relevant stage change by the next boundary 100% (board rung counts), the requested kind >=80%. Reverse if engine+spec pieces fail QB-G/QB-A on >20% of archetypes after human review, or if a live code arm reaches P(pass strict gate by deadline) >= 0.95 at n >= 30 with craft >= 4/5 (STUDIO-V2 D-S1 reversal).",
+   "source": "inbox/reset-plan.json"
+  },
+  {
+   "id": "reset-hands-free-replaces-click-to-speak",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "The Wave 2.5 lesson screen has no talk button: the mic is a state readout plus a mute switch (DESIGN-V3 §5); hands-free switches on (INTEGRATION W2.5-5, closed answers first, then open contexts) once TaxilaFDB L2 meets A1 (gap p50 <= 350 / p90 <= 700 ms closed answers), A2 (thinking-pause cut-offs <= silence-640 and <= 3%), A3=A8=A10=0; engine faults fail patient through the governor (rules -> silence backstop), never back to a button; the typed lane stays one tap away in every input mode. A1/A2 at L3 on an India phone with a fast ear is an exit item. Inherits owner-duplex-no-silence-gate-2026-10-04. Reverse if L3 on real child audio shows thinking-pause cut-offs worse than silence-640 after the semantic call lands (then keep engine shadow and ship the patient silence policy hands-free until the trained engine passes ARCHITECTURE §5.5).",
+   "source": "inbox/reset-plan.json"
+  },
+  {
+   "id": "reset-defect-rewalk-closure",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "A defect from the reset audit (DEFECTS.md, 187 rows) counts as closed only when RS-0's re-walk (evals/reset-audit/rewalk.mjs, built on the preserved audit harness) re-runs its reproduction on the deployed revision and records the fixed behaviour with a screenshot; a stream's own claim is not closure. Exit needs 40/40 top-40 closed and >=95% of the other 147, every open row with a written reason the owner acknowledged. Reverse if the re-walk proves flaky (the same revision gives different closure on >5% of rows across two runs): then closure needs two agreeing runs.",
+   "source": "inbox/reset-plan.json"
+  },
+  {
+   "id": "m-reset-baseline-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Wave 2.5 baseline, production 9242020, consolidated from the five reset deliverables + owner-truth (no re-run here): owner 0/100; conversation battery 134/345 (39%, Wilson80 36-42; 58 lessons, 916 turns); first stop ended lesson 11/12 and 0/16 check-ins; diversion parked 0/14, parked return 2/24; visual/game/animation request -> new stage content 1/25 (0/12 owner-truth; 0 artifacts in 52 audit turns); partial graded correct 4/4; frame-claim trusted 6/6; question-only replies 33/345 and 38/394; first served item >=2 classes below (strict judge) class4 35% (26/75), 5 59%, 6 45%, 7 40%; voice reply median 3.9 s (n=11), typed 2.6 s (n=25); W2 tree Studio kit coverage 23/385 class 4-7 topics; time picker broken on phone 2/2 screens; safety floor present. Each figure keeps its source's n, method and caveats (RESET-PLAN §2).",
+   "source": "inbox/reset-plan.json"
+  },
+  {
+   "id": "m-reset-plan-coverage-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "RESET-PLAN coverage, node evals/reset-plan/coverage.mjs (parses DEFECTS.md and RESET-PLAN §6-§8), 2026-10-04: owner requirements 16/16 with a lead stream; top-40 40/40 mapped exactly once (RS-1 7, RS-2 8, RS-3 7, RS-4 3, RS-5 10, RS-6 4, RS-7 1); defects 187/187 mapped exactly once (RS-0 1, RS-1 52, RS-2 51, RS-3 25, RS-4 17, RS-5 27, RS-6 10, RS-7 4); pass rows 2/2 kept; 0 unknown ids. Negative test: injecting a duplicate, an unknown id and a moved top-40 row gave 4/4 problems and exit 1. Checks the plan's bookkeeping, never the product.",
+   "source": "inbox/reset-plan.json"
+  },
+  {
+   "id": "rj-reset-child-stop-ends-lesson-gate",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried (BUILD-PLAN W2-E G-AUTHORITY and w2i-release.mjs as first written; brain/turn.js:333-342 forcing wantsToStop on RELEASE; prod state.js toWrap on one flag): a child stop phrase ends the lesson that turn. Broke: owner #7 (0/100); prod ended 11/12 first end-requests and 17 lessons on non-stop intents (skip, change topic, break, frustration); owner-truth 0/16 check-ins; F7 then closed the whole day (409). Instead: one check-in (3-min break / 2-min wrap / keep going), a second stop pauses, a real goodbye releases at once (NEVER MANIPULATE), no child request closes the day; Day 0 verifies the rewritten gate is what W2-I built.",
+   "source": "inbox/reset-plan.json"
+  },
+  {
+   "id": "rj-reset-w2h-library-as-visual-answer",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried (Wave 2 plan): W2-H library + prefetch + skeleton rungs, intents only from lesson-start prefetch and the Director's beat, as the answer to visuals and games. Broke: kit coverage lets a frame archetype mount on 23/385 class 4-7 topics (all fractions, plan.js chooseArchetype over every kit); no child-request source existed (owner-truth F16), so 'show me a diagram' could never reach the stage; live code builds need ~90 s lead and no archetype met the live ship bar. Cannot satisfy R3/R4/R14. Instead: Studio v2 engine+spec as rung 1 inside the W2-H host, child_request stage intents on any beat and lane, catalogue >=12 engines (reset-studio-v2-on-w2h-host).",
+   "source": "inbox/reset-plan.json"
+  },
+  {
+   "id": "rj-reset-wave2-exit-as-owner-ready",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried (planning assumption): Wave 2's exit ('the owner's thorough test of the whole product') as the point the owner tests again. Broke: owner-truth traced all 21 owner failures in the Wave 2 tree as built and found 0 fixed, 3 partial (F14, F16, F21); Wave 2's batteries are plumbing (rj-plumbing-batteries-as-acceptance) and none of them measures what the child hears or sees. Instead: Wave 2.5 between Wave 2 integration and the owner's test, exiting on the EXP gate (reset-exp-acceptance-gate) and the defect re-walk.",
+   "source": "inbox/reset-plan.json"
+  },
+  {
+   "id": "open-reset-owner-decisions",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "Owner decisions RESET-PLAN §9 needs: O-R1 teacher look (style-C puppet per stylised-c-owner-directive vs DESIGN-V3's painterly stand-in portraits) for ages 9-15; O-R3 diversions hidden from parents (safety always shown); O-R4 buy/name the reference ~INR 10k Android phone for QB-G9/X6; O-R5 fast ear in India (MAI-Transcribe in-region or Nemotron India hosting) for duplex L3; O-R6 a consented child panel (n>=24) for X1/X4/X6/Fun Toolkit; O-R7 human review of the synthetic safeguarding incidents blocking 3 leftover prod test accounts; O-R9 Wave 2.5 Azure envelope ~USD 60-90 [E].",
+   "source": "inbox/reset-plan.json"
+  },
+  {
+   "id": "design-v3-one-band-9-15",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Design v3 (docs/design/reset/DESIGN-V3.md): one design band for classes 4-7 / ages 9-15, reference child 12 (class 6); no Young (6-9) variant, no mascots/stars/coins/confetti/bubbly type on any screen. Reverse only by a theme default (Day) if X1/X2 show class 4-5 children fail or reject the dark UI; never by reintroducing a kids' visual language.",
+   "source": "inbox/design-v3.json"
+  },
+  {
+   "id": "design-v3-dark-instrument-identity",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Child screens default to a dark 'instrument' identity (ground #0A0C12, brand ion #8B98FF, one volt lime #CBFF4D 'your move' carrier per screen state; Bricolage Grotesque / Atkinson Hyperlegible Next / Geist Mono / Mukta); Day theme is child opt-in and the parent default. Replaces V2's Lamp-and-Paper painted world. Reverse to Day default if X1 (>=80% 'for my age' per age half) or X2 (>=90% class-4 task success) fails.",
+   "source": "inbox/design-v3.json"
+  },
+  {
+   "id": "design-v3-volt-one-carrier",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Volt lime is the single 'your move' colour: at most one volt element per screen state (primary CTA or your-move rail cue or the child's voice waveform), no other token within 12 deg hue. Inherits the one-turn-colour law (ds-status-carriers). Reverse if colour-blind CIEDE2000 vs mint < 12 in the same state, or X4 shows the cue missed > 10%.",
+   "source": "inbox/design-v3.json"
+  },
+  {
+   "id": "design-v3-stage-contract",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Stage contract: one absolutely-positioned slot (stage minus a 62 px HUD rail), fixed design canvas scaled with meet + letterbox, never scrolls; safe zones for the type label (top-left) and phone PiP (top-right, 26% of short side); labels >= 38 canvas units per 1000 width (>= 12.4 px at the 326 px floor slot), targets >= 130 units; text/interactive boxes leaving the canvas or entering a safe zone fail the Studio gate (never reach the child). Reverse if a needed artifact class cannot meet the minimums at the floor slot.",
+   "source": "inbox/design-v3.json"
+  },
+  {
+   "id": "design-v3-no-visible-build",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "The child never sees generation machinery: no '{teacher} is making this' caption, no labelled skeleton, no progress bar, no error card; if a piece is not ready the teacher draws on the board and the piece arrives at a later turn boundary only if it passes the gate. Supersedes LIVE-STUDIO 4.2's visible caption (owner reset R9). Network/mic trouble states still shown (real-world facts the child must act on).",
+   "source": "inbox/design-v3.json"
+  },
+  {
+   "id": "design-v3-no-streaks-mastery",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "No streaks, points, XP, levels or leaderboards on child screens; progress is shape-coded skill mastery (secure = right again days later), then-and-now lines and the child's own words. In-game HUD numbers (hit/combo/clean) are allowed only inside a running game and never totalled or carried out. Revisit only if X7 shows > 5 pp lessons/week loss AND no anxiety signal.",
+   "source": "inbox/design-v3.json"
+  },
+  {
+   "id": "design-v3-scheduler-no-native-pickers",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Date/time selection (owner reset R11) uses custom controls, never native input type=date/time: day toggles + quick picks + 15-minute time rail with steppers and arrow keys (onboarding); 14-day date strip + time grid that disables clashes, past times and times beyond parent lesson hours (parent reschedule). Reverse only if a native picker passes the same Android WebView + desktop battery.",
+   "source": "inbox/design-v3.json"
+  },
+  {
+   "id": "design-v3-diversions-not-reported",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "The parent corner's curiosity list shows learning questions only; off-topic diversions (a game, a film) are not reported to parents, so the corner is not surveillance. Safety events always go through the safety channel regardless. Reverse if pilot parents (n >= 20) rate the corner as hiding something important.",
+   "source": "inbox/design-v3.json"
+  },
+  {
+   "id": "design-v3-checks-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Design-v3 mockups, Playwright Chromium on file:// with routed Google Fonts: 55 renders (11 page states x 360x640, 390x844, 768x1024, 1024x768, 1440x900) 0 h-scroll, 0 page errors; 3 lesson screens x 5 viewports: 0 doc scroll, 0 artifact overflow/under-rail, 0 SVG ink outside viewport, dock visible 15/15, transcript clipped 0/15, buttons < 36 px 0/15. Floor 360x640 zones: top 52, stage 362-414, slot 326 x 334-360, rail 62, dock 108. Board label glyph box 10 px -> 16-19 px after raising labels to 38/48 units. Contrast: all text pairs >= 5:1 except day mint 4.36 -> #0B7D55 5.15. 18/18 scripted interaction assertions (reschedule, clash, lesson-hours, onboarding zero-days, 4 diversion scenarios).",
+   "source": "inbox/design-v3.json"
+  },
+  {
+   "id": "design-v3-unmeasured-2026-10-04",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "Design v3 is unvalidated with children: 'for my age' (X1), class-4 task success on dark UI (X2), onboarding time <= 90 s (X3), hands-free understanding (X4), greyscale mastery legibility (X5), game frame time on a Rs 10k phone (X6), no-streak retention (X7). Experiments in DESIGN-V3.md section 15.",
+   "source": "inbox/design-v3.json"
+  },
+  {
+   "id": "m-conv2-prod-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Conversation-v2 battery on PRODUCTION (taxila-web--s9242020-kj16), evals/conversation-v2/results/2026-10-04-run1: 357 class 4-7 child utterances in context, 47 intents; 58 real lessons, 916 child turns, 0 HTTP errors, text + cascade lanes, Hinglish/English/Hindi children. Judged by gpt-6-sol + mistral-m35 on binary rubric checks (kappa 0.657, case agreement 0.812), all 65 disputes decided by a human read, spot check of agreed cases 39/40. PASS 134/345 (39%, Wilson80 36-42%). Families: work 28/63, questions 26/35, steering 44/113, attention 20/73, energy 2/22, session 5/17, low-signal 9/22. Zero passes: diversion 0/14 (parked 0), visual 0/12, game 0/8, animation 0/5, change_topic 0/8 (4 ended the lesson), skip_item 0/5 (4 ended), end_request 0/12 (11 ended, 1 safeguard), thinking_aloud 0/8, joke 0/8, out_of_bounds 0/12 (1 complied: PUBG kill tips), frustration 0/8. Best: question_on_topic 12/14, method_instruction 10/12, language_switch 8/10 (never persisted), identity 6/6, leaving 5/5. Director: 89/90 teaching-moment probes got the next teach step regardless of the words; 171/181 practice non-answers got hint/repair; the lesson ended on 33 probes (17 on non-session intents); 1/25 stage requests put anything new on stage; parked-topic return 2/24; 33/345 replies are only the pending question; partial answers graded correct 4/4; 2 safeguard false alarms in 916 turns (a correct 'no', and 'i'm done'). Offline on the prod commit's detection path, distress 10/10 (5 predicate, 5 classifier). Spend about USD 5.35.",
+   "source": "inbox/conversation-v2.json"
+  },
+  {
+   "id": "m-conv2-understand-bakeoff-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "UNDERSTAND (intent note) bake-off, prototypes/reset/conversation-v2/bakeoff.mjs, n=355 battery cases read in production's own context (teacher's last turn, question + verified key, setup turns), scored as 'note → policy.mjs move equals gold move' (language switch counted as a modifier). gpt-6-sol effort none 330/355 (93%, Wilson80 91-95%), p50/p90 1810/2174 ms; gpt-6-sol low 332/355 (94%), 1936/2401 ms; grok-4-1-fast-nr (prod classifier) 313/355 (88%, 86-90%), 861/2483 ms; gpt-6-luna 316/355 (89%), 1242/1480; taxila-fast 313/355 (88%), 1141/1411; mistral-m35 not measured (130/355 calls 429-throttled; 202/225 completed right). Paired sol-none minus grok +4.8 pts [2.3, 7.0] (26 vs 9 discordant); sol low minus sol none +0.6 [-0.6, 2.3]. grok and gpt-6-sol agree on the move 313/355, right 302/313 when they agree; on the 42 disagreements gpt-6-sol right 28, grok 11. Deadline race (gpt-6-sol if back by D else grok): D=2000 ms 91.8%, D=2500 ms 93.0%. gpt-6-sol left lang_to empty 10/10 while labelling every switch (code now fills it). Latency from the US sandbox to eastus2. Spend USD 2.73.",
+   "source": "inbox/conversation-v2.json"
+  },
+  {
+   "id": "conv2-intent-layer",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "A closed intent taxonomy (47 intents, 7 families: work, questions, steering, attention, energy, session, low-signal; docs/design/reset/CONVERSATION-V2.md §2) is read on every child turn and routed by a code policy with a precedence ladder (safety > leaving > stop check-in > adult > break > bounds > off-lesson park/detour > work > steering > relationship > low-signal), with new move kinds (park, detour, decline, check_in, pause, show, play, adopt, offer_choice, pace_prove, level, rephrase, answer_q, wait). It replaces 'answer label + 5 booleans → hint/repair/next teach step'. Reverse only if a battery replay shows the layer below today's 39% on any family, or the owner's test rejects it.",
+   "source": "inbox/conversation-v2.json"
+  },
+  {
+   "id": "conv2-model-reads-code-decides",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Per turn: a model writes the UNDERSTAND note (intent, also, final answer text, parkable topic, in_bounds, lang_to, method, distress OR-ed into the floor, confidence); code decides the move (policy.mjs); the reply model only words the move (shape + modifiers + the child's words + stage facts). The note never grades and never narrows safety. Reverse if a model policy beats code on the battery with 0 hard breaks over >= 3 reps and >= 95% reproducibility (model-full-orchestrator: 15/72 breaks).",
+   "source": "inbox/conversation-v2.json"
+  },
+  {
+   "id": "conv2-understand-gpt6-sol",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "UNDERSTAND note model = taxila-gpt6 (gpt-6-sol) at effort none, started at the turn boundary (and on slices on the voice lane); grok-4-1-fast-nr's note rides free in the existing classify JSON as the speculative path and the fallback. The reply starts on grok's move behind a no-verdict uptake opener (duplex law 2) and re-plans when gpt-6-sol disagrees (12% of battery turns). The switch rule is met: the action intervals 91-95% vs 86-90% do not overlap, and the paired difference is +4.8 pts [2.3, 7.0]. Reasoning effort is not needed (+0.6 [-0.6, 2.3]). Reverse if a faster arm ties within noise at p50 <= 1 s, or if the real-child re-plan rate exceeds 20%.",
+   "source": "inbox/conversation-v2.json"
+  },
+  {
+   "id": "conv2-stop-checkin-never-closes-day",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "A child's stop request gets one check-in (a 3-min break, a 2-min wrap, or keep going; no guilt); a second stop within 2 turns, a yes to the check-in, or the stop chip PAUSES the lesson. 'Leaving' (mummy calling, tuition) pauses at once (NEVER MANIPULATE). No child request closes the day: a child pause never counts as 'today's lesson is done' (F7). Skip, change of topic, break, boredom and frustration are separate intents and never end a lesson (prod ended 17 lessons on them). Supersedes BUILD-PLAN:684 'RELEASE wins in 100%' and :865 w2i-release 'the lesson ends that turn'. Reverse if parents/owner report the check-in as nagging (>= 2/50 sessions) or children say stop twice in > 30% of check-ins.",
+   "source": "inbox/conversation-v2.json"
+  },
+  {
+   "id": "conv2-later-list",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Parked questions live in state.later ({topic scrubbed <= 60 chars, learning, promise: after this question | at the end, insist, servedAt}; at most 5 per lesson; out-of-bounds never parked). They return when the item on the table resolves ('after this question') or at the last boundary before the wrap ('Talk now 2 min / Skip', counted inside the parent limit). One push within 3 turns gets a detour of <= 2 sentences. Unserved LEARNING questions carry over to the child's home Later list; chat topics do not. Parents see learning questions only. Baseline: prod returned to a child's topic 2/24 times. Reverse if parks feel dismissive (child disengages within 2 turns after > 25% of parks).",
+   "source": "inbox/conversation-v2.json"
+  },
+  {
+   "id": "conv2-generation-triggers",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Stage generation is triggered by the child (visual / game / animation request, clarify, explain-differently / example / story, boredom, a returned curiosity question) and by the conversation (every explain beat, a misconception, a second miss, cadence: no new visual in the last 2 teaching turns or no activity in ~6-8 min). The path runs library → T1 engine → deterministic whiteboard → Studio live, with the reveal only at a turn boundary when READY. She never names what is not on stage (code guard on stage facts; text drawings stripped on the cascade lane). Frequency adapts x0.5-x2 to engagement. W2-H's intent sources gain requestIntent({source:'child_request'}) on any beat and on the voice lane. Baseline: 1/25 requests got anything; 3 ASCII drawings.",
+   "source": "inbox/conversation-v2.json"
+  },
+  {
+   "id": "rj-conv2-prescreen-as-incident-guard",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: an offline prescreen (the prod commit's scanSafety + classify on the same grok deployment) to keep any utterance the prod path would read as distress off production, so test accounts stay deletable. Broke: production still opened 2 safeguarding incidents in 916 turns, on a correct answer 'no' and on 'i'm done', neither flagged offline. The trigger is nondeterministic (classifier, content filter or reply fail-closed). Both test accounts stay undeletable (erase_review) until a human marks the synthetic incidents handled. Instead: keep the prescreen (it withheld all 10 distress cases), run batteries on a staging revision whose incidents are test-scoped, and add a fired-path trace (F10).",
+   "source": "inbox/conversation-v2.json"
+  },
+  {
+   "id": "rj-conv2-mistral-hinglish-judge",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: mistral-medium-3-5 as the out-of-vendor second judge for Hinglish tutoring turns. Broke: in most of its 65 dissents from gpt-6-sol it read an answered Hinglish turn as unanswered ('no answer on phototropism' when the reply explained phototropism; insistence-07, curiosity_offlesson-01/05/08), and it counted a bare re-ask as 're-engaging'. As a note reader it was 429-throttled on 130/355 calls at concurrency 10. Instead: gpt-6-sol plus a human read of every disagreement; recruit a second human rater (target kappa >= 0.8).",
+   "source": "inbox/conversation-v2.json"
+  },
+  {
+   "id": "rj-conv2-confidence-escalation",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried (simulated on the bake-off data): grok's note first, escalating to gpt-6-sol when grok's confidence is below a threshold. Broke: grok is overconfident. At 0.95 it escalated 3% of turns, and action accuracy moved only 87.0% → 87.6%, against gpt-6-sol's 93%. Instead: run both from the turn boundary; speculate on grok, verify with gpt-6-sol (conv2-understand-gpt6-sol).",
+   "source": "inbox/conversation-v2.json"
+  },
+  {
+   "id": "open-conv2-battery-templates",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "Conversation-v2 battery limits to fix before it gates. {partial} splits kit keys at commas (3/4 run partials weak), and {wrong} sometimes draws another item's answer (answer_hedged-03 became a right answer): hand-write partial/wrong per item. Insistence was not reproducible on prod, which never parks (8/10 setups answered at once). The voice lane is the cascade with typed ASR text. A second human rater is still needed.",
+   "source": "inbox/conversation-v2.json"
+  },
+  {
+   "id": "content-level-audit-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Content-level audit classes 4-7 (evals/content-level/, docs/design/reset/CONTENT-LEVEL.md). Bank n=60/class stratified by subject, 2 raters (taxila-brain gpt-5 blind judge + Claude), kappa 0.32: too easy floor/strict(GE<=C-2)/ceiling c4 20/25/43%, c5 13/33/60%, c6 7/30/35%, c7 18/38/48%; too hard 1/240. First item actually served (real buildPracticeQueue, all 385 topics) GE<=C-2: c4 35%, c5 59%, c6 45%, c7 40%. Full bank n=5076 judged GE<=C-2 25.5% (judge precision 23/40 vs 2025-26 NCERT books). Class-4 maths first items: 19/30 below class-4 demand (Claude), 18/30 (judge). Models only, no human teacher, no child data.",
+   "source": "inbox/content-level-2026-10-04.json"
+  },
+  {
+   "id": "content-level-queue-structure-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Practice queue structure over all class 4-7 kits (deterministic): first item is kit difficulty 1 in 318/385 topics; only 221/420 difficulty>=4 items can ever be posed (QUEUE_MAX=12 after easiest-first sort); in 83/385 topics the hardest skill never enters the queue.",
+   "source": "inbox/content-level-2026-10-04.json"
+  },
+  {
+   "id": "rj-topic-relative-difficulty-easiest-first",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: kit difficulty 1-5 relative to the topic (SCHEMA.md) + practice queue sorted easiest-first with the diagnostic second (items.js:154-162) + topic placement at chapter 1 maths-first with no placement test. Broke: every new class-4 child's first two questions were dice questions (c4-maths-ch01-t01-i01 and the m-visible-only diagnostic); the owner rated the product 0/100 partly for 'first-year content'. Served openers are easier than the bank in every class.",
+   "source": "inbox/content-level-2026-10-04.json"
+  },
+  {
+   "id": "rj-llm-grade-judge-alone",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: a single gpt-5 judge to grade-level kit items. Broke: chapter anchoring (dice item judged 'right, grade 4') and legacy-CBSE syllabus bias (Ganita Prakash 7 decimals/expressions judged grade 5); precision of its GE<=C-2 flags 23/40. Use two model families + rubric given the 2025-26 NCERT chapter scope + human adjudication of flags.",
+   "source": "inbox/content-level-2026-10-04.json"
+  },
+  {
+   "id": "content-level-fix-plan-2026-10-04",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "PROPOSED (needs main-loop acceptance): (F0) queue by target P(correct) vs theta, never an item GE<=C-2 as item 1-2 for an on-track child, skill-round-robin cap, diagnostic at position 3+, start at the school's current chapter, fast-forward + 'harder' chip + topic test-out; (F1) per-item ge + demand fields, two-family calibration + human pass, lint gate (<=10% ge<=C-2 per kit, >=2 items ge>=C-0.5 per skill), language-kit learning outcomes before regeneration; (F2) build onboarding-diagnostic OD1-OD12 for B3-B4, revisit OD4 q30 under the reset; (F3) theta-driven selection every lesson. Reverse if: a human-teacher rating of the bank sample, or real children's first-item P(correct) <= 0.85 on class-C openers, shows the openers are already on level.",
+   "source": "inbox/content-level-2026-10-04.json"
   }
  ],
  "edges": [
@@ -14839,6 +15112,221 @@
    "src": "ot-open-leftover-test-account",
    "rel": "caused_by",
    "dst": "ot-acceptance-item3-prod9242020-2026-10-04"
+  },
+  {
+   "src": "reset-wave-2-5-streams",
+   "rel": "constrains",
+   "dst": "owner-reset-2026-10-04"
+  },
+  {
+   "src": "reset-wave-2-5-streams",
+   "rel": "caused_by",
+   "dst": "owner-test-0-of-100-2026-10-04"
+  },
+  {
+   "src": "reset-exp-acceptance-gate",
+   "rel": "inherits",
+   "dst": "rj-plumbing-batteries-as-acceptance"
+  },
+  {
+   "src": "reset-exp-acceptance-gate",
+   "rel": "part_of",
+   "dst": "reset-wave-2-5-streams"
+  },
+  {
+   "src": "reset-exp-acceptance-gate",
+   "rel": "measured_by",
+   "dst": "m-reset-baseline-2026-10-04"
+  },
+  {
+   "src": "reset-truth-floor-day-0",
+   "rel": "part_of",
+   "dst": "reset-wave-2-5-streams"
+  },
+  {
+   "src": "reset-truth-floor-day-0",
+   "rel": "caused_by",
+   "dst": "rj-reset-child-stop-ends-lesson-gate"
+  },
+  {
+   "src": "reset-truth-floor-day-0",
+   "rel": "inherits",
+   "dst": "engines-v1-server-recheck"
+  },
+  {
+   "src": "reset-studio-v2-on-w2h-host",
+   "rel": "part_of",
+   "dst": "reset-wave-2-5-streams"
+  },
+  {
+   "src": "reset-studio-v2-on-w2h-host",
+   "rel": "caused_by",
+   "dst": "rj-reset-w2h-library-as-visual-answer"
+  },
+  {
+   "src": "reset-studio-v2-on-w2h-host",
+   "rel": "inherits",
+   "dst": "live-free-generation"
+  },
+  {
+   "src": "reset-hands-free-replaces-click-to-speak",
+   "rel": "part_of",
+   "dst": "reset-wave-2-5-streams"
+  },
+  {
+   "src": "reset-hands-free-replaces-click-to-speak",
+   "rel": "inherits",
+   "dst": "owner-duplex-no-silence-gate-2026-10-04"
+  },
+  {
+   "src": "reset-defect-rewalk-closure",
+   "rel": "part_of",
+   "dst": "reset-exp-acceptance-gate"
+  },
+  {
+   "src": "reset-wave-2-5-streams",
+   "rel": "measured_by",
+   "dst": "m-reset-plan-coverage-2026-10-04"
+  },
+  {
+   "src": "rj-reset-wave2-exit-as-owner-ready",
+   "rel": "inherits",
+   "dst": "rj-plumbing-batteries-as-acceptance"
+  },
+  {
+   "src": "open-reset-owner-decisions",
+   "rel": "blocks",
+   "dst": "reset-exp-acceptance-gate"
+  },
+  {
+   "src": "design-v3-one-band-9-15",
+   "rel": "supersedes",
+   "dst": "ds-band-fork-older"
+  },
+  {
+   "src": "design-v3-dark-instrument-identity",
+   "rel": "supersedes",
+   "dst": "design-v2-painted-world"
+  },
+  {
+   "src": "design-v3-volt-one-carrier",
+   "rel": "supersedes",
+   "dst": "design-v2-lamp-on-dock"
+  },
+  {
+   "src": "design-v3-volt-one-carrier",
+   "rel": "inherits",
+   "dst": "ds-status-carriers"
+  },
+  {
+   "src": "design-v3-stage-contract",
+   "rel": "inherits",
+   "dst": "ds-layout-dp-budget"
+  },
+  {
+   "src": "design-v3-stage-contract",
+   "rel": "supersedes",
+   "dst": "design-v2-desk-layout"
+  },
+  {
+   "src": "owner-reset-2026-10-04",
+   "rel": "constrains",
+   "dst": "design-v3-one-band-9-15"
+  },
+  {
+   "src": "owner-reset-2026-10-04",
+   "rel": "constrains",
+   "dst": "design-v3-no-visible-build"
+  },
+  {
+   "src": "owner-reset-2026-10-04",
+   "rel": "constrains",
+   "dst": "design-v3-scheduler-no-native-pickers"
+  },
+  {
+   "src": "design-v2-face-verdict-neutral",
+   "rel": "constrains",
+   "dst": "design-v3-dark-instrument-identity"
+  },
+  {
+   "src": "conv2-intent-layer",
+   "rel": "caused_by",
+   "dst": "owner-reset-2026-10-04"
+  },
+  {
+   "src": "conv2-model-reads-code-decides",
+   "rel": "caused_by",
+   "dst": "model-full-orchestrator"
+  },
+  {
+   "src": "conv2-model-reads-code-decides",
+   "rel": "caused_by",
+   "dst": "llm-beat-proposer-live"
+  },
+  {
+   "src": "conv2-understand-gpt6-sol",
+   "rel": "measured_by",
+   "dst": "m-conv2-understand-bakeoff-2026-10-04"
+  },
+  {
+   "src": "conv2-intent-layer",
+   "rel": "measured_by",
+   "dst": "m-conv2-prod-2026-10-04"
+  },
+  {
+   "src": "conv2-stop-checkin-never-closes-day",
+   "rel": "caused_by",
+   "dst": "owner-test-0-of-100-2026-10-04"
+  },
+  {
+   "src": "conv2-stop-checkin-never-closes-day",
+   "rel": "measured_by",
+   "dst": "m-conv2-prod-2026-10-04"
+  },
+  {
+   "src": "conv2-later-list",
+   "rel": "measured_by",
+   "dst": "m-conv2-prod-2026-10-04"
+  },
+  {
+   "src": "conv2-generation-triggers",
+   "rel": "measured_by",
+   "dst": "m-conv2-prod-2026-10-04"
+  },
+  {
+   "src": "rj-conv2-confidence-escalation",
+   "rel": "measured_by",
+   "dst": "m-conv2-understand-bakeoff-2026-10-04"
+  },
+  {
+   "src": "m-conv2-prod-2026-10-04",
+   "rel": "caused_by",
+   "dst": "rj-plumbing-batteries-as-acceptance"
+  },
+  {
+   "src": "conv2-intent-layer",
+   "rel": "constrains",
+   "dst": "rj-sig-bare-meta-words"
+  },
+  {
+   "src": "content-level-audit-2026-10-04",
+   "rel": "measured_by",
+   "dst": "owner-test-0-of-100-2026-10-04"
+  },
+  {
+   "src": "content-level-fix-plan-2026-10-04",
+   "rel": "part_of",
+   "dst": "owner-reset-2026-10-04"
+  },
+  {
+   "src": "rj-topic-relative-difficulty-easiest-first",
+   "rel": "measured_by",
+   "dst": "content-level-queue-structure-2026-10-04"
+  },
+  {
+   "src": "content-level-fix-plan-2026-10-04",
+   "rel": "measured_by",
+   "dst": "content-level-audit-2026-10-04"
   }
  ]
 }

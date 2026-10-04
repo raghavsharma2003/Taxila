@@ -27,7 +27,9 @@ export const STREAMS = process.env.TAXILA_FDB_STREAMS || "/tmp/taxila-fdb/stream
 export const FEAT = process.env.TAXILA_FDB_FEAT || "/tmp/taxila-fdb/feat";
 const HERE = path.dirname(new URL(import.meta.url).pathname);
 const SPEECH_DB = -20;
-export const ECHO_STT_MIN_DB = -20;
+// -20 → -30 after L2 (2026-10-04): the real live transcriber transcribed her -30 dB echo residue into the child's item in
+// 4/48 test streams ("लिक्विड कौन सा है? … भाप। भाप।"); the first simulator never did. A WORLD correction, not an engine one.
+export const ECHO_STT_MIN_DB = -30;
 export const OVERLAY_STT_MIN_DB = -12;
 const REPLY_BODY = "अच्छा, तो चलो इसको एक बार साथ में देखते हैं।";
 

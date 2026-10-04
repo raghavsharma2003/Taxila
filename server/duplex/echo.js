@@ -63,19 +63,26 @@ export class EchoSubtractor {
   /** Her words audible inside [t - lagMs - windowMs, t] (text arrives lagMs after the audio it covers). */
   recent(t, lagMs = 0) {
     const from = t - lagMs - this.o.windowMs;
-    return this.words.filter((x) => x.endMs >= from && x.startMs <= t && !(this.stopped.has(x.u) && x.startMs > this.stopped.get(x.u)));
+    // a WHOLE utterance stays matchable while any of it is recent: a streaming item that opened during her line is often
+    // transcribed (and re-transcribed in its final) long after its first words (L2, 2026-10-04: her 3 s question at -30 dB
+    // arrived as one final with the child's answer appended; a per-word 2 s window kept its first half)
+    const uEnd = new Map();
+    for (const x of this.words) uEnd.set(x.u, Math.max(uEnd.get(x.u) ?? -Infinity, x.endMs));
+    return this.words.filter((x) => (x.endMs >= from || uEnd.get(x.u) >= from) && x.startMs <= t && !(this.stopped.has(x.u) && x.startMs > this.stopped.get(x.u)));
   }
 
   /**
    * @param {string} text the child's transcript (one item version, or the turn)
    * @param {number} t arrival time on the session clock
    * @param {number} [lagMs] the source's lag (her words that far back may be in this text)
+   * @param {{fromMs:number, toMs:number}|null} [span] the audio this text describes, when known (fan-in passes it)
    * @returns {{ text: string, removed: number }}
    */
-  subtract(text, t, lagMs = 0) {
+  subtract(text, t, lagMs = 0, span = null, times = null) {
     const toks = split(text);
     if (!toks.length) return { text: String(text ?? "").trim(), removed: 0 };
-    const her = this.recent(t, lagMs).filter((x) => x.sk);
+    // `span` = the audio the text describes: her words outside it cannot be in it (echo is captured, not remembered)
+    const her = this.recent(t, lagMs).filter((x) => x.sk && (!span || (x.endMs >= span.fromMs - 100 && x.startMs <= span.toMs + 100)));
     if (!her.length) return { text: toks.join(" "), removed: 0 };
     const hs = her.map((x) => x.sk);
     const set = new Set(hs);
@@ -98,8 +105,16 @@ export class EchoSubtractor {
         // the single-token case compares SURFACE forms, not consonant skeletons: one skeleton is too lossy for one word
         // ("हाँ" and her "हैं" share the skeleton "h"; M-D7 i10: a child's yes over her yes/no question was deleted as echo
         // and she resumed over the answer, 30/30 on the fast lane)
-        const fresh = n === 1 && surf(toks[i]) === surf(her[k].w) && her[k].endMs >= t - lagMs - this.o.freshMs && her[k].endMs <= t + 100;
-        if (n >= this.o.minRun || fresh) for (let x = i; x < a; x++) drop[x] = true;
+        // fresh echo arrives at the TAIL of the text as she speaks: without token times only the last two tokens qualify
+        // (M-D7 c01: her uptake "तीन" deleted BOTH of the child's own "तीन"s, the first spoken 1 s before hers)
+        const tailOk = times ? true : i >= toks.length - 2;
+        const fresh = n === 1 && tailOk && surf(toks[i]) === surf(her[k].w) && her[k].endMs >= t - lagMs - this.o.freshMs && her[k].endMs <= t + 100;
+        // with token times (word-timed sources) a token is echo only if it was heard WHILE her matching word was audible
+        const aligned = !times || Array.from({ length: a - i }, (_, d) => i + d).every((x, d) => {
+          const tw = times[x], hw = her[k + d];
+          return !tw || !hw || (tw.endMs >= hw.startMs - 300 && tw.startMs <= hw.endMs + 300);
+        });
+        if ((n >= this.o.minRun || fresh) && aligned) for (let x = i; x < a; x++) drop[x] = true;
       }
     }
     // the whole text is echo-shaped: the shipped isEcho rule (>= 4 tokens, >= 70 % hers)

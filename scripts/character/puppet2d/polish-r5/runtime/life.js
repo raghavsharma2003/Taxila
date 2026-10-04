@@ -58,7 +58,7 @@ export class Life {
     }
     this.prevGaze = [gaze[0], gaze[1]];
     const onChild = Math.hypot(gaze[0], gaze[1]) < 9;
-    const fix = !this.reduced && this.gv < 18;
+    const fix = !this.reduced && !this.still && this.gv < 18;   // still: fixed poses (sheet stills) hold the gaze
     if (!fix) { this.target = [0, 0]; this.pt = -1; this.next = Math.max(this.next, t + 0.3); }
     else if (t >= this.next) {
       let i = Math.floor(this.rng() * 3);

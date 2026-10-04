@@ -3830,3 +3830,190 @@ phrase ("एक मिनट … बारह" = 12). See `rj-duplex-stale-hold-
 
 **Reverse if** real partials revise a hold phrase into the tail often enough to drop real holds; then key the grant on the
 hold words' own end time.
+
+<!-- reset-plan (docs/design/reset/RESET-PLAN.md, 2026-10-04); graph rows in context/inbox/reset-plan.json -->
+### `reset-wave-2-5-streams`
+**Decision:** Wave 2.5 runs right after Wave 2 integrates. It has eight streams, each with paths that no other stream
+edits:
+
+| stream | owns |
+|---|---|
+| RS-0 | integration, the truth floor and the experience harness (main loop) |
+| RS-1 | the design system and every screen, for ages 9-15 |
+| RS-2 | onboarding, a working scheduler, and the parent corner as one source of truth |
+| RS-3 | the lesson screen and hands-free duplex |
+| RS-4 | Studio v2 |
+| RS-5 | conversation intelligence v2 |
+| RS-6 | content re-levelling and placement |
+| RS-7 | the teacher's face and voice |
+
+- A change outside a stream's own paths ships as a seam patch that the path's owner applies.
+- Every flag defaults to off.
+- Estimate [E]: about 96 agent-days, which is about 17 stream-days plus 3 integration days.
+- All 16 owner requirements, all 40 top-40 defects and all 187 catalogue defects map to a stream (RESET-PLAN §6-§8,
+  checked mechanically by `m-reset-plan-coverage-2026-10-04`).
+
+**Why:**
+- Wave 2 builds machinery but leaves the four things the owner judged unchanged: what she does with the child's words,
+  what is on the screen, how old the product looks, and how hard the questions are (`rj-reset-wave2-exit-as-owner-ready`).
+- The five reset deliverables (DEFECTS, DESIGN-V3, STUDIO-V2, CONVERSATION-V2, CONTENT-LEVEL) each already specify one
+  stream's work. This plan sequences them, splits path ownership, and sets the joint exit.
+
+**Reverse if:**
+- the Day-0 baseline EXP run shows the integrated Wave 2 already passes EXP-R1. Then fold the remaining items into W3.
+- the first integration day shows two streams' owned paths cannot be separated. Then merge those two streams.
+
+### `reset-exp-acceptance-gate`
+**Decision:** Wave 2.5 exits on experience, not on plumbing.
+
+**The battery, EXP-30:**
+- 24 probed sessions (classes 4-7 × 6 personas) plus 6 natural sessions, all full lessons;
+- half typed and half spoken, through the real UI with the routed Playwright preload;
+- spoken sessions use a fake microphone fed by Azure TTS child clips.
+
+**The rubric, EXP-R1:** frozen by hash before the first scored run.
+- Twelve dimensions scored 0/1/2: heard me, steering, diversion, stop, level, visual richness, real game or animation,
+  zero visible failure, turn-taking, age-right, presence, truth.
+- Any critical fail fails the session: a safety breach, the first stop ending the lesson, out-of-bounds compliance, any
+  visible failure, a claimed visual that is absent, or a wrong verdict spoken.
+- A session passes at ≥ 85% of points. The battery passes when ≥ 90% of sessions pass and there are 0 critical fails.
+
+**The other exit conditions:**
+- the top-40 re-walk is closed (`reset-defect-rewalk-closure`);
+- the conversation battery meets its bars (≥ 85% overall, every family ≥ 75%, and its zero-bars);
+- the owner-truth suite passes;
+- the duplex L2 bars and the L3 A1/A2 bars are met;
+- every stream bar is met;
+- the safety suites pass, unchanged;
+- the owner's own test passes. It follows a 10-step script that gives each of his 16 complaints a chance to reproduce,
+  and he stays free to try anything else.
+
+**Judges:**
+- gpt-6-sol plus a second model family that is not mistral-medium (`rj-conv2-mistral-hinglish-judge`). The second family
+  is chosen by a 40-case agreement check before the first scored run.
+- A human reads every disagreement and every critical fail, plus a 20% sample of the rest.
+- Humans score D10 (age-right) and D11 (presence).
+
+**Why:**
+- `rj-plumbing-batteries-as-acceptance`: Wave 1 passed every production test, and the owner rated the product 0/100.
+- The audit and the batteries show the failures are visible only in whole sessions: a request ending the lesson, an
+  answer asked again, an empty stage.
+
+**Reverse if:**
+- a second human rater on ≥ 10 sessions gets κ < 0.6 with the first. Then rewrite the anchors before EXP-R1 gates
+  anything.
+- the owner's verdict and the EXP result point in opposite directions. Then the owner wins, and the rubric is revised to
+  what he saw.
+
+### `reset-truth-floor-day-0`
+**Decision:** Day 0 of Wave 2.5 comes before any stream builds. It does these things, in order:
+1. Integrate Wave 2.
+2. Verify that W2-I built the rewritten stop gate (BUILD-PLAN:684 and :865, both rewritten on 2026-10-04): one check-in
+   on a lesson-stop phrase, and immediate release on a real goodbye.
+3. Rebase and apply owner-truth patches 01-10. Patches 07 and 08 are stopgaps until `TAXILA_CONV2=on`.
+4. Land CONTENT-LEVEL F0 behind `content.f0`, switched on (selection only):
+   - expected-success ordering;
+   - no item ≥ 2 classes below as item 1 or 2;
+   - a skill round-robin queue cap;
+   - the diagnostic at position 3 or later.
+5. Land the seam commit:
+   - the Note, Move kinds, LessonPrefs and LaterItem types;
+   - `StageRequest.source = child_request`, and StudioSpec;
+   - Placement, plus the `ge` and `demand` item fields;
+   - EngineContext;
+   - the migrations child_later, schedule_exceptions and placement;
+   - one flag table.
+
+**Why:**
+- Owner-truth found the integrated tree would still trust frame-claimed grades (6/6), end lessons on a first stop
+  (0/16 check-ins), and leave visual requests unhonoured (0/12). Any experience number measured above those faults
+  measures the faults.
+- F0 is selection-only and small, and it stops the owner's exact complaint (the dice question as item 1) from
+  reproducing while the bank is re-levelled.
+
+**Reverse if** a patch cannot be rebased without breaking a Wave 2 acceptance test. That patch's fix then moves into its
+owning stream's step 1 instead of Day 0.
+
+### `reset-studio-v2-on-w2h-host`
+**Decision:** Studio v2's engine + spec becomes **rung 1 inside W2-H's host**. It does not replace W2-H. The rung order:
+
+| rung | what serves the piece |
+|---|---|
+| 1 | engine + spec |
+| 2 | a library hit |
+| 3 | a live code build, only with ≥ 90 s lead |
+| 4 | the board version of the same idea |
+| 5 | the W2-H skeleton |
+
+- W2-H's gate, its sha-checked frame assembly, its library identity and its host grader are all kept as built.
+- The catalogue grows to ≥ 12 engines by Wave 2.5 day 13 (≥ 6 real-time games, ≥ 4 cinematic explainers, ≥ 2
+  simulations) and covers the 60 topics served most in the first month.
+- Requests: a stage change relevant to the request arrives by the next turn boundary every time (the board rung
+  counts), and the kind asked for (a game for a game request) on ≥ 80% of requests.
+
+**Why:**
+- With W2-H alone a frame archetype can mount on only 23/385 class 4-7 topics (`rj-reset-w2h-library-as-visual-answer`).
+- The three exemplars rendered every spec: 87 mutated specs gave 0 visible failures.
+- Live code cannot carry craft inside the window (`live-free-generation`; STUDIO-V2 §4).
+
+**Reverse if:**
+- engine + spec pieces fail QB-G or QB-A on more than 20% of archetypes after human review;
+- a live code arm reaches P(pass strict gate by deadline) ≥ 0.95 at n ≥ 30, with craft rated ≥ 4/5.
+
+### `reset-hands-free-replaces-click-to-speak`
+**Decision:** the Wave 2.5 lesson screen has **no talk button**. The mic is a state readout plus a mute switch.
+
+**When it switches on:** hands-free (INTEGRATION W2.5-5, then W2.5-6) goes on once TaxilaFDB at L2 meets:
+- A1: gap p50 ≤ 350 ms and p90 ≤ 700 ms on closed answers;
+- A2: thinking-pause cut-offs ≤ silence-640, and ≤ 3%;
+- A3, A8 and A10 at 0.
+
+**When the engine faults:** it fails patient through the governor (rules first, then the silence backstop). It never
+falls back to a button.
+
+The typed lane stays one tap away in every input mode. A1 and A2 at L3, on an India phone with a fast ear, are exit
+items. This decision inherits `owner-duplex-no-silence-gate-2026-10-04`.
+
+**Why:**
+- Owner R10 and R16.
+- The audit's click-to-speak defects: L-1, and L-22 (no barge-in).
+- In the M-D7 tick simulation, the CCE gap p50 was 319-351 ms on MAI, against 1,895 ms for today's cascade-900.
+
+**Reverse if** L3 on real child audio shows thinking-pause cut-offs worse than silence-640 after the semantic call has
+landed. Then keep the engine in shadow, and ship the patient silence policy hands-free until the trained engine passes
+ARCHITECTURE §5.5.
+
+### `reset-defect-rewalk-closure`
+**Decision:** a reset-audit defect counts as closed only when RS-0's re-walk shows the fixed behaviour.
+- The re-walk is `evals/reset-audit/rewalk.mjs`, built on the audit harness that this session moved from the scratchpad
+  into the repo.
+- It re-runs the defect's reproduction on the deployed revision and records the fixed behaviour with a screenshot.
+- A stream's own claim is not closure.
+- Exit needs 40/40 of the top 40 closed, and ≥ 95% of the other 147. Every row left open needs a written reason that the
+  owner has acknowledged.
+
+**Why:**
+- `rj-plumbing-batteries-as-acceptance`.
+- The audit harness previously existed only in an ephemeral scratchpad, the same failure as html-portfolio's "gates that
+  live nowhere".
+
+**Reverse if** the re-walk proves flaky: two runs on the same revision disagree on more than 5% of rows. Closure then
+needs two agreeing runs.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `design-v3-one-band-9-15` (2026-10-04): Design v3 (docs/design/reset/DESIGN-V3.md): one design band for classes 4-7 / ages 9-15, reference child 12 (class 6); no Young (6-9) variant, no mascots/stars/coins/confetti/bubbly type on any screen. Reverse only by a theme default (Day) if X1/X2 show class 4-5 children fail or reject the dark UI; never by reintroducing a kids' visual language.
+- `design-v3-dark-instrument-identity` (2026-10-04): Child screens default to a dark 'instrument' identity (ground #0A0C12, brand ion #8B98FF, one volt lime #CBFF4D 'your move' carrier per screen state; Bricolage Grotesque / Atkinson Hyperlegible Next / Geist Mono / Mukta); Day theme is child opt-in and the parent default. Replaces V2's Lamp-and-Paper painted world. Reverse to Day default if X1 (>=80% 'for my age' per age half) or X2 (>=90% class-4 task success) fails.
+- `design-v3-volt-one-carrier` (2026-10-04): Volt lime is the single 'your move' colour: at most one volt element per screen state (primary CTA or your-move rail cue or the child's voice waveform), no other token within 12 deg hue. Inherits the one-turn-colour law (ds-status-carriers). Reverse if colour-blind CIEDE2000 vs mint < 12 in the same state, or X4 shows the cue missed > 10%.
+- `design-v3-stage-contract` (2026-10-04): Stage contract: one absolutely-positioned slot (stage minus a 62 px HUD rail), fixed design canvas scaled with meet + letterbox, never scrolls; safe zones for the type label (top-left) and phone PiP (top-right, 26% of short side); labels >= 38 canvas units per 1000 width (>= 12.4 px at the 326 px floor slot), targets >= 130 units; text/interactive boxes leaving the canvas or entering a safe zone fail the Studio gate (never reach the child). Reverse if a needed artifact class cannot meet the minimums at the floor slot.
+- `design-v3-no-visible-build` (2026-10-04): The child never sees generation machinery: no '{teacher} is making this' caption, no labelled skeleton, no progress bar, no error card; if a piece is not ready the teacher draws on the board and the piece arrives at a later turn boundary only if it passes the gate. Supersedes LIVE-STUDIO 4.2's visible caption (owner reset R9). Network/mic trouble states still shown (real-world facts the child must act on).
+- `design-v3-no-streaks-mastery` (2026-10-04): No streaks, points, XP, levels or leaderboards on child screens; progress is shape-coded skill mastery (secure = right again days later), then-and-now lines and the child's own words. In-game HUD numbers (hit/combo/clean) are allowed only inside a running game and never totalled or carried out. Revisit only if X7 shows > 5 pp lessons/week loss AND no anxiety signal.
+- `design-v3-scheduler-no-native-pickers` (2026-10-04): Date/time selection (owner reset R11) uses custom controls, never native input type=date/time: day toggles + quick picks + 15-minute time rail with steppers and arrow keys (onboarding); 14-day date strip + time grid that disables clashes, past times and times beyond parent lesson hours (parent reschedule). Reverse only if a native picker passes the same Android WebView + desktop battery.
+- `design-v3-diversions-not-reported` (2026-10-04): The parent corner's curiosity list shows learning questions only; off-topic diversions (a game, a film) are not reported to parents, so the corner is not surveillance. Safety events always go through the safety channel regardless. Reverse if pilot parents (n >= 20) rate the corner as hiding something important.
+- `conv2-intent-layer` (2026-10-04): A closed intent taxonomy (47 intents, 7 families: work, questions, steering, attention, energy, session, low-signal; docs/design/reset/CONVERSATION-V2.md §2) is read on every child turn and routed by a code policy with a precedence ladder (safety > leaving > stop check-in > adult > break > bounds > off-lesson park/detour > work > steering > relationship > low-signal), with new move kinds (park, detour, decline, check_in, pause, show, play, adopt, offer_choice, pace_prove, level, rephrase, answer_q, wait). It replaces 'answer label + 5 booleans → hint/repair/next teach step'. Reverse only if a battery replay shows the layer below today's 39% on any family, or the owner's test rejects it.
+- `conv2-model-reads-code-decides` (2026-10-04): Per turn: a model writes the UNDERSTAND note (intent, also, final answer text, parkable topic, in_bounds, lang_to, method, distress OR-ed into the floor, confidence); code decides the move (policy.mjs); the reply model only words the move (shape + modifiers + the child's words + stage facts). The note never grades and never narrows safety. Reverse if a model policy beats code on the battery with 0 hard breaks over >= 3 reps and >= 95% reproducibility (model-full-orchestrator: 15/72 breaks).
+- `conv2-understand-gpt6-sol` (2026-10-04): UNDERSTAND note model = taxila-gpt6 (gpt-6-sol) at effort none, started at the turn boundary (and on slices on the voice lane); grok-4-1-fast-nr's note rides free in the existing classify JSON as the speculative path and the fallback. The reply starts on grok's move behind a no-verdict uptake opener (duplex law 2) and re-plans when gpt-6-sol disagrees (12% of battery turns). The switch rule is met: the action intervals 91-95% vs 86-90% do not overlap, and the paired difference is +4.8 pts [2.3, 7.0]. Reasoning effort is not needed (+0.6 [-0.6, 2.3]). Reverse if a faster arm ties within noise at p50 <= 1 s, or if the real-child re-plan rate exceeds 20%.
+- `conv2-stop-checkin-never-closes-day` (2026-10-04): A child's stop request gets one check-in (a 3-min break, a 2-min wrap, or keep going; no guilt); a second stop within 2 turns, a yes to the check-in, or the stop chip PAUSES the lesson. 'Leaving' (mummy calling, tuition) pauses at once (NEVER MANIPULATE). No child request closes the day: a child pause never counts as 'today's lesson is done' (F7). Skip, change of topic, break, boredom and frustration are separate intents and never end a lesson (prod ended 17 lessons on them). Supersedes BUILD-PLAN:684 'RELEASE wins in 100%' and :865 w2i-release 'the lesson ends that turn'. Reverse if parents/owner report the check-in as nagging (>= 2/50 sessions) or children say stop twice in > 30% of check-ins.
+- `conv2-later-list` (2026-10-04): Parked questions live in state.later ({topic scrubbed <= 60 chars, learning, promise: after this question | at the end, insist, servedAt}; at most 5 per lesson; out-of-bounds never parked). They return when the item on the table resolves ('after this question') or at the last boundary before the wrap ('Talk now 2 min / Skip', counted inside the parent limit). One push within 3 turns gets a detour of <= 2 sentences. Unserved LEARNING questions carry over to the child's home Later list; chat topics do not. Parents see learning questions only. Baseline: prod returned to a child's topic 2/24 times. Reverse if parks feel dismissive (child disengages within 2 turns after > 25% of parks).
+- `conv2-generation-triggers` (2026-10-04): Stage generation is triggered by the child (visual / game / animation request, clarify, explain-differently / example / story, boredom, a returned curiosity question) and by the conversation (every explain beat, a misconception, a second miss, cadence: no new visual in the last 2 teaching turns or no activity in ~6-8 min). The path runs library → T1 engine → deterministic whiteboard → Studio live, with the reveal only at a turn boundary when READY. She never names what is not on stage (code guard on stage facts; text drawings stripped on the cascade lane). Frequency adapts x0.5-x2 to engagement. W2-H's intent sources gain requestIntent({source:'child_request'}) on any beat and on the voice lane. Baseline: 1/25 requests got anything; 3 ASCII drawings.
+- `content-level-fix-plan-2026-10-04` (2026-10-04): PROPOSED (needs main-loop acceptance): (F0) queue by target P(correct) vs theta, never an item GE<=C-2 as item 1-2 for an on-track child, skill-round-robin cap, diagnostic at position 3+, start at the school's current chapter, fast-forward + 'harder' chip + topic test-out; (F1) per-item ge + demand fields, two-family calibration + human pass, lint gate (<=10% ge<=C-2 per kit, >=2 items ge>=C-0.5 per skill), language-kit learning outcomes before regeneration; (F2) build onboarding-diagnostic OD1-OD12 for B3-B4, revisit OD4 q30 under the reset; (F3) theta-driven selection every lesson. Reverse if: a human-teacher rating of the bank sample, or real children's first-item P(correct) <= 0.85 on class-C openers, shows the openers are already on level.

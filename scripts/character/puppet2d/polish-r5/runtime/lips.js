@@ -124,8 +124,8 @@ export class LipSolver {
       const s = this.surprised;
       // r4: a DROPPED jaw-O (taller than wide, the lower lip carries the drop), not a full-lipped pucker (it read "ooh")
       // r5 (judge r4): a TALLER, NARROWER oval than aa (aa is the wide one now)
-      tgt.round = Math.max(tgt.round, 1.0 * s); tgt.flat = Math.max(tgt.flat, 1.0 * s); tgt.W = tgt.W * (1 - s) + 0.6 * s; tgt.sq = 0; tgt.pout = 0;
-      tgt.T = tgt.T * (1 - s) + 0.45 * s; tgt.TL = 0; tgt.up = 0.24; tgt.th = Math.max(tgt.th, 0.3); tgt.g = Math.max(tgt.g, 72 * s * clamp01(open / 0.3)); tgt.sm = 0;
+      tgt.round = Math.max(tgt.round, 1.0 * s); tgt.flat = Math.max(tgt.flat, 1.0 * s); tgt.W = tgt.W * (1 - s) + 0.64 * s; tgt.sq = 0; tgt.pout = 0;
+      tgt.T = tgt.T * (1 - s) + 0.45 * s; tgt.TL = 0; tgt.up = 0.3; tgt.th = Math.max(tgt.th, 0.3); tgt.g = Math.max(tgt.g, 82 * s * clamp01(open / 0.3)); tgt.sm = 0;
     }
     // an open-mouthed smile (delight / laugh): the D-shape. More opening, the upper lip stays high and flat, the
     // lower lip carries the drop, upper teeth show

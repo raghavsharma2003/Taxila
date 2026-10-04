@@ -1547,3 +1547,59 @@ resumed over a "रुको" whose words had not arrived yet. "No text" meant "
 mid-sentence and resumed ~0.8 s later on 20/30 continuer turns.
 
 **Replaced by:** `duplex-overlap-stay-ducked` (the reflex duck carries the first 450 ms).
+
+<!-- reset-plan (docs/design/reset/RESET-PLAN.md, 2026-10-04); graph rows in context/inbox/reset-plan.json -->
+### `rj-reset-child-stop-ends-lesson-gate`
+**Tried:** a child's stop phrase ends the lesson that turn. Four places did this:
+- production `state.js` `toWrap` on one `wants_to_stop` flag;
+- W2 `brain/turn.js:333-342`, which forced `wantsToStop` on a relational RELEASE;
+- the first wording of BUILD-PLAN W2-E G-AUTHORITY;
+- the first wording of `w2i-release.mjs` ("the lesson ends that turn").
+
+**What broke:**
+- Owner #7, in the test he rated 0/100.
+- Production ended the lesson on 11/12 first end-requests, and ended 17 lessons on intents that were not stop requests
+  (skip, change topic, break, frustration).
+- Owner-truth recorded 0/16 check-ins.
+- After the end, F7 closed the whole day: a restart got 409 "today's lesson is done".
+
+**Replaced by:**
+- one check-in: a 3-minute break, a 2-minute wrap, or keep going;
+- a second stop request pauses the lesson;
+- a real goodbye releases the child at once (NEVER MANIPULATE);
+- no child request closes the day.
+
+`reset-truth-floor-day-0` verifies that the rewritten gate is the one W2-I built.
+
+### `rj-reset-w2h-library-as-visual-answer`
+**Tried:** the Wave 2 plan's answer to visuals and games. W2-H's library, prefetch and skeleton rungs, with intents taken
+only from the lesson-start prefetch and the Director's beat.
+
+**What broke:**
+- Kit coverage lets a frame archetype mount on only 23/385 class 4-7 topics, all of them fractions (`plan.js
+  chooseArchetype` over every kit).
+- There was no child-request source (owner-truth F16), so "show me a diagram" could never reach the stage.
+- Live code builds need about 90 s of lead, and no archetype had met the live ship bar.
+- So this design cannot satisfy R3, R4 or R14 (production: 1/25 requests honoured; 0 artifacts in 52 turns).
+
+**Replaced by:** `reset-studio-v2-on-w2h-host`. Studio v2's engine + spec is rung 1, child-request stage intents work on
+any beat and any lane, and the catalogue grows to ≥ 12 engines.
+
+### `rj-reset-wave2-exit-as-owner-ready`
+**Tried:** the planning assumption that Wave 2's exit ("the owner's thorough test of the whole product") is the point at
+which the owner tests again.
+
+**What broke:**
+- Owner-truth traced all 21 owner failures through the Wave 2 tree as built. 0 were fixed and 3 were partly fixed (F14,
+  F16, F21).
+- Wave 2's acceptance is plumbing batteries. None of them measures what the child hears or sees.
+
+**Replaced by:** Wave 2.5, which runs between Wave 2 integration and the owner's test and exits on
+`reset-exp-acceptance-gate` and `reset-defect-rewalk-closure`.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-conv2-prescreen-as-incident-guard` (2026-10-04): Tried: an offline prescreen (the prod commit's scanSafety + classify on the same grok deployment) to keep any utterance the prod path would read as distress off production, so test accounts stay deletable. Broke: production still opened 2 safeguarding incidents in 916 turns, on a correct answer 'no' and on 'i'm done', neither flagged offline. The trigger is nondeterministic (classifier, content filter or reply fail-closed). Both test accounts stay undeletable (erase_review) until a human marks the synthetic incidents handled. Instead: keep the prescreen (it withheld all 10 distress cases), run batteries on a staging revision whose incidents are test-scoped, and add a fired-path trace (F10).
+- `rj-conv2-confidence-escalation` (2026-10-04): Tried (simulated on the bake-off data): grok's note first, escalating to gpt-6-sol when grok's confidence is below a threshold. Broke: grok is overconfident. At 0.95 it escalated 3% of turns, and action accuracy moved only 87.0% → 87.6%, against gpt-6-sol's 93%. Instead: run both from the turn boundary; speculate on grok, verify with gpt-6-sol (conv2-understand-gpt6-sol).
+- `rj-topic-relative-difficulty-easiest-first` (2026-10-04): Tried: kit difficulty 1-5 relative to the topic (SCHEMA.md) + practice queue sorted easiest-first with the diagnostic second (items.js:154-162) + topic placement at chapter 1 maths-first with no placement test. Broke: every new class-4 child's first two questions were dice questions (c4-maths-ch01-t01-i01 and the m-visible-only diagnostic); the owner rated the product 0/100 partly for 'first-year content'. Served openers are easier than the bank in every class.
+- `rj-llm-grade-judge-alone` (2026-10-04): Tried: a single gpt-5 judge to grade-level kit items. Broke: chapter anchoring (dice item judged 'right, grade 4') and legacy-CBSE syllabus bias (Ganita Prakash 7 decimals/expressions judged grade 5); precision of its GE<=C-2 flags 23/40. Use two model families + rubric given the 2025-26 NCERT chapter scope + human adjudication of flags.

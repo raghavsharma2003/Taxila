@@ -937,7 +937,7 @@ var ne = U(H.cx + 4), re = (e) => (e - H.cx) / (e < H.cx ? H.hwL : H.hwR), ie = 
 		let h = (n("eyeWideLeft") + n("eyeWideRight")) / 2;
 		if (this.surprised = s < .2 && h > .45 ? z((h - .45) / .3) : 0, this.surprised > 0) {
 			let e = this.surprised;
-			l.round = Math.max(l.round, 1 * e), l.flat = Math.max(l.flat, 1 * e), l.W = l.W * (1 - e) + .6 * e, l.sq = 0, l.pout = 0, l.T = l.T * (1 - e) + .45 * e, l.TL = 0, l.up = .24, l.th = Math.max(l.th, .3), l.g = Math.max(l.g, 72 * e * z(r / .3)), l.sm = 0;
+			l.round = Math.max(l.round, 1 * e), l.flat = Math.max(l.flat, 1 * e), l.W = l.W * (1 - e) + .64 * e, l.sq = 0, l.pout = 0, l.T = l.T * (1 - e) + .45 * e, l.TL = 0, l.up = .3, l.th = Math.max(l.th, .3), l.g = Math.max(l.g, 82 * e * z(r / .3)), l.sm = 0;
 		}
 		let g = z(((n("mouthSmileLeft") + n("mouthSmileRight")) / 2 - .35) / .4) * z(r / .18) * (1 - this.surprised);
 		g > 0 && (l.g += 36 * g * (1 - Math.min(1, s)), l.up *= 1 - .7 * g, l.T = Math.max(l.T, 1 * g), l.th = Math.max(l.th, .42 * g), l.W = Math.max(l.W, 1.08 * g + l.W * (1 - g))), l.tip = z(Math.max(l.tip, n("tongueTipUp"))), l.curl = z(Math.max(l.curl, n("tongueCurl"))), l.tip > .5 && !this.inTip && (this.inTip = !0, this.holdTip = this.t + .075), l.tip < .3 && (this.inTip = !1), this.t < this.holdTip && p < .5 && (l.tip = Math.max(l.tip, .9)), l.tip > .3 && (l.TL = 0, l.T = Math.min(l.T, .5), l.g = Math.max(l.g, 22 * l.tip * (1 - p)), l.th = Math.min(l.th, .1)), l.curl > .3 && (l.T = Math.min(l.T, .5), l.TL = 0, l.g = Math.max(l.g, 15), l.up = .38), n("tongueWide") > .2 && (l.th = Math.max(l.th, .35)), l.press = z(Math.max(l.press, (n("mouthPressLeft") + n("mouthPressRight")) / 2 * 1.4));
@@ -1189,7 +1189,7 @@ var me = [
 		}
 		this.prevGaze = [r[0], r[1]];
 		let c = Math.hypot(r[0], r[1]) < 9;
-		if (!(!this.reduced && this.gv < 18)) this.target = [0, 0], this.pt = -1, this.next = Math.max(this.next, e + .3);
+		if (!(!this.reduced && !this.still && this.gv < 18)) this.target = [0, 0], this.pt = -1, this.next = Math.max(this.next, e + .3);
 		else if (e >= this.next) {
 			let t = Math.floor(this.rng() * 3);
 			t === this.pt && (t = (t + 1 + Math.floor(this.rng() * 2)) % 3), t === 2 && this.rng() < .45 && (t = this.rng() < .5 ? 0 : 1), this.pt = t;
@@ -2849,7 +2849,7 @@ async function Ge() {
 				for (let [e, n] of Object.entries(i.bs)) t[e] = n < 0 ? 0 : Math.max(t[e] ?? 0, n);
 				n = n.map((e, t) => e + i.head[t]), r = [...i.gaze];
 			}
-			if (a.debug = e.debug || null, e.blinkAt != null) {
+			if (a.debug = e.debug || null, a.life.still = !0, e.blinkAt != null) {
 				a.resetPhysics();
 				let i = {
 					...t,
@@ -2864,7 +2864,7 @@ async function Ge() {
 				let c = s;
 				for (let t = 0; t <= e.blinkAt / 30 + 1e-6; t += 1 / 60) a.clock = c + t, a.frame(o, n, r, e.lean || 0, 0);
 			} else for (let i = 0; i < 6; i++) a.clock = 1e3 + i / 60, a.resetPhysics(), a.frame(t, n, r, e.lean || 0, 0);
-			return a.debug = null, a.mouth.name;
+			return a.debug = null, a.life.still = !1, a.mouth.name;
 		}
 	}, Pe) {
 		window.P2D.ready = !0;

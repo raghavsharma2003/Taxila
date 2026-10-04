@@ -22,7 +22,7 @@ export class DuplexSlice {
   constructor(o) {
     this.lessonId = o.lessonId;
     this.echo = new EchoSubtractor();
-    this.fanin = new TurnTranscript({ source: o.source || "other", filter: (text, meta) => this.echo.subtract(text, meta.t, this.fanin.lag.p90) });
+    this.fanin = new TurnTranscript({ source: o.source || "other", filter: (text, meta) => this.echo.subtract(text, meta.t, this.fanin.lag.p90, meta.fromMs !== undefined ? { fromMs: meta.fromMs, toMs: meta.toMs } : null, meta.times ?? null) });
     this.safety = new PartialSafety(o.scan ? { scan: o.scan } : {});
     this.spec = new Speculator({ launchDraft: o.launchDraft || noLaunch, launchWarm: o.launchWarm, lessonId: o.lessonId });
     this.builds = new BuildIntents({ launch: o.launchBuild });

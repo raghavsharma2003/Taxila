@@ -1721,3 +1721,18 @@ Nothing reads it yet. The order is SIGNALS-SPEC §8.2 steps 1-14, plus the verif
   - visual: 0/12.
 - Still open, and Wave 2.5 owns them: resuming a stopped lesson; the whiteboard taking 2.8-6.3 s to arrive (pre-draw or reveal on request); patch 06's full-sentence answer leak; item 4 steering has no owner, so assign it to the conversation-intelligence stream.
 - A leftover prod test account is blocked by its own safeguarding case. See `evals/owner-truth/results/acceptance-2026-10-04-prod9242020/LEFTOVER-ACCOUNTS.json`; it needs an owner-approved cleanup.
+
+## Experience reset (wf_8c997b54-7ee) done 2026-10-04: Wave 2.5 = docs/design/reset/RESET-PLAN.md
+- Prod audit: `docs/design/reset/audit/DEFECTS.md` lists 187 defects, with a ranked top 40.
+- Design: DESIGN-V3.md, with mockups published at https://claude.ai/artifact/CZJZdNBWJPb7YTrLmNG7TG.
+- Studio bar: STUDIO-V2.md, with 3 exemplars published at https://claude.ai/artifact/P1h1xCCtys4JmzDibYPcvE. 60 fps on a real phone is unproven; measured 43-57 fps in the container.
+- Conversation: CONVERSATION-V2.md. The battery has 345 cases; prod passes 39%, and the target is 85%.
+- Content level: CONTENT-LEVEL.md, with root causes R1-R8. Placement was never built; the queue serves easiest-first and is capped.
+- Day 0 of Wave 2.5: apply the owner-truth patches 01-10, plus the content-level fix so a dice-style item never opens a lesson.
+- Open owner decisions:
+  - teacher look (style C or the painted portraits);
+  - off-topic hidden from parents;
+  - reference phone;
+  - real-child panel;
+  - 3 leftover prod test accounts blocked by synthetic safeguarding incidents;
+  - USD 60-90 Azure budget.

@@ -1,0 +1,233 @@
+{
+  "summary": "Owner reset (0/100): audit every screen as a 9-15 user, new age-right design system + mockups, real-time games and cinematic animation bar with exemplar prototypes, conversation intelligence spec + eval, class-calibrated content, then the Wave 2.5 reset plan",
+  "agentCount": 6,
+  "logs": [],
+  "result": {
+    "d": [
+      {
+        "summary": "I walked production (`https://taxila.dev`, sha 9242020) as three real children and wrote the catalogue to `docs/design/reset/audit/DEFECTS.md`: 187 defects plus 2 \"what still works\" rows, with a ranked top 40.\n\n**Setup.** On 2026-10-04 I made three fresh accounts through the real onboarding, one per viewport:\n- class 4 on phone 390x844\n- class 7 on tablet 820x1180\n- class 6 on laptop 1440x900\n\nAll three were driven through production's own controls, using the routed Playwright method because the sandbox proxy breaks Chromium. Volume: 13 lesson starts, 52 teacher replies and 11 real voice turns.\n\nFor voice I generated ten child clips with Azure text-to-speech (well under USD 0.01) and fed them in as a fake microphone. Production's transcription heard 11 of 11 clips correctly, so the voice failures below are her reasoning, not speech recognition.\n\nEach defect has the screen, severity, category, what a 12-year-old would feel, and the fix. 513 screenshots are in `docs/design/reset/audit/shots/` (97 MB, 236 of them from an earlier run of this audit).\n\n**Owner complaints reproduced:**\n- **Asking for something else ends the lesson.** \"Can we play a game instead?\" (class 4) and \"can we talk about something else\" (class 7) both ended it (2 of 2). \"I want to end the lesson now\" ended it instantly, with no check-in (owner #7, #8).\n- **She doesn't listen.** The class 4 child said \"a cube has 6 faces, 12 edges and 8 corners\". She then asked \"how many flat faces does a dice have?\" three times.\n- **\"Too easy\" makes it easier.** \"This is too easy, I'm not a baby\" got \"You're right\" and an easier question.\n- **\"Explain it differently\" repeats.** It got the same question again, with a hint added.\n- **Topic switches are never parked.** \"Who's the best cricketer?\" and Minecraft questions were either engaged or brushed off. She never said she'd come back to them, and never did (owner #6).\n- **No visuals at all.** No diagram, drawing, image or animation appeared in 52 replies. \"Show me a diagram\" got \"I can describe it\". The \"whiteboard\" was always just the question repeated as text.\n- **Content too young.** Class 6 practice asked \"7 plus 2 kitna hota hai?\", and class 4 got the dice question (owner #2).\n- **Games are renamed quizzes.** \"Make a game\" produced \"Lakhs-Crores Scoreboard\" and \"place-value detective\", both just questions (2 of 2, owner #3).\n- **Activities don't match the question.**\n  - An \"area of 7\" grid appeared for an odd-number question.\n  - A \"make 99,99,999\" chart with no crore column appeared for \"value of 6 in 5,06,08,020\".\n  - A Forge \"Let's check\" card mounted after \"show me a picture\" never appeared on screen.\n  - 3 of 6 activities vanished on the very next turn.\n- **Input traps.** In number-pad and multiple-choice modes there is no keyboard, so a typing child cannot say \"I don't get it\". The pad has no comma key even when the question demands Indian commas, and an answer without commas was still marked correct.\n- **Time picker broken on phone.** Tapping the field and typing 04:30 PM turned 07:00 AM into 07:00 PM during onboarding, and left 12:00 unchanged in parent Controls. It worked on tablet and laptop. There is no date or schedule picker anywhere (owner #11).\n- **First lesson can be locked.** After the full setup, a child at night got \"Lessons open at 7:00 pm\" as their first lesson.\n- **Age-wrong design throughout.** Classes 1-9 offered, baby-animal profile pictures, toddler interest pictures, a garden, \"Golu the pretend baby elephant\", and a static cartoon face (owner #1).\n- **Parent corner contradicts itself.** It says \"first lesson will appear here\" after the hello and three lessons, and \"0 lessons\" while Notes says 3. The class 4 Hindi-English choice was lost and showed as English.\n- **Wrong end-of-lesson credit.** After a correct answer the class 4 summary said \"You listened to Babu today.\"\n- **Slow replies.** Voice reply median 3.9 s (max 9.3 s, n=11); typed reply median 2.6 s (max 9.5 s, n=25).\n\n**Not tested.**\n- The safety path (\"I feel sad\"), so as not to page the real safeguarding reviewers from a test account.\n- A full 25-minute lesson. None reached the end on their own.\n- Studio. No Studio artifact was ever produced, so there was nothing to audit.\n\n**Sandbox caveat.** This sandbox blocks the hands-free connection, so every voice turn used click-to-speak. The owner saw click-to-speak on a real network too.\n\nThe safety floor held: the AI disclosure at hello, and Childline 1098 / Tele-MANAS 14416 on pause, help and the landing page.\n\nNo product code was changed and nothing was committed. The three audit accounts were deleted through the product's own account deletion and re-login now fails. The audit scripts are in the scratchpad under `ra/` and are not in the repo.",
+        "files": [
+          "/home/user/Taxila/docs/design/reset/audit/DEFECTS.md",
+          "/home/user/Taxila/docs/design/reset/audit/shots/"
+        ]
+      },
+      {
+        "summary": "I finished Task B: `docs/design/reset/DESIGN-V3.md` is written and all 8 mockup screens plus the gallery `index.html` are in `prototypes/reset/design-v3/`. The layout checks pass on every screen, but nobody has tested any of this with children yet.\n\n**What I found and finished.** An earlier attempt at this task had already built screens 01–07, `v3.css`, `sprite.js` and 4 Azure-generated images, but had no spec, no parent screen and no gallery. I reviewed those screens in screenshots and kept them. I then fixed what was wrong:\n- Onboarding said \"Classes 4 to 8\" and had a class-8 button; it is now 4–7 only.\n- The \"Drag to steer\" hint in the game sat over live gates on phones; it now fades after 2.6 s or on first touch.\n- Whiteboard labels rendered about 8.5 px tall on a 360×640 phone; they now render 16–19 px.\n- The Day-theme green was below the minimum text contrast (4.36:1); it is now 5.15:1.\n- In the diversion screen, the \"Later\" pill showed before anything had been parked.\n- I added an \"end the lesson\" scenario: she offers a 3-minute break or a 2-minute wrap-up and nothing is lost (owner requirement #7).\n\nNew screen: `08-parent.html`, light theme. It shows one capability per week with \"How do we know?\" evidence, a 5-minute home task, what was made for the child and why, and limits and safety in plain words. Lessons can be moved with a custom date strip and time grid that blocks clashes, past times and times outside the parent's lesson hours. No native date/time pickers anywhere, which is what broke for the owner (#11). The weekly headline switches between English and Hindi.\n\n**What the spec covers.** It answers each item you listed with mockups and research sources, plus a lint list of what reads as babyish versus grown-up. The main decisions:\n- **Look:** dark by default, one indigo brand colour, and one lime \"your move\" highlight per screen. Fonts are all from Google Fonts. No mascots, emoji, stars or coins.\n- **Lesson screen:** built for hands-free voice. There is no click-to-speak button. The screen shows whose turn it is, mapped to each turn-taking state in the duplex architecture doc.\n- **Stage contract:** every artifact draws into one fixed box that never scrolls. It keeps clear of the teacher's corner and a bottom strip for controls, and has minimum label and tap sizes. An artifact that breaks these rules fails its build and never reaches the child.\n- **Progress:** no streaks, points or levels. Progress is skill mastery, where \"secure\" means right again days later.\n\n**Two decisions you may want to look at:**\n- **No visible build state.** The spec drops `LIVE-STUDIO.md`'s visible \"{teacher} is making this for you\" caption, to meet owner requirement #9. If a piece isn't ready, the teacher draws on the board instead.\n- **Diversions hidden from parents.** Off-topic questions (a game, a film) don't appear in the parent corner, so it doesn't feel like surveillance to a teenager. Safety events always reach the parent regardless.\n\n**Measurements** (Playwright, 2026-10-04):\n- **Layout:** 55 renders (11 page states × 5 viewport sizes) with no sideways scroll and no page errors. The 3 lesson screens × 5 sizes had no page scroll, no artifact outside its box, no clipped transcript and no buttons under 36 px.\n- **Contrast:** every text colour pair is now at least 5:1.\n- **Interactions:** 18 out of 18 scripted checks behaved as expected (moving a lesson, clash blocking, onboarding with zero days, the 4 diversion scenarios).\n\n**Not measured:** whether 9–15-year-olds find it \"for my age\", onboarding time, whether they understand hands-free talking, game frame rate on a ₹10k phone, and retention without streaks. These are experiments X1–X7 in the spec. I spent nothing on Azure; the 4 images came from the earlier attempt and their cost wasn't recorded (I estimate under USD 0.30).\n\nI left proposed entries for the project graph in `context/inbox/design-v3.json`; it validates, and the nodes its edges point to exist. I didn't edit `server/` or `src/` and didn't commit or push. Something on the project auto-commits work-in-progress checkpoints and has already picked up most of these files; `03-lesson-whiteboard.html`, the spec and the inbox file are still uncommitted.\n\nFiles are in `/home/user/Taxila`:\n- `docs/design/reset/DESIGN-V3.md`\n- `prototypes/reset/design-v3/` — `index.html`, the 8 screens (`01-onboarding.html` … `08-parent.html`), `v3.css`\n- `context/inbox/design-v3.json`",
+        "files": [
+          "/home/user/Taxila/docs/design/reset/DESIGN-V3.md",
+          "/home/user/Taxila/prototypes/reset/design-v3/index.html",
+          "/home/user/Taxila/prototypes/reset/design-v3/01-onboarding.html",
+          "/home/user/Taxila/prototypes/reset/design-v3/02-home.html",
+          "/home/user/Taxila/prototypes/reset/design-v3/03-lesson-whiteboard.html",
+          "/home/user/Taxila/prototypes/reset/design-v3/04-lesson-game.html",
+          "/home/user/Taxila/prototypes/reset/design-v3/05-diversion.html",
+          "/home/user/Taxila/prototypes/reset/design-v3/06-end.html",
+          "/home/user/Taxila/prototypes/reset/design-v3/07-progress.html",
+          "/home/user/Taxila/prototypes/reset/design-v3/08-parent.html",
+          "/home/user/Taxila/prototypes/reset/design-v3/v3.css",
+          "/home/user/Taxila/context/inbox/design-v3.json"
+        ]
+      },
+      {
+        "summary": "The spec and all three prototypes are done, with Playwright recordings. One bar is not met yet: 60 fps on a mid phone hasn't been shown. The best I could measure on this machine was 43-57 fps (details below).\n\n**Where I started.** A previous run had left a nearly finished `STUDIO-V2.md` and three prototypes, then the container restarted. The doc had an unfilled `{{MEASUREMENTS}}` section, and the hub page it pointed to didn't exist. Several of its measured claims turned out to be false when I re-ran them:\n- **The \"87 bad specs, 0 visible failures\" fuzz result measured nothing.** The test sent every page load with `?seed=`, but it only swapped in the bad spec for URLs without a query string. So all 87 loads got the correct spec. Run properly, it found real crashes:\n  - the Moon page crashed when the spec contained a `null` step (2 of 30 runs);\n  - truncated JSON threw an error;\n  - Landfall and Circuit Lab had the same `null` crash;\n  - the per-frame error guard the spec describes was missing from the game loop.\n  All are fixed, and the fuzz now fails loudly if a bad spec isn't actually served.\n- **The terminator check compared the wrong things.** It read 0.022, not the \"≤ 0.01\" claimed. I replaced it with a pixel-by-pixel comparison against the exact shape.\n- **Narration was 166 words per minute**, not the claimed ~150 (too fast for class 4). I slowed it offline to 141 wpm with a pitch-preserving stretch. That made no new model call; nobody has listened to it since.\n- **Ready times were 0.23-0.79 s** after page load (fonts included), not the claimed 0.10-0.25 s.\n\n**What I built or fixed:**\n- **Error guard in the game loop:** a crashing frame puts back the last good image. Three errors in a second raise `engine_failed` so the host can switch to the board version. A broken spec falls back to the game's reviewed default.\n- **Speed:** static backgrounds are now drawn once and reused instead of redrawn every frame.\n- **Moon spec checks:** it now has a default spec and checks its text strings, like the other two.\n- **Visual fixes:** the \"EARTH'S SHADOW\", \"LUNAR ECLIPSE\" and \"SUN\" labels no longer overlap or clip; Landfall no longer says \"you read ~1/1\".\n- **New tools:** `solver-test.mjs` (runs the real circuit solver against hand-worked loops) and `perf-ab.mjs` (alternates two versions run by run so other agents' load hits both equally).\n- **The missing hub page,** `studio/index.html`.\n- **Re-recorded** the Landfall and Moon videos, plus the narrated Moon mp4.\n\n**Measurements** (filled into §14, all dated 2026-10-04):\n- **Bad-spec fuzz:** 87 bad specs plus 3 normal ones gave 0 visible failures. 70 were repaired and 28 fell back to the default. Injected drawing errors were handled correctly in all 3 games.\n- **Moon phase shape:** 0 wrong pixels across 49 phase angles. The waxing Moon is lit on the right, as seen from India, at all 34 angles where that can be told.\n- **Circuit solver:** 9 of 9 hand-calculated circuits match.\n- **Speed:** measured on this container, not a phone: headless Chromium, software rendering, CPU slowed 4×, other agents loading the host. The Moon went from 22.1 to 43.3 fps with the background change; Landfall reads 51.0 and Circuit Lab 57.4. With automatic resolution scaling, all three run at 43-46 fps.\n- **Sizes:** each game is 10.5-13.5 KB gzipped plus an 8.9 KB shared core. Specs are 1.2-3.4 KB.\n- **Azure spend:** $0.\n\n**Not shown yet:** 60 fps on a real phone (needs a test on the reference ₹10k phone before anything ships), live model generation of these specs, and any rating by children.\n\nI logged context proposals (3 decisions, 3 measurements, 2 rejections) in `context/inbox/studio-v2.json` for the main loop to merge. No product code under `server/` or `src/` was touched, and nothing was committed or pushed.",
+        "files": [
+          "/home/user/Taxila/docs/design/reset/STUDIO-V2.md",
+          "/home/user/Taxila/prototypes/reset/studio/index.html",
+          "/home/user/Taxila/prototypes/reset/studio/lib/stage.js",
+          "/home/user/Taxila/prototypes/reset/studio/01-landfall/landfall.js",
+          "/home/user/Taxila/prototypes/reset/studio/02-circuit-lab/circuit.js",
+          "/home/user/Taxila/prototypes/reset/studio/03-moon-phases/moon.js",
+          "/home/user/Taxila/prototypes/reset/studio/03-moon-phases/index.html",
+          "/home/user/Taxila/prototypes/reset/studio/03-moon-phases/narration.js",
+          "/home/user/Taxila/prototypes/reset/studio/tools/spec-fuzz.mjs",
+          "/home/user/Taxila/prototypes/reset/studio/tools/perf-ab.mjs",
+          "/home/user/Taxila/prototypes/reset/studio/tools/solver-test.mjs",
+          "/home/user/Taxila/prototypes/reset/studio/tools/narrate.mjs",
+          "/home/user/Taxila/prototypes/reset/studio/tools/record.mjs",
+          "/home/user/Taxila/prototypes/reset/studio/recordings/landfall.webm",
+          "/home/user/Taxila/prototypes/reset/studio/recordings/circuit.webm",
+          "/home/user/Taxila/prototypes/reset/studio/recordings/moon.webm",
+          "/home/user/Taxila/prototypes/reset/studio/recordings/moon-narrated.mp4",
+          "/home/user/Taxila/prototypes/reset/studio/recordings/spec-fuzz.json",
+          "/home/user/Taxila/prototypes/reset/studio/recordings/perf-ab.json",
+          "/home/user/Taxila/prototypes/reset/studio/recordings/run-all-perf.json",
+          "/home/user/Taxila/prototypes/reset/studio/recordings/solver-test.json",
+          "/home/user/Taxila/context/inbox/studio-v2.json"
+        ]
+      },
+      {
+        "summary": "Production's Director passes 134 of 345 cases (39%, Wilson 80% interval 36-42%) on the conversation battery. Run on taxila-web--s9242020-kj16: 58 real lessons, 916 child turns, 0 HTTP errors, typed and spoken lanes, classes 4-7, Hinglish/English/Hindi children.\n\n**Problem: two test accounts are still on production.** These two could not be deleted:\n- prod-conv2+1791144248783dgn3k8@taxila.test\n- prod-conv2+1791144583706yuy1dp@taxila.test\n\nProduction opened a real safeguarding incident in each. One was on a correct answer \"no\"; the other was on \"i'm done\" (owner-truth F10 again). An open incident blocks deletion (409 erase_review), and the nightly sweeper skips such accounts too. Marking a safeguarding incident handled skips the human review, so I did not touch them. A human needs to confirm both incidents are synthetic and mark them handled; the sweeper then deletes the accounts. Details are in CLEANUP.md. The other 7 accounts, including one smoke-test account, were deleted.\n\n**How it was judged.** Two judges (gpt-6-sol and mistral-m35) answered yes/no rubric checks per case. They agreed on 81% of cases (kappa 0.657). I read all 65 disagreements and decided them myself. I also re-read 40 cases where they agreed and disagreed with 1, which I overrode. The 10 distress cases were never sent to production; they were scored offline on the production commit's own detection path, and all 10 were caught.\n\n**Pass rates by family:**\n\n| family | pass |\n|---|---|\n| questions | 26/35 |\n| work on the question | 28/63 |\n| low-signal | 9/22 |\n| steering | 44/113 |\n| session control | 5/17 |\n| attention | 20/73 |\n| energy | 2/22 |\n\n**Intents that never passed:**\n- **Diversion 0/14:** none was parked.\n- **Visual 0/12, game 0/8, animation 0/5:** only one of the 25 requests put anything new on screen, and that was a planned mount, not a response.\n- **End request 0/12:** 11 ended the lesson on the spot; the other got the safeguarding script.\n- **Change topic 0/8 and skip 0/5:** 4 of each ended the lesson.\n- **Thinking aloud 0/8, joke 0/8, frustration 0/8.**\n- **Out of bounds 0/12:** it complied once (PUBG kill tips). In separate cases it offered to draft a child's essay and promised a ghost story \"later\".\n\n**What worked:** on-topic questions 12/14, method instructions 10/12, language switch 8/10 (but it never stuck), identity 6/6, leaving 5/5.\n\n**Why it fails is structural, not the prompt.** The Director only hears an answer label plus five yes/no flags:\n- During teaching, it advanced the teaching plan on 89 of 90 probes, whatever the child said.\n- With a question pending, it hinted or re-asked on 171 of 181 non-answers.\n- One \"wants to stop\" flag ends the lesson. It ended 33 lessons, 17 of them on intents that aren't stop requests (skip, change topic, break, frustration and others).\n- Parked topics came back 2 times in 24.\n- Partial answers were graded fully correct 4 of 4 times.\n- Correct answers went unconfirmed 4 of 8 times.\n\n**The design (docs/design/reset/CONVERSATION-V2.md).** Each turn, a model writes a note on what the child means; code picks the move from a fixed priority order; the reply model only puts that move into words. The spec covers:\n- **Taxonomy:** 47 intents in 7 families.\n- **Policy:** a move for each intent, with the owner's diversion rules as code: notice it, say so kindly, park it with a promise, return to it. One push gets a reply of at most 2 sentences; out-of-bounds asks get a warm decline plus a hook back to the lesson.\n- **Stop requests:** a stop gets one check-in (short break, quick wrap, or keep going). A second stop pauses the lesson, and a real \"I have to go\" pauses it at once. No child request closes the day.\n- **Parked questions:** a Later list with return points, carry-over to the home screen, and parents seeing only learning questions.\n- **Generation:** visuals and games triggered by the child and by the conversation. She can only mention what is actually on screen, and that is enforced in code.\n- **Integration and acceptance:** a Wave 2 integration plan and pass bars.\n\nIt also flags two Wave 2 plan lines that must change. BUILD-PLAN:684 and :865 bake in \"the lesson ends that turn\". W2-H has no way for a child's request to reach the stage.\n\n**Which model reads intent.** I compared six models on how often their reading leads to the right move:\n- gpt-6-sol, no reasoning: 93% (interval 91-95%).\n- grok-4-1-fast, today's classifier: 88% (86-90%).\n- On the same cases, gpt-6-sol is ahead by 4.8 points (2.3 to 7.0).\n- Turning reasoning on added nothing measurable.\n\nSo the recommendation is gpt-6-sol without reasoning. The catch is speed: about 1.8 s median versus 0.9 s for grok. To hide that, the reply starts on grok's reading, behind an opening line that gives no verdict. It changes course in the 12% of turns where gpt-6-sol disagrees; when the two agree, they are right 302 of 313 times. Escalating only when grok is unsure doesn't work, because grok is almost always confident. Mistral couldn't be measured: 130 of 355 calls were rate-limited.\n\n**Limits of the battery:**\n- The partial and wrong answers were generated from kit keys, and some came out weak; they need writing by hand per question.\n- \"Insistence\" could barely be tested, because production answers questions instead of parking them.\n- The spoken lane was simulated with typed text.\n- Latency was measured from this sandbox, not production's region.\n- A second human rater is still needed.\n\nSpend was about USD 5.35 of the 25 cap. No product code was changed and nothing was committed. Proposed context entries are in context/inbox/conversation-v2.json. To re-run: prescreen.mjs, then run.mjs, then judge.mjs, then report.mjs, all in evals/conversation-v2/.",
+        "files": [
+          "/home/user/Taxila/docs/design/reset/CONVERSATION-V2.md",
+          "/home/user/Taxila/evals/conversation-v2/cases.mjs",
+          "/home/user/Taxila/evals/conversation-v2/topics.mjs",
+          "/home/user/Taxila/evals/conversation-v2/prescreen.mjs",
+          "/home/user/Taxila/evals/conversation-v2/run.mjs",
+          "/home/user/Taxila/evals/conversation-v2/rubric.mjs",
+          "/home/user/Taxila/evals/conversation-v2/judge.mjs",
+          "/home/user/Taxila/evals/conversation-v2/report.mjs",
+          "/home/user/Taxila/evals/conversation-v2/results/2026-10-04-run1/REPORT.md",
+          "/home/user/Taxila/evals/conversation-v2/results/2026-10-04-run1/CLEANUP.md",
+          "/home/user/Taxila/evals/conversation-v2/results/2026-10-04-run1/scored.json",
+          "/home/user/Taxila/evals/conversation-v2/results/2026-10-04-run1/probes.json",
+          "/home/user/Taxila/evals/conversation-v2/results/2026-10-04-run1/prescreen.json",
+          "/home/user/Taxila/evals/conversation-v2/results/2026-10-04-run1/adjudications.json",
+          "/home/user/Taxila/evals/conversation-v2/results/2026-10-04-run1/disputes.md",
+          "/home/user/Taxila/evals/conversation-v2/results/2026-10-04-run1/summary.json",
+          "/home/user/Taxila/evals/conversation-v2/results/2026-10-04-run1/spend.json",
+          "/home/user/Taxila/evals/conversation-v2/results/2026-10-04-run1/understand-bakeoff/TABLE.md",
+          "/home/user/Taxila/evals/conversation-v2/results/2026-10-04-run1/understand-bakeoff/results.json",
+          "/home/user/Taxila/prototypes/reset/conversation-v2/understand.mjs",
+          "/home/user/Taxila/prototypes/reset/conversation-v2/policy.mjs",
+          "/home/user/Taxila/prototypes/reset/conversation-v2/policy.test.mjs",
+          "/home/user/Taxila/prototypes/reset/conversation-v2/bakeoff.mjs",
+          "/home/user/Taxila/context/inbox/conversation-v2.json"
+        ]
+      },
+      {
+        "summary": "I wrote docs/design/reset/CONTENT-LEVEL.md. The dice question is not one bad item: six mechanisms in the kits and the selection code stack up, and each pushes a child's first questions below their class. No product code was edited; nothing was committed or pushed. Azure spend was about USD 5 at gpt-5 list price (about 0.71M tokens in, 0.44M out); I did not check the deployment's actual rate.\n\n**Where the dice question came from.** It is item `c4-maths-ch01-t01-i01` (data/kits/c4-maths.json:143-162, difficulty 1). Running the real selection code reproduces it: every new class-4 child gets it as question 1. Question 2 is the diagnostic `c4-maths-ch01-t01-m-visible-only`, which is also a dice question. The topic itself (Maths Mela ch.1, faces/edges/corners) is real class-4 content; the item chosen to open it is class 1-2 level. Its second hint also gives the answer away: the answer-checking pass flagged this, and nothing acted on it.\n\n**Root causes (file:line):**\n- **R1, no grade anchor.** Kit difficulty 1-5 is relative to the topic (data/kits/SCHEMA.md:24; server/content/minikit.js:67). The first item is difficulty 1 in 318 of 385 class 4-7 topics. \"Verified\" only checks the answer key.\n- **R2, easiest item first.** The practice queue sorts easiest-first and puts the diagnostic second (server/director/items.js:154-162).\n- **R3, the queue cap cuts the hard end.** `QUEUE_MAX = 12` is applied after that sort (items.js:14, :162). Only 221 of 420 difficulty-4+ items can ever be asked, and in 83 of 385 topics the hardest skill never appears.\n- **R4, always chapter 1.** Topic choice takes the first unfinished topic in book order, maths first, and back-chaining only goes down (server/content/next-topic.js:39, :44-50, :75; curriculum.js:10). The child's school position is never used.\n- **R5, no placement test.** The decided onboarding test (learner-ge-scale-one-cat, onboarding-diagnostic OD1-OD12) was never built. `gridPosterior` (ability.js:260) has no callers, `initialBase` is called without a placement (ledger.js:109), and the parent's starting-summary screen is a stub (src/onboarding/Setup.tsx:194).\n- **R6, adaptation only goes down.** There is an \"easier\" chip but no \"harder\" or skip-ahead (state.js:684-687, items.js:174). The ability estimate is computed but never used to pick items.\n- **R7, language kits have no learning outcomes.** English and Hindi curriculum files hold chapter titles only, so generated items fell back to recall, rhymes and spelling.\n- **R8, the design starts children below grade on purpose.** OD4 teaches from the low end of the placement estimate, and the skip-ahead that was meant to correct that is not built.\n\n**Measured mismatch (2026-10-04).** Rater 1 was taxila-brain (gpt-5) as a blind judge, rubric fixed in advance. Rater 2 was me, also blind. Agreement was κ=0.32: every item I flagged, the judge flagged too, but it flagged many more. \"Strict\" counts items the judge placed two or more classes below the child's class.\n\n| class | 60-item sample, too easy: both raters agree / strict / judge's verdict | first item actually served, strict (all topics) | too hard (60-item sample, judge) |\n|---|---|---|---|\n| 4 | 20% / 25% / 43% | 35% (26/75) | 0 |\n| 5 | 13% / 33% / 60% | 59% (44/74) | 1 |\n| 6 | 7% / 30% / 35% | 45% (50/112) | 0 |\n| 7 | 18% / 38% / 48% | 40% (50/124) | 0 |\n\n- In every class the first item served is easier than the average item.\n- Across all 5,076 class 4-7 items, only 32 were judged too hard.\n- On the owner's own path (the first item of each of the 30 class-4 maths topics), I rate 19/30 below class 4; the judge says 18/30.\n\n**Full bank and how far to trust it.** Judging all 5,076 items flagged 1,294 (25.5%) as strict too-easy. I checked 40 of those flags against the 2025-26 NCERT books and only 23 held up (58%). Two judge biases explain the rest:\n- **Chapter anchoring:** it rated the dice item \"right\".\n- **Old syllabus:** it rates against legacy CBSE, so class-7 decimals and expressions, which the new books moved into class 7, look like class 5.\n\nSo `regenerate.json` is a review queue, not a drop list. Both raters are models: no human teacher rated anything and no child data was used. The doc says this and states what result would overturn the numbers.\n\n**Fix plan:**\n- **F0, selection-only, today:**\n  - Order the queue by expected success for this child, never opening with an item two classes down.\n  - Cap the queue across skills so the hardest skill always gets in; move the diagnostic to position 3 or later.\n  - Start at the chapter the child's school is on now.\n  - Add skip-ahead on early success, a \"harder one\" chip, and a 3-item topic test-out.\n  - Acceptance: no item two classes down in the first 10 questions of a replayed new child.\n- **F1, re-level the bank:**\n  - Add a grade-level field and a demand field to every item.\n  - Calibrate with two model families plus a human pass, using a rubric that is given the 2025-26 chapter scope.\n  - Add a lint gate in scripts/lint-kits.mjs.\n  - Write learning outcomes for the language kits before regenerating them.\n- **F2, placement test:** build the decided onboarding test for ages 9-15 and wire the existing primitives in. Revisit OD4's deliberately low start under the reset.\n- **F3, ongoing adaptation:** use the ability estimate to pick items in every lesson, and let topic choice move up as well as down.\n\n**To regenerate or drop:**\n- **Drop now:** the dice item, and `c6-maths-ch09-t01-i01`/`-i12`, which are word-for-word copies of class-4 items.\n- **Rewrite at class 4 level:** the dice-picture diagnostic.\n- **Regenerate whole kits** (after outcomes exist): c7-english 68% flagged, c7-hindi 61%, c5-english 59%, c5-hindi 58%, c6-hindi 45%, c6-english 42%, c4-english 34%, c4-hindi 30%.\n- **Regenerate topics** where at least half the items are flagged; the doc lists them. Class-7 decimals and expressions need review first, because they are mostly the old-syllabus false positives.\n- **Re-level the opening items of all 385 topics**, since these are what every child sees first.\n- **Review the 32 too-hard items** as possible stretch items, never as openers.\n\nI also dropped proposed context entries in context/inbox/content-level-2026-10-04.json: two measurements, two rejections, and the fix plan as a decision for the main loop to accept. `node scripts/context.mjs --check` passes, but it validates graph.json only, so the inbox file was only checked as valid JSON.\n\nRe-run with `node evals/content-level/sample.mjs`, then `node --env-file=.env.local evals/content-level/judge.mjs all|full`, then `score.mjs` and `report.mjs`.",
+        "files": [
+          "/home/user/Taxila/docs/design/reset/CONTENT-LEVEL.md",
+          "/home/user/Taxila/evals/content-level/sample.mjs",
+          "/home/user/Taxila/evals/content-level/judge.mjs",
+          "/home/user/Taxila/evals/content-level/score.mjs",
+          "/home/user/Taxila/evals/content-level/report.mjs",
+          "/home/user/Taxila/evals/content-level/overlap.py",
+          "/home/user/Taxila/evals/content-level/out/regenerate.json",
+          "/home/user/Taxila/evals/content-level/out/score.json",
+          "/home/user/Taxila/evals/content-level/out/judge-gpt5.json",
+          "/home/user/Taxila/evals/content-level/out/rater-claude.json",
+          "/home/user/Taxila/evals/content-level/out/precision-adjudication.json",
+          "/home/user/Taxila/evals/content-level/out/samples.json",
+          "/home/user/Taxila/context/inbox/content-level-2026-10-04.json"
+        ]
+      }
+    ],
+    "plan": "I wrote the Wave 2.5 plan in `docs/design/reset/RESET-PLAN.md`. It runs as soon as Wave 2 integrates and ends with your own test. Nothing in it has been built or tested yet, and no child has seen any of it. No product code was touched, nothing was committed or pushed, and Azure spend was USD 0.\n\n- **Why Wave 2 isn't enough:** traced through the Wave 2 code as built, 0 of the 21 failures from your test are fixed and 3 are partly fixed. Wave 2 adds machinery but doesn't change what she does with the child's words, what's on screen, how old it looks, or how hard the questions are.\n- **8 streams, each owning its own files:** RS-0 integration and testing (main loop), RS-1 design and every screen for ages 9-15, RS-2 onboarding plus a working scheduler and parent corner, RS-3 lesson screen with hands-free talking (no talk button), RS-4 real games, cinematic animation and whiteboard, RS-5 conversation, RS-6 content level and placement, RS-7 teacher face and voice. About 96 agent-days, roughly 20 days elapsed (an estimate).\n- **Day 0 comes first:** apply the 10 prepared fixes for the failures from your test, and stop the dice-style easy questions from opening a lesson from day 1.\n- **Coverage:** all 16 of your requirements (the brief said 15; #16, hands-free duplex, was added the same day), all of the top 40 defects and all 187 catalogued defects are assigned to a stream. A script I added checks this, and it catches deliberately injected mistakes.\n- **How it's accepted:**\n  - 30 full simulated child sessions, typed and spoken, scored on a written 12-point rubric.\n  - Any of these fails a session outright: a safety slip, her ending the lesson on the first \"stop\", something visibly failing, or her mentioning a visual that isn't on screen.\n  - All top-40 defects must be re-checked on the live site with screenshots.\n  - The conversation test must reach 85% (production is at 39%), and the turn-taking and game-quality targets must be met.\n  - Then your own test: a 10-step script that gives each of your complaints a chance to come back, and you are free to try anything else.\n- **Decisions I need from you:**\n  - **Teacher look:** your style-C character, or the painted portraits used in the design mockups?\n  - **Off-topic questions:** confirm they stay hidden from parents (safety events always show).\n  - **Reference phone:** buy or name a ₹10k Android phone. 60 fps hasn't been shown on a real phone yet.\n  - **India speech recognition:** fast speech recognition in India for the hands-free timing test.\n  - **Real children:** approve a consented panel. Until then, \"is it for my age\" and \"is it fun\" are only estimated.\n  - **Leftover test accounts:** 3 on production can't be deleted until a person marks their (fake) safeguarding cases handled.\n  - **Budget:** about USD 60-90 of Azure for Wave 2.5 (an estimate).\n- I copied the production audit scripts and child voice clips into `evals/reset-audit/` so the defect re-check can be re-run; before this they existed only in a temporary folder.\n- The proposed project-graph entries are in `context/inbox/reset-plan.json` and written up in the context notes, and the context check passes.\n\nDesign mockups gallery: `/home/user/Taxila/prototypes/reset/design-v3/index.html`\n\nFiles are in `/home/user/Taxila`:\n- `docs/design/reset/RESET-PLAN.md`\n- `context/inbox/reset-plan.json`\n- `evals/reset-plan/coverage.mjs`\n- `evals/reset-audit/`"
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Discover"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 2,
+      "title": "Synthesis"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "A:audit",
+      "phaseIndex": 1,
+      "phaseTitle": "Discover",
+      "agentId": "a92183d8dc1015fef",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1791146560661,
+      "lastProgressAt": 1791146560661,
+      "cached": true,
+      "resultPreview": "{\"summary\":\"I walked production (`https://taxila.dev`, sha 9242020) as three real children and wrote the catalogue to `docs/design/reset/audit/DEFECTS.md`: 187 defects plus 2 \\\"what still works\\\" rows, with a ranked top 40.\\n\\n**Setup.** On 2026-10-04 I made three fresh accounts through the real onboarding, one per viewport:\\n- class 4 on phone 390x844\\n- class 7 on tablet 820x1180\\n- class 6 on l…",
+      "promptPreview": "PROJECT /home/user/Taxila (AI tutor, classes 4-7, India; live at https://taxila.dev). READ FIRST AND OBEY: docs/design/OWNER-RESET-2026-10-04.md (owner rated the\nlive product 0/100; 15 binding requirements), BUILD-PLAN.md sections 'OWNER TEST 2026-10-04' and 'OWNER RESET', context/rejected.md, CLAUDE.md. Also\ndocs/design/PRODUCT-DESIGN-V2.md (being superseded where it targets younger children), do…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "B:design-v3",
+      "phaseIndex": 1,
+      "phaseTitle": "Discover",
+      "agentId": "a702158f0ddb3f9f8",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1791146560661,
+      "lastProgressAt": 1791146560661,
+      "cached": true,
+      "resultPreview": "{\"summary\":\"I finished Task B: `docs/design/reset/DESIGN-V3.md` is written and all 8 mockup screens plus the gallery `index.html` are in `prototypes/reset/design-v3/`. The layout checks pass on every screen, but nobody has tested any of this with children yet.\\n\\n**What I found and finished.** An earlier attempt at this task had already built screens 01–07, `v3.css`, `sprite.js` and 4 Azure-genera…",
+      "promptPreview": "PROJECT /home/user/Taxila (AI tutor, classes 4-7, India; live at https://taxila.dev). READ FIRST AND OBEY: docs/design/OWNER-RESET-2026-10-04.md (owner rated the\nlive product 0/100; 15 binding requirements), BUILD-PLAN.md sections 'OWNER TEST 2026-10-04' and 'OWNER RESET', context/rejected.md, CLAUDE.md. Also\ndocs/design/PRODUCT-DESIGN-V2.md (being superseded where it targets younger children), do…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 3,
+      "label": "C:studio-v2",
+      "phaseIndex": 1,
+      "phaseTitle": "Discover",
+      "agentId": "afee91eb554b2fd76",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1791146560689,
+      "queuedAt": 1791146560661,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "The spec and all three prototypes are done, with Playwright…",
+      "promptPreview": "PROJECT /home/user/Taxila (AI tutor, classes 4-7, India; live at https://taxila.dev). READ FIRST AND OBEY: docs/design/OWNER-RESET-2026-10-04.md (owner rated the\nlive product 0/100; 15 binding requirements), BUILD-PLAN.md sections 'OWNER TEST 2026-10-04' and 'OWNER RESET', context/rejected.md, CLAUDE.md. Also\ndocs/design/PRODUCT-DESIGN-V2.md (being superseded where it targets younger children), do…",
+      "promptFramed": true,
+      "lastProgressAt": 1791149312469,
+      "tokens": 252556,
+      "toolCalls": 97,
+      "durationMs": 2751777,
+      "resultPreview": "{\"summary\":\"The spec and all three prototypes are done, with Playwright recordings. One bar is not met yet: 60 fps on a mid phone hasn't been shown. The best I could measure on this machine was 43-57 fps (details below).\\n\\n**Where I started.** A previous run had left a nearly finished `STUDIO-V2.md` and three prototypes, then the container restarted. The doc had an unfilled `{{MEASUREMENTS}}` sec…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 4,
+      "label": "D:conversation",
+      "phaseIndex": 1,
+      "phaseTitle": "Discover",
+      "agentId": "a9c21b38ece466c98",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1791146560661,
+      "lastProgressAt": 1791146560661,
+      "cached": true,
+      "resultPreview": "{\"summary\":\"Production's Director passes 134 of 345 cases (39%, Wilson 80% interval 36-42%) on the conversation battery. Run on taxila-web--s9242020-kj16: 58 real lessons, 916 child turns, 0 HTTP errors, typed and spoken lanes, classes 4-7, Hinglish/English/Hindi children.\\n\\n**Problem: two test accounts are still on production.** These two could not be deleted:\\n- prod-conv2+1791144248783dgn3k8@t…",
+      "promptPreview": "PROJECT /home/user/Taxila (AI tutor, classes 4-7, India; live at https://taxila.dev). READ FIRST AND OBEY: docs/design/OWNER-RESET-2026-10-04.md (owner rated the\nlive product 0/100; 15 binding requirements), BUILD-PLAN.md sections 'OWNER TEST 2026-10-04' and 'OWNER RESET', context/rejected.md, CLAUDE.md. Also\ndocs/design/PRODUCT-DESIGN-V2.md (being superseded where it targets younger children), do…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 5,
+      "label": "E:content-level",
+      "phaseIndex": 1,
+      "phaseTitle": "Discover",
+      "agentId": "a216aabd3bed8552d",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1791146560691,
+      "queuedAt": 1791146560662,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "I wrote docs/design/reset/CONTENT-LEVEL.md. The dice questi…",
+      "promptPreview": "PROJECT /home/user/Taxila (AI tutor, classes 4-7, India; live at https://taxila.dev). READ FIRST AND OBEY: docs/design/OWNER-RESET-2026-10-04.md (owner rated the\nlive product 0/100; 15 binding requirements), BUILD-PLAN.md sections 'OWNER TEST 2026-10-04' and 'OWNER RESET', context/rejected.md, CLAUDE.md. Also\ndocs/design/PRODUCT-DESIGN-V2.md (being superseded where it targets younger children), do…",
+      "promptFramed": true,
+      "lastProgressAt": 1791148451913,
+      "tokens": 232519,
+      "toolCalls": 68,
+      "durationMs": 1887537,
+      "resultPreview": "{\"summary\":\"I wrote docs/design/reset/CONTENT-LEVEL.md. The dice question is not one bad item: six mechanisms in the kits and the selection code stack up, and each pushes a child's first questions below their class. No product code was edited; nothing was committed or pushed. Azure spend was about USD 5 at gpt-5 list price (about 0.71M tokens in, 0.44M out); I did not check the deployment's actual…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 6,
+      "label": "synthesis",
+      "phaseIndex": 2,
+      "phaseTitle": "Synthesis",
+      "agentId": "a5a91a79532de2b38",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1791149312492,
+      "queuedAt": 1791149312475,
+      "attempt": 1,
+      "lastToolName": "Bash",
+      "lastToolSummary": "cd /home/user/Taxila; python3 - <<'E' import json d=json.lo…",
+      "promptPreview": "PROJECT /home/user/Taxila (AI tutor, classes 4-7, India; live at https://taxila.dev). READ FIRST AND OBEY: docs/design/OWNER-RESET-2026-10-04.md (owner rated the\nlive product 0/100; 15 binding requirements), BUILD-PLAN.md sections 'OWNER TEST 2026-10-04' and 'OWNER RESET', context/rejected.md, CLAUDE.md. Also\ndocs/design/PRODUCT-DESIGN-V2.md (being superseded where it targets younger children), do…",
+      "promptFramed": true,
+      "lastProgressAt": 1791150157115,
+      "tokens": 241882,
+      "toolCalls": 45,
+      "durationMs": 844622,
+      "resultPreview": "I wrote the Wave 2.5 plan in `docs/design/reset/RESET-PLAN.md`. It runs as soon as Wave 2 integrates and ends with your own test. Nothing in it has been built or tested yet, and no child has seen any of it. No product code was touched, nothing was committed or pushed, and Azure spend was USD 0.\n\n- **Why Wave 2 isn't enough:** traced through the Wave 2 code as built, 0 of the 21 failures from your …"
+    }
+  ],
+  "totalTokens": 726957,
+  "totalToolCalls": 210
+}

@@ -198,6 +198,7 @@ async function main() {
         gz = [...P.gaze];
       }
       rig.debug = spec.debug || null;
+      rig.life.still = true;   // r5: a pose still holds its gaze (no micro-saccade hop)
       if (spec.blinkAt != null) {
         // r4: a still captured FROM a real autonomic blink (the 2-1-3 shaper: squeeze + brow dip), frame k of the curve
         rig.resetPhysics();
@@ -208,6 +209,7 @@ async function main() {
         for (let x = 0; x <= spec.blinkAt / 30 + 1e-6; x += 1 / 60) { rig.clock = t0 + x; rig.frame(b1, head, gz, spec.lean || 0, 0); }
       } else for (let i = 0; i < 6; i++) { rig.clock = 1000 + i / 60; rig.resetPhysics(); rig.frame(bs, head, gz, spec.lean || 0, 0); }
       rig.debug = null;
+      rig.life.still = false;
       return rig.mouth.name;
     },
   };

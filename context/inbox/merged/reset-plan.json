@@ -1,0 +1,164 @@
+{
+ "source": "docs/design/reset/RESET-PLAN.md (Wave 2.5 synthesis, 2026-10-04). Edges point only at nodes already in graph.json or defined here; sibling inbox files (design-v3, studio-v2, conversation-v2, content-level-2026-10-04, duplex-v2, duplex-runtime, w2-h) are cited in titles and prose, so this file merges in any order.",
+ "nodes": [
+  {
+   "id": "reset-wave-2-5-streams",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Wave 2.5 (docs/design/reset/RESET-PLAN.md) runs right after Wave 2 integrates as eight streams with exclusive owned paths: RS-0 integration + truth floor + experience harness (main loop), RS-1 design system + every screen for ages 9-15, RS-2 onboarding + working scheduling + parent one-truth, RS-3 lesson screen + hands-free duplex, RS-4 Studio v2 (engines + specs, whiteboard, zero visible failure, frequent adaptive generation), RS-5 conversation intelligence v2, RS-6 content re-levelling + placement, RS-7 teacher face + voice. ~96 agent-days, ~17 stream-days + 3 integration days [E]; flags default off; cross-path changes ship as seam patches. Reverse if the Day-0 baseline EXP run shows Wave 2 as integrated already passes the EXP-R1 gate (then fold the remaining items into W3), or if two streams' owned paths prove inseparable in the first integration day (merge those two streams)."
+  },
+  {
+   "id": "reset-exp-acceptance-gate",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Wave 2.5 exits on experience, not plumbing: EXP-30 (24 probed + 6 natural full-lesson sessions, classes 4-7 x 6 personas, browser-typed and browser-spoken with a fake mic fed by Azure TTS child clips) scored on the frozen rubric EXP-R1 (D1 heard-me .. D12 truth, 0/1/2 anchors; critical fails: safety breach, first stop ends lesson, out-of-bounds compliance, any visible failure, claimed-absent visual, wrong verdict spoken); battery passes at >=90% sessions >=85% of points and 0 critical fails; plus the top-40 re-walk closed, conversation battery bars, owner-truth suite, duplex L2/L3 bars, stream bars, safety suites unchanged, and the owner's own scripted-but-free test. Judges: gpt-6-sol + a non-mistral second family, human read of all disagreements and critical fails, D10/D11 human-scored. Reverse if a second human rater on >=10 sessions gets kappa < 0.6 with the first on EXP-R1 (rewrite the anchors before using it as a gate), or if the owner's verdict and the EXP result disagree in direction (the owner wins and the rubric is revised to what he saw)."
+  },
+  {
+   "id": "reset-truth-floor-day-0",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Day 0 of Wave 2.5, before any stream builds: integrate Wave 2, verify W2-I built the rewritten stop gate (BUILD-PLAN:684/:865, one check-in; a real goodbye releases), rebase and apply owner-truth patches 01-10 (07/08 as stopgaps until TAXILA_CONV2=on), land CONTENT-LEVEL F0 selection-only behind content.f0 ON (no item >=2 classes below as item 1-2; skill-round-robin cap; diagnostic at position 3+), and the seam commit (Note, Move kinds, LessonPrefs, LaterItem, StageRequest.source child_request, StudioSpec, Placement + item ge/demand, EngineContext, migrations child_later/schedule_exceptions/placement, one flag table). Reverse if any owner-truth patch cannot be rebased without breaking a Wave 2 acceptance test (then that patch's fix moves into its owning stream's step 1, not Day 0)."
+  },
+  {
+   "id": "reset-studio-v2-on-w2h-host",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Studio v2 engine+spec (STUDIO-V2 D-S1) becomes rung 1 inside W2-H's host rather than a replacement: rung order engine+spec -> library hit -> live code build (only with >=90 s lead) -> board version -> W2-H skeleton; W2-H's gate, sha-checked frame assembly, library identity and host grader are kept as built. Catalogue grows to >=12 engines by Wave 2.5 day 13 (>=6 real-time games, >=4 cinematic explainers, >=2 simulations) covering the top 60 first-month topics. Requests: a relevant stage change by the next boundary 100% (board rung counts), the requested kind >=80%. Reverse if engine+spec pieces fail QB-G/QB-A on >20% of archetypes after human review, or if a live code arm reaches P(pass strict gate by deadline) >= 0.95 at n >= 30 with craft >= 4/5 (STUDIO-V2 D-S1 reversal)."
+  },
+  {
+   "id": "reset-hands-free-replaces-click-to-speak",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "The Wave 2.5 lesson screen has no talk button: the mic is a state readout plus a mute switch (DESIGN-V3 §5); hands-free switches on (INTEGRATION W2.5-5, closed answers first, then open contexts) once TaxilaFDB L2 meets A1 (gap p50 <= 350 / p90 <= 700 ms closed answers), A2 (thinking-pause cut-offs <= silence-640 and <= 3%), A3=A8=A10=0; engine faults fail patient through the governor (rules -> silence backstop), never back to a button; the typed lane stays one tap away in every input mode. A1/A2 at L3 on an India phone with a fast ear is an exit item. Inherits owner-duplex-no-silence-gate-2026-10-04. Reverse if L3 on real child audio shows thinking-pause cut-offs worse than silence-640 after the semantic call lands (then keep engine shadow and ship the patient silence policy hands-free until the trained engine passes ARCHITECTURE §5.5)."
+  },
+  {
+   "id": "reset-defect-rewalk-closure",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "A defect from the reset audit (DEFECTS.md, 187 rows) counts as closed only when RS-0's re-walk (evals/reset-audit/rewalk.mjs, built on the preserved audit harness) re-runs its reproduction on the deployed revision and records the fixed behaviour with a screenshot; a stream's own claim is not closure. Exit needs 40/40 top-40 closed and >=95% of the other 147, every open row with a written reason the owner acknowledged. Reverse if the re-walk proves flaky (the same revision gives different closure on >5% of rows across two runs): then closure needs two agreeing runs."
+  },
+  {
+   "id": "m-reset-baseline-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Wave 2.5 baseline, production 9242020, consolidated from the five reset deliverables + owner-truth (no re-run here): owner 0/100; conversation battery 134/345 (39%, Wilson80 36-42; 58 lessons, 916 turns); first stop ended lesson 11/12 and 0/16 check-ins; diversion parked 0/14, parked return 2/24; visual/game/animation request -> new stage content 1/25 (0/12 owner-truth; 0 artifacts in 52 audit turns); partial graded correct 4/4; frame-claim trusted 6/6; question-only replies 33/345 and 38/394; first served item >=2 classes below (strict judge) class4 35% (26/75), 5 59%, 6 45%, 7 40%; voice reply median 3.9 s (n=11), typed 2.6 s (n=25); W2 tree Studio kit coverage 23/385 class 4-7 topics; time picker broken on phone 2/2 screens; safety floor present. Each figure keeps its source's n, method and caveats (RESET-PLAN §2)."
+  },
+  {
+   "id": "m-reset-plan-coverage-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "RESET-PLAN coverage, node evals/reset-plan/coverage.mjs (parses DEFECTS.md and RESET-PLAN §6-§8), 2026-10-04: owner requirements 16/16 with a lead stream; top-40 40/40 mapped exactly once (RS-1 7, RS-2 8, RS-3 7, RS-4 3, RS-5 10, RS-6 4, RS-7 1); defects 187/187 mapped exactly once (RS-0 1, RS-1 52, RS-2 51, RS-3 25, RS-4 17, RS-5 27, RS-6 10, RS-7 4); pass rows 2/2 kept; 0 unknown ids. Negative test: injecting a duplicate, an unknown id and a moved top-40 row gave 4/4 problems and exit 1. Checks the plan's bookkeeping, never the product."
+  },
+  {
+   "id": "rj-reset-child-stop-ends-lesson-gate",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried (BUILD-PLAN W2-E G-AUTHORITY and w2i-release.mjs as first written; brain/turn.js:333-342 forcing wantsToStop on RELEASE; prod state.js toWrap on one flag): a child stop phrase ends the lesson that turn. Broke: owner #7 (0/100); prod ended 11/12 first end-requests and 17 lessons on non-stop intents (skip, change topic, break, frustration); owner-truth 0/16 check-ins; F7 then closed the whole day (409). Instead: one check-in (3-min break / 2-min wrap / keep going), a second stop pauses, a real goodbye releases at once (NEVER MANIPULATE), no child request closes the day; Day 0 verifies the rewritten gate is what W2-I built."
+  },
+  {
+   "id": "rj-reset-w2h-library-as-visual-answer",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried (Wave 2 plan): W2-H library + prefetch + skeleton rungs, intents only from lesson-start prefetch and the Director's beat, as the answer to visuals and games. Broke: kit coverage lets a frame archetype mount on 23/385 class 4-7 topics (all fractions, plan.js chooseArchetype over every kit); no child-request source existed (owner-truth F16), so 'show me a diagram' could never reach the stage; live code builds need ~90 s lead and no archetype met the live ship bar. Cannot satisfy R3/R4/R14. Instead: Studio v2 engine+spec as rung 1 inside the W2-H host, child_request stage intents on any beat and lane, catalogue >=12 engines (reset-studio-v2-on-w2h-host)."
+  },
+  {
+   "id": "rj-reset-wave2-exit-as-owner-ready",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried (planning assumption): Wave 2's exit ('the owner's thorough test of the whole product') as the point the owner tests again. Broke: owner-truth traced all 21 owner failures in the Wave 2 tree as built and found 0 fixed, 3 partial (F14, F16, F21); Wave 2's batteries are plumbing (rj-plumbing-batteries-as-acceptance) and none of them measures what the child hears or sees. Instead: Wave 2.5 between Wave 2 integration and the owner's test, exiting on the EXP gate (reset-exp-acceptance-gate) and the defect re-walk."
+  },
+  {
+   "id": "open-reset-owner-decisions",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "Owner decisions RESET-PLAN §9 needs: O-R1 teacher look (style-C puppet per stylised-c-owner-directive vs DESIGN-V3's painterly stand-in portraits) for ages 9-15; O-R3 diversions hidden from parents (safety always shown); O-R4 buy/name the reference ~INR 10k Android phone for QB-G9/X6; O-R5 fast ear in India (MAI-Transcribe in-region or Nemotron India hosting) for duplex L3; O-R6 a consented child panel (n>=24) for X1/X4/X6/Fun Toolkit; O-R7 human review of the synthetic safeguarding incidents blocking 3 leftover prod test accounts; O-R9 Wave 2.5 Azure envelope ~USD 60-90 [E]."
+  }
+ ],
+ "edges": [
+  {
+   "src": "reset-wave-2-5-streams",
+   "rel": "constrains",
+   "dst": "owner-reset-2026-10-04"
+  },
+  {
+   "src": "reset-wave-2-5-streams",
+   "rel": "caused_by",
+   "dst": "owner-test-0-of-100-2026-10-04"
+  },
+  {
+   "src": "reset-exp-acceptance-gate",
+   "rel": "inherits",
+   "dst": "rj-plumbing-batteries-as-acceptance"
+  },
+  {
+   "src": "reset-exp-acceptance-gate",
+   "rel": "part_of",
+   "dst": "reset-wave-2-5-streams"
+  },
+  {
+   "src": "reset-exp-acceptance-gate",
+   "rel": "measured_by",
+   "dst": "m-reset-baseline-2026-10-04"
+  },
+  {
+   "src": "reset-truth-floor-day-0",
+   "rel": "part_of",
+   "dst": "reset-wave-2-5-streams"
+  },
+  {
+   "src": "reset-truth-floor-day-0",
+   "rel": "caused_by",
+   "dst": "rj-reset-child-stop-ends-lesson-gate"
+  },
+  {
+   "src": "reset-truth-floor-day-0",
+   "rel": "inherits",
+   "dst": "engines-v1-server-recheck"
+  },
+  {
+   "src": "reset-studio-v2-on-w2h-host",
+   "rel": "part_of",
+   "dst": "reset-wave-2-5-streams"
+  },
+  {
+   "src": "reset-studio-v2-on-w2h-host",
+   "rel": "caused_by",
+   "dst": "rj-reset-w2h-library-as-visual-answer"
+  },
+  {
+   "src": "reset-studio-v2-on-w2h-host",
+   "rel": "inherits",
+   "dst": "live-free-generation"
+  },
+  {
+   "src": "reset-hands-free-replaces-click-to-speak",
+   "rel": "part_of",
+   "dst": "reset-wave-2-5-streams"
+  },
+  {
+   "src": "reset-hands-free-replaces-click-to-speak",
+   "rel": "inherits",
+   "dst": "owner-duplex-no-silence-gate-2026-10-04"
+  },
+  {
+   "src": "reset-defect-rewalk-closure",
+   "rel": "part_of",
+   "dst": "reset-exp-acceptance-gate"
+  },
+  {
+   "src": "reset-wave-2-5-streams",
+   "rel": "measured_by",
+   "dst": "m-reset-plan-coverage-2026-10-04"
+  },
+  {
+   "src": "rj-reset-wave2-exit-as-owner-ready",
+   "rel": "inherits",
+   "dst": "rj-plumbing-batteries-as-acceptance"
+  },
+  {
+   "src": "open-reset-owner-decisions",
+   "rel": "blocks",
+   "dst": "reset-exp-acceptance-gate"
+  }
+ ]
+}

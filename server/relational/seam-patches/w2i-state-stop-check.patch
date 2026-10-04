@@ -8,8 +8,8 @@
 #   - a relational CHECK_IN (RELATIONAL-OS I-7: a goodbye right after distress) is that same single check-in;
 #   - toWrap marks stoppedEarly (child.js countsAsDone: one 'bas' must not cost the day; that half is W2-A's child.js).
 # NEVER MANIPULATE holds: one check-in, never a second, no guilt, the stop chip ends it at once.
-# Tests to update with it: tests/director*.test.mjs cases that expect a wrap on the FIRST stop phrase (they now expect the
-# check-in; the second stop or "bye" wraps).
+# Includes the one test that encoded "a first stop phrase wraps" (tests/director-truth.test.mjs, flows G6): it now asserts
+# the check-in, the second stop, the stop chip, the relational RELEASE and leaving words.
 --- a/server/director/state.js	2026-10-04 21:25:44.351496283 +0000
 +++ b/server/director/state.js	2026-10-04 21:27:31.995407963 +0000
 @@ -17,6 +17,7 @@
@@ -77,3 +77,26 @@
    ];
    if (target.mode === "none" && target.misconceptions.length) {
      base.push("belief: if the reply expresses one of the listed wrong beliefs (in any words or language), its tag; otherwise none.");
+--- a/tests/director-truth.test.mjs	2026-10-04 21:38:44.442390676 +0000
++++ b/tests/director-truth.test.mjs	2026-10-04 21:38:44.443933331 +0000
+@@ -145,12 +145,17 @@
+   assert.notEqual(next.state.phase, "done");
+   assert.ok(next.state.skipped.includes("i1"));
+   assert.notEqual(next.move.itemId, "i1", "the next question is posed");
+-  // the child's own stop words still end the lesson (NEVER MANIPULATE)
++  // the child's own stop words: OWNER RESET 2026-10-04 #7 (W2-I/W2-C stop check) — one warm check-in first, then a second
++  // stop, the stop chip or a relational RELEASE (a true goodbye) ends the lesson (NEVER MANIPULATE: never a second check-in)
+   // (asserted unconditionally: the fast predicate's phrase, and the model classifier's flag for a phrase it misses)
+   const stop = classifyFast({ target, childText: "ab band karo", typed: true }).flags;
+   assert.equal(stop.wantsToStop, true, "the fast predicate catches 'ab band karo'");
+-  assert.equal(turn(r, K, { ...NE, flags: stop }, { typed: true }).move.kind, "wrap");
+-  assert.equal(turn(r, K, { ...NE, flags: { ...NE.flags, wantsToStop: true } }, { typed: true }).move.kind, "wrap", "a model-flagged stop ends it too");
++  const checked = turn(r, K, { ...NE, flags: stop }, { typed: true });
++  assert.equal(checked.move.kind, "break", "a stop phrase gets one check-in with choices");
++  assert.equal(turn(checked, K, { ...NE, flags: stop }, { typed: true }).move.kind, "wrap", "a second stop ends it");
++  assert.equal(turn(checked, K, NE, { typed: true, chipId: "stop:end" }).move.kind, "wrap", "the stop chip ends it at once");
++  assert.equal(turn(r, K, { ...NE, relRelease: true, flags: { ...NE.flags, wantsToStop: true } }, { typed: true }).move.kind, "wrap", "a relational RELEASE (a true goodbye) ends it at once");
++  assert.equal(turn(r, K, { ...NE, flags: { ...NE.flags, wantsToStop: true } }, { typed: true, text: "bye, mummy bula rahi hai" }).move.kind, "wrap", "leaving words end it even without the seam");
+   // a hint request is a rung, not evidence; the safety predicate still runs on what came with a help id
+   const hint = classifyFast({ target, childText: "Hint chahiye", chipId: "hint", typed: true }).result;
+   const h = turn(r, K, hint, { typed: true });

@@ -12,7 +12,7 @@ export interface SttEvent {
   audioEndMs?: number;
 }
 export declare class TurnTranscript {
-  constructor(o?: { source?: TranscriptView["source"]; lag?: { p50: number; p90: number }; filter?: (text: string, meta: { itemId: string; t: number }) => { text: string; removed: number } });
+  constructor(o?: { source?: TranscriptView["source"]; lag?: { p50: number; p90: number }; filter?: (text: string, meta: { itemId: string; t: number; fromMs?: number; toMs?: number; times?: WordTiming[] | null }) => { text: string; removed: number } });
   readonly source: TranscriptView["source"];
   readonly lag: { p50: number; p90: number };
   readonly turnStart: number;
