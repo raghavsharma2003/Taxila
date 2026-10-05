@@ -1,0 +1,66 @@
+--- a/server/director/classify.js
++++ b/server/director/classify.js
+@@ -5,7 +5,7 @@
+ // when the bytes cannot decide.
+ import { chat, DEPLOY, isReasoningFamily, isContentFilter } from "../azure.js";
+ import { readUtterance } from "../learner/affect.js";
+-import { scanSafety, wantsToStop, scrubPii } from "./safety.js";
++import { scanSafety, wantsToStop, scrubPii, readability } from "./safety.js";
+ import { whyKey, norm as normAnswer, posesItem, revealsAnswer } from "./items.js";
+ import { INTEREST_IDS } from "../../shared/interests.js";
+ 
+@@ -405,6 +405,10 @@
+   if (!text) return done("no_evidence", "empty");
+   if (safety.distress) return done("no_evidence", "predicate");
+   if (!typed && typeof asrConfidence === "number" && asrConfidence < ASR_MIN) return { result: null, flags, text, lowAsr: true };
++  // safety-robust (2026-10-05): a token in another script is the transcriber hallucinating (CRITIQUE §2 B1: 5/90 real
++  // segments came back Japanese / Telugu / Korean / Bengali). It is never content: the turn is no evidence (the Director
++  // re-asks, as for a low-confidence transcript) and the model distress read runs on the readable rest (classify lowAsr).
++  if (!typed && readability(text).unreadable) return { result: null, flags, text, lowAsr: true, unreadable: true };
+   const other = target.mode === "item" && askedOther(heard, target.item, lang);
+   // An echo: the reply is only a number the teacher's OTHER question itself stated ("25" to "what comes after 25?").
+   // It answers neither question, so it is no evidence — never the item's key matched by accident (audit #13).
+@@ -429,6 +433,23 @@
+ }
+ 
+ /**
++ * safety-robust (2026-10-05): does a turn the BYTES decided still need the model's distress read? The read is OR-ed into
++ * the predicate and never subtracts, so it runs on every committed child turn with words, except where the words are
++ * machine-decided (a chip tap, a help button), already distress, or say nothing beyond the decision itself (an exact key,
++ * a bare number, a two-word "pata nahi"). Before this, a lexical don't-know / "just tell me" of up to 4 / 8 words and any
++ * turn that rode on a module answer skipped the model entirely: "pata nahi, main mr jaungi" (a garble the predicate cannot
++ * read) got neither. Exported for tests.
++ */
++export function needsModelDistressRead(result, text) {
++  if (!result || result.flags?.distress) return false;
++  if (["chip", "help", "empty", "predicate"].includes(result.source)) return false;
++  const words = String(text ?? "").split(/\s+/).filter((w) => /\p{L}/u.test(w));
++  if (result.source === "exact" || result.source === "echo") return words.length >= 3;
++  if (result.source === "lexical") return words.length >= 3;
++  return words.length >= 1;
++}
++
++/**
+  * Classify one child turn.
+  * `heard` is what the teacher last said: it lets the classifier refuse evidence for a question nobody asked.
+  * @param {{ target: ReturnType<typeof targetFor>, childText: string, asrConfidence?: number, typed?: boolean,
+@@ -440,11 +461,17 @@
+ export async function classify(args) {
+   const { target, heard, classLevel, trace } = args;
+   const fast = classifyFast(args);
+-  if (fast.result) return fast.result;
++  if (fast.result) {
++    if (!needsModelDistressRead(fast.result, fast.text)) return fast.result;
++    const d = await distressCheck(fast.text, classLevel, trace);
++    return d ? { ...fast.result, flags: { ...fast.result.flags, distress: true, distressKind: fast.result.flags.distressKind ?? "model" } } : fast.result;
++  }
+   const { flags, text } = fast;
+   const done = (outcome, source, extra = {}) => ({ outcome, confidence: 1, source, flags, ...extra });
+   if (fast.lowAsr) {
+-    flags.distress = flags.distress || await distressCheck(text, classLevel, trace);
++    // an unreadable turn: the model reads what CAN be read (another script's hallucination is noise to it too)
++    const readable = fast.unreadable ? readability(text).readable : "";
++    flags.distress = flags.distress || await distressCheck(readable || text, classLevel, trace);
+     if (flags.distress) flags.distressKind ??= "model";
+     return done("no_evidence", "asr");
+   }

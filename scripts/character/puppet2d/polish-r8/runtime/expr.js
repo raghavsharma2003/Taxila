@@ -89,9 +89,11 @@ const MIRROR = (P) => {
 // make a slow 1-2 px search (search: deg amplitude; fixations of ~0.5-0.9 s with ~70 ms hops).
 // r7's take A is retired into this one (it lacked the mouth shift); take C (eyes down) is kept as the rare take only.
 const THINK_UP = {
-  bs: { browOuterUpLeft: 0.82, browInnerUp: 0.06, eyeWideLeft: 0.05, eyeWideRight: 0.03,
+  // r8 i3: gaze (18, 20) -> (14, 23) and a little inner-brow lift (effort): the blind models read i2's more lateral look
+  // plus the single arch as 'a mild skeptical undertone' / 'sly side-eye'; up-first reads as recalling
+  bs: { browOuterUpLeft: 0.82, browInnerUp: 0.2, eyeWideLeft: 0.05, eyeWideRight: 0.03,
     mouthLeft: 0.45, mouthPressLeft: 0.6, mouthRollUpper: 0.2, mouthFrownRight: 0.22, mouthSmileLeft: -1, mouthSmileRight: -1 },
-  head: [-3, -3, 7], gaze: [18, 20], env: [0.35, 0, 0.45], act: "thinkUp", search: [2.6, 2.0],
+  head: [-3, -3, 7], gaze: [14, 23], env: [0.35, 0, 0.45], act: "thinkUp", search: [2.4, 1.8],
 };
 // r7 take C (eyes down and aside, chin tucked, lips pressed and drawn to one side, one outer brow half up, no knit, zero
 // smile). r8: the RARE take only (judge r7: as the default it read sceptical side-eye in motion, shy / downcast at full size)
@@ -114,11 +116,11 @@ const CONCERN_B = {
   // solver caps the upper teeth while an expression's lower-lip pull holds); inner brows up: 'oh no, are you okay?'
   bs: { browInnerUp: 1.0, browDownLeft: 0.22, browDownRight: 0.22,
     jawOpen: 0.27, mouthLowerDownLeft: 0.2, mouthLowerDownRight: 0.2, mouthShrugLower: 0, mouthFrownLeft: 0.36, mouthFrownRight: 0.36, mouthSmileLeft: -1, mouthSmileRight: -1 },
-  head: [8, 0, -11], gaze: [-1, 5], env: [0.45, 0, 0.6], act: "concernLean",   // r8 i2: yaw -4 -> 0 (the field bent the parted mouth: sol "crooked, mechanically warped")
+  head: [8, 0, -8], gaze: [-1, 5], env: [0.45, 0, 0.6], act: "concernLean",   // r8 i2: yaw -4 -> 0 (the field bent the parted mouth: sol "crooked, mechanically warped")
 };
 export const VARIANTS = {
   // r8: UP (default, c-thinking), UP mirrored (the other side), C (eyes down) rare
-  thinking: [THINK_UP, { ...MIRROR(THINK_UP), head: [-3, 3, -6], gaze: [-17, 19] }, THINK_C],
+  thinking: [THINK_UP, { ...MIRROR(THINK_UP), head: [-3, 3, -6], gaze: [-13, 22] }, THINK_C],
   concern: [
     CONCERN_A,
     CONCERN_B,

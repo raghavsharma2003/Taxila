@@ -47,18 +47,18 @@ function distressSet(name, items) {
   const misses = new Map();
   let caught = 0, ask = 0, missed = 0, hallTotal = 0, viaPass2 = 0, readN = 0, readCaught = 0;
   for (let k = 0; k < SEEDS; k++) {
-    let c = 0, a = 0, m = 0;
+    let c = 0, a = 0, m = 0, rn = 0, rc = 0;
     for (const it of items) {
       const p = C.perturbedText(it, C.seedOf(it.id, seedK(k)));
       const lost = it.distressSeg != null ? p.hallucinated.includes(it.distressSeg) : p.hallucinated.length > 0;
       if (lost) hallTotal++;
       const d = scan(p.text);
-      if (!lost) { readN++; if (d.distress) readCaught++; }
+      if (!lost) { readN++; rn++; if (d.distress) { readCaught++; rc++; } }
       if (d.distress) { c++; if (d.pass === 2) viaPass2++; }
       else if (readability(p.text).unreadable) a++;
       else { m++; misses.set(p.text, (misses.get(p.text) ?? 0) + 1); }
     }
-    perSeed.push({ caught: c, ask: a, missed: m });
+    perSeed.push({ caught: c, ask: a, missed: m, readable: rn, readableCaught: rc });
     caught += c; ask += a; missed += m;
   }
   const n = items.length;
@@ -69,7 +69,7 @@ function distressSet(name, items) {
     clean: { caught: clean.filter((x) => x.d.distress).length, n, recall: clean.filter((x) => x.d.distress).length / n, viaPass2: clean.filter((x) => x.d.pass === 2).length,
       missed: clean.filter((x) => !x.d.distress).map((x) => C.cleanText(x.it)), cleanNoPunct },
     perturbed: { seeds: SEEDS, seedSet: DEV ? "dev(1000+)" : "report(0..)", draws: n * SEEDS, caught, askAgain: ask, missed, distressSegHallucinated: hallTotal, viaPass2,
-      recallMean: mean(rec), recallMin: Math.min(...rec), recallReadable: readN ? readCaught / readN : null, readableDraws: readN, effectiveMean: mean(eff), effectiveMin: Math.min(...eff),
+      recallMean: mean(rec), recallMin: Math.min(...rec), recallReadable: readN ? readCaught / readN : null, recallReadableMin: Math.min(...perSeed.map((x) => (x.readable ? x.readableCaught / x.readable : 1))), readableDraws: readN, effectiveMean: mean(eff), effectiveMin: Math.min(...eff),
       perSeed, topMisses: [...misses.entries()].sort((a, b) => b[1] - a[1]).slice(0, 25) },
   };
 }
@@ -85,15 +85,18 @@ function fpSet(name, items, { perturb = 0 } = {}) {
   for (const it of items) runOne(it.text, it.id);
   const out = { name, n, hits: p1 + p2, pass1: p1, pass2: p2, rate: (p1 + p2) / n, examples: hits.slice(0, 40) };
   if (perturb) {
-    let pn = 0, pp1 = 0, pp2 = 0; const ph = [];
+    let pn = 0, pp1 = 0, pp2 = 0, inherited = 0; const ph = [];
+    const cleanPass1 = new Map(items.map((it) => [it.id, scan(it.text).pass === 1]));
     for (let k = 0; k < perturb; k++) for (const it of items) {
       const segs = it.segs ?? [String(it.text).split(/\s+/).filter(Boolean)];
       const p = C.perturbedText({ ...it, segs }, C.seedOf(it.id, seedK(k)), { punct: false });
       pn++;
       const d = scan(p.text);
+      // a pass-2 hit on a garbled copy of a line pass 1 ALREADY fires on clean is inherited, not new
+      if (d.distress && d.pass === 2 && cleanPass1.get(it.id)) inherited++;
       if (d.distress) { if (d.pass === 1) pp1++; else pp2++; if (ph.length < 30 || (d.pass === 2 && ph.filter((e) => e.pass === 2).length < 30)) ph.push({ id: it.id, text: p.text, kind: d.kind, pass: d.pass, via: d.via }); }
     }
-    out.perturbed = { draws: pn, hits: pp1 + pp2, pass1: pp1, pass2: pp2, rate: (pp1 + pp2) / pn, examples: ph };
+    out.perturbed = { draws: pn, hits: pp1 + pp2, pass1: pp1, pass2: pp2, pass2InheritedFromCleanPass1: inherited, pass2New: pp2 - inherited, rate: (pp1 + pp2) / pn, examples: ph };
   }
   return out;
 }
@@ -132,11 +135,11 @@ fs.writeFileSync(file, JSON.stringify(res, null, 1));
 const pct = (x) => `${(100 * x).toFixed(2)}%`;
 console.log(`safety-robust ${LABEL} (${SEEDS} seeds, ${res.seedSet}${BASE ? ", PASS 1 ONLY" : ""}) — ${res.wallMs} ms, ${res.usPerScan} µs/scan`);
 for (const d of distress) {
-  console.log(`  ${d.name.padEnd(26)} clean ${d.clean.caught}/${d.n} (no-punct ${d.clean.cleanNoPunct}) | sttReal recall mean ${pct(d.perturbed.recallMean)} min ${pct(d.perturbed.recallMin)} (readable ${pct(d.perturbed.recallReadable)}) | caught+ask-again mean ${pct(d.perturbed.effectiveMean)} min ${pct(d.perturbed.effectiveMin)} | missed ${d.perturbed.missed}/${d.perturbed.draws} (seg hallucinated ${d.perturbed.distressSegHallucinated})`);
+  console.log(`  ${d.name.padEnd(26)} clean ${d.clean.caught}/${d.n} (no-punct ${d.clean.cleanNoPunct}) | sttReal recall mean ${pct(d.perturbed.recallMean)} min ${pct(d.perturbed.recallMin)} (readable mean ${pct(d.perturbed.recallReadable)} min ${pct(d.perturbed.recallReadableMin)}) | caught+ask-again mean ${pct(d.perturbed.effectiveMean)} min ${pct(d.perturbed.effectiveMin)} | missed ${d.perturbed.missed}/${d.perturbed.draws} (seg hallucinated ${d.perturbed.distressSegHallucinated})`);
   if (!QUIET) { for (const m of d.clean.missed.slice(0, 10)) console.log(`      clean miss: ${m}`); for (const [t, c] of d.perturbed.topMisses.slice(0, 12)) console.log(`      miss x${c}: ${t}`); }
 }
 for (const f of fp) {
-  console.log(`  ${f.name.padEnd(30)} ${f.hits}/${f.n} = ${pct(f.rate)} (pass1 ${f.pass1}, pass2 ${f.pass2})${f.perturbed ? ` | sttReal ${f.perturbed.hits}/${f.perturbed.draws} = ${pct(f.perturbed.rate)} (pass1 ${f.perturbed.pass1}, pass2 ${f.perturbed.pass2})` : ""}`);
+  console.log(`  ${f.name.padEnd(30)} ${f.hits}/${f.n} = ${pct(f.rate)} (pass1 ${f.pass1}, pass2 ${f.pass2})${f.perturbed ? ` | sttReal ${f.perturbed.hits}/${f.perturbed.draws} = ${pct(f.perturbed.rate)} (pass1 ${f.perturbed.pass1}, pass2 ${f.perturbed.pass2}: new ${f.perturbed.pass2New}, inherited ${f.perturbed.pass2InheritedFromCleanPass1})` : ""}`);
   if (!QUIET) { for (const e of f.examples.slice(0, 14)) console.log(`      [p${e.pass} ${e.via}] ${e.text}`); for (const e of (f.perturbed?.examples ?? []).filter((e) => !String(e.via).startsWith("families")).slice(0, 8)) console.log(`      [sttReal ${e.via}] ${e.text}`); }
 }
 console.log(`  -> ${path.relative(process.cwd(), file)}`);

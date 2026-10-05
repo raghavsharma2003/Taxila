@@ -135,3 +135,27 @@
 - `open-voicesig-dpdp-9-3` (2026-10-04): Counsel, before DPDP s.9 commences on 13 May 2027: (a) is Taxila an 'educational institution' ('an institution of learning that imparts education') under the Fourth Schedule exemption from s.9(1)/(3); (b) is a persistent per-child record of answer timing and fluency kept to adapt teaching 'behavioural monitoring' under s.9(3), which consent cannot cure? If not exempt and yes, V2 (persistent voice baselines) stays off for everyone and voice signals run session-only (M0). The same question applies to the persistent learner model.
 - `open-voicesig-mumbai-g-quota` (2026-10-04): Owner action: file AWS Service Quotas requests in ap-south-1 for L-3819A6DF (All G and VT Spot Instance Requests) and L-DB2E81BA (On-Demand G and VT), 0 -> 8 vCPU, so a K3 voice-encoder fine-tune on P4 child audio can run in Mumbai (g6.xlarge spot USD 0.529/h) instead of us-east-1. Also create the taxila-voicesig USD 80 budget with a deny-RunInstances action.
 - `open-voicesig-smart-turn-phone-budget` (2026-10-04): For the duplex workflow: the duplex architecture budgets Smart Turn v3.2 at the vendor's 10-100 ms CPU per candidate endpoint, but measured WASM 1 thread on a Xeon is 209 ms min (native 40 ms), about 420-840 ms estimated on a mid-range Android big core. Decide on VSP-M1: 3 s window (67 ms min here), WASM threads (needs COOP/COEP; Taxila sets neither), WebGPU, or encoder on own ACA CPU in India.
+
+## The distress predicate, two passes (safety-robust, 2026-10-05)
+`server/director/safety.js scanSafety(text)` is still the one predicate every lane imports. The lanes are duplex
+PartialSafety on every partial, classify, brain/turn.js and lesson.js's ask route. It now runs two passes:
+
+1. **Pass 1**: the shipped FAMILIES regexes on the bytes, and on their nukta/chandrabindu fold (unchanged).
+2. **Pass 2**, only when pass 1 is quiet:
+   - (a) the same FAMILIES over `server/safety/normalize.js readingsFor(text)`. The danda and all marks become spaces,
+     letter runs collapse, and other-script tokens are removed.
+   - (b) `server/safety/fuzzy.js fuzzyScan(text)`: 67 distress shapes over 94 slot groups. Matching uses a canonical
+     key that is the same across Devanagari, Roman and English spellings, plus vowel-sign, edit-distance-1 and
+     English-skeleton near-misses within a per-shape fuzz budget.
+     - The real-word list `server/safety/known-words.js` is generated from the kits by
+       `evals/safety-robust/build-known.mjs`.
+     - Family guards: lesson objects, reported speech, negation, games, place, wake clause.
+
+`scanSafetyDetail` returns which pass decided. `readability(text)` flags other-script hallucinations, which must never
+be read as content.
+
+Proposed seams (patches in `evals/safety-robust/patches/`):
+- classify runs the model distress read on every committed child turn that has words;
+- an unreadable spoken turn is low-ASR (the Director asks again);
+- brain/turn.js ORs `TurnRequest.duplex.safetyPending`;
+- the model distress read reaches `DuplexSlice.modelNote` through `server/duplex/registry.js`.

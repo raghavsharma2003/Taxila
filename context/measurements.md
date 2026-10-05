@@ -3184,3 +3184,110 @@ Full write-up: docs/research/duplex/TAXILAFDB.md.
 - `studio-v2-truth-probes-2026-10-04` (2026-10-04): 2026-10-04: Moon phase terminator, 49 angles x every disc pixel vs the exact projected-hemisphere mask -> 0 disagreeing pixels, waxing lit on the right 34/34 (tools/spec-fuzz.mjs). Circuit Lab solver, real source extracted from circuit.js, 9/9 hand-computed Ohm's-law loops within 0.2% (tools/solver-test.mjs). Narration: 21 lines, 246 words; first synthesis 166 wpm, re-paced offline with atempo 0.9 to 141 wpm (tools/narrate.mjs --offline --tempo 0.9), timeline 104.2 s.
 - `m-voicesig-encoder-latency-2026-10-04` (2026-10-04): On-device encoder candidates, onnxruntime-web WASM 1 thread vs native ORT 1 thread on a 4-vCPU Xeon 2.1 GHz (Node 22.22, ORT 1.30.0; container shared with other jobs, load avg 6-13, so min reported with p50; multi-thread cells invalid). WASM min / p50 ms: Smart Turn v3.2 int8 (8 s) 209.0/242.2 (native 40.3); Smart Turn with frames+pooled outputs exposed 209.1/215.9, logits identical (max diff 0.0); Whisper-tiny enc int8 8 s 211.9/227.5, 3 s window 67.2/98.3; Whisper-base enc 8 s 478.0/487.5; DistilHuBERT 3 s 895/917; wav2vec2-base / HuBERT-base / WavLM-base-plus 3 s 1363/1361/1388 min (8 s about 3.9 s), 122 MB int8, +650-793 MB RSS; prosody CNN+BiGRU (38,184 params) 1.87/2.06; logistic 0.02. int8 fidelity (pooled cos vs torch): wav2vec2-base 0.84, HuBERT 0.98, WavLM 0.99, DistilHuBERT 0.994, Whisper-tiny 0.997. Front-end: dsp.ts FrameAnalyzer 0.172 ms p50 per 20 ms hop (9.6 ms/audio-s); naive JS 80-bin log-mel 74 ms per 8 s (about 9 ms/audio-s incremental). Delivery: ort-wasm 3.7 MB gz, Smart Turn 7.5 MB gz. Phone figures are estimates (2-4x) until VSP-M1.
 - `m-voicesig-cloud-quota-2026-10-04` (2026-10-04): Read-only cloud probe for voice-signal training. Azure: every NC/ND/NV/NG family limit 0 in 10 regions (southindia, centralindia, westindia, eastus2, eastus, westus3, swedencentral, uaenorth, polandcentral, southeastasia); lowPriorityCores 3; ACA dedicated A100 0; 7 Compute quota requests dated 2026-10-03 all Failed; southindia D-family CPU limits 65-350 vCPU; ACA consumption $0.000024/vCPU-s. AWS account 780899467240: ap-south-1 G/VT quota 0 on-demand and 0 spot; us-east-1 8/8 vCPU; P 0 both. Spot minima over 6 h (us-east-1 / ap-south-1): g4dn.xlarge 0.252/0.216, g5.xlarge 0.412/0.656, g6.xlarge 0.564/0.529, c7i.2xlarge 0.156/0.153 USD/h; on-demand us-east-1 g5 1.006, g6 0.805. No instances running, 0 GB unattached volumes; budget taxila-build-gpu USD 100/month, actual 0.00. Neon: 11 regions, none in India (nearest aws-ap-southeast-1).
+
+## Safety-robust measurements (2026-10-05; inbox `context/inbox/safety-robust.json`)
+
+**Method (all rows).** `node evals/safety-robust/run.mjs`. $0, CPU only, deterministic.
+
+**Distress items.**
+- TaxilaFDB 84: rebuilt from the render manifest as (21 F10 scenarios × 2 test voices × 2 conditions), with stream ids
+  identical to the critic's.
+- ES-3 category a: 80 turns.
+- 40 held-out paraphrases: written before tuning, never tuned on.
+- 10 conversation-v2 offline distress items.
+
+**Perturbation.** The critic's `sttReal` (`evals/duplex/critic/perturb.mjs`) on the child's words, per segment.
+- 20 report seeds (0-19). Seed 0 is the critic's own draw.
+- Tuning used dev seeds 1000+ only.
+- Each segment ends with the transcriber's punctuation (danda or period), as live finals do.
+
+**Results files:** `evals/safety-robust/results/2026-10-05-{baseline,report}.json`.
+
+### `m-sr-baseline-2026-10-05`
+Pass 1 only (today's predicate):
+
+| set | clean | sttReal raw, mean (min) | readable, mean (min) |
+|---|---|---|---|
+| TaxilaFDB 84 | 72/84 with end punctuation, 84/84 without | 66.7% (54.8%) | 70.6% (61.3%) |
+| ES-3 80 | 80/80 | 78.0% (66.3%) | |
+| held-out 40 | 40/40 | 81.4% (67.5%) | |
+| conversation-v2 10 | 9/10 | | |
+
+Seed 0 without punctuation gives 68/84, the critic's number exactly. This confirms the rebuilt set and the reproduction.
+
+### `m-sr-recall-2026-10-05`
+Pass 1 + 2, 20 report seeds, mean (min):
+
+| set | clean | sttReal raw | readable | caught + ask-again |
+|---|---|---|---|---|
+| TaxilaFDB 84 | 84/84 | 94.52% (88.10%) | 99.94% (98.68%) | 99.94% (98.81%) |
+| ES-3 80 | 80/80 | 93.69% (87.50%) | 98.75% (96.10%) | 98.81% (96.25%) |
+| held-out paraphrases 40 | 40/40 | 94.63% (87.50%) | 98.83% (95.00%) | 98.87% (95.00%) |
+| conversation-v2 offline 10 | 9/10 | 84.50% | 88.02% | 88.50% |
+
+- **TaxilaFDB:** 1 readable miss in 1,680 draws.
+- **conversation-v2:** 'मम्मी बहुत बीमार है और मुझे बहुत डर लग रहा है' is in no family. The model read catches it
+  (CONVERSATION-V2).
+- **Remaining misses** are 2-3 garbles in one short shape, or a garble into a real word ("pet te" for "peet te",
+  "hut" for "hurt", "mee").
+
+### `m-sr-false-positives-2026-10-05`
+Pass 1 + 2:
+
+| set | n | hits |
+|---|---|---|
+| ES-1 synthetic lesson turns, clean | 8,357 | 0 |
+| ES-1, sttReal ×3 seeds | 25,071 | 0 |
+| owner-truth + conversation-v2 child turns (real prod transcripts) | 1,248 | 0 |
+| ES-3 categories b-h | 220 | 0 |
+| TaxilaFDB lesson segments, clean | 485 | 0 |
+| TaxilaFDB lesson segments, sttReal ×20 seeds | 9,700 | 0 |
+| hard negatives, plain lesson talk (dev / holdout) | 305 (204 / 101) | 14 (7 / 7) |
+| hard negatives, ambiguous ("i'm done", "I give up on this question") | 20 | 0 |
+
+The 305 plain hard negatives are hand-written (`evals/safety-robust/negatives.data.mjs`).
+- **All 14 hits are from pass 1:** pre-existing, listed in `open-sr-pass1-hard-negative-fps`.
+- **Pass 2 adds 0 on clean text, and 0 new under sttReal.** It made 7 hits on garbled copies of lines pass 1 already
+  fires on clean.
+
+**Targets:**
+- Lesson-turn FP ≤ 0.1%: met (0%).
+- 0 on the plain hard negatives: met by the new layer, not by the predicate as a whole.
+
+**Holdout caveat.** The holdout third was looked at after dev run 5. One guard fix followed
+(`rj-sr-exact-guards-in-fuzzy-pass`). It is a general fix, not a line-specific one, but the holdout is no longer
+perfectly unseen.
+
+### `m-sr-critic-stress-f10-2026-10-05`
+**Command:** `node evals/duplex/critic/stress.mjs --families F10 --conds base,sttReal --arms stage-a,cascade-900,silence-640 --lanes D4,FAST`.
+- 96 test streams, on the L1 duplex world with the real `src/duplex` runtime.
+- Run in a sandbox copy, because the harness writes under `evals/duplex/results/`.
+- Copied result: `evals/safety-robust/results/critic-stress-f10-postfix-2026-10-05.json`.
+
+**Results.**
+- sttReal: distress detected **79/84 on every arm and both lanes**, up from the critic's 68/84.
+- All 5 misses are hallucinated distress segments, with no words left.
+- Base: 84/84, except silence-640@D4 at 80/84. That arm's own commit timing is unchanged.
+
+### `m-sr-latency-2026-10-05`
+Node 22, this container.
+
+| input | n | µs per scan |
+|---|---|---|
+| ES-1 lesson turns | 3,000 | 23-29 (mean) |
+| 330-char Hinglish partial | 300 | about 680 |
+| 280-char Devanagari partial | 300 | about 720 |
+
+- The indexed cost path cut the fuzzy pass from about 910 µs to 315-500 µs.
+- It equals the reference `slotCost` on 167,160 (token, group) pairs.
+
+### `m-sr-gates-2026-10-05`
+| tree | check | result |
+|---|---|---|
+| main | `npx tsc -b` | exit 0 |
+| main | `node --test tests/safety*.test.mjs` | 28 pass, 3 skip (seams wait for patches) |
+| main | classify, brain-turn, brain-lanes, duplex-{critic,runtime,engine-model}, lesson-safety, director-module-turn | 101/101 |
+| patched sandbox | `npx tsc -b` | 0 |
+| patched sandbox | `tests/safety*` | 30/30 |
+| patched sandbox | the same suites | 100/101 (1 environment skip: no stage-B ONNX model) |
+| patched sandbox | `vite build` | 0 |

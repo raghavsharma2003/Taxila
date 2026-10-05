@@ -2752,7 +2752,7 @@ var Be = class {
 }, We = {
 	bs: {
 		browOuterUpLeft: .82,
-		browInnerUp: .06,
+		browInnerUp: .2,
 		eyeWideLeft: .05,
 		eyeWideRight: .03,
 		mouthLeft: .45,
@@ -2767,14 +2767,14 @@ var Be = class {
 		-3,
 		7
 	],
-	gaze: [18, 20],
+	gaze: [14, 23],
 	env: [
 		.35,
 		0,
 		.45
 	],
 	act: "thinkUp",
-	search: [2.6, 2]
+	search: [2.4, 1.8]
 }, Ge = {
 	bs: {
 		browOuterUpLeft: .3,
@@ -2845,7 +2845,7 @@ var Be = class {
 	head: [
 		8,
 		0,
-		-11
+		-8
 	],
 	gaze: [-1, 5],
 	env: [
@@ -2864,7 +2864,7 @@ var Be = class {
 				3,
 				-6
 			],
-			gaze: [-17, 19]
+			gaze: [-13, 22]
 		},
 		Ge
 	],

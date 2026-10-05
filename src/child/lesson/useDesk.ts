@@ -674,6 +674,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     openWhileSpeaking: ctx.textOnly,
     // "/" on the Older pad in a fraction question (live-content 10).
     padSlash: !young && fractionQuestion(askText, state.topic?.title ?? ""),
+    padComma: !!(ui as { padComma?: boolean }).padComma,
   };
 
   // ───────── actions ─────────

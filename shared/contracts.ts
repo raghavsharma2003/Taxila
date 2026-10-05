@@ -110,6 +110,11 @@ export interface UiDirectives {
   handover?: "chain" | "answer" | "choice" | "judge" | "ready" | "finish";
   /** How the child is expected to answer: it drives the dock body. */
   answerForm?: "words" | "number" | "choice" | "draw" | "read_aloud" | "tap_in_tray";
+  /**
+   * W2 integration: the NumberPad also shows a "," key (the item's verified key is written with commas, e.g. Indian
+   * grouping "1,07,040"). Without it a digits-only pad cannot enter the answer the item checks for.
+   */
+  padComma?: boolean;
   /** Only from the verified-key classifier on a kit item. Absent = ungraded (a covert why / teach-back, an unclear reply). */
   verdict?: "correct" | "not_yet" | "partial";
   /** A correct verdict that came after a hint rung (the tick in outline, §4.6 "With help"). */

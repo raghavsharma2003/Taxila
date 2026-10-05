@@ -111,3 +111,108 @@ test("abuse predicate: reported science / EVS / history is not a disclosure; dis
   for (const t of ["Papa gussa hote hain toh maarte hain, kal bhi maara", "papa mujhe maarte hain", "mat jao didi, papa mujhe roz maarte hain",
     "mummy ne bola papa marte hain", "papa ne bhai ko maara", "chacha roz raat ko peette hain"]) assert.equal(scanSafety(t).distress, true, t);
 });
+
+// ───────────── safety-robust (2026-10-05): the second pass (server/safety/normalize.js + fuzzy.js) ─────────────
+// CRITIQUE.md §4-§5: under the critic's realistic STT perturbation (evals/duplex/critic/perturb.mjs sttReal) the byte
+// predicate missed 16/84 TaxilaFDB distress lines on every arm; with a danda on each final it missed 12/84 even CLEAN.
+// Each garble below is one the perturbation produced (or the live transcriber's own habit, CRITIQUE §2 B1).
+import { scanSafetyDetail, readability } from "../server/director/safety.js";
+import { fuzzyScan } from "../server/safety/fuzzy.js";
+import { canonKey, devaToRoman, englishSkeleton, foldText } from "../server/safety/normalize.js";
+
+const STT_GARBLED = [
+  // danda on the final (the shipped lookahead `(?![ऀ-ॿ])` read "।" as a letter)
+  ["कभी कभी लगता है मैं ना रहूं।", "self_harm"], ["पता नहीं। कभी कभी लगता है मैं ना रहूं।", "self_harm"], ["मैं न रहूँ।", "self_harm"],
+  // one garbled word (the critic's misses)
+  ["पाप मारते हैं जब गलत होता है।", "abuse"], ["बासठ। पापा मारत हैं जब गलत होता है।", "abuse"], ["Nobody would evn notice if I was gone.", "self_harm"],
+  ["Nobody would even notice ife I was gone.", "self_harm"], ["मुझे मरथ जाना है।", "self_harm"], ["पता नहीं। I wish Ie wasn't here.", "self_harm"],
+  ["I wish I wasn't hre.", "self_harm"], ["और मुझे खुद क चोट लगानी है।", "self_harm"], ["और मुझे खुदथ को चोट लगानी है।", "self_harm"],
+  ["मुझे घर जान से डर लगता है।", "fear"], ["मुझे घर जाने स डर लगता है।", "fear"], ["पता नहीं। I don't wanna wake upe ever again.", "self_harm"],
+  ["कभी कभी लगता है मैंथ ना रहूं।", "self_harm"], ["answer 5 but I want to dsappear.", "self_harm"], ["sab mjhe chidhate hain school mein", "fear"],
+  ["papa marthe hain roz", "abuse"], ["uncle ne gandi taah chhua, paanch", "abuse"],
+  // English said inside Hindi, written in Devanagari
+  ["नोबडी वुड ईवन नोटिस इफ आई वॉज़ गॉन", "self_harm"], ["आई विश आई वाज़न्ट हियर", "self_harm"], ["आई हेट माई लाइफ", "self_harm"],
+  // Hindi shapes said in the other script than the first pass's pattern
+  ["मुझे ज़िंदा नहीं रहना", "self_harm"], ["मेरे अंकल मुझे गलत जगह टच करते हैं", "abuse"],
+  // repeated letters, an interleaved hallucination
+  ["i wanna dieeee", "self_harm"], ["पापा मारते हैं そうです", "abuse"],
+];
+
+test("safety-robust: STT-garbled, danda-ended and cross-script disclosures fire, in their family", () => {
+  for (const [text, kind] of STT_GARBLED) assert.deepEqual(scanSafety(text), { distress: true, kind }, text);
+});
+
+test("safety-robust: scanSafety keeps its { distress, kind } shape; scanSafetyDetail says which pass decided", () => {
+  assert.deepEqual(Object.keys(scanSafety("I wanna die")).sort(), ["distress", "kind"]);
+  assert.equal(scanSafetyDetail("I wanna die").pass, 1);
+  assert.equal(scanSafetyDetail("पाप मारते हैं जब गलत होता है।").pass, 2);
+  assert.match(scanSafetyDetail("पाप मारते हैं जब गलत होता है।").via, /^fuzzy:/);
+  assert.equal(scanSafetyDetail("कभी कभी लगता है मैं ना रहूं।").via, "families:normalised");
+  assert.deepEqual(scanSafetyDetail(""), { distress: false, kind: null, pass: null, via: null });
+});
+
+// Lesson talk the second pass must leave quiet (the first pass is quiet on every one of these too).
+const ROBUST_QUIET = [
+  "mar gaya answer, phir se karta hoon", "24 ko maaro", "24 ko 6 se maaro toh 4 aayega", "break karo", "isko 24 ko break karo", "carry maar ke 1 upar",
+  "mummy mujhe pyaar karti hain", "agar main ghar pe na rahun toh mummy phone karti hain", "papa mujhe cricket sikhate hain", "didi mujhe roz kahani sunati hain",
+  "i'm done", "I'm done!", "no", "No.", "nahi didi, 5 nahi hai", "नहीं", "नहीं, सात है", "ho gaya didi",
+  "a ray is just a line that ran away from home lol", "the bull ran in the field", "kahani mein raja mar gaya", "i died three times in level 2",
+  "पौधे पानी के बिना मर जाते हैं", "भाई ने छक्का मारा", "शेर ने खरगोश को मारा", "क्लास में न रहूं तो", "jeena isi ka naam hai", "मुझे अंधेरे से डर लगता है",
+  "my pencil is gone", "nobody in my class got it right", "no one will notice if i skip one question?", "i hate this question",
+  "बासठ। そうです先生。", "पापा ने बताया पांच होता है", "मेरी पेंसिल गायब हो गई",
+];
+
+test("safety-robust: maths / science / game / story talk, 'i'm done' and a correct 'no' stay quiet", () => {
+  for (const text of ROBUST_QUIET) assert.equal(scanSafety(text).distress, false, text);
+});
+
+test("safety-robust: fuzzy family guards — a garbled guard word keeps its guard, a real word is not a garble", () => {
+  // lesson objects (even garbled: "chhaka") turn the actor shape off
+  assert.equal(fuzzyScan("papa ne chhaka maara").distress, false);
+  assert.equal(fuzzyScan("पापा ने छक्का मारा").distress, false);
+  assert.equal(fuzzyScan("sir ne bataya cells marte hain").distress, false);
+  // "karti" (does) is a real word: never read as "marti" (hits) inside a shape
+  assert.equal(fuzzyScan("mummy mujhe pyaar karti hain").distress, false);
+  // "में" (in) is never "मैं" (I): a place before "न रहूं" stays a place
+  assert.equal(fuzzyScan("क्लास में न रहूं तो").distress, false);
+  // the wake shape reads the rest of the CLAUSE, and a garbled schedule word still counts
+  assert.equal(scanSafety("I don't want to wake up tomorrow, the answer is 5").distress, true);
+  assert.equal(fuzzyScan("i dont wnt to wake up erly tomorrow", { wakeOk: () => false }).distress, false);
+  // a solo word ("bully") takes no near-miss at all
+  assert.equal(fuzzyScan("the bull is strong").distress, false);
+  assert.equal(fuzzyScan("they bully me").distress, true);
+});
+
+test("safety-robust: an unreadable (other-script) segment is reported, never read as content", () => {
+  assert.deepEqual(readability("बासठ そうです先生。"), { unreadable: true, share: 0.5, readable: "बासठ", tokens: ["そうです先生。"] });
+  assert.equal(readability("बासठ, papa 🙂").unreadable, false);
+  assert.equal(scanSafety("そうです先生。").distress, false);
+  // the readable rest is still scanned
+  assert.equal(scanSafety("బాగుంది पापा मुझे मारते हैं").distress, true);
+});
+
+test("safety-robust: normalisation — transliteration and keys agree across scripts and spellings", () => {
+  assert.equal(devaToRoman("मारते"), "marte");
+  assert.equal(devaToRoman("लगता"), "lagta");
+  assert.equal(devaToRoman("मुझे"), "mujhe");
+  assert.equal(canonKey("maarte"), canonKey("मारते"));
+  assert.equal(canonKey("rahoon"), canonKey("रहूँ"));
+  assert.equal(canonKey("zinda"), canonKey("ज़िंदा"));
+  assert.notEqual(canonKey("मैं"), canonKey("में"));
+  assert.equal(englishSkeleton("notice"), englishSkeleton("नोटिस"));
+  assert.equal(englishSkeleton("gone"), englishSkeleton("गॉन"));
+  assert.equal(foldText("मैं ना रहूं।"), "मैं ना रहूं");
+  assert.equal(foldText("noooo  WAY!!"), "no way");
+});
+
+test("safety-robust: the indexed cost path equals the reference slotCost on every (token, group) pair", async () => {
+  const { __internals: I } = await import("../server/safety/fuzzy.js");
+  const texts = [...STT_GARBLED.map(([t]) => t), ...ROBUST_QUIET, ...PASSIVE, ...PASSIVE_BENIGN, ...DISCLOSURES.map(([t]) => t), ...QUIET,
+    "mjhe marna haie", "ppa roz maarte han", "नोबडी वुड नोटिस", "the bulky bull", "karti marti karta marta", "में मैं मै मे", "जान जाना जाने"];
+  let pairs = 0;
+  for (const tx of texts) for (const t of I.prep(tx)) {
+    const fast = I.costsOf(t);
+    for (const g of I.ALL_GROUPS()) { pairs++; assert.equal(fast.get(g.name) ?? Infinity, I.slotCost(t, g), `${t.raw} / ${g.name}`); }
+  }
+  assert.ok(pairs > 10000);
+});

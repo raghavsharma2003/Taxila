@@ -72,7 +72,7 @@ const G = {
   ACTOR_EN: "father mother dad daddy mom mum mummy papa brother sister uncle aunty auntie teacher sir stepfather stepmother",
   BEAT_HI: "maarte maarti maarta marte marti marta peette peetti peetta pitte pitti peet pitai मारते मारती मारता पीटते पीटती पीटता",
   BEAT_PAST: "maara mara peeta pita chhua chhuaa chua मारा पीटा छुआ",
-  TOUCH_HI: "chhoote chhute chhuta chhuti chhua chhuaa chua chhoo touch छूते छूता छूती छुआ छू",
+  TOUCH_HI: "chhoote chhute chhuta chhuti chhua chhuaa chua chhoo touch छूते छूता छूती छुआ छू टच",
   BEAT_EN: "hits hit beats beat slaps slapped kicks kicked punches punched hurts hurt touched touches",
   GANDI: "gandi gande ganda galat गंदी गंदा गंदे गलत",
   TARAH: "tarah jagah jagha तरह जगह",
@@ -175,7 +175,9 @@ function compileGroup(name, words, solo = false) {
     if (deva) devaWords.push(f);
     else { rawList.push(f); if (EN.has(name)) { const k = englishSkeleton(f); if (k.length >= 2) enSkel.add(k); } }
   }
-  return { name, solo, en: EN.has(name), canon, canonList, rawList, devaWords, enSkel, folded: new Set(list.map((w) => foldText(w).replace(/'/g, ""))) };
+  // precomputed per Devanagari word: its skeleton, its code-point length, and the form with its final vowel sign dropped
+  const devaInfo = devaWords.map((w) => ({ w, skel: devaSkeleton(w), n: cps(w).length, dropFinal: /[\u093E-\u094C]$/u.test(w) ? w.slice(0, -1) : null }));
+  return { name, solo, en: EN.has(name), canon, canonList, rawList, devaWords, devaInfo, enSkel, folded: new Set(list.map((w) => foldText(w).replace(/'/g, ""))) };
 }
 const GROUPS = Object.fromEntries([...Object.entries(G).map(([k, v]) => [k, compileGroup(k, v)]), ...Object.entries(SOLO).map(([k, v]) => [k, compileGroup(k, v, true)])]);
 const LIT = new Map();
@@ -195,19 +197,20 @@ export function slotCost(t, g, { known = KNOWN_NEAR } = {}) {
   if (g.solo && isKnown) return Infinity;
   let near = false;
   if (t.script === "deva" && !g.solo) {
-    for (const w of g.devaWords) {
+    const tn = t.n ?? (t.n = cps(t.raw).length);
+    for (const d of g.devaInfo) {
       // a dropped FINAL vowel sign is the commonest Devanagari garble ("जाना"→"जान", "पापा"→"पाप", "मारते"→"मारत"): read at
       // cost 1 even when the shortened form is itself a word. Any other vowel edit between two real words stays double
       // ("में" is never "मैं").
-      if (/[\u093E-\u094C]$/u.test(w) && t.raw === w.slice(0, -1)) { near = true; isKnown = false; break; }
-      if (devaSkeleton(w) === t.skel && lev1cp(t.raw, w)) { near = true; break; }
+      if (d.dropFinal === t.raw) { near = true; isKnown = false; break; }
+      if (d.skel === t.skel && Math.abs(d.n - tn) <= 1 && lev1cp(t.raw, d.w)) { near = true; break; }
       // one extra letter at the end ("मरथ", "मैंथ", "नथ" for "न"): never a vowel sign alone (that is the skeleton rule)
-      if (t.raw.length > w.length && t.raw.startsWith(w) && cps(t.raw).length === cps(w).length + 1) { near = true; break; }
+      if (tn === d.n + 1 && t.raw.startsWith(d.w)) { near = true; break; }
     }
   }
   // Roman / English: edit distance 1 on the canonical key and on the spelling itself ("hee" is "hi" canonically but one
   // letter from "here"); a slot word of 1-3 letters only by one letter added or dropped at its end ("Ie", "upe", "mye")
-  const editNear = (a, c) => (c.length >= (g.solo ? 5 : 4)
+  const editNear = (a, c) => (Math.abs(a.length - c.length) > 1 ? false : c.length >= (g.solo ? 5 : 4)
     ? a.length >= 3 && lev1(a, c)
     : !g.solo && t.script === "latin" && ((a.length === c.length + 1 && a.startsWith(c)) || (c.length === a.length + 1 && c.startsWith(a) && a.length >= 1)));
   if (!near) for (const c of g.canonList) if (editNear(t.canon, c)) { near = true; break; }
@@ -331,9 +334,88 @@ const SHAPES = [
     const name = opt ? s.slice(1) : s;
     return { opt, g: groupFor(name) };
   });
-  const req = steps.filter((s) => s.g && !s.opt).length;
-  return { kind, id, steps, budget: req <= 2 ? 0 : req === 3 ? 1 : 2, ...o };
+  const reqGroups = steps.filter((s) => s.g && !s.opt).map((s) => s.g);
+  const req = reqGroups.length;
+  return { kind, id, steps, req: reqGroups, budget: req <= 2 ? 0 : req === 3 ? 1 : 2, ...o };
 });
+
+// ── the indexed fast path ──
+// slotCost above is the reference (and the KNOWN builder's); fuzzyScan reads every group's cost for a token at once from these
+// indexes (exact keys, single-deletion keys, Devanagari skeleton / final-sign / prefix keys, English skeletons), so a long
+// partial costs O(tokens x word length) lookups instead of tokens x groups x words. tests/safety.test.mjs pins that both
+// paths agree on every (token, group) pair of the eval corpora.
+const ALL_GROUPS = () => [...Object.values(GROUPS), ...LIT.values()];
+const dels = (w) => { const out = []; for (let i = 0; i < w.length; i++) out.push(w.slice(0, i) + w.slice(i + 1)); return out; };
+const push = (m, k, v) => { const a = m.get(k); if (a) a.push(v); else m.set(k, [v]); };
+function buildIndex() {
+  const ix = { folded: new Map(), canon: new Map(), longCanon: new Map(), longRaw: new Map(), shortPlus: new Map(), shortMinus: new Map(),
+    devaSkel: new Map(), devaDrop: new Map(), devaPrefix: new Map(), enSkel: new Map() };
+  for (const g of ALL_GROUPS()) {
+    for (const f of g.folded) push(ix.folded, f, g);
+    for (const c of g.canon) push(ix.canon, c, g);
+    const min = g.solo ? 5 : 4;
+    const addLong = (m, w, kind) => { if (w.length < min) return; for (const k of new Set([w, ...dels(w)])) push(m, k, { g, w, kind }); };
+    for (const c of g.canonList) {
+      addLong(ix.longCanon, c, "canon");
+      if (!g.solo && c.length < min) { push(ix.shortPlus, c, { g, kind: "canon" }); if (c.length >= 2) push(ix.shortMinus, c.slice(0, -1), { g, kind: "canon" }); }
+    }
+    for (const w of g.rawList) {
+      addLong(ix.longRaw, w, "raw");
+      if (!g.solo && w.length < min) { push(ix.shortPlus, w, { g, kind: "raw" }); if (w.length >= 2) push(ix.shortMinus, w.slice(0, -1), { g, kind: "raw" }); }
+    }
+    if (!g.solo) for (const d of g.devaInfo) {
+      push(ix.devaSkel, d.skel, { g, d });
+      if (d.dropFinal) push(ix.devaDrop, d.dropFinal, g);
+      push(ix.devaPrefix, d.w, g);
+    }
+    if (g.en && !g.solo) for (const k of g.enSkel) push(ix.enSkel, k, g);
+  }
+  return ix;
+}
+let IX = null;
+
+/** Every group's cost for token t (Map group name → 0 | 1 | 2; absent = no). Same rules as slotCost. */
+function costsOf(t, known = KNOWN_NEAR) {
+  if (t.costs) return t.costs;
+  IX ??= buildIndex();
+  const out = new Map();
+  const set0 = (g) => out.set(g.name, 0);
+  for (const g of IX.folded.get(t.raw) ?? []) set0(g);
+  if (t.canon) for (const g of IX.canon.get(t.canon) ?? []) set0(g);
+  const conf = CONFUSION[t.raw];
+  if (conf) { for (const g of IX.folded.get(conf) ?? []) set0(g); for (const g of IX.canon.get(canonKey(conf)) ?? []) set0(g); }
+  if (t.canon && t.script !== "num" && t.script !== "other") {
+    const isKnown = known.has(t.raw);
+    const near = new Map();   // group name → { g, noPenalty }
+    const mark = (g, noPenalty = false) => { if (out.get(g.name) === 0) return; const p = near.get(g.name); if (!p || (noPenalty && !p.noPenalty)) near.set(g.name, { g, noPenalty: noPenalty || !!p?.noPenalty }); };
+    if (t.script === "deva") {
+      const tn = t.n ?? (t.n = cps(t.raw).length);
+      for (const g of IX.devaDrop.get(t.raw) ?? []) mark(g, true);
+      for (const { g, d } of IX.devaSkel.get(t.skel) ?? []) if (Math.abs(d.n - tn) <= 1 && lev1cp(t.raw, d.w)) mark(g);
+      const cp = cps(t.raw);
+      if (cp.length >= 2) for (const g of IX.devaPrefix.get(cp.slice(0, -1).join("")) ?? []) mark(g);
+      if (t.enSkel && t.enSkel.length >= 2) for (const g of IX.enSkel.get(t.enSkel) ?? []) mark(g);
+    }
+    const longNear = (m, a, kind) => {
+      if (a.length < 3) return;
+      for (const k of new Set([a, ...dels(a)])) for (const e of m.get(k) ?? []) if (e.kind === kind && Math.abs(e.w.length - a.length) <= 1 && lev1(a, e.w)) mark(e.g);
+    };
+    longNear(IX.longCanon, t.canon, "canon");
+    if (t.script === "latin") {
+      longNear(IX.longRaw, t.raw, "raw");
+      for (const [a, kind] of [[t.canon, "canon"], [t.raw, "raw"]]) {
+        if (a.length >= 2) for (const e of IX.shortPlus.get(a.slice(0, -1)) ?? []) if (e.kind === kind) mark(e.g);   // one letter added at the end
+        if (a.length >= 1) for (const e of IX.shortMinus.get(a) ?? []) if (e.kind === kind) mark(e.g);               // one letter dropped at the end
+      }
+    }
+    for (const { g, noPenalty } of near.values()) {
+      if (g.solo && isKnown) continue;
+      out.set(g.name, isKnown && !noPenalty ? 2 : 1);
+    }
+  }
+  t.costs = out;
+  return out;
+}
 
 /** Joins a fuzzy-matchable token list needs ("no one" → "noone", "do not" → "dont", "was not" → "wasnt"). */
 function joinPairs(toks) {
@@ -355,11 +437,10 @@ function prep(text) {
     t.canon = canonKey(t.raw);
     t.skel = t.script === "deva" ? devaSkeleton(t.raw) : "";
     t.enSkel = t.script === "deva" ? englishSkeleton(t.raw) : "";
-    t.cost = new Map();
   }
   return toks;
 }
-const costOf = (t, g) => { let c = t.cost.get(g.name); if (c === undefined) { c = slotCost(t, g); t.cost.set(g.name, c); } return c; };
+const costOf = (t, g) => costsOf(t).get(g.name) ?? Infinity;
 
 /** All matches of one shape starting at token i: yields { end, fuzz }. */
 function* walk(toks, steps, si, i, fuzz, budget) {
@@ -383,6 +464,8 @@ export function fuzzyScan(text, hooks = {}) {
   const toks = prep(text);
   if (!toks.length) return { distress: false, kind: null, shape: null, fuzz: 0 };
   for (const sh of SHAPES) {
+    // every required slot must be fillable by SOME token within budget, or the shape cannot match anywhere
+    if (!sh.req.every((g) => toks.some((t) => costOf(t, g) <= sh.budget))) continue;
     for (let i = 0; i < toks.length; i++) {
       for (const m of walk(toks, sh.steps, 0, i, 0, sh.budget)) {
         if (m.end <= i) continue;
@@ -401,4 +484,4 @@ export function fuzzyScan(text, hooks = {}) {
 }
 
 /** For the KNOWN builder and tests: the slot groups (name → compiled) and the shape list. */
-export const __internals = { GROUPS, SHAPES, prep, slotCost };
+export const __internals = { GROUPS, SHAPES, prep, slotCost, costsOf, ALL_GROUPS };

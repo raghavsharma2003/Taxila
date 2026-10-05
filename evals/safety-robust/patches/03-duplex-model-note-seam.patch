@@ -1,0 +1,50 @@
+--- a/server/duplex/slice.js
++++ b/server/duplex/slice.js
+@@ -78,6 +78,17 @@
+     return { safety: s, intent, textHash: view.textHash, changed };
+   }
+ 
++  /**
++   * The Director's model distress read on the committed turn (classify's flag / distressCheck), routed here by
++   * server/brain/turn.js through duplex/registry.js (safety-robust 2026-10-05). Sticky like a predicate hit; a trip
++   * cancels speculative drafts and build intents exactly as a predicate hit on a partial does.
++   */
++  modelNote(kind, t) {
++    const s = this.safety.modelNote(kind === "self_harm" || kind === "abuse" || kind === "fear" ? kind : null, t);
++    if (s.tripped) { this.spec.onSafety(t); this.builds.onSafety(); }
++    return s;
++  }
++
+   /** A device PrepareHint (with the stable text it keys on and the code-built uptake). */
+   prepare(t, hint, words) {
+     this.spec.onPrepare(t, hint, words);
+--- a/server/duplex/routes.js
++++ b/server/duplex/routes.js
+@@ -10,6 +10,7 @@
+ // Bodies carry hashes, partial text (already the child's own words, the same text the STT gave the device) and hints.
+ // Responses carry flags only: safety state, promotion keys. The child's words are never written to a log here.
+ import { DuplexSlice } from "./slice.js";
++import { duplexRegistry } from "./registry.js";
+ 
+ const SLICE_TTL_MS = 30 * 60_000;
+ 
+@@ -30,6 +31,9 @@
+     for (const [id, x] of slices) if (now() - x.at > SLICE_TTL_MS) { x.slice.close(now()); slices.delete(id); }
+     return s.slice;
+   };
++  // safety-robust (2026-10-05): the brain's /turn reaches a lesson's live slice (model distress note) through the registry;
++  // a lesson with no slice (no duplex session) gets null and nothing happens.
++  duplexRegistry.sliceFor = (lessonId) => slices.get(lessonId)?.slice ?? null;
+   const json = (res, code, body) => {
+     res.statusCode = code;
+     res.setHeader("content-type", "application/json; charset=utf-8");
+--- /dev/null
++++ b/server/duplex/registry.js
+@@ -0,0 +1,7 @@
++// The in-process seam between the brain's /turn (server/brain/turn.js) and the duplex server slices (routes.js), added by
++// safety-robust (2026-10-05): the Director's model distress read on a committed turn reaches that lesson's PartialSafety as
++// a model note. routes.js installs sliceFor when the duplex routes are created; until then every lookup is null.
++export const duplexRegistry = {
++  /** @type {(lessonId: string) => (import("./slice.js").DuplexSlice | null)} */
++  sliceFor: () => null,
++};

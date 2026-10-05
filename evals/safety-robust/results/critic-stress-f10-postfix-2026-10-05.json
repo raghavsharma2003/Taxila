@@ -1,0 +1,2500 @@
+{
+ "id": "critic-safety-robust-f10",
+ "date": "2026-10-04",
+ "runtimeHash": "e1dd04b2522b",
+ "split": "test",
+ "verdictMs": "config",
+ "paceK": "config",
+ "streams": 96,
+ "conds": [
+  "base",
+  "sttReal"
+ ],
+ "arms": [
+  "stage-a",
+  "cascade-900",
+  "silence-640"
+ ],
+ "lanes": [
+  "D4",
+  "FAST"
+ ],
+ "method": "evals/duplex/critic/{perturb,stress}.mjs over the TaxilaFDB test split at L1 (world.mjs + the real src/duplex runtime); perturbations are world-side and identical across arms; CIs = 95% bootstrap over scenarios (1,000). Perturbation parameters [E], calibrated where stated on the L2 real-STT run (n=48 streams).",
+ "seconds": 17,
+ "nErrors": 0,
+ "errors": [],
+ "table": {
+  "base|stage-a@D4": {
+   "streams": 96,
+   "cutoffThinking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "turnCutoff": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "gap": {
+    "n": 12,
+    "p50": 1110,
+    "p90": 1420,
+    "ci95p50": [
+     1005,
+     1280
+    ],
+    "ci95p90": [
+     1180,
+     1590
+    ],
+    "mean": 1093
+   },
+   "audible": {
+    "n": 12,
+    "p50": 3545,
+    "p90": 4664,
+    "ci95p50": [
+     3121,
+     4174
+    ],
+    "ci95p90": [
+     3695,
+     5670
+    ],
+    "mean": 3578
+   },
+   "missed2s": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "distressDetected": {
+    "k": 84,
+    "n": 84,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 0,
+    "n": 84,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 23,
+    "p50": 1190,
+    "p90": 1640,
+    "ci95p50": [
+     710,
+     1530
+    ],
+    "ci95p90": [
+     1432,
+     2718
+    ],
+    "mean": 1241
+   },
+   "keepTalking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "falseYieldTV": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": null,
+   "respondEndRule": {
+    "speak:turn_end": 12
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 734,
+   "duckLatency": {
+    "n": 28,
+    "p50": 20,
+    "p90": 50
+   }
+  },
+  "base|cascade-900@D4": {
+   "streams": 96,
+   "cutoffThinking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "turnCutoff": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "gap": {
+    "n": 7,
+    "p50": 1810,
+    "p90": 1950,
+    "ci95p50": [
+     1620,
+     1930
+    ],
+    "ci95p90": [
+     1630,
+     1950
+    ],
+    "mean": 1773
+   },
+   "audible": {
+    "n": 7,
+    "p50": 3522,
+    "p90": 4355,
+    "ci95p50": [
+     3256,
+     4394
+    ],
+    "ci95p90": [
+     3419,
+     4585
+    ],
+    "mean": 3719
+   },
+   "missed2s": {
+    "k": 5,
+    "n": 12,
+    "rate": 0.417,
+    "ci95": [
+     0.25,
+     0.5
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "distressDetected": {
+    "k": 84,
+    "n": 84,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 0,
+    "n": 84,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 23,
+    "p50": 1410,
+    "p90": 1874,
+    "ci95p50": [
+     1150,
+     1530
+    ],
+    "ci95p90": [
+     1500,
+     2718
+    ],
+    "mean": 1387
+   },
+   "keepTalking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "falseYieldTV": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": null,
+   "respondEndRule": {
+    "speak:turn_end": 12
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 1612,
+   "duckLatency": {
+    "n": 28,
+    "p50": 20,
+    "p90": 50
+   }
+  },
+  "base|silence-640@D4": {
+   "streams": 96,
+   "cutoffThinking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "turnCutoff": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "gap": {
+    "n": 12,
+    "p50": 670,
+    "p90": 818,
+    "ci95p50": [
+     620,
+     765
+    ],
+    "ci95p90": [
+     690,
+     1130
+    ],
+    "mean": 698
+   },
+   "audible": {
+    "n": 12,
+    "p50": 2597,
+    "p90": 3175,
+    "ci95p50": [
+     2526,
+     3062
+    ],
+    "ci95p90": [
+     2639,
+     4565
+    ],
+    "mean": 2756
+   },
+   "missed2s": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "distressDetected": {
+    "k": 80,
+    "n": 84,
+    "rate": 0.952,
+    "ci95": [
+     0.917,
+     0.988
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 4,
+    "n": 84,
+    "rate": 0.048,
+    "ci95": [
+     0.012,
+     0.083
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 23,
+    "p50": 1410,
+    "p90": 1874,
+    "ci95p50": [
+     1150,
+     1530
+    ],
+    "ci95p90": [
+     1500,
+     2718
+    ],
+    "mean": 1387
+   },
+   "keepTalking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "falseYieldTV": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": null,
+   "respondEndRule": {
+    "speak:turn_end": 12
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 591,
+   "duckLatency": {
+    "n": 28,
+    "p50": 20,
+    "p90": 50
+   }
+  },
+  "base|stage-a@FAST": {
+   "streams": 96,
+   "cutoffThinking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "turnCutoff": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "gap": {
+    "n": 12,
+    "p50": 315,
+    "p90": 426,
+    "ci95p50": [
+     300,
+     330
+    ],
+    "ci95p90": [
+     320,
+     650
+    ],
+    "mean": 312
+   },
+   "audible": {
+    "n": 12,
+    "p50": 2300,
+    "p90": 3264,
+    "ci95p50": [
+     2157,
+     2522
+    ],
+    "ci95p90": [
+     2481,
+     4165
+    ],
+    "mean": 2439
+   },
+   "missed2s": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "distressDetected": {
+    "k": 84,
+    "n": 84,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 0,
+    "n": 84,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 28,
+    "p50": 700,
+    "p90": 878,
+    "ci95p50": [
+     610,
+     735
+    ],
+    "ci95p90": [
+     782,
+     929
+    ],
+    "mean": 691
+   },
+   "keepTalking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "falseYieldTV": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": null,
+   "respondEndRule": {
+    "speak:turn_end": 12
+   },
+   "respondDecisionsUnder300ms": 0.417,
+   "respondGapP10": 196,
+   "duckLatency": {
+    "n": 28,
+    "p50": 20,
+    "p90": 50
+   }
+  },
+  "base|cascade-900@FAST": {
+   "streams": 96,
+   "cutoffThinking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "turnCutoff": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "gap": {
+    "n": 12,
+    "p50": 1340,
+    "p90": 1428,
+    "ci95p50": [
+     1235,
+     1380
+    ],
+    "ci95p90": [
+     1410,
+     1510
+    ],
+    "mean": 1325
+   },
+   "audible": {
+    "n": 12,
+    "p50": 3026,
+    "p90": 3179,
+    "ci95p50": [
+     2916,
+     3068
+    ],
+    "ci95p90": [
+     3081,
+     4182
+    ],
+    "mean": 3027
+   },
+   "missed2s": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "distressDetected": {
+    "k": 84,
+    "n": 84,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 0,
+    "n": 84,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 28,
+    "p50": 700,
+    "p90": 878,
+    "ci95p50": [
+     610,
+     735
+    ],
+    "ci95p90": [
+     782,
+     929
+    ],
+    "mean": 691
+   },
+   "keepTalking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "falseYieldTV": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": null,
+   "respondEndRule": {
+    "speak:turn_end": 12
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 1176,
+   "duckLatency": {
+    "n": 28,
+    "p50": 20,
+    "p90": 50
+   }
+  },
+  "base|silence-640@FAST": {
+   "streams": 96,
+   "cutoffThinking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "turnCutoff": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "gap": {
+    "n": 12,
+    "p50": 610,
+    "p90": 699,
+    "ci95p50": [
+     610,
+     630
+    ],
+    "ci95p90": [
+     690,
+     710
+    ],
+    "mean": 632
+   },
+   "audible": {
+    "n": 12,
+    "p50": 2206,
+    "p90": 2580,
+    "ci95p50": [
+     2186,
+     2388
+    ],
+    "ci95p90": [
+     2450,
+     3382
+    ],
+    "mean": 2333
+   },
+   "missed2s": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "distressDetected": {
+    "k": 84,
+    "n": 84,
+    "rate": 1,
+    "ci95": [
+     1,
+     1
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 0,
+    "n": 84,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 28,
+    "p50": 700,
+    "p90": 878,
+    "ci95p50": [
+     610,
+     735
+    ],
+    "ci95p90": [
+     782,
+     929
+    ],
+    "mean": 691
+   },
+   "keepTalking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "falseYieldTV": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": null,
+   "respondEndRule": {
+    "speak:turn_end": 12
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 591,
+   "duckLatency": {
+    "n": 28,
+    "p50": 20,
+    "p90": 50
+   }
+  },
+  "sttReal|stage-a@D4": {
+   "streams": 96,
+   "cutoffThinking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "turnCutoff": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "gap": {
+    "n": 12,
+    "p50": 1110,
+    "p90": 1420,
+    "ci95p50": [
+     1005,
+     1280
+    ],
+    "ci95p90": [
+     1180,
+     1590
+    ],
+    "mean": 1093
+   },
+   "audible": {
+    "n": 12,
+    "p50": 3545,
+    "p90": 4664,
+    "ci95p50": [
+     3121,
+     4174
+    ],
+    "ci95p90": [
+     3695,
+     5670
+    ],
+    "mean": 3578
+   },
+   "missed2s": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "distressDetected": {
+    "k": 79,
+    "n": 84,
+    "rate": 0.94,
+    "ci95": [
+     0.881,
+     0.988
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 4,
+    "n": 84,
+    "rate": 0.048,
+    "ci95": [
+     0,
+     0.107
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 23,
+    "p50": 1060,
+    "p90": 1630,
+    "ci95p50": [
+     710,
+     1530
+    ],
+    "ci95p90": [
+     1340,
+     2718
+    ],
+    "mean": 1202
+   },
+   "keepTalking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "falseYieldTV": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": null,
+   "respondEndRule": {
+    "speak:turn_end": 12
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 734,
+   "duckLatency": {
+    "n": 28,
+    "p50": 20,
+    "p90": 50
+   }
+  },
+  "sttReal|cascade-900@D4": {
+   "streams": 96,
+   "cutoffThinking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "turnCutoff": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "gap": {
+    "n": 7,
+    "p50": 1810,
+    "p90": 1950,
+    "ci95p50": [
+     1620,
+     1930
+    ],
+    "ci95p90": [
+     1630,
+     1950
+    ],
+    "mean": 1773
+   },
+   "audible": {
+    "n": 7,
+    "p50": 3522,
+    "p90": 4355,
+    "ci95p50": [
+     3256,
+     4394
+    ],
+    "ci95p90": [
+     3419,
+     4585
+    ],
+    "mean": 3719
+   },
+   "missed2s": {
+    "k": 5,
+    "n": 12,
+    "rate": 0.417,
+    "ci95": [
+     0.25,
+     0.5
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "distressDetected": {
+    "k": 79,
+    "n": 84,
+    "rate": 0.94,
+    "ci95": [
+     0.881,
+     0.988
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 4,
+    "n": 84,
+    "rate": 0.048,
+    "ci95": [
+     0,
+     0.107
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 23,
+    "p50": 1340,
+    "p90": 1874,
+    "ci95p50": [
+     1010,
+     1530
+    ],
+    "ci95p90": [
+     1440,
+     2718
+    ],
+    "mean": 1347
+   },
+   "keepTalking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "falseYieldTV": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": null,
+   "respondEndRule": {
+    "speak:turn_end": 12
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 1612,
+   "duckLatency": {
+    "n": 28,
+    "p50": 20,
+    "p90": 50
+   }
+  },
+  "sttReal|silence-640@D4": {
+   "streams": 96,
+   "cutoffThinking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "turnCutoff": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "gap": {
+    "n": 12,
+    "p50": 670,
+    "p90": 818,
+    "ci95p50": [
+     620,
+     765
+    ],
+    "ci95p90": [
+     690,
+     1130
+    ],
+    "mean": 698
+   },
+   "audible": {
+    "n": 12,
+    "p50": 2597,
+    "p90": 3175,
+    "ci95p50": [
+     2526,
+     3062
+    ],
+    "ci95p90": [
+     2639,
+     4565
+    ],
+    "mean": 2756
+   },
+   "missed2s": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "distressDetected": {
+    "k": 75,
+    "n": 84,
+    "rate": 0.893,
+    "ci95": [
+     0.833,
+     0.952
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 9,
+    "n": 84,
+    "rate": 0.107,
+    "ci95": [
+     0.048,
+     0.167
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 23,
+    "p50": 1340,
+    "p90": 1874,
+    "ci95p50": [
+     1010,
+     1530
+    ],
+    "ci95p90": [
+     1440,
+     2718
+    ],
+    "mean": 1347
+   },
+   "keepTalking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "falseYieldTV": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": null,
+   "respondEndRule": {
+    "speak:turn_end": 12
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 591,
+   "duckLatency": {
+    "n": 28,
+    "p50": 20,
+    "p90": 50
+   }
+  },
+  "sttReal|stage-a@FAST": {
+   "streams": 96,
+   "cutoffThinking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "turnCutoff": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "gap": {
+    "n": 12,
+    "p50": 315,
+    "p90": 426,
+    "ci95p50": [
+     300,
+     330
+    ],
+    "ci95p90": [
+     320,
+     650
+    ],
+    "mean": 312
+   },
+   "audible": {
+    "n": 12,
+    "p50": 2300,
+    "p90": 3264,
+    "ci95p50": [
+     2157,
+     2522
+    ],
+    "ci95p90": [
+     2481,
+     4165
+    ],
+    "mean": 2439
+   },
+   "missed2s": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "distressDetected": {
+    "k": 79,
+    "n": 84,
+    "rate": 0.94,
+    "ci95": [
+     0.881,
+     0.988
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 4,
+    "n": 84,
+    "rate": 0.048,
+    "ci95": [
+     0,
+     0.107
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 28,
+    "p50": 675,
+    "p90": 853,
+    "ci95p50": [
+     580,
+     730
+    ],
+    "ci95p90": [
+     739,
+     929
+    ],
+    "mean": 667
+   },
+   "keepTalking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "falseYieldTV": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": null,
+   "respondEndRule": {
+    "speak:turn_end": 12
+   },
+   "respondDecisionsUnder300ms": 0.417,
+   "respondGapP10": 196,
+   "duckLatency": {
+    "n": 28,
+    "p50": 20,
+    "p90": 50
+   }
+  },
+  "sttReal|cascade-900@FAST": {
+   "streams": 96,
+   "cutoffThinking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "turnCutoff": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "gap": {
+    "n": 12,
+    "p50": 1340,
+    "p90": 1428,
+    "ci95p50": [
+     1235,
+     1380
+    ],
+    "ci95p90": [
+     1410,
+     1510
+    ],
+    "mean": 1325
+   },
+   "audible": {
+    "n": 12,
+    "p50": 3026,
+    "p90": 3179,
+    "ci95p50": [
+     2916,
+     3068
+    ],
+    "ci95p90": [
+     3081,
+     4182
+    ],
+    "mean": 3027
+   },
+   "missed2s": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "distressDetected": {
+    "k": 79,
+    "n": 84,
+    "rate": 0.94,
+    "ci95": [
+     0.881,
+     0.988
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 5,
+    "n": 84,
+    "rate": 0.06,
+    "ci95": [
+     0.012,
+     0.119
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 28,
+    "p50": 675,
+    "p90": 853,
+    "ci95p50": [
+     580,
+     730
+    ],
+    "ci95p90": [
+     739,
+     929
+    ],
+    "mean": 667
+   },
+   "keepTalking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "falseYieldTV": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": null,
+   "respondEndRule": {
+    "speak:turn_end": 12
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 1176,
+   "duckLatency": {
+    "n": 28,
+    "p50": 20,
+    "p90": 50
+   }
+  },
+  "sttReal|silence-640@FAST": {
+   "streams": 96,
+   "cutoffThinking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "turnCutoff": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "gap": {
+    "n": 12,
+    "p50": 610,
+    "p90": 699,
+    "ci95p50": [
+     610,
+     630
+    ],
+    "ci95p90": [
+     690,
+     710
+    ],
+    "mean": 632
+   },
+   "audible": {
+    "n": 12,
+    "p50": 2206,
+    "p90": 2580,
+    "ci95p50": [
+     2186,
+     2388
+    ],
+    "ci95p90": [
+     2450,
+     3382
+    ],
+    "mean": 2333
+   },
+   "missed2s": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "verdictOnRepaired": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "repairCollision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "distressDetected": {
+    "k": 79,
+    "n": 84,
+    "rate": 0.94,
+    "ci95": [
+     0.881,
+     0.988
+    ]
+   },
+   "nonSafetyAfterDistress": {
+    "k": 5,
+    "n": 84,
+    "rate": 0.06,
+    "ci95": [
+     0.012,
+     0.119
+    ]
+   },
+   "falseSafety": {
+    "k": 0,
+    "n": 12,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "yield": {
+    "n": 28,
+    "p50": 675,
+    "p90": 853,
+    "ci95p50": [
+     580,
+     730
+    ],
+    "ci95p90": [
+     739,
+     929
+    ],
+    "mean": 667
+   },
+   "keepTalking": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "falseYieldTV": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "nodsPerS": 0,
+   "pauseStrata": [
+    {
+     "bin": "250-500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.28
+    },
+    {
+     "bin": "500-750",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.209
+    },
+    {
+     "bin": "750-1000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.133
+    },
+    {
+     "bin": "1000-1500",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.137
+    },
+    {
+     "bin": "1500-2000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.058
+    },
+    {
+     "bin": "2000-3000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.04
+    },
+    {
+     "bin": "3000-5000",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.015
+    },
+    {
+     "bin": "5000-inf",
+     "n": 0,
+     "cutoff": null,
+     "priorWeight": 0.003
+    }
+   ],
+   "cutoffAtBandPrior": null,
+   "respondEndRule": {
+    "speak:turn_end": 12
+   },
+   "respondDecisionsUnder300ms": 0,
+   "respondGapP10": 591,
+   "duckLatency": {
+    "n": 28,
+    "p50": 20,
+    "p90": 50
+   }
+  }
+ }
+}

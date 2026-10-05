@@ -1,0 +1,54 @@
+--- a/server/brain/turn.js
++++ b/server/brain/turn.js
+@@ -31,6 +31,7 @@
+ import { onTurnCommit } from "../conductor/hooks.js";
+ import { awaitSettled } from "../comprehension/session.js";
+ import { seamSafe as guardSeam } from "../seam-safe.js";
++import { duplexRegistry } from "../duplex/registry.js";
+ import { studioSeam, isStudioRow } from "../studio/seam.js";
+ import { relationalSeam } from "../relational/seam.js";
+ import { expressiveSeam } from "../voice/expressive/seam.js";
+@@ -334,6 +335,20 @@
+   let cls;
+   try { cls = classified ? await classify(clsArgs) : null; } finally { clsDone(); }
+   mark("classified");
++  // safety-robust (2026-10-05; INTEGRATION.md §2.1, PLAN X-1 / W2.5-2): the duplex floor's sticky partial-safety state
++  // (TurnRequest.duplex.safetyPending: the predicate ran on EVERY partial, and a hit stays even when the final transcript
++  // was revised clean) is OR-ed into this turn's distress flag before planTurn; it never subtracts. A client can only use
++  // it to force a safeguard (fail closed), never to suppress one.
++  const pendingSafety = body.duplex?.safetyPending;
++  if (cls && pendingSafety && !cls.flags?.distress) {
++    cls = { ...cls, flags: { ...cls.flags, distress: true, distressKind: cls.flags?.distressKind ?? (typeof pendingSafety.kind === "string" ? pendingSafety.kind : "duplex_partial") } };
++  }
++  // ... and a model distress read on the committed turn (classify's model flag or distressCheck, which now runs on every
++  // committed child turn with words) reaches the duplex floor as a model note, so a reply speculated on the partials is
++  // cancelled there as well (PartialSafety.modelNote was never called before this).
++  if (cls?.flags?.distress && cls.source !== "predicate") {
++    seamSafe("duplex.modelNote", () => duplexRegistry.sliceFor(lesson.id)?.modelNote(cls.flags.distressKind, Date.now()) ?? null, null);
++  }
+   if (settling) { await settling; carried = carriedFrom(state); planCtx.carried = carried; mark("settled"); }
+   // This utterance's voice tie-breakers (features.js signalsFrom: capped booleans) reach the plan only if they are
+   // already in when the classification is: the turn never waits on them (CE8: zero evidence weight, tie-break and
+--- a/shared/contracts.ts
++++ b/shared/contracts.ts
+@@ -185,6 +185,20 @@
+    * planned for the child's last answer was never voiced, the cascade voices it on this turn.
+    */
+   laneResume?: boolean;
++  /**
++   * The duplex engine's turn summary (docs/research/duplex/INTEGRATION.md §2; server/duplex/slice.js turnSummary). Hashes
++   * and flags only, never words. `safetyPending`: the predicate tripped on a PARTIAL of this turn (sticky): the server
++   * safeguards even if `childText` now reads clean (OR semantics; safety-robust 2026-10-05).
++   */
++  duplex?: {
++    transcriptHash: string;
++    genId?: string | null;
++    safetyPending?: { kind: "self_harm" | "abuse" | "fear" | null; source: "predicate" | "model_note" | null } | null;
++    superseded?: string[];
++    heardUpTo?: { chars: number; words: number; ms: number } | null;
++    cutInReason?: "safety" | "word_search_cue" | "off_task_drift" | "question_to_her" | "hold_offer" | null;
++    engineSummary?: { engine: string; reasons: string[]; pComplete: number[]; decidedAfterEndMs: number | null } | null;
++  };
+ }
+ /**
+  * One child utterance's voice features, computed on the device (src/voice/tracker.ts UtteranceFeatures).

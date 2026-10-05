@@ -193,7 +193,7 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
   // stay WorkTray's (W1-B). BUILD-PLAN W1-A items 3 and 11.
   const answerTray = m.tray && (m.tray.kind === "tiles" || m.tray.kind === "pad" || !!m.tray.overlay);
   const tray = m.tray && L.geometry === "work" ? answerTray ? (
-    <AnswerTray tray={m.tray} floor={floor} young={young} actions={a} slash={m.padSlash} />
+    <AnswerTray tray={m.tray} floor={floor} young={young} actions={a} slash={m.padSlash} comma={m.padComma} />
   ) : (
     <WorkTray tray={m.tray} floor={floor} young={young} modules={media.modules} lang={media.lang} ageBand={media.ageBand} actions={a} onModuleFailed={a.moduleFailed} />
   ) : null;

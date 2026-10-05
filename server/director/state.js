@@ -938,6 +938,8 @@ function uiFor(s, p, move, item, kit) {
   ui.answerForm = ui.chips ? "choice"
     : asking && s.module?.id && s.module.awaitingReveal && s.module.itemId === item.id ? "tap_in_tray"
       : asking && NUMERIC_KEY.test(String(item.answer).trim()) ? "number" : "words";
+  // a key written with commas (Indian grouping) needs a "," on the pad, or the child can never type what is checked
+  if (ui.answerForm === "number" && String(item?.answer ?? "").includes(",")) ui.padComma = true;
   ui.tray = ui.chips ? "tiles" : s.module?.id ? "module" : "none";
   const hint = hintFor(move, item, p.hintRung);
   if (hint) ui.hint = hint;

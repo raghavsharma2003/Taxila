@@ -30,6 +30,7 @@ export const W1A = {
   "help.menu.back_choices": "Back to the choices",
   // the pad
   "pad.slash": "Fraction bar",
+  "pad.comma": "Comma",
   // Me: tap and type
   "me.type.title": "Type instead",
   "me.type.on": "Lessons start with typing and tapping. {T} still talks.",

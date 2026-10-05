@@ -155,8 +155,10 @@ export function lintSource(file, text) {
   return findings;
 }
 
+/** A path is a directory (or a file): "src/ui" holds src/ui/** and never the sibling src/ui-v3/** (W2 integration). */
+const under = (f, p) => f === p || f.startsWith(p.endsWith("/") ? p : `${p}/`);
 export function lint({ paths = [] } = {}) {
-  const files = walk(join(ROOT, "src")).map((f) => relative(ROOT, f)).filter((f) => !paths.length || paths.some((p) => f.startsWith(p)));
+  const files = walk(join(ROOT, "src")).map((f) => relative(ROOT, f)).filter((f) => !paths.length || paths.some((p) => under(f, p)));
   return files.flatMap((file) => lintSource(file, readFileSync(join(ROOT, file), "utf8")));
 }
 

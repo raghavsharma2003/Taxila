@@ -168,6 +168,16 @@ try {
   let last = start;
   const send = async (text) => {
     const n = turns.length;
+    // a number item shows the NumberPad: digits only (a key like "1,07,040" is typed as its digits)
+    if (await page.locator('[data-testid="number-pad"]').isVisible().catch(() => false)) {
+      const hasComma = (await page.locator('[data-testid="number-pad"] .dk-key', { hasText: /^,$/ }).count()) > 0;
+      const digits = String(text).replace(hasComma ? /[^\d,]/g : /\D/g, "").slice(0, 12) || "0";
+      if (/,/.test(String(text))) ok(hasComma, `turn ${turns.length + 1}: the pad has a "," key for a key written with commas (${text})`);
+      for (const d of digits) await page.locator('[data-testid="number-pad"] .dk-key', { hasText: new RegExp(`^${d === "," ? "," : d}$`) }).first().click();
+      await page.locator('[data-testid="pad-send"], [data-testid="number-pad"] .dk-key--send').first().click();
+      for (let i = 0; i < 120 && turns.length <= n; i++) await pause(500);
+      return turns.length > n ? turns.at(-1) : null;
+    }
     const input = page.locator('[data-testid="child-input"]');
     if (!(await input.isVisible().catch(() => false))) await page.locator('[data-testid="type"]').click().catch(() => {});
     await input.fill(text);
@@ -220,6 +230,13 @@ try {
       for (let i = 0; i < 16 && !(f.stageKind && f.drawingInBox !== null); i++) { await pause(500); f = await layout(); }
     } else await pause(900);
     f = await layout();
+    if (f.stageKind === "whiteboard") {
+      // the board draws in step with her voice (anchored to her line's first audio sample; 1.2 s without a signal)
+      let marks = 0;
+      for (let i = 0; i < 16 && marks < 3; i++) { await pause(500); marks = await page.locator('[data-testid="studio-stage"] svg path, [data-testid="studio-stage"] svg text').count(); }
+      ok(marks >= 3, `turn ${n + 1}: the whiteboard draws strokes and labels in the stage (${marks} marks)`);
+      await pause(2500);
+    }
     const label = f.stageKind === "whiteboard" ? (seen.whiteboard++ < 2 ? "whiteboard" : null)
       : f.stageKind ? (seen.studio++ < 2 ? `studio-${f.stageKind}` : null)
       : f.frameInTray !== null ? (seen.frame++ < 2 ? "module" : null)
@@ -256,6 +273,49 @@ try {
   if (await homeBtn.isVisible().catch(() => false)) await homeBtn.click(); else await page.goto(`${BASE}/c/${childId}`);
   await pause(2500);
   await shoot("child-home-after");
+
+  // ───────── a Studio piece in the stage (a sibling's fractions lesson) ─────────
+  // Studio reveals a built piece on her cue after the lesson's opening minutes (W2-H); the walk's first lesson is a big-
+  // numbers lesson, so a sibling (class 5) runs the fractions topic W2-H's battery uses, with the @taxila.test clock moved
+  // past that moment (POST /api/test/clock: test accounts only), until the stage shows a non-whiteboard piece.
+  if (process.env.W2FLOW_STUDIO !== "0") {
+    const api = async (method, path, data) => { const r = await page.request.fetch(`${BASE}${path}`, { method, data }); return { status: r.status(), ...(await r.json().catch(() => ({}))) }; };
+    await api("POST", "/api/parent/unlock", { pin: PIN });
+    const kid = (await api("POST", "/api/children", { firstName: "Aarav", classLevel: 5, languagePref: "hinglish", interests: ["cricket"] })).child;
+    if (kid?.id) {
+      await api("POST", "/api/consent", { childId: kid.id, grants: { core_tutoring: true, learning_profile: true, memory: true } });
+      await api("POST", "/api/parent/controls", { childId: kid.id, hoursStart: "00:00", hoursEnd: "23:59", dailyMinutes: 120 });
+      await page.evaluate((cid) => { try { localStorage.setItem(`taxila.child.${cid}.prefs`, JSON.stringify({ hello: true })); } catch { /* */ } }, kid.id);
+      const startP = page.waitForResponse((r) => r.url().endsWith("/api/lesson/start"), { timeout: 45_000 });
+      await page.goto(`${BASE}/c/${kid.id}/lesson/new?mode=text&topic=c5-maths-ch02-t02`);
+      const st2 = await (await startP).json().catch(() => ({}));
+      await page.waitForSelector('[data-testid="child-input"], [data-testid="type"], [data-testid="number-pad"]', { timeout: 45_000 }).catch(() => {});
+      if (await btn(/^\s*Not now\s*$/).isVisible().catch(() => false)) await btn(/^\s*Not now\s*$/).click();
+      await pause(9000); // the prefetch plans its pieces
+      const clock = await api("POST", "/api/test/clock", { advanceMs: 10 * 60_000 });
+      if (clock.status !== 200) warn(`test clock refused (${clock.status}): a reveal may not come in this walk`);
+      const lines2 = ["haan ready", "teen chauthai matlab 3 by 4", "mujhe nahi pata", "pizza ke 4 hisse", "ek baar aur samjhao", "theek hai", "2 hisse", "haan", "samajh gaya", "aage chalo", "ok", "haan"];
+      let piece = null, l2 = st2;
+      for (let i = 0; i < lines2.length && !piece && !l2?.end; i++) {
+        const key = l2?.debug?.item?.answer ?? kitKey(l2?.ui?.ask?.itemId);
+        const r2 = (l2?.ui?.chips?.length && await page.locator('[data-testid="choices"] button').first().isVisible().catch(() => false))
+          ? await tapChip(key) : await send(l2?.ui?.ask?.itemId && key != null && i % 2 ? String(key) : lines2[i]);
+        if (!r2) break;
+        console.log(`  sibling turn ${i + 1}: ${r2.move?.kind} tray=${r2.ui?.tray ?? "-"} reveal=${r2.studio?.reveal ? "yes" : "-"} | ${String(r2.teacherReply ?? "").slice(0, 70)}`);
+        let f2 = await layout();
+        for (let k = 0; k < 12 && r2.ui?.tray === "studio" && !(f2.stageKind && f2.drawingInBox !== null); k++) { await pause(500); f2 = await layout(); }
+        if (f2.stageKind && f2.stageKind !== "whiteboard") { await pause(2500); piece = f2.stageKind; await shoot(`studio-piece-${f2.stageKind}`); }
+        l2 = r2;
+      }
+      ok(!!piece, `a Studio piece (game / skeleton / frame) appeared inside the stage (${piece ?? "none in 12 turns"})`);
+      if (piece) {
+        // fully interactive in place: a tap inside the piece reaches it (the frame or skeleton takes the pointer)
+        const box = await page.locator('[data-testid="studio-box"]').boundingBox();
+        if (box) { await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2); await pause(800); await shoot("studio-piece-after-tap"); }
+      }
+      if (l2?.end !== true && st2?.lessonId) await api("POST", "/api/lesson/end", { lessonId: st2.lessonId });
+    } else warn("could not add the sibling for the Studio piece");
+  }
 
   // ───────── the parent corner ─────────
   await page.goto(`${BASE}/parent`, { waitUntil: "networkidle" });

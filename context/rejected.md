@@ -2066,3 +2066,64 @@ Retrying a 200 that has no events was rejected without being shipped. It would h
 - `rj-voicesig-ssl-cnn-frontends-on-device` (2026-10-04): Tried (measured 2026-10-04): wav2vec2-base, HuBERT-base, WavLM-base-plus and DistilHuBERT as the on-device knowledge encoder, int8 in onnxruntime-web WASM. Broke: 1,361-1,388 ms (base) and 895 ms (Distil) per 3 s of audio on one Xeon thread, against 209 ms for the whole Whisper-tiny/Smart Turn encoder over 8 s; 50-122 MB; +390-793 MB RSS; wav2vec2-base int8 pooled cos 0.84. The raw-waveform CNN front-end dominates, so distilling the transformer does not help. Revisit if a <= 20 MB SSL student without the raw-waveform CNN reaches <= 250 ms per 3 s in WASM.
 - `rj-voicesig-licence-blocked` (2026-10-04): Licence-blocked for shipped voice-signal weights (checked 2026-10-04): facebook/mms-300m and mms-1b (CC-BY-NC-4.0: eval/research only); ai4bharat/indicwav2vec-hindi and indic-conformer-600m (gated repos, no-gated rule; IndicWav2Vec also 1.26 GB); microsoft/wavlm-base(-plus) as shipped weights (UniSpeech licence CC BY-SA 3.0: share-alike on distributed derivatives; offline teacher only); openSMILE/eGeMAPS (non-commercial; dsp.ts reimplements the features); MyST corpus (non-commercial unless licensed: evaluation only). Revisit on a licence change or a purchased commercial licence.
 - `rj-voicesig-placement-as-cure` (2026-10-04): Tried (analysis 2026-10-04): moving an emotion-from-voice model off Azure (device or AWS) to escape Microsoft CoC restriction 12. Broke: restriction 4 forbids applications built with Microsoft AI Services from using the services to 'interact with content, decisions, or actions prohibited in this Code', so an off-Azure emotion inference that steers the Azure-served teacher, Director or TTS is still covered. Placement only separates a shadow research arm whose output reaches no Microsoft service. What keeps voice signals compliant is the outcome-defined knowledge target (voicesig-outcome-defined-labels), not where the model runs.
+
+## Safety-robust (2026-10-05; inbox `context/inbox/safety-robust.json`)
+
+### `rj-sr-translit-reading-through-families`
+**Tried.** A pass-2 reading that transliterates Devanagari to Roman letters, run through the shipped Roman families.
+
+**What broke.** "भाई ने छक्का मारा" fired abuse through `ACTOR ne (\S+ )?mara`. The Roman rule's reported-speech gap
+reached Devanagari text: a new hard-negative FP.
+
+**Replaced by** the fuzzy shapes, where every abuse shape has the lesson-object guard.
+
+### `rj-sr-english-group-deva-canon`
+**Tried.** Giving an English slot group's Devanagari spellings a Roman canonical key.
+
+**What broke.** "रन" is "ran". "a ray is just a line that ran away from home lol" (a real transcript turn) fired
+run_away_from_home.
+
+**Fixed by:**
+- English groups now match Devanagari only by English skeleton or exactly;
+- run_away now needs an intent word, as in pass 1.
+
+### `rj-sr-fuzzy-without-real-word-penalty`
+**Tried.** Edit distance 1 on content words with no real-word check.
+
+**What broke.** "karti" (does) was read as "marti" (hits). Two hard negatives fired:
+- "agar main ghar pe na rahun toh mummy phone karti hain";
+- "mummy mujhe pyaar karti hain".
+
+**Replaced by** `sr-known-words-from-kits`: a real word costs 2.
+
+### `rj-sr-exact-guards-in-fuzzy-pass`
+**Tried.** Exact-word family guards in a pass that reads garbled text.
+
+**What broke.** "early" was garbled to "ealy". The wake schedule guard went quiet, and "i don't want toe wake up ealy
+tomorrow" fired self_harm.
+
+**Fixed by** guards that accept one edit on words of 5+ letters.
+
+### `rj-sr-wake-guard-over-whole-rest`
+**Tried.** Passing the rest of the turn, with punctuation folded away, to the wake clause rule.
+
+**What broke.** "I don't want to wake up tomorrow, the answer is 5" was turned off by the "5" in the next clause.
+
+**Fixed by** the fuzzy pass keeping clause indexes from the original marks.
+
+### `rj-sr-letter-run-collapse-before-fuzzy`
+**Tried.** Collapsing letter runs before fuzzy matching.
+
+**What broke.** "jaaa", a garble of "jaana", became "ja", which is two edits away.
+
+**Fixed by** fuzzy tokens keeping their runs. Only the families reading collapses them.
+
+### `rj-sr-raw-recall-98-target`
+**Tried.** Holding the text predicate to ≥ 98% raw recall under sttReal.
+
+**Why it cannot hold.** 91/1,680 TaxilaFDB draws (5.4%) replace the whole distress segment with another script, so no
+words are left to read.
+
+**Replaced by:**
+- unreadable → ask again (`sr-unreadable-ask-again`);
+- recall reported as readable and as caught + ask-again (`sr-recall-metric-readable`).
