@@ -1,4 +1,4 @@
-import { test, beforeEach, afterEach } from "node:test";
+import { describe, test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { classify, parseClassification, targetFor } from "../server/director/classify.js";
 import { initLessonState } from "../server/director/state.js";
@@ -14,7 +14,10 @@ function stateOn(itemId, over = {}) {
 const targetOn = (itemId, over) => { const s = stateOn(itemId, over); return targetFor(s, K, findItem(s, K, itemId)); };
 
 // ── mock fetch: records the request, answers with a chat-completions body ──
+// Everything sits in one describe: `npm test` runs all files in one process, and top-level hooks would wrap every
+// other file's tests too (they did: studio-router's loopback chatStream test got this canned reply, 2026-10-05).
 let calls, realFetch, reply;
+describe("classify", () => {
 beforeEach(() => {
   calls = []; realFetch = globalThis.fetch;
   process.env.AZURE_OPENAI_ENDPOINT = "https://example.test/openai/v1";
@@ -156,4 +159,5 @@ test("parse: with no keyed item a voiced wrong belief is a flag, never graded ev
   assert.equal(r.outcome, "no_evidence");
   assert.equal(r.voiced, K.misconceptions[0].id);
   assert.equal(parseClassification({ belief: "none", ...flags }, t).voiced, undefined);
+});
 });

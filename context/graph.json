@@ -11593,6 +11593,13 @@
    "title": "Calling the studio-router chatStream failure a load flake was wrong. npm test runs every file in one process, so classify.test.mjs's top-level beforeEach (a canned-reply globalThis.fetch stub) also wrapped this test, which then got that stub's 200 text/plain reply and no SSE events. Proven by logging globalThis.fetch at failure (2026-10-05, full npm test, n=1; same failure on GitHub gates runs 121-131). Fix: the test uses the fetch captured at module load and restores the stub after. Reverse if: tests move to process isolation and the file-level capture becomes unnecessary.",
    "at": "2026-10-05",
    "source": "inbox/test-fetch-leak.json"
+  },
+  {
+   "id": "dc-test-hooks-file-scoped-2026-10-05",
+   "kind": "decision",
+   "title": "Test files that swap global state in hooks keep those hooks inside a describe. npm test runs every file in one process, so a top-level beforeEach wraps every other file's tests. Capturing fetch at module load was not enough: the stub was already installed when studio-router.test.mjs loaded (gated deploy of 37247c4 failed the same way). classify.test.mjs and avatar-tutor-routes.test.mjs now scope their hooks in a describe. Reverse if: tests run with process isolation.",
+   "at": "2026-10-05",
+   "source": "inbox/test-fetch-leak-2.json"
   }
  ],
  "edges": [
@@ -18725,6 +18732,11 @@
    "src": "v4-review2-concern-read",
    "rel": "constrains",
    "dst": "v4-m-inapp-blind-judge"
+  },
+  {
+   "src": "dc-test-hooks-file-scoped-2026-10-05",
+   "rel": "supersedes",
+   "dst": "rj-chatstream-flake-label-2026-10-05"
   }
  ]
 }

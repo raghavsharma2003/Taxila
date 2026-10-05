@@ -2,7 +2,7 @@
 // decideChoice tests do not reach — auth is called with the child id, the parent gate fires only where policy says,
 // the pick is ONE statement (check + update + log), a statement that returns no row is a 409, and the pinned-teacher
 // / class-bound rules of characters/index.js. The real-database run is tests/tutor-db-e2e.mjs (test branch only).
-import { test, beforeEach } from "node:test";
+import { describe, test, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import { routes, deps, CHOOSE_SQL, effectivelyChosen, LIVE_HOURS } from "../server/routes/tutor.js";
 import { servesClass, teacherFor, teacherForLesson } from "../server/compiler/characters/index.js";
@@ -14,6 +14,8 @@ const CID = "00000000-0000-4000-8000-0000000000c1";
 let calls, child, liveRow, chooseRow, parentGateCalls;
 const real = { ...deps };
 
+// One describe: `npm test` runs all files in one process, and a top-level hook would also wrap other files' tests.
+describe("avatar tutor routes", () => {
 beforeEach(() => {
   calls = [];
   parentGateCalls = 0;
@@ -135,4 +137,5 @@ test("teacherForLesson: the lesson's pinned teacher wins over the child's curren
   assert.equal(teacherForLesson({ ...kid, teacher_id: "asha" }, "arjun").voice, teacherFor({ id: "b", class_level: 7 }).voice);
   assert.equal(teacherForLesson(kid, null).id, "asha", "a lesson without a pin falls back to teacherFor");
   assert.equal(teacherForLesson(kid, "zed").id, "asha");
+});
 });
