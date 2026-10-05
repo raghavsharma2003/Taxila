@@ -38,6 +38,13 @@ Node ids: `owner-reset-2026-10-04`, `owner-test-0-of-100-2026-10-04`, `rj-plumbi
     that re-decides every sub-second mini-turn and listens while she speaks. Generation stays cascaded; the decision engine is ours.
     Silence is only a feature and a backstop (`owner-duplex-no-silence-gate-2026-10-04`).
 
+17. **Speculative parallel content: duplex for Studio (2026-10-05).** While the conversation runs, build several candidate pieces in
+    parallel (games, animations, whiteboard, images, pages). Use the lesson plan ahead, the child's partial intent, their signals and what they
+    ask for. Keep re-ranking and invalidating them as the conversation changes, and show the student the right one at the right moment, without
+    fail. Never show a stale or wrong piece, and never show build state.
+18. **Focus (2026-10-05).** Diya is the final voice for now. The weekly model scout is paused until the app is properly done. All effort goes to
+    completing the product: duplex, voice-feature use, speculative content build and showcase, the 2D face, interaction and every screen.
+
 ## What changes in how we work
 - Acceptance = real child-like sessions judged on experience (transcripts reviewed), plus the owner's own test. Plumbing batteries are necessary,
   never sufficient (`rj-plumbing-batteries-as-acceptance`).

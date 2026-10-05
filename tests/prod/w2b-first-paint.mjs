@@ -16,6 +16,7 @@ const TOPICS = process.env.W2B_TOPICS ? process.env.W2B_TOPICS.split(",") : ["c6
 const LINES = ["haan, main ready hoon", "ok", "haan", "samjhao na", "ok", "theek hai", "haan", "ok"];
 const PROBE = process.env.TAXILA_PROBE === "1";   // set by the Azure probe fleet: the timing gate applies
 const times = [];
+const liveBoards = [];
 
 for (const topicId of TOPICS) {
   const classLevel = Number(topicId.match(/^c(\d)/)[1]);
@@ -26,7 +27,8 @@ for (const topicId of TOPICS) {
       page.on("response", async (res) => {
         if (!res.url().includes("/api/lesson/turn") || explainAt) return;
         const j = await res.json().catch(() => null);
-        if (j?.move?.kind === "explain") explainAt = { t: Date.now(), mount: (j.moduleCommands ?? []).find((c) => c.op === "mount")?.engine ?? null };
+        if (j?.move?.kind === "explain") explainAt = { t: Date.now(), mount: (j.moduleCommands ?? []).find((c) => c.op === "mount")?.engine ?? null,
+          liveBoard: j.ui?.tray === "studio" && /:wb:/.test(j.ui?.studioSlot?.intentId ?? "") };
       });
       await page.goto(`${BASE}/c/${child.id}/lesson/new?mode=text&topic=${topicId}`, { waitUntil: "domcontentloaded" });
       await page.waitForSelector('[data-testid="lesson"]', { timeout: 45_000 });
@@ -50,6 +52,26 @@ for (const topicId of TOPICS) {
       }
       if (!explainAt) { warn(`${topicId}: no explain move reached`); return; }
       const engine = explainAt.mount;
+      if (!engine && explainAt.liveBoard) {
+        // W2 integration: Studio took the explain beat's whiteboard ask, so the live board (W2-E/F) replaces this rung and the
+        // rung rides along as the slot's fallback. Its arrival includes the planner (W2-F bar: ≤ 6 s after the reply), so it
+        // is reported apart from the 300 ms client-paint gate; it must draw INSIDE the stage box, inside the tray.
+        const drawn = await page.waitForSelector('[data-testid="tray"][data-kind="studio"] [data-testid="studio-stage"][data-kind="whiteboard"] svg', { timeout: 12_000 }).catch(() => null);
+        const ms = Date.now() - explainAt.t;
+        ok(!!drawn, `${topicId}: the live board (or its template fallback) is drawn in the Studio stage (${drawn ? `${ms} ms after the reply` : "none in 12 s"})`);
+        if (drawn) {
+          liveBoards.push(ms);
+          const fit = await page.evaluate(() => {
+            const tray = document.querySelector('[data-testid="tray"]')?.getBoundingClientRect();
+            const box = document.querySelector('[data-testid="studio-box"]')?.getBoundingClientRect();
+            const svg = document.querySelector('[data-testid="studio-stage"] svg')?.getBoundingClientRect();
+            const inside = (a, b) => !!a && !!b && a.left >= b.left - 1 && a.top >= b.top - 1 && a.right <= b.right + 1 && a.bottom <= b.bottom + 1;
+            return { boxInTray: inside(box, tray), svgInBox: inside(svg, box), w: Math.round(svg?.width ?? 0), h: Math.round(svg?.height ?? 0) };
+          });
+          ok(fit.boxInTray && fit.svgInBox, `${topicId}: the board sits inside the stage and the stage inside the tray (${fit.w}x${fit.h})`);
+        }
+        return;
+      }
       ok(!!engine, `${topicId}: the explain turn mounts a rung (${engine ?? "none"})`);
       if (!engine) return;
       const iframe = await page.waitForSelector(`[data-testid="tray"][data-kind="module"] iframe[data-engine="${engine}"]`, { timeout: 15_000 }).catch(() => null);
@@ -66,10 +88,12 @@ for (const topicId of TOPICS) {
   }, { child: { classLevel }, tag: "w2b-paint" });
 }
 
+if (liveBoards.length) console.log(`live board arrival after the explain response: n=${liveBoards.length} ${[...liveBoards].sort((a, b) => a - b).join(", ")} ms (W2-F bar ≤ 6000)`);
+ok(liveBoards.every((ms) => ms <= 6000), `every live board arrived ≤ 6 s after the reply (${liveBoards.length} boards)`);
 const s = [...times].sort((a, b) => a - b);
 const p90 = s.length ? s[Math.min(s.length - 1, Math.ceil(0.9 * s.length) - 1)] : null;
 console.log(`first paint after the explain response: n=${s.length} p50=${s[Math.floor(s.length / 2)] ?? "-"} p90=${p90 ?? "-"} ms`);
 // The paint is CLIENT work (the turn response is in hand; with the spare frame adopted no fetch is on the path), so the
 // 300 ms gate applies everywhere: the probe fleet adds nothing to it (W2-B fixer, major 4)
-ok(p90 !== null && p90 <= 300, `first paint p90 ≤ 300 ms after the explain response (${p90} ms, n=${s.length}${PROBE ? ", probe fleet" : ""})`);
+ok(p90 === null ? liveBoards.length > 0 : p90 <= 300, `first paint p90 ≤ 300 ms after the explain response (${p90} ms, n=${s.length}${PROBE ? ", probe fleet" : ""})`);
 done();

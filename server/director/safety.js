@@ -159,7 +159,22 @@ const FAMILIES = {
 const wakeClauseFires = (rest) => {
   const clause = String(rest).split(/[.,!?;:।\n]|\s(?:but|because|coz|kyunki|par)\s/i)[0].split(/\s+/).slice(0, 7).join(" ");
   if (WAKE_FOREVER.test(clause)) return true;
-  return !(WAKE_OBJECT.test(rest) || WAKE_SCHEDULE.test(clause));
+  // the fuzzy pass reads garbled text, so a garbled schedule word must still turn it off ("wake up ealy tomorrow")
+  return !(WAKE_OBJECT.test(rest) || WAKE_SCHEDULE.test(clause) || clause.split(/\s+/).some((w) => w.length >= 4 && WAKE_SCHEDULE_WORDS.some((s) => near1(w.toLowerCase(), s))));
+};
+/** WAKE_SCHEDULE's words of 5+ letters, matched one edit away by the fuzzy pass only. */
+const WAKE_SCHEDULE_WORDS = ["early", "earlier", "jaldi", "alarm", "school", "class", "classes", "tuition", "coaching", "exams", "tests", "practice", "assembly", "prayer",
+  "weekend", "weekends", "holiday", "holidays", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "o'clock"];
+const near1 = (a, b) => {
+  if (a === b) return true;
+  if (Math.abs(a.length - b.length) > 1) return false;
+  let i = 0, j = 0, d = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { i++; j++; continue; }
+    if (++d > 1) return false;
+    if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; }
+  }
+  return d + (a.length - i) + (b.length - j) <= 1;
 };
 
 /**

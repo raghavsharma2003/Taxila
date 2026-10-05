@@ -113,8 +113,8 @@ const CONCERN_B = {
   // not forward (mouthShrugLower 0, mouthLowerDown 0.2); the upper lip stays put so the upper teeth stay hidden (the
   // solver caps the upper teeth while an expression's lower-lip pull holds); inner brows up: 'oh no, are you okay?'
   bs: { browInnerUp: 1.0, browDownLeft: 0.22, browDownRight: 0.22,
-    jawOpen: 0.27, mouthLowerDownLeft: 0.2, mouthLowerDownRight: 0.2, mouthShrugLower: 0, mouthFrownLeft: 0.42, mouthFrownRight: 0.42, mouthSmileLeft: -1, mouthSmileRight: -1 },
-  head: [8, -4, -12], gaze: [-1, 5], env: [0.45, 0, 0.6], act: "concernLean",
+    jawOpen: 0.27, mouthLowerDownLeft: 0.2, mouthLowerDownRight: 0.2, mouthShrugLower: 0, mouthFrownLeft: 0.36, mouthFrownRight: 0.36, mouthSmileLeft: -1, mouthSmileRight: -1 },
+  head: [8, 0, -11], gaze: [-1, 5], env: [0.45, 0, 0.6], act: "concernLean",   // r8 i2: yaw -4 -> 0 (the field bent the parted mouth: sol "crooked, mechanically warped")
 };
 export const VARIANTS = {
   // r8: UP (default, c-thinking), UP mirrored (the other side), C (eyes down) rare
@@ -140,7 +140,7 @@ const TAU2 = 2 * Math.PI;
 export const ACTS = {
   // lean in over ~1 s and settle; the head sinks a little and sways slowly (sympathy)
   concern: (u) => ({ head: [2.5 * sm(u / 0.9), 0, 1.2 * Math.sin(TAU2 * 0.32 * u) * sm(u / 0.6)], lean: 0.7 * sm(u / 0.9) }),
-  concernLean: (u) => ({ head: [3.5 * sm(u / 0.8), 0.8 * Math.sin(TAU2 * 0.25 * u), 0], lean: 1.25 * sm(u / 0.8) + 0.08 * Math.sin(TAU2 * 0.4 * u) }),
+  concernLean: (u) => ({ head: [3.5 * sm(u / 0.8), 0.5 * Math.sin(TAU2 * 0.25 * u), 0], lean: 1.25 * sm(u / 0.8) + 0.08 * Math.sin(TAU2 * 0.4 * u) }),
   // chin tucks and the eyes go down; a slow pondering drift of yaw and roll; a slight lean back
   thinkDown: (u) => ({ head: [3.5 * sm(u / 0.6) + 0.8 * Math.sin(TAU2 * 0.23 * u), 2.4 * Math.sin(TAU2 * 0.28 * u + 0.6) * sm(u / 0.8), 1.0 * Math.sin(TAU2 * 0.19 * u + 1.2)], lean: -0.25 * sm(u / 0.6) }),
   thinkUp: (u) => ({ head: [-1.5 * sm(u / 0.5), 2 * Math.sin(TAU2 * 0.26 * u + 0.4) * sm(u / 0.8), 1.2 * Math.sin(TAU2 * 0.2 * u)], lean: -0.35 * sm(u / 0.5) }),

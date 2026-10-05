@@ -196,6 +196,8 @@ void main(){
     t = mix(t, vec3(0.84, 0.47, 0.47), 0.5);
     t *= mix(0.97, 1.07, smoothstep(0.0, 0.8 * max(h, 0.5), h - db));
     t *= mix(1.0, 0.8, smoothstep(30.0, 70.0, gap));   // a tall opening (surprise): the tongue lies low, in shadow
+    // r8: ... and stays WARM in that shadow (the pink x 0.8 read lilac-grey at the bottom of the surprise O at full size)
+    t = mix(t, t * vec3(1.1, 0.92, 0.8), smoothstep(30.0, 70.0, gap));
     if (isTip) {
       // r5: a saturated pink lobe, lighter than the cavity and redder than the orange lip
       t = mix(t, vec3(0.80, 0.40, 0.44), 0.55);

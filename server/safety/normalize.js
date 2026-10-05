@@ -35,10 +35,10 @@ export function foldUnicode(text) {
  * The first-pass families' second reading: foldUnicode, lower case, every mark except a word-internal apostrophe a space
  * (danda included), Latin letter runs of 3+ one letter, repeated combining marks one. Letters and digits are kept.
  */
-export function foldText(text) {
-  return foldUnicode(text).toLowerCase()
-    .replace(/(\p{M})\1+/gu, "$1")
-    .replace(/([a-z])\1{2,}/g, "$1")
+export function foldText(text, { runs = true } = {}) {
+  const s = foldUnicode(text).toLowerCase().replace(/(\p{M})\1+/gu, "$1");
+  // the fuzzy matcher keeps letter runs (its own edit distance reads "jaaa" as one letter from "jaana")
+  return (runs ? s.replace(/([a-z])\1{2,}/g, "$1") : s)
     .replace(/(?<![\p{L}\p{M}\p{N}])'|'(?![\p{L}\p{M}\p{N}])/gu, " ")
     .replace(/[^\p{L}\p{M}\p{N}']+/gu, " ").replace(/\s+/g, " ").trim();
 }

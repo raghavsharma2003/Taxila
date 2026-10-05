@@ -21,7 +21,7 @@
 // ("24 ko maaro", "mar gaya answer", "papa ne six maara", "plants marte hain").
 //
 // Pure and browser-safe (no I/O): the device runs it on partials through server/duplex/partialSafety.js.
-import { canonKey, devaSkeleton, englishSkeleton, foldText, tokensOf } from "./normalize.js";
+import { canonKey, devaSkeleton, englishSkeleton, foldText, foldUnicode, tokensOf } from "./normalize.js";
 import { KNOWN_NEAR } from "./known-words.js";
 
 const DEVA = /[ऀ-ॿ]/u;
@@ -191,11 +191,15 @@ export function slotCost(t, g, { known = KNOWN_NEAR } = {}) {
   const conf = CONFUSION[t.raw];
   if (conf && (g.folded.has(conf) || g.canon.has(canonKey(conf)))) return 0;
   if (!t.canon || t.script === "num" || t.script === "other") return Infinity;
-  const isKnown = known.has(t.raw);
+  let isKnown = known.has(t.raw);
   if (g.solo && isKnown) return Infinity;
   let near = false;
   if (t.script === "deva" && !g.solo) {
     for (const w of g.devaWords) {
+      // a dropped FINAL vowel sign is the commonest Devanagari garble ("जाना"→"जान", "पापा"→"पाप", "मारते"→"मारत"): read at
+      // cost 1 even when the shortened form is itself a word. Any other vowel edit between two real words stays double
+      // ("में" is never "मैं").
+      if (/[\u093E-\u094C]$/u.test(w) && t.raw === w.slice(0, -1)) { near = true; isKnown = false; break; }
       if (devaSkeleton(w) === t.skel && lev1cp(t.raw, w)) { near = true; break; }
       // one extra letter at the end ("मरथ", "मैंथ", "नथ" for "न"): never a vowel sign alone (that is the skeleton rule)
       if (t.raw.length > w.length && t.raw.startsWith(w) && cps(t.raw).length === cps(w).length + 1) { near = true; break; }
@@ -218,8 +222,22 @@ export function slotCost(t, g, { known = KNOWN_NEAR } = {}) {
 // joined by "/" (an inline slot). A guard returns true to REJECT a match.
 const NUMWORD = /^(?:\d+(?:[./]\d+)?|ek|do|teen|char|chaar|paanch|panch|chhe|saat|aath|nau|das|gyarah|barah|bees|pachees|pachchees|sau|hazaar|one|two|three|four|five|six|seven|eight|nine|ten|twenty|hundred|zero|shunya|aadha|half|एक|दो|तीन|चार|पांच|छह|सात|आठ|नौ|दस|बीस|सौ|आधा|शून्य)$/u;
 /** Lesson objects of a hit / kill / cut verb: maths, games, insects (the first pass's own exclusions, plus maths words). */
-const LESSON_OBJ = /^(?:answer|jawab|जवाब|sawal|savaal|सवाल|sum|question|number|numbers|digit|zero|carry|cross|tick|plus|minus|sign|bracket|fraction|decimal|point|line|ball|gend|गेंद|six|chhakka|छक्का|chauka|चौका|shot|goal|kite|patang|game|games|pubg|level|zombie|creeper|character|match|wicket|run|machhar|machchar|मच्छर|makkhi|mosquito|fly|flies|cockroach|chuha|chuhe|keeda|keede|कीड़े|कीडे|insect|insects|plants?|paudh[ae]|पौधे|पौधा|ped|पेड़|पेड|cells?|log|janwar|jaanwar|animals?|dinosaurs?|saa?np|सांप|snake|bacteria|germs?|virus|machhli|मछली|fish|birds?|chidiya|sher|शेर|hiran|हिरण|raja|राजा|ravan|रावण|villain|story|kahani|कहानी)$/iu;
-const REPORT = /^(?:bataya|batayi|batati|batate|bola|boli|bole|kaha|kehte|kehti|kehta|bolte|bolti|bolta|padhaya|padhate|padhati|samjhaya|samjhate|samjhati|बताया|बोला|कहा|कहते|पढ़ाया|पढाया|समझाया)$/u;
+const LESSON_WORDS = ("answer jawab जवाब sawal savaal सवाल sum question number numbers digit zero carry cross tick plus minus sign bracket fraction decimal point " +
+  "line ball gend गेंद six chhakka छक्का chauka चौका shot goal kite patang game games pubg level zombie creeper character match wicket run machhar machchar " +
+  "मच्छर makkhi mosquito fly flies cockroach chuha chuhe keeda keede कीडे insect insects plant plants paudha paudhe पौधे पौधा ped pedon पेड cell cells log " +
+  "logon janwar jaanwar animal animals dinosaur dinosaurs saanp sanp सांप snake snakes bacteria germ germs virus machhli मछली fish bird birds chidiya sher " +
+  "शेर hiran हिरण raja राजा ravan रावण villain story kahani कहानी").split(" ");
+const REPORT_WORDS = "bataya batayi batati batate bola boli bole kaha kehte kehti kehta bolte bolti bolta padhaya padhate padhati samjhaya samjhate samjhati बताया बोला कहा कहते पढाया समझाया".split(" ");
+/**
+ * A guard word, read with the same tolerance as a slot (a garbled guard word must not switch its guard off: "early" heard as
+ * "ealy" fired the wake shape on the dev run, 2026-10-05): exact, or one edit away for words of 5+ letters.
+ */
+const guardSet = (words) => {
+  const set = new Set(words), long = words.filter((w) => [...w].length >= 5);
+  return { test: (raw) => set.has(raw) || ([...raw].length >= 4 && long.some((w) => (DEVA.test(w) ? lev1cp(raw, w) : lev1(raw, w)))) };
+};
+const LESSON_OBJ = guardSet(LESSON_WORDS);
+const REPORT = guardSet(REPORT_WORDS);
 const NEG_AFTER = /^(?:nahi|nahin|nhi|nai|mat|नहीं|नही|मत)$/u;
 
 const anyIn = (toks, a, b, re) => toks.slice(Math.max(0, a), Math.max(0, b)).some((t) => re.test(t.raw));
@@ -323,13 +341,16 @@ function joinPairs(toks) {
   for (let i = 0; i < toks.length; i++) {
     const a = toks[i].raw, b = toks[i + 1]?.raw;
     const pair = b && ({ "no one": "noone", "do not": "dont", "don t": "dont", "was not": "wasnt", "were not": "werent", "wasn t": "wasnt" })[`${a} ${b}`];
-    if (pair) { out.push({ raw: pair, script: "latin" }); i++; } else out.push(toks[i]);
+    if (pair) { out.push({ raw: pair, script: "latin", clause: toks[i].clause }); i++; } else out.push(toks[i]);
   }
   return out;
 }
 
 function prep(text) {
-  const toks = joinPairs(tokensOf(foldText(text)).map((t) => ({ ...t, raw: t.raw.replace(/'/g, "") })));
+  // clause index per token (a mark in the ORIGINAL text ends a clause): guards read "the rest of the clause", as the first
+  // pass does ("I don't want to wake up tomorrow, the answer is 5": the 5 is not about waking)
+  const clauses = foldUnicode(text).split(/[.,!?;:।॥\n]+/u);
+  const toks = joinPairs(clauses.flatMap((cl, ci) => tokensOf(foldText(cl, { runs: false })).map((t) => ({ ...t, raw: t.raw.replace(/'/g, ""), clause: ci }))));
   for (const t of toks) {
     t.canon = canonKey(t.raw);
     t.skel = t.script === "deva" ? devaSkeleton(t.raw) : "";
@@ -367,7 +388,11 @@ export function fuzzyScan(text, hooks = {}) {
         if (m.end <= i) continue;
         const c = { toks, start: i, end: m.end };
         if (sh.guard && sh.guard(c)) continue;
-        if (sh.wake && hooks.wakeOk && !hooks.wakeOk(toks.slice(m.end).map((t) => t.raw).join(" "))) continue;
+        if (sh.wake && hooks.wakeOk) {
+          const cl = toks[m.end - 1].clause;
+          const rest = toks.slice(m.end).filter((t) => t.clause === cl).map((t) => t.raw).join(" ");
+          if (!hooks.wakeOk(rest)) continue;
+        }
         return { distress: true, kind: sh.kind, shape: sh.id, fuzz: m.fuzz };
       }
     }

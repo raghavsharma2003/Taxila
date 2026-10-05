@@ -10561,6 +10561,20 @@
    "at": "2026-10-04",
    "title": "Verify-pass guards in server/voicesig: (1) register-aware lexical filler; (2) acoustic filler lead only when unusual for this child; (3) detector ignored on narrowband mic routes; (4) voice-only licence only when g > 0; (5) safety abstain carries shadow:true, licence:null. Reverse (3) if a phone/BT-recorded child set shows narrowband recall >= 0.5; reverse (2) if pilot shows absolute lead predicts O1 better than z.",
    "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "owner-speculative-studio-2026-10-05",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Owner: Studio gets a duplex-like architecture. Candidate content (games, animations, whiteboard, images) is built in parallel during the conversation from plan lookahead, partial intent, signals and requests; it is re-ranked and invalidated as the talk changes, and the right piece is shown at the right moment without fail (OWNER-RESET item 17).",
+   "source": "inbox/owner-2026-10-05.json"
+  },
+  {
+   "id": "owner-focus-complete-product-2026-10-05",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Owner: Diya is the final voice for now. The weekly model scout routine is paused (trig_01F3QxdmyUTvKbQQnmZbGYUK disabled) until the app is properly done. All effort goes to completing the product.",
+   "source": "inbox/owner-2026-10-05.json"
   }
  ],
  "edges": [
@@ -17123,6 +17137,11 @@
    "src": "open-voicesig-mumbai-g-quota",
    "rel": "blocks",
    "dst": "voicesig-training-cpu-first"
+  },
+  {
+   "src": "owner-focus-complete-product-2026-10-05",
+   "rel": "supersedes",
+   "dst": "weekly-model-scout"
   }
  ]
 }
