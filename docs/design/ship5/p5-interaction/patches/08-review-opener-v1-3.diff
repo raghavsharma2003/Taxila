@@ -1,0 +1,61 @@
+--- a/server/learner/live.js
++++ b/server/learner/live.js
+@@ -17,7 +17,7 @@
+ import { fuseEvidence, newLearnerState, beliefFor } from "../comprehension/index.js";
+ import { eventFromRow } from "./model.js";
+ import { fromLegacyEvidence, teachEvent } from "./kt/adapter.js";
+-import { readSkill, rank, ktView, checkDayOk } from "./kt/ledger.js";
++import { readSkill, rank, ktView, DELAY_MS } from "./kt/ledger.js";
+ 
+ /** One FoldCtx for the online fold AND every replay (a different ctx would make them differ). */
+ export const LIVE_FOLD_CTX = Object.freeze({});
+@@ -235,7 +235,11 @@
+   const view = ktView(ledger, { now });
+   const ids = new Set(view.due(k * 3));
+   for (const sk of Object.values(ledger.skills)) {
+-    if (rank(sk.display) >= rank("learned_today") && !sk.flags.delayed && checkDayOk(sk.anchorAt, t)) ids.add(sk.skillId);
++    // p5-interaction (w1c-three-day, "+1 day: the delayed check leads the next lesson"): the opener is due 20 h after the
++    // anchor, as before V1-10. What changed with V1.3 is what it COUNTS for: before 2 learning days it is a review of an item
++    // the child has met (server/learner/checks.js), which never certifies; from 2 days on, the certifying check on a new item
++    // (kt/ledger.js advanceDisplay: checkDayOk + novel).
++    if (rank(sk.display) >= rank("learned_today") && !sk.flags.delayed && sk.anchorAt && t - new Date(sk.anchorAt).getTime() >= DELAY_MS) ids.add(sk.skillId);
+   }
+   return [...ids].map((id) => readSkill(ledger.skills[id], now)).filter(Boolean)
+     .sort((a, b) => a.retention - b.retention || (a.skillId < b.skillId ? -1 : 1)).map((s) => ({ skillId: s.skillId, retention: s.retention }));
+--- a/server/learner/checks.js
++++ b/server/learner/checks.js
+@@ -9,6 +9,7 @@
+ import { getKit } from "../content/index.js";
+ import { LIMITS } from "../director/state.js";
+ import { checkReserveIds } from "../director/items.js";
++import { checkDayOk } from "./kt/ledger.js";
+ 
+ const CHECK_KINDS = ["near_transfer", "practice", "retrieval"];
+ const topicOf = (skillId) => String(skillId).replace(/-s\d+$/, "");
+@@ -18,7 +19,7 @@
+  * @param {string[]} skillIds the openers planChecks chose @param {{ ledger: any }} o
+  * @returns {Promise<any[]>} warm-up items, tagged kind "retrieval" for the Director (it poses them as the session's openers)
+  */
+-export async function warmupItemsFor(skillIds, { ledger } = {}) {
++export async function warmupItemsFor(skillIds, { ledger, now = Date.now() } = {}) {
+   const out = [];
+   for (const skillId of skillIds.slice(0, LIMITS.warmupMax)) {
+     const topicId = topicOf(skillId);
+@@ -26,6 +27,17 @@
+     if (!kit) continue;
+     const seen = new Set(ledger?.skills?.[skillId]?.items ?? []);
+     const all = kit.items.filter((i) => i.skillId === skillId && CHECK_KINDS.includes(i.kind));
++    // p5-interaction: before 2 learning days (V1.3) the opener is a REVIEW (spaced retrieval) of an item the child has met —
++    // never the reserve, which is kept for the certifying check; the ledger does not count it as the check either way
++    const anchorAt = ledger?.skills?.[skillId]?.anchorAt ?? null;
++    if (anchorAt && !checkDayOk(anchorAt, new Date(now).toISOString())) {
++      const reservedR = checkReserveIds(kit);
++      const met = all.filter((i) => seen.has(i.id) && !reservedR.has(i.id)).sort((a, b) => (a.difficulty ?? 3) - (b.difficulty ?? 3));
++      const r = met[0] ?? all.filter((i) => !reservedR.has(i.id)).sort((a, b) => (a.difficulty ?? 3) - (b.difficulty ?? 3))[0];
++      if (r) out.push({ ...r, kind: "retrieval", checkKind: r.kind, review: true, topicId, topicType: kit.topicType, kitVerified: kit.verified, expectations: kit.expectations,
++        misconceptions: kit.misconceptions.filter((m) => m.id === r.targetsMisconception).map((m) => ({ id: m.id, belief: m.belief, signs: m.signs, remediation: m.remediation })) });
++      continue;
++    }
+     const metDiff = median(all.filter((i) => seen.has(i.id)).map((i) => i.difficulty ?? 3)) ?? 1;
+     const reserved = checkReserveIds(kit);
+     const fresh = all.filter((i) => !seen.has(i.id)).sort((a, b) => reserved.has(b.id) - reserved.has(a.id));

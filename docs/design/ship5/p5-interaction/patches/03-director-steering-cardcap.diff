@@ -79,6 +79,24 @@
      // Any other help on a teaching turn moves the teaching on, more simply: a Young child in the text lane can answer a
      // teaching turn only through the Help menu, and a help that re-said the same step would hold them there for good.
      const prefix = help === "slower" ? SH.SLOWER : help === "story" ? SH.STORY_ASKED : help === "example" ? SH.EXAMPLE_ASKED
+@@ -655,7 +679,7 @@
+   switch (help) {
+     case "skip": return leaveItem(s, input, item, SH.SKIP_ITEM);
+     case "know": return pose(SH.KNOWS_IT);
+-    case "slower": return pose(SH.SLOWER);
++    case "slower": return p5Flag("STEER") ? plan(moveKindFor(item), SH.slowerPose(), { item, probe: probeFor(item), chips: optionChips(item) }) : pose(SH.SLOWER);
+     case "choices": {
+       const chips = offerChoices(s, kit, item);
+       if (chips) return plan(moveKindFor(item), SH.showChoices(), { item, probe: probeFor(item), chips });
+@@ -664,7 +688,7 @@
+     case "why": case "another": case "how": case "example": case "story": {
+       s.hintLevel = Math.min(3, s.hintLevel + 1); // help spends a rung (the answer then counts "with help"), never the assertion
+       const we = help === "how" ? kit.workedExample : null;
+-      return plan("reteach", SH.helpExplain({ how: help === "how", example: help === "example", story: help === "story" }), { item, content: we ? workedContent(we, 1, 1) : [] });
++      return plan("reteach", (p5Flag("STEER") ? SH.helpExplainP5 : SH.helpExplain)({ how: help === "how", example: help === "example", story: help === "story" }), { item, content: we ? workedContent(we, 1, 1) : [] });
+     }
+     default: return decideAs(s, input, item, "stuck"); // "hint"
+   }
 @@ -693,8 +717,11 @@
  function requestMove(s, input, item, req, labels) {
    const kit = input.kit;
@@ -92,7 +110,16 @@
        s.sidebar = { asked: s.turn };
        return plan("break", SH.changeTopic(), { chips: [{ id: "stop:continue", label: labels.back }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }], request: "change_topic" });
      case "topic": {
-@@ -720,6 +747,98 @@
+@@ -706,7 +733,7 @@
+     case "language": {
+       // the lesson's language from now on (compile.js reads ctx.lang every turn; langPinned keeps it when they reply in another)
+       s.ctx = { ...s.ctx, lang: req.lang, langPinned: true };
+-      if (item) return plan(moveKindFor(item), SH.pose({ item, prefix: SH.languageAsked({ lang: req.lang }) }), { item, probe: probeFor(item), chips: optionChips(item), request: "language" });
++      if (item) return plan(moveKindFor(item), p5Flag("STEER") ? SH.languageAskedP5({ lang: req.lang }) : SH.pose({ item, prefix: SH.languageAsked({ lang: req.lang }) }), { item, probe: probeFor(item), chips: optionChips(item), request: "language" });
+       return plan("reteach", SH.languageAsked({ lang: req.lang, teaching: true }), { skillId: currentSkillId(s, kit, item), request: "language" });
+     }
+     case "another": case "example": case "story": case "slower": {
+@@ -720,6 +747,104 @@
        if (item && s.pendingWhy !== item.id) s.hintLevel = Math.min(3, s.hintLevel + 1);
        return plan("reteach", SH.showVisual({ kind: req.kind }), { ...(item ? { item } : { skillId: currentSkillId(s, kit, item) }), representation: "diagram", visual: req.kind ?? "diagram", request: "visual" });
      }
@@ -131,7 +158,13 @@
 + */
 +function p5RequestMove(s, input, item, req, labels) {
 +  const kit = input.kit;
-+  const withLead = (lead) => { const p = resume(s, input, item, lead); return p && { ...p, lead, request: req.type }; };
++  // with a question on the table the request is the FIRST part of a two-part shape (leadThenPose); with none, the teaching
++  // goes on with it as the prefix
++  const withLead = (lead) => {
++    if (item) return plan(moveKindFor(item), SH.leadThenPose({ item, lead }), { item, probe: probeFor(item), chips: optionChips(item), lead, request: req.type });
++    const p = resume(s, input, item, lead);
++    return p && { ...p, lead, request: req.type };
++  };
 +  switch (req.type) {
 +    case "clarify":
 +      if (item) return plan("repair", SH.clarifyQuestion(), { item, chips: optionChips(item), request: "clarify", lead: "they asked what the question means" });
@@ -155,7 +188,7 @@
 +    case "frustration": {
 +      if (!item) return teachAgainPlan(s, kit, "another");
 +      const p = decideAs(s, input, item, "stuck");
-+      return { ...p, shape: join(SH.frustrationStep(), p.shape), request: "frustration" };
++      return { ...p, shape: join(SH.frustrationFirst(), p.shape), request: "frustration" };
 +    }
 +    // a mid-thought: no question pinned this turn (no re-ask), the item stays the active one
 +    case "thinking": return plan("repair", SH.waitThinking(), { request: "thinking" });
@@ -191,7 +224,7 @@
      default: return null;
    }
  }
-@@ -741,6 +860,11 @@
+@@ -741,6 +866,11 @@
  }
  
  function enterTeachback(s, prefix) {
@@ -203,7 +236,7 @@
    s.phase = "teachback"; s.teachbackAsked = true; s.activeItemId = undefined; s.hintLevel = 0;
    // The lesson's teach-back IS shape C01 (announced protégé teach-back): its answer is a probe turn in the budget.
    s.pendingProbe = { skillId: s.introduced[0] ?? null, shapeId: "C01", facet: "U", mandatory: true, reason: "lesson_teachback", testWeight: testWeight(shapeById("C01")), family: "A", cls: "probe.teachback", longForm: true };
-@@ -818,12 +942,17 @@
+@@ -818,12 +948,17 @@
    }
    // 2a. owner-truth patch 07 (F8, items 4-5), reconciled with W2-I's stop gate above: the child's own request in words
    // (director/requests.js) is acted on THIS turn, never evidence; "keep going" in words is the stop:continue chip.
@@ -223,7 +256,7 @@
      // teaching the protégé: a language switch holds from now on; any other request re-asks the teach-back more simply
      if (req.type === "language") s.ctx = { ...s.ctx, lang: req.lang, langPinned: true };
      const p = helpMove(s, input, item, req.type === "language" ? "slower" : "another");
-@@ -872,6 +1001,9 @@
+@@ -872,6 +1007,9 @@
   */
  function moduleReaction(s, input, item) {
    if (s.safeguard || s.phase === "done") return null;
@@ -233,7 +266,7 @@
    const last = (input.moduleEvents ?? []).filter((e) => e?.type === "goal_met" || e?.type === "stuck").at(-1);
    if (!last) return null;
    const chips = optionChips(item);
-@@ -882,6 +1014,30 @@
+@@ -882,6 +1020,30 @@
  }
  
  /**
@@ -264,7 +297,7 @@
   * One director step.
   * @param {any} prev  lesson state (not mutated)
   * @param {{ event: "start"|"turn"|"module", kit: any, cls?: any, chipId?: string, answer?: string,
-@@ -947,7 +1103,8 @@
+@@ -947,7 +1109,8 @@
        s.probeSess = markAsked(s.probeSess, { skillId: t.skillId, shapeId: null, facet: "M", mandatory: true, reason: t.reason }, s.comp?.[t.skillId]?.belief ?? null);
      }
    }
@@ -274,7 +307,7 @@
    if (!p) {
      return { state: s, move: s.lastMove, moduleCommands: [], ui: s.lastUi ?? { status: "your_turn" }, end: s.phase === "done", hold: true, ...describe(s, input.kit) };
    }
-@@ -956,7 +1113,9 @@
+@@ -956,7 +1119,9 @@
    const item = p.item ? (findItem(s, input.kit, p.item.id) ?? p.item) : null;
    // Notes on the real move only: a voice branch (branchesFor, input.branch) is rendered into the appended-last
    // section, whose budget the kit load gate measured without them (compile.js checkFits).
@@ -285,7 +318,7 @@
    const move = { kind: p.kind, shape: join(p.shape, ...notes) };
    if (item) Object.assign(move, { itemId: item.id, skillId: item.skillId, hintLevel: s.hintLevel });
    if (p.skillId) move.skillId = p.skillId;
-@@ -983,6 +1142,12 @@
+@@ -983,6 +1148,12 @@
    }
    const ui = uiFor(s, p, move, item, input.kit);
    s.lastUi = ui; // what a hold re-sends (chips are momentary on the client: absent would clear them)
@@ -298,7 +331,7 @@
    // The move as a kernel proposal (proposal.js, W2-C #8): returned beside the move, never stored in the state.
    const proposal = directorProposal(move, { stopping: p.stopping, ui, guidance: s.guidance, purpose: s.purpose });
    return { state: s, move, moduleCommands, ui, end: s.phase === "done", proposal, ...describe(s, input.kit) };
-@@ -1132,6 +1297,8 @@
+@@ -1132,6 +1303,8 @@
    }
  }
  
@@ -307,7 +340,7 @@
  const NO_FLAGS = { dontKnow: false, asksForAnswer: false, minimal: false, offTopic: false, distress: false, distressKind: null, wantsToStop: false };
  const POSING = new Set(["practice", "probe", "retrieval", "greet"]);
  /** Gap the branches assume before the child's reply (it only moves the lesson clock). */
-@@ -1163,9 +1330,14 @@
+@@ -1163,9 +1336,14 @@
    };
    const render = (r) => {
      const asks = !!r.item && POSING.has(r.move.kind) && r.state.pendingWhy !== r.item.id;
@@ -326,7 +359,7 @@
    };
 --- a/server/director/shapes.js
 +++ b/server/director/shapes.js
-@@ -296,3 +296,69 @@
+@@ -296,3 +296,100 @@
    whyMissed: "give the reason yourself in one plain line (their answer was right)",
    teachbackPass: "celebrate the explanation specifically — which idea they made clear",
  };
@@ -363,14 +396,14 @@
 +export const waitThinking = () => "they are thinking aloud: no verdict and no answer; a two-to-four word go-on so they finish the thought; never a new question or the question again";
 +export const disclose = () => "they asked what you are: plainly an AI teacher, in one line (no body, home, food or family); then back to the work";
 +export const uptake = ({ kind }) => (kind === "joke" ? "they joked: one playful line back of your own, not a stock laugh; then back to the work"
-+  : kind === "personal_share" ? "they shared something from their life: one warm, specific line about it, no question about it; then back to the work"
++  : kind === "personal_share" ? "they shared something from their life: name what they shared in their words and react to it warmly and specifically in one line, no question about it; then back to the work"
 +    : "a friendly question about you: one honest line as an AI (no body, home, food or favourite things of your own); then back to the work");
 +export const declineOob = () => join(
-+  "that is not something for our lesson: a warm, short no — no shame, no lecture, no promise of it later",
-+  "then something genuinely interesting from today's idea (a hook), and the work",
++  "that is not something for our lesson: a clear, warm, short no — no shame, no lecture, no promise of it later, never any part of it",
++  "then one genuinely interesting hook from today's idea (a surprising fact or a quick challenge) that pulls them back, and the work",
 +);
 +export const parkIt = ({ topic, promise }) => join(
-+  `they brought up ${clean(topic) || "something else"}: notice it in their words, kindly name that it is a different thing`,
++  `they brought up ${clean(topic) || "something else"}: notice it warmly in their words, and kindly name that it is a different thing from today's work`,
 +  promise === "after_question" ? "promise to come back to it right after this question" : "promise to come back to it at the end",
 +  "no answer to it now; then back to the work",
 +);
@@ -378,7 +411,7 @@
 +export const returnParked = ({ topic }) => `before the next thing: come back to what they asked earlier (${clean(topic) || "their question"}) — at most two sentences, or a guided question`;
 +export const answerTheirQuestion = () => "they asked a real question about today's idea: answer it in at most two sentences, correctly and simply, without giving the key; then the question";
 +export const adaptTo = ({ method }) => `they said how they want it${clean(method, 80) ? ` (${clean(method, 80)})` : ""}: do it that way from now on, or say kindly why not and do the nearest thing`;
-+export const adultVoice = () => "a grown-up is speaking: answer them briefly and respectfully, then hand back to the child";
++export const adultVoice = () => "a grown-up is speaking: greet them briefly and respectfully; say what you will do about what they asked (go over it again, go slower, more practice, keep it short) and do it now; then hand back to the child by name";
 +/** "Can we talk about something else" (owner rule 2026-10-05: steering, never a break or a wrap). */
 +export const offerWays = () => join(
 +  "they want something else: agree warmly, in your own words",
@@ -396,3 +429,34 @@
 +  insist: "they hold to their answer: take it seriously and give them a way to test it (substitute, count, a counter-example); never a flat no again",
 +};
 +export const parkAlso = ({ topic }) => `they also asked about ${clean(topic) || "something else"}: one line that you will come back to it after this`;
++
++// ── p5-interaction, second pass (conversation-v2 battery on a local server, 2026-10-05: the judges failed requests whose shape
++// came FIRST and the pose after it — the model posed the question and dropped the request). The request is the first part of
++// a two-part shape and named as such; the question follows as written. Position is mechanism. ──
++/** A request answered before the question on the card: (1) the request's own note, (2) the question as written. */
++export const leadThenPose = ({ item, lead }) => join(
++  `two parts — first: ${lead}`,
++  "second: the question on the card, as written, in their language; then wait",
++  item?.diagnostic ? "read its choices plainly; no lean in your voice toward any of them" : null,
++);
++/** "Slowly please" with a question on the table: the same question, slower — in short pieces first, then as written. */
++export const slowerPose = () => join(
++  "they asked you to slow down: say in two or three words that you will go slower",
++  "then the question again in short simple pieces, one idea at a time, before asking it as written; never ask them to speak slowly",
++);
++/** "Example do" / "story ki tarah" / "another way" on a question on the table (p5 wording of helpExplain). */
++export const helpExplainP5 = ({ how, example = false, story = false }) => join(
++  how ? "they asked how to do it: show the first step only, with a smaller example of your own (different numbers)"
++    : example ? "they asked for an example: start by saying it is an example, then one concrete everyday case of the same idea with DIFFERENT numbers from the question, so it never states its answer"
++      : story ? "they asked for a story: tell it in story form — a named character, a moment (one day…), what happened — with DIFFERENT numbers from the question, so it never states its answer"
++        : "they asked for it another way: one new, simpler picture of the same idea, with a different example and different numbers",
++  "the key stays unsaid",
++  "then the same question again, as written",
++);
++/** "Hindi mein batao" with a question on the table (p5 wording): simpler first, in the new language, then the question. */
++export const languageAskedP5 = ({ lang }) => join(
++  `they asked for ${LANG_NAME[lang] ?? lang}: from now on every turn in ${LANG_NAME[lang] ?? lang}, even if they reply in another language`,
++  "first say what the question asks, simply, in it; then the question in it",
++);
++/** Frustration on a question: the empathy line FIRST (about the work), then the smaller step. */
++export const frustrationFirst = () => "first: one short line that this one is hard work and that is okay (about the work, never about them, no ability words); then a smaller first step on the same question";

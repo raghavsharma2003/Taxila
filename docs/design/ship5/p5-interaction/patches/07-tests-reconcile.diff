@@ -45,6 +45,15 @@
  test("F11: their interest, now — 'cricket ke baare mein baat karo' answers about cricket, never 'later'", () => {
    const r = toPractice();
    const s = turn(r, said(r, "cricket ke baare mein baat karo"));
+@@ -186,7 +199,7 @@
+   }
+   const r = toPractice();
+   const slow = turn(r, said(r, "slowly please", false));
+-  assert.match(slow.move.shape, /you go slower/);
++  assert.match(slow.move.shape, /(you|you will) go slower/, "slower (p5 slowerPose keeps the promise to go slower)");
+   assert.doesNotMatch(slow.move.shape, /say it once more, slowly/);
+   assert.match(SLOWER, /never ask them to speak slowly/);
+   assert.doesNotMatch(repairUnclear({ chips: false }), /slowly/, "F14: the unclear repair never tells the child to slow down");
 --- a/tests/state.test.mjs
 +++ b/tests/state.test.mjs
 @@ -8,6 +8,16 @@
@@ -465,3 +474,115 @@
    { id: "topic_interest", text: "cricket ke baare mein baat karo", persona: "aarav",
      check: (rep) => (/\b(cricket|bat|batting|batsman|bowler|bowling|wicket|overs?|runs?|six|sixer|four|boundary|shot|pitch|stumps|innings|captain|kohli|dhoni|ipl|match|team)\b/i.test(rep) ? null : "cricket never came up: the request was ignored") },
    { id: "differently", text: "explain it differently", persona: "zoya",
+--- a/tests/prod/owner-1-grading.mjs
++++ b/tests/prod/owner-1-grading.mjs
+@@ -166,6 +166,10 @@
+   const p = v.chosen ?? v.choice;
+   if (p != null && Array.isArray(v.fractions)) return /^\d+$/.test(String(p)) && v.fractions[Number(p)] != null ? String(v.fractions[Number(p)]) : String(p);
+   for (const k of ["value", "written", "built", "claimed", "made", "given", "product"]) if (v[k] != null && typeof v[k] !== "object") return String(v[k]);
++  // patterns@1 pat.term commits the terms typed into the blanks as an array (src/modules/frame/engines/patterns.logic.ts
++  // growCorrect): the item's key is the LAST blank's term. Before this the harness could read no patterns@1 commit at all
++  // ("not verified: patterns@1", owner-1 on prod 2026-10-05) although the frame graded every one of them.
++  if (Array.isArray(v.given) && v.given.length && v.given.every((x) => x != null && typeof x !== "object")) return String(v.given.at(-1));
+   return null;
+ }
+ const sameValue = (a, b) => { const x = numOf(a), y = numOf(b); return x != null && y != null ? Math.abs(x - y) < 1e-9 : norm(a) === norm(b); };
+--- a/tests/prod/_w1c.mjs
++++ b/tests/prod/_w1c.mjs
+@@ -51,8 +51,14 @@
+  * One child reply to the turn on the table, as a child who knows (or, with `wrong`, holds the misconception):
+  * a chip matching the answer, the kit answer typed, the topic's key idea for an open "why" question, or "go on".
+  */
+-export function replyFor(ui, topicId, { wrong = false, explain = true } = {}) {
++export function replyFor(ui, topicId, { wrong = false, explain = true, teach = false } = {}) {
+   const item = ui?.ask?.itemId ? kitItem(ui.ask.itemId) ?? fadeItemOf(ui.ask.itemId, topicId) : null;
++  // `teach`: the child teaches the protégé the big idea at the teach-back (the lesson's generative pass, ledger (b)) even
++  // when they shrug at every why (p5-interaction: without it no day-0 skill is ever learned_today, so no check is ever due)
++  if (teach && ui?.phase === "teachback") {
++    const t = kitTopic(topicId);
++    return { text: `${(t?.expectations ?? ["yeh aise hi kaam karta hai"]).slice(0, 4).map((x) => String(x).replace(/\.$/, "")).join(", aur ")}.` };
++  }
+   // a child who does the items but cannot say why (the state after a typical first lesson: shallow)
+   const SHRUG = "pata nahi, bas aise hi aata hai";
+   if (!explain && (!item || item.kind === "why" || item.kind === "teachback") && (ui?.ask?.text || item)) return { text: SHRUG };
+@@ -76,7 +82,7 @@
+  * Drive a text lesson: start (optionally on a topic), answer every turn with replyFor, wait `delayMs` before each
+  * reply (the child "thinking"), stop at `maxTurns` or the lesson's end, then end it. Returns what a test needs.
+  */
+-export async function driveLesson(api, childId, { topicId, maxTurns = 14, delayMs = 0, wrong = () => false, explain = true, end = true } = {}) {
++export async function driveLesson(api, childId, { topicId, maxTurns = 14, delayMs = 0, wrong = () => false, explain = true, teach = false, end = true } = {}) {
+   const start = await api("POST", "/api/lesson/start", { childId, mode: "text", ...(topicId ? { topicId } : {}) });
+   const lessonId = start.lessonId;
+   const asked = [];
+@@ -84,7 +90,7 @@
+   let ui = start.ui, seq = 0;
+   if (ui?.ask?.itemId) asked.push(ui.ask.itemId);
+   for (let i = 0; i < maxTurns; i++) {
+-    const rep = replyFor(ui, start.topic?.id ?? topicId, { wrong: wrong(i, ui), explain });
++    const rep = replyFor(ui, start.topic?.id ?? topicId, { wrong: wrong(i, ui), explain, teach });
+     if (delayMs) await sleep(delayMs);
+     const body = rep.chip ? { childText: rep.chip.label, chipId: rep.chip.id } : { childText: rep.text };
+     const r = await api("POST", "/api/lesson/turn", { lessonId, typed: true, asrConfidence: 0.95, turnSeq: ++seq, ...body });
+--- a/tests/prod/w1c-three-day.mjs
++++ b/tests/prod/w1c-three-day.mjs
+@@ -1,6 +1,8 @@
+-// W1-C acceptance (BUILD-PLAN §3 W1-C; comprehension audit G1, G8): "understood" needs a success ≥ 20 h after learning,
+-// so nobody could test it in one sitting. With the test clock:
+-//   day 0   a scripted lesson: right answers, but "pata nahi" to every why (the typical first-lesson child: shallow);
++// W1-C acceptance (BUILD-PLAN §3 W1-C; comprehension audit G1, G8): "understood" needs a success ≥ 2 learning days after
++// learning, on an item never met (VALUES-100 V1.3; V1-10), so nobody could test it in one sitting. With the test clock:
++//   day 0   a scripted lesson: right answers, but "pata nahi" to every why (the typical first-lesson child: shallow); the
++//           child does teach the protégé at the teach-back (the lesson's generative pass: without one no skill is ever
++//           learned_today, so no check is ever due — p5-interaction root cause of the 2026-10-05 prod 17/22);
+ //           the parent "how we know" card is NOT null (G1: it was null for every English / shallow child);
+ //   +1 day  a lesson on a DIFFERENT topic: its opener asks a day-0 item (so it can only be the C31 delayed check; with
+ //           TAXILA_DB_URL the lesson state's pendingProbe must say C31 / delayed_check), the child answers it right, and
+@@ -8,7 +10,9 @@
+ //           Whether the STATE rises above shallow on that alone is reported honestly: by the ladder (state.js) a
+ //           correct delayed check is K / D evidence, and leaving shallow needs U ≥ U_FRAGILE, i.e. a reason. If it
+ //           stays shallow the test says so (a warn naming the rule), it does not borrow the rise from reasons;
+-//   +2 days a review lesson on the day-0 topic WITH reasons: the state rises above shallow (labelled: from reasons);
++//   +2 days a review lesson on the day-0 topic WITH reasons: the state rises above shallow (labelled: from reasons); its
++//           opener is the CERTIFYING check (≥ 2 learning days) on an item the child never met (V1.3: the +1 day opener was
++//           a review of a met item, which never certifies);
+ //   +3 days a lesson on a third topic: its opener checks a day-0 skill again (delayed check / expired weave callback);
+ //   the parent card's wording changes as the state rises.
+ // And a REAL account (not @taxila.test) asking for an offset gets 403.
+@@ -59,7 +63,7 @@
+   const wording = (v) => JSON.stringify([v?.card?.rows ?? [], v?.card?.chips ?? []]);
+ 
+   // ── day 0 ──
+-  const d0 = await driveLesson(api, child.id, { topicId: DAY0, maxTurns: 18, explain: false });
++  const d0 = await driveLesson(api, child.id, { topicId: DAY0, maxTurns: 18, explain: false, teach: true });
+   ok(d0.start.status === 201, `day 0 lesson starts on ${DAY0}`);
+   const graded0 = d0.turns.filter((t) => t.verdict).length;
+   ok(graded0 >= 3, `day 0: at least 3 graded answers (${graded0}; moves ${d0.turns.map((t) => t.move).join(",")})`);
+@@ -102,6 +106,9 @@
+   await advanceClock(api, 1);
+   const d2 = await driveLesson(api, child.id, { topicId: DAY0, maxTurns: 16, explain: true });
+   ok(d2.start.status === 201, "+2 days: a review lesson starts on the day-0 topic");
++  const open2 = d2.start.ui?.ask?.itemId ?? null;
++  ok(!!open2 && !d0.asked.includes(open2) && !warmTurns.some((t) => t.item === open2),
++    `+2 days: the certifying check (≥ 2 learning days, V1.3) leads, on an item never met (${open2 ?? "none"}; met: ${[...new Set([...d0.asked, ...warmTurns.map((t) => t.item)])].length} items)`);
+   const c2 = await cards("+2 days card (after reasons)");
+   ok(best(c2) > RANK.shallow, `+2 days: with reasons given, a day-0 skill is above shallow (${states(c2)}) — from reasons, not from the delayed check`);
+ 
+@@ -112,9 +119,15 @@
+   const warm3 = s3.ui?.ask?.itemId ?? null;
+   const st3 = await lessonState(s3.lessonId);
+   const due3 = (st3?.warmup ?? []).map((w) => w.id ?? w.itemId).filter(Boolean);
+-  ok((!!warm3 && topicOfItem(warm3) === DAY0) || due3.some((id) => topicOfItem(id) === DAY0),
+-    `+3 days: the opener of a ${DAY3} lesson checks a day-0 skill again (asks ${warm3 ?? "none"}; warm-up ${due3.join(", ") || "n/a"})`);
+-  if (st3) ok(st3.pendingProbe?.shapeId === "C31" && topicOfItem(st3.activeItemId) === DAY0, `+3 days: it is a C31 delayed check (pendingProbe ${st3.pendingProbe?.shapeId ?? "none"} on ${st3.activeItemId ?? "-"})`);
++  const checked3 = (!!warm3 && topicOfItem(warm3) === DAY0) || due3.some((id) => topicOfItem(id) === DAY0);
++  // V1.3: a skill certified at +2 days (its check passed) is next reviewed by FSRS, not the next day; one not certified yet
++  // must be checked again here
++  const certified2 = d2.turns[0]?.verdict === "correct";
++  if (certified2 && !checked3) warn(`+3 days: no day-0 check in the opener — the day-0 skill was certified at +2 days (its check was answered right), so its next review is FSRS's, later (V1.3)`);
++  else {
++    ok(checked3, `+3 days: the opener of a ${DAY3} lesson checks a day-0 skill again (asks ${warm3 ?? "none"}; warm-up ${due3.join(", ") || "n/a"})`);
++    if (st3) ok(st3.pendingProbe?.shapeId === "C31" && topicOfItem(st3.activeItemId) === DAY0, `+3 days: it is a C31 delayed check (pendingProbe ${st3.pendingProbe?.shapeId ?? "none"} on ${st3.activeItemId ?? "-"})`);
++  }
+   ui = s3.ui; seq = 0;
+   for (let i = 0; i < 3 && ui?.ask?.itemId && topicOfItem(ui.ask.itemId) === DAY0; i++) {
+     const rep = replyFor(ui, DAY0);

@@ -50,6 +50,12 @@ test("recheckCommitted: numbers and fractions by value, short labels by text, no
   assert.equal(recheckCommitted({ value: "12" }, "twelve"), null);
   assert.equal(recheckCommitted({}, "4"), null);
   assert.equal(recheckCommitted({ value: "4" }, ""), null);
+  // a number with a short unit is that number (owner-1 local 2026-10-05: geoboard "6 square units" vs bound key "6" went ungraded)
+  assert.equal(recheckCommitted({ value: "6 square units" }, "6"), true);
+  assert.equal(recheckCommitted({ value: "7 square units" }, "6"), false);
+  assert.equal(recheckCommitted({ value: "6" }, "6 square units"), true);
+  assert.equal(recheckCommitted({ value: "5 squares and 9 squares" }, "5"), null, "not a number with a unit");
+  assert.equal(moduleAnswerOf(st("geoboard@1", "6"), ev({ value: "6 square units" }, false)).correct, true, "the forged right value with claim false grades right");
 });
 
 test("patterns@1 unbound: numbers that are not a sequence never become an unanswerable grow activity (owner-1: '3 5 7 8 ? ?')", () => {

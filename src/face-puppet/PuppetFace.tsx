@@ -15,6 +15,7 @@ import type { TapSource } from "../avatar/tap.ts";
 import { puppetPoster } from "./assets.ts";
 import { puppetForcedOn, puppetServerAllows } from "./flag.ts";
 import { puppetBus } from "./bus.ts";
+import "./latch.ts"; // the page's safety latch listens from the first face mount, before the stage chunk loads
 import type { PuppetStage, PuppetStageEvent } from "./stage.ts";
 
 export interface PuppetFaceProps {

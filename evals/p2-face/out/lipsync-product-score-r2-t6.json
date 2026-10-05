@@ -1,0 +1,62 @@
+{
+ "date": "2026-10-05",
+ "prefix": "r2-t6-",
+ "method": "product path (real server + Azure websocket + real ttsStream player + real stage, Chromium headless SwiftShader); reference = wav2vec2-base-960h CTC forced alignment of the same scheduled audio; estimator = lipsync-offset E3 (best-Pearson lag on 5 ms grid)",
+ "segments": 3,
+ "scored": 3,
+ "skipped": 0,
+ "productMinusJudgedMs": {
+  "n": 3,
+  "median": -5,
+  "q25": -30,
+  "q75": -5,
+  "min": -30,
+  "max": -5,
+  "within50": 1
+ },
+ "mouthVsAlignmentDirectMs": {
+  "n": 3,
+  "median": 25,
+  "q25": 20,
+  "q75": 55
+ },
+ "gapVsSoundMs": {
+  "median": 25,
+  "rMedian": 0.46
+ },
+ "rows": [
+  {
+   "seg": "r2-t6-1-0",
+   "secs": 9.06,
+   "gapLagMs": 0,
+   "gapR": 0.346,
+   "ctcLagMs": 30,
+   "ctcR": 0.414,
+   "pairedMs": -30,
+   "directLagMs": 55,
+   "directR": 0.285
+  },
+  {
+   "seg": "r2-t6-1-1",
+   "secs": 6.25,
+   "gapLagMs": 35,
+   "gapR": 0.46,
+   "ctcLagMs": 40,
+   "ctcR": 0.452,
+   "pairedMs": -5,
+   "directLagMs": 25,
+   "directR": 0.342
+  },
+  {
+   "seg": "r2-t6-1-2",
+   "secs": 6.5,
+   "gapLagMs": 25,
+   "gapR": 0.534,
+   "ctcLagMs": 30,
+   "ctcR": 0.453,
+   "pairedMs": -5,
+   "directLagMs": 20,
+   "directR": 0.379
+  }
+ ]
+}

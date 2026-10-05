@@ -234,7 +234,7 @@ test("driver R6: a safety turn holds a soft-neutral mouth (no smile, no cheek pu
   };
   const calm = run(true), warm = run(false);
   assert.ok(calm.speakSmile <= SAFETY_NEUTRAL.mouthSmile + 1e-3, `safety reply smile ${calm.speakSmile}`);
-  assert.ok(warm.speakSmile > SAFETY_NEUTRAL.mouthSmile * 3, `a normal warm reply smiles (${warm.speakSmile})`);
+  assert.ok(warm.speakSmile > 0.02, `a normal warm reply smiles (${warm.speakSmile})`);
   for (const f of calm.frames.slice(-60)) {
     assert.ok((f.bs.cheekSquintLeft ?? 0) <= SAFETY_NEUTRAL.cheekSquint + 1e-3 && (f.bs.cheekSquintRight ?? 0) <= SAFETY_NEUTRAL.cheekSquint + 1e-3);
     assert.ok((f.bs.mouthFrownLeft ?? 0) < 0.01 && (f.bs.mouthFrownRight ?? 0) < 0.01);
@@ -290,4 +290,22 @@ test("duplex bridge: face cues, yield → cut, safety → calm_steady pose, deta
     assert.equal(seen.at(-1).kind, "duplex-detach");
     assert.equal(puppetDuplexSink(cmds[5]), cmds[5]);
   } finally { off(); }
+});
+
+// ───────── the page's safety latch (a face mounted after the cue starts neutral) ─────────
+
+test("safety latch: a calm_steady cue (Director) or pose (duplex) puts the page in a safety turn until a stage leaves it", async () => {
+  const { pageInSafety, clearPageSafety, resetLatch } = await import("../src/face-puppet/latch.ts");
+  const { faceCues } = await import("../src/avatar/faceCues.ts");
+  resetLatch();
+  assert.equal(pageInSafety(), false);
+  faceCues.emit({ kind: "affect", display: "warm_pride", seq: 1 });
+  assert.equal(pageInSafety(), false, "a warm cue is not a safety turn");
+  faceCues.emit({ kind: "affect", display: "calm_steady", seq: 2 });
+  assert.equal(pageInSafety(), true);
+  clearPageSafety();
+  assert.equal(pageInSafety(), false);
+  puppetBus.emit({ kind: "duplex", cue: { kind: "pose", pose: "calm_steady", why: "safety_attend" }, at: 1 });
+  assert.equal(pageInSafety(), true, "the duplex engine's safety_attend latches too");
+  resetLatch();
 });

@@ -8,9 +8,15 @@
 // page (no oscillation). Hidden tab: rAF stops, nothing runs.
 // Failures → `fallback` events (the host decides the face): no WebGL2, asset load error, load timeout (8 s), a second
 // context loss, the governor floor. A first context loss shows the poster and rebuilds once on restore.
+// Loading (ship5 p2-face): loader.ts decodes the layers off the main thread and runs the warm-up in <= 8 ms slices (the
+// judged load + warm() was one ~1 s main-thread task on a 4x-throttled profile); pixels match the judged path within 3/255
+// (evals/p2-face/out/loader-parity.json). Events: loaded (path, slices, longest slice), firstDraw, reveal (+ which rule
+// fired), stall (a drawn-frame gap > STALL_MS), all also kept in `log` for the ?facerig=1 read-out and the acceptance test.
 // Audio floor: nothing here touches playback; the tap is analysis-only (src/avatar/tap.ts).
 import { Puppet2DRig } from "./runtime/rig.js";
 import { PuppetDriver } from "./driver.ts";
+import { loadRigChunked } from "./loader.ts";
+import { clearPageSafety, pageInSafety } from "./latch.ts";
 import { puppetBus } from "./bus.ts";
 import { PUPPET_BASE, PUPPET_CLEAR, PUPPET_VIEW } from "./assets.ts";
 import { TeacherTap, type TapSource } from "../avatar/tap.ts";
@@ -18,7 +24,7 @@ import { faceCues, faceAffectOf, gazeAngles, gazeElement, type FaceCue } from ".
 import type { FloorStatus } from "../avatar/behaviour.ts";
 
 export type PuppetStageEvent =
-  | { type: "loaded"; ms: number }
+  | { type: "loaded"; ms: number; path?: string; slices?: number; longestSliceMs?: number; warmFrameMs?: number }
   /** `why`: the reveal rule that fired (silence | closed | bound), so the "never mid-word" claim is measured, not assumed. */
   | { type: "reveal"; ms: number; why: "silence" | "closed" | "bound" }
   /** The first live frame was drawn (ms since the stage was constructed), revealed or not. */
@@ -42,6 +48,8 @@ export interface PuppetStageOptions {
   /** Budget for the frame's JS work at p95 (ms). 8 ms leaves half a 60 fps frame for the GPU and the page. */
   budgetMs?: number;
   loadTimeoutMs?: number;
+  /** "chunked" (default, loader.ts) or "judged" (Puppet2DRig.load + warm() in one task: the parity eval). */
+  loader?: "chunked" | "judged";
   /** The clock the bus events are judged against (default performance.now; the evals pass their scripted clock). */
   now?: () => number;
   onEvent?: (e: PuppetStageEvent) => void;
@@ -49,6 +57,11 @@ export interface PuppetStageOptions {
 
 /** A drawn-frame gap above this is a visible freeze (5+ frames at 30 fps), reported as a `stall` event. */
 export const STALL_MS = 180;
+
+/** At most one RUNNING stage per page: the newest started. Measured (ship5 p2-face): the safeguarding TroubleScreen
+ *  mounted a second live puppet over the lesson tile (two WebGL loops on a budget phone). The others hold their last
+ *  frame (suspended) and the most recent of them resumes when the foreground stage is disposed. */
+const foreground: PuppetStage[] = [];
 
 const pct = (a: number[], q: number) => { if (!a.length) return 0; const s = [...a].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(q * s.length))]; };
 
@@ -61,6 +74,8 @@ export class PuppetStage {
   private tap: TeacherTap;
   private raf = 0;
   private running = false;
+  private suspended = false;
+  private wasSafe = false;
   private disposed = false;
   private status: FloorStatus | null = null;
   private childLevel = 0;
@@ -88,6 +103,8 @@ export class PuppetStage {
     this.o = o;
     this.dpr = Math.min(2, typeof devicePixelRatio === "number" ? devicePixelRatio : 1);
     this.driver = new PuppetDriver({ band: o.band, seed: o.seed, reducedMotion: o.reducedMotion, gentle: o.gentle });
+    // a face mounted during a safety turn (the TroubleScreen's) is neutral from its first frame (latch.ts)
+    if (pageInSafety()) { this.driver.safetyTurn(performance.now()); this.wasSafe = true; }
     this.tap = new TeacherTap(o.sources);
     const c = document.createElement("canvas");
     c.className = "fp-canvas";
@@ -127,13 +144,21 @@ export class PuppetStage {
     if (typeof WebGL2RenderingContext === "undefined") throw new Error("no WebGL2");
     this.host.appendChild(this.canvas);
     const view = [...PUPPET_VIEW[this.o.framing ?? "medium"]] as [number, number, number];
-    const load = Puppet2DRig.load(this.canvas, this.o.base ?? PUPPET_BASE, { ext: "webp", dpr: this.dpr, view, clear: PUPPET_CLEAR, reducedMotion: this.o.reducedMotion });
-    const timeout = new Promise<never>((_, rej) => { const id = window.setTimeout(() => rej(new Error("puppet load timeout")), this.o.loadTimeoutMs ?? 8000); this.timers.add(id); });
-    const rig = await Promise.race([load, timeout]);
+    const ropts = { ext: "webp", dpr: this.dpr, view, clear: PUPPET_CLEAR, reducedMotion: this.o.reducedMotion };
+    const base = this.o.base ?? PUPPET_BASE;
+    // ship5 p2-face: the chunked loader (loader.ts) by default: bitmaps decoded off-thread, warm-up in <= 8 ms slices.
+    // The judged single-task path (load + warm) stays available for the parity eval and as the loader's own fallback.
+    const abort = { aborted: false };
+    const load = this.o.loader === "judged"
+      ? Puppet2DRig.load(this.canvas, base, ropts).then((rig) => { rig.warm(); return { rig, path: "judged", slices: 1, longestSliceMs: NaN, warmFrameMs: NaN }; })
+      : loadRigChunked(this.canvas, base, ropts, { signal: abort });
+    const timeout = new Promise<never>((_, rej) => { const id = window.setTimeout(() => { abort.aborted = true; rej(new Error("puppet load timeout")); }, this.o.loadTimeoutMs ?? 8000); this.timers.add(id); });
+    const res = await Promise.race([load, timeout]);
+    const rig = res.rig;
     if (this.disposed) { rig.dispose(); return; }
-    rig.warm();
     this.rig = rig;
-    this.emit({ type: "loaded", ms: Math.round(performance.now() - t0) });
+    this.emit({ type: "loaded", ms: Math.round(performance.now() - t0), path: res.path, slices: res.slices, longestSliceMs: Math.round(res.longestSliceMs), warmFrameMs: Math.round(res.warmFrameMs * 10) / 10 });
+    this.startTier(res.warmFrameMs);
   }
 
   private subscribe(): void {
@@ -198,6 +223,11 @@ export class PuppetStage {
 
   start(): void {
     if (this.running || this.disposed) return;
+    this.suspended = false;
+    const k = foreground.indexOf(this);
+    if (k >= 0) foreground.splice(k, 1);
+    foreground.push(this);
+    for (const other of foreground) if (other !== this && other.running) { other.stop(); other.suspended = true; }
     this.running = true;
     this.lastNow = 0; // a stop/start (park, context restore) is not a stall
     const loop = (now: number) => {
@@ -236,6 +266,9 @@ export class PuppetStage {
     const rigMs = performance.now() - r0 - f.workMs;
     const work = performance.now() - w0;
     this.lipSource = f.lipSource;
+    const safe = this.driver.inSafety;
+    if (this.wasSafe && !safe) clearPageSafety();
+    this.wasSafe = safe;
     this.work.push(work);
     this.rigMs.push(rigMs);
     if (this.work.length > 120) { this.work.shift(); this.rigMs.shift(); }
@@ -273,8 +306,24 @@ export class PuppetStage {
     }
   }
 
+  /** Ship5 p2-face: start at the rate this device can hold. Measured on the throttled phone profile (evals/p2-face): the
+   *  governor alone took 15 s to its first step and ~30 s to 30 fps, and in that window a 20-30 ms rig frame at 60 fps
+   *  starved the page (freezes up to 1.3 s in her first sentences). The warm-up's own frames (after their first-use costs)
+   *  measure the rig here before the face is shown: over the 60 fps budget → start at 30 fps; over the 30 fps budget →
+   *  20 fps. The governor still steps down from there (never up). */
+  private startTier(warmFrameMs: number): void {
+    if (!(warmFrameMs > 0)) return;
+    const budget = this.o.budgetMs ?? 8;
+    const cap = warmFrameMs > budget * 2.5 ? 20 : warmFrameMs > budget ? 30 : 60;
+    if (cap < this.fpsCap) {
+      this.fpsCap = cap;
+      this.emit({ type: "governor", step: `start ${cap} fps`, workP95: warmFrameMs });
+    }
+  }
+
   private govern(now: number): void {
-    if (this.work.length < 90 || now - this.lastStep < 2000) return;
+    // ship5 p2-face: 60-frame windows, 1.5 s apart (was 90 frames, 2 s): the first step lands in ~2-3 s, not 15 s
+    if (this.work.length < 60 || now - this.lastStep < 1500) return;
     // budget per frame interval: 8 ms of JS at 60 fps (half the frame left for GL, compositing and the page), 20 ms at
     // 30 fps, 30 ms at 20 fps. A step needs TWO consecutive over-budget windows (~4 s sustained): wall-clock work includes
     // preemption, and one busy moment on the phone must not cost the child the smooth face for the rest of the page.
@@ -337,6 +386,13 @@ export class PuppetStage {
   dispose(): void {
     this.disposed = true;
     this.stop();
+    const k = foreground.indexOf(this);
+    if (k >= 0) {
+      const wasTop = k === foreground.length - 1;
+      foreground.splice(k, 1);
+      const top = foreground[foreground.length - 1];
+      if (wasTop && top?.suspended && !top.disposed) top.start();
+    }
     for (const off of this.offs) off();
     this.offs = [];
     for (const id of this.timers) window.clearTimeout(id);

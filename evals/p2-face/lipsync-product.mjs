@@ -59,7 +59,8 @@ await withTestAccount(async ({ api, child }) => {
     h.page.on("request", (r) => { if (/\/api\/voice\/tts-stream$/.test(r.url())) { try { spoken.push(JSON.parse(r.postData() || "{}").seq); } catch {} } });
     const t0 = Date.now();
     await h.page.goto(`${BASE}/c/${child.id}/lesson/new?mode=text&facerig=1${process.env.P2F_PUPPET_OFF ? "&puppet=0" : ""}`, { waitUntil: "domcontentloaded", timeout: 90_000 });
-    await h.page.waitForFunction(() => !!window.__puppet || !!document.querySelector("[data-face]:not([data-face='puppet2d'])"), null, { timeout: 60_000 }).catch(() => {});
+    // the lesson is up when her "Tap to hear" invitation (or her voice) is there; under CPU throttling that can take a while
+    await h.page.waitForFunction(() => [...document.querySelectorAll("button")].some((b) => /Tap to hear/.test(b.textContent ?? "")) || (window.__rec?.audio?.length ?? 0) > 0, null, { timeout: 90_000 }).catch(() => {});
     const tap = h.page.getByText(/Tap to hear/);
     if (await tap.count()) await tap.first().click().catch(() => {});
     const speaking = async () => {
@@ -86,6 +87,7 @@ await withTestAccount(async ({ api, child }) => {
       }
       await waitQuiet(60_000);
     }
+    await h.page.screenshot({ path: `${OUT}lipsync-product-${TAG}.png` }).catch(() => {});
     const rec = await h.page.evaluate(() => ({ ...window.__rec, ctx: null, rafGaps: window.__rec.rafGaps, log: window.__puppet?.log ?? [], snap: window.__puppet?.snapshot?.() ?? null, face: document.querySelector("[data-face]")?.getAttribute("data-face"), label: document.querySelector("[data-face]")?.getAttribute("aria-label") }));
     const a = analyse(rec);
     const firstDraw = rec.log.find((e) => e.type === "firstDraw"), reveal = rec.log.find((e) => e.type === "reveal");

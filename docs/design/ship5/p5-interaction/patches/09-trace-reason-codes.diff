@@ -1,0 +1,35 @@
+--- a/server/brain/reasons.js
++++ b/server/brain/reasons.js
+@@ -8,6 +8,18 @@
+ const SOURCES = ["safety", "consent", "conductor", "governor", "director", "comprehension", "relational", "vibe", "studio"];
+ const BEATS = ["arrive", "warmup", "hook", "explain", "worked_example", "contrast", "practice_set", "probe", "explore_question", "teachback",
+   "reflect", "recap", "wrap", "break", "safeguard"];
++// p5-interaction request types (director/requests.js, conversation/lexicon.js + policy.js, state.js P5_REQUESTS). Listed
++// here rather than imported so this module stays pure and dependency-free.
++const REQUEST_TYPES = ["another", "example", "story", "slower", "visual", "language", "topic", "change_topic", "break", "stop", "goodbye",
++  "continue", "confused", "thinking", "choices", "why", "how", "clarify", "repeat", "back", "skip", "know", "harder", "easier", "boredom",
++  "frustration", "identity", "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour"];
++// the CONVERSATION-V2 note's intents (conversation/understand.js INTENTS; a test keeps the two lists equal)
++const CONV2_INTENTS = ["answer_correct", "answer_wrong", "answer_partial", "answer_hedged", "thinking_aloud", "self_correction", "dont_know",
++  "ask_for_answer", "insist_wrong", "check_my_work", "question_on_topic", "clarify", "curiosity_offlesson", "explain_differently",
++  "method_instruction", "example", "story", "visual_request", "game_request", "animation_request", "slower", "skip_ahead", "harder", "easier",
++  "language_switch", "repeat", "change_topic", "skip_item", "diversion", "insistence", "out_of_bounds", "insistence_oob", "joke", "small_talk",
++  "identity", "personal_share", "meta_feedback", "boredom", "frustration", "break_request", "distress", "end_request", "leaving", "backchannel",
++  "noise", "adult_voice"];
+ const OVERLAYS = ["WARM_BOUNDARY", "RELEASE", "CHECK_IN", "OWN_SLIP", "AFFIRM_RECHECK", "SHARE_UPTAKE", "NOTICE", "CHRISTEN", "HOME_TEACH_BACK",
+   "POINT_OUT", "LAUGH_WITH"];
+ 
+@@ -50,6 +62,13 @@
+     "screen", "parts", "stage", "register", "ask", "twoq", "wrap", "content_filter", "unavailable"],
+   // release.check_in_given: the stop phrase got its single check-in (OWNER-RESET #7); release.goodbye_wrap: the lesson ended
+   release: ["goodbye", "check_in", "check_in_given", "goodbye_wrap"],
++  // p5-interaction: the request a turn was read as (classify / readings / the UNDERSTAND note), the note itself
++  // (conv2.note.<intent> acted on, conv2.shadow.<intent> recorded only, conv2.no_note), the 3-turn card cap, and a module
++  // answer the server could not re-check. Without these the trace dropped them (knownReasons) — acceptance 2026-10-05.
++  request: [...REQUEST_TYPES],
++  conv2: ["no_note", ...CONV2_INTENTS.flatMap((i) => [`note.${i}`, `shadow.${i}`])],
++  p5: ["capped.assert", "capped.leave"],
++  module: ["unverifiable"],
+ });
+ 
+ const SETS = Object.fromEntries(Object.entries(FAMILIES).map(([k, v]) => [k, new Set(v)]));

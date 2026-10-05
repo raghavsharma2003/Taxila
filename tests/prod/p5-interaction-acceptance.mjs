@@ -101,27 +101,31 @@ await withTestAccount(async ({ api }) => {
     }
     await L.end();
   }
+  await shapeAndTrace();   // inside the account: its deletion cascades the lessons and their brain_trace rows
 }, { tag: "p5int", child: { firstName: "Riya" } });
 
-// 5. the reply shape over every turn of every lesson
-const all = lessons.flatMap((L) => L.rows.filter((x) => x.r && !x.r.error).map((x) => ({ r: x.r, kind: x.kind })));
-const bares = all.filter((x) => x.kind !== "module" && bare(x.r));
-ok(bares.length === 0, `no reply is only the question on the card (${bares.length}/${all.length}${bares.length ? `: "${bares[0].r.teacherReply.slice(0, 80)}"` : ""})`);
-const dangling = all.filter((x) => DANGLING.test(String(x.r.teacherReply ?? "")));
-ok(dangling.length === 0, `no reply opens on an orphan quote (${dangling.length}/${all.length})`);
-const cut = all.filter((x) => CUT_DECIMAL.test(String(x.r.teacherReply ?? "")));
-ok(cut.length === 0, `no cut decimal ("0. 4") in any reply (${cut.length}/${all.length})`);
-const bye = all.filter((x) => !x.r.end && !["wrap", "break"].includes(x.r.move?.kind) && RX.wrapWords.test(String(x.r.teacherReply ?? "")));
-ok(bye.length === 0, `no goodbye words on a turn that goes on (${bye.length}/${all.length})`);
+/** 5 and 6, over every lesson above (run before the test account is deleted). */
+async function shapeAndTrace() {
+  // 5. the reply shape over every turn of every lesson
+  const all = lessons.flatMap((L) => L.rows.filter((x) => x.r && !x.r.error).map((x) => ({ r: x.r, kind: x.kind })));
+  const bares = all.filter((x) => x.kind !== "module" && bare(x.r));
+  ok(bares.length === 0, `no reply is only the question on the card (${bares.length}/${all.length}${bares.length ? `: "${bares[0].r.teacherReply.slice(0, 80)}"` : ""})`);
+  const dangling = all.filter((x) => DANGLING.test(String(x.r.teacherReply ?? "")));
+  ok(dangling.length === 0, `no reply opens on an orphan quote (${dangling.length}/${all.length})`);
+  const cut = all.filter((x) => CUT_DECIMAL.test(String(x.r.teacherReply ?? "")));
+  ok(cut.length === 0, `no cut decimal ("0. 4") in any reply (${cut.length}/${all.length})`);
+  const bye = all.filter((x) => !x.r.end && !["wrap", "break"].includes(x.r.move?.kind) && RX.wrapWords.test(String(x.r.teacherReply ?? "")));
+  ok(bye.length === 0, `no goodbye words on a turn that goes on (${bye.length}/${all.length})`);
 
-// 6. the trace codes (never the child's words)
-const ids = lessons.map((L) => L.lessonId).filter(Boolean);
-const rows = ids.length ? await dbq("select reasons from brain_trace where lesson_id = any($1::uuid[])", [ids]).catch(() => null) : null;
-if (!rows) warn(`brain_trace not readable from here (${BASE}): trace checks skipped`);
-else {
-  const codes = rows.flatMap((x) => x.reasons ?? []);
-  ok(codes.some((c) => /^request\.(another|story|example|slower|clarify|repeat|back|skip|boredom|frustration|thinking|identity|uptake|decline|change_topic)$/.test(c)),
-    `brain_trace records the readings as request codes (${[...new Set(codes.filter((c) => c.startsWith("request.")))].join(", ")})`);
-  ok(codes.every((c) => !/\s/.test(c) || c.length < 60), "trace reasons are codes, never sentences");
+  // 6. the trace codes (never the child's words)
+  const ids = lessons.map((L) => L.lessonId).filter(Boolean);
+  const rows = ids.length ? await dbq("select reasons from brain_trace where lesson_id = any($1::uuid[])", [ids]).catch(() => null) : null;
+  if (!rows) warn(`brain_trace not readable from here (${BASE}): trace checks skipped`);
+  else {
+    const codes = rows.flatMap((x) => x.reasons ?? []);
+    ok(codes.some((c) => /^request\.(another|story|example|slower|clarify|repeat|back|skip|boredom|frustration|thinking|identity|uptake|decline|change_topic)$/.test(c)),
+      `brain_trace records the readings as request codes (${[...new Set(codes.filter((c) => c.startsWith("request.")))].join(", ")})`);
+    ok(codes.every((c) => !/\s/.test(c) || c.length < 60), "trace reasons are codes, never sentences");
+  }
 }
 done();

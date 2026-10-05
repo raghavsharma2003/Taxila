@@ -66,7 +66,18 @@
  /**
   * An upcoming item whose key is a STATEMENT of the idea being taught (a why / teach-back item, or a key of 6+ words such
   * as "Any question that can be checked by trying something") cannot be kept out of the explanation that teaches it: the
-@@ -191,6 +199,13 @@
+@@ -174,7 +182,9 @@
+   const max = REPLY_MAX_WORDS[state.ctx.ageBand] + (item?.diagnostic ? words(item.options.map((o) => o.text).join(" ")) : 0);
+   const guardable = item && state.hintLevel < 4 && state.pendingWhy !== item.id;
+   const mustPose = guardable && state.hintLevel === 0 && POSING_MOVES.has(state.lastMove.kind);
+-  const mustHandBack = !CLOSING_MOVES.has(state.lastMove.kind);
++  // p5-interaction: a thinking-aloud wait hands back by letting them go on, never by a question (the "thinkq" guard below)
++  const thinkingWait = p5Flag("GUARDS") && state.lastMove?.request === "thinking";
++  const mustHandBack = !CLOSING_MOVES.has(state.lastMove.kind) && !thinkingWait;
+   const whyProbe = !!item && state.pendingWhy === item.id;
+   // A comparison across kinds of quantity (45,000 fans vs 4,500 km) in the teacher's OWN words; the kit's posed
+   // question is verified content and is not judged here.
+@@ -191,6 +201,13 @@
    const parityOf = (t) => askParity(t, pinned);
    const wrapping = !CLOSING_MOVES.has(kindNow);
    const praiseOf = (t) => praiseProblem(t, verdict);
@@ -80,13 +91,17 @@
    // G-PRAISE-2: after a right answer the acknowledgement never states a wrong option as the result (say.js correctsRight).
    const right = verdict === "correct" && state.lastRight?.wrong?.length ? { ...state.lastRight, nextPrompt: item ? promptFor(item, lang) : ahead ? promptFor(ahead, lang) : "" } : null;
    const problems = (t) => [
-@@ -215,12 +230,15 @@
+@@ -215,12 +232,19 @@
      pinned && !parityOf(t).endsOnAsk && "ask",
      mustHandBack && parityOf(t).questions > 1 && "twoq",
      wrapping && wrapsUp(t) && "wrap",
 +    // p5-interaction: the reply is only the question again (owner-2 R3, 9 / 90), or a line she already said (R4, 8 / 90)
 +    G && pinned && isBare(t, promptFor(item, lang), pinned, rePose ? undefined : 1) && "bare",
 +    G && repeatsEarlier(t, earlier) && "same",
++    // a mid-thought gets no question (conversation-v2 thinking_aloud 1/8: "new_question"); a right answer is confirmed
++    // before anything else (answer_correct 4/8: a covert probe with no uptake)
++    thinkingWait && /[?？]/.test(t) && "thinkq",
++    G && verdict === "correct" && !CLOSING_MOVES.has(kindNow) && !confirmsFirst(t) && "noconfirm",
    ].filter(Boolean);
    // The code repairs for the turn's shape (no model call): goodbye sentences out of a non-wrap turn, then the turn
    // ends on the pinned question (or keeps only its last question).
@@ -97,7 +112,18 @@
      else if (f.includes("drift")) out = repairDrift(out, item, lang);
      else if (f.includes("twoq")) out = lastQuestionOnly(out);
      return out;
-@@ -282,9 +300,12 @@
+@@ -265,7 +289,9 @@
+     }
+   }
+   if (found.length) {
+-    const why = [found.includes("leak") && (ahead
++    const asked = G && ["example", "story", "another"].includes(state.lastMove?.request);
++    const why = [found.includes("leak") && asked && "it gives away the answer to the question — keep what they asked for, but with different numbers and a different case from the question, so its answer is never stated",
++      found.includes("leak") && !asked && (ahead
+       ? "it states the answer to the practice question that comes next — explain with different numbers or a different example, and do not answer that question"
+       : "it gives away the key answer — the hint ladder has not reached rung 4"),
+       found.includes("drift") && `it must ask exactly this question and no other: "${promptFor(item, lang)}"`,
+@@ -282,9 +308,14 @@
        found.includes("parts") && `it names parts the screen does not show — ${screenContradiction(own(reply), module)?.onScreen ?? ""}`,
        found.includes("stage") && "it reads out a field name or markup (like 'Whiteboard:' or brackets) — plain spoken words only",
        found.includes("register") && (address === "aap" ? "it uses tum forms — address the child with aap forms only (aap, aapka; verbs ending -iye)" : "it uses aap — address the child with tum forms (tum, tumhara)"),
@@ -108,19 +134,41 @@
 +      found.includes("bare") && (rePose ? "it is only the question again — first answer what they just said, or give the nudge or the step, in one short line of your own; then the question"
 +        : "it is only the question — say a short bridge of your own first (a few words to what they said), then the question"),
 +      found.includes("same") && "it repeats what you already said earlier, almost word for word — say something new (a different nudge, example or way in); then the question",
++      found.includes("thinkq") && "they are in the middle of a thought — ask nothing at all; only a few words that let them go on and finish it",
++      found.includes("noconfirm") && "their answer was right — open by confirming it in a few words, naming what they got right, before anything else",
      ].filter(Boolean).join("; and ");
      try {
        reply = await ask([...messages, { role: "assistant", content: reply }, { role: "system", content: `Rewrite that turn: ${why}. Same move, same language, one idea, end by handing the floor back.` }]);
-@@ -307,7 +328,7 @@
+@@ -302,20 +333,34 @@
+     } else if (found.includes("leak") && ahead) {
+       // what is left must still be a turn (F18); else the rewrite stands and the next item is marked spoiled (turn.js)
+       const left = withoutLeaks(reply, ahead).replace(/^[\s”"'’)\]]+/, "");
+-      if (coherentRemainder(left)) { reply = left; guard.replaced = true; } else guard.spoilsAhead = ahead.id;
++      // p5-interaction (owner-4 "story ki tarah batao": the story was cut to "Agar cake 12 pieces ka ho, ek part mein kitne?"):
++      // when the child ASKED for this teaching (a story, an example, another way, slower, a picture), their request wins over
++      // the next item's evidence value: the rewrite stands and that item is marked spoiled (its answer is discounted)
++      if (coherentRemainder(left) && !(G && state.lastMove?.request)) { reply = left; guard.replaced = true; } else guard.spoilsAhead = ahead.id;
+     } else if (found.includes("leak") || found.includes("drift")) {
        // the acknowledgement before the drift / leak stays, then the verified question (F17: never the bare question when
        // the child's words got an answer in the draft)
        reply = repairDrift(reply, item, lang, { noLeak: true });
 -      if (problems(reply).includes("leak")) reply = promptFor(item, lang);
 +      if (problems(reply).includes("leak")) reply = askEnd;
        guard.replaced = true;
++      // p5-interaction (acceptance 2026-10-05, the req:story chip: 2 / 6 requested stories were cut to the bare question
++      // because the story's numbers stated the key): a REQUESTED story / example / other way gets one more attempt with
++      // other numbers; it is used only when no truth problem is left (a leak still ships the question alone)
++      if (G && item && state.lastMove?.request && isBare(reply, askEnd, pinned)) {
++        try {
++          const again = await ask([...messages, { role: "assistant", content: guard.firstDraft ?? reply }, { role: "system", content: `Rewrite that turn: they asked for it this way, so keep it that way, but use different numbers and things from the question so it never gives away or works out the question's answer; two short sentences, then end by asking exactly this question: "${askEnd}". Same language.` }]);
++          let a = again;
++          if (problems(a).includes("long")) a = trimToWords(a, max);
++          if (!problems(a).filter((p) => !SOFT_FIX.has(p)).length && !problems(a).includes("long") && !isBare(a, askEnd, pinned)) { reply = a; guard.reasked = true; }
++        } catch (e) { if (isContentFilter(e)) return blocked(); }
++      }
      } else {
        if (found.includes("units")) { reply = withoutMixedUnits(reply) || fallbackReply(state, item); guard.replaced = true; }
-@@ -315,7 +336,7 @@
+       if (found.includes("script")) reply = reply.replace(OFF_SCRIPT[lang] ?? OFF_SCRIPT.english, "").replace(/\s{2,}/g, " ").trim();
        // What is left of a turn whose words contradicted the verdict or the screen: those sentences go; if nothing
        // that hands the floor back is left, the item's question (or the move's fixed line) is the turn.
        const keepOr = (t) => (t && handsBack(t) ? t : item && !CLOSING_MOVES.has(kindNow) && state.pendingWhy !== item.id
@@ -129,7 +177,7 @@
        if (found.includes("praise")) { reply = keepOr(stripPraise(reply)); guard.replaced = true; }
        if (found.includes("corrects")) { reply = keepOr(stripCorrection(reply, right)); guard.replaced = true; }
        if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply)); guard.replaced = true; }
-@@ -326,9 +347,51 @@
+@@ -326,9 +371,51 @@
        if (found.includes("long")) reply = trimToWords(reply, max);
        // Last: the turn's shape (goodbye words out, the pinned question at the end, one question), in code.
        const left = problems(reply).filter((p) => SHAPE.has(p));
@@ -182,7 +230,7 @@
    // The final words, checked once more (debug and the evals read it): what reached the child.
    const final = problems(reply).filter((p) => p !== "long" || words(reply) > max);
    if (final.length) guard.final = final;
-@@ -337,3 +400,30 @@
+@@ -337,3 +424,36 @@
    const floor = final.includes("floor") ? floorOf(reply) : [];
    return { reply, guard, ...(floor.length ? { floor } : {}) };
  }
@@ -212,6 +260,12 @@
 +    return `${tidy(lead)} ${String(ask).trim()}`.replace(/\s{2,}/g, " ").trim();
 +  }
 +  return tidy(r);
++}
++
++/** p5-interaction: does a reply to a RIGHT answer confirm it in its first two sentences (agreement / praise of the answer)? */
++function confirmsFirst(t) {
++  const head = sentences(t).slice(0, 2).join(" ");
++  return praiseProblem(head, "not_yet") === "praise";
 +}
 --- a/server/director/say.js
 +++ b/server/director/say.js

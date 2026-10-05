@@ -29,6 +29,7 @@ export const INIT = () => {
   const stop0 = AudioBufferSourceNode.prototype.stop;
   AudioBufferSourceNode.prototype.stop = function (when) { try { W.audio.push({ stop: true, when: when ?? this.context.currentTime, at: performance.now() }); } catch {} return stop0.call(this, when); };
   let hooked = false, lastRaf = 0;
+  const safeStages = []; // stage objects stay out of W (it is serialised back to the test)
   W.rafGaps = [];
   const loop = () => {
     const now = performance.now();
@@ -39,6 +40,15 @@ export const INIT = () => {
     if (P) {
       const m = P.mouthProbe();
       // (the v4 build's mouthProbe has only the gap: read the same facts off the stage for the before/after arm)
+      // the safety-neutral face (policy R6): when it was first on, and what the policy did from then (the page may move on
+      // to the safeguarding screen and unmount the face right after her reply, so it is captured as it happens)
+      const safe = P.driver?.inSafety;
+      if (safe) {
+        // every stage seen in a safety turn (the TroubleScreen mounts a second one), and each one's policy log from then
+        W.safety ??= { at: Math.round(now) };
+        if (!safeStages.includes(P)) safeStages.push(P);
+      }
+      if (W.safety) W.safety.view = safeStages.map((st) => ({ inSafety: !!st.driver?.inSafety, log: (st.driver?.policy?.log ?? []).slice(-12) }));
       if (m) W.frames.push([Math.round(now * 10) / 10, Math.round(m.gap * 100) / 100, m.lip ?? P.lipSource, m.state ?? P.driver?.policy?.faceState, (m.revealed ?? P.revealed) ? 1 : 0]);
     }
     if (!hooked && window.__puppetBus) { hooked = true; window.__puppetBus.on((e) => { if (e.kind === "visemes") W.bus.push({ at: performance.now(), part: e.part, playAt: e.playAt, n: e.visemes.length, words: e.words?.length ?? 0, v: e.visemes.map((x) => [x.ms, x.id]) }); else W.bus.push({ at: performance.now(), kind: e.kind }); }); }

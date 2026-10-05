@@ -7,8 +7,9 @@ player scheduled, laid on the performance clock, and the reply's Roman text), a 
 with facebook/wav2vec2-base-960h (Apache-2.0) gives letter times from her own product audio, mapped to Azure-style
 viseme ids with the SAME trellis and letter->viseme rules as evals/face-puppet/ctc-align.py (copied here: that script
 runs at import). This is the timing the judged clips were driven by, so the product mouth can be scored against it.
-Skipped: Devanagari text (the English letter CTC cannot align it), text with digits (the spoken form of a digit is not
-in the text, so the alignment would stretch its neighbours), and segments with no text.
+Text: the spoken form (spoken-text.mjs runs the server's speakable(): digits become number words) when present.
+Skipped: Devanagari text (the English letter CTC cannot align it), text still holding digits (the spoken form of a digit
+is not in the text, so the alignment would stretch its neighbours), and segments with no text.
 """
 import json, os, re, glob
 import numpy as np
@@ -84,7 +85,13 @@ for jf in sorted(glob.glob(f"{D}/*-[0-9]*.json")):
     if jf.endswith(".ctc.json"):
         continue
     meta = json.load(open(jf))
-    text = meta.get("text") or ""
+    cf = jf.replace(".json", ".ctc.json")
+    if os.path.exists(cf) and not os.environ.get("CTC_REDO"):
+        prev = json.load(open(cf))
+        if not (prev.get("skipped") == "digits" and meta.get("spokenText")):
+            continue
+    # the text she SPOKE (spoken-text.mjs: speakable(), digits as words) when known, else the shown text
+    text = meta.get("spokenText") or meta.get("text") or ""
     why = "no text" if not text else "devanagari" if re.search(r"[\u0900-\u097F]", text) else "digits" if re.search(r"\d", text) else None
     if why:
         json.dump({"skipped": why}, open(jf.replace(".json", ".ctc.json"), "w"))

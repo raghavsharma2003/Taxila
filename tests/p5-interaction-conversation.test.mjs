@@ -167,3 +167,13 @@ test("flags: every switch defaults on; TAXILA_P5=off turns all off; TAXILA_CONV2
     process.env.TAXILA_P5 = "OFF"; assert.equal(p5Flag("STEER"), false); assert.equal(conv2Mode(), "off");
   } finally { for (const k of ["TAXILA_P5", "TAXILA_P5_GUARDS", "TAXILA_CONV2"]) { if (k in saved) process.env[k] = saved[k]; else delete process.env[k]; } }
 });
+
+test("the trace keeps the p5 codes: every request type, every note intent, the cap and module.unverifiable are in the closed vocabulary", async () => {
+  const { isReason, knownReasons } = await import("../server/brain/reasons.js");
+  const { INTENTS } = await import("../server/conversation/understand.js");
+  const { P5_REQUESTS } = await import("../server/director/state.js");
+  for (const i of INTENTS) { assert.ok(isReason(`conv2.note.${i}`), i); assert.ok(isReason(`conv2.shadow.${i}`), i); }
+  for (const t of [...P5_REQUESTS, "another", "example", "story", "slower", "visual", "language", "topic", "change_topic", "confused", "thinking"]) assert.ok(isReason(`request.${t}`), t);
+  assert.deepEqual(knownReasons(["conv2.no_note", "p5.capped.assert", "p5.capped.leave", "module.unverifiable", "request.nonsense"]),
+    ["conv2.no_note", "p5.capped.assert", "p5.capped.leave", "module.unverifiable"]);
+});

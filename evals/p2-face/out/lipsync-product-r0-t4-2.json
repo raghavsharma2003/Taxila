@@ -1,59 +1,135 @@
 {
- "date": "2026-10-05T18:29:24.049Z",
- "loadavg1m": 3.66,
+ "date": "2026-10-05T18:32:18.937Z",
+ "loadavg1m": 3.33,
  "base": "http://localhost:5391",
  "tag": "r0-t4-2",
  "throttle": 4,
  "viewport": "360x640 dpr 1 (CPU-throttled desktop Chromium; NOT a phone)",
  "method": "real lesson page (?mode=text), real server route + Azure websocket synthesis, real ttsStream player, real puppet stage; Chromium headless SwiftShader",
+ "face": "puppet2d",
+ "label": "Asha, AI teacher",
  "pageErrors": [],
- "wallMs": 6719,
- "firstDrawMs": 1084,
+ "wallMs": 41392,
+ "firstDrawMs": 1511,
  "reveal": {
-  "ms": 1137,
+  "ms": 1537,
   "why": "silence"
  },
- "revealedBeforeFirstSound": false,
+ "revealedBeforeFirstSound": true,
  "stalls": [
   {
    "type": "stall",
-   "ms": 900,
+   "ms": 1050,
    "speaking": false,
-   "at": 2528
+   "at": 2570
+  },
+  {
+   "type": "stall",
+   "ms": 800,
+   "speaking": false,
+   "at": 4004
+  },
+  {
+   "type": "stall",
+   "ms": 200,
+   "speaking": true,
+   "at": 4611
+  },
+  {
+   "type": "stall",
+   "ms": 450,
+   "speaking": true,
+   "at": 6088
   }
  ],
- "longTasks": 3,
- "longTaskMaxMs": 852,
- "busBatches": 0,
- "busVisemes": 0,
- "busWords": 0,
- "cuts": 0,
+ "longTasks": 9,
+ "longTaskMaxMs": 1005,
+ "busBatches": 67,
+ "busVisemes": 371,
+ "busWords": 39,
+ "cuts": 5,
  "snapshot": {
-  "frames": 3,
-  "fpsP50": 1.1111111111111112,
-  "intervalP95": 900,
-  "workP50": 23.299999999813735,
-  "workP95": 31.700000000186265,
-  "rigP95": 26.600000000558794,
-  "dpr": 2,
-  "fpsCap": 60,
-  "draws": 0,
-  "tris": 0,
-  "lipSource": "none",
+  "frames": 1058,
+  "fpsP50": 30.030030030027405,
+  "intervalP95": 33.400000000001455,
+  "workP50": 7.7000000001862645,
+  "workP95": 12.200000000186265,
+  "rigP95": 11.600000000558794,
+  "dpr": 1,
+  "fpsCap": 30,
+  "draws": 22,
+  "tris": 22614,
+  "lipSource": "tap",
   "curFps": 30,
   "revealed": true,
-  "state": "idle",
-  "stalls": 1
+  "state": "your_turn",
+  "stalls": 4
  },
- "error": "no audio scheduled",
+ "outputOffsetMs": 3647,
+ "firstSoundAt": 4393,
+ "replies": [
+  {
+   "startMs": 4398,
+   "secs": 8.27,
+   "gapLagMs": 35,
+   "r": 0.254,
+   "framesCovered": 0.97,
+   "visemeShare": 0.999
+  },
+  {
+   "startMs": 18738,
+   "secs": 8.01,
+   "gapLagMs": 25,
+   "r": 0.522,
+   "framesCovered": 1,
+   "visemeShare": 1
+  },
+  {
+   "startMs": 30378,
+   "secs": 7.8,
+   "gapLagMs": 0,
+   "r": 0.468,
+   "framesCovered": 1,
+   "visemeShare": 1
+  }
+ ],
+ "closure": {},
+ "freezes": {
+  "voicedSecs": 21,
+  "over100": 6,
+  "over180": 1,
+  "maxMs": 457,
+  "per10s": 0.48
+ },
+ "rafGapSpeakingP95": 55.899999999999636,
+ "rafGapSpeakingMax": 456.5,
  "fps": {
-  "n": 8,
-  "speakingFpsP50": null,
-  "idleFpsP50": null,
-  "workP95Median": 31.700000000186265,
-  "workP95Max": 31.700000000186265,
-  "finalDpr": 2,
-  "finalFpsCap": 60,
-  "governor": []
+  "n": 70,
+  "speakingFpsP50": 30.030030030027405,
+  "idleFpsP50": 30.030030030029046,
+  "workP95Median": 18.700000000186265,
+  "workP95Max": 107.1000000005588,
+  "finalDpr": 1,
+  "finalFpsCap": 30,
+  "governor": [
+   {
+    "type": "governor",
+    "step": "dpr 1.5",
+    "workP95": 21.700000000186265,
+    "at": 15236
+   },
+   {
+    "type": "governor",
+    "step": "dpr 1",
+    "workP95": 22.100000000558794,
+    "at": 23173
+   },
+   {
+    "type": "governor",
+    "step": "30 fps",
+    "workP95": 15.399999999441206,
+    "at": 29673
+   }
+  ]
  }
 }

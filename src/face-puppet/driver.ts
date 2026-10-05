@@ -65,10 +65,11 @@ class NodSpring {
 
 const lowpass = (cur: number, target: number, dt: number, tau: number) => cur + (1 - Math.exp(-dt / tau)) * (target - cur);
 
-/** R6 (policy.ts): the soft-neutral mouth of a safety turn. mouthSmile 0.012 sits at the rig's effective smile ~0.28
- *  (lips.js lift(): 0.22 = soft neutral, 0.45 = c-front's resting warm smile at behaviour's idle ~0.045); no cheek push,
- *  no frown (the concern frown read as sad / disappointed). Eased in and out over ~150 ms (no corner pop). */
-export const SAFETY_NEUTRAL = { mouthSmile: 0.012, cheekSquint: 0.03 } as const;
+/** R6 (policy.ts): the soft-neutral mouth of a safety turn: mouthSmile 0 is the rig's "soft neutral" corners (lips.js
+ *  lift(0) = 0.22 against c-front's resting warm smile 0.45 at behaviour's idle ~0.045), no cheek push, no frown (the
+ *  concern frown read as sad / disappointed). Checked by eye at 0.012 first (evals/p2-face/out/look/): the corners still
+ *  read as a light smile, so 0. Eased in and out over ~150 ms (no corner pop). */
+export const SAFETY_NEUTRAL = { mouthSmile: 0, cheekSquint: 0 } as const;
 
 export class PuppetDriver {
   readonly policy: ActingPolicy;

@@ -119,7 +119,7 @@
    if (!d || typeof d.correct !== "boolean") return null;
    // engines-v1-server-recheck (OWNER TEST 2026-10-04 item 1, evals/owner-truth F1): the frame's `correct` is a CLAIM. When
    // the committed value and the plan's verified key are both a number or a fraction, the SERVER decides from the value;
-@@ -405,6 +419,26 @@
+@@ -405,6 +419,33 @@
    return { correct: recheck, value: d.value, source: "engine_rechecked", ...(recheck !== d.correct ? { claimMismatch: true } : {}) };
  }
  
@@ -136,13 +136,20 @@
 +  const pick = act.chosen ?? act.choice;
 +  if (v == null && pick != null && Array.isArray(act.fractions)) v = /^\d+$/.test(String(pick)) ? act.fractions[Number(pick)] : pick;
 +  if (v == null) return null;
-+  const k = numericOf(key), n = numericOf(v);
++  // a number with a short unit ("6 square units", "12 cm") is that number: owner-1 local run 2026-10-05, a geoboard commit
++  // "6 square units" against the bound key "6" went ungraded
++  const k = numericOf(key) ?? unitNumberOf(key), n = numericOf(v) ?? unitNumberOf(v);
 +  if (k != null || n != null) return k != null && n != null ? Math.abs(n - k) < 1e-9 : null;
 +  const lab = (x) => String(x).toLowerCase().normalize("NFKC").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
 +  const a = lab(v), b = lab(key);
 +  return a && b && a.length <= 24 && b.length <= 24 ? a === b : null;
 +}
 +
++/** "6 square units" / "12 cm" / "3/4 kg" → the number; a number followed by anything but 1-3 short letter-only words → null. */
++function unitNumberOf(v) {
++  const m = String(v ?? "").trim().match(/^(-?\d+(?:\.\d+)?|-?\d+\s*\/\s*\d+)\s+((?:\p{L}{1,12}\.?\s*){1,3})$/u);
++  return m ? numericOf(m[1]) : null;
++}
  const FRAC_RE = /^\s*(-?\d+)\s*\/\s*(\d+)\s*$/;
  /** A plain number or fraction (string or number) → its value; anything else → null. Exported for tests. */
  export function numericOf(v) {

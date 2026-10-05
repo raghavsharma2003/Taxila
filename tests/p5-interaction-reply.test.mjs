@@ -75,3 +75,39 @@ test("kill switch: TAXILA_P5_GUARDS=off — a bare question ships as before (HEA
   const out = await textReply({ instructions: "x", state: r.state, kit: K, childText: "1/3", history: [], ui: r.ui, module: r.state.module, verdict: "not_yet" });
   assert.ok(!out.guard.caught.includes("bare"));
 });
+
+test("thinking aloud: a reply that asks a question is rewritten to a go-on; a right answer is confirmed first (noconfirm)", async () => {
+  const { classifyFast, targetFor } = await import("../server/director/classify.js");
+  const { findItem } = await import("../server/director/items.js");
+  let r = toPractice();
+  const target = targetFor(r.state, K, findItem(r.state, K, r.state.activeItemId));
+  const c = classifyFast({ target, childText: "ruko, soch raha hoon", typed: true }).result;
+  const t = turn(r, c);
+  const seen = scripted("Haan, kaunsa part dekh rahe ho?", "Haan, aaram se socho, main sun rahi hoon.");
+  const out = await textReply({ instructions: "x", state: t.state, kit: K, childText: "ruko, soch raha hoon", history: [], ui: t.ui, module: t.state.module });
+  assert.ok(out.guard.caught.includes("thinkq"), JSON.stringify(out.guard));
+  assert.match(seen.at(-1), /ask nothing at all/);
+  assert.doesNotMatch(out.reply, /\?/);
+  // a right answer: the reply opens by confirming it
+  r = toPractice();
+  const right = turn(r, cls("correct"));
+  const seen2 = scripted("Ab batao, tumne yeh kaise socha?", "Sahi, 1/2 hi hai! Ab batao, tumne yeh kaise socha?");
+  const out2 = await textReply({ instructions: "x", state: right.state, kit: K, childText: "1/2", history: [], ui: right.ui, module: right.state.module, verdict: "correct" });
+  assert.ok(out2.guard.caught.includes("noconfirm"), JSON.stringify(out2.guard));
+  assert.match(seen2.at(-1), /open by confirming it/);
+});
+
+test("a REQUESTED story whose numbers state the key is not cut to the bare question: one more attempt with other numbers", async () => {
+  const r0 = toPractice();
+  const r = turn(r0, { ...cls("no_evidence"), source: "chip", request: { type: "story", whole: true } });
+  assert.equal(r.state.lastMove?.request, "story");
+  const item = r.item, q = r.ui.ask.text, key = String(item.answer);
+  const leaky = `Ek din Riya ne socha, jawab ${key} hai, haan ${key}. ${q}`;
+  const clean = `Ek din Riya ne ek roti ke barabar tukde kiye aur sabko ek-ek diya. ${q}`;
+  const seen = scripted(leaky, leaky, clean);
+  const out = await textReply({ instructions: "x", state: r.state, kit: K, childText: "Tell it as a story", history: [], ui: r.ui, module: r.state.module, verdict: null });
+  assert.ok(out.guard.caught.includes("leak"), JSON.stringify(out.guard));
+  assert.equal(out.guard.reasked, true, JSON.stringify(out.guard));
+  assert.match(seen.at(-1), /different numbers/);
+  assert.equal(out.reply, clean);
+});

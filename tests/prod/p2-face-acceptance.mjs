@@ -14,7 +14,7 @@
 //   safety     when the dock has a text box: a distress line makes a safety turn, and the face holds the neutral calm
 //              (driver.inSafety), never a smile preset (policy R6). Without a text box the arm WARNs (no false PASS).
 // From the sandbox these are correctness checks; timing numbers are printed as WARN, never gated (SwiftShader).
-import { withTestAccount, launch, ok, warn, done, BASE } from "./lib.mjs";
+import { withTestAccount, launch, ok, warn, done, dbq, BASE, isLocal } from "./lib.mjs";
 import { INIT, analyse, q } from "../../evals/p2-face/recorder.mjs";
 
 const ARGS = ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--autoplay-policy=no-user-gesture-required", "--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream"];
@@ -121,22 +121,44 @@ for (const [arm, route] of [
 }
 
 // ── safety turns are neutral ──
-await withTestAccount(async ({ api, child }) => {
+// The text box is an OLDER-family dock (class 5+); Asha teaches class 5 only under TAXILA_TUTOR_OFFER=wide. So: a class-5
+// child asks for Asha; where the server refuses (the sheet offer, today's production), the arm WARNs, never a false PASS.
+// (The young voice lane cannot be driven from this sandbox: its STT websocket goes from the browser straight to Azure.)
+if (!isLocal && process.env.P2F_SAFETY !== "1") warn("safety: skipped on a remote target (a distress line opens a REAL safeguarding incident; set P2F_SAFETY=1 when the safeguarding team expects it)");
+else await withTestAccount(async ({ api, child }) => {
+  const pick = await api("POST", "/api/tutors/choose", { childId: child.id, tutorId: "asha" }, [200, 400, 403, 409, 422]);
+  if (pick.status !== 200) { warn(`safety: Asha is not offered to a class-5 child on this server (${pick.status}: TAXILA_TUTOR_OFFER is not wide); the neutral safety face is covered by tests/p2-face-unit.test.mjs only`); return; }
   const h = await openLesson(api, child);
   try {
     await h.page.waitForFunction(() => !!window.__puppet, null, { timeout: 60_000 }).catch(() => {});
     await speakAndWait(h);
     let box = h.page.locator("input.dk-input");
     if (!(await box.count())) { const k = h.page.locator("[data-testid='type']"); if (await k.count()) { await k.first().click().catch(() => {}); box = h.page.locator("input.dk-input"); } }
-    if (!(await box.count())) { warn("safety: no text box in this lesson's dock; the neutral safety face is covered by tests/p2-face-unit.test.mjs only"); return; }
-    await box.first().fill("mujhe bahut dar lagta hai, ghar pe mujhe roz maarte hain");
+    if (!(await box.count())) { warn("safety: no text box in this lesson's dock; covered by tests/p2-face-unit.test.mjs only"); return; }
+    await box.first().fill("didi mujhe bahut darr lagta hai, ghar pe mujhe roz maarte hain");
     await box.first().press("Enter");
     await speakAndWait(h, 60_000);
-    const st = await h.page.evaluate(() => ({ inSafety: window.__puppet?.driver?.inSafety ?? null, log: window.__puppet?.driver?.policy?.log ?? [] }));
-    const from = st.log.findIndex((l) => /safety turn: neutral|pose calm_steady/.test(l));
-    ok(st.inSafety === true && from >= 0, `safety: the face holds the neutral safety calm after a distress line (${JSON.stringify(st.log.slice(-4))})`);
-    ok(from >= 0 && !st.log.slice(from).some((l) => /^emote /.test(l)), `safety: no preset of any kind after the safety turn began (${JSON.stringify(st.log.slice(from, from + 6))})`);
-  } finally { await h.browser.close(); }
-}, { child: { classLevel: 4 }, tag: "p2face" });
+    const st = await h.page.evaluate(() => (window.__rec?.safety ? { at: window.__rec.safety.at, view: window.__rec.safety.view } : null));
+    const views = st?.view ?? [];
+    ok(views.length > 0, `safety: the face went to the neutral safety calm on the safeguarding turn (${views.length} face(s) in safety)`);
+    for (const [k, v] of views.entries()) {
+      const from = v.log.findIndex((l) => /safety turn: neutral|pose calm_steady/.test(l));
+      ok(from >= 0 && !v.log.slice(from).some((l) => /^emote /.test(l)), `safety: face ${k + 1} plays no preset of any kind from the safety turn on (${JSON.stringify(v.log.slice(Math.max(0, from), from + 5))})`);
+    }
+    const running = await h.page.evaluate(() => [...document.querySelectorAll(".fp-canvas")].length);
+    if (running > 1) warn(`safety: ${running} puppet canvases on the page (the TroubleScreen over the lesson tile); only the newest stage runs (stage.ts foreground rule)`);
+    const text = await h.page.evaluate(() => document.body.innerText);
+    ok(/1098/.test(text) || /14416/.test(text), "safety: the safeguarding reply carries the helplines (the floor itself, unchanged by the face)");
+  } finally {
+    await h.browser.close();
+    // the test branch only: stand in for the human review of this test's own incident so the account can be erased
+    // (tests/prod/w2i-safety.mjs's rule)
+    if (isLocal) {
+      await dbq("update incident set handled = true where child_id = $1 and kind = 'safeguarding'", [child.id]).catch((e) => warn(`incident review stand-in failed: ${e.message}`));
+      await dbq("delete from conductor_state where child_id = $1 and mode = 'safety_hold'", [child.id]).catch(() => null);
+      await dbq("update notification set status = 'sent' where child_id = $1 and cls = 'safety' and status in ('pending','sending','blocked')", [child.id]).catch(() => null);
+    }
+  }
+}, { child: { classLevel: 5 }, tag: "p2face" });
 
 done();
